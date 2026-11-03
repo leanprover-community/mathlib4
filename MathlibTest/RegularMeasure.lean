@@ -1,5 +1,7 @@
-import Mathlib.MeasureTheory.Group.Measure
-import Mathlib.Topology.Metrizable.Urysohn
+module
+
+public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.Topology.Metrizable.Urysohn
 
 /-! Check that typeclass inference knows that a Haar measure on a locally compact second countable
 topological group is automatically regular and inner regular. -/

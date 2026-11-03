@@ -60,7 +60,6 @@ instance isHomLift_homCartesianLift {a' : ∫ᶜ F} {φ' : a' ⟶ ⟨S, a⟩} {g
     [IsHomLift (forget F) (g ≫ f) φ'] : IsHomLift (forget F) g (homCartesianLift f g φ') :=
   IsHomLift.map (forget F) (homCartesianLift f g φ')
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isStronglyCartesian_homCartesianLift :
     IsStronglyCartesian (forget F) f (cartesianLift a f) where

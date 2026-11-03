@@ -862,7 +862,6 @@ instance forget_reflects_iso : (forget X).ReflectsIsomorphisms where
 noncomputable def mkIdInitial : Limits.IsInitial (mk (𝟙 X)) :=
   StructuredArrow.mkIdInitial
 
-set_option backward.defeqAttrib.useBackward true in
 -- We could make this defeq if we care.
 @[simp] lemma mkIdInitial_to_right (Y : Under X) : (mkIdInitial.to Y).right = Y.hom := by
   rw [mkIdInitial.hom_ext (mkIdInitial.to Y) (homMk Y.hom)]
@@ -1098,7 +1097,6 @@ lemma essImage.of_underPost {Y : Under (F.obj X)} :
     (Under.post F (X := X)).essImage Y → F.essImage Y.right :=
   fun ⟨Z, ⟨e⟩⟩ ↦ ⟨Z.right, ⟨(Under.forget _).mapIso e⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The essential image of `Over.post F` where `F` is full is the same as the essential image of
 `F`. -/
 @[simp] lemma essImage_overPost [F.Full] {Y : Over (F.obj X)} :
@@ -1256,7 +1254,6 @@ section CommaFst
 
 variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor used to define the equivalence `ofCommaSndEquivalence`. -/
 @[simps]
 def ofCommaSndEquivalenceFunctor (c : C) :
@@ -1264,7 +1261,6 @@ def ofCommaSndEquivalenceFunctor (c : C) :
   obj X := ⟨Under.mk X.hom, X.right.right, X.right.hom⟩
   map f := ⟨Under.homMk f.right.left (by simp [dsimp% f.w]), f.right.right, by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor used to define the equivalence `ofCommaSndEquivalence`. -/
 @[simps!]
 def ofCommaSndEquivalenceInverse (c : C) :
@@ -1324,7 +1320,6 @@ def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical functor from the costructured arrow category on the diagonal functor
 `T ⥤ T × T` to the costructured arrow category on `Under.forget`. -/
 @[simps!]
@@ -1336,7 +1331,6 @@ def ofDiagonalEquivalence.functor (X : T × T) :
     _ _
     (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; cat_disch)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor of `ofDiagonalEquivalence.functor`. -/
 @[simps!]
 def ofDiagonalEquivalence.inverse (X : T × T) :
@@ -1394,7 +1388,6 @@ section CommaFst
 
 variable {C : Type u₃} [Category.{v₃} C] (F : C ⥤ T) (G : D ⥤ T)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps]
 def ofCommaFstEquivalenceFunctor (c : C) :
@@ -1402,7 +1395,6 @@ def ofCommaFstEquivalenceFunctor (c : C) :
   obj X := ⟨Over.mk X.hom, X.left.right, X.left.hom⟩
   map f := ⟨Over.homMk f.left.left (by simpa using f.w), f.left.right, by simp⟩
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The inverse functor used to define the equivalence `ofCommaFstEquivalence`. -/
 @[simps!]
 def ofCommaFstEquivalenceInverse (c : C) :
@@ -1433,7 +1425,6 @@ open Opposite
 
 variable (X : T)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical equivalence between over and under categories by reversing structure arrows. -/
 @[simps]
 def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
@@ -1444,7 +1435,6 @@ def Over.opEquivOpUnder : Over (op X) ≌ (Under X)ᵒᵖ where
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The canonical equivalence between under and over categories by reversing structure arrows. -/
 @[simps]
 def Under.opEquivOpOver : Under (op X) ≌ (Over X)ᵒᵖ where

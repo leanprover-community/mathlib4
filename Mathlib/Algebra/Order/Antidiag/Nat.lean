@@ -268,8 +268,8 @@ open scoped ArithmeticFunction.omega in -- access notation `ω`
 theorem card_finMulAntidiagonal_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     #(finMulAntidiagonal d n) = d ^ ω n := by
   rw [← card_finMulAntidiagonal_pi d n hn, Finset.card_pi, Finset.prod_const,
-    ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
-    Finset.card_fin]
+    ArithmeticFunction.cardDistinctFactors_eq_length_dedup_primeFactorsList, ← List.card_toFinset,
+    toFinset_factors, Finset.card_fin]
 
 @[deprecated (since := "2026-09-06")]
 alias card_finMulAntidiag_of_squarefree := card_finMulAntidiagonal_of_squarefree

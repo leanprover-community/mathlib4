@@ -48,7 +48,7 @@ lemma mulSingle_one (i : ι) : mulSingle i (1 : M i) = 1 := Function.update_eq_s
 @[to_additive (attr := simp)]
 lemma mulSingle_eq_one_iff : mulSingle i x = 1 ↔ x = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
-  rw [← mulSingle_eq_same i x, h, one_apply]
+  rw [← mulSingle_eq_same i x, h, Pi.one_apply]
 
 @[to_additive]
 lemma mulSingle_ne_one_iff : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
@@ -136,7 +136,7 @@ lemma mulSingle_eq_mulSingle_iff {j : ι} {m n : M} :
 @[to_additive]
 lemma mulSingle_left_injective {m : M} (hm : m ≠ 1) :
     Function.Injective fun (i : ι) ↦ mulSingle (M := fun _ ↦ M) i m :=
-  Function.update_left_injective (fun _ ↦ by rwa [one_apply, ne_comm])
+  Function.update_left_injective (fun _ ↦ by rwa [Pi.one_apply, ne_comm])
 
 @[to_additive]
 lemma mulSingle_left_inj {j : ι} {m : M} (hm : m ≠ 1) :
