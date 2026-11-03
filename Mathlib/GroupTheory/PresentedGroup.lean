@@ -35,8 +35,6 @@ generators, relations, group presentations
 variable {α β : Type*}
 
 
-#check AddSubgroup.normalClosure
-
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedAddGroup` constructs the additive
 group with generators `x : α` and relations `rels` as a quotient of `FreeAddGroup α`. -/
 def PresentedAddGroup (rels : Set (FreeAddGroup α)) :=
