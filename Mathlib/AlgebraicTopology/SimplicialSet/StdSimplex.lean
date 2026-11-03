@@ -293,7 +293,7 @@ lemma face_inter_face {n : ℕ} (S₁ S₂ : Finset (Fin (n + 1))) :
 lemma face_empty (n : ℕ) :
     face.{u} (∅ : Finset (Fin (n + 1))) = ⊥ := by
   ext
-  simpa using Finset.univ_neq_empty _
+  simp
 
 @[simp]
 lemma face_univ (n : ℕ) :
