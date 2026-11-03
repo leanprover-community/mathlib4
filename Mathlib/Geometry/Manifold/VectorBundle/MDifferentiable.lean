@@ -63,7 +63,7 @@ theorem mdifferentiableAt_totalSpace_iff (f : M → TotalSpace F E) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x => (f x).proj) x₀ ∧
       MDiffAt (fun x ↦ (trivializationAt F E (f x₀).proj (f x)).2) x₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace _ f
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_totalSpace_iff _ f
 
 @[deprecated (since := "2026-11-03")]
 alias mdifferentiableAt_totalSpace := mdifferentiableAt_totalSpace_iff
@@ -72,7 +72,7 @@ alias mdifferentiableAt_totalSpace := mdifferentiableAt_totalSpace_iff
 in terms of the preferred trivialization at that point. -/
 theorem mdifferentiableWithinAt_section_iff (s : Π b, E b) {u : Set B} {b₀ : B} :
     MDiffAt[u] (T% s) b₀ ↔ MDiffAt[u] (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
-  rw [mdifferentiableWithinAt_totalSpace]
+  rw [mdifferentiableWithinAt_totalSpace_iff]
   change MDifferentiableWithinAt _ _ id _ _ ∧ _ ↔ _
   simp [mdifferentiableWithinAt_id]
 
@@ -83,7 +83,7 @@ alias mdifferentiableWithinAt_section := mdifferentiableWithinAt_section_iff
 in terms of the preferred trivialization at that point. -/
 theorem mdifferentiableAt_section_iff (s : Π b, E b) {b₀ : B} :
     MDiffAt (T% s) b₀ ↔ MDiffAt (fun b ↦ (trivializationAt F E b₀ (s b)).2) b₀ := by
-  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section _ _
+  simpa [← mdifferentiableWithinAt_univ] using mdifferentiableWithinAt_section_iff _ _
 
 @[deprecated (since := "2026-11-03")]
 alias mdifferentiableAt_section := mdifferentiableAt_section_iff
@@ -94,7 +94,7 @@ variable (E) {IB}
 
 theorem mdifferentiable_proj : MDiff (π F E) := fun x ↦ by
   have : MDiffAt (@id <| TotalSpace F E) x := mdifferentiableAt_id
-  rw [mdifferentiableAt_totalSpace] at this
+  rw [mdifferentiableAt_totalSpace_iff] at this
   exact this.1
 
 theorem mdifferentiableOn_proj {s : Set (TotalSpace F E)} : MDiff[s] (π F E) :=
@@ -115,7 +115,7 @@ variable [∀ x, Module 𝕜 (E x)] [VectorBundle 𝕜 F E]
 theorem mdifferentiable_zeroSection : MDiff (zeroSection F E) := by
   intro x
   unfold zeroSection
-  rw [mdifferentiableAt_section]
+  rw [mdifferentiableAt_section_iff]
   apply (mdifferentiableAt_const (c := 0)).congr_of_eventuallyEq
   filter_upwards [(trivializationAt F E x).open_baseSet.mem_nhds
     (mem_baseSet_trivializationAt F E x)] with y hy
@@ -274,7 +274,7 @@ theorem mdifferentiableWithinAt_totalSpace_iff
     (he : f x₀ ∈ e.source) :
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).proj) x₀ ∧ MDiffAt[s] (fun x ↦ (e (f x)).2) x₀ := by
-  rw [mdifferentiableWithinAt_totalSpace]
+  rw [_root_.mdifferentiableWithinAt_totalSpace_iff]
   apply and_congr_right
   intro hf
   rw [Trivialization.mdifferentiableWithinAt_snd_comp_iff₂ IB
@@ -287,7 +287,7 @@ theorem mdifferentiableAt_totalSpace_iff
     (f : M → TotalSpace F E) {x₀ : M}
     (he : f x₀ ∈ e.source) :
     MDiffAt f x₀ ↔ MDiffAt (fun x ↦ (f x).proj) x₀ ∧ MDiffAt (fun x ↦ (e (f x)).2) x₀ := by
-  rw [mdifferentiableAt_totalSpace]
+  rw [_root_.mdifferentiableAt_totalSpace_iff]
   apply and_congr_right
   intro hf
   rw [Trivialization.mdifferentiableAt_snd_comp_iff₂ IB
@@ -379,7 +379,7 @@ variable {f : B → 𝕜} {a : 𝕜} {s t : Π x : B, E x} {u : Set B} {x₀ : B
 lemma mdifferentiableWithinAt_add_section
     (hs : MDiffAt[u] (T% s) x₀) (ht : MDiffAt[u] (T% t) x₀) :
     MDiffAt[u] (T% (s + t)) x₀ := by
-  rw [mdifferentiableWithinAt_section] at hs ht ⊢
+  rw [mdifferentiableWithinAt_section_iff] at hs ht ⊢
   set e := trivializationAt F E x₀
   refine (hs.add ht).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
@@ -405,7 +405,7 @@ lemma mdifferentiable_add_section
 
 lemma mdifferentiableWithinAt_neg_section
     (hs : MDiffAt[u] (T% s) x₀) : MDiffAt[u] (T% (-s)) x₀ := by
-  rw [mdifferentiableWithinAt_section] at hs ⊢
+  rw [mdifferentiableWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F E x₀
   refine hs.neg.congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
@@ -448,7 +448,7 @@ lemma mdifferentiable_sub_section
 
 lemma MDifferentiableWithinAt.smul_section
     (hf : MDiffAt[u] f x₀) (hs : MDiffAt[u] (T% s) x₀) : MDiffAt[u] (T% (f • s)) x₀ := by
-  rw [mdifferentiableWithinAt_section] at hs ⊢
+  rw [mdifferentiableWithinAt_section_iff] at hs ⊢
   set e := trivializationAt F E x₀
   refine (hf.smul hs).congr_of_eventuallyEq ?_ ?_
   · apply eventually_of_mem (U := e.baseSet)
@@ -662,7 +662,7 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
     (hv : MDiffAt[s] (fun m ↦ (v m : TotalSpace F₁ E₁)) m₀)
     (hb₂ : MDiffAt[s] b₂ m₀) :
     MDiffAt[s] (fun m ↦ (ϕ m (v m) : TotalSpace F₂ E₂)) m₀ := by
-  rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
+  rw [mdifferentiableWithinAt_totalSpace_iff] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (MDifferentiableWithinAt.clm_apply hϕ hv.2).congr_of_eventuallyEq_insert
   have A : ∀ᶠ m in 𝓝[insert m₀ s] m₀, b₁ m ∈ (trivializationAt F₁ E₁ (b₁ m₀)).baseSet := by
