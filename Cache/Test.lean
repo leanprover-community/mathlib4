@@ -843,6 +843,13 @@ def test_missingFilesLines : IO Unit := do
   assertTrue "fork hint points at cache query" (containsSub fork "lake exe cache query")
   assertTrue "fork hint points at --scope" (containsSub fork "lake exe cache get --scope=")
   assertTrue "fork hint states the trust consequence" (containsSub fork "trusting the artifacts")
+  assertTrue "fork hint omits --repo when none was passed" (!containsSub fork "--repo=")
+  let forkRepo := "\n".intercalate
+    (missingFilesForkLines "alice/mathlib4" "cafe0123" 7 (some "bob/mathlib4"))
+  assertTrue "fork hint repeats --repo in cache query"
+    (containsSub forkRepo "lake exe cache query --repo=bob/mathlib4")
+  assertTrue "fork hint repeats --repo in cache get"
+    (containsSub forkRepo "lake exe cache get --repo=bob/mathlib4 --scope=")
   let generic := "\n".intercalate (missingFilesGenericLines 7)
   assertTrue "generic warning reports the miss count" (containsSub generic "7 file(s)")
   assertTrue "generic warning explains divergence" (containsSub generic "diverged from upstream")
