@@ -375,7 +375,7 @@ instance : ConditionallyCompleteLinearOrderBot Cardinal :=
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set Cardinal.{u}) = 0 :=
-  dite_eq_right Set.not_nonempty_empty
+  dite_eq_right (fun ⟨_, h⟩ ↦ not_isTop _ (isGLB_empty_iff.mp h))
 
 /-- Note that the successor of `c` is not the same as `c + 1` except in the case of finite `c`. -/
 @[no_expose] instance : SuccOrder Cardinal := .ofLinearWellFoundedLT _

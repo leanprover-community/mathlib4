@@ -18,8 +18,7 @@ We check that an `OrdConnected` set satisfies these conditions.
 
 ## TODO
 
-Add appropriate instances for all `Set.Ixx`. This requires a refactor that will allow different
-default values for `sSup` and `sInf`.
+Add appropriate instances for all `Set.Ixx`.
 -/
 
 @[expose] public section
@@ -48,7 +47,6 @@ noncomputable def subsetSupSet [Inhabited s] : SupSet s where
 attribute [local instance] subsetSupSet
 
 open scoped Classical in
-@[simp]
 theorem subset_sSup_def [Inhabited s] :
     @sSup s _ = fun t =>
       if ht : t.Nonempty ∧ BddAbove t ∧ sSup ((↑) '' t : Set α) ∈ s
@@ -58,7 +56,7 @@ theorem subset_sSup_def [Inhabited s] :
 
 theorem subset_sSup_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
-    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [h, h', h'']
+    sSup ((↑) '' t : Set α) = (@sSup s _ t : α) := by simp [subset_sSup_def, h, h', h'']
 
 theorem subset_sSup_emptyset [Inhabited s] :
     sSup (∅ : Set s) = default := by
@@ -88,7 +86,6 @@ noncomputable def subsetInfSet [Inhabited s] : InfSet s where
 attribute [local instance] subsetInfSet
 
 open scoped Classical in
-@[simp]
 theorem subset_sInf_def [Inhabited s] :
     @sInf s _ = fun t =>
       if ht : t.Nonempty ∧ BddBelow t ∧ sInf ((↑) '' t : Set α) ∈ s
@@ -98,7 +95,7 @@ theorem subset_sInf_def [Inhabited s] :
 
 theorem subset_sInf_of_within [Inhabited s] {t : Set s}
     (h' : t.Nonempty) (h'' : BddBelow t) (h : sInf ((↑) '' t : Set α) ∈ s) :
-    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [h, h', h'']
+    sInf ((↑) '' t : Set α) = (@sInf s _ t : α) := by simp [subset_sInf_def, h, h', h'']
 
 theorem subset_sInf_emptyset [Inhabited s] :
     sInf (∅ : Set s) = default := by
@@ -110,13 +107,15 @@ theorem subset_sInf_of_not_bddBelow [Inhabited s] {t : Set s} (ht : ¬BddBelow t
 
 end InfSet
 
+@[to_dual]
+theorem Subtype.isLUB_of_csSup_image_mem [ConditionallyCompleteLattice α] {s : Set α} {t : Set s}
+    (ht : t.Nonempty) (h_bdd : BddAbove t) (h : sSup ((↑) '' t : Set α) ∈ s) :
+    IsLUB t ⟨sSup ((↑) '' t : Set α), h⟩ :=
+  .of_image Subtype.coe_le_coe (isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd))
+
 section OrdConnected
 
 variable [ConditionallyCompleteLinearOrder α]
-
-attribute [local instance] subsetSupSet
-
-attribute [local instance] subsetInfSet
 
 /-- For a nonempty subset of a conditionally complete linear order to be a conditionally complete
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
@@ -126,20 +125,20 @@ noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :
     ConditionallyCompleteLinearOrder s :=
-  { subsetSupSet s, subsetInfSet s, DistribLattice.toLattice, (inferInstance : LinearOrder s) with
-    isLUB_csSup t ht h_bdd := .of_image Subtype.coe_le_coe <| by
-      rw [← subset_sSup_of_within s ht h_bdd (h_Sup ht h_bdd)]
-      exact isLUB_csSup (ht.image _) ((Subtype.mono_coe _).map_bddAbove h_bdd)
-    isGLB_csInf t ht h_bdd := .of_image Subtype.coe_le_coe <| by
-      rw [← subset_sInf_of_within s ht h_bdd (h_Inf ht h_bdd)]
-      exact isGLB_csInf (ht.image _) ((Subtype.mono_coe _).map_bddBelow h_bdd)
-    csSup_of_not_bddAbove := fun t ht ↦ by simp [ht]
-    csInf_of_not_bddBelow := fun t ht ↦ by simp [ht] }
+  letI := OrderSupSet.chooseBot (default : s)
+  letI := OrderInfSet.chooseTop (default : s)
+  { DistribLattice.toLattice, (inferInstance : LinearOrder s), ‹OrderSupSet s›, ‹OrderInfSet s› with
+    exists_isLUB_cond _ ht h_bdd := ⟨_, Subtype.isLUB_of_csSup_image_mem ht h_bdd (h_Sup ht h_bdd)⟩
+    exists_isGLB_cond _ ht h_bdd := ⟨_, Subtype.isGLB_of_csInf_image_mem ht h_bdd (h_Inf ht h_bdd)⟩
+    csSup_of_not_bddAbove _ ht :=
+      OrderSupSet.chooseBot_sSup_of_not_exists (ht ·.choose_spec.bddAbove)
+    csInf_of_not_bddBelow _ ht :=
+      OrderInfSet.chooseTop_sInf_of_not_exists (ht ·.choose_spec.bddBelow) }
 
 /-- The `sSup` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-above subsets of `s`. -/
-theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
-    (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
+theorem Set.OrdConnected.csSup_image_mem {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄
+    (ht : t.Nonempty) (h_bdd : BddAbove t) : sSup ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ upperBounds t := h_bdd
   refine hs.out c.2 B.2 ⟨?_, ?_⟩
@@ -148,8 +147,8 @@ theorem sSup_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
 
 /-- The `sInf` function on a nonempty `OrdConnected` set `s` in a conditionally complete linear
 order takes values within `s`, for all nonempty bounded-below subsets of `s`. -/
-theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄ (ht : t.Nonempty)
-    (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
+theorem Set.OrdConnected.csInf_image_mem {s : Set α} [hs : OrdConnected s] ⦃t : Set s⦄
+    (ht : t.Nonempty) (h_bdd : BddBelow t) : sInf ((↑) '' t : Set α) ∈ s := by
   obtain ⟨c, hct⟩ : ∃ c, c ∈ t := ht
   obtain ⟨B, hB⟩ : ∃ B, B ∈ lowerBounds t := h_bdd
   refine hs.out B.2 c.2 ⟨?_, ?_⟩
@@ -158,11 +157,29 @@ theorem sInf_within_of_ordConnected {s : Set α} [hs : OrdConnected s] ⦃t : Se
 
 /-- A nonempty `OrdConnected` set in a conditionally complete linear order is naturally a
 conditionally complete linear order. -/
-noncomputable instance ordConnectedSubsetConditionallyCompleteLinearOrder [Inhabited s]
+noncomputable instance Set.OrdConnected.conditionallyCompleteLinearOrder [Inhabited s]
     [OrdConnected s] : ConditionallyCompleteLinearOrder s :=
   subsetConditionallyCompleteLinearOrder s
-    (fun h => sSup_within_of_ordConnected h)
-    (fun h => sInf_within_of_ordConnected h)
+    (fun h => OrdConnected.csSup_image_mem h)
+    (fun h => OrdConnected.csInf_image_mem h)
+
+variable [Inhabited s] [OrdConnected s]
+
+theorem Set.OrdConnected.coe_sSup {t : Set s} (ht : t.Nonempty) (h_bdd : BddAbove t) :
+    ((sSup t : s) : α) = sSup ((↑) '' t : Set α) :=
+  congrArg Subtype.val <|
+    (Subtype.isLUB_of_csSup_image_mem ht h_bdd (csSup_image_mem ht h_bdd)).csSup_eq ht
+
+theorem Set.OrdConnected.coe_sInf {t : Set s} (ht : t.Nonempty) (h_bdd : BddBelow t) :
+    ((sInf t : s) : α) = sInf ((↑) '' t : Set α) :=
+  congrArg Subtype.val <|
+    (Subtype.isGLB_of_csInf_image_mem ht h_bdd (csInf_image_mem ht h_bdd)).csInf_eq ht
+
+theorem Set.OrdConnected.sSup_empty_of_noBotOrder [NoBotOrder s] : sSup (∅ : Set s) = default :=
+  OrderSupSet.chooseBot_sSup_empty_of_noBotOrder
+
+theorem Set.OrdConnected.sInf_empty_of_noTopOrder [NoTopOrder s] : sInf (∅ : Set s) = default :=
+  OrderInfSet.chooseTop_sInf_empty_of_noTopOrder
 
 end OrdConnected
 
@@ -255,3 +272,25 @@ theorem coe_biInf : (↑(⨅ i, ⨅ (_ : p i), f i) : α) = a ⊓ ⨅ i, ⨅ (_ 
 
 
 end Set.Iic
+
+attribute [deprecated "deprecated without replacement" (since := "2026-10-26")]
+  subsetSupSet subset_sSup_def subsetInfSet subset_sInf_def
+attribute [deprecated Subtype.isLUB_of_csSup_image_mem +typeChanged (since := "2026-10-26")]
+  subset_sSup_of_within
+attribute [deprecated Subtype.isGLB_of_csInf_image_mem +typeChanged (since := "2026-10-26")]
+  subset_sInf_of_within
+attribute [deprecated Set.OrdConnected.sSup_empty_of_noBotOrder +typeChanged
+  (since := "2026-10-26")]
+  subset_sSup_emptyset
+attribute [deprecated Set.OrdConnected.sInf_empty_of_noTopOrder +typeChanged
+  (since := "2026-10-26")]
+  subset_sInf_emptyset
+attribute [deprecated csSup_of_not_bddAbove +typeChanged (since := "2026-10-26")]
+  subset_sSup_of_not_bddAbove
+attribute [deprecated csInf_of_not_bddBelow +typeChanged (since := "2026-10-26")]
+  subset_sInf_of_not_bddBelow
+
+@[deprecated (since := "2026-10-26")]
+alias sSup_within_of_ordConnected := Set.OrdConnected.csSup_image_mem
+@[deprecated (since := "2026-10-26")]
+alias sInf_within_of_ordConnected := Set.OrdConnected.csInf_image_mem
