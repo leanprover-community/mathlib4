@@ -443,7 +443,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ by fun_prop⟩
+  base := TopCat.ofHom ⟨g, by rw [← h]; fun_prop⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
