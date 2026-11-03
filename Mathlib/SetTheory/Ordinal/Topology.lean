@@ -22,6 +22,10 @@ In all likelihood, any theorem which you might want to add to this file will gen
 typeclasses. In particular, the characterization of closed sets as those which are closed under
 suprema follows from the fact that the order topology on a well-order equals the Scott-Hausdorff
 topology.
+
+Note also that concepts like normal functions (`Order.IsNormal`) or club sets (`IsClub`), which are
+defined using the order topology of the ordinals within the literature, are given more general
+definitions in Mathlib which make no use of it.
 -/
 
 public section
