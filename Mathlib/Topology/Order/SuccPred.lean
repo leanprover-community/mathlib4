@@ -35,17 +35,16 @@ theorem isOpen_singleton_iff : IsOpen {a} ↔ ¬ IsSuccLimit a := by
     exact ha.isSuccPrelimit l ⟨h₁, fun b hlb hba ↦ hba.ne <| h₂ ⟨hlb, hba.le⟩⟩
   · rw [not_isSuccLimit_iff, not_isSuccPrelimit_iff] at ha
     obtain (ha | ⟨b, hb⟩) := ha
-    · obtain _ | _ := subsingleton_or_nontrivial α
+    · cases subsingleton_or_nontrivial α
       · rw [Subsingleton.eq_univ_of_nonempty (singleton_nonempty a)]
         exact isOpen_univ
-      · convert isOpen_Iio (a := Order.succ a)
-        rw [Iio_succ_of_not_isMax ha.not_isMax, ha.Iic_eq]
+      · rw [← ha.Iic_eq, ← Iio_succ_of_not_isMax ha.not_isMax]
+        exact isOpen_Iio
     · by_cases ha' : IsMax a
-      · convert isOpen_Ioi (a := b)
-        rw [hb.Ioi_eq]
-        grind [IsMax]
-      · convert isOpen_Ioo (a := b) (b := Order.succ a)
-        simp [(covBy_succ_of_not_isMax ha').Ioo_eq_Ioc, hb.Ioc_eq]
+      · rw [← ha'.Ici_eq, ← hb.Ioi_eq]
+        exact isOpen_Ioi
+      · rw [← hb.Ioc_eq, ← (covBy_succ_of_not_isMax ha').Ioo_eq_Ioc]
+        exact isOpen_Ioo
 
 @[to_dual] alias ⟨_, isOpen_singleton_of_not_isSuccLimit⟩ := isOpen_singleton_iff
 
