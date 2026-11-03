@@ -508,11 +508,8 @@ theorem norm_map_le_iff_adjoint_comp_self' [CompleteSpace E] [CompleteSpace F] (
     (∀ x : E, ‖p x‖ ≤ ‖x‖) ↔ adjoint p ∘L p ≤ 1 := by
   -- Corollary of `norm_map_le_iff_adjoint_comp_self`, but direct proof is simpler than the
   -- bookkeeping through the maps `p q : E →L[𝕜] WithLp 2 (E × F)`.
-  rw [← sub_nonneg, ContinuousLinearMap.nonneg_iff_isPositive]
-  refine ⟨fun h => ⟨?_, fun x => ?_⟩, fun h x => ?_⟩
-  · exact ((IsSelfAdjoint.one _).sub (isPositive_adjoint_comp_self p).isSelfAdjoint).isSymmetric
-  · simp [reApplyInnerSelf_apply, inner_sub_left, adjoint_inner_left, sq_le_sq₀, h x]
-  · simpa [reApplyInnerSelf_apply, inner_sub_left, adjoint_inner_left, sq_le_sq₀] using h.2 x
+  simp [le_def, isPositive_iff', isSelfAdjoint_iff, star_eq_adjoint, inner_sub_left,
+    adjoint_inner_left, ← RCLike.ofReal_pow, -map_pow, sq_le_sq₀]
 
 /-- A star projection operator is positive.
 
