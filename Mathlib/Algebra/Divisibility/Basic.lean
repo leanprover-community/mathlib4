@@ -7,9 +7,10 @@ Neil Strickland, Aaron Anderson, Re'em Melamed-Katz
 module
 
 public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Tactic.Common
-import Batteries.Tactic.SeqFocus
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+
+import Batteries.Tactic.SeqFocus
 
 /-!
 # Divisibility
@@ -147,9 +148,21 @@ theorem IsRightRegular.rightDvd_cancel_right (h : IsRightRegular a) :
   ⟨fun dvd ↦ have ⟨d, eq⟩ := dvd
     ⟨d, h (eq.trans (mul_assoc ..).symm)⟩, RightDvd.mul_const a⟩
 
+open MulOpposite in
+/-- Left divisibility in the opposite semigroup is equivalent to right divisibility. -/
+@[simp]
+lemma op_dvd_op_iff : op a ∣ op b ↔ a ∣ᵣ b :=
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+
+open MulOpposite in
+/-- Right divisibility in the opposite semigroup is equivalent to left divisibility. -/
+@[simp]
+lemma op_rightDvd_op_iff : op a ∣ᵣ op b ↔ a ∣ b :=
+  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, op_injective hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congrArg op hc⟩⟩
+
+@[deprecated op_dvd_op_iff +typeChanged (since := "2026-09-30")]
 theorem rightDvd_iff_op_dvd_op : a ∣ᵣ b ↔ MulOpposite.op a ∣ MulOpposite.op b :=
-  ⟨fun ⟨c, hc⟩ => ⟨MulOpposite.op c, by simp [hc]⟩,
-   fun ⟨c, hc⟩ => ⟨MulOpposite.unop c, by simpa using congrArg MulOpposite.unop hc⟩⟩
+  op_dvd_op_iff.symm
 
 end Semigroup
 

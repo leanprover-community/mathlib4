@@ -6,6 +6,7 @@ Authors: David Loeffler
 module
 
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+
 import Mathlib.Analysis.Calculus.ParametricIntegral
 
 /-! # The Mellin transform
@@ -119,7 +120,7 @@ theorem mellin_comp_rpow (f : ℝ → E) (s : ℂ) (a : ℝ) :
   rcases eq_or_ne a 0 with rfl | ha
   · by_cases hE : CompleteSpace E
     · simp [integral_smul_const, mellin, setIntegral_Ioi_zero_cpow]
-    · simp [integral, mellin, hE]
+    · simp [integral_of_not_completeSpace hE, mellin]
   simp_rw [mellin]
   conv_rhs => rw [← integral_comp_rpow_Ioi _ ha, ← integral_smul]
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
@@ -203,7 +204,7 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
     (hf : f =O[atTop] (· ^ (-a))) (hs : s < a) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioi c) := by
   obtain ⟨d, hd'⟩ := hf.isBigOWith
-  simp_rw [IsBigOWith, eventually_atTop] at hd'
+  simp_rw [isBigOWith_iff, eventually_atTop] at hd'
   obtain ⟨e, he⟩ := hd'
   have he' : 0 < max e 1 := zero_lt_one.trans_le (le_max_right _ _)
   refine ⟨max e 1, he', ?_, ?_⟩
@@ -229,7 +230,7 @@ theorem mellin_convergent_zero_of_isBigO {b : ℝ} {f : ℝ → ℝ}
     (hf : f =O[𝓝[>] 0] (· ^ (-b))) {s : ℝ} (hs : b < s) :
     ∃ c : ℝ, 0 < c ∧ IntegrableOn (fun t : ℝ => t ^ (s - 1) * f t) (Ioc 0 c) := by
   obtain ⟨d, _, hd'⟩ := hf.exists_pos
-  simp_rw [IsBigOWith, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
+  simp_rw [isBigOWith_iff, eventually_nhdsWithin_iff, Metric.eventually_nhds_iff, gt_iff_lt] at hd'
   obtain ⟨ε, hε, hε'⟩ := hd'
   refine ⟨ε, hε, Iff.mpr integrableOn_Ioc_iff_integrableOn_Ioo ⟨?_, ?_⟩⟩
   · refine AEStronglyMeasurable.mul ?_ (hfc.mono_set Ioo_subset_Ioi_self)
@@ -386,7 +387,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     refine (ae_restrict_mem measurableSet_Ioi).mono fun t ht y _ => ?_
     have ht' : (t : ℂ) ≠ 0 := ofReal_ne_zero.mpr (ne_of_gt ht)
     have u1 : HasDerivAt (fun z : ℂ => (t : ℂ) ^ (z - 1)) (t ^ (y - 1) * log t) y := by
-      convert! ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
+      convert ((hasDerivAt_id' y).sub_const 1).const_cpow (Or.inl ht') using 1
       rw [ofReal_log (le_of_lt ht)]
       ring
     exact u1.smul_const (f t)

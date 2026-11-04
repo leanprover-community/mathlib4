@@ -196,18 +196,12 @@ theorem stdIsLinearOrder_iff {α : Type*} [LE α] :
 
 section
 
-/-- `Std.Refl` as a definition, suitable for use in proofs. -/
-@[deprecated Std.Refl (since := "2026-03-27")]
-def Reflexive := ∀ x, x ≺ x
-
 /-- `Std.Symm` as a definition, suitable for use in proofs. -/
 @[deprecated Std.Symm (since := "2026-06-10")]
 def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
 
 theorem Equivalence.stdRefl (h : Equivalence r) : Std.Refl r where
   refl := h.refl
-
-@[deprecated (since := "2026-03-27")] alias Equivalence.reflexive := Equivalence.stdRefl
 
 theorem Equivalence.stdSymm (h : Equivalence r) : Std.Symm r where
   symm _ _ := h.symm

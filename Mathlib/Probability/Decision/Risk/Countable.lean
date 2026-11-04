@@ -6,7 +6,6 @@ Authors: Rémy Degenne
 module
 
 public import Mathlib.Probability.Decision.Risk.Defs
-
 public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 /-!

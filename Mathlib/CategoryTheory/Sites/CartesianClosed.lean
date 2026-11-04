@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
 public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+
 /-!
 
 # Sheaf categories are Cartesian closed

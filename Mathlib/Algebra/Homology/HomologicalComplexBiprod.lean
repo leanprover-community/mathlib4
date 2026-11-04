@@ -5,8 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.Additive
+
+import Mathlib.Algebra.Homology.HomologicalComplexLimits
 
 /-! # Binary biproducts of homological complexes
 

@@ -5,11 +5,12 @@ Authors: David Loeffler
 -/
 module
 
-import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
-import Mathlib.RingTheory.Localization.NumDen
 public import Mathlib.Topology.Algebra.Order.ArchimedeanDiscrete
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
+
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.RingTheory.Localization.NumDen
 
 /-!
 # Cusps
@@ -67,7 +68,7 @@ lemma IsCusp.smul {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : Is
 
 lemma IsCusp.smul_of_mem {c : OnePoint ℝ} {𝒢 : Subgroup (GL (Fin 2) ℝ)} (hc : IsCusp c 𝒢)
     {g : GL (Fin 2) ℝ} (hg : g ∈ 𝒢) : IsCusp (g • c) 𝒢 := by
-  convert! hc.smul g
+  convert hc.smul g
   ext x
   rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← ConjAct.toConjAct_inv,
     ConjAct.toConjAct_smul, inv_inv, Subgroup.mul_mem_cancel_right _ hg,
@@ -110,7 +111,6 @@ lemma IsCusp.of_isFiniteRelIndex_conj {𝒢 ℋ : Subgroup (GL (Fin 2) ℝ)} {c 
   rw [← ℋ.conjAct_pointwise_smul_eq_self (ℋ.le_normalizer hh), 𝒢.relIndex_pointwise_smul]
   exact 𝒢.relIndex_ne_zero
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The cusps of `SL(2, ℤ)` are precisely the elements of `ℙ¹(ℚ)`. -/
 lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range (OnePoint.map Rat.cast) := by
   constructor
@@ -121,11 +121,11 @@ lemma isCusp_SL2Z_iff {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ c ∈ Set.range 
     obtain ⟨a, rfl⟩ := c.exists_mem_SL2 ℤ
     refine ⟨_, ⟨a * ModularGroup.T * a⁻¹, rfl⟩, ?_, ?_⟩
     · suffices (mapGL ℝ ModularGroup.T).IsParabolic by simpa
-      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.T] using congr($ha 0 1)), ?_⟩
-      simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.T]
+      refine ⟨fun ⟨a, ha⟩ ↦ zero_ne_one' ℝ (by simpa [ModularGroup.coe_T] using congr($ha 0 1)), ?_⟩
+      simp [discr_fin_two, trace_fin_two, det_fin_two, ModularGroup.coe_T]
       norm_num
     · rw [← Rat.coe_castHom, ← (Rat.castHom ℝ).algebraMap_toAlgebra]
-      simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.T]
+      simp [OnePoint.map_smul, mul_smul, smul_infty_eq_self_iff, ModularGroup.coe_T]
 
 /-- The cusps of `SL(2, ℤ)` are precisely the `SL(2, ℤ)` orbit of `∞`. -/
 lemma isCusp_SL2Z_iff' {c : OnePoint ℝ} : IsCusp c 𝒮ℒ ↔ ∃ g : SL(2, ℤ), c = mapGL ℝ g • ∞ := by
@@ -316,8 +316,8 @@ open scoped Classical in
 0 if no such `x` exists. -/
 noncomputable def strictWidthInfty : ℝ :=
   if h : DiscreteTopology 𝒢.strictPeriods then
-    |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr h|
+    |Exists.choose <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq.mp
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr h|
   else 0
 
 lemma strictWidthInfty_nonneg : 0 ≤ 𝒢.strictWidthInfty := by
@@ -333,8 +333,8 @@ variable {𝒢} in
 lemma strictPeriods_eq_zmultiples_strictWidthInfty [DiscreteTopology 𝒢.strictPeriods] :
     𝒢.strictPeriods = AddSubgroup.zmultiples 𝒢.strictWidthInfty := by
   simp [Subgroup.strictWidthInfty, dite_eq_left,
-    Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq_top.mp
-      <| AddSubgroup.discrete_iff_addCyclic.mpr inferInstance]
+    Exists.choose_spec <| 𝒢.strictPeriods.isAddCyclic_iff_exists_zmultiples_eq.mp
+      <| AddSubgroup.isAddCyclic_iff_discreteTopology.mpr inferInstance]
 
 lemma strictWidthInfty_eq_one_of_T_mem {Γ : Subgroup SL(2, ℤ)} (hΓ : ModularGroup.T ∈ Γ) :
     strictWidthInfty (Γ : Subgroup (GL (Fin 2) ℝ)) = 1 := by
@@ -430,25 +430,21 @@ open Subgroup
 
 namespace CongruenceSubgroup
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma0 (N : ℕ) :
     strictPeriods (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
-  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictPeriods_Gamma1 (N : ℕ) :
     strictPeriods (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples 1 :=
-  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.T]
+  strictPeriods_eq_zmultiples_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma0 (N : ℕ) :
     strictWidthInfty (Gamma0 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
-  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma strictWidthInfty_Gamma1 (N : ℕ) :
     strictWidthInfty (Gamma1 N : Subgroup (GL (Fin 2) ℝ)) = 1 :=
-  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.T]
+  strictWidthInfty_eq_one_of_T_mem <| by simp [ModularGroup.coe_T]
 
 @[simp] lemma strictPeriods_Gamma (N : ℕ) :
     strictPeriods (Gamma N : Subgroup (GL (Fin 2) ℝ)) = AddSubgroup.zmultiples ↑N := by

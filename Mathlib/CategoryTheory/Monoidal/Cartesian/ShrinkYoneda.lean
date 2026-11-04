@@ -5,8 +5,8 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.Algebra.Category.Grp.Shrink
+public import Mathlib.Algebra.Category.MonCat.Shrink
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Grp
 
 /-!
