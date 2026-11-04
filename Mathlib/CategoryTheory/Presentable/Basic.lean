@@ -189,6 +189,12 @@ lemma isCardinalPresentable_monotone {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (
   rw [isCardinalPresentable_iff] at hX ⊢
   exact isCardinalPresentable_of_le _ h
 
+variable {κ} in
+lemma IsCardinalPresentable.of_le
+    {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') {X : C} [IsCardinalPresentable X κ] :
+    IsCardinalPresentable X κ' :=
+  isCardinalPresentable_monotone C h X inferInstance
+
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=

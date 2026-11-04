@@ -186,3 +186,14 @@ lemma uniformization_pair
 end IsCardinalAccessibleCategory
 
 end CategoryTheory
+
+lemma Cardinal.SharplyLT.preservesCardinalPresentable
+    {κ₁ κ₂ : Cardinal.{w}} [Fact κ₁.IsRegular] [Fact κ₂.IsRegular]
+    (h : κ₁.SharplyLT κ₂)
+    {C D : Type*} [Category* C] [Category* D]
+    [IsCardinalAccessibleCategory C κ₁] [IsCardinalAccessibleCategory D κ₁]
+    (F : C ⥤ D) [F.IsCardinalAccessible κ₁] [F.PreservesCardinalPresentable κ₁] :
+    F.PreservesCardinalPresentable κ₂ :=
+  IsCardinalAccessibleCategory.uniformization_aux _ h
+    ((Functor.PreservesCardinalPresentable.le_inverseImage_isCardinalPresentable F κ₁).trans
+      (ObjectProperty.inverseImage_monotone (isCardinalPresentable_monotone D h.le) _))

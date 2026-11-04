@@ -92,4 +92,65 @@ instance [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
 
 end IsCardinalAccessibleCategory
 
+namespace ObjectProperty
+
+-- to be moved
+lemma isAccessible_ι (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [P.IsClosedUnderCardinalFilteredColimits κ] [IsAccessibleCategory.{w} C] :
+    Functor.IsAccessible.{w} P.ι := by
+  obtain ⟨κ₁, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} C
+  obtain ⟨κ₂, _, h, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
+  have := h₁.isCardinalAccessibleCategory C
+  have : P.IsClosedUnderCardinalFilteredColimits κ₂ := .of_le h.le
+  refine ⟨κ₂, inferInstance, ?_⟩
+  infer_instance
+
+-- key part of Proposition 2.32
+lemma isClosedUnderCardinalPureSubobjects
+    [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [P.IsClosedUnderCardinalFilteredColimits κ]
+    [IsAccessibleCategory.{w} P.FullSubcategory] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
+      P.IsClosedUnderCardinalPureSubobjects κ' := by
+  obtain ⟨κ', _, h, _, _⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
+      P.ι.PreservesCardinalPresentable κ' ∧
+        IsCardinalAccessibleCategory.{w} P.FullSubcategory κ' := by
+    have := P.isAccessible_ι κ
+    obtain ⟨κ₁, _, _, _, _, _⟩ := IsCardinalAccessibleCategory.uniformization P.ι
+    obtain ⟨κ₂, _, h, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
+    exact ⟨κ₂, inferInstance, h, h₁.preservesCardinalPresentable _,
+      h₁.isCardinalAccessibleCategory _⟩
+  have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le h.le
+  exact ⟨κ', inferInstance, h, inferInstance⟩
+
+end ObjectProperty
+
+namespace IsCardinalAccessibleCategory
+
+-- 2.33
+variable (C) in
+lemma test (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
+        ∃ (X' : C) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
+          (_ : Mono i) (_ : IsCardinalPure κ i), f' ≫ i = f := sorry
+
+variable (C) in
+lemma test' (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
+    (α : Cardinal.{w}) [Fact α.IsRegular] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ') (_ : α ≤ κ'),
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
+        ∃ (X' : C) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
+          (_ : Mono i) (_ : IsCardinalPure κ i), f' ≫ i = f := by
+  obtain ⟨β, _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ α
+  have := h₁.isCardinalAccessibleCategory C
+  obtain ⟨κ', _, h₃, h⟩ := test C β
+  refine ⟨κ', inferInstance, h₁.trans h₃, h₂.le.trans h₃.le,
+    fun _ _ f _ ↦ ?_⟩
+  obtain ⟨X', _, f', i, hf', _, fac⟩ := h f inferInstance
+  exact ⟨X', inferInstance, f', i, inferInstance, .of_le h₁.le _, fac⟩
+
+end IsCardinalAccessibleCategory
+
 end CategoryTheory

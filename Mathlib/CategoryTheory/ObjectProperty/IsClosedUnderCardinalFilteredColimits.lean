@@ -59,6 +59,13 @@ lemma isCardinalClosedUnderColimitsOfShape
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
   exact isCardinalClosedUnderColimitsOfShape' P κ _
 
+variable {P κ}
+lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    P.IsClosedUnderCardinalFilteredColimits κ' where
+  isCardinalClosedUnderColimitsOfShape' J _ _ :=
+    have := IsCardinalFiltered.of_le J h
+    isCardinalClosedUnderColimitsOfShape P κ J
+
 instance [HasCardinalFilteredColimits C κ] :
     HasCardinalFilteredColimits P.FullSubcategory κ where
   hasColimitsOfShape J _ _ := by
