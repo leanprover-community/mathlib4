@@ -197,7 +197,7 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
         = 1 := by
       simpa using congr(Polynomial.eval t $(S_sq_add_S_sq R k))
     -- Apply the inductive hypothesis.
-    rw [pow_succ', LinearEquiv.mul_apply, ih, LinearEquiv.mul_apply]
+    rw [pow_succ', mul_apply_eq_comp, ih, mul_apply_eq_comp]
     -- Expand out all the reflections and use `hf`, `hg`.
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
@@ -246,7 +246,7 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
         ((S R ((m - 1) / 2)).eval t * ((S R (m / 2)).eval t + (S R ((m - 2) / 2)).eval t)) •
           ((f y * g z - f z) • x - g z • y) := by
   induction m using Int.negInduction with
-  | nat m => exact_mod_cast reflection_mul_reflection_pow_apply hf hg m z t ht
+  | nat m => exact mod_cast reflection_mul_reflection_pow_apply hf hg m z t ht
   | neg _ m =>
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
@@ -283,7 +283,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   | zero => simp
   | succ m ih =>
     -- Apply the inductive hypothesis.
-    rw [add_comm (m : ℤ) 1, zpow_one_add, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
+    rw [add_comm (m : ℤ) 1, zpow_one_add, mul_apply_eq_comp, mul_apply_eq_comp, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- Equate coefficients of `x` and `y`.
@@ -293,7 +293,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   | pred m ih =>
     -- Apply the inductive hypothesis.
     rw [sub_eq_add_neg (-m : ℤ) 1, add_comm (-m : ℤ) (-1), zpow_add, zpow_neg_one, mul_inv_rev,
-      reflection_inv, reflection_inv, LinearEquiv.mul_apply, LinearEquiv.mul_apply, ih]
+      reflection_inv, reflection_inv, mul_apply_eq_comp, mul_apply_eq_comp, ih]
     -- Expand out all the reflections and use `hf`, `hg`.
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- Equate coefficients of `x` and `y`.
@@ -314,7 +314,7 @@ lemma reflection_mul_reflection_mul_reflection_zpow_apply_self (m : ℤ)
     (t : R := f y * g x - 2) (ht : t = f y * g x - 2 := by rfl) :
     (reflection hg * (reflection hf * reflection hg) ^ m) x =
       ((S R m).eval t + (S R (m - 1)).eval t) • x + ((S R m).eval t * -g x) • y := by
-  rw [LinearEquiv.mul_apply, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
+  rw [mul_apply_eq_comp, reflection_mul_reflection_zpow_apply_self hf hg m t ht]
   -- Expand out all the reflections and use `hf`, `hg`.
   simp only [reflection_apply, map_add, map_smul, hg]
   -- Equate coefficients of `x` and `y`.
@@ -347,7 +347,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [IsDomain R] [IsTorsionFree R
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
     simp only [u, reflection_apply, hg₁, two_smul, LinearEquiv.coe_toLinearMap_mul,
-      LinearMap.id_coe, LinearEquiv.coe_coe, Module.End.mul_apply, LinearMap.add_apply, id_eq,
+      LinearMap.id_coe, LinearEquiv.coe_coe, mul_apply_eq_comp, LinearMap.add_apply, id_eq,
       LinearMap.coe_smulRight, LinearMap.sub_apply, map_sub, map_smul, sub_add_cancel_left,
       smul_neg, sub_neg_eq_add, sub_smul]
     abel

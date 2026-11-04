@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.CommGrp_
 public import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `CommGrp (Type u) ≌ CommGrpCat.{u}`
 

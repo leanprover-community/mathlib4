@@ -82,7 +82,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : Kernel α (γ × ℝ)) [IsFiniteKe
     IsRatCondKernelCDFAux (fun (p : α × γ) q ↦ density κ (fst κ) p.1 p.2 (Iic q)) κ (fst κ) where
   measurable := measurable_pi_iff.mpr fun _ ↦ measurable_density κ (fst κ) measurableSet_Iic
   mono' a q r hqr :=
-    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (by exact_mod_cast hqr))
+    ae_of_all _ fun c ↦ density_mono_set le_rfl a c (Iic_subset_Iic.mpr (mod_cast hqr))
   nonneg' _ _ := ae_of_all _ fun _ ↦ density_nonneg le_rfl _ _ _
   le_one' _ _ := ae_of_all _ fun _ ↦ density_le_one le_rfl _ _ _
   tendsto_integral_of_antitone a s hs_anti hs_tendsto := by
