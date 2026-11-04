@@ -887,6 +887,10 @@ theorem natCast_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
 
 @[simp]
+theorem ofNat_lt_omega0 (n : ℕ) [n.AtLeastTwo] : ofNat(n) < ω :=
+  natCast_lt_omega0 n
+
+@[simp]
 theorem typein_lt_nat (x : ℕ) : typein x = x := by
   have : Fintype <| Iio x := Nat.fintypeIio x
   rw [← type_Iio_lt, type_fintype, Nat.cast_inj]
@@ -952,7 +956,7 @@ theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   obtain ⟨b, hb', hb⟩ := (lt_add_iff omega0_ne_zero).1 ha
   obtain ⟨m, rfl⟩ := lt_omega0.1 hb'
   apply hb.trans_lt
-  exact_mod_cast natCast_lt_omega0 (n + m)
+  exact mod_cast natCast_lt_omega0 (n + m)
 
 theorem one_add_omega0 : 1 + ω = ω :=
   mod_cast natCast_add_omega0 1

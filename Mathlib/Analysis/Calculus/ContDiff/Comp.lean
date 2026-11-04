@@ -641,7 +641,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
   | ∞ =>
     rw [contDiffWithinAt_infty]
-    exact fun k ↦ this k (by exact_mod_cast le_top)
+    exact fun k ↦ this k (mod_cast le_top)
   | (m : ℕ) => exact this _ le_rfl
 
 /-- A special case of `ContDiffWithinAt.fderivWithin''` where we require that `s ⊆ g⁻¹(t)`. -/

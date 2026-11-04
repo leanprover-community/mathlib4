@@ -273,7 +273,7 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
   have ha : n * x = a := by
     refine mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) ?_
     rw [mul_left_comm, ← nsmul_eq_mul m, hmr]
-    exact_mod_cast ha'.symm
+    exact mod_cast ha'.symm
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
   rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
