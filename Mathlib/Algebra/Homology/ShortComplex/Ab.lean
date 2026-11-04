@@ -7,9 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Kernels
-public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.GroupTheory.QuotientGroup.Finite
+
+import Mathlib.GroupTheory.QuotientGroup.Finite
 
 /-!
 # Homology and exactness of short complexes of abelian groups
@@ -50,14 +50,13 @@ lemma ab_zero_apply (x : S.X₁) : S.g (S.f x) = 0 := by
 def abToCycles : S.X₁ →+ AddMonoidHom.ker S.g.hom :=
     AddMonoidHom.mk' (fun x => ⟨S.f x, S.ab_zero_apply x⟩) (by aesop)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The explicit left homology data of a short complex of abelian group that is
 given by a kernel and a quotient given by the `AddMonoidHom` API. -/
 @[simps]
 def abLeftHomologyData : S.LeftHomologyData where
   K := ↧S.g.hom.ker
   H := ↧(S.g.hom.ker ⧸ S.abToCycles.range)
-  i := AddCommGrpCat.ofHom <| (AddMonoidHom.ker S.g.hom).subtype
+  i := AddCommGrpCat.ofHom (AddMonoidHom.ker S.g.hom).subtype
   π := AddCommGrpCat.ofHom <| QuotientAddGroup.mk' _
   wi := by
     ext ⟨_, hx⟩

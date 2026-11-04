@@ -367,6 +367,10 @@ theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
 theorem Ioi_ssubset_Ioi (h : a < b) : Ioi b ⊂ Ioi a := by
   simpa [← coe_ssubset] using Set.Ioi_ssubset_Ioi h
 
+-- See note [lower instance priority]
+instance (priority := low) : WellFoundedGT α :=
+  StrictAnti.wellFoundedGT fun _ _ ↦ Finset.Ici_ssubset_Ici.mpr
+
 variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
@@ -429,6 +433,11 @@ theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
 @[gcongr]
 theorem Iio_ssubset_Iio (h : a < b) : Iio a ⊂ Iio b := by
   simpa [← coe_ssubset] using Set.Iio_ssubset_Iio h
+
+-- See note [lower instance priority]
+@[to_dual existing]
+instance (priority := low) : WellFoundedLT α :=
+  StrictMono.wellFoundedLT fun _ _ ↦ Finset.Iic_ssubset_Iic.mpr
 
 theorem sup_Iic_of_monotone {β : Type*} [SemilatticeSup β] [OrderBot β] {f : α → β}
     (hf : Monotone f) : (Iic a).sup f = f a :=
@@ -775,6 +784,9 @@ theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
 @[simp]
 theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := by ext; simp
 
+@[to_additive (attr := simp)]
+lemma Iic_one [One α] [IsBotOneClass α] : Iic (1 : α) = {1} := by ext; simp
+
 instance [OrderBot α] : Unique (Iic (⊥ : α)) where
   default := ⟨⊥, by simp⟩
   uniq := by simp
@@ -1070,7 +1082,7 @@ lemma transGen_wcovBy_of_le [Preorder α] [LocallyFiniteOrder α] {x y : α} (hx
     TransGen (· ⩿ ·) x y := by
   -- We proceed by well-founded induction on the cardinality of `Icc x y`.
   -- It's impossible for the cardinality to be zero since `x ≤ y`
-  have : #(Ico x y) < #(Icc x y) := card_lt_card <|
+  have : #(Ico x y) < #(Icc x y) := card_lt_card
     ⟨Ico_subset_Icc_self, not_subset.mpr ⟨y, ⟨right_mem_Icc.mpr hxy, right_notMem_Ico⟩⟩⟩
   by_cases hxy' : y ≤ x
   -- If `y ≤ x`, then `x ⩿ y`

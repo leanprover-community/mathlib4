@@ -5,10 +5,9 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes, A
 -/
 module
 
-public import Mathlib.Data.Fin.Rev
+public import Batteries.Data.Fin.Lemmas
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Fin.Basic
-public import Batteries.Data.Fin.Lemmas
 
 import Mathlib.Data.Set.Insert
 
@@ -147,7 +146,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
-  ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
+  ⟨congr($h 0), funext fun i ↦ by simpa using congr($h (Fin.succ i))⟩
 
 @[simp]
 theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
@@ -181,12 +180,19 @@ theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
 given by separating out the first element of the tuple.
 
 This is `Fin.cons` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
   toFun f := cons f.1 f.2
   invFun f := (f 0, tail f)
   left_inv f := by simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem consEquiv_apply (α : Fin (n + 1) → Type*) (f : α 0 × ∀ i, α (succ i)) :
+    consEquiv α f = cons f.1 f.2 :=
+  rfl
 
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
@@ -207,7 +213,7 @@ theorem consCases_cons {motive : (∀ i : Fin n.succ, α i) → Sort v}
 def consInduction {α : Sort*} {motive : ∀ {n : ℕ}, (Fin n → α) → Sort v} (elim0 : motive Fin.elim0)
     (cons : ∀ {n} (x₀) (x : Fin n → α), motive x → motive (Fin.cons x₀ x)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => consCases (fun _ _ ↦ cons _ _ <| consInduction elim0 cons _) x
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
@@ -329,7 +335,7 @@ theorem append_right_nil (u : Fin m → α) (v : Fin n → α) (hv : n = 0) :
     append u v = u ∘ Fin.cast (by rw [hv, Nat.add_zero]) := by
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · rw [append_left, Function.comp_apply]
-    refine congr_arg u (Fin.ext ?_)
+    congrm u $(Fin.ext ?_)
     simp
   · exact (Fin.cast hv r).elim0
 
@@ -343,7 +349,7 @@ theorem append_left_nil (u : Fin m → α) (v : Fin n → α) (hu : m = 0) :
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
-    refine congr_arg v (Fin.ext ?_)
+    congrm v $(Fin.ext ?_)
     simp [hu]
 
 @[simp]
@@ -482,7 +488,7 @@ theorem repeat_add (a : Fin n → α) (m₁ m₂ : ℕ) : Fin.repeat (m₁ + m�
 
 theorem repeat_rev (a : Fin n → α) (k : Fin (m * n)) :
     Fin.repeat m a k.rev = Fin.repeat m (a ∘ Fin.rev) k :=
-  congr_arg a k.modNat_rev
+  congr(a $k.modNat_rev)
 
 theorem repeat_comp_rev (a : Fin n → α) :
     Fin.repeat m a ∘ Fin.rev = Fin.repeat m (a ∘ Fin.rev) :=
@@ -584,7 +590,7 @@ lemma range_snoc {α : Type*} (f : Fin n → α) (x : α) :
 
 /-- As a binary function, `Fin.snoc` is injective. -/
 theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ h ↦
-  ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
+  ⟨funext fun i ↦ by simpa using congr($h (castSucc i)), by simpa using congr($h (last n))⟩
 
 @[simp]
 theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
@@ -712,12 +718,19 @@ theorem comp_init {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
 given by separating out the last element of the tuple.
 
 This is `Fin.snoc` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
-  toFun f _ := Fin.snoc f.2 f.1 _
+  toFun f := Fin.snoc f.2 f.1
   invFun f := ⟨f _, Fin.init f⟩
   left_inv f := by simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem snocEquiv_apply (α : Fin (n + 1) → Type*) (f : α (last n) × ∀ i, α (castSucc i)) :
+    snocEquiv α f = snoc f.2 f.1 :=
+  rfl
 
 /-- Recurse on an `n+1`-tuple by splitting it its initial `n`-tuple and its last element. -/
 @[elab_as_elim, inline]
@@ -740,7 +753,7 @@ def snocInduction {α : Sort*}
     (elim0 : motive Fin.elim0)
     (snoc : ∀ {n} (x : Fin n → α) (x₀), motive x → motive (Fin.snoc x x₀)) :
     ∀ {n : ℕ} (x : Fin n → α), motive x
-  | 0, x => by convert! elim0
+  | 0, x => by convert elim0
   | _ + 1, x => snocCases (fun _ _ ↦ snoc _ _ <| snocInduction elim0 snoc _) x
 
 theorem snoc_injective_of_injective {α} {x₀ : α} {x : Fin n → α}
@@ -913,7 +926,7 @@ theorem eq_insertNth_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbov
 /-- As a binary function, `Fin.insertNth` is injective. -/
 theorem insertNth_injective2 {p : Fin (n + 1)} :
     Function.Injective2 (@insertNth n α p) := fun xₚ yₚ x y h ↦
-  ⟨by simpa using congr_fun h p, funext fun i ↦ by simpa using congr_fun h (succAbove p i)⟩
+  ⟨by simpa using congr($h p), funext fun i ↦ by simpa using congr($h (succAbove p i))⟩
 
 @[simp]
 theorem insertNth_inj {p : Fin (n + 1)} {x y : ∀ i, α (succAbove p i)} {xₚ yₚ : α p} :
@@ -940,7 +953,7 @@ theorem insertNth_apply_above {i j : Fin (n + 1)} (h : i < j) (x : α i)
 
 theorem insertNth_zero (x : α 0) (p : ∀ j : Fin n, α (succAbove 0 j)) :
     insertNth 0 x p =
-      cons x fun j ↦ _root_.cast (congr_arg α (congr_fun succAbove_zero j)) (p j) := by
+      cons x fun j ↦ _root_.cast congr(α ($succAbove_zero j)) (p j) := by
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   convert! (cons_succ x p j).symm
@@ -951,11 +964,11 @@ theorem insertNth_zero' (x : β) (p : Fin n → β) : @insertNth _ (fun _ ↦ β
 
 theorem insertNth_last (x : α (last n)) (p : ∀ j : Fin n, α ((last n).succAbove j)) :
     insertNth (last n) x p =
-      snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x := by
+      snoc (fun j ↦ _root_.cast congr(α $(succAbove_last_apply j)) (p j)) x := by
   refine insertNth_eq_iff.2 ⟨by simp, ?_⟩
   ext j
   apply eq_of_heq
-  trans snoc (fun j ↦ _root_.cast (congr_arg α (succAbove_last_apply j)) (p j)) x j.castSucc
+  trans snoc (fun j ↦ _root_.cast congr(α $(succAbove_last_apply j)) (p j)) x j.castSucc
   · rw [snoc_castSucc]
     exact (cast_heq _ _).symm
   · apply congr_arg_heq
@@ -1062,13 +1075,21 @@ theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.suc
 given by separating out the `p`-th element of the tuple.
 
 This is `Fin.insertNth` as an `Equiv`. -/
-@[simps]
+@[simps symm_apply]
 def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
     α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
   toFun f := insertNth p f.1 f.2
   invFun f := (f p, removeNth p f)
   left_inv f := by ext <;> simp
   right_inv f := by simp
+
+/- `@[simps]` over-applies, while `@[simps -fullyApplied]` under-applies, so this is manually
+written. -/
+@[simp]
+theorem insertNthEquiv_apply (α : Fin (n + 1) → Type*) (p : Fin (n + 1))
+    (f : α p × ∀ i, α (p.succAbove i)) :
+    insertNthEquiv α p f = insertNth p f.1 f.2 :=
+  rfl
 
 @[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
   Equiv.symm_bijective.injective <| by ext <;> rfl
@@ -1289,10 +1310,9 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
     (hjk : (j : ℕ) ≠ k) : contractNth j op g k = g (j.succAbove k) := by
   rcases lt_trichotomy (k : ℕ) j with (h | h | h)
   · rwa [j.succAbove_of_castSucc_lt, contractNth_apply_of_lt]
-    · rwa [Fin.lt_def]
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
-    · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+    exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 
 lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
     (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :

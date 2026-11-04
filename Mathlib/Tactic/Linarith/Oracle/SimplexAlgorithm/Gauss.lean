@@ -8,6 +8,9 @@ module
 public meta import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 public import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm.Datatypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian Elimination algorithm
 

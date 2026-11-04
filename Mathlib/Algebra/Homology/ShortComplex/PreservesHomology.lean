@@ -341,7 +341,6 @@ instance hasLeftHomology_of_preserves [S.HasLeftHomology] [F.PreservesLeftHomolo
     (S.map F).HasLeftHomology :=
   HasLeftHomology.mk' (S.leftHomologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasLeftHomology_of_preserves' [S.HasLeftHomology] [F.PreservesLeftHomologyOf S] :
     (F.mapShortComplex.obj S).HasLeftHomology := by
   dsimp; infer_instance
@@ -350,7 +349,6 @@ instance hasRightHomology_of_preserves [S.HasRightHomology] [F.PreservesRightHom
     (S.map F).HasRightHomology :=
   HasRightHomology.mk' (S.rightHomologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasRightHomology_of_preserves' [S.HasRightHomology] [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasRightHomology := by
   dsimp; infer_instance
@@ -360,7 +358,6 @@ instance hasHomology_of_preserves [S.HasHomology] [F.PreservesLeftHomologyOf S]
     (S.map F).HasHomology :=
   HasHomology.mk' (S.homologyData.map F)
 
-set_option backward.defeqAttrib.useBackward true in
 instance hasHomology_of_preserves' [S.HasHomology] [F.PreservesLeftHomologyOf S]
     [F.PreservesRightHomologyOf S] :
     (F.mapShortComplex.obj S).HasHomology := by
@@ -503,7 +500,6 @@ lemma RightHomologyData.mapRightHomologyIso_eq [S.HasRightHomology]
   simp only [map_rightHomologyMap', ← rightHomologyMap'_comp, Functor.map_id, comp_id,
     Functor.mapShortComplex_obj]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma LeftHomologyData.mapHomologyIso_eq [S.HasHomology]
     [(S.map F).HasHomology] [F.PreservesLeftHomologyOf S] :
@@ -524,7 +520,6 @@ lemma RightHomologyData.mapHomologyIso'_eq [S.HasHomology]
     rightHomologyIso, rightHomologyMapIso', ShortComplex.rightHomologyIso]
   simp only [assoc, F.map_comp, map_rightHomologyMap', ← rightHomologyMap'_comp_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapCyclesIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
@@ -543,7 +538,6 @@ lemma mapCyclesIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
   rw [← cancel_epi (S₁.mapCyclesIso F).hom, ← mapCyclesIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapLeftHomologyIso_hom_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomology]
@@ -563,7 +557,6 @@ lemma mapLeftHomologyIso_inv_naturality [S₁.HasLeftHomology] [S₂.HasLeftHomo
   rw [← cancel_epi (S₁.mapLeftHomologyIso F).hom, ← mapLeftHomologyIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapOpcyclesIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]
@@ -583,7 +576,6 @@ lemma mapOpcyclesIso_inv_naturality [S₁.HasRightHomology] [S₂.HasRightHomolo
   rw [← cancel_epi (S₁.mapOpcyclesIso F).hom, ← mapOpcyclesIso_hom_naturality_assoc,
     Iso.hom_inv_id, comp_id, Iso.hom_inv_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma mapRightHomologyIso_hom_naturality [S₁.HasRightHomology] [S₂.HasRightHomology]

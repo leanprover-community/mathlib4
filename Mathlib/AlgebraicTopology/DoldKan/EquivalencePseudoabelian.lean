@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.AlgebraicTopology.DoldKan.Compatibility
+public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
-public import Mathlib.Tactic.SuppressCompilation
 
 /-!
 

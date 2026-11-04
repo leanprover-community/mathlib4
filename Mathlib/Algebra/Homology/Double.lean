@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.HasNoLoop
 public import Mathlib.Algebra.Homology.Single
-public import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # A homological complex lying in two degrees

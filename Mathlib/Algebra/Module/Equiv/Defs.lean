@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 module
 
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
@@ -227,7 +228,7 @@ protected theorem congr_arg {x x'} : x = x' → e x = e x' :=
   DFunLike.congr_arg e
 
 protected theorem congr_fun (h : e = e') (x : M) : e x = e' x :=
-  DFunLike.congr_fun h x
+  congr($h x)
 
 end
 
@@ -449,7 +450,7 @@ theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
 @[simp]
 theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
     f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
-  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  refine ⟨fun h => ?_, fun a ↦ congr(LinearMap.comp $a e₁₂.toLinearMap)⟩
   rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 lemma comp_symm_cancel_left (e : M₁ ≃ₛₗ[σ₁₂] M₂) (f : M₃ →ₛₗ[σ₃₂] M₂) :
@@ -587,10 +588,9 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma _root_.RingEquiv.symm_toSemilinearEquiv_symm_apply (f : R ≃+* S) (x : R) :
-  f.symm.toSemilinearEquiv.symm (σ' := RingHomClass.toRingHom f) x = f x := rfl
+  dsimp% f.symm.toSemilinearEquiv.symm x = f x := rfl
 
 variable [AddCommMonoid M]
 
@@ -620,7 +620,8 @@ instance : SMul Sˣ (V ≃ₗ[R] W) where smul α e :=
     left_inv _ := by simp [LinearMapClass.map_smul_of_tower e.symm, smul_smul]
     right_inv _ := by simp [smul_smul] }
 
-@[simp] theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
+@[simp]
+protected theorem smul_apply (α : Sˣ) (e : V ≃ₗ[R] W) (x : V) : (α • e) x = (α : S) • e x := rfl
 
 theorem symm_smul_apply (e : V ≃ₗ[R] W) (α : Sˣ) (x : W) :
     (α • e).symm x = (↑α⁻¹ : S) • e.symm x := rfl

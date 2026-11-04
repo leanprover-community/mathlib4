@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 module
 
 public import Mathlib.Algebra.Jordan.Basic
-public import Mathlib.Algebra.Module.Defs
 
 /-!
 # Symmetrized algebra
@@ -130,14 +129,12 @@ instance [Add α] : Add αˢʸᵐ where add a b := sym (unsym a + unsym b)
 
 instance [Sub α] : Sub αˢʸᵐ where sub a b := sym (unsym a - unsym b)
 
-instance [Neg α] : Neg αˢʸᵐ where neg a := sym (-unsym a)
-
 -- Introduce the symmetrized multiplication
 instance [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] : Mul αˢʸᵐ where
   mul a b := sym (⅟2 * (unsym a * unsym b + unsym b * unsym a))
 
-@[to_additive existing]
-instance [Inv α] : Inv αˢʸᵐ where inv a := sym <| (unsym a)⁻¹
+@[to_additive]
+instance [Inv α] : Inv αˢʸᵐ where inv a := sym (unsym a)⁻¹
 
 instance (R : Type*) [SMul R α] : SMul R αˢʸᵐ where smul r a := sym (r • unsym a)
 
@@ -165,14 +162,6 @@ theorem sym_sub [Sub α] (a b : α) : sym (a - b) = sym a - sym b :=
 theorem unsym_sub [Sub α] (a b : αˢʸᵐ) : unsym (a - b) = unsym a - unsym b :=
   rfl
 
-@[simp]
-theorem sym_neg [Neg α] (a : α) : sym (-a) = -sym a :=
-  rfl
-
-@[simp]
-theorem unsym_neg [Neg α] (a : αˢʸᵐ) : unsym (-a) = -unsym a :=
-  rfl
-
 theorem mul_def [Add α] [Mul α] [One α] [OfNat α 2] [Invertible (2 : α)] (a b : αˢʸᵐ) :
     a * b = sym (⅟2 * (unsym a * unsym b + unsym b * unsym a)) := rfl
 
@@ -183,11 +172,11 @@ theorem sym_mul_sym [Mul α] [Add α] [One α] [OfNat α 2] [Invertible (2 : α)
     sym a * sym b = sym (⅟2 * (a * b + b * a)) :=
   rfl
 
-@[simp, to_additive existing]
+@[to_additive (attr := simp)]
 theorem sym_inv [Inv α] (a : α) : sym a⁻¹ = (sym a)⁻¹ :=
   rfl
 
-@[simp, to_additive existing]
+@[to_additive (attr := simp)]
 theorem unsym_inv [Inv α] (a : αˢʸᵐ) : unsym a⁻¹ = (unsym a)⁻¹ :=
   rfl
 
@@ -317,7 +306,7 @@ instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
       rw [add_mul, ← add_assoc, ← mul_assoc, ← mul_assoc]
       rw [unsym_mul_self]
       rw [← mul_assoc, ← mul_assoc, ← mul_assoc, ← mul_assoc, ← sub_eq_zero, ← mul_sub]
-      convert! mul_zero (⅟(2 : α) * ⅟(2 : α))
+      convert mul_zero (⅟(2 : α) * ⅟(2 : α))
       rw [add_sub_add_right_eq_sub, add_assoc, add_assoc, add_sub_add_left_eq_sub, add_comm,
         add_sub_add_right_eq_sub, sub_eq_zero]
     -- Rearrange RHS

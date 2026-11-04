@@ -6,7 +6,6 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Geometry.Manifold.Immersion
-public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-! # Smooth embeddings
 
@@ -48,8 +47,6 @@ open scoped ContDiff
 open Topology
 
 public section
-
-noncomputable section
 
 namespace Manifold
 
