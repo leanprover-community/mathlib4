@@ -33,7 +33,8 @@ Wiener–Ikehara Tauberian theorem `WienerIkehara.tendsto_sum_div`.
 * `Chebyshev.isEquivalent_primeCounting`: **the prime number theorem** `π x ~ x / log x`, deduced
   from the `θ`-form by Abel summation.
 * `Chebyshev.eventually_exists_prime_mem_Ioc`: for every `ε > 0`, every sufficiently large `x` has
-  a prime in `(x, (1 + ε) * x]`.
+  a prime in `(x, (1 + ε) * x]`; `Chebyshev.eventually_exists_prime_mem_Ioc_sub` gives one in
+  `((1 - ε) * x, x]`.
 * `Chebyshev.isEquivalent_nth_prime_succ`: consecutive primes are asymptotically equal, `pₙ₊₁ ~ pₙ`.
 * `Chebyshev.isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
 * `Chebyshev.isEquivalent_log_lcmUpto_id`: `log (Nat.lcmUpto n) ~ n`.
@@ -73,6 +74,7 @@ theorem ArithmeticFunction.vonMangoldt.tendsto_residueClass_sum_div_atTop {q a} 
       if n % q = a then Λ n else 0) / x) atTop (𝓝 q.totient⁻¹) := by
   apply (tendsto_residueClass_sum_div ((isUnit_iff_coprime a q).mpr ha)).congr
   simp [residueClass, Set.indicator_apply, natCast_eq_natCast_iff', mod_eq_of_lt ha']
+  
 namespace Chebyshev
 
 /-- **The prime number theorem, `ψ` form**: `ψ x / x → 1` as `x → ∞`. -/
@@ -154,6 +156,18 @@ theorem eventually_exists_prime_mem_Ioc {ε : ℝ} (hε : 0 < ε) :
     exact this.congr' (by filter_upwards; grind)
   filter_upwards [(tendsto_order.1 this).1 0 hε, eventually_gt_atTop 0] with x _ hx
   exact exists_prime_of_theta_lt (by grind [lt_div_iff₀ hx])
+
+/-- **Small prime gaps**, dual form.  For every `ε > 0`, every sufficiently large `x` admits a
+prime in the interval `((1 - ε) * x, x]`. -/
+theorem eventually_exists_prime_mem_Ioc_sub {ε : ℝ} (hε : 0 < ε) :
+    ∀ᶠ x in atTop, ∃ p : ℕ, p.Prime ∧ ↑p ∈ Set.Ioc ((1 - ε) * x) x := by
+  wlog hε1 : ε < 1
+  · filter_upwards [this (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num), eventually_ge_atTop 0]
+      with x ⟨p, hp, h1, h2⟩ hx
+    exact ⟨p, hp, by nlinarith, h2⟩
+  filter_upwards [(tendsto_id.const_mul_atTop (by linarith : 0 < 1 - ε)).eventually
+    (eventually_exists_prime_mem_Ioc hε), eventually_ge_atTop 0] with x ⟨p, hp, h1, h2⟩ hx
+  exact ⟨p, hp, h1, h2.trans (by rw [id_eq]; nlinarith [mul_nonneg (sq_nonneg ε) hx])⟩
 
 /-- **Consecutive primes are asymptotically equal**: the `(n + 1)`-th prime is asymptotic to the
 `n`-th prime.. -/
