@@ -11,6 +11,10 @@ import Mathlib.Tactic.Primality
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2] }])
 
+-- A prime factor listed twice counts once.
+example : Nat.Prime 65537 := by
+  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])
+
 -- `786433 - 1` and `3221225473 - 1` have the same prime factors, and `5` is a primitive root of
 -- `3221225473` only, so `786433` takes the last entry.
 example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
@@ -68,9 +72,3 @@ example (n : ℕ) : Nat.Prime n := by primality
 #guard_msgs in
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 2, primeFactors := [2] }])
-
--- A repeated factor would fail the kernel's check that the prime powers multiply to `p - 1`.
-/-- error: no provided witness certifies the primality of 65537 -/
-#guard_msgs in
-example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])

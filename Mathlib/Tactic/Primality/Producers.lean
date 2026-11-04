@@ -37,9 +37,11 @@ inductive CertConfig where
   user. -/
   | witnesses (witnesses : List Witness)
 
-/-- The first entry of `witnesses` that is a Lucas witness for the prime `q`. -/
+/-- The first entry of `witnesses` that is a Lucas witness for the prime `q`, with repeated prime
+factors removed. -/
 def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
   for .lucas w in witnesses do
+    let w := { w with primeFactors := w.primeFactors.eraseDups }
     if w.certifies q then
       return w
   throwError "no provided witness certifies the primality of {q}"
