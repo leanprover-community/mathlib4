@@ -19,7 +19,7 @@ public section
 variable {R : Type*} [CommRing R]
 
 /-- If `M` is projective over `R`, then `M / IM` is projective over `R / I`. -/
-instance Module.Projective.quotient_smul {M : Type*} [AddCommGroup M] [Module R M]
+instance Module.Projective.quotient_smul_top {M : Type*} [AddCommGroup M] [Module R M]
     (I : Ideal R) [Module.Projective R M] :
     Module.Projective (R ⧸ I) (M ⧸ (I • (⊤ : Submodule R M))) :=
   Module.Projective.of_equiv' (TensorProduct.quotTensorEquivQuotSMul' M I)
