@@ -67,12 +67,10 @@ lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
 
 theorem isPerfect_iff_subsingleton_abelianization :
     IsPerfect G ↔ Subsingleton (Abelianization G) :=
-    ⟨
-      fun h ↦ by
-        rw [Abelianization, IsPerfect.commutator_eq_top]
-        exact QuotientGroup.subsingleton_quotient_top,
-      fun h ↦ ⟨QuotientGroup.subgroup_eq_top_of_subsingleton _ h⟩
-    ⟩
+  ⟨fun _ ↦ by
+    rw [Abelianization, IsPerfect.commutator_eq_top]
+    exact QuotientGroup.subsingleton_quotient_top,
+   fun h ↦ ⟨QuotientGroup.subgroup_eq_top_of_subsingleton _ h⟩⟩
 
 namespace IsPerfect
 
