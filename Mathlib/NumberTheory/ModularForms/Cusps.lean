@@ -188,16 +188,13 @@ noncomputable def map (hGH : G ≤ H) : CuspOrbits G → CuspOrbits H :=
     map hGH ⟦c⟧ = ⟦⟨c.val, c.property.mono hGH⟩⟧ := rfl
 
 @[simp] lemma map_map (hGH : G ≤ H) (hHK : H ≤ K) (c : CuspOrbits G) :
-    map hHK (map hGH c) = map (hGH.trans hHK) c := by
-  induction c using Quotient.inductionOn
-  rfl
+    map hHK (map hGH c) = map (hGH.trans hHK) c :=
+  Quotient.inductionOn c fun _ ↦ rfl
 
 /-- Every cusp orbit lifts along an inclusion of finite relative index. -/
 lemma map_surjective (hGH : G ≤ H) [G.IsFiniteRelIndex H] :
-    Function.Surjective (map hGH) := by
-  intro c
-  induction c using Quotient.inductionOn with
-  | h c => exact ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, by simp⟩
+    Function.Surjective (map hGH) :=
+  Quotient.ind fun c ↦ ⟨⟦⟨c.val, c.property.of_isFiniteRelIndex⟩⟧, rfl⟩
 
 open scoped Pointwise
 
@@ -274,9 +271,9 @@ instance (𝒢 : Subgroup (GL (Fin 2) ℝ)) [𝒢.IsArithmetic] : Finite (CuspOr
   .of_surjective _ (surjective_cosetToCuspOrbit 𝒢)
 
 /-- The cusp `∞`. (The `Fact` hypothesis is automatically supplied for arithmetic groups.) -/
-noncomputable abbrev cuspOrbitInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)} [Fact (IsCusp OnePoint.infty 𝒢)] :
+noncomputable abbrev cuspOrbitInfty {𝒢 : Subgroup (GL (Fin 2) ℝ)} [Fact (IsCusp ∞ 𝒢)] :
     CuspOrbits 𝒢 :=
-  ⟦⟨OnePoint.infty, mem_cuspsSubMulAction.mpr Fact.out⟩⟧
+  ⟦⟨∞, mem_cuspsSubMulAction.mpr Fact.out⟩⟧
 
 noncomputable instance : Unique (CuspOrbits 𝒮ℒ) where
   default := cuspOrbitInfty
@@ -507,10 +504,8 @@ lemma strictWidthInfty_pos_iff [DiscreteTopology 𝒢.strictPeriods] [𝒢.HasDe
       exact ⟨2 • x, by grind,
         by simpa only [AddChar.map_nsmul_eq_pow, neg_sq] using pow_mem hgg 2⟩
 
-lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty := by
-  rw [strictWidthInfty_pos_iff]
-  simpa [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z, isCusp_SL2Z_iff]
-    using ⟨_, OnePoint.map_infty _⟩
+lemma strictWidthInfty_pos [𝒢.IsArithmetic] : 0 < 𝒢.strictWidthInfty :=
+  strictWidthInfty_pos_iff.mpr Fact.out
 
 variable {𝒢} in
 lemma isCusp_of_mem_strictPeriods {h : ℝ} (hh : 0 < h) (h𝒢 : h ∈ 𝒢.strictPeriods) :
