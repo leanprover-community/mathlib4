@@ -21,13 +21,40 @@ public import Mathlib.CategoryTheory.Presentable.Uniformization
 
 public section
 
-universe w
+universe w v₁ v₂
 
 namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
 open Limits
+
+-- to be moved
+section
+
+open Opposite
+
+lemma isCardinalPresentable_iff_isAccessible_shrinkCoyoneda [LocallySmall.{w} C]
+    {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular] :
+    IsCardinalPresentable X κ ↔ (shrinkCoyoneda.{w}.obj (op X)).IsCardinalAccessible κ := by
+  refine ⟨fun _ ↦ inferInstance, fun _ ↦ ⟨fun J _ _ ↦ ?_⟩⟩
+  have := (shrinkCoyoneda.{w}.obj (op X)).preservesColimitsOfShape_of_isCardinalAccessible κ J
+  have := preservesColimitsOfShape_of_natIso (J := J) (shrinkCoyonedaObjCompUliftFunctorIso (op X))
+  exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
+
+lemma IsCardinalPresentable.of_full_of_faithful
+    {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular] {D : Type*} [Category* D]
+    [LocallySmall.{w} C] [LocallySmall.{w} D]
+    (F : C ⥤ D) [F.Full] [F.Faithful] [F.IsCardinalAccessible κ]
+    (h : IsCardinalPresentable (F.obj X) κ := by infer_instance) :
+    IsCardinalPresentable X κ := by
+  rw [isCardinalPresentable_iff_isAccessible_shrinkCoyoneda.{w}] at h ⊢
+  have : (F ⋙ shrinkCoyoneda.{w}.obj (F.op.obj (op X))).IsCardinalAccessible κ := by
+    dsimp
+    infer_instance
+  exact Functor.isCardinalAccessible_of_natIso (asIso (shrinkCoyonedaMap F (op X))).symm _
+
+end
 
 namespace ObjectProperty
 
@@ -42,6 +69,15 @@ lemma IsClosedUnderCardinalPureSubobjects.isClosedUnderIsomorphisms
     [P.IsClosedUnderCardinalPureSubobjects κ] :
     P.IsClosedUnderIsomorphisms where
   of_iso e h := P.prop_of_isCardinalPure κ e.inv h
+
+lemma IsClosedUnderCardinalPureSubobjects.of_le {P : ObjectProperty C} {κ κ' : Cardinal.{w}}
+    [Fact κ.IsRegular] [Fact κ'.IsRegular] (h : κ ≤ κ')
+    [P.IsClosedUnderCardinalPureSubobjects κ] :
+    P.IsClosedUnderCardinalPureSubobjects κ' where
+  prop_of_isCardinalPure f _ hY := by
+    have : IsCardinalPure κ f := .of_le h f
+    exact P.prop_of_isCardinalPure κ f hY
+
 
 end ObjectProperty
 
@@ -128,17 +164,61 @@ end ObjectProperty
 
 namespace IsCardinalAccessibleCategory
 
+attribute [local instance] Cardinal.fact_isRegular_aleph0
+
+section
+
+variable (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+end
+
+lemma test₀ (C : Type w) [SmallCategory C]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
+      ∀ ⦃X Y : C ⥤ Type w⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
+        ∃ (X' : C ⥤ Type w) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
+          (_ : Mono i) (_ : IsCardinalPure κ' i), f' ≫ i = f := by
+  sorry
+
+lemma test₁ {C : Type w} [SmallCategory C] (P : ObjectProperty (C ⥤ Type w))
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessibleCategory P.FullSubcategory κ]
+    [P.ι.PreservesCardinalPresentable κ]
+    [P.IsClosedUnderCardinalFilteredColimits κ]
+    [P.IsClosedUnderCardinalPureSubobjects κ] :
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
+      ∀ ⦃X Y : P.FullSubcategory⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
+        ∃ (X' : P.FullSubcategory) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
+          (_ : Mono i) (_ : IsCardinalPure κ' i), f' ≫ i = f := by
+  obtain ⟨κ', _, hκ', h⟩ := test₀ C κ
+  have : P.IsClosedUnderCardinalPureSubobjects κ' := .of_le hκ'.le
+  have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le hκ'.le
+  have := hκ'.preservesCardinalPresentable P.ι
+  refine ⟨κ', inferInstance, hκ', fun X Y f _ ↦ ?_⟩
+  obtain ⟨X', _, f', i, _, _, fac⟩ :=
+    h f.hom (inferInstanceAs (IsCardinalPresentable (P.ι.obj X) κ'))
+  have hX' := P.prop_of_isCardinalPure κ' i Y.property
+  have : IsCardinalPure κ' (P.ι.map (ObjectProperty.homMk (X := ⟨X', hX'⟩) i)) := by
+    assumption
+  refine ⟨⟨X', hX'⟩, ?_, ObjectProperty.homMk f', ObjectProperty.homMk i, ?_,
+    ⟨fun sq ↦ ?_⟩, ?_⟩
+  · exact IsCardinalPresentable.of_full_of_faithful P.ι (by assumption)
+  · exact P.ι.mono_of_mono_map (by assumption)
+  · obtain ⟨ρ, hρ⟩ := IsCardinalPure.exists_of_commSq κ' (sq.map P.ι)
+    exact ⟨ObjectProperty.homMk ρ, by cat_disch⟩
+  · cat_disch
+
 -- 2.33
 variable (C) in
-lemma test (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
+lemma test₂ (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
       ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
         ∃ (X' : C) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
-          (_ : Mono i) (_ : IsCardinalPure κ i), f' ≫ i = f := sorry
--- it seems it suffices to prove this when `C` is a presheaf category
+          (_ : Mono i) (_ : IsCardinalPure κ' i), f' ≫ i = f := by
+  sorry
 
 variable (C) in
-lemma test' (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
+lemma test₃ (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
     (α : Cardinal.{w}) [Fact α.IsRegular] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ') (_ : α ≤ κ'),
       ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
@@ -146,11 +226,11 @@ lemma test' (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategor
           (_ : Mono i) (_ : IsCardinalPure κ i), f' ≫ i = f := by
   obtain ⟨β, _, h₁, h₂⟩ := Cardinal.SharplyLT.exists_of_pair κ α
   have := h₁.isCardinalAccessibleCategory C
-  obtain ⟨κ', _, h₃, h⟩ := test C β
+  obtain ⟨κ', _, h₃, h⟩ := test₂ C β
   refine ⟨κ', inferInstance, h₁.trans h₃, h₂.le.trans h₃.le,
     fun _ _ f _ ↦ ?_⟩
   obtain ⟨X', _, f', i, hf', _, fac⟩ := h f inferInstance
-  exact ⟨X', inferInstance, f', i, inferInstance, .of_le h₁.le _, fac⟩
+  exact ⟨X', inferInstance, f', i, inferInstance, .of_le (h₁.trans h₃).le _, fac⟩
 
 end IsCardinalAccessibleCategory
 
