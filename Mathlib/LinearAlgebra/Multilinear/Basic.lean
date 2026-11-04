@@ -121,15 +121,19 @@ notation:25 piM " →ₘₗ[" R:25 "] " N:0 => MultilinearMap (RingHom.id R) (pi
 @[app_delab MultilinearMap]
 public meta def delabMultilinearMap : Delab := whenPPOption getPPNotation do
   let e ← getExpr
-  guard <| e.isAppOfArity ``MultilinearMap 9
-  let R ← withNaryArg 0 delab
-  let M ← withNaryArg 2 do
+  guard <| e.isAppOfArity ``MultilinearMap 12
+  let M ← withNaryArg 6 do
     let .lam name dom body bi ← etaExpand (← getExpr)
       | failure
     let piExpr := Expr.forallE name dom body.headBeta bi
     withTheReader SubExpr (fun cfg => { cfg with expr := piExpr }) PiNotation.delabPi'
-  let N ← withNaryArg 3 delab
-  `($M →ₘₗ[$R] $N)
+  let N ← withNaryArg 7 delab
+  if (e.getArg! 4).isAppOfArity ``RingHom.id 2 then
+    let R ← withNaryArg 0 delab
+    `($M →ₘₗ[$R] $N)
+  else
+    let σ ← withNaryArg 4 delab
+    `($M →ₘₛₗ[$σ] $N)
 
 end Meta
 
