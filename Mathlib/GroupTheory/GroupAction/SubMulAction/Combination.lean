@@ -227,7 +227,7 @@ theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
   -- The action is pretransitive.
   have : IsPretransitive (Perm α) (powersetCard α n) := powersetCard.isPretransitive
   -- The type on which the group acts is nontrivial.
-  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' (Nat.pos_of_ne_zero hn₀) hn
+  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' hn₀.pos hn
   obtain ⟨s⟩ := this.to_nonempty
   -- It remains to prove that stabilizer of some point is maximal.
   rw [← isCoatom_stabilizer_iff_preprimitive _ s]
@@ -236,7 +236,7 @@ theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
   -- We conclude by `Equiv.Perm.isCoatom_stabilizer`
   apply isCoatom_stabilizer
   -- `s` is nonempty because `n ≠ 0`.
-  · exact powersetCard.coe_nonempty_iff.mpr (Nat.pos_of_ne_zero hn₀)
+  · exact powersetCard.coe_nonempty_iff.mpr hn₀.pos
   -- `sᶜ` is nonempty because `n < Nat.card α`.
   · rw [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq]
     exact hn.ne
@@ -279,11 +279,11 @@ theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ} (hn₀ : n ≠ 0)
     (hα : Nat.card α ≠ 2 * n) : IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
   have : IsPretransitive (alternatingGroup α) (powersetCard α n) :=
     isPretransitive_alternatingGroup (by lia)
-  have : Nontrivial (powersetCard α n) := nontrivial' (Nat.pos_of_ne_zero hn₀) hn
+  have : Nontrivial (powersetCard α n) := nontrivial' hn₀.pos hn
   obtain ⟨s⟩ := this.to_nonempty
   rw [← isCoatom_stabilizer_iff_preprimitive _ s, ← stabilizer_subgroupOf, stabilizer_coe,
     stabilizer_subgroupOf]
-  exact alternatingGroup.isCoatom_stabilizer (coe_nonempty_iff.mpr (Nat.pos_of_ne_zero hn₀))
+  exact alternatingGroup.isCoatom_stabilizer (coe_nonempty_iff.mpr hn₀.pos)
     (by simpa [nonempty_compl, eq_univ_iff_ncard] using hn.ne) (by rwa [ncard_eq])
 
 end Set.powersetCard
