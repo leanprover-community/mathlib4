@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 module
 
+public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Ring.Associated
 
 /-!
@@ -199,6 +200,15 @@ theorem dvd_normalize_iff {a b : α} : a ∣ normalize b ↔ a ∣ b :=
 @[simp]
 theorem normalize_dvd_iff {a b : α} : normalize a ∣ b ↔ a ∣ b :=
   Units.mul_right_dvd
+
+@[simp]
+theorem irreducible_normalize_iff {x : α} : Irreducible (normalize x) ↔ Irreducible x :=
+  (normalize_associated x).irreducible_iff
+
+@[simp]
+theorem prime_normalize_iff {α : Type*} [CommMonoidWithZero α] [NormalizationMonoid α] {x : α} :
+    Prime (normalize x) ↔ Prime x :=
+  (normalize_associated x).prime_iff
 
 section
 

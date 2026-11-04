@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Localization.AsSubring
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maximal spectrum of a commutative (semi)ring
 

@@ -856,7 +856,7 @@ in any smaller ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - 
 by `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFPowerSeriesWithinOnBall.image_sub_sub_deriv_le
     (hf : HasFPowerSeriesWithinOnBall f p s x r) (hr : r' < r) :
-    ∃ C, ∀ᵉ (y ∈ insert x s ∩ Metric.eball x r') (z ∈ insert x s ∩ Metric.eball x r'),
+    ∃ C, ∀ y ∈ insert x s ∩ Metric.eball x r', ∀ z ∈ insert x s ∩ Metric.eball x r',
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   have := hf.isBigO_image_sub_image_sub_deriv_principal hr
   simp only [isBigO_principal, mem_inter_iff, Metric.mem_eball, Prod.edist_eq, max_lt_iff, mem_prod,
@@ -869,7 +869,7 @@ ball, the norm of the difference `f y - f z - p 1 (fun _ ↦ y - z)` is bounded 
 `C * (max ‖y - x‖ ‖z - x‖) * ‖y - z‖`. -/
 theorem HasFPowerSeriesOnBall.image_sub_sub_deriv_le
     (hf : HasFPowerSeriesOnBall f p x r) (hr : r' < r) :
-    ∃ C, ∀ᵉ (y ∈ Metric.eball x r') (z ∈ Metric.eball x r'),
+    ∃ C, ∀ y ∈ Metric.eball x r', ∀ z ∈ Metric.eball x r',
       ‖f y - f z - p 1 fun _ => y - z‖ ≤ C * max ‖y - x‖ ‖z - x‖ * ‖y - z‖ := by
   rw [← hasFPowerSeriesWithinOnBall_univ] at hf
   simpa only [mem_univ, insert_eq_of_mem, univ_inter] using hf.image_sub_sub_deriv_le hr

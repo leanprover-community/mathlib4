@@ -784,6 +784,9 @@ theorem card_Iio_eq_card_Iic_sub_one (a : α) : #(Iio a) = #(Iic a) - 1 := by
 @[simp]
 theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := by ext; simp
 
+@[to_additive (attr := simp)]
+lemma Iic_one [One α] [IsBotOneClass α] : Iic (1 : α) = {1} := by ext; simp
+
 instance [OrderBot α] : Unique (Iic (⊥ : α)) where
   default := ⟨⊥, by simp⟩
   uniq := by simp

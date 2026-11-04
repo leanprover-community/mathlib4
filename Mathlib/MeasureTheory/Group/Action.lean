@@ -84,7 +84,8 @@ theorem measure_preimage_smul_of_nullMeasurableSet (hs : NullMeasurableSet s μ)
     μ ((c • ·) ⁻¹' s) = μ s := by
   rw [← measure_toMeasurable s,
     ← SMulInvariantMeasure.measure_preimage_smul c (measurableSet_toMeasurable μ s)]
-  exact measure_congr (tendsto_smul_ae μ c hs.toMeasurable_ae_eq) |>.symm
+  refine (measure_congr ?_).symm
+  exact tendsto_smul_ae μ c hs.toMeasurable_ae_eq
 
 end AE_smul
 

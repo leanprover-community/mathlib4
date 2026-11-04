@@ -10,6 +10,7 @@ public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Mathlib.Analysis.Complex.ReImTopology
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 import Mathlib.Analysis.Real.Cardinality
@@ -37,6 +38,18 @@ differentiability at all but countably many points of the set mentioned below.
 * `Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
   `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
+
+### Unbounded rectangle integrals
+
+* `Complex.integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`: If a
+  function `f : ℂ → E` is continuous on an unbounded rectangle `[[x₁, x₂]] ×ℂ Ici y`, is *complex*
+  differentiable on its interior, tends to zero as the imaginary part of its argument tends to
+  infinity inside the strip `[[x₁, x₂]] ×ℂ Ici y`, and its integrals along the two vertical sides
+  converge, then its integral over the boundary of this rectangle is equal to zero.
+
+* `Complex.tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides`: In
+  the same setting, the integrals along one vertical side tend to the sum of the integral along
+  the horizontal side and the limit of the integrals along the other vertical side.
 
 ### Annuli and circles
 
@@ -81,10 +94,11 @@ differentiability at all but countably many points of the set mentioned below.
 
 ### Higher derivatives
 
-* `Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable`
-  **Cauchy integral formula for derivatives**: formula for the higher derivatives of `f` at the
-  centre `c` of a disc in terms of circle integrals of `f w / (w - c) ^ (n + 1)` around the
-  boundary circle.
+* `Complex.circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable`,
+  `Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable`
+  **Cauchy integral formula for derivatives**: formula for the higher derivatives of `f` at a point
+  in a disc in terms of circle integrals of `f z / (z - w) ^ (n + 1)` around the boundary circle,
+  together with the specialization to the centre of the disc.
 
 ## Implementation details
 
@@ -151,6 +165,13 @@ ball, see `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countabl
 Finally, we use the properties of the Cauchy integrals established elsewhere (see
 `hasFPowerSeriesOn_cauchy_integral`) and Cauchy integral formula to prove that the original
 function is analytic on the open ball.
+
+## TODO
+
+* The results on unbounded rectangles only cover rectangles that are unbounded above. Add versions
+  for rectangles that are unbounded below, to the left and to the right, together with lemmas
+  transferring statements between the four cases, so that these follow readily from the results
+  already formalised in this file.
 
 ## Tags
 
@@ -404,8 +425,10 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
       have hc' : ContinuousOn (fun z => (z - c)⁻¹) (sphere c r) :=
         (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hzne _ hz
       rw [circleIntegral.integral_sub] <;> refine (hc'.smul ?_).circleIntegrable hr0.le
-      · exact hc.mono <| subset_inter
-          (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
+      · refine hc.mono ?_
+        grw [subset_sdiff, disjoint_left]
+        refine ⟨?_, hzne⟩
+        grw [sphere_subset_closedBall, hrR]
       · exact continuousOn_const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by
       refine circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => ?_
@@ -437,8 +460,8 @@ then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
 theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
-  wlog hE : CompleteSpace E generalizing
-  · simp [circleIntegral, intervalIntegral, integral, hE]
+  wlog hE : CompleteSpace E
+  · simp [circleIntegral, intervalIntegral, integral_of_not_completeSpace hE]
   rcases h0.eq_or_lt with (rfl | h0); · apply circleIntegral.integral_radius_zero
   calc
     (∮ z in C(c, R), f z) = ∮ z in C(c, R), (z - c)⁻¹ • (z - c) • f z :=
@@ -782,14 +805,192 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
 
 end analyticity
 
-section derivatives
-/-!
-## Circle integrals for higher derivatives
+section unbounded
 
-TODO: add a version for `w ∈ Metric.ball c R`.
+/-!
+## Integrals over unbounded rectangular contours
 -/
 
-variable {R : ℝ} {f : ℂ → E} {c : ℂ} {s : Set ℂ}
+open Set Real Complex intervalIntegral Metric Filter MeasureTheory
+
+open scoped Interval Topology
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} {x₁ x₂ : ℝ} (y : ℝ)
+
+section tendsto_zero
+
+/-- If a family of functions `g m` tends to zero uniformly along the product filter
+`atTop ×ˢ (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))` (i.e., as `m → ∞` and the imaginary part of
+the input → ∞ jointly, within `[[x₁, x₂]] ×ℂ Ici y`), then
+$\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
+`tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
+    (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
+  apply TendstoUniformlyOn.tendsto_intervalIntegral_nhds_zero
+  rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter]
+  rw [tendstoUniformlyOnFilter_iff_tendsto] at htendsto ⊢
+  refine htendsto.comp <| tendsto_fst.prodMk <| tendsto_inf.mpr ⟨?_, tendsto_principal.mpr ?_⟩
+  · simpa [Function.comp_def] using tendsto_fst
+  · filter_upwards [tendsto_fst.eventually_ge_atTop y,
+      tendsto_snd.eventually (eventually_principal.mpr fun _ h ↦ h)] with q hq₁ hq₂
+    simpa [Complex.mem_reProdIm] using ⟨hq₂, hq₁⟩
+
+/-- If $f(z) \to 0$ as $\Im(z) \to \infty$ within `[[x₁, x₂]] ×ℂ univ`, then
+$\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
+lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
+  tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero (y := 0) (g := fun _ ↦ f) <|
+    (tendstoUniformlyOnFilter_iff_tendsto.mpr <|
+        tendsto_left_nhds_uniformity.comp (htendsto.comp tendsto_snd)).mono_right <|
+      inf_le_inf_left _ <| principal_mono.2 <| reProdIm_subset_iff.2 <|
+        prod_mono_right <| subset_univ _
+
+end tendsto_zero
+
+section tendsto
+
+private lemma integral_intermediate_rectangle_eq_zero
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x) :
+    ∀ m ≥ y, (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) - (∫ (x : ℝ) in x₁..x₂, f (x + m * I)) +
+      (I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) - (I • ∫ (t : ℝ) in y..m, f (x₁ + t * I))
+        = 0 := fun m hm ↦ calc
+  _ = (((∫ (t : ℝ) in (x₁ + y * I).re..(x₂ + m * I).re, f (t + (x₁ + y * I).im * I)) -
+      ∫ (t : ℝ) in (x₁ + y * I).re..(x₂ + m * I).re, f (t + (x₂ + m * I).im * I)) +
+      I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₂ + m * I).re + t * I)) -
+      I • ∫ (t : ℝ) in (x₁ + y * I).im..(x₂ + m * I).im, f ((x₁ + y * I).re + t * I) := by
+      simp
+  _ = 0 := by
+      refine Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable
+        f (x₁ + y * I) (x₂ + m * I) s hs ?_ ?_ <;> simp
+      · grind [hcont.mono, reProdIm_subset_iff, uIcc_of_le]
+      · grind [mem_reProdIm]
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, interval integrals of increasing
+interval length along the first contour tend to the sum of a translation integral and the limit of
+interval integrals along the second integral. ("Unbounded rectangular contours" refers to contours
+that look like the disjoint union symbol "⨆") -/
+theorem tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop <|
+      𝓝 ((∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂) := by
+  refine .congr' ((eventually_ge_atTop y).mono fun m hm ↦
+    sub_eq_zero.mp (integral_intermediate_rectangle_eq_zero y hcont s hs hdiff m hm)) ?_
+  simpa using (tendsto_const_nhds.sub
+    (tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero htendsto)).add hC₂
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
+along the first contour equals the sum of a translation integral and the limit of interval integrals
+along the second integral. -/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₁ : E} (hC₁ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ I • ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + C₂ - C₁ = 0 := by
+  rw [sub_eq_zero]
+  exact (tendsto_nhds_unique hC₁ <|
+    tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
+      y hcont s hs hdiff hC₂ htendsto).symm
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
+along the first contour equals the sum of a translation integral and the limit of interval integrals
+along the second integral.
+
+This is a variant of `integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`.
+The sole difference is that the assumptions in this lemma do not include the factor of `I` that
+comes from contour parametrisation. The reason we state this version is that it might be more
+convenient to use in certain cases.
+-/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable'
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    {C₁ : E} (hC₁ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₁ + t * I)) atTop (𝓝 C₁))
+    {C₂ : E} (hC₂ : Tendsto (fun m ↦ ∫ (t : ℝ) in y..m, f (x₂ + t * I)) atTop (𝓝 C₂))
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (t : ℝ) in x₁..x₂, f (t + y * I)) + (I • C₂) - (I • C₁) = 0 :=
+  integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable y hcont s hs hdiff
+    (hC₁.const_smul I) (hC₂.const_smul I) htendsto
+
+end tendsto
+
+section integrable
+
+/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+that a function satisfies Cauchy-Goursat conditions between them and is integrable along both
+vertical contours, the improper integral along the first contour equals the sum of a translation
+integral and the improper integrals along the second integral.
+
+This is a variant of `integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable'`
+that requires the much stronger assumption of integrability. The reason integrability is stronger is
+that it requires the integral of the norm of the function to be finite rather than just that of the
+function. We nevertheless include this version of the theorem because it is likely that in
+applications involving specific functions, there will already be proofs of integrability.
+-/
+theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable_of_integrable_on
+    (hcont : ContinuousOn f ([[x₁, x₂]] ×ℂ (Ici y))) (s : Set ℂ) (hs : s.Countable)
+    (hdiff : ∀ x ∈ ((Ioo (min x₁ x₂) (max x₁ x₂)) ×ℂ (Ioi y)) \ s, DifferentiableAt ℂ f x)
+    (hint₁ : IntegrableOn (fun (t : ℝ) ↦ f (x₁ + t * I)) (Ioi y) volume)
+    (hint₂ : IntegrableOn (fun (t : ℝ) ↦ f (x₂ + t * I)) (Ioi y) volume)
+    (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
+    (∫ (x : ℝ) in x₁..x₂, f (x + y * I)) + (I • ∫ (t : ℝ) in Ioi y, f (x₂ + t * I)) -
+      (I • ∫ (t : ℝ) in Ioi y, f (x₁ + t * I)) = 0 := by
+  refine integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable' y hcont s hs
+    hdiff ?_ ?_ htendsto
+  · exact intervalIntegral_tendsto_integral_Ioi y hint₁ fun ⦃U⦄ a ↦ a
+  · exact intervalIntegral_tendsto_integral_Ioi y hint₂ fun ⦃U⦄ a ↦ a
+
+end integrable
+
+end unbounded
+
+section derivatives
+
+/-!
+## Circle integrals for higher derivatives
+-/
+
+variable {R : ℝ} {f : ℂ → E} {c w : ℂ} {s : Set ℂ}
+
+/-- **Cauchy integral formula for derivatives** at any point `w` in an open ball, assuming `f` is
+continuous on the corresponding closed ball and differentiable on its interior away from a
+countable set. -/
+lemma circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable
+    (n : ℕ) (hs : s.Countable) (hw : w ∈ ball c R)
+    (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
+    ∮ z in C(c, R), (1 / (z - w) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f w := by
+  have hR : 0 < R := pos_of_mem_ball hw
+  have hfi : CircleIntegrable f c R :=
+    (hc.mono sphere_subset_closedBall).circleIntegrable hR.le
+  simp only [one_div, ← zpow_neg, ← zpow_natCast]
+  induction n generalizing w with
+  | zero =>
+    simpa using circleIntegral_sub_inv_smul_of_differentiable_on_off_countable hs hw hc hd
+  | succ n ih =>
+    have hws : w ∉ sphere c |R| := by grind [abs_of_pos hR, sphere_disjoint_ball]
+    let J (n : ℕ) (w : ℂ) : E := ∮ z in C(c, R), (z - w) ^ (-((n + 1 : ℕ) : ℤ)) • f z
+    calc
+      J (n + 1) w = (n + 1 : ℂ)⁻¹ • deriv (J n) w := by
+        rw [(hasDerivAt_circleIntegral_sub_zpow_smul hfi hws).deriv, smul_smul]
+        conv in _ * _ => simp [inv_mul_cancel₀ (n.cast_add_one_ne_zero (R := ℂ))]
+        rw [one_smul]
+        congr
+      _ = (2 * π * I / (n + 1).factorial) • iteratedDeriv (n + 1) f w := by
+        rw [EventuallyEq.deriv_eq ((isOpen_ball.eventually_mem hw).mono fun _ ↦ ih),
+          deriv_fun_const_smul_field, ← iteratedDeriv_succ, smul_smul, Nat.factorial_succ]
+        congr 1
+        push_cast
+        field
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
 differentiable on its interior away from a countable set. -/
@@ -797,13 +998,9 @@ lemma circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_counta
     (h0 : 0 < R) (n : ℕ) (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R)) (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) :
     ∮ z in C(c, R), (1 / (z - c) ^ (n + 1)) • f z
-      = (2 * π * I / n.factorial) • iteratedDeriv n f c := by
-  have := hasFPowerSeriesOnBall_of_differentiable_off_countable (R := .mk R h0.le) hs hc hd h0
-      |>.factorial_smul 1 n
-  rw [iteratedFDeriv_apply_eq_iteratedDeriv_mul_prod, Finset.prod_const_one, one_smul] at this
-  rw [← this, cauchyPowerSeries_apply, ← Nat.cast_smul_eq_nsmul ℂ, ← mul_smul, ← mul_smul,
-    div_mul_cancel₀ _ (mod_cast n.factorial_ne_zero), mul_inv_cancel₀ two_pi_I_ne_zero]
-  simp [← mul_smul, pow_succ, mul_comm]
+      = (2 * π * I / n.factorial) • iteratedDeriv n f c :=
+  circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable n hs
+    (mem_ball_self h0) hc hd
 
 /-- **Cauchy integral formula for the first order derivative**, assuming `f` is continuous on a
 closed ball and differentiable on its interior away from a countable set. -/
@@ -813,6 +1010,15 @@ lemma differentiable_on_off_countable_deriv_eq_smul_circleIntegral
     ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
   simpa using circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable
     h0 1 hs hc hd
+
+/-- **Cauchy integral formula for derivatives** at any point `w` in an open ball, assuming `f` is
+continuous on the closure of the ball and differentiable on the open ball. -/
+lemma _root_.DiffContOnCl.circleIntegral_one_div_sub_pow_smul
+    (hc : DiffContOnCl ℂ f (ball c R)) (n : ℕ) (hw : w ∈ ball c R) :
+    ∮ z in C(c, R), (1 / (z - w) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f w :=
+  circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable n countable_empty hw
+    hc.continuousOn_ball fun _ hx ↦ hc.differentiableAt isOpen_ball hx.1
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is continuous on a closed ball and
 differentiable on its interior. -/
@@ -829,6 +1035,15 @@ lemma _root_.DiffContOnCl.deriv_eq_smul_circleIntegral (h0 : 0 < R)
     (hc : DiffContOnCl ℂ f (ball c R)) :
     ∮ z in C(c, R), (1 / (z - c) ^ 2) • f z = (2 * π * I) • deriv f c := by
   simpa using DiffContOnCl.circleIntegral_one_div_sub_center_pow_smul h0 1 hc
+
+/-- **Cauchy integral formula for derivatives** at any point `w` in an open ball, assuming `f` is
+differentiable on the corresponding closed ball. -/
+lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_pow_smul
+    (hc : DifferentiableOn ℂ f (closedBall c R)) (n : ℕ) (hw : w ∈ ball c R) :
+    ∮ z in C(c, R), (1 / (z - w) ^ (n + 1)) • f z
+      = (2 * π * I / n.factorial) • iteratedDeriv n f w :=
+  (hc.mono closure_ball_subset_closedBall).diffContOnCl
+    |>.circleIntegral_one_div_sub_pow_smul n hw
 
 /-- **Cauchy integral formula for derivatives**, assuming `f` is differentiable on a closed ball. -/
 lemma _root_.DifferentiableOn.circleIntegral_one_div_sub_center_pow_smul (h0 : 0 < R) (n : ℕ)
