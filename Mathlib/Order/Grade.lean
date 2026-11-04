@@ -78,6 +78,7 @@ class GradeMinOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends Grad
   isMin_grade ⦃a : α⦄ : IsMin a → IsMin (grade a)
 
 /-- An `𝕆`-graded order where maximal elements have maximal grades. -/
+@[to_dual existing]
 class GradeMaxOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeOrder 𝕆 α where
   /-- Maximal elements have maximal grades. -/
   isMax_grade ⦃a : α⦄ : IsMax a → IsMax (grade a)
@@ -86,6 +87,10 @@ class GradeMaxOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends Grad
 grades. -/
 class GradeBoundedOrder (𝕆 α : Type*) [Preorder 𝕆] [Preorder α] extends GradeMinOrder 𝕆 α,
   GradeMaxOrder 𝕆 α
+
+attribute [to_dual existing] GradeBoundedOrder.toGradeMinOrder
+
+to_dual_for GradeBoundedOrder.mk := { isMin_grade := isMax_grade }
 
 section Preorder -- grading
 variable [Preorder 𝕆]
@@ -121,32 +126,17 @@ section GradeMinOrder
 variable (𝕆)
 variable [GradeMinOrder 𝕆 α] {a : α}
 
+@[to_dual]
 protected theorem IsMin.grade (h : IsMin a) : IsMin (grade 𝕆 a) :=
   GradeMinOrder.isMin_grade h
 
 variable {𝕆}
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem isMin_grade_iff : IsMin (grade 𝕆 a) ↔ IsMin a :=
   ⟨grade_strictMono.isMin_of_apply, IsMin.grade _⟩
 
 end GradeMinOrder
-
-section GradeMaxOrder
-
-variable (𝕆)
-variable [GradeMaxOrder 𝕆 α] {a : α}
-
-protected theorem IsMax.grade (h : IsMax a) : IsMax (grade 𝕆 a) :=
-  GradeMaxOrder.isMax_grade h
-
-variable {𝕆}
-
-@[simp]
-theorem isMax_grade_iff : IsMax (grade 𝕆 a) ↔ IsMax a :=
-  ⟨grade_strictMono.isMax_of_apply, IsMax.grade _⟩
-
-end GradeMaxOrder
 
 end Preorder
 
@@ -190,13 +180,9 @@ section PartialOrder
 
 variable [PartialOrder 𝕆] [Preorder α]
 
-@[simp]
+@[to_dual (attr := simp)]
 theorem grade_bot [OrderBot 𝕆] [OrderBot α] [GradeMinOrder 𝕆 α] : grade 𝕆 (⊥ : α) = ⊥ :=
   (isMin_bot.grade _).eq_bot
-
-@[simp]
-theorem grade_top [OrderTop 𝕆] [OrderTop α] [GradeMaxOrder 𝕆 α] : grade 𝕆 (⊤ : α) = ⊤ :=
-  (isMax_top.grade _).eq_top
 
 end PartialOrder
 
@@ -223,11 +209,9 @@ instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒ
   grade_strictMono := grade_strictMono.dual
   covBy_grade _ _ h := (h.ofDual.grade _).toDual
 
+@[to_dual]
 instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeOrder with isMin_grade := fun _ => IsMax.grade (α := α) 𝕆 }
-
-instance OrderDual.gradeMaxOrder [GradeMinOrder 𝕆 α] : GradeMaxOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with isMax_grade := fun _ => IsMin.grade (α := α) 𝕆 }
 
 instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
@@ -258,6 +242,7 @@ abbrev GradeMinOrder.liftLeft [GradeMinOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : S
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
+@[to_dual existing]
 abbrev GradeMaxOrder.liftLeft [GradeMaxOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder ℙ α :=
   { GradeOrder.liftLeft f hf hcovBy with isMax_grade := fun _ ha => hmax _ <| ha.grade _ }
@@ -285,6 +270,7 @@ abbrev GradeMinOrder.liftRight [GradeMinOrder 𝕆 β] (f : α → β) (hf : Str
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
+@[to_dual existing]
 abbrev GradeMaxOrder.liftRight [GradeMaxOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder 𝕆 α :=
   { GradeOrder.liftRight f hf hcovBy with isMax_grade := fun _ ha => (hmax _ ha).grade _ }
@@ -297,7 +283,6 @@ abbrev GradeBoundedOrder.liftRight [GradeBoundedOrder 𝕆 β] (f : α → β) (
   { GradeMinOrder.liftRight f hf hcovBy hmin, GradeMaxOrder.liftRight f hf hcovBy hmax with }
 
 /-! #### `Fin n`-graded to `ℕ`-graded to `ℤ`-graded -/
-
 
 -- See note [reducible non-instances]
 /-- A `Fin n`-graded order is also `ℕ`-graded. We do not mark this an instance because `n` is not
@@ -318,13 +303,10 @@ abbrev GradeMinOrder.finToNat (n : ℕ) [GradeMinOrder (Fin n) α] : GradeMinOrd
 instance GradeOrder.natToInt [GradeOrder ℕ α] : GradeOrder ℤ α :=
   (GradeOrder.liftLeft _ Int.natCast_strictMono) fun _ _ => CovBy.intCast
 
+@[to_dual]
 theorem GradeOrder.wellFoundedLT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
     [WellFoundedLT 𝕆] : WellFoundedLT α :=
   (grade_strictMono (𝕆 := 𝕆)).wellFoundedLT
-
-theorem GradeOrder.wellFoundedGT (𝕆 : Type*) [Preorder 𝕆] [GradeOrder 𝕆 α]
-    [WellFoundedGT 𝕆] : WellFoundedGT α :=
-  (grade_strictMono (𝕆 := 𝕆)).wellFoundedGT
 
 instance [GradeOrder ℕ α] : WellFoundedLT α :=
   GradeOrder.wellFoundedLT ℕ
@@ -343,7 +325,7 @@ A flag inherits the grading of its ambient order.
 namespace Flag
 variable [PartialOrder α] {s : Flag α} {a b : s}
 
-@[simp, norm_cast]
+@[simp, norm_cast, to_dual self]
 lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
   refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
     @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
@@ -354,7 +336,7 @@ lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
   · exact .inl (hcb.le.trans hbd)
   · cases h had hdb
 
-@[simp, norm_cast]
+@[simp, norm_cast, to_dual self]
 lemma coe_covBy_coe : (a : α) ⋖ b ↔ a ⋖ b := by simp [covBy_iff_wcovBy_and_not_le]
 
 @[simp]
@@ -365,7 +347,7 @@ lemma isMax_coe : IsMax (a : α) ↔ IsMax a where
     classical
     exact .inr <| hab.trans' <| h.isTop ⟨c, hc⟩
 
-@[simp]
+@[simp, to_dual existing]
 lemma isMin_coe : IsMin (a : α) ↔ IsMin a where
   mp h b hba := h hba
   mpr h b hba := by
@@ -378,11 +360,9 @@ variable [Preorder 𝕆]
 instance [GradeOrder 𝕆 α] (s : Flag α) : GradeOrder 𝕆 s :=
   .liftRight _ (Subtype.strictMono_coe _) fun _ _ ↦ coe_covBy_coe.2
 
+@[to_dual]
 instance [GradeMinOrder 𝕆 α] (s : Flag α) : GradeMinOrder 𝕆 s :=
   .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMin_coe.2
-
-instance [GradeMaxOrder 𝕆 α] (s : Flag α) : GradeMaxOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMax_coe.2
 
 instance [GradeBoundedOrder 𝕆 α] (s : Flag α) : GradeBoundedOrder 𝕆 s :=
   .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) (fun _ ↦ isMin_coe.2)
