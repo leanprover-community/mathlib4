@@ -3465,6 +3465,7 @@ public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Comma
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
+public import Mathlib.CategoryTheory.Presentable.EnoughPureSubobjects
 public import Mathlib.CategoryTheory.Presentable.EssentiallyLarge
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
