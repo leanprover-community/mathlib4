@@ -45,10 +45,10 @@ theorem exp_one_lt_three : exp 1 < 3 :=
   lt_trans exp_one_lt_d9 (by norm_num)
 
 theorem floor_exp_one_eq_two : ⌊exp 1⌋ = 2 :=
-  Int.floor_eq_iff.mpr ⟨exp_one_gt_two.le, by exact_mod_cast exp_one_lt_three⟩
+  Int.floor_eq_iff.mpr ⟨exp_one_gt_two.le, mod_cast exp_one_lt_three⟩
 
 theorem ceil_exp_one_eq_three : ⌈exp 1⌉ = 3 :=
-  Int.ceil_eq_iff.mpr ⟨by exact_mod_cast exp_one_gt_two, exp_one_lt_three.le⟩
+  Int.ceil_eq_iff.mpr ⟨mod_cast exp_one_gt_two, exp_one_lt_three.le⟩
 
 theorem round_exp_one_eq_three : round (exp 1) = 3 := by
   refine round_eq _ |>.trans <| Int.floor_eq_iff.mpr ⟨?_, by grind [exp_one_lt_three]⟩

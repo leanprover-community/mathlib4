@@ -255,15 +255,15 @@ instance LinearMap.instLieRingModule : LieRingModule L (M →ₗ[R] N) where
         simp only [smul_sub, map_smul, lie_smul, RingHom.id_apply] }
   add_lie x y f := by
     ext n
-    simp only [add_lie, coe_mk, AddHom.coe_mk, add_apply, map_add]
+    simp only [add_lie, coe_mk, AddHom.coe_mk, LinearMap.add_apply, map_add]
     abel
   lie_add x f g := by
     ext n
-    simp only [coe_mk, AddHom.coe_mk, lie_add, add_apply]
+    simp only [coe_mk, AddHom.coe_mk, lie_add, LinearMap.add_apply]
     abel
   leibniz_lie x y f := by
     ext n
-    simp only [lie_lie, coe_mk, AddHom.coe_mk, map_sub, add_apply, lie_sub]
+    simp only [lie_lie, coe_mk, AddHom.coe_mk, map_sub, LinearMap.add_apply, lie_sub]
     abel
 
 @[simp]
@@ -273,10 +273,10 @@ theorem LieHom.lie_apply (f : M →ₗ[R] N) (x : L) (m : M) : ⁅x, f⁆ m = �
 instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
   smul_lie t x f := by
     ext n
-    simp only [smul_sub, smul_lie, smul_apply, LieHom.lie_apply, map_smul]
+    simp only [smul_sub, smul_lie, LinearMap.smul_apply, LieHom.lie_apply, map_smul]
   lie_smul t x f := by
     ext n
-    simp only [smul_sub, smul_apply, LieHom.lie_apply, lie_smul]
+    simp only [smul_sub, LinearMap.smul_apply, LieHom.lie_apply, lie_smul]
 
 /-- We could avoid defining this by instead defining a `LieRingModule L R` instance with a zero
 bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that

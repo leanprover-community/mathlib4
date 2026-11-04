@@ -37,6 +37,8 @@ public meta import Mathlib.Tactic.TacticAnalysis.Declarations
 public meta import Mathlib.Tactic.TypeStar
 -- This import makes the binder plicity code action available globally
 public meta import Mathlib.Util.CodeActions
+-- This import makes the custom syntax used in Mathlib's Verso docstrings available globally.
+public meta import Mathlib.Util.VersoRoles
 -- This import makes the `alias` command available globally.
 public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.

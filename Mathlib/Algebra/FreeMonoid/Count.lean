@@ -54,7 +54,7 @@ lemma countP_of (x : α) : (of x).countP p =
 /-- `List.count` as a bundled additive monoid homomorphism. -/
 def count [DecidableEq α] (x : α) : FreeMonoid α →* Multiplicative ℕ := countP (· = x)
 
-theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) :
+theorem count_apply [DecidableEq α] (x : α) (l : FreeMonoid α) :
     count x l = Multiplicative.ofAdd (l.toList.count x) := rfl
 
 theorem count_of [DecidableEq α] (x y : α) :
@@ -78,7 +78,6 @@ theorem countP_of (x : α) : countP p (of x) = if p x then 1 else 0 := by
   simp only [decide_eq_true_eq]
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
--- Porting note: was (x = ·)
 def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countP (· = x)
 
 lemma count_of [DecidableEq α] (x y : α) : count x (of y) = (Pi.single x 1 : α → ℕ) y := by

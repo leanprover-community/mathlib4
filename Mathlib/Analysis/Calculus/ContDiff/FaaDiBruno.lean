@@ -1072,7 +1072,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
           ((q (f x)).compAlongOrderedFinpartition (p x) (c.extend i)).curryLeft) s x
       have cm : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       have cp i : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+        exact mod_cast OrderedFinpartition.partSize_le c i
       have I i : HasFDerivWithinAt (fun x ↦ p x (c.partSize i))
           (p x (c.partSize i).succ).curryLeft s x :=
         hf.fderivWithin (c.partSize i) ((cp i).trans_lt hm) x hx
@@ -1107,5 +1107,5 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)
       have : (c.partSize i : WithTop ℕ∞) ≤ m := by
-        exact_mod_cast OrderedFinpartition.partSize_le c i
+        exact mod_cast OrderedFinpartition.partSize_le c i
       exact hf.cont _ (this.trans hm)

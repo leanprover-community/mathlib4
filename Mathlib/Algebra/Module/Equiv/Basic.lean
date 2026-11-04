@@ -359,7 +359,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
-      simp only [coe_smulRight, Module.End.one_apply, smul_eq_mul, ← map_smul f, mul_one]
+      simp
     right_inv := fun x ↦ by simp }
 
 end LinearMap
@@ -578,7 +578,7 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
   map_add' f g := by
     ext x
-    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.

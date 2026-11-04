@@ -10,6 +10,7 @@ public import Mathlib.Order.BoundedOrder.Monotone
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.SetNotation
+public import Mathlib.Order.WellFounded
 
 /-!
 # Upper / lower bounds
@@ -960,6 +961,16 @@ theorem IsGLB.exists_between (h : IsGLB s a) (hb : a < b) : ∃ c ∈ s, a ≤ c
 theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ c ∈ s, a < c ∧ c < b :=
   let ⟨c, hcs, hac, hcb⟩ := h.exists_between hb
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
+
+@[to_dual]
+theorem IsGLB.min_eq [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) :
+    WellFoundedLT.min s hs₀ = a :=
+  (IsLeast.isGLB ⟨wellFounded_lt.min_mem s hs₀, fun _ ↦ WellFoundedLT.min_le⟩).unique hs
+
+@[to_dual]
+theorem IsGLB.mem_of_nonempty [WellFoundedLT α] (hs : IsGLB s a) (hs₀ : s.Nonempty) : a ∈ s := by
+  rw [← hs.min_eq hs₀]
+  exact wellFounded_lt.min_mem s hs₀
 
 end LinearOrder
 

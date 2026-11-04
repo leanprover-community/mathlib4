@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.DirSupClosed
 public import Mathlib.Order.ScottContinuity
+public import Mathlib.Topology.Order.SuccPred
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 
 /-!
@@ -73,7 +74,7 @@ namespace Topology
 /-- The Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+`d ∈ D` lies in `u` then there is a tail of `d` which is a subset of `u`.
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
@@ -94,7 +95,7 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
 /-- Predicate for an ordered topological space to be equipped with its Scott-Hausdorff topology.
 
 A set `u` is open in the Scott-Hausdorff topology iff when the least upper bound of a directed set
-`d` lies in `u` then there is a tail of `d` which is a subset of `u`.
+`d ∈ D` lies in `u` then there is a tail of `d` which is a subset of `u`.
 
 For mild conditions on `D`, this is equivalent to saying that open sets are `DirSupInaccOn D`,
 and closed sets are `DirSupClosedOn D`. -/
@@ -149,6 +150,45 @@ theorem isOpen_of_isLowerSet (hDL : IsLowerSet D) (h : IsLowerSet s) : IsOpen s 
 theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClosed s :=
   (isClosed_iff_dirSupClosedOn hDL).2 h.dirSupClosedOn
 
+theorem IsOpen.Iio_of_isLowerSet (h : IsLowerSet D) (a : α) : IsOpen (Iio a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Iio a
+
+theorem IsOpen.Iic_of_isLowerSet (h : IsLowerSet D) (a : α) : IsOpen (Iic a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Iic a
+
+theorem IsOpen.Ioi_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a : α) : IsOpen (Ioi a) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioi a
+
+theorem IsOpen.Ioo_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a b : α) : IsOpen (Ioo a b) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioo a b
+
+theorem IsOpen.Ioc_of_isLowerSet {α : Type*} [LinearOrder α] [TopologicalSpace α] {D : Set (Set α)}
+    [IsScottHausdorff α D] (h : IsLowerSet D) (a b : α) : IsOpen (Ioc a b) :=
+  isOpen_iff_dirSupInaccOn h |>.mpr <| .Ioc a b
+
+theorem IsClosed.Iic_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Iic a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Iic a
+
+theorem IsClosed.Ici_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Ici a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ici a
+
+theorem IsClosed.Ioi_of_isLowerSet (h : IsLowerSet D) (a : α) : IsClosed (Ioi a) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ioi a
+
+theorem IsClosed.Ioc_of_isLowerSet (h : IsLowerSet D) (a b : α) : IsClosed (Ioc a b) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Ioc a b
+
+theorem IsClosed.Icc_of_isLowerSet (h : IsLowerSet D) (a b : α) : IsClosed (Icc a b) :=
+  isClosed_iff_dirSupClosedOn h |>.mpr <| .Icc a b
+
+theorem ClosedIicTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIicTopology α where
+  isClosed_Iic := IsClosed.Iic_of_isLowerSet h
+
+theorem ClosedIciTopology.of_isLowerSet (h : IsLowerSet D) : ClosedIciTopology α where
+  isClosed_Ici := IsClosed.Ici_of_isLowerSet h
+
 end General
 
 section univ
@@ -188,6 +228,33 @@ theorem isLUB_of_mem_closure {s : Set α} {x : α} (hx : x ∈ closure s) :
     ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
   closure_subset_setOfPred_isLUB s hx
 
+protected theorem IsOpen.Iio (a : α) : IsOpen (Iio a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Iio a
+
+protected theorem IsOpen.Iic (a : α) : IsOpen (Iic a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Iic a
+
+protected theorem IsClosed.Iic (a : α) : IsClosed (Iic a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Iic a
+
+protected theorem IsClosed.Ici (a : α) : IsClosed (Ici a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ici a
+
+protected theorem IsClosed.Ioi (a : α) : IsClosed (Ioi a) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ioi a
+
+protected theorem IsClosed.Ioc (a b : α) : IsClosed (Ioc a b) :=
+  isClosed_iff_dirSupClosed.mpr <| .Ioc a b
+
+protected theorem IsClosed.Icc (a b : α) : IsClosed (Icc a b) :=
+  isClosed_iff_dirSupClosed.mpr <| .Icc a b
+
+instance : ClosedIicTopology α where
+  isClosed_Iic := IsClosed.Iic
+
+instance : ClosedIciTopology α where
+  isClosed_Ici := IsClosed.Ici
+
 end univ
 end Preorder
 
@@ -214,6 +281,10 @@ theorem continuous_of_leftOrdContinuous [Preorder β] [TopologicalSpace β] [IsS
   exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
     (hf.mono.directedOn_image d) (hf hd₀ hx)
 
+/-- See `LeftOrdContinuous.continuous'` for a version that instead requires the codomain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous := continuous_of_leftOrdContinuous
+
 /-- See `continuous_of_leftOrdContinuous` for a version that instead requires the domain to be
 linearly ordered. -/
 theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
@@ -224,8 +295,71 @@ theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [Is
   exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
     (.of_linearOrder _) (hf hd₀ hx)
 
+/-- See `LeftOrdContinuous.continuous` for a version that instead requires the codomain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous' := continuous_of_leftOrdContinuous'
+
+protected theorem IsOpen.Ioi (a : α) : IsOpen (Ioi a) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioi a
+
+protected theorem IsOpen.Ioo (a b : α) : IsOpen (Ioo a b) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioo a b
+
+protected theorem IsOpen.Ioc (a b : α) : IsOpen (Ioc a b) :=
+  isOpen_iff_dirSupInacc.mpr <| .Ioc a b
+
 end LinearOrder
 end IsScottHausdorff
+
+-- TODO: for a general linear order, its topology is the meet of the Scott-Hausdorff topology of
+-- itself and its order dual.
+section WellFounded
+variable {α : Type*} [LinearOrder α]
+
+theorem _root_.WellFoundedLT.scottHausdorff_eq_preorderTopology [WellFoundedLT α] :
+    scottHausdorff α univ = Preorder.topology α := by
+  let := Preorder.topology α
+  let : OrderTopology α := ⟨rfl⟩
+  have := SuccOrder.ofLinearWellFoundedLT α
+  apply le_antisymm
+  · rw [le_orderTopology_iff]
+    refine fun a ↦ ⟨?_, ?_⟩
+    · exact @Topology.IsScottHausdorff.IsOpen.Ioi α (scottHausdorff α univ) _ _ _
+    · exact @Topology.IsScottHausdorff.IsOpen.Iio α (scottHausdorff α univ) _ _ _
+  · intro s hs
+    rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s (scottHausdorff α univ)] at hs
+    rw [isOpen_iff_forall_mem_open]
+    intro x hxs
+    by_cases hx : Order.IsSuccLimit x
+    · rw [dirSupInacc_iff_inter_subset] at hs
+      obtain ⟨y, hy, hyx⟩ := hs hx.nonempty_Iio (.of_linearOrder _) hx.isLUB_Iio hxs
+      rw [Ici_inter_Iio] at hyx
+      refine ⟨Ioc y x, ?_, SuccOrder.isOpen_Ioc, ?_⟩
+      · rw [← Ioo_insert_right hy]
+        exact insert_subset hxs (Ioo_subset_Ico_self.trans hyx)
+      · simpa
+    · exact ⟨_, singleton_subset_iff.2 hxs, SuccOrder.isOpen_singleton_of_not_isSuccLimit hx,
+        mem_singleton _⟩
+
+instance _root_.WellFoundedLT.isScottHausdorff [TopologicalSpace α] [OrderTopology α]
+    [WellFoundedLT α] : IsScottHausdorff α univ where
+  topology_eq_scottHausdorff := by
+    rw [OrderTopology.topology_eq_generate_intervals (α := α),
+      WellFoundedLT.scottHausdorff_eq_preorderTopology]
+
+theorem _root_.WellFoundedGT.scottHausdorff_eq_bot [WellFoundedGT α] :
+    scottHausdorff α univ = ⊥ := by
+  rw [← le_bot_iff]
+  intro s hs
+  rw [@Topology.IsScottHausdorff.isOpen_iff_dirSupInacc α s (scottHausdorff α univ)]
+  exact DirSupInacc.of_wellFoundedGT _
+
+instance _root_.WellFoundedGT.isScottHausdorff [TopologicalSpace α] [DiscreteTopology α]
+    [WellFoundedGT α] : IsScottHausdorff α univ where
+  topology_eq_scottHausdorff := by
+    rw [DiscreteTopology.eq_bot (α := α), WellFoundedGT.scottHausdorff_eq_bot]
+
+end WellFounded
 
 /-! ### Scott topology -/
 
