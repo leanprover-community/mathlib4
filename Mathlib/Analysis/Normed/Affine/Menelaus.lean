@@ -5,9 +5,10 @@ Authors: Chu Zheng
 -/
 module
 
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Affine.AddTorsor
 public import Mathlib.LinearAlgebra.AffineSpace.Menelaus
-public import Mathlib.Analysis.Convex.Between
 
 /-!
 # Menelaus' theorem.
@@ -51,64 +52,13 @@ theorem prod_dist_div_dist_eq_one_of_mem_line_of_collinear {t : Triangle 𝕜 P}
   rw [Finset.prod_div_distrib, h, div_self]
   exact Finset.prod_ne_zero_iff.2 fun i _ ↦ by grind [dist_ne_zero]
 
-section LinearOrderedField
-
-variable {k E P : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
-  [AddCommGroup E] [Module k E] [AddTorsor E P]
-
-private lemma div_one_sub_nonneg_iff_wbtw {a b : P} {r : k} (hab : a ≠ b) :
-    0 ≤ r / (1 - r) ↔ Wbtw k (V := E) a (AffineMap.lineMap a b r) b := by
-  rw [wbtw_lineMap_iff, or_iff_right hab, Set.mem_Icc]
-  constructor
-  · intro h
-    grind [div_nonneg_iff]
-  · rintro ⟨hr0, hr1⟩
-    exact div_nonneg hr0 (sub_nonneg.mpr hr1)
-
-private lemma div_one_sub_neg_iff_not_wbtw {a b : P} {r : k} (hab : a ≠ b) :
-    r / (1 - r) < 0 ↔ ¬ Wbtw k (V := E) a (AffineMap.lineMap a b r) b := by
-  rw [← iff_not_comm, not_lt]
-  symm
-  exact div_one_sub_nonneg_iff_wbtw hab
-
-end LinearOrderedField
-
-section LinearOrderedRing
-
-variable {k : Type*} [CommRing k] [LinearOrder k] [IsStrictOrderedRing k]
-
-open SignType
-
-private lemma prod_neg_of_odd_ncard {ι : Type*} [Fintype ι] {q : ι → k}
-    (hne : ∀ i, q i ≠ 0) (hodd : Odd ({i : ι | q i < 0}.ncard)) :
-    ∏ i, q i < 0 := by
-  classical
-  have hfilter : Finset.univ.filter (fun i => q i < 0) = {i : ι | q i < 0}.toFinset := by grind
-  have hodd' : Odd (Finset.univ.filter (fun i => q i < 0)).card := by
-    grind [← Set.ncard_eq_toFinset_card']
-  refine sign_eq_neg_one_iff.mp ?_
-  calc
-    sign (∏ i, q i) = ∏ i, sign (q i) := map_prod (signHom : k →*₀ SignType) q Finset.univ
-    _ = ∏ i, if q i < 0 then (-1 : SignType) else 1 := by
-      apply Finset.prod_congr rfl
-      intro i _
-      by_cases hneg : q i < 0
-      · simp [sign_neg hneg, hneg]
-      · have hpos : 0 < q i := lt_of_le_of_ne (le_of_not_gt hneg) (hne i).symm
-        simp [sign_pos hpos, hneg]
-    _ = (-1 : SignType) ^ (Finset.univ.filter (fun i => q i < 0)).card := by
-      rw [Finset.prod_ite]
-      simp [Finset.prod_const]
-    _ = (-1 : SignType) := SignType.pow_odd (-1 : SignType) hodd'
-
-end LinearOrderedRing
-
 section Real
 
 variable {V P : Type*}
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V]
 variable [MetricSpace P] [NormedAddTorsor V P]
 
+open Classical in
 /-- The converse to **Menelaus' theorem** for a triangle, expressed as an equality of products.
 The odd cardinality assumption records that an odd number of the points lie outside the
 corresponding closed segments.
@@ -116,7 +66,8 @@ corresponding closed segments.
 theorem collinear_of_prod_dist_eq_prod_dist_of_odd_card
     {t : Triangle ℝ P} {p : Fin 3 → P}
     (hp : ∀ i, p i ∈ line[ℝ, t.points (i + 1), t.points (i + 2)])
-    (hodd : Odd ({i : Fin 3 | ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2))}.ncard))
+    (hodd : Odd (Finset.univ.filter
+      (fun i : Fin 3 ↦ ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2)))).card)
     (hprod : (∏ i, dist (t.points (i + 1)) (p i)) = ∏ i, dist (p i) (t.points (i + 2))) :
     Collinear ℝ {p 0, p 1, p 2} := by
   simp_rw [mem_affineSpan_pair_iff_exists_lineMap_eq] at hp
@@ -139,11 +90,11 @@ theorem collinear_of_prod_dist_eq_prod_dist_of_odd_card
       have hnorm_ne : ‖q i‖ ≠ 0 := (Finset.prod_ne_zero_iff.mp hprod_ne) i (Finset.mem_univ i)
       grind [norm_eq_zero]
     have hneg_iff (i : Fin 3) : q i < 0 ↔ ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2)) := by
-      change r i / (1 - r i) < 0 ↔ ¬ Wbtw ℝ (V := V) (t.points (i + 1)) (p i) (t.points (i + 2))
-      grind [div_one_sub_neg_iff_not_wbtw]
-    have hset : {i : Fin 3 | ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2))} =
-        {i : Fin 3 | q i < 0} := by grind
-    have hqprod_neg : ∏ i, q i < 0 := by grind [prod_neg_of_odd_ncard]
+      grind [not_wbtw_lineMap_iff_div_one_sub_neg]
+    have hqprod_neg : ∏ i, q i < 0 := by
+      apply (Finset.prod_neg_iff_odd_card_neg (fun i _ ↦ hq_ne i)).2
+      simp [hneg_iff]
+      grind
     have hqprod_norm : ‖∏ i, q i‖ = 1 := by grind [norm_prod]
     have hqprod_eq_neg_one : ∏ i, q i = -1 := by grind [Real.norm_eq_abs, abs_of_neg hqprod_neg]
     have hone_sub_ne (i : Fin 3) : 1 - r i ≠ 0 := by grind
@@ -167,11 +118,13 @@ theorem collinear_of_prod_dist_eq_prod_dist_of_odd_card
     apply (t.prod_eq_neg_prod_one_sub_iff_collinear_of_lineMap hr).mp
     grind [Finset.prod_eq_zero]
 
+open Classical in
 /-- The converse to **Menelaus' theorem** for a triangle, expressed using division of distances. -/
 theorem collinear_of_prod_dist_div_dist_eq_one_of_odd_card
     {t : Triangle ℝ P} {p : Fin 3 → P}
     (hp : ∀ i, p i ∈ line[ℝ, t.points (i + 1), t.points (i + 2)])
-    (hodd : Odd ({i : Fin 3 | ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2))}.ncard))
+    (hodd : Odd (Finset.univ.filter
+      (fun i : Fin 3 ↦ ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2)))).card)
     (hprod : ∏ i, dist (t.points (i + 1)) (p i) / dist (p i) (t.points (i + 2)) = 1) :
     Collinear ℝ {p 0, p 1, p 2} := by
   rw [Finset.prod_div_distrib] at hprod
@@ -179,23 +132,27 @@ theorem collinear_of_prod_dist_div_dist_eq_one_of_odd_card
   exact collinear_of_prod_dist_eq_prod_dist_of_odd_card hp hodd <|
     (div_eq_one_iff_eq hprod_ne).mp hprod
 
+open Classical in
 /-- The distance form of the converse to **Menelaus' theorem** is an equivalence when the
 points do not coincide with the corresponding second vertex. -/
 theorem prod_dist_div_dist_eq_one_iff_collinear_of_mem_line_of_odd_card
     {t : Triangle ℝ P} {p : Fin 3 → P}
     (hp0 : ∀ i, p i ≠ t.points (i + 2))
     (hp : ∀ i, p i ∈ line[ℝ, t.points (i + 1), t.points (i + 2)])
-    (hodd : Odd ({i : Fin 3 | ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2))}.ncard)) :
+    (hodd : Odd (Finset.univ.filter
+      (fun i : Fin 3 ↦ ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2)))).card) :
     (∏ i, dist (t.points (i + 1)) (p i) / dist (p i) (t.points (i + 2)) = 1) ↔
       Collinear ℝ {p 0, p 1, p 2} :=
   ⟨collinear_of_prod_dist_div_dist_eq_one_of_odd_card hp hodd,
     prod_dist_div_dist_eq_one_of_mem_line_of_collinear hp0 hp⟩
 
+open Classical in
 /-- The distance form of **Menelaus' theorem**, expressed as an equality of products. -/
 theorem prod_dist_eq_prod_dist_iff_collinear_of_mem_line_of_odd_card
     {t : Triangle ℝ P} {p : Fin 3 → P}
     (hp : ∀ i, p i ∈ line[ℝ, t.points (i + 1), t.points (i + 2)])
-    (hodd : Odd ({i : Fin 3 | ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2))}.ncard)) :
+    (hodd : Odd (Finset.univ.filter
+      (fun i : Fin 3 ↦ ¬ Wbtw ℝ (t.points (i + 1)) (p i) (t.points (i + 2)))).card) :
     (∏ i, dist (t.points (i + 1)) (p i)) =
       (∏ i, dist (p i) (t.points (i + 2))) ↔ Collinear ℝ {p 0, p 1, p 2} :=
   ⟨collinear_of_prod_dist_eq_prod_dist_of_odd_card hp hodd,
