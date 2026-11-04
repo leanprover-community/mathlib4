@@ -239,8 +239,8 @@ variable (n R S)
 def prodEquiv :
     SpecialLinearGroup n (R × S) ≃* SpecialLinearGroup n R × SpecialLinearGroup n S where
   __ := (map (RingHom.fst R S)).prod (map (RingHom.snd R S))
-  invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.1, A.2⟩, by
-    rw [det_prodRingEquiv_symm, A.1.2, A.2.2, Prod.mk_one_one]⟩
+  invFun A := ⟨(Matrix.prodRingEquiv n R S).symm ⟨A.fst, A.snd⟩, by
+    rw [det_prodRingEquiv_symm, A.fst.2, A.snd.2, Prod.mk_one_one]⟩
 
 end Prod
 

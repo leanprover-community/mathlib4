@@ -842,15 +842,17 @@ This is available in bundled forms as:
 @[simp] theorem toEquiv_prodAddEquiv [Add α] [Add β] :
     prodAddEquiv m n α β = prodEquiv m n α β := rfl
 
+variable (R)
+
 /-- `prodEquiv` as a `LinearEquiv`. -/
-@[simps!] def prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+@[simps!] def prodLinearEquiv [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] : Matrix m n (α × β) ≃ₗ[R] Matrix m n α × Matrix m n β where
   __ := prodAddEquiv m n α β
   map_smul' _ _ := rfl
 
-@[simp] theorem toAddEquiv_prodLinearEquiv (R) [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
+@[simp] theorem toAddEquiv_prodLinearEquiv [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] :
-    prodLinearEquiv m n α β R = prodAddEquiv m n α β := rfl
+    prodLinearEquiv m n R α β  = prodAddEquiv m n α β := rfl
 
 variable [Fintype n]
 
@@ -863,7 +865,7 @@ variable [Fintype n]
 @[simp] theorem toAddEquiv_prodRingEquiv [AddCommMonoid α] [AddCommMonoid β] [Mul α] [Mul β] :
     prodRingEquiv n α β = prodAddEquiv n n α β := rfl
 
-variable (R) [CommSemiring R] [DecidableEq n]
+variable [CommSemiring R] [DecidableEq n]
 
 /-- `prodEquiv` as an `AlgEquiv`. -/
 @[simps!] def prodAlgEquiv [Semiring α] [Algebra R α] [Semiring β] [Algebra R β] :
@@ -876,7 +878,7 @@ variable (R) [CommSemiring R] [DecidableEq n]
 
 @[simp] theorem toLinearEquiv_prodAlgEquiv [Semiring α] [Algebra R α]
     [Semiring β] [Algebra R β] :
-    prodAlgEquiv n R α β = prodLinearEquiv n n α β R := rfl
+    prodAlgEquiv n R α β = prodLinearEquiv n n R α β := rfl
 
 end Prod
 
@@ -911,9 +913,10 @@ This is available in bundled forms as:
   __ := piAddEquiv
   map_smul' _ _ := rfl
 
-@[simp] theorem toEquiv_piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)]
-    [Π i, Module R (β i)] : (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
-      Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i)) = piEquiv := rfl
+@[simp] theorem toAddEquiv_piLinearEquiv (R) [Semiring R] [Π i, AddCommMonoid (β i)]
+    [Π i, Module R (β i)] :
+    (piLinearEquiv (m := m) (n := n) (ι := ι) (β := β) R :
+      Matrix m n (Π i, β i) ≃+ Π i, Matrix m n (β i)) = piAddEquiv := rfl
 
 /-- `piEquiv` as a `RingEquiv`. -/
 @[simps!] def piRingEquiv [Π i, AddCommMonoid (β i)] [Π i, Mul (β i)] [Fintype n] :
@@ -925,20 +928,20 @@ This is available in bundled forms as:
     (piRingEquiv (n := n) (ι := ι) (β := β) :
       Matrix n n (Π i, β i) ≃+ Π i, Matrix n n (β i)) = piAddEquiv := rfl
 
+variable (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
+  [Fintype n] [DecidableEq n]
+
 /-- `piEquiv` as an `AlgEquiv`. -/
-@[simps!] def piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)] [Π i, Algebra R (β i)]
-    [Fintype n] [DecidableEq n] : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
+@[simps!] def piAlgEquiv : Matrix n n (Π i, β i) ≃ₐ[R] Π i, Matrix n n (β i) where
   __ := piRingEquiv
   commutes' := (AlgHom.mk' (piRingEquiv (β := β) (n := n)).toRingHom fun _ _ ↦ rfl).commutes
 
-@[simp] theorem toRingEquiv_piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)]
-    [Π i, Algebra R (β i)] [Fintype n] [DecidableEq n] :
-    (piAlgEquiv (n := n) (ι := ι) (β := β) R :
-      Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
+@[simp] theorem toRingEquiv_piAlgEquiv :
+    (piAlgEquiv (n := n) R (ι := ι) (β := β) :
+       Matrix n n (Π i, β i) ≃+* Π i, Matrix n n (β i)) = piRingEquiv := rfl
 
-@[simp] theorem toLinearEquiv_piAlgEquiv (R) [CommSemiring R] [Π i, Semiring (β i)]
-    [Π i, Algebra R (β i)] [Fintype n] [DecidableEq n] :
-    (piAlgEquiv (n := n) (ι := ι) (β := β) R :
+@[simp] theorem toLinearEquiv_piAlgEquiv :
+    (piAlgEquiv (n := n) R (ι := ι) (β := β) :
       Matrix n n (Π i, β i) ≃ₗ[R] Π i, Matrix n n (β i)) = piLinearEquiv R := rfl
 
 end Pi
