@@ -195,37 +195,15 @@ end Empty
 end Finset
 
 namespace Mathlib.Meta
-open Qq Lean
+open Qq Lean Meta
 
-/-- Attempt to prove that a finset is nonempty using the `finsetNonempty` aesop rule-set.
-
-You can add lemmas to the rule-set by tagging them with either:
-* `aesop safe apply (rule_sets := [finsetNonempty])` if they are always a good idea to follow or
-* `aesop unsafe apply (rule_sets := [finsetNonempty])` if they risk directing the search to a blind
-  alley.
-
-TODO: should some of the lemmas be `aesop safe simp` instead?
--/
+/-- Attempt to prove that a finset is nonempty using `grind`. -/
 meta def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do
-  -- Aesop expects to operate on goals, so we're going to make a new goal.
   let goal ← Lean.Meta.mkFreshExprMVar q(Finset.Nonempty $s)
-  let mvar := goal.mvarId!
-  -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
-  let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
-  let options : Aesop.Options' :=
-    { terminal := true -- Fail if the new goal is not closed.
-      generateScript := false
-      useDefaultSimpSet := false -- Avoiding the whole simp set to speed up the tactic.
-      warnOnNonterminal := false -- Don't show a warning on failure, simply return `none`.
-      forwardMaxDepth? := none }
-  let rules ← Aesop.mkLocalRuleSet rulesets options
-  let (remainingGoals, _) ←
-    try Aesop.search (options := options.toOptions) mvar (.some rules)
-    catch _ => return none
-  -- Fail if there are open goals remaining, this serves as an extra check for the
-  -- Aesop configuration option `terminal := true`.
-  if remainingGoals.size > 0 then return none
-  Lean.getExprMVarAssignment? mvar
+  let result ← Meta.Grind.main goal.mvarId! (← Meta.Grind.mkParams { splits := 0 } {})
+  if result.hasFailed then
+    return none
+  return some <| ← instantiateMVars goal
 
 end Mathlib.Meta
