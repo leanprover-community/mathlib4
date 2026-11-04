@@ -96,7 +96,7 @@ def Localization.submonoid : Submonoid R := Ideal.sInfPrimeCompl
 
 @[simp]
 lemma Localization.mem_submonoid_iff {r : R} :
-    r ∈ Localization.submonoid S ↔ (∀ v ∈ Sᶜ, r ∉ v.asIdeal) ∧ r ∈ nonZeroDivisors R := by
+    r ∈ Localization.submonoid S ↔ (∀ v ∉ S, r ∉ v.asIdeal) ∧ r ∈ nonZeroDivisors R := by
   simp [Localization.submonoid]
 
 @[simp]
@@ -106,6 +106,9 @@ lemma Localization.submonoid_eq_primeCompl (P : HeightOneSpectrum R) :
   simp
 
 lemma Localization.submonoid_le_nonZeroDivisors : Localization.submonoid S ≤ R⁰ := inf_le_right
+
+instance [IsDomain R] [Finite (ClassGroup R)] : Fact (IsMulTorsion (ClassGroup R)) :=
+  ⟨isMulTorsion_of_finite⟩
 
 namespace IsDedekindDomain
 
@@ -160,10 +163,9 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))]
       exact hD_ne_zero (pow_eq_zero_iff hn.ne' |>.1 (by simpa using hα))
   exact ⟨(β, ⟨α, hα_mem'⟩), SetLike.coe_eq_coe.mp ((hβ.trans (mul_comm _ _)).symm)⟩
 
-instance [Finite (ClassGroup R)] : Fact (IsMulTorsion (ClassGroup R)) := ⟨isMulTorsion_of_finite⟩
-
-/-- When every class in the class group has finite order, the ring of `S`-integers is a localization
-  of `R` at the multiplicative set `S`. -/
+/-- When every class in the class group has finite order, the ring of `S`-integers is the
+  localization of `R` at `Localization.submonoid S`, the submonoid of non-zero elements of `R`
+  not contained in any prime ideal away from `S`. -/
 instance isLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
     IsLocalization (Localization.submonoid S) <| S.integer K where
   map_units := by
