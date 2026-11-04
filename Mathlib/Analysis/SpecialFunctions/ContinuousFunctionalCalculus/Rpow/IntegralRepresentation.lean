@@ -385,7 +385,7 @@ lemma rpowIntegrand₁₂_zero (ht : 0 < t) :
     rpowIntegrand₁₂ p t 0 = 0 := by grind [rpowIntegrand₁₂]
 
 @[fun_prop]
-lemma continuousOn_rpowIntegrand₁₂_uncurry (hp : p ∈ Ioi 1) (s : Set ℝ) (hs : s ⊆ Ici 0) :
+lemma continuousOn_rpowIntegrand₁₂_uncurry (s : Set ℝ) (hs : s ⊆ Ici 0) :
     ContinuousOn (rpowIntegrand₁₂ p).uncurry (Ioi 0 ×ˢ s) := by
   unfold rpowIntegrand₁₂
   fun_prop (disch := grind)
@@ -484,7 +484,7 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₀₁ [CompleteSpac
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₀₁ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
   nontriviality A
-  have p_pos : 0 < (p : ℝ) := by exact_mod_cast hp.1
+  have p_pos : 0 < (p : ℝ) := mod_cast hp.1
   let f t := rpowIntegrand₀₁ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=
@@ -527,14 +527,14 @@ lemma exists_measure_nnrpow_eq_integral_cfcₙ_rpowIntegrand₁₂ [CompleteSpac
       ∧ a ^ p = ∫ t in Ioi 0, cfcₙ (rpowIntegrand₁₂ p t) a ∂μ := by
   obtain ⟨μ, hμ⟩ := exists_measure_rpow_eq_integral_rpowIntegrand₁₂ hp
   refine ⟨μ, fun a (ha : 0 ≤ a) => ?_⟩
-  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := by exact_mod_cast hp
+  have hpcoe : (p : ℝ) ∈ Ioo 1 2 := mod_cast hp
   let f t := rpowIntegrand₁₂ p t
   let maxr := sSup (quasispectrum ℝ a)
   have maxr_nonneg : 0 ≤ maxr :=
     le_csSup_of_le (b := 0) (IsCompact.bddAbove (quasispectrum.isCompact _)) (by simp) le_rfl
   let bound (t : ℝ) := ‖f t maxr‖
   have hf : ContinuousOn (Function.uncurry f) (Ioi (0 : ℝ) ×ˢ quasispectrum ℝ a) :=
-    continuousOn_rpowIntegrand₁₂_uncurry hpcoe.1 (quasispectrum ℝ a) (by grind)
+    continuousOn_rpowIntegrand₁₂_uncurry (quasispectrum ℝ a) (by grind)
   have hbound : ∀ᵐ t ∂μ.restrict (Ioi 0), ∀ z ∈ quasispectrum ℝ a, ‖f t z‖ ≤ bound t := by
     filter_upwards [ae_restrict_mem measurableSet_Ioi] with t ht
     intro z hz

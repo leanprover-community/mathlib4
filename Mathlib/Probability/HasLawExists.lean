@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Independence.InfinitePi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of Random Variables
 
