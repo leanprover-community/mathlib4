@@ -170,7 +170,6 @@ theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
     a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
     (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
@@ -182,7 +181,6 @@ theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
     x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
     (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
@@ -200,16 +198,14 @@ theorem acceptsFrom_union {S T : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
     M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
   ext x
-  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [↑mem_iUnion, ↑mem_ofPred_eq]; tauto
+  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion, mem_ofPred]
+  tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
     M.acceptsFrom (⋃ (i) (j), f i j) = ⋃ (i) (j), M.acceptsFrom (f i j) := by
@@ -306,7 +302,7 @@ variable (M) in
 def toDFA : DFA α (Set σ) where
   step := M.stepSet
   start := M.start
-  accept := { S | ∃ s ∈ S, s ∈ M.accept }
+  accept := {S | ∃ s ∈ S, s ∈ M.accept}
 
 @[simp]
 theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
@@ -362,7 +358,7 @@ variable (M) in
 resulting automaton accepts a word `x` if and only if `M` accepts `List.reverse x`. -/
 @[simps]
 def reverse : NFA α σ where
-  step s a := { s' | s ∈ M.step s' a }
+  step s a := {s' | s ∈ M.step s' a}
   start := M.accept
   accept := M.start
 

@@ -33,13 +33,12 @@ namespace Language
 
 variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
-def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
+def leftQuotient (x : List α) : Language α := {y | x ++ y ∈ L}
 
 variable (L) in
 @[simp]
 theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 variable (L) in
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
@@ -72,7 +71,7 @@ def toDFA : DFA α (Set.range L.leftQuotient) where
     exists y ++ [a]
     rw [← hy, leftQuotient_append]
   start := ⟨L, by exists []⟩
-  accept := { s | [] ∈ s.val }
+  accept := {s | [] ∈ s.val}
 
 @[simp]
 theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ [] ∈ s.val := Iff.rfl
