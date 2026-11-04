@@ -866,8 +866,7 @@ theorem extendedByOne_refl [DecidableEq n] (A : Matrix n n R) :
 
 lemma extendedByOne_apply_of_notMem_left (A : Matrix n n R) {i : m} (hi : i ∉ Set.range e) (j : m) :
     A.extendedByOne e i j = (1 : Matrix m m R) i j := by
-  simp only [extendedByOne, of_apply]
-  exact congr_fun (extend_apply' _ _ _ fun i ↦ hi i) _
+  simp [extendedByOne, extend_apply' _ _ _ fun i ↦ hi i]
 
 lemma extendedByOne_apply_of_notMem_right (A : Matrix n n R) {j : m} (hj : j ∉ Set.range e)
     (i : m) : A.extendedByOne e i j = (1 : Matrix m m R) i j := by
