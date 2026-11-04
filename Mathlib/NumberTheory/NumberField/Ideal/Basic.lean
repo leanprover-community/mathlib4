@@ -20,7 +20,7 @@ We study results about integral ideals of a number field `K`.
 * `Ideal.rootsOfUnityMapQuot_injective`: If the ideal `I` is nontrivial and its norm is coprime
   with `n`, then the map `Ideal.rootsOfUnityMapQuot` is injective.
 
-* `NumberField.torsionOrder_dvd_absNorm_sub_one`: If the norm of the (nonzero) prime ideal `P` is
+* `NumberField.torsionOrder_dvd_absNorm_sub_one`: If the norm of the prime ideal `P` is
   coprime with the order of the torsion of `K`, then the norm of `P` is congruent to `1` modulo
   `torsionOrder K`.
 
@@ -166,15 +166,17 @@ theorem Ideal.torsionMapQuot_inj' {P : Ideal (𝓞 K)} [hP : P.IsPrime]
   (torsionMapQuot_injective' hP₁ hP₂).eq_iff
 
 /--
-If the norm of the (nonzero) prime ideal `P` is coprime with the order of the torsion of `K`, then
+If the norm of the prime ideal `P` is coprime with the order of the torsion of `K`, then
 the norm of `P` is congruent to `1` modulo `torsionOrder K`.
 
 See `NumberField.torsionOrder_dvd_absNorm_sub_one'` for a version where this coprimality is replaced
 by `P` being unramified over `ℤ`.
 -/
-theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀ : P ≠ ⊥)
-    (hP₁ : P.IsPrime) (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
+theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₁ : P.IsPrime)
+    (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
     torsionOrder K ∣ absNorm P - 1 := by
+  obtain rfl | hP₀ := eq_or_ne P ⊥
+  · simp
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
   let _ := Ideal.Quotient.field P
   have hP₃ : absNorm P ≠ 1 := absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP₁

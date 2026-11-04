@@ -58,8 +58,12 @@ lemma degreeOf_prod_eq {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ 
       simp [a_not_mem, not_false_eq_true, prod_insert, sum_insert, degreeOf_mul_eq ha
         (by rw [prod_ne_zero_iff]; exact hs), ih hs]
 
-theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) (hp : p ≠ 0) :
+theorem degreeOf_pow_eq (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
     degreeOf i (p ^ n) = n * degreeOf i p := by
+  obtain rfl | hn := n.eq_zero_or_pos
+  · simp
+  obtain rfl | hp := eq_or_ne p 0
+  · simp [zero_pow hn.ne']
   rw [pow_eq_prod_const, degreeOf_prod_eq (range n) (fun _ ↦ p) (fun _ _ ↦ hp)]
   simp
 

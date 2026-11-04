@@ -50,7 +50,7 @@ open AddMonoidAlgebra
 namespace Counterexample
 
 /-- This is a simple example showing that if `R` is a non-trivial ring and `A` is an additive
-monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `2 ≤ n`,
+monoid with an element `a` satisfying `n • a = a` and `(n - 1) • a ≠ a`, for some `n`,
 then `R[A]` contains non-zero zero-divisors.  The elements are easy to write down:
 `[a]` and `[a] ^ (n - 1) - 1` are non-zero elements of `R[A]` whose product
 is zero.
@@ -58,8 +58,12 @@ is zero.
 Observe that such an element `a` *cannot* be invertible.  In particular, this lemma never applies
 if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
-    (n2 : 2 ≤ n) (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
+    (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
+  have n2 : 2 ≤ n := by
+    by_contra! hn
+    obtain rfl | rfl : n = 0 ∨ n = 1 := by lia
+    all_goals simp at na1
   refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
   · simpa [sub_ne_zero, single_inj]
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
@@ -226,7 +230,7 @@ example : ¬AddLeftMono (Lex (F →₀ F)) := by
   · simp [(by boom : ∀ j : F, j < 1 ↔ j = 0), ofLex_add, f010, f1, f110, f011, f111]
 
 example {α} [Ring α] [Nontrivial α] : ∃ f g : AddMonoidAlgebra α F, f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 :=
-  zero_divisors_of_periodic (1 : F) le_rfl (by simp [two_smul]) z01.ne'
+  zero_divisors_of_periodic (n := 2) (1 : F) (by simp [two_smul]) z01.ne'
 
 example {α} [Zero α] :
     2 • (Finsupp.single 0 1 : α →₀ F) = (Finsupp.single 0 1 : α →₀ F)

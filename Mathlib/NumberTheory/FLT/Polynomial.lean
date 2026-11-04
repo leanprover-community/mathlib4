@@ -194,7 +194,7 @@ private theorem Polynomial.flt_catalan_aux
 
 /-- Nonsolvability of the Fermat-Catalan equation. -/
 theorem Polynomial.flt_catalan
-    {p q r : ℕ} (hp : p ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
+    {p q r : ℕ}
     (hineq : q * r + r * p + p * q ≤ p * q * r)
     (chp : (p : k) ≠ 0) (chq : (q : k) ≠ 0) (chr : (r : k) ≠ 0)
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
@@ -202,6 +202,9 @@ theorem Polynomial.flt_catalan
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
     a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 := by
   -- WLOG argument: essentially three times flt_catalan_aux
+  have hp : p ≠ 0 := by rintro rfl; simp at chp
+  have hq : q ≠ 0 := by rintro rfl; simp at chq
+  have hr : r ≠ 0 := by rintro rfl; simp at chr
   have hbc : IsCoprime b c := by
     apply rot_coprime heq hab <;> assumption
   have heq' : C v * b ^ q + C w * c ^ r + C u * a ^ p = 0 := by
@@ -228,7 +231,7 @@ theorem Polynomial.flt
   have hone : (1 : k[X]) = C 1 := by rfl
   have hneg_one : (-1 : k[X]) = C (-1) := by simp only [map_neg, map_one]
   simp_rw [hneg_one, hone] at heq
-  apply flt_catalan hn'.ne' hn'.ne' hn'.ne' _
+  apply flt_catalan _
     chn chn chn ha hb hc hab one_ne_zero one_ne_zero (neg_ne_zero.mpr one_ne_zero) heq
   have eq_lhs : n * n + n * n + n * n = 3 * n * n := by ring
   rw [eq_lhs, mul_assoc, mul_assoc]

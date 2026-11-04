@@ -98,7 +98,9 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rcases h with ⟨p, rfl⟩
   rw [mul_div_cancel_left₀ _ hz, mul_left_comm, mul_div_cancel_left₀ _ hz]
 
-protected theorem mul_div_cancel' {a b : R} (hb : b ≠ 0) (hab : b ∣ a) : b * (a / b) = a := by
+protected theorem mul_div_cancel' {a b : R} (hab : b ∣ a) : b * (a / b) = a := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp [zero_dvd_iff.1 hab]
   rw [← mul_div_assoc _ hab, mul_div_cancel_left₀ _ hb]
 
 -- This generalizes `Int.div_one`, see note [simp-normal form]
@@ -334,7 +336,7 @@ theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b
 theorem add_mul_div_left (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x + y * z) / y = x / y + z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
-  rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_add, EuclideanDomain.mul_div_cancel' h2]
 
 theorem add_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x + z * y) / y = x / y + z := by
   rw [mul_comm z y]
@@ -343,7 +345,7 @@ theorem add_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x + z * y
 theorem sub_mul_div_left (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - y * z) / y = x / y - z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
-  rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_sub, EuclideanDomain.mul_div_cancel' h2]
 
 theorem sub_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - z * y) / y = x / y - z := by
   rw [mul_comm z y]
@@ -352,7 +354,7 @@ theorem sub_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - z * y
 theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
-  rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_add, EuclideanDomain.mul_div_cancel' h2]
 
 theorem mul_add_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z + y) / z = x + y / z := by
   rw [mul_comm x z]
@@ -361,7 +363,7 @@ theorem mul_add_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z + y
 theorem mul_sub_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x - y) / z = x - y / z := by
   rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
-  rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_sub, EuclideanDomain.mul_div_cancel' h2]
 
 theorem mul_sub_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z - y) / z = x - y / z := by
   rw [mul_comm x z]
@@ -378,20 +380,20 @@ theorem div_div {x y z : R} (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
     x / y / z = x / (y * z) := by
   rcases eq_or_ne y 0 with rfl | hy
   · simp only [div_zero, zero_div, zero_mul]
-  rw [← mul_dvd_mul_iff_left hy, EuclideanDomain.mul_div_cancel' hy h1] at h2
+  rw [← mul_dvd_mul_iff_left hy, EuclideanDomain.mul_div_cancel' h1] at h2
   exact (div_mul h1 h2).symm
 
 theorem div_add_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
     x / y + z / t = (t * x + y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
-  rw [mul_add, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
-    mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
+  rw [mul_add, mul_assoc, EuclideanDomain.mul_div_cancel' h3, mul_comm t y,
+    mul_assoc, EuclideanDomain.mul_div_cancel' h4]
 
 theorem div_sub_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
     x / y - z / t = (t * x - y * z) / (t * y) := by
   apply eq_div_of_mul_eq_right (mul_ne_zero h2 h1)
-  rw [mul_sub, mul_assoc, EuclideanDomain.mul_div_cancel' h1 h3, mul_comm t y,
-    mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
+  rw [mul_sub, mul_assoc, EuclideanDomain.mul_div_cancel' h3, mul_comm t y,
+    mul_assoc, EuclideanDomain.mul_div_cancel' h4]
 
 theorem div_eq_iff_eq_mul_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) :
     x / y = z ↔ x = y * z := by

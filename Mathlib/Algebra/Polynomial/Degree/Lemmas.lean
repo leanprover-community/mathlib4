@@ -457,8 +457,10 @@ theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
   exact irreducible_mul_isUnit
     (isUnit_C.mpr (IsUnit.mk0 _ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))
 
-lemma dvd_mul_leadingCoeff_inv {p q : K[X]} (hp0 : p ≠ 0) :
+lemma dvd_mul_leadingCoeff_inv {p q : K[X]} :
     q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p := by
+  obtain rfl | hp0 := eq_or_ne p 0
+  · simp
   simp [hp0]
 
 theorem monic_mul_leadingCoeff_inv {p : K[X]} (h : p ≠ 0) : Monic (p * C (leadingCoeff p)⁻¹) := by

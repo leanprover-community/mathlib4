@@ -433,8 +433,11 @@ theorem irreducible_pow_sup_of_le (hJ : Irreducible J) (n : ℕ) (hn : n ≤ emu
 @[deprecated (since := "2026-04-16")]
 alias _root_.irreducible_pow_sup_of_le := irreducible_pow_sup_of_le
 
-theorem irreducible_pow_sup_of_ge (hI : I ≠ ⊥) (hJ : Irreducible J) (n : ℕ)
+theorem irreducible_pow_sup_of_ge (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
+  obtain rfl | hI := eq_or_ne I ⊥
+  · rw [← Ideal.zero_eq_bot, emultiplicity_zero_right] at hn
+    exact absurd hn (by simp)
   rw [irreducible_pow_sup hI hJ, min_eq_left]
   · congr
     rw [← Nat.cast_inj (R := ℕ∞), ← FiniteMultiplicity.emultiplicity_eq_multiplicity,

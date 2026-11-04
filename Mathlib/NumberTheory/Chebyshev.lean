@@ -340,7 +340,9 @@ lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
   rw [← choose_symm_half]
   apply mul_choose_dvd_lcmUpto <;> lia
 
-lemma mul_four_pow_le_lcmUpto {n : ℕ} (hn : n ≠ 0) : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
+lemma mul_four_pow_le_lcmUpto {n : ℕ} : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
   grw [four_pow_le_add_one_mul_choose, ← mul_assoc]
   exact le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)
 
@@ -349,9 +351,9 @@ theorem two_pow_le_lcmUpto {n : ℕ} (hn : 7 ≤ n) : 2 ^ n ≤ lcmUpto n := by
   obtain ⟨k, rfl | rfl⟩ := n.even_or_odd'
   · obtain rfl | gk : k = 4 ∨ 4 ≤ k - 1 := by lia
     · decide
-    · nth_grw 1 [p2, ← k.sub_one_add_one (by lia), pow_succ', gk, mul_four_pow_le_lcmUpto (by lia)]
+    · nth_grw 1 [p2, ← k.sub_one_add_one (by lia), pow_succ', gk, mul_four_pow_le_lcmUpto]
       exact le_of_dvd (lcmUpto_pos _) (lcmUpto_dvd_lcmUpto (by lia))
-  · grw [pow_succ', p2, ← mul_four_pow_le_lcmUpto (by lia)]
+  · grw [pow_succ', p2, ← mul_four_pow_le_lcmUpto]
     exact Nat.mul_le_mul_right _ (by lia)
 
 /-!

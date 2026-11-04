@@ -124,9 +124,11 @@ lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x
   (ENat.mul_left_strictMono ha h_top).le_iff_le
 
 @[gcongr]
-lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
+lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (h_top : a ≠ ⊤) :
     x * a ≤ y * a := by
-  simpa [ha, h_top]
+  rcases eq_or_ne a 0 with rfl | ha
+  · simp
+  · simpa [ha, h_top]
 
 lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
   have hc' : 1 ≤ c := by

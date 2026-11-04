@@ -568,8 +568,8 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
 lemma addLECancellable_of_ne_bot [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
 
-lemma addLECancellable_of_lt_bot [Preorder α] [AddLeftReflectLE α]
-    (hx : x < ⊥) : AddLECancellable x := addLECancellable_of_ne_bot hx.ne
+lemma addLECancellable_of_lt_bot [Preorder α]
+    (hx : x < ⊥) : AddLECancellable x := (not_lt_bot hx).elim
 
 lemma addLECancellable_coe [LE α] [AddLeftReflectLE α] (a : α) :
     AddLECancellable (a : WithBot α) := addLECancellable_of_ne_bot coe_ne_bot

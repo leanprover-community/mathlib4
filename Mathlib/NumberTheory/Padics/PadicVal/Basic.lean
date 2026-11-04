@@ -327,8 +327,10 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   omega
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
-    (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
+    (hq : q ≠ 0) (hval : padicValRat p q < padicValRat p r) :
     padicValRat p (q + r) = padicValRat p q := by
+  obtain rfl | hr := eq_or_ne r 0
+  · simp
   rw [add_eq_min hqr hq hr (ne_of_lt hval), min_eq_left (le_of_lt hval)]
 
 lemma lt_add_of_lt {q r₁ r₂ : ℚ} (hqr : r₁ + r₂ ≠ 0)
@@ -526,8 +528,10 @@ lemma padicValNat_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
 
 /-- The p-adic valuation of `n` is equal to the logarithm w.r.t. `p` iff
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
-lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] (hn : n ≠ 0) :
+lemma nat_log_eq_padicValNat_iff {n : ℕ} [hp : Fact (Nat.Prime p)] :
     Nat.log p n = padicValNat p n ↔ n < p ^ (padicValNat p n + 1) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp [hp.out.pos]
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by lia⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) pow_padicValNat_dvd
 

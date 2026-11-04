@@ -82,18 +82,23 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
       use k
       simp only [zpow_natCast, formPerm_pow_apply_head _ _ hl k, Nat.mod_eq_of_lt hk]
 
-theorem pairwise_sameCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
-    Pairwise l.formPerm.SameCycle l :=
-  Pairwise.imp_mem.mpr
+theorem pairwise_sameCycle_formPerm (hl : Nodup l) :
+    Pairwise l.formPerm.SameCycle l := by
+  rcases lt_or_ge l.length 2 with hn | hn
+  · rw [pairwise_iff_getElem]
+    intro i j hi hj hij
+    lia
+  exact Pairwise.imp_mem.mpr
     (pairwise_of_forall fun _ _ hx hy =>
       (isCycle_formPerm hl hn).sameCycle ((formPerm_apply_mem_ne_self_iff _ hl _ hx).mpr hn)
         ((formPerm_apply_mem_ne_self_iff _ hl _ hy).mpr hn))
 
-theorem cycleOf_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) (x) :
-    cycleOf l.attach.formPerm x = l.attach.formPerm :=
-  have hn : 2 ≤ l.attach.length := by rwa [← length_attach] at hn
+theorem cycleOf_formPerm (hl : Nodup l) (x) :
+    cycleOf l.attach.formPerm x = l.attach.formPerm := by
   have hl : l.attach.Nodup := by rwa [← nodup_attach] at hl
-  (isCycle_formPerm hl hn).cycleOf_eq
+  rcases lt_or_ge l.attach.length 2 with hn | hn
+  · rw [(formPerm_eq_one_iff _ hl).2 (by lia), cycleOf_one]
+  exact (isCycle_formPerm hl hn).cycleOf_eq
     ((formPerm_apply_mem_ne_self_iff _ hl _ (mem_attach _ _)).mpr hn)
 
 theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :

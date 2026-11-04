@@ -50,9 +50,15 @@ lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 
   refine hx <| le_of_lt ?_
   simpa using hi
 
+omit hn in
 /-- The main inequality used for part a. -/
 lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     4 * n / (n + 1) ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
+  obtain rfl | hn := eq_or_ne n 0
+  · have := hp 0
+    have := hp 1
+    simp [h0]
+    positivity
   calc
     -- We first use AM-GM.
     _ ≤ (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / (∑ k ∈ range n, x (k + 1)) * n / (n + 1) := by
@@ -79,7 +85,7 @@ end Imo1982Q3
 theorem imo1982_q3a (hx : Antitone x) (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     ∃ n : ℕ, 3.999 ≤ ∑ k ∈ range n, (x k) ^ 2 / x (k + 1) := by
   use 4000
-  convert! Imo1982Q3.ineq (Nat.succ_ne_zero 3998) hx h0 hp
+  convert! Imo1982Q3.ineq hx h0 hp
   norm_num
 
 /-- Part b of the problem is solved by `x k = (1 / 2) ^ k`. -/

@@ -164,7 +164,7 @@ theorem next_cons_concat (y : α) (hy : x ≠ y) (hx : x ∉ l)
   · simp
   · simp [hy, hx]
 
-theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
+theorem next_getLast_cons (y : α) (h : x ∈ y :: l) (hy : x ≠ y)
     (hx : x = getLast (y :: l) (cons_ne_nil _ _)) (hl : Nodup l) : next (y :: l) x h = y := by
   rw [next, get, ← dropLast_append_getLast (cons_ne_nil y l), hx, nextOr_concat]
   subst hx

@@ -85,7 +85,9 @@ theorem filter_dvd_eq_divisors (h : n ≠ 0) : {d ∈ range n.succ | d ∣ n} = 
   exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
 
 @[simp]
-theorem filter_dvd_eq_properDivisors (h : n ≠ 0) : {d ∈ range n | d ∣ n} = n.properDivisors := by
+theorem filter_dvd_eq_properDivisors : {d ∈ range n | d ∣ n} = n.properDivisors := by
+  obtain rfl | h := eq_or_ne n 0
+  · simp [properDivisors]
   ext
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
   exact fun ha _ => succ_le_iff.mpr (pos_of_dvd_of_pos ha h.bot_lt)
@@ -94,8 +96,7 @@ theorem self_notMem_properDivisors : n ∉ properDivisors n := by simp [properDi
 
 @[simp]
 theorem mem_properDivisors {m : ℕ} : n ∈ properDivisors m ↔ n ∣ m ∧ n < m := by
-  rcases eq_or_ne m 0 with (rfl | hm); · simp [properDivisors]
-  simp only [and_comm, ← filter_dvd_eq_properDivisors hm, mem_filter, mem_range]
+  simp only [and_comm, ← filter_dvd_eq_properDivisors, mem_filter, mem_range]
 
 theorem insert_self_properDivisors (h : n ≠ 0) : insert n (properDivisors n) = divisors n := by
   rw [divisors, properDivisors,
@@ -568,8 +569,14 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
   exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 /-- Useful lemma for reordering sums. -/
-lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (n_ne_zero : n ≠ 0) (hn : n ≤ N) :
+lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (hn : n ≤ N) :
     n.divisorsAntidiagonal = (Ioc 0 N ×ˢ Ioc 0 N).filter (fun x ↦ x.1 * x.2 = n) := by
+  obtain rfl | n_ne_zero := eq_or_ne n 0
+  · ext ⟨a, b⟩
+    simp only [Nat.mem_divisorsAntidiagonal, ne_eq, not_true_eq_false, and_false, Finset.mem_filter,
+      Finset.mem_product, Finset.mem_Ioc, false_iff]
+    rintro ⟨⟨⟨ha, -⟩, ⟨hb, -⟩⟩, h⟩
+    exact (mul_pos ha hb).ne' h
   ext ⟨n1, n2⟩
   rw [Nat.mem_divisorsAntidiagonal]
   simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]

@@ -177,12 +177,16 @@ theorem spectralRadius_lt_of_forall_lt (a : A) {r : ℝ≥0}
 
 
 open Polynomial in
+omit [Nontrivial A] in
 /-- The **spectral mapping theorem** for polynomials in a Banach algebra over `ℂ`. -/
 theorem map_polynomial_aeval (a : A) (p : ℂ[X]) :
-    spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a :=
-  map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
+    spectrum ℂ (aeval a p) = (fun k => eval k p) '' spectrum ℂ a := by
+  rcases subsingleton_or_nontrivial A with _ | _
+  · simp [spectrum.of_subsingleton]
+  · exact map_polynomial_aeval_of_nonempty a p (spectrum.nonempty a)
 
 open Polynomial in
+omit [Nontrivial A] in
 /-- A specialization of the spectral mapping theorem for polynomials in a Banach algebra over `ℂ`
 to monic monomials. -/
 protected theorem map_pow (a : A) (n : ℕ) :

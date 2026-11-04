@@ -37,7 +37,7 @@ open scoped Topology
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
 lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
-    {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b) (hf : MonotoneOn f (Icc a b)) :
+    {f : ℝ → ℝ} {a b : ℝ} (hf : MonotoneOn f (Icc a b)) :
     ∃ G : (ℕ → ℝ → ℝ), (∀ᵐ x ∂volume.restrict (Icc a b),
       Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (deriv f x))) ∧
       (∀ (n : ℕ), AEStronglyMeasurable (G n) (volume.restrict (Icc a b))) ∧
@@ -49,6 +49,8 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
   `∫⁻ (x : ℝ) in Icc a b, ‖G c x‖ₑ ≤ f b - f a`, and `G c x` tends to `f' x` as `c` tends to `0`
   from the right. The function `fun n x ↦ G (n : ℝ)⁻¹ x` is a witness to the conclusion of the
   lemma. -/
+  rcases lt_or_ge b a with hab | hab
+  · refine ⟨0, ?_, fun n ↦ aestronglyMeasurable_zero, ?_⟩ <;> simp [Icc_eq_empty_of_lt hab]
   let g (x : ℝ) : ℝ := f (max a (min x b))
   have hg : Monotone g := monotoneOn_univ.mp <| hf.comp
     (monotoneOn_const.max <| monotoneOn_id.min monotoneOn_const) (by simpa)
@@ -90,7 +92,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   wlog hab : a ≤ b generalizing a b with h
   · exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -109,7 +111,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     simp only [neg_zero, neg_sub]
     rwa [uIcc_of_le (by linarith)] at h
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀

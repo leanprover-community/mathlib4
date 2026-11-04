@@ -62,13 +62,11 @@ of `p` in the factorization of `n`: we declare the former to be the simp-normal 
 @[simp]
 theorem factorization_def (n : ℕ) {p : ℕ} (pp : p.Prime) : n.factorization p = padicValNat p n := by
   rw [← primeFactorsList_count_eq]
-  rcases n.eq_zero_or_pos with (rfl | hn0)
-  · simp [count]
   apply _root_.le_antisymm
-  · rw [le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
+  · rw [le_padicValNat_iff_replicate_subperm_primeFactorsList pp]
     exact List.replicate_sublist_iff.mpr le_rfl |>.subperm
   · rw [← Nat.lt_add_one_iff, lt_iff_not_ge,
-      le_padicValNat_iff_replicate_subperm_primeFactorsList pp hn0.ne']
+      le_padicValNat_iff_replicate_subperm_primeFactorsList pp]
     intro h
     have := h.count_le p
     simp at this

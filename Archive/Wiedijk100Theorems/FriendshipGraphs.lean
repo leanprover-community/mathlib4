@@ -143,12 +143,15 @@ variable [Nonempty V]
 
 open scoped Classical in
 include hG in
+omit [Nonempty V] in
 /-- If `G` is a friendship graph without a politician (a vertex adjacent to all others), then
   it is regular. We have shown that nonadjacent vertices of a friendship graph have the same degree,
   and if there isn't a politician, we can show this for adjacent vertices by finding a vertex
   neither is adjacent to, and then using transitivity. -/
 theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     ∃ d : ℕ, G.IsRegularOfDegree d := by
+  obtain hV | hV := isEmpty_or_nonempty V
+  · exact ⟨0, fun v => isEmptyElim v⟩
   have v := Classical.arbitrary V
   use G.degree v
   intro x
@@ -285,10 +288,12 @@ theorem existsPolitician_of_degree_le_one (hd : G.IsRegularOfDegree d) (hd1 : d 
 
 open scoped Classical in
 include hG in
+omit [Nonempty V] in
 /-- If `d = 2`, a `d`-regular friendship graph has 3 vertices, so it must be complete graph,
   and all the vertices are politicians. -/
 theorem neighborFinset_eq_of_degree_eq_two (hd : G.IsRegularOfDegree 2) (v : V) :
     G.neighborFinset v = Finset.univ.erase v := by
+  have : Nonempty V := ⟨v⟩
   apply Finset.eq_of_subset_of_card_le
   · rw [Finset.subset_iff]
     intro x

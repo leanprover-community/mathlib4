@@ -280,6 +280,7 @@ theorem measure_zero_of_invariant (h : IsFundamentalDomain G s μ) (t : Set α)
     (ht : ∀ g : G, g • t = t) (hts : μ (t ∩ s) = 0) : μ t = 0 := by
   rw [measure_eq_tsum h]; simp [ht, hts]
 
+omit [Countable G] in
 /-- Given a measure space with an action of a finite group `G`, the measure of any `G`-invariant set
 is determined by the measure of its intersection with a fundamental domain for the action of `G`. -/
 @[to_additive measure_eq_card_smul_of_vadd_ae_eq_self /-- Given a measure space with an action of a

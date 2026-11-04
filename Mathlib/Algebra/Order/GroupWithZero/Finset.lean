@@ -68,10 +68,10 @@ lemma sup'_div₀ [MulPosReflectLT G₀] (ha : 0 ≤ a) (f : ι → G₀) (s : F
 
 end GroupWithZero
 
-lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] {a : G₀} (ha : 0 ≤ a)
+lemma sup_div₀ [LinearOrderedCommGroupWithZero G₀] {a : G₀}
     (s : Finset ι) (f : ι → G₀) : s.sup f / a = s.sup fun i ↦ f i / a := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [bot_eq_zero]
-  rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_div₀ (ha := ha)]
+  rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs, sup'_div₀ (ha := zero_le)]
 
 end Finset

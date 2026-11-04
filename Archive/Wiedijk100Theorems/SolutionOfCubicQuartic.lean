@@ -107,13 +107,17 @@ variable [Invertible (2 : K)] [Invertible (3 : K)]
 
 /-- **The Solution of Cubic**.
   The roots of a cubic polynomial whose discriminant is nonzero. -/
-theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
+theorem cubic_eq_zero_iff (hω : IsPrimitiveRoot ω 3)
     (hp : p = (3 * a * c - b ^ 2) / (9 * a ^ 2)) (hp_nonzero : p ≠ 0)
     (hq : q = (9 * a * b * c - 2 * b ^ 3 - 27 * a ^ 2 * d) / (54 * a ^ 3))
     (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r) (ht : t * s = p) (x : K) :
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - t - b / (3 * a) ∨
         x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) := by
+  have ha : a ≠ 0 := by
+    rintro rfl
+    simp at hp
+    exact hp_nonzero hp
   let y := x + b / (3 * a)
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
@@ -195,7 +199,7 @@ theorem quartic_depressed_eq_zero_iff
   The roots of a quartic polynomial when `q` is nonzero. See [Zwillinger](zwillinger2003).
   Here, `u` needs to satisfy the cubic resolvent. An explicit expression of `u` is possible using
   the cubic formula, but would be too long. -/
-theorem quartic_eq_zero_iff (ha : a ≠ 0)
+theorem quartic_eq_zero_iff
     (hp : p = (8 * a * c - 3 * b ^ 2) / (8 * a ^ 2))
     (hq : q = (b ^ 3 - 4 * a * b * c + 8 * a ^ 2 * d) / (8 * a ^ 3)) (hq_nonzero : q ≠ 0)
     (hr : r =
@@ -207,6 +211,10 @@ theorem quartic_eq_zero_iff (ha : a ≠ 0)
     a * x ^ 4 + b * x ^ 3 + c * x ^ 2 + d * x + e = 0 ↔
       x = (-2 * s - v) / 4 - b / (4 * a) ∨ x = (-2 * s + v) / 4 - b / (4 * a) ∨
         x = (2 * s - w) / 4 - b / (4 * a) ∨ x = (2 * s + w) / 4 - b / (4 * a) := by
+  have ha : a ≠ 0 := by
+    rintro rfl
+    simp at hq
+    exact hq_nonzero hq
   let y := x + b / (4 * a)
   have h4 : (4 : K) = 2 ^ 2 := by norm_num
   have h8 : (8 : K) = 2 ^ 3 := by norm_num

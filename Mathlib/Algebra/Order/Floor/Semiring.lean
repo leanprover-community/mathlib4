@@ -41,8 +41,10 @@ section floor
 theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
 
-theorem floor_lt_one (ha : 0 ≤ a) : ⌊a⌋₊ < 1 ↔ a < 1 :=
-  (floor_lt ha).trans <| by rw [Nat.cast_one]
+theorem floor_lt_one : ⌊a⌋₊ < 1 ↔ a < 1 := by
+  obtain ha | ha := lt_or_ge a 0
+  · exact iff_of_true (Nat.lt_one_iff.2 (FloorSemiring.floor_of_neg ha)) (ha.trans one_pos)
+  · exact (floor_lt ha).trans <| by rw [Nat.cast_one]
 
 theorem floor_le (ha : 0 ≤ a) : (⌊a⌋₊ : R) ≤ a :=
   (le_floor_iff ha).1 le_rfl
@@ -314,6 +316,7 @@ section
 
 variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
+omit [AddLeftStrictMono R] in
 @[simp]
 theorem floor_sub_natCast (a : R) (n : ℕ) : ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
   obtain ha | ha := le_total a 0
@@ -325,10 +328,12 @@ theorem floor_sub_natCast (a : R) (n : ℕ) : ⌊a - n⌋₊ = ⌊a⌋₊ - n :=
   · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_natCast _, tsub_add_cancel_of_le h]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
 
+omit [AddLeftStrictMono R] in
 @[simp]
 theorem floor_sub_one (a : R) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
   mod_cast floor_sub_natCast a 1
 
+omit [AddLeftStrictMono R] in
 @[simp]
 theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - ofNat(n)⌋₊ = ⌊a⌋₊ - ofNat(n) :=
@@ -365,6 +370,7 @@ theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
 
 variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
+omit [AddLeftStrictMono R] in
 @[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
   obtain han | hna := le_total a n
   · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]
@@ -372,8 +378,10 @@ variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]
     rw [← ceil_add_natCast, tsub_add_cancel_of_le hna]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le hna)
 
+omit [AddLeftStrictMono R] in
 @[simp] lemma ceil_sub_one (a : R) : ⌈a - 1⌉₊ = ⌈a⌉₊ - 1 := by simpa using ceil_sub_natCast a 1
 
+omit [AddLeftStrictMono R] in
 @[simp] lemma ceil_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] : ⌈a - ofNat(n)⌉₊ = ⌈a⌉₊ - ofNat(n) :=
   ceil_sub_natCast a n
 

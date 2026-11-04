@@ -37,10 +37,12 @@ kernel since `κ ×ₖ Kernel.deterministic f hf` would be deterministic and com
 Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
 lemma prod_prodMkLeft_comp_prod_deterministic {β' ε : Type*}
     {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
-    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (κ : Kernel γ β) (η : Kernel ε β') [IsSFiniteKernel η]
     (ξ : Kernel (β × ε) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
     (ξ ×ₖ η.prodMkLeft β) ∘ₖ (κ ×ₖ deterministic f hf)
       = (ξ ∘ₖ (κ ×ₖ deterministic f hf)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   ext ω s hs
   rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_prod_deterministic,
     lintegral_comp, lintegral_prod_deterministic]
@@ -60,10 +62,12 @@ kernel since `Kernel.deterministic f hf ×ₖ κ` would be deterministic and com
 Here `κ` is not deterministic, but it is discarded in one branch of the copy. -/
 lemma prod_prodMkRight_comp_deterministic_prod {β' ε : Type*}
     {mβ' : MeasurableSpace β'} {mε : MeasurableSpace ε}
-    (κ : Kernel γ β) [IsSFiniteKernel κ] (η : Kernel ε β') [IsSFiniteKernel η]
+    (κ : Kernel γ β) (η : Kernel ε β') [IsSFiniteKernel η]
     (ξ : Kernel (ε × β) δ) [IsSFiniteKernel ξ] {f : γ → ε} (hf : Measurable f) :
     (ξ ×ₖ η.prodMkRight β) ∘ₖ (deterministic f hf ×ₖ κ)
       = (ξ ∘ₖ (deterministic f hf ×ₖ κ)) ×ₖ (η ∘ₖ deterministic f hf) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   ext ω s hs
   rw [prod_apply' _ _ _ hs, comp_apply' _ _ _ hs, lintegral_deterministic_prod,
     lintegral_comp, lintegral_deterministic_prod]
@@ -117,8 +121,10 @@ lemma parallelComp_comp_compProd [IsSFiniteKernel κ] {η : Kernel β γ} [IsSFi
   rw [Measure.compProd_eq_comp_prod, Measure.compProd_eq_comp_prod, Measure.comp_assoc,
     Kernel.parallelComp_comp_prod, Kernel.id_comp]
 
-lemma compProd_map [SFinite μ] [IsSFiniteKernel κ] {f : β → γ} (hf : Measurable f) :
+lemma compProd_map [IsSFiniteKernel κ] {f : β → γ} (hf : Measurable f) :
     μ ⊗ₘ (κ.map f) = (μ ⊗ₘ κ).map (Prod.map id f) := by
+  by_cases hμ : SFinite μ
+  swap; · simp [hμ]
   calc μ ⊗ₘ (κ.map f)
   _ = (Kernel.id ∥ₖ Kernel.deterministic f hf) ∘ₘ (Kernel.id ×ₖ κ) ∘ₘ μ := by
     rw [comp_assoc, Kernel.parallelComp_comp_prod, compProd_eq_comp_prod,

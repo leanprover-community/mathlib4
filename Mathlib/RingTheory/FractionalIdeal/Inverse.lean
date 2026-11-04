@@ -61,7 +61,10 @@ variable {K}
 theorem mem_inv_iff (hI : I ≠ 0) {x : K} : x ∈ I⁻¹ ↔ ∀ y ∈ I, x * y ∈ (1 : FractionalIdeal R₁⁰ K) :=
   mem_div_iff_of_ne_zero hI
 
-theorem inv_anti_mono (hI : I ≠ 0) (hJ : J ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
+theorem inv_anti_mono (hI : I ≠ 0) (hIJ : I ≤ J) : J⁻¹ ≤ I⁻¹ := by
+  obtain rfl | hJ := eq_or_ne J 0
+  · rw [inv_zero']
+    exact zero_le _
   intro x
   simp only [mem_inv_iff hJ, mem_inv_iff hI]
   exact fun h y hy => h y (hIJ hy)

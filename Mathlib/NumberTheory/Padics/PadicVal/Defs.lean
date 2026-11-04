@@ -71,9 +71,10 @@ theorem le_emultiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n :
   (replicate_subperm_primeFactorsList_iff ha hb).trans
     pow_dvd_iff_le_emultiplicity |>.symm
 
-theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime)
-    (hb : b ≠ 0) :
+theorem le_padicValNat_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime) :
     n ≤ padicValNat a b ↔ replicate n a <+~ b.primeFactorsList := by
+  obtain rfl | hb := eq_or_ne b 0
+  · simp
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩
       |>.emultiplicity_eq_multiplicity, ← padicValNat_def,

@@ -80,9 +80,11 @@ lemma riskIncrease_eq_iInf_sub (hℓ : Measurable (uncurry ℓ)) (P : Kernel Θ 
     [SFinite π] {μ : Measure 𝓧} [IsProbabilityMeasure μ] :
     riskIncrease ℓ (Kernel.const Θ μ) π = 0 := by simp [riskIncrease, bayesRisk_const hℓ]
 
-lemma riskIncrease_le_iInf' [Nonempty 𝓨] (hℓ : Measurable (uncurry ℓ)) [SFinite π] :
-    riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π :=
-  riskIncrease_eq_iInf_sub' hℓ P π ▸ tsub_le_self
+lemma riskIncrease_le_iInf' (hℓ : Measurable (uncurry ℓ)) [SFinite π] :
+    riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π := by
+  obtain h | h := isEmpty_or_nonempty 𝓨
+  · simp
+  exact riskIncrease_eq_iInf_sub' hℓ P π ▸ tsub_le_self
 
 lemma riskIncrease_le_iInf (hℓ : Measurable (uncurry ℓ)) [IsMarkovKernel P] [SFinite π] :
     riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π :=

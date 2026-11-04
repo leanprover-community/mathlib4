@@ -409,9 +409,10 @@ theorem mul_nonneg_iff_right_nonneg_of_pos [PosMulStrictMono R]
     (ha : 0 < a) : 0 ≤ a * b ↔ 0 ≤ b :=
   ⟨fun h => nonneg_of_mul_nonneg_right h ha, mul_nonneg ha.le⟩
 
-theorem mul_nonneg_iff_left_nonneg_of_pos [PosMulStrictMono R] [MulPosStrictMono R]
+theorem mul_nonneg_iff_left_nonneg_of_pos [MulPosStrictMono R]
     (hb : 0 < b) : 0 ≤ a * b ↔ 0 ≤ a :=
-  ⟨fun h => nonneg_of_mul_nonneg_left h hb, fun h => mul_nonneg h hb.le⟩
+  ⟨fun h => nonneg_of_mul_nonneg_left h hb, fun h => by
+    simpa using mul_le_mul_of_nonneg_right h hb.le⟩
 
 theorem nonpos_of_mul_nonneg_left [PosMulStrictMono R]
     (h : 0 ≤ a * b) (hb : b < 0) : a ≤ 0 :=

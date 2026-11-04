@@ -527,18 +527,22 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
   · rw [Nat.le_zero] at hN
     rw [hN, upcrossingsBefore_zero, upperCrossingTime_zero, Pi.bot_apply, bot_eq_zero']
 
-theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hN : 0 < N) (hab : a < b)
-    (hn : n < upcrossingsBefore a b f N ω) : lowerCrossingTime a b f N n ω < N :=
-  lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ
+theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hab : a < b)
+    (hn : n < upcrossingsBefore a b f N ω) : lowerCrossingTime a b f N n ω < N := by
+  obtain rfl | hN := N.eq_zero_or_pos
+  · simp at hn
+  exact lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ
     (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn)
 
-theorem le_sub_of_le_upcrossingsBefore (hN : 0 < N) (hab : a < b)
+theorem le_sub_of_le_upcrossingsBefore (hab : a < b)
     (hn : n < upcrossingsBefore a b f N ω) :
     b - a ≤ stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω -
-      stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω :=
-  sub_le_sub
+      stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω := by
+  obtain rfl | hN := N.eq_zero_or_pos
+  · simp at hn
+  exact sub_le_sub
     (stoppedValue_upperCrossingTime (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn).ne)
-    (stoppedValue_lowerCrossingTime (lowerCrossingTime_lt_of_lt_upcrossingsBefore hN hab hn).ne)
+    (stoppedValue_lowerCrossingTime (lowerCrossingTime_lt_of_lt_upcrossingsBefore hab hn).ne)
 
 theorem sub_eq_zero_of_upcrossingsBefore_lt (hab : a < b) (hn : upcrossingsBefore a b f N ω < n) :
     stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω -
@@ -584,7 +588,7 @@ theorem mul_upcrossingsBefore_le (hf : a ≤ f N ω) (hab : a < b) :
             (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -
               stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N k ω : ℕ)) ω) := by
         gcongr ∑ k ∈ _, ?_ with i hi
-        refine le_sub_of_le_upcrossingsBefore (zero_lt_iff.2 hN) hab ?_
+        refine le_sub_of_le_upcrossingsBefore hab ?_
         rwa [Finset.mem_range] at hi
       _ ≤ ∑ k ∈ Finset.range N,
           (stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (k + 1) ω : ℕ)) ω -

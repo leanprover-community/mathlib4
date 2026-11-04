@@ -134,7 +134,7 @@ there is currently no instance of `Inv R⟦X⟧` for more general base rings `R`
 /-- Chain rule for polynomials viewed as power series.  Use `derivative_subst` instead. -/
 private theorem derivative_subst_coe [CommRing R] (p : Polynomial R) {g : R⟦X⟧} (hg : HasSubst g) :
     d⁄dX ((p : R⟦X⟧).subst g) = (d⁄dX (p : R⟦X⟧)).subst g * d⁄dX g := by
-  simp [subst_coe hg, derivative_coe, Derivation.comp_aeval_eq (a := g) derivative p,
+  simp [subst_coe hg, derivative_coe, Derivation.map_aeval derivative p g,
     smul_eq_mul]
 
 theorem derivative_subst [CommRing R] {f g : R⟦X⟧} (hg : HasSubst g) :

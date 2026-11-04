@@ -484,8 +484,11 @@ theorem mul_le_right_iff_opow_omega0_dvd {a b : Ordinal} (ha : 0 < a) :
   rw [← mul_eq_right_iff_opow_omega0_dvd]
   exact (isNormal_mul_right ha).strictMono.le_apply.ge_iff_eq'
 
-theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
+theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (hc : 0 < c)
     (hca : c ≤ a ^ ω) : nfp (a * ·) (a ^ ω * b + c) = a ^ ω * succ b := by
+  obtain rfl | ha := eq_zero_or_pos a
+  · rw [zero_opow omega0_ne_zero] at hca
+    exact absurd (hc.trans_le hca) (lt_irrefl _)
   apply le_antisymm
   · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]
@@ -509,6 +512,6 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   refine ⟨?_, fun c h => ?_⟩
   · rw [bot_eq_zero, deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [succ_eq_add_one, deriv_add_one, h]
-    exact nfp_mul_opow_omega0_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
+    exact nfp_mul_opow_omega0_add c zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
 
 end Ordinal

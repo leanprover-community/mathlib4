@@ -127,7 +127,9 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
       OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, this, div_self,
       le_refl]
 
-lemma r_mul_max_le {x : Fin 2 → ℤ} (hx : x ≠ 0) : r z * ‖x‖ ≤ ‖x 0 * (z : ℂ) + x 1‖ := by
+lemma r_mul_max_le {x : Fin 2 → ℤ} : r z * ‖x‖ ≤ ‖x 0 * (z : ℂ) + x 1‖ := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
   have hn0 : ‖x‖ ≠ 0 := by rwa [norm_ne_zero_iff]
   have h11 : x 0 * (z : ℂ) + x 1 = (x 0 / ‖x‖ * z + x 1 / ‖x‖) * ‖x‖ := by
     rw [div_mul_eq_mul_div, ← add_div, div_mul_cancel₀ _ (mod_cast hn0)]
@@ -147,7 +149,7 @@ lemma summand_bound {k : ℝ} (hk : 0 ≤ k) (x : Fin 2 → ℤ) :
     · rw [h, Real.rpow_zero, Real.rpow_zero, one_mul]
     · rw [Real.zero_rpow h, mul_zero]
   · rw [← Real.mul_rpow (r_pos _).le (norm_nonneg _)]
-    exact Real.rpow_le_rpow_of_nonpos (mul_pos (r_pos _) (norm_pos_iff.mpr hx)) (r_mul_max_le z hx)
+    exact Real.rpow_le_rpow_of_nonpos (mul_pos (r_pos _) (norm_pos_iff.mpr hx)) (r_mul_max_le z)
       (neg_nonpos.mpr hk)
 
 variable {z} in
