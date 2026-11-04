@@ -189,6 +189,10 @@ theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
 
+instance Projective.finsupp {ι : Type*} [Projective R M] : Projective R (ι →₀ M) := by
+  classical
+  exact Projective.of_equiv' (finsuppLequivDFinsupp R).symm
+
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
 
@@ -310,8 +314,6 @@ theorem Projective.trans {R : Type*} (S M : Type*) [Semiring R] [Semiring S]
     [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
     [Module.Projective R S] [Module.Projective S M] : Module.Projective R M := by
   classical
-  have : Module.Projective R (M →₀ S) :=
-    Module.Projective.of_equiv' (finsuppLequivDFinsupp R).symm
   obtain ⟨i, hi⟩ := (Module.projective_def' (R := S) (P := M)).mp inferInstance
   exact Module.Projective.of_split (i.restrictScalars R)
     ((Finsupp.linearCombination S id).restrictScalars R)
