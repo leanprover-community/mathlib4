@@ -194,8 +194,7 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
     dsimp [Y]
     calc
       ∫ ω : Ω, ⟪t, X 0 ω⟫ ∂P = ⟪t, P[X 0]⟫ := integral_inner (hL2.integrable <| by norm_num) t
-      _ = ⟪t, 0⟫ := by rw [h0]
-      _ = 0 := by simp
+      _ = 0 := by simp [h0]
   have hY2 : P[fun ω ↦ Y 0 ω ^ 2] = ‖t‖ ^ 2 := by
     dsimp [Y]
     calc
