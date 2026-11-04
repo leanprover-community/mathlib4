@@ -237,7 +237,7 @@ theorem ConcaveOn.add (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) : Conc
   hf.dual.add hg
 
 /-- A finite sum of convex functions is convex. -/
-theorem convexOn_finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
+theorem ConvexOn.finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
     (hf : ∀ i ∈ t, ConvexOn 𝕜 s (f i)) : ConvexOn 𝕜 s fun x ↦ ∑ i ∈ t, f i x := by
   classical
   induction t using Finset.induction_on with
