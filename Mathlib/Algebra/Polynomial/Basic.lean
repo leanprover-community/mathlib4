@@ -25,26 +25,16 @@ directory.
 * `monomial n a` is the polynomial `a X^n`. Note that `monomial n` is defined as an `R`-linear map.
 * `C a` is the constant polynomial `a`. Note that `C` is defined as a ring homomorphism.
 * `X` is the polynomial `X`, i.e., `monomial 1 1`.
-* `p.sum f` is `∑ n ∈ p.support, f n (p.coeff n)`, i.e., one sums the values of functions applied
-  to coefficients of the polynomial `p`.
 * `p.erase n` is the polynomial `p` in which one removes the `c X^n` term.
 * `ofMultiset s` is the monic polynomial `p` which has roots `s`.
-
-There are often two natural variants of lemmas involving sums, depending on whether one acts on the
-polynomials, or on the function. The naming convention is that one adds `index` when acting on
-the polynomials. For instance,
-* `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
-* `sum_add` states that `p.sum (fun n x ↦ f n x + g n x) = p.sum f + p.sum g`.
 * Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
 
 ## Implementation
 
 Polynomials are defined using `R[ℕ]`, where `R` is a semiring.
 The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the identity
-`X * p = p * X`.  The relationship to `R[ℕ]` is through a structure
-to make polynomials irreducible from the point of view of the kernel. Most operations
-are irreducible since Lean cannot compute anyway with `AddMonoidAlgebra`. There are two
-exceptions that we make semireducible:
+`X * p = p * X`. Most operations are irreducible since Lean cannot compute anyway with
+`AddMonoidAlgebra`. There are two exceptions that we make semireducible:
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
   diamonds.
@@ -411,6 +401,9 @@ theorem monomial_one_right_eq_X_pow (n : ℕ) : monomial n (1 : R) = X ^ n := by
 
 lemma X_eq_single : X = single 1 (1 : R) := rfl
 
+@[simp] lemma coeff_C (a : R) : (C a).coeff = .single 0 a := rfl
+@[simp] lemma coeff_X : (X : R[X]).coeff = .single 1 1 := rfl
+
 @[deprecated X_eq_single +typeChanged (since := "2026-07-18")]
 theorem toFinsupp_X : X.toFinsupp = .single 1 (1 : R) :=
   rfl
@@ -517,16 +510,15 @@ theorem coeff_one {n : ℕ} : coeff (1 : R[X]) n = if n = 0 then 1 else 0 := by
 @[deprecated coeff_one_zero +typeChanged (since := "2026-10-25")]
 protected theorem coeff_one_zero : coeff (1 : R[X]) 0 = 1 := by simp
 
-@[simp] lemma coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp [X]
-@[simp] lemma coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp [X]
+theorem coeff_X_zero : coeff (X : R[X]) 0 = 0 := by simp
+theorem coeff_X_one : coeff (X : R[X]) 1 = 1 := by simp
 
 theorem coeff_monomial_succ : coeff (monomial (n + 1) a) 0 = 0 := by simp
 
-@[aesop simp]
-theorem coeff_X : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by simp [X, Finsupp.single_apply]
+theorem coeff_X_apply : coeff (X : R[X]) n = if 1 = n then 1 else 0 := by
+  simp [Finsupp.single_apply]
 
-theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by
-  rw [coeff_X, ite_eq_right hn.symm]
+theorem coeff_X_of_ne_one {n : ℕ} (hn : n ≠ 1) : coeff (X : R[X]) n = 0 := by simp [coeff_X, hn]
 
 @[simp, grind =]
 theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
@@ -535,22 +527,19 @@ theorem mem_support_iff : n ∈ p.support ↔ p.coeff n ≠ 0 := by
 
 theorem notMem_support_iff : n ∉ p.support ↔ p.coeff n = 0 := by simp
 
-@[aesop simp]
-theorem coeff_C : coeff (C a) n = ite (n = 0) a 0 := by
-  simp [C, monomial, Finsupp.single_apply, eq_comm]
+theorem coeff_C_zero : coeff (C a) 0 = a := by simp
 
-@[simp]
-theorem coeff_C_zero : coeff (C a) 0 = a := by simp [C, monomial]
+theorem coeff_C_apply : coeff (C a) n = ite (n = 0) a 0 := by
+  simp [Finsupp.single_apply, eq_comm]
 
-theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, ite_eq_right h]
+theorem coeff_C_of_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by simp [coeff_C, h]
 
 @[deprecated (since := "2026-05-20")] alias coeff_C_ne_zero := coeff_C_of_ne_zero
 
-@[simp]
-lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
+lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp
 
 theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
-  simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+  simp [natCast_def, Finsupp.single_apply, eq_comm]
 
 theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) 0 = ofNat(a) := by simp
 theorem coeff_ofNat_succ (a n : ℕ) [a.AtLeastTwo] : coeff (ofNat(a) : R[X]) (n + 1) = 0 := by simp
@@ -745,79 +734,93 @@ theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
+@[deprecated "Use `Finsupp.sum` of `Polynomial.coeff`: `p.coeff.sum f`" (since := "2026-11-02")]
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
   ∑ n ∈ p.support, f n (p.coeff n)
 
+@[deprecated Finsupp.sum +typeChanged (since := "2026-11-02")]
 theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 
+@[deprecated Finsupp.sum_of_support_subset +typeChanged (since := "2026-11-02")]
 theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
     p.sum f = ∑ n ∈ s, f n (p.coeff n) :=
   Finsupp.sum_of_support_subset _ hs f (fun i _ ↦ hf i)
 
 /-- Expressing the product of two polynomials as a double sum. -/
-theorem mul_eq_sum_sum :
-    p * q = ∑ i ∈ p.support, q.sum fun j a ↦ (monomial (i + j)) (p.coeff i * a) :=
+theorem mul_eq_sum_sum_coeff :
+    p * q = ∑ i ∈ p.support, q.coeff.sum fun j a ↦ (monomial (i + j)) (p.coeff i * a) :=
   AddMonoidAlgebra.mul_def ..
 
-@[simp]
+@[deprecated (since := "2026-11-02")] alias mul_eq_sum_sum := mul_eq_sum_sum_coeff
+
+@[simp, deprecated Finsupp.sum_zero_index +typeChanged (since := "2026-11-02")]
 theorem sum_zero_index {S : Type*} [AddCommMonoid S] (f : ℕ → R → S) : (0 : R[X]).sum f = 0 := by
   simp [sum]
 
-@[simp]
+@[simp, deprecated Finsupp.sum_single_index +typeChanged (since := "2026-11-02")]
 theorem sum_monomial_index {S : Type*} [AddCommMonoid S] {n : ℕ} (a : R) (f : ℕ → R → S)
     (hf : f n 0 = 0) : (monomial n a : R[X]).sum f = f n a :=
   Finsupp.sum_single_index hf
 
-@[simp]
+@[simp, deprecated Finsupp.sum_single_index +typeChanged (since := "2026-11-02")]
 theorem sum_C_index {a} {β} [AddCommMonoid β] {f : ℕ → R → β} (h : f 0 0 = 0) :
     (C a).sum f = f 0 a :=
   sum_monomial_index a f h
 
 -- the assumption `hf` is only necessary when the ring is trivial
-@[simp]
+@[simp, deprecated Finsupp.sum_single_index +typeChanged (since := "2026-11-02")]
 theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 1 0 = 0) :
     (X : R[X]).sum f = f 1 1 :=
   sum_monomial_index 1 f hf
 
+@[deprecated Finsupp.sum_add_index' +typeChanged (since := "2026-11-02")]
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
     (p + q).sum f = p.sum f + q.sum f :=
   Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
 
 /-- See also `Polynomial.sum_add`. -/
-@[simp]
+@[simp, deprecated Finsupp.sum_add +typeChanged (since := "2026-11-02")]
 theorem sum_add' {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     p.sum (f + g) = p.sum f + p.sum g := by simp [sum_def, Finset.sum_add_distrib]
 
 /-- See also `Polynomial.sum_add'`. -/
-@[simp]
+@[simp, deprecated Finsupp.sum_add +typeChanged (since := "2026-11-02")]
 theorem sum_add {S : Type*} [AddCommMonoid S] (p : R[X]) (f g : ℕ → R → S) :
     (p.sum fun n x ↦ f n x + g n x) = p.sum f + p.sum g :=
   sum_add' _ _ _
 
 /-- See also `Polynomial.sum_smul_index'` for a version using `smul` on the RHS. -/
+@[deprecated Finsupp.sum_smul_index +typeChanged (since := "2026-11-02")]
 theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b * a) :=
   Finsupp.sum_smul_index hf
 
 /-- See also `Polynomial.sum_smul_index` for a version using multiplication on the RHS. -/
+@[deprecated Finsupp.sum_smul_index' +typeChanged (since := "2026-11-02")]
 theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
     (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a ↦ f n (b • a) :=
   Finsupp.sum_smul_index' hf
 
+@[deprecated Finsupp.smul_sum +typeChanged (since := "2026-11-02")]
 protected theorem smul_sum {S T : Type*} [AddCommMonoid S] [DistribSMul T S] (p : R[X]) (b : T)
     (f : ℕ → R → S) : b • p.sum f = p.sum fun n a ↦ b • f n a :=
   Finsupp.smul_sum
 
 @[simp]
+lemma sum_coeff_monomial (p : R[X]) : p.coeff.sum (fun n a ↦ monomial n a) = p := p.sum_coeff_single
+
+@[deprecated sum_coeff_monomial +typeChanged (since := "2026-11-02")]
 theorem sum_monomial_eq (p : R[X]) : (p.sum fun n a ↦ monomial n a) = p :=
   AddMonoidAlgebra.sum_coeff_single _
 
-theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a ↦ C a * X ^ n) = p := by
-  simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
+lemma sum_coeff_C_mul_X_pow (p : R[X]) : p.coeff.sum (fun n a ↦ C a * X ^ n) = p := by
+  simp_rw [C_mul_X_pow_eq_monomial, sum_coeff_monomial]
+
+@[deprecated (since := "2026-11-02")] alias sum_C_mul_X_pow_eq := sum_coeff_C_mul_X_pow
 
 @[elab_as_elim]
 protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, motive (C a))
@@ -836,7 +839,7 @@ protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, m
     · intro n s ns ih
       rw [sum_insert ns]
       exact add _ _ A ih
-  rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
+  rw [← sum_coeff_C_mul_X_pow p, Finsupp.sum]
   exact B (support p)
 
 /-- To prove something about polynomials,

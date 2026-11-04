@@ -110,7 +110,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen)
       natDegree_lt_natDegree_iff hQ]
     let : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
-  rw [this, aeval_eq_sum_range' hlt]
+  rw [this, aeval_eq_sum_range' (degree_le_natDegree.trans_lt <| mod_cast hlt)]
   simp only [map_sum, Finset.sum_apply']
   refine IsIntegral.sum _ fun j hj => ?_
   replace hj := Finset.mem_range.1 hj

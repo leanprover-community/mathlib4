@@ -47,7 +47,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
         _ ≤ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by gcongr; exacts [le_sup_left, le_sup_right]
     split_ifs with hpq; swap
     · simpa using H₀ _
-    simp only [coeff_add, coeff_C_mul, coeff_X_pow]
+    simp only [coeff_add, coeff_C_mul, coeff_X_pow_apply]
     generalize hr : (p - q * (C p.leadingCoeff * X ^ (deg(p) - deg(q)))) = r
     by_cases hr' : r = 0
     · simp only [mul_ite, mul_one, mul_zero, hr', divModByMonicAux, degree_zero, le_bot_iff,

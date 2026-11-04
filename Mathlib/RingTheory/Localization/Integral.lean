@@ -342,7 +342,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     by_cases hi : i ∈ q.support
     · exact Finset.le_sup (f := (q.coeff · |>.natDegree)) hi
     · simp_all
-  let q' := q.sum fun i r ↦ X ^ i * r.reflect N
+  let q' := q.coeff.sum fun i r ↦ X ^ i * r.reflect N
   have (i : _) : aeval t (reflect N (q.coeff i)) = t ^ N * (aeval s (q.coeff i)) := by
     let : Invertible t := ⟨s, hst, (mul_comm _ _).trans hst⟩
     rw [aeval_def, ← eval₂_reflect_mul_pow _ _ N _ ((natDegree_reflect_le ..).trans (by simp [hN]))]
@@ -352,7 +352,7 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
     · refine natDegree_sum_le_of_forall_le _ _ fun i hi ↦ ?_
       grw [natDegree_mul_le, natDegree_pow_le, natDegree_X_le, natDegree_reflect_le]
       simp [max_eq_left (hN _), le_natDegree_of_mem_supp _ hi]
-    · simp only [sum, finsetSum_coeff, coeff_X_pow_mul', coeff_reflect, q']
+    · simp only [Finsupp.sum, finsetSum_coeff, coeff_X_pow_mul', coeff_reflect, q']
       rw [Finset.sum_eq_single q.natDegree]
       · simp [hqm.leadingCoeff]
       · intro i hi₁ hi₂
@@ -361,9 +361,9 @@ lemma isIntegral_of_isIntegral_adjoin_of_mul_eq_one
         simpa [(le_natDegree_of_mem_supp _ hi₁).trans, revAt, this.not_ge] using
           coeff_eq_zero_of_natDegree_lt (by grind)
       · simp +contextual
-  · trans t ^ N * q.sum (t ^ · * φ.toRingHom ·)
-    · simp [φ, q', Polynomial.sum, ← aeval_def, this, mul_left_comm _ (t ^ N), ← Finset.mul_sum]
-    · simp_rw [mul_comm (t ^ _), ← eval₂_eq_sum, hqt, zero_mul]
+  · trans t ^ N * q.coeff.sum (t ^ · * φ.toRingHom ·)
+    · simp [φ, q', Finsupp.sum, ← aeval_def, this, mul_left_comm _ (t ^ N), ← Finset.mul_sum]
+    · simp_rw [mul_comm (t ^ _), ← eval₂_eq_sum_coeff, hqt, zero_mul]
 
 /-- If `t` is integral in `S[1/t]`, then it is integral in `S`. -/
 lemma IsLocalization.Away.isIntegral_of_isIntegral_map

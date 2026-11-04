@@ -202,7 +202,8 @@ theorem coeff_neg_of_eq {n : ℕ} {a : R} {f : R[X]} (hf : f.coeff n = a) :
     (-f).coeff n = -a := by subst hf; apply Polynomial.coeff_neg
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
+  rw [← C_eq_intCast, coeff_C, Finsupp.single_apply]
+  simp [eq_comm]
 
 end ring
 
@@ -357,7 +358,7 @@ def dispatchLemma
         | .inr ``Neg.neg =>
           π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg_of_eq
         | .inr ``Polynomial.X =>
-          π ``natDegree_X_le ``degree_X_le ``coeff_X
+          π ``natDegree_X_le ``degree_X_le ``coeff_X_apply
         | .inr ``Nat.cast =>
           π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``NatCast.natCast =>
@@ -369,7 +370,7 @@ def dispatchLemma
         | .inr ``Polynomial.monomial =>
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial_apply
         | .inr ``Polynomial.C =>
-          π ``natDegree_C_le ``degree_C_le ``coeff_C
+          π ``natDegree_C_le ``degree_C_le ``coeff_C_apply
         | .inr ``HSMul.hSMul =>
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl

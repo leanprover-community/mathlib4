@@ -70,8 +70,8 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 := by
 @[simp]
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C a) = Polynomial.C a := by
   ext m
-  rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
-  split_ifs with H <;> first | rfl | simp_all
+  rw [coeff_trunc, coeff_C, Polynomial.coeff_C, Finsupp.single_apply]
+  split_ifs with H <;> first | rfl | grind
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff n f) := by
@@ -91,13 +91,9 @@ theorem eval₂_trunc_eq_sum_range {S : Type*} [Semiring S] (s : S) (G : R →+*
   | zero =>
     rw [trunc_zero', range_zero, sum_empty, eval₂_zero]
   | succ n =>
-    have := natDegree_trunc_lt f n
-    rw [eval₂_eq_sum_range' (hn := this)]
-    apply sum_congr rfl
-    intro _ h
-    rw [mem_range] at h
-    congr
-    rw [coeff_trunc, ite_eq_left h]
+    rw [eval₂_eq_sum_range' _ <| degree_trunc_lt f (n + 1)]
+    congr! with _ h
+    simp_all [coeff_trunc]
 
 @[simp] theorem trunc_X (n) : trunc (n + 2) X = (Polynomial.X : R[X]) := by
   ext d
@@ -117,7 +113,7 @@ lemma trunc_X_of {n : ℕ} (hn : 2 ≤ n) : trunc n X = (Polynomial.X : R[X]) :=
 
 @[simp]
 lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff 0 p) := by
-  ext i; simp +contextual [coeff_trunc, Polynomial.coeff_C]
+  ext i; simp +contextual [coeff_trunc, Finsupp.single_apply, eq_comm]
 
 lemma trunc_one_X : trunc (R := R) 1 X = 0 := by simp
 

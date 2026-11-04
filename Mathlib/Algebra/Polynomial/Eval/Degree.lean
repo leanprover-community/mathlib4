@@ -45,11 +45,9 @@ theorem eval₂_eq_sum_range :
   _root_.trans (congr_arg _ p.as_sum_range)
     (_root_.trans (eval₂_finsetSum f _ _ x) (congr_arg _ (by simp)))
 
-theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
+theorem eval₂_eq_sum_range' (f : R →+* S) {p : R[X]} {n : ℕ} (hn : p.degree < n) (x : S) :
     eval₂ f x p = ∑ i ∈ Finset.range n, f (p.coeff i) * x ^ i := by
-  rw [eval₂_eq_sum, p.sum_over_range' _ _ hn]
-  intro i
-  rw [f.map_zero, zero_mul]
+  simp [eval₂_eq_sum_coeff, p.sum_coeff_eq_sum_range _ _ hn]
 
 end
 
@@ -61,11 +59,11 @@ variable {x : R}
 
 theorem eval_eq_sum_range {p : R[X]} (x : R) :
     p.eval x = ∑ i ∈ Finset.range (p.natDegree + 1), p.coeff i * x ^ i := by
-  rw [eval_eq_sum, sum_over_range]; simp
+  rw [eval_eq_sum_coeff, sum_coeff_eq_sum_range_natDegree]; simp
 
-theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : R) :
+theorem eval_eq_sum_range' {p : R[X]} {n : ℕ} (hn : p.degree < n) (x : R) :
     p.eval x = ∑ i ∈ Finset.range n, p.coeff i * x ^ i := by
-  rw [eval_eq_sum, p.sum_over_range' _ _ hn]; simp
+  simp [eval_eq_sum_coeff, p.sum_coeff_eq_sum_range _ _ hn]
 
 /-- A reformulation of the expansion of (1 + y)^d:
 $$(d + 1) (1 + y)^d - (d + 1)y^d = \sum_{i = 0}^d {d + 1 \choose i} \cdot i \cdot y^{i - 1}.$$
@@ -89,19 +87,12 @@ section Comp
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
-  rw [comp, eval₂_eq_sum, coeff_sum]
-  refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
-  case h₂ =>
-    simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]
-  case h₀ =>
-    intro b hbs hbp
-    refine coeff_eq_zero_of_natDegree_lt (natDegree_mul_le.trans_lt ?_)
-    rw [natDegree_C, zero_add]
-    refine natDegree_pow_le.trans_lt ?_
-    gcongr
-    exact lt_of_le_of_ne (le_natDegree_of_mem_supp _ hbs) hbp
-  case h₁ =>
-    simp +contextual
+  rw [comp, eval₂_eq_sum_coeff, coeff_finsuppSum,
+    Finsupp.sum_apply, Finsupp.sum_eq_single p.natDegree _ (by simp +contextual)]
+  · simp
+  · refine fun b hbs hbp ↦ coeff_eq_zero_of_natDegree_lt ?_
+    grw [natDegree_mul_le, natDegree_C, zero_add, natDegree_pow_le,
+      hbp.lt_of_le <| le_natDegree_of_mem_supp _ <| by simpa]
 
 @[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
     (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
