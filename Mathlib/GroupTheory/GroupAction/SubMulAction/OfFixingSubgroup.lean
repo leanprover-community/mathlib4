@@ -512,7 +512,7 @@ theorem IsPreprimitive.isPreprimitive_ofFixingSubgroup_inter
   rw [show Nat.card (ofFixingSubgroup M (s ∩ g • s)) = (s ∩ g • s)ᶜ.ncard from
     Nat.card_coe_set_eq _, Set.ncard_range_of_injective ofFixingSubgroup_of_inclusion_injective,
     show Nat.card (ofFixingSubgroup M s) = sᶜ.ncard from Nat.card_coe_set_eq _, Set.compl_inter]
-  refine (Set.ncard_union_lt sᶜ.toFinite (g • s)ᶜ.toFinite ?_).trans_le ?_
+  refine (Set.ncard_union_lt (Or.inl sᶜ.toFinite) ?_).trans_le ?_
   · rwa [Set.disjoint_compl_right_iff_subset, Set.compl_subset_iff_union]
   · rw [← Set.smul_set_compl, Set.ncard_smul_set, two_mul]
 
