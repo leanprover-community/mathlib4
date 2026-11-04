@@ -161,7 +161,7 @@ theorem spectralValue_X_sub_C (r : R) : spectralValue (X - C r) = ‖r‖ := by
 theorem spectralValue_X_pow (n : ℕ) : spectralValue (X ^ n : R[X]) = 0 := by
   rw [spectralValue]
   unfold spectralValueTerms
-  simp_rw [coeff_X_pow n, natDegree_X_pow]
+  simp_rw [coeff_X_pow_apply n, natDegree_X_pow]
   convert ciSup_const using 2
   · ext m
     by_cases hmn : m < n
@@ -431,7 +431,7 @@ theorem spectralNorm_zero_lt {y : L} (hy : y ≠ 0) (hy_alg : IsAlgebraic K y) :
   rw [spectralNorm, ne_eq, eq_comm, spectralValue_eq_zero_iff (minpoly.monic hy_alg.isIntegral)]
   intro h
   apply minpoly.coeff_zero_ne_zero hy_alg.isIntegral hy
-  rw [h, coeff_X_pow, ite_eq_right (ne_of_lt (minpoly.natDegree_pos hy_alg.isIntegral))]
+  rw [h, coeff_X_pow_apply, ite_eq_right (ne_of_lt (minpoly.natDegree_pos hy_alg.isIntegral))]
 
 /-- If `spectralNorm K L x = 0`, then `x = 0`. -/
 theorem eq_zero_of_map_spectralNorm_eq_zero {x : L} (hx : spectralNorm K L x = 0)

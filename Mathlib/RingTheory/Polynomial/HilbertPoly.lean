@@ -116,12 +116,10 @@ which says that `PowerSeries.coeff F n (p * PowerSeries.invOneSubPow F d)` equal
 -/
 noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
-  | d + 1 => ∑ i ∈ p.support, (p.coeff i) • preHilbertPoly F d i
+  | d + 1 => p.coeff.sum fun i r ↦ r • preHilbertPoly F d i
 
 lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
-  delta hilbertPoly; induction d with
-  | zero => simp only
-  | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
+  cases d <;> simp [hilbertPoly]
 
 lemma hilbertPoly_zero_right (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
@@ -130,28 +128,15 @@ lemma hilbertPoly_succ (p : F[X]) (d : ℕ) :
 
 lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
-  delta hilbertPoly; simp
+  simp [hilbertPoly, coeff_X_pow]
 
 lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
     hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
-  delta hilbertPoly
-  induction d with
-  | zero => simp only [add_zero]
-  | succ d _ =>
-      simp only
-      rw [← sum_def _ fun _ r => r • _]
-      exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
+  cases d <;> simp [hilbertPoly, Finsupp.sum_add_index', add_smul]
 
 lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
     hilbertPoly (a • p) d = a • hilbertPoly p d := by
-  delta hilbertPoly
-  induction d with
-  | zero => simp only [smul_zero]
-  | succ d _ =>
-      simp only
-      rw [← sum_def _ fun _ r => r • _, ← sum_def _ fun _ r => r • _, Polynomial.smul_sum,
-        sum_smul_index' _ _ _ fun i => zero_smul F (preHilbertPoly F d i)]
-      simp only [smul_assoc]
+  cases d <;> simp [hilbertPoly, Finsupp.sum_smul_index', mul_smul, Finsupp.smul_sum]
 
 variable (F) in
 /--
@@ -177,7 +162,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
   | zero => simp only [invOneSubPow_zero, Units.val_one, mul_one, coeff_coe, eval_zero]
             exact coeff_eq_zero_of_natDegree_lt hn
   | succ d hd =>
-      simp only [eval_finsetSum, eval_smul, smul_eq_mul]
+      simp only [eval_finsuppSum, eval_smul, smul_eq_mul]
       rw [← Finset.sum_coe_sort]
       have h_le (i : p.support) : (i : ℕ) ≤ n :=
         le_trans (le_natDegree_of_ne_zero <| mem_support_iff.1 i.2) hn.le
@@ -267,7 +252,7 @@ theorem natDegree_hilbertPoly_of_ne_zero_of_rootMultiplicity_lt
     rw [natDegree_preHilbertPoly]
   · have : (fun (x : ℕ) (a : F) => a) = fun x a => a * 1 ^ x := by simp only [one_pow, mul_one]
     simp only [finsetSum_coeff, AddMonoidAlgebra.coeff_smul_apply, smul_eq_mul,
-      coeff_preHilbertPoly_self, ← Finset.sum_mul, ← sum_def _ (fun _ a => a), this, ← eval_eq_sum,
+      coeff_preHilbertPoly_self, ← Finset.sum_mul, ← h, this, ← eval_eq_sum_coeff,
       eval_mul, eval_pow, eval_neg, eval_one, _root_.mul_eq_zero, pow_eq_zero_iff', neg_eq_zero,
       one_ne_zero, ne_eq, false_and, or_false, inv_eq_zero, cast_eq_zero, not_or]
     exact ⟨(not_iff_not.2 dvd_iff_isRoot).1 hq2, factorial_ne_zero _⟩

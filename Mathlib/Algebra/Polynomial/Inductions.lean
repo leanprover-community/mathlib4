@@ -72,7 +72,7 @@ theorem divX_X_pow : divX (X ^ n : R[X]) = if (n = 0) then 0 else X ^ (n - 1) :=
   cases n
   · simp
   · ext n
-    simp [coeff_X_pow]
+    simp [Finsupp.single_apply]
 
 /-- `divX` as an additive homomorphism. -/
 noncomputable

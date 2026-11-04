@@ -98,7 +98,7 @@ theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
 @[simp] lemma comp_C_mul_X_coeff {r : R} {n : ℕ} :
     (p.comp <| C r * X).coeff n = p.coeff n * r ^ n := by
   simp_rw [comp, eval₂_eq_sum_range, (commute_X _).symm.mul_pow,
-    ← C_pow, finsetSum_coeff, coeff_C_mul, coeff_X_pow]
+    ← C_pow, finsetSum_coeff, coeff_C_mul, coeff_X_pow_apply]
   rw [Finset.sum_eq_single n _ fun h ↦ ?_, ite_eq_left rfl, mul_one]
   · intro b _ h; simp_rw [ite_eq_right h.symm, mul_zero]
   · rw [coeff_eq_zero_of_natDegree_lt, zero_mul]

@@ -340,6 +340,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   obtain ⟨Q, hQ, _, ⟨e⟩⟩ := Ideal.exists_ideal_lt_liesOver_of_lt (S := S) P this
   refine hQ.ne (Algebra.WeaklyQuasiFiniteAt.eq_of_le_of_under_eq (R := R) hQ.le ?_)
   rw [← Ideal.under_under (B := R[X]), ← e]
+  ext
   simp [Ideal.mem_map_C_iff, Finsupp.single_apply, apply_ite]
 
 /-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
@@ -496,7 +497,7 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
     · simp [← self_sub_monomial_natDegree_leadingCoeff, hf, hm, pow_succ', ← Algebra.smul_def,
         ← Algebra.smul_mul_assoc, ← ha]
     · suffices algebraMap R S (f.coeff n) + algebraMap R S (if n = m then a else 0) ∉ p by
-        simpa [eraseLead_coeff, show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
+        simpa [eraseLead_coeff, Finsupp.single_apply, show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
       rwa [Ideal.add_mem_iff_left]
       split_ifs
       · convert p.mul_mem_right x Hfp

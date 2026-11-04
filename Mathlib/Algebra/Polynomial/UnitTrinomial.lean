@@ -169,7 +169,7 @@ theorem isUnitTrinomial_iff :
   replace hx := hp.2 k (mem_insert_self k {m, n})
   replace hy := hp.2 m (mem_insert_of_mem (mem_insert_self m {n}))
   replace hz := hp.2 n (mem_insert_of_mem (mem_insert_of_mem (mem_singleton_self n)))
-  simp_rw [coeff_add, coeff_C_mul, coeff_X_pow_self, mul_one, coeff_X_pow] at hx hy hz
+  simp_rw [coeff_add, coeff_C_mul, coeff_X_pow_self, mul_one, coeff_X_pow_apply] at hx hy hz
   rw [ite_eq_right hkm.ne, ite_eq_right (hkm.trans hmn).ne] at hx
   rw [ite_eq_right hkm.ne', ite_eq_right hmn.ne] at hy
   rw [ite_eq_right (hkm.trans hmn).ne', ite_eq_right hmn.ne'] at hz
