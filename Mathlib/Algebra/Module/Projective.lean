@@ -189,8 +189,9 @@ theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
 
-instance Projective.finsupp {ι : Type*} [Projective R M] : Projective R (ι →₀ M) :=
-  Projective.of_equiv' (finsuppLequivDFinsupp R).symm
+instance Projective.finsupp {ι : Type*} [Projective R M] : Projective R (ι →₀ M) := by
+  classical
+  exact Projective.of_equiv' (finsuppLequivDFinsupp R).symm
 
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
