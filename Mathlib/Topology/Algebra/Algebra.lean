@@ -677,9 +677,6 @@ theorem le_iff_mem {x : A} {s : Subalgebra R A} (hs : IsClosed (s : Set A)) :
 theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
 
-instance (x : A) : Fact (IsClosed (elemental R x : Set A)) :=
-  ⟨isClosed_topologicalClosure _⟩
-
 instance isMulCommutative [T2Space A] (x : A) : IsMulCommutative (elemental R x) := by
   unfold elemental; infer_instance
 

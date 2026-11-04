@@ -34,9 +34,6 @@ theorem isClosed_genEigenspace : IsClosed (genEigenspace (f : End R M) μ n : Se
 theorem isClosed_eigenspace : IsClosed (eigenspace (f : End R M) μ : Set M) :=
   isClosed_genEigenspace f μ 1
 
-instance : Fact (IsClosed (genEigenspace (f : End R M) μ n : Set M)) :=
-  ⟨isClosed_genEigenspace f μ n⟩
-
 instance : Fact (IsClosed (eigenspace (f : End R M) μ : Set M)) :=
   ⟨isClosed_eigenspace f μ⟩
 

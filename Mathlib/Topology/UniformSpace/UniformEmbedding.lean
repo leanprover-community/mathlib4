@@ -318,9 +318,6 @@ alias ⟨_, IsComplete.completeSpace_coe⟩ := completeSpace_coe_iff_isComplete
 theorem IsClosed.completeSpace_coe [CompleteSpace α] {s : Set α} (hs : IsClosed s) :
     CompleteSpace s := hs.isComplete.completeSpace_coe
 
-instance [CompleteSpace α] {s : Set α} [hs : Fact (IsClosed s)] : CompleteSpace s :=
-  hs.out.completeSpace_coe
-
 theorem completeSpace_ulift_iff : CompleteSpace (ULift α) ↔ CompleteSpace α :=
   IsUniformInducing.completeSpace_congr ⟨rfl⟩ ULift.down_surjective
 
