@@ -5,9 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Shift.Opposite
 public import Mathlib.CategoryTheory.Shift.Pullback
+
+import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
 /-!
 # The shift on the opposite category of a pretriangulated category
@@ -263,7 +264,6 @@ lemma opShiftFunctorEquivalence_zero_unitIso_inv_app (X : Cᵒᵖ) :
   rw [shiftFunctorZero_op_hom_app, unop_comp, Quiver.Hom.unop_op, Functor.map_comp,
     shiftFunctorCompIsoId_zero_zero_inv_app, assoc]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq
     (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p := by lia) :
@@ -282,7 +282,6 @@ lemma opShiftFunctorEquivalence_add_unitIso_hom_app_eq
   simp [shiftFunctorOpIso, shiftFunctor_op_obj, shiftFunctor_op_map _ m (-m), ← op_comp,
     (shiftFunctorAdd' C m n p h).hom.naturality]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma opShiftFunctorEquivalence_add_unitIso_inv_app_eq
     (X : Cᵒᵖ) (m n p : ℤ) (h : m + n = p := by lia) :
     (opShiftFunctorEquivalence C p).unitIso.inv.app X =
@@ -319,7 +318,6 @@ lemma opShiftFunctorEquivalence_counitIso_hom_app_shift (X : Cᵒᵖ) (n : ℤ) 
       ((opShiftFunctorEquivalence C n).unitIso.inv.app X)⟦n⟧' :=
   (opShiftFunctorEquivalence C n).counit_app_functor X
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftFunctorCompIsoId_op_hom_app (X : Cᵒᵖ) (n m : ℤ) (hnm : n + m = 0 := by lia) :
     (shiftFunctorCompIsoId Cᵒᵖ n m hnm).hom.app X =

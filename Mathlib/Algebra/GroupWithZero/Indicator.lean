@@ -5,10 +5,14 @@ Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 module
 
-import Mathlib.Algebra.Group.Pi.Basic
 public import Mathlib.Algebra.Group.Support
 public import Mathlib.Algebra.GroupWithZero.Basic
 public import Mathlib.Algebra.Notation.Indicator
+
+import Mathlib.Algebra.Group.Pi.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Indicator functions and support of a function in groups with zero

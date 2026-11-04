@@ -5,8 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Tactic.Attr.Register
 public import Std.Data.DTreeMap.Internal.Operations
+
+import Mathlib.Tactic.Attr.Register
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Simp tags for core lemmas

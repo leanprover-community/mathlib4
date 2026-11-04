@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Polynomial.Splits
 public import Mathlib.Analysis.Normed.Unbundled.RingSeminorm
+
 import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
@@ -78,7 +79,7 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     congr
     rw [hg.eval_eq_prod_roots_of_monic hgm]
   _ ≤ ‖g.eval a - f.eval a‖ + ‖f.eval a‖ := by
-    convert! norm_add_le (g.eval a - f.eval a) (f.eval a)
+    convert norm_add_le (g.eval a - f.eval a) (f.eval a)
     simp
   _ = ‖(∑ i ∈ Finset.range (g.natDegree + 1), C (g.coeff i - f.coeff i) * X ^ i).eval a‖ := by
     rw [← eval_sub]
@@ -96,7 +97,7 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     --     (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
   _ < _ := by
     rw [hdeg]
-    convert!
+    convert
       Finset.sum_lt_sum_of_nonempty (g := fun i ↦ ε * (‖a‖ ⊔ 1) ^ ↑f.natDegree)
         (Finset.nonempty_range_add_one) ?_
     · simp [mul_assoc]

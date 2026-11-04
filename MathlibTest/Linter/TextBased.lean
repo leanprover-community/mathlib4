@@ -790,10 +790,6 @@ meta def ErrorContext.isValid_parse?_error_context (ec : ErrorContext) : Bool :=
   lineNumber := 1234, path:="Mathlib/Tactic/Measurability/Init.lean"}
 
 #guard ErrorContext.isValid_parse?_error_context {
-  error := .trailingWhitespace,
-  lineNumber := 1234, path:="Mathlib/Tactic/Measurability/Init.lean"}
-
-#guard ErrorContext.isValid_parse?_error_context {
   error := .semicolon,
   lineNumber := 1234, path := "Mathlib/Tactic/Measurability/Init.lean"}
 

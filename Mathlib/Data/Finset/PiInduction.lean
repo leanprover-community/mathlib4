@@ -5,9 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
+public import Mathlib.Data.Fintype.Basic
+
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-public import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -48,7 +49,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
   induction hs : univ.sigma f using Finset.strongInductionOn generalizing f with | _ s ihs
   subst s
   rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
-  · convert! h0 using 1
+  · convert h0 using 1
     simpa [funext_iff] using he
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩

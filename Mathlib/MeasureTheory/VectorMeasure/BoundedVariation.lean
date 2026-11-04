@@ -101,7 +101,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
     exact eVariationOn.edist_le _ (by grind) (by grind)
   have B : hα = generateFrom {s | ∃ u v, u ≤ v ∧ s = Ioc u v} := by
     borelize α
-    convert! borel_eq_generateFrom_Ioc_le α using 2
+    convert borel_eq_generateFrom_Ioc_le α using 2
     grind only
   rcases VectorMeasure.exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
     IsSetSemiring.Ioc A B with ⟨m', hm', h'm'⟩
@@ -294,7 +294,7 @@ open VectorMeasure
 private lemma variation_vectorMeasure_le_variationAux (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure.variation ≤ hf.variationAux := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [vectorMeasure, add_apply, variationAux, Measure.coe_add, Pi.add_apply]
+  simp only [vectorMeasure, add_apply, variationAux]
   grw [enorm_add_le]
   gcongr
   · apply hf.exists_vectorMeasure_le_measureAux.choose_spec.2.2
@@ -311,8 +311,8 @@ private lemma variationAux_Ioc_le (hf : BoundedVariationOn f univ) {a b : α} (h
     · simp [not_lt.mpr (h.choose_spec a)]
     · simp
   have hα : Nonempty α := ⟨a⟩
-  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, Measure.coe_add,
-    Pi.add_apply, StieltjesFunction.measure_Ioc, this, add_zero]
+  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, add_apply,
+    StieltjesFunction.measure_Ioc, this, add_zero, ge_iff_le]
   rw [← variationOnFromTo.add hf.rightLim.locallyBoundedVariationOn (mem_univ hα.some) (mem_univ a)
     (mem_univ b), add_sub_cancel_left, variationOnFromTo.eq_of_le _ _ h, univ_inter,
     ENNReal.ofReal_toReal (hf.rightLim.mono (subset_univ _)),
@@ -356,7 +356,7 @@ private lemma variationAux_singleton (hf : BoundedVariationOn f univ) {a : α} :
     hf.variationAux {a} = hf.vectorMeasure.variation {a} := by
   classical
   have hα : Nonempty α := ⟨a⟩
-  simp only [variationAux, Measure.coe_add, Pi.add_apply, variation_vectorMeasure_singleton]
+  simp only [variationAux, add_apply, variation_apply_singleton, vectorMeasure_singleton]
   by_cases ha : IsBot a
   · have hx : ∃ x, IsBot x := ⟨a, ha⟩
     have A : hx.choose = a := le_antisymm (hx.choose_spec _) (ha _)

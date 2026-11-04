@@ -6,6 +6,7 @@ Authors: Kexing Ying
 module
 
 public import Mathlib.Probability.Martingale.Upcrossing
+public import Mathlib.Probability.Process.LimitProcess
 
 /-!
 
@@ -205,7 +206,7 @@ theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : S
   rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
   · exact MeasurableSet.compl <| measurableSet_exists_tendsto
-      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
+      fun n => (hf.stronglyMeasurable n).measurable.mono (le_iSup _ n) le_rfl
 
 /-- **Almost everywhere martingale convergence theorem**: An L¹-bounded submartingale converges
 almost everywhere to a `⨆ n, ℱ n`-measurable function. -/
@@ -213,10 +214,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     (hbdd : ∀ n, eLpNorm (f n) 1 μ ≤ R) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) := by
   classical
-  suffices
-      ∃ g, StronglyMeasurable[⨆ n, ℱ n] g ∧ ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (g ω)) by
-    rw [limitProcess, dite_eq_left this]
-    exact (Classical.choose_spec this).2
+  apply HasLimitProcess.ae_tendsto_limitProcess
   set g' : Ω → ℝ := fun ω => if h : ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) then h.choose else 0
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by

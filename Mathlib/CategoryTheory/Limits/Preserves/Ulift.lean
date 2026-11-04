@@ -6,8 +6,8 @@ Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 module
 
 public import Mathlib.CategoryTheory.Limits.Creates
-public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
+public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
 # `ULift` creates small (co)limits
@@ -27,7 +27,6 @@ universe v w w' u
 
 namespace CategoryTheory.Limits.Types
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 The equivalence between `K.sections` and `(K ⋙ uliftFunctor.{v, u}).sections`. This is used to show
 that `uliftFunctor` preserves limits that are potentially too large to exist in the source

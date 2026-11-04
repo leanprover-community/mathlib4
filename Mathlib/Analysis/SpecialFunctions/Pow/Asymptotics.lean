@@ -18,9 +18,6 @@ located here.
 
 public section
 
-
-noncomputable section
-
 open Real NNReal ENNReal Filter Set
 
 open scoped Topology

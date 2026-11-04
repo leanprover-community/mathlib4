@@ -8,8 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 public import Mathlib.LinearAlgebra.Matrix.Rank
+
+import Mathlib.LinearAlgebra.Matrix.Charpoly.Eigs
 
 /-! # Spectral theory of Hermitian matrices
 
