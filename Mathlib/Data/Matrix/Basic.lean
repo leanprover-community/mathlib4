@@ -976,7 +976,7 @@ theorem transpose_sum [AddCommMonoid α] {ι : Type*} (s : Finset ι) (M : ι �
 
 variable (m n R α)
 
-/-- `Matrix.transpose` as a `LinearMap`. -/
+/-- `Matrix.transpose` as a `LinearEquiv`. -/
 @[simps apply]
 def transposeLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
     Matrix m n α ≃ₗ[R] Matrix n m α where
