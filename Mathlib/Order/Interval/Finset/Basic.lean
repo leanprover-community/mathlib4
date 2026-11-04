@@ -650,6 +650,10 @@ instance [OrderTop α] : Unique (Ici (⊤ : α)) where
 
 end OrderTop
 
+@[to_additive (attr := simp)]
+lemma Iic_one [LocallyFiniteOrderBot α] [One α] [IsBotOneClass α] : Iic (1 : α) = {1} := by
+  ext; simp
+
 end BoundedPartialOrder
 
 section SemilatticeSup
