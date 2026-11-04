@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Yizheng Zhu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yizheng Zhu
+Authors: Yizheng Zhu, Dmitri Arkhipov
 -/
 module
 
@@ -23,8 +23,16 @@ This file proves that:
   `∫ x in a..b, f x * deriv g x = f b * g b - f a * g a - ∫ x in a..b, deriv f x * g x`.
 
 ## Tags
-absolutely continuous, fundamental theorem of calculus, integration by parts
+absolutely continuous, fundamental theorem of calculus, integration by parts, potential drift
 -/
+
+This file also proves the *potential drift lemma* and its corollaries:
+* `AbsolutelyContinuousOnInterval.measure_toReal_le_of_deriv_le`: if `deriv f ≤ -c` (`0 < c`)
+a.e. on a measurable `s ⊆ Icc a b`, then `(volume s).toReal ≤ (f a - f b) / c`.
+* `AbsolutelyContinuousOnInterval.measure_toReal_le_of_deriv_le_of_antitoneOn`: same, with the
+sign condition derived from `AntitoneOn f (Icc a b)`.
+* `AbsolutelyContinuousOnInterval.measure_toReal_inter_Icc_le_of_deriv_le_of_antitoneOn`:
+escape-time corollary on `Ici 0`: total "bad time" at rate `c` is at most `f 0 / c`.
 
 open scoped Finset
 
@@ -265,3 +273,167 @@ theorem AbsolutelyContinuousOnInterval.integral_mul_deriv_eq_deriv_mul {f g : �
   · exact (hf.intervalIntegrable_deriv.mul_continuousOn hg.continuousOn).add
       (hg.intervalIntegrable_deriv.continuousOn_mul hf.continuousOn)
   · exact hf.intervalIntegrable_deriv.mul_continuousOn hg.continuousOn
+
+open Filter MeasureTheory Set Topology
+open scoped ENNReal
+
+section DriftLemma
+
+variable {f : ℝ → ℝ} {a b c : ℝ} {s : Set ℝ}
+
+/-- **Potential drift lemma**.  If `f` is absolutely continuous on `uIcc a b`, `deriv f ≤ 0`
+a.e. on `Icc a b`, and `deriv f ≤ -c` on a measurable set `s ⊆ Icc a b` (with `c > 0`),
+then the Lebesgue measure of `s` is at most the total drop of `f` over `[a, b]`, divided
+by `c`. -/
+theorem AbsolutelyContinuousOnInterval.measure_toReal_le_of_deriv_le
+    (hab : a ≤ b) (hc : 0 < c)
+    (hf : AbsolutelyContinuousOnInterval f a b)
+    (hle : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ Icc a b → deriv f x ≤ 0)
+    (hs : MeasurableSet s) (hssub : s ⊆ Icc a b)
+    (hbad : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ s → deriv f x ≤ -c) :
+    (volume s).toReal ≤ (f a - f b) / c := by
+  classical
+  have hint : IntervalIntegrable (deriv f) volume a b := hf.intervalIntegrable_deriv
+  set t₁ : Set ℝ := Ioc a b ∩ s with ht₁
+  set t₂ : Set ℝ := Ioc a b \ s with ht₂
+  have ht₁meas : MeasurableSet t₁ := measurableSet_Ioc.inter hs
+  have ht₂meas : MeasurableSet t₂ := measurableSet_Ioc.diff hs
+  have hIocfin : volume (Ioc a b) < ∞ := by
+    rw [Real.volume_Ioc]
+    exact ENNReal.ofReal_lt_top
+  have hfin₁ : volume t₁ ≠ ∞ :=
+    ne_of_lt ((measure_mono inter_subset_left).trans_lt hIocfin)
+  have hint₁ : IntegrableOn (deriv f) t₁ volume :=
+    hint.1.mono inter_subset_left (le_refl _)
+  have hint₂ : IntegrableOn (deriv f) t₂ volume :=
+    hint.1.mono Set.sdiff_subset (le_refl _)
+  have hconst₁ : IntegrableOn (fun _ : ℝ => (-c : ℝ)) t₁ volume :=
+    integrableOn_const hfin₁ (by simp)
+  -- The complement piece is nonpositive
+  have hle₂ : ∀ᵐ (x : ℝ) ∂volume, x ∈ t₂ → 0 ≤ -deriv f x := by
+    filter_upwards [hle] with x hx hxt₂
+    have hxle := hx (Ioc_subset_Icc_self (ht₂ ▸ hxt₂).1)
+    linarith
+  have h₂ : ∫ x in t₂, deriv f x ∂volume ≤ 0 := by
+    have hneg : 0 ≤ ∫ x in t₂, -deriv f x ∂volume :=
+      setIntegral_nonneg_of_ae_restrict ((ae_restrict_iff' ht₂meas).mpr hle₂)
+    have heq : ∫ x in t₂, -deriv f x ∂volume = -∫ x in t₂, deriv f x ∂volume :=
+      integral_neg (deriv f) (μ := volume.restrict t₂)
+    linarith
+  -- The fast-drift piece is ≤ `-(volume t₁).toReal * c`
+  have h₁ : ∫ x in t₁, deriv f x ∂volume ≤ -((volume t₁).toReal * c) := by
+    have hmonoI : ∫ x in t₁, deriv f x ∂volume ≤ ∫ x in t₁, (-c : ℝ) ∂volume := by
+      refine setIntegral_mono_on_ae hint₁ hconst₁ ht₁meas ?_
+      filter_upwards [hbad] with x hxb hxt₁
+      exact hxb (ht₁ ▸ hxt₁).2
+    have hconstI : ∫ x in t₁, (-c : ℝ) ∂volume = -((volume t₁).toReal * c) := by
+      rw [setIntegral_const, Measure.real, smul_eq_mul]
+      ring
+    linarith
+  -- Reassemble the total drop via the fundamental theorem of calculus
+  have hFTC : ∫ (x : ℝ) in a..b, deriv f x ∂volume = f b - f a :=
+    hf.integral_deriv_eq_sub
+  have hunion : t₁ ∪ t₂ = Ioc a b := by
+    ext x
+    simp only [ht₁, ht₂, Set.mem_union, Set.mem_inter_iff, Set.mem_sdiff]
+    tauto
+  have hsplit : ∫ (x : ℝ) in a..b, deriv f x ∂volume
+      = ∫ x in t₁, deriv f x ∂volume + ∫ x in t₂, deriv f x ∂volume := by
+    have hdisj : Disjoint t₁ t₂ := by
+      rw [Set.disjoint_iff]
+      intro x hx
+      simp only [ht₁, ht₂, Set.mem_inter_iff, Set.mem_sdiff] at hx
+      exact hx.2.2 hx.1.2
+    rw [intervalIntegral.integral_of_le hab, ← hunion,
+      setIntegral_union hdisj ht₂meas hint₁ hint₂]
+  have key : (volume t₁).toReal * c ≤ f a - f b := by linarith
+  -- `volume s = volume t₁` since `s \ t₁ ⊆ {a}`
+  have hmeas_eq : volume s = volume t₁ := by
+    have hset : s = t₁ ∪ (s ∩ {a}) := by
+      ext x
+      simp only [ht₁, mem_union, mem_inter_iff, mem_Ioc, mem_singleton_iff]
+      constructor
+      · intro hxs
+        rcases eq_or_ne x a with rfl | hxa
+        · exact Or.inr ⟨hxs, rfl⟩
+        · exact Or.inl ⟨⟨lt_of_le_of_ne (hssub hxs).1 (Ne.symm hxa), (hssub hxs).2⟩, hxs⟩
+      · rintro (⟨⟨_, _⟩, hxs⟩ | ⟨hxs, _⟩)
+        · exact hxs
+        · exact hxs
+    have hdisj₂ : Disjoint t₁ (s ∩ {a}) := by
+      rw [Set.disjoint_iff]
+      intro x hx
+      simp only [ht₁, Set.mem_inter_iff, Set.mem_Ioc, Set.mem_singleton_iff] at hx
+      rcases hx with ⟨⟨⟨hax, -⟩, -⟩, -, -, rfl⟩
+      exact lt_irrefl a hax
+    rw [hset, measure_union hdisj₂ (hs.inter (measurableSet_singleton a)),
+      measure_mono_null Set.inter_subset_right Real.volume_singleton, add_zero]
+  rw [hmeas_eq]
+  exact (le_div_iff₀ hc).mpr key
+
+/-- **Potential drift lemma, monotone form**.  If `f` is absolutely continuous and antitone on
+`[a, b]`, and `deriv f ≤ -c` (with `c > 0`) on a measurable set `s ⊆ [a, b]`, then the Lebesgue
+measure of `s` is at most the total drop of `f` over `[a, b]`, divided by `c`. -/
+theorem AbsolutelyContinuousOnInterval.measure_toReal_le_of_deriv_le_of_antitoneOn
+    (hab : a ≤ b) (hc : 0 < c)
+    (hf : AbsolutelyContinuousOnInterval f a b)
+    (hanti : AntitoneOn f (Icc a b))
+    (hs : MeasurableSet s) (hssub : s ⊆ Icc a b)
+    (hbad : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ s → deriv f x ≤ -c) :
+    (volume s).toReal ≤ (f a - f b) / c := by
+  have hdiff : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ uIcc a b → DifferentiableAt ℝ f x :=
+    hf.ae_differentiableAt
+  have hioo : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ Ioo a b → deriv f x ≤ 0 := by
+    filter_upwards [hdiff] with x hxd hx
+    have hmem : Icc a b ∈ 𝓝 x := Icc_mem_nhds hx.1 hx.2
+    rw [← derivWithin_of_mem_nhds hmem]
+    exact hanti.derivWithin_nonpos
+  have hle : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ Icc a b → deriv f x ≤ 0 := by
+    rw [ae_iff]
+    refine measure_mono_null
+      (t := {x | ¬(x ∈ Ioo a b → deriv f x ≤ 0)} ∪ {a, b}) (fun x hx => ?_) ?_
+    · have hx' := not_imp.mp hx
+      by_cases hxb : x < b
+      · by_cases hax : a < x
+        · exact Or.inl (not_imp.mpr ⟨⟨hax, hxb⟩, hx'.2⟩)
+        · exact Or.inr (by simp [le_antisymm (le_of_not_gt hax) hx'.1.1])
+      · exact Or.inr (by simp [le_antisymm hx'.1.2 (le_of_not_gt hxb)])
+    · simp only [Set.insert_eq]
+      exact measure_union_null (ae_iff.mp hioo)
+        (measure_union_null Real.volume_singleton Real.volume_singleton)
+  exact measure_toReal_le_of_deriv_le hab hc hf hle hs hssub hbad
+
+/-- **Escape-time corollary** (potential budget over escape rate).  Let `f` be an antitone
+potential on the half-line `Ici 0` that is absolutely continuous on every `Icc 0 T` and
+nonnegative there, and let `s` be a measurable set on which `deriv f ≤ -c` (with `c > 0`)
+holds a.e.  Then for every horizon `T`, the Lebesgue measure of the "bad time" `s ∩ Icc 0 T`
+is at most the initial potential `f 0` divided by the escape rate `c`. -/
+theorem AbsolutelyContinuousOnInterval.measure_toReal_inter_Icc_le_of_deriv_le_of_antitoneOn
+    {f : ℝ → ℝ} {c : ℝ} {s : Set ℝ} {T : ℝ}
+    (hc : 0 < c)
+    (hs : MeasurableSet s)
+    (hfT : ∀ T, 0 ≤ T → AbsolutelyContinuousOnInterval f 0 T)
+    (hanti : AntitoneOn f (Ici 0))
+    (hfnn : ∀ x ∈ Ici 0, 0 ≤ f x)
+    (hbad : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ s → deriv f x ≤ -c) :
+    (volume (s ∩ Icc 0 T)).toReal ≤ f 0 / c := by
+  by_cases hT : 0 ≤ T
+  · have hbad' : ∀ᵐ (x : ℝ) ∂(volume : Measure ℝ), x ∈ s ∩ Icc 0 T → deriv f x ≤ -c := by
+      filter_upwards [hbad] with x hxb hx
+      exact hxb hx.1
+    have hmain := measure_toReal_le_of_deriv_le_of_antitoneOn
+      (f := f) (a := 0) (b := T) (c := c) (s := s ∩ Icc 0 T) hT hc (hfT T hT)
+      (hanti.mono fun _ hx => hx.1) (hs.inter measurableSet_Icc) Set.inter_subset_right hbad'
+    have h0T : 0 ≤ f T := hfnn T hT
+    have h1 : f 0 - f T ≤ f 0 - 0 := by linarith
+    exact hmain.trans
+      ((div_le_div_of_nonneg_right h1 hc.le).trans_eq (by simp))
+  · have hempty : s ∩ Icc 0 T = ∅ := by
+      rw [Icc_eq_empty hT]
+      simp
+    rw [hempty]
+    have h0 : (volume (∅ : Set ℝ)).toReal = 0 := by simp
+    rw [h0]
+    exact div_nonneg (hfnn 0 (by simp)) hc.le
+
+end DriftLemma
