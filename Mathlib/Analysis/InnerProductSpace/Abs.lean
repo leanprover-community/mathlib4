@@ -55,14 +55,14 @@ theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
   simp [abs_def, ← ContinuousLinearMap.nonneg_iff_isPositive]
 @[simp] theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [abs_def, T.isPositive_abs.isSelfAdjoint.adjoint_eq]
-  exact CFC.sqrt_mul_self |T| T.isPositive_abs.nonneg
+  exact CFC.sqrt_mul_self ..
 @[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
 
 theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 @[simp]
 theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
-  simp [abs_def, CFC.sqrt_eq_zero_iff, adjoint_comp_self_eq_zero_iff]
+  simp [abs_def, CFC.sqrt_eq_zero_iff]
 
 @[simp]
 theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
@@ -71,12 +71,12 @@ theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
 @[simp]
 theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
-  simp_rw [apply_norm_sq_eq_inner_adjoint_left, ContinuousLinearMap.comp_apply]
+  simp_rw [apply_norm_sq_eq_inner_adjoint_left, comp_apply]
   rw [T.isPositive_abs.isSelfAdjoint.adjoint_eq]
-  simp [abs_def, ← mul_apply_eq_comp, ContinuousLinearMap.comp_apply, CFC.sqrt_mul_sqrt_self]
+  simp [abs_def, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self]
 
 theorem ker_abs_eq_ker_adjoint_comp_self (T : E →L[ℂ] F) : |T|.ker = (T† ∘L T).ker := by
-  simpa [adjoint_abs, abs_comp_abs] using (ker_adjoint_comp_self |T|).symm
+  simpa using (ker_adjoint_comp_self |T|).symm
 
 @[simp]
 theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
@@ -87,7 +87,7 @@ theorem norm_abs (T : E →L[ℂ] F) : ‖|T|‖ = ‖T‖ := by
   simp_rw [norm_def |T|, norm_abs_apply, norm_def]
 
 theorem abs_nnrpow_two (T : E →L[ℂ] F) : |T| ^ (2 : ℝ≥0) = T† ∘L T := by
-  rw [CFC.nnrpow_two _ (T.isPositive_abs.nonneg), ContinuousLinearMap.mul_def]
+  rw [CFC.nnrpow_two .., mul_def]
   exact abs_comp_abs T
 
 theorem abs_nnrpow_two_mul (T : E →L[ℂ] F) (x : ℝ≥0) :
@@ -100,7 +100,7 @@ theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
 
 theorem abs_of_isPositive (S : E →L[ℂ] E) (hS : S.IsPositive) : |S| = S := by
   rw [abs_eq_cfcAbs]
-  exact CFC.abs_of_nonneg _ (hS.nonneg)
+  exact CFC.abs_of_nonneg ..
 
 theorem abs_of_isPositive_neg (S : E →L[ℂ] E) (hS : (-S).IsPositive) : |S| = -S := by
   rw [abs_eq_cfcAbs]
