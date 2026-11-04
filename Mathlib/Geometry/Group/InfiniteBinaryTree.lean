@@ -51,19 +51,9 @@ def root : InfiniteBinaryTree := []
 /-- The child of `v` obtained by appending the letter `i`. -/
 def succ (v : InfiniteBinaryTree) (i : Fin 2) : InfiniteBinaryTree := v ++ [i]
 
-/-- The left child of `v` (append `0`). -/
-def left (v : InfiniteBinaryTree) : InfiniteBinaryTree := v.succ 0
-
-/-- The right child of `v` (append `1`). -/
-def right (v : InfiniteBinaryTree) : InfiniteBinaryTree := v.succ 1
-
 @[simp] lemma root_eq_nil : root = [] := rfl
 
 @[simp] lemma succ_eq_append (v : InfiniteBinaryTree) (i : Fin 2) : v.succ i = v ++ [i] := rfl
-
-@[simp] lemma left_eq (v : InfiniteBinaryTree) : v.left = v ++ [0] := rfl
-
-@[simp] lemma right_eq (v : InfiniteBinaryTree) : v.right = v ++ [1] := rfl
 
 @[simp] lemma length_root : root.length = 0 := rfl
 
@@ -104,32 +94,6 @@ def symm (f : TreeAut) : TreeAut where
   rw [Equiv.apply_symm_apply] at h
   exact List.prefix_nil.mp h
 
-lemma length_lt_of_prefix_ne {v w : InfiniteBinaryTree} (h : v <+: w) (hne : v ≠ w) :
-    v.length < w.length :=
-  Nat.lt_of_le_of_ne h.length_le fun H ↦ hne (h.eq_of_length H)
-
-lemma length_map_take_ge (f : TreeAut) (v : InfiniteBinaryTree) :
-    ∀ k ≤ v.length, k ≤ (f (v.take k)).length
-  | 0, _ => Nat.zero_le _
-  | k + 1, hk => by
-    have hpref : v.take k <+: v.take (k + 1) := List.take_prefix_take_left (Nat.le_succ k)
-    have hne : v.take k ≠ v.take (k + 1) := by
-      intro h
-      have := congrArg List.length h
-      have hk' : k + 1 ≤ v.length := hk
-      simp [Nat.min_eq_left (Nat.le_of_succ_le hk'), Nat.min_eq_left hk'] at this
-    have hlt := length_lt_of_prefix_ne (f.map_isPrefix_iff.mp hpref) (f.toEquiv.injective.ne hne)
-    have ih := f.length_map_take_ge v k (Nat.le_of_succ_le hk)
-    omega
-
-/-- A tree automorphism preserves word length (the distance to the root). -/
-@[simp] lemma map_length (f : TreeAut) (v : InfiniteBinaryTree) : (f v).length = v.length := by
-  refine Nat.le_antisymm ?_ ?_
-  · have := f.symm.length_map_take_ge (f v) (f v).length le_rfl
-    simpa [List.take_length] using this
-  · have := f.length_map_take_ge v v.length le_rfl
-    simpa [List.take_length] using this
-
 @[ext] lemma ext {f g : TreeAut} (h : ∀ v, f.toEquiv v = g.toEquiv v) : f = g := by
   cases f
   cases g
@@ -157,6 +121,32 @@ instance : Group TreeAut where
   one_mul f := TreeAut.ext fun _ ↦ rfl
   mul_one f := TreeAut.ext fun _ ↦ rfl
   inv_mul_cancel f := TreeAut.ext fun v ↦ f.toEquiv.symm_apply_apply v
+
+lemma length_lt_of_prefix_ne {v w : InfiniteBinaryTree} (h : v <+: w) (hne : v ≠ w) :
+    v.length < w.length :=
+  Nat.lt_of_le_of_ne h.length_le fun H ↦ hne (h.eq_of_length H)
+
+lemma length_map_take_ge (f : TreeAut) (v : InfiniteBinaryTree) :
+    ∀ k ≤ v.length, k ≤ (f (v.take k)).length
+  | 0, _ => Nat.zero_le _
+  | k + 1, hk => by
+    have hpref : v.take k <+: v.take (k + 1) := List.take_prefix_take_left (Nat.le_succ k)
+    have hne : v.take k ≠ v.take (k + 1) := by
+      intro h
+      have := congrArg List.length h
+      have hk' : k + 1 ≤ v.length := hk
+      simp [Nat.min_eq_left (Nat.le_of_succ_le hk'), Nat.min_eq_left hk'] at this
+    have hlt := length_lt_of_prefix_ne (f.map_isPrefix_iff.mp hpref) (f.toEquiv.injective.ne hne)
+    have ih := f.length_map_take_ge v k (Nat.le_of_succ_le hk)
+    omega
+
+/-- A tree automorphism preserves word length (the distance to the root). -/
+@[simp] lemma map_length (f : TreeAut) (v : InfiniteBinaryTree) : (f v).length = v.length := by
+  refine Nat.le_antisymm ?_ ?_
+  · have := f.symm.length_map_take_ge (f v) (f v).length le_rfl
+    simpa [List.take_length] using this
+  · have := f.length_map_take_ge v v.length le_rfl
+    simpa [List.take_length] using this
 
 /-- The map underlying `phi`: apply `f₀` on the left subtree and `f₁` on the right subtree. -/
 def phiFun (f₀ f₁ : TreeAut) : InfiniteBinaryTree → InfiniteBinaryTree
@@ -430,16 +420,13 @@ lemma swapComponents_mul_self : swapComponents * swapComponents = 1 := by
 
 open Multiplicative (ofAdd toAdd)
 
-lemma zmod2_eq_zero_or_one (x : ZMod 2) : x = 0 ∨ x = 1 :=
-  fin2_eq_zero_or_one x
-
 /-- The `ℤ/2` action on `TreeAut × TreeAut` that swaps the two factors. -/
 def swapHom : Multiplicative (ZMod 2) →* MulAut (TreeAut × TreeAut) where
   toFun x := if x.toAdd = 0 then 1 else swapComponents
   map_one' := rfl
   map_mul' x y := by
-    rcases zmod2_eq_zero_or_one x.toAdd with hx | hx <;>
-      rcases zmod2_eq_zero_or_one y.toAdd with hy | hy
+    rcases ZMod.eq_zero_or_one x.toAdd with hx | hx <;>
+      rcases ZMod.eq_zero_or_one y.toAdd with hy | hy
     · simp [hx, hy]
     · simp [hx, hy]
     · simp [hx, hy]
@@ -453,8 +440,8 @@ def swapRootHom : Multiplicative (ZMod 2) →* TreeAut where
   toFun x := if x.toAdd = 0 then 1 else swapRoot
   map_one' := rfl
   map_mul' x y := by
-    rcases zmod2_eq_zero_or_one x.toAdd with hx | hx <;>
-      rcases zmod2_eq_zero_or_one y.toAdd with hy | hy
+    rcases ZMod.eq_zero_or_one x.toAdd with hx | hx <;>
+      rcases ZMod.eq_zero_or_one y.toAdd with hy | hy
     · simp [hx, hy]
     · simp [hx, hy]
     · simp [hx, hy]
@@ -475,7 +462,7 @@ lemma phiHom_compat (g : Multiplicative (ZMod 2)) :
     phiHom.comp (swapHom g).toMonoidHom =
       (MulAut.conj (swapRootHom g)).toMonoidHom.comp phiHom := by
   refine MonoidHom.ext fun p ↦ TreeAut.ext fun v ↦ ?_
-  rcases zmod2_eq_zero_or_one g.toAdd with h | h
+  rcases ZMod.eq_zero_or_one g.toAdd with h | h
   · have hg : g = 1 := by rw [← ofAdd_toAdd g, h]; rfl
     simp [hg]
   · have hg : g = ofAdd 1 := by rw [← ofAdd_toAdd g, h]
@@ -577,7 +564,7 @@ lemma ofSemidirect_toSemidirect (f : TreeAut) : ofSemidirect (toSemidirect f) = 
 lemma toSemidirect_ofSemidirect (x : (TreeAut × TreeAut) ⋊[swapHom] Multiplicative (ZMod 2)) :
     toSemidirect (ofSemidirect x) = x := by
   rcases x with ⟨⟨f₀, f₁⟩, ε⟩
-  rcases zmod2_eq_zero_or_one ε.toAdd with h | h
+  rcases ZMod.eq_zero_or_one ε.toAdd with h | h
   · have hε : ε = 1 := by rw [← ofAdd_toAdd ε, h]; rfl
     rw [hε, ofSemidirect_apply]
     change toSemidirect (phi f₀ f₁ * swapRootHom 1) = ⟨(f₀, f₁), 1⟩

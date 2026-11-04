@@ -957,6 +957,12 @@ theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
   CharP.neg_one_ne_one (ZMod n) n
 
+/-- Every element of `ZMod 2` is `0` or `1`. -/
+theorem eq_zero_or_one (a : ZMod 2) : a = 0 ∨ a = 1 := by
+  fin_cases a
+  · exact Or.inl rfl
+  · exact Or.inr rfl
+
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
