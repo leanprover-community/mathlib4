@@ -235,9 +235,6 @@ lemma nullSingletonClass_gaussianReal {μ : ℝ} {v : ℝ≥0} (h : v ≠ 0) :
   rw [gaussianReal_of_var_ne_zero _ h]
   infer_instance
 
-@[deprecated (since := "2026-06-09")]
-alias noAtoms_gaussianReal := nullSingletonClass_gaussianReal
-
 lemma gaussianReal_apply (μ : ℝ) {v : ℝ≥0} (hv : v ≠ 0) (s : Set ℝ) :
     gaussianReal μ v s = ∫⁻ x in s, gaussianPDF μ v x := by
   rw [gaussianReal_of_var_ne_zero _ hv, withDensity_apply' _ s]

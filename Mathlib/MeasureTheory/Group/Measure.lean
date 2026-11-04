@@ -952,9 +952,6 @@ instance (priority := 100) IsHaarMeasure.nullSingletonClass [IsTopologicalGroup 
     exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
 
-@[deprecated (since := "2026-06-09")]
-alias IsHaarMeasure.noAtoms := IsHaarMeasure.nullSingletonClass
-
 instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
     [MeasurableSpace A] [TopologicalSpace A] [BorelSpace A] [IsTopologicalAddGroup A]
     [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure] (g : Gᵈᵐᵃ) :

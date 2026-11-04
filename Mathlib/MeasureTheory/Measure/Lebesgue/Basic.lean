@@ -165,9 +165,6 @@ theorem volume_closedEBall (a : ℝ) (r : ℝ≥0∞) : volume (Metric.closedEBa
 instance nullSingletonClass_volume : NullSingletonClass (volume : Measure ℝ) :=
   ⟨fun _ => volume_singleton⟩
 
-@[deprecated (since := "2026-06-09")]
-alias noAtoms_volume := nullSingletonClass_volume
-
 @[simp]
 theorem volume_interval {a b : ℝ} : volume (uIcc a b) = ofReal |b - a| := by
   rw [← Icc_min_max, volume_Icc, max_sub_min_eq_abs]

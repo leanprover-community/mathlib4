@@ -95,9 +95,6 @@ theorem exists_eq_interval_average_of_nullSingletonClass
     (hint.mono_set hs') (measure_ne_top_of_subset hs' hμfin) hμ0'
   exact ⟨c, hc, by rwa [← setAverage_congr hs_ev]⟩
 
-@[deprecated (since := "2026-06-09")]
-alias exists_eq_interval_average_of_noAtoms := exists_eq_interval_average_of_nullSingletonClass
-
 /-- The mean value theorem for integrals:
 There exists a point in an interval such that the mean of a continuous function over the interval
 equals the value of the function at the point. -/

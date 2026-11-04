@@ -237,9 +237,6 @@ lemma nullSingletonClass (h : ∀ x, μ ≠ Measure.dirac x) : NullSingletonClas
     refine measure_mono_null ?_ hL_zero
     exact fun ⦃a⦄ ↦ congrArg ⇑L
 
-@[deprecated (since := "2026-06-09")]
-alias noAtoms := nullSingletonClass
-
 /-- Characteristic function of a centered Gaussian measure. -/
 lemma charFunDual_eq_of_integral_eq_zero (hμ : μ[id] = 0) (L : StrongDual ℝ E) :
     charFunDual μ L = exp (- Var[L; μ] / 2) := by
