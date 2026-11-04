@@ -7,7 +7,8 @@ Mario Carneiro
 module
 
 public import Mathlib.Data.List.Defs
-public import Mathlib.Logic.Basic
+
+import Mathlib.Basic.Logic.Basic
 
 /-! # getD and getI
 

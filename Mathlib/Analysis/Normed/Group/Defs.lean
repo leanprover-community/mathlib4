@@ -5,12 +5,14 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.Seminorm
-public import Mathlib.Topology.Order.Real
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Order.Module.Field
+public import Mathlib.Analysis.Normed.Group.Seminorm
 public import Mathlib.Tactic.Group
 public import Mathlib.Topology.MetricSpace.Defs
+public import Mathlib.Topology.Order.Real
+
+import Mathlib.Tactic.Basify.Attr
 
 /-!
 # (Semi)normed groups: definitions
@@ -48,7 +50,7 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {α E G : Type*}
 
 open Filter Bornology
 open ENNReal Filter NNReal
@@ -86,6 +88,7 @@ variable {E : Type*} [NNNorm E] {x : E} {r : ℝ≥0}
 
 instance NNNorm.toENorm : ENorm E where enorm := (‖·‖₊ : E → ℝ≥0∞)
 
+@[basify_op]
 lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
@@ -410,8 +413,8 @@ abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminor
   norm := f
   dist_eq _ _ := rfl
   dist_self x := by simp only [inv_mul_cancel, map_one_eq_zero]
-  dist_triangle x y z := by convert! map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
-  dist_comm x y := by convert! map_inv_eq_map f (y⁻¹ * x) using 2; group
+  dist_triangle x y z := by convert map_mul_le_add f (x⁻¹ * y) (y⁻¹ * z) using 2; group
+  dist_comm x y := by convert map_inv_eq_map f (y⁻¹ * x) using 2; group
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the

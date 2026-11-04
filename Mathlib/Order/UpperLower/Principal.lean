@@ -35,17 +35,17 @@ variable [Preorder α] [Preorder β] {s : UpperSet α} {a b : α}
 
 /-- Principal upper set. `Set.Ici` as an upper set. The smallest upper set containing a given
 element. -/
-@[to_dual
+@[to_dual (attr := implicit_reducible)
 /-- Principal lower set. `Set.Iic` as a lower set. The smallest lower set containing a given
 element. -/]
 def Ici (a : α) : UpperSet α :=
-  ⟨Set.Ici a, isUpperSet_Ici a⟩
+  ⟨.Ici a, .Ici a⟩
 
 /-- Strict principal upper set. `Set.Ioi` as an upper set. -/
-@[to_dual
+@[to_dual (attr := implicit_reducible)
 /-- Strict principal lower set. `Set.Iio` as a lower set. -/]
 def Ioi (a : α) : UpperSet α :=
-  ⟨Set.Ioi a, isUpperSet_Ioi a⟩
+  ⟨.Ioi a, .Ioi a⟩
 
 @[to_dual (attr := simp)]
 theorem coe_Ici (a : α) : ↑(Ici a) = Set.Ici a :=

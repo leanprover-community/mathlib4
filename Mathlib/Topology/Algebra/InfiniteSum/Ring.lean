@@ -6,11 +6,9 @@ Authors: Johannes Hölzl
 module
 
 public import Mathlib.Algebra.BigOperators.NatAntidiagonal
-public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 public import Mathlib.Topology.Algebra.InfiniteSum.NatInt
-public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 
 /-!
@@ -42,9 +40,11 @@ theorem HasSum.mul_left (a₂) (h : HasSum f a₁ L) : HasSum (fun i ↦ a₂ * 
 theorem HasSum.mul_right (a₂) (hf : HasSum f a₁ L) : HasSum (fun i ↦ f i * a₂) (a₁ * a₂) L := by
   simpa only using! hf.map (AddMonoidHom.mulRight a₂) (continuous_id.mul continuous_const)
 
+@[fun_prop]
 theorem Summable.mul_left (a) (hf : Summable f L) : Summable (fun i ↦ a * f i) L :=
   (hf.hasSum.mul_left _).summable
 
+@[fun_prop]
 theorem Summable.mul_right (a) (hf : Summable f L) : Summable (fun i ↦ f i * a) L :=
   (hf.hasSum.mul_right _).summable
 
@@ -320,6 +320,7 @@ section Ordered
 variable [LinearOrder ι] [LocallyFiniteOrderBot ι]
 
 /-- The infinite version of `Finset.prod_one_add_ordered`. -/
+@[to_dual tprod_one_add_ordered']
 theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 + f j))
     (hprod : Multipliable (1 + f ·)) :
@@ -328,7 +329,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   · simp
   obtain ⟨x, hx⟩ := hprod
   obtain ⟨a, ha⟩ := hsum
-  convert! hx.tprod_eq
+  convert hx.tprod_eq
   unfold HasProd at hx
   conv at hx in fun _ ↦ _ => ext _; rw [prod_one_add_ordered] -- simp_rw would cause loop
   rw [ha.tsum_eq]
@@ -340,6 +341,7 @@ theorem tprod_one_add_ordered [T2Space α] [ContinuousAdd α]
   grind
 
 /-- The infinite version of `Finset.prod_one_sub_ordered`. -/
+@[to_dual tprod_one_sub_ordered']
 theorem tprod_one_sub_ordered {α : Type*} {f : ι → α}
     [CommRing α] [TopologicalSpace α] [T2Space α] [IsTopologicalAddGroup α]
     (hsum : Summable fun i ↦ f i * ∏ j ∈ Iio i, (1 - f j))

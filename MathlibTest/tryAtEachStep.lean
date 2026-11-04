@@ -1,11 +1,17 @@
-import Mathlib.Tactic.Common
-import Mathlib.Tactic.TacticAnalysis.Declarations
+module
+
+public import Mathlib.Tactic.Common
+public import Mathlib.Tactic.TacticAnalysis.Declarations
 
 -- Disable timing in tests to avoid non-deterministic output
 set_option linter.tacticAnalysis.tryAtEachStep.showTiming false
 set_option linter.tacticAnalysis.tryAtEachStepAesop true
 
-/-- info: `rfl` can be replaced with `aesop` -/
+/--
+info: `rfl` can be replaced with `aesop`
+
+Note: This linter can be disabled with `set_option linter.tacticAnalysis.tryAtEachStepAesop false`
+-/
 #guard_msgs in
 theorem foo : 2 + 2 = 4 := by
   rfl

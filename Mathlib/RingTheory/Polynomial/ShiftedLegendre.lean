@@ -19,7 +19,7 @@ polynomial in `ℤ[X]`. We prove some basic properties of the Legendre polynomia
 * `shiftedLegendre_eval_symm`: The values of the shifted Legendre polynomial at `x` and `1 - x`
   differ by a factor `(-1)ⁿ`.
 
-## Reference
+## References
 
 * <https://en.wikipedia.org/wiki/Legendre_polynomials>
 

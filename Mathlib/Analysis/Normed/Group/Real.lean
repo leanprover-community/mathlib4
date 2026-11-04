@@ -20,7 +20,7 @@ normed group
 public section
 
 
-variable {𝓕 α ι κ E F G : Type*}
+variable {E : Type*}
 
 open Filter
 open ENNReal Filter NNReal
@@ -31,6 +31,8 @@ instance : NNNorm ℝ≥0 where
   nnnorm x := x
 
 @[simp] lemma nnnorm_eq_self (x : ℝ≥0) : ‖x‖₊ = x := rfl
+
+@[simp] lemma enorm_eq_coe (x : ℝ≥0) : ‖x‖ₑ = x := rfl
 
 end NNReal
 
@@ -122,7 +124,7 @@ end Real
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] {a : E}
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε]
 
 @[to_additive (attr := simp high) norm_norm] -- Higher priority as a shortcut lemma.

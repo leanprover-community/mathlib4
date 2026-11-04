@@ -5,8 +5,10 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Higher smoothness of continuously polynomial functions
@@ -29,7 +31,7 @@ variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
-variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
+variable {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-- A polynomial function is infinitely differentiable. -/

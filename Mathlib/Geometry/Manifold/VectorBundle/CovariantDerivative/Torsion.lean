@@ -5,7 +5,6 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 -/
 module
 
-public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
 public import Mathlib.Geometry.Manifold.VectorField.LieBracket
 
@@ -46,8 +45,8 @@ private def torsionAux
   fun X Y x ↦ cov Y x (X x) - cov X x (Y x) - VectorField.mlieBracket I X Y x
 
 variable [IsManifold I 2 M] [CompleteSpace E]
-  {cov cov' : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
-  {X X' Y : Π x : M, TangentSpace I x}
+  {cov : (Π x : M, TangentSpace I x) → (Π x : M, TangentSpace I x →L[𝕜] TangentSpace I x)}
+  {X Y : Π x : M, TangentSpace I x}
 
 private theorem torsionAux_tensorial₁ (hcov : IsCovariantDerivativeOn E cov) (x : M)
     (Y : Π x, TangentSpace I x) :

@@ -5,8 +5,8 @@ Authors: Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 public import Mathlib.Order.Atoms
+public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-! # Simple rings
 

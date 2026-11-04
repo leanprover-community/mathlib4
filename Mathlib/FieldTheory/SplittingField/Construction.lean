@@ -36,11 +36,11 @@ noncomputable section
 
 universe u v w
 
-variable {F : Type u} {K : Type v} {L : Type w}
+variable {K : Type v} {L : Type w}
 
 namespace Polynomial
 
-variable [Field K] [Field L] [Field F]
+variable [Field K] [Field L]
 
 open Polynomial
 
@@ -251,10 +251,10 @@ instance instField : Field (SplittingField f) where
   nnratCast_def q := by change algebraMap K _ _ = _; simp_rw [NNRat.cast_def, map_div₀, map_natCast]
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]
-  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' <| by
-    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
+  nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, NNRat.smul_def]))
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr(Quotient.mk'' $(by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
 
 instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
   charZero_of_injective_algebraMap (algebraMap K _).injective

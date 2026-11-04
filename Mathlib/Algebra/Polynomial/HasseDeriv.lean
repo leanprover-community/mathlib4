@@ -9,8 +9,9 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Data.Nat.Choose.Vandermonde
-public import Mathlib.Tactic.Field
 public import Mathlib.Tactic.Positivity
+
+import Mathlib.Tactic.Field
 
 /-!
 # Hasse derivative of polynomials
@@ -66,13 +67,14 @@ theorem hasseDeriv_apply :
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
-  rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial]
+  rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial,
+    Finsupp.single_apply]
   · simp
   · #adaptation_note
     /-- Prior to nightly-2025-08-14, this was working as
     `grind [coeff_monomial, Nat.choose_eq_zero_of_lt, Nat.cast_zero, zero_mul]` -/
     intro i _hi hink
-    rw [coeff_monomial]
+    rw [coeff_monomial, Finsupp.single_apply]
     by_cases hik : i < k
     · simp only [Nat.choose_eq_zero_of_lt hik, ite_self, Nat.cast_zero, zero_mul]
     · grind
@@ -84,7 +86,7 @@ theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
-  LinearMap.ext <| hasseDeriv_zero'
+  LinearMap.ext hasseDeriv_zero'
 
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
@@ -98,13 +100,13 @@ theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by
 
 @[simp]
 theorem hasseDeriv_one : @hasseDeriv R _ 1 = derivative :=
-  LinearMap.ext <| hasseDeriv_one'
+  LinearMap.ext hasseDeriv_one'
 
 @[simp]
 theorem hasseDeriv_monomial (n : ℕ) (r : R) :
     hasseDeriv k (monomial n r) = monomial (n - k) (↑(n.choose k) * r) := by
   ext i
-  simp only [hasseDeriv_coeff, coeff_monomial]
+  simp only [hasseDeriv_coeff, coeff_monomial, Finsupp.single_apply]
   by_cases hnik : n = i + k
   · grind
   · rw [ite_eq_right hnik, mul_zero]
@@ -124,14 +126,20 @@ theorem hasseDeriv_X (hk : 1 < k) : hasseDeriv k (X : R[X]) = 0 := by
   rw [← monomial_one_one_eq_X, hasseDeriv_monomial, Nat.choose_eq_zero_of_lt hk, Nat.cast_zero,
     zero_mul, monomial_zero_right]
 
+@[simp]
+theorem hasseDeriv_map {S : Type*} [Semiring S] (f : R →+* S) (k : ℕ) (p : R[X]) :
+    hasseDeriv k (p.map f) = (hasseDeriv k p).map f := by
+  ext
+  simp [hasseDeriv_coeff]
+
 theorem factorial_smul_hasseDeriv : ⇑(k ! • @hasseDeriv R _ k) = (@derivative R _)^[k] := by
   induction k with
   | zero => rw [hasseDeriv_zero, factorial_zero, iterate_zero, one_smul, LinearMap.id_coe]
   | succ k ih => ?_
-  ext f n : 2
+  ext f n : 3
   rw [iterate_succ_apply', ← ih]
-  simp only [LinearMap.smul_apply, coeff_smul, LinearMap.map_smul_of_tower, coeff_derivative,
-    hasseDeriv_coeff, ← @choose_symm_add _ k]
+  simp only [LinearMap.smul_apply, AddMonoidAlgebra.coeff_smul_apply, LinearMap.map_smul_of_tower,
+    coeff_derivative, hasseDeriv_coeff, ← @choose_symm_add _ k]
   simp only [nsmul_eq_mul, factorial_succ, mul_assoc, succ_eq_add_one, ← add_assoc,
     add_right_comm n 1 k, ← cast_succ]
   rw [← (cast_commute (n + 1) (f.coeff (n + k + 1))).eq]
@@ -189,7 +197,7 @@ theorem hasseDeriv_natDegree_eq_C : f.hasseDeriv f.natDegree = C f.leadingCoeff 
   rw [eq_C_of_natDegree_le_zero this, hasseDeriv_coeff, zero_add, Nat.choose_self,
     Nat.cast_one, one_mul, leadingCoeff]
 
-theorem natDegree_hasseDeriv [IsAddTorsionFree R] (p : R[X]) (n : ℕ) :
+theorem natDegree_hasseDeriv [HasUniqueDiv R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   classical
   refine map_natDegree_eq_sub (fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _) ?_

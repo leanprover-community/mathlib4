@@ -90,7 +90,6 @@ instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 instance [PreservesColimitsOfSize.{w, w} F] : F.IsCardinalAccessible κ where
 
-set_option backward.defeqAttrib.useBackward true in
 instance (A : C) : IsCardinalAccessible ((Functor.const C).obj A) κ where
   preservesColimitOfShape J _ _ :=
     { preservesColimit {F} :=
@@ -117,6 +116,9 @@ variable (F : C ⥤ D)
 lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessible F κ] : IsAccessible.{w} F where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+instance : IsAccessible.{w} (𝟭 C) :=
+  ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
 
 instance {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E) [IsAccessible.{w} F]
     [IsAccessible.{w} G] : IsAccessible.{w} (F ⋙ G) := by
@@ -197,7 +199,6 @@ instance : (isCardinalPresentable C κ).IsClosedUnderIsomorphisms where
     rw [isCardinalPresentable_iff] at hX ⊢
     exact isCardinalPresentable_of_iso e _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
     IsCardinalPresentable (e.functor.obj X) κ := by
@@ -234,7 +235,6 @@ lemma isCardinalPresentable_iff_of_isEquivalence
     infer_instance
 
 variable {X κ} in
-set_option backward.defeqAttrib.useBackward true in
 open IsFiltered in
 lemma IsCardinalPresentable.mk
     (hX : ∀ (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ]
@@ -347,7 +347,6 @@ lemma IsCardinalPresentable.exists_eq_of_isColimit' [IsCardinalPresentable X κ]
   have := isFiltered_of_isCardinalFiltered J κ
   exact exists_eq_of_preservesColimit_coyoneda_self hc f₁ f₂ hf
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a commutative square where both objects on the top are `κ`-presentable
 and the bottom map is a colimit of a natural transformation `f : X ⟶ Y` between
 functors in `J ⥤ C` where `J` is `κ`-filtered, the commutative square can be
@@ -416,6 +415,7 @@ class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
 
+variable {κ} in
 lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     HasCardinalFilteredColimits C κ' where

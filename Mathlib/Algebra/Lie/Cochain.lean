@@ -27,7 +27,7 @@ general theory of Lie algebra cohomology.
 * construction and classification of central extensions
 
 ## References
-* [H. Cartan, S. Eilenberg, *Homological Algebra*](cartan-eilenberg-1956)
+* [H. Cartan, S. Eilenberg, *Homological Algebra*][cartan-eilenberg-1956]
 
 -/
 
@@ -53,11 +53,12 @@ section
 
 variable {R L M}
 
+@[macro_inline]
 instance : FunLike (twoCochain R L M) L (L →ₗ[R] M) where
   coe := fun a x ↦ a.1 x
   coe_injective _ _ h := by
     ext
-    exact congrFun (congrArg DFunLike.coe (congrFun h _)) _
+    congrm $h _ _
 
 instance : LinearMapClass (twoCochain R L M) R L (L →ₗ[R] M) where
   map_add a := a.1.map_add
@@ -125,13 +126,13 @@ def d₂₃ : twoCochain R L M →ₗ[R] L →ₗ[R] L →ₗ[R] L →ₗ[R] M w
       toFun y := {
         toFun z := ⁅x, a y z⁆ - ⁅y, a x z⁆ + ⁅z, a x y⁆ - a ⁅x, y⁆ z + a ⁅x, z⁆ y - a ⁅y, z⁆ x
         map_add' _ _ := by simp; abel
-        map_smul' _ _ := by simp; abel_nf; simp }
+        map_smul' _ _ := by simp [smul_sub] }
       map_add' _ _ := by ext; simp; abel
-      map_smul' _ _ := by ext; simp; abel_nf; simp }
+      map_smul' _ _ := by ext; simp [smul_sub] }
     map_add' _ _ := by ext; simp; abel
-    map_smul' _ _ := by ext; simp; abel_nf; simp }
+    map_smul' _ _ := by ext; simp [smul_sub] }
   map_add' _ _ := by ext; simp; abel
-  map_smul' _ _ := by ext; simp; abel_nf; simp
+  map_smul' _ _ := by ext; simp [smul_sub]
 
 @[simp]
 lemma d₂₃_apply (a : twoCochain R L M) (x y z : L) :
@@ -146,7 +147,7 @@ lemma d₂₃_comp_d₁₂ : (d₂₃ R L M) ∘ₗ (d₁₂ R L M) = 0 := by
     d₁₂_apply_coe_apply_apply R L M, lie_sub, lie_lie]
   rw [leibniz_lie y x, leibniz_lie z x, leibniz_lie z y]
   have : a ⁅y, ⁅z, x⁆⁆ = a ⁅x, ⁅z, y⁆⁆ + a ⁅z, ⁅y, x⁆⁆ := by
-    rw [congr_arg a (leibniz_lie y z x), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
+    rw [congr(a $(leibniz_lie y z x)), ← lie_skew, ← lie_skew z y, lie_neg, map_add]
   simp only [lie_lie, sub_add_cancel, map_sub, ← lie_skew x y, ← lie_skew x z, ← lie_skew y z,
     lie_neg, map_neg, this]
   abel

@@ -1,7 +1,9 @@
-import Mathlib.Tactic.Widget.StringDiagram
-import ProofWidgets.Component.Panel.SelectionPanel
+module
 
-/-! ## Example use of string diagram widgets -/
+public import Mathlib.Tactic.Widget.StringDiagram
+public import ProofWidgets.Component.Panel.SelectionPanel
+
+/-! # Example use of string diagram widgets -/
 
 open ProofWidgets Mathlib.Tactic.Widget
 

@@ -5,9 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
-public import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -33,7 +31,7 @@ open Function
 
 universe u'' u' u v w
 
-variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v} {ι : Type w}
+variable {G : Type u''} {S : Type u'} {R : Type u} {M : Type v}
 
 /-- A submodule of a module is one which is closed under vector operations.
   This is a sufficient condition for the subset of vectors in the submodule
@@ -55,7 +53,7 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M) M
+instance : PartialOrder (Submodule R M) := .ofSetLike (Submodule R M)
 
 initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
 
@@ -198,7 +196,7 @@ variable [Semiring R] [AddCommMonoid M]
 -- We can infer the module structure implicitly from the bundled submodule,
 -- rather than via typeclass resolution.
 variable {module_M : Module R M}
-variable {p q : Submodule R M}
+variable {p : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
@@ -313,7 +311,7 @@ section AddCommGroup
 variable [Ring R] [AddCommGroup M]
 variable {module_M : Module R M}
 variable (p p' : Submodule R M)
-variable {r : R} {x y : M}
+variable {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
   { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }

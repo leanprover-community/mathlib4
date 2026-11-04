@@ -6,9 +6,10 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Generator.Basic
-public import Mathlib.CategoryTheory.Limits.ConeCategory
-public import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
-public import Mathlib.CategoryTheory.Subobject.Comma
+
+import Mathlib.CategoryTheory.Limits.ConeCategory
+import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
+import Mathlib.CategoryTheory.Subobject.Comma
 
 /-!
 # Adjoint functor theorem
@@ -46,7 +47,6 @@ namespace CategoryTheory
 
 open Limits
 
-variable {J : Type v}
 variable {C : Type u} [Category.{v} C]
 
 /-- The functor `G : D ⥤ C` satisfies the *solution set condition* if for every `A : C`, there is a

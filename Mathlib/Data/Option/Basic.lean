@@ -5,14 +5,14 @@ Authors: Mario Carneiro
 -/
 module
 
+public meta import Aesop
+public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs
-public import Mathlib.Logic.Relator
-public import Mathlib.Util.CompileInductive
-public import Aesop
-public import Batteries.Tactic.Lint.Simp
 public import Mathlib.Logic.Function.Basic
-public import Mathlib.Logic.IsEmpty.Defs
+public import Mathlib.Logic.Relator
+
+import Batteries.Tactic.Lint.Simp
 
 /-!
 # Option of a type
@@ -213,7 +213,7 @@ lemma elim'_update {α : Type*} {β : Type*} [DecidableEq α]
     (f : β) (g : α → β) (a : α) (x : β) :
     Option.elim' f (update g a x) = update (Option.elim' f g) (some a) x :=
   -- Can't reuse `Option.rec_update` as `Option.elim'` is not defeq.
-  Function.rec_update (α := fun _ => β) (@Option.some.inj _) (Option.elim' f) (fun _ _ => rfl) (fun
+  Function.rec_update (α := fun _ => β) (Option.elim' f) (fun _ _ => rfl) (fun
     | _, _, some _, h => (h _ rfl).elim
     | _, _, none, _ => rfl) _ _ _
 
