@@ -7413,7 +7413,6 @@ public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.TensorProduct.Pi
-public import Mathlib.RingTheory.TensorProduct.Quotient
 public import Mathlib.RingTheory.TensorProduct.Quotient.Algebra
 public import Mathlib.RingTheory.TensorProduct.Quotient.Projective
 public import Mathlib.RingTheory.TensorProduct.Quotient.Torsion
