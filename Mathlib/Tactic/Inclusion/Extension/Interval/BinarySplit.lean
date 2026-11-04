@@ -10,7 +10,9 @@ public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 /-!
 # Binary splitting of intervals
 
-This file defines the shared binary splitting parameter and builder.
+This file defines the inclusion parameter `binSplit` for binary splitting of intervals, and a shared
+expression builder `mkBinarySplitCover` for constructing the binary-splitting cover in Interval
+expressions.
 -/
 
 public section
@@ -25,7 +27,11 @@ meta def binarySplitParam : InclusionParamDecl where
   name := `binSplit
   type := q(ℕ)
 
-/-- Construct the binary-splitting cover. -/
+/-- Construct the binary-splitting cover from the `binSplit` parameter.
+
+If `binSplit` is omitted, return `none`. Otherwise, for `binSplit := n`, return `some` of the
+expression `cover n`. At depth `0`, the cover uses the original interval without splitting.
+At positive depth `n`, it bisects bounded intervals up to depth `n` and coarsens the results. -/
 @[inline]
 meta def mkBinarySplitCover {u v : Level} {Iα : Q(Type u)} {α : Q(Type v)}
     {inst : Q(ToSet $Iα $α)} (cover : Q(ℕ → @Cover.{0} $Iα $α $inst)) :

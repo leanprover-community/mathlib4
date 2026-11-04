@@ -44,8 +44,8 @@ theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
       · let m := (l + u) / 2
         by_cases hl : x ≤ m
         · exact Coarsen.mem_coarsen_left (ih ⟨hx.1, WithTop.coe_le_coe.mpr hl⟩)
-        · exact Coarsen.mem_coarsen_right
-            (ih ⟨WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt (lt_of_not_ge hl)), hx.2⟩)
+        · apply Coarsen.mem_coarsen_right
+          exact (ih ⟨WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt (lt_of_not_ge hl)), hx.2⟩)
       · exact hy _ hx
     | ⟨⊥, ⊤⟩ | ⟨⊥, some u⟩ | ⟨some l, ⊤⟩ => exact hy _ hx
 
