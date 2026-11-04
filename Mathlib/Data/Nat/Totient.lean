@@ -437,7 +437,7 @@ theorem prime_pow_pow_totient_ediv_prod {p : ℕ} (k : ℕ) (hp : p.Prime) :
 
 theorem prod_primeFactors_pow_totient_ediv_dvd (n : ℕ) :
     ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) ∣ n ^ φ n := by
-  rcases eq_or_ne n 0 with rfl| hn
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   have := Nat.prod_primeFactors_dvd n
   rw [← Nat.pow_dvd_pow_iff (Nat.totient_pos.mpr hn.pos).ne', ← Finset.prod_pow] at this
