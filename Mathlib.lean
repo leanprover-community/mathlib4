@@ -5551,6 +5551,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
