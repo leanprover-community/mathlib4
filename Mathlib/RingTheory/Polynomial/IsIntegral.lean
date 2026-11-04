@@ -54,8 +54,8 @@ lemma isIntegral_coeff_of_factors (p : S[X])
     simpa [sub_eq_zero]
   rintro ⟨a, ⟨i, hi⟩⟩ -
   obtain ⟨x, hx, rfl⟩ := Multiset.mem_map.mp (Multiset.count_pos.mp (i.zero_le.trans_lt hi))
-  simp [coeff_X, coeff_C, IsIntegral.sub, apply_ite (IsIntegral R),
-    isIntegral_one, isIntegral_zero, hpr x (H hx)]
+  refine fun _ ↦ .sub ?_ ?_ <;>
+    simp [Finsupp.single_apply, apply_ite, isIntegral_zero, isIntegral_one, hpr x (H hx)]
 
 open scoped TensorProduct in
 @[stacks 00H6 "(1)"]
@@ -100,7 +100,7 @@ lemma IsAlmostIntegral.coeff [IsDomain R] [FaithfulSMul R S]
   induction hn : p.natDegree using Nat.strong_induction_on generalizing p with | ind n IH
   by_cases hp' : p.natDegree = 0
   · obtain ⟨p, rfl⟩ := natDegree_eq_zero.mp hp'
-    simp only [coeff_C]
+    simp only [coeff_C_apply]
     split_ifs with h
     · simpa using H hp
     · exact (completeIntegralClosure R S).zero_mem
@@ -158,7 +158,7 @@ protected lemma IsIntegral.coeff
 theorem Polynomial.isIntegral_iff_isIntegral_coeff {f : S[X]} :
     IsIntegral R[X] f ↔ ∀ n, IsIntegral R (f.coeff n) := by
   refine ⟨IsIntegral.coeff, fun H ↦ ?_⟩
-  rw [← f.sum_monomial_eq, Polynomial.sum]
+  rw [← f.sum_coeff_monomial, Finsupp.sum]
   simp only [← C_mul_X_pow_eq_monomial, ← map_X (algebraMap R S)]
   exact .sum _ fun i _ ↦ ((H i).map (CAlgHom (R := R))).tower_top.mul (.pow isIntegral_algebraMap _)
 

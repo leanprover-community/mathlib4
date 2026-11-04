@@ -85,9 +85,10 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     rw [← eval_sub]
     simp only [ha, norm_zero, add_zero]
     rw [(g - f).as_sum_range' (g.natDegree + 1)]
-    · congr
-      simp [← C_mul_X_pow_eq_monomial]
-    · simpa [hdeg, Nat.lt_succ_iff] using g.natDegree_sub_le f
+    · simp [← C_mul_X_pow_eq_monomial]
+    · grw [degree_le_natDegree, natDegree_sub_le]
+      norm_cast
+      simp [hdeg]
   _ ≤ ∑ i ∈ Finset.range (g.natDegree + 1), ‖(g.coeff i - f.coeff i) * a ^ i‖ := by
     have := norm_sum_le (Finset.range (g.natDegree + 1))
         (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)

@@ -138,14 +138,12 @@ theorem mirror_leadingCoeff : p.mirror.leadingCoeff = p.trailingCoeff := by
   rw [← p.mirror_mirror, mirror_trailingCoeff, p.mirror_mirror]
 
 theorem coeff_mul_mirror :
-    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.sum fun _ => (· ^ 2) := by
-  rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk]
-  refine
-    (Finset.sum_congr rfl fun n hn => ?_).trans
-      (p.sum_eq_of_subset (fun _ ↦ (· ^ 2)) (fun _ ↦ zero_pow two_ne_zero) fun n hn ↦
-          Finset.mem_range_succ_iff.mpr
-            ((le_natDegree_of_mem_supp n hn).trans (Nat.le_add_right _ _))).symm
-  rw [coeff_mirror, ← revAt_le (Finset.mem_range_succ_iff.mp hn), revAt_invol, ← sq]
+    (p * p.mirror).coeff (p.natDegree + p.natTrailingDegree) = p.coeff.sum fun _ => (· ^ 2) := by
+  rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk,
+    p.coeff.sum_of_support_subset (s := .range <| p.natDegree + p.natTrailingDegree + 1)
+      (supp_subset_range <| by grw [degree_le_natDegree]; norm_cast; lia) _ (by simp)]
+  congr! with n hn
+  simp  [coeff_mirror, ← revAt_le (Finset.mem_range_succ_iff.mp hn), revAt_invol, ← sq]
 
 variable [NoZeroDivisors R]
 

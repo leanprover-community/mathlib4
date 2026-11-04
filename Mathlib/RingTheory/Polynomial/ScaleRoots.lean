@@ -137,7 +137,7 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
   calc
     _ = (scaleRoots p s).support.sum fun i =>
           f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i := by
-      simp [eval₂_eq_sum, sum_def]
+      simp [eval₂_eq_sum_coeff, Finsupp.sum, support]
     _ = p.support.sum fun i => f (coeff p i * s ^ (p.natDegree - i)) * (f s * a) ^ i :=
       (Finset.sum_subset (support_scaleRoots_le p s) fun i _hi hi' => by
         let : coeff p i * s ^ (p.natDegree - i) = 0 := by simpa using hi'
@@ -149,7 +149,8 @@ theorem scaleRoots_eval₂_mul_of_commute {p : S[X]} (f : S →+* A) (a : A) (s 
       Finset.sum_congr rfl fun i hi => by
         rw [mul_assoc, ← map_pow, (hf _ _).left_comm, map_pow, tsub_add_cancel_of_le]
         exact le_natDegree_of_ne_zero (Polynomial.mem_support_iff.mp hi)
-    _ = f s ^ p.natDegree * eval₂ f a p := by simp [← Finset.mul_sum, eval₂_eq_sum, sum_def]
+    _ = f s ^ p.natDegree * eval₂ f a p := by
+      simp [← Finset.mul_sum, eval₂_eq_sum_coeff, Finsupp.sum, support]
 
 theorem scaleRoots_eval₂_mul {p : S[X]} (f : S →+* R) (r : R) (s : S) :
     eval₂ f (f s * r) (scaleRoots p s) = f s ^ p.natDegree * eval₂ f r p :=

@@ -78,7 +78,7 @@ theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
   simp only [one_pow,
     Algebra.TensorProduct.tmul_pow]
   rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with i' <;> simp [single]
+  congr with i' <;> simp [single, Finsupp.single_apply, eq_comm]
 
 theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
     (matPolyEquiv (single i j p)).coeff k = single i j (p.coeff k) := by
