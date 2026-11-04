@@ -135,6 +135,7 @@ lemma test (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory
       ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (_ : IsCardinalPresentable X κ'),
         ∃ (X' : C) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y)
           (_ : Mono i) (_ : IsCardinalPure κ i), f' ≫ i = f := sorry
+-- it seems it suffices to prove this when `C` is a presheaf category
 
 variable (C) in
 lemma test' (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
