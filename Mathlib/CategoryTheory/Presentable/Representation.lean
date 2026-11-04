@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Presentable.Continuous
+public import Mathlib.CategoryTheory.Presentable.CardinalContinuous
 
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 import Mathlib.CategoryTheory.Presentable.Dense
@@ -54,7 +54,7 @@ locally `κ`-presentable: this assumption is now automatically satisfied.
 
 -/
 
-@[expose] public section
+public section
 
 universe w
 
@@ -71,6 +71,7 @@ variable {C D : Type*} [Category* C] [Category* D] [LocallySmall.{w} C] [Locally
 /-- If `F : C ⥤ D` is a fully faithful functor between locally `w`-small categories
 and `X : C`, the presheaf `(Presheaf.restrictedShrinkYoneda.{w} F).obj (F.obj X)`
 on `C` is represented by `X`. -/
+@[expose]
 noncomputable def restrictedShrinkYonedaObjObjRepresentableBy (X : C) :
     ((Presheaf.restrictedShrinkYoneda.{w} F).obj (F.obj X)).RepresentableBy X :=
   (shrinkYonedaRepresentableBy.{w} X).ofIso (asIso (shrinkYonedaMap.{w} F X))
@@ -138,7 +139,7 @@ lemma essImage_restrictedShrinkYoneda_isCardinalPresentable_ι :
 /-- When `C` is a `κ`-accessible category, this is functor
 from `C` to the category of `κ`-ind functors in the category of `κ`-presentable
 objects in `C`. This is an equivalence of categories. -/
-@[implicit_reducible, simps! obj_obj map_hom]
+@[expose, implicit_reducible, simps! obj_obj map_hom]
 noncomputable def toCardinalIndObject :
     C ⥤ CardinalInd (isCardinalPresentable C κ).FullSubcategory κ :=
   ObjectProperty.lift _ (Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _))
@@ -146,7 +147,7 @@ noncomputable def toCardinalIndObject :
 
 /-- The functor `toCardinalIndObject C κ` is induced by the restricted
 Yoneda functor. -/
-@[simps! +dsimpLhs]
+@[expose, simps! +dsimpLhs]
 noncomputable def toCardinalIndObjectCompIso :
     toCardinalIndObject C κ ⋙ ObjectProperty.ι _ ≅
       Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _) := Iso.refl _
@@ -176,7 +177,7 @@ variable [IsCardinalLocallyPresentable C κ]
 functor from `C` to the category of `κ`-continuous presheaves of the full subcategory
 of `κ`-presentable objects in `C`. This is an equivalence of categories when `C`
 is locally `κ`-presentable. -/
-@[implicit_reducible, simps! obj_obj map_hom]
+@[expose, implicit_reducible, simps! obj_obj map_hom]
 noncomputable def toCardinalContinuousFunctor :
     C ⥤ CardinalContinuousFunctor (isCardinalPresentable C κ).FullSubcategoryᵒᵖ (Type w) κ :=
   ObjectProperty.lift _ (Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _))
@@ -184,7 +185,7 @@ noncomputable def toCardinalContinuousFunctor :
 
 /-- The functor `toCardinalContinuousFunctor C κ` is induced by the restricted
 Yoneda functor. -/
-@[simps! +dsimpLhs]
+@[expose, simps! +dsimpLhs]
 noncomputable def toCardinalContinuousFunctorCompIso :
     toCardinalContinuousFunctor C κ ⋙ ObjectProperty.ι _ ≅
       Presheaf.restrictedShrinkYoneda.{w} (ObjectProperty.ι _) := Iso.refl _

@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Joël Riou. All rights reserved.
+Copyright (c) 2026 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -44,7 +44,7 @@ see `Presheaf.isCardinalIndObject_eq_isCardinalContinuous`.
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' v'' u u' u''
 
@@ -180,7 +180,7 @@ instance {F : CardinalContinuousFunctor C D κ} : F.obj.IsCardinalContinuous κ 
 variable {C} in
 /-- If two categories `C` and `C'` are equivalent, then the categories
 of `κ`-continuous functors in `C ⥤ D` and `C' ⥤ D` are also equivalent. -/
-@[implicit_reducible, simps!]
+@[expose, implicit_reducible, simps!]
 def Equivalence.congrLeftCardinalContinuousFunctor {C' : Type*} [Category* C']
     (e : C ≌ C') (D : Type*) [Category* D] (κ : Cardinal.{w}) :
     CardinalContinuousFunctor C D κ ≌ CardinalContinuousFunctor C' D κ :=

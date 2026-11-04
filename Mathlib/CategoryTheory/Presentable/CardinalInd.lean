@@ -380,6 +380,10 @@ end EssentiallySmall
 
 end CardinalInd
 
+/-- If two `w`-small categories `C₁` and `C₂` are equivalent,
+and `κ` is a regular cardinal, then the categories of `κ`-ind
+objects of `C₁` and `C₂` are also equivalent. -/
+@[expose, implicit_reducible, simps! +dsimpLhs]
 def Equivalence.congrCardinalInd
     {C₁ C₂ : Type*} [Category* C₁] [Category* C₂]
     [LocallySmall.{w} C₁] [LocallySmall.{w} C₂]
