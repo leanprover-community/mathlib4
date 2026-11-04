@@ -288,7 +288,7 @@ end Sdiff
 theorem attach_empty : (∅ : Finset α).attach = ∅ :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem attach_nonempty_iff {s : Finset α} : s.attach.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]
 
@@ -480,7 +480,7 @@ theorem toFinset_union (s t : Multiset α) : (s ∪ t).toFinset = s.toFinset ∪
 theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
   Finset.val_inj.symm.trans Multiset.dedup_eq_zero
 
-@[simp]
+@[simp, grind =]
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
   simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
 

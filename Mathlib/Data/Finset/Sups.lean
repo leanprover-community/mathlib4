@@ -102,7 +102,7 @@ theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a �
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
   image₂_subset_iff
 
-@[simp]
+@[simp, grind =]
 theorem sups_nonempty : (s ⊻ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
@@ -247,7 +247,7 @@ theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a �
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=
   image₂_subset_iff
 
-@[simp]
+@[simp, grind =]
 theorem infs_nonempty : (s ⊼ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
@@ -561,7 +561,7 @@ lemma forall_mem_diffs {p : α → Prop} : (∀ c ∈ s \\ t, p c) ↔ ∀ a ∈
 
 @[simp] lemma diffs_subset_iff : s \\ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a \ b ∈ u := image₂_subset_iff
 
-@[simp]
+@[simp, grind =]
 lemma diffs_nonempty : (s \\ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image₂_nonempty_iff
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
@@ -636,7 +636,7 @@ lemma exists_compls_iff {p : α → Prop} : (∃ a ∈ sᶜˢ, p a) ↔ ∃ a �
 
 lemma compls_subset_iff : sᶜˢ ⊆ t ↔ s ⊆ tᶜˢ := by rw [← compls_subset_compls, compls_compls]
 
-@[simp]
+@[simp, grind =]
 lemma compls_nonempty : sᶜˢ.Nonempty ↔ s.Nonempty := map_nonempty
 
 protected alias ⟨Nonempty.of_compls, Nonempty.compls⟩ := compls_nonempty

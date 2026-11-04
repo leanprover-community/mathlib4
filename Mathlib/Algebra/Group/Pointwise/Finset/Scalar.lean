@@ -94,7 +94,7 @@ lemma smul_empty (s : Finset α) : s • (∅ : Finset β) = ∅ := image₂_emp
 @[to_additive (attr := simp)]
 lemma smul_eq_empty : s • t = ∅ ↔ s = ∅ ∨ t = ∅ := image₂_eq_empty_iff
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 lemma smul_nonempty_iff : (s • t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := image₂_nonempty_iff
 
 @[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
@@ -184,7 +184,7 @@ lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := rfl
 @[to_additive (attr := simp)]
 lemma smul_finset_eq_empty : a • s = ∅ ↔ s = ∅ := image_eq_empty
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 lemma smul_finset_nonempty : (a • s).Nonempty ↔ s.Nonempty := image_nonempty
 
 @[to_additive (attr := aesop safe apply (rule_sets := [finsetNonempty]))]
@@ -275,7 +275,7 @@ theorem sdiv_empty (s : Finset β) : s /ₛ (∅ : Finset β) = ∅ :=
 theorem sdiv_eq_empty : s /ₛ t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem sdiv_nonempty : (s /ₛ t : Finset α).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 

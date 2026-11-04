@@ -192,7 +192,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   let ⟨xy, hxy⟩ := h
   ⟨xy.2, (mem_product.1 hxy).2⟩
 
-@[simp]
+@[simp, grind =]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 

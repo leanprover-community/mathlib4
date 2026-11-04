@@ -59,7 +59,7 @@ theorem piFinset_eq_empty : piFinset s = ∅ ↔ ∃ i, s i = ∅ := by simp [pi
 @[simp]
 theorem piFinset_empty [Nonempty α] : piFinset (fun _ => ∅ : ∀ i, Finset (δ i)) = ∅ := by simp
 
-@[simp]
+@[simp, grind =]
 lemma piFinset_nonempty : (piFinset s).Nonempty ↔ ∀ a, (s a).Nonempty := by simp [piFinset]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
