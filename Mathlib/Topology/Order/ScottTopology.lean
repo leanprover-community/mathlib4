@@ -168,6 +168,26 @@ theorem dirSupClosed_closure : DirSupClosed (closure s) := by
   rw [← isClosed_iff_dirSupClosed]
   exact isClosed_closure
 
+/-- This theorem can fail in partial orders if the assumption that `d` is directed is added. -/
+theorem closure_subset_setOfPred_isLUB (s : Set α) :
+    closure s ⊆ {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
+  rw [IsClosed.closure_subset_iff]
+  · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
+  · rw [isClosed_iff_dirSupClosed]
+    intro d hd hd₀ _ x hx
+    choose f hfs hf₀ hf using hd
+    refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · aesop
+    · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
+      exact ((hf hi).1 hy).trans (hx.1 hi)
+    · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
+
+/-- This theorem can fail in partial orders if the assumption that `d` is directed is added. -/
+theorem isLUB_of_mem_closure {s : Set α} {x : α} (hx : x ∈ closure s) :
+    ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
+  closure_subset_setOfPred_isLUB s hx
+
 end univ
 end Preorder
 
@@ -177,33 +197,34 @@ variable [LinearOrder α] [IsScottHausdorff α univ]
 /-- This theorem can fail in partial orders (even with the directed assumption). -/
 theorem closure_eq_setOfPred_isLUB (s : Set α) :
     closure s = {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
-  apply subset_antisymm
-  · rw [IsClosed.closure_subset_iff]
-    · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
-    · rw [isClosed_iff_dirSupClosed]
-      intro d hd hd₀ _ x hx
-      choose f hfs hf₀ hf using hd
-      refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
-      · simpa
-      · aesop
-      · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
-        exact ((hf hi).1 hy).trans (hx.1 hi)
-      · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
-  · rintro x ⟨d, hd, hd₀, hx⟩
-    exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
+  apply (closure_subset_setOfPred_isLUB s).antisymm
+  rintro x ⟨d, hd, hd₀, hx⟩
+  exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
 
 /-- This theorem can fail in partial orders (even with the directed assumption). -/
 theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
     x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
   Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
 
+/-- See `continuous_of_leftOrdContinuous'` for a version that instead requires the codomain to be
+linearly ordered. -/
 theorem continuous_of_leftOrdContinuous [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
     {f : α → β} (hf : LeftOrdContinuous f) : Continuous f := by
   rw [continuous_iff_image_closure_subset_closure_image]
   rintro s _ ⟨y, hy, rfl⟩
-  obtain ⟨d, hd, hd₀, hx⟩ := Topology.IsScottHausdorff.mem_closure_iff_isLUB.1 hy
+  obtain ⟨d, hd, hd₀, hx⟩ := isLUB_of_mem_closure hy
   exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
     (hf.mono.directedOn_image d) (hf hd₀ hx)
+
+/-- See `continuous_of_leftOrdContinuous` for a version that instead requires the domain to be
+linearly ordered. -/
+theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
+    {f : β → α} (hf : LeftOrdContinuous f) : Continuous f := by
+  rw [continuous_iff_image_closure_subset_closure_image]
+  rintro s _ ⟨y, hy, rfl⟩
+  obtain ⟨d, hd, hd₀, hx⟩ := isLUB_of_mem_closure hy
+  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
+    (.of_linearOrder _) (hf hd₀ hx)
 
 end LinearOrder
 end IsScottHausdorff
