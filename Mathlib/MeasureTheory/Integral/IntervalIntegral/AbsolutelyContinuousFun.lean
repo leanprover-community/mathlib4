@@ -26,6 +26,7 @@ This file proves that:
 absolutely continuous, fundamental theorem of calculus, integration by parts, potential drift
 -/
 
+/-!
 This file also proves the *potential drift lemma* and its corollaries:
 * `AbsolutelyContinuousOnInterval.measure_toReal_le_of_deriv_le`: if `deriv f ≤ -c` (`0 < c`)
 a.e. on a measurable `s ⊆ Icc a b`, then `(volume s).toReal ≤ (f a - f b) / c`.
@@ -33,6 +34,7 @@ a.e. on a measurable `s ⊆ Icc a b`, then `(volume s).toReal ≤ (f a - f b) / 
 sign condition derived from `AntitoneOn f (Icc a b)`.
 * `AbsolutelyContinuousOnInterval.measure_toReal_inter_Icc_le_of_deriv_le_of_antitoneOn`:
 escape-time corollary on `Ici 0`: total "bad time" at rate `c` is at most `f 0 / c`.
+-/
 
 open scoped Finset
 
