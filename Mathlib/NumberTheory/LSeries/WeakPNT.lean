@@ -262,8 +262,7 @@ theorem isEquivalent_nth_prime_succ :
   have hpos (n) : (0 : ℝ) < nth Nat.Prime n := mod_cast by linarith [add_two_le_nth_prime n]
   rw [isEquivalent_iff_tendsto_one (Eventually.of_forall fun n ↦ (hpos n).ne')]
   refine tendsto_order.2 ⟨fun c hc ↦ Eventually.of_forall fun n ↦ ?_, fun c hc ↦ ?_⟩
-  · rw [Pi.div_apply]
-    grw [hc]
+  · grw [Pi.div_apply, hc]
     field_simp [hpos n]
     simp [nth_monotone infinite_setOfPred_prime n.le_succ]
   · obtain ⟨ε, hε, hεc⟩ : ∃ ε, 0 < ε ∧ 1 + ε < c := ⟨(c - 1) / 2, by linarith, by linarith⟩
@@ -272,8 +271,8 @@ theorem isEquivalent_nth_prime_succ :
       with n ⟨q, hq, hq1, hq2⟩
     specialize hpos n
     simp only [Function.comp_apply] at hq1 hq2
-    rw [Pi.div_apply]
-    grw [(nth_add_one_le_iff infinite_setOfPred_prime hq).mpr (mod_cast hq1), hq2, ← hεc]
+    grw [Pi.div_apply, (nth_add_one_le_iff infinite_setOfPred_prime hq).mpr (mod_cast hq1),
+      hq2, ← hεc]
     simp [field]
 
 /-- **Least common multiple asymptotics**: `Real.log (lcmUpto n) / n → 1`. -/
