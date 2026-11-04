@@ -153,8 +153,8 @@ theorem LipschitzWith.nnNorm_le_mul' {f : E → F} {K : ℝ≥0} (h : LipschitzW
 @[to_additive (attr := deprecated (since := "2026-10-31")) LipschitzWith.nnnorm_le_mul]
 alias LipschitzWith.nnnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
 
-@[to_additive (attr := deprecated (since := "2026-09-28")) LipschitzWith.nnnorm_le_mul]
-alias LipschitzWith.nnnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
+@[to_additive (attr := deprecated (since := "2026-09-28")) LipschitzWith.nnorm_le_mul]
+alias LipschitzWith.nnorm_le_mul' := LipschitzWith.nnNorm_le_mul'
 
 @[to_additive AntilipschitzWith.le_mul_norm]
 theorem AntilipschitzWith.le_mul_norm' {f : E → F} {K : ℝ≥0} (h : AntilipschitzWith K f)

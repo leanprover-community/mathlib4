@@ -78,7 +78,7 @@ theorem conjCLE_nnNorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
 
 @[deprecated (since := "2026-10-31")] alias conjCLE_nnnorm := conjCLE_nnNorm
 
-@[deprecated (since := "2026-09-28")] alias conjCLE_nnnorm := conjCLE_nnNorm
+@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnNorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
