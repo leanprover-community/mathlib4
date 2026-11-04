@@ -285,12 +285,12 @@ theorem cons_cons_swap {α : Sort*} (x y : α) (q : Fin n → α) :
   induction i using Fin.induction with
   | zero => simp
   | succ i =>
-  induction i using Fin.induction with
-  | zero => simp
-  | succ i =>
-    simp only [Function.comp_apply, cons_succ]
-    rw [Equiv.swap_apply_of_ne_of_ne (by simp) (succ_succ_ne_one i)]
-    simp
+    induction i using Fin.induction with
+    | zero => simp
+    | succ i =>
+      simp only [Function.comp_apply, cons_succ]
+      rw [Equiv.swap_apply_of_ne_of_ne (by simp) (succ_succ_ne_one i)]
+      simp
 
 section Preorder
 
