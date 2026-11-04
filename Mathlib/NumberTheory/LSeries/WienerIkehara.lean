@@ -52,7 +52,7 @@ an interval, whence the theorem (`tendsto_sum_div`).
 This file is adapted from the `PrimeNumberTheoremAnd` project.
 -/
 
-public noncomputable section
+noncomputable section
 
 open Complex hiding log
 open Real MeasureTheory Filter Set FourierTransform LSeries Asymptotics SchwartzMap
@@ -67,10 +67,10 @@ variable (ψ : 𝓢(ℝ, ℂ)) (u : ℝ)
 
 /-- A bespoke seminorm on Schwartz functions `ψ` controlling the decay of their Fourier transform:
 `‖𝓕 ψ u‖ ≤ fourierSeminorm ψ / (1 + u ^ 2)`, see `norm_fourier_le_fourierSeminorm_mul`. -/
-def fourierSeminorm : ℝ := (𝓕 ψ).seminorm ℝ 0 0 + (𝓕 ψ).seminorm ℝ 2 0
+abbrev fourierSeminorm : ℝ := (𝓕 ψ).seminorm ℝ 0 0 + (𝓕 ψ).seminorm ℝ 2 0
 
-lemma fourierSeminorm_nonneg : 0 ≤ fourierSeminorm ψ :=
-  add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)
+lemma fourierSeminorm_nonneg : 0 ≤ fourierSeminorm ψ := by
+  positivity
 
 lemma continuous_fourierSeminorm : Continuous fourierSeminorm :=
   (((schwartz_withSeminorms ℝ ℝ ℂ).continuous_seminorm (0, 0)).comp (by fun_prop)).add
@@ -125,7 +125,7 @@ lemma lSeriesSummable : LSeriesSummable ↗f (σ : ℂ) := by
   calc
     _ ≤ ∑ k ∈ .range (2 * n), f k :=
       Finset.sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hpos k
-    _ ≤ _ := (bound (2 * n)).trans_eq (by push_cast; ring)
+    _ ≤ _ := (bound (2 * n)).trans_eq (by grind)
 
 include hx in
 lemma fourierChar_neg_mul_log_div {n : ℕ} (hn : n ≠ 0) (t : ℝ) :
@@ -165,12 +165,12 @@ lemma mul_integral_exp_mul_fourierChar_eq (t : ℝ) :
     rw [integral_Ici_eq_integral_Ioi]
     congr with u
     push_cast [fourierChar_apply, ← Complex.exp_add]
-    congr 1
+    congr
     field
   rw [this, integral_cexp_neg_mul_Ioi_neg_log hx (by simpa using hσ), ofReal_cpow hx.le,
     mul_div_assoc', ← cpow_add _ _ (mod_cast hx.ne')]
   push_cast
-  ring_nf
+  grind
 
 include hx hσ in
 lemma poleTerm_fourier_eq :
@@ -178,8 +178,7 @@ lemma poleTerm_fourier_eq :
   have hint : IntegrableOn (fun u ↦ rexp (-u * (σ - 1))) (Ici (-log x)) := by
     rw [integrableOn_Ici_iff_integrableOn_Ioi]
     convert exp_neg_integrableOn_Ioi (-log x) (sub_pos.mpr hσ) using 1
-    ext u
-    ring_nf
+    grind
   rw [poleTerm, mul_assoc]
   congr 1
   calc
@@ -212,9 +211,7 @@ lemma remainder_fourier_eq {ψ : 𝓢(ℝ, ℂ)} (hψ : HasCompactSupport ψ) {�
     Continuous.integrable_of_hasCompactSupport (by fun_prop) hψ.mul_left.mul_right.mul_left
   rw [remainder, smoothedSum_fourier_eq bound hpos ψ hx hσ, poleTerm_fourier_eq ψ hx hσ,
     sub_eq_iff_eq_add, ← integral_const_mul, ← integral_add hint₁ hint₂]
-  refine integral_congr_ae (.of_forall fun t ↦ ?_)
-  simp only [hG' (hσt t)]
-  ring
+  exact integral_congr_ae (.of_forall fun t ↦ by grind [hG' (hσt t)])
 
 end FourierIdentities
 
@@ -244,7 +241,7 @@ lemma antitoneOn_weight : AntitoneOn weight (Ioi 0) := by
     (fun _ _ ↦ (hasDerivAt_weight (by grind)).continuousAt.continuousWithinAt)
     (fun _ _ ↦ (hasDerivAt_weight (fun _ ↦ by simp_all)).hasDerivWithinAt)
     fun x _ ↦ ?_
-  have : 0 < 1 - (2 * π)⁻¹ := sub_pos.mpr (inv_lt_one_of_one_lt₀ (by linarith [two_le_pi]))
+  have : 0 < 1 - (2 * π)⁻¹ := by grind [two_le_pi, inv_lt_one_of_one_lt₀]
   simp only [neg_mul, Left.neg_nonpos_iff]
   positivity
 
@@ -272,7 +269,7 @@ lemma integrableOn_inv_mul_weight_div (hx : 0 < x) :
 
 lemma inv_mul_weight_div (hx : x ≠ 0) (t : ℝ) :
     x⁻¹ * weight (t / x) = (t * (1 + ((2 * π)⁻¹ * log (t / x)) ^ 2))⁻¹ := by
-  rw [weight, ← mul_inv, ← mul_assoc, mul_div_cancel₀ t hx]
+  grind [weight]
 
 lemma inv_mul_weight_div_le_one (hx : x ≠ 0) (ht : 1 ≤ t) : x⁻¹ * weight (t / x) ≤ 1 := by
   rw [inv_mul_weight_div hx]
@@ -283,10 +280,10 @@ lemma antitone_ite_weight (hx : 0 < x) :
     Antitone fun i : ℕ ↦ if i = 0 then (1 : ℝ) else x⁻¹ * weight (i / x) := by
   intro i j hij
   rcases eq_or_ne j 0 with rfl | hj
-  · simp [Nat.le_zero.mp hij]
+  · grind
   simp only [hj, ↓reduceIte]
   split_ifs with hi
-  · exact inv_mul_weight_div_le_one hx.ne' (mod_cast Nat.one_le_iff_ne_zero.mpr hj)
+  · exact inv_mul_weight_div_le_one hx.ne' (mod_cast by grind)
   · gcongr
     exact antitoneOn_weight (mem_Ioi.mpr (by positivity)) (mem_Ioi.mpr (by positivity)) (by gcongr)
 
@@ -434,7 +431,7 @@ lemma tendsto_integral_G_mul :
   simp only [max_self, ofReal_one] at this
   refine (this.mono_left nhdsWithin_le_nhds).congr' ?_
   filter_upwards [self_mem_nhdsWithin] with σ (hσ : 1 < σ)
-  simp only [max_eq_left hσ.le]
+  simp [max_eq_left hσ.le]
 
 include bound hG hG' hpos hΨ in
 lemma tendsto_remainder_one_fourier_of_hasCompactSupport :
@@ -506,8 +503,7 @@ lemma exists_norm_remainder_one_le :
     simp only [poleTerm_one, norm_mul, norm_real, norm_eq_abs]
     exact (mul_le_mul_of_nonneg_left (norm_setIntegral_fourier_le φ x) (abs_nonneg A)).trans_eq
       (by ring)
-  rw [remainder]
-  exact (norm_sub_le _ _).trans ((add_le_add h₁ h₂).trans_eq (mul_add ..).symm)
+  grind [remainder, norm_sub_le]
 
 include bound hG hG' hpos in
 lemma tendsto_remainder_one_fourier : Tendsto (remainder f A 1 (𝓕 Ψ)) atTop (𝓝 0) := by
@@ -522,10 +518,7 @@ lemma tendsto_remainder_one_fourier : Tendsto (remainder f A 1 (𝓕 Ψ)) atTop 
     (tendsto_remainder_one_fourier_of_hasCompactSupport bound hG hG' hpos φ hφcs) (ε / 2)
     (half_pos hε)] with x hx hφ
   rw [dist_zero_right] at hφ ⊢
-  calc
-    _ = ‖remainder f A 1 (𝓕 (Ψ - φ)) x + remainder f A 1 (𝓕 φ) x‖ := by
-      rw [remainder_one_fourier_sub bound hpos Ψ φ hx, sub_add_cancel]
-    _ < _ := by grw [norm_add_le, hφ, hK (Ψ - φ) hx, hφQ]; grind
+  grind [remainder_one_fourier_sub bound hpos Ψ φ hx, norm_sub_norm_le, hK (Ψ - φ) hx]
 
 end LimitingFourierIdentitySchwartz
 
@@ -545,7 +538,7 @@ lemma eventually_setIntegral_Ioi_inv_eq (hψ : ∀ᶠ x in 𝓝 0, ψ x = 0) :
   filter_upwards [eventually_gt_atTop ε⁻¹] with x hx
   refine (setIntegral_eq_of_subset_of_forall_sdiff_eq_zero measurableSet_Ioi
     (Ioi_subset_Ioi (inv_pos.mpr ((inv_pos.mpr hε).trans hx)).le) fun y ⟨hy, hy'⟩ ↦ h ?_).symm
-  grw [Real.dist_eq, sub_zero, abs_of_pos hy, not_lt.mp hy', inv_lt_of_inv_lt₀ hε hx]
+  grind [Real.dist_eq, abs_of_pos, inv_lt_of_inv_lt₀ hε hx]
 
 include hsmooth hsupp hplus in
 /-- `y ↦ y * ψ y`, written in the variable `(2 * π)⁻¹ * log y`, is a Fourier transform. -/
@@ -560,14 +553,14 @@ lemma exists_fourier_eq : ∃ g : 𝓢(ℝ, ℂ), ∀ y > 0, 𝓕 g ((2 * π)⁻
   refine ⟨𝓕⁻ (hh'.toSchwartzMap hh), fun y hy ↦ ?_⟩
   simp only [fourier_fourierInv_eq, HasCompactSupport.toSchwartzMap_toFun, h]
   field_simp
-  rw [exp_log hy]
+  simp [exp_log hy]
 
 include bound hG hG' hpos hsmooth hsupp hplus in
 /-- A smoothed *Wiener-Ikehara Tauberian Theorem*: If `f` is a nonnegative arithmetic
 function with `∑ i < n, f i ≤ C * n` whose L-series has a simple pole at `s = 1` with residue `A`
 and otherwise extends continuously to the closed half-plane `re s ≥ 1`, then `f` behaves like `A`
 asymptotically with respect to smooth weights with compact support in `(0, ∞)`. -/
-lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
+public lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x)
     atTop (𝓝 (A * ∫ y in Ioi 0, ψ y)) := by
   obtain ⟨g, hg⟩ := exists_fourier_eq hsmooth hsupp hplus
   have key : ∀ᶠ x in atTop,
@@ -590,7 +583,7 @@ lemma tendsto_sum_div_smooth : Tendsto (fun x ↦ (∑' n, f n * ψ (n / x)) / x
 
 include bound hG hG' hpos in
 /-- A version of smoothed Wiener-Ikehara for real-valued cutoffs. -/
-lemma tendsto_sum_div_smooth_real {Ψ : ℝ → ℝ} (hsmooth : ContDiff ℝ ∞ Ψ)
+public lemma tendsto_sum_div_smooth_real {Ψ : ℝ → ℝ} (hsmooth : ContDiff ℝ ∞ Ψ)
     (hsupp : HasCompactSupport Ψ) (hplus : tsupport Ψ ⊆ Ioi 0) :
     Tendsto (fun x ↦ (∑' n, f n * Ψ (n / x)) / x) atTop (𝓝 (A * ∫ y in Ioi 0, Ψ y)) := by
   have := (continuous_re.tendsto _).comp (tendsto_sum_div_smooth bound hG hG' hpos
@@ -706,14 +699,14 @@ lemma eventually_sum_range_div_lt {c : ℝ} (hc : A < c) :
 include bound hG hG' hpos in
 /-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n < N`; see
 `WienerIkehara.tendsto_sum_div` for the version summing over reals `n ≤ x`. -/
-theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N) atTop (𝓝 A) :=
+public theorem tendsto_sum_range_div : Tendsto (fun N ↦ (∑ i ∈ .range N, f i) / N) atTop (𝓝 A) :=
   tendsto_order.mpr ⟨fun _ ↦ eventually_lt_sum_range_div bound hG hG' hpos,
     fun _ ↦ eventually_sum_range_div_lt bound hG hG' hpos⟩
 
 include bound hG hG' hpos in
 /-- The *Wiener-Ikehara Tauberian Theorem*, summing over naturals `n ≤ x` for real `x`; see
 `WienerIkehara.tendsto_sum_range_div` for the version summing over naturals `n < N`. -/
-theorem tendsto_sum_div : Tendsto (fun x ↦ (∑ n ∈ .Icc 0 ⌊x⌋₊, f n) / x) atTop (𝓝 A) := by
+public theorem tendsto_sum_div : Tendsto (fun x ↦ (∑ n ∈ .Icc 0 ⌊x⌋₊, f n) / x) atTop (𝓝 A) := by
   have : Tendsto (fun x ↦ (∑ i ∈ .range (⌊x⌋₊ + 1), f i) / (⌊x⌋₊ + 1) * ((⌊x⌋₊ + 1) / x)) atTop
       (𝓝 A) := by
     rw [← mul_one A]
