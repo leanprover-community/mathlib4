@@ -71,9 +71,9 @@ structure LucasWitness where
 
 /-- Proves `Nat.Prime p` from the primitive root `root` and the prime factors of `p - 1` in
 `factors`, each with its proof of primality. -/
-def certifyLucas (p root : Nat) (factors : Array ((q : Nat) × Q(Nat.Prime $q))) :
+def certifyLucas (p root : Nat) (factors : List ((q : Nat) × Q(Nat.Prime $q))) :
     Q(Nat.Prime $p) :=
-  let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| factors.toList.map fun ⟨q, hq⟩ ↦
+  let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| factors.map fun ⟨q, hq⟩ ↦
     q((⟨$q, $hq⟩, $(mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1)))
   -- The kernel evaluates `Nat` arithmetic on terms with free variables (such as a hypothesis
   -- proving one of the factors prime) only inside `eagerReduce`.

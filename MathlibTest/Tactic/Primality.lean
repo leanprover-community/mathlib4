@@ -27,10 +27,10 @@ certificate at `.witnesses […]` -/
 example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by primality
 
 example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by
-  primality (cert := .lucas { factors := [10000000000037] })
+  primality (cert := .search { factors := [10000000000037] })
 
 example : Nat.Prime (2 * 1000021069 * 100000000000031 + 1) := by
-  primality (cert := .lucas { rhoSteps := 2 ^ 16 })
+  primality (cert := .search { rhoSteps := 2 ^ 16 })
 
 theorem prime_4398046517687 : Nat.Prime 4398046517687 := by primality
 
@@ -49,7 +49,7 @@ example : Nat.Prime (2 ^ 127 - 1) := by primality
 -- Only the last 3 factors are required, but 8 are included so the producer is faster.
 set_option exponentiation.threshold 521 in
 example : Nat.Prime (2 ^ 521 - 1) := by
-  primality (cert := .lucas { factors := [5746001, 7623851, 34110701, 308761441, 2400573761,
+  primality (cert := .search { factors := [5746001, 7623851, 34110701, 308761441, 2400573761,
     65427463921, 108140989558681, 145295143558111] })
 
 open Nat in
@@ -67,6 +67,13 @@ example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
     .lucas { root := 7, primeFactors := [2, 3, 786433, 3221225473] },
     .lucas { root := 5, primeFactors := [2, 3] },
     .lucas { root := 10, primeFactors := [2, 3] }])
+
+-- `1031` divides both `p - 1` and `2063 - 1`, so the tree meets it twice.
+example : Nat.Prime 12761719 := by
+  primality (cert := .witnesses [
+    .lucas { root := 3, primeFactors := [2, 3, 1031, 2063] },
+    .lucas { root := 5, primeFactors := [2, 1031] },
+    .lucas { root := 14, primeFactors := [2, 5, 103] }])
 
 -- Curve25519's field prime
 example : Nat.Prime (2 ^ 255 - 19) := by

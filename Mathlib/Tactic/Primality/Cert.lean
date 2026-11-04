@@ -29,7 +29,7 @@ inductive Cert : Nat → Type where
   | known {p : Nat} : Cert p
   /-- A Lucas certificate with the primitive root `root` and the prime factors of `p - 1` with
   their certificates in `factors`. -/
-  | lucas {p : Nat} (root : Nat) (factors : Array ((q : Nat) × Cert q)) : Cert p
+  | lucas {p : Nat} (root : Nat) (factors : List ((q : Nat) × Cert q)) : Cert p
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. The cache holds the proof of each prime, so
 that each prime is proved only once. -/

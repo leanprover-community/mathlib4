@@ -23,7 +23,7 @@ namespace Mathlib.Tactic.Primality
 /-- Configuration for `primality`. -/
 structure Config where
   /-- The certificate configuration to use. -/
-  cert : CertConfig := .lucas {}
+  cert : CertConfig := .search {}
 
 /-- Function elaborating `Config`. -/
 declare_config_elab elabPrimalityConfig Config

@@ -130,7 +130,7 @@ end Factorizer
 
 /-- The first of the candidates `roots`, each reduced modulo `p`, that is a primitive root of `p`
 given the prime factors of `p - 1`. Stops at a candidate showing that `p` is composite. -/
-def findPrimitiveRoot? (roots : Array Nat) (p : Nat) (factors : Array Nat) :
+def findPrimitiveRoot? (roots : Array Nat) (p : Nat) (factors : List Nat) :
     Option Nat := Id.run do
   for a in roots do
     let a := a % p
@@ -139,31 +139,28 @@ def findPrimitiveRoot? (roots : Array Nat) (p : Nat) (factors : Array Nat) :
     if factors.all fun q ↦ Nat.powMod a ((p - 1) / q) p != 1 then return some a
   return none
 
-/-- Options for Lucas certificates. -/
-structure LucasConfig extends FactorizerConfig
-
 /-- Searches for a Lucas witness for `q`, trying `2, …, 1023` as primitive roots. The part of
 `q - 1` that the factorizer leaves is taken to be prime. -/
 def findLucasWitness (factorizer : Factorizer) (q : Nat) : CoreM LucasWitness := do
   let (factors, rest) ← factorizer.decompose (q - 1)
-  let factors := if rest == 1 then factors else factors.push rest
+  let factors := (if rest == 1 then factors else factors.push rest).toList
   let some root := findPrimitiveRoot? (2...1024).toArray q factors |
     throwError "primality failed to find a witness for {q}; provide the certificate at \
       `.witnesses […]`"
-  return { root, primeFactors := factors.toList }
+  return { root, primeFactors := factors }
 
 /-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
-def normNumBound : Nat := 2 ^ 16
+def normNumBound : Nat := 2 ^ 10
 
 /-- The witness of a primality certificate for one prime, tagged by the certificate type. -/
 inductive Witness where
   /-- The witness of a Lucas certificate. -/
   | lucas (w : LucasWitness)
 
-/-- The certificate family to search in with its options, or the witnesses of a certificate. -/
+/-- Where the witnesses of a certificate come from. -/
 inductive CertConfig where
-  /-- Lucas certificates. -/
-  | lucas (cfg : LucasConfig)
+  /-- The witnesses are searched for, with the factorizer options `cfg`. -/
+  | search (cfg : FactorizerConfig)
   /-- The certificate with the witnesses in `witnesses`. A prime `q` takes the first entry whose
   factors are the prime factors of `q - 1` and whose root is a primitive root of `q`. Nothing is
   searched, so each prime needs an entry unless it is below `normNumBound` or proved by the
@@ -175,7 +172,7 @@ def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
   for .lucas w in witnesses do
     let rest? := w.primeFactors.foldlM (init := q - 1) fun rest r ↦
       if rest % r == 0 then some (rest.divMaxPow r) else none
-    if rest? == some 1 && (findPrimitiveRoot? #[w.root] q w.primeFactors.toArray).isSome then
+    if rest? == some 1 && (findPrimitiveRoot? #[w.root] q w.primeFactors).isSome then
       return w
   throwError "no provided witness certifies the primality of {q}"
 
@@ -196,10 +193,10 @@ where
     if q < normNumBound then
       return .normNum
     let w ← match cfg with
-      | .lucas lucasCfg =>
-        findLucasWitness ((Factorizer.ofArray known.toArray).then lucasCfg.toFactorizer) q
+      | .search searchCfg =>
+        findLucasWitness ((Factorizer.ofArray known.toArray).then searchCfg.toFactorizer) q
       | .witnesses witnesses => witnessFor witnesses q
-    let cert : Cert q := .lucas w.root (← w.primeFactors.toArray.mapM fun r ↦ return ⟨r, ← go r⟩)
+    let cert : Cert q := .lucas w.root (← w.primeFactors.mapM fun r ↦ return ⟨r, ← go r⟩)
     modify (·.insert q cert)
     return cert
 
