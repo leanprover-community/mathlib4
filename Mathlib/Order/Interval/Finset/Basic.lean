@@ -581,17 +581,25 @@ theorem Icc_sdiff_both (a b : α) : Icc a b \ {a, b} = Ioo a b := by simp [← c
 theorem insert_right_Ico (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Icc, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ico_union_right h]
 
+@[deprecated (since := "2026-11-03")] alias Ico_insert_right := insert_right_Ico
+
 @[simp]
 theorem insert_left_Ioc (h : a ≤ b) : insert a (Ioc a b) = Icc a b := by
   rw [← coe_inj, coe_insert, coe_Ioc, coe_Icc, Set.insert_eq, Set.union_comm, Set.Ioc_union_left h]
+
+@[deprecated (since := "2026-11-03")] alias Ioc_insert_left := insert_left_Ioc
 
 @[simp]
 theorem insert_left_Ioo (h : a < b) : insert a (Ioo a b) = Ico a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ico, Set.insert_eq, Set.union_comm, Set.Ioo_union_left h]
 
+@[deprecated (since := "2026-11-03")] alias Ioo_insert_left := insert_left_Ioo
+
 @[simp]
 theorem insert_right_Ioo (h : a < b) : insert b (Ioo a b) = Ioc a b := by
   rw [← coe_inj, coe_insert, coe_Ioo, coe_Ioc, Set.insert_eq, Set.union_comm, Set.Ioo_union_right h]
+
+@[deprecated (since := "2026-11-03")] alias Ioo_insert_right := insert_right_Ioo
 
 @[simp]
 theorem Icc_sdiff_Ico_self (h : a ≤ b) : Icc a b \ Ico a b = {b} := by simp [← coe_inj, h]
@@ -742,6 +750,8 @@ theorem insert_Ioi [DecidableEq α] (a : α) : insert a (Ioi a) = Ici a := by
   ext
   simp_rw [Finset.mem_insert, mem_Ici, mem_Ioi, le_iff_lt_or_eq, or_comm, eq_comm]
 
+@[deprecated (since := "2026-11-03")] alias Ioi_insert := insert_Ioi
+
 theorem notMem_Ioi_self {b : α} : b ∉ Ioi b := fun h => lt_irrefl _ (mem_Ioi.1 h)
 
 -- Purposefully written the other way around
@@ -770,6 +780,8 @@ theorem Iic_erase [DecidableEq α] (b : α) : (Iic b).erase b = Iio b := by
 theorem insert_Iio [DecidableEq α] (b : α) : insert b (Iio b) = Iic b := by
   ext
   simp_rw [Finset.mem_insert, mem_Iic, mem_Iio, le_iff_lt_or_eq, or_comm]
+
+@[deprecated (since := "2026-11-03")] alias Iio_insert := insert_Iio
 
 theorem notMem_Iio_self {b : α} : b ∉ Iio b := fun h => lt_irrefl _ (mem_Iio.1 h)
 
