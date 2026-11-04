@@ -42,15 +42,18 @@ variable {ρ : Measure (α × Ω)} [IsFiniteMeasure ρ]
 
 The conditional kernel of a measure is unique almost everywhere. -/
 
-/-- An s-finite kernel which satisfies the disintegration property of the given measure `ρ` is
+/-- A kernel which satisfies the disintegration property of the given measure `ρ` is
 almost everywhere equal to the disintegration kernel of `ρ` when evaluated on a measurable set.
 
 This theorem in the case of finite kernels is weaker than `eq_condKernel_of_measure_eq_compProd`
 which asserts that the kernels are equal almost everywhere and not just on a given measurable
 set. -/
-theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω) [IsSFiniteKernel κ]
+theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω)
     (hκ : ρ = ρ.fst ⊗ₘ κ) {s : Set Ω} (hs : MeasurableSet s) :
     ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
+  by_cases hκs : IsSFiniteKernel κ
+  swap
+  · simp_all
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (Kernel.measurable_coe κ hs) (Kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
   conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]

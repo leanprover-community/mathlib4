@@ -227,8 +227,10 @@ theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
   coeff_of_le_one le_rfl o
 
 theorem coeff_opow_mul_add {b e x y : Ordinal}
-    (hb : 1 < b) (hx : x ≠ 0) (hxb : x < b) (hy : y < b ^ e) :
+    (hb : 1 < b) (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   ext e'
   rw [add_apply]
   obtain rfl | he := eq_or_ne e e'
@@ -353,7 +355,7 @@ theorem coeff_eval {b : Ordinal} (hb : 1 < b) {f : Ordinal →₀ Ordinal} (hf :
         exact (hf' _ he').ne
       · rw [notMem_support_iff.1 he']
         exact hb.pos
-    rw [eval_single_add' _ hf', coeff_opow_mul_add hb hx, IH IH']
+    rw [eval_single_add' _ hf', coeff_opow_mul_add hb, IH IH']
     · apply (hf e).trans_eq'
       rw [add_apply, single_eq_same, notMem_support_iff.1, add_zero]
       exact fun h ↦ (hf' _ h).false

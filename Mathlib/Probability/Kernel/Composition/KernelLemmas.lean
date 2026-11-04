@@ -125,8 +125,10 @@ lemma parallelComp_comm :
   rw [parallelComp_id_left_comp_parallelComp, parallelComp_id_right_comp_parallelComp,
     comp_id, comp_id]
 
-lemma id_parallelComp_comp_parallelComp_id [IsSFiniteKernel κ] :
+lemma id_parallelComp_comp_parallelComp_id :
     Kernel.id ∥ₖ κ ∘ₖ (η ∥ₖ Kernel.id) = η ∥ₖ κ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   rw [parallelComp_id_left_comp_parallelComp]
   congr
   exact comp_id κ

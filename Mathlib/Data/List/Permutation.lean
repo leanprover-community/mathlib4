@@ -289,7 +289,7 @@ theorem length_permutationsAux :
 theorem length_permutations (l : List α) : length (permutations l) = (length l)! :=
   length_permutationsAux l []
 
-theorem mem_permutations_of_perm_lemma {is l : List α}
+private theorem mem_permutations_of_perm_lemma {is l : List α}
     (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
 

@@ -409,14 +409,12 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) {c : ℝ}
   · ext; simp only [comp_apply]; congr 1; field
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp
 
--- Note that `h'` is **not** implied by `h` if `c` is negative.
 -- TODO: generalise this lemma to enorms!
-theorem comp_mul_left_iff {f : ℝ → E} {c : ℝ} (hc : c ≠ 0) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
-    (h' : ‖f (c * min (a / c) (b / c))‖ₑ ≠ ∞ := by finiteness) :
+theorem comp_mul_left_iff {f : ℝ → E} {c : ℝ} (hc : c ≠ 0) :
     IntervalIntegrable (fun x ↦ f (c * x)) volume (a / c) (b / c) ↔
       IntervalIntegrable f volume a b := by
-  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹) h' (by simp),
-    (comp_mul_left · h h')⟩
+  exact ⟨fun h ↦ by simpa [hc] using h.comp_mul_left (c := c⁻¹),
+    (comp_mul_left · (c := c))⟩
 
 theorem comp_mul_right (hf : IntervalIntegrable f volume a b) {c : ℝ}
     (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness)
@@ -475,21 +473,20 @@ theorem comp_sub_right_iff {c : ℝ} (h : ‖f (min a b)‖ₑ ≠ ⊤ := by fin
   simp
 
 -- TODO: generalise this lemma to enorms!
-theorem iff_comp_neg {f : ℝ → E} (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+theorem iff_comp_neg {f : ℝ → E} :
     IntervalIntegrable f volume a b ↔ IntervalIntegrable (fun x ↦ f (-x)) volume (-a) (-b) := by
-  rw [← comp_mul_left_iff (neg_ne_zero.2 one_ne_zero) h (by simp)]; simp [div_neg]
+  rw [← comp_mul_left_iff (neg_ne_zero.2 one_ne_zero)]; simp [div_neg]
 
 -- TODO: generalise this lemma to enorms!
-theorem comp_sub_left {f : ℝ → E} (hf : IntervalIntegrable f volume a b) (c : ℝ)
-    (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+theorem comp_sub_left {f : ℝ → E} (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     IntervalIntegrable (fun x ↦ f (c - x)) volume (c - a) (c - b) := by
-  simpa only [neg_sub, ← sub_eq_add_neg] using (iff_comp_neg (by simp)).mp (hf.comp_add_left c h)
+  simpa only [neg_sub, ← sub_eq_add_neg] using iff_comp_neg.mp (hf.comp_add_left c)
 
 -- TODO: generalise this lemma to enorms!
-theorem comp_sub_left_iff {f : ℝ → E} (c : ℝ) (h : ‖f (min a b)‖ₑ ≠ ∞ := by finiteness) :
+theorem comp_sub_left_iff {f : ℝ → E} (c : ℝ) :
     IntervalIntegrable (fun x => f (c - x)) volume (c - a) (c - b) ↔
       IntervalIntegrable f volume a b :=
-  ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c h)⟩
+  ⟨fun h ↦ by simpa using h.comp_sub_left c, (.comp_sub_left · c)⟩
 
 end IntervalIntegrable
 
@@ -556,11 +553,10 @@ interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_even` for a stronger result. -/
 lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
-    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
-    {t : ℝ} (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ} :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
-  · rw [IntervalIntegrable.iff_comp_neg ht]
+  · rw [IntervalIntegrable.iff_comp_neg]
     conv => arg 1; intro t; rw [← h₁f]
     simp [h₂f (-t) (by simp [h])]
   · rw [h]
@@ -570,12 +566,10 @@ lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
 if it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_even
-    (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
-    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
+    (h₁f : ∀ x, f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ} :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_even₀ h₁f h₂f ha).symm.trans (b := 0)
-    (intervalIntegrable_of_even₀ h₁f h₂f hb)
+  (intervalIntegrable_of_even₀ h₁f h₂f).symm.trans (b := 0) (intervalIntegrable_of_even₀ h₁f h₂f)
 
 /-- An odd function is interval integrable (with respect to the volume measure) on every interval
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every

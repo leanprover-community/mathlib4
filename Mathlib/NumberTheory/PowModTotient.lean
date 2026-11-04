@@ -35,21 +35,27 @@ lemma pow_totient_mod_eq_one {x n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
     (x ^ φ n) % n = 1 := by
   exact mod_eq_of_modEq (ModEq.pow_totient h) hn
 
-lemma pow_add_totient_mod_eq {x k n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
+lemma pow_add_totient_mod_eq {x k n : ℕ} (h : x.Coprime n) :
     (x ^ (k + φ n)) % n = (x ^ k) % n := by
+  obtain rfl | rfl | hn : n = 0 ∨ n = 1 ∨ 1 < n := by lia
+  · simp_all
+  · simp [Nat.mod_one]
   rw [pow_add, mul_mod, pow_totient_mod_eq_one hn h]
   simp only [mul_one, dvd_refl, mod_mod_of_dvd]
 
-lemma pow_add_mul_totient_mod_eq {x k l n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
+lemma pow_add_mul_totient_mod_eq {x k l n : ℕ} (h : x.Coprime n) :
     (x ^ (k + l * φ n)) % n = (x ^ k) % n := by
   induction l with
   | zero => simp
   | succ l ih =>
-    rw [add_mul, one_mul, ← add_assoc, pow_add_totient_mod_eq hn h, ih]
+    rw [add_mul, one_mul, ← add_assoc, pow_add_totient_mod_eq h, ih]
 
-lemma pow_totient_mod {x k n : ℕ} (hn : 1 < n) (h : x.Coprime n) :
+lemma pow_totient_mod {x k n : ℕ} (h : x.Coprime n) :
     x ^ k % n = x ^ (k % φ n) % n := by
-  rw [← div_add_mod' k (φ n), add_comm, pow_add_mul_totient_mod_eq hn h, add_mul_mod_self_right,
+  obtain rfl | rfl | hn : n = 0 ∨ n = 1 ∨ 1 < n := by lia
+  · simp_all
+  · simp [Nat.mod_one]
+  rw [← div_add_mod' k (φ n), add_comm, pow_add_mul_totient_mod_eq h, add_mul_mod_self_right,
     mod_mod k (φ n)]
 
 end Nat

@@ -34,8 +34,10 @@ public section
 
 namespace Imo2013Q5
 
-theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
+theorem le_of_all_pow_lt_succ {x y : ℝ} (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
+  rcases le_or_gt x 1 with hx | hx
+  · exact hx.trans hy.le
   by_contra! hxy
   have hxmy : 0 < x - y := sub_pos.mpr hxy
   have hn : ∀ n : ℕ, 0 < n → (x - y) * (n : ℝ) ≤ x ^ n - y ^ n := by
@@ -67,7 +69,7 @@ theorem le_of_all_pow_lt_succ {x y : ℝ} (hx : 1 < x) (hy : 1 < y)
 -/
 theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
-  refine le_of_all_pow_lt_succ hx ?_ h
+  refine le_of_all_pow_lt_succ ?_ h
   by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
   have h_y'_lt_x : (x + 1) / 2 < x := by linarith
@@ -79,7 +81,7 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
     calc
       x ^ n - 1 < y ^ n := h n hn
       _ ≤ y' ^ n := by gcongr
-  exact h_y'_lt_x.not_ge (le_of_all_pow_lt_succ hx h1_lt_y' hh)
+  exact h_y'_lt_x.not_ge (le_of_all_pow_lt_succ h1_lt_y' hh)
 
 theorem f_pos_of_pos {f : ℚ → ℝ} {q : ℚ} (hq : 0 < q)
     (H1 : ∀ x y, 0 < x → 0 < y → f (x * y) ≤ f x * f y) (H4 : ∀ n : ℕ, 0 < n → (n : ℝ) ≤ f n) :

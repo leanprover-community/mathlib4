@@ -46,8 +46,8 @@ theorem one_mem : (1 : ℝ) ∈ I :=
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
   ⟨mul_nonneg hx.1 hy.1, (mul_le_of_le_one_left hy.1 hx.2).trans hy.2⟩
 
-theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
-  ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
+theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hxy : x ≤ y) : x / y ∈ I :=
+  ⟨div_nonneg hx (hx.trans hxy), div_le_one_of_le₀ hxy (hx.trans hxy)⟩
 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩

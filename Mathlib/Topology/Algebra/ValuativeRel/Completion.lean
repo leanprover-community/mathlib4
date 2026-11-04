@@ -87,8 +87,10 @@ section InversionEstimate
 /- The following is the main technical lemma ensuring that inversion is continuous
 in the topology induced by a valuation on a division ring (i.e. the next instance)
 and the fact that a valued field is completable [bourbaki1989b], VI.5.1 Lemme 1. -/
-theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
+theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ}
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
+  rcases eq_or_ne y 0 with rfl | y_ne
+  · simp at h
   have veq : v x = v y := Valuation.map_eq_of_sub_lt v (lt_of_lt_of_le h (min_le_right _ _))
   have x_ne : x ≠ 0 := fun _ ↦ by simp_all
   refine lt_of_eq_of_lt ?_ (mul_inv_lt_of_lt_mul₀ (lt_of_lt_of_le h (min_le_left _ _)) :
@@ -97,10 +99,10 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
   simp [← map_inv₀, ← map_mul, mul_sub, sub_mul, v.map_sub_swap, x_ne, y_ne]
 
 /-- A variant of `Valuation.inversion_estimate` specialized to the case `γ = v s / v r`. -/
-theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠ 0) (hs : s ≠ 0)
+theorem Valuation.inversion_estimate' {x y r s : K} (hr : r ≠ 0) (hs : s ≠ 0)
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
   refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
-  grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
+  grw [Valuation.inversion_estimate v (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
   simp [zero_lt_iff, hr]
 
 end InversionEstimate
@@ -119,7 +121,7 @@ instance (priority := 100) : IsTopologicalDivisionRing K where
     rw [mem_map, (valuation K).mem_nhds_iff]
     let γ' := Units.mk0 (Valuation.restrict _ x) ((valuation K).restrict.ne_zero_iff.mpr x_ne)
     refine ⟨min (γ * (γ' * γ')) γ', fun y y_in ↦ hs ?_⟩
-    refine inversion_estimate (Γ₀ := (valuation K).ValueGroup₀) _ x_ne ?_
+    refine inversion_estimate (Γ₀ := (valuation K).ValueGroup₀) _ ?_
     simpa [γ'] using y_in
 
 -- This instance will be tried in all `T2Space` synthesis, but it will
@@ -190,10 +192,9 @@ instance (priority := 100) [IsUniformAddGroup K] : CompletableTopField K where
     rcases hF.2 (min (γ * γ₀ * γ₀) γ₀) with ⟨M₁, M₁_in, H₁⟩
     refine ⟨(fun x : K ↦ x⁻¹) '' (M₀ ∩ M₁), by simp_all [-Filter.map_inv], ?_⟩
     rintro _ ⟨x, ⟨x_in₀, x_in₁⟩, rfl⟩ _ ⟨y, ⟨_, y_in₁⟩, rfl⟩
-    refine inversion_estimate _ ((valuation K).restrict.ne_zero_iff.mp fun h ↦ ?_) ?_
-    · simpa [h] using H₀ x x_in₀
-    · refine lt_of_lt_of_le (H₁ x x_in₁ y y_in₁) ?_
-      grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, H₀ x x_in₀]
+    refine inversion_estimate _ ?_
+    refine lt_of_lt_of_le (H₁ x x_in₁ y y_in₁) ?_
+    grw [Units.min_val, mul_assoc, Units.val_mul, Units.val_mul, H₀ x x_in₀]
 
 end IsValuativeTopology
 
