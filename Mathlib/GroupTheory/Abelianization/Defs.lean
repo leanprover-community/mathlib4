@@ -50,6 +50,7 @@ open scoped IsMulCommutative in
 def Abelianization : Type u :=
   G ⧸ commutator G
 
+-- Instantiating the abelianization as a commutative group
 open scoped IsMulCommutative in
 @[to_additive]
 instance : CommGroup (Abelianization G) :=
@@ -63,11 +64,9 @@ instance : Inhabited (Abelianization G) :=
 
 variable {G}
 
-
 /-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
-/-- `of` is the canonical projection from the additive group `G` to its abelianization.
--/]
+/-- `of` is the canonical projection from the additive group `G` to its abelianization. -/]
 def of : G →* Abelianization G where
   toFun := QuotientGroup.mk
   map_one' := rfl
@@ -138,8 +137,8 @@ section Map
 
 variable {H : Type v} [Group H] (f : G →* H)
 
-/-- The map operation of the `Abelianization` functor -/
-@[to_additive /-- The map operation of the `AddAbelianization` functor -/]
+/-- The map operation of the `Abelianization` functor. -/
+@[to_additive /-- The map operation of the `AddAbelianization` functor. -/]
 def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 
@@ -227,14 +226,16 @@ end Group
 
 /-! ### Deprecated aliases for the old root-namespace names -/
 
-section Deprecated
-
 @[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.instInhabited := Group.Abelianization.instInhabited
 @[deprecated (since := "2026-11-03")] alias Abelianization.of := Group.Abelianization.of
 @[deprecated (since := "2026-11-03")] alias Abelianization.mk_eq_of := Group.Abelianization.mk_eq_of
 @[deprecated (since := "2026-11-03")] alias Abelianization.ker_of := Group.Abelianization.ker_of
 @[deprecated (since := "2026-11-03")]
 alias Abelianization.commutator_le_ker := Group.Abelianization.commutator_le_ker
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.addCommutator_le_ker := AddGroup.Abelianization.addCommutator_le_ker
 @[deprecated (since := "2026-10-17")]
 alias Abelianization.commutator_subset_ker := Group.Abelianization.commutator_le_ker
 @[deprecated (since := "2026-11-03")] alias Abelianization.lift := Group.Abelianization.lift
@@ -248,6 +249,8 @@ alias Abelianization.lift_symm_apply := Group.Abelianization.lift_symm_apply
 alias Abelianization.lift_unique := Group.Abelianization.lift_unique
 @[deprecated (since := "2026-11-03")] alias Abelianization.lift_of := Group.Abelianization.lift_of
 @[deprecated (since := "2026-11-03")] alias Abelianization.hom_ext := Group.Abelianization.hom_ext
+@[deprecated (since := "2026-11-03")]
+alias Abelianization.hom_ext_iff := Group.Abelianization.hom_ext_iff
 @[deprecated (since := "2026-11-03")] alias Abelianization.map := Group.Abelianization.map
 @[deprecated (since := "2026-11-03")]
 alias Abelianization.lift_of_comp := Group.Abelianization.lift_of_comp
@@ -269,5 +272,3 @@ alias Abelianization.equivOfComm := Group.Abelianization.equivOfComm
 alias Abelianization.equivOfComm_apply := Group.Abelianization.equivOfComm_apply
 @[deprecated (since := "2026-11-03")]
 alias Abelianization.equivOfComm_symm_apply := Group.Abelianization.equivOfComm_symm_apply
-
-end Deprecated
