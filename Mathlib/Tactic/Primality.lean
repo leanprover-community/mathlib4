@@ -10,8 +10,8 @@ public import Mathlib.Tactic.Primality.Producers
 /-!
 # `primality`
 
-This file defines the `primality` tactic, which closes goals `Nat.Prime n` using a closed family of
-primality certificates, with witnesses it takes from the user.
+This file defines the `primality` tactic, which closes goals `Nat.Prime n` using a certificate
+constructed from witnesses it takes from the user.
 -/
 
 public meta section
@@ -45,12 +45,30 @@ def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap Nat Expr) := do
     have e : Q(Nat) := e
     have h : Q(Nat.Prime $e) := h
     let some ⟨q, qQ, pn⟩ ← evalNumeral? e |
-      throwError "{h} is not recognized as a proof of `Nat.Prime n`"
+      throwError "the tactic cannot simplify {e} to a numeral"
     known := known.insert q q(isNat.natElim (p := fun m ↦ Nat.Prime m → Nat.Prime $qQ) $pn id $h)
   return known
 
-/-- `primality` tries to prove a goal `Nat.Prime n`, using the hints provided by the user if any.
-Refer to `MathlibTest.Tactic.Primality` for a gallery of usages. -/
+/-- `primality` proves a goal `Nat.Prime n`, where `norm_num` evaluates `n` to a numeral, from a
+Lucas certificate given as a list of witnesses.
+
+A Lucas certificate proves `p` prime by a primitive root `a` of `p`, a number with
+`a ^ (p - 1) % p = 1` and `a ^ ((p - 1) / q) % p ≠ 1` for each prime factor `q` of `p - 1`. Each
+such `q` is proved prime in turn, so the witnesses form a tree with one entry for each prime.
+
+```lean
+example : Nat.Prime 1000003 := by
+  primality (cert := .witnesses [
+    -- Proves `1000003` prime, since `1000003 - 1 = 2 * 3 * 166667` and `2` is a primitive root.
+    .lucas { root := 2, primeFactors := [2, 3, 166667] },
+    -- Proves `166667` prime, since `166667 - 1 = 2 * 167 * 499` and `2` is a primitive root.
+    .lucas { root := 2, primeFactors := [2, 167, 499] }])
+```
+
+The primes `2`, `3`, `167` and `499` need no entry, since `norm_num` proves every prime below
+`2 ^ 10`. An entry does not name its prime, and each prime takes the first entry that fits it.
+`primality (cert := …) [h₁, …]` takes proofs `hᵢ : Nat.Prime m` of primes that then need no entry.
+See `MathlibTest/Tactic/Primality.lean` for more examples. -/
 syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
 elab_rules : tactic

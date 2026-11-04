@@ -33,15 +33,25 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   | case2 e _ ih =>
     simp [ih, ← ZMod.natCast_eq_natCast_iff', ← pow_mul, ← pow_add, Nat.div_add_mod']
 
+/-- Compiled code runs core's `Nat.powMod` in place of `powMod` since it is faster there. -/
+@[csimp] theorem powMod_eq_natPowMod : @powMod = @Nat.powMod := by
+  funext b e m
+  rw [powMod_def, Nat.powMod_def]
+
+/-- `lucasRootCheck p a qs` checks that `a ^ (p - 1) % p = 1` and that `a ^ ((p - 1) / q) % p ≠ 1`
+for each `q ∈ qs`. -/
+@[expose] def lucasRootCheck (p a : ℕ) (qs : List ℕ) : Bool :=
+  powMod a (p - 1) p == 1 && qs.all fun q ↦ powMod a ((p - 1) / q) p != 1
+
 /-- `lucasCheck p a fs` checks that `a ^ (p - 1) % p = 1`, that `a ^ ((p - 1) / q) % p ≠ 1` for
 each `(q, e) ∈ fs`, and that the `q ^ e` multiply to `p - 1`. -/
 @[expose] def lucasCheck (p a : ℕ) (fs : List (Nat.Primes × ℕ)) : Bool :=
-  powMod a (p - 1) p == 1 && fs.all (fun f ↦ powMod a ((p - 1) / f.1) p != 1) &&
-    (fs.map fun f ↦ (f.1 : ℕ) ^ f.2).prod == p - 1
+  lucasRootCheck p a (fs.map fun f ↦ (f.1 : ℕ)) && (fs.map fun f ↦ (f.1 : ℕ) ^ f.2).prod == p - 1
 
 theorem prime_of_lucasCheck {p a : ℕ} {fs : List (Nat.Primes × ℕ)}
     (h : lucasCheck p a fs = true) : p.Prime := by
-  simp only [lucasCheck, Bool.and_eq_true, beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
+  simp only [lucasCheck, lucasRootCheck, List.all_map, Function.comp_def, Bool.and_eq_true,
+    beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
   obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
   have hp : p ≠ 1 := by grind [powMod_def]
   refine lucas_primality p a ?_ fun q hq hqp h1 ↦ ?_
@@ -52,6 +62,20 @@ theorem prime_of_lucasCheck {p a : ℕ} {fs : List (Nat.Primes × ℕ)}
     apply hpow f hf
     rw [powMod_def, ← ZMod.val_natCast, Nat.cast_pow, h1, ZMod.val_one'' hp]
 
+/-- A candidate witness of a Lucas certificate for a `p`, which is not recorded in the type. -/
+structure LucasWitness where
+  /-- A primitive root of `p`. -/
+  root : Nat
+  /-- The prime factors of `p - 1`. -/
+  primeFactors : List Nat
+
+/-- Whether `w` is a witness for the prime `p`. Its prime factors, divided out of `p - 1` in turn,
+must each divide what is left and leave `1`, and its root must pass `lucasRootCheck`. -/
+def LucasWitness.certifies (w : LucasWitness) (p : Nat) : Bool :=
+  w.primeFactors.foldlM (init := p - 1)
+      (fun rest q ↦ if rest % q == 0 then some (rest.divMaxPow q) else none) == some 1 &&
+    lucasRootCheck p w.root w.primeFactors
+
 end Mathlib.Tactic.Primality
 
 end
@@ -61,13 +85,6 @@ public meta section
 open Lean Qq
 
 namespace Mathlib.Tactic.Primality
-
-/-- A candidate witness of a Lucas certificate for `p`. -/
-structure LucasWitness where
-  /-- A primitive root of `p`. -/
-  root : Nat
-  /-- The prime factors of `p - 1`. -/
-  primeFactors : List Nat
 
 /-- Proves `Nat.Prime p` from the primitive root `root` and the prime factors of `p - 1` in
 `factors`, each with its proof of primality. -/

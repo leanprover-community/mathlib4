@@ -5,7 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public meta import Mathlib.Data.Nat.MaxPowDiv
+public meta import Mathlib.Tactic.Primality.Lucas
 public import Mathlib.Init
 public import Mathlib.Tactic.Primality.Cert
 
@@ -40,10 +40,7 @@ inductive CertConfig where
 /-- The first entry of `witnesses` that is a Lucas witness for the prime `q`. -/
 def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
   for .lucas w in witnesses do
-    let rest? := w.primeFactors.foldlM (init := q - 1) fun rest r ↦
-      if rest % r == 0 then some (rest.divMaxPow r) else none
-    if rest? == some 1 && Nat.powMod w.root (q - 1) q == 1 &&
-        w.primeFactors.all (fun r ↦ Nat.powMod w.root ((q - 1) / r) q != 1) then
+    if w.certifies q then
       return w
   throwError "no provided witness certifies the primality of {q}"
 
