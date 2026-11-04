@@ -34,15 +34,9 @@ generators, relations, group presentations
 
 variable {α β : Type*}
 
-
-/-- Given a set of relations, `rels`, over a type `α`, `PresentedAddGroup` constructs the additive
-group with generators `x : α` and relations `rels` as a quotient of `FreeAddGroup α`. -/
-def PresentedAddGroup (rels : Set (FreeAddGroup α)) :=
-  FreeAddGroup α ⧸ AddSubgroup.normalClosure rels
-
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
-@[to_additive existing]
+@[to_additive]
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
 
@@ -53,11 +47,11 @@ instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
 namespace PresentedGroup
 
 /-- The canonical map from the free group on `α` to a presented group with generators `x : α`,
-where `x` is mapped to its equivalence class under the given set of relations `rels` -/
+where `x` is mapped to its equivalence class under the given set of relations `rels`. -/
 @[to_additive
 /-- The canonical map from the free additive group on `α` to a presented additive
 group with generators `x : α`, where `x` is mapped to its equivalence class under the given set of
-relations `rels` -/]
+relations `rels`. -/]
 def mk (rels : Set (FreeGroup α)) : FreeGroup α →* PresentedGroup rels :=
   ⟨⟨QuotientGroup.mk, rfl⟩, fun _ _ => rfl⟩
 
