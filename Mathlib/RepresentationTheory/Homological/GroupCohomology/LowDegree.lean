@@ -290,6 +290,7 @@ instance : FunLike (cocycles₁ A) G A := ⟨Subtype.val, Subtype.val_injective�
 @[simp]
 theorem cocycles₁.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : cocycles₁ A) : G → A) = f := rfl
 
+@[simp]
 lemma cocycles₁.coe_sub (f g : cocycles₁ A) : ((f - g : cocycles₁ A) : G → A) = f - g := rfl
 
 @[simp]
@@ -300,10 +301,8 @@ theorem cocycles₁_ext {f₁ f₂ : cocycles₁ A} (h : ∀ g : G, f₁ g = f�
   DFunLike.ext f₁ f₂ h
 
 theorem mem_cocycles₁_def (f : G → A) :
-    f ∈ cocycles₁ A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
-  LinearMap.mem_ker.trans <| by
-    simp_rw [funext_iff, d₁₂_hom_apply, Prod.forall]
-    rfl
+    f ∈ cocycles₁ A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 := by
+  simp_rw [cocycles₁, LinearMap.mem_ker, funext_iff, d₁₂_hom_apply, Prod.forall, Pi.zero_apply _]
 
 theorem mem_cocycles₁_iff (f : G → A) :
     f ∈ cocycles₁ A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
@@ -815,7 +814,6 @@ def isoShortComplexH1 : (inhomogeneousCochains A).sc 1 ≅ shortComplexH1 A :=
 def isoCocycles₁ : cocycles A 1 ≅ ↧(cocycles₁ A) :=
   cyclesMapIso' (isoShortComplexH1 A) _ (shortComplexH1 A).moduleCatLeftHomologyData
 
-attribute [local implicit_reducible] ShortComplex.cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₁_hom_comp_i :
     (isoCocycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
@@ -866,7 +864,6 @@ def isoShortComplexH2 :
 def isoCocycles₂ : cocycles A 2 ≅ ↧(cocycles₂ A) :=
   cyclesMapIso' (isoShortComplexH2 A) _ (shortComplexH2 A).moduleCatLeftHomologyData
 
-attribute [local implicit_reducible] ShortComplex.cycles in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCocycles₂_hom_comp_i :
     (isoCocycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
