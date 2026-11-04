@@ -175,7 +175,7 @@ theorem grade.decompose_single (i : ι) (r : R) :
       .of (fun i ↦ grade R i) i ⟨single i r, single_mem_grade _ _⟩ :=
   decomposeAux_single _ _ _
 
-/-- The component of degree `a` in the decomposition of `f` is its `a`-term. -/
+/-- The component of degree `i` in the decomposition of `x` is its `i`-term. -/
 @[simp] lemma grade.decompose_apply (x : R[ι]) (i : ι) :
     decompose (grade R) x i = single i (x.coeff i) := by
   induction x using induction_linear with
