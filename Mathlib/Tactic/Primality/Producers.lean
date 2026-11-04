@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Data.Nat.MaxPowDiv
 public import Mathlib.Init
-public import Mathlib.Tactic.Primality.Lucas
+public import Mathlib.Tactic.Primality.Cert
 
 /-!
 # Producers
@@ -183,5 +183,56 @@ def findLucasWitness (factorizer : Factorizer) (rootFinder : PrimitiveRootFinder
       be provided at `.lucas \{ factors := … }`. In the rare case that it is prime, add a \
       primitive root of it to `.lucas \{ roots := … }`."
   return { root, factors }
+
+/-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
+def normNumBound : Nat := 2 ^ 16
+
+/-- The witness of a primality certificate for one prime, tagged by the certificate type. -/
+inductive Witness where
+  /-- The witness of a Lucas certificate. -/
+  | lucas (w : LucasWitness)
+
+/-- The certificate family to search in with its options, or the witnesses of a certificate. -/
+inductive CertConfig where
+  /-- Lucas certificates. -/
+  | lucas (cfg : LucasConfig)
+  /-- The certificate with the witnesses in `witnesses`. A prime `q` takes the first entry whose
+  factors are the prime factors of `q - 1` and whose root is a primitive root of `q`. Nothing is
+  searched, so each prime needs an entry unless it is below `normNumBound` or proved by the
+  user. -/
+  | witnesses (witnesses : List Witness)
+
+/-- The first entry of `witnesses` that is a Lucas witness for the prime `q`. -/
+def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
+  for .lucas w in witnesses do
+    if w.factors.all (fun r ↦ (q - 1) % r == 0) && w.factors.foldl Nat.divMaxPow (q - 1) == 1 &&
+        (← PrimitiveRootFinder.ofArray #[w.root] q w.factors).isSome then
+      return w
+  throwError "no provided witness certifies the primality of {q}"
+
+/-- Builds the certificate of `p` from the witness that `cfg` gives or finds for each prime, with
+`norm_num` below `normNumBound` and the user's proofs for the primes in `known`. Each prime's
+certificate is built once. -/
+partial def mkCert (cfg : CertConfig) (known : Std.HashSet Nat) (p : Nat) : CoreM (Cert p) :=
+  StateT.run' (go p) {}
+where
+  /-- Builds the certificate of `q`. The state caches the certificates constructed for each
+  nontrivial intermediate result. -/
+  go (q : Nat) : StateT (Std.DHashMap Nat Cert) CoreM (Cert q) := do
+    let cache ← get
+    if let some cert := cache.get? q then
+      return cert
+    if known.contains q then
+      return .known
+    if q < normNumBound then
+      return .normNum
+    let w ← match cfg with
+      | .lucas lucasCfg =>
+        findLucasWitness ((Factorizer.ofArray known.toArray).then lucasCfg.toFactorizer)
+          lucasCfg.toPrimitiveRootFinder p q
+      | .witnesses witnesses => witnessFor witnesses q
+    let cert : Cert q := .lucas w.root (← w.factors.mapM fun r ↦ return ⟨r, ← go r⟩)
+    modify (·.insert q cert)
+    return cert
 
 end Mathlib.Tactic.Primality

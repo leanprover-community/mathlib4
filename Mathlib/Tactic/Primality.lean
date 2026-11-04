@@ -5,7 +5,6 @@ Authors: Rao Xiaojia
 -/
 module
 
-public import Mathlib.Tactic.Primality.Cert
 public import Mathlib.Tactic.Primality.Producers
 
 /-!
@@ -20,60 +19,6 @@ public meta section
 open Lean Meta Elab Tactic Qq Mathlib.Meta.NormNum
 
 namespace Mathlib.Tactic.Primality
-
-/-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
-def normNumBound : Nat := 2 ^ 16
-
-/-- The witness of a primality certificate for one prime, tagged by the certificate type. -/
-inductive Witness where
-  /-- The witness of a Lucas certificate. -/
-  | lucas (w : LucasWitness)
-
-/-- The certificate family to search in with its options, or the witnesses of a certificate. -/
-inductive CertConfig where
-  /-- Lucas certificates. -/
-  | lucas (cfg : LucasConfig)
-  /-- The certificate with the witnesses in `witnesses`. A prime `q` takes the first entry whose
-  factors are the prime factors of `q - 1` and whose root is a primitive root of `q`. Nothing is
-  searched, so each prime needs an entry unless it is below `normNumBound` or proved by the
-  user. -/
-  | witnesses (witnesses : List Witness)
-
-/-- Finds a primality certificate for `p` using the Lucas test, with the witness of each prime from
-`witnessOf`. Small numbers are handled by `norm_num`'s trial division. -/
-partial def findLucasCert (witnessOf : Nat → CoreM LucasWitness) (known : Std.HashSet Nat)
-    (p : Nat) : CoreM (Cert p) :=
-  StateT.run' (go p) {}
-where
-  /-- Finds a certificate for `q`. The state caches the certificates constructed for each
-  nontrivial intermediate result. -/
-  go (q : Nat) : StateT (Std.DHashMap Nat Cert) CoreM (Cert q) := do
-    let cache ← get
-    if let some cert := cache.get? q then
-      return cert
-    if known.contains q then
-      return .known
-    if q < normNumBound then
-      return .normNum
-    let w ← witnessOf q
-    let cert : Cert q := .lucas w.root (← w.factors.mapM fun r ↦ return ⟨r, ← go r⟩)
-    modify (·.insert q cert)
-    return cert
-
-/-- Finds a certificate for `p` with the options in `cfg`. The search of a certificate family
-throws its own error at the first value it cannot find a witness. -/
-def findCert (cfg : CertConfig) (known : Array Nat) (p : Nat) : CoreM (Cert p) :=
-  match cfg with
-  | .lucas lucasCfg =>
-    findLucasCert (findLucasWitness ((Factorizer.ofArray known).then lucasCfg.toFactorizer)
-      lucasCfg.toPrimitiveRootFinder p) (.ofArray known) p
-  | .witnesses witnesses =>
-    findLucasCert (fun q ↦ do
-      for .lucas w in witnesses do
-        if w.factors.all (fun r ↦ (q - 1) % r == 0) && w.factors.foldl Nat.divMaxPow (q - 1) == 1 &&
-            (← PrimitiveRootFinder.ofArray #[w.root] q w.factors).isSome then
-          return w
-      throwError "no provided witness certifies the primality of {q}") (.ofArray known) p
 
 /-- Configuration for `primality`. -/
 structure Config where
@@ -118,7 +63,7 @@ elab_rules : tactic
       have e : Q(Nat) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
-      let cert ← findCert cfg.cert known.keysArray p
+      let cert ← mkCert cfg.cert (.ofArray known.keysArray) p
       let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime cert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 
