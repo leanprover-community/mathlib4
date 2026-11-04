@@ -1,36 +1,50 @@
-import Mathlib.NumberTheory.LSeries.RiemannZeta
-import Mathlib.Analysis.Meromorphic.Basic
+/-
+Copyright (c) 2026 ChenGuang Studio. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+-/
+module
 
-open Complex Filter Set
+public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Tactic.FunProp
 
-theorem riemannZeta_meromorphicAt_one : MeromorphicAt riemannZeta 1 := by
-  refine ⟨2, ?_⟩
-  simp only [smul_eq_mul]
-  refine Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt ?_ ?_
-  · filter_upwards [self_mem_nhdsWithin] with z hz
-    exact ((differentiableAt_id.sub_const 1).pow 2).mul (differentiableAt_riemannZeta hz)
-  · have h1 : Tendsto (fun z : Complex => z - 1) (nhdsWithin 1 (Set.compl {1})) (nhds 0) := by
-      have hc : ContinuousAt (fun z : Complex => z - 1) 1 := by fun_prop
-      simpa using hc.tendsto.mono_left nhdsWithin_le_nhds
-    have h3 : Tendsto (fun z : Complex => (z - 1) ^ 2 * riemannZeta z)
-        (nhdsWithin 1 (Set.compl {1})) (nhds 0) := by
-      have hm := h1.mul riemannZeta_residue_one
-      simpa [pow_two, mul_assoc] using hm
-    have hf1 : (fun z : Complex => (z - 1) ^ 2 * riemannZeta z) 1 = 0 := by
-      show ((1 : Complex) - 1) ^ 2 * riemannZeta 1 = 0
-      rw [sub_self, zero_pow (by norm_num), zero_mul]
-    have huniv : (insert (1 : Complex) (Set.compl {1})) = Set.univ := by
-      ext x
-      by_cases h : x = 1
-      · simp [h]
-      · simp [h]; exact h
-    change Tendsto (fun z : Complex => (z - 1) ^ 2 * riemannZeta z) (nhds 1)
-      (nhds ((fun z : Complex => (z - 1) ^ 2 * riemannZeta z) 1))
-    rw [hf1]
-    rw [← nhdsWithin_univ, ← huniv, nhdsWithin_insert, tendsto_sup]
-    refine ⟨?_, h3⟩
-    rw [← hf1]
-    have hpure : Tendsto (fun z : Complex => (z - 1) ^ 2 * riemannZeta z) (pure 1)
-        (pure ((fun z : Complex => (z - 1) ^ 2 * riemannZeta z) 1)) := by
-      exact tendsto_pure.mpr (by simp : ∀ᶠ x in pure (1 : Complex), (fun z : Complex => (z - 1) ^ 2 * riemannZeta z) x = (fun z : Complex => (z - 1) ^ 2 * riemannZeta z) 1)
-    exact hpure.mono_right (by simp)
+/-!
+# Meromorphic continuation of the Riemann zeta function
+We show that `riemannZeta` is meromorphic on `ℂ`, the only possible pole being at `s = 1`.
+If `g` denotes the value at `1` of `s ↦ (s - 1) * f s` extended by its limit, then `g` is
+analytic (it is continuous at `1` and differentiable away from `1`) and `s ↦ g s / (s - 1)`
+agrees with `f` away from `1`.
+-/
+
+open Topology
+
+theorem meromorphicAt_riemannZeta_one : MeromorphicAt riemannZeta 1 := by
+  let g := Function.update (fun s => (s - 1) * riemannZeta s) 1 1
+  suffices MeromorphicAt (fun s => g s / (s - 1)) 1 by
+    apply this.congr
+    exact eventually_nhdsWithin_of_forall fun x h => (by grind)
+  refine MeromorphicAt.fun_div ?_ (by fun_prop)
+  apply AnalyticAt.meromorphicAt
+  apply Complex.analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt ?_ ?_
+  · apply eventually_nhdsWithin_of_forall fun x h => ?_
+    simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at h
+    suffices DifferentiableAt ℂ (fun s => (s - 1) * riemannZeta s) x by
+      apply this.congr_of_eventuallyEq
+      rw [Filter.EventuallyEq, eventually_nhds_iff]
+      use {1}ᶜ
+      simp +contextual [g, h]
+    apply DifferentiableAt.mul (by fun_prop)
+    apply differentiableAt_riemannZeta h
+  · rw [continuousAt_iff_punctured_nhds]
+    simp only [Function.update_self, g]
+    apply riemannZeta_residue_one.congr'
+    exact eventually_nhdsWithin_of_forall fun x h => (by grind)
+
+theorem meromorphic_riemannZeta : Meromorphic riemannZeta := by
+  intro s
+  rcases eq_or_ne s 1 with rfl | hs
+  · exact meromorphicAt_riemannZeta_one
+  · have hdiff : DifferentiableOn ℂ riemannZeta {1}ᶜ :=
+      fun z hz => (differentiableAt_riemannZeta hz).differentiableWithinAt
+    exact ((hdiff.analyticOn isOpen_compl_singleton).analyticAt
+      (isOpen_compl_singleton.mem_nhds hs)).meromorphicAt
