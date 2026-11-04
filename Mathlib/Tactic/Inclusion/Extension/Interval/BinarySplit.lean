@@ -28,10 +28,8 @@ meta def binarySplitParam : InclusionParamDecl where
   type := q(ℕ)
 
 /-- Construct the binary-splitting cover from the `binSplit` parameter.
-
 If `binSplit` is omitted, return `none`. Otherwise, for `binSplit := n`, return `some` of the
-expression `cover n`. At depth `0`, the cover uses the original interval without splitting.
-At positive depth `n`, it bisects bounded intervals up to depth `n` and coarsens the results. -/
+expression `cover n`. -/
 @[inline]
 meta def mkBinarySplitCover {u v : Level} {Iα : Q(Type u)} {α : Q(Type v)}
     {inst : Q(ToSet $Iα $α)} (cover : Q(ℕ → @Cover.{0} $Iα $α $inst)) :
