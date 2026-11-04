@@ -73,7 +73,9 @@ syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
-    let cfg ← elabPrimalityConfig cfg
+    let .witnesses witnesses := (← elabPrimalityConfig cfg).cert
+    let witnesses := witnesses.map fun (.lucas w) ↦
+      Witness.lucas { w with primeFactors := w.primeFactors.eraseDups }
     let known ← elabKnownPrimes <| hs.map (·.getElems) |>.getD #[]
     liftMetaFinishingTactic fun g ↦ do
       let_expr Nat.Prime e := ← instantiateMVars (← g.getType) |
@@ -81,7 +83,7 @@ elab_rules : tactic
       have e : Q(Nat) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
-      let cert ← mkCert cfg.cert (.ofArray known.keysArray) p
+      let cert ← mkCert (.witnesses witnesses) (.ofArray known.keysArray) p
       let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime cert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 

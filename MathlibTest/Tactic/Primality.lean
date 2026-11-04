@@ -11,7 +11,7 @@ import Mathlib.Tactic.Primality
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2] }])
 
--- A prime factor listed twice counts once.
+-- Repeated prime factors are deduplicated.
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])
 
@@ -68,6 +68,7 @@ example : Nat.Prime (2 ^ 255 - 19) := by
 #guard_msgs in
 example (n : ℕ) : Nat.Prime n := by primality
 
+-- `2` is not a primitive root of `65537`, since `2 ^ 32 % 65537 = 1`.
 /-- error: no provided witness certifies the primality of 65537 -/
 #guard_msgs in
 example : Nat.Prime 65537 := by

@@ -25,7 +25,7 @@ namespace Mathlib.Tactic.Primality
 inductive Cert : Nat → Type where
   /-- `p` is proved prime by `norm_num`. -/
   | normNum {p : Nat} : Cert p
-  /-- A proof that `p` is prime is provided, which should be stored in the initial cache of
+  /-- A proof that `p` is prime is provided, which must be stored in the initial cache of
   `certifyPrime`. -/
   | known {p : Nat} : Cert p
   /-- A Lucas certificate with the primitive root `root` and the prime factors of `p - 1` with
