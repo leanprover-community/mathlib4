@@ -358,6 +358,7 @@ instance : FunLike (cocycles₂ A) (G × G) A := ⟨Subtype.val, Subtype.val_inj
 @[simp]
 theorem cocycles₂.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : cocycles₂ A) : G × G → A) = f := rfl
 
+@[simp]
 lemma cocycles₂.coe_sub (f g : cocycles₂ A) : ((f - g : cocycles₂ A) : G × G → A) = f - g := rfl
 
 @[simp]
