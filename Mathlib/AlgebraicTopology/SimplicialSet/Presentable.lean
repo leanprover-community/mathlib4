@@ -5,11 +5,12 @@ Authors: Joël Riou
 -/
 module
 
-import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
 public import Mathlib.AlgebraicTopology.SimplicialSet.FiniteProd
-import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.Presheaf
+
+import Mathlib.AlgebraicTopology.SimplicialSet.FiniteColimits
+import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 
 /-!
 # Finite simplicial sets are presentable

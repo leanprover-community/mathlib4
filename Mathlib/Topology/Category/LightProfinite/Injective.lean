@@ -7,8 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.Topology.Category.LightProfinite.AsLimit
-import Mathlib.Topology.Category.CompHausLike.Limits
+
 import Mathlib.CategoryTheory.Functor.OfSequence
+import Mathlib.Topology.Category.CompHausLike.Limits
 
 /-!
 
@@ -102,7 +103,7 @@ lemma exists_lift_of_finite_of_injective_of_surjective {X Y S T : Type*}
   refine ⟨liftCover C (fun i _ ↦ i) h_glue C_cover_univ, IsLocallyConstant.continuous ?_, ?_, ?_⟩
   · rw [IsLocallyConstant.iff_isOpen_fiber]
     intro s
-    convert! (C_clopen s).2
+    convert (C_clopen s).2
     ext y
     simp [preimage_liftCover]
   · ext y

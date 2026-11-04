@@ -6,11 +6,12 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.Algebra.Module.StablyFree.Basic
+public import Mathlib.RingTheory.PicardGroup
+
 import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.ExteriorPower.Basis
 import Mathlib.RingTheory.Finiteness.Prod
-public import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!

@@ -6,6 +6,7 @@ Authors: Peter Nelson, Junyan Xu
 module
 
 public import Mathlib.Combinatorics.Matroid.Rank.ENat
+
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
@@ -50,7 +51,7 @@ However, for matroids that do not satisfy `InvariantCardinalRank`, they are badl
 For instance, in general `cRk` is not submodular,
 and its value may differ on a set `X` and the closure of `X`.
 We state and prove theorems without `InvariantCardinalRank` whenever possible,
-which sometime makes their proofs longer than they would be with the instance.
+which sometimes makes their proofs longer than they would be with the instance.
 
 ## TODO
 

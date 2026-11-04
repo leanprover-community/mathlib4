@@ -6,9 +6,10 @@ Authors: Simone M. Chiarello, Matteo Cipollina
 
 module
 
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.Subobject.MonoOver
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
 /-!
 # Filtrations

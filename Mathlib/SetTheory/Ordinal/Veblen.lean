@@ -495,7 +495,7 @@ theorem invVeblen₂_lt (x : Ordinal) : invVeblen₂ x < ω ^ x := by
 theorem invVeblen₂_le (x : Ordinal) : invVeblen₂ x ≤ x := by
   obtain h | h := eq_zero_or_pos (invVeblen₁ x)
   · rw [invVeblen₂_le_iff, h, veblen_zero]
-  · convert! (invVeblen₂_lt x).le
+  · convert (invVeblen₂_lt x).le
     rw [← veblen_zero_apply, veblen_eq_of_lt_invVeblen₁ h]
 
 theorem invVeblen₂_of_lt_opow (h : a < ω ^ a) : invVeblen₂ a = a := by
@@ -521,7 +521,7 @@ theorem veblen_eq_opow_iff (h : a < veblen o a) :
     · rw [← veblen_veblen_of_lt ho, veblen_zero_apply, opow_right_inj one_lt_omega0]
       rintro rfl
       simp [invVeblen₁_veblen h, invVeblen₂_veblen ho.ne' h]
-  · convert! ← veblen_invVeblen₁_invVeblen₂ x
+  · convert ← veblen_invVeblen₁_invVeblen₂ x
 
 /-! ### Epsilon function -/
 
@@ -556,9 +556,20 @@ theorem epsilon_zero_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
 theorem epsilon_le_veblen_of_ne_zero (ha : a ≠ 0) : ε_ b ≤ veblen a b :=
   veblen_left_monotone b <| Order.one_le_iff_ne_zero.mpr ha
 
+theorem mem_range_epsilon : o ∈ range epsilon ↔ ω ^ o = o := by
+  simp [mem_range_veblen one_ne_zero]
+
 @[simp]
 theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
-  rw [epsilon_eq_deriv, deriv_fp (isNormal_opow one_lt_omega0)]
+  simp [← mem_range_epsilon]
+
+theorem isPrincipal_opow_epsilon (o : Ordinal) : IsPrincipal (· ^ ·) (ε_ o) :=
+  (omega0_lt_and_isPrincipal_opow_iff.2 (omega0_opow_epsilon o)).2
+
+/-- The exponential principal ordinals are `0`, `2`, `ω`, and the epsilon numbers. -/
+theorem isPrincipal_opow_iff_zero_or_two_or_omega0_or_epsilon :
+    IsPrincipal (· ^ ·) o ↔ o = 0 ∨ o = 2 ∨ o = ω ∨ o ∈ range epsilon := by
+  rw [isPrincipal_opow_iff_zero_or_two_or_omega0_or_omega0_opow_eq, mem_range_epsilon]
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon_zero : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by

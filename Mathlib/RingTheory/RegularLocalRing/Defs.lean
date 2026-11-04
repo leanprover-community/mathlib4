@@ -5,8 +5,9 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.DedekindDomain.Dvr
+
+import Mathlib.Algebra.Module.SpanRankOperations
 import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.KrullDimension.PID
@@ -23,7 +24,7 @@ For the next section, we define regular rings as Noetherian rings whose localiza
 are regular local rings.
 (Note that a regular local ring is a regular ring, but this is not immediate under this definition).
 
-# Main Definition and Results
+## Main definitions and results
 
 * `IsRegularLocalRing` : A Noetherian local ring is regular if
   `(maximalIdeal R).spanFinrank = ringKrullDim R`,

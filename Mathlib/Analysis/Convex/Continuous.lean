@@ -6,7 +6,11 @@ Authors: Yaël Dillies, Zichen Wang
 module
 
 public import Mathlib.Analysis.Convex.Intrinsic
+
 import Mathlib.Analysis.Normed.Affine.Convex
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex functions are continuous
@@ -83,7 +87,7 @@ lemma ConvexOn.exists_lipschitzOnWith_of_isBounded (hf : ConvexOn ℝ (ball x₀
 
 lemma ConcaveOn.exists_lipschitzOnWith_of_isBounded (hf : ConcaveOn ℝ (ball x₀ r) f) (hr : r' < r)
     (hf' : IsBounded (f '' ball x₀ r)) : ∃ K, LipschitzOnWith K f (ball x₀ r') := by
-  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert! hf'.neg; ext; simp [neg_eq_iff_eq_neg]
+  replace hf' : IsBounded ((-f) '' ball x₀ r) := by convert hf'.neg; ext; simp [neg_eq_iff_eq_neg]
   simpa using hf.neg.exists_lipschitzOnWith_of_isBounded hr hf'
 
 lemma ConvexOn.isBoundedUnder_abs (hf : ConvexOn ℝ C f) {x₀ : E} (hC : C ∈ 𝓝 x₀) :
@@ -319,7 +323,6 @@ lemma ConcaveOn.continuousOn_Ico {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : Concave
   simpa using hf_cnv.neg.continuousOn_Ico hf_cont.neg
 
 lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
   suffices ContinuousOn f (Ico y z) ∧ ContinuousOn f (Ioc y z) by
@@ -336,9 +339,8 @@ lemma ConvexOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cvx : ConvexOn
   · exact hf_cvx.subset Ioc_subset_Icc_self (convex_Ioc y z)
 
 lemma ConcaveOn.continuousOn_Icc {f : ℝ → ℝ} {y z : ℝ} (hf_cnv : ConcaveOn ℝ (Icc y z) f)
-    (hyz : y < z)
     (hfy : ContinuousWithinAt f (Ici y) y) (hfz : ContinuousWithinAt f (Iic z) z) :
     ContinuousOn f (Icc y z) := by
-  simpa using hf_cnv.neg.continuousOn_Icc hyz hfy.neg hfz.neg
+  simpa using hf_cnv.neg.continuousOn_Icc hfy.neg hfz.neg
 
 end Intervals

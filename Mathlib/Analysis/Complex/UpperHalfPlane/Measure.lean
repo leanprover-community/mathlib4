@@ -8,7 +8,11 @@ module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
+
 import Mathlib.MeasureTheory.Function.Jacobian
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Invariant measure on the upper half-plane
@@ -95,7 +99,7 @@ instance : SMulInvariantMeasure (GL (Fin 2) ℝ) ℍ volume := by
         (hasStrictFDerivAt_smul g _).hasFDerivAt.hasFDerivWithinAt)
       hinj
       (fun z ↦ ↑((1 / ‖z.im‖₊) ^ 2 : NNReal))
-  convert! main using 1
+  convert main using 1
   · simp [Set.image_image]
   · apply setLIntegral_congr_fun (measurableEmbedding_coe.measurableSet_image.mpr hs)
     rintro _ ⟨τ, -, rfl⟩

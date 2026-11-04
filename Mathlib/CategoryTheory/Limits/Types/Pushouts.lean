@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
+public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
 # Pushouts in `Type`
@@ -210,7 +210,7 @@ variable {f g}
 lemma pushoutCocone_inl_eq_inr_imp_of_iso {c c' : PushoutCocone f g} (e : c ≅ c')
     (x₁ : X₁) (x₂ : X₂) (h : c.inl x₁ = c.inr x₂) :
     c'.inl x₁ = c'.inr x₂ := by
-  convert! congr(e.hom.hom $h)
+  convert congr(e.hom.hom $h)
   · congrm $((e.hom.w WalkingSpan.left).symm) x₁
   · congrm $((e.hom.w WalkingSpan.right).symm) x₂
 
@@ -360,7 +360,7 @@ lemma isPushout_of_isPullback_of_mono {k : X₄ ⟶ X₅}
     rw [isIso_iff_bijective]
     refine ⟨(mono_iff_injective _).1 (mono_of_mono φ k), fun x₄ ↦ ?_⟩
     have hx₄ := Set.mem_univ x₄
-    simp only [← h₂, Set.sup_eq_union, Set.mem_union, Set.mem_range] at hx₄
+    simp only [← h₂, Set.mem_union, Set.mem_range] at hx₄
     obtain (⟨x₂, rfl⟩ | ⟨x₃, rfl⟩) := hx₄
     · exact ⟨_, congr($hφ₁ x₂)⟩
     · exact ⟨_, congr($hφ₂ x₃)⟩

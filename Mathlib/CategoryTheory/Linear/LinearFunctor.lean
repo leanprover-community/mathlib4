@@ -5,9 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Linear.Basic
 public import Mathlib.Algebra.Module.LinearMap.Rat
+public import Mathlib.CategoryTheory.Linear.Basic
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
 # Linear Functors
@@ -136,7 +136,6 @@ end Functor
 
 namespace Equivalence
 
-set_option backward.defeqAttrib.useBackward true in
 instance inverseLinear (e : C ≌ D) [e.functor.Linear R] : e.inverse.Linear R where
   map_smul r f := by
     apply e.functor.map_injective
