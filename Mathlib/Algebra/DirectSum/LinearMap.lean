@@ -107,6 +107,7 @@ lemma trace_eq_sum_trace_restrict' (h : IsInternal N) (hN : {i | N i ≠ ⊥}.Fi
   rw [← Finset.sum_coe_sort, trace_eq_sum_trace_restrict (isInternal_ne_bot_iff.mpr h) (hf ·)]
   exact Fintype.sum_equiv hN.subtypeEquivToFinset _ _ (fun i ↦ rfl)
 
+omit [∀ i, Module.Finite R (N i)] [∀ i, Module.Projective R (N i)] in
 lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
     (σ : ι → ι) (hσ : ∀ i, σ i ≠ i) {f : Module.End R M}
     (hf : ∀ i, MapsTo f (N i) (N <| σ i)) :
@@ -117,6 +118,10 @@ lemma trace_eq_zero_of_mapsTo_ne (h : IsInternal N) [IsNoetherian R M]
   rw [← congrArg (trace R M) (h.sum_comp_subtype_component hN.toFinset (by simp) f), map_sum]
   apply Finset.sum_eq_zero
   intro i _
+  let π : M →ₗ[R] N i := component R ι (fun i ↦ N i) i ∘ₗ
+    (LinearEquiv.ofBijective (coeLinearMap N) h).symm.toLinearMap
+  haveI : Module.Projective R (N i) := Module.Projective.of_split (N i).subtype π
+    (LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem x.property)
   rw [trace_comp_comm', ← map_zero (trace R (N i))]
   congr 1
   exact LinearMap.ext fun x ↦ h.ofBijective_coeLinearMap_of_mem_ne (hσ i) (hf i x.property)
