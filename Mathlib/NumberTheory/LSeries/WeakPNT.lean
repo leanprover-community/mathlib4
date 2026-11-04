@@ -74,7 +74,7 @@ theorem ArithmeticFunction.vonMangoldt.tendsto_residueClass_sum_div_atTop {q a} 
       if n % q = a then Λ n else 0) / x) atTop (𝓝 q.totient⁻¹) := by
   apply (tendsto_residueClass_sum_div ((isUnit_iff_coprime a q).mpr ha)).congr
   simp [residueClass, Set.indicator_apply, natCast_eq_natCast_iff', mod_eq_of_lt ha']
-  
+
 namespace Chebyshev
 
 /-- **The prime number theorem, `ψ` form**: `ψ x / x → 1` as `x → ∞`. -/
