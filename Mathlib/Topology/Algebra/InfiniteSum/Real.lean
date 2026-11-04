@@ -110,4 +110,26 @@ protected theorem Summable.tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} 
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
   Summable.tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
 
+variable {R : Type*} [TopologicalSpace R] {g : ℝ → R} (f : ℕ → R) {x : ℝ}
+
+/-- If `g : ℝ → R` has compact support and `x ≠ 0`, then `n ↦ f n * g (n / x)` vanishes for all
+but finitely many `n : ℕ`, hence is summable. -/
+theorem HasCompactSupport.summable_mul_natCast_div [NonUnitalNonAssocSemiring R]
+    (hg : HasCompactSupport g) (hx : x ≠ 0) : Summable fun n : ℕ ↦ f n * g (n / x) := by
+  obtain ⟨M, hM⟩ := hg.isCompact.isBounded.subset_closedBall 0
+  refine summable_of_hasFiniteSupport <| (Set.finite_Iic ⌈M * |x|⌉₊).subset fun n hn ↦ ?_
+  have := hM (subset_tsupport _ (right_ne_zero_of_mul hn))
+  rw [Metric.mem_closedBall, Real.dist_eq, sub_zero, abs_div, Nat.abs_cast,
+    div_le_iff₀ (abs_pos.mpr hx)] at this
+  exact Nat.cast_le.mp (this.trans (Nat.le_ceil _))
+
+/-- For `0 < c`, the sum of `f n` over the natural numbers `n` with `n / c ∈ [u, v)`, written as
+a `tsum` against an indicator function. -/
+theorem tsum_mul_indicator_Ico_natCast_div [NonAssocSemiring R] (hx : 0 < x) (u v : ℝ) (f : ℕ → R) :
+    ∑' n : ℕ, f n * (Set.Ico u v).indicator 1 (n / x) = ∑ n ∈ Ico ⌈u * x⌉₊ ⌈v * x⌉₊, f n := by
+  rw [tsum_eq_sum (s := Ico ⌈u * x⌉₊ ⌈v * x⌉₊)]
+  · refine sum_congr rfl fun n hn ↦ ?_
+    simp_all [Nat.ceil_le, Nat.lt_ceil, le_div_iff₀, div_lt_iff₀]
+  · simp +contextual [Nat.ceil_le, Nat.lt_ceil, le_div_iff₀, div_lt_iff₀, hx]
+
 end summable
