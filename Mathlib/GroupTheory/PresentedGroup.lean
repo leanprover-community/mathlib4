@@ -39,17 +39,16 @@ variable {α β : Type*}
 group with generators `x : α` and relations `rels` as a quotient of `FreeAddGroup α`. -/
 def PresentedAddGroup (rels : Set (FreeAddGroup α)) :=
   FreeAddGroup α ⧸ AddSubgroup.normalClosure rels
-deriving AddGroup
 
 /-- Given a set of relations, `rels`, over a type `α`, `PresentedGroup` constructs the group with
 generators `x : α` and relations `rels` as a quotient of `FreeGroup α`. -/
 @[to_additive existing]
 def PresentedGroup (rels : Set (FreeGroup α)) :=
   FreeGroup α ⧸ Subgroup.normalClosure rels
-deriving Group
 
--- Register derived instances as additive/multiplicative versions
-attribute [to_additive existing] instGroupPresentedGroup
+@[to_additive]
+instance (rels : Set (FreeGroup α)) : Group (PresentedGroup rels) :=
+  QuotientGroup.Quotient.group _
 
 namespace PresentedGroup
 
