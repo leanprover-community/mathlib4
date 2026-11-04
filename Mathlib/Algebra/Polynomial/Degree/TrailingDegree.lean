@@ -443,7 +443,7 @@ lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
   · nontriviality R
     rw [h, natTrailingDegree_X_pow, ← h]
   · ext n
-    rw [coeff_X_pow]
+    rw [coeff_X_pow_apply]
     obtain hn | rfl | hn := lt_trichotomy n p.natDegree
     · rw [ite_eq_right hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (hn.trans_le h)]
     · simpa only [ite_eq_left rfl] using! h₁.leadingCoeff
