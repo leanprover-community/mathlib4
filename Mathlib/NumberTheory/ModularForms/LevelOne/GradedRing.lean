@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.NumberTheory.ModularForms.LevelOne.DimensionFormula
+
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.MvPolynomial.Groebner
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
