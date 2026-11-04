@@ -93,7 +93,7 @@ theorem cfc_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 
 lemma cfc_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [SubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
-    [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
+    (hs : IsClosed (s : Set A)) (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
     cfc f a ∈ s :=
   have := SMulMemClass.ofIsScalarTower S 𝕜 𝕜' A
   StarSubalgebra.topologicalClosure_minimal (t := .ofClass s) (by simpa) (by simpa)
@@ -140,12 +140,12 @@ lemma range_cfc_nnreal
 theorem cfc_nnreal_mem {𝕜 : Type*} [RCLike 𝕜] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     {S : Type*} [MulAction 𝕜 A] [SetLike S A]
     [SubringClass S A] [IsScalarTower ℝ 𝕜 A]
-    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} (hs : IsClosed (s : Set A))
     (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
     cfc f a ∈ s := by
   by_cases ha : 0 ≤ a
   · rw [cfc_nnreal_eq_real ..]
-    exact cfc_mem _ has
+    exact cfc_mem hs _ has
   · simp [cfc_apply_of_not_predicate _ ha]
 
 end Unital
@@ -209,7 +209,7 @@ theorem cfcₙ_mem_elemental (f : 𝕜 → 𝕜) (a : A) :
 
 lemma cfcₙ_mem {𝕜' S : Type*} [Monoid 𝕜'] [MulAction 𝕜' A] [SetLike S A] [NonUnitalSubringClass S A]
     [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' A] [SMulMemClass S 𝕜' A] [StarMemClass S A] {s : S}
-    [hs : IsClosed (s : Set A)] (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
+    (hs : IsClosed (s : Set A)) (f : 𝕜 → 𝕜) {a : A} (has : a ∈ s) :
     cfcₙ f a ∈ s :=
   have := SMulMemClass.ofIsScalarTower S 𝕜 𝕜' A
   NonUnitalStarSubalgebra.topologicalClosure_minimal (t := .ofClass s) _ (by simpa) (by simpa)
@@ -263,12 +263,12 @@ theorem cfcₙ_nnreal_mem {𝕜 : Type*} [RCLike 𝕜]
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     {S : Type*} [MulAction 𝕜 A] [SetLike S A]
     [NonUnitalSubringClass S A] [IsScalarTower ℝ 𝕜 A]
-    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} [hs : IsClosed (s : Set A)]
+    [SMulMemClass S 𝕜 A] [StarMemClass S A] {s : S} (hs : IsClosed (s : Set A))
     (f : ℝ≥0 → ℝ≥0) {a : A} (has : a ∈ s) :
     cfcₙ f a ∈ s := by
   by_cases ha : 0 ≤ a
   · rw [cfcₙ_nnreal_eq_real ..]
-    exact cfcₙ_mem _ has
+    exact cfcₙ_mem hs _ has
   · simp [cfcₙ_apply_of_not_predicate _ ha]
 
 end NonUnital
@@ -282,11 +282,12 @@ variable {𝕜 S A : Type*} [NonUnitalRing A] [StarRing A] [TopologicalSpace A]
     [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [StarModule ℝ A]
     [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S 𝕜 A] [StarMemClass S A]
 
-instance Subtype.starOrderedRing (s : S) [hs : IsClosed (s : Set A)] : StarOrderedRing s :=
+instance Subtype.starOrderedRing (s : S) [hs : Fact (IsClosed (s : Set A))] :
+    StarOrderedRing s :=
   .of_nonneg_iff' add_le_add_right fun x ↦ by
     refine ⟨?_, ?_⟩
     · intro (hx : 0 ≤ (x : A))
-      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem _ x.2⟩
+      use ⟨cfcₙ Real.sqrt (x : A), cfcₙ_mem hs.out _ x.2⟩
       ext
       simp only [MulMemClass.coe_mul, StarMemClass.coe_star]
       rw [IsSelfAdjoint.star_eq (by cfc_tac), ← cfcₙ_mul ..]

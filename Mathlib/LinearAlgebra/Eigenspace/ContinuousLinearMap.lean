@@ -28,10 +28,16 @@ variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M] [TopologicalSp
 
 open Module End
 
-instance isClosed_genEigenspace : IsClosed (genEigenspace (f : End R M) μ n : Set M) := by
+theorem isClosed_genEigenspace : IsClosed (genEigenspace (f : End R M) μ n : Set M) := by
   simpa [genEigenspace_nat] using isClosed_ker ↑((f - μ • 1) ^ n)
 
-instance isClosed_eigenspace : IsClosed (eigenspace (f : End R M) μ : Set M) :=
+theorem isClosed_eigenspace : IsClosed (eigenspace (f : End R M) μ : Set M) :=
   isClosed_genEigenspace f μ 1
+
+instance : Fact (IsClosed (genEigenspace (f : End R M) μ n : Set M)) :=
+  ⟨isClosed_genEigenspace f μ n⟩
+
+instance : Fact (IsClosed (eigenspace (f : End R M) μ : Set M)) :=
+  ⟨isClosed_eigenspace f μ⟩
 
 end ContinuousLinearMap

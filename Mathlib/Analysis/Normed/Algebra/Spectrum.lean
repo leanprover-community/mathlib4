@@ -596,7 +596,8 @@ open scoped Topology
 section NormedField
 
 variable [NormedField 𝕜] [NormedAlgebra 𝕜 A] [instSMulMem : SMulMemClass SA 𝕜 A]
-variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+variable (S : SA) (hS : IsClosed (S : Set A)) (x : S)
+include hS
 
 set_option backward.isDefEq.respectTransparency.types false in
 open SubalgebraClass in
@@ -635,7 +636,8 @@ lemma _root_.Subalgebra.frontier_spectrum : frontier (σ 𝕜 x) ⊆ σ 𝕜 (x 
   rw [mem_closure_iff_clusterPt] at hμ₁
   apply hμ₂
   rw [mem_compl_iff, spectrum.notMem_iff]
-  refine Subalgebra.isUnit_of_isUnit_val_of_eventually S h ?_ ?_ <| .map hμ₁ (algebraMap 𝕜 S · - x)
+  refine Subalgebra.isUnit_of_isUnit_val_of_eventually S hS h ?_ ?_ <|
+    .map hμ₁ (algebraMap 𝕜 S · - x)
   · calc
       _ ≤ map _ (𝓝 μ) := map_mono (by simp)
       _ ≤ _ := by rw [← Filter.Tendsto, ← ContinuousAt]; fun_prop
@@ -650,7 +652,7 @@ lemma Subalgebra.frontier_subset_frontier :
     frontier (σ 𝕜 x) ⊆ frontier (σ 𝕜 (x : A)) := by
   rw [frontier_eq_closure_inter_closure (s := σ 𝕜 (x : A)),
     (spectrum.isClosed (x : A)).closure_eq]
-  apply subset_inter (frontier_spectrum S x)
+  apply subset_inter (frontier_spectrum S hS x)
   rw [frontier_eq_closure_inter_closure]
   grw [inter_subset_right, spectrum.subset_subalgebra]
 
@@ -669,7 +671,7 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
   have : CompleteSpace S := hS.completeSpace_coe
   have h_open : IsOpen (σ 𝕜 x \ σ 𝕜 (x : A)) := by
     rw [← (spectrum.isClosed (𝕜 := 𝕜) x).closure_eq, closure_eq_interior_union_frontier,
-      union_sdiff_distrib, sdiff_eq_empty.mpr (frontier_spectrum S x),
+      union_sdiff_distrib, sdiff_eq_empty.mpr (frontier_spectrum S hS x),
       sdiff_eq_compl_inter, union_empty]
     exact (spectrum.isClosed _).isOpen_compl.inter isOpen_interior
   apply isClopen_preimage_val h_open
@@ -677,7 +679,7 @@ lemma Subalgebra.spectrum_sUnion_connectedComponentIn :
     disjoint_of_subset_left h_frontier <| disjoint_compl_right.frontier_left
       (spectrum.isClosed _).isOpen_compl
   grw [sdiff_eq_compl_inter, frontier_inter_subset, inter_subset_left, inter_subset_right,
-    frontier_compl, frontier_subset_frontier, union_self]
+    frontier_compl, frontier_subset_frontier S hS, union_self]
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`, and let `x : S`. If `z` is in the
 spectrum of `x`, then the connected component of `z` in the complement of the spectrum of `↑x : A`
@@ -688,25 +690,26 @@ lemma Subalgebra.spectrum_isBounded_connectedComponentIn {z : 𝕜} (hz : z ∈ 
   · simp [connectedComponentIn_eq_empty (show z ∉ (σ 𝕜 (x : A))ᶜ from not_not.mpr hz')]
   · have : CompleteSpace S := hS.completeSpace_coe
     suffices connectedComponentIn (σ 𝕜 (x : A))ᶜ z ⊆ σ 𝕜 x from spectrum.isBounded x |>.subset this
-    rw [spectrum_sUnion_connectedComponentIn S]
+    rw [spectrum_sUnion_connectedComponentIn S hS]
     exact subset_biUnion_of_mem (mem_sdiff_of_mem hz hz') |>.trans subset_union_right
 
 end NormedField
 
 variable [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 A] [SMulMemClass SA 𝕜 A]
-variable (S : SA) [hS : IsClosed (S : Set A)] (x : S)
+variable (S : SA) (hS : IsClosed (S : Set A)) (x : S)
+include hS
 
 /-- Let `S` be a closed subalgebra of a Banach algebra `A`. If for `x : S` the complement of the
 spectrum of `↑x : A` is connected, then `spectrum 𝕜 x = spectrum 𝕜 (x : A)`. -/
 lemma Subalgebra.spectrum_eq_of_isPreconnected_compl (h : IsPreconnected (σ 𝕜 (x : A))ᶜ) :
     σ 𝕜 x = σ 𝕜 (x : A) := by
   suffices σ 𝕜 x \ σ 𝕜 (x : A) = ∅ by
-    rw [spectrum_sUnion_connectedComponentIn, this]
+    rw [spectrum_sUnion_connectedComponentIn S hS, this]
     simp
   refine eq_empty_of_forall_notMem fun z hz ↦ NormedSpace.unbounded_univ 𝕜 𝕜 ?_
   obtain ⟨hz, hz'⟩ := mem_sdiff _ |>.mp hz
   have := (spectrum.isBounded (x : A)).union <|
-    h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S x hz
+    h.connectedComponentIn hz' ▸ spectrum_isBounded_connectedComponentIn S hS x hz
   simpa
 
 end BoundarySpectrum

@@ -162,8 +162,11 @@ theorem le_iff_mem {x : A} {s : NonUnitalSubalgebra R A} (hs : IsClosed (s : Set
     elemental R x ≤ s ↔ x ∈ s :=
   ⟨fun h ↦ h (self_mem R x), fun h ↦ le_of_mem hs h⟩
 
-instance isClosed (x : A) : IsClosed (elemental R x : Set A) :=
+theorem isClosed (x : A) : IsClosed (elemental R x : Set A) :=
   isClosed_topologicalClosure _
+
+instance (x : A) : Fact (IsClosed (elemental R x : Set A)) :=
+  ⟨isClosed_topologicalClosure _⟩
 
 instance [T2Space A] {x : A} : IsMulCommutative (elemental R x) :=
   isMulCommutative_topologicalClosure _

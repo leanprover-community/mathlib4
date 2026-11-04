@@ -225,8 +225,8 @@ end closure
 section CompleteSpace
 
 instance {R M : Type*} [Semiring R] [AddCommMonoid M] [UniformSpace M] [Module R M]
-    [CompleteSpace M] (K : Submodule R M) [c : IsClosed (K : Set M)] : CompleteSpace K :=
-  IsComplete.completeSpace_coe (c.isComplete)
+    [CompleteSpace M] (K : Submodule R M) [c : Fact (IsClosed (K : Set M))] : CompleteSpace K :=
+  IsComplete.completeSpace_coe c.out.isComplete
 
 end CompleteSpace
 
@@ -353,9 +353,9 @@ instance continuousSMul_quotient [TopologicalSpace R] [IsTopologicalAddGroup M]
     rw [← (IsOpenQuotientMap.id.prodMap S.isOpenQuotientMap_mkQ).continuous_comp_iff]
     exact continuous_quot_mk.comp continuous_smul
 
-instance t3_quotient_of_isClosed [IsTopologicalAddGroup M] [IsClosed (S : Set M)] :
+instance t3_quotient_of_isClosed [IsTopologicalAddGroup M] [hS : Fact (IsClosed (S : Set M))] :
     T3Space (M ⧸ S) :=
-  letI : IsClosed (S.toAddSubgroup : Set M) := ‹_›
+  letI : Fact (IsClosed (S.toAddSubgroup : Set M)) := hS
   QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule

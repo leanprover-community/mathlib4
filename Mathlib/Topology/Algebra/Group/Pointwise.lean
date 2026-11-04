@@ -267,7 +267,7 @@ lemma IsClosed.mul_closure_one_eq {F : Set G} (hF : IsClosed F) :
   calc
   F * (closure {1} : Set G) = closure F * closure ({1} : Set G) := by rw [hF.closure_eq]
   _ ⊆ closure (F * ({1} : Set G)) := smul_set_closure_subset _ _
-  _ = F := by simp
+  _ = F := by simp [hF.closure_eq]
 
 @[to_additive]
 lemma compl_mul_closure_one_eq {t : Set G} (ht : t * (closure {1} : Set G) = t) :

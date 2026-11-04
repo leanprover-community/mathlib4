@@ -40,7 +40,7 @@ variable (R M) in
 lemma Module.Finite.compactSpace [CompactSpace R] [Module.Finite R M] : CompactSpace M :=
   ⟨Submodule.isCompact_of_fg (Module.Finite.fg_top (R := R))⟩
 
-instance (priority := low) IsNoetherianRing.isClosed_ideal
+theorem IsNoetherianRing.isClosed_ideal
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     [IsNoetherianRing R] [CompactSpace R] [T2Space R] (I : Ideal R) :
     IsClosed (X := R) I :=

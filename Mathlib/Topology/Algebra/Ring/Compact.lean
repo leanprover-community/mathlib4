@@ -43,6 +43,9 @@ attribute [local instance] Ideal.Quotient.field Fintype.ofFinite finite_of_compa
 variable {R : Type*} [CommRing R] [TopologicalSpace R]
 variable [IsTopologicalRing R] [CompactSpace R] [T2Space R]
 
+local instance [IsNoetherianRing R] (I : Ideal R) : Fact (IsClosed (X := R) I) :=
+  ⟨IsNoetherianRing.isClosed_ideal I⟩
+
 namespace IsArtinianRing
 
 /-- Compact Hausdorff Artinian (commutative) rings are finite. This is not an instance, as it would
@@ -72,7 +75,7 @@ lemma Ideal.isOpen_of_isMaximal (I : Ideal R) [I.IsMaximal] : IsOpen (X := R) I 
   have : I.toAddSubgroup.FiniteIndex :=
     @AddSubgroup.finiteIndex_of_finite_quotient _ _ _
       (inferInstanceAs (Finite (R ⧸ I)))
-  I.toAddSubgroup.isOpen_of_isClosed_of_finiteIndex (inferInstanceAs (IsClosed (X := R) I))
+  I.toAddSubgroup.isOpen_of_isClosed_of_finiteIndex (IsNoetherianRing.isClosed_ideal I)
 
 lemma Ideal.isOpen_pow_of_isMaximal (I : Ideal R) [I.IsMaximal] (n : ℕ) :
     IsOpen (X := R) ↑(I ^ n) :=
