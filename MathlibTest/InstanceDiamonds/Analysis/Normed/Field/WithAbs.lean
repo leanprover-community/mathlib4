@@ -1,7 +1,6 @@
 module
 
 public import Mathlib
-import all Mathlib.Analysis.Normed.Field.WithAbs
 
 example {R : Type*} [Field R] (v : AbsoluteValue R ℝ) :
     (WithAbs.normedField v).toNormedCommRing.toNormedRing = WithAbs.normedRing v := by
