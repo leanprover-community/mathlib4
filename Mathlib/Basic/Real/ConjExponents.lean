@@ -501,7 +501,7 @@ lemma toReal_iff (hp : 1 < p.toReal) :
     rw [toReal_pos_iff]
     refine ⟨pos q p, lt_top_iff_one_lt q p |>.mpr ?_⟩
     contrapose! hp
-    exact toReal_mono one_ne_top hp
+    exact toReal_le_one_of_le_one hp
   simpa using HolderTriple.toReal 1 (zero_lt_one.trans hp) hq
 
 lemma toReal (hp : 1 < p.toReal) [HolderConjugate p q] :
@@ -510,7 +510,7 @@ lemma toReal (hp : 1 < p.toReal) [HolderConjugate p q] :
 
 lemma toReal_of_ne_top (hp : p ≠ ∞) (hq : q ≠ ∞) [HolderConjugate p q] :
     p.toReal.HolderConjugate q.toReal :=
-  toReal ((toReal_lt_toReal one_ne_top hp).mpr ((lt_top_iff_one_lt q p).mp hq.lt_top))
+  toReal (one_lt_toReal.mpr ⟨(lt_top_iff_one_lt q p).mp hq.lt_top, hp⟩)
 
 lemma of_toNNReal (h : NNReal.HolderConjugate p.toNNReal q.toNNReal) :
     HolderConjugate p q :=
@@ -520,7 +520,7 @@ lemma toNNReal_iff (hp : 1 < p.toNNReal) :
     NNReal.HolderConjugate p.toNNReal q.toNNReal ↔ HolderConjugate p q := by
   simp_rw [← NNReal.holderTriple_coe_iff, coe_toNNReal_eq_toReal]
   apply toReal_iff ?_
-  simpa [← coe_toNNReal_eq_toReal]
+  simpa using hp
 
 lemma toNNReal (hp : 1 < p.toNNReal) [HolderConjugate p q] :
     NNReal.HolderConjugate p.toNNReal q.toNNReal :=

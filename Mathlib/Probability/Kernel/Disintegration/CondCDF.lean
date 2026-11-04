@@ -209,8 +209,7 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
   le_one' a q := by
     simp only [Kernel.const_apply]
     filter_upwards [preCDF_le_one ρ] with a ha
-    refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
-    simp [ha]
+    exact ENNReal.toReal_le_one_of_le_one (ha q)
   tendsto_integral_of_antitone a s _ hs_tendsto := by
     simp_rw [Kernel.const_apply, integral_preCDF_fst ρ]
     have h := ρ.tendsto_IicSnd_atBot MeasurableSet.univ

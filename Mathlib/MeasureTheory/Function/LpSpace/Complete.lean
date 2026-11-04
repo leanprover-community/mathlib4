@@ -314,9 +314,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
       exact
         Tendsto.comp (g := ENNReal.toReal) (ENNReal.tendsto_toReal ENNReal.zero_ne_top)
           (ENNReal.tendsto_atTop_zero_of_tsum_ne_top hB)
-  have hp1 : 1 ≤ p.toReal := by
-    rw [← ENNReal.ofReal_le_iff_le_toReal hp_top, ENNReal.ofReal_one]
-    exact hp
+  have hp1 : 1 ≤ p.toReal := (ENNReal.one_le_toReal hp_top).2 hp
   have h_cau' : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm' (f n - f m) p.toReal μ < B N := by
     intro N n m hn hm
     specialize h_cau N n m hn hm

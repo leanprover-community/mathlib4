@@ -93,14 +93,13 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Integr
       filter_upwards [hs_le] with x hx
       rw [abs_of_nonneg]
       simp only [sub_nonneg]
-      exact ENNReal.toReal_le_of_le_ofReal (by simp) (by simp [hx])
+      exact ENNReal.toReal_le_one_of_le_one hx
     · refine integral_congr_ae ?_
       filter_upwards [hs_ge, ae_restrict_of_ae hf_top] with x hx hx_top
       rw [abs_of_nonpos]
       · simp
       · simp only [tsub_le_iff_right, zero_add]
-        rw [← ENNReal.toReal_one]
-        gcongr
+        exact (ENNReal.one_le_toReal hx_top).2 hx
   _ = ∫ x, |1 - (f x).toReal| ∂μ := by
     refine integral_add_compl hs ?_
     exact (Integrable.sub (by simp) hf_toReal).abs

@@ -174,7 +174,7 @@ def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ
     have key := @thickenedIndicatorAux_le_one _ _ δ E
     apply add_le_add <;>
       · norm_cast
-        exact (toNNReal_le_toNNReal (lt_of_le_of_lt (key _) one_lt_top).ne one_ne_top).mpr (key _)
+        exact toNNReal_le_one_of_le_one (key _)
 
 theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     ⇑(thickenedIndicator δ_pos E) = ENNReal.toNNReal ∘ thickenedIndicatorAux δ E :=
@@ -183,8 +183,7 @@ theorem thickenedIndicator.coeFn_eq_comp {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 theorem thickenedIndicator_le_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) (x : α) :
     thickenedIndicator δ_pos E x ≤ 1 := by
   rw [thickenedIndicator.coeFn_eq_comp]
-  simpa using (toNNReal_le_toNNReal (by finiteness) one_ne_top).mpr
-    (thickenedIndicatorAux_le_one δ E x)
+  exact toNNReal_le_one_of_le_one (thickenedIndicatorAux_le_one δ E x)
 
 theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_mem : x ∈ closure E) : thickenedIndicator δ_pos E x = 1 := by

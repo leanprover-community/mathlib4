@@ -219,8 +219,7 @@ lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
 lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
   filter_upwards [h.isFiniteMeasure, h.mgf_le] with ω' h h_mgf
-  suffices (κ ω').real Set.univ ≤ 1 by
-    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
+  suffices (κ ω').real Set.univ ≤ 1 from (ENNReal.toReal_le_one (measure_ne_top _ _)).1 this
   simpa [mgf] using h_mgf 0
 
 end BasicProperties
@@ -333,9 +332,7 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε
   by_cases hc0 : c = 0
   · filter_upwards [h.measure_univ_le_one] with ω' h
     simp only [hc0, NNReal.coe_zero, mul_zero, div_zero, exp_zero]
-    refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
-    simp only [ENNReal.ofReal_one]
-    exact (measure_mono (Set.subset_univ _)).trans h
+    exact ENNReal.toReal_le_one_of_le_one ((measure_mono (Set.subset_univ _)).trans h)
   filter_upwards [measure_ge_le_exp_add h ε] with ω' h
   calc (κ ω').real {ω | ε ≤ X ω}
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.

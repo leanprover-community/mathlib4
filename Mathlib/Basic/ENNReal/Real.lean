@@ -106,6 +106,44 @@ theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.
 theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
   @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
 
+lemma toReal_le_one_of_le_one (h : a ≤ 1) : a.toReal ≤ 1 := by
+  simpa using toReal_mono one_ne_top h
+
+@[simp]
+lemma toReal_le_one (ha : a ≠ ∞) : a.toReal ≤ 1 ↔ a ≤ 1 := by
+  simpa using toReal_le_toReal ha one_ne_top
+
+@[simp]
+lemma one_le_toReal (ha : a ≠ ∞) : 1 ≤ a.toReal ↔ 1 ≤ a := by
+  simpa using toReal_le_toReal one_ne_top ha
+
+@[simp]
+lemma toReal_lt_one (ha : a ≠ ∞) : a.toReal < 1 ↔ a < 1 := by
+  simpa using toReal_lt_toReal ha one_ne_top
+
+@[simp]
+lemma one_lt_toReal : 1 < a.toReal ↔ 1 < a ∧ a ≠ ∞ := by
+  by_cases ha : a = ∞ <;> simp [ha, ← toReal_lt_toReal one_ne_top]
+
+lemma toNNReal_le_one_of_le_one (h : a ≤ 1) : a.toNNReal ≤ 1 := by
+  simpa using toNNReal_mono one_ne_top h
+
+@[simp]
+lemma toNNReal_le_one (ha : a ≠ ∞) : a.toNNReal ≤ 1 ↔ a ≤ 1 := by
+  simpa using toNNReal_le_toNNReal ha one_ne_top
+
+@[simp]
+lemma one_le_toNNReal (ha : a ≠ ∞) : 1 ≤ a.toNNReal ↔ 1 ≤ a := by
+  simpa using toNNReal_le_toNNReal one_ne_top ha
+
+@[simp]
+lemma toNNReal_lt_one (ha : a ≠ ∞) : a.toNNReal < 1 ↔ a < 1 := by
+  simpa using toNNReal_lt_toNNReal ha one_ne_top
+
+@[simp]
+lemma one_lt_toNNReal : 1 < a.toNNReal ↔ 1 < a ∧ a ≠ ∞ := by
+  by_cases ha : a = ∞ <;> simp [ha, ← toNNReal_lt_toNNReal one_ne_top]
+
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
@@ -374,9 +412,7 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
 
 protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal :=
-  haveI : p = ⊤ ∨ 0 < p.toReal ∧ 1 ≤ p.toReal := by
-    simpa using ENNReal.trichotomy₂ (Fact.out : 1 ≤ p)
-  this.imp_right fun h => h.2
+  (eq_or_ne p ∞).imp_right fun h ↦ (one_le_toReal h).2 Fact.out
 
 theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal ↔ p ≠ ∞ :=
   ⟨fun h hp =>
