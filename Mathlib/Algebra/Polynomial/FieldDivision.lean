@@ -541,7 +541,7 @@ theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p 
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
-    coeff_C, coeff_C, inv_eq_one_div]
+    coeff_C_apply, coeff_C_apply, inv_eq_one_div]
   split_ifs
   · rw [div_eq_iff_mul_eq (coeff_coe_units_zero_ne_zero u), coeff_zero_eq_eval_zero,
         coeff_zero_eq_eval_zero, ← eval_mul, ← Units.val_mul, inv_mul_cancel]

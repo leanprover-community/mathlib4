@@ -269,14 +269,13 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials (v : Fin
     Matrix.of (fun i j => ((p j).eval (v i))) =
     (Matrix.vandermonde v) * (Matrix.of (fun (i j : Fin n) => (p j).coeff i)) := by
   ext i j
-  simp_rw [Matrix.mul_apply, eval, Matrix.of_apply, eval₂_eq_sum]
-  simp only [Matrix.vandermonde]
-  have : (p j).support ⊆ range n := supp_subset_range <| Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
-  rw [Polynomial.sum_eq_of_subset _ (fun j => zero_mul ((v i) ^ j)) this,
+  simp only [eval, eval₂_eq_sum_coeff, RingHom.id_apply, of_apply, Matrix.mul_apply,
+    vandermonde_apply]
+  have : (p j).support ⊆ range n := supp_subset_range <|
+    degree_le_natDegree.trans_lt <| mod_cast Nat.lt_of_le_of_lt (h_deg j) <| Fin.prop j
+  rw [Finsupp.sum_of_support_subset _ this _ (fun j _ => zero_mul ((v i) ^ j)),
     ← Fin.sum_univ_eq_sum_range]
-  congr
-  ext k
-  rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
+  simp [mul_comm]
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :

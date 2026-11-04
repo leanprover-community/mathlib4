@@ -49,10 +49,14 @@ theorem toFunBilinear_apply_apply (a : A) (p : R[X]) :
 @[simp] theorem toFunBilinear_apply_eq_smul (a : A) (p : R[X]) :
     toFunBilinear R A a p = a • p.map (algebraMap R A) := rfl
 
-theorem toFunBilinear_apply_eq_sum (a : A) (p : R[X]) :
-    toFunBilinear R A a p = p.sum fun n r ↦ monomial n (a * algebraMap R A r) := by
-  conv_lhs => rw [toFunBilinear_apply_eq_smul, ← p.sum_monomial_eq, sum, Polynomial.map_sum]
-  simp [Finset.smul_sum, sum, ← smul_eq_mul]
+theorem toFunBilinear_apply_eq_sum_coeff (a : A) (p : R[X]) :
+    toFunBilinear R A a p = p.coeff.sum fun n r ↦ monomial n (a * algebraMap R A r) := by
+  conv_lhs =>
+    rw [toFunBilinear_apply_eq_smul, ← p.sum_coeff_monomial, Finsupp.sum, Polynomial.map_sum]
+  simp [Finset.smul_sum, Finsupp.sum, ← smul_eq_mul]
+
+@[deprecated (since := "2026-11-02")]
+alias toFunBilinear_apply_eq_sum := toFunBilinear_apply_eq_sum_coeff
 
 /-- (Implementation detail).
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
@@ -84,13 +88,13 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
     (toFunLinear R A) ((a₁ * a₂) ⊗ₜ[R] (p₁ * p₂)) =
       (toFunLinear R A) (a₁ ⊗ₜ[R] p₁) * (toFunLinear R A) (a₂ ⊗ₜ[R] p₂) := by
   classical
-    simp only [toFunLinear_tmul_apply, toFunBilinear_apply_eq_sum]
+    simp only [toFunLinear_tmul_apply, toFunBilinear_apply_eq_sum_coeff]
     ext k
-    simp_rw [coeff_sum, coeff_monomial, Finsupp.single_apply, sum_def, Finset.sum_ite_eq',
-      mem_support_iff, Ne]
+    simp_rw [coeff_finsuppSum, coeff_monomial, Finsupp.single_apply, Finsupp.sum,
+      Finset.sum_ite_eq',      Finsupp.mem_support_iff, Ne]
     conv_rhs => rw [coeff_mul]
     simp_rw [finsetSum_coeff, coeff_monomial, Finsupp.single_apply, Finset.sum_ite_eq',
-      mem_support_iff, Ne, mul_ite, mul_zero,
+      Finsupp.mem_support_iff, Ne, mul_ite, mul_zero,
       ite_mul, zero_mul]
     simp_rw [← ite_zero_mul (¬p₁.coeff _ = 0) (a₁ * (algebraMap R A) (p₁.coeff _))]
     simp_rw [← mul_ite_zero (¬p₂.coeff _ = 0) _ (_ * _)]
@@ -111,8 +115,8 @@ def toFunAlgHom : A ⊗[R] R[X] →ₐ[R] A[X] :=
     toFunAlgHom R A (a ⊗ₜ[R] p) = a • p.map (algebraMap R A) := rfl
 
 theorem toFunAlgHom_apply_tmul (a : A) (p : R[X]) :
-    toFunAlgHom R A (a ⊗ₜ[R] p) = p.sum fun n r => monomial n (a * (algebraMap R A) r) :=
-  toFunBilinear_apply_eq_sum R A _ _
+    toFunAlgHom R A (a ⊗ₜ[R] p) = p.coeff.sum fun n r => monomial n (a * (algebraMap R A) r) :=
+  toFunBilinear_apply_eq_sum_coeff R A _ _
 
 /-- (Implementation detail.)
 
@@ -134,12 +138,12 @@ theorem left_inv (x : A ⊗ R[X]) : invFun R A ((toFunAlgHom R A) x) = x := by
   refine TensorProduct.inductionOn x ?_ ?_
   · intro a p
     dsimp only [invFun]
-    rw [toFunAlgHom_apply_tmul, eval₂_sum]
+    rw [toFunAlgHom_apply_tmul, eval₂_finsuppSum]
     simp_rw [eval₂_monomial, AlgHom.coe_toRingHom, Algebra.TensorProduct.tmul_pow, one_pow,
       Algebra.TensorProduct.includeLeft_apply, Algebra.TensorProduct.tmul_mul_tmul, mul_one,
-      one_mul, ← Algebra.commutes, ← Algebra.smul_def, smul_tmul, sum_def, ← tmul_sum]
-    conv_rhs => rw [← sum_C_mul_X_pow_eq p]
-    simp only [Algebra.smul_def]
+      one_mul, ← Algebra.commutes, ← Algebra.smul_def, smul_tmul, Finsupp.sum, ← tmul_sum]
+    conv_rhs => rw [← sum_coeff_C_mul_X_pow p]
+    simp [Algebra.smul_def]
     rfl
   · intro p q hp hq
     simp only [map_add, invFun_add, hp, hq]
@@ -151,7 +155,7 @@ theorem right_inv (x : A[X]) : (toFunAlgHom R A) (invFun R A x) = x := by
   · intro n a
     rw [invFun_monomial, Algebra.TensorProduct.tmul_pow,
         one_pow, Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul, toFunAlgHom_apply_tmul,
-        X_pow_eq_monomial, sum_monomial_index] <;>
+        X_pow_eq_monomial, coeff_monomial, Finsupp.sum_single_index] <;>
       simp
 
 /-- (Implementation detail)
@@ -184,7 +188,8 @@ theorem polyEquivTensor_symm_apply_tmul_eq_smul (a : A) (p : R[X]) :
     (polyEquivTensor R A).symm (a ⊗ₜ p) = a • p.map (algebraMap R A) := rfl
 
 theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
-    (polyEquivTensor R A).symm (a ⊗ₜ p) = p.sum fun n r => monomial n (a * algebraMap R A r) :=
+    (polyEquivTensor R A).symm (a ⊗ₜ p) =
+      p.coeff.sum fun n r ↦ monomial n (a * algebraMap R A r) :=
   toFunAlgHom_apply_tmul _ _ _ _
 
 section

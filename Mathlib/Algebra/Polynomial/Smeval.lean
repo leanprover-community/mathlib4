@@ -53,35 +53,29 @@ def smul_pow : ℕ → R → S := fun n r => r • x ^ n
 
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
-@[no_expose] def smeval : S := p.sum (smul_pow x)
+@[no_expose] def smeval : S := p.coeff.sum fun n r => r • x ^ n
 
-theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := (rfl)
+theorem smeval_eq_sum_coeff : p.smeval x = p.coeff.sum (fun n r => r • x ^ n) := (rfl)
 
-@[simp]
-theorem smeval_C : (C r).smeval x = r • x ^ 0 := by
-  simp only [smeval_eq_sum, smul_pow, zero_smul, sum_C_index]
+@[deprecated (since := "2026-11-02")] alias smeval_eq_sum := smeval_eq_sum_coeff
 
 @[simp]
-theorem smeval_monomial (n : ℕ) :
-    (monomial n r).smeval x = r • x ^ n := by
-  simp only [smeval_eq_sum, smul_pow, zero_smul, sum_monomial_index]
+theorem smeval_C : (C r).smeval x = r • x ^ 0 := by simp [smeval_eq_sum_coeff, coeff_C]
 
-theorem eval_eq_smeval : p.eval r = p.smeval r := by
-  rw [eval_eq_sum, smeval_eq_sum]
-  rfl
+@[simp]
+lemma smeval_monomial (n : ℕ) : (monomial n r).smeval x = r • x ^ n := by simp [smeval_eq_sum_coeff]
+
+theorem eval_eq_smeval : p.eval r = p.smeval r := by simp [eval_eq_sum_coeff, smeval_eq_sum_coeff]
 
 theorem eval₂_smulOneHom_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
     [IsScalarTower R S S] (p : R[X]) (x : S) :
     p.eval₂ RingHom.smulOneHom x = p.smeval x := by
-  rw [smeval_eq_sum, eval₂_eq_sum]
-  congr 1 with e a
-  simp only [RingHom.smulOneHom_apply, smul_one_mul, smul_pow]
+  simp [smeval_eq_sum_coeff, eval₂_eq_sum_coeff]
 
 variable (R)
 
 @[simp]
-theorem smeval_zero : (0 : R[X]).smeval x = 0 := by
-  simp only [smeval_eq_sum, sum_zero_index]
+theorem smeval_zero : (0 : R[X]).smeval x = 0 := by simp [smeval_eq_sum_coeff]
 
 @[simp]
 theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
@@ -89,14 +83,11 @@ theorem smeval_one : (1 : R[X]).smeval x = 1 • x ^ 0 := by
   simp only [one_smul]
 
 @[simp]
-theorem smeval_X :
-    (X : R[X]).smeval x = x ^ 1 := by
-  simp only [smeval_eq_sum, smul_pow, zero_smul, sum_X_index, one_smul]
+theorem smeval_X : (X : R[X]).smeval x = x ^ 1 := by simp [smeval_eq_sum_coeff]
 
 @[simp]
-theorem smeval_X_pow {n : ℕ} :
-    (X ^ n : R[X]).smeval x = x ^ n := by
-  simp only [smeval_eq_sum, smul_pow, X_pow_eq_monomial, zero_smul, sum_monomial_index, one_smul]
+theorem smeval_X_pow {n : ℕ} : (X ^ n : R[X]).smeval x = x ^ n := by
+  simp [smeval_eq_sum_coeff, X_pow_eq_monomial]
 
 end MulActionWithZero
 
@@ -107,10 +98,7 @@ variable (R : Type*) [Semiring R] (p q : R[X]) {S : Type*} [AddCommMonoid S] [Po
 
 @[simp]
 theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
-  simp only [smeval_eq_sum]
-  refine sum_add_index p q (smul_pow x) (fun _ ↦ ?_) (fun _ _ _ ↦ ?_)
-  · rw [smul_pow, zero_smul]
-  · rw [smul_pow, smul_pow, smul_pow, add_smul]
+  simp [smeval_eq_sum_coeff, Finsupp.sum_add_index', add_smul]
 
 theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   induction n with
@@ -160,9 +148,7 @@ theorem smeval_sub : (p - q).smeval x = p.smeval x - q.smeval x := by
 
 theorem smeval_neg_nat (S : Type*) [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
-  rw [smeval_eq_sum, smeval_eq_sum]
-  simp only [Polynomial.smul_pow, sum_def]
-  simp
+  simp [smeval_eq_sum_coeff]
 
 end Neg
 
@@ -314,9 +300,7 @@ section Algebra
 
 theorem aeval_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) (p : R[X]) : aeval x p = p.smeval x := by
-  rw [aeval_def, eval₂_eq_sum, Algebra.algebraMap_eq_smul_one', smeval_eq_sum]
-  simp only [Algebra.smul_mul_assoc, one_mul]
-  exact rfl
+  simp [aeval_def, eval₂_eq_sum_coeff, Algebra.algebraMap_eq_smul_one', smeval_eq_sum_coeff]
 
 theorem aeval_coe_eq_smeval {R : Type*} [CommSemiring R] {S : Type*} [Semiring S] [Algebra R S]
     (x : S) : ⇑(aeval x) = fun (p : R[X]) => p.smeval x := funext fun p => aeval_eq_smeval x p

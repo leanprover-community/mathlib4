@@ -388,7 +388,8 @@ lemma exists_eval_ne_zero_of_coeff_finSuccEquiv_ne_zero_aux
     simp only [map_zero]
     rw [← Nat.sub_ne_zero_iff_lt] at hi
     exact hi.symm
-  simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range' hdeg,
+  simp_rw [eval_eq_eval_mv_eval', eval_one_map, Polynomial.eval_eq_sum_range'
+    (degree_le_natDegree.trans_lt <| mod_cast hdeg),
     eval_zero, one_pow, mul_one, map_sum, Finset.sum_range_succ, Finset.sum_eq_zero aux, zero_add]
   contrapose hFn
   ext d

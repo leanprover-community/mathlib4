@@ -46,7 +46,8 @@ variable {p q : R[X]} (x : A)
 theorem _root_.Polynomial.adjoin_X : R[(X : R[X])] = ⊤ := by
   refine top_unique fun p _hp => ?_
   set S := R[(X : R[X])]
-  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial]
+  rw [← p.sum_coeff_monomial]
+  simp only [← smul_X_eq_monomial]
   exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (subset_adjoin rfl) _) _
 
 variable (R)

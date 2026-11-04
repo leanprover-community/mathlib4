@@ -35,8 +35,8 @@ lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
   induction hP using Algebra.adjoin_induction generalizing i with
   | mem x hx =>
     obtain ⟨r, hrI, rfl⟩ := hx
-    simp +contextual [coeff_X, apply_ite, hrI, @eq_comm _ 1]
-  | algebraMap r => simp +contextual [coeff_C, apply_ite]
+    simp +contextual [Finsupp.single_apply, apply_ite, hrI, @eq_comm _ 1]
+  | algebraMap r => simp +contextual [Finsupp.single_apply, apply_ite, @eq_comm _ 0]
   | add x y hx hy _ _ => aesop
   | mul x y _ _ hx hy =>
     rw [coeff_mul]

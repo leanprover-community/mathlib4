@@ -45,29 +45,25 @@ variable [Semiring R] {p : R[X]}
 
 /-- `derivative p` is the formal derivative of the polynomial `p` -/
 def derivative : R[X] →ₗ[R] R[X] where
-  toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
+  toFun p := p.coeff.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
-    rw [sum_add_index] <;>
-      simp only [add_mul, forall_const, map_add, zero_mul, map_zero]
+    rw [AddMonoidAlgebra.coeff_add, Finsupp.sum_add_index'] <;>
+      simp [add_mul]
   map_smul' a p := by
-    dsimp; rw [sum_smul_index] <;>
-      simp only [mul_sum, ← C_mul', mul_assoc, map_mul, forall_const, zero_mul, map_zero, sum]
+    dsimp; rw [Finsupp.sum_smul_index] <;>
+      simp [mul_sum, ← C_mul', mul_assoc, Finsupp.sum]
 
-theorem derivative_apply (p : R[X]) : derivative p = p.sum fun n a => C (a * n) * X ^ (n - 1) :=
+theorem derivative_apply (p : R[X]) :
+    derivative p = p.coeff.sum fun n a => C (a * n) * X ^ (n - 1) :=
   rfl
 
 theorem coeff_derivative (p : R[X]) (n : ℕ) :
     coeff (derivative p) n = coeff p (n + 1) * (n + 1) := by
   rw [derivative_apply]
-  simp only [coeff_X_pow, coeff_sum, coeff_C_mul]
-  rw [sum, Finset.sum_eq_single (n + 1)]
-  · simp only [Nat.add_succ_sub_one, add_zero, mul_one, ite_true]; norm_cast
-  · intro b
-    cases b
-    · intros
-      rw [Nat.cast_zero, mul_zero, zero_mul]
-    · intro _ H
-      rw [Nat.add_one_sub_one, ite_eq_right (mt (congr_arg Nat.succ) H.symm), mul_zero]
+  simp only [coeff_X_pow_apply, coeff_finsuppSum, coeff_C_mul]
+  rw [Finsupp.sum, Finset.sum_eq_single (n + 1)]
+  · simp
+  · rintro (_ | b) <;> simp +contextual [eq_comm]
   · simp_all
 
 @[simp]
@@ -79,7 +75,8 @@ theorem iterate_derivative_zero {k : ℕ} : derivative^[k] (0 : R[X]) = 0 :=
 
 theorem derivative_monomial (a : R) (n : ℕ) :
     derivative (monomial n a) = monomial (n - 1) (a * n) := by
-  rw [derivative_apply, sum_monomial_index, C_mul_X_pow_eq_monomial]
+  rw [derivative_apply, ← single_eq_monomial, AddMonoidAlgebra.coeff_single,
+    Finsupp.sum_single_index, C_mul_X_pow_eq_monomial]
   simp
 
 @[simp]
@@ -109,7 +106,8 @@ theorem derivative_X_sq : derivative (X ^ 2 : R[X]) = C 2 * X := by
   rw [derivative_X_pow, Nat.cast_two, pow_one]
 
 @[simp]
-theorem derivative_C {a : R} : derivative (C a) = 0 := by simp [derivative_apply]
+theorem derivative_C {a : R} : derivative (C a) = 0 := by
+  simp [derivative_apply, ← monomial_zero_left]
 
 theorem derivative_of_natDegree_zero {p : R[X]} (hp : p.natDegree = 0) : derivative p = 0 := by
   rw [eq_C_of_natDegree_eq_zero hp, derivative_C]
@@ -242,16 +240,18 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   | succ n => grind
 
 theorem derivative_eval (p : R[X]) (x : R) :
-    p.derivative.eval x = p.sum fun n a => a * n * x ^ (n - 1) := by
-  simp_rw [derivative_apply, eval_sum, eval_mul_X_pow, eval_C]
+    p.derivative.eval x = p.coeff.sum fun n a => a * n * x ^ (n - 1) := by
+  simp_rw [derivative_apply, eval_finsuppSum, eval_mul_X_pow, eval_C]
 
 @[simp]
 theorem derivative_map [Semiring S] (p : R[X]) (f : R →+* S) :
     derivative (p.map f) = p.derivative.map f := by
   let n := max p.natDegree (map f p).natDegree
   rw [derivative_apply, derivative_apply]
-  rw [sum_over_range' _ _ (n + 1) ((le_max_left _ _).trans_lt (lt_add_one _))]
-  on_goal 1 => rw [sum_over_range' _ _ (n + 1) ((le_max_right _ _).trans_lt (lt_add_one _))]
+  rw [sum_coeff_eq_sum_range p _ (n + 1)
+    (degree_le_natDegree.trans_lt (mod_cast (le_max_left _ _).trans_lt (lt_add_one _)))]
+  on_goal 1 => rw [sum_coeff_eq_sum_range (map f p) _ (n + 1)
+    (degree_le_natDegree.trans_lt (mod_cast (le_max_right _ _).trans_lt (lt_add_one _)))]
   · simp only [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
       map_natCast, Polynomial.map_natCast, Polynomial.map_pow, map_X]
   all_goals intro n; rw [zero_mul, C_0, zero_mul]

@@ -54,28 +54,32 @@ variable (f : R →+* S) (x : S)
 /-- Evaluate a polynomial `p` given a ring hom `f` from the scalar ring
   to the target and a value `x` for the variable in the target -/
 @[no_expose] def eval₂ (p : R[X]) : S :=
-  p.sum fun e a => f a * x ^ e
+  p.coeff.sum fun e a => f a * x ^ e
 
+lemma eval₂_eq_sum_coeff (f : R →+* S) (x : S) : p.eval₂ f x = p.coeff.sum fun n a ↦ f a * x ^ n :=
+  (rfl)
+
+@[deprecated eval₂_eq_sum_coeff +typeChanged (since := "2026-11-02")]
 theorem eval₂_eq_sum {f : R →+* S} {x : S} : p.eval₂ f x = p.sum fun e a => f a * x ^ e := (rfl)
 
-@[deprecated (since := "2026-10-20")] alias eval₂_def := eval₂_eq_sum
+@[deprecated (since := "2026-10-20")] alias eval₂_def := eval₂_eq_sum_coeff
 
 theorem eval₂_congr {R S : Type*} [Semiring R] [Semiring S] {f g : R →+* S} {s t : S}
     {φ ψ : R[X]} : f = g → s = t → φ = ψ → eval₂ f s φ = eval₂ g t ψ := by
   rintro rfl rfl rfl; rfl
 
 @[simp]
-theorem eval₂_zero : (0 : R[X]).eval₂ f x = 0 := by simp [eval₂_eq_sum]
+theorem eval₂_zero : (0 : R[X]).eval₂ f x = 0 := by simp [eval₂_eq_sum_coeff]
 
 @[simp]
-theorem eval₂_C : (C a).eval₂ f x = f a := by simp [eval₂_eq_sum]
+theorem eval₂_C : (C a).eval₂ f x = f a := by simp [eval₂_eq_sum_coeff, ← monomial_zero_left]
 
 @[simp]
-theorem eval₂_X : X.eval₂ f x = x := by simp [eval₂_eq_sum]
+theorem eval₂_X : X.eval₂ f x = x := by simp [eval₂_eq_sum_coeff, ← monomial_one_one_eq_X]
 
 @[simp]
 theorem eval₂_monomial {n : ℕ} {r : R} : (monomial n r).eval₂ f x = f r * x ^ n := by
-  simp [eval₂_eq_sum]
+  simp [eval₂_eq_sum_coeff]
 
 @[simp]
 theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
@@ -85,8 +89,7 @@ theorem eval₂_X_pow {n : ℕ} : (X ^ n).eval₂ f x = x ^ n := by
 
 @[simp]
 theorem eval₂_add : (p + q).eval₂ f x = p.eval₂ f x + q.eval₂ f x := by
-  simp only [eval₂_eq_sum]
-  apply sum_add_index <;> simp [add_mul]
+  simp [eval₂_eq_sum_coeff, Finsupp.sum_add_index', add_mul]
 
 @[simp]
 theorem eval₂_one : (1 : R[X]).eval₂ f x = 1 := by rw [← C_1, eval₂_C, f.map_one]
@@ -112,15 +115,17 @@ lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →
 
 variable [Semiring T]
 
-theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
-    (p.sum g).eval₂ f x = p.sum fun n a => (g n a).eval₂ f x := by
+theorem eval₂_finsuppSum {α : Type*} (c : α →₀ T) (g : α → T → R[X]) (x : S) :
+    (c.sum g).eval₂ f x = c.sum fun n a => (g n a).eval₂ f x := by
   let T : R[X] →+ S :=
     { toFun := eval₂ f x
       map_zero' := eval₂_zero _ _
       map_add' := fun p q => eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
-  rw [sum, map_sum, sum]
+  rw [Finsupp.sum, map_sum, Finsupp.sum]
+
+@[deprecated (since := "2026-11-02")] alias eval₂_sum := eval₂_finsuppSum
 
 theorem eval₂_list_sum (l : List R[X]) (x : S) : eval₂ f x l.sum = (l.map (eval₂ f x)).sum :=
   map_list_sum (eval₂AddMonoidHom f x) l
@@ -135,7 +140,7 @@ theorem eval₂_finsetSum (s : Finset ι) (g : ι → R[X]) (x : S) :
 
 theorem eval₂_eq_liftNC {f : R →+* S} {x : S} {p : R[X]} :
     eval₂ f x p = liftNC f (powersHom S x) p := by
-  simp [eval₂_eq_sum, sum, support, liftNC, Finsupp.sum]
+  simp [eval₂_eq_sum_coeff, liftNC, Finsupp.sum]
 
 @[deprecated eval₂_eq_liftNC +typeChanged (since := "2026-10-25")]
 theorem eval₂_ofFinsupp {f : R →+* S} {x : S} {p : R[ℕ]} :
@@ -152,7 +157,7 @@ theorem eval₂_mul_X : eval₂ f x (p * X) = eval₂ f x p * x := by
   refine _root_.trans (eval₂_mul_noncomm _ _ fun k => ?_) (by rw [eval₂_X])
   rcases em (k = 1) with (rfl | hk)
   · simp
-  · simp [coeff_X_of_ne_one hk]
+  · simp [Finsupp.single_eq_of_ne hk]
 
 @[simp]
 theorem eval₂_X_mul : eval₂ f x (X * p) = eval₂ f x p * x := by rw [X_mul, eval₂_mul_X]
@@ -253,15 +258,16 @@ def eval (x : R) (p : R[X]) : R :=
 @[simp]
 theorem eval₂_id : eval₂ (RingHom.id _) x p = p.eval x := rfl
 
-theorem eval_eq_sum : p.eval x = p.sum fun e a => a * x ^ e := by
-  rw [eval, eval₂_eq_sum]
+theorem eval_eq_sum_coeff : p.eval x = p.coeff.sum fun e a => a * x ^ e := by
+  rw [eval, eval₂_eq_sum_coeff]
   rfl
+
+@[deprecated (since := "2026-11-02")] alias eval_eq_sum := eval_eq_sum_coeff
 
 @[simp]
 theorem eval₂_at_apply {S : Type*} [Semiring S] (f : R →+* S) (r : R) :
     p.eval₂ f (f r) = f (p.eval r) := by
-  rw [eval₂_eq_sum, eval_eq_sum, sum, sum, map_sum f]
-  simp only [f.map_mul, f.map_pow]
+  simp [eval₂_eq_sum_coeff, eval_eq_sum_coeff, Finsupp.sum, map_sum f]
 
 @[simp]
 theorem eval₂_at_one {S : Type*} [Semiring S] (f : R →+* S) : p.eval₂ f 1 = f (p.eval 1) := by
@@ -341,9 +347,11 @@ theorem eval_listSum (l : List R[X]) (x : R) : eval x l.sum = (l.map (eval x)).s
 theorem eval_multisetSum (s : Multiset R[X]) (x : R) : eval x s.sum = (s.map (eval x)).sum :=
   eval₂_multiset_sum ..
 
-theorem eval_sum (p : R[X]) (f : ℕ → R → R[X]) (x : R) :
-    (p.sum f).eval x = p.sum fun n a => (f n a).eval x :=
-  eval₂_sum _ _ _ _
+theorem eval_finsuppSum {α : Type*} (c : α →₀ R) (f : α → R → R[X]) (x : R) :
+    (c.sum f).eval x = c.sum fun n a => (f n a).eval x :=
+  eval₂_finsuppSum _ _ _ _
+
+@[deprecated (since := "2026-11-02")] alias eval_sum := eval_finsuppSum
 
 theorem eval_finsetSum (s : Finset ι) (g : ι → R[X]) (x : R) :
     (∑ i ∈ s, g i).eval x = ∑ i ∈ s, (g i).eval x :=
@@ -379,12 +387,14 @@ section Comp
 def comp (p q : R[X]) : R[X] :=
   p.eval₂ C q
 
-theorem comp_eq_sum_left : p.comp q = p.sum fun e a => C a * q ^ e := by rw [comp, eval₂_eq_sum]
+theorem comp_eq_sum_coeff_left : p.comp q = p.coeff.sum fun e a => C a * q ^ e := by
+  rw [comp, eval₂_eq_sum_coeff]
+
+@[deprecated (since := "2026-11-02")] alias comp_eq_sum_left := comp_eq_sum_coeff_left
 
 @[simp]
 theorem comp_X : p.comp X = p := by
-  simp only [comp, eval₂_eq_sum, C_mul_X_pow_eq_monomial]
-  exact sum_monomial_eq _
+  simp [comp, eval₂_eq_sum_coeff, C_mul_X_pow_eq_monomial]
 
 @[simp]
 theorem X_comp : X.comp p = p :=

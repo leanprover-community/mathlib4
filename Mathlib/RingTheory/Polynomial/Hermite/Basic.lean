@@ -84,7 +84,7 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
   clear hnk
   induction n generalizing k with
-  | zero => exact coeff_C
+  | zero => simp [coeff_one]
   | succ n ih =>
     have : n + k + 1 + 2 = n + (k + 2) + 1 := by ring
     rw [coeff_hermite_succ_succ, add_right_comm, this, ih k, ih (k + 2), mul_zero, sub_zero]
@@ -92,7 +92,7 @@ theorem coeff_hermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (hermite n) k = 0 
 @[simp]
 theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
   induction n with
-  | zero => exact coeff_C
+  | zero => simp
   | succ n ih =>
     rw [coeff_hermite_succ_succ, ih, coeff_hermite_of_lt, mul_zero, sub_zero]
     simp

@@ -78,15 +78,17 @@ lemma evalEval_X (x y : R) : X.evalEval x y = y := by
 @[simp]
 lemma evalEval_add (x y : R) (p q : R[X][Y]) :
     (p + q).evalEval x y = p.evalEval x y + q.evalEval x y := by
-  simp only [evalEval, eval_add]
-
-lemma evalEval_sum (x y : R) (p : R[X]) (f : ℕ → R → R[X][Y]) :
-    (p.sum f).evalEval x y = p.sum fun n a => (f n a).evalEval x y := by
-  simp only [evalEval, eval, eval₂_sum]
+  simp [evalEval]
 
 lemma evalEval_finsetSum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X][Y]) :
     (∑ i ∈ s, f i).evalEval x y = ∑ i ∈ s, (f i).evalEval x y := by
-  simp only [evalEval, eval_finsetSum]
+  simp [evalEval, eval_finsetSum]
+
+lemma evalEval_finsuppSum {ι : Type*} (x y : R) (c : ι →₀ R) (f : ι → R → R[X][Y]) :
+    (c.sum f).evalEval x y = c.sum fun n a => (f n a).evalEval x y := by
+  simp [Finsupp.sum, evalEval_finsetSum]
+
+@[deprecated (since := "2026-11-02")] alias evalEval_sum := evalEval_finsuppSum
 
 @[simp]
 lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)

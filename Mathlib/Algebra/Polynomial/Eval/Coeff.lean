@@ -43,9 +43,7 @@ variable (f : R →+* S) (x : S)
 
 @[simp]
 theorem eval₂_at_zero : p.eval₂ f 0 = f (coeff p 0) := by
-  simp +contextual only [eval₂_eq_sum, zero_pow_eq, mul_ite, mul_zero,
-    mul_one, sum, Classical.not_not, mem_support_iff, sum_ite_eq', ite_eq_left_iff, map_zero,
-    imp_true_iff]
+  simp +contextual [eval₂_eq_sum_coeff, zero_pow_eq, Finsupp.sum]
 
 @[simp]
 theorem eval₂_C_X : eval₂ C X p = p :=
@@ -59,10 +57,7 @@ section Eval
 theorem coeff_zero_eq_eval_zero (p : R[X]) : coeff p 0 = p.eval 0 :=
   calc
     coeff p 0 = coeff p 0 * 0 ^ 0 := by simp
-    _ = p.eval 0 := by
-      symm
-      rw [eval_eq_sum]
-      exact Finset.sum_eq_single _ (fun b _ hb => by simp [zero_pow hb]) (by simp)
+    _ = p.eval 0 := by simp +contextual [eval_eq_sum_coeff, Finsupp.sum_eq_single 0]
 
 theorem zero_isRoot_iff_coeff_zero_eq_zero {p : R[X]} : IsRoot p 0 ↔ p.coeff 0 = 0 := by
   rw [coeff_zero_eq_eval_zero, IsRoot]
@@ -79,8 +74,7 @@ variable (f : R →+* S)
 
 @[simp]
 theorem coeff_map (n : ℕ) : coeff (p.map f) n = f (coeff p n) := by
-  rw [map, eval₂_eq_sum, coeff_sum, sum]
-  simp_all
+  simp +contextual [map, eval₂_eq_sum_coeff]
 
 lemma coeff_map_eq_comp (p : R[X]) (f : R →+* S) : (p.map f).coeff = f ∘ p.coeff := by
   ext n; exact coeff_map ..

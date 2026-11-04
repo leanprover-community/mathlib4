@@ -184,7 +184,7 @@ theorem isUnitTrinomial_iff' :
     Nat.mul_div_right _ zero_lt_two, coeff_mul_mirror]
   refine ⟨?_, fun hp => ?_⟩
   · rintro ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩
-    rw [sum_def, trinomial_support hkm hmn u.ne_zero v.ne_zero w.ne_zero,
+    rw [Finsupp.sum, ← support, trinomial_support hkm hmn u.ne_zero v.ne_zero w.ne_zero,
       sum_insert (mt mem_insert.mp (not_or_intro hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
       sum_insert (mt mem_singleton.mp hmn.ne), sum_singleton, trinomial_leading_coeff' hkm hmn,
       trinomial_middle_coeff hkm hmn, trinomial_trailing_coeff' hkm hmn]
@@ -194,7 +194,7 @@ theorem isUnitTrinomial_iff' :
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
     refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => .of_pow_eq_one (key k hk) two_ne_zero⟩
-    rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
+    rw [Finsupp.sum, ← support, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 
 theorem isUnitTrinomial_iff'' (h : p * p.mirror = q * q.mirror) :

@@ -340,8 +340,7 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   obtain ⟨Q, hQ, _, ⟨e⟩⟩ := Ideal.exists_ideal_lt_liesOver_of_lt (S := S) P this
   refine hQ.ne (Algebra.WeaklyQuasiFiniteAt.eq_of_le_of_under_eq (R := R) hQ.le ?_)
   rw [← Ideal.under_under (B := R[X]), ← e]
-  ext
-  simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
+  simp [Ideal.mem_map_C_iff, Finsupp.single_apply, apply_ite]
 
 /-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
