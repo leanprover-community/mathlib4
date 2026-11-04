@@ -104,10 +104,10 @@ lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff 
 /-- The unit `a` is an `n`-th power in `Mˣ` if and only if `a` is an `n`-th power in `M`. -/
 @[to_additive /-- The additive unit `a` is an `n`-th multiple in `AddUnits M` if and only
 if `a` is an `n`-th multiple in `M`. -/]
-lemma exists_pow_eq_unit_iff (a : Mˣ) : (∃ x, x ^ n = a) ↔ ∃ (x : M), x ^ n = a := by
-  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x, by simp [← hx]⟩, fun ⟨x, hx⟩ ↦ ?_⟩
+lemma exists_unit_eq_pow_iff {a : Mˣ} : (∃ x, a = x ^ n ) ↔ ∃ (x : M), a = x ^ n := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x, by simp [hx]⟩, fun ⟨x, hx⟩ ↦ ?_⟩
   match n with
-  | 0 => exact ⟨1, Units.ext (by simp_all)⟩
+  | 0 => exact ⟨1, Units.ext <| by simp [hx]⟩
   | n + 1 => exact ⟨isUnit_pow_succ_iff.mp (hx ▸ a.isUnit) |>.unit, Units.ext <| by simp [← hx]⟩
 
 lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
