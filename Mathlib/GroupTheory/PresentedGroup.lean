@@ -236,11 +236,11 @@ lemma lift_toCoprod_eq_one (r : FreeGroup (α ⊕ β))
     FreeGroup.lift (toCoprod rels₁ rels₂) r = 1 := by
   obtain ⟨r, hr, rfl⟩ | ⟨r, hr, rfl⟩ := hr <;> simp [← MonoidHom.comp_apply, one_of_mem hr]
 
-/-- The free product (Coproduct) of presentations is isomorphic to the presentation of the union
-over the `FreeGroup (α ⊕ β)` -/
+/-- The free product (coproduct) of presentations is isomorphic to the presentation of the union
+over the `FreeGroup (α ⊕ β)`. -/
 @[to_additive
-/-- The free product (Coproduct) of presentations is isomorphic to the presentation of the union
-over the `FreeAddGroup (α ⊕ β)`-/]
+/-- The free product (coproduct) of presentations is isomorphic to the presentation of the union
+over the `FreeAddGroup (α ⊕ β)`.-/]
 def coprodPresentations :
     PresentedGroup (FreeGroup.map Sum.inl '' rels₁ ∪ FreeGroup.map Sum.inr '' rels₂) ≃*
     Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
