@@ -233,6 +233,8 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
+@[simp] lemma map_id : map (.id R) = .id (SpecialLinearGroup n R) := rfl
+
 section Equiv
 
 variable (n) (e : R ≃+* S) (g : S ≃+* T)
@@ -311,8 +313,6 @@ def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (
   toFun A i := map (Pi.evalRingHom R i) A
   invFun A := ⟨of fun a b i ↦ A i a b, funext fun i ↦
     (RingHom.map_det (Pi.evalRingHom R i) (of fun a b i ↦ A i a b)).trans (A i).det_coe⟩
-  left_inv A := by ext; rfl
-  right_inv A := by ext; rfl
   map_mul' A B := by ext; simp
 
 end Pi
