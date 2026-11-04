@@ -194,14 +194,12 @@ end Preorder
 section LinearOrder
 variable [LinearOrder α] [IsScottHausdorff α univ]
 
-/-- This theorem can fail in partial orders (even with the directed assumption). -/
 theorem closure_eq_setOfPred_isLUB (s : Set α) :
     closure s = {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
   apply (closure_subset_setOfPred_isLUB s).antisymm
   rintro x ⟨d, hd, hd₀, hx⟩
   exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
 
-/-- This theorem can fail in partial orders (even with the directed assumption). -/
 theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
     x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
   Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
