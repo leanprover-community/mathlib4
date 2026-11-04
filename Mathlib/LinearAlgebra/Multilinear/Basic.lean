@@ -21,14 +21,17 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 # Multilinear maps
 
 We define multilinear maps as maps from `∀ (i : ι), M i` to `N` which are `σ`-semilinear in each
-coordinate. Here, `M i` and `N` are modules over rings `R` and `S`, respectively, and `ι` is an
-arbitrary type (although some statements will require it to be a fintype). This space, denoted by
-`(Π i, M i) →ₘₛₗ[σ] N`, inherits a module structure by pointwise addition and multiplication.
+coordinate. Here, `M i` and `N` are modules over rings `R` and `S`, respectively, `σ` is a ring
+homomorphism `R →+* S` and `ι` is an arbitrary type (although some statements will require
+it to be a fintype). This space, denoted by `(Π i, M i) →ₘₛₗ[σ] N`, inherits a module structure
+by pointwise addition and multiplication.
 
 ## Main definitions
 
 * `MultilinearMap σ M N` (`(Π i, M i) →ₘₛₗ[σ] M₂`) is the space of `σ`-multisemilinear maps
-  from `(i : ι) → M i` to `N`.
+  from `(i : ι) → M i` to `N`. Here `σ` is a `RingHom` from `R` to `S` and we recover plain
+  multilinear maps by choosing `σ` to be `RingHom.id R`, in which case the space is denoted by
+  `(Π i, M i) →ₘₗ[R] N`.
 * `f.map_update_smul` is the multiplicativity of the multilinear map `f` along each coordinate.
 * `f.map_update_add` is the additivity of the multilinear map `f` along each coordinate.
 * `f.map_smul_univ` expresses the multiplicativity of `f` over all coordinates at the same time,
