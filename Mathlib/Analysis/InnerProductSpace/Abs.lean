@@ -42,10 +42,10 @@ variable {E F : Type*}
 
 /-- The abs `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
 @[expose]
-def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
+protected def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
 
 @[inherit_doc]
-local notation "|" T "|" => abs T
+local notation "|" T "|" => ContinuousLinearMap.abs T
 
 theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
 
@@ -58,7 +58,7 @@ theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
   exact CFC.sqrt_mul_self ..
 @[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
 
-theorem continuous_abs : Continuous (abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
+theorem continuous_abs : Continuous (ContinuousLinearMap.abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
   CFC.continuousOn_sqrt.comp_continuous (by fun_prop)
     fun T => T.isPositive_adjoint_comp_self.nonneg
 
