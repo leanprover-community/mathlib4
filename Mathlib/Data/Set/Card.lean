@@ -1163,8 +1163,7 @@ theorem pred_ncard_le_ncard_sdiff_singleton (s : Set α) (a : α) :
 alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff (hs : s.Finite := by toFinite_tac)
-    (ht : t.Finite := by toFinite_tac) :
-    s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
+    (ht : t.Finite := by toFinite_tac) : s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
   rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs,
     ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht, inter_comm, add_right_inj]
 
