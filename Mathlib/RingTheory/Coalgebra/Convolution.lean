@@ -197,7 +197,7 @@ instance convAlgebra [CommSemiring S] [Algebra S A] [SMulCommClass R S A] :
   .ofModule smul_mul_assoc mul_smul_comm
 
 @[simp]
-lemma convAlgebraMap_apply [CommSemiring S] [Algebra S A] [SMulCommClass R S A] (s : S) (c : C) :
+lemma convAlgebraMap_apply [CommSemiring S] [Algebra S A] (s : S) (c : C) :
     algebraMap S (WithConv (C →ₗ[R] A)) s c = s • algebraMap R A (counit c) := rfl
 
 end Semiring

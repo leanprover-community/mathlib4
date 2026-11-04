@@ -527,6 +527,7 @@ theorem symm_dual_comp (g : βᵒᵈ →o γᵒᵈ) (f : αᵒᵈ →o βᵒᵈ)
   rfl
 
 /-- `OrderHom.dual` as an order isomorphism. -/
+@[simps toEquiv]
 def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (αᵒᵈ →o βᵒᵈ)ᵒᵈ where
   toEquiv := OrderHom.dual.trans OrderDual.toDual
   map_rel_iff' := Iff.rfl
@@ -888,6 +889,11 @@ theorem coe_trans (e : α ≃o β) (e' : β ≃o γ) : ⇑(e.trans e') = e' ∘ 
   rfl
 
 @[simp]
+theorem trans_toEquiv (e : α ≃o β) (e' : β ≃o γ) :
+    (e.trans e').toEquiv = e.toEquiv.trans e'.toEquiv :=
+  rfl
+
+@[simp]
 theorem trans_apply (e : α ≃o β) (e' : β ≃o γ) (x : α) : e.trans e' x = e' (e x) :=
   rfl
 
@@ -941,11 +947,36 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
                OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
     exact Iff.symm f.forall_congr_left
 
+@[simp] lemma arrowCongr_refl {α β : Type*} [Preorder α] [Preorder β] :
+    arrowCongr (.refl α) (.refl β) = .refl (α →o β) := rfl
+
+@[simp] lemma arrowCongr_trans {α₁ α₂ α₃ β₁ β₂ β₃ : Type*} [Preorder α₁] [Preorder α₂]
+    [Preorder α₃] [Preorder β₁] [Preorder β₂] [Preorder β₃]
+    (e₁ : α₁ ≃o α₂) (e₁' : β₁ ≃o β₂) (e₂ : α₂ ≃o α₃) (e₂' : β₂ ≃o β₃) :
+    arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') := rfl
+
+@[simp, grind =] lemma arrowCongr_symm {α₁ α₂ β₁ β₂ : Type*} [Preorder α₁] [Preorder α₂]
+    [Preorder β₁] [Preorder β₂] (e₁ : α₁ ≃o α₂) (e₂ : β₁ ≃o β₂) :
+    (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := rfl
+
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
   arrowCongr f f
+
+@[simp] lemma conj_refl {α : Type*} [Preorder α] : conj (.refl α) = Equiv.refl (α →o α) := rfl
+
+@[simp, grind =]
+lemma symm_conj {α β} [Preorder α] [Preorder β] (e : α ≃o β) : e.conj.symm = e.symm.conj := rfl
+
+@[deprecated symm_conj +typeChanged (since := "2026-10-28")]
+lemma conj_symm_apply {α β} [Preorder α] [Preorder β] (e : α ≃o β) (f : β →o β) :
+    e.conj.symm f = e.symm.conj f := rfl
+
+@[simp]
+lemma conj_trans_conj {α β γ} [Preorder α] [Preorder β] [Preorder γ] (e₁ : α ≃o β) (e₂ : β ≃o γ) :
+    e₁.conj.trans e₂.conj = (e₁.trans e₂).conj := rfl
 
 /-- Transport an `OrderEmbedding` across a pair of `OrderIso`s, by pre- and post-composition.
 
@@ -963,6 +994,20 @@ theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ
     (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
 
+@[simp, grind =]
+lemma orderEmbeddingCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+    (orderEmbeddingCongr f g).symm = orderEmbeddingCongr f.symm g.symm := rfl
+
+@[simp]
+lemma orderEmbeddingCongr_refl :
+    orderEmbeddingCongr (.refl α) (.refl β) = Equiv.refl (α ↪o β) := rfl
+
+@[simp]
+lemma orderEmbeddingCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+    (f : α ≃o γ) (g : β ≃o δ) (f' : γ ≃o ε) (g' : δ ≃o ζ) :
+    (orderEmbeddingCongr f g).trans (orderEmbeddingCongr f' g') =
+      orderEmbeddingCongr (f.trans f') (g.trans g') := rfl
+
 /-- Transport an `OrderIso` across a pair of `OrderIso`s, by pre- and post-composition.
 
 This is `Equiv.equivCongr`/`RelIso.relIsoCongr` for `OrderIso`. -/
@@ -979,6 +1024,18 @@ theorem orderIsoCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ≃o 
     (orderIsoCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
 
+@[simp, grind =]
+lemma orderIsoCongr_symm (f : α ≃o γ) (g : β ≃o δ) :
+    (orderIsoCongr f g).symm = orderIsoCongr f.symm g.symm := rfl
+
+@[simp] lemma orderIsoCongr_refl : orderIsoCongr (.refl α) (.refl β) = .refl (α ≃o β) := rfl
+
+@[simp]
+lemma orderIsoCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+    (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
+    (orderIsoCongr e₁ e₂).trans (orderIsoCongr e₁' e₂') =
+      orderIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
 /-- A surjective order embedding is an order isomorphism. -/
 @[simps!]
 noncomputable def ofSurjective (f : α ↪o β) (hf : Function.Surjective f) : α ≃o β :=
@@ -994,16 +1051,38 @@ noncomputable def equivEmbeddingSurjective :
   right_inv _ := rfl
 
 /-- `Prod.swap` as an `OrderIso`. -/
+@[simps! (attr := grind =) toEquiv apply]
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
   map_rel_iff' := Prod.swap_le_swap
 
 /-- `Equiv.prodAssoc` promoted to an order isomorphism. -/
-@[simps! (attr := grind =)]
+@[simps! (attr := grind =) toEquiv apply symm_apply]
 def prodAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] :
     (α × β) × γ ≃o α × (β × γ) where
   toEquiv := .prodAssoc α β γ
   map_rel_iff' := @fun ⟨⟨_, _⟩, _⟩ ⟨⟨_, _⟩, _⟩ ↦ by simp [Equiv.prodAssoc, and_assoc]
+
+/-- `Equiv.prodCongr` promoted to an order isomorphism. -/
+@[simps! (attr := grind =) toEquiv apply]
+def prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) : α × β ≃o γ × δ where
+  toEquiv := e₁.toEquiv.prodCongr e₂.toEquiv
+  map_rel_iff' := by simp [Prod.le_def]
+
+@[simp, grind =]
+lemma symm_prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) :
+    (prodCongr e₁ e₂).symm = prodCongr e₁.symm e₂.symm := rfl
+
+@[simp]
+lemma prodCongr_refl_refl : prodCongr (.refl α) (.refl β) = .refl (α × β) := rfl
+
+@[simp]
+lemma prodCongr_trans_prodCongr {ε ζ : Type*} [LE ε] [LE ζ]
+    (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
+    (prodCongr e₁ e₂).trans (prodCongr e₁' e₂') = prodCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
+
+lemma prodComm_trans_prodCongr (e₁ : α ≃o γ) (e₂ : β ≃o δ) :
+    prodComm.trans (prodCongr e₁ e₂) = (prodCongr e₂ e₁).trans prodComm := rfl
 
 @[simp]
 theorem coe_prodComm : ⇑(prodComm : α × β ≃o β × α) = Prod.swap :=
@@ -1055,6 +1134,37 @@ theorem le_symm_apply (e : α ≃o β) {x : α} {y : β} : x ≤ e.symm y ↔ e 
   e.rel_symm_apply
 
 end LE
+
+section Unique
+variable {α β : Type*} [LE α] [Preorder β] [Unique β]
+
+variable (α β) in
+/-- `Equiv.prodUnique` promoted to an order isomorphism. -/
+@[simps! (attr := grind =) toEquiv apply symm_apply]
+def prodUnique : α × β ≃o α where
+  toEquiv := .prodUnique α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+variable (α β) in
+/-- `Equiv.uniqueProd` promoted to an order isomorphism. -/
+@[simps! (attr := grind =) toEquiv apply symm_apply]
+def uniqueProd : β × α ≃o α where
+  toEquiv := .uniqueProd α β
+  map_rel_iff' := by simp [Prod.le_def, le_of_subsingleton]
+
+@[simp] lemma coe_prodUnique : ⇑(prodUnique α β) = Prod.fst := rfl
+@[simp] lemma coe_uniqueProd : ⇑(uniqueProd α β) = Prod.snd := rfl
+
+@[simp] lemma prodComm_trans_prodUnique : prodComm.trans (prodUnique α β) = uniqueProd α β := rfl
+@[simp] lemma prodComm_trans_uniqueProd : prodComm.trans (uniqueProd α β) = prodUnique α β := rfl
+
+@[simp] lemma symm_prodUnique_trans_prodComm :
+    (prodUnique α β).symm.trans prodComm = (uniqueProd α β).symm := rfl
+
+@[simp] lemma symm_uniqueProd_trans_prodComm :
+    (uniqueProd α β).symm.trans prodComm = (prodUnique α β).symm := rfl
+
+end Unique
 
 variable [Preorder α] [Preorder β]
 
@@ -1166,7 +1276,7 @@ theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
 
 /-- The order isomorphism `α ≃o β` when `α` and `β` are preordered types
 containing unique elements. -/
-@[simps!]
+@[simps! toEquiv apply symm_apply]
 noncomputable def ofUnique
     (α β : Type*) [Unique α] [Unique β] [Preorder α] [Preorder β] :
     α ≃o β where
@@ -1174,6 +1284,7 @@ noncomputable def ofUnique
   map_rel_iff' := by simp
 
 /-- `Equiv.equivOfIsEmpty` promoted to an `OrderIso`. -/
+@[simps toEquiv]
 def ofIsEmpty (α β : Type*) [Preorder α] [Preorder β] [IsEmpty α] [IsEmpty β] : α ≃o β :=
   ⟨Equiv.equivOfIsEmpty α β, @isEmptyElim _ _ _⟩
 
@@ -1228,6 +1339,11 @@ variable [LE α] [LE β] (f : α ≃o β)
 @[simp] lemma OrderIso.dual_symm_apply (x) : f.dual.symm x = .toDual (f.symm x.ofDual) := rfl
 
 @[simp] lemma OrderIso.symm_dual : f.symm.dual = f.dual.symm := rfl
+
+@[simp] lemma OrderIso.dual_refl (α : Type*) [LE α] : (OrderIso.refl α).dual = .refl αᵒᵈ := rfl
+
+@[simp] lemma OrderIso.dual_trans {γ : Type*} [LE γ] (g : β ≃o γ) :
+    (f.trans g).dual = f.dual.trans g.dual := rfl
 
 end
 
