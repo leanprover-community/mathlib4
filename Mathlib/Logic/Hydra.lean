@@ -50,7 +50,7 @@ variable {α : Type*}
   is also easier to verify for explicit multisets `s'`, `s` and `t`.
 
   The lemma `Relation.cutExpand_iff` below converts between this convenient definition
-  and the direct translation when `r` is irreflexive. -/
+  and the direct translation. -/
 def CutExpand (r : α → α → Prop) (s' s : Multiset α) : Prop :=
   ∃ (t : Multiset α) (a : α), a ∈ s ∧ (∀ a' ∈ t, r a' a) ∧ s' + {a} = s + t
 
@@ -187,8 +187,7 @@ lemma cutExpand_triple_pair_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a�
 @[deprecated (since := "2026-08-16")]
 alias cutExpand_double_left := cutExpand_triple_pair_left
 
-/-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
-  assuming `r` is irreflexive. -/
+/-- A multiset is accessible under `CutExpand` if all its singleton subsets are. -/
 private theorem acc_of_singleton {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutExpand r) {a}) :
     Acc (CutExpand r) s := by
   induction s using Multiset.induction with
@@ -198,8 +197,7 @@ private theorem acc_of_singleton {s : Multiset α} (hs : ∀ a ∈ s, Acc (CutEx
     rw [forall_mem_cons] at hs
     exact (hs.1.prod_gameAdd <| ihs fun a ha ↦ hs.2 a ha).of_fibration _ (cutExpand_fibration r)
 
-/-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`,
-  assuming `r` is irreflexive. -/
+/-- A singleton `{a}` is accessible under `CutExpand r` if `a` is accessible under `r`. -/
 theorem _root_.Acc.cutExpand_singleton {a : α} (hacc : Acc r a) : Acc (CutExpand r) {a} := by
   induction hacc with | _ a h ih
   refine Acc.intro _ fun s ↦ ?_
