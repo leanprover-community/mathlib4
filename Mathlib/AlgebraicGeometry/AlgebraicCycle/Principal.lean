@@ -6,7 +6,7 @@ Authors: Raphael Douglas Giles
 module
 
 public import Mathlib.AlgebraicGeometry.AlgebraicCycle.Basic
-public import Mathlib.AlgebraicGeometry.OrderOfVanishing
+public import Mathlib.AlgebraicGeometry.OrderOfVanishing.Basic
 
 /-!
 # Principal divisors
