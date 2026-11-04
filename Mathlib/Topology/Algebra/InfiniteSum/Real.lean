@@ -110,7 +110,7 @@ protected theorem Summable.tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} 
     (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
   Summable.tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
 
-variable {R : Type*} [TopologicalSpace R] {g : ℝ → R} (f : ℕ → R) {x : ℝ}
+variable {R : Type*} [TopologicalSpace R] {g : ℝ → R} (u v : ℝ) (f : ℕ → R) {x : ℝ}
 
 /-- If `g : ℝ → R` has compact support and `x ≠ 0`, then `n ↦ f n * g (n / x)` vanishes for all
 but finitely many `n : ℕ`, hence is summable. -/
@@ -125,7 +125,7 @@ theorem HasCompactSupport.summable_mul_natCast_div [NonUnitalNonAssocSemiring R]
 
 /-- For `0 < c`, the sum of `f n` over the natural numbers `n` with `n / c ∈ [u, v)`, written as
 a `tsum` against an indicator function. -/
-theorem tsum_mul_indicator_Ico_natCast_div [NonAssocSemiring R] (hx : 0 < x) (u v : ℝ) (f : ℕ → R) :
+theorem tsum_mul_indicator_Ico_natCast_div [NonAssocSemiring R] (hx : 0 < x) :
     ∑' n : ℕ, f n * (Set.Ico u v).indicator 1 (n / x) = ∑ n ∈ Ico ⌈u * x⌉₊ ⌈v * x⌉₊, f n := by
   rw [tsum_eq_sum (s := Ico ⌈u * x⌉₊ ⌈v * x⌉₊)]
   · refine sum_congr rfl fun n hn ↦ ?_
