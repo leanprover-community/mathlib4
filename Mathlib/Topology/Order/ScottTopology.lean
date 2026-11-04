@@ -214,6 +214,10 @@ theorem continuous_of_leftOrdContinuous [Preorder β] [TopologicalSpace β] [IsS
   exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
     (hf.mono.directedOn_image d) (hf hd₀ hx)
 
+/-- See `LeftOrdContinuous.continuous'` for a version that instead requires the codomain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous := continuous_of_leftOrdContinuous
+
 /-- See `continuous_of_leftOrdContinuous` for a version that instead requires the domain to be
 linearly ordered. -/
 theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
@@ -223,6 +227,10 @@ theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [Is
   obtain ⟨d, hd, hd₀, hx⟩ := isLUB_of_mem_closure hy
   exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
     (.of_linearOrder _) (hf hd₀ hx)
+
+/-- See `LeftOrdContinuous.continuous` for a version that instead requires the domain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous' := continuous_of_leftOrdContinuous'
 
 end LinearOrder
 end IsScottHausdorff
