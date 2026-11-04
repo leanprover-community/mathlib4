@@ -94,10 +94,10 @@ theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
   map_zpow₀ (normHom : α →*₀ ℝ)
 
 @[simp]
-theorem nnNorm_zPow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
+theorem nnNorm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
   map_zpow₀ (nnNormHom : α →*₀ ℝ≥0)
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_zpow := nnNorm_zPow
+@[deprecated (since := "2026-10-31")] alias nnnorm_zpow := nnNorm_zpow
 
 theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     dist z⁻¹ w⁻¹ = dist z w / (‖z‖ * ‖w‖) := by

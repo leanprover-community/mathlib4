@@ -466,11 +466,11 @@ lemma nnNorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 alias nnnorm_pow_le_mul_norm := nnNorm_pow_le_mul_norm
 
 @[to_additive (attr := simp) nnNorm_abs_zsMul]
-theorem nnNorm_zPow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
+theorem nnNorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_abs_zsmul]
-alias nnnorm_zpow_abs := nnNorm_zPow_abs
+alias nnnorm_zpow_abs := nnNorm_zpow_abs
 
 @[to_additive (attr := simp) nnNorm_natAbs_sMul]
 theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
@@ -480,11 +480,11 @@ theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n�
 alias nnnorm_pow_natAbs := nnNorm_pow_natAbs
 
 @[to_additive nnNorm_isUnit_zsMul]
-theorem nnNorm_zPow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
+theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_zpow_isUnit a hn
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_isUnit_zsmul]
-alias nnnorm_zpow_isUnit := nnNorm_zPow_isUnit
+alias nnnorm_zpow_isUnit := nnNorm_zpow_isUnit
 
 @[simp]
 theorem nnNorm_units_zsMul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
