@@ -65,7 +65,7 @@ theorem eLpNorm_add_le (hp1 : 1 ≤ p) :
   · simp [hp0, hf, hg, hfg]
   by_cases hp_top : p = ∞
   · simp [hp_top, hf, hg, hfg, eLpNormEssSup_add_le]
-  have hp1_real : 1 ≤ p.toReal := (ENNReal.one_le_toReal hp_top).2 hp1
+  have hp1_real : 1 ≤ p.toReal := ENNReal.one_le_toReal.2 ⟨hp1, hp_top⟩
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top hfg, eLpNorm_eq_eLpNorm' hp0 hp_top hf,
     eLpNorm_eq_eLpNorm' hp0 hp_top hg]
   exact eLpNorm'_add_le hf hg hp1_real

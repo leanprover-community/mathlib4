@@ -114,8 +114,8 @@ lemma toReal_le_one (ha : a ≠ ∞) : a.toReal ≤ 1 ↔ a ≤ 1 := by
   simpa using toReal_le_toReal ha one_ne_top
 
 @[simp]
-lemma one_le_toReal (ha : a ≠ ∞) : 1 ≤ a.toReal ↔ 1 ≤ a := by
-  simpa using toReal_le_toReal one_ne_top ha
+lemma one_le_toReal : 1 ≤ a.toReal ↔ 1 ≤ a ∧ a ≠ ∞ := by
+  by_cases ha : a = ∞ <;> simp [ha, ← toReal_le_toReal one_ne_top]
 
 @[simp]
 lemma toReal_lt_one (ha : a ≠ ∞) : a.toReal < 1 ↔ a < 1 := by
@@ -133,8 +133,8 @@ lemma toNNReal_le_one (ha : a ≠ ∞) : a.toNNReal ≤ 1 ↔ a ≤ 1 := by
   simpa using toNNReal_le_toNNReal ha one_ne_top
 
 @[simp]
-lemma one_le_toNNReal (ha : a ≠ ∞) : 1 ≤ a.toNNReal ↔ 1 ≤ a := by
-  simpa using toNNReal_le_toNNReal one_ne_top ha
+lemma one_le_toNNReal : 1 ≤ a.toNNReal ↔ 1 ≤ a ∧ a ≠ ∞ := by
+  by_cases ha : a = ∞ <;> simp [ha, ← toNNReal_le_toNNReal one_ne_top]
 
 @[simp]
 lemma toNNReal_lt_one (ha : a ≠ ∞) : a.toNNReal < 1 ↔ a < 1 := by
@@ -412,7 +412,7 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
 
 protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal :=
-  (eq_or_ne p ∞).imp_right fun h ↦ (one_le_toReal h).2 Fact.out
+  (eq_or_ne p ∞).imp_right fun h ↦ one_le_toReal.2 ⟨Fact.out, h⟩
 
 theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal ↔ p ≠ ∞ :=
   ⟨fun h hp =>

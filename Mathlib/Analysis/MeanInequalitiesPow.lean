@@ -339,7 +339,7 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   split_ifs with h
   · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
     rw [one_div, sub_nonneg, ← ENNReal.toReal_inv]
-    exact (ENNReal.one_le_toReal (by simpa using h.1.ne')).2 (ENNReal.one_le_inv.2 h.2.le)
+    exact ENNReal.one_le_toReal.2 ⟨ENNReal.one_le_inv.2 h.2.le, by simpa using h.1.ne'⟩
   · exact ENNReal.one_lt_top
 
 theorem LpAddConst_ne_zero (p : ℝ≥0∞) : LpAddConst p ≠ 0 := by

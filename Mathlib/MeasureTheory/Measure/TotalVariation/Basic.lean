@@ -99,7 +99,7 @@ lemma tvDist_withDensity_self_eq_integral {f : 𝓧 → ℝ≥0∞} (hf : Integr
       rw [abs_of_nonpos]
       · simp
       · simp only [tsub_le_iff_right, zero_add]
-        exact (ENNReal.one_le_toReal hx_top).2 hx
+        exact ENNReal.one_le_toReal.2 ⟨hx, hx_top⟩
   _ = ∫ x, |1 - (f x).toReal| ∂μ := by
     refine integral_add_compl hs ?_
     exact (Integrable.sub (by simp) hf_toReal).abs
