@@ -25,7 +25,7 @@ namespace IntervalDyadicReal
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
     ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
-    (Interval.mkBinarySplitCover (mkConst ``binarySplit [.zero]))
+    (Interval.mkBinarySplitCover q(binarySplit))
 
 @[grind =]
 theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=

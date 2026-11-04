@@ -24,7 +24,7 @@ namespace Inclusion.IntervalInt
 meta def mkIntIVar : InclusionExt :=
   mkNDIVarExt `interval_int
     ⟨q(ℤ), q(Interval ℤ), q(instToSetIntervalOfPreorder (α := ℤ))⟩
-    (Interval.mkBinarySplitCover (mkConst ``binarySplit [.zero]))
+    (Interval.mkBinarySplitCover q(binarySplit))
 
 @[inclusion_op interval_int]
 theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℤ) ∈ Interval.singleton (n : ℤ) :=
