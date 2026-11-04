@@ -228,7 +228,7 @@ lemma measurePreserving_inner_multivariateGaussian (hS : S.PosSemidef) (t : Eucl
     rw [← coe_innerSL_apply, IsGaussian.map_eq_gaussianReal]
     congr
     · rw [ContinuousLinearMap.integral_comp_id_comm]
-      · simp [real_inner_comm]
+      · simp
       · exact IsGaussian.integrable_id
     · rw [coe_innerSL_apply, ← covarianceBilin_self IsGaussian.memLp_two_id,
         covarianceBilin_multivariateGaussian hS]
