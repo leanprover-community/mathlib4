@@ -7,7 +7,7 @@ module
 
 public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.Ideal.BigOperators
-public import Mathlib.RingTheory.TensorProduct.Quotient
+public import Mathlib.RingTheory.TensorProduct.Quotient.Algebra
 
 /-!
 
