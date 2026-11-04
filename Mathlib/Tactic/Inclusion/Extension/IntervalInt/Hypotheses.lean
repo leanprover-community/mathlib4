@@ -28,16 +28,17 @@ theorem Ici_mem_of_le {x y : ℤ} {I : Interval ℤ} (hxy : x ≤ y) (hx : x ∈
 
 @[hypothesis_op interval_int]
 theorem Iic_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hy : y ∈ I) :
-    x ∈ Interval.Iic (I.ub - 1) :=
-  ⟨bot_le, (WithTop.coe_le_coe.mpr (Int.le_sub_one_of_lt hxy)).trans
-    ((LinearOrderedAddCommGroupWithTop.sub_le_sub_iff_left_of_ne_top
-      WithTop.coe_ne_top).mpr hy.2)⟩
+    x ∈ Interval.Iic (I.ub - 1) := by
+  refine ⟨bot_le, ?_⟩
+  grw [WithTop.coe_le_coe.mpr (Int.le_sub_one_of_lt hxy)]
+  exact (LinearOrderedAddCommGroupWithTop.sub_le_sub_iff_left_of_ne_top WithTop.coe_ne_top).mpr hy.2
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_lt {x y : ℤ} {I : Interval ℤ} (hxy : x < y) (hx : x ∈ I) :
-    y ∈ Interval.Ici (I.lb + 1) :=
-  ⟨(add_le_add_left hx.1 1).trans
-    (WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt hxy)), le_top⟩
+    y ∈ Interval.Ici (I.lb + 1) := by
+  refine ⟨?_, le_top⟩
+  grw [← WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt hxy)]
+  exact add_le_add_left hx.1 1
 
 @[hypothesis_op interval_int]
 theorem Ici_mem_of_mem_Ici {a x : ℤ} {I : Interval ℤ} (hx : x ∈ Set.Ici a) (ha : a ∈ I) :
