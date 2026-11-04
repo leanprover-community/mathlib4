@@ -266,12 +266,12 @@ end Algebra
 
 section StarAlgebra
 
-variable [CommSemiring R] [Fintype n] [Fintype m] [Fintype o] [Semiring A] [Algebra R A]
-  [StarRing A]
+variable [Semiring R] [Fintype n] [Fintype m] [Fintype o] [NonUnitalNonAssocSemiring A] [Module R A]
+  [Star A]
 
-/-- For square matrices with coefficients in a ⋆-algebra over a commutative semiring, the natural
-map that reindexes a matrix's rows and columns with equivalent types,
-`Matrix.reindex`, is an equivalence of ⋆-algebras. -/
+/-- For square matrices with coefficients in a (non-unital, non-associative) semiring `A` with a
+star operation and an `R`-module structure, the natural map that reindexes a matrix's rows and
+columns with equivalent types, `Matrix.reindex`, is an equivalence of ⋆-algebras. -/
 def reindexStarAlgEquiv (e : m ≃ n) : Matrix m m A ≃⋆ₐ[R] Matrix n n A where
   __ := reindexRingEquiv A e
   __ := reindexLinearEquiv R A e e
@@ -297,11 +297,6 @@ theorem toRingEquiv_reindexStarAlgEquiv (e : m ≃ n) :
   rfl
 
 @[simp]
-theorem toAlgEquiv_reindexStarAlgEquiv [DecidableEq m] [DecidableEq n] (e : m ≃ n) :
-    (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
-  rfl
-
-@[simp]
 theorem symm_reindexStarAlgEquiv (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).symm = reindexStarAlgEquiv R A e.symm :=
   rfl
@@ -318,6 +313,18 @@ theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ 
   rfl
 
 end StarAlgebra
+
+section StarAlgebraToAlgEquiv
+
+variable [CommSemiring R] [Fintype n] [Fintype m] [Semiring A] [Algebra R A] [Star A]
+  [DecidableEq m] [DecidableEq n]
+
+@[simp]
+theorem toAlgEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
+  rfl
+
+end StarAlgebraToAlgEquiv
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
