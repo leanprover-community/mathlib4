@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
+public meta import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 
 set_option doc.verso true
@@ -42,10 +42,16 @@ def binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β] :
 
 theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
     (n : ℕ) {I : Interval Dyadic} {F : Interval Dyadic → Iβ} {y : β} {r : ℝ}
-    (hr : r ∈ I) (hy : ∀ J, r ∈ J → y ∈ F J) : y ∈ binarySplitMap n I F :=
-  Interval.mem_binarySplitMap Dyadic.toReal midpoint id (fun _ _ ↦ True) binarySplitMap
-    (by intros; rfl) (fun h ↦ h.le) (by intros; rfl)
-    (by rintro n ⟨_ | l, _ | u⟩ F <;> rfl) n hr hy
+    (hr : r ∈ I) (hy : ∀ J, r ∈ J → y ∈ F J) : y ∈ binarySplitMap n I F := by
+  induction n generalizing I with
+  | zero => exact hy I hr
+  | succ n ih => match I with
+    | ⟨some l, some u⟩ =>
+      let m := midpoint l u
+      by_cases hl : r ≤ Dyadic.toReal m
+      · exact Coarsen.mem_coarsen_left (ih ⟨hr.1, WithTop.coe_le_coe.mpr hl⟩)
+      · exact Coarsen.mem_coarsen_right (ih ⟨WithBot.coe_le_coe.mpr (le_of_not_ge hl), hr.2⟩)
+    | ⟨⊥, ⊤⟩ | ⟨⊥, some u⟩ | ⟨some l, ⊤⟩ => exact hy _ hr
 
 /-- Cover a dyadic interval by repeatedly bisecting it to depth `n`. -/
 def binarySplit (n : ℕ) : Cover (Interval Dyadic) ℝ where

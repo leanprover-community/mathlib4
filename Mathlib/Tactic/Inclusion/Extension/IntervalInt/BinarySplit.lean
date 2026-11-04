@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
+public meta import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 
 /-!
@@ -34,10 +34,20 @@ def binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β] :
 
 theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
     (n : ℕ) {I : Interval ℤ} {F : Interval ℤ → Iβ} {y : β} {x : ℤ}
-    (hx : x ∈ I) (hy : ∀ J, x ∈ J → y ∈ F J) : y ∈ binarySplitMap n I F :=
-  Interval.mem_binarySplitMap id (fun l u ↦ (l + u) / 2) (· + 1) (· < ·) binarySplitMap
-    (by simp) (fun h ↦ Int.add_one_le_of_lt h) (by intros; rfl)
-    (by rintro n ⟨_ | l, _ | u⟩ F <;> rfl) n hx hy
+    (hx : x ∈ I) (hy : ∀ J, x ∈ J → y ∈ F J) : y ∈ binarySplitMap n I F := by
+  induction n generalizing I with
+  | zero => exact hy I hx
+  | succ n ih => match I with
+    | ⟨some l, some u⟩ =>
+      rw [binarySplitMap]
+      split
+      · let m := (l + u) / 2
+        by_cases hl : x ≤ m
+        · exact Coarsen.mem_coarsen_left (ih ⟨hx.1, WithTop.coe_le_coe.mpr hl⟩)
+        · exact Coarsen.mem_coarsen_right
+            (ih ⟨WithBot.coe_le_coe.mpr (Int.add_one_le_of_lt (lt_of_not_ge hl)), hx.2⟩)
+      · exact hy _ hx
+    | ⟨⊥, ⊤⟩ | ⟨⊥, some u⟩ | ⟨some l, ⊤⟩ => exact hy _ hx
 
 /-- Cover an integer interval by repeatedly bisecting it to depth `n`. -/
 def binarySplit (n : ℕ) : Cover (Interval ℤ) ℤ where
