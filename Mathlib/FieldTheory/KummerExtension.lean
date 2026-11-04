@@ -112,7 +112,7 @@ theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
   rw [← AdjoinRoot.powerBasis_gen (X_pow_sub_C_ne_zero (Nat.pos_of_ne_zero hn) a),
     Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly,
     minpoly_powerBasis_gen_of_monic (monic_X_pow_sub_C a hn),
-    coeff_sub, coeff_X_pow, ite_eq_right hn.symm]
+    coeff_sub, coeff_X_pow_apply, ite_eq_right hn.symm]
   simp
 
 -- TODO: generalize to even `n`

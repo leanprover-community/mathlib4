@@ -235,9 +235,9 @@ theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matr
       X ^ k - C (M ^ k) := by
   ext m i j
   rw [coeff_sub, coeff_C_apply, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
-    AlgHom.coe_toRingHom, coeff_X_pow]
+    AlgHom.coe_toRingHom, coeff_X_pow_apply]
   by_cases hij : i = j
-  · rw [hij, charmatrix_apply_eq, map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow,
+  · rw [hij, charmatrix_apply_eq, map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow_apply,
       coeff_C_apply]
     split_ifs with mp m0 <;> simp
   · rw [charmatrix_apply_ne _ _ _ hij, map_neg, expand_C, coeff_neg, coeff_C_apply]

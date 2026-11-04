@@ -53,12 +53,12 @@ lemma isNilpotent_tensor_residueField_iff
   constructor
   · intro e i hi
     replace e := congr(($e).coeff i)
-    simpa only [Algebra.coe_lmul_eq_mul, coeff_map, coeff_X_pow, hi.ne, ↓reduceIte,
+    simpa only [Algebra.coe_lmul_eq_mul, coeff_map, coeff_X_pow_apply, hi.ne, ↓reduceIte,
       ← RingHom.mem_ker, Ideal.ker_algebraMap_residueField] using e
   · intro H
     ext i
     obtain (hi | hi) := eq_or_ne i ((LinearMap.mul R A) f).charpoly.natDegree
-    · simp only [Algebra.coe_lmul_eq_mul, hi, coeff_map, coeff_X_pow, ↓reduceIte]
+    · simp only [Algebra.coe_lmul_eq_mul, hi, coeff_map, coeff_X_pow_apply, ↓reduceIte]
       rw [← Polynomial.leadingCoeff, ((LinearMap.mul R A) f).charpoly_monic, map_one]
     obtain (hi | hi) := lt_or_gt_of_ne hi
     · simpa [hi.ne, ← RingHom.mem_ker, Ideal.ker_algebraMap_residueField] using H i hi

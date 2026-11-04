@@ -189,7 +189,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     congr 1
     ext n
     simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    simp only [coeff_C_mul, coeff_X_pow, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
+    simp only [coeff_C_mul, coeff_X_pow_apply, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
     split_ifs with hn
     · rw [hn, leadingCoeff, sub_self]
       exact zero_mem _

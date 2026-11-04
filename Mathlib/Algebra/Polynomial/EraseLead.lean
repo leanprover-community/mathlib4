@@ -434,7 +434,7 @@ theorem card_support_eq {n : ℕ} :
         rw [sum_eq_single, coeff_C_mul, coeff_X_pow_self, mul_one]
         · exact hx i
         · intro j _ hji
-          rw [coeff_C_mul, coeff_X_pow, ite_eq_right (hk.injective.ne hji.symm), mul_zero]
+          rw [coeff_C_mul, coeff_X_pow_apply, ite_eq_right (hk.injective.ne hji.symm), mul_zero]
         · exact fun hi => (hi (mem_univ i)).elim
     · intro i
       by_cases hi : ∃ i₀, Fin.castSucc i₀ = i
