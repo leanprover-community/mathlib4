@@ -26,6 +26,14 @@ public section
 
 universe w v u
 
+namespace Opposite
+
+instance {α : Type*} [Fintype α] : Fintype αᵒᵖ := .ofEquiv _ equivToOpposite
+
+instance {α : Type*} [Finite α] : Finite αᵒᵖ := .of_equiv _ equivToOpposite
+
+end Opposite
+
 noncomputable section
 
 namespace CategoryTheory
@@ -56,7 +64,6 @@ open Opposite
 /-- The opposite of a finite category is finite.
 -/
 instance finCategoryOpposite {J : Type v} [SmallCategory J] [FinCategory J] : FinCategory Jᵒᵖ where
-  fintypeObj := Fintype.ofEquiv _ equivToOpposite
   fintypeHom j j' := Fintype.ofEquiv _ (opEquiv j j').symm
 
 attribute [local instance] uliftCategory in

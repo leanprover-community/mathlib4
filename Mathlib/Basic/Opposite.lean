@@ -5,7 +5,6 @@ Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
 module
 
-public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Logic.Small.Defs
 
 /-!
@@ -112,10 +111,6 @@ instance [Inhabited α] : Inhabited αᵒᵖ :=
 instance [Nonempty α] : Nonempty αᵒᵖ := Nonempty.map op ‹_›
 
 instance [Subsingleton α] : Subsingleton αᵒᵖ := unop_injective.subsingleton
-
-instance [Finite α] : Finite αᵒᵖ := .of_equiv _ equivToOpposite
-
-instance [Countable α] : Countable αᵒᵖ := .of_equiv _ equivToOpposite
 
 /-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small. -/
 instance small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by

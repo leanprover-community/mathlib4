@@ -20,6 +20,12 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
+namespace Opposite
+
+instance {α : Type*} [Countable α] : Countable αᵒᵖ := .of_equiv _ equivToOpposite
+
+end Opposite
+
 noncomputable section
 
 namespace CategoryTheory
