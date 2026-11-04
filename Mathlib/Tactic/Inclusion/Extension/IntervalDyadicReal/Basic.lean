@@ -5,7 +5,6 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Extension.Interval.Params
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
 /-!
