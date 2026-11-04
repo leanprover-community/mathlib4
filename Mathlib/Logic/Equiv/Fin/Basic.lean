@@ -328,8 +328,8 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
-  toFun ab := ab.1.mkDivMod ab.2
-  invFun a := (a.divNat, a.modNat)
+  toFun := Function.uncurry Fin.mkDivMod
+  invFun := Function.prod Fin.divNat Fin.modNat
   left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
   right_inv := Fin.divNat_mkDivMod_modNat
 
@@ -338,10 +338,10 @@ This is like `finProdFinEquiv.symm` but with `m` infinite.
 See `Nat.div_mod_unique` for a similar propositional statement. -/
 @[simps]
 def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
-  toFun a := (a / n, Fin.ofNat n a)
-  invFun ai := n.mkDivMod ai.1 ai.2
-  left_inv _ := n.mkDivMod_div_mod
-  right_inv _ := Prod.ext (by simp) (by simp [Fin.ext_iff, Nat.mod_eq_of_lt])
+  toFun := Function.prod (· / n) (Fin.ofNat n)
+  invFun  := Function.uncurry n.mkDivFin
+  left_inv := mkDivFin_div_ofNat
+  right_inv _ := Prod.ext (div_mkDivFin _ _) (ofNat_mkDivFin _ _)
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/
