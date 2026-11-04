@@ -32,8 +32,9 @@ approximating as an interval of dyadic rational numbers.
 This tactic is implemented as a family for the `inclusion` tactic: `dyadic_interval` is the same as
 `inclusion [core, interval_int, interval_dyadic_real]`.
 
-* `dyadic_interval [binSplit := n]` splits each real interval `n` times, into `2^n` pieces. Higher
-  values of `n` make the tactic slower but able to prove more. Default: no splitting.
+* `dyadic_interval [binSplit := n]` splits each bounded interval up to `n` times, into at most
+  `2^n` pieces. Higher values of `n` make the tactic slower but able to prove more.
+  Default: no splitting.
 * `dyadic_interval [prec := n]` uses a precision of `2^-n` when constructing the approximation.
   Higher values of `n` make the tactic slower but able to prove more. Default value: 0.
 * `dyadic_interval [fam₁, ... famₙ]` uses the inclusion families `fam₁`, ..., `famₙ` for additional

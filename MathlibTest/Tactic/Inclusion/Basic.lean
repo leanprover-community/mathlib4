@@ -33,13 +33,23 @@ example {x y : ℤ} (hx : x ∈ Set.Ioo (-3) 4) (hy : y ∈ Set.Icc (-2) 1) :
 example {x : ℤ} (hx : x ∈ Set.Ioo (-3) 2) :
     -x ∈ Set.Icc (-1) 2 ∧ |x| ∈ Set.Icc 0 2 := by dyadic_interval
 
-example {x : ℤ} (hx : x < -2) : x ^ 3 ≤ -27 ∧ 81 ≤ x ^ 4 := by dyadic_interval
+example {x : ℤ} (hx : x < -2) : x ^ 3 ≤ -27 ∧ 81 ≤ x ^ 4 := by
+  dyadic_interval [binSplit := 3]
 
--- Integer arithmetic before casting and real arithmetic after casting share the enclosure of `n`.
 example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3) :
     x * ((n ^ 2 + 1 : ℤ) : ℝ) + (n : ℝ) ^ 2 ∈ Set.Icc 1 14 := by dyadic_interval
 
 example {n : ℤ} (hn : n < -2) : 9 ≤ (n : ℝ) ^ 2 := by dyadic_interval
+
+example {n : ℤ} (hn : n ∈ Set.Ioo (-3) 0) : (n + 2) * (n + 1) = 0 := by
+  inclusion [core, interval_int, binSplit := 1]
+
+example {n : ℤ} (hn : n ∈ Set.Icc (-2) 2) : ((n * n : ℤ) : ℝ) - (n : ℝ) ^ 2 = 0 := by
+  dyadic_interval [binSplit := 3]
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc (-1) 1) (hn : n ∈ Set.Icc 0 1) :
+    x + ((n * (1 - n) : ℤ) : ℝ) - x ∈ Set.Icc (-0.5) 0.5 := by
+  dyadic_interval [binSplit := 2, prec := 1]
 
 end Integers
 

@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public meta import Mathlib.Tactic.Inclusion.Extension.Interval.Params
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 
 set_option doc.verso true
@@ -19,7 +19,7 @@ This file defines the `binarySplit` cover for the `interval_dyadic_real` inclusi
 
 @[expose] public section
 
-open Lean Qq
+open Lean
 
 namespace Inclusion
 namespace IntervalDyadicReal
@@ -59,13 +59,6 @@ theorem mem_binarySplitMap {Iβ β : Type*} [ToSet Iβ β] [Coarsen Iβ β]
 def binarySplit (n : ℕ) : Cover (Interval Dyadic) ℝ where
   coverMap := binarySplitMap n
   mem_coverMap := mem_binarySplitMap n
-
-/-- The depth to which bounded dyadic intervals are repeatedly bisected. A depth of
-`n` produces `2 ^ n` pieces. -/
-@[inclusion_param]
-meta def binarySplitParam : InclusionParamDecl where
-  name := `binSplit
-  type := q(ℕ)
 
 /-- Construct the binary-splitting cover with `2 ^ n` pieces. -/
 meta def mkBinarySplitCover : InclusionM (Option Expr) := do
