@@ -837,9 +837,7 @@ def H0Iso : H0 A ≅ (coinvariantsFunctor k G).obj A :=
 /-- The quotient map from `A` to `H₀(G, A)`. -/
 def H0π : ↧A.V ⟶ H0 A := (cyclesIso₀ A).inv ≫ π A 0
 
-instance : Epi (H0π A) :=
-  (ModuleCat.epi_iff_surjective _).2 fun x =>
-    groupHomology_induction_on x fun y => ⟨(cyclesIso₀ A).hom y, by simp [H0π]⟩
+instance : Epi (H0π A) := inferInstanceAs <| Epi (_ ≫ _)
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H0Iso_hom :
