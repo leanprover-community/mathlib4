@@ -71,7 +71,7 @@ def UnifIntegrable (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : P
 uniformly integrable in the measure theory sense and is uniformly bounded. -/
 structure UniformIntegrable (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop where
   protected unifIntegrable : UnifIntegrable f p μ
-  protected bdd : ⨆ i, eLpNorm (f i) p μ < ∞
+  protected iSup_eLpNorm_lt : ⨆ i, eLpNorm (f i) p μ < ∞
 
 /-- A characterization of `UnifIntegrable` families. This version does not assume that the sets `s`
 are measurable, and is convenient for applying the hypothesis that a family is `UnifIntegrable`.
@@ -89,7 +89,7 @@ theorem unifIntegrable_iff :
 namespace UniformIntegrable
 
 protected theorem memLp (hf : UniformIntegrable f p μ) (i : ι) : MemLp (f i) p μ :=
-  (le_iSup _ i).trans_lt hf.bdd
+  (le_iSup _ i).trans_lt hf.iSup_eLpNorm_lt
 
 protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
     AEStronglyMeasurable (f i) μ :=
@@ -687,7 +687,7 @@ theorem uniformIntegrable_zero_meas [MeasurableSpace α] : UniformIntegrable f p
 theorem UniformIntegrable.ae_eq {g : ι → α → β} (hf : UniformIntegrable f p μ)
     (hfg : ∀ n, f n =ᵐ[μ] g n) : UniformIntegrable g p μ :=
   ⟨(unifIntegrable_congr_ae hfg).1 hf.unifIntegrable,
-    hf.bdd.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
+    hf.iSup_eLpNorm_lt.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
 
 theorem uniformIntegrable_congr_ae {g : ι → α → β} (hfg : ∀ n, f n =ᵐ[μ] g n) :
     UniformIntegrable f p μ ↔ UniformIntegrable g p μ :=
@@ -782,12 +782,12 @@ theorem UniformIntegrable.spec (hp : p ≠ 0) (hp' : p ≠ ∞) (hfu : UniformIn
     specialize this (2 * max (⨆ i, eLpNorm (f i) p μ) 1 * δ⁻¹ ^ (1 / p.toReal)).toNNReal
     replace this := this.trans (le_iSup (fun i ↦ eLpNorm (f i) p μ) _)
     rw [toNNReal_mul, toNNReal_mul, coe_mul, coe_mul, coe_toNNReal ofNat_ne_top,
-      coe_toNNReal (by simp [hfu.bdd.ne]),
+      coe_toNNReal (by simp [hfu.iSup_eLpNorm_lt.ne]),
       coe_toNNReal (rpow_ne_top_of_nonneg (by positivity) (by finiteness)), mul_assoc,
       ← mul_rpow_of_nonneg δ⁻¹ δ (by positivity),
       ENNReal.inv_mul_cancel hδpos.ne' (ne_top_of_lt (hℐ 0)), one_rpow, mul_one, two_mul] at this
     replace this := (add_le_add (le_max_left _ 1) (le_max_right _ 1)).trans this
-    exact not_lt_of_ge this (lt_add_right hfu.bdd.ne one_ne_zero)
+    exact not_lt_of_ge this (lt_add_right hfu.iSup_eLpNorm_lt.ne one_ne_zero)
   refine ⟨C, fun i ↦ (hδ i { x | C ≤ ‖f i x‖₊ } (hC i)).trans_eq' ?_⟩
   apply (eLpNorm_indicator_eq_eLpNorm_restrict _).symm
   exact (nullMeasurableSet_le aemeasurable_const (hf i).nnnorm.aemeasurable)
@@ -856,7 +856,7 @@ lemma UniformIntegrable.uniformIntegrable_of_tendstoInMeasure {κ : Type*} (u : 
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
       TendstoInMeasure μ (fn ∘ ni) u g}) ↦ f.1) p μ := by
   refine ⟨hUI.1.unifIntegrable_of_tendstoInMeasure u (fun i ↦ hUI.aestronglyMeasurable i), ?_⟩
-  refine hUI.bdd.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
+  refine hUI.iSup_eLpNorm_lt.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
   refine eLpNorm_le_of_tendstoInMeasure (Eventually.of_forall fun i ↦ ?_) hs (fun i ↦ ?_)
   · exact le_iSup (fun j ↦ eLpNorm (fn j) p μ) (s i)
   · exact hUI.aestronglyMeasurable (s i)
@@ -885,7 +885,7 @@ lemma UniformIntegrable.uniformIntegrable_of_ae_tendsto {κ : Type*} (u : Filter
     UniformIntegrable (fun (f : {g : α → β | ∃ ni : κ → ι,
       ∀ᵐ (x : α) ∂μ, Tendsto (fun n ↦ fn (ni n) x) u (𝓝 (g x))}) ↦ f.1) p μ := by
   refine ⟨hUI.unifIntegrable.unifIntegrable_of_ae_tendsto u hUI.aestronglyMeasurable, ?_⟩
-  refine hUI.bdd.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
+  refine hUI.iSup_eLpNorm_lt.trans_le' (iSup_le fun ⟨f, s, hs⟩ ↦ ?_)
   refine Lp.eLpNorm_le_of_ae_tendsto (Eventually.of_forall fun i ↦ ?_) (fun n ↦ ?_) ?_ hs
   · exact le_iSup (fun j ↦ eLpNorm (fn j) p μ) (s i)
   · exact hUI.aestronglyMeasurable (s n)
