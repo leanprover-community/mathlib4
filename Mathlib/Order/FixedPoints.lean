@@ -5,9 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau, Yury Kudryashov
 -/
 module
 
-public import Mathlib.Order.Hom.Order
-public import Mathlib.Order.BourbakiWitt
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Order.BourbakiWitt
+public import Mathlib.Order.Hom.Order
 
 /-!
 # Fixed point construction on complete lattices

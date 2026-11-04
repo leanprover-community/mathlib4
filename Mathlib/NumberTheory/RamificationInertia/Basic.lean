@@ -112,9 +112,9 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     obtain ⟨a'', ha'', hx⟩ := (Submodule.mem_ideal_smul_span_iff_exists_sum p a x).1
       (by { rw [ha, smul_top_eq]; exact Submodule.mem_top } :
         x ∈ p • Submodule.span R (Set.range a))
-    · refine ⟨fun i => a'' i, fun i => ha'' _, ?_⟩
-      rw [← hx, Finsupp.sum_fintype]
-      exact fun _ => zero_smul _ _
+    refine ⟨fun i => a'' i, fun i => ha'' _, ?_⟩
+    rw [← hx, Finsupp.sum_fintype]
+    exact fun _ => zero_smul _ _
   choose A' hA'p hA' using fun i => exists_sum (a i)
   -- This gives us a(n invertible) matrix `A` such that `det A ∈ (M = span R b)`,
   let A : Matrix (Fin n) (Fin n) R := Matrix.of A' - 1
@@ -448,14 +448,11 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
-  let Q : ℕ → Prop :=
-    fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
-      = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
-  · dsimp only [Q]
+  induction hi using Nat.decreasingInduction with
+  | of_succ j lt_e ih =>
     rwa [rank_pow_quot_aux p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
-  · dsimp only [Q]
+  | self =>
     rw [Nat.sub_self, zero_nsmul, map_quotient_self]
     exact rank_bot (R ⧸ p) (S ⧸ P ^ e)
 

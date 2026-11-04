@@ -6,6 +6,7 @@ Authors: Edison Xie, Bhavik Mehta
 module
 
 public import Mathlib.LinearAlgebra.Projectivization.Subspace
+
 import Mathlib.LinearAlgebra.Projectivization.Independence
 
 /-!

@@ -7,13 +7,13 @@ module
 
 public import Mathlib.InformationTheory.KullbackLeibler.Basic
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Notation
 
 import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Analysis.Convex.Deriv
 import Mathlib.InformationTheory.KullbackLeibler.ChainRule
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondJensen
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.RadonNikodym
-public import Mathlib.Probability.Notation
 
 /-!
 # Data processing inequality for the Kullback-Leibler divergence

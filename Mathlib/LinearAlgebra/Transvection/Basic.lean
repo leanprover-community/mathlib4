@@ -600,13 +600,13 @@ private theorem det_ofField [FiniteDimensional K V] (f : Dual K V) (v : V) :
     simp only [map_add, Basis.repr_self, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
       Pi.add_apply, Pi.smul_apply, smul_eq_mul, Matrix.of_apply]
     rw [hv, Function.update_apply, Basis.repr_self, Pi.one_apply, hf]
-    simp only [smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
+    simp only [LinearMap.smul_apply, Basis.coord_apply, Basis.repr_self, smul_eq_mul,
       Finsupp.single_eq_same, mul_one]
     split_ifs with hxy hxi
     · simp [← hxy, hxi]
     · rw [Finsupp.single_eq_of_ne hxi]; simp [hxy]
     · rw [Finsupp.single_eq_of_ne hxy, zero_add, mul_assoc]
-      convert! mul_zero _
+      convert mul_zero _
       by_cases hxi : x = i
       · simp [← hxi, Finsupp.single_eq_of_ne hxy]
       · simp [Finsupp.single_eq_of_ne hxi]

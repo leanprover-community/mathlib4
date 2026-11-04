@@ -5,8 +5,8 @@ Authors: Moritz Doll, Zhouhang Zhou
 -/
 module
 
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Group.Completion
+public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Topology.Algebra.LinearMapCompletion
 
@@ -312,7 +312,7 @@ def extendOfIsometry (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e�
       refine h_dense₁.induction ?_ (isClosed_eq (by
         simp only [ContinuousLinearEquiv.coe_toLinearEquiv]; fun_prop) continuous_norm)
       rintro x ⟨y, rfl⟩
-      convert! h_norm y
+      convert h_norm y
       apply LinearMap.extendOfNorm_eq h_dense₁ (by use 1; simp [h_norm]) }
 
 theorem extendOfIsometry_apply (h_dense₁ : DenseRange e₁) (h_dense₂ : DenseRange e₂)
@@ -348,7 +348,7 @@ namespace LinearIsometry
 open UniformSpace
 
 variable {R R₂ : Type*} [Semiring R] [Semiring R₂] [SeminormedAddCommGroup E] [Module R E]
-  [IsUniformAddGroup E] [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
+  [UniformContinuousConstSMul R E] [NormedAddCommGroup F] [Module R₂ F]
   {σ₁₂ : R →+* R₂} (f : E →ₛₗᵢ[σ₁₂] F)
 
 section fromCompletion

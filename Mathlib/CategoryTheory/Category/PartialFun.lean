@@ -6,8 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.CategoryTheory.Category.Pointed
-public import Mathlib.Data.PFun
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
+public import Mathlib.Data.PFun
 
 /-!
 # The category of types with partial functions
@@ -120,7 +120,7 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
       map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
-        convert! Part.some_toOption a)
+        convert Part.some_toOption a)
       map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Prod
 public import Mathlib.Probability.Kernel.Composition.MapComap
+
 import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
@@ -28,7 +29,7 @@ Two kernels `κ : Kernel α β` and `η : Kernel γ δ` can be applied in parall
 
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory
 
@@ -43,7 +44,7 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 open scoped Classical in
 /-- Parallel product of two kernels. -/
 noncomputable
-irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
+def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
   if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
   { toFun := fun x ↦ (κ x.1).prod (η x.2)
     measurable' := by

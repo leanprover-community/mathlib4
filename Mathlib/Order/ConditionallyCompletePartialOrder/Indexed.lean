@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
+
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!

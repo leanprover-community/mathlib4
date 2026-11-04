@@ -6,8 +6,8 @@ Authors: Joseph Myers, Manuel Candales
 module
 
 public import Mathlib.Analysis.Convex.Between
-public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 public import Mathlib.Analysis.Normed.Affine.Isometry
+public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
 /-!
 # Angles between points
@@ -299,7 +299,7 @@ theorem angle_eq_pi_iff_sbtw {p₁ p₂ p₃ : P} : ∠ p₁ p₂ p₃ = π ↔ 
   · rw [← eq_vadd_iff_vsub_eq] at hp₃p₂
     rw [AffineMap.lineMap_apply, hp₃p₂, vadd_vsub_assoc, ← neg_vsub_eq_vsub_rev p₂ p₁, smul_neg, ←
       neg_smul, smul_add, smul_smul, ← add_smul, eq_comm, eq_vadd_iff_vsub_eq]
-    convert! (one_smul ℝ (p₂ -ᵥ p₁)).symm
+    convert (one_smul ℝ (p₂ -ᵥ p₁)).symm
     field [(sub_pos.2 (hr.trans zero_lt_one)).ne.symm]
   · rw [ne_comm, ← @vsub_ne_zero V, hp₃p₂, smul_ne_zero_iff]
     exact ⟨hr.ne, hp₁p₂⟩
@@ -523,5 +523,20 @@ theorem collinear_of_sin_eq_zero {p₁ p₂ p₃ : P} (h : Real.sin (∠ p₁ p�
   revert h
   contrapose
   exact sin_ne_zero_of_not_collinear
+
+/-- When `q`, `r` and `s` are collinear, `∠ p r q` and `∠ p r s` are either equal or complementary,
+so their `Real.sin` are equal. -/
+theorem _root_.Collinear.sin_angle_eq_right (p : P) {q r s : P} (h : Collinear ℝ {q, r, s})
+    (hqr : q ≠ r) (hrs : r ≠ s) : Real.sin (∠ p r q) = Real.sin (∠ p r s) := by
+  rcases h.wbtw_or_wbtw_or_wbtw with h | h | h
+  · suffices ∠ p r q = π - ∠ p r s by rw [this, Real.sin_pi_sub]
+    rw [eq_sub_iff_add_eq, angle_add_angle_eq_pi_of_angle_eq_pi]
+    exact Sbtw.angle₁₂₃_eq_pi ⟨h, hqr.symm, hrs⟩
+  · rw [h.angle_eq_right p hrs.symm]
+  · rw [h.symm.angle_eq_right p hqr]
+
+theorem _root_.Collinear.sin_angle_eq_left (p : P) {q r s : P} (h : Collinear ℝ {q, r, s})
+    (hqr : q ≠ r) (hrs : r ≠ s) : Real.sin (∠ q r p) = Real.sin (∠ s r p) := by
+  rw [angle_comm q r p, angle_comm s r p, h.sin_angle_eq_right p hqr hrs]
 
 end EuclideanGeometry
