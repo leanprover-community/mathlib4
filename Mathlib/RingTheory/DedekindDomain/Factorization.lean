@@ -977,3 +977,55 @@ lemma multiplicity_iSup [Nonempty ι] {I : ι → Ideal R} (hI : ∀ i, I i ≠ 
 end IsDedekindDomain.HeightOneSpectrum
 
 end multiplicity
+
+/-!
+### Valuation of a fractional ideal via `multiplicity`
+
+We give an alternative definition `FractionalIdeal.count'` of `FractionalIdeal.count` using
+`multiplicity` instead of `Associates.count`, and prove that the two definitions agree.
+-/
+
+section count'
+
+variable {R : Type*} [CommRing R] (K : Type*) [Field K] [Algebra R K] (v : HeightOneSpectrum R)
+
+namespace FractionalIdeal
+
+open Classical in
+/-- The `v`-adic valuation of a fractional ideal `I`, that is the multiplicity of `v` in `I.num`
+minus the multiplicity of `v` in the ideal spanned by `I.den`. If `I = 0`, it is `0`.
+
+This will eventually replace the existing definition of `FractionalIdeal.count`. -/
+noncomputable def count' (I : FractionalIdeal R⁰ K) : ℤ :=
+  if I = 0 then 0 else
+    multiplicity v.asIdeal I.num - multiplicity v.asIdeal (Ideal.span {(I.den : R)})
+
+@[simp]
+theorem count'_zero : count' K v (0 : FractionalIdeal R⁰ K) = 0 := by
+  simp [count']
+
+theorem count'_of_ne_zero {I : FractionalIdeal R⁰ K} (hI : I ≠ 0) :
+    count' K v I =
+      multiplicity v.asIdeal I.num - multiplicity v.asIdeal (Ideal.span {(I.den : R)}) := by
+  simp [count', hI]
+
+variable [IsDedekindDomain R] [IsFractionRing R K]
+
+theorem count_coe_eq_multiplicity (J : Ideal R) :
+    count K v J = multiplicity v.asIdeal J := by
+  obtain rfl | hJ := eq_or_ne J 0
+  · simp [count_zero]
+  rw [count_coe K v hJ, Ideal.count_associates_factors_eq hJ v.isPrime v.ne_bot,
+    count_normalizedFactors_eq_multiplicity hJ]
+
+theorem count_eq_count' (I : FractionalIdeal R⁰ K) : count K v I = count' K v I := by
+  obtain rfl | hI := eq_or_ne I 0
+  · simp [count_zero]
+  rw [count'_of_ne_zero K v hI, ← count_coe_eq_multiplicity K, ← count_coe_eq_multiplicity K,
+    sub_eq_add_neg, ← count_inv, ← count_mul K v (coeIdeal_ne_zero.mpr (num_eq_zero_iff.not.mpr hI))
+      (inv_ne_zero (by simp)), coeIdeal_span_singleton, ← den_mul_self_eq_num', mul_comm,
+    inv_mul_cancel_left₀ (by simp)]
+
+end FractionalIdeal
+
+end count'
