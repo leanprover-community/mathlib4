@@ -310,7 +310,7 @@ protected theorem sigma {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSyst
     IsCompactSystem {S : Set (Σ i, α i) | ∃ s : Finset ι, S ∈ (s : Set ι).sigma '' univ.pi C} := by
   classical
   intro S hS h_empty
-  simp only [mem_ofPred_eq, mem_image, mem_pi, mem_univ, forall_const] at hS
+  simp only [mem_ofPred, mem_image, mem_pi, mem_univ, forall_const] at hS
   choose s x hx hxS using hS
   obtain rfl : S = fun n ↦ (s n : Set ι).sigma (x n) := funext fun n ↦ (hxS n).symm
   -- for each `i`, the fibers over `i` of the first sets have empty intersection
