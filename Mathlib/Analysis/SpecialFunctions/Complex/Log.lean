@@ -105,6 +105,28 @@ theorem log_zero : log 0 = 0 := by simp [log]
 @[simp]
 theorem log_one : log 1 = 0 := by simp [log]
 
+lemma log_mul_eq_add_log_sub_iff {x y : ℂ} :
+    log (x * y) = log x + log y - 2 * π * I ↔ π < arg x + arg y := by
+  by_cases! hxy : x = 0 ∨ y = 0
+  · refine iff_of_false (fun h ↦ ?_) (by rcases hxy with rfl | rfl <;> simp [arg_le_pi])
+    have h := congr(im $h)
+    rcases hxy with rfl | rfl <;> simp [log_im] at h <;> grind [arg_le_pi, Real.pi_pos]
+  rw [Complex.ext_iff, ← arg_mul_eq_add_arg_sub_iff]
+  simp [log_re, log_im, Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
+
+alias ⟨_, log_mul_of_pi_lt⟩ := log_mul_eq_add_log_sub_iff
+
+lemma log_mul_eq_add_log_add_iff {x y : ℂ} :
+    log (x * y) = log x + log y + 2 * π * I ↔ arg x + arg y ≤ -π := by
+  by_cases! hxy : x = 0 ∨ y = 0
+  · refine iff_of_false (fun h ↦ ?_) (by rcases hxy with rfl | rfl <;> simp [neg_pi_lt_arg])
+    have h := congr(im $h)
+    rcases hxy with rfl | rfl <;> simp [log_im] at h <;> grind [neg_pi_lt_arg, Real.pi_pos]
+  rw [Complex.ext_iff, ← arg_mul_eq_add_arg_add_iff]
+  simp [log_re, log_im, Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
+
+alias ⟨_, log_mul_of_le_neg_pi⟩ := log_mul_eq_add_log_add_iff
+
 /-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `log 0 = 0`. -/
 @[simp] lemma log_div_self (x : ℂ) : log (x / x) = 0 := by simp [log]
 
