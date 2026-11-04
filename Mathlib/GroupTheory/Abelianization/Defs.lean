@@ -18,8 +18,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 * `Group.Abelianization`/`AddGroup.Abelianization`: defines the abelianization of a group
   (resp. additive group) `G` as the quotient of a group by it commutator subgroup.
-* `Abelianization.map`/`AddAbelianization.map`: lifts a group (resp. additive group) homomorphism to
-  a homomorphism between the abelianizations
+* `Group.Abelianization.map`/`AddGroup.Abelianization.map`: lifts a group (resp. additive group)
+  homomorphism to a homomorphism between the abelianizations
 * `MulEquiv.abelianizationCongr`/`AddEquiv.abelianizationCongr`: Equivalent groups (resp. additive
   groups) have equivalent abelianizations
 
