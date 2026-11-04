@@ -941,6 +941,9 @@ def centerCongr (e : A ≃ₐ[R] B) :
   toRingEquiv := Subsemiring.centerCongr e.toRingEquiv
   commutes' r := Subtype.ext <| e.commutes r
 
+@[simp] lemma toRingEquiv_centerCongr (e : A ≃ₐ[R] B) :
+    (centerCongr e).toRingEquiv = Subsemiring.centerCongr e.toRingEquiv := rfl
+
 @[simp] lemma symm_centerCongr (e : A ≃ₐ[R] B) : (centerCongr e).symm = centerCongr e.symm := rfl
 
 @[simp] lemma centerCongr_refl : centerCongr (.refl (R := R) (A₁ := A)) = .refl := rfl
