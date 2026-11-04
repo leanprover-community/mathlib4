@@ -147,7 +147,7 @@ lemma isSheaf (M : X.Modules) : M.presheaf.IsSheaf := SheafOfModules.isSheaf M
 lemma Hom.isIso_iff_isIso_app {M N : X.Modules} {φ : M ⟶ N} :
     IsIso φ ↔ ∀ U, IsIso (φ.app U) := by
   rw [← isIso_iff_of_reflects_iso _ (toPresheaf X), NatTrans.isIso_iff_isIso_app]
-  simp [Opposite.op_surjective.forall]
+  simp
 
 instance [IsIso φ] : IsIso (φ.app U) := Hom.isIso_iff_isIso_app.mp ‹_› _
 

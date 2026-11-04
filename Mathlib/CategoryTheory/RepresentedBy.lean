@@ -55,7 +55,7 @@ variable {F : Cᵒᵖ ⥤ Type w} {X : C} {x : F.obj (op X)}
 lemma IsRepresentedBy.iff_isIso_uliftYonedaEquiv :
     F.IsRepresentedBy x ↔
       IsIso ((uliftYonedaEquiv (F := F ⋙ uliftFunctor.{v})).symm ⟨x⟩) := by
-  rw [isRepresentedBy_iff, NatTrans.isIso_iff_isIso_app, Opposite.op_surjective.forall]
+  rw [isRepresentedBy_iff, NatTrans.isIso_iff_isIso_app, Opposite.forall]
   refine forall_congr' fun Y ↦ ?_
   rw [isIso_iff_bijective, ← Function.Bijective.of_comp_iff _ Equiv.ulift.{w}.symm.bijective,
     ← Function.Bijective.of_comp_iff' Equiv.ulift.{v}.bijective]

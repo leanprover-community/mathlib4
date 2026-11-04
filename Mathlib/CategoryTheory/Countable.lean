@@ -91,7 +91,6 @@ open Opposite
 /-- The opposite of a countable category is countable. -/
 instance countableCategoryOpposite {J : Type*} [Category* J] [CountableCategory J] :
     CountableCategory Jᵒᵖ where
-  countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
 attribute [local instance] uliftCategory in
