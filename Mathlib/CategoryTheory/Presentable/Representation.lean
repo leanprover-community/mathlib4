@@ -19,12 +19,12 @@ and locally `κ`-presentable categories `C` as suitable full subcategories
 of the category of presheaves on the category of `κ`-presentable objects in `C`.
 
 More precisely, if `C` is a `κ`-accessible category, we show that the
-functor `IsCardinalAccessible.toCardinalIndObject C κ` is an equivalence
+functor `IsCardinalAccessibleCategory.toCardinalIndObject C κ` is an equivalence
 of categories between `C` and the category of `κ`-ind objects of the
 category of `κ`-presentable objects in `C`. It follows that a category
 is `κ`-accessible iff it is equivalent to a category of `κ`-ind
 objects of a `w`-small category (see the lemma
-`IsCardinalAccessible.iff_nonempty_equivalence_cardinalInd`):
+`IsCardinalAccessibleCategory.iff_nonempty_equivalence_cardinalInd`):
 this is the equivalence (i) ↔ (iii) from the theorem 2.26 in the book
 by Adámek and and Rosický
 
@@ -97,7 +97,7 @@ instance [LocallySmall.{w} C] [HasColimitsOfSize.{w, w} C] (X : C) :
     dsimp [Presheaf.restrictedShrinkYoneda]
     infer_instance
 
-namespace IsCardinalAccessible
+namespace IsCardinalAccessibleCategory
 
 variable [IsCardinalAccessibleCategory C κ]
 
@@ -156,7 +156,7 @@ instance isEquivalence_toCardinalIndObject :
     (toCardinalIndObject C κ).IsEquivalence := by
   dsimp [toCardinalIndObject]
   rw [ObjectProperty.isEquivalence_lift_iff,
-    IsCardinalAccessible.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι]
+    IsCardinalAccessibleCategory.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι]
 
 lemma iff_nonempty_equivalence_cardinalInd
     (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
@@ -167,7 +167,17 @@ lemma iff_nonempty_equivalence_cardinalInd
       ((equivSmallModel _).congrCardinalInd  κ)⟩⟩,
     fun ⟨_, _, ⟨e⟩⟩ ↦ e.symm.isCardinalAccessibleCategory κ⟩
 
-end IsCardinalAccessible
+lemma exists_equivalence_fullSubcategory
+    (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessibleCategory C κ] :
+    ∃ (A : Type w) (_ : SmallCategory A) (P : ObjectProperty (A ⥤ Type w)),
+      IsCardinalAccessibleCategory P.FullSubcategory κ ∧
+      P.IsClosedUnderCardinalFilteredColimits κ ∧
+      Nonempty (C ≌ P.FullSubcategory) := by
+  obtain ⟨A, _, ⟨e⟩⟩ := (iff_nonempty_equivalence_cardinalInd C κ).1 inferInstance
+  exact ⟨Aᵒᵖ, _, _, inferInstance, inferInstance, ⟨e⟩⟩
+
+end IsCardinalAccessibleCategory
 
 namespace IsCardinalLocallyPresentable
 
@@ -203,7 +213,7 @@ instance isEquivalence_toCardinalContinuousFunctor :
     (toCardinalContinuousFunctor C κ).IsEquivalence := by
   dsimp [toCardinalContinuousFunctor]
   rw [ObjectProperty.isEquivalence_lift_iff,
-    IsCardinalAccessible.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι,
+    IsCardinalAccessibleCategory.essImage_restrictedShrinkYoneda_isCardinalPresentable_ι,
     isCardinalIndObject_eq_isCardinalContinuous]
 
 include κ in
@@ -221,7 +231,7 @@ instance (J : Type*) [Category* J] [EssentiallySmall.{w} J] :
   have := IsCardinalLocallyPresentable.hasFiniteLimits C κ
   infer_instance
 
-lemma iff_nonempty_equivalence_cardinalInd
+lemma iff_nonempty_equivalence_cardinalContinuousFunctor
     (C : Type*) [Category* C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalLocallyPresentable C κ ↔
       ∃ (A : Type w) (_ : SmallCategory A),
