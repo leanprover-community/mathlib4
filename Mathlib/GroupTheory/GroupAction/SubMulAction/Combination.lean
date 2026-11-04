@@ -281,6 +281,9 @@ theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ} (hn₀ : n ≠ 0)
     isPretransitive_alternatingGroup (by lia)
   have : Nontrivial (powersetCard α n) := nontrivial' hn₀.pos hn
   obtain ⟨s⟩ := this.to_nonempty
+  -- TODO: this should just be `rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]`,
+  -- but the two actions of `alternatingGroup α` on `powersetCard α n` (as a subgroup of
+  -- `Perm α`, and as a group acting on `α`) only agree at default transparency.
   rw [← isCoatom_stabilizer_iff_preprimitive _ s, ← stabilizer_subgroupOf, stabilizer_coe,
     stabilizer_subgroupOf]
   exact alternatingGroup.isCoatom_stabilizer (coe_nonempty_iff.mpr hn₀.pos)
