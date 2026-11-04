@@ -137,7 +137,7 @@ def adj : free ⊣ forget GrpCat.{u} :=
 instance : (forget GrpCat.{u}).IsRightAdjoint :=
   ⟨_, ⟨adj⟩⟩
 
-section Group.Abelianization
+section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
@@ -171,7 +171,7 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
         intros
         apply Group.Abelianization.lift_apply_of }
 
-end Group.Abelianization
+end Abelianization
 
 end GrpCat
 

@@ -16,8 +16,8 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
-* `Abelianization`/`AddAbelianization`: defines the abelianization of a group (resp. additive group)
-  `G` as the quotient of a group by it commutator subgroup.
+* `Group.Abelianization`/`AddGroup.Abelianization`: defines the abelianization of a group
+  (resp. additive group) `G` as the quotient of a group by it commutator subgroup.
 * `Abelianization.map`/`AddAbelianization.map`: lifts a group (resp. additive group) homomorphism to
   a homomorphism between the abelianizations
 * `MulEquiv.abelianizationCongr`/`AddEquiv.abelianizationCongr`: Equivalent groups (resp. additive
@@ -36,16 +36,12 @@ variable (G : Type u) [Group G]
 
 open Subgroup (centralizer)
 
-namespace AddGroup
-
 open scoped IsMulCommutative in
 /-- The abelianization of the additive group `A` is the quotient of `A` by its commutator
 subgroup. -/
-def Abelianization (A : Type*) [AddGroup A] :=
+def AddGroup.Abelianization (A : Type*) [AddGroup A] :=
   A ⧸ addCommutator A
 deriving AddCommGroup
-
-end AddGroup
 
 namespace Group
 
