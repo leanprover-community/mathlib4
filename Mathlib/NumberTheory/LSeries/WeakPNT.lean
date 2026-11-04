@@ -17,9 +17,8 @@ import Mathlib.NumberTheory.LSeries.Linearity
 /-!
 # The weak prime number theorem
 
-We deduce the prime number theorem, together with the von Mangoldt form of its version for primes
-in arithmetic progressions, from the Wiener–Ikehara Tauberian theorem
-`WienerIkehara.tendsto_sum_div`.
+We deduce the prime number theorem, and its version for primes in arithmetic progressions, from
+the Wiener–Ikehara Tauberian theorem `WienerIkehara.tendsto_sum_div`.
 
 Here `ψ x = ∑ n ≤ x, Λ n` and `θ x = ∑ p ≤ x, log p` (the sum running over primes) are the
 Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
@@ -29,6 +28,11 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 * `ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop`: the von Mangoldt form of the
   prime number theorem in arithmetic progressions: for `a` coprime to `q`,
   `∑ n ≤ x, n ≡ a [MOD q], Λ n = x / q.totient + o(x)`.
+* `Nat.isEquivalent_card_prime_modEq`: **the prime number theorem in arithmetic progressions**:
+  for `a` coprime to `q`, the number of primes `p ≤ x` with `p ≡ a [MOD q]` is asymptotic to
+  `x / (q.totient * log x)`.  It is deduced from the previous result and the prime number
+  theorem `Nat.isEquivalent_primeCounting`, which control the error
+  `|ψ(x; q, a) - π(x; q, a) log x| ≤ (ψ x - θ x) + (π x log x - θ x)`.
 * `Chebyshev.isEquivalent_psi_id`: the `ψ`-form of the prime number theorem, `ψ x ~ x`
   (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`); this is the `q = 1` case of
   the previous result.
@@ -147,6 +151,80 @@ theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun
   · refine integral_theta_div_log_sq_isLittleO.congr' ?_ (Eventually.of_forall fun _ ↦ rfl)
     filter_upwards [eventually_ge_atTop 2]
     grind [primeCounting_eq_theta_div_log_add_integral]
+
+/-- **The prime number theorem in arithmetic progressions**: for `a` coprime to `q`, the number
+`π(x; q, a)` of primes `p ≤ x` with `p ≡ a [MOD q]` satisfies
+`π(x; q, a) * log x / x → 1 / φ(q)`. -/
+theorem tendsto_card_prime_modEq_mul_log_div_atTop {q a : ℕ} [NeZero q] (ha : a.Coprime q) :
+    Tendsto (fun x : ℝ ↦ #{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} * Real.log x / x) atTop
+      (𝓝 q.totient⁻¹) := by
+  set f := fun (x : ℝ) (n : ℕ) ↦ Λ n - if n.Prime then Real.log x else 0
+  have hψ : Tendsto (fun x : ℝ ↦ (∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) / x) atTop
+      (𝓝 q.totient⁻¹) :=
+    (tendsto_sum_modEq_div_atTop ha).congr fun x ↦ by
+      rw [sum_filter, sum_filter, ← add_sum_Ioc_eq_sum_Icc] <;> simp
+  have hπ : Tendsto (fun x ↦ (⌊x⌋₊.primeCounting : ℝ) * Real.log x / x) atTop (𝓝 1) := by
+    refine ((isEquivalent_iff_tendsto_one ?_).mp isEquivalent_primeCounting).congr' ?_
+    · filter_upwards [eventually_gt_atTop 1] with x hx
+      exact div_ne_zero (by linarith) (Real.log_pos hx).ne'
+    · filter_upwards [eventually_gt_atTop 1] with x hx
+      have := (Real.log_pos hx).ne'
+      simp only [Pi.div_apply]
+      field_simp
+  have hsum {x : ℝ} (hx : 0 < x) : ∑ n ∈ Ioc 0 ⌊x⌋₊, |f x n| =
+      ψ x + ⌊x⌋₊.primeCounting * Real.log x - 2 * θ x := by
+    rw [← primesLE_card_eq_primeCounting, primesLE_eq_filter_Ioc_zero, ← nsmul_eq_mul,
+      ← sum_const, Chebyshev.psi, Chebyshev.theta, sum_filter, sum_filter, mul_sum,
+      ← sum_add_distrib, ← sum_sub_distrib]
+    refine sum_congr rfl fun n hn ↦ ?_
+    simp only [f]
+    split_ifs with hp
+    · rw [mem_Ioc] at hn
+      have : Real.log n ≤ Real.log x :=
+        Real.log_le_log (mod_cast hn.1) ((Nat.le_floor_iff hx.le).mp hn.2)
+      rw [ArithmeticFunction.vonMangoldt_apply_prime hp, abs_sub_comm,
+        abs_of_nonneg (by linarith)]
+      ring
+    · simp [abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+  have herr : Tendsto (fun x ↦ (∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], f x n) / x) atTop
+      (𝓝 0) := by
+    have := (tendsto_psi_div_atTop.add hπ).sub (tendsto_theta_div_atTop.const_mul 2)
+    norm_num at this
+    refine squeeze_zero_norm' ?_ this
+    filter_upwards [eventually_gt_atTop 0] with x hx
+    rw [norm_div, Real.norm_of_nonneg hx.le, Real.norm_eq_abs]
+    calc |∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], f x n| / x
+      _ ≤ (∑ n ∈ Ioc 0 ⌊x⌋₊, |f x n|) / x := by
+        gcongr
+        exact (abs_sum_le_sum_abs _ _).trans
+          (sum_le_sum_of_subset_of_nonneg (filter_subset _ _) fun _ _ _ ↦ abs_nonneg _)
+      _ = _ := by rw [hsum hx]; ring
+  have := hψ.sub herr
+  rw [sub_zero] at this
+  refine this.congr fun x ↦ ?_
+  have : ∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], f x n =
+      (∑ n ∈ Ioc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) -
+        #{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} * Real.log x := by
+    rw [sum_sub_distrib, ← sum_filter, filter_filter, sum_const, nsmul_eq_mul]
+    simp only [and_comm]
+  rw [this]
+  ring
+
+/-- **The prime number theorem in arithmetic progressions**: for `a` coprime to `q`, the number
+`π(x; q, a)` of primes `p ≤ x` with `p ≡ a [MOD q]` satisfies `π(x; q, a) ~ x / (φ(q) log x)`. -/
+theorem isEquivalent_card_prime_modEq {q a : ℕ} [NeZero q] (ha : a.Coprime q) :
+    (fun x : ℝ ↦ (#{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} : ℝ)) ~[atTop]
+      fun x ↦ x / (q.totient * Real.log x) := by
+  have hφ : (q.totient : ℝ) ≠ 0 := mod_cast (totient_pos.mpr (NeZero.pos q)).ne'
+  rw [isEquivalent_iff_tendsto_one (by
+    filter_upwards [eventually_gt_atTop 1] with x hx
+    exact div_ne_zero (by linarith) (mul_ne_zero hφ (Real.log_pos hx).ne'))]
+  convert ((tendsto_card_prime_modEq_mul_log_div_atTop ha).const_mul (q.totient : ℝ)).congr' ?_
+  · field_simp
+  · filter_upwards [eventually_gt_atTop 1] with x hx
+    have := (Real.log_pos hx).ne'
+    simp only [Pi.div_apply]
+    field_simp
 
 /-- **Small prime gaps.**  Let `ε > 0`.  Then for every sufficiently large `x`, there exists a
 prime in the interval `(x, (1 + ε) * x]`. -/
