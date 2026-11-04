@@ -41,7 +41,6 @@ open scoped IsMulCommutative in
 subgroup. -/
 def AddGroup.Abelianization (A : Type*) [AddGroup A] :=
   A ⧸ addCommutator A
-deriving AddCommGroup
 
 namespace Group
 
@@ -50,10 +49,11 @@ open scoped IsMulCommutative in
 @[to_additive existing]
 def Abelianization : Type u :=
   G ⧸ commutator G
-deriving CommGroup
 
--- Register the derived instances as additive/multiplicative counterparts.
-attribute [to_additive existing] instCommGroupAbelianization
+open scoped IsMulCommutative in
+@[to_additive]
+instance : CommGroup (Abelianization G) :=
+  inferInstanceAs (CommGroup (G ⧸ commutator G))
 
 namespace Abelianization
 
@@ -66,7 +66,8 @@ variable {G}
 
 /-- `of` is the canonical projection from the group `G` to its abelianization. -/
 @[to_additive
-/-- `of` is the canonical projection from the additive group `G` to its abelianization.-/]
+/-- `of` is the canonical projection from the additive group `G` to its abelianization.
+-/]
 def of : G →* Abelianization G where
   toFun := QuotientGroup.mk
   map_one' := rfl
@@ -95,7 +96,7 @@ theorem commutator_le_ker : commutator G ≤ f.ker := by
   simp [MonoidHom.mem_ker, mul_comm' (f p) (f q), commutatorElement_def]
 
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
-  from the abelianization of `G` to `A` that factors through `f`. -/
+from the abelianization of `G` to `A` that factors through `f`. -/
 @[to_additive
 /-- If `f : G → A` is an additive group homomorphism to an abelian group, then `lift f` is the
 unique map from the abelianization of `G` to `A` that factors through `f`. -/]
@@ -172,8 +173,8 @@ section AbelianizationCongr
 
 variable {G} {H : Type v} [Group H]
 
-/-- Equivalent groups have equivalent abelianizations -/
-@[to_additive /-- Equivalent additive groups have equivalent abelianizations -/]
+/-- Isomorphic groups have equivalent abelianizations. -/
+@[to_additive /-- Isomorphic additive groups have equivalent abelianizations. -/]
 def _root_.MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abelianization H where
   toFun := Abelianization.map e.toMonoidHom
   invFun := Abelianization.map e.symm.toMonoidHom
