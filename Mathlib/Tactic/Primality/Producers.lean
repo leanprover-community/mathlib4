@@ -15,7 +15,7 @@ public import Mathlib.Tactic.Primality.Cert
 This file defines the producers of the witnesses of primality certificates.
 
 - Factorizers: find prime factors of `p - 1`.
-- Primitive root finders: find primitive roots mod `p`.
+- Primitive root search: finds a primitive root mod `p`.
 -/
 
 public meta section
@@ -128,14 +128,10 @@ def FactorizerConfig.toFactorizer (cfg : FactorizerConfig) : Factorizer :=
 
 end Factorizer
 
-section PrimitiveRootFinder
-
-/-- Returns a primitive root of `p` given the prime factors of `p - 1`. -/
-abbrev PrimitiveRootFinder := Nat → Array Nat → CoreM (Option Nat)
-
-/-- Tries the candidates `roots` in order, each reduced modulo `p`, and stops at a candidate showing
-that `p` is composite. -/
-def PrimitiveRootFinder.ofArray (roots : Array Nat) : PrimitiveRootFinder := fun p factors ↦ do
+/-- The first of the candidates `roots`, each reduced modulo `p`, that is a primitive root of `p`
+given the prime factors of `p - 1`. Stops at a candidate showing that `p` is composite. -/
+def findPrimitiveRoot? (roots : Array Nat) (p : Nat) (factors : Array Nat) :
+    Option Nat := Id.run do
   for a in roots do
     let a := a % p
     if a == 0 then continue
@@ -143,45 +139,17 @@ def PrimitiveRootFinder.ofArray (roots : Array Nat) : PrimitiveRootFinder := fun
     if factors.all fun q ↦ Nat.powMod a ((p - 1) / q) p != 1 then return some a
   return none
 
-/-- Runs `f₁`, followed by `f₂` if `f₁` finds nothing. -/
-def PrimitiveRootFinder.then (f₁ f₂ : PrimitiveRootFinder) : PrimitiveRootFinder :=
-  fun p factors ↦ do
-    if let some a ← f₁ p factors then
-      return some a
-    f₂ p factors
-
-/-- Tries `2, …, 1023` as primitive roots. -/
-def trialRoots : PrimitiveRootFinder := .ofArray (2...1024).toArray
-
-/-- Options for finding primitive roots. -/
-structure PrimitiveRootFinderConfig where
-  /-- Candidate primitive roots, tried before the search for the input and the required
-  intermediate primes. -/
-  roots : List Nat := []
-
-/-- Tries `roots`, then the numbers below `1024`. -/
-def PrimitiveRootFinderConfig.toPrimitiveRootFinder (cfg : PrimitiveRootFinderConfig) :
-    PrimitiveRootFinder :=
-  .then (.ofArray cfg.roots.toArray) trialRoots
-
-end PrimitiveRootFinder
-
 /-- Options for Lucas certificates. -/
-structure LucasConfig extends FactorizerConfig, PrimitiveRootFinderConfig
+structure LucasConfig extends FactorizerConfig
 
-/-- Searches for a Lucas witness for `q`, a value met while proving `p` prime. The part of `q - 1`
-that the factorizer leaves is taken to be prime. -/
-def findLucasWitness (factorizer : Factorizer) (rootFinder : PrimitiveRootFinder) (p q : Nat) :
-    CoreM LucasWitness := do
+/-- Searches for a Lucas witness for `q`, trying `2, …, 1023` as primitive roots. The part of
+`q - 1` that the factorizer leaves is taken to be prime. -/
+def findLucasWitness (factorizer : Factorizer) (q : Nat) : CoreM LucasWitness := do
   let (factors, rest) ← factorizer.decompose (q - 1)
   let factors := if rest == 1 then factors else factors.push rest
-  let some root ← rootFinder q factors | do
-    if q == p then
-      throwError "primality could not find a primitive root for {p}; \
-        primitive roots can be provided at `.lucas \{ roots := … }` if {p} is prime."
-    throwError "primality could not find factors for the intermediate value {q}; factors can \
-      be provided at `.lucas \{ factors := … }`. In the rare case that it is prime, add a \
-      primitive root of it to `.lucas \{ roots := … }`."
+  let some root := findPrimitiveRoot? (2...1024).toArray q factors |
+    throwError "primality failed to find a witness for {q}; provide the certificate at \
+      `.witnesses […]`"
   return { root, primeFactors := factors.toList }
 
 /-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
@@ -207,8 +175,7 @@ def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
   for .lucas w in witnesses do
     let rest? := w.primeFactors.foldlM (init := q - 1) fun rest r ↦
       if rest % r == 0 then some (rest.divMaxPow r) else none
-    if rest? == some 1 &&
-        (← PrimitiveRootFinder.ofArray #[w.root] q w.primeFactors.toArray).isSome then
+    if rest? == some 1 && (findPrimitiveRoot? #[w.root] q w.primeFactors.toArray).isSome then
       return w
   throwError "no provided witness certifies the primality of {q}"
 
@@ -230,8 +197,7 @@ where
       return .normNum
     let w ← match cfg with
       | .lucas lucasCfg =>
-        findLucasWitness ((Factorizer.ofArray known.toArray).then lucasCfg.toFactorizer)
-          lucasCfg.toPrimitiveRootFinder p q
+        findLucasWitness ((Factorizer.ofArray known.toArray).then lucasCfg.toFactorizer) q
       | .witnesses witnesses => witnessFor witnesses q
     let cert : Cert q := .lucas w.root (← w.primeFactors.toArray.mapM fun r ↦ return ⟨r, ← go r⟩)
     modify (·.insert q cert)

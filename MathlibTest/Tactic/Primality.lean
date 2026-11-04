@@ -21,9 +21,8 @@ example : Nat.Prime (10 ^ 9 + 7) := by primality
 -- `p - 1 = 2 ^ 4 * 1031 ^ 2`, so Pollard's rho method finds the factor `1031` twice.
 example : Nat.Prime 17007377 := by primality
 
-/-- error: primality could not find factors for the intermediate value 100000000004900000000016761;
-factors can be provided at `.lucas { factors := … }`. In the rare case that it is prime, add a
-primitive root of it to `.lucas { roots := … }`. -/
+/-- error: primality failed to find a witness for 100000000004900000000016761; provide the
+certificate at `.witnesses […]` -/
 #guard_msgs in
 example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by primality
 
@@ -101,8 +100,8 @@ example : Nat.Prime (2 ^ 255 - 19) := by
 #guard_msgs in
 example (n : ℕ) : Nat.Prime n := by primality
 
-/-- error: primality could not find a primitive root for 1000001; primitive roots can be
-provided at `.lucas { roots := … }` if 1000001 is prime. -/
+/-- error: primality failed to find a witness for 1000001; provide the certificate at
+`.witnesses […]` -/
 #guard_msgs in
 example : Nat.Prime 1000001 := by primality
 
