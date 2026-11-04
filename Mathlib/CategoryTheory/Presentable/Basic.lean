@@ -496,25 +496,26 @@ section
 for any `κ`-filtered category `J`. -/
 class HasCardinalFilteredColimits (C : Type u₁) [Category.{v₁} C]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
-  hasColimitsOfShape (C) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+  hasColimitsOfShape' (C) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by intros; infer_instance
 
 instance (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasColimitsOfSize.{w, w} C] :
     HasCardinalFilteredColimits.{w} C κ where
 
-lemma hasColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
+variable (C) in
+lemma HasCardinalFilteredColimits.hasColimitsOfShape
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
     (J : Type u₃) [Category.{v₃} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     HasColimitsOfShape J C := by
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
-  have := HasCardinalFilteredColimits.hasColimitsOfShape C κ (SmallModel.{w} J)
+  have := HasCardinalFilteredColimits.hasColimitsOfShape' C κ (SmallModel.{w} J)
   exact hasColimitsOfShape_of_equivalence (equivSmallModel.{w} J).symm
 
 variable {κ} in
 lemma HasCardinalFilteredColimits.of_le {κ : Cardinal.{w}} [Fact κ.IsRegular]
     [HasCardinalFilteredColimits C κ] {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
     HasCardinalFilteredColimits C κ' where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := IsCardinalFiltered.of_le J h
     exact HasCardinalFilteredColimits.hasColimitsOfShape C κ J
 
