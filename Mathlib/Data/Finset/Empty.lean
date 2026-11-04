@@ -201,7 +201,9 @@ open Qq Lean Meta
 meta def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
     MetaM (Option Q(Finset.Nonempty $s)) := do
   let goal ← Lean.Meta.mkFreshExprMVar q(Finset.Nonempty $s)
-  let result ← Meta.Grind.main goal.mvarId! (← Meta.Grind.mkParams { splits := 0 } {})
+  let config := { splits := 0 }
+  let params ← Grind.mkDefaultParams config
+  let result ← Grind.withProtectedMCtx config goal.mvarId! (Grind.main · params)
   if result.hasFailed then
     return none
   return some <| ← instantiateMVars goal
