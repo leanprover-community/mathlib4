@@ -422,7 +422,7 @@ theorem _root_.Even.eq_of_totient_eq_totient {a b : ℕ} (h : a ∣ b) (ha : Eve
 theorem prime_pow_pow_totient_ediv_prod {p : ℕ} (k : ℕ) (hp : p.Prime) :
       (p ^ k : ℕ) ^ φ (p ^ k) / ∏ q ∈ (p ^ k).primeFactors, q ^ (φ (p ^ k) / (q - 1)) =
         p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
-  rcases eq_or_ne k 0 with rfl| hk
+  rcases eq_or_ne k 0 with rfl | hk
   · simp
   have h : p ^ (k - 1) ≤ k * (p ^ (k - 1) * (p - 1)) := by
     rw [mul_left_comm]
