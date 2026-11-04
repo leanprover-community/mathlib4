@@ -7719,6 +7719,7 @@ public import Mathlib.Tactic.Hessenberg.Similarity
 public import Mathlib.Tactic.HigherOrder
 public import Mathlib.Tactic.Hint
 public import Mathlib.Tactic.ITauto
+public import Mathlib.Tactic.Inclusion.Core.BinarySplit
 public import Mathlib.Tactic.Inclusion.Core.Core
 public import Mathlib.Tactic.Inclusion.Core.DiscrTreeExt
 public import Mathlib.Tactic.Inclusion.Core.Elab
@@ -7729,7 +7730,7 @@ public import Mathlib.Tactic.Inclusion.Core.ToSet
 public import Mathlib.Tactic.Inclusion.Core.Types
 public import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public import Mathlib.Tactic.Inclusion.Extension.Core.Init
-public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 public import Mathlib.Tactic.Inclusion.Extension.Interval.Params
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit

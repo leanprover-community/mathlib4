@@ -10,12 +10,12 @@ public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 /-!
 # Parameters for interval inclusion families
 
-This file defines parameters shared by the interval inclusion families.
+This file defines parameters shared by the interval based inclusion families.
 -/
 
 public meta section
 
-open Qq
+open Lean Qq
 
 namespace Inclusion.Interval
 
@@ -24,5 +24,9 @@ namespace Inclusion.Interval
 def binarySplitParam : InclusionParamDecl where
   name := `binSplit
   type := q(ℕ)
+
+/-- Construct the binary-splitting cover. -/
+def mkBinarySplitCover (cover : Expr) : InclusionM (Option Expr) := do
+  return (← InclusionM.getParam? `binSplit).map (mkApp cover)
 
 end Inclusion.Interval

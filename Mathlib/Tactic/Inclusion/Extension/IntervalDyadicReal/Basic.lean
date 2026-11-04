@@ -5,6 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
+public meta import Mathlib.Tactic.Inclusion.Extension.Interval.Params
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
 /-!
@@ -24,7 +25,8 @@ namespace IntervalDyadicReal
 @[inclusion_ext(_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
-    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
+    (Interval.mkBinarySplitCover (mkConst ``binarySplit [.zero]))
 
 @[grind =]
 theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=

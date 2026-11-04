@@ -5,7 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public meta import Mathlib.Tactic.Inclusion.Extension.Interval.Params
 public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
 
 /-!
@@ -24,7 +24,8 @@ namespace Inclusion.IntervalInt
 @[inclusion_ext(_ : ℤ)]
 meta def mkIntIVar : InclusionExt :=
   mkNDIVarExt `interval_int
-    ⟨q(ℤ), q(Interval ℤ), q(instToSetIntervalOfPreorder (α := ℤ))⟩ mkBinarySplitCover
+    ⟨q(ℤ), q(Interval ℤ), q(instToSetIntervalOfPreorder (α := ℤ))⟩
+    (Interval.mkBinarySplitCover (mkConst ``binarySplit [.zero]))
 
 @[inclusion_op interval_int]
 theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℤ) ∈ Interval.singleton (n : ℤ) :=

@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Algebra.Order.Ring.Int
-public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 
 /-!
 # Initialization for the integer interval extension family
