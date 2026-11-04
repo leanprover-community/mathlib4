@@ -17,27 +17,30 @@ import Mathlib.NumberTheory.LSeries.Linearity
 /-!
 # The weak prime number theorem
 
-We deduce the weak prime number theorem, and its version in arithmetic progressions, from the
-Wiener–Ikehara Tauberian theorem `WienerIkehara.tendsto_sum_div`.
+We deduce the prime number theorem, together with the von Mangoldt form of its version for primes
+in arithmetic progressions, from the Wiener–Ikehara Tauberian theorem
+`WienerIkehara.tendsto_sum_div`.
+
+Here `ψ x = ∑ n ≤ x, Λ n` and `θ x = ∑ p ≤ x, log p` (the sum running over primes) are the
+Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 
 ## Main results
 
-* `ArithmeticFunction.vonMangoldt.tendsto_residueClass_sum_div_atTop`: the weak prime number
-  theorem in arithmetic progressions: for `a` coprime to `q`,
+* `ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop`: the von Mangoldt form of the
+  prime number theorem in arithmetic progressions: for `a` coprime to `q`,
   `∑ n ≤ x, n ≡ a [MOD q], Λ n = x / q.totient + o(x)`.
-* `ArithmeticFunction.vonMangoldt.tendsto_sum_div_atTop`: the weak prime number theorem
-  `∑ n ≤ x, Λ n = x + o(x)`, the `q = 1` case.
 * `Chebyshev.isEquivalent_psi_id`: the `ψ`-form of the prime number theorem, `ψ x ~ x`
-  (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`).
+  (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`); this is the `q = 1` case of
+  the previous result.
 * `Chebyshev.isEquivalent_theta_id`: the `θ`-form, `θ x ~ x`.
-* `Chebyshev.isEquivalent_primeCounting`: **the prime number theorem** `π x ~ x / log x`, deduced
+* `Nat.isEquivalent_primeCounting`: **the prime number theorem** `π x ~ x / log x`, deduced
   from the `θ`-form by Abel summation.
-* `Chebyshev.eventually_exists_prime_mem_Ioc`: for every `ε > 0`, every sufficiently large `x` has
-  a prime in `(x, (1 + ε) * x]`; `Chebyshev.eventually_exists_prime_mem_Ioc_sub` gives one in
+* `Nat.eventually_exists_prime_mem_Ioc`: for every `ε > 0` and every sufficiently large `x`, there
+  is a prime in `(x, (1 + ε) * x]`; `Nat.eventually_exists_prime_mem_Ioc_sub` gives one in
   `((1 - ε) * x, x]`.
-* `Chebyshev.isEquivalent_nth_prime_succ`: consecutive primes are asymptotically equal, `pₙ₊₁ ~ pₙ`.
-* `Chebyshev.isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
-* `Chebyshev.isEquivalent_log_lcmUpto_id`: `log (Nat.lcmUpto n) ~ n`.
+* `Nat.isEquivalent_nth_prime_succ`: consecutive primes are asymptotically equal, `pₙ₊₁ ~ pₙ`.
+* `isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
+* `Nat.isEquivalent_log_lcmUpto_id`: `log (Nat.lcmUpto n) ~ n`.
 * `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id`: the **Möbius form of the prime number
   theorem** `∑ n ≤ x, μ n = o(x)`, obtained by applying Wiener–Ikehara to the nonnegative function
   `n ↦ 1 + μ n` (with `L`-series `ζ s + 1/ζ s`).
@@ -50,44 +53,43 @@ open Complex hiding log
 open ArithmeticFunction.vonMangoldt Filter LSeries Chebyshev Real Finset ZMod Asymptotics
 open scoped Topology
 
-/-- The Wiener–Ikehara theorem applied to the von Mangoldt function restricted to the residue
-class `a` mod `q`: the average of `residueClass a` over `[0, x]` tends to `(q.totient)⁻¹`. -/
-private theorem tendsto_residueClass_sum_div {q : ℕ} [NeZero q] {a : ZMod q} (ha : IsUnit a) :
+/-- **The prime number theorem in arithmetic progressions**, von Mangoldt form, stated for a unit
+`a` of `ZMod q`: the average of `residueClass a` over `[0, x]` tends to `(q.totient)⁻¹`. -/
+theorem ArithmeticFunction.vonMangoldt.tendsto_sum_residueClass_div_atTop {q : ℕ} [NeZero q]
+    {a : ZMod q} (ha : IsUnit a) :
     Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, residueClass a n) / x) atTop (𝓝 q.totient⁻¹) :=
   WienerIkehara.tendsto_sum_div (C := log 4 + 4) (G := LFunctionResidueClassAux a)
-    (fun N ↦ calc
-      _ ≤ ∑ i ∈ range N, Λ i := by grw [residueClass_le]
-      _ ≤ (log 4 + 4) * N := by
-        rcases eq_or_ne N 0 with rfl | h
-        · simp
-        grw [range_eq_Icc_zero_sub_one _ h, (by simp : N - 1 = ⌊(N : ℝ) - 1⌋₊),
-          ← psi_eq_sum_Icc, psi_le_const_mul_self <| sub_nonneg_of_le <|
-          one_le_cast_iff_ne_zero.mpr h, (by linarith : (N : ℝ) - 1 ≤ N)])
+    (fun N ↦ (sum_le_sum fun i _ ↦ residueClass_le a i).trans (sum_range_vonMangoldt_le N))
     (continuousOn_LFunctionResidueClassAux a)
     (fun s hs ↦ by rw [eqOn_LFunctionResidueClassAux ha hs]; push_cast; ring)
     (residueClass_nonneg a)
 
-/-- **The weak prime number theorem in arithmetic progressions.**  For `a` coprime to `q`, the
-von Mangoldt function summed over `n ≤ x` with `n ≡ a mod q` grows like `x / q.totient`. -/
-theorem ArithmeticFunction.vonMangoldt.tendsto_residueClass_sum_div_atTop {q a} [NeZero q]
-    (ha : a.Coprime q) (ha' : a < q) : Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊,
-      if n % q = a then Λ n else 0) / x) atTop (𝓝 q.totient⁻¹) := by
-  apply (tendsto_residueClass_sum_div ((isUnit_iff_coprime a q).mpr ha)).congr
-  simp [residueClass, Set.indicator_apply, natCast_eq_natCast_iff', mod_eq_of_lt ha']
+/-- **The prime number theorem in arithmetic progressions**, von Mangoldt form.  For `a` coprime
+to `q`, the von Mangoldt function summed over `n ≤ x` with `n ≡ a [MOD q]` grows like
+`x / q.totient`. -/
+theorem ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop {q a : ℕ} [NeZero q]
+    (ha : a.Coprime q) :
+    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊ with n ≡ a [MOD q], Λ n) / x) atTop
+      (𝓝 q.totient⁻¹) := by
+  apply (tendsto_sum_residueClass_div_atTop ((isUnit_iff_coprime a q).mpr ha)).congr
+  simp [residueClass, Set.indicator_apply, sum_filter, natCast_eq_natCast_iff]
 
 namespace Chebyshev
 
-/-- **The prime number theorem, `ψ` form**: `ψ x / x → 1` as `x → ∞`. -/
+/-- **The prime number theorem, `ψ` form**: `ψ x / x → 1` as `x → ∞`, where
+`ψ x = ∑ n ≤ x, Λ n` is the Chebyshev function `Chebyshev.psi`. -/
 theorem tendsto_psi_div_atTop : Tendsto (fun x ↦ ψ x / x) atTop (𝓝 1) := by
-  simpa [mod_one, totient_one, psi_eq_sum_Icc] using
-    tendsto_residueClass_sum_div_atTop (by simp) one_pos
+  simpa [Nat.modEq_one, totient_one, psi_eq_sum_Icc] using
+    tendsto_sum_modEq_div_atTop (q := 1) (a := 0) (by simp)
 
-/-- **The prime number theorem, `ψ` form**: `ψ x ∼ x`. -/
+/-- **The prime number theorem, `ψ` form**: `ψ x ∼ x`, where `ψ x = ∑ n ≤ x, Λ n` is the
+Chebyshev function `Chebyshev.psi`. -/
 theorem isEquivalent_psi_id : ψ ~[atTop] id := by
   rw [isEquivalent_iff_tendsto_one (by exact eventually_ne_atTop 0)]
   exact tendsto_psi_div_atTop.congr (by simp)
 
-/-- **The prime number theorem, `θ` form**: `θ x / x → 1` as `x → ∞`. -/
+/-- **The prime number theorem, `θ` form**: `θ x / x → 1` as `x → ∞`, where
+`θ x = ∑ p ≤ x, log p` (over primes `p`) is the Chebyshev function `Chebyshev.theta`. -/
 theorem tendsto_theta_div_atTop : Tendsto (fun x ↦ θ x / x) atTop (𝓝 1) := by
   suffices Tendsto (fun x ↦ (ψ x - θ x) / x) atTop (𝓝 0) by
     convert (tendsto_psi_div_atTop.sub this).congr' ?_
@@ -101,23 +103,11 @@ theorem tendsto_theta_div_atTop : Tendsto (fun x ↦ θ x / x) atTop (𝓝 1) :=
   · filter_upwards [eventually_gt_atTop 0] with x _; positivity [theta_le_psi x]
   · filter_upwards [eventually_gt_atTop 0] with x _; grw [hC x]
 
-/-- **The prime number theorem, `θ` form**: `θ x ~ x`. -/
+/-- **The prime number theorem, `θ` form**: `θ x ~ x`, where `θ x = ∑ p ≤ x, log p` (over
+primes `p`) is the Chebyshev function `Chebyshev.theta`. -/
 theorem isEquivalent_theta_id : θ ~[atTop] id := by
   rw [isEquivalent_iff_tendsto_one (by exact eventually_ne_atTop 0)]
   exact tendsto_theta_div_atTop.congr (by simp)
-
-/-- **The prime number theorem**: the prime counting function satisfies `π x ~ x / log x`. -/
-theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun x ↦ x / log x := by
-  rw [(by grind : (↑⌊·⌋₊.primeCounting) = fun x ↦ θ x / log x + (⌊x⌋₊.primeCounting - θ x / log x))]
-  apply IsEquivalent.add_isLittleO
-  · rw [isEquivalent_iff_tendsto_one (by
-      filter_upwards [eventually_gt_atTop 1] with x hx; grind [log_pos hx])]
-    apply tendsto_theta_div_atTop.congr'
-    filter_upwards [eventually_gt_atTop 1] with x hx
-    simp [div_div_div_cancel_right₀ (log_pos hx).ne']
-  · refine integral_theta_div_log_sq_isLittleO.congr' ?_ (Eventually.of_forall fun _ ↦ rfl)
-    filter_upwards [eventually_ge_atTop 2]
-    grind [primeCounting_eq_theta_div_log_add_integral]
 
 /-- If the Chebyshev function `θ` is strictly larger at `b` than at `a`, then there is a prime in
 the half-open interval `(a, b]`. -/
@@ -140,10 +130,28 @@ theorem exists_prime_of_theta_lt {a b} (hab : θ a < θ b) :
     grw [← hpp.one_le] at hpb
     grind [one_le_floor_iff]
 
-/-- **Small prime gaps.**  For every `ε > 0`, every sufficiently large `x` admits a prime in the
-interval `(x, (1 + ε) * x]`. -/
+end Chebyshev
+
+namespace Nat
+
+/-- **The prime number theorem**: the prime counting function satisfies `π x ~ x / Real.log x`. -/
+theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun x ↦ x / Real.log x := by
+  rw [(by grind : (↑⌊·⌋₊.primeCounting) =
+    fun x ↦ θ x / Real.log x + (⌊x⌋₊.primeCounting - θ x / Real.log x))]
+  apply IsEquivalent.add_isLittleO
+  · rw [isEquivalent_iff_tendsto_one (by
+      filter_upwards [eventually_gt_atTop 1] with x hx; grind [Real.log_pos hx])]
+    apply tendsto_theta_div_atTop.congr'
+    filter_upwards [eventually_gt_atTop 1] with x hx
+    simp [div_div_div_cancel_right₀ (Real.log_pos hx).ne']
+  · refine integral_theta_div_log_sq_isLittleO.congr' ?_ (Eventually.of_forall fun _ ↦ rfl)
+    filter_upwards [eventually_ge_atTop 2]
+    grind [primeCounting_eq_theta_div_log_add_integral]
+
+/-- **Small prime gaps.**  Let `ε > 0`.  Then for every sufficiently large `x`, there exists a
+prime in the interval `(x, (1 + ε) * x]`. -/
 theorem eventually_exists_prime_mem_Ioc {ε : ℝ} (hε : 0 < ε) :
-    ∀ᶠ x in atTop, ∃ p : ℕ, p.Prime ∧ ↑p ∈ Set.Ioc x ((1 + ε) * x) := by
+    ∀ᶠ x : ℝ in atTop, ∃ p : ℕ, p.Prime ∧ ↑p ∈ Set.Ioc x ((1 + ε) * x) := by
   have : Tendsto (fun x ↦ θ ((1 + ε) * x) / ((1 + ε) * x)) atTop (𝓝 1) :=
     tendsto_theta_div_atTop.comp (tendsto_id.const_mul_atTop (by linarith))
   have : Tendsto (fun x ↦ θ ((1 + ε) * x) / x) atTop (𝓝 (1 + ε)) := by
@@ -157,10 +165,10 @@ theorem eventually_exists_prime_mem_Ioc {ε : ℝ} (hε : 0 < ε) :
   filter_upwards [(tendsto_order.1 this).1 0 hε, eventually_gt_atTop 0] with x _ hx
   exact exists_prime_of_theta_lt (by grind [lt_div_iff₀ hx])
 
-/-- **Small prime gaps**, dual form.  For every `ε > 0`, every sufficiently large `x` admits a
-prime in the interval `((1 - ε) * x, x]`. -/
+/-- **Small prime gaps**, dual form.  Let `ε > 0`.  Then for every sufficiently large `x`, there
+exists a prime in the interval `((1 - ε) * x, x]`. -/
 theorem eventually_exists_prime_mem_Ioc_sub {ε : ℝ} (hε : 0 < ε) :
-    ∀ᶠ x in atTop, ∃ p : ℕ, p.Prime ∧ ↑p ∈ Set.Ioc ((1 - ε) * x) x := by
+    ∀ᶠ x : ℝ in atTop, ∃ p : ℕ, p.Prime ∧ ↑p ∈ Set.Ioc ((1 - ε) * x) x := by
   wlog hε1 : ε < 1
   · filter_upwards [this (by norm_num : (0 : ℝ) < 1 / 2) (by norm_num), eventually_ge_atTop 0]
       with x ⟨p, hp, h1, h2⟩ hx
@@ -170,13 +178,13 @@ theorem eventually_exists_prime_mem_Ioc_sub {ε : ℝ} (hε : 0 < ε) :
   exact ⟨p, hp, h1, h2.trans (by rw [id_eq]; nlinarith [mul_nonneg (sq_nonneg ε) hx])⟩
 
 /-- **Consecutive primes are asymptotically equal**: the `(n + 1)`-th prime is asymptotic to the
-`n`-th prime.. -/
+`n`-th prime. -/
 theorem isEquivalent_nth_prime_succ :
     (fun n ↦ ↑(nth Nat.Prime (n + 1))) ~[atTop] fun n ↦ (nth Nat.Prime n : ℝ) := by
   have hpos (n) : (0 : ℝ) < nth Nat.Prime n := mod_cast by linarith [add_two_le_nth_prime n]
   rw [isEquivalent_iff_tendsto_one (Eventually.of_forall fun n ↦ (hpos n).ne')]
   refine tendsto_order.2 ⟨fun c hc ↦ Eventually.of_forall fun n ↦ ?_, fun c hc ↦ ?_⟩
-  · dsimp
+  · rw [Pi.div_apply]
     grw [hc]
     field_simp [hpos n]
     simp [nth_monotone infinite_setOfPred_prime n.le_succ]
@@ -185,9 +193,22 @@ theorem isEquivalent_nth_prime_succ :
       infinite_setOfPred_prime).tendsto_atTop).eventually (eventually_exists_prime_mem_Ioc hε)]
       with n ⟨q, hq, hq1, hq2⟩
     specialize hpos n
-    dsimp at *
+    simp only [Function.comp_apply] at hq1 hq2
+    rw [Pi.div_apply]
     grw [(nth_add_one_le_iff infinite_setOfPred_prime hq).mpr (mod_cast hq1), hq2, ← hεc]
     simp [field]
+
+/-- **Least common multiple asymptotics**: `Real.log (lcmUpto n) / n → 1`. -/
+theorem tendsto_log_lcmUpto_div_atTop : Tendsto (fun n ↦ Real.log (lcmUpto n) / n) atTop (𝓝 1) :=
+  (tendsto_psi_div_atTop.comp tendsto_natCast_atTop_atTop).congr (by simp [psi_eq_log_lcmUpto])
+
+/-- **Least common multiple asymptotics**: `Real.log (lcmUpto n) ~ n`. -/
+theorem isEquivalent_log_lcmUpto_id : (fun n ↦ Real.log (lcmUpto n)) ~[atTop] (↑·) := by
+  rw [isEquivalent_iff_tendsto_one
+    (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
+  exact tendsto_log_lcmUpto_div_atTop.congr (by simp)
+
+end Nat
 
 /-- **Primorial asymptotics**: `log (primorial n) / n → 1`. -/
 theorem tendsto_log_primorial_div_atTop : Tendsto (fun n ↦ log (primorial n) / n) atTop (𝓝 1) :=
@@ -199,18 +220,6 @@ theorem isEquivalent_log_primorial_id : (fun n ↦ log (primorial n)) ~[atTop] (
   rw [isEquivalent_iff_tendsto_one
     (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
   exact tendsto_log_primorial_div_atTop.congr (by simp)
-
-/-- **Least common multiple asymptotics**: `log (lcmUpto n) / n → 1`. -/
-theorem tendsto_log_lcmUpto_div_atTop : Tendsto (fun n ↦ log (lcmUpto n) / n) atTop (𝓝 1) :=
-  (tendsto_psi_div_atTop.comp tendsto_natCast_atTop_atTop).congr (by simp [psi_eq_log_lcmUpto])
-
-/-- **Least common multiple asymptotics**: `log (lcmUpto n) ~ n`. -/
-theorem isEquivalent_log_lcmUpto_id : (fun n ↦ log (lcmUpto n)) ~[atTop] (↑·) := by
-  rw [isEquivalent_iff_tendsto_one
-    (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
-  exact tendsto_log_lcmUpto_div_atTop.congr (by simp)
-
-end Chebyshev
 
 namespace Mertens
 

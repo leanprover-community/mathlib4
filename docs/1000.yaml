@@ -416,7 +416,7 @@ Q384142:
 Q386292:
   title: Prime number theorem
   decls:
-    - Chebyshev.isEquivalent_primeCounting
+    - Nat.isEquivalent_primeCounting
     - Chebyshev.isEquivalent_theta_id
     - Mertens.isLittleO_M_id
   authors : Alex Kontorovich, Terry Tao, and the Prime Number Theorem + Project
