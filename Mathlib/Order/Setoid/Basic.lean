@@ -251,10 +251,7 @@ open Relation
 of the set of all equivalence relations containing r. -/
 theorem eqvGen_eq (r : α → α → Prop) :
     EqvGen.setoid r = sInf { s : Setoid α | ∀ ⦃x y⦄, r x y → s x y } :=
-  le_antisymm
-    (fun _ _ H =>
-      EqvGen.rec (fun _ _ h _ hs => hs h) (refl' _) (fun _ _ _ => symm' _)
-        (fun _ _ _ _ _ => trans' _) H)
+  le_antisymm (le_sInf fun s hs _ _ ↦ s.iseqv.eqvGen_le (fun _ _ h ↦ hs h) _ _)
     (sInf_le fun _ _ h => EqvGen.rel _ _ h)
 
 /-- The supremum of two equivalence relations r and s is the equivalence closure of the binary
@@ -299,7 +296,8 @@ theorem eqvGen_idem (r : α → α → Prop) : EqvGen.setoid (EqvGen.setoid r) =
 /-- The equivalence closure of a binary relation r is contained in any equivalence
 relation containing r. -/
 theorem eqvGen_le {r : α → α → Prop} {s : Setoid α} (h : ∀ x y, r x y → s x y) :
-    EqvGen.setoid r ≤ s := by rw [eqvGen_eq]; exact sInf_le h
+    EqvGen.setoid r ≤ s :=
+  fun _ _ ↦ s.iseqv.eqvGen_le h _ _
 
 /-- Equivalence closure of binary relations is monotone. -/
 theorem eqvGen_mono {r s : α → α → Prop} (h : ∀ x y, r x y → s x y) :

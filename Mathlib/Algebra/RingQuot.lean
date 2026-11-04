@@ -67,22 +67,12 @@ theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : 
 def ringCon (r : R → R → Prop) : RingCon R where
   r := Relation.EqvGen (Rel r)
   iseqv := Relation.EqvGen.is_equivalence _
-  add' {a b c d} hab hcd := by
-    induction hab generalizing c d with
-    | rel _ b hab =>
-      exact (Relation.EqvGen.rel _ _ hab.add_left).trans _ _ _
-        (Relation.EqvGen.lift (b + ·) (fun _ _ h ↦ h.add_right) _ _ hcd)
-    | refl a => exact Relation.EqvGen.lift (a + ·) (fun _ _ h ↦ h.add_right) _ _ hcd
-    | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
-  mul' {a b c d} hab hcd := by
-    induction hab generalizing c d with
-    | rel _ b hab =>
-      exact (Relation.EqvGen.rel _ _ hab.mul_left).trans _ _ _
-        (Relation.EqvGen.lift (b * ·) (fun _ _ h ↦ h.mul_right) _ _ hcd)
-    | refl a => exact Relation.EqvGen.lift (a * ·) (fun _ _ h ↦ h.mul_right) _ _ hcd
-    | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
+  add' {_ b c _} hab hcd :=
+    (hab.lift (· + c) fun _ _ h ↦ h.add_left).trans _ _ _
+      (hcd.lift (b + ·) fun _ _ h ↦ h.add_right)
+  mul' {_ b c _} hab hcd :=
+    (hab.lift (· * c) fun _ _ h ↦ h.mul_left).trans _ _ _
+      (hcd.lift (b * ·) fun _ _ h ↦ h.mul_right)
 
 theorem eqvGen_rel_eq (r : R → R → Prop) : Relation.EqvGen (Rel r) = RingConGen.Rel r := by
   ext x₁ x₂
