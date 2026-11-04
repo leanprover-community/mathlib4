@@ -301,11 +301,9 @@ lemma eq_if_preStoneCechUnit_eq {a b : α} (h : preStoneCechUnit a = preStoneCec
   rw [preStoneCechUnit, preStoneCechUnit, Quot.eq] at h
   generalize (pure a : Ultrafilter α) = F at h
   generalize (pure b : Ultrafilter α) = G at h
-  induction h with
-  | rel x y a => exact let ⟨a, hx, hy⟩ := a; preStoneCechCompat hg hx hy
-  | refl x => rfl
-  | symm x y _ h => rw [h]
-  | trans x y z _ _ h h' => exact h.trans h'
+  refine (InvImage.equivalence _ _ eq_equivalence).eqvGen_le ?_ _ _ h
+  rintro x y ⟨a, hx, hy⟩
+  exact preStoneCechCompat hg hx hy
 
 theorem continuous_preStoneCechExtend : Continuous (preStoneCechExtend hg) :=
   continuous_quot_lift _ (continuous_ultrafilter_extend g)
