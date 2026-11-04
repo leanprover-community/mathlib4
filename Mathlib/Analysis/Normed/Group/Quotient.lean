@@ -430,7 +430,7 @@ variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| SeminormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
-instance Submodule.Quotient.normedAddCommGroup [hS : Fact (IsClosed (S : Set M))] :
+instance Submodule.Quotient.normedAddCommGroup [Fact (IsClosed (S : Set M))] :
     NormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| NormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
