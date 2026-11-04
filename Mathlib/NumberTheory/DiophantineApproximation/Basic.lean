@@ -169,7 +169,7 @@ theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0
   have hn : 0 < (n : ℝ) := mod_cast n_pos
   have hfu (m i) : fract (ξ i * m) * n < n := mul_lt_of_lt_one_left hn (fract_lt_one _)
   conv in |_| < _ => rw [mul_comm, lt_div_iff₀ hn, ← abs_of_pos hn, ← abs_mul]
-  let D := Finset.range (n ^ d + 1)
+  let D := range (n ^ d + 1)
   have hwd (m) (_ : m ∈ D) : f m ∈ Fintype.piFinset fun _ ↦ Ico (0 : ℤ) n := by
     simp_rw [Fintype.mem_piFinset, mem_Ico]
     refine fun i ↦ ⟨?_, ?_⟩
@@ -181,7 +181,7 @@ theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0
     obtain h | rfl | h := lt_trichotomy x y
     exacts [⟨x, hx, y, hy, h, hxy⟩, by contradiction, ⟨y, hy, x, hx, h, hxy.symm⟩]
   refine ⟨fun i ↦ ⌊ξ i * y⌋ - ⌊ξ i * x⌋, y - x, by lia, by grind, fun i ↦ ?_⟩
-  rw [Int.cast_sub, Nat.cast_sub x_lt_y.le]
+  rw [cast_sub, Nat.cast_sub x_lt_y.le]
   convert_to |fract (ξ i * y) * n - fract (ξ i * x) * n| < 1
   · grind [fract]
   exact abs_sub_lt_one_of_floor_eq_floor congr($hxy i).symm
