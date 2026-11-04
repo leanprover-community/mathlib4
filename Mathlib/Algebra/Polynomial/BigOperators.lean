@@ -154,7 +154,7 @@ where this condition is automatically satisfied.
 -/
 theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     t.prod.leadingCoeff = (t.map leadingCoeff).prod := by
-  induction t using Multiset.induction_on with | empty => simp | cons a t ih => ?_
+  induction t using Multiset.induction_on with | zero => simp | cons a t ih
   simp only [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Polynomial.leadingCoeff_mul']
   · rw [ih]
@@ -183,13 +183,12 @@ where this condition is automatically satisfied.
 -/
 theorem natDegree_multiset_prod' (h : (t.map fun f => leadingCoeff f).prod ≠ 0) :
     t.prod.natDegree = (t.map fun f => natDegree f).sum := by
-  revert h
-  refine Multiset.induction_on t ?_ fun a t ih ht => ?_; · simp
-  rw [Multiset.map_cons, Multiset.prod_cons] at ht ⊢
+  induction t using Multiset.induction_on with | zero => simp | cons a t ih
+  rw [Multiset.map_cons, Multiset.prod_cons] at h ⊢
   rw [Multiset.sum_cons, Polynomial.natDegree_mul', ih]
-  · apply right_ne_zero_of_mul ht
+  · apply right_ne_zero_of_mul h
   · rwa [Polynomial.leadingCoeff_multiset_prod']
-    apply right_ne_zero_of_mul ht
+    apply right_ne_zero_of_mul h
 
 /-- The degree of a product of polynomials is equal to
 the sum of the degrees, provided that the product of leading coefficients is nonzero.
@@ -236,7 +235,7 @@ theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s,
   · simpa using h
 
 theorem coeff_zero_multiset_prod : t.prod.coeff 0 = (t.map fun f => coeff f 0).prod := by
-  refine Multiset.induction_on t ?_ fun a t ht => ?_; · simp
+  induction t using Multiset.induction_on with | zero => simp | cons a t ht
   rw [Multiset.prod_cons, Multiset.map_cons, Multiset.prod_cons, Polynomial.mul_coeff_zero, ht]
 
 theorem coeff_zero_prod : (∏ i ∈ s, f i).coeff 0 = ∏ i ∈ s, (f i).coeff 0 := by

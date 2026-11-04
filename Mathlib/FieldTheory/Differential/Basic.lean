@@ -61,9 +61,9 @@ lemma logDeriv_eq_zero : logDeriv a = 0 ↔ a′ = 0 :=
 
 lemma logDeriv_multisetProd {ι : Type*} (s : Multiset ι) {f : ι → R} (h : ∀ x ∈ s, f x ≠ 0) :
     logDeriv (s.map f).prod = (s.map fun x ↦ logDeriv (f x)).sum := by
-  induction s using Multiset.induction_on
-  · simp
-  · rename_i h₂
+  induction s using Multiset.induction_on with
+  | zero => simp
+  | cons _ _ h₂ =>
     simp only [Multiset.map_cons, Multiset.sum_cons, Multiset.prod_cons]
     rw [← h₂]
     · apply logDeriv_mul

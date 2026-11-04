@@ -90,7 +90,7 @@ theorem divisor_closure_eq_closure [CommMonoidWithZero M₀] [IsCancelMulZero M�
     x ∈ closure { r : M₀ | IsUnit r ∨ Prime r} := by
   obtain ⟨m, hm, hprod⟩ := exists_multiset_of_mem_closure hxy
   induction m using Multiset.induction generalizing x y with
-  | empty =>
+  | zero =>
     apply subset_closure
     push _ ∈ _
     simp only [Multiset.prod_zero] at hprod
@@ -125,7 +125,7 @@ theorem Multiset.prod_primes_dvd [CommMonoidWithZero M₀] [IsCancelMulZero M₀
     [∀ a : M₀, DecidablePred (Associated a)] {s : Multiset M₀} (n : M₀) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
   induction s using Multiset.induction_on generalizing n with
-  | empty => simp only [Multiset.prod_zero, one_dvd]
+  | zero => simp only [Multiset.prod_zero, one_dvd]
   | cons a s induct =>
     rw [Multiset.prod_cons]
     obtain ⟨k, rfl⟩ : a ∣ n := div a (Multiset.mem_cons_self a s)

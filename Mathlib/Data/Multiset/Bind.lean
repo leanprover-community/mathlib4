@@ -74,14 +74,14 @@ theorem card_join (S) : card (@join α S) = sum (map card S) :=
 theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
     map f (join S) = join (map (map f) S) := by
   induction S using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons _ _ ih => simp [ih]
 
 @[to_additive (attr := simp)]
 theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
     prod (join S) = prod (map prod S) := by
   induction S using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons _ _ ih => simp [ih]
 
 theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.join t.join := by
@@ -92,13 +92,13 @@ theorem rel_join {r : α → β → Prop} {s t} (h : Rel (Rel r) s t) : Rel r s.
 theorem filter_join (S : Multiset (Multiset α)) (p : α → Prop) [DecidablePred p] :
     filter p (join S) = join (map (filter p) S) := by
   induction S using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons _ _ ih => simp [ih]
 
 theorem filterMap_join (S : Multiset (Multiset α)) (f : α → Option β) :
     filterMap f (join S) = join (map (filterMap f) S) := by
   induction S using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons _ _ ih => simp [ih]
 
 /-! ### Bind -/
@@ -186,7 +186,7 @@ theorem bind_map_comm (m : Multiset α) (n : Multiset β) {f : α → β → γ}
 theorem filter_eq_bind (m : Multiset α) (p : α → Prop) [DecidablePred p] :
     filter p m = bind m (fun a => if p a then {a} else 0) := by
   induction m using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons a m ih => simp [filter_cons, ih]
 
 theorem bind_filter (m : Multiset α) (p : α → Prop) (f : α → Multiset β) [DecidablePred p] :
@@ -202,7 +202,7 @@ theorem filter_bind (m : Multiset α) (f : α → Multiset β) (p : β → Prop)
 theorem filterMap_eq_bind (m : Multiset α) (f : α → Option β) :
     filterMap f m = bind m (fun a => ((f a).map singleton).getD 0) := by
   induction m using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons a m ih => simp [filterMap_cons, ih]
 
 theorem bind_filterMap (m : Multiset α) (f : α → Option β) (g : β → Multiset γ) :
@@ -278,7 +278,7 @@ theorem fold_bind {ι : Type*} (s : Multiset ι) (t : ι → Multiset α) (b : �
     (s.bind t).fold op ((s.map b).fold op b₀) =
     (s.map fun i => (t i).fold op (b i)).fold op b₀ := by
   induction s using Multiset.induction_on with
-  | empty => rw [zero_bind, map_zero, map_zero, fold_zero]
+  | zero => rw [zero_bind, map_zero, map_zero, fold_zero]
   | cons a ha ih => rw [cons_bind, map_cons, map_cons, fold_cons_left, fold_cons_left, fold_add, ih]
 
 end Bind

@@ -80,7 +80,7 @@ theorem prime_factors_unique [CommMonoidWithZero α] [IsCancelMulZero α] :
       (∀ x ∈ f, Prime x) → (∀ x ∈ g, Prime x) → f.prod ~ᵤ g.prod → Multiset.Rel Associated f g := by
   intro f
   induction f using Multiset.induction_on with
-  | empty =>
+  | zero =>
     intro g _ hg h
     exact Multiset.rel_zero_left.2 <|
       Multiset.eq_zero_of_forall_notMem fun x hx =>
@@ -126,16 +126,18 @@ end UniqueFactorizationMonoid
   then it is an associate of one of its prime factors. -/
 theorem prime_factors_irreducible [CommMonoidWithZero α] {a : α} {f : Multiset α}
     (ha : Irreducible a) (pfa : (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a) : ∃ p, a ~ᵤ p ∧ f = {p} := by
-  have := Classical.decEq α
-  refine @Multiset.induction_on _
-    (fun g => (g.prod ~ᵤ a) → (∀ b ∈ g, Prime b) → ∃ p, a ~ᵤ p ∧ g = {p}) f ?_ ?_ pfa.2 pfa.1
-  · intro h; exact (ha.not_isUnit (associated_one_iff_isUnit.1 (Associated.symm h))).elim
-  · rintro p s _ ⟨u, hu⟩ hs
+  classical
+  induction f using Multiset.induction_on with
+  | zero =>
+    absurd ha.not_isUnit
+    simpa using pfa.right.symm
+  | cons p s _ =>
+    rcases pfa with ⟨hs, ⟨u, hu⟩⟩
     use p
     have hs0 : s = 0 := by
       by_contra hs0
       obtain ⟨q, hq⟩ := Multiset.exists_mem_of_ne_zero hs0
-      apply (hs q (by simp [hq])).2.1
+      apply (hs q (by simp [hq])).not_isUnit
       refine (ha.isUnit_or_isUnit (?_ : _ = p * ↑u * (s.erase q).prod * _)).resolve_left ?_
       · rw [mul_right_comm _ _ q, mul_assoc, ← Multiset.prod_cons, Multiset.cons_erase hq, ← hu,
           mul_comm, mul_comm p _, mul_assoc]
