@@ -59,11 +59,8 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 theorem continuousWithinAt_inter_iff_continuousWithinAt_domRestrict (f : α → β) {x : α}
     {s t : Set α} (h : x ∈ s) :
     ContinuousWithinAt f (s ∩ t) x ↔
-      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ := by
-  rw [ContinuousWithinAt, ContinuousWithinAt, nhdsWithin_subtype, Subtype.image_preimage_coe,
-    domRestrict_eq, ← tendsto_map'_iff, map_comap, Subtype.range_coe, ← nhdsWithin_inter',
-    inter_right_comm, inter_self]
-  rfl
+      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ :=
+  tendsto_nhdsWithin_inter_iff_subtype h f _
 
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
