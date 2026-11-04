@@ -248,9 +248,9 @@ theorem ConvexOn.finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (h
       (ih fun j hj ↦ hf j (Finset.mem_insert_of_mem hj))
 
 /-- A finite sum of concave functions is concave. -/
-theorem concaveOn_finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
+theorem ConcaveOn.finsetSum {ι : Type*} {t : Finset ι} {f : ι → E → β} (hs : Convex 𝕜 s)
     (hf : ∀ i ∈ t, ConcaveOn 𝕜 s (f i)) : ConcaveOn 𝕜 s fun x ↦ ∑ i ∈ t, f i x :=
-  convexOn_finsetSum (β := βᵒᵈ) hs hf
+  ConvexOn.finsetSum (β := βᵒᵈ) hs hf
 
 end DistribMulAction
 

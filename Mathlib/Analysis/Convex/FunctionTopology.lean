@@ -22,8 +22,8 @@ We prove the following facts:
 * `convexOn_of_frequently_convexOn_of_tendsto` : a pointwise limit of convex functions is convex
 * `concaveOn_of_frequently_concaveOn_of_tendsto` : a pointwise limit of concave functions is
   concave
-* `convexOn_tsum` : a pointwise summable series of convex functions is convex
-* `concaveOn_tsum` : a pointwise summable series of concave functions is concave
+* `ConvexOn.tsum` : a pointwise summable series of convex functions is convex
+* `ConcaveOn.tsum` : a pointwise summable series of concave functions is concave
 -/
 
 open scoped Topology
@@ -87,17 +87,17 @@ variable {𝕜 α β ι : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrd
     [ContinuousConstSMul 𝕜 β] [ContinuousAdd β] {s : Set α} {f : ι → α → β}
 
 /-- A pointwise summable series of convex functions is convex. -/
-public theorem convexOn_tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConvexOn 𝕜 s (f i))
+public theorem ConvexOn.tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConvexOn 𝕜 s (f i))
     (hsum : ∀ x ∈ s, Summable fun i ↦ f i x) : ConvexOn 𝕜 s fun x ↦ ∑' i, f i x :=
   convexOn_of_frequently_convexOn_of_tendsto (l := atTop)
-    (Frequently.of_forall fun _ ↦ convexOn_finsetSum hs fun i _ ↦ hf i)
+    (Frequently.of_forall fun _ ↦ ConvexOn.finsetSum hs fun i _ ↦ hf i)
     fun x hx ↦ (hsum x hx).hasSum
 
 /-- A pointwise summable series of concave functions is concave. -/
-public theorem concaveOn_tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConcaveOn 𝕜 s (f i))
+public theorem ConcaveOn.tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConcaveOn 𝕜 s (f i))
     (hsum : ∀ x ∈ s, Summable fun i ↦ f i x) : ConcaveOn 𝕜 s fun x ↦ ∑' i, f i x :=
   concaveOn_of_frequently_concaveOn_of_tendsto (l := atTop)
-    (Frequently.of_forall fun _ ↦ concaveOn_finsetSum hs fun i _ ↦ hf i)
+    (Frequently.of_forall fun _ ↦ ConcaveOn.finsetSum hs fun i _ ↦ hf i)
     fun x hx ↦ (hsum x hx).hasSum
 
 end DistribMulAction
