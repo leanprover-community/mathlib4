@@ -6,6 +6,7 @@ module
 
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.Analysis.Meromorphic.Basic
+public import Mathlib.Analysis.Complex.RemovableSingularity
 public import Mathlib.Tactic.FunProp
 
 /-!
