@@ -8,9 +8,11 @@ module
 public import Mathlib.CategoryTheory.Functor.OfSequence
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Countable
+
+import Mathlib.CategoryTheory.EffectiveEpi.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
+
 /-!
 
 # ℕ-indexed products as sequential limits
@@ -61,7 +63,7 @@ noncomputable def functorMap : ∀ n,
   intro n
   refine Limits.Pi.map fun m ↦ if h : m < n then eqToHom ?_ else
     if h' : m < n + 1 then eqToHom ?_ ≫ f m ≫ eqToHom ?_ else eqToHom ?_
-  all_goals split_ifs; try rfl; try lia
+  all_goals lia
 
 set_option backward.isDefEq.respectTransparency false in
 lemma functorMap_commSq_succ (n : ℕ) :
@@ -143,7 +145,6 @@ lemma cone_π_app (n : ℕ) : (cone f).π.app ⟨n⟩ =
     Limits.Pi.map fun m ↦ if h : m < n then eqToHom (functorObj_eq_pos h).symm else
     f m ≫ eqToHom (functorObj_eq_neg h).symm := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m⟩ ≫
@@ -151,7 +152,6 @@ lemma cone_π_app_comp_Pi_π_pos (m n : ℕ) (h : n < m) : (cone f).π.app ⟨m�
     Pi.π _ n ≫ eqToHom (functorObj_eq_pos h).symm := by
   simp [cone_π_app, dite_eq_left h]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cone_π_app_comp_Pi_π_neg (m n : ℕ) (h : ¬(n < m)) : (cone f).π.app ⟨m⟩ ≫ Pi.π _ n =

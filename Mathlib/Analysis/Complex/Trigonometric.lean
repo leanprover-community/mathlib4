@@ -334,13 +334,13 @@ theorem sin_add_mul_I (x y : ℂ) : sin (x + y * I) = sin x * cosh y + cos x * s
   rw [sin_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem sin_eq (z : ℂ) : sin z = sin z.re * cosh z.im + cos z.re * sinh z.im * I := by
-  convert! sin_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert sin_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem cos_add_mul_I (x y : ℂ) : cos (x + y * I) = cos x * cosh y - sin x * sinh y * I := by
   rw [cos_add, cos_mul_I, sin_mul_I, mul_assoc]
 
 theorem cos_eq (z : ℂ) : cos z = cos z.re * cosh z.im - sin z.re * sinh z.im * I := by
-  convert! cos_add_mul_I z.re z.im; exact (re_add_im z).symm
+  convert cos_add_mul_I z.re z.im; exact (re_add_im z).symm
 
 theorem sin_sub_sin : sin x - sin y = 2 * sin ((x - y) / 2) * cos ((x + y) / 2) := by
   have s1 := sin_add ((x + y) / 2) ((x - y) / 2)
@@ -994,7 +994,7 @@ theorem norm_exp_mul_I (x : ℂ) : ‖exp (x * I)‖ = Real.exp (-x.im) := by
 
 theorem abs_one_sub_rexp_re_le (x : ℂ) : |1 - Real.exp x.re| ≤ ‖1 - exp x‖ := by
   rw [← norm_exp]
-  exact_mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
+  exact mod_cast abs_norm_sub_norm_le (1 : ℂ) (exp x)
 
 theorem one_sub_rexp_re_le (x : ℂ) : 1 - Real.exp x.re ≤ ‖1 - exp x‖ :=
   (le_abs_self _).trans (abs_one_sub_rexp_re_le x)

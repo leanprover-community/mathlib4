@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 module
 
-public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
+public import Mathlib.Data.Fintype.Pi
 
 
 /-!

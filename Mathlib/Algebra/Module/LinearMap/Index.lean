@@ -5,8 +5,9 @@ Authors: Oliver Nash
 -/
 module
 
-import Mathlib.Algebra.Exact.Sequence
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+
+import Mathlib.Algebra.Exact.Sequence
 
 /-!
 # The index of a linear map

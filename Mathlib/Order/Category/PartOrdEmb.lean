@@ -5,10 +5,10 @@ Authors: Joël Riou, Johan Commelin
 -/
 module
 
-public import Mathlib.Order.Category.PartOrd
 public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
+public import Mathlib.Order.Category.PartOrd
 
 /-!
 # Category of partial orders, with order embeddings as morphisms
@@ -284,7 +284,6 @@ def cocone : Cocone F where
         simpa [← hl₁, ← hl₂] using h }
   ι.naturality _ _ f := by ext x; congrm $(c.w f) x
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `isColimitCocone`. -/
 def CoconePt.desc (s : Cocone F) : CoconePt hc ↪o s.pt where

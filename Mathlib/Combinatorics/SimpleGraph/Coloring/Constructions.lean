@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Data.Fin.Parity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
@@ -63,8 +63,7 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
-  rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
-  tauto
+  rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p, not_iff]
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
@@ -161,6 +160,15 @@ theorem completeEquipartiteGraph_colorable :
   (completeEquipartiteGraph r t).Colorable r := ⟨Coloring.completeEquipartiteGraph⟩
 
 end CompleteEquipartiteGraph
+
+/-- Taking the remainder upon dividing by `r` produces an `r`-coloring of `turanGraph n r` for
+nonzero `r`. -/
+@[simps]
+protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
+  ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
+
+protected theorem Colorable.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Colorable r :=
+  ⟨.turanGraph n r⟩
 
 open Walk
 lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :

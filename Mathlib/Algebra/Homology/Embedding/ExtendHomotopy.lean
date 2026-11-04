@@ -34,7 +34,6 @@ namespace extend
 
 variable (e : c.Embedding c') (φ : ∀ i j, K.X i ⟶ L.X j)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `Homotopy.extend` -/
 noncomputable def homAux (i' j' : Option ι) : extend.X K i' ⟶ extend.X L j' :=
   match i', j' with

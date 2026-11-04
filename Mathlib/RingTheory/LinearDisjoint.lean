@@ -6,17 +6,18 @@ Authors: Jz Pan
 module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
-import Mathlib.Algebra.Algebra.Subalgebra.Rank
-import Mathlib.Algebra.Polynomial.Basis
 public import Mathlib.LinearAlgebra.LinearDisjoint
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
-import Mathlib.RingTheory.Adjoin.Dimension
 public import Mathlib.RingTheory.Algebraic.Basic
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
-import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.RingTheory.TensorProduct.Nontrivial
 public import Mathlib.RingTheory.Trace.Defs
+
+import Mathlib.Algebra.Algebra.Subalgebra.Rank
+import Mathlib.Algebra.Polynomial.Basis
+import Mathlib.RingTheory.Adjoin.Dimension
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 /-!
 
@@ -651,7 +652,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
     refine ⟨⟨a, by simp [fa]⟩, ⟨b, hf ?_⟩⟩
     simp_rw [fb, Algebra.TensorProduct.includeRight_apply, f,
       Algebra.TensorProduct.mapOfCompatibleSMul_tmul]
-    convert! ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
+    convert ← (TensorProduct.smul_tmul (R := R[X]) (R' := R[X]) (M := A) (N := B) X 1 1).symm <;>
       (simp_rw [Algebra.smul_def, mul_one]; exact aeval_X _)
   have key3 := (Subalgebra.inclusion key2).comp (AlgEquiv.ofInjective gab htab).toAlgHom
     |>.toLinearMap.lift_rank_le_of_injective

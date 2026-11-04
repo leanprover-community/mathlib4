@@ -5,9 +5,10 @@ Authors: Aaron Anderson, Gabin Kolly, David Wärn
 -/
 module
 
-import Mathlib.Data.Set.Finite.Range
 public import Mathlib.ModelTheory.DirectLimit
 public import Mathlib.Order.Ideal
+
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Partial Isomorphisms

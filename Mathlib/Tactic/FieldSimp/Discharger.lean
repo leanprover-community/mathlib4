@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel, David Renshaw
 -/
 module
 
-import all Lean.Meta.Tactic.Simp.Rewrite -- for `Simp.dischargeUsingAssumption?`
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Util.DischargerAsTactic
+
+import all Lean.Meta.Tactic.Simp.Rewrite -- for `Simp.dischargeUsingAssumption?`
 
 /-!
 # Discharger for `field_simp` tactic

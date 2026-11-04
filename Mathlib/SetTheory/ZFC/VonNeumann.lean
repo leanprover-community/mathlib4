@@ -128,8 +128,8 @@ theorem vonNeumann_of_isSuccPrelimit (h : IsSuccPrelimit o) :
     V_ o = ⋃ a : Set.Iio o, vonNeumann a :=
   ext fun z ↦ by simp [mem_vonNeumann, h.lt_iff_nonempty_Ioo (b := z.rank), Set.Nonempty, and_comm]
 
-theorem iUnion_vonNeumann : ⋃ o, (V_ o : Class) = Class.univ :=
-  Class.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
+theorem iUnion_vonNeumann : ⋃ o, (V_ o : ZFClass) = .univ :=
+  Set.eq_univ_of_forall fun x ↦ Set.mem_iUnion.2 <| exists_mem_vonNeumann x
 
 theorem _root_.Ordinal.toZFSet_subset_vonNeumann (o : Ordinal) : o.toZFSet ⊆ V_ o := by
   simp [subset_vonNeumann]
@@ -149,9 +149,9 @@ theorem card_vonNeumann (o : Ordinal.{u}) : card (V_ o) = preBeth o := by
     rw [← lift_le.{u + 1}]
     apply lift_card_iUnion_le_sum_card.trans
     refine (sum_eq_lift_iSup_of_lift_mk_le_lift_iSup ?_ ?_).le
-    · rw [mk_Iio_ordinal, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
+    · rw [Ordinal.cardinalMk_Iio, ← lift_aleph0.{u + 1, u}, lift_le, Ordinal.aleph0_le_card]
       exact Ordinal.omega0_le_of_isSuccLimit ho
-    · rw [mk_Iio_ordinal, lift_lift, lift_le]
+    · rw [Ordinal.cardinalMk_Iio, lift_lift, lift_le]
       by_contra! h
       refine (⨆ i : Set.Iio o, (V_ ↑i).card).card_ord.not_lt <|
         (Ordinal.card_le_card_vonNeumann _).trans_lt <| (cantor _).trans_le ?_

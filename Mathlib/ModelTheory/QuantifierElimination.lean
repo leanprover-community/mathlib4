@@ -6,8 +6,8 @@ Authors: Yağız Kaan Aydoğdu, Yusuf Demir, Salih Erdem Koçak
 module
 
 public import Mathlib.ModelTheory.Complexity
-public import Mathlib.ModelTheory.Satisfiability
 public import Mathlib.ModelTheory.ElementaryExtensionPair
+public import Mathlib.ModelTheory.Satisfiability
 
 /-!
 # Quantifier Elimination
