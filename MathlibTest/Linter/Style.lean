@@ -1,6 +1,5 @@
 module
 
-import all Batteries.Data.List.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Linter.Style
 import Mathlib.Order.SetNotation

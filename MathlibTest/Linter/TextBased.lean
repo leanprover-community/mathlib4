@@ -1,6 +1,6 @@
 module
 
-import all Batteries.Data.List.Basic
+meta import Batteries.Data.List.Basic
 import all Mathlib.Tactic.Linter.TextBased
 import all Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 
