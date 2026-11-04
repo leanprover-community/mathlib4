@@ -90,7 +90,7 @@ lemma riskIncrease_le_iInf (hℓ : Measurable (uncurry ℓ)) [IsMarkovKernel P] 
     riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, ℓ θ z ∂π :=
   riskIncrease_eq_iInf_sub hℓ P π ▸ tsub_le_self
 
-lemma riskIncrease_lt_top' [Nonempty 𝓨] (hℓ : Measurable (uncurry ℓ))
+lemma riskIncrease_lt_top' (hℓ : Measurable (uncurry ℓ))
     [IsFiniteMeasure π] {y : 𝓨} (h_finite : ∫⁻ θ, P θ univ * ℓ θ y ∂π ≠ ∞) :
     riskIncrease ℓ P π < ∞ :=
   (riskIncrease_le_iInf' hℓ).trans_lt (iInf_lt_top.mpr ⟨y, h_finite.lt_top⟩)

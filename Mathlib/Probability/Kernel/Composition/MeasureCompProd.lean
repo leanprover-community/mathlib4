@@ -405,7 +405,7 @@ lemma absolutelyContinuous_compProd_of_compProd [SigmaFinite μ] [SigmaFinite ν
   exact withDensity_absolutelyContinuous _ _
 
 lemma absolutelyContinuous_compProd_iff
-    [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [IsSFiniteKernel η] [∀ x, NeZero (κ x)] :
+    [SigmaFinite μ] [SigmaFinite ν] [IsSFiniteKernel κ] [∀ x, NeZero (κ x)] :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η ↔ μ ≪ ν ∧ μ ⊗ₘ κ ≪ μ ⊗ₘ η :=
   ⟨fun h ↦ ⟨absolutelyContinuous_of_compProd h, absolutelyContinuous_compProd_of_compProd h⟩,
     fun h ↦ h.1.compProd_of_compProd h.2⟩
