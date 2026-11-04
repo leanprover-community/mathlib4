@@ -157,7 +157,7 @@ example (f : ℕ → ℝ≥0∞) : f two' ≤ f 2 + f two' := by
 def foo : ℝ≥0∞ := 1
 def bar : ℝ≥0∞ := foo
 
-/-- `foo` and `bar` are definitionally equal, but we collect atoms up to `instanses` transparency -/
+/-- `foo` and `bar` are definitionally equal, but we collect atoms up to `instances` transparency -/
 example : foo ≤ bar := by
   fail_if_success (basify; linarith)
   unfold bar
@@ -177,6 +177,23 @@ example (a b : ℝ≥0∞) (h : (let c : ℝ≥0∞ := a + b; c) = 0) : a = 0 :=
 example (f : ℕ → ℝ≥0∞) (h : ∀ i, f i ≤ 1) : f 0 ≤ 1 := by
   have := h 0
   basify
+
+/-- Metadata should not affect atom formation. -/
+example : ‖(2 : ℝ)‖ₑ = ofNat(2) := by
+  basify
+  norm_num
+
+/-- Metadata in an argument's type. An argument (a : no_index ℝ≥0∞) gets stripped of its metadata
+before `basify` gets to it, so we hide it in a function type instead. -/
+example (f : ℕ → no_index ℝ≥0∞) : f 0 ≤ f 0 + 1 := by
+  basify
+  linarith
+
+/-- Metadata in a binder type, which `intro` puts on the new hypothesis. -/
+example : ∀ a : no_index ℝ≥0∞, a ≤ a + 1 := by
+  intro a
+  basify
+  linarith
 
 /-! ### Numerals -/
 
