@@ -35,7 +35,7 @@ The main results are four variants of Dirichlet's approximation theorem:
   satisfying `|ξ - q| ≤ 1/((n+1)*q.den)` and `q.den ≤ n`,
 * `Real.exists_pi_nat_abs_mul_sub_lt`, which states that for all `d`-tuples of reals `ξ` and
   natural `0 < n`, there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
-  such that for all `i`, `|k * ξ i - j i| < 1 / n`.
+  with `|k * ξ i - j i| < 1 / n` for all `i`.
 
 and
 * `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`, which states that
@@ -161,8 +161,8 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
 
 /-- *Simultaneous Dirichlet's approximation theorem:*
 For any `d`-tuple of real numbers `ξ` and positive natural `n`,
-there exist a natural number `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
-such that for all `i`, `|k * ξ i - j i| < 1 / n`. -/
+there exist a natural `k` with `0 < k ≤ n ^ d` and a `d`-tuple of integers `j`
+with `|k * ξ i - j i| < 1 / n` for all `i`. -/
 theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0 < n) :
     ∃ j : Fin d → ℤ, ∃ k : ℕ, 0 < k ∧ k ≤ n ^ d ∧ ∀ i, |k * ξ i - j i| < 1 / n := by
   let f (m : ℕ) (i : Fin d) : ℤ := ⌊fract (ξ i * m) * n⌋
