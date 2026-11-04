@@ -55,10 +55,10 @@ theorem norm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖ ≤ ‖n‖ * ‖
   rcases n.eq_nat_or_neg with ⟨n, rfl | rfl⟩ <;> simpa [Int.norm_natCast] using norm_pow_le_mul_norm
 
 @[to_additive nnNorm_zsMul_le]
-theorem nnNorm_zpow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
+theorem nnNorm_zPow_le_mul_norm (n : ℤ) (a : α) : ‖a ^ n‖₊ ≤ ‖n‖₊ * ‖a‖₊ := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_mul] using! norm_zpow_le_mul_norm n a
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_zsmul_le]
-alias nnnorm_zpow_le_mul_norm := nnNorm_zpow_le_mul_norm
+alias nnnorm_zpow_le_mul_norm := nnNorm_zPow_le_mul_norm
 
 end

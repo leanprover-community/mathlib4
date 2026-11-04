@@ -165,17 +165,17 @@ lemma norm_pow_le (x : S) (n : ℕ) :
   nnNorm_pow_le x n
 
 @[to_additive]
-lemma nnNorm_zpow_le (x : S) (z : ℤ) :
+lemma nnNorm_zPow_le (x : S) (z : ℤ) :
     ‖x ^ z‖₊ ≤ ‖x‖₊ := by
   cases z <;>
   simpa using nnNorm_pow_le _ _
 
-@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_zpow_le := nnNorm_zpow_le
+@[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_zpow_le := nnNorm_zPow_le
 
 @[to_additive]
 lemma norm_zpow_le (x : S) (z : ℤ) :
     ‖x ^ z‖ ≤ ‖x‖ :=
-  nnNorm_zpow_le x z
+  nnNorm_zPow_le x z
 
 section nonarch
 
