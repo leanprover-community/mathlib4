@@ -89,6 +89,18 @@ theorem inCoordinates_eq {x₀ x : B₁} {y₀ y : B₂} {ϕ : E₁ x [⋀^ι]�
   ext
   simp [inCoordinates, *, Function.comp_def]
 
+/-- Rewrite `ContinuousAlternatingMap.inCoordinates` using a continuous linear equivalence in the
+target, assuming only that the point belongs to the base set in the target.
+Useful when `ι` is empty and the source is therefore irrelevant. -/
+theorem inCoordinates_eq_of_mem_baseSet₂ {x₀ x : B₁} {y₀ y : B₂} {ϕ : E₁ x [⋀^ι]→L[𝕜] E₂ y}
+    (hy : y ∈ (trivializationAt F₂ E₂ y₀).baseSet) :
+    inCoordinates F₁ F₂ x₀ x y₀ y ϕ =
+      (((trivializationAt F₂ E₂ y₀).continuousLinearEquivAt 𝕜 y hy : E₂ y →L[𝕜] F₂)
+        |>.compContinuousAlternatingMap ϕ |>.compContinuousLinearMap
+          ((trivializationAt F₁ E₁ x₀).symmL 𝕜 x : F₁ →L[𝕜] E₁ x)) := by
+  ext
+  simp [inCoordinates, *, Function.comp_def]
+
 end ContinuousAlternatingMap
 
 open ContinuousAlternatingMap (inCoordinates)

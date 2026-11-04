@@ -37,6 +37,10 @@ namespace MeasureTheory
 variable {𝓧 : Type*} {m𝓧 : MeasurableSpace 𝓧} {μ ν : Measure 𝓧} {f : ℝ → ℝ}
 
 @[fun_prop]
+lemma Measure.integrable_rnDeriv [IsFiniteMeasure μ] : Integrable (μ.rnDeriv ν) ν :=
+  ⟨(Measure.measurable_rnDeriv _ _).aestronglyMeasurable, Measure.lintegral_rnDeriv_lt_top _ _⟩
+
+@[fun_prop]
 lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
     Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
   integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable

@@ -120,17 +120,19 @@ section
 
 variable {X : Type*} [TopologicalSpace X]
 
-protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ] [SFinite ν]
+protected theorem MeasureTheory.AEStronglyMeasurable.prod_swap [SFinite μ]
     {f : β × α → X} (hf : AEStronglyMeasurable f (ν.prod μ)) :
     AEStronglyMeasurable (fun z : α × β => f z.swap) (μ.prod ν) := by
-  rw [← prod_swap] at hf
-  exact hf.comp_measurable measurable_swap
+  by_cases hν : SFinite ν
+  · rw [← prod_swap] at hf
+    exact hf.comp_measurable measurable_swap
+  · simp [Measure.prod_eq_zero_of_not_sfinite, hν]
 
-theorem MeasureTheory.AEStronglyMeasurable.comp_fst [SFinite ν] {γ} [TopologicalSpace γ] {f : α → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_fst {γ} [TopologicalSpace γ] {f : α → γ}
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun z : α × β => f z.1) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_fst
 
-theorem MeasureTheory.AEStronglyMeasurable.comp_snd [SFinite ν] {γ} [TopologicalSpace γ] {f : β → γ}
+theorem MeasureTheory.AEStronglyMeasurable.comp_snd {γ} [TopologicalSpace γ] {f : β → γ}
     (hf : AEStronglyMeasurable f ν) : AEStronglyMeasurable (fun z : α × β => f z.2) (μ.prod ν) :=
   hf.comp_quasiMeasurePreserving quasiMeasurePreserving_snd
 
@@ -256,6 +258,7 @@ theorem Integrable.integral_norm_prod_right [SFinite μ] ⦃f : α × β → E�
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, ‖f (x, y)‖ ∂μ) ν :=
   hf.swap.integral_norm_prod_left
 
+omit [SFinite ν] in
 theorem Integrable.op_fst_snd {F G : Type*} [NormedAddCommGroup F] [NormedAddCommGroup G]
     {op : E → F → G} (hop : Continuous op.uncurry) (hop_norm : ∃ C, ∀ x y, ‖op x y‖ ≤ C * ‖x‖ * ‖y‖)
     {f : α → E} {g : β → F} (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -285,12 +288,14 @@ lemma Integrable.comp_snd {f : β → E} (hf : Integrable f ν) (μ : Measure α
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.comp_snd μ
 
+omit [SFinite ν] in
 @[fun_prop]
 theorem Integrable.smul_prod {R : Type*} [NormedRing R] [Module R E] [IsBoundedSMul R E]
     {f : α → R} {g : β → E} (hf : Integrable f μ) (hg : Integrable g ν) :
     Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν) :=
   hf.op_fst_snd continuous_smul ⟨1, by simpa using norm_smul_le⟩ hg
 
+omit [SFinite ν] in
 @[fun_prop]
 theorem Integrable.mul_prod {L : Type*} [NormedRing L] {f : α → L} {g : β → L} (hf : Integrable f μ)
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
@@ -437,7 +442,7 @@ theorem continuous_integral_integral :
   of the right-hand side is integrable. -/
 theorem integral_prod (f : α × β → E) (hf : Integrable f (μ.prod ν)) :
     ∫ z, f z ∂μ.prod ν = ∫ x, ∫ y, f (x, y) ∂ν ∂μ := by
-  by_cases hE : CompleteSpace E; swap; · simp only [integral, dite_eq_right hE]
+  by_cases hE : CompleteSpace E; swap; · simp only [integral_of_not_completeSpace hE]
   revert f
   apply Integrable.induction
   · intro c s hs h2s
@@ -521,7 +526,7 @@ theorem integral_prod_bilin {E F G 𝕜 : Type*} [RCLike 𝕜]
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
-  by_cases hE : CompleteSpace E; swap; · simp [integral, hE]
+  by_cases hE : CompleteSpace E; swap; · simp [integral_of_not_completeSpace hE]
   by_cases h : Integrable (fun z : α × β => f z.1 • g z.2) (μ.prod ν)
   · rw [integral_prod _ h]
     simp_rw [integral_smul, integral_smul_const]

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Connected.PathConnected
 
 import Mathlib.LinearAlgebra.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Segment between 2 points as a bundled path
 

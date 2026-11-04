@@ -75,7 +75,7 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 
 lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
-lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
+lemma coe_strictMono : StrictMono ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 variable [DecidableEq ι]
 

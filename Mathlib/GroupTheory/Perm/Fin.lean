@@ -240,8 +240,8 @@ theorem succAbove_cycleRange (i j : Fin n) :
     · rw [Fin.lt_def]
       simpa [this] using hlt
   · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
-    · rw [Fin.castSucc_zero]
-      apply Fin.succ_pos
+    rw [Fin.castSucc_zero]
+    apply Fin.succ_pos
   · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_of_le_castSucc, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · apply (Fin.succ_injective _).ne hgt.ne.symm
