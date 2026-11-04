@@ -303,12 +303,12 @@ lemma add_vlt_of_vlt_of_vlt {x y z : R} (hx : x <ᵥ z) (hy : y <ᵥ z) : x + y 
 section Ring
 variable {R : Type*} [Ring R] [ValuativeRel R]
 
-lemma neg_vle_self (x : R) : -x ≤ᵥ x := by
+private lemma neg_vle_self (x : R) : -x ≤ᵥ x := by
   rcases vle_total (-x) x with h | h
   · exact h
   · simpa using mul_vle_mul_left h (-1)
 
-lemma self_vle_neg (x : R) : x ≤ᵥ -x := by simpa using neg_vle_self (-x)
+private lemma self_vle_neg (x : R) : x ≤ᵥ -x := by simpa using neg_vle_self (-x)
 
 lemma neg_veq_self (x : R) : -x =ᵥ x := ⟨neg_vle_self x, self_vle_neg x⟩
 
