@@ -1101,7 +1101,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) := by
   have A : μ s = μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' Ioi 0) := by
     rw [← measure_union]
-    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
+    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, insert_Ioi,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
     · exact disjoint_singleton_left.mpr self_notMem_Ioi
         |>.preimage f |>.inter_right' s |>.inter_left' s
