@@ -166,7 +166,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
   · simp_all only [mem_nonZeroDivisors_iff_ne_zero, ne_eq, mem_toFinset, mem_mulSupport,
       one_eq_top, primaryComponent_mem, mem_torsionBySet_iff, SetLike.coe_sort_coe,
       Subtype.forall, iSup_pos, S]
-    exact ⟨(Associates.mk P.asIdeal).count (Associates.mk (span {a})).factors, fun _ b ↦ hxmem _ b⟩
+    exact ⟨multiplicity P.asIdeal (span {a}), fun _ b ↦ hxmem _ b⟩
   · simp_all
 
 variable (A M) in

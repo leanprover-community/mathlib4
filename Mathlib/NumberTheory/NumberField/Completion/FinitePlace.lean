@@ -241,7 +241,7 @@ lemma HeightOneSpectrum.embedding_mul_absNorm {x : R} (h_x_nezero : x ≠ 0) :
   rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_absNorm_nnreal v)).ne']
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_absNorm_nnreal v).ne')]
-  simp [valuation_of_algebraMap, intValuation_if_neg, h_x_nezero]
+  simp [valuation_of_algebraMap, intValuation_eq_exp_neg_multiplicity, h_x_nezero]
 
 end HasFiniteQuotients
 
