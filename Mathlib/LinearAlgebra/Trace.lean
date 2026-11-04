@@ -257,26 +257,26 @@ theorem trace_conj' [Module.Finite R N] [Module.Projective R N]
   · exact Matrix.trace_map (AlgEquiv.ofBijective _ (AlgHom.ofClass f).bijective) x
   · simp
 
-theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p]
-    [Module.Finite R p] [Module.Projective R (ker f)] [Module.Finite R (ker f)] :
+theorem IsProj.trace {p : Submodule R M} {f : M →ₗ[R] M} (h : IsProj p f) [Module.Free R p] :
     trace R M f = (finrank R p : R) := by
-  rw [h.eq_conj_prodMap, trace_conj', trace_prodMap', trace_id, map_zero, add_zero]
+  have : Module.Finite R p := Module.Finite.of_surjective h.codRestrict
+    fun x ↦ ⟨x, h.codRestrict_apply_cod x⟩
+  rw [← h.subtype_comp_codRestrict, trace_comp_comm']
+  have hf : h.codRestrict ∘ₗ p.subtype = LinearMap.id := LinearMap.ext h.codRestrict_apply_cod
+  rw [hf, trace_id]
 
 open LinearMap in
 /-- An idempotent endomorphism of a module over a characteristic-zero commutative ring
-with vanishing trace is the zero map, provided its range is finite free and its kernel
-is finite projective.
+with vanishing trace is the zero map, provided the module is finite projective and the
+range is free.
 
-The freeness, projectivity and finiteness instance arguments on `range e` and `ker e` are
-automatic over a field, and more generally over any principal ideal domain `R` for which
-`M` itself is finite and free (submodules of finite free modules over a PID are finite
-and free). -/
+The freeness of the range is automatic over a field, and more generally over a principal
+ideal domain `R` when `M` is free. -/
 theorem IsIdempotentElem.trace_eq_zero_iff {R : Type*} [CommRing R] [CharZero R]
     {M : Type*} [AddCommGroup M] [Module R M]
     [Module.Finite R M] [Module.Projective R M]
     {e : M →ₗ[R] M} (he : IsIdempotentElem e)
-    [Module.Free R (range e)] [Module.Finite R (range e)]
-    [Module.Projective R (ker e)] [Module.Finite R (ker e)] :
+    [Module.Free R (range e)] :
     trace R M e = 0 ↔ e = 0 := by
   rw [he.isProj_range.trace, Nat.cast_eq_zero, finrank_eq_zero_iff_of_free,
     Submodule.subsingleton_iff_eq_bot, range_eq_bot]
