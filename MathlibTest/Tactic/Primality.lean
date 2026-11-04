@@ -25,6 +25,13 @@ example (h : Nat.Prime 786433) : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
     .lucas { root := 7, primeFactors := [2, 3, 786433, 3221225473] },
     .lucas { root := 5, primeFactors := [2, 3] }]) [h]
 
+-- `1031` divides both `p - 1` and `2063 - 1`, so the tree meets it twice.
+example : Nat.Prime 12761719 := by
+  primality (cert := .witnesses [
+    .lucas { root := 3, primeFactors := [2, 3, 1031, 2063] },
+    .lucas { root := 5, primeFactors := [2, 1031] },
+    .lucas { root := 14, primeFactors := [2, 5, 103] }])
+
 -- Curve25519's field prime
 example : Nat.Prime (2 ^ 255 - 19) := by
   primality (cert := .witnesses [

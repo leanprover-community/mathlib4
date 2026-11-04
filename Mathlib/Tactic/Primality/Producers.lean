@@ -65,7 +65,7 @@ where
       return .normNum
     let w ← match cfg with
       | .witnesses witnesses => witnessFor witnesses q
-    let cert : Cert q := .lucas w.root (← w.primeFactors.toArray.mapM fun r ↦ return ⟨r, ← go r⟩)
+    let cert : Cert q := .lucas w.root (← w.primeFactors.mapM fun r ↦ return ⟨r, ← go r⟩)
     modify (·.insert q cert)
     return cert
 
