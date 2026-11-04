@@ -850,9 +850,7 @@ noncomputable def extendedByOne (A : Matrix n n R) : Matrix m m R :=
 @[simp]
 theorem extendedByOne_apply_embedding {i j : n} (A : Matrix n n R) :
     A.extendedByOne e (e i) (e j) = A i j := by
-  simp only [extendedByOne, of_apply]
-  exact (congr_fun (e.injective.extend_apply (fun _ ↦ extend e _ _) ..) _).trans
-    (e.injective.extend_apply ..)
+  simp [extendedByOne, e.injective]
 
 @[simp]
 theorem extendedByOne_submatrix (A : Matrix n n R) :
