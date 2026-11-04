@@ -297,6 +297,11 @@ theorem toRingEquiv_reindexStarAlgEquiv (e : m ≃ n) :
   rfl
 
 @[simp]
+theorem toAlgEquiv_reindexStarAlgEquiv [DecidableEq m] [DecidableEq n] (e : m ≃ n) :
+    (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
+  rfl
+
+@[simp]
 theorem symm_reindexStarAlgEquiv (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).symm = reindexStarAlgEquiv R A e.symm :=
   rfl
