@@ -182,7 +182,7 @@ def findLucasWitness (factorizer : Factorizer) (rootFinder : PrimitiveRootFinder
     throwError "primality could not find factors for the intermediate value {q}; factors can \
       be provided at `.lucas \{ factors := … }`. In the rare case that it is prime, add a \
       primitive root of it to `.lucas \{ roots := … }`."
-  return { root, factors }
+  return { root, primeFactors := factors.toList }
 
 /-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
 def normNumBound : Nat := 2 ^ 16
@@ -205,8 +205,10 @@ inductive CertConfig where
 /-- The first entry of `witnesses` that is a Lucas witness for the prime `q`. -/
 def witnessFor (witnesses : List Witness) (q : Nat) : CoreM LucasWitness := do
   for .lucas w in witnesses do
-    if w.factors.all (fun r ↦ (q - 1) % r == 0) && w.factors.foldl Nat.divMaxPow (q - 1) == 1 &&
-        (← PrimitiveRootFinder.ofArray #[w.root] q w.factors).isSome then
+    let rest? := w.primeFactors.foldlM (init := q - 1) fun rest r ↦
+      if rest % r == 0 then some (rest.divMaxPow r) else none
+    if rest? == some 1 &&
+        (← PrimitiveRootFinder.ofArray #[w.root] q w.primeFactors.toArray).isSome then
       return w
   throwError "no provided witness certifies the primality of {q}"
 
@@ -231,7 +233,7 @@ where
         findLucasWitness ((Factorizer.ofArray known.toArray).then lucasCfg.toFactorizer)
           lucasCfg.toPrimitiveRootFinder p q
       | .witnesses witnesses => witnessFor witnesses q
-    let cert : Cert q := .lucas w.root (← w.factors.mapM fun r ↦ return ⟨r, ← go r⟩)
+    let cert : Cert q := .lucas w.root (← w.primeFactors.toArray.mapM fun r ↦ return ⟨r, ← go r⟩)
     modify (·.insert q cert)
     return cert
 

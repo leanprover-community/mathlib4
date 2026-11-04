@@ -1,6 +1,7 @@
 module
 
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Tactic.NormNum.Pow
 
 import Mathlib.Tactic.Primality
 
@@ -15,7 +16,7 @@ provides proofs.
 
 example : Nat.Prime 100000007 := by primality
 
-example : Nat.Prime (10 ^ 9 + 7) := by simp; primality
+example : Nat.Prime (10 ^ 9 + 7) := by primality
 
 -- `p - 1 = 2 ^ 4 * 1031 ^ 2`, so Pollard's rho method finds the factor `1031` twice.
 example : Nat.Prime 17007377 := by primality
@@ -44,12 +45,11 @@ example (h : Nat.Prime 4398046517687) : Nat.Prime (2 * 4398046517687 * 100000000
 
 /-! ## Special primes -/
 
-example : Nat.Prime (2 ^ 127 - 1) := by simp; primality
+example : Nat.Prime (2 ^ 127 - 1) := by primality
 
 -- Only the last 3 factors are required, but 8 are included so the producer is faster.
 set_option exponentiation.threshold 521 in
 example : Nat.Prime (2 ^ 521 - 1) := by
-  simp
   primality (cert := .lucas { factors := [5746001, 7623851, 34110701, 308761441, 2400573761,
     65427463921, 108140989558681, 145295143558111] })
 
@@ -59,42 +59,41 @@ example : Nat.Prime (73 ! + 1) := by simp [Nat.factorial]; primality
 /-! ## Certificates given by witnesses -/
 
 example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [.lucas { root := 3, factors := #[2] }])
+  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2] }])
 
 -- `786433 - 1` and `3221225473 - 1` have the same prime factors, and `5` is a primitive root of
 -- `3221225473` only, so `786433` takes the last entry.
 example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
   primality (cert := .witnesses [
-    .lucas { root := 7, factors := #[2, 3, 786433, 3221225473] },
-    .lucas { root := 5, factors := #[2, 3] },
-    .lucas { root := 10, factors := #[2, 3] }])
+    .lucas { root := 7, primeFactors := [2, 3, 786433, 3221225473] },
+    .lucas { root := 5, primeFactors := [2, 3] },
+    .lucas { root := 10, primeFactors := [2, 3] }])
 
 -- Curve25519's field prime
 example : Nat.Prime (2 ^ 255 - 19) := by
-  simp
   primality (cert := .witnesses [
-    .lucas { root := 2, factors := #[2, 3, 65147, 74058212732561358302231226437062788676166966415465897661863160754340907] },
-    .lucas { root := 2, factors := #[2, 3, 353, 57467, 132049, 1923133, 31757755568855353, 75445702479781427272750846543864801] },
-    .lucas { root := 7, factors := #[2, 3, 5, 75707, 72106336199, 1919519569386763] },
-    .lucas { root := 10, factors := #[2, 3, 31, 107, 223, 4153, 430751] },
-    .lucas { root := 2, factors := #[2, 3, 7, 19, 47, 127, 8574133] },
-    .lucas { root := 7, factors := #[2, 13, 2773320623] },
-    .lucas { root := 5, factors := #[2, 2437, 569003] },
-    .lucas { root := 2, factors := #[2, 3, 7, 103, 991] },
-    .lucas { root := 2, factors := #[2, 3, 43, 3727] },
-    .lucas { root := 2, factors := #[2, 7, 97, 419] },
-    .lucas { root := 17, factors := #[2, 5, 1723] },
-    .lucas { root := 26, factors := #[2, 3, 7, 131] },
-    .lucas { root := 2, factors := #[2, 37853] },
-    .lucas { root := 2, factors := #[2, 32573] },
-    .lucas { root := 2, factors := #[2, 59, 487] },
-    .lucas { root := 2, factors := #[2, 9463] },
-    .lucas { root := 2, factors := #[2, 17, 479] },
-    .lucas { root := 3, factors := #[2, 3, 19, 83] },
-    .lucas { root := 5, factors := #[2, 3, 173] },
-    .lucas { root := 3, factors := #[2, 3, 23] },
-    .lucas { root := 2, factors := #[2, 3, 7, 29] },
-    .lucas { root := 3, factors := #[2, 3, 7, 41] }])
+    .lucas { root := 2, primeFactors := [2, 3, 65147, 74058212732561358302231226437062788676166966415465897661863160754340907] },
+    .lucas { root := 2, primeFactors := [2, 3, 353, 57467, 132049, 1923133, 31757755568855353, 75445702479781427272750846543864801] },
+    .lucas { root := 7, primeFactors := [2, 3, 5, 75707, 72106336199, 1919519569386763] },
+    .lucas { root := 10, primeFactors := [2, 3, 31, 107, 223, 4153, 430751] },
+    .lucas { root := 2, primeFactors := [2, 3, 7, 19, 47, 127, 8574133] },
+    .lucas { root := 7, primeFactors := [2, 13, 2773320623] },
+    .lucas { root := 5, primeFactors := [2, 2437, 569003] },
+    .lucas { root := 2, primeFactors := [2, 3, 7, 103, 991] },
+    .lucas { root := 2, primeFactors := [2, 3, 43, 3727] },
+    .lucas { root := 2, primeFactors := [2, 7, 97, 419] },
+    .lucas { root := 17, primeFactors := [2, 5, 1723] },
+    .lucas { root := 26, primeFactors := [2, 3, 7, 131] },
+    .lucas { root := 2, primeFactors := [2, 37853] },
+    .lucas { root := 2, primeFactors := [2, 32573] },
+    .lucas { root := 2, primeFactors := [2, 59, 487] },
+    .lucas { root := 2, primeFactors := [2, 9463] },
+    .lucas { root := 2, primeFactors := [2, 17, 479] },
+    .lucas { root := 3, primeFactors := [2, 3, 19, 83] },
+    .lucas { root := 5, primeFactors := [2, 3, 173] },
+    .lucas { root := 3, primeFactors := [2, 3, 23] },
+    .lucas { root := 2, primeFactors := [2, 3, 7, 29] },
+    .lucas { root := 3, primeFactors := [2, 3, 7, 41] }])
 
 /-! ## Errors -/
 
@@ -110,4 +109,10 @@ example : Nat.Prime 1000001 := by primality
 /-- error: no provided witness certifies the primality of 65537 -/
 #guard_msgs in
 example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [.lucas { root := 2, factors := #[2] }])
+  primality (cert := .witnesses [.lucas { root := 2, primeFactors := [2] }])
+
+-- A repeated factor would fail the kernel's check that the prime powers multiply to `p - 1`.
+/-- error: no provided witness certifies the primality of 65537 -/
+#guard_msgs in
+example : Nat.Prime 65537 := by
+  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])

@@ -36,7 +36,7 @@ def evalNumeral? (e : Q(Nat)) : MetaM (Option (Nat × (nQ : Q(Nat)) × Q(IsNat $
   return some ⟨n, nQ, pn⟩
 
 /-- Store the proofs `hs` of `Nat.Prime n` in a hashmap. -/
-def elabProofs (hs : Array Term) : TacticM (Std.HashMap Nat Expr) := do
+def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap Nat Expr) := do
   let mut known : Std.HashMap Nat Expr := {}
   for h in hs do
     let h ← elabTerm h none
@@ -56,7 +56,7 @@ syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
     let cfg ← elabPrimalityConfig cfg
-    let known ← elabProofs <| hs.map (·.getElems) |>.getD #[]
+    let known ← elabKnownPrimes <| hs.map (·.getElems) |>.getD #[]
     liftMetaFinishingTactic fun g ↦ do
       let_expr Nat.Prime e := ← instantiateMVars (← g.getType) |
         throwError "the goal is not of the form `Nat.Prime n`"

@@ -67,7 +67,7 @@ structure LucasWitness where
   /-- A primitive root of `p`. -/
   root : Nat
   /-- The prime factors of `p - 1`. -/
-  factors : Array Nat
+  primeFactors : List Nat
 
 /-- Proves `Nat.Prime p` from the primitive root `root` and the prime factors of `p - 1` in
 `factors`, each with its proof of primality. -/
