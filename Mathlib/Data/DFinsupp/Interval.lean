@@ -12,6 +12,9 @@ public import Mathlib.Order.Interval.Finset.Basic
 
 import Mathlib.Data.Fintype.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite intervals of finitely supported functions
 

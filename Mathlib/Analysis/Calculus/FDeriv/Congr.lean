@@ -81,7 +81,7 @@ theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
 theorem fderivWithin_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
-  simp only [fderivWithin, differentiableWithinAt_congr_set_nhdsNE h,
+  simp only [fderivWithin_def, differentiableWithinAt_congr_set_nhdsNE h,
     hasFDerivWithinAt_congr_set_nhdsNE h]
 
 /-- In the case `y = x`, see also `fderivWithin_congr_set_nhdsNE`,
@@ -89,7 +89,8 @@ which does not require the domain to be a T₁ space. -/
 theorem fderivWithin_congr_set' [T1Space E] (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
   classical
-  simp only [fderivWithin, differentiableWithinAt_congr_set' _ h, hasFDerivWithinAt_congr_set' _ h]
+  simp only [fderivWithin_def, differentiableWithinAt_congr_set' _ h,
+    hasFDerivWithinAt_congr_set' _ h]
 
 theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_congr_set_nhdsNE <| h.filter_mono inf_le_left
@@ -221,7 +222,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
   classical
-  simp only [fderivWithin, DifferentiableWithinAt, hs.hasFDerivWithinAt_iff hx]
+  simp only [fderivWithin_def, DifferentiableWithinAt, hs.hasFDerivWithinAt_iff hx]
 
 theorem Filter.EventuallyEq.fderivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
