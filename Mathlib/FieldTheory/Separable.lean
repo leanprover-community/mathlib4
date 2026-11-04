@@ -518,7 +518,7 @@ theorem _root_.Irreducible.separable_of_natCast_natDegree_ne_zero {f : F[X]} (hf
 
 theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
     f.Separable :=
-  Irreducible.separable_of_natCast_natDegree_ne_zero hf (by simpa using hf.natDegree_pos.ne')
+  hf.separable_of_natCast_natDegree_ne_zero (by simpa using hf.natDegree_pos.ne')
 
 end Field
 
