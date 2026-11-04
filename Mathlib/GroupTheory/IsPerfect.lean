@@ -31,6 +31,15 @@ Among the basic results, we show that
 
 public section
 
+namespace AddGroup
+open AddSubgroup
+
+variable (A) [AddGroup A] in
+class IsPerfect where
+  commutator_eq_top : addCommutator A = (⊤ : AddSubgroup A)
+
+end AddGroup
+
 namespace Group
 open Subgroup
 
@@ -141,4 +150,10 @@ theorem center_quotient_center_eq_bot [IsPerfect G] : center (G ⧸ center G) = 
     ← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk',
     Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center G <| by lia]
 
-end Group.IsPerfect
+end IsPerfect
+
+theorem isPerfect_iff_subsingleton_abelianization :
+    IsPerfect G ↔ Subsingleton (Abelianization G) := by
+    sorry
+
+end Group
