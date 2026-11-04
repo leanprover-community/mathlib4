@@ -210,7 +210,6 @@ instance (R : D ⥤ C) [R.IsRightAdjoint] : R.leftAdjoint.IsLeftAdjoint :=
 
 variable {X' X : C} {Y Y' : D}
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none]
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 
@@ -232,7 +231,6 @@ theorem homEquiv_naturality_left (f : X' ⟶ X) (g : F.obj X ⟶ Y) :
   rw [← Equiv.eq_symm_apply]
   simp only [Equiv.symm_apply_apply, homEquiv_naturality_left_symm]
 
-set_option backward.defeqAttrib.useBackward true in
 @[to_dual none]
 theorem homEquiv_naturality_right (f : F.obj X ⟶ Y) (g : Y ⟶ Y') :
     (adj.homEquiv X Y') (f ≫ g) = (adj.homEquiv X Y) f ≫ G.map g := by
@@ -542,7 +540,6 @@ def compCoyonedaIso {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Categor
     F.op ⋙ coyoneda ≅ coyoneda ⋙ (whiskeringLeft _ _ _).obj G :=
   NatIso.ofComponents fun X => NatIso.ofComponents fun Y => (adj.homEquiv X.unop Y).toIso
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism which an adjunction `F ⊣ G` induces on `F.op ⋙ uliftCoyoneda`.
 This states that `Adjunction.homEquiv` is natural in both arguments. -/
 @[simps!]

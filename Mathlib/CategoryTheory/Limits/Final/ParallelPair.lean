@@ -6,6 +6,7 @@ Authors: Dagur Asgeirsson, Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Final
+
 /-!
 
 # Conditions for `parallelPair` to be initial

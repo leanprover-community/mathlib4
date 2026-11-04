@@ -48,12 +48,8 @@ def liftLinear [MeasurableSpace β] (f : OuterMeasure α →ₗ[ℝ≥0∞] Oute
     (hf : ∀ μ : Measure α, ‹_› ≤ (f μ.toOuterMeasure).caratheodory) :
     Measure α →ₗ[ℝ≥0∞] Measure β where
   toFun μ := (f μ.toOuterMeasure).toMeasure (hf μ)
-  map_add' μ₁ μ₂ := ext fun s hs => by
-    simp only [map_add, coe_add, Pi.add_apply, toMeasure_apply, add_toOuterMeasure,
-      FunLike.coe_add, hs]
-  map_smul' c μ := ext fun s hs => by
-    simp only [map_smulₛₗ, Pi.smul_apply, toMeasure_apply, smul_toOuterMeasure (R := ℝ≥0∞),
-      FunLike.coe_smul, smul_apply, hs]
+  map_add' μ₁ μ₂ := ext fun s hs => by simp [hs]
+  map_smul' c μ := ext fun s hs => by simp [hs]
 
 lemma liftLinear_apply₀ {f : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β} (hf) {s : Set β}
     (hs : NullMeasurableSet s (liftLinear f hf μ)) : liftLinear f hf μ s = f μ.toOuterMeasure s :=
@@ -85,7 +81,7 @@ theorem mapₗ_congr {f g : α → β} (hf : Measurable f) (hg : Measurable g) (
   simpa only [mapₗ, hf, hg, hs, dite_eq_left, liftLinear_apply, OuterMeasure.map_apply]
     using! measure_congr (h.preimage s)
 
-private lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
+lemma nonempty_of_not_aemeasurable {f : α → β} (hf : ¬AEMeasurable f μ) :
     Nonempty β := by
   contrapose! hf
   exact (measurable_of_empty_codomain f).aemeasurable
@@ -95,15 +91,18 @@ open scoped Classical in
 we define it to be `0` if `μ = 0`, and to be an arbitrary Dirac mass otherwise. That way
 we always have `map f 0 = 0`, and the push-forward of a probability measure is always a
 probability measure. -/
+@[no_expose]
 noncomputable
-irreducible_def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
+def map [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure α) :
     Measure β :=
   if hf : AEMeasurable f μ
     then mapₗ (hf.mk f) μ
     else if μ = 0 then 0
     else
-      haveI : Nonempty β := by exact nonempty_of_not_aemeasurable hf
+      haveI : Nonempty β := nonempty_of_not_aemeasurable hf
       dirac Classical.ofNonempty
+
+alias map_def := map.eq_def
 
 theorem mapₗ_mk_apply_of_aemeasurable {f : α → β} (hf : AEMeasurable f μ) :
     mapₗ (hf.mk f) μ = map f μ := by simp [map, hf]

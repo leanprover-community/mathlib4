@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Condensed.Discrete.Colimit
 public import Mathlib.Condensed.Discrete.Module
+
 /-!
 
 # Characterizing discrete condensed sets and `R`-modules.

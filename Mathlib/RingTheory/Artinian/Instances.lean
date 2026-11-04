@@ -5,6 +5,7 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.Algebra.Polynomial.Basic
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.RingTheory.Artinian.Module
 
