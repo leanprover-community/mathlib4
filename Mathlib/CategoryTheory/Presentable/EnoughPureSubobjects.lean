@@ -25,9 +25,9 @@ universe w
 
 namespace CategoryTheory
 
-open Limits
-
 variable {C : Type*} [Category* C]
+
+open Limits
 
 namespace ObjectProperty
 
@@ -47,10 +47,8 @@ end ObjectProperty
 
 namespace IsCardinalAccessibleCategory
 
-variable (C : Type*) [Category* C] [EssentiallySmall.{w} C]
-
 open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
-instance (P : ObjectProperty (C ⥤ Type w))
+instance [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [P.IsClosedUnderCardinalFilteredColimits κ]
     [IsCardinalAccessibleCategory P.FullSubcategory κ]
