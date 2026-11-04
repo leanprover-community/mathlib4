@@ -136,7 +136,7 @@ example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   cases p <;>
   constructor
   assumption'
-  any_goals cases f
+  all_goals cases f
 
 #guard_msgs in
 -- `focus` is ignored.
@@ -147,7 +147,6 @@ example : True ∧ True := by
   focus
     exact .intro
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl

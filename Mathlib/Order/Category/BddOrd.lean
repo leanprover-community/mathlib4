@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Bipointed
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Hom.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bounded orders
 
