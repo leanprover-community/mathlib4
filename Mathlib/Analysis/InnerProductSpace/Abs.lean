@@ -109,6 +109,9 @@ theorem abs_of_isPositive_neg (S : E →L[ℂ] E) (hS : (-S).IsPositive) : |S| =
 theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
   abs_of_isPositive _ (isPositive_adjoint_comp_self T)
 
+theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
+  abs_of_isPositive _ (isPositive_self_comp_adjoint T)
+
 theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
   simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq]
