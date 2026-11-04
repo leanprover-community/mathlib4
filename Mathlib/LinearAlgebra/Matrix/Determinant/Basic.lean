@@ -368,7 +368,6 @@ theorem det_prodRingEquiv_symm (M : Matrix n n R × Matrix n n S) :
 
 end Prod
 
-
 section DetZero
 
 /-!
