@@ -294,22 +294,18 @@ lemma measurable_multivariateGaussian : Measurable (multivariateGaussian (ι := 
 
 section HasLaw
 
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω} {X : Ω → EuclideanSpace ℝ ι}
+
 lemma HasLaw.inner_multivariateGaussian
-    {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
-    {X : Ω → EuclideanSpace ℝ ι}
     (hX : HasLaw X (multivariateGaussian μ S) P)
     (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
-    HasLaw (fun ω ↦ ⟪t, X ω⟫)
-      (gaussianReal ⟪t, μ⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
+    HasLaw (fun ω ↦ ⟪t, X ω⟫) (gaussianReal ⟪t, μ⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
   (measurePreserving_inner_multivariateGaussian hS t).fun_comp_hasLaw hX
 
 lemma HasLaw.multivariateGaussian_inner
-    {Ω : Type*} {mΩ : MeasurableSpace Ω} {P : Measure Ω}
-    {X : Ω → EuclideanSpace ℝ ι}
     (hX : HasLaw X (multivariateGaussian μ S) P)
     (hS : S.PosSemidef) (t : EuclideanSpace ℝ ι) :
-    HasLaw (fun ω ↦ ⟪X ω, t⟫)
-      (gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
+    HasLaw (fun ω ↦ ⟪X ω, t⟫) (gaussianReal ⟪μ, t⟫ (t ⬝ᵥ S *ᵥ t).toNNReal) P :=
   (measurePreserving_multivariateGaussian_inner hS t).fun_comp_hasLaw hX
 
 end HasLaw
