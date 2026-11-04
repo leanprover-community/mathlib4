@@ -78,6 +78,13 @@ def IsStoppingTime [Preorder ι] (f : Filtration ι m) (τ : Ω → WithTop ι) 
 theorem isStoppingTime_const [Preorder ι] (f : Filtration ι m) (i : ι) :
     IsStoppingTime f fun _ => i := fun j => by simp only [MeasurableSet.const]
 
+/-- If a filtration `f` is complete with respect to `μ`, then a random time that is `μ`-almost
+everywhere equal to a stopping time is a stopping time. -/
+theorem IsStoppingTime.congr_ae [Preorder ι] {f : Filtration ι m} {μ : Measure Ω} [f.IsComplete μ]
+    {τ σ : Ω → WithTop ι} (hσ : IsStoppingTime f σ) (h : τ =ᵐ[μ] σ) :
+    IsStoppingTime f τ :=
+  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i) (h.fun_comp (· ≤ i))
+
 section MeasurableSet
 
 section Preorder

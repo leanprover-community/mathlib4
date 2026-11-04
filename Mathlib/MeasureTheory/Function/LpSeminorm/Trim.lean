@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lp seminorm with respect to trimmed measure
 

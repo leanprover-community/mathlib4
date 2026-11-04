@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 import Mathlib.MeasureTheory.Measure.MeasuredSets
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing a vector measure from an additive content
 

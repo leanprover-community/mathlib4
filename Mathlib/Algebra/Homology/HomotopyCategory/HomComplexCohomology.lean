@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cohomology of the hom complex
 

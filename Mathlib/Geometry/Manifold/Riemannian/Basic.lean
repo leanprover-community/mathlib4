@@ -117,7 +117,7 @@ noncomputable def riemannianMetricVectorSpace :
     exact NormedSpace.isVonNBounded_ball ℝ F 1
   contMDiff := by
     intro x
-    rw [contMDiffAt_section]
+    rw [contMDiffAt_section_iff]
     convert! contMDiffAt_const (c := innerSL ℝ)
     ext v w
     simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]

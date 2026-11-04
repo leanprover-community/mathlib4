@@ -119,6 +119,10 @@ theorem fourier_neg (f : E) : 𝓕 (-f) = - 𝓕 f :=
   map_neg (AddMonoidHom.mk' 𝓕 fourier_add) f
 
 @[simp]
+theorem fourier_sub (f g : E) : 𝓕 (f - g) = 𝓕 f - 𝓕 g :=
+  map_sub (AddMonoidHom.mk' 𝓕 fourier_add) f g
+
+@[simp]
 theorem fourier_sum (f : ι → E) (s : Finset ι) : 𝓕 (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕 (f i) :=
   map_sum (AddMonoidHom.mk' 𝓕 fourier_add) f s
 
@@ -135,6 +139,10 @@ theorem fourierInv_zero : 𝓕⁻ (0 : E) = 0 :=
 @[simp]
 theorem fourierInv_neg (f : E) : 𝓕⁻ (-f) = - 𝓕⁻ f :=
   map_neg (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f
+
+@[simp]
+theorem fourierInv_sub (f g : E) : 𝓕⁻ (f - g) = 𝓕⁻ f - 𝓕⁻ g :=
+  map_sub (AddMonoidHom.mk' 𝓕⁻ fourierInv_add) f g
 
 @[simp]
 theorem fourierInv_sum (f : ι → E) (s : Finset ι) : 𝓕⁻ (∑ i ∈ s, f i) = ∑ i ∈ s, 𝓕⁻ (f i) :=

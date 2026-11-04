@@ -9,6 +9,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Filter.Bases.Basic
 public import Mathlib.Order.Filter.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lift filters along filter and set functions
 -/

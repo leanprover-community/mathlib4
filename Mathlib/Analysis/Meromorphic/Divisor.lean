@@ -234,7 +234,7 @@ The divisor of `f₁ + f₂` is larger than or equal to the minimum of the divis
 respectively.
 -/
 theorem min_divisor_le_divisor_add {f₁ f₂ : 𝕜 → E} {z : 𝕜} {U : Set 𝕜} (hf₁ : MeromorphicOn f₁ U)
-    (hf₂ : MeromorphicOn f₂ U) (h₁z : z ∈ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
+    (hf₂ : MeromorphicOn f₂ U) (h₃ : meromorphicOrderAt (f₁ + f₂) z ≠ ⊤) :
     min (divisor f₁ U z) (divisor f₂ U z) ≤ divisor (f₁ + f₂) U z := by
   by_cases! hz : z ∉ U
   · simp_all
@@ -261,7 +261,7 @@ theorem negPart_divisor_add_le_max {f₁ f₂ : 𝕜 → E} {U : Set 𝕜} (hf�
   by_cases hf₁₂ : meromorphicOrderAt (f₁ + f₂) z = ⊤
   · simp [divisor_apply (hf₁.add hf₂) hz, hf₁₂, negPart_nonneg]
   rw [← negPart_min]
-  apply ((le_iff_posPart_negPart _ _).1 (min_divisor_le_divisor_add hf₁ hf₂ hz hf₁₂)).2
+  apply ((le_iff_posPart_negPart _ _).1 (min_divisor_le_divisor_add hf₁ hf₂ hf₁₂)).2
 
 /--
 The pole divisor of `f₁ + f₂` is smaller than or equal to the sum of the pole divisors of `f₁` and

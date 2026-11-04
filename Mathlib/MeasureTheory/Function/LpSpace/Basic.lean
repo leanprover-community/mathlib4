@@ -939,7 +939,7 @@ private lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • 
   simp [LpToLpOfMeasureLeSMulₗ, MemLp.coeFn_toLp]
 
 private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
-    (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
+    (hc : c ≠ ∞) (h : μ ≤ c • ν) {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
   simp only [Lp.enorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]

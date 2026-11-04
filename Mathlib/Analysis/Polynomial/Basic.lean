@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Roots
 public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits related to polynomial and rational functions
 
