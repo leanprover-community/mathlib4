@@ -23,6 +23,8 @@ Among the basic results, we show that
 
 ## Main Theorems
 
+* `isPerfect_iff_subsingleton_abelianization`: a group is perfect if and only if its abelianization
+  is trivial.
 * `IsPerfect.map`: The image of a perfect group under a monoid homomorphism is perfect.
 * `IsPerfect.instQuotientSubgroup`: The quotient of a perfect group by a normal subgroup is perfect.
 * `IsPerfect.ofSurjective`: The image of a perfect group under a surjective monoid
@@ -62,6 +64,15 @@ lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
 
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
   isPerfect_iff.mp hH
+
+theorem isPerfect_iff_subsingleton_abelianization :
+    IsPerfect G ↔ Subsingleton (Abelianization G) :=
+    ⟨
+      fun h ↦ by
+        rw [Abelianization, IsPerfect.commutator_eq_top]
+        exact QuotientGroup.subsingleton_quotient_top,
+      fun h ↦ ⟨QuotientGroup.subgroup_eq_top_of_subsingleton _ h⟩
+    ⟩
 
 namespace IsPerfect
 
@@ -150,10 +161,4 @@ theorem center_quotient_center_eq_bot [IsPerfect G] : center (G ⧸ center G) = 
     ← comap_eq_ker_of_surjective <| QuotientGroup.mk'_surjective _, QuotientGroup.ker_mk',
     Subgroup.comap_upperCentralSeries_quotient_center, upperCentralSeries_eq_center G <| by lia]
 
-end IsPerfect
-
-theorem isPerfect_iff_subsingleton_abelianization :
-    IsPerfect G ↔ Subsingleton (Abelianization G) := by
-    sorry
-
-end Group
+end Group.IsPerfect
