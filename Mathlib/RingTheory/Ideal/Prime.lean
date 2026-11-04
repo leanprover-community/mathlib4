@@ -162,7 +162,7 @@ theorem sInfPrimeCompl_le_primeCompl {P : Ideal α} (hP : P ∈ S) :
   fun _ hx ↦ (mem_sInfPrimeCompl_iff S hS).mp hx P hP
 
 theorem sInfPrimeCompl_anti {S T : Set (Ideal α)} (hST : S ⊆ T) (hP : ∀ P ∈ T, P.IsPrime) :
-    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (by grind  : ∀ P ∈ S, P.IsPrime) := by
+    sInfPrimeCompl T hP ≤ sInfPrimeCompl S (by grind : ∀ P ∈ S, P.IsPrime) := by
   intro x hx
   rw [mem_sInfPrimeCompl_iff] at hx ⊢
   exact fun P hp ↦ hx P (hST hp)

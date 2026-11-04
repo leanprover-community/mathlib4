@@ -24,7 +24,7 @@ This file defines the subalgebra of `S`-integers of `K` and the subgroup of `S`-
 * `Set.integer`: `S`-integers.
 * `Set.unit`: `S`-units.
 * `Localization.submonoid`: the submonoid of non-zero elements of `R` that are not contained in any
-    prime ideal away from `S`.
+  prime ideal away from `S`.
 
 ## Main statements
 
