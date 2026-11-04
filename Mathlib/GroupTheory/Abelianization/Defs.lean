@@ -16,13 +16,11 @@ groups, which can be found in `Mathlib/Algebra/Category/Grp/Adjunctions.lean`.
 
 ## Main definitions
 
-* `Group.Abelianization`/`AddGroup.Abelianization`: defines the abelianization of a group
-  (resp. additive group) `G` as the quotient of a group by it commutator subgroup.
-* `Group.Abelianization.map`/`AddGroup.Abelianization.map`: lifts a group (resp. additive group)
-  homomorphism to a homomorphism between the abelianizations
-* `MulEquiv.abelianizationCongr`/`AddEquiv.abelianizationCongr`: Equivalent groups (resp. additive
-  groups) have equivalent abelianizations
-
+* `Group.Abelianization`: defines the abelianization of a group `G` as the quotient of a group by
+  its commutator subgroup.
+* `Group.Abelianization.map`: lifts a group homomorphism to a homomorphism between the
+  abelianizations.
+* `MulEquiv.abelianizationCongr`: Isomorphic groups have isomorphic abelianizations.
 -/
 
 @[expose] public section
@@ -36,17 +34,10 @@ variable (G : Type u) [Group G]
 
 open Subgroup (centralizer)
 
-open scoped IsMulCommutative in
-/-- The abelianization of the additive group `A` is the quotient of `A` by its commutator
-subgroup. -/
-def AddGroup.Abelianization (A : Type*) [AddGroup A] :=
-  A ⧸ addCommutator A
-
 namespace Group
 
-open scoped IsMulCommutative in
 /-- The abelianization of the group `G` is the quotient of `G` by its commutator subgroup. -/
-@[to_additive existing]
+@[to_additive]
 def Abelianization : Type u :=
   G ⧸ commutator G
 
@@ -128,8 +119,8 @@ end lift
 
 variable {A : Type v} [Monoid A]
 
-/-- See note [partially-applied ext lemmas]. -/
-@[to_additive (attr := ext) /-- See note [partially-applied ext lemmas]. -/]
+-- See note [partially-applied ext lemmas].
+@[to_additive (attr := ext)]
 theorem hom_ext (φ ψ : Abelianization G →* A) (h : φ.comp of = ψ.comp of) : φ = ψ :=
   MonoidHom.ext fun x => QuotientGroup.induction_on x <| DFunLike.congr_fun h
 
@@ -138,7 +129,7 @@ section Map
 variable {H : Type v} [Group H] (f : G →* H)
 
 /-- The map operation of the `Abelianization` functor. -/
-@[to_additive /-- The map operation of the `AddAbelianization` functor. -/]
+@[to_additive /-- The map operation of the `Abelianization` functor. -/]
 def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 
@@ -172,8 +163,8 @@ section AbelianizationCongr
 
 variable {G} {H : Type v} [Group H]
 
-/-- Isomorphic groups have equivalent abelianizations. -/
-@[to_additive /-- Isomorphic additive groups have equivalent abelianizations. -/]
+/-- Isomorphic groups have isomorphic abelianizations. -/
+@[to_additive /-- Isomorphic additive groups have isomorphic abelianizations. -/]
 def _root_.MulEquiv.abelianizationCongr (e : G ≃* H) : Abelianization G ≃* Abelianization H where
   toFun := Abelianization.map e.toMonoidHom
   invFun := Abelianization.map e.symm.toMonoidHom
@@ -223,8 +214,6 @@ instance [Unique G] :
   Unique (Abelianization G) := Quotient.instUniqueQuotient _
 
 end Group
-
-/-! ### Deprecated aliases for the old root-namespace names -/
 
 @[deprecated (since := "2026-11-03")] alias Abelianization := Group.Abelianization
 @[deprecated (since := "2026-11-03")]
