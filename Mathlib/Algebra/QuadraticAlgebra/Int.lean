@@ -16,9 +16,9 @@ import Mathlib.RingTheory.Polynomial.RationalRoot
 /-!
 # Quadratic algebras over `ℤ`
 
-For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ a b`. This file
-proves that `QuadraticAlgebra ℚ a b` is its fraction ring, and that it is the integral closure of
-`ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
+For `a b : ℤ`, this file proves that `QuadraticAlgebra ℚ a b` is the fraction ring of
+`QuadraticAlgebra ℤ a b`, and that `QuadraticAlgebra ℤ a b` is the integral closure of `ℤ` in
+`QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
 
 ## Main definitions
 
@@ -272,6 +272,10 @@ protected theorem isIntegrallyClosed_iff :
     isIntegrallyClosed_iff_isIntegrallyClosedIn (QuadraticAlgebra ℚ a b)]
   exact ⟨fun _ ↦ .of_isIntegrallyClosedIn, fun _ ↦ .of_isIntegralClosure ℤ⟩
 
+instance [h : Fact (Int.IsFundamentalDiscr (discr a b))] :
+    IsIntegrallyClosed (QuadraticAlgebra ℤ a b) :=
+  Int.isIntegrallyClosed_iff.mpr h.out
+
 /-- When `discr a b` is a fundamental discriminant, `QuadraticAlgebra ℤ a b` is isomorphic, as a
 `ℤ`-algebra, to the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`. -/
 noncomputable def algEquivIntegralClosure (h : Int.IsFundamentalDiscr (discr a b)) :
@@ -288,6 +292,10 @@ theorem coe_algEquivIntegralClosure_apply (h : Int.IsFundamentalDiscr (discr a b
   haveI := Int.isIntegralClosure_iff.mpr h
   IsIntegralClosure.algebraMap_equiv ℤ _ (QuadraticAlgebra ℚ a b)
     (integralClosure ℤ (QuadraticAlgebra ℚ a b)) x
+
+theorem coe_algEquivIntegralClosure_omega (h : Int.IsFundamentalDiscr (discr a b)) :
+    (algEquivIntegralClosure h ω : QuadraticAlgebra ℚ a b) = ω := by
+  simp
 
 @[simp]
 theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDiscr (discr a b))
