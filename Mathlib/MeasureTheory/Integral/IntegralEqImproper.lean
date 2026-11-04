@@ -501,6 +501,22 @@ theorem AECover.integral_eq_of_tendsto_of_nonneg_ae [l.NeBot] [l.IsCountablyGene
   have hfi' : Integrable f μ := hφ.integrable_of_integral_tendsto_of_nonneg_ae I hfi hnng htendsto
   hφ.integral_eq_of_tendsto I hfi' htendsto
 
+/-- If `f` vanishes in a neighborhood of `a`, then `∫ x in Ioi b, f x ∂μ = ∫ x in Ioi a, f x ∂μ`
+for all `b` close enough to `a`. -/
+theorem eventually_setIntegral_Ioi_eq_of_eventuallyEq_zero [LinearOrder α] [TopologicalSpace α]
+    [OrderTopology α] [OpensMeasurableSpace α] {f : α → E} {a : α} (hf : f =ᶠ[𝓝 a] 0) :
+    ∀ᶠ b in 𝓝 a, ∫ x in Ioi b, f x ∂μ = ∫ x in Ioi a, f x ∂μ := by
+  filter_upwards [tendsto_smallSets_iff.mp (tendsto_const_nhds.uIcc tendsto_id) _ hf] with b hb
+  rw [← integral_indicator measurableSet_Ioi, ← integral_indicator measurableSet_Ioi]
+  congr 1 with x
+  by_cases hx : x ∈ uIcc a b
+  · simp [indicator_apply, show f x = 0 from hb hx]
+  simp only [indicator_apply, mem_Ioi]
+  split_ifs with h₁ h₂ h₂ <;> first
+    | rfl
+    | exact (hx (mem_uIcc.mpr (.inr ⟨h₁.le, not_lt.mp h₂⟩))).elim
+    | exact (hx (mem_uIcc.mpr (.inl ⟨h₂.le, not_lt.mp h₁⟩))).elim
+
 end Integral
 
 section IntegrableOfIntervalIntegral
