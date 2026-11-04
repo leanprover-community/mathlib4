@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 module
 
+public import Mathlib.GroupTheory.Torsion
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Basic
 
 /-!
@@ -453,6 +454,18 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
   by_cases hI : I = ⊥
   · rw [hI]; exact bot_isPrincipal
   · exact (ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_iff_ne_zero.mpr hI)).mp (eq_one _)
+
+/-- If the class group is a torsion group, then every ideal has a power that is principal. -/
+theorem ClassGroup.exists_pow_eq_span_singleton [IsDedekindDomain R]
+    (hR : IsMulTorsion (ClassGroup R)) (I : Ideal R) :
+    ∃ n ≠ 0, ∃ α : R, I ^ n = Ideal.span {α} := by
+  rcases eq_or_ne I 0 with rfl | hI
+  · exact ⟨1, one_ne_zero, 0, by simp⟩
+  have hI' : I ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hI
+  obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 (hR (ClassGroup.mk0 ⟨I, hI'⟩))
+  obtain ⟨α, hα⟩ : (I ^ n).IsPrincipal := by
+    rw [← ClassGroup.mk0_eq_one_iff (pow_mem hI' n), ← hpow, ← map_pow]; rfl
+  exact ⟨n, hn.ne', α, hα⟩
 
 section MulEquiv
 
