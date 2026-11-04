@@ -113,56 +113,56 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
   rintro ⟨l₁⟩ ⟨l₂⟩; simp
 
 @[elab_as_elim]
-protected theorem induction {p : Multiset α → Prop} (empty : p 0)
-    (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : ∀ s, p s := by
-  rintro ⟨l⟩; induction l with | nil => exact empty | cons _ _ ih => exact cons _ _ ih
+protected theorem induction {motive : Multiset α → Prop} (zero : motive 0)
+    (cons : ∀ (a : α) (s : Multiset α), motive s → motive (a ::ₘ s)) : ∀ s, motive s := by
+  rintro ⟨l⟩; induction l with | nil => exact zero | cons _ _ ih => exact cons _ _ ih
 
 @[elab_as_elim]
-protected theorem induction_on {p : Multiset α → Prop} (s : Multiset α) (empty : p 0)
-    (cons : ∀ (a : α) (s : Multiset α), p s → p (a ::ₘ s)) : p s :=
-  Multiset.induction empty cons s
+protected theorem induction_on {motive : Multiset α → Prop} (s : Multiset α) (zero : motive 0)
+    (cons : ∀ (a : α) (s : Multiset α), motive s → motive (a ::ₘ s)) : motive s :=
+  Multiset.induction zero cons s
 
 theorem cons_swap (a b : α) (s : Multiset α) : a ::ₘ b ::ₘ s = b ::ₘ a ::ₘ s :=
   Quot.inductionOn s fun _ => Quotient.sound <| Perm.swap _ _ _
 
 section Rec
 
-variable {C : Multiset α → Sort*}
+variable {motive : Multiset α → Sort*}
 
 /-- Dependent recursor on multisets.
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
 protected
-def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
-    (C_cons_heq :
-      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b))
-    (m : Multiset α) : C m :=
-  Quotient.hrecOn m (@List.rec α (fun l => C ⟦l⟧) C_0 fun a l b => C_cons a ⟦l⟧ b) fun _ _ h =>
+def rec (zero : motive 0) (cons : ∀ a m, motive m → motive (a ::ₘ m))
+    (cons_swap : ∀ a a' m b, cons a (a' ::ₘ m) (cons a' m b) ≍ cons a' (a ::ₘ m) (cons a m b))
+    (m : Multiset α) : motive m :=
+  Quotient.hrecOn m (@List.rec α (fun l => motive ⟦l⟧) zero fun a l b => cons a ⟦l⟧ b) fun _ _ h =>
     h.rec_heq
       (fun hl _ ↦ by congr 1; exact Quot.sound hl)
-      (C_cons_heq _ _ ⟦_⟧ _)
+      (cons_swap _ _ ⟦_⟧ _)
 
 /-- Companion to `Multiset.rec` with more convenient argument order. -/
 @[elab_as_elim]
 protected
-def recOn (m : Multiset α) (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
-    (C_cons_heq :
-      ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)) :
-    C m :=
-  Multiset.rec C_0 C_cons C_cons_heq m
+def recOn (m : Multiset α) (zero : motive 0) (cons : ∀ a m, motive m → motive (a ::ₘ m))
+    (cons_swap : ∀ a a' m b, cons a (a' ::ₘ m) (cons a' m b) ≍ cons a' (a ::ₘ m) (cons a m b)) :
+    motive m :=
+  Multiset.rec zero cons cons_swap m
 
-variable {C_0 : C 0} {C_cons : ∀ a m, C m → C (a ::ₘ m)}
-  {C_cons_heq :
-    ∀ a a' m b, C_cons a (a' ::ₘ m) (C_cons a' m b) ≍ C_cons a' (a ::ₘ m) (C_cons a m b)}
+variable {zero : motive 0} {cons : ∀ a m, motive m → motive (a ::ₘ m)}
+  {cons_swap : ∀ a a' m b, cons a (a' ::ₘ m) (cons a' m b) ≍ cons a' (a ::ₘ m) (cons a m b)}
 
 @[simp]
-theorem recOn_0 : @Multiset.recOn α C (0 : Multiset α) C_0 C_cons C_cons_heq = C_0 :=
+theorem recOn_zero : @Multiset.recOn α motive (0 : Multiset α) zero cons cons_swap = zero :=
   rfl
+
+@[deprecated (since := "2026-11-04")]
+alias recOn_0 := recOn_zero
 
 @[simp]
 theorem recOn_cons (a : α) (m : Multiset α) :
-    (a ::ₘ m).recOn C_0 C_cons C_cons_heq = C_cons a m (m.recOn C_0 C_cons C_cons_heq) :=
+    (a ::ₘ m).recOn zero cons cons_swap = cons a m (m.recOn zero cons cons_swap) :=
   Quotient.inductionOn m fun _ => rfl
 
 end Rec
@@ -313,12 +313,12 @@ theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
 
 @[simp] lemma singleton_subset : {a} ⊆ s ↔ a ∈ s := by simp [subset_iff]
 
-theorem induction_on' {p : Multiset α → Prop} (S : Multiset α) (h₁ : p 0)
-    (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → p s → p (insert a s)) : p S :=
-  @Multiset.induction_on α (fun T => T ⊆ S → p T) S (fun _ => h₁)
+theorem induction_on' {motive : Multiset α → Prop} (S : Multiset α) (zero : motive 0)
+    (insert : ∀ {a s}, a ∈ S → s ⊆ S → motive s → motive (insert a s)) : motive S :=
+  @Multiset.induction_on α (fun T => T ⊆ S → motive T) S (fun _ => zero)
     (fun _ _ hps hs =>
       let ⟨hS, sS⟩ := cons_subset.1 hs
-      h₂ hS sS (hps sS))
+      insert hS sS (hps sS))
     (Subset.refl S)
 
 end Subset
@@ -595,7 +595,7 @@ protected nonrec
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
   induction t using Multiset.induction_on generalizing s u with
-  | empty => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
+  | zero => rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
   | cons x t ih =>
     obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
