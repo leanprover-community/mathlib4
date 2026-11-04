@@ -385,26 +385,20 @@ less than `κ`. -/
 def CardinalLTGenerated (S : L.Substructure M) (κ : Cardinal) : Prop :=
   ∃ s : Set M, HasCardinalLT s κ ∧ closure L s = S
 
-theorem cardinalLTGenerated_def {S : L.Substructure M} {κ : Cardinal} :
-    S.CardinalLTGenerated κ ↔ ∃ s : Set M, HasCardinalLT s κ ∧ closure L s = S :=
-  Iff.rfl
-
 theorem cardinalLTGenerated_closure {s : Set M} {κ : Cardinal} (hs : HasCardinalLT s κ) :
     CardinalLTGenerated (closure L s) κ :=
   ⟨s, hs, rfl⟩
 
 theorem cardinalLTGenerated_closure_singleton (m : M) {κ : Cardinal}
-    (hκ : Cardinal.aleph0 ≤ κ) : CardinalLTGenerated (closure L ({m} : Set M)) κ := by
-  have : Finite ({m} : Set M) := (finite_singleton m).to_subtype
-  exact cardinalLTGenerated_closure (hasCardinalLT_of_finite ({m} : Set M) κ hκ)
+    (hκ : Cardinal.aleph0 ≤ κ) : CardinalLTGenerated (closure L ({m} : Set M)) κ :=
+  cardinalLTGenerated_closure (hasCardinalLT_of_finite ({m} : Set M) κ hκ)
 
 theorem CardinalLTGenerated.sup {S T : L.Substructure M} {κ : Cardinal}
     (hS : S.CardinalLTGenerated κ) (hT : T.CardinalLTGenerated κ)
-    (hκ : Cardinal.aleph0 ≤ κ) : (S ⊔ T).CardinalLTGenerated κ :=
-  let ⟨s, hs⟩ := cardinalLTGenerated_def.1 hS
-  let ⟨t, ht⟩ := cardinalLTGenerated_def.1 hT
-  cardinalLTGenerated_def.2
-    ⟨s ∪ t, hasCardinalLT_union hκ hs.1 ht.1, by rw [closure_union, hs.2, ht.2]⟩
+    (hκ : Cardinal.aleph0 ≤ κ) : (S ⊔ T).CardinalLTGenerated κ := by
+  rcases hS with ⟨s, hs⟩
+  rcases hT with ⟨t, ht⟩
+  exact ⟨s ∪ t, hasCardinalLT_union hκ hs.1 ht.1, by rw [closure_union, hs.2, ht.2]⟩
 
 instance small_bot : Small.{u} (⊥ : L.Substructure M) := by
   rw [← closure_empty]
@@ -573,9 +567,7 @@ theorem CardinalLTGenerated.map {f : M →[L] N} {S : L.Substructure M} {κ : Ca
     (hS : S.CardinalLTGenerated κ) : (S.map f).CardinalLTGenerated κ := by
   rcases hS with ⟨s, hs_card, hs⟩
   refine ⟨f '' s, ?_, by rw [closure_image, hs]⟩
-  exact hs_card.of_surjective
-    (fun x : s ↦ ⟨f x.1, x.1, x.2, rfl⟩)
-    (by rintro ⟨_, x, hx, rfl⟩; exact ⟨⟨x, hx⟩, rfl⟩)
+  exact hs_card.of_surjective (Set.imageFactorization f s) Set.imageFactorization_surjective
 
 section GaloisCoinsertion
 
