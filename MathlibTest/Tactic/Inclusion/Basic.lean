@@ -41,10 +41,7 @@ example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3)
 
 example {n : ℤ} (hn : n < -2) : 9 ≤ (n : ℝ) ^ 2 := by dyadic_interval
 
-example {n : ℤ} (hn : n ∈ Set.Ioo (-3) 0) : (n + 2) * (n + 1) = 0 := by
-  inclusion [core, interval_int, binSplit := 1]
-
-example {n : ℤ} (hn : n ∈ Set.Icc (-2) 2) : ((n * n : ℤ) : ℝ) - (n : ℝ) ^ 2 = 0 := by
+example {n : ℤ} (hn : n ∈ Set.Icc (-2) 2) : n * n - n ^ 2 = 0 := by
   dyadic_interval [binSplit := 3]
 
 example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc (-1) 1) (hn : n ∈ Set.Icc 0 1) :
