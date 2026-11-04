@@ -213,10 +213,10 @@ section Coprod
 variable (rels₁ : Set (FreeGroup α)) (rels₂ : Set (FreeGroup β))
 
 /-- The canonical inclusion map from the disjoint union of types to the free product of the
- relations -/
+relations. -/
 @[to_additive
 /-- The canonical inclusion map from the disjoint union of types to the free product of the
-relations -/]
+relations. -/]
 def toCoprod : α ⊕ β → Monoid.Coprod (PresentedGroup rels₁) (PresentedGroup rels₂) :=
   Sum.elim (Monoid.Coprod.inl ∘ .of) (Monoid.Coprod.inr ∘ .of)
 
