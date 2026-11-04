@@ -419,20 +419,24 @@ variable [Lattice α] [LocallyFiniteOrder α] {a b x : α}
 /-- `Finset.uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
 Note that we define it more generally in a lattice as `Finset.Icc (a ⊓ b) (a ⊔ b)`. In a
 product type, `Finset.uIcc` corresponds to the bounding box of the two elements. -/
+@[to_dual self (reorder := a b)]
 def uIcc (a b : α) : Finset α :=
   Icc (a ⊓ b) (a ⊔ b)
+
+to_dual_insert_cast uIcc := by grind
 
 @[inherit_doc]
 scoped[FinsetInterval] notation "[[" a ", " b "]]" => Finset.uIcc a b
 
-@[simp]
+@[to_dual none, simp, grind =]
 theorem mem_uIcc : x ∈ uIcc a b ↔ a ⊓ b ≤ x ∧ x ≤ a ⊔ b :=
   mem_Icc
 
-@[simp, norm_cast]
+@[to_dual self, simp, norm_cast]
 theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
   coe_Icc _ _
 
+@[to_dual self]
 theorem _root_.Fintype.card_uIcc (a b : α) [Fintype (Set.uIcc a b)] :
     Fintype.card (Set.uIcc a b) = #(uIcc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp [Set.uIcc]
