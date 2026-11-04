@@ -74,6 +74,10 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 
+theorem isBoundedAtImInfty_neg_iff {α : Type*} [SeminormedAddCommGroup α] {f : ℍ → α} :
+    IsBoundedAtImInfty (-f) ↔ IsBoundedAtImInfty f := by
+  simp_rw [UpperHalfPlane.isBoundedAtImInfty_iff, Pi.neg_apply, norm_neg]
+
 set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
@@ -94,5 +98,9 @@ lemma tendsto_smul_atImInfty {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
       abs_of_pos (UpperHalfPlane.im_pos _), mul_div_right_comm]
   apply tendsto_comap.const_mul_atTop
   simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
+
+lemma ne_zero_of_tendsto_ne_zero {α : Type*} [SeminormedAddCommGroup α] [T2Space α] {f : ℍ → α}
+    {c : α} (hc : c ≠ 0) (hf : Tendsto f atImInfty (nhds c)) : f ≠ 0 := fun h ↦
+  hc (tendsto_nhds_unique tendsto_const_nhds (h ▸ hf)).symm
 
 end UpperHalfPlane
