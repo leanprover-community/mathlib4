@@ -370,8 +370,8 @@ lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
     simp only [toReal_enorm, smul_smul]
     rw [mul_inv_cancel₀, one_smul]
     simpa using hx
-  rw [this, variation_withDensity I (by simp [nnNorm_smul, mul_comm]),
-    variation_transpose_eq _ _ (by simp [nnNorm_smul, mul_comm]), Measure.variation_toSignedMeasure,
+  rw [this, variation_withDensity I (by simp [nnNorm_sMul, mul_comm]),
+    variation_transpose_eq _ _ (by simp [nnNorm_sMul, mul_comm]), Measure.variation_toSignedMeasure,
     ← withDensity_mul₀ hf.aestronglyMeasurable.enorm]; swap
   · exact (hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable).enorm
   congr with x

@@ -75,7 +75,7 @@ instance CStarRing.instRegularNormedAlgebra : RegularNormedAlgebra 𝕜 E where
       refine ⟨_, ⟨k • star a, ?_, rfl⟩, ?_⟩
       · simpa only [mem_closedBall_zero_iff, norm_smul, one_mul, norm_star] using!
           (NNReal.le_inv_iff_mul_le ha.ne').1 (one_mul ‖a‖₊⁻¹ ▸ hk₂.le : ‖k‖₊ ≤ ‖a‖₊⁻¹)
-      · simp only [map_smul, nnNorm_smul, mul_apply', CStarRing.nnNorm_self_mul_star]
+      · simp only [map_smul, nnNorm_sMul, mul_apply', CStarRing.nnNorm_self_mul_star]
         rwa [← div_lt_iff₀ (mul_pos ha ha), div_eq_mul_inv, mul_inv, ← mul_assoc]
 
 section CStarProperty

@@ -205,10 +205,10 @@ section Norm
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E] (u : Circle) (v : E)
 
 @[simp] protected lemma norm_smul : ‖u • v‖ = ‖v‖ := by simp [smul_def, norm_smul]
-@[simp] protected lemma nnNorm_smul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
+@[simp] protected lemma nnNorm_sMul : ‖u • v‖₊ = ‖v‖₊ := NNReal.coe_injective (u.norm_smul v)
 @[simp] protected lemma enorm_smul : ‖u • v‖ₑ = ‖v‖ₑ := by simp [eNorm_eq_nnNorm]
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_smul := nnNorm_smul
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul := nnNorm_sMul
 
 instance : IsIsometricSMul Circle E :=
   ⟨fun _ ↦ Isometry.of_dist_eq fun _ _ ↦ by simp [dist_eq_norm, ← smul_sub]⟩

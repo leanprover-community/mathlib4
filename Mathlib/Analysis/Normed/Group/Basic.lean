@@ -453,33 +453,33 @@ theorem nnNorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_add_le]
 alias nnnorm_mul_le' := nnNorm_mul_le'
 
-@[to_additive norm_nsmul_le]
+@[to_additive norm_nsMul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
   | n + 1 => by simpa [pow_succ, add_mul] using norm_mul_le_of_le' norm_pow_le_mul_norm le_rfl
 
-@[to_additive nnNorm_nsmul_le]
+@[to_additive nnNorm_nsMul_le]
 lemma nnNorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
   simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using! norm_pow_le_mul_norm
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_nsmul_le]
 alias nnnorm_pow_le_mul_norm := nnNorm_pow_le_mul_norm
 
-@[to_additive (attr := simp) nnNorm_abs_zsmul]
+@[to_additive (attr := simp) nnNorm_abs_zsMul]
 theorem nnNorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_zpow_abs a n
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_abs_zsmul]
 alias nnnorm_zpow_abs := nnNorm_zpow_abs
 
-@[to_additive (attr := simp) nnNorm_natAbs_smul]
+@[to_additive (attr := simp) nnNorm_natAbs_sMul]
 theorem nnNorm_pow_natAbs (a : E) (n : ℤ) : ‖a ^ n.natAbs‖₊ = ‖a ^ n‖₊ :=
   NNReal.eq <| norm_pow_natAbs a n
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_natAbs_smul]
 alias nnnorm_pow_natAbs := nnNorm_pow_natAbs
 
-@[to_additive nnNorm_isUnit_zsmul]
+@[to_additive nnNorm_isUnit_zsMul]
 theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_zpow_isUnit a hn
 
@@ -487,10 +487,10 @@ theorem nnNorm_zpow_isUnit (a : E) {n : ℤ} (hn : IsUnit n) : ‖a ^ n‖₊ = 
 alias nnnorm_zpow_isUnit := nnNorm_zpow_isUnit
 
 @[simp]
-theorem nnNorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
+theorem nnNorm_units_zsMul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E) : ‖n • a‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_isUnit_zsmul a n.isUnit
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_units_zsmul := nnNorm_units_zsmul
+@[deprecated (since := "2026-10-31")] alias nnnorm_units_zsmul := nnNorm_units_zsMul
 
 @[to_additive (attr := simp)]
 theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nnDist_eq_nnNorm_inv_mul]

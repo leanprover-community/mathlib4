@@ -315,7 +315,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     refine NNReal.summable_of_le ?_ this
     intro i
     gcongr
-    apply nnNorm_smul_le
+    apply nnNorm_sMul_le
 
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
   hf.const_smul c
@@ -726,7 +726,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     dsimp only
     rw [← NNReal.mul_rpow, lp.coeFn_smul, Pi.smul_apply]
     gcongr
-    apply nnNorm_smul_le
+    apply nnNorm_sMul_le
 
 instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
   IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le Fact.out).ne'

@@ -465,7 +465,7 @@ private theorem norm_unitOf (a : α) : ‖unitOf a‖₊ = 1 := by
   split_ifs with h
   · simp
   · rw [← nnNorm_eq_zero] at h
-    rw [nnNorm_smul, nnNorm_inv, nnNorm_norm, mul_inv_cancel₀ h]
+    rw [nnNorm_sMul, nnNorm_inv, nnNorm_norm, mul_inv_cancel₀ h]
 
 private theorem mul_unitOf (a : α) : a * unitOf a = algebraMap _ _ (‖a‖₊ : ℝ) := by
   simp only [unitOf, coe_nnNorm]

@@ -782,10 +782,10 @@ theorem norm_mkPiAlgebraFin [NormOneClass A] :
 end
 
 @[simp]
-theorem nnNorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
+theorem nnNorm_sMulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
   refine le_antisymm ?_ ?_
-  · refine opNNNorm_le_iff.2 fun m => (nnNorm_smul_le _ _).trans ?_
+  · refine opNNNorm_le_iff.2 fun m => (nnNorm_sMul_le _ _).trans ?_
     rw [mul_right_comm]
     gcongr
     exact le_opNNNorm _ _
@@ -795,14 +795,14 @@ theorem nnNorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     intro m
     rw [div_mul_eq_mul_div, le_div_iff₀ hz]
     refine le_trans ?_ ((f.smulRight z).le_opNNNorm m)
-    rw [smulRight_apply, nnNorm_smul]
+    rw [smulRight_apply, nnNorm_sMul]
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_smulRight := nnNorm_smulRight
+@[deprecated (since := "2026-10-31")] alias nnnorm_smulRight := nnNorm_sMulRight
 
 @[simp]
 theorem norm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖ = ‖f‖ * ‖z‖ :=
-  congr($(nnNorm_smulRight f z).toReal)
+  congr($(nnNorm_sMulRight f z).toReal)
 
 @[simp]
 theorem norm_mkPiRing (z : G) : ‖ContinuousMultilinearMap.mkPiRing 𝕜 ι z‖ = ‖z‖ := by

@@ -322,7 +322,7 @@ theorem setLIntegral_nnNorm_condExpL2_indicator_le (hm : m ≤ m0) (hs : Measura
       setLIntegral_congr_fun_ae (hm t ht)
         ((condExpL2_indicator_ae_eq_smul 𝕜 hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
-      simp_rw [nnNorm_smul, ENNReal.coe_mul]
+      simp_rw [nnNorm_sMul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
       exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]
@@ -396,7 +396,7 @@ theorem setLIntegral_nnNorm_condExpIndSMul_le (hm : m ≤ m0) (hs : MeasurableSe
       setLIntegral_congr_fun_ae (hm t ht)
         ((condExpIndSMul_ae_eq_smul hm hs hμs x).mono fun a ha _ => by rw [ha])
     _ = (∫⁻ a in t, ‖(condExpL2 ℝ ℝ hm (indicatorConstLp 2 hs hμs 1) : α → ℝ) a‖₊ ∂μ) * ‖x‖₊ := by
-      simp_rw [nnNorm_smul, ENNReal.coe_mul]
+      simp_rw [nnNorm_sMul, ENNReal.coe_mul]
       rw [lintegral_mul_const]
       exact (Lp.stronglyMeasurable _).enorm (ε := ℝ)
     _ ≤ μ (s ∩ t) * ‖x‖₊ := by grw [lintegral_nnNorm_condExpL2_indicator_le_real hs hμs ht hμt]

@@ -217,14 +217,14 @@ with respect to a vector measure. -/
 @[simp] lemma variation_transpose_lsmul :
     (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation = μ.variation := by
   apply variation_transpose_eq
-  simp [nnNorm_smul, mul_comm]
+  simp [nnNorm_sMul, mul_comm]
 
 /-- Control of the variation of the vector measure which appears in the integral of a vector
 function with respect to a signed measure. -/
 @[simp] lemma variation_transpose_lsmul_flip [Nontrivial E] {μ : SignedMeasure X} :
     (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ (E := E)).flip).variation = μ.variation := by
   apply variation_transpose_eq
-  simp [nnNorm_smul, mul_comm]
+  simp [nnNorm_sMul, mul_comm]
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `μ.variation`. -/

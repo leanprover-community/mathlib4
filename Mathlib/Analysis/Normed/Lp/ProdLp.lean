@@ -921,7 +921,7 @@ section IsBoundedSMul
 variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [IsBoundedSMul 𝕜 α] [IsBoundedSMul 𝕜 β]
 
 instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
-  .of_nnNorm_smul_le fun c f => by
+  .of_nnNorm_sMul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnNorm_ofLp, ofLp_smul]
       exact norm_smul_le _ _
@@ -930,7 +930,7 @@ instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
       rw [prod_nnNorm_eq_add hpt, prod_nnNorm_eq_add hpt, one_div, NNReal.rpow_inv_le_iff hp0,
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
         ← NNReal.mul_rpow, ← NNReal.mul_rpow]
-      gcongr <;> exact nnNorm_smul_le _ _
+      gcongr <;> exact nnNorm_sMul_le _ _
 
 variable {𝕜 p α β}
 
@@ -947,14 +947,14 @@ end IsBoundedSMul
 
 instance instProdNormSMulClass [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β]
     [NormSMulClass 𝕜 α] [NormSMulClass 𝕜 β] : NormSMulClass 𝕜 (WithLp p (α × β)) :=
-  .of_nnNorm_smul fun c f => by
+  .of_nnNorm_sMul fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · simp only [← prod_nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_smul]
+    · simp only [← prod_nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_sMul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [prod_nnNorm_eq_add hpt, prod_nnNorm_eq_add hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one, mul_add,
-        ← NNReal.mul_rpow, ← NNReal.mul_rpow, smul_fst, smul_snd, nnNorm_smul, nnNorm_smul]
+        ← NNReal.mul_rpow, ← NNReal.mul_rpow, smul_fst, smul_snd, nnNorm_sMul, nnNorm_sMul]
 
 section SeminormedAddCommGroup
 

@@ -533,34 +533,34 @@ variable {𝕜 α E : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedR
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm_of_pos (p : ℝ≥0∞) (hp : 0 < p) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
   simpa using! eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_pos p (· • ·) 1
-    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _) hp
+    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _) hp
 
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hφ : AEStronglyMeasurable φ μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ := by
   simpa using! eLpNorm_le_eLpNorm_top_mul_eLpNorm p (· • ·) 1
-    continuous_smul hφ (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _)
+    continuous_smul hφ (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _)
 
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top_of_pos (p : ℝ≥0∞) (hp : 0 < p) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
   simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm_top_of_pos p (· • ·) 1
-    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _) hp
+    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _) hp
 
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ) :
     eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ := by
   simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm_top p (· • ·) 1
-    continuous_smul hf (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _)
+    continuous_smul hf (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _)
 
 theorem eLpNorm'_smul_le_mul_eLpNorm' {p q r : ℝ} (hf : AEStronglyMeasurable f μ)
     {φ : α → 𝕜} (hφ : AEStronglyMeasurable φ μ) (hpqr : Real.HolderTriple q r p) :
     eLpNorm' (φ • f) p μ ≤ eLpNorm' φ q μ * eLpNorm' f r μ := by
   simpa using! eLpNorm'_le_eLpNorm'_mul_eLpNorm' (· • ·) 1 hφ hf
-    (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _) hpqr
+    (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _) hpqr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm_of_pos {p q r : ℝ≥0∞} (hr : 0 < r) [hpqr : HolderTriple p q r] :
     eLpNorm (φ • f) r μ ≤ eLpNorm φ p μ * eLpNorm f q μ := by
   simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm_of_pos (· • ·) 1
-    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _) hr
+    continuous_smul (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _) hr
 
 /-- Hölder's inequality, as an inequality on the `ℒp` seminorm of a scalar product `φ • f`. -/
 theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞}
@@ -568,12 +568,12 @@ theorem eLpNorm_smul_le_mul_eLpNorm {p q r : ℝ≥0∞}
     [hpqr : HolderTriple p q r] :
     eLpNorm (φ • f) r μ ≤ eLpNorm φ p μ * eLpNorm f q μ := by
   simpa using! eLpNorm_le_eLpNorm_mul_eLpNorm (· • ·) 1 continuous_smul hφ hf
-    (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _)
+    (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _)
 
 theorem MemLp.smul {p q r : ℝ≥0∞} {f : α → E} {φ : α → 𝕜} (hφ : MemLp φ p μ) (hf : MemLp f q μ)
     [hpqr : HolderTriple p q r] : MemLp (φ • f) r μ := by
   apply hφ.of_bilin (· • ·) 1 hf continuous_smul
-    (.of_forall fun _ => by simpa using! nnNorm_smul_le _ _)
+    (.of_forall fun _ => by simpa using! nnNorm_sMul_le _ _)
 
 end IsBoundedSMul
 

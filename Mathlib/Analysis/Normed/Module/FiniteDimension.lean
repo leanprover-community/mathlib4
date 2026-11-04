@@ -365,7 +365,7 @@ theorem opNNNorm_le {ι : Type*} [Fintype ι] (v : Basis ι 𝕜 E) {u : E →L[
       ‖u e‖₊ = ‖u (∑ i, v.equivFun e i • v i)‖₊ := by rw [v.sum_equivFun]
       _ = ‖∑ i, v.equivFun e i • (u <| v i)‖₊ := by simp only [equivFun_apply, map_sum, map_smul]
       _ ≤ ∑ i, ‖v.equivFun e i • (u <| v i)‖₊ := nnNorm_sum_le _ _
-      _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnNorm_smul]
+      _ = ∑ i, ‖v.equivFun e i‖₊ * ‖u (v i)‖₊ := by simp only [nnNorm_sMul]
       _ ≤ ∑ i, ‖v.equivFun e i‖₊ * M := by gcongr; apply hu
       _ = (∑ i, ‖v.equivFun e i‖₊) * M := by rw [Finset.sum_mul]
       _ ≤ Fintype.card ι • (‖φ‖₊ * ‖e‖₊) * M := by

@@ -697,10 +697,10 @@ lemma norm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) : �
   simpa [Nat.cast_smul_eq_nsmul] using norm_smul (n : K) x
 
 variable (K) in
-lemma nnNorm_nsmul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
-    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnNorm_smul (n : K) x
+lemma nnNorm_nsMul [NormedAddCommGroup E] [NormedSpace K E] (n : ℕ) (x : E) :
+    ‖n • x‖₊ = n • ‖x‖₊ := by simpa [Nat.cast_smul_eq_nsmul] using nnNorm_sMul (n : K) x
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_nsmul := nnNorm_nsmul
+@[deprecated (since := "2026-10-31")] alias nnnorm_nsmul := nnNorm_nsMul
 
 theorem mul_self_norm (z : K) : ‖z‖ * ‖z‖ = normSq z := by rw [normSq_eq_def', sq]
 
@@ -836,7 +836,7 @@ lemma norm_nnqsmul (q : ℚ≥0) (x : E) : ‖q • x‖ = q • ‖x‖ := by
 
 variable (K) in
 lemma nnNorm_nnqsMul (q : ℚ≥0) (x : E) : ‖q • x‖₊ = q • ‖x‖₊ := by
-  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_smul (q : K) x
+  simpa [NNRat.cast_smul_eq_nnqsmul] using! nnNorm_sMul (q : K) x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_nnqsmul := nnNorm_nnqsMul
 

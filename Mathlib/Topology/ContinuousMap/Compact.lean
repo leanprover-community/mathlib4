@@ -352,17 +352,17 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnNorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnNorm_sMul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
-  simp only [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_smul, iSup_mul]
+  simp only [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_sMul, iSup_mul]
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_smul_const := nnNorm_smul_const
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul_const := nnNorm_sMul_const
 
 @[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
-  simp only [← coe_nnNorm, NNReal.coe_mul, nnNorm_smul_const]
+  simp only [← coe_nnNorm, NNReal.coe_mul, nnNorm_sMul_const]
 
 section NormSum
 

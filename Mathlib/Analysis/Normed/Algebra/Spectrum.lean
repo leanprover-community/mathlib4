@@ -383,7 +383,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
         · simp only [nnNorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
         · have nnNorm_lt : ‖y‖₊ < ‖a‖₊⁻¹ := by
             simpa only [← coe_inv h, mem_ball_zero_iff, Metric.eball_coe] using! hy
-          rwa [← coe_nnNorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnNorm_smul,
+          rwa [← coe_nnNorm, ← Real.lt_toNNReal_iff_coe_lt, Real.toNNReal_one, nnNorm_sMul,
             ← NNReal.lt_inv_iff_mul_lt h]
       simpa [← smul_pow, (summable_geometric_of_norm_lt_one norm_lt).hasSum_iff] using!
         (NormedRing.inverse_one_sub _ norm_lt).symm }
