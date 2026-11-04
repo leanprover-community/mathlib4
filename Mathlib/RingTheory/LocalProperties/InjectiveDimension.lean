@@ -33,7 +33,6 @@ set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
     (ModuleCat.localizedModuleFunctor.{v} S).PreservesInjectiveObjects where
   injective_obj X {inj} := by
-    let _ : Small.{v, u} (Localization S) := small_of_surjective Localization.mkHom_surjective
     rw [← Module.injective_iff_injective_object] at inj ⊢
     simpa [ModuleCat.localizedModuleFunctor] using
       Module.injective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
@@ -41,7 +40,6 @@ instance [Small.{v} R] [IsNoetherianRing R] (S : Submonoid R) :
 lemma localizedModule_hasInjectiveDimensionLE [Small.{v, u} R] [IsNoetherianRing R] (n : ℕ)
     (S : Submonoid R) (M : ModuleCat.{v} R) [HasInjectiveDimensionLE M n] :
     HasInjectiveDimensionLE (M.localizedModule S) n := by
-  have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
   induction n generalizing M with
   | zero =>
     have injle : HasInjectiveDimensionLE M 0 := ‹_›
@@ -91,15 +89,12 @@ lemma hasInjectiveDimensionLE_iff_forall_maximalSpectrum [Small.{v, u} R] [IsNoe
   | zero =>
     simp only [HasInjectiveDimensionLE, zero_add, ← injective_iff_hasInjectiveDimensionLT_one]
     refine ⟨fun h m ↦ ?_, fun h ↦ ?_⟩
-    · let _ : Small.{v} (Localization m.1.primeCompl) :=
-        small_of_surjective Localization.mkHom_surjective
-      let _ : Module.Injective R M := Module.injective_module_of_injective_object R M
+    · let _ : Module.Injective R M := Module.injective_module_of_injective_object R M
       rw [← Module.injective_iff_injective_object]
       exact Module.injective_of_isLocalizedModule m.1.primeCompl
         (M.localizedModuleMkLinearMap m.1.primeCompl)
     · rw [← Module.injective_iff_injective_object]
       apply Module.injective_of_localization_maximal (fun p hp ↦ ?_)
-      let : Small.{v} (Localization.AtPrime p) := small_of_surjective Localization.mkHom_surjective
       have : Module.Injective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
         simpa [Module.injective_iff_injective_object] using h ⟨p, hp⟩
       rw [← Module.Baer.iff_injective] at this ⊢
