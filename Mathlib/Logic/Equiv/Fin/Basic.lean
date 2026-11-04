@@ -333,15 +333,21 @@ def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where
   left_inv _ := Prod.ext (Fin.divNat_mkDivMod _ _) (Fin.modNat_mkDivMod _ _)
   right_inv := Fin.divNat_mkDivMod_modNat
 
-/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
-This is like `finProdFinEquiv.symm` but with `m` infinite.
-See `Nat.div_mod_unique` for a similar propositional statement. -/
+/-- Equivalence between `ℕ × Fin n` and `ℕ` for nonzero `n`, sending `(q, r)` to the natural number
+`n * q + r` with quotient `q` and remainder `r` modulo `n`.
+This is like `finProdFinEquiv` but with `m` infinite; its inverse is `Nat.divModEquiv`. -/
 @[simps]
-def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
-  toFun := Function.prod (· / n) (Fin.ofNat n)
-  invFun  := Function.uncurry n.mkDivFin
-  left_inv := mkDivFin_div_ofNat
-  right_inv _ := Prod.ext (div_mkDivFin _ _) (ofNat_mkDivFin _ _)
+def natProdFinEquiv (n : ℕ) [NeZero n] : ℕ × Fin n ≃ ℕ where
+  toFun := Function.uncurry n.mkDivFin
+  invFun := Function.prod (· / n) (Fin.ofNat n)
+  left_inv _ := Prod.ext (Nat.div_mkDivFin _ _) (Nat.ofNat_mkDivFin _ _)
+  right_inv := Nat.mkDivFin_div_ofNat
+
+/-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
+This is the inverse of `natProdFinEquiv`, and is like `finProdFinEquiv.symm` but with `m` infinite.
+See `Nat.div_mod_unique` for a similar propositional statement. -/
+@[simps!]
+def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n := (natProdFinEquiv n).symm
 
 /-- The equivalence induced by `a ↦ (a / n, a % n)` for nonzero `n`.
 See `Int.ediv_emod_unique` for a similar propositional statement. -/

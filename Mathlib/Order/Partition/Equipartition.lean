@@ -128,21 +128,20 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
     ∀ a b : s, P.part a = P.part b ↔ f a % #P.parts = f b % #P.parts := by
   obtain ⟨f, hf⟩ := P.exists_enumeration
   obtain ⟨g, hg⟩ := hP.exists_partsEquiv
-  let z a : Fin #s := ⟨(#P.parts).mkDivMod (f a).2 (g (f a).1), by
-    rw [← Nat.div_add_mod #s #P.parts]
-    rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
-    · calc
-        _ < #P.parts * ((f a).2 + 1) := Nat.add_lt_add_left (g (f a).1).2 _
-        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.2
-        _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
-    · exact add_lt_add_of_le_of_lt (mul_le_mul_right (by lia) _) ((hg (f a).1).mp c)⟩
-  have bij : z.Bijective := by
-    simp_rw [bijective_iff_injective_and_card, card_coe, Fintype.card_fin, and_true, z,
-      Function.Injective, Fin.mk_eq_mk, (#P.parts).mkDivMod_inj_fin, g.apply_eq_iff_eq,
-      ← f.apply_eq_iff_eq, Sigma.ext_iff]
-    exact fun _ _ e => ⟨e.2, (Fin.heq_ext_iff (by grind)).mpr <| e.1⟩
-  exact ⟨Equiv.ofBijective _ bij, fun _ _ => by simp_rw [Equiv.ofBijective_apply, z,
-    Nat.mod_mkDivMod_fin, Fin.val_inj, g.apply_eq_iff_eq, hf]⟩
+  simp_rw [hf]
+  let z a : Fin #s := ⟨(#P.parts).mkDivFin (f a).2 (g (f a).1), by
+    have : NeZero #P.parts := ⟨(g (f a).1).pos.ne'⟩
+    refine (Nat.mkDivFin_lt_mkDivFin_iff.mpr ?_).trans_eq (Nat.mkDivFin_div_ofNat #s)
+    rw [Fin.lt_def, Fin.val_ofNat, ← hg]
+    have := (f a).2.isLt
+    have := hP.card_part_le_average_add_one (f a).1.2
+    lia⟩
+  have hz : z.Injective := fun a b h => by
+    obtain ⟨h₁, h₂⟩ := Nat.mkDivFin_inj.mp (congrArg Fin.val h)
+    rw [g.apply_eq_iff_eq] at h₂
+    exact f.injective <| Sigma.ext h₂ <| (Fin.heq_ext_iff (h₂ ▸ rfl)).mpr h₁
+  refine ⟨.ofBijective z ((bijective_iff_injective_and_card z).mpr ⟨hz, by simp⟩), fun a b => ?_⟩
+  simp_rw [Equiv.ofBijective_apply, z, Nat.mod_mkDivFin, Fin.val_inj, g.apply_eq_iff_eq]
 
 /-! ### Discrete and indiscrete finpartitions -/
 

@@ -491,6 +491,9 @@ theorem mkDivMod_def {n i j : ℕ} : n.mkDivMod i j = n * i + j := rfl
 @[simp] theorem ofNat_mkDivMod {n : ℕ} [NeZero n] (i j : ℕ) :
     Fin.ofNat n (n.mkDivMod i j) = Fin.ofNat n j := Fin.ext <| mod_mkDivMod _ _
 
+/-- `Nat.mkDivFin n i j` is `Nat.mkDivMod n i j` with the remainder `j` bundled as a `Fin n`,
+so that it is guaranteed to be the remainder of the result modulo `n`.
+This makes the quotient `i` and remainder `j` recoverable without side conditions. -/
 def mkDivFin (n i : ℕ) (j : Fin n) : ℕ := n.mkDivMod i j
 
 @[simp, grind =] theorem div_mkDivFin {n : ℕ} (i : ℕ) (j : Fin n) :
@@ -507,6 +510,19 @@ def mkDivFin (n i : ℕ) (j : Fin n) : ℕ := n.mkDivMod i j
 @[simp, grind =] theorem mkDivFin_inj {n i₁ i₂ : ℕ} {j₁ : Fin n} {j₂ : Fin n} :
     n.mkDivFin i₁ j₁ = n.mkDivFin i₂ j₂ ↔ i₁ = i₂ ∧ j₁ = j₂ :=
   (n.ext_div_mod_iff _ _).trans <| by simp [Fin.ext_iff]
+
+/-- `Nat.mkDivFin` is strictly monotone with respect to the lexicographic order on
+quotient and remainder. -/
+theorem mkDivFin_lt_mkDivFin_iff {n i₁ i₂ : ℕ} {j₁ j₂ : Fin n} :
+    n.mkDivFin i₁ j₁ < n.mkDivFin i₂ j₂ ↔ i₁ < i₂ ∨ i₁ = i₂ ∧ j₁ < j₂ := by
+  refine ⟨fun h => ?_, ?_⟩
+  · have : i₁ ≤ i₂ := by simpa using Nat.div_le_div_right (c := n) (Nat.le_of_lt h)
+    rcases Nat.lt_or_eq_of_le this with h' | rfl
+    · exact .inl h'
+    · exact .inr ⟨rfl, Fin.lt_def.mpr (Nat.lt_of_add_lt_add_left h)⟩
+  · rintro (h | ⟨rfl, h⟩)
+    · exact Nat.lt_of_div_lt_div (c := n) (by simpa using h)
+    · exact Nat.add_lt_add_left (Fin.lt_def.mp h) _
 
 @[simp, grind =] theorem mkDivFin_div_ofNat {n : ℕ} [NeZero n] (k : ℕ) :
     n.mkDivFin (k / n) (Fin.ofNat n k) = k := Nat.div_add_mod _ _
