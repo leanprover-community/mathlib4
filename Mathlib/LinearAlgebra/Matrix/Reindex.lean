@@ -314,17 +314,11 @@ theorem reindexStarAlgEquiv_trans_reindexStarAlgEquiv (e : m ≃ n) (e' : n ≃ 
 
 end StarAlgebra
 
-section StarAlgebraToAlgEquiv
-
-variable [CommSemiring R] [Fintype n] [Fintype m] [Semiring A] [Algebra R A] [Star A]
-  [DecidableEq m] [DecidableEq n]
-
 @[simp]
-theorem toAlgEquiv_reindexStarAlgEquiv (e : m ≃ n) :
+theorem toAlgEquiv_reindexStarAlgEquiv [CommSemiring R] [Fintype m] [Fintype n] [Semiring A]
+    [Algebra R A] [Star A] [DecidableEq m] [DecidableEq n] (e : m ≃ n) :
     (reindexStarAlgEquiv R A e).toAlgEquiv = reindexAlgEquiv R A e :=
   rfl
-
-end StarAlgebraToAlgEquiv
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 
