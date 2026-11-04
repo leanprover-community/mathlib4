@@ -162,10 +162,8 @@ theorem normalizedDerivOfComplex_discriminant : D Δ = E2 * Δ := by
     filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.2] with w hw
     simp [discriminant, ofComplex_apply_of_im_pos hw]
   have hη := differentiableAt_eta_of_mem_upperHalfPlaneSet z.2
-  have h1 : deriv eta z = (π * I / 12) * E2 z * eta z := by
-    rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
-  simp only [normalizedDerivOfComplex, Pi.mul_apply, hΔ.deriv_eq, deriv_fun_pow hη, h1,
-    discriminant]
+  simp only [normalizedDerivOfComplex, Pi.mul_apply, hΔ.deriv_eq, deriv_fun_pow hη,
+    deriv_eta_eq_E2_mul_eta z, discriminant]
   field
 
 open Derivative in
