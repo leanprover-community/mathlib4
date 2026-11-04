@@ -361,10 +361,16 @@ lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse 
   apply image2_swap
 
 @[simp]
+lemma reverse_iUnion {ι : Sort*} (l : ι → Language α) : reverse (⋃ i, l i) = ⋃ i, (l i).reverse :=
+  preimage_iUnion
+
 lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
   preimage_iUnion
 
 @[simp]
+lemma reverse_iInter {ι : Sort*} (l : ι → Language α) : reverse (⋂ i, l i) = ⋂ i, (l i).reverse :=
+  preimage_iInter
+
 lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse :=
   preimage_iInter
 
@@ -387,7 +393,6 @@ lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n 
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
-@[simp]
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 

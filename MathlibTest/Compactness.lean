@@ -10,11 +10,11 @@ example : IsCompact <| Metric.closedBall (0 : Fin 5 → ℝ) 7 := by compactness
 
 example {a b c d : ℝ} : IsCompact (Icc a b ∩ Icc c d) := by compactness
 
-example : IsCompact {0} := by compactness
+example : IsCompact ({0} : Set ℕ) := by compactness
 
-example {a b c : ℝ} : IsCompact {a, b, c} := by compactness
+example {a b c : ℝ} : IsCompact ({a, b, c} : Set ℝ) := by compactness
 
-example {a b c d e : ℝ} : IsCompact {a, b, c, d, e} := by compactness
+example {a b c d e : ℝ} : IsCompact ({a, b, c, d, e} : Set ℝ) := by compactness
 
 example {s : Set ℝ} (h : s.Finite) : IsCompact s := by compactness
 
