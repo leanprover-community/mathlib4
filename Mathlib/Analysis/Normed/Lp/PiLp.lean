@@ -831,10 +831,10 @@ end L2
 instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, IsBoundedSMul 𝕜 (β i)] :
     IsBoundedSMul 𝕜 (PiLp p β) :=
-  .of_nnNorm_sMul_le fun c f => by
+  .of_nnNorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · rw [← nnNorm_ofLp, ← nnNorm_ofLp, ofLp_smul]
-      exact nnNorm_sMul_le c (ofLp f)
+      exact nnNorm_smul_le c (ofLp f)
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [nnNorm_eq_sum hpt, nnNorm_eq_sum hpt, one_div, NNReal.rpow_inv_le_iff hp0,
@@ -842,20 +842,20 @@ instance instIsBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup 
         Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
       gcongr
-      apply nnNorm_sMul_le
+      apply nnNorm_smul_le
 
 instance instNormSMulClass [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
     [∀ i, Module 𝕜 (β i)] [∀ i, NormSMulClass 𝕜 (β i)] :
     NormSMulClass 𝕜 (PiLp p β) :=
-  .of_nnNorm_sMul fun c f => by
+  .of_nnNorm_smul fun c f => by
     rcases p.dichotomy with (rfl | hp)
-    · rw [← nnNorm_ofLp, ← nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_sMul]
+    · rw [← nnNorm_ofLp, ← nnNorm_ofLp, WithLp.ofLp_smul, nnNorm_smul]
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [nnNorm_eq_sum hpt, nnNorm_eq_sum hpt, one_div, NNReal.rpow_inv_eq_iff hp0.ne',
         NNReal.mul_rpow, ← NNReal.rpow_mul, inv_mul_cancel₀ hp0.ne', NNReal.rpow_one,
         Finset.mul_sum]
-      simp_rw [← NNReal.mul_rpow, smul_apply, nnNorm_sMul]
+      simp_rw [← NNReal.mul_rpow, smul_apply, nnNorm_smul]
 
 /-- The product of finitely many normed spaces is a normed space, with the `L^p` norm. -/
 instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]

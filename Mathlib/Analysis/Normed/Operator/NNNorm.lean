@@ -180,8 +180,8 @@ theorem exists_lt_apply_of_lt_opNNNorm (f : E →SL[σ₁₂] F) {r : ℝ≥0}
   rw [← inv_inv ‖f y‖₊, NNReal.lt_inv_iff_mul_lt (inv_ne_zero hfy), mul_assoc, mul_comm ‖y‖₊, ←
     mul_assoc, ← NNReal.lt_inv_iff_mul_lt hy'] at hy
   obtain ⟨k, hk₁, hk₂⟩ := NormedField.exists_lt_nnNorm_lt 𝕜 hy
-  refine ⟨k • y, (nnNorm_sMul k y).symm ▸ (NNReal.lt_inv_iff_mul_lt hy').1 hk₂, ?_⟩
-  rwa [map_smulₛₗ f, nnNorm_sMul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv,
+  refine ⟨k • y, (nnNorm_smul k y).symm ▸ (NNReal.lt_inv_iff_mul_lt hy').1 hk₂, ?_⟩
+  rwa [map_smulₛₗ f, nnNorm_smul, ← div_lt_iff₀ hfy.bot_lt, div_eq_mul_inv,
     RingHomIsometric.nnNorm_map]
 
 theorem exists_lt_apply_of_lt_opNorm (f : E →SL[σ₁₂] F) {r : ℝ}
@@ -231,7 +231,7 @@ theorem exists_nnNorm_eq_one_lt_apply_of_lt_opNNNorm [NormedAlgebra ℝ 𝕜]
   obtain rfl | hx0 := eq_zero_or_nnNorm_pos x
   · simp at hr
   use algebraMap ℝ 𝕜 ‖x‖⁻¹ • x
-  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnNorm_sMul, inv_mul_cancel₀ hx0.ne'] using this
+  suffices r < ‖x‖₊⁻¹ * ‖f x‖₊ by simpa [nnNorm_smul, inv_mul_cancel₀ hx0.ne'] using this
   calc
     r < 1⁻¹ * ‖f x‖₊ := by simpa
     _ < ‖x‖₊⁻¹ * ‖f x‖₊ := by gcongr; exact hr.pos

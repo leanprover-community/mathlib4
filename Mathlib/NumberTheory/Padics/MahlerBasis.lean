@@ -169,7 +169,7 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     rw [norm_neg, ← coe_nnNorm, coe_le_coe]
     refine nnNorm_sum_le_of_forall_le (fun i hi ↦ Finset.le_sup_of_le hi ?_)
     rw [← Nat.cast_smul_eq_nsmul ℤ_[p], div_eq_inv_mul]
-    refine (nnNorm_sMul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
+    refine (nnNorm_smul_le _ _).trans <| mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     rw [mem_range] at hi
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)

@@ -468,10 +468,10 @@ theorem norm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c
 /-- The non-negative norm of the tensor product of a scalar linear map and of an element of a normed
 space is the product of the non-negative norms. -/
 @[simp]
-theorem nnNorm_sMulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
+theorem nnNorm_smulRight_apply (c : StrongDual 𝕜 E) (f : Fₗ) : ‖smulRight c f‖₊ = ‖c‖₊ * ‖f‖₊ :=
   NNReal.eq <| c.norm_smulRight_apply f
 
-@[deprecated (since := "2026-10-31")] alias nnnorm_smulRight_apply := nnNorm_sMulRight_apply
+@[deprecated (since := "2026-10-31")] alias nnnorm_smulRight_apply := nnNorm_smulRight_apply
 
 @[simp] theorem norm_toSpanSingleton (x : E) : ‖toSpanSingleton 𝕜 x‖ = ‖x‖ := by
   simp [← smulRight_id, norm_id]

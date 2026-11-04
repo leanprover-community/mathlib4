@@ -209,7 +209,7 @@ theorem opNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖ 
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
 
 theorem opNNNorm_lsmul_apply_le (x : R) : ‖(lsmul 𝕜 R x : E →L[𝕜] E)‖₊ ≤ ‖x‖₊ :=
-  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnNorm_sMul_le x y
+  ContinuousLinearMap.opNNNorm_le_bound _ _ fun y => nnNorm_smul_le x y
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 R : R →L[𝕜] E →L[𝕜] E)‖ ≤ 1 :=
