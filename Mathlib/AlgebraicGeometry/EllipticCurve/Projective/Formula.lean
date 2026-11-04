@@ -417,13 +417,6 @@ lemma dblY_of_Y_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQ
     W.dblY P = W.dblU P := by
   rw [dblU, ← dblY_of_Y_eq' hP hPz hQz hx hy hy', mul_div_cancel_right₀ _ <| pow_ne_zero 2 hPz]
 
-lemma dblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
-    W.dblY P / W.dblZ P = W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
-      (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  erw [dblY, negY_of_Z_ne_zero <| dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy,
-    dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, negDblY_of_Z_ne_zero hP hQ hPz hQz hx hy, Affine.addY]
-
 variable (W') in
 /-- The coordinates of a representative of `2 • P` for a projective point representative `P` on a
 Weierstrass curve. -/
@@ -439,19 +432,42 @@ lemma dblXYZ_Y (P : Fin 3 → R) : W'.dblXYZ P y = W'.dblY P :=
 lemma dblXYZ_Z (P : Fin 3 → R) : W'.dblXYZ P z = W'.dblZ P :=
   rfl
 
+variable (W') in
+/-- The coordinates of a representative of `-2 • P` for a projective point representative `P` on a
+Weierstrass curve. -/
+noncomputable def negDblXYZ (P : Fin 3 → R) : Fin 3 → R :=
+  ![W'.dblX P, W'.negDblY P, W'.dblZ P]
+
+lemma negDblXYZ_X (P : Fin 3 → R) : W'.negDblXYZ P x = W'.dblX P := rfl
+
+lemma negDblXYZ_Y (P : Fin 3 → R) : W'.negDblXYZ P y = W'.negDblY P := rfl
+
+lemma negDblXYZ_Z (P : Fin 3 → R) : W'.negDblXYZ P z = W'.dblZ P := rfl
+
+lemma dblY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
+    W.dblY P / W.dblZ P = W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
+      (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
+  rw [dblY, ← negDblXYZ, ← negDblXYZ_Z]
+  rw [negY_of_Z_ne_zero <| dblZ_ne_zero_of_Y_ne' hP hQ hPz hQz hx hy]
+  rw [negDblXYZ_X, negDblXYZ_Y, negDblXYZ_Z, dblX_of_Z_ne_zero hP hQ hPz hQz hx hy]
+  rw [negDblY_of_Z_ne_zero hP hQ hPz hQz hx hy]
+  rw [Affine.addY]
+
 lemma dblXYZ_smul (P : Fin 3 → R) (u : R) : W'.dblXYZ (u • P) = u ^ 4 • W'.dblXYZ P := by
   rw [dblXYZ, dblX_smul, dblY_smul, dblZ_smul, smul_fin3, dblXYZ_X, dblXYZ_Y, dblXYZ_Z]
 
 lemma dblXYZ_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P) (hPz : P z = 0) :
     W'.dblXYZ P = P y ^ 4 • ![0, 1, 0] := by
-  erw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, smul_fin3,
-    mul_zero, mul_one]
+  rw [dblXYZ, dblX_of_Z_eq_zero hP hPz, dblY_of_Z_eq_zero hP hPz, dblZ_of_Z_eq_zero hPz, smul_fin3]
+  simp
 
 lemma dblXYZ_of_Y_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hPz : P z ≠ 0) (hQz : Q z ≠ 0)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W.negY Q * P z) :
     W.dblXYZ P = W.dblU P • ![0, 1, 0] := by
-  erw [dblXYZ, dblX_of_Y_eq hP hPz hQz hx hy hy', dblY_of_Y_eq hP hPz hQz hx hy hy',
-    dblZ_of_Y_eq hQz hx hy hy', smul_fin3, mul_zero, mul_one]
+  rw [dblXYZ, dblX_of_Y_eq hP hPz hQz hx hy hy', dblY_of_Y_eq hP hPz hQz hx hy hy',
+    dblZ_of_Y_eq hQz hx hy hy', smul_fin3]
+  simp
 
 lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) (hy : P y * Q z ≠ W.negY Q * P z) :
@@ -461,8 +477,10 @@ lemma dblXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] := by
   have hZ : IsUnit <| W.dblZ P := isUnit_dblZ_of_Y_ne' hP hQ hPz hQz hx hy
-  erw [dblXYZ, smul_fin3, ← dblX_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel,
-    ← dblY_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel, mul_one]
+  rw [dblXYZ, smul_fin3, ← dblX_of_Z_ne_zero hP hQ hPz hQz hx hy]
+  simp only [fin3_def_ext]
+  rw [hZ.mul_div_cancel, ← dblY_of_Z_ne_zero hP hQ hPz hQz hx hy, hZ.mul_div_cancel]
+  simp
 
 /-! ## Addition formulae in projective coordinates -/
 
@@ -699,12 +717,26 @@ lemma negAddY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation 
     toAffine_negAddY_of_ne hPz hQz <| sub_ne_zero.mpr hx]
 
 variable (W') in
+/-- The coordinates of a representative of `- P - Q` for two distinct projective point
+representatives `P` and `Q` on a Weierstrass curve.
+
+If the representatives of `P` and `Q` are equal, then this returns the value `![0, 0, 0]`. -/
+noncomputable def negAddXYZ (P Q : Fin 3 → R) : Fin 3 → R :=
+  ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
+
+variable (W') in
 /-- The `Y`-coordinate of a representative of `P + Q` for two distinct projective point
 representatives `P` and `Q` on a Weierstrass curve.
 
 If the representatives of `P` and `Q` are equal, then this returns the value `0`. -/
 def addY (P Q : Fin 3 → R) : R :=
   W'.negY ![W'.addX P Q, W'.negAddY P Q, W'.addZ P Q]
+
+lemma negAddXYZ_X (P Q : Fin 3 → R) : W'.negAddXYZ P Q x = W'.addX P Q := rfl
+
+lemma negAddXYZ_Y (P Q : Fin 3 → R) : W'.negAddXYZ P Q y = W'.negAddY P Q := rfl
+
+lemma negAddXYZ_Z (P Q : Fin 3 → R) : W'.negAddXYZ P Q z = W'.addZ P Q := rfl
 
 lemma addY_smul (P Q : Fin 3 → R) (u v : R) :
     W'.addY (u • P) (v • Q) = (u * v) ^ 2 * W'.addY P Q := by
@@ -737,13 +769,6 @@ lemma addY_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (
   rw [addU, ← mul_div_mul_right _ _ <| pow_ne_zero 2 <| mul_ne_zero hPz hQz,
     ← addY_of_X_eq' hP hQ hPz hQz hx, ← pow_succ',
     mul_div_cancel_right₀ _ <| pow_ne_zero 3 <| mul_ne_zero hPz hQz]
-
-lemma addY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
-    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
-      W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
-        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
-  erw [addY, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hP hQ hx, addX_of_Z_ne_zero hP hQ hPz hQz hx,
-    negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 variable (W') in
 /-- The coordinates of a representative of `P + Q` for two distinct projective point representatives
@@ -781,8 +806,17 @@ lemma addXYZ_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : Fin 3 → R} (hQ : W'.
 
 lemma addXYZ_of_X_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
     (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z) : W.addXYZ P Q = addU P Q • ![0, 1, 0] := by
-  erw [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx,
-    addZ_of_X_eq hP hQ hPz hQz hx, smul_fin3, mul_zero, mul_one]
+  rw [addXYZ, addX_of_X_eq hP hQ hPz hQz hx, addY_of_X_eq hP hQ hPz hQz hx,
+    addZ_of_X_eq hP hQ hPz hQz hx]
+  simp
+
+lemma addY_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
+    (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addY P Q / W.addZ P Q =
+      W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
+        (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)) := by
+  rw [addY, ← negAddXYZ, ← negAddXYZ_Z, negY_of_Z_ne_zero <| addZ_ne_zero_of_X_ne hP hQ hx,
+    negAddXYZ_X, negAddXYZ_Z, addX_of_Z_ne_zero hP hQ hPz hQz hx,
+    negAddXYZ_Y, negAddY_of_Z_ne_zero hP hQ hPz hQz hx, Affine.addY]
 
 lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q)
     (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z ≠ Q x * P z) : W.addXYZ P Q = W.addZ P Q •
@@ -791,8 +825,9 @@ lemma addXYZ_of_Z_ne_zero [DecidableEq F] {P Q : Fin 3 → F} (hP : W.Equation P
         W.toAffine.addY (P x / P z) (Q x / Q z) (P y / P z)
           (W.toAffine.slope (P x / P z) (Q x / Q z) (P y / P z) (Q y / Q z)), 1] := by
   have hZ : IsUnit <| W.addZ P Q := isUnit_addZ_of_X_ne hP hQ hx
-  erw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel,
-    ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
+  rw [addXYZ, smul_fin3, ← addX_of_Z_ne_zero hP hQ hPz hQz hx]
+  simp only [fin3_def_ext]
+  rw [hZ.mul_div_cancel, ← addY_of_Z_ne_zero hP hQ hPz hQz hx, hZ.mul_div_cancel, mul_one]
 
 /-! ## Maps and base changes -/
 
