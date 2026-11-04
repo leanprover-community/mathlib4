@@ -107,7 +107,7 @@ lemma ord_inv (z : X) (f : X.functionField) : ord f⁻¹ z = -ord f z := by
   · simp [hf]
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
   rw [mul_inv_cancel₀ hf] at h
-  simp only [ord_one, Pi.zero_apply] at h
+  simp only [ord_one] at h
   omega
 
 @[simp]
