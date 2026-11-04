@@ -787,13 +787,7 @@ theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
 /-- The multiplicity of a prime in a power. -/
 theorem multiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     multiplicity p (a ^ k) = k * multiplicity p a := by
-  by_cases ha : FiniteMultiplicity p a
-  · exact_mod_cast (ha.pow hp).emultiplicity_eq_multiplicity ▸
-      ha.emultiplicity_eq_multiplicity ▸ emultiplicity_pow hp
-  obtain rfl | hk := eq_or_ne k 0
-  · simp
-  · rw [multiplicity_eq_zero_of_not_finiteMultiplicity ha, mul_zero,
-      multiplicity_eq_zero_of_not_finiteMultiplicity fun h ↦ ha (h.of_pow hk)]
+  simp [multiplicity, emultiplicity_pow hp]
 
 @[deprecated multiplicity_pow +typeChanged (since := "2026-10-29")]
 protected theorem FiniteMultiplicity.multiplicity_pow {p a : α} (hp : Prime p)
