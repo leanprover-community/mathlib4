@@ -873,9 +873,7 @@ lemma extendedByOne_apply_of_notMem_right (A : Matrix n n R) {j : m} (hj : j ∉
     (i : m) : A.extendedByOne e i j = (1 : Matrix m m R) i j := by
   by_cases hi : i ∈ Set.range e
   · obtain ⟨-, rfl⟩ := hi
-    simp only [extendedByOne, of_apply]
-    exact ((congr_fun (e.injective.extend_apply ..) _).trans (extend_apply' _ _ _ hj)).trans
-      (one_apply_ne fun h ↦ hj ⟨_, h⟩).symm
+    simp [extendedByOne, extend_apply' _ _ _ hj, e.injective, one_apply_ne fun h ↦ hj ⟨_, h⟩]
   · exact extendedByOne_apply_of_notMem_left _ _ hi _
 
 theorem ext_extendedByOne_iff {B : Matrix m m R} {A : Matrix n n R} :
