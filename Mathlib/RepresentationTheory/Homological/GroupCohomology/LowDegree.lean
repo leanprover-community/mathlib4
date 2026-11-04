@@ -370,10 +370,8 @@ theorem cocycles₂_ext {f₁ f₂ : cocycles₂ A} (h : ∀ g h : G, f₁ (g, h
 
 theorem mem_cocycles₂_def (f : G × G → A) :
     f ∈ cocycles₂ A ↔ ∀ g h j : G,
-      A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 :=
-  LinearMap.mem_ker.trans <| by
-    simp_rw [funext_iff, d₂₃_hom_apply, Prod.forall]
-    rfl
+      A.ρ g (f (h, j)) - f (g * h, j) + f (g, h * j) - f (g, h) = 0 := by
+  simp_rw [cocycles₂, LinearMap.mem_ker, funext_iff, d₂₃_hom_apply, Prod.forall, Pi.zero_apply _]
 
 theorem mem_cocycles₂_iff (f : G × G → A) :
     f ∈ cocycles₂ A ↔ ∀ g h j : G,
