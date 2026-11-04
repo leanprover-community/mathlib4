@@ -58,7 +58,7 @@ variable {r : α → α → Prop}
 
 theorem cutExpand_le_invImage_lex [DecidableEq α] [Std.Irrefl r] :
     CutExpand r ≤ InvImage (Finsupp.Lex (rᶜ ⊓ (· ≠ ·)) (· < ·)) toFinsupp := by
-  rintro s t ⟨u, a, ha, hr, he⟩
+  rintro s t ⟨u, a, -, hr, he⟩
   replace hr := fun a' ↦ mt (hr a')
   refine ⟨a, fun b h ↦ ?_, ?_⟩ <;> simp_rw [toFinsupp_apply]
   · apply_fun count b at he
