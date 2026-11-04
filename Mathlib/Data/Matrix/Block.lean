@@ -845,7 +845,7 @@ variable [DecidableEq l] [DecidableEq m] [Semiring R] (e : n ↪ m)
 /-- Extend a matrix `A : Matrix n n R` along an embedding `e : n ↪ m`: the entry at `(e i, e j)`
 is `A i j`, and every other entry is that of the identity matrix. -/
 noncomputable def extendedByOne (A : Matrix n n R) : Matrix m m R :=
-  of <| extend e (fun i ↦ extend e (A i) 0) (1 : Matrix m m R)
+  of <| extend e (fun i ↦ extend e (A i) 0) (of.symm (1 : Matrix m m R))
 
 @[simp]
 theorem extendedByOne_apply_embedding {i j : n} (A : Matrix n n R) :
