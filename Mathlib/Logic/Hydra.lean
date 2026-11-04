@@ -104,7 +104,7 @@ theorem cutExpand_add_singleton_single {a' a : α} (s : Multiset α) (h : r a' a
     CutExpand r (s + {a'}) (s + {a}) :=
   ⟨{a'}, a, mem_add.2 (.inr (mem_singleton_self a)), by simpa using h, by ac_rfl⟩
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias cutExpand_add_single := cutExpand_add_singleton_single
 
 theorem cutExpand_singleton_add_single {a' a : α} (h : r a' a) (s : Multiset α) :
@@ -112,7 +112,7 @@ theorem cutExpand_singleton_add_single {a' a : α} (h : r a' a) (s : Multiset α
   rw [add_comm {a'} s, add_comm {a} s]
   exact cutExpand_add_singleton_single s h
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias cutExpand_single_add := cutExpand_singleton_add_single
 
 theorem cutExpand_iff [DecidableEq α] {s' s : Multiset α} :
@@ -131,7 +131,7 @@ theorem not_cutExpand_zero (s) : ¬CutExpand r s 0 := by simp [CutExpand]
 lemma cutExpand_zero_singleton {x} : CutExpand r 0 {x} :=
   ⟨0, x, mem_singleton_self x, by simp, add_comm 0 _⟩
 
-@[deprecated (since := "2026-08-16")] alias cutExpand_zero := cutExpand_zero_singleton
+@[deprecated (since := "2026-11-04")] alias cutExpand_zero := cutExpand_zero_singleton
 
 /-- For any relation `r` on `α`, multiset addition `Multiset α × Multiset α → Multiset α` is a
   fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
@@ -169,14 +169,14 @@ lemma cutExpand_pair_pair_left {a' a b} (hr : r a' a) : CutExpand r {a', b} {a, 
   rw [insert_eq_cons, insert_eq_cons, ← singleton_add, ← singleton_add]
   exact cutExpand_singleton_add_single hr {b}
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias cutExpand_pair_left := cutExpand_pair_pair_left
 
 lemma cutExpand_pair_pair_right {a b' b} (hr : r b' b) : CutExpand r {a, b'} {a, b} := by
   rw [insert_eq_cons, insert_eq_cons, ← singleton_add, ← singleton_add]
   exact cutExpand_add_singleton_single {a} hr
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias cutExpand_pair_right := cutExpand_pair_pair_right
 
 lemma cutExpand_triple_pair_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) :
@@ -184,7 +184,7 @@ lemma cutExpand_triple_pair_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a�
   simp_rw [insert_eq_cons, ← singleton_add, ← add_assoc]
   exact (cutExpand_singleton (by simp [h₁, h₂])).add_right {b}
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias cutExpand_double_left := cutExpand_triple_pair_left
 
 /-- A multiset is accessible under `CutExpand` if all its singleton subsets are. -/
@@ -208,7 +208,7 @@ theorem _root_.Acc.cutExpand_singleton {a : α} (hacc : Acc r a) : Acc (CutExpan
   rw [erase_singleton, zero_add]
   exact ih a' ∘ hr a'
 
-@[deprecated (since := "2026-08-16")]
+@[deprecated (since := "2026-11-04")]
 alias _root_.Acc.cutExpand := Acc.cutExpand_singleton
 
 theorem acc_cutExpand {s} (hs : ∀ a ∈ s, Acc r a) : Acc (CutExpand r) s :=
