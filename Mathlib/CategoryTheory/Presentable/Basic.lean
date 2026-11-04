@@ -406,20 +406,13 @@ F(j₀) --> colim F
 where X₁ is κ-presentable, there exists an index j₁ and a commutative diagram
 ```
   X₀ -------------> X₁
-  |                 |
-  | g               | q'
-  v                 v
+  |                 |  \
+  |                 |   v
+  | g            q' |   colimF
+  |                 |   ^
+  v                 v  /
 F(j₀) ----------> F(j₁)
 ```
-such that the triangle
-```
-X₁---> F(j₁)
- \      /
-q \    / q'
-   v  v
-  colim F
-```
-also commutes.
 -/
 lemma IsCardinalPresentable.exists_of_square
     [IsCardinalFiltered J κ] [EssentiallySmall.{w} J] {F : J ⥤ C} {c : Limits.Cocone F}
