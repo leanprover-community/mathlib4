@@ -38,7 +38,7 @@ public theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) :
     let c := dist p₁ p₃
     let s := (a + b + c) / 2
     1 / 2 * a * b * sin (∠ p₁ p₂ p₃) = √(s * (s - a) * (s - b) * (s - c)) := by
-  obtain rfl | h2 := eq_or_ne p₃ p₂
+  rcases eq_or_ne p₃ p₂ with rfl | h2
   · simp
   intro a b c s
   let γ := ∠ p₁ p₂ p₃

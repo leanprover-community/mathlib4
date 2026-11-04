@@ -529,7 +529,7 @@ theorem upcrossingsBefore_lt_of_exists_upcrossing (hab : a < b) {N₁ N₂ : ℕ
 
 theorem lowerCrossingTime_lt_of_lt_upcrossingsBefore (hab : a < b)
     (hn : n < upcrossingsBefore a b f N ω) : lowerCrossingTime a b f N n ω < N := by
-  obtain rfl | hN := N.eq_zero_or_pos
+  rcases N.eq_zero_or_pos with rfl | hN
   · simp at hn
   exact lt_of_le_of_lt lowerCrossingTime_le_upperCrossingTime_succ
     (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn)
@@ -538,7 +538,7 @@ theorem le_sub_of_le_upcrossingsBefore (hab : a < b)
     (hn : n < upcrossingsBefore a b f N ω) :
     b - a ≤ stoppedValue f (fun ω ↦ (upperCrossingTime a b f N (n + 1) ω : ℕ)) ω -
       stoppedValue f (fun ω ↦ (lowerCrossingTime a b f N n ω : ℕ)) ω := by
-  obtain rfl | hN := N.eq_zero_or_pos
+  rcases N.eq_zero_or_pos with rfl | hN
   · simp at hn
   exact sub_le_sub
     (stoppedValue_upperCrossingTime (upperCrossingTime_lt_of_le_upcrossingsBefore hN hab hn).ne)

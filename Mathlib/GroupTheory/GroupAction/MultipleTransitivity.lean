@@ -304,9 +304,7 @@ theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α 
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) :
     IsMultiplyPretransitive G α m := by
   rcases (finite_or_infinite α).symm with _ | _
-  · obtain rfl : n = 0 := by simpa using hα
-    obtain rfl : m = 0 := by omega
-    assumption
+  · simp_all
   obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
   exact IsPretransitive.of_surjective_map (f := embMap G α (castAddEmb p))
     (Fin.Embedding.restrictSurjective_of_add_le_natCard hα) inferInstance

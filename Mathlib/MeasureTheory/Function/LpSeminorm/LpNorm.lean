@@ -165,7 +165,7 @@ lemma lpNorm_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → �
 
 lemma lpNorm_fun_div_natCast [CharZero 𝕜] (n : ℕ) (f : α → 𝕜) (p : ℝ≥0∞)
     (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := by
-  obtain rfl | hn := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   · exact lpNorm_div_natCast hn ..
 

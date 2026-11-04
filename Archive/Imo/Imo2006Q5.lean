@@ -192,7 +192,7 @@ open Imo2006Q5
 /-- The general problem follows easily from the k = 2 case. -/
 theorem imo2006_q5 {P : Polynomial ℤ} (hP : 1 < P.natDegree) (k : ℕ) :
     (P.comp^[k] X - X).roots.toFinset.card ≤ P.natDegree := by
-  obtain rfl | hk := k.eq_zero_or_pos
+  rcases k.eq_zero_or_pos with rfl | hk
   · simp
   refine (Finset.card_le_card fun t ht => ?_).trans (imo2006_q5' hP)
   have hP' : P.comp P - X ≠ 0 := by

@@ -102,7 +102,7 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
 
 lemma mem_Ico_n_of_mem_Ioo (n : ℕ) (h : α ∈ Set.Ioo 0 2) :
     α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 := by
-  obtain rfl | hn := n.eq_zero_or_pos
+  rcases n.eq_zero_or_pos with rfl | hn
   · simpa using ⟨h.1.le, h.2⟩
   suffices ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋ = n ^ 2 ∧ α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 from this.2
   induction n, hn using Nat.le_induction with

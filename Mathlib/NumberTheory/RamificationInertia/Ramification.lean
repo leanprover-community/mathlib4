@@ -128,7 +128,7 @@ theorem ramificationIdx'_of_not_le (h : ¬map f p ≤ P) : ramificationIdx' p P 
 
 theorem ramificationIdx'_bot' (hf : Function.Injective f) :
     ramificationIdx' p (⊥ : Ideal S) = 0 := by
-  obtain rfl | hp := eq_or_ne p ⊥
+  rcases eq_or_ne p ⊥ with rfl | hp
   · simp
   exact ramificationIdx'_of_not_le <|
     le_bot_iff.not.mpr <| (map_eq_bot_iff_of_injective hf).not.mpr hp

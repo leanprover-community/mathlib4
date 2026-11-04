@@ -36,7 +36,7 @@ namespace Imo2013Q5
 
 theorem le_of_all_pow_lt_succ {x y : ℝ} (hy : 1 < y)
     (h : ∀ n : ℕ, 0 < n → x ^ n - 1 < y ^ n) : x ≤ y := by
-  obtain hx | hx := le_or_gt x 1
+  rcases le_or_gt x 1 with hx | hx
   · exact hx.trans hy.le
   by_contra! hxy
   have hxmy : 0 < x - y := sub_pos.mpr hxy

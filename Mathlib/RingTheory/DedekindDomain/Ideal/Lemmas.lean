@@ -435,7 +435,7 @@ alias _root_.irreducible_pow_sup_of_le := irreducible_pow_sup_of_le
 
 theorem irreducible_pow_sup_of_ge (hJ : Irreducible J) (n : ℕ)
     (hn : emultiplicity J I ≤ n) : J ^ n ⊔ I = J ^ multiplicity J I := by
-  obtain rfl | hI := eq_or_ne I ⊥
+  rcases eq_or_ne I ⊥ with rfl | hI
   · rw [← Ideal.zero_eq_bot, emultiplicity_zero_right] at hn
     exact absurd hn (by simp)
   rw [irreducible_pow_sup hI hJ, min_eq_left]

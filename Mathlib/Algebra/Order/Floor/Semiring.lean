@@ -42,7 +42,7 @@ theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff ha
 
 theorem floor_lt_one : ⌊a⌋₊ < 1 ↔ a < 1 := by
-  obtain ha | ha := lt_or_ge a 0
+  rcases lt_or_ge a 0 with ha | ha
   · exact iff_of_true (Nat.lt_one_iff.2 (FloorSemiring.floor_of_neg ha)) (ha.trans one_pos)
   · exact (floor_lt ha).trans <| by rw [Nat.cast_one]
 

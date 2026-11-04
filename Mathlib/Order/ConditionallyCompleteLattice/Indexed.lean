@@ -83,7 +83,7 @@ theorem le_ciSup_of_le {f : ι → α} (H : BddAbove (range f)) (c : ι) (h : a 
 theorem ciSup_extend_le {f : ι → β} {g : ι → α} (hg : BddAbove (range g)) {j : β → α}
     (hj : BddAbove (range j)) :
     iSup (extend f g j) ≤ iSup g ⊔ iSup j := by
-  obtain hβ | hβ := isEmpty_or_nonempty β
+  rcases isEmpty_or_nonempty β with hβ | hβ
   · simp [iSup, Set.range_eq_empty]
   refine ciSup_le fun i ↦ ?_
   classical aesop (add simp [le_sup_of_le_left, le_sup_of_le_right, Function.extend_def, le_ciSup])

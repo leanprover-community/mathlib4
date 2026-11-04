@@ -78,7 +78,7 @@ theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (
     [hp : Fact p.Prime] (hxr : x ^ n = m)
     (hv : multiplicity (p : ℤ) m % n ≠ 0) :
     Irrational x := by
-  obtain rfl | hm := eq_or_ne m 0
+  rcases eq_or_ne m 0 with rfl | hm
   · simp at hv
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr

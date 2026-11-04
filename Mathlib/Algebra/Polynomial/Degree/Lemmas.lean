@@ -456,7 +456,7 @@ theorem irreducible_mul_leadingCoeff_inv {p : K[X]} :
 
 lemma dvd_mul_leadingCoeff_inv {p q : K[X]} :
     q ∣ p * C (leadingCoeff p)⁻¹ ↔ q ∣ p := by
-  obtain rfl | hp0 := eq_or_ne p 0
+  rcases eq_or_ne p 0 with rfl | hp0
   · simp
   simp [hp0]
 

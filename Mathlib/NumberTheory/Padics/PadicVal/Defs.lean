@@ -78,7 +78,7 @@ theorem le_emultiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n :
 
 theorem le_multiplicity_iff_replicate_subperm_primeFactorsList {a b : ℕ} {n : ℕ} (ha : a.Prime) :
     n ≤ multiplicity a b ↔ replicate n a <+~ b.primeFactorsList := by
-  obtain rfl | hb := eq_or_ne b 0
+  rcases eq_or_ne b 0 with rfl | hb
   · simp
   rw [← le_emultiplicity_iff_replicate_subperm_primeFactorsList ha hb,
     Nat.finiteMultiplicity_iff.2 ⟨ha.ne_one, Nat.pos_of_ne_zero hb⟩

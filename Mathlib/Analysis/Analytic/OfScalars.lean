@@ -198,7 +198,7 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
 theorem inv_le_ofScalars_radius_of_tendsto {r : ℝ≥0}
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       ofNNReal r⁻¹ ≤ (ofScalars E c).radius := by
-  obtain rfl | hr := eq_or_ne r 0
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   refine le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
   rw [coe_lt_coe, NNReal.lt_inv_iff_mul_lt hr] at hr'

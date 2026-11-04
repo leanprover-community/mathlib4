@@ -527,7 +527,7 @@ theorem support_mul [DecidableEq σ] (p q : MvPolynomial σ R) :
 lemma disjoint_support_monomial {a : σ →₀ ℕ} {p : MvPolynomial σ R} {s : R}
     (ha : a ∉ p.support) : Disjoint (monomial a s).support p.support := by
   classical
-  obtain rfl | hs := eq_or_ne s 0
+  rcases eq_or_ne s 0 with rfl | hs
   · simp
   simpa [support_monomial, hs] using notMem_support_iff.mp ha
 

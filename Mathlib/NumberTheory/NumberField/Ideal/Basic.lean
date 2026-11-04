@@ -175,7 +175,7 @@ by `P` being unramified over `ℤ`.
 theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₁ : P.IsPrime)
     (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
     torsionOrder K ∣ absNorm P - 1 := by
-  obtain rfl | hP₀ := eq_or_ne P ⊥
+  rcases eq_or_ne P ⊥ with rfl | hP₀
   · simp
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
   let _ := Ideal.Quotient.field P

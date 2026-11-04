@@ -251,7 +251,7 @@ theorem pow_image_of_prime_by_factor_orderIso_dvd
     {m p : Associates M} {n : Associates N} (hp : p ∈ normalizedFactors m)
     (d : Set.Iic m ≃o Set.Iic n) {s : ℕ} (hs' : p ^ s ≤ m) :
     (d ⟨p, dvd_of_mem_normalizedFactors hp⟩ : Associates N) ^ s ≤ n := by
-  obtain rfl | hn := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   by_cases hs : s = 0
   · simp [← Associates.bot_eq_one, hs]

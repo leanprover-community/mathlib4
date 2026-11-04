@@ -379,9 +379,8 @@ theorem one_eq [Nontrivial A] : σ (1 : A) = {1} :=
 further conditions on the algebra `A` and scalar field `𝕜`. -/
 theorem smul_eq_smul (k : 𝕜) (a : A) (ha : (σ a).Nonempty) :
     σ (k • a) = k • σ a := by
-  obtain hA | hA := subsingleton_or_nontrivial A
-  · obtain ⟨x, hx⟩ := ha
-    exact absurd (isUnit_of_subsingleton _) (spectrum.mem_iff.1 hx)
+  rcases subsingleton_or_nontrivial A with hA | hA
+  · simp [spectrum.of_subsingleton] at ha
   rcases eq_or_ne k 0 with (rfl | h)
   · simpa [ha, zero_smul_set] using (show {(0 : 𝕜)} = (0 : Set 𝕜) from rfl)
   · exact unit_smul_eq_smul a (Units.mk0 k h)

@@ -82,7 +82,7 @@ lemma riskIncrease_eq_iInf_sub (hℓ : Measurable (uncurry ℓ)) (P : Kernel Θ 
 
 lemma riskIncrease_le_iInf' (hℓ : Measurable (uncurry ℓ)) [SFinite π] :
     riskIncrease ℓ P π ≤ ⨅ z : 𝓨, ∫⁻ θ, P θ univ * ℓ θ z ∂π := by
-  obtain h | h := isEmpty_or_nonempty 𝓨
+  rcases isEmpty_or_nonempty 𝓨 with h | h
   · simp
   exact riskIncrease_eq_iInf_sub' hℓ P π ▸ tsub_le_self
 

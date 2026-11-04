@@ -229,7 +229,7 @@ theorem coeff_one_left (o : Ordinal) : coeff 1 o = single 0 o :=
 theorem coeff_opow_mul_add {b e x y : Ordinal}
     (hb : 1 < b) (hxb : x < b) (hy : y < b ^ e) :
     coeff b (b ^ e * x + y) = single e x + coeff b y := by
-  obtain rfl | hx := eq_or_ne x 0
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   ext e'
   rw [add_apply]

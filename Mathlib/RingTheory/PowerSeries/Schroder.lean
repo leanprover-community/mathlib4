@@ -61,7 +61,7 @@ lemma coeff_X_mul_largeSchroderSeries (n : ℕ) (hn : 0 < n) :
 lemma coeff_X_mul_largeSchroderSeriesSeries_sq (n : ℕ) :
     coeff n (X * largeSchroderSeries ^ 2) =
       ∑ i ∈ range n, largeSchroder i * largeSchroder (n - 1 - i) := by
-  obtain rfl | hn := n.eq_zero_or_pos
+  rcases n.eq_zero_or_pos with rfl | hn
   · simp
   rw [pow_two, ← mul_assoc, coeff_mul]
   rw [Nat.sum_antidiagonal_eq_sum_range_succ

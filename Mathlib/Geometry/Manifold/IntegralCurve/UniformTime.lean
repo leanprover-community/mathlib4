@@ -47,8 +47,7 @@ lemma eqOn_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     {a a' : ℝ} (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
   rcases le_or_gt a' 0 with ha' | hpos
-  · rw [Ioo_eq_empty (not_lt.2 (by linarith))]
-    exact eqOn_empty _ _
+  · simp [Ioo_eq_empty_of_le (by linarith : a' ≤ -a')]
   apply isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
     (hγ a' (by positivity)) ((hγ a (lt_of_lt_of_le hpos hle)).mono _)
     (by rw [hγx a, hγx a'])

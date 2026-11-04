@@ -116,7 +116,7 @@ the normalized factor occurs in the `normalizedFactors`.
 For a version using `emultiplicity`, see `emultiplicity_eq_count_normalizedFactors`. -/
 theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) :
     multiplicity a b = (normalizedFactors b).count (normalize a) := by
-  obtain rfl | hb := eq_or_ne b 0
+  rcases eq_or_ne b 0 with rfl | hb
   · simp
   have := emultiplicity_eq_count_normalizedFactors ha hb
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,

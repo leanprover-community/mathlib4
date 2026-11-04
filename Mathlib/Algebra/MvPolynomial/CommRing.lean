@@ -95,10 +95,8 @@ theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →
     (hc : p.coeff d = c) :
     (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
   classical
-  obtain rfl | hdd' := eq_or_ne d d'
-  · rw [sub_self, sub_zero]
-    intro x hx
-    by_cases hxd : x = d <;> simp [hxd, hx]
+  rcases eq_or_ne d d' with rfl | hdd'
+  · grind
   intro x hx
   have hd_not := notMem_support_sub_monomial_sub_monomial p d d' c hdd' hc
   rcases Finset.mem_union.mp (support_sub σ p _ hx) with hp | hdelta

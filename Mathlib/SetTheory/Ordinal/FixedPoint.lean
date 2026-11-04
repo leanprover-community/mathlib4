@@ -486,9 +486,8 @@ theorem mul_le_right_iff_opow_omega0_dvd {a b : Ordinal} (ha : 0 < a) :
 
 theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (hc : 0 < c)
     (hca : c ≤ a ^ ω) : nfp (a * ·) (a ^ ω * b + c) = a ^ ω * succ b := by
-  obtain rfl | ha := eq_zero_or_pos a
-  · rw [zero_opow omega0_ne_zero] at hca
-    exact absurd (hc.trans_le hca) (lt_irrefl _)
+  rcases eq_zero_or_pos a with rfl | ha
+  · simp [zero_opow omega0_ne_zero, hc.ne'] at hca
   apply le_antisymm
   · apply nfp_le_fp (isNormal_mul_right ha).monotone
     · rw [mul_succ]

@@ -171,8 +171,7 @@ lemma cpow_ofNat_mul' {x : ℂ} {n : ℕ} [n.AtLeastTwo] (hlt : -π < OfNat.ofNa
 lemma pow_cpow_nat_inv {x : ℂ} {n : ℕ} (hlt : -(π / n) < x.arg) (hle : x.arg ≤ π / n) :
     (x ^ n) ^ (n⁻¹ : ℂ) = x := by
   rcases eq_or_ne n 0 with rfl | h₀
-  · simp only [Nat.cast_zero, div_zero, neg_zero] at hlt hle
-    exact absurd (hlt.trans_le hle) (lt_irrefl _)
+  · exact absurd (hlt.trans_le hle) (by simp)
   rw [← cpow_nat_mul', mul_inv_cancel₀ (Nat.cast_ne_zero.2 h₀), cpow_one]
   · rwa [← div_lt_iff₀' (Nat.cast_pos.2 h₀.bot_lt), neg_div]
   · rwa [← le_div_iff₀' (Nat.cast_pos.2 h₀.bot_lt)]

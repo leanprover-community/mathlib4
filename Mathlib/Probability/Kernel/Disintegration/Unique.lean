@@ -53,8 +53,7 @@ theorem eq_condKernel_of_measure_eq_compProd' (κ : Kernel α Ω)
     ∀ᵐ x ∂ρ.fst, κ x s = ρ.condKernel x s := by
   by_cases hκs : IsSFiniteKernel κ
   swap
-  · rw [Measure.compProd_of_not_isSFiniteKernel _ _ hκs] at hκ
-    simp [hκ]
+  · simp_all
   refine ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite
     (Kernel.measurable_coe κ hs) (Kernel.measurable_coe ρ.condKernel hs) (fun t ht _ ↦ ?_)
   conv_rhs => rw [Measure.setLIntegral_condKernel_eq_measure_prod ht hs, hκ]

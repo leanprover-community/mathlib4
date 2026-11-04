@@ -355,7 +355,7 @@ theorem isPrime_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.ab
 
 theorem prime_of_irreducible_absNorm_span {a : S}
     (hI : Irreducible (Ideal.absNorm (Ideal.span ({a} : Set S)))) : Prime a := by
-  obtain rfl | ha := eq_or_ne a 0
+  rcases eq_or_ne a 0 with rfl | ha
   · simp at hI
   exact (Ideal.span_singleton_prime ha).mp (isPrime_of_irreducible_absNorm hI)
 

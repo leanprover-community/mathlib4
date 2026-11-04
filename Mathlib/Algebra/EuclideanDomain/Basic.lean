@@ -99,7 +99,7 @@ theorem mul_div_assoc (x : R) {y z : R} (h : z ∣ y) : x * y / z = x * (y / z) 
   rw [mul_div_cancel_left₀ _ hz, mul_left_comm, mul_div_cancel_left₀ _ hz]
 
 protected theorem mul_div_cancel' {a b : R} (hab : b ∣ a) : b * (a / b) = a := by
-  obtain rfl | hb := eq_or_ne b 0
+  rcases eq_or_ne b 0 with rfl | hb
   · simp [zero_dvd_iff.1 hab]
   rw [← mul_div_assoc _ hab, mul_div_cancel_left₀ _ hb]
 

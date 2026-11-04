@@ -150,7 +150,7 @@ omit [Nonempty V] in
   neither is adjacent to, and then using transitivity. -/
 theorem isRegularOf_not_existsPolitician (hG' : ¬ExistsPolitician G) :
     ∃ d : ℕ, G.IsRegularOfDegree d := by
-  obtain hV | hV := isEmpty_or_nonempty V
+  rcases isEmpty_or_nonempty V with hV | hV
   · exact ⟨0, fun v => isEmptyElim v⟩
   have v := Classical.arbitrary V
   use G.degree v

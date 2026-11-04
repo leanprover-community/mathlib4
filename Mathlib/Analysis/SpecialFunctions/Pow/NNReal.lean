@@ -298,17 +298,17 @@ lemma rpow_lt_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z < y
 lemma rpow_le_rpow_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ^ z ≤ y ^ z ↔ y ≤ x :=
   Real.rpow_le_rpow_iff_of_neg hx hy hz
 
-lemma le_rpow_inv_iff_of_pos (hz : 0 < z) (x : ℝ≥0) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y :=
-  Real.le_rpow_inv_iff_of_pos x.2 y.2 hz
+@[deprecated le_rpow_inv_iff (since := "2026-11-04")]
+alias le_rpow_inv_iff_of_pos := le_rpow_inv_iff
 
-lemma rpow_inv_le_iff_of_pos (hz : 0 < z) (x : ℝ≥0) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z :=
-  Real.rpow_inv_le_iff_of_pos x.2 y.2 hz
+@[deprecated rpow_inv_le_iff (since := "2026-11-04")]
+alias rpow_inv_le_iff_of_pos := rpow_inv_le_iff
 
-lemma lt_rpow_inv_iff_of_pos (hz : 0 < z) (x : ℝ≥0) : x < y ^ z⁻¹ ↔ x ^ z < y :=
-  Real.lt_rpow_inv_iff_of_pos x.2 y.2 hz
+@[deprecated lt_rpow_inv_iff (since := "2026-11-04")]
+alias lt_rpow_inv_iff_of_pos := lt_rpow_inv_iff
 
-lemma rpow_inv_lt_iff_of_pos (hz : 0 < z) (x : ℝ≥0) : x ^ z⁻¹ < y ↔ x < y ^ z :=
-  Real.rpow_inv_lt_iff_of_pos x.2 y.2 hz
+@[deprecated rpow_inv_lt_iff (since := "2026-11-04")]
+alias rpow_inv_lt_iff_of_pos := rpow_inv_lt_iff
 
 lemma le_rpow_inv_iff_of_neg (hx : 0 < x) (hy : 0 < y) (hz : z < 0) : x ≤ y ^ z⁻¹ ↔ y ≤ x ^ z :=
   Real.le_rpow_inv_iff_of_neg hx hy hz

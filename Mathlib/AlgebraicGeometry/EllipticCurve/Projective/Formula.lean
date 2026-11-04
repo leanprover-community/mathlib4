@@ -729,7 +729,7 @@ lemma addY_of_Z_eq_zero_right [NoZeroDivisors R] {P Q : Fin 3 → R} (hQ : W'.Eq
 lemma addY_of_X_eq' [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z = Q x * P z) :
     W'.addY P Q * (P z * Q z) ^ 3 = -(P y * Q z - Q y * P z) ^ 3 * (P z * Q z) ^ 2 := by
-  obtain h | h := eq_or_ne (P z * Q z) 0
+  rcases eq_or_ne (P z * Q z) 0 with h | h
   · simp [h]
   have hPz : P z ≠ 0 := left_ne_zero_of_mul h
   have hQz : Q z ≠ 0 := right_ne_zero_of_mul h

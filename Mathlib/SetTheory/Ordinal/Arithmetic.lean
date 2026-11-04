@@ -695,7 +695,7 @@ theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ 
 
 theorem div_mul_cancel : ∀ {a b : Ordinal}, a ∣ b → a * (b / a) = b
   | a, _, ⟨b, rfl⟩ => by
-    obtain rfl | a0 := eq_or_ne a 0
+    rcases eq_or_ne a 0 with rfl | a0
     · simp
     · rw [mul_div_cancel _ a0]
 

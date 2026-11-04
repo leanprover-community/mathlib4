@@ -309,7 +309,7 @@ set_option linter.overlappingInstances false
 variable [IsDedekindDomain A] [IsDedekindDomain B]
 
 theorem one_le_extendedHom_iff : 1 ≤ extendedHom L B I ↔ 1 ≤ I := by
-  obtain rfl | hI := eq_or_ne I 0
+  rcases eq_or_ne I 0 with rfl | hI
   · simp
   rw [← inv_le_inv_iff ((extendedHom_eq_zero_iff _ _).not.mpr hI) (by simp), inv_one, ← map_inv₀,
     extendedHom_le_one_iff, inv_le_comm hI (by simp), inv_one]

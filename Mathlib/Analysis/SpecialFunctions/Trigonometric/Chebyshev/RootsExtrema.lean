@@ -278,9 +278,12 @@ theorem isLocalExtr_T_real_iff {n : ℕ} (hn : 2 ≤ n) (x : ℝ) :
     rw [hx]
     exact isLocalExtr_T_real (Finset.mem_Ioo.mp hk).1 (Finset.mem_Ioo.mp hk).2
 
-theorem isMaxOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk₁ : k ≤ n) (hk₂ : Even k) :
-    IsMaxOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) :=
-  isMaxOn_iff.mpr (fun x hx => le_of_le_of_eq (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
+theorem isMaxOn_T_real {n k : ℕ} (hk₁ : k ≤ n) (hk₂ : Even k) :
+    IsMaxOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [isMaxOn_iff]
+  exact isMaxOn_iff.mpr (fun x hx => le_of_le_of_eq
+    (abs_le.mp (abs_eval_T_real_le_one n (by grind))).2
     ((eval_T_real_eq_one_iff hn _).mpr ⟨k, hk₁, hk₂, rfl⟩).symm)
 
 theorem isMinOn_T_real {n k : ℕ} (hk₁ : k ≤ n) (hk₂ : Odd k) :
@@ -289,10 +292,10 @@ theorem isMinOn_T_real {n k : ℕ} (hk₁ : k ≤ n) (hk₂ : Odd k) :
     ((eval_T_real_eq_neg_one_iff n _).mpr ⟨k, hk₁, hk₂, rfl⟩)
     (abs_le.mp (abs_eval_T_real_le_one n (by grind))).1)
 
-theorem isExtrOn_T_real {n k : ℕ} (hn : n ≠ 0) (hk : k ≤ n) :
+theorem isExtrOn_T_real {n k : ℕ} (hk : k ≤ n) :
     IsExtrOn (T ℝ n).eval (Set.Icc (-1) 1) (cos (k * π / n)) := by
   cases k.even_or_odd
-  case inl hk₂ => exact .inr (isMaxOn_T_real hn hk hk₂)
+  case inl hk₂ => exact .inr (isMaxOn_T_real hk hk₂)
   case inr hk₂ => exact .inl (isMinOn_T_real hk hk₂)
 
 theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.Icc (-1) 1) :
@@ -312,7 +315,7 @@ theorem isExtrOn_T_real_iff {n : ℕ} (hn : n ≠ 0) {x : ℝ} (hx : x ∈ Set.I
       rwa [(eval_T_real_eq_one_iff hn _).mpr ⟨0, by simp, by simp⟩] at this
   · rintro ⟨k, hk, hx⟩
     rw [hx]
-    exact isExtrOn_T_real hn hk
+    exact isExtrOn_T_real hk
 
 theorem irrational_of_isRoot_T_real {n : ℕ} {x : ℝ} (hroot : (T ℝ n).IsRoot x) (hnz : x ≠ 0) :
     Irrational x := by

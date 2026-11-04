@@ -128,7 +128,7 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
       le_refl]
 
 lemma r_mul_max_le {x : Fin 2 → ℤ} : r z * ‖x‖ ≤ ‖x 0 * (z : ℂ) + x 1‖ := by
-  obtain rfl | hx := eq_or_ne x 0
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   have hn0 : ‖x‖ ≠ 0 := by rwa [norm_ne_zero_iff]
   have h11 : x 0 * (z : ℂ) + x 1 = (x 0 / ‖x‖ * z + x 1 / ‖x‖) * ‖x‖ := by

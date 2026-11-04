@@ -86,7 +86,7 @@ theorem filter_dvd_eq_divisors (h : n ≠ 0) : {d ∈ range n.succ | d ∣ n} = 
 
 @[simp]
 theorem filter_dvd_eq_properDivisors : {d ∈ range n | d ∣ n} = n.properDivisors := by
-  obtain rfl | h := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | h
   · simp [properDivisors]
   ext
   simp only [properDivisors, mem_filter, mem_range, mem_Ico, and_congr_left_iff, iff_and_self]
@@ -571,12 +571,8 @@ theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
 /-- Useful lemma for reordering sums. -/
 lemma divisorsAntidiagonal_eq_prod_filter_of_le {n N : ℕ} (hn : n ≤ N) :
     n.divisorsAntidiagonal = (Ioc 0 N ×ˢ Ioc 0 N).filter (fun x ↦ x.1 * x.2 = n) := by
-  obtain rfl | n_ne_zero := eq_or_ne n 0
-  · ext ⟨a, b⟩
-    simp only [Nat.mem_divisorsAntidiagonal, ne_eq, not_true_eq_false, and_false, Finset.mem_filter,
-      Finset.mem_product, Finset.mem_Ioc, false_iff]
-    rintro ⟨⟨⟨ha, -⟩, ⟨hb, -⟩⟩, h⟩
-    exact (mul_pos ha hb).ne' h
+  rcases eq_or_ne n 0 with rfl | n_ne_zero
+  · simp +contextual [Finset.ext_iff, Nat.pos_iff_ne_zero]
   ext ⟨n1, n2⟩
   rw [Nat.mem_divisorsAntidiagonal]
   simp only [ne_eq, Finset.mem_filter, Finset.mem_product, Finset.mem_Ioc]

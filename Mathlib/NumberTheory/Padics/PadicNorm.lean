@@ -79,10 +79,8 @@ protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 /-- The `p`-adic norm of `p` is `p⁻¹`. -/
 @[simp]
 theorem padicNorm_p : padicNorm p p = (p : ℚ)⁻¹ := by
-  obtain hp | hp := le_or_gt p 1
-  · obtain rfl | rfl : p = 0 ∨ p = 1 := by omega
-    · simp
-    · simp
+  rcases le_or_gt p 1 with hp | hp
+  · interval_cases p <;> simp
   · simp [padicNorm, (pos_of_gt hp).ne', Nat.multiplicity_self hp]
 
 @[deprecated (since := "2026-11-04")] alias padicNorm_p_of_prime := padicNorm_p

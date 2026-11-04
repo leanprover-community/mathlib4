@@ -336,7 +336,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hval : padicValRat p q < padicValRat p r) :
     padicValRat p (q + r) = padicValRat p q := by
-  obtain rfl | hr := eq_or_ne r 0
+  rcases eq_or_ne r 0 with rfl | hr
   · simp
   rw [add_eq_min hqr hq hr (ne_of_lt hval), min_eq_left (le_of_lt hval)]
 
@@ -575,7 +575,7 @@ lemma multiplicity_add_le_self {a : ℕ} [hp : Fact p.Prime] (ha : p < a) :
 `n` is less than `p` raised to one plus the p-adic valuation of `n`. -/
 lemma nat_log_eq_multiplicity_iff {n : ℕ} [hp : Fact (Nat.Prime p)] :
     Nat.log p n = multiplicity p n ↔ n < p ^ (multiplicity p n + 1) := by
-  obtain rfl | hn := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | hn
   · simp [hp.out.pos]
   rw [Nat.log_eq_iff (Or.inr ⟨(Nat.Prime.one_lt' p).out, by lia⟩), and_iff_right_iff_imp]
   exact fun _ => Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hn) (pow_multiplicity_dvd p n)

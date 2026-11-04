@@ -315,7 +315,7 @@ open scoped Classical in
 theorem normalized_count_X_eq_of_coe {P : k[X]} :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
-  obtain rfl | hP := eq_or_ne P 0
+  rcases eq_or_ne P 0 with rfl | hP
   · simp
   apply eq_of_forall_le_iff
   simp only [← Nat.cast_le (α := ℕ∞)]

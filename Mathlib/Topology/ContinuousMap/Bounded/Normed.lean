@@ -48,7 +48,7 @@ theorem norm_eq (f : α →ᵇ β) : ‖f‖ = sInf { C : ℝ | 0 ≤ C ∧ ∀ 
 
 /-- We do not need the `0 ≤ C` condition in the formula for `‖f‖` as a `sInf`. -/
 theorem norm_eq_sInf_norm_le : ‖f‖ = sInf { C : ℝ | ∀ x : α, ‖f x‖ ≤ C } := by
-  obtain h | ⟨⟨a⟩⟩ := isEmpty_or_nonempty α
+  rcases isEmpty_or_nonempty α with h | ⟨⟨a⟩⟩
   · simp [norm_def, dist_zero_of_empty]
   rw [norm_eq]
   congr

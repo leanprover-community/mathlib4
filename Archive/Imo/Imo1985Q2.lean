@@ -49,12 +49,8 @@ def Condition (n j : ℕ) (C : ℕ → Fin 2) : Prop :=
 lemma C_mul_mod {n j : ℕ} (hj : j ∈ Set.Ico 1 n) (cpj : Nat.Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {k : ℕ} (hk : k ∈ Set.Ico 1 n) :
     C (k * j % n) = C j := by
-  obtain hn | hn := lt_or_ge n 3
-  · simp only [Set.mem_Ico] at hj hk
-    obtain rfl : j = 1 := by lia
-    obtain rfl : k = 1 := by lia
-    obtain rfl : n = 2 := by lia
-    simp
+  rcases lt_or_ge n 3 with hn | hn
+  · grind
   induction k, hk.1 using Nat.le_induction with
   | base => rw [one_mul, Nat.mod_eq_of_lt hj.2]
   | succ k hk₁ ih =>
@@ -85,9 +81,8 @@ lemma C_mul_mod {n j : ℕ} (hj : j ∈ Set.Ico 1 n) (cpj : Nat.Coprime n j)
 theorem result {n j : ℕ} (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
     C i = C j := by
-  obtain hn | hn := lt_or_ge n 3
-  · obtain rfl : i = j := by simp only [Set.mem_Ico] at hi hj; lia
-    rfl
+  rcases lt_or_ge n 3 with hn | hn
+  · grind
   obtain ⟨v, -, hv⟩ := exists_mul_mod_eq_one_of_coprime cpj.symm (by lia)
   have hvi : i = (v * i % n) * j % n := by
     rw [mod_mul_mod, ← mul_rotate, ← mod_mul_mod, hv, one_mul, mod_eq_of_lt hi.2]

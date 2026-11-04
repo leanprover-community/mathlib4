@@ -694,7 +694,7 @@ include K L in
 lemma pow_sub_one_dvd_differentIdeal_aux
     {p : Ideal A} [p.IsMaximal] (P : Ideal B) {e : ℕ} (hp : p ≠ ⊥)
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
-  obtain rfl | he := eq_or_ne e 0
+  rcases eq_or_ne e 0 with rfl | he
   · simp
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective

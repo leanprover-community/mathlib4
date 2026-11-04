@@ -328,7 +328,7 @@ def ordFrac : K →*₀ ℤᵐ⁰ :=
 
 lemma ordFrac_eq_ord {x : R} :
     ordFrac R (algebraMap R K x) = ordMonoidWithZeroHom R x := by
-  obtain rfl | hx := eq_or_ne x 0
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   have := (FaithfulSMul.algebraMap_injective R K).isDomain
   refine (Submonoid.LocalizationMap.lift_eq ..).trans ?_

@@ -356,7 +356,7 @@ theorem dvd_of_mem_factors {a p : Associates α} (hm : p ∈ factors a) :
 theorem dvd_of_mem_factors' {a : α} {p : Associates α} {hp : Irreducible p}
     (h_mem : Subtype.mk p hp ∈ factors' a) : p ∣ Associates.mk a := by
   have := Classical.decEq (Associates α)
-  obtain rfl | hz := eq_or_ne a 0
+  rcases eq_or_ne a 0 with rfl | hz
   · simp
   apply dvd_of_mem_factors
   rw [factors_mk _ hz]
@@ -461,7 +461,7 @@ theorem prime_pow_dvd_iff_le {m p : Associates α} (h₁ : m ≠ 0) (h₂ : Irre
 
 theorem le_of_count_ne_zero {m p : Associates α} (hp : Irreducible p) :
     count p m.factors ≠ 0 → p ≤ m := by
-  obtain rfl | h0 := eq_or_ne m 0
+  rcases eq_or_ne m 0 with rfl | h0
   · simp
   rw [← pos_iff_ne_zero]
   intro h

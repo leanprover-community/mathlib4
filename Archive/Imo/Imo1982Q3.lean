@@ -54,11 +54,8 @@ omit hn in
 /-- The main inequality used for part a. -/
 lemma ineq (h0 : x 0 = 1) (hp : ∀ k, 0 < x k) :
     4 * n / (n + 1) ≤ ∑ k ∈ range (n + 1), x k ^ 2 / x (k + 1) := by
-  obtain rfl | hn := eq_or_ne n 0
-  · have := hp 0
-    have := hp 1
-    simp [h0]
-    positivity
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp [h0, (hp 1).le]
   calc
     -- We first use AM-GM.
     _ ≤ (∑ k ∈ range n, x (k + 1) + 1) ^ 2 / (∑ k ∈ range n, x (k + 1)) * n / (n + 1) := by

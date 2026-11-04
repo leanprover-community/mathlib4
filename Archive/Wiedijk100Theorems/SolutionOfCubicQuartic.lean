@@ -116,8 +116,7 @@ theorem cubic_eq_zero_iff (hω : IsPrimitiveRoot ω 3)
         x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) := by
   have ha : a ≠ 0 := by
     rintro rfl
-    simp at hp
-    exact hp_nonzero hp
+    exact hp_nonzero (by simpa using hp)
   let y := x + b / (3 * a)
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
@@ -213,8 +212,7 @@ theorem quartic_eq_zero_iff
         x = (2 * s - w) / 4 - b / (4 * a) ∨ x = (2 * s + w) / 4 - b / (4 * a) := by
   have ha : a ≠ 0 := by
     rintro rfl
-    simp at hq
-    exact hq_nonzero hq
+    exact hq_nonzero (by simpa using hq)
   let y := x + b / (4 * a)
   have h4 : (4 : K) = 2 ^ 2 := by norm_num
   have h8 : (8 : K) = 2 ^ 3 := by norm_num

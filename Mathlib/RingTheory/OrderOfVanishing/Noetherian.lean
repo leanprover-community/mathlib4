@@ -163,7 +163,7 @@ variable {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
 lemma ordMonoidWithZeroHom_eq_intValuation {x : R} :
     (ordMonoidWithZeroHom R) x = ((IsDiscreteValuationRing.maximalIdeal R).intValuation x)⁻¹ := by
-  obtain rfl | hx := eq_or_ne x 0
+  rcases eq_or_ne x 0 with rfl | hx
   · simp
   simp [ordMonoidWithZeroHom_eq_ord (mem_nonZeroDivisors_of_ne_zero hx),
     IsDiscreteValuationRing.intValuation_maximalIdeal]

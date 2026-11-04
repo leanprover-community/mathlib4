@@ -379,10 +379,8 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
 include hm notbdd in
 /-- Given two natural numbers `n, m` with `m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
 lemma le_pow_log : f n ≤ f m ^ logb m n := by
-  obtain hn | hn := le_or_gt n 1
-  · obtain rfl | rfl : n = 0 ∨ n = 1 := by omega
-    · simp
-    · simp
+  rcases le_or_gt n 1 with hn | hn
+  · interval_cases n <;> simp
   have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * f m ^ logb m n)
       atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]

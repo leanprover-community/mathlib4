@@ -147,8 +147,7 @@ theorem index_of_argmax :
   | [], m, _, _, _ => by simp
   | hd :: tl, m, hm, a, ham => by
     by_cases ha : a ∉ hd :: tl
-    · rw [idxOf_of_notMem ha]
-      exact idxOf_le_length
+    · exact idxOf_of_notMem ha ▸ idxOf_le_length
     rw [not_not] at ha
     simp only [idxOf_cons, argmax_cons, Option.mem_def] at hm ⊢
     cases h : argmax f tl

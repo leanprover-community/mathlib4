@@ -85,9 +85,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
 theorem pairwise_sameCycle_formPerm (hl : Nodup l) :
     Pairwise l.formPerm.SameCycle l := by
   rcases lt_or_ge l.length 2 with hn | hn
-  · rw [pairwise_iff_getElem]
-    intro i j hi hj hij
-    lia
+  · exact pairwise_iff_getElem.2 fun i j hi hj _ ↦ by lia
   exact Pairwise.imp_mem.mpr
     (pairwise_of_forall fun _ _ hx hy =>
       (isCycle_formPerm hl hn).sameCycle ((formPerm_apply_mem_ne_self_iff _ hl _ hx).mpr hn)

@@ -146,7 +146,7 @@ theorem coeff_truncFinset_mul_truncFinset_eq_coeff_mul (hs : IsLowerSet (s : Set
 theorem truncFinset_truncFinset_pow (hs : IsLowerSet (s : Set (σ →₀ ℕ))) {k : ℕ}
     (p : MvPowerSeries σ R) : truncFinset R s ((truncFinset R s p) ^ k) =
       truncFinset R s (p ^ k) := by
-  obtain rfl | hk := Nat.eq_zero_or_pos k
+  rcases Nat.eq_zero_or_pos k with rfl | hk
   · simp
   induction k, hk using Nat.le_induction with
   | base => simp [truncFinset_truncFinset]

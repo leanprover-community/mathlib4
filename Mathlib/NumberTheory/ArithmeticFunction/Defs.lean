@@ -385,7 +385,7 @@ theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) :=
 theorem dirichletInverseFun_apply_ne {n : ℕ} (hn1 : n ≠ 1) :
     dirichletInverseFun f hf n =
       - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
-  obtain rfl | hn0 := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | hn0
   · simp [dirichletInverseFun_apply_zero]
   rw [dirichletInverseFun, ite_eq_right hn0, ite_eq_right hn1]
   conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]

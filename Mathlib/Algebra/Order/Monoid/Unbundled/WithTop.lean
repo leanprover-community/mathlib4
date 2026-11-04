@@ -568,6 +568,8 @@ protected theorem add_lt_add_of_lt_of_le [Preorder α] [AddLeftMono α]
 lemma addLECancellable_of_ne_bot [LE α] [AddLeftReflectLE α]
     (hx : x ≠ ⊥) : AddLECancellable x := fun _b _c ↦ WithBot.le_of_add_le_add_left hx
 
+@[deprecated "This lemma is vacuous since `x < ⊥` never holds; use `addLECancellable_of_ne_bot`."
+  (since := "2026-11-04")]
 lemma addLECancellable_of_lt_bot [Preorder α]
     (hx : x < ⊥) : AddLECancellable x := (not_lt_bot hx).elim
 

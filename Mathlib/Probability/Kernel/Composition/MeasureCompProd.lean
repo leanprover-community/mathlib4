@@ -268,7 +268,7 @@ lemma AbsolutelyContinuous.compProd_right [IsSFiniteKernel η]
     (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     μ ⊗ₘ κ ≪ μ ⊗ₘ η := by
   by_cases hμ : SFinite μ
-  swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
+  swap; · simp [compProd_of_not_sfinite _ _ hμ]
   by_cases hκ : IsSFiniteKernel κ
   · refine Measure.AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_
     rw [Measure.compProd_apply hs, lintegral_eq_zero_iff (Kernel.measurable_kernel_prodMk_left hs)]
@@ -312,7 +312,7 @@ lemma AbsolutelyContinuous.compProd_of_compProd [SFinite ν]
     (hμν : μ ≪ ν) (hκη : μ ⊗ₘ κ ≪ μ ⊗ₘ η) :
     μ ⊗ₘ κ ≪ ν ⊗ₘ η := by
   by_cases hη : IsSFiniteKernel η
-  swap; · rw [compProd_of_not_isSFiniteKernel _ _ hη] at hκη ⊢; exact hκη
+  swap; · simpa [compProd_of_not_isSFiniteKernel _ _ hη] using hκη
   by_cases hμ : SFinite μ
   swap; · rw [compProd_of_not_sfinite _ _ hμ]; simp
   refine AbsolutelyContinuous.mk fun s hs hs_zero ↦ ?_

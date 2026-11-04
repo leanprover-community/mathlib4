@@ -779,7 +779,7 @@ omit hf in
 lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
     (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
     IsCompl (LinearMap.ker f) p := by
-  obtain rfl | hf := eq_or_ne f 0
+  rcases eq_or_ne f 0 with rfl | hf
   · simp [hp] at hpf
   refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
   have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by

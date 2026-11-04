@@ -341,7 +341,7 @@ lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :
   apply mul_choose_dvd_lcmUpto <;> lia
 
 lemma mul_four_pow_le_lcmUpto {n : ℕ} : n * 4 ^ n ≤ lcmUpto (2 * n + 1) := by
-  obtain rfl | hn := eq_or_ne n 0
+  rcases eq_or_ne n 0 with rfl | hn
   · simp
   grw [four_pow_le_add_one_mul_choose, ← mul_assoc]
   exact le_of_dvd (lcmUpto_pos _) (mul_mul_choose_dvd_lcmUpto hn)

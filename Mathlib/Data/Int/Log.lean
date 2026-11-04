@@ -252,7 +252,7 @@ theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by r
 
 omit [IsStrictOrderedRing R] in
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by
-  obtain rfl | rfl : b = 0 ∨ b = 1 := by omega
+  obtain rfl | rfl : b = 0 ∨ b = 1 := by lia
   · simp
   · simp
 
