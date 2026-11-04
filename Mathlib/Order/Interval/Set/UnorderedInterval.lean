@@ -339,7 +339,9 @@ lemma uIoc_union_uIoc (h : b ∈ [[a, c]]) : Ι a b ∪ Ι b c = Ι a c := by
   rw [uIcc_of_le hac] at h
   rw [uIoc_of_le h.1, uIoc_of_le h.2, uIoc_of_le hac, Ioc_union_Ioc_eq_Ioc h.1 h.2]
 
-section uIoo
+@[simp]
+lemma nonempty_uIoc : (uIoc a b).Nonempty ↔ a ≠ b := by
+  simp [uIoc, eq_comm]
 
 /-- `uIoo a b` is the set of elements lying between `a` and `b`, with `a` and `b` not included.
 Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ b)`. In a product type,
@@ -415,17 +417,11 @@ lemma uIoo_subset_Ioo (ha : a₁ ∈ Icc a₂ b₂) (hb : b₁ ∈ Icc a₂ b₂
 lemma nonempty_uIoo [DenselyOrdered α] : (uIoo a b).Nonempty ↔ a ≠ b := by
   simp [uIoo, eq_comm]
 
-@[simp]
-lemma nonempty_uIoc : (uIoc a b).Nonempty ↔ a ≠ b := by
-  simp [uIoc, eq_comm]
-
 @[to_dual none]
 lemma uIoo_eq_union : uIoo a b = Ioo a b ∪ Ioo b a := by
   rcases lt_or_ge a b with h | h
   · simp [uIoo_of_lt, h, Ioo_eq_empty_of_le h.le]
   · simp [uIoo_of_ge, h]
-
-end uIoo
 
 end LinearOrder
 
