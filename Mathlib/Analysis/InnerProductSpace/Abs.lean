@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Abs
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 /-!
 # Absolute value
@@ -57,6 +57,10 @@ theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
   rw [abs_def, T.isPositive_abs.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self ..
 @[simp] theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
+
+theorem continuous_abs : Continuous (abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
+  CFC.continuousOn_sqrt.comp_continuous (by fun_prop)
+    fun T => T.isPositive_adjoint_comp_self.nonneg
 
 theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
