@@ -954,7 +954,7 @@ lemma div_veq_iff (hc : c ≠ 0) : a / c =ᵥ b ↔ a =ᵥ b * c := by
   simp [veq_def, vle_div_iff hc, div_vle_iff hc]
 
 lemma veq_div_iff (hc : c ≠ 0) : b =ᵥ a / c ↔ b * c =ᵥ a := by
-  simp [veq_def, vle_div_iff hc, div_vle_iff hc]
+  rw [veq_comm, div_veq_iff hc, veq_comm]
 
 lemma one_vle_div_iff (hb : b ≠ 0) : 1 ≤ᵥ a / b ↔ b ≤ᵥ a := by
   simp [vle_div_iff hb]
@@ -989,9 +989,7 @@ lemma inv_veq_one : x⁻¹ =ᵥ 1 ↔ x =ᵥ 1 := by
 
 @[simp]
 lemma one_veq_inv : 1 =ᵥ x⁻¹ ↔ 1 =ᵥ x := by
-  by_cases hx : x = 0
-  · simp [hx]
-  grind [veq_def, one_vle_inv, inv_vle_one]
+  rw [veq_comm, inv_veq_one, veq_comm]
 
 lemma vle_one_or_inv_vlt_one : x ≤ᵥ 1 ∨ x⁻¹ <ᵥ 1 := by
   by_cases h : x = 0
