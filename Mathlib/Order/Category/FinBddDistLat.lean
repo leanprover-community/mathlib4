@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Category.BddDistLat
 public import Mathlib.Order.Category.FinPartOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite bounded distributive lattices
 
