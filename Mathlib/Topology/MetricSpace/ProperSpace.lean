@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Topology.MetricSpace.Pseudo.Basic
 public import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 public import Mathlib.Topology.MetricSpace.Pseudo.Pi
+
+import Mathlib.Topology.MetricSpace.Pseudo.Basic
 
 /-! # Proper spaces
 

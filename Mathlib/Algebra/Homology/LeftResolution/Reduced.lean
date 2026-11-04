@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!

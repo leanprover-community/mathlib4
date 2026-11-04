@@ -5,12 +5,13 @@ Authors: Eric Rodriguez
 -/
 module
 
+public import Mathlib.RingTheory.Localization.Cardinality
+public import Mathlib.SetTheory.Cardinal.Divisibility
+
 import Mathlib.Algebra.Field.TransferInstance
 import Mathlib.Algebra.MonoidAlgebra.Cardinal
 import Mathlib.Data.Rat.Encodable
 import Mathlib.FieldTheory.Finite.GaloisField
-public import Mathlib.RingTheory.Localization.Cardinality
-public import Mathlib.SetTheory.Cardinal.Divisibility
 
 /-!
 # Cardinality of Fields

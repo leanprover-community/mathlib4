@@ -195,7 +195,7 @@ theorem existsUnique_gluing' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover
     rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
     exact gl_spec i
   · intro gl' gl'_spec
-    convert! congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
+    convert congr_arg _ (gl_uniq (F.1.map (eqToHom V_eq_supr_U.symm).op gl') fun i => _) <;>
       rw [← ConcreteCategory.comp_apply, ← F.1.map_comp]
     · simp
     · exact gl'_spec i
@@ -226,7 +226,7 @@ theorem eq_of_locally_eq' (V : Opens X) (iUV : ∀ i : ι, U i ⟶ V) (hcover : 
     s = t := by
   have V_eq_supr_U : V = iSup U := le_antisymm hcover (iSup_le fun i => (iUV i).le)
   suffices F.1.map (eqToHom V_eq_supr_U.symm).op s = F.1.map (eqToHom V_eq_supr_U.symm).op t by
-    convert! congr(F.1.map (eqToHom V_eq_supr_U).op $this) <;>
+    convert congr(F.1.map (eqToHom V_eq_supr_U).op $this) <;>
     rw [← ConcreteCategory.comp_apply, ← F.1.map_comp, eqToHom_op, eqToHom_op, eqToHom_trans,
       eqToHom_refl, F.1.map_id, ConcreteCategory.id_apply]
   apply eq_of_locally_eq
@@ -245,8 +245,8 @@ theorem eq_of_locally_eq₂ {U₁ U₂ V : Opens X} (i₁ : U₁ ⟶ V) (i₂ : 
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) true
     · exact le_iSup (fun t : Bool => if t then U₁ else U₂) false
   · rintro ⟨_ | _⟩
-    any_goals exact h₁
-    any_goals exact h₂
+    · exact h₂
+    · exact h₁
 
 variable {F} {U} in
 theorem eq_app_of_locally_eq {V : Opens X} {G : Sheaf C X} {f : F ⟶ G}

@@ -5,8 +5,8 @@ Authors: Sam van Gool, Jake Levinson
 -/
 module
 
-public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.CategoryTheory.Sites.EpiMono
+public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
 
@@ -55,7 +55,7 @@ such that `$T_*(s_V) = t|_V$`.
 
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
-def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
+abbrev IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :
@@ -107,10 +107,10 @@ theorem locally_surjective_iff_surjective_on_stalks (T : ℱ ⟶ 𝒢) :
     have key_W := 𝒢.germ_eq x hxV hxU (T.app _ s) t <| by
       convert! hs_x using 1
       symm
-      convert! stalkFunctor_map_germ_apply _ _ _ _ s
+      convert stalkFunctor_map_germ_apply _ _ _ _ s
     obtain ⟨W, hxW, hWV, hWU, h_eq⟩ := key_W
     refine ⟨W, hWU, ⟨ℱ.map hWV.op s, ?_⟩, hxW⟩
-    convert! h_eq using 1
+    convert h_eq using 1
     simp only [← ConcreteCategory.comp_apply, T.naturality]
 
 end SurjectiveOnStalks

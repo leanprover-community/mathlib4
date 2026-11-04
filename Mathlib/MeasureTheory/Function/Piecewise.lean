@@ -5,8 +5,8 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Data.Setoid.Partition
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
+public import Mathlib.Order.Setoid.Partition
 
 /-!
 # Measurability of piecewise functions

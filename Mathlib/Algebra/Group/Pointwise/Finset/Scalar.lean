@@ -5,8 +5,8 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.NAry
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
+public import Mathlib.Data.Finset.NAry
 
 /-!
 # Pointwise operations of finsets

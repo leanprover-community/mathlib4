@@ -5,8 +5,8 @@ Authors: Felix Weilacher, Yury Kudryashov, Rémy Degenne
 -/
 module
 
-public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Data.Set.MemPartition
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.Order.Filter.CountableSeparatingOn
 
 /-!
@@ -364,7 +364,7 @@ instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [Measurabl
     [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
   measurableSet_singleton x := by
     choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
-    convert! MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
     ext y
     rcases eq_or_ne x y with rfl | h
     · simpa
@@ -500,7 +500,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
           refine disjoint_memPartition t n (mem_of_mem_sdiff huV) (hS_subset huS) ?_
           exact ne_of_mem_of_not_mem huS (notMem_of_mem_sdiff huV) |>.symm
         · rw [codisjoint_iff]
-          simp only [sup_eq_union, top_eq_univ]
+          simp only [top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_sdiff_cancel hS_subset]
     | iUnion f _ h =>
       choose S hS_subset hS_eq using h

@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
+public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
+
 import Mathlib.Data.Fintype.Perm
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Basic
 
 /-! # Properties of `Equiv.Perm` on `Finite` types
 

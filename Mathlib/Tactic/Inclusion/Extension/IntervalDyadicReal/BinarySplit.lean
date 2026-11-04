@@ -5,8 +5,11 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public meta import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Binary splitting of dyadic real intervals

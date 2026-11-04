@@ -6,6 +6,7 @@ Authors: Jeremy Tan
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
+
 import Mathlib.Algebra.Order.Interval.Set.Group
 
 /-!
@@ -45,7 +46,7 @@ theorem tan_arctan {z : ℂ} (h₁ : z ≠ I) (h₂ : z ≠ -I) : tan (arctan z)
   have key : exp (2 * (arctan z * I)) = (1 + z * I) / (1 - z * I) := by
     rw [arctan, ← mul_rotate, ← mul_assoc,
       show 2 * (I * (-I / 2)) = 1 by simp [field], one_mul, exp_log]
-    · exact div_ne_zero z₁ z₂
+    exact div_ne_zero z₁ z₂
   -- multiply top and bottom by `1 - z * I`
   rw [key, ← mul_div_mul_right _ _ z₂, sub_mul, add_mul, div_mul_cancel₀ _ z₂, one_mul,
     show _ / _ * I = -(I * I) * z by ring, I_mul_I, neg_neg, one_mul]
@@ -128,7 +129,7 @@ theorem hasSum_arctan {z : ℂ} (hz : ‖z‖ < 1) :
   simp_rw [← mul_comm 2 _] at this
   refine this.prod_fiberwise fun k => ?_
   dsimp only
-  convert! hasSum_fintype (_ : Fin 2 → ℂ) using 1
+  convert hasSum_fintype (_ : Fin 2 → ℂ) using 1
   rw [Fin.sum_univ_two, Fin.val_zero, Fin.val_one, Odd.neg_one_pow (n := 2 * k + 0 + 1) (by simp),
     neg_add_cancel, zero_mul, zero_div, mul_zero, zero_add,
     show 2 * k + 1 + 1 = 2 * (k + 1) by ring, Even.neg_one_pow (n := 2 * (k + 1)) (by simp),

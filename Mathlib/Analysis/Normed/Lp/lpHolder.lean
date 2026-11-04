@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Operator.Bilinear
+
 import Mathlib.Tactic.Positivity.Finset
 
 /-! # Hölder's inequality for `lp` spaces

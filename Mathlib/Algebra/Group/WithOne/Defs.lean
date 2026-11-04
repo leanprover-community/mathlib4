@@ -6,10 +6,14 @@ Authors: Mario Carneiro, Johan Commelin
 module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
-import Mathlib.Basic.Nontrivial.Basic
 public import Mathlib.Data.Option.Basic
-public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
+
+import Mathlib.Basic.Nontrivial.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Adjoining a zero/one to semigroups and related algebraic structures
