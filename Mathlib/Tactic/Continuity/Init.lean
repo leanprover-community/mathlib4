@@ -5,7 +5,7 @@ Authors: Jannis Limperg
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Init
 
 /-!

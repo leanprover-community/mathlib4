@@ -583,8 +583,7 @@ interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_odd` for a stronger result. -/
 lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
-    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ}
-    (ht : ‖f (min 0 t)‖ₑ ≠ ∞ := by finiteness) :
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {t : ℝ} :
     IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg]
@@ -598,11 +597,10 @@ lemma intervalIntegrable_of_odd₀ (h₁f : ∀ x, -f x = f (-x))
 iff it is interval integrable (with respect to the volume measure) on every interval of the form
 `0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ}
-    (ha : ‖f (min 0 a)‖ₑ ≠ ∞ := by finiteness) (hb : ‖f (min 0 b)‖ₑ ≠ ∞ := by finiteness) :
+    (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) {a b : ℝ} :
     IntervalIntegrable f volume a b :=
   -- Split integral and apply lemma
-  (intervalIntegrable_of_odd₀ h₁f h₂f ha).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f hb)
+  (intervalIntegrable_of_odd₀ h₁f h₂f).symm.trans (intervalIntegrable_of_odd₀ h₁f h₂f)
 
 end
 
@@ -780,8 +778,6 @@ nonrec theorem integral_finsetSum {ι} {s : Finset ι} {f : ι → ℝ → E}
     ∫ x in a..b, ∑ i ∈ s, f i x ∂μ = ∑ i ∈ s, ∫ x in a..b, f i x ∂μ := by
   simp only [intervalIntegral_eq_integral_uIoc, integral_finsetSum s fun i hi => (h i hi).def',
     Finset.smul_sum]
-
-@[deprecated (since := "2026-04-08")] alias integral_finset_sum := integral_finsetSum
 
 @[simp]
 nonrec theorem integral_neg : ∫ x in a..b, -f x ∂μ = -∫ x in a..b, f x ∂μ := by
@@ -1275,8 +1271,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
   rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
     Measure.restrict_restrict, this]
-  · exact measurableSet_Iic
-  all_goals apply measurableSet_Iic
+  all_goals exact measurableSet_Iic
 
 end OrderClosedTopology
 

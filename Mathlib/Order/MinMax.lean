@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.OpClass
 public import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `max` and `min`
 
@@ -116,9 +119,6 @@ theorem max_lt_max (h₁ : a < c) (h₂ : b < d) : max a b < max c d :=
 @[to_dual]
 lemma min_right_comm (a b c : α) : min (min a b) c = min (min a c) b := by
   rw [min_assoc, min_comm b, ← min_assoc]
-
-@[deprecated (since := "2026-03-22")] alias Max.left_comm := max_left_comm
-@[deprecated (since := "2026-03-22")] alias Max.right_comm := max_right_comm
 
 @[to_dual]
 theorem MonotoneOn.map_max (hf : MonotoneOn f s) (ha : a ∈ s) (hb : b ∈ s) : f (max a b) =

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact operators and finite dimensional spaces
 
@@ -34,6 +37,3 @@ lemma FiniteDimensional.of_isCompactOperator_id (h : IsCompactOperator (id : E �
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_isCompactOperator_id h
   exact FiniteDimensional.of_locallyCompactSpace 𝕜
-
-@[deprecated (since := "2026-03-05")] alias IsCompactOperator.finiteDimensional :=
-  FiniteDimensional.of_isCompactOperator_id

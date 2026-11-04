@@ -90,20 +90,20 @@ lemma dist_orthogonalProjection_eq_iff_angle_eq {p p' : P} {s₁ s₂ : AffineSu
     angle_comm,
     angle_eq_arcsin_of_angle_eq_pi_div_two (angle_self_orthogonalProjection p hp'₂)
       (.inl (Ne.symm (orthogonalProjection_eq_self_iff.symm.not.1 h'.2)))]
-  · refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-    · rw [h]
-    · have hp : p ≠ p' := by
-        rintro rfl
-        exact h'.1 hp'₁
-      have hpd : 0 < dist p p' := dist_pos.2 hp
-      rw [Real.arcsin_inj (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity))
-        ((div_le_one hpd).2 ?_)
-        (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
-      · rwa [div_left_inj' hpd.ne'] at h
-      · rw [dist_orthogonalProjection_eq_infDist]
-        exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₁)
-      · rw [dist_orthogonalProjection_eq_infDist]
-        exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₂)
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rw [h]
+  · have hp : p ≠ p' := by
+      rintro rfl
+      exact h'.1 hp'₁
+    have hpd : 0 < dist p p' := dist_pos.2 hp
+    rw [Real.arcsin_inj (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity))
+      ((div_le_one hpd).2 ?_)
+      (le_trans (by simp : (-1 : ℝ) ≤ 0) (by positivity)) ((div_le_one hpd).2 ?_)] at h
+    · rwa [div_left_inj' hpd.ne'] at h
+    · rw [dist_orthogonalProjection_eq_infDist]
+      exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₁)
+    · rw [dist_orthogonalProjection_eq_infDist]
+      exact Metric.infDist_le_dist_of_mem (SetLike.mem_coe.1 hp'₂)
 
 section Oriented
 

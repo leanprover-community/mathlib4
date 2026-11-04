@@ -25,6 +25,8 @@ A polynomial `f : R[X]` splits if it is a product of constant and monic linear p
 
 variable {R : Type*}
 
+open AddMonoidAlgebra
+
 namespace Polynomial
 
 section Semiring
@@ -239,7 +241,7 @@ variable [Ring R]
 
 @[simp, aesop safe apply]
 theorem Splits.X_sub_C (a : R) : Splits (X - C a) := by
-  simpa using! Splits.X_add_C (-a)
+  simpa [sub_eq_add_neg, C_neg] using Splits.X_add_C (-a)
 
 @[aesop safe apply]
 protected theorem Splits.neg {f : R[X]} (hf : Splits f) : Splits (-f) := by
@@ -253,10 +255,10 @@ theorem splits_neg_iff {f : R[X]} : Splits (-f) ↔ Splits f :=
 theorem Splits.comp_neg_X {f : R[X]} (hf : f.Splits) : (f.comp (-X)).Splits := by
   refine Submonoid.closure_induction ?_ (by simp)
     (fun f g _ _ hf hg ↦ mul_comp_neg_X f g ▸ hf.mul hg) hf
-  · rintro f (⟨a, rfl⟩ | ⟨a, rfl⟩)
-    · simp
-    · rw [add_comp, X_comp, C_comp, neg_add_eq_sub, ← neg_sub]
-      exact (X_sub_C a).neg
+  rintro f (⟨a, rfl⟩ | ⟨a, rfl⟩)
+  · simp
+  · rw [add_comp, X_comp, C_comp, neg_add_eq_sub, ← neg_sub]
+    exact (X_sub_C a).neg
 
 end Ring
 
@@ -268,7 +270,7 @@ variable [CommRing R] {f g : R[X]} {A B : Type*} [CommRing A] [CommRing B]
 theorem splits_iff_exists_multiset :
     Splits f ↔ ∃ m : Multiset R, f = C f.leadingCoeff * (m.map (X - C ·)).prod := by
   refine splits_iff_exists_multiset'.trans ⟨?_, ?_⟩ <;>
-    rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa⟩
+    rintro ⟨m, hm⟩ <;> exact ⟨m.map (- ·), by simpa [← sub_eq_add_neg]⟩
 
 theorem Splits.exists_eval_eq_zero (hf : Splits f) (hf0 : degree f ≠ 0) :
     ∃ a, eval a f = 0 := by
@@ -389,7 +391,7 @@ theorem Splits.roots_map_of_ne_zero {S : Type*} [CommRing S] [IsDomain S]
   induction hf using Submonoid.closure_induction with
   | mem p hp => obtain (⟨r, rfl⟩ | ⟨a, rfl⟩) := hp <;> simp
   | one => simp
-  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by aesop]
+  | mul x y _ _ hx hy => simp_all [roots_mul, show x * y ≠ 0 by contrapose hφ; simp [hφ]]
 
 theorem Splits.roots_map_of_injective {S : Type*} [CommRing S] [IsDomain S]
     (hf : f.Splits) {i : R →+* S} (hi : Function.Injective i) : (f.map i).roots = f.roots.map i :=
@@ -669,30 +671,5 @@ theorem Splits.of_degree_eq_two {x : R} (h₁ : f.degree = 2) (h₂ : f.eval x =
   Splits.of_natDegree_eq_two (natDegree_eq_of_degree_eq_some h₁) h₂
 
 end Field
-
-
-universe u v w
-
-section Splits
-
-section CommRing
-
-variable {i}
-
-variable (i)
-
-end CommRing
-
-variable [CommRing R]
-
-section UFD
-
-attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
-
-local infixl:50 " ~ᵤ " => Associated
-
-end UFD
-
-end Splits
 
 end Polynomial

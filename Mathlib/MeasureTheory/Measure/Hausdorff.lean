@@ -115,7 +115,7 @@ Hausdorff measure, measure, metric measure
 
 open scoped NNReal ENNReal Topology
 
-open Metric Set Function Filter Encodable Module TopologicalSpace
+open Metric Set Function Filter Encodable Module TopologicalSpace CompleteLattice
 
 noncomputable section
 
@@ -168,8 +168,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
       fun x hx y hy ↦ hx.2.trans <| infEDist_le_edist_of_mem hy⟩
   have Ssep' : ∀ n, Metric.AreSeparated (S n) (s ∩ t) := fun n =>
     (Ssep n).mono Subset.rfl inter_subset_right
-  have S_sub : ∀ n, S n ⊆ s \ t := fun n =>
-    subset_inter inter_subset_left (Ssep n).subset_compl_right
+  have S_sub (n) : S n ⊆ s \ t := fun x hx ↦ ⟨hx.1, (Ssep n).subset_compl_right hx⟩
   have hSs : ∀ n, μ (s ∩ t) + μ (S n) ≤ μ s := fun n =>
     calc
       μ (s ∩ t) + μ (S n) = μ (s ∩ t ∪ S n) := Eq.symm <| hm _ _ (Ssep' n).symm
@@ -202,7 +201,7 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   /- While the sets `S (k + 1) \ S k` are not pairwise metric separated, the sets in each
     subsequence `S (2 * k + 1) \ S (2 * k)` and `S (2 * k + 2) \ S (2 * k)` are metric separated,
     so `m` is additive on each of those sequences. -/
-  rw [← tsum_even_add_odd ENNReal.summable ENNReal.summable, ENNReal.add_ne_top]
+  rw [← tsum_even_add_odd summable summable, ENNReal.add_ne_top]
   suffices ∀ a, (∑' k : ℕ, μ (S (2 * k + 1 + a) \ S (2 * k + a))) ≠ ∞ from
     ⟨by simpa using this 0, by simpa using this 1⟩
   refine fun r => ne_top_of_le_ne_top htop ?_
@@ -212,8 +211,8 @@ theorem borel_le_caratheodory (hm : IsMetric μ) : borel X ≤ μ.caratheodory :
   · exact μ.mono (iUnion_subset fun i => iUnion_subset fun _ x hx => mem_iUnion.2 ⟨_, hx.1⟩)
   suffices ∀ i j, i < j → Metric.AreSeparated (S (2 * i + 1 + r)) (s \ S (2 * j + r)) from
     fun i _ j _ hij => hij.lt_or_gt.elim
-      (fun h => (this i j h).mono inter_subset_left fun x hx => by exact ⟨hx.1.1, hx.2⟩)
-      fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) inter_subset_left
+      (fun h => (this i j h).mono sdiff_subset fun x hx => by exact ⟨hx.1.1, hx.2⟩)
+      fun h => (this j i h).symm.mono (fun x hx => by exact ⟨hx.1.1, hx.2⟩) sdiff_subset
   intro i j hj
   have A : ((↑(2 * j + r))⁻¹ : ℝ≥0∞) < (↑(2 * i + 1 + r))⁻¹ := by
     rw [ENNReal.inv_lt_inv, Nat.cast_lt]; lia
@@ -447,7 +446,7 @@ variable [MeasurableSpace X] [BorelSpace X]
 (we use `≤ᶠ[𝓝[≥] 0]` to state this), then `mkMetric m₁ hm₁ ≤ c • mkMetric m₂ hm₂`. -/
 theorem mkMetric_mono_smul {m₁ m₂ : ℝ≥0∞ → ℝ≥0∞} {c : ℝ≥0∞} (hc : c ≠ ∞) (h0 : c ≠ 0)
     (hle : m₁ ≤ᶠ[𝓝[≥] 0] c • m₂) : (mkMetric m₁ : Measure X) ≤ c • mkMetric m₂ := fun s ↦ by
-  rw [← OuterMeasure.coe_mkMetric, coe_smul, ← OuterMeasure.coe_mkMetric]
+  rw [← OuterMeasure.coe_mkMetric, FunLike.coe_smul, ← OuterMeasure.coe_mkMetric]
   exact OuterMeasure.mkMetric_mono_smul hc h0 hle s
 
 @[simp]
@@ -482,7 +481,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     simp only [iInf_eq_if, htr n, ite_true]
   · rw [iInf_eq_if, ite_eq_right htr]
     push Not at htr; rcases htr with ⟨n, hn⟩
-    refine ENNReal.tsum_eq_top_of_eq_top ⟨n, ?_⟩
+    refine tsum_eq_top_of_eq_top ⟨n, ?_⟩
     rw [iSup_eq_if, ite_eq_left, iInf_eq_if, ite_eq_right]
     · exact hn.not_ge
     rcases ediam_pos_iff.1 hn.pos with ⟨x, hx, -⟩
@@ -515,7 +514,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
   · calc
       (∑' j : ℕ, ⨆ _ : (u j).Nonempty, m (ediam (u j))) = _ :=
         tsum_iUnion_decode₂ (fun t : Set X => ⨆ _ : t.Nonempty, m (ediam t)) (by simp) _
-      _ ≤ ∑' i : ι n, m (ediam (t n i)) := ENNReal.tsum_le_tsum fun b => iSup_le fun _ => le_rfl
+      _ ≤ ∑' i : ι n, m (ediam (t n i)) := tsum_le_tsum fun b => iSup_le fun _ => le_rfl
       _ ≤ c := hn.le
 
 /-- To bound the Hausdorff measure (or, more generally, for a measure defined using
@@ -645,7 +644,7 @@ theorem hausdorffMeasure_zero_singleton (x : X) : μH[0] ({x} : Set X) = 1 := by
     simp only [ENNReal.rpow_zero, le_iInf_iff]
     intro t hst _
     rcases mem_iUnion.1 (hst (mem_singleton x)) with ⟨m, hm⟩
-    grw [← ENNReal.le_tsum m]
+    grw [← le_tsum _ m]
     have A : (t m).Nonempty := ⟨x, hm⟩
     simp [A]
 
@@ -716,7 +715,7 @@ theorem hausdorffMeasure_image_le (h : HolderOnWith C r f s) (hr : 0 < r) {d : �
       ⟨fun n => f '' (t n ∩ s), ?_, iInf_mono' fun htδ ↦
         ⟨fun n => (h.ediam_image_inter_le (t n)).trans (H (htδ n)).le, ?_⟩⟩
     · grw [← image_iUnion, ← iUnion_inter, ← hst, inter_self]
-    · refine ENNReal.tsum_le_tsum fun n => ?_
+    · refine tsum_le_tsum fun n => ?_
       simp only [iSup_le_iff, image_nonempty]
       intro hft
       simp only [Nonempty.mono ((t n).inter_subset_left) hft, ciSup_pos]
@@ -762,8 +761,8 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   rw [← le_inv_smul_iff_of_pos]
   · dsimp
     rw [← NNReal.inv_rpow, ← nnnorm_inv]
-    · refine Eq.trans_le ?_ (this (r • s))
-      rw [inv_smul_smul₀ hr]
+    refine Eq.trans_le ?_ (this (r • s))
+    rw [inv_smul_smul₀ hr]
   · simp [pos_iff_ne_zero, hr]
 
 /-!
@@ -800,7 +799,7 @@ theorem hausdorffMeasure_preimage_le (hf : AntilipschitzWith K f) (hd : 0 ≤ d)
   replace hst : f ⁻¹' s ⊆ _ := preimage_mono hst; rw [preimage_iUnion] at hst
   refine iInf₂_le_of_le _ hst (iInf_le_of_le (fun n => ?_) ?_)
   · exact (hf.ediam_preimage_le _).trans (ENNReal.mul_le_of_le_div' <| htε n)
-  · refine ENNReal.tsum_le_tsum fun n => iSup_le_iff.2 fun hft => ?_
+  · refine tsum_le_tsum fun n => iSup_le_iff.2 fun hft => ?_
     simp only [nonempty_of_nonempty_preimage hft, ciSup_pos]
     rw [← ENNReal.mul_rpow_of_nonneg _ _ hd]
     exact ENNReal.rpow_le_rpow (hf.ediam_preimage_le _) hd
@@ -1079,7 +1078,7 @@ theorem map_homothety_hausdorffMeasure {d : ℝ} (hd : 0 ≤ d) (x : P) {c : �
     Measure.map (AffineMap.homothety x c) μH[d] = ‖c‖₊⁻¹ ^ d • μH[d] := by
   ext s hs
   rw [Measure.map_apply (AffineMap.homothety_continuous x c).measurable hs,
-    hausdorffMeasure_homothety_preimage hd x hc s, Measure.smul_apply]
+    hausdorffMeasure_homothety_preimage hd x hc s, smul_apply]
 
 end NormedFieldAffine
 
