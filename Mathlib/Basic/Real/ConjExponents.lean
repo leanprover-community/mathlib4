@@ -265,30 +265,36 @@ protected lemma symm : q.HolderTriple p r where
   right_pos := h.left_pos
 
 theorem pos : 0 < p := h.left_pos
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 theorem nonneg : 0 ≤ p := h.pos.le
 theorem ne_zero : p ≠ 0 := h.pos.ne'
 protected lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 protected lemma inv_nonneg : 0 ≤ p⁻¹ := h.inv_pos.le
 protected lemma inv_ne_zero : p⁻¹ ≠ 0 := h.inv_pos.ne'
 theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
 /-- For `r`, instead of `p` -/
 theorem pos' : 0 < r := inv_pos.mp <| h.inv_add_inv_eq_inv ▸ add_pos h.inv_pos h.symm.inv_pos
 /-- For `r`, instead of `p` -/
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 theorem nonneg' : 0 ≤ r := h.pos'.le
 /-- For `r`, instead of `p` -/
 theorem ne_zero' : r ≠ 0 := h.pos'.ne'
 /-- For `r`, instead of `p` -/
 protected lemma inv_pos' : 0 < r⁻¹ := inv_pos.2 h.pos'
 /-- For `r`, instead of `p` -/
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 protected lemma inv_nonneg' : 0 ≤ r⁻¹ := h.inv_pos'.le
 /-- For `r`, instead of `p` -/
 protected lemma inv_ne_zero' : r⁻¹ ≠ 0 := h.inv_pos'.ne'
 /-- For `r`, instead of `p` -/
 theorem one_div_pos' : 0 < 1 / r := _root_.one_div_pos.2 h.pos'
 /-- For `r`, instead of `p` -/
+@[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
 theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
 /-- For `r`, instead of `p` -/
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
