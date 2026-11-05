@@ -509,12 +509,10 @@ lemma IsCircuit.elimination (hC₁ : M.IsCircuit C₁) (hC₂ : M.IsCircuit C₂
     ∃ C ⊆ (C₁ ∪ C₂) \ {e}, M.IsCircuit C := by
   have hnss : ¬ (C₁ ⊆ C₂) := fun hss ↦ h <| hC₁.eq_of_subset_isCircuit hC₂ hss
   obtain ⟨f, hf₁, hf₂⟩ := not_subset.1 hnss
-  by_cases he₁ : e ∈ C₁
-  · by_cases he₂ : e ∈ C₂
-    · obtain ⟨C, hC, hC', -⟩ := hC₁.strong_elimination hC₂ he₂ hf₁ hf₂
-      exact ⟨C, hC, hC'⟩
-    exact ⟨C₂, subset_sdiff_singleton subset_union_right he₂, hC₂⟩
-  exact ⟨C₁, subset_sdiff_singleton subset_union_left he₁, hC₁⟩
+  by_cases he : e ∈ C₂
+  · obtain ⟨C, hC, hC', -⟩ := hC₁.strong_elimination hC₂ he hf₁ hf₂
+    exact ⟨C, hC, hC'⟩
+  exact ⟨C₂, subset_sdiff_singleton subset_union_right he, hC₂⟩
 
 end Elimination
 
