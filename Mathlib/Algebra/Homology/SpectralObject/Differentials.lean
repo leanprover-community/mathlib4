@@ -137,7 +137,6 @@ lemma Ψ_fromOpcycles (hn₁ : n₀ + 1 = n₁ := by lia) :
     toCycles_Ψ_assoc .., p_fromOpcycles, toCycles_i_assoc]
   exact (X.δ_naturality _ _ _ _ _ _ _ _ rfl).symm
 
-include h₂₃ in
 @[reassoc (attr := simp)]
 lemma cyclesMap_Ψ (hn₁ : n₀ + 1 = n₁ := by lia) :
     X.cyclesMap _ _ _ _ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂) n₀ ≫
@@ -145,8 +144,8 @@ lemma cyclesMap_Ψ (hn₁ : n₀ + 1 = n₁ := by lia) :
   rw [← cancel_epi (X.toCycles f₁₂ f₃ (f₁ ≫ f₂ ≫ f₃)
     (by rw [reassoc_of% h₁₂]) n₀), comp_zero,
     X.toCycles_cyclesMap_assoc f₁₂ f₃ f₂ f₃ (f₁ ≫ f₂ ≫ f₃)
-    (by rw [reassoc_of% h₁₂]) f₂₃ h₂₃ (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂)
-    (twoδ₁Toδ₀ f₁ f₂₃ (f₁ ≫ f₂ ≫ f₃) (by rw [h₂₃])) n₀ rfl rfl,
+    (by rw [reassoc_of% h₁₂]) (f₂ ≫ f₃) rfl (threeδ₁Toδ₀ f₁ f₂ f₃ f₁₂ h₁₂)
+    (twoδ₁Toδ₀ f₁ (f₂ ≫ f₃) (f₁ ≫ f₂ ≫ f₃) rfl) n₀ rfl rfl,
     toCycles_Ψ .., zero₃_assoc .., zero_comp]
 
 include h₁₂ in
@@ -168,7 +167,7 @@ noncomputable def sequenceΨ (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.opcyclesMap _ _ _ _ (threeδ₃Toδ₂ f₁ f₂ f₃ f₂₃ h₂₃) n₁)
 
 lemma cyclesMap_Ψ_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
-    (ShortComplex.mk _ _ (X.cyclesMap_Ψ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁)).Exact := by
+    (ShortComplex.mk _ _ (X.cyclesMap_Ψ f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ hn₁)).Exact := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements]
   intro A z hz
   refine ⟨A, 𝟙 _, inferInstance,
@@ -198,7 +197,7 @@ lemma Ψ_opcyclesMap_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
 
 lemma sequenceΨ_exact (hn₁ : n₀ + 1 = n₁ := by lia) :
     (X.sequenceΨ f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁).Exact :=
-  exact_of_δ₀ (X.cyclesMap_Ψ_exact f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁).exact_toComposableArrows
+  exact_of_δ₀ (X.cyclesMap_Ψ_exact f₁ f₂ f₃ f₁₂ h₁₂ n₀ n₁ hn₁).exact_toComposableArrows
     (X.Ψ_opcyclesMap_exact f₁ f₂ f₃ f₁₂ h₁₂ f₂₃ h₂₃ n₀ n₁ hn₁).exact_toComposableArrows
 
 end
