@@ -60,7 +60,7 @@ lemma isCardinalClosedUnderColimitsOfShape
 
 instance [HasCardinalFilteredColimits C κ] :
     HasCardinalFilteredColimits P.FullSubcategory κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     have := isCardinalClosedUnderColimitsOfShape P κ J
     infer_instance
