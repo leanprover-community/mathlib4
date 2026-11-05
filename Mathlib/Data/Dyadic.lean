@@ -49,11 +49,14 @@ namespace Dyadic
 -- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
 attribute [coe] toRat
 
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
 instance : Coe Dyadic Rat := ⟨toRat⟩
 
 -- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
 attribute [norm_cast] toRat_zero toRat_add toRat_neg toRat_sub toRat_mul toRat_pow
   toRat_intCast toRat_natCast toRat_eq_zero_iff toRat_lt_toRat_iff toRat_le_toRat_iff
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
 attribute [simp, norm_cast] toRat_inj
 
 @[simp, norm_cast]
