@@ -50,20 +50,20 @@ def normNumBound : Nat := 2 ^ 10
 `norm_num` below `normNumBound` and the user's proofs for the primes in `known`. Each prime's
 certificate is built once. -/
 partial def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet Nat) (p : Nat) :
-    CoreM (Cert p) :=
+    CoreM Cert :=
   StateT.run' (go p) {}
 where
   /-- Builds the certificate of `p`. The state caches the certificates constructed for each
   nontrivial intermediate result. -/
-  go (p : Nat) : StateT (Std.DHashMap Nat Cert) CoreM (Cert p) := do
-    if let some cert := (← get).get? p then
+  go (p : Nat) : StateT (Std.HashMap Nat Cert) CoreM Cert := do
+    if let some cert := (← get)[p]? then
       return cert
     if known.contains p then
       return .known
     if p < normNumBound then
       return .normNum
     let (root, factorization) ← witnessFor witnesses p
-    let cert : Cert p := .lucas root (← factorization.mapM fun f ↦ return ⟨f, ← go f.1⟩)
+    let cert : Cert := .lucas root (← factorization.mapM fun (q, e) ↦ return (q, e, ← go q))
     modify (·.insert p cert)
     return cert
 

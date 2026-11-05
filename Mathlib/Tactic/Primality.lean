@@ -82,7 +82,7 @@ elab_rules : tactic
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
       let cert ← Cert.ofWitnesses witnesses (.ofArray known.keysArray) p
-      let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime cert) known
+      let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime p cert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 
 end Mathlib.Tactic.Primality

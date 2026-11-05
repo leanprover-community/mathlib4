@@ -20,19 +20,19 @@ open Lean Meta Qq
 
 namespace Mathlib.Tactic.Primality
 
-/-- A certificate that `p` is prime. -/
-inductive Cert : Nat → Type where
+/-- A primality certificate for `p` (not recorded in the type). -/
+inductive Cert : Type where
   /-- `p` is proved prime by `norm_num`. -/
-  | normNum {p : Nat} : Cert p
+  | normNum
   /-- A proof that `p` is prime is provided, which should be stored in the initial state of
   `certifyPrime`. -/
-  | known {p : Nat} : Cert p
+  | known
   /-- A Lucas certificate with the primitive root `root` and the factorization of `p - 1` in
   `factorization`, each prime factor with its exponent and certificate. -/
-  | lucas {p : Nat} (root : Nat) (factorization : List ((f : Nat × Nat) × Cert f.1)) : Cert p
+  | lucas (root : Nat) (factorization : List (Nat × Nat × Cert))
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
-partial def certifyPrime {p : Nat} (cert : Cert p) :
+partial def certifyPrime (p : Nat) (cert : Cert) :
     StateT (Std.HashMap Nat Expr) MetaM Q(Nat.Prime $p) := do
   if let some pf := (← get)[p]? then
     return pf
@@ -44,7 +44,7 @@ partial def certifyPrime {p : Nat} (cert : Cert p) :
     | .known => throwError "no proof that {p} is prime is provided"
     | .lucas root factorization =>
       pure <| certifyLucas p root
-        (← factorization.mapM fun ⟨(q, e), cert⟩ ↦ return ⟨q, e, ← certifyPrime cert⟩)
+        (← factorization.mapM fun (q, e, cert) ↦ return ⟨q, e, ← certifyPrime q cert⟩)
   modify (·.insert p pf)
   return pf
 
