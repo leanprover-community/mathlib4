@@ -67,13 +67,12 @@ theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
   tauto
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
-    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := by
-  by_contra! h
+    (h : Odd p.length) : 3 ≤ G.chromaticNumber := by
+  contrapose! h
   have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
   let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
-  have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
-  simp_all
+  simp [c'.odd_length_iff_not_congr]
 
 /-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
