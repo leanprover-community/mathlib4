@@ -68,7 +68,8 @@ theorem directedOn_image {s : Set β} {f : β → α} :
   simp only [DirectedOn, Set.mem_image, exists_exists_and_eq_and, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂, Order.Preimage]
 
-theorem Monotone.directedOn_image [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f)
+@[to_dual directedOn_ge_image]
+theorem Monotone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f)
     (s : Set α) : DirectedOn (· ≤ ·) (f '' s) := by
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact ⟨_, Set.mem_image_of_mem _ (max_rec' _ hx hy), hf (le_max_left x y), hf (le_max_right x y)⟩
