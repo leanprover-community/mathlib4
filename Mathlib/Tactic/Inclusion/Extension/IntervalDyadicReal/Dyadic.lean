@@ -46,6 +46,7 @@ instance : AddCommGroup Dyadic where
   zsmul_neg' := by grind
 
 namespace Dyadic
+open Dyadic
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
