@@ -45,7 +45,7 @@ lemma LipschitzOnWith.cauchySeq_comp {s : Set α} {f : α → β} (hf : Lipschit
   · intro n m N hn hm
     have A n : u n ∈ s := h'u (mem_range_self _)
     apply (hf.dist_le_mul _ (A n) _ (A m)).trans
-    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.property
+    exact mul_le_mul_of_nonneg_left (hb n m N hn hm) K.val_nonneg
   · rw [← mul_zero (K : ℝ)]
     exact blim.const_mul _
 

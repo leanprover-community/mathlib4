@@ -233,7 +233,7 @@ theorem dist_conj_comm (z w : ℂ) : dist (conj z) w = dist z (conj w) := by
   rw [← dist_conj_conj, conj_conj]
 
 theorem nnDist_conj_comm (z w : ℂ) : nnDist (conj z) w = nnDist z (conj w) :=
-  Subtype.ext <| dist_conj_comm _ _
+  Nonneg.ext <| dist_conj_comm _ _
 
 @[deprecated (since := "2026-11-07")] alias nndist_conj_comm := nnDist_conj_comm
 

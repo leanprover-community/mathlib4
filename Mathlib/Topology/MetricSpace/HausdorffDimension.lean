@@ -580,7 +580,7 @@ theorem DifferentiableOn.hausdorffMeasure_image_eq_zero [MeasurableSpace E] [Bor
 theorem DifferentiableOn.dimH_image_le (hf : DifferentiableOn 𝕜 f t) :
     dimH (f '' t) ≤ dimH t := by
   borelize E F
-  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.property)
+  simpa [dimH_eq_iInf] using biInf_mono (fun r ↦ hf.hausdorffMeasure_image_eq_zero r.val_nonneg)
 
 variable [NormedSpace ℝ E] [NormedSpace ℝ F]
 
