@@ -174,7 +174,7 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
   let Iu := Units.mk0 I I_ne_zero
   have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
     simpa only [Units.smul_def, Units.val_mk0] using!
-      spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
+      exp_mem_spectrum_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
     simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
       smul_eq_mul, I_mul, neg_eq_zero] using!
@@ -210,7 +210,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
-      Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
+      Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded ℂ a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
   case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ Set.inter_subset_right
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ Set.inter_subset_right
