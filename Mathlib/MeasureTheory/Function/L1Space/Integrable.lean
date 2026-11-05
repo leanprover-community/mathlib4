@@ -147,10 +147,10 @@ lemma integrable_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
   simp [integrable_const_iff, hc, isFiniteMeasure_iff]
 
 theorem Integrable.of_mem_Icc_enorm [IsFiniteMeasure μ]
-    {a b : ℝ≥0∞} (ha : a ≠ ∞) (hb : b ≠ ∞) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
+    {a b : ℝ≥0∞} (hb : b ≠ ∞) {X : α → ℝ≥0∞} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     Integrable X μ :=
-  ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top ha hb h⟩
+  ⟨hX.aestronglyMeasurable, .of_mem_Icc_of_ne_top hb h⟩
 
 theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
@@ -232,12 +232,11 @@ lemma integrable_norm_rpow_iff {f : α → β} {p : ℝ≥0∞}
     ENNReal.div_self p_zero p_top]
 
 lemma integrable_norm_rpow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStronglyMeasurable f μ)
-    {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
+    {p q : ℝ} (hp : 0 ≤ p) (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
     Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
   rcases hp.eq_or_lt with (rfl | hp)
   · simp
-  rcases hq.eq_or_lt with (rfl | hq)
-  · grind
+  have hq : 0 < q := hp.trans_le hpq
   rw [← ENNReal.toReal_ofReal hp.le, integrable_norm_rpow_iff hf (by simp [hp]) (by simp)]
   rw [← ENNReal.toReal_ofReal hq.le, integrable_norm_rpow_iff hf (by simp [hq]) (by simp)] at hint
   exact MemLp.mono_exponent hint (ENNReal.ofReal_le_ofReal hpq)
@@ -246,7 +245,7 @@ lemma integrable_norm_pow_of_le [IsFiniteMeasure μ] {f : α → β} (hf : AEStr
     {p q : ℕ} (hpq : p ≤ q) (hint : Integrable (fun x ↦ ‖f x‖ ^ q) μ) :
     Integrable (fun x ↦ ‖f x‖ ^ p) μ := by
   simp_rw [← Real.rpow_natCast] at *
-  exact integrable_norm_rpow_of_le hf p.cast_nonneg q.cast_nonneg (by simpa) hint
+  exact integrable_norm_rpow_of_le hf p.cast_nonneg (by simpa) hint
 
 theorem Integrable.mono_measure {f : α → ε} (h : Integrable f ν) (hμ : μ ≤ ν) : Integrable f μ :=
   ⟨h.aestronglyMeasurable.mono_measure hμ, h.hasFiniteIntegral.mono_measure hμ⟩

@@ -185,8 +185,10 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
   hasFiniteIntegral_const_iff.2 <| .inr ‹_›
 
 theorem HasFiniteIntegral.of_mem_Icc_of_ne_top [IsFiniteMeasure μ]
-    {a b : ℝ≥0∞} (ha : a ≠ ⊤) (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    {a b : ℝ≥0∞} (hb : b ≠ ⊤) {X : α → ℝ≥0∞} (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     HasFiniteIntegral X μ := by
+  rcases eq_or_ne a ⊤ with rfl | ha
+  · simp_all [top_le_iff, HasFiniteIntegral]
   have : ‖max ‖a‖ₑ ‖b‖ₑ‖ₑ ≠ ⊤ := by simp [ha, hb]
   apply (hasFiniteIntegral_const_enorm this (μ := μ)).mono'_enorm
   filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω h₁ h₂ using by simp [h₂]

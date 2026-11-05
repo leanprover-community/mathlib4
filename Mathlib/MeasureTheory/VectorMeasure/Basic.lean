@@ -168,14 +168,20 @@ theorem of_iUnion_nonpos {M : Type*} [TopologicalSpace M]
   (v.of_disjoint_iUnion hf₁ hf₂).symm ▸ tsum_nonpos hf₃
 
 theorem of_nonneg_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (h : Disjoint A B)
-    (hA₁ : MeasurableSet A) (hB₁ : MeasurableSet B) (hA₂ : 0 ≤ s A) (hB₂ : 0 ≤ s B)
+    (hB₁ : MeasurableSet B) (hA₂ : 0 ≤ s A) (hB₂ : 0 ≤ s B)
     (hAB : s (A ∪ B) = 0) : s A = 0 := by
+  by_cases hA₁ : MeasurableSet A
+  swap
+  · exact s.not_measurable hA₁
   rw [of_union h hA₁ hB₁] at hAB
   linarith
 
 theorem of_nonpos_disjoint_union_eq_zero {s : SignedMeasure α} {A B : Set α} (h : Disjoint A B)
-    (hA₁ : MeasurableSet A) (hB₁ : MeasurableSet B) (hA₂ : s A ≤ 0) (hB₂ : s B ≤ 0)
+    (hB₁ : MeasurableSet B) (hA₂ : s A ≤ 0) (hB₂ : s B ≤ 0)
     (hAB : s (A ∪ B) = 0) : s A = 0 := by
+  by_cases hA₁ : MeasurableSet A
+  swap
+  · exact s.not_measurable hA₁
   rw [of_union h hA₁ hB₁] at hAB
   linarith
 
