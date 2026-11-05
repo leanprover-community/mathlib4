@@ -50,16 +50,25 @@ local notation "|" T "|" => ContinuousLinearMap.abs T
 
 protected theorem abs_def (T : E →L[ℂ] F) : |T| = CFC.sqrt (T† ∘L T) := rfl
 
-@[simp] protected theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by
+@[simp]
+protected theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by
   simp [ContinuousLinearMap.abs_def]
-@[simp] protected theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by
+
+@[simp]
+protected theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by
   simp [ContinuousLinearMap.abs_def]
-@[simp] protected theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
+
+@[simp]
+protected theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
   simp [ContinuousLinearMap.abs_def, ← ContinuousLinearMap.nonneg_iff_isPositive]
-@[simp] protected theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
+
+@[simp]
+protected theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   rw [ContinuousLinearMap.abs_def, T.isPositive_abs.isSelfAdjoint.adjoint_eq]
   exact CFC.sqrt_mul_self ..
-@[simp] protected theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
+
+@[simp]
+protected theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
 
 protected theorem continuous_abs : Continuous (ContinuousLinearMap.abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
   CFC.continuousOn_sqrt.comp_continuous (by fun_prop)
