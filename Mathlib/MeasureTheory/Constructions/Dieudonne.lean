@@ -8,6 +8,7 @@ module
 public import Mathlib.MeasureTheory.Measure.Support
 public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.SetTheory.Cardinal.Cofinality.Club
+public import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Dieudonné measure
@@ -33,6 +34,10 @@ open Cardinal Order Set
 
 variable {α : Type*} {s : Set α} [LinearOrder α] [WellFoundedLT α] [h₀ : Fact (cof α ≠ ℵ₀)]
 include h₀
+
+open Ordinal in
+scoped instance : Fact (cof (Iio ω₁) ≠ ℵ₀) where
+  out := by simp
 
 /-- Measurable sets in Dieudonné space either contain or entirely omit some club set. -/
 scoped instance : MeasurableSpace α where
