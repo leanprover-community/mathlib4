@@ -5,8 +5,10 @@ Authors: Violeta Hernández Palacios
 -/
 module
 
+-- TODO: most of these imports can be removed once the deprecations go through
 public import Mathlib.SetTheory.Cardinal.Cofinality.Enum
 public import Mathlib.SetTheory.Ordinal.Enum
+public import Mathlib.Topology.Order.ScottTopology
 public import Mathlib.Topology.Order.SuccPred
 
 import Mathlib.Topology.Order.Monotone
@@ -14,35 +16,38 @@ import Mathlib.Topology.Order.Monotone
 /-!
 # Topology of ordinals
 
-We prove some miscellaneous results involving the order topology of ordinals.
+This file registers an `OrderTopology` instance on `Ordinal`.
 
-## Main results
+In all likelihood, any theorem which you might want to add to this file will generalize to broader
+typeclasses. In particular:
 
-* `Ordinal.isClosed_iff_iSup`: A set of ordinals is closed iff it's
-  closed under suprema.
-* `Ordinal.enumOrd_isNormal_iff_isClosed`: The function enumerating the ordinals of a set is
-  normal iff the set is closed.
+- The topological characterization of limit ordinals is proven as `SuccOrder.isOpen_singleton_iff`
+  for any linear successor order with the order topology.
+- The characterization of closed sets as those which are closed under suprema follows from the fact
+  that the order topology on a well-order equals the Scott-Hausdorff topology.
 
-## Todo
-
-Most things in this file should be generalized to other well-orders, or to Scott-Hausdorff
-topologies.
+Note also that concepts like normal functions (`Order.IsNormal`) or club sets (`IsClub`), which are
+defined using the order topology of the ordinals within the literature, are given more general
+definitions in Mathlib which make no use of it.
 -/
 
-@[expose] public noncomputable section
+public section
 
-universe u v
-
-open Order Topology
+universe u
 
 namespace Ordinal
-
-variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
 
 instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
+/-! ### Everything below is deprecated. -/
+
+variable {s : Set Ordinal.{u}} {a : Ordinal.{u}}
+
+open Order Topology
+
 open List Set in
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
     TFAE [a ∈ closure s,
       a ∈ closure (s ∩ Iic a),
@@ -74,17 +79,20 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
       bddAbove_of_small
   tfae_finish
 
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_closure_iff_iSup :
     a ∈ closure s ↔
       ∃ (ι : Type u) (_ : Nonempty ι) (f : ι → Ordinal), (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   apply ((mem_closure_tfae a s).out 1 5).trans
   simp_rw [exists_prop]
 
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem mem_iff_iSup_of_isClosed (hs : IsClosed s) :
     a ∈ s ↔ ∃ (ι : Type u) (_hι : Nonempty ι) (f : ι → Ordinal),
       (∀ i, f i ∈ s) ∧ ⨆ i, f i = a := by
   rw [← mem_closure_iff_iSup, hs.closure_eq]
 
+@[deprecated IsScottHausdorff.mem_closure_iff_isLUB +typeChanged (since := "2026-11-03")]
 theorem isClosed_iff_iSup :
     IsClosed s ↔
       ∀ {ι : Type u}, Nonempty ι → ∀ f : ι → Ordinal, (∀ i, f i ∈ s) → ⨆ i, f i ∈ s := by
