@@ -4672,6 +4672,8 @@ public import Mathlib.Data.ZMod.ValMinAbs
 public import Mathlib.Deprecated.Aliases
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.Dynamics.BirkhoffSum.Basic
+public import Mathlib.Dynamics.BirkhoffSum.Integrable
+public import Mathlib.Dynamics.BirkhoffSum.Maximal
 public import Mathlib.Dynamics.BirkhoffSum.NormedSpace
 public import Mathlib.Dynamics.BirkhoffSum.QuasiMeasurePreserving
 public import Mathlib.Dynamics.Circle.RotationNumber.TranslationNumber
@@ -5624,6 +5626,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
+public import Mathlib.MeasureTheory.Constructions.KolmogorovExtension
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
@@ -5816,6 +5819,7 @@ public import Mathlib.MeasureTheory.Measure.AEDisjoint
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 public import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 public import Mathlib.MeasureTheory.Measure.AddContent
+public import Mathlib.MeasureTheory.Measure.AddContent.CompactSystem
 public import Mathlib.MeasureTheory.Measure.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.TaylorExpansion
@@ -7731,7 +7735,8 @@ public import Mathlib.Tactic.Inclusion.Core.ToSet
 public import Mathlib.Tactic.Inclusion.Core.Types
 public import Mathlib.Tactic.Inclusion.Extension.Core.Core
 public import Mathlib.Tactic.Inclusion.Extension.Core.Init
-public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
@@ -7739,6 +7744,10 @@ public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
+public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Basic
+public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Hypotheses
+public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Attr
 public import Mathlib.Tactic.Inclusion.ExtensionAPI.Basic
 public import Mathlib.Tactic.Ineq
@@ -7869,6 +7878,10 @@ public import Mathlib.Tactic.Positivity
 public import Mathlib.Tactic.Positivity.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Positivity.Finset
+public import Mathlib.Tactic.Primality
+public import Mathlib.Tactic.Primality.Cert
+public import Mathlib.Tactic.Primality.Lucas
+public import Mathlib.Tactic.Primality.Producers
 public import Mathlib.Tactic.ProdAssoc
 public import Mathlib.Tactic.ProxyType
 public import Mathlib.Tactic.Push
