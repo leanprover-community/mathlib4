@@ -145,6 +145,7 @@ variable {R S S' : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
   {ι : Type*} {M : ι → Type*} {N N' : Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
   [AddCommMonoid N] [AddCommMonoid N'] [Module S N] [Module S N'] (f : (Π i, M i) →ₘₛₗ[σ] N)
 
+@[macro_inline]
 instance : FunLike ((Π i, M i) →ₘₛₗ[σ] N) (∀ i, M i) N where
   coe f := f.toFun
   coe_injective f g h := by cases f; cases g; cases h; rfl
@@ -307,7 +308,7 @@ def ofSubsingleton [Module R N] [Subsingleton ι] (i : ι) :
         simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
       map_smul' := fun c x ↦ by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
-  right_inv f := by ext x; refine congr_arg f ?_; exact (eq_const_of_subsingleton _ _).symm
+  right_inv f := by ext x; congrm f ?_; exact (eq_const_of_subsingleton _ _).symm
 
 variable (σ M) in
 /-- The constant map is multilinear when `ι` is empty. -/
@@ -386,8 +387,7 @@ variable {R₁ R₂ R₃ R₄ : Type*} [Semiring R₁] [Semiring R₂] [Semiring
   [AddCommMonoid N₃] [AddCommMonoid N₄] [Module R₂ N₂] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- If `g` is a multilinear map and `f` is a collection of linear maps,
-then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call
-`g.compLinearMap f`. -/
+then `g (f₁ m₁, ..., fₙ mₙ)` is again a multilinear map, that we call `g.compLinearMap f`. -/
 def compLinearMap (g : (Π i, M₂ i) →ₘₛₗ[σ₂₃] N₃) (f : ∀ i, M₁ i →ₛₗ[σ₁₂] M₂ i) :
     (Π i, M₁ i) →ₘₛₗ[σ₁₃] N₃ where
   toFun m := g fun i => f i (m i)
