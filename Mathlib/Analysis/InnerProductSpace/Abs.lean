@@ -58,6 +58,9 @@ protected theorem abs_zero : |(0 : E →L[ℂ] F)| = 0 := by
 protected theorem abs_neg (T : E →L[ℂ] F) : |-T| = |T| := by
   simp [ContinuousLinearMap.abs_def]
 
+protected theorem abs_sub_comm (S T : E →L[ℂ] F) : |S - T| = |T - S| := by
+  rw [← neg_sub, ContinuousLinearMap.abs_neg]
+
 @[simp]
 protected theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
   simp [ContinuousLinearMap.abs_def, ← ContinuousLinearMap.nonneg_iff_isPositive]
