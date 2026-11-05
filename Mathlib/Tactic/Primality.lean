@@ -54,7 +54,7 @@ Lucas certificate given as a list of witnesses.
 
 A Lucas certificate proves `p` prime by a primitive root `a` of `p`, a number with
 `a ^ (p - 1) % p = 1` and `a ^ ((p - 1) / q) % p ≠ 1` for each prime factor `q` of `p - 1`. Each
-such `q` is proved prime in turn, so the witnesses form a tree with one entry for each prime.
+such `q` needs a certificate too, except for primes below `2 ^ 10` which are left to `norm_num`.
 
 ```lean
 example : Nat.Prime 1000003 := by
@@ -65,9 +65,7 @@ example : Nat.Prime 1000003 := by
     .lucas { root := 2, primeFactors := [2, 167, 499] }])
 ```
 
-The primes `2`, `3`, `167` and `499` need no entry, since `norm_num` proves every prime below
-`2 ^ 10`. An entry does not name its prime, and each prime takes the first entry that fits it.
-`primality (cert := …) [h₁, …]` takes proofs `hᵢ : Nat.Prime m` of primes that then need no entry.
+`primality (cert := …) [h₁, …]` takes proofs `hᵢ : Nat.Prime m` instead of a certificate.
 See `MathlibTest/Tactic/Primality.lean` for more examples. -/
 syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 

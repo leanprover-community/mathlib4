@@ -11,8 +11,7 @@ public import Mathlib.Tactic.Primality.Lucas
 /-!
 # Primality certificates
 
-The type of primality certificates and the certifier that constructs a `Nat.Prime` proof term
-from one.
+The type of primality certificates and the certifier that constructs a `Nat.Prime` proof term.
 -/
 
 public meta section
