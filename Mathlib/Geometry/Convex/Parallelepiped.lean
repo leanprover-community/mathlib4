@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel, Justus Springer
+Authors: Anouk Brose, Sébastien Gouëzel, Justus Springer
 -/
 module
 
@@ -15,12 +15,15 @@ import Mathlib.Order.Interval.Set.Pi
 /-!
 # Parallelepipeds
 
-Parallelepipeds spanned by a finite family of vectors in a module over a linearly ordered field.
+Closed and half-open parallelepipeds spanned by a finite family of vectors in a module over a
+linearly ordered field.
 
 ## Main definitions
 
 * `parallelepiped K v`: the parallelepiped spanned by `v`, i.e. all combinations
   `∑ i, t i • v i` with `t i ∈ [0, 1]`.
+* `halfOpenParallelepiped K v`: the half-open parallelepiped spanned by `v`, i.e. all combinations
+  `∑ i, t i • v i` with `t i ∈ [0, 1)`.
 -/
 
 @[expose] public section
@@ -31,6 +34,8 @@ open scoped Pointwise
 variable {K : Type*} [Field K] [LinearOrder K]
 variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
 variable [AddCommGroup E] [Module K E] [AddCommGroup F] [Module K F]
+
+section parallelepiped
 
 variable (K) in
 /-- The parallelepiped spanned by a finite family of vectors. -/
@@ -107,3 +112,78 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → K) :
     simp [Pi.single_apply]
   simp_rw [parallelepiped, h, ← pi_univ_Icc, piMap_image_univ_pi, ← pi_univ_uIcc, Pi.zero_apply,
     Pi.one_apply, ← uIcc_of_le zero_le_one, image_mul_const_uIcc, zero_mul, one_mul]
+
+end parallelepiped
+
+section halfOpenParallelepiped
+
+variable (K) in
+/-- The half-open parallelepiped spanned by a finite family of vectors. -/
+def halfOpenParallelepiped (v : ι → E) : Set E :=
+  (fun t : ι → K => ∑ i, t i • v i) '' univ.pi fun _ ↦ Ico 0 1
+
+theorem mem_halfOpenParallelepiped_iff (v : ι → E) (x : E) :
+    x ∈ halfOpenParallelepiped K v ↔
+      ∃ t : ι → K, (∀ i, t i ∈ Ico (0 : K) 1) ∧ x = ∑ i, t i • v i := by
+  simp [halfOpenParallelepiped, eq_comm]
+
+@[simp]
+theorem halfOpenParallelepiped_of_isEmpty [IsEmpty ι] (v : ι → E) :
+    halfOpenParallelepiped K v = {0} := by
+  simp [halfOpenParallelepiped, univ_eq_empty_iff.mpr]
+
+theorem sum_smul_mem_halfOpenParallelepiped (v : ι → E) {t : ι → K}
+    (ht : ∀ i, t i ∈ Ico (0 : K) 1) : ∑ i, t i • v i ∈ halfOpenParallelepiped K v :=
+  (mem_halfOpenParallelepiped_iff v _).mpr ⟨t, ht, rfl⟩
+
+/-- For linearly independent `v`, a linear combination of `v` lies in the half-open parallelepiped
+spanned by `v` if and only if all its coefficients lie in `[0, 1)`. -/
+theorem LinearIndependent.sum_smul_mem_halfOpenParallelepiped_iff {v : ι → E}
+    (hv : LinearIndependent K v) {t : ι → K} :
+    ∑ i, t i • v i ∈ halfOpenParallelepiped K v ↔ ∀ i, t i ∈ Ico (0 : K) 1 := by
+  refine ⟨fun h ↦ ?_, sum_smul_mem_halfOpenParallelepiped v⟩
+  obtain ⟨t', ht', hsum⟩ := (mem_halfOpenParallelepiped_iff v _).mp h
+  exact fun i ↦ Fintype.linearIndependent_iffₛ.mp hv _ _ hsum i ▸ ht' i
+
+theorem halfOpenParallelepiped_basis_eq (b : Basis ι K E) :
+    halfOpenParallelepiped K b = {x | ∀ i, b.repr x i ∈ Ico 0 1} := by
+  ext x
+  conv_lhs => rw [← b.sum_repr x]
+  exact b.linearIndependent.sum_smul_mem_halfOpenParallelepiped_iff
+
+theorem image_halfOpenParallelepiped (f : E →ₗ[K] F) (v : ι → E) :
+    f '' halfOpenParallelepiped K v = halfOpenParallelepiped K (f ∘ v) := by
+  rw [halfOpenParallelepiped, ← image_comp]
+  congr 1 with t
+  simp
+
+/-- Reindexing a family of vectors does not change their half-open parallelepiped. -/
+@[simp]
+theorem halfOpenParallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
+    halfOpenParallelepiped K (v ∘ e) = halfOpenParallelepiped K v := by
+  ext x
+  refine (e.arrowCongr (.refl K)).exists_congr fun t ↦ ?_
+  simp [← e.sum_comp, e.forall_congr_left]
+
+theorem halfOpenParallelepiped_prod (v : ι → E) (w : ι' → F) :
+    halfOpenParallelepiped K (Sum.elim (LinearMap.inl K E F ∘ v) (LinearMap.inr K E F ∘ w)) =
+      halfOpenParallelepiped K v ×ˢ halfOpenParallelepiped K w := by
+  ext ⟨x, y⟩
+  rw [mem_halfOpenParallelepiped_iff, (Equiv.sumArrowEquivProdArrow ι ι' K).exists_congr_left]
+  simp [mem_halfOpenParallelepiped_iff, Prod.ext_iff, Prod.fst_sum, Prod.snd_sum,
+    and_and_and_comm]
+
+theorem halfOpenParallelepiped_subset_parallelepiped (v : ι → E) :
+    halfOpenParallelepiped K v ⊆ parallelepiped K v :=
+  image_mono fun _ ht ↦ ⟨fun i ↦ (ht i trivial).1, fun i ↦ (ht i trivial).2.le⟩
+
+variable [IsStrictOrderedRing K]
+
+@[simp]
+theorem zero_mem_halfOpenParallelepiped (v : ι → E) : (0 : E) ∈ halfOpenParallelepiped K v :=
+  (mem_halfOpenParallelepiped_iff v _).mpr ⟨0, by simp⟩
+
+theorem convex_halfOpenParallelepiped (v : ι → E) : Convex K (halfOpenParallelepiped K v) :=
+  (convex_pi fun _ _ ↦ convex_Ico 0 1).linear_image (Fintype.linearCombination K v)
+
+end halfOpenParallelepiped
