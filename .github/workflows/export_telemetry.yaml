@@ -15,7 +15,11 @@ permissions:
 
 jobs:
   otel-export:
-    if: ${{ github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing' }}
+    # `workflow_run` matches the triggering workflow by name only, which doesn't identify it.
+    # Our CI workflows run on `push` and `pull_request_target` only, which both run workflow
+    # files from this repository, so skip runs for any other event.
+    if: ${{ (github.repository == 'leanprover-community/mathlib4' || github.repository == 'leanprover-community/mathlib4-nightly-testing') &&
+            contains(fromJSON('["push", "pull_request_target"]'), github.event.workflow_run.event) }}
     runs-on: ubuntu-latest
     steps:
       - name: Export workflow telemetry
