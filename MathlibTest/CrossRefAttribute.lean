@@ -165,7 +165,7 @@ theorem IsAbelian : 1 + 1 = 2 := by
   rfl
 
 /--
-info: some ([LMFDB group.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
+info: some ([LMFDB group\.abelian](https://www.lmfdb.org/knowledge/show/group.abelian) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd
@@ -190,6 +190,18 @@ info:
 -/
 #guard_msgs in
 #lmfdb_tags
+
+-- Ensure Verso does not try to interpret the `_` in the tag name as formatting.
+set_option doc.verso true in
+@[lmfdb tag_99 "A vacuous comment"]
+theorem foo : 1 + 1 = 2 := by
+  rfl
+
+-- A period has no special meaning in Verso, but it can still be escaped.
+set_option doc.verso true in
+@[lmfdb tag.99 "A vacuous comment"]
+theorem bar : 1 + 1 = 2 := by
+  rfl
 
 end LMFDB
 
@@ -245,7 +257,7 @@ theorem test : 1 + 1 = 2 := by
   rfl
 
 /--
-info: some ([DLMF 5.5.E1](https://dlmf.nist.gov/5.5.E1) (A vacuous comment))
+info: some ([DLMF 5\.5\.E1](https://dlmf.nist.gov/5.5.E1) (A vacuous comment))
 -/
 #guard_msgs in
 run_cmd

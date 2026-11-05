@@ -142,6 +142,13 @@ def addTagEntry {m : Type → Type} [MonadEnv m]
   modifyEnv (tagExt.addEntry ·
     { declName := declName, database := db, tag := tag, comment := comment })
 
+/-- Escape punctuation characters in a string so it can be included inline in Markdown or Verso. -/
+def escapeFormatting (str : String) : String :=
+  str.foldl (init := "") fun acc c =>
+    -- Markdown allows escaping any ASCII punctuation character.
+    -- Therefore, let's just escape everything and be sure it won't be misinterpreted.
+    if c.val < 128 && !c.isAlphanum then acc.push '\\' |>.push c else acc.push c
+
 /-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
 This is the database-agnostic core of every cross-reference attribute's `add` handler.
 
@@ -152,7 +159,7 @@ See Zulip: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topi
 def addCrossRefDoc (db : Database) (decl : Name) (idStr comment : String) : CoreM Unit := do
   let oldDoc := (← findDocString? (← getEnv) decl).getD ""
   let commentInDoc := if comment.isEmpty then "" else s!" ({comment})"
-  let link := s!"[{db.label} {idStr}]({db.url idStr}){commentInDoc}"
+  let link := s!"[{db.label} {escapeFormatting idStr}]({db.url idStr}){commentInDoc}"
   let newDoc := "\n\n".intercalate ([oldDoc, link].filter (· != ""))
   if doc.verso.get (← getOptions) then Meta.MetaM.run' <| Term.TermElabM.run' <| do
     -- Verso docstrings expect to be elaborated in the context of an existing declaration.
