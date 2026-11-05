@@ -53,28 +53,6 @@ variable [CommSemiring R] [CommSemiring R₁] [AddCommMonoid M₁] [Module R₁ 
   [AddCommMonoid M₂] [Module R₂ M₂] [AddCommMonoid M] [Module R M]
   {I₁ : R₁ →+* R} {I₂ : R₂ →+* R} {I₁' : R₁ →+* R}
 
-/-- The proposition that two elements of a sesquilinear map space are orthogonal -/
-@[deprecated "Use `B x y = 0`" (since := "2026-03-30")]
-def IsOrtho (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x : M₁) (y : M₂) : Prop :=
-  B x y = 0
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_def {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M} {x y} : B.IsOrtho x y ↔ B x y = 0 :=
-  Iff.rfl
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_left (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B (0 : M₁) x := by
-  dsimp only [IsOrtho]
-  rw [map_zero B, zero_apply]
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x) : IsOrtho B x (0 : M₂) :=
-  map_zero (B x)
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
-  simp_rw [isOrtho_def, flip_apply]
-
 open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. -/
@@ -98,30 +76,13 @@ variable [Field K] [AddCommGroup V] [Module K V] [Field K₁] [AddCommGroup V₁
   [Field K₂] [AddCommGroup V₂] [Module K₂ V₂]
   {I₁ : K₁ →+* K} {I₂ : K₂ →+* K} {I₁' : K₁ →+* K}
 
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₁} (ha : a ≠ 0) :
-    IsOrtho B x y ↔ IsOrtho B (a • x) y := by
-  dsimp only [IsOrtho]
-  constructor <;> intro H
-  · rw [map_smulₛₗ₂, H, smul_zero]
-  · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    rcases H with H | H
-    · rw [map_eq_zero I₁] at H
-      trivial
-    · exact H
-
-@[deprecated "`LinearMap.IsOrtho` has been deprecated" (since := "2026-03-30")]
-theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} {a : K₂} {ha : a ≠ 0} :
-    IsOrtho B x y ↔ IsOrtho B x (a • y) := by
-  simp_all [IsOrtho]
-
 /-- A set of orthogonal vectors `v` with respect to some sesquilinear map `B` is linearly
   independent if for all `i`, `B (v i) (v i) ≠ 0`. -/
 theorem linearIndependent_of_isOrthoᵢ {B : V₁ →ₛₗ[I₁] V₁ →ₛₗ[I₁'] V} {v : n → V₁}
     (hv₁ : B.IsOrthoᵢ v) (hv₂ : ∀ i, B (v i) (v i) ≠ 0) : LinearIndependent K₁ v := by
   rw [linearIndependent_iff']
   intro s w hs i hi
-  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, zero_apply]
+  have : B (s.sum fun i : n ↦ w i • v i) (v i) = 0 := by rw [hs, map_zero, LinearMap.zero_apply]
   have hsum : (s.sum fun j : n ↦ I₁ (w j) • B (v j) (v i)) = I₁ (w i) • B (v i) (v i) := by
     apply Finset.sum_eq_single_of_mem i hi
     intro j _hj hij
@@ -152,9 +113,6 @@ include H
 theorem eq_zero : ∀ {x y}, B x y = 0 → B y x = 0 := fun {x y} ↦ H x y
 
 theorem eq_iff {x y} : B x y = 0 ↔ B y x = 0 := ⟨H x y, H y x⟩
-
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
 
 theorem domRestrict (p : Submodule R₁ M₁) : (B.domRestrict₁₂ p p).IsRefl :=
   fun _ _ ↦ by
@@ -201,9 +159,6 @@ theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
   simp [H1]
 
 theorem eq_iff (H : B.IsSymm) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
-
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
 
 theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm where
   eq _ _ := by
@@ -318,9 +273,6 @@ theorem isRefl (H : B.IsAlt) : B.IsRefl := by
 
 theorem eq_iff (H : B.IsAlt) {x y} : B x y = 0 ↔ B y x = 0 := H.isRefl.eq_iff
 
-@[deprecated (since := "2026-03-30")]
-alias ortho_comm := eq_iff
-
 end IsAlt
 
 end AddCommGroup
@@ -336,11 +288,11 @@ theorem isAlt_iff_eq_neg_flip [NoZeroDivisors R] [CharZero R] {B : M₁ →ₛ�
     B.IsAlt ↔ B = -B.flip := by
   constructor <;> intro h
   · ext
-    simp_rw [neg_apply, flip_apply]
+    simp_rw [LinearMap.neg_apply, flip_apply]
     exact (h.neg _ _).symm
   intro x
   let h' := congr($h x x)
-  simp only [neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
+  simp only [LinearMap.neg_apply, flip_apply, ← add_eq_zero_iff_eq_neg] at h'
   exact add_self_eq_zero.mp h'
 
 end Semiring
@@ -383,7 +335,7 @@ theorem isAdjointPair_iff_comp_eq_compl₂ : IsAdjointPair B B' f g ↔ B'.comp 
     rw [← compl₂_apply, ← comp_apply, h]
 
 theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun _ _ ↦ by
-  simp only [Pi.zero_apply, map_zero, zero_apply]
+  simp only [Pi.zero_apply, map_zero, LinearMap.zero_apply]
 
 theorem isAdjointPair_id : IsAdjointPair B B (_root_.id : M → M) (_root_.id : M → M) :=
   fun _ _ ↦ rfl
@@ -624,7 +576,7 @@ theorem Nondegenerate.congr (h : B.Nondegenerate) :
 theorem separatingLeft_congr_iff :
     (e₁.arrowCongr (e₂.arrowCongr (LinearEquiv.refl R M)) B).SeparatingLeft ↔ B.SeparatingLeft :=
   ⟨fun h ↦ by
-    convert! h.congr e₁.symm e₂.symm
+    convert h.congr e₁.symm e₂.symm
     ext x y
     simp,
    SeparatingLeft.congr e₁ e₂⟩
@@ -658,10 +610,10 @@ theorem flip_nondegenerate : B.flip.Nondegenerate ↔ B.Nondegenerate :=
 
 theorem separatingLeft_iff_linear_nontrivial : B.SeparatingLeft ↔ ∀ x : M₁, B x = 0 → x = 0 := by
   constructor <;> intro h x hB
-  · simpa only [hB, zero_apply, eq_self_iff_true, forall_const] using h x
+  · simpa only [hB, LinearMap.zero_apply, eq_self_iff_true, forall_const] using h x
   have h' : B x = 0 := by
     ext
-    rw [zero_apply]
+    rw [LinearMap.zero_apply]
     exact hB _
   exact h x h'
 
@@ -820,9 +772,7 @@ lemma apply_smul_sub_smul_sub_eq [CommRing R] [AddCommGroup M] [Module R M]
     (B : LinearMap.BilinForm R M) (x y : M) :
     B ((B x y) • x - (B x x) • y) ((B x y) • x - (B x x) • y) =
       (B x x) * ((B x x) * (B y y) - (B x y) * (B y x)) := by
-  simp only [map_sub, map_smul, sub_apply, smul_apply, smul_eq_mul, mul_sub,
-    mul_comm (B x y) (B x x), mul_left_comm (B x y) (B x x)]
-  abel
+  simp [mul_comm, mul_sub]
 
 variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M] (B : LinearMap.BilinForm R M)
@@ -921,7 +871,7 @@ lemma apply_mul_apply_lt_iff_linearIndependent (hp : ∀ x, x ≠ 0 → 0 < B x 
     by_cases hs : s = 0; · simp_all
     suffices
         (B (r • x) (r • x)) * (B (s • y) (s • y)) = (B (r • x) (s • y)) * (B (s • y) (r • x)) by
-      simp only [map_smul, smul_apply, smul_eq_mul] at this
+      simp only [map_smul, LinearMap.smul_apply, smul_eq_mul] at this
       rw [show r * (r * (B x) x) * (s * (s * (B y) y)) = (r * r * s * s) * ((B x) x * (B y) y) by
         ring, show s * (r * (B x) y) * (r * (s * (B y) x)) = (r * r * s * s) * ((B x) y * (B y) x)
         by ring] at this

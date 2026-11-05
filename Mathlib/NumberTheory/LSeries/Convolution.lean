@@ -5,9 +5,10 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.NumberTheory.ArithmeticFunction.Defs
 public import Mathlib.NumberTheory.LSeries.Convergence
+
+import Mathlib.Algebra.BigOperators.Field
 
 /-!
 # Dirichlet convolution of sequences and products of L-series

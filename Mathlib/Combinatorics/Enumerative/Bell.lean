@@ -198,6 +198,7 @@ theorem uniformBell_eq_div (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 The `n`th standard Bell number,
 which counts the number of partitions of a set of cardinality `n`.
 -/
+@[oeis A000110]
 protected def bell : ℕ → ℕ
   | 0 => 1
   | n + 1 => ∑ i ≤ n, choose n i * (n - i).bell

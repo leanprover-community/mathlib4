@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Group.Unbundled.Int
 public import Mathlib.Data.Rat.Defs
+
 import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
@@ -120,14 +121,6 @@ instance : AddLeftMono ℚ where
   simp +instances [Int.le_iff_lt_or_eq, instLE, Rat.blt]
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
-
-@[deprecated "use `div_lt_div_iff₀`" (since := "2026-03-20")] theorem div_lt_div_iff_mul_lt_mul
-    {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
-    (a : ℚ) / b < c / d ↔ a * d < c * b := by
-  simp only [lt_iff_le_not_ge]
-  apply and_congr
-  · simp [div_def', Rat.divInt_le_divInt b_pos d_pos]
-  · simp [div_def', Rat.divInt_le_divInt d_pos b_pos]
 
 theorem num_le_denom_iff {q : ℚ} : q.num ≤ q.den ↔ q ≤ 1 := by simp [Rat.le_iff]
 

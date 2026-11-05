@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Antoine Chambert-Loir, Anatole Dedecker, Jireh Lor
 module
 
 public import Mathlib.Topology.Constructions.SumProd
+
 import Mathlib.Topology.ContinuousOn
 
 /-!

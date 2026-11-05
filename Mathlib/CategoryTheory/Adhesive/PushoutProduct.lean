@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushout-products in adhesive categories
 

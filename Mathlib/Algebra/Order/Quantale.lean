@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 public import Mathlib.Order.CompleteLattice.Basic
+
 import Mathlib.Tactic.Variable
 
 /-!

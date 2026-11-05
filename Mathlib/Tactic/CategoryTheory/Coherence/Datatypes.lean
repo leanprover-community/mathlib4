@@ -6,7 +6,6 @@ Authors: Yuma Mizuno
 module
 
 public meta import Lean.Meta.Basic
-public meta import Batteries.Tactic.Alias
 public import Mathlib.Init
 
 /-!
