@@ -141,7 +141,7 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
   invFun y := ⟨fun _ ↦ y, by fun_prop⟩
-  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ f.2 _)
+  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ (map_continuous f) _)
   right_inv _ := rfl
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)

@@ -1494,7 +1494,8 @@ public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Normalization
 public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.AlgebraicGeometry.OrderOfVanishing
+public import Mathlib.AlgebraicGeometry.OrderOfVanishing.Basic
+public import Mathlib.AlgebraicGeometry.OrderOfVanishing.DVR
 public import Mathlib.AlgebraicGeometry.Over
 public import Mathlib.AlgebraicGeometry.PointsPi
 public import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
@@ -6071,6 +6072,7 @@ public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.LSeries.RiemannZetaLogDeriv
 public import Mathlib.NumberTheory.LSeries.SumCoeff
+public import Mathlib.NumberTheory.LSeries.WienerIkehara
 public import Mathlib.NumberTheory.LSeries.ZMod
 public import Mathlib.NumberTheory.LSeries.ZetaZeros
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
