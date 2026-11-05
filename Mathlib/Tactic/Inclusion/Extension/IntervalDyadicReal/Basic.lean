@@ -65,8 +65,7 @@ theorem neg_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : -x ∈ I.neg :=
 
 @[inclusion_op interval_dyadic_real]
 theorem abs_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : |x| ∈ I.abs :=
-  Interval.abs_mem castOrderEmbedding (map_zero castAddMonoidHom)
-    (map_neg castAddMonoidHom) hx
+  Interval.abs_mem castOrderEmbedding (by simp) (by simp) hx
 
 @[inclusion_op interval_dyadic_real]
 theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x - y ∈ I.sub J :=
@@ -74,12 +73,11 @@ theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J
 
 @[inclusion_op interval_dyadic_real]
 theorem mul_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x * y ∈ I.mul J :=
-  Interval.mul_mem castOrderEmbedding (map_zero castAddMonoidHom) (by simp) hx hy
+  Interval.mul_mem castOrderEmbedding (by simp) (by simp) hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem pow_mem (n : ℕ) {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : x ^ n ∈ I.pow n :=
-  Interval.pow_mem castOrderEmbedding (map_zero castAddMonoidHom)
-    (by exact map_one (Rat.castHom ℝ)) (map_neg castAddMonoidHom)
+  Interval.pow_mem castOrderEmbedding (by simp) (by exact map_one (Rat.castHom ℝ)) (by simp)
     (by intros; simpa using map_pow (Rat.castHom ℝ) _ _) n hx
 
 end Arithmetic
