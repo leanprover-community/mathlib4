@@ -6,10 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Algebra.Homology.ShortComplex.HomologyCofork
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 public import Mathlib.CategoryTheory.Presentable.Basic
+
+import Mathlib.Algebra.Homology.ShortComplex.HomologyCofork
+import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.ExactColimits
 
 /-!
 # The homology functor on a Grothendieck abelian category is accessible
