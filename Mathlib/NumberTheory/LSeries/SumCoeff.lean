@@ -55,7 +55,7 @@ private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     exact hs.le
   have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ ‖(x : ℂ) ^ (-s)‖) t :=
     have ht' : t ≠ 0 := (zero_lt_one.trans_le ht).ne'
-    (differentiableAt_id.ofReal_cpow_const (-s) ht').norm ℝ <|
+    (differentiableAt_id.ofReal_cpow_const ht' h₁).norm ℝ <|
       (cpow_ne_zero_iff_of_exponent_ne_zero h₁).mpr <| ofReal_ne_zero.mpr ht'
   have h₄ : (deriv fun t : ℝ ↦ ‖(t : ℂ) ^ (-s)‖) =ᶠ[atTop] fun t ↦ -s.re * t ^ (-(s.re + 1)) := by
     filter_upwards [eventually_gt_atTop 0] with t ht
@@ -104,8 +104,9 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
     LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (-(s + 1)) := by
   have h₁ : (-s - 1).re + r < -1 := by
     rwa [sub_re, one_re, neg_re, neg_sub_left, neg_add_lt_iff_lt_add, add_neg_cancel_comm]
+  have h₂ : s ≠ 0 := ne_zero_of_re_pos (hr.trans_lt hs)
   have h₃ (t : ℝ) (ht : t ∈ Set.Ici 1) : DifferentiableAt ℝ (fun x : ℝ ↦ (x : ℂ) ^ (-s)) t :=
-    differentiableAt_id.ofReal_cpow_const (-s) (zero_lt_one.trans_le ht).ne'
+    differentiableAt_id.ofReal_cpow_const (zero_lt_one.trans_le ht).ne' (neg_ne_zero.mpr h₂)
   have h₄ : ∀ n, ∑ k ∈ Icc 0 n, f k = ∑ k ∈ Icc 1 n, f k := fun n ↦ by
     rw [← insert_Icc_add_one_left_eq_Icc n.zero_le, sum_insert (by aesop), hf, zero_add, zero_add]
   simp_rw [← h₄] at hO
