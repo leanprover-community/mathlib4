@@ -5,9 +5,10 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Order.Defs.LinearOrder
+public import Mathlib.Data.Rat.Defs
+public import Mathlib.Order.Hom.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -64,6 +65,20 @@ theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
     toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) := by
   rw [← Nat.cast_ofNat (R := Dyadic)]
   exact toRat_natCast n
+
+/-- Coercion from dyadic rationals to rational numbers as an additive monoid homomorphism. -/
+@[simps]
+def toRatAddMonoidHom : Dyadic →+ ℚ where
+  toFun := toRat
+  map_zero' := toRat_zero
+  map_add' := toRat_add
+
+/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
+@[simps]
+def toRatOrderEmbedding : Dyadic ↪o ℚ where
+  toFun := toRat
+  inj' := fun _ _ ↦ toRat_inj.mp
+  map_rel_iff' := toRat_le_toRat_iff
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)

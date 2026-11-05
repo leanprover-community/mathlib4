@@ -17,12 +17,8 @@ set_option doc.verso.suggestions false
 /-!
 # Initialization for the dyadic real interval extension family
 
-This file interprets dyadic rationals as real numbers, initializes the `interval_dyadic_real`
-inclusion family, and defines the `ToSet`, `Univ`, `Refine` and `Coarsen` instances it uses in the
-`inclusion` tactic.
-
-Dyadic rationals are coerced to real numbers through `ℚ`. The bundled maps used in the correctness
-proofs live here so that `Mathlib.Data.Dyadic` does not import real numbers.
+This file initializes the `interval_dyadic_real` inclusion family and defines the `ToSet`,
+`Univ` and `Coarsen` instances it uses in the `inclusion` tactic.
 -/
 
 @[expose] public section
@@ -36,15 +32,13 @@ meta initialize intervalDyadicRealFamily : InclusionFamily ←
   registerInclusionFamily `interval_dyadic_real
 
 /-- Coercion from dyadic rationals to real numbers as an additive monoid homomorphism. -/
-def castAddMonoidHom : Dyadic →+ ℝ where
-  toFun := (↑)
-  map_zero' := by simp
-  map_add' := by simp
+noncomputable def castAddMonoidHom : Dyadic →+ ℝ :=
+  (Rat.castHom ℝ).toAddMonoidHom.comp Dyadic.toRatAddMonoidHom
 
 /-- Coercion from dyadic rationals to real numbers as an order embedding. -/
 @[simps! apply]
-def castOrderEmbedding : Dyadic ↪o ℝ :=
-  OrderEmbedding.ofStrictMono (↑) fun _ _ h ↦ by simpa using h
+noncomputable def castOrderEmbedding : Dyadic ↪o ℝ :=
+  Dyadic.toRatOrderEmbedding.comp Rat.castOrderEmbedding
 
 instance instToSetIntervalDyadicReal : ToSet (Interval Dyadic) ℝ where
   toSet I := (I.map (↑)).toSet
