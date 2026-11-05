@@ -48,6 +48,31 @@ example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc (-1) 1) (hn : n ∈ Set.Icc 0 1)
     x + ((n * (1 - n) : ℤ) : ℝ) - x ∈ Set.Icc (-0.5) 0.5 := by
   dyadic_interval [binSplit := 2, prec := 1]
 
+example {z : ℤ} (hl : (2 : ℝ) ≤ z) (hu : (z : ℝ) ≤ 2) : z = 2 := by
+  dyadic_interval
+
+example {z : ℤ} (hl : (-2.1 : ℝ) ≤ z) (hu : (z : ℝ) ≤ 2.1) :
+    z ∈ Set.Icc (-2) 2 := by dyadic_interval [prec := 4]
+
+example {z : ℤ} (hl : (-2 : ℝ) < z) (hu : (z : ℝ) < 2) :
+    z ∈ Set.Icc (-1) 1 := by dyadic_interval
+
+example {z : ℤ} (hl : (-2.1 : ℝ) < z) (hu : (z : ℝ) < 2.1) :
+    z ∈ Set.Icc (-2) 2 := by dyadic_interval [prec := 4]
+
+example {n : ℤ} (hl : 0 ≤ n) (hu : (n : ℝ) < 1 + 0.5) :
+    ((n + 1 : ℤ) : ℝ) + (n : ℝ) ∈ Set.Icc 1 3 := by dyadic_interval [prec := 1]
+
+example {m n : ℤ} (hm₀ : (m : ℝ) ∈ Set.Ici 1) (hm₁ : (m : ℝ) ∈ Set.Iio 2)
+    (hn₀ : (n : ℝ) ∈ Set.Ioi (-2)) (hn₁ : (n : ℝ) ∈ Set.Iic (-1)) :
+    m = 1 ∧ n = -1 := by dyadic_interval
+
+example {w x y z : ℤ} (hw : (w : ℝ) ∈ Set.Icc (-2.1) 2.1)
+    (hx : (x : ℝ) ∈ Set.Ico (-2) 2) (hy : (y : ℝ) ∈ Set.Ioc (-2) 2)
+    (hz : (z : ℝ) ∈ Set.Ioo (-2) 2) :
+    w ∈ Set.Icc (-2) 2 ∧ x ∈ Set.Icc (-2) 1 ∧ y ∈ Set.Icc (-1) 2 ∧
+      z ∈ Set.Icc (-1) 1 := by dyadic_interval [prec := 4]
+
 end Integers
 
 section Rationals
