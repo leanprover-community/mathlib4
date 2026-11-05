@@ -74,9 +74,9 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 
-theorem isBoundedAtImInfty_neg_iff {α : Type*} [SeminormedAddCommGroup α] {f : ℍ → α} :
+@[simp] theorem isBoundedAtImInfty_neg_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
     IsBoundedAtImInfty (-f) ↔ IsBoundedAtImInfty f := by
-  simp_rw [UpperHalfPlane.isBoundedAtImInfty_iff, Pi.neg_apply, norm_neg]
+  simp [isBoundedAtImInfty_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
