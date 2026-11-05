@@ -111,8 +111,8 @@ lemma log_mul_eq_add_log_sub_iff {x y : ℂ} :
   · refine iff_of_false (fun h ↦ ?_) (by rcases hxy with rfl | rfl <;> simp [arg_le_pi])
     have h := congr(im $h)
     rcases hxy with rfl | rfl <;> simp [log_im] at h <;> grind [arg_le_pi, Real.pi_pos]
-  rw [Complex.ext_iff, ← arg_mul_eq_add_arg_sub_iff]
-  simp [log_re, log_im, Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
+  simp [Complex.ext_iff, arg_mul_eq_add_arg_sub_two_pi_iff, log_re, log_im,
+    Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
 
 alias ⟨_, log_mul_of_pi_lt⟩ := log_mul_eq_add_log_sub_iff
 
@@ -122,8 +122,8 @@ lemma log_mul_eq_add_log_add_iff {x y : ℂ} :
   · refine iff_of_false (fun h ↦ ?_) (by rcases hxy with rfl | rfl <;> simp [neg_pi_lt_arg])
     have h := congr(im $h)
     rcases hxy with rfl | rfl <;> simp [log_im] at h <;> grind [neg_pi_lt_arg, Real.pi_pos]
-  rw [Complex.ext_iff, ← arg_mul_eq_add_arg_add_iff]
-  simp [log_re, log_im, Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
+  simp [Complex.ext_iff, arg_mul_eq_add_arg_add_two_pi_iff, log_re, log_im,
+    Real.log_mul (norm_ne_zero_iff.mpr hxy.1) (norm_ne_zero_iff.mpr hxy.2)]
 
 alias ⟨_, log_mul_of_le_neg_pi⟩ := log_mul_eq_add_log_add_iff
 
