@@ -6,6 +6,7 @@ Authors: Alex Kontorovich, Heather Macbeth, Marc Masdeu
 module
 
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Projective
 
 /-!
@@ -397,6 +398,11 @@ lemma denom_J_mul (g : GL (Fin 2) ℝ) (τ : ℂ) : denom (J * g) τ = denom g �
   simp [denom, vecMul, vecHead, vecTail]
 
 end J
+
+lemma upperRightHom_smul (r : ℝ) (τ : ℍ) :
+    GeneralLinearGroup.upperRightHom r • τ = r +ᵥ τ := by
+  ext
+  simp [coe_smul, coe_vadd, σ, num, denom, add_comm]
 
 end UpperHalfPlane
 
