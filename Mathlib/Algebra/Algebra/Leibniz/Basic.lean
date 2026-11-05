@@ -73,13 +73,11 @@ theorem mul_left_mul (x y z : A) : x * (y * z) = (x * y) * z - (x * z) * y := by
 
 /-- Multiplying a square on the left by any element gives zero. -/
 theorem mul_left_mul_self (x z : A) : z * (x * x) = 0 := by
-  rw [mul_left_mul]
-  simp only [sub_self]
+  rw [mul_left_mul, sub_self]
 
 /-- Swapping the factors of the inner product negates `x * (y * z)`. -/
 theorem mul_left_mul_anticomm (x y z : A) : x * (y * z) = - (x * (z * y)) := by
-  rw [mul_left_mul, mul_left_mul]
-  simp only [neg_sub]
+  rw [mul_left_mul, mul_left_mul, neg_sub]
 
 end Leibniz
 
@@ -94,7 +92,7 @@ def spanOfSquares (R A : Type*) [Semiring R] [NonUnitalNonAssocRing A] [Module R
 theorem symm_SpanOfSquares_mem {R A : Type*} [Ring R] [NonUnitalNonAssocRing A] [Module R A]
     (x y : A) : x * y + y * x ∈ spanOfSquares R A:= by
   have : x * y + y * x = (x + y) * (x + y) - x * x - y * y := by
-    rw [add_mul, mul_add,mul_add]
+    rw [add_mul, mul_add, mul_add]
     abel
   rw [this]
   refine sub_mem (sub_mem ?_ ?_) ?_ <;> exact Submodule.subset_span ⟨_, rfl⟩
@@ -153,7 +151,6 @@ lemma squareSpan_right_mul_mem {R : Type*} [Ring R] {A : Type*}
   rw [← hy,Leibniz.leibniz y y a]
   exact symm_SpanOfSquares_mem (R := R) (y * a) y
 
-
 end Leibniz
 
 namespace NonUnitalNonAssocSemiring
@@ -183,8 +180,7 @@ instance instLieRing {A : Type*} [NonUnitalNonAssocRing A] [IsLeibniz A] [IsSkew
     have : (y + x * z) * y + (y + x * z) * (x * z) = 0 := by
       rw [← mul_add]
       apply IsSkew.skew
-    rw [← neg_eq_iff_add_eq_zero, add_mul, add_mul] at this
-    simp only [IsSkew.skew, zero_add, add_zero] at this
+    simp only [← neg_eq_iff_add_eq_zero, add_mul, add_mul, IsSkew.skew, zero_add, add_zero] at this
     rw [sub_eq_add_neg, this]
 }
 
