@@ -170,7 +170,7 @@ theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : Line
     ← exp_sum] at hp
   norm_cast at hp
   apply AddMonoidAlgebra.ext
-  apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ ∑ i ∈ e.support, e i • u i) _)
+  apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ e.linearCombination _ u) _)
   exacts [hp, hu]
 
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :

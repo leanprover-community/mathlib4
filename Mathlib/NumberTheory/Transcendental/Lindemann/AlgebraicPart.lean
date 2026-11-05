@@ -101,35 +101,20 @@ theorem coe_classSumBasis (c : ConjRootClass F K) :
   simp [coeff_classSumBasis, AddMonoidAlgebra.coeff_sum, AddMonoidAlgebra.coeff_single,
     Finsupp.single_apply, ConjRootClass.mem_carrier]
 
-open Classical in
-theorem coeff_classSumBasis_mul_classSumBasis_zero (x y : ConjRootClass F K) :
-    ((classSumBasis F R K x : R[K]) * classSumBasis F R K y).coeff 0 =
-      if x = -y then (#x.carrier.toFinset : R) else 0 := by
-  simp only [coe_classSumBasis, sum_mul_sum, AddMonoidAlgebra.single_mul_single, mul_one,
-    AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
-    AddMonoidAlgebra.coeff_single, Finsupp.single_apply]
-  calc _ = ∑ i ∈ x.carrier.toFinset, if x = -y then (1 : R) else 0 := by
-        refine sum_congr rfl fun i hi ↦ ?_
-        rw [Set.mem_toFinset, ConjRootClass.mem_carrier] at hi
-        simp only [add_eq_zero_iff_eq_neg', Finset.sum_ite_eq', Set.mem_toFinset,
-          ConjRootClass.mem_carrier, ← ConjRootClass.mk_neg, hi, neg_eq_iff_eq_neg]
-    _ = _ := by split_ifs <;> simp
-
-open Classical in
-theorem classSumBasis_repr_mul_classSumBasis_apply_zero
+theorem coeff_coe_mul_classSumBasis_zero
     (x : FixedPoints.subalgebra R R[K] Gal(K/F)) (c : ConjRootClass F K) :
-    (classSumBasis F R K).repr (x * classSumBasis F R K c) 0 =
-      (classSumBasis F R K).repr x (-c) * #(-c).carrier.toFinset := by
-  rw [classSumBasis_repr_apply_zero]
-  conv_lhs => rw [← (classSumBasis F R K).linearCombination_repr x]
-  simp only [Finsupp.linearCombination_apply, Finsupp.sum, Subalgebra.coe_mul,
-    AddSubmonoidClass.coe_finsetSum, sum_mul, AddMonoidAlgebra.coeff_sum, Finsupp.coe_finsetSum,
-    Finset.sum_apply, Subalgebra.coe_smul, smul_mul_assoc, AddMonoidAlgebra.coeff_smul,
-    Finsupp.smul_apply, coeff_classSumBasis_mul_classSumBasis_zero, smul_eq_mul, mul_ite,
-    mul_zero, sum_ite_eq']
-  split_ifs with h
-  · rfl
-  · rw [Finsupp.notMem_support_iff.mp h, zero_mul]
+    (x * classSumBasis F R K c : R[K]).coeff 0 =
+      (classSumBasis F R K).repr x (-c) * c.carrier.ncard := by
+  rw [coe_classSumBasis, mul_sum, AddMonoidAlgebra.coeff_sum]
+  simp only [Finsupp.coe_finsetSum, Finset.sum_apply,
+    AddMonoidAlgebra.coeff_mul_single_apply, zero_add, mul_one]
+  classical
+  calc
+    _ = ∑ a ∈ c.carrier, (classSumBasis F R K).repr x (-c) := by
+      refine sum_congr rfl fun a ha ↦ ?_
+      rw [← classSumBasis_repr_apply_mk, ← ConjRootClass.mk_neg,
+        ConjRootClass.mem_carrier.mp (Set.mem_toFinset.mp ha)]
+    _ = _ := by simp [nsmul_eq_mul, mul_comm]
 
 open Classical in
 theorem lift_eq_sum_classSumBasis_repr (A : Type*) [Semiring A] [Algebra R A]
@@ -167,16 +152,14 @@ theorem exists_sum_conjRootClass_eq_zero {F K S : Type*}
     ∃ v : ConjRootClass F K →₀ F, v 0 ≠ 0 ∧
       Finsupp.linearCombination F
         (fun c : ConjRootClass F K ↦ ∑ x ∈ c.carrier, φ (.ofAdd x)) v = 0 := by
-  rw [← (classSumBasis F F K).repr.injective.ne_iff, map_zero] at x0
-  obtain ⟨i, hi⟩ := Finsupp.support_nonempty_iff.mpr x0
-  set x' := x * classSumBasis F F K (-i) with x'_def
-  have hx' : (classSumBasis F F K).repr x' 0 ≠ 0 := by
-    rw [x'_def, classSumBasis_repr_mul_classSumBasis_apply_zero, neg_neg]
-    exact mul_ne_zero (Finsupp.mem_support_iff.mp hi)
-      (Nat.cast_ne_zero.mpr (card_pos.mpr (Set.toFinset_nonempty.mpr i.carrier_nonempty)).ne')
-  have lift_x' : AddMonoidAlgebra.lift F _ _ φ x' = 0 := by
-    rw [x'_def, Subalgebra.coe_mul, map_mul, hx, zero_mul]
-  exact ⟨_, hx', by rw [Finsupp.linearCombination_apply, ← lift_eq_sum_classSumBasis_repr, lift_x']⟩
+  rw [← (classSumBasis F F K).repr.injective.ne_iff, map_zero, Finsupp.ne_iff] at x0
+  obtain ⟨i, hi⟩ := x0
+  refine ⟨(classSumBasis F F K).repr (x * classSumBasis F F K (-i)), ?_, ?_⟩
+  · rw [classSumBasis_repr_apply_zero, Subalgebra.coe_mul, coeff_coe_mul_classSumBasis_zero,
+      neg_neg, mul_ne_zero_iff_left hi, Nat.cast_ne_zero]
+    exact (-i).carrier_nonempty.ncard_pos.ne'
+  · rw [Finsupp.linearCombination_apply, ← lift_eq_sum_classSumBasis_repr, Subalgebra.coe_mul,
+      map_mul, hx, zero_mul]
 
 open Polynomial
 
@@ -196,11 +179,9 @@ theorem exists_sum_conjRootClass_eq_add_sum_map_aroots (A : Type*) {R F K S : Ty
   · intro p hp
     obtain ⟨c, hc, rfl⟩ := Finset.mem_image.mp (Finsupp.mapDomain_support hp)
     rw [← coeff_zero_eq_eval_zero, Ne, IsFractionRing.coeff_integerNormalization_eq_zero_iff]
-    induction c using ConjRootClass.ind with | h x => ?_
-    rcases eq_or_ne x 0 with (rfl | hx)
-    · simp at hc
-    rw [ConjRootClass.minpoly_mk]
-    exact minpoly.coeff_zero_ne_zero (Algebra.IsIntegral.isIntegral x) hx
+    have hc0 : c ≠ 0 := Finset.ne_of_mem_erase (by simpa only [Finsupp.support_erase] using hc)
+    simpa only [← coeff_zero_eq_aeval_zero', map_eq_zero, ConjRootClass.mk_zero] using
+      mt (ConjRootClass.aeval_minpoly_iff (0 : K) c).mp hc0.symm
   · rw [← Finsupp.add_sum_erase' v 0 _ (by simp),
       Finsupp.sum_mapDomain_index (by simp) (by simp [add_smul])]
     congr 1
@@ -240,14 +221,13 @@ public theorem exists_add_sum_map_aroots_eq_zero {S : Type*}
     · exact fun h ↦ v0 congr(($h ·))
     · simpa [u', v']
   open scoped AlgebraMonoidAlgebra in
-  obtain ⟨f, f0, hf⟩ := (Algebra.IsIntegral.isIntegral (R := ℚ[K]) f).isAlgebraic
+  let A := FixedPoints.subalgebra ℚ ℚ[K] Gal(K/ℚ)
+  have : Algebra.IsIntegral A ℚ[K] := Algebra.IsInvariant.isIntegral A ℚ[K] Gal(K/ℚ)
+  have : Algebra.IsIntegral A K[K] := Algebra.IsIntegral.trans ℚ[K]
+  obtain ⟨f, f0, hf⟩ := (Algebra.IsIntegral.isIntegral (R := A) f).isAlgebraic
     |>.exists_ne_zero_map_algebraMap_eq_zero _ f0 hf
-  rw [AddMonoidAlgebra.algebraMap_def, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
-    AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
-  have := Algebra.IsInvariant.isIntegral (FixedPoints.subalgebra ℚ ℚ[K] Gal(K/ℚ)) ℚ[K] Gal(K/ℚ)
-  obtain ⟨f, f0, hf⟩ :=
-    (Algebra.IsIntegral.isIntegral (R := FixedPoints.subalgebra ℚ ℚ[K] Gal(K/ℚ)) f).isAlgebraic
-    |>.exists_ne_zero_map_algebraMap_eq_zero _ f0 hf
+  rw [Subalgebra.algebraMap_def, AddMonoidAlgebra.algebraMap_def, AlgHom.toRingHom_eq_coe,
+    RingHom.coe_coe, AddMonoidAlgebra.lift_mapRingHom_algebraMap] at hf
   obtain ⟨v, v0, hv⟩ := exists_sum_conjRootClass_eq_zero _ f f0 hf
   obtain ⟨b, hb, v', hbv, hv'⟩ := IsFractionRing.exists_linearCombination_eq_zero ℤ _ v hv
   obtain ⟨w', hw', h⟩ := exists_sum_conjRootClass_eq_add_sum_map_aroots ℤ φ v'
