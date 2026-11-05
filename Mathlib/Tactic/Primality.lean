@@ -75,7 +75,7 @@ syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
-    let build : Std.HashSet Nat → (p : Nat) → CoreM (Cert p) :=
+    let build : Std.HashSet Nat → Nat → CoreM Cert :=
       match (← elabPrimalityConfig cfg).cert with
       | .search searchCfg => Cert.search searchCfg
       | .witnesses witnesses => Cert.ofWitnesses <| witnesses.map fun (.lucas w) ↦
@@ -88,7 +88,7 @@ elab_rules : tactic
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
       let cert ← build (.ofArray known.keysArray) p
-      let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime cert) known
+      let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime p cert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 
 end Mathlib.Tactic.Primality
