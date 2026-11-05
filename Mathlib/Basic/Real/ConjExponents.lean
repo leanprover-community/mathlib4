@@ -266,7 +266,7 @@ protected lemma symm : q.HolderTriple p r where
 
 theorem pos : 0 < p := h.left_pos
 @[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
-theorem nonneg : 0 ≤ p := h.pos.le
+theorem nonneg : 0 ≤ p := zero_le
 theorem ne_zero : p ≠ 0 := h.pos.ne'
 protected lemma inv_pos : 0 < p⁻¹ := inv_pos.2 h.pos
 @[deprecated "This is trivial in `ℝ≥0`; use `zero_le`." (since := "2026-11-04")]
