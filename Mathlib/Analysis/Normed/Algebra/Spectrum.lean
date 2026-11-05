@@ -65,7 +65,7 @@ variable {𝕜 A : Type*}
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
 
-/- The *spectral radius* is the supremum of the `enorm` (`‖·‖ₑ`) of elements in the quasispectrum.
+/-- The *spectral radius* is the supremum of the `eNorm` (`‖·‖ₑ`) of elements in the quasispectrum.
 
 It is also possible that `quasispectrum 𝕜 a` be unbounded (though not for Banach
 algebras, see `spectrum.isBounded`/`quasispectrum.isBounded`, below). In this case,
@@ -379,19 +379,8 @@ variable (𝕜)
 -- TODO: generalize this and the next two to `PNat` powers in semigroups once #40785 is merged.
 theorem spectralRadius_le_pow_eNorm_rPow_one_div (a : A) (n : ℕ) :
     spectralRadius 𝕜 a ≤ ‖a ^ (n + 1)‖ₑ ^ (1 / (n + 1) : ℝ) := by
-  rw [spectralRadius_eq_of_unital]
-  refine iSup₂_le fun k hk => ?_
-  -- apply easy direction of the spectral mapping theorem for polynomials
-  have pow_mem : k ^ (n + 1) ∈ σ 𝕜 (a ^ (n + 1)) := by
-    simpa only [one_mul, Algebra.algebraMap_eq_smul_one, one_smul, aeval_monomial, one_mul,
-      eval_monomial] using subset_polynomial_aeval a (@monomial 𝕜 _ (n + 1) (1 : 𝕜)) ⟨k, hk, rfl⟩
-  -- power of the norm is bounded by norm of the power
-  have enorm_pow_le : ‖k‖ₑ ^ (n + 1) ≤ ‖a ^ (n + 1)‖ₑ := by
-    simpa using ENNReal.ofReal_mono (norm_le_norm_of_mem pow_mem)
-  -- take (n + 1)ᵗʰ roots and clean up the left-hand side
-  have hn : 0 < (n + 1 : ℝ) := mod_cast Nat.succ_pos'
-  convert monotone_rpow_of_nonneg (one_div_pos.mpr hn).le enorm_pow_le
-  simp [← ENNReal.rpow_natCast, ← ENNReal.rpow_mul, mul_inv_cancel₀ hn.ne']
+  rw [one_div, le_rpow_inv_iff (by positivity), ← Nat.cast_one, ← Nat.cast_add, rpow_natCast]
+  grw [spectralRadius_pow_le _ _ (by simp), spectralRadius_le_eNorm]
 
 @[deprecated (since := "2026-10-30")]
 alias spectrum.spectralRadius_le_pow_nnnorm_pow_one_div := spectralRadius_le_pow_eNorm_rPow_one_div
@@ -965,11 +954,11 @@ theorem exp_mem_spectrum_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
     gcongr
     · exact norm_pow_le' _ (pos_iff_ne_zero.mpr hn)
     · exact n.le_succ
-  have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - algebraMap 𝕜 A z) ^ (n + 1))
-      = (a - algebraMap 𝕜 A z) * b := by
+  have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - algebraMap 𝕜 A z) ^ (n + 1)) =
+      (a - algebraMap 𝕜 A z) * b := by
     simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - algebraMap 𝕜 A z)
-  have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - algebraMap 𝕜 A z) ^ (n + 1))
-      = b * (a - algebraMap 𝕜 A z) := by
+  have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - algebraMap 𝕜 A z) ^ (n + 1)) =
+      b * (a - algebraMap 𝕜 A z) := by
     simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - algebraMap 𝕜 A z)
   have h₃ : exp (a - algebraMap 𝕜 A z) = 1 + (a - algebraMap 𝕜 A z) * b := by
     rw [exp_eq_tsum 𝕜]
