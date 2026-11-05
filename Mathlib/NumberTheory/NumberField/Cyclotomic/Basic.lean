@@ -864,12 +864,11 @@ theorem integralPowerBasis_dim [IsCyclotomicExtension {n} ℚ K] (hζ : IsPrimit
     hζ.integralPowerBasis.dim = φ n := by
   simp [integralPowerBasis, ← cyclotomic_eq_minpoly hζ (NeZero.pos _), natDegree_cyclotomic]
 
-/-- Let `ζ` be a primitive `p`-th root of unity, with `p` prime, and let `f : Fin p → ℤ` be such
-that `f i = 0` for some `i`. If an integer `m` divides `∑ j, f j • ζ ^ j` in `𝓞 K`, then `m`
-divides every `f j`. -/
-theorem dvd_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p} ℚ K]
-    (hζ : IsPrimitiveRoot ζ p) {f : Fin p → ℤ} (hf : ∃ i, f i = 0) {m : ℤ}
-    (hdiv : (m : 𝓞 K) ∣ ∑ j, f j • hζ.toInteger ^ (j : ℕ)) (j : Fin p) : m ∣ f j := by
+/-- Let `ζ` be a primitive `p`-th root of unity, with `p` prime, and let `f : Fin p → ℤ`. If an
+integer `m` divides `∑ j, f j • ζ ^ j` in `𝓞 K`, then `m` divides every `f i - f j`. -/
+theorem dvd_sub_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p} ℚ K]
+    (hζ : IsPrimitiveRoot ζ p) {f : Fin p → ℤ} {m : ℤ}
+    (hdiv : (m : 𝓞 K) ∣ ∑ j, f j • hζ.toInteger ^ (j : ℕ)) (i j : Fin p) : m ∣ f i - f j := by
   obtain ⟨n, rfl⟩ : ∃ n, p = n + 1 := ⟨p.pred, (Nat.succ_pred_prime hp.out).symm⟩
   set b := hζ.integralPowerBasis with hb
   have hdim : b.dim = n := by
@@ -902,15 +901,20 @@ theorem dvd_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p} �
         b.basis.coord i (m • y) := by rw [← hy, b.basis.coord_equivFun_symm]
     rw [h1]
     exact b.basis.dvd_coord_smul i y m
-  have hlast : m ∣ f (Fin.last n) := by
-    obtain ⟨i, hi⟩ := hf
+  have hlast (i : Fin (n + 1)) : m ∣ f i - f (Fin.last n) := by
     rcases (Nat.lt_succ_iff.mp i.2).eq_or_lt with h | h
-    · rw [← show i = Fin.last n from Fin.ext h, hi]
-      exact dvd_zero m
-    · simpa [hi] using key ⟨i, hdim.symm ▸ h⟩
-  rcases (Nat.lt_succ_iff.mp j.2).eq_or_lt with h | h
-  · exact (show j = Fin.last n from Fin.ext h) ▸ hlast
-  · simpa using (key ⟨j, hdim.symm ▸ h⟩).add hlast
+    · simp [show i = Fin.last n from Fin.ext h]
+    · simpa using key ⟨i, hdim.symm ▸ h⟩
+  simpa using (hlast i).sub (hlast j)
+
+/-- Let `ζ` be a primitive `p`-th root of unity, with `p` prime, and let `f : Fin p → ℤ` be such
+that `f i = 0` for some `i`. If an integer `m` divides `∑ j, f j • ζ ^ j` in `𝓞 K`, then `m`
+divides every `f j`. -/
+theorem dvd_of_intCast_dvd_sum_zsmul_toInteger_pow [IsCyclotomicExtension {p} ℚ K]
+    (hζ : IsPrimitiveRoot ζ p) {f : Fin p → ℤ} (hf : ∃ i, f i = 0) {m : ℤ}
+    (hdiv : (m : 𝓞 K) ∣ ∑ j, f j • hζ.toInteger ^ (j : ℕ)) (j : Fin p) : m ∣ f j := by
+  obtain ⟨i, hi⟩ := hf
+  simpa [hi] using hζ.dvd_sub_of_intCast_dvd_sum_zsmul_toInteger_pow hdiv j i
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a cyclotomic

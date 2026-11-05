@@ -77,6 +77,12 @@ theorem quotientMk_span_zeta_sub_one_comp (σ : 𝓞 K →+* 𝓞 K) :
   rw [← hi]
   simpa using dvd_sub (sub_one_dvd_pow_sub_one hζ.toInteger i) (dvd_refl (hζ.toInteger - 1))
 
+/-- We have `σ x ≡ x` modulo `ζ - 1` for every ring endomorphism `σ` of `𝓞 K` and every `x : 𝓞 K`,
+where `ζ` is a primitive `n`-th root of unity. -/
+theorem quotientMk_span_zeta_sub_one_apply (σ : 𝓞 K →+* 𝓞 K) (x : 𝓞 K) :
+    Ideal.Quotient.mk (span {hζ.toInteger - 1}) (σ x) = Ideal.Quotient.mk _ x :=
+  RingHom.congr_fun (quotientMk_span_zeta_sub_one_comp n hζ σ) x
+
 /-- The trace of `x : 𝓞 K` is congruent to `φ n • x` modulo `ζ - 1`, where `ζ` is a primitive
 `n`-th root of unity. -/
 theorem zeta_sub_one_dvd_trace_sub_smul (x : 𝓞 K) :
@@ -84,7 +90,7 @@ theorem zeta_sub_one_dvd_trace_sub_smul (x : 𝓞 K) :
   have := isGalois {n} ℚ K
   rw [← mem_span_singleton, ← Ideal.Quotient.eq_zero_iff_mem, map_sub,
     Algebra.intCast_trace_int_eq_sum_automorphisms, map_sum]
-  simp_rw [← RingHom.comp_apply, quotientMk_span_zeta_sub_one_comp n hζ]
+  simp_rw [quotientMk_span_zeta_sub_one_apply n hζ]
   rw [Finset.sum_const, map_nsmul, sub_eq_zero, Finset.card_univ, ← Nat.card_eq_fintype_card,
     IsGalois.card_aut_eq_finrank, IsCyclotomicExtension.Rat.finrank n K]
 
@@ -284,8 +290,9 @@ theorem exists_natCast_dvd_pow_sub_intCast_pow (a : 𝓞 K) :
     ← pow_succ, Nat.sub_add_cancel hp.out.one_lt.le]
   ring
 
-/-- `(ζ - 1) ^ p` divides `N(1 + p • x) - (1 - p • x)` for every `x : 𝓞 K`, where `N` is the norm
-and `ζ` is a primitive `p`-th root of unity. -/
+/-- `(ζ - 1) ^ p` divides `N(1 + p • x) - 1 + p • x` for every `x : 𝓞 K`, where `N` is the norm
+and `ζ` is a primitive `p`-th root of unity. In other words, `N(1 + p • x) ≡ 1 - p • x` modulo
+`(ζ - 1) ^ p`. -/
 theorem zeta_sub_one_pow_dvd_norm_one_add_smul_sub (x : 𝓞 K) :
     (hζ.toInteger - 1) ^ p ∣ (Algebra.norm ℤ (1 + p • x) : 𝓞 K) - 1 + p • x := by
   obtain ⟨r, hr⟩ := Algebra.norm_one_add_smul (p : ℤ) x
