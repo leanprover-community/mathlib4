@@ -29,11 +29,11 @@ inductive Cert : Type where
   | known
   /-- A Lucas certificate with the primitive root `root` and the factorization of `p - 1` in
   `factorization`, each prime factor with its exponent and certificate. -/
-  | lucas (root : Nat) (factorization : List (Nat × Nat × Cert))
+  | lucas (root : ℕ) (factorization : List (ℕ × ℕ × Cert))
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
-partial def certifyPrime (p : Nat) (cert : Cert) :
-    StateT (Std.HashMap Nat Expr) MetaM Q(Nat.Prime $p) := do
+partial def certifyPrime (p : ℕ) (cert : Cert) :
+    StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
   if let some pf := (← get)[p]? then
     return pf
   let pf : Q(Nat.Prime $p) ← match cert with

@@ -37,25 +37,25 @@ inductive CertMode where
 
 /-- Find the root and the factorization of `p - 1` given by the first entry of `witnesses` that is
 a Lucas witness for the prime `p`. -/
-def witnessFor (witnesses : List Witness) (p : Nat) : CoreM (Nat × List (Nat × Nat)) := do
+def witnessFor (witnesses : List Witness) (p : ℕ) : CoreM (ℕ × List (ℕ × ℕ)) := do
   for .lucas w in witnesses do
     if let some factorization := w.factorization? p then
       return (w.root, factorization)
   throwError "no provided witness certifies the primality of {p}"
 
 /-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
-def normNumBound : Nat := 2 ^ 10
+def normNumBound : ℕ := 2 ^ 10
 
 /-- Builds the certificate of `p` from the first entry of `witnesses` that fits each prime, with
 `norm_num` below `normNumBound` and the user's proofs for the primes in `known`. Each prime's
 certificate is built once. -/
-partial def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet Nat) (p : Nat) :
+partial def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet ℕ) (p : ℕ) :
     CoreM Cert :=
   StateT.run' (go p) {}
 where
   /-- Builds the certificate of `p`. The state caches the certificates constructed for each
   nontrivial intermediate result. -/
-  go (p : Nat) : StateT (Std.HashMap Nat Cert) CoreM Cert := do
+  go (p : ℕ) : StateT (Std.HashMap ℕ Cert) CoreM Cert := do
     if let some cert := (← get)[p]? then
       return cert
     if known.contains p then
