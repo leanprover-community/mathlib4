@@ -60,6 +60,10 @@ example : Nat.Prime (73 ! + 1) := by simp [Nat.factorial]; primality
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2] }])
 
+-- Repeated prime factors are deduplicated.
+example : Nat.Prime 65537 := by
+  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])
+
 -- `786433 - 1` and `3221225473 - 1` have the same prime factors, and `5` is a primitive root of
 -- `3221225473` only, so `786433` takes the last entry.
 example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
@@ -112,13 +116,8 @@ example (n : ℕ) : Nat.Prime n := by primality
 #guard_msgs in
 example : Nat.Prime 1000001 := by primality
 
+-- `2` is not a primitive root of `65537`, since `2 ^ 32 % 65537 = 1`.
 /-- error: no provided witness certifies the primality of 65537 -/
 #guard_msgs in
 example : Nat.Prime 65537 := by
   primality (cert := .witnesses [.lucas { root := 2, primeFactors := [2] }])
-
--- A repeated factor would fail the kernel's check that the prime powers multiply to `p - 1`.
-/-- error: no provided witness certifies the primality of 65537 -/
-#guard_msgs in
-example : Nat.Prime 65537 := by
-  primality (cert := .witnesses [.lucas { root := 3, primeFactors := [2, 2] }])
