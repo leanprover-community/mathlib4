@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Order.IsNormal
 public import Mathlib.Topology.Order.IsLUB
+public import Mathlib.Topology.Order.ScottTopology
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -28,26 +29,16 @@ variable {α β : Type*}
   [LinearOrder α] [WellFoundedLT α] [TopologicalSpace α] [OrderTopology α]
   [LinearOrder β] [WellFoundedLT β] [TopologicalSpace β] [OrderTopology β]
 
-attribute [local instance]
-  WellFoundedLT.toOrderBot WellFoundedLT.conditionallyCompleteLinearOrderBot in
-theorem IsNormal.continuous {f : α → β} (hf : IsNormal f) : Continuous f := by
-  rw [OrderTopology.continuous_iff]
-  refine fun b ↦ ⟨?_, ((IsLowerSet.Iio b).preimage hf.strictMono.monotone).isOpen⟩
-  rw [← isClosed_compl_iff, ← Set.preimage_compl, Set.compl_Ioi]
-  obtain ha | ⟨a, ha⟩ := ((IsLowerSet.Iic b).preimage hf.strictMono.monotone).eq_univ_or_Iio
-  · exact ha ▸ isClosed_univ
-  · obtain h | h := (f ⁻¹' Iic b).eq_empty_or_nonempty
-    · exact h ▸ isClosed_empty
-    · have : Nonempty α := ⟨a⟩
-      have : Nonempty β := ⟨b⟩
-      rw [hf.preimage_Iic h (ha ▸ bddAbove_Iio)]
-      exact isClosed_Iic
+@[deprecated Topology.IsScottHausdorff.continuous_of_leftOrdContinuous +typeChanged
+(since := "2026-11-03")]
+theorem IsNormal.continuous {f : α → β} (hf : IsNormal f) : Continuous f :=
+  Topology.IsScottHausdorff.continuous_of_leftOrdContinuous hf.leftOrdContinuous
 
 /-- A normal function between well-orders is equivalent to a strictly monotone,
 continuous function. -/
 theorem isNormal_iff_strictMono_and_continuous {f : α → β} :
     IsNormal f ↔ StrictMono f ∧ Continuous f where
-  mp hf := ⟨hf.strictMono, hf.continuous⟩
+  mp hf := ⟨hf.strictMono, hf.leftOrdContinuous.continuous⟩
   mpr := by
     rintro ⟨hs, hc⟩
     refine ⟨hs, fun {a} ha ↦ (isLUB_of_mem_closure ?_ ?_).2⟩
