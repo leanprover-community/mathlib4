@@ -64,7 +64,11 @@ theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n
   refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
   · simpa [sub_ne_zero, single_inj]
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
-      sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans n2), na]
+  have hn : 0 < n := pos_of_ne_zero (by rintro rfl; simp at na1)
+refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
+· simpa [sub_ne_zero, single_inj]
+· rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
+sub_eq_zero, add_zero, ← succ_nsmul', Nat.sub_add_cancel (one_le_two.trans hn), na]
 
 theorem single_zero_one {R A} [Semiring R] [Zero A] :
     single (0 : A) (1 : R) = (1 : R[A]) :=
