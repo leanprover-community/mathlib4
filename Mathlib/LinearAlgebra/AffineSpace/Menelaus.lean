@@ -5,8 +5,9 @@ Authors: Chu Zheng
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
+
 /-!
 # Menelaus' theorem.
 
