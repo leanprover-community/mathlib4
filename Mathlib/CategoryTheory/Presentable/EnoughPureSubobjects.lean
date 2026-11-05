@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Representation
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
 # ...
@@ -181,6 +182,7 @@ lemma isClosedUnderCardinalPureSubobjects
 
 end ObjectProperty
 
+-- FIXME: we may need two regular cardinal instead of one...
 class HasEnoughPureSubobjects (C : Type*) [Category* C]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop
     extends IsCardinalAccessibleCategory C κ where
@@ -205,6 +207,68 @@ lemma HasEnoughPureSubobjects.of_equivalence {C D : Type*} [Category* C] [Catego
 namespace IsCardinalAccessibleCategory
 
 open HasEnoughPureSubobjects
+
+namespace step₁
+
+variable {C : Type w} [SmallCategory C] {κ : Cardinal.{w}} [Fact κ.IsRegular]
+   {F : C ⥤ Type w}
+
+structure Span (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F) where
+  src : C ⥤ Type w
+  tgt : C ⥤ Type w
+  prop_src : P src
+  prop_tgt : P tgt
+  t : src ⟶ tgt
+  l : src ⟶ S.toFunctor
+  exists_r : ∃ (r : tgt ⟶ F), t ≫ r = l ≫ S.ι
+
+namespace Span
+
+variable {P : ObjectProperty (C ⥤ Type w)} {S : Subfunctor F}
+
+instance [ObjectProperty.Small.{w} P] :
+    Small.{w} (Span P S) := by
+  let φ (s : Span P S) : Σ (src tgt : P.FullSubcategory),
+      (src.obj ⟶ tgt.obj) × (src.obj ⟶ S.toFunctor) :=
+    ⟨⟨s.src, s.prop_src⟩, ⟨s.tgt, s.prop_tgt⟩, s.t, s.l⟩
+  refine small_of_injective (f := φ) (fun s s' h ↦ ?_)
+  obtain ⟨src, tgt, _, _, t, l, _⟩ := s
+  obtain ⟨src', tgt', _, _, t', l', _⟩ := s'
+  obtain rfl : src = src' := congr($(h).1.obj)
+  obtain rfl : tgt = tgt' := congr($(h).2.1.obj)
+  simpa [φ] using h
+
+noncomputable def r (s : Span P S) : s.tgt ⟶ F := s.exists_r.choose
+
+@[reassoc]
+lemma fac (s : Span P S) : s.t ≫ s.r = s.l ≫ S.ι := s.exists_r.choose_spec
+
+end Span
+
+noncomputable def step (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F) : Subfunctor F :=
+  S ⊔ ⨆ (s : Span P S), Subfunctor.range s.r
+
+lemma le_step (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F) :
+    S ≤ step P S :=
+  le_sup_left
+
+variable (hC : HasCardinalLT (Arrow C) κ) {P : ObjectProperty (C ⥤ Type w)}
+  (hP : P.isoClosure = isCardinalPresentable _ κ)
+
+variable (κ P) in
+noncomputable def iter (S : Subfunctor F) (a : WithTop κ.ord.ToType) : Subfunctor F :=
+  transfiniteIterate (step P) a S
+
+variable (κ P) in
+omit [Fact κ.IsRegular] in
+lemma iter_monotone (S : Subfunctor F) : Monotone (iter κ P S) := by
+  intro _ _ h
+  let : OrderBot (WithTop κ.ord.ToType) := WellFoundedLT.toOrderBot _
+  exact monotone_transfiniteIterate _ _ (le_step P) h
+
+noncomputable def subfunctor (S : Subfunctor F) : Subfunctor F := iter κ P S ⊤
+
+end step₁
 
 lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
