@@ -130,6 +130,10 @@ protected theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T 
 protected theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
   abs_of_isPositive _ isPositive_one
 
+@[simp]
+protected theorem abs_one : |(1 : E →L[ℂ] E)| = 1 :=
+  abs_of_isPositive _ isPositive_one
+
 protected theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
   simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq]
