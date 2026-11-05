@@ -74,6 +74,12 @@ example : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
     .lucas { root := 5, primeFactors := [2, 3] },
     .lucas { root := 10, primeFactors := [2, 3] }])
 
+-- Takes a proof that `786433` is prime as a hint, so that prime needs no entry.
+example (h : Nat.Prime 786433) : Nat.Prime (72 * 786433 * 3221225473 + 1) := by
+  primality (cert := .witnesses [
+    .lucas { root := 7, primeFactors := [2, 3, 786433, 3221225473] },
+    .lucas { root := 5, primeFactors := [2, 3] }]) [h]
+
 -- `1031` divides both `p - 1` and `2063 - 1`, so the tree meets it twice.
 example : Nat.Prime 12761719 := by
   primality (cert := .witnesses [
