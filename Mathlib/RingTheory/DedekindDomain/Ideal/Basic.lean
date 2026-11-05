@@ -162,7 +162,7 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-private theorem mul_inv_cancel_of_le_one_aux (hI0 : I ≠ ⊥)
+private theorem mul_inv_cancel_of_le_one (hI0 : I ≠ ⊥)
     (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
@@ -184,7 +184,7 @@ and finally conclude that fractional ideals in a Dedekind domain form a group wi
 -/
 theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
-  apply mul_inv_cancel_of_le_one_aux hI0
+  apply mul_inv_cancel_of_le_one hI0
   by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
   · rw [hJ0, inv_zero']; exact zero_le _
   intro x hx
@@ -212,9 +212,6 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   induction i with
   | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
   | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
-
-@[deprecated coe_ideal_mul_inv (since := "2026-11-04")]
-alias mul_inv_cancel_of_le_one := coe_ideal_mul_inv
 
 end FractionalIdeal
 
