@@ -40,7 +40,6 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## TODO
 
-* Prove that `s` is partially well-ordered iff it has no infinite descending chain or antichain.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
@@ -302,13 +301,12 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
   obtain ⟨m, n, hlt, hmn⟩ := hs g hgs
   exact ⟨m, n, hlt, hf _ (hgs m) _ (hgs n) hmn⟩
 
--- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  by_contra! hi
-  obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
-  exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
-    ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
+  have hs : IsAntichain (Subrel r (· ∈ s)) (univ : Set s) :=
+    fun a _ b _ hab ↦ ha a.2 b.2 (Subtype.coe_ne_coe.2 hab)
+  have h := IsAntichain.finite_of_wellQuasiOrdered hs hp
+  exact finite_coe_iff.mp (finite_univ_iff.mp h)
 
 section Refl
 variable [Std.Refl r]
@@ -412,6 +410,21 @@ protected theorem PartiallyWellOrderedOn.pi {α : ι → Type*} [Finite ι] {r :
 theorem PartiallyWellOrderedOn.wellFoundedOn (h : s.PartiallyWellOrderedOn r) :
     s.WellFoundedOn fun a b => r a b ∧ ¬ r b a :=
   h.wellFounded
+
+/-- A set is partially well-ordered by a preorder `r` iff it is well-founded and has no infinite
+antichains. -/
+theorem partiallyWellOrderedOn_iff_wellFoundedOn_and_finite_antichains :
+    s.PartiallyWellOrderedOn r ↔
+      s.WellFoundedOn (fun a b ↦ r a b ∧ ¬ r b a) ∧ ∀ t ⊆ s, IsAntichain r t → t.Finite := by
+  let : Preorder s :=
+    { le := Subrel r (· ∈ s)
+      le_refl := refl
+      le_trans _ _ _ := trans_of _ }
+  refine (wellQuasiOrderedLE_def s).symm.trans <| wellQuasiOrderedLE_iff.trans <|
+    and_congr_right' ⟨fun h t hts ht ↦ ?_, fun h t ht ↦ ?_⟩
+  · simpa [hts] using (h _ (ht.preimage Subtype.val_injective fun _ _ ↦ id)).image Subtype.val
+  · exact (h _ (by simp) (ht.image Subtype.val fun _ _ ↦ id)).of_finite_image
+      Subtype.val_injective.injOn
 
 end IsPreorder
 
