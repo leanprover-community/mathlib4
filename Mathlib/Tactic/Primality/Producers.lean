@@ -29,17 +29,17 @@ section Factorizer
 
 /-- Returns an array of distinct prime factors of the input (not necessarily complete).
 Works in `CoreM` to check heartbeats and handle cancellation. -/
-abbrev Factorizer := Nat → CoreM (Array Nat)
+abbrev Factorizer := ℕ → CoreM (Array ℕ)
 
 /-- Returns the prime factors of `n` that `f` finds, plus the remaining factor with all of the
 found prime factors divided out. -/
-def Factorizer.decompose (f : Factorizer) (n : Nat) : CoreM (Array Nat × Nat) := do
+def Factorizer.decompose (f : Factorizer) (n : ℕ) : CoreM (Array ℕ × ℕ) := do
   let ps ← f n
   return (ps, ps.foldl Nat.divMaxPow n)
 
 /-- Returns the candidates in `factors` that divide its input. To ensure that the returned array
 consists of primes only, the array of factors should ideally all be prime. -/
-def Factorizer.ofArray (factors : Array Nat) : Factorizer := fun n ↦
+def Factorizer.ofArray (factors : Array ℕ) : Factorizer := fun n ↦
   pure (factors.foldl (init := (#[], n)) fun (found, rest) p ↦
     if 1 < p && rest % p == 0 then (found.push p, rest.divMaxPow p) else (found, rest)).1
 
@@ -49,7 +49,7 @@ def Factorizer.then (f₁ f₂ : Factorizer) : Factorizer := fun n ↦ do
   return ps ++ (← f₂ rest)
 
 /-- The primes below `1024`. This is currently called once per tactic run. -/
-def smallPrimes : Array Nat := Id.run do
+def smallPrimes : Array ℕ := Id.run do
   let bound := 1024
   let mut composite := Array.replicate bound false
   let mut primes := #[]
@@ -68,7 +68,7 @@ def trialDivision : Factorizer := .ofArray smallPrimes
 section PollardRho
 
 /-- Whether `n` passes the Miller–Rabin test to the prime bases `bases`. -/
-def millerRabin (bases : Array Nat) (n : Nat) : Bool := Id.run do
+def millerRabin (bases : Array ℕ) (n : ℕ) : Bool := Id.run do
   if n < 2 then return false
   if let some a := bases.find? (n % · == 0) then return n == a
   let (s, d) := Nat.maxPowDvdDiv 2 (n - 1)
@@ -83,12 +83,12 @@ def millerRabin (bases : Array Nat) (n : Nat) : Bool := Id.run do
 
 /-- Whether `n` passes the Miller–Rabin test to the prime bases up to `41`, which no composite below
 `3.3 * 10 ^ 24` does. -/
-def isProbablePrime (n : Nat) : Bool :=
+def isProbablePrime (n : ℕ) : Bool :=
   millerRabin #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41] n
 
 /-- Finds a nontrivial factor of `n` by Pollard's rho method with `x ↦ x ^ 2 + c`, trying
 `c = 1, 2, 3` for at most `steps` steps each. -/
-def rhoFactor? (n steps : Nat) : CoreM (Option Nat) := do
+def rhoFactor? (n steps : ℕ) : CoreM (Option ℕ) := do
   for c in 1...=3 do
     let mut x := 2
     let mut y := 2
@@ -105,7 +105,7 @@ def rhoFactor? (n steps : Nat) : CoreM (Option Nat) := do
 
 /-- Splits `n` by `rhoFactor?` into factors that pass `isProbablePrime`, and returns the distinct
 ones. A part that it cannot split is left out. -/
-partial def pollardRho (steps : Nat) : Factorizer := fun n ↦ do
+partial def pollardRho (steps : ℕ) : Factorizer := fun n ↦ do
   if n < 2 then return #[]
   if isProbablePrime n then return #[n]
   let some d ← rhoFactor? n steps | return #[]
@@ -118,9 +118,9 @@ end PollardRho
 structure FactorizerConfig where
   /-- Candidate prime factors, tried before trial division on `p - 1` and on `q - 1` for each prime
   `q` required on the way. -/
-  factors : List Nat := []
+  factors : List ℕ := []
   /-- The number of steps of Pollard's rho method for each constant it tries. -/
-  rhoSteps : Nat := 2 ^ 15
+  rhoSteps : ℕ := 2 ^ 15
 
 /-- Tries `factors`, then trial division up to `1024`, then Pollard's rho method. -/
 def FactorizerConfig.toFactorizer (cfg : FactorizerConfig) : Factorizer :=
@@ -132,7 +132,7 @@ end Factorizer
 /-- Searches for the root and the factorization of `p - 1` of a Lucas witness for `p`, trying
 `2, …, 1023` as primitive roots. The part of `p - 1` that the factorizer leaves is taken to be
 prime. -/
-def findLucasWitness (factorizer : Factorizer) (p : Nat) : CoreM (Nat × List (Nat × Nat)) := do
+def findLucasWitness (factorizer : Factorizer) (p : ℕ) : CoreM (ℕ × List (ℕ × ℕ)) := do
   let (factors, rest) ← factorizer.decompose (p - 1)
   let primeFactors := (if rest == 1 then factors else factors.push rest).toList
   for root in 2...1024 do
@@ -158,25 +158,25 @@ inductive CertMode where
 
 /-- Find the root and the factorization of `p - 1` given by the first entry of `witnesses` that is
 a Lucas witness for the prime `p`. -/
-def witnessFor (witnesses : List Witness) (p : Nat) : CoreM (Nat × List (Nat × Nat)) := do
+def witnessFor (witnesses : List Witness) (p : ℕ) : CoreM (ℕ × List (ℕ × ℕ)) := do
   for .lucas w in witnesses do
     if let some factorization := w.factorization? p then
       return (w.root, factorization)
   throwError "no provided witness certifies the primality of {p}"
 
 /-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
-def normNumBound : Nat := 2 ^ 10
+def normNumBound : ℕ := 2 ^ 10
 
 /-- Builds the certificate of `p` from the root and the factorization of `p - 1` that `witness`
 gives for each prime, with `norm_num` below `normNumBound` and the user's proofs for the primes in
 `known`. Each prime's certificate is built once. -/
-partial def Cert.build (witness : Nat → CoreM (Nat × List (Nat × Nat))) (known : Std.HashSet Nat)
-    (p : Nat) : CoreM Cert :=
+partial def Cert.build (witness : ℕ → CoreM (ℕ × List (ℕ × ℕ))) (known : Std.HashSet ℕ)
+    (p : ℕ) : CoreM Cert :=
   StateT.run' (go p) {}
 where
   /-- Builds the certificate of `p`. The state caches the certificates constructed for each
   nontrivial intermediate result. -/
-  go (p : Nat) : StateT (Std.HashMap Nat Cert) CoreM Cert := do
+  go (p : ℕ) : StateT (Std.HashMap ℕ Cert) CoreM Cert := do
     if let some cert := (← get)[p]? then
       return cert
     if known.contains p then
@@ -189,12 +189,12 @@ where
     return cert
 
 /-- Builds the certificate of `p` from the first entry of `witnesses` that fits each prime. -/
-def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet Nat) (p : Nat) : CoreM Cert :=
+def Cert.ofWitnesses (witnesses : List Witness) (known : Std.HashSet ℕ) (p : ℕ) : CoreM Cert :=
   Cert.build (witnessFor witnesses) known p
 
 /-- Builds the certificate of `p` from witnesses searched for with the factorizer options `cfg`,
 trying the user's primes in `known` as factors first. -/
-def Cert.search (cfg : FactorizerConfig) (known : Std.HashSet Nat) (p : Nat) : CoreM Cert :=
+def Cert.search (cfg : FactorizerConfig) (known : Std.HashSet ℕ) (p : ℕ) : CoreM Cert :=
   Cert.build (findLucasWitness ((Factorizer.ofArray known.toArray).then cfg.toFactorizer)) known p
 
 end Mathlib.Tactic.Primality

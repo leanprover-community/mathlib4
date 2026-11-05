@@ -29,20 +29,20 @@ structure Config where
 declare_config_elab elabPrimalityConfig Config
 
 /-- Evaluates `e` to a numeral with `norm_num`, if it can. -/
-def evalNumeral? (e : Q(Nat)) : MetaM (Option (Nat × (nQ : Q(Nat)) × Q(IsNat $e $nQ))) := do
+def evalNumeral? (e : Q(ℕ)) : MetaM (Option (ℕ × (nQ : Q(ℕ)) × Q(IsNat $e $nQ))) := do
   let some ⟨nQ, pn⟩ ← try some <$> deriveNat e q(Nat.instAddMonoidWithOne) catch _ => pure none |
     return none
   let .lit (.natVal n) := nQ | return none
   return some ⟨n, nQ, pn⟩
 
 /-- Store the proofs `hs` of `Nat.Prime n` in a hashmap. -/
-def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap Nat Expr) := do
-  let mut known : Std.HashMap Nat Expr := {}
+def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap ℕ Expr) := do
+  let mut known : Std.HashMap ℕ Expr := {}
   for h in hs do
     let h ← elabTerm h none
     let_expr Nat.Prime e := ← instantiateMVars (← inferType h) |
       throwError "{h} is not recognized as a proof of `Nat.Prime n`"
-    have e : Q(Nat) := e
+    have e : Q(ℕ) := e
     have h : Q(Nat.Prime $e) := h
     let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
       throwError "the tactic cannot simplify {e} to a numeral"
@@ -75,7 +75,7 @@ syntax (name := primality) "primality" optConfig (" [" term,* "]")? : tactic
 
 elab_rules : tactic
   | `(tactic| primality $cfg:optConfig $[[$hs,*]]?) => withMainContext do
-    let build : Std.HashSet Nat → Nat → CoreM Cert :=
+    let build : Std.HashSet ℕ → ℕ → CoreM Cert :=
       match (← elabPrimalityConfig cfg).cert with
       | .search searchCfg => Cert.search searchCfg
       | .witnesses witnesses => Cert.ofWitnesses <| witnesses.map fun (.lucas w) ↦
@@ -84,7 +84,7 @@ elab_rules : tactic
     liftMetaFinishingTactic fun g ↦ do
       let_expr Nat.Prime e := ← instantiateMVars (← g.getType) |
         throwError "the goal is not of the form `Nat.Prime n`"
-      have e : Q(Nat) := e
+      have e : Q(ℕ) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
       let cert ← build (.ofArray known.keysArray) p
