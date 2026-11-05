@@ -77,7 +77,7 @@ protected theorem continuous_abs : Continuous (ContinuousLinearMap.abs : (E →L
 protected theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 @[simp]
-protected theorem abs_eq_zero (T : E →L[ℂ] F) : |T| = 0 ↔ T = 0 := by
+protected theorem abs_eq_zero {T : E →L[ℂ] F} : |T| = 0 ↔ T = 0 := by
   simp [ContinuousLinearMap.abs_def, CFC.sqrt_eq_zero_iff]
 
 @[simp]
@@ -112,27 +112,27 @@ protected theorem abs_nnrpow (T : E →L[ℂ] F) (x : ℝ≥0) :
     |T| ^ x = (T† ∘L T) ^ (x / 2) := by
   simp [← ContinuousLinearMap.abs_nnrpow_two_mul, mul_div_left_comm]
 
-theorem abs_of_isPositive (S : E →L[ℂ] E) (hS : S.IsPositive) : |S| = S := by
+theorem abs_of_isPositive {S : E →L[ℂ] E} (hS : S.IsPositive) : |S| = S := by
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonneg ..
 
-theorem abs_of_isPositive_neg (S : E →L[ℂ] E) (hS : (-S).IsPositive) : |S| = -S := by
+theorem abs_of_isPositive_neg {S : E →L[ℂ] E} (hS : (-S).IsPositive) : |S| = -S := by
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ (neg_nonneg.mp hS.nonneg)
 
 protected theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
-  abs_of_isPositive _ (isPositive_adjoint_comp_self T)
+  abs_of_isPositive (isPositive_adjoint_comp_self T)
 
 protected theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
-  abs_of_isPositive _ (isPositive_self_comp_adjoint T)
+  abs_of_isPositive (isPositive_self_comp_adjoint T)
 
 @[simp]
 protected theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
-  abs_of_isPositive _ isPositive_one
+  abs_of_isPositive isPositive_one
 
 @[simp]
 protected theorem abs_one : |(1 : E →L[ℂ] E)| = 1 :=
-  abs_of_isPositive _ isPositive_one
+  abs_of_isPositive isPositive_one
 
 protected theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ • |T| := by
   rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
