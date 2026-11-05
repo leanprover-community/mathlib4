@@ -81,8 +81,9 @@ scoped macro_rules
   | `($R[X]) => `(Polynomial $R)
 
 open Lean PrettyPrinter in
+/-- Unexpander for `Polynomial`. -/
 @[scoped app_unexpander Polynomial]
-meta def unexpandPolynomial : Unexpander
+meta def unexpander : Unexpander
   | `($_ $R) => `($R[X])
   | _ => throw ()
 
