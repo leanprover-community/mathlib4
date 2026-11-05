@@ -733,9 +733,15 @@ theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X
     {l : Filter X} {b₁ b₂ : Y} (hg : Tendsto g l (𝓝 b₁)) (hb : b₁ ≠ b₂) : ∀ᶠ z in l, g z ≠ b₂ :=
   hg.eventually (isOpen_compl_singleton.eventually_mem hb)
 
-theorem Filter.Tendsto.ne_zero {X} [TopologicalSpace Y] [T1Space Y] [Zero Y] {f : X → Y}
-    {l : Filter X} [l.NeBot] {c : Y} (hf : Tendsto f l (𝓝 c)) (hc : c ≠ 0) : f ≠ 0 :=
-  fun h ↦ (hf.eventually_ne hc).exists.elim fun _ hx ↦ hx (congrFun h _)
+theorem Filter.Tendsto.ne_const {X} [TopologicalSpace Y] [T1Space Y] {f : X → Y}
+    {l : Filter X} [l.NeBot] {b₁ b₂ : Y} (hf : Tendsto f l (𝓝 b₁)) (hb : b₁ ≠ b₂) :
+    f ≠ (fun _ ↦ b₂) :=
+  fun h ↦ (hf.eventually_ne hb).exists.elim fun _ hx ↦ hx (congrFun h _)
+
+@[to_additive]
+theorem Filter.Tendsto.ne_one {X} [TopologicalSpace Y] [T1Space Y] [One Y] {f : X → Y}
+    {l : Filter X} [l.NeBot] {b : Y} (hf : Tendsto f l (𝓝 b)) (hb : b ≠ 1) : f ≠ 1 :=
+  Filter.Tendsto.ne_const hf hb
 
 theorem ContinuousAt.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y} {x : X} {y : Y}
     (hg1 : ContinuousAt g x) (hg2 : g x ≠ y) : ∀ᶠ z in 𝓝 x, g z ≠ y :=
