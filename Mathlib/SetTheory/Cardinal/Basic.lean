@@ -245,8 +245,7 @@ if bounded by the lift of some cardinal from the larger supremum.
 theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardinal.{w}}
     {f' : ι' → Cardinal.{w'}} (hf' : BddAbove (range f')) {g : ι → ι'}
     (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
-  by_cases hf : BddAbove (range f)
-  swap
+  by_cases! hf : ¬ BddAbove (range f)
   · simp [ciSup_of_not_bddAbove hf]
   rw [lift_iSup hf, lift_iSup hf']
   exact ciSup_mono_of_forall_exists' (bddAbove_range_comp.{_, _, w} hf' _) fun i => ⟨_, h i⟩
