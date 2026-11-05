@@ -813,7 +813,7 @@ noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
   obj A := groupHomology A n
   map {A B} φ := map (MonoidHom.id _) φ n
   map_id A := by simp [map, groupHomology]
-  map_comp f g := by simp [← map_comp, resMap_id]
+  map_comp f g := map_id_comp ..
 
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
