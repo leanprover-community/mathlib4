@@ -57,6 +57,19 @@ theorem IsOpenQuotientMap.weaklyLocallyCompactSpace [WeaklyLocallyCompactSpace X
     rcases exists_compact_mem_nhds x with ⟨K, hKc, hKx⟩
     exact ⟨f '' K, hKc.image hf.continuous, hf.isOpenMap.image_mem_nhds hKx⟩
 
+/-- Along an open quotient map out of a weakly locally compact space, every compact set is
+covered by the image of a compact set. -/
+theorem IsOpenQuotientMap.exists_isCompact_subset_image [WeaklyLocallyCompactSpace X] {f : X → Y}
+    (hf : IsOpenQuotientMap f) {K : Set Y} (hK : IsCompact K) :
+    ∃ K', IsCompact K' ∧ K ⊆ f '' K' := by
+  choose s hs hsx using exists_compact_mem_nhds (X := X)
+  obtain ⟨t, ht⟩ := hK.elim_finite_subcover (fun x ↦ interior (f '' s x)) (fun _ ↦ isOpen_interior)
+    fun y _ ↦ hf.surjective.forall.2 (fun x ↦ mem_iUnion.2
+      ⟨x, mem_interior_iff_mem_nhds.2 (hf.isOpenMap.image_mem_nhds (hsx x))⟩) y
+  refine ⟨⋃ x ∈ t, s x, t.isCompact_biUnion fun x _ ↦ hs x, ht.trans ?_⟩
+  rw [image_iUnion₂]
+  exact iUnion₂_mono fun _ _ ↦ interior_subset
+
 /-- In a weakly locally compact space,
 every compact set is contained in the interior of a compact set. -/
 theorem exists_compact_superset [WeaklyLocallyCompactSpace X] {K : Set X} (hK : IsCompact K) :

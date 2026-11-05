@@ -336,9 +336,10 @@ variable {n} in
 theorem mem_smul_span_iff {v : ι → ℝ} :
     v ∈ (n : ℝ)⁻¹ • L ↔ ∀ i, n * v i ∈ Set.range (algebraMap ℤ ℝ) := by
   have := Fintype.ofFinite ι
-  rw [ZSpan.smul _ (inv_ne_zero (NeZero.ne _)), Module.Basis.mem_span_iff_repr_mem]
-  simp_rw [Module.Basis.repr_isUnitSMul, Pi.basisFun_repr, Units.smul_def, Units.val_inv_eq_inv_val,
-    IsUnit.unit_spec, inv_inv, smul_eq_mul]
+  rw [← SetLike.mem_coe, coe_pointwise_smul,
+    Set.mem_smul_set_iff_inv_smul_mem₀ (inv_ne_zero (NeZero.ne _)), SetLike.mem_coe,
+    Module.Basis.mem_span_iff_repr_mem]
+  simp_rw [Pi.basisFun_repr, inv_inv, Pi.smul_apply, smul_eq_mul]
 
 theorem tag_mem_smul_span (ν : ι → ℤ) :
     tag n ν ∈ (n : ℝ)⁻¹ • L := by
@@ -371,7 +372,7 @@ private theorem tendsto_card_div_pow₂ (hs₁ : IsBounded s)
   rw [Nat.card_congr (tendsto_card_div_pow₁ s hx.ne'),
       Nat.card_congr (tendsto_card_div_pow₁ s (hx.trans_le hy).ne')]
   refine Nat.card_mono ?_ ?_
-  · exact ZSpan.setFinite_inter _ (IsBounded.smul₀ hs₁ y)
+  · exact finite_inter_of_isBounded _ (hs₁.smul₀ y)
   · exact Set.inter_subset_inter_left _ <| hs₄ hx hy
 
 end finite
@@ -387,8 +388,8 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
   unfold integralSum
   have : Fintype ↑(s ∩ (n : ℝ)⁻¹ • L) := by
     apply Set.Finite.fintype
-    rw [← coe_pointwise_smul, ZSpan.smul _ (inv_ne_zero (NeZero.ne _))]
-    exact ZSpan.setFinite_inter _ (B.isBounded.subset hs₀)
+    rw [← coe_pointwise_smul, ← Units.val_mk0 (inv_ne_zero (NeZero.ne (n : ℝ))), ← Units.smul_def]
+    exact finite_inter_of_isBounded _ (B.isBounded.subset hs₀)
   rw [tsum_fintype, Finset.sum_set_coe, Finset.sum_div, eq_comm]
   simp_rw [Set.indicator_apply, apply_ite, BoxAdditiveMap.toSMul_apply, Measure.toBoxAdditive_apply,
     smul_eq_mul, mul_zero, Finset.sum_ite, Finset.sum_const_zero, add_zero]

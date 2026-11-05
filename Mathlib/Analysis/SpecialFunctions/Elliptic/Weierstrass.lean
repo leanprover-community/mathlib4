@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.Algebra.Module.ZLattice.Summable
+public import Mathlib.Algebra.Module.Lattice.Summable
 public import Mathlib.Analysis.Meromorphic.Order
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.Topology.Algebra.InfiniteSum.UniformOn
@@ -108,28 +108,23 @@ lemma ω₂_div_two_notMem_lattice : L.ω₂ / 2 ∉ L.lattice := by
   simpa [inv_mul_eq_div] using
     (L.mul_ω₁_add_mul_ω₂_mem_lattice (α := 0) (β := 1 / 2)).not.mpr (by simp)
 
--- helper lemma to connect to the ZLattice API
+-- helper lemma to connect to the lattice API
 lemma lattice_eq_span_range_basis :
     L.lattice = Submodule.span ℤ (Set.range L.basis) := by
   have : Finset.univ (α := Fin 2) = {0, 1} := rfl
   rw [lattice, ← Set.image_univ, ← Finset.coe_univ, this]
   simp
 
-instance : DiscreteTopology L.lattice := L.lattice_eq_span_range_basis ▸ inferInstance
+instance : L.lattice.IsFullLattice ℝ := L.lattice_eq_span_range_basis ▸ inferInstance
 
-instance : IsZLattice ℝ L.lattice := by
-  simp_rw [L.lattice_eq_span_range_basis]
-  infer_instance
+lemma isDiscrete_lattice : IsDiscrete (L.lattice : Set ℂ) :=
+  SetLike.isDiscrete_iff_discreteTopology.mpr inferInstance
 
 lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
-  @AddSubgroup.isClosed_of_discreteTopology _ _ _ _ _ L.lattice.toAddSubgroup
-    (inferInstanceAs (DiscreteTopology L.lattice))
+  L.lattice.toAddSubgroup.isClosed_of_isDiscrete L.isDiscrete_lattice
 
-lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
-  convert
-    L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
-  convert Set.image_preimage_eq_inter_range.symm using 1
-  simpa
+lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s :=
+  isClosed_of_subset_discrete_closed hs L.isDiscrete_lattice L.isClosed_lattice
 
 lemma isOpen_compl_lattice_sdiff {s : Set ℂ} : IsOpen (L.lattice \ s)ᶜ :=
   (L.isClosed_of_subset_lattice Set.sdiff_subset).isOpen_compl
@@ -227,8 +222,8 @@ lemma hasSumLocallyUniformly_weierstrassPExcept (l₀ : ℂ) :
       (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else (1 / (z - l) ^ 2 - 1 / l ^ 2))
       ℘[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := (10 * · * ‖·‖ ^ (-3 : ℝ))) _
-    (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
-    Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
+    (fun _ _ ↦ (Submodule.IsLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _)
+    fun r hr ↦ Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
   · simpa using! show 0 ≤ 10 * r * (‖↑l‖ ^ 3)⁻¹ by positivity
@@ -342,8 +337,8 @@ lemma hasSumLocallyUniformly_derivWeierstrassPExcept (l₀ : ℂ) :
     HasSumLocallyUniformly (fun (l : L.lattice) (z : ℂ) ↦ if l.1 = l₀ then 0 else -2 / (z - l) ^ 3)
       ℘'[L - l₀] := by
   refine L.hasSumLocallyUniformly_aux (u := fun _ ↦ (16 * ‖·‖ ^ (-3 : ℝ))) _
-    (fun _ _ ↦ (ZLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _) fun r hr ↦
-    Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
+    (fun _ _ ↦ (Submodule.IsLattice.summable_norm_rpow _ _ (by simp; norm_num)).mul_left _)
+    fun r hr ↦ Filter.eventually_atTop.mpr ⟨2 * r, ?_⟩
   rintro _ h s hs l rfl
   split_ifs
   · simp
@@ -608,7 +603,7 @@ def sumInvPow (x : ℂ) (r : ℕ) : ℂ := ∑' l : L.lattice, ((l - x) ^ r)⁻�
 
 lemma hasSum_sumInvPow (x : ℂ) {r : ℕ} (hr : 2 < r) :
     HasSum (fun l : L.lattice ↦ ((l - x) ^ r)⁻¹) (L.sumInvPow x r) := by
-  refine Summable.hasSum (.of_norm_bounded (ZLattice.summable_norm_sub_zpow _
+  refine Summable.hasSum (.of_norm_bounded (Submodule.IsLattice.summable_norm_sub_zpow _
     (-r) (by simpa) x) fun l ↦ ?_)
   rw [← zpow_natCast, ← zpow_neg, ← norm_zpow]
 
@@ -689,7 +684,7 @@ lemma summable_weierstrassPExceptSummand (l₀ z x : ℂ)
       simpa [mul_comm] using ((Real.hasFPowerSeriesOnBall_ofScalars_mul_add_zero 1 2).hasSum
         (y := κ⁻¹) (by simpa [enorm_eq_nnnorm])).summable
     have H₂ : Summable fun l : L.lattice ↦ ‖l - x‖ ^ (-3 : ℤ) * ‖z - x‖ :=
-      (ZLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
+      (Submodule.IsLattice.summable_norm_sub_zpow _ _ (by simp) _).mul_right _
     refine (H₁.mul_of_nonneg H₂ (by intro; positivity) (by intro; positivity)).of_norm_bounded ?_
     intro p
     split_ifs with hp
@@ -1067,9 +1062,9 @@ private lemma analyticAt_relation (x : ℂ) : AnalyticAt ℂ L.relation x := by
 private lemma relation_eq_zero : L.relation = 0 := by
   ext x
   have : Differentiable ℂ L.relation := fun x ↦ (L.analyticAt_relation x).differentiableAt
-  exact (this.apply_eq_apply_of_bounded (IsZLattice.isCompact_range_of_periodic L.lattice _
-    this.continuous fun z w hw ↦ by lift w to L.lattice using hw; simp).isBounded x 0).trans
-    (ite_eq_left (by simp))
+  exact (this.apply_eq_apply_of_bounded (AddSubgroup.IsCocompact.isCompact_range_of_periodic
+    (H := L.lattice.toAddSubgroup) this.continuous fun w hw z ↦ by
+      lift w to L.lattice using hw; simp).isBounded x 0).trans (ite_eq_left (by simp))
 
 /-- `℘'(z)² = 4 ℘(z)³ - g₂ ℘(z) - g₃` -/
 lemma derivWeierstrassP_sq (z : ℂ) (hz : z ∉ L.lattice) :

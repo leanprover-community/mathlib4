@@ -177,7 +177,7 @@ open scoped Classical in
 a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental domain for the action
 of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and `torsion_smul_mem_of_mem`. -/
 def fundamentalCone : Set (mixedSpace K) :=
-  logMap ⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ _)) \
+  logMap ⁻¹' (ZSpan.fundamentalDomain ((basisUnitLattice K).extendOfIsFullLattice ℝ)) \
       {x | mixedEmbedding.norm x = 0}
 
 theorem measurableSet_fundamentalCone :
@@ -229,11 +229,11 @@ set_option backward.isDefEq.respectTransparency.types false in
 theorem exists_unit_smul_mem (hx : mixedEmbedding.norm x ≠ 0) :
     ∃ u : (𝓞 K)ˣ, u • x ∈ fundamentalCone K := by
   classical
-  let B := (basisUnitLattice K).ofZLatticeBasis ℝ
+  let B := (basisUnitLattice K).extendOfIsFullLattice ℝ
   rsuffices ⟨⟨_, ⟨u, _, rfl⟩⟩, hu⟩ : ∃ e : unitLattice K, e + logMap x ∈ ZSpan.fundamentalDomain B
   · exact ⟨u, by rwa [Set.mem_preimage, logMap_unit_smul u hx], by simp [hx]⟩
   · obtain ⟨⟨e, h₁⟩, h₂, -⟩ := ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)
-    exact ⟨⟨e, by rwa [← Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]⟩, h₂⟩
+    exact ⟨⟨e, by rwa [← Module.Basis.extendOfIsFullLattice_span ℝ (basisUnitLattice K)]⟩, h₂⟩
 
 theorem torsion_smul_mem_of_mem (hx : x ∈ fundamentalCone K) {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
     ζ • x ∈ fundamentalCone K := by
@@ -248,10 +248,10 @@ theorem unit_smul_mem_iff_mem_torsion (hx : x ∈ fundamentalCone K) (u : (𝓞 
   classical
   refine ⟨fun h ↦ ?_, fun h ↦ torsion_smul_mem_of_mem hx h⟩
   rw [← logEmbedding_eq_zero_iff]
-  let B := (basisUnitLattice K).ofZLatticeBasis ℝ
+  let B := (basisUnitLattice K).extendOfIsFullLattice ℝ
   refine (Subtype.mk_eq_mk (h := ?_) (h' := Submodule.zero_mem _)).mp <|
     (ZSpan.exist_unique_vadd_mem_fundamentalDomain B (logMap x)).unique ?_ ?_
-  · rw [Module.Basis.ofZLatticeBasis_span ℝ (unitLattice K)]
+  · rw [Module.Basis.extendOfIsFullLattice_span ℝ (basisUnitLattice K)]
     exact ⟨u, trivial, rfl⟩
   · rw [AddSubmonoid.mk_vadd, vadd_eq_add, ← logMap_unit_smul _ hx.2]
     exact h.1

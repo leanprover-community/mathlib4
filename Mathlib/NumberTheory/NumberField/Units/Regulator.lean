@@ -123,16 +123,15 @@ theorem isMaxRank_iff_closure_finiteIndex {u : Fin (rank K) → (𝓞 K)ˣ} :
       MonoidHom.map_closure, toAddSubgroup_closure, Set.range_comp, Set.range_comp,
       QuotientGroup.coe_mk', ← Equiv.image_symm_eq_preimage]
     rfl
-  have h₂ : DiscreteTopology
-      (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
-    rw [← SetLike.isDiscrete_iff_discreteTopology]
+  have h₂ : IsLattice ℝ (span ℤ (Set.range fun i ↦ (logEmbedding K) (Additive.ofMul (u i)))) := by
+    rw [IsLattice.iff_discreteTopology_int, ← SetLike.isDiscrete_iff_discreteTopology]
     refine (inferInstance : DiscreteTopology (unitLattice K)).isDiscrete.mono ?_
     rw [SetLike.coe_subset_coe, Submodule.span_le]
     rintro _ ⟨i, rfl⟩
     exact ⟨Additive.ofMul (u i), mem_top, rfl⟩
   rw [finiteIndex_iff_sup_torsion_finiteIndex, finiteIndex_iff, h₁, finiteQuotient_iff,
     unitLattice_rank, ← Set.finrank, IsMaxRank, linearIndependent_iff_card_eq_finrank_span,
-    Real.finrank_eq_int_finrank_of_discrete h₂, Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
+    Set.finrank_eq_of_isLattice (R := ℤ), Set.finrank, Set.finrank, ← finrank_map_subtype_eq,
     map_span, ← Set.range_comp', eq_comm]
   simp
 
@@ -269,20 +268,20 @@ def regulator : ℝ := ZLattice.covolume (unitLattice K)
 theorem isMaxRank_fundSystem :
     IsMaxRank (fundSystem K) := by
   classical
-  convert! ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K)).linearIndependent
-  rw [logEmbedding_fundSystem, Basis.ofZLatticeBasis_apply]
+  convert! ((basisUnitLattice K).extendOfIsFullLattice ℝ).linearIndependent
+  rw [logEmbedding_fundSystem, Basis.extendOfIsFullLattice_apply]
 
 open scoped Classical in
 theorem basisOfIsMaxRank_fundSystem :
-    basisOfIsMaxRank (isMaxRank_fundSystem K) = (basisUnitLattice K).ofZLatticeBasis ℝ := by
+    basisOfIsMaxRank (isMaxRank_fundSystem K) = (basisUnitLattice K).extendOfIsFullLattice ℝ := by
   ext
-  rw [Basis.ofZLatticeBasis_apply, basisOfIsMaxRank_apply, logEmbedding_fundSystem]
+  rw [Basis.extendOfIsFullLattice_apply, basisOfIsMaxRank_apply, logEmbedding_fundSystem]
 
 theorem regulator_eq_regOfFamily_fundSystem :
     regulator K = regOfFamily (fundSystem K) := by
   classical
   rw [regOfFamily_of_isMaxRank (isMaxRank_fundSystem K), regulator,
-    ← (basisUnitLattice K).ofZLatticeBasis_span ℝ, basisOfIsMaxRank_fundSystem]
+    ← (basisUnitLattice K).extendOfIsFullLattice_span ℝ, basisOfIsMaxRank_fundSystem]
 
 theorem regulator_pos : 0 < regulator K :=
   regulator_eq_regOfFamily_fundSystem K ▸ regOfFamily_pos (isMaxRank_fundSystem K)
