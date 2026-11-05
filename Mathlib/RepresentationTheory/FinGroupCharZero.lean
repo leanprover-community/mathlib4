@@ -82,6 +82,7 @@ instance [NeZero (Nat.card G : k)] (V : FDRep k G) : Projective V :=
 
 variable [IsAlgClosed k]
 
+omit [Finite G] in
 /--
 If `G` is finite and its order is nonzero in an algebraically closed field `k`,
 then an object of `FDRep k G` is simple if and only if its space of endomorphisms is
@@ -89,8 +90,11 @@ a `k`-vector space of dimension `1`.
 -/
 lemma simple_iff_end_is_rank_one [NeZero (Nat.card G : k)] (V : FDRep k G) :
     Simple V ↔ Module.finrank k (V ⟶ V) = 1 where
-  mp h := finrank_endomorphism_simple_eq_one k V
+  mp h :=
+    have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
+    finrank_endomorphism_simple_eq_one k V
   mpr h := by
+    have : Finite G := Nat.finite_of_card_ne_zero fun h ↦ NeZero.ne (Nat.card G : k) (by simp [h])
     refine { mono_isIso_iff_nonzero {W} f _ := ⟨fun hf habs ↦ ?_, fun hf ↦ ?_⟩ }
     · rw [habs, isIsoZero_iff_source_target_isZero] at hf
       obtain ⟨g, hg⟩ : ∃ g : V ⟶ V, g ≠ 0 :=
