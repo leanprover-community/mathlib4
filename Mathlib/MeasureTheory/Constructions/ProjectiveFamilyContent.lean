@@ -125,8 +125,7 @@ lemma projectiveFamilyContent_eq (hP : IsProjectiveMeasureFamily P) :
 lemma projectiveFamilyContent_congr (hP : IsProjectiveMeasureFamily P) (s : Set (Π i, α i))
     (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
     projectiveFamilyContent hP s = P I S := by
-  rw [projectiveFamilyContent_eq,
-    projectiveFamilyFun_congr hP hs_eq hS]
+  rw [projectiveFamilyContent_eq, projectiveFamilyFun_congr hP hs_eq hS]
 
 lemma projectiveFamilyContent_cylinder (hP : IsProjectiveMeasureFamily P) (hS : MeasurableSet S) :
     projectiveFamilyContent hP (cylinder I S) = P I S := projectiveFamilyContent_congr _ _ rfl hS
