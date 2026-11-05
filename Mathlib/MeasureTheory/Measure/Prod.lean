@@ -899,7 +899,7 @@ for the product measures on `α × γ` and `β × δ`.
 Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew product* over `f`,
 thus the choice of a name.
 -/
-theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
+theorem skew_product [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
   have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hf.1.comp measurable_fst).prodMk hgm
@@ -923,7 +923,7 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
 
 /-- If `f : α → β` sends the measure `μa` to `μb` and `g : γ → δ` sends the measure `μc` to `μd`,
 then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
-protected theorem prod [SFinite μa] [SFinite μc] {f : α → β} {g : γ → δ}
+protected theorem prod [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
   have : Measurable (uncurry fun _ : α => g) := hg.1.comp measurable_snd

@@ -116,8 +116,7 @@ def isLimitOfHasKernelOfPreservesLimit [PreservesLimit (parallelPair f 0) G] :
 instance [PreservesLimit (parallelPair f 0) G] : HasKernel (G.map f) where
   exists_limit := ⟨⟨_, isLimitOfHasKernelOfPreservesLimit G f⟩⟩
 
-variable [HasKernel (G.map f)]
-
+variable [HasKernel (G.map f)] in
 /-- If the kernel comparison map for `G` at `f` is an isomorphism, then `G` preserves the
 kernel of `f`.
 -/
@@ -245,8 +244,7 @@ def isColimitOfHasCokernelOfPreservesColimit [PreservesColimit (parallelPair f 0
 instance [PreservesColimit (parallelPair f 0) G] : HasCokernel (G.map f) where
   exists_colimit := ⟨⟨_, isColimitOfHasCokernelOfPreservesColimit G f⟩⟩
 
-variable [HasCokernel (G.map f)]
-
+variable [HasCokernel (G.map f)] in
 /-- If the cokernel comparison map for `G` at `f` is an isomorphism, then `G` preserves the
 cokernel of `f`.
 -/

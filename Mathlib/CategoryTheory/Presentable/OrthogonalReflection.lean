@@ -187,6 +187,8 @@ lemma D₁.ιLeft_comp_t {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
     D₁.ιLeft f hf g ≫ D₁.t W Z = f ≫ D₁.ιRight f hf g := by
   apply ι_colimMap
 
+section
+
 variable [HasPushouts C]
 
 /-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
@@ -220,15 +222,19 @@ def D₂.multispanShape : MultispanShape where
   fst _ := .unit
   snd _ := .unit
 
+end
+
 section
 
 variable [MorphismProperty.IsSmall.{w} W] [LocallySmall.{w} C]
 
+variable [HasPushouts C] in
 instance : Small.{w} (D₂ (W := W) (Z := Z)) := by
   dsimp [D₂]
   infer_instance
 
 set_option backward.defeqAttrib.useBackward true in
+variable [HasPushouts C] in
 instance : Small.{w} (D₂.multispanShape W Z).L := by dsimp; infer_instance
 
 attribute [local instance] essentiallySmall_of_small_of_locallySmall in
@@ -237,6 +243,8 @@ lemma D₂.hasColimitsOfShape [HasColimitsOfSize.{w, w} C] :
   hasColimitsOfShape_of_equivalence (equivSmallModel.{w} _).symm
 
 end
+
+variable [HasPushouts C]
 
 /-- The diagram of the multicoequalizer of all pair of morphisms `g₁ g₂ : Y ⟶ step W Z` with
 a `f : X ⟶ Y` satisfying `W` such that `f ≫ g₁ = f ≫ g₂`. -/

@@ -32,7 +32,7 @@ open scoped nonZeroDivisors
 namespace ClassGroup
 section EuclideanDomain
 
-variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S] [IsDomain S]
+variable {R S : Type*} (K L : Type*) [EuclideanDomain R] [CommRing S]
 variable [Field K] [Field L]
 variable [Algebra R K] [IsFractionRing R K]
 variable [Algebra K L] [FiniteDimensional K L] [Algebra.IsSeparable K L]
@@ -41,6 +41,10 @@ variable [Algebra R S] [Algebra S L]
 variable [ist : IsScalarTower R S L]
 variable (abv : AbsoluteValue R ℤ)
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] (bS : Basis ι R S)
+
+section
+
+variable [IsDomain S]
 
 /-- If `b` is an `R`-basis of `S` of cardinality `n`, then `normBound abv b` is an integer
 such that for every `R`-integral element `a : S` with coordinates `≤ y`,
@@ -132,11 +136,14 @@ theorem exists_min (I : (Ideal S)⁰) :
   contrapose! lt with c_ne_zero
   exact min _ ⟨c, hc, c_ne_zero, rfl⟩
 
+end
+
 section IsAdmissible
 
 variable {abv}
 variable (adm : abv.IsAdmissible)
 
+variable [IsDomain S] in
 /-- If we have a large enough set of elements in `R^ι`, then there will be a pair
 whose remainders are close together. We'll show that all sets of cardinality
 at least `cardM bS adm` elements satisfy this condition.
@@ -149,21 +156,25 @@ noncomputable def cardM : ℕ :=
 
 variable [Infinite R]
 
+variable [IsDomain S] in
 /-- In the following results, we need a large set of distinct elements of `R`. -/
 noncomputable def distinctElems : Fin (cardM bS adm).succ ↪ R :=
   Fin.valEmbedding.trans (Infinite.natEmbedding R)
 
 variable [DecidableEq R]
 
+variable [IsDomain S] in
 /-- `finsetApprox` is a finite set such that each fractional ideal in the integral closure
 contains an element close to `finsetApprox`. -/
 noncomputable def finsetApprox : Finset R :=
   (Finset.univ.image fun xy : _ × _ => distinctElems bS adm xy.1 - distinctElems bS adm xy.2).erase
     0
 
+variable [IsDomain S] in
 theorem finsetApprox.zero_notMem : (0 : R) ∉ finsetApprox bS adm :=
   Finset.notMem_erase _ _
 
+variable [IsDomain S] in
 @[simp]
 theorem mem_finsetApprox {x : R} :
     x ∈ finsetApprox bS adm ↔ ∃ i j, i ≠ j ∧ distinctElems bS adm i - distinctElems bS adm j =
@@ -186,6 +197,7 @@ open Real
 attribute [-instance] Real.decidableEq
 
 set_option backward.isDefEq.respectTransparency.types false in
+variable [IsDomain S] in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     ∃ q : S,
@@ -238,6 +250,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
       smul_eq_mul, mul_boole, Finset.sum_ite_eq', Finset.mem_univ, ite_true]
   · exact mod_cast ε_le
 
+variable [IsDomain S] in
 /-- We can approximate `a / b : L` with `q / r`, where `r` has finitely many options for `L`. -/
 theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R S] (a : S) {b : S} (hb : b ≠ 0) :
     ∃ q : S,
@@ -257,12 +270,14 @@ theorem exists_mem_finset_approx' [Algebra.IsAlgebraic R S] (a : S) {b : S} (hb 
 
 end Real
 
+variable [IsDomain S] in
 theorem prod_finsetApprox_ne_zero : algebraMap R S (∏ m ∈ finsetApprox bS adm, m) ≠ 0 := by
   refine mt ((injective_iff_map_eq_zero _).mp bS.algebraMap_injective _) ?_
   simp only [Finset.prod_eq_zero_iff, not_exists]
   rintro x ⟨hx, rfl⟩
   exact finsetApprox.zero_notMem bS adm hx
 
+variable [IsDomain S] in
 theorem ne_bot_of_prod_finsetApprox_mem (J : Ideal S)
     (h : algebraMap _ _ (∏ m ∈ finsetApprox bS adm, m) ∈ J) : J ≠ ⊥ :=
   (Submodule.ne_bot_iff _).mpr ⟨_, h, prod_finsetApprox_ne_zero _ _⟩
@@ -305,6 +320,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] [Algebra.IsAlgebraic R S] (I : (I
   refine mul_dvd_mul_right (dvd_trans (map_dvd _ ?_) hr') _
   exact Multiset.dvd_prod (Multiset.mem_map.mpr ⟨_, r_mem, rfl⟩)
 
+variable [IsDomain S] in
 /-- `ClassGroup.mkMMem` is a specialization of `ClassGroup.mk0` to (the finite set of)
 ideals that contain `M := ∏ m ∈ finsetApprox L f abs, m`.
 By showing this function is surjective, we prove that the class group is finite. -/
@@ -319,6 +335,8 @@ theorem mkMMem_surjective [IsDedekindDomain S] [Algebra.IsAlgebraic R S] :
   obtain ⟨⟨I, hI⟩, rfl⟩ := ClassGroup.mk0_surjective I'
   obtain ⟨J, mk0_eq_mk0, J_dvd⟩ := exists_mk0_eq_mk0 bS adm ⟨I, hI⟩
   exact ⟨⟨J, J_dvd⟩, mk0_eq_mk0.symm⟩
+
+variable [IsDomain S]
 
 open scoped Classical in
 /-- The **class number theorem**: the class group of an integral closure `S` of `R` in an

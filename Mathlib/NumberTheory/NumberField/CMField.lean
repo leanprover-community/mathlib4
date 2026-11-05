@@ -513,6 +513,7 @@ theorem ofCMExtension :
       (CMExtension.equivMaximalRealSubfield F K).symm (RingEquiv.refl K) (by ext; simp)⟩
 
 open IntermediateField in
+omit [Algebra.IsIntegral ℚ K] in
 /--
 A totally complex field that has a unique complex conjugation is CM.
 -/

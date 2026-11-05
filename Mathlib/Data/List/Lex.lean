@@ -119,7 +119,7 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
   | _, _, cons h, e => to_ne h (List.cons.inj e).2
   | _, _, rel r, e => r (List.cons.inj e).1
 
-theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
+theorem _root_.Decidable.List.Lex.ne_iff {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
     induction l₁ generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩

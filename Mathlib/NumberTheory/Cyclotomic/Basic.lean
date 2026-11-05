@@ -199,6 +199,7 @@ theorem union_left [h : IsCyclotomicExtension T A B] (hS : S ⊆ T) :
 
 variable {n}
 
+omit [NeZero n] in
 /-- If there exists a primitive root of unity of order `n` in `B`, then
 `IsCyclotomicExtension S A B` implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
@@ -216,6 +217,7 @@ theorem union_of_isPrimitiveRoot [hB : IsCyclotomicExtension S A B] {r : B}
 
 variable {S}
 
+omit [NeZero n] in
 /-- If there exists a nonzero `s ∈ S` such that `n ∣ s`, then `IsCyclotomicExtension S A B`
 implies `IsCyclotomicExtension (S ∪ {n}) A B`. -/
 theorem of_union_of_dvd (h : ∃ s ∈ S, s ≠ 0 ∧ n ∣ s) [H : IsCyclotomicExtension S A B] :

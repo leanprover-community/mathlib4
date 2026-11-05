@@ -33,12 +33,13 @@ open NNReal BoundedContinuousFunction Set Metric
 namespace ContinuousMap
 
 variable {α β E : Type*}
-variable [TopologicalSpace α] [CompactSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
+variable [TopologicalSpace α] [PseudoMetricSpace β] [SeminormedAddCommGroup E]
 
 section
 
 variable (α β)
 
+variable [CompactSpace α] in
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ β` are
 equivalent to `C(α, β)`.
 -/
@@ -50,6 +51,7 @@ def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
     ext
     rfl⟩
 
+variable [CompactSpace α] in
 theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBoundedOfCompact α β) :=
   IsUniformInducing.mk'
     (by
@@ -62,12 +64,17 @@ theorem isUniformInducing_equivBoundedOfCompact : IsUniformInducing (equivBounde
           ⟨⟨Set.univ, { p | dist p.1 p.2 ≤ ε }⟩, ⟨isCompact_univ, ⟨ε, hε, fun _ h => h⟩⟩,
             fun ⟨f, g⟩ h => hs _ _ (ht ((dist_le hε.le).mpr fun x => h x (mem_univ x)))⟩⟩)
 
+variable [CompactSpace α] in
 theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoundedOfCompact α β) :=
   { isUniformInducing_equivBoundedOfCompact α β with
     injective := (equivBoundedOfCompact α β).injective }
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+section
+
+variable [CompactSpace α]
+
 set_option backward.isDefEq.respectTransparency.types false in
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
@@ -95,11 +102,15 @@ def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β) where
 
 end
 
+end
+
+variable [CompactSpace α] in
 @[simp]
 theorem _root_.BoundedContinuousFunction.dist_mkOfCompact (f g : C(α, β)) :
     dist (mkOfCompact f) (mkOfCompact g) = dist f g :=
   rfl
 
+variable [CompactSpace α] in
 @[simp]
 theorem _root_.BoundedContinuousFunction.dist_toContinuousMap (f g : α →ᵇ β) :
     dist f.toContinuousMap g.toContinuousMap = dist f g :=
@@ -110,6 +121,10 @@ open BoundedContinuousFunction
 section
 
 variable {f g : C(α, β)} {C : ℝ}
+
+section
+
+variable [CompactSpace α]
 
 /-- The pointwise distance is controlled by the distance between functions, by definition. -/
 theorem dist_apply_le_dist (x : α) : dist (f x) (g x) ≤ dist f g := by
@@ -154,20 +169,29 @@ instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul
 
 end
 
+end
+
 -- TODO at some point we will need lemmas characterising this norm!
 -- At the moment the only way to reason about it is to transfer `f : C(α,E)` back to `α →ᵇ E`.
+variable [CompactSpace α] in
 instance : Norm C(α, E) where norm x := dist x 0
 
+variable [CompactSpace α] in
 @[simp]
 theorem _root_.BoundedContinuousFunction.norm_mkOfCompact (f : C(α, E)) : ‖mkOfCompact f‖ = ‖f‖ :=
   rfl
 
+variable [CompactSpace α] in
 @[simp]
 theorem _root_.BoundedContinuousFunction.norm_toContinuousMap_eq (f : α →ᵇ E) :
     ‖f.toContinuousMap‖ = ‖f‖ :=
   rfl
 
 open BoundedContinuousFunction
+
+section
+
+variable [CompactSpace α]
 
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
@@ -188,12 +212,18 @@ instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
 
+end
+
 section
 
 variable (f : C(α, E))
 
 -- The corresponding lemmas for `BoundedContinuousFunction` are stated with `{f}`,
 -- and so cannot be used in dot notation.
+section
+
+variable [CompactSpace α]
+
 theorem norm_coe_le_norm (x : α) : ‖f x‖ ≤ ‖f‖ :=
   (mkOfCompact f).norm_coe_le_norm x
 
@@ -235,11 +265,14 @@ theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
 theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
   (mkOfCompact f).enorm_eq_iSup_enorm
 
+end
+
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
     CompactSpace (K : Set X) :=
   TopologicalSpace.Compacts.instCompactSpaceSubtypeMem ..
 
+variable [CompactSpace α] in
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
   (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
@@ -252,6 +285,8 @@ lemma norm_eq_norm_coeFn [Fintype α] : ‖f‖ = ‖(f : α → E)‖ := by
     exact f.norm_coe_le_norm
 
 end
+
+variable [CompactSpace α]
 
 section
 

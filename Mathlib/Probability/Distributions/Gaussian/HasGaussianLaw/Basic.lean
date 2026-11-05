@@ -86,6 +86,7 @@ namespace HasGaussianLaw
 
 variable [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E] {X : Ω → E}
 
+omit [BorelSpace E] in
 lemma of_subsingleton [NormedSpace ℝ E] [Subsingleton E] [IsProbabilityMeasure P] :
     HasGaussianLaw X P where
   isGaussian_map := .of_subsingleton

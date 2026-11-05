@@ -277,8 +277,9 @@ section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
 -- See note [implicit instance arguments]
-variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ M₃} (e : M ≃+ M₂)
+variable {modM₃ : Module ℤ M₃} (e : M ≃+ M₂)
 
+variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} in
 /-- An additive equivalence between commutative additive groups is a linear
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
@@ -287,9 +288,11 @@ def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
+variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} in
 @[simp]
 theorem coe_toIntLinearEquiv : ⇑(e.toIntLinearEquiv (modM := modM) (modM₂ := modM₂)) = e := rfl
 
+variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} in
 @[simp]
 theorem coe_symm_toIntLinearEquiv :
     ⇑(e.toIntLinearEquiv (modM := modM) (modM₂ := modM₂)).symm = e.symm :=
@@ -299,6 +302,8 @@ theorem coe_symm_toIntLinearEquiv :
 theorem toIntLinearEquiv_toAddEquiv : ↑e.toIntLinearEquiv = e := by
   ext
   rfl
+
+variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂}
 
 @[simp]
 theorem _root_.LinearEquiv.toAddEquiv_toIntLinearEquiv (e : M ≃ₗ[ℤ] M₂) :

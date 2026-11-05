@@ -105,16 +105,18 @@ section Field
 
 open Polynomial
 
-variable [Field K] [Field L] [Algebra K L] [IsPurelyInseparable K L]
+variable [Field K] [Field L] [Algebra K L]
 variable {L}
 
 open scoped Classical in
+variable [IsPurelyInseparable K L] in
 /-- The exponent of an element `a ∈ L` of a purely inseparable field extension `L / K`
 is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`. -/
 noncomputable def elemExponent (a : L) : ℕ :=
   Nat.find <| minpoly_eq_X_pow_sub_C K (ringExpChar K) a
 
 variable {K} in
+variable [IsPurelyInseparable K L] in
 theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).range) :
     elemExponent K a = 0 := by
   classical
@@ -123,9 +125,14 @@ theorem elemExponent_eq_zero_of_mem_range {a : L} (h : a ∈ (algebraMap K L).ra
   obtain ⟨y, hy⟩ := h
   exact ⟨y, hy ▸ minpoly.eq_X_sub_C L y⟩
 
+variable [IsPurelyInseparable K L] in
 theorem elemExponent_eq_zero_of_charZero (a : L) [CharZero K] :
     elemExponent K a = 0 :=
   elemExponent_eq_zero_of_mem_range <| surjective_algebraMap_of_isSeparable K L a
+
+section
+
+variable [IsPurelyInseparable K L]
 
 open scoped Classical in
 /-- The element `y` of the base field `K` such that
@@ -174,7 +181,10 @@ theorem elemExponent_def' (p : ℕ) [ExpChar K p] (a : L) :
     a ^ p ^ elemExponent K a ∈ (algebraMap K L).range :=
   ringExpChar.eq K p ▸ elemExponent_def K a
 
+end
+
 variable {K} in
+variable [IsPurelyInseparable K L] in
 theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
     (h : a ^ ringExpChar K ^ n ∈ (algebraMap K L).range) : elemExponent K a ≤ n := by
   let ⟨p, _⟩ := ExpChar.exists K
@@ -191,16 +201,19 @@ theorem elemExponent_le_of_pow_mem {a : L} {n : ℕ}
       natDegree_le_natDegree (minpoly.min K a hf₂ hf₁)
 
 variable {K} in
+variable [IsPurelyInseparable K L] in
 /-- Version of `elemExponent_le_of_pow_mem` using `ExpChar`. -/
 theorem elemExponent_le_of_pow_mem' (p : ℕ) [ExpChar K p] {a : L} {n : ℕ}
     (h : a ^ p ^ n ∈ (algebraMap K L).range) : elemExponent K a ≤ n :=
   elemExponent_le_of_pow_mem (ringExpChar.eq K p ▸ h)
 
 variable {K} in
+variable [IsPurelyInseparable K L] in
 theorem elemExponent_min {a : L} {n : ℕ} (h : n < elemExponent K a) :
     a ^ ringExpChar K ^ n ∉ (algebraMap K L).range :=
   fun hn ↦ (Nat.not_lt_of_ge <| elemExponent_le_of_pow_mem hn) h
 
+variable [IsPurelyInseparable K L] in
 /-- Version of `elemExponent_min` using `ExpChar`. -/
 theorem elemExponent_min' (p : ℕ) [ExpChar K p] {a : L} {n : ℕ} (h : n < elemExponent K a) :
     a ^ p ^ n ∉ (algebraMap K L).range :=
@@ -210,6 +223,8 @@ theorem elemExponent_min' (p : ℕ) [ExpChar K p] {a : L} {n : ℕ} (h : n < ele
 theorem elemExponent_le_exponent [HasExponent K L] (a : L) :
     elemExponent K a ≤ exponent K L :=
   elemExponent_le_of_pow_mem <| exponent_def K a
+
+variable [IsPurelyInseparable K L]
 
 variable {K} in
 instance hasExponent_of_finiteDimensional [FiniteDimensional K L] :

@@ -59,10 +59,13 @@ end PointedCone
 
 namespace ProperCone
 variable {R M N : Type*} [CommRing R] [PartialOrder R] [IsOrderedRing R] [TopologicalSpace R]
-  [ClosedIciTopology R]
   [AddCommGroup M] [Module R M] [TopologicalSpace M]
   [AddCommGroup N] [Module R N] [TopologicalSpace N]
   {p : M →ₗ[R] N →ₗ[R] R} [p.IsContPerfPair] {s t : Set M} {y : N}
+
+section
+
+variable [ClosedIciTopology R]
 
 variable (p s) in
 /-- The dual cone of a set `s` with respect to a perfect pairing `p` is the cone consisting of all
@@ -84,10 +87,14 @@ def dual (s : Set M) : ProperCone R N where
 
 @[gcongr] lemma dual_le_dual (h : t ⊆ s) : dual p s ≤ dual p t := fun _y hy _x hx ↦ hy (h hx)
 
+end
+
 /-- The inner dual cone of a singleton is given by the preimage of the positive cone under the
 linear map `p x`. -/
 lemma dual_singleton [IsTopologicalRing R] [OrderClosedTopology R] (x : M) :
     dual p {x} = (positive R R).comap (p.toContPerfPair x) := by ext; simp
+
+variable [ClosedIciTopology R]
 
 lemma dual_union (s t : Set M) : dual p (s ∪ t) = dual p s ⊓ dual p t := by aesop
 

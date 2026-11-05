@@ -36,6 +36,7 @@ variable (A J : Type*) [Category* A] [Category* J] [Preadditive A]
 -- API, but when `A` is a concrete category, these will both be synthesized anyway.
 
 set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
+omit [Preadditive A] in
 lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [HasFiniteLimits A] : HasExactColimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=

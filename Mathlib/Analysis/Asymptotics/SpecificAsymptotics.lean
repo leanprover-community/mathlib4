@@ -261,6 +261,7 @@ theorem Continuous.isBounded_range_iff_isBigO_atTop_atBot {f : β → E} (hf : C
     IsBounded (range f) ↔ f =O[atTop] (1 : β → ℝ) ∧ f =O[atBot] (1 : β → ℝ) := by
   rw [hf.isBounded_range_iff_isBigO, cocompact_eq_atBot_atTop, isBigO_sup, and_comm]
 
+omit [NoMinOrder β] in
 /-- A continuous even function has bounded range if and only if `f =O[atTop] 1`. -/
 theorem Continuous.isBounded_range_iff_isBigO_atTop_of_even [AddCommGroup β] [IsOrderedAddMonoid β]
     {f : β → E} (hf : Continuous f) (heven : Function.Even f) :

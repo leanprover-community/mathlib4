@@ -609,9 +609,9 @@ lemma eq_bot_iff_forall_le [NoBotOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := 
   exact not_isBot y fun z => coe_le_coe.1 (h z)
 
 @[to_dual forall_le_coe_iff_le]
-lemma forall_coe_le_iff_le [NoBotOrder α] : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+lemma forall_coe_le_iff_le : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | a := x
-  · simpa [WithBot.none_eq_bot, eq_bot_iff_forall_le] using! fun a ha ↦ (not_isBot _ ha).elim
+  · simp [WithBot.none_eq_bot]
   · exact ⟨fun h ↦ h _ le_rfl, fun hay b ↦ hay.trans'⟩
 
 @[to_dual forall_coe_le_iff_le]
@@ -665,11 +665,11 @@ lemma eq_top_iff_forall_ge [Nonempty α] [NoTopOrder α] {x : WithBot (WithTop �
   · simp at H
   · simpa [WithTop.eq_top_iff_forall_ge] using H
 
-variable [NoBotOrder α]
-
 @[to_dual eq_of_forall_le_coe_iff]
 lemma eq_of_forall_coe_le_iff (h : ∀ a : α, a ≤ x ↔ a ≤ y) : x = y :=
   le_antisymm (forall_coe_le_iff_le.mp fun a ↦ (h a).1) (forall_coe_le_iff_le.mp fun a ↦ (h a).2)
+
+variable [NoBotOrder α]
 
 @[to_dual eq_of_forall_coe_le_iff]
 lemma eq_of_forall_le_coe_iff (h : ∀ a : α, x ≤ a ↔ y ≤ a) : x = y :=

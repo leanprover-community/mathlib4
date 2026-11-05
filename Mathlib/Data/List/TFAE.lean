@@ -55,7 +55,7 @@ theorem TFAE.out {l} (h : TFAE l) (i j : Nat) {a b}
     (h₁ : l[i - 1]? = some a := by rfl)
     (h₂ : l[j - 1]? = some b := by rfl)
     (_ : i ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.")
-    (_ : j ≠ 0 := by first | decide +kernel | fail "TFAE indices start at 1.") :
+    :
     a ↔ b :=
   h _ (List.mem_of_getElem? h₁) _ (List.mem_of_getElem? h₂)
 

@@ -56,6 +56,7 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
+omit [Small.{v} β] in
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
   eventuallyConst_of_monotone (β := βᵒᵈ) hf
 
@@ -68,6 +69,7 @@ theorem eventuallyConst_of_monotone (hf : Monotone f) : atTop.EventuallyConst f 
   refine .of_monotone_of_lt_cof hf ?_
   simpa [← small_iff_lift_mk_lt_univ]
 
+omit [Small.{v} β] in
 theorem eventuallyConst_of_antitone (hf : Antitone f) : atTop.EventuallyConst f :=
   eventuallyConst_of_monotone (β := βᵒᵈ) hf
 

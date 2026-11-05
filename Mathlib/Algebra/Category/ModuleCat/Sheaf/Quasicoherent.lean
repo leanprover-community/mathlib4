@@ -190,8 +190,11 @@ end
 
 section
 
+variable [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
+
+section
+
 variable [∀ X, HasWeakSheafify (J.over X) AddCommGrpCat.{u}]
-  [∀ X, (J.over X).WEqualsLocallyBijective AddCommGrpCat.{u}]
 
 /-- This structure contains the data of a family of objects `X i` which cover
 the terminal object, and of a presentation of `M.over (X i)` for all `i`. -/
@@ -279,6 +282,8 @@ instance (M : SheafOfModules.{u} R) [M.IsFinitePresentation] :
   exists_localGeneratorsData := by
     obtain ⟨σ, _⟩ := IsFinitePresentation.exists_quasicoherentData M
     exact ⟨σ.localGeneratorsData, inferInstance⟩
+
+end
 
 section map
 

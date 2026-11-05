@@ -85,20 +85,18 @@ def IsG2.toEmbeddedG2 [P.IsG2] : P.EmbeddedG2 where
 lemma IsG2.nonempty [P.IsG2] : Nonempty ι :=
   ⟨(IsG2.exists_pairingIn_neg_three (P := P)).choose⟩
 
-variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
-
-lemma isG2_iff :
+lemma isG2_iff [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] :
     P.IsG2 ↔ ∃ i j, P.pairingIn ℤ i j = -3 :=
   ⟨fun _ ↦ IsG2.exists_pairingIn_neg_three, fun h ↦ ⟨h⟩⟩
 
-lemma isNotG2_iff :
+lemma isNotG2_iff [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] :
     P.IsNotG2 ↔ ∀ i j, P.pairingIn ℤ i j ∈ ({-2, -1, 0, 1, 2} : Set ℤ) :=
   ⟨fun _ ↦ IsNotG2.pairingIn_mem_zero_one_two, fun h ↦ ⟨h⟩⟩
 
 variable [Finite ι] [CharZero R] [IsDomain R]
 
 @[simp]
-lemma not_isG2_iff_isNotG2 :
+lemma not_isG2_iff_isNotG2 [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible] :
     ¬ P.IsG2 ↔ P.IsNotG2 := by
   simp only [isG2_iff, isNotG2_iff, not_exists, Set.mem_insert_iff, mem_singleton_iff]
   refine ⟨fun h i j ↦ ?_, fun h i j ↦ ?_⟩
@@ -108,7 +106,6 @@ lemma not_isG2_iff_isNotG2 :
   · specialize h i j
     lia
 
-set_option linter.overlappingInstances false in
 lemma IsG2.pairingIn_mem_zero_one_three [P.IsG2]
     (i j : ι) (h : P.root i ≠ P.root j) (h' : P.root i ≠ -P.root j) :
     P.pairingIn ℤ i j ∈ ({-3, -1, 0, 1, 3} : Set ℤ) := by

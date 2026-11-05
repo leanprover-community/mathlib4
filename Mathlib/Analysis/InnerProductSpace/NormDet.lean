@@ -53,8 +53,12 @@ open Module
 namespace LinearMap
 
 variable {𝕜 U V W : Type*} [RCLike 𝕜] [NormedAddCommGroup U] [InnerProductSpace 𝕜 U]
-  [FiniteDimensional 𝕜 U] [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [NormedAddCommGroup W]
+  [NormedAddCommGroup V] [InnerProductSpace 𝕜 V] [NormedAddCommGroup W]
   [InnerProductSpace 𝕜 W]
+
+section
+
+variable [FiniteDimensional 𝕜 U]
 
 open Classical in
 /--
@@ -224,6 +228,8 @@ theorem normDet_id : (id : U →ₗ[𝕜] U).normDet = 1 :=
 theorem normDet_subtype (p : Submodule 𝕜 U) : p.subtype.normDet = 1 :=
   p.subtypeₗᵢ.normDet_eq_one
 
+end
+
 @[simp]
 theorem normDet_of_subsingleton [Subsingleton U] (f : U →ₗ[𝕜] V) : f.normDet = 1 := by
   have h : f.ker = ⊥ := Submodule.eq_bot_of_subsingleton
@@ -231,6 +237,8 @@ theorem normDet_of_subsingleton [Subsingleton U] (f : U →ₗ[𝕜] V) : f.norm
   let bu : OrthonormalBasis (Fin 0) 𝕜 U := (stdOrthonormalBasis 𝕜 U).reindex (by rw [hrank])
   let bv := orthonormalBasis_range h bu
   simp [normDet_eq_norm_det_toMatrix_rangeRestrict f bu bv]
+
+variable [FiniteDimensional 𝕜 U]
 
 @[simp]
 theorem normDet_zero : (0 : U →ₗ[𝕜] V).normDet = 0 ^ finrank 𝕜 U := by

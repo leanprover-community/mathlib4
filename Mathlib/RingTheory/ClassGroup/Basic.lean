@@ -81,8 +81,8 @@ instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal :=
 end
 
 variable (R)
-variable [IsDomain R]
 
+variable [IsDomain R] in
 /-- The ideal class group of `R` is the group of invertible fractional ideals
 modulo the principal ideals. -/
 @[wikidata Q912083]
@@ -90,6 +90,7 @@ def ClassGroup :=
   (FractionalIdeal R⁰ (FractionRing R))ˣ ⧸ (toPrincipalIdeal R (FractionRing R)).range
 deriving CommGroup, Inhabited
 
+variable [IsDomain R] in
 /-- The class group of `R` is isomorphic to the group of invertible `R`-submodules in `Frac(R)`
 modulo the principal submodules (invertible submodules are automatically fractional ideals). -/
 def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
@@ -100,6 +101,7 @@ def ClassGroup.mulEquivUnitsSubmoduleQuotRange :
 
 variable {R} (K)
 
+variable [IsDomain R] in
 /-- Send a nonzero fractional ideal to the corresponding class in the class group. -/
 def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :=
   (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range).comp
@@ -107,12 +109,14 @@ def ClassGroup.mk : (FractionalIdeal R⁰ K)ˣ →* ClassGroup R :=
 
 variable {K}
 
+variable [IsDomain R] in
 lemma ClassGroup.mk_def (I : (FractionalIdeal R⁰ K)ˣ) :
     ClassGroup.mk K I =
       (QuotientGroup.mk' (toPrincipalIdeal R (FractionRing R)).range)
         (Units.map (FractionalIdeal.canonicalEquiv R⁰ K (FractionRing R)) I) := rfl
 
 -- Can't be `@[simp]` because it can't figure out the quotient relation.
+variable [IsDomain R] in
 theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ) :
     Quot.mk _ I = ClassGroup.mk (FractionRing R) I := by
   rw [ClassGroup.mk_def, canonicalEquiv_self, RingEquiv.toMonoidHom_refl, Units.map_id,
@@ -120,12 +124,14 @@ theorem ClassGroup.Quot_mk_eq_mk (I : (FractionalIdeal R⁰ (FractionRing R))ˣ)
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
+variable [IsDomain R] in
 theorem ClassGroup.mk_eq_mk {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ} :
     ClassGroup.mk (FractionRing R) I = ClassGroup.mk (FractionRing R) J ↔
       ∃ x : (FractionRing R)ˣ, I * toPrincipalIdeal R (FractionRing R) x = J := by
   rw [mk_def, mk_def, QuotientGroup.mk'_eq_mk']
   simp [RingEquiv.toMonoidHom_refl, MonoidHom.mem_range, -toPrincipalIdeal_eq_iff]
 
+variable [IsDomain R] in
 theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' J' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I')
     (hJ : (J : FractionalIdeal R⁰ <| FractionRing R) = J') :
@@ -146,6 +152,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
     convert!
       (mk'_mul_coeIdeal_eq_coeIdeal (FractionRing R) <| mem_nonZeroDivisors_of_ne_zero hy).2 h
 
+variable [IsDomain R] in
 theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| FractionRing R)ˣ}
     {I' : Ideal R} (hI : (I : FractionalIdeal R⁰ <| FractionRing R) = I') :
     ClassGroup.mk (FractionRing R) I = 1 ↔ ∃ x : R, x ≠ 0 ∧ I' = Ideal.span {x} := by
@@ -164,6 +171,7 @@ theorem ClassGroup.mk_eq_one_of_coe_ideal {I : (FractionalIdeal R⁰ <| Fraction
 
 variable (K)
 
+variable [IsDomain R] in
 /-- Induction principle for the class group: to show something holds for all `x : ClassGroup R`,
 we can choose a fraction field `K` and show it holds for the equivalence class of each
 `I : FractionalIdeal R⁰ K`. -/
@@ -177,6 +185,7 @@ theorem ClassGroup.induction {P : ClassGroup R → Prop}
     rw [congr(QuotientGroup.mk (s := (toPrincipalIdeal R (FractionRing R)).range) $this)]
     exact h _
 
+variable [IsDomain R] in
 /-- The definition of the class group does not depend on the choice of field of fractions. -/
 def ClassGroup.equiv :
     ClassGroup R ≃* (FractionalIdeal R⁰ K)ˣ ⧸ (toPrincipalIdeal R K).range := by
@@ -204,6 +213,7 @@ def ClassGroup.equiv :
     (Units.mapEquiv (FractionalIdeal.canonicalEquiv R⁰ (FractionRing R) K).toMulEquiv) this
 
 set_option backward.isDefEq.respectTransparency false in
+variable [IsDomain R] in
 @[simp]
 theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
@@ -216,6 +226,7 @@ theorem ClassGroup.equiv_mk (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRi
   rw [← Units.val_inj, Units.coe_mapEquiv, Units.coe_mapEquiv, Units.coe_map]
   exact FractionalIdeal.canonicalEquiv_canonicalEquiv _ _ _ _ _
 
+variable [IsDomain R] in
 @[simp]
 theorem ClassGroup.mk_canonicalEquiv (K' : Type*) [Field K'] [Algebra R K'] [IsFractionRing R K']
     (I : (FractionalIdeal R⁰ K)ˣ) :
@@ -251,6 +262,7 @@ theorem FractionalIdeal.map_canonicalEquiv_mk0 [IsDedekindDomain R] (K' : Type*)
       FractionalIdeal.mk0 K' I :=
   Units.ext (FractionalIdeal.canonicalEquiv_mk0 K K' I)
 
+variable [IsDomain R] in
 /-- Send a nonzero ideal to the corresponding class in the class group. -/
 def ClassGroup.mk0 [IsDedekindDomain R] : (Ideal R)⁰ →* ClassGroup R :=
   (ClassGroup.mk (FractionRing R)).comp (FractionalIdeal.mk0 (FractionRing R))
@@ -312,6 +324,7 @@ theorem ClassGroup.mk0_eq_mk0_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} :
         (IsFractionRing.injective R (FractionRing R)).eq_iff] at hx
     · exact (FractionalIdeal.mk'_mul_coeIdeal_eq_coeIdeal _ hy').mpr h
 
+variable [IsDomain R] in
 /-- A fractional ideal is a unit iff its integral numerator `num` is a unit. -/
 theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
     IsUnit (I.num : FractionalIdeal R⁰ (FractionRing R)) ↔ IsUnit I := by
@@ -327,6 +340,7 @@ theorem FractionalIdeal.isUnit_num {I : FractionalIdeal R⁰ (FractionRing R)} :
 def ClassGroup.integralRep (I : FractionalIdeal R⁰ (FractionRing R)) :
     Ideal R := I.num
 
+variable [IsDomain R] in
 theorem ClassGroup.integralRep_mem_nonZeroDivisors
     {I : FractionalIdeal R⁰ (FractionRing R)} (hI : I ≠ 0) :
     I.num ∈ (Ideal R)⁰ := by
@@ -350,6 +364,7 @@ theorem ClassGroup.mk0_surjective [IsDedekindDomain R] :
   refine ⟨⟨ClassGroup.integralRep I.1, ClassGroup.integralRep_mem_nonZeroDivisors I.ne_zero⟩, ?_⟩
   rw [ClassGroup.mk0_integralRep, ClassGroup.Quot_mk_eq_mk]
 
+variable [IsDomain R] in
 theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     ClassGroup.mk K I = 1 ↔ (I : Submodule R K).IsPrincipal := by
   rw [← (ClassGroup.equiv K).injective.eq_iff]
@@ -379,6 +394,7 @@ theorem FractionalIdeal.isPrincipal.of_isPrincipal_pow_of_coprime [IsDedekindDom
   rw [orderOf_dvd_iff_pow_eq_one, ← map_pow, ClassGroup.mk_eq_one_iff]
   exact mod_cast hI
 
+variable [IsDomain R] in
 /-- If the class group is trivial, any unit fractional ideal is principal. -/
 theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup R)]
     (I : FractionalIdeal R⁰ K) (hI : IsUnit I) :
@@ -386,6 +402,7 @@ theorem ClassGroup.isPrincipal_coeSubmodule_of_isUnit [Subsingleton (ClassGroup 
   rcases hI with ⟨I, rfl⟩
   rw [← ClassGroup.mk_eq_one_iff, Subsingleton.elim (ClassGroup.mk K I) 1]
 
+variable [IsDomain R] in
 /-- If the class group is trivial, any integral ideal that is a unit as a fractional ideal
 is principal. -/
 theorem ClassGroup.isPrincipal_of_isUnit_coeIdeal [Subsingleton (ClassGroup R)]
@@ -423,6 +440,7 @@ theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} 
   rw [this, Submodule.span_zero_singleton] at ha
   exact nonZeroDivisors.coe_ne_zero _ <| J.prop.2 _ ha
 
+variable [IsDomain R] in
 /-- The class group of principal ideal domain is finite (in fact a singleton).
 
 See `ClassGroup.fintypeOfAdmissibleOfFinite` for a finiteness proof that works for rings of integers
@@ -435,6 +453,7 @@ instance [IsPrincipalIdealRing R] : Fintype (ClassGroup R) where
     rw [Finset.mem_singleton]
     exact ClassGroup.mk_eq_one_iff.mpr (I : FractionalIdeal R⁰ (FractionRing R)).isPrincipal
 
+variable [IsDomain R] in
 /-- The class number of a principal ideal domain is `1`. -/
 theorem card_classGroup_eq_one [IsPrincipalIdealRing R] : Fintype.card (ClassGroup R) = 1 := by
   rw [Fintype.card_eq_one_iff]
@@ -453,6 +472,8 @@ theorem card_classGroup_eq_one_iff [IsDedekindDomain R] [Fintype (ClassGroup R)]
   by_cases hI : I = ⊥
   · rw [hI]; exact bot_isPrincipal
   · exact (ClassGroup.mk0_eq_one_iff (mem_nonZeroDivisors_iff_ne_zero.mpr hI)).mp (eq_one _)
+
+variable [IsDomain R]
 
 section MulEquiv
 

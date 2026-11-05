@@ -20,13 +20,14 @@ namespace RootPairing
 
 variable {ι R M N : Type*} [CommRing R] [CharZero R] [IsDomain R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-  {P : RootPairing ι R M N} [Finite ι] [P.IsCrystallographic]
+  {P : RootPairing ι R M N} [Finite ι]
 
 local notation "Φ" => range P.root
 local notation "α" => P.root
 
 namespace Base
 
+variable [P.IsCrystallographic]
 variable {b : P.Base} (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
 include hij hi hj
 
@@ -109,7 +110,6 @@ section chainBotCoeff_mul_chainTopCoeff
 
 variable {b : P.Base} {i j k l m : ι}
 
-set_option linter.overlappingInstances false in
 private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
     (hik_mem : P.root k + P.root i ∈ range P.root) :
     P.pairingIn ℤ k i = 0 ∨ (P.pairingIn ℤ k i < 0 ∧ P.chainBotCoeff i k = 0) := by
@@ -119,7 +119,7 @@ private lemma chainBotCoeff_mul_chainTopCoeff.aux_0 [P.IsNotG2]
   rw [P.chainBotCoeff_if_one_zero hik_mem, ite_eq_right_iff, P.pairingIn_eq_zero_iff (i := i)]
   lia
 
-variable [P.IsReduced] [P.IsIrreducible]
+variable [P.IsCrystallographic] [P.IsReduced] [P.IsIrreducible]
   (hi : i ∈ b.support) (hj : j ∈ b.support) (hij : i ≠ j)
   (h₁ : P.root k + P.root i = P.root l)
   (h₂ : P.root k - P.root j = P.root m)

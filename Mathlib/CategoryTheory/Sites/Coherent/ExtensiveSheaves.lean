@@ -32,8 +32,6 @@ open Limits Presieve Opposite
 
 variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
-variable [FinitaryPreExtensive C]
-
 /-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
 coproduct to the target. -/
 class Presieve.Extensive {X : C} (R : Presieve X) : Prop where
@@ -41,6 +39,10 @@ class Presieve.Extensive {X : C} (R : Presieve X) : Prop where
   coproduct of their sources. -/
   arrows_nonempty_isColimit : ∃ (α : Type) (_ : Finite α) (Z : α → C) (π : (a : α) → (Z a ⟶ X)),
     R = Presieve.ofArrows Z π ∧ Nonempty (IsColimit (Cofan.mk X π))
+
+section
+
+variable [FinitaryPreExtensive C]
 
 instance {X : C} (S : Presieve X) [S.Extensive] : S.HasPairwisePullbacks where
   has_pullbacks := by
@@ -76,6 +78,8 @@ theorem extensiveTopology.isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (extensi
 /-- The extensive topology on a finitary pre-extensive category is subcanonical. -/
 instance extensiveTopology.subcanonical : (extensiveTopology C).Subcanonical :=
   GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
+
+end
 
 variable [FinitaryExtensive C]
 
@@ -128,6 +132,8 @@ theorem Presheaf.isSheaf_iff_preservesFiniteProducts (F : Cᵒᵖ ⥤ D) :
   · intro _ E
     rw [Presieve.isSheaf_iff_preservesFiniteProducts]
     exact ⟨inferInstance⟩
+
+variable [FinitaryPreExtensive C]
 
 instance (F : Sheaf (extensiveTopology C) D) : PreservesFiniteProducts F.obj :=
   (Presheaf.isSheaf_iff_preservesFiniteProducts F.obj).mp F.property

@@ -101,12 +101,14 @@ theorem ite_eq_mem_stdSimplex (i : ι) : (if i = · then (1 : 𝕜) else 0) ∈ 
 variable [IsOrderedRing 𝕜]
 
 set_option linter.overlappingInstances false
+omit [ZeroLEOneClass 𝕜] in
 /-- The edges are contained in the simplex. -/
 @[deprecated "no replacement" (since := "2026-08-29")]
 lemma segment_single_subset_stdSimplex (i j : ι) :
     [Pi.single i 1 -[𝕜] Pi.single j 1] ⊆ stdSimplex 𝕜 ι :=
   (convex_stdSimplex 𝕜 ι).segment_subset (single_mem_stdSimplex _ _) (single_mem_stdSimplex _ _)
 
+omit [ZeroLEOneClass 𝕜] in
 @[deprecated "no replacement" (since := "2026-08-29")]
 lemma stdSimplex_fin_two :
     stdSimplex 𝕜 (Fin 2) = [Pi.single 0 1 -[𝕜] Pi.single 1 1] := by

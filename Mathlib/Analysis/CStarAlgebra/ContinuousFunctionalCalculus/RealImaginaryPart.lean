@@ -72,6 +72,7 @@ lemma cfcₙ_imaginaryPart (f : ℂ → ℂ) (a : A)
 
 variable [T2Space A]
 
+omit [ContinuousMapZero.UniqueHom ℂ A] in
 lemma cfcₙ_comp_re (f : ℝ → ℝ) (a : A)
     (hf : ContinuousOn f (quasispectrum ℝ (ℜ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
@@ -84,6 +85,7 @@ lemma cfcₙ_comp_re (f : ℝ → ℝ) (a : A)
     rw [cfcₙ_real_eq_complex, ← cfcₙ_re_id a, ← cfcₙ_comp' ..]
     simp
 
+omit [ContinuousMapZero.UniqueHom ℂ A] in
 lemma cfcₙ_comp_im (f : ℝ → ℝ) (a : A)
     (hf : ContinuousOn f (quasispectrum ℝ (ℑ a : A)) := by cfc_cont_tac)
     (hf0 : f 0 = 0 := by cfc_zero_tac) (ha : IsStarNormal a := by cfc_tac) :
@@ -150,6 +152,7 @@ lemma cfc_imaginaryPart (f : ℂ → ℂ) (a : A)
 
 variable [T2Space A]
 
+omit [ContinuousMap.UniqueHom ℂ A] in
 lemma cfc_comp_re (f : ℝ → ℝ) (a : A)
     (hf : ContinuousOn f (spectrum ℝ (ℜ a : A)) := by cfc_tac)
     (ha : IsStarNormal a := by cfc_tac) :
@@ -162,6 +165,7 @@ lemma cfc_comp_re (f : ℝ → ℝ) (a : A)
     rw [cfc_real_eq_complex, ← cfc_re_id a, ← cfc_comp' ..]
     simp
 
+omit [ContinuousMap.UniqueHom ℂ A] in
 lemma cfc_comp_im (f : ℝ → ℝ) (a : A) (hf : ContinuousOn f (spectrum ℝ (ℑ a : A)))
     (ha : IsStarNormal a := by cfc_tac) :
     cfc (fun x : ℂ ↦ f (im x)) a = cfc f (ℑ a : A) := by

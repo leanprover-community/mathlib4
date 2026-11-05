@@ -273,6 +273,7 @@ theorem Integrable.norm_condExp_rpow_le {p : ℝ} (hp : 1 ≤ p)
   filter_upwards [norm_condExp_le f, this] with a ha hb
   exact (Real.rpow_le_rpow (norm_nonneg _) ha hp'.le).trans hb
 
+omit [CompleteSpace E] in
 /-- **Conditional Jensen's inequality**: in a finite dimensional Banach space `E` with a measure
 `μ` that is σ-finite on a sub-σ-algebra `m`, if `φ : E → ℝ` is convex, then for any `f : α → E` such
 that `f` and `φ ∘ f` are integrable, we have `φ (𝔼[f | m]) ≤ᵐ[μ] 𝔼[φ ∘ f | m]`. -/
@@ -283,6 +284,7 @@ theorem ConvexOn.map_condExp_le_of_finiteDimensional [FiniteDimensional ℝ E] (
   hφ_cvx.map_condExp_le_univ hm
     (continuousOn_univ.1 (hφ_cvx.continuousOn isOpen_univ)).lowerSemicontinuous hf_int hφ_int
 
+omit [CompleteSpace E] in
 theorem ConcaveOn.condExp_map_le_of_finiteDimensional [FiniteDimensional ℝ E] (hm : m ≤ mα)
     [SigmaFinite (μ.trim hm)] (hφ_cvx : ConcaveOn ℝ univ φ) (hf_int : Integrable f μ)
     (hφ_int : Integrable (φ ∘ f) μ) :

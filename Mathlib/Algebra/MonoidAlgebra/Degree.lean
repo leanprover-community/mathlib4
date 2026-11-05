@@ -171,8 +171,8 @@ end Semiring
 
 section CommutativeLemmas
 
-variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B] [AddRightMono B]
-  [AddCommMonoid T] [AddLeftMono T] [AddRightMono T]
+variable [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B] [AddLeftMono B]
+  [AddCommMonoid T] [AddLeftMono T]
   {degb : A → B} {degt : A → T}
 
 theorem sup_support_coeff_multisetProd_le (degb0 : degb 0 ≤ 0)
@@ -202,6 +202,8 @@ theorem sup_support_coeff_finsetProd_le (degb0 : degb 0 ≤ 0)
     (∏ i ∈ s, f i).coeff.support.sup degb ≤ ∑ i ∈ s, (f i).coeff.support.sup degb :=
   (sup_support_coeff_multisetProd_le degb0 degbm _).trans_eq <| congr_arg _ <| Multiset.map_map ..
 
+variable [AddRightMono B]
+
 @[deprecated (since := "2026-06-18")]
 alias sup_support_finsetProd_le := sup_support_coeff_finsetProd_le
 
@@ -209,6 +211,8 @@ theorem le_inf_support_coeff_finsetProd (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (s : Finset ι) (f : ι → R[A]) :
     (∑ i ∈ s, (f i).coeff.support.inf degt) ≤ (∏ i ∈ s, f i).coeff.support.inf degt :=
   le_of_eq_of_le (by rw [Multiset.map_map]; rfl) (le_inf_support_coeff_multisetProd degt0 degtm _)
+
+variable [AddRightMono T]
 
 @[deprecated (since := "2026-06-18")]
 alias le_inf_support_finsetProd := le_inf_support_coeff_finsetProd
@@ -403,8 +407,6 @@ lemma supDegree_sum_lt (hs : s.Nonempty) {b : B}
   refine supDegree_sum_le.trans_lt ((Finset.sup_lt_iff ?_).mpr h)
   obtain ⟨i, hi⟩ := hs; exact bot_le.trans_lt (h i hi)
 
-variable [AddZeroClass A]
-
 open Finsupp in
 lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
     (p + q).supDegree D = p.supDegree D := by
@@ -413,6 +415,8 @@ lemma supDegree_add_eq_left (h : q.supDegree D < p.supDegree D) :
   rw [he] at h ⊢
   apply Finset.le_sup
   simpa [coeff_eq_zero_of_not_le_supDegree h.not_ge] using ha
+
+variable [AddZeroClass A]
 
 lemma supDegree_add_eq_right (h : p.supDegree D < q.supDegree D) :
     (p + q).supDegree D = q.supDegree D := by

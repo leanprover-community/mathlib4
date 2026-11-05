@@ -504,6 +504,7 @@ theorem tsum_iUnion_le_sum [Fintype ι'] (f : ι → α) (t : ι' → Set ι) :
   convert tsum_iUnion_le_tsum f t
   exact (tsum_fintype fun b ↦ ∑' (x : ↑(t b)), f ↑x).symm
 
+omit [T3Space α] in
 theorem tsum_subtype_eq_tsum_support (s : Set ι) (f : ι → α) :
     ∑' (x : s), f x = ∑' (x : {x | x ∈ s ∧ f x ≠ 0}), f x := by
   have hu : s = {i | i ∈ s ∧ f i ≠ 0} ∪ {i | i ∈ s ∧ f i = 0} := by

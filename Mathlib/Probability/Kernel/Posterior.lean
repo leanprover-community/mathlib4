@@ -61,7 +61,7 @@ namespace ProbabilityTheory
 
 variable {Ω 𝓧 𝓨 : Type*}
   {mΩ : MeasurableSpace Ω} {m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨}
-  {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ] [IsFiniteKernel κ]
+  {κ : Kernel Ω 𝓧} {μ : Measure Ω} [IsFiniteMeasure μ]
 
 variable [StandardBorelSpace Ω] [Nonempty Ω]
 
@@ -73,6 +73,10 @@ def posterior (κ : Kernel Ω 𝓧) (μ : Measure Ω) [IsFiniteMeasure μ] [IsFi
 
 /-- Posterior of the kernel `κ` with respect to the measure `μ`. -/
 scoped[ProbabilityTheory] infix:arg "†" => ProbabilityTheory.posterior
+
+section
+
+variable [IsFiniteKernel κ]
 
 /-- The posterior is a Markov kernel. -/
 instance : IsMarkovKernel κ†μ := by rw [posterior]; infer_instance
@@ -121,11 +125,14 @@ lemma ae_eq_posterior_of_compProd_eq_swap_comp (η : Kernel 𝓧 Ω) [IsFiniteKe
     η =ᵐ[κ ∘ₘ μ] κ†μ :=
   ae_eq_posterior_of_compProd_eq <| by rw [h, Measure.swap_comp]
 
+end
+
 @[simp]
 lemma posterior_comp_self [IsMarkovKernel κ] : κ†μ ∘ₘ κ ∘ₘ μ = μ := by
   rw [← Measure.snd_compProd, compProd_posterior_eq_map_swap, Measure.snd_map_swap,
     Measure.fst_compProd]
 
+variable [IsFiniteKernel κ] in
 /-- The posterior of the identity kernel is the identity kernel. -/
 lemma posterior_id (μ : Measure Ω) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[μ] Kernel.id := by
   suffices Kernel.id =ᵐ[Kernel.id ∘ₘ μ] (Kernel.id : Kernel Ω Ω)†μ by
@@ -134,6 +141,7 @@ lemma posterior_id (μ : Measure Ω) [IsFiniteMeasure μ] : Kernel.id†μ =ᵐ[
   refine ae_eq_posterior_of_compProd_eq_swap_comp Kernel.id ?_
   rw [Measure.id_comp, Measure.compProd_id_eq_copy_comp, Measure.comp_assoc, Kernel.swap_copy]
 
+variable [IsFiniteKernel κ] in
 /-- For a deterministic kernel `κ`, `κ ∘ₖ κ†μ` is `μ.map f`-a.e. equal to the identity kernel. -/
 lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
     {f : Ω → 𝓧} (hf : Measurable f) :
@@ -157,6 +165,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
     rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
       Measure.deterministic_comp_eq_map]
 
+variable [IsFiniteKernel κ] in
 lemma absolutelyContinuous_posterior {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
     ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ := by
   suffices (κ ∘ₘ μ) ⊗ₘ (κ†μ) ≪ ν.prod μ by
@@ -182,6 +191,8 @@ lemma posterior_posterior [IsMarkovKernel κ] : (κ†μ)†(κ ∘ₘ μ) =ᵐ[
   rw [posterior_comp_self, compProd_posterior_eq_swap_comp, Measure.comp_assoc,
     Kernel.swap_swap, Measure.id_comp]
 
+variable [IsFiniteKernel κ]
+
 /-- The posterior is contravariant. -/
 lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
     (η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ) := by
@@ -203,6 +214,8 @@ lemma posterior_comp {η : Kernel 𝓧 𝓨} [IsFiniteKernel η] :
       Kernel.swap_parallelComp, Kernel.comp_assoc, Kernel.swap_copy]
 
 end StandardBorelSpace
+
+variable [IsFiniteKernel κ]
 
 
 section CountableOrCountablyGenerated

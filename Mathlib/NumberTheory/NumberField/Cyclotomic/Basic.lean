@@ -611,9 +611,9 @@ namespace IsCyclotomicExtension.Rat
 open nonZeroDivisors IsPrimitiveRoot
 
 variable (K p k)
-variable [CharZero K]
 
 set_option backward.defeqAttrib.useBackward true in
+variable [CharZero K] in
 /-- We compute the absolute discriminant of a `p ^ k`-th cyclotomic field.
   Beware that in the cases `p ^ k = 1` and `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`.
   See also the results below. -/
@@ -640,6 +640,7 @@ theorem discr_prime_pow [IsCyclotomicExtension {p ^ k} ℚ K] :
   · simp_rw [algebraMap_int_eq, map_mul, map_pow, map_neg, map_one, map_natCast]
 
 open Nat in
+variable [CharZero K] in
 /-- We compute the absolute discriminant of a `p ^ (k + 1)`-th cyclotomic field.
   Beware that in the case `p ^ k = 2` the formula uses `1 / 2 = 0`. See also the results below. -/
 theorem discr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
@@ -648,6 +649,7 @@ theorem discr_prime_pow_succ [IsCyclotomicExtension {p ^ (k + 1)} ℚ K] :
     (-1) ^ (p ^ k * (p - 1) / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   simpa [totient_prime_pow hp.out (succ_pos k)] using discr_prime_pow p (k + 1) K
 
+variable [CharZero K] in
 /-- We compute the absolute discriminant of a `p`-th cyclotomic field where `p` is prime. -/
 theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {p} ℚ K
@@ -661,6 +663,7 @@ theorem discr_prime [IsCyclotomicExtension {p} ℚ K] :
 variable (n) [hn : NeZero n]
 
 open Algebra IntermediateField Nat in
+variable [CharZero K] in
 /--
 Computes the absolute discriminant of the `n`-th cyclotomic field.
 -/
@@ -725,6 +728,7 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
     simp_rw +contextual [← pow_mul, Nat.div_mul_right_comm (this _), Nat.totient_mul h]
     rw [mul_pow, mul_comm n₂.totient]
 
+variable [CharZero K] in
 theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
     haveI : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
     (NumberField.discr K).natAbs = n ^ φ n / ∏ p ∈ n.primeFactors, p ^ (φ n / (p - 1)) := by
@@ -762,6 +766,8 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
     exact toInteger_isPrimitiveRoot hζ
   · simp [← sup_toSubalgebra_of_left, htop]
   · exact isCoprime_differentIdeal_of_isCoprime_discr _ h_cpr
+
+variable [CharZero K]
 
 variable {n K}
 

@@ -75,8 +75,7 @@ instance [PreservesLimit (pair X Y) G] :
     HasBinaryProduct (G.obj X) (G.obj Y) :=
   ⟨_, isLimitOfHasBinaryProductOfPreservesLimit G X Y⟩
 
-variable [HasBinaryProduct (G.obj X) (G.obj Y)]
-
+variable [HasBinaryProduct (G.obj X) (G.obj Y)] in
 /-- If the product comparison map for `G` at `(X,Y)` is an isomorphism, then `G` preserves the
 pair of `(X,Y)`.
 -/
@@ -110,6 +109,8 @@ theorem PreservesLimitPair.iso_inv_snd :
     (PreservesLimitPair.iso G X Y).inv ≫ G.map prod.snd = prod.snd := by
   rw [← Iso.cancel_iso_hom_left (PreservesLimitPair.iso G X Y), ← Category.assoc, Iso.hom_inv_id]
   simp
+
+variable [HasBinaryProduct (G.obj X) (G.obj Y)]
 
 instance : IsIso (prodComparison G X Y) := by
   rw [← PreservesLimitPair.iso_hom]

@@ -33,13 +33,17 @@ Basic definitions and properties of the above ideas are provided in this file.
 open Set
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
-  (H : LieSubalgebra R L) [LieRing.IsNilpotent H]
+  (H : LieSubalgebra R L)
   {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieAlgebra
 
 open scoped TensorProduct
 open TensorProduct.LieModule LieModule
+
+section Nilpotent
+
+variable [LieRing.IsNilpotent H]
 
 /-- Given a nilpotent Lie subalgebra `H ⊆ L`, the root space of a map `χ : H → R` is the weight
 space of `L` regarded as a module of `H` via the adjoint action. -/
@@ -252,6 +256,10 @@ theorem eq_rootSpace_zero_iff_isCartan [IsNoetherian R L] :
   rw [← zeroRootSubalgebra_eq_iff_is_cartan, ← LieSubalgebra.toSubmodule_inj,
     ← LieSubmodule.toSubmodule_inj]
   aesop
+
+end Nilpotent
+
+variable (R L)
 
 @[simp]
 theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :

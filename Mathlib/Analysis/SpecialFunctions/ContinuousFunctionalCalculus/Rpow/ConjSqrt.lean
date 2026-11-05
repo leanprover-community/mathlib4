@@ -28,7 +28,11 @@ public section ConjSqrt
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
   [StarOrderedRing A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-  [NonnegSpectrumClass ℝ A] [SeparatelyContinuousMul A]
+  [NonnegSpectrumClass ℝ A]
+
+section
+
+variable [SeparatelyContinuousMul A]
 
 /-- Conjugation by the square root of an element, i.e. `sqrt c * a * sqrt c`. -/
 @[expose]
@@ -52,6 +56,8 @@ lemma conjSqrt_monotone {c : A} : Monotone (conjSqrt c) := by
 @[gcongr]
 lemma conjSqrt_le_conjSqrt {c a b : A} (h : a ≤ b) : conjSqrt c a ≤ conjSqrt c b :=
   conjSqrt_monotone h
+
+end
 
 variable [IsSemitopologicalRing A] [T2Space A]
 

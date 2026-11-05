@@ -31,7 +31,11 @@ open scoped NNReal Pointwise ENNReal
 namespace MeasureTheory
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [MeasurableSpace G]
-    [BorelSpace G] [IsTopologicalGroup G] [LocallyCompactSpace G]
+    [BorelSpace G] [IsTopologicalGroup G]
+
+section
+
+variable [LocallyCompactSpace G]
 
 /-- If `φ : G ≃ₜ* G` then `mulEquivHaarChar φ` is the positive real factor by which
 `φ` scales Haar measures on `G`. -/
@@ -130,6 +134,8 @@ lemma mulEquivHaarChar_symm {φ : G ≃ₜ* G} :
   symm
   apply inv_eq_of_mul_eq_one_right
   simp [← mulEquivHaarChar_trans]
+
+end
 
 open TopologicalSpace Set in
 @[to_additive addEquivAddHaarChar_eq_one_of_compactSpace]
