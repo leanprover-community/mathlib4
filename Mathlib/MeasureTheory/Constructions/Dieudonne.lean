@@ -75,7 +75,7 @@ theorem exists_isClub_subset (hs : IsStationary s) (hs' : MeasurableSet s) : ∃
 
 instance : MeasurableSingletonClass α where
   measurableSet_singleton x := by
- by_cases hx : IsMax x
+    by_cases hx : IsMax x
     · exact measurableSet_of_isClub hx.isClub_singleton
     · exact measurableSet_of_not_isStationary (mt isStationary_singleton_iff.1 hx)
 
