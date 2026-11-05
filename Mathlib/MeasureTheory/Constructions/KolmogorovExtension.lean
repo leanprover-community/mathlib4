@@ -37,7 +37,7 @@ second-countable and completely pseudo-metrizable (for example Polish spaces).
 
 open Set
 
-open scoped ENNReal
+open scoped ENNReal Function
 
 namespace MeasureTheory
 
@@ -70,7 +70,7 @@ theorem projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular (hP : IsProjectiv
     (hP_inner : ∀ J, (P J).InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet)
     ⦃f : ℕ → Set (Π i, α i)⦄ (hf : ∀ i, f i ∈ measurableCylinders α)
     (hf_Union : (⋃ i, f i) ∈ measurableCylinders α)
-    (h_disj : Pairwise (Function.onFun Disjoint f)) :
+    (h_disj : Pairwise (Disjoint on f)) :
     projectiveFamilyContent hP (⋃ i, f i) = ∑' i, projectiveFamilyContent hP (f i) :=
   addContent_iUnion_eq_sum_of_innerRegular isSetRing_measurableCylinders
     (projectiveFamilyContent hP) (fun _ _ ↦ projectiveFamilyContent_ne_top hP)
@@ -99,7 +99,7 @@ variable [∀ i, TopologicalSpace (α i)] [∀ i, SecondCountableTopology (α i)
 theorem projectiveFamilyContent_iUnion_eq_tsum (hP : IsProjectiveMeasureFamily P)
     ⦃f : ℕ → Set (Π i, α i)⦄
     (hf : ∀ i, f i ∈ measurableCylinders α) (hf_Union : (⋃ i, f i) ∈ measurableCylinders α)
-    (h_disj : Pairwise (Function.onFun Disjoint f)) :
+    (h_disj : Pairwise (Disjoint on f)) :
     projectiveFamilyContent hP (⋃ i, f i) = ∑' i, projectiveFamilyContent hP (f i) :=
   projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular hP
     (fun J ↦ innerRegular_isCompact_isClosed_measurableSet_of_finite (P J)) hf hf_Union h_disj
@@ -118,10 +118,12 @@ noncomputable def projectiveLimit (P : ∀ J : Finset ι, Measure (Π j : J, α 
   (projectiveFamilyContent hP).measure isSetSemiring_measurableCylinders
     generateFrom_measurableCylinders.symm.le (isSigmaSubadditive_projectiveFamilyContent hP)
 
-/-- **Kolmogorov extension theorem**: for any projective measure family `P`, there exists a measure
-on `Π i, α i` which is the projective limit of `P`. That measure is given by
+/-- **Kolmogorov extension theorem**: for any projective measure family `P` of finite measures,
+there exists a measure on `Π i, α i` which is the projective limit of `P`. That measure is given by
 `projectiveLimit P hP`, where `hP : IsProjectiveMeasureFamily P`.
-The projective limit is unique: see `IsProjectiveLimit.unique`. -/
+The projective limit is unique: see `IsProjectiveLimit.unique`.
+The spaces `α i` are assumed to be second-countable and completely pseudo-metrizable
+(for example Polish spaces) -/
 theorem isProjectiveLimit_projectiveLimit (hP : IsProjectiveMeasureFamily P) :
     IsProjectiveLimit (projectiveLimit P hP) P := by
   intro J
