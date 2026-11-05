@@ -417,7 +417,7 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
-      simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
+      simp only [Set.mem_sdiff, and_congr_left_iff]
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]

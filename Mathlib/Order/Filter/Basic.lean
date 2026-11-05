@@ -1324,6 +1324,9 @@ lemma compl (h : s ≤ᶠ[l] t) : tᶜ ≤ᶠ[l] sᶜ := h.mono fun _ => mt
 lemma diff (h : s ≤ᶠ[l] t) {s' t' : Set α} (h' : t' ≤ᶠ[l] s') : s \ s' ≤ᶠ[l] t \ t' :=
   h.inter h'.compl
 
+lemma congr (h : s ≤ᶠ[l] t) {s' t' : Set α} (hs : s =ᶠ[l] s') (ht : t =ᶠ[l] t') : s' ≤ᶠ[l] t' :=
+  h.mp <| ht.mp <| hs.mono fun x hf hg H => by rwa [hf, hg] at H
+
 end EventuallySubset
 
 @[deprecated (since := "2026-08-14")] alias EventuallyLE.inter := EventuallySubset.inter
