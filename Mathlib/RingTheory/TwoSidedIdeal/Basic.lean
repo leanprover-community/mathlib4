@@ -198,7 +198,7 @@ instance : SMulMemClass (TwoSidedIdeal R) R R where
 theorem smulMemClass_mulOpposite : SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R where
   smul_mem _ _ h := TwoSidedIdeal.mul_mem_right _ _ _ h
 
-@[deprecated (since := "2026-08-20")] alias instSMulMemClassMulOpposite := smulMemClass_mulOpposite
+@[deprecated (since := "2026-11-05")] alias instSMulMemClassMulOpposite := smulMemClass_mulOpposite
 
 instance : Add I where add x y := ⟨x.1 + y.1, I.add_mem x.2 y.2⟩
 
