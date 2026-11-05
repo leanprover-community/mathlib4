@@ -87,7 +87,7 @@ noncomputable def isLimitKernelFork :
       parallelPair.ext (K.truncGE'XIsoOpcycles e hj' hj)
         (K.truncGE'XIso e rfl (e.not_boundaryGE_next hjk))
         (by simp [K.truncGE'_d_eq_fromOpcycles e hjk hj' rfl hj]) (by simp)
-    exact (IsLimit.postcomposeHomEquiv e _).1
+    exact (IsLimit.postcomposeHomEquiv e _).toFun
       (IsLimit.ofIsoLimit (K.homologyIsKernel _ _ hk')
       (Fork.ext (Iso.refl _) (by simp [e, Fork.ι])))
   · have := K.isIso_homologyι _ _ hk'

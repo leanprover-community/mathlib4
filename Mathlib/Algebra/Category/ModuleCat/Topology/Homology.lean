@@ -85,7 +85,7 @@ def isColimitCoker : IsColimit (CokernelCofork.ofπ (cokerπ φ) (comp_cokerπ �
     { toLinearMap := φ.hom.range.liftQ s.π.hom.toLinearMap
         (LinearMap.range_le_ker_iff.mpr <| show (φ ≫ s.π).hom.toLinearMap = 0 by
           rw [s.condition, hom_zero, ContinuousLinearMap.toLinearMap_zero])
-      cont := Continuous.quotient_lift s.π.hom.2 _ })
+      cont := Continuous.quotient_lift s.π.hom.cont _ })
   (fun s ↦ rfl)
   (fun s m h ↦ by dsimp at h ⊢; rw [← cancel_epi (cokerπ φ), h]; rfl)
 
@@ -104,7 +104,7 @@ instance : CategoryWithHomology (TopModuleCat R) := by
     rw [← ConcreteCategory.isIso_iff_bijective, ShortComplex.map_leftRightHomologyComparison']
     infer_instance
   have hF' : Topology.IsEmbedding F := by
-    refine .of_comp F.1.2 D₂.ι.1.2 ?_
+    refine .of_comp F.hom'.cont D₂.ι.hom'.cont ?_
     -- `isEmbedding_of_isOpenQuotientMap_of_isInducing` is the key lemma that shows the two
     -- definitions of homology give the same topology.
     refine isEmbedding_of_isOpenQuotientMap_of_isInducing
