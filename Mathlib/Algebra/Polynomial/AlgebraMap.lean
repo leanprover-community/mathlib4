@@ -6,9 +6,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 module
 
 public import Mathlib.Algebra.Algebra.Pi
-public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
-public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Algebra.Polynomial.Eval.Algebra
 public import Mathlib.Algebra.Polynomial.Eval.Degree
@@ -36,7 +34,7 @@ assert_not_exists Ideal
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -51,31 +49,19 @@ section CommSemiring
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 variable {p r : R[X]}
 
-/-- Note that this instance also provides `Algebra R R[X]`. -/
-instance algebraOfAlgebra : Algebra R A[X] where
-  smul_def' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      rw [toFinsupp_smul, toFinsupp_mul, toFinsupp_C]
-      exact Algebra.smul_def' _ _
-  commutes' r p :=
-    toFinsupp_injective <| by
-      dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply]
-      simp_rw [toFinsupp_mul, toFinsupp_C]
-      convert! Algebra.commutes' r p.toFinsupp
-  algebraMap := C.comp (algebraMap R A)
-
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R A[X] r = C (algebraMap R A r) :=
   rfl
 
-@[simp]
+@[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_algebraMap (r : R) : (algebraMap R A[X] r).toFinsupp = algebraMap R _ r :=
   show toFinsupp (C (algebraMap _ _ r)) = _ by
     rw [toFinsupp_C]
     rfl
 
-theorem ofFinsupp_algebraMap (r : R) : (⟨algebraMap R _ r⟩ : A[X]) = algebraMap R A[X] r :=
+@[deprecated "Now a tautology" (since := "2026-07-18")]
+theorem ofFinsupp_algebraMap (r : R) :
+    (ofFinsupp (algebraMap R _ r) : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm
 
 /-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
@@ -98,22 +84,30 @@ def CAlgHom : A →ₐ[R] A[X] where
 
 /-- Extensionality lemma for algebra maps out of `A'[X]` over a smaller base ring than `A'`
 -/
-@[ext 1100]
+-- Since `R[X]` is reducibly `AddMonoidAlgebra R ℕ`,  `AddMonoidAlgebra.algHom_ext'` also  applies
+-- to equalities in `R[X]`. We make this ext lemma have higher priority to avoid exposing
+-- `AddMonoidAlgebra.single`.
+@[ext high + 1]
 theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hC : f.comp CAlgHom = g.comp CAlgHom)
     (hX : f X = g X) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
+  AlgHom.toRingHom_injective (ringHom_ext' congr($(hC).toRingHom) hX)
 
 set_option backward.defeqAttrib.useBackward true in
 variable (R) in
-open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
-@[simps!]
+@[deprecated "Now a tautology" (since := "2026-07-18"), simps! -isSimp apply symm_apply]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun r => by
-      dsimp }
+    commutes' := fun _ => rfl }
+
+attribute [deprecated "Now a tautology" (since := "2026-07-18")]
+  toFinsuppIsoAlg_apply toFinsuppIsoAlg_symm_apply
+
+@[deprecated "Now a tautology" (since := "2026-10-25")]
+theorem toFinsuppIsoAlg_symm_apply_toFinsupp (f : R[ℕ]) :
+    ((toFinsuppIsoAlg R).symm f).toFinsupp = f := rfl
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -122,7 +116,7 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true, Algebra.mem_top,
         algebraMap_apply]
       intro x
-      rw [ext_iff, not_forall]
+      rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, not_forall]
       refine ⟨1, ?_⟩
       simp⟩⟩
 
@@ -178,9 +172,11 @@ theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
   AlgHom.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
+theorem toRingHom_mapAlgHom (f : A →ₐ[R] B) :
     ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgHom_coe_ringHom := toRingHom_mapAlgHom
 
 @[simp]
 theorem mapAlgHom_comp (C : Type*) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
@@ -216,9 +212,11 @@ theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl 
   AlgEquiv.ext fun _x => map_id
 
 @[simp]
-theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+theorem toRingHom_mapAlgEquiv (f : A ≃ₐ[R] B) :
     ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
   rfl
+
+@[deprecated (since := "2026-05-05")] alias mapAlgEquiv_coe_ringHom := toRingHom_mapAlgEquiv
 
 @[simp]
 theorem mapAlgEquiv_toAlgHom (f : A ≃ₐ[R] B) :
@@ -265,7 +263,8 @@ def mapAlg (R : Type u) [CommSemiring R] (S : Type v) [Semiring S] [Algebra R S]
     R[X] →ₐ[R] S[X] :=
   @aeval _ S[X] _ _ _ (X : S[X])
 
-@[ext 1200]
+-- We want this lemma to have higher priority than `algHom_ext'`.
+@[ext high + 2]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
   algHom_ext' (Subsingleton.elim ..) hX
@@ -401,7 +400,7 @@ theorem aeval_X_left : aeval (X : R[X]) = AlgHom.id R R[X] :=
   algHom_ext <| aeval_X X
 
 theorem aeval_X_left_apply (p : R[X]) : aeval X p = p :=
-  AlgHom.congr_fun (@aeval_X_left R _) p
+  congr($(@aeval_X_left R _) p)
 
 lemma aeval_X_left_eq_map [CommSemiring S] [Algebra R S] (p : R[X]) :
     aeval X p = map (algebraMap R S) p :=
@@ -412,16 +411,12 @@ theorem eval_unique (φ : R[X] →ₐ[R] A) (p) : φ p = eval₂ (algebraMap R A
 
 theorem aeval_algHom_apply {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
     (f : F) (x : A) (p : R[X]) :
-    aeval (f x) p = f (aeval x p) := by
-  refine Polynomial.induction_on p (by simp [AlgHomClass.commutes]) (fun p q hp hq => ?_)
-    (by simp [AlgHomClass.commutes])
-  rw [map_add, hp, hq, ← map_add, ← map_add]
+    aeval (f x) p = f (aeval x p) :=
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [AlgHomClass.commutes])
 
 theorem aeval_op_apply (x : A) (p : R[X]) :
-    aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq => simp [map_add, hp, hq]
-  | monomial n c => simp [aeval_monomial, MulOpposite.op_pow, Algebra.commutes]
+    aeval (MulOpposite.op x) p = MulOpposite.op (aeval x p) :=
+  p.induction_on' (fun _ _ hp hq => by simp [hp, hq]) (by simp [Algebra.commutes])
 
 theorem aeval_smul (f : R[X]) {G : Type*} [Monoid G] [MulSemiringAction G A] [SMulCommClass G R A]
     (g : G) (x : A) : f.aeval (g • x) = g • (f.aeval x) := by
@@ -581,7 +576,7 @@ theorem aevalTower_toAlgHom (x : R) : aevalTower g y (IsScalarTower.toAlgHom S R
 
 @[simp]
 theorem aevalTower_comp_toAlgHom : (aevalTower g y).comp (IsScalarTower.toAlgHom S R R[X]) = g :=
-  AlgHom.coe_ringHom_injective <| aevalTower_comp_algebraMap _ _
+  AlgHom.toRingHom_injective <| aevalTower_comp_algebraMap _ _
 
 @[simp]
 theorem aevalTower_id : aevalTower (AlgHom.id S S) = aeval := by
@@ -622,7 +617,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)
-  · convert! dvd_zero p
+  · convert dvd_zero p
     rw [notMem_support_iff] at hi
     simp [hi]
 
@@ -679,11 +674,11 @@ lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
   let _ := invertibleOne (α := R)
-  simpa using! dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
+  simpa [sub_eq_add_neg] using dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
-  simpa using! dvd_comp_X_sub_C_iff p q (-a)
+  simpa [sub_eq_add_neg] using dvd_comp_X_sub_C_iff p q (-a)
 
 lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
   let _ := invertibleOne (α := R)
@@ -731,7 +726,8 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
-    simpa [ext_iff, mul_comm Q.leadingCoeff] using fun i ↦ congr_arg (·.coeff Q.natDegree) (this i)
+    simpa [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, mul_comm Q.leadingCoeff]
+      using fun i ↦ congr($(this i).coeff Q.natDegree)
   apply Nat.strong_decreasing_induction
   · use P.natDegree
     intro i hi
@@ -741,7 +737,8 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
   · apply eq_zero_of_mul_eq_zero_of_smul _ h (P.coeff l • Q)
     rw [smul_eq_C_mul, mul_left_comm, hQ, mul_zero]
   suffices P.coeff l * Q.leadingCoeff = 0 by
-    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul, hl, coeff_natDegree, smul_eq_mul]
+    rwa [← leadingCoeff_eq_zero, ← coeff_natDegree, coeff_smul_apply, hl,
+      coeff_natDegree, smul_eq_mul]
   let m := Q.natDegree
   suffices (P * Q).coeff (l + m) = P.coeff l * Q.leadingCoeff by rw [← this, hQ, coeff_zero]
   rw [coeff_mul]
@@ -770,12 +767,14 @@ theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a �
 protected lemma mem_nonZeroDivisors_iff {P : R[X]} : P ∈ R[X]⁰ ↔ ∀ a : R, a • P = 0 → a = 0 := by
   simpa [not_imp_not] using (notMem_nonZeroDivisors_iff (P := P)).not
 
-lemma mem_nonzeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
+lemma mem_nonZeroDivisors_of_coeff_mem {p : R[X]} (n : ℕ) (hp : p.coeff n ∈ R⁰) :
     p ∈ R[X]⁰ :=
   Polynomial.mem_nonZeroDivisors_iff.mpr fun r hr ↦ hp.2 _ (by simpa using congr(coeff $hr n))
 
-lemma X_mem_nonzeroDivisors : X ∈ R[X]⁰ :=
-  mem_nonzeroDivisors_of_coeff_mem 1 (by simp [one_mem])
+@[deprecated (since := "2026-09-28")]
+alias mem_nonzeroDivisors_of_coeff_mem := mem_nonZeroDivisors_of_coeff_mem
+
+@[deprecated (since := "2026-09-28")] alias X_mem_nonzeroDivisors := X_mem_nonZeroDivisors
 
 end CommSemiring
 

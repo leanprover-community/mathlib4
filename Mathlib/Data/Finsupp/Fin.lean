@@ -106,7 +106,7 @@ lemma cons_right_injective : Injective (Finsupp.cons y : (Fin n →₀ M) → Fi
 /-- As a binary function, `Finsupp.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (cons (n := n) (M := M)) := by
   refine fun x₀ y₀ x y h ↦ ?_
-  have := DFunLike.congr_fun h 0
+  have := congr($h 0)
   simp only [cons_zero] at this
   exact ⟨this, cons_right_injective y₀ (this ▸ h)⟩
 

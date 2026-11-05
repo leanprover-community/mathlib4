@@ -5,11 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 public import Mathlib.RingTheory.FiniteLength
 public import Mathlib.RingTheory.SimpleModule.Isotypic
-public import Mathlib.RingTheory.SimpleRing.Congr
-public import Mathlib.RingTheory.SimpleRing.Matrix
+
+import Mathlib.RingTheory.SimpleRing.Congr
+import Mathlib.RingTheory.SimpleRing.Matrix
 
 /-!
 # Wedderburn–Artin Theorem
@@ -82,6 +82,13 @@ instance (priority := low) : IsSemisimpleRing R :=
 theorem isIsotypic (M) [AddCommGroup M] [Module R M] : IsIsotypic R M :=
   (isSimpleRing_isArtinianRing_iff.mp ⟨‹_›, ‹_›⟩).2.1.of_self M
 
+theorem nonempty_linearEquiv_of_isSimpleModule (M N) [AddCommGroup M] [Module R M] [AddCommGroup N]
+    [Module R N] [IsSimpleModule R M] [IsSimpleModule R N] :
+    Nonempty (M ≃ₗ[R] N) := by
+  have := Submodule.topEquiv.isSimpleModule_iff.mpr (show IsSimpleModule R M by assumption)
+  obtain ⟨e⟩ := (isIsotypic R R).isIsotypicOfType M N ⊤
+  exact ⟨Submodule.topEquiv.symm.trans e⟩
+
 /-- The **Wedderburn–Artin Theorem**: an Artinian simple ring is isomorphic to a matrix
 ring over the opposite of the endomorphism ring of its simple module. -/
 theorem exists_ringEquiv_matrix_end_mulOpposite :
@@ -143,7 +150,7 @@ theorem exists_end_algEquiv_pi_matrix_end :
   choose d pos S _ simple e using fun c : isotypicComponents R M ↦
     (IsIsotypic.isotypicComponents c.2).submodule_linearEquiv_fun
   exact ⟨_, _, _, fun _ ↦ simple _, fun _ ↦ pos _, ⟨.trans (endAlgEquiv R₀ R M) <| .trans
-    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..)) <|
+    (.piCongrRight fun c ↦ ((e c).some.conjAlgEquiv R₀).trans (endVecAlgEquivMatrixEnd ..))
     (.piCongrLeft' R₀ _ (Finite.equivFin _))⟩⟩
 
 theorem exists_end_ringEquiv_pi_matrix_end :

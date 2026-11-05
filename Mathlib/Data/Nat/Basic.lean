@@ -8,6 +8,7 @@ module
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Data.Nat.Init
+public import Mathlib.Data.Set.Defs
 public import Mathlib.Order.Defs.LinearOrder
 public import Mathlib.Tactic.GCongr
 
@@ -48,8 +49,6 @@ instance : Preorder ℕ := inferInstance
 instance : PartialOrder ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
-
-attribute [gcongr] Nat.succ_le_succ Nat.div_le_div_right Nat.div_le_div
 
 /-! ### `succ`, `pred` -/
 

@@ -288,15 +288,20 @@ theorem circleAverage_mono_on_of_le_circle {f : ℂ → ℝ} {a : ℝ} (hf : Cir
   exact intervalIntegral.integral_mono_on_of_le_Ioo (le_of_lt two_pi_pos) hf
     intervalIntegrable_const (fun θ _ ↦ h₂f (circleMap c R θ) (circleMap_mem_sphere' c R θ))
 
+theorem norm_circleAverage_le_circleAverage_norm :
+    ‖circleAverage f c R‖ ≤ circleAverage (fun z ↦ ‖f z‖) c R := by
+  simp only [circleAverage_def, norm_smul, smul_eq_mul]
+  gcongr
+  · simp [abs_of_nonneg pi_nonneg]
+  · exact intervalIntegral.norm_integral_le_integral_norm (by positivity)
+
 /--
 Analogue of `intervalIntegral.abs_integral_le_integral_abs`: The absolute value of a circle average
 is less than or equal to the circle average of the absolute value of the function.
 -/
 theorem abs_circleAverage_le_circleAverage_abs {f : ℂ → ℝ} :
     |circleAverage f c R| ≤ circleAverage |f| c R := by
-  rw [circleAverage, circleAverage, smul_eq_mul, smul_eq_mul, abs_mul,
-    abs_of_pos (inv_pos.2 two_pi_pos), mul_le_mul_iff_of_pos_left (inv_pos.2 two_pi_pos)]
-  exact intervalIntegral.abs_integral_le_integral_abs (le_of_lt two_pi_pos)
+  simpa [← norm_eq_abs, Pi.abs_def] using norm_circleAverage_le_circleAverage_norm
 
 /--
 The circle average of a nonnegative function is nonnegative.

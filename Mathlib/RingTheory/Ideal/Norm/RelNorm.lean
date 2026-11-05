@@ -5,12 +5,13 @@ Authors: Anne Baanen, Alex J. Best
 -/
 module
 
-public import Mathlib.Algebra.GroupWithZero.Torsion
 public import Mathlib.NumberTheory.RamificationInertia.Galois
 public import Mathlib.RingTheory.DedekindDomain.Factorization
-public import Mathlib.RingTheory.DedekindDomain.Instances
-public import Mathlib.RingTheory.Ideal.Int
-public import Mathlib.RingTheory.NormalClosure
+
+import Mathlib.Algebra.GroupWithZero.Torsion
+import Mathlib.RingTheory.DedekindDomain.Instances
+import Mathlib.RingTheory.Ideal.Int
+import Mathlib.RingTheory.NormalClosure
 
 /-!
 
@@ -66,8 +67,8 @@ variable {R} in
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map,
-    mem_bot]
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, IsConcreteLE.le_iff,
+    map, mem_bot]
 
 theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
     Algebra.intNorm R S x ∈ I.spanNorm R :=
@@ -323,7 +324,7 @@ theorem relNorm_map_algEquiv {T : Type*} [CommRing T] [IsDedekindDomain T] [IsIn
     [Algebra R T] [Module.Finite R T] [IsTorsionFree R T] (σ : S ≃ₐ[R] T) (I : Ideal S) :
     relNorm R (I.map σ) = relNorm R I := by
   refine le_antisymm (relNorm_map_algEquiv_aux σ I) ?_
-  convert! relNorm_map_algEquiv_aux σ.symm (I.map σ)
+  convert relNorm_map_algEquiv_aux σ.symm (I.map σ)
   change I = map σ.symm.toAlgHom (map σ.toAlgHom I)
   simp [map_mapₐ]
 
@@ -434,7 +435,10 @@ theorem relNorm_eq_pow_of_isPrime_isGalois [p.IsMaximal] [P.IsPrime]
   rw [one_eq_top]
   exact IsMaximal.ne_top inferInstance
 
-theorem relNorm_eq_pow_of_isMaximal [PerfectField (FractionRing R)] [P.IsMaximal] [p.IsMaximal] :
+/-- The relative norm of a maximal ideal is the prime below it raised to the inertia degree,
+whenever the extension of fraction fields is separable. -/
+theorem relNorm_eq_pow_of_isMaximal [Algebra.IsSeparable (FractionRing R) (FractionRing S)]
+    [P.IsMaximal] [p.IsMaximal] :
     relNorm R P = p ^ P.inertiaDeg R := by
   let T := Ring.NormalClosure R S
   obtain ⟨Q, hQ₁, hQ₂⟩ : ∃ Q : Ideal T, Q.IsMaximal ∧ Q.LiesOver P :=
@@ -457,7 +461,7 @@ local instance : Infinite R := Module.Free.infinite ℤ R
 local instance : Infinite S := Module.Free.infinite ℤ S
 
 open UniqueFactorizationMonoid in
-theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
+theorem absNorm_relNorm (I : Ideal S) :
     absNorm (relNorm R I) = absNorm I := by
   have : Module.Finite ℤ R := Module.Finite.left ℤ R S
   by_cases hI : I = ⊥
@@ -474,6 +478,8 @@ theorem absNorm_relNorm [PerfectField (FractionRing R)] (I : Ideal S) :
     let P := under R Q
     let p := absNorm (under ℤ P)
     have : Q.LiesOver (span {(p : ℤ)}) := LiesOver.trans Q P _
+    have : HasUniqueDiv R := .of_isTorsionFree ℤ _
+    have : CharZero R := .of_hasUniqueDiv R R
     rw [relNorm_eq_pow_of_isMaximal Q P, map_pow, ← pow_inertiaDeg p, ← pow_inertiaDeg p,
       ← pow_mul, ← inertiaDeg_tower]
 

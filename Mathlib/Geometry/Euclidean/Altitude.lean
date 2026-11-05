@@ -6,9 +6,10 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Geometry.Euclidean.Projection
-public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
-public import Mathlib.Analysis.InnerProductSpace.Affine
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Shift
+
+import Mathlib.Analysis.InnerProductSpace.Affine
+import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 
 /-!
 # Altitudes of a simplex
@@ -211,7 +212,7 @@ lemma altitudeFoot_mem_affineSpan_faceOpposite {n : ℕ} [NeZero n] (s : Simplex
 
 lemma altitudeFoot_mem_affineSpan {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
     (i : Fin (n + 1)) : s.altitudeFoot i ∈ affineSpan ℝ (Set.range s.points) := by
-  refine SetLike.le_def.1 (affineSpan_mono _ ?_) (s.altitudeFoot_mem_affineSpan_faceOpposite _)
+  refine mem_of_le_of_mem (affineSpan_mono _ ?_) (s.altitudeFoot_mem_affineSpan_faceOpposite _)
   simp
 
 lemma affineSpan_pair_altitudeFoot_eq_altitude
@@ -297,9 +298,6 @@ meta def evalHeight : PositivityExt where eval {u α} _ pα? e :=
     return .positive q(height_pos $s $i)
   | _, _, _ => throwError "not Simplex.height"
 
-example {n : ℕ} [NeZero n] (s : Simplex ℝ P n) (i : Fin (n + 1)) : 0 < s.height i := by
-  positivity
-
 /-- The height of a 1-dimensional simplex equals to the distance between the two vertices. -/
 @[simp] lemma height_eq_dist (s : Simplex ℝ P 1) (i : Fin 2) :
     s.height i = dist (s.points 0) (s.points 1) := by
@@ -345,7 +343,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
     |⟪s.points i -ᵥ s.altitudeFoot i, s.points j -ᵥ s.altitudeFoot j⟫|
       < s.height i * s.height j := by
   apply lt_of_le_of_ne
-  · convert! abs_real_inner_le_norm _ _ using 1
+  · convert abs_real_inner_le_norm _ _ using 1
     simp only [dist_eq_norm_vsub, height]
   · simp_rw [height, dist_eq_norm_vsub]
     rw [← Real.norm_eq_abs, ne_eq, norm_inner_eq_norm_iff (by simp) (by simp)]
@@ -356,7 +354,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
       ← Submodule.inf_orthogonal_eq_bot (vectorSpan ℝ (Set.range s.points))]
     refine ⟨vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan
       (mem_affineSpan _ (Set.mem_range_self _)) ?_, ?_⟩
-    · refine SetLike.le_def.1 (affineSpan_mono _ ?_) (Subtype.property _)
+    · refine mem_of_le_of_mem (affineSpan_mono _ ?_) (Subtype.property _)
       simp
     · rw [SetLike.mem_coe]
       have hk : ∃ k, k ≠ i ∧ k ≠ j := Fin.exists_ne_and_ne_of_two_lt i j
@@ -378,7 +376,7 @@ lemma abs_inner_vsub_altitudeFoot_lt_mul {i j : Fin (n + 1)} (hij : i ≠ j) :
           simp_rw [← Set.image_univ, ← Set.compl_inter]
           rw [Set.inter_singleton_eq_empty.mpr ?_, Set.compl_empty]
           simpa using hij.symm
-        convert! AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
+        convert AffineSubspace.vectorSpan_union_of_mem_of_mem ℝ hki' hkj'
       rw [hs, ← Submodule.inf_orthogonal, Submodule.mem_inf]
       refine ⟨?_, ?_⟩
       · rw [h, ← direction_affineSpan]

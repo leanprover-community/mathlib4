@@ -10,9 +10,11 @@ public import Mathlib.Algebra.Ring.AddAut
 public import Mathlib.Data.Nat.Totient
 public import Mathlib.GroupTheory.Divisible
 public import Mathlib.Topology.Algebra.Group.ZPow
-public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
+public import Mathlib.Topology.Algebra.OpenSubgroup
 public import Mathlib.Topology.Algebra.Order.Field
 public import Mathlib.Topology.OpenPartialHomeomorph.Defs
+
+import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.GroupTheory.QuotientGroup.ModEq
 
@@ -261,7 +263,7 @@ theorem finite_torsion_of_isSMulRegular (n : ℕ) (hn : IsSMulRegular 𝕜 n) :
 
 theorem card_torsion_le_of_isSMulRegular_int (n : ℤ) (h0 : n ≠ 0) (hn : IsSMulRegular 𝕜 n) :
     {x : AddCircle p | n • x = 0}.encard ≤ n.natAbs := by
-  convert!
+  convert
     card_torsion_le_of_isSMulRegular p _ (Int.natAbs_ne_zero.mpr h0)
       (IsSMulRegular.natAbs_iff.mpr hn) using 1
   simp
@@ -497,7 +499,7 @@ variable [Field 𝕜] (p q : 𝕜)
 /-- The rescaling equivalence between additive circles with different periods. -/
 def equivAddCircle (hp : p ≠ 0) (hq : q ≠ 0) : AddCircle p ≃+ AddCircle q :=
   QuotientAddGroup.congr _ _ (AddAut.mulRight <| (Units.mk0 p hp)⁻¹ * Units.mk0 q hq) <| by
-    rw [AddMonoidHom.map_zmultiples, AddMonoidHom.coe_coe, AddAut.mulRight_apply, Units.val_mul,
+    rw [AddMonoidHom.map_zmultiples, AddMonoidHom.coe_ofClass, AddAut.mulRight_apply, Units.val_mul,
       Units.val_mk0, Units.val_inv_eq_inv_val, Units.val_mk0, mul_inv_cancel_left₀ hp]
 
 @[simp]
@@ -514,7 +516,6 @@ theorem equivAddCircle_eq [LinearOrder 𝕜] [IsOrderedAddMonoid 𝕜] [Archimed
     [hp : Fact (0 < p)] (hq : q ≠ 0) :
     ⇑(equivAddCircle p q hp.out.ne' hq)
       = fun x ↦ ((equivIco p 0 x : 𝕜) * (p⁻¹ * q) : AddCircle q) := by
-  ext x
   grind [coe_equivIco, equivAddCircle_apply_mk]
 
 section
@@ -602,7 +603,7 @@ theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
 
 theorem addOrderOf_div_of_gcd_eq_one {m n : ℕ} (hn : 0 < n) (h : m.gcd n = 1) :
     addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  convert! gcd_mul_addOrderOf_div_eq p m hn
+  convert gcd_mul_addOrderOf_div_eq p m hn
   rw [h, one_mul]
 
 theorem addOrderOf_div_of_gcd_eq_one' {m : ℤ} {n : ℕ} (hn : 0 < n) (h : m.natAbs.gcd n = 1) :
@@ -636,7 +637,7 @@ protected theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     mul_div_cancel_right₀ p h0] at ha
   rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
     mul_div_right_comm, eq_comm, add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
+  exact Int.emod_nonneg _ (mod_cast h.ne')
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
@@ -647,7 +648,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   obtain ⟨m, hm, hk⟩ := (AddCircle.nsmul_eq_zero_iff h).mp
     (addOrderOf_nsmul_eq_zero (k : AddCircle p))
   refine ⟨m, hm, mul_right_cancel₀ h.ne' ?_, hk⟩
-  convert! gcd_mul_addOrderOf_div_eq p m h using 1
+  convert gcd_mul_addOrderOf_div_eq p m h using 1
   · rw [hk]
   · apply one_mul
 

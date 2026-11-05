@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Discrete.StructuredArrow
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Characterization of connected categories using initial/final functors

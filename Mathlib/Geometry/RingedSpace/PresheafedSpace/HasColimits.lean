@@ -6,9 +6,9 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Geometry.RingedSpace.PresheafedSpace
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Sheaves.Limits
-public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+import Mathlib.Topology.Category.TopCat.Limits.Basic
 
 /-!
 # `PresheafedSpace C` has colimits.
@@ -56,7 +56,6 @@ attribute [local simp] eqToHom_map
 -- although it doesn't appear to help in this file, in any case.
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
     (F.map (𝟙 j)).c.app U =
@@ -65,17 +64,15 @@ theorem map_id_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) (j) (U) :
   simp [PresheafedSpace.congr_app (F.map_id j)]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem map_comp_c_app (F : J ⥤ PresheafedSpace.{_, _, v} C) {j₁ j₂ j₃}
     (f : j₁ ⟶ j₂) (g : j₂ ⟶ j₃) (U) :
     (F.map (f ≫ g)).c.app U =
       (F.map g).c.app U ≫
         ((pushforward C (F.map g).base).map (F.map f).c).app U ≫
-          (pushforwardEq (congr_arg Hom.base (F.map_comp f g).symm) _).hom.app U := by
+          (pushforwardEq congr($((F.map_comp f g).symm).base) _).hom.app U := by
   simp [PresheafedSpace.congr_app (F.map_comp f g)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a diagram of `PresheafedSpace C`s, its colimit is computed by pushing the sheaves onto
 the colimit of the underlying spaces, and taking componentwise limit.
@@ -166,7 +163,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
         · ext ⟨⟩
-          simp [← congr_arg NatTrans.app (limit.w (pushforwardDiagramToColimit F).leftOp f.op)] }
+          simp [← congr($(limit.w (pushforwardDiagramToColimit F).leftOp f.op).app)] }
 
 variable [HasLimitsOfShape Jᵒᵖ C]
 
@@ -197,10 +194,10 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
     rw [PresheafedSpace.congr_app (s.w f.unop).symm U]
     have w :=
       Functor.congr_obj
-        (congr_arg Opens.map (colimit.ι_desc ((PresheafedSpace.forget C).mapCocone s) (unop j)))
+        congr(Opens.map $(colimit.ι_desc ((PresheafedSpace.forget C).mapCocone s) (unop j)))
         (unop U)
     simp only [Opens.map_comp_obj_unop] at w
-    replace w := congr_arg op w
+    replace w := congr(op $w)
     have w' := NatTrans.congr (F.map f.unop).c w
     rw [w']
     simp
@@ -218,7 +215,7 @@ theorem desc_c_naturality (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F)
   have w := Functor.congr_hom (congr_arg Opens.map
     (colimit.ι_desc ((PresheafedSpace.forget C).mapCocone s) (unop j))) i.unop
   simp only [Opens.map_comp_map] at w
-  simp [congr_arg Quiver.Hom.op w]
+  simp [congr($(w).op)]
 
 /-- Auxiliary definition for `AlgebraicGeometry.PresheafedSpace.colimitCoconeIsColimit`.
 -/
@@ -228,7 +225,6 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
     { app := fun U => descCApp F s U
       naturality := fun _ _ i => desc_c_naturality F s i }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
@@ -270,7 +266,7 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       simp [desc, descCApp,
         PresheafedSpace.congr_app (w (unop j)).symm U,
         NatTrans.congr (limit.π (pushforwardDiagramToColimit F).leftOp j)
-        (congr_arg op (Functor.congr_obj (congr_arg Opens.map t) (unop U)))]
+        congr(op ((Opens.map $t).obj (unop U)))]
 
 instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
@@ -316,7 +312,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
     simp only [Functor.op_obj, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
-    refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
+    congrm Set.preimage $(funext fun x => ?_) U.1
     simp only [colimitCocone, colimit, ← TopCat.comp_app]
     congr
     exact ι_preservesColimitIso_inv (forget C) F (unop X)

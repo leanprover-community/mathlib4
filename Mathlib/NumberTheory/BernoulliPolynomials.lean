@@ -5,9 +5,6 @@ Authors: Ashvni Narayanan, David Loeffler
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.AlgebraMap
-public import Mathlib.Algebra.Polynomial.Derivative
-public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.NumberTheory.Bernoulli
 
 /-!
@@ -61,7 +58,7 @@ theorem bernoulli_def (n : ℕ) : bernoulli n =
 
 theorem coeff_bernoulli (n i : ℕ) :
     (bernoulli n).coeff i = if i ≤ n then (_root_.bernoulli (n - i) * choose n i) else 0 := by
-  simp only [bernoulli, finsetSum_coeff, coeff_monomial]
+  simp only [bernoulli, finsetSum_coeff, coeff_monomial, Finsupp.single_apply]
   split_ifs with h
   · convert! sum_ite_eq_of_mem (range (n + 1)) (n - i) _ (by grind) using 3 <;> grind [choose_symm]
   · exact Finset.sum_eq_zero <| by grind
@@ -219,8 +216,9 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
   | zero => simp
   | succ n =>
   ext i
-  rw [← neg_one_mul, ← C_1, ← C_neg, Polynomial.comp_C_mul_X_coeff, coeff_smul, coeff_add,
-    coeff_smul, coeff_bernoulli, coeff_X_pow]
+  rw [← neg_one_mul, ← C_1, ← C_neg, Polynomial.comp_C_mul_X_coeff,
+    AddMonoidAlgebra.coeff_smul_apply, coeff_add, AddMonoidAlgebra.coeff_smul_apply,
+    coeff_bernoulli, coeff_X_pow]
   split_ifs with h h'
   · subst h'
     simp
@@ -233,7 +231,7 @@ theorem bernoulli_comp_neg_X (n : ℕ) :
 
 theorem bernoulli_eval_neg (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (-x) = (-1) ^ n * ((bernoulli n).eval x + n * x ^ (n - 1)) := by
-  simpa [mul_add] using congr_arg (Polynomial.eval x) (bernoulli_comp_neg_X n)
+  simpa [mul_add] using congr(Polynomial.eval x $(bernoulli_comp_neg_X n))
 
 theorem bernoulli_comp_one_sub_X (n : ℕ) :
     (bernoulli n).comp (1 - X) = (-1) ^ n * bernoulli n := by
@@ -247,7 +245,7 @@ theorem bernoulli_comp_one_sub_X (n : ℕ) :
 
 theorem bernoulli_eval_one_sub (n : ℕ) (x : ℚ) :
     (bernoulli n).eval (1 - x) = (-1) ^ n * (bernoulli n).eval x := by
-  simpa using congr_arg (Polynomial.eval x) (bernoulli_comp_one_sub_X n)
+  simpa using congr(Polynomial.eval x $(bernoulli_comp_one_sub_X n))
 
 open PowerSeries
 

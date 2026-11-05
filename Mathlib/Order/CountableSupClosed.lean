@@ -55,7 +55,7 @@ lemma CountableSupClosed.iSup_mem [CompleteLattice α] [Countable ι] [Nonempty 
     (hs : CountableSupClosed s) {A : ι → α} (hA : ∀ n, A n ∈ s) :
     ⨆ n, A n ∈ s := by
   let i₀ := Nonempty.some (α := ι) inferInstance
-  exact hs.isLUB_mem (range A) (by simp [range]; grind) ⟨A i₀, by simp⟩ (countable_range A) _
+  exact hs.isLUB_mem (range A) (by grind) ⟨A i₀, by simp⟩ (countable_range A) _
     isLUB_iSup
 
 @[to_dual]
@@ -181,7 +181,7 @@ variable [Preorder α]
 def countableSupClosure : ClosureOperator (Set α) := .ofPred
   (fun s ↦ {a | ∃ (A : Set α) (_ : A ⊆ s) (_ : A.Nonempty) (_ : A.Countable), IsLUB A a})
   CountableSupClosed
-  (fun s x hxs ↦ ⟨{x}, by simp; grind, by simp, by simp, by simp⟩)
+  (fun s x hxs ↦ ⟨{x}, by grind, by simp, by simp, by simp⟩)
   (fun s ↦ by
     constructor
     intro A hA hA_ne hAc x hx
@@ -297,6 +297,11 @@ lemma mem_countableSupClosure_iff_iSup [CompleteLattice α] :
 lemma sup_mem_countableSupClosure [SemilatticeSup α] (ha : a ∈ s) (hb : b ∈ s) :
     a ⊔ b ∈ countableSupClosure s :=
   supClosed_countableSupClosure (subset_countableSupClosure ha) (subset_countableSupClosure hb)
+
+@[to_dual]
+lemma supClosure_subset_countableSupClosure [SemilatticeSup α] :
+    supClosure s ⊆ countableSupClosure s :=
+  supClosure_min subset_countableSupClosure supClosed_countableSupClosure
 
 @[to_dual]
 lemma iSup_mem_countableSupClosure [CompleteLattice α] [Countable ι] [Nonempty ι] {A : ι → α}
