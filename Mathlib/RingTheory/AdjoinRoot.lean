@@ -702,7 +702,8 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
         funext fun i => by
-          simp only [(modByMonicHom hg).map_smul, coeff_smul, Pi.smul_apply, RingHom.id_apply]
+          simp only [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
+            Pi.smul_apply, RingHom.id_apply]
       left_inv f := AdjoinRoot.induction_on _ f fun f => Eq.symm <| mk_eq_mk.mpr <| by
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
         rw [modByMonic_eq_sub_mul_div, sub_sub_cancel]
@@ -712,7 +713,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
           nontriviality R
           simp only [modByMonicHom_mk]
           rw [(modByMonic_eq_self_iff hg).mpr, finsetSum_coeff]
-          · simp_rw [coeff_monomial, Fin.val_eq_val, Finset.sum_ite_eq',
+          · simp_rw [coeff_monomial, Finsupp.single_apply, Fin.val_eq_val, Finset.sum_ite_eq',
               ite_eq_left (Finset.mem_univ _)]
           · simp_rw [← C_mul_X_pow_eq_monomial]
             exact (degree_eq_natDegree hg.ne_zero).symm ▸ degree_sum_fin_lt _ }

@@ -78,7 +78,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Monoid M] [Monoid N]
 
 In particular this provides the instance `Algebra R R[M]`. -/
 @[to_additive (dont_translate := R A)
-/-- The instance `Algebra R R[M]` whenever we have `Algebra R R`.
+/-- The instance `Algebra R A[M]` whenever we have `Algebra R A`.
 
 In particular this provides the instance `Algebra R R[M]`. -/]
 instance algebra : Algebra R A[M] where
