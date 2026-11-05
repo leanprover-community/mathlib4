@@ -76,9 +76,7 @@ theorem abs_comp_abs (T : E →L[ℂ] F) : |T| ∘L |T| = T† ∘L T := by
 @[simp]
 theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
-  simp_rw [apply_norm_sq_eq_inner_adjoint_left, comp_apply]
-  rw [T.isPositive_abs.isSelfAdjoint.adjoint_eq]
-  simp [abs_def, ← mul_apply_eq_comp, CFC.sqrt_mul_sqrt_self]
+  simp [apply_norm_sq_eq_inner_adjoint_left]
 
 theorem ker_abs_eq_ker_adjoint_comp_self (T : E →L[ℂ] F) : |T|.ker = (T† ∘L T).ker := by
   simpa using (ker_adjoint_comp_self |T|).symm
