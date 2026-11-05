@@ -323,14 +323,28 @@ lemma degree_eq_sum_deg_support (hφ : φ.IsHomogeneous n) {s : σ →₀ ℕ} (
     n = ∑ i ∈ s.support, s i := by
   simp [← hφ <| mem_support_iff.mp hs, ← degree_apply, degree_eq_weight_one, Pi.one_def]
 
-/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`
-the output by a factor of `c ^ d`. -/
-lemma eval_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R) (p : σ → R) :
-    F.eval (c • p) = c ^ d * F.eval p := by
-  simp only [MvPolynomial.eval_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_pow,
-    Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum]
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma eval₂_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (f : R →+* S) (c : R)
+    (p : σ → S) :
+    F.eval₂ f (f c • p) = f (c ^ d) * F.eval₂ f p := by
+  simp only [eval₂_eq, Pi.smul_apply, smul_eq_mul, Finset.mul_sum, mul_pow,
+    Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, map_pow]
   congr! 1 with x hx
   rw [hF.degree_eq_sum_deg_support hx, mul_left_comm]
+
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma aeval_smul [Algebra R S] {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R)
+    (p : σ → S) :
+    F.aeval (c • p) = c ^ d • F.aeval p := by
+  simpa [aeval_def, Algebra.smul_def (A := S)] using hF.eval₂_smul (algebraMap R S) c p
+
+/-- Scaling the input of a degree `d` homogeneous polynomial by a factor of `c`,
+scales the output by a factor of `c ^ d`. -/
+lemma eval_smul {F : MvPolynomial σ R} {d : ℕ} (hF : F.IsHomogeneous d) (c : R) (p : σ → R) :
+    F.eval (c • p) = c ^ d * F.eval p :=
+  hF.eval₂_smul ..
 
 theorem rename_isHomogeneous {f : σ → τ} (h : φ.IsHomogeneous n) :
     (rename f φ).IsHomogeneous n := by
