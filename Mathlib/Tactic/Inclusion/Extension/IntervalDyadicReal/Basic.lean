@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
+import Mathlib.Data.Rat.Cast.Lemmas
+
 /-!
 # Basic inclusion extensions for interval_dyadic_real
 
@@ -77,8 +79,7 @@ theorem mul_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J
 
 @[inclusion_op interval_dyadic_real]
 theorem pow_mem (n : ℕ) {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : x ^ n ∈ I.pow n :=
-  Interval.pow_mem castOrderEmbedding (by simp) (by exact map_one (Rat.castHom ℝ)) (by simp)
-    (by intros; simpa using map_pow (Rat.castHom ℝ) _ _) n hx
+  Interval.pow_mem castOrderEmbedding (by simp) Rat.cast_one (by simp) (by simp) n hx
 
 end Arithmetic
 
