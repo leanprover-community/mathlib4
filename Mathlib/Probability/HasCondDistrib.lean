@@ -86,6 +86,20 @@ lemma HasCondDistrib.snd {Y : Ω → 𝓨 × 𝓩} {κ : Kernel 𝓧 (𝓨 × �
   rw [Kernel.snd_eq]
   exact h.comp_left measurable_snd
 
+lemma HasCondDistrib.of_compProd {Z : Ω → 𝓩} {η : Kernel (𝓧 × 𝓨) 𝓩} [IsMarkovKernel η]
+    (h : HasCondDistrib (fun a ↦ (Y a, Z a)) X (κ ⊗ₖ η) P) :
+    HasCondDistrib Z (fun a ↦ (X a, Y a)) η P := by
+  have hZ : AEMeasurable Z P := h.aemeasurable_snd.snd
+  have hY : AEMeasurable Y P := h.aemeasurable_snd.fst
+  refine ⟨by fun_prop, ?_⟩
+  calc P.map (fun a ↦ ((X a, Y a), Z a))
+  _ = (P.map X ⊗ₘ (κ ⊗ₖ η)).map MeasurableEquiv.prodAssoc.symm := by
+      rw [← h.map_eq, AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
+      rfl
+  _ = P.map X ⊗ₘ κ ⊗ₘ η := Measure.compProd_assoc
+  _ = P.map (fun a ↦ (X a, Y a)) ⊗ₘ η := by simp [h.fst.map_eq]
+
+
 variable [SFinite P]
 
 lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
@@ -109,19 +123,5 @@ lemma HasCondDistrib.measurableEquiv_comp_right (h : HasCondDistrib Y X κ P) (f
     HasCondDistrib Y (f ∘ X) (κ.comap f.symm f.symm.measurable) P := by
   apply HasCondDistrib.comp_right (hf := f.measurable)
   simpa [← Kernel.comap_comp_right]
-
-omit [SFinite P] in
-lemma HasCondDistrib.of_compProd {Z : Ω → 𝓩} {η : Kernel (𝓧 × 𝓨) 𝓩} [IsMarkovKernel η]
-    (h : HasCondDistrib (fun a ↦ (Y a, Z a)) X (κ ⊗ₖ η) P) :
-    HasCondDistrib Z (fun a ↦ (X a, Y a)) η P := by
-  have hZ : AEMeasurable Z P := h.aemeasurable_snd.snd
-  have hY : AEMeasurable Y P := h.aemeasurable_snd.fst
-  refine ⟨by fun_prop, ?_⟩
-  calc P.map (fun a ↦ ((X a, Y a), Z a))
-  _ = (P.map X ⊗ₘ (κ ⊗ₖ η)).map MeasurableEquiv.prodAssoc.symm := by
-      rw [← h.map_eq, AEMeasurable.map_map_of_aemeasurable (by fun_prop) (by fun_prop)]
-      rfl
-  _ = P.map X ⊗ₘ κ ⊗ₘ η := Measure.compProd_assoc
-  _ = P.map (fun a ↦ (X a, Y a)) ⊗ₘ η := by simp [h.fst.map_eq]
 
 end ProbabilityTheory
