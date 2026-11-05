@@ -150,7 +150,7 @@ lemma measurePreserving_equivIoc {a : ℝ} :
   have h := (measurableEquivIoc T a).measurable
   refine ⟨h, ?_⟩
   ext s hs
-  rw [comap_apply _ Subtype.val_injective (fun _ ↦ measurableSet_Ioc.subtype_image) _ hs,
+  rw [comap_apply (le_comap_caratheodory_of_le_comap le_rfl _) hs,
     map_apply (by measurability) hs, add_projection_respects_measure T a (by exact h hs)]
   congr!
   ext x

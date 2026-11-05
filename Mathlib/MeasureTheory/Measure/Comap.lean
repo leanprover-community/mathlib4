@@ -14,10 +14,10 @@ set_option doc.verso.suggestions false
 /-!
 # Pullback of a measure
 
-In this file we define the pullback `MeasureTheory.Measure.comap f μ`
-of a measure `μ` along an injective map `f`
-such that the image of any measurable set under `f` is a null-measurable set.
-If `f` does not have these properties, then we define `comap f μ` to be zero.
+In this file we define the pullback `MeasureTheory.Measure.comap f μ` of a measure `μ` along a map
+`f` such that every measurable set is the preimage of a set that is Carathéodory-measurable
+for `μ`. Then `comap f μ s = μ (f '' s)` for every measurable set `s`.
+If `f` does not have this property, then we define `comap f μ` to be zero.
 
 In the future, we may decide to redefine `comap f μ` so that it gives meaningful results, e.g.,
 for covering maps like `(↑) : ℝ → AddCircle (1 : ℝ)`.
@@ -37,147 +37,163 @@ namespace Measure
 variable {α β γ : Type*} {s : Set α}
 
 open scoped Classical in
-/-- Pullback of a `Measure` as a linear map. If `f` sends each measurable set to a measurable
-set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
-
-Note that if `f` is not injective, this definition assigns `Set.univ` measure zero.
+/-- Pullback of a `Measure` as a linear map. If every measurable set is the preimage of a
+measurable set, then for each measurable set `s` we have `comapₗ f μ s = μ (f '' s)`.
 
 If the linearity is not needed, please use `comap` instead, which works for a larger class of
 functions. `comapₗ` is an auxiliary definition and most lemmas deal with comap. -/
-def comapₗ [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Measure β →ₗ[ℝ≥0∞] Measure α :=
-  if hf : Injective f ∧ ∀ s, MeasurableSet s → MeasurableSet (f '' s) then
-    liftLinear (OuterMeasure.comap f) fun μ s hs t => by
-      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_sdiff hf.1]
-      apply le_toOuterMeasure_caratheodory
-      exact hf.2 s hs
+def comapₗ [mα : MeasurableSpace α] [mβ : MeasurableSpace β] (f : α → β) :
+    Measure β →ₗ[ℝ≥0∞] Measure α :=
+  if hf : mα ≤ mβ.comap f then
+    liftLinear (OuterMeasure.comap f) fun μ ↦ hf.trans <|
+      (MeasurableSpace.comap_mono (le_toOuterMeasure_caratheodory μ)).trans
+        (OuterMeasure.le_comap_caratheodory f _)
   else 0
 
 set_option backward.isDefEq.respectTransparency false in
-theorem comapₗ_apply {_ : MeasurableSpace α} {_ : MeasurableSpace β} (f : α → β)
-    (hfi : Injective f) (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β)
-    (hs : MeasurableSet s) : comapₗ f μ s = μ (f '' s) := by
-  rw [comapₗ, dite_eq_left, liftLinear_apply _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
-  exact ⟨hfi, hf⟩
+theorem comapₗ_apply {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {f : α → β}
+    (hf : mα ≤ mβ.comap f) (μ : Measure β) (hs : MeasurableSet s) :
+    comapₗ f μ s = μ (f '' s) := by
+  rw [comapₗ, dite_eq_left hf, liftLinear_apply _ hs, OuterMeasure.comap_apply,
+    coe_toOuterMeasure]
 
 open scoped Classical in
-/-- Pullback of a `Measure`. If `f` sends each measurable set to a null-measurable set,
-then for each measurable set `s` we have `comap f μ s = μ (f '' s)`.
+/-- Pullback of a `Measure`. If every measurable set is the preimage of a set that is
+Carathéodory-measurable for `μ`, then for each measurable set `s` we have
+`comap f μ s = μ (f '' s)`. Otherwise, `comap f μ` is zero.
 
-Note that if `f` is not injective, this definition assigns `Set.univ` measure zero. -/
-def comap [MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
-  if hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ then
-    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure <| by
-      intro s hs t
-      simp only [OuterMeasure.comap_apply, image_inter hf.1, image_sdiff hf.1]
-      exact (measure_inter_add_sdiff₀ _ (hf.2 s hs)).symm
+The condition holds if `f` is injective and sends measurable sets to null-measurable sets
+(`le_comap_caratheodory_of_injective`), or if every measurable set is the preimage of a
+measurable set (`le_comap_caratheodory_of_le_comap`). -/
+def comap [mα : MeasurableSpace α] [MeasurableSpace β] (f : α → β) (μ : Measure β) : Measure α :=
+  if hf : mα ≤ μ.caratheodory.comap f then
+    (OuterMeasure.comap f μ.toOuterMeasure).toMeasure
+      (hf.trans (OuterMeasure.le_comap_caratheodory f _))
   else 0
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {f : α → β} {g : β → γ}
 
-theorem comap_apply₀ (f : α → β) (μ : Measure β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
+/-- If every measurable set is the preimage of a measurable set, then `f` satisfies the
+hypothesis of `comap_apply`. -/
+theorem le_comap_caratheodory_of_le_comap (hf : mα ≤ mβ.comap f) (μ : Measure β) :
+    mα ≤ μ.caratheodory.comap f :=
+  hf.trans (MeasurableSpace.comap_mono (le_toOuterMeasure_caratheodory μ))
+
+/-- If `f` is injective and sends measurable sets to null-measurable sets, then `f`
+satisfies the hypothesis of `comap_apply`. -/
+theorem le_comap_caratheodory_of_injective {μ : Measure β} (hfi : Injective f)
+    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) : mα ≤ μ.caratheodory.comap f :=
+  fun s hs ↦ ⟨f '' s, fun t ↦ (measure_inter_add_sdiff₀ t (hf s hs)).symm, hfi.preimage_image s⟩
+
+/-- If `f` is a measurable embedding, then `f` satisfies the hypothesis of `comap_apply`. -/
+theorem _root_.MeasurableEmbedding.le_comap_caratheodory (hf : MeasurableEmbedding f)
+    (μ : Measure β) : mα ≤ μ.caratheodory.comap f :=
+  le_comap_caratheodory_of_le_comap hf.comap_eq.ge μ
+
+theorem comap_apply₀ {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f)
     (hs : NullMeasurableSet s (comap f μ)) : comap f μ s = μ (f '' s) := by
-  rw [comap, dite_eq_left (And.intro hfi hf)] at hs ⊢
+  rw [comap, dite_eq_left hf] at hs ⊢
   rw [toMeasure_apply₀ _ _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
 
-lemma comap_undef {μ : Measure β}
-    (h : ¬ (Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)) :
-    comap f μ = 0 := dite_eq_right h
+lemma comap_undef {μ : Measure β} (h : ¬ mα ≤ μ.caratheodory.comap f) : comap f μ = 0 :=
+  dite_eq_right h
 
-theorem le_comap_apply (f : α → β) (μ : Measure β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) (s : Set α) :
+theorem le_comap_apply {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f) (s : Set α) :
     μ (f '' s) ≤ comap f μ s := by
-  grw [comap, dite_eq_left (And.intro hfi hf), ← le_toMeasure_apply]; rfl
+  grw [comap, dite_eq_left hf, ← le_toMeasure_apply]; rfl
 
-theorem comap_apply (f : α → β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
+theorem comap_apply {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f) (hs : MeasurableSet s) :
     comap f μ s = μ (f '' s) :=
-  comap_apply₀ f μ hfi (fun s hs => (hf s hs).nullMeasurableSet) hs.nullMeasurableSet
+  comap_apply₀ hf hs.nullMeasurableSet
 
 theorem comap_apply_le (f : α → β) (μ : Measure β) (hs : NullMeasurableSet s (μ.comap f)) :
     μ.comap f s ≤ μ (f '' s) := by
-  by_cases hf : Injective f ∧ ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ
-  · rw [comap_apply₀ _ _ hf.1 hf.2 hs]
+  by_cases hf : mα ≤ μ.caratheodory.comap f
+  · rw [comap_apply₀ hf hs]
   · simp [comap_undef hf]
 
-theorem comapₗ_eq_comap (f : α → β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β) (hs : MeasurableSet s) :
-    comapₗ f μ s = comap f μ s :=
-  (comapₗ_apply f hfi hf μ hs).trans (comap_apply f hfi hf μ hs).symm
+/-- If `f` is measurable, then `comap f μ s = μ (f '' s)` holds for every set `s`. -/
+theorem comap_apply_of_measurable {μ : Measure β} (hfm : Measurable f)
+    (hf : mα ≤ μ.caratheodory.comap f) (s : Set α) : comap f μ s = μ (f '' s) := by
+  refine le_antisymm ?_ (le_comap_apply hf s)
+  grw [image_subset_iff.mp (subset_toMeasurable μ (f '' s)),
+    comap_apply hf (hfm (measurableSet_toMeasurable ..)), image_preimage_subset,
+    measure_toMeasurable]
 
-theorem measure_image_eq_zero_of_comap_eq_zero (f : α → β) (μ : Measure β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ) {s : Set α} (hs : comap f μ s = 0) :
-    μ (f '' s) = 0 := by
-  rw [← nonpos_iff_eq_zero]
-  exact (le_comap_apply f μ hfi hf s).trans hs.le
+theorem comapₗ_eq_comap (hf : mα ≤ mβ.comap f) (μ : Measure β) : comapₗ f μ = comap f μ :=
+  ext fun _ hs ↦ (comapₗ_apply hf μ hs).trans
+    (comap_apply (le_comap_caratheodory_of_le_comap hf μ) hs).symm
 
-theorem ae_eq_image_of_ae_eq_comap (f : α → β) (μ : Measure β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
+theorem measure_image_eq_zero_of_comap_eq_zero {μ : Measure β}
+    (hf : mα ≤ μ.caratheodory.comap f) {s : Set α} (hs : comap f μ s = 0) : μ (f '' s) = 0 :=
+  nonpos_iff_eq_zero.mp <| (le_comap_apply hf s).trans hs.le
+
+theorem ae_eq_image_of_ae_eq_comap {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f)
     {s t : Set α} (hst : s =ᵐ[comap f μ] t) : f '' s =ᵐ[μ] f '' t := by
-  rw [EventuallyEqSet, EventuallyEq, ae_iff] at hst ⊢
-  have h_eq_α : { a : α | ¬(a ∈ s) = (a ∈ t) } = s \ t ∪ t \ s := by
-    ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
-    tauto
-  have h_eq_β : { a : β | ¬(a ∈ f '' s) = (a ∈ f '' t) } = f '' s \ f '' t ∪ f '' t \ f '' s := by
-    ext1 x
-    simp only [eq_iff_iff, mem_ofPred_eq, mem_union, Set.mem_sdiff]
-    tauto
-  rw [← Set.image_sdiff hfi, ← Set.image_sdiff hfi, ← Set.image_union] at h_eq_β
-  rw [h_eq_β]
-  rw [h_eq_α] at hst
-  exact measure_image_eq_zero_of_comap_eq_zero f μ hfi hf hst
+  rw [ae_eq_set] at hst ⊢
+  obtain ⟨hst, hts⟩ := hst
+  exact ⟨measure_mono_null (subset_image_sdiff f s t)
+      (measure_image_eq_zero_of_comap_eq_zero hf hst),
+    measure_mono_null (subset_image_sdiff f t s) (measure_image_eq_zero_of_comap_eq_zero hf hts)⟩
 
-theorem NullMeasurableSet.image (f : α → β) (μ : Measure β) (hfi : Injective f)
-    (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
-    (hs : NullMeasurableSet s (μ.comap f)) : NullMeasurableSet (f '' s) μ := by
-  refine ⟨toMeasurable μ (f '' toMeasurable (μ.comap f) s), measurableSet_toMeasurable _ _, ?_⟩
-  refine EventuallyEq.trans ?_ (NullMeasurableSet.toMeasurable_ae_eq ?_).symm
-  swap
-  · exact hf _ (measurableSet_toMeasurable _ _)
-  have h : toMeasurable (comap f μ) s =ᵐ[comap f μ] s :=
-    NullMeasurableSet.toMeasurable_ae_eq hs
-  exact ae_eq_image_of_ae_eq_comap f μ hfi hf h.symm
+theorem NullMeasurableSet.image {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f)
+    (hf' : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
+    (hs : NullMeasurableSet s (μ.comap f)) : NullMeasurableSet (f '' s) μ :=
+  (hf' _ (measurableSet_toMeasurable _ s)).congr
+    (ae_eq_image_of_ae_eq_comap hf hs.toMeasurable_ae_eq)
 
-theorem comap_preimage (f : α → β) (μ : Measure β) (hf : Injective f) (hf' : Measurable f)
-    (h : ∀ t, MeasurableSet t → NullMeasurableSet (f '' t) μ) {s : Set β} (hs : MeasurableSet s) :
-    μ.comap f (f ⁻¹' s) = μ (s ∩ range f) := by
-  rw [comap_apply₀ _ _ hf h (hf' hs).nullMeasurableSet, image_preimage_eq_inter_range]
+theorem comap_preimage {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f) (hf' : Measurable f)
+    (s : Set β) : μ.comap f (f ⁻¹' s) = μ (s ∩ range f) := by
+  rw [comap_apply_of_measurable hf' hf, image_preimage_eq_inter_range]
 
 @[simp] lemma comap_zero (f : α → β) : (0 : Measure β).comap f = 0 := by
-  by_cases hf : Injective f ∧ ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) (0 : Measure β)
-  · simp [comap, hf]
-  · simp [comap, hf]
+  by_cases hf : mα ≤ (0 : Measure β).caratheodory.comap f
+  · ext s hs
+    simp [comap_apply hf hs]
+  · exact comap_undef hf
 
 @[simp]
-lemma comap_id (μ : Measure β) : comap (fun x ↦ x) μ = μ := by
+lemma comap_id (μ : Measure β) : comap (fun x ↦ x) μ = μ :=
+  ext fun s hs ↦ by
+    rw [comap_apply (f := fun x ↦ x) (MeasurableEmbedding.id.le_comap_caratheodory μ) hs,
+      image_id']
+
+lemma comap_comap {μ : Measure γ} (hg : Measurable g) (hgμ : mβ ≤ μ.caratheodory.comap g)
+    (hgf : mα ≤ μ.caratheodory.comap (g ∘ f)) : comap f (comap g μ) = comap (g ∘ f) μ := by
+  have hf : mα ≤ (comap g μ).caratheodory.comap f := by
+    have : (comap g μ).toOuterMeasure = OuterMeasure.comap g μ.toOuterMeasure :=
+      OuterMeasure.ext (comap_apply_of_measurable hg hgμ)
+    rw [this]
+    grw [hgf, ← MeasurableSpace.comap_comp, OuterMeasure.le_comap_caratheodory]
   ext s hs
-  rw [comap_apply, image_id']
-  · exact injective_id
-  all_goals simp [*]
+  rw [comap_apply hf hs, comap_apply_of_measurable hg hgμ, comap_apply hgf hs, image_comp]
 
-lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg : Injective g)
-    (hg' : ∀ s, MeasurableSet s → MeasurableSet (g '' s)) (μ : Measure γ) :
-    comap f (comap g μ) = comap (g ∘ f) μ := by
-  by_cases hf : Injective f
-  · ext s hs
-    rw [comap_apply _ hf hf' _ hs, comap_apply _ hg hg' _ (hf' _ hs),
-      comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
-  · rw [comap, dite_eq_right <| mt And.left hf, comap, dite_eq_right fun h ↦ hf h.1.of_comp]
+lemma comap_smul_of_le {μ : Measure β} (hf : mα ≤ μ.caratheodory.comap f) (c : ℝ≥0∞) :
+    comap f (c • μ) = c • comap f μ := by
+  have hcf : mα ≤ (c • μ).caratheodory.comap f := by
+    rw [smul_toOuterMeasure]
+    exact hf.trans (MeasurableSpace.comap_mono (OuterMeasure.le_smul_caratheodory c _))
+  ext s hs
+  rw [comap_apply hcf hs, smul_apply, smul_apply, comap_apply hf hs]
 
-lemma comap_smul {μ : Measure β} (c : ℝ≥0∞) : comap f (c • μ) = c • comap f μ := by
-  obtain rfl | hc := eq_or_ne c 0
+/-- See `comap_smul_of_le` for `c = ⊤`. Every set is Carathéodory-measurable for `⊤ • μ`, so
+`comap f (⊤ • μ)` can be nonzero while `comap f μ = 0`. -/
+lemma comap_smul {μ : Measure β} {c : ℝ≥0∞} (hc : c ≠ ⊤) :
+    comap f (c • μ) = c • comap f μ := by
+  obtain rfl | hc₀ := eq_or_ne c 0
   · simp
-  by_cases h : Function.Injective f ∧ ∀ s : Set α, MeasurableSet s → NullMeasurableSet (f '' s) μ
-  · ext s hs
-    rw [comap_apply₀ f _ h.1 _ hs.nullMeasurableSet, smul_apply, smul_apply,
-      comap_apply₀ f μ h.1 h.2 hs.nullMeasurableSet]
-    simpa [nullMeasurableSet_smul_measure_iff hc] using h.2
-  · have h' : ¬ (Function.Injective f ∧
-        ∀ (s : Set α), MeasurableSet s → NullMeasurableSet (f '' s) (c • μ)) := by
-      simpa [nullMeasurableSet_smul_measure_iff hc] using h
-    simp [comap_undef, h, h']
+  by_cases hf : mα ≤ μ.caratheodory.comap f
+  · exact comap_smul_of_le hf c
+  have hcf : ¬ mα ≤ (c • μ).caratheodory.comap f := by
+    refine fun h ↦ hf (h.trans (MeasurableSpace.comap_mono ?_))
+    have := OuterMeasure.le_smul_caratheodory c⁻¹ (c • μ).toOuterMeasure
+    rwa [smul_toOuterMeasure, smul_smul, ENNReal.inv_mul_cancel hc₀ hc, one_smul] at this
+  rw [comap_undef hf, comap_undef hcf, smul_zero]
+
+lemma comap_add (hf : mα ≤ mβ.comap f) (μ ν : Measure β) :
+    (μ + ν).comap f = μ.comap f + ν.comap f := by
+  simp only [← comapₗ_eq_comap hf, map_add]
 
 end Measure
 
@@ -188,17 +204,15 @@ open MeasureTheory Measure
 variable {α β : Type*} {ma : MeasurableSpace α} {mb : MeasurableSpace β}
 
 lemma MeasurableEmbedding.comap_add {f : α → β} (hf : MeasurableEmbedding f) (μ ν : Measure β) :
-    (μ + ν).comap f = μ.comap f + ν.comap f := by
-  ext s hs
-  simp only [← comapₗ_eq_comap _ hf.injective (fun _ ↦ hf.measurableSet_image.mpr) _ hs,
-    map_add, add_apply]
+    (μ + ν).comap f = μ.comap f + ν.comap f :=
+  Measure.comap_add hf.comap_eq.ge μ ν
 
 namespace MeasurableEquiv
 
 lemma comap_symm {μ : Measure α} (e : α ≃ᵐ β) : μ.comap e.symm = μ.map e := by
   ext s hs
-  rw [e.map_apply, Measure.comap_apply _ e.symm.injective _ _ hs, image_symm]
-  exact fun t ht ↦ e.symm.measurableSet_image.mpr ht
+  rw [e.map_apply, comap_apply (e.symm.measurableEmbedding.le_comap_caratheodory μ) hs,
+    image_symm]
 
 lemma map_symm {μ : Measure α} (e : β ≃ᵐ α) : μ.map e.symm = μ.comap e := by
   rw [← comap_symm, symm_symm]

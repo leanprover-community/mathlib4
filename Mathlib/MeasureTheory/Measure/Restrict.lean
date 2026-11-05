@@ -806,17 +806,16 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
 
 theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=
-  NullMeasurableSet.image _ μ Subtype.coe_injective
+  NullMeasurableSet.image (le_comap_caratheodory_of_le_comap le_rfl μ)
     (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) ht
 
-theorem measure_subtype_coe_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
+theorem measure_subtype_coe_le_comap (t : Set s) :
     μ (((↑) : s → α) '' t) ≤ μ.comap Subtype.val t :=
-  le_comap_apply _ _ Subtype.coe_injective (fun _ =>
-    MeasurableSet.nullMeasurableSet_subtype_coe hs) _
+  le_comap_apply (le_comap_caratheodory_of_le_comap le_rfl μ) t
 
-theorem measure_subtype_coe_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
+theorem measure_subtype_coe_eq_zero_of_comap_eq_zero {t : Set s}
     (ht : μ.comap Subtype.val t = 0) : μ (((↑) : s → α) '' t) = 0 :=
-  eq_bot_iff.mpr <| (measure_subtype_coe_le_comap hs t).trans ht.le
+  eq_bot_iff.mpr <| (measure_subtype_coe_le_comap t).trans ht.le
 
 end ComapAnyMeasure
 
@@ -837,19 +836,16 @@ attribute [local instance] Subtype.measureSpace
 theorem Subtype.volume_def : (volume : Measure u) = volume.comap Subtype.val :=
   rfl
 
-theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) = volume u := by
-  rw [Subtype.volume_def, comap_apply₀ _ _ _ _ MeasurableSet.univ.nullMeasurableSet]
-  · simp only [image_univ, Subtype.range_coe_subtype, ofPred_mem_eq]
-  · exact Subtype.coe_injective
-  · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
+theorem Subtype.volume_univ : volume (univ : Set u) = volume u := by
+  rw [Subtype.volume_def, comap_apply (le_comap_caratheodory_of_le_comap le_rfl _) .univ,
+    image_univ, Subtype.range_coe]
 
-theorem volume_subtype_coe_le_volume (hu : NullMeasurableSet u) (t : Set u) :
-    volume (((↑) : u → δ) '' t) ≤ volume t :=
-  measure_subtype_coe_le_comap hu t
+theorem volume_subtype_coe_le_volume (t : Set u) : volume (((↑) : u → δ) '' t) ≤ volume t :=
+  measure_subtype_coe_le_comap t
 
-theorem volume_subtype_coe_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
-    (ht : volume t = 0) : volume (((↑) : u → δ) '' t) = 0 :=
-  measure_subtype_coe_eq_zero_of_comap_eq_zero hu ht
+theorem volume_subtype_coe_eq_zero_of_volume_eq_zero {t : Set u} (ht : volume t = 0) :
+    volume (((↑) : u → δ) '' t) = 0 :=
+  measure_subtype_coe_eq_zero_of_comap_eq_zero ht
 
 end MeasureSpace
 
@@ -871,16 +867,11 @@ include hf
 
 theorem map_comap (μ : Measure β) : (comap f μ).map f = μ.restrict (range f) := by
   ext1 t ht
-  rw [hf.map_apply, comap_apply f hf.injective hf.measurableSet_image' _ (hf.measurable ht),
+  rw [hf.map_apply, comap_apply (hf.le_comap_caratheodory μ) (hf.measurable ht),
     image_preimage_eq_inter_range, Measure.restrict_apply ht]
 
 theorem comap_apply (μ : Measure β) (s : Set α) : comap f μ s = μ (f '' s) :=
-  calc
-    comap f μ s = comap f μ (f ⁻¹' f '' s) := by rw [hf.injective.preimage_image]
-    _ = (comap f μ).map f (f '' s) := (hf.map_apply _ _).symm
-    _ = μ (f '' s) := by
-      rw [hf.map_comap, restrict_apply' hf.measurableSet_range,
-        inter_eq_self_of_subset_left (image_subset_range _ _)]
+  comap_apply_of_measurable hf.measurable (hf.le_comap_caratheodory μ) s
 
 theorem comap_map (μ : Measure α) : (map f μ).comap f = μ := by
   ext t _
@@ -963,13 +954,9 @@ theorem volume_image_subtype_coe {s : Set α} (hs : MeasurableSet s) (t : Set s)
   (comap_subtype_coe_apply hs volume t).symm
 
 @[simp]
-theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
-    volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
-  rw [volume_set_coe_def,
-    comap_apply₀ _ _ Subtype.coe_injective
-      (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)
-      (measurable_subtype_coe ht).nullMeasurableSet,
-    image_preimage_eq_inter_range, Subtype.range_coe]
+theorem volume_preimage_coe (s t : Set α) : volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
+  rw [volume_set_coe_def, comap_preimage (le_comap_caratheodory_of_le_comap le_rfl _)
+    measurable_subtype_coe, Subtype.range_coe]
 
 end Subtype
 
