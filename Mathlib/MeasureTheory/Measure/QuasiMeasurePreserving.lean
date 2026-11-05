@@ -184,7 +184,7 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (hfm : Measurable f)
     ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
   obtain ⟨t, htm, ht⟩ := hs
   refine ⟨limsup (f^[·] ⁻¹' t) atTop, ?_, ?_, ?_⟩
-  · exact .measurableSet_limsup fun n ↦ (hfm.iterate n) htm
+  · exact .measurableSet_limsup fun n ↦ hfm.iterate n htm
   · have : f ⁻¹' t =ᵐ[μ] t := (h.preimage_ae_eq ht.symm).trans (hs'.trans ht)
     exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ .trans (h.preimage_iterate_ae_eq _ this) ht.symm
   · simp only [Set.preimage_iterate_eq]
