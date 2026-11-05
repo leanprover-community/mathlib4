@@ -971,29 +971,30 @@ open TensorProduct
 
 /-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
 sending `⟦g⟧, a` to `⟦single g a⟧`. -/
-def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
-  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <| Abelianization.lift {
-    toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHom.ofClass
-      ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
-    map_one' := Multiplicative.toAdd.injective <|
-      LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
-    map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
-      simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
-        simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
-          d₂₁_single (A := A), isTrivial_apply]⟩).symm }
+def mkH1OfIsTrivial : Additive (Group.Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicativeRight.symm <|
+    Group.Abelianization.lift {
+      toFun g := Multiplicative.ofAdd (AddMonoidHom.toIntLinearMap (AddMonoidHom.ofClass
+        ((H1π A).hom ∘ₗ (cycles₁IsoOfIsTrivial A).inv.hom ∘ₗ lsingle g)))
+      map_one' := Multiplicative.toAdd.injective <|
+        LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_boundaries₁ _
+      map_mul' g h := Multiplicative.toAdd.injective <| LinearMap.ext fun a => by
+        simpa [← map_add] using ((H1π_eq_iff _ _).2 ⟨single (g, h) a, by
+          simp [cycles₁IsoOfIsTrivial, sub_add_eq_add_sub, add_comm (single h a),
+            d₂₁_single (A := A), isTrivial_apply]⟩).symm }
 
 variable {A} in
 @[simp]
 lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
-    mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
+    mkH1OfIsTrivial A (Additive.ofMul (Group.Abelianization.of g)) a =
       H1π A ((cycles₁IsoOfIsTrivial A).inv (single g a)) := rfl
 
 set_option backward.isDefEq.respectTransparency false in
 /-- If a `G`-representation on `A` is trivial, this is the natural map `H₁(G, A) → Gᵃᵇ ⊗[ℤ] A`
 sending `⟦single g a⟧` to `⟦g⟧ ⊗ₜ a`. -/
-def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Abelianization G) ⊗[ℤ] A :=
+def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Group.Abelianization G) ⊗[ℤ] A :=
   ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHom.ofClass
-    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Abelianization.of g)))).comp
+    (TensorProduct.mk ℤ _ _ (Additive.ofMul (Group.Abelianization.of g)))).comp
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
       simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
         shortComplexH1, isTrivial_apply]).comp <|
@@ -1005,7 +1006,7 @@ variable {A} in
 @[simp]
 lemma H1ToTensorOfIsTrivial_H1π_single (g : G) (a : A) :
     H1ToTensorOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
-      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+      Additive.ofMul (Group.Abelianization.of g) ⊗ₜ[ℤ] a := by
   simp only [H1ToTensorOfIsTrivial, H1π, AddMonoidHom.coe_toIntLinearMap, AddMonoidHom.coe_comp]
   -- todo: change this proof so that we don't need `change` that abuses defeq.
   change QuotientAddGroup.lift _ _ _ ((H1Iso A).hom _) = _
@@ -1017,7 +1018,7 @@ set_option backward.isDefEq.respectTransparency false in
 `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` defined by `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
 @[simps! -isSimp]
 def H1AddEquivOfIsTrivial :
-    H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
+    H1 A ≃+ (Additive <| Group.Abelianization G) ⊗[ℤ] A :=
   LinearEquiv.toAddEquiv <| LinearEquiv.ofLinearMap
     (H1ToTensorOfIsTrivial A) (lift <| mkH1OfIsTrivial A)
     (ext <| LinearMap.toAddMonoidHom_injective <| by
@@ -1039,12 +1040,12 @@ def H1AddEquivOfIsTrivial :
 @[simp]
 lemma H1AddEquivOfIsTrivial_single (g : G) (a : A) :
     H1AddEquivOfIsTrivial A (H1π A <| (cycles₁IsoOfIsTrivial A).inv (single g a)) =
-      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+      Additive.ofMul (Group.Abelianization.of g) ⊗ₜ[ℤ] a := by
   rw [H1AddEquivOfIsTrivial_apply, H1ToTensorOfIsTrivial_H1π_single g a]
 
 @[simp]
 lemma H1AddEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
-    (H1AddEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
+    (H1AddEquivOfIsTrivial A).symm (Additive.ofMul (Group.Abelianization.of g) ⊗ₜ[ℤ] a) =
       H1π A ((cycles₁IsoOfIsTrivial A).inv <| single g a) := by
   rfl
 

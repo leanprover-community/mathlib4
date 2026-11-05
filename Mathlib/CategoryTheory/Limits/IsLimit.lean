@@ -487,7 +487,6 @@ theorem homIso_hom (h : IsLimit t) {W : C} :
     (IsLimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).π :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The limit of `F` represents the functor taking `W` to
   the set of cones on `F` with cone point `W`. -/
 def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones := by
@@ -640,7 +639,6 @@ namespace IsColimit
 
 variable {t : Cocone F}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of `F` represents the functor taking `W` to
   the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
