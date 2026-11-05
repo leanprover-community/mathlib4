@@ -579,7 +579,7 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   rw [commute_iff_eq]
   ext
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
-  simp only [LinearEquiv.mul_apply, reflection_apply, LinearMap.flip_apply, map_sub,
+  simp only [mul_apply_eq_comp, reflection_apply, LinearMap.flip_apply, map_sub,
     map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 

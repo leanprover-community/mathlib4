@@ -10,6 +10,9 @@ public import Mathlib.Order.Directed
 
 import Mathlib.Data.Multiset.ZeroCons
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finsets of ordered types
 -/

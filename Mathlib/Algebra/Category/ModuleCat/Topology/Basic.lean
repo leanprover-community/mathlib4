@@ -5,7 +5,7 @@ Authors: Richard Hill, Andrew Yang
 -/
 module
 
-public import Lean.Meta.Tactic.Rfl
+public meta import Lean.Meta.Tactic.Rfl
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
 public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
@@ -422,7 +422,7 @@ def freeMap {X Y : TopCat.{v}} (f : X ⟶ Y) : freeObj R X ⟶ freeObj R Y :=
     refine sInf_le ⟨continuousSMul_induced (Finsupp.lmapDomain _ _ f.hom),
       continuousAdd_induced (Finsupp.lmapDomain _ _ f.hom), ?_⟩
     rw [← coinduced_le_iff_le_induced]
-    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp f.hom.2)]
+    grw [← hτ₃, ← coinduced_mono (continuous_iff_coinduced_le.mp (map_continuous f.hom))]
     rw [coinduced_compose, coinduced_compose]
     congr! 1
     ext x

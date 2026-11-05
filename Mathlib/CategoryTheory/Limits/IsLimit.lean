@@ -487,7 +487,6 @@ theorem homIso_hom (h : IsLimit t) {W : C} :
     (IsLimit.homIso h W).hom = ↾fun f ↦ (t.extend f.down).π :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The limit of `F` represents the functor taking `W` to
   the set of cones on `F` with cone point `W`. -/
 def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones := by
@@ -625,7 +624,6 @@ def ofRepresentableBy {X : C} (h : F.cones.RepresentableBy X) : IsLimit (limitCo
     rw [coneOfHom_fac]
     dsimp [Cone.extend]; cases s; congr with j; exact w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a limit cone, `F.cones` is representable by the point of the cone. -/
 def representableBy (hc : IsLimit t) : F.cones.RepresentableBy t.pt where
   homEquiv := hc.homEquiv
@@ -641,7 +639,6 @@ namespace IsColimit
 
 variable {t : Cocone F}
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The colimit of `F` represents the functor taking `W` to
   the set of cocones on `F` with cone point `W`. -/
 def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} ≅ F.cocones :=
@@ -720,7 +717,6 @@ def ofCorepresentableBy {X : C} (h : F.cocones.CorepresentableBy X) :
     rw [coconeOfHom_fac]
     dsimp [Cocone.extend]; cases s; congr with j; exact w j
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a colimit cocone, `F.cocones` is corepresentable by the point of the cocone. -/
 def corepresentableBy (hc : IsColimit t) : F.cocones.CorepresentableBy t.pt where
   homEquiv := hc.homEquiv

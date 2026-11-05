@@ -199,7 +199,6 @@ end SymmetricCategory
 
 end Monoidal
 
-set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance Functor.LaxMonoidal.whiskeringRight
     {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
@@ -208,7 +207,6 @@ instance Functor.LaxMonoidal.whiskeringRight
   ε := { app X := Functor.LaxMonoidal.ε L }
   μ F G := { app X := Functor.LaxMonoidal.μ L (F.obj X) (G.obj X) }
 
-set_option backward.defeqAttrib.useBackward true in
 @[simps]
 instance Functor.OplaxMonoidal.whiskeringRight
     {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
@@ -219,13 +217,11 @@ instance Functor.OplaxMonoidal.whiskeringRight
   oplax_left_unitality := by aesop
   oplax_right_unitality := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 instance {C D E : Type*} [Category* C] [Category* D] [Category* E] [MonoidalCategory D]
     [MonoidalCategory E] (L : D ⥤ E) [L.Monoidal] :
     ((Functor.whiskeringRight C D E).obj L).Monoidal where
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 instance Functor.Monoidal.whiskeringLeft
     (E : Type*) [Category* E] [MonoidalCategory E] (F : C ⥤ D) :
@@ -240,7 +236,6 @@ instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).inverse.Monoidal :=
   inferInstanceAs ((Functor.whiskeringLeft _ _ E).obj e.functor).Monoidal
 
-set_option backward.defeqAttrib.useBackward true in
 instance (E : Type*) [Category* E] [MonoidalCategory E] (e : C ≌ D) :
     (e.congrLeft (E := E)).IsMonoidal where
   leftAdjoint_μ X Y := by
