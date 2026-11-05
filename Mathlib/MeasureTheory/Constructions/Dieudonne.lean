@@ -36,7 +36,7 @@ variable {α : Type*} {s : Set α} [LinearOrder α] [WellFoundedLT α] [h₀ : F
 include h₀
 
 open Ordinal in
-scoped instance : Fact (cof (Iio ω₁) ≠ ℵ₀) where
+scoped instance cof_Iio_omega_one_ne_aleph0 : Fact (cof (Iio ω₁) ≠ ℵ₀) where
   out := by simp
 
 /-- Measurable sets in Dieudonné space either contain or entirely omit some club set. -/
