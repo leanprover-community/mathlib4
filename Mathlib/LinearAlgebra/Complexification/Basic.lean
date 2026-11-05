@@ -11,8 +11,7 @@ public import Mathlib.LinearAlgebra.Complex.Module
 
 In this file we define the complexificatin of spaces. We essentially extend a real space to
 a complex space, and extend operators to its complexification so we can use `ℂ`-results.
-This is realised as a product space, where the first component is the "real part" and the second
-is the "imaginary part".
+This is realised as a structure with a "real part" and an "imaginary part".
 This way, we can informally think of `(x, y) : Complexification M` as `x + I • y`.
 
 In particular, `ℂ`-scalar multiplication is given by
