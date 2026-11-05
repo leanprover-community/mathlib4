@@ -29,8 +29,8 @@ inductive Cert : Nat → Type where
   `certifyPrime`. -/
   | known {p : Nat} : Cert p
   /-- A Lucas certificate with the primitive root `root` and the prime factors of `p - 1` with
-  their certificates in `factors`. -/
-  | lucas {p : Nat} (root : Nat) (factors : List ((q : Nat) × Cert q)) : Cert p
+  their certificates in `primeFactors`. -/
+  | lucas {p : Nat} (root : Nat) (primeFactors : List ((q : Nat) × Cert q)) : Cert p
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
 partial def certifyPrime {p : Nat} (cert : Cert p) :
@@ -43,8 +43,9 @@ partial def certifyPrime {p : Nat} (cert : Cert p) :
         throwError "{p} is not prime"
       pure pf
     | .known => throwError "no proof that {p} is prime is provided"
-    | .lucas root factors =>
-      pure <| certifyLucas p root (← factors.mapM fun ⟨q, cert⟩ ↦ return ⟨q, ← certifyPrime cert⟩)
+    | .lucas root primeFactors =>
+      pure <| certifyLucas p root
+        (← primeFactors.mapM fun ⟨q, cert⟩ ↦ return ⟨q, ← certifyPrime cert⟩)
   modify (·.insert p pf)
   return pf
 

@@ -14,16 +14,16 @@ import Mathlib.NumberTheory.LucasPrimality
 /-!
 # Lucas primality certificates
 
-Proves `Nat.Prime p` by the Lucas test from a primitive root and certified prime factors of `p - 1`.
+Proves `Nat.Prime p` by the Lucas test from a primitive root and prime factors of `p - 1`.
 -/
 
 public section
 
 namespace Mathlib.Tactic.Primality
 
-/-- `b ^ e % m`, computed four bits of `e` at a time by `Nat.pow`, which the kernel evaluates
-natively (`^` unfolds `Monoid.npow`'s instances first). Replace it with `Nat.powMod` once the kernel
-evaluates `Nat.powMod` efficiently. -/
+/-- A more kernel-efficient version of `b ^ e % m`, computed four bits of `e` at a time by
+`Nat.pow`. Replace with `Nat.powMod` once
+[lean4#15167](https://github.com/leanprover/lean4/pull/15167) is available. -/
 @[expose] def powMod (b e m : ℕ) : ℕ :=
   if e = 0 then 1 % m else Nat.pow (powMod b (e / 16) m) 16 * Nat.pow b (e % 16) % m
 
@@ -38,18 +38,20 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   funext b e m
   rw [powMod_def, Nat.powMod_def]
 
-/-- `lucasRootCheck p a qs` checks that `a ^ (p - 1) % p = 1` and that `a ^ ((p - 1) / q) % p ≠ 1`
-for each `q ∈ qs`. -/
-@[expose] def lucasRootCheck (p a : ℕ) (qs : List ℕ) : Bool :=
-  powMod a (p - 1) p == 1 && qs.all fun q ↦ powMod a ((p - 1) / q) p != 1
+/-- `lucasRootCheck p a primeFactors` checks that `a ^ (p - 1) % p = 1` and that
+`a ^ ((p - 1) / q) % p ≠ 1` for each `q ∈ primeFactors`. -/
+@[expose] def lucasRootCheck (p a : ℕ) (primeFactors : List ℕ) : Bool :=
+  powMod a (p - 1) p == 1 && primeFactors.all fun q ↦ powMod a ((p - 1) / q) p != 1
 
-/-- `lucasCheck p a fs` checks that `a ^ (p - 1) % p = 1`, that `a ^ ((p - 1) / q) % p ≠ 1` for
-each `(q, e) ∈ fs`, and that the `q ^ e` multiply to `p - 1`. -/
-@[expose] def lucasCheck (p a : ℕ) (fs : List (Nat.Primes × ℕ)) : Bool :=
-  lucasRootCheck p a (fs.map fun f ↦ (f.1 : ℕ)) && (fs.map fun f ↦ (f.1 : ℕ) ^ f.2).prod == p - 1
+/-- `lucasCheck p a factorization` checks that `a ^ (p - 1) % p = 1`, that
+`a ^ ((p - 1) / q) % p ≠ 1` for each `(q, e) ∈ factorization`, and that the `q ^ e` multiply to
+`p - 1`. -/
+@[expose] def lucasCheck (p a : ℕ) (factorization : List (Nat.Primes × ℕ)) : Bool :=
+  lucasRootCheck p a (factorization.map fun f ↦ (f.1 : ℕ)) &&
+    (factorization.map fun f ↦ (f.1 : ℕ) ^ f.2).prod == p - 1
 
-theorem prime_of_lucasCheck {p a : ℕ} {fs : List (Nat.Primes × ℕ)}
-    (h : lucasCheck p a fs = true) : p.Prime := by
+theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (Nat.Primes × ℕ)}
+    (h : lucasCheck p a factorization = true) : p.Prime := by
   simp only [lucasCheck, lucasRootCheck, List.all_map, Function.comp_def, Bool.and_eq_true,
     beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
   obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
@@ -87,10 +89,10 @@ open Lean Qq
 namespace Mathlib.Tactic.Primality
 
 /-- Proves `Nat.Prime p` from the primitive root `root` and the prime factors of `p - 1` in
-`factors`, each with its proof of primality. -/
-def certifyLucas (p root : Nat) (factors : List ((q : Nat) × Q(Nat.Prime $q))) :
+`primeFactors`, each with its proof of primality. -/
+def certifyLucas (p root : Nat) (primeFactors : List ((q : Nat) × Q(Nat.Prime $q))) :
     Q(Nat.Prime $p) :=
-  let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| factors.map fun ⟨q, hq⟩ ↦
+  let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| primeFactors.map fun ⟨q, hq⟩ ↦
     q((⟨$q, $hq⟩, $(mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1)))
   -- The kernel evaluates `Nat` arithmetic on terms with free variables (such as a hypothesis
   -- proving one of the factors prime) only inside `eagerReduce`.
