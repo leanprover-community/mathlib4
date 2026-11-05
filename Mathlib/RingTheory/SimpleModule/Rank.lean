@@ -32,15 +32,11 @@ theorem isCompl_of_quot_isSimpleModule
     {p : Submodule R M} (h : IsSimpleModule R (M ⧸ p)) :
     ∃ x : M, x ∉ p ∧ IsCompl p (span R {x}) := by
   have := IsSimpleModule.nontrivial R (M ⧸ p)
-  have ⟨y, hy⟩ := exists_ne (0 : M ⧸ p)
+  obtain ⟨y, hy⟩ := exists_ne (0 : M ⧸ p)
   obtain ⟨x,hx⟩ := (Submodule.Quotient.mk_surjective p) y
-  use x
   have xnotinp : x ∉ p:= by
     apply (Quotient.mk_eq_zero p (x:=x)).not.mp
     simpa [hx] using hy
-  constructor
-  · exact xnotinp
-  · refine isCompl_span_singleton_of_isCoatom_of_notMem (s:=p)
-      ((isSimpleModule_iff_isCoatom (m:=p)).mp h) xnotinp
-
+  exact ⟨x, xnotinp,
+    isCompl_span_singleton_of_isCoatom_of_notMem ((isSimpleModule_iff_isCoatom).mp h) xnotinp⟩
 end Quotient

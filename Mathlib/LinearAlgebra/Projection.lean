@@ -291,9 +291,8 @@ theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x �
 theorem prodEquivOfIsCompl_symm_add (x : E) (hpq : IsCompl p q) :
     ((prodEquivOfIsCompl _ _ hpq).symm x).1.val +
       ((prodEquivOfIsCompl _ _ hpq).symm x).2.val = x := by
-  have hprojx := congrFun (congrArg DFunLike.coe (projection_add_projection_eq_id hpq)) x
-  simp only [LinearMap.add_apply, id_coe, id_eq] at hprojx
-  rw [← hprojx]
+  rw [show x = (p.projection q hpq + q.projection p hpq.symm) x by
+    simp [projection_add_projection_eq_id hpq]]
   simp
   congr
   · simp [projection_apply_of_mem_right hpq]
