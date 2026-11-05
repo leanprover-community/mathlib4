@@ -240,7 +240,7 @@ theorem nnNorm_def (f : Lp E p μ) : ‖f‖₊ = ENNReal.toNNReal (eLpNorm f p 
 protected theorem coe_nnNorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
   rfl
 
-@[deprecated (since := "2026-10-31")] alias coe_nnnorm := coe_nnNorm
+@[deprecated (since := "2026-10-31")] protected alias coe_nnnorm := Lp.coe_nnNorm
 
 theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f

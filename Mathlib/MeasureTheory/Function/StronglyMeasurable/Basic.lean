@@ -980,7 +980,7 @@ protected theorem nnNorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
   continuous_nnNorm.comp_stronglyMeasurable hf
 
-@[deprecated (since := "2026-10-31")] protected alias nnnorm := nnNorm
+@[deprecated (since := "2026-10-31")] protected alias nnnorm := StronglyMeasurable.nnNorm
 
 /-- The `enorm` of a strongly measurable function is measurable.
 
