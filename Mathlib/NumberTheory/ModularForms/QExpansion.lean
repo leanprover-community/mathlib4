@@ -818,15 +818,13 @@ lemma qExpansion_coeff_eq_zero_of_not_isRegularAtInfty [Γ.IsArithmetic] [Γ.Has
     rw [← τ.upperRightHom_smul, ← τ.neg_smul, SlashInvariantForm.slash_action_eqn']
     · simp [← mul_assoc, ← mul_zpow]
     · exact Γ.widthInfty_mem_periods.resolve_left (hirr ∘ Γ.isRegularAtInfty_iff.mpr)
-  have hqshift (τ : ℍ) : 𝕢 Γ.strictWidthInfty (Γ.widthInfty + τ) = -𝕢 Γ.strictWidthInfty τ := by
-    simpa [Γ.strictWidthInfty_of_not_isRegularAtInfty hirr] using
-      Periodic.qParam_add_half_period Γ.widthInfty_pos.ne' τ
   let c (m : ℕ) := (-1 : ℂ) ^ (k + m) * (qExpansion Γ.strictWidthInfty f).coeff m
   have hsum (τ : ℍ) : HasSum (fun m ↦ c m • 𝕢 Γ.strictWidthInfty τ ^ m) (f τ) := by
     rw [hfshift]
     refine ((hasSum_qExpansion f Γ.strictWidthInfty_pos Γ.strictWidthInfty_mem_strictPeriods
       (Γ.widthInfty +ᵥ τ)).mul_left _).congr_fun fun m ↦ ?_
-    simp only [c, smul_eq_mul, coe_vadd, hqshift]
+    simp only [c, smul_eq_mul, coe_vadd, Γ.strictWidthInfty_of_not_isRegularAtInfty hirr,
+      Periodic.qParam_add_half_period Γ.widthInfty_pos.ne']
     rw [zpow_add₀ (by norm_num), zpow_natCast]
     ring
   simpa [c, hn.neg_one_zpow, CharZero.neg_eq_self_iff] using
