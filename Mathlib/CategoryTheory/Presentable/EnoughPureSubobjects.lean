@@ -20,11 +20,12 @@ public import Mathlib.CategoryTheory.Subfunctor.Image
 
 -/
 
+@[expose]
 public section
 
 universe w v₁ v₂
 
-open CategoryTheory
+open CategoryTheory Limits
 
 structure Cardinal.SharplyLT.HasEnoughPureSubobjects
     {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] (h : κ.SharplyLT κ')
@@ -65,6 +66,17 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
+
+@[simps, implicit_reducible]
+def Subfunctor.toFunctorFunctor {F : C ⥤ Type w} : Subfunctor F ⥤ C ⥤ Type w where
+  obj A := A.toFunctor
+  map h := Subfunctor.homOfLe (leOfHom h)
+
+-- to be moved (refactor `SimplicialSet/SubcomplexEvaluation.lean`)
+instance {J : Type*} [Category* J] {F : C ⥤ Type w} [IsFilteredOrEmpty J] :
+    PreservesColimitsOfShape J (Subfunctor.toFunctorFunctor (F := F)) where
+  preservesColimit {F} := sorry
+
 instance {P : ObjectProperty C} (X : P.FullSubcategory) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalPresentable X κ] [P.ι.PreservesCardinalPresentable κ] :
     IsCardinalPresentable X.obj κ :=
@@ -79,9 +91,6 @@ lemma IsCardinalPure.of_full_of_faithful
   exists_of_commSq sq := by
     obtain ⟨ρ, hρ⟩ := exists_of_commSq κ (sq.map F)
     exact ⟨F.preimage ρ, F.map_injective (by cat_disch)⟩
-
-
-open Limits
 
 -- to be moved
 section
@@ -257,28 +266,88 @@ lemma fac (s : Span P S) : s.t ≫ s.r = s.l ≫ S.ι := s.exists_r.choose_spec
 
 end Span
 
-noncomputable def step (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F) : Subfunctor F :=
+variable (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F)
+
+noncomputable def step : Subfunctor F :=
   S ⊔ ⨆ (s : Span P S), Subfunctor.range s.r
 
-lemma le_step (P : ObjectProperty (C ⥤ Type w)) (S : Subfunctor F) :
+variable {P S} in
+noncomputable def Span.r' (s : Span P S) : s.tgt ⟶ (step P S).toFunctor :=
+  Subfunctor.lift s.r (le_trans (by rfl) ((le_iSup _ s).trans le_sup_right))
+
+@[reassoc (attr := simp)]
+lemma Span.r'_ι (s : Span P S) : s.r' ≫ (step P S).ι = s.r := rfl
+
+lemma le_step :
     S ≤ step P S :=
   le_sup_left
 
-variable (hC : HasCardinalLT (Arrow C) κ) {P : ObjectProperty (C ⥤ Type w)}
-  (hP : P.isoClosure = isCardinalPresentable _ κ)
+variable (κ) (hC : HasCardinalLT (Arrow C) κ) (hP : P.isoClosure = isCardinalPresentable _ κ)
 
-variable (κ P) in
-noncomputable def iter (S : Subfunctor F) (a : WithTop κ.ord.ToType) : Subfunctor F :=
+noncomputable def iter (a : κ.ord.ToType) : Subfunctor F :=
   transfiniteIterate (step P) a S
 
-variable (κ P) in
+lemma iter_succ (a : κ.ord.ToType) :
+    iter κ P S (Order.succ a) = step P (iter κ P S a) := by
+  have : NoMaxOrder κ.ord.ToType :=
+    Cardinal.noMaxOrder (Cardinal.IsRegular.aleph0_le Fact.out)
+  exact transfiniteIterate_succ _ _ _ (not_isMax _)
+
 omit [Fact κ.IsRegular] in
-lemma iter_monotone (S : Subfunctor F) : Monotone (iter κ P S) := by
-  intro _ _ h
-  let : OrderBot (WithTop κ.ord.ToType) := WellFoundedLT.toOrderBot _
+lemma iter_monotone : Monotone (iter κ P S) := by
+  intro j _ h
+  have : Nonempty κ.ord.ToType := ⟨j⟩
+  let : OrderBot (κ.ord.ToType) := WellFoundedLT.toOrderBot _
   exact monotone_transfiniteIterate _ _ (le_step P) h
 
-noncomputable def subfunctor (S : Subfunctor F) : Subfunctor F := iter κ P S ⊤
+noncomputable def subfunctor : Subfunctor F :=
+  ⨆ (j : κ.ord.ToType), iter κ P S j
+
+variable {κ} in
+omit [Fact κ.IsRegular] in
+lemma iter_le_subfunctor (S : Subfunctor F) (j : κ.ord.ToType) :
+    iter κ P S j ≤ subfunctor κ P S :=
+  le_iSup ..
+
+@[implicit_reducible, simps!]
+noncomputable def subfunctorCocone :
+    Cocone (iter_monotone κ P S).functor where
+  pt := subfunctor κ P S
+  ι.app j := homOfLE (iter_le_subfunctor P S j)
+
+noncomputable def isColimitSubfunctorCocone :
+    IsColimit (subfunctorCocone κ P S) :=
+  (Preorder.colimitCoconeOfIsLUB _ isLUB_iSup).isColimit
+
+include hP in
+lemma isCardinalPure_subfunctor_ι (S : Subfunctor F) :
+    IsCardinalPure κ (subfunctor κ P S).ι where
+  exists_of_commSq {X' Y' t l r hX' hY'} sq := by
+    wlog h : P X' ∧ P Y' generalizing X' Y'
+    · obtain ⟨X, hX, ⟨e₁⟩⟩ : P.isoClosure X' := by rwa [hP]
+      obtain ⟨Y, hY, ⟨e₂⟩⟩ : P.isoClosure Y' := by rwa [hP]
+      have hX' := isCardinalPresentable_of_iso e₁ κ
+      have hY' := isCardinalPresentable_of_iso e₂ κ
+      have sq' : CommSq (e₁.inv ≫ t ≫ e₂.hom) (e₁.inv ≫ l)
+        (e₂.inv ≫ r) (subfunctor κ P S).ι := ⟨by simp [sq.w]⟩
+      obtain ⟨ρ, hρ⟩ := this (hX' := hX') (hY' := hY') sq' ⟨hX, hY⟩
+      exact ⟨e₂.hom ≫ ρ, by cat_disch⟩
+    have : IsCardinalFiltered κ.ord.ToType κ := inferInstance
+    obtain ⟨j, l', hl'⟩ := IsCardinalPresentable.exists_hom_of_isColimit κ
+      (isColimitOfPreserves Subfunctor.toFunctorFunctor
+        (isColimitSubfunctorCocone κ P S)) l
+    let s : Span P (iter κ P S j) :=
+      { src := X'
+        tgt := Y'
+        prop_src := h.1
+        prop_tgt := h.2
+        t := t
+        l := l'
+        exists_r := ⟨r, by simp [sq.w, ← hl', Subfunctor.homOfLe_ι (iter_le_subfunctor P S j)]⟩ }
+    refine ⟨s.r' ≫ Subfunctor.homOfLe (by rw [← iter_succ]; apply iter_le_subfunctor ), ?_⟩
+    simp [← cancel_mono (Subfunctor.ι _), s.fac, ← hl', s,
+      Subfunctor.homOfLe_ι (iter_le_subfunctor P S j)]
+
 
 end step₁
 
