@@ -44,7 +44,6 @@ instance [HasBinaryBiproducts C] : HasHomotopyFiber φ where
 
 variable [HasHomotopyFiber φ]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : HasHomotopyCofiber ((opFunctor C c).map φ.op) where
   hasBinaryBiproduct i j hij := by
     have := HasHomotopyFiber.hasBinaryBiproduct φ j i hij
@@ -59,7 +58,6 @@ end
 
 variable (K) [∀ i, HasBinaryBiproduct (K.X i) (K.X i)]
 
-set_option backward.defeqAttrib.useBackward true in
 instance (i : α) : HasBinaryBiproduct (K.op.X i) (K.op.X i) := by
   dsimp; infer_instance
 
@@ -86,7 +84,6 @@ noncomputable def pathObject := (unopFunctor C c.symm).obj (op K.op.cylinder)
 
 namespace pathObject
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isZero_X (i : α) (h₁ : IsZero (K.X i)) (h₂ : ∀ (j : α), c.Rel j i → IsZero (K.X j)) :
     IsZero (K.pathObject.X i) := by
   apply IsZero.unop
@@ -175,7 +172,6 @@ variable
   [HasHomotopyCofiber (biprod.lift (𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op))
     (-𝟙 ((H.op.mapHomologicalComplex c.symm).obj K.op)))]
   [HasHomotopyCofiber ((H.op.mapHomologicalComplex c.symm).map (biprod.lift (𝟙 K.op) (-𝟙 K.op)))]
-  [∀ (i : α), HasBinaryBiproduct (K.op.X i) (K.op.X i)]
 
 variable (hc : ∀ (i : α), ∃ j, c.Rel i j)
 

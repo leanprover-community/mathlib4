@@ -13,6 +13,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Basic
 
 import Mathlib.Analysis.Convex.Contractible
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the upper half plane
 

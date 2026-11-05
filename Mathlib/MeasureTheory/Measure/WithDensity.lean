@@ -45,6 +45,10 @@ theorem withDensity_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableS
     μ.withDensity f s = ∫⁻ a in s, f a ∂μ :=
   Measure.ofMeasurable_apply s hs
 
+lemma withDensity_real_apply (f : α → ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply f hs]
+
 theorem withDensity_apply_le (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ a in s, f a ∂μ ≤ μ.withDensity f s := by
   let t := toMeasurable (μ.withDensity f) s
@@ -79,6 +83,10 @@ theorem withDensity_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
   _ = ∫⁻ a in t, f a ∂μ := withDensity_apply f (measurableSet_toMeasurable μ s)
   _ = ∫⁻ a in s, f a ∂μ := by congr 1; exact restrict_toMeasurable_of_sfinite s
 
+lemma withDensity_real_apply' [SFinite μ] (f : α → ℝ≥0∞) (s : Set α) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply' f]
+
 @[simp]
 lemma withDensity_zero_left (f : α → ℝ≥0∞) : (0 : Measure α).withDensity f = 0 := by
   ext s hs
@@ -101,7 +109,7 @@ lemma withDensity_mono {f g : α → ℝ≥0∞} (hfg : f ≤ᵐ[μ] g) :
 theorem withDensity_add_left {f : α → ℝ≥0∞} (hf : Measurable f) (g : α → ℝ≥0∞) :
     μ.withDensity (f + g) = μ.withDensity f + μ.withDensity g := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
+  rw [withDensity_apply _ hs, add_apply, withDensity_apply _ hs, withDensity_apply _ hs,
     ← lintegral_add_left hf]
   simp only [Pi.add_apply]
 
@@ -112,25 +120,25 @@ theorem withDensity_add_right (f : α → ℝ≥0∞) {g : α → ℝ≥0∞} (h
 theorem withDensity_add_measure {m : MeasurableSpace α} (μ ν : Measure α) (f : α → ℝ≥0∞) :
     (μ + ν).withDensity f = μ.withDensity f + ν.withDensity f := by
   ext1 s hs
-  simp only [withDensity_apply f hs, restrict_add, lintegral_add_measure, Measure.add_apply]
+  simp [withDensity_apply f hs]
 
 theorem withDensity_sum {ι : Type*} {m : MeasurableSpace α} (μ : ι → Measure α) (f : α → ℝ≥0∞) :
     (sum μ).withDensity f = sum fun n => (μ n).withDensity f := by
   ext1 s hs
-  simp_rw [sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
+  simp_rw [Measure.sum_apply _ hs, withDensity_apply f hs, restrict_sum μ hs, lintegral_sum_measure]
 
 theorem withDensity_smul (r : ℝ≥0∞) {f : α → ℝ≥0∞} (hf : Measurable f) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
-    smul_eq_mul, ← lintegral_const_mul r hf]
+  rw [withDensity_apply _ hs, smul_apply, withDensity_apply _ hs, smul_eq_mul,
+    ← lintegral_const_mul r hf]
   simp only [Pi.smul_apply, smul_eq_mul]
 
 theorem withDensity_smul' (r : ℝ≥0∞) (f : α → ℝ≥0∞) (hr : r ≠ ∞) :
     μ.withDensity (r • f) = r • μ.withDensity f := by
   refine Measure.ext fun s hs => ?_
-  rw [withDensity_apply _ hs, Measure.coe_smul, Pi.smul_apply, withDensity_apply _ hs,
-    smul_eq_mul, ← lintegral_const_mul' r f hr]
+  rw [withDensity_apply _ hs, smul_apply, withDensity_apply _ hs, smul_eq_mul,
+    ← lintegral_const_mul' r f hr]
   simp only [Pi.smul_apply, smul_eq_mul]
 
 theorem withDensity_smul_measure (r : ℝ≥0∞) (f : α → ℝ≥0∞) :
@@ -142,6 +150,12 @@ theorem isFiniteMeasure_withDensity {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a 
     IsFiniteMeasure (μ.withDensity f) :=
   { measure_univ_lt_top := by
       rwa [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ, lt_top_iff_ne_top] }
+
+lemma isFiniteMeasure_withDensity_iff {f : α → ℝ≥0∞} :
+    IsFiniteMeasure (μ.withDensity f) ↔ ∫⁻ a, f a ∂μ ≠ ∞ := by
+  refine ⟨fun h ↦ ?_, isFiniteMeasure_withDensity⟩
+  rw [← setLIntegral_univ, ← withDensity_apply f .univ]
+  exact measure_ne_top _ _
 
 theorem withDensity_absolutelyContinuous {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) :
     μ.withDensity f ≪ μ := by
@@ -158,6 +172,10 @@ theorem withDensity_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeas
     measure_congr (withDensity_absolutelyContinuous μ f hs.toMeasurable_ae_eq)
   rw [← A, ← B]
   exact withDensity_apply _ (measurableSet_toMeasurable μ s)
+
+lemma withDensity_real_apply₀ (f : α → ℝ≥0∞) {s : Set α} (hs : NullMeasurableSet s μ) :
+    (μ.withDensity f).real s = (∫⁻ a in s, f a ∂μ).toReal := by
+  rw [Measure.real, withDensity_apply₀ f hs]
 
 instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ≥0∞) :
     NullSingletonClass (μ.withDensity f) where
@@ -184,10 +202,10 @@ theorem withDensity_const (c : ℝ≥0∞) : μ.withDensity (fun _ ↦ c) = c �
 theorem withDensity_tsum {ι : Type*} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     μ.withDensity (∑' n, f n) = sum fun n => μ.withDensity (f n) := by
   ext1 s hs
-  simp_rw [sum_apply _ hs, withDensity_apply _ hs]
+  simp_rw [Measure.sum_apply _ hs, withDensity_apply _ hs]
   change ∫⁻ x in s, (∑' n, f n) x ∂μ = ∑' i, ∫⁻ x, f i x ∂μ.restrict s
   rw [← lintegral_tsum fun i => (h i).aemeasurable]
-  exact lintegral_congr fun x => Pi.tsum_apply (Pi.summable.2 fun _ => ENNReal.summable)
+  exact lintegral_congr fun x => Pi.tsum_apply (Pi.summable.2 fun _ => CompleteLattice.summable)
 
 theorem withDensity_indicator {s : Set α} (hs : MeasurableSet s) (f : α → ℝ≥0∞) :
     μ.withDensity (s.indicator f) = (μ.restrict s).withDensity f := by
@@ -736,7 +754,7 @@ lemma Measure.prod_smul_right {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R �
     μ.prod (c • ν) = c • (μ.prod ν) := by
   ext s hs
   have A (s : Set β) : c • ν s = (c • 1) * ν s := by simp
-  simp_rw [Measure.prod_apply hs, Measure.smul_apply, Measure.prod_apply hs, A]
+  simp_rw [Measure.prod_apply hs, smul_apply, Measure.prod_apply hs, A]
   rw [lintegral_const_mul, smul_one_mul]
   exact measurable_measure_prodMk_left hs
 

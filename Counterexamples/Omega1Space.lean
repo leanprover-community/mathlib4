@@ -35,7 +35,7 @@ open scoped Cardinal Ordinal
 
 namespace Omega1Space
 
-def inc : Iio ω₁ → Iic ω₁ := inclusion Iio_subset_Iic_self
+noncomputable def inc : Iio ω₁ → Iic ω₁ := inclusion Iio_subset_Iic_self
 
 lemma inc_embedding : IsEmbedding inc := IsEmbedding.inclusion Iio_subset_Iic_self
 
