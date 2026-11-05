@@ -17,7 +17,7 @@ set_option doc.verso.suggestions false
 
 public section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
