@@ -110,6 +110,6 @@ noncomputable def associatesOrderIso :
     Associates α ≃o WithTop (Multiset (IrreducibleAssociates α)) :=
   (congrOrderMonoidIso mulEquivWithZero).toOrderIso.trans <| withZeroOrderIso.trans <|
     .withTopCongr <| prodOrderIso.trans <| (OrderIso.uniqueProd _ _).trans <|
-      canonicalOrderMonoidIso.toOrderIso.trans (OrderIso.multiplicative _).symm
+      canonicalOrderMonoidIso.toOrderIso.trans (Multiplicative.ofAddOrderIso _).symm
 
 end UniqueFactorizationMonoid
