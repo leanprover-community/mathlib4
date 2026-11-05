@@ -307,7 +307,7 @@ def EventuallyLE [LE β] (l : Filter α) (f g : α → β) : Prop :=
 This is definitionally `(· ∈ s) =ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
 abbreviation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
-  EventuallyEq l (fun x => x ∈ s) (fun x => x ∈ t)
+  ∀ᶠ x in l, x ∈ s ↔ x ∈ t
 
 /-- A set `s` is *eventually contained* in a set `t` along a filter `l` if the set of `x` such that
 `x ∈ s → x ∈ t` belongs to `l`.
@@ -315,7 +315,7 @@ def EventuallyEqSet (l : Filter α) (s t : Set α) : Prop :=
 This is definitionally `(· ∈ s) ≤ᶠ[l] (· ∈ t)`, but it is a separate definition (rather than an
 abbreviation) to avoid simp unfolding membership of concrete sets. -/
 def EventuallySubset (l : Filter α) (s t : Set α) : Prop :=
-  EventuallyLE l (fun x => x ∈ s) (fun x => x ∈ t)
+  ∀ᶠ x in l, x ∈ s → x ∈ t
 
 /-- `x =ᶠ[l] y` means that `x` and `y` are *eventually equal* along the filter `l`.
 
