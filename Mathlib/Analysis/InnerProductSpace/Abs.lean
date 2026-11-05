@@ -129,11 +129,11 @@ protected theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T�
 protected theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
   abs_of_isPositive (isPositive_self_comp_adjoint T)
 
-protected theorem abs_eq_self {T : E →L[ℂ] E} : |T| = T ↔ T.IsPositive :=
-  ⟨fun h ↦ h ▸ ContinuousLinearMap.isPositive_abs T, fun h ↦ abs_of_isPositive h⟩
+protected theorem abs_eq_self {S : E →L[ℂ] E} : |S| = S ↔ S.IsPositive :=
+  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive h⟩
 
-protected theorem abs_eq_self_neg {T : E →L[ℂ] E} : |T| = -T ↔ (-T).IsPositive :=
-  ⟨fun h ↦ h ▸ ContinuousLinearMap.isPositive_abs T, fun h ↦ abs_of_isPositive_neg h⟩
+protected theorem abs_eq_self_neg {S : E →L[ℂ] E} : |S| = -S ↔ (-S).IsPositive :=
+  ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive_neg h⟩
 
 @[simp]
 protected theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
@@ -147,6 +147,12 @@ protected theorem abs_smul (c : ℂ) (T : E →L[ℂ] F) : |c • T| = ‖c‖ �
   rw [ContinuousLinearMap.abs_def, CFC.sqrt_eq_iff _ _ (adjoint_comp_self_nonneg (c • T))]
   simp [mul_def, ← smul_assoc, Complex.mul_conj', map_smulₛₗ, sq]
   norm_cast
+
+theorem abs_linearIsometry_comp {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℂ G]
+    [CompleteSpace G] (U : F →ₗᵢ[ℂ] G) (T : E →L[ℂ] F) :
+    |U.toContinuousLinearMap ∘L T| = |T| := by
+  simp [ContinuousLinearMap.abs_def, comp_assoc, ← comp_assoc (U.toContinuousLinearMap†),
+    (isometry_iff_adjoint_comp_self U.toContinuousLinearMap).mp U.isometry, one_def]
 
 end Abs
 
