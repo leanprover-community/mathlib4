@@ -35,7 +35,7 @@ namespace ContinuousLinearMap
 
 section Abs
 
-open scoped ENNReal NNReal InnerProduct
+open scoped NNReal InnerProduct
 
 variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
