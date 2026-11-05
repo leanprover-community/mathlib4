@@ -496,8 +496,9 @@ private lemma ZariskisMainProperty.of_adjoin_eq_top
       exact (eraseLead_natDegree_le ..).trans (by lia)
     · simp [← self_sub_monomial_natDegree_leadingCoeff, hf, hm, pow_succ', ← Algebra.smul_def,
         ← Algebra.smul_mul_assoc, ← ha]
-    · suffices algebraMap R S (f.coeff n) + algebraMap R S (if n = m then a else 0) ∉ p by
-        simpa [eraseLead_coeff, Finsupp.single_apply, show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
+    · suffices algebraMap R S (f.coeff n) + algebraMap R S (if m = n then a else 0) ∉ p by
+        simpa [eraseLead_coeff, Finsupp.single_apply,
+          show n ≠ f.natDegree by rintro rfl; exact hfn (by simpa)]
       rwa [Ideal.add_mem_iff_left]
       split_ifs
       · convert p.mul_mem_right x Hfp

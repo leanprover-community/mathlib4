@@ -262,6 +262,8 @@ theorem eval_eq_sum_coeff : p.eval x = p.coeff.sum fun e a => a * x ^ e := by
   rw [eval, eval₂_eq_sum_coeff]
   rfl
 
+lemma eval_one_eq_sum_coeff : p.eval 1 = p.coeff.sum fun _ a ↦ a := by simp [eval_eq_sum_coeff]
+
 @[deprecated (since := "2026-11-02")] alias eval_eq_sum := eval_eq_sum_coeff
 
 @[simp]
