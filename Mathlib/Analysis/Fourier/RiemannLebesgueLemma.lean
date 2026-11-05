@@ -38,6 +38,8 @@ equivalence to an inner-product space.
   with its unique Hausdorff topological vector space structure), and `W` the dual of `V`, the
   function `fun w : W ↦ ∫ v : V, exp (2 * π * w v * I) • f v` tends to along `cocompact W`.
 - `Real.tendsto_integral_exp_smul_cocompact`: special case of functions on `ℝ`.
+- `Real.tendsto_integral_cpow_mul_I_smul_atTop`: multiplicative form for functions on `ℝ`,
+  `∫ t, x ^ (t * I) • f t → 0` as `x → ∞`.
 - `Real.zero_at_infty_fourierIntegral` and `Real.zero_at_infty_vector_fourierIntegral`:
   reformulations explicitly using the Fourier integral.
 -/
@@ -211,6 +213,28 @@ theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
 `Real.instFourierTransform.fourier`. -/
 theorem Real.zero_at_infty_fourier (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=
   tendsto_integral_exp_inner_smul_cocompact f
+
+/-- For `0 < x`, the character `t ↦ x ^ (t * I)` of `ℝ` is `t ↦ 𝐞 (t * log x / (2 * π))`. -/
+theorem Real.fourierChar_mul_log_div_two_pi {x : ℝ} (hx : 0 < x) (t : ℝ) :
+    (𝐞 (t * Real.log x / (2 * π)) : ℂ) = (x : ℂ) ^ (t * I) := by
+  rw [Real.fourierChar_apply, cpow_def_of_ne_zero (ofReal_ne_zero.mpr hx.ne'),
+    ← ofReal_log hx.le]
+  congr 1
+  push_cast
+  field_simp
+
+/-- The Riemann-Lebesgue lemma for functions on `ℝ`, in multiplicative form: the integrals
+`∫ t, x ^ (t * I) • f t` tend to `0` as `x → ∞`. -/
+theorem Real.tendsto_integral_cpow_mul_I_smul_atTop (f : ℝ → E) :
+    Tendsto (fun x : ℝ ↦ ∫ t : ℝ, (x : ℂ) ^ (t * I) • f t) atTop (𝓝 0) := by
+  have h : Tendsto (fun x ↦ -(Real.log x / (2 * π))) atTop (cocompact ℝ) :=
+    (tendsto_neg_atTop_atBot.comp
+      (Real.tendsto_log_atTop.atTop_div_const (by positivity))).mono_right atBot_le_cocompact
+  refine ((Real.zero_at_infty_fourier f).comp h).congr' ?_
+  filter_upwards [eventually_gt_atTop 0] with x hx
+  simp only [Function.comp_apply, Real.fourier_real_eq]
+  refine integral_congr_ae (.of_forall fun t ↦ ?_)
+  simp [← mul_div_assoc, Circle.smul_def, Real.fourierChar_mul_log_div_two_pi hx]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional inner-product space, formulated
 via dual space. **Do not use** -- it is only a stepping stone to
