@@ -1030,7 +1030,7 @@ lemma symm_orderIsoCongr (f : α ≃o γ) (g : β ≃o δ) :
 
 -- We want this lemma to have higher priority than `RelIso.relIsoCongr_trans_relIsoCongr`
 @[simp high]
-lemma orderIsoCongr_trans {ε ζ : Type*} [LE ε] [LE ζ]
+lemma orderIsoCongr_trans_orderIsoCongr {ε ζ : Type*} [LE ε] [LE ζ]
     (e₁ : α ≃o γ) (e₂ : β ≃o δ) (e₁' : γ ≃o ε) (e₂' : δ ≃o ζ) :
     (orderIsoCongr e₁ e₂).trans (orderIsoCongr e₁' e₂') =
       orderIsoCongr (e₁.trans e₁') (e₂.trans e₂') := rfl
