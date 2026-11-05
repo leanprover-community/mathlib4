@@ -20,6 +20,8 @@ core.
 
 @[expose] public section
 
+namespace Inclusion.IntervalDyadicReal
+
 instance : LinearOrder Dyadic where
   le_refl := Std.IsPreorder.le_refl
   le_trans := Std.IsPreorder.le_trans
@@ -215,3 +217,5 @@ def toRealOrderEmbedding : Dyadic ↪o ℝ :=
 end Real
 
 end Dyadic
+
+end Inclusion.IntervalDyadicReal
