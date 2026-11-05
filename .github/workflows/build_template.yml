@@ -1027,10 +1027,8 @@ jobs:
 
       # The dump is single-threaded and needs only the Mathlib oleans, so it runs in
       # the background from here; the job waits for it before the upload.
-      # Everything the `import-graph` artifact holds goes into one directory, outside
-      # the checkout, which is checked and uploaded as a whole: the dumper names its
-      # own files there (`--out-dir`: `api.jsonl`, which replaces `decls.txt`, and
-      # `imports.json`), so a new one needs no edit to this workflow.
+      # Everything the `import-graph` artifact holds goes into one directory specified by
+      # `--out-dir`.
       - name: dump declarations and transitive-import counts
         id: dump
         background: true
