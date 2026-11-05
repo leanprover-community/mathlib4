@@ -17,9 +17,10 @@ This file defines the absolute value `|T| = √(T†∘T)` for continuous linear
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
 ## Implementation details
+
 The absolute value `ContinuousLinearMap.abs T` is similar to `CFC.abs T` for a continuous linear
 map `T : E →L[ℂ] E` acting on a Hilbert space `E`. They agree when `E = F`, see the theorem
-`abs_eq_abs`. However, when `E ≠ F`, the adjoint is no longer a star operation and thus
+`abs_eq_cfcAbs`. However, when `E ≠ F`, the adjoint is no longer a star operation and thus
 `CFC.abs T` is no longer defined.
 
 The absolute value `ContinuousLinearMap.abs T` is also known in the literature under the name
