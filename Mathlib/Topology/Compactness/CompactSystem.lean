@@ -29,10 +29,12 @@ This file defines compact systems of sets.
 * `isCompactSystem_isCompact`: In a `T2Space`, the set of compact sets is a compact system.
 * `IsCompactSystem.supClosure`: If `S` is a compact system, then the set of finite unions of sets
   in `S` is also a compact system.
-* `IsCompactSystem.countableInfClosure`: If `S` is a compact system, then the set of countable
-  intersections of sets in `S` is a compact system.
+* `IsCompactSystem.countableInfClosure`, `IsCompactSystem.infClosure`: If `S` is a compact system,
+  then the set of countable (or finite) intersections of sets in `S` is a compact system.
 * `IsCompactSystem.prod`, `IsCompactSystem.pi`: Products of sets from compact systems form a
   compact system.
+* `IsCompactSystem.sum`, `IsCompactSystem.sigma`: Compact systems on the summands of a sum type or
+  of a sigma type give a compact system on that type.
 * `isCompactSystem_compactClosedSquareCylinders`: Compact and closed square cylinders form a
   compact system.
 -/
@@ -251,6 +253,10 @@ protected theorem countableInfClosure (hS : IsCompactSystem S) :
   simp only [mem_dissipate, mem_iInter] at hx ⊢
   exact fun k hk ↦ hx _ ((unpair_left_le k).trans hk) _
 
+/-- If `S` is a compact system, then so is the set of finite intersections of sets in `S`. -/
+protected theorem infClosure (hS : IsCompactSystem S) : IsCompactSystem (infClosure S) :=
+  hS.countableInfClosure.mono infClosure_subset_countableInfClosure
+
 /-- Products of sets from two compact systems form a compact system. -/
 protected theorem prod {β : Type*} {T : Set (Set β)}
     (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
@@ -266,6 +272,26 @@ protected theorem prod {β : Type*} {T : Set (Set β)}
   · obtain ⟨n, hn⟩ := hT t ht h
     exact ⟨n, .inr hn⟩
 
+/-- If `S` and `T` are compact systems on `α` and `β`, then the sets of `α ⊕ β` whose parts in `α`
+and `β` belong to `S` and `T` form a compact system. -/
+protected theorem sum {β : Type*} {T : Set (Set β)}
+    (hS : IsCompactSystem S) (hT : IsCompactSystem T) :
+    IsCompactSystem {u | Sum.inl ⁻¹' u ∈ S ∧ Sum.inr ⁻¹' u ∈ T} := by
+  intro u hu h_empty
+  -- the parts of `u n` in `α` and in `β` have finite subintersections that are empty
+  obtain ⟨n, hn⟩ := hS (fun k ↦ Sum.inl ⁻¹' u k) (fun k ↦ (hu k).1)
+    (by rw [← preimage_iInter, h_empty, preimage_empty])
+  obtain ⟨m, hm⟩ := hT (fun k ↦ Sum.inr ⁻¹' u k) (fun k ↦ (hu k).2)
+    (by rw [← preimage_iInter, h_empty, preimage_empty])
+  refine ⟨max n m, eq_empty_iff_forall_notMem.mpr ?_⟩
+  rintro (x | x) hx <;> simp only [mem_dissipate] at hx
+  · refine eq_empty_iff_forall_notMem.mp hn x ?_
+    simp only [mem_dissipate, mem_preimage]
+    exact fun i hi ↦ hx i (hi.trans (le_max_left _ _))
+  · refine eq_empty_iff_forall_notMem.mp hm x ?_
+    simp only [mem_dissipate, mem_preimage]
+    exact fun i hi ↦ hx i (hi.trans (le_max_right _ _))
+
 variable {ι : Type*} {α : ι → Type*}
 
 /-- Boxes formed by compact systems form a compact system. -/
@@ -277,6 +303,41 @@ protected theorem pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem 
   obtain ⟨i, hi⟩ := iInter_univ_pi_eq_empty_iff.mp h_empty
   obtain ⟨n, hn⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i (mem_univ i)) hi
   exact ⟨n, biInter_univ_pi_eq_empty_iff.mpr ⟨i, hn⟩⟩
+
+/-- If `C i` is a compact system on `α i` for all `i`, then the sets of `Σ i, α i` of the form
+`(s : Set ι).sigma t` with `s` finite and `t i ∈ C i` for all `i` form a compact system. -/
+protected theorem sigma {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCompactSystem (C i)) :
+    IsCompactSystem {S : Set (Σ i, α i) | ∃ s : Finset ι, S ∈ (s : Set ι).sigma '' univ.pi C} := by
+  classical
+  intro S hS h_empty
+  simp only [mem_ofPred_eq, mem_image, mem_pi, mem_univ, forall_const] at hS
+  choose s x hx hxS using hS
+  obtain rfl : S = fun n ↦ (s n : Set ι).sigma (x n) := funext fun n ↦ (hxS n).symm
+  -- for each `i`, the fibers over `i` of the first sets have empty intersection
+  have key (i : ι) : ∃ N, ∀ y, ⟨i, y⟩ ∉ dissipate (fun n ↦ (s n : Set ι).sigma (x n)) N := by
+    by_cases! hi : ∀ n, i ∈ s n
+    · -- `C i` is a compact system and the intersection of the fibers over `i` is empty
+      obtain ⟨N, hN⟩ := hC i (fun n ↦ x n i) (fun n ↦ hx n i) <| by
+        refine eq_empty_iff_forall_notMem.mpr fun y hy ↦ ?_
+        refine eq_empty_iff_forall_notMem.mp h_empty ⟨i, y⟩ ?_
+        simp only [mem_iInter, mem_sigma_iff] at hy ⊢
+        exact fun n ↦ ⟨hi n, hy n⟩
+      refine ⟨N, fun y hy ↦ eq_empty_iff_forall_notMem.mp hN y ?_⟩
+      simp only [mem_dissipate, mem_sigma_iff] at hy ⊢
+      exact fun n hn ↦ (hy n hn).2
+    · -- `i ∉ s n` for some `n`
+      obtain ⟨n, hn⟩ := hi
+      refine ⟨n, fun y hy ↦ hn ?_⟩
+      simp only [mem_dissipate, mem_sigma_iff] at hy
+      exact (hy n le_rfl).1
+  -- only the finitely many `i ∈ s 0` matter
+  choose N hN using key
+  refine ⟨(s 0).sup N, eq_empty_iff_forall_notMem.mpr ?_⟩
+  rintro ⟨i, y⟩ hiy
+  have hi0 : i ∈ s 0 := by
+    simp only [mem_dissipate, mem_sigma_iff] at hiy
+    exact (hiy 0 (Nat.zero_le _)).1
+  exact hN i y (antitone_dissipate (Finset.le_sup hi0) hiy)
 
 end IsCompactSystem
 
