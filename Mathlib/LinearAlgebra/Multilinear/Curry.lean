@@ -29,8 +29,11 @@ open Fin Function Finset
 
 universe uR uS uι uι' v v' v₁ v₂ v₃
 
-variable {R : Type uR} {S : Type uS} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
+variable {R : Type uR} {S : Type uS} [Semiring R] [CommSemiring S] {σ : R →+* S}
+  {ι : Type uι} {ι' : Type uι'} {n : ℕ}
   {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M' : Type v'}
+  [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂]
+  [∀ i, Module R (M i)] [Module R M'] [Module S M₂]
 
 /-!
 ### Currying
@@ -49,9 +52,6 @@ We also register linear equiv versions of these correspondences, in
 
 open MultilinearMap
 
-variable [Semiring R] [CommSemiring S] {σ : R →+* S}
-  [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂]
-  [∀ i, Module R (M i)] [Module R M'] [Module S M₂]
 
 /-! #### Left currying -/
 
@@ -335,7 +335,7 @@ multilinear maps on `fun i : Fin k => M'` taking values in the space of multilin
 on `fun i : Fin l => M'`. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
     ((Fin n → M') →ₘₛₗ[σ] M₂) ≃ₗ[S] (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂ :=
-  (domDomCongrLinearEquiv S M' M₂ σ (finSumEquivOfFinset hk hl).symm).trans
+  (domDomCongrLinearEquiv S σ M' M₂ (finSumEquivOfFinset hk hl).symm).trans
     currySumEquiv
 
 variable {σ M₂ M'}
@@ -343,21 +343,21 @@ variable {σ M₂ M'}
 @[simp]
 theorem curryFinFinset_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
     (f : (Fin n → M') →ₘₛₗ[σ] M₂) (mk : Fin k → M') (ml : Fin l → M') :
-    curryFinFinset M₂ M' σ hk hl f mk ml =
+    curryFinFinset σ M₂ M' hk hl f mk ml =
       f fun i => Sum.elim mk ml ((finSumEquivOfFinset hk hl).symm i) :=
   rfl
 
 @[simp]
 theorem curryFinFinset_symm_apply {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l)
     (f : (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂) (m : Fin n → M') :
-    (curryFinFinset M₂ M' σ hk hl).symm f m =
+    (curryFinFinset σ M₂ M' hk hl).symm f m =
       f (fun i => m <| finSumEquivOfFinset hk hl (Sum.inl i)) fun i =>
         m <| finSumEquivOfFinset hk hl (Sum.inr i) :=
   rfl
 
 theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l) (f : (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂) (x y : M') :
-    (curryFinFinset M₂ M' σ hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
+    (curryFinFinset σ M₂ M' hk hl).symm f (s.piecewise (fun _ => x) fun _ => y) =
       f (fun _ => x) fun _ => y := by
   rw [curryFinFinset_symm_apply]; congr
   · ext
@@ -370,12 +370,12 @@ theorem curryFinFinset_symm_apply_piecewise_const {k l n : ℕ} {s : Finset (Fin
 @[simp]
 theorem curryFinFinset_symm_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l) (f : (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂) (x : M') :
-    ((curryFinFinset M₂ M' σ hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
+    ((curryFinFinset σ M₂ M' hk hl).symm f fun _ => x) = f (fun _ => x) fun _ => x :=
   rfl
 
 theorem curryFinFinset_apply_const {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k)
     (hl : #sᶜ = l) (f : (Fin n → M') →ₘₛₗ[σ] M₂) (x y : M') :
-    (curryFinFinset M₂ M' σ hk hl f (fun _ => x) fun _ => y) =
+    (curryFinFinset σ M₂ M' hk hl f (fun _ => x) fun _ => y) =
       f (s.piecewise (fun _ => x) fun _ => y) := by
   rw [← curryFinFinset_symm_apply_piecewise_const hk hl, LinearEquiv.symm_apply_apply]
 
