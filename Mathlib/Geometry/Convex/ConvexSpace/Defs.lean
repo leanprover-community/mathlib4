@@ -5,6 +5,8 @@ Authors: Kim Morrison, Andrew Yang, Yaël Dillies
 -/
 module
 
+public meta import Mathlib.Tactic.Positivity.Core
+public meta import Mathlib.Util.Qq
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Data.Finsupp.Order
@@ -56,15 +58,17 @@ being the map `weights : StdSimplex R X → R^⊕X`.
 Note in particular that, in the common case where `X := M` is a `R`-module, `StdSimplex R M` is NOT
 the standard simplex in `M`. Indeed, the notion of a standard simplex depends on a choice of basis,
 and `M` isn't given one. -/
-structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) where
-  /-- The weights of the `StdSimplex` as a `Finsupp`. -/
-  weights : X →₀ R
+structure StdSimplex (R : Type u) [LE R] [AddCommMonoid R] [One R] (X : Type v) extends
+    weights : X →₀ R where
   /-- All weights are non-negative. -/
   nonneg : 0 ≤ weights
   /-- The weights sum to 1. -/
   total : weights.sum (fun _ r => r) = 1
 
-attribute [simp] StdSimplex.total
+/-- The weights of an element of the standard simplex` as a `Finsupp`. -/
+add_decl_doc StdSimplex.weights
+
+attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
@@ -78,6 +82,9 @@ variable {R : Type u} [PartialOrder R] [Semiring R] {w : StdSimplex R X} {x : X}
 
 @[simp] lemma weights_ne_zero [Nontrivial R] : ∀ w : StdSimplex R X, w.weights ≠ 0 := by
   rintro ⟨_, -, total⟩ rfl; simp at total
+
+@[simp] lemma weights_pos [Nontrivial R] (w : StdSimplex R X) : 0 < w.weights :=
+  w.nonneg.lt_of_ne w.weights_ne_zero.symm
 
 lemma support_weights_nonempty [Nontrivial R] (w : StdSimplex R X) :
     w.weights.support.Nonempty := by simp
@@ -347,16 +354,15 @@ lemma weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· 
       ((w.weights.filter (· ∈ s)).sum fun _x k ↦ k)⁻¹ • w.weights.filter (· ∈ s) := by
   simp [restrict]; congr
 
-variable [IsDomain K]
-
 @[simp]
 lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· ∈ s)] :
     (w.restrict s hs).weights.support = w.weights.support.filter (· ∈ s) := by
   have : (w.weights.filter (· ∈ s)).sum (fun x k ↦ k) ≠ 0 :=
     (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by
       simpa [ne_iff, filter_apply]).ne'
-  rw [weights_restrict, support_smul_eq (by convert inv_ne_zero this)]
-  simp
+  rw [weights_restrict]
+  ext a
+  simp [filter_apply, inv_ne_zero this, and_comm]
 
 @[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :
     w.restrict {x} hx = single x := by
@@ -800,3 +806,43 @@ lemma isAffineMap_convexCombPair (m : X) :
 end CommSemiring
 
 end Convexity
+
+namespace Mathlib.Meta.Positivity
+open Lean Meta Qq Convexity
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative
+(in the sense of `0 ≤ w.weights`),
+and even positive (in the sense of `0 < w.weights`, not `∀ i, 0 < w.weights i`) when `R` is
+nontrivial.
+
+This handles `w.weights`; see `evalStdSimplexWeightsApply` for the applied `w.weights i`. -/
+@[positivity StdSimplex.weights _]
+meta def evalStdSimplexWeights : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
+  match pα? with | none => pure .none | some _ => do
+  let some ⟨_uX, _uR, _X, R, _instZero, _hu, _hα⟩ ← matchFinsupp α | throwError "not a `Finsupp`"
+  let _semiringR ← synthInstanceQ q(Semiring $R)
+  let _partialOrderR ← synthInstanceQ q(PartialOrder $R)
+  assertInstancesCommute
+  let ~q(StdSimplex.weights $w) := q($e) | throwError "not `StdSimplex.weights`"
+  assumeInstancesCommute
+  -- `StdSimplex.weights_pos` needs `Nontrivial R`, so fall back to nonnegativity without it.
+  match ← trySynthInstanceQ q(Nontrivial $R) with
+  | .some _instNontrivial => pure <| .positive q(StdSimplex.weights_pos $w)
+  | _ => pure <| .nonnegative q(StdSimplex.nonneg $w)
+
+/-- Extension for the `positivity` tactic: the weights of a `StdSimplex` are always nonnegative.
+
+This handles `w.weights i`; see `evalStdSimplexWeights` for the unapplied `w.weights`. -/
+@[positivity StdSimplex.weights _ _]
+meta def evalStdSimplexWeightsApply : PositivityExt where eval {_u α} _zα pα? e :=
+  -- FIXME: `PartialOrder α` shouldn't be necessary since we know `α = X →₀ R` and `PartialOrder R`.
+  match pα? with | none => pure .none | some _ => do
+  let _instPartialOrder ← synthInstanceQ q(PartialOrder $α)
+  let _instSemiring ← synthInstanceQ q(Semiring $α)
+  assumeInstancesCommute
+  match e with
+  | ~q(StdSimplex.weights $w $i) => pure (.nonnegative q($(w).weights_nonneg $i))
+  | _ => throwError "not `StdSimplex.weights`"
+
+end Mathlib.Meta.Positivity

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.TaylorSeries
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonnegativity of values of holomorphic functions
 

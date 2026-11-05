@@ -48,7 +48,8 @@ and using `Finsupp` instead.
 
 ## Implementation issues
 
-The definition is `def FreeAbelianGroup : Type u := Additive <| Abelianization <| FreeGroup α`.
+The definition is
+`def FreeAbelianGroup : Type u := Additive <| Group.Abelianization <| FreeGroup α`.
 
 Chris Hughes has suggested that this all be rewritten in terms of `Finsupp`.
 Johan Commelin has written all the API relating the definition to `Finsupp`
@@ -94,7 +95,7 @@ and addition given pointwise.
 TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
 def FreeAbelianGroup : Type u :=
-  Additive <| Abelianization <| FreeGroup α
+  Additive <| Group.Abelianization <| FreeGroup α
 deriving Inhabited, AddCommGroup
 
 instance [IsEmpty α] : Unique (FreeAbelianGroup α) :=
@@ -106,12 +107,12 @@ namespace FreeAbelianGroup
 
 /-- The canonical map from `α` to `FreeAbelianGroup α`. -/
 def of (x : α) : FreeAbelianGroup α :=
-  Additive.ofMul <| Abelianization.of <| FreeGroup.of x
+  Additive.ofMul <| Group.Abelianization.of <| FreeGroup.of x
 
 /-- The map `FreeAbelianGroup α →+ A` induced by a map of types `α → A`. -/
 def lift {β : Type v} [AddCommGroup β] : (α → β) ≃ (FreeAbelianGroup α →+ β) :=
   (@FreeGroup.lift _ (Multiplicative β) _).trans <|
-    (@Abelianization.lift _ _ (Multiplicative β) _).trans MonoidHom.toAdditive
+    (@Group.Abelianization.lift _ _ (Multiplicative β) _).trans MonoidHom.toAdditive
 
 section lift
 
@@ -122,7 +123,8 @@ open FreeAbelianGroup
 -- Porting note: needed to add `(β := Multiplicative β)`
 @[simp]
 theorem lift_apply_of (x : α) : lift f (of x) = f x := by
-  convert! Abelianization.lift_apply_of (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
+  convert! Group.Abelianization.lift_apply_of
+    (FreeGroup.lift f (β := Multiplicative β)) (FreeGroup.of x)
   exact (FreeGroup.lift_apply_of (β := Multiplicative β)).symm
 
 theorem lift_unique (g : FreeAbelianGroup α →+ β) (hg : ∀ x, g (of x) = f x) {x} :

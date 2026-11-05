@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.SkewMonoidAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the support of an element of a skew monoid algebra
 
