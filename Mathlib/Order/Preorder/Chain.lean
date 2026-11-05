@@ -51,6 +51,16 @@ local infixl:50 " ≺ " => r
 def IsChain (s : Set α) : Prop :=
   s.Pairwise fun x y => x ≺ y ∨ y ≺ x
 
+/-- An abbreviation of `IsChain (· ≤ ·) s`. `to_dual` translates `IsLEChain` to itself instead of
+`IsChain (· ≥ ·) s`. Note: `≤`-chain is equivalent to `<`-chain in partial order, but strictly
+weaker than `<`-chain in preorder. -/
+abbrev IsLEChain [LE α] (s : Set α) := IsChain (· ≤ ·) s
+
+/-- An abbreviation of `IsChain (· < ·) s`. `to_dual` translates `IsLTChain` to itself instead of
+`IsChain (· > ·) s`. Note: `≤`-chain is equivalent to `<`-chain in partial order, but strictly
+weaker than `<`-chain in preorder. -/
+abbrev IsLTChain [LT α] (s : Set α) := IsChain (· < ·) s
+
 /-- `SuperChain s t` means that `t` is a chain that strictly includes `s`. -/
 def SuperChain (s t : Set α) : Prop :=
   IsChain r t ∧ s ⊂ t
@@ -77,6 +87,9 @@ theorem IsChain.mono_rel {r' : α → α → Prop} (h : IsChain r s) (h_imp : �
 /-- This can be used to turn `IsChain (≥)` into `IsChain (≤)` and vice-versa. -/
 theorem IsChain.symm (h : IsChain r s) : IsChain (flip r) s :=
   h.mono' fun _ _ => Or.symm
+
+to_dual_insert_cast IsLEChain := propext ⟨IsChain.symm, IsChain.symm⟩
+to_dual_insert_cast IsLTChain := propext ⟨IsChain.symm, IsChain.symm⟩
 
 theorem isChain_of_trichotomous [Std.Trichotomous r] (s : Set α) : IsChain r s :=
   fun a _ b _ hab => (trichotomous_of r a b).imp_right fun h => h.resolve_left hab
@@ -111,26 +124,55 @@ lemma isChain_union {s t : Set α} :
   have : Std.Symm fun a b ↦ a ≺ b ∨ b ≺ a := { symm _ _ := Or.symm }
   rw [IsChain, IsChain, IsChain, pairwise_union_of_symm]
 
-lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
-    (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+lemma Monotone.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Monotone f) (hs : IsLEChain s) : IsLEChain (f '' s) :=
   hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
 
-theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
-    IsChain (· ≤ ·) (range f) := by
+lemma StrictMono.isLTChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : StrictMono f) (hs : IsLTChain s) : IsLTChain (f '' s) :=
+  hs.image_of_map_rel _ _ _ (fun _ _ a ↦ hf a)
+
+theorem Monotone.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
+    IsLEChain (range f) := by
   rw [← image_univ]
-  exact hf.isChain_image (isChain_of_trichotomous _)
+  exact hf.isLEChain_image (isChain_of_trichotomous _)
 
-lemma Antitone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
-    (hf : Antitone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
-  hf.dual_left.isChain_image hs.symm
+lemma StrictMono.isLTChain_range [LinearOrder α] [Preorder β] {f : α → β}
+    (hf : StrictMono f) : IsLTChain (range f) := by
+  rw [← image_univ]
+  exact hf.isLTChain_image (isChain_of_trichotomous _)
 
-theorem Antitone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
-    IsChain (· ≤ ·) (range f) :=
-  hf.dual_left.isChain_range
+lemma Antitone.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Antitone f) (hs : IsLEChain s) : IsLEChain (f '' s) :=
+  hf.dual_left.isLEChain_image hs.symm
 
-theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
-    IsChain (· < ·) s := fun _a ha _b hb hne ↦
-  (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+lemma StrictAnti.isLEChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : StrictAnti f) (hs : IsLTChain s) : IsLTChain (f '' s) :=
+  hf.dual_left.isLTChain_image hs.symm
+
+theorem Antitone.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f) :
+    IsLEChain (range f) :=
+  hf.dual_left.isLEChain_range
+
+theorem StrictAnti.isLEChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : StrictAnti f) :
+    IsLTChain (range f) :=
+  hf.dual_left.isLTChain_range
+
+@[deprecated (since := "2026-10-04")] alias Monotone.isChain_image := Monotone.isLEChain_image
+@[deprecated (since := "2026-10-04")] alias Monotone.isChain_range := Monotone.isLEChain_range
+@[deprecated (since := "2026-10-04")] alias Antitone.isChain_image := Monotone.isLEChain_image
+@[deprecated (since := "2026-10-04")] alias Antitone.isChain_range := Monotone.isLEChain_range
+
+theorem IsLTChain.isLEChain [Preorder α] {s : Set α} (h : IsLTChain s) : IsLEChain s :=
+  h.mono_rel fun _ _ => le_of_lt
+
+theorem IsLEChain.isLTChain [PartialOrder α] {s : Set α} (h : IsLEChain s) : IsLTChain s :=
+  fun _ ha _ hb hne ↦ (h ha hb hne).imp hne.lt_of_le hne.lt_of_le'
+
+@[deprecated (since := "2026-10-04")] alias IsChain.lt_of_le := IsLEChain.isLTChain
+
+theorem isLEChain_iff_isLTChain [PartialOrder α] {s : Set α} : IsLEChain s ↔ IsLTChain s :=
+  ⟨IsLEChain.isLTChain, IsLTChain.isLEChain⟩
 
 @[simp] protected theorem IsChain.diff {s t : Set α} (h : IsChain r s) : IsChain r (s \ t) :=
   h.mono Set.sdiff_subset
@@ -164,25 +206,36 @@ theorem IsChain.image_relEmbedding_iff {φ : r ↪r r'} : IsChain r' (φ '' s) �
 theorem IsChain.image_relIso_iff {φ : r ≃r r'} : IsChain r' (φ '' s) ↔ IsChain r s :=
   @image_relEmbedding_iff _ _ _ _ _ (φ : r ↪r r')
 
-theorem IsChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ↪o β) :
-    IsChain (· ≤ ·) (φ ⁻¹' t) :=
-  preimage_relEmbedding ht _
+theorem IsLEChain.preimage_embedding [LE α] [LE β] {t : Set β} (ht : IsLEChain t) (φ : α ↪o β) :
+    IsLEChain (φ ⁻¹' t) :=
+  ht.preimage_relEmbedding _
 
-theorem IsChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
-    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
-  image_relEmbedding_iff
+theorem IsLEChain.image_embedding_iff [LE α] [LE β] {φ : α ↪o β} :
+    IsLEChain (φ '' s) ↔ IsLEChain s :=
+  IsChain.image_relEmbedding_iff
 
-theorem IsChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
-    IsChain (· ≤ ·) (φ '' s) ↔ IsChain (· ≤ ·) s :=
-  image_relEmbedding_iff
+theorem IsLEChain.image_iso_iff [LE α] [LE β] {φ : α ≃o β} :
+    IsLEChain (φ '' s) ↔ IsLEChain s :=
+  IsChain.image_relEmbedding_iff
 
-theorem IsChain.preimage_iso [LE α] [LE β] {t : Set β} (ht : IsChain (· ≤ ·) t) (φ : α ≃o β) :
-    IsChain (· ≤ ·) (φ ⁻¹' t) :=
-  preimage_relEmbedding ht _
+theorem IsLEChain.preimage_iso [LE α] [LE β] {t : Set β} (ht : IsLEChain t) (φ : α ≃o β) :
+    IsLEChain (φ ⁻¹' t) :=
+  ht.preimage_relEmbedding _
 
-theorem IsChain.preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
-    IsChain (· ≤ ·) (φ ⁻¹' t) ↔ IsChain (· ≤ ·) t :=
+theorem IsLEChain.preimage_iso_iff [LE α] [LE β] {t : Set β} {φ : α ≃o β} :
+    IsLEChain (φ ⁻¹' t) ↔ IsLEChain t :=
   ⟨fun h => (φ.image_preimage t).subst (h.image φ), fun h => h.preimage_iso _⟩
+
+@[deprecated (since := "2026-10-04")]
+alias IsChain.preimage_embedding := IsLEChain.preimage_embedding
+@[deprecated (since := "2026-10-04")]
+alias IsChain.image_embedding_iff := IsLEChain.image_embedding_iff
+@[deprecated (since := "2026-10-04")]
+alias IsChain.image_iso_iff := IsLEChain.image_iso_iff
+@[deprecated (since := "2026-10-04")]
+alias IsChain.preimage_iso := IsLEChain.preimage_iso
+@[deprecated (since := "2026-10-04")]
+alias IsChain.preimage_iso_iff := IsLEChain.preimage_iso_iff
 
 end Rel
 
@@ -213,9 +266,9 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
 
 end Total
 
-/-- A chain in a preorder is a linear order. -/
+/-- A `<`-chain in a preorder is a linear order. -/
 @[implicit_reducible]
-def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChain (· < ·) s) :
+def IsLTChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsLTChain s) :
     LinearOrder s where
   le_antisymm :=
     fun ⟨a, ha⟩ ⟨b, hb⟩ hab hba ↦
@@ -224,23 +277,29 @@ def IsChain.linearOrder [Preorder α] [DecidableLE α] {s : Set α} (hs : IsChai
     fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ eq_or_ne a b |>.elim (by simp [·]) (hs ha hb · |>.imp (·.le) (·.le))
   toDecidableLE x y := inferInstanceAs (Decidable (x.1 ≤ y.1))
 
-lemma IsChain.le_of_not_gt [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsLEChain.le_of_not_gt [Preorder α] (hs : IsLEChain s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
   cases hs.total hx hy with
   | inr h' => exact h'
   | inl h' => simpa [lt_iff_le_not_ge, h'] using h
 
-lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsLEChain.not_lt [Preorder α] (hs : IsLEChain s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
   ⟨(hs.le_of_not_gt hx hy ·), fun h h' ↦ h'.not_ge h⟩
 
-lemma IsChain.lt_of_not_ge [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsLEChain.lt_of_not_ge [Preorder α] (hs : IsLEChain s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
   (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_ge · h)
 
-lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
+lemma IsLEChain.not_le [Preorder α] (hs : IsLEChain s)
     {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
   ⟨(hs.lt_of_not_ge hx hy ·), fun h h' ↦ h'.not_gt h⟩
+
+@[deprecated (since := "2026-10-04")] alias IsChain.linearOrder := IsLTChain.linearOrder
+@[deprecated (since := "2026-10-04")] alias IsChain.le_of_not_gt := IsLEChain.le_of_not_gt
+@[deprecated (since := "2026-10-04")] alias IsChain.not_lt := IsLEChain.not_lt
+@[deprecated (since := "2026-10-04")] alias IsChain.lt_of_not_ge := IsLEChain.lt_of_not_ge
+@[deprecated (since := "2026-10-04")] alias IsChain.not_le := IsLEChain.not_le
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
@@ -324,9 +383,9 @@ structure Flag (α : Type*) [LE α] where
   /-- The `carrier` of a flag is the underlying set. -/
   carrier : Set α
   /-- By definition, a flag is a chain -/
-  Chain' : IsChain (· ≤ ·) carrier
+  Chain' : IsLEChain carrier
   /-- By definition, a flag is a maximal chain -/
-  max_chain' : ∀ ⦃s⦄, IsChain (· ≤ ·) s → carrier ⊆ s → carrier = s
+  max_chain' : ∀ ⦃s⦄, IsLEChain s → carrier ⊆ s → carrier = s
 
 namespace Flag
 
@@ -358,11 +417,13 @@ theorem coe_mk (s : Set α) (h₁ h₂) : (mk s h₁ h₂ : Set α) = s :=
 theorem mk_coe (s : Flag α) : mk (s : Set α) s.Chain' s.max_chain' = s :=
   ext rfl
 
-theorem chain_le (s : Flag α) : IsChain (· ≤ ·) (s : Set α) :=
+theorem isLEChain (s : Flag α) : IsLEChain (s : Set α) :=
   s.Chain'
 
+@[deprecated (since := "2026-10-04")] alias chain_le := isLEChain
+
 protected theorem maxChain (s : Flag α) : IsMaxChain (· ≤ ·) (s : Set α) :=
-  ⟨s.chain_le, s.max_chain'⟩
+  ⟨s.isLEChain, s.max_chain'⟩
 
 theorem top_mem [OrderTop α] (s : Flag α) : (⊤ : α) ∈ s :=
   s.maxChain.top_mem
@@ -383,7 +444,7 @@ section Preorder
 variable [Preorder α] [Preorder β] {a b : α} {s : Flag α}
 
 protected theorem le_or_le (s : Flag α) (ha : a ∈ s) (hb : b ∈ s) : a ≤ b ∨ b ≤ a :=
-  s.chain_le.total ha hb
+  s.isLEChain.total ha hb
 
 instance [OrderTop α] (s : Flag α) : OrderTop s :=
   Subtype.orderTop s.top_mem
@@ -398,7 +459,7 @@ lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨
   ⟨fun ha b => s.le_or_le ha, fun hb =>
     of_not_not fun ha =>
       Set.ne_insert_of_notMem _ ‹_› <|
-        s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
+        s.maxChain.2 (s.isLEChain.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/
 def map (e : α ≃o β) : Flag α ≃ Flag β where
@@ -417,7 +478,9 @@ section PartialOrder
 
 variable [PartialOrder α]
 
-theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
+theorem isLTChain (s : Flag α) : IsLTChain (s : Set α) := s.isLEChain.isLTChain
+
+@[deprecated (since := "2026-10-04")] alias chain_lt := isLTChain
 
 instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
