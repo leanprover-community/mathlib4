@@ -253,7 +253,7 @@ theorem cthickening_subset_of_subset (δ : ℝ) {E₁ E₂ : Set α} (h : E₁ �
 
 theorem cthickening_subset_thickening {δ₁ : ℝ≥0} {δ₂ : ℝ} (hlt : (δ₁ : ℝ) < δ₂) (E : Set α) :
     cthickening δ₁ E ⊆ thickening δ₂ E := fun _ hx =>
-  hx.out.trans_lt ((ENNReal.ofReal_lt_ofReal_iff (lt_of_le_of_lt δ₁.prop hlt)).mpr hlt)
+  hx.out.trans_lt ((ENNReal.ofReal_lt_ofReal_iff (δ₁.val_nonneg.trans_lt hlt)).mpr hlt)
 
 /-- The closed thickening `Metric.cthickening δ₁ E` is contained in the open thickening
 `Metric.thickening δ₂ E` if the radius of the latter is positive and larger. -/

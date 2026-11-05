@@ -54,7 +54,7 @@ lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
 
 @[simp]
 theorem nnNorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
-  Subtype.ext <| norm_star _
+  Nonneg.ext <| norm_star _
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_star := nnNorm_star
 
@@ -146,12 +146,12 @@ theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
 
 theorem nnNorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
-  Subtype.ext norm_self_mul_star
+  Nonneg.ext norm_self_mul_star
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_self_mul_star := nnNorm_self_mul_star
 
 theorem nnNorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
-  Subtype.ext norm_star_mul_self
+  Nonneg.ext norm_star_mul_self
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_star_mul_self := nnNorm_star_mul_self
 
@@ -161,7 +161,7 @@ lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
 
 lemma _root_.IsSelfAdjoint.nnNorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
-  Subtype.ext hx.norm_mul_self
+  Nonneg.ext hx.norm_mul_self
 
 @[deprecated (since := "2026-10-31")]
 alias _root_.IsSelfAdjoint.nnnorm_mul_self := _root_.IsSelfAdjoint.nnNorm_mul_self

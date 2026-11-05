@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yaël Dillies
 module
 
 public import Batteries.Classes.RatCast
+public import Mathlib.Algebra.Order.Nonneg.Defs
 public import Mathlib.Data.Nat.Notation
 
 /-!
@@ -21,7 +22,7 @@ This file is eligible to upstreaming to Batteries.
 @[inherit_doc] notation "ℚ" => Rat
 
 /-- Nonnegative rational numbers. -/
-def NNRat := {q : ℚ // 0 ≤ q}
+def NNRat := Nonneg ℚ
 
 @[inherit_doc] notation "ℚ≥0" => NNRat
 
@@ -57,7 +58,7 @@ instance NNRatCast.toCoeTail : CoeTail ℚ≥0 K where coe := NNRat.cast
 -- See note [coercion into rings]
 instance NNRatCast.toCoeHTCT : CoeHTCT ℚ≥0 K where coe := NNRat.cast
 
-instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Subtype.val⟩
+instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Nonneg.val⟩
 
 /-! ### Numerator and denominator of a nonnegative rational -/
 

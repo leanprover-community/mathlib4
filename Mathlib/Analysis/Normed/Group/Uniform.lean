@@ -188,7 +188,7 @@ theorem OneHomClass.bound_of_antilipschitz [OneHomClass 𝓕 E F] (f : 𝓕) {K 
 @[to_additive]
 theorem Isometry.nnNorm_map_of_map_one {f : E → F} (hi : Isometry f) (h₁ : f 1 = 1) (x : E) :
     ‖f x‖₊ = ‖x‖₊ :=
-  Subtype.ext <| hi.norm_map_of_map_one h₁ x
+  Nonneg.ext <| hi.norm_map_of_map_one h₁ x
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))]
 alias Isometry.nnnorm_map_of_map_one := Isometry.nnNorm_map_of_map_one
@@ -212,7 +212,7 @@ theorem uniformContinuous_norm' : UniformContinuous (norm : E → ℝ) :=
 
 @[to_additive (attr := fun_prop) uniformContinuous_nnNorm]
 theorem uniformContinuous_nnNorm' : UniformContinuous fun a : E => ‖a‖₊ :=
-  uniformContinuous_norm'.subtype_mk _
+  uniformContinuous_norm'.nonnegMk _
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) uniformContinuous_nnnorm]
 alias uniformContinuous_nnnorm' := uniformContinuous_nnNorm'

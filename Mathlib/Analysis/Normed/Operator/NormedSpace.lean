@@ -39,7 +39,7 @@ variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
   f.toContinuousLinearMap.homothety_norm <| by simp
 
 @[simp] lemma nnNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖₊ = 1 :=
-  Subtype.ext f.norm_toContinuousLinearMap
+  Nonneg.ext f.norm_toContinuousLinearMap
 
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap

@@ -794,7 +794,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       fun n => mem_range_self _, ?_⟩
   suffices Tendsto (fun n : ℕ => (toLp (x n) (hx_memLp n) : Lp G p μ)) atTop (𝓝 (g : Lp G p μ)) by
     rw [tendsto_iff_dist_tendsto_zero] at this ⊢
-    simp_rw [Subtype.dist_eq]
+    simp_rw [Nonneg.dist_eq]
     exact this
   have hg_toLp : hg_memLp.toLp (g : α → G) = (g : Lp G p μ) :=
     Lp.toLp_coeFn (g : Lp G p μ) hg_memLp

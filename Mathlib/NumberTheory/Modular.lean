@@ -886,7 +886,7 @@ private lemma mem_closure_of_arc {x : ℍ} (hxnorm : ‖(x : ℂ)‖ = 1) (hxre 
   -- Consider a vertical line going upwards from `x` (parametrized by `ℝ≥0`)
   apply mem_closure_of_frequently_of_tendsto (b := 𝓝[>] 0)
     (f := fun t : ℝ≥0 ↦ ⟨x + t * Complex.I, by
-      simpa using! add_pos_of_pos_of_nonneg x.coe_im_pos t.property⟩)
+      simpa using! add_pos_of_pos_of_nonneg x.coe_im_pos t.val_nonneg⟩)
   · apply Filter.Eventually.frequently
     filter_upwards [self_mem_nhdsWithin] with a (ha : 0 < a)
     refine mem_closure_of_one_lt_norm ?_ (by simpa using! hxre)

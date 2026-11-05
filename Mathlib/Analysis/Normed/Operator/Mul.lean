@@ -124,7 +124,7 @@ lemma opNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖ = ‖x‖ :=
 
 @[simp]
 lemma opNNNorm_mul_apply (x : R) : ‖mul 𝕜 R x‖₊ = ‖x‖₊ :=
-  Subtype.ext <| opNorm_mul_apply 𝕜 R x
+  Nonneg.ext <| opNorm_mul_apply 𝕜 R x
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -247,7 +247,7 @@ theorem opNorm_mul : ‖mul 𝕜 R‖ = 1 :=
 
 @[simp]
 theorem opNNNorm_mul : ‖mul 𝕜 R‖₊ = 1 :=
-  Subtype.ext <| opNorm_mul 𝕜 R
+  Nonneg.ext <| opNorm_mul 𝕜 R
 
 @[simp]
 theorem opENorm_mul : ‖mul 𝕜 R‖ₑ = 1 := by

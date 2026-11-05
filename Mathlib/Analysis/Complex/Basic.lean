@@ -231,7 +231,7 @@ theorem dist_conj_comm (z w : ℂ) : dist (conj z) w = dist z (conj w) := by
   rw [← dist_conj_conj, conj_conj]
 
 theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
-  Subtype.ext <| dist_conj_comm _ _
+  Nonneg.ext <| dist_conj_comm _ _
 
 instance : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
