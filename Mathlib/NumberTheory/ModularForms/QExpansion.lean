@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
-public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
 
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
@@ -560,6 +560,15 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
   have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
     simpa [ite_apply] using! iteratedDeriv_const
   simp +contextual [qExpansion_coeff, h1, h2]
+
+theorem analyticOrderAt_eq_qExpansion_order {f : ℍ → ℂ} (hh : 0 < h)
+    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    analyticOrderAt (cuspFunction h f) 0 = (qExpansion h f).order := by
+  -- Both orders are characterized by the vanishing of all coefficients below `n`.
+  refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+  rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero
+    (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd), PowerSeries.nat_le_order_iff]
+  simp [qExpansion_coeff, Nat.factorial_ne_zero]
 
 end UpperHalfPlane
 

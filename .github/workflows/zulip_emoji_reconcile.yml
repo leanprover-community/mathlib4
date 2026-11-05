@@ -97,15 +97,21 @@ jobs:
           INPUT_PR: ${{ inputs.pr }}
           EVENT_PR: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
         run: |
           set -euo pipefail
           case "$EVENT" in
             workflow_dispatch) pr="$INPUT_PR" ;;
             pull_request_target) pr="$EVENT_PR" ;;
             workflow_run)
-              # PR(s) at the CI run's head commit (works for fork PRs too).
-              pr=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/pulls" \
-                     --jq 'map(.number) | join(" ")')
+              # HEAD_REPO is empty if the fork was deleted;
+              # leave pr empty then (the hourly sweep covers it).
+              pr=""
+              if [ -n "$HEAD_REPO" ]; then
+                # Keep only PRs into this repo, not ones within the fork.
+                pr=$(gh api "repos/${HEAD_REPO}/commits/${HEAD_SHA}/pulls" \
+                       --jq 'map(select(.base.repo.full_name == env.GITHUB_REPOSITORY) | .number) | join(" ")')
+              fi
               ;;
             *) pr="" ;;  # schedule -> sweep
           esac

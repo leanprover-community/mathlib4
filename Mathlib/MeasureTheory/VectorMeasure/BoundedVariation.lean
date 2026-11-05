@@ -294,7 +294,7 @@ open VectorMeasure
 private lemma variation_vectorMeasure_le_variationAux (hf : BoundedVariationOn f univ) :
     hf.vectorMeasure.variation ≤ hf.variationAux := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
-  simp only [vectorMeasure, add_apply, variationAux, Measure.coe_add, Pi.add_apply]
+  simp only [vectorMeasure, add_apply, variationAux]
   grw [enorm_add_le]
   gcongr
   · apply hf.exists_vectorMeasure_le_measureAux.choose_spec.2.2
@@ -311,8 +311,8 @@ private lemma variationAux_Ioc_le (hf : BoundedVariationOn f univ) {a b : α} (h
     · simp [not_lt.mpr (h.choose_spec a)]
     · simp
   have hα : Nonempty α := ⟨a⟩
-  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, Measure.coe_add,
-    Pi.add_apply, StieltjesFunction.measure_Ioc, this, add_zero]
+  simp only [variationAux, measureAux, hα, ↓reduceDIte, stieltjesFunctionRightLim, add_apply,
+    StieltjesFunction.measure_Ioc, this, add_zero, ge_iff_le]
   rw [← variationOnFromTo.add hf.rightLim.locallyBoundedVariationOn (mem_univ hα.some) (mem_univ a)
     (mem_univ b), add_sub_cancel_left, variationOnFromTo.eq_of_le _ _ h, univ_inter,
     ENNReal.ofReal_toReal (hf.rightLim.mono (subset_univ _)),
@@ -356,11 +356,11 @@ private lemma variationAux_singleton (hf : BoundedVariationOn f univ) {a : α} :
     hf.variationAux {a} = hf.vectorMeasure.variation {a} := by
   classical
   have hα : Nonempty α := ⟨a⟩
-  simp only [variationAux, Measure.coe_add, Pi.add_apply, variation_vectorMeasure_singleton]
+  simp only [variationAux, add_apply, variation_apply_singleton, vectorMeasure_singleton]
   by_cases ha : IsBot a
   · have hx : ∃ x, IsBot x := ⟨a, ha⟩
     have A : hx.choose = a := le_antisymm (hx.choose_spec _) (ha _)
-    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← enorm_eq_nnnorm]
+    suffices hf.measureAux {a} = 0 by simpa [hx, A, leftLim_eq_of_isBot ha, ← eNorm_eq_nnNorm]
     simp [measureAux, hα, leftLim_eq_of_isBot ha]
   have : (𝓝[<] a).NeBot := nhdsLT_neBot_of_exists_lt (by simpa [IsBot] using ha)
   have : (if h : ∃ x, IsBot x then ‖Function.rightLim f h.choose - f h.choose‖₊ •

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.Group.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ULift` instances for groups and monoids
 

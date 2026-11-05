@@ -131,7 +131,7 @@ theorem isBigO_norm_Icc_restrict_atTop {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
     apply rpow_le_rpow_of_nonpos <;> linarith
   -- Now the main proof.
   obtain ⟨c, hc, hc'⟩ := hf.exists_pos
-  simp only [IsBigO, IsBigOWith, eventually_atTop] at hc' ⊢
+  simp only [isBigO_iff, isBigOWith_iff, eventually_atTop] at hc' ⊢
   obtain ⟨d, hd⟩ := hc'
   refine ⟨c * (1 / 2) ^ (-b), ⟨max (1 + max 0 (-2 * R)) (d - R), fun x hx => ?_⟩⟩
   rw [max_le_iff] at hx
