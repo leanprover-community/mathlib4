@@ -125,7 +125,7 @@ this approach is taken, see the module documentation for
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
 `Mathlib/Analysis/Normed/Algebra/MatrixExponential.lean` for lemmas
 specific to that case. -/
-noncomputable irreducible_def exp (x : 𝔸) : 𝔸 :=
+@[no_expose] noncomputable def exp (x : 𝔸) : 𝔸 :=
   if h : Nonempty (Algebra ℚ 𝔸) then
     letI _ := h.some
     (NormedSpace.expSeries ℚ 𝔸).sum x
