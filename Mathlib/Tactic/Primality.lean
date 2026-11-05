@@ -10,8 +10,8 @@ public import Mathlib.Tactic.Primality.Producers
 /-!
 # `primality`
 
-This file defines the `primality` tactic, which closes goals `Nat.Prime n` using a certificate
-constructed from witnesses it takes from the user.
+Defines the frontend of the `primality` tactic, which closes goals `Nat.Prime n` using a
+certificate constructed from witnesses it takes from the user.
 -/
 
 public meta section
@@ -23,7 +23,7 @@ namespace Mathlib.Tactic.Primality
 /-- Configuration for `primality`. -/
 structure Config where
   /-- The certificate configuration to use. -/
-  cert : CertConfig := .witnesses []
+  cert : CertMode := .witnesses []
 
 /-- Function elaborating `Config`. -/
 declare_config_elab elabPrimalityConfig Config
@@ -83,7 +83,7 @@ elab_rules : tactic
       have e : Q(Nat) := e
       let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
         throwError "{e} does not evaluate to a numeral; try simplifying it first"
-      let cert ← mkCert (.witnesses witnesses) (.ofArray known.keysArray) p
+      let cert ← Cert.ofWitnesses witnesses (.ofArray known.keysArray) p
       let hp : Q(Nat.Prime $pQ) ← StateT.run' (certifyPrime cert) known
       g.assign q(isNat.natElim (p := Nat.Prime) $pn $hp)
 

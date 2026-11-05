@@ -5,8 +5,7 @@ Authors: Rao Xiaojia
 -/
 module
 
-public meta import Mathlib.Data.Nat.MaxPowDiv
-public meta import Mathlib.Util.Qq
+public meta import Qq
 public import Mathlib.Data.Nat.Prime.Defs
 
 import Mathlib.NumberTheory.LucasPrimality
@@ -14,7 +13,7 @@ import Mathlib.NumberTheory.LucasPrimality
 /-!
 # Lucas primality certificates
 
-Proves `Nat.Prime p` by the Lucas test from a primitive root and prime factors of `p - 1`.
+Proves `Nat.Prime p` by the Lucas test from a primitive root and the prime factors of `p - 1`.
 -/
 
 public section
@@ -38,23 +37,21 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   funext b e m
   rw [powMod_def, Nat.powMod_def]
 
-/-- `lucasRootCheck p a primeFactors` checks that `a ^ (p - 1) % p = 1` and that
-`a ^ ((p - 1) / q) % p ≠ 1` for each `q ∈ primeFactors`. -/
-@[expose] def lucasRootCheck (p a : ℕ) (primeFactors : List ℕ) : Bool :=
-  powMod a (p - 1) p == 1 && primeFactors.all fun q ↦ powMod a ((p - 1) / q) p != 1
-
 /-- `lucasCheck p a factorization` checks that `a ^ (p - 1) % p = 1`, that
 `a ^ ((p - 1) / q) % p ≠ 1` for each `(q, e) ∈ factorization`, and that the `q ^ e` multiply to
 `p - 1`. -/
 @[expose] def lucasCheck (p a : ℕ) (factorization : List (ℕ × ℕ)) : Bool :=
-  lucasRootCheck p a (factorization.map fun f ↦ f.1) &&
+  powMod a (p - 1) p == 1 && factorization.all (fun f ↦ powMod a ((p - 1) / f.1) p != 1) &&
     (factorization.map fun f ↦ f.1 ^ f.2).prod == p - 1
+
+theorem forall_prime_cons {p e : ℕ} {l : List (ℕ × ℕ)} (hp : p.Prime) (h : ∀ f ∈ l, f.1.Prime) :
+    ∀ f ∈ (p, e) :: l, f.1.Prime :=
+  List.forall_mem_cons.2 ⟨hp, h⟩
 
 theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (ℕ × ℕ)}
     (hprime : ∀ f ∈ factorization, f.1.Prime) (h : lucasCheck p a factorization = true) :
     p.Prime := by
-  simp only [lucasCheck, lucasRootCheck, List.all_map, Function.comp_def, Bool.and_eq_true,
-    beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
+  simp only [lucasCheck, Bool.and_eq_true, beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
   obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
   have hp : p ≠ 1 := by grind [powMod_def]
   refine lucas_primality p a ?_ fun q hq hqp h1 ↦ ?_
@@ -72,12 +69,12 @@ structure LucasWitness where
   /-- The prime factors of `p - 1`. -/
   primeFactors : List Nat
 
-/-- Whether `w` is a witness for the prime `p`. Its prime factors, divided out of `p - 1` in turn,
-must each divide what is left and leave `1`, and its root must pass `lucasRootCheck`. -/
-def LucasWitness.certifies (w : LucasWitness) (p : Nat) : Bool :=
-  w.primeFactors.foldlM (init := p - 1)
-      (fun rest q ↦ if rest % q == 0 then some (rest.divMaxPow q) else none) == some 1 &&
-    lucasRootCheck p w.root w.primeFactors
+/-- The factorization of `p - 1` into the prime factors of `w`, if each of them divides `p - 1`
+and `lucasCheck` passes with the root of `w`. -/
+def LucasWitness.factorization? (w : LucasWitness) (p : Nat) : Option (List (Nat × Nat)) := do
+  let factorization := w.primeFactors.map fun q ↦ (q, (Nat.maxPowDvdDiv q (p - 1)).1)
+  guard (factorization.all (·.2 != 0) && lucasCheck p w.root factorization)
+  return factorization
 
 end Mathlib.Tactic.Primality
 
@@ -89,21 +86,21 @@ open Lean Qq
 
 namespace Mathlib.Tactic.Primality
 
-/-- Proves `Nat.Prime p` from the primitive root `root` and the prime factors of `p - 1` in
-`primeFactors`, each with its proof of primality. -/
-def certifyLucas (p root : Nat) (primeFactors : List ((q : Nat) × Q(Nat.Prime $q))) :
+/-- Proves `Nat.Prime p` from the primitive root `root` and the factorization of `p - 1` in
+`factorization`, each prime factor with its exponent and proof of primality. -/
+def certifyLucas (p root : Nat) (factorization : List ((q : Nat) × Nat × Q(Nat.Prime $q))) :
     Q(Nat.Prime $p) :=
-  let ⟨factorization, hprime⟩ := go primeFactors
-  have hcheck : Q(lucasCheck $p $root $factorization = true) := reflBoolTrue
+  let ⟨factorizationQ, hprime⟩ := go factorization
+  have hcheck : Q(lucasCheck $p $root $factorizationQ = true) := reflBoolTrue
   q(prime_of_lucasCheck $hprime $hcheck)
 where
-  /-- The factorization of `p - 1` with the factors in `primeFactors`, and their primality. -/
-  go : List ((q : Nat) × Q(Nat.Prime $q)) →
-      (factorization : Q(List (Nat × Nat))) × Q(∀ f ∈ $factorization, f.1.Prime)
+  /-- The list literal of `factorization`, with the primality of its prime factors. -/
+  go (factorization : List ((q : Nat) × Nat × Q(Nat.Prime $q))) :
+      (factorizationQ : Q(List (Nat × Nat))) × Q(∀ f ∈ $factorizationQ, f.1.Prime) :=
+    match factorization with
     | [] => ⟨q([]), q(List.forall_mem_nil _)⟩
-    | ⟨q, hq⟩ :: rest =>
-      let ⟨factorization, hprime⟩ := go rest
-      have e : Q(Nat) := mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1
-      ⟨q(($q, $e) :: $factorization), q(List.forall_mem_cons.2 ⟨$hq, $hprime⟩)⟩
+    | ⟨q, e, hq⟩ :: rest =>
+      let ⟨factorizationQ, hprime⟩ := go rest
+      ⟨q(($q, $e) :: $factorizationQ), q(forall_prime_cons $hq $hprime)⟩
 
 end Mathlib.Tactic.Primality

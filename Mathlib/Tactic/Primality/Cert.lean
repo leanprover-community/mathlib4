@@ -25,12 +25,12 @@ namespace Mathlib.Tactic.Primality
 inductive Cert : Nat → Type where
   /-- `p` is proved prime by `norm_num`. -/
   | normNum {p : Nat} : Cert p
-  /-- A proof that `p` is prime is provided, which must be stored in the initial cache of
+  /-- A proof that `p` is prime is provided, which should be stored in the initial state of
   `certifyPrime`. -/
   | known {p : Nat} : Cert p
-  /-- A Lucas certificate with the primitive root `root` and the prime factors of `p - 1` with
-  their certificates in `primeFactors`. -/
-  | lucas {p : Nat} (root : Nat) (primeFactors : List ((q : Nat) × Cert q)) : Cert p
+  /-- A Lucas certificate with the primitive root `root` and the factorization of `p - 1` in
+  `factorization`, each prime factor with its exponent and certificate. -/
+  | lucas {p : Nat} (root : Nat) (factorization : List ((f : Nat × Nat) × Cert f.1)) : Cert p
 
 /-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
 partial def certifyPrime {p : Nat} (cert : Cert p) :
@@ -43,9 +43,9 @@ partial def certifyPrime {p : Nat} (cert : Cert p) :
         throwError "{p} is not prime"
       pure pf
     | .known => throwError "no proof that {p} is prime is provided"
-    | .lucas root primeFactors =>
+    | .lucas root factorization =>
       pure <| certifyLucas p root
-        (← primeFactors.mapM fun ⟨q, cert⟩ ↦ return ⟨q, ← certifyPrime cert⟩)
+        (← factorization.mapM fun ⟨(q, e), cert⟩ ↦ return ⟨q, e, ← certifyPrime cert⟩)
   modify (·.insert p pf)
   return pf
 
