@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 module
 
 public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Data.Set.Functor
 
 /-!
 # Envelopes of Semicontinuous functions on Hereditarily Lindelöf spaces

@@ -123,6 +123,7 @@ public import Mathlib.Util.TransImports
 public import Mathlib.Util.WhatsNew
 public meta import Lean.Elab.Tactic.Try
 public meta import Lean.Meta.Tactic.Try.Collect
+public import Aesop
 
 -- Preserve custom import ordering:
 set_option linter.style.header.imports false

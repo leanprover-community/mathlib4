@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 module
 
-public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Algebra.Group.Action.Basic
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Subgroup.Defs

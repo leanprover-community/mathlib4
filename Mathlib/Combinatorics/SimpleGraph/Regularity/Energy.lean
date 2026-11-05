@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Density
 
 import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.Data.Rat.Cast.Lemmas
 

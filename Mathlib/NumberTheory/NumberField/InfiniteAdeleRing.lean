@@ -8,7 +8,6 @@ module
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
-import Mathlib.Algebra.Group.Pi.Units
 
 /-!
 # The infinite adele ring of a number field

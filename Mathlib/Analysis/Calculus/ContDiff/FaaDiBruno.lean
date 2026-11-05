@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
-import Mathlib.Analysis.Analytic.Within
+import Mathlib.Analysis.Analytic.Constructions
 
 /-!
 # Faa di Bruno formula

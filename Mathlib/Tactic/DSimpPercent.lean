@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Init
 
-meta import Lean.Elab.Tactic.Simp
+public import Lean.Elab.Tactic.Simp
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

@@ -10,7 +10,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Finite
 public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
-import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Order.Star.Real
 import Mathlib.Tactic.Positivity.Finset
 

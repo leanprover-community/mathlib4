@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Mathlib.Lean.Meta.Basic
 public import Mathlib.Init
+public import Mathlib.Tactic.Linter.TacticDocumentation
 
 /-!
 # Apply at

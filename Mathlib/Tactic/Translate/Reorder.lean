@@ -6,6 +6,8 @@ Authors: Jovan Gerbscheid
 module
 
 public import Mathlib.Init
+public import Batteries.Tactic.Lint
+public import Mathlib.Tactic.TypeStar
 
 /-!
 # Reordering arguments in a translation

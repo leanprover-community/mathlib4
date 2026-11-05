@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Int.Notation
 
 import Mathlib.Tactic.Push.Attr
+import Mathlib.Tactic.TypeStar
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

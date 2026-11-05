@@ -12,6 +12,7 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
+public import Mathlib.RingTheory.Support
 
 /-!
 

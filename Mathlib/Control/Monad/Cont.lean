@@ -5,7 +5,6 @@ Authors: Simon Hudon
 -/
 module
 
-public import Batteries.Data.Except
 public import Batteries.Tactic.Congr
 public import Mathlib.Control.Monad.Writer
 

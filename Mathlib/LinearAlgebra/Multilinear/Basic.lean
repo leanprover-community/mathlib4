@@ -10,11 +10,16 @@ public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Data.Fintype.BigOperators
 public import Mathlib.Data.Fintype.Powerset
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Logic.Equiv.Fintype
 public import Mathlib.Tactic.Abel
 
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import Mathlib.Algebra.Algebra.Defs
+public import Mathlib.Algebra.BigOperators.Pi
+public import Mathlib.Algebra.Module.Prod
+public import Mathlib.Algebra.Module.Submodule.Lattice
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.Tactic.Bound.Init
 
 
 /-!

@@ -10,7 +10,6 @@ public meta import Mathlib.Data.Nat.NthRoot.Defs
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Tactic.Rify
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Power function on `ℝ≥0` and `ℝ≥0∞`

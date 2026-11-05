@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios
 module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
-public import Mathlib.SetTheory.ZFC.Class
+public import Mathlib.SetTheory.ZFC.Ordinal
 
 /-!
 # Von Neumann hierarchy

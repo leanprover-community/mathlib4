@@ -11,6 +11,7 @@ public import Mathlib.RingTheory.Polynomial.RationalRoot
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 

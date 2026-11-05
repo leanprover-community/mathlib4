@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToAdditive
+public import Mathlib.Tactic.Lemma
 
 /-!
 # Typeclasses for algebraic operations

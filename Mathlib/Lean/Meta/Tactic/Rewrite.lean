@@ -8,6 +8,7 @@ module
 public import Lean.Meta.Tactic.Rewrite
 
 import Mathlib.Init
+public import Mathlib.Init
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

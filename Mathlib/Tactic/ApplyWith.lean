@@ -9,6 +9,7 @@ public meta import Lean.Elab.ConfigEval
 public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
+public import Lean.Elab.ConfigEval
 
 /-!
 # The `applyWith` tactic

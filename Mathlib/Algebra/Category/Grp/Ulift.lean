@@ -7,7 +7,10 @@ module
 
 public import Mathlib.Algebra.Category.Grp.LargeColimits
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Algebra.Module.CharacterModule
+public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+public import Mathlib.Data.Nat.Totient
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.Tactic.Continuity
 
 /-!
 # Properties of the universe lift functor for groups

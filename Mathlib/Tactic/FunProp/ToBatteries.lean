@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 module
 
 public import Mathlib.Init
+public import Lean.Meta.AppBuilder
 
 /-!
 ## `funProp` missing function from standard library

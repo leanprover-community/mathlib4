@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
 import Mathlib.Analysis.Calculus.FDeriv.OfCompLeft
+public import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

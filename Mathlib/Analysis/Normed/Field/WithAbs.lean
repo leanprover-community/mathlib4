@@ -13,8 +13,6 @@ public import Mathlib.Analysis.Normed.Ring.WithAbs
 public import Mathlib.FieldTheory.Separable
 public import Mathlib.Topology.MetricSpace.Completion
 
-import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Topology.Algebra.UniformField
 
 /-!
 # WithAbs for fields

@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Regular.Basic
 public import Mathlib.Algebra.Ring.Basic
 
 import Mathlib.Algebra.Regular.Opposite
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # Non-zero divisors in a ring

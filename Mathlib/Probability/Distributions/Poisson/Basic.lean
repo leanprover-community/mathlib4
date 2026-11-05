@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 public import Mathlib.Probability.HasLaw
-public import Mathlib.Probability.ProbabilityMassFunction.Basic
 
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
