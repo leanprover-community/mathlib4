@@ -34,10 +34,10 @@ inductive Witness where
 -- certificate.
 /-- The witnesses of a certificate. -/
 inductive CertConfig where
-  /-- The certificate with the witnesses in `witnesses`. A prime `p` takes the first entry whose
-  factors are the prime factors of `p - 1` and whose root is a primitive root of `p`. Nothing is
-  searched, so each prime needs an entry unless it is below `normNumBound` or proved by the
-  user. -/
+  /-- The certificate with a list of explicit witnesses in `witnesses`. A prime `p` takes the
+  first entry whose factors are the prime factors of `p - 1` and whose root is a primitive root of
+  `p`. Nothing is searched, so each prime needs an entry unless it is below `normNumBound` or
+  proved by the user. -/
   | witnesses (witnesses : List Witness)
 
 /-- Find the first entry of `witnesses` that is a Lucas witness for the prime `p`. -/

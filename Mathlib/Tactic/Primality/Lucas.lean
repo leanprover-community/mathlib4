@@ -46,12 +46,13 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
 /-- `lucasCheck p a factorization` checks that `a ^ (p - 1) % p = 1`, that
 `a ^ ((p - 1) / q) % p ≠ 1` for each `(q, e) ∈ factorization`, and that the `q ^ e` multiply to
 `p - 1`. -/
-@[expose] def lucasCheck (p a : ℕ) (factorization : List (Nat.Primes × ℕ)) : Bool :=
-  lucasRootCheck p a (factorization.map fun f ↦ (f.1 : ℕ)) &&
-    (factorization.map fun f ↦ (f.1 : ℕ) ^ f.2).prod == p - 1
+@[expose] def lucasCheck (p a : ℕ) (factorization : List (ℕ × ℕ)) : Bool :=
+  lucasRootCheck p a (factorization.map fun f ↦ f.1) &&
+    (factorization.map fun f ↦ f.1 ^ f.2).prod == p - 1
 
-theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (Nat.Primes × ℕ)}
-    (h : lucasCheck p a factorization = true) : p.Prime := by
+theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (ℕ × ℕ)}
+    (hprime : ∀ f ∈ factorization, f.1.Prime) (h : lucasCheck p a factorization = true) :
+    p.Prime := by
   simp only [lucasCheck, lucasRootCheck, List.all_map, Function.comp_def, Bool.and_eq_true,
     beq_iff_eq, List.all_eq_true, bne_iff_ne] at h
   obtain ⟨⟨ha, hpow⟩, hprod⟩ := h
@@ -60,7 +61,7 @@ theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (Nat.Primes × ℕ
   · rw [← Nat.cast_pow, ← ZMod.natCast_mod, ← powMod_def, ha, Nat.cast_one]
   · obtain ⟨_, hx, hqf⟩ := hq.prime.dvd_prod_iff.mp (hprod ▸ hqp)
     obtain ⟨f, hf, rfl⟩ := List.mem_map.mp hx
-    obtain rfl := (Nat.prime_dvd_prime_iff_eq hq f.1.prop).mp (hq.dvd_of_dvd_pow hqf)
+    obtain rfl := (Nat.prime_dvd_prime_iff_eq hq (hprime f hf)).mp (hq.dvd_of_dvd_pow hqf)
     apply hpow f hf
     rw [powMod_def, ← ZMod.val_natCast, Nat.cast_pow, h1, ZMod.val_one'' hp]
 
@@ -92,11 +93,17 @@ namespace Mathlib.Tactic.Primality
 `primeFactors`, each with its proof of primality. -/
 def certifyLucas (p root : Nat) (primeFactors : List ((q : Nat) × Q(Nat.Prime $q))) :
     Q(Nat.Prime $p) :=
-  let factorization : Q(List (Nat.Primes × Nat)) := mkListLitQ <| primeFactors.map fun ⟨q, hq⟩ ↦
-    q((⟨$q, $hq⟩, $(mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1)))
-  -- The kernel evaluates `Nat` arithmetic on terms with free variables (such as a hypothesis
-  -- proving one of the factors prime) only inside `eagerReduce`.
-  have hcheck : Q(lucasCheck $p $root $factorization = true) := eagerReflBoolTrue
-  q(prime_of_lucasCheck $hcheck)
+  let ⟨factorization, hprime⟩ := go primeFactors
+  have hcheck : Q(lucasCheck $p $root $factorization = true) := reflBoolTrue
+  q(prime_of_lucasCheck $hprime $hcheck)
+where
+  /-- The factorization of `p - 1` with the factors in `primeFactors`, and their primality. -/
+  go : List ((q : Nat) × Q(Nat.Prime $q)) →
+      (factorization : Q(List (Nat × Nat))) × Q(∀ f ∈ $factorization, f.1.Prime)
+    | [] => ⟨q([]), q(List.forall_mem_nil _)⟩
+    | ⟨q, hq⟩ :: rest =>
+      let ⟨factorization, hprime⟩ := go rest
+      have e : Q(Nat) := mkNatLitQ (Nat.maxPowDvdDiv q (p - 1)).1
+      ⟨q(($q, $e) :: $factorization), q(List.forall_mem_cons.2 ⟨$hq, $hprime⟩)⟩
 
 end Mathlib.Tactic.Primality
