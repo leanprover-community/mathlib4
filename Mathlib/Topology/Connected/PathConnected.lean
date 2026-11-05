@@ -662,7 +662,7 @@ theorem IsPathConnected.Icc [PathConnectedSpace α] (hab : a ≤ b) : IsPathConn
 theorem IsPathConnected.Ico [PathConnectedSpace α] (hab : a < b) :
     IsPathConnected (Set.Ico a b) := by
   refine ⟨a, ⟨le_rfl, hab⟩, fun y hy ↦ ?_⟩
-  exact ((PathConnectedSpace.joined a y).joinedIn_Icc ⟨le_rfl, hy.1⟩ ⟨hy.1, le_rfl⟩).mono
+  exact PathConnectedSpace.joined a y |>.joinedIn_Icc ⟨le_rfl, hy.1⟩ ⟨hy.1, le_rfl⟩ |>.mono
     fun _ hz ↦ ⟨hz.1, hz.2.trans_lt hy.2⟩
 
 /-- Every nonempty left-open interval in a path-connected topological lattice is path-connected. -/
