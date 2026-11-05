@@ -5,9 +5,9 @@ Authors: Junyan Xu
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.SimpleModule.Basic
-public import Mathlib.LinearAlgebra.Dimension.Finrank
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
