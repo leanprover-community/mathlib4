@@ -139,7 +139,7 @@ instance isFiniteMeasure_projectiveLimit (hP : IsProjectiveMeasureFamily P) :
   IsProjectiveLimit.isFiniteMeasure (isProjectiveLimit_projectiveLimit hP)
 
 instance isProbabilityMeasure_projectiveLimit
-    {P : ∀ J : Finset ι, Measure (Π j : J, α j)} [∀ i, IsProbabilityMeasure (P i)]
+    {P : ∀ J : Finset ι, Measure (Π j : J, α j)} [∀ J, IsProbabilityMeasure (P J)]
     (hP : IsProjectiveMeasureFamily P) : IsProbabilityMeasure (projectiveLimit P hP) := by
   constructor
   rw [← cylinder_univ (∅ : Finset ι),
