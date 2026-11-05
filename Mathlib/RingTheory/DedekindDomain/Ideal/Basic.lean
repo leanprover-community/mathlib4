@@ -162,41 +162,8 @@ lemma not_inv_le_one_of_ne_bot (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) :
     have := Ideal.mem_span_singleton'.mpr ⟨x', IsFractionRing.injective A K h₂_abs⟩
     contradiction
 
-/-- Nonzero integral ideals in a Dedekind domain are invertible.
-
-We will use this to show that nonzero fractional ideals are invertible,
-and finally conclude that fractional ideals in a Dedekind domain form a group with zero.
--/
-theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
-  -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
-  have hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1 := by
-    by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
-    · rw [hJ0, inv_zero']; exact zero_le _
-    intro x hx
-    -- In particular, we'll show all `x ∈ J⁻¹` are integral.
-    suffices x ∈ integralClosure A K by
-      rwa [IsIntegrallyClosed.integralClosure_eq_bot, Algebra.mem_bot, Set.mem_range,
-        ← mem_one_iff] at this
-    -- For that, we'll find a subalgebra that is f.g. as a module and contains `x`.
-    -- `A` is a Noetherian ring, so we just need to find a subalgebra between `{x}` and `I⁻¹`.
-    rw [mem_integralClosure_iff_mem_fg]
-    have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
-      intro b hb
-      rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-      rw [mem_inv_iff hJ0] at hx
-      simp_rw [mul_assoc, mul_comm b]
-      exact fun y hy ↦ hx _ (mul_mem_mul hy hb)
-    -- It turns out the subalgebra consisting of all `p(x)` for `p : A[X]` works.
-    refine ⟨AlgHom.range (Polynomial.aeval x : A[X] →ₐ[A] K),
-      isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy => ?_,
-      ⟨Polynomial.X, Polynomial.aeval_X x⟩⟩
-    obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp hy
-    rw [Polynomial.aeval_eq_sum_range]
-    refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
-    clear hi
-    induction i with
-    | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-    | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
+private theorem mul_inv_cancel_of_le_one_aux (hI0 : I ≠ ⊥)
+    (hI : (I * (I : FractionalIdeal A⁰ K)⁻¹)⁻¹ ≤ 1) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
   -- We'll show a contradiction with `exists_notMem_one_of_ne_bot`:
   -- `J⁻¹ = (I * I⁻¹)⁻¹` cannot have an element `x ∉ 1`, so it must equal `1`.
   obtain ⟨J, hJ⟩ : ∃ J : Ideal A, (J : FractionalIdeal A⁰ K) = I * (I : FractionalIdeal A⁰ K)⁻¹ :=
@@ -209,6 +176,42 @@ theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalI
   by_cases hJ1 : J = ⊤
   · rw [← hJ, hJ1, coeIdeal_top]
   exact (not_inv_le_one_of_ne_bot (K := K) hJ0 hJ1 (hJ ▸ hI)).elim
+
+/-- Nonzero integral ideals in a Dedekind domain are invertible.
+
+We will use this to show that nonzero fractional ideals are invertible,
+and finally conclude that fractional ideals in a Dedekind domain form a group with zero.
+-/
+theorem coe_ideal_mul_inv (I : Ideal A) (hI0 : I ≠ ⊥) : I * (I : FractionalIdeal A⁰ K)⁻¹ = 1 := by
+  -- We'll show `1 ≤ J⁻¹ = (I * I⁻¹)⁻¹ ≤ 1`.
+  apply mul_inv_cancel_of_le_one_aux hI0
+  by_cases hJ0 : I * (I : FractionalIdeal A⁰ K)⁻¹ = 0
+  · rw [hJ0, inv_zero']; exact zero_le _
+  intro x hx
+  -- In particular, we'll show all `x ∈ J⁻¹` are integral.
+  suffices x ∈ integralClosure A K by
+    rwa [IsIntegrallyClosed.integralClosure_eq_bot, Algebra.mem_bot, Set.mem_range,
+      ← mem_one_iff] at this
+  -- For that, we'll find a subalgebra that is f.g. as a module and contains `x`.
+  -- `A` is a Noetherian ring, so we just need to find a subalgebra between `{x}` and `I⁻¹`.
+  rw [mem_integralClosure_iff_mem_fg]
+  have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
+    intro b hb
+    rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
+    rw [mem_inv_iff hJ0] at hx
+    simp_rw [mul_assoc, mul_comm b]
+    exact fun y hy ↦ hx _ (mul_mem_mul hy hb)
+  -- It turns out the subalgebra consisting of all `p(x)` for `p : A[X]` works.
+  refine ⟨AlgHom.range (Polynomial.aeval x : A[X] →ₐ[A] K),
+    isNoetherian_submodule.mp (isNoetherian (I : FractionalIdeal A⁰ K)⁻¹) _ fun y hy => ?_,
+    ⟨Polynomial.X, Polynomial.aeval_X x⟩⟩
+  obtain ⟨p, rfl⟩ := (AlgHom.mem_range _).mp hy
+  rw [Polynomial.aeval_eq_sum_range]
+  refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
+  clear hi
+  induction i with
+  | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
+  | succ i ih => rw [pow_succ']; exact x_mul_mem _ ih
 
 @[deprecated coe_ideal_mul_inv (since := "2026-11-04")]
 alias mul_inv_cancel_of_le_one := coe_ideal_mul_inv
