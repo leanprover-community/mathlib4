@@ -17,7 +17,7 @@ from one.
 
 public meta section
 
-open Lean Meta Qq Mathlib.Meta.NormNum
+open Lean Meta Qq
 
 namespace Mathlib.Tactic.Primality
 
@@ -32,17 +32,20 @@ inductive Cert : Nat → Type where
   their certificates in `factors`. -/
   | lucas {p : Nat} (root : Nat) (factors : List ((q : Nat) × Cert q)) : Cert p
 
-/-- Proves `Nat.Prime p` from the certificate `cert`. The cache holds the proof of each prime, so
-that each prime is proved only once. -/
+/-- Proves `Nat.Prime p` from the certificate `cert`. Each prime is proved only once. -/
 partial def certifyPrime {p : Nat} (cert : Cert p) :
-    MonadStateCacheT Nat Expr MetaM Q(Nat.Prime $p) :=
-  checkCache (β := Expr) p fun _ ↦ do
-    match cert with
+    StateT (Std.HashMap Nat Expr) MetaM Q(Nat.Prime $p) := do
+  if let some pf := (← get)[p]? then
+    return pf
+  let pf : Q(Nat.Prime $p) ← match cert with
     | .normNum =>
-      let ⟨true, pf⟩ ← deriveBool q(Nat.Prime $p) | throwError "{p} is not prime"
-      return pf
+      let ⟨true, pf⟩ ← Mathlib.Meta.NormNum.deriveBool q(Nat.Prime $p) |
+        throwError "{p} is not prime"
+      pure pf
     | .known => throwError "no proof that {p} is prime is provided"
     | .lucas root factors =>
-      return certifyLucas p root (← factors.mapM fun ⟨q, cert⟩ ↦ return ⟨q, ← certifyPrime cert⟩)
+      pure <| certifyLucas p root (← factors.mapM fun ⟨q, cert⟩ ↦ return ⟨q, ← certifyPrime cert⟩)
+  modify (·.insert p pf)
+  return pf
 
 end Mathlib.Tactic.Primality
