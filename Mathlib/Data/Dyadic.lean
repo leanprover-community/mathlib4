@@ -5,6 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Algebra.Order.Ring.InjSurj
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
@@ -28,9 +29,12 @@ instance : LinearOrder Dyadic where
   le_total := Std.IsLinearOrder.le_total
   toDecidableLE := Dyadic.instDecidableLE
 
-instance : AddCommGroup Dyadic where
+instance : CommRing Dyadic where
   nsmul := (· * ·)
   zsmul := (· * ·)
+  npow n x := x ^ n
+  natCast := Nat.cast
+  intCast := Int.cast
   add_zero := Dyadic.add_zero
   zero_add := Dyadic.zero_add
   add_assoc := Dyadic.add_assoc
@@ -42,6 +46,24 @@ instance : AddCommGroup Dyadic where
   zsmul_zero' := by grind
   zsmul_succ' := by grind
   zsmul_neg' := by grind
+  mul_assoc := Dyadic.mul_assoc
+  one_mul := Dyadic.one_mul
+  mul_one := Dyadic.mul_one
+  mul_comm := Dyadic.mul_comm
+  left_distrib := Dyadic.mul_add
+  right_distrib := Dyadic.add_mul
+  zero_mul := Dyadic.zero_mul
+  mul_zero := Dyadic.mul_zero
+  npow_zero := Dyadic.pow_zero
+  npow_succ n x := Dyadic.pow_succ x n
+  natCast_zero := rfl
+  natCast_succ := by grind
+  intCast_ofNat _ := rfl
+  intCast_negSucc _ := Dyadic.toRat_inj.mp (by simp)
+
+instance : IsStrictOrderedRing Dyadic :=
+  Function.Injective.isStrictOrderedRing Dyadic.toRat rfl rfl Dyadic.toRat_add
+    Dyadic.toRat_mul Dyadic.toRat_le_toRat_iff Dyadic.toRat_lt_toRat_iff
 
 namespace Dyadic
 
