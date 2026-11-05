@@ -100,8 +100,10 @@ lemma mem_Ico_one_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) : α ∈ Set.Ico 1 2 := by
     calc x * α < α⁻¹ * α := by gcongr; exact hx.2
       _ = 1 := by simp [h0.ne']
 
-lemma mem_Ico_n_of_mem_Ioo (h : α ∈ Set.Ioo 0 2) {n : ℕ} (hn : 0 < n) :
+lemma mem_Ico_n_of_mem_Ioo (n : ℕ) (h : α ∈ Set.Ioo 0 2) :
     α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 := by
+  rcases n.eq_zero_or_pos with rfl | hn
+  · simpa using ⟨h.1.le, h.2⟩
   suffices ∑ i ∈ Finset.Icc 1 n, ⌊i * α⌋ = n ^ 2 ∧ α ∈ Set.Ico ((2 * n - 1) / n : ℝ) 2 from this.2
   induction n, hn using Nat.le_induction with
   | base =>
@@ -154,7 +156,7 @@ lemma not_condition_of_mem_Ioo {α : ℝ} (h : α ∈ Set.Ioo 0 2) : ¬Condition
   intro hc
   let n : ℕ := ⌊(2 - α)⁻¹⌋₊ + 1
   have hn : 0 < n := by lia
-  have hna := (hc.mem_Ico_n_of_mem_Ioo h hn).1
+  have hna := (hc.mem_Ico_n_of_mem_Ioo n h).1
   rcases h with ⟨-, h2⟩
   have hna' : 2 - (n : ℝ)⁻¹ ≤ α := by
     convert! hna using 1
