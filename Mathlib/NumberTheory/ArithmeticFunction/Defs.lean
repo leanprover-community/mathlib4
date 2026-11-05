@@ -374,7 +374,6 @@ def dirichletInverseFun (n : ℕ) : R :=
     have : d < n := (Nat.mem_properDivisors.mp d.2).2
     f (n / d) * dirichletInverseFun d
 
-@[simp]
 theorem dirichletInverseFun_apply_zero : dirichletInverseFun f hf 0 = 0 := by
   rw [dirichletInverseFun, ite_eq_left rfl]
 
@@ -383,9 +382,11 @@ theorem dirichletInverseFun_apply_one : dirichletInverseFun f hf 1 = ⅟(f 1) :=
   rw [dirichletInverseFun, ite_eq_right one_ne_zero, ite_eq_left rfl]
 
 @[simp]
-theorem dirichletInverseFun_apply_ne {n : ℕ} (hn0 : n ≠ 0) (hn1 : n ≠ 1) :
+theorem dirichletInverseFun_apply_ne {n : ℕ} (hn1 : n ≠ 1) :
     dirichletInverseFun f hf n =
       - ⅟(f 1) * ∑ d ∈ n.properDivisors, f (n / d) * dirichletInverseFun f hf d := by
+  rcases eq_or_ne n 0 with rfl | hn0
+  · simp [dirichletInverseFun_apply_zero]
   rw [dirichletInverseFun, ite_eq_right hn0, ite_eq_right hn1]
   conv_rhs => rw [← Finset.sum_attach, Finset.attach_eq_univ]
 
