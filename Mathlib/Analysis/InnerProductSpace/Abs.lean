@@ -126,6 +126,12 @@ protected theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T�
 protected theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
   abs_of_isPositive (isPositive_self_comp_adjoint T)
 
+protected theorem abs_eq_self {T : E →L[ℂ] E} : |T| = T ↔ T.IsPositive :=
+  ⟨fun h ↦ h ▸ ContinuousLinearMap.isPositive_abs T, fun h ↦ abs_of_isPositive h⟩
+
+protected theorem abs_eq_self_neg {T : E →L[ℂ] E} : |T| = -T ↔ (-T).IsPositive :=
+  ⟨fun h ↦ h ▸ ContinuousLinearMap.isPositive_abs T, fun h ↦ abs_of_isPositive_neg h⟩
+
 @[simp]
 protected theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
   abs_of_isPositive isPositive_one
