@@ -24,6 +24,43 @@ public section
 
 universe w v₁ v₂
 
+open CategoryTheory
+
+structure Cardinal.SharplyLT.HasEnoughPureSubobjects
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] (h : κ.SharplyLT κ')
+    (C : Type*) [Category* C] extends IsCardinalAccessibleCategory C κ where
+  exists_isCardinalPure {X Y : C} (f : X ⟶ Y) [IsCardinalPresentable X κ'] :
+    ∃ (X' : C) (_ : IsCardinalPresentable X' κ') (f' : X ⟶ X') (i : X' ⟶ Y),
+      IsCardinalPure κ i ∧ f' ≫ i = f
+
+lemma Cardinal.SharplyLT.HasEnoughPureSubobjects.trans
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] {h : κ.SharplyLT κ'}
+    {C : Type*} [Category* C] (hC : h.HasEnoughPureSubobjects C)
+    {κ₀ : Cardinal.{w}} [Fact κ₀.IsRegular]
+    [IsCardinalAccessibleCategory C κ₀] (h₀ : κ₀.SharplyLT κ) :
+    (h₀.trans h).HasEnoughPureSubobjects C where
+  exists_isCardinalPure {X Y} f _ := by
+    obtain ⟨X', _, f', i, _, fac⟩ := hC.exists_isCardinalPure f
+    exact ⟨X', inferInstance, f', i, IsCardinalPure.of_le h₀.le i, fac⟩
+
+lemma Cardinal.SharplyLT.HasEnoughPureSubobjects.of_equivalence
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular]
+    {h : κ.SharplyLT κ'} {C D : Type*} [Category* C] [Category* D]
+    (hC : h.HasEnoughPureSubobjects C) (e : C ≌ D) :
+    h.HasEnoughPureSubobjects D where
+  toIsCardinalAccessibleCategory := by
+    have := hC.toIsCardinalAccessibleCategory
+    exact e.isCardinalAccessibleCategory _
+  exists_isCardinalPure {X Y} f _ := by
+    have := hC.toIsCardinalAccessibleCategory
+    obtain ⟨X', _, f', i, _, fac⟩ := hC.exists_isCardinalPure (e.inverse.map f)
+    refine ⟨e.functor.obj X', inferInstance, e.symm.toAdjunction.homEquiv _ _ f',
+      (e.toAdjunction.homEquiv _ _).symm i, ?_,
+      e.inverse.map_injective
+        (by simpa [Adjunction.homEquiv_apply, Adjunction.homEquiv_symm_apply])⟩
+    simp only [Adjunction.homEquiv_symm_apply, Equivalence.toAdjunction_counit]
+    infer_instance
+
 namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
@@ -94,7 +131,6 @@ lemma IsClosedUnderCardinalPureSubobjects.of_le {P : ObjectProperty C} {κ κ' :
   prop_of_isCardinalPure f _ hY := by
     have : IsCardinalPure κ f := .of_le h f
     exact P.prop_of_isCardinalPure κ f hY
-
 
 end ObjectProperty
 
@@ -182,31 +218,7 @@ lemma isClosedUnderCardinalPureSubobjects
 
 end ObjectProperty
 
--- FIXME: we may need two regular cardinal instead of one...
-class HasEnoughPureSubobjects (C : Type*) [Category* C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop
-    extends IsCardinalAccessibleCategory C κ where
-  exists_isCardinalPure (κ) {X Y : C} (f : X ⟶ Y) [IsCardinalPresentable X κ] :
-    ∃ (X' : C) (_ : IsCardinalPresentable X' κ) (f' : X ⟶ X') (i : X' ⟶ Y),
-      IsCardinalPure κ i ∧ f' ≫ i = f
-
-lemma HasEnoughPureSubobjects.of_equivalence {C D : Type*} [Category* C] [Category* D]
-    (e : C ≌ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    (_ : HasEnoughPureSubobjects C κ := by infer_instance) :
-    HasEnoughPureSubobjects D κ where
-  toIsCardinalAccessibleCategory := e.isCardinalAccessibleCategory _
-  exists_isCardinalPure {X Y} f _ := by
-    obtain ⟨X', _, f', i, _, fac⟩ := exists_isCardinalPure κ (e.inverse.map f)
-    refine ⟨e.functor.obj X', inferInstance, e.symm.toAdjunction.homEquiv _ _ f',
-      (e.toAdjunction.homEquiv _ _).symm i, ?_,
-      e.inverse.map_injective
-        (by simpa [Adjunction.homEquiv_apply, Adjunction.homEquiv_symm_apply])⟩
-    simp only [Adjunction.homEquiv_symm_apply, Equivalence.toAdjunction_counit]
-    infer_instance
-
 namespace IsCardinalAccessibleCategory
-
-open HasEnoughPureSubobjects
 
 namespace step₁
 
@@ -272,57 +284,43 @@ end step₁
 
 lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
-      HasEnoughPureSubobjects (C ⥤ Type w) κ' := by
+      h.HasEnoughPureSubobjects (C ⥤ Type w) := by
   sorry
 
-lemma step₂ {C : Type*} [Category* C] (P : ObjectProperty C)
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] {h : κ.SharplyLT κ'}
+    {C : Type*} [Category* C] (hC : h.HasEnoughPureSubobjects C)
+    (P : ObjectProperty C)
     [IsCardinalAccessibleCategory P.FullSubcategory κ]
-    [P.ι.PreservesCardinalPresentable κ]
     [P.IsClosedUnderCardinalFilteredColimits κ]
     [P.IsClosedUnderCardinalPureSubobjects κ]
-    [HasEnoughPureSubobjects C κ] :
-    HasEnoughPureSubobjects P.FullSubcategory κ where
+    [P.ι.PreservesCardinalPresentable κ] :
+    h.HasEnoughPureSubobjects P.FullSubcategory where
   exists_isCardinalPure {X Y} f _ := by
-    obtain ⟨X', _, f', i, _, fac⟩ := exists_isCardinalPure κ f.hom
+    have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le h.le
+    have := hC.toIsCardinalAccessibleCategory
+    have := h.isCardinalAccessibleCategory C
+    have := h.preservesCardinalPresentable P.ι
+    obtain ⟨X', _, f', i, _, fac⟩ := hC.exists_isCardinalPure f.hom
     exact ⟨⟨X', P.prop_of_isCardinalPure κ i Y.property⟩,
       .of_full_of_faithful P.ι (by assumption),
       ObjectProperty.homMk f', ObjectProperty.homMk i,
       IsCardinalPure.of_full_of_faithful P.ι (by assumption), by cat_disch⟩
 
-attribute [instance] step₂
-
 lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessibleCategory C κ] :
-    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
-      HasEnoughPureSubobjects C κ' := by
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
+      h.HasEnoughPureSubobjects C := by
   obtain ⟨A, _, P, _, _, ⟨e⟩⟩ :=
     IsCardinalAccessibleCategory.exists_equivalence_fullSubcategory C κ
   have : IsAccessibleCategory.{w} P.FullSubcategory := ⟨κ, inferInstance, inferInstance⟩
   obtain ⟨κ₁, _, h₁, _, _, _, _⟩ := P.isClosedUnderCardinalPureSubobjects κ
-  obtain ⟨κ₂, inferInstance, h₂, _⟩ := step₁ A κ₁
-  have := h₂.preservesCardinalPresentable P.ι
-  have := h₂.isCardinalAccessibleCategory P.FullSubcategory
-  have : P.IsClosedUnderCardinalFilteredColimits κ₂ := .of_le (h₁.trans h₂).le
-  have : P.IsClosedUnderCardinalPureSubobjects κ₂ := .of_le h₂.le
+  obtain ⟨κ₂, inferInstance, h₂, H⟩ := step₁ A κ₁
+  have : P.IsClosedUnderCardinalFilteredColimits κ₁ := .of_le h₁.le
   exact ⟨κ₂, inferInstance, h₁.trans h₂,
-    HasEnoughPureSubobjects.of_equivalence e.symm _⟩
+    ((H.fullSubcategory P).trans h₁).of_equivalence e.symm⟩
 
 end IsCardinalAccessibleCategory
-
-namespace IsAccessibleCategory
-
-lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
-    [IsAccessibleCategory.{w} C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
-    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
-      HasEnoughPureSubobjects C κ' := by
-  obtain ⟨κ₁, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} C
-  obtain ⟨κ₂, _, h, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
-  have := h₁.isCardinalAccessibleCategory C
-  obtain ⟨κ', _, h', _⟩ := IsCardinalAccessibleCategory.hasEnoughPureSubobjects C κ₂
-  exact ⟨κ', inferInstance, h.trans h', inferInstance⟩
-
-end IsAccessibleCategory
 
 end CategoryTheory
