@@ -293,7 +293,11 @@ theorem preimage_Iic {a : R} (ha : 0 ≤ a) : (Nat.cast : ℕ → R) ⁻¹' Set.
   ext
   simp [le_floor_iff, ha]
 
-variable [IsOrderedAddMonoid R] [AddLeftStrictMono R]
+variable [IsOrderedAddMonoid R]
+
+section AddLeftStrictMono
+
+variable [AddLeftStrictMono R]
 
 @[push]
 theorem floor_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n := by
@@ -310,36 +314,6 @@ theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋₊ = ⌊a⌋₊ + ofNat(n) :=
   floor_add_natCast ha n
-
-
-section
-
-variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]
-
-omit [AddLeftStrictMono R] in
-@[simp]
-theorem floor_sub_natCast (a : R) (n : ℕ) : ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
-  obtain ha | ha := le_total a 0
-  · rw [floor_of_nonpos ha,
-      floor_of_nonpos (tsub_nonpos_of_le (ha.trans (FloorSemiring.natCast_nonneg n))), zero_tsub]
-  rcases le_total a n with h | h
-  · rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
-    exact Nat.cast_le.1 ((Nat.floor_le ha).trans h)
-  · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_natCast _, tsub_add_cancel_of_le h]
-    exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
-
-omit [AddLeftStrictMono R] in
-@[simp]
-theorem floor_sub_one (a : R) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
-  mod_cast floor_sub_natCast a 1
-
-omit [AddLeftStrictMono R] in
-@[simp]
-theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
-    ⌊a - ofNat(n)⌋₊ = ⌊a⌋₊ - ofNat(n) :=
-  floor_sub_natCast a n
-
-end
 
 theorem ceil_add_natCast (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n :=
   eq_of_forall_ge_iff fun b => by
@@ -362,15 +336,37 @@ theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
 theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : R) < a + 1 :=
   lt_ceil.1 <| (Nat.lt_succ_self _).trans_le (ceil_add_one ha).ge
 
-omit [AddLeftStrictMono R] in
+end AddLeftStrictMono
+
 @[bound]
 theorem ceil_add_le (a b : R) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
   rw [ceil_le, Nat.cast_add]
   gcongr <;> apply le_ceil
 
+section
+
 variable [AddLeftReflectLE R] [Sub R] [OrderedSub R] [ExistsAddOfLE R]
 
-omit [AddLeftStrictMono R] in
+@[simp]
+theorem floor_sub_natCast (a : R) (n : ℕ) : ⌊a - n⌋₊ = ⌊a⌋₊ - n := by
+  obtain ha | ha := le_total a 0
+  · rw [floor_of_nonpos ha,
+      floor_of_nonpos (tsub_nonpos_of_le (ha.trans (FloorSemiring.natCast_nonneg n))), zero_tsub]
+  rcases le_total a n with h | h
+  · rw [floor_of_nonpos (tsub_nonpos_of_le h), eq_comm, tsub_eq_zero_iff_le]
+    exact Nat.cast_le.1 ((Nat.floor_le ha).trans h)
+  · rw [eq_tsub_iff_add_eq_of_le (le_floor h), ← floor_add_natCast _, tsub_add_cancel_of_le h]
+    exact le_tsub_of_add_le_left ((add_zero _).trans_le h)
+
+@[simp]
+theorem floor_sub_one (a : R) : ⌊a - 1⌋₊ = ⌊a⌋₊ - 1 :=
+  mod_cast floor_sub_natCast a 1
+
+@[simp]
+theorem floor_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] :
+    ⌊a - ofNat(n)⌋₊ = ⌊a⌋₊ - ofNat(n) :=
+  floor_sub_natCast a n
+
 @[simp] lemma ceil_sub_natCast (a : R) (n : ℕ) : ⌈a - n⌉₊ = ⌈a⌉₊ - n := by
   obtain han | hna := le_total a n
   · rwa [ceil_eq_zero.2 (tsub_nonpos_of_le han), eq_comm, tsub_eq_zero_iff_le, Nat.ceil_le]
@@ -378,12 +374,12 @@ omit [AddLeftStrictMono R] in
     rw [← ceil_add_natCast, tsub_add_cancel_of_le hna]
     exact le_tsub_of_add_le_left ((add_zero _).trans_le hna)
 
-omit [AddLeftStrictMono R] in
 @[simp] lemma ceil_sub_one (a : R) : ⌈a - 1⌉₊ = ⌈a⌉₊ - 1 := by simpa using ceil_sub_natCast a 1
 
-omit [AddLeftStrictMono R] in
 @[simp] lemma ceil_sub_ofNat (a : R) (n : ℕ) [n.AtLeastTwo] : ⌈a - ofNat(n)⌉₊ = ⌈a⌉₊ - ofNat(n) :=
   ceil_sub_natCast a n
+
+end
 
 end LinearOrderedSemiring
 
