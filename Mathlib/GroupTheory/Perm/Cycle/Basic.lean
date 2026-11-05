@@ -423,7 +423,8 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
           tauto
 
 theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCycle f) {x : α}
-    (hx : f x ≠ x) (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) := by
+    (hffx : f (f x) ≠ x) : IsCycle (swap x (f x) * f) := by
+  have hx : f x ≠ x := fun h ↦ hffx (by rw [h, h])
   refine ⟨f x, ?_, fun y hy ↦ ?_⟩
   · simp [swap_apply_def, mul_apply, ite_eq_right hffx, f.injective.eq_iff, hx]
   obtain ⟨i, rfl⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
@@ -445,7 +446,7 @@ theorem IsCycle.sign {f : Perm α} (hf : IsCycle f) : sign f = -(-1) ^ #f.suppor
         have h : #(swap x (f x) * f).support + 1 = #f.support := by
           rw [← insert_erase (mem_support.2 hx.1), support_swap_mul_eq _ _ h1,
             card_insert_of_notMem (notMem_erase _ _), sdiff_singleton_eq_erase]
-        rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul hx.1 h1).sign, ← h]
+        rw [sign_mul, sign_swap hx.1.symm, (hf.swap_mul h1).sign, ← h]
         simp only [mul_neg, neg_mul, one_mul, neg_neg, pow_add, pow_one, mul_one]
 termination_by #f.support
 
