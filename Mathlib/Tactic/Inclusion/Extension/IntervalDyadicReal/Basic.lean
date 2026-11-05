@@ -24,7 +24,8 @@ namespace IntervalDyadicReal
 @[inclusion_ext(_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
-    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
+    (Interval.mkBinarySplitCover q(binarySplit))
 
 @[grind =]
 theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=
@@ -56,11 +57,16 @@ theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : 
   rw [Semiring.toGrindSemiring_ofNat]
   exact natCast_mem n
 
-@[inclusion_op interval_dyadic_real]
 theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
   simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
 
 end Constants
+
+@[inclusion_op interval_dyadic_real]
+theorem intCast_mem_of_mem {z : ℤ} {I : Interval ℤ} (hz : z ∈ I) :
+    (z : ℝ) ∈ I.map (fun z : ℤ ↦ (z : Dyadic)) := by
+  rw [mem_iff_mem_map, Interval.map_map, Interval.mem_map_iff]
+  simp [← WithBot.le_coe_iff, ← WithTop.coe_le_iff, ← Interval.mem_def, hz]
 
 section Arithmetic
 

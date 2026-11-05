@@ -573,7 +573,7 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
     refine IntervalDyadicReal.mem_Ici_coe _ _ |>.mpr <|
       Dyadic.lowerLog_le lb prec |>.trans <| Real.log_le_log ?_ <|
         IntervalDyadicReal.mem_Ici_coe x lb |>.mp hx
-    have := WithBot.coe_nonneg.mp <| hI' ▸ show 0 ≤ Interval.lb _ from I.abs_lb_nonneg
+    have := WithBot.coe_nonneg.mp <| hI' ▸ I.abs_lb_nonneg
     simpa using lt_of_le_of_ne this <| Ne.symm hlb
   | case3 hI' =>
     rw [hI'] at hx
@@ -595,7 +595,7 @@ theorem log_mem {x : ℝ} {I : Interval Dyadic} (prec : ℕ) (hx : x ∈ I) : x.
     replace hx : lb.toReal ≤ x ∧ x ≤ ub.toReal := IntervalDyadicReal.mem_mk_coe x _ _ |>.mp hx
     simp only [IntervalDyadicReal.mem_mk_coe]
     have : 0 < lb.toReal := by
-      have := WithBot.coe_nonneg.mp <| hI' ▸ show 0 ≤ Interval.lb _ from I.abs_lb_nonneg
+      have := WithBot.coe_nonneg.mp <| hI' ▸ I.abs_lb_nonneg
       simpa [← Dyadic.toReal_zero] using lt_of_le_of_ne this <| Ne.symm hlb
     exact ⟨lb.lowerLog_le prec |>.trans <| Real.log_le_log this <| hx.left,
       ub.le_upperLog prec |>.trans' <| Real.log_le_log (this.trans_le hx.left) hx.right⟩

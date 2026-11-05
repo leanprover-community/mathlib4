@@ -1231,7 +1231,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm, toZeroAtInfty_toBCF]
 
 variable (𝕜 E F)
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
@@ -1280,7 +1280,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
     rw [eLpNorm_exponent_top hf']
-    refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
+    refine eLpNormEssSup_le_of_ae_nnNorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
       one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x
