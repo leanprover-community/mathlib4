@@ -77,11 +77,13 @@ theorem StrictConvex.extremePoints_eq_sdiff_interior [Nontrivial A] {S : Set A}
 @[deprecated (since := "2026-06-03")]
 alias StrictConvex.extremePoints_eq_diff_interior := StrictConvex.extremePoints_eq_sdiff_interior
 
-/-- In a strictly convex space, the sphere is contained in the extreme points of the closed ball
-when the radius is nonzero.
+/-- In a strictly convex space, the sphere is contained in the extreme points of the closed ball.
 In a nontrivial space, they are equal, see `extremePoints_closedBall_eq_sphere`. -/
 lemma StrictConvexSpace.sphere_subset_extremePoints_closedBall [StrictConvexSpace ℝ A]
-    (a : A) {r : ℝ} (hr : r ≠ 0) : sphere a r ⊆ extremePoints ℝ (closedBall a r) := fun _ hx ↦ by
+    (a : A) (r : ℝ) : sphere a r ⊆ extremePoints ℝ (closedBall a r) := by
+  rcases eq_or_ne r 0 with rfl | hr
+  · simp
+  intro _ hx
   rw [← frontier_closedBall _ hr, frontier, closure_closedBall] at hx
   exact (_root_.strictConvex_closedBall ℝ _ _).sdiff_interior_subset_extremePoints hx
 
