@@ -144,7 +144,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := f.base.hom.2
+lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f := by fun_prop
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -443,7 +443,7 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 /-- Copies a morphism with a different underlying map -/
 def copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  base := TopCat.ofHom ⟨g, by rw [← h]; fun_prop⟩
   c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
   prop x := by
     subst h
@@ -778,7 +778,7 @@ open scoped Pointwise in
 lemma zeroLocus_setMul {U : X.Opens} (s t : Set Γ(X, U)) :
     X.zeroLocus (s * t) = X.zeroLocus s ∪ X.zeroLocus t := by
   simp only [← Set.image2_mul, zeroLocus_def, Set.biInter_image2]
-  simp [Set.compl_inter, ← Set.union_iInter₂, ← Set.iInter₂_union]
+  simp [← Set.union_iInter₂, ← Set.iInter₂_union]
 
 open scoped Pointwise in
 lemma zeroLocus_mul {U : X.Opens} (I J : Ideal Γ(X, U)) :
@@ -984,7 +984,6 @@ lemma germ_stalkMap_apply (U : Y.Opens) (x : X) (hx : f x ∈ U) (y) :
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `x = y`, the stalk maps are isomorphic. -/
 noncomputable def arrowStalkMapIsoOfEq {x y : X}
     (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
