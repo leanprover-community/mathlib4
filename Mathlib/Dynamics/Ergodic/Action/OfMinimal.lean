@@ -235,18 +235,14 @@ If the preimages of `0` under the iterations of `f` are dense,
 then it is pre-ergodic with respect to any finite inner regular left invariant measure. -/]
 theorem preErgodic_of_dense_iUnion_preimage_one
     {μ : Measure G} [IsFiniteMeasure μ] [μ.InnerRegular] [μ.IsMulLeftInvariant]
-    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hfm : Measurable f)
+    (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1))
     (hqmp : QuasiMeasurePreserving f μ μ) :
-    PreErgodic f μ := by
-  refine .of_preimage_eq hfm hqmp fun s hsm hs ↦
-    aeconst_of_dense_setOfPred_preimage_smul_eq (M := G) hsm.nullMeasurableSet ?_
-  refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
-  have hsn : f^[n] ⁻¹' s = s := by
-    rw [preimage_iterate_eq, iterate_fixed hs]
-  rw [mem_preimage, Set.mem_one] at hx
-  rw [mem_ofPred, ← hsn]
-  ext y
-  simp [hx]
+    PreErgodic f μ where
+  aeconst_set s hsm hs := by
+    refine aeconst_of_dense_aestabilizer_smul hsm <| hf.mono <| iUnion_subset fun n x hx ↦ ?_
+    rw [← MulAction.aestabilizer_congr (hqmp.preimage_iterate_ae_eq n hs)]
+    apply MulAction.stabilizer_le_aestabilizer
+    simp_all [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
 
 /-- Let `f : G →* G` be a continuous surjective group endomorphism
 of a compact topological group with second countable topology.
@@ -260,6 +256,6 @@ theorem ergodic_of_dense_iUnion_preimage_one [CompactSpace G] {μ : Measure G} [
     (f : G →* G) (hf : Dense (⋃ n, f^[n] ⁻¹' 1)) (hcont : Continuous f) (hsurj : Surjective f) :
     Ergodic f μ :=
   have hmp := f.measurePreserving hcont hsurj rfl
-  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hmp.measurable hmp.quasiMeasurePreserving⟩
+  ⟨hmp, f.preErgodic_of_dense_iUnion_preimage_one hf hmp.quasiMeasurePreserving⟩
 
 end MonoidHom
