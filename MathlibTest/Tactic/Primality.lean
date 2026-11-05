@@ -29,8 +29,10 @@ example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by primality
 example : Nat.Prime (2 * 10000000000037 * 10000000000453 + 1) := by
   primality (cert := .search { factors := [10000000000037] })
 
-example : Nat.Prime (2 * 1000021069 * 100000000000031 + 1) := by
-  primality (cert := .search { rhoSteps := 2 ^ 16 })
+-- Pollard's rho method needs more than the default `2 ^ 17` steps to split
+-- `10000003003 * 100000000000031`.
+example : Nat.Prime (2 * 10000003003 * 100000000000031 + 1) := by
+  primality (cert := .search { rhoSteps := 2 ^ 18 })
 
 theorem prime_4398046517687 : Nat.Prime 4398046517687 := by primality
 

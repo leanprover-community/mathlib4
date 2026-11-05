@@ -25,6 +25,9 @@ open Lean
 
 namespace Mathlib.Tactic.Primality
 
+/-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
+def normNumBound : ℕ := 2 ^ 10
+
 section Factorizer
 
 /-- Returns an array of distinct prime factors of the input (not necessarily complete).
@@ -48,9 +51,8 @@ def Factorizer.then (f₁ f₂ : Factorizer) : Factorizer := fun n ↦ do
   let (ps, rest) ← f₁.decompose n
   return ps ++ (← f₂ rest)
 
-/-- The primes below `1024`. This is currently called once per tactic run. -/
-def smallPrimes : Array ℕ := Id.run do
-  let bound := 1024
+/-- The primes below `bound`. This is currently called once per tactic run. -/
+def smallPrimes (bound : ℕ) : Array ℕ := Id.run do
   let mut composite := Array.replicate bound false
   let mut primes := #[]
   for k in 2...bound do
@@ -62,8 +64,8 @@ def smallPrimes : Array ℕ := Id.run do
         j := j + k
   return primes
 
-/-- Trial division by `smallPrimes`. -/
-def trialDivision : Factorizer := .ofArray smallPrimes
+/-- Trial division by `smallPrimes normNumBound`. -/
+def trialDivision : Factorizer := .ofArray (smallPrimes normNumBound)
 
 section PollardRho
 
@@ -81,26 +83,30 @@ def millerRabin (bases : Array ℕ) (n : ℕ) : Bool := Id.run do
     if x != n - 1 then return false
   return true
 
-/-- Whether `n` passes the Miller–Rabin test to the prime bases up to `41`, which no composite below
-`3.3 * 10 ^ 24` does. -/
+/-- Whether `n` passes the Miller–Rabin test to the prime bases up to `41` (no false-positive up to
+`3.3 * 10 ^ 24`). -/
 def isProbablePrime (n : ℕ) : Bool :=
   millerRabin #[2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41] n
 
-/-- Finds a nontrivial factor of `n` by Pollard's rho method with `x ↦ x ^ 2 + c`, trying
-`c = 1, 2, 3` for at most `steps` steps each. -/
+/-- Finds a nontrivial factor of `n` by Pollard's rho method with `x ↦ x ^ 2 + c` in at most
+`steps` steps, starting with `c = 1` and moving to the next `c` when a run finds `n` itself. -/
 def rhoFactor? (n steps : ℕ) : CoreM (Option ℕ) := do
-  for c in 1...=3 do
-    let mut x := 2
-    let mut y := 2
-    for i in 0...steps do
-      if i % 4096 == 0 then
-        checkSystem "pollardRho"
-      x := (x * x + c) % n
-      y := (y * y + c) % n
-      y := (y * y + c) % n
-      let d := Nat.gcd (x + n - y) n
-      if d == n then break
-      if d != 1 then return some d
+  let mut c := 1
+  let mut x := 2
+  let mut y := 2
+  for i in 0...steps do
+    if i % 4096 == 0 then
+      checkSystem "pollardRho"
+    x := (x * x + c) % n
+    y := (y * y + c) % n
+    y := (y * y + c) % n
+    let d := Nat.gcd (x + n - y) n
+    if d == n then
+      c := c + 1
+      x := 2
+      y := 2
+    else if d != 1 then
+      return some d
   return none
 
 /-- Splits `n` by `rhoFactor?` into factors that pass `isProbablePrime`, and returns the distinct
@@ -119,10 +125,10 @@ structure FactorizerConfig where
   /-- Candidate prime factors, tried before trial division on `p - 1` and on `q - 1` for each prime
   `q` required on the way. -/
   factors : List ℕ := []
-  /-- The number of steps of Pollard's rho method for each constant it tries. -/
-  rhoSteps : ℕ := 2 ^ 15
+  /-- The number of steps of Pollard's rho method on each number before it gives up. -/
+  rhoSteps : ℕ := 2 ^ 17
 
-/-- Tries `factors`, then trial division up to `1024`, then Pollard's rho method. -/
+/-- Tries `factors`, then trial division up to `normNumBound`, then Pollard's rho method. -/
 def FactorizerConfig.toFactorizer (cfg : FactorizerConfig) : Factorizer :=
   Factorizer.then (.ofArray cfg.factors.toArray) <|
     trialDivision.then (pollardRho cfg.rhoSteps)
@@ -163,9 +169,6 @@ def witnessFor (witnesses : List Witness) (p : ℕ) : CoreM (ℕ × List (ℕ ×
     if let some factorization := w.factorization? p then
       return (w.root, factorization)
   throwError "no provided witness certifies the primality of {p}"
-
-/-- Numbers below this bound are proved prime by `norm_num`'s evaluation of `Nat.minFac`. -/
-def normNumBound : ℕ := 2 ^ 10
 
 /-- Builds the certificate of `p` from the root and the factorization of `p - 1` that `witness`
 gives for each prime, with `norm_num` below `normNumBound` and the user's proofs for the primes in

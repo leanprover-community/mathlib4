@@ -44,10 +44,6 @@ theorem powMod_def (b e m : ℕ) : powMod b e m = b ^ e % m := by
   powMod a (p - 1) p == 1 && factorization.all (fun f ↦ powMod a ((p - 1) / f.1) p != 1) &&
     (factorization.map fun f ↦ f.1 ^ f.2).prod == p - 1
 
-theorem forall_prime_cons {p e : ℕ} {l : List (ℕ × ℕ)} (hp : p.Prime) (h : ∀ f ∈ l, f.1.Prime) :
-    ∀ f ∈ (p, e) :: l, f.1.Prime :=
-  List.forall_mem_cons.2 ⟨hp, h⟩
-
 theorem prime_of_lucasCheck {p a : ℕ} {factorization : List (ℕ × ℕ)}
     (hprime : ∀ f ∈ factorization, f.1.Prime) (h : lucasCheck p a factorization = true) :
     p.Prime := by
@@ -101,6 +97,6 @@ where
     | [] => ⟨q([]), q(List.forall_mem_nil _)⟩
     | ⟨q, e, hq⟩ :: rest =>
       let ⟨factorizationQ, hprime⟩ := go rest
-      ⟨q(($q, $e) :: $factorizationQ), q(forall_prime_cons $hq $hprime)⟩
+      ⟨q(($q, $e) :: $factorizationQ), q(List.forall_mem_cons.2 ⟨$hq, $hprime⟩)⟩
 
 end Mathlib.Tactic.Primality
