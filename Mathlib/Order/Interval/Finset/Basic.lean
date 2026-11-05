@@ -326,9 +326,6 @@ theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
 
 @[simp] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
 
-@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by
-  contrapose!; exact Ioi_eq_empty
-
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
 @[simp]
@@ -336,7 +333,9 @@ theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
   ext a; simp only [mem_Ici, bot_le, mem_univ]
 
 @[simp] lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp] lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+@[simp] lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ∃ b, a < b := by simp [Finset.Nonempty]
+
+@[deprecated (since := "2026-11-05")] alias Ioi_nonempty := nonempty_Ioi
 
 @[simp, gcongr]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
@@ -389,9 +388,6 @@ theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
 
 @[simp] alias ⟨_, _root_.IsMin.finsetIio_eq⟩ := Iio_eq_empty
 
-@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by
-  contrapose!; exact Iio_eq_empty
-
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
 
 @[simp]
@@ -399,7 +395,9 @@ theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
   ext a; simp only [mem_Iic, le_top, mem_univ]
 
 @[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
+@[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ∃ b, b < a := by simp [Finset.Nonempty]
+
+@[deprecated (since := "2026-11-05")] alias Iio_nonempty := nonempty_Iio
 
 @[simp, gcongr]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
