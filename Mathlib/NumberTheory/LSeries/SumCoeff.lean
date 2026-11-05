@@ -118,9 +118,8 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
       ?_ ?_ (integrableAtFilter_rpow_atTop_iff.mpr h₁)
   · rw [zero_sub, ← integral_neg]
     refine setIntegral_congr_fun measurableSet_Ioi fun t ht ↦ ?_
-    rw [deriv_ofReal_cpow_const (zero_lt_one.trans ht).ne', h₄]
-    · ring_nf
-    · exact neg_ne_zero.mpr <| ne_zero_of_re_pos (hr.trans_lt hs)
+    rw [deriv_ofReal_cpow_const (-s) (zero_lt_one.trans ht).ne', h₄]
+    ring_nf
   · refine (Iff.mpr integrableOn_Ici_iff_integrableOn_Ioi <|
       integrableOn_Ioi_deriv_ofReal_cpow zero_lt_one
         (by simpa using! hr.trans_lt hs)).locallyIntegrableOn

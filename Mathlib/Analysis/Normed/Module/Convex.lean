@@ -98,8 +98,10 @@ theorem convex_closedEBall (a : E) (r : ENNReal) : Convex ℝ (closedEBall a r) 
 
 open scoped Pointwise in
 theorem convexHull_sphere_eq_closedBall {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [Nontrivial F] (x : F) {r : ℝ} (hr : 0 ≤ r) :
+    [Nontrivial F] (x : F) (r : ℝ) :
     convexHull ℝ (sphere x r) = closedBall x r := by
+  rcases lt_or_ge r 0 with hr | hr
+  · simp [closedBall_eq_empty.2 hr, sphere_eq_empty_of_neg hr]
   suffices convexHull ℝ (sphere (0 : F) r) = closedBall 0 r by
     rw [← add_zero x, ← vadd_eq_add, ← Metric.vadd_sphere, convexHull_vadd,
       this, vadd_closedBall_zero, vadd_eq_add, add_zero]
