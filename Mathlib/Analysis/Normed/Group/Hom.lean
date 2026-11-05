@@ -287,7 +287,7 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_no
 
 
 /-- Addition of normed group homs. -/
-instance add : Add (NormedAddGroupHom V₁ V₂) :=
+instance : Add (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     (f.toAddMonoidHom + g.toAddMonoidHom).mkNormedAddGroupHom (‖f‖ + ‖g‖) fun v =>
       calc
@@ -312,7 +312,7 @@ theorem add_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 /-! ### The zero normed group hom -/
 
 
-instance zero : Zero (NormedAddGroupHom V₁ V₂) :=
+instance : Zero (NormedAddGroupHom V₁ V₂) :=
   ⟨(0 : V₁ →+ V₂).mkNormedAddGroupHom 0 (by simp)⟩
 
 instance inhabited : Inhabited (NormedAddGroupHom V₁ V₂) :=
@@ -382,7 +382,7 @@ theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
 
 
 /-- Opposite of a normed group hom. -/
-instance neg : Neg (NormedAddGroupHom V₁ V₂) :=
+instance : Neg (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f => (-f.toAddMonoidHom).mkNormedAddGroupHom ‖f‖ fun v => by simp [le_opNorm f v]⟩
 
 @[simp]
@@ -401,7 +401,7 @@ theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
 
 
 /-- Subtraction of normed group homs. -/
-instance sub : Sub (NormedAddGroupHom V₁ V₂) :=
+instance : Sub (NormedAddGroupHom V₁ V₂) :=
   ⟨fun f g =>
     { f.toAddMonoidHom - g.toAddMonoidHom with
       bound' := by
@@ -426,7 +426,7 @@ variable {R R' : Type*} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetr
   [IsBoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
   [IsBoundedSMul R' V₂]
 
-instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
+instance : SMul R (NormedAddGroupHom V₁ V₂) where
   smul r f :=
     { toFun := r • ⇑f
       map_add' := (r • f.toAddMonoidHom).map_add'
@@ -462,7 +462,7 @@ instance isCentralScalar [DistribMulAction Rᵐᵒᵖ V₂] [IsCentralScalar R V
 
 end SMul
 
-instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
+instance : SMul ℕ (NormedAddGroupHom V₁ V₂) where
   smul n f :=
     { toFun := n • ⇑f
       map_add' := (n • f.toAddMonoidHom).map_add'
@@ -480,7 +480,7 @@ theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r
 theorem nsmul_apply (r : ℕ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r • f) v = r • f v :=
   rfl
 
-instance zsmul : SMul ℤ (NormedAddGroupHom V₁ V₂) where
+instance : SMul ℤ (NormedAddGroupHom V₁ V₂) where
   smul z f :=
     { toFun := z • ⇑f
       map_add' := (z • f.toAddMonoidHom).map_add'

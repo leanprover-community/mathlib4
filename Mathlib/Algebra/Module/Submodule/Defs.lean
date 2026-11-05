@@ -233,16 +233,16 @@ lemma smul_mem_iff_of_isUnit (hr : IsUnit r) :
   let _ : Invertible r := hr.invertible
   smul_mem_iff'' p
 
-instance add : Add p :=
+instance : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
 
-instance zero : Zero p :=
+instance : Zero p :=
   ⟨⟨0, zero_mem _⟩⟩
 
 instance inhabited : Inhabited p :=
   ⟨0⟩
 
-instance smul [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
+instance [SMul S R] [SMul S M] [IsScalarTower S R M] : SMul S p :=
   ⟨fun c x => ⟨c • x.1, smul_of_tower_mem _ c x.2⟩⟩
 
 instance isScalarTower [SMul S R] [SMul S M] [IsScalarTower S R M] : IsScalarTower S R p :=

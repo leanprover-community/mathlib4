@@ -75,7 +75,7 @@ section MulOneClass
 variable [MulOneClass M']
 
 @[to_additive]
-instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
+instance [SMul M' α] (S : Submonoid M') : SMul S α :=
   inferInstance
 
 @[to_additive]

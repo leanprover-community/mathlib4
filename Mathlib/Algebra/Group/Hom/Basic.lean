@@ -236,7 +236,7 @@ variable [MulOneClass M] [CommMonoid N]
 /-- Given two monoid morphisms `f`, `g` to a commutative monoid, `f * g` is the monoid morphism
 sending `x` to `f x * g x`. -/
 @[to_additive]
-instance mul : Mul (M →* N) :=
+instance : Mul (M →* N) :=
   ⟨fun f g =>
     { toFun := fun m => f m * g m,
       map_one' := by simp,

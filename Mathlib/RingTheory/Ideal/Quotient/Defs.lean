@@ -49,7 +49,7 @@ namespace Quotient
 
 variable {I} {x y : R}
 
-instance one (I : Ideal R) : One (R ⧸ I) :=
+instance (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 
 set_option backward.isDefEq.respectTransparency false in

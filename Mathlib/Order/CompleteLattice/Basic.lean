@@ -869,7 +869,7 @@ namespace Prod
 variable (α β)
 
 @[to_dual]
-instance supSet [SupSet α] [SupSet β] : SupSet (α × β) :=
+instance [SupSet α] [SupSet β] : SupSet (α × β) :=
   ⟨fun s => (sSup (Prod.fst '' s), sSup (Prod.snd '' s))⟩
 
 variable {α β}

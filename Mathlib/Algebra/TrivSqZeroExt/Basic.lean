@@ -178,16 +178,16 @@ variable {T : Type*} {S : Type*} {R : Type u} {M : Type v}
 instance inhabited [Inhabited R] [Inhabited M] : Inhabited (tsze R M) :=
   inferInstanceAs <| Inhabited (R × M)
 
-instance zero [Zero R] [Zero M] : Zero (tsze R M) :=
+instance [Zero R] [Zero M] : Zero (tsze R M) :=
   inferInstanceAs <| Zero (R × M)
 
-instance add [Add R] [Add M] : Add (tsze R M) :=
+instance [Add R] [Add M] : Add (tsze R M) :=
   inferInstanceAs <| Add (R × M)
 
-instance sub [Sub R] [Sub M] : Sub (tsze R M) :=
+instance [Sub R] [Sub M] : Sub (tsze R M) :=
   inferInstanceAs <| Sub (R × M)
 
-instance neg [Neg R] [Neg M] : Neg (tsze R M) :=
+instance [Neg R] [Neg M] : Neg (tsze R M) :=
   inferInstanceAs <| Neg (R × M)
 
 instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M) :=
@@ -196,7 +196,7 @@ instance addSemigroup [AddSemigroup R] [AddSemigroup M] : AddSemigroup (tsze R M
 instance addZeroClass [AddZeroClass R] [AddZeroClass M] : AddZeroClass (tsze R M) :=
   inferInstanceAs <| AddZeroClass (R × M)
 
-instance smul [SMul S R] [SMul S M] : SMul S (tsze R M) :=
+instance [SMul S R] [SMul S M] : SMul S (tsze R M) :=
   inferInstanceAs <| SMul S (R × M)
 
 instance addMonoid [AddMonoid R] [AddMonoid M] : AddMonoid (tsze R M) where
@@ -402,10 +402,10 @@ section Mul
 
 variable {R : Type u} {M : Type v}
 
-instance one [One R] [Zero M] : One (tsze R M) :=
+instance [One R] [Zero M] : One (tsze R M) :=
   ⟨(1, 0)⟩
 
-instance mul [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
+instance [Mul R] [Add M] [SMul R M] [SMul Rᵐᵒᵖ M] : Mul (tsze R M) :=
   ⟨fun x y => (x.1 * y.1, x.1 •> y.2 + x.2 <• y.1)⟩
 
 @[simp]

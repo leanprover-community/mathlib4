@@ -25,7 +25,7 @@ namespace PUnit
 variable {R S : Type*}
 
 @[to_additive]
-instance smul : SMul R PUnit :=
+instance : SMul R PUnit :=
   ⟨fun _ _ => unit⟩
 
 @[to_additive (attr := simp)]

@@ -52,13 +52,13 @@ variable (M : Type*) (p q : ℕ) [CommMonoid M] [PerfectRing M p] [PerfectRing M
 
 namespace PerfectRing
 
-instance one : PerfectRing M 1 :=
+instance : PerfectRing M 1 :=
   ⟨by simpa using! bijective_id⟩
 
-instance mul : PerfectRing M (p * q) :=
+instance : PerfectRing M (p * q) :=
   ⟨by simp_rw [pow_mul]; exact PerfectRing.bijective_frobenius.comp PerfectRing.bijective_frobenius⟩
 
-instance pow (n : ℕ) : PerfectRing M (p ^ n) :=
+instance (n : ℕ) : PerfectRing M (p ^ n) :=
   n.recOn (inferInstanceAs (PerfectRing M 1)) fun n _ ↦ inferInstanceAs (PerfectRing M (p ^ n * p))
 
 end PerfectRing

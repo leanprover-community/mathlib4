@@ -339,7 +339,7 @@ variable {A M₁ : Type*} [SetLike A M₁] [One M₁] [hA : OneMemClass A M₁] 
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
-instance one : One S' :=
+instance : One S' :=
   ⟨⟨1, OneMemClass.one_mem S'⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -431,12 +431,12 @@ variable {M : Type*} [MulOneClass M] (S : Submonoid M)
 
 /-- A submonoid of a monoid inherits a multiplication. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits an addition. -/]
-instance mul : Mul S :=
+instance : Mul S :=
   ⟨fun a b => ⟨a.1 * b.1, S.mul_mem a.2 b.2⟩⟩
 
 /-- A submonoid of a monoid inherits a 1. -/
 @[to_additive /-- An `AddSubmonoid` of an `AddMonoid` inherits a zero. -/]
-instance one : One S :=
+instance : One S :=
   ⟨⟨_, S.one_mem⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]

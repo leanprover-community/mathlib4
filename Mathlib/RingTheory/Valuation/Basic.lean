@@ -395,7 +395,7 @@ variable [Nontrivial R] [NoZeroDivisors R] [DecidablePred fun x : R ↦ x = 0]
 
 variable (R Γ₀) in
 /-- The trivial valuation, sending everything to 1 other than 0. -/
-protected instance one : One (Valuation R Γ₀) where
+instance : One (Valuation R Γ₀) where
   one :=
   { __ : R →*₀ Γ₀ := 1
     map_add_le_max' x y := by

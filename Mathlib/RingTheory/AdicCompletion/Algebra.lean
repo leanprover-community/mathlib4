@@ -304,7 +304,7 @@ instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Sub
     rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
     rfl
 
-instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
+instance : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
     val := fun n ↦ eval I R n r • eval I M n x
     property := fun {m n} hmn ↦ by

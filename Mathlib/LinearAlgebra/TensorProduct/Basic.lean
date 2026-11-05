@@ -371,7 +371,7 @@ variable (R) in
 def Neg.aux : M ⊗[R] N →ₗ[R] M ⊗[R] N :=
   lift <| (mk R M N).comp (-LinearMap.id)
 
-instance neg : Neg (M ⊗[R] N) where
+instance : Neg (M ⊗[R] N) where
   neg := Neg.aux R
 
 protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=

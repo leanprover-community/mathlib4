@@ -337,9 +337,9 @@ theorem _root_.Submodule.FG.of_finite {N : Submodule R M} [Module.Finite R N] : 
 
 variable (R M)
 
-instance bot : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
+instance : Module.Finite R (⊥ : Submodule R M) := .of_fg fg_bot
 
-instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
+instance [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := .of_fg fg_top
 
 instance top_left [Module.Finite R M] : Module.Finite (⊤ : Subsemiring R) M :=
   have : RingHomSurjective (Subsemiring.topEquiv (R := R)).symm.toRingHom :=

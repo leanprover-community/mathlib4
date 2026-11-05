@@ -322,7 +322,7 @@ instance mulAction : MulAction S₂ (M₁ →SL[σ₁₂] M₂) := fast_instance
 end SMulMonoid
 
 /-- The continuous map that is constantly zero. -/
-instance zero : Zero (M₁ →SL[σ₁₂] M₂) :=
+instance : Zero (M₁ →SL[σ₁₂] M₂) :=
   ⟨⟨0, continuous_zero⟩⟩
 
 instance : IsZeroApply (M₁ →SL[σ₁₂] M₂) where
@@ -368,7 +368,7 @@ protected def id : M₁ →L[R₁] M₁ :=
 
 end
 
-instance one : One (M₁ →L[R₁] M₁) :=
+instance : One (M₁ →L[R₁] M₁) :=
   ⟨.id R₁ M₁⟩
 
 theorem one_def : (1 : M₁ →L[R₁] M₁) = .id R₁ M₁ := rfl
@@ -413,7 +413,7 @@ section Add
 
 variable [ContinuousAdd M₂]
 
-instance add : Add (M₁ →SL[σ₁₂] M₂) :=
+instance : Add (M₁ →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f + g, f.2.add g.2⟩⟩
 
 instance instIsAddApply : IsAddApply (M₁ →SL[σ₁₂] M₂) where
@@ -824,7 +824,7 @@ section
 
 variable [IsTopologicalAddGroup M₂]
 
-instance neg : Neg (M →SL[σ₁₂] M₂) :=
+instance : Neg (M →SL[σ₁₂] M₂) :=
   ⟨fun f => ⟨-f, f.2.neg⟩⟩
 
 instance : IsNegApply (M →SL[σ₁₂] M₂) where
@@ -843,7 +843,7 @@ theorem toLinearMap_neg (f : M →SL[σ₁₂] M₂) : (↑(-f) : M →ₛₗ[σ
 theorem toContinuousAddMonoidHom_neg (f : M →SL[σ₁₂] M₂) :
     ↑(-f) = -(f : ContinuousAddMonoidHom M M₂) := rfl
 
-instance sub : Sub (M →SL[σ₁₂] M₂) :=
+instance : Sub (M →SL[σ₁₂] M₂) :=
   ⟨fun f g => ⟨f - g, f.2.sub g.2⟩⟩
 
 instance : IsSubApply (M →SL[σ₁₂] M₂) where

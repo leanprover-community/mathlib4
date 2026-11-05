@@ -28,7 +28,7 @@ section One
 variable [One α] {a : α}
 
 @[to_additive]
-instance one : One (WithTop α) :=
+instance : One (WithTop α) :=
   ⟨(1 : α)⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -96,7 +96,7 @@ section Add
 
 variable [Add α] {w x y z : WithTop α} {a b : α}
 
-instance add : Add (WithTop α) :=
+instance : Add (WithTop α) :=
   ⟨WithTop.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithTop α) := rfl
@@ -401,7 +401,7 @@ namespace WithBot
 section One
 variable [One α] {a : α}
 
-@[to_additive] instance one : One (WithBot α) := ⟨(1 : α)⟩
+@[to_additive] instance : One (WithBot α) := ⟨(1 : α)⟩
 
 @[to_additive (attr := simp, norm_cast)] lemma coe_one : ((1 : α) : WithBot α) = 1 := rfl
 
@@ -457,7 +457,7 @@ end One
 section Add
 variable [Add α] {w x y z : WithBot α} {a b : α}
 
-instance add : Add (WithBot α) :=
+instance : Add (WithBot α) :=
   ⟨WithBot.map₂ (· + ·)⟩
 
 @[simp, norm_cast] lemma coe_add (a b : α) : ↑(a + b) = (a + b : WithBot α) := rfl

@@ -45,15 +45,15 @@ def some : α → WithBot α :=
   Option.some
 
 @[to_dual]
-instance coe : Coe α (WithBot α) :=
+instance : Coe α (WithBot α) :=
   ⟨some⟩
 
 @[to_dual]
-instance bot : Bot (WithBot α) :=
+instance : Bot (WithBot α) :=
   ⟨none⟩
 
 @[to_dual]
-instance inhabited : Inhabited (WithBot α) :=
+instance : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/

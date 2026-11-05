@@ -202,7 +202,7 @@ open SlashInvariantForm
 
 variable {Γ : Subgroup (GL (Fin 2) ℝ)} {k : ℤ}
 
-instance add : Add (ModularForm Γ k) where add f g :=
+instance : Add (ModularForm Γ k) where add f g :=
   { toSlashInvariantForm := f + g
     holo' := f.holo'.add g.holo'
     bdd_at_cusps' hc := by simpa using (f.bdd_at_cusps' hc).add (g.bdd_at_cusps' hc) }

@@ -66,10 +66,10 @@ section Monoid
 
 variable [∀ i, Monoid (G i)] [Monoid H] {φ : ∀ i, H →* G i}
 
-protected instance mul : Mul (PushoutI φ) := by
+instance : Mul (PushoutI φ) := by
   delta PushoutI; infer_instance
 
-protected instance one : One (PushoutI φ) := by
+instance : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
 instance monoid : Monoid (PushoutI φ) :=

@@ -70,11 +70,11 @@ lemma of_le [IsLocal P L] (hle : K ≤ L) : IsLocal P K where
   component hR _ f hf hX := component (hle _ hR) f hf hX
   of_presieve hR H := of_presieve (hle _ hR) H
 
-instance top : IsLocal (⊤ : ObjectProperty C) K where
+instance : IsLocal (⊤ : ObjectProperty C) K where
   component := by simp
   of_presieve := by simp
 
-instance inf (P Q : ObjectProperty C) [IsLocal P K] [IsLocal Q K] :
+instance (P Q : ObjectProperty C) [IsLocal P K] [IsLocal Q K] :
     IsLocal (P ⊓ Q) K where
   component hR _ _ hf h := ⟨component hR _ hf h.1, component hR _ hf h.2⟩
   of_presieve hR h := ⟨of_presieve hR fun _ _ hf ↦ (h hf).1, of_presieve hR fun _ _ hf ↦ (h hf).2⟩

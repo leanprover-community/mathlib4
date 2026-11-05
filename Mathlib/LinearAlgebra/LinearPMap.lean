@@ -268,7 +268,7 @@ def eqLocus (f g : E →ₛₗ.[σ] F) : Submodule R E where
         simp
       rw [this hfx, this hgx, f.map_smulₛₗ, g.map_smulₛₗ, hx]⟩
 
-instance bot : Bot (E →ₛₗ.[σ] F) :=
+instance : Bot (E →ₛₗ.[σ] F) :=
   ⟨⟨⊥, 0⟩⟩
 
 instance inhabited : Inhabited (E →ₛₗ.[σ] F) :=

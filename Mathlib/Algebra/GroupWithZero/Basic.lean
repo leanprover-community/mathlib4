@@ -88,7 +88,7 @@ end Mul
 
 namespace NeZero
 
-instance mul [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] :
+instance [Zero M₀] [Mul M₀] [NoZeroDivisors M₀] {x y : M₀} [NeZero x] [NeZero y] :
     NeZero (x * y) :=
   ⟨mul_ne_zero out out⟩
 
