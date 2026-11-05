@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.Completion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of a normed group
 
@@ -45,8 +48,10 @@ instance [SeminormedAddCommGroup E] : NormedAddCommGroup (Completion E) where
         dist_eq_norm_neg_add]
 
 @[simp]
-theorem nnnorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
-  simp [nnnorm]
+theorem nnNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖₊ = ‖x‖₊ := by
+  simp [nnNorm]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
 @[simp]
 lemma enorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by

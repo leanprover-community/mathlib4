@@ -44,8 +44,10 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
 theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
-theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
+theorem reCLM_nnNorm : ‖reCLM‖₊ = 1 :=
   Subtype.ext reCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias reCLM_nnnorm := reCLM_nnNorm
 
 @[simp]
 theorem imCLM_norm : ‖imCLM‖ = 1 :=
@@ -58,8 +60,10 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
 theorem imCLM_enorm : ‖imCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
-theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
+theorem imCLM_nnNorm : ‖imCLM‖₊ = 1 :=
   Subtype.ext imCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias imCLM_nnnorm := imCLM_nnNorm
 
 @[simp]
 theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
@@ -69,10 +73,12 @@ theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
 theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
-theorem conjCLE_nnnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+theorem conjCLE_nnNorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
 
-@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnnorm
+@[deprecated (since := "2026-10-31")] alias conjCLE_nnnorm := conjCLE_nnNorm
+
+@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnNorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
@@ -82,7 +88,9 @@ theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
 theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
 
 @[simp]
-theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
+theorem ofRealCLM_nnNorm : ‖ofRealCLM‖₊ = 1 :=
   Subtype.ext ofRealCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias ofRealCLM_nnnorm := ofRealCLM_nnNorm
 
 end Complex

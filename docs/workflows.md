@@ -34,6 +34,20 @@ This is an overview of the most important triggers used by Mathlib CI. For a com
 | [`build.yml`](../.github/workflows/build.yml) | continuous integration<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/build.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/build.yml) | High | `push` | On non-fork PRs, this workflow builds, lints and tests Mathlib using the reusable build template (`build_template.yml`). |
 | [`release_cache.yml`](../.github/workflows/release_cache.yml) | publish release cache<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/release_cache.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/release_cache.yml) | High | `push (v4.* tags), workflow_dispatch` | On every `v4.*` release tag, this workflow builds the tagged commit using the reusable build template (`build_template.yml`) and publishes its cache to the `master` container. When the cache is already complete, the build uploads nothing. |
 
+<!-- TODO: Remove this paragraph when no active Batteries adaptations remain in mathlib4-nightly-testing. -->
+Batteries adaptations on `mathlib4-nightly-testing` also retain push builds and status reports.
+Their reporting job uses the existing `mathlib-nightly-testing` App.
+
+Batteries adaptation PRs come from `leanprover-community/mathlib4-adaptations`.
+They use `build_fork.yml`, including while they are drafts. The shared fork has Actions disabled.
+PR tests accept full commit pins for unmerged dependencies; Bors requires stable dependency references.
+A separate job reports build, test, and lint results on the Batteries PR, with status comments and `builds-mathlib` / `breaks-mathlib` labels.
+It uses `lean-pr-testing-comments.sh` from `mathlib-ci`.
+It posts a fresh comment when `awaiting-mathlib` is present and removes that label after success.
+Read the [Batteries contributor guide](https://github.com/leanprover-community/batteries#mathlib-adaptations)
+for the adaptation process and the [workflow reference](https://github.com/leanprover-community/batteries/blob/main/docs/ci/mathlib-adaptations.md)
+for fork permissions and recovery procedures.
+
 ### The main CI pipelines above all use this reusable workflow for the base logic:
 | File  | Description |
 |---|---|
@@ -102,4 +116,4 @@ Primary trigger for this section: completion of other workflows (`workflow_run`)
 | [`olean_report_wf_run.yaml`](../.github/workflows/olean_report_wf_run.yaml) | olean report (workflow_run)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/olean_report_wf_run.yaml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/olean_report_wf_run.yaml) | Low | `workflow_run` | Privileged companion to `olean_report.yaml`. Downloads the bridge artifact and posts or updates the olean diff as a comment on the PR. |
 | [`decls-diff.yml`](../.github/workflows/decls-diff.yml) | Declarations diff (post-build)<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/decls-diff.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/decls-diff.yml) | Low | `workflow_run` | Post-build companion to `ci` that diffs the `import-graph` artifact of a PR build against its master merge-base and patches the `### PR summary` comment's declarations-diff section with the Lean-aware result (or a cache-miss notice). |
 | [`export_telemetry.yaml`](../.github/workflows/export_telemetry.yaml) | Export workflow telemetry<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/export_telemetry.yaml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/export_telemetry.yaml) | Low | `workflow_run` | Exports CI run telemetry to OTLP when selected CI workflows complete. |
-| [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) | Export cross-reference data<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/export_crossrefs.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/export_crossrefs.yml) | Low | `workflow_run` | After a successful master `ci` build, regenerates the `@[wikidata]`/`@[stacks]`/`@[kerodon]` cross-reference JSON via `scripts/export_crossrefs.lean` and pushes it to the versioned crossrefs repository when the entries change. |
+| [`export_crossrefs.yml`](../.github/workflows/export_crossrefs.yml) | Export cross-reference data<br>[![passed/failed](https://img.shields.io/github/actions/workflow/status/leanprover-community/mathlib4/export_crossrefs.yml?label=status)](https://github.com/leanprover-community/mathlib4/actions/workflows/export_crossrefs.yml) | Low | `workflow_run` | After a successful master `ci` build, regenerates the cross-reference JSON (decls. with a `CrossRef.Tag`) via `scripts/export_crossrefs.lean` and pushes it to the versioned crossrefs repository when the entries change. |

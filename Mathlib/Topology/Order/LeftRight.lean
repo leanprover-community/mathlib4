@@ -130,7 +130,7 @@ theorem nhdsWithinLT_sup_nhdsWithinGT (a : α) :
 @[to_dual nhdsLT_sup_nhdsWithin_singleton]
 lemma nhdsGT_sup_nhdsWithin_singleton (a : α) :
     𝓝[>] a ⊔ 𝓝[{a}] a = 𝓝[≥] a := by
-  simp only [union_singleton, Ioi_insert, ← nhdsWithin_union]
+  simp only [union_singleton, insert_Ioi, ← nhdsWithin_union]
 
 lemma nhdsWithin_uIoo_left_le_nhdsNE {a b : α} : 𝓝[uIoo a b] a ≤ 𝓝[≠] a :=
   nhdsWithin_mono _ (by simp)

@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 module
 
-public meta import Aesop
 public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Simproc.ExistsAndEq
@@ -255,8 +254,8 @@ theorem inter_singleton_eq_empty : s ∩ {a} = ∅ ↔ a ∉ s := by
 @[simp] alias ⟨_, singleton_inter_of_notMem⟩ := singleton_inter_eq_empty
 @[simp] alias ⟨_, inter_singleton_of_notMem⟩ := inter_singleton_eq_empty
 
-@[simp] lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
-@[simp] lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
+lemma singleton_inter_of_mem (ha : a ∈ s) : {a} ∩ s = {a} := by simpa
+lemma inter_singleton_of_mem (ha : a ∈ s) : s ∩ {a} = {a} := by simpa
 
 theorem notMem_singleton_empty {s : Set α} : s ∉ ({∅} : Set (Set α)) ↔ s.Nonempty :=
   nonempty_iff_ne_empty.symm
@@ -378,7 +377,7 @@ theorem pair_comm (a b : α) : ({a, b} : Set α) = {b, a} :=
 
 theorem pair_eq_pair_iff {x y z w : α} :
     ({x, y} : Set α) = {z, w} ↔ x = z ∧ y = w ∨ x = w ∧ y = z := by
-  simp [subset_antisymm_iff, insert_subset_iff]; aesop
+  simp [subset_antisymm_iff, insert_subset_iff]; grind
 
 theorem pair_subset_iff : {a, b} ⊆ s ↔ a ∈ s ∧ b ∈ s := by grind
 
