@@ -239,7 +239,8 @@ theorem preErgodic_of_dense_iUnion_preimage_one
     (hqmp : QuasiMeasurePreserving f μ μ) :
     PreErgodic f μ where
   aeconst_set s hsm hs := by
-    refine aeconst_of_dense_aestabilizer_smul hsm <| hf.mono <| iUnion_subset fun n x hx ↦ ?_
+    refine aeconst_of_dense_aestabilizer_smul (G := G) hsm ?_
+    refine hf.mono <| iUnion_subset fun n x hx ↦ ?_
     rw [← MulAction.aestabilizer_congr (hqmp.preimage_iterate_ae_eq n hs)]
     apply MulAction.stabilizer_le_aestabilizer
     simp_all [Set.ext_iff, mem_smul_set_iff_inv_smul_mem]
