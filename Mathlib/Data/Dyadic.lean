@@ -6,6 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Data.Nat.Cast.Defs
 public import Mathlib.Order.Defs.LinearOrder
 
 set_option doc.verso true
@@ -19,8 +20,6 @@ core.
 -/
 
 @[expose] public section
-
-assert_not_exists Real
 
 instance : LinearOrder Dyadic where
   le_refl := Std.IsPreorder.le_refl
@@ -46,6 +45,22 @@ instance : AddCommGroup Dyadic where
   zsmul_neg' := by grind
 
 namespace Dyadic
+
+-- From Violeta Hernández's leanprover/lean4#15532. TODO: Remove the following instance and
+-- attributes once that PR is included in Mathlib's Lean toolchain.
+attribute [coe] toRat
+
+instance : Coe Dyadic Rat := ⟨toRat⟩
+
+attribute [norm_cast] toRat_zero toRat_add toRat_neg toRat_sub toRat_mul toRat_pow
+  toRat_intCast toRat_natCast toRat_eq_zero_iff toRat_lt_toRat_iff toRat_le_toRat_iff
+attribute [simp, norm_cast] toRat_inj
+
+@[simp, norm_cast]
+theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) := by
+  rw [← Nat.cast_ofNat (R := Dyadic)]
+  exact toRat_natCast n
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)

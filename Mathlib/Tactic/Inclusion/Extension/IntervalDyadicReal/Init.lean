@@ -21,55 +21,11 @@ This file interprets dyadic rationals as real numbers, initializes the `interval
 inclusion family, and defines the `ToSet`, `Univ`, `Refine` and `Coarsen` instances it uses in the
 `inclusion` tactic.
 
-The real-specific dyadic API lives here so that `Mathlib.Data.Dyadic` does not import real numbers.
+Dyadic rationals are coerced to real numbers through `ℚ`. The bundled maps used in the correctness
+proofs live here so that `Mathlib.Data.Dyadic` does not import real numbers.
 -/
 
 @[expose] public section
-
-namespace Dyadic
-
-/-- Interpret a dyadic rational as a real number. -/
-def toReal (d : Dyadic) : ℝ := d.toRat
-
-@[simp]
-lemma toReal_natCast (n : ℕ) : toReal (n : Dyadic) = (n : ℝ) := by simp [toReal]
-
-@[simp]
-lemma toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    toReal (ofNat(n) : Dyadic) = (ofNat(n) : ℝ) := by
-  rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := ℝ)]
-  exact toReal_natCast n
-
-@[simp]
-lemma toReal_intCast (z : ℤ) : toReal (z : Dyadic) = (z : ℝ) := by simp [toReal]
-
-@[simp]
-lemma toReal_add (a b : Dyadic) : toReal (a + b) = toReal a + toReal b := by simp [toReal]
-
-@[simp]
-lemma toReal_mul (a b : Dyadic) : toReal (a * b) = toReal a * toReal b := by simp [toReal]
-
-@[simp]
-lemma toReal_pow (a : Dyadic) (n : ℕ) : toReal (a ^ n) = toReal a ^ n := by
-  simpa [toReal] using map_pow (Rat.castHom ℝ) a.toRat n
-
-/-- `Dyadic.toReal` as an additive monoid homomorphism. -/
-def toRealAddMonoidHom : Dyadic →+ ℝ where
-  toFun := toReal
-  map_zero' := by simp [toReal]
-  map_add' := toReal_add
-
-@[simp]
-lemma toReal_le_toReal {a b : Dyadic} : toReal a ≤ toReal b ↔ a ≤ b := by simp [toReal]
-
-@[simp]
-lemma toReal_lt_toReal {a b : Dyadic} : toReal a < toReal b ↔ a < b := by simp [toReal]
-
-/-- `Dyadic.toReal` as an order embedding. -/
-def toRealOrderEmbedding : Dyadic ↪o ℝ :=
-  OrderEmbedding.ofStrictMono toReal fun _ _ h ↦ toReal_lt_toReal.mpr h
-
-end Dyadic
 
 namespace Inclusion
 
@@ -79,21 +35,32 @@ namespace IntervalDyadicReal
 meta initialize intervalDyadicRealFamily : InclusionFamily ←
   registerInclusionFamily `interval_dyadic_real
 
+/-- Coercion from dyadic rationals to real numbers as an additive monoid homomorphism. -/
+def castAddMonoidHom : Dyadic →+ ℝ where
+  toFun := (↑)
+  map_zero' := by simp
+  map_add' := by simp
+
+/-- Coercion from dyadic rationals to real numbers as an order embedding. -/
+@[simps! apply]
+def castOrderEmbedding : Dyadic ↪o ℝ :=
+  OrderEmbedding.ofStrictMono (↑) fun _ _ h ↦ by simpa using h
+
 instance instToSetIntervalDyadicReal : ToSet (Interval Dyadic) ℝ where
-  toSet I := (I.map Dyadic.toReal).toSet
+  toSet I := (I.map (↑)).toSet
 
 instance : Univ (Interval Dyadic) ℝ where
   univ := Interval.univ Dyadic
-  mem_univ := Interval.mem_map_univ Dyadic.toReal
+  mem_univ := Interval.mem_map_univ ((↑) : Dyadic → ℝ)
 
 instance : Refine (Interval Dyadic) ℝ where
   refine := Interval.inter
-  mem_refine := Interval.inter_mem Dyadic.toRealOrderEmbedding
+  mem_refine := Interval.inter_mem castOrderEmbedding
 
 instance : Coarsen (Interval Dyadic) ℝ where
   coarsen := Interval.hull
-  mem_coarsen_left := Interval.hull_mem_left Dyadic.toRealOrderEmbedding
-  mem_coarsen_right := Interval.hull_mem_right Dyadic.toRealOrderEmbedding
+  mem_coarsen_left := Interval.hull_mem_left castOrderEmbedding
+  mem_coarsen_right := Interval.hull_mem_right castOrderEmbedding
 
 end IntervalDyadicReal
 

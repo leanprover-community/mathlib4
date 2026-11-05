@@ -28,14 +28,14 @@ meta def mkRealIVar : InclusionExt :=
     (Interval.mkBinarySplitCover q(binarySplit))
 
 @[grind =]
-theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map Dyadic.toReal :=
+theorem mem_iff_mem_map {x : ℝ} {I : Interval Dyadic} : x ∈ I ↔ x ∈ I.map ((↑) : Dyadic → ℝ) :=
   Iff.rfl
 
 section Constants
 
 @[inclusion_op interval_dyadic_real]
 theorem natCast_mem (n : ℕ) : (n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
-  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (n : Dyadic) Dyadic.toReal
+  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (n : Dyadic) ((↑) : Dyadic → ℝ)
 
 @[inclusion_op interval_dyadic_real]
 theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : Dyadic) := by
@@ -43,7 +43,7 @@ theorem ofNat_mem (n : ℕ) : (OfNat.ofNat n : ℝ) ∈ Interval.singleton (n : 
   exact natCast_mem n
 
 theorem intCast_mem (z : ℤ) : (z : ℝ) ∈ Interval.singleton (z : Dyadic) := by
-  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) Dyadic.toReal
+  simpa [mem_iff_mem_map] using Interval.mem_map_singleton (z : Dyadic) ((↑) : Dyadic → ℝ)
 
 end Constants
 
@@ -57,30 +57,30 @@ section Arithmetic
 
 @[inclusion_op interval_dyadic_real]
 theorem add_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x + y ∈ I.add J :=
-  Interval.add_mem Dyadic.toRealAddMonoidHom hx hy
+  Interval.add_mem castAddMonoidHom hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem neg_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : -x ∈ I.neg :=
-  Interval.neg_mem Dyadic.toRealAddMonoidHom hx
+  Interval.neg_mem castAddMonoidHom hx
 
 @[inclusion_op interval_dyadic_real]
 theorem abs_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : |x| ∈ I.abs :=
-  Interval.abs_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
-    (map_neg Dyadic.toRealAddMonoidHom) hx
+  Interval.abs_mem castOrderEmbedding (map_zero castAddMonoidHom)
+    (map_neg castAddMonoidHom) hx
 
 @[inclusion_op interval_dyadic_real]
 theorem sub_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x - y ∈ I.sub J :=
-  Interval.sub_mem Dyadic.toRealAddMonoidHom hx hy
+  Interval.sub_mem castAddMonoidHom hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem mul_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) : x * y ∈ I.mul J :=
-  Interval.mul_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
-    Dyadic.toReal_mul hx hy
+  Interval.mul_mem castOrderEmbedding (map_zero castAddMonoidHom) (by simp) hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem pow_mem (n : ℕ) {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) : x ^ n ∈ I.pow n :=
-  Interval.pow_mem Dyadic.toRealOrderEmbedding (map_zero Dyadic.toRealAddMonoidHom)
-    (by exact map_one (Rat.castHom ℝ)) (map_neg Dyadic.toRealAddMonoidHom) Dyadic.toReal_pow n hx
+  Interval.pow_mem castOrderEmbedding (map_zero castAddMonoidHom)
+    (by exact map_one (Rat.castHom ℝ)) (map_neg castAddMonoidHom)
+    (by intros; simpa using map_pow (Rat.castHom ℝ) _ _) n hx
 
 end Arithmetic
 
@@ -89,57 +89,57 @@ section Props
 @[inclusion_op interval_dyadic_real]
 theorem le_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) :
     (x ≤ y) ∈ I.le J :=
-  Interval.le_mem Dyadic.toRealOrderEmbedding hx hy
+  Interval.le_mem castOrderEmbedding hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem lt_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) :
     (x < y) ∈ I.lt J :=
-  Interval.lt_mem Dyadic.toRealOrderEmbedding hx hy
+  Interval.lt_mem castOrderEmbedding hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem eq_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) :
     (x = y) ∈ I.eq J :=
-  Interval.eq_mem Dyadic.toRealOrderEmbedding hx hy
+  Interval.eq_mem castOrderEmbedding hx hy
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Ici {a x : ℝ} {I J : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) :
     (x ∈ Set.Ici a) ∈ I.le J :=
-  Interval.mem_Ici Dyadic.toRealOrderEmbedding ha hx
+  Interval.mem_Ici castOrderEmbedding ha hx
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Ioi {a x : ℝ} {I J : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) :
     (x ∈ Set.Ioi a) ∈ I.lt J :=
-  Interval.mem_Ioi Dyadic.toRealOrderEmbedding ha hx
+  Interval.mem_Ioi castOrderEmbedding ha hx
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Iic {b x : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hb : b ∈ J) :
     (x ∈ Set.Iic b) ∈ I.le J :=
-  Interval.mem_Iic Dyadic.toRealOrderEmbedding hx hb
+  Interval.mem_Iic castOrderEmbedding hx hb
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Iio {b x : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hb : b ∈ J) :
     (x ∈ Set.Iio b) ∈ I.lt J :=
-  Interval.mem_Iio Dyadic.toRealOrderEmbedding hx hb
+  Interval.mem_Iio castOrderEmbedding hx hb
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Icc {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) (hb : b ∈ K) :
     (x ∈ Set.Icc a b) ∈ (I.le J).and (J.le K) :=
-  Interval.mem_Icc Dyadic.toRealOrderEmbedding ha hx hb
+  Interval.mem_Icc castOrderEmbedding ha hx hb
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Ico {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) (hb : b ∈ K) :
     (x ∈ Set.Ico a b) ∈ (I.le J).and (J.lt K) :=
-  Interval.mem_Ico Dyadic.toRealOrderEmbedding ha hx hb
+  Interval.mem_Ico castOrderEmbedding ha hx hb
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Ioc {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) (hb : b ∈ K) :
     (x ∈ Set.Ioc a b) ∈ (I.lt J).and (J.le K) :=
-  Interval.mem_Ioc Dyadic.toRealOrderEmbedding ha hx hb
+  Interval.mem_Ioc castOrderEmbedding ha hx hb
 
 @[inclusion_op interval_dyadic_real]
 theorem mem_Ioo {a b x : ℝ} {I J K : Interval Dyadic} (ha : a ∈ I) (hx : x ∈ J) (hb : b ∈ K) :
     (x ∈ Set.Ioo a b) ∈ (I.lt J).and (J.lt K) :=
-  Interval.mem_Ioo Dyadic.toRealOrderEmbedding ha hx hb
+  Interval.mem_Ioo castOrderEmbedding ha hx hb
 
 end Props
 
@@ -155,8 +155,8 @@ def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
 
 theorem mem_roundOut_iff {x : ℝ} {I : Interval Dyadic} {prec : ℕ} :
     x ∈ roundOut I prec ↔
-      (∀ J : Dyadic, I.lb = J → (J.roundDown prec).toReal ≤ x) ∧
-      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec).toReal) := by
+      (∀ J : Dyadic, I.lb = J → (J.roundDown prec : ℝ) ≤ x) ∧
+      (∀ J : Dyadic, I.ub = J → x ≤ (J.roundUp prec : ℝ)) := by
   rw [mem_iff_mem_map, Interval.mem_map_iff]
   simp [roundOut, WithBot.map_eq_some_iff, WithTop.map_eq_some_iff]
 
@@ -164,8 +164,8 @@ theorem roundOut_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ)
     x ∈ roundOut I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
   refine mem_roundOut_iff.mpr ⟨fun l hl ↦ ?_, fun u hu ↦ ?_⟩
-  · exact (Dyadic.toReal_le_toReal.mpr Dyadic.roundDown_le).trans (hx.1 l hl)
-  · exact (hx.2 u hu).trans (Dyadic.toReal_le_toReal.mpr Dyadic.le_roundUp)
+  · exact (castOrderEmbedding.monotone Dyadic.roundDown_le).trans (hx.1 l hl)
+  · exact (hx.2 u hu).trans (castOrderEmbedding.monotone Dyadic.le_roundUp)
 
 end Rounding
 

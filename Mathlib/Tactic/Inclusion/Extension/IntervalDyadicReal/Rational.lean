@@ -51,10 +51,10 @@ def rat (x : ℚ) (prec : ℕ) : Interval Dyadic :=
 
 @[inclusion_op interval_dyadic_real]
 theorem ratCast_mem (q : ℚ) (prec : ℕ) : (q : ℝ) ∈ rat q prec := by
-  apply Interval.mem_map_Icc Dyadic.toReal
+  apply Interval.mem_map_Icc ((↑) : Dyadic → ℝ)
   · exact Rat.cast_le.mpr Rat.toRat_toDyadic_le
   · split_ifs with h
-    · rw [Dyadic.toReal, h]
+    · rw [h]
     · rw [← Dyadic.ofIntWithPrec_one]
       exact Rat.cast_lt.mpr Rat.lt_toRat_toDyadic_add |>.le
 
@@ -105,7 +105,7 @@ theorem scientific_mem (m : ℕ) (s : Bool) (e prec : ℕ) :
     (OfScientific.ofScientific (α := ℝ) m s e) ∈ scientific m s e prec := by
   cases s
   · simpa [scientific, NNRatCast.ofScientific_eq_ite, mem_iff_mem_map] using
-      Interval.mem_map_singleton (m * (10 : Dyadic) ^ e) Dyadic.toReal
+      Interval.mem_map_singleton (m * (10 : Dyadic) ^ e) ((↑) : Dyadic → ℝ)
   · simpa [scientific, NNRatCast.ofScientific_eq_ite] using
       natDiv_mem m prec (Nat.pow_pos (by decide : 0 < 10))
 

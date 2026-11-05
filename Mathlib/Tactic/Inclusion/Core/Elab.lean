@@ -233,7 +233,7 @@ to a theorem which must be formatted in a specific way. We give these a special 
 @[inclusion_op interval_dyadic_real]
 theorem add_mem {x y : ℝ} {I J : Interval Dyadic} (hx : x ∈ I) (hy : y ∈ J) :
     x + y ∈ I.add J :=
-  Interval.add_mem Dyadic.toRealAddMonoidHom hx hy
+  Interval.add_mem castAddMonoidHom hx hy
 ```
 
 ```lean
