@@ -99,14 +99,12 @@ theorem _root_.isClub_Ici (x : α) : IsClub (Ici x) := by
 theorem _root_.isClub_Ioi [NoMaxOrder α] (x : α) : IsClub (Ioi x) := by
   simpa using IsClub.univ.inter_Ioi x
 
+theorem _root_.IsMax.isClub_singleton (hx : IsMax x) : IsClub {x} :=
+  ⟨dirSupClosed_singleton x, fun y ↦ ⟨x, rfl, hx.isTop y⟩⟩
+
 @[simp]
 theorem singleton_top [OrderTop α] : IsClub ({⊤} : Set α) :=
-  ⟨dirSupClosed_singleton _, by simp⟩
-
-theorem _root_.IsMax.isClub_singleton (hx : IsMax x) : IsClub {x} := by
-  let : Top α := ⟨x⟩
-  let : OrderTop α := ⟨hx.isTop⟩
-  exact singleton_top
+  isMax_top.isClub_singleton
 
 theorem sInter_of_orderTop {s : Set (Set α)} [OrderTop α] (hs : ∀ x ∈ s, IsClub x) :
     IsClub (⋂₀ s) := by
