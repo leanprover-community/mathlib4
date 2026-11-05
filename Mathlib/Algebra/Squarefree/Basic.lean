@@ -39,6 +39,7 @@ variable {R : Type*}
 
 /-- An element of a monoid is squarefree if the only squares that
   divide it are the squares of units. -/
+@[oeis A005117]
 def Squarefree [Monoid R] (r : R) : Prop :=
   ∀ x : R, x * x ∣ r → IsUnit x
 
@@ -63,12 +64,8 @@ theorem Squarefree.ne_zero [MonoidWithZero R] [Nontrivial R] {m : R} (hm : Squar
   exact not_squarefree_zero hm
 
 @[simp]
-theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x := by
-  rintro y ⟨z, hz⟩
-  rw [mul_assoc] at hz
-  rcases h.isUnit_or_isUnit hz with (hu | hu)
-  · exact hu
-  · apply isUnit_of_mul_isUnit_left hu
+theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squarefree x :=
+  fun _ ↦ h.isUnit_of_mul_self_dvd
 
 @[simp]
 theorem Prime.squarefree [CommMonoidWithZero R] [IsCancelMulZero R] {x : R} (h : Prime x) :
@@ -98,7 +95,7 @@ theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : �
 
 theorem Squarefree.isUnit_of_pow [Monoid R] {x : R} {n : ℕ} (hn : 2 ≤ n)
     (h : Squarefree (x ^ n)) : IsUnit x := by
-  by_contra!
+  by_contra this
   grind [h.eq_zero_or_one_of_pow_of_not_isUnit this]
 
 theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
@@ -298,6 +295,15 @@ theorem _root_.exists_sq_mul_squarefree (x : R) : ∃ e d : R, e ^ 2 * d = x ∧
       rw [squarefree_mul_iff]
       exact ⟨(hp.isRelPrime_iff_not_dvd.mpr hpd).symm, hd, hp.squarefree⟩
 
+/-- A nonzero square factor can be cancelled from a square. -/
+theorem _root_.IsSquare.of_mul_right {x y : R} (hy : y ≠ 0) (h : IsSquare (x * y))
+    (hy' : IsSquare y) : IsSquare x := by
+  obtain ⟨c, rfl⟩ := hy'
+  obtain ⟨d, hd⟩ := h
+  obtain ⟨e, rfl⟩ : c ∣ d :=
+    (pow_dvd_pow_iff_dvd two_ne_zero).mp ⟨x, by rw [pow_two, pow_two, ← hd, mul_comm]⟩
+  exact ⟨e, mul_right_cancel₀ hy (by rw [hd]; simp [mul_comm, mul_left_comm])⟩
+
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
@@ -320,7 +326,7 @@ theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     rcases WfDvdMonoid.exists_irreducible_factor hu h0 with ⟨b, hib, hdvd⟩
     apply le_trans (emultiplicity_le_emultiplicity_of_dvd_left hdvd)
     rw [emultiplicity_eq_count_normalizedFactors hib x0]
-    exact_mod_cast h (normalize b)
+    exact mod_cast h (normalize b)
 
 end UniqueFactorizationMonoid
 

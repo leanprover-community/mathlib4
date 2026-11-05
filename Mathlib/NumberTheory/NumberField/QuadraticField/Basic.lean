@@ -62,7 +62,6 @@ theorem discr_eq_quadraticAlgebra_discr {a b : ℤ}
   rw [← discr_eq_discr K ((QuadraticAlgebra.basis a b).map f.toIntAlgEquiv.symm),
     Module.Basis.coe_map, RingEquiv.symm_toIntAlgEquiv, AlgEquiv.coe_toLinearEquiv,
     ← Algebra.discr_eq_discr_of_algEquiv, ← Algebra.discr_quadraticAlgebra]
-  rfl
 
 variable (K)
 
@@ -74,14 +73,14 @@ theorem isFundamentalDiscr_discr : Int.IsFundamentalDiscr (discr K) := by
   exact QuadraticAlgebra.Int.isIntegrallyClosed_iff.mp <| IsIntegrallyClosed.of_equiv f.toRingEquiv
 
 /-- The ring of integers of a quadratic field `K` is the quadratic algebra of discriminant
-`discr K`, see `Int.IsFundamentalDiscr.discr_ediv_four_emod_four`. -/
+`discr K`, see `QuadraticAlgebra.discr_ediv_emod`. -/
 theorem nonempty_algEquiv_ringOfIntegers :
     Nonempty (𝓞 K ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
   refine ⟨f.trans (Nonempty.some ?_)⟩
   rw [QuadraticAlgebra.nonempty_algEquiv_int_iff,
-    (isFundamentalDiscr_discr K).discr_ediv_four_emod_four,
+    QuadraticAlgebra.discr_ediv_emod (isFundamentalDiscr_discr K).emod_four_eq_zero_or_one,
     discr_eq_quadraticAlgebra_discr f.toRingEquiv]
 
 /-- Every quadratic field is `ℚ(√(discr K))`. -/
@@ -91,13 +90,13 @@ theorem nonempty_algEquiv_quadraticAlgebra_discr :
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
   exact ⟨(algEquivOfRingEquiv f.toRingEquiv).trans <|
     (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) (b : ℚ)).trans <|
-      QuadraticAlgebra.equivOfEq (by rw [QuadraticAlgebra.Int.discr_intCast,
+      QuadraticAlgebra.equivOfEq (by rw [QuadraticAlgebra.discr_intCast,
         discr_eq_quadraticAlgebra_discr f.toRingEquiv]) rfl⟩
 
 /-- The discriminant of a quadratic field is not `1`. A more general version is the
 Hermite-Minkowski theorem, see `NumberField.abs_discr_gt_two`. -/
 theorem discr_ne_one : discr K ≠ 1 := by
-  by_contra! h
+  by_contra h
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
   exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)

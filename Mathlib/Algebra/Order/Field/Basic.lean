@@ -239,9 +239,11 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*}
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
-theorem div_nat_le_self_of_nonnneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
+theorem div_nat_le_self_of_nonneg (ha : 0 ≤ a) (n : ℕ) : a / n ≤ a :=
   if h : n = 0 then by simpa [h]
   else div_le_self ha (n.one_le_cast_iff_ne_zero.mpr h)
+
+@[deprecated (since := "2026-09-17")] alias div_nat_le_self_of_nonnneg := div_nat_le_self_of_nonneg
 
 theorem div_nat_lt_self_of_pos_of_two_le (ha : 0 < a) {n : ℕ} (hn : 2 ≤ n) : a / n < a :=
   div_lt_self ha (n.one_lt_cast.mpr hn)
@@ -734,12 +736,12 @@ lemma zpow_zero_pos {α : Type*} [Semifield α] [PartialOrder α] [IsStrictOrder
 /-- The `positivity` extension which identifies expressions of the form `a / b`,
 such that `positivity` successfully recognises both `a` and `b`. -/
 @[positivity _ / _] meta def evalDiv : PositivityExt where eval {u α} zα pα? e := do
-  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← withReducible (whnf e)
+  let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnf e
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
   trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
   let _a ← synthInstanceQ q(Semifield $α)
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
+  let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   match (dependent := true) pα? with
   | none =>
     match ← core zα pα? a, ← core zα pα? b with
@@ -767,10 +769,10 @@ such that `positivity` successfully recognises both `a` and `b`. -/
 such that `positivity` successfully recognises `a`. -/
 @[positivity _⁻¹]
 meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
-  let .app (f : Q($α → $α)) (a : Q($α)) ← withReducible (whnf e) | throwError "not ⁻¹"
+  let .app (f : Q($α → $α)) (a : Q($α)) ← whnf e | throwError "not ⁻¹"
   let _e_eq : $e =Q $f $a := ⟨⟩
   let _a ← synthInstanceQ q(Semifield $α)
-  let ⟨_f_eq⟩ ← withDefault <| withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
+  let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(Inv.inv)
   match (dependent := true) pα? with
   | none =>
     match ← core zα pα? a with
@@ -799,7 +801,7 @@ meta def evalInv : PositivityExt where eval {u α} zα pα? e := do
 @[positivity _ ^ (0 : ℤ), Pow.pow _ (0 : ℤ)]
 meta def evalPowZeroInt : PositivityExt where eval {u α} _zα pα? e :=
   match pα? with | none => pure .none | some _ => do
-  let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
+  let .app (.app _ (a : Q($α))) _ ← whnf e | throwError "not ^"
   let _a ← synthInstanceQ q(Semifield $α)
   let _a ← synthInstanceQ q(LinearOrder $α)
   let _a ← synthInstanceQ q(IsStrictOrderedRing $α)

@@ -169,7 +169,7 @@ theorem negPart_map_norm (f : α →ₛ ℝ) : (negPart f).map norm = negPart f 
 theorem posPart_sub_negPart (f : α →ₛ ℝ) : f.posPart - f.negPart = f := by
   simp only [posPart, negPart]
   ext a
-  rw [coe_sub]
+  rw [FunLike.coe_sub]
   exact max_zero_sub_eq_self (f a)
 
 end PosPart
@@ -226,7 +226,6 @@ theorem integral_const {m : MeasurableSpace α} (μ : Measure α) (y : F) :
       integral_eq_sum_of_subset <| (filter_subset _ _).trans (range_const_subset _ _)
     _ = μ.real univ • y := by simp [Set.preimage]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ : Measure α) {s : Set α}
     (hs : MeasurableSet s) : (piecewise s hs f 0).integral μ = f.integral (μ.restrict s) := by
@@ -234,13 +233,12 @@ theorem integral_piecewise_zero {m : MeasurableSpace α} (f : α →ₛ F) (μ :
   refine (integral_eq_sum_of_subset ?_).trans
       ((sum_congr rfl fun y hy => ?_).trans (integral_eq_sum_filter _ _).symm)
   · intro y hy
-    simp only [mem_filter, mem_range, coe_piecewise, coe_zero, piecewise_eq_indicator,
+    simp only [mem_filter, mem_range, coe_piecewise, FunLike.coe_zero, piecewise_eq_indicator,
       mem_range_indicator] at *
     rcases hy with ⟨⟨rfl, -⟩ | ⟨x, -, rfl⟩, h₀⟩
     exacts [(h₀ rfl).elim, ⟨Set.mem_range_self _, h₀⟩]
-  · dsimp
-    rw [Set.piecewise_eq_indicator, indicator_preimage_of_notMem,
-      measureReal_restrict_apply (f.measurableSet_preimage _)]
+  · simp only [coe_piecewise, FunLike.coe_zero, piecewise_eq_indicator]
+    rw [indicator_preimage_of_notMem, measureReal_restrict_apply (f.measurableSet_preimage _)]
     exact fun h₀ => (mem_filter.1 hy).2 (Eq.symm h₀)
 
 /-- Calculate the integral of `g ∘ f : α →ₛ F`, where `f` is an integrable function from `α` to `E`
@@ -316,7 +314,7 @@ theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)
   simp_rw [integral_def]
   refine setToSimpleFunc_add_left'
     (weightedSMul μ) (weightedSMul ν) (weightedSMul (μ + ν)) (fun s _ hμνs => ?_) hf
-  rw [lt_top_iff_ne_top, Measure.coe_add, Pi.add_apply, ENNReal.add_ne_top] at hμνs
+  rw [lt_top_iff_ne_top, add_apply, ENNReal.add_ne_top] at hμνs
   rw [weightedSMul_add_measure _ _ hμνs.1 hμνs.2]
 
 section Order
@@ -500,8 +498,8 @@ theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = �
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
     filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
-    rw [SimpleFunc.sub_apply, ← h₁, ← h₂]
-    exact DFunLike.congr_fun (toSimpleFunc f).posPart_sub_negPart.symm _
+    rw [sub_apply, ← h₁, ← h₂]
+    congrm $((toSimpleFunc f).posPart_sub_negPart.symm) _
   · exact (SimpleFunc.integrable f).pos_part.congr ae_eq₁
   · exact (SimpleFunc.integrable f).neg_part.congr ae_eq₂
 
@@ -534,7 +532,7 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM' ℝ
 
 /-- The Bochner integral in L1 space -/
-irreducible_def integral : (α →₁[μ] E) → E :=
+@[no_expose] def integral : (α →₁[μ] E) → E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by
@@ -560,8 +558,7 @@ variable (𝕜) in
 theorem integral_eq' (f : α →₁[μ] E) : integral f = integralCLM' 𝕜 f := by
   apply isClosed_property (simpleFunc.denseRange one_ne_top)
     (isClosed_eq _ (integralCLM' 𝕜).continuous) _ f
-  · simp_rw [integral_def]
-    exact (integralCLM (E := E)).continuous
+  · exact (integralCLM (E := E)).continuous
   intro f
   norm_cast
 
