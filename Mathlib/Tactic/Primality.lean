@@ -44,9 +44,9 @@ def elabKnownPrimes (hs : Array Term) : TacticM (Std.HashMap Nat Expr) := do
       throwError "{h} is not recognized as a proof of `Nat.Prime n`"
     have e : Q(Nat) := e
     have h : Q(Nat.Prime $e) := h
-    let some ⟨q, qQ, pn⟩ ← evalNumeral? e |
+    let some ⟨p, pQ, pn⟩ ← evalNumeral? e |
       throwError "the tactic cannot simplify {e} to a numeral"
-    known := known.insert q q(isNat.natElim (p := fun m ↦ Nat.Prime m → Nat.Prime $qQ) $pn id $h)
+    known := known.insert p q(isNat.natElim (p := fun m ↦ Nat.Prime m → Nat.Prime $pQ) $pn id $h)
   return known
 
 /-- `primality` proves a goal `Nat.Prime n`, where `norm_num` evaluates `n` to a numeral, from a
