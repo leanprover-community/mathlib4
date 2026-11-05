@@ -113,7 +113,7 @@ The set of all `n` such that `X^n` has a non-zero coefficient.
 def support (p : SkewPolynomial R) : Finset ℕ :=
   Finset.map ⟨toAdd, toAdd.injective⟩ (SkewMonoidAlgebra.support p)
 
-/-- Though `SkewPolynomial.support` is not definiyionally equal to `SkewMonoidAlgebra.support` we
+/-- Though `SkewPolynomial.support` is not definitionally equal to `SkewMonoidAlgebra.support` we
   can relate them using the following lemma. -/
 lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
     p.support = Finset.map (Multiplicative.toAdd (α := ℕ)) (SkewMonoidAlgebra.support p) := by

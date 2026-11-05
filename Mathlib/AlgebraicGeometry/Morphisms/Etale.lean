@@ -155,7 +155,6 @@ deriving Category, HasPullbacks, HasFiniteLimits
 
 variable (X : Scheme.{u})
 
-set_option backward.defeqAttrib.useBackward true in
 instance (Y : X.Etale) : dsimp% Etale Y.hom := Y.prop
 
 instance {X : Scheme.{u}} {Z Y : X.Etale} (f : Z ⟶ Y) : Etale f.left := by
