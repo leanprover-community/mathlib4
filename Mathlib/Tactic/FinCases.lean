@@ -10,8 +10,6 @@ public meta import Mathlib.Tactic.Core
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Fintype.Defs
 
-import Mathlib.Data.Finset.Attr
-
 /-!
 # The `fin_cases` tactic.
 

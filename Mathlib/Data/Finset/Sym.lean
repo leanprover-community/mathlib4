@@ -117,7 +117,6 @@ theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   contrapose!; exact sym2_eq_empty
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
 
 @[simp]

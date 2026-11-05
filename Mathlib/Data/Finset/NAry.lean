@@ -110,7 +110,6 @@ theorem image₂_nonempty_iff : (image₂ f s t).Nonempty ↔ s.Nonempty ∧ t.N
   rw [← coe_nonempty, coe_image₂]
   exact image2_nonempty_iff
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.image₂ (hs : s.Nonempty) (ht : t.Nonempty) : (image₂ f s t).Nonempty :=
   image₂_nonempty_iff.2 ⟨hs, ht⟩
 

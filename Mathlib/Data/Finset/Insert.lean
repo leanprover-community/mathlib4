@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 module
 
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Finset.Dedup
 public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.FinsetOps
@@ -95,7 +94,7 @@ theorem singleton_injective : Injective (singleton : α → Finset α) := fun _a
 theorem singleton_inj : ({a} : Finset α) = {b} ↔ a = b :=
   singleton_injective.eq_iff
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem singleton_nonempty (a : α) : ({a} : Finset α).Nonempty :=
   ⟨a, mem_singleton_self a⟩
 
@@ -286,7 +285,7 @@ theorem mk_cons {s : Multiset α} (h : (a ::ₘ s).Nodup) :
 @[simp]
 theorem cons_empty (a : α) : cons a ∅ (notMem_empty _) = {a} := rfl
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
@@ -428,7 +427,7 @@ theorem pair_comm (a b : α) : ({a, b} : Finset α) = {b, a} :=
 
 theorem insert_idem (a : α) (s : Finset α) : insert a (insert a s) = insert a s := by grind
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
   ⟨a, mem_insert_self a s⟩
 
