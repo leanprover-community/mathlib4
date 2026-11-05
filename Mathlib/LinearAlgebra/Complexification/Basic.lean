@@ -45,7 +45,7 @@ structure Complexification (M : Type*) where
   im : M
 
 open Lean.PrettyPrinter.Delaborator in
-/-- This prevents `mk x` being printed as `{ re := x.re, im := x.im }` by
+/-- This prevents `mk x.re y.im` being printed as `{ re := x.re, im := x.im }` by
 `delabStructureInstance`. -/
 @[app_delab Complexification.mk]
 meta def Complexification.delabMk : Delab := delabApp
