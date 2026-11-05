@@ -103,7 +103,7 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   empty' := by simp
   not_measurable' _ hi := ite_eq_right hi
   m_iUnion' _ hf₁ hf₂ := by
-    rw [Summable.hasSum_iff ENNReal.summable, ite_eq_left (MeasurableSet.iUnion hf₁),
+    rw [Summable.hasSum_iff CompleteLattice.summable, ite_eq_left (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => ite_eq_left (hf₁ n)
 

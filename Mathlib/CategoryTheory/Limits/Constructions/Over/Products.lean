@@ -114,7 +114,6 @@ end Over
 section Under
 variable {f : X ⟶ Y} {g : X ⟶ Z}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Pushout cocones from `X` are the same thing as binary cofans in `Under X`. -/
 @[simps]
@@ -228,7 +227,6 @@ abbrev widePullbackDiagramOfDiagramOver (B : C) {J : Type w} (F : Discrete J ⥤
     WidePullbackShape J ⥤ C :=
   WidePullbackShape.wideCospan B (fun j => (F.obj ⟨j⟩).left) fun j => (F.obj ⟨j⟩).hom
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
 def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : Cone F) :
@@ -344,7 +342,6 @@ theorem over_finiteProducts_of_finiteWidePullbacks [HasFiniteWidePullbacks C] {B
 
 end ConstructProducts
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Construct terminal object in the over category. This isn't an instance as it's not typically the
 way we want to define terminal objects.
 (For instance, this gives a terminal object which is different from the generic one given by

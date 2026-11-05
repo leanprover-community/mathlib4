@@ -167,7 +167,7 @@ variable [_i : Fact (finrank ℝ E = n)] (o : Orientation ℝ E (Fin n))
 /-- The volume form on an oriented real inner product space, a nonvanishing top-dimensional
 alternating form uniquely defined by compatibility with the orientation and inner product structure.
 -/
-irreducible_def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
+@[no_expose] def volumeForm : E [⋀^Fin n]→ₗ[ℝ] ℝ := by
   classical
     cases n with
     | zero =>
