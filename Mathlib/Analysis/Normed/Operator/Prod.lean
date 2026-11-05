@@ -63,7 +63,7 @@ theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ =
 
 @[simp]
 theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
-  Subtype.ext <| opNorm_prod f g
+  Nonneg.ext <| opNorm_prod f g
 
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/

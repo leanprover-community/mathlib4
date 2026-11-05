@@ -47,7 +47,7 @@ namespace Nonneg
 def unitsEquivPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
     [IsStrictOrderedRing R] [PosMulReflectLT R] :
     (Nonneg R)ˣ ≃* { r : R // 0 < r } where
-  toFun r := ⟨r, lt_of_le_of_ne r.val.property (Subtype.val_injective.ne r.ne_zero.symm)⟩
+  toFun r := ⟨r, lt_of_le_of_ne r.val.property (Nonneg.val_injective.ne r.ne_zero.symm)⟩
   invFun r := ⟨⟨r.val, r.property.le⟩, ⟨r.val⁻¹, inv_nonneg.mpr r.property.le⟩,
     by ext; simp [r.property.ne'], by ext; simp [r.property.ne']⟩
   left_inv r := by ext; rfl
@@ -109,7 +109,7 @@ instance instNNRatSMul : SMul ℚ≥0 (Nonneg α) where
       q • a := rfl
 
 instance divisionSemiring : DivisionSemiring (Nonneg α) :=
-  Subtype.coe_injective.divisionSemiring _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
+  Nonneg.val_injective.divisionSemiring _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
 
@@ -119,7 +119,7 @@ section LinearOrderedSemifield
 
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {x y : α}
 
-instance semifield : Semifield { x : α // 0 ≤ x } := fast_instance% {
+instance semifield : Semifield (Nonneg α) := fast_instance% {
   __ := divisionSemiring
   mul_comm := mul_comm
 }

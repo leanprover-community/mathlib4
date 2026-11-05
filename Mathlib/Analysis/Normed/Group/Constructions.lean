@@ -334,7 +334,7 @@ instance Pi.seminormedGroup : SeminormedGroup (∀ i, G i) where
 lemma Pi.norm_def' : ‖f‖ = ↑(Finset.univ.sup fun b => ‖f b‖₊) := rfl
 
 @[to_additive Pi.nnNorm_def]
-lemma Pi.nnNorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := Subtype.eta _ _
+lemma Pi.nnNorm_def' : ‖f‖₊ = Finset.univ.sup fun b => ‖f b‖₊ := rfl
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) Pi.nnnorm_def]
 alias Pi.nnnorm_def' := Pi.nnNorm_def'

@@ -125,7 +125,7 @@ lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
 protected lemma norm_two : ‖(2 : ℂ)‖ = 2 := norm_ofNat 2
 
 @[simp 1100, norm_cast]
-lemma nnNorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp [norm_natCast]
+lemma nnNorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Nonneg.ext <| by simp [norm_natCast]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
 
