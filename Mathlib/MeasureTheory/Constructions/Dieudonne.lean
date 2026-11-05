@@ -14,7 +14,7 @@ public import Mathlib.SetTheory.Cardinal.Regular
 # Dieudonné measure
 
 Let `α` be a well-ordered type, of uncountable cofinality. We can define a measurable space on `α`,
-consisting of sets that either contain or entirely omit an `IsClub` set. On this measurable space,
+consisting of sets that either contain or entirely omit some `IsClub` set. On this measurable space,
 the indicator function of stationary sets is a zero-one measure with empty support.
 
 In the specific case `α = Iio ω₁`, this is known as the Dieudonné measure. We use this name for the
