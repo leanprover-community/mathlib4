@@ -29,7 +29,7 @@ modulus. The name `ContinuousLinearMap.abs` has been chosen to be consistent wit
 
 -/
 
-public noncomputable section
+public section
 
 namespace ContinuousLinearMap
 
@@ -43,7 +43,7 @@ variable {E F : Type*}
 
 /-- The abs `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
 @[expose]
-protected def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
+protected noncomputable def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
 
 @[inherit_doc]
 local notation "|" T "|" => ContinuousLinearMap.abs T
