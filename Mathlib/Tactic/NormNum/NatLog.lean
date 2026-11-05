@@ -83,9 +83,8 @@ theorem nat_clog_helper {b m n : ℕ}
   rw [Nat.ble_eq] at h₂
   have hb : 1 < b := by
     by_contra! hb
-    obtain rfl | rfl : b = 0 ∨ b = 1 := by lia
-    · lia
-    · lia
+    have : b = 0 ∨ b = 1 := by lia
+    lia
   rw [← Nat.lt_clog_iff_pow_lt hb] at h₁
   rw [← Nat.clog_le_iff_le_pow hb] at h₂
   lia
