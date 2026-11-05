@@ -498,13 +498,13 @@ instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
 
 @[simp]
 lemma adjoint_comp_self_nonneg [CompleteSpace E] [CompleteSpace F] (T : E →L[𝕜] F) :
-    0 ≤ T.adjoint ∘L T := by
-  simp [nonneg_iff_isPositive]
+    0 ≤ T.adjoint ∘L T :=
+  T.isPositive_adjoint_comp_self.nonneg
 
 @[simp]
 lemma self_comp_adjoint_nonneg [CompleteSpace E] [CompleteSpace F] (T : E →L[𝕜] F) :
-    0 ≤ T ∘L T.adjoint := by
-  simp [nonneg_iff_isPositive]
+    0 ≤ T ∘L T.adjoint :=
+  T.isPositive_self_comp_adjoint.nonneg
 
 end Order
 
