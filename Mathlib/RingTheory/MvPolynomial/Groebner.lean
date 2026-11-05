@@ -123,10 +123,8 @@ lemma withBotDegree_le_withBotDegree_of_toColex_support_le_toColex_support {R} [
     {f g : MvPolynomial σ R}
     (h : toColex (f.support.image m.toSyn) ≤ toColex (g.support.image m.toSyn)) :
     m.toWithBotSyn (m.withBotDegree f) ≤ m.toWithBotSyn (m.withBotDegree g) := by
-  have := Finset.Colex.max_ofColex_le_max_ofColex_of_le h
-  simp_rw [ofColex_toColex, Finset.max_eq_sup_coe, Finset.sup_image] at this
-  -- todo: the two sub-goals should be a lemma or definition in #40010 later
-  convert this <;> simp [toWithBotSyn, withBotDegree, Finset.max_eq_sup_coe]
+  convert Finset.Colex.max_le_max_of_toColex_le_toColex h
+  all_goals simp [toWithBotSyn, withBotDegree]
 
 lemma toColex_support_sub_lt_toColex_support_of_leadingTerm_eq {e : σ →₀ ℕ} {f g : MvPolynomial σ R}
     (he : e ∈ f.support) (h : m.leadingTerm g = monomial e (f.coeff e)) :
