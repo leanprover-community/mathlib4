@@ -60,7 +60,7 @@ if `A` is a group. -/
 theorem zero_divisors_of_periodic {R A} [Nontrivial R] [Ring R] [AddMonoid A] {n : ℕ} (a : A)
     (na : n • a = a) (na1 : (n - 1) • a ≠ 0) :
     ∃ f g : R[A], f ≠ 0 ∧ g ≠ 0 ∧ f * g = 0 := by
-  have n2 : 2 ≤ n := by rcases n with _ | _ | n <;> simp_all
+  have n2 : 0 < n := pos_of_ne_zero (by rintro rfl; simp at na1)
   refine ⟨single a 1, single ((n - 1) • a) 1 - single 0 1, by simp, ?_, ?_⟩
   · simpa [sub_ne_zero, single_inj]
   · rw [mul_sub, AddMonoidAlgebra.single_mul_single, AddMonoidAlgebra.single_mul_single,
