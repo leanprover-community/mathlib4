@@ -968,7 +968,7 @@ def H1ToTensorOfIsTrivial : H1 A →ₗ[ℤ] (Additive <| Group.Abelianization G
   ((QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => AddMonoidHom.ofClass
     (TensorProduct.mk ℤ _ _ (Additive.ofMul (Group.Abelianization.of g)))).comp
       (cycles₁ A).toAddSubgroup.subtype) fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
-      simp [← hz, d₂₁, sum_sum_index, sum_add_index', tmul_add, sum_sub_index, tmul_sub,
+      simp [← hz, d₂₁, map_finsuppSum, -liftAddHom_apply, liftAddHom_apply_single,
         shortComplexH1, isTrivial_apply]).comp <|
           AddMonoidHom.ofClass (H1Iso A).hom.hom).toIntLinearMap
 
