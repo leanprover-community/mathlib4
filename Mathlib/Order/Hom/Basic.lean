@@ -893,8 +893,6 @@ theorem toEquiv_trans (e : α ≃o β) (e' : β ≃o γ) :
     (e.trans e').toEquiv = e.toEquiv.trans e'.toEquiv :=
   rfl
 
-@[deprecated (since := "2026-11-05")] alias trans_toEquiv := toEquiv_trans
-
 @[simp]
 theorem trans_apply (e : α ≃o β) (e' : β ≃o γ) (x : α) : e.trans e' x = e' (e x) :=
   rfl
@@ -961,8 +959,6 @@ def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder
     [Preorder β₁] [Preorder β₂] (e₁ : α₁ ≃o α₂) (e₂ : β₁ ≃o β₂) :
     (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := rfl
 
-@[deprecated (since := "2026-11-05")] alias arrowCongr_symm := symm_arrowCongr
-
 /-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
 from `α` and `β` to themselves are order-isomorphic. -/
 @[simps! apply]
@@ -991,11 +987,6 @@ abbrev orderEmbeddingCongr (f : α ≃o γ) (g : β ≃o δ) : (α ↪o β) ≃ 
 @[simp]
 theorem orderEmbeddingCongr_apply (f : α ≃o γ) (g : β ≃o δ) (h : α ↪o β) :
     orderEmbeddingCongr f g h = .trans (.trans f.symm h) g :=
-  rfl
-
-@[deprecated "simp already proves this using `symm_orderEmbeddingCongr`" (since := "2026-11-05")]
-theorem orderEmbeddingCongr_symm_apply (f : α ≃o γ) (g : β ≃o δ) (h : γ ↪o δ) :
-    (orderEmbeddingCongr f g).symm h = .trans (.trans f h) g.symm :=
   rfl
 
 @[simp, grind =]
