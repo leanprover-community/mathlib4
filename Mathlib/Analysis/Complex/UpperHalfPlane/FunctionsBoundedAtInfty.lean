@@ -101,8 +101,4 @@ lemma tendsto_smul_atImInfty {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) :
   apply tendsto_comap.const_mul_atTop
   simpa [Matrix.det_fin_two, hg] using g.det_ne_zero
 
-lemma ne_zero_of_tendsto_ne_zero {α : Type*} [SeminormedAddCommGroup α] [T2Space α] {f : ℍ → α}
-    {c : α} (hc : c ≠ 0) (hf : Tendsto f atImInfty (nhds c)) : f ≠ 0 := fun h ↦
-  hc (tendsto_nhds_unique tendsto_const_nhds (h ▸ hf)).symm
-
 end UpperHalfPlane
