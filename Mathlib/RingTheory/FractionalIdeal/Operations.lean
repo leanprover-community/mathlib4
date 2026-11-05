@@ -218,7 +218,8 @@ variable [IsLocalization S P] [IsLocalization S P']
 
 /-- `canonicalEquiv f f'` is the canonical equivalence between the fractional
 ideals in `P` and in `P'`, which are both localizations of `R` at `S`. -/
-noncomputable irreducible_def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
+@[no_expose]
+noncomputable def canonicalEquiv : FractionalIdeal S P ≃+* FractionalIdeal S P' :=
   mapEquiv
     { ringEquivOfRingEquiv P P' (RingEquiv.refl R)
         (show S.map _ = S by rw [RingEquiv.toMonoidHom_refl', Submonoid.map_id]) with
@@ -829,7 +830,7 @@ theorem num_le (I : FractionalIdeal S P) :
   exact Submodule.smul_mem _ _ h
 
 /-- If the numerator ideal of a fractional ideal is principal, then so is the fractional ideal. -/
-theorem isPrincipal_of_isPrincipal_num [IsDomain R]
+theorem isPrincipal_of_isPrincipal_num
     (I : FractionalIdeal R⁰ (FractionRing R)) (hI : I.num.IsPrincipal) :
     (I : Submodule R (FractionRing R)).IsPrincipal :=
   Module.isPrincipal_submodule_iff.mp
