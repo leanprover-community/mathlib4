@@ -48,7 +48,8 @@ attribute [fun_prop] QuasiMeasurePreserving.aemeasurable
 
 namespace QuasiMeasurePreserving
 
-@[deprecated QuasiMeasurePreserving.aemeasurable (since := "2026-10-24")]
+@[deprecated "After a change of definition, quasi-measure-preserving maps are no longer necessarily
+measurable." (since := "2026-10-24")]
 protected alias measurable := QuasiMeasurePreserving.aemeasurable
 
 @[fun_prop]
