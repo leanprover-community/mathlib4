@@ -63,7 +63,7 @@ lemma tendsto_zero_of_innerRegular_addContent (hR : IsSetRing R) (m : AddContent
     _ ≤ ∑ i ∈ Finset.range (n + 1), m (s i \ t i) :=
         addContent_biUnion_le hR fun i _ ↦ hR.sdiff_mem (hs i) (ht_mem i)
     _ ≤ ∑ i ∈ Finset.range (n + 1), (δ i : ℝ≥0∞) := Finset.sum_le_sum fun i _ ↦ ht i
-    _ ≤ ∑' i, (δ i : ℝ≥0∞) := ENNReal.sum_le_tsum _
+    _ ≤ ∑' i, (δ i : ℝ≥0∞) := sum_le_tsum _
     _ ≤ ε := hδ_sum.le
 
 /-- An additive content with finite values on a ring of sets `R`, which is inner regular with
