@@ -110,7 +110,6 @@ lemma functorHom_ext {X : C} {x y : (F.functorHom G).obj X}
     (h : ∀ (Y : C) (f : X ⟶ Y), x.app Y f = y.app Y f) : x = y :=
   HomObj.ext (by ext; apply h)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence `(A ⟶ F.functorHom G) ≃ HomObj F G A`. -/
 @[simps]
@@ -132,7 +131,6 @@ def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ H
       congr((φ.app X a).app Y $(by simp))
   right_inv x := by simp [functorHom, homObjFunctor]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with

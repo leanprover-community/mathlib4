@@ -203,7 +203,6 @@ def normalizeIsoApp' :
 @[simp] theorem normalizeIsoApp'_unit (n : NormalMonoidalObject C) :
     normalizeIsoApp' C (𝟙_ (F C)) n = ρ_ _ := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 theorem normalizeIsoApp_eq :
     ∀ (X : F C) (n : N C), normalizeIsoApp C X n = normalizeIsoApp' C X n.as
   | of _, _ => rfl
@@ -294,7 +293,6 @@ def normalizeIso : tensorFunc C ≅ normalize' C :=
     all_goals dsimp; rw [normalizeIsoApp_eq]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism between an object and its normal form is natural. -/
 def fullNormalizeIso : 𝟭 (F C) ≅ fullNormalize C ⋙ inclusion :=
   NatIso.ofComponents

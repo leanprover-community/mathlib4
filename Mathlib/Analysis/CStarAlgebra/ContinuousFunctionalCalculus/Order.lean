@@ -341,7 +341,7 @@ lemma le_iff_norm_sqrt_mul_sqrt_inv (a : A) (b : Aˣ) (ha : 0 ≤ a := by cfc_ta
     (hb : 0 ≤ (b : A) := by cfc_tac) :
     a ≤ b ↔ ‖sqrt a * sqrt (↑b⁻¹ : A)‖ ≤ 1 := by
   rw [CFC.sqrt_eq_rpow (a := (↑b⁻¹ : A)), ← CFC.rpow_neg_one_eq_inv b,
-    CFC.rpow_rpow (b : A) _ _ (by simp),
+    CFC.rpow_rpow (b : A) _ _ (b.isUnit.isStrictlyPositive hb),
     le_iff_norm_sqrt_mul_rpow a (hb := b.isUnit.isStrictlyPositive hb)]
   simp
 
@@ -552,7 +552,7 @@ lemma convexOn_cfcₙ_of_convexOn_cfc {f : ℝ → ℝ} {s : Set A}
   let inrl : A →ₗ[ℝ] A⁺¹ := inrHom ℝ ℂ A
   by_cases hf₀ : f 0 = 0
   case neg =>
-    have : (cfcₙ f : A → A) = fun _ => 0 := by ext x; grind
+    have : (cfcₙ f : A → A) = fun _ => 0 := by grind
     rw [this]
     refine convexOn_const _ ?_
     have : Convex ℝ (inrl ⁻¹' inrl '' s) := Convex.linear_preimage hf.1 _

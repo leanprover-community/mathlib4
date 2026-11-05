@@ -329,7 +329,6 @@ variable
   (s :
     PullbackCone (F.1.map (homOfLE inf_le_left : U ⊓ V ⟶ _).op) (F.1.map (homOfLE inf_le_right).op))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- (Implementation).
 Every cone over `F(U) ⟶ F(U ⊓ V)` and `F(V) ⟶ F(U ⊓ V)` factors through `F(U ⊔ V)`.
 -/
