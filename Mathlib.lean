@@ -280,7 +280,6 @@ public import Mathlib.Algebra.Colimit.Finiteness
 public import Mathlib.Algebra.Colimit.Module
 public import Mathlib.Algebra.Colimit.Ring
 public import Mathlib.Algebra.Colimit.TensorProduct
-public import Mathlib.Algebra.Complexification
 public import Mathlib.Algebra.ContinuedFractions.Basic
 public import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 public import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
@@ -2001,6 +2000,7 @@ public import Mathlib.Analysis.Complex.ValueDistribution.LogCounting.Truncated
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.Basic
 public import Mathlib.Analysis.Complex.ValueDistribution.Proximity.IntegralPresentation
 public import Mathlib.Analysis.Complex.ValueDistribution.SecondMainTheorem
+public import Mathlib.Analysis.Complexification
 public import Mathlib.Analysis.ConstantSpeed
 public import Mathlib.Analysis.Convex.AmpleSet
 public import Mathlib.Analysis.Convex.Approximation
@@ -5250,6 +5250,7 @@ public import Mathlib.LinearAlgebra.Complex.Determinant
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.LinearAlgebra.Complex.Orientation
+public import Mathlib.LinearAlgebra.Complexification.Basic
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.ConvexSpace
 public import Mathlib.LinearAlgebra.ConvexSpace.AffineSpace

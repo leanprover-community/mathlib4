@@ -5,11 +5,7 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
-public import Mathlib.Basic.Complex.Basic
-public import Mathlib.Basic.Real.Basic
 public import Mathlib.LinearAlgebra.Complex.Module
-public import Mathlib.Tactic.Module
 
 /-! # Complexification of spaces.
 
@@ -24,11 +20,10 @@ In particular, `ℂ`-scalar multiplication is given by
 
 We also define multiplication and star structures on complexifications.
 
-### Implementation details
+## Implementation details
 
 We use products to describe complexifications as opposed to tensor products so that we can
-complexify normed spaces, C⋆-algebras, etc. With tensor products, this poses a slight problem since
-we only have tensor products of Hilbert spaces.
+complexify normed spaces, C⋆-algebras, etc. With tensor products, this poses a slight problem.
 
 We will show the equivalence between the complexification defined here and its tensor product
 description soon.
@@ -149,6 +144,8 @@ variable (V) in
   left_inv _ := by simp
   right_inv _ := by simp
 
+@[simp] lemma re_conj (x) : (conj V x).re = x.re := rfl
+@[simp] lemma im_conj (x) : (conj V x).im = -x.im := rfl
 @[simp] lemma symm_conj : (conj V).symm = conj V := rfl
 @[simp] lemma conj_conj (x) : conj V (conj V x) = x := by simp [conj_apply]
 @[simp] lemma conj_mk (x y : V) : conj V (.mk x y) = .mk x (-y) := rfl
@@ -156,9 +153,7 @@ variable (V) in
 lemma conj_I_smul (x) : conj V (Complex.I • x) = -Complex.I • conj V x := by simp [conj_apply]
 
 @[simp] lemma conj_eq_self_iff {x} : conj V x = x ↔ x.im = 0 := by
-  simp only [conj_apply, Complexification.ext_iff, true_and]
-  rw [eq_comm, ← sub_eq_zero]
-  simp [← two_smul ℝ]
+  simp [Complexification.ext_iff, neg_eq_iff_add_eq_zero, ← two_smul ℝ]
 
 /-- The complexification of `ℝ` is equivalent to `ℂ`. -/
 @[expose, simps apply symm_apply]
@@ -181,7 +176,7 @@ def _root_.Submodule.complexification (K : Submodule ℝ V) : Submodule ℂ (Com
   zero_mem' := by simp
   smul_mem' := by aesop
 
-@[simp] lemma _root_.Submodule.mem_complexification {K : Submodule ℝ V} (x : Complexification V) :
+@[simp] lemma _root_.Submodule.mem_complexification {K : Submodule ℝ V} {x : Complexification V} :
     x ∈ K.complexification ↔ x.re ∈ K ∧ x.im ∈ K := .rfl
 
 variable (V) in
@@ -224,6 +219,10 @@ lemma _root_.Submodule.complexification_sup (K L : Submodule ℝ V) :
     (K ⊔ L).complexification = K.complexification ⊔ L.complexification :=
   Submodule.complexification_gc.l_sup
 
+lemma _root_.Submodule.complexification_inf (K L : Submodule ℝ V) :
+    (K ⊓ L).complexification = K.complexification ⊓ L.complexification := by
+  ext; simp [and_and_and_comm]
+
 @[simp] lemma _root_.Submodule.complexification_inj {K L : Submodule ℝ V} :
     K.complexification = L.complexification ↔ K = L := by simp [le_antisymm_iff]
 
@@ -247,7 +246,7 @@ iff `U` is closed under conjugation.
 This is Chapter 1, Exercise 26 in [roman_advanced_linear_algebra]. -/
 lemma _root_.Submodule.exists_complexification_eq_iff {U : Submodule ℂ (Complexification V)} :
     (∃ S : Submodule ℝ V, S.complexification = U) ↔ ∀ v ∈ U, conj V v ∈ U := by
-  refine ⟨fun ⟨S, hS⟩ v hv ↦ by simpa [← hS, conj_apply] using hv, fun h ↦ ?_⟩
+  refine ⟨fun ⟨S, hS⟩ v hv ↦ by simpa [← hS] using hv, fun h ↦ ?_⟩
   exact ⟨_, Submodule.complexification_comap_inclusion h⟩
 
 section NonUnitalNonAssocRing
