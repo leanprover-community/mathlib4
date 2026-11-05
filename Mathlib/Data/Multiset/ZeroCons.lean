@@ -133,6 +133,7 @@ variable {C : Multiset α → Sort*}
 TODO: should be @[recursor 6], but then the definition of `Multiset.pi` fails with a stack
 overflow in `whnf`.
 -/
+@[elab_as_elim]
 protected
 def rec (C_0 : C 0) (C_cons : ∀ a m, C m → C (a ::ₘ m))
     (C_cons_heq :
@@ -313,6 +314,7 @@ theorem eq_zero_of_subset_zero {s : Multiset α} (h : s ⊆ 0) : s = 0 :=
 
 @[simp] lemma singleton_subset : {a} ⊆ s ↔ a ∈ s := by simp [subset_iff]
 
+@[elab_as_elim]
 theorem induction_on' {p : Multiset α → Prop} (S : Multiset α) (h₁ : p 0)
     (h₂ : ∀ {a s}, a ∈ S → s ⊆ S → p s → p (insert a s)) : p S :=
   @Multiset.induction_on α (fun T => T ⊆ S → p T) S (fun _ => h₁)
