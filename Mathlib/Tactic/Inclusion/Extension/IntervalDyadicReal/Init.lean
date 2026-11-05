@@ -7,7 +7,7 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
-public import Mathlib.Tactic.Inclusion.Extension.Interval.Dyadic
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
