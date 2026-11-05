@@ -1110,10 +1110,13 @@ public import Mathlib.Algebra.Order.Monoid.Units
 public import Mathlib.Algebra.Order.Monoid.WithTop
 public import Mathlib.Algebra.Order.Monovary
 public import Mathlib.Algebra.Order.Nonneg.Basic
+public import Mathlib.Algebra.Order.Nonneg.Defs
 public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Algebra.Order.Nonneg.Floor
+public import Mathlib.Algebra.Order.Nonneg.Interval
 public import Mathlib.Algebra.Order.Nonneg.Lattice
 public import Mathlib.Algebra.Order.Nonneg.Module
+public import Mathlib.Algebra.Order.Nonneg.Order
 public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.PUnit
 public import Mathlib.Algebra.Order.Pi
@@ -8546,6 +8549,7 @@ public import Mathlib.Topology.Order.Monotone
 public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.MonotoneConvergence
 public import Mathlib.Topology.Order.NhdsSet
+public import Mathlib.Topology.Order.Nonneg
 public import Mathlib.Topology.Order.OrderClosed
 public import Mathlib.Topology.Order.OrderClosedExtr
 public import Mathlib.Topology.Order.PartialSups

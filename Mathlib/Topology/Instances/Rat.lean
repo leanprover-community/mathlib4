@@ -113,7 +113,7 @@ end Rat
 namespace NNRat
 
 instance : MetricSpace ℚ≥0 :=
-  inferInstanceAs <| MetricSpace (Subtype _)
+  inferInstanceAs <| MetricSpace (Nonneg ℚ)
 
 set_option linter.style.whitespace false in -- linter false positive
 @[simp ←, push_cast]
@@ -127,9 +127,12 @@ instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom
 
-instance : ContinuousSub ℚ≥0 := ⟨Continuous.subtype_mk (by fun_prop) _⟩
+instance : ContinuousSub ℚ≥0 := ⟨Continuous.nonnegMk (by fun_prop) _⟩
 
-instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
+instance : OrderTopology ℚ≥0 :=
+  ⟨Nonneg.strictMono_val.induced_topology_eq_preorder <| by
+    rw [Nonneg.range_val]; exact Set.ordConnected_Ici⟩
+
 instance : ContinuousInv₀ ℚ≥0 := inferInstance
 
 -- Special case of `IsBoundedSMul.continuousSMul` but this shortcut instance reduces dependencies
@@ -143,6 +146,6 @@ instance {R : Type*} [TopologicalSpace R] [MulAction ℚ R] [MulAction ℚ≥0 R
     fun_prop
 
 instance : ContinuousSMul ℚ≥0 NNReal where
-  continuous_smul := Continuous.subtype_mk (by fun_prop) _
+  continuous_smul := Continuous.nonnegMk (by fun_prop) _
 
 end NNRat

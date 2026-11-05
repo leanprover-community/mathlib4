@@ -85,15 +85,15 @@ instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
 
 @[ext]
 theorem ext : (p : ℚ) = (q : ℚ) → p = q :=
-  Subtype.ext
+  Nonneg.ext
 
 protected theorem coe_injective : Injective ((↑) : ℚ≥0 → ℚ) :=
-  Subtype.coe_injective
+  Nonneg.val_injective
 
 -- See note [specialised high priority simp lemma]
 @[simp high, norm_cast]
 theorem coe_inj : (p : ℚ) = q ↔ p = q :=
-  Subtype.coe_inj
+  Nonneg.coe_inj
 
 theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not
@@ -101,8 +101,8 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
 -- TODO: We have to write `NNRat.cast` explicitly, else the statement picks up `Subtype.val` instead
 @[simp, norm_cast] lemma coe_mk (q : ℚ) (hq) : NNRat.cast ⟨q, hq⟩ = q := rfl
 
-lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
-lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Subtype.exists
+lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Nonneg.forall
+lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Nonneg.exists
 
 /-- Reinterpret a rational number `q` as a non-negative rational number. Returns `0` if `q ≤ 0`. -/
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=

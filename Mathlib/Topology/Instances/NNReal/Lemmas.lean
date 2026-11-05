@@ -55,7 +55,7 @@ open Filter Finset
 
 @[fun_prop]
 theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
-  (continuous_id.max continuous_const).subtype_mk _
+  (continuous_id.max continuous_const).nonnegMk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
 @[simps -fullyApplied]
@@ -73,26 +73,30 @@ theorem map_coe_nhdsGE (x : ℝ≥0) : (𝓝[≥] x).map toReal = 𝓝[≥] ↑x
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
-  continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
+  Nonneg.continuous_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ)) f (𝓝 (x : ℝ)) ↔ Tendsto m f (𝓝 x) :=
-  tendsto_subtype_rng.symm
+  Nonneg.isInducing_val.tendsto_nhds_iff.symm
 
 theorem tendsto_coe' {f : Filter α} [NeBot f] {m : α → ℝ≥0} {x : ℝ} :
     Tendsto (fun a => m a : α → ℝ) f (𝓝 x) ↔ ∃ hx : 0 ≤ x, Tendsto m f (𝓝 ⟨x, hx⟩) :=
   ⟨fun h => ⟨ge_of_tendsto' h fun c => (m c).2, tendsto_coe.1 h⟩, fun ⟨_, hm⟩ => tendsto_coe.2 hm⟩
 
-@[simp] theorem map_coe_atTop : map toReal atTop = atTop := map_val_Ici_atTop 0
+@[simp] theorem map_coe_atTop : map toReal atTop = atTop := by
+  have : map ((↑) : Set.Ici (0 : ℝ) → ℝ) (map Nonneg.orderIsoIci atTop) = atTop := by
+    rw [OrderIso.map_atTop, map_val_Ici_atTop]
+  rwa [Filter.map_map] at this
 
 @[simp]
-theorem comap_coe_atTop : comap toReal atTop = atTop := (atTop_Ici_eq 0).symm
+theorem comap_coe_atTop : comap toReal atTop = atTop := by
+  rw [← map_coe_atTop, comap_map NNReal.coe_injective]
 
 @[simp, norm_cast]
 theorem tendsto_coe_atTop {f : Filter α} {m : α → ℝ≥0} :
-    Tendsto (fun a => (m a : ℝ)) f atTop ↔ Tendsto m f atTop :=
-  tendsto_Ici_atTop.symm
+    Tendsto (fun a => (m a : ℝ)) f atTop ↔ Tendsto m f atTop := by
+  rw [← comap_coe_atTop, tendsto_comap_iff, Function.comp_def]
 
 theorem _root_.tendsto_real_toNNReal {f : Filter α} {m : α → ℝ} {x : ℝ} (h : Tendsto m f (𝓝 x)) :
     Tendsto (fun a => Real.toNNReal (m a)) f (𝓝 (Real.toNNReal x)) :=

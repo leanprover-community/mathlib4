@@ -131,7 +131,7 @@ theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
 
 @[to_additive (attr := continuity, fun_prop) continuous_nnNorm]
 theorem continuous_nnNorm' : Continuous fun a : E => ‖a‖₊ :=
-  continuous_norm'.subtype_mk _
+  continuous_norm'.nonnegMk _
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) continuous_nnnorm]
 alias continuous_nnnorm' := continuous_nnNorm'

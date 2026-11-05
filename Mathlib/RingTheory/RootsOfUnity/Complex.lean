@@ -143,7 +143,7 @@ theorem IsPrimitiveRoot.norm'_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot �
 
 theorem IsPrimitiveRoot.nnNorm_eq_one {ζ : ℂ} {n : ℕ} (h : IsPrimitiveRoot ζ n) (hn : n ≠ 0) :
     ‖ζ‖₊ = 1 :=
-  Subtype.ext <| h.norm'_eq_one hn
+  Nonneg.ext <| h.norm'_eq_one hn
 
 @[deprecated (since := "2026-10-31")]
 alias IsPrimitiveRoot.nnnorm_eq_one := IsPrimitiveRoot.nnNorm_eq_one

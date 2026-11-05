@@ -10,6 +10,7 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.Nonneg.Floor
+public import Mathlib.Algebra.Order.Nonneg.Interval
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Basic.Real.Pointwise
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
@@ -36,7 +37,7 @@ open scoped BigOperators
 namespace NNReal
 variable {M : Type*} [Zero M]
 
-noncomputable instance : FloorSemiring ℝ≥0 := inferInstanceAs <| FloorSemiring (Subtype _)
+noncomputable instance : FloorSemiring ℝ≥0 := inferInstanceAs <| FloorSemiring (Nonneg ℝ)
 
 @[simp, norm_cast]
 theorem coe_mulIndicator {α} (s : Set α) (f : α → ℝ≥0) (a : α) :
@@ -235,46 +236,46 @@ section rify
 end rify
 
 @[simp]
-theorem range_coe : range toReal = Ici 0 := Subtype.range_coe_subtype
+theorem range_coe : range toReal = Ici 0 := Nonneg.range_val
 
 @[simp]
-theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..
+theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := Nonneg.image_val_Ici _
 
 @[simp]
-theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtype_val_Ici_Iic ..
+theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := Nonneg.image_val_Iic _
 
 @[simp]
-theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtype_val_Ici_Ioi ..
+theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := Nonneg.image_val_Ioi _
 
 @[simp]
-theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtype_val_Ici_Iio ..
+theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := Nonneg.image_val_Iio _
 
 @[simp]
 theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=
-  image_subtype_val_Icc (s := Ici 0) ..
+  Nonneg.image_val_Icc ..
 
 @[simp]
 theorem image_coe_Ioc (x y : ℝ≥0) : toReal '' Ioc x y = Ioc ↑x ↑y :=
-  image_subtype_val_Ioc (s := Ici 0) ..
+  Nonneg.image_val_Ioc ..
 
 @[simp]
 theorem image_coe_Ico (x y : ℝ≥0) : toReal '' Ico x y = Ico ↑x ↑y :=
-  image_subtype_val_Ico (s := Ici 0) ..
+  Nonneg.image_val_Ico ..
 
 @[simp]
 theorem image_coe_Ioo (x y : ℝ≥0) : toReal '' Ioo x y = Ioo ↑x ↑y :=
-  image_subtype_val_Ioo (s := Ici 0) ..
+  Nonneg.image_val_Ioo ..
 
 @[simp]
 theorem image_coe_uIcc (x y : ℝ≥0) : toReal '' uIcc x y = uIcc ↑x ↑y :=
-  image_subtype_val_uIcc (s := Ici 0) ..
+  Nonneg.image_val_uIcc ..
 
 @[simp]
 theorem image_coe_uIoc (x y : ℝ≥0) : toReal '' uIoc x y = uIoc ↑x ↑y :=
-  image_subtype_val_uIoc (s := Ici 0) ..
+  Nonneg.image_val_uIoc ..
 
 @[simp]
 theorem image_coe_uIoo (x y : ℝ≥0) : toReal '' uIoo x y = uIoo ↑x ↑y :=
-  image_subtype_val_uIoo (s := Ici 0) ..
+  Nonneg.image_val_uIoo ..
 
 end NNReal

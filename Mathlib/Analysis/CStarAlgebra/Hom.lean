@@ -122,7 +122,7 @@ lemma norm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖ = ‖
 
 /-- A non-unital star algebra monomorphism of complex C⋆-algebras is isometric. -/
 lemma nnNorm_map (φ : F) (hφ : Function.Injective φ) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
-  Subtype.ext <| norm_map φ hφ a
+  Nonneg.ext <| norm_map φ hφ a
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 

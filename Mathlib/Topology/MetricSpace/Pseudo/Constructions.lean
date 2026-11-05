@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Bornology.Constructions
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import Mathlib.Topology.Order.Nonneg
 
 /-!
 # Products of pseudometric spaces and other constructions
@@ -85,6 +86,32 @@ theorem image_closedBall {p : α → Prop} (a : {a // p a}) (r : ℝ) :
 
 end Subtype
 
+namespace Nonneg
+variable {M : Type*} [Zero M] [LE M] [PseudoMetricSpace M]
+
+instance instPseudoMetricSpace : PseudoMetricSpace (Nonneg M) :=
+  isInducing_val.comapPseudoMetricSpace
+
+lemma dist_eq (x y : Nonneg M) : dist x y = dist (x : M) y := rfl
+
+lemma nndist_eq (x y : Nonneg M) : nndist x y = nndist (x : M) y := rfl
+
+lemma isUniformInducing_val : IsUniformInducing (val : Nonneg M → M) := ⟨rfl⟩
+
+lemma isUniformEmbedding_val : IsUniformEmbedding (val : Nonneg M → M) :=
+  ⟨isUniformInducing_val, val_injective⟩
+
+@[fun_prop]
+lemma uniformContinuous_val : UniformContinuous (val : Nonneg M → M) := uniformContinuous_comap
+
+end Nonneg
+
+@[fun_prop]
+lemma UniformContinuous.nonnegMk {M X : Type*} [Zero M] [LE M] [PseudoMetricSpace M]
+    [UniformSpace X] {f : X → M} (hf : UniformContinuous f) (hf₀ : ∀ x, 0 ≤ f x) :
+    UniformContinuous fun x ↦ (⟨f x, hf₀ x⟩ : Nonneg M) :=
+  uniformContinuous_comap' hf
+
 namespace MulOpposite
 
 @[to_additive]
@@ -108,7 +135,7 @@ end MulOpposite
 section NNReal
 
 instance : PseudoMetricSpace ℝ≥0 :=
-  inferInstanceAs <| PseudoMetricSpace (Subtype _)
+  inferInstanceAs <| PseudoMetricSpace (Nonneg ℝ)
 
 lemma NNReal.dist_eq (a b : ℝ≥0) : dist a b = |(a : ℝ) - b| := rfl
 
@@ -245,7 +272,7 @@ lemma continuous_iff_continuous_dist [TopologicalSpace β] {f : β → α} :
       (h.comp (.prodMk_left _)).tendsto' _ _ <| dist_self _⟩
 
 lemma uniformContinuous_nndist : UniformContinuous fun p : α × α => nndist p.1 p.2 :=
-  uniformContinuous_dist.subtype_mk _
+  uniformContinuous_comap' uniformContinuous_dist
 
 protected lemma UniformContinuous.nndist [UniformSpace β] {f g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun b => nndist (f b) (g b) :=

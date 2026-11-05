@@ -123,19 +123,30 @@ instance Real.metricSpace : MetricSpace ℝ := .ofT0PseudoMetricSpace ℝ
 
 end Real
 
+namespace Nonneg
+variable {M : Type*} [Zero M] [LE M] [MetricSpace M]
+
+instance instMetricSpace : MetricSpace (Nonneg M) where
+  __ := instPseudoMetricSpace
+  eq_of_dist_eq_zero h := val_injective <| dist_eq_zero.1 h
+
+end Nonneg
+
 section NNReal
 
 instance : MetricSpace ℝ≥0 :=
-  inferInstanceAs <| MetricSpace (Subtype _)
+  inferInstanceAs <| MetricSpace (Nonneg ℝ)
 
 theorem NNReal.isUniformEmbedding_coe : IsUniformEmbedding NNReal.toReal :=
-  isUniformEmbedding_subtype_val
+  Nonneg.isUniformEmbedding_val
 
 theorem NNReal.isEmbedding_coe : Topology.IsEmbedding NNReal.toReal :=
   isUniformEmbedding_coe.isEmbedding
 
 theorem NNReal.isClosedEmbedding_coe : Topology.IsClosedEmbedding NNReal.toReal :=
-  isClosed_Ici.isClosedEmbedding_subtypeVal
+  ⟨isEmbedding_coe, by
+    have : Set.range NNReal.toReal = Set.Ici 0 := Nonneg.range_val
+    rw [this]; exact isClosed_Ici⟩
 
 end NNReal
 

@@ -182,7 +182,7 @@ theorem ae_bdd_condExp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   refine setLIntegral_mono
     (stronglyMeasurable_condExp.mono hnm).measurable.nnNorm.coe_nnreal_ennreal fun x hx => ?_
   rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm, coe_le_coe, Real.nnNorm_of_nonneg R.coe_nonneg]
-  exact Subtype.mk_le_mk.2 (le_of_lt hx)
+  exact Nonneg.mk_le_mk.2 (le_of_lt hx)
 
 end HasSolidNorm
 
