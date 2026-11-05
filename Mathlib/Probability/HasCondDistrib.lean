@@ -99,7 +99,6 @@ lemma HasCondDistrib.of_compProd {Z : Ω → 𝓩} {η : Kernel (𝓧 × 𝓨) �
   _ = P.map X ⊗ₘ κ ⊗ₘ η := Measure.compProd_assoc
   _ = P.map (fun a ↦ (X a, Y a)) ⊗ₘ η := by simp [h.fst.map_eq]
 
-
 variable [SFinite P]
 
 lemma HasCondDistrib.comp_right {f : 𝓩 → 𝓧}
