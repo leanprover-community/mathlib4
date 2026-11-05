@@ -6,8 +6,8 @@ Authors: Xavier Roblot
 module
 
 public import Mathlib.Algebra.QuadraticAlgebra.Discriminant
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
-public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.NumberTheory.FundamentalDiscriminant
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 
 import Mathlib.Algebra.QuadraticAlgebra.Integral
 import Mathlib.RingTheory.Int.Basic
@@ -16,7 +16,15 @@ import Mathlib.RingTheory.Polynomial.RationalRoot
 /-!
 # Quadratic algebras over `ℤ`
 
-For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ a b`.
+For `a b : ℤ`, this file proves that `QuadraticAlgebra ℚ a b` is the fraction ring of
+`QuadraticAlgebra ℤ a b`, and that `QuadraticAlgebra ℤ a b` is the integral closure of `ℤ` in
+`QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
+
+## Main definitions
+
+* `QuadraticAlgebra.Int.algEquivIntegralClosure`: when `discr a b` is a fundamental discriminant,
+  the isomorphism between `QuadraticAlgebra ℤ a b` and the integral closure of `ℤ` in
+  `QuadraticAlgebra ℚ a b`.
 
 ## Main results
 
@@ -30,6 +38,14 @@ For `a b : ℤ`, `QuadraticAlgebra ℤ a b` is an order in `QuadraticAlgebra ℚ
 * `QuadraticAlgebra.Int.exists_isIntegral_notMem_of_sq_mul`: conversely, if
   `discr a b = d ^ 2 * e` with `1 < |d|` and `e` congruent to `0` or `1` modulo `4`, then there is
   an integral element `z` not in `QuadraticAlgebra ℤ a b` such that `d • z` lies in it.
+* `QuadraticAlgebra.Int.isIntegralClosure_iff`: `QuadraticAlgebra ℤ a b` is the integral closure
+  of `ℤ` in `QuadraticAlgebra ℚ a b` iff `discr a b` is a fundamental discriminant.
+* `QuadraticAlgebra.Int.isIntegrallyClosed_iff`: `QuadraticAlgebra ℤ a b` is integrally closed iff
+  `discr a b` is a fundamental discriminant.
+
+## Tags
+
+quadratic algebra, quadratic order, integral closure, fundamental discriminant
 -/
 
 public section
@@ -232,6 +248,61 @@ theorem exists_im_den_sq_mul {z : QuadraticAlgebra ℚ a b} (hz : IsIntegral ℤ
   refine exists_sq_mul_of_isCoprime hz ?_ hx
   rw [show x.im = z.im.num by simpa using congr_arg im hx]
   exact (Rat.isCoprime_num_den z.im).symm
+
+/-- The order `QuadraticAlgebra ℤ a b` is the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`
+iff `discr a b` is a fundamental discriminant. -/
+protected theorem isIntegralClosure_iff :
+    IsIntegralClosure (QuadraticAlgebra ℤ a b) ℤ (QuadraticAlgebra ℚ a b) ↔
+      Int.IsFundamentalDiscr (discr a b) := by
+  rw [isIntegralClosure_iff]
+  refine ⟨fun h ↦ Int.isFundamentalDiscr_iff_forall_prime.mpr
+    ⟨discr_emod_four_eq_zero_or_one a b, fun p hp ⟨e, he, he'⟩ ↦ ?_⟩, fun h z ↦ ⟨fun hz ↦ ?_, ?_⟩⟩
+  · obtain ⟨z, hz, -, hz'⟩ := exists_isIntegral_notMem_of_sq_mul (d := p) hp.one_lt he he'
+    exact hz' ((h z).mp hz)
+  · obtain ⟨e, he, he'⟩ := exists_im_den_sq_mul hz
+    simpa [h.eq_one_of_eq_sq_mul he he'] using im_den_smul_mem hz
+  · rintro ⟨w, rfl⟩
+    exact (Algebra.IsIntegral.isIntegral w).algebraMap
+
+/-- The order `QuadraticAlgebra ℤ a b` is integrally closed iff `discr a b` is a fundamental
+discriminant. -/
+protected theorem isIntegrallyClosed_iff :
+    IsIntegrallyClosed (QuadraticAlgebra ℤ a b) ↔ Int.IsFundamentalDiscr (discr a b) := by
+  rw [← Int.isIntegralClosure_iff,
+    isIntegrallyClosed_iff_isIntegrallyClosedIn (QuadraticAlgebra ℚ a b)]
+  exact ⟨fun _ ↦ .of_isIntegrallyClosedIn, fun _ ↦ .of_isIntegralClosure ℤ⟩
+
+instance [h : Fact (Int.IsFundamentalDiscr (discr a b))] :
+    IsIntegrallyClosed (QuadraticAlgebra ℤ a b) :=
+  Int.isIntegrallyClosed_iff.mpr h.out
+
+/-- When `discr a b` is a fundamental discriminant, `QuadraticAlgebra ℤ a b` is isomorphic, as a
+`ℤ`-algebra, to the integral closure of `ℤ` in `QuadraticAlgebra ℚ a b`. -/
+noncomputable def algEquivIntegralClosure (h : Int.IsFundamentalDiscr (discr a b)) :
+    QuadraticAlgebra ℤ a b ≃ₐ[ℤ] integralClosure ℤ (QuadraticAlgebra ℚ a b) :=
+  haveI := Int.isIntegralClosure_iff.mpr h
+  IsIntegralClosure.equiv ℤ (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)
+    (integralClosure ℤ (QuadraticAlgebra ℚ a b))
+
+@[simp]
+theorem coe_algEquivIntegralClosure_apply (h : Int.IsFundamentalDiscr (discr a b))
+    (x : QuadraticAlgebra ℤ a b) :
+    (algEquivIntegralClosure h x : QuadraticAlgebra ℚ a b) =
+      algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b) x :=
+  haveI := Int.isIntegralClosure_iff.mpr h
+  IsIntegralClosure.algebraMap_equiv ℤ _ (QuadraticAlgebra ℚ a b)
+    (integralClosure ℤ (QuadraticAlgebra ℚ a b)) x
+
+theorem coe_algEquivIntegralClosure_omega (h : Int.IsFundamentalDiscr (discr a b)) :
+    (algEquivIntegralClosure h ω : QuadraticAlgebra ℚ a b) = ω := by
+  simp
+
+@[simp]
+theorem algebraMap_algEquivIntegralClosure_symm_apply (h : Int.IsFundamentalDiscr (discr a b))
+    (y : integralClosure ℤ (QuadraticAlgebra ℚ a b)) :
+    algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b)
+      ((algEquivIntegralClosure h).symm y) = y := by
+  rw [← coe_algEquivIntegralClosure_apply h, AlgEquiv.apply_symm_apply]
 
 end Int
 
