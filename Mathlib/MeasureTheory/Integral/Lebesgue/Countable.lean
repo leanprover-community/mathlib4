@@ -148,7 +148,7 @@ theorem lintegral_insert [MeasurableSingletonClass α] {a : α} {s : Set α} (h 
 
 theorem lintegral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → ℝ≥0∞) :
     ∫⁻ x in s, f x ∂μ = ∑ x ∈ s, f x * μ {x} := by
-  simp only [lintegral_countable _ s.countable_toSet, ← Finset.tsum_subtype']
+  simp only [lintegral_countable _ s.countable_toSet, ← (Finset.tsum_subtype')]
 
 theorem lintegral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → ℝ≥0∞) :
     ∫⁻ x, f x ∂μ = ∑ x, f x * μ {x} := by
@@ -183,7 +183,7 @@ theorem exists_measurable_le_forall_setLIntegral_eq [SFinite μ] (f : α → ℝ
     refine ⟨fun x ↦ ⨆ n, g n x, .iSup hgm, fun x ↦ iSup_le (hgle · x), fun s ↦ ?_⟩
     rw [← sum_sfiniteSeq μ, Measure.restrict_sum_of_countable,
       lintegral_sum_measure, lintegral_sum_measure]
-    exact ENNReal.tsum_le_tsum fun n ↦ (hgint n s).trans (lintegral_mono fun x ↦ le_iSup (g · x) _)
+    exact tsum_le_tsum fun n ↦ (hgint n s).trans (lintegral_mono fun x ↦ le_iSup (g · x) _)
   -- According to `exists_measurable_le_lintegral_eq`, for any natural `n`
   -- we can choose a measurable function $g_{n}$
   -- such that $g_{n}(x) ≤ \min (f(x), n)$ for all $x$

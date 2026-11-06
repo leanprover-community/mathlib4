@@ -988,7 +988,7 @@ def lintegralₗ {m : MeasurableSpace α} : (α →ₛ ℝ≥0∞) →ₗ[ℝ≥
     { toFun := lintegral f
       map_add' := by simp [lintegral, mul_add, Finset.sum_add_distrib]
       map_smul' := fun c μ => by
-        simp [lintegral, mul_left_comm _ c, Finset.mul_sum, Measure.smul_apply c] }
+        simp [lintegral, mul_left_comm, Finset.mul_sum] }
   map_add' f g := LinearMap.ext fun _ => add_lintegral f g
   map_smul' c f := LinearMap.ext fun _ => const_mul_lintegral f c
 
@@ -1013,9 +1013,9 @@ theorem lintegral_finsetSum {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure
 
 theorem lintegral_sum {m : MeasurableSpace α} {ι} (f : α →ₛ ℝ≥0∞) (μ : ι → Measure α) :
     f.lintegral (Measure.sum μ) = ∑' i, f.lintegral (μ i) := by
-  simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← Finset.tsum_subtype, ←
+  simp only [lintegral, Measure.sum_apply, f.measurableSet_preimage, ← (Finset.tsum_subtype), ←
     ENNReal.tsum_mul_left]
-  apply ENNReal.tsum_comm
+  apply tsum_comm
 
 theorem restrict_lintegral (f : α →ₛ ℝ≥0∞) {s : Set α} (hs : MeasurableSet s) :
     (restrict f s).lintegral μ = ∑ r ∈ f.range, r * μ (f ⁻¹' {r} ∩ s) := by

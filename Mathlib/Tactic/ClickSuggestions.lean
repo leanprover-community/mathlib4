@@ -132,6 +132,8 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
+  -- Focus with a `·` if there are multiple goals, or the previous tactic was also a `·`.
+  let focus := onGoal.isNone && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
   goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
@@ -143,7 +145,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
     let html ← mkRefreshComponentM
       (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, masterToken, statusToken, solvedToken
+        onGoal, focus, masterToken, statusToken, solvedToken
         stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos
@@ -166,10 +168,12 @@ public def clickSuggestionsComponent : Component PanelWidgetProps :=
 
 /--
 `#click_suggestions` enables a widget in the infoview that gives tactic suggestions for
-the expression in the tactic state that was (most recently) selected with shift-click.
-Each suggestion has an insert button for pasting it into the editor, at the position of the cursor.
+the (most recently) selected expression in the tactic state.
+To select an expression, use `shift`+click in VS Code, and `ctrl`+click or `gK` in Neovim.
+Each suggestion starts with a button for pasting the tactic into the editor
+at the position of the cursor.
 
-Theorems are searched for use in `apply`, `apply at`, `rw` and `grw`.
+Theorems are searched for the `apply`, `apply at`, `rw` and `grw` tactics.
 These suggestions are grouped and sorted by the pattern that the lemmas match with.
 Rewrites that don't change the goal and rewrites that create the same goal as another rewrite
 are filtered out, as well as suggestions that create new goal(s) with metavariables in them.

@@ -146,7 +146,7 @@ instance {G : Type v'} [Group G] (S : Subgroup G) :
     have hγ (s : S) (g : G) : γ (s.1 * g) = s * γ g := by ext; simp [mul_assoc, γ, hmk]
     let x (g : G) : X := X.ρ (γ g) (s (y.1 (i (Quotient.mk' g))))
     refine ⟨⟨x, fun _ _ => ?_⟩, Subtype.ext <| funext fun g => ?_⟩
-    · simp [x, ← Module.End.mul_apply, ← map_mul, hmk, hγ]
+    · simp [x, ← mul_apply_eq_comp, ← map_mul, hmk, hγ]
     · simp only [coindFunctor_obj, coindFunctor_map, hom_ofHom,
         Representation.coindMap_coe_apply_apply, hom_comm_apply, x]
       simp_all [← y.2 (γ g), γ]

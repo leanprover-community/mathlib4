@@ -11,6 +11,9 @@ public import Mathlib.Topology.UniformSpace.Completion
 
 import Mathlib.CategoryTheory.Adjunction.Reflective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of uniform spaces
 

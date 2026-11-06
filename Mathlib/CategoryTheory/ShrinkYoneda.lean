@@ -19,7 +19,7 @@ file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 
 @[expose] public section
 
-universe w w' w'' v u
+universe w w' w'' v v' u
 
 namespace CategoryTheory
 
@@ -50,7 +50,6 @@ noncomputable def shrinkMap {F G : C ⥤ Type w'} (τ : F ⟶ G) [FunctorToTypes
     shrink.{w} F ⟶ shrink.{w} G where
   app X := ↾(equivShrink.{w} _ ∘ τ.app X ∘ (equivShrink.{w} _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Shrinking `F` to `Type w` followed by universe lifting is the same as shrinking to
 `Type (max w w')`. -/
 @[simps! hom_app inv_app]
@@ -139,6 +138,15 @@ noncomputable def shrinkYonedaEquiv {X : C} {P : Cᵒᵖ ⥤ Type w} :
     simpa [shrinkYoneda] using ((τ.naturality_apply f.op) (equivShrink _ (𝟙 X))).symm
   right_inv x := by simp
 
+lemma shrinkYonedaEquiv_apply {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (τ : shrinkYoneda.{w}.obj X ⟶ P) :
+    shrinkYonedaEquiv τ = τ.app _ (shrinkYonedaObjObjEquiv.symm (𝟙 X)) := rfl
+
+lemma shrinkYonedaEquiv_symm_app {X : C} {P : Cᵒᵖ ⥤ Type w}
+    (x : P.obj (op X)) {Y : Cᵒᵖ} (f : (shrinkYoneda.{w}.obj X).obj Y) :
+    (shrinkYonedaEquiv.{w}.symm x).app Y f =
+    P.map (shrinkYonedaObjObjEquiv f).op x := rfl
+
 set_option backward.isDefEq.respectTransparency false in
 lemma map_shrinkYonedaEquiv {X Y : C} {P : Cᵒᵖ ⥤ Type w} (f : shrinkYoneda.obj X ⟶ P)
     (g : Y ⟶ X) : P.map g.op (shrinkYonedaEquiv f) =
@@ -180,6 +188,12 @@ lemma shrinkYonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm {X : C} {P : Cᵒ�
   obtain ⟨g, rfl⟩ := shrinkYonedaEquiv.surjective s
   simp [map_shrinkYonedaEquiv]
 
+set_option backward.isDefEq.respectTransparency.types false in
+@[reassoc]
+lemma shrinkYonedaEquiv_symm_comp {X : Cᵒᵖ} {P Q : Cᵒᵖ ⥤ Type w} (x : P.obj X) (α : P ⟶ Q) :
+    shrinkYonedaEquiv.symm x ≫ α = shrinkYonedaEquiv.symm (α.app _ x) :=
+  shrinkYonedaEquiv.injective (by simp [shrinkYonedaEquiv])
+
 variable (C) in
 /-- The functor `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w` for a locally `w`-small category `C`
 is fully faithful. -/
@@ -205,7 +219,6 @@ def shrinkYonedaIsoYoneda : shrinkYoneda.{v} ≅ yoneda (C := C) :=
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_map_app])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `shrinkYoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkYonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
@@ -225,7 +238,39 @@ noncomputable def uliftYonedaIsoShrinkYoneda :
       ext
       exact (shrinkYoneda_map_app_shrinkYonedaObjObjEquiv_symm _ _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
+omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_inv_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (shrinkYoneda.{max w' v}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X).app Y f =
+      ULift.up (shrinkYonedaObjObjEquiv f) := rfl
+
+omit [LocallySmall.{w} C] in
+lemma uliftYonedaIsoShrinkYoneda_hom_app_app
+    {X : C} {Y : Cᵒᵖ} (f : (uliftYoneda.{w'}.obj X).obj Y) :
+    (uliftYonedaIsoShrinkYoneda.{w'}.hom.app X).app Y f =
+    shrinkYonedaObjObjEquiv.{max w' v}.symm f.down := by
+  rfl
+
+omit [LocallySmall.{w} C] in
+@[reassoc (attr := simp)]
+lemma uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop ≫ uliftYonedaEquiv.symm x =
+      shrinkYonedaEquiv.symm x :=
+  shrinkYonedaEquiv.injective (by
+    simp [shrinkYonedaEquiv_apply.{max w' v},
+      uliftYonedaIsoShrinkYoneda_inv_app_app.{w'},
+      uliftYonedaEquiv, shrinkYonedaEquiv_symm_app.{max w' v}])
+
+omit [LocallySmall.{w} C] in
+@[reassoc]
+lemma uliftYonedaIsoShrinkYoneda_hom_app_comp_shrinkYoneda_symm
+    {X : Cᵒᵖ} {P : Cᵒᵖ ⥤ Type max w' v} (x : P.obj X) :
+    uliftYonedaIsoShrinkYoneda.{w'}.hom.app X.unop ≫ shrinkYonedaEquiv.symm x =
+      uliftYonedaEquiv.symm x := by
+  simp [← cancel_epi (uliftYonedaIsoShrinkYoneda.{w'}.inv.app X.unop),
+    uliftYonedaIsoShrinkYoneda_inv_app_comp_uliftYonedaEquiv_symm.{w'}]
+
 /-- The functor `shrinkYoneda.{w}` followed by the evaluation
 at `Y : Cᵒᵖ` and `uliftFunctor.{v}` identifies to `coyoneda.obj Y` followed
 by `uliftFunctor.{w}`. -/
@@ -248,11 +293,49 @@ def shrinkYonedaRepresentableBy (X : C) : (shrinkYoneda.{w}.obj X).Representable
 instance (X : C) : (shrinkYoneda.{w}.obj X).IsRepresentable :=
   (shrinkYonedaRepresentableBy X).isRepresentable
 
+section
+
+variable {D : Type*} [Category* D] [LocallySmall.{w} D]
+
+/-- The natural transformation `shrinkYoneda.obj X ⟶ F.op ⋙ shrinkYoneda.obj (F.obj X)`
+when `F : C ⥤ D` and `X : C`. -/
+@[simps! -isSimp]
+noncomputable def shrinkYonedaMap (F : C ⥤ D) (X : C) :
+    shrinkYoneda.{w}.obj X ⟶ F.op ⋙ shrinkYoneda.{w}.obj (F.obj X) where
+  app Y := ↾(fun f ↦ shrinkYonedaObjObjEquiv.symm (F.map (shrinkYonedaObjObjEquiv f)))
+  naturality {Y Z} g := by
+    ext f
+    obtain ⟨f, rfl⟩ := shrinkYonedaObjObjEquiv.symm.surjective f
+    simp [shrinkYoneda_obj_map_shrinkYonedaObjObjEquiv_symm.{w}]
+
+lemma shrinkYonedaMap_app_shrinkYonedaObjObjEquiv_symm (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    (shrinkYonedaMap.{w} F Y).app (op X) (shrinkYonedaObjObjEquiv.symm f) =
+      shrinkYonedaObjObjEquiv.symm (F.map f) := by
+  simp [shrinkYonedaMap]
+
+end
+
+lemma comp_shrinkYonedaMap_comp_eq_yonedaMap
+    {C D : Type*} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) (X : C) :
+    shrinkYonedaIsoYoneda.inv.app _ ≫ shrinkYonedaMap.{v} F X ≫
+      Functor.whiskerLeft _ (shrinkYonedaIsoYoneda.hom.app _) = yonedaMap F X := by
+  ext
+  simp [shrinkYonedaMap_app_hom_apply.{v}]
+
+lemma comp_shrinkYonedaMap_comp_eq_uliftYonedaMap
+    {C : Type*} [Category.{v} C] {D : Type*} [Category.{v'} D] (F : C ⥤ D) (X : C) :
+    uliftYonedaIsoShrinkYoneda.hom.app _ ≫ shrinkYonedaMap.{max w v v'} F X ≫
+      Functor.whiskerLeft _ (uliftYonedaIsoShrinkYoneda.inv.app _) =
+    uliftYonedaMap.{w} F X := by
+  ext
+  simp [shrinkYonedaMap_app_hom_apply.{max w v v'}, uliftYonedaMap,
+    uliftYonedaIsoShrinkYoneda_hom_app_app.{max v' w},
+    uliftYonedaIsoShrinkYoneda_inv_app_app.{max v w}]
+
 end Yoneda
 
 section Coyoneda
 
-set_option backward.defeqAttrib.useBackward true in
 instance (X : Cᵒᵖ) : FunctorToTypes.Small.{w} (coyoneda.obj X) :=
   fun _ ↦ by dsimp; infer_instance
 
@@ -356,12 +439,18 @@ lemma shrinkCoyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {P : C ⥤ Type w} (t
     rw [← shrinkCoyonedaEquiv_naturality]
     simp)
 
-lemma shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm {X : Cᵒᵖ} {P : C ⥤ Type w}
-    (s : P.obj X.unop) {Y : Cᵒᵖ} (f : Y ⟶ X) :
-    (shrinkCoyonedaEquiv.symm s).app Y.unop (shrinkCoyonedaObjObjEquiv.symm f.unop) =
-      P.map f.unop s := by
+lemma shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm {X : C} {P : C ⥤ Type w}
+    (s : P.obj X) {Y : C} (f : X ⟶ Y) :
+    (shrinkCoyonedaEquiv.symm s).app Y (shrinkCoyonedaObjObjEquiv.symm f) =
+      P.map f s := by
   obtain ⟨g, rfl⟩ := shrinkCoyonedaEquiv.surjective s
-  simp [map_shrinkCoyonedaEquiv]
+  simp [dsimp% map_shrinkCoyonedaEquiv g f.op]
+
+lemma shrinkCoyonedaEquiv_symm_app_shrinkYonedaObjObjEquiv_symm_comp
+    {X Y Z : C} {P : C ⥤ Type w} (x : P.obj X) (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (shrinkCoyonedaEquiv.symm x).app Z (shrinkYonedaObjObjEquiv.symm (f ≫ g)) =
+    P.map g ((shrinkCoyonedaEquiv.symm x).app Y (shrinkYonedaObjObjEquiv.symm f)) := by
+  simp [shrinkCoyonedaEquiv_symm_app_shrinkCoyonedaObjObjEquiv_symm.{w}]
 
 variable (C) in
 /-- The functor `shrinkCoyoneda : Cᵒᵖ ⥤ C ⥤ Type w` for a locally `w`-small category `C`
@@ -389,7 +478,6 @@ def shrinkCoyonedaIsoCoyoneda : shrinkCoyoneda.{v} ≅ coyoneda (C := C) :=
     (by intros; ext; simp [shrinkYonedaObjObjEquiv_obj_map])
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- `shrinkCoyoneda` is compatible with `uliftFunctor`. -/
 noncomputable
 def shrinkCoyonedaUliftFunctorIso [LocallySmall.{max w w'} C] :
@@ -409,7 +497,6 @@ noncomputable def uliftYonedaIsoShrinkCoyoneda :
       ext
       exact (shrinkCoyoneda_map_app_shrinkCoyonedaObjObjEquiv_symm _ _).symm)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `shrinkCoyoneda.{w}` followed by the evaluation
 at `Y : C` and `uliftFunctor.{v}` identifies to `yoneda.obj Y` followed
 by `uliftFunctor.{w}`. -/

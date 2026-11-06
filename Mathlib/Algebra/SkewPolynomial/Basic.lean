@@ -113,7 +113,7 @@ The set of all `n` such that `X^n` has a non-zero coefficient.
 def support (p : SkewPolynomial R) : Finset ℕ :=
   Finset.map ⟨toAdd, toAdd.injective⟩ (SkewMonoidAlgebra.support p)
 
-/-- Though `SkewPolynomial.support` is not definiyionally equal to `SkewMonoidAlgebra.support` we
+/-- Though `SkewPolynomial.support` is not definitionally equal to `SkewMonoidAlgebra.support` we
   can relate them using the following lemma. -/
 lemma support_eq_skewMonoidAlgebra_support (p : SkewPolynomial R) :
     p.support = Finset.map (Multiplicative.toAdd (α := ℕ)) (SkewMonoidAlgebra.support p) := by
@@ -528,10 +528,12 @@ lemma monomial_left_inj {R : Type*} [Semiring R] {a : R} (ha : a ≠ 0) {i j : �
     (monomial i a) = (monomial j a) ↔ i = j :=
   SkewMonoidAlgebra.single_left_inj ha
 
-lemma nat_cast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
+lemma natCast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
     [MulSemiringAction (Multiplicative ℕ) R] : (n : SkewPolynomial R) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 section Sum
+
+@[deprecated (since := "2026-10-13")] alias nat_cast_mul := natCast_mul
 
 variable {S : Type*} [AddCommMonoid S]
 
