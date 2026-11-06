@@ -20,8 +20,8 @@ A lattice in an `A`-module `V` is full if its `A`-span is all of `V`.
 
 - `Module.Basis.extendOfIsFullLattice`: an `R`-basis of a full lattice is an `A`-basis of `V`.
 - `Submodule.IsFullLattice.rank`: a full lattice has `R`-rank the `A`-rank of `V`.
-- `Submodule.IsFullLattice.inf`: over a fraction field, the intersection of two full lattices in a
-  finite-dimensional module is again a full lattice.
+- `Submodule.IsFullLattice.inf`: over a fraction field, the intersection of two full lattices is
+  again a full lattice.
 -/
 
 @[expose] public section
@@ -85,15 +85,22 @@ theorem rank_eq [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
 theorem finrank_eq [IsFullLattice K M] : finrank R M = finrank K V :=
   congr(Cardinal.toNat $(rank_eq K M))
 
+/-- A lattice whose `R`-finrank is at least the `K`-finrank of a finite-dimensional ambient module
+is full. -/
+theorem of_finrank_le [Module.Finite K V] [IsLattice K M]
+    (hr : Module.finrank K V ≤ Module.finrank R M) : IsFullLattice K M where
+  span_eq_top := eq_of_le_of_finrank_le le_top <| by
+    rwa [finrank_top, IsLattice.finrank_span_eq_finrank]
+
 /-- A lattice whose `R`-rank is at least the `K`-rank of a finite-dimensional ambient module
 is full. -/
-theorem of_rank_le [Module.Finite K V] [IsLattice K M] (hr : Module.rank K V ≤ Module.rank R M) :
-    IsFullLattice K M where
-  span_eq_top := by
-    refine Submodule.eq_top_of_finrank_eq (congrArg Cardinal.toNat (le_antisymm
-      (Submodule.rank_le _) ?_))
-    rw [IsLattice.rank_span_eq_rank K M]
-    exact hr
+theorem of_rank_le [IsLattice K M] (hr : Module.rank K V ≤ Module.rank R M) :
+    IsFullLattice K M :=
+  have : Nontrivial R := (algebraMap R K).domain_nontrivial
+  have : Module.Finite R M := IsLattice.finite K M
+  have hM : Module.rank R M < Cardinal.aleph0 := Module.rank_lt_aleph0 R M
+  have : Module.Finite K V := rank_lt_aleph0_iff.mp (hr.trans_lt hM)
+  of_finrank_le K M (Cardinal.toNat_le_toNat hr hM)
 
 section IsFractionRing
 
@@ -112,14 +119,15 @@ theorem of_le_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsFullLattice K M] (h
   have := IsLattice.of_fg K hfg
   of_le K hle
 
-/-- If `K` is the field of fractions of `R`, the intersection of two full lattices in a
-finite-dimensional module is a full lattice. -/
-instance inf [IsDomain R] [IsNoetherianRing R] [Module.Finite K V] (M N : Submodule R V)
+/-- If `K` is the field of fractions of `R`, the intersection of two full lattices is a full
+lattice. -/
+instance inf [IsDomain R] [IsNoetherianRing R] (M N : Submodule R V)
     [IsFullLattice K M] [IsFullLattice K N] : IsFullLattice K (M ⊓ N) := by
-  refine IsFullLattice.of_rank_le K _ (le_of_eq ?_)
+  apply of_rank_le K
+  have := IsLattice.finite K M
   have h := Submodule.rank_sup_add_rank_inf_eq M N
-  rw [IsFullLattice.rank_eq K M, IsFullLattice.rank_eq K N, IsFullLattice.rank_eq K (M ⊔ N)] at h
-  exact (Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)).symm
+  rw [rank_eq K M, rank_eq K N, rank_eq K (M ⊔ N)] at h
+  exact (Cardinal.eq_of_add_eq_add_left h (rank_eq K M ▸ rank_lt_aleph0 R M)).ge
 
 end IsFractionRing
 
