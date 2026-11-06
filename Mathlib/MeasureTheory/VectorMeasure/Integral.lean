@@ -651,7 +651,7 @@ theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integra
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
       ‖B‖ * (∫⁻ a, edist (f a) (g a) ∂μ.variation).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp [edist_eq_eNorm_sub]
+  simp [eDist_eq_eNorm_sub]
 
 theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤

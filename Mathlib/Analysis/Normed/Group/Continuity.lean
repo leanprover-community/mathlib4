@@ -73,7 +73,7 @@ theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
 @[to_additive]
 theorem tendsto_iff_eNorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖ₑ) a (𝓝 0) := by
-  simp only [← edist_eq_eNorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
+  simp only [← eDist_eq_eNorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive]
 theorem tendsto_one_iff_eNorm_tendsto_zero {f : α → E} {a : Filter α} :
@@ -337,7 +337,7 @@ theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E}
 @[to_additive]
 theorem tendsto_iff_eNorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
-  simp only [← edist_eq_eNorm_div, ← tendsto_iff_edist_tendsto_0]
+  simp only [← eDist_eq_eNorm_div, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive]
 theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :

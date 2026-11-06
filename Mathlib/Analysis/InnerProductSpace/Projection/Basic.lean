@@ -273,7 +273,7 @@ to the orthogonal complement of `U` as given by `Metric.infEDist`. -/
 theorem eNorm_starProjection_eq_infEDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖ₑ = Metric.infEDist y Uᗮ := by
-  simp [← Uᗮ.edist_starProjection_eq_infEDist y, edist_eq_eNorm_sub]
+  simp [← Uᗮ.edist_starProjection_eq_infEDist y, eDist_eq_eNorm_sub]
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]

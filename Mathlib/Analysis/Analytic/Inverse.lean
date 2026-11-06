@@ -688,7 +688,7 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
   have : y + f a ∈ Metric.eball (f a) r := by
-    simp only [Metric.mem_eball, edist_eq_eNorm_sub, sub_zero, lt_min_iff,
+    simp only [Metric.mem_eball, eDist_eq_eNorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
   simpa [add_comm] using! hr this

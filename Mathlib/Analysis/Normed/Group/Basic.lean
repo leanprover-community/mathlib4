@@ -696,7 +696,7 @@ lemma exists_eNorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
 lemma eNorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
 
 @[to_additive]
-theorem edist_eq_eNorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
+theorem eDist_eq_eNorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive]
@@ -863,7 +863,7 @@ alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
 alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
-theorem edist_eq_eNorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+theorem eDist_eq_eNorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive]

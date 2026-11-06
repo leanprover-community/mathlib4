@@ -488,7 +488,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     gcongr
     exact eNorm_setIntegral_le_lintegral_eNorm
   apply (Summable.hasSum_iff_tendsto_nat this).2
-  simp_rw [tendsto_iff_edist_tendsto_0, edist_eq_eNorm_sub, eNorm_sub_rev]
+  simp_rw [tendsto_iff_edist_tendsto_0, eDist_eq_eNorm_sub, eNorm_sub_rev]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (ENNReal.tendsto_sum_nat_add _ I.ne) (by positivity) (fun N ↦ ?_)
   have : ⋃ n, s n = (⋃ n ∈ Finset.range N, s n) ∪ (⋃ n, s (n + N)) := by
