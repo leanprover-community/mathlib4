@@ -236,7 +236,7 @@ omit [PseudoMetrizableSpace ε] in
 theorem eNorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
   ⟨h.1.eNorm, h.2.eNorm⟩
 
-@[deprecated (since := "2026-11-06")] alias enorm := eNorm
+@[deprecated (since := "2026-11-06")] protected alias enorm := IntervalIntegrable.eNorm
 
 theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩

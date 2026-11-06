@@ -992,7 +992,7 @@ protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace 
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (continuous_eNorm.comp_stronglyMeasurable hf).measurable
 
-@[deprecated (since := "2026-11-06")] alias enorm := eNorm
+@[deprecated (since := "2026-11-06")] protected alias enorm := StrongMeasurable.eNorm
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :
