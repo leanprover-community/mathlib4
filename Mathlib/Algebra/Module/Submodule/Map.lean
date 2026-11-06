@@ -495,6 +495,10 @@ lemma map_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M) :
     (p.map f).toAddSubgroup = p.toAddSubgroup.map (f : M →+ M₂) :=
   rfl
 
+lemma comap_toAddSubgroup (f : M →ₗ[R] M₂) (p : Submodule R M₂) :
+    (p.comap f).toAddSubgroup = p.toAddSubgroup.comap (f : M →+ M₂) :=
+  rfl
+
 end AddCommGroup
 
 end Submodule

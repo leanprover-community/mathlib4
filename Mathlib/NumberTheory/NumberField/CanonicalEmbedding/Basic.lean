@@ -676,14 +676,8 @@ theorem span_latticeBasis :
     Submodule.span ℤ (Set.range (latticeBasis K)) = mixedEmbedding.integerLattice K :=
   Submodule.ext_iff.mpr fun _ ↦ mem_span_latticeBasis K
 
-instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
-  classical
+instance : (mixedEmbedding.integerLattice K).IsFullLattice ℝ := by
   rw [← span_latticeBasis]
-  infer_instance
-
-open scoped Classical in
-instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
-  simp_rw [← span_latticeBasis]
   infer_instance
 
 open scoped Classical in
@@ -790,14 +784,8 @@ theorem span_idealLatticeBasis :
   ext x
   simp [mem_span_fractionalIdealLatticeBasis]
 
-instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
-  classical
+instance : (mixedEmbedding.idealLattice K I).IsFullLattice ℝ := by
   rw [← span_idealLatticeBasis]
-  infer_instance
-
-open scoped Classical in
-instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
-  simp_rw [← span_idealLatticeBasis]
   infer_instance
 
 open scoped Classical in
@@ -870,15 +858,10 @@ theorem volumePreserving_toMixed_symm :
 open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the Euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
-  ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
+  (mixedEmbedding.integerLattice K).comap ((toMixed K).toLinearMap.restrictScalars ℤ)
 
-instance : DiscreteTopology (euclidean.integerLattice K) := by
+instance : (euclidean.integerLattice K).IsFullLattice ℝ:= by
   rw [euclidean.integerLattice]
-  infer_instance
-
-open scoped Classical in
-instance : IsZLattice ℝ (euclidean.integerLattice K) := by
-  simp_rw [euclidean.integerLattice]
   infer_instance
 
 end euclidean

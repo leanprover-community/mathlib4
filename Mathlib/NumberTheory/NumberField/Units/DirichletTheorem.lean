@@ -57,8 +57,8 @@ We define a group morphism from `(𝓞 K)ˣ` to `logSpace K`, defined as
 prove that its kernel is the torsion subgroup (see `logEmbedding_eq_zero_iff`) and that its image,
 called `unitLattice`, is a full `ℤ`-lattice. It follows that `unitLattice` is a free `ℤ`-module
 (see `instModuleFree_unitLattice`) of rank `card (InfinitePlace K) - 1` (see `unitLattice_rank`).
-To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it is discrete
-(see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
+To prove that the `unitLattice` is a full `ℤ`-lattice, we need to prove that it meets every closed
+ball in a finite set (see `unitLattice_inter_ball_finite`) and that it spans the full space over `ℝ`
 (see `unitLattice_span_eq_top`); this is the main part of the proof, see the section `span_top`
 below for more details.
 -/
@@ -358,21 +358,10 @@ open dirichletUnitTheorem Module
 /-- The unit rank of the number field `K`, it is equal to `card (InfinitePlace K) - 1`. -/
 def rank : ℕ := Fintype.card (InfinitePlace K) - 1
 
-instance instDiscrete_unitLattice : DiscreteTopology (unitLattice K) := by
-  classical
-  refine discreteTopology_of_isOpen_singleton_zero ?_
-  refine isOpen_singleton_of_finite_mem_nhds 0 (s := Metric.closedBall 0 1) ?_ ?_
-  · exact Metric.closedBall_mem_nhds _ (by simp)
-  · refine Set.Finite.of_finite_image ?_ (Set.injOn_of_injective Subtype.val_injective)
-    convert unitLattice_inter_ball_finite K 1
-    ext x
-    refine ⟨?_, fun ⟨hx1, hx2⟩ ↦ ⟨⟨x, hx1⟩, hx2, rfl⟩⟩
-    rintro ⟨x, hx, rfl⟩
-    exact ⟨Subtype.mem x, hx⟩
-
 open scoped Classical in
-instance instZLattice_unitLattice : IsZLattice ℝ (unitLattice K) where
-  span_top := unitLattice_span_eq_top K
+instance instIsFullLattice_unitLattice : (unitLattice K).IsFullLattice ℝ where
+  toIsLattice := Submodule.IsLattice.of_finite_inter_closedBall _ (unitLattice_inter_ball_finite K)
+  span_eq_top := unitLattice_span_eq_top K
 
 set_option backward.isDefEq.respectTransparency false in
 protected theorem finrank_eq_rank :
@@ -384,8 +373,7 @@ protected theorem finrank_eq_rank :
 @[simp]
 theorem unitLattice_rank :
     finrank ℤ (unitLattice K) = Units.rank K := by
-  classical
-  rw [← Units.finrank_eq_rank, ZLattice.rank ℝ]
+  rw [← Units.finrank_eq_rank, Submodule.IsFullLattice.finrank ℝ]
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :

@@ -188,7 +188,7 @@ theorem normAtAllPlaces_normLeOne :
     normAtAllPlaces '' (normLeOne K) =
     mixedSpaceOfRealSpace ⁻¹'
       (logMap ⁻¹'
-          ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))) ∩
+          ZSpan.fundamentalDomain ((basisUnitLattice K).extendOfIsFullLattice ℝ)) ∩
       {x | (∀ w, 0 ≤ x w)} ∩
       {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≠ 0} ∩
       {x | mixedEmbedding.norm (mixedSpaceOfRealSpace x) ≤ 1} := by
@@ -398,7 +398,7 @@ theorem linearIndependent_completeFamily :
   have h₁ : LinearIndependent ℝ (fun w : {w // w ≠ w₀} ↦ completeFamily K w.1) := by
     refine LinearIndependent.of_comp realSpaceToLogSpace ?_
     simp_rw [Function.comp_def, realSpaceToLogSpace_completeFamily_of_ne]
-    convert! (((basisUnitLattice K).ofZLatticeBasis ℝ _).reindex
+    convert! (((basisUnitLattice K).extendOfIsFullLattice ℝ).reindex
       (Units.equivFinRank K)).linearIndependent
     simp
   have h₂ : completeFamily K w₀ ∉ Submodule.span ℝ
@@ -535,7 +535,7 @@ theorem norm_expMapBasis_ne_zero (x : realSpace K) :
 open scoped Classical in
 theorem logMap_expMapBasis (x : realSpace K) :
     logMap (mixedSpaceOfRealSpace (expMapBasis x)) ∈
-        ZSpan.fundamentalDomain ((basisUnitLattice K).ofZLatticeBasis ℝ (unitLattice K))
+        ZSpan.fundamentalDomain ((basisUnitLattice K).extendOfIsFullLattice ℝ)
       ↔ ∀ w, w ≠ w₀ → x w ∈ Set.Ico 0 1 := by
   simp_rw [ZSpan.mem_fundamentalDomain, (Units.equivFinRank K).forall_congr_left, Subtype.forall]
   refine forall₂_congr fun w hw ↦ ?_
@@ -549,9 +549,9 @@ theorem logMap_expMapBasis (x : realSpace K) :
   simp_rw [Finset.sum_apply, ← sum_fn, map_sum, Pi.smul_apply, ← Pi.smul_def, map_smul,
     completeBasis_apply_of_ne, expMap_symm_apply, normAtAllPlaces_mixedEmbedding,
     ← logEmbedding_component, logEmbedding_fundSystem, Finsupp.coe_finsetSum, Finsupp.coe_smul,
-    Finset.sum_apply, Pi.smul_apply, Basis.ofZLatticeBasis_repr_apply, Basis.repr_self,
-    Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite, Int.cast_one, Int.cast_zero,
-    smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
+    Finset.sum_apply, Pi.smul_apply, Basis.extendOfIsFullLattice_repr_apply, eq_intCast,
+    Basis.repr_self, Finsupp.single_apply, EmbeddingLike.apply_eq_iff_eq, Int.cast_ite,
+    Int.cast_one, Int.cast_zero, smul_ite, smul_eq_mul, mul_one, mul_zero, Fintype.sum_ite_eq']
 
 theorem normAtAllPlaces_image_preimage_expMapBasis (s : Set (realSpace K)) :
     normAtAllPlaces '' normAtAllPlaces ⁻¹' expMapBasis '' s = expMapBasis '' s := by
