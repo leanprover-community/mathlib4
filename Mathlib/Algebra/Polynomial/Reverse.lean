@@ -143,9 +143,13 @@ lemma reflect_map {S : Type*} [Semiring S] (f : R →+* S) (p : R[X]) (n : ℕ) 
 lemma reflect_one (n : ℕ) : (1 : R[X]).reflect n = Polynomial.X ^ n := by
   rw [← C.map_one, reflect_C, map_one, one_mul]
 
-theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.support ≤ cf.succ)
-    (Cg : #g.support ≤ cg.succ) (Nf : f.natDegree ≤ N) (Og : g.natDegree ≤ O) :
+theorem reflect_mul_induction (N O : ℕ) (f g : R[X]) (Nf : f.natDegree ≤ N)
+    (Og : g.natDegree ≤ O) :
     reflect (N + O) (f * g) = reflect N f * reflect O g := by
+  revert Nf Og
+  obtain ⟨cf, Cf⟩ : ∃ cf : ℕ, #f.support ≤ cf.succ := ⟨_, (#f.support).le_succ⟩
+  obtain ⟨cg, Cg⟩ : ∃ cg : ℕ, #g.support ≤ cg.succ := ⟨_, (#g.support).le_succ⟩
+  intro Nf Og
   induction cf generalizing f with
   | zero =>
     induction cg generalizing g with
@@ -174,7 +178,7 @@ theorem reflect_mul_induction (cf cg : ℕ) (N O : ℕ) (f g : R[X]) (Cf : #f.su
 @[simp]
 theorem reflect_mul (f g : R[X]) {F G : ℕ} (Ff : f.natDegree ≤ F) (Gg : g.natDegree ≤ G) :
     reflect (F + G) (f * g) = reflect F f * reflect G g :=
-  reflect_mul_induction _ _ F G f g (#f.support).le_succ (#g.support).le_succ Ff Gg
+  reflect_mul_induction F G f g Ff Gg
 
 set_option backward.isDefEq.respectTransparency false in
 lemma natDegree_reflect_le {N : ℕ} {p : R[X]} :

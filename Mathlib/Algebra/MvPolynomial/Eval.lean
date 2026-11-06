@@ -490,12 +490,12 @@ lemma coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) [DecidableEq S₁] :
   | C a => aesop (add simp coeffs_C)
   | mul_X p n ih => simpa
   | monomial_add a s p ha hs hp ih =>
-    rw [coeffs_add (disjoint_support_monomial ha hs), map_add, coeffs_add]
+    rw [coeffs_add (disjoint_support_monomial ha), map_add, coeffs_add]
     · rw [Finset.image_union, Finset.union_subset_iff]
       exact ⟨ih.trans (by simp), hp.trans (by simp)⟩
     · exact Finset.disjoint_of_subset_left (support_map_subset _ _) <|
         Finset.disjoint_of_subset_right (support_map_subset _ _) <|
-          disjoint_support_monomial ha hs
+          disjoint_support_monomial ha
 
 @[simp]
 lemma coe_coeffs_map (f : R →+* S₁) (p : MvPolynomial σ R) :
@@ -522,7 +522,7 @@ lemma mem_range_map_iff_coeffs_subset {f : R →+* S₁} {x : MvPolynomial σ S�
       obtain ⟨q, rfl⟩ := ih hx
       exact ⟨q * X n, by simp⟩
     | monomial_add a s p ha hs hp ih =>
-      rw [coeffs_add (disjoint_support_monomial ha hs)] at hx
+      rw [coeffs_add (disjoint_support_monomial ha)] at hx
       simp only [Finset.coe_union, Set.union_subset_iff] at hx
       obtain ⟨q, hq⟩ := ih hx.1
       obtain ⟨u, hu⟩ := hp hx.2

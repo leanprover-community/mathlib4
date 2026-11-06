@@ -89,12 +89,14 @@ theorem notMem_support_sub_monomial_sub_monomial (d d' : σ →₀ ℕ) (c : R)
   rw [notMem_support_iff, coeff_sub, coeff_sub, coeff_monomial, coeff_monomial,
     ite_eq_left rfl, ite_eq_right hdd'.symm, sub_zero, hc, sub_self]
 
-/-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p` and `d ≠ d'`,
+/-- Subtracting `monomial d c - monomial d' c` from `p`, where `c = coeff d p`,
 leaves the support inside `p.support.erase d ∪ {d'}`. -/
 theorem support_sub_monomial_sub_monomial_subset [DecidableEq σ] (d d' : σ →₀ ℕ) (c : R)
-    (hdd' : d ≠ d') (hc : p.coeff d = c) :
+    (hc : p.coeff d = c) :
     (p - (monomial d c - monomial d' c)).support ⊆ p.support.erase d ∪ {d'} := by
   classical
+  rcases eq_or_ne d d' with rfl | hdd'
+  · grind
   intro x hx
   have hd_not := notMem_support_sub_monomial_sub_monomial p d d' c hdd' hc
   rcases Finset.mem_union.mp (support_sub σ p _ hx) with hp | hdelta
