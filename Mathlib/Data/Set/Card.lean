@@ -1280,10 +1280,12 @@ lemma exists_subsuperset_card_eq {n : ℕ} (hst : s ⊆ t) (hsn : s.ncard ≤ n)
 lemma exists_subset_card_eq {n : ℕ} (hns : n ≤ s.ncard) : ∃ t ⊆ s, t.ncard = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
-lemma exists_subset_ncard_eq {k : ℕ} (hs : s.Finite) (hks : k ≤ s.ncard) :
+/-- Every `k ≤ s.ncard` is the `ncard` of a finite subset of `s`. For
+infinite `s`, `s.ncard = 0` makes `k = 0` so it remains true. -/
+lemma exists_subset_ncard_eq {k : ℕ} (hks : k ≤ s.ncard) :
     ∃ t ⊆ s, t.Finite ∧ t.ncard = k := by
-  obtain ⟨t, -, hts, rfl⟩ := exists_subsuperset_card_eq s.empty_subset (by simp) hks
-  exact ⟨t, hts, hs.subset hts, rfl⟩
+  obtain ⟨t, hts, ht⟩ := exists_subset_encard_eq ((Nat.cast_le.2 hks).trans s.ncard_le_encard)
+  exact ⟨t, hts, finite_of_encard_eq_coe ht, by simp [ncard_def, ht]⟩
 
 theorem Infinite.exists_subset_ncard_eq {s : Set α} (hs : s.Infinite) (k : ℕ) :
     ∃ t, t ⊆ s ∧ t.Finite ∧ t.ncard = k := by
