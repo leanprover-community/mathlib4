@@ -92,12 +92,9 @@ theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := 
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp
   simp [apply_norm_sq_eq_inner_adjoint_left]
 
-theorem ker_abs_eq_ker_adjoint_comp_self (T : E →L[ℂ] F) : |T|.ker = (T† ∘L T).ker := by
-  simpa using (ker_adjoint_comp_self |T|).symm
-
 @[simp]
 theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
-  rw [ker_abs_eq_ker_adjoint_comp_self, ker_adjoint_comp_self]
+  simp [← ker_adjoint_comp_self]
 
 @[simp]
 protected theorem norm_abs (T : E →L[ℂ] F) : ‖|T|‖ = ‖T‖ := by
