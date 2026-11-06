@@ -155,23 +155,26 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
-  set L := hf.localInverseAt x
   intro _ y hy
   -- note: this whole argument is repeated above
-  have : L =ᶠ[𝓝 y] (L ∘ f) ∘ (hf.localInverseAt (g y)) := by
+  have : hf.localInverseAt x =ᶠ[𝓝 y] (hf.localInverseAt x ∘ f) ∘ (hf.localInverseAt (g y)) := by
     have hT : (hf.localInverseAt (g y)).source ∈ 𝓝 y := by
       refine (hf.localInverseAt (g y)).open_source.mem_nhds ?_
       simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
     filter_upwards [hT] with x hx
     simp [hf.apply_localInverseAt_of_mem hx]
-
   apply ContMDiffAt.contMDiffWithinAt
   apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
-
   apply ContMDiffAt.comp (I' := I) y
-  · have aux := foo hf h
-
-    sorry
+  · have aux := foo hf h (g y) x
+    simp at aux
+    apply aux.contMDiffAt
+    rw [show hf.localInverseAt (g y) y = g y by
+      simpa [hg y] using hf.localInverseAt_apply_self (x := g y)]
+    refine IsOpen.mem_nhds ?_ ?_
+    · exact (hf.localInverseAt (g y)).open_target.inter
+        ((hf.localInverseAt x).open_source.preimage hf.continuous)
+    · exact ⟨hf.self_mem_localInverseAt_target, by simpa [hg y] using hy⟩
   · exact contMDiffAt_localInverseAt_rightInverse hf hg y
 
 /-- Suppose `F : M → N` is invariant under `f`
