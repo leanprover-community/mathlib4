@@ -614,8 +614,14 @@ theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
       (monic_normalize fun hp0 ↦ absurd hp1 (by simp [hp0]))
   exact (normalize_associated _).prime this
 
+theorem prime_of_natDegree_eq_one (hp1 : natDegree p = 1) : Prime p :=
+  prime_of_degree_eq_one ((degree_eq_iff_natDegree_eq_of_pos one_pos).mpr hp1)
+
 theorem irreducible_of_degree_eq_one (hp1 : degree p = 1) : Irreducible p :=
   (prime_of_degree_eq_one hp1).irreducible
+
+theorem irreducible_of_natDegree_eq_one (hp1 : natDegree p = 1) : Irreducible p :=
+  (prime_of_natDegree_eq_one hp1).irreducible
 
 theorem not_irreducible_C (x : R) : ¬Irreducible (C x) := by
   by_cases H : x = 0
@@ -707,6 +713,25 @@ protected theorem mem_normalizedFactors_iff [DecidableEq R] (hq : q ≠ 0) :
   by_cases hp : p = 0
   · simpa [hp] using zero_notMem_normalizedFactors _
   · rw [mem_normalizedFactors_iff' hq, normalize_eq_self_iff_monic hp]
+
+open UniqueFactorizationMonoid in
+theorem sum_natDegree_normalizedFactors [DecidableEq R] (a : R[X]) :
+    ((normalizedFactors a).map natDegree).sum = a.natDegree := by
+  by_cases h0: a = 0
+  · simp [h0]
+  nth_rw 2 [← leadingCoeff_mul_prod_normalizedFactors a]
+  rw [Polynomial.natDegree_C_mul (by simp [h0]),
+      natDegree_multiset_prod _ (zero_notMem_normalizedFactors a)]
+
+/-- If every monic irreducible factor of a polynomial `f` has `natDegree` divisible by `n`,
+  then so does `f` itself. -/
+lemma dvd_natDegree_of_monic_of_irreducible (f : R[X]) {n : ℕ}
+    (h : ∀ d, Monic d → Irreducible d → d ∣ f → n ∣ d.natDegree) : n ∣ f.natDegree := by
+  classical
+  by_cases h0 : f = 0
+  · simp [h0]
+  · rw [← sum_natDegree_normalizedFactors]
+    grind [Multiset.dvd_sum, Multiset.mem_map, Polynomial.mem_normalizedFactors_iff]
 
 variable (p) in
 @[simp]
