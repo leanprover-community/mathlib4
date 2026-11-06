@@ -108,6 +108,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
   apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
   exact fun y ↦ hF _ _ (hg (f y)).symm
 
+omit [IsManifold I n M] in
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
@@ -139,6 +140,7 @@ lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
 
   sorry
 
+omit [IsManifold I n M] in
 lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
@@ -156,6 +158,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
   · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
 
 -- maybe this could be just dropped
+omit [IsManifold I n M] in
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
 the induced map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
