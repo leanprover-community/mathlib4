@@ -11,6 +11,9 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Tactic.Inclusion.Core.ToSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (possibly unbounded) intervals
 
@@ -53,6 +56,10 @@ theorem Interval.mem_def [Preorder α] {x : α} {I : Interval α} :
 /-- Apply a function to the finite endpoints of an interval. -/
 def Interval.map (I : Interval α) (f : α → β) : Interval β :=
   ⟨WithBot.map f I.lb, WithTop.map f I.ub⟩
+
+@[simp]
+theorem Interval.map_id (I : Interval α) : I.map id = I := by
+  simp [Interval.map]
 
 theorem Interval.map_map {γ : Type*} (I : Interval α) (f : α → β) (g : β → γ) :
     (I.map f).map g = I.map (g ∘ f) := by
@@ -104,6 +111,10 @@ def Interval.Iic (ub : WithTop α) : Interval α := ⟨⊥, ub⟩
 
 /-- The interval unbounded above with lower endpoint `lb`. -/
 def Interval.Ici (lb : WithBot α) : Interval α := ⟨lb, ⊤⟩
+
+theorem Interval.mem_Icc_of_mem [Preorder α] {x : α} {lb : WithBot α} {ub : WithTop α}
+    (hl : x ∈ Interval.Ici lb) (hu : x ∈ Interval.Iic ub) : x ∈ Interval.Icc lb ub :=
+  ⟨hl.1, hu.2⟩
 
 theorem Interval.mem_Iic_of_le [Preorder α] {x y : α} {I : Interval α}
     (hxy : x ≤ y) (hy : y ∈ I) : x ∈ Interval.Iic I.ub := by

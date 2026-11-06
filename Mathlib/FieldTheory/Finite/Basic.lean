@@ -385,7 +385,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       have := congr($eq x)
       rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
       refine ⟨fun h ↦ ?_, this⟩
-      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr(coeff $h 1)
+      simpa [Fintype.one_lt_card.ne, pos.ne, eqComm] using congr($(h).coeff 1)
     refine this.not_gt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
       (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
@@ -418,7 +418,7 @@ theorem minpoly_frobeniusAlgHom :
     minpoly K (frobeniusAlgHom K L).toLinearMap = X ^ Module.finrank K L - 1 :=
   minpoly.eq_of_linearIndependent _ _ (leadingCoeff_X_pow_sub_one Module.finrank_pos)
     (LinearMap.ext fun x ↦ by
-      simpa [sub_eq_zero, Module.End.coe_pow, orderOf_frobeniusAlgHom] using!
+      simpa [sub_eq_zero, FunLike.coe_pow_eq_iterate, orderOf_frobeniusAlgHom] using!
         congr($(pow_orderOf_eq_one (frobeniusAlgHom K L)) x)) _
     (degree_X_pow_sub_C Module.finrank_pos _) <| by
       simpa [← AlgHom.toEnd_apply, ← map_pow] using! (linearIndependent_algHom_toLinearMap K L L

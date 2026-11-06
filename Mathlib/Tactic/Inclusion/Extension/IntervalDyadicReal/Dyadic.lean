@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dyadic rationals
 
@@ -16,6 +19,8 @@ core.
 -/
 
 @[expose] public section
+
+namespace Inclusion.IntervalDyadicReal
 
 instance : LinearOrder Dyadic where
   le_refl := Std.IsPreorder.le_refl
@@ -45,6 +50,7 @@ instance : AddLeftMono Dyadic where
   elim a b c h := Dyadic.toRat_le_toRat_iff.mp <| by
     simpa [Dyadic.toRat_add] using add_le_add_right (Dyadic.toRat_le_toRat_iff.mpr h) c.toRat
 
+open Dyadic
 namespace Dyadic
 
 @[simp]
@@ -84,7 +90,7 @@ theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
 lemma step_pos (prec : ℤ) : 0 < step prec := ofOdd_pos.mpr zero_lt_one
 
 lemma step_eq_add (prec : ℤ) : step prec = step (prec + 1) + step (prec + 1) := by
-  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← _root_.add_mul, ← one_div, step]
+  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← Rat.add_mul, ← one_div, step]
 
 lemma toRat_step (prec : ℤ) : (step prec).toRat = (1 / 2) ^ prec := by
   simp [← ofIntWithPrec_one, toRat_ofIntWithPrec_eq_mul_two_pow]
@@ -94,7 +100,7 @@ lemma toRat_step_real (prec : ℤ) : (step prec).toRat = (1 / 2 : ℝ) ^ prec :=
 
 section Shift
 
-variable (k e : ℤ) (hk : k % 2 = 1) (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
+variable (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
 
 @[simp] theorem zero_shiftLeft : (0 : Dyadic) <<< a = 0 := rfl
 
@@ -106,15 +112,23 @@ variable (k e : ℤ) (hk : k % 2 = 1) (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
 @[simp] theorem ofOdd_shiftRight {k e : ℤ} {hk : k % 2 = 1} {a : ℤ} :
     ofOdd k e hk >>> a = ofOdd k (e + a) hk := rfl
 
+@[simp, norm_cast]
 theorem shiftLeft_natCast : d <<< (m : ℤ) = d <<< m := rfl
 
+@[simp, norm_cast]
 theorem shiftRight_natCast : d >>> (m : ℤ) = d >>> m := rfl
 
-theorem shiftLeft_add : d <<< (a + b) = d <<< a <<< b := by
+theorem shiftLeft_add_int : d <<< (a + b) = d <<< a <<< b := by
   induction d <;> simp [Int.sub_sub]
 
-theorem shiftRight_add : d >>> (a + b) = d >>> a >>> b := by
+theorem shiftLeft_add_nat : d <<< (m + n) = d <<< m <<< n := by
+  simp only [← shiftLeft_natCast, Nat.cast_add, shiftLeft_add_int]
+
+theorem shiftRight_add_int : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.add_assoc]
+
+theorem shiftRight_add_nat : d >>> (m + n) = d >>> m >>> n := by
+  simp only [← shiftRight_natCast, Nat.cast_add, shiftRight_add_int]
 
 @[simp] theorem shiftLeft_neg : d <<< (-a) = d >>> a := by
   induction d <;> simp
@@ -123,10 +137,10 @@ theorem shiftRight_add : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.sub_eq_add_neg]
 
 theorem shiftLeft_shiftRight : d <<< a >>> b = d <<< (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftLeft_add, shiftLeft_neg]
+  rw [Int.sub_eq_add_neg, shiftLeft_add_int, shiftLeft_neg]
 
 theorem shiftRight_shiftLeft : d >>> a <<< b = d >>> (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftRight_add, shiftRight_neg]
+  rw [Int.sub_eq_add_neg, shiftRight_add_int, shiftRight_neg]
 
 theorem shiftLeft_shiftRight' : d <<< a >>> b = d >>> (b - a) := by
   rw [← Int.neg_sub, shiftRight_neg, shiftLeft_shiftRight]
@@ -136,6 +150,7 @@ theorem shiftRight_shiftLeft' : d >>> a <<< b = d <<< (b - a) := by
 
 section toRat
 
+@[simp]
 theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
   rcases d with _ | ⟨d, k, hd⟩
   · simp
@@ -143,11 +158,9 @@ theorem toRat_shiftLeft : (d <<< a).toRat = d.toRat * 2 ^ a := by
     ac_rfl
 
 theorem toRat_shiftRight : (d >>> a).toRat = d.toRat * 2 ^ (-a) := by
-  rcases d with _ | ⟨d, k, hd⟩
-  · simp
-  · norm_num [toRat_ofOdd_eq_mul_two_pow, zpow_add₀]
-    ac_rfl
+  rw [← shiftLeft_neg, toRat_shiftLeft]
 
+@[simp]
 theorem toRat_shiftRight' : (d >>> a).toRat = d.toRat / 2 ^ a := by
   rw [toRat_shiftRight, zpow_neg, div_eq_mul_inv]
 
@@ -160,10 +173,10 @@ theorem toRat_shiftRight_nat : (d >>> n).toRat = d.toRat / 2 ^ n :=
 end toRat
 
 @[simp] theorem shiftLeft_inj : x <<< a = y <<< a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftLeft, zpow_ne_zero]
+  simp [← toRat_inj, zpow_ne_zero]
 
 @[simp] theorem shiftRight_inj : x >>> a = y >>> a ↔ x = y := by
-  simp [← toRat_inj, toRat_shiftRight, zpow_ne_zero]
+  simp [← toRat_inj, zpow_ne_zero]
 
 @[simp] theorem shiftLeft_eq_zero : d <<< a = 0 ↔ d = 0 := by
   simpa using shiftLeft_inj d 0 a
@@ -177,17 +190,29 @@ end toRat
 @[simp] theorem neg_shiftRight : (-d) >>> a = -(d >>> a) := by
   induction d <;> simp
 
-theorem add_shiftLeft : (x + y) <<< a = x <<< a + y <<< a := by
-  simp [← toRat_inj, toRat_shiftLeft, Rat.add_mul]
+theorem add_shiftLeft_int : (x + y) <<< a = x <<< a + y <<< a := by
+  simp [← toRat_inj, Rat.add_mul]
 
-theorem add_shiftRight : (x + y) >>> a = x >>> a + y >>> a := by
-  simp [← toRat_inj, toRat_shiftRight, Rat.add_mul]
+theorem add_shiftLeft_nat : (x + y) <<< m = x <<< m + y <<< m :=
+  add_shiftLeft_int x y m
 
-theorem sub_shiftLeft : (x - y) <<< a = x <<< a - y <<< a := by
-  simp [sub_eq_add_neg, add_shiftLeft, neg_shiftLeft]
+theorem add_shiftRight_int : (x + y) >>> a = x >>> a + y >>> a := by
+  simp [← toRat_inj, add_div]
 
-theorem sub_shiftRight : (x - y) >>> a = x >>> a - y >>> a := by
-  simp [sub_eq_add_neg, add_shiftRight, neg_shiftRight]
+theorem add_shiftRight_nat : (x + y) >>> m = x >>> m + y >>> m :=
+  add_shiftRight_int x y m
+
+theorem sub_shiftLeft_int : (x - y) <<< a = x <<< a - y <<< a := by
+  simp [sub_eq_add_neg, add_shiftLeft_int, neg_shiftLeft]
+
+theorem sub_shiftLeft_nat : (x - y) <<< m = x <<< m - y <<< m :=
+  sub_shiftLeft_int x y m
+
+theorem sub_shiftRight_int : (x - y) >>> a = x >>> a - y >>> a := by
+  simp [sub_eq_add_neg, add_shiftRight_int, neg_shiftRight]
+
+theorem sub_shiftRight_nat : (x - y) >>> m = x >>> m - y >>> m :=
+  sub_shiftRight_int x y m
 
 end Shift
 
@@ -241,3 +266,5 @@ def toRealOrderEmbedding : Dyadic ↪o ℝ :=
 end Real
 
 end Dyadic
+
+end Inclusion.IntervalDyadicReal
