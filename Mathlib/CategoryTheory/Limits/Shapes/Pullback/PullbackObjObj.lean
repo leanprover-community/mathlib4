@@ -39,7 +39,7 @@ a parameterized adjunction `F.leibnizAdjunction G adj₂ : F.leibnizPushout ⊣�
 
 ## References
 
-* [Emily Riehl, Dominic Verity, *Elements of ∞-Category Theory*, Definition C.2.8][RV22]
+* [Emily Riehl, Dominic Verity, *Elements of ∞-Category Theory*, Definition C.2.8][RiehlVerity2022]
 * https://ncatlab.org/nlab/show/pushout-product
 * https://ncatlab.org/nlab/show/pullback-power
 
