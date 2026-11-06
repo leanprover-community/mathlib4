@@ -61,23 +61,15 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     ← b'.tsum_inner_mul_inner (S (b _)), ← b.tsum_inner_mul_inner (S (b' _)),
     ← inner_conj_symm (S _), RCLike.conj_mul, ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
   congr
-  have h (i : ι') (j : ι) : ‖⟪b' i, S (b j)⟫_ℂ‖ ^ 2 = ‖⟪b j, S (b' i)⟫_ℂ‖ ^ 2 := by
-    rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm (b' i) (b j), norm_inner_symm]
-  by_cases hs : Summable (Function.uncurry fun i j ↦ ‖⟪b' i, S (b j)⟫_ℂ‖ ^ 2)
-  · rw [Summable.tsum_comm hs]
-    simp [h]
-  · rw [tsum_eq_zero_of_not_summable (fun hsum ↦ by
-      have hg : Summable (fun p : ι × ι' ↦ ‖⟪b' p.2, S (b p.1)⟫_ℂ‖ ^ 2) :=
-        (summable_prod_of_nonneg (fun _ ↦ by positivity)).2
-        ⟨fun c ↦ b'.orthonormal.inner_products_summable (S (b c)), hsum⟩
-      exact hs ((Equiv.prodComm ι' ι).summable_iff.2 hg)
-    )]
-    rw [tsum_eq_zero_of_not_summable (fun hsum ↦ by
-      have hf : Summable (fun p : ι' × ι ↦ ‖⟪b p.2, S (b' p.1)⟫_ℂ‖ ^ 2) :=
-        (summable_prod_of_nonneg (fun _ ↦ by positivity)).2
-        ⟨fun i ↦ b.orthonormal.inner_products_summable (S (b' i)), hsum⟩
-      exact hs (hf.congr fun p ↦ (h p.1 p.2).symm)
-    )]
+  simp_rw [← toReal_enorm, ← ENNReal.toReal_pow,
+    ← ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.pow_ne_top enorm_ne_top]
+  rw [← ENNReal.tsum_toReal_eq fun _ ↦ ?_, ← ENNReal.tsum_toReal_eq fun _ ↦ ?_, ENNReal.tsum_comm]
+  · congr! 5
+    rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm, ← inner_conj_symm,
+      RCLike.enorm_conj]
+  all_goals
+    simp_rw [← ofReal_norm, ← ENNReal.ofReal_pow (norm_nonneg _)]
+    exact (Orthonormal.inner_products_summable _ (HilbertBasis.orthonormal _)).tsum_ofReal_ne_top
 
 /-- The trace of an operator on `E`. -/
 def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A
