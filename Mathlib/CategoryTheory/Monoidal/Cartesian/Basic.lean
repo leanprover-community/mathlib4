@@ -810,15 +810,15 @@ instance fullSubcategory
       (P.prop_of_isLimit isTerminalTensorUnit (by simp))
       (fun X Y hX hY ↦ P.prop_of_isLimit (tensorProductIsBinaryProduct X Y)
         (by rintro (_ | _) <;> assumption))
-  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.1))
+  isTerminalTensorUnit := .ofUniqueHom (fun X ↦ ObjectProperty.homMk (toUnit X.obj))
     fun _ _ ↦ by ext; apply toUnit_unique
-  fst X Y := ObjectProperty.homMk (fst X.1 Y.1)
-  snd X Y := ObjectProperty.homMk (snd X.1 Y.1)
+  fst X Y := ObjectProperty.homMk (fst X.obj Y.obj)
+  snd X Y := ObjectProperty.homMk (snd X.obj Y.obj)
   tensorProductIsBinaryProduct X Y :=
     BinaryFan.IsLimit.mk _ (fun f g ↦ ObjectProperty.homMk (lift f.hom g.hom))
       (by aesop_cat) (by aesop_cat) (by aesop_cat)
-  fst_def X Y := by ext; exact fst_def X.1 Y.1
-  snd_def X Y := by ext; exact snd_def X.1 Y.1
+  fst_def X Y := by ext; exact fst_def X.obj Y.obj
+  snd_def X Y := by ext; exact snd_def X.obj Y.obj
 
 end CartesianMonoidalCategory
 

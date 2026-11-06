@@ -45,7 +45,7 @@ open scoped MonoidalCategory SFinKer ComonObj
 universe u
 
 /-- Morphism property selecting Markov kernels in `SFinKer`. -/
-abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.1
+abbrev StochHom : MorphismProperty SFinKer := fun _ _ κ => IsMarkovKernel κ.hom
 
 instance : StochHom.IsStableUnderBraiding where
   id_mem X := by dsimp [StochHom]; infer_instance
@@ -88,7 +88,7 @@ instance (X Y : Stoch) (κ : Kernel X.obj Y.obj) [IsDeterministic κ] [IsMarkovK
 
 section PositiveCategory
 
-instance : IsMarkovKernel κ.hom.hom := κ.2
+instance : IsMarkovKernel κ.hom.hom := κ.property
 
 instance [Deterministic κ] : Deterministic κ.hom where
   hom_comul := WideSubcategory.hom_ext_iff.mp <| Deterministic.copy_natural κ

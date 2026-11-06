@@ -297,7 +297,7 @@ def unitsCentralizerEquiv (x : Mˣ) :
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]
-      exact Units.ext (u.1.2 x <| Set.mem_singleton _).symm⟩
+      exact Units.ext (u.val.2 x <| Set.mem_singleton _).symm⟩
     map_mul' := map_mul _ }
 
 end Units

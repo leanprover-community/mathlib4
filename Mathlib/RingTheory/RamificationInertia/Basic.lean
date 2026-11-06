@@ -51,11 +51,11 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   apply Finset.sum_congr rfl
   intro q _
   simp_rw [toEquiv_symm, coe_symm_toEquiv, coe_primesOverOrderIsoFiber_symm_apply]
-  set r := q.1.comap Algebra.TensorProduct.includeRight
+  set r := q.asIdeal.comap Algebra.TensorProduct.includeRight
   let := Localization.AtPrime.algebraOfLiesOver p r
   rw [ramificationIdx_eq p r, inertiaDeg_eq p r]
   let Rp := Localization.AtPrime p
-  let Sq := Localization.AtPrime q.1
+  let Sq := Localization.AtPrime q.asIdeal
   let Sr := Localization.AtPrime r
   let κp := p.ResidueField
   let κr := r.ResidueField
@@ -63,7 +63,8 @@ theorem sum_ramification_inertia_eq_finrank_fiber
   suffices length Sr A * finrank κp κr = finrank κp Sq by simpa using congr($(this).toNat)
   calc length Sr A * finrank κp κr = length Sr A * length κp κr := by rw [length_eq_finrank]
     _ = length Rp A := (length_restrictScalars Rp Sr A).symm
-    _ = length Rp Sq := (Fiber.localizationAlgEquivQuotient p q.1).toLinearEquiv.length_eq.symm
+    _ = length Rp Sq :=
+      (Fiber.localizationAlgEquivQuotient p q.asIdeal).toLinearEquiv.length_eq.symm
     _ = length κp Sq := length_eq_of_surjective residue_surjective
     _ = finrank κp Sq := length_eq_finrank κp Sq
 

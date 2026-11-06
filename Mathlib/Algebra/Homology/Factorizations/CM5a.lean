@@ -443,7 +443,7 @@ def zero [Mono f] (n : ℤ) [K.IsStrictlyGE (n + 1)] [L.IsStrictlyGE (n + 1)] :
 variable {f} in
 lemma exists_next {n₀ : ℤ} (F : CofFibFactorizationQuasiIsoLE f n₀)
     (n₁ : ℤ) (hn₁ : n₀ + 1 = n₁) :
-    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.1 ⟶ F.1),
+    ∃ (F' : CofFibFactorizationQuasiIsoLE f n₁) (g : F'.obj ⟶ F.obj),
       ∀ (i : ℤ) (_ : i ≤ n₀), IsIso (g.hom.h.f i) := by
   obtain ⟨F₁₂, h₁, h₂⟩ := step F.obj.obj.ι n₀ n₁ F.property
   exact ⟨.mk (.mk { mid := F₁₂.obj.mid, ι := F₁₂.obj.ι, π := F₁₂.obj.π ≫ F.obj.obj.π }

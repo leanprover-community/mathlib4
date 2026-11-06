@@ -166,13 +166,13 @@ noncomputable def snakeInput : ShortComplex.SnakeInput C where
       τ₃ := cokernel.π g }
   h₀ := by
     apply ShortComplex.isLimitOfIsLimitπ <;>
-      apply (KernelFork.isLimitMapConeEquiv _ _).2
+      apply (KernelFork.isLimitMapConeEquiv _ _).invFun
     · exact kernelIsKernel _
     · exact isLimit f g
     · exact kernelIsKernel _
   h₃ := by
     apply ShortComplex.isColimitOfIsColimitπ <;>
-      apply (CokernelCofork.isColimitMapCoconeEquiv _ _).2
+      apply (CokernelCofork.isColimitMapCoconeEquiv _ _).invFun
     · exact cokernelIsCokernel _
     · exact isColimit f g
     · exact cokernelIsCokernel _

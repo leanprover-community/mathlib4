@@ -96,8 +96,8 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal. -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
-  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).toIsAlgebraic, splits' := fun x => ?_ }
+  obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).toIsAlgebraic) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
     have : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by

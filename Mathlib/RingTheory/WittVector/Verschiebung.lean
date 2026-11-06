@@ -62,7 +62,8 @@ theorem ghostComponent_verschiebungFun [hp : Fact p.Prime] (x : 𝕎 R) (n : ℕ
     ghostComponent (n + 1) (verschiebungFun x) = p * ghostComponent n x := by
   simp only [ghostComponent_apply, aeval_wittPolynomial]
   rw [Finset.sum_range_succ', verschiebungFun_coeff, ite_eq_left rfl,
-    zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
+    zero_pow (pow_ne_zero _ hp.out.ne_zero), mul_zero, add_zero, Finset.mul_sum,
+    Finset.sum_congr rfl]
   rintro i -
   simp only [pow_succ', verschiebungFun_coeff_succ, Nat.succ_sub_succ_eq_sub, mul_assoc]
 

@@ -61,7 +61,7 @@ instance IsLocallyArtinian.isLocallyNoetherian [h : IsLocallyArtinian X] :
 
 instance IsLocallyArtinian.isArtinianRing_of_isAffine [h : IsLocallyArtinian X] [IsAffine X] :
     IsArtinianRing Γ(X, ⊤) :=
-  h.1 ⟨⊤, isAffineOpen_top X⟩
+  h.isArtinianRing_presheaf_obj ⟨⊤, isAffineOpen_top X⟩
 
 lemma IsLocallyArtinian.of_topologicalKrullDim_le_zero
     [IsLocallyNoetherian X] (h : topologicalKrullDim X ≤ 0) : IsLocallyArtinian X where
@@ -100,7 +100,7 @@ instance (priority := low) IsLocallyArtinian.discreteTopology [IsLocallyArtinian
   have : IsArtinianRing Γ(X, W) := IsLocallyArtinian.isArtinianRing_presheaf_obj ⟨_, hW1⟩
   have : DiscreteTopology (Spec Γ(X, W)) := inferInstanceAs (DiscreteTopology (PrimeSpectrum _))
   have : DiscreteTopology W := hW1.isoSpec.hom.homeomorph.symm.discreteTopology
-  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.2
+  simpa using (isOpen_discrete ({⟨x, hW2⟩} : Set W)).trans W.is_open'
 
 theorem IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology :
     IsLocallyArtinian X ↔ IsLocallyNoetherian X ∧ DiscreteTopology X :=

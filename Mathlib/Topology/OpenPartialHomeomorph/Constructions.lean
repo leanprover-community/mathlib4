@@ -106,7 +106,7 @@ theorem refl_prod_refl : (OpenPartialHomeomorph.refl X).prod (OpenPartialHomeomo
 theorem prod_trans (e : OpenPartialHomeomorph X Y) (f : OpenPartialHomeomorph Y Z)
     (e' : OpenPartialHomeomorph X' Y') (f' : OpenPartialHomeomorph Y' Z') :
     (e.prod e').trans (f.prod f') = (e.trans f).prod (e'.trans f') :=
-  toPartialEquiv_injective <| e.1.prod_trans ..
+  toPartialEquiv_injective <| e.toPartialHomeomorph.prod_trans ..
 
 theorem prod_eq_prod_of_nonempty {eX eX' : OpenPartialHomeomorph X X'}
     {eY eY' : OpenPartialHomeomorph Y Y'} (h : (eX.prod eY).source.Nonempty) :
@@ -296,13 +296,13 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : OpenPartialHomeomorph X Y) 
     (f.subtypeRestr hs).symm.trans (f'.subtypeRestr hs) ≈
       (f.symm.trans f').restr (f.target ∩ f.symm ⁻¹' s) := by
   simp only [subtypeRestr_def, trans_symm_eq_symm_trans_symm]
-  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.2
+  have openness₁ : IsOpen (f.target ∩ f.symm ⁻¹' s) := f.isOpen_inter_preimage_symm s.is_open'
   rw [← ofSet_trans _ openness₁, ← trans_assoc, ← trans_assoc]
   refine EqOnSource.trans' ?_ (eqOnSource_refl _)
   -- f' has been eliminated !!!
   have set_identity : f.symm.source ∩ (f.target ∩ f.symm ⁻¹' s) = f.symm.source ∩ f.symm ⁻¹' s := by
     mfld_set_tac
-  have openness₂ : IsOpen (s : Set X) := s.2
+  have openness₂ : IsOpen (s : Set X) := s.is_open'
   rw [ofSet_trans', set_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine EqOnSource.trans' (eqOnSource_refl _) ?_
   -- f has been eliminated !!!

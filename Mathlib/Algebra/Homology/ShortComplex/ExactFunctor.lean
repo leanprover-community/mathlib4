@@ -133,7 +133,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
-    apply (KernelFork.isLimitMapConeEquiv _ F).2
+    apply (KernelFork.isLimitMapConeEquiv _ F).invFun
     let S := ShortComplex.mk _ _ (kernel.condition f)
     let hS := hF S ⟨exact_kernel f, inferInstance⟩
     have : Mono (S.map F).f := hS.2
@@ -192,7 +192,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
   tfae_have 2 → 3
   | hF, X, Y, f => by
     refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_
-    apply (CokernelCofork.isColimitMapCoconeEquiv _ F).2
+    apply (CokernelCofork.isColimitMapCoconeEquiv _ F).invFun
     let S := ShortComplex.mk _ _ (cokernel.condition f)
     let hS := hF S ⟨exact_cokernel f, inferInstance⟩
     have : Epi (S.map F).g := hS.2

@@ -218,7 +218,7 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulCommClass 
 
 instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
-    { toLinearMap := r • D.1
+    { toLinearMap := r • D.toLinearMap
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
       leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩

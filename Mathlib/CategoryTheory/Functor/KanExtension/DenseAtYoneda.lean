@@ -97,7 +97,7 @@ def yonedaCocone (P : Cᵒᵖ ⥤ Type v) :
     Cocone ((π P).leftOp ⋙ CategoryTheory.yoneda) where
   pt := P
   ι.app x := yonedaEquiv.symm x.unop.val
-  ι.naturality x y f := by simp [yonedaEquiv_symm_naturality_left f.unop.1.unop]
+  ι.naturality x y f := by simp [yonedaEquiv_symm_naturality_left f.unop.hom.unop]
 
 /-- Let `P : Cᵒᵖ ⥤ Type v` be a presheaf. For any `X : Cᵒᵖ`,
 the cocone `yonedaCocone P` becomes colimit after applying
@@ -127,7 +127,7 @@ def uliftYonedaCocone (P : Cᵒᵖ ⥤ Type max w v) :
     Cocone ((π P).leftOp ⋙ uliftYoneda.{w}) where
   pt := P
   ι.app x := uliftYonedaEquiv.symm x.unop.val
-  ι.naturality x y f := by simp [uliftYonedaEquiv_symm_naturality_left f.unop.1.unop]
+  ι.naturality x y f := by simp [uliftYonedaEquiv_symm_naturality_left f.unop.hom.unop]
 
 attribute [local implicit_reducible] Equiv.ulift in
 /-- Let `P : Cᵒᵖ ⥤ Type max w v` be a presheaf. For any `X : Cᵒᵖ`,

@@ -52,7 +52,7 @@ theorem cardinalMk_le_of_le' {κ : Cardinal.{max u v}}
   nth_rewrite 1 [← lift_id'.{v, u} #γ] at hκ
   simp_rw [← mk_arrow, ← mk_sigma, le_def] at hκ
   obtain ⟨hκ⟩ := hκ
-  exact Cardinal.mk_le_of_injective (elim_injective _ hκ.1 hκ.2)
+  exact Cardinal.mk_le_of_injective (elim_injective _ hκ.toFun hκ.inj')
 
 /-- If, for any `a : α`, `β a` is finite, then the cardinality of `WType β`
 is at most the maximum of the cardinality of `α` and `ℵ₀` -/

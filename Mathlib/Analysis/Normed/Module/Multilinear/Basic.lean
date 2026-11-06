@@ -334,7 +334,7 @@ variable [Fintype ι]
 
 theorem bound (f : ContinuousMultilinearMap 𝕜 E G) :
     ∃ C : ℝ, 0 < C ∧ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
-  f.toMultilinearMap.exists_bound_of_continuous f.2
+  f.toMultilinearMap.exists_bound_of_continuous f.cont
 
 open Real
 
@@ -465,7 +465,8 @@ lemma uniformity_eq_seminorm :
       simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, Set.subset_def, Set.MapsTo]
     intro f hf
     refine opNorm_le_bound (by positivity) <|
-      f.1.bound_of_shell_of_continuous f.2 (fun _ ↦ hc₀) (fun _ ↦ hc) fun x hcx hx ↦ ?_
+      f.toMultilinearMap.bound_of_shell_of_continuous f.cont (fun _ ↦ hc₀) (fun _ ↦ hc)
+        fun x hcx hx ↦ ?_
     calc
       ‖f x‖ ≤ 1 := hf _ <| (pi_norm_le_iff_of_nonneg (norm_nonneg c)).2 fun i ↦ (hx i).le
       _ = ∏ i : ι, 1 := by simp

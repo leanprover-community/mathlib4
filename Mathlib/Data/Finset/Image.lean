@@ -52,10 +52,10 @@ section Map
 /-- When `f` is an embedding of `α` in `β` and `s` is a finset in `α`, then `s.map f` is the image
 finset in `β`. The embedding condition guarantees that there are no duplicates in the image. -/
 def map (f : α ↪ β) (s : Finset α) : Finset β :=
-  ⟨s.1.map f, s.2.map f.2⟩
+  ⟨s.val.map f, s.nodup.map f.inj'⟩
 
 @[simp]
-theorem map_val (f : α ↪ β) (s : Finset α) : (map f s).1 = s.1.map f :=
+theorem map_val (f : α ↪ β) (s : Finset α) : (map f s).val = s.val.map f :=
   rfl
 
 @[simp]
@@ -76,7 +76,7 @@ theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f
 
 @[simp 1100]
 theorem mem_map' (f : α ↪ β) {a} {s : Finset α} : f a ∈ s.map f ↔ a ∈ s :=
-  mem_map_of_injective f.2
+  mem_map_of_injective f.inj'
 
 @[simp 1100]
 theorem mem_map_mk (f : α → β) {a : α} {s : Finset α} (hf : Function.Injective f) :
@@ -276,10 +276,10 @@ variable [DecidableEq β]
 
 /-- `image f s` is the forward image of `s` under `f`. -/
 def image (f : α → β) (s : Finset α) : Finset β :=
-  (s.1.map f).toFinset
+  (s.val.map f).toFinset
 
 @[simp]
-theorem image_val (f : α → β) (s : Finset α) : (image f s).1 = (s.1.map f).dedup :=
+theorem image_val (f : α → β) (s : Finset α) : (image f s).val = (s.val.map f).dedup :=
   rfl
 
 @[simp]
@@ -299,7 +299,7 @@ lemma forall_mem_image {p : β → Prop} : (∀ y ∈ s.image f, p y) ↔ ∀ �
 lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x ∈ s, p (f x) := by simp
 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
-  eq_of_veq (s.map f).2.dedup.symm
+  eq_of_veq (s.map f).nodup.dedup.symm
 
 -- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
@@ -364,8 +364,8 @@ theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=
   ext fun _ => by simp only [mem_image, Multiset.mem_toFinset, Multiset.mem_map]
 
-theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).1 = s.1.map f :=
-  (s.2.map_on H).dedup
+theorem image_val_of_injOn (H : Set.InjOn f s) : (image f s).val = s.val.map f :=
+  (s.nodup.map_on H).dedup
 
 @[simp]
 theorem image_id [DecidableEq α] : s.image id = s :=
@@ -569,7 +569,7 @@ theorem image_const {s : Finset α} (h : s.Nonempty) (b : β) : (s.image fun _ =
 theorem map_erase [DecidableEq α] (f : α ↪ β) (s : Finset α) (a : α) :
     (s.erase a).map f = (s.map f).erase (f a) := by
   simp_rw [map_eq_image]
-  exact s.image_erase f.2 a
+  exact s.image_erase f.inj' a
 
 theorem iterate_image [DecidableEq α] (f : α → α) (n : ℕ) :
     (Finset.image f)^[n] s = s.image f^[n] := by
@@ -598,7 +598,7 @@ variable (f : α → Option β) (s' : Finset α) {s t : Finset α}
   {f_inj : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a'}
 
 @[simp]
-theorem filterMap_val : (filterMap f s' f_inj).1 = s'.1.filterMap f := rfl
+theorem filterMap_val : (filterMap f s' f_inj).val = s'.val.filterMap f := rfl
 
 @[simp]
 theorem filterMap_empty : (∅ : Finset α).filterMap f f_inj = ∅ := rfl

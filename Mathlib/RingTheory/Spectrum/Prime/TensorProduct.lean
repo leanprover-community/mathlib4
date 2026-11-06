@@ -54,9 +54,10 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks_aux
   have h₄ : a ∉ p₂.asIdeal.comap (algebraMap S (S ⊗[R] T)) :=
     fun h ↦ h₂ (Ideal.mul_mem_right _ _ h)
   replace h₃ : t ∉ p₁.asIdeal.comap g := by
-    rwa [show p₁.asIdeal.comap g = p₂.asIdeal.comap g from congr($h.2.1)]
+    rwa [show p₁.asIdeal.comap g = p₂.asIdeal.comap g from congr($h.2.asIdeal)]
   replace h₄ : a ∉ p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) := by
-    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from congr($h.1.1)]
+    rwa [show p₁.asIdeal.comap (algebraMap S (S ⊗[R] T)) = p₂.asIdeal.comap _ from
+      congr($h.1.asIdeal)]
   exact p₁.asIdeal.primeCompl.mul_mem h₄ h₃ h₁
 
 lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
@@ -71,7 +72,7 @@ lemma PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks :
   rintro J (hJ : f ∉ J.asIdeal)
   obtain ⟨t, r, a, ht, e⟩ := hRT.exists_mul_eq_tmul f
     (J.asIdeal.comap g) inferInstance
-  refine ⟨_, ?_, ⟨_, (basicOpen a).2.prod (basicOpen t).2, rfl⟩, ?_⟩
+  refine ⟨_, ?_, ⟨_, (basicOpen a).is_open'.prod (basicOpen t).is_open', rfl⟩, ?_⟩
   · rintro x ⟨hx₁ : a ⊗ₜ[R] (1 : T) ∉ x.asIdeal, hx₂ : (1 : S) ⊗ₜ[R] t ∉ x.asIdeal⟩
       (hx₃ : f ∈ x.asIdeal)
     apply x.asIdeal.primeCompl.mul_mem hx₁ hx₂

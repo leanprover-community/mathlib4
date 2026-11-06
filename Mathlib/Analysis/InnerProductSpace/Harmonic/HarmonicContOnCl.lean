@@ -44,7 +44,7 @@ theorem HarmonicOnNhd.harmonicContOnCl (h : HarmonicOnNhd f (closure s)) :
 
 theorem IsClosed.harmonicContOnCl_iff (hs : IsClosed s) :
     HarmonicContOnCl f s ↔ HarmonicOnNhd f s where
-  mp := (·.1 · ·)
+  mp := (·.harmonicOnNhd · ·)
   mpr h := by
     rw [← hs.closure_eq] at h
     exact h.harmonicContOnCl
@@ -68,7 +68,7 @@ theorem mk_ball {x : E} {r : ℝ} (hd : HarmonicOnNhd f (ball x r))
   ⟨hd, hc.mono closure_ball_subset_closedBall⟩
 
 theorem contDiffAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
-    ContDiffAt ℝ 2 f x := (h.1 x hx).1
+    ContDiffAt ℝ 2 f x := (h.harmonicOnNhd x hx).1
 
 theorem differentiableAt (h : HarmonicContOnCl f s) (hx : x ∈ s) :
     DifferentiableAt ℝ f x := (h.contDiffAt hx).differentiableAt two_ne_zero
@@ -78,7 +78,8 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl f t := ⟨h.harmonicOnNhd.mono ht, h.continuousOn.mono (closure_mono ht)⟩
 
 @[to_fun] theorem add (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
-    HarmonicContOnCl (f₁ + f₂) s := ⟨hf₁.1.add hf₂.1, hf₁.2.add hf₂.2⟩
+    HarmonicContOnCl (f₁ + f₂) s :=
+  ⟨hf₁.harmonicOnNhd.add hf₂.harmonicOnNhd, hf₁.continuousOn.add hf₂.continuousOn⟩
 
 @[to_fun] theorem add_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f + fun _ ↦ c) s := hf.add harmonicContOnCl_const
@@ -87,10 +88,11 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
   HarmonicContOnCl ((fun _ ↦ c) + f) s := harmonicContOnCl_const.add hf
 
 @[to_fun] theorem neg (hf : HarmonicContOnCl f s) :
-    HarmonicContOnCl (-f) s := ⟨hf.1.neg, hf.2.neg⟩
+    HarmonicContOnCl (-f) s := ⟨hf.harmonicOnNhd.neg, hf.continuousOn.neg⟩
 
 @[to_fun] theorem sub (hf₁ : HarmonicContOnCl f₁ s) (hf₂ : HarmonicContOnCl f₂ s) :
-    HarmonicContOnCl (f₁ - f₂) s := ⟨hf₁.1.sub hf₂.1, hf₁.2.sub hf₂.2⟩
+    HarmonicContOnCl (f₁ - f₂) s :=
+  ⟨hf₁.harmonicOnNhd.sub hf₂.harmonicOnNhd, hf₁.continuousOn.sub hf₂.continuousOn⟩
 
 @[to_fun] theorem sub_const (hf : HarmonicContOnCl f s) (c : F) :
     HarmonicContOnCl (f - fun _ ↦ c) s := hf.sub harmonicContOnCl_const
@@ -99,7 +101,7 @@ theorem mono {t : Set E} (h : HarmonicContOnCl f s) (ht : t ⊆ s) :
     HarmonicContOnCl ((fun _ ↦ c) - f) s := harmonicContOnCl_const.sub hf
 
 @[to_fun] theorem const_smul (hf : HarmonicContOnCl f s) (c : ℝ) :
-    HarmonicContOnCl (c • f) s := ⟨hf.1.const_smul, hf.2.const_smul c⟩
+    HarmonicContOnCl (c • f) s := ⟨hf.harmonicOnNhd.const_smul, hf.continuousOn.const_smul c⟩
 
 end HarmonicContOnCl
 

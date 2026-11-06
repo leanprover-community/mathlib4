@@ -182,7 +182,7 @@ lemma CommRingCat.finrank_eq_of_isPushout {R S T P : CommRingCat.{u}} {f : R ⟶
     (hfin : f.hom.Finite) (x : PrimeSpectrum T) :
     inr.hom.finrank x = f.hom.finrank (PrimeSpectrum.comap g.hom x) := by
   algebraize [f.hom, g.hom, inl.hom, inr.hom, inl.hom.comp f.hom]
-  have : IsScalarTower R T P := .of_algebraMap_eq' <| congr($(h.1.1).hom)
+  have : IsScalarTower R T P := .of_algebraMap_eq' <| congr($(h.toCommSq.w).hom)
   have : Algebra.IsPushout R S T P := CommRingCat.isPushout_iff_isPushout.mp h
   exact Algebra.rankAtStalk_eq_of_isPushout R S T P x
 

@@ -136,7 +136,7 @@ instance (priority := 100) completable : CompletableTopField K :=
     nice := by
       rintro F hF h0
       have : ∃ γ₀ : hv.v.ValueGroup₀ˣ, ∃ M ∈ F,
-          ∀ x ∈ M, (γ₀.1) ≤ v.restrict x := by
+          ∀ x ∈ M, (γ₀.val) ≤ v.restrict x := by
         rcases Filter.inf_eq_bot_iff.mp h0 with ⟨U, U_in, M, M_in, H⟩
         rcases Valued.mem_nhds_zero.mp U_in with ⟨γ₀, hU⟩
         exists γ₀, M, M_in
@@ -182,7 +182,7 @@ lemma valuation_isClosedMap : IsClosedMap (v.restrict : K → hv.v.ValueGroup₀
   refine (em _).imp_right fun h ↦ ?_
   obtain ⟨γ, h⟩ := hU _ h
   simp only [sub_zero] at h
-  refine ⟨γ.1, γ.ne_zero, h.trans ?_⟩
+  refine ⟨γ.val, γ.ne_zero, h.trans ?_⟩
   intro
   simp
 
@@ -449,12 +449,12 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
   is_topological_valuation s := by
     suffices HasBasis (𝓝 (0 : hat K)) (fun _ ↦ True)
         fun γ : hv.v.ValueGroup₀ˣ ↦ { x | extensionValuation x <
-          (Units.map (ValueGroup₀.embedding (f := (hv.v : K →*₀ Γ₀))) γ).1 } by
+          (Units.map (ValueGroup₀.embedding (f := (hv.v : K →*₀ Γ₀))) γ).val } by
       rw [this.mem_iff]
       simp only [extensionValuation_toFun, Units.coe_map, MonoidHom.coe_ofClass, true_and]
       have (x : hat K) (γ : hv.v.ValueGroup₀ˣ) : extensionValuation.restrict x <
-          ((Units.map valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).1 ↔
-          embedding (extension x) < embedding γ.1 := by
+          ((Units.map valueGroup₀_equiv_extensionValuation.toMonoidHom) γ).val ↔
+          embedding (extension x) < embedding γ.val := by
         simp only [MulEquiv.toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_ofClass]
         rw [embedding_strictMono.lt_iff_lt, Valuation.restrict_def, restrict₀_apply]
         by_cases hx0 : x = 0

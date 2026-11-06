@@ -86,7 +86,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The counit of the adjunction `lightCondSetToTopCat ⊣ topCatToLightCondSet` -/
 noncomputable def topCatAdjunctionCounit (X : TopCat.{u}) : X.toLightCondSet.toTopCat ⟶ X :=
   TopCat.ofHom
-  { toFun x := x.1 PUnit.unit
+  { toFun x := x.toFun PUnit.unit
     continuous_toFun := by
       rw [continuous_coinduced_dom]
       continuity }

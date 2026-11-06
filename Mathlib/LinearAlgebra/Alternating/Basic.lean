@@ -302,7 +302,7 @@ theorem toMultilinearMap_zero : ((0 : M [⋀^ι]→ₗ[R] N) : (ι → M) →ₘ
 @[deprecated (since := "2026-07-27")] alias coe_zero := toMultilinearMap_zero
 
 @[simp]
-theorem mk_zero : mk (0 : (ι → M) →ₘₗ[R] N) (0 : M [⋀^ι]→ₗ[R] N).2 = 0 :=
+theorem mk_zero : mk (0 : (ι → M) →ₘₗ[R] N) (0 : M [⋀^ι]→ₗ[R] N).map_eq_zero_of_eq' = 0 :=
   rfl
 
 instance instInhabited : Inhabited (M [⋀^ι]→ₗ[R] N) :=

@@ -181,7 +181,7 @@ theorem mem_span_mul_finite_of_mem_mul {I J : FractionalIdeal S P} {x : P} (hx :
   Submodule.mem_span_mul_finite_of_mem_mul (by simpa using mem_coe.mpr hx)
 
 lemma _root_.Units.submodule_isFractional [IsLocalization S P] (I : (Submodule R P)ˣ) :
-    IsFractional S I.1 :=
+    IsFractional S I.val :=
   FractionalIdeal.isFractional_of_fg (fg_unit _)
 
 set_option backward.isDefEq.respectTransparency false in

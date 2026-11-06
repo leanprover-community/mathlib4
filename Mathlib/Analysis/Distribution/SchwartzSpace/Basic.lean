@@ -637,7 +637,7 @@ variable (𝕜 E G) in
 /-- The map applying a vector to Hom-valued Schwartz function as a continuous linear map. -/
 protected def evalCLM (m : F) : 𝓢(E, F →L[ℝ] G) →L[𝕜] 𝓢(E, G) :=
   mkCLM (fun f x => f x m) (fun _ _ _ => rfl) (fun _ _ _ => rfl)
-    (fun f => ContDiff.clm_apply f.2 contDiff_const) <| by
+    (fun f => ContDiff.clm_apply f.smooth' contDiff_const) <| by
   rintro ⟨k, n⟩
   use {(k, n)}, ‖m‖, norm_nonneg _
   intro f x

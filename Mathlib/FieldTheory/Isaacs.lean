@@ -46,22 +46,22 @@ theorem nonempty_algHom_of_exists_root (h : ∀ x : E, ∃ y : K, aeval y (minpo
   let K' := SplittingField p
   have splits s (hs : s ∈ S) : ((minpoly F s).map (algebraMap F K')).Splits := by
     apply (SplittingField.splits p).of_dvd (map_ne_zero (Finset.prod_ne_zero_iff.mpr
-      fun _ _ ↦ Polynomial.map_ne_zero (minpoly.ne_zero <| alg.isIntegral.1 _))) ?_
+      fun _ _ ↦ Polynomial.map_ne_zero (minpoly.ne_zero <| alg.isIntegral.isIntegral _))) ?_
     rw [IsScalarTower.algebraMap_eq F K K', ← Polynomial.map_map, map_dvd_map']
     exact Finset.dvd_prod_of_mem _ hs
   let K₀ := (⊥ : IntermediateField K K').restrictScalars F
   let FS := adjoin F (S : Set E)
   let Ω := FS →ₐ[F] K'
-  have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).1 _
+  have := finiteDimensional_adjoin (S := (S : Set E)) fun _ _ ↦ (alg.isIntegral).isIntegral _
   let M (ω : Ω) := Subalgebra.toSubmodule (K₀.comap ω).toSubalgebra
   have : ⋃ ω : Ω, (M ω : Set FS) = Set.univ :=
     Set.eq_univ_of_forall fun ⟨α, hα⟩ ↦ Set.mem_iUnion.mpr <| by
       have ⟨β, hβ⟩ := h α
       let ϕ : F⟮α⟯ →ₐ[F] K' := (IsScalarTower.toAlgHom _ _ _).comp
         ((AdjoinRoot.liftAlgHom _ _ _ hβ).comp
-        (adjoinRootEquivAdjoin F <| (alg.isIntegral).1 _).symm.toAlgHom)
+        (adjoinRootEquivAdjoin F <| (alg.isIntegral).isIntegral _).symm.toAlgHom)
       have ⟨ω, hω⟩ := exists_algHom_adjoin_of_splits
-        (fun s hs ↦ ⟨(alg.isIntegral).1 _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
+        (fun s hs ↦ ⟨(alg.isIntegral).isIntegral _, splits s hs⟩) ϕ (adjoin_simple_le_iff.mpr hα)
       refine ⟨ω, β, (congr($hω (AdjoinSimple.gen F α)).trans ?_).symm⟩
       rw [AlgHom.comp_apply, AlgHom.comp_apply, AlgEquiv.coe_toAlgHom,
         adjoinRootEquivAdjoin_symm_apply_gen, AdjoinRoot.liftAlgHom_root]
@@ -93,7 +93,7 @@ theorem nonempty_algEquiv_of_range_minpoly_eq
     by_contra hy
     have ⟨x, hx⟩ := h.ge ⟨y, rfl⟩
     rw [minpoly.eq_zero hy] at hx
-    exact minpoly.ne_zero ((alg.isIntegral).1 x) hx⟩
+    exact minpoly.ne_zero ((alg.isIntegral).isIntegral x) hx⟩
   have ⟨τ⟩ := nonempty_algHom_of_range_minpoly_subset h.ge
   ⟨.ofBijective _ (Algebra.IsAlgebraic.algHom_bijective₂ σ τ).1⟩
 
@@ -102,7 +102,7 @@ theorem nonempty_algHom_of_aeval_eq_zero_subset
     Nonempty (E →ₐ[F] K) :=
   nonempty_algHom_of_minpoly_eq fun x ↦
     have ⟨y, hy⟩ := h ⟨_, minpoly.aeval F x⟩
-    ⟨y, (minpoly.eq_iff_aeval_minpoly_eq_zero <| (alg.isIntegral).1 x).mpr hy⟩
+    ⟨y, (minpoly.eq_iff_aeval_minpoly_eq_zero <| (alg.isIntegral).isIntegral x).mpr hy⟩
 
 theorem nonempty_algEquiv_of_aeval_eq_zero_eq [Algebra.IsAlgebraic F K]
     (h : {p : F[X] | ∃ x : E, aeval x p = 0} = {p | ∃ y : K, aeval y p = 0}) :
@@ -116,7 +116,7 @@ theorem _root_.IsAlgClosure.of_exists_root
     IsAlgClosure F E :=
   .of_splits fun p _ _ ↦
     have ⟨σ⟩ := nonempty_algHom_of_exists_root fun x : p.SplittingField ↦
-      have := Algebra.IsAlgebraic.isIntegral (K := F).1 x
+      have := Algebra.IsAlgebraic.isIntegral (K := F).isIntegral x
       h _ (minpoly.monic this) (minpoly.irreducible this)
     Splits.of_algHom (SplittingField.splits _) σ
 

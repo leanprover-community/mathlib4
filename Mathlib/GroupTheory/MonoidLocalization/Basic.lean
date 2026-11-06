@@ -456,15 +456,15 @@ theorem ext {f g : LocalizationMap S N} (h : ∀ x, f x = g x) : f = g := DFunLi
 
 @[to_additive]
 theorem map_units (f : LocalizationMap S N) (y : S) : IsUnit (f y) :=
-  f.2.1 y
+  f.isLocalizationMap.map_units y
 
 @[to_additive]
 theorem surj (f : LocalizationMap S N) (z : N) : ∃ x : M × S, z * f x.2 = f x.1 :=
-  f.2.2 z
+  f.isLocalizationMap.surj z
 
 @[to_additive]
 theorem exists_of_eq (f : LocalizationMap S N) {x y : M} : f x = f y → ∃ c : S, c * x = c * y :=
-  f.2.3
+  f.isLocalizationMap.exists_of_eq
 
 /-- Given a localization map `f : M →* N`, and `z w : N`, there exist `z' w' : M` and `d : S`
 such that `f z' / f d = z` and `f w' / f d = w`. -/
@@ -483,7 +483,7 @@ theorem surj₂ (f : LocalizationMap S N) (z w : N) : ∃ z' w' : M, ∃ d : S,
 
 @[to_additive]
 theorem eq_iff_exists (f : LocalizationMap S N) {x y} :
-    f x = f y ↔ ∃ c : S, c * x = c * y := Iff.intro f.2.3
+    f x = f y ↔ ∃ c : S, c * x = c * y := Iff.intro f.isLocalizationMap.exists_of_eq
   fun ⟨c, h⟩ ↦ by
     replace h := congr(f $h)
     rw [map_mul, map_mul] at h
@@ -887,14 +887,14 @@ variable {M N : Type*} [CommMonoid M] {S : Submonoid M} [CommMonoid N]
   rw [map_mul, ← mul_assoc n₁, eq₁, ← mul_assoc n₂, mul_right_comm n₂, eq₂] at eq ⊢
   simp_rw [← map_mul, eq_iff_exists] at eq ⊢
   simp_rw [mul_left_comm _ m] at eq
-  exact eq.imp fun _ ↦ (hm.1 ·)
+  exact eq.imp fun _ ↦ (hm.left ·)
 
 @[to_additive] theorem isCancelMul (f : LocalizationMap S N) [IsCancelMul M] : IsCancelMul N := by
   simp_rw [isCancelMul_iff_forall_isRegular, Commute.isRegular_iff (Commute.all _),
     ← Commute.isRightRegular_iff (Commute.all _)]
   intro n
   have ⟨ms, eq⟩ := f.surj n
-  exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).2.of_mul
+  exact (eq ▸ f.map_isRegular (isCancelMul_iff_forall_isRegular.mp ‹_› ms.1)).right.of_mul
 
 @[to_additive] instance [IsCancelMul M] : IsCancelMul (Localization S) :=
   (Localization.monoidOf S).isCancelMul

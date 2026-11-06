@@ -340,7 +340,7 @@ set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isLimit' := ⟨evaluationJointlyReflectsLimits _ (fun ⟨⟨n⟩⟩ ↦ by
-    refine (isLimitMapConePullbackConeEquiv _ _).2
+    refine (isLimitMapConePullbackConeEquiv _ _).invFun
       (IsPullback.isLimit ?_)
     dsimp
     rw [Types.isPullback_iff]
@@ -392,7 +392,7 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨n⟩⟩ ↦ by
-    refine (isColimitMapCoconePushoutCoconeEquiv _ _).2
+    refine (isColimitMapCoconePushoutCoconeEquiv _ _).invFun
       (IsPushout.isColimit ?_)
     refine Types.isPushout_of_isPullback_of_mono' ?_ ?_ ?_
     · exact (isPullback i d).map ((evaluation _ _).obj _)

@@ -311,7 +311,7 @@ class PolynormableSpace [topology : TopologicalSpace E] where
 
 theorem WithSeminorms.withSeminorms_eq {p : SeminormFamily 𝕜 E ι} [t : TopologicalSpace E]
     (hp : WithSeminorms p) : t = p.moduleFilterBasis.topology :=
-  hp.1
+  hp.topology_eq_withSeminorms
 
 variable [TopologicalSpace E]
 variable {p : SeminormFamily 𝕜 E ι}
@@ -348,7 +348,7 @@ instance PolynormableSpace.continuousSMul [PolynormableSpace 𝕜 E] :
 
 theorem WithSeminorms.hasBasis (hp : WithSeminorms p) :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ p.basisSets) id := by
-  rw [congr_fun (congr_arg (@nhds E) hp.1) 0]
+  rw [congr_fun (congr_arg (@nhds E) hp.topology_eq_withSeminorms) 0]
   exact AddGroupFilterBasis.nhds_zero_hasBasis _
 
 theorem WithSeminorms.hasBasis_zero_ball (hp : WithSeminorms p) :
@@ -1082,7 +1082,7 @@ theorem WithSeminorms.toLocallyConvexSpace {p : SeminormFamily 𝕜 E ι} (hp : 
     LocallyConvexSpace ℝ E := by
   have := hp.isTopologicalAddGroup
   apply ofBasisZero ℝ E id fun s => s ∈ p.basisSets
-  · rw [hp.1, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
+  · rw [hp.topology_eq_withSeminorms, AddGroupFilterBasis.nhds_eq _, AddGroupFilterBasis.N_zero]
     exact FilterBasis.hasBasis _
   · intro s hs
     change s ∈ Set.iUnion _ at hs

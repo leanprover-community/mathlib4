@@ -384,7 +384,7 @@ instance hasLimit_wideCospan [Finite ι] (X : C) : HasLimit (wideCospan ι X) :=
 def wideCospan.limitIsoPi [Finite ι] (X : C) :
     limit (wideCospan ι X) ≅ ∏ᶜ fun _ : ι => X :=
   (IsLimit.conePointUniqueUpToIso (limit.isLimit _)
-    (wideCospan.limitCone ι X).2)
+    (wideCospan.limitCone ι X).isLimit)
 
 @[reassoc (attr := simp)]
 lemma wideCospan.limitIsoPi_inv_comp_pi [Finite ι] (X : C) (j : ι) :

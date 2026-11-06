@@ -154,7 +154,7 @@ instance [IsDedekindDomain S] : IsDedekindDomain Sₚ :=
 set_option linter.overlappingInstances false in
 instance [IsDedekindDomain R] [IsDedekindDomain S] [Module.Finite R S] [hP : NeZero P] :
     IsPrincipalIdealRing Sₚ :=
-  IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.1 h)
+  IsDedekindDomain.isPrincipalIdealRing_localization_over_prime S P (fun h ↦ hP.out h)
 
 instance [Algebra.IsSeparable K L] :
     -- Without the following line there is a timeout

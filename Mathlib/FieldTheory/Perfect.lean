@@ -330,7 +330,7 @@ theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   replace dvd : p ∣ q := by
     rw [derivative_mul, dvd_add_left (dvd_mul_right p _)] at dvd
     exact (separable_of_irreducible h).dvd_of_dvd_mul_left dvd
-  exact (h.1 : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
+  exact (h.not_isUnit : ¬ IsUnit p) (sqf _ <| mul_dvd_mul_left _ dvd)
 
 end PerfectField
 

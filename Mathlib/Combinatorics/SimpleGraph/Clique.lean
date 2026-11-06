@@ -247,7 +247,7 @@ structure IsNClique (n : ℕ) (s : Finset α) : Prop where
   card_eq : #s = n
 
 theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.isClique, h.card_eq⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNClique n s) :=
@@ -266,7 +266,7 @@ theorem IsNClique.mono (h : G ≤ H) : G.IsNClique n s → H.IsNClique n s := by
 
 protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
     (G.map f).IsNClique n (s.map f) :=
-  ⟨by rw [coe_map]; exact h.1.map, (card_map _).trans h.2⟩
+  ⟨by rw [coe_map]; exact h.isClique.map, (card_map _).trans h.card_eq⟩
 
 theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
     (G.map f).IsNClique n t ↔ ∃ s : Finset α, G.IsNClique n s ∧ s.map f = t := by
@@ -301,13 +301,13 @@ protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Ad
     G.IsNClique (n + 1) (insert a s) := by
   constructor
   · push_cast
-    exact hs.1.insert fun b hb _ => h _ hb
-  · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.2]
+    exact hs.isClique.insert fun b hb _ => h _ hb
+  · rw [card_insert_of_notMem fun ha => (h _ ha).ne rfl, hs.card_eq]
 
 lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
     G.IsNClique (n - 1) (s.erase a) where
   isClique := hs.isClique.subset <| by simp
-  card_eq := by rw [card_erase_of_mem ha, hs.2]
+  card_eq := by rw [card_erase_of_mem ha, hs.card_eq]
 
 protected lemma IsNClique.insert_erase
     (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
@@ -352,8 +352,8 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
     (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
-  isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
-  card_eq  := by rw [card_erase_of_mem hx, hc.2]
+  isClique := coe_erase v _ ▸ hc.isClique.sdiff_of_sup_edge
+  card_eq  := by rw [card_erase_of_mem hx, hc.card_eq]
 
 /-- The vertices in a copy of `⊤ : SimpleGraph β` are a `card β`-clique. -/
 theorem isNClique_map_copy_top [Fintype β] (f : Copy (⊤ : SimpleGraph β) G) :
@@ -548,7 +548,7 @@ lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} 
     (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
   by_contra hf
   have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
-  exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
+  exact h t ⟨ht ▸ hc.isClique.sdiff_of_sup_edge, hc.card_eq⟩
 
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
@@ -611,7 +611,7 @@ protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn
   fun _t _ ↦ hG _
 
 theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
-  fun _t hts ht => h.not_ge <| ht.2.symm.trans_le <| card_mono hts
+  fun _t hts ht => h.not_ge <| ht.card_eq.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
 @[simp]
@@ -808,7 +808,7 @@ structure IsMaximumClique [Finite α] (G : SimpleGraph α) (s : Finset α) : Pro
 
 theorem isMaximumClique_iff [Finite α] {s : Finset α} :
     G.IsMaximumClique s ↔ G.IsClique s ∧ ∀ t : Finset α, G.IsClique t → #t ≤ #s :=
-  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+  ⟨fun h ↦ ⟨h.isClique, h.maximum⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 /-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
 theorem isMaximalClique_iff {s : Set α} :

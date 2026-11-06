@@ -89,7 +89,7 @@ lemma NumberField.exists_not_isUnramifiedAt_int_of_isGalois [IsGalois ℚ K]
   replace hQ : (p : 𝒪) ∈ Q := Q.mem_of_dvd
     (map_dvd (algebraMap _ _) p.associated_natAbs.symm.dvd) (by simpa using hQ)
   have : .span {p} = Ideal.under ℤ Q :=
-    ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).1
+    ((Ideal.liesOver_span_iff Ideal.IsPrime.ne_top' this).mpr hQ).over
   rwa [← Ideal.ramificationIdx_eq_one_iff,
     ← Ideal.ramificationIdxIn_eq_ramificationIdx (Q.under ℤ) _ Gal(K/ℚ), ← this, ← hp,
     Ideal.ramificationIdxIn_eq_ramificationIdx _ P Gal(K/ℚ), Ideal.ramificationIdx_eq_one_iff]

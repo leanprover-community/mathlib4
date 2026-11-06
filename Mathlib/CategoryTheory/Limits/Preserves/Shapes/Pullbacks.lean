@@ -81,14 +81,14 @@ def isLimitPullbackConeMapOfIsLimit [PreservesLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk h k comm)) :
     have : G.map h ≫ G.map f = G.map k ≫ G.map g := by rw [← G.map_comp, ← G.map_comp, comm]
     IsLimit (PullbackCone.mk (G.map h) (G.map k) this) :=
-  (PullbackCone.isLimitMapConeEquiv _ G).1 (isLimitOfPreserves G l)
+  (PullbackCone.isLimitMapConeEquiv _ G).toFun (isLimitOfPreserves G l)
 
 /-- The property of reflecting pullbacks expressed in terms of binary fans. -/
 def isLimitOfIsLimitPullbackConeMap [ReflectsLimit (cospan f g) G]
     (l : IsLimit (PullbackCone.mk (G.map h) (G.map k) (show G.map h ≫ G.map f = G.map k ≫ G.map g
     by simp only [← G.map_comp, comm]))) : IsLimit (PullbackCone.mk h k comm) :=
   isLimitOfReflects G
-    ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).2 l)
+    ((PullbackCone.isLimitMapConeEquiv (PullbackCone.mk _ _ comm) G).invFun l)
 
 variable (f g) [PreservesLimit (cospan f g) G]
 

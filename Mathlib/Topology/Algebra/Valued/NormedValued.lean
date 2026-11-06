@@ -93,7 +93,7 @@ def toValued : Valued K ℝ≥0 :=
           apply lt_trans hy
           simpa [RankLeOne.hom', valuation.restrict_def] using! hxy
       · rintro ⟨ε, hε⟩
-        refine ⟨(embedding ε.1 : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
+        refine ⟨(embedding ε.val : ℝ≥0), ?_, fun x hx ↦ hε ?_⟩
         · exact NNReal.coe_pos.mpr <| embedding_unit_pos _
         · simpa [restrict_lt_iff_lt_embedding] using! (mem_ball_zero_iff.mp hx) }
 

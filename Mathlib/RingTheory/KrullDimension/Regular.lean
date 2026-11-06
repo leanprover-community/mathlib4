@@ -33,8 +33,8 @@ open RingTheory Sequence IsLocalRing Ideal PrimeSpectrum Pointwise
 
 omit [IsNoetherianRing R] [Module.Finite R M] in
 lemma exists_ltSeries_support_isMaximal_last_of_ltSeries_support (q : LTSeries (support R M)) :
-    ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.1.IsMaximal := by
-  obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.2.1
+    ∃ p : LTSeries (support R M), q.length ≤ p.length ∧ p.last.1.asIdeal.IsMaximal := by
+  obtain ⟨m, hmm, hm⟩ := exists_le_maximal _ q.last.1.isPrime.ne_top'
   obtain hlt | rfl := lt_or_eq_of_le hm
   · use q.snoc ⟨⟨m, inferInstance⟩, mem_support_mono hm q.last.2⟩ hlt
     simpa
@@ -44,9 +44,9 @@ theorem supportDim_le_supportDim_quotSMulTop_succ_of_mem_jacobson {x : R}
     (h : x ∈ (annihilator R M).jacobson) : supportDim R M ≤ supportDim R (QuotSMulTop x M) + 1 := by
   nontriviality M
   refine iSup_le_iff.mpr (fun p ↦ ?_)
-  wlog hxp : x ∈ p.last.1.1 generalizing p
+  wlog hxp : x ∈ p.last.1.asIdeal generalizing p
   · obtain ⟨p, hle, hm⟩ := exists_ltSeries_support_isMaximal_last_of_ltSeries_support p
-    have hj : (annihilator R M).jacobson ≤ p.last.1.1 :=
+    have hj : (annihilator R M).jacobson ≤ p.last.1.asIdeal :=
       sInf_le ⟨mem_support_iff_of_finite.mp p.last.2, inferInstance⟩
     exact (Nat.cast_le.mpr hle).trans <| this _ (hj h)
   -- `q` is a chain of primes such that `x ∈ q 1`, `p.length = q.length` and `p.head = q.head`.
@@ -98,7 +98,7 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
     p.map (Set.MapsTo.restrict id (support R (QuotSMulTop x M)) (support R M) le) (fun _ _ h ↦ h)
   obtain ⟨r, hrm, hr⟩ := exists_minimalPrimes_le (mem_support_iff_of_finite.mp q.head.2)
   let r : support R M := ⟨⟨r, hrm.isPrime⟩, mem_support_iff_of_finite.mpr hrm.1.2⟩
-  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
+  have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.asIdeal (by rwa [← h]) hp.2)
   exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson {x : R}
@@ -188,7 +188,7 @@ theorem supportDim_add_length_eq_supportDim_of_isRegular (rs : List R) (reg : Is
     simpa using supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl)
   | cons x rs' ih =>
     have mem : x ∈ maximalIdeal R := by
-      simpa using fun isu ↦ reg.2 (by simp [span_singleton_eq_top.mpr isu])
+      simpa using fun isu ↦ reg.top_ne_smul (by simp [span_singleton_eq_top.mpr isu])
     simp [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
       ← supportDim_quotSMulTop_succ_eq_supportDim ((isRegular_cons_iff M _ _).mp reg).1 mem,
       ← ih ((isRegular_cons_iff M _ _).mp reg).2, ← add_assoc]

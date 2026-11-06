@@ -52,7 +52,7 @@ Later, we will also assume:
 -/
 variable (F : Sheaf Scheme.zariskiTopology.{u} (Type u))
   {ι : Type u} {X : ι → Scheme.{u}}
-  (f : (i : ι) → yoneda.obj (X i) ⟶ F.1) (hf : ∀ i, IsOpenImmersion.presheaf (f i))
+  (f : (i : ι) → yoneda.obj (X i) ⟶ F.obj) (hf : ∀ i, IsOpenImmersion.presheaf (f i))
 
 namespace LocalRepresentability
 
@@ -185,7 +185,7 @@ Suppose
 Then `F` is representable, and the representing object is glued from the `X i`s
 -/
 noncomputable
-def representableBy : F.1.RepresentableBy (glueData hf).glued :=
+def representableBy : F.obj.RepresentableBy (glueData hf).glued :=
   Functor.representableByEquiv.symm ((sheafToPresheaf _ _).mapIso (yonedaIsoSheaf hf))
 
 
@@ -200,7 +200,7 @@ Suppose
 Then `F` is representable.
 -/
 @[stacks 01JJ]
-theorem isRepresentable : F.1.IsRepresentable :=
+theorem isRepresentable : F.obj.IsRepresentable :=
   ⟨_, ⟨representableBy hf⟩⟩
 
 end LocalRepresentability

@@ -67,7 +67,7 @@ variable (R) in
 /-- The prime spectrum is in bijection with the set of prime ideals. -/
 @[simps]
 def equivSubtype : PrimeSpectrum R ≃o {I : Ideal R // I.IsPrime} where
-  toFun I := ⟨I.asIdeal, I.2⟩
+  toFun I := ⟨I.asIdeal, I.isPrime⟩
   invFun I := ⟨I, I.2⟩
   map_rel_iff' := .rfl
 

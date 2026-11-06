@@ -110,7 +110,7 @@ instance : RankOne (PadicAlgCl.valued p).v where
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
-    have hp : Nat.Prime p := hp.1
+    have hp : Nat.Prime p := hp.out
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩
@@ -172,7 +172,7 @@ instance : RankOne (PadicComplex.valued p).v where
   strictMono' := embedding_strictMono
   exists_val_nontrivial := by
     use p
-    have hp : Nat.Prime p := hp.1
+    have hp : Nat.Prime p := hp.out
     simp only [valuation_p, one_div, ne_eq, inv_eq_zero, Nat.cast_eq_zero, inv_eq_one,
       Nat.cast_eq_one]
     exact ⟨hp.ne_zero, hp.ne_one⟩

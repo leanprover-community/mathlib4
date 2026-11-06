@@ -101,7 +101,7 @@ lemma ind_iff_exists (H : P ≤ isFinitelyPresentable.{w} C)
     have : EssentiallySmall.{w} (CostructuredArrow P.ι X) :=
       essentiallySmall_of_fully_faithful (C := CostructuredArrow (incl ⋙ _) X)
         (CostructuredArrow.pre incl (isFinitelyPresentable.{w} C).ι X)
-    exact of_essentiallySmall_index ⟨_, _, hc⟩ fun Y ↦ Y.left.2
+    exact of_essentiallySmall_index ⟨_, _, hc⟩ fun Y ↦ Y.left.property
 
 section
 
@@ -138,7 +138,7 @@ private lemma ind_pi_of_ind {ι : Type w} [P.IsClosedUnderLimitsOfShape (Discret
   choose J _ _ pres hpres using hc
   obtain ⟨hc⟩ := IsIPCOfShape.nonempty_isColimit fun i ↦ (pres i).isColimit
   exact ⟨∀ j, J j, inferInstance, inferInstance,
-    { diag := _, ι := _, isColimit := hc }, fun i ↦ P.prop_limit _ fun a ↦ hpres a.1 _⟩
+    { diag := _, ι := _, isColimit := hc }, fun i ↦ P.prop_limit _ fun a ↦ hpres a.as _⟩
 
 instance isClosedUnderLimitsOfShape_ind_discrete {ι : Type*} [Small.{w} ι]
     [P.IsClosedUnderLimitsOfShape (Discrete ι)] [HasProductsOfShape ι C] [IsIPCOfShape.{w} ι C] :

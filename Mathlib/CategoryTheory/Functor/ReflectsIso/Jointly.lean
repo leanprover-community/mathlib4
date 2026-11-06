@@ -79,7 +79,7 @@ lemma mono {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Mono ((F i).map f)]
   have hc := pullbackIsPullback f f
   rw [mono_iff_isIso_fst hc, h.isIso_iff]
   intro i
-  exact (mono_iff_isIso_fst ((isLimitMapConePullbackConeEquiv (F i) pullback.condition).1
+  exact (mono_iff_isIso_fst ((isLimitMapConePullbackConeEquiv (F i) pullback.condition).toFun
     (isLimitOfPreserves (F i) hc))).1 (hf i)
 
 lemma jointlyReflectMonomorphisms [∀ i, PreservesLimitsOfShape WalkingCospan (F i)]
@@ -92,7 +92,7 @@ lemma epi {X Y : C} (f : X ⟶ Y) [hf : ∀ i, Epi ((F i).map f)]
   have hc := pushoutIsPushout f f
   rw [epi_iff_isIso_inl hc, h.isIso_iff]
   intro i
-  exact (epi_iff_isIso_inl ((isColimitMapCoconePushoutCoconeEquiv (F i) pushout.condition).1
+  exact (epi_iff_isIso_inl ((isColimitMapCoconePushoutCoconeEquiv (F i) pushout.condition).toFun
     (isColimitOfPreserves (F i) hc))).1 (hf i)
 
 lemma jointlyReflectEpimorphisms [∀ i, PreservesColimitsOfShape WalkingSpan (F i)]

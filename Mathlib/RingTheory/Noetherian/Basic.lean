@@ -398,6 +398,6 @@ theorem Module.exists_finite_presentation [Small.{v} R] (M : Type v) [AddCommGro
       (_ : Module.Finite R P) (f : P →ₗ[R] M), Function.Surjective f := by
   rcases Module.Finite.exists_fin' R M with ⟨m, f', hf'⟩
   let f := f'.comp ((Finsupp.mapRange.linearEquiv (Shrink.linearEquiv.{v} R R)).trans
-      (Finsupp.linearEquivFunOnFinite R R (Fin m))).1
+      (Finsupp.linearEquivFunOnFinite R R (Fin m))).toLinearMap
   use (Fin m →₀ Shrink.{v, u} R), inferInstance, inferInstance, inferInstance, inferInstance, f
   simpa [f] using hf'

@@ -153,7 +153,8 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
         (lmapDomain _ _ u) (mapDomain_injective hu) (isCompl_range_lmapDomain_span h) := by
   classical
   refine Finsupp.basisSingleOne.ext fun i ↦ ?_
-  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by rw [codisjoint_iff.mp h.2]; trivial
+  obtain ⟨i, rfl⟩ | ⟨i, rfl⟩ : i ∈ Set.range u ⊔ .range v := by
+    rw [codisjoint_iff.mp h.codisjoint]; trivial
   · have : single (u i) 1 = lmapDomain R R u (.single i 1) := by simp
     simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_single]
     rw [this, LinearMap.linearProjOfIsCompl_apply_left]
@@ -162,7 +163,7 @@ lemma lcomapDomain_eq_linearProjOfIsCompl {α β : Type*}
       simp only [coe_basisSingleOne, lcomapDomain_apply, comapDomain_apply, single_apply,
         coe_zero, Pi.zero_apply, ite_eq_right_iff]
       intro hij
-      exact (Set.disjoint_range_iff.mp h.1 j i hij.symm).elim
+      exact (Set.disjoint_range_iff.mp h.disjoint j i hij.symm).elim
     · exact Submodule.subset_span ⟨i, rfl⟩
 
 end Ring

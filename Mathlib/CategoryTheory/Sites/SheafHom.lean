@@ -223,14 +223,14 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
   map f := ↾((J.overMapPullback A f.unop).map)
   map_id X := by
     ext φ : 4
-    congrm $((presheafHom F.1 G.1).map_id X) φ.1
+    congrm $((presheafHom F.obj G.obj).map_id X) φ.hom
   map_comp f g := by
     ext φ : 4
-    congrm $((presheafHom F.1 G.1).map_comp f g) φ.1
+    congrm $((presheafHom F.obj G.obj).map_comp f g) φ.hom
 
 /-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
 def sheafHom'Iso (F G : Sheaf J A) :
-    sheafHom' F G ≅ presheafHom F.1 G.1 :=
+    sheafHom' F G ≅ presheafHom F.obj G.obj :=
   NatIso.ofComponents
     (fun _ => Sheaf.homEquiv.toIso) (fun _ => rfl)
 
@@ -239,13 +239,13 @@ this `sheafHom F G` is the sheaf of types which sends an object `X : C`
 to the type of morphisms between the "restrictions" of `F` and `G` to the category `Over X`. -/
 def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   obj := sheafHom' F G
-  property := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
+  property := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.property.hom F.obj)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
 def sheafHomSectionsEquiv (F G : Sheaf J A) :
-    (sheafHom F G).1.sections ≃ (F ⟶ G) :=
+    (sheafHom F G).obj.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
-    ((presheafHomSectionsEquiv F.1 G.1).trans Sheaf.homEquiv.symm)
+    ((presheafHomSectionsEquiv F.obj G.obj).trans Sheaf.homEquiv.symm)
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :

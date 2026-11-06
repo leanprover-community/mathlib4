@@ -114,7 +114,7 @@ instance [Algebra.IsPushout R S A B] :
 lemma map_liftBaseChange_smul [h : Algebra.IsPushout R S A B] (b : B) (x) :
     ((map R S A B).restrictScalars R).liftBaseChange S (b • x) =
     b • ((map R S A B).restrictScalars R).liftBaseChange S x := by
-  induction b using h.1.inductionOn with
+  induction b using h.out.inductionOn with
   | smul s b e => rw [smul_assoc, map_smul, e, smul_assoc]
   | add b₁ b₂ e₁ e₂ => simp only [map_add, e₁, e₂, add_smul]
   | tmul a =>
@@ -193,7 +193,7 @@ def tensorKaehlerEquivBase [h : Algebra.IsPushout R S A B] :
       -- We use the specialized version of `map_smul` here for performance.
       simp only [Derivation.tensorProductTo_tmul, LinearMap.map_smul,
         Derivation.liftKaehlerDifferential_comp_D, map_liftBaseChange_smul]
-      induction y using h.1.inductionOn
+      induction y using h.out.inductionOn
       · simp only [AlgHom.toLinearMap_apply, IsScalarTower.coe_toAlgHom',
           derivationTensorProduct_algebraMap, LinearMap.liftBaseChange_tmul,
           LinearMap.coe_restrictScalars, map_D, one_smul]

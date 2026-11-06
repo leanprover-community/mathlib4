@@ -84,7 +84,7 @@ lemma finite_comap_preimage_singleton [QuasiFinite R S] (P : PrimeSpectrum R) :
 lemma finite_primesOver [QuasiFinite R S] (I : Ideal R) : (I.primesOver S).Finite := by
   by_cases h : I.IsPrime
   · refine ((finite_comap_preimage_singleton ⟨I, h⟩).image PrimeSpectrum.asIdeal).subset ?_
-    exact fun J hJ ↦ ⟨⟨_, hJ.1⟩, PrimeSpectrum.ext hJ.2.1.symm, rfl⟩
+    exact fun J hJ ↦ ⟨⟨_, hJ.1⟩, PrimeSpectrum.ext hJ.2.over.symm, rfl⟩
   · convert Set.finite_empty
     by_contra!
     obtain ⟨J, h₁, ⟨rfl⟩⟩ := this
@@ -96,10 +96,11 @@ instance (p : Ideal R) (q : Ideal S) [q.LiesOver p] [q.IsPrime] [QuasiFinite R S
   have : p.IsPrime := isPrime_of_liesOver q p
   let Sq := Localization.AtPrime q
   let r := PrimeSpectrum.primesOverOrderIsoFiber R S p (primesOver.mk p q)
-  have : q = r.1.comap Algebra.TensorProduct.includeRight := by
+  have : q = r.asIdeal.comap Algebra.TensorProduct.includeRight := by
     rw [← PrimeSpectrum.coe_primesOverOrderIsoFiber_symm_apply, OrderIso.symm_apply_apply]
-  let := Localization.AtPrime.algebraOfLiesOver p (r.1.comap Algebra.TensorProduct.includeRight)
-  convert (Fiber.localizationAlgEquivQuotient p r.1).toRingEquiv.isArtinianRing
+  let := Localization.AtPrime.algebraOfLiesOver p
+    (r.asIdeal.comap Algebra.TensorProduct.includeRight)
+  convert (Fiber.localizationAlgEquivQuotient p r.asIdeal).toRingEquiv.isArtinianRing
 
 lemma finite_comap_preimage [QuasiFinite R S] {s : Set (PrimeSpectrum R)} (hs : s.Finite) :
     (PrimeSpectrum.comap (algebraMap R S) ⁻¹' s).Finite :=
@@ -284,7 +285,7 @@ lemma eq_of_le_of_under_eq [QuasiFinite R S] (P Q : Ideal S) [P.IsPrime] [Q.IsPr
     (h₁ : P ≤ Q) (h₂ : P.under R = Q.under R) : P = Q :=
   congr($((isDiscrete_comap_preimage_singleton ⟨_, inferInstance⟩).eq_of_specializes
     (a := ⟨P, ‹_›⟩) (b := ⟨Q, ‹_›⟩) (by simpa [← PrimeSpectrum.le_iff_specializes]) rfl
-    (PrimeSpectrum.ext h₂.symm)).1)
+    (PrimeSpectrum.ext h₂.symm)).asIdeal)
 
 instance [QuasiFinite R S] (P : Ideal R) [P.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver P]
     [Algebra (Localization.AtPrime P) (Localization.AtPrime Q)]
@@ -517,7 +518,7 @@ lemma QuasiFiniteAt.of_isOpen_singleton
     obtain ⟨M, hM, H⟩ :=
       Ideal.exists_le_maximal (.span {algebraMap _ (Localization.Away e) s.1}) (by simpa)
     have := Subsingleton.elim ((IsLocalRing.closedPoint _).comap f.toRingHom) ⟨M, inferInstance⟩
-    have := congr(($this).1).ge (H (Ideal.mem_span_singleton_self _))
+    have := congr(($this).asIdeal).ge (H (Ideal.mem_span_singleton_self _))
     simp [IsLocalRing.closedPoint, IsLocalization.AtPrime.isUnit_to_map_iff _ p.asIdeal] at this
   have : Algebra.FiniteType R (Localization.AtPrime p.asIdeal) :=
     .of_surjective (f.restrictScalars R) hf
@@ -533,7 +534,7 @@ lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
   let e := PrimeSpectrum.preimageHomeomorphFiber _ S ⟨p, inferInstance⟩
   let qF : PrimeSpectrum (p.Fiber S) := e ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩
   have : Algebra.QuasiFiniteAt p.ResidueField qF.asIdeal := .baseChange q _
-    congr($(e.symm_apply_apply ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).1.1).symm
+    congr($(e.symm_apply_apply ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩).1.asIdeal).symm
   obtain ⟨r, hr, hrq⟩ := Algebra.QuasiFiniteAt.exists_basicOpen_eq_singleton
     (R := p.ResidueField) qF.asIdeal
   obtain ⟨s, hs, x, hsx⟩ := Ideal.Fiber.exists_smul_eq_one_tmul _ r
@@ -547,7 +548,7 @@ lemma _root_.Ideal.exists_notMem_forall_mem_of_ne_of_liesOver
     · simpa [IsScalarTower.algebraMap_apply R S q.ResidueField, q.over_def p] using hs
   refine ⟨x, this, fun q' _ hq' _ ↦ not_not.mp fun hxq' ↦ hq' ?_⟩
   congrm $(e.injective (a₁ := ⟨⟨q', ‹_›⟩, PrimeSpectrum.ext (q'.over_def p).symm⟩)
-   (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.1
+   (a₂ := ⟨⟨q, ‹_›⟩, PrimeSpectrum.ext (q.over_def p).symm⟩) (hrq.le ?_)).1.asIdeal
   simp only [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, PrimeSpectrum.preimageHomeomorphFiber,
     PrimeSpectrum.preimageOrderIsoFiber, Homeomorph.homeomorph_mk_coe, Set.mem_compl_iff,
     PrimeSpectrum.mem_zeroLocus, Set.singleton_subset_iff, SetLike.mem_coe, e]

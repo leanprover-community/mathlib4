@@ -175,7 +175,7 @@ alias IsSuccLimit.lt_iff_exists_lt := IsSuccLimit.lt_iff_nonempty_Ioo
 
 @[to_dual]
 theorem IsSuccLimit.nonempty_Iio (h : IsSuccLimit a) : (Set.Iio a).Nonempty :=
-  not_isMin_iff.1 h.1
+  not_isMin_iff.1 h.not_isMin
 
 @[to_dual]
 theorem IsSuccPrelimit.noMaxOrder_Iio (h : IsSuccPrelimit a) : NoMaxOrder (Set.Iio a) := by
@@ -220,7 +220,7 @@ theorem IsSuccPrelimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
 theorem IsSuccLimit.subtypeVal {s : Set α} (hs : IsLowerSet s) {a : s}
     (ha : IsSuccLimit a) : IsSuccLimit a.1 := by
   refine ⟨?_, ha.isSuccPrelimit.subtypeVal hs⟩
-  have := ha.1
+  have := ha.not_isMin
   rw [not_isMin_iff] at ⊢ this
   obtain ⟨b, hb⟩ := this
   exact ⟨b, hb⟩

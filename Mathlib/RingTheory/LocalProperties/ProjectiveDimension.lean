@@ -52,7 +52,7 @@ lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : S
     rw [← projective_iff_hasProjectiveDimensionLT_one, ← IsProjective.iff_projective] at projle ⊢
     exact Module.projective_of_isLocalizedModule S (M.localizedModuleMkLinearMap S)
   | succ n ih =>
-    rcases ModuleCat.enoughProjectives.1 M with ⟨⟨P, f⟩⟩
+    rcases ModuleCat.enoughProjectives.presentation M with ⟨⟨P, f⟩⟩
     let T := ShortComplex.mk (kernel.ι f) f (kernel.condition f)
     have T_exact : T.ShortExact := { exact := ShortComplex.exact_kernel f }
     let TS := T.map (ModuleCat.localizedModuleFunctor S)
@@ -82,7 +82,8 @@ lemma projectiveDimension_le_projectiveDimension_of_isLocalizedModule [Small.{v,
 
 lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
-    ∀ (m : MaximalSpectrum R), HasProjectiveDimensionLE (M.localizedModule m.1.primeCompl) n := by
+    ∀ (m : MaximalSpectrum R),
+      HasProjectiveDimensionLE (M.localizedModule m.asIdeal.primeCompl) n := by
   induction n generalizing M with
   | zero =>
     simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
@@ -90,8 +91,8 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
     · let : Small.{v} (Localization p.asIdeal.primeCompl) :=
         small_of_surjective Localization.mkHom_surjective
       rw [← IsProjective.iff_projective]
-      exact Module.projective_of_isLocalizedModule p.1.primeCompl
-        (M.localizedModuleMkLinearMap p.1.primeCompl)
+      exact Module.projective_of_isLocalizedModule p.asIdeal.primeCompl
+        (M.localizedModuleMkLinearMap p.asIdeal.primeCompl)
     · rw [← IsProjective.iff_projective]
       have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
       apply Module.projective_of_localization_maximal (fun p hp ↦ ?_)
@@ -108,28 +109,28 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
     let S := f.shortComplexKer
     have S_exact := LinearMap.shortExact_shortComplexKer surjf
     have proj := ModuleCat.projective_of_categoryTheory_projective S.X₂
-    let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModuleFunctor p.1.primeCompl)
+    let Sp (p : MaximalSpectrum R) := S.map (ModuleCat.localizedModuleFunctor p.asIdeal.primeCompl)
     have Sp_exact (p : MaximalSpectrum R) : (Sp p).ShortExact :=
       S_exact.map_of_exact (ModuleCat.localizedModuleFunctor p.asIdeal.primeCompl)
     specialize ih ↧(LinearMap.ker f)
     have projp (p : MaximalSpectrum R) : Projective (Sp p).X₂ :=
-      (ModuleCat.localizedModuleFunctor.{v} p.1.primeCompl).projective_obj_of_projective proj
+      (ModuleCat.localizedModuleFunctor.{v} p.asIdeal.primeCompl).projective_obj_of_projective proj
     simp only [HasProjectiveDimensionLE] at ih ⊢
     rw [S_exact.hasProjectiveDimensionLT_X₃_iff n proj, ih]
     exact (forall_congr' (fun p ↦ (Sp_exact p).hasProjectiveDimensionLT_X₃_iff n (projp p))).symm
 
 lemma hasProjectiveDimensionLE_iff_forall_primeSpectrum (n : ℕ) [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : HasProjectiveDimensionLE M n ↔
-    ∀ (p : PrimeSpectrum R), HasProjectiveDimensionLE (M.localizedModule p.1.primeCompl) n :=
-  ⟨fun _ p ↦ M.localizedModule_hasProjectiveDimensionLE n p.1.primeCompl,
+    ∀ (p : PrimeSpectrum R), HasProjectiveDimensionLE (M.localizedModule p.asIdeal.primeCompl) n :=
+  ⟨fun _ p ↦ M.localizedModule_hasProjectiveDimensionLE n p.asIdeal.primeCompl,
     fun h ↦ (M.hasProjectiveDimensionLE_iff_forall_maximalSpectrum n).mpr
-    fun m ↦ h ⟨m.1, Ideal.IsMaximal.isPrime' m.1⟩⟩
+    fun m ↦ h ⟨m.asIdeal, Ideal.IsMaximal.isPrime' m.asIdeal⟩⟩
 
 lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
-    ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
+    ⨆ (p : PrimeSpectrum R), projectiveDimension (M.localizedModule p.asIdeal.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : PrimeSpectrum R), projectiveDimension
-    (M.localizedModule p.1.primeCompl) ≤ n := by
+    (M.localizedModule p.asIdeal.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     exact M.hasProjectiveDimensionLE_iff_forall_primeSpectrum n
   refine eq_of_forall_ge_iff (fun N ↦ ?_)
@@ -149,9 +150,9 @@ lemma projectiveDimension_eq_iSup_localizedModule_prime [Small.{v} R]
 
 lemma projectiveDimension_eq_iSup_localizedModule_maximal [Small.{v} R]
     [IsNoetherianRing R] (M : ModuleCat.{v} R) [Module.Finite R M] : projectiveDimension M =
-    ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.1.primeCompl) := by
+    ⨆ (p : MaximalSpectrum R), projectiveDimension (M.localizedModule p.asIdeal.primeCompl) := by
   have aux (n : ℕ) : projectiveDimension M ≤ n ↔ ⨆ (p : MaximalSpectrum R), projectiveDimension
-    (M.localizedModule p.1.primeCompl) ≤ n := by
+    (M.localizedModule p.asIdeal.primeCompl) ≤ n := by
     simp only [projectiveDimension_le_iff, iSup_le_iff]
     exact M.hasProjectiveDimensionLE_iff_forall_maximalSpectrum n
   refine eq_of_forall_ge_iff (fun N ↦ ?_)

@@ -195,7 +195,7 @@ variable [P.IsStableUnderShift A]
 noncomputable instance hasShift :
     HasShift P.FullSubcategory A :=
   P.fullyFaithfulι.hasShift (fun n ↦ ObjectProperty.lift _ (P.ι ⋙ shiftFunctor C n)
-    (fun X ↦ P.le_shift n _ X.2)) (fun _ => P.liftCompιIso _ _)
+    (fun X ↦ P.le_shift n _ X.property)) (fun _ => P.liftCompιIso _ _)
 
 instance commShiftι : P.ι.CommShift A :=
   Functor.CommShift.ofHasShiftOfFullyFaithful _ _ _

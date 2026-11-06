@@ -465,8 +465,8 @@ def cycleFactors [Fintype α] [LinearOrder α] (f : Perm α) :
   without a linear order. -/
 def truncCycleFactors [DecidableEq α] [Fintype α] (f : Perm α) :
     Trunc { l : List (Perm α) // l.prod = f ∧ (∀ g ∈ l, IsCycle g) ∧ l.Pairwise Disjoint } :=
-  Quotient.recOnSubsingleton (@univ α _).1 (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
-    (show ∀ x, f x ≠ x → x ∈ (@univ α _).1 from fun _ _ => mem_univ _)
+  Quotient.recOnSubsingleton (@univ α _).val (fun l h => Trunc.mk (cycleFactorsAux l f (h _)))
+    (show ∀ x, f x ≠ x → x ∈ (@univ α _).val from fun _ _ => mem_univ _)
 
 section CycleFactorsFinset
 

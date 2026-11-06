@@ -105,7 +105,7 @@ variable (X : Type u) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 class HasProp : Prop where
   hasProp : P ↧X
 
-instance (X : CompHausLike P) : HasProp P X := ⟨X.4⟩
+instance (X : CompHausLike P) : HasProp P X := ⟨X.prop⟩
 
 variable [HasProp P X]
 

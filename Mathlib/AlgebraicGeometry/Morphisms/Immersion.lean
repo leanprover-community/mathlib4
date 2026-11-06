@@ -130,10 +130,10 @@ instance : IsZariskiLocalAtTarget @IsImmersion := by
     exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
 instance (priority := 900) (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
-  isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
+  isLocallyClosed_range := f.isOpenEmbedding.isOpen_range.isLocallyClosed
 
 instance (priority := 900) (f : X ⟶ Y) [IsClosedImmersion f] : IsImmersion f where
-  isLocallyClosed_range := f.isClosedEmbedding.2.isLocallyClosed
+  isLocallyClosed_range := f.isClosedEmbedding.isClosed_range.isLocallyClosed
 
 instance : MorphismProperty.IsMultiplicative @IsImmersion where
   id_mem _ := inferInstance

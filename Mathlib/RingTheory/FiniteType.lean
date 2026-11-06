@@ -52,7 +52,7 @@ section Algebra
 -- see Note [lower instance priority]
 instance (priority := 100) finiteType {R : Type*} (A : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [hRA : Module.Finite R A] : Algebra.FiniteType R A :=
-  ⟨Subalgebra.fg_of_submodule_fg hRA.1⟩
+  ⟨Subalgebra.fg_of_submodule_fg hRA.fg_top⟩
 
 end Algebra
 
@@ -81,7 +81,7 @@ variable {R S A B}
 
 theorem of_surjective [FiniteType R A] (f : A →ₐ[R] B) (hf : Surjective f) : FiniteType R B :=
   ⟨by
-    convert ‹FiniteType R A›.1.map f
+    convert ‹FiniteType R A›.out.map f
     simpa only [map_top f, @eq_comm _ ⊤, eq_top_iff, AlgHom.mem_range] using! hf⟩
 
 theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
@@ -89,7 +89,7 @@ theorem equiv (hRA : FiniteType R A) (e : A ≃ₐ[R] B) : FiniteType R B :=
 
 theorem trans [Algebra S A] [IsScalarTower R S A] (hRS : FiniteType R S) (hSA : FiniteType S A) :
     FiniteType R A :=
-  ⟨fg_trans' hRS.1 hSA.1⟩
+  ⟨fg_trans' hRS.out hSA.out⟩
 
 instance quotient (R : Type*) {S : Type*} [CommSemiring R] [CommRing S] [Algebra R S] (I : Ideal S)
     [h : Algebra.FiniteType R S] : Algebra.FiniteType R (S ⧸ I) :=
@@ -178,11 +178,11 @@ theorem iff_quotient_mvPolynomial'' :
     exact .of_surjective f hsur
 
 instance prod [hA : FiniteType R A] [hB : FiniteType R B] : FiniteType R (A × B) :=
-  ⟨by rw [← Subalgebra.prod_top]; exact hA.1.prod hB.1⟩
+  ⟨by rw [← Subalgebra.prod_top]; exact hA.out.prod hB.out⟩
 
 theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
     [h : Algebra.FiniteType R S] [IsNoetherianRing R] : IsNoetherianRing S := by
-  obtain ⟨s, hs⟩ := h.1
+  obtain ⟨s, hs⟩ := h.out
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom

@@ -71,13 +71,13 @@ instance InducedWideCategory.category :
     Category (InducedWideCategory D F P) where
   Hom X Y := Hom X Y
   id X := ⟨𝟙 (F X), P.id_mem (F X)⟩
-  comp {_ _ _} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
+  comp {_ _ _} f g := ⟨f.hom ≫ g.hom, P.comp_mem _ _ f.property g.property⟩
 
 /-- The forgetful functor from an induced wide category to the original category. -/
 @[simps]
 def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
-  map {_ _} f := f.1
+  map {_ _} f := f.hom
 
 /-- The induced functor `wideInducedFunctor F P : InducedWideCategory D F P ⥤ D`
 is faithful. -/
@@ -111,11 +111,11 @@ lemma WideSubcategory.hom_ext {X Y : WideSubcategory P} {f g : X ⟶ Y} (h : f.h
   InducedWideCategory.Hom.ext h
 
 @[simp]
-lemma WideSubcategory.id_def (X : WideSubcategory P) : (CategoryStruct.id X).1 = 𝟙 X.obj := rfl
+lemma WideSubcategory.id_def (X : WideSubcategory P) : (CategoryStruct.id X).hom = 𝟙 X.obj := rfl
 
 @[simp]
 lemma WideSubcategory.comp_def {X Y Z : WideSubcategory P} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    (f ≫ g).1 = (f.1 ≫ g.1 : X.obj ⟶ Z.obj) := rfl
+    (f ≫ g).hom = (f.hom ≫ g.hom : X.obj ⟶ Z.obj) := rfl
 
 /-- The forgetful functor from a wide subcategory into the original category
 ("forgetting" the condition).
@@ -129,7 +129,7 @@ theorem wideSubcategoryInclusion.obj (X) : (wideSubcategoryInclusion P).obj X = 
 
 @[simp]
 theorem wideSubcategoryInclusion.map {X Y} {f : X ⟶ Y} :
-    (wideSubcategoryInclusion P).map f = f.1 :=
+    (wideSubcategoryInclusion P).map f = f.hom :=
   rfl
 
 /-- The inclusion of a wide subcategory is faithful. -/

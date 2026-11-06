@@ -84,7 +84,7 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
 theorem isCompl_iff_disjoint [FiniteDimensional K V] (s t : Submodule K V)
     (hdim : finrank K V ≤ finrank K s + finrank K t) :
     IsCompl s t ↔ Disjoint s t :=
-  ⟨fun h ↦ h.1, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
+  ⟨fun h ↦ h.disjoint, fun h ↦ ⟨h, codisjoint_iff.mpr <| eq_top_of_disjoint s t hdim h⟩⟩
 
 theorem sup_span_singleton_eq_top_iff [Module.Finite K V] {W : Submodule K V} {v : V} (hv : v ∉ W) :
     W ⊔ span K {v} = ⊤ ↔ finrank K (V ⧸ W) = 1 := by

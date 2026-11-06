@@ -67,7 +67,7 @@ instance : Singleton α (Finset α) :=
   ⟨fun a => ⟨{a}, nodup_singleton a⟩⟩
 
 @[simp]
-theorem singleton_val (a : α) : ({a} : Finset α).1 = {a} :=
+theorem singleton_val (a : α) : ({a} : Finset α).val = {a} :=
   rfl
 
 @[simp, grind =]
@@ -242,7 +242,7 @@ variable {s t : Finset α} {a b : α}
 `insert a s` when it is defined, but unlike `insert a s` it does not require `DecidableEq α`,
 and the union is guaranteed to be disjoint. -/
 def cons (a : α) (s : Finset α) (h : a ∉ s) : Finset α :=
-  ⟨a ::ₘ s.1, nodup_cons.2 ⟨h, s.2⟩⟩
+  ⟨a ::ₘ s.val, nodup_cons.2 ⟨h, s.nodup⟩⟩
 
 @[simp, grind =]
 theorem mem_cons {h} : b ∈ s.cons a h ↔ b = a ∨ b ∈ s :=
@@ -255,7 +255,7 @@ theorem mem_cons_self (a : α) (s : Finset α) {h} : a ∈ cons a s h :=
   Multiset.mem_cons_self _ _
 
 @[simp]
-theorem cons_val (h : a ∉ s) : (cons a s h).1 = a ::ₘ s.1 :=
+theorem cons_val (h : a ∉ s) : (cons a s h).val = a ::ₘ s.val :=
   rfl
 
 theorem eq_of_mem_cons_of_notMem (has : a ∉ s) (h : b ∈ cons a s has) (hb : b ∉ s) : b = a :=
@@ -353,19 +353,20 @@ variable [DecidableEq α] {s t : Finset α} {a b : α} {f : α → β}
 
 /-- `insert a s` is the set `{a} ∪ s` containing `a` and the elements of `s`. -/
 instance : Insert α (Finset α) :=
-  ⟨fun a s => ⟨_, s.2.ndinsert a⟩⟩
+  ⟨fun a s => ⟨_, s.nodup.ndinsert a⟩⟩
 
-theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.2.ndinsert a⟩ :=
+theorem insert_def (a : α) (s : Finset α) : insert a s = ⟨_, s.nodup.ndinsert a⟩ :=
   rfl
 
 @[simp]
-theorem insert_val (a : α) (s : Finset α) : (insert a s).1 = ndinsert a s.1 :=
+theorem insert_val (a : α) (s : Finset α) : (insert a s).val = ndinsert a s.val :=
   rfl
 
-theorem insert_val' (a : α) (s : Finset α) : (insert a s).1 = dedup (a ::ₘ s.1) := by
+theorem insert_val' (a : α) (s : Finset α) : (insert a s).val = dedup (a ::ₘ s.val) := by
   rw [dedup_cons, dedup_eq_self]; rfl
 
-theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : (insert a s).1 = a ::ₘ s.1 := by
+theorem insert_val_of_notMem {a : α} {s : Finset α} (h : a ∉ s) :
+    (insert a s).val = a ::ₘ s.val := by
   rw [insert_val, ndinsert_of_notMem h]
 
 @[simp, grind =]
@@ -373,7 +374,7 @@ theorem mem_insert : a ∈ insert b s ↔ a = b ∨ a ∈ s :=
   mem_ndinsert
 
 theorem mem_insert_self (a : α) (s : Finset α) : a ∈ insert a s :=
-  mem_ndinsert_self a s.1
+  mem_ndinsert_self a s.val
 
 theorem mem_insert_of_mem (h : a ∈ s) : a ∈ insert b s :=
   mem_ndinsert_of_mem h

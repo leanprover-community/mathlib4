@@ -61,21 +61,21 @@ include hY
 `J.CoversTop Y` -/
 abbrev cover (W : C) : Cover J W := ⟨Sieve.ofObjects Y W, hY W⟩
 
-lemma ext (F : Sheaf J A) {c : Cone F.1} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
+lemma ext (F : Sheaf J A) {c : Cone F.obj} (hc : IsLimit c) {X : A} {f g : X ⟶ c.pt}
     (h : ∀ (i : I), f ≫ c.π.app (Opposite.op (Y i)) =
       g ≫ c.π.app (Opposite.op (Y i))) :
     f = g := by
-  refine hc.hom_ext (fun Z => F.2.hom_ext (hY.cover Z.unop) _ _ ?_)
+  refine hc.hom_ext (fun Z => F.property.hom_ext (hY.cover Z.unop) _ _ ?_)
   rintro ⟨W, a, ⟨i, ⟨b⟩⟩⟩
-  simpa using h i =≫ F.1.map b.op
+  simpa using h i =≫ F.obj.map b.op
 
-lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
+lemma sections_ext (F : Sheaf J Type*) {x y : F.obj.sections}
     (h : ∀ (i : I), x.1 (Opposite.op (Y i)) = y.1 (Opposite.op (Y i))) :
     x = y := by
   ext W
-  apply (((isSheaf_iff_isSheaf_of_type _ _).1 F.2).isSeparated _ (hY W.unop)).ext
+  apply (((isSheaf_iff_isSheaf_of_type _ _).1 F.property).isSeparated _ (hY W.unop)).ext
   rintro T a ⟨i, ⟨b⟩⟩
-  simpa using congr(F.1.map b.op $(h i))
+  simpa using congr(F.obj.map b.op $(h i))
 
 end CoversTop
 

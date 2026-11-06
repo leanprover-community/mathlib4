@@ -161,8 +161,8 @@ lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd 
 theorem isSimpleGroup_of_prime_card {p : ℕ} [hp : Fact p.Prime]
     (h : Nat.card α = p) : IsSimpleGroup α := by
   subst h
-  have : Finite α := Nat.finite_of_card_ne_zero hp.1.ne_zero
-  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp hp.1.one_lt
+  have : Finite α := Nat.finite_of_card_ne_zero hp.out.ne_zero
+  have : Nontrivial α := Finite.one_lt_card_iff_nontrivial.mp hp.out.one_lt
   exact ⟨fun H _ => H.eq_bot_or_eq_top_of_prime_card⟩
 
 end Cyclic

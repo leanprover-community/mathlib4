@@ -136,7 +136,7 @@ lemma Scheme.IsGermInjective.Spec
       ∃ f : R, f ∉ I ∧ ∀ (x y : R), y * x = 0 → y ∉ I → ∃ n, f ^ n * x = 0) :
     (Spec R).IsGermInjective := by
   refine fun p ↦ ⟨?_⟩
-  obtain ⟨f, hf, H⟩ := H p.asIdeal p.2
+  obtain ⟨f, hf, H⟩ := H p.asIdeal p.isPrime
   refine ⟨PrimeSpectrum.basicOpen f, hf, ?_, ?_⟩
   · rw [← basicOpen_eq_of_affine]
     exact (isAffineOpen_top (Spec R)).basicOpen _
@@ -342,7 +342,7 @@ lemma spread_out_of_isGermInjective [LocallyOfFiniteType sY] {x : X} [X.IsGermIn
     S.isBasis_affineOpens.exists_subset_of_mem_open (Set.mem_univ (sX x)) isOpen_univ
   have hyU : sY y ∈ U := e ▸ hxU
   obtain ⟨_, ⟨V : Y.Opens, hV, rfl⟩, hyV, iVU⟩ :=
-    Y.isBasis_affineOpens.exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).2
+    Y.isBasis_affineOpens.exists_subset_of_mem_open hyU (sY ⁻¹ᵁ U).is_open'
   have : sY.appLE U V iVU ≫ Y.presheaf.germ V y hyV ≫ φ =
       sX.app U ≫ X.presheaf.germ (sX ⁻¹ᵁ U) x hxU := by
     rw [Scheme.Hom.appLE, Category.assoc, Y.presheaf.germ_res_assoc,

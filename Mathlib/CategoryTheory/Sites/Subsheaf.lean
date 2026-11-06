@@ -194,16 +194,16 @@ def Subfunctor.toRangeSheafify (f : F' ⟶ F) : F' ⟶ ((Subfunctor.range f).she
 `image_presheaf`. -/
 @[simps]
 def Sheaf.image {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Sheaf J (Type w) :=
-  ⟨((Subfunctor.range f.1).sheafify J).toFunctor, by
+  ⟨((Subfunctor.range f.hom).sheafify J).toFunctor, by
     rw [isSheaf_iff_isSheaf_of_type]
     apply Subfunctor.sheafify_isSheaf
     rw [← isSheaf_iff_isSheaf_of_type]
-    exact F'.2⟩
+    exact F'.property⟩
 
 /-- A morphism factors through the image sheaf. -/
 @[simps]
 def Sheaf.toImage {F F' : Sheaf J (Type w)} (f : F ⟶ F') : F ⟶ Sheaf.image f :=
-  ⟨Subfunctor.toRangeSheafify J f.1⟩
+  ⟨Subfunctor.toRangeSheafify J f.hom⟩
 
 /-- The inclusion of the image sheaf to the target. -/
 @[simps]
@@ -229,7 +229,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 instance {F F' : Sheaf J (Type w)} (f : F ⟶ F') : Epi (Sheaf.toImage f) := by
   refine ⟨@fun G' g₁ g₂ e => ?_⟩
   ext U ⟨s, hx⟩
-  apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.2 _ hx).isSeparatedFor.ext
+  apply ((isSheaf_iff_isSheaf_of_type J _).mp G'.property _ hx).isSeparatedFor.ext
   rintro V i ⟨y, e'⟩
   change (g₁.hom.app _ ≫ G'.obj.map _) _ = (g₂.hom.app _ ≫ G'.obj.map _) _
   rw [← NatTrans.naturality, ← NatTrans.naturality]
@@ -255,15 +255,15 @@ noncomputable def imageFactorization {F F' : Sheaf J (Type (max v u))} (f : F �
   isImage :=
     { lift := fun I => by
         haveI M := (Sheaf.Hom.mono_iff_presheaf_mono J (Type (max v u)) _).mp I.m_mono
-        refine ⟨Subfunctor.homOfLe ?_ ≫ inv (Subfunctor.toRange I.m.1)⟩
+        refine ⟨Subfunctor.homOfLe ?_ ≫ inv (Subfunctor.toRange I.m.hom)⟩
         apply Subfunctor.sheafify_le
         · conv_lhs => rw [← I.fac]
           apply Subfunctor.range_comp_le
         · rw [← isSheaf_iff_isSheaf_of_type]
-          exact F'.2
-        · apply Presieve.isSheaf_iso J (asIso <| Subfunctor.toRange I.m.1)
+          exact F'.property
+        · apply Presieve.isSheaf_iso J (asIso <| Subfunctor.toRange I.m.hom)
           rw [← isSheaf_iff_isSheaf_of_type]
-          exact I.I.2
+          exact I.I.property
       lift_fac := fun I => by
         ext1
         dsimp [imageMonoFactorization]

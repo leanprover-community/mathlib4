@@ -95,7 +95,7 @@ theorem totallyDisconnectedSpace_iff_connectedComponent_subsingleton :
     TotallyDisconnectedSpace α ↔ ∀ x : α, (connectedComponent x).Subsingleton := by
   constructor
   · intro h x
-    apply h.1
+    apply h.isTotallyDisconnected_univ
     · exact subset_univ _
     exact isPreconnected_connectedComponent
   intro h; constructor

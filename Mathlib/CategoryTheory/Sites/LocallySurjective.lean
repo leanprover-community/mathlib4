@@ -182,7 +182,7 @@ lemma comp_isLocallySurjective_iff
 variable {J} in
 lemma isLocallySurjective_of_le {K : GrothendieckTopology C} (hJK : J ≤ K) {F G : Cᵒᵖ ⥤ A}
     (f : F ⟶ G) (h : IsLocallySurjective J f) : IsLocallySurjective K f where
-  imageSieve_mem s := by apply hJK; exact h.1 _
+  imageSieve_mem s := by apply hJK; exact h.imageSieve_mem _
 
 lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
@@ -195,7 +195,7 @@ lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
       all_goals apply imageSieve_mem
     let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X.unop) (_ : S f), Sieve Y := fun Y f hf =>
       equalizerSieve (localPreimage f₁ x₁ f hf.1) (localPreimage f₁ x₂ f hf.2)
-    refine J.superset_covering ?_ (J.transitive hS (Sieve.bind S.1 T) ?_)
+    refine J.superset_covering ?_ (J.transitive hS (Sieve.bind S.arrows T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
       simpa using congr(f₁.app _ $ha)
     · intro Y f hf
@@ -221,7 +221,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     let T : ∀ ⦃Y : C⦄ (f : Y ⟶ X) (_ : S f), Sieve Y := fun Y f hf =>
       equalizerSieve (f₁.app _ (localPreimage (f₁ ≫ f₂) (f₂.app _ x) f hf)) (F₂.map f.op x)
     refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
-      (Sieve.bind S.1 T) ?_)
+      (Sieve.bind S.arrows T) ?_)
     · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
       exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using! ha⟩
     · intro Y f hf
@@ -361,7 +361,7 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
     [IsLocallySurjective φ] : Epi φ where
   left_cancellation {Z} f₁ f₂ h := by
     ext X x
-    apply (((isSheaf_iff_isSheaf_of_type _ _).1 Z.2).isSeparated _
+    apply (((isSheaf_iff_isSheaf_of_type _ _).1 Z.property).isSeparated _
       (Presheaf.imageSieve_mem J φ.hom x)).ext
     rintro Y f ⟨s : F₁.obj.obj (op Y), hs : φ.hom.app _ s = F₂.obj.map f.op x⟩
     dsimp
@@ -469,7 +469,7 @@ lemma ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_uliftYoneda_map
   let e : Discrete.functor (fun i ↦ uliftYoneda.{w}.obj (X i)) ≅
       Discrete.functor (fun i ↦ shrinkYoneda.{max w v}.obj (X i)) :=
     Discrete.natIso (fun i ↦ uliftYonedaIsoShrinkYoneda.{w}.app (X i.as))
-  let hc' := (IsColimit.precomposeInvEquiv e _).2 hc
+  let hc' := (IsColimit.precomposeInvEquiv e _).invFun hc
   rw [ofArrows_mem_iff_isLocallySurjective_cofanIsColimitDesc_shrinkYoneda_map.{max w v} J f hc']
   have :
       Cofan.IsColimit.desc hc (fun i ↦ uliftYoneda.map (f i)) ≫

@@ -236,7 +236,7 @@ lemma isHamiltonianCycle_iff_isCycle_and_support_count_tail_eq_one :
 lemma IsHamiltonianCycle.mem_support (hp : p.IsHamiltonianCycle) (b : α) :
     b ∈ p.support :=
   List.mem_of_mem_tail <|
-    support_tail_of_not_nil p hp.1.not_nil ▸ hp.isHamiltonian_tail.mem_support _
+    support_tail_of_not_nil p hp.toIsCycle.not_nil ▸ hp.isHamiltonian_tail.mem_support _
 
 /-- The length of a Hamiltonian cycle is the number of vertices. -/
 lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
@@ -248,11 +248,11 @@ lemma IsHamiltonianCycle.length_eq [Fintype α] (hp : p.IsHamiltonianCycle) :
 lemma IsHamiltonianCycle.count_support_self (hp : p.IsHamiltonianCycle) :
     p.support.count a = 2 := by
   rw [← cons_tail_support, List.count_cons_self,
-    ← support_tail_of_not_nil _ hp.1.not_nil, hp.isHamiltonian_tail]
+    ← support_tail_of_not_nil _ hp.toIsCycle.not_nil, hp.isHamiltonian_tail]
 
 lemma IsHamiltonianCycle.support_count_of_ne (hp : p.IsHamiltonianCycle) (h : a ≠ b) :
     p.support.count b = 1 := by
-  rw [← cons_support_tail hp.1.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
+  rw [← cons_support_tail hp.toIsCycle.not_nil, List.count_cons_of_ne h, hp.isHamiltonian_tail]
 
 theorem isHamiltonianCycle_iff_isCycle_and_forall_mem_support :
     p.IsHamiltonianCycle ↔ p.IsCycle ∧ ∀ v, v ∈ p.support := by

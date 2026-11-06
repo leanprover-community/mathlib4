@@ -310,7 +310,7 @@ noncomputable def leftHomologyData : S.LeftHomologyData where
       π_comp_isoHomology_hom, zero_comp, f'_eq,
       assoc, Iso.inv_hom_id_assoc, toCycles_comp_homologyπ]
   hπ := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsCokernel
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun S.homologyIsCokernel
     · exact parallelPair.ext (Iso.refl _) (S.isoCyclesOfIsLimit hkf)
     · exact Cofork.ext (isoHomology S hkf hcc fac) (by simp [Cofork.π])
 
@@ -334,7 +334,7 @@ noncomputable def rightHomologyData : S.RightHomologyData where
     rw [id_comp, g'_eq, ← cancel_epi (isoHomology S hkf hcc fac).inv, comp_zero,
       isoHomology_hom_comp_ι_assoc, Iso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
   hι := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).2 S.homologyIsKernel
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).invFun S.homologyIsKernel
     · exact parallelPair.ext (S.isoOpcyclesOfIsColimit hcc) (Iso.refl _)
     · exact Fork.ext (isoHomology S hkf hcc fac) (by simp [Fork.ι])
 

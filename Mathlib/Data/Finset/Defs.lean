@@ -83,13 +83,13 @@ instance Multiset.canLiftFinset {α} : CanLift (Multiset α) (Finset α) Finset.
 
 namespace Finset
 
-theorem eq_of_veq : ∀ {s t : Finset α}, s.1 = t.1 → s = t
+theorem eq_of_veq : ∀ {s t : Finset α}, s.val = t.val → s = t
   | ⟨s, _⟩, ⟨t, _⟩, h => by cases h; rfl
 
 theorem val_injective : Injective (val : Finset α → Multiset α) := fun _ _ => eq_of_veq
 
 @[simp]
-theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
+theorem val_inj {s t : Finset α} : s.val = t.val ↔ s = t :=
   val_injective.eq_iff
 
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
@@ -99,16 +99,16 @@ instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
 
 /-- Convert a finset to a set in the natural way. -/
 instance : SetLike (Finset α) α where
-  coe s := {a | a ∈ s.1}
+  coe s := {a | a ∈ s.val}
   coe_injective s₁ s₂ h := (val_inj.symm.trans <| s₁.nodup.ext s₂.nodup).2 <| Set.ext_iff.mp h
 
-theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
+theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.val :=
   Iff.rfl
 
 -- If https://github.com/leanprover/lean4/issues/2678 is resolved-
 -- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
 @[simp, grind =]
-theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
+theorem mem_val {a : α} {s : Finset α} : (a ∈ s.val) = (a ∈ s) := rfl
 
 @[simp, grind =]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=
@@ -190,7 +190,7 @@ variable {s t : Finset α}
 @[deprecated "This is now a syntactic identity" (since := "2026-05-24")]
 theorem subset_of_le : s ≤ t → s ⊆ t := id
 
-theorem subset_def : s ⊆ t ↔ s.1 ⊆ t.1 :=
+theorem subset_def : s ⊆ t ↔ s.val ⊆ t.val :=
   Iff.rfl
 
 theorem ssubset_def : s ⊂ t ↔ s ⊆ t ∧ ¬t ⊆ s :=
@@ -236,8 +236,8 @@ theorem coe_subset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊆ s₂ ↔ s₁ �
   Iff.rfl
 
 @[simp]
-theorem val_le_iff {s₁ s₂ : Finset α} : s₁.1 ≤ s₂.1 ↔ s₁ ⊆ s₂ :=
-  le_iff_subset s₁.2
+theorem val_le_iff {s₁ s₂ : Finset α} : s₁.val ≤ s₂.val ↔ s₁ ⊆ s₂ :=
+  le_iff_subset s₁.nodup
 
 theorem Subset.antisymm_iff {s₁ s₂ : Finset α} : s₁ = s₂ ↔ s₁ ⊆ s₂ ∧ s₂ ⊆ s₁ :=
   le_antisymm_iff
@@ -265,7 +265,7 @@ theorem coe_ssubset {s₁ s₂ : Finset α} : (s₁ : Set α) ⊂ s₂ ↔ s₁ 
   simp
 
 @[simp]
-theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.1 < s₂.1 ↔ s₁ ⊂ s₂ :=
+theorem val_lt_iff {s₁ s₂ : Finset α} : s₁.val < s₂.val ↔ s₁ ⊂ s₂ :=
   and_congr val_le_iff <| not_congr val_le_iff
 
 lemma val_strictMono : StrictMono (val : Finset α → Multiset α) := fun _ _ ↦ val_lt_iff.2

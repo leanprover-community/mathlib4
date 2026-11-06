@@ -67,7 +67,7 @@ macro_rules
     let mut newFields := #[]
 
     for field in fields do
-      match field.1 with
+      match field.raw with
         | `(structInstField| $name:ident := $arg) =>
           if name.getId.eraseMacroScopes == `__ then do
             spreads := spreads.push arg

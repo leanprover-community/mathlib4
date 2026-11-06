@@ -220,7 +220,7 @@ theorem dvd_of_isCyclotomicExtension [IsCyclotomicExtension {n} ℚ K] {ζ : K}
   have hl : NeZero l := ⟨hl⟩
   have hroot := IsCyclotomicExtension.zeta_spec n ℚ K
   have key := IsPrimitiveRoot.lcm_totient_le_finrank hζ hroot
-    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.1) (NeZero.pos n))
+    (cyclotomic.irreducible_rat <| Nat.lcm_pos (Nat.pos_of_ne_zero hl.out) (NeZero.pos n))
   rw [IsCyclotomicExtension.finrank K (cyclotomic.irreducible_rat (NeZero.pos n))] at key
   rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
   have ineq := Nat.totient_super_multiplicative n r
@@ -253,7 +253,7 @@ theorem exists_neg_pow_of_isOfFinOrder [IsCyclotomicExtension {n} ℚ K]
   have hlzero : NeZero l := ⟨fun h ↦ by simp [h] at hl⟩
   have : NeZero (l : K) := ⟨NeZero.natCast_ne l K⟩
   rw [isRoot_cyclotomic_iff] at hlroot
-  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.1
+  obtain ⟨a, ha⟩ := hlroot.dvd_of_isCyclotomicExtension n hlzero.out
   replace hlroot : x ^ (2 * n) = 1 := by rw [ha, pow_mul, hlroot.pow_eq_one, one_pow]
   obtain ⟨s, -, hs⟩ := hnegζ.eq_pow_of_pow_eq_one hlroot
   exact ⟨s, hs.symm⟩
@@ -392,7 +392,7 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
     (hirr : Irreducible (cyclotomic (p ^ (k + 1)) K)) (hs : s ≤ k)
     (htwo : p ^ (k - s + 1) ≠ 2) : norm K (ζ ^ p ^ s - 1) = (p : K) ^ p ^ s := by
   have hirr₁ : Irreducible (cyclotomic (p ^ (k - s + 1)) K) :=
-    cyclotomic_irreducible_pow_of_irreducible_pow hpri.1 (by lia) hirr
+    cyclotomic_irreducible_pow_of_irreducible_pow hpri.out (by lia) hirr
   set η := ζ ^ p ^ s - 1
   let η₁ : K⟮η⟯ := IntermediateField.AdjoinSimple.gen K η
   have hη : IsPrimitiveRoot (η + 1) (p ^ (k + 1 - s)) := by
@@ -422,11 +422,11 @@ theorem norm_pow_sub_one_of_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot 
   have := IsCyclotomicExtension.isGalois {p ^ (k + 1)} K L
   rw [norm_eq_norm_adjoin K]
   have H := hη.sub_one_norm_isPrimePow ?_ hirr₁ htwo
-  swap; · exact hpri.1.isPrimePow.pow (Nat.succ_ne_zero _)
+  swap; · exact hpri.out.isPrimePow.pow (Nat.succ_ne_zero _)
   rw [add_sub_cancel_right] at H
   rw [H]
   congr
-  · rw [Nat.pow_minFac, hpri.1.minFac_eq]
+  · rw [Nat.pow_minFac, hpri.out.minFac_eq]
     exact Nat.succ_ne_zero _
   have := Module.finrank_mul_finrank K K⟮η⟯ L
   rw [IsCyclotomicExtension.finrank L hirr, IsCyclotomicExtension.finrank K⟮η⟯ hirr₁,

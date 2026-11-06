@@ -344,7 +344,7 @@ theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y �
 regular iff `r : R` is. -/
 @[simp] lemma isRegular_mk' (hM : ∀ m ∈ M, IsRegular m) {r : R} {m : M} :
     IsRegular (IsLocalization.mk' S r m) ↔ IsRegular r := by
-  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).1.eq_iff
+  have (n : M) (x y : R) : n * x = n * y ↔ x = y := (hM _ n.2).left.eq_iff
   simp +contextual only [← isLeftRegular_iff_isRegular, IsLeftRegular, Function.Injective,
     (mk'_surjective M).forall, ← mk'_mul, Prod.forall, Subtype.forall, IsLocalization.eq,
     Submonoid.coe_mul, this, exists_const, mul_assoc]

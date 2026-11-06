@@ -184,10 +184,10 @@ def coconeOfRepresentable (P : Cᵒᵖ ⥤ Type max w v₁) :
     Cocone (functorToRepresentables P) where
   pt := P
   ι :=
-    { app x := uliftYonedaEquiv.symm x.unop.2
+    { app x := uliftYonedaEquiv.symm x.unop.val
       naturality {x₁ x₂} f := by
         dsimp
-        rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.2] }
+        rw [comp_id, ← uliftYonedaEquiv_symm_map, f.unop.map_val] }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -279,23 +279,23 @@ variable {X : C} {G : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ Dᵒᵖ ⥤ Type ma
 /-- Auxiliary definition for `presheafHom`. -/
 @[deprecated "No replacement." (since := "2026-08-23")]
 def coconeApp {P : Cᵒᵖ ⥤ Type max w v₁ v₂} (x : P.Elements) :
-    uliftYoneda.{max w v₂}.obj x.1.unop ⟶ F.op ⋙ G.obj P :=
+    uliftYoneda.{max w v₂}.obj x.obj.unop ⟶ F.op ⋙ G.obj P :=
   uliftYonedaEquiv.symm
-    ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).app _
-      ((φ.app x.1.unop).app _ (ULift.up (𝟙 _))))
+    ((G.map (uliftYonedaEquiv.{max w v₂}.symm x.val)).app _
+      ((φ.app x.obj.unop).app _ (ULift.up (𝟙 _))))
 
 @[deprecated "No replacement." (since := "2026-08-23"), reassoc (attr := simp)]
 lemma coconeApp_naturality {P : Cᵒᵖ ⥤ Type max w v₁ v₂} {x y : P.Elements} (f : x ⟶ y) :
-    uliftYoneda.map f.1.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
-  have eq₁ : uliftYoneda.map f.1.unop ≫ uliftYonedaEquiv.symm x.2 =
-      uliftYonedaEquiv.{max w v₂}.symm y.2 :=
+    uliftYoneda.map f.hom.unop ≫ coconeApp.{w} φ x = coconeApp φ y := by
+  have eq₁ : uliftYoneda.map f.hom.unop ≫ uliftYonedaEquiv.symm x.val =
+      uliftYonedaEquiv.{max w v₂}.symm y.val :=
     uliftYonedaEquiv.injective
-      (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.2)
-  have eq₂ := congr($((G.map (uliftYonedaEquiv.{max w v₂}.symm x.2)).naturality
-    (F.map f.1.unop).op) ((φ.app x.1.unop).app _ (.up (𝟙 _))))
+      (by simpa only [Equiv.apply_symm_apply, ← uliftYonedaEquiv_naturality] using f.map_val)
+  have eq₂ := congr($((G.map (uliftYonedaEquiv.{max w v₂}.symm x.val)).naturality
+    (F.map f.hom.unop).op) ((φ.app x.obj.unop).app _ (.up (𝟙 _))))
   have eq₃ := ConcreteCategory.congr_hom (CC := fun X ↦ X)
-    (congr_app (φ.naturality f.1.unop) _) (ULift.up (𝟙 _))
-  have eq₄ := ConcreteCategory.congr_hom ((φ.app x.1.unop).naturality (F.map f.1.unop).op)
+    (congr_app (φ.naturality f.hom.unop) _) (ULift.up (𝟙 _))
+  have eq₄ := ConcreteCategory.congr_hom ((φ.app x.obj.unop).naturality (F.map f.hom.unop).op)
   dsimp at eq₂ eq₃ eq₄
   apply uliftYonedaEquiv.{max w v₂}.injective
   dsimp only [coconeApp]

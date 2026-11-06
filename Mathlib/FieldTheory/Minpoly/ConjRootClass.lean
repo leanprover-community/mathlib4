@@ -183,7 +183,7 @@ theorem nodup_aroots_minpoly (c : ConjRootClass K L) : (c.minpoly.aroots L).Nodu
   nodup_roots c.separable_minpoly.map
 
 theorem aroots_minpoly_eq_carrier_val (c : ConjRootClass K L) [Fintype c.carrier] :
-    c.minpoly.aroots L = c.carrier.toFinset.1 := by
+    c.minpoly.aroots L = c.carrier.toFinset.val := by
   classical
   simp_rw [← rootSet_minpoly_eq_carrier, rootSet_def, Finset.toFinset_coe, Multiset.toFinset_val,
     c.nodup_aroots_minpoly.dedup]

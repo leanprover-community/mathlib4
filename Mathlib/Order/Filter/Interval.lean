@@ -105,17 +105,17 @@ class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : ou
 
 theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :
     TendstoIxxClass Ixx (𝓟 s) (𝓟 t) ↔ ∀ x ∈ s, ∀ y ∈ s, Ixx x y ⊆ t :=
-  Iff.trans ⟨fun h => h.1, fun h => ⟨h⟩⟩ <| by
+  Iff.trans ⟨fun h => h.tendsto_Ixx, fun h => ⟨h⟩⟩ <| by
     simp only [smallSets_principal, prod_principal_principal, tendsto_principal_principal,
       forall_prod_set, mem_powerset_iff]
 
 theorem tendstoIxxClass_inf {l₁ l₁' l₂ l₂' : Filter α} {Ixx} [h : TendstoIxxClass Ixx l₁ l₂]
     [h' : TendstoIxxClass Ixx l₁' l₂'] : TendstoIxxClass Ixx (l₁ ⊓ l₁') (l₂ ⊓ l₂') :=
-  ⟨by simpa only [prod_inf_prod, smallSets_inf] using h.1.inf h'.1⟩
+  ⟨by simpa only [prod_inf_prod, smallSets_inf] using h.tendsto_Ixx.inf h'.tendsto_Ixx⟩
 
 theorem tendstoIxxClass_of_subset {l₁ l₂ : Filter α} {Ixx Ixx' : α → α → Set α}
     (h : ∀ a b, Ixx a b ⊆ Ixx' a b) [h' : TendstoIxxClass Ixx' l₁ l₂] : TendstoIxxClass Ixx l₁ l₂ :=
-  ⟨h'.1.smallSets_mono <| Eventually.of_forall <| Prod.forall.2 h⟩
+  ⟨h'.tendsto_Ixx.smallSets_mono <| Eventually.of_forall <| Prod.forall.2 h⟩
 
 theorem HasBasis.tendstoIxxClass {ι : Type*} {p : ι → Prop} {s} {l : Filter α}
     (hl : l.HasBasis p s) {Ixx : α → α → Set α}

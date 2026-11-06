@@ -95,7 +95,7 @@ trivialization, after the bundle of continuous semilinear maps is equipped with 
 topological vector bundle structure. -/
 def continuousLinearMap :
     Pretrivialization (F₁ →SL[σ] F₂) (π (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) where
-  toFun p := ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩
+  toFun p := ⟨p.proj, .comp (e₂.continuousLinearMapAt 𝕜₂ p.proj) (p.snd.comp (e₁.symmL 𝕜₁ p.proj))⟩
   invFun p := ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩
   source := Bundle.TotalSpace.proj ⁻¹' (e₁.baseSet ∩ e₂.baseSet)
   target := (e₁.baseSet ∩ e₂.baseSet) ×ˢ Set.univ
@@ -130,7 +130,7 @@ instance continuousLinearMap.isLinear [∀ x, ContinuousAdd (E₂ x)] [∀ x, Co
 
 theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x ↦ E₁ x →SL[σ] E₂ x) :
     (continuousLinearMap σ e₁ e₂) p =
-      ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩ :=
+      ⟨p.proj, .comp (e₂.continuousLinearMapAt 𝕜₂ p.proj) (p.snd.comp (e₁.symmL 𝕜₁ p.proj))⟩ :=
   rfl
 
 theorem continuousLinearMap_symm_apply (p : B × (F₁ →SL[σ] F₂)) :
@@ -252,8 +252,8 @@ theorem Bundle.Trivialization.baseSet_continuousLinearMap :
 theorem Bundle.Trivialization.continuousLinearMap_apply
     (p : TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :
     e₁.continuousLinearMap σ e₂ p =
-      ⟨p.1, (e₂.continuousLinearMapAt 𝕜₂ p.1 : _ →L[𝕜₂] _).comp
-        (p.2.comp (e₁.symmL 𝕜₁ p.1 : F₁ →L[𝕜₁] E₁ p.1) : F₁ →SL[σ] E₂ p.1)⟩ :=
+      ⟨p.proj, (e₂.continuousLinearMapAt 𝕜₂ p.proj : _ →L[𝕜₂] _).comp
+        (p.snd.comp (e₁.symmL 𝕜₁ p.proj : F₁ →L[𝕜₁] E₁ p.proj) : F₁ →SL[σ] E₂ p.proj)⟩ :=
   rfl
 
 theorem hom_trivializationAt (x₀ : B) :
@@ -263,7 +263,7 @@ theorem hom_trivializationAt (x₀ : B) :
 theorem hom_trivializationAt_apply (x₀ : B)
     (x : TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) :
     trivializationAt (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x) x₀ x =
-      ⟨x.1, inCoordinates F₁ E₁ F₂ E₂ x₀ x.1 x₀ x.1 x.2⟩ :=
+      ⟨x.proj, inCoordinates F₁ E₁ F₂ E₂ x₀ x.proj x₀ x.proj x.snd⟩ :=
   rfl
 
 @[simp, mfld_simps]
@@ -288,17 +288,19 @@ theorem hom_trivializationAt_baseSet (x₀ : B) :
 theorem continuousWithinAt_hom_bundle {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {s : Set M} {x₀ : M} :
     ContinuousWithinAt f s x₀ ↔
-      ContinuousWithinAt (fun x ↦ (f x).1) s x₀ ∧
+      ContinuousWithinAt (fun x ↦ (f x).proj) s x₀ ∧
         ContinuousWithinAt
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) s x₀ :=
+          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj
+            (f x).snd) s x₀ :=
   FiberBundle.continuousWithinAt_totalSpace ..
 
 theorem continuousAt_hom_bundle {M : Type*} [TopologicalSpace M]
     (f : M → TotalSpace (F₁ →SL[σ] F₂) (fun x ↦ E₁ x →SL[σ] E₂ x)) {x₀ : M} :
     ContinuousAt f x₀ ↔
-      ContinuousAt (fun x ↦ (f x).1) x₀ ∧
+      ContinuousAt (fun x ↦ (f x).proj) x₀ ∧
         ContinuousAt
-          (fun x ↦ inCoordinates F₁ E₁ F₂ E₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+          (fun x ↦
+            inCoordinates F₁ E₁ F₂ E₂ (f x₀).proj (f x).proj (f x₀).proj (f x).proj (f x).snd) x₀ :=
   FiberBundle.continuousAt_totalSpace ..
 
 section

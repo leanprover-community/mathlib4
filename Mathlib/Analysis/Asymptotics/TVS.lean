@@ -215,7 +215,7 @@ protected theorem IsThetaTVS.rfl : f =Θ[𝕜; l] f := .refl f l
 
 theorem IsLittleOTVS.isBigOTVS (h : f =o[𝕜; l] g) : f =O[𝕜; l] g := by
   refine ⟨fun U hU ↦ ?_⟩
-  rcases h.1 U hU with ⟨V, hV₀, hV⟩
+  rcases h.exists_eventuallyLE_mul U hU with ⟨V, hV₀, hV⟩
   use V, hV₀
   simpa using hV 1 one_ne_zero
 
@@ -237,8 +237,8 @@ variable {k : α → G}
 @[trans]
 theorem IsBigOTVS.trans (hfg : f =O[𝕜; l] g) (hgk : g =O[𝕜; l] k) : f =O[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE V hV₀
   refine ⟨W, hW₀, ?_⟩
   filter_upwards [hV, hW] with x hx₁ hx₂ using hx₁.trans hx₂
 
@@ -273,8 +273,8 @@ instance instTransIsThetaOTVS :
 theorem IsLittleOTVS.trans_isBigOTVS (hfg : f =o[𝕜; l] g) (hgk : g =O[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE_mul U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
   filter_upwards [hV ε hε, hW] with x hx₁ hx₂ using hx₁.trans <| by gcongr
 
@@ -293,8 +293,8 @@ instance instTransIsLittleOTVSIsThetaTVS :
 theorem IsBigOTVS.trans_isLittleOTVS (hfg : f =O[𝕜; l] g) (hgk : g =o[𝕜; l] k) :
     f =o[𝕜; l] k := by
   refine ⟨fun U hU₀ ↦ ?_⟩
-  obtain ⟨V, hV₀, hV⟩ := hfg.1 U hU₀
-  obtain ⟨W, hW₀, hW⟩ := hgk.1 V hV₀
+  obtain ⟨V, hV₀, hV⟩ := hfg.exists_eventuallyLE U hU₀
+  obtain ⟨W, hW₀, hW⟩ := hgk.exists_eventuallyLE_mul V hV₀
   refine ⟨W, hW₀, fun ε hε ↦ ?_⟩
   filter_upwards [hV, hW ε hε] with x hx₁ hx₂ using hx₁.trans hx₂
 
@@ -395,10 +395,11 @@ theorem isBigOTVS_map {k : β → α} {l : Filter β} :
   simp [isBigOTVS_iff, EventuallyLE]
 
 lemma IsLittleOTVS.mono (hf : f =o[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜; l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE_mul U hU;
+    ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
 
 lemma IsBigOTVS.mono (hf : f =O[𝕜; l₁] g) (h : l₂ ≤ l₁) : f =O[𝕜; l₂] g :=
-  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, hV.filter_mono h⟩⟩
+  ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.exists_eventuallyLE U hU; ⟨V, hV0, hV.filter_mono h⟩⟩
 
 lemma IsLittleOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =o[𝕜; l] g)
     (hk : Tendsto k lb l) : (f ∘ k) =o[𝕜; lb] (g ∘ k) :=
@@ -745,7 +746,7 @@ lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g
     (h : g =o[𝕜; l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [← isLittleOTVS_one (𝕜 := 𝕜), isLittleOTVS_iff]
   intro U hU
-  rcases (h.smul_left f⁻¹).1 U hU with ⟨V, hV₀, hV⟩
+  rcases (h.smul_left f⁻¹).exists_eventuallyLE_mul U hU with ⟨V, hV₀, hV⟩
   refine ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x hx ↦ hx.trans ?_⟩
   by_cases hx₀ : f x = 0 <;> simp [hx₀, egauge_zero_right _ (Filter.nonempty_of_mem hV₀)]
 
