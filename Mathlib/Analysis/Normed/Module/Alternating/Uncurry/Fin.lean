@@ -15,6 +15,7 @@ Given a continuous function `f` which is linear in the first argument
 and is alternating form in the other `n` arguments,
 this file defines a continuous alternating form `ContinuousAlternatingMap.alternatizeUncurryFin f`
 in `n + 1` arguments.
+The domain and codomain may be seminormed spaces.
 
 This function is given by
 ```
@@ -50,9 +51,9 @@ open Fin Function
 namespace ContinuousAlternatingMap
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]
   {n : ℕ}
 
 /-- If `f` is a continuous `(n + 1)`-multilinear alternating map, `x` is an element of the domain,
