@@ -84,11 +84,9 @@ theorem range_polarₗᵢ (T : E →L[ℂ] F) :
       T.polarₗᵢ.isometry.isClosedEmbedding.isClosed_range
 
 theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
-    T.polarₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₗᵢ.toContinuousLinearMap
-     = ContinuousLinearMap.id ℂ _ := by
+    T.polarₗᵢ.toContinuousLinearMap.adjoint ∘L T.polarₗᵢ.toContinuousLinearMap = .id ℂ _ := by
   refine ContinuousLinearMap.ext fun x => ext_inner_right ℂ fun y => ?_
-  erw [comp_apply, ContinuousLinearMap.adjoint_inner_left]
-  simp [LinearIsometry.inner_map_map T.polarₗᵢ x y]
+  simp
 
 theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
     T.polarₗᵢ.toContinuousLinearMap ∘L T.polarₗᵢ.toContinuousLinearMap.adjoint
