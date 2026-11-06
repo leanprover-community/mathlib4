@@ -66,9 +66,13 @@ equidimensionality hypotheses cannot be assumed.
 -/
 @[stacks 02R4 "(2) with arbitrary weight function instead of `δ`-dimension."]
 noncomputable
-def map [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
-    (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
+def map [QuasiCompact f] {N : Type*} [DecidableEq N]
+    (wx : X → N) (wy : Y → N) (c : AlgebraicCycle X R) : AlgebraicCycle Y R :=
   Function.locallyFinsupp.map f (Nat.cast (R := R) <| mapCoeff f wx wy ·) f.isSpectralMap c
+
+lemma map_apply [QuasiCompact f] {N : Type*} [DecidableEq N] (wx : X → N) (wy : Y → N)
+    (c : AlgebraicCycle X R) (y : Y) :
+    map f wx wy c y = ∑ᶠ x ∈ f ⁻¹' {y}, c x * (Nat.cast (R := R) <| mapCoeff f wx wy x) := rfl
 
 @[simp]
 lemma map_id {N : Type*} [DecidableEq N] (wx : X → N) (c : AlgebraicCycle X R) :

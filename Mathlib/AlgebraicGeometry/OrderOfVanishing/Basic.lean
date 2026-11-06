@@ -86,13 +86,20 @@ lemma ord_mul {x : X} {f g : X.functionField}
   simp [hf, hg, ord_eq_ordHom_of_coheight_eq_one hx, unzeroD_eq_unzero]
 
 @[simp]
-lemma ord_one : ord (1 : X.functionField) = 0 := by
-  ext z
-  by_cases! hz : coheight z ≠ 1
-  · simp [hz]
-  · simp only [Pi.zero_apply]
-    rw [ord_eq_iff hz one_ne_zero]
-    simp
+lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
+    (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
+  by_cases! hx : coheight x ≠ 1
+  · simp [hx]
+  simp [map_ne_zero_iff, germToFunctionField_injective, IsUnit.ne_zero hf,
+    ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
+
+@[simp]
+lemma ord_of_isUnit_top {g : Γ(X, ⊤)} (hg : IsUnit g) (z : X) :
+    ord (X.germToFunctionField ⊤ g) z = 0 := ord_of_isUnit hg trivial
+
+@[simp]
+lemma ord_one (z : X) : ord (1 : X.functionField) z = 0 := by
+  simpa using ord_of_isUnit_top (g := (1 : Γ(X, ⊤))) isUnit_one z
 
 @[simp]
 lemma ord_inv (z : X) (f : X.functionField) : ord f⁻¹ z = -ord f z := by
@@ -100,7 +107,7 @@ lemma ord_inv (z : X) (f : X.functionField) : ord f⁻¹ z = -ord f z := by
   · simp [hf]
   have h := ord_mul (x := z) hf (inv_ne_zero hf)
   rw [mul_inv_cancel₀ hf] at h
-  simp only [ord_one, Pi.zero_apply] at h
+  simp only [ord_one] at h
   omega
 
 @[simp]
@@ -144,14 +151,6 @@ lemma ord_prod {ι : Type*} (z : X) (T : Finset ι) (F : ι → X.functionField)
     rw [Finset.prod_insert haT, Finset.sum_insert haT,
       ord_mul (hF a (Finset.mem_insert_self a T)) hprod,
       ih fun i hi => hF i (Finset.mem_insert_of_mem hi)]
-
-@[simp]
-lemma ord_of_isUnit {U : X.Opens} [Nonempty U] {f : Γ(X, U)} (hf : IsUnit f) {x : X}
-    (hx' : x ∈ U) : ord (X.germToFunctionField U f) x = 0 := by
-  by_cases! hx : coheight x ≠ 1
-  · simp [hx]
-  simp [map_ne_zero_iff, germToFunctionField_injective, IsUnit.ne_zero hf,
-    ord_eq_iff hx, ordHom_of_isUnit hf hx hx']
 
 @[simp]
 lemma ord_neg (f : X.functionField) (z : X) : ord (-f) z = ord f z := by
