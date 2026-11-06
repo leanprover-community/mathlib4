@@ -101,7 +101,7 @@ theorem Valuation.inversion_estimate' {x y r s : K} (y_ne : y ≠ 0) (hr : r ≠
     (h : v (x - y) < min ((v s / v r) * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) * v r < v s := by
   refine (?_ : _ < _).trans_eq <| div_mul_cancel₀ (a := v s) (b := v r) (by simpa using hr)
   grw [Valuation.inversion_estimate v (x := x) y_ne (γ := (.mk0 (v s / v r) (by simp_all))) h] <;>
-  simp [zero_lt_iff, hr]
+  simp [pos_iff_ne_zero, hr]
 
 end InversionEstimate
 
@@ -349,7 +349,7 @@ theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
   simp only [mem_ofPred_eq, mem_closure_iff_nhds]
   refine ⟨fun hx ↦ ?_, fun hx t ht ↦ ?_⟩
   · rcases eq_or_ne x 0 with rfl | h
-    · simp [zero_lt_iff, hr]
+    · simp [pos_iff_ne_zero, hr]
     · obtain ⟨_, hy : v.extension _ = v.extension x, y, hy' : v y < r, rfl⟩ :=
         hx _ (v.extension_locally_const h)
       rwa [← hy, extension_apply_coe]
@@ -361,7 +361,7 @@ theorem closure_image_coe_ofPred_map_mul_map_lt_map {r s : K} (hr : r ≠ 0) (hs
     {x : Completion K | v.extension x * v r < v s} := by
   have hrs : v s / v r ≠ 0 := by simp [hr, hs]
   convert v.closure_image_coe_ofPred_map_lt hrs using 3
-  all_goals simp [← lt_div_iff₀, zero_lt_iff, hr]
+  all_goals simp [← lt_div_iff₀, pos_iff_ne_zero, hr]
 
 /-- The function underlying `Valuation.valueGroup₀ExtensionHom`: it sends `v.restrict x` to
 `v.extension.restrict x` for `x : K`. It is characterised by

@@ -107,7 +107,7 @@ theorem IsPreconnected.ediam_le_hausdorffMeasure (hs : IsPreconnected s) :
 subsingleton. -/
 theorem IsPreconnected.subsingleton_of_hausdorffMeasure_lt_top (hs : IsPreconnected s) {d : ℝ}
     (hd : d < 1) (hle : μH[d] s < ∞) : s.Subsingleton := by
-  grw [← ediam_eq_zero_iff, ← le_zero_iff, hs.ediam_le_hausdorffMeasure, le_zero_iff]
+  grw [← ediam_eq_zero_iff, ← nonpos_iff_eq_zero, hs.ediam_le_hausdorffMeasure]
   grind [Measure.hausdorffMeasure_zero_or_top hd s]
 
 /-- A set with finite `d`-dimensional Hausdorff measure for some `d < 1` is totally disconnected. -/

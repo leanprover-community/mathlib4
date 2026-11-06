@@ -132,7 +132,7 @@ theorem dvd_of_le (hv : Integers v O) {x y : O}
     (fun hy : algebraMap O F y = 0 =>
       have hx : x = 0 :=
         hv.1 <|
-          (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| le_zero_iff.1 (v.map_zero ▸ hy ▸ h))
+          (algebraMap O F).map_zero.symm ▸ (v.zero_iff.1 <| eq_zero_of_nonpos (v.map_zero ▸ hy ▸ h))
       hx.symm ▸ dvd_zero y)
     fun hy : algebraMap O F y ≠ 0 =>
     have : v ((algebraMap O F y)⁻¹ * algebraMap O F x) ≤ 1 := by

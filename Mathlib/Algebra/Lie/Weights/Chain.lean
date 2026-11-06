@@ -284,9 +284,7 @@ lemma chainTopCoeff_add_one :
       Nat.find (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists := by
   classical
   rw [chainTopCoeff, dite_eq_right hα]
-  apply Nat.succ_pred_eq_of_pos
-  rw [zero_lt_iff]
-  intro e
+  refine Nat.succ_pred_eq_of_pos (pos_of_ne_zero fun e ↦ ?_)
   have : genWeightSpace M (0 • α + β : L → R) = ⊥ := by
     rw [← e]
     exact Nat.find_spec (eventually_genWeightSpace_smul_add_eq_bot M α β hα).exists
