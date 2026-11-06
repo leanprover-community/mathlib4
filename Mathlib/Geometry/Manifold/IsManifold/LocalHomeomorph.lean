@@ -111,8 +111,26 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
 lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  rw [contMDiffAt_iff]
+  constructor
+  · sorry
+  · set L := hf.localInverseAt (g y)
+    set φy := extChartAt I y
+    have : L y = g y := by
+      sorry
+    rw [this]
+    set ϕgy := extChartAt I (g y)
+    have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
+    rw [extChartAt_coe, extChartAt_coe_symm, hc]
+    simp only [OpenPartialHomeomorph.coe_trans_symm, localInverseAt_symm]
 
-  sorry
+    have aux : ((↑I ∘ ↑(chartAt H (g y))) ∘ ↑L ∘ (f ∘ ↑(chartAt H (g y)).symm) ∘ ↑I.symm)
+        =ᶠ[𝓝[Set.range I] (φy y)] id := by
+      sorry
+    refine ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h₁ := aux) ?_ ?_
+    · exact contDiffWithinAt_id
+    · exact Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y)
 
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
@@ -135,11 +153,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
   apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
   apply ContMDiffAt.comp (I' := I) x'
   · exact hφ.contMDiffAt
-  ·
-    --refine (smooth_localInverseAt hf hg (g x') h).contMDiffAt ?_
-
-    sorry
-
+  · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
 
 
   /-
