@@ -898,7 +898,7 @@ theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P :
   exact le_antisymm (this normal_in_normalizer) le_normalizer
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
-    (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
+    (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime]
     (P : Sylow p G) : P.Normal :=
   normalizer_eq_top_iff.mp
     (by

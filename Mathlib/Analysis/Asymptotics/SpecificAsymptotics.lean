@@ -99,7 +99,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
     (huv : u =O[l] v) (hu : Tendsto (fun x => ‖u x‖) l atTop) :
     Tendsto (fun x => ‖v x‖) l atTop := by
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
-  rw [IsBigOWith] at hcuv
+  rw [isBigOWith_iff] at hcuv
   convert! Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
   rw [mul_div_cancel_left₀ _ hc.ne.symm]
 

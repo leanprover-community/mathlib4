@@ -123,10 +123,10 @@ theorem mem_nhdsWithin_iff_eventuallyEqSet {s t : Set α} {x : α} :
 alias mem_nhdsWithin_iff_eventuallyEq := mem_nhdsWithin_iff_eventuallyEqSet
 
 lemma mem_nhdsWithin_inter_self {s t : Set α} {x : α} : t ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp
 
 lemma mem_nhdsWithin_self_inter {s t : Set α} {x : α} : s ∈ 𝓝[s ∩ t] x :=
-  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp [inter_comm s t, inter_assoc]
+  mem_nhdsWithin_iff_eventuallyEqSet.mpr <| by simp
 
 theorem nhdsWithin_eq_iff_eventuallyEqSet {s t : Set α} {x : α} : 𝓝[s] x = 𝓝[t] x ↔ s =ᶠ[𝓝 x] t :=
   eventuallyEqSet_iff_inf_principal.symm
@@ -568,6 +568,10 @@ lemma nhdsSetWithin_basis_open (s t : Set α) :
 
 lemma mem_nhdsSetWithin {s t u : Set α} : u ∈ 𝓝ˢ[t] s ↔ ∃ v, IsOpen v ∧ s ⊆ v ∧ v ∩ t ⊆ u := by
   simpa [and_assoc] using (nhdsSetWithin_basis_open s t).mem_iff
+
+lemma mem_nhdsSetWithin_iff_forall {X : Type*} [TopologicalSpace X] {s t u : Set X} :
+    u ∈ 𝓝ˢ[t] s ↔ ∀ x ∈ s, u ∈ 𝓝[t] x := by
+  simp [nhdsSetWithin, nhdsSet, nhdsWithin, sSup_image, ← iSup_inf_principal]
 
 @[simp]
 lemma nhdsSetWithin_singleton {x : α} {s : Set α} : 𝓝ˢ[s] {x} = 𝓝[s] x := by
