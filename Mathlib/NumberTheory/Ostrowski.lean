@@ -376,9 +376,11 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ (m * f m / (f m - 1)) * f m ^ logb m ↑(n ^ k) := h_ineq1 hm (Nat.one_lt_pow hk hn)
     _ = (m * f m / (f m - 1)) * f m ^ (k * logb m n) := by rw [Nat.cast_pow, logb_pow]
 
-include hm hn notbdd in
-/-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
+include hm notbdd in
+/-- Given two natural numbers `n, m` with `m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
 lemma le_pow_log : f n ≤ f m ^ logb m n := by
+  rcases le_or_gt n 1 with hn | hn
+  · interval_cases n <;> simp
   have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * f m ^ logb m n)
       atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
@@ -390,7 +392,7 @@ include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
 private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
-  apply le_trans <| le_pow_log hm hn notbdd
+  apply le_trans <| le_pow_log hm notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
     rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast hm.ne') (mod_cast zero_lt_of_lt hn)]
 

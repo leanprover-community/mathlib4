@@ -302,9 +302,11 @@ theorem logMap_expMap {x : realSpace K}
   rw [logMap, normAtPlace_mixedSpaceOfRealSpace (Real.exp_nonneg _), expMap_apply, Real.log_exp,
     mul_sub, mul_inv_cancel_left₀ mult_coe_ne_zero, hx, Real.log_one, zero_mul, mul_zero, sub_zero]
 
-theorem sum_expMap_symm_apply {x : K} (hx : x ≠ 0) :
+theorem sum_expMap_symm_apply {x : K} :
     ∑ w : InfinitePlace K, expMap.symm ((normAtAllPlaces (mixedEmbedding K x))) w =
       Real.log (|Algebra.norm ℚ x| : ℚ) := by
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   simp_rw [← prod_eq_abs_norm, Real.log_prod (fun _ _ ↦ pow_ne_zero _ ((map_ne_zero _).mpr hx)),
     Real.log_pow, expMap_symm_apply, normAtAllPlaces_mixedEmbedding]
 
@@ -357,11 +359,11 @@ def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl
 
-theorem realSpaceToLogSpace_expMap_symm {x : K} (hx : x ≠ 0) :
+theorem realSpaceToLogSpace_expMap_symm {x : K} :
     realSpaceToLogSpace (expMap.symm (normAtAllPlaces (mixedEmbedding K x))) =
       logMap (mixedEmbedding K x) := by
   ext w
-  simp_rw [realSpaceToLogSpace_apply, sum_expMap_symm_apply hx, expMap_symm_apply,
+  simp_rw [realSpaceToLogSpace_apply, sum_expMap_symm_apply, expMap_symm_apply,
     logMap, normAtPlace_apply, mul_sub, mul_assoc, norm_eq_norm]
 
 theorem realSpaceToLogSpace_completeFamily_of_eq :
@@ -376,7 +378,6 @@ theorem realSpaceToLogSpace_completeFamily_of_ne (i : {w : InfinitePlace K // w 
   ext
   rw [← logEmbedding_fundSystem, ← logMap_eq_logEmbedding, completeFamily, dite_eq_right,
     realSpaceToLogSpace_expMap_symm]
-  exact coe_ne_zero _
 
 theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
     (hx : x ∈ Submodule.span ℝ (Set.range fun w : {w // w ≠ w₀} ↦ completeFamily K w.1)) :
@@ -384,7 +385,7 @@ theorem sum_eq_zero_of_mem_span_completeFamily {x : realSpace K}
   induction hx using Submodule.span_induction with
   | mem _ h =>
       obtain ⟨w, rfl⟩ := h
-      simp_rw [completeFamily, dite_eq_right w.prop, sum_expMap_symm_apply (coe_ne_zero _),
+      simp_rw [completeFamily, dite_eq_right w.prop, sum_expMap_symm_apply,
         Units.norm, Rat.cast_one, Real.log_one]
   | zero => simp
   | add _ _ _ _ hx hy => simp [sum_add_distrib, hx, hy]

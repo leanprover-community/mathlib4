@@ -480,10 +480,13 @@ section tuples
 
 variable {ι : Type*} [Fintype ι] [Nonempty ι] {x : ι → ℤ}
 
+omit [Nonempty ι] in
 /-- The term corresponding to a finite place in the definition of the multiplicative height
 of a tuple of rational numbers equals `1` if the tuple consists of coprime integers. -/
 lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Finset.univ.gcd x = 1) :
     ⨆ i, v (x i) = 1 := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · simp at hx
   have hv : IsNonarchimedean (v ·) := FinitePlace.add_le v
   have H (n : ℤ) : v n ≤ 1 := hv.apply_intCast_le_one (map_zero_le v 1) (map_one v)
     (map_neg_eq_map v)
@@ -496,11 +499,14 @@ lemma iSup_finitePlace_apply_eq_one_of_gcd_eq_one (v : FinitePlace ℚ) (hx : Fi
   replace hf : 1 ≤ v (x i) := hf.trans <| mul_le_of_le_one_right (apply_nonneg v _) (H _)
   exact le_antisymm (ciSup_le (H <| x ·)) <| Finite.le_ciSup_of_le i hf
 
+omit [Nonempty ι] in
 open AdmissibleAbsValues in
 /-- The multiplicative height of a tuple of rational numbers that consists of coprime integers
 is the maximum of the absolute values of the entries. -/
 lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
     mulHeight (((↑) : ℤ → ℚ) ∘ x) = ⨆ i, |x i| := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · simp at hx
   have hx₀ : Int.cast ∘ x ≠ (0 : ι → ℚ) := by
     contrapose! hx
     rw [Function.comp_eq_zero_iff x intCast_injective Rat.intCast_zero] at hx
@@ -510,6 +516,7 @@ lemma mulHeight_eq_max_abs_of_gcd_eq_one (hx : Finset.univ.gcd x = 1) :
     infinitePlace_apply]
   simp [finprod_eq_one_of_forall_eq_one (iSup_finitePlace_apply_eq_one_of_gcd_eq_one · hx)]
 
+omit [Nonempty ι] in
 open Real in
 /-- The logarithmic height of a tuple of rational numbers that consists of coprime integers
 is the logarithm of the maximum of the absolute values of the entries. -/

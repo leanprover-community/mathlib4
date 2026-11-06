@@ -567,11 +567,12 @@ theorem eq_of_xn_modEq_lem2 {n} (h : 2 * xn a1 n = xn a1 (n + 1)) : a = 2 ∧ n 
         h
   cases this; simp at h; exact ⟨h.symm, rfl⟩
 
-theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
+theorem eq_of_xn_modEq_lem3 {i n} :
     ∀ {j}, i < j → j ≤ 2 * n → j ≠ n → ¬(a = 2 ∧ n = 1 ∧ i = 0 ∧ j = 2) →
         xn a1 i % xn a1 n < xn a1 j % xn a1 n
   | 0, ij, _, _, _ => absurd ij (Nat.not_lt_zero _)
   | j + 1, ij, j2n, jnn, ntriv =>
+    have npos : 0 < n := by lia
     have lem2 : ∀ k > n, k ≤ 2 * n → (↑(xn a1 k % xn a1 n) : ℤ) =
         xn a1 n - xn a1 (2 * n - k) := fun k kn k2n => by
       let k2nl : 2 * n - k < n := by lia
@@ -626,7 +627,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
           (lt_or_eq_of_le (Nat.le_of_succ_le_succ ij)).elim
             (fun h =>
               lt_trans
-                (eq_of_xn_modEq_lem3 npos h (le_of_lt (Nat.lt_of_succ_le j2n)) jn
+                (eq_of_xn_modEq_lem3 h (le_of_lt (Nat.lt_of_succ_le j2n)) jn
                     fun ⟨_, n1, _, j2⟩ => by
                       rw [n1, j2] at j2n; exact absurd j2n (by decide))
                 s)
@@ -655,10 +656,10 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
         rw [jn] at ij'
         exact
           x0.trans
-            (eq_of_xn_modEq_lem3 _ (Nat.pos_of_ne_zero npos) (Nat.succ_pos _) (le_trans ij j2n)
+            (eq_of_xn_modEq_lem3 _ (Nat.succ_pos _) (le_trans ij j2n)
               (_root_.ne_of_lt ij') fun ⟨_, n1, _, i2⟩ => by
               rw [n1, i2] at ij'; exact absurd ij' (by decide))
-      else _root_.ne_of_lt (eq_of_xn_modEq_lem3 a1 (Nat.pos_of_ne_zero npos) ij' j2n jn ntriv) h
+      else _root_.ne_of_lt (eq_of_xn_modEq_lem3 a1 ij' j2n jn ntriv) h
 
 theorem eq_of_xn_modEq {i j n} (i2n : i ≤ 2 * n) (j2n : j ≤ 2 * n)
     (h : xn a1 i ≡ xn a1 j [MOD xn a1 n])
