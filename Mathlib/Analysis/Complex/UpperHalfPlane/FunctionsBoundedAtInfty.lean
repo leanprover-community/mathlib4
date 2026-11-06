@@ -80,9 +80,9 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
 
 alias ⟨_, IsBoundedAtImInfty.neg⟩ := isBoundedAtImInfty_neg_iff
 
-@[simp] theorem isZeroAtImInfty_neg_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
-    IsZeroAtImInfty (-f) ↔ IsZeroAtImInfty f := by
-  simp [isZeroAtImInfty_iff]
+@[simp] theorem isZeroAtImInfty_neg_iff {α : Type*} [TopologicalSpace α] [SubtractionMonoid α]
+    [ContinuousNeg α] {f : ℍ → α} : IsZeroAtImInfty (-f) ↔ IsZeroAtImInfty f :=
+  zeroAtFilter_neg_iff.symm
 
 alias ⟨_, IsZeroAtImInfty.neg⟩ := isZeroAtImInfty_neg_iff
 
