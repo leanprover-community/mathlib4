@@ -62,6 +62,17 @@ theorem floor_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌊(↑n / ↑d : ℚ)�
   refine (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left ?_ <| Int.natCast_nonneg q.den).symm
   rwa [← d_eq_c_mul_denom, Int.natCast_pos]
 
+theorem _root_.Int.fdiv_eq_floor (n d : ℤ) : n.fdiv d = ⌊(n / d : ℚ)⌋ := by
+  rcases lt_trichotomy d 0 with hd | rfl | hd
+  · rw [← neg_div_neg_eq, ← Int.neg_fdiv_neg, Int.fdiv_eq_ediv,
+      ite_eq_left (by omega), sub_zero, ← Int.cast_neg, ← Int.cast_neg]
+    lift -d to ℕ using le_of_lt <| neg_pos.mpr hd with d
+    rw [Int.cast_natCast, Rat.floor_intCast_div_natCast]
+  · simp
+  · rw [Int.fdiv_eq_ediv, ite_eq_left (by omega), sub_zero]
+    lift d to ℕ using hd.le
+    rw [Int.cast_natCast, Rat.floor_intCast_div_natCast]
+
 @[norm_cast]
 theorem ceil_intCast_div_natCast (n : ℤ) (d : ℕ) : ⌈(↑n / ↑d : ℚ)⌉ = -((-n) / (↑d : ℤ)) := by
   conv_lhs => rw [← neg_neg ⌈_⌉, ← floor_neg]
