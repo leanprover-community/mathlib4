@@ -83,7 +83,7 @@ theorem rank_eq [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
 
 /-- The `R`-finrank of a full lattice equals the `K`-finrank of the ambient module. -/
 theorem finrank_eq [IsFullLattice K M] : finrank R M = finrank K V :=
-  congr(Cardinal.toNat $(rank K M))
+  congr(Cardinal.toNat $(rank_eq K M))
 
 /-- A lattice whose `R`-rank is at least the `K`-rank of a finite-dimensional ambient module
 is full. -/
@@ -118,7 +118,7 @@ instance inf [IsDomain R] [IsNoetherianRing R] [Module.Finite K V] (M N : Submod
     [IsFullLattice K M] [IsFullLattice K N] : IsFullLattice K (M ⊓ N) := by
   refine IsFullLattice.of_rank_le K _ (le_of_eq ?_)
   have h := Submodule.rank_sup_add_rank_inf_eq M N
-  rw [IsFullLattice.rank K M, IsFullLattice.rank K N, IsFullLattice.rank K (M ⊔ N)] at h
+  rw [IsFullLattice.rank_eq K M, IsFullLattice.rank_eq K N, IsFullLattice.rank_eq K (M ⊔ N)] at h
   exact (Cardinal.eq_of_add_eq_add_left h (Module.rank_lt_aleph0 K V)).symm
 
 end IsFractionRing
@@ -136,20 +136,20 @@ alias IsLattice.of_le_of_isLattice_of_fg := IsFullLattice.of_le_of_fg
 alias IsLattice.of_rank_le := IsFullLattice.of_rank_le
 
 @[deprecated (since := "2026-10-27")]
-alias IsLattice.rank' := IsFullLattice.rank
+alias IsLattice.rank' := IsFullLattice.rank_eq
 
 @[deprecated "Use `IsFullLattice.rank` and `rank_fun'`." (since := "2026-10-27")]
 theorem IsLattice.rank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K] {ι : Type*}
     [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
     Module.rank R M = Fintype.card ι := by
-  rw [IsFullLattice.rank K M, rank_fun']
+  rw [IsFullLattice.rank_eq K M, rank_fun']
 
 @[deprecated "Use `IsFullLattice.finrank` and `Module.finrank_fintype_fun_eq_card`."
   (since := "2026-10-27")]
 theorem IsLattice.finrank_of_pi (K : Type*) [Field K] [Algebra R K] [FaithfulSMul R K]
     {ι : Type*} [Fintype ι] (M : Submodule R (ι → K)) [IsFullLattice K M] :
     finrank R M = Fintype.card ι := by
-  rw [IsFullLattice.finrank K M, finrank_fintype_fun_eq_card]
+  rw [IsFullLattice.finrank_eq K M, finrank_fintype_fun_eq_card]
 
 @[deprecated (since := "2026-10-27")]
 alias IsLattice.span_eq_top := IsFullLattice.span_eq_top
