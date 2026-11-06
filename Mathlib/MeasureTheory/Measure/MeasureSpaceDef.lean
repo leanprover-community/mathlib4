@@ -188,7 +188,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
   exact hs
 
 theorem nonempty_of_measure_ne_zero (h : μ s ≠ 0) : s.Nonempty :=
-  nonempty_iff_ne_empty.2 fun h' => h <| h'.symm ▸ measure_empty
+  ne_empty_iff_nonempty.1 fun h' => h <| h'.symm ▸ measure_empty
 
 theorem measure_mono_top (h : s₁ ⊆ s₂) (h₁ : μ s₁ = ∞) : μ s₂ = ∞ :=
   top_unique <| h₁ ▸ measure_mono h

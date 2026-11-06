@@ -248,7 +248,7 @@ lemma IsTrivial.trivialOn (hf : Set.Nonempty f) :
   grind [trivialOn, IsTrivial]
 
 lemma IsTrivial.isNonempty (h : IsTrivial H) : IsNonempty H := by
-  grind [IsNonempty, IsTrivial, Set.nonempty_iff_ne_empty]
+  grind [IsNonempty, IsTrivial, ← Set.ne_empty_iff_nonempty]
 
 lemma IsTrivial.notMem_edgeSet (h : H.IsTrivial) : e ∉ E(H) := by grind [IsTrivial]
 

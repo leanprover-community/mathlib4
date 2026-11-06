@@ -106,7 +106,7 @@ lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set
   | zero =>
     by_cases s_empty : s = ∅
     · simp [s_empty]
-    simp_rw [← nonempty_iff_ne_empty] at s_empty
+    simp_rw [ne_empty_iff_nonempty] at s_empty
     simp [s_empty]
   | succ n hn =>
     have obs : ((fun x ↦ x ^ (n + 1)) '' s) ⊆ ((fun x ↦ x ^ n) '' s) * s := by

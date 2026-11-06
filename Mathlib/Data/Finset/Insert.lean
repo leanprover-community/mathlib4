@@ -617,7 +617,7 @@ theorem toFinset_eq_empty_iff (l : List α) : l.toFinset = ∅ ↔ l = nil := by
 
 @[simp]
 theorem toFinset_nonempty_iff (l : List α) : l.toFinset.Nonempty ↔ l ≠ [] := by
-  simp [Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 end List
 

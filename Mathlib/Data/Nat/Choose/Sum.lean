@@ -216,7 +216,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
-  exact ite_eq_right (nonempty_iff_ne_empty.mp h0)
+  exact ite_eq_right (ne_empty_iff_nonempty.mpr h0)
 
 variable [NonAssocSemiring R]
 

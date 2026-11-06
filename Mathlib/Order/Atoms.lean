@@ -1120,7 +1120,7 @@ theorem isAtom_iff {s : Set α} : IsAtom s ↔ ∃ x, s = {x} := by
     ⟨?_, by
       rintro ⟨x, rfl⟩
       exact isAtom_singleton x⟩
-  rw [isAtom_iff_le_of_ge, bot_eq_empty, ← nonempty_iff_ne_empty]
+  rw [isAtom_iff_le_of_ge, bot_eq_empty, ne_empty_iff_nonempty]
   rintro ⟨⟨x, hx⟩, hs⟩
   exact
     ⟨x, eq_singleton_iff_unique_mem.2

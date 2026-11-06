@@ -908,7 +908,7 @@ theorem _root_.affineSpan_prod_eq (s : Set P) (t : Set Q) :
   rcases t.eq_empty_or_nonempty with rfl | ht
   · simp
   apply AffineSubspace.ext_of_direction_eq
-  · simp [direction_prod_eq, Set.nonempty_iff_ne_empty.mp, hs, ht, direction_affineSpan,
+  · simp [direction_prod_eq, Set.ne_empty_iff_nonempty.mpr, hs, ht, direction_affineSpan,
       vectorSpan_prod_eq]
   · obtain ⟨x, hx⟩ := hs
     obtain ⟨y, hy⟩ := ht

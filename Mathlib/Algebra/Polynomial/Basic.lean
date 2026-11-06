@@ -271,7 +271,7 @@ theorem support_eq_empty : p.support = ∅ ↔ p = 0 := by
   simp [support]
 
 @[simp] lemma support_nonempty : p.support.Nonempty ↔ p ≠ 0 :=
-  Finset.nonempty_iff_ne_empty.trans support_eq_empty.not
+  Finset.ne_empty_iff_nonempty.symm.trans support_eq_empty.not
 
 theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 
@@ -934,7 +934,7 @@ theorem coeffs_empty_iff {p : R[X]} : coeffs p = ∅ ↔ p = 0 := by
 
 @[simp]
 theorem coeffs_nonempty_iff {p : R[X]} : p.coeffs.Nonempty ↔ p ≠ 0 := by
-  simp [Finset.nonempty_iff_ne_empty]
+  simp [← Finset.ne_empty_iff_nonempty]
 
 theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
   rw [coeffs, support_monomial n hc]

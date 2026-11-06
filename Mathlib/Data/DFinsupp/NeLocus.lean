@@ -61,7 +61,7 @@ theorem neLocus_eq_empty {f g : Π₀ a, N a} : f.neLocus g = ∅ ↔ f = g :=
 
 @[simp]
 theorem nonempty_neLocus_iff {f g : Π₀ a, N a} : (f.neLocus g).Nonempty ↔ f ≠ g :=
-  Finset.nonempty_iff_ne_empty.trans neLocus_eq_empty.not
+  Finset.ne_empty_iff_nonempty.symm.trans neLocus_eq_empty.not
 
 theorem neLocus_comm : f.neLocus g = g.neLocus f := by
   simp_rw [neLocus, Finset.union_comm, ne_comm]

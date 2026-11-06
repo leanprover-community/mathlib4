@@ -147,7 +147,7 @@ theorem coe_eq_empty : (s : Set α) = ∅ ↔ s = ⊤ := by simp [SetLike.ext'_i
 
 @[to_dual (attr := simp, norm_cast)]
 lemma coe_nonempty : (s : Set α).Nonempty ↔ s ≠ ⊤ :=
-  nonempty_iff_ne_empty.trans coe_eq_empty.not
+  ne_empty_iff_nonempty.symm.trans coe_eq_empty.not
 
 @[to_dual (attr := simp, norm_cast)]
 theorem coe_sup (s t : UpperSet α) : (↑(s ⊔ t) : Set α) = (s : Set α) ∩ t :=

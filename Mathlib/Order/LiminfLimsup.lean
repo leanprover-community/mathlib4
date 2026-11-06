@@ -852,7 +852,7 @@ theorem HasBasis.liminf_eq_ite {v : Filter ι} {p : ι' → Prop} {s : ι' → S
   rw [ite_eq_right H']
   apply hv.liminf_eq_ciSup_ciInf
   · push Not at H
-    simpa only [nonempty_iff_ne_empty] using H
+    simpa only [← ne_empty_iff_nonempty] using H
   · push Not at H'
     exact H'
 

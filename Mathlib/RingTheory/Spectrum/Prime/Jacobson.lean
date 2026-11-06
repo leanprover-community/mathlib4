@@ -51,7 +51,7 @@ instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
   rintro S hS ⟨U, Z, hU, hZ, rfl⟩
   simp only [← isClosed_compl_iff, isClosed_iff_zeroLocus_ideal, @compl_eq_comm _ U] at hU hZ
   obtain ⟨⟨I, rfl⟩, ⟨J, rfl⟩⟩ := And.intro hU hZ
-  simp only [Set.nonempty_iff_ne_empty, ne_eq, Set.inter_assoc,
+  simp only [← Set.ne_empty_iff_nonempty, ne_eq, Set.inter_assoc,
     ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
     zeroLocus_subset_zeroLocus_iff, Ideal.radical_eq_jacobson, Ideal.jacobson, le_sInf_iff] at hS ⊢
   contrapose hS

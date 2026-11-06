@@ -213,7 +213,7 @@ theorem AffineIndepOn.ncard_eq_succ_finDim_affineSpan {s : Set P} (hai : AffineI
   rw [← Subtype.range_coe (s := s)] at hf
   have := finiteDimensional_iff_setFinite k hai |>.mp hf
   have := hai.finrank_vectorSpan this hs
-  rw [finDim_eq_finrank (by simp [Set.nonempty_iff_ne_empty.mp hs]), direction_affineSpan,
+  rw [finDim_eq_finrank (by simp [Set.ne_empty_iff_nonempty.mpr hs]), direction_affineSpan,
     WithBot.succ_natCast, this]
   grind only [Set.ncard_eq_zero, Set.not_nonempty_empty]
 

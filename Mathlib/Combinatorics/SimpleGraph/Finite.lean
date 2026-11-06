@@ -118,7 +118,7 @@ lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
 
 @[simp]
 lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
-  rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
+  rw [← Finset.ne_empty_iff_nonempty, edgeFinset_eq_empty.ne]
 
 theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
@@ -230,7 +230,7 @@ theorem neighborFinset_sup_of_disjoint {G₁ G₂ : SimpleGraph V}
   simp [neighborFinset, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborFinset_nonempty : (G.neighborFinset v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [nonempty_iff_ne_empty]
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborFinset_eq_empty, IsIsolated.neighborFinset_eq_empty⟩
     := neighborFinset_eq_empty

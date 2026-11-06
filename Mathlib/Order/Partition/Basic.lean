@@ -125,7 +125,7 @@ lemma le_of_mem (P : Partition s) (hx : x ∈ P) : x ≤ s :=
   (le_sSup hx).trans_eq P.sSup_eq
 
 lemma parts_nonempty (P : Partition s) (hs : s ≠ ⊥) : (P : Set α).Nonempty :=
-  nonempty_iff_ne_empty.2 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
+  ne_empty_iff_nonempty.1 fun hP ↦ by simp [← P.sSup_eq, hP, sSup_empty] at hs
 
 @[simp]
 lemma bot_notMem (P : Partition s) : ⊥ ∉ P :=

@@ -476,7 +476,7 @@ theorem IsPretransitive.isPretransitive_ofFixingSubgroup_inter
     (hs : IsPretransitive (fixingSubgroup M s) (ofFixingSubgroup M s))
     {g : M} (ha : s ∪ g • s ≠ ⊤) :
     IsPretransitive (fixingSubgroup M (s ∩ g • s)) (ofFixingSubgroup M (s ∩ g • s)) := by
-  rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, ← Set.nonempty_iff_ne_empty] at ha
+  rw [Ne, Set.top_eq_univ, ← Set.compl_empty_iff, ← Ne, Set.ne_empty_iff_nonempty] at ha
   obtain ⟨a, ha⟩ := ha
   rw [Set.compl_union] at ha
   have ha' : a ∈ (s ∩ g • s)ᶜ := by

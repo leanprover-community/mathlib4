@@ -110,10 +110,10 @@ theorem coe_fintypeCard [Fintype s] : Fintype.card s = s.encard := by
   rw [encard_eq_zero]
 
 theorem nonempty_of_encard_ne_zero (h : s.encard ≠ 0) : s.Nonempty := by
-  rwa [nonempty_iff_ne_empty, Ne, ← encard_eq_zero]
+  rwa [← ne_empty_iff_nonempty, Ne, ← encard_eq_zero]
 
 theorem encard_ne_zero : s.encard ≠ 0 ↔ s.Nonempty := by
-  rw [ne_eq, encard_eq_zero, nonempty_iff_ne_empty]
+  rw [ne_eq, encard_eq_zero, ← ne_empty_iff_nonempty]
 
 @[simp] theorem encard_pos : 0 < s.encard ↔ s.Nonempty := by
   rw [pos_iff_ne_zero, encard_ne_zero]
@@ -213,7 +213,7 @@ theorem encard_sdiff (h : s ⊆ t) (hs : s.Finite) :
 @[deprecated (since := "2026-06-03")] alias encard_diff := encard_sdiff
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
+  rw [← ne_empty_iff_nonempty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
 
 lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp
 
@@ -406,7 +406,7 @@ theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := 
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
-  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ← nonempty_iff_ne_empty]
+  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ne_empty_iff_nonempty]
   refine ⟨fun h a b has hbs ↦ ?_,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
@@ -708,7 +708,7 @@ theorem ncard_le_card [Finite α] (s : Set α) : s.ncard ≤ Nat.card α :=
   rw [ncard_eq_zero]
 
 theorem ncard_pos (hs : s.Finite := by toFinite_tac) : 0 < s.ncard ↔ s.Nonempty := by
-  rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, nonempty_iff_ne_empty]
+  rw [pos_iff_ne_zero, Ne, ncard_eq_zero hs, ← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Nonempty.ncard_pos⟩ := ncard_pos
 
@@ -722,7 +722,7 @@ theorem finite_of_ncard_pos (hs : 0 < s.ncard) : s.Finite :=
   finite_of_ncard_ne_zero hs.ne.symm
 
 theorem nonempty_of_ncard_ne_zero (hs : s.ncard ≠ 0) : s.Nonempty := by
-  rw [nonempty_iff_ne_empty]; rintro rfl; simp at hs
+  rw [← ne_empty_iff_nonempty]; rintro rfl; simp at hs
 
 @[simp] theorem ncard_singleton (a : α) : ({a} : Set α).ncard = 1 := by
   simp [ncard]
@@ -1119,7 +1119,7 @@ theorem ncard_sdiff_add_ncard (s t : Set α) (hs : s.Finite := by toFinite_tac)
 
 theorem sdiff_nonempty_of_ncard_lt_ncard (h : s.ncard < t.ncard)
     (hs : s.Finite := by toFinite_tac) : (t \ s).Nonempty := by
-  rw [Set.nonempty_iff_ne_empty, Ne, sdiff_eq_empty]
+  rw [← Set.ne_empty_iff_nonempty, Ne, sdiff_eq_empty]
   exact fun h' ↦ h.not_ge (ncard_le_ncard h' hs)
 
 @[deprecated (since := "2026-06-03")]

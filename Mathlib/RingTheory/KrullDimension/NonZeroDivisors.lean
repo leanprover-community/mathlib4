@@ -41,7 +41,7 @@ lemma ringKrullDim_quotient_succ_le_of_nonZeroDivisor
   · rw [hr', ringKrullDim_eq_bot_of_subsingleton]
     simp
   have : Nonempty (PrimeSpectrum.zeroLocus (R := R) (Ideal.span {r})) := by
-    rwa [Set.nonempty_coe_sort, Set.nonempty_iff_ne_empty, ne_eq,
+    rwa [Set.nonempty_coe_sort, ← Set.ne_empty_iff_nonempty, ne_eq,
       PrimeSpectrum.zeroLocus_empty_iff_eq_top]
   have := Ideal.Quotient.nontrivial_iff.mpr hr'
   have := (Ideal.Quotient.mk (Ideal.span {r})).domain_nontrivial

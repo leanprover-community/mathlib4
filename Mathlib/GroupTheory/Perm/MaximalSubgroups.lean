@@ -330,7 +330,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
   classical
-  have h1 : sᶜ.Nonempty := nonempty_iff_ne_empty.mpr (by aesop)
+  have h1 : sᶜ.Nonempty := ne_empty_iff_nonempty.mp (by aesop)
   have : Fintype α := Fintype.ofFinite α
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`

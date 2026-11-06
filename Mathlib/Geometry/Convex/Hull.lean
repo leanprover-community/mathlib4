@@ -70,8 +70,8 @@ variable (R) in
 @[simp] lemma convexHull_eq_empty : convexHull R s = ∅ ↔ s = ∅ := by
   simp [← subset_empty_iff, IsConvexSet.empty.convexHull_subset_iff]
 
-@[simp] lemma convexHull_nonempty : (convexHull R s).Nonempty ↔ s.Nonempty :=
-  not_iff_not.1 <| by simp [not_nonempty_iff_eq_empty]
+@[simp] lemma convexHull_nonempty : (convexHull R s).Nonempty ↔ s.Nonempty := by
+  simp [← ne_empty_iff_nonempty]
 
 protected alias ⟨_, Set.Nonempty.convexHull'⟩ := convexHull_nonempty
 

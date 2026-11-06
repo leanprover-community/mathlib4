@@ -335,9 +335,7 @@ instance [T1Space α] : T0Space (Set α) where
 theorem isPreconnected_nonempty_finite_subsets {s : Set α} (hs : IsPreconnected s) :
     IsPreconnected {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} := by
   rcases eq_empty_or_nonempty s with rfl | ⟨x, hx⟩
-  · convert isPreconnected_empty using 1
-    ext t
-    simp +contextual
+  · simp +contextual [and_iff_right_of_imp, ← ne_empty_iff_nonempty, isPreconnected_empty]
   suffices {t | t.Nonempty ∧ t.Finite ∧ t ⊆ s} =
       ⋃ n : ℕ+, range (ι := Fin n) '' Set.pi univ fun _ => s by
     rw [this]

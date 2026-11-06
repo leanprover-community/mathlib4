@@ -82,7 +82,7 @@ lemma jacobsonSpace_iff_locallyClosed :
   rw [jacobsonSpace_iff]
   constructor
   · simp_rw [isLocallyClosed_iff_isOpen_coborder, coborder, isOpen_compl_iff,
-      Set.nonempty_iff_ne_empty]
+      ← Set.ne_empty_iff_nonempty]
     intro H Z hZ hZ' e
     have : Z ⊆ closure Z \ Z := by
       refine subset_closure.trans ?_
@@ -98,7 +98,7 @@ lemma jacobsonSpace_iff_locallyClosed :
       ← Set.not_nonempty_iff_eq_empty]
     intro H'
     have := H _ H' (isClosed_closure.isOpen_compl.isLocallyClosed.inter hZ.isLocallyClosed)
-    rw [Set.nonempty_iff_ne_empty, Set.inter_assoc, ne_eq,
+    rw [← Set.ne_empty_iff_nonempty, Set.inter_assoc, ne_eq,
       ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset] at this
     exact this subset_closure
 

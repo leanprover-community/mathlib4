@@ -199,7 +199,7 @@ variable {f g : ∀ ⦃i⦄, α i → β i → Finset (γ i)} {a : Σ i, α i} {
 
 theorem sigmaLift_nonempty :
     (sigmaLift f a b).Nonempty ↔ ∃ h : a.1 = b.1, (f (h ▸ a.2) b.2).Nonempty := by
-  simp_rw [nonempty_iff_ne_empty, sigmaLift]
+  simp_rw [← ne_empty_iff_nonempty, sigmaLift]
   split_ifs with h <;> simp [h]
 
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by

@@ -168,7 +168,7 @@ theorem isMultiplyPreprimitive_succ_iff_ofStabilizer
     · exact ofStabilizer.isMultiplyPretransitive.mpr H.isMultiplyPretransitive
     · intro s hs
       have : ∃ b : α, b ∈ s := by
-        rw [← Set.nonempty_def, Set.nonempty_iff_ne_empty]
+        rw [← Set.nonempty_def, ← Set.ne_empty_iff_nonempty]
         intro h
         apply not_lt.mpr hn
         rw [h, Set.encard_empty, zero_add, ← Nat.cast_one, Nat.cast_inj, Nat.succ_inj] at hs

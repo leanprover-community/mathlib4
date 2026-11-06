@@ -278,8 +278,9 @@ lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finr
     ∃ m : M, ∀ r : R, r ≠ 0 → r • m ∉ N := by
   obtain ⟨s, hs, hs'⟩ :=
     exists_finset_linearIndependent_of_le_finrank (R := R) (M := M ⧸ N) le_rfl
-  obtain ⟨v, hv⟩ : s.Nonempty := by rwa [Finset.nonempty_iff_ne_empty, ne_eq, ← Finset.card_eq_zero,
-    hs, finrank_quotient, tsub_eq_zero_iff_le, not_le]
+  obtain ⟨v, hv⟩ : s.Nonempty := by
+    rwa [← Finset.ne_empty_iff_nonempty, ne_eq, ← Finset.card_eq_zero, hs, finrank_quotient,
+      tsub_eq_zero_iff_le, not_le]
   obtain ⟨v, rfl⟩ := N.mkQ_surjective v
   refine ⟨v, fun r hr ↦ mt ?_ hr⟩
   have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)

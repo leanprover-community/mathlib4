@@ -385,16 +385,16 @@ lemma thickening_eq_empty_iff_of_pos (hε : 0 < ε) :
   ⟨fun h ↦ subset_eq_empty (self_subset_thickening hε _) h, by simp +contextual⟩
 
 lemma thickening_nonempty_iff_of_pos (hε : 0 < ε) :
-    (thickening ε s).Nonempty ↔ s.Nonempty :=
-  not_iff_not.1 <| by simp [not_nonempty_iff_eq_empty, thickening_eq_empty_iff_of_pos hε]
+    (thickening ε s).Nonempty ↔ s.Nonempty := by
+  simp [← ne_empty_iff_nonempty, thickening_eq_empty_iff_of_pos hε]
 
 @[simp] lemma thickening_eq_empty_iff : thickening ε s = ∅ ↔ ε ≤ 0 ∨ s = ∅ := by
   obtain hε | hε := lt_or_ge 0 ε
   · simp [thickening_eq_empty_iff_of_pos, hε]
   · simp [hε, thickening_of_nonpos hε]
 
-@[simp] lemma thickening_nonempty_iff : (thickening ε s).Nonempty ↔ 0 < ε ∧ s.Nonempty :=
-  not_iff_not.1 <| by simp [not_nonempty_iff_eq_empty, imp_iff_not_or]
+@[simp] lemma thickening_nonempty_iff : (thickening ε s).Nonempty ↔ 0 < ε ∧ s.Nonempty := by
+  simp [← ne_empty_iff_nonempty]
 
 open ENNReal
 

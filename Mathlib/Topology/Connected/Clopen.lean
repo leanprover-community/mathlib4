@@ -184,7 +184,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
+  simp only [← ne_empty_iff_nonempty, Ne, frontier_eq_empty_iff, not_or]
 
 /-- In a preconnected space, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -346,7 +346,7 @@ lemma IsClopen.isPreconnected_iff {s : Set α} (hs : IsClopen s) :
     rintro ⟨a, b, ha, hb, ha', hb', hab, rfl⟩ H
     exact (H a b ha.isOpen hb.isOpen subset_rfl (by rwa [union_inter_cancel_left])
       (by rwa [union_inter_cancel_right])).ne_empty (by grind)
-  · rw [nonempty_iff_ne_empty]
+  · rw [← ne_empty_iff_nonempty]
     intro h
     exact H (s ∩ a) (s ∩ b)
       (isClopen_inter_of_disjoint_cover_clopen' hs hsab ha hb (by grind))
