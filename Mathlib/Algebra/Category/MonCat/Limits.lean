@@ -148,7 +148,6 @@ noncomputable instance forget_preservesLimitsOfSize [UnivLE.{v, u}] :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget MonCat.{u}) :=
   MonCat.forget_preservesLimitsOfSize.{u, u}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[to_additive]
 noncomputable instance forget_createsLimit :
@@ -175,8 +174,7 @@ noncomputable instance forget_createsLimit :
       { toFun := (Types.Small.limitConeIsLimit.{v, u} _).lift ((forget MonCat).mapCone _),
         map_one' := by simp; rfl, map_mul' := ?_ }
     intro x y
-    simp only [Types.Small.limitCone_pt, Functor.comp_obj, Functor.mapCone_pt,
-      Types.Small.limitConeIsLimit_lift, Functor.const_obj_obj, Functor.mapCone_π_app,
+    simp only [Functor.comp_obj, Types.Small.limitConeIsLimit_lift, Functor.mapCone_π_app,
       ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk, map_mul]
     rw [← equivShrink_mul]
     rfl
