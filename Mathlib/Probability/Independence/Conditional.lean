@@ -57,8 +57,9 @@ These notations are scoped in the `ProbabilityTheory` namespace.
 ## Implementation notes
 
 The definitions of conditional independence in this file are a particular case of independence with
-respect to a kernel and a measure, as defined in the file
-`Mathlib/Probability/Independence/Kernel.lean`.
+respect to a kernel and a measure, as defined in the files
+`Mathlib/Probability/Independence/Kernel/Indep.lean` and
+`Mathlib/Probability/Independence/Kernel/IndepFun.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
 
 -/

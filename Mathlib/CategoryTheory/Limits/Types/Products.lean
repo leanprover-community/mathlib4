@@ -28,7 +28,7 @@ namespace CategoryTheory.Limits.Types
 example : HasProducts.{v} (Type v) := inferInstance
 example [UnivLE.{v, u}] : HasProducts.{v} (Type u) := inferInstance
 
--- This shortcut instance is required in `Mathlib/CategoryTheory/Closed/Types.lean`,
+-- This shortcut instance is required in `Mathlib/CategoryTheory/Monoidal/Closed/Types.lean`,
 -- although I don't understand why, and wish it wasn't.
 instance : HasProducts.{v} (Type v) := inferInstance
 
