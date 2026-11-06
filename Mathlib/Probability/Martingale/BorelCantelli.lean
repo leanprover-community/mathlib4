@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 import Mathlib.Probability.Martingale.Convergence
 
 /-!
-
 # Generalized Borel-Cantelli lemma
 
 This file proves Lévy's generalized Borel-Cantelli lemma which is a generalization of the
