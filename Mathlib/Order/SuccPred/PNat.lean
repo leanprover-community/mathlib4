@@ -6,7 +6,7 @@ Authors: Javier Burroni
 module
 
 public import Mathlib.Algebra.Order.SuccPred
-public import Mathlib.Data.PNat.Basic
+public import Mathlib.Data.PNat.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

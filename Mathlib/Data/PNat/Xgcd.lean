@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.PNat.Prime
 
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -140,7 +141,7 @@ set_option backward.isDefEq.respectTransparency false in
 theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
   dsimp [IsSpecial, IsSpecial']
   let ⟨wp, x, y, zp, ap, bp⟩ := u
-  constructor <;> intro h <;> simp only [w, succPNat, succ_eq_add_one, z] at * <;>
+  constructor <;> intro h <;> simp only [w, succPNat, Nat.succ_eq_add_one, z] at * <;>
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
   · simp only [Nat.mul_add, Nat.add_mul, one_mul, mul_one, ← Nat.add_assoc,

@@ -4485,8 +4485,12 @@ public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.PFunctor.Multivariate.W
 public import Mathlib.Data.PFunctor.Univariate.Basic
 public import Mathlib.Data.PFunctor.Univariate.M
+public import Mathlib.Data.PNat.Algebra
+public import Mathlib.Data.PNat.Algebra.Order
 public import Mathlib.Data.PNat.Basic
 public import Mathlib.Data.PNat.Defs
+public import Mathlib.Data.PNat.DivMod
+public import Mathlib.Data.PNat.Dvd
 public import Mathlib.Data.PNat.Equiv
 public import Mathlib.Data.PNat.Factors
 public import Mathlib.Data.PNat.Find
