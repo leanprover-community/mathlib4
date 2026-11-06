@@ -162,15 +162,16 @@ open scoped RealInnerProductSpace
 variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
   {P : Measure Ω} {P' : Measure Ω'}
   [IsProbabilityMeasure P] [IsProbabilityMeasure P']
-  {d : ℕ} {X : ℕ → Ω → EuclideanSpace ℝ (Fin d)} {Y : Ω' → EuclideanSpace ℝ (Fin d)}
+  {ι : Type*} [Fintype ι] [DecidableEq ι]
+  {X : ℕ → Ω → EuclideanSpace ℝ ι} {Y : Ω' → EuclideanSpace ℝ ι}
 
 /-- **Multivariate Central Limit Theorem:** Given a sequence of random variables `X : ℕ → Ω →
-EuclideanSpace ℝ (Fin d)` that are independent, identically distributed, centered and with an
-identity covariance matrix, and a random variable `Y : Ω' → EuclideanSpace ℝ (Fin d)` following
-`stdGaussian (EuclideanSpace ℝ (Fin d))`, the sequence `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k`
+EuclideanSpace ℝ ι` that are independent, identically distributed, centered and with an
+identity covariance matrix, and a random variable `Y : Ω' → EuclideanSpace ℝ ι` following
+`stdGaussian (EuclideanSpace ℝ ι)`, the sequence `n ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k`
 converges to `Y` in distribution. -/
 theorem tendstoInDistribution_inv_sqrt_smul_sum
-    (hY : HasLaw Y (stdGaussian (EuclideanSpace ℝ (Fin d))) P') (h0 : P[X 0] = 0)
+    (hY : HasLaw Y (stdGaussian (EuclideanSpace ℝ ι)) P') (h0 : P[X 0] = 0)
     (h1 : ∀ i j, P[(fun ω ↦ (X 0 ω i) * (X 0 ω j))] = if i = j then 1 else 0)
     (hindep : iIndepFun X P)
     (hident : ∀ (i : ℕ), IdentDistrib (X i) (X 0) P P) :
@@ -178,7 +179,7 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
       (fun _ ↦ P) P' := by
   have hL2 : MemLp (X 0) 2 P := .of_eval_piLp fun i ↦
     (memLp_two_iff_integrable_sq ((by fun_prop : Continuous
-      (fun x : EuclideanSpace ℝ (Fin d) ↦ x i)).comp_aestronglyMeasurable
+      (fun x : EuclideanSpace ℝ ι ↦ x i)).comp_aestronglyMeasurable
         (hident 0).aemeasurable_fst.aestronglyMeasurable)).2 <| .of_integral_ne_zero <| by
       simp [h1 i i, pow_two]
   have mX n : AEMeasurable (X n) P := (hident n).aemeasurable_fst
