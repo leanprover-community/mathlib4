@@ -348,7 +348,7 @@ theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ 
 @[simp]
 theorem conjTranspose_mul [Fintype n] [NonUnitalNonAssocSemiring α] [StarRing α] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᴴ = Nᴴ * Mᴴ :=
-  Matrix.ext <| by simp [mul_apply]
+  Matrix.ext <| by simp [Matrix.mul_apply]
 
 @[simp]
 theorem conjTranspose_neg [AddGroup α] [StarAddMonoid α] (M : Matrix m n α) : (-M)ᴴ = -Mᴴ :=

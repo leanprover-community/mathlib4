@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 public import Mathlib.CategoryTheory.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of "structured arrows"
 
@@ -80,6 +83,13 @@ end
 @[implicit_reducible, simps!]
 def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
   Comma.snd _ _
+
+/-- The `hom` field of structured arrows in `StructuredArrow S T`,
+as a natural transformation `(Functor.const _).obj S ⟶ proj S T ⋙ T`. -/
+@[simps]
+def ι (S : D) (T : C ⥤ D) :
+    (Functor.const _).obj S ⟶ proj S T ⋙ T where
+  app X := X.hom
 
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
@@ -526,6 +536,13 @@ end
 def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
   Comma.fst _ _
 
+/-- The `hom` field of costructured arrows in `CostructuredArrow S T`,
+as a natural transformation `proj S T ⋙ S ⟶ (Functor.const _).obj T`. -/
+@[simps]
+def ι (S : C ⥤ D) (T : D) :
+    proj S T ⋙ S ⟶ (Functor.const _).obj T where
+  app X := X.hom
+
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
 @[ext]
@@ -807,7 +824,7 @@ def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [
 def map₂Congr {F' : C ⥤ A} {G' : D ⥤ B} (e₁ : F ≅ F') (e₂ : G ≅ G')
     (α' : F' ⋙ U ⟶ S ⋙ G') (β' : G'.obj T ⟶ V)
     (hα : α ≫ Functor.whiskerLeft _ e₂.hom = Functor.whiskerRight e₁.hom _ ≫ α')
-    (hβ : β = e₂.hom.app _ ≫  β') :
+    (hβ : β = e₂.hom.app _ ≫ β') :
     map₂ α β ≅ map₂ α' β' :=
   NatIso.ofComponents (fun X ↦ isoMk (e₁.app X.left) ?_) ?_
 where finally
