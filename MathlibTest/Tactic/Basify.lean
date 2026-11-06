@@ -208,9 +208,7 @@ example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
   norm_cast; norm_cast; lia
 
 example (k : ℕ∞) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
-  basify
-  · simp [← WithTop.coe_add ⊤ ⊤] -- TODO: make `simp` (or even `basify_simps`) solve this directly
-  norm_cast
+  basify <;> norm_cast
 
 end
 
