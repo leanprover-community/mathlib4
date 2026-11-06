@@ -8,6 +8,8 @@ module
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 public import Mathlib.Geometry.Euclidean.Projection
 
+import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+
 /-!
 # Angles and orthogonal projection.
 
@@ -40,5 +42,23 @@ open scoped Real
     haveI : Nonempty s := ⟨p', h⟩
     ∠ p' (orthogonalProjection s p) p = π / 2 := by
   rw [angle_comm, angle_self_orthogonalProjection p h]
+
+theorem dist_orthogonalProjection_eq_sin_mul_dist (p : P) {q : P} {s : AffineSubspace ℝ P}
+    [s.direction.HasOrthogonalProjection] (h : q ∈ s) :
+    haveI : Nonempty s := ⟨q, h⟩
+    dist p (orthogonalProjection s p) =
+      Real.sin (∠ p q (orthogonalProjection s p).val) * dist p q := by
+  rw [angle_comm, sin_angle_mul_dist_of_angle_eq_pi_div_two <| angle_self_orthogonalProjection p h]
+
+theorem dist_orthogonalProjection_eq_sin_mul_dist_of_collinear (p : P) {q r : P}
+    {s : AffineSubspace ℝ P} [s.direction.HasOrthogonalProjection] (hq : q ∈ s) (hr : r ∈ s)
+    (hcollinear : haveI : Nonempty s := ⟨q, hq⟩; Collinear ℝ {(orthogonalProjection s p).val, q, r})
+    (hqr : q ≠ r) :
+    haveI : Nonempty s := ⟨q, hq⟩
+    dist p (orthogonalProjection s p) = Real.sin (∠ p q r) * dist p q := by
+  have : Nonempty s := ⟨q, hq⟩
+  by_cases! hpq : orthogonalProjection s p = q
+  · simp [← hpq, angle_self_orthogonalProjection p hr]
+  rw [dist_orthogonalProjection_eq_sin_mul_dist p hq, hcollinear.sin_angle_eq_right p hpq hqr]
 
 end EuclideanGeometry

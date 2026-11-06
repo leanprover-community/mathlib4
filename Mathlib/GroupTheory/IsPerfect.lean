@@ -23,6 +23,8 @@ Among the basic results, we show that
 
 ## Main Theorems
 
+* `subsingleton_abelianization_iff_isPerfect`: a group is perfect if and only if its abelianization
+  is trivial.
 * `IsPerfect.map`: The image of a perfect group under a monoid homomorphism is perfect.
 * `IsPerfect.instQuotientSubgroup`: The quotient of a perfect group by a normal subgroup is perfect.
 * `IsPerfect.ofSurjective`: The image of a perfect group under a surjective monoid
@@ -53,6 +55,10 @@ lemma _root_.Subgroup.isPerfect_iff : IsPerfect H ↔ ⁅H, H⁆ = H := by
 
 lemma _root_.Subgroup.commutator_eq_self [hH : IsPerfect H] : ⁅H, H⁆ = H :=
   isPerfect_iff.mp hH
+
+theorem subsingleton_abelianization_iff_isPerfect :
+    Subsingleton (Abelianization G) ↔ IsPerfect G :=
+  QuotientGroup.subsingleton_iff.trans isPerfect_def.symm
 
 namespace IsPerfect
 
@@ -106,11 +112,11 @@ instance instQuotientSubgroup [H.Normal] [IsPerfect G] : IsPerfect (G ⧸ H) :=
 
 variable (G) in
 @[simp]
-theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : derivedSeries G n = ⊤ := by
+theorem derivedSeries_eq_top [IsPerfect G] (n : ℕ) : Subgroup.derivedSeries G n = ⊤ := by
   match n with
   | 0 => simp
   | n + 1 =>
-    rw [derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
+    rw [Subgroup.derivedSeries_succ, derivedSeries_eq_top, commutator_eq_self]
 
 @[simp]
 theorem lowerCentralSeries_eq_top (H : Subgroup G) [IsPerfect H] (n : ℕ) :

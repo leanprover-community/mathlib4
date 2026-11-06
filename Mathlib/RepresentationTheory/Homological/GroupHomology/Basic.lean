@@ -137,7 +137,6 @@ theorem d_single (n : ℕ) (g : Fin (n + 1) → G) (a : A) :
 
 open ModuleCat.MonoidalCategory
 
-set_option backward.defeqAttrib.useBackward true in
 theorem d_eq [DecidableEq G] :
     d A n = (coinvariantsTensorFreeLEquiv A (Fin (n + 1) → G)).toModuleIso.inv ≫
       ((barComplex k G).coinvariantsTensorObj A).d (n + 1) n ≫
@@ -173,7 +172,6 @@ theorem inhomogeneousChains.d_def (n : ℕ) :
     (inhomogeneousChains A).d (n + 1) n = d A n := by
   simp [inhomogeneousChains]
 
-set_option backward.defeqAttrib.useBackward true in
 theorem inhomogeneousChains.d_comp_d :
     d A (n + 1) ≫ d A n = 0 := by
   simpa [ChainComplex.of.d] using ((inhomogeneousChains A).d_comp_d (n + 2) (n + 1) n)
@@ -225,6 +223,7 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/
+@[implicit_reducible]
 def groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n
 
