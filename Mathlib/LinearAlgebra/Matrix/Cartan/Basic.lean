@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash, Jonathan Reich
+Authors: Oliver Nash, Jonathan Reich, Rida Hamadani
 -/
 module
 
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.PosDef
@@ -535,5 +536,454 @@ omit hM in
   ⟨fun h ↦ by simpa using h.transpose, IsFiniteCartan.transpose⟩
 
 end Matrix.IsFiniteCartan
+
+namespace CartanMatrix
+
+theorem isFiniteCartan_a (n : ℕ) : (A n).IsFiniteCartan where
+  diag := by simp [← diag_apply, A_diag]
+  offDiag_nonpos := A_apply_le_zero_of_ne n
+  zero_comm i j := by dsimp [A]; grind
+  exists_posDef := by
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', one_mul, true_and]
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦
+        (if i = j.castSucc then 1 else 0) + if i = j.succ then -1 else 0
+    have hsum (a b : Fin (n + 1)) (hab : a ≠ b) (f : Fin (n + 1) → ℤ) :
+        (∑ x, if x = a then f x else if x = b then -f x else 0) = f a - f b := calc
+      _ = ∑ x, ((if x = a then f x else 0) + (if x = b then -f x else 0)) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib, Int.add_neg_eq_sub]
+    have h : A n = Mᴴ * M := by
+      ext i j
+      rw [conjTranspose_eq_transpose_of_trivial, mul_apply]
+      dsimp [A]
+      grind [transpose_apply, hsum j.castSucc j.succ (by grind) (fun x ↦ if x = i.castSucc then 1
+        else if x = i.succ then -1 else 0)]
+    rw [h]
+    apply PosDef.conjTranspose_mul_self
+    intro x y hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have hp (z : Fin n → ℤ) : (∑ j, (if 0 = j.castSucc then 1 else 0) * z j) = z ⟨0, hk⟩ := calc
+        _ = ∑ j, (if j = ⟨0, hk⟩ then 1 else 0) * z j := by grind
+        _ = z ⟨0, hk⟩ := by simp
+      have hn (z : Fin n → ℤ) : (∑ j, (if 0 = j.succ then -1 else 0) * z j) = 0 := by
+        grind [Finset.sum_eq_zero]
+      have h (z : Fin n → ℤ) : (M.mulVec z) 0 = z ⟨0, hk⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z, add_zero]
+      have heq := congrFun hxy 0
+      rwa [h x, h y] at heq
+    | succ k =>
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have hp (z : Fin n → ℤ) : (∑ j, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then 1 else 0) * z j)
+          = z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨k + 1, hk⟩ then 1 else 0) * z j := by grind
+        _ = _ := by simp
+      have hn (z : Fin n → ℤ) : (∑ j, (if Fin.succ ⟨k, hk'⟩ = j.succ then -1 else 0) * z j)
+          = -z ⟨k, hk'⟩ := calc
+        _ = ∑ j, (if j = ⟨k, hk'⟩ then -1 else 0) * z j := by grind
+        _ = _ := by simp
+      have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = z ⟨k + 1, hk⟩ - z ⟨k, hk'⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z,
+          Int.add_neg_eq_sub]
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
+
+theorem isFiniteCartan_b (n : ℕ) : (B n).IsFiniteCartan where
+  diag := B_diag n
+  offDiag_nonpos := B_off_diag_nonpos n
+  zero_comm i j := by
+    dsimp [B]
+    split_ifs <;> grind
+  exists_posDef := by
+    let d : Fin n → ℤ := fun i ↦ if i.val + 1 = n then 2 else 1
+    use d
+    refine ⟨fun i ↦ by grind, ?_⟩
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦ (if i = j.castSucc then d j else 0) +
+      (if i = j.succ then if j.val + 1 = n then 0 else -1 else 0)
+    have h (a b : Fin (n + 1)) (hab : a ≠ b) (c₁ c₂ : ℤ) (f : Fin (n + 1) → ℤ) : (∑ x, if x = a
+        then c₁ * f x else if x = b then c₂ * f x else 0) = c₁ * f a + c₂ * f b := calc
+      _ = ∑ x, ((if x = a then c₁ * f x else 0) + if x = b then c₂ * f x else 0) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib]
+    have h : diagonal d * B n = Mᴴ * M := by
+      ext i j
+      have : (∑ x, M x i * M x j)
+          = d j * M (j.castSucc) i + (if j.val + 1 = n then 0 else -1) * M (j.succ) i := calc
+        _ = _ := by grind
+        _ = _ := h j.castSucc j.succ (by grind) (d j) (if j + 1 = n then 0 else -1) (fun x ↦ M x i)
+      calc
+        _ = d i * B n i j := by simp [diagonal, mul_apply]
+        _ = ∑ x : Fin (n + 1), M x i * M x j := by dsimp [B, d, M]; grind
+        _ = _ := by simp_rw [conjTranspose_eq_transpose_of_trivial, mul_apply, transpose_apply]
+    rw [h]
+    apply PosDef.conjTranspose_mul_self
+    intro _ _ hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have hp (z : Fin n → ℤ) : ∑ j, (if 0 = j.castSucc then d j else 0) * z j = d ⟨0, hk⟩
+          * z ⟨0, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = (⟨0, hk⟩ : Fin n) then d j else 0) * z j := by grind
+        _ = _ := by simp
+      have hn (z : Fin n → ℤ) : (∑ j, (if 0 = j.succ then (if j.val + 1 = n then 0 else -1) else 0)
+          * z j) = 0 := by
+        apply Finset.sum_eq_zero
+        intro j _
+        simp [show 0 ≠ j.succ by grind]
+      have (z : Fin n → ℤ) : (M.mulVec z) 0 = d ⟨0, hk⟩ * z ⟨0, hk⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z, add_zero]
+      grind [congrFun hxy 0]
+    | succ k =>
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have hp (z : Fin n → ℤ) : ∑ j, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then d j else 0) * z j
+          = d ⟨k + 1, hk⟩ * z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j, (if j = ⟨k + 1, hk⟩ then d j else 0) * z j := by grind
+        _ = _ := by simp
+      have hn (z : Fin n → ℤ) : ∑ j, (if Fin.succ ⟨k, hk'⟩ = j.succ then (if j.val + 1
+          = n then 0 else -1) else 0) * z j = -z ⟨k, hk'⟩ := calc
+        _ = ∑ j, (if j = ⟨k, hk'⟩ then -1 else 0) * z j := by grind
+        _ = _ := by simp
+      have h (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = d ⟨k + 1, hk⟩ * z ⟨k + 1, hk⟩
+          - z ⟨k, hk'⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z,
+          Int.add_neg_eq_sub]
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
+
+theorem isFiniteCartan_c (n : ℕ) : (C n).IsFiniteCartan where
+  diag := C_diag n
+  offDiag_nonpos := C_off_diag_nonpos n
+  zero_comm i j := by
+    dsimp [C]
+    split_ifs <;> grind
+  exists_posDef := by
+    let d : Fin n → ℤ := fun i ↦ if i.val + 1 = n then 2 else 4
+    use d
+    refine ⟨fun i ↦ by grind, ?_⟩
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦ (if i = j.castSucc then 2 else 0)
+      + (if i = j.succ then if j.val + 1 = n then 0 else -2 else 0)
+    have h (a b : Fin (n + 1)) (hab : a ≠ b) (c₁ c₂ : ℤ) (f : Fin (n + 1) → ℤ) : (∑ x, if x = a
+        then c₁ * f x else if x = b then c₂ * f x else 0) = c₁ * f a + c₂ * f b := calc
+      _ = ∑ x, ((if x = a then c₁ * f x else 0) + if x = b then c₂ * f x else 0) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib]
+    have h : diagonal d * C n = Mᴴ * M := by
+      ext i j
+      have : (∑ x, M x i * M x j)
+          = 2 * M (j.castSucc) i + (if j.val + 1 = n then 0 else -2) * M (j.succ) i := calc
+        _ = _ := by grind
+        _ = _ := h j.castSucc j.succ (by grind) 2 (if j.val + 1 = n then 0 else -2) (fun x ↦ M x i)
+      calc
+        _ = d i * C n i j := by simp [mul_apply, diagonal]
+        _ = ∑ x, M x i * M x j := by dsimp [C, d, M]; grind
+        _ = _ := by
+          simp_rw [conjTranspose_eq_transpose_of_trivial, mul_apply, transpose_apply]
+    rw [h]
+    apply PosDef.conjTranspose_mul_self
+    intro _ _ hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have hp (z : Fin n → ℤ) : ∑ j, (if 0 = j.castSucc then 2 else 0) * z j = 2 * z ⟨0, hk⟩ := calc
+        _ = ∑ j : Fin n, (if j = ⟨0, hk⟩ then 2 else 0) * z j := by grind
+        _ = _ := by simp
+      have hn (z : Fin n → ℤ) : ∑ j, (if 0 = j.succ then (if j.val + 1 = n then 0 else -2) else 0)
+          * z j = 0 := by
+        apply Finset.sum_eq_zero
+        intro j _
+        simp [show 0 ≠ j.succ by grind]
+      have (z : Fin n → ℤ) : (M.mulVec z) 0 = 2 * z ⟨0, hk⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z, add_zero]
+      grind [congrFun hxy 0]
+    | succ k =>
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have hp (z : Fin n → ℤ) : (∑ j, (if Fin.succ ⟨k, hk'⟩ = j.castSucc then 2 else 0) * z j) =
+          2 * z ⟨k + 1, hk⟩ := calc
+        _ = ∑ j, (if j = (⟨k + 1, hk⟩ : Fin n) then 2 else 0) * z j := by grind
+        _ = _ := by simp
+      have hn (z : Fin n → ℤ) : ∑ j, (if Fin.succ ⟨k, hk'⟩ = j.succ then (if j.val + 1 = n then 0
+          else -2) else 0) * z j = -2 * z ⟨k, hk'⟩ := calc
+        _ = ∑ j, (if j = (⟨k, hk'⟩ : Fin n) then -2 else 0) * z j := by grind
+        _ = _ := by simp
+      have (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ ⟨k, hk'⟩) = 2 * z ⟨k + 1, hk⟩
+          - 2 * z ⟨k, hk'⟩ := by
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp z, hn z]
+        ring
+      grind [congrFun hxy (Fin.succ ⟨k, hk'⟩)]
+
+theorem isFiniteCartan_d (n : ℕ) : (D n).IsFiniteCartan where
+  diag := D_diag n
+  offDiag_nonpos := D_off_diag_nonpos n
+  zero_comm i j := by
+    dsimp [D]
+    split_ifs <;> grind
+  exists_posDef := by
+    use 1
+    by_cases hn : n ≤ 2
+    · interval_cases n <;> simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one',
+        one_mul, true_and] <;> exact PosDef.ofNat 2
+    let M : Matrix (Fin (n + 1)) (Fin n) ℤ := fun i j ↦ (if i = j.castSucc then 1 else 0)
+      + (if i = j.succ then if j.val + 1 = n then 0 else -1 else 0)
+      + (if j.val + 1 = n ∧ i.val + 2 = n then 1 else 0)
+    have h (a b : Fin (n + 1)) (hab : a ≠ b) (c₁ c₂ : ℤ) (f : Fin (n + 1) → ℤ) : (∑ x, if x = a
+        then c₁ * f x else if x = b then c₂ * f x else 0) = c₁ * f a + c₂ * f b := calc
+      _ = ∑ x, ((if x = a then c₁ * f x else 0) + if x = b then c₂ * f x else 0) := by grind
+      _ = _ := by simp [Finset.sum_add_distrib]
+    have h (j : Fin n) (f : Fin (n + 1) → ℤ) : (∑ x, M x j * f x) = if j.val + 1 = n then
+        f ⟨n - 2, by omega⟩ + f ⟨n - 1, by omega⟩ else f j.castSucc - f j.succ := by
+      by_cases hj : j.val + 1 = n
+      · let a : Fin (n + 1) := ⟨n - 2, by simp⟩
+        let b : Fin (n + 1) := ⟨n - 1, by simp⟩
+        calc
+          _ = ∑ x, (if x = a then 1 * f x else if x = b then 1 * f x else 0) := by grind
+          _ = f a + f b := by simpa using h a b (by grind) 1 1 f
+          _ = _ := by simp [hj, a, b]
+      · calc
+        _ = ∑ x, (if x = j.castSucc then f x else if x = j.succ then -1 * f x else 0) := by grind
+        _ = _ := by grind [h j.castSucc j.succ (by grind) 1 (-1) f]
+    have h : D n = Mᴴ * M := by
+      ext i j
+      have h : (∑ x, M x i * M x j) =if j.val + 1 = n then M ⟨n - 2, by simp⟩ i
+          + M ⟨n - 1, by simp⟩ i else M j.castSucc i - M j.succ i := calc
+        _ = _ := by grind
+        _ = _ := h j (fun x ↦ M x i)
+      simp_rw [conjTranspose_eq_transpose_of_trivial, mul_apply, transpose_apply, h]
+      dsimp [D, M]
+      simp only [Fin.ext_iff, hn, ↓reduceIte, Int.reduceNeg, Fin.val_castSucc, Fin.val_succ,
+        Nat.pred_eq_succ_iff, Nat.add_right_cancel_iff]
+      omega
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one',
+      conjTranspose_eq_transpose_of_trivial, one_mul, true_and, h]
+    apply PosDef.conjTranspose_mul_self
+    intro x y hxy
+    funext ⟨k, hk⟩
+    induction k with
+    | zero =>
+      have h (hk : 0 < n) (z : Fin n → ℤ) : (M.mulVec z) 0 = z ⟨0, hk⟩ := by
+        have hp : (∑ j, (if 0 = j.castSucc then 1 else 0) * z j) = z ⟨0, hk⟩ := calc
+          _ = ∑ j, (if j = ⟨0, hk⟩ then 1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hn : (∑ j, (if 0 = j.succ then (if j.val + 1 = n then 0 else -1)
+            else 0) * z j) = 0 := by
+          apply Finset.sum_eq_zero
+          intro j _
+          simp [show 0 ≠ j.succ by grind]
+        have hz : (∑ j, (if j.val + 1 = n ∧ (0 : Fin (n + 1)).val + 2 = n
+            then 1 else 0) * z j) = 0 := by
+          exact Finset.sum_eq_zero (by grind)
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp, hn, hz, add_zero]
+      have heq := congrFun hxy (0 : Fin (n + 1))
+      change (M.mulVec x) 0 = (M.mulVec y) 0 at heq
+      rwa [h hk x, h hk y] at heq
+    | succ k =>
+      have hm : n - 1 < n := Nat.sub_one_lt_of_lt hk
+      have hk' : k < n := Nat.lt_of_succ_lt hk
+      have h (l : ℕ) (hl' : l < n) (hl : l + 1 < n) (z : Fin n → ℤ) : (M.mulVec z) (Fin.succ
+          ⟨l, hl'⟩) = z ⟨l + 1, hl⟩ - z ⟨l, hl'⟩ + (if l + 3 = n then z ⟨n - 1, hm⟩ else 0) := by
+        have hp : (∑ j, (if Fin.succ ⟨l, hl'⟩ = j.castSucc then 1 else 0) * z j)
+            = z ⟨l + 1, hl⟩ := calc
+          _ = ∑ j, (if j = ⟨l + 1, hl⟩ then 1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hn : (∑ j, (if Fin.succ ⟨l, hl'⟩ = j.succ then (if j.val + 1
+            = n then 0 else -1) else 0) * z j) = -z ⟨l, hl'⟩ := calc
+          _ = ∑ j, (if j = ⟨l, hl'⟩ then -1 else 0) * z j := by grind
+          _ = _ := by simp
+        have hz : (∑ j, (if j.val + 1 = n ∧ (Fin.succ ⟨l, hl'⟩).val + 2 = n then 1 else 0) * z j)
+            = (if l + 3 = n then z ⟨n - 1, hm⟩ else 0) := by
+          by_cases hc : l + 3 = n
+          · calc
+              _ = ∑ j, (if j = ⟨n - 1, hm⟩ then 1 else 0) * z j := by grind
+              _ = _ := by
+                simp only [ite_mul, one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ,
+                  ↓reduceIte, left_eq_ite_iff]
+                intro _
+                contradiction
+          · simp [hc]
+        simp_rw [mulVec_apply_eq_sum, M, add_mul, Finset.sum_add_distrib, hp, hn, hz,
+          Int.add_neg_eq_sub]
+      have h := congrFun hxy (Fin.succ ⟨k, hk'⟩)
+      change (M.mulVec x) (Fin.succ ⟨k, hk'⟩) = (M.mulVec y) (Fin.succ ⟨k, hk'⟩) at h
+      have h := congrFun hxy (Fin.succ ⟨k + 1, hk⟩)
+      change (M.mulVec x) (Fin.succ ⟨k + 1, hk⟩) = (M.mulVec y) (Fin.succ ⟨k + 1, hk⟩) at h
+      grind
+
+theorem isFiniteCartan_e₆ : (E 6).IsFiniteCartan where
+  diag := E_diag 6
+  offDiag_nonpos := E_off_diag_nonpos 6
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
+  exists_posDef := by
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_six_eq, Int.reduceNeg,
+      one_mul, true_and]
+    apply PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    intro x hx
+    simp only [star_trivial, Int.reduceNeg, cons_mulVec, cons_dotProduct, zero_mul,
+      show vecHead x = x 0 by rfl, Fin.isValue, show vecHead (vecTail x) = x 1 by rfl,
+      show vecHead (vecTail (vecTail x)) = x 2 by rfl, neg_mul, one_mul,
+      show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail x)))) = x 4 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail x))))) = x 5 by rfl,
+      dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, dotProduct_cons]
+    apply pos_of_mul_pos_right (a := 6) ?_ (by positivity)
+    have : 6 * (x 0 * (2 * x 0 + -x 2) + (x 1 * (2 * x 1 + -x 3) + (x 2 * (-x 0 + (2 * x 2 + -x 3))
+        + (x 3 * (-x 1 + (-x 2 + (2 * x 3 + -x 4))) + (x 4 * (-x 3 + (2 * x 4 + -x 5))
+        + x 5 * (-x 4 + 2 * x 5)))))) = 3 * (2 * x 0 - x 2) ^ 2 + (3 * x 2 - 2 * x 3) ^ 2 +
+        3 * (2 * x 1 - x 3) ^ 2 + (3 * x 4 - 2 * x 3) ^ 2 + 3 * (2 * x 5 - x 4) ^ 2 + x 3 ^ 2 := by
+      ring
+    rw [this]
+    apply lt_of_le_of_ne
+    · positivity
+    · symm
+      contrapose hx
+      repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+      obtain ⟨⟨_, _⟩, _⟩ := hx
+      ext i
+      rw [Pi.zero_apply]
+      fin_cases i <;> simp_all
+
+theorem isFiniteCartan_e₇ : (E 7).IsFiniteCartan where
+  diag := E_diag 7
+  offDiag_nonpos := E_off_diag_nonpos 7
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
+  exists_posDef := by
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_seven_eq, Int.reduceNeg,
+      one_mul, true_and]
+    apply PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    intro x hx
+    simp only [star_trivial, Int.reduceNeg, cons_mulVec, cons_dotProduct, zero_mul,
+      show vecHead x = x 0 by rfl, Fin.isValue, show vecHead (vecTail x) = x 1 by rfl,
+      show vecHead (vecTail (vecTail x)) = x 2 by rfl, neg_mul, one_mul,
+      show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail x)))) = x 4 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail x))))) = x 5 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail (vecTail x)))))) = x 6 by rfl,
+      dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, dotProduct_cons]
+    apply pos_of_mul_pos_right (a := 12) ?_ (by positivity)
+    have : 12 * (x 0 * (2 * x 0 + -x 2) + (x 1 * (2 * x 1 + -x 3) + (x 2 * (-x 0 + (2 * x 2 + -x 3))
+        + (x 3 * (-x 1 + (-x 2 + (2 * x 3 + -x 4))) + (x 4 * (-x 3 + (2 * x 4 + -x 5)) + (x 5 *
+        (-x 4 + (2 * x 5 + -x 6)) + x 6 * (-x 5 + 2 * x 6))))))) = 6 * (2 * x 0 - x 2) ^ 2
+        + 2 * (3 * x 2 - 2 * x 3) ^ 2 + 6 * (2 * x 1 - x 3) ^ 2 + (4 * x 4 - 3 * x 3) ^ 2
+        + 2 * (3 * x 5 - 2 * x 4) ^ 2 + 6 * (2 * x 6 - x 5) ^ 2 + x 3 ^ 2 := by ring
+    rw [this]
+    apply lt_of_le_of_ne
+    · positivity
+    · symm
+      contrapose hx
+      repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+      obtain ⟨⟨⟨_, _⟩, _⟩, _⟩ := hx
+      ext i
+      rw [Pi.zero_apply]
+      fin_cases i <;> simp_all
+
+theorem isFiniteCartan_e₈ : (E 8).IsFiniteCartan where
+  diag := E_diag 8
+  offDiag_nonpos := E_off_diag_nonpos 8
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> rfl
+  exists_posDef := by
+    use 1
+    simp only [Pi.one_apply, zero_lt_one, implies_true, diagonal_one', E_eight_eq, Int.reduceNeg,
+      one_mul, true_and]
+    apply PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    intro x hx
+    simp only [star_trivial, Int.reduceNeg, cons_mulVec, cons_dotProduct, zero_mul,
+      show vecHead x = x 0 by rfl, Fin.isValue, show vecHead (vecTail x) = x 1 by rfl,
+      show vecHead (vecTail (vecTail x)) = x 2 by rfl, neg_mul, one_mul,
+      show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail x)))) = x 4 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail x))))) = x 5 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail (vecTail x)))))) = x 6 by rfl,
+      show vecHead (vecTail (vecTail (vecTail (vecTail (vecTail (vecTail (vecTail x))))))) = x 7 by
+      rfl, dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, dotProduct_cons]
+    apply pos_of_mul_pos_right (a := 60) ?_ (by positivity)
+    have : 60 * (x 0 * (2 * x 0 + -x 2) + (x 1 * (2 * x 1 + -x 3) + (x 2 * (-x 0 + (2 * x 2 + -x 3))
+        + (x 3 * (-x 1 + (-x 2 + (2 * x 3 + -x 4))) + (x 4 * (-x 3 + (2 * x 4 + -x 5)) + (x 5 * (-x
+        4 + (2 * x 5 + -x 6)) + (x 6 * (-x 5 + (2 * x 6 + -x 7)) + x 7 * (-x 6 + 2 * x 7)))))))) =
+        30 * (2 * x 0 - x 2) ^ 2 + 10 * (3 * x 2 - 2 * x 3) ^ 2 + 30 * (2 * x 1 - x 3) ^ 2
+        + 3 * (5 * x 4 - 4 * x 3) ^ 2 + 5 * (4 * x 5 - 3 * x 4) ^ 2 + 10 * (3 * x 6 - 2 * x 5) ^ 2
+        + 30 * (2 * x 7 - x 6) ^ 2 + 2 * x 3 ^ 2 := by
+      ring
+    rw [this]
+    apply lt_of_le_of_ne
+    · positivity
+    · symm
+      contrapose hx
+      repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+      obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := hx
+      ext i
+      rw [Pi.zero_apply]
+      fin_cases i <;> simp_all
+
+theorem isFiniteCartan_f₄ : F₄.IsFiniteCartan where
+  diag := F₄_diag
+  offDiag_nonpos := F₄_off_diag_nonpos
+  zero_comm i j := by fin_cases i <;> fin_cases j <;> simp [F₄]
+  exists_posDef := by
+    use ![1, 1, 2, 2]
+    have h : diagonal ![1, 1, 2, 2] * F₄
+        = !![2, -1, 0, 0; -1, 2, -2, 0; 0, -2, 4, -2; 0, 0, -2, 4] := by
+      ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    rw [h]
+    refine ⟨fun i ↦ by fin_cases i <;> simp, PosDef.of_dotProduct_mulVec_pos ?_ ?_⟩
+    · ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    · intro x hx
+      have h : star x ⬝ᵥ !![2, -1, 0, 0; -1, 2, -2, 0; 0, -2, 4, -2; 0, 0, -2, 4] *ᵥ x
+          = 2 * x 0 ^ 2 + 2 * x 1 ^ 2 + 4 * x 2 ^ 2 + 4 * x 3 ^ 2
+          - 2 * x 0 * x 1 - 4 * x 1 * x 2 - 4 * x 2 * x 3 := by
+        simp [show vecHead x = x 0 by rfl, show vecHead (vecTail x) = x 1 by rfl,
+          show vecHead (vecTail (vecTail x)) = x 2 by rfl,
+          show vecHead (vecTail (vecTail (vecTail x))) = x 3 by rfl]
+        ring
+      rw [h]
+      apply pos_of_mul_pos_right (a := 6) ?_ (by positivity)
+      have h : 6 * (2 * x 0 ^ 2 + 2 * x 1 ^ 2 + 4 * x 2 ^ 2 + 4 * x 3 ^ 2
+          - 2 * x 0 * x 1 - 4 * x 1 * x 2 - 4 * x 2 * x 3)
+          = 3 * (2 * x 0 - x 1) ^ 2 + (3 * x 1 - 4 * x 2) ^ 2 + 2 * (2 * x 2 - 3 * x 3) ^ 2
+          + 6 * x 3 ^ 2 := by ring
+      rw [h]
+      apply lt_of_le_of_ne
+      · positivity
+      · symm
+        contrapose hx
+        repeat rw [add_eq_zero_iff_of_nonneg (by positivity) (by positivity)] at hx
+        obtain ⟨⟨_, _⟩, _⟩ := hx
+        ext i
+        rw [Pi.zero_apply]
+        fin_cases i <;> simp_all
+
+theorem isFiniteCartan_g₂ : G₂.IsFiniteCartan where
+  diag := G₂_diag
+  offDiag_nonpos := G₂_off_diag_nonpos
+  zero_comm := by simp [G₂]
+  exists_posDef := by
+    use ![1, 3]
+    have h : diagonal ![1, 3] * G₂ = !![2, -3; -3, 6] := by
+      ext i j
+      fin_cases i <;> fin_cases j <;> rfl
+    simp only [h, Fin.forall_fin_two, cons_val_zero, zero_lt_one, true_and,
+      cons_val_one, cons_val_fin_one, Nat.ofNat_pos, Int.reduceNeg]
+    apply PosDef.of_dotProduct_mulVec_pos
+    · ext i j
+      fin_cases i <;> fin_cases j <;> simp
+    · intro x hx
+      have h : star x ⬝ᵥ !![2, -3; -3, 6].mulVec x =
+        2 * x 0 ^ 2 - 6 * x 0 * x 1 + 6 * x 1 ^ 2 := by
+        simp [show vecHead x = x 0 by rfl, show vecHead (vecTail x) = x 1 by rfl]
+        ring
+      rw [h]
+      by_cases h : x 1 = 0
+      · have h₀ : x 0 ≠ 0 := by
+          contrapose hx
+          ext i
+          fin_cases i <;> simp_all
+        simp [h, sq_pos_iff.mpr h₀]
+      · nlinarith [sq_pos_iff.mpr h, sq_nonneg (2 * x 0 - 3 * x 1)]
+
+end CartanMatrix
 
 end
