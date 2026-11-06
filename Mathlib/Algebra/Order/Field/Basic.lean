@@ -739,7 +739,7 @@ such that `positivity` successfully recognises both `a` and `b`. -/
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnf e
     | throwError "not /"
   let _e_eq : $e =Q $f $a $b := ⟨⟩
-  trace[Tactic.positivity.zeroness] "evalDiv: {a} divided by {b}"
+  trace[Tactic.positivity] "evalDiv: {a} divided by {b}"
   let _a ← synthInstanceQ q(Semifield $α)
   let ⟨_f_eq⟩ ← withNewMCtxDepth <| assertDefEqQ q($f) q(HDiv.hDiv)
   match (dependent := true) pα? with

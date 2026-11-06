@@ -338,7 +338,7 @@ private def mkEncodableCmds (indVal : InductiveVal) (declNames : Array Name) :
       ← mkFromSFuns ctx fromSFunNames,
       ← mkInjThms ctx toSFunNames fromSFunNames]
     ++ (← mkEncodableInstanceCmds ctx declNames toSFunNames fromSFunNames)
-  trace[Mathlib.Deriving.encodable] "\n{cmds}"
+  trace[Mathlib.Deriving.Encodable] "\n{cmds}"
   return cmds
 
 open Command
