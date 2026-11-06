@@ -125,8 +125,7 @@ theorem mem_vars_rename (f : σ → τ) (φ : MvPolynomial σ R) {j : τ} (h : j
   simpa only [exists_prop, Finset.mem_image] using vars_rename f φ h
 
 @[simp]
-theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := by
-  classical rw [vars_def, degrees_zero, Multiset.toFinset_zero]
+theorem vars_0 : (0 : MvPolynomial σ R).vars = ∅ := rfl
 
 @[simp]
 theorem vars_monomial (h : r ≠ 0) : (monomial s r).vars = s.support := by
