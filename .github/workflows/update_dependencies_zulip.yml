@@ -35,6 +35,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
@@ -45,6 +46,8 @@ jobs:
 
       - name: Parse dependency changes
         id: parse_changes
+        # if this fails, still send the message, without the list of changes
+        continue-on-error: true
         run: |
           output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
@@ -108,6 +111,7 @@ jobs:
           fetch-depth: 1
           sparse-checkout: .github/actions
           path: workflow-actions
+          persist-credentials: false # no later step needs git credentials
       - name: Get mathlib-ci
         uses: ./workflow-actions/.github/actions/get-mathlib-ci
 
@@ -118,6 +122,8 @@ jobs:
 
       - name: Parse dependency changes
         id: parse_changes
+        # if this fails, still send the message, without the list of changes
+        continue-on-error: true
         run: |
           output="$("${CI_SCRIPTS_DIR}/zulip/parse_lake_manifest_changes.py")"
           echo "Dependency changes:"
@@ -137,7 +143,7 @@ jobs:
             let prs = context.payload.workflow_run.pull_requests
             if (prs.length) {
               for (let pr of prs) {
-                output += "#" + pr.number + " passed CI and is ready for review. ";
+                output += "[PR " + pr.number + "](" + context.payload.repository.html_url + "/pull/" + pr.number + ") passed CI and is ready for review. ";
               }
               output += "\n\n" + (process.env.CHANGES ?? "");
               return output
