@@ -155,7 +155,7 @@ noncomputable def ofIsInitialLeft : F.PushoutObjObj f₁ f₂ where
     let hX₂ := IsInitial.isInitialObj (F.flip.obj X₂) _ h
     let hY₂ := IsInitial.isInitialObj (F.flip.obj Y₂) _ h
     apply +allowSynthFailures IsPushout.of_vert_isIso
-    · exact isIso_of_isInitial hX₂ hY₂ _
+    · exact hX₂.isIso hY₂ _
     · exact ⟨hX₂.hom_ext _ _⟩
   ι := (F.obj Y₁).map f₂
   inr_ι := (IsInitial.isInitialObj (F.flip.obj Y₂) _ h).hom_ext ..
@@ -181,7 +181,7 @@ noncomputable def ofIsInitialRight : F.PushoutObjObj f₁ f₂ where
     let hX₁ := IsInitial.isInitialObj (F.obj X₁) _ h
     let hY₁ := IsInitial.isInitialObj (F.obj Y₁) _ h
     apply +allowSynthFailures IsPushout.of_horiz_isIso
-    · exact isIso_of_isInitial hX₁ hY₁ _
+    · exact hX₁.isIso hY₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
   ι := (F.map f₁).app Y₂
   inl_ι := (IsInitial.isInitialObj (F.obj Y₁) _ h).hom_ext ..
@@ -376,7 +376,7 @@ noncomputable def ofIsInitial : G.PullbackObjObj f₁ f₃ where
     let hX₃ := IsTerminal.isTerminalObj (G.flip.obj X₃) _ h.op
     let hY₃ := IsTerminal.isTerminalObj (G.flip.obj Y₃) _ h.op
     apply +allowSynthFailures IsPullback.of_vert_isIso
-    · exact isIso_of_isTerminal hX₃ hY₃ _
+    · exact hX₃.isIso hY₃ _
     · exact ⟨hY₃.hom_ext _ _⟩
   π := (G.obj (op Y₁)).map f₃
   π_fst := (IsTerminal.isTerminalObj (G.flip.obj X₃) _ h.op).hom_ext _ _
@@ -402,7 +402,7 @@ noncomputable def ofIsTerminal : G.PullbackObjObj f₁ f₃ where
     let hX₁ := IsTerminal.isTerminalObj (G.obj (op X₁)) _ h
     let hY₁ := IsTerminal.isTerminalObj (G.obj (op Y₁)) _ h
     apply +allowSynthFailures IsPullback.of_horiz_isIso
-    · exact isIso_of_isTerminal hY₁ hX₁ _
+    · exact hY₁.isIso hX₁ _
     · exact ⟨hX₁.hom_ext _ _⟩
   π := (G.map f₁.op).app X₃
   π_snd := (IsTerminal.isTerminalObj (G.obj (op Y₁)) _ h).hom_ext _ _

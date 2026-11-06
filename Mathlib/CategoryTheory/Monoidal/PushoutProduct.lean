@@ -214,7 +214,7 @@ initial object. -/
 def isInitialIso (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (X □ i.to W) ≅ X.hom ▷ W :=
   haveI : IsIso (X.hom ▷ I) :=
-    isIso_of_isInitial (i.ofIso (zeroMul i).symm) (i.ofIso (zeroMul i).symm) _
+    (i.ofIso (zeroMul i).symm).isIso (i.ofIso (zeroMul i).symm) _
   haveI : IsPushout (X.hom ▷ I) (_ ◁ i.to W) ((i.ofIso (zeroMul i).symm).to _) (𝟙 _) :=
     .of_horiz_isIso (sq := ⟨(i.ofIso (zeroMul i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
@@ -227,7 +227,7 @@ an initial object. -/
 def isInitialIso' [BraidedCategory C] (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (i.to W □ X) ≅ Arrow.mk (W ◁ X.hom) :=
   haveI : IsIso (I ◁ X.hom) :=
-    isIso_of_isInitial (i.ofIso (mulZero i).symm) (i.ofIso (mulZero i).symm) _
+    (i.ofIso (mulZero i).symm).isIso (i.ofIso (mulZero i).symm) _
   haveI : IsPushout (i.to W ▷ _) (I ◁ X.hom) (𝟙 _) ((i.ofIso (mulZero i).symm).to _) :=
     .of_vert_isIso (sq := ⟨(i.ofIso (mulZero i).symm).hom_ext ..⟩)
   Arrow.isoMk' _ _ this.isoPushout.symm (Iso.refl _)
@@ -302,7 +302,7 @@ def isTerminalIso [MonoidalCategory C] [MonoidalClosed C]
     (X : Arrow C) {T : C} (t : IsTerminal T) {W : C} :
     ((Opposite.op X) ⋔ Arrow.mk (t.from W)) ≅ Arrow.mk ((MonoidalClosed.pre X.hom).app W) :=
   haveI : IsIso ((MonoidalClosed.pre X.hom).app T) :=
-    isIso_of_isTerminal (IsTerminal.isTerminalObj (ihom _) _ t)
+    (IsTerminal.isTerminalObj (ihom _) _ t).isIso
       (IsTerminal.isTerminalObj (ihom _) _ t) _
   haveI : IsPullback (𝟙 _) ((IsTerminal.isTerminalObj (ihom _) _ t).from _)
       ((ihom X.left).map (t.from W)) ((MonoidalClosed.pre X.hom).app T) :=
@@ -320,7 +320,7 @@ def isInitialIso [CartesianMonoidalCategory C] [MonoidalClosed C] [BraidedCatego
     (X : Arrow C) {I : C} (i : IsInitial I) {W : C} :
     (Opposite.op (Arrow.mk (i.to W)) ⋔ X) ≅ Arrow.mk ((ihom W).map X.hom) :=
   haveI : IsIso ((ihom I).map X.hom) :=
-    isIso_of_isTerminal (isTerminalTensorUnit.ofIso (powZero i).symm)
+    (isTerminalTensorUnit.ofIso (powZero i).symm).isIso
       (isTerminalTensorUnit.ofIso (powZero i).symm) _
   haveI : IsPullback ((isTerminalTensorUnit.ofIso (powZero i).symm).from _) (𝟙 _)
       ((ihom I).map X.hom) ((MonoidalClosed.pre (i.to W)).app X.right) :=
