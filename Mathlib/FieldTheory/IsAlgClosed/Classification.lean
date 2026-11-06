@@ -172,7 +172,7 @@ theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < 
   obtain ⟨e⟩ := Cardinal.lift_mk_eq'.1 this
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
-private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
+private theorem ringEquiv_of_cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   let : Algebra (ZMod p) K := ZMod.algebra _ _
   let : Algebra (ZMod p) L := ZMod.algebra _ _
@@ -195,7 +195,7 @@ theorem ringEquiv_of_equiv_of_char_eq (p : ℕ) [CharP K p] [CharP L p] (hK : �
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · have : Fact p.Prime := ⟨hp⟩
-    exact ringEquiv_of_Cardinal_eq_of_charP p hK hKL
+    exact ringEquiv_of_cardinal_eq_of_charP p hK hKL
   · simp only [hp] at *
     let : CharZero K := CharP.charP_to_charZero K
     let : CharZero L := CharP.charP_to_charZero L

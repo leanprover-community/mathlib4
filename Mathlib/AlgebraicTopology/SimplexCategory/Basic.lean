@@ -888,7 +888,9 @@ def toCat : SimplexCategory ⥤ Cat.{0} :=
       forget₂ LinOrd Lat ⋙ forget₂ Lat PartOrd ⋙
       forget₂ PartOrd Preord ⋙ preordToCat
 
-theorem toCat.obj_eq_Fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+theorem toCat.obj_eq_fin (n : ℕ) : toCat.obj ⦋n⦌ = Fin (n + 1) := rfl
+
+@[deprecated (since := "2026-10-27")] alias toCat.obj_eq_Fin := toCat.obj_eq_fin
 
 instance uniqueHomToZero {Δ : SimplexCategory} : Unique (Δ ⟶ ⦋0⦌) where
   default := Δ.const _ 0

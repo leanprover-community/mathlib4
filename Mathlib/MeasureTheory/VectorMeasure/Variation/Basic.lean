@@ -85,7 +85,7 @@ lemma le_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) {
       simp only [sup_set_eq_biUnion, id_eq]
       exact hs.diff <| .biUnion (Finset.countable_toSet _) (by simp)
 
-/-- Measure version of `preVariation.exists_Finpartition_sum_gt`. -/
+/-- Measure version of `preVariation.exists_finpartition_sum_gt`. -/
 lemma exists_lt_sum_of_lt_variation (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
     {a : ℝ≥0∞} (ha : a < μ.variation s) :
     ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
@@ -94,7 +94,7 @@ lemma exists_lt_sum_of_lt_variation (μ : VectorMeasure X V) {s : Set X} (hs : M
     at ha ⊢
   obtain ⟨P, hP⟩ : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
       a < ∑ p ∈ P.parts, (fun x ↦ ‖μ x‖ₑ) p :=
-    preVariation.exists_Finpartition_sum_gt (‖μ ·‖ₑ) _ ha
+    preVariation.exists_finpartition_sum_gt (‖μ ·‖ₑ) _ ha
   refine ⟨P.parts.map (Function.Embedding.subtype _), ?_, ?_, ?_, ?_⟩
   · simp only [mem_map, Function.Embedding.subtype_apply, Subtype.exists, exists_and_right,
       exists_eq_right, forall_exists_index]
@@ -110,7 +110,7 @@ lemma exists_lt_sum_of_lt_variation (μ : VectorMeasure X V) {s : Set X} (hs : M
   · simp +contextual
   · rwa [Finset.sum_map]
 
-/-- Measure version of `preVariation.exists_Finpartition_sum_ge'`. -/
+/-- Measure version of `preVariation.exists_finpartition_sum_ge'`. -/
 lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
     {ε : ℝ≥0∞} (hε : 0 < ε) (hμ : μ.variation s ≠ ∞) :
     ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
@@ -119,7 +119,7 @@ lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : Measur
     at hμ ⊢
   obtain ⟨P, hP⟩ : ∃ P : Finpartition (⟨s, hs⟩ : Subtype MeasurableSet),
       preVariationFun (fun x ↦ ‖μ x‖ₑ) s ≤ ∑ p ∈ P.parts, (fun x ↦ ‖μ x‖ₑ) ↑p + ε :=
-    preVariation.exists_Finpartition_sum_ge' (‖μ ·‖ₑ) hs hε hμ
+    preVariation.exists_finpartition_sum_ge' (‖μ ·‖ₑ) hs hε hμ
   refine ⟨P.parts.map (Function.Embedding.subtype _), ?_, ?_, ?_, ?_⟩
   · simp only [mem_map, Function.Embedding.subtype_apply, Subtype.exists, exists_and_right,
       exists_eq_right, forall_exists_index]
@@ -135,7 +135,7 @@ lemma exists_variation_le_add' (μ : VectorMeasure X V) {s : Set X} (hs : Measur
   · simp +contextual
   · rwa [Finset.sum_map]
 
-/-- Measure version of `preVariation.exists_Finpartition_sum_ge`. -/
+/-- Measure version of `preVariation.exists_finpartition_sum_ge`. -/
 lemma exists_variation_le_add (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s)
     {ε : ℝ≥0} (hε : 0 < ε) (hμ : μ.variation s ≠ ∞) :
     ∃ (P : Finset (Set X)), (∀ t ∈ P, t ⊆ s) ∧ ((P : Set (Set X)).PairwiseDisjoint id) ∧
