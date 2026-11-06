@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Projection.Minimal
 public import Mathlib.Analysis.InnerProductSpace.Symmetric
 public import Mathlib.Analysis.RCLike.Lemmas
-public import Mathlib.Topology.Algebra.Module.Complement
 
 /-!
 # The orthogonal projection
@@ -204,7 +203,7 @@ theorem eq_starProjection_of_mem_orthogonal' {u v z : E}
 theorem starProjection_orthogonal_val (u : E) :
     Kᗮ.starProjection u = u - K.starProjection u :=
   eq_starProjection_of_mem_orthogonal' (sub_starProjection_mem_orthogonal _)
-    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) <| (sub_add_cancel _ _).symm
+    (K.le_orthogonal_orthogonal (K.orthogonalProjectionOnto u).2) (sub_add_cancel _ _).symm
 
 theorem orthogonalProjectionOnto_orthogonal (u : E) :
     Kᗮ.orthogonalProjectionOnto u =
@@ -261,10 +260,13 @@ theorem norm_starProjection_eq_infDist
 
 /-- The nonnegative norm of the orthogonal projection of `y` onto `U` equals the nonnegative
 distance to the orthogonal complement of `U` as given by `Metric.infNndist`. -/
-theorem nnnorm_starProjection_eq_infNndist
+theorem nnNorm_starProjection_eq_infNNDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
-  simp [← nndist_starProjection_eq_infNndist, nndist_eq_nnnorm]
+  simp [← nndist_starProjection_eq_infNndist, nnDist_eq_nnNorm]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_starProjection_eq_infNndist := nnNorm_starProjection_eq_infNNDist
 
 /-- The extended norm of the orthogonal projection of `y` onto `U` equals the extended distance
 to the orthogonal complement of `U` as given by `Metric.infEDist`. -/
@@ -462,7 +464,7 @@ theorem starProjection_singleton {v : E} (w : E) :
     (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ((‖v‖ ^ 2 : ℝ) : 𝕜)) • (𝕜 ∙ v).starProjection w =
       (((‖v‖ ^ 2 : ℝ) : 𝕜)⁻¹ * ⟪v, w⟫) • v := by
     simp [mul_smul, smul_starProjection_singleton 𝕜 w, -map_pow]
-  convert! key using 1 <;> match_scalars <;> field_simp [hv']
+  convert key using 1 <;> match_scalars <;> field_simp [hv']
 
 /-- Formula for orthogonal projection onto a single unit vector. -/
 theorem starProjection_unit_singleton {v : E} (hv : ‖v‖ = 1) (w : E) :
@@ -509,7 +511,7 @@ theorem orthogonalProjectionOnto_comp_subtypeL_eq_zero_iff {U V : Submodule 𝕜
     [U.HasOrthogonalProjection] : U.orthogonalProjectionOnto ∘L V.subtypeL = 0 ↔ U ⟂ V := by
   refine ⟨fun h u hu v hv ↦ ?_, Submodule.IsOrtho.orthogonalProjectionOnto_comp_subtypeL⟩
   convert starProjection_inner_eq_zero v u hu
-  have : U.orthogonalProjectionOnto v = 0 := DFunLike.congr_fun h (⟨_, hv⟩ : V)
+  have : U.orthogonalProjectionOnto v = 0 := congr($h ⟨_, hv⟩)
   rw [starProjection_apply, this, Submodule.coe_zero, sub_zero]
 
 @[deprecated (since := "2026-05-05")]
@@ -571,7 +573,7 @@ theorem _root_.LinearMap.IsSymmetricProjection.hasOrthogonalProjection_range
     (range p).HasOrthogonalProjection :=
   ⟨fun v => ⟨p v, by
     simp [hp.isIdempotentElem.isSymmetric_iff_orthogonal_range.mp hp.isSymmetric,
-      ← Module.End.mul_apply, hp.isIdempotentElem.eq]⟩⟩
+      ← mul_apply_eq_comp, hp.isIdempotentElem.eq]⟩⟩
 
 /-- The orthogonal projection onto `(𝕜 ∙ v)ᗮ` of `v` is zero. -/
 theorem orthogonalProjectionOnto_orthogonalComplement_singleton_eq_zero (v : E) :

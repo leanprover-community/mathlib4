@@ -11,11 +11,8 @@ public import Mathlib.Data.Finset.Erase
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Data.Finset.Range
 public import Mathlib.Data.Finset.SDiff
-public import Mathlib.Data.Multiset.Basic
 public import Mathlib.Logic.Equiv.Set
 public import Mathlib.Order.Directed
-public import Mathlib.Order.Interval.Set.Defs
-public import Mathlib.Data.Set.SymmDiff
 
 /-!
 # Basic lemmas on finite sets
@@ -72,13 +69,11 @@ variable [DecidableEq α] {s t u : Finset α} {a b : α}
 @[simp]
 theorem disjUnion_eq_union (s t h) : @disjUnion α s t h = s ∪ t := by grind
 
-@[simp]
-theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u := by
-  simp only [disjoint_left, mem_union, or_imp, forall_and]
+theorem disjoint_union_left : Disjoint (s ∪ t) u ↔ Disjoint s u ∧ Disjoint t u :=
+  disjoint_sup_left
 
-@[simp]
-theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u := by
-  simp only [disjoint_right, mem_union, or_imp, forall_and]
+theorem disjoint_union_right : Disjoint s (t ∪ u) ↔ Disjoint s t ∧ Disjoint s u :=
+  disjoint_sup_right
 
 /-! #### inter -/
 
@@ -178,6 +173,15 @@ theorem erase_subset_iff_of_mem (h : a ∈ t) : s.erase a ⊆ t ↔ s ⊆ t := b
 
 theorem erase_injOn' (a : α) : { s : Finset α | a ∈ s }.InjOn fun s => s.erase a :=
   fun s hs t ht (h : s.erase a = _) => by rw [← insert_erase hs, ← insert_erase ht, h]
+
+theorem insert_right_inj (hs : a ∉ s) (ht : a ∉ t) : insert a s = insert a t ↔ s = t :=
+  ⟨fun h ↦ by rw [← erase_insert hs, h, erase_insert ht], congrArg _⟩
+
+theorem insert_injOn_notMem (a : α) : { s : Finset α | a ∉ s }.InjOn (insert a) :=
+  fun _s hs _t ht ↦ (insert_right_inj hs ht).1
+
+theorem sdiff_singleton_injOn_mem (a : α) : { s : Finset α | a ∈ s }.InjOn (· \ {a}) :=
+  fun _s hs _t ht ↦ superset_injOn_sdiff _ (singleton_subset_iff.2 hs) (singleton_subset_iff.2 ht)
 
 end Erase
 

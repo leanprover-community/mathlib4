@@ -6,11 +6,12 @@ Authors: Anne Baanen, Kexing Ying, Eric Wieser
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.Order.BigOperators.Expect
-public import Mathlib.Analysis.Normed.Group.Basic
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Basic.Sign.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+
+import Mathlib.Algebra.Order.BigOperators.Expect
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Real quadratic forms
@@ -44,7 +45,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
     by_cases hi : w i = 0
     · simp [hi]
     · simp only [hi, ↓reduceDIte, Units.val_mk0, u]; field_simp; simp
-  convert!
+  convert
     QuadraticMap.isometryEquivBasisRepr (weightedSumSquares ℝ w)
       ((Pi.basisFun ℝ ι).unitsSMul fun i => .mk0 _ (hu i))
   ext1 v

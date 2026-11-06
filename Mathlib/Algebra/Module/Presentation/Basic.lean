@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Exact.Basic
-public import Mathlib.Algebra.Module.ULift
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
@@ -48,7 +46,6 @@ namespace Module
 
 variable (A : Type u) [Ring A]
 
-set_option linter.checkUnivs false in
 /-- Given a ring `A`, this structure involves a family of elements (indexed by a type `R`)
 in a free module `G →₀ A`. This allows to define an `A`-module by generators and relations,
 see `Relations.Quotient`. -/
@@ -118,7 +115,7 @@ lemma toQuotient_map : relations.toQuotient.comp relations.map = 0 := by aesop
 @[simp]
 lemma toQuotient_map_apply (x : relations.R →₀ A) :
     relations.toQuotient (relations.map x) = 0 :=
-  DFunLike.congr_fun relations.toQuotient_map x
+  congr($relations.toQuotient_map x)
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
@@ -237,7 +234,7 @@ of a composition of linear maps. -/
 @[simps! -isSimp]
 def ofπ' : relations.Solution M :=
   ofπ π (fun r ↦ by
-    simpa using DFunLike.congr_fun hπ (Finsupp.single r 1))
+    simpa using congr($hπ (.single r 1)))
 
 @[simp]
 lemma ofπ'_π : (ofπ' π hπ).π = π := by simp [ofπ']
@@ -333,7 +330,7 @@ lemma desc_comp_π (s : relations.Solution N) : (h.desc s).comp solution.π = s.
 @[simp]
 lemma π_desc_apply (s : relations.Solution N) (x : relations.G →₀ A) :
     h.desc s (solution.π x) = s.π x :=
-  DFunLike.congr_fun (h.desc_comp_π s) x
+  congr($(h.desc_comp_π s) x)
 
 @[simp]
 lemma postcomp_desc (s : relations.Solution N) :
@@ -344,7 +341,7 @@ lemma postcomp_injective {f f' : M →ₗ[A] N}
   suffices f.comp solution.fromQuotient = f'.comp solution.fromQuotient by
     ext x
     obtain ⟨y, rfl⟩ := h.bijective.2 x
-    exact DFunLike.congr_fun this y
+    congrm $this y
   ext g
   simpa using congr_var h' g
 
@@ -452,7 +449,7 @@ def down (h : IsPresentationCore.{max w' w''} solution) :
     ext x
     have := congr_postcomp h' ULift.moduleEquiv.{_, _, w'}.symm.toLinearMap
     simp only [← postcomp_comp] at this
-    simpa using! DFunLike.congr_fun (h.postcomp_injective this) x
+    simpa using! congr($(h.postcomp_injective this) x)
 
 lemma isPresentation {solution : relations.Solution M}
     (h : IsPresentationCore.{max u v w₀} solution) :
@@ -488,7 +485,6 @@ end Relations
 
 variable (M : Type v) [AddCommGroup M] [Module A M]
 
-set_option linter.checkUnivs false in
 /-- Given an `A`-module `M`, a term in this type is a presentation by `M` by
 generators and relations. -/
 structure Presentation extends Relations.{w₀, w₁} A,

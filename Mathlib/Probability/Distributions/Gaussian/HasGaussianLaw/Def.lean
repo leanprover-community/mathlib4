@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian random variables
 

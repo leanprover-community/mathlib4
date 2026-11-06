@@ -6,7 +6,6 @@ Authors: Damiano Testa, Yuyang Zhao
 module
 
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-public import Mathlib.Tactic.MkIffOfInductiveProp
 public import Mathlib.Util.Notation3
 
 /-!

@@ -5,9 +5,8 @@ Authors: Michael Rothgang
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
-public import Mathlib.Topology.Algebra.Module.Equiv
 public import Mathlib.Topology.Algebra.ContinuousAffineMap
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Continuous affine equivalences
@@ -104,8 +103,7 @@ theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
 @[continuity]
-protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
-  e.2
+protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e := by fun_prop
 
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
@@ -131,13 +129,14 @@ lemma toContinuousAffineMap_toAffineMap (e : P₁ ≃ᴬ[k] P₂) :
   rfl
 
 lemma toContinuousAffineMap_toContinuousMap (e : P₁ ≃ᴬ[k] P₂) :
-    e.toContinuousAffineMap.toContinuousMap = toContinuousMap e.toHomeomorph :=
+    e.toContinuousAffineMap.toContinuousMap = ContinuousMap.ofClass e.toHomeomorph :=
   rfl
 
 end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where
@@ -439,6 +438,9 @@ def prodComm : P₁ × P₂ ≃ᴬ[k] P₂ × P₁ where
 @[simp]
 theorem prodComm_symm : (prodComm k P₁ P₂).symm = prodComm k P₂ P₁ :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm k P₁ P₂).trans (prodComm k P₂ P₁) = .refl _ _ := rfl
 
 set_option backward.defeqAttrib.useBackward true in
 /-- Product of affine spaces is associative up to continuous affine isomorphism. -/

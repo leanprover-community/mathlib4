@@ -6,7 +6,6 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Constructors
-public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.RingHom.Locally
 
 /-!
@@ -223,10 +222,10 @@ lemma exists_basicOpen_le_appLE_of_appLE_of_isAffine
     congr
     apply X.presheaf.map_comp
   refine ⟨r, s, hBx, ers, ?_⟩
-  · rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
-    apply hPa _ s' _
-    rw [U₂.2.appLE_eq_away_map f V₂.2]
-    exact hPl _ _ _ _ h₂
+  rw [f.appLE_congr _ hBrr' hBss' (fun f => P f.hom), heq]
+  apply hPa _ s' _
+  rw [U₂.2.appLE_eq_away_map f V₂.2]
+  exact hPl _ _ _ _ h₂
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f` over some affine open
@@ -642,7 +641,7 @@ lemma iff_exists_appLE_locally
   · obtain ⟨U, V, hxV, e, hf⟩ := hf x
     use U, V, hxV, e
     simp only [iff_of_isAffine (P := P), Scheme.Hom.appLE, homOfLE_leOfHom] at hf ⊢
-    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp <|
+    have : (toMorphismProperty (Locally Q)).RespectsIso := toMorphismProperty_respectsIso_iff.mp
       (isLocal_ringHomProperty P).respectsIso
     exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty (Locally Q))
       (arrowResLEAppIso f U V e)).mpr (locally_of hQi _ hf)

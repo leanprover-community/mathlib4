@@ -6,12 +6,10 @@ Authors: Johan Commelin, Robert Y. Lewis
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-public import Mathlib.Algebra.MvPolynomial.Variables
 public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.Algebra.MvPolynomial.Expand
-public import Mathlib.Algebra.Order.Ring.Rat
-public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Data.ZMod.Basic
+
+import Mathlib.Data.ZMod.Basic
 
 /-!
 # Witt polynomials
@@ -163,7 +161,7 @@ theorem wittPolynomial_vars [CharZero R] (n : ℕ) : (wittPolynomial p R n).vars
   have : ∀ i, (monomial (Finsupp.single i (p ^ (n - i))) ((p : R) ^ i)).vars = {i} := by
     intro i
     refine vars_monomial_single i (pow_ne_zero _ hp.1) ?_
-    exact_mod_cast pow_ne_zero i hp.1
+    exact mod_cast pow_ne_zero i hp.1
   rw [wittPolynomial, vars_sum_of_disjoint]
   · simp only [this, biUnion_singleton_eq_self]
   · simp only [this]

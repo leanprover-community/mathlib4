@@ -80,6 +80,11 @@ def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
 lemma eLpNormEssSup_eq_essSup_enorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
 
+@[simp]
+lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
+    eLpNormEssSup f (Measure.dirac a) = ‖f a‖ₑ := by
+  simp [eLpNormEssSup]
+
 /-- `ℒp` seminorm, for almost everywhere strongly measurable functions,
 equal to `0` for `p=0`, to `(∫ ‖f a‖^p ∂μ) ^ (1/p)` for `0 < p < ∞` and to
 `essSup ‖f‖ μ` for `p = ∞`. For not almost everywhere strongly measurable functions,
@@ -100,7 +105,7 @@ theorem eLpNorm_of_not_aestronglyMeasurable [TopologicalSpace ε]
 
 theorem aestronglyMeasurable_of_eLpNorm_ne_top [TopologicalSpace ε]
     {f : α → ε} {p : ℝ≥0∞} (h : eLpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact eLpNorm_of_not_aestronglyMeasurable h
 
 theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
@@ -110,7 +115,7 @@ theorem eLpNorm_eq_eLpNorm' [TopologicalSpace ε]
 lemma eLpNorm_nnreal_eq_eLpNorm' [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = eLpNorm' f p μ :=
-  eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf
+  eLpNorm_eq_eLpNorm' (mod_cast hp) ENNReal.coe_ne_top hf
 
 lemma eLpNorm_eq_lintegral_rpow_enorm_toReal [TopologicalSpace ε]
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {f : α → ε} (hf : AEStronglyMeasurable f μ) :
@@ -169,7 +174,7 @@ theorem lintegral_rpow_enorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
 lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ ^ (p : ℝ) = ∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ := by
-  simp [eLpNorm_eq_eLpNorm' (by exact_mod_cast hp) ENNReal.coe_ne_top hf,
+  simp [eLpNorm_eq_eLpNorm' (mod_cast hp) ENNReal.coe_ne_top hf,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
 /-- Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
@@ -190,7 +195,7 @@ agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1
 and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
 
 Under this modification, the triangle inequality holds for all `p` and
-is thus somethimes more convenient. -/
+is thus sometimes more convenient. -/
 def inhmgELpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in
@@ -209,7 +214,7 @@ theorem inhmgELpNorm_of_not_aestronglyMeasurable
 
 theorem aestronglyMeasurable_of_inhmgELpNorm_ne_top
     {f : α → ε} {p : ℝ≥0∞} (h : inhmgELpNorm f p μ ≠ ∞) : AEStronglyMeasurable f μ := by
-  contrapose! h
+  contrapose h
   exact inhmgELpNorm_of_not_aestronglyMeasurable h
 
 theorem inhmgELpNorm_eq_eLpNorm (hp : 1 ≤ p) {f : α → ε} :
