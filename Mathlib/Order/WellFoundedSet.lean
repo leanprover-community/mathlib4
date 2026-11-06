@@ -413,7 +413,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn (h : s.PartiallyWellOrderedOn r) :
 
 /-- A set is partially well-ordered by a preorder `r` iff it is well-founded and has no infinite
 antichains. -/
-theorem partiallyWellOrderedOn_iff_wellFoundedOn_and_finite_antichains :
+theorem partiallyWellOrderedOn_iff_wellFoundedOn_and_isAntichain_imp_finite :
     s.PartiallyWellOrderedOn r ↔
       s.WellFoundedOn (fun a b ↦ r a b ∧ ¬ r b a) ∧ ∀ t ⊆ s, IsAntichain r t → t.Finite := by
   let : Preorder s :=
