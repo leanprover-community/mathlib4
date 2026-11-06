@@ -51,6 +51,8 @@ jobs:
 
         # Print the duplicate count of category `$1`, read from the first `Number of duplicates`
         # line under its `=== Duplicate $1 ===` header (or nothing if that section has no count).
+        # This is somewhat fragile and depends on an exact header match and the number appearing as the
+        # 4th word of its line.
         count() {
           awk -v header="=== Duplicate $1 ===" '
             $0 == header { found = 1; next }
