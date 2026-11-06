@@ -38,7 +38,7 @@ namespace ContinuousLinearMap
 theorem nnNorm_def (f : E →SL[σ₁₂] F) : ‖f‖₊ = sInf { c | ∀ x, ‖f x‖₊ ≤ c * ‖x‖₊ } := by
   ext
   rw [NNReal.coe_sInf, coe_nnNorm, norm_def, NNReal.coe_image]
-  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnNorm, mem_ofPred_eq, NNReal.coe_mk,
+  simp_rw [← NNReal.coe_le_coe, NNReal.coe_mul, coe_nnNorm, mem_ofPred, NNReal.coe_mk,
     exists_prop]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def

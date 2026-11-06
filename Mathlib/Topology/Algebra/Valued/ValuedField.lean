@@ -61,7 +61,7 @@ instance (priority := 100) Valued.isTopologicalDivisionRing [Valued K Γ₀] :
       use min (γ * (γ' * γ')) γ'
       intro y y_in
       apply hs
-      simp only [mem_ofPred_eq, Units.min_val, Units.val_mul] at y_in
+      simp only [mem_ofPred, Units.min_val, Units.val_mul] at y_in
       exact Valuation.inversion_estimate _ x_ne y_in }
 
 /-- A valued division ring is separated. -/
@@ -74,7 +74,7 @@ instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := 
   set γ' := Units.mk0 ((ValueGroup₀.restrict₀ _) x) (v.restrict.ne_zero_iff.mpr x_ne) with hdef
   exact ⟨γ', fun y hy => by
     simp only [Valuation.restrict_lt_iff_lt_embedding, hdef, sub_zero, Units.val_mk0,
-      mem_ofPred_eq, embedding_restrict₀] at hy
+      mem_ofPred, embedding_restrict₀] at hy
     simpa using hy⟩
 
 section
@@ -348,10 +348,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   have heq : γ₀ = embedding γ₀' := rfl
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
-    · simp only [(Valuation.zero_iff _).mp h, mem_ofPred_eq, Valuation.map_zero, Units.zero_lt,
+    · simp only [(Valuation.zero_iff _).mp h, mem_ofPred, Valuation.map_zero, Units.zero_lt,
         iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_ofPred_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
+      exact ⟨0, by simp only [mem_ofPred, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have h' : γ₀' ≠ 0 := by simpa only [heq, map_ne_zero] using h

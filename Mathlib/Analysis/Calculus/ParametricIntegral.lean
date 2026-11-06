@@ -133,7 +133,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
       ‖∫ a, ‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀)) ∂μ‖ := by
     apply mem_of_superset (ball_mem_nhds _ ε_pos)
     intro x x_in; simp only
-    rw [mem_ofPred_eq, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub,
+    rw [mem_ofPred, ← norm_smul_of_nonneg (nneg _), integral_smul, integral_sub,
       integral_sub, ← ContinuousLinearMap.integral_apply hF'_int]
     exacts [hF_int' x x_in, hF_int, (hF_int' x x_in).sub hF_int,
       hF'_int.apply_continuousLinearMap _]
@@ -510,7 +510,7 @@ lemma ContDiffOn.parametric_integral
       have : z ∈ v'' := by
         have : u'' ×ˢ (t'' ∩ k) ⊆ v'' := Subset.trans (by gcongr) (ht'.trans inter_subset_right)
         exact this z_mem
-      simp only [Finset.mem_Iic, mem_iInter, mem_ofPred_eq, v''] at this
+      simp only [Finset.mem_Iic, mem_iInter, mem_ofPred, v''] at this
       exact this i hi
   refine ⟨k', k'_mem, k', inter_subset_right, k'k, k'meas, fun t tk' tmeas hmut ↦ ?_⟩
   have : HasFTaylorSeriesUpToOn m (fun x ↦ ∫ a in t, f x a ∂μ)

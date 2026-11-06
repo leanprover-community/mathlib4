@@ -416,7 +416,7 @@ protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃
   induction d₁ using ManyOneDegree.ind_on
   induction d₂ using ManyOneDegree.ind_on
   induction d₃ using ManyOneDegree.ind_on
-  simpa only [← add_of, of_le_of, Set.mem_ofPred_eq] using disjoin_le
+  simpa only [← add_of, of_le_of, Set.mem_ofPred] using disjoin_le
 
 @[simp]
 protected theorem le_add_left (d₁ d₂ : ManyOneDegree) : d₁ ≤ d₁ + d₂ :=

@@ -119,7 +119,7 @@ theorem countable_ofPred_isolated_within [SeparableSpace α] {s : Set α} :
   refine ((countable_ofPred_isolated_subtype s).image Subtype.val).mono ?_
   rintro x ⟨hxs, hx⟩
   refine ⟨⟨x, hxs⟩, ?_, rfl⟩
-  rwa [mem_ofPred_eq, isOpen_singleton_iff_punctured_nhds, nhds_ne_subtype_eq_bot_iff,
+  rwa [mem_ofPred, isOpen_singleton_iff_punctured_nhds, nhds_ne_subtype_eq_bot_iff,
     ← nhdsWithin_inter', ← sdiff_eq_compl_inter]
 
 /-- A separable linearly ordered topological space is hereditarily separable: every subset,

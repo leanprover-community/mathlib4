@@ -538,7 +538,7 @@ lemma generateFrom_iUnion_memPartition (t : ℕ → Set α) :
       rw [hun]
       exact MeasurableSet.univ
     | succ n ih =>
-      simp only [memPartition_succ, mem_ofPred_eq] at hun
+      simp only [memPartition_succ, mem_ofPred] at hun
       obtain ⟨v, hv, huv⟩ := hun
       rcases huv with rfl | rfl
       · exact (ih v hv).inter (measurableSet_generateFrom ⟨n, rfl⟩)

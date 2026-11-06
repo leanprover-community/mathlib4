@@ -293,7 +293,7 @@ instance (priority := 100) EuclideanDomain.instIsPrincipalIdealRing : IsPrincipa
       refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
       · rw [← Ideal.span, Ideal.mem_span_singleton, ← mod_eq_zero]
         have : x % m ∉ { x : R | x ∈ S ∧ x ≠ 0 } := (hl _ · (mod_lt x hm0))
-        rw [Set.mem_ofPred_eq, not_and_or, not_not] at this
+        rw [Set.mem_ofPred, not_and_or, not_not] at this
         exact this.neg_resolve_left <| (mod_mem_iff hms).2 hx
       · obtain ⟨y, rfl⟩ := Ideal.mem_span_singleton.1 hx
         exact S.mul_mem_right _ hms

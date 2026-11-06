@@ -199,7 +199,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
     closure s = ⋂ V ∈ {V | V ∈ 𝓤 α ∧ SetRel.IsSymm V}, V ○ s ○ V := by
   ext ⟨x, y⟩
   simp +contextual only
-    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred_eq,
+    [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_ofPred,
       and_imp, SetRel.mem_comp_comp, ← mem_inter_iff, inter_comm, Set.Nonempty, SetRel.inv_eq_self]
 
 theorem uniformity_hasBasis_closed :
