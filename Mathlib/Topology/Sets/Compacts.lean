@@ -137,7 +137,7 @@ theorem coe_eq_empty {s : Compacts α} : (s : Set α) = ∅ ↔ s = ⊥ :=
 
 @[simp]
 theorem coe_nonempty {s : Compacts α} : (s : Set α).Nonempty ↔ s ≠ ⊥ :=
-  nonempty_iff_ne_empty.trans coe_eq_empty.not
+  ne_empty_iff_nonempty.symm.trans coe_eq_empty.not
 
 @[simp]
 theorem coe_finset_sup {ι : Type*} {s : Finset ι} {f : ι → Compacts α} :

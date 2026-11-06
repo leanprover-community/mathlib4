@@ -466,20 +466,24 @@ theorem eq_empty_of_forall_notMem (h : ∀ x, x ∉ s) : s = ∅ :=
 theorem eq_empty_of_subset_empty {s : Set α} : s ⊆ ∅ → s = ∅ :=
   subset_empty_iff.1
 
-/-- See also `Set.nonempty_iff_ne_empty`. -/
+/-- See also `Set.ne_empty_iff_nonempty`. -/
 @[push]
 theorem not_nonempty_iff_eq_empty : ¬s.Nonempty ↔ s = ∅ := by
   simp only [Set.Nonempty, not_exists, eq_empty_iff_forall_notMem]
 
 /-- See also `Set.not_nonempty_iff_eq_empty`. -/
-@[push ←]
-theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
-  not_nonempty_iff_eq_empty.not_right
+@[simp, push]
+lemma ne_empty_iff_nonempty : s ≠ ∅ ↔ s.Nonempty :=
+  not_nonempty_iff_eq_empty.symm.not_left
 
-/-- Variant of `nonempty_iff_ne_empty` used by `push Not`. -/
+@[deprecated ne_empty_iff_nonempty +typeChanged (since := "2026-11-05")]
+theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
+  ne_empty_iff_nonempty.symm
+
+/-- Variant of `ne_empty_iff_nonempty` used by `push Not`. -/
 @[push ←]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
-  nonempty_iff_ne_empty.trans ne_comm
+  ne_empty_iff_nonempty.symm.trans ne_comm
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
@@ -489,14 +493,14 @@ theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by
 theorem nonempty_iff_ne_empty' : Nonempty s ↔ s ≠ ∅ :=
   not_nonempty_iff_eq_empty'.not_right
 
-alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
+alias ⟨_, Nonempty.ne_empty⟩ := ne_empty_iff_nonempty
 
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
 @[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
-  not_iff_not.1 <| by simpa using! nonempty_iff_ne_empty
+  not_iff_not.1 <| by simp [Set.Nonempty]
 
 lemma eq_empty_of_isEmpty (s : Set α) [IsEmpty s] : s = ∅ := by
   simpa using ‹IsEmpty s›
@@ -506,7 +510,7 @@ instance uniqueEmpty [IsEmpty α] : Unique (Set α) where
   uniq _ := eq_empty_of_isEmpty _
 
 theorem eq_empty_or_nonempty (s : Set α) : s = ∅ ∨ s.Nonempty :=
-  or_iff_not_imp_left.2 nonempty_iff_ne_empty.2
+  or_iff_not_imp_left.2 ne_empty_iff_nonempty.1
 
 theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
   subset_empty_iff.1 <| e ▸ h
@@ -549,7 +553,7 @@ instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
 
 @[simp]
 theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
-  (@bot_lt_iff_ne_bot (Set α) _ _ _).trans nonempty_iff_ne_empty.symm
+  (@bot_lt_iff_ne_bot (Set α) _ _ _).trans ne_empty_iff_nonempty
 
 alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
@@ -1064,7 +1068,7 @@ variable {α : Type*} {β : Type*}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
     {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
-  rw [nonempty_iff_ne_empty, ← h2, nonempty_iff_ne_empty, hf.ne_iff]
+  rw [← ne_empty_iff_nonempty, ← h2, ← ne_empty_iff_nonempty, hf.ne_iff]
 
 end Function
 

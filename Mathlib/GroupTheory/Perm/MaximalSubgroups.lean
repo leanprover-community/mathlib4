@@ -175,7 +175,8 @@ theorem has_swap_mem_of_lt_stabilizer [DecidableEq α]
     convert one_add_one_eq_two <;>
     · apply le_antisymm
       · assumption
-      rw [one_le_encard_iff_nonempty, Set.nonempty_iff_ne_empty]
+      rw [one_le_encard_iff_nonempty]
+      by_contra! h
       aesop
   have _ : Finite α := by
     rw [← ENat.card_lt_top, hα]
@@ -329,7 +330,7 @@ theorem isCoatom_stabilizer_of_ncard_lt_ncard_compl
     {s : Set α} (h0 : s.Nonempty) (hα : s.ncard < sᶜ.ncard) :
     IsCoatom (stabilizer (Perm α) s) := by
   classical
-  have h1 : sᶜ.Nonempty := nonempty_iff_ne_empty.mpr (by aesop)
+  have h1 : sᶜ.Nonempty := ne_empty_iff_nonempty.mp (by aesop)
   have : Fintype α := Fintype.ofFinite α
   -- To prove that `stabilizer (Perm α) s` is maximal,
   -- we need to prove that it is `≠ ⊤`

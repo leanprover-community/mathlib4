@@ -1343,7 +1343,7 @@ def splitSupport (l : (Σ i, αs i) →₀ M) : Finset ι :=
 set_option backward.isDefEq.respectTransparency false in
 theorem mem_splitSupport_iff_ne_zero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
-    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
+    Finset.ne_empty_iff_nonempty, split, comapDomain, Finset.Nonempty]
   simp only [Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 

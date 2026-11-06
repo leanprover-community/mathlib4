@@ -569,7 +569,7 @@ theorem disjoint_of_disjoint_support (h : Disjoint G.support H.support) : Disjoi
 @[simp] lemma edgeSet_eq_empty : G.edgeSet = ∅ ↔ G = ⊥ := by rw [← edgeSet_bot, edgeSet_inj]
 
 @[simp] lemma edgeSet_nonempty : G.edgeSet.Nonempty ↔ G ≠ ⊥ := by
-  rw [Set.nonempty_iff_ne_empty, edgeSet_eq_empty.ne]
+  rw [← Set.ne_empty_iff_nonempty, edgeSet_eq_empty.ne]
 
 /-- This lemma, combined with `edgeSet_sdiff` and `edgeSet_fromEdgeSet`,
 allows proving `(G \ fromEdgeSet s).edgeSet = G.edgeSet \ s` by `simp`. -/
@@ -1041,7 +1041,7 @@ def IsIsolated (G : SimpleGraph V) (v : V) : Prop := ∀ w, ¬ G.Adj v w
   simp [neighborSet, IsIsolated, Set.ext_iff]
 
 @[simp] lemma neighborSet_nonempty : (G.neighborSet v).Nonempty ↔ ¬ G.IsIsolated v := by
-  simp [Set.nonempty_iff_ne_empty]
+  simp [← Set.ne_empty_iff_nonempty]
 
 protected alias ⟨IsIsolated.of_neighborSet_eq_empty, IsIsolated.neighborSet_eq_empty⟩ :=
   neighborSet_eq_empty

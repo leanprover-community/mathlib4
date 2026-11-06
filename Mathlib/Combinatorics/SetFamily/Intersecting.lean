@@ -96,7 +96,7 @@ theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α)
   refine
     subsingleton_of_subsingleton.intersecting.trans
       ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_⟩
-  · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
+  · obtain ⟨a, ha⟩ := ne_empty_iff_nonempty.1 h
     rwa [Subsingleton.elim ⊥ a]
   · rintro rfl
     exact (Set.singleton_nonempty _).ne_empty.symm

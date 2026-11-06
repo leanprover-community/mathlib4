@@ -123,7 +123,7 @@ lemma Module.support_eq_empty_iff :
 
 lemma Module.nonempty_support_iff :
     (Module.support R M).Nonempty ↔ Nontrivial M := by
-  rw [Set.nonempty_iff_ne_empty, ne_eq,
+  rw [← Set.ne_empty_iff_nonempty, ne_eq,
     Module.support_eq_empty_iff, ← not_subsingleton_iff_nontrivial]
 
 lemma Module.nonempty_support_of_nontrivial [Nontrivial M] : (Module.support R M).Nonempty :=

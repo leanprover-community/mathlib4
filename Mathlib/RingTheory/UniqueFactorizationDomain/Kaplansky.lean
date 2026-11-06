@@ -48,7 +48,7 @@ theorem exists_mem_kaplanskySet_le {C : Set (Ideal R)} (hS : 0 ∉ S) (hC : C �
     rw [mem_kaplanskySet_iff, eq_empty_iff_forall_notMem]
     intro x hx
     rcases (Submodule.mem_sSup_of_directed ⟨_, hI⟩ hC₂.directedOn).1 hx.1 with ⟨J, hJ₁, hJ₂⟩
-    have hx₂ : (J : Set R) ∩ S ≠ ∅ := nonempty_iff_ne_empty.1 ⟨x, hJ₂, hx.2⟩
+    have hx₂ : (J : Set R) ∩ S ≠ ∅ := ne_empty_iff_nonempty.2 ⟨x, hJ₂, hx.2⟩
     exact hx₂ (mem_kaplanskySet_iff.mp (hC hJ₁))
 
 /-- If `0 ∉ S`, then there is a maximal element in `kaplanskySet S`. -/
@@ -84,7 +84,7 @@ theorem of_exists_prime_mem_of_isPrime
   refine UniqueFactorizationMonoid.of_exists_prime_factors fun a ha ↦ ?_
   have ha₂ := span_notMem_kaplanskySet ha H
   rw [mem_kaplanskySet_iff] at ha₂
-  rcases nonempty_iff_ne_empty.2 ha₂ with ⟨x, hx, hx₂⟩
+  rcases ne_empty_iff_nonempty.1 ha₂ with ⟨x, hx, hx₂⟩
   obtain ⟨b, hb⟩ := mem_span_singleton'.1 hx
   rw [← hb, mul_comm] at hx₂
   have hsubset : closure {r : R | Prime r} ≤ closure {r : R | IsUnit r ∨ Prime r} :=

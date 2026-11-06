@@ -429,7 +429,7 @@ lemma exists_ne_mem_inter_of_not_pairwiseDisjoint
   simp only [not_forall] at h
   obtain ⟨i, hi, j, hj, h_ne, t, hfi, hfj, ht⟩ := h
   replace ht : t.Nonempty := by
-    rwa [le_bot_iff, bot_eq_empty, ← Ne, ← nonempty_iff_ne_empty] at ht
+    rwa [le_bot_iff, bot_eq_empty, ← Ne, ne_empty_iff_nonempty] at ht
   obtain ⟨x, hx⟩ := ht
   exact ⟨i, hi, j, hj, h_ne, x, hfi hx, hfj hx⟩
 

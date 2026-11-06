@@ -113,7 +113,7 @@ theorem nonempty_inter [PreconnectedSpace α] {s t : Set α} :
 theorem isClopen_iff [PreconnectedSpace α] {s : Set α} : IsClopen s ↔ s = ∅ ∨ s = univ :=
   ⟨fun hs =>
     by_contradiction fun h =>
-      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_iff_ne_empty] using h
+      have h1 : s.Nonempty ∧ sᶜ.Nonempty := by simpa [nonempty_compl] using h
       have ⟨_, h2, h3⟩ := nonempty_inter hs.2 hs.1.isOpen_compl (union_compl_self s) h1.1 h1.2
       h3 h2,
     by rintro (rfl | rfl); exacts [isClopen_empty, isClopen_univ]⟩
@@ -184,7 +184,7 @@ theorem frontier_eq_empty_iff [PreconnectedSpace α] {s : Set α} :
 
 theorem nonempty_frontier_iff [PreconnectedSpace α] {s : Set α} :
     (frontier s).Nonempty ↔ s.Nonempty ∧ s ≠ univ := by
-  simp only [nonempty_iff_ne_empty, Ne, frontier_eq_empty_iff, not_or]
+  simp only [← ne_empty_iff_nonempty, Ne, frontier_eq_empty_iff, not_or]
 
 /-- In a preconnected space, given a transitive relation `P`, if `P x y` and `P y x` are true
 for `y` close enough to `x`, then `P x y` holds for all `x, y`. This is a version of the fact
@@ -285,7 +285,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
       · refine subset_empty_iff.1 fun x ⟨hxs, hxu, v, hvU, hxv⟩ => ?_
         exact ne_of_mem_of_not_mem hvU uU (hU.1 v hvU ⟨x, hxs, hxu, hxv⟩).symm
       · exact IH (fun u hu => (hU.2 u hu).2) hUo.2
-  · simpa [subset_empty_iff, nonempty_iff_ne_empty] using h ∅
+  · simpa [subset_empty_iff] using h ∅
   · rw [← not_nonempty_iff_eq_empty] at hsuv
     have := hsuv; rw [inter_comm u] at this
     simpa [*, or_imp, forall_and] using h {u, v}
@@ -346,7 +346,7 @@ lemma IsClopen.isPreconnected_iff {s : Set α} (hs : IsClopen s) :
     rintro ⟨a, b, ha, hb, ha', hb', hab, rfl⟩ H
     exact (H a b ha.isOpen hb.isOpen subset_rfl (by rwa [union_inter_cancel_left])
       (by rwa [union_inter_cancel_right])).ne_empty (by grind)
-  · rw [nonempty_iff_ne_empty]
+  · rw [← ne_empty_iff_nonempty]
     intro h
     exact H (s ∩ a) (s ∩ b)
       (isClopen_inter_of_disjoint_cover_clopen' hs hsab ha hb (by grind))

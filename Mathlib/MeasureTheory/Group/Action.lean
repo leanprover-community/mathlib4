@@ -356,7 +356,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
   rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
-    measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
+    measure_pos_iff_nonempty_of_smulInvariant G hμ hU, ← ne_empty_iff_nonempty]
 
 end IsMinimal
 

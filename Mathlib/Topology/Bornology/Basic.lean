@@ -127,7 +127,7 @@ theorem isBounded_empty : IsBounded (∅ : Set α) := by
   exact univ_mem
 
 theorem nonempty_of_not_isBounded (h : ¬IsBounded s) : s.Nonempty := by
-  rw [nonempty_iff_ne_empty]
+  rw [← ne_empty_iff_nonempty]
   rintro rfl
   exact h isBounded_empty
 

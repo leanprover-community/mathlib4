@@ -251,7 +251,7 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
       · have hs' := (AddTorsor.subsingleton_iff V P).1 hs
         simp [hs, Metric.sphere_eq_empty_of_subsingleton (dist_nonneg.trans_lt h).ne']
       · simp only [orthRadius_center, top_coe, Set.inter_univ, not_true_eq_false, and_false,
-          not_subsingleton_iff_nontrivial.2 hs, or_self, iff_false, ← Set.nonempty_iff_ne_empty]
+          not_subsingleton_iff_nontrivial.2 hs, or_self, iff_false, Set.ne_empty_iff_nonempty]
         obtain ⟨v, hv⟩ := exists_norm_eq V (dist_nonneg.trans_lt h).le
         exact ⟨v +ᵥ s.center, by simp [hv]⟩
     · simp only [hp, not_false_eq_true, and_true]
@@ -279,7 +279,7 @@ lemma inter_orthRadius_eq_empty_iff {s : Sphere P} {p : P} :
           obtain ⟨c', rfl⟩ := hv v'
           refine ⟨c' / c, ?_⟩
           simp [← hc, smul_smul, hc0]
-        simp only [hnf, hn, or_self, iff_false, ← Set.nonempty_iff_ne_empty]
+        simp only [hnf, hn, or_self, iff_false, Set.ne_empty_iff_nonempty]
         rw [ne_eq, ← Submodule.orthogonal_eq_bot_iff] at hb
         obtain ⟨v, hvm, hv0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hb
         refine ⟨(√(s.radius ^ 2 - (dist p s.center) ^ 2) / ‖v‖) • v +ᵥ p, ?_⟩

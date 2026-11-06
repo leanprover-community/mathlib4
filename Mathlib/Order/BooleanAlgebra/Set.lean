@@ -134,7 +134,7 @@ theorem compl_univ_iff {s : Set α} : sᶜ = univ ↔ s = ∅ :=
   compl_eq_top
 
 theorem compl_ne_univ : sᶜ ≠ univ ↔ s.Nonempty :=
-  compl_univ_iff.not.trans nonempty_iff_ne_empty.symm
+  compl_univ_iff.not.trans ne_empty_iff_nonempty
 
 lemma inl_compl_union_inr_compl {s : Set α} {t : Set β} :
     Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ = (Sum.inl '' s ∪ Sum.inr '' t)ᶜ := by
@@ -603,7 +603,7 @@ lemma mem_sdiff_singleton : a ∈ s \ {b} ↔ a ∈ s ∧ a ≠ b := .rfl
 @[deprecated (since := "2026-06-03")] alias mem_diff_singleton := mem_sdiff_singleton
 
 lemma mem_sdiff_singleton_empty {t : Set (Set α)} : s ∈ t \ {∅} ↔ s ∈ t ∧ s.Nonempty :=
-  mem_sdiff_singleton.trans <| and_congr_right' nonempty_iff_ne_empty.symm
+  mem_sdiff_singleton.trans <| and_congr_right' ne_empty_iff_nonempty
 
 @[deprecated (since := "2026-06-03")] alias mem_diff_singleton_empty := mem_sdiff_singleton_empty
 

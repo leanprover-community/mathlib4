@@ -311,7 +311,7 @@ theorem isOpen_iff {s : Set (CofiniteTopology X)} : IsOpen s ↔ s.Nonempty → 
     finite_image_iff (WithTopology.ofTopology_injective _).injOn]
 
 theorem isOpen_iff' {s : Set (CofiniteTopology X)} : IsOpen s ↔ s = ∅ ∨ sᶜ.Finite := by
-  simp only [isOpen_iff, nonempty_iff_ne_empty, or_iff_not_imp_left]
+  simp only [isOpen_iff, ← ne_empty_iff_nonempty, or_iff_not_imp_left]
 
 theorem isClosed_iff {s : Set (CofiniteTopology X)} : IsClosed s ↔ s = univ ∨ s.Finite := by
   simp only [← isOpen_compl_iff, isOpen_iff', compl_compl, compl_empty_iff]

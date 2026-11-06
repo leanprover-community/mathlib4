@@ -196,7 +196,7 @@ def IsPartition (c : Set (Set α)) := ∅ ∉ c ∧ ∀ a, ∃! b ∈ c, a ∈ b
 /-- A partition of `α` does not contain the empty set. -/
 theorem nonempty_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (h : s ∈ c) :
     s.Nonempty :=
-  Set.nonempty_iff_ne_empty.2 fun hs0 => hc.1 <| hs0 ▸ h
+  Set.ne_empty_iff_nonempty.1 fun hs0 => hc.1 <| hs0 ▸ h
 
 theorem isPartition_classes (r : Setoid α) : IsPartition r.classes :=
   ⟨empty_notMem_classes, classes_eqv_classes⟩

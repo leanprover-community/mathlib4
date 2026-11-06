@@ -628,7 +628,7 @@ the property is additive and holds on summands. -/]
 theorem prod_induction_nonempty {M : Type*} [CommMonoid M] (f : ι → M) (p : M → Prop)
     (hom : ∀ a b, p a → p b → p (a * b)) (nonempty : s.Nonempty) (base : ∀ x ∈ s, p <| f x) :
     p <| ∏ x ∈ s, f x :=
-  Multiset.prod_induction_nonempty p hom (by simp [nonempty_iff_ne_empty.mp nonempty])
+  Multiset.prod_induction_nonempty p hom (by simp [ne_empty_iff_nonempty.mpr nonempty])
     (Multiset.forall_mem_map_iff.mpr base)
 
 @[to_additive]

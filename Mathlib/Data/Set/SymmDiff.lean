@@ -38,7 +38,7 @@ theorem symmDiff_eq_empty : s ∆ t = ∅ ↔ s = t :=
 
 @[simp]
 theorem symmDiff_nonempty : (s ∆ t).Nonempty ↔ s ≠ t :=
-  nonempty_iff_ne_empty.trans symmDiff_eq_empty.not
+  ne_empty_iff_nonempty.symm.trans symmDiff_eq_empty.not
 
 theorem inter_symmDiff_distrib_left (s t u : Set α) : s ∩ t ∆ u = (s ∩ t) ∆ (s ∩ u) :=
   inf_symmDiff_distrib_left _ _ _
