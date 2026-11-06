@@ -6,8 +6,8 @@ Authors: Kirill Kondrashov, Oliver Nash
 module
 
 public import Mathlib.LinearAlgebra.ExteriorPower.BilinForm
+public import Mathlib.LinearAlgebra.ExteriorPower.Orientation
 public import Mathlib.LinearAlgebra.ExteriorPower.WedgePairing
-public import Mathlib.LinearAlgebra.Orientation
 
 /-!
 # Hodge star on exterior powers
@@ -59,21 +59,11 @@ lemma exteriorPower_hodgeStar_eq_wedgePairing (x : ⋀[R]^k M) :
 variable [LinearOrder R] [IsStrictOrderedRing R]
   [Module.Oriented R M (Fin (finrank R M))]
 
-open Set Set.powersetCard in
-/-- The Hodge star associated to `B` and the positive orientation, using `Module.finBasis` to
-choose a volume element compatible with the orientation. -/
+/-- The Hodge star associated to `B` and the positive orientation. -/
 @[expose, simps!]
 public def hodgeStarOfOrientation {k l : ℕ}
     (hkl : k + l = finrank R M) :
-    ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M := by
-  classical
-  let b := Module.finBasis R M
-  letI : Unique (powersetCard (Fin (finrank R M)) (finrank R M)) := {
-    default := ⟨Finset.univ, by simp⟩
-    uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp
-  }
-  let vol := (b.exteriorPower (finrank R M)).equiv (Basis.singleton _ R) (Equiv.refl _)
-  let vol' := if b.orientation = positiveOrientation then vol else vol.trans (LinearEquiv.neg R)
-  exact hodgeStar B hB vol' hkl
+    ⋀[R]^k M ≃ₗ[R] ⋀[R]^l M :=
+  hodgeStar B hB (volOfOrientation (R := R) (M := M)) hkl
 
 end exteriorPower
