@@ -90,7 +90,7 @@ lemma condLExp_eNorm (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {
   grw [← A, condLExp_ofReal m hf h'f]
   filter_upwards [condExp_nonneg h'f (m := m)] with x hx using by simp [Real.eNorm_eq_ofReal hx]
 
-lemma lintegral_enorm_condExp_indicator
+lemma lintegral_eNorm_condExp_indicator
     {m : MeasurableSpace 𝓧} {m𝓧 : MeasurableSpace 𝓧} (hm : m ≤ m𝓧) {μ : Measure 𝓧}
     [SigmaFinite (μ.trim hm)] {s : Set 𝓧} (hs : MeasurableSet s) (h's : μ s ≠ ∞ := by finiteness) :
     ∫⁻ a, ‖μ[s.indicator (1 : 𝓧 → ℝ) | m] a‖ₑ ∂μ = μ s := calc

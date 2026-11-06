@@ -46,7 +46,7 @@ namespace MeasureTheory
 
 /-! ### Some results about the Lebesgue integral involving a normed group -/
 
-lemma lintegral_enorm_eq_lintegral_edist (f : α → β) :
+lemma lintegral_eNorm_eq_lintegral_edist (f : α → β) :
     ∫⁻ a, ‖f a‖ₑ ∂μ = ∫⁻ a, edist (f a) 0 ∂μ := by simp only [edist_zero_right]
 
 theorem lintegral_norm_eq_lintegral_edist (f : α → β) :
@@ -61,17 +61,17 @@ theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable 
   apply edist_triangle_right
 
 -- Yaël: Why do the following four lemmas even exist?
-theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : ε'')‖ₑ ∂μ = 0 := by simp
+theorem lintegral_eNorm_zero : ∫⁻ _ : α, ‖(0 : ε'')‖ₑ ∂μ = 0 := by simp
 
-theorem lintegral_enorm_add_left {f : α → ε''} (hf : AEStronglyMeasurable f μ) (g : α → ε') :
+theorem lintegral_eNorm_add_left {f : α → ε''} (hf : AEStronglyMeasurable f μ) (g : α → ε') :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_left' hf.eNorm _
 
-theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStronglyMeasurable g μ) :
+theorem lintegral_eNorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStronglyMeasurable g μ) :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
   lintegral_add_right' _ hg.eNorm
 
-theorem lintegral_enorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ := by simp
+theorem lintegral_eNorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ := by simp
 
 /-! ### The predicate `HasFiniteIntegral` -/
 
@@ -100,7 +100,7 @@ theorem hasFiniteIntegral_iff_edist (f : α → β) :
 
 theorem hasFiniteIntegral_iff_ofReal {f : α → ℝ} (h : 0 ≤ᵐ[μ] f) :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ENNReal.ofReal (f a) ∂μ) < ∞ := by
-  rw [hasFiniteIntegral_iff_eNorm, lintegral_enorm_of_ae_nonneg h]
+  rw [hasFiniteIntegral_iff_eNorm, lintegral_eNorm_of_ae_nonneg h]
 
 theorem hasFiniteIntegral_iff_ofNNReal {f : α → ℝ≥0} :
     HasFiniteIntegral (fun x => (f x : ℝ)) μ ↔ (∫⁻ a, f a ∂μ) < ∞ := by
@@ -268,7 +268,7 @@ theorem HasFiniteIntegral.eNorm {f : α → ε} (hfi : HasFiniteIntegral f μ) :
 theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (fun a => ‖f a‖) μ := by simpa [hasFiniteIntegral_iff_eNorm] using hfi
 
-theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
+theorem hasFiniteIntegral_eNorm_iff (f : α → ε) :
     HasFiniteIntegral (‖f ·‖ₑ) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr'_eNorm <| Eventually.of_forall fun x => eNorm_eNorm (f x)
 
@@ -339,7 +339,7 @@ theorem ae_norm_ofReal_f_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ 
   intro a tendsto_norm F_le_bound
   exact le_of_tendsto' tendsto_norm F_le_bound
 
-theorem ae_enorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
+theorem ae_eNorm_le_bound (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F' n a‖ₑ ≤ bound' a)
     (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n ↦ F' n a) atTop (𝓝 (f' a))) :
     ∀ᵐ a ∂μ, ‖f' a‖ₑ ≤ bound' a := by
   rw [← ae_all_iff] at h_bound
@@ -356,7 +356,7 @@ theorem hasFiniteIntegral_of_dominated_convergence_eNorm
   rw [hasFiniteIntegral_iff_eNorm]
   calc
     (∫⁻ a, ‖f' a‖ₑ ∂μ) ≤ ∫⁻ a, bound' a ∂μ :=
-      lintegral_mono_ae <| ae_enorm_le_bound h_bound h_lim
+      lintegral_mono_ae <| ae_eNorm_le_bound h_bound h_lim
     _ < ∞ := bound_hasFiniteIntegral
 
 theorem hasFiniteIntegral_of_dominated_convergence

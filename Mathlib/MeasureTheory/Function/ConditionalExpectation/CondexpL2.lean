@@ -155,7 +155,7 @@ theorem lintegral_nnNorm_condExpL2_le (hs : MeasurableSet[m] s) (hμs : μ s ≠
     dsimp only
     simp_rw [hx]
   rw [lintegral_congr_ae hg_nnNorm_eq.symm]
-  refine lintegral_enorm_le_of_forall_fin_meas_integral_eq
+  refine lintegral_eNorm_le_of_forall_fin_meas_integral_eq
     hm (Lp.stronglyMeasurable f) ?_ ?_ ?_ ?_ hs hμs
   · exact integrableOn_Lp_of_measure_ne_top f fact_one_le_two_ennreal.elim hμs
   · exact hg_meas

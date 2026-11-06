@@ -71,14 +71,14 @@ theorem tendsto_one_iff_norm_tendsto_zero {f : α → E} {a : Filter α} :
   tendsto_iff_norm_inv_mul_tendsto_zero.trans <| by simp
 
 @[to_additive]
-theorem tendsto_iff_enorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+theorem tendsto_iff_eNorm_inv_mul_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖(f e)⁻¹ * b‖ₑ) a (𝓝 0) := by
-  simp only [← edist_eq_enorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
+  simp only [← edist_eq_eNorm_inv_mul, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive]
-theorem tendsto_one_iff_enorm_tendsto_zero {f : α → E} {a : Filter α} :
+theorem tendsto_one_iff_eNorm_tendsto_zero {f : α → E} {a : Filter α} :
     Tendsto f a (𝓝 1) ↔ Tendsto (‖f ·‖ₑ) a (𝓝 0) :=
-  tendsto_iff_enorm_inv_mul_tendsto_zero.trans <| by simp
+  tendsto_iff_eNorm_inv_mul_tendsto_zero.trans <| by simp
 
 @[to_additive (attr := simp 1100)]
 theorem comap_norm_nhds_one : comap norm (𝓝 0) = 𝓝 (1 : E) := by
@@ -335,9 +335,9 @@ theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E}
   simp only [← dist_eq_norm_div, ← tendsto_iff_dist_tendsto_zero]
 
 @[to_additive]
-theorem tendsto_iff_enorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
+theorem tendsto_iff_eNorm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖ₑ) a (𝓝 0) := by
-  simp only [← edist_eq_enorm_div, ← tendsto_iff_edist_tendsto_0]
+  simp only [← edist_eq_eNorm_div, ← tendsto_iff_edist_tendsto_0]
 
 @[to_additive]
 theorem SeminormedCommGroup.mem_closure_iff {s : Set E} :

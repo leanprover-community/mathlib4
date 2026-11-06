@@ -195,7 +195,7 @@ lemma prod_flip_apply_eq_integral [CompleteSpace G] [IsFiniteMeasure μ.variatio
 
 lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinite ν.variation] :
     (μ.prod ν B).variation ≤ ‖B‖ₑ • μ.variation.prod ν.variation := by
-  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
   rw [prod_apply_eq_integral hs]
   simp only [smul_apply, Measure.prod_apply hs, smul_eq_mul]
   grw [eNorm_integral_le_lintegral_eNorm, ContinuousLinearMap.opENorm_flip,
@@ -305,7 +305,7 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
     ← lintegral_prod _ (A _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral, ofReal_norm]
   suffices Tendsto (fun i ↦ ‖B‖ₑ * ‖i - g‖ₑ) (𝓝 g) (𝓝 (‖B‖ₑ * 0)) by simpa
   apply ENNReal.Tendsto.const_mul _ (by simp)
-  rw [← tendsto_iff_enorm_sub_tendsto_zero]
+  rw [← tendsto_iff_eNorm_sub_tendsto_zero]
   exact tendsto_id
 
 /-- **Fubini's Theorem**: For integrable functions on `X × Y`,

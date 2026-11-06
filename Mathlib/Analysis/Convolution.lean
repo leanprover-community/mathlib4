@@ -539,7 +539,7 @@ lemma eLpNorm_convolution_integrand_le {p q r : ENNReal} [hpq : p.HolderTriple q
     eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) r μ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := by
   have hmp := μ.measurePreserving_sub_left x₀
   rw [← eLpNorm_comp_measurePreserving hg hmp]
-  exact eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
+  exact eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm L hf (hg.comp_measurePreserving hmp)
 
 omit [NormedSpace ℝ F] in
 /-- If `MemLp f p μ` and `MemLp g q μ`, where `p` and `q` are Hölder conjugates, then the
@@ -558,7 +558,7 @@ theorem eNorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
   calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := eNorm_integral_le_lintegral_eNorm _
-    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_enorm_le_eLpNorm_one
+    _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_eNorm_le_eLpNorm_one
     _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
 
 end IsAddLeftInvariant

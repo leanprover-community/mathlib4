@@ -167,7 +167,7 @@ theorem nndist_tmul_le (x x' : E) (y y' : F) :
 
 theorem edist_tmul_le (x x' : E) (y y' : F) :
     edist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ₑ * ‖y‖ₑ + ‖x'‖ₑ * ‖y'‖ₑ := by
-  grw [edist_eq_enorm_sub, eNorm_sub_le]; simp
+  grw [edist_eq_eNorm_sub, eNorm_sub_le]; simp
 
 /-- In `ℝ` or `ℂ` fields, the inner product on tensor products is essentially just the inner product
 with multiplication instead of tensors, i.e., `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a * b, c * d⟫`. -/

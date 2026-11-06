@@ -389,7 +389,7 @@ theorem IntegrableOn.restrict_toMeasurable {f : α → ε'}
     intro n
     rw [inter_comm, ← Measure.restrict_apply (measurableSet_toMeasurable _ _),
       measure_toMeasurable]
-    exact (hf.measure_enorm_ge_lt_top (u_pos n).1 (u_pos n).2.ne).ne
+    exact (hf.measure_eNorm_ge_lt_top (u_pos n).1 (u_pos n).2.ne).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
   obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ₑ :=

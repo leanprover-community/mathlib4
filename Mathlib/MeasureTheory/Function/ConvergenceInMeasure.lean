@@ -76,7 +76,7 @@ theorem tendstoInMeasure_iff_eNorm [SeminormedAddCommGroup E] {l : Filter ι} {f
     {g : α → E} :
     TendstoInMeasure μ f l g ↔
       ∀ ε, 0 < ε → ε ≠ ∞ → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ₑ }) l (𝓝 0) := by
-  simp_rw [← edist_eq_enorm_sub]
+  simp_rw [← edist_eq_eNorm_sub]
   exact ⟨fun h ε hε hε_top ↦ h ε hε, tendstoInMeasure_of_ne_top⟩
 
 /-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with
@@ -412,7 +412,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top [SeminormedAddCommGroup E]
   · convert!
       mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
       using 6
-    simp [edist_eq_enorm_sub]
+    simp [edist_eq_eNorm_sub]
   · simp [hε_top]
   · simp [hε.ne']
 
@@ -438,7 +438,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [SeminormedAddCommGroup E] {
     hn.trans_lt (ENNReal.half_lt_self hδ.ne' hδ_top)
   refine ((le_of_eq ?_).trans (ae_lt_of_essSup_lt this).le).trans hε.le
   congr with x
-  simp [edist_eq_enorm_sub]
+  simp [edist_eq_eNorm_sub]
 
 /-- Convergence in Lp implies convergence in measure. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm [NormedAddCommGroup E] {l : Filter ι}

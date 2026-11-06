@@ -41,7 +41,7 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
     [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
     (B : E →L[𝕜] F →L[𝕜] G)
 
-theorem MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
+theorem MeasureTheory.eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g : α → F}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     eLpNorm (fun a ↦ B (f a) (g a)) r μ ≤ ‖B‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm (B · ·) ‖B‖ₑ B.continuous₂.comp_aestronglyMeasurable₂

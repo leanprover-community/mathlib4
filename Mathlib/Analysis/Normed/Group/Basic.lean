@@ -685,8 +685,8 @@ section ENorm
 lemma eNorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
   rw [ESeminormedMonoid.eNorm_zero]
 
-@[to_additive exists_enorm_lt]
-lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
+@[to_additive exists_eNorm_lt]
+lemma exists_eNorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
     (ContinuousENorm.continuous_eNorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
@@ -696,7 +696,7 @@ lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
 lemma eNorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
 
 @[to_additive]
-theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
+theorem edist_eq_eNorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive]
@@ -863,7 +863,7 @@ alias nnDist_eq_nnNorm := nnDist_eq_nnNorm_sub
 alias nndist_eq_nnnorm := nnDist_eq_nnNorm
 
 @[to_additive]
-theorem edist_eq_enorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
+theorem edist_eq_eNorm_div (a b : E) : edist a b = ‖a / b‖ₑ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm']
 
 @[to_additive]

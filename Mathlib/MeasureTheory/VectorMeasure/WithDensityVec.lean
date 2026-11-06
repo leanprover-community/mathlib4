@@ -87,7 +87,7 @@ lemma restrict_withDensity (hf : μ.Integrable f) :
 
 /-- For a finite family of disjoint measurable sets, the sum of the enorms of the integrals
 against a restricted vector measure is bounded by the variation of its density measure. -/
-lemma sum_enorm_setIntegral_le_variation_withDensity {ι : Type*} (t : Finset ι)
+lemma sum_eNorm_setIntegral_le_variation_withDensity {ι : Type*} (t : Finset ι)
     {A : ι → Set X} (hf : μ.Integrable f) (hs : MeasurableSet s)
     (hA : ∀ i ∈ t, MeasurableSet (A i)) (hdisj : (t : Set ι).PairwiseDisjoint A) :
     ∑ i ∈ t, ‖∫ᵛ x in A i, f x ∂[B; μ.restrict s]‖ₑ ≤ (μ.withDensity f B).variation s := by
@@ -106,9 +106,9 @@ lemma sum_enorm_setIntegral_le_variation_withDensity {ι : Type*} (t : Finset ι
 lemma variation_WithDensity_le :
     (μ.withDensity f B).variation ≤ (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
   by_cases hf : μ.Integrable f
-  · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  · apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
     rw [withDensity_apply hf, MeasureTheory.withDensity_apply _ hs]
-    apply eNorm_setIntegral_le_lintegral_enorm_transpose
+    apply eNorm_setIntegral_le_lintegral_eNorm_transpose
   · simp [withDensity, hf, Measure.zero_le]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -271,7 +271,7 @@ lemma variation_withDensity' [CompleteSpace G]
     _ ≤ ∑ i ∈ g.range.sigma P, ∫⁻ x in i.2, ‖g x - f x‖ₑ ∂(μ.transpose B).variation
         + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
       gcongr with i hi
-      grw [eNorm_setIntegral_le_lintegral_enorm_transpose]
+      grw [eNorm_setIntegral_le_lintegral_eNorm_transpose]
       apply lintegral_mono' _ le_rfl
       apply Measure.restrict_mono_measure
       simpa [transpose_restrict, variation_restrict hs] using Measure.restrict_le_self
@@ -302,7 +302,7 @@ lemma variation_withDensity' [CompleteSpace G]
   -- partition is bounded by the variation of `μ.withDensity f B`, by definition of the variation.
   have I5 : ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ
       ≤ (μ.withDensity f B).variation s := by
-    apply sum_enorm_setIntegral_le_variation_withDensity (g.range.sigma P) hf hs
+    apply sum_eNorm_setIntegral_le_variation_withDensity (g.range.sigma P) hf hs
     · grind
     · rintro ⟨i, p⟩ hi ⟨j, q⟩ hj hijpq
       simp only [Finset.mem_coe, Finset.mem_sigma] at hi hj

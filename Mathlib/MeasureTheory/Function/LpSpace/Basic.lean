@@ -489,7 +489,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
   smul_assoc k k' f := Subtype.ext <| smul_assoc k k' (f : α →ₘ[μ] E)
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
-  IsBoundedSMul.of_enorm_smul_le fun r f => by
+  IsBoundedSMul.of_eNorm_smul_le fun r f => by
     simpa only [eLpNorm_congr_ae (coeFn_smul _ _), eNorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
@@ -539,7 +539,7 @@ theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     rw [ENNReal.div_zero p_zero]
     simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using
       (memLp_top_const_eNorm (by simp)).eLpNorm_lt_top
-  rw [eLpNorm_enorm_rpow _ hf.aestronglyMeasurable (ENNReal.toReal_pos q_zero q_top)]
+  rw [eLpNorm_eNorm_rpow _ hf.aestronglyMeasurable (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
     mul_one]
@@ -569,10 +569,10 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
     mul_one]
   exact hf.eLpNorm_ne_top
 
-theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
+theorem memLp_eNorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.eNorm_rpow_div q⟩
-  apply (memLp_enorm_iff hf).1
+  apply (memLp_eNorm_iff hf).1
   convert h.eNorm_rpow_div q⁻¹ using 1
   · ext x
     have : q.toReal * q.toReal⁻¹ = 1 :=

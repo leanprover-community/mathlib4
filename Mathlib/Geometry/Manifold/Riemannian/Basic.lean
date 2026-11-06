@@ -147,7 +147,7 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
     ∫⁻ t in Icc 0 1, ‖fderivWithin ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) (Icc 0 1) t 1‖ₑ
       = edist x y := by
   have : edist x y = ∫⁻ t in Icc (0 : ℝ) 1, ‖y - x‖ₑ := by
-    simp [edist_comm x y, edist_eq_enorm_sub]
+    simp [edist_comm x y, edist_eq_eNorm_sub]
   rw [this]
   apply setLIntegral_congr_fun measurableSet_Icc (fun z hz ↦ ?_)
   rw [show y - x = fderiv ℝ (ContinuousAffineMap.lineMap (R := ℝ) x y) z 1 by simp]
@@ -168,7 +168,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       pathELength_eq_lintegral_mfderivWithin_Icc]
     simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
     conv_lhs =>
-      rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
+      rw [edist_comm, edist_eq_eNorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
     exact (eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
@@ -252,7 +252,7 @@ lemma eventually_norm_mfderiv_extChartAt_lt (x : M) :
   rwa [← TangentBundle.continuousLinearMapAt_trivializationAt h'y]
 
 set_option backward.isDefEq.respectTransparency false in
-lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
+lemma eventually_eNorm_mfderiv_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝 x, ‖mfderiv% (extChartAt I x) y‖ₑ < C := by
   rcases eventually_norm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   lift C to ℝ≥0 using C_pos.le
@@ -291,7 +291,7 @@ lemma eventually_norm_mfderivWithin_symm_extChartAt_lt (x : M) :
   convert hy
 
 set_option backward.isDefEq.respectTransparency false in
-lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
+lemma eventually_eNorm_mfderivWithin_symm_extChartAt_lt (x : M) :
     ∃ C > (0 : ℝ≥0), ∀ᶠ y in 𝓝[range I] (extChartAt I x x),
     ‖mfderiv[range I] (extChartAt I x).symm y‖ₑ < C := by
   rcases eventually_norm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
@@ -313,7 +313,7 @@ lemma eventually_riemannianEDist_le_edist_extChartAt (x : M) :
   the derivative of the latter is locally bounded, this only multiplies the length by a bounded
   amount. -/
   -- first start from a bound on the derivative
-  rcases eventually_enorm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  rcases eventually_eNorm_mfderivWithin_symm_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   refine ⟨C, C_pos, ?_⟩
   -- consider a small convex set around `extChartAt x x` where everything is controlled.
   obtain ⟨r, r_pos, hr⟩ : ∃ r > 0,
@@ -411,7 +411,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
   real intervals.
   -/
   -- first introduce a neighborhood where the derivative of the extended chart is bounded by `C`
-  rcases eventually_enorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
+  rcases eventually_eNorm_mfderiv_extChartAt_lt I x with ⟨C, C_pos, hC⟩
   -- let `u` be a closed neighborhood, inside `s`, with the derivative control
   obtain ⟨u, u_mem, u_closed, us, hu, uc⟩ : ∃ u ∈ 𝓝 x, IsClosed u ∧ u ⊆ s
       ∧ u ⊆ {y | ‖mfderiv% (extChartAt I x) y‖ₑ < C} ∧ u ⊆ (extChartAt I x).source := by
@@ -493,7 +493,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
     _ = r := (ENNReal.eq_div_iff (by simpa using C_pos.ne') ENNReal.coe_ne_top).mp rfl
   have : γ' t₁ ∈ (extChartAt I x).symm ⁻¹' v := by
     apply hr
-    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_enorm_sub]
+    rw [← Metric.eball_coe, Metric.mem_eball, edist_eq_eNorm_sub]
     convert this
     simp [γ', hγx]
   convert mem_preimage.1 this

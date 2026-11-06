@@ -1215,14 +1215,14 @@ theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
 
 lemma lipschitzWith_re : LipschitzWith 1 (re (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, edist_eq_eNorm_sub]
   calc ‖re x - re y‖ₑ
   _ = ‖re (x - y)‖ₑ := by rw [map_sub re x y]
   _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_re_le_norm (x - y)
 
 lemma lipschitzWith_im : LipschitzWith 1 (im (K := K)) := by
   intro x y
-  simp only [ENNReal.coe_one, one_mul, edist_eq_enorm_sub]
+  simp only [ENNReal.coe_one, one_mul, edist_eq_eNorm_sub]
   calc ‖im x - im y‖ₑ
   _ = ‖im (x - y)‖ₑ := by rw [map_sub im x y]
   _ ≤ ‖x - y‖ₑ := by rw [eNorm_le_iff_norm_le]; exact norm_im_le_norm (x - y)

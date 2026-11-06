@@ -127,7 +127,7 @@ theorem aemeasurable_coeFn [MeasurableSpace β] [BorelSpace β] (f : α →₁[�
 theorem edist_def (f g : α →₁[μ] β) : edist f g = ∫⁻ a, edist (f a) (g a) ∂μ := by
   rw [Lp.edist_def, eLpNorm_one_eq_lintegral_eNorm
     ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable g))]
-  simp [edist_eq_enorm_sub]
+  simp [edist_eq_eNorm_sub]
 
 theorem dist_def (f g : α →₁[μ] β) : dist f g = (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
   simp_rw [dist_edist, edist_def]
@@ -225,7 +225,7 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
     ((memLp_one_iff_integrable.2 hg).toLp g) = _
   rw [Lp.edist_toLp_toLp,
     eLpNorm_one_eq_lintegral_eNorm (hf.aestronglyMeasurable.sub hg.aestronglyMeasurable)]
-  simp [edist_eq_enorm_sub]
+  simp [edist_eq_eNorm_sub]
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by

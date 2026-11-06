@@ -122,7 +122,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   have lip : LipschitzWith 1 m₀ := by
     intro s t
     have : edist s t = edist (s : MeasuredSets μ) t := rfl
-    simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, edist_eq_enorm_sub]
+    simp only [ENNReal.coe_one, one_mul, this, MeasuredSets.edist_def, m₀, edist_eq_eNorm_sub]
     rw [measure_symmDiff_eq (by exact s.1.2.nullMeasurableSet) (by exact t.1.2.nullMeasurableSet)]
     have Is : ((s : Set α) ∩ t) ∪ (s \ t) = (s : Set α) := Set.inter_union_sdiff _ _
     have It : ((t : Set α) ∩ s) ∪ (t \ s) = (t : Set α) := Set.inter_union_sdiff _ _
@@ -167,7 +167,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have It : ‖m t' - m₁ t‖ₑ < δ := by
       have : m₁ ⟨t', hCmeas _ t'C⟩ = m t' :=
         C'_dense.extend_eq lip.continuous ⟨⟨t', hCmeas _ t'C⟩, ⟨t', t'C, rfl⟩⟩
-      rw [← this, ← edist_eq_enorm_sub]
+      rw [← this, ← edist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       exact ht'
@@ -191,7 +191,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
     have Is : ‖m s'' - m₁ s‖ₑ < 3 * δ := by
       have : m₁ ⟨s'', hCmeas _ s''C⟩ = m s'' :=
         C'_dense.extend_eq lip.continuous ⟨⟨s'', hCmeas _ s''C⟩, ⟨s'', s''C, rfl⟩⟩
-      rw [← this, ← edist_eq_enorm_sub]
+      rw [← this, ← edist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       exact hs''
@@ -200,7 +200,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       have s''t'C : s'' ∪ t' ∈ C := hC.union_mem s''C t'C
       have : m₁ ⟨s'' ∪ t', hCmeas _ s''t'C⟩ = m (s'' ∪ t') :=
         C'_dense.extend_eq lip.continuous ⟨⟨s'' ∪ t', hCmeas _ s''t'C⟩, ⟨s'' ∪ t', s''t'C, rfl⟩⟩
-      rw [← this, ← edist_eq_enorm_sub]
+      rw [← this, ← edist_eq_eNorm_sub]
       apply (m₁_lip _ _).trans_lt
       simp only [ENNReal.coe_one, MeasuredSets.edist_def, one_mul]
       change μ ((s'' ∪ t') ∆ (s ∪ t)) < 4 * δ
@@ -337,7 +337,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     apply (hm s hs).trans_eq
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
   have m'_le : m'.variation ≤ μ' := by
-    exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
+    exact variation_le_of_forall_eNorm_le (fun s hs ↦ hm' _)
   -- next line is to make sure that the default instance is picked below when defining `m''`.
   let : MeasurableSpace α := hα
   let m'' : VectorMeasure α E :=
@@ -360,7 +360,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
         indicator_iUnion_of_pairwise_disjoint _ hf, this]
       have I : ∑' (i : ℕ), ∫⁻ (a : α), ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ < ∞ := by
         have A i : ∫⁻ a, ‖μ[(f i).indicator (1 : α → ℝ) | M] a‖ₑ ∂μ = μ (f i) :=
-          lintegral_enorm_condExp_indicator Mle (f_meas i)
+          lintegral_eNorm_condExp_indicator Mle (f_meas i)
         simp_rw [A, ← measure_iUnion hf f_meas]
         exact measure_lt_top _ _
       rw [integral_tsum (by fun_prop)]; swap
@@ -393,6 +393,6 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     simp only [coe_mk, hs, ↓reduceIte, m'']
     grw [eNorm_integral_le_lintegral_eNorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
       lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop),
-      lintegral_enorm_condExp_indicator Mle hs]
+      lintegral_eNorm_condExp_indicator Mle hs]
 
 end MeasureTheory.VectorMeasure

@@ -526,7 +526,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   · rw [eLpNorm_nnreal_eq_lintegral hp'0 hu.continuous.aestronglyMeasurable, h3u,
       ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ ≠ ∞ := by
-    refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
+    refine lintegral_rpow_eNorm_lt_top_of_eLpNorm'_lt_top
       ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp'0) ?_ |>.ne
     rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0 hu.continuous.aestronglyMeasurable]
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top

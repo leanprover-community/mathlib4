@@ -413,22 +413,22 @@ theorem integral_continuousLinearMap_comp
       filter_upwards [hfg] with x hx using by simp [hx]
     rw [← integral_congr_ae hfg, ← integral_congr_ae this, hf]
 
-theorem eNorm_setIntegral_le_of_enorm_le_const_ae {C : ℝ≥0∞}
+theorem eNorm_setIntegral_le_of_eNorm_le_const_ae {C : ℝ≥0∞}
     (hC : ∀ᵐ x ∂μ.variation.restrict s, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation s := by
   by_cases hs : MeasurableSet s; swap
   · simp [setIntegral_eq_zero_of_not_measurableSet hs]
   rw [← variation_restrict hs] at hC
-  apply (eNorm_integral_le_of_enorm_le_const hC).trans
+  apply (eNorm_integral_le_of_eNorm_le_const hC).trans
   rw [variation_restrict hs, Measure.restrict_apply MeasurableSet.univ]
   simp
 
-theorem eNorm_setIntegral_le_of_enorm_le_const {C : ℝ≥0∞}
+theorem eNorm_setIntegral_le_of_eNorm_le_const {C : ℝ≥0∞}
     (hC : ∀ x ∈ s, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation s := by
   by_cases hs : MeasurableSet s; swap
   · simp [setIntegral_eq_zero_of_not_measurableSet hs]
-  apply eNorm_setIntegral_le_of_enorm_le_const_ae
+  apply eNorm_setIntegral_le_of_eNorm_le_const_ae
   apply (ae_restrict_iff' hs).2
   filter_upwards with x using hC x
 
@@ -465,9 +465,9 @@ theorem eNorm_setIntegral_le_lintegral_eNorm :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ x in s, ‖f x‖ₑ ∂μ.variation := by
   grw [eNorm_integral_le_lintegral_eNorm, variation_restrict_le]
 
-theorem eNorm_setIntegral_le_lintegral_enorm_transpose :
+theorem eNorm_setIntegral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂(μ.transpose B).variation := by
-  grw [eNorm_integral_le_lintegral_enorm_transpose, transpose_restrict,variation_restrict_le]
+  grw [eNorm_integral_le_lintegral_eNorm_transpose, transpose_restrict,variation_restrict_le]
 
 private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))
@@ -488,7 +488,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     gcongr
     exact eNorm_setIntegral_le_lintegral_eNorm
   apply (Summable.hasSum_iff_tendsto_nat this).2
-  simp_rw [tendsto_iff_edist_tendsto_0, edist_eq_enorm_sub, eNorm_sub_rev]
+  simp_rw [tendsto_iff_edist_tendsto_0, edist_eq_eNorm_sub, eNorm_sub_rev]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (ENNReal.tendsto_sum_nat_add _ I.ne) (by positivity) (fun N ↦ ?_)
   have : ⋃ n, s n = (⋃ n ∈ Finset.range N, s n) ∪ (⋃ n, s (n + N)) := by

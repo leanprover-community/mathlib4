@@ -176,7 +176,7 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
 function, such that their integrals coincide on `m`-measurable sets with finite measure.
 Then `∫⁻ x in s, ‖g x‖ₑ ∂μ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ` on all `m`-measurable sets with finite
 measure. -/
-theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
+theorem lintegral_eNorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : α → ℝ}
     (hf : StronglyMeasurable f) (hfi : IntegrableOn f s μ) (hg : StronglyMeasurable[m] g)
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)

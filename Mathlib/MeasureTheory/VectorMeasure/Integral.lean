@@ -169,7 +169,7 @@ lemma transpose_dirac (x : X) (v : F) :
 set_option backward.isDefEq.respectTransparency.types false in
 lemma variation_transpose_le :
     (μ.transpose B).variation ≤ ‖B‖₊ • μ.variation := by
-  apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+  apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
     smul_apply, Measure.nnreal_smul_coe_apply]
@@ -195,7 +195,7 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
     · simp [Measure.zero_le]
     suffices μ.variation ≤ C⁻¹ • (μ.transpose B).variation by
       grw [this, smul_smul, mul_inv_cancel₀ hC, one_smul]
-    apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
+    apply variation_le_of_forall_eNorm_le (fun s hs ↦ ?_)
     have : ‖μ s‖ₑ ≤ C⁻¹ • ‖(μ.transpose B) s‖ₑ := by
       obtain ⟨x, hx⟩ : ∃ (x : E), x ≠ 0 := exists_ne 0
       have : ‖B.flip (μ s) x‖₊ ≤ ‖B.flip (μ s)‖₊ * ‖x‖₊ := le_opNNNorm _ _
@@ -640,7 +640,7 @@ theorem eNorm_integral_le_lintegral_eNorm :
   gcongr
   simp [← coe_nnNorm]
 
-theorem eNorm_integral_le_lintegral_enorm_transpose :
+theorem eNorm_integral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation := by
   by_cases hf : μ.Integrable f
   · rw [integral_eq_setToFun_transpose hf]
@@ -651,7 +651,7 @@ theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integra
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
       ‖B‖ * (∫⁻ a, edist (f a) (g a) ∂μ.variation).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp [edist_eq_enorm_sub]
+  simp [edist_eq_eNorm_sub]
 
 theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     edist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤
@@ -794,7 +794,7 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ.variation]
     simp [ENNReal.toReal_ofReal hC, Measure.real]
   _ = C * ‖B‖ * μ.variation.real univ := by ring
 
-theorem eNorm_integral_le_of_enorm_le_const
+theorem eNorm_integral_le_of_eNorm_le_const
     {C : ℝ≥0∞} (h : ∀ᵐ x ∂μ.variation, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation univ := by
   apply eNorm_integral_le_lintegral_eNorm.trans

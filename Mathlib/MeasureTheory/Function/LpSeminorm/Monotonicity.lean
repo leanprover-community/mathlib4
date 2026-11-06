@@ -93,7 +93,7 @@ theorem le_eLpNorm_of_bddBelow' (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → ε}
     C * μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
   by_cases hmeas : AEStronglyMeasurable f μ; swap
   · rw [eLpNorm_of_not_aestronglyMeasurable hmeas]; exact le_top
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' hmeas,
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp hp' hmeas,
     one_div, ENNReal.le_rpow_inv_iff (ENNReal.toReal_pos hp hp'),
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     inv_mul_cancel₀ (ENNReal.toReal_pos hp hp').ne', ENNReal.rpow_one, ← setLIntegral_const]
@@ -128,7 +128,7 @@ theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α →
   · rw [eLpNorm_of_not_aestronglyMeasurable hg]
     rcases eq_or_ne c 0 with rfl | hc
     · simp only [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, zero_smul] at h ⊢
-      apply eLpNorm_zero_of_ae_enorm_zero' hf h
+      apply eLpNorm_zero_of_ae_eNorm_zero' hf h
     · simp [hc, ENNReal.smul_top c]
   by_cases h0 : p = 0
   · simp [h0, hf, hg]
@@ -205,7 +205,7 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul'' {f : α → ε} {c : ℝ≥0∞} {
   · rw [eLpNorm_of_not_aestronglyMeasurable hg]
     rcases eq_or_ne c 0 with rfl | hc
     · simp only [zero_mul, nonpos_iff_eq_zero] at h ⊢
-      exact eLpNorm_zero_of_ae_enorm_zero' hf h
+      exact eLpNorm_zero_of_ae_eNorm_zero' hf h
     · rw [ENNReal.mul_top hc]
       exact le_top
   by_cases h₀ : p = 0
@@ -222,7 +222,7 @@ theorem MemLp.of_nnNorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
 
 @[deprecated (since := "2026-10-31")] alias MemLp.of_nnnorm_le_mul := MemLp.of_nnNorm_le_mul
 
-theorem MemLp.of_enorm_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
+theorem MemLp.of_eNorm_le_mul {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hf hfg p).trans_lt <|
     ENNReal.mul_lt_top ENNReal.coe_lt_top hg

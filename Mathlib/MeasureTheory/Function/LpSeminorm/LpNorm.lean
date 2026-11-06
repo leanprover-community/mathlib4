@@ -46,7 +46,7 @@ lemma lpNorm_of_not_memLp (hf' : ¬ MemLp f p μ) : lpNorm f p μ = 0 := by simp
 lemma lpNorm_eq_integral_norm_rpow_toReal (hp₀ : p ≠ 0) (hp : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) :
     lpNorm f p μ = (∫ x, ‖f x‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹ := by
-  rw [← toReal_eLpNorm, eLpNorm_eq_lintegral_rpow_enorm_toReal hp₀ hp hf,
+  rw [← toReal_eLpNorm, eLpNorm_eq_lintegral_rpow_eNorm_toReal hp₀ hp hf,
     ← ENNReal.toReal_rpow, ← integral_toReal]
   · simp [← ENNReal.toReal_rpow]
   · simp_rw [← ofReal_norm]

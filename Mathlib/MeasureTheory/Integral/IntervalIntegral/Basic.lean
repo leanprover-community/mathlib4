@@ -239,10 +239,10 @@ theorem eNorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖
 theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩
 
-theorem intervalIntegrable_enorm_iff {μ : Measure ℝ} {a b : ℝ}
+theorem intervalIntegrable_eNorm_iff {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     IntervalIntegrable (fun t => ‖f t‖ₑ) μ a b ↔ IntervalIntegrable f μ a b := by
-  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_enorm_iff hf]
+  simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_eNorm_iff hf]
 
 theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :

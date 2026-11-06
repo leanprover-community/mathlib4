@@ -153,7 +153,7 @@ protected theorem ae_mono (hg : UnifIntegrable g p μ) (hf_meas : ∀ i, AEStron
   refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun ε ↦ ?_)
   simp only
   gcongr
-  exact eLpNorm_mono_enorm_ae (hf_meas i).restrict ((hfg i).filter_mono ae_restrict_le)
+  exact eLpNorm_mono_eNorm_ae (hf_meas i).restrict ((hfg i).filter_mono ae_restrict_le)
 
 protected theorem ae_eq (hf : UnifIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
     UnifIntegrable g p μ := by
@@ -306,7 +306,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
     (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
     exact hf.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_real
   conv_rhs => rw [← mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne']

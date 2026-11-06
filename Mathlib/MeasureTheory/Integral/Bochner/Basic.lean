@@ -336,7 +336,7 @@ theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
   grw [dist_eq_norm, ← integral_sub hf hg, norm_integral_le_lintegral_norm]
-  simp [edist_eq_enorm_sub]
+  simp [edist_eq_eNorm_sub]
 
 theorem edist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -957,13 +957,13 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
     eLpNorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖ₑ ^ p.toReal ∂μ := by
     simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
-  simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal hp1 hp2 hf.aestronglyMeasurable,
+  simp only [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp1 hp2 hf.aestronglyMeasurable,
     one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
   · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
-  exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf).ne
+  exact (lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf).ne
 
 end NormedAddCommGroup
 
@@ -1211,13 +1211,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
   refine ENNReal.toReal_mono ?_ ?_
   · refine ENNReal.mul_ne_top ?_ ?_
     · convert hf.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hf.aestronglyMeasurable]
+      rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal _ _ hf.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · finiteness
     · convert hg.eLpNorm_ne_top
-      rw [eLpNorm_eq_lintegral_rpow_enorm_toReal _ _ hg.aestronglyMeasurable]
+      rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal _ _ hg.aestronglyMeasurable]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
       · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos

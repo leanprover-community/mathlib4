@@ -36,7 +36,7 @@ open scoped Topology
 /-- If `f` is monotone on `[a, b]`, then `f'` is the limit of `G n` a.e. on `[a, b]`, where each
 `G n` is `AEStronglyMeasurable` and the liminf of the lower Lebesgue integral of `‖G n ·‖ₑ` is at
 most `f b - f a`. -/
-lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
+lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_eNorm_le
     {f : ℝ → ℝ} {a b : ℝ} (hab : a ≤ b) (hf : MonotoneOn f (Icc a b)) :
     ∃ G : (ℕ → ℝ → ℝ), (∀ᵐ x ∂volume.restrict (Icc a b),
       Filter.Tendsto (fun (n : ℕ) ↦ G n x) Filter.atTop (𝓝 (deriv f x))) ∧
@@ -90,7 +90,7 @@ theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
   wlog hab : a ≤ b generalizing a b with h
   · exact h (uIcc_comm a b ▸ hf) (by linarith) |>.symm
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_eNorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -109,7 +109,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     simp only [neg_zero, neg_sub]
     rwa [uIcc_of_le (by linarith)] at h
   rw [uIcc_of_le hab] at hf
-  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_enorm_le hab
+  obtain ⟨G, hGf, hG, hG'⟩ := hf.exists_tendsto_deriv_liminf_lintegral_eNorm_le hab
   have hG'₀ : liminf (fun (n : ℕ) ↦ ∫⁻ (x : ℝ) in Icc a b, ‖G n x‖ₑ) atTop ≠ ⊤ :=
     lt_of_le_of_lt hG' ENNReal.ofReal_lt_top |>.ne_top
   have integrable_f_deriv := integrable_of_tendsto hGf hG hG'₀
@@ -125,7 +125,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     rw [Filter.EventuallyLE, ← restrict_Ioo_eq_restrict_Icc,
       MeasureTheory.ae_restrict_iff' measurableSet_Ioo]
     exact Filter.Eventually.of_forall @f_deriv_nonneg
-  · have ebound := lintegral_enorm_le_liminf_of_tendsto
+  · have ebound := lintegral_eNorm_le_liminf_of_tendsto
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
       (fun n ↦ (hG n).aemeasurable.eNorm)
     grw [hG'] at ebound

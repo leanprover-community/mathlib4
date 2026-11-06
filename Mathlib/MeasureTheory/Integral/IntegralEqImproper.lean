@@ -410,31 +410,31 @@ section Integrable
 
 variable {α ι E : Type*} [MeasurableSpace α] {μ : Measure α} {l : Filter ι} [NormedAddCommGroup E]
 
-theorem AECover.integrable_of_lintegral_enorm_bounded [l.NeBot] [l.IsCountablyGenerated]
+theorem AECover.integrable_of_lintegral_eNorm_bounded [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
     (hbounded : ∀ᶠ i in l, ∫⁻ x in φ i, ‖f x‖ₑ ∂μ ≤ ENNReal.ofReal I) : Integrable f μ := by
   refine ⟨hfm, (le_of_tendsto ?_ hbounded).trans_lt ENNReal.ofReal_lt_top⟩
   exact hφ.lintegral_tendsto_of_countably_generated hfm.eNorm
 
-theorem AECover.integrable_of_lintegral_enorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
+theorem AECover.integrable_of_lintegral_eNorm_tendsto [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 <| .ofReal I)) :
     Integrable f μ := by
-  refine hφ.integrable_of_lintegral_enorm_bounded (max 1 (I + 1)) hfm ?_
+  refine hφ.integrable_of_lintegral_eNorm_bounded (max 1 (I + 1)) hfm ?_
   refine htendsto.eventually (ge_mem_nhds ?_)
   refine (ENNReal.ofReal_lt_ofReal_iff (lt_max_of_lt_left zero_lt_one)).2 ?_
   exact lt_max_of_lt_right (lt_add_one I)
 
-theorem AECover.integrable_of_lintegral_enorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
+theorem AECover.integrable_of_lintegral_eNorm_bounded' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (hbounded : ∀ᶠ i in l, ∫⁻ x in φ i, ‖f x‖ₑ ∂μ ≤ I) : Integrable f μ :=
-  hφ.integrable_of_lintegral_enorm_bounded I hfm
+  hφ.integrable_of_lintegral_eNorm_bounded I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using hbounded)
 
-theorem AECover.integrable_of_lintegral_enorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
+theorem AECover.integrable_of_lintegral_eNorm_tendsto' [l.NeBot] [l.IsCountablyGenerated]
     {φ : ι → Set α} (hφ : AECover μ l φ) {f : α → E} (I : ℝ≥0) (hfm : AEStronglyMeasurable f μ)
     (htendsto : Tendsto (fun i => ∫⁻ x in φ i, ‖f x‖ₑ ∂μ) l (𝓝 I)) : Integrable f μ :=
-  hφ.integrable_of_lintegral_enorm_tendsto I hfm
+  hφ.integrable_of_lintegral_eNorm_tendsto I hfm
     (by simpa only [ENNReal.ofReal_coe_nnreal] using htendsto)
 
 theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGenerated]
@@ -442,7 +442,7 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     (hbounded : ∀ᶠ i in l, (∫ x in φ i, ‖f x‖ ∂μ) ≤ I) : Integrable f μ := by
   have hfm : AEStronglyMeasurable f μ :=
     hφ.aestronglyMeasurable fun i => (hfi i).aestronglyMeasurable
-  refine hφ.integrable_of_lintegral_enorm_bounded I hfm ?_
+  refine hφ.integrable_of_lintegral_eNorm_bounded I hfm ?_
   conv at hbounded in integral _ _ =>
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
         hfm.norm.restrict]

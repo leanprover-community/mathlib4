@@ -79,13 +79,13 @@ theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measura
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
-  simpa [eNorm, edist_eq_enorm_sub, ← ENNReal.coe_add, norm_sub_rev]
+  simpa [eNorm, edist_eq_eNorm_sub, ← ENNReal.coe_add, norm_sub_rev]
     using! edist_approxOn_y0_le hf h₀ x n
 
 theorem norm_approxOn_zero_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     (h₀ : (0 : E) ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s 0 h₀ n x‖ ≤ ‖f x‖ + ‖f x‖ := by
-  simpa [eNorm, edist_eq_enorm_sub, ← ENNReal.coe_add, norm_sub_rev]
+  simpa [eNorm, edist_eq_eNorm_sub, ← ENNReal.coe_add, norm_sub_rev]
     using! edist_approxOn_y0_le hf h₀ x n
 
 theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β → E} {μ : Measure β}
@@ -98,7 +98,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
   -- We simply check the conditions of the Dominated Convergence Theorem:
   -- (1) The function "`p`-th power of distance between `f` and the approximation" is measurable
   have hF_meas n : Measurable fun x => ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p := by
-    simpa only [← edist_eq_enorm_sub] using
+    simpa only [← edist_eq_eNorm_sub] using
       (approxOn f hf s y₀ h₀ n).measurable_bind (fun y x => edist y (f x) ^ p) fun y =>
         (measurable_edist_right.comp hf).pow_const p
   -- (2) The functions "`p`-th power of distance between `f` and the approximation" are uniformly
@@ -108,7 +108,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
     .of_forall fun x => rpow_le_rpow (coe_mono (nnNorm_approxOn_le hf h₀ x n)) hp.le
   -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, ‖f a - y₀‖ₑ ^ p ∂μ) ≠ ⊤ :=
-    (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top hp hi).ne
+    (lintegral_rpow_eNorm_lt_top_of_eLpNorm'_lt_top hp hi).ne
   -- (4) The functions "`p`-th power of distance between `f` and the approximation" tend pointwise
   -- to zero
   have h_lim :
@@ -297,7 +297,7 @@ theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ �
   have h_fin : (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).FinMeasSupp μ := by
     refine FinMeasSupp.of_lintegral_ne_top ?_
     rw [← (f.map fun x ↦ ‖x‖ₑ ^ p.toReal).lintegral_eq_lintegral μ]
-    exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
+    exact (lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top hp_pos hp_ne_top hf.eLpNorm_lt_top).ne
   have hf_fin : f.FinMeasSupp μ := by
     have {b : E} : (fun x ↦ ‖x‖ₑ ^ p.toReal) b = 0 ↔ b = 0 := by
       simp [rpow_eq_zero_iff_of_pos (toReal_pos hp_pos hp_ne_top)]

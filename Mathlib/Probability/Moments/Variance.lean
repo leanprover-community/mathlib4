@@ -97,7 +97,7 @@ theorem variance_congr (h : X =ᵐ[μ] Y) : Var[X; μ] = Var[Y; μ] := by
 
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memLp_const μ[X]) (n := 2)
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top
     (hX.sub <| memLp_const μ[X]).aestronglyMeasurable, ← ENNReal.rpow_two]
     at this
   simp only [ENNReal.toReal_ofNat, Pi.sub_apply, one_div] at this
@@ -115,7 +115,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
     have hm : AEStronglyMeasurable (fun ω => X ω - μ[X]) μ :=
       (hXm.sub aestronglyMeasurable_const).congr <| by filter_upwards with x using rfl
-    rw [memLp_iff, eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top hm]
+    rw [memLp_iff, eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top hm]
     simp only [ENNReal.toReal_ofNat, ENNReal.rpow_two]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
@@ -371,7 +371,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   · symm
     rw [evariance_eq_top hX hℒ, ENNReal.sub_eq_top_iff]
     refine ⟨?_, ENNReal.ofReal_ne_top⟩
-    simp only [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top hX, not_lt,
+    simp only [eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top hX, not_lt,
       top_le_iff, ENNReal.toReal_ofNat, one_div, ENNReal.rpow_eq_top_iff, inv_lt_zero, inv_pos,
       and_true, or_iff_not_imp_left, not_and_or, zero_lt_two, MemLp] at hℒ
     exact mod_cast hℒ fun _ => zero_le_two
@@ -386,7 +386,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
         (f := X - fun _ ↦ μ[X]) A (by simp)
     using 1
   · norm_cast
-  rw [eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top (hX.sub B)]
+  rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top (hX.sub B)]
   simp only [ENNReal.toReal_ofNat, one_div, Pi.sub_apply]
   rw [div_eq_mul_inv, ENNReal.inv_pow, mul_comm, ENNReal.rpow_two]
   congr

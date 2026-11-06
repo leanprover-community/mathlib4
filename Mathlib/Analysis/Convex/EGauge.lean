@@ -264,7 +264,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     · obtain hι | hbot : IsEmpty ι ∨ (𝓝[≠] (0 : 𝕜)).NeBot := by simpa [@eq_comm _ ∅] using hI₀
       · use 0
         simp [@eq_comm _ ∅, hι, hr₀]
-      · rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₀, hc₀, hc₀r⟩
+      · rcases exists_eNorm_lt 𝕜 hr₀.ne' with ⟨c₀, hc₀, hc₀r⟩
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
@@ -274,7 +274,7 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
         have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)
-        rcases exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₁, hc₁, hc₁r⟩
+        rcases exists_eNorm_lt 𝕜 hr₀.ne' with ⟨c₁, hc₁, hc₁r⟩
         refine ⟨c₁, .inl hc₁, fun i hi ↦ ?_, hc₁r⟩
         simp [hc0 i hi]
   refine egauge_lt_iff.2 ⟨c₀, ?_, hc₀r⟩

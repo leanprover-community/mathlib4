@@ -40,7 +40,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
     rw [← this]
     exact le_tsum (fun i ↦ eLpNorm (f i) p μ) _
   suffices H : ∀ᵐ a ∂μ, ∑' n, ‖f n a‖ₑ < ∞ by
-    filter_upwards [H] with x hx using tsum_enorm_ne_top_iff_summable_norm.1 hx.ne
+    filter_upwards [H] with x hx using tsum_eNorm_ne_top_iff_summable_norm.1 hx.ne
   -- the result is straightforward in `L^∞`.
   rcases eq_top_or_lt_top p with rfl | h'p
   · have : ∀ᵐ x ∂μ, ∀ n, ‖f n x‖ₑ ≤ eLpNorm (f n) ∞ μ := ae_all_iff.2 fun n ↦ by

@@ -244,8 +244,8 @@ theorem exists_nnNorm_lt {r : ℝ≥0} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖₊
 
 @[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt := exists_nnNorm_lt
 
-/-- TODO: merge with `_root_.exists_enorm_lt`. -/
-theorem exists_enorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < r :=
+/-- TODO: merge with `_root_.exists_eNorm_lt`. -/
+theorem exists_eNorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < r :=
   match r with
   | ∞ => exists_one_lt_eNorm α |>.imp fun _ hx => ⟨zero_le_one.trans_lt hx, ENNReal.coe_lt_top⟩
   | (r : ℝ≥0) => exists_nnNorm_lt α (ENNReal.coe_pos.mp hr) |>.imp fun _ =>
@@ -258,7 +258,7 @@ theorem exists_nnNorm_lt_one : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := 
 
 @[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
 
-theorem exists_enorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := exists_enorm_lt _ one_pos
+theorem exists_eNorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := exists_eNorm_lt _ one_pos
 
 variable {α}
 
