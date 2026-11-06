@@ -28,13 +28,6 @@ This file defines the following linters:
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
 - the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
-- the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
-  this is allowed Lean syntax, but it is nicer to be uniform
-- the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
-  similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
-  the `|>` symbol
-- the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
-  instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
 - the `openClassical` linter checks for `open (scoped) Classical` statements which are not
