@@ -61,6 +61,16 @@ theorem coeff_derivative (f : R⟦X⟧) (n : ℕ) :
     coeff n (d⁄dX f) = coeff (n + 1) f * (n + 1) := by
   simp [coeff, derivative, MvPowerSeries.coeff_pderiv]
 
+/-- The coefficient of a product with a formal derivative, written as a finite sum. -/
+theorem coeff_derivative_mul (f g : R⟦X⟧) (n : ℕ) :
+    (d⁄dX f * g).coeff n =
+      ∑ i ∈ Finset.range (n + 2), f.coeff i * (i • g.coeff (n + 1 - i)) := by
+  symm
+  rw [coeff_mul, Finset.Nat.sum_antidiagonal_eq_sum_range_succ_mk, Finset.sum_range_succ']
+  simp only [zero_smul, mul_zero, add_zero]
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  simp [coeff_derivative, mul_assoc]
+
 /-- The `k`-th coefficient of the `n`-th formal derivative: differentiating `n` times multiplies the
 `(k + n)`-th coefficient by the ascending factorial `(k + 1)(k + 2) ⋯ (k + n)`. -/
 theorem coeff_iterate_derivative (f : R⟦X⟧) (n k : ℕ) :
