@@ -62,7 +62,7 @@ def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
 variable [T2Space X]
 
 /-- For`K`a compact and `P`a KPresheaf verifying the third axiom of KSheaves, this is
-a recipe to build maps from `P.obj(op K)` by only using the open relatively
+a recipe to build maps from `P.obj (op K)` by only using the open relatively
 compact neighbourhoods and not all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KPresheaf A X) (K : Compacts X)
     (h : (IsColimit (P.coconeOfCompacts K))) {G : (K.openRcNhds)ᵒᵖ ⥤ A} (t : Cocone G)
@@ -78,10 +78,20 @@ lemma hom_ext_of_isColimit_coconeOfCompacts (P : KPresheaf A X) {K : Compacts X}
       (P.coconeOfClosureOfOpens K).ι.app V ≫ f') :
     f = f' :=
   ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op
-    _  ).symm h).hom_ext w
+    _).symm h).hom_ext w
 
 /-- The Ksheaf condition. It's a generalisation of the one of J.Pardon that
 correspond to the one of J.Lurie in the case of usual categories.
+
+## References
+
+*[J. Pardon, *An algebraic approach to virtual fundamental cycles on moduli
+spaces of pseudo-holomorphic curves*, Section A.1][], definition A.1.4
+*[Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT], definition 7.3.4.1
+.
+
+.
+
 
 There is no corresponding Grothendieck topology on compact subsets, in particular
 because the nonempty_isColimit_coconeOfCompacts condition can't be expressed as a
@@ -108,14 +118,15 @@ abbrev KSheaf := ObjectProperty.FullSubcategory (KPresheaf.isKSheaf A X)
 
 namespace KSheaf
 
-/-- If `P`is a KSheaf, its the evidence that for any `K`a compact subset of `X`,
- `P.obj.coconeOfCompacts K`is a colimit cocone
+/-- If `P` is a KSheaf, its the evidence that for any `K`a compact subset of `X`,
+ `P.obj.coconeOfCompacts K` is a colimit cocone
 -/
+@[no_expose]
 noncomputable def isColimit (P : KSheaf A X) (K : Compacts X) :
     IsColimit (P.obj.coconeOfCompacts K) :=
   (P.property.nonempty_isColimit_coconeOfCompacts K).some
 
-/-- For`K`a compact and `P`a KSheaf, this is a recipe to build maps from
+/-- For `K` a compact and `P` a KSheaf, this is a recipe to build maps from
 `P.obj (op K)` by only using the open relatively compact neighbourhoods and not
 all the compacts neighbourhoods. -/
 noncomputable def mapOfOpenClosure (P : KSheaf A X) (K : Compacts X) {G : (K.openRcNhds)ᵒᵖ ⥤ A}
