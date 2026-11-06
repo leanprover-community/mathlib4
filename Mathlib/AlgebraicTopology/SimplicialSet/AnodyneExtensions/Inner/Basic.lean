@@ -66,8 +66,7 @@ lemma innerAnodyneExtensions_le : innerAnodyneExtensions ≤ anodyneExtensions.{
     rlp_llp_rlp]
   exact antitone_rlp innerHornInclusions_le_J
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0
-  Cardinal.orderBotAleph0OrdToType
+attribute [local instance] Cardinal.orderBotAleph0OrdToType
 
 instance : MorphismProperty.IsSmall.{u} innerHornInclusions.{u} := by
   rw [innerHornInclusions_eq_iSup]

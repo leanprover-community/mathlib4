@@ -166,8 +166,6 @@ lemma IsCardinalFiltered.nonempty (J : Type u) [Category.{v} J]
   have := isFiltered_of_isCardinalFiltered J κ
   IsFiltered.nonempty
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0
-
 lemma isCardinalFiltered_aleph0_iff (J : Type u) [Category.{v} J] :
     IsCardinalFiltered J Cardinal.aleph0.{w} ↔ IsFiltered J := by
   constructor
