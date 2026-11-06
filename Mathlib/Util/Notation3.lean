@@ -322,6 +322,9 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
           -- The type of the instance is already accounted for by the previous arguments
           -- and the type of `f`.
           matcher ← ``(matchApp $matcher pure)
+        else if ← isProof arg then
+          -- By proof irrelevance, there is no need to match proofs.
+          matcher ← ``(matchApp $matcher pure)
         else
           let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
           matcher ← ``(matchApp $matcher $matchArg)
@@ -361,11 +364,20 @@ partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
       try
         Term.elabPattern stx none
       catch e =>
-        logException e
-        trace[notation3] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
-        -- Convert the exception into an `OptionT` failure so that the `(prettyPrint := false)`
-        -- suggestion appears.
-        failure
+        -- Tactic blocks often fail on the pattern, since it contains free variables in place of
+        -- the notation's arguments. They usually produce proofs, which `exprToMatcher` does not
+        -- match anyway, so we try again with all tactic blocks replaced by holes.
+        let stx' : Term := ⟨← stx.raw.replaceM fun s => do
+          if s.isOfKind ``Parser.Term.byTactic then return some (← `(_)) else return none⟩
+        try
+          if stx' == stx then throw e
+          Term.elabPattern stx' none
+        catch _ =>
+          logException e
+          trace[notation3] "Could not elaborate pattern{indentD stx}\nError: {e.toMessageData}"
+          -- Convert the exception into an `OptionT` failure so that the `(prettyPrint := false)`
+          -- suggestion appears.
+          failure
     trace[notation3] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars {} patt
 
