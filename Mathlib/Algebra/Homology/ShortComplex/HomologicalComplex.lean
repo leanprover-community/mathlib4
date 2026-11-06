@@ -64,7 +64,7 @@ instance [HasLimitsOfSize.{w₁, w₂} C] (i j k : ι) :
 
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
-@[simps!, implicit_reducible]
+@[implicit_reducible, simps!]
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
@@ -192,7 +192,7 @@ end
 @[reassoc (attr := simp)]
 lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
-  simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
+  simp [← cancel_mono (K.iCycles k)]
 
 variable {i j} in
 lemma toCycles_eq_zero [K.HasHomology j] (hij : ¬ c.Rel i j) :
@@ -831,7 +831,7 @@ namespace CochainComplex
 variable {C : Type*} [Category* C] [Abelian C]
 
 lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
-    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    (hφ : φ ≫ K.d 0 1 = 0) :
     IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
@@ -852,7 +852,7 @@ namespace ChainComplex
 variable {C : Type*} [Category* C] [Abelian C]
 
 lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)
-    [K.HasHomology 0] (hφ : K.d 1 0 ≫ φ = 0) :
+    (hφ : K.d 1 0 ≫ φ = 0) :
     IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Epi φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.down ℕ).prev 0 = i)

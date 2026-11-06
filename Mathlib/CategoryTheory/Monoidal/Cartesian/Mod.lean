@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.Cartesian.Mon
 public import Mathlib.CategoryTheory.Monoidal.Mod
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Module objects in cartesian monoidal categories
 

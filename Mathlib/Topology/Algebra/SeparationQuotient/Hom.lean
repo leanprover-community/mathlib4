@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lift of `MonoidHom M N` to `MonoidHom (SeparationQuotient M) N`
 
@@ -31,7 +34,7 @@ noncomputable def liftContinuousMonoidHom [CommMonoid M] [ContinuousMul M] [Comm
   toFun := SeparationQuotient.lift f hf
   map_one' := map_one f
   map_mul' := Quotient.ind₂ <| map_mul f
-  continuous_toFun := continuous_lift f.2
+  continuous_toFun := by fun_prop
 
 @[to_additive (attr := simp)]
 theorem liftContinuousCommMonoidHom_mk [CommMonoid M] [ContinuousMul M] [CommMonoid N]

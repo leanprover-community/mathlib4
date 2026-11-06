@@ -943,7 +943,6 @@ as a natural transformation`. -/
 noncomputable def homologyπNatTrans [CategoryWithHomology C] :
     cyclesFunctor C ⟶ homologyFunctor C where
   app S := S.homologyπ
-  naturality _ _ f := (homologyπ_naturality f).symm
 
 variable (C) in
 /-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
@@ -952,7 +951,6 @@ as a natural transformation`. -/
 noncomputable def homologyιNatTrans [CategoryWithHomology C] :
     homologyFunctor C ⟶ opcyclesFunctor C where
   app S := S.homologyι
-  naturality _ _ f := homologyι_naturality f
 
 @[reassoc (attr := simp)]
 lemma homology_π_ι :

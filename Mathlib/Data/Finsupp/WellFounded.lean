@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.Finsupp.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well-foundedness of the lexicographic and product orders on `Finsupp`
 
