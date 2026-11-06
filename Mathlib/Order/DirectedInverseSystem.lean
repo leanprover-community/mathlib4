@@ -98,7 +98,7 @@ variable [IsDirectedOrder ι]
 /-- The setoid on the sigma type defining the direct limit. -/
 @[instance_reducible]
 def setoid : Setoid (Σ i, F i) where
-  r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
+  r x y := ∃ i, ∃ hx : x.1 ≤ i, ∃ hy : y.1 ≤ i, f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
     fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
@@ -184,6 +184,16 @@ theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
   DirectLimit.induction₂ _ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
 
 end lift
+
+/-- If `m` is an upper bound for the index type, then the direct limit is equivalent to the
+component at `m`. -/
+def equivOfIsTop (m : ι) (hm : IsTop m) : DirectLimit F f ≃ F m where
+  toFun := DirectLimit.lift f (fun i x ↦ f i m (hm i) x) (by simp [map_map'])
+  invFun x := ⟦⟨m, x⟩⟧
+  left_inv z := by
+    induction z using DirectLimit.induction with
+    | _ i x => simp only [lift_def, mk_apply]
+  right_inv := fun _ ↦ by simp only [lift_def, map_self']
 
 section map
 
