@@ -174,6 +174,6 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_iff_contMDiff
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n (F ∘ g) ↔ CMDiff n F :=
   ⟨fun h' ↦ IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse hf hg h hF h',
-    fun h' ↦ IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff hf hg h hF h'⟩
+    fun h' ↦ IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff hf hg hF h'⟩
 
 end
