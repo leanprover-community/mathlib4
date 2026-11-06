@@ -864,7 +864,7 @@ theorem isLUB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) 
     IsLUB s a ↔ IsLUB s b := by
   simp [isLUB_iff_le_iff, h.le_congr_left]
 
--- `to_dual` swaps the arguments of `AntisymmRel`, so it would reverse `h` here.
+-- TODO: `to_dual` doesn't work with `AntisymmRel`.
 theorem isGLB_congr_of_antisymmRel {a b : α} (h : AntisymmRel (· ≤ ·) a b) :
     IsGLB s a ↔ IsGLB s b := by
   simp [isGLB_iff_le_iff, h.le_congr_right]
