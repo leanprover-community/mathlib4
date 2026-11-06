@@ -28,7 +28,6 @@ namespace LeftResolution
 
 open CategoryTheory.Functor
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Transport `LeftResolution` via equivalences of categories. -/
 def transport {ι : C ⥤ A} (Λ : LeftResolution ι) {ι' : C' ⥤ A'}
     (eA : A' ≌ A) (eC : C' ≌ C) (e : ι' ⋙ eA.functor ≅ eC.functor ⋙ ι) :

@@ -19,6 +19,37 @@ example : ((-3 : ℤ) : ℝ) = -3 := by dyadic_interval
 
 end Constants
 
+section Integers
+
+example {n : ℤ} (hn₀ : 1 < n) (hn₁ : n < 3) : n = 2 := by
+  dyadic_interval
+
+example {x y z : ℤ} (hx : x ∈ Set.Ico 0 2) (hy : y ∈ Set.Ioc 1 3)
+    (hz : z ∈ Set.Ioo (-3) 0) : x + y - z ∈ Set.Icc 3 6 := by dyadic_interval
+
+example {x y : ℤ} (hx : x ∈ Set.Ioo (-3) 4) (hy : y ∈ Set.Icc (-2) 1) :
+    x * y ∈ Set.Icc (-6) 4 := by dyadic_interval
+
+example {x : ℤ} (hx : x ∈ Set.Ioo (-3) 2) :
+    -x ∈ Set.Icc (-1) 2 ∧ |x| ∈ Set.Icc 0 2 := by dyadic_interval
+
+example {x : ℤ} (hx : x < -2) : x ^ 3 ≤ -27 ∧ 81 ≤ x ^ 4 := by
+  dyadic_interval [binSplit := 3]
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc 1 2) (hn : n ∈ Set.Ioo (-2) 3) :
+    x * ((n ^ 2 + 1 : ℤ) : ℝ) + (n : ℝ) ^ 2 ∈ Set.Icc 1 14 := by dyadic_interval
+
+example {n : ℤ} (hn : n < -2) : 9 ≤ (n : ℝ) ^ 2 := by dyadic_interval
+
+example {n : ℤ} (hn : n ∈ Set.Icc (-2) 2) : n * n - n ^ 2 = 0 := by
+  dyadic_interval [binSplit := 3]
+
+example {x : ℝ} {n : ℤ} (hx : x ∈ Set.Icc (-1) 1) (hn : n ∈ Set.Icc 0 1) :
+    x + ((n * (1 - n) : ℤ) : ℝ) - x ∈ Set.Icc (-0.5) 0.5 := by
+  dyadic_interval [binSplit := 2, prec := 1]
+
+end Integers
+
 section Rationals
 
 example : ((1 / 2 : ℚ) : ℝ) = 0.5 := by dyadic_interval [prec := 1]
@@ -210,7 +241,6 @@ example : (1 : ℝ) ≤ 2 := by
 /-- error: The inclusion check failed:
 The proposition is provably false -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (h : False) : (2 : ℝ) ≤ 1 := by
   dyadic_interval?
   exact h.elim
@@ -218,7 +248,6 @@ example (h : False) : (2 : ℝ) ≤ 1 := by
 /-- error: The inclusion check failed:
 The proposition was not proven true or false. -/
 #guard_msgs in
-set_option linter.unusedTactic false in
 example (x : ℝ) (h : False) : x ≤ 1 := by
   dyadic_interval?
   exact h.elim

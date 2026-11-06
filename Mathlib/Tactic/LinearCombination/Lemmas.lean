@@ -86,20 +86,20 @@ theorem mul_const_lt_weak [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
 theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p ▸ rfl
 
-theorem smul_le_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+theorem smul_le_const [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
     [IsOrderedModule K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p ha
 
-theorem smul_lt_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+theorem smul_lt_const [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
     [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 < a) :
     t • a < s • a :=
   smul_lt_smul_of_pos_right p ha
 
-theorem smul_lt_const_weak [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
+theorem smul_lt_const_weak [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
     [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p.le ha

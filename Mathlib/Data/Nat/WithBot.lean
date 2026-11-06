@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Cast.WithTop
 
 import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `WithBot ℕ`
 

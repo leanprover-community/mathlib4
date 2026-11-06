@@ -61,7 +61,8 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
       congr
       next => skip
       ext
-      rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial]
+      rw [lcoeff_apply, ← C_eq_natCast, C_mul_X_pow_eq_monomial, coeff_monomial,
+        Finsupp.single_apply]
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi
     simp only [hi.trans_le (Nat.sub_le _ _), sum_ite_eq', mem_range, ite_true,
@@ -257,10 +258,10 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   -- The base case is `dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt`.
   refine mem_adjoin_of_dvd_coeff_of_dvd_aeval hp.ne_zero (fun i => ?_) hQ
   induction i using Nat.case_strong_induction_on with
-  | hz =>
+  | zero =>
     intro
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
-  | hi j hind =>
+  | succ j hind =>
     intro hj
     convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd (n := n) _ hndiv
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.

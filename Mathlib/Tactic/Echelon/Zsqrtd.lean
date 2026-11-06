@@ -12,9 +12,8 @@ public import Mathlib.Tactic.Echelon.Core
 /-!
 # The `ℤ√d` model for the Bareiss elimination
 
-The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `Expr` representing
-`⟨a, b⟩` literals with raw integer components. Accepted entries are `⟨a, b⟩` literals, `√d`, or
-integers evaluated from `norm_num`.
+The computable model of the quadratic extensions `ℤ√d`. The elimination runs on `ℤ√d` values.
+Accepted entries are `⟨a, b⟩` literals, `√d`, or integers evaluated from `norm_num`.
 -/
 
 public meta section
@@ -52,36 +51,22 @@ def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
     ⟨z.re / n, z.im / n⟩
   isZero := (· == 0)
 
-/-- The integer of a raw literal `Int.ofNat n` or `Int.negOfNat n`. -/
-def intOfRawLit? (e : Expr) : Option ℤ :=
-  match_expr e with
-  | Int.ofNat n => n.rawNatLit?
-  | Int.negOfNat n => n.rawNatLit?.map fun k => -k
-  | _ => none
-
-/-- The value of a literal `⟨re, im⟩ : ℤ√d` with raw integer components. -/
-def zsqrtdOfRawLit? (d : ℤ) (e : Expr) : Option (ℤ√d) :=
-  match_expr e with
-  | Zsqrtd.mk _ re im => do return ⟨← intOfRawLit? re, ← intOfRawLit? im⟩
-  | _ => none
-
-/-- The literal that `zsqrtdOfRawLit?` reads back as v. -/
-def mkZsqrtdRawLit (dQ : Q(ℤ)) {d : ℤ} (v : ℤ√d) : Q(Zsqrtd $dQ) :=
-  q(⟨$(Meta.NormNum.mkRawIntLit v.re), $(Meta.NormNum.mkRawIntLit v.im)⟩)
-
-/-- The `ℤ√d` model of the ring `α`, which reduces to `Zsqrtd dQ`. The elimination runs on
-literals with raw integer components, computed with the arithmetic of `ℤ√d`. `d` is the value of
-the integer literal `dQ`. -/
-def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α Expr where
-  ops := (zsqrtdOps d).lift (zsqrtdOfRawLit? d) (mkZsqrtdRawLit dQ)
-  evalEntry e := return (mkZsqrtdRawLit dQ (← evalZsqrtdEntry d e), none)
+/-- The `ℤ√d` model of the ring `α`, which reduces to `Zsqrtd dQ`.
+The elimination runs on `ℤ√d` values. `d` is the value of the integer literal `dQ`. -/
+def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α := .mk (ℤ√d) {
+  ops := zsqrtdOps d
+  evalEntry e := return (← evalZsqrtdEntry d e, none)
   -- The entries are rebuilt in the numeral form instead of returned as the carrier's shape
   -- since the raw literals display as `Int.ofNat 3`, and `simp` does not normalise them.
-  mkEntry e := do
-    let some v := zsqrtdOfRawLit? d e
-      | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+  mkEntry v := do
+    -- An integer value is emitted as an integer numeral.
+    if v.im = 0 then
+      let n : Q(Zsqrtd $dQ) ← mkNumeral q(Zsqrtd $dQ) v.re.natAbs
+      let entry : Q(Zsqrtd $dQ) := if v.re < 0 then q(-$n) else n
+      return entry
     let entry : Q(Zsqrtd $dQ) := q(⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩)
     return entry
+}
 
 /-- The `ℤ√d` model registration: handles `Zsqrtd d` for an integer literal `d`. -/
 @[bareiss_ext] def zsqrtdExt : BareissExt where
@@ -91,6 +76,6 @@ def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α 
     let_expr Zsqrtd dE := R | return none
     let some d ← getIntValue? dE | return none
     have dQ : Q(ℤ) := dE
-    return some ⟨.expr, zsqrtdModel α dQ d⟩
+    return zsqrtdModel α dQ d
 
 end Mathlib.Tactic.Echelon

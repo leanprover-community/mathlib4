@@ -417,8 +417,7 @@ theorem _root_.mem_span_of_iInf_ker_le_ker [Finite ι] {L : ι → E →ₗ[𝕜
   rw [← p.liftQ_mkQ K h]
   ext x
   convert! congr($hK' (p.mkQ x))
-  simp only [L', LinearMap.coe_sum, Finset.sum_apply, smul_apply, coe_comp, Function.comp_apply,
-    smul_eq_mul]
+  simp [L']
 
 end Submodule
 
@@ -492,7 +491,7 @@ theorem dualRestrict_comp_dualLift (W : Subspace K V) : W.dualRestrict.comp W.du
 
 theorem dualRestrict_leftInverse (W : Subspace K V) :
     Function.LeftInverse W.dualRestrict W.dualLift := fun x ↦ by
-  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, End.one_apply]
+  rw [← LinearMap.comp_apply, dualRestrict_comp_dualLift, one_apply_eq_self]
 
 theorem dualLift_rightInverse (W : Subspace K V) :
     Function.RightInverse W.dualLift W.dualRestrict :=
