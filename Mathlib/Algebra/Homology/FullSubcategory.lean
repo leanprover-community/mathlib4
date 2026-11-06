@@ -21,7 +21,7 @@ namespace HomologicalComplex
 /-- Given `P : ObjectProperty V` and `K : HomologicalComplex V c`,
 this is a lift of `K` in `HomologicalComplex P.FullSubcategory c`
 when `K.X n` satisfies `P` for all `n`. -/
-@[simps X d]
+@[simps X d, implicit_reducible]
 def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
     {V : Type*} [Category* V] [Preadditive V] (P : ObjectProperty V)
     (K : HomologicalComplex V c) (hK : ∀ (n : ι), P (K.X n)) :
@@ -29,12 +29,11 @@ def liftObjectProperty {ι : Type*} {c : ComplexShape ι}
   X n := ⟨_, hK n⟩
   d i j := ObjectProperty.homMk (K.d i j)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `D ⥤ HomologicalComplex P.FullSubcategory c`
 which is obtained by lifting a functor `D ⥤ HomologicalComplex V c`
 when for any `X : D` and `n`, the object `(F.obj X).X n`
 satisfies a property `P : ObjectProperty V`. -/
-@[simps]
+@[simps, implicit_reducible]
 def liftFunctorObjectProperty {D : Type*} [Category* D] {ι : Type*} {c : ComplexShape ι}
     {V : Type*} [Category* V] [Preadditive V] (P : ObjectProperty V)
     (F : D ⥤ HomologicalComplex V c) (hF : ∀ (X : D) (n : ι), P ((F.obj X).X n)) :

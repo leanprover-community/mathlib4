@@ -139,7 +139,7 @@ end SpectralSequenceDataCore
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × ℤ` from a spectral object indexed by `EInt`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def coreE₂Cohomological :
     SpectralSequenceDataCore EInt (fun r ↦ ComplexShape.up' (⟨r, 1 - r⟩ : ℤ × ℤ)) 2 where
   deg pq := pq.1 + pq.2
@@ -172,7 +172,7 @@ def coreE₂Cohomological :
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
 assumptions on the spectral object are required for the construction of
 the spectral sequence from this.) -/
-@[simps!]
+@[simps!, implicit_reducible]
 def coreE₂CohomologicalNat :
     SpectralSequenceDataCore EInt
     (fun r ↦ ComplexShape.spectralSequenceNat ⟨r, 1 - r⟩) 2 where
@@ -210,7 +210,7 @@ def coreE₂CohomologicalNat :
 
 /-- The data which allows to construct an `E₂`-cohomological spectral sequence
 indexed by `ℤ × Fin l` from a spectral object indexed by `Fin (l + 1)`. -/
-@[simps deg i₀ i₁ i₂ i₃]
+@[simps deg i₀ i₁ i₂ i₃, implicit_reducible]
 def coreE₂CohomologicalFin (l : ℕ) :
     SpectralSequenceDataCore (Fin (l + 1))
     (fun r ↦ ComplexShape.spectralSequenceFin l ⟨r, 1 - r⟩) 2 where
@@ -256,7 +256,7 @@ def coreE₂CohomologicalFin (l : ℕ) :
 indexed by `ℕ × ℕ` from a spectral object indexed by `EInt`. (Note: additional
 assumptions on the spectral object are required for the construction of
 the spectral sequence from this.) -/
-@[simps!]
+@[simps!, implicit_reducible]
 def coreE₂HomologicalNat :
     SpectralSequenceDataCore EInt
     (fun r ↦ ComplexShape.spectralSequenceNat ⟨-r, r - 1⟩) 2 where
@@ -352,7 +352,6 @@ instance (E : SpectralObject C EInt) : E.HasSpectralSequence coreE₂Cohomologic
     exfalso
     exact hpq (pq - (r, 1 - r)) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 instance {l : ℕ} (E : SpectralObject C (Fin (l + 1))) :
     E.HasSpectralSequence (coreE₂CohomologicalFin l) where
   isZero_H_obj_mk₁_i₀_le r r' pq hpq n hn hrr' hr := by

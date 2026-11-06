@@ -303,7 +303,7 @@ lemma quasiIsoAt_π (q : ℤ) (hq : q < n) : QuasiIsoAt (π f n) q := by
   apply Balanced.isIso_of_mono_of_epi
 
 /-- The (exact) short complex `K.homology n ⟶ L.homology n ⟶ (S f n).homology n`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyShortComplex : ShortComplex C :=
   ShortComplex.mk (homologyMap f n) (homologyMap (α f n) n) (by
     rw [← homologyMap_comp, comp_α, homologyMap_zero])
@@ -371,8 +371,6 @@ lemma quasiIso_truncGEπ [Mono f] [Mono (homologyMap f n)] :
   rw [quasiIso_πTruncGE_iff]
   exact isGE_cokernel f n hf
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 attribute [local instance] HasDerivedCategory.standard in
 lemma quasiIsoAt_ι [Mono f] [Mono (homologyMap f n)] (q : ℤ) (hq : q ≤ n) :
     QuasiIsoAt (ι f n) q := by
@@ -497,7 +495,7 @@ variable [Mono f] (n₀ : ℤ) [K.IsStrictlyGE (n₀ + 1)] [L.IsStrictlyGE (n₀
 /-- Given a monomorphism `f : K ⟶ L` between complexes that are strictly `≥ n₀ + 1`,
 this is a projective system in `(cofFib f).FullSubcategory` given by the
 sequence of morphisms `CofFibFactorizationQuasiIsoLE.toSequenceNext`. -/
-noncomputable def functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
+noncomputable abbrev functor : ℕᵒᵖ ⥤ (cofFib f).FullSubcategory :=
   (Functor.ofSequence (fun q ↦ (CofFibFactorizationQuasiIsoLE.toSequenceNext f n₀ q).op)).leftOp
 
 lemma isIso_functor_map_hom_h_f {q₁ q₂ : ℕ} (hq : q₁ ≤ q₂) (i : ℤ) (hi : i ≤ n₀ + q₁) :

@@ -86,7 +86,6 @@ lemma opcyclesToCycles_naturality :
 
 variable (C c)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.opcyclesToCycles i j : K.opcycles i ⟶ K.cycles j` for all
 `K : HomologicalComplex C c`. -/
 @[simps]
@@ -116,8 +115,7 @@ instance [K.HasHomology i] [K.HasHomology j] :
 
 instance [K.HasHomology i] [K.HasHomology j] :
     Epi ((composableArrows₃ K i j).map' 2 3) := by
-  -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
-  dsimp [-Fin.reduceFinMk]
+  dsimp
   infer_instance
 
 include hij in
@@ -158,8 +156,7 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    -- Disable `Fin.reduceFinMk`, otherwise `Precomp.obj_succ` does not fire. (https://github.com/leanprover-community/mathlib4/issues/27382)
-    (homologyMap φ j) (by simp) (by simp [-Fin.reduceFinMk]) (by simp [-Fin.reduceFinMk])
+    (homologyMap φ j) (by simp) (by simp) (by simp)
 
 end HomologySequence
 
@@ -218,13 +215,12 @@ variable {S : ShortComplex (HomologicalComplex C c)}
 
 namespace HomologySequence
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a short exact short complex `S : HomologicalComplex C c`, and degrees `i` and `j`
 such that `c.Rel i j`, this is the snake diagram whose four lines are respectively
 obtained by applying the functors `homologyFunctor C c i`, `opcyclesFunctor C c i`,
 `cyclesFunctor C c j`, `homologyFunctor C c j` to `S`. Applying the snake lemma to this
 gives the homology sequence of `S`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def snakeInput (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j) :
     ShortComplex.SnakeInput C where
   L₀ := (homologyFunctor C c i).mapShortComplex.obj S
@@ -293,7 +289,6 @@ lemma comp_δ : HomologicalComplex.homologyMap S.g i ≫ hS.δ i j hij = 0 :=
 lemma homology_exact₁ : (ShortComplex.mk _ _ (δ_comp hS i j hij)).Exact :=
   (snakeInput hS i j hij).L₂'_exact
 
-set_option backward.isDefEq.respectTransparency false in
 include hS in
 /-- Exactness of `S.X₁.homology i ⟶ S.X₂.homology i ⟶ S.X₃.homology i`. -/
 lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i)

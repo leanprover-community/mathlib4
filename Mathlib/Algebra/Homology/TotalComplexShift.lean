@@ -139,7 +139,6 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     dsimp
     simp only [ι_totalDesc_assoc, Category.assoc, ι_totalDesc, XXIsoOfEq_inv_ιTotal, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
     ((shiftFunctor₁ C x).obj K).D₁ (up ℤ) n₀ n₁ ≫ (K.totalShift₁XIso x n₁ n₁' h₁).hom =
@@ -157,7 +156,6 @@ lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x 
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     grind [up_Rel]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma D₂_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
     ((shiftFunctor₁ C x).obj K).D₂ (up ℤ) n₀ n₁ ≫ (K.totalShift₁XIso x n₁ n₁' h₁).hom =
@@ -189,7 +187,6 @@ noncomputable def totalShift₁Iso :
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : a' = a + x)
     (n' : ℤ) (hn' : n' = n + x) :
@@ -197,10 +194,8 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
       (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; lia) ≫
         (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv := by
   subst ha' hn'
-  dsimp [totalShift₁Iso, totalShift₁XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₁Iso, totalShift₁XIso]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
     (ha' : a' + b = n') (hn' : n' = n + x) :
@@ -211,8 +206,7 @@ lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
         ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
   obtain rfl : a = a' - x := by lia
-  dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  simp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -247,7 +241,6 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
       Linear.comp_units_smul, XXIsoOfEq_inv_ιTotal, smul_smul, Int.units_mul_self, one_smul,
       comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
     ((shiftFunctor₂ C y).obj K).D₁ (up ℤ) n₀ n₁ ≫ (K.totalShift₂XIso y n₁ n₁' h₁).hom =
@@ -268,7 +261,6 @@ lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
   · rw [D₁_shape _ _ _ _ h, zero_comp, D₁_shape, comp_zero, smul_zero]
     grind [up_Rel]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
     ((shiftFunctor₂ C y).obj K).D₂ (up ℤ) n₀ n₁ ≫ (K.totalShift₂XIso y n₁ n₁' h₁).hom =
@@ -305,7 +297,6 @@ noncomputable def totalShift₂Iso :
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : b' = b + y)
     (n' : ℤ) (hn' : n' = n + y) :
@@ -314,10 +305,8 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
         K.ιTotal (up ℤ) a b' n' (by dsimp; lia) ≫
           (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv := by
   subst hb' hn'
-  dsimp [totalShift₂Iso, totalShift₂XIso]
-  simp only [ι_totalDesc, comp_id, id_comp]
+  simp [totalShift₂Iso, totalShift₂XIso]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
     (hb' : a + b' = n') (hn' : n' = n + y) :
@@ -328,8 +317,7 @@ lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
         ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h := by
   subst hn'
   obtain rfl : b = b' - y := by lia
-  dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
-  simp only [id_comp, ι_totalDesc]
+  simp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
 
 variable {K L} in
 @[reassoc]
@@ -351,7 +339,6 @@ def shiftFunctor₁₂CommIso (x y : ℤ) :
     shiftFunctor₂ C y ⋙ shiftFunctor₁ C x ≅ shiftFunctor₁ C x ⋙ shiftFunctor₂ C y :=
   Iso.refl _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The compatibility isomorphisms of the total complex with the shifts
 in both variables "commute" only up to a sign `(x * y).negOnePow`. -/
 lemma totalShift₁Iso_trans_totalShift₂Iso :
@@ -363,8 +350,9 @@ lemma totalShift₁Iso_trans_totalShift₂Iso :
       (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
   ext n n₁ n₂ h
   dsimp at h ⊢
-  rw [Linear.comp_units_smul, ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
-    ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
+  rw [total.mapIso_hom, Iso.app_hom, Linear.comp_units_smul,
+    ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl, ιTotal_map_assoc,
+    ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
     Linear.units_smul_comp, Linear.comp_units_smul]
   dsimp [shiftFunctor₁₂CommIso]
   rw [id_comp, id_comp, id_comp, id_comp, comp_id,

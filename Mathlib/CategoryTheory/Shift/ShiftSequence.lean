@@ -83,6 +83,7 @@ variable {M}
 variable [F.ShiftSequence M]
 
 /-- The shifted functors given by the shift sequence. -/
+@[implicit_reducible]
 def shift (n : M) : C ⥤ A := ShiftSequence.sequence F n
 
 /-- Compatibility isomorphism `shiftFunctor C n ⋙ F.shift a ≅ F.shift a'` when `n + a = a'`. -/

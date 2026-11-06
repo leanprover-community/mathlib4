@@ -70,6 +70,7 @@ variable (h : ConnectData K L) (h' : ConnectData K' L') (h'' : ConnectData K'' L
 
 variable (K L) in
 /-- Auxiliary definition for `ConnectData.cochainComplex`. -/
+@[implicit_reducible]
 def X : ℤ → C
   | .ofNat n => L.X n
   | .negSucc n => K.X n
@@ -93,7 +94,6 @@ def d : ∀ (n m : ℤ), X K L n ⟶ X K L m
 @[simp] lemma d_zero_one : h.d 0 1 = L.d 0 1 := rfl
 @[simp] lemma d_sub_two_sub_one : h.d (-2) (-1) = K.d 1 0 := rfl
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
   match n, m with
   | .ofNat n, .ofNat m => L.shape _ _ (by simp at hnm ⊢; lia)
@@ -108,7 +108,6 @@ lemma shape (n m : ℤ) (hnm : n + 1 ≠ m) : h.d n m = 0 :=
       · rfl
     · simp only [d]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
   by_cases hnm : n + 1 = m; swap
@@ -132,7 +131,7 @@ lemma d_comp_d (n m p : ℤ) : h.d n m ≫ h.d m p = 0 := by
 /-- Given `h : ConnectData K L` where `K : ChainComplex C ℕ` and `L : CochainComplex C ℕ`,
 this is the cochain complex indexed by `ℤ` obtained by connecting `K` and `L`:
 `... ⟶ K.X 2 ⟶ K.X 1 ⟶ K.X 0 ⟶ L.X 0 ⟶ L.X 1 ⟶ L.X 2 ⟶ ...`. -/
-@[simps]
+@[simps, implicit_reducible]
 def cochainComplex : CochainComplex C ℤ where
   X := X K L
   d := h.d
@@ -140,7 +139,6 @@ def cochainComplex : CochainComplex C ℤ where
 
 open HomologicalComplex
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `L` in degrees `≥ 0`. -/
 @[simps!]
 def restrictionGEIso :
@@ -153,8 +151,6 @@ def restrictionGEIso :
       (j' := (n + 1 : ℕ)) (by simp) (by simp), cochainComplex_d, h.d_ofNat]
     simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If `h : ConnectData K L`, then `h.cochainComplex` identifies to `K` in degrees `≤ -1`. -/
 @[simps!]
 def restrictionLEIso :
@@ -207,17 +203,13 @@ protected def map : h.cochainComplex ⟶ h'.cochainComplex where
   | .negSucc 0, _, .refl _ => by simpa
   | .negSucc (i + 1), _, .refl _ => fK.comm _ _
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp] lemma map_id : h.map h (𝟙 K) (𝟙 L) (by simp) = 𝟙 _ := by ext (m | _ | m) <;> simp; rfl
 
-set_option backward.defeqAttrib.useBackward true in
 lemma map_comp_map :
     h.map h' fK fL f_comm ≫ h'.map h'' fK' fL' f_comm'
      = h.map h'' (fK ≫ fK') (fL ≫ fL') (by simp [f_comm', reassoc_of% f_comm]) := by
   ext (m | _ | m) <;> simp; rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
     [HasHomology h.cochainComplex m] [HasHomology L n]
     [HasHomology h'.cochainComplex m] [HasHomology L' n] :
@@ -225,15 +217,14 @@ lemma homologyMap_map_of_eq_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = n)
     (h.homologyIsoPos n m hmn).hom ≫ homologyMap fL n ≫ (h'.homologyIsoPos n m hmn).inv := by
   rw [← cancel_mono (HomologicalComplex.homologyι ..)]
   dsimp [homologyIsoPos]
-  simp only [homologyι_naturality, Category.assoc, restrictionHomologyIso_hom_homologyι,
-    homologyι_naturality_assoc, restrictionHomologyIso_inv_homologyι_assoc]
+  simp only [homologyι_naturality, homologyMapIso_hom, homologyMapIso_inv, Category.assoc,
+    restrictionHomologyIso_hom_homologyι, homologyι_naturality_assoc,
+    restrictionHomologyIso_inv_homologyι_assoc]
   congr 1
   rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
   subst hmn
   simp
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -↑(n + 1))
     [HasHomology h.cochainComplex m] [HasHomology K n]
     [HasHomology h'.cochainComplex m] [HasHomology K' n] :
@@ -241,8 +232,9 @@ lemma homologyMap_map_of_eq_neg_succ (n : ℕ) [NeZero n] (m : ℤ) (hmn : m = -
       (h.homologyIsoNeg n m hmn).hom ≫ homologyMap fK n ≫ (h'.homologyIsoNeg n m hmn).inv := by
   rw [← cancel_mono (HomologicalComplex.homologyι ..)]
   dsimp [homologyIsoNeg]
-  simp only [homologyι_naturality, Category.assoc, restrictionHomologyIso_hom_homologyι,
-    homologyι_naturality_assoc, restrictionHomologyIso_inv_homologyι_assoc]
+  simp only [homologyι_naturality, homologyMapIso_hom, homologyMapIso_inv,
+    Category.assoc, restrictionHomologyIso_hom_homologyι, homologyι_naturality_assoc,
+    restrictionHomologyIso_inv_homologyι_assoc]
   congr 1
   rw [← cancel_epi (HomologicalComplex.pOpcycles ..)]
   obtain rfl : m = .negSucc n := hmn

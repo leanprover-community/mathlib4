@@ -472,7 +472,6 @@ noncomputable def mapHomologicalComplexObjXIso (i : ι) :
   else H.mapIso (homotopyCofiber.XIso φ i hi) ≪≫
     (homotopyCofiber.XIso ((H.mapHomologicalComplex c).map φ) i hi).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inlX_mapHomologicalComplexObjXIso_inv
     (i j : ι) (hij : c.Rel j i) :
@@ -481,7 +480,6 @@ lemma inlX_mapHomologicalComplexObjXIso_inv
   obtain rfl := c.next_eq' hij
   simp [mapHomologicalComplexObjXIso, dite_eq_left hij, ← Functor.map_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma inrX_mapHomologicalComplexObjXIso_inv (i : ι) :
     inrX ((H.mapHomologicalComplex c).map φ) i ≫
@@ -715,7 +713,6 @@ variable (F) {D : Type*} [Category* D] [Preadditive D] (H : C ⥤ D) [H.Additive
 
 attribute [local instance] preservesBinaryBiproduct_of_preservesBiproduct
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism expressing the commutation between taking
 the cylinder of a homological complex and applying an additive functor. -/
 noncomputable def mapHomologicalComplexObjIso :

@@ -29,25 +29,22 @@ variable (C : Type*) [Category* C]
 namespace ComplexShape
 
 /-- The embedding of the complex shape `up ℤ` in `down ℤ` given by `n ↦ -n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def embeddingUpIntDownInt : (up ℤ).Embedding (down ℤ) where
   f n := -n
   injective_f _ _ := by simp
   rel := by simp
 
-set_option backward.defeqAttrib.useBackward true in
 instance : embeddingUpIntDownInt.IsRelIff where
   rel' := by dsimp; lia
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The embedding of the complex shape `down ℤ` in `up ℤ` given by `n ↦ -n`. -/
-@[simps]
+@[simps, implicit_reducible]
 def embeddingDownIntUpInt : (down ℤ).Embedding (up ℤ) where
   f n := -n
   injective_f _ _ := by simp
   rel := by dsimp; lia
 
-set_option backward.defeqAttrib.useBackward true in
 instance : embeddingDownIntUpInt.IsRelIff where
   rel' := by dsimp; lia
 
@@ -57,10 +54,9 @@ namespace ChainComplex
 
 variable [HasZeroMorphisms C]
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 attribute [local simp] HomologicalComplex.XIsoOfEq in
 /-- The equivalence of categories `ChainComplex C ℤ ≌ CochainComplex C ℤ`. -/
+@[implicit_reducible]
 def cochainComplexEquivalence :
     ChainComplex C ℤ ≌ CochainComplex C ℤ where
   functor := ComplexShape.embeddingUpIntDownInt.restrictionFunctor C
@@ -77,6 +73,7 @@ end ChainComplex
 namespace CochainComplex
 
 /-- The equivalence of categories `(CochainComplex C ℤ)ᵒᵖ ≌ CochainComplex Cᵒᵖ ℤ`. -/
+@[implicit_reducible]
 def opEquivalence [HasZeroMorphisms C] :
     (CochainComplex C ℤ)ᵒᵖ ≌ CochainComplex Cᵒᵖ ℤ :=
   (HomologicalComplex.opEquivalence C (.up ℤ)).trans
@@ -90,8 +87,6 @@ section
 
 variable {K L : CochainComplex C ℤ} {f g : K ⟶ L}
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an homotopy between morphisms of cochain complexes indexed by `ℤ`,
 this is the corresponding homotopy between morphisms of cochain complexes
 in the opposite category. -/
@@ -115,8 +110,6 @@ def homotopyOp (h : Homotopy f g) :
       symm
       exact prevD_eq _ (j' := n - 1) (by simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 lemma homotopyOp_hom_eq (h : Homotopy f g)
     (p q p' q' : ℤ) (hp : p + p' = 0 := by lia) (hq : q + q' = 0 := by lia) :
     (homotopyOp h).hom p q =
@@ -126,8 +119,6 @@ lemma homotopyOp_hom_eq (h : Homotopy f g)
   obtain rfl : q' = -q := by lia
   simp [homotopyOp]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The homotopy between two morphisms of cochain complexes indexed by `ℤ`
 which correspond to an homotopy between morphisms of cochain complexes
 in the opposite category. -/
@@ -159,7 +150,6 @@ def homotopyUnop (h : Homotopy ((opEquivalence C).functor.map f.op)
       dsimp
       simp [H (- -(n + 1)) (- -n) (n + 1) n (by simp) (by simp), ← op_comp_assoc, ← op_comp])
 
-set_option backward.defeqAttrib.useBackward true in
 lemma homotopyUnop_hom_eq
     (h : Homotopy ((opEquivalence C).functor.map f.op)
       ((opEquivalence C).functor.map g.op))
@@ -173,8 +163,6 @@ lemma homotopyUnop_hom_eq
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- Two morphisms of cochain complexes indexed by `ℤ` are homotopic iff
 they are homotopic after the application of the functor
 `(opEquivalence C).functor : (CochainComplex C ℤ)ᵒᵖ ⥤ CochainComplex Cᵒᵖ ℤ`. -/

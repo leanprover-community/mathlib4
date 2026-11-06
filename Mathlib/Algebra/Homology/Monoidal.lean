@@ -182,7 +182,7 @@ noncomputable def leftUnitor' :
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma leftUnitor'_inv (i : I) :
-    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ (K.X i)) ≫
+    (leftUnitor' K).inv i = (λ_ (K.X i)).inv ≫ ((singleObjXSelf c 0 (𝟙_ C)).inv ▷ K.X i) ≫
       ιTensorObj (tensorUnit C c) K 0 i i (zero_add i) := by
   dsimp [leftUnitor']
   rw [GradedObject.Monoidal.leftUnitor_inv_apply, assoc, assoc, Iso.cancel_iso_inv_left,

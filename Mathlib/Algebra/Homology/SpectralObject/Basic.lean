@@ -103,19 +103,19 @@ lemma zero₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) :
 
 /-- The (exact) short complex `H^n₀(g) ⟶ H^n₁(f) ⟶ H^n₁(fg)` of a
 spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₁ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₁ f g fg h n₀ n₁ hn₁)
 
 /-- The (exact) short complex `H^n₀(f) ⟶ H^n₀(fg) ⟶ H^n₀(g)` of a
 spectral object, when `f ≫ g = fg`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₂ (n₀ : ℤ) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₂ f g fg h n₀)
 
 /-- The (exact) short complex `H^n₀(fg) ⟶ H^n₀(g) ⟶ H^n₁(f)`
 of a spectral object, when `f ≫ g = fg` and `n₀ + 1 = n₁`. -/
-@[simps]
+@[simps, implicit_reducible]
 def sc₃ (n₀ n₁ : ℤ) (hn₁ : n₀ + 1 = n₁ := by lia) : ShortComplex C :=
   ShortComplex.mk _ _ (X.zero₃ f g fg h n₀ n₁ hn₁)
 

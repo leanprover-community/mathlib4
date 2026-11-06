@@ -40,7 +40,6 @@ namespace HomologicalComplex
 
 namespace HomologySequence
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The morphism `snakeInput hS₁ i j hij ⟶ snakeInput hS₂ i j hij` induced by
 a morphism `φ : S₁ ⟶ S₂` of short complexes of homological complexes, that
 are short exact (`hS₁ : S₁.ShortExact` and `hS₂ : S₁.ShortExact`). -/
@@ -130,7 +129,6 @@ lemma mono_homologyMap_τ₃ (i : ι)
     apply epi_homologyMap_of_epi_of_not_rel
     simpa using hi
 
-set_option backward.defeqAttrib.useBackward true in
 lemma epi_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₂ i))
     (h₂ : ∀ j, c.Rel i j → Epi (homologyMap φ.τ₁ j))

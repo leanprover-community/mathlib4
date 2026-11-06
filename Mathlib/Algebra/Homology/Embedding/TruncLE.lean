@@ -36,6 +36,7 @@ variable (K L M : HomologicalComplex C c') (φ : K ⟶ L) (φ' : L ⟶ M)
 
 /-- The canonical truncation of a homological complex relative to an embedding
 of complex shapes `e` which satisfies `e.IsTruncLE`. -/
+@[implicit_reducible]
 noncomputable def truncLE' : HomologicalComplex C c := (K.op.truncGE' e.op).unop
 
 /-- The isomorphism `(K.truncLE' e).X i ≅ K.X i'` when `e.f i = i'`
@@ -71,6 +72,7 @@ variable [HasZeroObject C]
 
 /-- The canonical truncation of a homological complex relative to an embedding
 of complex shapes `e` which satisfies `e.IsTruncLE`. -/
+@[implicit_reducible]
 noncomputable def truncLE : HomologicalComplex C c' := (K.op.truncGE e.op).unop
 
 /-- The canonical isomorphism `K.truncLE e ≅ (K.truncLE' e).extend e`. -/
@@ -100,14 +102,13 @@ variable {K L M}
 noncomputable def truncLE'Map : K.truncLE' e ⟶ L.truncLE' e :=
   (unopFunctor C c.symm).map (truncGE'Map ((opFunctor C c').map φ.op) e.op).op
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma truncLE'Map_f_eq_cyclesMap {i : ι} (hi : e.BoundaryLE i) {i' : ι'} (h : e.f i = i') :
     (truncLE'Map φ e).f i =
       (K.truncLE'XIsoCycles e h hi).hom ≫ cyclesMap φ i' ≫
         (L.truncLE'XIsoCycles e h hi).inv := by
   apply Quiver.Hom.op_inj
   dsimp [truncLE'Map, truncLE'XIsoCycles]
+  simp only [Iso.unop_hom, Quiver.Hom.op_unop, Iso.unop_inv]
   rw [assoc, assoc, truncGE'Map_f_eq_opcyclesMap _ e.op (by simpa) h,
     opcyclesOpIso_inv_naturality_assoc, Iso.hom_inv_id_assoc]
 
@@ -220,13 +221,12 @@ variable (e : Embedding c c') [e.IsTruncLE]
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncLE`,
 this is the (canonical) truncation functor
 `HomologicalComplex C c' ⥤ HomologicalComplex C c`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def truncLE'Functor :
     HomologicalComplex C c' ⥤ HomologicalComplex C c where
   obj K := K.truncLE' e
   map φ := HomologicalComplex.truncLE'Map φ e
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.truncGE' e ⟶ K.restriction e` for all `K`. -/
 @[simps]
 noncomputable def truncLE'ToRestrictionNatTrans :
@@ -236,13 +236,12 @@ noncomputable def truncLE'ToRestrictionNatTrans :
 /-- Given an embedding `e : Embedding c c'` of complex shapes which satisfy `e.IsTruncLE`,
 this is the (canonical) truncation functor
 `HomologicalComplex C c' ⥤ HomologicalComplex C c'`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def truncLEFunctor :
     HomologicalComplex C c' ⥤ HomologicalComplex C c' where
   obj K := K.truncLE e
   map φ := HomologicalComplex.truncLEMap φ e
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `K.ιTruncLE e : K.truncLE e ⟶ K` for all `K`. -/
 @[simps]
 noncomputable def ιTruncLENatTrans : e.truncLEFunctor C ⟶ 𝟭 _ where
