@@ -195,6 +195,27 @@ lemma le_iff_sdiff_subset_lowerClosure {s t : Colex (Finset α)} :
       lowerClosure (↑(ofColex t) \ ↑(ofColex s) : Set α) := by
   simp [le_def, Set.subset_def, and_assoc]
 
+lemma exists_mem_le_of_toColex_le_toColex_of_mem (hle : toColex s ≤ toColex t) (hmem : a ∈ s) :
+    ∃ b ∈ t, a ≤ b := by
+  by_cases ha2 : a ∈ t
+  · use a
+  obtain ⟨b, hb⟩ := le_def.mp hle hmem ha2
+  exact ⟨b, hb.1, hb.2.2⟩
+
+lemma exists_mem_ofColex_le_of_le_of_mem
+    {s t : Colex (Finset α)} (hle : s ≤ t) (hmem : a ∈ ofColex s) :
+    ∃ b ∈ ofColex t, a ≤ b := exists_mem_le_of_toColex_le_toColex_of_mem hle hmem
+
+lemma max_le_max_of_toColex_le_toColex {α} [LinearOrder α] {s t : Finset α}
+    (h : toColex s ≤ toColex t) : s.max ≤ t.max := by
+  rw [Finset.max_le_iff]
+  intro a ha
+  obtain ⟨b, hb⟩ := exists_mem_le_of_toColex_le_toColex_of_mem h ha
+  exact le_trans (WithBot.coe_le_coe.mpr hb.2) (Finset.le_max hb.1)
+
+lemma max_ofColex_le_max_ofColex_of_le {α} [LinearOrder α] {s t : Colex (Finset α)}
+    (h : s ≤ t) : (ofColex s).max ≤ (ofColex t).max := max_le_max_of_toColex_le_toColex h
+
 section DecidableEq
 variable [DecidableEq α]
 
