@@ -99,7 +99,7 @@ theorem degree_reduce_lt {f b : MvPolynomial σ R} (hb : IsUnit (m.leadingCoeff 
       apply hf
       simp [hf0]
   have H' : (m.reduce hb f).coeff (m.degree f) = 0 := by
-    simp only [reduce, coeff_sub, sub_eq_zero]
+    simp only [reduce, AddMonoidAlgebra.coeff_sub, Finsupp.sub_apply, sub_eq_zero]
     nth_rewrite 3 [H]
     rw [coeff_mul_of_degree_add (m := m), leadingCoeff_monomial, mul_comm, ← mul_assoc,
       IsUnit.mul_val_inv, one_mul, ← leadingCoeff]

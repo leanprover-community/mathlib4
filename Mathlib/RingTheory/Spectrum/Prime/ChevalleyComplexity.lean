@@ -879,7 +879,7 @@ lemma chevalley_mvPolynomial_mvPolynomial
       · intro i
         obtain j | j := j
         · simp [σ, MvPolynomial.coeff_map, degrees_C]
-        · simp only [MvPolynomial.algebraMap_eq, Sum.elim_inr, MvPolynomial.coeff_sub,
+        · simp only [MvPolynomial.algebraMap_eq, Sum.elim_inr, AddMonoidAlgebra.coeff_sub_apply,
             MvPolynomial.coeff_C, MvPolynomial.coeff_map, σ]
           refine degrees_sub_le.trans ?_
           simp only [degrees_C, apply_ite, degrees_zero,
