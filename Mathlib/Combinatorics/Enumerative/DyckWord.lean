@@ -28,6 +28,8 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
   at least as many `U`s as `D`s.
 * `DyckWord.semilength`: semilength (half the length) of a Dyck word.
 * `DyckWord.firstReturn`: for a nonempty word, the index of the `D` matching the initial `U`.
+* `DyckWord.equivIsNestedOfSemilengthEq`: nesting gives an equivalence between Dyck words
+  of semilength `n` and nested Dyck words of semilength `n + 1`.
 
 ## Main results
 
@@ -37,6 +39,8 @@ one consequence being that the number of Dyck words with length `2 * n` is `cata
   rooted binary trees with `n` internal nodes.
 * `DyckWord.card_dyckWord_semilength_eq_catalan`:
   there are `catalan n` Dyck words of length `2 * n` or semilength `n`.
+* `DyckWord.card_isNested_semilength_eq_catalan`:
+  there are `catalan n` nested Dyck words of semilength `n + 1`.
 
 ## Implementation notes
 
@@ -548,6 +552,27 @@ theorem card_dyckWord_semilength_eq_catalan (n : ℕ) :
   convert Fintype.card_coe _
 
 end BinaryTree
+
+/-- Nesting gives a bijection between Dyck words of semilength `n` and nested Dyck words
+of semilength `n + 1`. -/
+def equivIsNestedOfSemilengthEq (n : ℕ) :
+    { p : DyckWord // p.semilength = n } ≃
+      { p : DyckWord // p.IsNested ∧ p.semilength = n + 1 } where
+  toFun p := ⟨p.1.nest, .nest, by simp [p.2]⟩
+  invFun p := ⟨p.1.denest p.2.1, by
+    have h := congrArg semilength (p.1.nest_denest p.2.1)
+    simpa only [semilength_nest, p.2.2, Nat.add_right_cancel_iff] using h⟩
+  left_inv p := Subtype.ext (denest_nest _)
+  right_inv p := Subtype.ext (nest_denest p.1 p.2.1)
+
+instance {n : ℕ} : Fintype { p : DyckWord // p.IsNested ∧ p.semilength = n + 1 } :=
+  Fintype.ofEquiv _ (equivIsNestedOfSemilengthEq n)
+
+/-- There are `catalan n` nested Dyck words of semilength `n + 1`. -/
+theorem card_isNested_semilength_eq_catalan (n : ℕ) :
+    Fintype.card { p : DyckWord // p.IsNested ∧ p.semilength = n + 1 } = catalan n := by
+  rw [← Fintype.card_congr (equivIsNestedOfSemilengthEq n),
+    card_dyckWord_semilength_eq_catalan]
 
 end DyckWord
 
