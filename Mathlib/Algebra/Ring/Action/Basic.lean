@@ -49,22 +49,14 @@ Two key axioms are `g • (x + y) = (g • x) + (g • y)` and `g • (x * y) = 
 A typical use case is the action of a Galois group $Gal(L/K)$ on the field `L`.
 -/
 class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extends
-  DistribMulAction M R where
-  /-- Multiplying `1` by a scalar gives `1` -/
-  smul_one : ∀ g : M, (g • (1 : R) : R) = 1
-  /-- Scalar multiplication distributes across multiplication -/
-  smul_mul : ∀ (g : M) (x y : R), g • (x * y) = g • x * g • y
+  DistribMulAction M R, MulDistribMulAction M R where
+
+attribute [instance 100] MulSemiringAction.toMulDistribMulAction
 
 section Semiring
 
 variable (M N : Type*) [Monoid M] [Monoid N]
 variable (R : Type v) [Semiring R]
-
--- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
-instance (priority := 100) MulSemiringAction.toMulDistribMulAction
-    (M R) {_ : Monoid M} {_ : Semiring R} [h : MulSemiringAction M R] :
-    MulDistribMulAction M R :=
-  { h with }
 
 /-- Each element of the monoid defines a semiring homomorphism. -/
 @[simps!]
