@@ -181,9 +181,6 @@ instance nullSingletonClass_withDensity [NullSingletonClass μ] (f : α → ℝ�
     NullSingletonClass (μ.withDensity f) where
   measure_singleton _ := withDensity_absolutelyContinuous μ f (measure_singleton _)
 
-@[deprecated (since := "2026-06-09")]
-alias noAtoms_withDensity := nullSingletonClass_withDensity
-
 @[simp]
 theorem withDensity_zero : μ.withDensity 0 = 0 := by
   ext1 s hs
