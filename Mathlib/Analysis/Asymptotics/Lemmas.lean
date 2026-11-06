@@ -27,9 +27,7 @@ open scoped Topology
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*} {E''' : Type*}
-  {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
+variable {α β E F G E' F' G' E'' F'' G'' E''' R 𝕜 𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
 variable [SeminormedAddGroup E'] [SeminormedAddGroup F'] [SeminormedAddGroup G']
@@ -41,6 +39,7 @@ variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
 variable {f' : α → E'} {g' : α → F'}
 variable {f'' : α → E''} {g'' : α → F''}
 variable {l : Filter α}
+
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   rw [isBigOWith_iff, eventually_principal]
