@@ -93,7 +93,7 @@ theorem norm_abs_apply (T : E →L[ℂ] F) (x : E) : ‖|T| x‖ = ‖T x‖ := 
   simp [apply_norm_sq_eq_inner_adjoint_left]
 
 @[simp]
-theorem ker_abs_eq (T : E →L[ℂ] F) : |T|.ker = T.ker := by
+theorem ker_abs (T : E →L[ℂ] F) : |T|.ker = T.ker := by
   simp [← ker_adjoint_comp_self]
 
 @[simp]
