@@ -175,6 +175,17 @@ theorem SemilatticeSup.dual_dual (α : Type*) [H : SemilatticeSup α] :
     OrderDual.instSemilatticeSup αᵒᵈ = H :=
   SemilatticeSup.ext fun _ _ => Iff.rfl
 
+variable (α) in
+/-- In a (semi)lattice, `a ≤ b` can be decided by checking if `a ⊔ b = b`. -/
+abbrev SemilatticeSup.decidableLEOfDecidableEq [DecidableEq α] : DecidableLE α :=
+  fun _ _ => decidable_of_iff _ sup_eq_right
+
+/-- In a (semi)lattice, `a ≤ b` can be decided by checking if `a ⊓ b = a`. -/
+@[to_dual existing]
+abbrev SemilatticeInf.decidableLEOfDecidableEq (α : Type*) [SemilatticeInf α] [DecidableEq α] :
+    DecidableLE α :=
+  fun _ _ => decidable_of_iff _ inf_eq_left
+
 end SemilatticeSup
 
 /-!
