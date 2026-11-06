@@ -5,8 +5,8 @@ Authors: Patrick Massot
 -/
 module
 
-public import Mathlib.Topology.Path
 public import Mathlib.Topology.Order.Lattice
+public import Mathlib.Topology.Path
 
 /-!
 # Path connectedness
