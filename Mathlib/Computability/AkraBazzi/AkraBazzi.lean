@@ -53,9 +53,9 @@ prove the version with a sum here, as it is simpler and more relevant for algori
 
 ## References
 
-* Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
-* Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
-* Manuel Eberl, Asymptotic reasoning in a proof assistant
+* [M. Akra, L. Bazzi, *On the solution of linear recurrence equations*][akrabazzi1998]
+* [T. Leighton, *Notes on better master theorems for divide-and-conquer recurrences*][leighton1996]
+* [M. Eberl, *Asymptotic reasoning in a proof assistant*][eberl2021]
 
 -/
 

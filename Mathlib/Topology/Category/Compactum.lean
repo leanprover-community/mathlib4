@@ -64,7 +64,7 @@ We also add wrappers around structures which already exist. Here are the main on
 
 ## References
 
-- E. Manes, Algebraic Theories, Graduate Texts in Mathematics 26, Springer-Verlag, 1976.
+- [E. Manes, *Algebraic theories*][manes1976]
 - https://ncatlab.org/nlab/show/ultrafilter
 
 -/

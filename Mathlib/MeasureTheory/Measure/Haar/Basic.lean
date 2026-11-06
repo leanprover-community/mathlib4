@@ -55,7 +55,7 @@ the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 
 ## References
 * [P. R. Halmos, *Measure Theory*][halmos1950measure], §53
-* Jonathan Gleason, Existence and Uniqueness of Haar Measure
+* [J. Gleason, *Existence and uniqueness of Haar measure*][gleason2010]
   - Note: step 9, page 8 contains a mistake: the last defined `μ` does not extend the `μ` on compact
     sets, see Halmos (1950) p. 233, bottom of the page. This makes some other steps (like step 11)
     invalid.

@@ -47,7 +47,8 @@ rather than in `ℝ`.
 
 ## References
 
-* Bourbaki: General Topology (1995), Chapter 3 §5 (Infinite sums in commutative groups)
+* [N. Bourbaki, *General Topology, Chapters 1–4*][bourbaki1995], Chapter 3 §5 (Infinite sums in
+  commutative groups)
 
 -/
 

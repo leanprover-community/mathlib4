@@ -48,9 +48,9 @@ have the finite intersection property, so their intersection is nonempty.
 
 ## References
 
-* de Bruijn, N. G.; Erdős, P. (1951). "A colour problem for infinite graphs and a problem
-  in the theory of relations".
-* Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
+* [N. G. de Bruijn, P. Erdős, *A colour problem for infinite graphs and a problem in the theory
+  of relations*][debruijnerdos1951]
+* [R. Rado, *Axiomatic treatment of rank in infinite sets*][rado1949]
 
 -/
 
