@@ -67,23 +67,22 @@ theorem ext_cauchy {x y : Real} : x.cauchy = y.cauchy → x = y :=
 def equivCauchy : ℝ ≃ CauSeq.Completion.Cauchy (abs : ℚ → ℚ) :=
   ⟨Real.cauchy, Real.ofCauchy, fun ⟨_⟩ => rfl, fun _ => rfl⟩
 
--- irreducible doesn't work for instances: https://github.com/leanprover-community/lean/issues/511
-private irreducible_def zero : ℝ :=
+@[no_expose] private def zero : ℝ :=
   ⟨0⟩
 
-private irreducible_def one : ℝ :=
+@[no_expose] private def one : ℝ :=
   ⟨1⟩
 
-private irreducible_def add : ℝ → ℝ → ℝ
+@[no_expose] private def add : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a + b⟩
 
-private irreducible_def neg : ℝ → ℝ
+@[no_expose] private def neg : ℝ → ℝ
   | ⟨a⟩ => ⟨-a⟩
 
-private irreducible_def mul : ℝ → ℝ → ℝ
+@[no_expose] private def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
-private noncomputable irreducible_def inv' : ℝ → ℝ
+@[no_expose] private noncomputable def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
 @[no_expose]
@@ -113,50 +112,35 @@ instance : Sub ℝ :=
 noncomputable instance : Inv ℝ :=
   ⟨inv'⟩
 
-theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 :=
-  zero_def.symm
+theorem ofCauchy_zero : (⟨0⟩ : ℝ) = 0 := (rfl)
 
-theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 :=
-  one_def.symm
+theorem ofCauchy_one : (⟨1⟩ : ℝ) = 1 := (rfl)
 
-theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ :=
-  (add_def _ _).symm
+theorem ofCauchy_add (a b) : (⟨a + b⟩ : ℝ) = ⟨a⟩ + ⟨b⟩ := (rfl)
 
-theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ :=
-  (neg_def _).symm
+theorem ofCauchy_neg (a) : (⟨-a⟩ : ℝ) = -⟨a⟩ := (rfl)
 
 theorem ofCauchy_sub (a b) : (⟨a - b⟩ : ℝ) = ⟨a⟩ - ⟨b⟩ := by
-  rw [sub_eq_add_neg, ofCauchy_add, ofCauchy_neg]
-  rfl
+  rw [sub_eq_add_neg]; rfl
 
-theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ :=
-  (mul_def _ _).symm
+theorem ofCauchy_mul (a b) : (⟨a * b⟩ : ℝ) = ⟨a⟩ * ⟨b⟩ := (rfl)
 
-theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ :=
-  show _ = inv' _ by rw [inv']
+theorem ofCauchy_inv {f} : (⟨f⁻¹⟩ : ℝ) = ⟨f⟩⁻¹ := (rfl)
 
-theorem cauchy_zero : (0 : ℝ).cauchy = 0 :=
-  show zero.cauchy = 0 by rw [zero_def]
+theorem cauchy_zero : (0 : ℝ).cauchy = 0 := (rfl)
 
-theorem cauchy_one : (1 : ℝ).cauchy = 1 :=
-  show one.cauchy = 1 by rw [one_def]
+theorem cauchy_one : (1 : ℝ).cauchy = 1 := (rfl)
 
-theorem cauchy_add : ∀ a b, (a + b : ℝ).cauchy = a.cauchy + b.cauchy
-  | ⟨a⟩, ⟨b⟩ => show (add _ _).cauchy = _ by rw [add_def]
+theorem cauchy_add (a b : ℝ) : (a + b : ℝ).cauchy = a.cauchy + b.cauchy := (rfl)
 
-theorem cauchy_neg : ∀ a, (-a : ℝ).cauchy = -a.cauchy
-  | ⟨a⟩ => show (neg _).cauchy = _ by rw [neg_def]
+theorem cauchy_neg (a : ℝ) : (-a : ℝ).cauchy = -a.cauchy := (rfl)
 
-theorem cauchy_mul : ∀ a b, (a * b : ℝ).cauchy = a.cauchy * b.cauchy
-  | ⟨a⟩, ⟨b⟩ => show (mul _ _).cauchy = _ by rw [mul_def]
+theorem cauchy_mul (a b : ℝ) : (a * b : ℝ).cauchy = a.cauchy * b.cauchy := (rfl)
 
-theorem cauchy_sub : ∀ a b, (a - b : ℝ).cauchy = a.cauchy - b.cauchy
-  | ⟨a⟩, ⟨b⟩ => by
-    rw [sub_eq_add_neg, ← cauchy_neg, ← cauchy_add]
-    rfl
+theorem cauchy_sub (a b : ℝ) : (a - b : ℝ).cauchy = a.cauchy - b.cauchy := by
+  rw [sub_eq_add_neg]; rfl
 
-theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
-  | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
+theorem cauchy_inv (f : ℝ) : (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹ := (rfl)
 
 instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
 instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
@@ -255,7 +239,7 @@ def mk (x : CauSeq ℚ abs) : ℝ :=
 theorem mk_eq {f g : CauSeq ℚ abs} : mk f = mk g ↔ f ≈ g :=
   ext_cauchy_iff.trans CauSeq.Completion.mk_eq
 
-private irreducible_def lt : ℝ → ℝ → Prop
+@[no_expose] private def lt : ℝ → ℝ → Prop
   | ⟨x⟩, ⟨y⟩ =>
     (Quotient.liftOn₂ x y (· < ·)) fun _ _ _ _ hf hg =>
       propext
@@ -266,22 +250,20 @@ private irreducible_def lt : ℝ → ℝ → Prop
 instance : LT ℝ :=
   ⟨lt⟩
 
-theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g :=
-  show lt _ _ ↔ _ by rw [lt_def]; rfl
+theorem lt_cauchy {f g} : (⟨⟦f⟧⟩ : ℝ) < ⟨⟦g⟧⟩ ↔ f < g := .rfl
 
 @[simp]
-theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g :=
-  lt_cauchy
+theorem mk_lt {f g : CauSeq ℚ abs} : mk f < mk g ↔ f < g := .rfl
 
-theorem mk_zero : mk 0 = 0 := by rw [← ofCauchy_zero]; rfl
+theorem mk_zero : mk 0 = 0 := (rfl)
 
-theorem mk_one : mk 1 = 1 := by rw [← ofCauchy_one]; rfl
+theorem mk_one : mk 1 = 1 := (rfl)
 
-theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := by simp [mk, ← ofCauchy_add]
+theorem mk_add {f g : CauSeq ℚ abs} : mk (f + g) = mk f + mk g := (rfl)
 
-theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := by simp [mk, ← ofCauchy_mul]
+theorem mk_mul {f g : CauSeq ℚ abs} : mk (f * g) = mk f * mk g := (rfl)
 
-theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := by simp [mk, ← ofCauchy_neg]
+theorem mk_neg {f : CauSeq ℚ abs} : mk (-f) = -mk f := (rfl)
 
 @[simp]
 theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
@@ -290,15 +272,14 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
 
 lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
 
-private irreducible_def le (x y : ℝ) : Prop :=
+@[no_expose] private def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
 @[no_expose]
 instance : LE ℝ :=
   ⟨le⟩
 
-private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
-  iff_of_eq <| le_def _ _
+private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y := .rfl
 
 @[simp]
 theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
@@ -368,33 +349,27 @@ instance instIsOrderedRing : IsOrderedRing ℝ :=
 instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
-private irreducible_def sup : ℝ → ℝ → ℝ
+@[no_expose] private def sup : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊔ ·) (fun _ _ hx _ _ hy => sup_equiv_sup hx hy) x y⟩
 
 @[no_expose]
 instance : Max ℝ :=
   ⟨sup⟩
 
-theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ :=
-  show _ = sup _ _ by
-    rw [sup_def]
-    rfl
+theorem ofCauchy_sup (a b) : (⟨⟦a ⊔ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊔ ⟨⟦b⟧⟩ := (rfl)
 
 @[simp]
 theorem mk_sup (a b) : (mk (a ⊔ b) : ℝ) = mk a ⊔ mk b :=
   ofCauchy_sup _ _
 
-private irreducible_def inf : ℝ → ℝ → ℝ
+@[no_expose] private def inf : ℝ → ℝ → ℝ
   | ⟨x⟩, ⟨y⟩ => ⟨Quotient.map₂ (· ⊓ ·) (fun _ _ hx _ _ hy => inf_equiv_inf hx hy) x y⟩
 
 @[no_expose]
 instance : Min ℝ :=
   ⟨inf⟩
 
-theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ :=
-  show _ = inf _ _ by
-    rw [inf_def]
-    rfl
+theorem ofCauchy_inf (a b) : (⟨⟦a ⊓ b⟧⟩ : ℝ) = ⟨⟦a⟧⟩ ⊓ ⟨⟦b⟧⟩ := (rfl)
 
 @[simp]
 theorem mk_inf (a b) : (mk (a ⊓ b) : ℝ) = mk a ⊓ mk b :=

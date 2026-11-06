@@ -52,9 +52,12 @@ variable {α E : Type*} [SeminormedAddGroup E] {s t : Set α} (f : α → E) (a 
 theorem norm_indicator_eq_indicator_norm : ‖indicator s f a‖ = indicator s (fun a => ‖f a‖) a :=
   congr($((indicator_comp_of_zero norm_zero).symm) a)
 
-theorem nnnorm_indicator_eq_indicator_nnnorm :
+theorem nnNorm_indicator_eq_indicator_nnNorm :
     ‖indicator s f a‖₊ = indicator s (fun a => ‖f a‖₊) a :=
-  congr($((indicator_comp_of_zero nnnorm_zero).symm) a)
+  congr($((indicator_comp_of_zero nnNorm_zero).symm) a)
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_indicator_eq_indicator_nnnorm := nnNorm_indicator_eq_indicator_nnNorm
 
 theorem norm_indicator_le_of_subset (h : s ⊆ t) (f : α → E) (a : α) :
     ‖indicator s f a‖ ≤ ‖indicator t f a‖ := by
