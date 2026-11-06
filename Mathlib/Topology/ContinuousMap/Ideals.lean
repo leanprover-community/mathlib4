@@ -210,8 +210,8 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     ∃ g : C(X, ℝ≥0), (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g ∈ I ∧ (∀ x, g x ≤ 1) ∧ t.EqOn g 1 by
     obtain ⟨g, hgI, hg, hgt⟩ := this
     refine ⟨f * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g, I.mul_mem_left f hgI, ?_⟩
-    rw [nndist_eq_nnnorm]
-    refine (nnnorm_lt_iff _ hε).2 fun x => ?_
+    rw [nnDist_eq_nnNorm]
+    refine (nnNorm_lt_iff _ hε).2 fun x => ?_
     simp only [sub_apply, mul_apply, comp_apply, coe_mk, algebraMapCLM_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_ofClass, algebraMapCLM_apply,
