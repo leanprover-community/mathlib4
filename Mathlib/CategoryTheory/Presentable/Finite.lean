@@ -28,8 +28,6 @@ open Limits Opposite Cardinal
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-attribute [local instance] fact_isRegular_aleph0
-
 /-- A functor `F : C ⥤ D` is finitely accessible if it is `ℵ₀`-accessible.
 Equivalently, it preserves all filtered colimits.
 See `CategoryTheory.Functor.IsFinitelyAccessible_iff_preservesFilteredColimits`. -/

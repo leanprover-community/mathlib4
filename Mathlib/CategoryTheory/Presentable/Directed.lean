@@ -538,7 +538,6 @@ lemma exists_cardinal_directed (J : Type w) [SmallCategory J] (κ : Cardinal.{w}
 
 end IsCardinalFiltered
 
-attribute [local instance] Cardinal.fact_isRegular_aleph0 in
 @[stacks 0032]
 lemma IsFiltered.exists_directed
     (J : Type w) [SmallCategory J] [IsFiltered J] :

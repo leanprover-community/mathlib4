@@ -510,8 +510,7 @@ lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
       r := Arrow.homMk (𝟙 _) (πObj I κ f) }
 
 omit κ in
-attribute [local instance] Cardinal.fact_isRegular_aleph0
-  Cardinal.orderBotAleph0OrdToType in
+attribute [local instance] Cardinal.orderBotAleph0OrdToType in
 lemma llp_rlp_of_isCardinalForSmallObjectArgument_aleph0
     [I.IsCardinalForSmallObjectArgument Cardinal.aleph0.{w}] :
     I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts ℕ).retracts := by
