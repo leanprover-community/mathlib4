@@ -126,7 +126,7 @@ theorem topologicalSpace_eq [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (
       (UniformOnFun.topologicalSpace E F 𝔖) := by
   rw [instTopologicalSpace]
   congr
-  exact IsUniformAddGroup.rightUniformSpace_eq
+  exact IsRightUniformAddGroup.rightUniformSpace_eq F
 
 /-- The uniform structure associated with `ContinuousLinearMap.strongTopology`. We make sure
 that this has nice definitional properties. -/
@@ -135,7 +135,8 @@ instance instUniformSpace [UniformSpace F] [IsUniformAddGroup F]
   UniformSpace.replaceTopology
     ((UniformOnFun.uniformSpace E F 𝔖).comap (UniformOnFun.ofFun 𝔖 ∘ DFunLike.coe))
     (by
-      rw [UniformConvergenceCLM.instTopologicalSpace, IsUniformAddGroup.rightUniformSpace_eq]; rfl)
+      rw [UniformConvergenceCLM.instTopologicalSpace, IsRightUniformAddGroup.rightUniformSpace_eq]
+      rfl)
 
 theorem uniformSpace_eq [UniformSpace F] [IsUniformAddGroup F] (𝔖 : Set (Set E)) :
     instUniformSpace σ F 𝔖 =
