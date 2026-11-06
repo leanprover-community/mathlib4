@@ -7,7 +7,8 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-public import Mathlib.Tactic.LinearCombination
+
+import Mathlib.Tactic.LinearCombination
 
 /-!
 # The quadratic form on a tensor product
@@ -32,7 +33,7 @@ section CommRing
 variable [CommRing R] [CommRing A]
 variable [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N₁] [AddCommGroup N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁] [IsScalarTower R A N₁]
+variable [IsScalarTower R A M₁] [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 section InvertibleTwo
@@ -163,7 +164,6 @@ theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
   ext x
   induction x with
   | tmul => simp [h]
-  | zero => simp
   | add x y hx hy =>
     have : Q₁.polarBilin = Q₂.polarBilin := by
       ext

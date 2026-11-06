@@ -6,14 +6,17 @@ Authors: Yongle Hu
 module
 
 public import Mathlib.Algebra.Module.StablyFree.Basic
-public import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
-public import Mathlib.LinearAlgebra.Determinant
-public import Mathlib.LinearAlgebra.ExteriorPower.Basis
-public import Mathlib.RingTheory.Finiteness.Prod
 public import Mathlib.RingTheory.PicardGroup
-public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
+
+import Mathlib.LinearAlgebra.Alternating.Uncurry.Fin
+import Mathlib.LinearAlgebra.Determinant
+import Mathlib.LinearAlgebra.ExteriorPower.Basis
+import Mathlib.RingTheory.Finiteness.Prod
+import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 /-!
+# Invertible finite stably free modules are free
+
 This file proves that a finite stably free module `M` is free if it is invertible.
 -/
 

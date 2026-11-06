@@ -76,10 +76,6 @@ theorem finRotate_apply (i : Fin n) : haveI := i.neZero; finRotate n i = i + 1 :
       simp only [Fin.lt_def, Fin.val_last] at h
       simp [finRotate_of_lt h, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
 
-@[deprecated finRotate_apply (since := "2026-03-29")]
-theorem finRotate_succ_apply (i : Fin (n + 1)) : finRotate (n + 1) i = i + 1 := by
-  simp
-
 theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
   simp
 
@@ -107,10 +103,6 @@ lemma finRotate_symm_apply (i : Fin n) : haveI := i.neZero; (finRotate _).symm i
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero i.pos.ne'
   apply (finRotate n.succ).symm_apply_eq.mpr
   rw [finRotate_apply, sub_add_cancel]
-
-@[deprecated finRotate_symm_apply (since := "2026-03-29")]
-lemma finRotate_succ_symm_apply [NeZero n] (i : Fin n) : (finRotate _).symm i = i - 1 := by
-  simp
 
 lemma coe_finRotate_symm_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) :
     ((finRotate _).symm i : ℕ) = i - 1 := by
