@@ -44,16 +44,19 @@ private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : |T| x ∈ 
     polarₗᵢAux T ⟨|T| x, h⟩ = T x := by
   exact congrArg _ (|T|.quotKerEquivRange_symm_apply_image x h)
 
+private theorem denseRange_inclusion (T : E →L[ℂ] F) :
+    DenseRange (Submodule.inclusion |T|.range.le_topologicalClosure) := by
+  erw [denseRange_inclusion_iff (by
+    simpa [← SetLike.coe_subset_coe] using |T|.range.le_topologicalClosure)]
+  simp
+
 /-- The polar `U` is a partial linear isometry from the range `|T|.range` of `|T|` to the
 orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that
 `T = U ∘ |T|`. -/
 def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
   T.polarₗᵢAux.extendOfIsometry
     (e := Submodule.inclusion |T|.range.le_topologicalClosure)
-    (by
-      erw [denseRange_inclusion_iff (by
-        simpa [← SetLike.coe_subset_coe] using |T|.range.le_topologicalClosure)]
-      simp)
+    T.denseRange_inclusion
     (by
       rintro ⟨_, x, rfl⟩
       simp [norm_abs_apply])
@@ -69,11 +72,7 @@ theorem range_polarₗᵢ (T : E →L[ℂ] F) :
   apply le_antisymm
   · rintro _ ⟨m, rfl⟩
     rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe]
-    have hd : DenseRange (Submodule.inclusion |T|.range.le_topologicalClosure) := by
-      erw [denseRange_inclusion_iff (by
-        simpa [← SetLike.coe_subset_coe] using |T|.range.le_topologicalClosure)]
-      simp
-    refine hd.induction_on m
+    refine T.denseRange_inclusion.induction_on m
       (isClosed_closure.preimage T.polarₗᵢ.toContinuousLinearMap.continuous) ?_
     rintro ⟨_, x, rfl⟩
     exact subset_closure ⟨x, (T.polarₗᵢ_apply x).symm ▸ rfl⟩
