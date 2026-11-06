@@ -172,8 +172,8 @@ lemma variation_transpose_le :
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   apply opENorm_le_bound _ (fun x ↦ ?_)
   simp only [transpose, mapRange_apply, LinearMap.toAddMonoidHom_coe, coe_coe, flip_apply,
-    Measure.smul_apply, Measure.nnreal_smul_coe_apply]
-  grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← enorm_eq_nnnorm]
+    smul_apply, Measure.nnreal_smul_coe_apply]
+  grw [le_opENorm, le_opENorm, enorm_measure_le_variation, ← eNorm_eq_nnNorm]
   exact le_of_eq (by ring)
 
 lemma absolutelyContinuous_variation_transpose (μ : VectorMeasure X F) (B : E →L[ℝ] F →L[ℝ] G) :
@@ -203,7 +203,7 @@ lemma variation_transpose_eq_smul [Nontrivial E] {C : ℝ≥0}
       rw [mul_right_comm, mul_le_mul_iff_left₀ (by simpa), ← le_div_iff₀' (by positivity),
         div_eq_inv_mul, ← ENNReal.coe_le_coe] at this
       exact this
-    grw [this, enorm_measure_le_variation, Measure.smul_apply]
+    grw [this, enorm_measure_le_variation, smul_apply]
 
 lemma variation_transpose_eq [Nontrivial E] (hB : ∀ x y, ‖B x y‖₊ = ‖x‖₊ * ‖y‖₊) :
     (μ.transpose B).variation = μ.variation := by
@@ -217,14 +217,14 @@ with respect to a vector measure. -/
 @[simp] lemma variation_transpose_lsmul :
     (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ)).variation = μ.variation := by
   apply variation_transpose_eq
-  simp [nnnorm_smul, mul_comm]
+  simp [nnNorm_smul, mul_comm]
 
 /-- Control of the variation of the vector measure which appears in the integral of a vector
 function with respect to a signed measure. -/
 @[simp] lemma variation_transpose_lsmul_flip [Nontrivial E] {μ : SignedMeasure X} :
     (μ.transpose (ContinuousLinearMap.lsmul ℝ ℝ (E := E)).flip).variation = μ.variation := by
   apply variation_transpose_eq
-  simp [nnnorm_smul, mul_comm]
+  simp [nnNorm_smul, mul_comm]
 
 /-- `f : X → E` is said to be integrable with respect to `μ` and `B` if it is integrable with
 respect to `μ.variation`. -/
@@ -638,7 +638,7 @@ theorem enorm_integral_le_lintegral_enorm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ a, ‖f a‖ₑ ∂μ.variation := by
   apply (enorm_setToFun_le _ (by simp)).trans
   gcongr
-  simp [← coe_nnnorm]
+  simp [← coe_nnNorm]
 
 theorem enorm_integral_le_lintegral_enorm_transpose :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation := by
@@ -806,7 +806,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f) (h₂ : ν.Integrable f) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ‖B‖ₑ * ∫⁻ x, ‖f x‖ₑ ∂ν.variation := by
-  rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
+  rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact enorm_integral_le_lintegral_enorm
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}

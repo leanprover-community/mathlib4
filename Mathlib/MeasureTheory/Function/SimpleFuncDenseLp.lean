@@ -66,13 +66,15 @@ section Lp
 variable [MeasurableSpace β] [MeasurableSpace E] [NormedAddCommGroup E] [NormedAddCommGroup F]
   {p : ℝ≥0∞}
 
-theorem nnnorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
+theorem nnNorm_approxOn_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - f x‖₊ ≤ ‖f x - y₀‖₊ := by
   have := edist_approxOn_le hf h₀ x n
   rw [edist_comm y₀] at this
-  simp only [edist_nndist, nndist_eq_nnnorm] at this
+  simp only [edist_nndist, nnDist_eq_nnNorm] at this
   exact mod_cast this
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_approxOn_le := nnNorm_approxOn_le
 
 theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f) {s : Set E}
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
@@ -103,7 +105,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
   -- bounded, at any given point, by `fun x => ‖f x - y₀‖ ^ p.toReal`
   have h_bound n :
     (fun x ↦ ‖approxOn f hf s y₀ h₀ n x - f x‖ₑ ^ p) ≤ᵐ[μ] (‖f · - y₀‖ₑ ^ p) :=
-    .of_forall fun x => rpow_le_rpow (coe_mono (nnnorm_approxOn_le hf h₀ x n)) hp.le
+    .of_forall fun x => rpow_le_rpow (coe_mono (nnNorm_approxOn_le hf h₀ x n)) hp.le
   -- (3) The bounding function `fun x => ‖f x - y₀‖ ^ p.toReal` has finite integral
   have h_fin : (∫⁻ a : β, ‖f a - y₀‖ₑ ^ p ∂μ) ≠ ⊤ :=
     (lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top hp hi).ne
@@ -114,7 +116,7 @@ theorem tendsto_approxOn_Lp_eLpNorm' [OpensMeasurableSpace E] {p : ℝ} {f : β 
     filter_upwards [hμ] with a ha
     have : Tendsto (fun n => (approxOn f hf s y₀ h₀ n) a - f a) atTop (𝓝 (f a - f a)) :=
       (tendsto_approxOn hf h₀ ha).sub tendsto_const_nhds
-    convert! continuous_rpow_const.continuousAt.tendsto.comp (tendsto_coe.mpr this.nnnorm)
+    convert! continuous_rpow_const.continuousAt.tendsto.comp (tendsto_coe.mpr this.nnNorm)
     simp [zero_rpow_of_pos hp]
   -- Then we apply the Dominated Convergence Theorem
   simpa using tendsto_lintegral_of_dominated_convergence _ hF_meas h_bound h_fin h_lim
@@ -396,11 +398,11 @@ def simpleFunc : AddSubgroup (Lp E p μ) where
     rintro f g ⟨s, hs⟩ ⟨t, ht⟩
     use s + t
     simp only [← hs, ← ht, AEEqFun.mk_add_mk, AddSubgroup.coe_add,
-      SimpleFunc.coe_add]
+      FunLike.coe_add]
   neg_mem' := by
     rintro f ⟨s, hs⟩
     use -s
-    simp only [← hs, AEEqFun.neg_mk, SimpleFunc.coe_neg, AddSubgroup.coe_neg]
+    simp only [← hs, AEEqFun.neg_mk, FunLike.coe_neg, AddSubgroup.coe_neg]
 
 variable {E p μ}
 
@@ -851,7 +853,7 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : 
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
       exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
-      rw [SimpleFunc.coe_add, memLp_add_of_disjoint hfg f.aestronglyMeasurable] at int_fg
+      rw [FunLike.coe_add, memLp_add_of_disjoint hfg f.aestronglyMeasurable] at int_fg
       exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
@@ -905,12 +907,12 @@ theorem MemLp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
       exact ⟨g, hg, Pg⟩
   · intro f f' hff' hf hf' δ δpos int_ff'
     obtain ⟨η, ηpos, hη⟩ := exists_Lp_half E μ p δpos
-    rw [SimpleFunc.coe_add, memLp_add_of_disjoint hff' f.aestronglyMeasurable] at int_ff'
+    rw [FunLike.coe_add, memLp_add_of_disjoint hff' f.aestronglyMeasurable] at int_ff'
     rcases hf η ηpos.ne' int_ff'.1 with ⟨g, hg, Pg⟩
     rcases hf' η ηpos.ne' int_ff'.2 with ⟨g', hg', Pg'⟩
     refine ⟨g + g', ?_, h1P g g' Pg Pg'⟩
     convert (hη _ _ hg hg').le using 2
-    rw [SimpleFunc.coe_add]
+    rw [FunLike.coe_add]
     abel
 
 section Integrable
