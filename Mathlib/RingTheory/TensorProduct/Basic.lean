@@ -5,9 +5,8 @@ Authors: Kim Morrison, Johan Commelin
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Star.TensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Tower
+public import Mathlib.LinearAlgebra.TensorProduct.Lift
 public import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
@@ -37,57 +36,6 @@ open scoped TensorProduct
 
 open TensorProduct
 
-
-namespace LinearMap
-
-section liftBaseChange
-
-variable {R M N} (A) [CommSemiring R] [CommSemiring A] [Algebra R A] [AddCommMonoid M]
-variable [AddCommMonoid N] [Module R M] [Module R N] [Module A N] [IsScalarTower R A N]
-
-/--
-If `M` is an `R`-module and `N` is an `A`-module, then `A`-linear maps `A ⊗[R] M →ₗ[A] N`
-correspond to `R` linear maps `M →ₗ[R] N` by composing with `M → A ⊗ M`, `x ↦ 1 ⊗ x`.
--/
-def liftBaseChangeEquiv : (M →ₗ[R] N) ≃ₗ[A] (A ⊗[R] M →ₗ[A] N) :=
-  (LinearMap.ringLmapEquivSelf _ _ _).symm.trans (AlgebraTensorModule.lift.equiv _ _ _ _ _ _)
-
-/-- If `N` is an `A` module, we may lift a linear map `M →ₗ[R] N` to `A ⊗[R] M →ₗ[A] N` -/
-abbrev liftBaseChange (l : M →ₗ[R] N) : A ⊗[R] M →ₗ[A] N :=
-  LinearMap.liftBaseChangeEquiv A l
-
-@[simp]
-lemma liftBaseChange_tmul (l : M →ₗ[R] N) (x y) : l.liftBaseChange A (x ⊗ₜ y) = x • l y := rfl
-
-lemma liftBaseChange_one_tmul (l : M →ₗ[R] N) (y) : l.liftBaseChange A (1 ⊗ₜ y) = l y := by simp
-
-@[simp]
-lemma liftBaseChangeEquiv_symm_apply (l : A ⊗[R] M →ₗ[A] N) (x) :
-    (liftBaseChangeEquiv A).symm l x = l (1 ⊗ₜ x) := rfl
-
-lemma liftBaseChange_comp {P} [AddCommMonoid P] [Module A P] [Module R P] [IsScalarTower R A P]
-    (l : M →ₗ[R] N) (l' : N →ₗ[A] P) :
-      l' ∘ₗ l.liftBaseChange A = (l'.restrictScalars R ∘ₗ l).liftBaseChange A := by
-  ext
-  simp
-
-@[simp]
-lemma range_liftBaseChange (l : M →ₗ[R] N) :
-    LinearMap.range (l.liftBaseChange A) = Submodule.span A (LinearMap.range l) := by
-  apply le_antisymm
-  · rintro _ ⟨x, rfl⟩
-    induction x using TensorProduct.inductionOn
-    · rw [LinearMap.liftBaseChange_tmul]
-      exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨_, rfl⟩)
-    · rw [map_add]
-      exact add_mem ‹_› ‹_›
-  · rw [Submodule.span_le]
-    rintro _ ⟨x, rfl⟩
-    exact ⟨1 ⊗ₜ x, by simp⟩
-
-end liftBaseChange
-
-end LinearMap
 
 namespace Algebra
 
@@ -159,7 +107,7 @@ unseal mul in
 theorem _root_.SemiconjBy.tmul {a₁ a₂ a₃ : A} {b₁ b₂ b₃ : B}
     (ha : SemiconjBy a₁ a₂ a₃) (hb : SemiconjBy b₁ b₂ b₃) :
     SemiconjBy (a₁ ⊗ₜ[R] b₁) (a₂ ⊗ₜ[R] b₂) (a₃ ⊗ₜ[R] b₃) :=
-  congr_arg₂ (· ⊗ₜ[R] ·) ha.eq hb.eq
+  congr($ha.eq ⊗ₜ[R] $hb.eq)
 
 nonrec theorem _root_.Commute.tmul {a₁ a₂ : A} {b₁ b₂ : B}
     (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
@@ -238,13 +186,9 @@ variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower
 
 unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    exact DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this x) y) z
+  apply mul.assoc_iff.mpr
   ext xa xb ya yb za zb
-  exact congr_arg₂ (· ⊗ₜ ·) (mul_assoc xa ya za) (mul_assoc xb yb zb)
+  congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 
 instance instNonUnitalSemiring : NonUnitalSemiring (A ⊗[R] B) where
   mul_assoc := Algebra.TensorProduct.mul_assoc
@@ -294,7 +238,7 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-lemma algebraMap_def [SMulCommClass R S A] :
+lemma algebraMap_def :
     algebraMap S (A ⊗[R] B) = includeLeftRingHom.comp (algebraMap S A) := rfl
 
 example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
@@ -305,7 +249,7 @@ instance instAlgebra : Algebra R (A ⊗[R] B) :=
   inferInstance
 
 @[simp]
-theorem algebraMap_apply [SMulCommClass R S A] (r : S) :
+theorem algebraMap_apply (r : S) :
     algebraMap S (A ⊗[R] B) r = (algebraMap S A) r ⊗ₜ 1 :=
   rfl
 
@@ -318,11 +262,11 @@ def includeLeft [SMulCommClass R S A] : A →ₐ[S] A ⊗[R] B :=
   { includeLeftRingHom with commutes' := by simp }
 
 @[simp]
-theorem includeLeft_apply [SMulCommClass R S A] (a : A) :
+theorem includeLeft_apply (a : A) :
     (includeLeft : A →ₐ[S] A ⊗[R] B) a = a ⊗ₜ 1 :=
   rfl
 
-@[simp] theorem toLinearMap_includeLeft [SMulCommClass R S A] :
+@[simp] theorem toLinearMap_includeLeft :
     (includeLeft : A →ₐ[S] A ⊗[R] B).toLinearMap = (AlgebraTensorModule.mk R S A B).flip 1 := rfl
 
 /-- The algebra morphism `B →ₐ[R] A ⊗[R] B` sending `b` to `1 ⊗ₜ b`. -/
@@ -362,7 +306,7 @@ theorem ext ⦃f g : (A ⊗[R] B) →ₐ[S] C⦄
     f = g := by
   apply AlgHom.toLinearMap_injective
   ext a b
-  have := congr_arg₂ HMul.hMul (AlgHom.congr_fun ha a) (AlgHom.congr_fun hb b)
+  have := congr(($ha a) * ($hb b))
   dsimp at *
   rwa [← map_mul, ← map_mul, tmul_mul_tmul, one_mul, mul_one] at this
 
@@ -706,7 +650,7 @@ lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (al
 
 lemma Algebra.TensorProduct.includeLeft_surjective
     (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
-    [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
   TensorProduct.flip_mk_surjective _ h
 

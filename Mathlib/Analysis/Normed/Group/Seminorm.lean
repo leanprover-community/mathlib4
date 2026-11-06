@@ -5,8 +5,8 @@ Authors: María Inés de Frutos-Fernández, Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Basic.NNReal.Defs
-public import Mathlib.Data.FunLike.Module
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
 /-!
@@ -226,8 +226,7 @@ instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
       inv' := fun _ => rfl }⟩
 
 @[to_additive]
-instance : IsZeroApply (GroupSeminorm E) E ℝ where
-  zero_apply _ := rfl
+instance : IsZeroApply (GroupSeminorm E) where
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_zero := FunLike.coe_zero
@@ -252,8 +251,7 @@ instance : Add (GroupSeminorm E) :=
       inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive]
-instance : IsAddApply (GroupSeminorm E) E ℝ where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (GroupSeminorm E) where
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupSeminorm.coe_add := FunLike.coe_add
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupSeminorm.coe_add := FunLike.coe_add
@@ -336,7 +334,7 @@ an additive group seminorm. -/]
 def comp (p : GroupSeminorm E) (f : F →* E) : GroupSeminorm F where
   toFun x := p (f x)
   map_one' := by simp_rw [f.map_one, map_one_eq_zero p]
-  mul_le' _ _ := (congr_arg p <| f.map_mul _ _).trans_le <| map_mul_le_add p _ _
+  mul_le' _ _ := congr(p $(f.map_mul ..)).trans_le <| map_mul_le_add p _ _
   inv' x := by simp_rw [map_inv, map_inv_eq_map p]
 
 @[to_additive (attr := simp)]
@@ -482,8 +480,7 @@ instance : Zero (NonarchAddGroupSeminorm E) :=
       add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
       neg' := fun _ => rfl }⟩
 
-instance : IsZeroApply (NonarchAddGroupSeminorm E) E ℝ where
-  zero_apply _ := rfl
+instance : IsZeroApply (NonarchAddGroupSeminorm E) where
 
 @[deprecated (since := "2026-07-10")] alias coe_zero := FunLike.coe_zero
 
@@ -580,7 +577,7 @@ instance instOne [DecidableEq E] : One (GroupSeminorm E) :=
         by_cases hx : x = 1
         · rw [ite_eq_left hx, hx, one_mul, zero_add]
         · rw [ite_eq_right hx]
-          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> norm_num
+          refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> simp
       inv' := fun x => by simp_rw [inv_eq_one] }⟩
 
 @[to_additive (attr := simp) apply_one]
@@ -602,8 +599,7 @@ instance : SMul R (GroupSeminorm E) :=
       inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
 
 @[to_additive (dont_translate := R) instIsSMulApplyReal]
-instance : IsSMulApply R (GroupSeminorm E) E ℝ where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply R (GroupSeminorm E) where
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -660,8 +656,7 @@ instance : SMul R (NonarchAddGroupSeminorm E) :=
         apply map_add_le_max
       neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
 
-instance : IsSMulApply R (NonarchAddGroupSeminorm E) E ℝ where
-  smul_apply _ _ _ := rfl
+instance : IsSMulApply R (NonarchAddGroupSeminorm E) where
 
 @[deprecated (since := "2026-07-10")] alias coe_smul := FunLike.coe_smul
 
@@ -737,8 +732,7 @@ instance : Add (GroupNorm E) :=
         of_not_not fun h => hx.not_gt <| add_pos (map_pos_of_ne_one p h) (map_pos_of_ne_one q h) }⟩
 
 @[to_additive]
-instance : IsAddApply (GroupNorm E) E ℝ where
-  add_apply _ _ _ := rfl
+instance : IsAddApply (GroupNorm E) where
 
 @[deprecated (since := "2026-07-10")] alias _root_.GroupNorm.coe_add := FunLike.coe_add
 @[deprecated (since := "2026-07-10")] alias _root_.AddGroupNorm.coe_add := FunLike.coe_add

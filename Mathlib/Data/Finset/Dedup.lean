@@ -6,8 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Deduplicating Multisets to make Finsets

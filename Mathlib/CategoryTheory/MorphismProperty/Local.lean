@@ -5,9 +5,10 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
+public import Mathlib.CategoryTheory.Sites.Hypercover.Zero
+
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 
 /-!
 # Locality conditions on morphism properties
@@ -138,7 +139,7 @@ end IsLocalAtTarget
 set_option backward.defeqAttrib.useBackward true in
 lemma of_zeroHypercover_target {P : MorphismProperty C} {K : Precoverage C} [K.HasPullbacks]
     [P.IsLocalAtTarget K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K Y)
-    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (pullback.snd f (𝒰.f i))) :
+    (h : ∀ i, P (pullback.snd f (𝒰.f i))) :
     P f := by
   rw [IsLocalAtTarget.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
   simp [h]
@@ -220,7 +221,7 @@ end IsLocalAtSource
 set_option backward.defeqAttrib.useBackward true in
 lemma of_zeroHypercover_source {P : MorphismProperty C} {K : Precoverage C}
     [P.IsLocalAtSource K] {X Y : C} {f : X ⟶ Y} (𝒰 : Precoverage.ZeroHypercover.{w} K X)
-    [Precoverage.ZeroHypercover.Small.{v} 𝒰] (h : ∀ i, P (𝒰.f i ≫ f)) :
+    (h : ∀ i, P (𝒰.f i ≫ f)) :
     P f := by
   rw [IsLocalAtSource.iff_of_zeroHypercover (P := P) 𝒰.restrictIndexOfSmall]
   simp [h]

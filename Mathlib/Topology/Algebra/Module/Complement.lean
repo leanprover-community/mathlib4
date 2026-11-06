@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Quotient
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Topological complements of submodules
@@ -55,7 +55,7 @@ change to something less misleading.
 ## Implementation details
 
 In the definition of `Submodule.IsTopCompl`, we choose to ask for the continuity of the projection
-on the left submdule along the right one, because it is a simpler map to work with than the
+on the left submodule along the right one, because it is a simpler map to work with than the
 map `M ≃ p × q`.
 
 Because the condition is symmetric, a lot of lemmas could have a left and a right variation.

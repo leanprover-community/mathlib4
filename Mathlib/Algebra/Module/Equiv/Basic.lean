@@ -8,12 +8,9 @@ module
 
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Basic
-public import Mathlib.Algebra.GroupWithZero.Action.Units
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Module.Hom
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
-public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Algebra.Module.Prod
 
 /-!
@@ -65,7 +62,7 @@ end RestrictScalars
 theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
-    Function.bijective_iff_has_inverse.mpr <|
+    Function.bijective_iff_has_inverse.mpr
       ⟨h.unit.inv,
         ⟨Module.End.isUnit_inv_apply_apply_of_isUnit h,
         Module.End.isUnit_apply_inv_apply_of_isUnit h⟩⟩,
@@ -84,12 +81,14 @@ instance automorphismGroup : Group (M ≃ₗ[R] M) where
   mul_assoc _ _ _ := rfl
   mul_one _ := ext fun _ ↦ rfl
   one_mul _ := ext fun _ ↦ rfl
-  inv_mul_cancel f := ext <| f.left_inv
+  inv_mul_cancel f := ext f.left_inv
 
 lemma one_eq_refl : (1 : M ≃ₗ[R] M) = refl R M := rfl
 lemma mul_eq_trans (f g : M ≃ₗ[R] M) : f * g = g.trans f := rfl
 
-@[simp]
+instance : IsOneApplyEqSelf (M ≃ₗ[R] M) where
+
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-27")]
 lemma coe_one : ↑(1 : M ≃ₗ[R] M) = id := rfl
 
 @[simp] lemma coe_inv (f : M ≃ₗ[R] M) : ⇑f⁻¹ = ⇑f.symm := rfl
@@ -102,11 +101,17 @@ lemma coe_toLinearMap_mul {e₁ e₂ : M ≃ₗ[R] M} :
     (↑(e₁ * e₂) : M →ₗ[R] M) = (e₁ : M →ₗ[R] M) * (e₂ : M →ₗ[R] M) :=
   rfl
 
+instance : IsMulApplyEqComp (M ≃ₗ[R] M) where
+
+@[deprecated FunLike.coe_pow_eq_iterate +typeChanged (since := "2026-10-27")]
 theorem coe_pow (e : M ≃ₗ[R] M) (n : ℕ) : ⇑(e ^ n) = e^[n] := hom_coe_pow _ rfl (fun _ _ ↦ rfl) _ _
 
-theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m := congr_fun (coe_pow e n) m
+@[deprecated pow_apply_eq_iterate +typeChanged (since := "2026-10-27")]
+protected theorem pow_apply (e : M ≃ₗ[R] M) (n : ℕ) (m : M) : (e ^ n) m = e^[n] m :=
+  congr($(coe_pow e n) m)
 
-@[simp] lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
+@[deprecated mul_apply_eq_comp +typeChanged (since := "2026-10-27")]
+protected lemma mul_apply (f : M ≃ₗ[R] M) (g : M ≃ₗ[R] M) (x : M) : (f * g) x = f (g x) := rfl
 
 /-- Restriction from `R`-linear automorphisms of `M` to `R`-linear endomorphisms of `M`,
 promoted to a monoid hom. -/
@@ -120,7 +125,7 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
 
 This generalizes `Function.End.applyMulAction`. -/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
-  smul := (· <| ·)
+  smul := (· ·)
   smul_zero := map_zero
   smul_add := map_add
   one_smul _ := rfl
@@ -278,8 +283,8 @@ variable {modM : Module ℤ M} {modM₂ : Module ℤ M₂} {modM₃ : Module ℤ
 equivalence between ℤ-modules -/
 def toIntLinearEquiv : M ≃ₗ[ℤ] M₂ := by
   refine e.toLinearEquiv fun c a ↦ ?_
-  convert! e.toAddMonoidHom.map_zsmul c a using 1
-  · exact congr(e $(int_smul_eq_zsmul ..))
+  convert e.toAddMonoidHom.map_zsmul c a using 1
+  · congrm e $(int_smul_eq_zsmul ..)
   · exact int_smul_eq_zsmul ..
 
 @[simp]
@@ -362,7 +367,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
-      simp only [coe_smulRight, Module.End.one_apply, smul_eq_mul, ← map_smul f, mul_one]
+      simp
     right_inv := fun x ↦ by simp }
 
 end LinearMap
@@ -420,17 +425,20 @@ instance : Zero (M ≃ₛₗ[σ₁₂] M₂) :=
       right_inv := Subsingleton.elim _
       left_inv := Subsingleton.elim _ }⟩
 
+instance : IsZeroApply (M ≃ₛₗ[σ₁₂] M₂) where
+
 -- Even though these are implied by `Subsingleton.elim` via the `Unique` instance below, they're
 -- nice to have as `rfl`-lemmas for `dsimp`.
 @[simp]
 theorem zero_symm : (0 : M ≃ₛₗ[σ₁₂] M₂).symm = 0 :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_zero +typeChanged (since := "2026-10-27")]
 theorem coe_zero : ⇑(0 : M ≃ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 
-theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
+@[deprecated zero_apply +typeChanged (since := "2026-10-27")]
+protected theorem zero_apply (x : M) : (0 : M ≃ₛₗ[σ₁₂] M₂) x = 0 :=
   rfl
 
 /-- Between two zero modules, the zero map is the only equivalence. -/
@@ -455,10 +463,9 @@ variable (V V₂ R M)
 
 /-- Linear equivalence between a curried and uncurried function.
   Differs from `TensorProduct.curry`. -/
-protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M :=
-  { Equiv.curry _ _ _ with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
+protected def curry : (V × V₂ → M) ≃ₗ[R] V → V₂ → M where
+  toAddEquiv := .curry V V₂ M
+  map_smul' _ _ := rfl
 
 @[simp]
 theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
@@ -466,6 +473,10 @@ theorem coe_curry : ⇑(LinearEquiv.curry R M V V₂) = curry :=
 
 @[simp]
 theorem coe_curry_symm : ⇑(LinearEquiv.curry R M V V₂).symm = uncurry :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_curry : (LinearEquiv.curry R M V V₂).toAddEquiv = AddEquiv.curry V V₂ M :=
   rfl
 
 end Uncurry
@@ -578,7 +589,7 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     simp only [Function.comp_apply, apply_symm_apply, coe_comp, coe_coe]
   map_add' f g := by
     ext x
-    simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
+    simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
 
 /-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.

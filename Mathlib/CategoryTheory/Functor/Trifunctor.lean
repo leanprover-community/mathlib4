@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.Category
+
 /-!
 # Trifunctors obtained by composition of bifunctors
 
@@ -38,7 +39,6 @@ def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two bifunctors `F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂` and `G : C₁₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps, implicit_reducible]
@@ -53,8 +53,6 @@ def bifunctorComp₁₂ (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C
         dsimp
         simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
@@ -73,8 +71,6 @@ def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
         dsimp
         simp only [← NatTrans.comp_app, NatTrans.naturality] }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `bifunctorComp₁₂Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂} (φ : F₁₂ ⟶ F₁₂') :
@@ -115,12 +111,8 @@ def bifunctorComp₂₃Obj (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C
     { obj X₃ := (F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)
       map φ := (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
   map {X₂ Y₂} φ :=
-    { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃)
-      naturality X₃ Y₃ φ := by
-        dsimp
-        simp only [← Functor.map_comp, NatTrans.naturality] }
+    { app X₃ := (F.obj X₁).map ((G₂₃.map φ).app X₃) }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given two bifunctors `F : C₁ ⥤ C₂₃ ⥤ C₄` and `G₂₃ : C₂ ⥤ C₃ ⥤ C₄`, this is
 the trifunctor `C₁ ⥤ C₂ ⥤ C₃ ⥤ C₄` obtained by composition. -/
 @[simps, implicit_reducible]
@@ -131,8 +123,6 @@ def bifunctorComp₂₃ (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃
     { app := fun X₂ =>
         { app := fun X₃ => (F.map φ).app ((G₂₃.obj X₂).obj X₃) } }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
@@ -141,17 +131,12 @@ def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :
   map {G₂₃ G₂₃'} φ :=
     { app X₁ :=
         { app X₂ :=
-            { app X₃ := (F.obj X₁).map ((φ.app X₂).app X₃)
-              naturality X₃ Y₃ f := by
-                dsimp
-                simp only [← Functor.map_comp, NatTrans.naturality] }
+            { app X₃ := (F.obj X₁).map ((φ.app X₂).app X₃) }
           naturality X₂ Y₂ f := by
             ext X₃
             dsimp
-            simp only [← NatTrans.comp_app, ← Functor.map_comp, NatTrans.naturality] } }
+            simp } }
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps, implicit_reducible]
 def bifunctorComp₂₃FunctorMap {F F' : C₁ ⥤ C₂₃ ⥤ C₄} (φ : F ⟶ F') :

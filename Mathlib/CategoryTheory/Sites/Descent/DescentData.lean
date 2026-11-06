@@ -125,7 +125,6 @@ lemma id_hom (D : F.DescentData f) (i : ι) : Hom.hom (𝟙 D) i = 𝟙 _ := rfl
 lemma comp_hom {D₁ D₂ D₃ : F.DescentData f} (φ : D₁ ⟶ D₂) (φ' : D₂ ⟶ D₃) (i : ι) :
     (φ ≫ φ').hom i = φ.hom i ≫ φ'.hom i := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a family of morphisms `f : X i ⟶ S`, and `M : F.obj (.mk (op S))`,
 this is the object in `F.DescentData f` that is obtained by pulling back `M`
 over the `X i`. -/
@@ -155,9 +154,9 @@ def isoMk {D₁ D₂ : F.DescentData f} (e : ∀ (i : ι), D₁.obj i ≅ D₂.o
     { hom i := (e i).inv
       comm Y q i₁ i₂ f₁ f₂ hf₁ hf₂ := by
         rw [← cancel_mono ((F.map f₂.op.toLoc).toFunctor.map (e i₂).hom), Category.assoc,
-          Category.assoc, Iso.map_inv_hom_id, Category.comp_id,
+          Category.assoc, Iso.inv_hom_id_map, Category.comp_id,
           ← cancel_epi ((F.map f₁.op.toLoc).toFunctor.map (e i₁).hom),
-          Iso.map_hom_inv_id_assoc, comm q f₁ f₂ hf₁ hf₂] }
+          Iso.hom_inv_id_map_assoc, comm q f₁ f₂ hf₁ hf₂] }
 
 end DescentData
 
@@ -233,7 +232,6 @@ def pullFunctorObj (D : F.DescentData f) :
 
 variable (F)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a family of morphisms `f : X i ⟶ S` and `f' : X' j ⟶ S'`, and suitable
 commutative diagrams `p' j ≫ f (α j) = f' j ≫ p`, this is the
@@ -547,10 +545,10 @@ lemma bijective_toDescentData_map_iff (M N : F.obj (.mk (op S))) :
     Function.Bijective ((F.toDescentData f).map : (M ⟶ N) → _) ↔
   Presieve.IsSheafFor (F.presheafHom M N) (X := Over.mk (𝟙 S))
     (Presieve.ofArrows (Y := fun i ↦ Over.mk (f i)) (fun i ↦ Over.homMk (f i))) := by
-  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
+  rw [Presieve.isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← (DescentData.subtypeCompatibleHomEquiv F f).bijective.of_comp_iff',
     ← Function.Bijective.of_comp_iff _ (presheafHomObjHomEquiv F).bijective]
-  convert! Iff.rfl
+  convert Iff.rfl
   ext φ : 1
   apply DescentData.subtypeCompatibleHomEquiv_toCompatible_presheafHomObjHomEquiv
 
@@ -561,7 +559,7 @@ lemma isPrestackFor_iff_isSheafFor {S : C} (R : Sieve S) :
   rw [isPrestackFor_iff, Functor.FullyFaithful.nonempty_iff_map_bijective]
   refine forall_congr' (fun M ↦ forall_congr' (fun N ↦ ?_))
   rw [bijective_toDescentData_map_iff]
-  convert! Iff.rfl
+  convert Iff.rfl
   refine le_antisymm ?_ ?_
   · rintro X f (hf : R.arrows f.left)
     obtain ⟨X, g, rfl⟩ := Over.mk_surjective X
@@ -579,7 +577,7 @@ lemma isPrestackFor_iff_isSheafFor' {S : C} (R : Sieve S) :
   rw [← Presieve.isSheafFor_iff_of_iso (F.overMapCompPresheafHomIso M N a),
     Presieve.isSheafFor_over_map_op_comp_iff (X' := Over.mk a)
       (e := Over.isoMk (Iso.refl _))] at h
-  convert! h
+  convert h
   refine le_antisymm ?_ ?_
   · intro Y f hf
     exact ⟨Over.mk f.left, Over.homMk f.left, Over.homMk (𝟙 _) (by simpa using Over.w f),
