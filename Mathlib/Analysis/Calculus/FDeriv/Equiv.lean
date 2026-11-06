@@ -79,9 +79,9 @@ protected theorem differentiableOn : DifferentiableOn 𝕜 iso s :=
 
 theorem comp_differentiableWithinAt_iff {f : G → E} {s : Set G} {x : G} :
     DifferentiableWithinAt 𝕜 (iso ∘ f) s x ↔ DifferentiableWithinAt 𝕜 f s x := by
-  refine ⟨fun H => ?_, fun H => iso.differentiable.differentiableAt.comp_differentiableWithinAt x H⟩
+  refine ⟨fun H => ?_, fun H => iso.toContinuousLinearMap.comp_differentiableWithinAt H⟩
   have : DifferentiableWithinAt 𝕜 (iso.symm ∘ iso ∘ f) s x :=
-    iso.symm.differentiable.differentiableAt.comp_differentiableWithinAt x H
+    iso.symm.toContinuousLinearMap.comp_differentiableWithinAt H
   rwa [← Function.comp_assoc iso.symm iso f, iso.symm_comp_self] at this
 
 theorem comp_differentiableAt_iff {f : G → E} {x : G} :
@@ -98,21 +98,23 @@ theorem comp_differentiable_iff {f : G → E} : Differentiable 𝕜 (iso ∘ f) 
   rw [← differentiableOn_univ, ← differentiableOn_univ]
   exact iso.comp_differentiableOn_iff
 
-theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] E} :
-    HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x := by
-  refine ⟨fun H => ?_, fun H => iso.hasFDerivAt.comp_hasFDerivWithinAt x H⟩
+theorem comp_hasFDerivAtFilter_iff {f : G → E} {f' : G →L[𝕜] E} {L : Filter (G × G)} :
+    HasFDerivAtFilter (iso ∘ f) ((iso : E →L[𝕜] F).comp f') L ↔ HasFDerivAtFilter f f' L := by
+  refine ⟨fun H => ?_, fun H => iso.toContinuousLinearMap.comp_hasFDerivAtFilter H⟩
   simpa [Function.comp_def, ← ContinuousLinearMap.comp_assoc]
-    using iso.symm.hasFDerivAt.comp_hasFDerivWithinAt x H
+    using iso.symm.toContinuousLinearMap.comp_hasFDerivAtFilter H
+
+theorem comp_hasFDerivWithinAt_iff {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] E} :
+    HasFDerivWithinAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') s x ↔ HasFDerivWithinAt f f' s x :=
+  iso.comp_hasFDerivAtFilter_iff
 
 theorem comp_hasStrictFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
-    HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x := by
-  refine ⟨fun H => ?_, fun H => iso.hasStrictFDerivAt.comp x H⟩
-  convert iso.symm.hasStrictFDerivAt.comp x H using 1 <;>
-    ext z <;> apply (iso.symm_apply_apply _).symm
+    HasStrictFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasStrictFDerivAt f f' x :=
+  iso.comp_hasFDerivAtFilter_iff
 
 theorem comp_hasFDerivAt_iff {f : G → E} {x : G} {f' : G →L[𝕜] E} :
-    HasFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasFDerivAt f f' x := by
-  simp_rw [← hasFDerivWithinAt_univ, iso.comp_hasFDerivWithinAt_iff]
+    HasFDerivAt (iso ∘ f) ((iso : E →L[𝕜] F).comp f') x ↔ HasFDerivAt f f' x :=
+  iso.comp_hasFDerivAtFilter_iff
 
 theorem comp_hasFDerivWithinAt_iff' {f : G → E} {s : Set G} {x : G} {f' : G →L[𝕜] F} :
     HasFDerivWithinAt (iso ∘ f) f' s x ↔
