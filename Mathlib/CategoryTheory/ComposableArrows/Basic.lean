@@ -208,6 +208,10 @@ lemma ext {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i)
   Functor.ext_of_iso
     (isoMk (fun i => eqToIso (h i)) (fun i hi => by simp [w i hi])) h
 
+lemma ext_of_isThin [Quiver.IsThin C] {F G : ComposableArrows C n} (h : ∀ i, F.obj i = G.obj i) :
+    F = G :=
+  ext h (by subsingleton)
+
 /-- Constructor for morphisms in `ComposableArrows C 0`. -/
 @[implicit_reducible, simps!]
 def homMk₀ {F G : ComposableArrows C 0} (f : F.obj' 0 ⟶ G.obj' 0) : F ⟶ G :=
