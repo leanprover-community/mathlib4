@@ -93,7 +93,7 @@ theorem le_opNNNorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖₊ ≤ ‖f‖
 lemma le_opENorm (f : E →SL[σ₁₂] F) (x : E) : ‖f x‖ₑ ≤ ‖f‖ₑ * ‖x‖ₑ := by
   dsimp [eNorm]; exact mod_cast le_opNNNorm ..
 
-@[deprecated (since := "2026-06-27")] alias le_opNorm_eNorm := le_opENorm
+@[deprecated (since := "2026-06-27")] alias le_opNorm_enorm := le_opENorm
 
 /-- If one controls the eNorm of every `f x`, then one controls the eNorm of `f`. -/
 theorem opENorm_le_bound (f : E →SL[σ₁₂] F) {M : ℝ≥0∞} (hM : ∀ x, ‖f x‖ₑ ≤ M * ‖x‖ₑ) :

@@ -1002,6 +1002,9 @@ theorem Integrable.smul_eNorm
     {f : α → ε} (hf : Integrable f μ) : Integrable (c • f) μ := by
   constructor <;> fun_prop
 
+@[deprecated (since := "2026-11-06")] alias Integrable.smul_enorm := Integrable.smul_eNorm
+@[deprecated (since := "2026-11-06")] alias Integrable.fun_smul_enorm := Integrable.fun_smul_eNorm
+
 theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [MulActionWithZero 𝕜 β]
     [IsBoundedSMul 𝕜 β] {c : 𝕜} (hc : IsUnit c) (f : α → β) :
     Integrable (c • f) μ ↔ Integrable f μ :=
@@ -1274,6 +1277,9 @@ theorem lintegral_eNorm_le_liminf_of_tendsto
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
   lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.eNorm.liminf_eq) ▸
     (MeasureTheory.lintegral_liminf_le' hG)
+
+@[deprecated (since := "2026-11-06")]
+alias lintegral_enorm_le_liminf_of_tendsto := lintegral_eNorm_le_liminf_of_tendsto
 
 /-- If `G n` tends to `f` a.e., each `G n` is `AEStronglyMeasurable` and the liminf of the lower
 Lebesgue integral of `‖G n ·‖ₑ` is finite, then `f` is Lebesgue integrable. -/

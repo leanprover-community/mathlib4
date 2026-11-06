@@ -426,6 +426,10 @@ lemma _root_.MeasureTheory.SignedMeasure.exists_subset_lt_eNorm_apply_of_lt_vari
     · exact Finset.measurableSet_biUnion _ (by grind)
     · exact hP.trans_le (by gcongr)
 
+@[deprecated (since := "2026-11-06")]
+alias _root_.MeasureTheory.SignedMeasure.exists_subset_lt_enorm_apply_of_lt_variation :=
+  _root_.MeasureTheory.SignedMeasure.exists_subset_lt_eNorm_apply_of_lt_variation
+
 end NormedAddCommGroup
 
 section ENNReal

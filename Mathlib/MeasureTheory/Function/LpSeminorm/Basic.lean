@@ -61,6 +61,9 @@ theorem lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top
   · simpa [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top (aestronglyMeasurable_of_eLpNorm_ne_top hfp.ne)]
       using hfp
 
+@[deprecated (since := "2026-11-06")]
+alias lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top := lintegral_rpow_eNorm_lt_top_of_eLpNorm_lt_top
+
 theorem eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top
     {f : α → ε} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ < ∞ ↔ ∫⁻ a, ‖f a‖ₑ ^ p.toReal ∂μ < ∞ :=
@@ -70,6 +73,10 @@ theorem eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top
     have : 0 < 1 / p.toReal := div_pos zero_lt_one hp'
     simpa [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp_ne_zero hp_ne_top hf] using
       ENNReal.rpow_lt_top_of_nonneg (le_of_lt this) (ne_of_lt h)⟩
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top :=
+  eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top
 
 end Top
 
@@ -295,6 +302,8 @@ theorem memLp_const_iff_eNorm
     MemLp (fun _ : α ↦ c) p μ ↔ ‖c‖ₑ = 0 ∨ μ Set.univ < ∞ := by
   simp_all [MemLp, eLpNorm_const_lt_top_iff_eNorm hc hp_ne_zero hp_ne_top]
 
+@[deprecated (since := "2026-11-06")] alias memLp_const_iff_enorm := memLp_const_iff_eNorm
+
 theorem memLp_const_iff {p : ℝ≥0∞} {c : E} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun _ : α => c) p μ ↔ c = 0 ∨ μ Set.univ < ∞ := by
   rw [memLp_const_iff_eNorm eNorm_ne_top hp_ne_zero hp_ne_top]; simp
@@ -469,6 +478,9 @@ theorem eLpNorm_le_of_ae_eNorm_bound
   refine (eLpNorm_mono_eNorm_ae hf this).trans_eq ?_
   rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, eNorm_eq_self, smul_eq_mul]
 
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_le_of_ae_eNorm_bound := eLpNorm_le_of_ae_eNorm_bound
+
 theorem eLpNorm_le_of_ae_nnNorm_bound {f : α → F} {C : ℝ≥0}
     (hf : AEStronglyMeasurable f μ) (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
     eLpNorm f p μ ≤ C • μ Set.univ ^ p.toReal⁻¹ := by
@@ -502,6 +514,9 @@ theorem eLpNorm_zero_of_ae_eNorm_zero'
   have := eLpNorm_congr_eNorm_ae hf (g := fun _ ↦ (0 : ℝ)) (p := p) aestronglyMeasurable_const
   simp only [eNorm_zero, eLpNorm_fun_zero] at this
   exact this hfC
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_zero_of_ae_enorm_zero' := eLpNorm_zero_of_ae_eNorm_zero'
 
 theorem eLpNorm_congr_nnNorm_ae {f : α → F} {g : α → G} (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖₊ = ‖g x‖₊) :

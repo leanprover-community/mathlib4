@@ -83,6 +83,10 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_eNorm_le
         simp [g]
       _ = ENNReal.ofReal (f b - f a) := by grind
 
+@[deprecated (since := "2026-11-06")]
+alias MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le :=
+  MonotoneOn.exists_tendsto_deriv_liminf_lintegral_eNorm_le
+
 /-- If `f` is monotone on `a..b`, then `f'` is interval integrable on `a..b`. -/
 theorem MonotoneOn.intervalIntegrable_deriv {f : ℝ → ℝ} {a b : ℝ}
     (hf : MonotoneOn f (uIcc a b)) :

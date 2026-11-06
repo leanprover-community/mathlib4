@@ -275,6 +275,9 @@ theorem eNorm_starProjection_eq_infEDist
     ‖U.starProjection y‖ₑ = Metric.infEDist y Uᗮ := by
   simp [← Uᗮ.edist_starProjection_eq_infEDist y, eDist_eq_eNorm_sub]
 
+@[deprecated (since := "2026-11-06")]
+alias eNorm_starProjection_eq_infEDist := eNorm_starProjection_eq_infEDistn
+
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
 theorem orthogonalProjectionOnto_mem_subspace_eq_self (v : K) :

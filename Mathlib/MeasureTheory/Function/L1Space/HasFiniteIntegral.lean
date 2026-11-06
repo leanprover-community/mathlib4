@@ -407,6 +407,10 @@ theorem hasFiniteIntegral_of_dominated_convergence_eNorm
       lintegral_mono_ae <| ae_eNorm_le_bound h_bound h_lim
     _ < ∞ := bound_hasFiniteIntegral
 
+@[deprecated (since := "2026-11-06")]
+alias hasFiniteIntegral_of_dominated_convergence_enorm :=
+  hasFiniteIntegral_of_dominated_convergence_eNorm
+
 theorem hasFiniteIntegral_of_dominated_convergence
     (bound_hasFiniteIntegral : HasFiniteIntegral bound μ)
     (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)

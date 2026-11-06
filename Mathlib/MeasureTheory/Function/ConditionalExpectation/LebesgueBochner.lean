@@ -107,4 +107,7 @@ lemma lintegral_eNorm_condExp_indicator
   _ = μ s := by
     simp [lintegral_condLExp hm, eNorm_indicator_eq_indicator_eNorm, lintegral_indicator hs]
 
+@[deprecated (since := "2026-11-06")]
+alias lintegral_enorm_condExp_indicator := lintegral_eNorm_condExp_indicator
+
 end MeasureTheory

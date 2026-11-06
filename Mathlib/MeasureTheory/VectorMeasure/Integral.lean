@@ -808,6 +808,9 @@ theorem eNorm_integral_le_of_eNorm_le_const
   gcongr
   exact (lintegral_mono_ae h).trans (by simp)
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_of_enorm_le_const := eNorm_integral_le_of_eNorm_le_const
+
 theorem nndist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f) (h₂ : ν.Integrable f) :
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤

@@ -243,6 +243,10 @@ theorem eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm_of_not_aestronglyMeasurable
     simp [mul_eq_zero, hc.ne', this]
 
 @[deprecated (since := "2026-09-16")]
+alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm_of_not_aestronglyMeasurable :=
+  eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm_of_not_aestronglyMeasurable
+
+@[deprecated (since := "2026-09-16")]
 alias eLpNorm_le_eLpNorm_mul_eLpNorm_of_not_aestronglyMeasurable_ennreal :=
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm_of_not_aestronglyMeasurable
 

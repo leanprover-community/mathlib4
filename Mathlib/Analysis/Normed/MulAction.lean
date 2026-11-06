@@ -122,6 +122,9 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
 class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop where
   protected eNorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
 
+@[deprecated (since := "2026-11-06")]
+protected alias ENormSMulClass.enorm_smul := ENormSMulClass.eNorm_smul
+
 lemma eNorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
     ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ :=
   ENormSMulClass.eNorm_smul r x

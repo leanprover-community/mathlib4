@@ -1051,6 +1051,10 @@ lemma _root_.HasCompactSupport.eNorm_le_lintegral_Ici_deriv
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
+@[deprecated (since := "2026-11-06")]
+alias _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv :=
+  _root_.HasCompactSupport.eNorm_le_lintegral_Ici_deriv
+
 end IicFTC
 
 section UnivFTC

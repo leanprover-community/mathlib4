@@ -396,9 +396,9 @@ alias toReal_enorm' := toReal_eNorm'
 @[to_additive (attr := simp) ofReal_norm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
-@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_eNorm := ofReal_norm
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
 
-@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_eNorm' := ofReal_norm'
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
 
 @[to_additive eNorm_eq_iff_norm_eq]
 theorem eNorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by

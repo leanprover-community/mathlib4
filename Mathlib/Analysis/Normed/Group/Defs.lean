@@ -97,7 +97,7 @@ instance NNNorm.toENorm : ENorm E where eNorm := (‖·‖₊ : E → ℝ≥0∞
 @[basify_op]
 lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
-@[deprecated (since := "2026-10-31")] alias eNorm_eq_nnnorm := eNorm_eq_nnNorm
+@[deprecated (since := "2026-10-31")] alias enorm_eq_nnnorm := eNorm_eq_nnNorm
 
 @[simp] lemma toNNReal_eNorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
 
@@ -108,12 +108,16 @@ lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp, norm_cast] lemma coe_lt_eNorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [eNorm]
 @[simp, norm_cast] lemma eNorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [eNorm]
 
-@[deprecated (since := "2026-11-06")] alias enorm_lt_coe := coe_le_eNorm
+@[deprecated (since := "2026-11-06")] alias coe_le_enorm := coe_le_eNorm
+@[deprecated (since := "2026-11-06")] alias enorm_le_coe := eNorm_le_coe
+@[deprecated (since := "2026-11-06")] alias coe_lt_enorm := coe_lt_eNorm
+@[deprecated (since := "2026-11-06")] alias enorm_lt_coe := eNorm_lt_coe
 
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
 lemma eNorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [eNorm]
 @[simp] lemma eNorm_lt_top : ‖x‖ₑ < ∞ := by simp [eNorm]
 
+@[deprecated (since := "2026-11-06")] alias enorm_ne_top := eNorm_ne_top
 @[deprecated (since := "2026-11-06")] alias enorm_lt_top := eNorm_ne_top
 
 end ENorm
