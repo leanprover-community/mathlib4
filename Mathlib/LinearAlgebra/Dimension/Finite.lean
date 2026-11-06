@@ -118,6 +118,14 @@ theorem Module.finite_of_rank_eq_nat [Module.Free R M] {n : ℕ} (h : Module.ran
     b.linearIndependent.cardinal_le_rank |>.trans_eq h |>.trans_lt natCast_lt_aleph0
   exact Module.Finite.of_basis b
 
+theorem Module.finite_of_rank_le_nat [Module.Free R M] {n : ℕ} (h : Module.rank R M ≤ n) :
+    Module.Finite R M := by
+  obtain ⟨n, h⟩ := Cardinal.lt_aleph0.mp (h.trans_lt natCast_lt_aleph0)
+  exact finite_of_rank_eq_nat h
+
+theorem Module.finite_of_rank_lt_nat [Module.Free R M] {n : ℕ} (h : Module.rank R M < n) :
+    Module.Finite R M := finite_of_rank_le_nat h.le
+
 theorem Module.finite_of_rank_eq_one [Module.Free R M] (h : Module.rank R M = 1) :
     Module.Finite R M :=
   Module.finite_of_rank_eq_nat <| h.trans Nat.cast_one.symm

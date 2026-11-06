@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
+import Mathlib.Algebra.GroupWithZero.Action.Regular
+import Mathlib.FieldTheory.Minpoly.Finite
+
 /-!
 
 # Separable polynomials
@@ -506,11 +509,16 @@ theorem exists_finset_of_splits (i : F →+* K) {f : F[X]} (sep : Separable f)
 
 end Splits
 
-theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
+theorem _root_.Irreducible.separable_of_natCast_natDegree_ne_zero {f : F[X]} (hf : Irreducible f)
+    (h : (f.natDegree : F) ≠ 0) :
     f.Separable := by
-  rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative]
-  · rintro ⟨⟩
-  exact hf.natDegree_pos.ne'
+  have h : IsSMulRegular F f.natDegree := by simp [isSMulRegular_iff_right_eq_zero_of_smul, h]
+  simp [separable_iff_derivative_ne_zero hf, ← degree_eq_bot.ne,
+    degree_derivative_of_isSMulRegular h]
+
+theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f) :
+    f.Separable :=
+  hf.separable_of_natCast_natDegree_ne_zero (by simpa using hf.natDegree_pos.ne')
 
 end Field
 
@@ -652,16 +660,49 @@ theorem isSeparable_algebraMap (x : F) : IsSeparable F (algebraMap F K x) :=
 instance Algebra.isSeparable_self : Algebra.IsSeparable F F :=
   ⟨isSeparable_algebraMap⟩
 
-variable [IsDomain K] [Algebra.IsIntegral F K] [CharZero F]
+variable [IsDomain K]
 
-theorem IsSeparable.of_integral (x : K) : IsSeparable F x :=
-  (minpoly.irreducible <| Algebra.IsIntegral.isIntegral x).separable
+variable {F} in
+theorem IsSeparable.of_isIntegral_of_natCast_natDegree_ne_zero {x : K} (hx : IsIntegral F x)
+    (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
+  (minpoly.irreducible hx).separable_of_natCast_natDegree_ne_zero h
+
+theorem IsSeparable.of_algebraIsIntegral_of_natCast_natDegree_ne_zero [Algebra.IsIntegral F K]
+    {x : K} (h : ((minpoly F x).natDegree : F) ≠ 0) : IsSeparable F x :=
+  .of_isIntegral_of_natCast_natDegree_ne_zero (Algebra.IsIntegral.isIntegral x) h
+
+theorem Algebra.IsSeparable.of_isIntegral_of_finrank_lt [Algebra.IsIntegral F K] [Module.Finite F K]
+    (h : Module.finrank F K < ringChar F) :
+    Algebra.IsSeparable F K where
+  isSeparable' x := .of_algebraIsIntegral_of_natCast_natDegree_ne_zero _ <| by
+    rw [ne_eq, ringChar.spec]
+    apply Nat.not_dvd_of_pos_of_lt (minpoly.natDegree_pos <| IsIntegral.isIntegral x)
+    grw [minpoly.natDegree_le, h]
+
+theorem Algebra.IsSeparable.of_isIntegral_of_rank_lt [Algebra.IsIntegral F K]
+    (h : Module.rank F K < ringChar F) :
+    Algebra.IsSeparable F K := by
+  have : Module.Finite F K := Module.finite_of_rank_lt_nat h
+  exact of_isIntegral_of_finrank_lt _ (Module.finrank_lt_of_rank_lt h)
+
+section CharZero
+variable [CharZero F]
+
+variable {F} in
+theorem IsSeparable.of_isIntegral {x : K} (hx : IsIntegral F x) : IsSeparable F x :=
+  (minpoly.irreducible hx).separable
+
+theorem IsSeparable.of_integral [Algebra.IsIntegral F K] (x : K) : IsSeparable F x :=
+  .of_isIntegral (Algebra.IsIntegral.isIntegral x)
 
 -- See note [lower instance priority]
 variable (K) in
 /-- An integral field extension in characteristic 0 is separable. -/
-protected instance (priority := 100) Algebra.IsSeparable.of_integral : Algebra.IsSeparable F K :=
+protected instance (priority := 100) Algebra.IsSeparable.of_integral [Algebra.IsIntegral F K] :
+    Algebra.IsSeparable F K :=
   ⟨_root_.IsSeparable.of_integral _⟩
+
+end CharZero
 
 end IsIntegral
 
