@@ -204,14 +204,14 @@ theorem _root_.ContinuousAt.isLittleO {α : Type*} {E : Type*} [NormedAddCommGro
     (f · - f x) =o[𝓝 x] (fun _ ↦ (1 : F)) :=
   continuousAt_iff_isLittleO.mp hcont
 
-theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [NormedAddCommGroup E]
+theorem _root_.ContinuousAt.isBigO {α : Type*} {E : Type*} [SeminormedAddGroup E]
     [One F] [NormOneClass F] [TopologicalSpace α] {f : α → E} {x : α}
     (hcont : ContinuousAt f x) :
     f =O[𝓝 x] (fun _ ↦ (1 : F)) :=
-  hcont.isLittleO.isBigO.congr_of_sub.mpr (isBigO_const_one ..)
+  isBigO_norm_left.mp <| hcont.norm.tendsto.isBigO_one F
 
-theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddCommGroup E]
-    [NormedAddCommGroup F] [One F] [NormOneClass F] [TopologicalSpace α]
+theorem _root_.ContinuousAt.isTheta {α F : Type*} {E : Type*} [NormedAddGroup E]
+    [NormedAddGroup F] [One F] [NormOneClass F] [TopologicalSpace α]
     {f : α → E} {x : α} (hcont : ContinuousAt f x) (hne : f x ≠ 0) :
     f =Θ[𝓝 x] (fun _ ↦ (1 : F)) := by
   refine ⟨hcont.isBigO, ?_⟩
@@ -682,20 +682,20 @@ theorem IsBigO.nat_of_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTo
   · simp [hf, hC_pos]
   exact hC fun a ↦ hf (h a)
 
-theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isBigOWith_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} {C : ℝ} (hC : 0 ≤ C) :
     IsBigOWith C l f g' ↔ ∀ i, IsBigOWith C l (fun x => f x i) g' := by
   have this (x) : 0 ≤ C * ‖g' x‖ := by positivity
   simp only [isBigOWith_iff, pi_norm_le_iff_of_nonneg (this _), eventually_all]
 
 @[simp]
-theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} : f =O[l] g' ↔ ∀ i, (fun x => f x i) =O[l] g' := by
   simp only [isBigO_iff_eventually_isBigOWith, ← eventually_all]
   exact eventually_congr (eventually_atTop.2 ⟨0, fun c => isBigOWith_pi⟩)
 
 @[simp]
-theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddCommGroup (E' i)]
+theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, SeminormedAddGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
   simp +contextual only [isLittleO_iff_forall_isBigOWith, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
@@ -798,7 +798,7 @@ theorem summable_of_isBigO_nat {E} [SeminormedAddCommGroup E] [CompleteSpace E]
   summable_of_isBigO hg <| Nat.cofinite_eq_atTop.symm ▸ h
 
 lemma Asymptotics.IsBigO.comp_summable_norm {ι E F : Type*}
-    [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] {f : E → F} {g : ι → E}
+    [SeminormedAddGroup E] [SeminormedAddGroup F] {f : E → F} {g : ι → E}
     (hf : f =O[𝓝 0] id) (hg : Summable (‖g ·‖)) : Summable (‖f <| g ·‖) :=
   summable_of_isBigO hg <| hf.norm_norm.comp_tendsto <|
     tendsto_zero_iff_norm_tendsto_zero.2 hg.tendsto_cofinite_zero
@@ -915,7 +915,7 @@ end ContinuousOn
 
 /-- The (scalar) product of a sequence that tends to zero with a bounded one also tends to zero. -/
 lemma NormedField.tendsto_zero_smul_of_tendsto_zero_of_bounded {ι 𝕜 E : Type*}
-    [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
+    [NormedDivisionRing 𝕜] [SeminormedAddGroup E] [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
     {l : Filter ι} {ε : ι → 𝕜} {f : ι → E} (hε : Tendsto ε l (𝓝 0))
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) :
     Tendsto (ε • f) l (𝓝 0) := by
