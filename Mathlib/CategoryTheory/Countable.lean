@@ -20,6 +20,12 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
+namespace Opposite
+
+instance {α : Type*} [Countable α] : Countable αᵒᵖ := .of_equiv _ equivToOpposite
+
+end Opposite
+
 noncomputable section
 
 namespace CategoryTheory
@@ -91,7 +97,6 @@ open Opposite
 /-- The opposite of a countable category is countable. -/
 instance countableCategoryOpposite {J : Type*} [Category* J] [CountableCategory J] :
     CountableCategory Jᵒᵖ where
-  countableObj := Countable.of_equiv _ equivToOpposite
   countableHom j j' := Countable.of_equiv _ (opEquiv j j').symm
 
 attribute [local instance] uliftCategory in

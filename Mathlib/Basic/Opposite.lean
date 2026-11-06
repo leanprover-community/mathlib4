@@ -83,6 +83,14 @@ theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpp
 
 theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := equivToOpposite.symm.surjective
 
+theorem op_bijective : Function.Bijective (op : α → αᵒᵖ) := equivToOpposite.bijective
+
+theorem unop_bijective : Function.Bijective (unop : αᵒᵖ → α) := equivToOpposite.symm.bijective
+
+@[simp] lemma «forall» {p : αᵒᵖ → Prop} : (∀ a, p a) ↔ ∀ a, p (op a) := op_surjective.forall
+
+@[simp] lemma «exists» {p : αᵒᵖ → Prop} : (∃ a, p a) ↔ ∃ a, p (op a) := op_surjective.exists
+
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=
   rfl
