@@ -382,7 +382,7 @@ partial def buildProofStep (db : HashMap Nat Clause)
     let app := mkApp3 (mkConst ``Sat.Valuation.by_cases) (v d1) nlit <|
       mkLambda `h default (mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) lit) pr
     let dom := mkApp2 (mkConst ``Sat.Valuation.neg) (v d1) nlit
-    f e := f <| mkApp app <| mkLambda `h default dom e
+    f := fun e ↦ f <| mkApp app <| mkLambda `h default dom e
     lctx := lctx.insert (-u) depth
   return Except.error s!"no refutation: {ns}, {pf}, {lctx.toList}"
 
