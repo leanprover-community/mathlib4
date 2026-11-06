@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension from set functions to integrable simple functions
 

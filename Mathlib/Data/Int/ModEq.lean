@@ -6,6 +6,7 @@ Authors: Chris Hughes
 module
 
 public import Mathlib.Data.Nat.ModEq
+
 import Mathlib.Data.Int.Cast.Lemmas
 
 /-!

@@ -6,9 +6,10 @@ Authors: Yaël Dillies, Filippo A. E. Nuccio, Sam van Gool
 module
 
 public import Mathlib.Data.Fintype.Order
-import Mathlib.Order.Interval.Finset.Basic
 public import Mathlib.Order.Irreducible
 public import Mathlib.Order.UpperLower.Closure
+
+import Mathlib.Order.Interval.Finset.Basic
 
 /-!
 # Birkhoff representation
@@ -186,10 +187,10 @@ noncomputable def birkhoffFinset : α ↪o Finset {a : α // SupIrred a} := by
   simp [birkhoffFinset, (OrderIso.coe_toOrderEmbedding)]
 
 @[simp] lemma birkhoffSet_sup (a b : α) : birkhoffSet (a ⊔ b) = birkhoffSet a ∪ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
+  unfold OrderEmbedding.birkhoffSet; split <;> simp
 
 @[simp] lemma birkhoffSet_inf (a b : α) : birkhoffSet (a ⊓ b) = birkhoffSet a ∩ birkhoffSet b := by
-  unfold OrderEmbedding.birkhoffSet; split <;> simp [eq_iff_true_of_subsingleton]
+  unfold OrderEmbedding.birkhoffSet; split <;> simp
 
 @[simp] lemma birkhoffSet_apply [OrderBot α] (a : α) :
     birkhoffSet a = OrderIso.lowerSetSupIrred a := by

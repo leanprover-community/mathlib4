@@ -7,6 +7,7 @@ module
 
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
+
 import Mathlib.RingTheory.FiniteType
 
 /-!

@@ -5,10 +5,11 @@ Authors: Vasilii Nesterov
 -/
 module
 
-import Mathlib.Analysis.Normed.Group.FunctionSeries
 public import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Tactic.Rify
+
+import Mathlib.Analysis.Normed.Group.FunctionSeries
 import Mathlib.Tactic.Qify
+import Mathlib.Tactic.Rify
 
 /-!
 # Representation of reals in positional system

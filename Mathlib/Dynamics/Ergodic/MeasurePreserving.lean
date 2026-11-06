@@ -175,7 +175,7 @@ theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : Measure
 theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) :
     (ae μa).EventuallyEmptyOrUniv (f ⁻¹' s) ↔ (ae μb).EventuallyEmptyOrUniv s :=
-  aeconst_comp hf hs.mem
+  aeconst_comp hf hs.mem.nullMeasurable
 
 theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
     (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where

@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Topology.MetricSpace.Gluing
+
 import Mathlib.Topology.Metrizable.Uniformity
 
 /-!

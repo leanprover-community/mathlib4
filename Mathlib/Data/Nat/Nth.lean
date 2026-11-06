@@ -480,7 +480,8 @@ theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i �
   rwa [nth_count hpa, lt_self_iff_false] at hn
 
 theorem le_nth_count' {n : ℕ} (hpn : ∃ k, p k ∧ n ≤ k) : n ≤ nth p (count p n) :=
-  (le_csInf hpn fun _ => And.right).trans (nth_count_eq_sInf p n).ge
+  (le_csInf (s := {i : ℕ | p i ∧ n ≤ i}) hpn fun _ => And.right).trans
+    (nth_count_eq_sInf p n).ge
 
 theorem le_nth_count (hp : (Set.ofPred p).Infinite) (n : ℕ) : n ≤ nth p (count p n) :=
   let ⟨m, hp, hn⟩ := hp.exists_gt n
@@ -524,8 +525,8 @@ theorem nth_of_forall_not {n : ℕ} (hp : ∀ n' ≥ n, ¬p n') : nth p n = 0 :=
     contrapose! hp
     exact ⟨n', by simpa using hp, Set.mem_ofPred.mp hn'⟩
   rw [nth_of_card_le ((finite_toSet _).subset this)]
-  · refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
-    exact Set.Finite.toFinset_subset.mpr this
+  refine (Finset.card_le_card ?_).trans_eq (Finset.card_range n)
+  exact Set.Finite.toFinset_subset.mpr this
 
 @[simp] theorem nth_false (n : ℕ) : nth (fun _ ↦ False) n = 0 := nth_of_forall_not fun _ _ ↦ id
 

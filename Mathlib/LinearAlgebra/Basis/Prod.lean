@@ -5,9 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.LinearAlgebra.Finsupp.SumProd
 public import Mathlib.LinearAlgebra.FreeModule.Basic
+public import Mathlib.LinearAlgebra.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bases for the product of modules

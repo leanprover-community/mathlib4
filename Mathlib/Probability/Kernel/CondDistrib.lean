@@ -61,7 +61,7 @@ For almost all `a`, `condDistrib Y X μ` evaluated at `X a` and a measurable set
 the conditional expectation `μ⟦Y ⁻¹' s | mβ.comap X⟧ a`. It also satisfies the equality
 `μ[(fun a => f (X a, Y a)) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`
 for all integrable functions `f`. -/
-noncomputable irreducible_def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
+@[no_expose] noncomputable def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
     (X : α → β) (μ : Measure α) [IsFiniteMeasure μ] : Kernel β Ω :=
   (μ.map fun a => (X a, Y a)).condKernel
 
@@ -392,8 +392,8 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prodMk {Ω F} {m�
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   refine ⟨fun x => hf.mk f x.2, hf.stronglyMeasurable_mk.comp_measurable measurable_snd, ?_⟩
-  suffices h : Measure.QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
-    Measure.QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
+  suffices h : QuasiMeasurePreserving Prod.snd (μ.map fun ω ↦ (X ω, ω)) μ from
+    QuasiMeasurePreserving.ae_eq_comp h hf.ae_eq_mk
   refine ⟨measurable_snd, Measure.AbsolutelyContinuous.mk fun s hs hμs => ?_⟩
   rw [Measure.map_apply measurable_snd hs, Measure.map_apply_of_aemeasurable]
   · rw [← univ_prod, mk_preimage_prod, preimage_univ, univ_inter, preimage_id']

@@ -60,8 +60,6 @@ layer cake representation, Cavalieri's principle, tail probability formula
 
 public section
 
-noncomputable section
-
 open scoped ENNReal MeasureTheory Topology
 
 open Set MeasureTheory Filter Measure
@@ -368,8 +366,8 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
               = ∫⁻ t in Ioi M, ν {a : α | t ≤ f a} * ENNReal.ofReal (g t) := by
       apply setLIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
       rw [Measure.restrict_apply (measurableSet_le measurable_const f_mble)]
-      congr 3
-      exact (inter_eq_left.2 (fun a ha ↦ (mem_Ioi.1 ht).trans_le ha)).symm
+      congr! 4 with a
+      simpa using (mem_Ioi.1 ht).trans_le
     have I : Ioi (0 : ℝ) = Ioc (0 : ℝ) M ∪ Ioi M := (Ioc_union_Ioi_eq_Ioi M_nonneg).symm
     have J : Disjoint (Ioc 0 M) (Ioi M) := Ioc_disjoint_Ioi le_rfl
     rw [I, lintegral_union measurableSet_Ioi J, lintegral_union measurableSet_Ioi J, B1, B2]
@@ -455,6 +453,24 @@ theorem lintegral_eq_lintegral_meas_le (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f)
   rw [← key]
   congr with ω
   simp only [intervalIntegral.integral_const, sub_zero, smul_eq_mul, mul_one]
+
+/-- The standard case of the layer cake formula / Cavalieri's principle / tail probability formula
+for an `ENNReal`-valued function. -/
+theorem lintegral_eq_lintegral_measure_ofReal_le (μ : Measure α) {f : α → ℝ≥0∞}
+    (hf : AEMeasurable f μ) :
+    ∫⁻ x, f x ∂μ = ∫⁻ t in Ioi 0, μ {x | .ofReal t ≤ f x} := by
+  by_cases h : f =ᵐ[μ] fun x ↦ .ofReal (f x).toReal
+  · rw [lintegral_congr_ae h, lintegral_eq_lintegral_meas_le μ (.of_forall (by simp)) (by fun_prop)]
+    congr with t
+    apply measure_congr
+    filter_upwards [h] with x hx
+    simp [← ENNReal.ofReal_le_ofReal_iff ENNReal.toReal_nonneg, ← hx]
+  · have h' : μ {x | f x = ∞} ≠ 0 := by grind [ENNReal.ofReal_toReal_eq_iff, aeEq_iff]
+    rw [lintegral_eq_top_of_measure_eq_top_ne_zero hf h', Eq.comm, ← top_le_iff]
+    trans ∫⁻ (t : ℝ) in Ioi 0, μ {x | f x = ∞}
+    · simp [h']
+    · gcongr
+      simp +contextual
 
 end Layercake
 

@@ -35,11 +35,11 @@ theorem isStarProjection_iff_mem_extremePoints_setOfPred_nonneg_inter_unitClosed
     such that `t • a + s • b = e` where `t` and `s` are positive.
     Then we want to show `a = e`.
     As `t • a + s • b = e`, we have that in the unitization
-    `t • (e * (1 - a) * e)) + s • (e * (1 - b) * e) = 0`.
+    `t • (e * (1 - a) * e) + s • (e * (1 - b) * e) = 0`.
     And as `a` and `b` are in the nonnegative closed unit ball, we get `1 - a` and
     `1 - b` are nonnegative (and so are `e * (1 - a) * e` and `e * (1 - b) * e`).
-    Then `t • (e * (1 - a) * e)) ≤ t • (e * (1 - a) * e)) + s • (e * (1 - b) * e) = 0`,
-    and so `t • (e * (1 - a) * e)) = 0`.
+    Then `t • (e * (1 - a) * e) ≤ t • (e * (1 - a) * e) + s • (e * (1 - b) * e) = 0`,
+    and so `t • (e * (1 - a) * e) = 0`.
     Note that we also get `0 ≤ t • a ≤ t • a + s • b = e` and so `t • e * a * e = t • a` using
     `IsStarProjection.conjugate_of_nonneg_of_le`.
     And so the result then follows. -/

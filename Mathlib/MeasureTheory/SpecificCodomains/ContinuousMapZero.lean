@@ -5,8 +5,8 @@ Authors: Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 public import Mathlib.MeasureTheory.SpecificCodomains.ContinuousMap
+public import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 
 /-!
 # Specific results about `ContinuousMapZero`-valued integration

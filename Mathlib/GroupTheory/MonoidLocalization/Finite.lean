@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.GroupTheory.MonoidLocalization.GrothendieckGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of a finitely generated submonoid
 

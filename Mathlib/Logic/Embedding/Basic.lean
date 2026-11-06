@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 module
 
-import Mathlib.Basic.IsEmpty.Basic
 public import Mathlib.Data.Prod.Basic
 public import Mathlib.Data.Prod.PProd
 public import Mathlib.Data.Sum.Basic
 public import Mathlib.Logic.Equiv.Basic
+
+import Mathlib.Basic.IsEmpty.Basic
 
 /-!
 # Injective functions
@@ -256,13 +257,15 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
     rintro ⟨⟩ ⟨⟩ _
     rfl⟩
 
-/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
-def oneEmbeddingEquiv {one α : Type*} [Unique one] : (one ↪ α) ≃ α where
+/-- The equivalence `α ↪ β` with `β`, for `Unique α`. -/
+def _root_.Equiv.embeddingUnique {α β : Type*} [Unique α] : (α ↪ β) ≃ β where
   toFun f := f default
-  invFun a := {
-    toFun := fun _ ↦ a
+  invFun b := {
+    toFun := fun _ ↦ b
     inj' x y h := by simp [Unique.uniq inferInstance] }
   left_inv f := by ext; simp [Unique.uniq]
+
+@[deprecated (since := "2026-11-02")] alias oneEmbeddingEquiv := Equiv.embeddingUnique
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]

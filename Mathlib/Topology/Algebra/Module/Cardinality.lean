@@ -5,11 +5,15 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Algebra.Module.Card
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.SetTheory.Cardinal.Continuum
+
+import Mathlib.Algebra.Module.Card
 import Mathlib.SetTheory.Cardinal.CountableCover
 import Mathlib.Topology.MetricSpace.Perfect
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cardinality of open subsets of vector spaces
