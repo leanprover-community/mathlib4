@@ -197,11 +197,11 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
   norm_cast
   -- Let `t := {x : X | ε / 2 ≤ ‖f x‖₊}` which is closed and disjoint from `set_of_ideal I`.
   set t := {x : X | ε / 2 ≤ ‖f x‖₊}
-  have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnnorm
+  have ht : IsClosed t := isClosed_le continuous_const (map_continuous f).nnNorm
   have htI : Disjoint t (setOfIdeal I)ᶜ := by
     refine Set.subset_compl_iff_disjoint_left.mp fun x hx => ?_
     simpa only [t, Set.mem_ofPred, Set.mem_compl_iff, not_le] using!
-      (nnnorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
+      (nnNorm_eq_zero.mpr (mem_idealOfSet.mp hf hx)).trans_lt (half_pos hε)
   /- It suffices to produce `g : C(X, ℝ≥0)` which takes values in `[0,1]` and is constantly `1` on
     `t` such that when composed with the natural embedding of `ℝ≥0` into `𝕜` lies in the ideal `I`.
     Indeed, then `‖f - f * ↑g‖ ≤ ‖f * (1 - ↑g)‖ ≤ ⨆ ‖f * (1 - ↑g) x‖`. When `x ∉ t`, `‖f x‖ < ε / 2`
@@ -215,7 +215,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
     simp only [sub_apply, mul_apply, comp_apply, coe_mk, algebraMapCLM_apply]
     by_cases hx : x ∈ t
     · simpa only [hgt hx, comp_apply, Pi.one_apply, ContinuousMap.coe_ofClass, algebraMapCLM_apply,
-        map_one, mul_one, sub_self, nnnorm_zero] using! hε
+        map_one, mul_one, sub_self, nnNorm_zero] using! hε
     · refine lt_of_le_of_lt ?_ (half_lt_self hε)
       have :=
         calc
@@ -224,12 +224,12 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
           _ = ‖algebraMap ℝ≥0 𝕜 (1 - g x)‖₊ := by
             simp only [Algebra.algebraMap_eq_smul_one, NNReal.smul_def, NNReal.coe_sub (hg x),
               NNReal.coe_one, sub_smul, one_smul]
-          _ ≤ 1 := (nnnorm_algebraMap_nnreal 𝕜 (1 - g x)).trans_le tsub_le_self
+          _ ≤ 1 := (nnNorm_algebraMap_nnReal 𝕜 (1 - g x)).trans_le tsub_le_self
       calc
         ‖f x - f x * (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g x‖₊ =
             ‖f x * (1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ := by simp [mul_sub]
         _ ≤ ε / 2 * ‖(1 - (algebraMapCLM ℝ≥0 𝕜 : C(ℝ≥0, 𝕜)).comp g) x‖₊ :=
-          ((nnnorm_mul_le _ _).trans
+          ((nnNorm_mul_le _ _).trans
             (mul_le_mul_left (not_le.mp <| show ¬ε / 2 ≤ ‖f x‖₊ from hx).le _))
         _ ≤ ε / 2 := by simpa only [mul_one] using! mul_le_mul_right this _
   /- There is some `g' : C(X, ℝ≥0)` which is strictly positive on `t` such that the composition
@@ -261,7 +261,7 @@ theorem idealOfSet_ofIdeal_eq_closure (I : Ideal C(X, 𝕜)) :
       refine
         ⟨{y : X | g y ≠ 0} ∩ t,
           mem_nhdsWithin_iff_exists_mem_nhds_inter.mpr ⟨_, this, Set.Subset.rfl⟩,
-          ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnnorm.fun_pow 2⟩, ?_, fun x hx =>
+          ⟨⟨fun x => ‖g x‖₊ ^ 2, (map_continuous g).nnNorm.fun_pow 2⟩, ?_, fun x hx =>
             pow_pos (norm_pos_iff.mpr hx.1) 2⟩⟩
       convert I.mul_mem_left (star g) hI
       ext
