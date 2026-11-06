@@ -55,7 +55,7 @@ def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ
 
 theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
     T.polarₗᵢ ⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
-  change T.polarₗᵢ (Submodule.inclusion |T|.range.le_topologicalClosure ⟨|T| x, ⟨x, rfl⟩⟩) = _
+  rw [← Submodule.inclusion_apply |T|.range.le_topologicalClosure ⟨|T| x, ⟨x, rfl⟩⟩]
   simp only [polarₗᵢ]
   erw [LinearMap.extendOfIsometry_eq, LinearMap.comp_apply,
     |T|.quotKerEquivRange_symm_apply_image x]
