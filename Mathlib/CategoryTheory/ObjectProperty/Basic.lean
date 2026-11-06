@@ -154,6 +154,10 @@ def inverseImage (P : ObjectProperty D) (F : C ⥤ D) : ObjectProperty C :=
 lemma prop_inverseImage_iff (P : ObjectProperty D) (F : C ⥤ D) (X : C) :
     P.inverseImage F X ↔ P (F.obj X) := Iff.rfl
 
+lemma inverseImage_monotone {P Q : ObjectProperty D} (h : P ≤ Q) (F : C ⥤ D) :
+    P.inverseImage F ≤ Q.inverseImage F :=
+  fun _ hX ↦ h _ hX
+
 /-- The essential image of a property of objects by a functor. -/
 def map (P : ObjectProperty C) (F : C ⥤ D) : ObjectProperty D :=
   fun Y ↦ ∃ (X : C), P X ∧ Nonempty (F.obj X ≅ Y)
@@ -209,6 +213,12 @@ lemma strictMap_singleton (X : C) (F : C ⥤ D) :
     (singleton X).strictMap F = singleton (F.obj X) := by
   ext
   simp [strictMap_iff]
+
+lemma strictMap_le_iff (P : ObjectProperty C) (Q : ObjectProperty D) (F : C ⥤ D) :
+    P.strictMap F ≤ Q ↔ P ≤ Q.inverseImage F := by
+  refine ⟨fun h _ hX ↦ h _ (strictMap_obj _ _ hX), ?_⟩
+  rintro h _ ⟨X, hX⟩
+  exact h _ hX
 
 end
 

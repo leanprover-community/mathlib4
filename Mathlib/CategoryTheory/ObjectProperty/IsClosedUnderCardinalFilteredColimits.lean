@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.ObjectProperty.ColimitsOfShape
 public import Mathlib.CategoryTheory.Presentable.Basic
 
 /-!
@@ -33,7 +34,7 @@ universe w
 
 namespace CategoryTheory.ObjectProperty
 
-open Limits
+open Limits Opposite
 
 variable {C : Type*} [Category* C]
 
@@ -44,7 +45,7 @@ class IsClosedUnderCardinalFilteredColimits
     (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular] : Prop where
   isCardinalClosedUnderColimitsOfShape'
       (P) (κ) (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
-    P.IsClosedUnderColimitsOfShape J := by infer_instance
+    P.IsClosedUnderColimitsOfShape J := by intros; infer_instance
 
 namespace IsClosedUnderCardinalFilteredColimits
 
@@ -57,6 +58,13 @@ lemma isCardinalClosedUnderColimitsOfShape
   rw [P.isClosedUnderColimitsOfShape_iff_of_equivalence (equivSmallModel.{w} J)]
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
   exact isCardinalClosedUnderColimitsOfShape' P κ _
+
+variable {P κ}
+lemma of_le {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') :
+    P.IsClosedUnderCardinalFilteredColimits κ' where
+  isCardinalClosedUnderColimitsOfShape' J _ _ :=
+    have := IsCardinalFiltered.of_le J h
+    isCardinalClosedUnderColimitsOfShape P κ J
 
 instance [HasCardinalFilteredColimits C κ] :
     HasCardinalFilteredColimits P.FullSubcategory κ where
@@ -84,6 +92,24 @@ lemma isClosedUnderIsomorphisms : P.IsClosedUnderIsomorphisms where
         prop_diag_obj _ := hX }
     p.prop
 
+instance {D : Type*} [Category* D] (F : D ⥤ C) [F.IsCardinalAccessible κ] :
+    (P.inverseImage F).IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := by
+    have := isCardinalClosedUnderColimitsOfShape P κ J
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
+    infer_instance
+
 end IsClosedUnderCardinalFilteredColimits
+
+lemma isCardinalPresentable_of_fullSubcategory
+    {P : ObjectProperty C} (X : P.FullSubcategory)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [HasCardinalFilteredColimits C κ]
+    [P.IsClosedUnderCardinalFilteredColimits κ]
+    (hX : IsCardinalPresentable X.obj κ := by infer_instance) :
+    IsCardinalPresentable X κ := by
+  dsimp [IsCardinalPresentable] at hX ⊢
+  let e : coyoneda.obj (op X) ≅ P.ι ⋙ coyoneda.obj (op X.obj) :=
+    NatIso.ofComponents (fun _ ↦ P.fullyFaithfulι.homEquiv.toIso)
+  exact Functor.isCardinalAccessible_of_natIso e.symm _
 
 end CategoryTheory.ObjectProperty

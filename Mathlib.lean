@@ -2746,6 +2746,7 @@ public import Mathlib.CategoryTheory.Comma.Basic
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Comma.Final
+public import Mathlib.CategoryTheory.Comma.IsoCat
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Comma.Over.OverClass
@@ -3457,13 +3458,16 @@ public import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.Basic
+public import Mathlib.CategoryTheory.Presentable.CardinalContinuous
 public import Mathlib.CategoryTheory.Presentable.CardinalDirectedPoset
 public import Mathlib.CategoryTheory.Presentable.CardinalFilteredPresentation
+public import Mathlib.CategoryTheory.Presentable.CardinalInd
 public import Mathlib.CategoryTheory.Presentable.CardinalPure
 public import Mathlib.CategoryTheory.Presentable.ColimitPresentation
 public import Mathlib.CategoryTheory.Presentable.Comma
 public import Mathlib.CategoryTheory.Presentable.Dense
 public import Mathlib.CategoryTheory.Presentable.Directed
+public import Mathlib.CategoryTheory.Presentable.EnoughPureSubobjects
 public import Mathlib.CategoryTheory.Presentable.EssentiallyLarge
 public import Mathlib.CategoryTheory.Presentable.Finite
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
@@ -3473,6 +3477,7 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 public import Mathlib.CategoryTheory.Presentable.OrthogonalReflection
 public import Mathlib.CategoryTheory.Presentable.PreservesCardinalPresentable
 public import Mathlib.CategoryTheory.Presentable.Presheaf
+public import Mathlib.CategoryTheory.Presentable.Representation
 public import Mathlib.CategoryTheory.Presentable.Retracts
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Basic
 public import Mathlib.CategoryTheory.Presentable.SharplyLT.Lemmas
@@ -3649,6 +3654,7 @@ public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 public import Mathlib.CategoryTheory.SmallRepresentatives
 public import Mathlib.CategoryTheory.Square
 public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Colimits
 public import Mathlib.CategoryTheory.Subfunctor.Equalizer
 public import Mathlib.CategoryTheory.Subfunctor.Finite
 public import Mathlib.CategoryTheory.Subfunctor.Image

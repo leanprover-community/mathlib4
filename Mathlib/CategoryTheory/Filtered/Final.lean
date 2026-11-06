@@ -200,6 +200,73 @@ theorem Functor.initial_of_exists_of_isCofiltered_of_fullyFaithful [IsCofiltered
   obtain ⟨c, ⟨f⟩⟩ := h d.unop
   exact ⟨op c, ⟨f.op⟩⟩
 
+lemma ObjectProperty.final_ι_iff_of_isFiltered
+    (P : ObjectProperty C) [IsFilteredOrEmpty C] :
+    P.ι.Final ↔ ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (X ⟶ Y) := by
+  refine ⟨fun _ X ↦ ?_, fun h ↦ ?_⟩
+  · have Y : (StructuredArrow X P.ι) := Classical.arbitrary _
+    exact ⟨Y.right.obj, Y.right.property, ⟨Y.hom⟩⟩
+  · refine Functor.final_of_exists_of_isFiltered_of_fullyFaithful _ (fun X ↦ ?_)
+    obtain ⟨Y, hY, ⟨f⟩⟩ := h X
+    exact ⟨⟨Y, hY⟩, ⟨f⟩⟩
+
+lemma ObjectProperty.initial_ι_iff_of_isCofiltered
+    (P : ObjectProperty C) [IsCofilteredOrEmpty C] :
+    P.ι.Initial ↔ ∀ (X : C), ∃ (Y : C) (_ : P Y), Nonempty (Y ⟶ X) := by
+  rw [← P.final_ι_op_iff, final_ι_iff_of_isFiltered]
+  refine ⟨fun h X ↦ ?_, fun h ⟨X⟩ ↦ ?_⟩
+  · obtain ⟨Y, hY, ⟨f⟩⟩ := h (op X)
+    exact ⟨Y.unop, hY, ⟨f.unop⟩⟩
+  · obtain ⟨Y, hY, ⟨f⟩⟩ := h X
+    exact ⟨op Y, hY, ⟨f.op⟩⟩
+
+lemma ObjectProperty.isFilteredOrEmpty
+    (P : ObjectProperty C) [IsFiltered C]
+    (hP : P.ι.Final := by infer_instance) :
+    IsFilteredOrEmpty P.FullSubcategory where
+  cocone_objs X Y := by
+    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    obtain ⟨Z, hZ, ⟨f⟩⟩ := hP (IsFiltered.max X.obj Y.obj)
+    exact ⟨⟨Z, hZ⟩, ObjectProperty.homMk (IsFiltered.leftToMax _ _ ≫ f),
+      ObjectProperty.homMk (IsFiltered.rightToMax _ _ ≫ f), by tauto⟩
+  cocone_maps X Y f g := by
+    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    obtain ⟨Z, hZ, ⟨h⟩⟩ := hP (IsFiltered.coeq f.hom g.hom)
+    refine ⟨⟨Z, hZ⟩, ObjectProperty.homMk (IsFiltered.coeqHom f.hom g.hom ≫ h), ?_⟩
+    ext
+    dsimp
+    rw [IsFiltered.coeq_condition_assoc]
+
+lemma ObjectProperty.isCofilteredOrEmpty
+    (P : ObjectProperty C) [IsCofiltered C]
+    (hP : P.ι.Initial := by infer_instance) :
+    IsCofilteredOrEmpty P.FullSubcategory := by
+  have := P.op.isFilteredOrEmpty (by simpa)
+  have := IsFilteredOrEmpty.of_equivalence P.opEquivalence
+  exact isCofilteredOrEmpty_of_isFilteredOrEmpty_op P.FullSubcategory
+
+attribute [local instance] IsFiltered.nonempty in
+lemma ObjectProperty.isFiltered
+    {C : Type*} [Category* C] (P : ObjectProperty C) [IsFiltered C]
+    (hP : P.ι.Final := by infer_instance) :
+    IsFiltered P.FullSubcategory where
+  toIsFilteredOrEmpty := P.isFilteredOrEmpty hP
+  nonempty := by
+    rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+    obtain ⟨X, hX, _⟩ := hP (Classical.arbitrary _)
+    exact ⟨⟨X, hX⟩⟩
+
+attribute [local instance] IsCofiltered.nonempty in
+lemma ObjectProperty.isCofiltered
+    {C : Type*} [Category* C] (P : ObjectProperty C) [IsCofiltered C]
+    (hP : P.ι.Initial := by infer_instance) :
+    IsCofiltered P.FullSubcategory where
+  toIsCofilteredOrEmpty := P.isCofilteredOrEmpty hP
+  nonempty := by
+    rw [ObjectProperty.initial_ι_iff_of_isCofiltered] at hP
+    obtain ⟨X, hX, _⟩ := hP (Classical.arbitrary _)
+    exact ⟨⟨X, hX⟩⟩
+
 /-- Any under category on a filtered or empty category is filtered.
 (Note that under categories are always cofiltered since they have an initial object.) -/
 instance IsFiltered.under [IsFilteredOrEmpty C] (c : C) : IsFiltered (Under c) :=

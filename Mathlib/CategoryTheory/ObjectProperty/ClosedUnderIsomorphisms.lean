@@ -107,6 +107,11 @@ lemma map_isoClosure (F : C ⥤ D) :
   rintro X ⟨Y, ⟨Z, hZ, ⟨e⟩⟩, ⟨e'⟩⟩
   exact ⟨Z, hZ, ⟨F.mapIso e.symm ≪≫ e'⟩⟩
 
+lemma map_le_iff (P : ObjectProperty C) (Q : ObjectProperty D)
+    [Q.IsClosedUnderIsomorphisms] (F : C ⥤ D) :
+    P.map F ≤ Q ↔ P ≤ Q.inverseImage F := by
+  rw [← isoClosure_strictMap, isoClosure_le_iff, strictMap_le_iff]
+
 end ObjectProperty
 
 end CategoryTheory

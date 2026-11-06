@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
@@ -167,6 +168,12 @@ theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :
   ext
   rfl
 
+variable (F) in
+-- the `SSet` case should use this
+@[simps! inv_app_hom_apply]
+def topIso : (⊤ : Subfunctor F).toFunctor ≅ F :=
+  NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (F.obj n)).toIso)
+
 instance : IsIso (Subfunctor.ι (⊤ : Subfunctor F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   intro X
@@ -186,6 +193,11 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
+
+@[simps, implicit_reducible]
+def toFunctorFunctor : Subfunctor F ⥤ C ⥤ Type w where
+  obj A := A.toFunctor
+  map h := Subfunctor.homOfLe (leOfHom h)
 
 end Subfunctor
 

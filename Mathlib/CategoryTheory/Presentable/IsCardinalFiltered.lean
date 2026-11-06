@@ -6,7 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
-public import Mathlib.CategoryTheory.Filtered.Final
+public import Mathlib.CategoryTheory.Filtered.FinallySmall
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 
 /-! # κ-filtered category
@@ -381,5 +381,46 @@ lemma isCardinalFiltered_of_hasTerminal (J : Type u) [Category.{v} J]
     [HasTerminal J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     IsCardinalFiltered J κ :=
   terminalIsTerminal.isCardinalFiltered _
+
+open IsCardinalFiltered in
+lemma ObjectProperty.isCardinalFiltered {C : Type*} [Category* C] (P : ObjectProperty C)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalFiltered C κ]
+    (hP : P.ι.Final := by infer_instance) :
+    IsCardinalFiltered P.FullSubcategory κ := by
+  have := isFiltered_of_isCardinalFiltered C κ
+  rw [ObjectProperty.final_ι_iff_of_isFiltered] at hP
+  rw [isCardinalFiltered_iff]
+  refine ⟨fun ι X hι ↦ ?_, fun ι X Y f hι ↦ ?_⟩
+  · let X' (i : ι) := (X i).obj
+    obtain ⟨Y, hY, ⟨f⟩⟩ := hP (max X' hι)
+    exact ⟨⟨Y, hY⟩, fun i ↦ ⟨ObjectProperty.homMk (toMax X' hι i ≫ f)⟩⟩
+  · let f' (i : ι) : X.obj ⟶ Y.obj := (f i).hom
+    obtain ⟨Z, hZ, ⟨g⟩⟩ := hP (coeq f' hι)
+    refine ⟨⟨Z, hZ⟩, ObjectProperty.homMk (coeqHom f' hι ≫ g),
+      ObjectProperty.homMk (toCoeq f' hι ≫ g), fun i ↦ ?_⟩
+    ext
+    dsimp
+    rw [coeq_condition_assoc f' hι i]
+
+lemma finallySmall_iff_of_isCardinalFiltered
+    (J : Type*) [Category* J] [LocallySmall.{w} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] :
+    FinallySmall.{w} J ↔ ∃ (P : ObjectProperty J), ObjectProperty.Small.{w} P ∧
+      P.ι.Final := by
+  have := isFiltered_of_isCardinalFiltered J κ
+  rw [finallySmall_iff_of_isFiltered]
+
+lemma isCardinalFiltered_and_finallySmall_iff
+    (J : Type*) [Category* J] [LocallySmall.{w} J] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+    IsCardinalFiltered J κ ∧ FinallySmall.{w} J ↔
+      ∃ (J₀ : Type w) (_ : SmallCategory J₀) (_ : IsCardinalFiltered J₀ κ)
+        (F : J₀ ⥤ J), F.Final := by
+  refine ⟨fun ⟨_, _⟩ ↦ ?_,
+    fun ⟨J₀, _, _, F, _⟩ ↦ ⟨IsCardinalFiltered.of_final F κ, .mk' F⟩⟩
+  obtain ⟨P, _, hP⟩ := (finallySmall_iff_of_isCardinalFiltered J κ).1 inferInstance
+  let e := equivSmallModel.{w} P.FullSubcategory
+  have := P.isCardinalFiltered κ
+  exact ⟨SmallModel.{w} P.FullSubcategory, inferInstance,
+    IsCardinalFiltered.of_equivalence _ e, e.inverse ⋙ P.ι, inferInstance⟩
 
 end CategoryTheory
