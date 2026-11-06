@@ -124,9 +124,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
     obtain ⟨s, rfl⟩ := IsLattice.fg A M
-    rw [Submodule.smul_span]
-    have : Finite (a • (s : Set V) : Set V) := Finite.Set.finite_image _ _
-    exact Submodule.fg_span (Set.toFinite (a • (s : Set V)))
+    exact (fg A _).map _
   linearIndepOn s hsM hs := by
     rw [coe_pointwise_smul, Set.subset_smul_set_iff] at hsM
     rw [← linearIndepOn_id_smul_set_iff a⁻¹] at hs ⊢
