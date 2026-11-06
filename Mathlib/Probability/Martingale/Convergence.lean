@@ -169,7 +169,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           refine add_le_add_left (le_iSup_of_le n ?_) _
           simp [eLpNorm_one_eq_lintegral_enorm (hf.integrable n).aestronglyMeasurable,
-            enorm_eq_nnnorm]
+            eNorm_eq_nnNorm]
       refine ne_of_lt (iSup_lt_iff.2 ⟨(⨆ n, eLpNorm (f n) 1 μ) + ‖a‖₊ * μ Set.univ, by finiteness,
         fun n ↦ (hR' n).trans' ?_ ⟩)
       refine lintegral_mono fun ω => ?_
