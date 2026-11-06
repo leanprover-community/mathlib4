@@ -308,7 +308,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     have yone : ‖y‖ ≤ 1 := le_trans y_lt.le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < ‖y‖ ∧ ‖y‖ ≤ (1 / 2) ^ k :=
-      exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
+      exists_natCast_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
         (by norm_num : (1 : ℝ) / 2 < 1)
     -- the scale is large enough (as `y` is small enough)
     have k_gt : n e < k := by
@@ -635,7 +635,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     have yone : y - x ≤ 1 := le_trans y_le (pow_le_one₀ (by norm_num) (by norm_num))
     -- define the scale `k`.
     obtain ⟨k, hk, h'k⟩ : ∃ k : ℕ, (1 / 2) ^ (k + 1) < y - x ∧ y - x ≤ (1 / 2) ^ k :=
-      exists_nat_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
+      exists_natCast_pow_near_of_lt_one yzero yone (by norm_num : (0 : ℝ) < 1 / 2)
         (by norm_num : (1 : ℝ) / 2 < 1)
     -- the scale is large enough (as `y - x` is small enough)
     have k_gt : n e < k := by

@@ -122,7 +122,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
   -- We use a monotone convergence argument to extend it to the reals.
   by_cases hρ_zero : (ν a).restrict s = 0
   · rw [hρ_zero, lintegral_zero_measure]
-    have ⟨q, hq⟩ := exists_rat_gt x
+    have ⟨q, hq⟩ := exists_ratCast_gt x
     suffices κ a (s ×ˢ Iic (q : ℝ)) = 0 by
       symm
       refine measure_mono_null (fun p ↦ ?_) this
@@ -141,13 +141,13 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
     rw [← Monotone.measure_iInter]
     · congr with y : 1
       simp only [mem_Iic, mem_iInter, Subtype.forall]
-      exact le_iff_forall_lt_rat_imp_le
+      exact le_iff_forall_lt_ratCast_imp_le
     · exact fun r r' hrr' ↦ Iic_subset_Iic.mpr <| mod_cast hrr'
     · exact fun _ ↦ nullMeasurableSet_Iic
-    · obtain ⟨q, hq⟩ := exists_rat_gt x
+    · obtain ⟨q, hq⟩ := exists_ratCast_gt x
       exact ⟨⟨q, hq⟩, measure_ne_top _ _⟩
   have h_nonempty : Nonempty { r' : ℚ // x < ↑r' } := by
-    obtain ⟨r, hrx⟩ := exists_rat_gt x
+    obtain ⟨r, hrx⟩ := exists_ratCast_gt x
     exact ⟨⟨r, hrx⟩⟩
   rw [h, lintegral_iInf_directed_of_measurable hρ_zero fun q : { r' : ℚ // x < ↑r' } ↦ ?_]
   rotate_left
@@ -165,7 +165,7 @@ lemma setLIntegral_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondK
   · rw [← prod_iInter]
     congr with y
     simp only [mem_iInter, mem_Iic, Subtype.forall]
-    exact ⟨le_of_forall_lt_rat_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
+    exact ⟨le_of_forall_lt_ratCast_imp_le, fun hyx q hq ↦ hyx.trans hq.le⟩
   · exact fun i j hij ↦ prod_mono_right (by gcongr)
   · exact fun i ↦ (hs.prod measurableSet_Iic).nullMeasurableSet
   · exact ⟨h_nonempty.some, measure_ne_top _ _⟩
@@ -334,7 +334,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
     congr with x : 1
     simp only [mem_iInter, mem_Iic, Subtype.forall]
     refine ⟨fun h ↦ ?_, fun h a hta ↦ h.trans ?_⟩
-    · refine le_of_forall_lt_rat_imp_le fun q htq ↦ h q ?_
+    · refine le_of_forall_lt_ratCast_imp_le fun q htq ↦ h q ?_
       exact mod_cast htq
     · exact mod_cast hta.le
   · exact fun r r' hrr' ↦ prod_mono_right <| by gcongr

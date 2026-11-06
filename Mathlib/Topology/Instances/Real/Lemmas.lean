@@ -33,8 +33,8 @@ theorem Real.isTopologicalBasis_Ioo_rat :
   isTopologicalBasis_of_isOpen_of_nhds (by simp +contextual [isOpen_Ioo])
     fun a _ hav hv =>
     let ⟨_, _, ⟨hl, hu⟩, h⟩ := mem_nhds_iff_exists_Ioo_subset.mp (IsOpen.mem_nhds hv hav)
-    let ⟨q, hlq, hqa⟩ := exists_rat_btwn hl
-    let ⟨p, hap, hpu⟩ := exists_rat_btwn hu
+    let ⟨q, hlq, hqa⟩ := exists_ratCast_btwn hl
+    let ⟨p, hap, hpu⟩ := exists_ratCast_btwn hu
     ⟨Ioo q p, by
       simp only [mem_iUnion]
       exact ⟨q, p, Rat.cast_lt.1 <| hqa.trans hap, rfl⟩, ⟨hqa, hap⟩, fun _ ⟨hqa', ha'p⟩ =>
@@ -97,11 +97,11 @@ theorem closure_ordConnected_inter_rat {s : Set ℝ} (conn : s.OrdConnected) (nt
     Real.mem_closure_iff.mpr fun ε ε_pos ↦ by
       have ⟨z, hz, ne⟩ := nt.exists_ne x
       refine ne.lt_or_gt.elim (fun lt ↦ ?_) fun lt ↦ ?_
-      · have ⟨q, h₁, h₂⟩ := exists_rat_btwn (max_lt lt (sub_lt_self x ε_pos))
+      · have ⟨q, h₁, h₂⟩ := exists_ratCast_btwn (max_lt lt (sub_lt_self x ε_pos))
         rw [max_lt_iff] at h₁
         refine ⟨q, ⟨conn.out hz hx ⟨h₁.1.le, h₂.le⟩, q, rfl⟩, ?_⟩
         simpa only [abs_sub_comm, abs_of_pos (sub_pos.mpr h₂), sub_lt_comm] using h₁.2
-      · have ⟨q, h₁, h₂⟩ := exists_rat_btwn (lt_min lt (lt_add_of_pos_right x ε_pos))
+      · have ⟨q, h₁, h₂⟩ := exists_ratCast_btwn (lt_min lt (lt_add_of_pos_right x ε_pos))
         rw [lt_min_iff] at h₂
         refine ⟨q, ⟨conn.out hx hz ⟨h₁.le, h₂.1.le⟩, q, rfl⟩, ?_⟩
         simpa only [abs_of_pos (sub_pos.2 h₁), sub_lt_iff_lt_add'] using h₂.2

@@ -353,7 +353,7 @@ lemma measure_pos_eq_zero_of_hasSubGaussianMGF_zero (h : HasSubgaussianMGF X 0 �
     simp only [Set.mem_ofPred_eq, Set.mem_iUnion, Subtype.exists, exists_prop]
     constructor
     · intro hp
-      obtain ⟨q, h1, h2⟩ := exists_rat_btwn hp
+      obtain ⟨q, h1, h2⟩ := exists_ratCast_btwn hp
       exact ⟨q, (q.cast_pos.1 h1), h2.le⟩
     · intro ⟨q, h1, h2⟩
       exact lt_of_lt_of_le (q.cast_pos.2 h1) h2
