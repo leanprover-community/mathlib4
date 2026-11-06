@@ -30,6 +30,8 @@ See also `Circle` and `Real.Angle`.  For the normed group structure on `AddCircl
 
 * `AddCircle`: the additive circle `𝕜 ⧸ ℤ ∙ p` for some period `p : 𝕜`
 * `UnitAddCircle`: the special case `ℝ ⧸ ℤ`
+* `AddCircle.map`: the homomorphism `AddCircle p →+ AddCircle q` induced by `f : 𝕜 →+ 𝕜'` with
+  `f p ∈ zmultiples q`
 * `AddCircle.equivAddCircle`: the rescaling equivalence `AddCircle p ≃+ AddCircle q`
 * `AddCircle.equivIco` and `AddCircle.equivIoc`: the natural equivalences
   `AddCircle p ≃ Ico a (a + p)` and `AddCircle p ≃ Ioc a (a + p)`
@@ -229,6 +231,34 @@ protected theorem continuous_mk' [TopologicalSpace 𝕜] :
     Continuous (QuotientAddGroup.mk' (zmultiples p) : 𝕜 → AddCircle p) :=
   continuous_coinduced_rng
 
+section Map
+
+variable {𝕜' : Type*} [AddCommGroup 𝕜'] {q : 𝕜'}
+
+/-- A group homomorphism `f : 𝕜 →+ 𝕜'` with `f p ∈ zmultiples q` induces a homomorphism
+`AddCircle p →+ AddCircle q`. -/
+def map (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) : AddCircle p →+ AddCircle q :=
+  QuotientAddGroup.map _ _ f <| zmultiples_le.2 h
+
+@[simp]
+theorem map_coe (f : 𝕜 →+ 𝕜') (h : f p ∈ zmultiples q) (x : 𝕜) :
+    map p f h x = (f x : AddCircle q) :=
+  rfl
+
+theorem map_injective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Injective f)
+    (hq : f p = q) : Injective (map p f h) := by
+  subst hq
+  rw [map, QuotientAddGroup.map_injective_iff]
+  intro x
+  simp [mem_zmultiples_iff, ← map_zsmul, hf.eq_iff]
+
+theorem map_surjective {f : 𝕜 →+ 𝕜'} {h : f p ∈ zmultiples q} (hf : Surjective f) :
+    Surjective (map p f h) := by
+  apply QuotientAddGroup.map_surjective_of_surjective
+  exact QuotientAddGroup.mk_surjective.comp hf
+
+end Map
+
 section Torsion
 
 -- TODO: move this (and the definition `AddCircle`) to GroupTheory.QuotientGroup.Basic
@@ -298,6 +328,19 @@ theorem coe_eq_zero_of_pos_iff (hp : 0 < p) {x : 𝕜} (hx : 0 < x) :
       simpa only [← neg_nonneg, ← zsmul_neg, zsmul_neg'] using zsmul_nonneg hp.le (neg_nonneg.2 hx)
     exact ⟨n.toNat, by rw [← natCast_zsmul, Int.toNat_of_nonneg hx.le]⟩
   · exact ⟨(n : ℤ), by simp⟩
+
+/-- The quotient map `𝕜 → AddCircle p` is injective on `[0, p)`. -/
+theorem injOn_coe_Ico (hp : 0 < p) : InjOn ((↑) : 𝕜 → AddCircle p) (Ico 0 p) := by
+  rintro x ⟨hx₀, hx⟩ y ⟨hy₀, hy⟩ hxy
+  obtain ⟨n, hn⟩ : ∃ n : ℤ, n • p = x - y :=
+    (coe_eq_zero_iff p).1 (by rw [coe_sub, hxy, sub_self])
+  have : |n| • p < (1 : ℤ) • p := by
+    simpa [← hn, abs_zsmul, abs_of_pos hp] using abs_sub_lt_of_nonneg_of_lt hx₀ hx hy₀ hy
+  rw [zsmul_lt_zsmul_iff_left hp, Int.abs_lt_one_iff] at this
+  simpa [this, sub_eq_zero, eq_comm] using hn
+
+instance [hp : Fact (0 < p)] [DenselyOrdered 𝕜] : Infinite (AddCircle p) :=
+  .of_injective _ (injOn_coe_Ico p hp.out).injective
 
 variable [hp : Fact (0 < p)] (a : 𝕜) [Archimedean 𝕜]
 
