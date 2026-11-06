@@ -201,7 +201,7 @@ lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · simpa [enorm_smul, ← eLpNorm_enorm _ (hf.const_smul _), ← eLpNorm_enorm _ hf]
-      using eLpNorm_const_mul_ennreal hf.enorm.aestronglyMeasurable
+      using eLpNorm_const_mul_ennreal hf.eNorm.aestronglyMeasurable
   rcases eq_or_ne c 0 with rfl | hc
   · simp
   simp only [NNReal.enorm_eq_coe, hf, not_false_eq_true, eLpNorm_of_not_aestronglyMeasurable,

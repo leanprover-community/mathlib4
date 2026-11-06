@@ -241,7 +241,7 @@ theorem integrableOn_finite_iUnion [PseudoMetrizableSpace ε] [Finite β] {t : �
   cases nonempty_fintype β
   simpa using integrableOn_finset_iUnion (f := f) (μ := μ) (s := Finset.univ) (t := t)
 
--- TODO: generalise this lemma and the next to enorm classes; this entails assuming that
+-- TODO: generalise this lemma and the next to eNorm classes; this entails assuming that
 -- f is finite on almost every element of `s`
 lemma IntegrableOn.finset [MeasurableSingletonClass α] {μ : Measure α} [IsFiniteMeasure μ]
     {s : Finset α} {f : α → E} : IntegrableOn f s μ := by
@@ -403,7 +403,7 @@ variable {ε' : Type*} [TopologicalSpace ε'] [ENormedAddMonoid ε'] [PseudoMetr
 
 -- TODO: generalise this to e-seminormed commutative monoids,
 -- by merely assuming ‖f x‖ₑ vanishes on t \ s
-/-- If a function is integrable on a set `s`, and its enorm vanishes on `t \ s`,
+/-- If a function is integrable on a set `s`, and its eNorm vanishes on `t \ s`,
 then it is integrable on `t` if `t` is null-measurable. -/
 theorem IntegrableOn.of_ae_sdiff_eq_zero {f : α → ε'}
     (hf : IntegrableOn f s μ) (ht : NullMeasurableSet t μ)
@@ -631,9 +631,9 @@ theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpa
   · simp [hc]
   · simpa [hc] using MeasureTheory.integrableAtFilter_smul_iff' hc
 
-protected theorem IntegrableAtFilter.enorm (hf : IntegrableAtFilter f l μ) :
+protected theorem IntegrableAtFilter.eNorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
-  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.enorm⟩
+  Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.eNorm⟩
 
 protected theorem IntegrableAtFilter.norm {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖) l μ :=

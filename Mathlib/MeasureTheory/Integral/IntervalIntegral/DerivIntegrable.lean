@@ -127,7 +127,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
     exact Filter.Eventually.of_forall @f_deriv_nonneg
   · have ebound := lintegral_enorm_le_liminf_of_tendsto
       ((MeasureTheory.ae_restrict_iff' (by measurability) |>.mpr hGf))
-      (fun n ↦ (hG n).aemeasurable.enorm)
+      (fun n ↦ (hG n).aemeasurable.eNorm)
     grw [hG'] at ebound
     rw [uIcc_of_le hab,
         ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,

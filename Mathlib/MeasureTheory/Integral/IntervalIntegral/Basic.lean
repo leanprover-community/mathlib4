@@ -233,8 +233,8 @@ theorem neg {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrab
   ⟨h.1.neg, h.2.neg⟩
 
 omit [PseudoMetrizableSpace ε] in
-theorem enorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
-  ⟨h.1.enorm, h.2.enorm⟩
+theorem eNorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
+  ⟨h.1.eNorm, h.2.eNorm⟩
 
 theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩

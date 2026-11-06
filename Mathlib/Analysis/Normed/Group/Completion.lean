@@ -55,7 +55,7 @@ theorem nnNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E
 
 @[simp]
 lemma enorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
-  simp [enorm]
+  simp [eNorm]
 
 end Completion
 

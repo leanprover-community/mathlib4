@@ -25,7 +25,7 @@ In a complete (semi)normed group,
 - `tsum_of_norm_bounded`, `HasSum.norm_le_of_bounded`: if `‖f i‖ ≤ g i`, where `∑' i, g i` is a
   summable series, then `‖∑' i, f i‖ ≤ ∑' i, g i`.
 
-- versions of these lemmas for `nnNorm` and `enorm`.
+- versions of these lemmas for `nnNorm` and `eNorm`.
 
 ## Tags
 
@@ -115,7 +115,7 @@ theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → �
 
 theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
-  exact le_of_tendsto_of_tendsto' hf.enorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
+  exact le_of_tendsto_of_tendsto' hf.eNorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by

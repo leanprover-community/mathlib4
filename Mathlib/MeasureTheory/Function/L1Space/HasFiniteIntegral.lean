@@ -65,11 +65,11 @@ theorem lintegral_enorm_zero : ∫⁻ _ : α, ‖(0 : ε'')‖ₑ ∂μ = 0 := b
 
 theorem lintegral_enorm_add_left {f : α → ε''} (hf : AEStronglyMeasurable f μ) (g : α → ε') :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
-  lintegral_add_left' hf.enorm _
+  lintegral_add_left' hf.eNorm _
 
 theorem lintegral_enorm_add_right (f : α → ε') {g : α → ε''} (hg : AEStronglyMeasurable g μ) :
     ∫⁻ a, ‖f a‖ₑ + ‖g a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ + ∫⁻ a, ‖g a‖ₑ ∂μ :=
-  lintegral_add_right' _ hg.enorm
+  lintegral_add_right' _ hg.eNorm
 
 theorem lintegral_enorm_neg {f : α → β} : ∫⁻ a, ‖(-f) a‖ₑ ∂μ = ∫⁻ a, ‖f a‖ₑ ∂μ := by simp
 
@@ -151,11 +151,11 @@ theorem hasFiniteIntegral_congr' {f : α → β} {g : α → γ} (h : ∀ᵐ a �
 
 theorem HasFiniteIntegral.congr {f g : α → ε} (hf : HasFiniteIntegral f μ) (h : f =ᵐ[μ] g) :
     HasFiniteIntegral g μ :=
-  hf.congr'_enorm <| h.fun_comp enorm
+  hf.congr'_enorm <| h.fun_comp eNorm
 
 theorem hasFiniteIntegral_congr {f g : α → ε} (h : f =ᵐ[μ] g) :
     HasFiniteIntegral f μ ↔ HasFiniteIntegral g μ :=
-  hasFiniteIntegral_congr'_enorm <| h.fun_comp enorm
+  hasFiniteIntegral_congr'_enorm <| h.fun_comp eNorm
 
 theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ : α ↦ c) μ ↔ ‖c‖ₑ = 0 ∨ IsFiniteMeasure μ := by
@@ -261,7 +261,7 @@ theorem hasFiniteIntegral_neg_iff {f : α → β} : HasFiniteIntegral (-f) μ �
   ⟨fun h => neg_neg f ▸ h.neg, HasFiniteIntegral.neg⟩
 
 @[fun_prop]
-theorem HasFiniteIntegral.enorm {f : α → ε} (hfi : HasFiniteIntegral f μ) :
+theorem HasFiniteIntegral.eNorm {f : α → ε} (hfi : HasFiniteIntegral f μ) :
     HasFiniteIntegral (‖f ·‖ₑ) μ := by simpa [hasFiniteIntegral_iff_enorm] using hfi
 
 @[fun_prop]
@@ -493,7 +493,7 @@ section count
 
 variable [MeasurableSingletonClass α]
 
-/-- A function has finite integral for the counting measure iff its enorm has finite `tsum`. -/
+/-- A function has finite integral for the counting measure iff its eNorm has finite `tsum`. -/
 -- Note that asking for mere summability makes no sense, as every sequence in ℝ≥0∞ is summable.
 lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
     HasFiniteIntegral f Measure.count ↔ tsum (‖f ·‖ₑ) < ⊤ := by
@@ -502,7 +502,7 @@ lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
 /-- A function has finite integral for the counting measure iff its norm is summable. -/
 lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
-  simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
+  simp only [hasFiniteIntegral_iff_enorm, eNorm, lintegral_count, lt_top_iff_ne_top,
     tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnNorm]
 
 end count

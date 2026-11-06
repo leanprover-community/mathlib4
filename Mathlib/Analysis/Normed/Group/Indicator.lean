@@ -12,7 +12,7 @@ import Mathlib.Algebra.Order.Group.Indicator
 /-!
 # Indicator function and (e)norm
 
-This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`.
+This file contains a few simple lemmas about `Set.indicator`, `norm` and `eNorm`.
 
 ## Tags
 indicator, norm

@@ -298,7 +298,7 @@ hypothesis on `f`. -/
 @[fun_prop]
 lemma integrable_dirac' {a : α} {f : α → ε} (hf : StronglyMeasurable f) (hfa : ‖f a‖ₑ < ∞) :
     Integrable f (Measure.dirac a) :=
-  ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
+  ⟨hf.aestronglyMeasurable, by simpa [HasFiniteIntegral, lintegral_dirac' _ hf.eNorm]⟩
 
 theorem integrable_finsetSum_measure [PseudoMetrizableSpace ε]
     {ι} {m : MeasurableSpace α} {f : α → ε} {μ : ι → Measure α}
@@ -537,7 +537,7 @@ theorem Integrable.sub' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
     Integrable (fun a ↦ f a - g a) μ := by simpa only [sub_eq_add_neg] using! hf.add hg.neg
 
 @[fun_prop]
-theorem Integrable.enorm {f : α → ε} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ := by
+theorem Integrable.eNorm {f : α → ε} (hf : Integrable f μ) : Integrable (‖f ·‖ₑ) μ := by
   constructor <;> fun_prop
 
 @[fun_prop]
@@ -568,7 +568,7 @@ theorem Integrable.abs {β}
   rw [← memLp_one_iff_integrable] at hf ⊢
   exact hf.abs
 
--- TODO: generalise the following lemmas to enorm classes
+-- TODO: generalise the following lemmas to eNorm classes
 
 /-- **Hölder's inequality for integrable functions**: the scalar multiplication of an integrable
 vector-valued function by a scalar function with finite essential supremum is integrable. -/
@@ -598,7 +598,7 @@ theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZe
 
 theorem integrable_enorm_iff {f : α → ε} (hf : AEStronglyMeasurable f μ) :
     Integrable (‖f ·‖ₑ) μ ↔ Integrable f μ := by
-  simp_rw [Integrable, and_iff_right hf, and_iff_right hf.enorm.aestronglyMeasurable,
+  simp_rw [Integrable, and_iff_right hf, and_iff_right hf.eNorm.aestronglyMeasurable,
     hasFiniteIntegral_enorm_iff]
 
 theorem integrable_norm_iff {f : α → β} (hf : AEStronglyMeasurable f μ) :
@@ -784,7 +784,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
       true_and]
     rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
     · simp [enorm_smul]
-    · simpa [aemeasurable_withDensity_ennreal_iff hf, enorm_smul] using H.enorm
+    · simpa [aemeasurable_withDensity_ennreal_iff hf, enorm_smul] using H.eNorm
   · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
@@ -1135,7 +1135,7 @@ theorem integrable_of_integrable_trim (hm : m ≤ m0) (hf_int : Integrable f (μ
     Integrable f μ' := by
   obtain ⟨hf_meas_ae, hf⟩ := hf_int
   refine ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf_meas_ae, ?_⟩
-  simpa [HasFiniteIntegral, lintegral_trim_ae hm hf_meas_ae.enorm] using hf
+  simpa [HasFiniteIntegral, lintegral_trim_ae hm hf_meas_ae.eNorm] using hf
 
 end Trim
 
@@ -1231,7 +1231,7 @@ theorem lintegral_enorm_le_liminf_of_tendsto
     (hGf : ∀ᵐ x ∂μ, Tendsto (fun (n : ℕ) ↦ G n x) atTop (𝓝 (f x)))
     (hG : ∀ (n : ℕ), AEMeasurable (fun x ↦ ‖G n x‖ₑ) μ) :
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ liminf (fun n ↦ ∫⁻ x, ‖G n x‖ₑ ∂μ) atTop :=
-  lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.enorm.liminf_eq) ▸
+  lintegral_congr_ae (by filter_upwards [hGf] with x hx using hx.eNorm.liminf_eq) ▸
     (MeasureTheory.lintegral_liminf_le' hG)
 
 /-- If `G n` tends to `f` a.e., each `G n` is `AEStronglyMeasurable` and the liminf of the lower
@@ -1244,7 +1244,7 @@ theorem integrable_of_tendsto
     Integrable f μ :=
   ⟨aestronglyMeasurable_of_tendsto_ae _ hG hGf,
    lt_of_le_of_lt (lintegral_enorm_le_liminf_of_tendsto hGf
-    (fun n ↦ (hG n).aemeasurable.enorm)) hG'.lt_top⟩
+    (fun n ↦ (hG n).aemeasurable.eNorm)) hG'.lt_top⟩
 
 end Limit
 

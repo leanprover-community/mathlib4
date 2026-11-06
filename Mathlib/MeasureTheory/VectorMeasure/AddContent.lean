@@ -143,7 +143,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   have m₁_lip : LipschitzWith 1 m₁ := C'_dense.lipschitzWith_extend lip
   have hBound : ∀ s, ‖m₁ s‖ₑ ≤ μ s := by
     have : IsClosed {s | ‖m₁ s‖ₑ ≤ μ s} :=
-      isClosed_le m₁_lip.continuous.enorm MeasuredSets.continuous_measure
+      isClosed_le m₁_lip.continuous.eNorm MeasuredSets.continuous_measure
     have : Dense {s | ‖m₁ s‖ₑ ≤ μ s} := by
       apply C'_dense.mono
       intro s hs

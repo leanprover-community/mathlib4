@@ -196,7 +196,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
     HasFiniteIntegral f (μ.prod ν) ↔
       (∀ᵐ x ∂μ, HasFiniteIntegral (fun y => f (x, y)) ν) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂ν) μ := by
-  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.enorm.aemeasurable]
+  simp only [hasFiniteIntegral_iff_enorm, lintegral_prod _ h1f.eNorm.aemeasurable]
   have (x : _) : ∀ᵐ y ∂ν, 0 ≤ ‖f (x, y)‖ := by filter_upwards with y using norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
       (h1f.norm.comp_measurable measurable_prodMk_left).aestronglyMeasurable,
@@ -208,7 +208,7 @@ theorem hasFiniteIntegral_prod_iff ⦃f : α × β → E⦄ (h1f : StronglyMeasu
   · intro h2f; rw [lintegral_congr_ae]
     filter_upwards [h2f] with x hx
     rw [ofReal_toReal]; rw [← lt_top_iff_ne_top]; exact hx
-  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.enorm.lintegral_prod_right'
+  · intro h2f; refine ae_lt_top ?_ h2f.ne; exact h1f.eNorm.lintegral_prod_right'
 
 theorem hasFiniteIntegral_prod_iff' ⦃f : α × β → E⦄ (h1f : AEStronglyMeasurable f (μ.prod ν)) :
     HasFiniteIntegral f (μ.prod ν) ↔
@@ -311,7 +311,7 @@ theorem Integrable.of_comp_snd {f : β → E} (hf : Integrable (f ·.2) (μ.prod
     Integrable f ν := by
   rcases hf with ⟨hf_meas, hf_fin⟩
   use hf_meas.of_comp_snd hμ
-  have := hf_meas.enorm
+  have := hf_meas.eNorm
   aesop (add simp [HasFiniteIntegral, lintegral_prod, ENNReal.mul_lt_top_iff])
 
 theorem Integrable.of_comp_fst [SFinite μ] {f : α → E} (hf : Integrable (f ·.1) (μ.prod ν))
@@ -429,7 +429,7 @@ theorem continuous_integral_integral :
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂ν ∂μ
   swap; · exact fun i => lintegral_mono fun x => enorm_integral_le_lintegral_enorm _
   have (i : α × β →₁[μ.prod ν] E) : Measurable fun z => ‖i z - g z‖ₑ :=
-    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
+    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).eNorm
   simp_rw [← lintegral_prod _ (this _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral,
     ← ofReal_zero]
   refine (continuous_ofReal.tendsto 0).comp ?_

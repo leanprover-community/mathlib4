@@ -46,7 +46,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) 
   calc
     (∫⁻ a : α, (‖f a‖ₑ * g a) ^ p ∂μ) ^ (1 / p) ≤
         (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * (∫⁻ a : α, g a ^ r ∂μ) ^ (1 / r) :=
-      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.enorm aemeasurable_const
+      ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.eNorm aemeasurable_const
     _ = (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) * μ Set.univ ^ (1 / p - 1 / q) := by
       simp [← hpqr.inv_add_inv_eq_inv, g]
 
@@ -280,7 +280,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b :
       eLpNorm_mono_enorm_ae hbf h
     _ ≤ c * eLpNorm f ∞ μ * eLpNorm g p μ := ?_
   have hprod : AEStronglyMeasurable (fun i ↦ ‖f i‖ₑ * ‖g i‖ₑ) μ :=
-    (hf.enorm.mul hg.enorm).aestronglyMeasurable
+    (hf.eNorm.mul hg.eNorm).aestronglyMeasurable
   simp only [mul_assoc]
   rw [eLpNorm_const_mul_ennreal (by fun_prop)]
   gcongr
@@ -295,7 +295,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b :
     eLpNorm_eq_lintegral_rpow_enorm_toReal hp₁.ne' hp₂.ne hg,
     eLpNorm_exponent_top hf]
   simp_rw [
-    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, enorm]
+    eLpNormEssSup, one_div, ENNReal.rpow_inv_le_iff hp, eNorm]
   rw [ENNReal.mul_rpow_of_nonneg (hz := hp.le), ENNReal.rpow_inv_rpow hp.ne',
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
@@ -406,10 +406,10 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
       simpa using ha
     _ ≤ c * eLpNorm' f p μ * eLpNorm' g q μ := by
       simp only [mul_assoc]
-      rw [eLpNorm'_const_mul_ennreal hro_lt (by exact (hf.enorm.mul hg.enorm).aestronglyMeasurable)]
+      rw [eLpNorm'_const_mul_ennreal hro_lt (by exact (hf.eNorm.mul hg.eNorm).aestronglyMeasurable)]
       gcongr
       simpa only [eLpNorm', enorm_mul, enorm_norm] using!
-        ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.enorm hg.enorm
+        ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.eNorm hg.eNorm
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (b : E → F → G) (c : ℝ≥0)
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)

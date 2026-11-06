@@ -300,7 +300,7 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
       ‖i (x, y) - g (x, y)‖ₑ ∂ν.variation ∂μ.variation); swap
   · exact fun i ↦ lintegral_mono fun x ↦ enorm_integral_le_lintegral_enorm
   have A (i : X × Y →₁[μ.variation.prod ν.variation] G) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
-    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).enorm
+    ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).eNorm
   simp_rw [lintegral_const_mul' ‖B‖ₑ _ (by simp),
     ← lintegral_prod _ (A _).aemeasurable, ← L1.ofReal_norm_sub_eq_lintegral, ofReal_norm]
   suffices Tendsto (fun i ↦ ‖B‖ₑ * ‖i - g‖ₑ) (𝓝 g) (𝓝 (‖B‖ₑ * 0)) by simpa

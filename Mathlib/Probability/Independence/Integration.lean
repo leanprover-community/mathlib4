@@ -169,7 +169,7 @@ theorem IndepFun.integrable_op
     gcongr with ω
     simp [← mul_assoc, hB]
   _ = C * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
-    rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.enorm hY.1.enorm
+    rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.eNorm hY.1.eNorm
         (hXY.comp measurable_enorm measurable_enorm)]
   _ < ∞ := mul_lt_top (by finiteness) (mul_lt_top hX.2 hY.2)
 
@@ -202,7 +202,7 @@ theorem IndepFun.integrable_left_of_integrable_op
     Integrable X μ := by
   refine ⟨hX, ?_⟩
   have I : (∫⁻ ω, ‖Y ω‖ₑ ∂μ) ≠ 0 := fun H ↦ by
-    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.enorm).1 H
+    have I : (fun ω => ‖Y ω‖ₑ : Ω → ℝ≥0∞) =ᵐ[μ] 0 := (lintegral_eq_zero_iff' hY.eNorm).1 H
     apply h'Y
     filter_upwards [I] with ω hω
     simpa using hω
@@ -212,7 +212,7 @@ theorem IndepFun.integrable_left_of_integrable_op
     ∞ = c * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
       rw [H, top_mul I, mul_top (by simpa)]
     _ ≤ ∫⁻ ω, ‖B (X ω) (Y ω)‖ₑ ∂μ := by
-      rw [← lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.enorm hY.enorm J,
+      rw [← lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.eNorm hY.eNorm J,
         ← lintegral_const_mul'' _ (by fun_prop)]
       gcongr with ω
       simp [hB, ← mul_assoc]

@@ -15,7 +15,7 @@ public import Mathlib.Topology.MetricSpace.Thickening
 ## Main statements
 
 * `measurable_dist`, `measurable_infEDist`, `measurable_norm`, `measurable_enorm`,
-  `Measurable.dist`, `Measurable.infEDist`, `Measurable.norm`, `Measurable.enorm`:
+  `Measurable.dist`, `Measurable.infEDist`, `Measurable.norm`, `Measurable.eNorm`:
   measurability of various metric-related notions;
 * `tendsto_measure_thickening_of_isClosed`:
   the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
@@ -217,14 +217,14 @@ variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENor
   [OpensMeasurableSpace ε] [MeasurableSpace β]
 
 @[fun_prop]
-lemma measurable_enorm : Measurable (enorm : ε → ℝ≥0∞) := continuous_enorm.measurable
+lemma measurable_enorm : Measurable (eNorm : ε → ℝ≥0∞) := continuous_enorm.measurable
 
 @[fun_prop]
-protected lemma Measurable.enorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
+protected lemma Measurable.eNorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
   measurable_enorm.comp hf
 
 @[fun_prop]
-protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
+protected lemma AEMeasurable.eNorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (‖f ·‖ₑ) μ :=
   measurable_enorm.comp_aemeasurable hf
 

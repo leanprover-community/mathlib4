@@ -56,8 +56,8 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
   have A (s : Set X) (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
       ∀ᵐ x ∂μ, x ∈ s → ∑' n, ‖f n x‖ₑ < ∞ := by
     rw [← ae_restrict_iff' hs]
-    apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).restrict.enorm))
-    rw [lintegral_tsum (fun i ↦ (hf i).restrict.enorm)]
+    apply ae_lt_top' (AEMeasurable.tsum (fun i ↦ (hf i).restrict.eNorm))
+    rw [lintegral_tsum (fun i ↦ (hf i).restrict.eNorm)]
     apply ne_of_lt
     have : ∑' n, eLpNorm (f n) p (μ.restrict s) *
         (μ.restrict s) Set.univ ^ (1 / ENNReal.toReal 1 - 1 / p.toReal) < ∞ := by

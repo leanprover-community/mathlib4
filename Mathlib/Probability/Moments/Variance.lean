@@ -155,7 +155,7 @@ theorem evariance_eq_lintegral_ofReal :
   simp [evariance, ← enorm_pow, Real.enorm_of_nonneg (sq_nonneg _)]
 
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
-  simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).enorm.pow_const _) <|
+  simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).eNorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
 
 /-- A random variable with variance `0` is almost surely constant. -/
@@ -180,7 +180,7 @@ theorem evariance_zero : evariance 0 μ = 0 := by simp [evariance]
 
 theorem evariance_eq_zero_iff (hX : AEMeasurable X μ) :
     evariance X μ = 0 ↔ X =ᵐ[μ] fun _ => μ[X] := by
-  simp [evariance, lintegral_eq_zero_iff' ((hX.sub_const _).enorm.pow_const _), EventuallyEq,
+  simp [evariance, lintegral_eq_zero_iff' ((hX.sub_const _).eNorm.pow_const _), EventuallyEq,
     sub_eq_zero]
 
 theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
@@ -364,7 +364,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   by_cases hℒ : MemLp X 2 μ
   · rw [← ofReal_variance hℒ, variance_eq_sub hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
     congr
-    simp_rw [← enorm_pow, enorm]
+    simp_rw [← enorm_pow, eNorm]
     rw [lintegral_coe_eq_integral]
     · simp
     · simpa using hℒ.abs.integrable_sq

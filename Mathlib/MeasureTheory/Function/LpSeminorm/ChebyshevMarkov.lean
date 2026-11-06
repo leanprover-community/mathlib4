@@ -32,7 +32,7 @@ theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
   by_cases hf : AEStronglyMeasurable f μ
   · rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_ne_zero hp_ne_top hf]
     gcongr
-    exact mul_meas_ge_le_lintegral₀ (hf.enorm.pow_const _) ε
+    exact mul_meas_ge_le_lintegral₀ (hf.eNorm.pow_const _) ε
   rw [eLpNorm_of_not_aestronglyMeasurable hf]
   exact le_top
 

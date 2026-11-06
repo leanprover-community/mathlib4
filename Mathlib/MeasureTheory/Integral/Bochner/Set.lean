@@ -637,7 +637,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     μ.real {x | ↑R < f x} * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
-    refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
+    refine setLIntegral_mono_ae hfint.1.eNorm <| ae_of_all _ fun x hx => ?_
     simp only [ENNReal.coe_le_coe, Real.nnNorm_of_nonneg hR, eNorm_eq_nnNorm,
       Real.nnNorm_of_nonneg (hR.trans <| le_of_lt hx)]
     exact le_of_lt hx

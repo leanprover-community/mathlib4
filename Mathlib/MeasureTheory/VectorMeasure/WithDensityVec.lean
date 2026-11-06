@@ -173,7 +173,7 @@ lemma variation_withDensity' [CompleteSpace G]
     _ = ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation +
           ∫⁻ a in s, ‖f a - g a‖ₑ ∂(μ.transpose B).variation := by
       rw [lintegral_add_right, add_comm]
-      exact g.stronglyMeasurable.enorm
+      exact g.stronglyMeasurable.eNorm
     _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation +
           ∫⁻ a, ‖f a - g a‖ₑ ∂(μ.transpose B).variation := by
       gcongr
@@ -362,7 +362,7 @@ lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
     ext s hs
     rw [withDensityᵥ_apply hf hs, withDensity_apply I, setIntegral_toSignedMeasure hs,
         setIntegral_withDensity_eq_setIntegral_toReal_smul₀ _ _ _ hs]; rotate_left
-    · exact hf.aestronglyMeasurable.restrict.enorm
+    · exact hf.aestronglyMeasurable.restrict.eNorm
     · filter_upwards with x using by simp
     congr with x
     rcases eq_or_ne (f x) 0 with hx | hx
@@ -372,8 +372,8 @@ lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
     simpa using hx
   rw [this, variation_withDensity I (by simp [nnNorm_smul, mul_comm]),
     variation_transpose_eq _ _ (by simp [nnNorm_smul, mul_comm]), Measure.variation_toSignedMeasure,
-    ← withDensity_mul₀ hf.aestronglyMeasurable.enorm]; swap
-  · exact (hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable).enorm
+    ← withDensity_mul₀ hf.aestronglyMeasurable.eNorm]; swap
+  · exact (hf.aestronglyMeasurable.norm.inv₀.smul hf.aestronglyMeasurable).eNorm
   congr with x
   rcases eq_or_ne (f x) 0 with hx | hx
   · simp [hx]

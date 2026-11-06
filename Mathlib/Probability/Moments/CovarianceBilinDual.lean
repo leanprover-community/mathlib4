@@ -95,7 +95,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
       rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
     gcongr
     · rw [ENNReal.essSup_const_mul]
-      have hid : essSup enorm μ ≠ ∞ := by
+      have hid : essSup eNorm μ ≠ ∞ := by
         change eLpNormEssSup id μ ≠ ∞
         rw [← eLpNorm_exponent_top h_Lp.aestronglyMeasurable]
         exact h_Lp.eLpNorm_ne_top

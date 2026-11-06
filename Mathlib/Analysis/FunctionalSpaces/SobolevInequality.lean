@@ -550,7 +550,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
       · gcongr
         simp_rw [← mul_assoc]
         exact enorm_fderiv_norm_rpow_le (hu.differentiable one_ne_zero) h1γ
-      dsimp [enorm]
+      dsimp [eNorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by

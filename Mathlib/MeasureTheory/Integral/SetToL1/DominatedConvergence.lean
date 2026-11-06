@@ -204,7 +204,7 @@ theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
     setToFun μ T hT (fun a ↦ ∑' i, f i a) = ∑' i, setToFun μ T hT (f i) := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
-  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
+  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).eNorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
     refine (ae_lt_top' (AEMeasurable.tsum hf'') hf').mono ?_
@@ -249,7 +249,7 @@ theorem _root_.measurableSet_integrable {β : Type*} {mβ : MeasurableSpace β} 
     ⦃f : β → α → E⦄ (hf : StronglyMeasurable (Function.uncurry f)) :
     MeasurableSet {x | Integrable (f x) μ} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
+  exact measurableSet_lt (Measurable.lintegral_prod_right hf.eNorm) measurable_const
 
 /-- The `setToFun` operation is measurable. This shows that the integrand of (the right-hand-side
 of) Fubini's theorem is measurable. This version has `f` in curried form. -/

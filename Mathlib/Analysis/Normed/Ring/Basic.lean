@@ -174,7 +174,7 @@ section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
 @[simp] lemma nnNorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
-@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
+@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_one := nnNorm_one
 
@@ -460,7 +460,7 @@ theorem nnNorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖₊ = ‖a ^ n‖₊ :
 
 @[simp]
 theorem enorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
-  simp [enorm]
+  simp [eNorm]
 
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
   { ULift.nonUnitalSeminormedRing, ULift.ring with }
@@ -704,7 +704,7 @@ open NNReal
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
 @[simp] lemma nnNorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnNorm]
-@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [enorm]
+@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq := nnNorm_eq
 
@@ -777,7 +777,7 @@ variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_mul := nnNorm_mul
 
-@[simp] lemma enorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
+@[simp] lemma enorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [eNorm]
 
 end SeminormedAddCommGroup
 
@@ -814,7 +814,7 @@ theorem nnNorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_pow := nnNorm_pow
 
-@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
+@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [eNorm]
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   map_list_prod (normHom.toMonoidHom : α →* ℝ) _

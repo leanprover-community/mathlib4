@@ -55,10 +55,10 @@ theorem LocallyIntegrableOn.mono_set (hf : LocallyIntegrableOn f s μ) {t : Set 
     (hst : t ⊆ s) : LocallyIntegrableOn f t μ := fun x hx =>
   (hf x <| hst hx).filter_mono (nhdsWithin_mono x hst)
 
-theorem LocallyIntegrableOn.enorm (hf : LocallyIntegrableOn f s μ) :
+theorem LocallyIntegrableOn.eNorm (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (‖f ·‖ₑ) s μ := fun t ht ↦
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
-  ⟨U, hU_nhd, hU_int.enorm⟩
+  ⟨U, hU_nhd, hU_int.eNorm⟩
 
 theorem LocallyIntegrableOn.norm {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>

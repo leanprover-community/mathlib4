@@ -42,7 +42,7 @@ theorem nnNorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖
 
 @[bound]
 lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_mul] using nnNorm_smul_le ..
+  simpa [eNorm, ← ENNReal.coe_mul] using nnNorm_smul_le ..
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
   simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
@@ -138,7 +138,7 @@ theorem nnNorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖�
 @[deprecated (since := "2026-10-31")] alias nnnorm_smul := nnNorm_smul
 
 instance (priority := 100) : ENormSMulClass α β where
-  enorm_smul r x := by simp [enorm, nnNorm_smul]
+  enorm_smul r x := by simp [eNorm, nnNorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
