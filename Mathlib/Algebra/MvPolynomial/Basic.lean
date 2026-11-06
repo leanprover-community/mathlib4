@@ -537,7 +537,6 @@ theorem ext (p q : MvPolynomial σ R) : (∀ m, p.coeff m = q.coeff m) → p = q
 protected theorem coeff_add (m : σ →₀ ℕ) (p q : MvPolynomial σ R) :
     coeff (p + q) m = coeff p m + coeff q m := by simp
 
-@[simp]
 theorem coeff_smul {S₁ : Type*} [SMulZeroClass S₁ R] (m : σ →₀ ℕ) (C : S₁) (p : MvPolynomial σ R) :
     coeff (C • p) m = C • coeff p m :=
   AddMonoidAlgebra.coeff_smul_apply ..

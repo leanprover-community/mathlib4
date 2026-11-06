@@ -146,7 +146,7 @@ theorem tfae_equational_criterion : List.TFAE [
       intro i
       simpa [linearCombination_apply, sum_fintype, Finsupp.single_apply] using ha'y' i
     · ext j
-      simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, finsetSum_apply]
+      simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, sum_apply]
       exact ha' j
   tfae_have 5 → 4
   | h₅, l, f, x, hfx => by
@@ -157,8 +157,8 @@ theorem tfae_equational_criterion : List.TFAE [
     refine ⟨k, fun i ↦ a' (single i 1), fun j ↦ y' (single j 1), fun i ↦ ?_, fun j ↦ ?_⟩
     · simpa [x', ← map_smul, ← map_sum, smul_single] using
         congr($ha'y' (.single i 1))
-    · simp_rw [← smul_eq_mul, ← Finsupp.smul_apply, ← map_smul, ← finsetSum_apply, ← map_sum,
-        smul_single, smul_eq_mul, mul_one,
+    · simp_rw [← smul_eq_mul, ← smul_apply, ← map_smul, ← sum_apply, ← map_sum, smul_single,
+        smul_eq_mul, mul_one,
         ← (fun _ ↦ equivFunOnFinite_symm_apply_apply _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using congr($ha' j)
   tfae_finish

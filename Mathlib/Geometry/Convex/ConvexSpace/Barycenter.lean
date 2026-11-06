@@ -31,7 +31,7 @@ noncomputable def subBarycenter (S : Finset M) (hS : S.Nonempty) : StdSimplex K 
 lemma subBarycenter_weights_apply_eq_zero
     (S : Finset M) (hS : S.Nonempty) (m : M) (hm : m ∉ S) :
     (subBarycenter (K := K) S hS).weights m = 0 := by
-  simp only [weights_subBarycenter, Finsupp.coe_finsetSum, Finset.sum_apply]
+  simp only [weights_subBarycenter, sum_apply]
   rw [Finset.sum_eq_zero]
   intro x hx
   rw [Finsupp.single_apply_eq_zero]

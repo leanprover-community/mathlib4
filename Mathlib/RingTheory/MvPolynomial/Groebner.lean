@@ -148,8 +148,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
   by_cases hf0 : f = 0
   · refine ⟨0, 0, by simp [hf0], ?_, by simp⟩
     intro b
-    simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
-    exact bot_le
+    simp
   by_cases! hf : ∃ i, m.degree (b i) ≤ m.degree f
   · obtain ⟨i, hf⟩ := hf
     have deg_reduce : m.degree (m.reduce (hb i) f) ≺[m] m.degree f := by
@@ -166,7 +165,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
       simp [reduce]
     constructor
     · rintro j
-      simp only [Finsupp.coe_add, Pi.add_apply]
+      simp only [add_apply]
       rw [mul_add]
       apply le_trans degree_add_le
       simp only [sup_le_iff]
@@ -201,8 +200,7 @@ theorem div {ι : Type*} {b : ι → MvPolynomial σ R}
     by_cases hf'0 : m.subLTerm f = 0
     · refine ⟨0, 0, by simp [hf'0], ?_, by simp⟩
       intro b
-      simp only [Finsupp.coe_zero, Pi.zero_apply, mul_zero, degree_zero, map_zero]
-      exact bot_le
+      simp
     · exact (div hb) (m.subLTerm f)
 termination_by WellFounded.wrap m.wellFoundedLT_syn (m.toSyn (m.degree f))
 decreasing_by

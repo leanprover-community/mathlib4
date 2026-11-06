@@ -133,7 +133,7 @@ variable {α M}
 @[simp]
 theorem support_smul_eq [Semiring R] [IsDomain R] [AddCommMonoid M] [Module R M]
     [Module.IsTorsionFree R M] {b : R} (hb : b ≠ 0) {g : α →₀ M} : (b • g).support = g.support :=
-  Finset.ext fun a => by simp [Finsupp.smul_apply, hb]
+  Finset.ext fun a => by simp [hb]
 
 section
 
@@ -143,7 +143,7 @@ variable {p : α → Prop} [DecidablePred p]
 theorem filter_smul [Zero M] [SMulZeroClass R M] {b : R} {v : α →₀ M} :
     (b • v).filter p = b • v.filter p :=
   DFunLike.coe_injective <| by
-    simp only [filter_eq_indicator, coe_smul]
+    simp only [filter_eq_indicator, FunLike.coe_smul]
     exact Set.indicator_const_smul { x | p x } b v
 
 end

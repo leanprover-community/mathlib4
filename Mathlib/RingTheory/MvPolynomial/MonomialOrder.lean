@@ -342,8 +342,7 @@ theorem degree_add_le {f g : MvPolynomial σ R} :
   · right
     apply m.le_degree
     simp only [notMem_support_iff] at hf
-    simpa only [mem_support_iff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hf, zero_add]
-      using hb
+    simpa [hf] using hb
 
 theorem degree_sum_le {α : Type*} {s : Finset α} {f : α → MvPolynomial σ R} :
     (m.toSyn <| m.degree <| ∑ x ∈ s, f x) ≤ s.sup fun x ↦ (m.toSyn <| m.degree <| f x) := by
@@ -360,8 +359,8 @@ theorem degree_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degr
   · apply le_trans degree_add_le
     simp only [sup_le_iff, le_refl, true_and, le_of_lt h]
   · apply le_degree
-    rw [mem_support_iff, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, m.coeff_eq_zero_of_lt h,
-      add_zero, ← leadingCoeff, leadingCoeff_ne_zero_iff]
+    rw [mem_support_iff, AddMonoidAlgebra.coeff_add, add_apply, m.coeff_eq_zero_of_lt h, add_zero,
+      ← leadingCoeff, leadingCoeff_ne_zero_iff]
     intro hf
     rw [← not_le, hf] at h
     apply h
@@ -375,8 +374,7 @@ theorem degree_add_eq_right_of_lt {f g : MvPolynomial σ R} (h : m.degree f ≺[
 
 theorem leadingCoeff_add_of_lt {f g : MvPolynomial σ R} (h : m.degree g ≺[m] m.degree f) :
     m.leadingCoeff (f + g) = m.leadingCoeff f := by
-  simp only [leadingCoeff, m.degree_add_of_lt h, AddMonoidAlgebra.coeff_add, Finsupp.add_apply,
-    coeff_eq_zero_of_lt h, add_zero]
+  simp [leadingCoeff, m.degree_add_of_lt h, coeff_eq_zero_of_lt h]
 
 theorem Monic.add_of_lt {f g : MvPolynomial σ R} (hf : m.Monic f) (h : m.degree g ≺[m] m.degree f) :
     m.Monic (f + g) := by
@@ -1391,7 +1389,7 @@ lemma sPolynomial_decomposition {d : m.syn} {ι : Type*}
         apply Finset.sum_congr rfl
         intro b' hb'
         rcases hd b' hb' with h | h <;> simp [h]
-      · rw [← coeff_sum, ← Finsupp.add_apply, ← AddMonoidAlgebra.coeff_add, ← notMem_support_iff]
+      · rw [← coeff_sum, ← add_apply, ← AddMonoidAlgebra.coeff_add, ← notMem_support_iff]
         exact m.notMem_support_of_degree_lt hfd
     · apply Finset.sum_congr rfl
       intro b' hb'

@@ -83,8 +83,8 @@ lemma coinvariantsKer_leftRegular_eq_ker :
   · have : x = x.coeff.sum (fun g r => .single g r - .single 1 r) := by
       ext g
       by_cases hg : g = 1
-      · simp_all [linearCombination, sum_apply', MonoidAlgebra.coeff_finsuppSum]
-      · simp_all [sum_apply', MonoidAlgebra.coeff_finsuppSum]
+      · simp_all [linearCombination, MonoidAlgebra.coeff_finsuppSum]
+      · simp_all [MonoidAlgebra.coeff_finsuppSum]
     rw [this]
     exact Submodule.finsuppSum_mem _ _ _ _ fun g _ =>
       Coinvariants.mem_ker_of_eq g (.single 1 (x.coeff g)) _ (by simp)

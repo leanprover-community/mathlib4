@@ -387,7 +387,7 @@ theorem coeff_map (p : MvPolynomial σ R) : ∀ m : σ →₀ ℕ, (map f p).coe
   · intro r m
     simp_rw [map_C, coeff_C, apply_ite f, f.map_zero]
   · intro p q hp hq m
-    simp only [hp, hq, (map f).map_add, coeff_add, Finsupp.add_apply, f.map_add]
+    simp only [hp, hq, (map f).map_add, coeff_add, add_apply, f.map_add]
   · intro p i hp m
     simp only [(map f).map_mul, map_X, hp, coeff_mul_X', f.map_zero, apply_ite f]
 
@@ -476,7 +476,7 @@ theorem support_map_of_injective (p : MvPolynomial σ R) {f : R →+* S₁} (hf 
 theorem C_dvd_iff_map_hom_eq_zero (q : R →+* S₁) (r : R) (hr : ∀ r' : R, q r' = 0 ↔ r ∣ r')
     (φ : MvPolynomial σ R) : C r ∣ φ ↔ map q φ = 0 := by
   rw [C_dvd_iff_dvd_coeff, MvPolynomial.ext_iff]
-  simp only [coeff_map, coeff_zero, Finsupp.zero_apply, hr]
+  simp [coeff_map, hr]
 
 theorem map_mapRange_eq_iff (f : R →+* S₁) (g : S₁ → R) (hg : g 0 = 0) (φ : MvPolynomial σ S₁) :
     map f (.ofCoeff <| Finsupp.mapRange g hg <| AddMonoidAlgebra.coeff φ) = φ ↔
@@ -826,7 +826,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
     · simpa [MvPolynomial.notMem_support_iff.1 ha] using hs a
     have := hs i
-    rw [coeff_add, Finsupp.add_apply, coeff_monomial] at this
+    rw [coeff_add, add_apply, coeff_monomial] at this
     split_ifs at this with h
     · subst h
       rw [MvPolynomial.notMem_support_iff.1 ha, map_zero]

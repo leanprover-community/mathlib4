@@ -396,7 +396,7 @@ theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) 
       LinearMap.toMatrix_apply', LinearMap.coe_proj, Function.eval, Pi.single_apply]
     split_ifs with h
     · rw [h]
-    · simp only [map_zero, Finsupp.coe_zero, Pi.zero_apply]
+    · simp
   rw [this, Matrix.det_blockDiagonal]
 
 end LinearMap
@@ -588,8 +588,7 @@ multilinear map. -/
 nonrec def det : M [⋀^ι]→ₗ[R] R where
   toMultilinearMap :=
     MultilinearMap.mk' (fun v ↦ det (e.toMatrix v))
-      (fun v i x y ↦ by
-        simp only [e.toMatrix_update, map_add, Finsupp.coe_add, det_updateCol_add])
+      (fun v i x y ↦ by simp [e.toMatrix_update, det_updateCol_add])
       (fun u i c x ↦ by
         simp only [e.toMatrix_update, smul_eq_mul, map_smul]
         apply det_updateCol_smul)

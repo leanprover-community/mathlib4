@@ -329,7 +329,7 @@ theorem two_pow_le_mul_lcmUpto (n : ℕ) : 2 ^ n ≤ (n + 1) * lcmUpto n := calc
 lemma mul_choose_dvd_lcmUpto {n k : ℕ} (nk : k ≠ 0) (lk : k ≤ n) : k * n.choose k ∣ lcmUpto n := by
   rw [← factorization_prime_le_iff_dvd (mul_ne_zero nk (choose_ne_zero lk)) (lcmUpto_ne_zero n)]
   intro p pp
-  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), Finsupp.add_apply]
+  rw [factorization_lcmUpto n pp, factorization_mul nk (choose_ne_zero lk), add_apply]
   exact factorization_add_factorization_choose_le_log lk
 
 lemma mul_mul_choose_dvd_lcmUpto {n : ℕ} (hn : n ≠ 0) :

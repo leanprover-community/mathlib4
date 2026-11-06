@@ -162,16 +162,14 @@ theorem optionElim_ne_zero_of_left (y : M) (f : α →₀ M) (h : y ≠ 0) : f.o
   contrapose h with c
   have : f.optionElim y none = (0 : Option α →₀ M) none := by
     rw [c]
-  simp only [optionElim_apply_eq_elim, Option.elim_none, coe_zero, Pi.zero_apply] at this
-  exact this
+  simpa
 
 theorem optionElim_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f.optionElim y ≠ 0 := by
   contrapose h with c
   ext a
   have : f.optionElim y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
     rw [c]
-  simp only [optionElim_apply_eq_elim, Option.elim_some, coe_zero, Pi.zero_apply] at this
-  exact this
+  simpa
 
 theorem optionElim_ne_zero_iff (y : M) (f : α →₀ M) :
     f.optionElim y ≠ 0 ↔ f ≠ 0 ∨ y ≠ 0 := by
@@ -201,7 +199,7 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
     | zero => simp [some_zero, h_zero]
     | add f₁ f₂ h₁ h₂ =>
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
+      · simp only [add_apply, h_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
     | single a m => cases a <;> simp [h_zero]

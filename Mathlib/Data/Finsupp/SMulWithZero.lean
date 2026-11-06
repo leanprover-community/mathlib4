@@ -5,9 +5,10 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Action.Pi
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Finsupp
-public import Mathlib.Algebra.GroupWithZero.Action.Defs
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.FunLike
 
 /-!
 # Scalar multiplication on `Finsupp`
@@ -47,45 +48,47 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀
     ext
     apply smul_zero
 
+instance [Zero M] [SMulZeroClass R M] : IsSMulApply R (α →₀ M) where
+
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
 `[]`. See note [implicit instance arguments].
 -/
 
-@[simp, norm_cast]
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-27")]
 theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
   rfl
 
-theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
+@[deprecated smul_apply +typeChanged (since := "2026-10-27")]
+protected theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
     (b • v) a = b • v a :=
   rfl
 
-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
-  zero_smul f := by ext i; exact zero_smul _ _
+instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) :=
+  FunLike.smulWithZero
 
 variable (α M)
 
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
+instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) :=
+  FunLike.distribSMul
 
 instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-    [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
-  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
+    [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) :=
+  FunLike.isScalarTower
 
 instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-    SMulCommClass R S (α →₀ M) where
-  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
+    SMulCommClass R S (α →₀ M) :=
+  FunLike.smulCommClass
 
 instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-    IsCentralScalar R (α →₀ M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
+    IsCentralScalar R (α →₀ M) :=
+  FunLike.isCentralScalar
 
 variable {α M}
 
 theorem support_smul [Zero M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne]
+  simp only [mem_support_iff, Ne, smul_apply]
   exact mt fun h => h.symm ▸ smul_zero _
 
 @[simp]

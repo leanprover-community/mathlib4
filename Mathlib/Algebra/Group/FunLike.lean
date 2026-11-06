@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Hom.Defs
 public import Mathlib.Algebra.Group.InjSurj
-public import Mathlib.Algebra.Group.IsApply
+public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
+public import Mathlib.Algebra.Group.Pi.Lemmas
 public import Mathlib.Algebra.Group.Pi.Torsion
+public import Mathlib.Tactic.TermCongr
 
 /-! # Group instances for `FunLike` types
 In this file we define various instances related to groups for `FunLike` types.
@@ -53,6 +55,15 @@ theorem coeMulHom_injective : Function.Injective (coeMulHom F α β) := by
   rw [coe_coeMulHom]
   exact DFunLike.coe_injective
 
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMulHom (x : α) : F →ₙ* β := (Pi.evalMulHom _ x).comp (coeMulHom F α β)
+
+@[to_additive (attr := simp)]
+theorem evalMulHom_apply (x : α) (f : F) : evalMulHom F x f = f x := rfl
+
 end MulHom
 
 section MonoidHom
@@ -82,11 +93,31 @@ theorem coeMonoidHom_injective : Function.Injective (coeMonoidHom F α β) := by
   rw [coe_coeMonoidHom]
   exact DFunLike.coe_injective
 
+variable (F) in
+/-- Evaluation as a multiplicative homomorphism. -/
+@[to_additive
+/-- Evaluation as an additive homomorphism. -/]
+def evalMonoidHom (x : α) : F →* β := (Pi.evalMonoidHom _ x).comp (coeMonoidHom F α β)
+
+@[to_additive (attr := simp)]
+theorem evalMonoidHom_apply (x : α) (f : F) : evalMonoidHom F x f = f x := rfl
+
 end MonoidHom
 
 end CoercionHom
 
 section GroupInstances
+
+/-- A `FunLike` type that satisfies `(f ^ n) x = f x ^ n` has unique roots
+if `β` has unique roots. -/
+@[to_additive /-- A `FunLike` type that satisfies `(n • f) x = n • f x` has unique div
+if `β` has unique div. -/]
+protected abbrev hasUniqueRoots [Monoid F] [Monoid β] [HasUniqueRoots β] [IsPowApply ℕ F] :
+    HasUniqueRoots F where
+  pow_left_injective n hn a b h := by
+    refine DFunLike.ext _ _ fun x ↦ ?_
+    apply pow_left_injective hn
+    simp_rw [← pow_apply, h]
 
 variable [Mul F]
 

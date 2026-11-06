@@ -119,7 +119,7 @@ theorem coeff_toPolynomialAdjoinImageCompl_ne_zero
     dsimp only [F₀] at this
     rw [renameEquiv_apply, Finsupp.equivMapDomain_eq_mapDomain, coeff_rename_mapDomain _
       e.injective, Finsupp.mapDomain_equiv_apply, Equiv.symm_symm, Equiv.optionSubtypeNe_none,
-      ← renameEquiv_apply, H, AddMonoidAlgebra.coeff_zero, Finsupp.zero_apply, eq_comm,
+      ← renameEquiv_apply, H, AddMonoidAlgebra.coeff_zero, zero_apply, eq_comm,
       ← notMem_support_iff] at this
     exact this hσ
   · apply_fun Subalgebra.val _ at H

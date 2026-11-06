@@ -62,7 +62,7 @@ private theorem not_power_nat_pow {n p q : ℕ} (h_coprime : p.Coprime q) (hq : 
     rwa [Nat.factorization_pow, n.factorization_prod_pow_eq_self_of_le_factorization ?_]
     exact hf ▸ le_self_nsmul zero_le (by lia)
   ext z
-  rw [Finsupp.smul_apply, smul_eq_mul, Finsupp.mapRange_apply, Nat.mul_div_cancel']
+  rw [smul_apply, smul_eq_mul, Finsupp.mapRange_apply, Nat.mul_div_cancel']
   simpa using h_coprime.symm.dvd_of_dvd_mul_left ⟨_, by simpa using congr(Nat.factorization $h z)⟩
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
