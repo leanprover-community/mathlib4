@@ -9,6 +9,11 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Order.SuccPred.Limit
 
+import Mathlib.CategoryTheory.Limits.Final.Type
+import Mathlib.Order.Interval.Set.Final
+import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.LatticeIntervals
+
 /-!
 # Limits of inverse systems indexed by well-ordered types
 
@@ -51,10 +56,10 @@ structure WellOrderInductionData where
   /-- When `j` is a limit element, and `x` is a compatible family of elements
   in `F.obj (op i)` for all `i < j`, this is a lifting to `F.obj (op j)`. -/
   lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections) :
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections) :
       F.obj (op j)
   map_lift (j : J) (hj : Order.IsSuccLimit j)
-    (x : ((OrderHom.Subtype.val (· ∈ Set.Iio j)).monotone.functor.op ⋙ F).sections)
+    (x : ((Set.Iio j).mono_coe.functor.op ⋙ F).sections)
     (i : J) (hi : i < j) :
         F.map (homOfLE hi.le).op (lift j hj x) = x.val (op ⟨i, hi⟩)
 
@@ -78,8 +83,6 @@ noncomputable def ofExists
 
 variable {F} (d : F.WellOrderInductionData) [OrderBot J]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `d : F.WellOrderInductionData`, `val₀ : F.obj (op ⊥)` and `j : J`,
 this is the data of an element `val : F.obj (op j)` such that the induced
 compatible family of elements in all `F.obj (op i)` for `i ≤ j`
@@ -278,6 +281,67 @@ include d in
 lemma surjective :
     Function.Surjective ((fun s ↦ s (op ⊥)) ∘ Subtype.val : F.sections → F.obj (op ⊥)) :=
   fun val₀ ↦ ⟨d.sectionsMk val₀, d.sectionsMk_val_op_bot val₀⟩
+
+variable (t : J) in
+/-- Given a `F.WellOrderInductionData`, and a non-limit element, construct a
+`WellOrderInductionData` on the restriction of `F` to elements `≥ t`.
+This is used as a way to construct sections of `F` from non-minimal elements. -/
+private noncomputable def restrictIci (d : F.WellOrderInductionData)
+    (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    ((Set.Ici t).mono_coe.functor.op ⋙ F).WellOrderInductionData where
+  succ j hj p :=
+    (F.map (homOfLE (by dsimp; rw [coe_succ_of_mem (by grind [Order.le_succ])])).op)
+      (d.succ j.val (fun h ↦ hj (fun _ h' ↦ h h')) p)
+  map_succ u hu v := by
+    dsimp
+    rw [← ConcreteCategory.comp_apply, ← F.map_comp, ← op_comp]
+    apply d.map_succ
+  lift j hj s :=
+    /- The idea is to use that F and F restricted to `Ici t` have the same sections because
+    the inclusion Set.Iio j →o Set.Iio j.val is final -/
+    haveI hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+    letI φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+    haveI hφ : Monotone φ := by tauto
+    haveI hφ' : hφ.functor.Final := by
+      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+    d.lift j (Set.Ici.isSuccLimit_coe _ hj)
+      ((sectionsEquivOfInitial hφ.functor.op _).symm s)
+  map_lift j hj s i hi := by
+    have hj' : Order.IsSuccLimit j.val := Set.Ici.isSuccLimit_coe j hj
+    let φ : Set.Iio j → Set.Iio j.val := fun u ↦ ⟨u, u.property⟩
+    have hφ : Monotone φ := by tauto
+    have hφ' : hφ.functor.Final := by
+      simp only [Monotone.final_functor_iff, Subtype.exists, Set.mem_Iio, Set.mem_Ici,
+        Subtype.forall, Subtype.mk_le_mk, exists_prop, exists_and_right, φ]
+      refine fun j₁ a ↦ ⟨max t (Order.succ j₁), ⟨?_, ?_⟩, ?_⟩
+      all_goals grind [Order.IsSuccLimit.succ_lt, Subtype.mk_lt_mk, Order.le_succ]
+    dsimp
+    rw [dsimp% d.map_lift j (Set.Ici.isSuccLimit_coe _ hj)
+      ((sectionsEquivOfInitial hφ.functor.op _).symm s) i hi]
+    obtain ⟨t, rfl⟩ := (sectionsEquivOfInitial hφ.functor.op
+      ((Set.mono_coe _).functor.op ⋙ F)).surjective s
+    simp [dsimp% (sectionsEquivOfInitial hφ.functor.op
+      ((Set.mono_coe _).functor.op ⋙ F)).symm_apply_apply t, φ]
+
+omit [OrderBot J] in
+include d in
+lemma surjective' (t : J) (ht : ¬ Order.IsSuccLimit t) :
+    Function.Surjective ((fun s ↦ s (op t)) ∘ Subtype.val : F.sections → F.obj (op t)) := by
+  -- The idea is to apply `surjective` to Set.Ici t
+  let _ : OrderBot (Set.Ici t) := Set.Ici.orderBot
+  let F' : (Set.Ici t)ᵒᵖ ⥤ Type v := (Set.Ici t).mono_coe.functor.op ⋙ F
+  let d' : F'.WellOrderInductionData := d.restrictIci t ht
+  intro u
+  obtain ⟨s, hs⟩ := d'.surjective u
+  have : (Set.Ici t).mono_coe.functor.op.Initial := Functor.initial_op_of_final _
+  let e : F.sections ≃ F'.sections := Equiv.ofBijective _ <|
+    (Set.Ici t).mono_coe.functor.op.bijective_sectionsPrecomp F
+  use ⟨e.symm s, by simp⟩
+  rw [← hs]
+  exact congr($(e.apply_symm_apply s).val (op ⊥))
 
 end WellOrderInductionData
 
