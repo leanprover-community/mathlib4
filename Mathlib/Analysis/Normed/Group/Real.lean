@@ -44,7 +44,7 @@ instance : ENorm ℝ≥0∞ where
 @[simp] lemma eNorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
 noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
-  continuous_enorm := continuous_id
+  continuous_eNorm := continuous_id
   eNorm_zero := by simp
   eNorm_eq_zero := by simp
   eNorm_add_le := by simp
@@ -134,7 +134,7 @@ theorem toNNReal_eq_nnNorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
 @[deprecated (since := "2026-10-31")]
 alias toNNReal_eq_nnnorm_of_nonneg := toNNReal_eq_nnNorm_of_nonneg
 
-theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
+theorem ofReal_le_eNorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
   rw [eNorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
 
 end Real
@@ -156,7 +156,7 @@ alias nnnorm_norm' := nnNorm_norm'
 @[to_additive (attr := simp) eNorm_norm]
 lemma eNorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
-lemma eNorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [eNorm]
+lemma eNorm_eNorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
 end SeminormedCommGroup
 

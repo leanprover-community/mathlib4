@@ -77,11 +77,11 @@ theorem eNorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) 
   · simp [setToFun_undef _ hf]
   apply (ENNReal.toReal_le_toReal (by simp)
     (ENNReal.mul_ne_top (by simp) hf.hasFiniteIntegral.ne)).1
-  simp only [toReal_enorm, toReal_mul, coe_toReal, NNReal.coe_mk]
+  simp only [toReal_eNorm, toReal_mul, coe_toReal, NNReal.coe_mk]
   apply (norm_setToFun_le hT hf hC).trans
   gcongr
   apply le_of_eq
-  rw [Integrable.norm_toL1_eq_lintegral_enorm]
+  rw [Integrable.norm_toL1_eq_lintegral_eNorm]
 
 theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ ≤ NNReal.mk C hC * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
@@ -94,7 +94,7 @@ theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 �
   apply (norm_setToFun_le hT hf hC).trans
   gcongr
   · simp
-  rw [Integrable.norm_toL1_eq_lintegral_enorm]
+  rw [Integrable.norm_toL1_eq_lintegral_eNorm]
   simp
 
 /-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost

@@ -65,12 +65,12 @@ theorem LocallyIntegrableOn.norm {f : X → E} (hf : LocallyIntegrableOn f s μ)
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
   ⟨U, hU_nhd, hU_int.norm⟩
 
-theorem LocallyIntegrableOn.mono_enorm (hf : LocallyIntegrableOn f s μ) {g : X → ε'}
+theorem LocallyIntegrableOn.mono_eNorm (hf : LocallyIntegrableOn f s μ) {g : X → ε'}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ₑ ≤ ‖f x‖ₑ) :
     LocallyIntegrableOn g s μ := by
   intro x hx
   rcases hf x hx with ⟨t, t_mem, ht⟩
-  exact ⟨t, t_mem, ht.mono_enorm hg.restrict (ae_restrict_of_ae h)⟩
+  exact ⟨t, t_mem, ht.mono_eNorm hg.restrict (ae_restrict_of_ae h)⟩
 
 theorem LocallyIntegrableOn.mono {f : X → E} (hf : LocallyIntegrableOn f s μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
@@ -253,11 +253,11 @@ theorem LocallyIntegrable.locallyIntegrableOn (hf : LocallyIntegrable f μ) (s :
 theorem Integrable.locallyIntegrable (hf : Integrable f μ) : LocallyIntegrable f μ := fun _ =>
   hf.integrableAtFilter _
 
-theorem LocallyIntegrable.mono_enorm (hf : LocallyIntegrable f μ) {g : X → ε'}
+theorem LocallyIntegrable.mono_eNorm (hf : LocallyIntegrable f μ) {g : X → ε'}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ₑ ≤ ‖f x‖ₑ) :
     LocallyIntegrable g μ := by
   rw [← locallyIntegrableOn_univ] at hf ⊢
-  exact hf.mono_enorm hg h
+  exact hf.mono_eNorm hg h
 
 theorem LocallyIntegrable.mono {f : X → E} (hf : LocallyIntegrable f μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
@@ -357,21 +357,21 @@ theorem MemLp.locallyIntegrable [IsLocallyFiniteMeasure μ] {p : ℝ≥0∞}
   rw [IntegrableOn, ← memLp_one_iff_integrable]
   apply (hf.restrict U).mono_exponent hp
 
-theorem locallyIntegrable_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
+theorem locallyIntegrable_const_eNorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrable (fun _ => c) μ :=
-  (memLp_top_const_enorm hc).locallyIntegrable le_top
+  (memLp_top_const_eNorm hc).locallyIntegrable le_top
 
 theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
-  locallyIntegrable_const_enorm eNorm_ne_top
+  locallyIntegrable_const_eNorm eNorm_ne_top
 
-theorem locallyIntegrableOn_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
+theorem locallyIntegrableOn_const_eNorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrableOn (fun _ => c) s μ :=
-  (locallyIntegrable_const_enorm hc).locallyIntegrableOn s
+  (locallyIntegrable_const_eNorm hc).locallyIntegrableOn s
 
 theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrableOn (fun _ => c) s μ :=
-  locallyIntegrableOn_const_enorm eNorm_ne_top
+  locallyIntegrableOn_const_eNorm eNorm_ne_top
 
 theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : ε'')) μ :=
   (integrable_zero X ε'' μ).locallyIntegrable

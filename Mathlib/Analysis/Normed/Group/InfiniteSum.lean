@@ -130,7 +130,7 @@ theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ�
   · exact hf.hasSum.eNorm_le_of_bounded hg h
   · simp [tsum_eq_zero_of_not_summable hf]
 
-theorem eNorm_tsum_le_tsum_enorm {f : ι → ε} :
+theorem eNorm_tsum_le_tsum_eNorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
   tsum_of_enorm_bounded CompleteLattice.summable.hasSum fun _i => le_rfl
 
@@ -208,5 +208,5 @@ theorem Summable.of_nnNorm {f : ι → E} (hf : Summable fun a => ‖f a‖₊) 
 
 @[deprecated (since := "2026-10-31")] alias Summable.of_nnnorm := Summable.of_nnNorm
 
-theorem Summable.of_enorm {f : ι → E} (hf : ∑' a, ‖f a‖ₑ ≠ ∞) : Summable f :=
+theorem Summable.of_eNorm {f : ι → E} (hf : ∑' a, ‖f a‖ₑ ≠ ∞) : Summable f :=
   Summable.of_nnNorm_bounded (tsum_coe_ne_top_iff_summable.1 hf) fun _i => le_rfl

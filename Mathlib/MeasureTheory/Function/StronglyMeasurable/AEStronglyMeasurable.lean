@@ -526,7 +526,7 @@ a.e. strong measurability. -/
 @[fun_prop]
 protected theorem eNorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
+  (continuous_eNorm.comp_aestronglyMeasurable hf).aemeasurable
 
 /-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
 

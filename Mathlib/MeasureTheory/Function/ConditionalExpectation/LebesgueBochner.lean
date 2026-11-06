@@ -81,7 +81,7 @@ lemma condLExp_ofReal (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} 
 
 /-- The two definitions of the conditional expectation `condExp` and `condLExp` (for Bochner and
 Lebesgue integrals respectively) agree almost everywhere. -/
-lemma condLExp_enorm (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
+lemma condLExp_eNorm (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {μ : Measure 𝓧}
     {f : 𝓧 → ℝ} (hf : Integrable f μ) (h'f : 0 ≤ᵐ[μ] f) :
     μ⁻[fun x ↦ ‖f x‖ₑ | m] =ᵐ[μ] fun x ↦ ‖μ[f | m] x‖ₑ := by
   have A : μ⁻[fun x ↦ ENNReal.ofReal (f x) | m] =ᵐ[μ] μ⁻[fun x ↦ ‖f x‖ₑ | m] := by
@@ -96,13 +96,13 @@ lemma lintegral_enorm_condExp_indicator
     ∫⁻ a, ‖μ[s.indicator (1 : 𝓧 → ℝ) | m] a‖ₑ ∂μ = μ s := calc
   _ = ∫⁻ a, μ⁻[fun x ↦ ‖s.indicator (1 : 𝓧 → ℝ) x‖ₑ | m] a ∂μ := by
     apply lintegral_congr_ae
-    apply (condLExp_enorm _ _ _).symm
+    apply (condLExp_eNorm _ _ _).symm
     · apply (integrable_indicator_iff hs).2
       apply integrableOn_const h's
     · filter_upwards with x
       simp only [Pi.zero_apply, Set.indicator, Pi.one_apply]
       grind
   _ = μ s := by
-    simp [lintegral_condLExp hm, eNorm_indicator_eq_indicator_enorm, lintegral_indicator hs]
+    simp [lintegral_condLExp hm, eNorm_indicator_eq_indicator_eNorm, lintegral_indicator hs]
 
 end MeasureTheory

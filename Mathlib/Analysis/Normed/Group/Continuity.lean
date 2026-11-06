@@ -38,25 +38,25 @@ section ContinuousENorm
 variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
 
 @[continuity, fun_prop]
-lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+lemma continuous_eNorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_eNorm
 
 variable {X : Type*} [TopologicalSpace X] {f : X → E} {s : Set X} {a : X}
 
 @[fun_prop]
 lemma Continuous.eNorm : Continuous f → Continuous (‖f ·‖ₑ) :=
-  continuous_enorm.comp
+  continuous_eNorm.comp
 
 lemma ContinuousAt.eNorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := by fun_prop
 
 @[fun_prop]
 lemma ContinuousWithinAt.eNorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (‖f ·‖ₑ) s a :=
-  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+  (ContinuousENorm.continuous_eNorm.continuousWithinAt).comp (t := Set.univ) h
     (fun _ _ ↦ by trivial)
 
 @[fun_prop]
 lemma ContinuousOn.eNorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
+  (ContinuousENorm.continuous_eNorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
 
 end ContinuousENorm
 
@@ -142,7 +142,7 @@ section Instances
 
 @[to_additive]
 instance SeminormedGroup.toESeminormedMonoid [SeminormedGroup E] : ESeminormedMonoid E where
-  continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnNorm'
+  continuous_eNorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnNorm'
   eNorm_zero := by simp [eNorm_eq_nnNorm]
   eNorm_mul_le := by simp [eNorm_eq_nnNorm, ← coe_add, nnNorm_mul_le']
 
@@ -178,9 +178,9 @@ theorem Inseparable.nnNorm_eq_nnNorm' {u v : E} (h : Inseparable u v) : ‖u‖�
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_eq_nnnorm]
 alias Inseparable.nnnorm_eq_nnnorm' := Inseparable.nnNorm_eq_nnNorm'
 
-theorem Inseparable.eNorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+theorem Inseparable.eNorm_eq_eNorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
-  h.map continuous_enorm |>.eq
+  h.map continuous_eNorm |>.eq
 
 @[to_additive]
 theorem mem_closure_one_iff_norm {x : E} : x ∈ closure ({1} : Set E) ↔ ‖x‖ = 0 := by
@@ -231,7 +231,7 @@ section ContinuousENorm
 variable [TopologicalSpace E] [ContinuousENorm E] {a : E} {l : Filter α} {f : α → E}
 
 lemma Filter.Tendsto.eNorm (h : Tendsto f l (𝓝 a)) : Tendsto (‖f ·‖ₑ) l (𝓝 ‖a‖ₑ) :=
-  .comp continuous_enorm.continuousAt h
+  .comp continuous_eNorm.continuousAt h
 
 end ContinuousENorm
 

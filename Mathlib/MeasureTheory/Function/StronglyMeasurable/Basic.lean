@@ -990,7 +990,7 @@ Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnNorm`, this lemma prove
 @[fun_prop]
 protected theorem eNorm {_ : MeasurableSpace α} {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
     {f : α → ε} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
-  (continuous_enorm.comp_stronglyMeasurable hf).measurable
+  (continuous_eNorm.comp_stronglyMeasurable hf).measurable
 
 @[fun_prop]
 protected theorem real_toNNReal {_ : MeasurableSpace α} {f : α → ℝ} (hf : StronglyMeasurable f) :

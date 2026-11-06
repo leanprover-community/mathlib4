@@ -170,7 +170,7 @@ theorem IndepFun.integrable_op
     simp [← mul_assoc, hB]
   _ = C * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
     rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.1.eNorm hY.1.eNorm
-        (hXY.comp measurable_enorm measurable_enorm)]
+        (hXY.comp measurable_eNorm measurable_eNorm)]
   _ < ∞ := mul_lt_top (by finiteness) (mul_lt_top hX.2 hY.2)
 
 /-- A continuous bilinear map applied to two independent and integrable random variables
@@ -206,8 +206,8 @@ theorem IndepFun.integrable_left_of_integrable_op
     apply h'Y
     filter_upwards [I] with ω hω
     simpa using hω
-  refine hasFiniteIntegral_iff_enorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
-  have J : (‖X ·‖ₑ) ⟂ᵢ[μ] (‖Y ·‖ₑ) := hXY.comp measurable_enorm measurable_enorm
+  refine hasFiniteIntegral_iff_eNorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
+  have J : (‖X ·‖ₑ) ⟂ᵢ[μ] (‖Y ·‖ₑ) := hXY.comp measurable_eNorm measurable_eNorm
   have : ∞ < ∞ := calc
     ∞ = c * ((∫⁻ ω, ‖X ω‖ₑ ∂μ) * (∫⁻ ω, ‖Y ω‖ₑ ∂μ)) := by
       rw [H, top_mul I, mul_top (by simpa)]

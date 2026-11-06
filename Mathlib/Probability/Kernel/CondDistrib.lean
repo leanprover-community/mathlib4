@@ -407,7 +407,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   have hf := hf_int.1.comp_snd_map_prodMk hX (mΩ := mΩ) (mβ := mβ)
   refine ⟨hf, ?_⟩
-  rw [hasFiniteIntegral_iff_enorm, lintegral_map' hf.eNorm (hX.prodMk aemeasurable_id)]
+  rw [hasFiniteIntegral_iff_eNorm, lintegral_map' hf.eNorm (hX.prodMk aemeasurable_id)]
   exact hf_int.2
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}

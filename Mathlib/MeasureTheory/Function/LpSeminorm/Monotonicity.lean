@@ -33,7 +33,7 @@ variable {ε ε' : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ c * ‖g x‖₊) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
-  simp_rw [eLpNorm'_eq_lintegral_enorm]
+  simp_rw [eLpNorm'_eq_lintegral_eNorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
   simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne', ENNReal.rpow_one, eNorm,
@@ -48,7 +48,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
 theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
-  simp_rw [eLpNorm'_eq_lintegral_enorm]
+  simp_rw [eLpNorm'_eq_lintegral_eNorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.smul_def, smul_eq_mul,
     ENNReal.mul_rpow_of_nonneg _ _ hp.le]
   simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne', ENNReal.rpow_one,
@@ -71,7 +71,7 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
   by_cases hc : c = ⊤
   · by_cases hg' : eLpNorm' g p μ = 0
     · have : ∀ᵐ (x : α) ∂μ, ‖g x‖ₑ = 0 := by
-        simp only [eLpNorm'_eq_lintegral_enorm, one_div, ENNReal.rpow_eq_zero_iff, inv_pos, hp,
+        simp only [eLpNorm'_eq_lintegral_eNorm, one_div, ENNReal.rpow_eq_zero_iff, inv_pos, hp,
           and_true, inv_neg'', hp', and_false, or_false] at hg'
         rw [MeasureTheory.lintegral_eq_zero_iff' (by fun_prop)] at hg'
         exact hg'.mono fun x hx ↦ by simpa [hp, hp'] using hx
@@ -79,7 +79,7 @@ theorem eLpNorm'_le_mul_eLpNorm'_of_ae_le_mul {f : α → ε} {c : ℝ≥0∞} {
       simpa only [hg', mul_zero, nonpos_iff_eq_zero] using eLpNorm'_eq_zero_of_ae_eq_zero hp this
     · simp_all
   have : c ^ p ≠ ⊤ := by simp [hp.le, hc]
-  simp_rw [eLpNorm'_eq_lintegral_enorm]
+  simp_rw [eLpNorm'_eq_lintegral_eNorm]
   rw [← ENNReal.rpow_le_rpow_iff hp, ENNReal.mul_rpow_of_nonneg _ _ hp.le]
   simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne', ENNReal.rpow_one,
     ← lintegral_const_mul' _ _ this]
@@ -245,7 +245,7 @@ theorem le_eLpNorm_of_bddBelow (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α → F} (
     C • μ s ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
   rw [ENNReal.smul_def, smul_eq_mul]
   apply le_eLpNorm_of_bddBelow' hp hp' C
-  simpa only [coe_le_enorm]
+  simpa only [coe_le_eNorm]
 
 section Star
 

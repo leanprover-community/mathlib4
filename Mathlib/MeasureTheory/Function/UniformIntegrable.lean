@@ -313,7 +313,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
   rw [rpow_mul]
   gcongr
   convert! hM using 3 with x
-  rw [eNorm_indicator_eq_indicator_enorm, eNorm_indicator_eq_indicator_enorm]
+  rw [eNorm_indicator_eq_indicator_eNorm, eNorm_indicator_eq_indicator_eNorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnNorm, coe_nnNorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
       ← Real.rpow_le_rpow_iff hM' (by positivity)
@@ -742,7 +742,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
     eLpNorm (f i) p μ ≤
         eLpNorm ({ x : α | ‖f i x‖₊ < C }.indicator (f i)) p μ +
           eLpNorm ({ x : α | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ := by
-      refine le_trans (eLpNorm_mono_enorm (hf i) fun x => ?_)
+      refine le_trans (eLpNorm_mono_eNorm (hf i) fun x => ?_)
         (eLpNorm_add_le hp)
       rw [Pi.add_apply, Set.indicator_apply]
       split_ifs with hx

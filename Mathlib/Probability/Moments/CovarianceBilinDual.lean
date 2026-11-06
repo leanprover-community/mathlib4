@@ -92,7 +92,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
       eLpNorm_exponent_top h_Lp.aestronglyMeasurable]
     simp only [eLpNormEssSup, id_eq]
     suffices (essSup (fun x ↦ ‖L x‖ₑ) μ).toReal ≤ (essSup (fun x ↦ ‖L‖ₑ * ‖x‖ₑ) μ).toReal by
-      rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_enorm] at this
+      rwa [ENNReal.essSup_const_mul, ENNReal.toReal_mul, toReal_eNorm] at this
     gcongr
     · rw [ENNReal.essSup_const_mul]
       have hid : essSup eNorm μ ≠ ∞ := by
@@ -107,7 +107,7 @@ lemma norm_toLpₗ_le [OpensMeasurableSpace E] (L : StrongDual 𝕜 E) :
     refine this.trans_eq ?_
     simp only [ENNReal.toReal_mul]
     rw [← ENNReal.toReal_rpow, Real.mul_rpow (by positivity) (by positivity),
-      ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_enorm]
+      ← Real.rpow_mul (by positivity), mul_inv_cancel₀ h0.ne', Real.rpow_one, toReal_eNorm]
     rw [eLpNorm_eq_lintegral_rpow_enorm_toReal (by simp [hp]) hp_top h_Lp.aestronglyMeasurable,
       ENNReal.toReal_rpow]
     simp

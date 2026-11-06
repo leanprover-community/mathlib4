@@ -155,7 +155,7 @@ theorem evariance_eq_lintegral_ofReal :
   simp [evariance, ← eNorm_pow, Real.eNorm_of_nonneg (sq_nonneg _)]
 
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
-  simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).eNorm.pow_const _) <|
+  simp [variance, evariance, toReal_eNorm, ← integral_toReal ((hX.sub_const _).eNorm.pow_const _) <|
     .of_forall fun _ ↦ ENNReal.pow_lt_top eNorm_lt_top]
 
 /-- A random variable with variance `0` is almost surely constant. -/
@@ -382,7 +382,7 @@ theorem meas_ge_le_evariance_div_sq {X : Ω → ℝ} (hX : AEStronglyMeasurable 
   have A : (c : ℝ≥0∞) ≠ 0 := by rwa [Ne, ENNReal.coe_eq_zero]
   have B : AEStronglyMeasurable (fun _ : Ω => μ[X]) μ := aestronglyMeasurable_const
   convert
-      meas_ge_le_mul_pow_eLpNorm_enorm μ two_ne_zero ENNReal.ofNat_ne_top
+      meas_ge_le_mul_pow_eLpNorm_eNorm μ two_ne_zero ENNReal.ofNat_ne_top
         (f := X - fun _ ↦ μ[X]) A (by simp)
     using 1
   · norm_cast

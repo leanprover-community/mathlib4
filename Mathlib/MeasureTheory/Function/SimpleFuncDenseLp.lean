@@ -230,7 +230,7 @@ section Integrable
 variable [MeasurableSpace β]
 variable [MeasurableSpace E] [NormedAddCommGroup E]
 
-theorem tendsto_approxOn_L1_enorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
+theorem tendsto_approxOn_L1_eNorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
     {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] {μ : Measure β}
     (hμ : ∀ᵐ x ∂μ, f x ∈ closure s)
     (hi : HasFiniteIntegral (fun x => f x - y₀) μ) :
@@ -246,11 +246,11 @@ theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fme
   rw [← memLp_one_iff_integrable] at hf hi₀ ⊢
   exact memLp_approxOn fmeas hf h₀ hi₀ n
 
-theorem tendsto_approxOn_range_L1_enorm [OpensMeasurableSpace E] {f : β → E} {μ : Measure β}
+theorem tendsto_approxOn_range_L1_eNorm [OpensMeasurableSpace E] {f : β → E} {μ : Measure β}
     [SeparableSpace (range f ∪ {0} : Set E)] (fmeas : Measurable f) (hf : Integrable f μ) :
     Tendsto (fun n => ∫⁻ x, ‖approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ₑ ∂μ) atTop
       (𝓝 0) := by
-  apply tendsto_approxOn_L1_enorm fmeas
+  apply tendsto_approxOn_L1_eNorm fmeas
   · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
 
@@ -290,7 +290,7 @@ theorem memLp_top (f : α →ₛ E) (μ : Measure α) : MemLp f ∞ μ :=
 protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
     eLpNorm' f p μ = (∑ y ∈ f.range, ‖y‖ₑ ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (‖f ·‖ₑ ^ p) = f.map (‖·‖ₑ ^ p) := by simp; rfl
-  rw [eLpNorm'_eq_lintegral_enorm, h_map, lintegral_eq_lintegral, map_lintegral]
+  rw [eLpNorm'_eq_lintegral_eNorm, h_map, lintegral_eq_lintegral, map_lintegral]
 
 theorem measure_preimage_lt_top_of_memLp (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) (f : α →ₛ E)
     (hf : MemLp f p μ) (y : E) (hy_ne : y ≠ 0) : μ (f ⁻¹' {y}) < ∞ := by

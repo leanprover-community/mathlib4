@@ -55,7 +55,7 @@ variable [TopologicalSpace V] [ENormedAddCommMonoid V] [T2Space V]
   {μ ν : VectorMeasure X V} {s : Set X}
 
 lemma variation_apply (μ : VectorMeasure X V) (s : Set X) :
-    μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_enorm μ) (by simp) s := rfl
+    μ.variation s = preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_eNorm μ) (by simp) s := rfl
 
 @[simp]
 lemma ennrealVariation_apply (μ : VectorMeasure X V) {s : Set X} (hs : MeasurableSet s) :
@@ -301,7 +301,7 @@ variable [NormedAddCommGroup V] {μ ν : VectorMeasure X V}
 
 theorem norm_measure_le_variation {E : Set X} (hE : μ.variation E ≠ ∞ := by finiteness) :
     ‖μ E‖ ≤ μ.variation.real E := by
-  rw [measureReal_def, ← toReal_enorm, ENNReal.toReal_le_toReal (eNorm_ne_top) hE]
+  rw [measureReal_def, ← toReal_eNorm, ENNReal.toReal_le_toReal (eNorm_ne_top) hE]
   exact eNorm_measure_le_variation μ E
 
 variable (μ) in

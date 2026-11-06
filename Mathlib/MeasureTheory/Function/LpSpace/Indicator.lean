@@ -131,13 +131,13 @@ theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
     eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
-      measureReal_def, ENNReal.toReal_rpow, toReal_enorm]
+      measureReal_def, ENNReal.toReal_rpow, toReal_eNorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
     eLpNorm_indicator_const' hs.nullMeasurableSet hμs_ne_zero ENNReal.top_ne_zero,
-    ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
+    ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_eNorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
@@ -166,7 +166,7 @@ theorem eNorm_indicatorConstLp_le :
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.eNorm_def, ← eNorm_eq_nnNorm]
     using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
-theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
+theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
@@ -177,7 +177,7 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
-  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, eNorm, ENNReal.coe_toReal,
+  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
     Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
@@ -264,13 +264,13 @@ theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
   have := NeZero.ne μ
   rw [← MemLp.toLp_const, Lp.norm_toLp,
     eLpNorm_const _ hp_zero this]
-  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_eNorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← MemLp.toLp_const, Lp.norm_toLp,
     eLpNorm_const' _ hp_zero hp_top]
-  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_eNorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← indicatorConstLp_univ]

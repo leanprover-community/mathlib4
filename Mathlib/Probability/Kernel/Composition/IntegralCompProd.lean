@@ -64,7 +64,7 @@ variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [I
 theorem hasFiniteIntegral_prodMk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
     HasFiniteIntegral (fun b => (η (a, b)).real (Prod.mk b ⁻¹' s)) (κ a) := by
   let t := toMeasurable ((κ ⊗ₖ η) a) s
-  simp_rw [hasFiniteIntegral_iff_enorm, measureReal_def, eNorm_eq_ofReal toReal_nonneg]
+  simp_rw [hasFiniteIntegral_iff_eNorm, measureReal_def, eNorm_eq_ofReal toReal_nonneg]
   calc
     ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
     _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
@@ -101,7 +101,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
-  simp only [hasFiniteIntegral_iff_enorm]
+  simp only [hasFiniteIntegral_iff_eNorm]
   rw [lintegral_compProd _ _ _ h1f.eNorm]
   have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)
@@ -219,7 +219,7 @@ theorem Kernel.continuous_integral_integral :
   simp_rw [← lintegral_fn_integral_sub (‖·‖ₑ) (L1.integrable_coeFn _) (L1.integrable_coeFn g)]
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i => zero_le) _
   · exact fun i => ∫⁻ x, ∫⁻ y, ‖i (x, y) - g (x, y)‖ₑ ∂η (a, x) ∂κ a
-  swap; · exact fun i => lintegral_mono fun x => eNorm_integral_le_lintegral_enorm _
+  swap; · exact fun i => lintegral_mono fun x => eNorm_integral_le_lintegral_eNorm _
   have (i : Lp (α := β × γ) E 1 (((κ ⊗ₖ η) a) : Measure (β × γ))) :
       Measurable fun z => ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).eNorm
@@ -295,7 +295,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp {δ : Type*} [Topological
 theorem hasFiniteIntegral_comp_iff ⦃f : γ → E⦄ (hf : StronglyMeasurable f) :
     HasFiniteIntegral f ((η ∘ₖ κ) a) ↔
     (∀ᵐ x ∂κ a, HasFiniteIntegral f (η x)) ∧ HasFiniteIntegral (fun x ↦ ∫ y, ‖f y‖ ∂η x) (κ a) := by
-  simp_rw [hasFiniteIntegral_iff_enorm, lintegral_comp _ _ _ hf.eNorm]
+  simp_rw [hasFiniteIntegral_iff_eNorm, lintegral_comp _ _ _ hf.eNorm]
   simp_rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun y ↦ norm_nonneg _)
       hf.norm.aestronglyMeasurable, eNorm_eq_ofReal toReal_nonneg, ofReal_norm]
   have : ∀ {p q r : Prop} (_ : r → p), (r ↔ p ∧ q) ↔ p → (r ↔ q) := fun h ↦ by
@@ -401,7 +401,7 @@ theorem continuous_integral_integral_comp :
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le
     (h := fun i ↦ ∫⁻ x, ∫⁻ y, ‖i y - g y‖ₑ ∂η x ∂κ a)
     tendsto_const_nhds ?_ (fun _ ↦ zero_le) ?_
-  swap; · exact fun _ ↦ lintegral_mono fun _ ↦ eNorm_integral_le_lintegral_enorm _
+  swap; · exact fun _ ↦ lintegral_mono fun _ ↦ eNorm_integral_le_lintegral_eNorm _
   have (i : γ →₁[(η ∘ₖ κ) a] E) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).eNorm
   simp_rw [← lintegral_comp _ _ _ (this _), ← L1.ofReal_norm_sub_eq_lintegral, ← ofReal_zero]

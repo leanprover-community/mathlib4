@@ -55,7 +55,7 @@ theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ �
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
 
-theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+theorem meas_ge_le_mul_pow_eLpNorm_eNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {f : α → ε'} {ε : ℝ≥0∞} (hε : ε ≠ 0) (hmeas_top : ε = ∞ → μ {x | ‖f x‖ₑ = ⊤} = 0) :
     μ { x | ε ≤ ‖f x‖ₑ } ≤ ε⁻¹ ^ p.toReal * eLpNorm f p μ ^ p.toReal := by
   by_cases h : ε = ∞
@@ -68,11 +68,11 @@ theorem meas_ge_le_mul_pow_eLpNorm_enorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
       ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
     exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
 
-theorem MemLp.meas_ge_lt_top'_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
+theorem MemLp.meas_ge_lt_top'_eNorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) (hε' : ε = ∞ → μ {x | ‖f x‖ₑ = ⊤} = 0) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ := by
-  apply meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hε hε'
+  apply meas_ge_le_mul_pow_eLpNorm_eNorm μ hp_ne_zero hp_ne_top hε hε'
     |>.trans_lt (ENNReal.mul_lt_top ?_ ?_)
   · simp [hε, lt_top_iff_ne_top]
   · simp [hℒp.eLpNorm_lt_top.ne, lt_top_iff_ne_top]
@@ -82,12 +82,12 @@ theorem MemLp.meas_ge_lt_top' {μ : Measure α} {f : α → E} (hℒp : MemLp f 
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   by_cases h : ε = ∞
   · simp [h]
-  exact hℒp.meas_ge_lt_top'_enorm hp_ne_zero hp_ne_top hε (by simp)
+  exact hℒp.meas_ge_lt_top'_eNorm hp_ne_zero hp_ne_top hε (by simp)
 
-theorem MemLp.meas_ge_lt_top_enorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
+theorem MemLp.meas_ge_lt_top_eNorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ :=
-  hℒp.meas_ge_lt_top'_enorm hp_ne_zero hp_ne_top (by simp [hε]) (by simp)
+  hℒp.meas_ge_lt_top'_eNorm hp_ne_zero hp_ne_top (by simp [hε]) (by simp)
 
 theorem MemLp.meas_ge_lt_top {μ : Measure α} {f : α → E} (hℒp : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :

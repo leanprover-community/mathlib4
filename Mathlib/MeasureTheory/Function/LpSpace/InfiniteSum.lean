@@ -75,7 +75,7 @@ theorem summable_norm_of_tsum_eLpNorm_ne_top {ι : Type*} [Countable ι]
         simpa
     apply lt_of_le_of_lt ?_ this
     gcongr with i
-    rw [← eLpNorm_one_eq_lintegral_enorm (hf i).restrict]
+    rw [← eLpNorm_one_eq_lintegral_eNorm (hf i).restrict]
     exact eLpNorm_le_eLpNorm_mul_rpow_measure_univ_of_pos hp zero_lt_one
   /- We wish now to reduce to finite measure sets to apply the above. The function `f n` in `L^p`
   has a sigma-finite support, that we denote by `s n`. -/
@@ -122,7 +122,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
   obtain ⟨ns, hns, nslim⟩ : ∃ ns : ℕ → ℕ, StrictMono ns ∧ ∀ᵐ x ∂μ,
       Tendsto (fun i ↦ (∑ j ∈ range (ns i), f j : Lp E p μ) x) atTop (𝓝 ((∑' n, f n) x)) := by
     have : Tendsto (fun i ↦ (∑ j ∈ range i, f j)) atTop (𝓝 (∑' n, f n)) :=
-      Summable.tendsto_sum_tsum_nat (Summable.of_enorm hf)
+      Summable.tendsto_sum_tsum_nat (Summable.of_eNorm hf)
     exact (tendstoInMeasure_of_tendsto_Lp this).exists_seq_tendsto_ae
   filter_upwards [A, B, nslim] with x S h'x h''x
   apply hasSum_of_subseq_of_summable S (tendsto_finset_range.comp hns.tendsto_atTop)

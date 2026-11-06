@@ -272,10 +272,10 @@ theorem mono_set' (hf : IntervalIntegrable f μ a b) (hsub : Ι c d ⊆ Ι a b) 
     IntervalIntegrable f μ c d :=
   hf.mono_set_ae <| Eventually.of_forall hsub
 
-theorem mono_fun_enorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
+theorem mono_fun_eNorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hf : IntervalIntegrable f μ a b) (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
-  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_enorm hgm hle
+  intervalIntegrable_iff.2 <| hf.def'.integrable.mono_eNorm hgm hle
 
 theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
@@ -283,10 +283,10 @@ theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : In
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono hgm hle
 
 -- XXX: the best spelling of this lemma may look slightly different (e.gl, with different domain)
-theorem mono_fun_enorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
+theorem mono_fun_eNorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
-  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_enorm hfm hle
+  intervalIntegrable_iff.2 <| hg.def'.integrable.mono_eNorm hfm hle
 
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))

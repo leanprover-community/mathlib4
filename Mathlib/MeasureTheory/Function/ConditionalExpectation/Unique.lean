@@ -181,8 +181,8 @@ theorem lintegral_enorm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g :
     (hgi : IntegrableOn g s μ)
     (hgf : ∀ t, MeasurableSet[m] t → μ t < ∞ → ∫ x in t, g x ∂μ = ∫ x in t, f x ∂μ)
     (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) : (∫⁻ x in s, ‖g x‖ₑ ∂μ) ≤ ∫⁻ x in s, ‖f x‖ₑ ∂μ := by
-  rw [← ofReal_integral_norm_eq_lintegral_enorm hfi, ←
-    ofReal_integral_norm_eq_lintegral_enorm hgi, ENNReal.ofReal_le_ofReal_iff]
+  rw [← ofReal_integral_norm_eq_lintegral_eNorm hfi, ←
+    ofReal_integral_norm_eq_lintegral_eNorm hgi, ENNReal.ofReal_le_ofReal_iff]
   · exact integral_norm_le_of_forall_fin_meas_integral_eq hm hf hfi hg hgi hgf hs hμs
   · positivity
 

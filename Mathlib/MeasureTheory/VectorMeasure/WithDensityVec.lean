@@ -179,7 +179,7 @@ lemma variation_withDensity' [CompleteSpace G]
       gcongr
       exact Measure.restrict_le_self
     _ ≤ ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation + δ := by
-      rw [eLpNorm_one_eq_lintegral_enorm
+      rw [eLpNorm_one_eq_lintegral_eNorm
         (aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (hg.trans_lt ENNReal.coe_lt_top)))] at hg
       gcongr
       exact hg
@@ -295,7 +295,7 @@ lemma variation_withDensity' [CompleteSpace G]
       gcongr
       simp_rw [eNorm_sub_rev]
       change ∫⁻ x, ‖(f - ⇑g) x‖ₑ ∂(μ.transpose B).variation ≤ ↑δ
-      rw [← eLpNorm_one_eq_lintegral_enorm
+      rw [← eLpNorm_one_eq_lintegral_eNorm
         (aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (hg.trans_lt ENNReal.coe_lt_top)))]
       exact hg
   -- register that the sum of the enorms of the integrals of `f` over the pieces `Pᵢⱼ` of the
@@ -367,7 +367,7 @@ lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
     congr with x
     rcases eq_or_ne (f x) 0 with hx | hx
     · simp [hx]
-    simp only [toReal_enorm, smul_smul]
+    simp only [toReal_eNorm, smul_smul]
     rw [mul_inv_cancel₀, one_smul]
     simpa using hx
   rw [this, variation_withDensity I (by simp [nnNorm_smul, mul_comm]),

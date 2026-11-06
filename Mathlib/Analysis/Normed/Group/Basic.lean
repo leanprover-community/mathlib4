@@ -387,15 +387,15 @@ alias coe_comp_nnnorm' := coe_comp_nnNorm'
 theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
   @Real.toNNReal_coe ‖a‖₊
 
-@[to_additive (attr := simp) toReal_enorm]
-lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [eNorm]
+@[to_additive (attr := simp) toReal_eNorm]
+lemma toReal_eNorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [eNorm]
 
 @[to_additive (attr := simp) ofReal_norm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
 
-@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm := ofReal_norm
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_eNorm := ofReal_norm
 
-@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
+@[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_eNorm' := ofReal_norm'
 
 @[to_additive eNorm_eq_iff_norm_eq]
 theorem eNorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
@@ -689,7 +689,7 @@ lemma eNorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 
 lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
     [hbot : NeBot (𝓝[≠] (1 : E))] {c : ℝ≥0∞} (hc : c ≠ 0) : ∃ x ≠ (1 : E), ‖x‖ₑ < c :=
   frequently_iff_neBot.mpr hbot |>.and_eventually
-    (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
+    (ContinuousENorm.continuous_eNorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
     |>.exists
 
 @[to_additive (attr := simp) eNorm_neg]

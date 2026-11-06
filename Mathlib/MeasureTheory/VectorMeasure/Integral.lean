@@ -634,7 +634,7 @@ theorem norm_integral_le_integral_norm :
   · rw [integral_non_aestronglyMeasurable h, norm_zero]
     positivity
 
-theorem eNorm_integral_le_lintegral_enorm :
+theorem eNorm_integral_le_lintegral_eNorm :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ a, ‖f a‖ₑ ∂μ.variation := by
   apply (eNorm_setToFun_le _ (by simp)).trans
   gcongr
@@ -658,7 +658,7 @@ theorem edist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integr
       ‖B‖ₑ * ∫⁻ a, edist (f a) (g a) ∂μ.variation := by
   rw [edist_dist]
   apply ENNReal.ofReal_le_of_le_toReal
-  grw [dist_integral_le_lintegral_edist hf hg, ENNReal.toReal_mul, toReal_enorm]
+  grw [dist_integral_le_lintegral_edist hf hg, ENNReal.toReal_mul, toReal_eNorm]
 
 theorem frequently_ae_ne_zero_of_integral_ne_zero
     (h : ∫ᵛ a, f a ∂[B; μ] ≠ 0) : ∃ᶠ a in ae μ.variation, f a ≠ 0 :=
@@ -734,7 +734,7 @@ lemma tendsto_integral_of_L1' {ι} (f : X → E)
   refine tendsto_integral_of_L1 f hfi hFi ?_
   apply hF.congr'
   filter_upwards [hFi] with i hi
-  rw [eLpNorm_one_eq_lintegral_enorm (hi.aestronglyMeasurable.sub hfi)]
+  rw [eLpNorm_one_eq_lintegral_eNorm (hi.aestronglyMeasurable.sub hfi)]
   rfl
 
 variable {Y : Type*} [TopologicalSpace Y] [FirstCountableTopology Y]
@@ -797,7 +797,7 @@ theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ.variation]
 theorem eNorm_integral_le_of_enorm_le_const
     {C : ℝ≥0∞} (h : ∀ᵐ x ∂μ.variation, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation univ := by
-  apply eNorm_integral_le_lintegral_enorm.trans
+  apply eNorm_integral_le_lintegral_eNorm.trans
   rw [mul_comm C, mul_assoc]
   gcongr
   exact (lintegral_mono_ae h).trans (by simp)
@@ -807,7 +807,7 @@ theorem nndist_integral_add_vectorMeasure_le_lintegral
     (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ‖B‖ₑ * ∫⁻ x, ‖f x‖ₑ ∂ν.variation := by
   rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
-  exact eNorm_integral_le_lintegral_enorm
+  exact eNorm_integral_le_lintegral_eNorm
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}
 

@@ -462,7 +462,7 @@ theorem nnNorm_inner_le_nnNorm (x y : E) : ‖⟪x, y⟫‖₊ ≤ ‖x‖₊ * 
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_inner_le_nnnorm := nnNorm_inner_le_nnNorm
 
-lemma eNorm_inner_le_enorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
+lemma eNorm_inner_le_eNorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y‖ₑ := by
   grw [← ofReal_norm, norm_inner_le_norm]
   simp
 

@@ -21,7 +21,7 @@ namespace MeasureTheory
 
 variable {α : Type*} [MeasurableSpace α] {μ : Measure α}
 
-theorem lintegral_ofReal_le_lintegral_enorm (f : α → ℝ) :
+theorem lintegral_ofReal_le_lintegral_eNorm (f : α → ℝ) :
     ∫⁻ x, ENNReal.ofReal (f x) ∂μ ≤ ∫⁻ x, ‖f x‖ₑ ∂μ := by
   simp_rw [← ofReal_norm]
   refine lintegral_mono fun x => ENNReal.ofReal_le_ofReal ?_

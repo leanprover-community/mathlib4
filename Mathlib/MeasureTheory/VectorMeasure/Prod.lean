@@ -198,7 +198,7 @@ lemma variation_prod_le [CompleteSpace G] [IsFiniteMeasure μ.variation] [SFinit
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   rw [prod_apply_eq_integral hs]
   simp only [smul_apply, Measure.prod_apply hs, smul_eq_mul]
-  grw [eNorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_flip,
+  grw [eNorm_integral_le_lintegral_eNorm, ContinuousLinearMap.opENorm_flip,
     eNorm_measure_le_variation]
 
 instance [CompleteSpace G] [IsFiniteMeasure μ.variation] [IsFiniteMeasure ν.variation] :
@@ -298,7 +298,7 @@ theorem continuous_integral_integral {B : G →L[ℝ] F →L[ℝ] H} {C : H →L
   apply tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds _ (fun i ↦ zero_le) _
     (h := fun i ↦ ∫⁻ x, ‖B‖ₑ * ∫⁻ y,
       ‖i (x, y) - g (x, y)‖ₑ ∂ν.variation ∂μ.variation); swap
-  · exact fun i ↦ lintegral_mono fun x ↦ eNorm_integral_le_lintegral_enorm
+  · exact fun i ↦ lintegral_mono fun x ↦ eNorm_integral_le_lintegral_eNorm
   have A (i : X × Y →₁[μ.variation.prod ν.variation] G) : Measurable fun z ↦ ‖i z - g z‖ₑ :=
     ((Lp.stronglyMeasurable i).sub (Lp.stronglyMeasurable g)).eNorm
   simp_rw [lintegral_const_mul' ‖B‖ₑ _ (by simp),

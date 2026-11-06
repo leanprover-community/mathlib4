@@ -557,7 +557,7 @@ by `‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ`. -/
 theorem eNorm_convolution_le {p q : ENNReal}
     [hpq : p.HolderConjugate q] (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (x₀ : G) : ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ :=
-  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := eNorm_integral_le_lintegral_enorm _
+  calc ‖(f ⋆[L, μ] g) x₀‖ₑ ≤ ∫⁻ a, ‖L (f a) (g (x₀ - a))‖ₑ ∂μ := eNorm_integral_le_lintegral_eNorm _
     _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_enorm_le_eLpNorm_one
     _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
 

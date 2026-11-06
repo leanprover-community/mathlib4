@@ -449,7 +449,7 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
   conv at hbounded in ENNReal.ofReal _ =>
     rw [← coe_nnNorm, ENNReal.ofReal_coe_nnreal]
   refine hbounded.mono fun i hi => ?_
-  rw [← ENNReal.ofReal_toReal <| ne_top_of_lt <| hasFiniteIntegral_iff_enorm.mp (hfi i).2]
+  rw [← ENNReal.ofReal_toReal <| ne_top_of_lt <| hasFiniteIntegral_iff_eNorm.mp (hfi i).2]
   apply ENNReal.ofReal_le_ofReal hi
 
 theorem AECover.integrable_of_integral_norm_tendsto [l.NeBot] [l.IsCountablyGenerated]
@@ -1030,7 +1030,7 @@ lemma _root_.HasCompactSupport.eNorm_le_lintegral_Ici_deriv
   have h'f' : HasCompactSupport f' := h'f.comp_left rfl
   have : ‖f' x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f' y‖ₑ := by
     rw [← HasCompactSupport.integral_Iic_deriv_eq hf' h'f' x]
-    exact eNorm_integral_le_lintegral_enorm _
+    exact eNorm_integral_le_lintegral_eNorm _
   convert! this with y
   · simp [f', I, Completion.eNorm_coe]
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]

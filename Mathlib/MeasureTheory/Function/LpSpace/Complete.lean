@@ -28,12 +28,12 @@ theorem eLpNorm'_lim_eq_lintegral_liminf {ι} [Nonempty ι] [LinearOrder ι] {f 
     {f_lim : α → E} (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm' f_lim p μ = (∫⁻ a, atTop.liminf (‖f · a‖ₑ ^ p) ∂μ) ^ (1 / p) := by
   suffices h_no_pow : (∫⁻ a, ‖f_lim a‖ₑ ^ p ∂μ) = ∫⁻ a, atTop.liminf fun m => ‖f m a‖ₑ ^ p ∂μ by
-    rw [eLpNorm'_eq_lintegral_enorm, h_no_pow]
+    rw [eLpNorm'_eq_lintegral_eNorm, h_no_pow]
   refine lintegral_congr_ae (h_lim.mono fun a ha => ?_)
   dsimp only
   rw [Tendsto.liminf_eq]
   refine (ENNReal.continuous_rpow_const.tendsto ‖f_lim a‖₊).comp ?_
-  exact (continuous_enorm.tendsto (f_lim a)).comp ha
+  exact (continuous_eNorm.tendsto (f_lim a)).comp ha
 
 theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     (hp_pos : 0 < p) (hf : ∀ n, AEStronglyMeasurable (f n) μ) {f_lim : α → E}
@@ -50,18 +50,18 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
     all_goals isBoundedDefault
   rw [h_pow_liminf]
-  simp_rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div,
+  simp_rw [eLpNorm'_eq_lintegral_eNorm, ← ENNReal.rpow_mul, one_div,
     inv_mul_cancel₀ hp_pos.ne.symm, ENNReal.rpow_one]
 
 theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrder ι] {f : ι → α → E}
     {f_lim : α → E} (hf_lim : AEStronglyMeasurable f_lim μ)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim ∞ μ = essSup (fun x => atTop.liminf fun m => ‖f m x‖ₑ) μ := by
-  rw [eLpNorm_exponent_top hf_lim, eLpNormEssSup_eq_essSup_enorm]
+  rw [eLpNorm_exponent_top hf_lim, eLpNormEssSup_eq_essSup_eNorm]
   refine essSup_congr_ae (h_lim.mono fun x hx => ?_)
   dsimp only
   apply (Tendsto.liminf_eq ..).symm
-  exact (continuous_enorm.tendsto (f_lim x)).comp hx
+  exact (continuous_eNorm.tendsto (f_lim x)).comp hx
 
 theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty ι] [Countable ι]
     [LinearOrder ι] {f : ι → α → E} {f_lim : α → E}
@@ -215,7 +215,7 @@ private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
     (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ) ≤ (∑' i, B i) ^ p := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   rw [← inv_inv p, @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [hp_pos]), inv_inv p]
-  simp_rw [eLpNorm'_eq_lintegral_enorm, one_div] at hn
+  simp_rw [eLpNorm'_eq_lintegral_eNorm, one_div] at hn
   have h_nnNorm_nonneg :
     (fun a => ‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖ₑ ^ p) = fun a =>
       (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p := by

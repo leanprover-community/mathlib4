@@ -47,13 +47,13 @@ theorem eNorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
     ENNReal.ofReal_le_ofReal (s.norm_le_totalVariation i)
   _ = _ := by rw [measureReal_def, ENNReal.ofReal_toReal (measure_ne_top _ _)]
 
-private lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
+private lemma toMeasureOfZeroLE_apply_eq_eNorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
     (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : 0 ≤ μ (i ∩ j) :=
     μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
   rw [Real.eNorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnreal]
 
-private lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
+private lemma toMeasureOfLEZero_apply_eq_eNorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
     μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : μ (i ∩ j) ≤ 0 :=
@@ -69,8 +69,8 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
     calc μ.totalVariation r
       _ = ‖μ (s ∩ r)‖ₑ + ‖μ (sᶜ ∩ r)‖ₑ := by
           rw [totalVariation, add_apply, hposPart, hnegPart,
-            μ.toMeasureOfZeroLE_apply_eq_enorm hs hpos hr,
-            μ.toMeasureOfLEZero_apply_eq_enorm hs.compl hneg hr]
+            μ.toMeasureOfZeroLE_apply_eq_eNorm hs hpos hr,
+            μ.toMeasureOfLEZero_apply_eq_eNorm hs.compl hneg hr]
       _ ≤ μ.variation (s ∩ r) + μ.variation (sᶜ ∩ r) :=
           add_le_add (μ.eNorm_measure_le_variation _) (μ.eNorm_measure_le_variation _)
       _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) :=

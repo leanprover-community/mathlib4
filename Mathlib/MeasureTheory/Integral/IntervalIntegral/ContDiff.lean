@@ -93,7 +93,7 @@ theorem eNorm_sub_le_lintegral_deriv_of_contDiffOn_Icc (h : ContDiffOn ℝ 1 f (
     rw [← edist_eq_enorm_sub, Function.comp_def, g.isometry.edist_eq, edist_eq_enorm_sub]
   rw [← this, ← integral_deriv_of_contDiffOn_Icc (g.contDiff.comp_contDiffOn h) hab,
     integral_of_le hab, restrict_Ioc_eq_restrict_Icc]
-  apply (eNorm_integral_le_lintegral_enorm _).trans
+  apply (eNorm_integral_le_lintegral_eNorm _).trans
   apply lintegral_mono_ae
   rw [← restrict_Ioo_eq_restrict_Icc]
   filter_upwards [self_mem_ae_restrict measurableSet_Ioo] with x hx

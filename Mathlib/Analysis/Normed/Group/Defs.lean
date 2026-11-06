@@ -96,11 +96,11 @@ lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
 @[deprecated (since := "2026-10-31")] alias eNorm_eq_nnnorm := eNorm_eq_nnNorm
 
-@[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
+@[simp] lemma toNNReal_eNorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
 
-@[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [eNorm]
+@[simp, norm_cast] lemma coe_le_eNorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [eNorm]
 @[simp, norm_cast] lemma eNorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [eNorm]
-@[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [eNorm]
+@[simp, norm_cast] lemma coe_lt_eNorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [eNorm]
 @[simp, norm_cast] lemma eNorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [eNorm]
 
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
@@ -114,7 +114,7 @@ end ENorm
 NB. We do not demand that the topology is somehow defined by the eNorm:
 for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
-  continuous_enorm : Continuous eNorm
+  continuous_eNorm : Continuous eNorm
 
 /-- An e-seminormed monoid is an additive monoid endowed with a continuous eNorm.
 Note that we do not ask for the eNorm to be positive definite:

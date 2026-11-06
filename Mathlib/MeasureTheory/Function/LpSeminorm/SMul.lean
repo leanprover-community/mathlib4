@@ -120,14 +120,14 @@ variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [Module 𝕜 F] [NormSMulClass
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by
   obtain rfl | hc := eq_or_ne c 0
-  · simp [eLpNorm'_eq_lintegral_enorm, hq_pos]
+  · simp [eLpNorm'_eq_lintegral_eNorm, hq_pos]
   refine le_antisymm (eLpNorm'_const_smul_le hq_pos) <| ENNReal.mul_le_of_le_div' ?_
   simpa [eNorm_inv, hc, ENNReal.div_eq_inv_mul]
     using eLpNorm'_const_smul_le (c := c⁻¹) (f := c • f) hq_pos
 
 theorem eLpNormEssSup_const_smul (c : 𝕜) (f : α → F) :
     eLpNormEssSup (c • f) μ = ‖c‖ₑ * eLpNormEssSup f μ := by
-  simp_rw [eLpNormEssSup_eq_essSup_enorm, Pi.smul_apply, eNorm_smul,
+  simp_rw [eLpNormEssSup_eq_essSup_eNorm, Pi.smul_apply, eNorm_smul,
     ENNReal.essSup_const_mul]
 
 theorem eLpNorm_const_smul (c : 𝕜) (f : α → F) (p : ℝ≥0∞) (μ : Measure α) :
@@ -200,7 +200,7 @@ variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε] [MulActionWith
 lemma eLpNorm_const_smul_nnreal {f : α → ε} {c : ℝ≥0} :
     eLpNorm (c • f) p μ = ‖c‖ₑ * eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
-  · simpa [eNorm_smul, ← eLpNorm_enorm _ (hf.const_smul _), ← eLpNorm_enorm _ hf]
+  · simpa [eNorm_smul, ← eLpNorm_eNorm _ (hf.const_smul _), ← eLpNorm_eNorm _ hf]
       using eLpNorm_const_mul_ennreal hf.eNorm.aestronglyMeasurable
   rcases eq_or_ne c 0 with rfl | hc
   · simp

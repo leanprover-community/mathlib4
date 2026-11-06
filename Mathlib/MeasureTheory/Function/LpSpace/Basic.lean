@@ -538,7 +538,7 @@ theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
         ENNReal.zero_lt_top]
     rw [ENNReal.div_zero p_zero]
     simpa only [ENNReal.rpow_zero, eLpNorm_exponent_top] using
-      (memLp_top_const_enorm (by simp)).eLpNorm_lt_top
+      (memLp_top_const_eNorm (by simp)).eLpNorm_lt_top
   rw [eLpNorm_enorm_rpow _ hf.aestronglyMeasurable (ENNReal.toReal_pos q_zero q_top)]
   apply ENNReal.rpow_lt_top_of_nonneg ENNReal.toReal_nonneg
   rw [ENNReal.ofReal_toReal q_top, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
@@ -973,7 +973,7 @@ private lemma eNorm_LpToLpOfMeasureLeSMulₗ_apply_le
 private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) [Fact (1 ≤ p)] {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
-  simp only [← toReal_enorm]
+  simp only [← toReal_eNorm]
   rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
   grw [eNorm_LpToLpOfMeasureLeSMulₗ_apply_le]
   simp [ENNReal.mul_eq_top, hc]
@@ -1047,28 +1047,28 @@ end Composition
 namespace MeasureTheory.Lp
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
-lemma pow_mul_meas_ge_le_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (ε : ℝ≥0∞) :
+lemma pow_mul_meas_ge_le_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (ε : ℝ≥0∞) :
     (ε * μ {x | ε ≤ ‖f x‖ₑ ^ p.toReal}) ^ (1 / p.toReal) ≤ ENNReal.ofReal ‖f‖ :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     pow_mul_meas_ge_le_eLpNorm μ hp_ne_zero hp_ne_top ε
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
-lemma mul_meas_ge_le_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (ε : ℝ≥0∞) :
+lemma mul_meas_ge_le_pow_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (ε : ℝ≥0∞) :
     ε * μ {x | ε ≤ ‖f x‖ₑ ^ p.toReal} ≤ ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top ε
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
-theorem mul_meas_ge_le_pow_enorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
+theorem mul_meas_ge_le_pow_eNorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (ε : ℝ≥0∞) : ε ^ p.toReal * μ {x | ε ≤ ‖f x‖ₑ} ≤ ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
-theorem meas_ge_le_mul_pow_enorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞}
+theorem meas_ge_le_mul_pow_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖ₑ} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
-    meas_ge_le_mul_pow_eLpNorm_enorm μ hp_ne_zero hp_ne_top hε (by simp)
+    meas_ge_le_mul_pow_eLpNorm_eNorm μ hp_ne_zero hp_ne_top hε (by simp)
 
 section Star
 

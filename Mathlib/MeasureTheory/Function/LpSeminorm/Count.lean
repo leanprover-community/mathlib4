@@ -42,10 +42,10 @@ lemma eNorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
 lemma eLpNorm_count_lt_top_of_lt [Finite α]
     (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
   have := Fintype.ofFinite α
-  refine (eLpNorm_mono_enorm (by fun_prop)
+  refine (eLpNorm_mono_eNorm (by fun_prop)
     (g := fun _ ↦ Finset.univ.sup (‖f ·‖ₑ)) ?_).trans_lt ?_
   · exact fun x ↦ Finset.le_sup (f := (‖f ·‖ₑ)) (Finset.mem_univ x)
-  · exact (memLp_const_enorm <| by simp [h, LT.lt.ne]).eLpNorm_lt_top
+  · exact (memLp_const_eNorm <| by simp [h, LT.lt.ne]).eLpNorm_lt_top
 
 lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) :
     eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ :=

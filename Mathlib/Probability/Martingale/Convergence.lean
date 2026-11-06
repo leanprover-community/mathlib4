@@ -163,7 +163,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
     · have hR' : ∀ n, ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ R + ‖a‖₊ * μ Set.univ := by
         intro n
         have hb := hbdd n
-        rw [eLpNorm_one_eq_lintegral_enorm
+        rw [eLpNorm_one_eq_lintegral_eNorm
           ((hf.stronglyMeasurable n).mono (ℱ.le n)).aestronglyMeasurable] at hb
         refine (lintegral_mono ?_ : ∫⁻ ω, ‖f n ω - a‖₊ ∂μ ≤ ∫⁻ ω, ‖f n ω‖₊ + ‖a‖₊ ∂μ).trans ?_
         · intro ω

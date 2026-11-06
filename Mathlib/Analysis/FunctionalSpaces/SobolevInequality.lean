@@ -441,7 +441,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
     {p : ℝ≥0} (hp : NNReal.HolderConjugate (finrank ℝ E) p) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOneConst μ p * eLpNorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  rw [eLpNorm_one_eq_lintegral_enorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
+  rw [eLpNorm_one_eq_lintegral_eNorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ← ENNReal.coe_rpow_of_nonneg _ h0p.le, eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
     eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne' hu.continuous.aestronglyMeasurable,
@@ -544,7 +544,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
         simp (discharger := positivity) [v, Real.eNorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by
-      rw [eLpNorm_one_eq_lintegral_enorm (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable]
+      rw [eLpNorm_one_eq_lintegral_eNorm (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
       · gcongr

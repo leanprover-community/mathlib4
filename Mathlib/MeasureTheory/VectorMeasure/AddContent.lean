@@ -44,7 +44,7 @@ def of_additive_of_le_measure
   not_measurable' := h''m
   m_iUnion' f f_meas f_disj := by
     rw [hasSum_iff_tendsto_nat_of_summable_norm]; swap
-    · simp only [← toReal_enorm]
+    · simp only [← toReal_eNorm]
       apply ENNReal.summable_toReal
       apply ne_of_lt
       calc ∑' i, ‖m (f i)‖ₑ
@@ -52,7 +52,7 @@ def of_additive_of_le_measure
       _ = μ (⋃ i, f i) := (measure_iUnion f_disj f_meas).symm
       _ < ⊤ := measure_lt_top μ (⋃ i, f i)
     apply tendsto_iff_norm_sub_tendsto_zero.2
-    simp_rw [norm_sub_rev, ← toReal_enorm, ← ENNReal.toReal_zero]
+    simp_rw [norm_sub_rev, ← toReal_eNorm, ← ENNReal.toReal_zero]
     apply (ENNReal.tendsto_toReal ENNReal.zero_ne_top).comp
     have A n : m (⋃ i ∈ Finset.range n, f i) = ∑ i ∈ Finset.range n, m (f i) := by
       induction n with
@@ -351,7 +351,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
         apply ae_mono m'_le
         apply ae_eq_trim_of_measurable _ (by fun_prop) (by fun_prop)
         apply condExp_tsum (fun i ↦ ?_)
-        · simp only [eNorm_indicator_eq_indicator_enorm, Pi.one_apply, eNorm_one, f_meas,
+        · simp only [eNorm_indicator_eq_indicator_eNorm, Pi.one_apply, eNorm_one, f_meas,
             lintegral_indicator, lintegral_const, MeasurableSet.univ, Measure.restrict_apply,
             Set.univ_inter, one_mul, ne_eq, ← measure_iUnion hf f_meas, measure_ne_top,
             not_false_eq_true]
@@ -369,10 +369,10 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
         have A i : Measurable[M] (fun x ↦ ‖μ[(f i).indicator (1 : α → ℝ) | M] x‖ₑ) := by fun_prop
         simp_rw [lintegral_trim Mle (A _)]
         exact I
-      refine Summable.hasSum (Summable.of_enorm ?_)
+      refine Summable.hasSum (Summable.of_eNorm ?_)
       apply ne_of_lt (lt_of_le_of_lt ?_ I)
       gcongr with i
-      grw [eNorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+      grw [eNorm_integral_le_lintegral_eNorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
         lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop)] }
   refine ⟨m'', fun s hs ↦ ?_, fun s ↦ ?_⟩
   · simp only [coe_mk, h'C s hs, ↓reduceIte, m'']
@@ -391,7 +391,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
   · by_cases hs : MeasurableSet s; swap
     · simp [not_measurable _ hs]
     simp only [coe_mk, hs, ↓reduceIte, m'']
-    grw [eNorm_integral_le_lintegral_enorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
+    grw [eNorm_integral_le_lintegral_eNorm, ContinuousLinearMap.opENorm_lsmul_le, one_mul,
       lintegral_mono' m'_le le_rfl, hμ', lintegral_trim _ (by fun_prop),
       lintegral_enorm_condExp_indicator Mle hs]
 

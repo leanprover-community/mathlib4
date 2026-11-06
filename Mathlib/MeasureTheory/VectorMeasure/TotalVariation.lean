@@ -40,7 +40,7 @@ variable {𝓧 M : Type*} {m𝓧 : MeasurableSpace 𝓧} [NormedAddCommGroup M] 
 /-- Total variation distance between two vector measures, with value in `ℝ≥0∞`. -/
 noncomputable def etvDist (μ ν : VectorMeasure 𝓧 M) : ℝ≥0∞ := (μ - ν).variation Set.univ
 
-lemma etvDist_eq_iSup_finPartition_enorm :
+lemma etvDist_eq_iSup_finPartition_eNorm :
     etvDist μ ν = ⨆ P : Finpartition (⟨.univ, .univ⟩ : Subtype (MeasurableSet (α := 𝓧))),
       ∑ x ∈ P.parts, ‖μ x - ν x‖ₑ := by
   simp [etvDist, variation, preVariation, ennrealPreVariation,

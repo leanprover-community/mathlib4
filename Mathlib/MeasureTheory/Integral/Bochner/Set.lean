@@ -277,7 +277,7 @@ theorem tendsto_setIntegral_of_monotone₀
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnNorm,
     NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
-  refine (eNorm_integral_le_lintegral_enorm _).trans ?_
+  refine (eNorm_integral_le_lintegral_eNorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
   rw [← withDensity_apply₀ _ (hSm.diff (hsm _)), ← hν, measure_sdiff hsub hsm']
   exacts [tsub_le_iff_tsub_le.mp hi.1,

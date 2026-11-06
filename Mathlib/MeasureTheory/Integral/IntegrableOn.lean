@@ -81,11 +81,11 @@ theorem HasFiniteIntegral.restrict_of_bounded [NormedAddCommGroup E] {f : α →
 variable [NormedAddCommGroup E] {f g : α → ε} {s t : Set α} {μ ν : Measure α}
   [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem HasFiniteIntegral.restrict_of_bounded_enorm {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness)
+theorem HasFiniteIntegral.restrict_of_bounded_eNorm {C : ℝ≥0∞} (hC : ‖C‖ₑ ≠ ∞ := by finiteness)
     (hs : μ s ≠ ∞ := by finiteness) (hf : ∀ᵐ x ∂μ.restrict s, ‖f x‖ₑ ≤ C) :
     HasFiniteIntegral f (μ.restrict s) :=
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ]; exact hs.lt_top⟩
-  .of_bounded_enorm hC hf
+  .of_bounded_eNorm hC hf
 
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
@@ -114,7 +114,7 @@ theorem IntegrableOn.of_measure_zero (hs : μ s = 0) : IntegrableOn f s μ := by
 @[simp]
 theorem integrableOn_const_iff {C : ε'} (hC : ‖C‖ₑ ≠ ∞ := by finiteness) :
     IntegrableOn (fun _ ↦ C) s μ ↔ ‖C‖ₑ = 0 ∨ μ s < ∞ := by
-  rw [IntegrableOn, integrable_const_iff_enorm hC, isFiniteMeasure_restrict, lt_top_iff_ne_top]
+  rw [IntegrableOn, integrable_const_iff_eNorm hC, isFiniteMeasure_restrict, lt_top_iff_ne_top]
 
 theorem integrableOn_const {C : ε'} (hs : μ s ≠ ∞ := by finiteness)
     (hC : ‖C‖ₑ ≠ ∞ := by finiteness) : IntegrableOn (fun _ ↦ C) s μ :=
@@ -214,7 +214,7 @@ theorem integrableOn_singleton_iff {f : α → ε'} {x : α}
   have : f =ᵐ[μ.restrict {x}] fun _ => f x := by
     filter_upwards [ae_restrict_mem (measurableSet_singleton x)] with _ ha
     simp only [mem_singleton_iff.1 ha]
-  rw [IntegrableOn, integrable_congr this, integrable_const_iff_enorm, isFiniteMeasure_restrict,
+  rw [IntegrableOn, integrable_congr this, integrable_const_iff_eNorm, isFiniteMeasure_restrict,
     lt_top_iff_ne_top]
   exact hfx
 
@@ -333,8 +333,8 @@ variable {f : α → ε'}
 
 theorem integrable_indicator_iff₀ (hs : NullMeasurableSet s μ) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
-  simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_enorm,
-    eNorm_indicator_eq_indicator_enorm, lintegral_indicator₀ hs,
+  simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_eNorm,
+    eNorm_indicator_eq_indicator_eNorm, lintegral_indicator₀ hs,
     aestronglyMeasurable_indicator_iff₀ hs]
 
 theorem integrable_indicator_iff (hs : MeasurableSet s) :
@@ -479,7 +479,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ :=
   calc
-    (∫⁻ x, ENNReal.ofReal (f x) ∂μ) ≤ ∫⁻ x, ↑‖f x‖₊ ∂μ := lintegral_ofReal_le_lintegral_enorm f
+    (∫⁻ x, ENNReal.ofReal (f x) ∂μ) ≤ ∫⁻ x, ↑‖f x‖₊ ∂μ := lintegral_ofReal_le_lintegral_eNorm f
     _ < ∞ := hf.2
 
 theorem IntegrableOn.setLIntegral_lt_top {f : α → ℝ} {s : Set α} (hf : IntegrableOn f s μ) :
@@ -575,11 +575,11 @@ lemma integrableAtFilter_congr (h : f =ᵐ[μ] g) :
     IntegrableAtFilter f l μ ↔ IntegrableAtFilter g l μ :=
   ⟨(·.congr h), (·.congr h.symm)⟩
 
-lemma IntegrableAtFilter.congr'_enorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
+lemma IntegrableAtFilter.congr'_eNorm {ε'' : Type*} [TopologicalSpace ε''] [ContinuousENorm ε'']
     {g : α → ε''} (hf : IntegrableAtFilter f l μ) (hg : AEStronglyMeasurable g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ₑ = ‖g a‖ₑ) :
     IntegrableAtFilter g l μ :=
-  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_enorm hg.restrict (ae_restrict_le h)⟩
+  let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_eNorm hg.restrict (ae_restrict_le h)⟩
 
 @[simp]
 lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=

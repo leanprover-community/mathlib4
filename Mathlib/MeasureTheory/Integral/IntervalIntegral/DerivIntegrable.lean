@@ -71,7 +71,7 @@ lemma MonotoneOn.exists_tendsto_deriv_liminf_lintegral_enorm_le
       _ = liminf (fun (n : ℕ) ↦ ENNReal.ofReal (∫ (x : ℝ) in Icc a b, (G (n : ℝ)⁻¹) x)) atTop := by
         apply Filter.liminf_congr
         filter_upwards with n
-        rw [← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm (G_integrable n)]
+        rw [← MeasureTheory.ofReal_integral_norm_eq_lintegral_eNorm (G_integrable n)]
         congr with y
         exact abs_eq_self.mpr (hg.monotoneOn univ |>.slope_nonneg trivial trivial)
       _ ≤ ENNReal.ofReal (g b - g a) := by
@@ -130,7 +130,7 @@ theorem MonotoneOn.intervalIntegral_deriv_mem_uIcc {f : ℝ → ℝ} {a b : ℝ}
       (fun n ↦ (hG n).aemeasurable.eNorm)
     grw [hG'] at ebound
     rw [uIcc_of_le hab,
-        ← MeasureTheory.ofReal_integral_norm_eq_lintegral_enorm integrable_f_deriv,
+        ← MeasureTheory.ofReal_integral_norm_eq_lintegral_eNorm integrable_f_deriv,
         ENNReal.ofReal_le_ofReal_iff (by linarith),
         integral_Icc_eq_integral_Ioc,
         ← intervalIntegral.integral_of_le hab] at ebound
