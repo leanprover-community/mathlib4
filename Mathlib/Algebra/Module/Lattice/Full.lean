@@ -123,7 +123,7 @@ theorem of_le_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsFullLattice K M] (h
 lattice. -/
 instance inf [IsDomain R] [IsNoetherianRing R] (M N : Submodule R V)
     [IsFullLattice K M] [IsFullLattice K N] : IsFullLattice K (M ⊓ N) := by
-  apply of_rank_le K
+  apply of_rank_le
   have := IsLattice.finite K M
   have h := Submodule.rank_sup_add_rank_inf_eq M N
   rw [rank_eq K M, rank_eq K N, rank_eq K (M ⊔ N)] at h
