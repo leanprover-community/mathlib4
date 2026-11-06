@@ -28,6 +28,8 @@ are also differentiable almost everywhere.
   an interval of ℝ into a finite-dimensional real vector space is differentiable almost everywhere,
   with `DifferentiableAt` in its conclusion.
 * `LipschitzOnWith.ae_differentiableWithinAt` is the same result for Lipschitz functions.
+* `Function.Periodic.eVariationOn_Icc_add_one` shows that for a `1`-periodic function, every
+  window of length one has the same variation.
 
 We also give several variations around these results.
 
@@ -199,6 +201,50 @@ theorem intervalIntegrable {f : ℝ → E} {a b : ℝ} {μ : Measure ℝ} [IsLoc
   exact (hint.congr_fun heq measurableSet_uIcc).intervalIntegrable
 
 end BoundedVariationOn
+
+/-!
+### Variation of a periodic function
+-/
+
+namespace Function.Periodic
+
+variable {f : ℝ → ℝ}
+
+/-- Translating by an integer does not change the variation of a `1`-periodic function. -/
+theorem eVariationOn_Icc_add_int (hf : Periodic f 1) (n : ℤ) (a b : ℝ) :
+    eVariationOn f (Icc (a + n) (b + n)) = eVariationOn f (Icc a b) := by
+  have h := eVariationOn.comp_eq_of_monotoneOn f (· + (n : ℝ))
+    (fun x _ y _ hxy ↦ add_le_add_left hxy _ : MonotoneOn (· + (n : ℝ)) (Icc a b))
+  rw [image_add_const_Icc] at h
+  rw [← h]
+  exact congrArg (eVariationOn · (Icc a b)) (funext fun x ↦ by simpa using hf.int_mul n x)
+
+/-- For a `1`-periodic function, every window of length one has the same variation. -/
+theorem eVariationOn_Icc_add_one (hf : Periodic f 1) (β : ℝ) :
+    eVariationOn f (Icc β (β + 1)) = eVariationOn f (Icc 0 1) := by
+  have hb0 : 0 ≤ Int.fract β := Int.fract_nonneg β
+  have hb1 : Int.fract β ≤ 1 := (Int.fract_lt_one β).le
+  -- shift the window by `⌊β⌋` so that it starts inside `[0, 1]`
+  have e1 : eVariationOn f (Icc β (β + 1))
+      = eVariationOn f (Icc (Int.fract β) (Int.fract β + 1)) := by
+    rw [← hf.eVariationOn_Icc_add_int ⌊β⌋ (Int.fract β) (Int.fract β + 1),
+      show Int.fract β + (⌊β⌋ : ℝ) = β by linarith [Int.floor_add_fract β],
+      show Int.fract β + 1 + (⌊β⌋ : ℝ) = β + 1 by linarith [Int.floor_add_fract β]]
+  -- split at `1`, move the piece `[1, b + 1]` back to `[0, b]`, and reassemble `[0, 1]`
+  have h1 : eVariationOn f (Icc (Int.fract β) 1) + eVariationOn f (Icc 1 (Int.fract β + 1))
+      = eVariationOn f (Icc (Int.fract β) (Int.fract β + 1)) := by
+    simpa using eVariationOn.Icc_add_Icc f (s := univ) (a := Int.fract β) (b := (1 : ℝ))
+      (c := Int.fract β + 1) hb1 (by linarith) (mem_univ _)
+  have h0 : eVariationOn f (Icc 0 (Int.fract β)) + eVariationOn f (Icc (Int.fract β) 1)
+      = eVariationOn f (Icc 0 1) := by
+    simpa using eVariationOn.Icc_add_Icc f (s := univ) (a := (0 : ℝ)) (b := Int.fract β)
+      (c := (1 : ℝ)) hb0 hb1 (mem_univ _)
+  have hshift : eVariationOn f (Icc 1 (Int.fract β + 1))
+      = eVariationOn f (Icc 0 (Int.fract β)) := by
+    simpa using hf.eVariationOn_Icc_add_int 1 0 (Int.fract β)
+  rw [e1, ← h1, hshift, add_comm, h0]
+
+end Function.Periodic
 
 namespace LocallyBoundedVariationOn
 
