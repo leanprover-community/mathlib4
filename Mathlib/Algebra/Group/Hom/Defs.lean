@@ -201,7 +201,7 @@ library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
-to `MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
+`MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
 precisely because these lemmas are so widely applicable, they keys in the `simp` discrimination tree
 are necessarily highly non-specific. For example, the key for `map_one` is
 `@DFunLike.coe _ _ _ _ _ 1`.
@@ -907,7 +907,7 @@ theorem MulHom.id_comp [Mul M] [Mul N] (f : M →ₙ* N) : (MulHom.id N).comp f 
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.id_comp [MulOne M] [MulOne N] (f : M →* N) :
-    (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
+    (MonoidHom.id N).comp f = f := rfl
 
 @[to_additive (reorder := a n)]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :

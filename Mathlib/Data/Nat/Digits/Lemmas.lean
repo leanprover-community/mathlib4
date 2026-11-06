@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Algebra.BigOperators.Ring.List
 public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.List.Indexes
 public import Mathlib.Data.Nat.Digits.Defs
 public import Mathlib.Data.Nat.Log
 public import Mathlib.Tactic.IntervalCases
@@ -42,6 +43,13 @@ theorem ofDigits_eq_sum_mapIdx (b : ℕ) (L : List ℕ) :
   | cons hd tl hl =>
     simpa [List.range_succ_eq_map, List.zipWith_map_right, ofDigits_eq_sum_mapIdx_aux] using!
       Or.inl hl
+
+/-- The positional-value representation: `n` equals the sum `∑ aᵢ · bⁱ` where the `aᵢ`
+are the base-`b` digits of `n`. -/
+@[simp]
+theorem eq_mapIdx_digits_sum (b n : ℕ) :
+    (List.mapIdx (fun i a ↦ a * b ^ i) (digits b n)).sum = n := by
+  rw [← ofDigits_eq_sum_mapIdx b (digits b n), ofDigits_digits]
 
 /-!
 ### Properties
@@ -385,6 +393,47 @@ theorem sum_digits_ofDigits_eq_sum {b : ℕ} (hb : 1 < b) {l : ℕ} {L : List �
   nth_rewrite 2 [← (setInvOn_digitsAppend_ofDigits hb l).1 hL]
   rw [digitsAppend, List.sum_append_nat, List.sum_replicate, nsmul_zero, add_zero]
 
+theorem digitsAppend_eq_nil_iff {b l n : ℕ} :
+    digitsAppend b l n = [] ↔ n = 0 ∧ l = 0 := by
+  rw [digitsAppend, List.append_eq_nil_iff, digits_eq_nil_iff_eq_zero,
+    List.replicate_eq_nil_iff, Nat.sub_eq_zero_iff_le, and_congr_right_iff]
+  intro h
+  rw [h, digits_zero, List.length_nil, le_zero]
+
+theorem digitsAppend_ne_nil_of_ne_zero {b l n : ℕ} (hn : n ≠ 0) : digitsAppend b l n ≠ [] :=
+  fun h ↦ hn (digitsAppend_eq_nil_iff.mp h).1
+
+theorem mem_digitsAppend_of_mem_digits {b n : ℕ} (l d : ℕ) (hd : d ∈ digits b n) :
+    d ∈ digitsAppend b l n := by
+  rw [digitsAppend, List.mem_append]
+  exact Or.inl hd
+
+theorem digitsAppend_sum_eq_digits_sum (b l n : ℕ) :
+    (digitsAppend b l n).sum = (digits b n).sum := by
+  rw [digitsAppend, List.sum_append, List.sum_replicate, nsmul_zero, add_zero]
+
+/-- `digitsAppend b l n` equals `digits b n` (i.e., no zeros were appended) if and only if
+`l ≤ (digits b n).length`. -/
+theorem digitsAppend_eq_digits_iff_le {b l n : ℕ} :
+    digitsAppend b l n = digits b n ↔ l ≤ (digits b n).length := by
+  rw [digitsAppend, List.append_right_eq_self, List.replicate_eq_nil_iff, Nat.sub_eq_zero_iff_le]
+
+/-- `digitsAppend b l n` equals `digits b n` (i.e., no zeros were appended) if and only if
+the last element is nonzero. -/
+theorem digitsAppend_eq_digits_iff {b l n : ℕ} (hn : n ≠ 0) :
+    digitsAppend b l n = digits b n ↔
+      (digitsAppend b l n).getLast (digitsAppend_ne_nil_of_ne_zero hn) ≠ 0 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by grind [digitsAppend]⟩
+  rw! [h]
+  exact getLast_digit_ne_zero _ hn
+
+/-- The positional-value formula holds for `digitsAppend`: the sum `∑ aᵢ · bⁱ`, where the `aᵢ`
+are the base-`b` digits of `n`, equals `n`. -/
+@[simp]
+theorem mapIdx_digitsAppend_sum_eq (b l n : ℕ) :
+    (List.mapIdx (fun i a ↦ a * b ^ i) (digitsAppend b l n)).sum = n := by
+  simp [digitsAppend, List.mapIdx_append, List.sum_append, List.mapIdx_replicate]
+
 end Nat
 
 namespace List
@@ -413,9 +462,7 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_ofDigits' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (ofDigits b) (fixedLengthDigits hb l) (Finset.range (b ^ l)) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_ofDigits hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]; exact bijOn_ofDigits hb l
 
 /--
 The bijection `Nat.bijOn_digitsAppend` stated as a bijection between `Finset`.
@@ -423,9 +470,7 @@ This spelling can be helpful for some proofs.
 -/
 theorem _root_.Nat.bijOn_digitsAppend' {b : ℕ} (hb : 1 < b) (l : ℕ) :
     Set.BijOn (digitsAppend b l) (Finset.range (b ^ l)) (fixedLengthDigits hb l) := by
-  rw [fixedLengthDigits, Set.coe_toFinset]
-  convert bijOn_digitsAppend hb l
-  ext; simp
+  rw [fixedLengthDigits, Set.coe_toFinset, Finset.coe_range]; exact bijOn_digitsAppend hb l
 
 @[simp]
 theorem fixedLengthDigits_zero {b : ℕ} (hb : 1 < b) :

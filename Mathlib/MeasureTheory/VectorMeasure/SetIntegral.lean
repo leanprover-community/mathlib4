@@ -501,7 +501,7 @@ private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
   · simp only [Finset.mem_range, disjoint_iUnion_right, disjoint_iUnion_left]
     intro i j hi
     apply hd (by grind)
-  · apply MeasurableSet.biUnion (Finset.countable_toSet _) (fun i hi ↦ hm i)
+  · exact Finset.measurableSet_biUnion _ (fun i hi ↦ hm i)
   · apply MeasurableSet.iUnion (fun i ↦ hm _)
   · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
   · apply hfi.mono (MeasurableSet.iUnion hm) (by simp [subset_iUnion s])
@@ -547,7 +547,7 @@ theorem Integrable.tendsto_setIntegral_nhds_zero {ι : Type*}
     (hs : Tendsto (μ.variation ∘ s) l (𝓝 0)) :
     Tendsto (fun i ↦ ∫ᵛ x in s i, f x ∂[B; μ]) l (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
-  simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
+  simp_rw [← coe_nnNorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   have : Tendsto (fun i ↦ ‖B‖ₑ * ∫⁻ (x : X) in s i, ‖f x‖ₑ ∂μ.variation) l (𝓝 (‖B‖ₑ * 0)) :=
     ENNReal.Tendsto.const_mul (tendsto_setLIntegral_zero (ne_of_lt hf.2) hs) (by simp)

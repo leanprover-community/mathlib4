@@ -587,6 +587,7 @@ instance module : Module R C(α, M) := fast_instance%
 
 variable (R)
 
+set_option fun_prop.projDefaultTransparency true in
 /-- Composition on the left by a continuous linear map, as a `ContinuousLinearMap`.
 Similar to `LinearMap.compLeft`. -/
 @[simps]
@@ -815,7 +816,7 @@ variable
   {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
 
 instance instSMul' : SMul C(α, R) C(α, M) :=
-  ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
+  ⟨fun f g => ⟨fun x => f x • g x, by fun_prop⟩⟩
 
 /-- Coercion to a function for a scalar-valued continuous map multiplying a vector-valued one
 (as opposed to `ContinuousMap.coe_smul` which is multiplication by a constant scalar). -/
