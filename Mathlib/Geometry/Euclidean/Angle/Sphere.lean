@@ -306,8 +306,10 @@ a chord equals the inscribed angle subtending that chord", for oriented angles m
 represented here as equality of twice the angles. -/
 theorem two_zsmul_oangle_tangent_eq {s : Sphere P} {p₁ p₂ p₃ p₄ : P} (hp₁ : p₁ ∈ s) (hp₂ : p₂ ∈ s)
     (hp₃ : p₃ ∈ s) (htan : s.IsTangentAt p₁ line[ℝ, p₁, p₄]) (hp₄p₁ : p₄ ≠ p₁) (hp₃p₁ : p₃ ≠ p₁)
-    (hp₃p₂ : p₃ ≠ p₂) (hp₂p₁ : p₂ ≠ p₁) :
+    (hp₃p₂ : p₃ ≠ p₂) :
     (2 : ℤ) • ∡ p₄ p₁ p₂ = (2 : ℤ) • ∡ p₁ p₃ p₂ := by
+  rcases eq_or_ne p₂ p₁ with rfl | hp₂p₁
+  · simp
   have hcenter : s.center ≠ p₁ := (ne_center_of_mem_of_mem_of_ne hp₁ hp₃ hp₃p₁.symm).symm
   have hr : s.radius ≠ 0 := by rw [← mem_sphere.mp hp₁]; exact dist_ne_zero.mpr hcenter.symm
   have htan_chord : (2 : ℤ) • ∡ p₄ p₁ p₂ = π + (2 : ℤ) • ∡ s.center p₁ p₂ := by
