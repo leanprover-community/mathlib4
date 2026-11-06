@@ -168,7 +168,7 @@ instance (priority := 100) [T1Space X] : JacobsonSpace X :=
 
 lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Opens X}
     (hU : IsOpenCover U) : JacobsonSpace X ↔ ∀ i, JacobsonSpace (U i) := by
-  refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).2.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
+  refine ⟨fun H i ↦ .of_isOpenEmbedding (U i).is_open'.isOpenEmbedding_subtypeVal, fun H ↦ ?_⟩
   rw [jacobsonSpace_iff_locallyClosed]
   intro Z hZ hZ'
   rw [← hU.iUnion_inter Z, Set.nonempty_iUnion] at hZ
@@ -182,7 +182,7 @@ lemma TopologicalSpace.IsOpenCover.jacobsonSpace_iff {ι : Type*} {U : ι → Op
     apply isClosed_singleton_of_isLocallyClosed_singleton
     convert
       (hy'.isLocallyClosed.image IsEmbedding.subtypeVal.isInducing
-            (U i).2.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
+            (U i).is_open'.isOpenEmbedding_subtypeVal.isOpen_range.isLocallyClosed).preimage
         continuous_subtype_val
     ext
     simp [← Subtype.coe_inj]

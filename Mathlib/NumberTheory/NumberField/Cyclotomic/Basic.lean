@@ -439,7 +439,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   -- Let `pB` be the power basis of `𝓞 K` given by powers of `ζ`.
   let pB := hζ.integralPowerBasisOfPrimePow
   have hdim : pB.dim = p ^ k * (↑p - 1) := by
-    simp [integralPowerBasisOfPrimePow_dim, pB, Nat.totient_prime_pow hp.1 (Nat.zero_lt_succ k)]
+    simp [integralPowerBasisOfPrimePow_dim, pB, Nat.totient_prime_pow hp.out (Nat.zero_lt_succ k)]
   replace hdim : 1 < pB.dim := by
     rw [Nat.one_lt_iff_ne_zero_and_ne_one, hdim]
     refine ⟨by simp only [ne_eq, mul_eq_zero, NeZero.ne _, Nat.sub_eq_zero_iff_le, false_or,
@@ -447,8 +447,8 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     by_cases hk : k = 0
     · simp only [hk, zero_add, pow_one, pow_zero, one_mul, Nat.lt_sub_iff_add_lt,
         Nat.reduceAdd] at htwo ⊢
-      exact htwo.symm.lt_of_le hp.1.two_le
-    · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.1.one_lt hk)
+      exact htwo.symm.lt_of_le hp.out.two_le
+    · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.out.one_lt hk)
         (have := Nat.Prime.two_le hp.out; by lia)
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
@@ -465,7 +465,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     show 1 = pB.gen ^ (⟨0, by lia⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
-  exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
+  exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.out])).not_dvd_one ⟨_, h⟩
 
 /-- In a `p ^ (k + 1)`-th cyclotomic extension of `ℚ `, we have that `ζ` is not congruent to an
   integer modulo `p` if `p ≠ 2`. -/
@@ -493,7 +493,7 @@ theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
-  exact hζ.ne_one (one_lt_pow₀ hp.1.one_lt (Nat.zero_ne_add_one k).symm)
+  exact hζ.ne_one (one_lt_pow₀ hp.out.one_lt (Nat.zero_ne_add_one k).symm)
     (RingOfIntegers.ext_iff.1 h)
 
 theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
@@ -540,11 +540,11 @@ lemma toInteger_sub_one_not_dvd_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   replace h : hζ.toInteger - 1 ∣ (2 : ℤ) := by simp [h]
   rw [← Ideal.norm_dvd_iff, hζ.norm_toInteger_sub_one_of_prime_ne_two hodd] at h
   · refine hodd <| (prime_dvd_prime_iff_eq ?_ ?_).1 ?_
-    · exact Nat.prime_iff.1 hp.1
+    · exact Nat.prime_iff.1 hp.out
     · exact Nat.prime_iff.1 Nat.prime_two
     · exact Int.ofNat_dvd.mp h
   · rw [hζ.norm_toInteger_sub_one_of_prime_ne_two hodd]
-    exact Nat.prime_iff_prime_int.1 hp.1
+    exact Nat.prime_iff_prime_int.1 hp.out
 
 set_option backward.isDefEq.respectTransparency.types false in
 open IntermediateField in

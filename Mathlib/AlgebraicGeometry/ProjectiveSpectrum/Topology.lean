@@ -385,7 +385,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
           apply Ideal.sum_mem _ fun i _ => H i with ⟨i, hi⟩
         exact ⟨basicOpen 𝒜 (GradedRing.proj 𝒜 i f), ⟨i, rfl⟩, by rwa [mem_basicOpen]⟩
       · obtain ⟨_, ⟨i, rfl⟩, hz⟩ := hz
-        exact fun rid => hz (z.1.2 i rid)
+        exact fun rid => hz (z.asHomogeneousIdeal.is_homogeneous' i rid)
 
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis

@@ -588,8 +588,8 @@ theorem isMultiplyPretransitive :
   rcases Int.units_eq_one_or (Equiv.Perm.sign g) with h | h
   · exact ⟨⟨g, h⟩, hg⟩
   · have : (Finset.univ.image x)ᶜ.card = 2 := by
-      rw [Finset.card_compl, Finset.univ.card_image_of_injective (by exact x.2), Finset.card_univ,
-        ← Nat.card_eq_fintype_card, Fintype.card_fin, tsub_tsub_cancel_of_le h2]
+      rw [Finset.card_compl, Finset.univ.card_image_of_injective (by exact x.inj'),
+        Finset.card_univ, ← Nat.card_eq_fintype_card, Fintype.card_fin, tsub_tsub_cancel_of_le h2]
     obtain ⟨a, b, hab, hs⟩ := Finset.card_eq_two.mp this
     refine ⟨⟨g * Equiv.swap a b, by simp [h, hab]⟩, ?_⟩
     ext i

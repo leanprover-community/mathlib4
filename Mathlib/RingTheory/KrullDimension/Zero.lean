@@ -137,7 +137,7 @@ variable (R) in
 theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
     Subsingleton (PrimeSpectrum R) :=
   ⟨fun x y ↦ PrimeSpectrum.ext <|
-    (eq_maximalIdeal_of_isPrime x.1).trans (eq_maximalIdeal_of_isPrime y.1).symm⟩
+    (eq_maximalIdeal_of_isPrime x.asIdeal).trans (eq_maximalIdeal_of_isPrime y.asIdeal).symm⟩
 
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal R :=

@@ -226,11 +226,11 @@ def symm (e : A ≃A[R] B) : B ≃A[R] A where
 
 @[simp]
 theorem apply_symm_apply (e : A ≃A[R] B) (b : B) : e (e.symm b) = b :=
-  e.1.right_inv b
+  e.toAlgEquiv.right_inv b
 
 @[simp]
 theorem symm_apply_apply (e : A ≃A[R] B) (a : A) : e.symm (e a) = a :=
-  e.1.left_inv a
+  e.toAlgEquiv.left_inv a
 
 @[simp]
 theorem symm_image_image (e : A ≃A[R] B) (S : Set A) : e.symm '' e '' S = S :=

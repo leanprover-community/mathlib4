@@ -370,7 +370,7 @@ noncomputable def endMulEquivAutGalois : End F ≃* (AutGalois F)ᵐᵒᵖ :=
   MulEquiv.mk (Equiv.trans (endEquivAutGalois F) MulOpposite.opEquiv) (by simp)
 
 lemma endMulEquivAutGalois_pi (f : End F) (A : PointedGaloisObject F) :
-    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.2 = f.asHom.app A A.pt :=
+    F.map (AutGalois.π F A (endMulEquivAutGalois F f).unop).asIso.hom A.pt = f.asHom.app A A.pt :=
   endEquivAutGalois_π F f A
 
 /-- Any endomorphism of a fiber functor is a unit. -/

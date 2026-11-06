@@ -328,7 +328,7 @@ universal property of pullbacks. -/
 def isLimitPullbackCone : IsLimit (pullbackCone f g pb) := by
   refine PullbackCone.IsLimit.mk
     (fst := (pullbackCone f g pb).fst) (snd := (pullbackCone f g pb).snd) _
-    (fun s ↦ (homPullbackEquiv f g pb hpb s.pt).2 ⟨(s.fst, s.snd), s.condition⟩)
+    (fun s ↦ (homPullbackEquiv f g pb hpb s.pt).invFun ⟨(s.fst, s.snd), s.condition⟩)
     (fun s ↦ congrArg (·.1.fst)
       ((homPullbackEquiv f g pb hpb s.pt).right_inv ⟨(s.fst, s.snd), s.condition⟩))
     (fun s ↦ congrArg (·.1.snd)

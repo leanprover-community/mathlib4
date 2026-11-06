@@ -418,7 +418,7 @@ theorem comap_const (f : C(X, Y)) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
   ext; simp [h]
 
-lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
+lemma comap_injective (f : C(X, Y)) (hfs : f.toFun.Surjective) :
     (comap (Z := Z) f).Injective := by
   intro a b h
   ext y
@@ -457,7 +457,8 @@ noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
   isLocallyConstant := fun s => by
     rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
-    exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
+    exact ((f.isLocallyConstant s).inter hU.isOpen).union
+      ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 
 variable (a : X)
 
@@ -514,8 +515,8 @@ a two-element set
 -/
 def equivClopens [∀ (s : Set X) x, Decidable (x ∈ s)] :
     LocallyConstant X (Fin 2) ≃ TopologicalSpace.Clopens X where
-  toFun f := ⟨f ⁻¹' {0}, f.2.isClopen_fiber _⟩
-  invFun s := ofIsClopen s.2
+  toFun f := ⟨f ⁻¹' {0}, f.isLocallyConstant.isClopen_fiber _⟩
+  invFun s := ofIsClopen s.isClopen'
   left_inv _ := locallyConstant_eq_of_fiber_zero_eq _ _ (by simp)
   right_inv _ := by simp
 

@@ -60,7 +60,7 @@ theorem disjoint_iff_ne : Disjoint s t ↔ ∀ a ∈ s, ∀ b ∈ t, a ≠ b := 
   simp only [disjoint_left, imp_not_comm, forall_eq']
 
 @[simp]
-theorem disjoint_val : Disjoint s.1 t.1 ↔ Disjoint s t :=
+theorem disjoint_val : Disjoint s.val t.val ↔ Disjoint s t :=
   Multiset.disjoint_left.trans disjoint_left.symm
 
 theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb : b ∈ t) : a ≠ b :=
@@ -129,7 +129,7 @@ It is the same as `s ∪ t`, but it does not require decidable equality on the t
 ensures that the sets are disjoint. -/
 @[simps]
 def disjUnion (s t : Finset α) (h : Disjoint s t) : Finset α :=
-  ⟨s.1 + t.1, Multiset.nodup_add.2 ⟨s.2, t.2, disjoint_val.2 h⟩⟩
+  ⟨s.val + t.val, Multiset.nodup_add.2 ⟨s.nodup, t.nodup, disjoint_val.2 h⟩⟩
 
 @[simp, grind =]
 theorem mem_disjUnion {α s t h a} : a ∈ @disjUnion α s t h ↔ a ∈ s ∨ a ∈ t := by

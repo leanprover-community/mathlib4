@@ -80,7 +80,7 @@ I would love to print `tac` with another colour, e.g. the keyword highlighting u
 but I have no idea how to do this.
 -/
 def tacticToHtml (tac : TSyntax `tactic) : MetaM ProofWidgets.Html := do
-  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.1.getKind
+  formatToHtmlWithDoc (← PrettyPrinter.ppTactic tac) tac.raw.getKind
 
 end
 

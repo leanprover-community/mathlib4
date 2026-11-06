@@ -42,7 +42,7 @@ theorem jacobiTheta_T_sq_smul (τ : ℍ) : jacobiTheta (ModularGroup.T ^ 2 • �
 
 theorem jacobiTheta_S_smul (τ : ℍ) :
     jacobiTheta ↑(ModularGroup.S • τ) = (-I * τ) ^ (1 / 2 : ℂ) * jacobiTheta τ := by
-  have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.2)
+  have h0 : (τ : ℂ) ≠ 0 := ne_of_apply_ne im (zero_im.symm ▸ ne_of_gt τ.coe_im_pos)
   have h1 : (-I * τ) ^ (1 / 2 : ℂ) ≠ 0 := by
     rw [Ne, cpow_eq_zero_iff, not_and_or]
     exact Or.inl <| mul_ne_zero (neg_ne_zero.mpr I_ne_zero) h0

@@ -208,6 +208,6 @@ lemma not_dvd_discr_iff_forall_mem [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp 
   rw [NumberField.not_dvd_discr_iff_forall_liesOver K 𝒪 hp]
   exact ⟨fun H P hP h ↦ H P (hP.isMaximal (by aesop))
     ((Ideal.liesOver_span_iff hP.ne_top hp).mpr h),
-    fun H P _ h ↦ H P _ (h.1.le (Ideal.mem_span_singleton_self _))⟩
+    fun H P _ h ↦ H P _ (h.over.le (Ideal.mem_span_singleton_self _))⟩
 
 end NumberField

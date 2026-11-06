@@ -30,7 +30,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   let S := { s | IsPartialOrder α s }
   have hS : ∀ c, c ⊆ S → IsChain (· ≤ ·) c → ∀ y ∈ c, ∃ ub ∈ S, ∀ z ∈ c, z ≤ ub := by
     rintro c hc₁ hc₂ s hs
-    have := (hc₁ hs).1
+    have := (hc₁ hs).toIsPreorder
     refine ⟨sSup c, ?_, fun z hz => le_sSup hz⟩
     refine
         { refl := ?_
@@ -81,10 +81,13 @@ def LinearExtension (α : Type u) : Type u :=
 
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
-  le_refl := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.1.1
-  le_trans := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.1.2.1
-  le_antisymm := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.1.2.1
-  le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.2.1
+  le_refl := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toIsPreorder.toRefl.refl
+  le_trans := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toIsPreorder.toIsTrans.trans
+  le_antisymm := extend_partialOrder ((· ≤ ·) : α → α → Prop)
+    |>.choose_spec.1.toIsPartialOrder.toAntisymm.antisymm
+  le_total := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.1.toTotal.total
   toDecidableLE := Classical.decRel _
 
 /-- The embedding of `α` into `LinearExtension α` as an order homomorphism. -/

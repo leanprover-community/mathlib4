@@ -230,7 +230,8 @@ lemma Submodule.codisjoint_span_image_of_codisjoint (hv : Submodule.span R (Set.
 lemma LinearIndependent.isCompl_span_image (h₁ : LinearIndependent R v)
     (h₂ : Submodule.span R (Set.range v) = ⊤) {s t : Set ι} (hst : IsCompl s t) :
     IsCompl (Submodule.span R (v '' s)) (Submodule.span R (v '' t)) :=
-  ⟨h₁.disjoint_span_image hst.1, Submodule.codisjoint_span_image_of_codisjoint h₂ hst.2⟩
+  ⟨h₁.disjoint_span_image hst.disjoint,
+    Submodule.codisjoint_span_image_of_codisjoint h₂ hst.codisjoint⟩
 
 end Semiring
 

@@ -126,7 +126,7 @@ theorem coverDense_iff_isBasis [Category* ι] (B : ι ⥤ Opens X) :
     B.IsCoverDense (Opens.grothendieckTopology X) ↔ Opens.IsBasis (Set.range B.obj) := by
   rw [Opens.isBasis_iff_nbhd]
   constructor
-  · intro hd U x hx; rcases hd.1 U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
+  · intro hd U x hx; rcases hd.is_cover U x hx with ⟨V, f, ⟨i, f₁, f₂, _⟩, hV⟩
     exact ⟨B.obj i, ⟨i, rfl⟩, f₁.le hV, f₂.le⟩
   intro hb; constructor; intro U x hx; rcases hb hx with ⟨_, ⟨i, rfl⟩, hx, hi⟩
   exact ⟨B.obj i, ⟨⟨hi⟩⟩, ⟨⟨i, 𝟙 _, ⟨⟨hi⟩⟩, rfl⟩⟩, hx⟩
@@ -237,19 +237,19 @@ is a sheaf on `X`, then a homomorphism between a presheaf `F` on `X` and `F'`
 is equivalent to a homomorphism between their restrictions to the indexing type
 `ι` of `B`, with the induced category structure on `ι`. -/
 def restrictHomEquivHom (h : Opens.IsBasis (Set.range B)) :
-    ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) ≃ (F ⟶ F'.1) :=
+    ((inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.obj) ≃ (F ⟶ F'.obj) :=
   @Functor.IsCoverDense.restrictHomEquivHom _ _ _ _ _ _ _ _
     (Opens.coverDense_inducedFunctor h) _ F F'
 
 @[simp]
 theorem extend_hom_app (h : Opens.IsBasis (Set.range B))
-    (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.1) (i : ι) :
+    (α : (inducedFunctor B).op ⋙ F ⟶ (inducedFunctor B).op ⋙ F'.obj) (i : ι) :
     (restrictHomEquivHom F F' h α).app (op (B i)) = α.app (op i) := by
   nth_rw 2 [← (restrictHomEquivHom F F' h).left_inv α]
   rfl
 
 theorem hom_ext (h : Opens.IsBasis (Set.range B))
-    {α β : F ⟶ F'.1} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
+    {α β : F ⟶ F'.obj} (he : ∀ i, α.app (op (B i)) = β.app (op (B i))) : α = β := by
   apply (restrictHomEquivHom F F' h).symm.injective
   ext i
   exact he i.unop

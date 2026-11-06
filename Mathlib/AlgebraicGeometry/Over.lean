@@ -47,7 +47,7 @@ abbrev Hom.IsOver (f : X.Hom Y) (S : Scheme.{u}) [X.Over S] [Y.Over S] := HomIsO
 
 @[simp]
 lemma Hom.isOver_iff [X.Over S] [Y.Over S] {f : X ⟶ Y} : f.IsOver S ↔ f ≫ Y ↘ S = X ↘ S :=
-  ⟨fun H ↦ H.1, fun h ↦ ⟨h⟩⟩
+  ⟨fun H ↦ H.comp_over, fun h ↦ ⟨h⟩⟩
 
 /-! Also note the existence of `CategoryTheory.IsOverTower X Y S`. -/
 

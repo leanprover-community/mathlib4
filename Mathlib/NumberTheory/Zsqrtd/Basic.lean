@@ -94,7 +94,7 @@ theorem im_sqrtd : (sqrtd : ℤ√d).im = 1 :=
 
 /-- Addition of elements of `ℤ√d` -/
 instance : Add (ℤ√d) :=
-  ⟨fun z w => ⟨z.1 + w.1, z.2 + w.2⟩⟩
+  ⟨fun z w => ⟨z.re + w.re, z.im + w.im⟩⟩
 
 @[simp]
 theorem add_def (x y x' y' : ℤ) : (⟨x, y⟩ + ⟨x', y'⟩ : ℤ√d) = ⟨x + x', y + y'⟩ :=
@@ -110,7 +110,7 @@ theorem im_add (z w : ℤ√d) : (z + w).im = z.im + w.im :=
 
 /-- Negation in `ℤ√d` -/
 instance : Neg (ℤ√d) :=
-  ⟨fun z => ⟨-z.1, -z.2⟩⟩
+  ⟨fun z => ⟨-z.re, -z.im⟩⟩
 
 @[simp]
 theorem re_neg (z : ℤ√d) : (-z).re = -z.re :=
@@ -122,7 +122,7 @@ theorem im_neg (z : ℤ√d) : (-z).im = -z.im :=
 
 /-- Multiplication in `ℤ√d` -/
 instance : Mul (ℤ√d) :=
-  ⟨fun z w => ⟨z.1 * w.1 + d * z.2 * w.2, z.1 * w.2 + z.2 * w.1⟩⟩
+  ⟨fun z w => ⟨z.re * w.re + d * z.im * w.im, z.re * w.im + z.im * w.re⟩⟩
 
 @[simp]
 theorem re_mul (z w : ℤ√d) : (z * w).re = z.re * w.re + d * z.im * w.im :=
@@ -201,7 +201,7 @@ instance : Distrib (ℤ√d) := by infer_instance
 
 /-- Conjugation in `ℤ√d`. The conjugate of `a + b √d` is `a - b √d`. -/
 instance : Star (ℤ√d) where
-  star z := ⟨z.1, -z.2⟩
+  star z := ⟨z.re, -z.im⟩
 
 @[simp]
 theorem star_mk (x y : ℤ) : star (⟨x, y⟩ : ℤ√d) = ⟨x, -y⟩ :=
@@ -861,7 +861,7 @@ root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of 
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
   toFun r :=
-    { toFun := fun a => a.1 + a.2 * (r : R)
+    { toFun := fun a => a.re + a.im * (r : R)
       map_zero' := by simp
       map_add' := fun a b => by
         simp only [re_add, Int.cast_add, im_add]

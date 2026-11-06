@@ -26,18 +26,18 @@ namespace Set.Ici
 lemma isSuccLimit_coe {J : Type u} [LinearOrder J] {j : J}
     (m : Set.Ici j) (hm : Order.IsSuccLimit m) :
     Order.IsSuccLimit m.1 :=
-  ⟨Set.not_isMin_coe _ hm.1, fun b ↦ by
+  ⟨Set.not_isMin_coe _ hm.not_isMin, fun b ↦ by
     simp only [CovBy, not_lt, not_and, not_forall, not_le]
     intro hb
     by_cases hb' : j ≤ b
-    · have := hm.2 ⟨b, hb'⟩
+    · have := hm.isSuccPrelimit ⟨b, hb'⟩
       rw [not_covBy_iff (by exact hb)] at this
       obtain ⟨⟨x, h₁⟩, h₂, h₃⟩ := this
       refine ⟨x, h₂, h₃⟩
     · simp only [not_le] at hb'
       refine ⟨j, hb', ?_⟩
       by_contra!
-      apply hm.1
+      apply hm.not_isMin
       rintro ⟨k, hk⟩ _
       exact this.trans (by simpa using hk)⟩
 

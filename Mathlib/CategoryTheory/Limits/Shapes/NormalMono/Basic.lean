@@ -129,7 +129,7 @@ def NormalMono.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [← reassoc_of% this, hf.w, comp_zero]
   isLimit := by
-    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isLimit
+    refine (IsLimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isLimit
     · exact parallelPair.ext (Arrow.rightFunc.mapIso e) (Iso.refl _)
     · exact Fork.ext (Arrow.leftFunc.mapIso e)
 
@@ -253,7 +253,7 @@ def NormalEpi.ofArrowIso {X Y : C} {f : X ⟶ Y}
     dsimp at this
     rw [Category.assoc, this, reassoc_of% hf.w, zero_comp]
   isColimit := by
-    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).1 hf.isColimit
+    refine (IsColimit.equivOfNatIsoOfIso ?_ _ _ ?_).toFun hf.isColimit
     · exact parallelPair.ext (Iso.refl _) (Arrow.leftFunc.mapIso e)
     · exact Cofork.ext (Arrow.rightFunc.mapIso e) (by simp [Cofork.π])
 

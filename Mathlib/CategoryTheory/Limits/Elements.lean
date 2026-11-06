@@ -46,11 +46,11 @@ variable (F : I ⥤ A.Elements)
 
 /-- (implementation) A system `(Fi, fi)_i` of elements induces an element in `lim_i A(Fi)`. -/
 noncomputable def liftedConeElement' : limit ((F ⋙ π A) ⋙ A) :=
-  Types.Limit.mk _ (fun i => (F.obj i).2) (by simp)
+  Types.Limit.mk _ (fun i => (F.obj i).val) (by simp)
 
 @[simp]
 lemma π_liftedConeElement' (i : I) :
-    dsimp% limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).2 :=
+    dsimp% limit.π ((F ⋙ π A) ⋙ A) i (liftedConeElement' F) = (F.obj i).val :=
   Types.Limit.π_mk _ _ _ _
 
 variable [HasLimitsOfShape I C] [PreservesLimitsOfShape I A]

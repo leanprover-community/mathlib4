@@ -106,7 +106,7 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
         (π : S' ⟶ S) (_ : Function.Surjective π) (g' : P ⊗ (free R).obj S'.toCondensed ⟶ A),
           (P ◁ ((lightProfiniteToLightCondSet ⋙ free R).map π)) ≫ g = g' ≫ e) := by
   refine ⟨fun ⟨h⟩ A B e he S g ↦ ?_, fun h ↦ ⟨⟨fun {A B} e he ↦ ?_⟩⟩⟩
-  · have hh := h.1 e
+  · have hh := h.preserves e
     rw [LightCondMod.epi_iff_locallySurjective_on_lightProfinite] at hh
     specialize hh S ((ihomPoints R P B S).symm g)
     obtain ⟨S', π, hπ, g', hh⟩ := hh

@@ -41,7 +41,7 @@ def map (I : HomogeneousIdeal 𝒜) : HomogeneousIdeal ℬ where
     | mem a ha =>
       obtain ⟨a, ha, rfl⟩ := ha
       rw [← f.map_directSumDecompose]
-      exact Ideal.mem_map_of_mem _ (I.2 _ ha)
+      exact Ideal.mem_map_of_mem _ (I.is_homogeneous' _ ha)
     | smul a₁ a₂ ha₂ ih =>
       classical rw [smul_eq_mul, DirectSum.decompose_mul, DirectSum.coe_mul_apply]
       exact sum_mem fun ij hij ↦ Ideal.mul_mem_left _ _ <| ih _
@@ -53,7 +53,7 @@ def comap (I : HomogeneousIdeal ℬ) : HomogeneousIdeal 𝒜 where
   __ := I.toIdeal.comap f
   is_homogeneous' n a ha := by
     rw [Ideal.mem_comap, HomogeneousIdeal.mem_iff, f.map_directSumDecompose]
-    exact I.2 _ ha
+    exact I.is_homogeneous' _ ha
 
 variable {I : HomogeneousIdeal 𝒜} {J : HomogeneousIdeal ℬ}
   {K : HomogeneousIdeal 𝒞}

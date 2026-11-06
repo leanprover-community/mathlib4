@@ -69,7 +69,7 @@ def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card �
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
-      mem_univ_val univ.2
+      mem_univ_val univ.nodup
 
 /-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
@@ -98,7 +98,7 @@ def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bi
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getBijectionOfForallMemList _ h))
-      mem_univ_val univ.2
+      mem_univ_val univ.nodup
 
 end Fintype
 
@@ -343,7 +343,7 @@ namespace Function.Embedding
 
 /-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
 noncomputable def equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
-  Equiv.ofBijective e e.2.bijective_of_finite
+  Equiv.ofBijective e e.inj'.bijective_of_finite
 
 @[simp]
 theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
@@ -584,7 +584,7 @@ theorem not_injective_infinite_finite {α β} [Infinite α] [Finite β] (f : α 
   fun hf => (Finite.of_injective f hf).false
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
-  ⟨fun f => not_injective_infinite_finite f f.2⟩
+  ⟨fun f => not_injective_infinite_finite f f.inj'⟩
 
 theorem not_surjective_finite_infinite {α β} [Finite α] [Infinite β] (f : α → β) : ¬Surjective f :=
   fun hf => (Infinite.of_surjective f hf).not_finite ‹_›

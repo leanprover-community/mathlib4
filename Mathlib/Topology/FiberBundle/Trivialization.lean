@@ -219,7 +219,7 @@ theorem mk_mem_target {x : B} {y : F} : (x, y) ∈ e'.target ↔ x ∈ e'.baseSe
 
 @[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e' : Pretrivialization F (π F E)) (h : x ∈ e'.baseSet) :
-    (e'.toPartialEquiv.symm (x, y)).1 = x :=
+    (e'.toPartialEquiv.symm (x, y)).proj = x :=
   e'.proj_symm_apply' h
 
 section Nonempty
@@ -232,11 +232,11 @@ open scoped Classical in
 chosen junk values. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
-    cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).2
+    cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).snd
   else Classical.arbitrary _
 
 theorem symm_apply (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
-    e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).2 :=
+    e.symm b y = cast (congr_arg E (e.symm_coe_proj hb)) (e.toPartialEquiv.symm (b, y)).snd :=
   dite_eq_left hb
 
 @[deprecated "The junk values of `Pretrivialization.symm` were changed from `0` to
@@ -261,7 +261,7 @@ theorem mk_symm (e : Pretrivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet
 
 @[simp, mfld_simps]
 theorem symm_proj_apply (e : Pretrivialization F (π F E)) (z : TotalSpace F E)
-    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 := by
+    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.snd := by
   rw [e.symm_apply hz, cast_eq_iff_heq, e.mk_proj_snd' hz, e.symm_apply_apply (e.mem_source.mpr hz)]
 
 @[simp, mfld_simps]
@@ -673,7 +673,7 @@ theorem symm_apply_apply {x : TotalSpace F E} (hx : x ∈ e'.source) :
 
 @[simp, mfld_simps]
 theorem symm_coe_proj {x : B} {y : F} (e : Trivialization F (π F E)) (h : x ∈ e.baseSet) :
-    (e.toOpenPartialHomeomorph.symm (x, y)).1 = x :=
+    (e.toOpenPartialHomeomorph.symm (x, y)).proj = x :=
   e.proj_symm_apply' h
 
 section Nonempty
@@ -688,7 +688,7 @@ protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F)
 
 theorem symm_apply (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (y : F) :
     e.symm b y =
-      cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).2 :=
+      cast (congr_arg E (e.symm_coe_proj hb)) (e.toOpenPartialHomeomorph.symm (b, y)).snd :=
   dite_eq_left hb
 
 @[deprecated "The junk values of `Trivialization.symm` were changed from `0` to
@@ -705,7 +705,7 @@ theorem mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.baseSet) (
 
 @[simp, mfld_simps]
 theorem symm_proj_apply (e : Trivialization F (π F E)) (z : TotalSpace F E)
-    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.2 :=
+    (hz : z.proj ∈ e.baseSet) : e.symm z.proj (e z).2 = z.snd :=
   e.toPretrivialization.symm_proj_apply z hz
 
 @[simp, mfld_simps]

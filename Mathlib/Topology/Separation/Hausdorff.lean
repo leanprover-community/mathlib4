@@ -286,7 +286,7 @@ theorem Ultrafilter.lim_eq_iff_le_nhds [CompactSpace X] {x : X} {F : Ultrafilter
   ⟨fun h => h ▸ F.le_nhds_lim, lim_eq⟩
 
 theorem isOpen_iff_ultrafilter' [CompactSpace X] (U : Set X) :
-    IsOpen U ↔ ∀ F : Ultrafilter X, F.lim ∈ U → U ∈ F.1 := by
+    IsOpen U ↔ ∀ F : Ultrafilter X, F.lim ∈ U → U ∈ F.toFilter := by
   rw [isOpen_iff_ultrafilter]
   refine ⟨fun h F hF => h F.lim hF F F.le_nhds_lim, ?_⟩
   intro cond x hx f h

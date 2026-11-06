@@ -35,7 +35,7 @@ protected abbrev Small (P : ObjectProperty C) : Prop := _root_.Small.{w} (Subtyp
 
 instance (P : ObjectProperty C) [ObjectProperty.Small.{w} P] :
     Small.{w} P.FullSubcategory :=
-  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.1, x.2⟩, rfl⟩)
+  small_of_surjective (f := fun (x : Subtype P) ↦ ⟨x.1, x.2⟩) (fun x ↦ ⟨⟨x.obj, x.property⟩, rfl⟩)
 
 lemma Small.of_le {P Q : ObjectProperty C} [ObjectProperty.Small.{w} Q] (h : P ≤ Q) :
     ObjectProperty.Small.{w} P :=
@@ -253,8 +253,8 @@ lemma EssentiallySmall.of_functor (P : ObjectProperty C) (F : C ⥤ D)
     (H₁ : ObjectProperty.EssentiallySmall.{w} (P.map F))
     (H₂ : ∀ Y : D, ObjectProperty.EssentiallySmall.{w} (P ⊓ (Nonempty <| F.obj · ≅ Y))) :
     ObjectProperty.EssentiallySmall.{w} P := by
-  choose P₁ hP₁ x hP₁x hx using H₁.1
-  choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).1
+  choose P₁ hP₁ x hP₁x hx using H₁.exists_small_le'
+  choose P₂ hP₂ y hP₂y hy using fun Y ↦ (H₂ Y).exists_small_le'
   let f : Subtype P → Σ i : Subtype P₁, Subtype (P₂ i.1) := fun c ↦
     ⟨⟨_, hP₁x _ _⟩, _, hP₂y _ c ⟨c.2, hx _ ⟨_, c.2, ⟨.refl _⟩⟩⟩⟩
   let g : (Σ i : Subtype P₁, Subtype (P₂ i.1)) → C := fun i ↦ i.2.1
@@ -294,7 +294,7 @@ lemma essentiallySmall_iff_objectPropertyEssentiallySmall :
       ObjectProperty.EssentiallySmall.{w} (C := C) ⊤ := by
   wlog hC : LocallySmall.{w} C; · simp [essentiallySmall_iff, hC]
   simp only [hC, ← exists_equivalence_iff_of_locallySmall, true_and]
-  refine ⟨fun H ↦ H.1, fun H ↦ ⟨H⟩⟩
+  refine ⟨fun H ↦ H.equiv_smallCategory, fun H ↦ ⟨H⟩⟩
 
 lemma EssentiallySmall.of_functor (F : C ⥤ D)
     [LocallySmall.{w} C] (H₁ : ObjectProperty.EssentiallySmall.{w} F.essImage)

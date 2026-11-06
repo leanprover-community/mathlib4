@@ -158,7 +158,7 @@ theorem isInducing_postcomp (g : C(Y, Z)) (hg : IsInducing g) :
 then the composition `ContinuousMap.comp g : C(X, Y) → C(X, Z)` is an embedding too. -/
 theorem isEmbedding_postcomp (g : C(Y, Z)) (hg : IsEmbedding g) :
     IsEmbedding (g.comp : C(X, Y) → C(X, Z)) :=
-  ⟨isInducing_postcomp g hg.1, postcomp_injective g hg.2⟩
+  ⟨isInducing_postcomp g hg.toIsInducing, postcomp_injective g hg.injective⟩
 
 /-- `C(·, Z)` is a functor. -/
 @[continuity, fun_prop]

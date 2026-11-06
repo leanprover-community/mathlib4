@@ -46,12 +46,12 @@ Here we construct its `Units` structure. -/
 @[simps! val]
 def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
   Units.copy -- to make `add_val` true definitionally, for convenience
-    (x * Units.oneSub (-((x⁻¹).1 * t)) (by
+    (x * Units.oneSub (-((x⁻¹).val * t)) (by
       nontriviality R using zero_lt_one
       have hpos : 0 < ‖(↑x⁻¹ : R)‖ := Units.norm_pos x⁻¹
       calc
         ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
-        _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).1 _
+        _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).val _
         _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
         _ = 1 := mul_inv_cancel₀ (ne_of_gt hpos)))
     (x + t) (by simp [mul_add]) _ rfl

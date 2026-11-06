@@ -237,7 +237,7 @@ nonrec lemma Scheme.Hom.isLocallyConstant_finrank [LocallyOfFinitePresentation f
     obtain ⟨R, g, _, x, rfl⟩ := Y.exists_Spec_apply_eq y
     simp_rw [IsLocallyConstant.iff_exists_open] at this
     obtain ⟨U, hU, hxU, H⟩ := this (pullback.snd f g) ⟨_, rfl⟩ x
-    refine ⟨g ''ᵁ ⟨U, hU⟩, (g ''ᵁ ⟨U, hU⟩).2, ⟨x, hxU, rfl⟩, fun y ↦ ?_⟩
+    refine ⟨g ''ᵁ ⟨U, hU⟩, (g ''ᵁ ⟨U, hU⟩).is_open', ⟨x, hxU, rfl⟩, fun y ↦ ?_⟩
     rintro ⟨y', (hyU : y' ∈ U), (rfl : g y' = y)⟩
     rw [← finrank_pullback_snd _ g, ← finrank_pullback_snd _ g]
     exact H y' hyU

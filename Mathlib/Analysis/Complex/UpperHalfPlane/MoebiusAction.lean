@@ -84,7 +84,7 @@ lemma moebius_im (g : GL (Fin 2) ℝ) (z : ℂ) :
     (num g z / denom g z).im = g.det.val * z.im / Complex.normSq (denom g z) := by
   simp only [num, denom, Complex.div_im, Complex.add_im, Complex.mul_im, Complex.ofReal_re,
     Complex.ofReal_im, zero_mul, add_zero, Complex.add_re, Complex.mul_re, sub_zero, ← sub_div,
-    GeneralLinearGroup.val_det_apply, g.1.det_fin_two]
+    GeneralLinearGroup.val_det_apply, g.val.det_fin_two]
   ring
 
 /-- Automorphism of `ℂ`: the identity if `0 < det g` and conjugation otherwise. -/

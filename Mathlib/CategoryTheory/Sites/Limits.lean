@@ -66,7 +66,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
     Cone (F ⋙ sheafToPresheaf J D ⋙ (evaluation Cᵒᵖ D).obj (op X)) where
   pt := S.pt
   π :=
-    { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).1 W (F.obj k).2).lift <|
+    { app := fun k => (Presheaf.isLimitOfIsSheaf J (F.obj k).obj W (F.obj k).property).lift <|
         Multifork.ofι _ S.pt (fun i => S.ι i ≫ (E.π.app k).app (op i.Y))
           (by
             intro i
@@ -80,7 +80,7 @@ def multiforkEvaluationCone (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPreshe
         intro i j f
         dsimp [Presheaf.isLimitOfIsSheaf]
         rw [Category.id_comp]
-        apply Presheaf.IsSheaf.hom_ext (F.obj j).2 W
+        apply Presheaf.IsSheaf.hom_ext (F.obj j).property W
         intro ii
         rw [Presheaf.IsSheaf.amalgamate_map, Category.assoc, ← (F.map f).hom.naturality, ←
           Category.assoc, Presheaf.IsSheaf.amalgamate_map]
@@ -119,7 +119,7 @@ def isLimitMultiforkOfIsLimit (F : K ⥤ Sheaf J D) (E : Cone (F ⋙ sheafToPres
       intro k
       dsimp
       erw [(isLimitOfPreserves ((evaluation Cᵒᵖ D).obj (op X)) hE).fac]
-      apply Presheaf.IsSheaf.hom_ext (F.obj k).2 W
+      apply Presheaf.IsSheaf.hom_ext (F.obj k).property W
       intro i
       dsimp only [multiforkEvaluationCone, Presheaf.isLimitOfIsSheaf]
       rw [(F.obj k).property.amalgamate_map]

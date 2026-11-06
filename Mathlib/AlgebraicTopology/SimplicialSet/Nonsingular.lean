@@ -138,7 +138,7 @@ variable [X.Nonsingular] {x y z : X.N} (h : x ≤ y)
 
 include h in
 lemma existsUnique_of_le :
-    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Mono f ∧ X.map f.op y.1.2 = x.1.2 :=
+    ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Mono f ∧ X.map f.op y.toS.simplex = x.toS.simplex :=
   existsUnique_of_exists_of_unique (by
     obtain ⟨f, _, hf⟩ := le_iff_exists_mono.1 h
     exact ⟨f, inferInstance, hf⟩) (fun f₁ f₂ ⟨_, hf₁⟩ ⟨_, hf₂⟩ ↦ by

@@ -225,9 +225,9 @@ public lemma IsLeviCivitaConnection.apply_eq
   have eq2a := h.isMetricCompatible.mvfderiv_inner_eq Y hZ hX
   have eq3a := h.isMetricCompatible.mvfderiv_inner_eq Z hX hY
   -- use the torsion-freeness in three ways
-  have eq1b := congr(inner ℝ (Y x) ($(h.2) x (X x) (Z x)))
-  have eq2b := congr(inner ℝ (Z x) ($(h.2) x (Y x) (X x)))
-  have eq3b := congr(inner ℝ (X x) ($(h.2) x (Z x) (Y x)))
+  have eq1b := congr(inner ℝ (Y x) ($(h.torsion) x (X x) (Z x)))
+  have eq2b := congr(inner ℝ (Z x) ($(h.torsion) x (Y x) (X x)))
+  have eq3b := congr(inner ℝ (X x) ($(h.torsion) x (Z x) (Y x)))
   -- combine
   simp (disch := fun_prop) [real_inner_comm, inner_sub_right, torsion_apply] at *
   linear_combination - (eq1a + eq1b + eq2a + eq2b - eq3a - eq3b) / 2

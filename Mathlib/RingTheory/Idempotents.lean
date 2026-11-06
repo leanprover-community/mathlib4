@@ -314,7 +314,8 @@ lemma CompleteOrthogonalIdempotents.lift_of_isNilpotent_ker_aux
     simp at hn
   rcases n with - | n
   · simpa using he.complete
-  obtain ⟨e', h₁, h₂⟩ := OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.1 he'
+  obtain ⟨e', h₁, h₂⟩ :=
+    OrthogonalIdempotents.lift_of_isNilpotent_ker f h he.toOrthogonalIdempotents he'
   refine ⟨_, (equiv (finSuccEquiv n)).mpr
     (CompleteOrthogonalIdempotents.option (h₁.embedding (Fin.succEmb _))), funext fun i ↦ ?_⟩
   have (i : _) : f (e' i) = e i := congr($h₂ i)
@@ -413,7 +414,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent (h : ∀ x ∈ RingHom.
 lemma CompleteOrthogonalIdempotents.prod_one_sub
     (he : CompleteOrthogonalIdempotents e) :
     ∏ i, (1 - e i) = 0 := by
-  rw [he.1.prod_one_sub, he.complete, sub_self]
+  rw [he.toOrthogonalIdempotents.prod_one_sub, he.complete, sub_self]
 
 lemma CompleteOrthogonalIdempotents.of_prod_one_sub
     (he : OrthogonalIdempotents e) (he' : ∏ i, (1 - e i) = 0) :
@@ -425,7 +426,7 @@ lemma CompleteOrthogonalIdempotents.of_prod_one_sub
 lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempotents e) :
     Function.Bijective (RingHom.pi fun i ↦ Ideal.Quotient.mk (Ideal.span {1 - e i})) := by
   classical
-  refine ⟨?_, he.1.surjective_pi⟩
+  refine ⟨?_, he.toOrthogonalIdempotents.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
   simp only [funext_iff, RingHom.pi_apply, Pi.zero_apply, Ideal.Quotient.eq_zero_iff_mem,
@@ -490,18 +491,20 @@ lemma CompleteOrthogonalIdempotents.exists_eq_comp_of_ker_eq_span
     ∃ e', CompleteOrthogonalIdempotents (Option.rec e₀ e') ∧ e = f ∘ e' := by
   choose e' he' using hef
   choose k hk using fun i ↦ Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by simp [he', (he.1.1 i).eq]))
+      (hfe₀.le (show f (e' i * e' i - e' i) = 0 by
+        simp [he', (he.toOrthogonalIdempotents.idem i).eq]))
   refine ⟨(1 - e₀) • e', ⟨⟨Option.rec he₀ fun i ↦ ?_, ?_⟩, ?_⟩, ?_⟩
   · rintro (_|i) (_|j) h
     · simp at h
     · dsimp; linear_combination - he₀.eq * e' j
     · dsimp; linear_combination - he₀.eq * e' i
     · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-        (hfe₀.le (show f (e' i * e' j) = 0 by simp [he', he.1.2 (by simpa using h)]))
+        (hfe₀.le (show f (e' i * e' j) = 0 by
+          simp [he', he.toOrthogonalIdempotents.ortho (by simpa using h)]))
       dsimp
       rw [mul_mul_mul_comm, hk, he₀.one_sub.eq, ← mul_assoc, he₀.one_sub_mul_self, zero_mul]
   · obtain ⟨k, hk⟩ := Ideal.mem_span_singleton.mp
-      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.2))
+      (hfe₀.le (show f (∑ i, e' i - 1) = 0 by simpa [he', sub_eq_zero] using he.complete))
     simp only [Fintype.sum_option, Pi.smul_apply, smul_eq_mul, ← Finset.mul_sum,
       sub_eq_iff_eq_add.mp hk]
     linear_combination - he₀.eq * k

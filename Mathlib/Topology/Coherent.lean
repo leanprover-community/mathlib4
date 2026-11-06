@@ -42,7 +42,7 @@ namespace Topology.IsCoherentWith
 
 protected theorem isOpen_iff (hS : IsCoherentWith S) :
     IsOpen t ↔ ∀ s ∈ S, IsOpen ((↑) ⁻¹' t : Set s) :=
-  ⟨fun ht _ _ ↦ ht.preimage continuous_subtype_val, hS.1 t⟩
+  ⟨fun ht _ _ ↦ ht.preimage continuous_subtype_val, hS.isOpen_of_forall_induced t⟩
 
 protected theorem isClosed_iff (hS : IsCoherentWith S) :
     IsClosed t ↔ ∀ s ∈ S, IsClosed ((↑) ⁻¹' t : Set s) := by

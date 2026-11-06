@@ -106,13 +106,13 @@ variable [TopologicalSpace (TotalSpace F₁ E₁)] [TopologicalSpace (TotalSpace
 the induced topology from the diagonal embedding into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂`. -/
 instance FiberBundle.Prod.topologicalSpace : TopologicalSpace (TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)) :=
   TopologicalSpace.induced
-    (fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂)))
+    (fun p ↦ ((⟨p.proj, p.snd.1⟩ : TotalSpace F₁ E₁), (⟨p.proj, p.snd.2⟩ : TotalSpace F₂ E₂)))
     inferInstance
 
 /-- The diagonal map from the total space of the fiberwise product of two fiber bundles
 `E₁`, `E₂` into `TotalSpace F₁ E₁ × TotalSpace F₂ E₂` is an inducing map. -/
 theorem FiberBundle.Prod.isInducing_diag :
-    IsInducing (fun p ↦ (⟨p.1, p.2.1⟩, ⟨p.1, p.2.2⟩) :
+    IsInducing (fun p ↦ (⟨p.proj, p.snd.1⟩, ⟨p.proj, p.snd.2⟩) :
       TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂) :=
   ⟨rfl⟩
 
@@ -133,14 +133,14 @@ variable (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂
 function for the construction `Trivialization.prod`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`. -/
 def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F₂ :=
-  fun p ↦ ⟨p.1, (e₁ ⟨p.1, p.2.1⟩).2, (e₂ ⟨p.1, p.2.2⟩).2⟩
+  fun p ↦ ⟨p.proj, (e₁ ⟨p.proj, p.snd.1⟩).2, (e₂ ⟨p.proj, p.snd.2⟩).2⟩
 
 variable {e₁ e₂}
 
 theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
     (π (F₁ × F₂) (E₁ ×ᵇ E₂) ⁻¹' (e₁.baseSet ∩ e₂.baseSet)) := by
   let f₁ : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → TotalSpace F₁ E₁ × TotalSpace F₂ E₂ :=
-    fun p ↦ ((⟨p.1, p.2.1⟩ : TotalSpace F₁ E₁), (⟨p.1, p.2.2⟩ : TotalSpace F₂ E₂))
+    fun p ↦ ((⟨p.proj, p.snd.1⟩ : TotalSpace F₁ E₁), (⟨p.proj, p.snd.2⟩ : TotalSpace F₂ E₂))
   let f₂ : TotalSpace F₁ E₁ × TotalSpace F₂ E₂ → (B × F₁) × B × F₂ := fun p ↦ ⟨e₁ p.1, e₂ p.2⟩
   let f₃ : (B × F₁) × B × F₂ → B × F₁ × F₂ := fun p ↦ ⟨p.1.1, p.1.2, p.2.2⟩
   have hf₁ : Continuous f₁ := (Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous

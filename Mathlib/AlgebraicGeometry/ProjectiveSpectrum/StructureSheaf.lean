@@ -176,16 +176,16 @@ def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 
 instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) :
-    CommRing ((structureSheafInType 𝒜).1.obj U) :=
+    CommRing ((structureSheafInType 𝒜).obj.obj U) :=
   (sectionsSubring U).toCommRing
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type`-valued
 structure presheaf. -/
 @[simps obj_carrier]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
-  obj U := ↧((structureSheafInType 𝒜).1.obj U)
+  obj U := ↧((structureSheafInType 𝒜).obj.obj U)
   map i := CommRingCat.ofHom
-    { toFun := (structureSheafInType 𝒜).1.map i
+    { toFun := (structureSheafInType 𝒜).obj.map i
       map_zero' := rfl
       map_add' := fun _ _ => rfl
       map_one' := rfl
@@ -194,7 +194,7 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the
 `Type`-valued structure presheaf. -/
 def structurePresheafCompForget :
-    structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
+    structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).obj :=
   NatIso.ofComponents (fun _ => Iso.refl _) (by cat_disch)
 
 end ProjectiveSpectrum.StructureSheaf
@@ -219,33 +219,33 @@ open AlgebraicGeometry.ProjectiveSpectrum ProjectiveSpectrum.StructureSheaf Open
 
 section
 variable {U V : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ} (i : V ⟶ U)
-    (s t : (Proj.structureSheaf 𝒜).1.obj V) (x : V.unop)
+    (s t : (Proj.structureSheaf 𝒜).obj.obj V) (x : V.unop)
 
 @[simp]
-theorem Proj.res_apply (x) : ((Proj.structureSheaf 𝒜).1.map i s).1 x = s.1 (i.unop x) := rfl
+theorem Proj.res_apply (x) : ((Proj.structureSheaf 𝒜).obj.map i s).1 x = s.1 (i.unop x) := rfl
 
 @[ext] theorem Proj.ext (h : s.1 = t.1) : s = t := Subtype.ext h
 @[simp] theorem Proj.add_apply : (s + t).1 x = s.1 x + t.1 x := rfl
 @[simp] theorem Proj.mul_apply : (s * t).1 x = s.1 x * t.1 x := rfl
 @[simp] theorem Proj.sub_apply : (s - t).1 x = s.1 x - t.1 x := rfl
 @[simp] theorem Proj.pow_apply (n : ℕ) : (s ^ n).1 x = s.1 x ^ n := rfl
-@[simp] theorem Proj.zero_apply : (0 : (Proj.structureSheaf 𝒜).1.obj V).1 x = 0 := rfl
-@[simp] theorem Proj.one_apply : (1 : (Proj.structureSheaf 𝒜).1.obj V).1 x = 1 := rfl
+@[simp] theorem Proj.zero_apply : (0 : (Proj.structureSheaf 𝒜).obj.obj V).1 x = 0 := rfl
+@[simp] theorem Proj.one_apply : (1 : (Proj.structureSheaf 𝒜).obj.obj V).1 x = 1 := rfl
 
 end
 
 /-- `Proj` of a graded ring as a `SheafedSpace` -/
 def Proj.toSheafedSpace : SheafedSpace CommRingCat where
   carrier := ↧(ProjectiveSpectrum 𝒜)
-  presheaf := (Proj.structureSheaf 𝒜).1
-  IsSheaf := (Proj.structureSheaf 𝒜).2
+  presheaf := (Proj.structureSheaf 𝒜).obj
+  IsSheaf := (Proj.structureSheaf 𝒜).property
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The ring homomorphism that takes a section of the structure sheaf of `Proj` on the open set `U`,
 implemented as a subtype of dependent functions to localizations at homogeneous prime ideals, and
 evaluates the section on the point corresponding to a given homogeneous prime ideal. -/
 def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : ProjectiveSpectrum.top 𝒜)
-    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).1.obj (op U) ⟶ ↧(at x) :=
+    (hx : x ∈ U) : (Proj.structureSheaf 𝒜).obj.obj (op U) ⟶ ↧(at x) :=
   CommRingCat.ofHom
   { toFun s := (s.1 ⟨x, hx⟩ :)
     map_one' := rfl
@@ -259,7 +259,7 @@ to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
 formed by gluing the `openToLocalization` maps. -/
 def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ ↧(at x) :=
-  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
+  Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).obj)
     { pt := _
       ι :=
         { app := fun U =>
@@ -274,7 +274,7 @@ theorem germ_comp_stalkToFiberRingHom
 
 @[simp]
 theorem stalkToFiberRingHom_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
-    (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
+    (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).obj.obj (op U)) :
     stalkToFiberRingHom 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   RingHom.ext_iff.1 (CommRingCat.hom_ext_iff.mp (germ_comp_stalkToFiberRingHom 𝒜 U x hx)) s
 
@@ -291,7 +291,7 @@ such that, for any `f` in the homogeneous localization at `x`, it returns the ob
 basic open set `D(f.den)`. -/
 def sectionInBasicOpen (x : ProjectiveSpectrum.top 𝒜) :
     ∀ f : HomogeneousLocalization.NumDenSameDeg 𝒜 x.asHomogeneousIdeal.toIdeal.primeCompl,
-    (Proj.structureSheaf 𝒜).1.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
+    (Proj.structureSheaf 𝒜).obj.obj (op (ProjectiveSpectrum.basicOpen 𝒜 f.den)) :=
   fun f =>
   ⟨fun y => HomogeneousLocalization.mk ⟨f.deg, f.num, f.den, y.2⟩, fun y =>
     ⟨ProjectiveSpectrum.basicOpen 𝒜 f.den, y.2,
@@ -360,7 +360,7 @@ def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
 
 @[simp]
 theorem Proj.stalkIso'_germ (U : Opens (ProjectiveSpectrum.top 𝒜))
-    (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).1.obj (op U)) :
+    (x : ProjectiveSpectrum.top 𝒜) (hx : x ∈ U) (s : (Proj.structureSheaf 𝒜).obj.obj (op U)) :
     Proj.stalkIso' 𝒜 x ((Proj.structureSheaf 𝒜).presheaf.germ _ x hx s) = s.1 ⟨x, hx⟩ :=
   stalkToFiberRingHom_germ 𝒜 U x hx s
 

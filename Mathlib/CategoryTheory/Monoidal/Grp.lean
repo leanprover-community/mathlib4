@@ -674,7 +674,7 @@ attribute [local instance] Monoidal.ofChosenFiniteProducts in
 @[to_additive (attr := simps)
 /-- `mapAddGrp` is functorial in the left-exact functor. -/]
 noncomputable def mapGrpFunctor : (C ⥤ₗ D) ⥤ Grp C ⥤ Grp D where
-  obj F := F.1.mapGrp
+  obj F := F.obj.mapGrp
   map {F G} α := { app A := Grp.homMk'' (α.hom.app A.X) }
 
 /-- Pullback a group object along a fully faithful monoidal functor. -/

@@ -307,7 +307,7 @@ theorem not_separatedNhds_rat_irrational_antidiag :
   · exact Ioo_subset_Ico_self hxn
   · exact left_mem_Ico.2 h₀'
   · exact left_mem_Ico.2 h₀'
-  · refine (nhds_antitone_basis_Ico_inv_pnat (-x)).2 hnN ⟨neg_le_neg hxn.1.le, ?_⟩
+  · refine (nhds_antitone_basis_Ico_inv_pnat (-x)).antitone hnN ⟨neg_le_neg hxn.1.le, ?_⟩
     simp only [add_neg_lt_iff_le_add', lt_neg_add_iff_add_lt]
     exact hxn.2
 

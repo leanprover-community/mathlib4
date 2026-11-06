@@ -212,12 +212,12 @@ noncomputable def FiniteField.primitiveChar (F F' : Type*) [Field F] [Finite F] 
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
-  let pp := p.toPNat hp.1.pos
+  let pp := p.toPNat hp.out.pos
   have hp₂ : ¬ringChar F' ∣ p := by
     rcases CharP.char_is_prime_or_zero F' (ringChar F') with hq | hq
-    · exact mt (Nat.Prime.dvd_iff_eq hp.1 (Nat.Prime.ne_one hq)).mp h.symm
+    · exact mt (Nat.Prime.dvd_iff_eq hp.out (Nat.Prime.ne_one hq)).mp h.symm
     · rw [hq]
-      exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
+      exact fun hf => Nat.Prime.ne_zero hp.out (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
   let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom

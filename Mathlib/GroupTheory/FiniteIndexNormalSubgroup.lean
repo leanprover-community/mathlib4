@@ -48,7 +48,7 @@ theorem toSubgroup_injective : Function.Injective
 
 @[to_additive]
 instance : SetLike (FiniteIndexNormalSubgroup G) G where
-  coe U := U.1
+  coe U := U.toSubgroup
   coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
 
 @[to_additive]

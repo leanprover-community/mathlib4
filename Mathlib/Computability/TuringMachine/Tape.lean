@@ -502,7 +502,7 @@ def Tape.nth {Γ} [Inhabited Γ] (T : Tape Γ) : ℤ → Γ
   | -(n + 1 : ℕ) => T.left.nth n
 
 @[simp]
-theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.1 :=
+theorem Tape.nth_zero {Γ} [Inhabited Γ] (T : Tape Γ) : T.nth 0 = T.head :=
   rfl
 
 theorem Tape.right₀_nth {Γ} [Inhabited Γ] (T : Tape Γ) (n : ℕ) : T.right₀.nth n = T.nth n := by
@@ -543,7 +543,7 @@ def Tape.write {Γ} [Inhabited Γ] (b : Γ) (T : Tape Γ) : Tape Γ :=
   { T with head := b }
 
 @[simp]
-theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.1 = T := by
+theorem Tape.write_self {Γ} [Inhabited Γ] : ∀ T : Tape Γ, T.write T.head = T := by
   rintro ⟨⟩; rfl
 
 @[simp]
@@ -563,11 +563,11 @@ theorem Tape.write_mk' {Γ} [Inhabited Γ] (b : Γ) (L R : ListBlank Γ) :
 
 /-- Apply a pointed map to a tape to change the alphabet. -/
 def Tape.map {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') (T : Tape Γ) : Tape Γ' :=
-  ⟨f T.1, T.2.map f, T.3.map f⟩
+  ⟨f T.head, T.left.map f, T.right.map f⟩
 
 @[simp]
 theorem Tape.map_fst {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (f : PointedMap Γ Γ') :
-    ∀ T : Tape Γ, (T.map f).1 = f T.1 := by
+    ∀ T : Tape Γ, (T.map f).head = f T.head := by
   rintro ⟨⟩; rfl
 
 @[simp]

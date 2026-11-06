@@ -26,7 +26,7 @@ variable {C : Type u} [Category.{v} C] {P Q : ObjectProperty C} (h : P ≤ Q)
 
 lemma essSurj_ιOfLE_iff : (ιOfLE h).EssSurj ↔ Q ≤ P.isoClosure := by
   refine ⟨fun _ X hX ↦ ?_, fun hPQ ↦ ⟨fun ⟨Y, hY⟩ ↦ ?_⟩⟩
-  · exact ⟨_, ((ιOfLE h).objPreimage ⟨X, hX⟩).2,
+  · exact ⟨_, ((ιOfLE h).objPreimage ⟨X, hX⟩).property,
       ⟨Q.ι.mapIso ((ιOfLE h).objObjPreimageIso ⟨X, hX⟩).symm⟩⟩
   · obtain ⟨X, hX, ⟨e⟩⟩ := hPQ _ hY
     exact ⟨⟨X, hX⟩, ⟨Q.ι.preimageIso e.symm⟩⟩

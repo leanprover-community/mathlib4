@@ -135,7 +135,7 @@ theorem CPolynomialOn.analyticOn {s : Set E} (hf : CPolynomialOn 𝕜 f s) : Ana
 
 theorem HasFiniteFPowerSeriesOnBall.congr (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (hg : EqOn f g (Metric.eball x r)) : HasFiniteFPowerSeriesOnBall g p x n r :=
-  ⟨hf.1.congr hg, hf.finite⟩
+  ⟨hf.toHasFPowerSeriesOnBall.congr hg, hf.finite⟩
 
 theorem HasFiniteFPowerSeriesOnBall.of_le {m n : ℕ}
     (h : HasFiniteFPowerSeriesOnBall f p x n r) (hmn : n ≤ m) :
@@ -152,11 +152,11 @@ theorem HasFiniteFPowerSeriesAt.of_le {m n : ℕ}
 `z ↦ f (z - y)` has the same finite power series around `x + y`. -/
 theorem HasFiniteFPowerSeriesOnBall.comp_sub (hf : HasFiniteFPowerSeriesOnBall f p x n r) (y : E) :
     HasFiniteFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) n r :=
-  ⟨hf.1.comp_sub y, hf.finite⟩
+  ⟨hf.toHasFPowerSeriesOnBall.comp_sub y, hf.finite⟩
 
 theorem HasFiniteFPowerSeriesOnBall.mono (hf : HasFiniteFPowerSeriesOnBall f p x n r)
     (r'_pos : 0 < r') (hr : r' ≤ r) : HasFiniteFPowerSeriesOnBall f p x n r' :=
-  ⟨hf.1.mono r'_pos hr, hf.finite⟩
+  ⟨hf.toHasFPowerSeriesOnBall.mono r'_pos hr, hf.finite⟩
 
 theorem HasFiniteFPowerSeriesAt.congr (hf : HasFiniteFPowerSeriesAt f p x n) (hg : f =ᶠ[𝓝 x] g) :
     HasFiniteFPowerSeriesAt g p x n :=
@@ -199,7 +199,7 @@ then `g ∘ f` has the finite power series `g ∘ p` on the same ball. -/
 theorem ContinuousLinearMap.comp_hasFiniteFPowerSeriesOnBall (g : F →L[𝕜] G)
     (h : HasFiniteFPowerSeriesOnBall f p x n r) :
     HasFiniteFPowerSeriesOnBall (g ∘ f) (g.compFormalMultilinearSeries p) x n r :=
-  ⟨g.comp_hasFPowerSeriesOnBall h.1, fun m hm ↦ by
+  ⟨g.comp_hasFPowerSeriesOnBall h.toHasFPowerSeriesOnBall, fun m hm ↦ by
     rw [compFormalMultilinearSeries_apply, h.finite m hm]
     ext; exact map_zero g⟩
 
@@ -287,7 +287,7 @@ theorem HasFiniteFPowerSeriesAt.eventually_const_of_bound_one
 /-- If a function admits a finite power series expansion on a disk, then it is continuous there. -/
 protected theorem HasFiniteFPowerSeriesOnBall.continuousOn
     (hf : HasFiniteFPowerSeriesOnBall f p x n r) :
-    ContinuousOn f (Metric.eball x r) := hf.1.continuousOn
+    ContinuousOn f (Metric.eball x r) := hf.toHasFPowerSeriesOnBall.continuousOn
 
 protected theorem HasFiniteFPowerSeriesAt.continuousAt (hf : HasFiniteFPowerSeriesAt f p x n) :
     ContinuousAt f x := hf.hasFPowerSeriesAt.continuousAt

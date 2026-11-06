@@ -72,10 +72,10 @@ def pushforwardForgetIso (f : X ⟶ Y) :
 variable {C}
 
 @[simp] lemma pushforward_obj_val (f : X ⟶ Y) (F : X.Sheaf C) :
-    ((pushforward C f).obj F).1 = f _* F.1 := rfl
+    ((pushforward C f).obj F).obj = f _* F.obj := rfl
 
 @[simp] lemma pushforward_map (f : X ⟶ Y) {F F' : X.Sheaf C} (α : F ⟶ F') :
-    ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
+    ((pushforward C f).map α).hom = (Presheaf.pushforward C f).map α.hom := rfl
 
 variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
 variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
@@ -143,7 +143,7 @@ def sheafPullbackIso : Sheaf.pullback A f ≅ hf.sheafPullback A := by
       (hf.isOpenMap.pullbackIso.app _) ≪≫
       (fullyFaithfulSheafToPresheaf (Opens.grothendieckTopology X) A).preimageIso
       (isoSheafify (Opens.grothendieckTopology X)
-      (TopCat.Presheaf.isSheaf_of_isOpenEmbedding hf F.2)).symm
+      (TopCat.Presheaf.isSheaf_of_isOpenEmbedding hf F.property)).symm
   · dsimp
     rw [← Functor.map_comp_assoc, hf.isOpenMap.pullbackIso.hom.naturality, Sheaf.hom_ext_iff]
     simp only [Functor.whiskeringLeft_obj_obj, Functor.whiskeringLeft_obj_map, Functor.map_comp,

@@ -643,7 +643,7 @@ private theorem sSup_aux (c : Set (E →ₛₗ.[σ] F)) (hc : DirectedOn (· ≤
     have := (mem_sSup_of_directed (cne.image _) hdir).1 x.2
     rwa [Set.exists_mem_image, ← bex_def, SetCoe.exists'] at this
   set f : ↥(sSup (domain '' c)) → F := fun x => (P x).val.val ⟨x, (P x).property⟩
-  have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.1) (_hxy : (x : E) = y),
+  have f_eq : ∀ (p : c) (x : ↥(sSup (domain '' c))) (y : p.1.domain) (_hxy : (x : E) = y),
       f x = p.1 y := by
     intro p x y hxy
     rcases hc (P x).1.1 (P x).1.2 p.1 p.2 with ⟨q, _hqc, ⟨hxq1, hxq2⟩, ⟨hpq1, hpq2⟩⟩

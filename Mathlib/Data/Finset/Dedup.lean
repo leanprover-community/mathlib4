@@ -35,8 +35,8 @@ variable {α : Type*} {β : Type*}
 namespace Finset
 
 @[simp]
-theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.1 = s.1 :=
-  s.2.dedup
+theorem dedup_eq_self [DecidableEq α] (s : Finset α) : dedup s.val = s.val :=
+  s.nodup.dedup
 
 end Finset
 
@@ -51,7 +51,7 @@ def toFinset (s : Multiset α) : Finset α :=
   ⟨_, nodup_dedup s⟩
 
 @[simp]
-theorem toFinset_val (s : Multiset α) : s.toFinset.1 = s.dedup :=
+theorem toFinset_val (s : Multiset α) : s.toFinset.val = s.dedup :=
   rfl
 
 theorem toFinset_eq {s : Multiset α} (n : Nodup s) : Finset.mk s n = s.toFinset :=
@@ -109,7 +109,7 @@ def toFinset (l : List α) : Finset α :=
   Multiset.toFinset l
 
 @[simp]
-theorem toFinset_val (l : List α) : l.toFinset.1 = (l.dedup : Multiset α) :=
+theorem toFinset_val (l : List α) : l.toFinset.val = (l.dedup : Multiset α) :=
   rfl
 
 @[simp]
@@ -168,7 +168,7 @@ section ToList
 
 /-- Produce a list of the elements in the finite set using choice. -/
 noncomputable def toList (s : Finset α) : List α :=
-  s.1.toList
+  s.val.toList
 
 theorem nodup_toList (s : Finset α) : s.toList.Nodup := by
   rw [toList, ← Multiset.coe_nodup, Multiset.coe_toList]

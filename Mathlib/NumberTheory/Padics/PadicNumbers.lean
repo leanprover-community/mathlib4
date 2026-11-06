@@ -866,12 +866,12 @@ theorem eq_padicNorm (q : ℚ) : ‖(q : ℚ_[p])‖ = padicNorm p q := by
 theorem norm_p : ‖(p : ℚ_[p])‖ = (p : ℝ)⁻¹ := by
   rw [← @Rat.cast_natCast ℝ _ p]
   rw [← @Rat.cast_natCast ℚ_[p] _ p]
-  simp [hp.1.ne_zero, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
+  simp [hp.out.ne_zero, norm, padicNorm, padicValRat, padicValInt, zpow_neg,
     -Rat.cast_natCast]
 
 theorem norm_p_lt_one : ‖(p : ℚ_[p])‖ < 1 := by
   rw [norm_p]
-  exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
+  exact inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
 
 @[simp high] -- Shortcut lemma with higher priority.
 theorem norm_p_zpow (n : ℤ) : ‖(p : ℚ_[p]) ^ n‖ = (p : ℝ) ^ (-n) := by
@@ -886,7 +886,7 @@ instance : NontriviallyNormedField ℚ_[p] :=
     non_trivial :=
       ⟨p⁻¹, by
         rw [norm_inv, norm_p, inv_inv]
-        exact mod_cast hp.1.one_lt⟩ }
+        exact mod_cast hp.out.one_lt⟩ }
 
 protected theorem padicNormE.image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
   Quotient.inductionOn q fun f hf ↦
@@ -925,11 +925,11 @@ theorem norm_rat_le_one : ∀ {q : ℚ} (_ : ¬p ∣ q.den), ‖(q : ℚ_[p])‖
       apply inv_le_one_of_one_le₀
       norm_cast
       apply one_le_pow
-      exact hp.1.pos
+      exact hp.out.pos
 
 theorem norm_int_le_one (z : ℤ) : ‖(z : ℚ_[p])‖ ≤ 1 :=
   suffices ‖((z : ℚ) : ℚ_[p])‖ ≤ 1 by simpa
-  norm_rat_le_one <| by simp [hp.1.ne_one]
+  norm_rat_le_one <| by simp [hp.out.ne_one]
 
 @[simp]
 theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣ k := by
@@ -950,7 +950,7 @@ theorem norm_intCast_lt_one_iff {k : ℤ} : ‖(k : ℚ_[p])‖ < 1 ↔ ↑p ∣
         mul_le_mul le_rfl (by simpa using norm_int_le_one _) (norm_nonneg _) (norm_nonneg _)
       _ < 1 := by
         rw [mul_one, norm_p]
-        exact inv_lt_one_of_one_lt₀ <| mod_cast hp.1.one_lt
+        exact inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
 
 @[simp]
 lemma norm_natCast_lt_one_iff {n : ℕ} :
@@ -1247,11 +1247,11 @@ section NormLEIff
 
 theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
     ‖x‖ ≤ (p : ℝ) ^ n ↔ ‖x‖ < (p : ℝ) ^ (n + 1) := by
-  have aux (n : ℤ) : 0 < ((p : ℝ) ^ n) := zpow_pos (mod_cast hp.1.pos) _
+  have aux (n : ℤ) : 0 < ((p : ℝ) ^ n) := zpow_pos (mod_cast hp.out.pos) _
   by_cases hx0 : x = 0
   · simp [hx0, norm_zero, aux, le_of_lt (aux _)]
   rw [norm_eq_zpow_neg_valuation hx0]
-  have h1p : 1 < (p : ℝ) := mod_cast hp.1.one_lt
+  have h1p : 1 < (p : ℝ) := mod_cast hp.out.one_lt
   have H := zpow_right_strictMono₀ h1p
   rw [H.le_iff_le, H.lt_iff_lt, Int.lt_add_one_iff]
 
@@ -1263,7 +1263,7 @@ theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.val
   by_cases hx : x = 0
   · simp only [hx, norm_zero, valuation_zero, zero_le_one, le_refl]
   · rw [norm_eq_zpow_neg_valuation hx, ← zpow_zero (p : ℝ), zpow_le_zpow_iff_right₀, neg_nonpos]
-    exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).1
+    exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).out
 
 end NormLEIff
 

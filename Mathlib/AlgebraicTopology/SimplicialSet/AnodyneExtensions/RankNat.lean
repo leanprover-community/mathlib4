@@ -34,7 +34,7 @@ variable (P : A.Pairing)
 
 instance (y : P.II) : Finite { x // P.AncestralRel x y } := by
   let T := { x : P.II // P.AncestralRel x y }
-  let U := Σ (d : Fin (P.p y).1.dim), ⦋d⦌ ⟶ ⦋(P.p y).1.1.1.1⦌
+  let U := Σ (d : Fin (P.p y).1.dim), ⦋d⦌ ⟶ ⦋(P.p y).1.toN.toS.dim⦌
   let ψ : U → X.S := fun ⟨d, f⟩ ↦ S.mk (X.map f.op (P.p y).1.simplex)
   have h (t : T) : ∃ u, ψ u = t.1.1.toS := by
     obtain ⟨f, _, hf⟩ := N.le_iff_exists_mono.1 t.2.2.le

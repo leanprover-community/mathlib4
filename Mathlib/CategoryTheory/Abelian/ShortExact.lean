@@ -29,7 +29,7 @@ variable (F : C ⥤ D) [PreservesZeroMorphisms F] [F.Faithful]
 variable {S : ShortComplex C}
 
 lemma reflects_shortExact_of_faithful (hS : (S.map F).ShortExact) : S.ShortExact where
-  exact := F.reflects_exact_of_faithful _ hS.1
+  exact := F.reflects_exact_of_faithful _ hS.exact
   mono_f := ReflectsMonomorphisms.reflects _ hS.mono_f
   epi_g := ReflectsEpimorphisms.reflects _ hS.epi_g
 

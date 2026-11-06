@@ -277,7 +277,7 @@ theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K (G.op.ran.obj ℱ.obj) := by
   rw [Presheaf.isSheaf_iff_multifork]
   intro X S
-  exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.2
+  exact ⟨RanIsSheafOfIsCocontinuous.isLimitMultifork ℱ.property
     (G.op.isPointwiseRightKanExtensionRanCounit ℱ.obj) S⟩
 
 variable (A J)

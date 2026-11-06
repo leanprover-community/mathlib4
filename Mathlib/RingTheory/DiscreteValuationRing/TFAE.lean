@@ -58,7 +58,7 @@ theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [IsLocalRin
     obtain ⟨f, hf₁, rfl, hf₂⟩ := (WfDvdMonoid.not_isUnit_iff_exists_factors_eq r hr₁).mp hr₂
     have : ∀ b ∈ f, Associated x b := by
       intro b hb
-      exact Irreducible.associated_of_dvd hx' (hf₁ b hb) ((H b).mp (hf₁ b hb).1)
+      exact Irreducible.associated_of_dvd hx' (hf₁ b hb) ((H b).mp (hf₁ b hb).not_isUnit)
     clear hr₁ hr₂ hf₁
     induction f using Multiset.induction with
     | empty => exact (hf₂ rfl).elim
@@ -230,7 +230,7 @@ lemma IsLocalRing.finrank_CotangentSpace_eq_one_iff [IsNoetherianRing R] [IsLoca
   by_cases hR : IsField R
   · let := hR.toField
     simp only [finrank_cotangentSpace_eq_zero, zero_ne_one, false_iff]
-    exact fun h ↦ h.3 maximalIdeal_eq_bot
+    exact fun h ↦ h.not_a_field' maximalIdeal_eq_bot
   · exact (IsDiscreteValuationRing.TFAE R hR).out 6 1
 
 variable (R)

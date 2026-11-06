@@ -65,7 +65,7 @@ lemma extensiveTopology.surjective_of_isLocallySurjective_sheaf_of_types [Finita
       (h : Presheaf.IsLocallySurjective (extensiveTopology C) f) {X : C} :
         Function.Surjective (f.app (op X)) := by
   intro x
-  replace h := h.1 x
+  replace h := h.imageSieve_mem x
   rw [mem_sieves_iff_contains_colimit_cofan] at h
   obtain ⟨α, _, Y, π, h, h'⟩ := h
   let y : (a : α) → (F.obj ⟨Y a⟩) := fun a ↦ (h' a).choose
@@ -110,7 +110,7 @@ lemma regularTopology.isLocallySurjective_sheaf_of_types [Preregular C] [Finitar
       (h : Presheaf.IsLocallySurjective (coherentTopology C) f) :
         Presheaf.IsLocallySurjective (regularTopology C) f where
   imageSieve_mem y := by
-    replace h := h.1 y
+    replace h := h.imageSieve_mem y
     rw [coherentTopology.mem_sieves_iff_hasEffectiveEpiFamily] at h
     obtain ⟨α, _, Z, π, h, h'⟩ := h
     rw [mem_sieves_iff_hasEffectiveEpi]

@@ -177,10 +177,10 @@ theorem coe_mk' (f : A →ₐ[R] B) (h) : (mk f h : A → B) = f := rfl
 theorem coe_coe (f : A →A[R] B) : ⇑(f : A →ₐ[R] B) = f := rfl
 
 instance : ContinuousMapClass (A →A[R] B) A B where
-  map_continuous f := f.2
+  map_continuous f := f.cont
 
 @[fun_prop]
-protected theorem continuous (f : A →A[R] B) : Continuous f := f.2
+protected theorem continuous (f : A →A[R] B) : Continuous f := f.cont
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
     [Ring E₁] [Ring E₂] [Algebra R E₁] [Algebra R E₂] [IsUniformAddGroup E₁]
@@ -342,7 +342,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 
 /-- Composition of continuous algebra homomorphisms. -/
 def comp (g : B →A[R] C) (f : A →A[R] B) : A →A[R] C :=
-  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.2.comp f.2⟩
+  ⟨(g : B →ₐ[R] C).comp (f : A →ₐ[R] B), g.cont.comp f.cont⟩
 
 @[simp, norm_cast]
 theorem coe_comp (h : B →A[R] C) (f : A →A[R] B) :
@@ -402,7 +402,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 /-- The Cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
-  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩
+  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.cont.prodMk f₂.cont⟩
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :

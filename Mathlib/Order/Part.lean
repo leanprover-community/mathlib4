@@ -68,6 +68,6 @@ namespace OrderHom
 @[simps]
 def partBind (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
   toFun x := (f x).bind (g x)
-  monotone' := f.2.partBind g.2
+  monotone' := f.monotone'.partBind g.monotone'
 
 end OrderHom

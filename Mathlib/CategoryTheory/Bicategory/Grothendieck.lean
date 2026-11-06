@@ -175,9 +175,9 @@ def map (α : F ⟶ G) : ∫ F ⥤ ∫ G where
     base := a.base
     fiber := (α.app ⟨a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
-    base := f.1
-    fiber := (α.naturality f.1.toLoc).inv.toNatTrans.app a.fiber ≫
-      (α.app ⟨b.base⟩).toFunctor.map f.2 }
+    base := f.base
+    fiber := (α.naturality f.base.toLoc).inv.toNatTrans.app a.fiber ≫
+      (α.app ⟨b.base⟩).toFunctor.map f.fiber }
   map_id a := by
     ext
     · dsimp
@@ -334,9 +334,9 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
     base := a.base
     fiber := (α.app ⟨op a.base⟩).toFunctor.obj a.fiber }
   map {a b} f := {
-    base := f.1
-    fiber := (α.app ⟨op a.base⟩).toFunctor.map f.2 ≫
-      (α.naturality f.1.op.toLoc).hom.toNatTrans.app b.fiber }
+    base := f.base
+    fiber := (α.app ⟨op a.base⟩).toFunctor.map f.fiber ≫
+      (α.naturality f.base.op.toLoc).hom.toNatTrans.app b.fiber }
   map_id a := by
     ext1
     · dsimp

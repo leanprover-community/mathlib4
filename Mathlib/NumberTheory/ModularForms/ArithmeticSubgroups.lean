@@ -190,13 +190,13 @@ namespace Matrix.SpecialLinearGroup
 
 /-- The image of `SL(n, ℤ)` in `GL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRange : DiscreteTopology (mapGL (n := n) (R := ℤ) ℝ).range :=
-  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.1).toHomeomorph.discreteTopology
+  (isEmbedding_mapGL Real.isClosedEmbedding_intCast.toIsEmbedding).toHomeomorph.discreteTopology
 
 /-- The image of `SL(n, ℤ)` in `SL(n, ℝ)` is discrete. -/
 instance discreteSpecialLinearGroupIntRangeSL :
     DiscreteTopology (SpecialLinearGroup.map (Int.castRingHom ℝ) (n := n)).range := by
   refine (Topology.IsEmbedding.toHomeomorph ?_).discreteTopology
-  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.1
+  exact Real.isClosedEmbedding_intCast.specialLinearGroup_map.toIsEmbedding
 
 lemma isClosedEmbedding_mapGLInt : Topology.IsClosedEmbedding (mapGL ℝ : SL n ℤ → GL n ℝ) :=
   isClosedEmbedding_mapGL Real.isClosedEmbedding_intCast

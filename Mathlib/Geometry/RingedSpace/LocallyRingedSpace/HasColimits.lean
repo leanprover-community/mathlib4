@@ -176,7 +176,7 @@ noncomputable def imageBasicOpen : Opens Y :=
 theorem imageBasicOpen_image_preimage :
     (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).hom.base ''
-        (imageBasicOpen f g U s).1) = (imageBasicOpen f g U s).1 := by
+        (imageBasicOpen f g U s).carrier) = (imageBasicOpen f g U s).carrier := by
   fapply Types.coequalizer_preimage_image_eq_of_preimage_eq (↾f.base)
     (↾g.base) (↾(coequalizer.π f.toShHom g.toShHom).hom.base)
   · ext
@@ -206,14 +206,14 @@ theorem imageBasicOpen_image_preimage :
 
 set_option backward.isDefEq.respectTransparency false in
 theorem imageBasicOpen_image_open :
-    IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' (imageBasicOpen f g U s).1) := by
+    IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' (imageBasicOpen f g U s).carrier) := by
   rw [← (TopCat.homeoOfIso (PreservesCoequalizer.iso (SheafedSpace.forget _) f.toShHom
     g.toShHom)).isOpen_preimage, TopCat.coequalizer_isOpen_iff, ← Set.preimage_comp]
   erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
   rw [imageBasicOpen_image_preimage]
-  exact (imageBasicOpen f g U s).2
+  exact (imageBasicOpen f g U s).is_open'
 
 set_option backward.isDefEq.respectTransparency false in
 @[instance]
@@ -225,18 +225,18 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   rw [PresheafedSpace.stalkMap_germ_apply (coequalizer.π f.toShHom g.toShHom).hom U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
-      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1) = V.1 :=
+      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier) = V.carrier :=
     imageBasicOpen_image_preimage f g U s
   have hV' : V = ⟨(coequalizer.π f.toShHom g.toShHom).hom.base ⁻¹'
-      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1), hV.symm ▸ V.2⟩ :=
+      ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier), hV.symm ▸ V.is_open'⟩ :=
     SetLike.ext' hV.symm
-  have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.1) :=
+  have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier) :=
     imageBasicOpen_image_open f g U s
-  have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).hom.base '' V.1, V_open⟩ ≤ U :=
+  have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).hom.base '' V.carrier, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
   rw [← (coequalizer f.toShHom g.toShHom).presheaf.germ_res_apply (homOfLE VleU) _
-      (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).hom.base x V.1 hxV) s]
+      (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).hom.base x V.carrier hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom).hom.c.app _).hom,
     ← CommRingCat.comp_apply, NatTrans.naturality, CommRingCat.comp_apply,
@@ -291,8 +291,8 @@ noncomputable def coequalizerCoforkIsColimit : IsColimit (coequalizerCofork f g)
   -- but this is no longer possible
   set h := _
   change IsLocalHom h
-  suffices _ : IsLocalHom (((coequalizerCofork f g).π.1.stalkMap _).hom.comp h) by
-    apply isLocalHom_of_comp _ ((coequalizerCofork f g).π.1.stalkMap _).hom
+  suffices _ : IsLocalHom (((coequalizerCofork f g).π.toHom.stalkMap _).hom.comp h) by
+    apply isLocalHom_of_comp _ ((coequalizerCofork f g).π.toHom.stalkMap _).hom
   rw [← CommRingCat.hom_ofHom h, ← CommRingCat.hom_comp]
   erw [← PresheafedSpace.stalkMap.comp]
   apply isLocalHom_stalkMap_congr _ _ (coequalizer.π_desc s.π.toShHom e).symm y

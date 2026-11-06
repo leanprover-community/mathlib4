@@ -352,7 +352,7 @@ theorem coeFn_injective : @Injective (P ≃ᵃⁱ[𝕜] P₂) (P → P₂) (fun 
 
 /-- Reinterpret an `AffineIsometryEquiv` as an `AffineIsometry`. -/
 def toAffineIsometry : P →ᵃⁱ[𝕜] P₂ :=
-  ⟨e.1.toAffineMap, e.2⟩
+  ⟨e.toAffineEquiv.toAffineMap, e.norm_map⟩
 
 @[simp]
 theorem coe_toAffineIsometry : ⇑e.toAffineIsometry = e :=
@@ -630,13 +630,13 @@ theorem edist_map (x y : P) : edist (e x) (e y) = edist x y :=
   e.toAffineIsometry.edist_map x y
 
 protected theorem bijective : Bijective e :=
-  e.1.bijective
+  e.toAffineEquiv.bijective
 
 protected theorem injective : Injective e :=
-  e.1.injective
+  e.toAffineEquiv.injective
 
 protected theorem surjective : Surjective e :=
-  e.1.surjective
+  e.toAffineEquiv.surjective
 
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff

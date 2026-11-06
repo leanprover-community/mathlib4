@@ -52,10 +52,10 @@ theorem ext {q₁ q₂ : Semiquot α} : q₁ = q₂ ↔ ∀ a, a ∈ q₁ ↔ a 
   ext_s.trans Set.ext_iff
 
 theorem exists_mem (q : Semiquot α) : ∃ a, a ∈ q :=
-  let ⟨⟨a, h⟩, _⟩ := q.2.exists_rep
+  let ⟨⟨a, h⟩, _⟩ := q.val.exists_rep
   ⟨a, h⟩
 
-theorem eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.1 h :=
+theorem eq_mk_of_mem {q : Semiquot α} {a : α} (h : a ∈ q) : q = @mk _ a q.s h :=
   ext_s.2 rfl
 
 theorem nonempty (q : Semiquot α) : q.s.Nonempty :=
@@ -71,7 +71,7 @@ theorem mem_pure' {a b : α} : a ∈ Semiquot.pure b ↔ a = b :=
 
 /-- Replace `s` in a `Semiquot` with a superset. -/
 def blur' (q : Semiquot α) {s : Set α} (h : q.s ⊆ s) : Semiquot α :=
-  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.2⟩
+  ⟨s, Trunc.lift (fun a : q.s => Trunc.mk ⟨a.1, h a.2⟩) (fun _ _ => Trunc.eq _ _) q.val⟩
 
 /-- Replace `s` in a `q : Semiquot α` with a union `s ∪ q.s` -/
 def blur (s : Set α) (q : Semiquot α) : Semiquot α :=
@@ -90,12 +90,12 @@ def ofTrunc (q : Trunc α) : Semiquot α :=
 
 /-- Convert a `Semiquot α` to a `Trunc α`. -/
 def toTrunc (q : Semiquot α) : Trunc α :=
-  q.2.map Subtype.val
+  q.val.map Subtype.val
 
 /-- If `f` is a constant on `q.s`, then `q.liftOn f` is the value of `f`
 at any point of `q`. -/
 def liftOn (q : Semiquot α) (f : α → β) (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) : β :=
-  Trunc.liftOn q.2 (fun x => f x.1) fun x y => h _ x.2 _ y.2
+  Trunc.liftOn q.val (fun x => f x.1) fun x y => h _ x.2 _ y.2
 
 theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
     (h : ∀ a ∈ q, ∀ b ∈ q, f a = f b) (a : α) (aq : a ∈ q) : liftOn q f h = f a := by
@@ -103,7 +103,7 @@ theorem liftOn_ofMem (q : Semiquot α) (f : α → β)
 
 /-- Apply a function to the unknown value stored in a `Semiquot α`. -/
 def map (f : α → β) (q : Semiquot α) : Semiquot β :=
-  ⟨f '' q.1, q.2.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
+  ⟨f '' q.s, q.val.map fun x => ⟨f x.1, Set.mem_image_of_mem _ x.2⟩⟩
 
 @[simp]
 theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ ∃ a, a ∈ q ∧ f a = b :=
@@ -111,7 +111,7 @@ theorem mem_map (f : α → β) (q : Semiquot α) (b : β) : b ∈ map f q ↔ �
 
 /-- Apply a function returning a `Semiquot` to a `Semiquot`. -/
 def bind (q : Semiquot α) (f : α → Semiquot β) : Semiquot β :=
-  ⟨⋃ a ∈ q.1, (f a).1, q.2.bind fun a => (f a.1).2.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
+  ⟨⋃ a ∈ q.s, (f a).s, q.val.bind fun a => (f a.1).val.map fun b => ⟨b.1, Set.mem_biUnion a.2 b.2⟩⟩
 
 @[simp]
 theorem mem_bind (q : Semiquot α) (f : α → Semiquot β) (b : β) :

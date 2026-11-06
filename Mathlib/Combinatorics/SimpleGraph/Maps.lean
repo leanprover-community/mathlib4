@@ -369,10 +369,10 @@ def mapNeighborSet (v : V) (w : G.neighborSet v) : G'.neighborSet (f v) :=
 
 /-- The map between darts induced by a homomorphism. -/
 def mapDart (d : G.Dart) : G'.Dart :=
-  ⟨d.1.map f f, f.map_adj d.2⟩
+  ⟨d.toProd.map f f, f.map_adj d.adj⟩
 
 @[simp]
-theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
+theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.toProd.map f f, f.map_adj d.adj⟩ :=
   rfl
 
 /-- The graph homomorphism from a smaller graph to a bigger one. -/

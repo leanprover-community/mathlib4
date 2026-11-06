@@ -205,7 +205,7 @@ class CG : Prop where
 variable {L M}
 
 theorem fg_def : FG L M ↔ (⊤ : L.Substructure M).FG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.FG` in terms of `Set.Finite` instead of `Finset`. -/
 theorem fg_iff : FG L M ↔ ∃ S : Set M, S.Finite ∧ closure L S = (⊤ : L.Substructure M) := by
@@ -256,7 +256,7 @@ theorem fg_iff_finite [L.IsRelational] : FG L M ↔ Finite M :=
   ⟨FG.finite, fun _ => FG.of_finite⟩
 
 theorem cg_def : CG L M ↔ (⊤ : L.Substructure M).CG :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 /-- An equivalent expression of `Structure.cg`. -/
 theorem cg_iff : CG L M ↔ ∃ S : Set M, S.Countable ∧ closure L S = (⊤ : L.Substructure M) := by

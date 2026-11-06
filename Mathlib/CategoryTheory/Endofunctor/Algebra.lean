@@ -65,7 +65,7 @@ F f |          | f
 @[ext]
 structure Hom (A₀ A₁ : Algebra F) where
   /-- underlying morphism between the carriers -/
-  f : A₀.1 ⟶ A₁.1
+  f : A₀.a ⟶ A₁.a
   /-- compatibility condition -/
   h : F.map f ≫ A₁.str = A₀.str ≫ f := by cat_disch
 
@@ -80,7 +80,7 @@ instance : Inhabited (Hom A A) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- The composition of morphisms between algebras of endofunctor `F` -/
-def comp (f : Hom A₀ A₁) (g : Hom A₁ A₂) : Hom A₀ A₂ where f := f.1 ≫ g.1
+def comp (f : Hom A₀ A₁) (g : Hom A₁ A₂) : Hom A₀ A₂ where f := f.f ≫ g.f
 
 end Hom
 
@@ -98,7 +98,7 @@ theorem id_eq_id : Algebra.Hom.id A = 𝟙 A :=
   rfl
 
 @[simp]
-theorem id_f : (𝟙 _ : A ⟶ A).1 = 𝟙 A.1 :=
+theorem id_f : (𝟙 _ : A ⟶ A).f = 𝟙 A.a :=
   rfl
 
 variable (f : A₀ ⟶ A₁) (g : A₁ ⟶ A₂)
@@ -108,7 +108,7 @@ theorem comp_eq_comp : Algebra.Hom.comp f g = f ≫ g :=
   rfl
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+theorem comp_f : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 
 /-- Algebras of an endofunctor `F` form a category -/
@@ -118,7 +118,7 @@ instance (F : C ⥤ C) : Category (Algebra F) := { }
 commutes with the structure morphisms.
 -/
 @[simps!]
-def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h.hom := by cat_disch) :
+def isoMk (h : A₀.a ≅ A₁.a) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h.hom := by cat_disch) :
     A₀ ≅ A₁ where
   hom := { f := h.hom }
   inv :=
@@ -130,12 +130,12 @@ def isoMk (h : A₀.1 ≅ A₁.1) (w : F.map h.hom ≫ A₁.str = A₀.str ≫ h
 /-- The forgetful functor from the category of algebras, forgetting the algebraic structure. -/
 @[simps]
 def forget (F : C ⥤ C) : Algebra F ⥤ C where
-  obj A := A.1
+  obj A := A.a
   map := Hom.f
 
 /-- An algebra morphism with an underlying isomorphism hom in `C` is an algebra isomorphism. -/
-theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
-  ⟨⟨{ f := inv f.1
+theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.f] : IsIso f :=
+  ⟨⟨{ f := inv f.f
       h := by simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
@@ -143,11 +143,11 @@ instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects :=
 instance forget_faithful : (forget F).Faithful := { }
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
-theorem epi_of_epi {X Y : Algebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
+theorem epi_of_epi {X Y : Algebra F} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
   (forget F).epi_of_epi_map h
 
 /-- An algebra morphism with an underlying monomorphism hom in `C` is an algebra monomorphism. -/
-theorem mono_of_mono {X Y : Algebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
+theorem mono_of_mono {X Y : Algebra F} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget F).mono_of_mono_map h
 
 /-- From a natural transformation `α : G → F` we get a functor from
@@ -156,9 +156,9 @@ algebras of `F` to algebras of `G`.
 @[simps]
 def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G where
   obj A :=
-    { a := A.1
+    { a := A.a
       str := α.app _ ≫ A.str }
-  map f := { f := f.1 }
+  map f := { f := f.f }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -205,7 +205,7 @@ namespace Initial
 variable {A : Algebra F} (h : Limits.IsInitial A)
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
-def strInv : A.1 ⟶ F.obj A.1 :=
+def strInv : A.a ⟶ F.obj A.a :=
   (h.to ⟨F.obj A.a, F.map A.str⟩).f
 
 theorem left_inv' :
@@ -216,7 +216,7 @@ theorem left_inv : strInv h ≫ A.str = 𝟙 _ :=
   congr($(left_inv' h).f)
 
 theorem right_inv : A.str ≫ strInv h = 𝟙 _ := by
-  rw [strInv, ← (h.to ⟨F.obj A.1, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
+  rw [strInv, ← (h.to ⟨F.obj A.a, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
   congr
   exact left_inv h
 
@@ -259,7 +259,7 @@ variable {F : C ⥤ C} (V : Coalgebra F) {V₀ V₁ V₂ : Coalgebra F}
 @[ext]
 structure Hom (V₀ V₁ : Coalgebra F) where
   /-- underlying morphism between two carriers -/
-  f : V₀.1 ⟶ V₁.1
+  f : V₀.V ⟶ V₁.V
   /-- compatibility condition -/
   h : V₀.str ≫ F.map f = f ≫ V₁.str := by cat_disch
 
@@ -274,7 +274,7 @@ instance : Inhabited (Hom V V) :=
   ⟨{ f := 𝟙 _ }⟩
 
 /-- The composition of morphisms between algebras of endofunctor `F` -/
-def comp (f : Hom V₀ V₁) (g : Hom V₁ V₂) : Hom V₀ V₂ where f := f.1 ≫ g.1
+def comp (f : Hom V₀ V₁) (g : Hom V₁ V₂) : Hom V₀ V₂ where f := f.f ≫ g.f
 
 end Hom
 
@@ -292,7 +292,7 @@ theorem id_eq_id : Coalgebra.Hom.id V = 𝟙 V :=
   rfl
 
 @[simp]
-theorem id_f : (𝟙 _ : V ⟶ V).1 = 𝟙 V.1 :=
+theorem id_f : (𝟙 _ : V ⟶ V).f = 𝟙 V.V :=
   rfl
 
 variable (f : V₀ ⟶ V₁) (g : V₁ ⟶ V₂)
@@ -302,7 +302,7 @@ theorem comp_eq_comp : Coalgebra.Hom.comp f g = f ≫ g :=
   rfl
 
 @[simp]
-theorem comp_f : (f ≫ g).1 = f.1 ≫ g.1 :=
+theorem comp_f : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 
 /-- Coalgebras of an endofunctor `F` form a category -/
@@ -312,7 +312,7 @@ instance (F : C ⥤ C) : Category (Coalgebra F) := { }
 commutes with the structure morphisms.
 -/
 @[simps]
-def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁.str := by cat_disch) :
+def isoMk (h : V₀.V ≅ V₁.V) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁.str := by cat_disch) :
     V₀ ≅ V₁ where
   hom := { f := h.hom }
   inv :=
@@ -324,14 +324,14 @@ def isoMk (h : V₀.1 ≅ V₁.1) (w : V₀.str ≫ F.map h.hom = h.hom ≫ V₁
 /-- The forgetful functor from the category of coalgebras, forgetting the coalgebraic structure. -/
 @[simps]
 def forget (F : C ⥤ C) : Coalgebra F ⥤ C where
-  obj A := A.1
-  map f := f.1
+  obj A := A.V
+  map f := f.f
 
 /-- A coalgebra morphism with an underlying isomorphism hom in `C` is a coalgebra isomorphism. -/
-theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
-  ⟨⟨{ f := inv f.1
+theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.f] : IsIso f :=
+  ⟨⟨{ f := inv f.f
       h := by
-        rw [IsIso.eq_inv_comp f.1, ← Category.assoc, ← f.h, Category.assoc]
+        rw [IsIso.eq_inv_comp f.f, ← Category.assoc, ← f.h, Category.assoc]
         simp }, by cat_disch, by cat_disch⟩⟩
 
 instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
@@ -339,11 +339,11 @@ instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects :=
 instance forget_faithful : (forget F).Faithful := { }
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
-theorem epi_of_epi {X Y : Coalgebra F} (f : X ⟶ Y) [h : Epi f.1] : Epi f :=
+theorem epi_of_epi {X Y : Coalgebra F} (f : X ⟶ Y) [h : Epi f.f] : Epi f :=
   (forget F).epi_of_epi_map h
 
 /-- An algebra morphism with an underlying monomorphism hom in `C` is an algebra monomorphism. -/
-theorem mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.1] : Mono f :=
+theorem mono_of_mono {X Y : Coalgebra F} (f : X ⟶ Y) [h : Mono f.f] : Mono f :=
   (forget F).mono_of_mono_map h
 
 /-- From a natural transformation `α : F → G` we get a functor from
@@ -352,10 +352,10 @@ coalgebras of `F` to coalgebras of `G`.
 @[simps]
 def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra G where
   obj V :=
-    { V := V.1
-      str := V.str ≫ α.app V.1 }
+    { V := V.V
+      str := V.str ≫ α.app V.V }
   map f :=
-    { f := f.1
+    { f := f.f
       h := by rw [Category.assoc, ← α.naturality, ← Category.assoc, f.h, Category.assoc] }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -403,7 +403,7 @@ variable {A : Coalgebra F} (h : Limits.IsTerminal A)
 
 /-- The inverse of the structure map of a terminal coalgebra -/
 @[simp]
-def strInv : F.obj A.1 ⟶ A.1 :=
+def strInv : F.obj A.V ⟶ A.V :=
   (h.from ⟨F.obj A.V, F.map A.str⟩).f
 
 theorem right_inv' :
@@ -447,10 +447,10 @@ coalgebra over `G` defined via adjunction applied to the structure map. -/
 @[simps!]
 def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G where
   obj A :=
-    { V := A.1
-      str := (adj.homEquiv A.1 A.1).toFun A.2 }
+    { V := A.a
+      str := (adj.homEquiv A.a A.a).toFun A.str }
   map f :=
-    { f := f.1
+    { f := f.f
       h := Algebra.homEquiv_naturality_str adj _ _ f }
 
 /-- Given an adjunction `F ⊣ G`, the functor that associates to a coalgebra over `G` an algebra over
@@ -458,10 +458,10 @@ def Algebra.toCoalgebraOf (adj : F ⊣ G) : Algebra F ⥤ Coalgebra G where
 @[simps!]
 def Coalgebra.toAlgebraOf (adj : F ⊣ G) : Coalgebra G ⥤ Algebra F where
   obj V :=
-    { a := V.1
-      str := (adj.homEquiv V.1 V.1).invFun V.2 }
+    { a := V.V
+      str := (adj.homEquiv V.V V.V).invFun V.str }
   map f :=
-    { f := f.1
+    { f := f.f
       h := Coalgebra.homEquiv_naturality_str_symm adj _ _ f }
 
 set_option backward.defeqAttrib.useBackward true in

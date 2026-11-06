@@ -319,7 +319,7 @@ theorem isUniformInducing_coe : IsUniformInducing ((↑) : α → Completion α)
 
 theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
-  (isUniformInducing_coe _).1
+  (isUniformInducing_coe _).comap_uniformity
 
 variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=

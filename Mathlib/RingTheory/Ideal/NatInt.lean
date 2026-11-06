@@ -94,10 +94,10 @@ theorem ringKrullDim_nat : ringKrullDim ℕ = 2 := by
     let s := s.take ⟨3, by lia⟩
     have : NeZero s.length := ⟨three_ne_zero⟩
     have h1 : ⊥ < (s 1).asIdeal := bot_le.trans_lt (s.step 0)
-    obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).2).resolve_left h1.ne'
+    obtain hmax | ⟨p, hp, hsp⟩ := (Ideal.isPrime_nat_iff.mp (s 1).isPrime).resolve_left h1.ne'
     · exact (le_maximalIdeal_of_isPrime (s 2).asIdeal).not_gt (hmax.symm.trans_lt (s.step 1))
     obtain hmax | ⟨q, hq, hsq⟩ :=
-      (Ideal.isPrime_nat_iff.mp (s 2).2).resolve_left (h1.trans (s.step 1)).ne'
+      (Ideal.isPrime_nat_iff.mp (s 2).isPrime).resolve_left (h1.trans (s.step 1)).ne'
     · exact (le_maximalIdeal_of_isPrime (s 3).asIdeal).not_gt (hmax.symm.trans_lt (s.step 2))
     · exact hq.not_isUnit <| (Ideal.span_singleton_lt_span_singleton.mp
         ((hsp.symm.trans_lt (s.step 1)).trans_eq hsq)).isUnit_of_irreducible_right hp

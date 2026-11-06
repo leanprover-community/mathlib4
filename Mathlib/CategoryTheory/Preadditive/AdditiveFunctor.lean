@@ -279,11 +279,11 @@ def AdditiveFunctor.of (F : C ⥤ D) [F.Additive] : C ⥤+ D :=
   ⟨F, by simpa⟩
 
 @[simp]
-theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).1 = F :=
+theorem AdditiveFunctor.of_fst (F : C ⥤ D) [F.Additive] : (AdditiveFunctor.of F).obj = F :=
   rfl
 
 @[simp]
-theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.1 :=
+theorem AdditiveFunctor.forget_obj (F : C ⥤+ D) : (AdditiveFunctor.forget C D).obj F = F.obj :=
   rfl
 
 theorem AdditiveFunctor.forget_obj_of (F : C ⥤ D) [F.Additive] :
@@ -297,8 +297,8 @@ theorem AdditiveFunctor.forget_map (F G : C ⥤+ D) (α : F ⟶ G) :
 
 instance : Functor.Additive (AdditiveFunctor.forget C D) where map_add := rfl
 
-instance (F : C ⥤+ D) : Functor.Additive F.1 :=
-  F.2
+instance (F : C ⥤+ D) : Functor.Additive F.obj :=
+  F.property
 
 end
 

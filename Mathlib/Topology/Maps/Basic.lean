@@ -234,11 +234,11 @@ lemma of_leftInverse_of_isInducing {f : X → Y} {g : Y → X}
   rwa [← ts, h.preimage_preimage t]
 
 lemma map_nhds_eq (hf : IsEmbedding f) (x : X) : (𝓝 x).map f = 𝓝[range f] f x :=
-  hf.1.map_nhds_eq x
+  hf.toIsInducing.map_nhds_eq x
 
 lemma map_nhds_of_mem (hf : IsEmbedding f) (x : X) (h : range f ∈ 𝓝 (f x)) :
     (𝓝 x).map f = 𝓝 (f x) :=
-  hf.1.map_nhds_of_mem x h
+  hf.toIsInducing.map_nhds_of_mem x h
 
 lemma tendsto_nhds_iff {f : ι → Y} {l : Filter ι} {y : Y} (hg : IsEmbedding g) :
     Tendsto f l (𝓝 y) ↔ Tendsto (g ∘ f) l (𝓝 (g y)) := hg.isInducing.tendsto_nhds_iff
@@ -251,7 +251,7 @@ lemma continuous (hf : IsEmbedding f) : Continuous f := hf.isInducing.continuous
 
 lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) :=
-  hf.1.closure_eq_preimage_closure_image s
+  hf.toIsInducing.closure_eq_preimage_closure_image s
 
 /-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
 is the discrete topology on `X`.
@@ -335,15 +335,15 @@ protected theorem id : IsQuotientMap (@id X) :=
 
 @[fun_prop]
 protected theorem comp (hg : IsQuotientMap g) (hf : IsQuotientMap f) : IsQuotientMap (g ∘ f) :=
-  ⟨.comp hg.1 hf.1, hg.surjective.comp hf.surjective, ⟩
+  ⟨.comp hg.isCoinducing hf.isCoinducing, hg.surjective.comp hf.surjective, ⟩
 
 protected theorem of_comp (hf : Continuous f) (hg : Continuous g)
     (hgf : IsQuotientMap (g ∘ f)) : IsQuotientMap g :=
-  ⟨.of_comp hf hg hgf.1, hgf.2.of_comp⟩
+  ⟨.of_comp hf hg hgf.isCoinducing, hgf.surjective.of_comp⟩
 
 theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinducing f) :
     IsQuotientMap g :=
-  ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
+  ⟨hf.of_comp_iff.mp hgf.isCoinducing, hgf.surjective.of_comp⟩
 
 protected theorem of_comp_iff (hf : IsQuotientMap f) :
     IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
@@ -756,7 +756,7 @@ lemma IsEmbedding.isOpenEmbedding_of_surjective (hf : IsEmbedding f) (hsurj : f.
 alias IsOpenEmbedding.of_isEmbedding := IsEmbedding.isOpenEmbedding_of_surjective
 
 lemma isOpenEmbedding_iff_isEmbedding_isOpenMap : IsOpenEmbedding f ↔ IsEmbedding f ∧ IsOpenMap f :=
-  ⟨fun h => ⟨h.1, h.isOpenMap⟩, fun h => .of_isEmbedding_isOpenMap h.1 h.2⟩
+  ⟨fun h => ⟨h.toIsEmbedding, h.isOpenMap⟩, fun h => .of_isEmbedding_isOpenMap h.1 h.2⟩
 
 theorem IsOpenEmbedding.of_continuous_injective_isOpenMap
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : IsOpenEmbedding f := by
@@ -779,7 +779,7 @@ protected lemma id : IsOpenEmbedding (@id X) := ⟨.id, IsOpenMap.id.isOpen_rang
 @[fun_prop]
 protected lemma comp (hg : IsOpenEmbedding g)
     (hf : IsOpenEmbedding f) : IsOpenEmbedding (g ∘ f) :=
-  ⟨hg.1.comp hf.1, (hg.isOpenMap.comp hf.isOpenMap).isOpen_range⟩
+  ⟨hg.toIsEmbedding.comp hf.toIsEmbedding, (hg.isOpenMap.comp hf.isOpenMap).isOpen_range⟩
 
 theorem isOpenMap_iff (hg : IsOpenEmbedding g) :
     IsOpenMap f ↔ IsOpenMap (g ∘ f) := by
@@ -788,7 +788,7 @@ theorem isOpenMap_iff (hg : IsOpenEmbedding g) :
 theorem of_comp_iff (f : X → Y) (hg : IsOpenEmbedding g) :
     IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
   simp only [isOpenEmbedding_iff_continuous_injective_isOpenMap, ← hg.isOpenMap_iff, ←
-    hg.1.continuous_iff, hg.injective.of_comp_iff]
+    hg.toIsEmbedding.continuous_iff, hg.injective.of_comp_iff]
 
 lemma of_comp (f : X → Y) (hg : IsOpenEmbedding g) (h : IsOpenEmbedding (g ∘ f)) :
     IsOpenEmbedding f := (IsOpenEmbedding.of_comp_iff f hg).1 h

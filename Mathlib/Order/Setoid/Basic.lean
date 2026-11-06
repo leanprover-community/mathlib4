@@ -191,7 +191,7 @@ instance completeLattice : CompleteLattice (Setoid α) :=
     top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
     le_top := fun _ _ _ _ => trivial
     bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
-    bot_le := fun r x _ h => h ▸ r.2.1 x }
+    bot_le := fun r x _ h => h ▸ r.iseqv.refl x }
 
 @[simp, grind =]
 theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
@@ -561,11 +561,11 @@ open Quotient
 /-- Given an equivalence relation `r` on `α`, the order-preserving bijection between the set of
 equivalence relations containing `r` and the equivalence relations on the quotient of `α` by `r`. -/
 def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) where
-  toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
+  toFun s := ⟨Quotient.lift₂ s.1.r fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
       (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
       (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+    ⟨Quotient.ind s.1.iseqv.refl, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.iseqv.symm,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.iseqv.trans⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
   map_rel_iff' :=

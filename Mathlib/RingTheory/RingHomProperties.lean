@@ -139,7 +139,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
       P (algebraMap R T) → P (algebraMap S (S ⊗[R] T))) :
     IsStableUnderBaseChange @P := by
   introv R h H
-  let e := h.symm.1.equiv
+  let e := h.symm.out.equiv
   let f' := Algebra.TensorProduct.productMap (IsScalarTower.toAlgHom R R' S')
     (IsScalarTower.toAlgHom R S S')
   have hef (x : _) : e x = f' x := by
@@ -148,7 +148,7 @@ theorem IsStableUnderBaseChange.mk (h₁ : RespectsIso @P)
   have hemul (x y : _) : e (x * y) = e x * e y := by simp_rw [hef, map_mul]
   convert h₁.1 _ { e with map_mul' := hemul } (h₂ H)
   ext x
-  simp [e, h.symm.1.equiv_tmul, Algebra.smul_def]
+  simp [e, h.symm.out.equiv_tmul, Algebra.smul_def]
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
 
@@ -205,9 +205,9 @@ lemma isStableUnderCobaseChange_toMorphismProperty_iff :
   refine ⟨fun h R S R' S' _ _ _ _ _ _ _ _ _ _ _ hsq hRS ↦ ?_,
       fun h ↦ ⟨fun {R} S R' S' f g f' g' hsq hf ↦ ?_⟩⟩
   · rw [← CommRingCat.isPushout_iff_isPushout] at hsq
-    exact h.1 (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
+    exact h.of_isPushout (f := CommRingCat.ofHom (algebraMap R S)) hsq.flip hRS
   · algebraize [f.hom, g.hom, f'.hom, g'.hom, f'.hom.comp g.hom]
-    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.1.1).hom x)
+    have : IsScalarTower R S S' := .of_algebraMap_eq fun x ↦ congr($(hsq.toCommSq.w).hom x)
     have : Algebra.IsPushout R S R' S' := (CommRingCat.isPushout_iff_isPushout.mp hsq).symm
     exact h (R := R) (S := S) _ _ hf
 

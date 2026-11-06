@@ -50,7 +50,7 @@ class IsMaximal (I : Ideal α) : Prop where
   out : IsCoatom I
 
 theorem isMaximal_def {I : Ideal α} : I.IsMaximal ↔ IsCoatom I :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
@@ -63,7 +63,7 @@ theorem isMaximal_iff {I : Ideal α} :
   simp_rw [isMaximal_def, SetLike.isCoatom_iff, Ideal.ne_top_iff_one, ← Ideal.eq_top_iff_one]
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
-  eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
+  eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.out.2 _ h)⟩
 
 theorem IsMaximal.eq_iff_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) : I = J ↔ I ≤ J :=
   ⟨by aesop, Ideal.IsMaximal.eq_of_le hI hJ⟩
@@ -152,7 +152,7 @@ theorem isPrime_span_singleton_of_prime {p : α} (hp : Prime p) : (span {p}).IsP
   simp [Ideal.span_singleton_prime hp.ne_zero, hp]
 
 theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
-  ⟨H.1.1, @fun x y hxy =>
+  ⟨H.out.1, @fun x y hxy =>
     or_iff_not_imp_left.2 fun hx => by
       let J : Ideal α := Submodule.span α (insert x ↑I)
       have IJ : I ≤ J := Set.Subset.trans (subset_insert _ _) subset_span
@@ -172,7 +172,7 @@ instance (priority := 100) IsMaximal.isPrime' (I : Ideal α) : ∀ [_H : I.IsMax
 theorem exists_disjoint_powers_of_span_eq_top (s : Set α) (hs : span s = ⊤) (I : Ideal α)
     (hI : I ≠ ⊤) : ∃ r ∈ s, Disjoint (I : Set α) (Submonoid.powers r) := by
   have ⟨M, hM, le⟩ := exists_le_maximal I hI
-  have := hM.1.1
+  have := hM.out.1
   rw [Ne, eq_top_iff, ← hs, span_le, Set.not_subset] at this
   have ⟨a, has, haM⟩ := this
   exact ⟨a, has, Set.disjoint_left.mpr fun x hx ⟨n, hn⟩ ↦

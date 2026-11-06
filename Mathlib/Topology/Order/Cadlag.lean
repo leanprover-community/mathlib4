@@ -175,10 +175,10 @@ variable [LinearOrder X] [PseudoMetricSpace Y]
 /-- A càdlàg function is locally bounded. -/
 @[to_dual /-- A càglàd function is locally bounded. -/]
 lemma IsCadlag.isLocallyBounded (hf : IsCadlag f) (x : X) : ∃ t ∈ 𝓝 x, IsBounded (f '' t) := by
-  obtain ⟨l, hl⟩ := hf.2 x
+  obtain ⟨l, hl⟩ := hf.tendsto_nhdsLT x
   obtain ⟨-, ⟨⟨A, ⟨hA, ⟨W, hW, rfl⟩⟩⟩, hAW⟩⟩ := Metric.exists_isBounded_image_of_tendsto hl
   obtain ⟨-, ⟨⟨B, ⟨hB, ⟨R, hR, rfl⟩⟩⟩, hBR⟩⟩ :=
-    Metric.exists_isBounded_image_of_tendsto (hf.1 x).tendsto
+    Metric.exists_isBounded_image_of_tendsto (hf.isRightContinuous x).tendsto
   refine ⟨A ∩ B, inter_mem hA hB, ?_⟩
   apply ((hAW.union hBR).union (isBounded_singleton (x := f x))).subset
   rintro _ ⟨y, ⟨hyL, hyR⟩ , rfl⟩

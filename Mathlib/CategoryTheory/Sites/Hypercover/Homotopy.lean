@@ -306,11 +306,11 @@ instance : Nonempty (J.HOneHypercover S) := ⟨⟨Nonempty.some inferInstance⟩
 /-- If `C` has pullbacks, the category of `1`-hypercovers up to homotopy is cofiltered. -/
 instance isCofiltered_of_hasPullbacks [HasPullbacks C] : IsCofiltered (J.HOneHypercover S) where
   cone_objs {E F} :=
-    ⟨⟨E.1.inter F.1⟩, Quot.mk _ (PreOneHypercover.interFst _ _),
+    ⟨⟨E.as.inter F.as⟩, Quot.mk _ (PreOneHypercover.interFst _ _),
       Quot.mk _ (PreOneHypercover.interSnd _ _), ⟨⟩⟩
   cone_maps {X Y} f g := by
-    obtain ⟨(f : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective f
-    obtain ⟨(g : X.1 ⟶ Y.1), rfl⟩ := (toHOneHypercover J S).map_surjective g
+    obtain ⟨(f : X.as ⟶ Y.as), rfl⟩ := (toHOneHypercover J S).map_surjective f
+    obtain ⟨(g : X.as ⟶ Y.as), rfl⟩ := (toHOneHypercover J S).map_surjective g
     obtain ⟨W, h, ⟨H⟩⟩ := OneHypercover.exists_nonempty_homotopy f g
     use (toHOneHypercover J S).obj W, (toHOneHypercover J S).map h
     rw [← Functor.map_comp, ← Functor.map_comp]

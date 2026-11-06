@@ -100,7 +100,7 @@ instance inhabitedFinset : Inhabited (Finset α) :=
   ⟨∅⟩
 
 @[simp]
-theorem empty_val : (∅ : Finset α).1 = 0 :=
+theorem empty_val : (∅ : Finset α).val = 0 :=
   rfl
 
 @[simp, grind ←]
@@ -130,7 +130,7 @@ theorem eq_empty_of_forall_notMem {s : Finset α} (H : ∀ x, x ∉ s) : s = ∅
 theorem eq_empty_iff_forall_notMem {s : Finset α} : s = ∅ ↔ ∀ x, x ∉ s := by grind
 
 @[simp]
-theorem val_eq_zero {s : Finset α} : s.1 = 0 ↔ s = ∅ :=
+theorem val_eq_zero {s : Finset α} : s.val = 0 ↔ s = ∅ :=
   @val_inj _ s ∅
 
 @[simp] lemma subset_empty : s ⊆ ∅ ↔ s = ∅ := subset_zero.trans val_eq_zero

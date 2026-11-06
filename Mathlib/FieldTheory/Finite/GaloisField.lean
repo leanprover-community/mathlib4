@@ -163,7 +163,7 @@ theorem _root_.FiniteField.splits_X_pow_nat_card_sub_X [Finite K] :
 
 theorem _root_.FiniteField.isSplittingField_of_nat_card_eq (h : Nat.card K = p ^ n) :
     IsSplittingField (ZMod p) K (X ^ p ^ n - X) := by
-  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.1.pos n)).2
+  have : Finite K := (Nat.card_pos_iff.mp (h ▸ pow_pos h_prime.out.pos n)).2
   have : Fintype K := Fintype.ofFinite K
   rw [← h, Nat.card_eq_fintype_card]
   exact FiniteField.isSplittingField_sub K (ZMod p)
@@ -235,7 +235,7 @@ theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun 
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
-  exact ⟨x, congr($(eq).1)⟩
+  exact ⟨x, congr($(eq).val)⟩
 
 end norm
 
