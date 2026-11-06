@@ -159,7 +159,6 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
 the induced map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
     {F : M → N} (hF : ∀ p q, f p = f q → F p = F q)
     (hF' : CMDiff n F) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
