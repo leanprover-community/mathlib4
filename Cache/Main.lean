@@ -202,7 +202,7 @@ def main (args : List String) : IO Unit := do
   match args with
   | ["query"] =>
     let repo ← resolveQueryRepo repo?
-    cacheQuery repo (cap := 50)
+    cacheQuery repo (cap := 50) (repoExplicit? := repo?)
     return
   | ["query", ref] =>
     let repo ← resolveQueryRepo repo?
@@ -276,6 +276,7 @@ def main (args : List String) : IO Unit := do
     -- a read fully served by the configured locations stays silent even when
     -- HEAD has no fork cache of its own.
     warnIfMissingFiles resolvedRepo missing (unsafeMode := unsafeWindow?.isSome)
+      (repoExplicit? := repo?)
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   -- `pack`-and-upload: the hash memo scopes the file list to what this
