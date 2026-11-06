@@ -84,7 +84,7 @@ theorem noAtoms_iff' :
 
 namespace NoAtoms
 
-/-- A version of `noAtoms_iff'` in which the subset `t` need not be measurable. -/
+/-- A constructor for `NoAtoms` in which the subset `t` need not be measurable. -/
 theorem mk' (h : ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) :
     NoAtoms μ := by
   refine noAtoms_iff'.2 fun s hs hμs ↦ ?_
