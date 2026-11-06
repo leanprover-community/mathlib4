@@ -117,6 +117,89 @@ example (a : ℕ∞) (h : a ≠ ⊤) : 2 * a = a + a := by
   basify
   lia
 
+example (a : ℕ∞) : a + ∞ = ∞ := by
+  basify
+
+example (a : ℕ∞) : ∞ + a = ∞ := by
+  basify
+
+example (a : ℕ∞) : 2 ≤ a + 3 := by
+  basify
+  lia
+
+example (a : ℕ∞) : (a + 1) + 1 ≤ a + 3 := by
+  basify
+  lia
+
+/-! ## Operations on `WithTop ℕ∞` -/
+
+section
+
+local notation "ℕ∞ω" => WithTop ℕ∞
+local notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
+
+variable {k : WithTop ℕ∞}
+
+/--
+warning: declaration uses `sorry`
+---
+warning: Unused tactic linter: `basify` does not change the goal.
+
+Note: This linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : k ≤ k + 2 := by
+  -- TODO: basify doesn't do anything yet
+  basify
+  sorry
+
+example : k + 1 ≤ k + 2 := by
+  -- basify makes no progress
+  gcongr
+  simp
+
+example : k + 1 + 1 ≤ k + 2 := by
+  sorry -- TODO: neither basify nor norm_cast helps!
+
+example : 2 ≤ k + 3 := by sorry -- TODO: basify does nothing yet
+
+-- Analogous tests for something in ℕ∞ being cast to WithTop: these are already handled well.
+example (k : ℕ∞) : (k : ℕ∞ω) ≤ k + 2 := by
+  basify; simp -- TODO: make basify able to solve the first side goal
+  -- TODO: investigate why norm_cast is not idempotent, and how to fix this
+  norm_cast; norm_cast; lia
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 ≤ k + 2 := by
+  basify; simp -- TODO: make basify able to solve the first side goal
+  -- TODO: investigate why norm_cast is not idempotent, and how to fix this
+  norm_cast; norm_cast; lia
+
+example (k : ℕ∞) : k + 1 ≤ (k : ℕ∞ω) + 1 + 1 := by
+  basify; simp -- TODO: make basify able to solve the first side goal
+  norm_cast; lia
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 2 ≤ k + 3 := by
+  basify; sorry -- TODO: make basify able to solve the first side goal
+  norm_cast; norm_cast; lia -- TODO: why is norm_cast not idempotent?
+
+lemma aux7 (k : ℕ∞) : (k + 2 : ℕ∞ω) + 1 ≤ k + 3 := by
+  basify; sorry -- TODO: make basify able to solve the first side goal
+  norm_cast
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 2 := by
+  basify; simp -- TODO: make basify able to solve the first side goal
+  norm_cast
+
+example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 3 := by
+  basify; simp -- TODO: make basify able to solve the first side goal
+  norm_cast; norm_cast; lia -- TODO: why is norm_cast not idempotent?
+
+example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
+  basify; sorry -- TODO: make basify solve the first side goal
+  norm_cast; norm_cast; lia
+
+end
+
 /-! ## Operations of `ℕ+` -/
 
 example (a : ℕ+) : 1 ≤ a := by
