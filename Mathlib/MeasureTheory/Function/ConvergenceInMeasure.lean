@@ -176,7 +176,6 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
   filter_upwards [h_left] with i h_ae_eq
   refine measure_congr ?_
   filter_upwards [h_ae_eq, h_right] with x hxf hxg
-  rw [eq_iff_iff]
   rw [hxg, hxf]
 
 protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')

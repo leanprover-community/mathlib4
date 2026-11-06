@@ -521,7 +521,7 @@ noncomputable instance _root_.Module.End.instDivisionRing [IsSimpleModule R M] :
     DivisionRing (Module.End R M) where
   inv f := open scoped Classical in if h : f = 0 then 0 else (LinearEquiv.ofBijective _ <|
     bijective_of_ne_zero h).symm
-  exists_pair_ne := ⟨0, 1, have := IsSimpleModule.nontrivial R M; zero_ne_one⟩
+  toNontrivial := have := IsSimpleModule.nontrivial R M; inferInstance
   mul_inv_cancel a a0 := by
     simp_rw [dite_eq_right a0]; ext
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
