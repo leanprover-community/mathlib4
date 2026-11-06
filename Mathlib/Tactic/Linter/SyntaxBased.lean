@@ -12,7 +12,7 @@ public import Mathlib.Tactic.Linter.Header  -- shake: keep
 /-!
 # Syntax based linters
 
-This file defines a linter that combines many differen linters that each operate directly on
+This file defines a linter that combines many different linters that each operate directly on
 the `Syntax`. This approach of combining the linters into a single loop is more efficient than
 having each linter do this by itself.
 -/
