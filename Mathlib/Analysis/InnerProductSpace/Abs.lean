@@ -62,7 +62,7 @@ protected theorem abs_sub_comm (S T : E →L[ℂ] F) : |S - T| = |T - S| := by
   rw [← neg_sub, ContinuousLinearMap.abs_neg]
 
 @[simp]
-protected theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
+theorem isPositive_abs (T : E →L[ℂ] F) : |T|.IsPositive := by
   simp [ContinuousLinearMap.abs_def, ← ContinuousLinearMap.nonneg_iff_isPositive]
 
 @[simp]
@@ -71,14 +71,14 @@ protected theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
   exact CFC.sqrt_mul_self ..
 
 @[simp]
-protected theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
+theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
 
 @[fun_prop]
 protected theorem continuous_abs : Continuous (ContinuousLinearMap.abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
   CFC.continuousOn_sqrt.comp_continuous (by fun_prop)
     fun T => T.isPositive_adjoint_comp_self.nonneg
 
-protected theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
+theorem abs_eq_cfcAbs (T : E →L[ℂ] E) : |T| = CFC.abs T := rfl
 
 @[simp]
 protected theorem abs_eq_zero {T : E →L[ℂ] F} : |T| = 0 ↔ T = 0 := by
@@ -121,10 +121,10 @@ theorem abs_of_isPositive_neg {S : E →L[ℂ] E} (hS : (-S).IsPositive) : |S| =
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ (neg_nonneg.mp hS.nonneg)
 
-protected theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
+theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
   abs_of_isPositive (isPositive_adjoint_comp_self T)
 
-protected theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
+theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
   abs_of_isPositive (isPositive_self_comp_adjoint T)
 
 protected theorem abs_eq_self {S : E →L[ℂ] E} : |S| = S ↔ S.IsPositive :=
@@ -134,7 +134,7 @@ protected theorem abs_eq_self_neg {S : E →L[ℂ] E} : |S| = -S ↔ (-S).IsPosi
   ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive_neg h⟩
 
 @[simp]
-protected theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
+theorem abs_id : |(.id ℂ E : E →L[ℂ] E)| = .id ℂ E :=
   abs_of_isPositive isPositive_one
 
 @[simp]
