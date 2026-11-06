@@ -38,15 +38,15 @@ variable {M : Type*} [TopologicalSpace M]
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} [IsManifold I n M]
+  {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
 
 variable {M' : Type*} [TopologicalSpace M']
 
 open scoped ContDiff Manifold Topology
 
 variable {f : M → M'} (hf : IsLocalHomeomorph f)
+  {g : M' → M} (hg : Function.RightInverse g f)
 
-omit [IsManifold I n M] in
 lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧
       ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) (p q : M) :
     ContMDiffOn I I n ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q)
@@ -65,7 +65,61 @@ lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧
     with r' hr' hσr' hfσr'
   exact hf.injOn_localInverseAt_target (τ.map_source hr').1 hσr' ((hτ hr').trans hfσr'.symm)
 
-variable {g : M' → M} (hg : Function.RightInverse g f)
+lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
+    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
+  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+  rw [contMDiffAt_iff]
+  constructor
+  · apply OpenPartialHomeomorph.continuousAt
+    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
+  · rw [show hf.localInverseAt (g y) y = g y by
+      simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
+    have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
+    rw [extChartAt_coe, extChartAt_coe_symm, hc]
+    simp only [OpenPartialHomeomorph.coe_trans_symm]
+    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
+      (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
+    filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
+    simp only [Function.comp_apply, id]
+    rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
+    rw [Set.mem_inter_iff, Set.mem_preimage] at hx
+    obtain ⟨⟨h1, h2⟩, h3⟩ := hx
+    rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
+
+variable {H' : Type*} [TopologicalSpace H']
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  {J : ModelWithCorners 𝕜 E' H'}
+
+lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
+    {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiff I J n φ := by
+  intro _ x'
+  have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
+    have hT : (hf.localInverseAt (g x')).source ∈ 𝓝 x' := by
+      refine (hf.localInverseAt (g x')).open_source.mem_nhds ?_
+      simpa [hg x'] using hf.apply_self_mem_localInverseAt_source (x:= g x')
+    filter_upwards [hT] with x hx
+    simp [hf.apply_localInverseAt_of_mem hx]
+  apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
+  apply ContMDiffAt.comp (I' := I) x'
+  · exact hφ.contMDiffAt
+  · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
+
+-- maybe this could be just dropped
+/-- Suppose `F : M → N` is `C^n` and invariant under `f`,
+the induced map `F ∘ g : M' → N` is also `C^n`. -/
+lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
+    {F : M → N} (hF : ∀ p q, f p = f q → F p = F q)
+    (hF' : CMDiff n F) :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiff I J n (F ∘ g) := by
+  apply IsLocalHomeomorph.contMDiff_of_contMDiff_comp hf hg
+  exact hF'.congr (fun y ↦ hF _ _ (hg (f y)))
+
+variable [IsManifold I n M]
 
 lemma IsLocalHomeomorph.isManifoldOfRightInverse
     -- TODO Is `h` below the most useful hypothesis?
@@ -91,10 +145,14 @@ lemma IsLocalHomeomorph.isContMDiffOfRightInverse
 
   sorry
 
-variable {H' : Type*} [TopologicalSpace H']
-  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  {J : ModelWithCorners 𝕜 E' H'} -- [IsManifold J n N]
+lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
+    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
+    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
+    ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
+  intro y
+  have aux := foo hf h
+
+  sorry
 
 /-- Suppose `F : M → N` is invariant under `f`
 and the map `F ∘ g : M' → N` is `C^n`, then so is `F`. -/
@@ -107,67 +165,6 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
   exact fun y ↦ hF _ _ (hg (f y)).symm
-
-omit [IsManifold I n M] in
-lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
-    letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiffAt I I n (hf.localInverseAt (g y)) y := by
-  let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-  rw [contMDiffAt_iff]
-  constructor
-  · apply OpenPartialHomeomorph.continuousAt
-    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
-  · rw [show hf.localInverseAt (g y) y = g y by
-      simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
-    have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
-    rw [extChartAt_coe, extChartAt_coe_symm, hc]
-    simp only [OpenPartialHomeomorph.coe_trans_symm]
-    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
-      (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
-    filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
-    simp only [Function.comp_apply, id]
-    rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
-    rw [Set.mem_inter_iff, Set.mem_preimage] at hx
-    obtain ⟨⟨h1, h2⟩, h3⟩ := hx
-    rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
-
-lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
-    (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
-    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiffOn I I n (↑(hf.localInverseAt x)) (hf.localInverseAt x).source := by
-  intro y
-  have aux := foo hf h
-
-  sorry
-
-omit [IsManifold I n M] in
-lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
-    {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
-    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiff I J n φ := by
-  intro _ x'
-  have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
-    have hT : (hf.localInverseAt (g x')).source ∈ 𝓝 x' := by
-      refine (hf.localInverseAt (g x')).open_source.mem_nhds ?_
-      simpa [hg x'] using hf.apply_self_mem_localInverseAt_source (x:= g x')
-    filter_upwards [hT] with x hx
-    simp [hf.apply_localInverseAt_of_mem hx]
-  apply ContMDiffAt.congr_of_eventuallyEq (h₁ := this)
-  apply ContMDiffAt.comp (I' := I) x'
-  · exact hφ.contMDiffAt
-  · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
-
--- maybe this could be just dropped
-omit [IsManifold I n M] in
-/-- Suppose `F : M → N` is `C^n` and invariant under `f`,
-the induced map `F ∘ g : M' → N` is also `C^n`. -/
-lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
-    {F : M → N} (hF : ∀ p q, f p = f q → F p = F q)
-    (hF' : CMDiff n F) :
-    let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
-    ContMDiff I J n (F ∘ g) := by
-  apply IsLocalHomeomorph.contMDiff_of_contMDiff_comp hf hg
-  exact hF'.congr (fun y ↦ hF _ _ (hg (f y)))
 
 /-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
 `M ⧸ G → N` is. -/
