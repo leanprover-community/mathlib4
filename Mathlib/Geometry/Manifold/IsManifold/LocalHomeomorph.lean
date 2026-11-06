@@ -18,6 +18,8 @@ This file gives a condition under which this makes `M'` a `C^n` manifold.
 
 ## Main results
 
+TODO: rewrite this
+
 If this condition holds:
 
 * `IsLocalHomeomorph.isManifoldOfRightInverse`: `M'` is a smooth manifold.
@@ -47,6 +49,7 @@ open scoped ContDiff Manifold Topology
 variable {f : M → M'} (hf : IsLocalHomeomorph f)
   {g : M' → M} (hg : Function.RightInverse g f)
 
+-- TODO: find proper name for this
 lemma foo (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧
       ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) (p q : M) :
     ContMDiffOn I I n ((hf.localInverseAt p).symm ≫ₕ hf.localInverseAt q)
@@ -108,7 +111,7 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
   · exact hφ.contMDiffAt
   · exact IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse hf hg x'
 
--- maybe this could be just dropped
+-- TODO: decide whether to keep this result
 /-- Suppose `F : M → N` is `C^n` and invariant under `f`,
 the induced map `F ∘ g : M' → N` is also `C^n`. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
@@ -122,7 +125,7 @@ lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_of_contMDiff
 variable [IsManifold I n M]
 
 lemma IsLocalHomeomorph.isManifoldOfRightInverse
-    -- TODO Is `h` below the most useful hypothesis?
+    -- TODO: Is `h` below the most useful hypothesis?
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
