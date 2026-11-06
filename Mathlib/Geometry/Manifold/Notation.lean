@@ -368,6 +368,7 @@ where findFromLocalInstance (e : Expr) : TermElabM <| Option Expr := do
       else return none
     | _ => pure none
 
+set_option linter.longDeclaration false in
 /-- Try to find a `ModelWithCorners` instance on a type (represented by an expression `e`),
 using the local context to infer the appropriate instance. This supports the following cases:
 - the model with corners on the total space of a vector bundle
