@@ -37,8 +37,8 @@ section Polar
 local notation "|" T "|" => abs T
 
 private def polarₗᵢAux (T : E →L[ℂ] F) : |T|.range →ₗ[ℂ] F :=
-  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun ⦃x⦄ a ↦ a)
-    ∘ₗ (|T|.quotKerEquivRange).symm.toLinearMap
+  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun _ a ↦ a)
+    ∘ₗ |T|.quotKerEquivRange.symm.toLinearMap
 
 @[simp]
 private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : |T| x ∈ |T|.range) :
@@ -75,7 +75,7 @@ theorem range_polarₗᵢ (T : E →L[ℂ] F) :
     refine T.denseRange_inclusion.induction_on m
       (isClosed_closure.preimage T.polarₗᵢ.toContinuousLinearMap.continuous) ?_
     rintro ⟨_, x, rfl⟩
-    exact subset_closure ⟨x, (T.polarₗᵢ_apply x).symm ▸ rfl⟩
+    exact subset_closure ⟨x, T.polarₗᵢ_apply x ▸ rfl⟩
   · exact Submodule.topologicalClosure_minimal _
       (by
         rintro _ ⟨x, rfl⟩
