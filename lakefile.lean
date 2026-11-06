@@ -6,17 +6,17 @@ open Lake DSL
 ## Mathlib dependencies on upstream projects
 -/
 
-require "leanprover-community" / "batteries" @ git "main"
-require "leanprover-community" / "Qq" @ git "master"
+require "leanprover-community" / "batteries" @ git "nightly-testing"
+require "leanprover-community" / "Qq" @ git "nightly-testing"
 
-require "leanprover-community" / "aesop" @ git "master"
-require "leanprover-community" / "proofwidgets" @ git "main"
+require "leanprover-community" / "aesop" @ git "nightly-testing"
+require "leanprover-community" / "proofwidgets" @ git "nightly-testing"
   with NameMap.empty.insert `errorOnBuild
     "ProofWidgets failed to reuse pre-built JS code. \
     Please report this issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "main"
+require "leanprover-community" / "plausible" @ git "nightly-testing"
 
 
 /-!
@@ -166,6 +166,10 @@ lean_exe «lint-style» where
 
 /-- `lake exe check-title-labels` checks if a PR title obeys some basic formatting requirements.
 Currently, these checks are quite lenient, but could be made stricter in the future. -/
+lean_exe «check-title-labels» where
+  srcDir := "scripts"
+
+-- TODO: provided for backwards compatibility; delete after #44306
 lean_exe «check_title_labels» where
   srcDir := "scripts"
   -- TODO: modulise this script, so remove the need for this option
