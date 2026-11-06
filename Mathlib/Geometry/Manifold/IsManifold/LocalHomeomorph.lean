@@ -115,18 +115,15 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   rw [contMDiffAt_iff]
   constructor
   · sorry
-  · --set L := hf.localInverseAt (g y)
-    set φy := extChartAt I y
-    have : hf.localInverseAt (g y) y = g y := by
+  · have : hf.localInverseAt (g y) y = g y := by
       sorry
     rw [this]
-    set ϕgy := extChartAt I (g y)
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
     rw [extChartAt_coe, extChartAt_coe_symm, hc]
     simp only [OpenPartialHomeomorph.coe_trans_symm]
     have aux : ((I ∘ (chartAt H (g y))) ∘ hf.localInverseAt (g y) ∘
         ((hf.localInverseAt (g y)).symm ∘ (chartAt H (g y)).symm) ∘ ↑I.symm)
-        =ᶠ[𝓝[Set.range I] (φy y)] id := by
+        =ᶠ[𝓝[Set.range I] (extChartAt I y y)] id := by
       filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
       simp only [Function.comp_apply, id]
       rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
