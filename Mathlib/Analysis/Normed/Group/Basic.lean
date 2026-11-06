@@ -182,6 +182,20 @@ theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
 theorem dist_norm_norm_le_norm_inv_mul (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a⁻¹ * b‖ :=
   abs_norm_sub_norm_le_norm_inv_mul a b
 
+@[to_additive abs_norm_sub_norm_le]
+theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
+  abs_sub_le_iff.2
+    ⟨by simpa using norm_mul_le' (a / b) b, by simpa [norm_div_rev] using norm_mul_le' (a / b)⁻¹ a⟩
+
+@[to_additive norm_sub_norm_le]
+theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
+  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+
+@[to_additive dist_norm_norm_le]
+theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
+  abs_norm_sub_norm_le' a b
+
+
 @[to_additive]
 theorem norm_le_norm_add_norm_div' (u v : E) : ‖u‖ ≤ ‖v‖ + ‖u / v‖ := by
   rw [add_comm]
@@ -452,6 +466,13 @@ theorem nnNorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_add_le]
 alias nnnorm_mul_le' := nnNorm_mul_le'
+
+@[to_additive nnDist_nnNorm_nnNorm_le]
+theorem nnDist_nnNorm_nnNorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
+  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nndist_nnnorm_nnnorm_le]
+alias nndist_nnnorm_nnnorm_le' := nnDist_nnNorm_nnNorm_le'
 
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
@@ -830,25 +851,6 @@ alias dist_eq_norm' := dist_eq_norm_sub'
 @[to_additive]
 theorem norm_inv_mul (a b : E) : ‖a⁻¹ * b‖ = ‖a / b‖ := by
   rw [← dist_eq_norm_inv_mul, dist_eq_norm_div]
-
-@[to_additive abs_norm_sub_norm_le]
-theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
-  (abs_norm_sub_norm_le_norm_inv_mul a b).trans_eq (norm_inv_mul a b)
-
-@[to_additive norm_sub_norm_le]
-theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
-  (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
-
-@[to_additive dist_norm_norm_le]
-theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
-  abs_norm_sub_norm_le' a b
-
-@[to_additive nnDist_nnNorm_nnNorm_le]
-theorem nnDist_nnNorm_nnNorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
-  NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
-
-@[to_additive (attr := deprecated (since := "2026-10-31")) nndist_nnnorm_nnnorm_le]
-alias nndist_nnnorm_nnnorm_le' := nnDist_nnNorm_nnNorm_le'
 
 @[to_additive]
 theorem nnDist_eq_nnNorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=

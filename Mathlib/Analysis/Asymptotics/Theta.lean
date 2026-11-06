@@ -29,13 +29,11 @@ open scoped Topology
 namespace Asymptotics
 
 
-variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Type*}
-  {F' : Type*} {G' : Type*} {E'' : Type*} {F'' : Type*}
-  {𝕜 : Type*} {𝕜' : Type*}
+variable {α β E F G E' F' G' E'' F'' 𝕜 𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F'']
+variable [SeminormedAddGroup E'] [SeminormedAddGroup F'] [SeminormedAddGroup G']
+  [NormedAddGroup E''] [NormedAddGroup F'']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
@@ -179,10 +177,12 @@ theorem IsTheta.isBoundedUnder_le_iff (h : f' =Θ[l] g') :
     IsBoundedUnder (· ≤ ·) l (norm ∘ f') ↔ IsBoundedUnder (· ≤ ·) l (norm ∘ g') := by
   simp only [← isBigO_const_of_ne (one_ne_zero' ℝ), h.isBigO_congr_left]
 
-theorem IsTheta.smul [NormedSpace 𝕜 E'] [NormedSpace 𝕜' F'] {f₁ : α → 𝕜} {f₂ : α → 𝕜'} {g₁ : α → E'}
-    {g₂ : α → F'} (hf : f₁ =Θ[l] f₂) (hg : g₁ =Θ[l] g₂) :
-    (fun x ↦ f₁ x • g₁ x) =Θ[l] fun x ↦ f₂ x • g₂ x :=
-  ⟨hf.1.smul hg.1, hf.2.smul hg.2⟩
+theorem IsTheta.smul [SMul 𝕜 E'] [NormSMulClass 𝕜 E'] [SMul 𝕜' F'] [NormSMulClass 𝕜' F']
+    {f₁ : α → 𝕜} {f₂ : α → 𝕜'} {g₁ : α → E'} {g₂ : α → F'} (hf : f₁ =Θ[l] f₂)
+    (hg : g₁ =Θ[l] g₂) : (fun x ↦ f₁ x • g₁ x) =Θ[l] fun x ↦ f₂ x • g₂ x := by
+  refine ⟨?_, ?_⟩ <;> rw [← isBigO_norm_left, ← isBigO_norm_right] <;> simp only [norm_smul]
+  · exact hf.1.norm_norm.mul hg.1.norm_norm
+  · exact hf.2.norm_norm.mul hg.2.norm_norm
 
 theorem IsTheta.mul {f₁ f₂ : α → 𝕜} {g₁ g₂ : α → 𝕜'} (h₁ : f₁ =Θ[l] g₁) (h₂ : f₂ =Θ[l] g₂) :
     (fun x ↦ f₁ x * f₂ x) =Θ[l] fun x ↦ g₁ x * g₂ x :=
@@ -242,13 +242,13 @@ theorem isTheta_zero_left : (fun _ ↦ (0 : E')) =Θ[l] g'' ↔ g'' =ᶠ[l] 0 :=
 theorem isTheta_zero_right : (f'' =Θ[l] fun _ ↦ (0 : F')) ↔ f'' =ᶠ[l] 0 :=
   isTheta_comm.trans isTheta_zero_left
 
-theorem isTheta_const_smul_left [NormedSpace 𝕜 E'] {c : 𝕜} (hc : c ≠ 0) :
+theorem isTheta_const_smul_left [SMul 𝕜 E'] [NormSMulClass 𝕜 E'] {c : 𝕜} (hc : c ≠ 0) :
     (fun x ↦ c • f' x) =Θ[l] g ↔ f' =Θ[l] g :=
   and_congr (isBigO_const_smul_left hc) (isBigO_const_smul_right hc)
 
 alias ⟨IsTheta.of_const_smul_left, IsTheta.const_smul_left⟩ := isTheta_const_smul_left
 
-theorem isTheta_const_smul_right [NormedSpace 𝕜 F'] {c : 𝕜} (hc : c ≠ 0) :
+theorem isTheta_const_smul_right [SMul 𝕜 F'] [NormSMulClass 𝕜 F'] {c : 𝕜} (hc : c ≠ 0) :
     (f =Θ[l] fun x ↦ c • g' x) ↔ f =Θ[l] g' :=
   and_congr (isBigO_const_smul_right hc) (isBigO_const_smul_left hc)
 
@@ -272,7 +272,7 @@ theorem IsLittleO.right_isTheta_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂
 
 theorem IsLittleO.right_isTheta_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =Θ[l] (f₂ + f₁) :=
-  add_comm f₁ f₂ ▸ h.right_isTheta_add
+  ⟨h.right_isBigO_add', (isBigO_refl _ _).add_isLittleO h⟩
 
 lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
     (hΘ : f₁ =Θ[l] g) (ho : f₂ =o[l] g) : (f₁ + f₂) =Θ[l] g :=
@@ -280,7 +280,7 @@ lemma IsTheta.add_isLittleO {f₁ f₂ : α → E'} {g : α → F}
 
 lemma IsLittleO.add_isTheta {f₁ f₂ : α → E'} {g : α → F}
     (ho : f₁ =o[l] g) (hΘ : f₂ =Θ[l] g) : (f₁ + f₂) =Θ[l] g :=
-  add_comm f₁ f₂ ▸ hΘ.add_isLittleO ho
+  (ho.trans_isTheta hΘ.symm).right_isTheta_add.symm.trans hΘ
 
 theorem isTheta_of_div_tendsto_nhds_ne_zero {c : 𝕜} {f g : α → 𝕜}
     (h : Tendsto (fun x ↦ g x / f x) l (𝓝 c)) (hc : c ≠ 0) :
