@@ -27,8 +27,6 @@ open Set
 
 open scoped Computability
 
--- "ε_NFA"
-
 universe u v
 
 /-- An `εNFA` is a set of states (`σ`), a transition function from state to state labelled by the
@@ -180,8 +178,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
   evalFrom_append_singleton _ _ _ _
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α :=
-  { x | ∃ S ∈ M.accept, S ∈ M.eval x }
+def accepts : Language α := .ofSet {x | ∃ S ∈ M.accept, S ∈ M.eval x.toList}
 
 /-- `M.IsPath` represents a traversal in `M` from a start state to an end state by following a list
 of transitions in order. -/
@@ -281,7 +278,7 @@ theorem mem_evalFrom_iff_exists_path {s₁ s₂ : σ} {x : List α} :
       tauto
 
 theorem mem_accepts_iff_exists_path {x : List α} :
-    x ∈ M.accepts ↔
+    ⟨x⟩ ∈ M.accepts ↔
       ∃ s₁ s₂ x', s₁ ∈ M.start ∧ s₂ ∈ M.accept ∧ x'.reduceOption = x ∧ M.IsPath s₁ s₂ x' where
   mp := by
     intro ⟨s₂, _, h⟩
@@ -312,10 +309,10 @@ theorem toNFA_evalFrom_match (start : Set σ) :
 theorem toNFA_correct : M.toNFA.accepts = M.accepts :=
   rfl
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : ⟨x⟩ ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
-    ∃ a b c, x = a ++ b ++ c ∧
-      a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts :=
+    ∃ a b c, x = a ++ b ++ c ∧ a.length + b.length ≤ Fintype.card (Set σ) ∧
+      b ≠ [] ∧ {⟨a⟩} * {⟨b⟩}∗ * {⟨c⟩} ≤ M.accepts :=
   M.toNFA.pumping_lemma hx hlen
 
 end εNFA

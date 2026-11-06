@@ -153,40 +153,42 @@ theorem mem_evalFrom_iff_exists {s : σ} {S : Set σ} {x : List α} :
 variable (M) in
 /-- `M.acceptsFrom S` is the language of `x` such that there is an accept state
 in `M.evalFrom S x`. -/
-def acceptsFrom (S : Set σ) : Language α := {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x}
+def acceptsFrom (S : Set σ) : Language α := .ofSet {x | ∃ s ∈ M.accept, s ∈ M.evalFrom S x.toList}
 
-theorem mem_acceptsFrom {S : Set σ} {x : List α} :
-    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x := by
+theorem mem_acceptsFrom {S : Set σ} {x : FreeMonoid α} :
+    x ∈ M.acceptsFrom S ↔ ∃ s ∈ M.accept, s ∈ M.evalFrom S x.toList := by
   rfl
 
 variable (M) in
 @[simp]
-theorem nil_mem_acceptsFrom {S : Set σ} : [] ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
-  simp only [mem_acceptsFrom, evalFrom_nil]; tauto
+theorem one_mem_acceptsFrom {S : Set σ} : 1 ∈ M.acceptsFrom S ↔ ∃ s ∈ S, s ∈ M.accept := by
+  simp only [mem_acceptsFrom]; tauto
 
 variable (M) in
 @[simp]
-theorem cons_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
-    a :: x ∈ M.acceptsFrom S ↔ x ∈ M.acceptsFrom (M.stepSet S a) := by
+theorem of_mul_mem_acceptsFrom {S : Set σ} {a : α} {x : List α} :
+    .of a * ⟨x⟩ ∈ M.acceptsFrom S ↔ ⟨x⟩ ∈ M.acceptsFrom (M.stepSet S a) := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem cons_preimage_acceptsFrom {S : Set σ} {a : α} :
-    (a :: ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.stepSet S a) := by
-  ext x; simp [cons_mem_acceptsFrom M]
+    (⟨a :: ·.toList⟩) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.stepSet S a)).toSet := by
+  ext x; simp [of_mul_mem_acceptsFrom M]
 
 variable (M) in
 @[simp]
-theorem append_mem_acceptsFrom {S : Set σ} {x y : List α} :
-    x ++ y ∈ M.acceptsFrom S ↔ y ∈ M.acceptsFrom (M.evalFrom S x) := by
+theorem mul_mem_acceptsFrom {S : Set σ} {x y : List α} :
+    ⟨x⟩ * ⟨y⟩ ∈ M.acceptsFrom S ↔ ⟨y⟩ ∈ M.acceptsFrom (M.evalFrom S x) := by
   simp [mem_acceptsFrom]
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem append_preimage_acceptsFrom {S : Set σ} {x : List α} :
-    (x ++ ·) ⁻¹' M.acceptsFrom S = M.acceptsFrom (M.evalFrom S x) := by
-  ext y; simp [append_mem_acceptsFrom M]
+    (⟨x ++ ·.toList⟩) ⁻¹' (M.acceptsFrom S).toSet = (M.acceptsFrom (M.evalFrom S x)).toSet := by
+  ext y; simp [mul_mem_acceptsFrom M]
+
+@[deprecated (since := "2026-11-03")] alias nil_mem_acceptsFrom := one_mem_acceptsFrom
+@[deprecated (since := "2026-11-03")] alias cons_mem_acceptsFrom := of_mul_mem_acceptsFrom
+@[deprecated (since := "2026-11-03")] alias append_mem_acceptsFrom := mul_mem_acceptsFrom
 
 variable (M) in
 @[simp]
@@ -200,28 +202,27 @@ theorem acceptsFrom_union {S T : Set σ} :
     · right; tauto
   · rintro (⟨s, hs, h⟩ | ⟨s, hs, h⟩) <;> exists s <;> tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 @[simp]
 theorem acceptsFrom_iUnion {ι : Sort*} (s : ι → Set σ) :
-    M.acceptsFrom (⋃ i, s i) = ⋃ i, M.acceptsFrom (s i) := by
+    (M.acceptsFrom (⋃ i, s i)).toSet = ⋃ i, (M.acceptsFrom (s i)).toSet := by
   ext x
-  simp only [acceptsFrom, evalFrom_iUnion, mem_iUnion]
-  simp_rw [↑mem_iUnion, ↑mem_ofPred_eq]; tauto
+  simp_rw [mem_iUnion, SetSemiring.mem_toSet, mem_acceptsFrom, evalFrom_iUnion, mem_iUnion]
+  tauto
 
-set_option backward.isDefEq.respectTransparency false in
 variable (M) in
 theorem acceptsFrom_iUnion₂ {ι : Sort*} {κ : ι → Sort*} (f : ∀ i, κ i → Set σ) :
-    M.acceptsFrom (⋃ (i) (j), f i j) = ⋃ (i) (j), M.acceptsFrom (f i j) := by
+    (M.acceptsFrom (⋃ (i) (j), f i j)).toSet = ⋃ (i) (j), (M.acceptsFrom (f i j)).toSet := by
   simp
 
 variable (M) in
 @[simp]
 private theorem mem_acceptsFrom_sep_fact {S : Set σ} {p : Prop} {x : List α} :
-    x ∈ M.acceptsFrom {s ∈ S | p} ↔ x ∈ M.acceptsFrom S ∧ p := by
+    ⟨x⟩ ∈ M.acceptsFrom {s ∈ S | p} ↔ ⟨x⟩ ∈ M.acceptsFrom S ∧ p := by
   induction x generalizing S with
-  | nil => simp only [nil_mem_acceptsFrom, mem_ofPred_eq]; tauto
+  | nil => simp only [FreeMonoid.ofList_nil, one_mem_acceptsFrom, mem_ofPred_eq]; tauto
   | cons a x ih =>
+    simp only [FreeMonoid.ofList_cons, of_mul_mem_acceptsFrom]
     have h : M.stepSet {s ∈ S | p} a = {s ∈ M.stepSet S a | p} := by
       ext s; simp only [stepSet, mem_ofPred_eq, mem_iUnion, exists_prop]; tauto
     simp [*]
@@ -250,10 +251,10 @@ theorem eval_append_singleton (x : List α) (a : α) :
 
 variable (M) in
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
+def accepts : Language α := .ofSet {x | ∃ S ∈ M.accept, S ∈ M.eval x.toList}
 
-theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
-  rfl
+theorem mem_accepts {x : FreeMonoid α} :
+    x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x.toList := by rfl
 
 theorem accepts_eq_acceptsFrom_start : M.accepts = M.acceptsFrom M.start := rfl
 
@@ -296,7 +297,7 @@ theorem mem_evalFrom_iff_nonempty_path {s t : σ} {x : List α} :
       exact ⟨s', h₁, mem_evalFrom_iff_nonempty_path.2 ⟨h₂⟩⟩
 
 theorem accepts_iff_exists_path {x : List α} :
-    x ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
+    ⟨x⟩ ∈ M.accepts ↔ ∃ s ∈ M.start, ∃ t ∈ M.accept, Nonempty (M.Path s t x) := by
   simp only [← mem_evalFrom_iff_nonempty_path, mem_accepts, mem_evalFrom_iff_exists (S := M.start)]
   tauto
 
@@ -306,7 +307,7 @@ variable (M) in
 def toDFA : DFA α (Set σ) where
   step := M.stepSet
   start := M.start
-  accept := { S | ∃ s ∈ S, s ∈ M.accept }
+  accept := {S | ∃ s ∈ S, s ∈ M.accept}
 
 @[simp]
 theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
@@ -314,11 +315,10 @@ theorem toDFA_correct : M.toDFA.accepts = M.accepts := by
   rw [mem_accepts, DFA.mem_accepts]
   constructor <;> · exact fun ⟨w, h2, h3⟩ => ⟨w, h3, h2⟩
 
-theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
+theorem pumping_lemma [Fintype σ] {x : List α} (hx : ⟨x⟩ ∈ M.accepts)
     (hlen : Fintype.card (Set σ) ≤ List.length x) :
-    ∃ a b c,
-      x = a ++ b ++ c ∧
-        a.length + b.length ≤ Fintype.card (Set σ) ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
+    ∃ a b c, x = a ++ b ++ c ∧ a.length + b.length ≤ Fintype.card (Set σ) ∧
+      b ≠ [] ∧ {⟨a⟩} * {⟨b⟩}∗ * {⟨c⟩} ≤ M.accepts := by
   rw [← toDFA_correct] at hx ⊢
   exact M.toDFA.pumping_lemma hx hlen
 
@@ -351,7 +351,7 @@ theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by
   constructor
   · rintro ⟨S, hS₁, hS₂⟩
     rwa [Set.mem_singleton_iff.mp hS₂] at hS₁
-  · exact fun h => ⟨M.eval x, h, rfl⟩
+  · exact fun h ↦ ⟨M.eval x.toList, h, rfl⟩
 
 end DFA
 
@@ -362,7 +362,7 @@ variable (M) in
 resulting automaton accepts a word `x` if and only if `M` accepts `List.reverse x`. -/
 @[simps]
 def reverse : NFA α σ where
-  step s a := { s' | s ∈ M.step s' a }
+  step s a := {s' | s ∈ M.step s' a}
   start := M.accept
   accept := M.start
 
@@ -394,7 +394,7 @@ theorem disjoint_evalFrom_reverse_iff {x : List α} {S S' : Set σ} :
   ⟨disjoint_evalFrom_reverse, fun h ↦ List.reverse_reverse x ▸ disjoint_evalFrom_reverse h⟩
 
 @[simp]
-theorem mem_accepts_reverse {x : List α} : x ∈ M.reverse.accepts ↔ x.reverse ∈ M.accepts := by
+theorem mem_accepts_reverse {x : List α} : ⟨x⟩ ∈ M.reverse.accepts ↔ ⟨x.reverse⟩ ∈ M.accepts := by
   simp [mem_accepts, ← Set.not_disjoint_iff, disjoint_evalFrom_reverse_iff]
 
 end NFA
@@ -403,7 +403,7 @@ namespace Language
 
 protected theorem IsRegular.reverse {L : Language α} (h : L.IsRegular) : L.reverse.IsRegular :=
   have ⟨σ, _, M, hM⟩ := h
-  ⟨_, inferInstance, M.toNFA.reverse.toDFA, by ext; simp [hM]⟩
+  ⟨_, inferInstance, M.toNFA.reverse.toDFA, by ext ⟨x⟩; simp [hM]; rfl⟩
 
 protected theorem IsRegular.of_reverse {L : Language α} (h : L.reverse.IsRegular) : L.IsRegular :=
   L.reverse_reverse ▸ h.reverse

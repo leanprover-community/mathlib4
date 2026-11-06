@@ -48,6 +48,18 @@ def toSet : SetSemiring α ≃ Set α := Equiv.refl _
 @[simp] lemma symm_toSet : toSet (α := α).symm = ofSet := rfl
 @[simp] lemma symm_ofSet : ofSet (α := α).symm = toSet := rfl
 
+instance : Membership α (SetSemiring α) where
+  mem s a := a ∈ s.toSet
+
+instance : Singleton α (SetSemiring α) where
+  singleton a := ofSet {a}
+
+instance : Insert α (SetSemiring α) where
+  insert a s := ofSet (insert a s.toSet)
+
+@[simp] lemma mem_toSet {s : SetSemiring α} {a : α} : a ∈ s.toSet ↔ a ∈ s := Iff.rfl
+@[simp] lemma mem_singleton_iff {a b : α} : a ∈ ({b} : SetSemiring α) ↔ a = b := Iff.rfl
+
 instance : Zero (SetSemiring α) where zero := ofSet ∅
 instance : Add (SetSemiring α) where add s t := ofSet (s.toSet ∪ t.toSet)
 
