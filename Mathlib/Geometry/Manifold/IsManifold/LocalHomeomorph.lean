@@ -114,7 +114,8 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   rw [contMDiffAt_iff]
   constructor
-  · sorry
+  · apply OpenPartialHomeomorph.continuousAt
+    simpa [hg y] using hf.apply_self_mem_localInverseAt_source (x:= g y)
   · rw [show hf.localInverseAt (g y) y = g y by
       simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
