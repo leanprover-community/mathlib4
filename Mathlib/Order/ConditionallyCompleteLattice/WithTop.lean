@@ -189,6 +189,21 @@ theorem coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
   · rw [preimage_image_eq]
     exact Option.some_injective _
 
+@[to_dual]
+theorem iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
+    ⨅ i, f i = ⊤ := by
+  simp
+
+@[to_dual (attr := norm_cast)]
+theorem coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
+    ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
+  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
+
+@[to_dual (attr := norm_cast)]
+theorem coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
+    ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
+  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
+
 end Preorder
 
 variable [ConditionallyCompleteLinearOrderBot α]
@@ -336,29 +351,6 @@ instance WithBot.WithTop.completeLinearOrder {α : Type*}
 
 end WithTopBot
 
-section
-
-/-!
-Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot α`
--/
-
-variable [Preorder α]
-
-@[to_dual]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by
-  simp
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
-    ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
-    ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
-
 @[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
 
 @[to_dual]
@@ -378,8 +370,6 @@ theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
 theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
     ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
   simp [coe_iInf]
-
-end
 
 section WithTopBot
 
