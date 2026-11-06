@@ -41,7 +41,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
-/-- The abs `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
+/-- The absolute value `|T| = √(T†∘T)` of a continuous linear map `T : E →L[ℂ] F`. -/
 @[expose]
 protected noncomputable def abs (T : E →L[ℂ] F) : E →L[ℂ] E := CFC.sqrt (T† ∘L T)
 
