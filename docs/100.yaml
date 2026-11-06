@@ -272,7 +272,7 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
-  decl   : transcendental_pi
+  decl   : Real.transcendental_pi
   authors: "Trevor Morris and Yuyang Zhao (independent formalizations)"
   links  :
     Trevor Morris's proof: https://github.com/gotrevor/lean-formalizations/blob/bad0e21a37874f09f45072dad6225de55742e6c5/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean#L26-L32
@@ -335,7 +335,7 @@
 67:
   title  : e is Transcendental
   decls  :
-    - transcendental_e
+    - Complex.transcendental_e
   links  :
     result: https://github.com/jjaassoonn/transcendental/blob/master/src/e_transcendental.lean
     website: https://jjaassoonn.github.io/transcendental/
