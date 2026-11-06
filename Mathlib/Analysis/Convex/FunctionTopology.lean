@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Function
 public import Mathlib.Topology.Algebra.ConstMulAction
+public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
 import Mathlib.Topology.Algebra.Monoid
@@ -18,10 +19,17 @@ We prove the following facts:
 
 * `isClosed_setOfPred_convexOn` : the set of convex functions on a set is closed
 * `isClosed_setOfPred_concaveOn` : the set of concave functions on a set is closed
+* `convexOn_of_frequently_convexOn_of_tendsto` : a pointwise limit of convex functions is convex
+* `concaveOn_of_frequently_concaveOn_of_tendsto` : a pointwise limit of concave functions is
+  concave
+* `ConvexOn.tsum` : a pointwise summable series of convex functions is convex
+* `ConcaveOn.tsum` : a pointwise summable series of concave functions is concave
 -/
 
 open scoped Topology
-open Set
+open Filter Set
+
+section SMul
 
 variable {𝕜 α β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder β]
     [TopologicalSpace β] [OrderClosedTopology β]
@@ -49,3 +57,47 @@ public theorem isClosed_setOfPred_concaveOn {s : Set α} :
 
 @[deprecated (since := "2026-07-09")]
 public alias isClosed_setOf_concaveOn := isClosed_setOfPred_concaveOn
+
+/-- The limit of a collection of functions that is frequently convex on a set is convex on that
+set. -/
+public theorem convexOn_of_frequently_convexOn_of_tendsto {ι : Type*} {l : Filter ι}
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∃ᶠ i in l, ConvexOn 𝕜 s (F i))
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : ConvexOn 𝕜 s f := by
+  obtain ⟨i, hi⟩ := hF.exists
+  refine ⟨hi.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
+  exact le_of_tendsto_of_tendsto_of_frequently (hlim _ (hi.1 hx hy ha hb hab))
+    (((hlim x hx).const_smul a).add ((hlim y hy).const_smul b))
+    (hF.mono fun _ hi ↦ hi.2 hx hy ha hb hab)
+
+/-- The limit of a collection of functions that is frequently concave on a set is concave on that
+set. -/
+public theorem concaveOn_of_frequently_concaveOn_of_tendsto {ι : Type*} {l : Filter ι}
+    {F : ι → α → β} {f : α → β} {s : Set α} (hF : ∃ᶠ i in l, ConcaveOn 𝕜 s (F i))
+    (hlim : ∀ x ∈ s, Tendsto (fun i ↦ F i x) l (𝓝 (f x))) : ConcaveOn 𝕜 s f :=
+  convexOn_of_frequently_convexOn_of_tendsto (β := βᵒᵈ) hF hlim
+
+end SMul
+
+section DistribMulAction
+
+variable {𝕜 α β ι : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [PartialOrder β]
+    [TopologicalSpace β] [OrderClosedTopology β]
+    [AddCommMonoid α] [AddCommMonoid β] [IsOrderedAddMonoid β]
+    [SMul 𝕜 α] [DistribMulAction 𝕜 β]
+    [ContinuousConstSMul 𝕜 β] [ContinuousAdd β] {s : Set α} {f : ι → α → β}
+
+/-- A pointwise summable series of convex functions is convex. -/
+public theorem ConvexOn.tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConvexOn 𝕜 s (f i))
+    (hsum : ∀ x ∈ s, Summable fun i ↦ f i x) : ConvexOn 𝕜 s fun x ↦ ∑' i, f i x :=
+  convexOn_of_frequently_convexOn_of_tendsto (l := atTop)
+    (Frequently.of_forall fun _ ↦ ConvexOn.finsetSum hs fun i _ ↦ hf i)
+    fun x hx ↦ (hsum x hx).hasSum
+
+/-- A pointwise summable series of concave functions is concave. -/
+public theorem ConcaveOn.tsum (hs : Convex 𝕜 s) (hf : ∀ i, ConcaveOn 𝕜 s (f i))
+    (hsum : ∀ x ∈ s, Summable fun i ↦ f i x) : ConcaveOn 𝕜 s fun x ↦ ∑' i, f i x :=
+  concaveOn_of_frequently_concaveOn_of_tendsto (l := atTop)
+    (Frequently.of_forall fun _ ↦ ConcaveOn.finsetSum hs fun i _ ↦ hf i)
+    fun x hx ↦ (hsum x hx).hasSum
+
+end DistribMulAction
