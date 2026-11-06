@@ -82,8 +82,8 @@ lean_lib Mathlib where
   -- Enforce Mathlib's default linters and style options.
   leanOptions := mathlibLeanOptions
 
--- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
--- `scripts/mk_all.lean`.
+-- NB. When adding further libraries, check if they should be excluded from Mathlib's `mk_all`
+-- config in `scripts/mk_all.lean`.
 lean_lib Cache where
   globs := #[`Cache.+]
   -- The `Cache` modules do not use the module system, but they import each other and thus
