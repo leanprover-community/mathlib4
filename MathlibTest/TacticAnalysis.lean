@@ -5,6 +5,16 @@ public import Mathlib.Algebra.BigOperators.Associated
 public import Mathlib.Tactic.AdaptationNote
 public import Mathlib.Tactic.TacticAnalysis.Declarations
 
+-- The always-on replacement passes have their own focused test file.  Keep them from adding
+-- unrelated messages to the tests for the general tactic-analysis framework below.
+set_option linter.tacticAnalysis.aesopToSimpAll false
+set_option linter.tacticAnalysis.aesopToSimp false
+set_option linter.tacticAnalysis.simpAllToSimp false
+set_option linter.tacticAnalysis.grindToLia false
+set_option linter.tacticAnalysis.simpRwToRw false
+set_option linter.tacticAnalysis.depRwToRw false
+set_option linter.tacticAnalysis.grwToRw false
+
 @[expose] public section
 
 section terminalReplacement

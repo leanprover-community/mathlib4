@@ -126,7 +126,7 @@ example (a b c d : ℕ) (h : a = c + d) : b + a = b + c + d := by
 
 [config-simp]: https://lean-lang.org/doc/reference/latest/The-Simplifier/Configuring-Simplification
 -/
-elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
+elab (name := simpRw) s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
   evalTactic (← `(tactic| simp%$s $[$(getConfigItems cfg)]* (failIfUnchanged := false) only $(g)?))
   withSimpRWRulesSeq rws fun symm term => do
     evalTactic (← match term with
