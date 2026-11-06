@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
@@ -186,6 +187,11 @@ theorem eq_top_iff_isIso : G = ⊤ ↔ IsIso G.ι := by
 theorem nat_trans_naturality (f : F' ⟶ G.toFunctor) {U V : C} (i : U ⟶ V)
     (x : F'.obj U) : (f.app V (F'.map i x)).1 = F.map i (f.app U x).1 :=
   congrArg Subtype.val (NatTrans.naturality_apply f i x)
+
+@[simps, implicit_reducible]
+def toFunctorFunctor : Subfunctor F ⥤ C ⥤ Type w where
+  obj A := A.toFunctor
+  map h := Subfunctor.homOfLe (leOfHom h)
 
 end Subfunctor
 

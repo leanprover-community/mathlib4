@@ -2745,6 +2745,7 @@ public import Mathlib.CategoryTheory.Comma.Basic
 public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.Comma.CatCommSq
 public import Mathlib.CategoryTheory.Comma.Final
+public import Mathlib.CategoryTheory.Comma.IsoCat
 public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Comma.Over.OverClass

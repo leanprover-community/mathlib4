@@ -94,6 +94,10 @@ def π : F.Elements ⥤ C where
   obj X := X.1
   map f := f.hom
 
+@[simp]
+lemma eqToHom_hom {x y : F.Elements} (h : x = y) :
+    (eqToHom h).hom = eqToHom (by rw [h]) := by subst h; rfl
+
 end Functor.Elements
 
 /-- Natural transformations are mapped to functors between categories of elements. -/
@@ -494,5 +498,18 @@ def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ
     φ.mapElements ≅ φ'.mapElements :=
   NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
 
+@[simps!, implicit_reducible]
+def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    F.Elements ≌ G.Elements where
+  functor := e.hom.mapElements
+  inverse := e.inv.mapElements
+  unitIso := NatTrans.congrMapElements e.hom_inv_id.symm
+  counitIso := NatTrans.congrMapElements e.inv_hom_id
+
+@[simps!, implicit_reducible]
+def Functor.Elements.isoCatOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    IsoCat F.Elements G.Elements :=
+  (equivalenceOfIso e).toIsoCat
+    (fun x ↦ ext _ _ rfl (by simp)) (fun y ↦ ext _ _ rfl (by simp))
 
 end CategoryTheory

@@ -5,9 +5,12 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Comma.IsoCat
+public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
+public import Mathlib.CategoryTheory.Subfunctor.Basic
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
@@ -109,6 +112,103 @@ instance {A : Type u'} [Category.{v'} A] [IsLocallyPresentable.{w} A] [HasPullba
   exists_cardinal := by
     obtain ⟨κ, _, _⟩ := IsLocallyPresentable.exists_cardinal.{w} A
     exact ⟨κ, inferInstance, inferInstance⟩
+
+end Presheaf
+
+lemma Functor.Elements.hasCardinalLT_arrow_elements_iff
+    {A : Type*} [Category* A] {κ : Cardinal.{w}} (P : A ⥤ Type w)
+    (hκ₀ : .aleph0 ≤ κ) (hκ : HasCardinalLT (Arrow A) κ) :
+    HasCardinalLT (Arrow P.Elements) κ ↔ HasCardinalLT P.Elements κ :=
+  ⟨hasCardinalLT_of_hasCardinalLT_arrow,
+    fun h ↦ HasCardinalLT.of_injective
+      (hasCardinalLT_prod hκ₀ h (hasCardinalLT_prod hκ₀ h hκ))
+        (fun f ↦ (f.left, f.right, Arrow.mk f.hom.hom))
+        (fun f₁ f₂ h ↦ by
+          obtain ⟨X, Y, f₁, rfl⟩ := f₁.mk_surjective
+          obtain ⟨X', Y', f₂, rfl⟩ := f₂.mk_surjective
+          obtain rfl : X = X' := congr($(h).1)
+          obtain rfl : Y = Y' := congr($(h).2.1)
+          obtain rfl : f₁ = f₂ := by ext; exact congr($(h).2.2.hom)
+          rfl)⟩
+
+namespace Presheaf
+
+section
+
+variable {A : Type w} [SmallCategory A] {κ : Cardinal.{w}} [Fact κ.IsRegular]
+  {P : A ⥤ Type w}
+
+lemma isCardinalPresentable_of_hasCardinalLT_arrow_elements
+    (hP : HasCardinalLT (Arrow P.Elements) κ) :
+    IsCardinalPresentable P κ := by
+  apply +allowSynthFailures isCardinalPresentable_of_isColimit _
+    (Functor.Elements.isColimitShrinkCoyonedaCocone P) κ
+  · simpa
+  · intro
+    dsimp
+    infer_instance
+
+variable (κ P) in
+abbrev hasCardinalLTSubfunctorToFunctorElements : Set (Subfunctor P) :=
+  .ofPred (fun S ↦ HasCardinalLT (S.toFunctor.Elements) κ)
+
+namespace hasCardinalLTSubfunctorToFunctorElements
+
+variable (κ P) in
+lemma isCardinalFiltered_fullSubcategory :
+    IsCardinalFiltered (hasCardinalLTSubfunctorToFunctorElements κ P) κ :=
+  isCardinalFiltered_preorder _ _ (fun ι S hι ↦ by
+    rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
+    let T : Subfunctor P := ⨆ (i : ι), S i
+    have hT (i : ι) : S i ≤ T := le_trans (by rfl) (le_iSup _ i)
+    refine ⟨⟨T, ?_⟩, fun i ↦ ?_⟩
+    · simp only [Set.mem_ofPred_eq]
+      let p : (Σ (i : ι), (S i).val.toFunctor.Elements) → T.toFunctor.Elements :=
+        fun ⟨i, x⟩ ↦ (NatTrans.mapElements (Subfunctor.homOfLe (hT i))).obj x
+      have hp : Function.Surjective p := by
+        rintro @⟨X, e, he⟩
+        simp only [Set.mem_ofPred_eq, Subfunctor.iSup_obj, Set.mem_iUnion, T] at he
+        obtain ⟨i, he⟩ := he
+        exact ⟨⟨i, Functor.elementsMk _ X ⟨e, he⟩⟩, rfl⟩
+      exact .of_surjective (hasCardinalLT_sigma _ _ hι (fun i ↦ (S i).prop)) _ hp
+    · rw [Subtype.mk_le_mk]
+      exact hT i)
+
+variable (κ P) in
+abbrev functor : hasCardinalLTSubfunctorToFunctorElements κ P ⥤ A ⥤ Type w :=
+  (Set.mono_coe _).functor ⋙ Subfunctor.toFunctorFunctor
+
+variable (κ P) in
+@[expose, simps, implicit_reducible]
+def cocone :
+    Cocone (functor κ P) where
+  pt := P
+  ι.app _ := Subfunctor.ι _
+
+variable (P) in
+def isColimitCocone (hκ : HasCardinalLT (Arrow A) κ) : IsColimit (cocone κ P) := by
+  sorry
+
+end hasCardinalLTSubfunctorToFunctorElements
+
+open hasCardinalLTSubfunctorToFunctorElements in
+lemma isCardinalPresentable_iff_hasCardinalLT_arrow_elements
+    (hκ : HasCardinalLT (Arrow A) κ) :
+    IsCardinalPresentable P κ ↔ HasCardinalLT P.Elements κ := by
+  refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
+  · have : IsCardinalPresentable (cocone κ P).pt κ := by assumption
+    have := isCardinalFiltered_fullSubcategory κ P
+    obtain ⟨⟨S, hS⟩, f, fac⟩ :=
+      IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone P hκ) (𝟙 _)
+    dsimp at f fac
+    have : IsIso f := ⟨S.ι, fac, by simp [← cancel_mono S.ι, fac]⟩
+    exact hS.of_injective  _
+      (Functor.Elements.isoCatOfIso (asIso f)).objEquiv.injective
+  · apply isCardinalPresentable_of_hasCardinalLT_arrow_elements
+    rwa [Functor.Elements.hasCardinalLT_arrow_elements_iff P
+      (Cardinal.IsRegular.aleph0_le Fact.out) hκ]
+
+end
 
 end Presheaf
 
