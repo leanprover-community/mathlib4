@@ -101,6 +101,15 @@ def Units.ofPow (u : Mˣ) (x : M) {n : ℕ} (hn : n ≠ 0) (hu : x ^ n = u) : M�
 @[to_additive]
 lemma isUnit_pow_succ_iff : IsUnit (a ^ (n + 1)) ↔ IsUnit a := isUnit_pow_iff n.succ_ne_zero
 
+/-- The unit `a` is an `n`-th power in `Mˣ` if and only if `a` is an `n`-th power in `M`. -/
+@[to_additive /-- The additive unit `a` is an `n`-th multiple in `AddUnits M` if and only
+if `a` is an `n`-th multiple in `M`. -/]
+lemma exists_unit_eq_pow_iff {a : Mˣ} : (∃ x, a = x ^ n ) ↔ ∃ (x : M), a = x ^ n := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ⟨x, by simp [hx]⟩, fun ⟨x, hx⟩ ↦ ?_⟩
+  match n with
+  | 0 => exact ⟨1, Units.ext <| by simp [hx]⟩
+  | n + 1 => exact ⟨isUnit_pow_succ_iff.mp (hx ▸ a.isUnit) |>.unit, Units.ext <| by simp [← hx]⟩
+
 lemma isUnit_pow_iff_of_not_isUnit (hx : ¬ IsUnit a) {n : ℕ} :
     IsUnit (a ^ n) ↔ n = 0 := by
   rcases n with (_ | n) <;>
