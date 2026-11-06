@@ -692,9 +692,15 @@ theorem ncard_le_ncard (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
 
 theorem ncard_mono [Finite α] : @Monotone (Set α) _ _ _ ncard := fun _ _ ↦ ncard_le_ncard
 
-@[simp] theorem ncard_eq_zero (hs : s.Finite := by toFinite_tac) :
+theorem ncard_eq_zero (hs : s.Finite := by toFinite_tac) :
     s.ncard = 0 ↔ s = ∅ := by
   rw [← Nat.cast_inj (R := ℕ∞), hs.cast_ncard_eq, Nat.cast_zero, encard_eq_zero]
+
+@[simp]
+theorem ncard_eq_zero' (s : Set α) : s.ncard = 0 ↔ s = ∅ ∨ s.Infinite := by
+  by_cases! hs : s.Finite
+  · simp [ncard_eq_zero hs, hs]
+  · simp [hs.ncard, hs]
 
 @[simp, norm_cast] theorem ncard_coe_finset (s : Finset α) : (s : Set α).ncard = s.card := by
   rw [ncard_eq_toFinset_card _, Finset.finite_toSet_toFinset]
@@ -971,42 +977,29 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
     (hinj : ∀ a₁ a₂ ha₁ ha₂, f a₁ ha₁ = f a₂ ha₂ → a₁ = a₂) (hst : t.ncard ≤ s.ncard)
     (ht : t.Finite := by toFinite_tac) :
     ∀ b ∈ t, ∃ a ha, b = f a ha := by
+  classical
   intro b hb
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
-  have finj : f'.Injective := by
-    rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-    simp only [f', Subtype.mk.injEq] at hxy ⊢
-    apply hinj _ _ hx hy hxy
-  have hft := ht.fintype
-  have hft' := Fintype.ofInjective f' finj
-  set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
-  · simp [f'']
-  · simp [f'', hf]
-  · intro a₁ a₂ ha₁ ha₂ h
-    rw [mem_toFinset] at ha₁ ha₂
-    exact hinj _ _ ha₁ ha₂ h
-  rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card']
+  let F a := if h : a ∈ s then f a h else b
+  have hFt : F '' s ⊆ t := by
+    rintro - ⟨a, ha, rfl⟩
+    simp [F, ha, hf a ha]
+  have hF : InjOn F s := fun a₁ ha₁ a₂ ha₂ h ↦ hinj a₁ a₂ ha₁ ha₂ (by simpa [F, ha₁, ha₂] using h)
+  obtain ⟨a, ha, hab⟩ := (eq_of_subset_of_ncard_le hFt (by rwa [hF.ncard_image]) ht).symm ▸ hb
+  exact ⟨a, ha, by simpa [F, ha, eq_comm] using hab⟩
 
-theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : ∀ a ha, f a ha ∈ t)
+theorem inj_on_of_surj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β)
     (hsurj : ∀ b ∈ t, ∃ a ha, f a ha = b) (hst : s.ncard ≤ t.ncard) ⦃a₁⦄ (ha₁ : a₁ ∈ s) ⦃a₂⦄
     (ha₂ : a₂ ∈ s) (ha₁a₂ : f a₁ ha₁ = f a₂ ha₂) (hs : s.Finite := by toFinite_tac) :
     a₁ = a₂ := by
   classical
-  set f' : s → t := fun x ↦ ⟨f x.1 x.2, hf _ _⟩
-  have hsurj : f'.Surjective := by
-    rintro ⟨y, hy⟩
-    obtain ⟨a, ha, rfl⟩ := hsurj y hy
-    simp only [Subtype.exists]
-    exact ⟨_, ha, rfl⟩
-  have := hs.fintype
-  have := Fintype.ofSurjective _ hsurj
-  set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
-  exact
-    @Finset.inj_on_of_surj_on_of_card_le _ _ _ t.toFinset f''
-      (fun a ha ↦ by { rw [mem_toFinset] at ha ⊢; exact hf a ha }) (by simpa)
-      (by { rwa [← ncard_eq_toFinset_card', ← ncard_eq_toFinset_card'] }) a₁
-      (by simpa) a₂ (by simpa) (by simpa)
+  let F a := if h : a ∈ s then f a h else f a₁ ha₁
+  have hts : t ⊆ F '' s := by
+    intro b hb
+    obtain ⟨a, ha, rfl⟩ := hsurj b hb
+    exact ⟨a, ha, by simp [F, ha]⟩
+  apply injOn_of_ncard_image_eq ((ncard_image_le hs).antisymm
+    (hst.trans (ncard_le_ncard hts (hs.image F)))) hs ha₁ ha₂
+  simp [F, ha₁, ha₂, ha₁a₂]
 
 theorem ncard_coe {α : Type*} (s : Set α) :
     Set.ncard (Set.univ : Set (Set.Elem s)) = s.ncard := by simp
@@ -1058,10 +1051,17 @@ theorem ncard_union_eq_iff (hs : s.Finite := by toFinite_tac)
   rw [← ncard_union_add_ncard_inter s t hs ht, left_eq_add,
     ncard_eq_zero (hs.inter_of_left t), disjoint_iff_inter_eq_empty]
 
-theorem ncard_union_lt (hs : s.Finite := by toFinite_tac)
-    (ht : t.Finite := by toFinite_tac) (h : ¬ Disjoint s t) :
-    (s ∪ t).ncard < s.ncard + t.ncard :=
-  (ncard_union_le s t).lt_of_ne (mt (ncard_union_eq_iff hs ht).mp h)
+theorem ncard_union_lt (hst : s.Finite ∨ t.Finite := by toFinite_tac)
+    (h : ¬ Disjoint s t) :
+    (s ∪ t).ncard < s.ncard + t.ncard := by
+  wlog hs : s.Finite
+  · grind
+  by_cases! ht : t.Finite
+  · exact (ncard_union_le s t).lt_of_ne (mt (ncard_union_eq_iff hs ht).mp h)
+  · rw [ht.ncard, (ht.mono subset_union_right).ncard, add_zero]
+    apply Nonempty.ncard_pos hs
+    contrapose! h
+    grind
 
 theorem ncard_sdiff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
     (t \ s).ncard + s.ncard = t.ncard := by
@@ -1164,24 +1164,28 @@ alias pred_ncard_le_ncard_diff_singleton := pred_ncard_le_ncard_sdiff_singleton
 
 theorem ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff (hs : s.Finite := by toFinite_tac)
     (ht : t.Finite := by toFinite_tac) : s.ncard = t.ncard ↔ (s \ t).ncard = (t \ s).ncard := by
-  rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
-    inter_comm, add_right_inj]
+  rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs,
+    ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht, inter_comm, add_right_inj]
 
 @[deprecated (since := "2026-06-03")]
 alias ncard_eq_ncard_iff_ncard_diff_eq_ncard_diff := ncard_eq_ncard_iff_ncard_sdiff_eq_ncard_sdiff
 
-theorem ncard_le_ncard_iff_ncard_sdiff_le_ncard_sdiff (hs : s.Finite := by toFinite_tac)
+theorem ncard_le_ncard_iff_ncard_sdiff_le_ncard_sdiff
     (ht : t.Finite := by toFinite_tac) : s.ncard ≤ t.ncard ↔ (s \ t).ncard ≤ (t \ s).ncard := by
-  rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
-    inter_comm, add_le_add_iff_left]
+  by_cases! hs : s.Finite
+  · rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs,
+      ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht, inter_comm, add_le_add_iff_left]
+  · simp [hs.ncard, (hs.sdiff ht).ncard]
 
 @[deprecated (since := "2026-06-03")]
 alias ncard_le_ncard_iff_ncard_diff_le_ncard_diff := ncard_le_ncard_iff_ncard_sdiff_le_ncard_sdiff
 
-theorem ncard_lt_ncard_iff_ncard_sdiff_lt_ncard_sdiff (hs : s.Finite := by toFinite_tac)
-    (ht : t.Finite := by toFinite_tac) : s.ncard < t.ncard ↔ (s \ t).ncard < (t \ s).ncard := by
-  rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs, ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht,
-    inter_comm, add_lt_add_iff_left]
+theorem ncard_lt_ncard_iff_ncard_sdiff_lt_ncard_sdiff (hs : s.Finite := by toFinite_tac) :
+    s.ncard < t.ncard ↔ (s \ t).ncard < (t \ s).ncard := by
+  by_cases! ht : t.Finite
+  · rw [← ncard_inter_add_ncard_sdiff_eq_ncard s t hs,
+      ← ncard_inter_add_ncard_sdiff_eq_ncard t s ht, inter_comm, add_lt_add_iff_left]
+  · simp [ht.ncard, (ht.sdiff hs).ncard]
 
 @[deprecated (since := "2026-06-03")]
 alias ncard_lt_ncard_iff_ncard_diff_lt_ncard_diff := ncard_lt_ncard_iff_ncard_sdiff_lt_ncard_sdiff
