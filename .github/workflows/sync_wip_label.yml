@@ -12,6 +12,7 @@ on:
 # Limit permissions for `GH_TOKEN` for the entire workflow
 permissions:
   pull-requests: write
+  contents: write
   # All other permissions are implicitly 'none'
 
 env:
