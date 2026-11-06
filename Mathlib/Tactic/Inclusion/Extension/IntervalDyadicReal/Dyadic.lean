@@ -20,6 +20,8 @@ core.
 
 @[expose] public section
 
+namespace Inclusion.IntervalDyadicReal
+
 instance : LinearOrder Dyadic where
   le_refl := Std.IsPreorder.le_refl
   le_trans := Std.IsPreorder.le_trans
@@ -48,6 +50,7 @@ instance : AddLeftMono Dyadic where
   elim a b c h := Dyadic.toRat_le_toRat_iff.mp <| by
     simpa [Dyadic.toRat_add] using add_le_add_right (Dyadic.toRat_le_toRat_iff.mpr h) c.toRat
 
+open Dyadic
 namespace Dyadic
 
 @[simp]
@@ -87,7 +90,7 @@ theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
 lemma step_pos (prec : ℤ) : 0 < step prec := ofOdd_pos.mpr zero_lt_one
 
 lemma step_eq_add (prec : ℤ) : step prec = step (prec + 1) + step (prec + 1) := by
-  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← _root_.add_mul, ← one_div, step]
+  norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← Rat.add_mul, ← one_div, step]
 
 lemma toRat_step (prec : ℤ) : (step prec).toRat = (1 / 2) ^ prec := by
   simp [← ofIntWithPrec_one, toRat_ofIntWithPrec_eq_mul_two_pow]
@@ -263,3 +266,5 @@ def toRealOrderEmbedding : Dyadic ↪o ℝ :=
 end Real
 
 end Dyadic
+
+end Inclusion.IntervalDyadicReal
