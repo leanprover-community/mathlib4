@@ -109,10 +109,7 @@ theorem exists_mem_adjoin_mul_eq_pow_natDegree {x : S} (hx : aeval x f = 0) (hmo
     exact mem_span_singleton.1 (by simpa using hf.mem hn)
   choose! φ hφ using this
   conv_rhs at hx =>
-    congr
-    congr
-    · skip
-    ext i
+    enter [1, 2, i]
     rw [coeff_map, hφ i.1 (lt_of_lt_of_le i.2 natDegree_map_le), map_mul, mul_assoc]
   rw [hx, ← mul_sum, neg_eq_neg_one_mul, ← mul_assoc (-1 : S), mul_comm (-1 : S), mul_assoc]
   refine
