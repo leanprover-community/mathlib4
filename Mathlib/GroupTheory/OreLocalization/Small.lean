@@ -11,7 +11,7 @@ public import Mathlib.Logic.Small.Basic
 /-!
 # Smallness of Ore localizations
 
-We show that `X[S⁻¹]` is `w`-small if `S` and `X` are; in particular, this holds if `R` and `X`
+We show that `X[S⁻¹]` is `w`-small if `S` and `X` are. In particular, this holds if `R` and `X`
 are. This also applies to `Localization S` and `LocalizedModule S M`.
 -/
 
