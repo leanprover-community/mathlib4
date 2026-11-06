@@ -88,12 +88,12 @@ noncomputable abbrev toSSetAugmented (Y : Type w) [ConvexSpace R Y] :
 
 attribute [local simp] SimplicialObject.δ_def SimplexCategory.δ_apply
   SimplicialObject.σ_def SimplexCategory.σ_apply in
-variable {Y} in
 /-- Given a convex space `Y` (over a semiring `R`) and `y : Y`, this is an extra degeneracy
 for `ConvexSpace.toSSetAugmented R Y`. In degree `0`, it is given by `[y]`, and otherwise
 it sends a `n`-simplex `[y₀, ..., yₙ]` to `[y, y₀, ..., yₙ]`, where affine maps
-from the standard `n`-simplex to `Y` are identified to tuples `[y₀, ..., yₙ]` given
-by the images of the vertices. -/
+from the standard `n`-simplex to `Y` are identified to tuples `[y₀, ..., yₙ]` corresponding
+by the images of the vertices. (Note that this data implies that the simplicial set
+`ConvexSpace.toSSet R Y` is contractible, see the example below.) -/
 @[simps]
 noncomputable def toSSet.extraDegeneracy {Y : Type w} [ConvexSpace R Y] (y : Y) :
     (toSSetAugmented R Y).ExtraDegeneracy where
@@ -104,6 +104,10 @@ noncomputable def toSSet.extraDegeneracy {Y : Type w} [ConvexSpace R Y] (y : Y) 
   s_comp_σ _ _ := by ext _ j; obtain rfl | ⟨j, rfl⟩ := j.eq_zero_or_eq_succ <;> simp
   s_comp_δ₀ n := by ext; simp
 
+noncomputable example {Y : Type w} [ConvexSpace R Y] (y : Y) :
+    SimplicialObject.Homotopy (SSet.const (AffineMap.const y)) (𝟙 (toSSet R Y)) :=
+  (toSSet.extraDegeneracy y).homotopy
+
 variable {Y Z : Type w} [ConvexSpace R Y] [ConvexSpace R Z]
   {C : Type*} [Category* C] [Preadditive C] [HasCoproducts.{max u w} C]
 
@@ -111,8 +115,7 @@ variable {Y Z : Type w} [ConvexSpace R Y] [ConvexSpace R Z]
 affine `n`-chains (with coefficients in `M`) to affine `n + 1`-chains which
 sends a simplex `[y₀, ..., yₙ]` to `[y, y₀, ..., yₙ]`. -/
 noncomputable def toSSet.cone (y : Y) (M : C) (n : ℕ) :
-    ((toSSet R Y).chainComplex M).X n ⟶
-      ((toSSet R Y).chainComplex M).X (n + 1) :=
+    ((toSSet R Y).chainComplex M).X n ⟶ ((toSSet R Y).chainComplex M).X (n + 1) :=
   ((extraDegeneracy y).map (sigmaConst.obj M)).s n
 
 @[simp]
