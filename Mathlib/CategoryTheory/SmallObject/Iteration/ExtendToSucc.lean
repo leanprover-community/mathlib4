@@ -27,6 +27,10 @@ open Category
 
 namespace SmallObject
 
+#adaptation_note
+/-- The tactic proof in this `variable`'s type generates a private helper declaration, so every
+public declaration using the variable needs `set_option backward.privateInPublic true in`; see
+https://github.com/leanprover/lean4/issues/14708. Once that is fixed, those `set_option`s can go. -/
 variable {C : Type*} [Category* C]
   {J : Type u} [LinearOrder J] [SuccOrder J] {j : J} (hj : ¬IsMax j)
   (F : Set.Iic j ⥤ C) {X : C} (τ : F.obj ⟨j, by simp⟩ ⟶ X)
