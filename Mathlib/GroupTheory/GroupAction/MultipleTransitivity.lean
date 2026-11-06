@@ -177,13 +177,13 @@ variable {one : Type*} [Unique one]
 @[to_additive /-- For `Unique one`, the equivariant map from `one ↪ α` to `α` -/]
 def _root_.MulActionHom.oneEmbeddingMap :
     (one ↪ α) →[G] α := {
-  oneEmbeddingEquiv with
+  Equiv.embeddingUnique with
   map_smul' _ _ := rfl }
 
 @[to_additive]
 theorem _root_.MulActionHom.oneEmbeddingMap_bijective :
     Function.Bijective (oneEmbeddingMap (one := one) (G := G) (α := α)) :=
-  oneEmbeddingEquiv.bijective
+  Equiv.embeddingUnique.bijective
 
 /-- An action is `1`-pretransitive iff it is pretransitive. -/
 @[to_additive /-- An additive action is `1`-pretransitive iff it is pretransitive. -/]
