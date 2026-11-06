@@ -270,9 +270,8 @@ protected theorem ae_mono (hf : ∀ i, AEStronglyMeasurable (f i) μ) (hg : Unif
   apply (eLpNorm_mono_enorm_ae (hf i).restrict (ae_restrict_of_ae (hfg i))).trans
   apply eLpNorm_mono_measure
   apply μ.restrict_mono_ae
-  filter_upwards [hfg i] with x hx
-  simp only [le_Prop_eq]
-  exact hx.trans'
+  filter_upwards [hfg i] with x hfg hMf
+  exact hMf.trans hfg
 
 protected theorem ae_eq (hf : UnifLpTail f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) : UnifLpTail g p μ := by
   refine hf.congr fun M ↦ iSup_congr fun i ↦ ?_

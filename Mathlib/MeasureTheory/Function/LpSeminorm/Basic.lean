@@ -1113,8 +1113,8 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {f : ℕ → α → E}
   have hp : p ≠ 0 := fun h => by simp [h] at hp0
   have hp' : p ≠ ∞ := fun h => by simp [h] at hp0
   refine ae_lt_top' ?_ (LT.lt.ne ?_)
-  · exact .liminf fun n ↦ (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const p.toReal
-  apply (lintegral_liminf_le' fun n ↦ (hfae n).nnnorm.aemeasurable.coe_nnreal_ennreal.pow_const
+  · exact .liminf fun n ↦ (hfae n).nnNorm.aemeasurable.coe_nnreal_ennreal.pow_const p.toReal
+  apply (lintegral_liminf_le' fun n ↦ (hfae n).nnNorm.aemeasurable.coe_nnreal_ennreal.pow_const
     p.toReal).trans_lt
   apply lt_of_le_of_lt (b := (⨆ n, eLpNorm (f n) p μ) ^ p.toReal) ?_ (by finiteness)
   simp_rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' (hfae _), one_div] at hbdd
