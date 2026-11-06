@@ -286,7 +286,7 @@
   authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
-  decl   : linearIndependent_exp
+  decl   : Complex.linearIndependent_exp
   authors: Yuyang Zhao
 57:
   title  : Heron’s Formula
