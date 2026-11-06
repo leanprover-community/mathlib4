@@ -58,6 +58,36 @@ theorem neg_eq_neg_one : neg = -1 :=
 theorem pos_eq_one : pos = 1 :=
   rfl
 
+/-- Recursor for `SignType` using the preferred forms `0`, `-1`, and `1`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def recZeroNegOne {motive : SignType → Sort*}
+    (zero : motive 0) (neg_one : motive (-1)) (one : motive 1) (t : SignType) : motive t :=
+  match t with
+  | 0 => zero
+  | -1 => neg_one
+  | 1 => one
+
+@[simp]
+theorem recZeroNegOne_zero {motive : SignType → Sort*}
+    (zero : motive 0) (neg_one : motive (-1)) (one : motive 1) :
+    recZeroNegOne zero neg_one one 0 = zero := rfl
+
+@[simp]
+theorem recZeroNegOne_neg_one {motive : SignType → Sort*}
+    (zero : motive 0) (neg_one : motive (-1)) (one : motive 1) :
+    recZeroNegOne zero neg_one one (-1) = neg_one := rfl
+
+@[simp]
+theorem recZeroNegOne_one {motive : SignType → Sort*}
+    (zero : motive 0) (neg_one : motive (-1)) (one : motive 1) :
+    recZeroNegOne zero neg_one one 1 = one := rfl
+
+@[simp]
+theorem recZeroNegOne_neg {motive : SignType → Sort*}
+    (zero : motive 0) (neg_one : motive (-1)) (one : motive 1) (t : SignType) :
+    @recZeroNegOne motive zero neg_one one (-t) =
+      recZeroNegOne zero one neg_one t := by cases t <;> rfl
+
 theorem trichotomy (a : SignType) : a = -1 ∨ a = 0 ∨ a = 1 := by
   cases a <;> simp
 
@@ -263,7 +293,7 @@ variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
-  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, fun a b h => by
+  ⟨fun a => if 0 < a then 1 else if a < 0 then -1 else 0, show _ from fun a b h => by
     dsimp
     split_ifs with h₁ h₂ h₃ h₄ _ _ h₂ h₃ <;> try constructor!
     · cases lt_irrefl 0 (h₁.trans <| h.trans_lt h₃)
