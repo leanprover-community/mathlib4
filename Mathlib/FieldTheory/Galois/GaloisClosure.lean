@@ -21,7 +21,6 @@ In a field extension `K/k`
 ## TODO
 
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
-
 -/
 
 @[expose] public section

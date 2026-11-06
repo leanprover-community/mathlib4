@@ -20,7 +20,6 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
 
 ## Tags
 chain rule, manifolds, higher derivative
-
 -/
 
 public section

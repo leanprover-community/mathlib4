@@ -24,7 +24,6 @@ to specialize API about long exact sequences to group homology.
 
 * `groupHomology.δ hX i j hij`: the connecting homomorphism `Hᵢ(G, X₃) ⟶ Hⱼ(G, X₁)` associated
   to an exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations.
-
 -/
 
 public section

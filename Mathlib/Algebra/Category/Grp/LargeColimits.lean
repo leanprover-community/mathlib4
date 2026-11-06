@@ -15,7 +15,6 @@ import Mathlib.Algebra.Module.CharacterModule
 If `F : J ⥤ AddCommGrpCat.{w}` is a functor, we show that `F` admits a colimit if and only
 if `Colimits.Quot F` (the quotient of the direct sum of the commutative groups `F.obj j`
 by the relations given by the morphisms in the diagram) is `w`-small.
-
 -/
 
 public section

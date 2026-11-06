@@ -14,7 +14,6 @@ Assuming that `L : C ⥤ D` is a localization functor for a class of morphisms `
 that has a calculus of left *or* right fractions, we show in this file
 that the functor `L.mapComposableArrows n : ComposableArrows C n ⥤ ComposableArrows D n`
 is essentially surjective for any `n : ℕ`.
-
 -/
 
 public section

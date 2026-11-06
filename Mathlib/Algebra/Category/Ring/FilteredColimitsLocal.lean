@@ -32,7 +32,6 @@ able to directly write that the residue field functor preserves colimits.
 
 * `CommRingCat.FilteredColimit.isColimitResidueFieldCocone` : the residue field of a filtered
   colimit of local rings via local homomorphisms is the colimit of the residue fields.
-
 -/
 
 @[expose] public section

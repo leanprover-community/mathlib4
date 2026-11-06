@@ -33,7 +33,6 @@ fraction obtained by an explicit transformation of its coefficient stream.
 
 * https://en.wikipedia.org/wiki/Euler%27s_continued_fraction_formula
 * [Wall, H.S., *Analytic Theory of Continued Fractions*][wall2018analytic]
-
 -/
 
 public section

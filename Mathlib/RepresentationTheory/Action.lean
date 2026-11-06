@@ -17,7 +17,6 @@ currently are doing in the `Rep` file.
 
 TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
 reconstruct the current `linearize` functor using this file.
-
 -/
 
 universe w w' u u' v v'

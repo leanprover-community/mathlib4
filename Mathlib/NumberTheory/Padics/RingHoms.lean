@@ -38,7 +38,6 @@ there is a unique limit `R → ℤ_[p]`
 
 The constructions of the ring homomorphisms go through an auxiliary constructor
 `PadicInt.toZModHom`, which removes some boilerplate code.
-
 -/
 
 @[expose] public section

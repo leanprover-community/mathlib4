@@ -27,7 +27,6 @@ We construct a `SplittingFieldAux` without worrying about whether the instances 
 definitional equalities. Then the actual `SplittingField` is defined to be a quotient of a
 `MvPolynomial` ring by the kernel of the obvious map into `SplittingFieldAux`. Because the
 actual `SplittingField` will be a quotient of a `MvPolynomial`, it has nice instances on it.
-
 -/
 
 @[expose] public section

@@ -17,7 +17,6 @@ import Mathlib.Topology.Algebra.Module.Compact
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),
 we say that it is a non-archimedean local field if the topology comes from the given valuation,
 and it is locally compact and non-discrete.
-
 -/
 
 @[expose] public section

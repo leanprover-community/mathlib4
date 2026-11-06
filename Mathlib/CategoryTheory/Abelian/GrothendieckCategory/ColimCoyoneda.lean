@@ -26,7 +26,6 @@ then the map from the colimit of the types `X ⟶ Y j` to
 additional assumption that for any map `f : j ⟶ j'` in `J`,
 `Y.map f` is a monomorphism, see
 `IsGrothendieckAbelian.preservesColimit_coyoneda_obj_of_mono`.
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ homology of `K : HomologicalComplex C c'` in degree `j'` and
 that of `K.restriction e` in degree `j` when `e : Embedding c c'`
 is an embedding of complex shapes. See `restriction.sc'Iso`
 and `restriction.hasHomology`.
-
 -/
 
 @[expose] public section

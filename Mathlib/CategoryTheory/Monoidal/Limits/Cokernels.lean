@@ -16,7 +16,6 @@ Let `c₁` and `c₂` be cokernel coforks for morphisms `f₁ : X₁ ⟶ Y₁` a
 cofork for `(X₁ ⊗ Y₂) ⨿ (Y₁ ⊗ X₂) ⟶ Y₁ ⊗ Y₂` with point `c₁.pt ⊗ c₂.pt`,
 and show that it is colimit if `c₁` and `c₂` are colimit, and the
 cokernels of `f₁` and `f₂` are preserved by suitable tensor products.
-
 -/
 
 @[expose] public section

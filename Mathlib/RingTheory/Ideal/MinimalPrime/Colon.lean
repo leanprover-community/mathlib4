@@ -16,7 +16,6 @@ import Mathlib.RingTheory.Noetherian.Basic
 
 We prove that a minimal prime over an ideal of the form `N.colon {x}` in a Noetherian ring is
 itself an ideal of the form `N.colon {x'}`.
-
 -/
 
 public section

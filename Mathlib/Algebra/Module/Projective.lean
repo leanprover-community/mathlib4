@@ -50,7 +50,6 @@ https://en.wikipedia.org/wiki/Projective_module
 ## Tags
 
 projective module
-
 -/
 
 public section

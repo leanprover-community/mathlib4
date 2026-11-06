@@ -46,7 +46,6 @@ the real and imaginary parts using the real subalgebra of real-valued functions 
 
 Extend to cover the case of subalgebras of the continuous functions vanishing at infinity,
 on non-compact spaces.
-
 -/
 
 @[expose] public section

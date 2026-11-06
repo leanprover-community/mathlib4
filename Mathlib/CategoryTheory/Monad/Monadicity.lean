@@ -34,7 +34,6 @@ Please try to keep them in sync.
 ## Tags
 
 Beck, monadicity, descent
-
 -/
 
 @[expose] public section

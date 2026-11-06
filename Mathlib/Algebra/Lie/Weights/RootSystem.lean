@@ -30,7 +30,6 @@ characteristic 0 form a root system. We achieve this by studying root chains.
 - `LieAlgebra.IsKilling.rootSystem`: The root system of a finite-dimensional Lie algebra with
   non-degenerate Killing form over a field of characteristic zero,
   relative to a splitting Cartan subalgebra.
-
 -/
 
 @[expose] public section

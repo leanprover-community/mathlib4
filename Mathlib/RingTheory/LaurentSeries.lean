@@ -83,7 +83,6 @@ type with a zero. They are denoted `R⸨X⸩`.
   `K⟮X⟯` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
   that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
   to `K⟦X⟧`.
-
 -/
 
 @[expose] public section

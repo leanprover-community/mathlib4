@@ -23,7 +23,6 @@ Under suitable assumptions on `c` (e.g. chain complexes, or cochain
 complexes indexed by `ℤ`), we shall show that `HomologicalComplexUpToQuasiIso C c`
 is also the localized category of `HomotopyCategory C c` with respect to
 the class of quasi-isomorphisms.
-
 -/
 
 @[expose] public section

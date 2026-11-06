@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Sites.LocallyBijective
 
 In this file, we define the category `SheafOfModules R` when `R : Sheaf J RingCat`
 is a sheaf of rings on a category `C` equipped with a Grothendieck topology `J`.
-
 -/
 
 @[expose] public section

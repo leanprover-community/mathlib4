@@ -11,7 +11,6 @@ public import Mathlib.RepresentationTheory.Subrepresentation
 # Intertwining maps
 
 This file gives defines intertwining maps of representations (aka equivariant linear maps).
-
 -/
 
 @[expose] public section

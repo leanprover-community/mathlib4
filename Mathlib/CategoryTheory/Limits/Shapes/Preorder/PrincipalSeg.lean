@@ -15,7 +15,6 @@ public import Mathlib.Order.InitialSeg
 If `f : α <i β` is a principal segment and `F : β ⥤ C`,
 there is a cocone for `f.monotone.functor ⋙ F : α ⥤ C`
 the point of which is `F.obj f.top`.
-
 -/
 
 @[expose] public section

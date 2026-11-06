@@ -16,7 +16,6 @@ public import Mathlib.Order.Preorder.Finsupp
 This defines `Finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `Multiset α`, along
 with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` (the equivalence
 promoted to an order isomorphism).
-
 -/
 
 @[expose] public section

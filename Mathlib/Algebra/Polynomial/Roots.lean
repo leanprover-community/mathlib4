@@ -28,7 +28,6 @@ We define the multiset of roots of a polynomial, and prove basic results about i
 * `Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
   degree, it can be written as the product of its leading coefficient with `∏ (X - a)` where `a`
   ranges through its roots.
-
 -/
 
 @[expose] public section

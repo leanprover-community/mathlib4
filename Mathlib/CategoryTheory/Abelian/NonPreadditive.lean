@@ -44,7 +44,6 @@ reconstruct any natural preadditive structure the category may have.
 ## References
 
 * [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
-
 -/
 
 @[expose] public section

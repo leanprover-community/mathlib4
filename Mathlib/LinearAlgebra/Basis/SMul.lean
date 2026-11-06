@@ -13,7 +13,6 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 # Bases and scalar multiplication
 
 This file defines the scalar multiplication of bases by multiplying each basis vector.
-
 -/
 
 @[expose] public section

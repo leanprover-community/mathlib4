@@ -15,7 +15,6 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
 /-!
 # Dimension Shifting
-
 -/
 
 public section

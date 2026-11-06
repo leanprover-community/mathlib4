@@ -65,7 +65,6 @@ for commutative rings.
 ## TODO
 
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
-
 -/
 
 @[expose] public section

@@ -19,7 +19,6 @@ maximal ideal in `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_idea
 
 * `IsLocalRing`: A predicate on semirings, stating that for any pair of elements that
   adds up to `1`, one of them is a unit.
-
 -/
 
 public section
