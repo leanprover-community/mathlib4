@@ -22,7 +22,12 @@ In this file we define
 
 `Filter.cofinite`: the filter of sets with finite complement
 
-and prove its basic properties. In particular, we prove that for `ℕ` it is equal to `Filter.atTop`.
+`Filter.IsFree`: a filter is *free* if no point belongs to every set in the filter
+
+`Filter.IsNonprincipal`: a filter is *non-principal* if it is not `𝓟 s` for any `s`
+
+and prove their basic properties. In particular, we prove that for `ℕ` the cofinite filter is equal
+to `Filter.atTop`.
 
 ## TODO
 
@@ -104,6 +109,65 @@ theorem le_cofinite_iff_compl_singleton_mem : l ≤ cofinite ↔ ∀ x, {x}ᶜ �
 theorem le_cofinite_iff_eventually_ne : l ≤ cofinite ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
   le_cofinite_iff_compl_singleton_mem
 
+/-- A filter is *free* (or *non-fixed*) if no point belongs to every set in the filter.
+Equivalently, the filter extends the Fréchet (cofinite) filter; see `isFree_iff_le_cofinite`.
+On finite types, no `NeBot` filter is free; see `not_isFree_of_neBot`. -/
+def IsFree (f : Filter α) : Prop := ∀ a, {a}ᶜ ∈ f
+
+theorem isFree_iff_le_cofinite : l.IsFree ↔ l ≤ cofinite :=
+  le_cofinite_iff_compl_singleton_mem.symm
+
+theorem isFree_iff_ker_eq_empty : l.IsFree ↔ l.ker = ∅ := by
+  constructor
+  · intro h; ext x; simp only [Set.mem_empty_iff_false, iff_false]
+    exact fun hx => absurd (mem_ker.mp hx _ (h x)) (by simp)
+  · intro h x
+    have : x ∉ l.ker := by simp [h]
+    rw [mem_ker] at this; push_neg at this
+    obtain ⟨s, hs, hxs⟩ := this
+    exact mem_of_superset hs fun y hy hya => hxs (hya ▸ hy)
+
+theorem isFree_iff_eventually_ne : l.IsFree ↔ ∀ x, ∀ᶠ y in l, y ≠ x :=
+  isFree_iff_le_cofinite.trans le_cofinite_iff_eventually_ne
+
+theorem IsFree.le_cofinite (h : l.IsFree) : l ≤ cofinite := isFree_iff_le_cofinite.mp h
+theorem IsFree.ker_eq_empty (h : l.IsFree) : l.ker = ∅ := isFree_iff_ker_eq_empty.mp h
+theorem IsFree.eventually_ne (h : l.IsFree) (x : α) : ∀ᶠ y in l, y ≠ x := h x
+theorem IsFree.compl_singleton_mem (h : l.IsFree) (x : α) : {x}ᶜ ∈ l := h x
+
+theorem IsFree.mono {l l' : Filter α} (h : l.IsFree) (hl : l' ≤ l) : l'.IsFree :=
+  isFree_iff_le_cofinite.mpr (hl.trans h.le_cofinite)
+
+@[simp]
+theorem cofinite_isFree [Infinite α] : (cofinite : Filter α).IsFree :=
+  isFree_iff_le_cofinite.mpr le_rfl
+
+theorem not_isFree_of_neBot {α : Type*} [Finite α] {l : Filter α} (hl : l.NeBot) :
+    ¬l.IsFree := by
+  intro h; rw [isFree_iff_le_cofinite, cofinite_eq_bot] at h
+  exact hl.ne (le_bot_iff.mp h)
+
+/-- A filter is *non-principal* if it is not equal to `𝓟 s` for any set `s`.
+
+This is weaker than `IsFree`: every free `NeBot` filter is non-principal, but the converse
+fails in general (e.g. `𝓝 x` in a non-discrete T₁ space is non-principal but not free).
+For ultrafilters the two notions coincide; see `Ultrafilter.isNonprincipal_iff_isFree`. -/
+def IsNonprincipal (f : Filter α) : Prop := ∀ s, f ≠ 𝓟 s
+
+theorem isNonprincipal_iff_ne_principal : l.IsNonprincipal ↔ ∀ s, l ≠ 𝓟 s :=
+  Iff.rfl
+
+theorem isNonprincipal_iff_ker : l.IsNonprincipal ↔ l ≠ 𝓟 l.ker :=
+  ⟨fun h => h l.ker, fun h s hs => h (by rw [hs, ker_principal])⟩
+
+theorem IsFree.isNonprincipal (hf : l.IsFree) (hne : l.NeBot) : l.IsNonprincipal := by
+  intro s hs
+  have : s = ∅ := by rw [← ker_principal s, ← hs]; exact hf.ker_eq_empty
+  subst this; simp at hs; exact hne.ne hs
+
+theorem IsNonprincipal.ne_pure (h : l.IsNonprincipal) (a : α) : l ≠ pure a := by
+  intro ha; exact h {a} (by rw [ha, principal_singleton])
+
 /-- If `α` is a preorder with no top element, then `atTop ≤ cofinite`. -/
 theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atTop
@@ -111,6 +175,12 @@ theorem atTop_le_cofinite [Preorder α] [NoTopOrder α] : (atTop : Filter α) �
 /-- If `α` is a preorder with no bottom element, then `atBot ≤ cofinite`. -/
 theorem atBot_le_cofinite [Preorder α] [NoBotOrder α] : (atBot : Filter α) ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr eventually_ne_atBot
+
+theorem atTop_isFree [Preorder α] [NoTopOrder α] : (atTop : Filter α).IsFree :=
+  isFree_iff_le_cofinite.mpr atTop_le_cofinite
+
+theorem atBot_isFree [Preorder α] [NoBotOrder α] : (atBot : Filter α).IsFree :=
+  isFree_iff_le_cofinite.mpr atBot_le_cofinite
 
 theorem comap_cofinite_le (f : α → β) : comap f cofinite ≤ cofinite :=
   le_cofinite_iff_eventually_ne.mpr fun x =>
