@@ -73,6 +73,7 @@ protected theorem abs_abs (T : E →L[ℂ] F) : |(|T|)| = |T| := by
 @[simp]
 protected theorem adjoint_abs (T : E →L[ℂ] F) : |T|† = |T| := T.isPositive_abs.isSelfAdjoint
 
+@[fun_prop]
 protected theorem continuous_abs : Continuous (ContinuousLinearMap.abs : (E →L[ℂ] F) → E →L[ℂ] E) :=
   CFC.continuousOn_sqrt.comp_continuous (by fun_prop)
     fun T => T.isPositive_adjoint_comp_self.nonneg
