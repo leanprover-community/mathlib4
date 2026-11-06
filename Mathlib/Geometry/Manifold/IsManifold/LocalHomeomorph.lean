@@ -120,17 +120,14 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
     rw [extChartAt_coe, extChartAt_coe_symm, hc]
     simp only [OpenPartialHomeomorph.coe_trans_symm]
-    have aux : ((I ∘ (chartAt H (g y))) ∘ hf.localInverseAt (g y) ∘
-        ((hf.localInverseAt (g y)).symm ∘ (chartAt H (g y)).symm) ∘ ↑I.symm)
-        =ᶠ[𝓝[Set.range I] (extChartAt I y y)] id := by
-      filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
-      simp only [Function.comp_apply, id]
-      rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
-      rw [Set.mem_inter_iff, Set.mem_preimage] at hx
-      obtain ⟨⟨h1, h2⟩, h3⟩ := hx
-      rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
-    refine ContDiffWithinAt.congr_of_eventuallyEq_of_mem (h₁ := aux) contDiffWithinAt_id ?_
-    exact Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y)
+    refine contDiffWithinAt_id.congr_of_eventuallyEq_of_mem ?_
+      (Set.mem_range_self (((chartAt H y).symm.restr I.source).symm y))
+    filter_upwards [extChartAt_target_mem_nhdsWithin y] with x hx
+    simp only [Function.comp_apply, id]
+    rw [extChartAt_target, hc, OpenPartialHomeomorph.trans_target] at hx
+    rw [Set.mem_inter_iff, Set.mem_preimage] at hx
+    obtain ⟨⟨h1, h2⟩, h3⟩ := hx
+    rw [(hf.localInverseAt (g y)).right_inv h2, (chartAt H (g y)).right_inv h1, I.right_inv h3]
 
 lemma IsLocalHomeomorph.contMDiffOn_localInverseAt_rightInverse (x : M)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
