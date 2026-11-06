@@ -126,6 +126,9 @@ variable [IsManifold I n M]
 
 lemma IsLocalHomeomorph.isManifoldOfRightInverse
     -- TODO: Is `h` below the most useful hypothesis?
+    -- I think so? from h we are trying to prove f is local diffeom. but also
+    -- i think the converse is true? and its not too painful to work with
+    -- but maybe it could be its own Prop definition (?)
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f) :
     letI : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     IsManifold I n M' := by
