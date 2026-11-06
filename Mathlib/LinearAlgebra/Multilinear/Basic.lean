@@ -20,7 +20,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 /-!
 # Multilinear maps
 
-We define multilinear maps as maps from `∀ (i : ι), M i` to `N` which are `σ`-semilinear in each
+We define multilinear maps as maps from `Π (i : ι), M i` to `N` which are `σ`-semilinear in each
 coordinate. Here, `M i` and `N` are modules over rings `R` and `S`, respectively, `σ` is a ring
 homomorphism `R →+* S` and `ι` is an arbitrary type (although some statements will require
 it to be a fintype). This space, denoted by `(Π i, M i) →ₘₛₗ[σ] N`, inherits a module structure
@@ -83,7 +83,7 @@ universe uR uS uι u v
 
 -- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
 set_option genInjectivity false in
-/-- Multilinear maps from the `R`-module `∀ i, M i` to the `S`-module `N`
+/-- Multilinear maps from the `R`-module `Π i, M i` to the `S`-module `N`
 over a ring homomorphism `σ : R →+* S`. -/
 structure MultilinearMap {R : Type uR} {S : Type uS} [Semiring R] [Semiring S]
     (σ : R →+* S) {ι : Type uι} (M : ι → Type u) (N : Type v)
