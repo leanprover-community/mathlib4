@@ -272,6 +272,63 @@ theorem ContinuousLinearMap.isOpen_injective [FiniteDimensional 𝕜 E] :
   exact ⟨(K⁻¹ - ‖φ - φ₀‖₊)⁻¹, inv_pos_of_pos (tsub_pos_of_lt hφ),
     H.add_sub_lipschitzWith (φ - φ₀).lipschitzWith hφ⟩
 
+/-- A continuous family of injective linear maps with finite-dimensional source has a uniform
+positive lower bound on a compact parameter set. -/
+theorem IsCompact.exists_pos_le_norm_apply [FiniteDimensional 𝕜 E]
+    {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
+    {A : X → E →L[𝕜] F} (hA : ContinuousOn A s)
+    (hinj : ∀ x ∈ s, Function.Injective (A x)) :
+    ∃ m > 0, ∀ x ∈ s, ∀ u : E, m * ‖u‖ ≤ ‖A x u‖ := by
+  refine hs.induction_on (p := fun t ↦ ∃ m > 0, ∀ x ∈ t, ∀ u : E,
+    m * ‖u‖ ≤ ‖A x u‖) ⟨1, zero_lt_one, by simp⟩ ?_ ?_ ?_
+  · rintro t u htu ⟨m, hm, hbound⟩
+    exact ⟨m, hm, fun x hx ↦ hbound x (htu hx)⟩
+  · rintro t u ⟨m, hm, hmt⟩ ⟨n, hn, hnu⟩
+    refine ⟨min m n, lt_min hm hn, fun x hx v ↦ ?_⟩
+    rcases hx with hx | hx
+    · exact (mul_le_mul_of_nonneg_right (min_le_left _ _) (norm_nonneg v)).trans (hmt x hx v)
+    · exact (mul_le_mul_of_nonneg_right (min_le_right _ _) (norm_nonneg v)).trans (hnu x hx v)
+  · intro x hx
+    obtain ⟨K, hK, hKA⟩ := (A x).toLinearMap.exists_antilipschitzWith
+      (LinearMap.ker_eq_bot.mpr (hinj x hx))
+    have hK' : 0 < (K : ℝ) := hK
+    have hlower (v : E) : (K : ℝ)⁻¹ * ‖v‖ ≤ ‖A x v‖ := by
+      have h := mul_le_mul_of_nonneg_left ((A x).bound_of_antilipschitz hKA v)
+        (inv_nonneg.mpr hK'.le)
+      simpa only [← mul_assoc, inv_mul_cancel₀ hK'.ne', one_mul] using h
+    let m := (K : ℝ)⁻¹ / 2
+    have hm : 0 < m := half_pos (inv_pos.mpr hK')
+    refine ⟨{y | ‖A y - A x‖ < m}, ?_, m, hm, ?_⟩
+    · change ∀ᶠ y in 𝓝[s] x, ‖A y - A x‖ < m
+      exact ((hA x hx).tendsto.eventually (ball_mem_nhds (A x) hm)).mono
+        fun y hy ↦ by simpa only [mem_ball, dist_eq_norm] using hy
+    · intro y hy v
+      have hop := (A x - A y).le_opNorm v
+      rw [sub_apply, norm_sub_rev (A x) (A y)] at hop
+      have htri := norm_le_norm_sub_add (A x v) (A y v)
+      have hsmall := mul_le_mul_of_nonneg_right hy.le (norm_nonneg v)
+      have hlow := hlower v
+      dsimp [m] at hsmall ⊢
+      linarith
+
+/-- A single perturbation bound preserves injectivity throughout a compact continuous family
+of injective linear maps with finite-dimensional source. -/
+theorem IsCompact.exists_pos_forall_injective_of_norm_sub_lt [FiniteDimensional 𝕜 E]
+    {X : Type*} [TopologicalSpace X] {s : Set X} (hs : IsCompact s)
+    {A : X → E →L[𝕜] F} (hA : ContinuousOn A s)
+    (hinj : ∀ x ∈ s, Function.Injective (A x)) :
+    ∃ ε > 0, ∀ B : X → E →L[𝕜] F,
+      (∀ x ∈ s, ‖B x - A x‖ < ε) → ∀ x ∈ s, Function.Injective (B x) := by
+  obtain ⟨m, hm, hlower⟩ := hs.exists_pos_le_norm_apply hA hinj
+  refine ⟨m, hm, fun B hB x hx u v huv ↦ ?_⟩
+  by_contra hne
+  have hpos : 0 < ‖u - v‖ := norm_pos_iff.mpr (sub_ne_zero.mpr hne)
+  have hzero : B x (u - v) = 0 := by rw [map_sub, huv, sub_self]
+  have hop := (B x - A x).le_opNorm (u - v)
+  simp only [sub_apply, hzero, zero_sub, norm_neg] at hop
+  exact (not_lt_of_ge ((hlower x hx (u - v)).trans hop))
+    (mul_lt_mul_of_pos_right (hB x hx) hpos)
+
 open ContinuousLinearMap
 
 /-- Continuous linear equivalence between continuous linear functions `𝕜ⁿ → E` and `Eⁿ`.
