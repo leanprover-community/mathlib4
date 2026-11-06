@@ -216,7 +216,7 @@ private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   rw [← inv_inv p, @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [hp_pos]), inv_inv p]
   simp_rw [eLpNorm'_eq_lintegral_enorm, one_div] at hn
-  have h_nnnorm_nonneg :
+  have h_nnNorm_nonneg :
     (fun a => ‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖ₑ ^ p) = fun a =>
       (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p := by
     ext1 a
@@ -226,7 +226,7 @@ private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
     · rw [Real.norm_of_nonneg _]
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
     · exact fun x _ => norm_nonneg _
-  rwa [h_nnnorm_nonneg] at hn
+  rwa [h_nnNorm_nonneg] at hn
 
 private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
@@ -284,7 +284,7 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
       lintegral_rpow_tsum_coe_enorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, ∑' i, ‖f (i + 1) x - f i x‖ₑ < ∞ :=
       tsum_enorm_sub_ae_lt_top hf hp1 hB h3
-    exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
+    exact h4.mono fun x hx => .of_nnNorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   refine h_summable.mono fun x hx ↦ ?_
   have hx_sum := hx.hasSum.tendsto_sum_nat
   rw [funext fun n ↦ Finset.sum_range_sub (fun m ↦ f m x) n] at hx_sum

@@ -437,14 +437,17 @@ theorem ae_le_pi {β : ι → Type*} [∀ i, Preorder (β i)] {f f' : ∀ i, α 
     (fun (x : ∀ i, α i) i => f i (x i)) ≤ᵐ[Measure.pi μ] fun x i => f' i (x i) :=
   (eventually_all.2 fun i => tendsto_eval_ae_ae.eventually (h i)).mono fun _ hx => hx
 
-theorem ae_le_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
+theorem ae_subset_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i ≤ᵐ[μ i] t i) :
     Set.pi I s ≤ᵐ[Measure.pi μ] Set.pi I t :=
   ((eventually_all_finite I.toFinite).2 fun i hi => tendsto_eval_ae_ae.eventually (h i hi)).mono
     fun _ hst hx i hi => hst i hi <| hx i hi
 
+@[deprecated (since := "2026-11-05")] alias ae_le_set_pi := ae_subset_pi
+
 theorem ae_eq_set_pi {I : Set ι} {s t : ∀ i, Set (α i)} (h : ∀ i ∈ I, s i =ᵐ[μ i] t i) :
     Set.pi I s =ᵐ[Measure.pi μ] Set.pi I t :=
-  (ae_le_set_pi fun i hi => (h i hi).le).antisymm (ae_le_set_pi fun i hi => (h i hi).symm.le)
+  (ae_subset_pi fun i hi => (h i hi).subset).antisymm
+    (ae_subset_pi fun i hi => (h i hi).symm.subset)
 
 lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpace (β i)]
     (μ : (i : Option ι) → Measure (β i)) [∀ (i : Option ι), SigmaFinite (μ i)] :
