@@ -11,6 +11,7 @@ public import Mathlib.Algebra.Order.Nonneg.Field
 public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
+public import Mathlib.Topology.Order.Nonneg
 
 /-!
 # Topological fields
@@ -91,12 +92,13 @@ def Nonneg.unitsHomeomorphPos (R : Type*) [DivisionSemiring R] [PartialOrder R]
   __ := Nonneg.unitsEquivPos R
   continuous_toFun := by
     rw [Topology.IsEmbedding.subtypeVal.continuous_iff]
-    exact Continuous.subtype_val (p := (0 ≤ ·)) Units.continuous_val
+    exact Nonneg.continuous_val.comp Units.continuous_val
   continuous_invFun := by
     rw [Units.continuous_iff]
     refine ⟨by fun_prop, ?_⟩
     suffices Continuous fun (x : { r : R // 0 < r }) ↦ (x⁻¹ : R) by
-      simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def]
+      simpa [Topology.IsEmbedding.subtypeVal.continuous_iff, Function.comp_def,
+        Nonneg.unitsEquivPos] using this.nonnegMk fun x ↦ inv_nonneg.2 x.2.le
     rw [continuous_iff_continuousAt]
     exact fun x ↦ ContinuousAt.inv₀ (by fun_prop) x.2.ne'
 

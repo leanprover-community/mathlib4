@@ -371,15 +371,15 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps apply]
-def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
+def primeSpectrumEquiv : PrimeSpectrum A ≃ Set.Ici A where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
-  invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
+  invFun S := ⟨idealOfLE _ S (Set.mem_Ici.1 S.2), inferInstance⟩
   left_inv P := by ext1; simp
   right_inv S := by ext1; simp
 
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
-def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
+def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o Set.Ici A :=
   { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
     map_rel_iff' {a b} :=
       ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
@@ -387,13 +387,13 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
           (le_ofPrime A (PrimeSpectrum.asIdeal _)) h,
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
+instance le_total_ideal : @Std.Total (Set.Ici A) (· ≤ ·) := by
   classical
   let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => le_total x y⟩
   exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
-instance linearOrderOverring : LinearOrder {S // A ≤ S} where
+instance linearOrderOverring : LinearOrder (Set.Ici A) where
   le_total := (le_total_ideal A).1
   max_def a b := congr($sup_eq_maxDefault a b)
   toDecidableLE := _
@@ -407,7 +407,7 @@ theorem eq_self_or_eq_top_of_le (hle : A ≤ B) : A = B ∨ B = ⊤ := by
   obtain h | h := IsLocalRing.Ring.KrullDimLE.eq_bot_or_eq_top (A.primeSpectrumEquiv.symm ⟨B, hle⟩)
   all_goals
     replace h := congr(primeSpectrumEquiv A $h)
-    simp_all
+    simp_all [Subtype.ext_iff]
 
 theorem eq_of_le_of_ne_top (hle : A ≤ B) (hTop : B ≠ ⊤) : A = B := by
   obtain h | h := eq_self_or_eq_top_of_le hle <;> simp_all

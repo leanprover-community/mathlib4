@@ -133,7 +133,7 @@ theorem nnNorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖
 
 @[simp]
 theorem norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) : ‖A.map f‖ = ‖A‖ :=
-  congr($(nnNorm_map_eq A f fun a => Subtype.ext <| hf a))
+  congr($(nnNorm_map_eq A f fun a => Nonneg.ext <| hf a))
 
 @[simp]
 theorem nnNorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ :=
@@ -315,7 +315,7 @@ theorem linfty_opNorm_def (A : Matrix m n α) :
 
 theorem linfty_opNNNorm_def (A : Matrix m n α) :
     ‖A‖₊ = (Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ :=
-  Subtype.ext <| linfty_opNorm_def A
+  Nonneg.ext <| linfty_opNorm_def A
 
 theorem nnNorm_apply_le_linfty_opNNNorm (A : Matrix m n α) (i : m) (j : n) : ‖A i j‖₊ ≤ ‖A‖₊ :=
   (PiLp.nnNorm_apply_le (toLp 1 (A i)) j).trans (nnNorm_le_pi_nnNorm (fun i ↦ toLp 1 (A i)) i)
@@ -625,7 +625,7 @@ theorem frobenius_nnNorm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a,
 @[simp]
 theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, ‖f a‖ = ‖a‖) :
     ‖A.map f‖ = ‖A‖ :=
-  congr($(frobenius_nnNorm_map_eq A f fun a => Subtype.ext <| hf a))
+  congr($(frobenius_nnNorm_map_eq A f fun a => Nonneg.ext <| hf a))
 
 @[simp]
 theorem frobenius_nnNorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
@@ -662,7 +662,7 @@ lemma frobenius_norm_replicateRow (v : m → α) : ‖replicateRow ι v‖ = ‖
 
 @[simp]
 lemma frobenius_nnNorm_replicateRow (v : m → α) : ‖replicateRow ι v‖₊ = ‖toLp 2 v‖₊ :=
-  Subtype.ext <| frobenius_norm_replicateRow v
+  Nonneg.ext <| frobenius_norm_replicateRow v
 
 @[deprecated (since := "2026-10-31")]
 alias frobenius_nnnorm_replicateRow := frobenius_nnNorm_replicateRow
@@ -673,7 +673,7 @@ lemma frobenius_norm_replicateCol (v : n → α) : ‖replicateCol ι v‖ = ‖
 
 @[simp]
 lemma frobenius_nnNorm_replicateCol (v : n → α) : ‖replicateCol ι v‖₊ = ‖toLp 2 v‖₊ :=
-  Subtype.ext <| frobenius_norm_replicateCol v
+  Nonneg.ext <| frobenius_norm_replicateCol v
 
 @[deprecated (since := "2026-10-31")]
 alias frobenius_nnnorm_replicateCol := frobenius_nnNorm_replicateCol

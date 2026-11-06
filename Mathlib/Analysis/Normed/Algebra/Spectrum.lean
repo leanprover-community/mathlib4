@@ -211,7 +211,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
+  exact NNReal.isClosedEmbedding_coe.isCompact_preimage <| by assumption
 
 @[simp]
 theorem isCompact_nnreal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
@@ -471,7 +471,7 @@ instance instCompactSpaceNNReal {A : Type*} [NonUnitalNormedRing A] [NormedSpace
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage ‹_›
+  exact NNReal.isClosedEmbedding_coe.isCompact_preimage ‹_›
 
 @[simp]
 theorem isCompact_nnreal {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [IsScalarTower ℝ A A]

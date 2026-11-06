@@ -222,7 +222,7 @@ theorem nnDist_le_two_nnNorm (x y : α) : nndist (f x) (f y) ≤ 2 * ‖f‖₊ 
 
 /-- The `nnNorm` of a function is controlled by the supremum of the pointwise `nnNorm`s. -/
 theorem nnNorm_le (C : ℝ≥0) : ‖f‖₊ ≤ C ↔ ∀ x : α, ‖f x‖₊ ≤ C :=
-  norm_le C.prop
+  norm_le C.val_nonneg
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_le := nnNorm_le
 
@@ -233,12 +233,12 @@ theorem nnNorm_const_le (b : β) : ‖const α b‖₊ ≤ ‖b‖₊ :=
 
 @[simp]
 theorem nnNorm_const_eq [Nonempty α] (b : β) : ‖const α b‖₊ = ‖b‖₊ :=
-  Subtype.ext <| norm_const_eq _
+  Nonneg.ext <| norm_const_eq _
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_const_eq := nnNorm_const_eq
 
 theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
-  Subtype.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnNorm]
+  Nonneg.ext <| (norm_eq_iSup_norm f).trans <| by simp_rw [val_eq_coe, NNReal.coe_iSup, coe_nnNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_iSup_nnnorm := nnNorm_eq_iSup_nnNorm
 
