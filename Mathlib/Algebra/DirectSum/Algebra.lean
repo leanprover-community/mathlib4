@@ -70,7 +70,6 @@ instance _root_.GradedMonoid.isScalarTower_right :
 
 variable [DecidableEq ι]
 
-set_option backward.defeqAttrib.useBackward true in
 instance : Algebra R (⨁ i, A i) where
   algebraMap :=
   { toFun := (DirectSum.of A 0).comp GAlgebra.toFun
@@ -92,9 +91,8 @@ instance : Algebra R (⨁ i, A i) where
     change DistribSMul.toAddMonoidHom _ r x = AddMonoidHom.mul (DirectSum.of _ _ _) x
     apply DFunLike.congr_fun _ x
     ext i xi : 2
-    dsimp only [AddMonoidHom.comp_apply, DistribSMul.toAddMonoidHom_apply,
-      AddMonoidHom.mul_apply]
-    rw [DirectSum.of_mul_of, ← of_smul]
+    simp only [AddMonoidHom.comp_apply, DistribSMul.toAddMonoidHom_apply,
+      AddMonoidHom.mul_apply, ← of_smul, of_mul_of]
     apply DFinsupp.single_eq_of_sigma_eq (GAlgebra.smul_def r ⟨i, xi⟩)
 
 theorem algebraMap_apply (r : R) :
