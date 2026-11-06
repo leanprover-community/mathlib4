@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.CompleteSublattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `SetLike` instance for elements of `CompleteSublattice (Set X)`
 

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Action.Basic
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.GroupTheory.GroupAction.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructors for `Action V G` for some concrete categories
 

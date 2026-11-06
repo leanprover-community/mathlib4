@@ -403,7 +403,7 @@ lemma tendsto_eLpNorm_one_densityProcess_limitProcess (hκν : fst κ ≤ ν) [I
       ext x
       simp only [mem_ofPred_eq, mem_empty_iff_false, iff_false, not_le]
       refine (?_ : _ ≤ (1 : ℝ≥0)).trans_lt one_lt_two
-      rw [Real.nnnorm_of_nonneg (densityProcess_nonneg ..)]
+      rw [Real.nnNorm_of_nonneg (densityProcess_nonneg ..)]
       exact mod_cast (densityProcess_le_one hκν ..)
 
 lemma tendsto_eLpNorm_one_restrict_densityProcess_limitProcess [IsFiniteKernel ν]

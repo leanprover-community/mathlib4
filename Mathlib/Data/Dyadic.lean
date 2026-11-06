@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Rat.Cast.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dyadic rationals
 
@@ -50,7 +53,7 @@ theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
 
 section Shift
 
-variable (k e : ℤ) (hk : k % 2 = 1) (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
+variable (d x y : Dyadic) (a b : ℤ) (m n : ℕ)
 
 @[simp] theorem zero_shiftLeft : (0 : Dyadic) <<< a = 0 := rfl
 
@@ -68,11 +71,17 @@ theorem shiftLeft_natCast : d <<< (m : ℤ) = d <<< m := rfl
 @[simp, norm_cast]
 theorem shiftRight_natCast : d >>> (m : ℤ) = d >>> m := rfl
 
-theorem shiftLeft_add : d <<< (a + b) = d <<< a <<< b := by
+theorem shiftLeft_add_int : d <<< (a + b) = d <<< a <<< b := by
   induction d <;> simp [Int.sub_sub]
 
-theorem shiftRight_add : d >>> (a + b) = d >>> a >>> b := by
+theorem shiftLeft_add_nat : d <<< (m + n) = d <<< m <<< n := by
+  simp only [← shiftLeft_natCast, Nat.cast_add, shiftLeft_add_int]
+
+theorem shiftRight_add_int : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.add_assoc]
+
+theorem shiftRight_add_nat : d >>> (m + n) = d >>> m >>> n := by
+  simp only [← shiftRight_natCast, Nat.cast_add, shiftRight_add_int]
 
 @[simp] theorem shiftLeft_neg : d <<< (-a) = d >>> a := by
   induction d <;> simp
@@ -81,10 +90,10 @@ theorem shiftRight_add : d >>> (a + b) = d >>> a >>> b := by
   induction d <;> simp [Int.sub_eq_add_neg]
 
 theorem shiftLeft_shiftRight : d <<< a >>> b = d <<< (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftLeft_add, shiftLeft_neg]
+  rw [Int.sub_eq_add_neg, shiftLeft_add_int, shiftLeft_neg]
 
 theorem shiftRight_shiftLeft : d >>> a <<< b = d >>> (a - b) := by
-  rw [Int.sub_eq_add_neg, shiftRight_add, shiftRight_neg]
+  rw [Int.sub_eq_add_neg, shiftRight_add_int, shiftRight_neg]
 
 theorem shiftLeft_shiftRight' : d <<< a >>> b = d >>> (b - a) := by
   rw [← Int.neg_sub, shiftRight_neg, shiftLeft_shiftRight]
@@ -134,17 +143,29 @@ end toRat
 @[simp] theorem neg_shiftRight : (-d) >>> a = -(d >>> a) := by
   induction d <;> simp
 
-theorem add_shiftLeft : (x + y) <<< a = x <<< a + y <<< a := by
+theorem add_shiftLeft_int : (x + y) <<< a = x <<< a + y <<< a := by
   simp [← toRat_inj, Rat.add_mul]
 
-theorem add_shiftRight : (x + y) >>> a = x >>> a + y >>> a := by
+theorem add_shiftLeft_nat : (x + y) <<< m = x <<< m + y <<< m :=
+  add_shiftLeft_int x y m
+
+theorem add_shiftRight_int : (x + y) >>> a = x >>> a + y >>> a := by
   simp [← toRat_inj, add_div]
 
-theorem sub_shiftLeft : (x - y) <<< a = x <<< a - y <<< a := by
-  simp [sub_eq_add_neg, add_shiftLeft, neg_shiftLeft]
+theorem add_shiftRight_nat : (x + y) >>> m = x >>> m + y >>> m :=
+  add_shiftRight_int x y m
 
-theorem sub_shiftRight : (x - y) >>> a = x >>> a - y >>> a := by
-  simp [sub_eq_add_neg, add_shiftRight, neg_shiftRight]
+theorem sub_shiftLeft_int : (x - y) <<< a = x <<< a - y <<< a := by
+  simp [sub_eq_add_neg, add_shiftLeft_int, neg_shiftLeft]
+
+theorem sub_shiftLeft_nat : (x - y) <<< m = x <<< m - y <<< m :=
+  sub_shiftLeft_int x y m
+
+theorem sub_shiftRight_int : (x - y) >>> a = x >>> a - y >>> a := by
+  simp [sub_eq_add_neg, add_shiftRight_int, neg_shiftRight]
+
+theorem sub_shiftRight_nat : (x - y) >>> m = x >>> m - y >>> m :=
+  sub_shiftRight_int x y m
 
 end Shift
 
