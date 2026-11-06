@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Projectivization.PSL.Stabilizer
 
 import Mathlib.GroupTheory.IsPerfect
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 -/
 

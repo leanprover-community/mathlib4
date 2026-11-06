@@ -43,7 +43,7 @@ on `α`, modulo a given σ-filter `l` on `α`. -/
 @[instance_reducible]
 def eventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
-  measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
+  measurableSet_empty := ⟨∅, MeasurableSet.empty, .rfl⟩
   measurableSet_compl := fun _ ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
   measurableSet_iUnion s hs := by
     choose t ht hts using hs
@@ -60,7 +60,7 @@ variable {m}
 
 theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
     EventuallyMeasurableSet m l s :=
-  ⟨s, hs, EventuallyEq.refl _ _⟩
+  ⟨s, hs, .rfl⟩
 
 theorem le_eventuallyMeasurableSpace : m ≤ eventuallyMeasurableSpace m l :=
   fun _ hs => hs.eventuallyMeasurableSet

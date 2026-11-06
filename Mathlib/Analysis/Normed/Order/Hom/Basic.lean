@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Hom.GroupNorm
 public import Mathlib.Analysis.Normed.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing (semi)normed groups from (semi)normed homs
 

@@ -571,6 +571,15 @@ theorem mul_def (f g : M₁ →L[R₁] M₁) : f * g = f ∘L g :=
 theorem toLinearMap_mul (f g : M₁ →L[R₁] M₁) : (↑(f * g) : M₁ →ₗ[R₁] M₁) = f * g :=
   rfl
 
+instance : NPow (M₁ →L[R₁] M₁) where
+  npow := npowRec
+
+instance : IsNPowApplyEqIterate (M₁ →L[R₁] M₁) where
+  pow_apply_eq_iterate f n x := by
+    induction n generalizing x with
+    | zero => rfl
+    | succ n ih => rw [Function.iterate_succ_apply]; exact ih (f x)
+
 @[deprecated (since := "2026-05-20")] alias coe_mul := toLinearMap_mul
 
 @[deprecated (since := "2026-05-20")] protected alias coe_mul' := FunLike.coe_mul

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Fourier.FiniteAbelian.Orthogonality
 public import Mathlib.Combinatorics.Additive.Dissociation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Randomising by a function of dissociated support
 

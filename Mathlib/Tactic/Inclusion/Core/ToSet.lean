@@ -12,9 +12,9 @@ public import Mathlib.Data.Set.Insert
 
 This file defines the `ToSet` class and its API needed for the `inclusion` tactic.
 
-## Implimentation Notes
+## Implementation notes
 
-* `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a seperate API and
+* `Inclusion.IntervalBool` is nearly identical to `Lean.LBool` but with a separate API and
 documentation which is catered to the needs of the inclusion tactic.
 
 -/
