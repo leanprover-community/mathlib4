@@ -295,6 +295,43 @@ theorem vle_add_cases (x y : R) : x + y ≤ᵥ x ∨ x + y ≤ᵥ y :=
   grw [show (0 : R) = x * 0 by simp, veq_mul_comm, veq_mul_comm x] at hy
   exact vle_mul_cancel hx hy
 
+section Ring
+
+variable {R : Type*} [Ring R] [ValuativeRel R]
+
+lemma neg_vle_self (x : R) : -x ≤ᵥ x := by
+  rcases vle_total (-x) x with h | h
+  · exact h
+  · simpa using mul_vle_mul_left h (-1)
+
+lemma self_vle_neg (x : R) : x ≤ᵥ -x := by simpa using neg_vle_self (-x)
+
+lemma neg_veq_self (x : R) : -x =ᵥ x := ⟨neg_vle_self x, self_vle_neg x⟩
+
+@[simp]
+lemma neg_vle_iff {x y : R} : -x ≤ᵥ y ↔ x ≤ᵥ y where
+  mp h := vle_trans (self_vle_neg x) h
+  mpr h := vle_trans (neg_vle_self x) h
+
+@[simp]
+lemma vle_neg_iff {x y : R} : x ≤ᵥ -y ↔ x ≤ᵥ y where
+  mp h := vle_trans h (neg_vle_self y)
+  mpr h := vle_trans h (self_vle_neg y)
+
+@[simp]
+lemma neg_vlt_iff {x y : R} : -x <ᵥ y ↔ x <ᵥ y := by simp [← not_vle]
+
+@[simp]
+lemma vlt_neg_iff {x y : R} : x <ᵥ -y ↔ x <ᵥ y := by simp [← not_vle]
+
+@[simp]
+lemma neg_veq_iff {x y : R} : -x =ᵥ y ↔ x =ᵥ y := by simp [veq_def]
+
+@[simp]
+lemma veq_neg_iff {x y : R} : x =ᵥ -y ↔ x =ᵥ y := by simp [veq_def]
+
+end Ring
+
 variable (R) in
 /-- The submonoid of elements `x : R` whose valuation is positive. -/
 def posSubmonoid : Submonoid R where
@@ -922,6 +959,16 @@ lemma inv_vlt_one (hx : x ≠ 0) : x⁻¹ <ᵥ 1 ↔ 1 <ᵥ x :=
 
 lemma one_vlt_inv (hx : x ≠ 0) : 1 <ᵥ x⁻¹ ↔ x <ᵥ 1 :=
   (inv_vle_one hx).not
+
+lemma vle_one_or_inv_vlt_one : x ≤ᵥ 1 ∨ x⁻¹ <ᵥ 1 := by
+  by_cases h : x = 0
+  · simp [h]
+  · simp [or_iff_not_imp_right, one_vle_inv h]
+
+lemma vle_one_or_inv_vle_one : x ≤ᵥ 1 ∨ x⁻¹ ≤ᵥ 1 := by
+  by_cases h : x = 0
+  · simp [h]
+  · simpa [inv_vle_one h] using vle_total x 1
 
 end DivisionRing
 
