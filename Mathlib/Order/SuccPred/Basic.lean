@@ -438,10 +438,12 @@ theorem succ_lt_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a < succ b ↔ a < b := by
   rw [lt_succ_iff_of_not_isMax hb, succ_le_iff_of_not_isMax ha]
 
-@[to_dual (reorder := ha hb)]
-theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
-    succ a ≤ succ b ↔ a ≤ b := by
-  rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
+@[to_dual]
+theorem succ_le_succ_iff_of_not_isMax (ha : ¬IsMax a) : succ a ≤ succ b ↔ a ≤ b := by
+  by_cases hb : IsMax b
+  · rw [hb.succ_eq, succ_le_iff_of_not_isMax ha]
+    exact ⟨le_of_lt, fun h => h.lt_of_ne fun h' => ha (h' ▸ hb)⟩
+  · rw [succ_le_iff_of_not_isMax ha, lt_succ_iff_of_not_isMax hb]
 
 @[to_dual]
 theorem Iio_succ_of_not_isMax (ha : ¬IsMax a) : Iio (succ a) = Iic a :=
@@ -458,7 +460,7 @@ theorem Ioo_succ_right_of_not_isMax (hb : ¬IsMax b) : Ioo a (succ b) = Ioc a b 
 @[to_dual]
 theorem succ_eq_succ_iff_of_not_isMax (ha : ¬IsMax a) (hb : ¬IsMax b) :
     succ a = succ b ↔ a = b := by
-  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha hb,
+  rw [eq_iff_le_not_lt, eq_iff_le_not_lt, succ_le_succ_iff_of_not_isMax ha,
     succ_lt_succ_iff_of_not_isMax ha hb]
 
 @[to_dual pred_le_iff_eq_or_le]
