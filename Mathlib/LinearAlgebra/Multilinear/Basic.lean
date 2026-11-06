@@ -944,9 +944,7 @@ instance [Module.IsTorsionFree S N₂] : Module.IsTorsionFree S ((Π i, M₁ i) 
 
 variable (S)
 
-/-- `LinearMap.compMultilinearMap` as an `S`-linear map.
-
-See also `LinearMap.compMultilinearMapₛₗ`. -/
+/-- `LinearMap.compMultilinearMap` as an `S`-linear map. -/
 @[simps]
 def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul N₂ N₂' S R₂]
     (g : N₂ →ₗ[R₂] N₂') : ((Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂) →ₗ[S] (Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂' where
@@ -957,7 +955,7 @@ def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul N₂ N₂' 
 /-- An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence, and a multilinear version
-of `LinearEquiv.congrRight`: see also `LinearEquiv.multilinearMapCongrRightₛₗ`. -/
+of `LinearEquiv.congrRight`. -/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.multilinearMapCongrRight [LinearMap.CompatibleSMul N₂ N₂' S R₂]
     [LinearMap.CompatibleSMul N₂' N₂ S R₂] (g : N₂ ≃ₗ[R₂] N₂') :
@@ -1362,8 +1360,8 @@ end RangeAddCommGroup
 
 section AddCommGroup
 
-variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {ι : Type*} {M : ι → Type*}
-  {N N₁ N₂ N₂' N₃ N₄ : Type*} [∀ i, AddCommGroup (M i)] [AddCommGroup N]
+variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S}
+  {ι : Type*} {M : ι → Type*} {N : Type*} [∀ i, AddCommGroup (M i)] [AddCommGroup N]
   [∀ i, Module R (M i)] [Module S N] (f : (Π i, M i) →ₘₛₗ[σ] N)
 
 @[simp]

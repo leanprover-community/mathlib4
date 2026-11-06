@@ -282,7 +282,8 @@ def uncurrySum (g : (Π i : ι, N (.inl i)) →ₘₛₗ[σ] (Π i : ι', N (.in
 
 @[simp]
 theorem uncurrySum_apply (g : (Π i : ι, N (.inl i)) →ₘₛₗ[σ] (Π i : ι', N (.inr i)) →ₘₛₗ[σ] M₂) (u) :
-    g.uncurrySum u = g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) := rfl
+    g.uncurrySum u = g (fun i ↦ u (.inl i)) (fun i' ↦ u (.inr i')) :=
+  rfl
 
 @[simp]
 lemma uncurrySum_add (g₁ g₂ : (Π i : ι, N (.inl i)) →ₘₛₗ[σ] (Π i : ι', N (.inr i)) →ₘₛₗ[σ] M₂) :
