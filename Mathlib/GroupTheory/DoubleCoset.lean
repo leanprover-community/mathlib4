@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.GroupTheory.Coset.Basic
+public import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Double cosets
@@ -24,7 +25,7 @@ this is the usual left or right quotient of a group by a subgroup.
 
 @[expose] public section
 
-assert_not_exists MonoidWithZero
+assert_not_exists Field
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α]
 
@@ -281,5 +282,30 @@ lemma iUnion_finset_rightRel_eq_univ_of_rightRel {H K : Subgroup G} {t : Finset 
     obtain ⟨a, ha⟩ : ∃ a : H, a * x = q := Quotient.eq.mp hx
     exact ⟨⟨a⁻¹, by simp⟩, eq_inv_mul_of_mul_eq ha⟩
   exact ⟨a.1, a.2, ⟨1, Subgroup.one_mem K, by simpa using ha⟩⟩
+
+
+section relPosition
+
+variable {H₁ H₂ : Subgroup G}
+
+/-- The map sending `(gH₁, g'H₂)` to `H₁g⁻¹g'H₂`. -/
+def relPosition : G ⧸ H₁ → G ⧸ H₂ → DoubleCoset.Quotient (H₁ : Set G) (H₂ : Set G) :=
+  Quotient.lift₂ (fun g g' : G => mk H₁ H₂ (g⁻¹ * g')) fun _ _ _ _ ha hb => by
+    rw [eq]
+    exact ⟨_, H₁.inv_mem (QuotientGroup.leftRel_apply.mp ha), _,
+      QuotientGroup.leftRel_apply.mp hb, by simp [mul_assoc]⟩
+
+@[simp]
+lemma relPosition_mk_mk (g g' : G) :
+    relPosition (g : G ⧸ H₁) (g' : G ⧸ H₂) = mk H₁ H₂ (g⁻¹ * g') := rfl
+
+@[simp]
+lemma relPosition_smul (g : G) (c : G ⧸ H₁) (d : G ⧸ H₂) :
+    relPosition (g • c) d = relPosition c (g⁻¹ • d) := by
+  rw [← QuotientGroup.out_eq' c, ← QuotientGroup.out_eq' d, MulAction.Quotient.smul_mk,
+    MulAction.Quotient.smul_mk, relPosition_mk_mk, relPosition_mk_mk]
+  simp [mul_assoc]
+
+end relPosition
 
 end DoubleCoset
