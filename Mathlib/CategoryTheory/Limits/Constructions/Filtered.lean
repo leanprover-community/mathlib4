@@ -41,7 +41,7 @@ variable [HasFiniteCoproducts C]
 
 /-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
 `Finset (Discrete α) ⥤ C` by taking coproducts. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
   obj s := ∐ fun x : s => F.obj x
   map {_ Y} h := Sigma.desc fun y =>
@@ -51,7 +51,7 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
 taking the colimit of the diagram formed by the coproducts of finite sets over the indexing type. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
     (F : Discrete α ⥤ C) : ColimitCocone F where
   cocone :=
@@ -80,7 +80,7 @@ set_option backward.defeqAttrib.useBackward true in
 variable (C) (α) in
 /-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
 coproducts. -/
-@[simps!]
+@[implicit_reducible, simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
   map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
