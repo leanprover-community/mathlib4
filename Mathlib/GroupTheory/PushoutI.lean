@@ -73,9 +73,7 @@ instance : One (PushoutI φ) := by
   delta PushoutI; infer_instance
 
 instance monoid : Monoid (PushoutI φ) :=
-  { Con.monoid _ with
-    toMul := PushoutI.mul
-    toOne := PushoutI.one }
+  inferInstanceAs <| Monoid (con φ).Quotient
 
 /-- The map from each indexing group into the pushout -/
 def of (i : ι) : G i →* PushoutI φ :=

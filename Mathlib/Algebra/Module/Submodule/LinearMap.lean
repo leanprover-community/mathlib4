@@ -110,7 +110,7 @@ variable {α : Type*}
 
 /-- The action by a submodule is the action by the underlying module. -/
 instance [AddAction M α] : AddAction p α :=
-  AddSubmonoid.instAddActionSubtypeMem p
+  SetLike.instAddActionSubtypeMem p
 
 end AddAction
 
