@@ -15,7 +15,8 @@ This file defines the polar decomposition for a continuous linear map `T : E →
 between (potentially distinct) Hilbert spaces `E` and `F`.
 
 ## Main definitions
- - `ContinuousLinearMap.polarₗᵢ` the partial linear isometry `U` such that `T = U ∘ |T|`.
+ - `ContinuousLinearMap.polarₗᵢ` the linear isometry `U : |T|.range.topologicalClosure →ₗᵢ[ℂ] F`
+    such that `T = U ∘ |T|`.
 
 -/
 
@@ -50,9 +51,8 @@ private theorem denseRange_inclusion (T : E →L[ℂ] F) :
     simpa [← SetLike.coe_subset_coe] using |T|.range.le_topologicalClosure)]
   simp
 
-/-- The polar `U` is a partial linear isometry from the range `|T|.range` of `|T|` to the
-orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that
-`T = U ∘ |T|`. -/
+/-- The polar `U` is a linear isometry from the range `|T|.range` of `|T|` to the orthogonal of
+the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that `T = U ∘ |T|`. -/
 def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
   T.polarₗᵢAux.extendOfIsometry
     (e := Submodule.inclusion |T|.range.le_topologicalClosure)
