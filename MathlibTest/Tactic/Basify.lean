@@ -159,6 +159,10 @@ example : k + 1 ≤ k + 2 := by
   gcongr
   simp
 
+example (hk : k ≠ ⊤) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
+  sorry -- TODO: basify makes no progress; would want it to reduce to ℕ∞ (at least)
+
+
 example : k + 1 + 1 ≤ k + 2 := by
   sorry -- TODO: neither basify nor norm_cast helps!
 
@@ -199,6 +203,12 @@ example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 3 := by
 example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
   basify; · simp -- TODO: make basify solve the first side goal also
   norm_cast; norm_cast; lia
+
+-- TODO: why does simp not solve this?
+example (k : ℕ∞) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
+  basify
+  · sorry -- TODO: why does simp not work?
+  norm_cast
 
 end
 
