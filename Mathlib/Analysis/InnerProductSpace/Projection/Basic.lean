@@ -260,10 +260,13 @@ theorem norm_starProjection_eq_infDist
 
 /-- The nonnegative norm of the orthogonal projection of `y` onto `U` equals the nonnegative
 distance to the orthogonal complement of `U` as given by `Metric.infNndist`. -/
-theorem nnnorm_starProjection_eq_infNndist
+theorem nnNorm_starProjection_eq_infNNDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
-  simp [← nndist_starProjection_eq_infNndist, nndist_eq_nnnorm]
+  simp [← nndist_starProjection_eq_infNndist, nnDist_eq_nnNorm]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_starProjection_eq_infNndist := nnNorm_starProjection_eq_infNNDist
 
 /-- The extended norm of the orthogonal projection of `y` onto `U` equals the extended distance
 to the orthogonal complement of `U` as given by `Metric.infEDist`. -/
