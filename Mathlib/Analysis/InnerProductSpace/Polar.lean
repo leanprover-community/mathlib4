@@ -35,13 +35,20 @@ section Polar
 @[inherit_doc]
 local notation "|" T "|" => abs T
 
+private def polarₗᵢAux (T : E →L[ℂ] F) : |T|.range →ₗ[ℂ] F :=
+  Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun ⦃x⦄ a ↦ a)
+    ∘ₗ (|T|.quotKerEquivRange).symm.toLinearMap
+
+@[simp]
+private theorem polarₗᵢAux_apply (T : E →L[ℂ] F) (x : E) (h : |T| x ∈ |T|.range) :
+    polarₗᵢAux T ⟨|T| x, h⟩ = T x := by
+  exact congrArg _ (|T|.quotKerEquivRange_symm_apply_image x h)
+
 /-- The polar `U` is a partial linear isometry from the range `|T|.range` of `|T|` to the
 orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ] F` such that
 `T = U ∘ |T|`. -/
 def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
-  LinearMap.extendOfIsometry
-    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun _ a ↦ a))
-      ∘ₗ |T|.quotKerEquivRange.symm.toLinearMap)
+  T.polarₗᵢAux.extendOfIsometry
     (e := Submodule.inclusion |T|.range.le_topologicalClosure)
     (by
       erw [denseRange_inclusion_iff (by
@@ -49,17 +56,13 @@ def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ
       simp)
     (by
       rintro ⟨_, x, rfl⟩
-      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe]
-      erw [|T|.quotKerEquivRange_symm_apply_image x]
       simp [norm_abs_apply])
 
 theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
     T.polarₗᵢ ⟨|T| x, |T|.range.le_topologicalClosure ⟨x, rfl⟩⟩ = T x := by
-  rw [← Submodule.inclusion_apply |T|.range.le_topologicalClosure ⟨|T| x, ⟨x, rfl⟩⟩]
-  simp only [polarₗᵢ]
-  erw [LinearMap.extendOfIsometry_eq, LinearMap.comp_apply,
-    |T|.quotKerEquivRange_symm_apply_image x]
-  simp
+  rw [← Submodule.inclusion_apply |T|.range.le_topologicalClosure
+    ⟨|T| x, LinearMap.mem_range_self _ x⟩]
+  simp [polarₗᵢ]
 
 theorem range_polarₗᵢ (T : E →L[ℂ] F) :
     T.polarₗᵢ.range = T.range.topologicalClosure := by
