@@ -663,3 +663,16 @@ theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
   (measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
 
 end MeasureIxx
+
+section MeasureUIxx
+
+open scoped Interval
+
+variable [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α] {m : MeasurableSpace α}
+  {μ : Measure α} [IsLocallyFiniteMeasure μ] {a b : α}
+
+theorem measure_uIcc_lt_top : μ [[a, b]] < ∞ := measure_Icc_lt_top
+
+theorem measure_uIoc_lt_top : μ (Ι a b) < ∞ := measure_Ioc_lt_top
+
+end MeasureUIxx

@@ -60,7 +60,7 @@ theorem Real.circleAverage_posLog_le_posLog_circleAverage {u : ℂ → ℝ} {r :
   exact hConcave.le_map_set_average
     (ContinuousOn.log (by fun_prop) (by grind))
     isClosed_Ici (by simp [uIoc_of_le Real.two_pi_pos.le, Real.pi_pos])
-    (by rw [uIoc_of_le Real.two_pi_pos.le]; exact measure_Ioc_lt_top.ne)
+    measure_uIoc_lt_top.ne
     (MeasureTheory.ae_restrict_of_forall_mem measurableSet_uIoc
       fun θ _ ↦ h₀ _ (circleMap_mem_sphere' 0 r θ))
     (intervalIntegrable_iff.1 hu) (intervalIntegrable_iff.1 hInt)
