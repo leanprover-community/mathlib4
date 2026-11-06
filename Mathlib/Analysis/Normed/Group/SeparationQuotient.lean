@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifts of maps to separation quotients of seminormed groups
 
@@ -21,7 +24,6 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 `SeparationQuotient.normedMk` as `normedMk`.
 
 * `normedMk` : the normed group hom from `M` to `SeparationQuotient M`.
-
 * `liftNormedAddGroupHom` : any bounded group hom `f : M → N` such that `∀ x, ‖x‖ = 0 → f x = 0`
   descends to a bounded group hom `SeparationQuotient M → N`.
   Here, `(f : NormedAddGroupHom M N)`, `(hf : ∀ x : M, ‖x‖ = 0 → f x = 0)`
@@ -31,7 +33,6 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 ## Main results
 
 * `norm_normedMk_eq_one` : the operator norm of the projection is `1` if the subspace is not `⊤`.
-
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 -/
 

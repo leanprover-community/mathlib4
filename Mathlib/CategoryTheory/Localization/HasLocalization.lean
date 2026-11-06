@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Predicate
 
-/-! # Morphism properties equipped with a localized category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Morphism properties equipped with a localized category
 
 If `C : Type u` is a category (with `[Category.{v} C]`), and
 `W : MorphismProperty C`, then the constructed localized
@@ -35,7 +39,6 @@ involve the localized category, but the proof does,
 it is no longer necessary to use a `HasLocalization`
 assumption, but one may use
 `HasLocalization.standard` in the proof instead.
-
 -/
 
 @[expose] public noncomputable section

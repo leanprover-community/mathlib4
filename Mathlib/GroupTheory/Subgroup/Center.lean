@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.GroupTheory.Submonoid.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of subgroups
-
 -/
 
 @[expose] public section

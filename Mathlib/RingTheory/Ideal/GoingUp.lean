@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.Localization.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals over/under ideals in integral extensions
 
@@ -77,12 +80,15 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
   refine fun p hp ↦ polynomial_mem_ideal_of_coeff_mem_ideal P p fun n ↦ ?_
   simpa [Quotient.eq_zero_iff_mem] using congr($(hp).coeff n)
 
-/-- The identity in this lemma asserts that the "obvious" square
+/--
+The identity in this lemma asserts that the "obvious" square
+
 ```
     R    → (R / (P ∩ R))
     ↓          ↓
 R[x] / P → (R / (P ∩ R))[x] / (P / (P ∩ R))
 ```
+
 commutes.  It is used, for instance, in the proof of `quotient_mk_comp_C_is_integral_of_jacobson`,
 in the file `Mathlib/RingTheory/Jacobson/Polynomial.lean`.
 -/

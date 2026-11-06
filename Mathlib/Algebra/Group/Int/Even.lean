@@ -11,6 +11,9 @@ public import Mathlib.Data.Int.Sqrt
 
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parity of integers
 -/
@@ -21,7 +24,9 @@ open Nat
 
 namespace Int
 
-/-! #### Parity -/
+/-!
+# Parity
+-/
 
 variable {m n : ℤ}
 

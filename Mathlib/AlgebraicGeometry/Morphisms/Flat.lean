@@ -11,6 +11,9 @@ public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.PullbackCarrier
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flat morphisms
 
@@ -19,7 +22,6 @@ A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 
 We show that this property is local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -188,9 +190,10 @@ lemma flat_and_surjective_SpecMap_iff {R S : CommRingCat.{u}} (f : R ⟶ S) :
 section sections
 
 /-!
-## Sections of fibered products
+# Sections of fibered products
 
 Suppose we are given the following cartesian square:
+
 ```
 Y --g-→ X
 |       |
@@ -198,23 +201,24 @@ iY      iX
 ↓       |
 T --f-→ S
 ```
+
 Let `Uₛ` be an open of `S`, `Uₓ` and `Uₜ` be opens of `X` and `T` mapping into `Uₛ`.
 There is a canonical map `Γ(X, Uₓ) ⊗[Γ(S, Uₛ)] Γ(T, Uₜ) ⟶ Γ(X ×ₛ T, pr₁ ⁻¹ Uₓ ∩ pr₂ ⁻¹ Uₜ)`.
 
 We show that this map is
-1. `isIso_pushoutSection_of_isAffineOpen`:
-  bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
-2. `mono_pushoutSection_of_isCompact_of_flat_right`:
-  injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
-3. `isIso_pushoutSection_of_isQuasiSeparated_of_flat_right`:
-  bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
-4. `mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
-  injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
-  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
-5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
-  bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
-  and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
 
+1. `isIso_pushoutSection_of_isAffineOpen`:
+   bijective when `Uₛ`, `Uₜ`, and `Uₓ` are all affine.
+2. `mono_pushoutSection_of_isCompact_of_flat_right`:
+   injective when `Uₛ`, `Uₜ` are affine, `Uₓ` is compact, and `f` is flat.
+3. `isIso_pushoutSection_of_isQuasiSeparated_of_flat_right`:
+   bijective when `Uₛ`, `Uₜ` are affine, `Uₓ` is qcqs, and `f` is flat.
+4. `mono_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
+   injective when `Uₛ` is affine, `Uₜ` is compact, `Uₓ` is qcqs, `f` is flat,
+   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
+5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
+   bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
+   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
 -/
 
 variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}

@@ -9,7 +9,11 @@ public import Mathlib.CategoryTheory.Comma.CardinalArrow
 public import Mathlib.CategoryTheory.Filtered.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 
-/-! # κ-filtered category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# κ-filtered category
 
 If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
 category `J`: it means that any functor `A ⥤ J` from a small category such
@@ -22,8 +26,9 @@ A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section
@@ -287,9 +292,11 @@ lemma isCardinalFiltered_iff_aux₂ {ι : Type w} {j : ι → J} {k : J}
   exact ⟨l, b, fun i ↦ by grind⟩
 
 variable (J κ) in
-/-- A category is `κ`-filtered iff
+/--
+A category is `κ`-filtered iff
+
 1. any family of objects of cardinality `< κ` admits a map towards a common object, and
-2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between *fixed* objects
+2. any family of morphisms `j ⟶ k` of cardinality `< κ` (between _fixed_ objects
    `j` and `k`) can be coequalized by a suitable morphism `k ⟶ l`.
 -/
 lemma isCardinalFiltered_iff :

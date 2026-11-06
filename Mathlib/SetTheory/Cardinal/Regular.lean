@@ -10,6 +10,9 @@ public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Ordinal.FundamentalSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular cardinals
 
@@ -33,7 +36,9 @@ open Function Cardinal Set Order Ordinal
 namespace Cardinal
 variable {c : Cardinal}
 
-/-! ### Regular cardinals -/
+/-!
+# Regular cardinals
+-/
 
 /-- A cardinal is regular if it is infinite and it equals its own cofinality. -/
 @[mk_iff]
@@ -211,7 +216,9 @@ theorem deriv_lt_ord {f : Ordinal.{u} → Ordinal} {c} (hc : IsRegular c) (hc' :
   derivFamily_lt_ord_lift hc
     (by simpa using Cardinal.one_lt_aleph0.trans (lt_of_le_of_ne hc.1 hc'.symm)) hc' fun _ => hf
 
-/-! ### Singular cardinals -/
+/-!
+# Singular cardinals
+-/
 
 /-- A cardinal is singular if it is infinite and not regular. -/
 @[mk_iff]
@@ -296,7 +303,9 @@ theorem IsSingular.aleph_omega0_le (hc : IsSingular c) : ℵ_ ω ≤ c := by
   rw [aleph_le_aleph]
   exact omega0_le_of_isSuccLimit hc.1
 
-/-! ### Inaccessible cardinals -/
+/-!
+# Inaccessible cardinals
+-/
 
 /-- A cardinal is inaccessible if it is an uncountable regular strong limit cardinal. -/
 structure IsInaccessible (c : Cardinal) : Prop where

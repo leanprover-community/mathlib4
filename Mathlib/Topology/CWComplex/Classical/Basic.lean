@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.RCLike.Real
 public import Mathlib.Logic.Equiv.PartialEquiv
 public import Mathlib.Util.AliasIn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # CW complexes
 
@@ -19,6 +22,7 @@ A CW complex is a topological space that is made by gluing closed disks of diffe
 together.
 
 ## Main definitions
+
 * `RelCWComplex C D`: the class of CW structures on a subspace `C` relative to a base set
   `D` of a topological space `X`.
 * `CWComplex C`: an abbreviation for `RelCWComplex C ∅`. The class of CW structures on a
@@ -29,11 +33,13 @@ together.
 * `skeleton C n`: the `n`-skeleton of the (relative) CW complex `C`.
 
 ## Main statements
+
 * `iUnion_openCell_eq_skeleton`: the skeletons can also be seen as a union of open cells.
 * `cellFrontier_subset_finite_openCell`: the edge of a cell is contained in a finite union of
   open cells of a lower dimension.
 
 ## Implementation notes
+
 * We use the historical definition of CW complexes, due to Whitehead: a CW complex is a collection
   of cells with attaching maps - all cells are subspaces of one ambient topological space.
   This way, we avoid having to work with a lot of different topological spaces.
@@ -42,6 +48,7 @@ together.
 * For a categorical approach that defines CW complexes via colimits and transfinite compositions,
   see `Mathlib/Topology/CWComplex/Abstract/Basic.lean`.
   The two approaches are equivalent but serve different purposes:
+
   * This approach is more convenient for concrete geometric arguments
   * The categorical approach is more suitable for abstract arguments and generalizations
 * The definition `RelCWComplex` does not require `X` to be a Hausdorff space.
@@ -80,7 +87,8 @@ together.
   one about `skeletonLT`.
 
 ## References
-* [A. Hatcher, *Algebraic Topology*][hatcher02]
+
+* ‍\[A. Hatcher, _Algebraic Topology_\]\[hatcher02\]
 -/
 
 @[expose] public section
@@ -91,11 +99,13 @@ open Metric Set Function
 
 namespace Topology
 
-/-- A CW complex of a topological space `X` relative to another subspace `D` is the data of its
-*`n`-cells* `cell n i` for each `n : ℕ` along with *attaching maps* that satisfy a number of
+/--
+A CW complex of a topological space `X` relative to another subspace `D` is the data of its
+_`n`-cells_ `cell n i` for each `n : ℕ` along with _attaching maps_ that satisfy a number of
 properties with the most important being closure-finiteness (`mapsTo`) and weak topology
 (`closed'`). Note that this definition requires `C` and `D` to be closed subspaces.
-If `C` is not closed choose `X` to be `C`. -/
+If `C` is not closed choose `X` to be `C`.
+-/
 class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outParam (Set X)) where
   /-- The indexing type of the cells of dimension `n`. -/
   cell (n : ℕ) : Type u

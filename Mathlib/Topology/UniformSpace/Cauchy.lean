@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Topology.Algebra.Constructions
 public import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of Cauchy filters in uniform spaces. Complete uniform spaces. Totally bounded subsets.
 -/
@@ -30,8 +33,10 @@ variable {α : Type u} {β : Type v} [uniformSpace : UniformSpace α]
 def Cauchy (f : Filter α) :=
   NeBot f ∧ f ×ˢ f ≤ 𝓤 α
 
-/-- A set `s` is called *complete*, if any Cauchy filter `f` such that `s ∈ f`
-has a limit in `s` (formally, it satisfies `f ≤ 𝓝 x` for some `x ∈ s`). -/
+/--
+A set `s` is called _complete_, if any Cauchy filter `f` such that `s ∈ f`
+has a limit in `s` (formally, it satisfies `f ≤ 𝓝 x` for some `x ∈ s`).
+-/
 def IsComplete (s : Set α) :=
   ∀ f, Cauchy f → f ≤ 𝓟 s → ∃ x ∈ s, f ≤ 𝓝 x
 
@@ -803,7 +808,7 @@ theorem isCompact_closure_interUnionBalls {p : ℕ → Prop} {U : ℕ → SetRel
   exact totallyBounded_interUnionBalls H xs u
 
 /-!
-### Sequentially complete space
+# Sequentially complete space
 
 In this section we prove that a uniform space is complete provided that it is sequentially complete
 (i.e., any Cauchy sequence converges) and its uniformity filter admits a countable generating set.
@@ -813,7 +818,8 @@ In particular, this applies to (e)metric spaces, see the files
 More precisely, we assume that there is a sequence of entourages `U_n` such that any other
 entourage includes one of `U_n`. Then any Cauchy filter `f` generates a decreasing sequence of
 sets `s_n ∈ f` such that `s_n × s_n ⊆ U_n`. Choose a sequence `x_n∈s_n`. It is easy to show
-that this is a Cauchy sequence. If this sequence converges to some `a`, then `f ≤ 𝓝 a`. -/
+that this is a Cauchy sequence. If this sequence converges to some `a`, then `f ≤ 𝓝 a`.
+-/
 
 
 namespace SequentiallyComplete

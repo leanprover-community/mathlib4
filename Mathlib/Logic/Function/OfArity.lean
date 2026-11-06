@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Logic.Function.FromTypes
 
-/-! # Function types of a given arity
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Function types of a given arity
 
 This provides `Function.OfArity`, such that `OfArity α β 2 = α → α → β`.
 Note that it is often preferable to use `(Fin n → α) → β` in place of `OfArity n α β`.
@@ -24,10 +28,12 @@ universe u
 
 namespace Function
 
-/-- The type of `n`-ary functions `α → α → ... → β`.
+/--
+The type of `n`-ary functions `α → α → ... → β`.
 
 Note that this is not universe polymorphic, as this would require that when `n=0` we produce either
-`Unit → β` or `ULift β`. -/
+`Unit → β` or `ULift β`.
+-/
 abbrev OfArity (α β : Type u) (n : ℕ) : Type u := FromTypes (fun (_ : Fin n) => α) β
 
 @[simp]

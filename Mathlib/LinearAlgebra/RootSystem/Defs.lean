@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 public import Mathlib.LinearAlgebra.Reflection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Root data and root systems
 
@@ -56,7 +59,6 @@ and coroots. This is necessary when working with infinite root systems, where th
 uniquely determined by the roots, because without it, the reflection permutations on roots and
 coroots may not correspond. For this purpose, we define a map from `ι` to permutations on `ι`, and
 require that it is compatible with reflections and coreflections.
-
 -/
 
 @[expose] public section
@@ -71,13 +73,15 @@ noncomputable section
 variable (ι R M N : Type*)
   [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
-/-- Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with indexing set `ι`
+/--
+Given two perfectly-paired `R`-modules `M` and `N`, a root pairing with indexing set `ι`
 is the data of an `ι`-indexed subset of `M` ("the roots"), an `ι`-indexed subset of `N`
 ("the coroots"), and an `ι`-indexed set of permutations of `ι`, such that each root-coroot pair
 evaluates to `2`, and the permutation attached to each element of `ι` is compatible with the
 reflections on the corresponding roots and coroots.
 
-It exists to allow for a convenient unification of the theories of root systems and root data. -/
+It exists to allow for a convenient unification of the theories of root systems and root data.
+-/
 structure RootPairing extends M →ₗ[R] N →ₗ[R] R where
   [isPerfPair_toLinearMap : toLinearMap.IsPerfPair]
   /-- A parametrized family of vectors, called roots. -/
@@ -98,7 +102,8 @@ structure RootPairing extends M →ₗ[R] N →ₗ[R] R where
 
 attribute [instance] RootPairing.isPerfPair_toLinearMap
 
-/-- Informally a root datum is a root pairing with coefficients in the integers, for which the root
+/--
+Informally a root datum is a root pairing with coefficients in the integers, for which the root
 and coroot spaces are finitely-generated free Abelian groups.
 
 Formally `RootDatum` does not demand the finite generation hypotheses. Thus to capture the informal
@@ -107,7 +112,8 @@ concept one must supply the two assumptions `[Module.Finite ℤ X₁] [Module.Fi
 Finally note that if `[Module.Finite ℤ X₁] [Module.Finite ℤ X₂]` are supplied, one does not need to
 assume freeness since it follows automatically. Moreover Mathlib knows this via
 `Module.IsReflexive.of_isPerfPair`, `Module.IsReflexive.to_isTorsionFree`,
-`Module.free_of_finite_type_torsion_free'`. -/
+`Module.free_of_finite_type_torsion_free'`.
+-/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
 namespace RootPairing

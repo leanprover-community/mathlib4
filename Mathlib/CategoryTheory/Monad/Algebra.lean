@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.EpiMono
 public import Mathlib.CategoryTheory.Monad.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
 
@@ -19,7 +22,8 @@ from and to the original category, as well as the adjoint pair of forgetful and
 cofree functors, respectively from and to the original category.
 
 ## References
-* [Riehl, *Category theory in context*, Section 5.2.4][riehl2017]
+
+* ‍\[Riehl, _Category theory in context_, Section 5.2.4\]\[riehl2017\]
 -/
 
 @[expose] public section
@@ -36,8 +40,10 @@ variable {C : Type u₁} [Category.{v₁} C]
 
 to_dual_name_hint Algebra Coalgebra, Free Cofree, Mono Epi, Right Left
 
-/-- An Eilenberg-Moore algebra for a monad `T`.
-cf Definition 5.2.3 in [Riehl][riehl2017]. -/
+/--
+An Eilenberg-Moore algebra for a monad `T`.
+cf Definition 5.2.3 in \[Riehl\]\[riehl2017\].
+-/
 structure Monad.Algebra (T : Monad C) : Type max u₁ v₁ where
   /-- The underlying object associated to an algebra. -/
   A : C
@@ -127,8 +133,10 @@ theorem id_f (A : Algebra T) : (𝟙 A : A ⟶ A).f = 𝟙 A.A :=
 theorem comp_f {A A' A'' : Algebra T} (f : A ⟶ A') (g : A' ⟶ A'') : (f ≫ g).f = f.f ≫ g.f :=
   rfl
 
-/-- The category of Eilenberg-Moore algebras for a monad.
-cf Definition 5.2.4 in [Riehl][riehl2017]. -/
+/--
+The category of Eilenberg-Moore algebras for a monad.
+cf Definition 5.2.4 in \[Riehl\]\[riehl2017\].
+-/
 @[to_dual /-- The category of Eilenberg-Moore coalgebras for a comonad. -/]
 instance eilenbergMoore : Category (Algebra T) where
 
@@ -194,8 +202,10 @@ instance [Inhabited C] : Inhabited (Algebra T) :=
 
 -- The other two `simps` projection lemmas can be derived from these two, so `simp_nf` complains if
 -- those are added too
-/-- The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
-  a monad. cf Lemma 5.2.8 of [Riehl][riehl2017]. -/
+/--
+The adjunction between the free and forgetful constructions for Eilenberg-Moore algebras for
+a monad. cf Lemma 5.2.8 of \[Riehl\]\[riehl2017\].
+-/
 @[simps! unit counit]
 def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv

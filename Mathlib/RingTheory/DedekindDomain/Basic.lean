@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.Polynomial.RationalRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dedekind rings and domains
 
@@ -17,10 +20,10 @@ as a Noetherian integrally closed commutative ring (domain) of Krull dimension a
 
 ## Main definitions
 
-- `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
+* `IsDedekindRing` defines a Dedekind ring as a commutative ring that is
   Noetherian, integrally closed in its field of fractions and has Krull dimension at most one.
   `isDedekindRing_iff` shows that this does not depend on the choice of field of fractions.
-- `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
+* `IsDedekindDomain` defines a Dedekind domain as a Dedekind ring that is a domain.
 
 ## Implementation notes
 
@@ -37,9 +40,9 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 
@@ -112,7 +115,8 @@ instance (priority := low) {R : Type*} [CommRing R] [Ring.DimensionLEOne R] : Ri
 
 end Ring.DimensionLEOne
 
-/-- A Dedekind ring is a commutative ring that is Noetherian, integrally closed, and
+/--
+A Dedekind ring is a commutative ring that is Noetherian, integrally closed, and
 has Krull dimension at most one.
 
 This is exactly `IsDedekindDomain` minus the `IsDomain` hypothesis.
@@ -134,10 +138,11 @@ theorem isDedekindRing_iff (K : Type*) [CommRing K] [Algebra A K] [IsFractionRin
              fun {_} => (isIntegrallyClosed_iff K).mp inferInstance⟩,
    fun ⟨hr, hd, hi⟩ => { hr, hd, (isIntegrallyClosed_iff K).mpr @hi with }⟩
 
-/-- A Dedekind domain is an integral domain that is Noetherian, integrally closed, and
+/--
+A Dedekind domain is an integral domain that is Noetherian, integrally closed, and
 has Krull dimension at most one.
 
-This is definition 3.2 of [Neukirch1992].
+This is definition 3.2 of \[Neukirch1992\].
 
 This is exactly `IsDedekindRing` plus the `IsDomain` hypothesis.
 
@@ -145,13 +150,15 @@ The integral closure condition is independent of the choice of field of fraction
 use `isDedekindDomain_iff` to prove `IsDedekindDomain` for a given `fraction_map`.
 
 See also `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` and
-`isDedekindDomain_iff_mul_inv_cancel`. -/
+`isDedekindDomain_iff_mul_inv_cancel`.
+-/
 class IsDedekindDomain : Prop
   extends IsDomain A, IsDedekindRing A
 
 attribute [instance 90] IsDedekindDomain.toIsDomain
 
-/-- Make a Dedekind domain from a Dedekind ring given that it is a domain.
+/--
+Make a Dedekind domain from a Dedekind ring given that it is a domain.
 
 `IsDedekindRing` and `IsDedekindDomain` form a cycle in the typeclass hierarchy:
 `IsDedekindRing R + IsDomain R` imply `IsDedekindDomain R`, which implies `IsDedekindRing R`.

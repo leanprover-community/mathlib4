@@ -9,7 +9,11 @@ public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
-/-! # ℤ[√d]
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# ℤ\[√d\]
 
 The ring of integers adjoined with a square root of `d : ℤ`.
 
@@ -18,7 +22,6 @@ as well as an integral domain.
 
 We provide the universal property, that ring homomorphisms `ℤ√d →+* R` correspond
 to choices of square roots of `d` in `R`.
-
 -/
 
 @[expose] public section

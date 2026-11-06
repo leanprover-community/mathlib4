@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.Restrict
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology of affine subspaces.
 
@@ -17,7 +20,6 @@ affine map.
 ## Main definitions
 
 * `AffineSubspace.subtypeA` is `AffineSubspace.subtype` as a `ContinuousAffineMap`.
-
 -/
 
 @[expose] public section
@@ -58,10 +60,12 @@ namespace ContinuousAffineEquiv
 variable {R V P W Q : Type*} [Ring R] [AddCommGroup V] [Module R V] [TopologicalSpace P]
   [AddTorsor V P] [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 
-/-- A continuous affine equivalence restricts to a continuous affine equivalence between an affine
+/--
+A continuous affine equivalence restricts to a continuous affine equivalence between an affine
 subspace and its image.
 
-This is the continuous affine version of `AffineEquiv.affineSubspaceMap`. -/
+This is the continuous affine version of `AffineEquiv.affineSubspaceMap`.
+-/
 noncomputable def affineSubspaceMap (e : P ≃ᴬ[R] Q) (s : AffineSubspace R P) [Nonempty s] :
     s ≃ᴬ[R] s.map e.toAffineMap :=
   { e.toAffineEquiv.affineSubspaceMap s with

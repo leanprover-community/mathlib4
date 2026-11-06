@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.Limits.Types.Multicoequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Colimits involving subcomplexes of a simplicial set
 
@@ -19,7 +22,6 @@ the `U i` along the `V i j`.
 
 Similarly, bicartesian squares in the lattice `Subcomplex X` give pushout
 squares in the category of simplicial sets.
-
 -/
 
 @[expose] public section

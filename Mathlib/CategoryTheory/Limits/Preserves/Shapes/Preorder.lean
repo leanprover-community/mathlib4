@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 public import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of well order continuous functors
 
@@ -16,7 +19,6 @@ we define a type class `PreservesWellOrderContinuousOfShape J G`
 saying that `G` preserves colimits of shape `Set.Iio j`
 for any limit element `j : J`. It follows that if
 `F : J ⥤ C` is well order continuous, then so is `F ⋙ G`.
-
 -/
 
 public section

@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 import Mathlib.Analysis.MeanInequalitiesPow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ℓp space
 
@@ -53,7 +56,6 @@ say that `‖-f‖ = ‖f‖`, instead of the non-working `f.norm_neg`.
 * More versions of Hölder's inequality (for example: the case `p = 1`, `q = ∞`; a version for normed
   rings which has `‖∑' i, f i * g i‖` rather than `∑' i, ‖f i‖ * g i‖` on the RHS; a version for
   three exponents satisfying `1 / r = 1 / p + 1 / q`)
-
 -/
 
 @[expose] public section
@@ -65,15 +67,17 @@ open scoped NNReal ENNReal Function
 variable {𝕜 𝕜' : Type*} {α : Type*} {E : α → Type*} {p q : ℝ≥0∞} [∀ i, NormedAddCommGroup (E i)]
 
 /-!
-### `Memℓp` predicate
-
+# `Memℓp` predicate
 -/
 
 
-/-- The property that `f : ∀ i : α, E i`
+/--
+The property that `f : ∀ i : α, E i`
+
 * is finitely supported, if `p = 0`, or
 * admits an upper bound for `Set.range (fun i ↦ ‖f i‖)`, if `p = ∞`, or
-* has the series `∑' i, ‖f i‖ ^ p` be summable, if `0 < p < ∞`. -/
+* has the series `∑' i, ‖f i‖ ^ p` be summable, if `0 < p < ∞`.
+-/
 def Memℓp (f : ∀ i, E i) (p : ℝ≥0∞) : Prop :=
   if p = 0 then Set.Finite { i | f i ≠ 0 }
   else if p = ∞ then BddAbove (Set.range fun i => ‖f i‖)
@@ -325,19 +329,21 @@ end IsBoundedSMul
 end Memℓp
 
 /-!
-### lp space
+# lp space
 
 The space of elements of `∀ i, E i` satisfying the predicate `Memℓp`.
 -/
 
 
-/-- We define `PreLp E` to be a type synonym for `∀ i, E i` which, importantly, does not inherit
+/--
+We define `PreLp E` to be a type synonym for `∀ i, E i` which, importantly, does not inherit
 the `pi` topology on `∀ i, E i` (otherwise this topology would descend to `lp E p` and conflict
 with the normed group topology we will later equip it with.)
 
 We choose to deal with this issue by making a type synonym for `∀ i, E i` rather than for the `lp`
 subgroup itself, because this allows all the spaces `lp E p` (for varying `p`) to be subgroups of
-the same ambient group, which permits lemma statements like `lp.monotone` (below). -/
+the same ambient group, which permits lemma statements like `lp.monotone` (below).
+-/
 @[nolint unusedArguments]
 def PreLp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] : Type _ :=
   ∀ i, E i
@@ -360,12 +366,14 @@ instance unique [IsEmpty α] : Unique (PreLp E) :=
 
 end PreLp
 
-/-- **The (little) ℓᵖ space**: The additive subgroup of a type synonym of `Π i, E i`, which consists
+/--
+*The (little) ℓᵖ space*: The additive subgroup of a type synonym of `Π i, E i`, which consists
 of those functions `f` such that `Memℓp f p` (i.e., `f` has finite `p`-norm).
 
 The non-dependent version comes equipped with the notation `ℓ^p(ι, E)` in the `lp` namespace. When
 `p` takes the values `0`, `1` or `2`, the notation `ℓ⁰(ι, E)`, `ℓ¹(ι, E)`, `ℓ²(ι, E)` is also
-available. -/
+available.
+-/
 def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp
@@ -377,8 +385,10 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 be used outside of the context of `ℓ^p(ι, E)` spaces, and one should instead prefer `Finsupp`
 in other situations. -/
 scoped[lp] notation "ℓ⁰(" ι ", " E ")" => lp (fun _ : ι ↦ E) 0
-/-- `ℓ¹(ι, E)` is the space of summable functions `ι → E`. To be more precise, it is the space
-of functions whose *norms* are summable, but when `E` is complete these coincide. -/
+/--
+`ℓ¹(ι, E)` is the space of summable functions `ι → E`. To be more precise, it is the space
+of functions whose _norms_ are summable, but when `E` is complete these coincide.
+-/
 scoped[lp] notation "ℓ¹(" ι ", " E ")" => lp (fun _ : ι ↦ E) 1
 /-- `ℓ²(ι, E)` is the space of square-summable functions `ι → E`. When `E := 𝕜`, with `RCLike 𝕜`,
 this is a Hilbert space. -/
@@ -1190,9 +1200,11 @@ protected theorem hasSum_single [Fact (1 ≤ p)] (hp : p ≠ ⊤) (f : lp E p) :
     simp only [Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
   exact this ▸ hs
 
-/-- Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
+/--
+Two continuous additive maps from `lp E p` agree if they agree on `lp.single`.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousAddMonoidHom
     {F : Type*} [AddCommMonoid F] [TopologicalSpace F] [T2Space F]
@@ -1206,9 +1218,11 @@ theorem ext_continuousAddMonoidHom
   congr! 2 with i
   congrm $(h i) (x i)
 
-/-- Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
+/--
+Two continuous linear maps from `lp E p` agree if they agree on `lp.single`.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[local ext] -- not globally `ext` due to `hp`
 theorem ext_continuousLinearMap
     {F : Type*} [AddCommMonoid F] [Module 𝕜 F] [TopologicalSpace F] [T2Space F]

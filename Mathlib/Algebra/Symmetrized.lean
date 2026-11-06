@@ -7,14 +7,15 @@ module
 
 public import Mathlib.Algebra.Jordan.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetrized algebra
 
 A commutative multiplication on a real or complex space can be constructed from any multiplication
 by "symmetrization" i.e.
-$$
-a \circ b = \frac{1}{2}(ab + ba)
-$$
+$$`  a \circ b = \frac{1}{2}(ab + ba)  `
 
 We provide the symmetrized version of a type `α` as `SymAlg α`, with notation `αˢʸᵐ`.
 
@@ -29,7 +30,7 @@ See `SymmetricAlgebra` instead if you are looking for the symmetric algebra of a
 
 ## References
 
-* [Hanche-Olsen and Størmer, Jordan Operator Algebras][hancheolsenstormer1984]
+* ‍\[Hanche-Olsen and Størmer, Jordan Operator Algebras\]\[hancheolsenstormer1984\]
 -/
 
 @[expose] public section

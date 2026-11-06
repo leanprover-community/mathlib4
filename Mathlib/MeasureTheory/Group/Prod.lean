@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Group.Measure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure theory in the product of groups
 
@@ -14,22 +17,24 @@ In this file we show properties about measure theory in products of measurable g
 and properties of iterated integrals in measurable groups.
 
 These lemmas show the uniqueness of left invariant measures on measurable groups, up to
-scaling. In this file we follow the proof and refer to the book *Measure Theory* by Paul Halmos.
+scaling. In this file we follow the proof and refer to the book _Measure Theory_ by Paul Halmos.
 
 The idea of the proof is to use the translation invariance of measures to prove `μ(t) = c * μ(s)`
 for two sets `s` and `t`, where `c` is a constant that does not depend on `μ`. Let `e` and `f` be
 the characteristic functions of `s` and `t`.
 Assume that `μ` and `ν` are left-invariant measures. Then the map `(x, y) ↦ (y * x, x⁻¹)`
 preserves the measure `μ × ν`, which means that
+
 ```
   ∫ x, ∫ y, h x y ∂ν ∂μ = ∫ x, ∫ y, h (y * x) x⁻¹ ∂ν ∂μ
 ```
+
 If we apply this to `h x y := e x * f y⁻¹ / ν ((fun h ↦ h * y⁻¹) ⁻¹' s)`, we can rewrite the RHS to
 `μ(t)`, and the LHS to `c * μ(s)`, where `c = c(ν)` does not depend on `μ`.
 Applying this to `μ` and to `ν` gives `μ (t) / μ (s) = ν (t) / ν (s)`, which is the uniqueness up to
 scalar multiplication.
 
-The proof in [Halmos] seems to contain an omission in §60 Th. A, see
+The proof in \[Halmos\] seems to contain an omission in §60 Th. A, see
 `MeasureTheory.measure_lintegral_div_measure`.
 
 Note that this theory only applies in measurable groups, i.e., when multiplication and inversion
@@ -75,9 +80,11 @@ open Measure
 
 section LeftInvariant
 
-/-- The multiplicative shear mapping `(x, y) ↦ (x, xy)` preserves the measure `μ × ν`.
-This condition is part of the definition of a measurable group in [Halmos, §59].
-There, the map in this lemma is called `S`. -/
+/--
+The multiplicative shear mapping `(x, y) ↦ (x, xy)` preserves the measure `μ × ν`.
+This condition is part of the definition of a measurable group in \[Halmos, §59\].
+There, the map in this lemma is called `S`.
+-/
 @[to_additive measurePreserving_prod_add
 /-- The shear mapping `(x, y) ↦ (x, x + y)` preserves the measure `μ × ν`. -/]
 theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
@@ -85,9 +92,11 @@ theorem measurePreserving_prod_mul [IsMulLeftInvariant ν] :
   (MeasurePreserving.id μ).skew_product measurable_mul <|
     Filter.Eventually.of_forall <| map_mul_left_eq_self ν
 
-/-- The map `(x, y) ↦ (y, yx)` sends the measure `μ × ν` to `ν × μ`.
-This is the map `SR` in [Halmos, §59].
-`S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
+/--
+The map `(x, y) ↦ (y, yx)` sends the measure `μ × ν` to `ν × μ`.
+This is the map `SR` in \[Halmos, §59\].
+`S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`.
+-/
 @[to_additive measurePreserving_prod_add_swap
 /-- The map `(x, y) ↦ (y, y + x)` sends the measure `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_mul_swap [IsMulLeftInvariant μ] :
@@ -107,9 +116,11 @@ theorem measurable_measure_mul_right (hs : MeasurableSet s) :
 
 variable [MeasurableInv G]
 
-/-- The map `(x, y) ↦ (x, x⁻¹y)` is measure-preserving.
-This is the function `S⁻¹` in [Halmos, §59],
-where `S` is the map `(x, y) ↦ (x, xy)`. -/
+/--
+The map `(x, y) ↦ (x, x⁻¹y)` is measure-preserving.
+This is the function `S⁻¹` in \[Halmos, §59\],
+where `S` is the map `(x, y) ↦ (x, xy)`.
+-/
 @[to_additive measurePreserving_prod_neg_add
 /-- The map `(x, y) ↦ (x, - x + y)` is measure-preserving. -/]
 theorem measurePreserving_prod_inv_mul [IsMulLeftInvariant ν] :
@@ -118,18 +129,22 @@ theorem measurePreserving_prod_inv_mul [IsMulLeftInvariant ν] :
 
 variable [IsMulLeftInvariant μ]
 
-/-- The map `(x, y) ↦ (y, y⁻¹x)` sends `μ × ν` to `ν × μ`.
-This is the function `S⁻¹R` in [Halmos, §59],
-where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
+/--
+The map `(x, y) ↦ (y, y⁻¹x)` sends `μ × ν` to `ν × μ`.
+This is the function `S⁻¹R` in \[Halmos, §59\],
+where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`.
+-/
 @[to_additive measurePreserving_prod_neg_add_swap
 /-- The map `(x, y) ↦ (y, - y + x)` sends `μ × ν` to `ν × μ`. -/]
 theorem measurePreserving_prod_inv_mul_swap :
     MeasurePreserving (fun z : G × G => (z.2, z.2⁻¹ * z.1)) (μ.prod ν) (ν.prod μ) :=
   (measurePreserving_prod_inv_mul ν μ).comp measurePreserving_swap
 
-/-- The map `(x, y) ↦ (yx, x⁻¹)` is measure-preserving.
-This is the function `S⁻¹RSR` in [Halmos, §59],
-where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`. -/
+/--
+The map `(x, y) ↦ (yx, x⁻¹)` is measure-preserving.
+This is the function `S⁻¹RSR` in \[Halmos, §59\],
+where `S` is the map `(x, y) ↦ (x, xy)` and `R` is `Prod.swap`.
+-/
 @[to_additive measurePreserving_add_prod_neg
 /-- The map `(x, y) ↦ (y + x, - x)` is measure-preserving. -/]
 theorem measurePreserving_mul_prod_inv [IsMulLeftInvariant ν] :
@@ -219,8 +234,12 @@ theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) 
   conv_lhs => rw [← map_mul_left_eq_self μ g]
   exact (absolutelyContinuous_inv μ).map (measurable_const_mul g)
 
-/-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/
-@[to_additive /-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/]
+/--
+This is the computation performed in the proof of \[Halmos, §60 Th. A\].
+-/
+@[to_additive /--
+              This is the computation performed in the proof of \[Halmos, §60 Th. A\].
+              -/]
 theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) (f : G → ℝ≥0∞)
     (hf : Measurable f) : (μ s * ∫⁻ y, f y ∂ν) = ∫⁻ x, ν ((fun z => z * x) ⁻¹' s) * f x⁻¹ ∂μ := by
   rw [← setLIntegral_one, ← lintegral_indicator sm,
@@ -280,24 +299,28 @@ theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero (h2s : ν' s ≠ 0) (h3s
   intro hν
   rw [hν, zero_apply]
 
-/-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A].
-  Note that if `f` is the characteristic function of a measurable set `t` this states that
-  `μ t = c * μ s` for a constant `c` that does not depend on `μ`.
+/--
+A technical lemma relating two different measures. This is basically \[Halmos, §60 Th. A\].
+Note that if `f` is the characteristic function of a measurable set `t` this states that
+`μ t = c * μ s` for a constant `c` that does not depend on `μ`.
 
-  Note: There is a gap in the last step of the proof in [Halmos].
-  In the last line, the equality `g(x⁻¹)ν(sx⁻¹) = f(x)` holds if we can prove that
-  `0 < ν(sx⁻¹) < ∞`. The first inequality follows from §59, Th. D, but the second inequality is
-  not justified. We prove this inequality for almost all `x` in
-  `MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`. -/
+Note: There is a gap in the last step of the proof in \[Halmos\].
+In the last line, the equality `g(x⁻¹)ν(sx⁻¹) = f(x)` holds if we can prove that
+`0 < ν(sx⁻¹) < ∞`. The first inequality follows from §59, Th. D, but the second inequality is
+not justified. We prove this inequality for almost all `x` in
+`MeasureTheory.ae_measure_preimage_mul_right_lt_top_of_ne_zero`.
+-/
 @[to_additive
-/-- A technical lemma relating two different measures. This is basically [Halmos, §60 Th. A]. Note
+/--
+A technical lemma relating two different measures. This is basically \[Halmos, §60 Th. A\]. Note
 that if `f` is the characteristic function of a measurable set `t` this states that `μ t = c * μ s`
 for a constant `c` that does not depend on `μ`.
 
-Note: There is a gap in the last step of the proof in [Halmos]. In the last line, the equality
+Note: There is a gap in the last step of the proof in \[Halmos\]. In the last line, the equality
 `g(-x) + ν(s - x) = f(x)` holds if we can prove that `0 < ν(s - x) < ∞`. The first inequality
 follows from §59, Th. D, but the second inequality is not justified. We prove this inequality for
-almost all `x` in `MeasureTheory.ae_measure_preimage_add_right_lt_top_of_ne_zero`. -/]
+almost all `x` in `MeasureTheory.ae_measure_preimage_add_right_lt_top_of_ne_zero`.
+-/]
 theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞)
     (f : G → ℝ≥0∞) (hf : Measurable f) :
     (μ' s * ∫⁻ y, f y⁻¹ / ν' ((· * y⁻¹) ⁻¹' s) ∂ν') = ∫⁻ x, f x ∂μ' := by
@@ -460,21 +483,29 @@ theorem quasiMeasurePreserving_div [IsMulLeftInvariant μ] :
   (quasiMeasurePreserving_div_of_right_invariant μ.inv ν).mono
     ((absolutelyContinuous_inv μ).prod AbsolutelyContinuous.rfl) (inv_absolutelyContinuous μ)
 
-/-- A *left*-invariant measure is quasi-preserved by *right*-multiplication.
-This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasurePreserving`. -/
+/--
+A _left_-invariant measure is quasi-preserved by _right_-multiplication.
+This should not be confused with `(measurePreserving_mul_right μ g).quasiMeasurePreserving`.
+-/
 @[to_additive (attr := fun_prop)
-/-- A *left*-invariant measure is quasi-preserved by *right*-addition.
-This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`. -/]
+/--
+A _left_-invariant measure is quasi-preserved by _right_-addition.
+This should not be confused with `(measurePreserving_add_right μ g).quasiMeasurePreserving`.
+-/]
 theorem quasiMeasurePreserving_mul_right [IsMulLeftInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => h * g) μ μ := by
   refine ⟨measurable_mul_const g, AbsolutelyContinuous.mk fun s hs => ?_⟩
   rw [map_apply (measurable_mul_const g) hs, measure_mul_right_null]; exact id
 
-/-- A *right*-invariant measure is quasi-preserved by *left*-multiplication.
-This should not be confused with `(measurePreserving_mul_left μ g).quasiMeasurePreserving`. -/
+/--
+A _right_-invariant measure is quasi-preserved by _left_-multiplication.
+This should not be confused with `(measurePreserving_mul_left μ g).quasiMeasurePreserving`.
+-/
 @[to_additive (attr := fun_prop)
-/-- A *right*-invariant measure is quasi-preserved by *left*-addition.
-This should not be confused with `(measurePreserving_add_left μ g).quasiMeasurePreserving`. -/]
+/--
+A _right_-invariant measure is quasi-preserved by _left_-addition.
+This should not be confused with `(measurePreserving_add_left μ g).quasiMeasurePreserving`.
+-/]
 theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
     QuasiMeasurePreserving (fun h : G => g * h) μ μ := by
   have :=

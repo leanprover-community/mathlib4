@@ -10,12 +10,14 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 import Mathlib.RingTheory.FiniteType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials on a finite algebra
 
 This file proves the bound on the degree of a minimal polynomial on an algebra
 that is finite as a module.
-
 -/
 
 public section

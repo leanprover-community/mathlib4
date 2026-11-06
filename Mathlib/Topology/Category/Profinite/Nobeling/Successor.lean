@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.Topology.Category.Profinite.Nobeling.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The successor case in the induction for Nöbeling's theorem
 
@@ -15,7 +18,7 @@ Here we assume that `o` is an ordinal such that `contained C (o+1)` and `o < I`.
 corresponding to `o` is called `term I ho`, but in this informal docstring we refer to it simply as
 `o`.
 
-This section follows the proof in [scholze2019condensed] quite closely. A translation of the
+This section follows the proof in \[scholze2019condensed\] quite closely. A translation of the
 notation there is as follows:
 
 ```
@@ -28,15 +31,15 @@ The left map in the exact sequence      |`πs`
 The right map in the exact sequence     |`Linear_CC'`
 ```
 
-When comparing the proof of the successor case in Theorem 5.4 in [scholze2019condensed] with this
+When comparing the proof of the successor case in Theorem 5.4 in \[scholze2019condensed\] with this
 proof, one should read the phrase "is a basis" as "is linearly independent". Also, the short exact
-sequence in [scholze2019condensed] is only proved to be left exact here (indeed, that is enough
+sequence in \[scholze2019condensed\] is only proved to be left exact here (indeed, that is enough
 since we are only proving linear independence).
 
 This section is split into two sections. The first one, `ExactSequence` defines the left exact
 sequence mentioned in the previous paragraph (see `succ_mono` and `succ_exact`). It corresponds to
-the penultimate paragraph of the proof in [scholze2019condensed]. The second one, `GoodProducts`
-corresponds to the last paragraph in the proof in [scholze2019condensed].
+the penultimate paragraph of the proof in \[scholze2019condensed\]. The second one, `GoodProducts`
+corresponds to the last paragraph in the proof in \[scholze2019condensed\].
 
 For the overall proof outline see `Mathlib/Topology/Category/Profinite/Nobeling/Basic.lean`.
 
@@ -49,7 +52,6 @@ The main definitions in the section `GoodProducts` are as follows:
 
 * `MaxProducts`: the set of good products that contain the ordinal `o` (since we have
   `contained C (o+1)`, these all start with `o`).
-
 * `GoodProducts.sum_equiv`: the equivalence between `GoodProducts C` and the disjoint union of
   `MaxProducts C` and `GoodProducts (π C (ord I · < o))`.
 
@@ -57,10 +59,12 @@ The main definitions in the section `GoodProducts` are as follows:
 
 * The main results in the section `ExactSequence` are `succ_mono` and `succ_exact` which together
   say that the sequence given by `πs` and `Linear_CC'` is left exact:
+
   ```
                                               f                        g
   0 --→ LocallyConstant (π C (ord I · < o)) ℤ --→ LocallyConstant C ℤ --→ LocallyConstant C' ℤ
   ```
+
   where `f` is `πs` and `g` is `Linear_CC'`.
 
 The main results in the section `GoodProducts` are as follows:
@@ -68,13 +72,12 @@ The main results in the section `GoodProducts` are as follows:
 * `Products.max_eq_eval` says that the linear map on the right in the exact sequence, i.e.
   `Linear_CC'`, takes the evaluation of a term of `MaxProducts` to the evaluation of the
   corresponding list with the leading `o` removed.
-
 * `GoodProducts.maxTail_isGood` says that removing the leading `o` from a term of `MaxProducts C`
   yields a list which `isGood` with respect to `C'`.
 
 ## References
 
-- [scholze2019condensed], Theorem 5.4.
+* ‍\[scholze2019condensed\], Theorem 5.4.
 -/
 
 @[expose] public section
@@ -349,7 +352,8 @@ theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   ext ⟨_, _⟩ <;> [rfl; rfl]
 
-/-- Let
+/--
+Let
 
 `N := LocallyConstant (π C (ord I · < o)) ℤ`
 
@@ -366,6 +370,7 @@ theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho).toFun =
 Then `SumEval C ho` is the map `u` in the diagram below. It is linearly independent if and only if
 `GoodProducts.eval C` is, see `linearIndependent_iff_sum`. The top row is the exact sequence given
 by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.square_commutes`.
+
 ```
 0 --→ N --→ M --→  P
       ↑     ↑      ↑

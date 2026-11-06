@@ -10,12 +10,16 @@ public import Mathlib.RingTheory.Coalgebra.TensorProduct
 public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.Tactic.SuppressCompilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convolution product on linear maps from a coalgebra to an algebra
 
 This file constructs the ring and algebra structure on linear maps `C → A` where `C` is a
 coalgebra and `A` an algebra, where multiplication is given by
 `(f * g)(x) = ∑ f x₍₁₎ * g x₍₂₎` in Sweedler notation or
+
 ```
          |
          μ
@@ -25,6 +29,7 @@ f * g = f g
          δ
          |
 ```
+
 diagrammatically, where `μ` stands for multiplication and `δ` for comultiplication.
 
 ## Implementation notes

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Logic.Function.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semiconjugate and commuting maps
 
@@ -51,21 +54,25 @@ theorem comp_right (h : Semiconj f ga gb) (h' : Semiconj f ga' gb') :
     Semiconj f (ga ∘ ga') (gb ∘ gb') := fun x ↦ by
   simp only [comp_apply, h.eq, h'.eq]
 
-/-- If `fab : α → β` semiconjugates `ga` to `gb` and `fbc : β → γ` semiconjugates `gb` to `gc`,
+/--
+If `fab : α → β` semiconjugates `ga` to `gb` and `fbc : β → γ` semiconjugates `gb` to `gc`,
 then `fbc ∘ fab` semiconjugates `ga` to `gc`.
 
-See also `Function.Semiconj.comp_left` for a version with reversed arguments. -/
+See also `Function.Semiconj.comp_left` for a version with reversed arguments.
+-/
 protected theorem trans (hab : Semiconj fab ga gb) (hbc : Semiconj fbc gb gc) :
     Semiconj (fbc ∘ fab) ga gc := fun x ↦ by
   simp only [comp_apply, hab.eq, hbc.eq]
 
-/-- If `fbc : β → γ` semiconjugates `gb` to `gc` and `fab : α → β` semiconjugates `ga` to `gb`,
+/--
+If `fbc : β → γ` semiconjugates `gb` to `gc` and `fab : α → β` semiconjugates `ga` to `gb`,
 then `fbc ∘ fab` semiconjugates `ga` to `gc`.
 
 See also `Function.Semiconj.trans` for a version with reversed arguments.
 
-**Backward compatibility note:** before 2024-01-13,
-this lemma used to have the same order of arguments that `Function.Semiconj.trans` has now. -/
+*Backward compatibility note:* before 2024-01-13,
+this lemma used to have the same order of arguments that `Function.Semiconj.trans` has now.
+-/
 theorem comp_left (hbc : Semiconj fbc gb gc) (hab : Semiconj fab ga gb) :
     Semiconj (fbc ∘ fab) ga gc :=
   hab.trans hbc

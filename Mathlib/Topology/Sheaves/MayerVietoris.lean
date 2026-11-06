@@ -8,18 +8,21 @@ module
 public import Mathlib.CategoryTheory.Sites.MayerVietorisSquare
 public import Mathlib.CategoryTheory.Sites.Spaces
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mayer-Vietoris squares
 
 Given two open subsets `U` and `V` of a topological space `T`,
 we construct the associated Mayer-Vietoris square:
+
 ```
 U ⊓ V --->   U
   |          |
   v          v
   V   ---> U ⊔ V
 ```
-
 -/
 
 @[expose] public section

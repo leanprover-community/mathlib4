@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Positive
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous (star-)algebra equivalences between continuous endomorphisms are (isometrically) inner
 
@@ -16,8 +19,9 @@ This file shows that continuous (star-)algebra equivalences between continuous e
 See `Mathlib/LinearAlgebra/GeneralLinearGroup/AlgEquiv.lean` for the non-continuous version.
 The proof follows the same idea as the non-continuous version.
 
-### TODO:
-- when `V = W`, we can state that the group homomorphism
+## TODO:
+
+* when `V = W`, we can state that the group homomorphism
   `(V →L[𝕜] V)ˣ →* ((V →L[𝕜] V) ≃A[𝕜] (V →L[𝕜] V))` is surjective,
   see `Module.End.mulSemiringActionToAlgEquiv_conjAct_surjective` for the non-continuous
   version of this.
@@ -149,11 +153,13 @@ end auxiliaryDefs
 open ComplexOrder
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The ⋆-algebra equivalence version of
+/--
+The ⋆-algebra equivalence version of
 `ContinuousAlgEquiv.eq_continuousLinearEquivConjContinuousAlgEquiv`.
 
 TODO: remove the hypothesis `Continuous f`, as star-algebra equivalences between endomorphisms are
-automatically continuous. -/
+automatically continuous.
+-/
 public theorem StarAlgEquiv.eq_linearIsometryEquivConjStarAlgEquiv
     (f : (V →L[𝕜] V) ≃⋆ₐ[𝕜] (W →L[𝕜] W)) (hf : Continuous f) :
     ∃ U : V ≃ₗᵢ[𝕜] W, f = U.conjStarAlgEquiv := by

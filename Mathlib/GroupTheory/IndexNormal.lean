@@ -11,16 +11,17 @@ public import Mathlib.Order.Atoms
 
 import Mathlib.Data.Finite.Perm
 
-/-! # Subgroups of small index are normal
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Subgroups of small index are normal
 
 * `Subgroup.normal_of_index_eq_smallest_prime_factor`: in a finite group `G`,
   a subgroup of index equal to the smallest prime factor of `Nat.card G` is normal.
-
 * `Subgroup.normal_of_index_two`: in a group `G`, a subgroup of index 2 is normal
   (This does not require `G` to be finite.)
-
 * `Subgroup.isCoatom_of_index_prime`: a subgroup of prime index is maximal.
-
 -/
 
 public section
@@ -54,9 +55,11 @@ theorem normal_of_index_eq_one (hH : H.index = 1) : H.Normal := by
 theorem normal_of_index_eq_two (hH : H.index = 2) : H.Normal where
   conj_mem x hxH g := by simp_rw [mul_mem_iff_of_index_two hH, hxH, iff_true, inv_mem_iff]
 
-/-- A subgroup of a finite group whose index is the smallest prime factor is normal.
+/--
+A subgroup of a finite group whose index is the smallest prime factor is normal.
 
-Note : if `G` is infinite, then `Nat.card G = 0` and `(Nat.card G).minFac = 2` -/
+Note : if `G` is infinite, then `Nat.card G = 0` and `(Nat.card G).minFac = 2`
+-/
 theorem normal_of_index_eq_minFac_card (hHp : H.index = (Nat.card G).minFac) :
     H.Normal := by
   by_cases hG0 : Nat.card G = 0

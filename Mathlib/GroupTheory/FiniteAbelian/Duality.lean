@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.FiniteAbelian.Basic
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Duality for finite abelian groups
 
@@ -15,6 +18,7 @@ Let `G` be a finite abelian group.
 
 For `M` a commutative monoid that has enough `n`th roots of unity, where `n` is the exponent of `G`,
 the main results in this file are:
+
 * `CommGroup.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: Homomorphisms `G →* Mˣ` separate
   elements of `G`.
 * `CommGroup.monoidHom_mulEquiv_self_of_hasEnoughRootsOfUnity`: `G` is isomorphic to `G →* Mˣ`.

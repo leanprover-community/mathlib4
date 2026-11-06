@@ -13,13 +13,16 @@ public import Mathlib.RingTheory.OreLocalization.OreSet
 
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank of localization
 
 ## Main statements
 
-- `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
-- `rank_quotient_add_rank_of_isDomain`: The **rank-nullity theorem** for commutative domains.
+* `IsLocalizedModule.lift_rank_eq`: `rank_Rₚ Mₚ = rank R M`.
+* `rank_quotient_add_rank_of_isDomain`: The *rank-nullity theorem* for commutative domains.
 -/
 
 public section
@@ -98,19 +101,23 @@ section
 
 variable (R N) [IsFractionRing R S]
 
-/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank S N`
+/--
+Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the rank `rank S N`
 of the right part of the tower equals the rank `rank R N` of the whole tower.
 
-See `IsFractionRing.finrank_right_eq` for the finrank version. -/
+See `IsFractionRing.finrank_right_eq` for the finrank version.
+-/
 theorem IsFractionRing.rank_right_eq : Module.rank S N = Module.rank R N :=
   IsLocalization.rank_eq S R⁰ le_rfl
 
-/-- Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
+/--
+Given `IsScalarTower R S N`, if `S` is the fraction ring of `R`, then the finrank `finrank S N`
 of the right part of the tower equals the finrank `finrank R N` of the whole tower.
 
 See `IsFractionRing.rank_right_eq` for the rank version.
 See `IsFractionRing.finrank_left_eq` for the left version.
-See `IsFractionRing.finrank_eq` for the simultaneous version. -/
+See `IsFractionRing.finrank_eq` for the simultaneous version.
+-/
 theorem IsFractionRing.finrank_right_eq : finrank S N = finrank R N :=
   IsLocalization.finrank_eq S R⁰ le_rfl
 
@@ -118,11 +125,13 @@ end
 
 variable (R) in
 open IsLocalization in
-/-- Given `IsScalarTower R S A`, if `A` is the fraction ring of `S`, then the finrank `finrank R S`
+/--
+Given `IsScalarTower R S A`, if `A` is the fraction ring of `S`, then the finrank `finrank R S`
 of the left part of the tower equals the finrank `finrank R A` of the whole tower.
 
 See `IsFractionRing.finrank_right_eq` for the right version.
-See `IsFractionRing.finrank_eq` for the simultaneous version. -/
+See `IsFractionRing.finrank_eq` for the simultaneous version.
+-/
 theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [Algebra R A]
     [IsScalarTower R S A] [IsFractionRing S A] : Module.finrank R S = Module.finrank R A := by
   nontriviality R
@@ -139,11 +148,13 @@ theorem IsFractionRing.finrank_left_eq (A : Type*) [CommRing A] [Algebra S A] [A
     exact ⟨finsetIntegerMultiple S⁰ s, card_finsetIntegerMultiple S⁰ s,
       linearIndepOn_finsetIntegerMultiple S⁰ hs⟩
 
-/-- If `K` is the fraction ring of `A` and `L` is the fraction ring of `B`, then the finrank
+/--
+If `K` is the fraction ring of `A` and `L` is the fraction ring of `B`, then the finrank
 `finrank K L` of the fraction rings equals the finrank `finrank A B` of the base rings.
 
 See `IsFractionRing.finrank_left_eq` and `IsFractionRing.finrank_right_eq` for one-sided versions.
-See `Algebra.IsAlgebraic.rank_of_isFractionRing` for a rank version with additional assumptions. -/
+See `Algebra.IsAlgebraic.rank_of_isFractionRing` for a rank version with additional assumptions.
+-/
 protected theorem IsFractionRing.finrank_eq (A K B L : Type*)
     [CommRing A] [CommRing K] [CommRing B] [CommRing L] [Algebra A B] [Module K L]
     [Algebra A K] [Algebra B L] [Algebra A L] [IsScalarTower A K L] [IsScalarTower A B L]
@@ -266,8 +277,10 @@ section Ring
 
 variable {R} [Ring R] [IsDomain R]
 
-/-- A domain that is not (left) Ore is of infinite rank.
-See [cohn_1995] Proposition 1.3.6 -/
+/--
+A domain that is not (left) Ore is of infinite rank.
+See \[cohn\_1995\] Proposition 1.3.6
+-/
 lemma aleph0_le_rank_of_isEmpty_oreSet (hS : IsEmpty (OreLocalization.OreSet R⁰)) :
     ℵ₀ ≤ Module.rank R R := by
   rw [← not_nonempty_iff, OreLocalization.nonempty_oreSet_iff_of_noZeroDivisors] at hS

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Inseparable
 public import Mathlib.Topology.Piecewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separation properties of topological spaces
 
@@ -25,7 +28,7 @@ conditions, see the file `Mathlib/Topology/Separation/Hausdorff.lean`.
   `hasSeparatingCovers_iff_separatedNhds` to witness when two `Set`s have `SeparatedNhds`.
 * `T0Space`: A T₀/Kolmogorov space is a space where, for every two points `x ≠ y`,
   there is an open set that contains one, but not the other.
-* `R0Space`: An R₀ space (sometimes called a *symmetric space*) is a topological space
+* `R0Space`: An R₀ space (sometimes called a _symmetric space_) is a topological space
   such that the `Specializes` relation is symmetric.
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
@@ -53,8 +56,8 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Separation_axiom>
-* [Willard's *General Topology*][zbMATH02107988]
+* [https://en.wikipedia.org/wiki/Separation\_axiom](https://en.wikipedia.org/wiki/Separation_axiom)
+* ‍\[Willard's _General Topology_\]\[zbMATH02107988\]
 -/
 
 @[expose] public section
@@ -271,10 +274,12 @@ theorem nontrivial_iff_nontrivialTopology [T0Space X] : Nontrivial X ↔ Nontriv
   rw [← not_subsingleton_iff_nontrivial, ← not_indiscrete_iff, not_iff_not]
   exact subsingleton_iff_indiscreteTopology
 
-/-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
+/--
+A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
 In other words, given two points `x y : X`,
-if every neighborhood of `y` contains `x`, then every neighborhood of `x` contains `y`. -/
+if every neighborhood of `y` contains `x`, then every neighborhood of `x` contains `y`.
+-/
 @[mk_iff]
 class R0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- In an R₀ space, the `Specializes` relation is symmetric. -/
@@ -798,8 +803,10 @@ theorem ContinuousWithinAt.eqOn_const_closure [TopologicalSpace Y] [T1Space Y]
   intro x hx
   apply ContinuousWithinAt.eq_const_of_mem_closure (h x hx) hx ht
 
-/-- To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
-`f` admits *some* limit at `x`. -/
+/--
+To prove a function to a `T1Space` is continuous at some point `x`, it suffices to prove that
+`f` admits _some_ limit at `x`.
+-/
 theorem continuousAt_of_tendsto_nhds [TopologicalSpace Y] [T1Space Y] {f : X → Y} {x : X} {y : Y}
     (h : Tendsto f (𝓝 x) (𝓝 y)) : ContinuousAt f x := by
   rwa [ContinuousAt, eq_of_tendsto_nhds h]
@@ -897,8 +904,10 @@ theorem isOpen_inter_eq_singleton_of_mem_discrete {s : Set X} (hs : IsDiscrete s
   obtain ⟨t, ht_sub, ht_open, ht_x⟩ := mem_nhds_iff.mp hU_nhds
   grind
 
-/-- For point `x` in a discrete subset `s` of a topological space, there is a set `U`
+/--
+For point `x` in a discrete subset `s` of a topological space, there is a set `U`
 such that
+
 1. `U` is a punctured neighborhood of `x` (i.e. `U ∪ {x}` is a neighbourhood of `x`),
 2. `U` is disjoint from `s`.
 -/
@@ -929,12 +938,16 @@ lemma Function.update_eventuallyEq_nhdsNE
     Function.update f a b =ᶠ[𝓝[≠] a'] f :=
   (Function.update_eventuallyEq_cofinite f a b).filter_mono (nhdsNE_le_cofinite a')
 
-/-! ### R₁ (preregular) spaces -/
+/-!
+# R₁ (preregular) spaces
+-/
 
 section R1Space
 
-/-- A topological space is called a *preregular* (a.k.a. R₁) space,
-if any two topologically distinguishable points have disjoint neighbourhoods. -/
+/--
+A topological space is called a _preregular_ (a.k.a. R₁) space,
+if any two topologically distinguishable points have disjoint neighbourhoods.
+-/
 @[mk_iff r1Space_iff_specializes_or_disjoint_nhds]
 class R1Space (X : Type*) [TopologicalSpace X] : Prop where
   specializes_or_disjoint_nhds (x y : X) : Specializes x y ∨ Disjoint (𝓝 x) (𝓝 y)
@@ -972,9 +985,11 @@ theorem r1_separation {x y : X} (h : ¬Inseparable x y) :
   obtain ⟨u, ⟨hxu, hu⟩, v, ⟨hyv, hv⟩, huv⟩ := h
   exact ⟨u, v, hu, hv, hxu, hyv, huv⟩
 
-/-- Limits are unique up to separability.
+/--
+Limits are unique up to separability.
 
-A weaker version of `tendsto_nhds_unique` for `R1Space`. -/
+A weaker version of `tendsto_nhds_unique` for `R1Space`.
+-/
 theorem tendsto_nhds_unique_inseparable {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : Inseparable a b :=
   .of_nhds_neBot <| neBot_of_le <| le_inf ha hb
@@ -1175,7 +1190,7 @@ theorem Bornology.relativelyCompact_eq_inCompact :
   Bornology.ext _ _ Filter.coclosedCompact_eq_cocompact
 
 /-!
-### Lemmas about a weakly locally compact R₁ space
+# Lemmas about a weakly locally compact R₁ space
 
 In fact, a space with these properties is locally compact and regular.
 Some lemmas are formulated using the latter assumptions below.

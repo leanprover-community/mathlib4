@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Basis of a polynomial ring
-
 -/
 
 @[expose] public noncomputable section

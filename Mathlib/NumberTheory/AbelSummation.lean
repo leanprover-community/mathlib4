@@ -11,6 +11,9 @@ public import Mathlib.Topology.Order.IsLocallyClosed
 
 import Mathlib.MeasureTheory.Function.Floor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abel's summation formula
 
@@ -20,10 +23,8 @@ We prove several versions of Abel's summation formula.
 
 * `sum_mul_eq_sub_sub_integral_mul`: general statement of the formula for a sum between two
   (nonnegative) reals `a` and `b`.
-
 * `sum_mul_eq_sub_integral_mul`: a specialized version of `sum_mul_eq_sub_sub_integral_mul` for
   the case `a = 0`.
-
 * `sum_mul_eq_sub_integral_mul₀`: a specialized version of `sum_mul_eq_sub_integral_mul` for
   when the first coefficient of the sequence is `0`. This is useful for `ArithmeticFunction`.
 
@@ -31,17 +32,15 @@ Primed versions of the three results above are also stated for when the endpoint
 
 * `tendsto_sum_mul_atTop_nhds_one_sub_integral`: limit version of `sum_mul_eq_sub_integral_mul`
   when `a` tends to `∞`.
-
 * `tendsto_sum_mul_atTop_nhds_one_sub_integral₀`: limit version of `sum_mul_eq_sub_integral_mul₀`
   when `a` tends to `∞`.
-
 * `summable_mul_of_bigO_atTop`: let `c : ℕ → 𝕜` and `f : ℝ → 𝕜` with `𝕜 = ℝ` or `ℂ`, prove the
   summability of `n ↦ (c n) * (f n)` using Abel's formula under some `bigO` assumptions at infinity.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Abel%27s_summation_formula>
-
+* [
+  https://en.wikipedia.org/wiki/Abel%27s\_summation\_formula](https://en.wikipedia.org/wiki/Abel%27s_summation_formula)
 -/
 
 public section

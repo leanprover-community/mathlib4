@@ -9,92 +9,84 @@ public import Mathlib.LinearAlgebra.Dimension.Finite
 public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Flat.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Linearly disjoint submodules
 
 This file contains basics about linearly disjoint submodules.
 
 ## Mathematical background
 
-We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
-Let `R` be a commutative ring, `S` be an `R`-algebra (not necessarily commutative).
-Let `M` and `N` be `R`-submodules in `S` (`Submodule R S`).
+We adapt the definitions in [
+https://en.wikipedia.org/wiki/Linearly\_disjoint](https://en.wikipedia.org/wiki/Linearly_disjoint).
+Let `R` be a commutative ring, `S` be an `R`-algebra (not necessarily commutative). Let `M` and `N`
+be `R`-submodules in `S` (`Submodule R S`).
 
-- `M` and `N` are linearly disjoint (`Submodule.LinearDisjoint M N` or simply
+* `M` and `N` are linearly disjoint (`Submodule.LinearDisjoint M N` or simply
   `M.LinearDisjoint N`), if the natural `R`-linear map `M ⊗[R] N →ₗ[R] S`
   (`Submodule.mulMap M N`) induced by the multiplication in `S` is injective.
 
 The following is the first equivalent characterization of linear disjointness:
 
-- `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
+* `Submodule.LinearDisjoint.linearIndependent_left_of_flat`:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
   to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) is injective.
-
-- `Submodule.LinearDisjoint.of_basis_left`:
+* `Submodule.LinearDisjoint.of_basis_left`:
   conversely, if `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
 Dually, we have:
 
-- `Submodule.LinearDisjoint.linearIndependent_right_of_flat`:
+* `Submodule.LinearDisjoint.linearIndependent_right_of_flat`:
   if `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
   to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) is injective.
-
-- `Submodule.LinearDisjoint.of_basis_right`:
+* `Submodule.LinearDisjoint.of_basis_right`:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
 The following is the second equivalent characterization of linear disjointness:
 
-- `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
+* `Submodule.LinearDisjoint.linearIndependent_mul_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then for any family of
   `R`-linearly independent elements `{ m_i }` of `M`, and any family of
   `R`-linearly independent elements `{ n_j }` of `N`, the family `{ m_i * n_j }` in `S` is
   also `R`-linearly independent.
-
-- `Submodule.LinearDisjoint.of_basis_mul`:
+* `Submodule.LinearDisjoint.of_basis_mul`:
   conversely, if `{ m_i }` is an `R`-basis of `M`, if `{ n_i }` is an `R`-basis of `N`,
   such that the family `{ m_i * n_j }` in `S` is `R`-linearly independent,
   then `M` and `N` are linearly disjoint.
 
 ## Other main results
 
-- `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
+* `Submodule.LinearDisjoint.symm_of_commute`, `Submodule.linearDisjoint_comm_of_commute`:
   linear disjointness is symmetric under some commutative conditions.
-
-- `Submodule.LinearDisjoint.map`:
+* `Submodule.LinearDisjoint.map`:
   linear disjointness is preserved by injective algebra homomorphisms.
-
-- `Submodule.linearDisjoint_op`:
+* `Submodule.linearDisjoint_op`:
   linear disjointness is preserved by taking multiplicative opposite.
-
-- `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
+* `Submodule.LinearDisjoint.of_le_left_of_flat`, `Submodule.LinearDisjoint.of_le_right_of_flat`,
   `Submodule.LinearDisjoint.of_le_of_flat_left`, `Submodule.LinearDisjoint.of_le_of_flat_right`:
   linear disjointness is preserved by taking submodules under some flatness conditions.
-
-- `Submodule.LinearDisjoint.of_linearDisjoint_fg_left`,
+* `Submodule.LinearDisjoint.of_linearDisjoint_fg_left`,
   `Submodule.LinearDisjoint.of_linearDisjoint_fg_right`,
   `Submodule.LinearDisjoint.of_linearDisjoint_fg`:
   conversely, if any finitely generated submodules of `M` and `N` are linearly disjoint,
   then `M` and `N` themselves are linearly disjoint.
-
-- `Submodule.LinearDisjoint.bot_left`, `Submodule.LinearDisjoint.bot_right`:
+* `Submodule.LinearDisjoint.bot_left`, `Submodule.LinearDisjoint.bot_right`:
   the zero module is linearly disjoint with any other submodules.
-
-- `Submodule.LinearDisjoint.one_left`, `Submodule.LinearDisjoint.one_right`:
+* `Submodule.LinearDisjoint.one_left`, `Submodule.LinearDisjoint.one_right`:
   the image of `R` in `S` is linearly disjoint with any other submodules.
-
-- `Submodule.LinearDisjoint.of_left_le_one_of_flat`,
+* `Submodule.LinearDisjoint.of_left_le_one_of_flat`,
   `Submodule.LinearDisjoint.of_right_le_one_of_flat`:
   if a submodule is contained in the image of `R` in `S`, then it is linearly disjoint with
   any other submodules, under some flatness conditions.
-
-- `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`,
+* `Submodule.LinearDisjoint.not_linearIndependent_pair_of_commute_of_flat`,
   `Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat`:
   if `M` and `N` are linearly disjoint, if one of `M` and `N` is flat, then any two commutative
   elements contained in the intersection of `M` and `N` are not `R`-linearly independent (namely,
@@ -113,8 +105,7 @@ The following is the second equivalent characterization of linear disjointness:
   convert h
   exact (FinVec.map_eq _ _).symm
   ```
-
-- `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`:
+* `Submodule.LinearDisjoint.rank_le_one_of_commute_of_flat_of_self`:
   if `M` and itself are linearly disjoint, if `M` is flat, if any two elements in `M`
   are commutative, then the rank of `M` is at most one.
 
@@ -124,7 +115,6 @@ assuming `S` is commutative.
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section

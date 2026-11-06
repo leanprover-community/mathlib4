@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Group.Units.Equiv
 public import Mathlib.Algebra.Order.Group.Unbundled.Basic
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inverse and multiplication as order isomorphisms in ordered groups
-
 -/
 
 @[expose] public section

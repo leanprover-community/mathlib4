@@ -7,10 +7,13 @@ module
 
 public import Mathlib.GroupTheory.Exponent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Period of a group action
 
-This module defines some helpful lemmas around [`MulAction.period`] and [`AddAction.period`].
+This module defines some helpful lemmas around \[`MulAction.period`\] and \[`AddAction.period`\].
 The period of a point `a` by a group element `g` is the smallest `m` such that `g ^ m • a = a`
 (resp. `(m • g) +ᵥ a = a`) for a given `g : G` and `a : α`.
 
@@ -62,7 +65,8 @@ theorem pow_smul_ne_of_lt_period {m : M} {a : α} {n : ℕ} (n_pos : 0 < n)
 
 section Identities
 
-/-! ### `MulAction.period` for common group elements
+/-!
+# `MulAction.period` for common group elements
 -/
 
 variable (M) in
@@ -80,7 +84,8 @@ end Identities
 
 section MonoidExponent
 
-/-! ### `MulAction.period` and group exponents
+/-!
+# `MulAction.period` and group exponents
 
 The period of a given element `m : M` can be bounded by the `Monoid.exponent M` or `orderOf m`.
 -/

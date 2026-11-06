@@ -9,8 +9,10 @@ public meta import Mathlib.Tactic.Determinant.Bird.Meta
 public meta import Mathlib.Tactic.Ring
 public import Mathlib.Tactic.Determinant.Bird.Meta
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Certificate-chain evaluator for `BirdDet.birdDet`
 
 This file contains an evaluator that computes the ring tactic normal form of
@@ -64,12 +66,12 @@ improve performance.
 
 ## Main definitions
 
-- `certEntry` certifies `BirdDet.get`.
-- `certSumFromStop` and `certSumFromStep` certify `BirdDet.sumFrom_stop` and
+* `certEntry` certifies `BirdDet.get`.
+* `certSumFromStop` and `certSumFromStep` certify `BirdDet.sumFrom_stop` and
   `BirdDet.sumFrom_step`.
-- `certIterStepEntry` certifies entries of
+* `certIterStepEntry` certifies entries of
   `(BirdDet.stepEntry n A)^[t] (BirdDet.get n A)`.
-- `certBirdDet` certifies `BirdDet.birdDet_zero` and `BirdDet.birdDet_eq`.
+* `certBirdDet` certifies `BirdDet.birdDet_zero` and `BirdDet.birdDet_eq`.
 -/
 
 public meta section
@@ -134,7 +136,8 @@ def val (c : Cert rα) : CertVal rα c.norm :=
 def proof (c : Cert rα) : Q($c.subject = $c.norm) :=
   c.result.proof
 
-/-- Prepend an equality to an existing normalized certificate.
+/--
+Prepend an equality to an existing normalized certificate.
 
 Given `c.proof : s.subject = c.norm` and `h : lhs = s.subject` return a
 certificate with `proof : lhs = c.norm`.
@@ -244,7 +247,8 @@ def certEntry (i j : ℕ) : CertM rα (Cert rα) := do
   modify fun s => {s with entryCache := s.entryCache.insert (i, j) cert}
   return cert
 
-/-- Certify the stop branch of `BirdDet.sumFrom`.
+/--
+Certify the stop branch of `BirdDet.sumFrom`.
 
 This corresponds to the `else 0` branch of:
 
@@ -262,7 +266,8 @@ def certSumFromStop (lo : ℕ) (f : Q(ℕ → $α)) : CertM rα (Cert rα) := do
   let hNot : Q(¬ $lo < $dimLit) ← mkDecideProofQ q(¬ $lo < $dimLit)
   return zeroCertOfProof q(BirdDet.sumFrom_stop $dimLit $lo $f $hNot)
 
-/-- Certify the step branch of `BirdDet.sumFrom`.
+/--
+Certify the step branch of `BirdDet.sumFrom`.
 
 This corresponds to the `lo < n` branch of:
 
@@ -330,7 +335,8 @@ partial def certIterStepEntry (t i j : ℕ) : CertM rα (Cert rα) := do
   return cert
 
 
-/-- Certify the diagonal tail sum in one `BirdDet.stepEntry` application:
+/--
+Certify the diagonal tail sum in one `BirdDet.stepEntry` application:
 
 ```
 sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F k k)
@@ -356,7 +362,8 @@ partial def certDiag (t lo : ℕ) : CertM rα (Cert rα) := do
   modify fun s => {s with diagCache := s.diagCache.insert (t, lo) cert}
   return cert
 
-/-- Certify the upper-tail sum in one `BirdDet.stepEntry` application:
+/--
+Certify the upper-tail sum in one `BirdDet.stepEntry` application:
 
 ```
 sumFrom n (i + 1) fun k => (stepEntry n A)^[t] F i k * get n A k j

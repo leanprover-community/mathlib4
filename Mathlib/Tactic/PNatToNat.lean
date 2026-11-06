@@ -9,16 +9,20 @@ public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Data.PNat.Basic
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `pnat_to_nat`
 
 This file implements the `pnat_to_nat` tactic that shifts `PNat`s in the context to `Nat`.
 
 ## Implementation details
+
 The implementation follows these steps:
+
 1. For each `x : PNat` in the context, add the hypothesis `0 < (↑x : ℕ)`.
 2. Translate arithmetic on `PNat` to `Nat` using the `pnat_to_nat_coe` simp set.
-
 -/
 
 public meta section

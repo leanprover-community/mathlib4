@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.DFinsupp
 public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of the polynomial ring on module induced by an algebra element.
 
@@ -31,7 +34,7 @@ namespace Module
 /--
 Suppose `a` is an element of an `R`-algebra `A` and `M` is an `A`-module.
 Loosely speaking, `Module.AEval R M a` is the `R[X]`-module with elements `m : M`,
-where the action of a polynomial $f$ is given by $f • m = f(a) • m$.
+where the action of a polynomial $`f` is given by $`f • m = f(a) • m`.
 
 More precisely, `Module.AEval R M a` has elements `Module.AEval.of R M a m` for `m : M`,
 and the action of `f` is `f • (of R M a m) = of R M a ((aeval a f) • m)`.
@@ -182,8 +185,8 @@ end AEval
 variable (φ : M →ₗ[R] M)
 /--
 Given and `R`-module `M` and a linear map `φ : M →ₗ[R] M`, `Module.AEval' φ` is loosely speaking
-the `R[X]`-module with elements `m : M`, where the action of a polynomial $f$ is given by
-$f • m = f(a) • m$.
+the `R[X]`-module with elements `m : M`, where the action of a polynomial $`f` is given by
+$`f • m = f(a) • m`.
 
 More precisely, `Module.AEval' φ` has elements `Module.AEval'.of φ m` for `m : M`,
 and the action of `f` is `f • (of φ m) = of φ ((aeval φ f) • m)`.

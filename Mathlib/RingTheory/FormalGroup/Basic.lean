@@ -9,12 +9,17 @@ public import Mathlib.RingTheory.PowerSeries.Substitution
 
 import Mathlib.Tactic.Ring.NamePowerVars
 
-/-! # Formal group laws over commutative ring
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Formal group laws over commutative ring
 
 Let `R` be a commutative ring, a one dimensional formal group law is a formal power series
 `F(X,Y) ∈ R⟦X,Y⟧` such that
-  * `F(X,Y) = X + Y + higher order terms`.
-  * `F(F(X,Y),Z) = F(X,F(Y,Z))`.
+
+* `F(X,Y) = X + Y + higher order terms`.
+* `F(F(X,Y),Z) = F(X,F(Y,Z))`.
 
 Under this definition, we can prove that `F(X,0) = X` and `F(0,X) = X`. Moreover, there is a
 unique power series `i(X)` such that `F(X, i(X)) = 0`, which is considered to be the inverse
@@ -23,20 +28,18 @@ of the formal group law `F(X,Y)`.
 ## Main definitions/lemmas
 
 * `FormalGroup R`: definition of one dimensional formal group law over commutative ring `R`.
-
 * Properties: `F(X,0) = X` and `F(0,X) = X`.
-
 * Additive formal group laws `𝔾ₐ` and multiplicative formal group laws `𝔾ₘ`.
-
 * `F.Point σ` taking values in the formal power series ring `MvPowerSeries σ R` with the property
-that constant coefficient is nilpotent. We have the following typeclass:
-- `AddMonoid (F.Point σ)`
-when `F` is a commutative formal group law
-- `AddCommMonoid (F.Point σ)`
+  that constant coefficient is nilpotent. We have the following typeclass:
+
+* `AddMonoid (F.Point σ)`
+  when `F` is a commutative formal group law
+* `AddCommMonoid (F.Point σ)`
 
 ## References
-* [Hazewinkel, Michiel. Formal Groups and Applications][hazewinkel1978]
 
+* ‍\[Hazewinkel, Michiel. Formal Groups and Applications\]\[hazewinkel1978\]
 -/
 
 @[expose] public section
@@ -55,15 +58,23 @@ variable (R) in
 /-- A structure for a 1-dimensional formal group law over `R`. -/
 @[ext]
 structure FormalGroup where
-  /-- The underlying power series $F(X, Y)$ in two variables. -/
+  /--
+  The underlying power series $`F(X, Y)` in two variables.
+  -/
   toPowerSeries : MvPowerSeries (Fin 2) R
   /-- The constant coefficient of the formal group law is zero. -/
   zero_constantCoeff : toPowerSeries.constantCoeff = 0
-  /-- The coefficient of $X$ in $F(X, Y)$ is 1. -/
+  /--
+  The coefficient of $`X` in $`F(X, Y)` is 1.
+  -/
   lin_coeff_X : toPowerSeries.coeff (single 0 1) = 1
-  /-- The coefficient of $Y$ in $F(X, Y)$ is 1. -/
+  /--
+  The coefficient of $`Y` in $`F(X, Y)` is 1.
+  -/
   lin_coeff_Y : toPowerSeries.coeff (single 1 1) = 1
-  /-- Associativity condition: $F(F(X, Y), Z) = F(X, F(Y, Z))$. -/
+  /--
+  Associativity condition: $`F(F(X, Y), Z) = F(X, F(Y, Z))`.
+  -/
   assoc : toPowerSeries.subst ![toPowerSeries.subst ![Y₀, Y₁], Y₂]
     = toPowerSeries.subst ![Y₀, toPowerSeries.subst ![Y₁, Y₂]] (S := R)
 
@@ -71,7 +82,9 @@ structure FormalGroup where
 instance FormalGroup.coeToPowerSeries : Coe (FormalGroup R) (MvPowerSeries (Fin 2) R) :=
   ⟨toPowerSeries⟩
 
-/-- Given a formal group `F`, `F.IsComm` is a proposition that $F(X,Y) = F(Y,X)$. -/
+/--
+Given a formal group `F`, `F.IsComm` is a proposition that $`F(X,Y) = F(Y,X)`.
+-/
 class FormalGroup.IsComm (F : FormalGroup R) : Prop where
   comm : F = (F : MvPowerSeries (Fin 2) R).subst ![X₁, X₀]
 
@@ -116,13 +129,15 @@ namespace FormalGroup
 variable {σ : Type*} (F : FormalGroup R)
 
 set_option linter.unusedVariables false in
-/-- `F.Point σ` represents the mathematical space of points of a formal group $F$
+/--
+`F.Point σ` represents the mathematical space of points of a formal group $`F`
 taking values in the formal power series ring `MvPowerSeries σ R` with the property
 that constant coefficient is nilpotent.
 
-TODO: Mathematically, a 1-dimensional formal group law $F$ over a ring $R$ defines a group
-structure on the elements of a complete local $R$-algebra (specifically, its maximal ideal)
-via the substitution operation $x +_F y = F(x, y)$. -/
+TODO: Mathematically, a 1-dimensional formal group law $`F` over a ring $`R` defines a group
+structure on the elements of a complete local $`R`-algebra (specifically, its maximal ideal)
+via the substitution operation $`x +_F y = F(x, y)`.
+-/
 @[nolint unusedArguments]
 def Point (F : FormalGroup R) (σ : Type*) := {f : MvPowerSeries σ R // PowerSeries.HasSubst f}
 
@@ -202,7 +217,9 @@ namespace FormalGroup
 
 variable (F : FormalGroup R)
 
-/-- An abbreviation of $F(X,0)$ for a formal group $F$. -/
+/--
+An abbreviation of $`F(X,0)` for a formal group $`F`.
+-/
 abbrev Xzero : PowerSeries R := subst ![PowerSeries.X, 0] F.toPowerSeries
 
 lemma constantCoeff_Xzero : F.Xzero.constantCoeff = 0 := by
@@ -254,7 +271,9 @@ lemma Xzero_eq_X : F.Xzero = PowerSeries.X := by
     _ = _ := by
       rw [Xzero_subst_Xzero, F.Xzero.subst_substInv_left F.constantCoeff_Xzero]
 
-/-- An abbreviation of $F(0,X)$ for a formal group $F$. -/
+/--
+An abbreviation of $`F(0,X)` for a formal group $`F`.
+-/
 abbrev zeroX : PowerSeries R := subst ![0, PowerSeries.X] F.toPowerSeries
 
 lemma constantCoeff_zeroX : F.zeroX.constantCoeff = 0 := by

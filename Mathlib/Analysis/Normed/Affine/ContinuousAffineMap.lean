@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.Analysis.Normed.Operator.NormedSpace
 public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm on the continuous affine maps between normed vector spaces.
 
@@ -32,7 +35,6 @@ submultiplicative: for a composition of maps, we have only `‖f.comp g‖ ≤ �
 * `ContinuousAffineMap.hasNorm`
 * `ContinuousAffineMap.norm_comp_le`
 * `ContinuousAffineMap.toConstProdContinuousLinearMap`
-
 -/
 
 @[expose] public section

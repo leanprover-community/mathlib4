@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mean value inequalities
 
@@ -19,28 +22,23 @@ these inequalities are available in `MeasureTheory.MeanInequalities`.
 
 ## Main theorems: generalized mean inequality
 
-The inequality says that for two non-negative vectors $w$ and $z$ with $\sum_{i\in s} w_i=1$
-and $p ≤ q$ we have
-$$
-\sqrt[p]{\sum_{i\in s} w_i z_i^p} ≤ \sqrt[q]{\sum_{i\in s} w_i z_i^q}.
-$$
+The inequality says that for two non-negative vectors $`w` and $`z` with $`\sum_{i\in s} w_i=1`
+and $`p ≤ q` we have
+$$`  \sqrt[p]{\sum_{i\in s} w_i z_i^p} ≤ \sqrt[q]{\sum_{i\in s} w_i z_i^q}.  `
 
-Currently we only prove this inequality for $p=1$. As in the rest of `Mathlib`, we provide
+Currently we only prove this inequality for $`p=1`. As in the rest of `Mathlib`, we provide
 different theorems for natural exponents (`pow_arith_mean_le_arith_mean_pow`), integer exponents
 (`zpow_arith_mean_le_arith_mean_zpow`), and real exponents (`rpow_arith_mean_le_arith_mean_rpow` and
 `arith_mean_le_rpow_mean`). In the first two cases we prove
-$$
-\left(\sum_{i\in s} w_i z_i\right)^n ≤ \sum_{i\in s} w_i z_i^n
-$$
+$$`  \left(\sum_{i\in s} w_i z_i\right)^n ≤ \sum_{i\in s} w_i z_i^n  `
 in order to avoid using real exponents. For real exponents we prove both this and standard versions.
 
 ## TODO
 
-- each inequality `A ≤ B` should come with a theorem `A = B ↔ _`; one of the ways to prove them
+* each inequality `A ≤ B` should come with a theorem `A = B ↔ _`; one of the ways to prove them
   is to define `StrictConvexOn` functions.
-- generalized mean inequality with any `p ≤ q`, including negative numbers;
-- prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
+* generalized mean inequality with any `p ≤ q`, including negative numbers;
+* prove that the power mean tends to the geometric mean as the exponent tends to zero.
 -/
 
 public section

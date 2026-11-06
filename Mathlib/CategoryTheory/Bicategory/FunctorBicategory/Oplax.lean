@@ -7,10 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Oplax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bicategories of oplax functors
 
 Given bicategories `B` and `C`, we give bicategory structures on `B ⥤ᵒᵖᴸ C` whose
+
 * objects are oplax functors,
 * 1-morphisms are lax or oplax natural transformations, and
 * 2-morphisms are modifications.

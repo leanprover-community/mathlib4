@@ -12,7 +12,11 @@ public import Mathlib.Topology.Algebra.Module.Equiv.Prod
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Normed.Operator.Mul
 
-/-! # Properties of continuously polynomial functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of continuously polynomial functions
 
 We expand the API around continuously polynomial functions. Notably, we show that this class is
 stable under the usual operations (addition, subtraction, negation).
@@ -140,7 +144,7 @@ theorem CPolynomialOn.prodMk {g : E → G} (hf : CPolynomialOn 𝕜 f s) (hg : C
   fun x hx ↦ (hf x hx).prodMk (hg x hx)
 
 /-!
-### Continuous multilinear maps
+# Continuous multilinear maps
 
 We show that continuous multilinear maps are continuously polynomial, and therefore analytic.
 -/
@@ -291,7 +295,7 @@ lemma analyticWithinAt_compContinuousLinearMapCLM (s : Set (E →L[𝕜] F)) (f�
 end ContinuousAlternatingMap
 
 /-!
-### Continuous linear maps into continuous multilinear maps
+# Continuous linear maps into continuous multilinear maps
 
 We show that a continuous linear map into continuous multilinear maps is continuously polynomial
 (as a function of two variables, i.e., uncurried). Therefore, it is also analytic.

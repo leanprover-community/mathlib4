@@ -9,20 +9,22 @@ public import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # (Absolute) Discriminant and Different Ideal
 
 ## Main results
-- `NumberField.absNorm_differentIdeal`:
+
+* `NumberField.absNorm_differentIdeal`:
   The norm of `differentIdeal ℤ 𝒪` is the absolute discriminant.
-- `NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow`:
+* `NumberField.natAbs_discr_eq_absNorm_differentIdeal_mul_natAbs_discr_pow`:
   Formula for the absolute discriminant of `L` in terms of that of `K` in an extension `L/K`.
-- `NumberField.natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow`:
+* `NumberField.natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow`:
   Assume that `K₁` and `K₂` are two linear disjoint number fields with coprime different ideals.
   Then, the absolute value of the discriminant of their compositum is equal to
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
-
 -/
 
 public section
@@ -184,11 +186,13 @@ lemma not_dvd_discr_iff_forall_liesOver [IsIntegralClosure 𝒪 ℤ K] {p : ℤ}
       ← Int.natAbs_pow, Int.natAbs_dvd_natAbs] at this
     exact (dvd_pow_self _ (Ideal.inertiaDeg_pos ..).ne').trans this
 
-/-- A prime `p` does not divide `discr K` if and only if `p` (as the ideal `span {p}`) is
+/--
+A prime `p` does not divide `discr K` if and only if `p` (as the ideal `span {p}`) is
 unramified in the ring of integers `𝒪`.
 
 Also see `not_dvd_discr_iff_forall_liesOver` and `not_dvd_discr_iff_forall_mem` for variants
-whose RHS does not use `Algebra.IsUnramifiedIn`. -/
+whose RHS does not use `Algebra.IsUnramifiedIn`.
+-/
 lemma not_dvd_discr_iff_isUnramifiedIn [IsIntegralClosure 𝒪 ℤ K] {p : ℤ} (hp : Prime p) :
     ¬ p ∣ discr K ↔ Algebra.IsUnramifiedIn 𝒪 (Ideal.span {p}) := by
   have := (IsIntegralClosure.algebraMap_injective 𝒪 ℤ K).isDomain

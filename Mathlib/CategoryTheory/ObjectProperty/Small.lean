@@ -10,12 +10,14 @@ public import Mathlib.CategoryTheory.ObjectProperty.CompleteLattice
 public import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 public import Mathlib.CategoryTheory.ObjectProperty.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smallness of a property of objects
 
 In this file, given `P : ObjectProperty C`, we define
 `ObjectProperty.Small.{w} P` as an abbreviation for `Small.{w} (Subtype P)`.
-
 -/
 
 public section

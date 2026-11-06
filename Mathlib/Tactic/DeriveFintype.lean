@@ -11,6 +11,9 @@ public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Data.Fintype.OfMap  -- shake: keep (metaprogram output dependency)
 public import Mathlib.Tactic.ProxyType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `Fintype` derive handler
 
@@ -18,6 +21,7 @@ This file defines a derive handler to automatically generate `Fintype` instances
 for structures and inductive types.
 
 The following is a prototypical example of what this can handle:
+
 ```
 inductive MyOption (α : Type*)
   | none
@@ -43,7 +47,7 @@ There are two kinds of `Fintype` instances that we generate, depending on the in
 
 If it is an enum (an inductive type with only 0-ary constructors), then we generate the
 complete `List` of all constructors; see `Mathlib.Deriving.Fintype.mkFintypeEnum` for more
-details. The proof has $O(n)$ complexity in the number of constructors.
+details. The proof has $`O(n)` complexity in the number of constructors.
 
 Otherwise, the strategy we take is to generate a "proxy type", define an equivalence between
 our type and the proxy type (see `proxy_equiv%`), and then use `Fintype.ofEquiv` to pull a
@@ -106,7 +110,8 @@ def mkFintype (declName : Name) : CommandElabM Bool := do
   elabCommand cmd
   return true
 
-/-- Derive a `Fintype` instance for enum types. These come with a `ctorIdx` function.
+/--
+Derive a `Fintype` instance for enum types. These come with a `ctorIdx` function.
 
 We generate a more optimized instance than the one produced by `mkFintype`.
 The strategy is to (1) create a list `enumList` of all the constructors, (2) prove that this
@@ -114,7 +119,8 @@ is in `ctorIdx` order, (3) show that `ctorIdx` maps `enumList` to `List.range nu
 the list has no duplicates, and (4) give the `Fintype` instance, using 2 for completeness.
 
 The proofs are all linear complexity, and the main computation is that
-`enumList.map ctorIdx = List.range numCtors`, which is true by `refl`. -/
+`enumList.map ctorIdx = List.range numCtors`, which is true by `refl`.
+-/
 def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   let indVal ← getConstInfoInduct declName
   let levels := indVal.levelParams.map Level.param

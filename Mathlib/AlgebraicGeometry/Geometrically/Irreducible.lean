@@ -8,18 +8,22 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically Irreducible Schemes
 
 ## Main results
-- `AlgebraicGeometry.GeometricallyIrreducible`:
+
+* `AlgebraicGeometry.GeometricallyIrreducible`:
   We say that morphism `f : X ⟶ Y` is geometrically irreducible if for all `Spec K ⟶ Y` with `K`
   a field, `X ×[Y] Spec K` is irreducible.
   We also provide the fact that this is stable under base change (by `infer_instance`)
-- `GeometricallyIrreducible.iff_geometricallyIrreducible_fiber`:
+* `GeometricallyIrreducible.iff_geometricallyIrreducible_fiber`:
   A scheme is geometrically irreducible over `S` iff the fibers of all
   `s : S` are geometrically irreducible.
-- `AlgebraicGeometry.GeometricallyIrreducible.irreducibleSpace`:
+* `AlgebraicGeometry.GeometricallyIrreducible.irreducibleSpace`:
   If `X` is geometrically irreducible and universally open (e.g. when flat + finite presentation),
   over an irreducible scheme, then `X` is also irreducible.
   In particular, the base change of a geometrically irreducible and universally open scheme to an
@@ -103,11 +107,13 @@ lemma GeometricallyIrreducible.irreducibleSpace_of_subsingleton
   have : IrreducibleSpace S := ⟨‹_›⟩
   GeometricallyIrreducible.irreducibleSpace (f := f) fun _ _ ↦ isOpen_discrete _
 
-/-- If `X` is geometrically irreducible and universally open over `S` and `Y` is irreducible,
+/--
+If `X` is geometrically irreducible and universally open over `S` and `Y` is irreducible,
 then `X ×ₛ Y` is irreducible.
 
 The universally open assumption in particular holds when it is flat and locally of finite
-presentation, or when `S` is a field. -/
+presentation, or when `S` is a field.
+-/
 instance [GeometricallyIrreducible f] [UniversallyOpen f] [IrreducibleSpace Y] :
     IrreducibleSpace ↥(pullback f g) :=
   GeometricallyIrreducible.irreducibleSpace (pullback.snd _ _) (pullback.snd f g).isOpenMap

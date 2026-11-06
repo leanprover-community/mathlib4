@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Linear.Basic
 
 import Mathlib.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The total complex of a bicomplex
 
@@ -25,7 +28,6 @@ In particular, if `c := ComplexShape.up ℤ` and `K : HomologicalComplex₂ c c`
 `p + q = n`, and the differential on `(K.total c).X n` is induced by the sum of horizontal
 differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the vertical
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
-
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Fib.Basic
 
 import Mathlib.Tactic.Monotonicity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
 
@@ -28,23 +31,23 @@ in `Algebra.ContinuedFractions.Computation.ApproximationCorollaries`.
 
 ## Main Theorems
 
-- `GenContFract.of_partNum_eq_one`: shows that all partial numerators `aᵢ` are
+* `GenContFract.of_partNum_eq_one`: shows that all partial numerators `aᵢ` are
   equal to one.
-- `GenContFract.exists_int_eq_of_partDen`: shows that all partial denominators
+* `GenContFract.exists_int_eq_of_partDen`: shows that all partial denominators
   `bᵢ` correspond to an integer.
-- `GenContFract.of_one_le_get?_partDen`: shows that `1 ≤ bᵢ`.
-- `ContFract.of` returns the regular continued fraction of a value.
-- `GenContFract.succ_nth_fib_le_of_nthDen`: shows that the `n`th denominator
+* `GenContFract.of_one_le_get?_partDen`: shows that `1 ≤ bᵢ`.
+* `ContFract.of` returns the regular continued fraction of a value.
+* `GenContFract.succ_nth_fib_le_of_nthDen`: shows that the `n`th denominator
   `Bₙ` is greater than or equal to the `n + 1`th fibonacci number `Nat.fib (n + 1)`.
-- `GenContFract.le_of_succ_get?_den`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
+* `GenContFract.le_of_succ_get?_den`: shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is
   the `n`th partial denominator of the continued fraction.
-- `GenContFract.abs_sub_convs_le`: shows that
+* `GenContFract.abs_sub_convs_le`: shows that
   `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`, where `Aₙ` is the `n`th partial numerator.
 
 ## References
 
-- [*Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman, Joseph*][hardy2008introduction]
-
+* ‍\[_Hardy, GH and Wright, EM and Heath-Brown, Roger and Silverman,
+  Joseph_\]\[hardy2008introduction\]
 -/
 
 @[expose] public section
@@ -315,7 +318,7 @@ theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
 section ErrorTerm
 
 /-!
-### Approximation of Error Term
+# Approximation of Error Term
 
 Next we derive some approximations for the error term when computing a continued fraction up a given
 position, i.e. bounds for the term `|v - (GenContFract.of v).convs n|`.

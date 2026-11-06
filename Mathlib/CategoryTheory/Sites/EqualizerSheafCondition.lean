@@ -10,26 +10,27 @@ public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The equalizer diagram sheaf condition for a presieve
 
 In `Mathlib/CategoryTheory/Sites/IsSheafFor.lean` it is defined what it means for a presheaf to be a
-sheaf *for* a particular presieve. In this file we provide equivalent conditions in terms of
+sheaf _for_ a particular presieve. In this file we provide equivalent conditions in terms of
 equalizer diagrams.
 
 * In `Equalizer.Presieve.sheaf_condition`, the sheaf condition at a presieve is shown to be
   equivalent to that of https://stacks.math.columbia.edu/tag/00VM (and combined with
   `isSheaf_pretopology`, this shows the notions of `IsSheaf` are exactly equivalent.)
-
 * In `Equalizer.Sieve.equalizer_sheaf_condition`, the sheaf condition at a sieve is shown to be
-  equivalent to that of Equation (3) p. 122 in Maclane-Moerdijk [MM92].
+  equivalent to that of Equation (3) p. 122 in Maclane-Moerdijk \[MM92\].
 
 ## References
 
-* [MM92]: *Sheaves in geometry and logic*, Saunders MacLane, and Ieke Moerdijk:
+* ‍\[MM92\]: _Sheaves in geometry and logic_, Saunders MacLane, and Ieke Moerdijk:
   Chapter III, Section 4.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
-
 -/
 
 @[expose] public section
@@ -49,7 +50,7 @@ variable {C : Type u} [Category.{v} C] (P : Cᵒᵖ ⥤ Type (max v u)) {X : C} 
 noncomputable section
 
 /--
-The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
+The middle object of the fork diagram given in Equation (3) of \[MM92\], as well as the fork diagram
 of the Stacks entry.
 -/
 @[stacks 00VM "This is the middle object of the fork diagram there."]
@@ -83,7 +84,7 @@ instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
   inferInstanceAs <| Inhabited (FirstObj P (⊥ : Presieve X))
 
 /--
-The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork diagram
+The left morphism of the fork diagram given in Equation (3) of \[MM92\], as well as the fork diagram
 of the Stacks entry.
 -/
 @[stacks 00VM "This is the left morphism of the fork diagram there."]
@@ -91,14 +92,15 @@ def forkMap : P.obj (op X) ⟶ FirstObj P R :=
   Pi.lift fun f => P.map f.2.1.op
 
 /-!
-This section establishes the equivalence between the sheaf condition of Equation (3) [MM92] and
+This section establishes the equivalence between the sheaf condition of Equation (3) \[MM92\] and
 the definition of `IsSheafFor`.
 -/
 
 
 namespace Sieve
 
-/-- The rightmost object of the fork diagram of Equation (3) [MM92], which contains the data used
+/--
+The rightmost object of the fork diagram of Equation (3) \[MM92\], which contains the data used
 to check a family is compatible.
 -/
 abbrev SecondObj : Type (max v u) :=
@@ -116,7 +118,9 @@ lemma SecondObj.ext (z₁ z₂ : SecondObj P S) (h : ∀ (Y Z : C) (g : Z ⟶ Y)
 
 variable (P S)
 
-/-- The map `p` of Equations (3,4) [MM92]. -/
+/--
+The map `p` of Equations (3,4) \[MM92\].
+-/
 def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg =>
     Pi.π _ (⟨_, _, S.downward_closed fg.2.2.2.2 fg.2.2.1⟩ : Σ Y, { f : Y ⟶ X // S f })
@@ -124,7 +128,9 @@ def firstMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
 instance : Inhabited (SecondObj P (⊥ : Sieve X)) :=
   ⟨firstMap _ _ default⟩
 
-/-- The map `a` of Equations (3,4) [MM92]. -/
+/--
+The map `a` of Equations (3,4) \[MM92\].
+-/
 def secondMap : FirstObj P (S : Presieve X) ⟶ SecondObj P S :=
   Pi.lift fun fg => Pi.π _ ⟨_, fg.2.2.2⟩ ≫ P.map fg.2.2.1.op
 

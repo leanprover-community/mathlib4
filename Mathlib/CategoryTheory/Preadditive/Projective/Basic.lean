@@ -11,12 +11,15 @@ public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective objects and categories with enough projectives
 
-An object `P` is called *projective* if every morphism out of `P` factors through every epimorphism.
+An object `P` is called _projective_ if every morphism out of `P` factors through every epimorphism.
 
-A category `C` *has enough projectives* if every object admits an epimorphism from some
+A category `C` _has enough projectives_ if every object admits an epimorphism from some
 projective object.
 
 `CategoryTheory.Projective.over X` picks an arbitrary such projective object, and
@@ -26,7 +29,6 @@ epimorphism.
 Given a morphism `f : X ⟶ Y`, `CategoryTheory.Projective.left f` is a projective object over
 `CategoryTheory.Limits.kernel f`, and `Projective.d f : Projective.left f ⟶ X` is the morphism
 `π (kernel f) ≫ kernel.ι f`.
-
 -/
 
 @[expose] public section
@@ -43,7 +45,7 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C]
 
 /--
-An object `P` is called *projective* if every morphism out of `P` factors through every epimorphism.
+An object `P` is called _projective_ if every morphism out of `P` factors through every epimorphism.
 -/
 class Projective (P : C) : Prop where
   factors : ∀ {E X : C} (f : P ⟶ X) (e : E ⟶ X) [Epi e], ∃ f', f' ≫ e = f
@@ -180,7 +182,8 @@ def syzygies : C := over (kernel f)
 
 instance : Projective (syzygies f) := inferInstanceAs (Projective (over _))
 
-/-- When `C` has enough projectives,
+/--
+When `C` has enough projectives,
 `Projective.d f : Projective.syzygies f ⟶ X` is the composition
 `π (kernel f) ≫ kernel.ι f`.
 

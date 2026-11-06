@@ -8,12 +8,16 @@ module
 public import Mathlib.Probability.Kernel.Condexp
 public import Mathlib.Probability.Moments.Tilted
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sub-Gaussian random variables
 
 This presentation of sub-Gaussian random variables is inspired by section 2.5 of
-[vershynin2018high]. Let `X` be a random variable. Consider the following five properties, in which
-`Kᵢ` are positive reals,
+‍\[vershynin2018high\]. Let `X` be a random variable. Consider the following five properties, in
+which `Kᵢ` are positive reals,
+
 * (i) for all `t ≥ 0`, `ℙ(|X| ≥ t) ≤ 2 * exp(-t^2 / K₁^2)`,
 * (ii) for all `p : ℕ` with `1 ≤ p`, `𝔼[|X|^p]^(1/p) ≤ K₂ sqrt(p)`,
 * (iii) for all `|t| ≤ 1/K₃`, `𝔼[exp (t^2 * X^2)] ≤ exp (K₃^2 * t^2)`,
@@ -37,7 +41,7 @@ inequalities using Chernoff's method.
 TODO: implement definitions for (i)-(iv) when it makes sense. For example the maximal constant `K₄`
 such that (iv) is true is an Orlicz norm. Prove relations between those properties.
 
-### Conditionally sub-Gaussian random variables and kernels
+## Conditionally sub-Gaussian random variables and kernels
 
 A related notion to sub-Gaussian random variables is that of conditionally sub-Gaussian random
 variables. A random variable `X` is conditionally sub-Gaussian in the sense of (v) with respect to
@@ -83,12 +87,14 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 ### Definition of `Kernel.HasSubgaussianMGF`
 
 The definition of sub-Gaussian with respect to a kernel and a measure is the following:
+
 ```
 structure Kernel.HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν)
   mgf_le : ∀ᵐ ω' ∂ν, ∀ t, mgf X (κ ω') t ≤ exp (c * t ^ 2 / 2)
 ```
+
 An interesting point is that the integrability condition is not integrability of `exp (t * X)`
 with respect to `κ ω'` for `ν`-almost all `ω'`, but integrability with respect to `κ ∘ₘ ν`.
 This is a stronger condition, as the weaker one did not allow to prove interesting results about
@@ -104,6 +110,7 @@ conditional expectation kernel for `m`, `condExpKernel μ m`, and the restrictio
 `μ.trim hm` (where `hm` states that `m` is a sub-sigma-algebra).
 Note that `condExpKernel μ m ∘ₘ μ.trim hm = μ`. The definition is equivalent to the two
 conditions
+
 * for all `t`, `exp (t * X)` is `μ`-integrable,
 * for `μ.trim hm`-almost all `ω`, for all `t`, the mgf with respect to the conditional
   distribution `condExpKernel μ m ω` is bounded by `exp (c * t ^ 2 / 2)`.
@@ -114,9 +121,8 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
 
 ## References
 
-* [R. Vershynin, *High-dimensional probability: An introduction with applications in data
-  science*][vershynin2018high]
-
+* ‍\[R. Vershynin, _High-dimensional probability: An introduction with applications in data
+  science_\]\[vershynin2018high\]
 -/
 
 @[expose] public section
@@ -132,7 +138,9 @@ section Kernel
 variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'}
   {ν : Measure Ω'} {κ : Kernel Ω' Ω} {X : Ω → ℝ} {c : ℝ≥0}
 
-/-! ### Sub-Gaussian with respect to a kernel and a measure -/
+/-!
+# Sub-Gaussian with respect to a kernel and a measure
+-/
 
 /-- A random variable `X` has a sub-Gaussian moment-generating function with parameter `c`
 with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`, for all `t : ℝ`,
@@ -523,13 +531,16 @@ end Kernel
 
 section Conditional
 
-/-! ### Conditionally sub-Gaussian moment-generating function -/
+/-!
+# Conditionally sub-Gaussian moment-generating function
+-/
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {hm : m ≤ mΩ} [StandardBorelSpace Ω]
   {μ : Measure Ω} [IsFiniteMeasure μ] {X : Ω → ℝ} {c : ℝ≥0}
 
 variable (m) (hm) in
-/-- A random variable `X` has a conditionally sub-Gaussian moment-generating function
+/--
+A random variable `X` has a conditionally sub-Gaussian moment-generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
 `exp (t * X)` is `μ`-integrable and the moment-generating function of `X` conditioned on `m` is
 almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
@@ -537,7 +548,8 @@ This implies in particular that `X` has expectation 0.
 
 The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
 sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
-to the sigma-algebra `m`. -/
+to the sigma-algebra `m`.
+-/
 def HasCondSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (μ : Measure Ω := by volume_tac) [IsFiniteMeasure μ] : Prop :=
   Kernel.HasSubgaussianMGF X c (condExpKernel μ m) (μ.trim hm)
@@ -582,11 +594,14 @@ end HasCondSubgaussianMGF
 
 end Conditional
 
-/-! ### Sub-Gaussian moment-generating function -/
+/-!
+# Sub-Gaussian moment-generating function
+-/
 
 variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {c : ℝ≥0}
 
-/-- A random variable `X` has a sub-Gaussian moment-generating function with parameter `c`
+/--
+A random variable `X` has a sub-Gaussian moment-generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
 the moment-generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
 This implies in particular that `X` has expectation 0.
@@ -594,7 +609,8 @@ This implies in particular that `X` has expectation 0.
 This is equivalent to `Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ())`,
 as proved in `HasSubgaussianMGF_iff_kernel`.
 Properties about sub-Gaussian moment-generating functions should be proved first for
-`Kernel.HasSubgaussianMGF` when possible. -/
+`Kernel.HasSubgaussianMGF` when possible.
+-/
 structure HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
   mgf_le : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
@@ -862,12 +878,14 @@ section Martingale
 
 variable [StandardBorelSpace Ω]
 
-/-- If `X` is sub-Gaussian with parameter `cX` with respect to the restriction of `μ` to
+/--
+If `X` is sub-Gaussian with parameter `cX` with respect to the restriction of `μ` to
 a sub-sigma-algebra `m` and `Y` is conditionally sub-Gaussian with parameter `cY` with respect to
 `m` and `μ` then `X + Y` is sub-Gaussian with parameter `cX + cY` with respect to `μ`.
 
 `HasSubgaussianMGF X cX (μ.trim hm)` can be obtained from `HasSubgaussianMGF X cX μ` if `X` is
-`m`-measurable. See `HasSubgaussianMGF.trim`. -/
+`m`-measurable. See `HasSubgaussianMGF.trim`.
+-/
 lemma HasSubgaussianMGF.add_of_hasCondSubgaussianMGF [IsFiniteMeasure μ]
     {Y : Ω → ℝ} {cX cY : ℝ≥0} (hm : m ≤ mΩ)
     (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :

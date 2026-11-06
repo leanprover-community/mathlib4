@@ -7,13 +7,16 @@ module
 
 public import Mathlib.FieldTheory.KummerExtension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # More results on primitive roots of unity
 
 (We put these in a separate file because of the `KummerExtension` import.)
 
 Assume that `μ` is a primitive `n`th root of unity in an integral domain `R`. Then
-$$ \prod_{k=1}^{n-1} (1 - \mu^k) = n \,; $$
+$$`  \prod_{k=1}^{n-1} (1 - \mu^k) = n \,;  `
 see `IsPrimitiveRoot.prod_one_sub_pow_eq_order` and its variant
 `IsPrimitiveRoot.prod_pow_sub_one_eq_order` in terms of `∏ (μ^k - 1)`.
 

@@ -10,8 +10,10 @@ public import Mathlib.CategoryTheory.Sites.CartesianClosed
 public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.Condensed.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Condensed sets form a Cartesian closed category
 -/
 

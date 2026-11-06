@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1
 
 import Mathlib.MeasureTheory.Function.LpSpace.InfiniteSum
 
-/-! # Conditional expectation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditional expectation
 
 We build the conditional expectation of an integrable function `f` with value in a Banach space
 with respect to a measure `μ` (defined on a measurable space structure `m₀`) and a measurable space
@@ -18,6 +22,7 @@ function `μ[f | m]` which is integrable and verifies `∫ x in s, μ[f | m] x �
 for all `m`-measurable sets `s`. It is unique as an element of `L¹`.
 
 The construction is done in four steps:
+
 * Define the conditional expectation of an `L²` function, as an element of `L²`. This is the
   orthogonal projection on the subspace of almost everywhere `m`-measurable functions.
 * Show that the conditional expectation of the indicator of a measurable set with finite measure
@@ -58,18 +63,19 @@ Uniqueness of the conditional expectation
 
 For a measure `μ` defined on a measurable space structure `m₀`, another measurable space structure
 `m` with `hm : m ≤ m₀` (a sub-σ-algebra) and a function `f`, we define the notation
+
 * `μ[f | m] = condExp m μ f`.
 
 ## TODO
 
-See https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Conditional.20expectation.20of.20product
+See
+https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Conditional.20expectation.20of.20product
 for how to prove that we can pull `m`-measurable continuous linear maps out of the `m`-conditional
 expectation. This would generalise `MeasureTheory.condExp_mul_of_stronglyMeasurable_left`.
 
 ## Tags
 
 conditional expectation, conditional expected value
-
 -/
 
 public section
@@ -91,12 +97,15 @@ variable [NormedSpace ℝ E]
 
 open scoped Classical in
 variable (m) in
-/-- Conditional expectation of a function, with notation `μ[f | m]`.
+/--
+Conditional expectation of a function, with notation `μ[f | m]`.
 
 It is defined as 0 if any one of the following conditions is true:
-- `m` is not a sub-σ-algebra of `m₀`,
-- `μ` is not σ-finite with respect to `m`,
-- `f` is not integrable. -/
+
+* `m` is not a sub-σ-algebra of `m₀`,
+* `μ` is not σ-finite with respect to `m`,
+* `f` is not integrable.
+-/
 @[wikidata Q772232]
 noncomputable def condExp (μ : Measure[m₀] α) (f : α → E) : α → E :=
   if hm : m ≤ m₀ then
@@ -335,10 +344,12 @@ theorem condExp_sub (hf : Integrable f μ) (hg : Integrable g μ) (m : Measurabl
   simp_rw [sub_eq_add_neg]
   exact (condExp_add hf hg.neg _).trans (EventuallyEq.rfl.add (condExp_neg ..))
 
-/-- **Tower property of the conditional expectation**.
+/--
+*Tower property of the conditional expectation*.
 
 Taking the `m₂`-conditional expectation then the `m₁`-conditional expectation, where `m₁` is a
-smaller σ-algebra, is the same as taking the `m₁`-conditional expectation directly. -/
+smaller σ-algebra, is the same as taking the `m₁`-conditional expectation directly.
+-/
 theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measure α} (hm₁₂ : m₁ ≤ m₂)
     (hm₂ : m₂ ≤ m₀) [SigmaFinite (μ.trim hm₂)] : μ[μ[f | m₂] | m₁] =ᵐ[μ] μ[f | m₁] := by
   by_cases hμm₁ : SigmaFinite (μ.trim (hm₁₂.trans hm₂))

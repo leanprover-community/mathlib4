@@ -8,12 +8,14 @@ module
 public import Mathlib.Tactic.Peel
 public import Mathlib.Topology.Perfect
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derived set
 
 This file defines the derived set of a set, the set of all `AccPt`s of its principal filter,
 and proves some properties of it.
-
 -/
 
 @[expose] public section
@@ -86,12 +88,14 @@ lemma closure_eq_self_union_derivedSet (A : Set X) : closure A = A ∪ derivedSe
   ext
   simp [closure_eq_cluster_pts, clusterPt_principal]
 
-/-- In a `T1Space`, the `derivedSet` of the closure of a set is equal to the derived set of the
+/--
+In a `T1Space`, the `derivedSet` of the closure of a set is equal to the derived set of the
 set itself.
 
 Note: this doesn't hold in a space with the indiscrete topology. For example, if `X` is a type with
 two elements, `x` and `y`, and `A := {x}`, then `closure A = Set.univ` and `derivedSet A = {y}`,
-but `derivedSet Set.univ = Set.univ`. -/
+but `derivedSet Set.univ = Set.univ`.
+-/
 lemma derivedSet_closure [T1Space X] (A : Set X) : derivedSet (closure A) = derivedSet A := by
   refine le_antisymm (fun x hx => ?_) (derivedSet_mono _ _ subset_closure)
   rw [mem_derivedSet, AccPt, (nhdsWithin_basis_open x {x}ᶜ).inf_principal_neBot_iff] at hx ⊢

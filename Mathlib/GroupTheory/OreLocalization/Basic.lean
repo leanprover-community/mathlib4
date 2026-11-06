@@ -12,8 +12,10 @@ public import Mathlib.GroupTheory.OreLocalization.OreSet
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal
@@ -27,11 +29,11 @@ a denominator `s : S`.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/Ore+localization>
-* [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
-
+* [https://ncatlab.org/nlab/show/Ore+localization](https://ncatlab.org/nlab/show/Ore+localization)
+* ‍\[Zoran Škoda, _Noncommutative localization in noncommutative geometry_\]\[skoda2006\]
 
 ## Tags
+
 localization, Ore, non-commutative
 
 ## Implementation detail
@@ -44,7 +46,6 @@ Also see https://github.com/leanprover-community/mathlib4/pull/31862.
 We shall investigate if there are ways to improve performances. For example by introducing
 typeclasses to unify the two constructions on this and `LocalizedModule`, or by marking some
 downstream constructions (e.g. `Spec.structureSheaf`) as irreducible.
-
 -/
 
 @[expose] public section

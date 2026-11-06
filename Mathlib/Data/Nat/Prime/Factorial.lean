@@ -8,9 +8,11 @@ module
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Data.Nat.Prime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime natural numbers and the factorial operator
-
 -/
 
 public section

@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorial and variants
 
@@ -190,7 +193,9 @@ lemma factorial_le_pow : ∀ n, n ! ≤ n ^ n
 
 end Factorial
 
-/-! ### Ascending and descending factorials -/
+/-!
+# Ascending and descending factorials
+-/
 
 
 section AscFactorial
@@ -493,7 +498,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
 
 
 /-!
-### Factorial via binary splitting.
+# Factorial via binary splitting.
 
 We prove this is equal to the standard factorial and mark it `@[csimp]`.
 
@@ -502,6 +507,7 @@ We could proceed further, with either Legendre or Luschny methods.
 
 /-!
 This is the highest factorial I can `#eval` using the naive implementation without a stack overflow:
+
 ```
 /-- info: 114716 -/
 #guard_msgs in
@@ -515,10 +521,12 @@ We could implement a tail-recursive version (or just use `Nat.fold`),
 but instead let's jump straight to binary splitting.
 -/
 
-/-- `ascFactorial` implemented using binary splitting.
+/--
+`ascFactorial` implemented using binary splitting.
 
 While this still performs the same number of multiplications,
-the big-integer operands to each are much smaller. -/
+the big-integer operands to each are much smaller.
+-/
 def ascFactorialBinary (n k : ℕ) : ℕ :=
   match k with
   | 0 => 1
@@ -533,10 +541,12 @@ lemma ascFactorial_eq_ascFactorialBinary : ascFactorial = ascFactorialBinary := 
   | case2 => simp [ascFactorial]
   | case3 n k ih₁ ih₂ => grind [ascFactorial_mul_ascFactorial]
 
-/-- Factorial implemented using binary splitting.
+/--
+Factorial implemented using binary splitting.
 
 While this still performs the same number of multiplications,
-the big-integer operands to each are much smaller. -/
+the big-integer operands to each are much smaller.
+-/
 def factorialBinarySplitting (n : ℕ) : ℕ :=
   ascFactorialBinary 1 n
 

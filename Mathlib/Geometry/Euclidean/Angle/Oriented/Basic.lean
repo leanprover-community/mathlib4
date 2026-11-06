@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.TwoDim
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Oriented angles.
 
@@ -27,7 +30,6 @@ modulo `2 * π` as equalities of `(2 : ℤ) • θ`.
 ## References
 
 * Evan Chen, Euclidean Geometry in Mathematical Olympiads.
-
 -/
 
 @[expose] public section

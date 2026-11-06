@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Ring.Action.Rat
 public import Mathlib.Data.Finset.Sort
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
@@ -33,6 +36,7 @@ directory.
 There are often two natural variants of lemmas involving sums, depending on whether one acts on the
 polynomials, or on the function. The naming convention is that one adds `index` when acting on
 the polynomials. For instance,
+
 * `sum_add_index` states that `(p + q).sum f = p.sum f + q.sum f`;
 * `sum_add` states that `p.sum (fun n x ↦ f n x + g n x) = p.sum f + p.sum g`.
 * Notation to refer to `Polynomial R`, as `R[X]` or `R[t]`.
@@ -45,6 +49,7 @@ The variable `X` commutes with every polynomial `p`: lemma `X_mul` proves the id
 to make polynomials irreducible from the point of view of the kernel. Most operations
 are irreducible since Lean cannot compute anyway with `AddMonoidAlgebra`. There are two
 exceptions that we make semireducible:
+
 * The zero polynomial, so that its coefficients are definitionally equal to `0`.
 * The scalar action, to permit typeclass search to unfold it to resolve potential instance
   diamonds.
@@ -60,11 +65,13 @@ in general not be used once the basic API for polynomials is constructed.
 
 noncomputable section
 
-/-- `Polynomial R` is the type of univariate polynomials over `R`,
+/--
+`Polynomial R` is the type of univariate polynomials over `R`,
 denoted as `R[X]` within the `Polynomial` namespace.
 
 Polynomials should be seen as (semi-)rings with the additional constructor `X`.
-The embedding from `R` is called `C`. -/
+The embedding from `R` is called `C`.
+-/
 @[wikidata Q43260]
 abbrev Polynomial (R : Type*) [Semiring R] : Type _ := AddMonoidAlgebra R ℕ
 
@@ -104,7 +111,8 @@ theorem exists_iff_exists_finsupp (P : R[X] → Prop) : (∃ p, P p) ↔ ∃ q, 
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem eta (f : R[X]) : Polynomial.ofFinsupp f.toFinsupp = f := rfl
 
-/-! ### Conversions to and from `AddMonoidAlgebra`
+/-!
+# Conversions to and from `AddMonoidAlgebra`
 
 Since `R[X]` is not defeq to `R[ℕ]`, but instead is a structure wrapping
 it, we have to copy across all the arithmetic operators manually, along with the lemmas about how
@@ -410,16 +418,20 @@ theorem X_pow_mul {n : ℕ} : X ^ n * p = p * X ^ n := by
     conv_lhs => rw [pow_succ]
     rw [mul_assoc, X_mul, ← mul_assoc, ih, mul_assoc, ← pow_succ]
 
-/-- Prefer putting constants to the left of `X`.
+/--
+Prefer putting constants to the left of `X`.
 
-This lemma is the loop-avoiding `simp` version of `Polynomial.X_mul`. -/
+This lemma is the loop-avoiding `simp` version of `Polynomial.X_mul`.
+-/
 @[simp]
 theorem X_mul_C (r : R) : X * C r = C r * X :=
   X_mul
 
-/-- Prefer putting constants to the left of `X ^ n`.
+/--
+Prefer putting constants to the left of `X ^ n`.
 
-This lemma is the loop-avoiding `simp` version of `X_pow_mul`. -/
+This lemma is the loop-avoiding `simp` version of `X_pow_mul`.
+-/
 @[simp]
 theorem X_pow_mul_C (r : R) (n : ℕ) : X ^ n * C r = C r * X ^ n :=
   X_pow_mul
@@ -427,9 +439,11 @@ theorem X_pow_mul_C (r : R) (n : ℕ) : X ^ n * C r = C r * X ^ n :=
 theorem X_pow_mul_assoc {n : ℕ} : p * X ^ n * q = p * q * X ^ n := by
   rw [mul_assoc, X_pow_mul, ← mul_assoc]
 
-/-- Prefer putting constants to the left of `X ^ n`.
+/--
+Prefer putting constants to the left of `X ^ n`.
 
-This lemma is the loop-avoiding `simp` version of `X_pow_mul_assoc`. -/
+This lemma is the loop-avoiding `simp` version of `X_pow_mul_assoc`.
+-/
 @[simp]
 theorem X_pow_mul_assoc_C {n : ℕ} (r : R) : p * X ^ n * C r = p * C r * X ^ n :=
   X_pow_mul_assoc

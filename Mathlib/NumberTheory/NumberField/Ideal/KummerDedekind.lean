@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Int
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kummer-Dedekind criterion for the splitting of prime numbers
 
@@ -23,10 +26,8 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
 
 * `RingOfIntegers.exponent`: the smallest positive integer `d` contained in the conductor of `θ`.
   It is the smallest integer such that `d • 𝓞 K ⊆ ℤ[θ]`, see `RingOfIntegers.exponent_eq_sInf`.
-
 * `RingOfIntegers.ZModXQuotSpanEquivQuotSpan`: The isomorphism between `(ℤ / pℤ)[X] / (minpoly θ)`
   and `𝓞 K / p(𝓞 K)` for a prime `p` which doesn't divide the exponent of `θ`.
-
 * `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod`: The bijection between the prime ideals
   of `K` above `p` and the monic irreducible factors of `minpoly ℤ θ` modulo `p` for a prime `p`
   which doesn't divide the exponent of `θ`.
@@ -36,16 +37,13 @@ Let `K` be a number field and `θ` an algebraic integer of `K`.
 * `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod`: The ideal corresponding to the class
   of `Q ∈ ℤ[X]` modulo `p` via `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is spanned
   by `p` and `Q(θ)`.
-
 * `NumberField.Ideal.inertiaDeg_primesOverSpanEquivMonicFactorsMod_symm_apply`: The residual degree
   of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
   `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the degree of `Q mod p`.
-
 * `NumberField.Ideal.ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply`: The
   ramification index of the ideal corresponding to the class of `Q ∈ ℤ[X]` modulo `p` via
   `NumberField.Ideal.primesOverSpanEquivMonicFactorsMod` is equal to the multiplicity of `Q mod p`
   in `minpoly ℤ θ`.
-
 -/
 
 @[expose] public section

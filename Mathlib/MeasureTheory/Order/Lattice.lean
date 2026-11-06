@@ -7,14 +7,17 @@ module
 
 public import Mathlib.MeasureTheory.Measure.AEMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for measurability of lattice operations
 
 In this file we define classes `MeasurableSup` and `MeasurableInf` and prove dot-style
 lemmas (`Measurable.sup`, `AEMeasurable.sup` etc). For binary operations we define two typeclasses:
 
-- `MeasurableSup` says that both left and right sup are measurable;
-- `MeasurableSup₂` says that `fun p : α × α => p.1 ⊔ p.2` is measurable,
+* `MeasurableSup` says that both left and right sup are measurable;
+* `MeasurableSup₂` says that `fun p : α × α => p.1 ⊔ p.2` is measurable,
 
 and similarly for other binary operations. The reason for introducing these classes is that in case
 of topological space `α` equipped with the Borel `σ`-algebra, instances for `MeasurableSup₂`
@@ -26,7 +29,6 @@ For instances relating, e.g., `ContinuousSup` to `MeasurableSup` see file
 ## Tags
 
 measurable function, lattice operation
-
 -/
 
 public section

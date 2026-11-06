@@ -9,6 +9,9 @@ public import Mathlib.Topology.Separation.Basic
 
 import Mathlib.Order.Interval.Set.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the set of filters on a type
 
@@ -19,12 +22,9 @@ only if it is a union of a family of these basic open sets, see `Filter.isOpen_i
 This topology has the following important properties.
 
 * If `X` is a topological space, then the map `𝓝 : X → Filter X` is a topology inducing map.
-
 * In particular, it is a continuous map, so `𝓝 ∘ f` tends to `𝓝 (𝓝 a)` whenever `f` tends to `𝓝 a`.
-
 * If `X` is an ordered topological space with order topology and no max element, then `𝓝 ∘ f` tends
   to `𝓝 Filter.atTop` whenever `f` tends to `Filter.atTop`.
-
 * It turns `Filter X` into a T₀ space and the order on `Filter X` is the dual of the
   `specializationOrder (Filter X)`.
 

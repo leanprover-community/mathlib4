@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Disintegration.Density
 public import Mathlib.Probability.Kernel.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
@@ -15,6 +18,7 @@ Let `α` and `γ` be two measurable spaces, where either `α` is countable or `�
 countably generated. Let `κ, η : Kernel α γ` be finite kernels.
 Then there exists a function `Kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
 and a kernel `Kernel.singularPart κ η : Kernel α γ` such that
+
 * `κ = Kernel.withDensity η (Kernel.rnDeriv κ η) + Kernel.singularPart κ η`,
 * for all `a : α`, `Kernel.singularPart κ η a ⟂ₘ η a`,
 * for all `a : α`, `Kernel.singularPart κ η a = 0 ↔ κ a ≪ η a`,
@@ -61,13 +65,13 @@ is used.
 
 Uniqueness results: if `κ = η.withDensity f + ξ` for measurable `f` and `ξ` is such that
 `ξ a ⟂ₘ η a` for some `a : α` then
+
 * `ProbabilityTheory.Kernel.eq_rnDeriv`: `f a =ᵐ[η a] Kernel.rnDeriv κ η a`
 * `ProbabilityTheory.Kernel.eq_singularPart`: `ξ a = Kernel.singularPart κ η a`
 
 ## References
 
-Theorem 1.28 in [O. Kallenberg, Random Measures, Theory and Applications][kallenberg2017].
-
+Theorem 1.28 in \[O. Kallenberg, Random Measures, Theory and Applications\]\[kallenberg2017\].
 -/
 
 @[expose] public section
@@ -82,11 +86,13 @@ variable {α γ : Type*} {mα : MeasurableSpace α} {mγ : MeasurableSpace γ} {
   [hαγ : MeasurableSpace.CountableOrCountablyGenerated α γ]
 
 open scoped Classical in
-/-- Auxiliary function used to define `ProbabilityTheory.Kernel.rnDeriv` and
+/--
+Auxiliary function used to define `ProbabilityTheory.Kernel.rnDeriv` and
 `ProbabilityTheory.Kernel.singularPart`.
 
 This has the properties we want for a Radon-Nikodym derivative only if `κ ≪ ν`. The definition of
-`rnDeriv κ η` will be built from `rnDerivAux κ (κ + η)`. -/
+`rnDeriv κ η` will be built from `rnDerivAux κ (κ + η)`.
+-/
 noncomputable
 def rnDerivAux (κ η : Kernel α γ) (a : α) (x : γ) : ℝ :=
   if hα : Countable α then ((κ a).rnDeriv (η a) x).toReal
@@ -183,8 +189,10 @@ lemma withDensity_one_sub_rnDerivAux (κ η : Kernel α γ) [IsFiniteKernel κ] 
 `κ` and `η`. -/
 def mutuallySingularSet (κ η : Kernel α γ) : Set (α × γ) := {p | 1 ≤ rnDerivAux κ (κ + η) p.1 p.2}
 
-/-- A set of points in `α × γ` related to the absolute continuity / mutual singularity of
+/--
+A set of points in `α × γ` related to the absolute continuity / mutual singularity of
 `κ` and `η`. That is,
+
 * `withDensity η (rnDeriv κ η) a (mutuallySingularSetSlice κ η a) = 0`,
 * `singularPart κ η a (mutuallySingularSetSlice κ η a)ᶜ = 0`.
 -/

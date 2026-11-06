@@ -9,16 +9,18 @@ public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
 public import Mathlib.Order.DirectedInverseSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Number of embeddings of an algebraic extension of infinite separable degree
 
 ## Main results
 
-- `Field.Emb.cardinal_eq_two_pow_rank` : if `E/F` is an algebraic separable field extension
+* `Field.Emb.cardinal_eq_two_pow_rank` : if `E/F` is an algebraic separable field extension
   of infinite degree, then `#(Field.Emb F E) = 2 ^ Module.rank F E`.
   This is in contrast to the case of finite degree, where `#(Field.Emb F E) = Module.rank F E`.
-
-- `Field.Emb.cardinal_eq_two_pow_sepDegree`: more generally, if `E/F` is an algebraic
+* `Field.Emb.cardinal_eq_two_pow_sepDegree`: more generally, if `E/F` is an algebraic
   extension of infinite separable degree, then `#(Field.Emb F E) = 2 ^ Field.sepDegree F E`.
 
 ## Sketch of the proof
@@ -61,7 +63,6 @@ To make this straightforward, it is crucial that `(↑i : WithTop ι)⁺ = ↑(i
 The predicate `IsSuccPrelimit` allows us to treat limits and the bottom element uniformly, and
 the only place the bottom element requires special treatment is in `equivLim` (the bijection
 between `E⟮<i⟯ →ₐ[F] Ē` and the inverse limit of `E⟮<j⟯ →ₐ[F] Ē` over `j < i`).
-
 -/
 
 @[expose] public section

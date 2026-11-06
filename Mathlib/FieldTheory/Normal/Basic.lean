@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.GroupTheory.Solvable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normal field extensions
 
@@ -21,7 +24,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 * `Algebra.IsQuadraticExtension.normal`: the instance that a quadratic extension, given as a class
   `Algebra.IsQuadraticExtension`, is normal.
-
 -/
 
 @[expose] public section

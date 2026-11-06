@@ -9,6 +9,9 @@ public meta import Mathlib.Algebra.Order.Round
 public import Mathlib.Algebra.Order.Round
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Floor Function for Rational Numbers
 
@@ -270,7 +273,7 @@ meta def evalIntFract : NormNumExt where eval {u α} e := do
   | _, _, _ => failure
 
 /-!
-### `norm_num` extension for `round`
+# `norm_num` extension for `round`
 -/
 
 theorem isNat_round (r : R) (m : ℕ) : IsNat r m → IsNat (round r) m := by

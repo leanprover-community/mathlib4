@@ -7,11 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 
-/-! # Functors that are linear with respect to an action
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functors that are linear with respect to an action
 
 Given a monoidal category `C` acting on the left or on the right on categories
 `D` and `D'`, we introduce the following typeclasses on functors `F : D ⥤ D'` to
 express compatibility of `F` with the action of `C`:
+
 * `F.LaxLeftLinear C` bundles the "lineator" as a morphism
   `μₗ : c ⊙ₗ F.obj d ⟶ F.obj (c ⊙ₗ d)`.
 * `F.LaxRightLinear C` bundles the "lineator" as a morphism
@@ -26,7 +31,6 @@ express compatibility of `F` with the action of `C`:
 * `F.RightLinear C` expresses that `F` has both a `LaxRightLinear C` and
   an `F.OplaxRightLinear C` structure, and that they are compatible, i.e.
   `δᵣ F` is a left and right inverse to `μᵣ`.
-
 -/
 
 public section

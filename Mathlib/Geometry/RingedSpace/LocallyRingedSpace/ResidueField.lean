@@ -8,8 +8,10 @@ module
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -20,12 +22,11 @@ canonical evaluation map from `Γ(X, U)` to the residue field of `X` at `x`.
 
 The following are in the `AlgebraicGeometry.LocallyRingedSpace` namespace:
 
-- `residueField`: the residue field of the stalk at `x`.
-- `evaluation`: for open subsets `U` of `X` containing `x`, the evaluation map from sections over
+* `residueField`: the residue field of the stalk at `x`.
+* `evaluation`: for open subsets `U` of `X` containing `x`, the evaluation map from sections over
   `U` to the residue field at `x`.
-- `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
+* `evaluationMap`: a morphism of locally ringed spaces induces a morphism, i.e. extension, of
   residue fields.
-
 -/
 
 @[expose] public section

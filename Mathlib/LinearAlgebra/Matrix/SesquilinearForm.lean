@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sesquilinear form
 
@@ -30,7 +33,6 @@ generalized to fully semi-bilinear forms.
 ## Tags
 
 Sesquilinear form, Sesquilinear map, matrix, basis
-
 -/
 
 @[expose] public section
@@ -47,9 +49,11 @@ variable [Semiring R₁] [Semiring S₁] [Semiring R₂] [Semiring S₂] [AddCom
 variable [Fintype n] [Fintype m]
 variable (σ₁ : R₁ →+* S₁) (σ₂ : R₂ →+* S₂)
 
-/-- The map from `Matrix n n R` to bilinear maps on `n → R`.
+/--
+The map from `Matrix n n R` to bilinear maps on `n → R`.
 
-This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toLinearMap₂'`.
+-/
 def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ₁] (m → R₂) →ₛₗ[σ₂] N₂ :=
   -- porting note: we don't seem to have `∑ i j` as valid notation yet
   mk₂'ₛₗ σ₁ σ₂ (fun (v : n → R₁) (w : m → R₂) => ∑ i, ∑ j, σ₂ (w j) • σ₁ (v i) • f i j)
@@ -85,10 +89,12 @@ variable [AddCommMonoid M₁] [Module R₁ M₁] [AddCommMonoid M₂] [Module R�
 variable {σ₁ : R₁ →+* S₁} {σ₂ : R₂ →+* S₂}
 variable (R)
 
-/-- The linear map from sesquilinear maps to `Matrix n m N₂` given an `n`-indexed basis for `M₁`
+/--
+The linear map from sesquilinear maps to `Matrix n m N₂` given an `n`-indexed basis for `M₁`
 and an `m`-indexed basis for `M₂`.
 
-This is an auxiliary definition for the equivalence `Matrix.toLinearMapₛₗ₂'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toLinearMapₛₗ₂'`.
+-/
 def LinearMap.toMatrix₂Aux (b₁ : n → M₁) (b₂ : m → M₂) :
     (M₁ →ₛₗ[σ₁] M₂ →ₛₗ[σ₂] N₂) →ₗ[R] Matrix n m N₂ where
   toFun f := of fun i j => f (b₁ i) (b₂ j)
@@ -123,7 +129,8 @@ end AuxToMatrix
 
 section ToMatrix'
 
-/-! ### Bilinear maps over `n → R`
+/-!
+# Bilinear maps over `n → R`
 
 This section deals with the conversion between matrices and sesquilinear maps on `n → R`.
 -/
@@ -302,7 +309,8 @@ end CommToMatrix'
 
 section ToMatrix
 
-/-! ### Bilinear maps over arbitrary vector spaces
+/-!
+# Bilinear maps over arbitrary vector spaces
 
 This section deals with the conversion between matrices and bilinear maps on
 a module with a fixed basis.
@@ -526,7 +534,9 @@ end
 
 end ToMatrix
 
-/-! ### Adjoint pairs -/
+/-!
+# Adjoint pairs
+-/
 
 
 section MatrixAdjoints
@@ -653,7 +663,9 @@ end MatrixAdjoints
 
 namespace LinearMap
 
-/-! ### Nondegenerate bilinear forms -/
+/-!
+# Nondegenerate bilinear forms
+-/
 
 open Matrix
 

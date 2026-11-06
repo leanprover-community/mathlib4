@@ -11,15 +11,19 @@ public import Mathlib.Tactic.ExtendDoc
 public import Mathlib.Tactic.Linter.OldObtain
 public import Mathlib.Tactic.PPWithUniv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic tactics and utilities for tactic writing
 
 This file defines some basic utilities for tactic writing, and also
-- a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
-- the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
+
+* a dummy `variables` macro (which warns that the Lean 4 name is `variable`)
+* the `introv` tactic, which allows the user to automatically introduce the variables of a theorem
   and explicitly name the non-dependent hypotheses,
-- an `assumption` macro, calling the `assumption` tactic on all goals
-- the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
+* an `assumption` macro, calling the `assumption` tactic on all goals
+* the tactics `match_target` and `clear_aux_decl` (clearing all auxiliary declarations from the
   context).
 -/
 
@@ -40,12 +44,14 @@ and merely warns that it has been renamed to `variable` in Lean 4. -/
     elabVariable (← `(variable%$pos $binders*))
   | _ => throwUnsupportedSyntax
 
-/-- Given two arrays of `FVarId`s, one from an old local context and the other from a new local
+/--
+Given two arrays of `FVarId`s, one from an old local context and the other from a new local
 context, pushes `FVarAliasInfo`s into the info tree for corresponding pairs of `FVarId`s.
 Recall that variables linked this way should be considered to be semantically identical.
 
 The effect of this is, for example, the unused variable linter will see that variables
-from the first array are used if corresponding variables in the second array are used. -/
+from the first array are used if corresponding variables in the second array are used.
+-/
 def pushFVarAliasInfo {m : Type → Type} [Monad m] [MonadInfoTree m]
     (oldFVars newFVars : Array FVarId) (newLCtx : LocalContext) : m Unit := do
   for old in oldFVars, new in newFVars do
@@ -62,6 +68,7 @@ arguments does nothing.
   parameters, using the names `h₁`, `h₂`, ... in turn. Use `_` to anonymize a specific hypothesis.
 
 Examples:
+
 ```
 example : ∀ a b : Nat, a = b → b = a := by
   introv h

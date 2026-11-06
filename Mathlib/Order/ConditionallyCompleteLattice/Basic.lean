@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Lattice.Indexed
 public import Mathlib.Order.ConditionallyCompleteLattice.Defs
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of conditionally complete lattices
 
@@ -235,9 +238,12 @@ theorem csSup_Iio [NoMinOrder α] [DenselyOrdered α] : sSup (Iio a) = a :=
 theorem csSup_Ioo [DenselyOrdered α] (h : a < b) : sSup (Ioo a b) = b :=
   (isLUB_Ioo h).csSup_eq (nonempty_Ioo.2 h)
 
-/-- Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that
-1) `b` is an upper bound
-2) every other upper bound `b'` satisfies `b ≤ b'`. -/
+/--
+Introduction rule to prove that `b` is the supremum of `s`: it suffices to check that
+
+1. `b` is an upper bound
+2. every other upper bound `b'` satisfies `b ≤ b'`.
+-/
 theorem csSup_eq_of_is_forall_le_of_forall_le_imp_ge (hs : s.Nonempty) (h_is_ub : ∀ a ∈ s, a ≤ b)
     (h_b_le_ub : ∀ ub, (∀ a ∈ s, a ≤ ub) → b ≤ ub) : sSup s = b :=
   (csSup_le hs h_is_ub).antisymm ((h_b_le_ub _) fun _ => le_csSup ⟨b, h_is_ub⟩)
@@ -389,7 +395,7 @@ theorem Monotone.map_csInf {β : Type*} [ConditionallyCompleteLattice β] {f : �
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Lemmas about a conditionally complete linear order with bottom element
+# Lemmas about a conditionally complete linear order with bottom element
 
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/
@@ -561,7 +567,7 @@ theorem AntitoneOn.sInf_image_Icc [Preorder α] [ConditionallyCompleteLattice β
   exact h'.dual_left.sInf_image_Icc (α := αᵒᵈ) hab
 
 /-!
-### Supremum/infimum of `Set.image2`
+# Supremum/infimum of `Set.image2`
 
 A collection of lemmas showing what happens to the suprema/infima of `s` and `t` when mapped under
 a binary function whose partial evaluations are lower/upper adjoints of Galois connections.

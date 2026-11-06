@@ -13,6 +13,9 @@ public import Mathlib.GroupTheory.GroupAction.Quotient
 public import Mathlib.GroupTheory.QuotientGroup.Basic
 public import Mathlib.SetTheory.Cardinal.NatCard
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Index of a Subgroup
 
@@ -21,20 +24,20 @@ Several theorems proved in this file are known as Lagrange's theorem.
 
 ## Main definitions
 
-- `H.index` : the index of `H : Subgroup G` as a natural number,
+* `H.index` : the index of `H : Subgroup G` as a natural number,
   and returns 0 if the index is infinite.
-- `H.relIndex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
+* `H.relIndex K` : the relative index of `H : Subgroup G` in `K : Subgroup G` as a natural number,
   and returns 0 if the relative index is infinite.
 
 ## Main results
 
-- `card_mul_index` : `Nat.card H * H.index = Nat.card G`
-- `index_mul_card` : `H.index * Nat.card H = Nat.card G`
-- `index_dvd_card` : `H.index ∣ Nat.card G`
-- `relIndex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
-- `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
-- `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
-- `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
+* `card_mul_index` : `Nat.card H * H.index = Nat.card G`
+* `index_mul_card` : `H.index * Nat.card H = Nat.card G`
+* `index_dvd_card` : `H.index ∣ Nat.card G`
+* `relIndex_mul_index` : If `H ≤ K`, then `H.relindex K * K.index = H.index`
+* `index_dvd_of_le` : If `H ≤ K`, then `K.index ∣ H.index`
+* `relIndex_mul_relIndex` : `relIndex` is multiplicative in towers
+* `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
 @[expose] public section

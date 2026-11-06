@@ -10,6 +10,9 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.GradedAlgebra.HomogeneousLocalization
 public import Mathlib.Topology.Sheaves.LocalPredicate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The structure sheaf on `ProjectiveSpectrum 𝒜`.
 
@@ -17,15 +20,17 @@ In `Mathlib/AlgebraicGeometry/ProjectiveSpectrum/Topology.lean`, we have given a
 `ProjectiveSpectrum 𝒜`; in this file we will construct a sheaf on `ProjectiveSpectrum 𝒜`.
 
 ## Notation
-- `A` is a commutative ring;
-- `σ` is a class of additive subgroups of `A`;
-- `𝒜 : ℕ → σ` is the grading of `A`;
-- `U` is opposite object of some open subset of `ProjectiveSpectrum.top`.
+
+* `A` is a commutative ring;
+* `σ` is a class of additive subgroups of `A`;
+* `𝒜 : ℕ → σ` is the grading of `A`;
+* `U` is opposite object of some open subset of `ProjectiveSpectrum.top`.
 
 ## Main definitions and results
+
 We define the structure sheaf as the subsheaf of all dependent function
 `f : Π x : U, HomogeneousLocalization 𝒜 x` such that `f` is locally expressible as ratio of two
-elements of the *same grading*, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b ∈ 𝒜 i), ∀ z ∈ V, f z = a / b`.
+elements of the _same grading_, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b ∈ 𝒜 i), ∀ z ∈ V, f z = a / b`.
 
 * `AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isLocallyFraction`: the predicate that
   a dependent function is locally expressible as a ratio of two elements of the same grading.
@@ -36,15 +41,14 @@ elements of the *same grading*, i.e. `∀ y ∈ U, ∃ (V ⊆ U) (i : ℕ) (a b 
   restriction map.
 
 Then we establish that `Proj 𝒜` is a `LocallyRingedSpace`:
+
 * `AlgebraicGeometry.Proj.stalkIso'`: for any `x : ProjectiveSpectrum 𝒜`, the stalk of
   `Proj.StructureSheaf` at `x` is isomorphic to `HomogeneousLocalization 𝒜 x`.
 * `AlgebraicGeometry.Proj.toLocallyRingedSpace`: `Proj` as a locally ringed space.
 
 ## References
 
-* [Robin Hartshorne, *Algebraic Geometry*][Har77]
-
-
+* ‍\[Robin Hartshorne, _Algebraic Geometry_\]\[Har77\]
 -/
 
 @[expose] public section
@@ -70,8 +74,9 @@ namespace ProjectiveSpectrum.StructureSheaf
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable {𝒜} in
-/-- The predicate saying that a dependent function on an open `U` is realised as a fixed fraction
-`r / s` of *same grading* in each of the stalks (which are localizations at various prime ideals).
+/--
+The predicate saying that a dependent function on an open `U` is realised as a fixed fraction
+`r / s` of _same grading_ in each of the stalks (which are localizations at various prime ideals).
 -/
 def IsFraction {U : Opens (ProjectiveSpectrum.top 𝒜)} (f : ∀ x : U, at x.1) : Prop :=
   ∃ (i : ℕ) (r s : 𝒜 i) (s_nin : ∀ x : U, s.1 ∉ x.1.asHomogeneousIdeal),
@@ -254,9 +259,11 @@ def openToLocalization (U : Opens (ProjectiveSpectrum.top 𝒜)) (x : Projective
     map_add' _ _ := rfl }
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The ring homomorphism from the stalk of the structure sheaf of `Proj` at a point corresponding
-to a homogeneous prime ideal `x` to the *homogeneous localization* at `x`,
-formed by gluing the `openToLocalization` maps. -/
+/--
+The ring homomorphism from the stalk of the structure sheaf of `Proj` at a point corresponding
+to a homogeneous prime ideal `x` to the _homogeneous localization_ at `x`,
+formed by gluing the `openToLocalization` maps.
+-/
 def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ⟶ ↧(at x) :=
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)

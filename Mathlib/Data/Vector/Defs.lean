@@ -9,6 +9,9 @@ public import Mathlib.Data.List.Defs
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The type `List.Vector`
 
@@ -29,7 +32,7 @@ universe u v w
 `List.Vector α n` is the type of lists of length `n` with elements of type `α`.
 
 Note that there is also `Vector α n` in the root namespace,
-which is the type of *arrays* of length `n` with elements of type `α`.
+which is the type of _arrays_ of length `n` with elements of type `α`.
 
 Typically, if you are doing programming or verification, you will primarily use `Vector α n`,
 and if you are doing mathematics, you may want to use `List.Vector α n` instead.
@@ -186,7 +189,9 @@ def mapAccumr₂ (f : α → β → σ → σ × φ) : Vector α n → Vector β
 
 end Accum
 
-/-! ### Shift Primitives -/
+/-!
+# Shift Primitives
+-/
 section Shift
 
 /-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
@@ -202,7 +207,9 @@ def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
 end Shift
 
 
-/-! ### Basic Theorems -/
+/-!
+# Basic Theorems
+-/
 /-- Vector is determined by the underlying list. -/
 protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

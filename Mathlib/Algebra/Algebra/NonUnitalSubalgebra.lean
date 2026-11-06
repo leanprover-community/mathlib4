@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.LinearAlgebra.Span.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-unital Subalgebras over Commutative Semirings
 
@@ -266,7 +269,9 @@ variable {S : NonUnitalSubalgebra R A}
 
 section
 
-/-! ### `NonUnitalSubalgebra`s inherit structure from their `Submodule` coercions. -/
+/-!
+# `NonUnitalSubalgebra`s inherit structure from their `Submodule` coercions.
+-/
 
 instance instModule' [Semiring R'] [SMul R' R] [Module R' A] [IsScalarTower R' R A] : Module R' S :=
   SMulMemClass.toModule' _ R' R A S
@@ -497,9 +502,11 @@ theorem injective_codRestrict
     Function.Injective (NonUnitalAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
-/-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
+/--
+Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 abbrev rangeRestrict (f : A →ₙₐ[R] B) :
     A →ₙₐ[R] f.range :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
@@ -519,9 +526,11 @@ theorem mem_equalizer (φ ψ : A →ₙₐ[R] B) (x : A) :
     x ∈ NonUnitalAlgHom.equalizer φ ψ ↔ φ x = ψ x :=
   Iff.rfl
 
-/-- The range of a morphism of algebras is a fintype, if the domain is a fintype.
+/--
+The range of a morphism of algebras is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype. -/
+Note that this instance can cause a diamond with `Subtype.fintype` if `B` is also a fintype.
+-/
 instance fintypeRange [Fintype A] [DecidableEq B] (φ : A →ₙₐ[R] B) :
     Fintype φ.range :=
   Set.fintypeRange φ
@@ -920,9 +929,11 @@ theorem prod_inf_prod {S T : NonUnitalSubalgebra R A} {S₁ T₁ : NonUnitalSuba
 end Prod
 
 
-/-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
+/--
+The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
-This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion` -/
+This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`
+-/
 def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl

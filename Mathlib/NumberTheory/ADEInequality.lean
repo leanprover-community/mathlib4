@@ -12,6 +12,9 @@ import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Basic
 import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The inequality `p⁻¹ + q⁻¹ + r⁻¹ > 1`
 
@@ -19,6 +22,7 @@ In this file we classify solutions to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`, for positive natural numbers `p`, `q`, and `r`.
 
 The solutions are exactly of the form.
+
 * `A' q r := {1,q,r}`
 * `D' r := {2,2,r}`
 * `E6 := {2,3,3}`, or `E7 := {2,3,4}`, or `E8 := {2,3,5}`
@@ -34,7 +38,6 @@ in the classification of Dynkin diagrams, root systems, and semisimple Lie algeb
 * `ADEInequality.E7`, the multiset `{2,3,4}`
 * `ADEInequality.E8`, the multiset `{2,3,5}`
 * `ADEInequality.classification`, the classification of solutions to `p⁻¹ + q⁻¹ + r⁻¹ > 1`
-
 -/
 
 @[expose] public section
@@ -51,58 +54,72 @@ that is a solution to the inequality
 def A' (q r : ℕ+) : Multiset ℕ+ :=
   {1, q, r}
 
-/-- `A r := {1,1,r}` is a `Multiset ℕ+`
+/--
+`A r := {1,1,r}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-These solutions are related to the Dynkin diagrams $A_r$. -/
+These solutions are related to the Dynkin diagrams $`A_r`.
+-/
 def A (r : ℕ+) : Multiset ℕ+ :=
   A' 1 r
 
-/-- `D' r := {2,2,r}` is a `Multiset ℕ+`
+/--
+`D' r := {2,2,r}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-These solutions are related to the Dynkin diagrams $D_{r+2}$. -/
+These solutions are related to the Dynkin diagrams $`D_{r+2}`.
+-/
 def D' (r : ℕ+) : Multiset ℕ+ :=
   {2, 2, r}
 
-/-- `E' r := {2,3,r}` is a `Multiset ℕ+`.
+/--
+`E' r := {2,3,r}` is a `Multiset ℕ+`.
 For `r ∈ {3,4,5}` is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-These solutions are related to the Dynkin diagrams $E_{r+3}$. -/
+These solutions are related to the Dynkin diagrams $`E_{r+3}`.
+-/
 def E' (r : ℕ+) : Multiset ℕ+ :=
   {2, 3, r}
 
-/-- `E6 := {2,3,3}` is a `Multiset ℕ+`
+/--
+`E6 := {2,3,3}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-This solution is related to the Dynkin diagrams $E_6$. -/
+This solution is related to the Dynkin diagrams $`E_6`.
+-/
 def E6 : Multiset ℕ+ :=
   E' 3
 
-/-- `E7 := {2,3,4}` is a `Multiset ℕ+`
+/--
+`E7 := {2,3,4}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-This solution is related to the Dynkin diagrams $E_7$. -/
+This solution is related to the Dynkin diagrams $`E_7`.
+-/
 def E7 : Multiset ℕ+ :=
   E' 4
 
-/-- `E8 := {2,3,5}` is a `Multiset ℕ+`
+/--
+`E8 := {2,3,5}` is a `Multiset ℕ+`
 that is a solution to the inequality
 `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1`.
 
-This solution is related to the Dynkin diagrams $E_8$. -/
+This solution is related to the Dynkin diagrams $`E_8`.
+-/
 def E8 : Multiset ℕ+ :=
   E' 5
 
-/-- `sumInv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
+/--
+`sumInv pqr` for a `pqr : Multiset ℕ+` is the sum of the inverses
 of the elements of `pqr`, as rational number.
 
-The intended argument is a multiset `{p,q,r}` of cardinality `3`. -/
+The intended argument is a multiset `{p,q,r}` of cardinality `3`.
+-/
 def sumInv (pqr : Multiset ℕ+) : ℚ :=
   Multiset.sum (pqr.map fun (x : ℕ+) => x⁻¹)
 
@@ -220,7 +237,8 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   apply admissible_of_one_lt_sumInv_aux hS _ H
   simp only [S, insert_eq_cons, length_sort, card_cons, card_singleton]
 
-/-- A multiset `{p,q,r}` of positive natural numbers
+/--
+A multiset `{p,q,r}` of positive natural numbers
 is a solution to `(p⁻¹ + q⁻¹ + r⁻¹ : ℚ) > 1` if and only if
 it is `Admissible` which means it is one of:
 

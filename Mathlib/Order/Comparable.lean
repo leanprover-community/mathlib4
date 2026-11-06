@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Antisymmetrization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparability and incomparability relations
 
@@ -41,7 +44,9 @@ open Function Relation
 
 variable {α : Type*} {a b c d : α}
 
-/-! ### Comparability -/
+/-!
+# Comparability
+-/
 
 /-- A partial order where any two elements are comparable is a linear order. -/
 @[instance_reducible]
@@ -53,7 +58,9 @@ def Relation.linearOrderOfSymmGen [PartialOrder α]
   toDecidableEq := decEq
   toDecidableLT := decLT
 
-/-! ### Incomparability relation -/
+/-!
+# Incomparability relation
+-/
 
 section Relation
 

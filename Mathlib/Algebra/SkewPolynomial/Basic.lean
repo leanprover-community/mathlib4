@@ -9,28 +9,31 @@ public import Mathlib.Algebra.SkewMonoidAlgebra.Single
 
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Univariate skew polynomials
 
 Given a ring `R` and an endomorphism `φ` on `R` the skew polynomials over `R`
 are polynomials
-$$\sum_{i= 0}^n a_iX^n, n\geq 0, a_i\in R$$
+$$`\sum_{i= 0}^n a_iX^n, n\geq 0, a_i\in R`
 where the addition is the usual addition of polynomials
-$$\sum_{i= 0}^n a_iX^n + \sum_{i= 0}^n b_iX^n= \sum_{i= 0}^n (a_i + b_i)X^n.$$
+$$`\sum_{i= 0}^n a_iX^n + \sum_{i= 0}^n b_iX^n= \sum_{i= 0}^n (a_i + b_i)X^n.`
 The multiplication, however, is determined by
-$$Xa = \varphi (a)X$$
+$$`Xa = \varphi (a)X`
 by extending it to all polynomials in the obvious way.
 
 Skew polynomials are represented as `SkewMonoidAlgebra R (Multiplicative ℕ)`,
 where `R` is usually at least a Semiring. In this file, we define `SkewPolynomial`
 and provide basic instances.
 
-**Note**: To register the endomorphism `φ` see notation below.
+*Note*: To register the endomorphism `φ` see notation below.
 
 ## Notation
 
 The endomorphism `φ` is implemented using some action of `Multiplicative ℕ` on `R`.
-From this action, `φ` is an `abbrev` denoting $(\text{ofAdd } 1) \cdot a := \varphi(a)$.
+From this action, `φ` is an `abbrev` denoting $`(\text{ofAdd } 1) \cdot a := \varphi(a)`.
 
 Users that want to work with a specific map `φ` should introduce an action of
 `Multiplicative ℕ` on `R`. Specifying that this action is a `MulSemiringAction` amounts
@@ -67,21 +70,20 @@ uses an acting `AddMonoid M` and so we need to use `Multiplicative ℕ` for the 
 
 For associativity to hold, there should be an instance of
 `MulSemiringAction (Multiplicative ℕ) R` present in the context.
-For example, in the context of $\mathbb{F}_q$-linear polynomials, this can be the
-$q$-th Frobenius endomorphism - so $\varphi(a) = a^q$.
+For example, in the context of $`\mathbb{F}_q`-linear polynomials, this can be the
+$`q`-th Frobenius endomorphism - so $`\varphi(a) = a^q`.
 
 ## Reference
 
-The definition is inspired by Chapter 3 of [Papikian2023].
+The definition is inspired by Chapter 3 of \[Papikian2023\].
 
 ## Tags
 
 Skew Polynomials, Twisted Polynomials.
 
-Note that [ore33] proposes a more general definition of skew polynomial ring, where the
-multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `φ` is as above and
+Note that \[ore33\] proposes a more general definition of skew polynomial ring, where the
+multiplication is determined by  $`Xa = \varphi (a)X + δ (a)`, where `φ` is as above and
 `δ` is a derivation.
-
 -/
 
 @[expose] public section

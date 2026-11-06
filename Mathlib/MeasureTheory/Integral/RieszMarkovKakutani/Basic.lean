@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.Content
 public import Mathlib.Topology.ContinuousMap.CompactlySupported
 public import Mathlib.Topology.PartitionOfUnity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Riesz–Markov–Kakutani representation theorem
 
@@ -25,8 +28,7 @@ literature.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
-
+* ‍\[Walter Rudin, Real and Complex Analysis.\]\[Rud87\]
 -/
 
 @[expose] public section
@@ -42,7 +44,9 @@ open scoped BoundedContinuousFunction NNReal ENNReal CompactlySupported
 variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
-/-! ### Construction of the content: -/
+/-!
+# Construction of the content:
+-/
 
 section Monotone
 

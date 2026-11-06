@@ -13,6 +13,9 @@ public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Fourier transform
 
@@ -21,6 +24,7 @@ We set up the Fourier transform for complex-valued functions on finite-dimension
 ## Design choices
 
 In namespace `VectorFourier`, we define the Fourier integral in the following context:
+
 * `𝕜` is a commutative ring.
 * `V` and `W` are `𝕜`-modules.
 * `e` is a unitary additive character of `𝕜`, i.e. an `AddChar 𝕜 Circle`.
@@ -65,7 +69,9 @@ open MeasureTheory Filter
 
 open scoped Topology
 
-/-! ## Fourier theory for functions on general vector spaces -/
+/-!
+# Fourier theory for functions on general vector spaces
+-/
 
 namespace VectorFourier
 
@@ -180,10 +186,12 @@ variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [
 
 variable {σ : ℂ →+* ℂ} [RingHomIsometric σ]
 
-/-- Fubini's theorem for the Fourier integral.
+/--
+Fubini's theorem for the Fourier integral.
 
 This is the main technical step in proving both Parseval's identity and self-adjointness of the
-Fourier transform. -/
+Fourier transform.
+-/
 theorem integral_fourierIntegral_swap
     {f : V → E} {g : W → F} (M : F →L[ℂ] E →SL[σ] G) (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -211,9 +219,11 @@ theorem integral_fourierIntegral_swap
 variable [CompleteSpace E] [CompleteSpace F]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
+/--
+The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint.
 
-Version where the multiplication is replaced by a general bilinear form `M`. -/
+Version where the multiplication is replaced by a general bilinear form `M`.
+-/
 theorem integral_bilin_fourierIntegral_eq_flip
     {f : V → E} {g : W → F} (M : E →L[ℂ] F →L[ℂ] G) (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -245,11 +255,13 @@ theorem integral_fourierIntegral_smul_eq_flip
       ∫ x, (f x) • (fourierIntegral e ν L.flip g x) ∂μ :=
   integral_bilin_fourierIntegral_eq_flip (ContinuousLinearMap.lsmul ℂ ℂ) he hL hf hg
 
-/-- The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
+/--
+The Fourier transform satisfies `∫ 𝓕 f * conj g = ∫ f * conj (𝓕⁻¹ g)`, which together
 with the Fourier inversion theorem yields Plancherel's theorem. The stated version is more
 convenient since it does only require integrability of `f` and `g`.
 
-Version where the multiplication is replaced by a general bilinear form `M`. -/
+Version where the multiplication is replaced by a general bilinear form `M`.
+-/
 theorem integral_sesq_fourierIntegral_eq_neg_flip
     {f : V → E} {g : W → F} (M : E →L⋆[ℂ] F →L[ℂ] G) (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hf : Integrable f μ) (hg : Integrable g ν) :
@@ -324,7 +336,9 @@ theorem fourierIntegral_continuousMultilinearMap_apply
 end VectorFourier
 
 
-/-! ## Fourier theory for functions on `𝕜` -/
+/-!
+# Fourier theory for functions on `𝕜`
+-/
 
 
 namespace Fourier

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
 public import Mathlib.RingTheory.Polynomial.ContentIdeal
 public import Mathlib.RingTheory.Polynomial.GaussNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss's Lemma for Dedekind Domains
 

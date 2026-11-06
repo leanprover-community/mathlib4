@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Analysis.LocallyConvex.SeparatingDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The weak operator topology
 
@@ -90,7 +93,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
 local notation X "⋆" => StrongDual 𝕜₂ X
 
 /-!
-### Basic properties common with `E →L[𝕜] F`
+# Basic properties common with `E →L[𝕜] F`
 
 The section copies basic non-topological properties of `E →L[𝕜] F` over to `E →WOT[𝕜] F`, such as
 the module structure, `FunLike`, etc.
@@ -295,7 +298,7 @@ variable [IsTopologicalAddGroup F]
 end Basic
 
 /-!
-### The topology of `E →WOT[𝕜] F`
+# The topology of `E →WOT[𝕜] F`
 
 The section endows `E →WOT[𝕜] F` with the weak operator topology and shows the basic properties
 of this topology. In particular, we show that it is a topological vector space.
@@ -382,7 +385,9 @@ instance instIsUniformAddGroup : IsUniformAddGroup (E →SWOT[σ] F) := .comap (
 
 end Topology
 
-/-! ### The WOT is induced by a family of seminorms -/
+/-!
+# The WOT is induced by a family of seminorms
+-/
 section Seminorms
 
 variable [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜₂ F]

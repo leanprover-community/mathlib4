@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Star.Rat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Self-adjoint, skew-adjoint and normal elements of a star additive group
 
@@ -37,7 +40,6 @@ We also define `IsStarNormal R`, a `Prop` that states that an element `x` satisf
 * Define `fun z x => z * x * star z` (i.e. conjugation by `z`) as a monoid action of `R` on `R`
   (similar to the existing `ConjAct` for groups), and then state the fact that `selfAdjoint R` is
   invariant under it.
-
 -/
 
 @[expose] public section
@@ -377,9 +379,11 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
+/--
+The self-adjoint elements of a star additive monoid, as an additive submonoid.
 
-When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API. -/
+When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API.
+-/
 def selfAdjoint.addSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R

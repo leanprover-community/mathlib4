@@ -9,6 +9,9 @@ public meta import Mathlib.Util.Qq
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Defs
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reification support for the determinant tactic
 
@@ -18,8 +21,7 @@ certificate-chain evaluator.
 
 ## Main definitions
 
-- `reifyBirdDet`: Parse a call to `BirdDet.birdDet`.
-
+* `reifyBirdDet`: Parse a call to `BirdDet.birdDet`.
 -/
 
 public meta section
@@ -34,7 +36,8 @@ abbrev commSemiringOfCommRing {u : Level} {α : Q(Type u)}
     (rα : Q(CommRing $α)) : Q(CommSemiring $α) :=
   q(CommRing.toCommSemiring (α := $α) (s := $rα))
 
-/-- Parse an array literal into an array of element expressions.
+/--
+Parse an array literal into an array of element expressions.
 
 Compared to `getArrayLit?`, this also performs `whnf`.
 -/

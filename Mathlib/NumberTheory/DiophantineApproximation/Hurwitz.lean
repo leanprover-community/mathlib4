@@ -9,28 +9,30 @@ public import Mathlib.NumberTheory.Real.Irrational
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hurwitz's Theorem in Diophantine Approximation
 
-This file proves **Hurwitz's approximation theorem**: if $\xi$ is an irrational real number, then
-there are infinitely many irreducible rationals $x/y$ such that
-$$\left|\xi - \frac{x}{y}\right| < \frac{1}{\sqrt{5}\,y^2} \,.$$
+This file proves *Hurwitz's approximation theorem*: if $`\xi` is an irrational real number, then
+there are infinitely many irreducible rationals $`x/y` such that
+$$`\left|\xi - \frac{x}{y}\right| < \frac{1}{\sqrt{5}\,y^2} \,.`
 
 This strengthens the corresponding `Real.infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational`
-(Dirichlet's Theorem) with constant $1$ proved in
-`Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`. In fact the constant $\sqrt 5$ is
+(Dirichlet's Theorem) with constant $`1` proved in
+`Mathlib/NumberTheory/DiophantineApproximation/Basic.lean`. In fact the constant $`\sqrt 5` is
 best possible, with the golden ratio being a counterexample for larger constants.
 
-The proof avoids continued fractions entirely, instead using *Farey brackets*, which are pairs of
-rationals $\frac{p}{q} < \xi < \frac{r}{s}$ with $qr - ps = 1$. We can show that at least one of
-$\frac{p}{q}$, $\frac{r}{s}$ and the mediant $\frac{p+r}{q+s}$ satisfies the bound, and by
-repeatedly constructing smaller intervals around $\xi$, infinitude is achieved.
+The proof avoids continued fractions entirely, instead using _Farey brackets_, which are pairs of
+rationals $`\frac{p}{q} < \xi < \frac{r}{s}` with $`qr - ps = 1`. We can show that at least one of
+$`\frac{p}{q}`, $`\frac{r}{s}` and the mediant $`\frac{p+r}{q+s}` satisfies the bound, and by
+repeatedly constructing smaller intervals around $`\xi`, infinitude is achieved.
 
 ## Main definitions
 
 * `Real.Hurwitz.IsFarey`, defining a Farey interval on 4 integers `p, q, r, s` such that `0 < q, s`
   and `p/q < ξ < r/s` with `q*r - p*s = 1`.
-
 * `Real.Hurwitz.IsGoodApprox` defines a good approximation as one satisfying the Hurwitz bound
   without using division for simplicity. It can be accessed using `Real.Hurwitz.isGoodApprox_iff`.
 
@@ -52,8 +54,10 @@ Intermediate lemmas are stated in the division-free form `|y*ξ - x| * y * √5 
 
 ## References
 
-* [G. H. Hardy and E. M. Wright, *An Introduction to the Theory of Numbers*][hardy2008introduction]
-* <https://en.wikipedia.org/wiki/Hurwitz%27s_theorem_(number_theory)>
+* ‍\[G. H. Hardy and E. M. Wright, _An Introduction to the Theory of
+  Numbers_\]\[hardy2008introduction\]
+* [
+  https://en.wikipedia.org/wiki/Hurwitz%27s\_theorem\_(number\_theory)](https://en.wikipedia.org/wiki/Hurwitz%27s_theorem_(number_theory))
 
 ## Tags
 
@@ -117,7 +121,9 @@ private theorem aux₁' {b d : ℝ} (hd : 0 < d) (h : b ^ 2 + d ^ 2 ≤ √5 * (
   apply aux₁ hd
   linarith
 
-/-! ### Bridging `IsGoodApprox` to `aux₀` hypotheses -/
+/-!
+# Bridging `IsGoodApprox` to `aux₀` hypotheses
+-/
 
 private lemma one_le_of_not_isGoodApprox {x y : ℤ} (hy : 0 < y) (h : ¬ IsGoodApprox ξ x y) :
     1 ≤ |(y : ℝ) * ξ - x| * y * √5 := by
@@ -146,7 +152,9 @@ private lemma one_le_sqrt_five_mul_of_not_isGoodApprox_right {c d : ℤ} (hd : 0
   rw [abs_of_neg hneg] at h'
   linarith
 
-/-! ### Important contradiction -/
+/-!
+# Important contradiction
+-/
 
 private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b) :
     2 * (d : ℝ) ≠ (√5 - 1) * b := by
@@ -157,7 +165,9 @@ private lemma two_mul_ne_sqrt_five_sub_one_mul {b d : ℤ} (hb : 0 < b) :
   rw [div_eq_iff hb0]
   linear_combination h
 
-/-! ### Mediant properties -/
+/-!
+# Mediant properties
+-/
 
 private lemma sub_eq_one_div_mul {p q r s : ℤ} (hq : 0 < q) (hs : 0 < s)
     (hdet : q * r - p * s = 1) : (r : ℝ) / s - p / q = 1 / ((q : ℝ) * s) := by
@@ -210,7 +220,9 @@ private theorem of_mediant_lt {p q r s : ℤ} (h : IsFarey ξ p q r s)
   left := hm
   right := h.right
 
-/-! ### Key step: one of three consecutive Farey endpoints is good -/
+/-!
+# Key step: one of three consecutive Farey endpoints is good
+-/
 
 private theorem abs_sub_lt_of_mem {p q r s : ℤ} (h : IsFarey ξ p q r s) {z : ℝ}
     (hl : (p : ℝ) / q ≤ z) (hr : z ≤ (r : ℝ) / s) :
@@ -272,7 +284,9 @@ private theorem exists_next (hξ : Irrational ξ) {p q r s : ℤ} (h : IsFarey �
 
 end IsFarey
 
-/-! ### Generating brackets of arbitrarily large denominators -/
+/-!
+# Generating brackets of arbitrarily large denominators
+-/
 
 private theorem isFarey_floor (hξ : Irrational ξ) : IsFarey ξ ⌊ξ⌋ 1 (⌊ξ⌋ + 1) 1 where
   q_pos := one_pos
@@ -298,7 +312,9 @@ theorem exists_isFarey_large (hξ : Irrational ξ) (n : ℕ) :
     obtain ⟨p', q', r', s', h', hlt⟩ := h.exists_next hξ
     exact ⟨p', q', r', s', h', by omega⟩
 
-/-! ### From ℤ to ℚ, and infinitude -/
+/-!
+# From ℤ to ℚ, and infinitude
+-/
 
 /-- A good approximation in the division-free sense satisfies the usual Hurwitz bound
 `|ξ - x / y| < 1 / (√5 * y ^ 2)`. -/

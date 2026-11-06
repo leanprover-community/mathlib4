@@ -9,6 +9,9 @@ public import Batteries.Util.LibraryNote
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Documentation of the algebraic hierarchy
 
@@ -20,11 +23,12 @@ refer to files/types that currently only exist in mathlib3.
 
 Add sections about algebra-order and algebra-topology mixins and interactions with
 normed typeclasses.
-
 -/
 
 @[expose] public section
 
+
+set_option doc.verso false
 library_note «the algebraic hierarchy» /-- # The algebraic hierarchy
 
 In any theorem proving environment,
@@ -192,73 +196,106 @@ Hopefully this document makes it easy to assemble this list.
 Another alternative to a TODO list in the doc-strings is adding Github issues.
 -/
 
+
+set_option doc.verso true
 library_note «reducible non-instances» /--
-Some definitions that define objects of a class cannot be instances, because they have an
-explicit argument that does not occur in the conclusion. An example is `Preorder.lift` that has a
-function `f : α → β` as an explicit argument to lift a preorder on `β` to a preorder on `α`.
+                                       Some definitions that define objects of a class cannot be
+instances, because they have an explicit argument that does
+not occur in the conclusion. An example is `Preorder.lift`
+that has a function `f : α → β` as an explicit argument to
+lift a preorder on `β` to a preorder on `α`.
 
-If these definitions are used to define instances of this class *and* this class is an argument to
-some other type-class so that type-class inference will have to unfold these instances to check
-for definitional equality, then these definitions should be marked `@[reducible]`.
+                                       If these definitions are used to define instances of this
+class _and_ this class is an argument to some other
+type-class so that type-class inference will have to unfold
+these instances to check for definitional equality, then
+these definitions should be marked `@[reducible]`.
 
-For example, `Preorder.lift` is used to define `Units.Preorder` and `PartialOrder.lift` is used
-to define `Units.PartialOrder`. In some cases it is important that type-class inference can
-recognize that `Units.Preorder` and `Units.PartialOrder` give rise to the same `LE` instance.
-For example, you might have another class that takes `[LE α]` as an argument, and this argument
-sometimes comes from `Units.Preorder` and sometimes from `Units.PartialOrder`.
-Therefore, `Preorder.lift` and `PartialOrder.lift` are marked `@[reducible]`.
--/
+                                       For example, `Preorder.lift` is used to define
+`Units.Preorder` and `PartialOrder.lift` is used to define
+`Units.PartialOrder`. In some cases it is important that
+type-class inference can recognize that `Units.Preorder` and
+`Units.PartialOrder` give rise to the same `LE` instance. For
+example, you might have another class that takes `[LE α]` as
+an argument, and this argument sometimes comes from
+`Units.Preorder` and sometimes from `Units.PartialOrder`.
+Therefore, `Preorder.lift` and `PartialOrder.lift` are marked
+`@[reducible]`.
+                                       -/
 
 library_note «implicit instance arguments» /--
-There are places where typeclass arguments are specified with implicit `{}` brackets instead of
-the usual `[]` brackets. This is done when the instances can be inferred because they are implicit
-arguments to the type of one of the other arguments. There are several reasons for doing so.
+                                           There are places where typeclass arguments are specified
+with implicit `{}` brackets instead of the usual `[]`
+brackets. This is done when the instances can be inferred
+because they are implicit arguments to the type of one of
+the other arguments. There are several reasons for doing
+so.
 
-When they can be inferred from these other arguments,
-it is faster to use this method than to use type class inference.
-For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
-and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
-`[Semiring α] [Semiring β]`.
+                                           When they can be inferred from these other arguments, it
+is faster to use this method than to use type class
+inference. For example, when writing lemmas about
+`(f : α →+* β)`, it is faster to specify the fact that
+`α` and `β` are `Semiring`s as
+`{rα : Semiring α} {rβ : Semiring β}` rather than the
+usual `[Semiring α] [Semiring β]`.
 
-When handling non-canonical instances, it is necessary that the relevant declarations take these
-instance arguments implicitly, otherwise Lean will refuse to apply them.
-For example, in measure theory a space `X` will often come equipped with a canonical base
-sigma-algebra `MeasurableSpace X` along with many sub-sigma algebras, also of type
-`MeasurableSpace X`. In homological algebra, `ModuleCat ℤ` appears regularly as the category of
-abelian groups, but terms `A : ModuleCat ℤ` come with two (propeq) `Module ℤ A` instances:
-one from being `ℤ`-modules, and one from being abelian groups.
--/
+                                           When handling non-canonical instances, it is necessary
+that the relevant declarations take these instance
+arguments implicitly, otherwise Lean will refuse to apply
+them. For example, in measure theory a space `X` will
+often come equipped with a canonical base sigma-algebra
+`MeasurableSpace X` along with many sub-sigma algebras,
+also of type `MeasurableSpace X`. In homological algebra,
+`ModuleCat ℤ` appears regularly as the category of
+abelian groups, but terms `A : ModuleCat ℤ` come with two
+(propeq) `Module ℤ A` instances: one from being
+`ℤ`-modules, and one from being abelian groups.
+                                           -/
 
 library_note «lower instance priority» /--
-Certain instances always apply during type-class resolution. For example, the instance
-`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α` applies to all type-class
-resolution problems of the form `AddGroup _`, and type-class inference will then do an
-exhaustive search to find a commutative group. These instances take a long time to fail.
-Other instances will only apply if the goal has a certain shape. For example
+                                       Certain instances always apply during type-class resolution.
+For example, the instance
+`AddCommGroup.toAddGroup {α} [AddCommGroup α] : AddGroup α`
+applies to all type-class resolution problems of the form
+`AddGroup _`, and type-class inference will then do an
+exhaustive search to find a commutative group. These
+instances take a long time to fail. Other instances will only
+apply if the goal has a certain shape. For example
 `Int.instAddGroup : AddGroup ℤ` or
-`Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`. Usually these instances
-will fail quickly, and when they apply, they are almost always the desired instance.
-For this reason, we want the instances of the second type (that only apply in specific cases) to
-always have higher priority than the instances of the first type (that always apply).
-See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1561).
+`Prod.instAddGroup {α β} [AddGroup α] [AddGroup β] : AddGroup (α × β)`.
+Usually these instances will fail quickly, and when they
+apply, they are almost always the desired instance. For this
+reason, we want the instances of the second type (that only
+apply in specific cases) to always have higher priority than
+the instances of the first type (that always apply). See also
+[
+mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1561).
 
-Therefore, if we create an instance that always applies, we set the priority of these instances to
-100 (or something similar, which is below the default value of 1000).
--/
+                                       Therefore, if we create an instance that always applies, we
+set the priority of these instances to 100 (or something
+similar, which is below the default value of 1000).
+                                       -/
 
 library_note «higher instance priority» /--
-Certain instances only apply if the goal has a certain shape. For example
-`Semiring.toModule [Semiring R] : Module R R` or `Int.instAddGroup : AddGroup ℤ`.
-Usually these instances will fail quickly, and when they apply, they are almost always
-the desired instance. For performance reasons it is sometimes useful to increase the
-priority of these instances, especially if they are defined very early on in mathlib
-(which would mean that they would be tried very late if they had the default priority).
+                                        Certain instances only apply if the goal has a certain
+shape. For example
+`Semiring.toModule [Semiring R] : Module R R` or
+`Int.instAddGroup : AddGroup ℤ`. Usually these instances
+will fail quickly, and when they apply, they are almost
+always the desired instance. For performance reasons it is
+sometimes useful to increase the priority of these
+instances, especially if they are defined very early on in
+mathlib (which would mean that they would be tried very late
+if they had the default priority).
 
-Therefore, if we create an instance that only applies in specific circumstances, and that
-is essentially always the right answer when it does apply, we may want to set the
-priority of these instances to 1100 (or something similar, which is above the default
-value of 1000).
--/
+                                        Therefore, if we create an instance that only applies in
+specific circumstances, and that is essentially always the
+right answer when it does apply, we may want to set the
+priority of these instances to 1100 (or something similar,
+which is above the default value of 1000).
+                                        -/
+
+set_option doc.verso false
 library_note «instance argument order» /--
 When type class inference applies an instance, it attempts to solve the sub-goals from left to
 right (it used to be from right to left in lean 3). For example in
@@ -279,6 +316,10 @@ where the `Group G` instance appears in `IsKleinFour G`. Future work may be done
 type class synthesis order in this situation.
 -/
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 library_note «commutative subobjects» /--
 The algebraic hierarchy is designed so that commutativity (e.g., of multiplication) is bundled
 into the type class, so that we have, for example `Group` and `CommGroup`, `Ring` and `CommRing`,
@@ -323,3 +364,5 @@ the entirety of both the bundled and unbundled hierarchies), these instances are
 available inside the `IsMulCommutative` scope and are simultaneously given the very low priority
 `50`.
 -/
+
+set_option doc.verso true

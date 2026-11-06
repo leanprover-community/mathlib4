@@ -9,6 +9,9 @@ public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The complete lattice structure on `UpperSet`/`LowerSet`
 
@@ -17,7 +20,7 @@ pulled back across the canonical injection (`UpperSet.carrier`, `LowerSet.carrie
 
 ## Notes
 
-Upper sets are ordered by **reverse** inclusion. This convention is motivated by the fact that this
+Upper sets are ordered by *reverse* inclusion. This convention is motivated by the fact that this
 makes them order-isomorphic to lower sets and antichains, and matches the convention on `Filter`.
 -/
 
@@ -38,8 +41,12 @@ instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
   coe_injective s t h := by cases s; cases t; congr
 
-/-- See Note [custom simps projection]. -/
-@[to_dual /-- See Note [custom simps projection]. -/]
+/--
+See Note \[custom simps projection\].
+-/
+@[to_dual /--
+          See Note \[custom simps projection\].
+          -/]
 def Simps.coe (s : UpperSet α) : Set α := s
 
 initialize_simps_projections UpperSet (carrier → coe, as_prefix coe)
@@ -225,7 +232,9 @@ theorem mem_iInf₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨅ (i) (j), 
 theorem codisjoint_coe : Codisjoint (s : Set α) t ↔ Disjoint s t := by
   simp [disjoint_iff, codisjoint_iff, SetLike.ext'_iff]
 
-/-! ### Complement -/
+/-!
+# Complement
+-/
 
 /-- The complement of an upper set as a lower set. -/
 @[to_dual /-- The complement of a lower set as an upper set. -/]

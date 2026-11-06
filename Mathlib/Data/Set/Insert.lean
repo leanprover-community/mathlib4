@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Disjoint
 public import Mathlib.Tactic.GrindAttrs
 public import Mathlib.Tactic.Simproc.ExistsAndEq
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about insertion, singleton, and pairs
 
@@ -17,14 +20,15 @@ This file provides extra lemmas about `insert`, `singleton`, and `pair`.
 ## Tags
 
 insert, singleton
-
 -/
 
 @[expose] public section
 
 assert_not_exists HeytingAlgebra
 
-/-! ### Set coercion to a type -/
+/-!
+# Set coercion to a type
+-/
 
 open Function
 
@@ -33,7 +37,7 @@ namespace Set
 variable {α β : Type*} {s t : Set α} {a b : α}
 
 /-!
-### Lemmas about `insert`
+# Lemmas about `insert`
 
 `insert a s` is the set `{a} ∪ s`.
 -/
@@ -146,7 +150,9 @@ def subtypeInsertEquivOption
   left_inv y := by grind
   right_inv := by rintro (_ | y) <;> grind
 
-/-! ### Lemmas about singletons -/
+/-!
+# Lemmas about singletons
+-/
 
 instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
@@ -330,7 +336,9 @@ theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempt
 theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
     s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
-/-! ### Disjointness -/
+/-!
+# Disjointness
+-/
 
 @[simp default + 1]
 lemma disjoint_singleton_left : Disjoint {a} s ↔ a ∉ s := by simp [Set.disjoint_iff, subset_def]
@@ -367,7 +375,9 @@ theorem inter_insert_of_notMem (h : a ∉ s) : s ∩ insert a t = s ∩ t := by 
 
 theorem insert_inter_of_notMem (h : a ∉ t) : insert a s ∩ t = s ∩ t := by grind
 
-/-! ### Lemmas about pairs -/
+/-!
+# Lemmas about pairs
+-/
 
 theorem pair_eq_singleton (a : α) : ({a, a} : Set α) = {a} :=
   union_self {a}
@@ -399,7 +409,9 @@ theorem range_ite_const {p : α → Prop} [DecidablePred p] {x y : β}
     Set.range (fun a ↦ if p a then x else y) = {x, y} := by
   grind
 
-/-! ### Powerset -/
+/-!
+# Powerset
+-/
 
 /-- The powerset of a singleton contains only `∅` and the singleton itself. -/
 theorem powerset_singleton (x : α) : 𝒫 {x} = {∅, {x}} := by grind
@@ -415,9 +427,13 @@ lemma preimage_snd_singleton_eq_range : (Prod.snd ⁻¹' {b} : Set (α × β)) =
 
 end
 
-/-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
+/-!
+# Lemmas about `inclusion`, the injection of subtypes induced by `⊆`
+-/
 
-/-! ### Decidability instances for sets -/
+/-!
+# Decidability instances for sets
+-/
 
 variable (a b : α)
 

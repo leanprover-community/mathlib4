@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # One-dimensional iterated derivatives
 
@@ -71,7 +74,9 @@ theorem iteratedDerivWithin_eq_iteratedDeriv (hs : UniqueDiffOn 𝕜 s) (h : Con
     (hx : x ∈ s) : iteratedDerivWithin n f s x = iteratedDeriv n f x := by
   rw [iteratedDerivWithin, iteratedDeriv, iteratedFDerivWithin_eq_iteratedFDeriv hs h hx]
 
-/-! ### Properties of the iterated derivative within a set -/
+/-!
+# Properties of the iterated derivative within a set
+-/
 
 
 theorem iteratedDerivWithin_eq_iteratedFDerivWithin : iteratedDerivWithin n f s x =
@@ -221,7 +226,9 @@ theorem contDiffOn_nat_succ_iff_contDiffOn_one_iteratedDerivWithin {n : ℕ}
     contDiffOn_one_iff_derivWithin, ← iteratedDerivWithin_succ]
   grind
 
-/-! ### Properties of the iterated derivative on the whole space -/
+/-!
+# Properties of the iterated derivative on the whole space
+-/
 
 
 theorem iteratedDeriv_eq_iteratedFDeriv :

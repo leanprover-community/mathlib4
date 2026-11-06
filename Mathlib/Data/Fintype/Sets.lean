@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.BooleanAlgebra
 public import Mathlib.Data.Finset.SymmDiff
 public import Mathlib.Data.Fintype.OfMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsets of finite types
 
@@ -57,10 +60,12 @@ theorem toFinset_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x
     @Set.toFinset _ p (Fintype.ofFinset s H) = s :=
   Finset.ext fun x => by rw [@mem_toFinset _ _ (id _), H]
 
-/-- Membership of a set with a `Fintype` instance is decidable.
+/--
+Membership of a set with a `Fintype` instance is decidable.
 
 Using this as an instance leads to potential loops with `Subtype.fintype` under certain decidability
-assumptions, so it should only be declared a local instance. -/
+assumptions, so it should only be declared a local instance.
+-/
 def decidableMemOfFintype [DecidableEq α] (s : Set α) [Fintype s] (a) : Decidable (a ∈ s) :=
   decidable_of_iff _ mem_toFinset
 
@@ -220,7 +225,9 @@ theorem Finset.toFinset_coe (s : Finset α) [Fintype (s : Set α)] : (s : Set α
 
 section Finset
 
-/-! ### `Fintype (s : Finset α)` -/
+/-!
+# `Fintype (s : Finset α)`
+-/
 
 
 instance Finset.fintypeCoeSort {α : Type u} (s : Finset α) : Fintype s :=
@@ -304,9 +311,11 @@ theorem mem_image_univ_iff_mem_range {α β : Type*} [Fintype α] [DecidableEq �
 
 open Batteries.ExtendedBinder Lean Meta
 
-/-- `finset% t` elaborates `t` as a `Finset`.
+/--
+`finset% t` elaborates `t` as a `Finset`.
 If `t` is a `Set`, then inserts `Set.toFinset`.
 Does not make use of the expected type; useful for big operators over finsets.
+
 ```
 #check finset% Finset.range 2 -- Finset Nat
 #check finset% (Set.univ : Set Bool) -- Finset Bool

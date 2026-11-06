@@ -10,6 +10,9 @@ public import Mathlib.Probability.HasLaw
 
 import Mathlib.Probability.Kernel.Composition.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A predicate for having a specified conditional distribution
 
@@ -23,7 +26,6 @@ The use of `HasLaw` also implies that `Y` and `X` are a.e. measurable.
 
 * `HasCondDistrib Y X κ P` : predicate stating that the conditional distribution of `Y` given `X`
   under the measure `P` is equal to the kernel `κ`.
-
 -/
 
 @[expose] public section

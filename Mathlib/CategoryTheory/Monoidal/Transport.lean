@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport a monoidal structure along an equivalence.
 
@@ -151,8 +154,10 @@ def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
     e.functor.mapIso ((whiskerLeftIso _ (e.unitIso.app _).symm) ≪≫ ρ_ (e.inverse.obj X)) ≪≫
       e.counitIso.app _
 
-#adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-the fields `whiskerLeft_eq` and following were all filled by the `cat_disch` auto_param. -/
+#adaptation_note /--
+                 Prior to https://github.com/leanprover/lean4/pull/12244 the fields `whiskerLeft_eq`
+and following were all filled by the `cat_disch` auto\_param.
+                 -/
 attribute [local simp] transportStruct in
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/

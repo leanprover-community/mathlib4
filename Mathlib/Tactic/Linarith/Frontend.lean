@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Linarith.Verification
 public import Mathlib.Tactic.Ring.Basic
 public import Mathlib.Util.ElabWithoutMVars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `linarith`: solving linear arithmetic goals
 
@@ -24,7 +27,7 @@ where `R ∈ {<, ≤, =, ≥, >}`.
 Our goal is to determine if the inequalities in `S` are jointly satisfiable, that is, if there is
 an assignment of values to `x₁, ..., xₙ` such that every inequality in `S` is true.
 
-Specifically, we aim to show that they are *not* satisfiable. This amounts to proving a
+Specifically, we aim to show that they are _not_ satisfiable. This amounts to proving a
 contradiction. If our goal is also a linear inequality, we negate it and move it to a hypothesis
 before trying to prove `False`.
 
@@ -63,25 +66,22 @@ calls, and should be used sparingly. The default preprocessor set does not inclu
 
 There are two oracles that can be used in `linarith` so far.
 
-1. **Fourier-Motzkin elimination.**
-  This technique transforms a set of inequalities in `n` variables to an equisatisfiable set in
-  `n - 1` variables. Once all variables have been eliminated, we conclude that the original set was
-  unsatisfiable iff the comparison `0 < 0` is in the resulting set.
-  While performing this elimination, we track the history of each derived comparison. This allows us
-  to represent any comparison at any step as a positive combination of comparisons from the original
-  set. In particular, if we derive `0 < 0`, we can find our desired list of coefficients
-  by counting how many copies of each original comparison appear in the history.
-  This oracle was historically implemented earlier, and is sometimes faster on small states, but it
-  has [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle
-  large problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
-
-2. **Simplex Algorithm (default).**
-  This oracle reduces the search for an unsatisfiability certificate to some Linear Programming
-  problem. The problem is then solved by a standard Simplex Algorithm. We use
-  [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the algorithm
-  terminates.
-  The default version of the algorithm operates with sparse matrices as it is usually faster. You
-  can invoke the dense version by `linarith (oracle := .simplexAlgorithmDense)`.
+1. *Fourier-Motzkin elimination.* This technique transforms a set of inequalities in `n` variables
+   to an equisatisfiable set in `n - 1` variables. Once all variables have been eliminated, we
+   conclude that the original set was unsatisfiable iff the comparison `0 < 0` is in the resulting
+   set. While performing this elimination, we track the history of each derived comparison. This
+   allows us to represent any comparison at any step as a positive combination of comparisons from
+   the original set. In particular, if we derive `0 < 0`, we can find our desired list of
+   coefficients by counting how many copies of each original comparison appear in the history. This
+   oracle was historically implemented earlier, and is sometimes faster on small states, but it has
+   [bugs](https://github.com/leanprover-community/mathlib4/issues/2717) and cannot handle large
+   problems. You can use it with `linarith (oracle := .fourierMotzkin)`.
+2. *Simplex Algorithm (default).* This oracle reduces the search for an unsatisfiability certificate
+   to some Linear Programming problem. The problem is then solved by a standard Simplex Algorithm.
+   We use [Bland's pivot rule](https://en.wikipedia.org/wiki/Bland%27s_rule) to guarantee that the
+   algorithm terminates. The default version of the algorithm operates with sparse matrices as it is
+   usually faster. You can invoke the dense version by
+   `linarith (oracle := .simplexAlgorithmDense)`.
 
 ## Implementation details
 
@@ -105,7 +105,7 @@ An alternate oracle can be specified in the `LinarithConfig` object.
 A variant, `nlinarith`, adds an extra preprocessing step to handle some basic nonlinear goals.
 There is a hook in the `LinarithConfig` configuration object to add custom preprocessing routines.
 
-The certificate checking step is *not* by reflection. `linarith` converts the certificate into a
+The certificate checking step is _not_ by reflection. `linarith` converts the certificate into a
 proof term of type `False`.
 
 Some of the behavior of `linarith` can be inspected with the option
@@ -142,11 +142,11 @@ open Batteries
 
 namespace Mathlib.Tactic.Linarith
 
-/-! ### Config objects
+/-!
+# Config objects
 
 The config object is defined in the frontend, instead of in `Datatypes.lean`, since the oracles must
 be in context to choose a default.
-
 -/
 
 section
@@ -192,7 +192,9 @@ def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : B
 
 end
 
-/-! ### Control -/
+/-!
+# Control
+-/
 
 /--
 If `e` is a comparison `a R b` or the negation of a comparison `¬ a R b`, found in the target,
@@ -407,13 +409,17 @@ partial def linarith (only_on : Bool) (hyps : List Expr) (cfg : LinarithConfig :
 
 end Linarith
 
-/-! ### User facing functions -/
+/-!
+# User facing functions
+-/
 
 open Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
 syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
 
+
+set_option doc.verso false
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
 Equivalently, it can prove a linear inequality by assuming its negation and proving `False`.
@@ -476,6 +482,8 @@ routine.
 -/
 syntax (name := linarith) "linarith" "!"? linarithArgsRest : tactic
 
+
+set_option doc.verso true
 /--
 `linarith?` behaves like `linarith` but, on success, it prints a suggestion of
 the form `linarith only [...]` listing a minimized set of hypotheses used in the

@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.AlgebraicIndependent.Defs
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.MvPolynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic Independence
 
@@ -23,8 +26,8 @@ This file contains basic results on algebraic independence of a family of elemen
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
-transcendence basis, transcendence degree, transcendence
 
+transcendence basis, transcendence degree, transcendence
 -/
 
 @[expose] public section

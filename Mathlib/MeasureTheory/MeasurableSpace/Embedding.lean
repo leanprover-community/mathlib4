@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable embeddings and equivalences
 
@@ -16,14 +19,14 @@ the equivalence are measurable functions.
 
 ## Main definitions
 
-* `MeasurableEmbedding`: a map `f : α → β` is called a *measurable embedding* if it is injective,
+* `MeasurableEmbedding`: a map `f : α → β` is called a _measurable embedding_ if it is injective,
   measurable, and sends measurable sets to measurable sets.
-* `MeasurableEquiv`: an equivalence `α ≃ β` is a *measurable equivalence* if its forward and inverse
+* `MeasurableEquiv`: an equivalence `α ≃ β` is a _measurable equivalence_ if its forward and inverse
   functions are measurable.
 
 We prove a multitude of elementary lemmas about these, and one more substantial theorem:
 
-* `MeasurableEmbedding.schroederBernstein`: the **measurable Schröder-Bernstein Theorem**: given
+* `MeasurableEmbedding.schroederBernstein`: the *measurable Schröder-Bernstein Theorem*: given
   measurable embeddings `α → β` and `β → α`, we can find a measurable equivalence `α ≃ᵐ β`.
 
 ## Notation
@@ -45,7 +48,8 @@ universe uι
 
 variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
 
-/-- A map `f : α → β` is called a *measurable embedding* if it is injective, measurable, and sends
+/--
+A map `f : α → β` is called a _measurable embedding_ if it is injective, measurable, and sends
 measurable sets to measurable sets. The latter assumption can be replaced with “`f` has measurable
 inverse `g : Set.range f → α`”, see `MeasurableEmbedding.measurable_rangeSplitting`,
 `MeasurableEmbedding.of_measurable_inverse_range`, and
@@ -55,7 +59,8 @@ One more interpretation: `f` is a measurable embedding if it defines a measurabl
 range and the range is a measurable set. One implication is formalized as
 `MeasurableEmbedding.equivRange`; the other one follows from
 `MeasurableEquiv.measurableEmbedding`, `MeasurableEmbedding.subtype_coe`, and
-`MeasurableEmbedding.comp`. -/
+`MeasurableEmbedding.comp`.
+-/
 structure MeasurableEmbedding [MeasurableSpace α] [MeasurableSpace β] (f : α → β) : Prop where
   /-- A measurable embedding is injective. -/
   protected injective : Injective f
@@ -236,11 +241,15 @@ def symm (ab : α ≃ᵐ β) : β ≃ᵐ α where
 theorem coe_toEquiv_symm (e : α ≃ᵐ β) : (e.toEquiv.symm : β → α) = e.symm :=
   rfl
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : α ≃ᵐ β) : α → β := h
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (h : α ≃ᵐ β) : β → α := h.symm
 
 initialize_simps_projections MeasurableEquiv (toFun → apply, invFun → symm_apply)
@@ -558,10 +567,12 @@ def piFinTwo (α : Fin 2 → Type*) [∀ i, MeasurableSpace (α i)] : (∀ i, α
 def finTwoArrow : (Fin 2 → α) ≃ᵐ α × α :=
   piFinTwo fun _ => α
 
-/-- Measurable equivalence between `Π j : Fin (n + 1), α j` and
+/--
+Measurable equivalence between `Π j : Fin (n + 1), α j` and
 `α i × Π j : Fin n, α (Fin.succAbove i j)`.
 
-Measurable version of `Fin.insertNthEquiv`. -/
+Measurable version of `Fin.insertNthEquiv`.
+-/
 @[simps! -fullyApplied]
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
@@ -809,7 +820,9 @@ theorem MeasurableSpace.comap_compl {m' : MeasurableSpace β} [BooleanAlgebra β
 
 section curry
 
-/-! ### Currying as a measurable equivalence -/
+/-!
+# Currying as a measurable equivalence
+-/
 
 namespace MeasurableEquiv
 

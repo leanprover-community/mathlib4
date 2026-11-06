@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Galois.Examples
 public import Mathlib.CategoryTheory.Galois.Prorepresentability
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Induced functor to finite `Aut F`-sets
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -17,7 +19,6 @@ from finite `Aut F`-sets to finite sets. In this file we collect basic propertie
 of the induced functor `H : C ⥤ Action FintypeCat (Aut F)`.
 
 See `Mathlib/CategoryTheory/Galois/Full.lean` for the proof that `H` is (faithfully) full.
-
 -/
 
 @[expose] public section

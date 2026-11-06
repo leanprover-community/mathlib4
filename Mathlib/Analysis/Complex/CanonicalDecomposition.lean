@@ -10,21 +10,24 @@ public import Mathlib.Analysis.Meromorphic.FactorizedRational
 import Mathlib.Analysis.Meromorphic.RCLike
 import Mathlib.Analysis.Normed.Module.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical Decomposition
 
 If a function `f` is meromorphic on a compact set `U`, then it has only finitely many zeros and
 poles on the disk, and the theorem `MeromorphicOn.extract_zeros_poles` can be used to re-write `f`
 as `(∏ᶠ u, (· - u) ^ divisor f U u) • g`, where `g` is analytic without zeros on `U`. In case where
-`U` is a disk, one consider a similar decomposition, called *Finite Canonical Decomposition* or
-*Finite Blaschke Product* that replaces the factors `(· - u)` by canonical factors that take only
+`U` is a disk, one consider a similar decomposition, called _Finite Canonical Decomposition_ or
+_Finite Blaschke Product_ that replaces the factors `(· - u)` by canonical factors that take only
 values of norm one on the boundary of the disk. This file introduces the canonical factors and
 provides API for the canonical decomposition.
 
 This file also formulates an extended version of the canonical decomposition that takes zeros on
 poles on the boundary of the ball into account.
 
-See Page 160f of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
+See Page 160f of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] for a detailed
 discussion.
 -/
 
@@ -39,7 +42,7 @@ open scoped ComplexConjugate Topology
 variable {R : ℝ} {w : ℂ}
 
 /-!
-## Canonical Factors
+# Canonical Factors
 
 Given `R : ℝ` and `w : ℂ`, the canonical factor `canonical R w : ℂ → ℂ` is meromorphic function in
 normal form that has a single pole at `w`, no zeros, and takes values of norm one on the circle of
@@ -68,7 +71,7 @@ lemma canonicalFactor_apply_self (R : ℝ) (w : ℂ) :
   simp [canonicalFactor_apply]
 
 /-!
-### Regularity properties
+# Regularity properties
 -/
 
 variable (R w) in
@@ -126,7 +129,7 @@ theorem meromorphicNFOn_canonicalFactor (h : w ∈ ball 0 R) :
   apply (analyticOnNhd_canonicalFactor R w z h₁).meromorphicNFAt
 
 /-!
-### Values of Canonical Factors
+# Values of Canonical Factors
 -/
 
 open scoped ComplexOrder in
@@ -170,7 +173,7 @@ theorem norm_canonicalFactor_eval_circle_eq_one {z : ℂ} (hw : w ∈ ball 0 R) 
   simp [← map_sub]
 
 /-!
-### Orders and Divisors
+# Orders and Divisors
 -/
 
 /--
@@ -210,7 +213,7 @@ theorem divisor_canonicalFactor (hw : w ∈ ball 0 R) :
   · simp_all
 
 /-!
-## Canonical Decomposition
+# Canonical Decomposition
 
 The canonical decomposition theorem shows that a meromorphic function `f` on a disk is equal, up to
 modification over a discrete set, to a product of canonical factors and a meromorphic function `g`
@@ -430,7 +433,7 @@ theorem CanonicalDecomp.divisor_eq_divisor {x : ℂ} (D : CanonicalDecomp f g R)
     simp_all
 
 /-!
-## Extended Canonical Decomposition
+# Extended Canonical Decomposition
 
 The extended canonical decomposition theorem shows that a meromorphic function `f` on a closed disk
 is equal, up to modification over a discrete set, to a product of a non-vanishing analytic function,

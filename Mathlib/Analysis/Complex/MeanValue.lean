@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.CauchyIntegral
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Mean Value Property of Complex Differentiable Functions
 
@@ -26,7 +29,7 @@ variable
   {f : ℂ → E} {R : ℝ} {c w : ℂ} {s : Set ℂ}
 
 /-!
-## Generalized Mean Value Properties
+# Generalized Mean Value Properties
 
 For a complex differentiable function `f`, the theorems in this section compute values of `f` in the
 interior of a disk as circle averages of a weighted function.
@@ -78,7 +81,7 @@ theorem DiffContOnCl.circleAverage_smul_div (hf : DiffContOnCl ℂ f (ball c |R|
     apply (hf.1 z hz).differentiableAt (isOpen_ball.mem_nhds hz)
 
 /-!
-## Classic Mean Value Properties
+# Classic Mean Value Properties
 
 For a complex differentiable function `f`, the theorems in this section compute value of `f` at the
 center of a circle as a circle average of the function. This specializes the generalized mean value

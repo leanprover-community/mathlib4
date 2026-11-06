@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 public import Mathlib.CategoryTheory.ObjectProperty.LimitsOfShape
 public import Mathlib.CategoryTheory.ObjectProperty.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonals are closed under (co)limits, quotients and subobjects
 
@@ -21,12 +24,12 @@ limits of any shape.
 These are registered as instances of `IsClosedUnderQuotients`, `IsClosedUnderColimitsOfShape`,
 `IsClosedUnderSubobjects` and `IsClosedUnderLimitsOfShape`. Closure of the orthogonals under
 extensions is shown in `Mathlib/CategoryTheory/Abelian/OrthogonalClosed.lean`; together these
-form the easy direction of [S. E. Dickson][dickson1966]'s characterisation of torsion classes,
+form the easy direction of \[S. E. Dickson\]\[dickson1966\]'s characterisation of torsion classes,
 see `CategoryTheory.Abelian.isTorsionClass_iff`.
 
 ## References
 
-* [S. E. Dickson, *A torsion theory for Abelian categories*][dickson1966]
+* ‍\[S. E. Dickson, _A torsion theory for Abelian categories_\]\[dickson1966\]
 -/
 
 @[expose] public section

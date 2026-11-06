@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
@@ -22,6 +24,7 @@ oplax functors.
 
 A PrelaxFunctorStruct `F` between quivers `B` and `C`, such that both have been equipped with quiver
 structures on the hom-types, consists of
+
 * a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
@@ -31,12 +34,12 @@ structures on the hom-types, consists of
 A prelax functor `F` between bicategories `B` and `C` is a `PrelaxFunctorStruct` such that the
 associated prefunctors between the hom types are all functors. In other words, it is a
 `PrelaxFunctorStruct` that satisfies
+
 * `F.map₂ (𝟙 f) = 𝟙 (F.map f)`,
 * `F.map₂ (η ≫ θ) = F.map₂ η ≫ F.map₂ θ`.
 
 `mkOfHomFunctor`: constructs a `PrelaxFunctor` from a map on objects and functors between the
 corresponding hom types.
-
 -/
 
 @[expose] public section

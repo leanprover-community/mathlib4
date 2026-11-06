@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Analytic.OfScalars
 
 import Mathlib.Algebra.Algebra.TransferInstance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The logarithm in a topological algebra
 
@@ -81,7 +84,8 @@ theorem logSeries_eq_ofScalars : logSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ 
 variable {𝕂 𝔸}
 
 open scoped Classical in
-/-- `NormedSpace.log : 𝔸 → 𝔸` is the logarithm `log x = ∑ₙ ((-1) ^ (n + 1) / n) • (x - 1) ^ n`.
+/--
+`NormedSpace.log : 𝔸 → 𝔸` is the logarithm `log x = ∑ₙ ((-1) ^ (n + 1) / n) • (x - 1) ^ n`.
 It is defined as the sum of the `FormalMultilinearSeries` `logSeries ℚ 𝔸` at `x - 1`, in the same
 way as `NormedSpace.exp`, and takes the junk value `0` where the series does not converge.
 

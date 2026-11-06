@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of points of a site
 
@@ -15,9 +18,9 @@ a morphism between `Φ₁ ⟶ Φ₂` between two points consists of a
 morphism `Φ₂.fiber ⟶ Φ₁.fiber` (SGA 4 IV 3.2).
 
 ## References
-* [Alexander Grothendieck and Jean-Louis Verdier, *Exposé IV : Topos*,
-  SGA 4 IV 3.2][sga-4-tome-1]
 
+* ‍\[Alexander Grothendieck and Jean-Louis Verdier, _Exposé IV : Topos_,
+  SGA 4 IV 3.2\]\[sga-4-tome-1\]
 -/
 
 @[expose] public section

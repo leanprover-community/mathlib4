@@ -12,6 +12,9 @@ public import Mathlib.MeasureTheory.Measure.Stieltjes
 
 import Mathlib.MeasureTheory.Group.LIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue measure on the real line and on `ℝⁿ`
 
@@ -42,7 +45,7 @@ open ENNReal (ofReal)
 open scoped ENNReal NNReal Topology
 
 /-!
-### Definition of the Lebesgue measure and lengths of intervals
+# Definition of the Lebesgue measure and lengths of intervals
 -/
 
 
@@ -229,7 +232,7 @@ theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a :
   simpa [-mem_Ioo] using hx.1.trans hx.2
 
 /-!
-### Volume of a box in `ℝⁿ`
+# Volume of a box in `ℝⁿ`
 -/
 
 
@@ -300,7 +303,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ ediam s ^ Fi
       simp only [ENNReal.coe_one, one_mul, Finset.prod_const, Fintype.card]
 
 /-!
-### Images of the Lebesgue measure under multiplication in ℝ
+# Images of the Lebesgue measure under multiplication in ℝ
 -/
 
 
@@ -347,7 +350,7 @@ theorem volume_preimage_mul_right {a : ℝ} (h : a ≠ 0) (s : Set ℝ) :
     _ = ENNReal.ofReal (abs a⁻¹) * volume s := by rw [map_volume_mul_right h]; rfl
 
 /-!
-### Images of the Lebesgue measure under translation/linear maps in ℝⁿ
+# Images of the Lebesgue measure under translation/linear maps in ℝⁿ
 -/
 
 

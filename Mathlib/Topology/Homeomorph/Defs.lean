@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ContinuousMap.Defs
 public import Mathlib.Topology.Maps.OpenQuotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homeomorphisms
 
@@ -19,7 +22,6 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `Homeomorph X Y`: The type of homeomorphisms from `X` to `Y`.
   This type can be denoted using the following notation: `X ≃ₜ Y`.
 * `HomeomorphClass`: `HomeomorphClass F A B` states that `F` is a type of homeomorphisms.
-
 * `Homeomorph.symm`: the inverse of a homeomorphism
 * `Homeomorph.trans`: composing two homeomorphisms
 * Homeomorphisms are open and closed embeddings, inducing, quotient maps etc.
@@ -28,9 +30,7 @@ directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
 * `Homeomorph.homeomorphOfUnique`: if both `X` and `Y` have a unique element, then `X ≃ₜ Y`.
 * `Equiv.toHomeomorph`: an equivalence between topological spaces respecting openness
   is a homeomorphism.
-
 * `IsHomeomorph`: the predicate that a function is a homeomorphism
-
 -/
 
 @[expose] public section
@@ -87,7 +87,9 @@ protected def symm (h : X ≃ₜ Y) : Y ≃ₜ X where
 theorem symm_bijective : Function.Bijective (Homeomorph.symm : (X ≃ₜ Y) → Y ≃ₜ X) :=
   Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (h : X ≃ₜ Y) : Y → X :=
   h.symm
 
@@ -539,7 +541,8 @@ section IsHomeomorph
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {f : X → Y}
 
-/-- Predicate saying that `f` is a homeomorphism.
+/--
+Predicate saying that `f` is a homeomorphism.
 
 This should be used only when `f` is a concrete function whose continuous inverse is not easy to
 write down. Otherwise, `Homeomorph` should be preferred as it bundles the continuous inverse.
@@ -547,7 +550,8 @@ write down. Otherwise, `Homeomorph` should be preferred as it bundles the contin
 Having both `Homeomorph` and `IsHomeomorph` is justified by the fact that so many function
 properties are unbundled in the topology part of the library, and by the fact that a homeomorphism
 is not merely a continuous bijection, that is `IsHomeomorph f` is not equivalent to
-`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`. -/
+`Continuous f ∧ Bijective f` but to `Continuous f ∧ Bijective f ∧ IsOpenMap f`.
+-/
 @[wikidata Q202906]
 structure IsHomeomorph (f : X → Y) : Prop where
   continuous : Continuous f

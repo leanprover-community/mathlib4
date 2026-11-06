@@ -11,6 +11,9 @@ public meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypothe
 
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `dyadic_interval` tactic
 
@@ -24,7 +27,8 @@ open Lean.Parser.Tactic
 
 namespace Inclusion
 
-/-- `dyadic_interval` proves real number equalities, inequalities and interval memberships by
+/--
+`dyadic_interval` proves real number equalities, inequalities and interval memberships by
 approximating as an interval of dyadic rational numbers.
 
 This tactic is implemented as a family for the `inclusion` tactic: `dyadic_interval` is the same as

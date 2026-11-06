@@ -10,6 +10,9 @@ public import Mathlib.Order.ModularLattice
 public import Mathlib.Order.SuccPred.Basic
 public import Mathlib.Tactic.Nontriviality.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Atoms, Coatoms, and Simple Lattices
 
@@ -19,10 +22,12 @@ which are lattices with only two elements, and related ideas.
 ## Main definitions
 
 ### Atoms and Coatoms
+
 * `IsAtom a` indicates that the only element below `a` is `⊥`.
 * `IsCoatom a` indicates that the only element above `a` is `⊤`.
 
 ### Atomic and Atomistic Lattices
+
 * `IsAtomic` indicates that every element other than `⊥` is above an atom.
 * `IsCoatomic` indicates that every element other than `⊤` is below a coatom.
 * `IsAtomistic` indicates that every element is the `sSup` of a set of atoms.
@@ -31,16 +36,19 @@ which are lattices with only two elements, and related ideas.
 * `IsStronglyCoatomic` indicates that for all `a < b`, there is some `x` with `a ≤ x ⋖ b`.
 
 ### Simple Lattices
+
 * `IsSimpleOrder` indicates that an order has only two unique elements, `⊥` and `⊤`.
 * `IsSimpleOrder.boundedOrder`
 * `IsSimpleOrder.distribLattice`
 * Given an instance of `IsSimpleOrder`, we provide the following definitions. These are not
   made global instances as they contain data :
+
   * `IsSimpleOrder.booleanAlgebra`
   * `IsSimpleOrder.completeLattice`
   * `IsSimpleOrder.completeBooleanAlgebra`
 
 ## Main results
+
 * `isAtom_dual_iff_isCoatom` and `isCoatom_dual_iff_isAtom` express the (definitional) duality
   of `IsAtom` and `IsCoatom`.
 * `isSimpleOrder_iff_isAtom_top` and `isSimpleOrder_iff_isCoatom_bot` express the
@@ -48,7 +56,6 @@ which are lattices with only two elements, and related ideas.
 * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
   bounded lattice, a complement of an atom is a coatom and vice versa.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
-
 -/
 
 @[expose] public section
@@ -435,9 +442,11 @@ end BooleanAlgebra
 
 namespace CompleteBooleanAlgebra
 
-/-- Every atomic complete Boolean algebra is completely atomic.
+/--
+Every atomic complete Boolean algebra is completely atomic.
 
-This is not made an instance to avoid typeclass loops. -/
+This is not made an instance to avoid typeclass loops.
+-/
 -- See note [reducible non-instances]
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where

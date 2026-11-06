@@ -11,8 +11,10 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Exact (co)limits
 
 We introduce a typeclass `HasExactColimitsOfShape J C` in order to express
@@ -26,8 +28,8 @@ See the file `Mathlib/CategoryTheory/Abelian/GrothendieckAxioms/Basic.lean` for
 the applications to the `AB` axioms in abelian categories.
 
 ## References
-* [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 
+* [Stacks: Grothendieck's AB conditions](https://stacks.math.columbia.edu/tag/079A)
 -/
 
 public section

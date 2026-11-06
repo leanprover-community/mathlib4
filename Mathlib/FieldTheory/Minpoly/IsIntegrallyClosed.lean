@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Polynomial.GaussLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials over a GCD monoid
 
@@ -16,14 +19,11 @@ This file specializes the theory of minpoly to the case of an algebra over a GCD
 
 * `minpoly.isIntegrallyClosed_eq_field_fractions`: For integrally closed domains, the minimal
   polynomial over the ring is the same as the minimal polynomial over the fraction field.
-
 * `minpoly.isIntegrallyClosed_dvd`: For integrally closed domains, the minimal polynomial divides
   any primitive polynomial that has the integral element as root.
-
 * `IsIntegrallyClosed.Minpoly.unique`: The minimal polynomial of an element `x` is uniquely
   characterized by its defining property: if there is another monic polynomial of minimal degree
   that has `x` as a root, then this polynomial is equal to the minimal polynomial of `x`.
-
 -/
 
 @[expose] public section

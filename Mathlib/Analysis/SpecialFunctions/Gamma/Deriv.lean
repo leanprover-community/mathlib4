@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of the Gamma function
 

@@ -13,6 +13,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
 import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 import Mathlib.CategoryTheory.Types.Monomorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The relative cell complex attached to a rank function for a pairing
 
@@ -22,8 +25,8 @@ be a rank function. We show that the inclusion `A.ι` is a relative
 cell complex with basic cells given by horn inclusions.
 
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 @[expose] public section
@@ -244,6 +247,7 @@ section
 /-!
 The main technical result in this section is `SSet.Subcomplex.Pairing.RankFunction.isPushout`
 which states that there is a pushout square:
+
 ```
                                       f.t j
 ∐ fun (c : f.Cell j) ↦ c.horn  -------------> f.filtration j
@@ -252,9 +256,9 @@ which states that there is a pushout square:
                v                      f.b j        v
 ∐ fun (c : f.Cell j) ↦ Δ[c.dim + 1]  -------> f.filtration (Order.succ j)
 ```
+
 The map on the left is a coproduct of horn inclusions (the source and target
 of the morphism `f.m j` are denoted `f.sigmaHorn j` and `f.sigmaStdSimplex j`).
-
 -/
 
 /-- Given a rank function for a proper pairing of a subcomplex of a

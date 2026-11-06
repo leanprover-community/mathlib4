@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.DiscreteQuotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Profinite sets as limits of finite sets.
 
@@ -17,17 +20,17 @@ discrete (hence finite) quotients.
 ## Definitions
 
 There are a handful of definitions in this file, given `X : Profinite`:
+
 1. `X.fintypeDiagram` is the functor `DiscreteQuotient X ⥤ FintypeCat` whose limit
-  is isomorphic to `X` (the limit taking place in `Profinite` via `FintypeCat.toProfinite`, see 2).
+   is isomorphic to `X` (the limit taking place in `Profinite` via `FintypeCat.toProfinite`, see 2).
 2. `X.diagram` is an abbreviation for `X.fintypeDiagram ⋙ FintypeCat.toProfinite`.
 3. `X.asLimitCone` is the cone over `X.diagram` whose cone point is `X`.
 4. `X.isoAsLimitConeLift` is the isomorphism `X ≅ (Profinite.limitCone X.diagram).X` induced
-  by lifting `X.asLimitCone`.
+   by lifting `X.asLimitCone`.
 5. `X.asLimitConeIso` is the isomorphism `X.asLimitCone ≅ (Profinite.limitCone X.diagram)`
-  induced by `X.isoAsLimitConeLift`.
+   induced by `X.isoAsLimitConeLift`.
 6. `X.asLimit` is a term of type `IsLimit X.asLimitCone`.
 7. `X.lim : CategoryTheory.Limits.LimitCone X.asLimitCone` is a bundled combination of 3 and 6.
-
 -/
 
 @[expose] public section

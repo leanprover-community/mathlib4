@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Norm for (finite) ring extensions
 
@@ -30,8 +33,7 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 
 ## References
 
-* https://en.wikipedia.org/wiki/Field_norm
-
+* https://en.wikipedia.org/wiki/Field\_norm
 -/
 
 @[expose] public section
@@ -92,7 +94,8 @@ theorem norm_algebraMap_of_basis [Fintype ι] (b : Basis ι R S) (x : R) :
 
 variable [Free R S]
 
-/-- If `x` is in the base ring `R` and `S` is free over `R`, then the norm is `x ^ [S : R]`.
+/--
+If `x` is in the base ring `R` and `S` is free over `R`, then the norm is `x ^ [S : R]`.
 
 (If `S` is not finitely generated over `R`, then `norm = 1 = x ^ 0 = x ^ (finrank R S)`.)
 -/

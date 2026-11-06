@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Action.Concrete
 public import Mathlib.CategoryTheory.Action.Limits
 public import Mathlib.CategoryTheory.Galois.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Examples of Galois categories and fiber functors
 
@@ -16,7 +19,6 @@ We show that for a group `G` the category of finite `G`-sets is a `PreGaloisCate
 forgetful functor to `FintypeCat` is a `FiberFunctor`.
 
 The connected finite `G`-sets are precisely the ones with transitive `G`-action.
-
 -/
 
 @[expose] public section

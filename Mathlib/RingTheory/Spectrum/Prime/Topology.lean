@@ -15,6 +15,9 @@ public import Mathlib.Topology.Constructible
 public import Mathlib.Topology.KrullDimension
 public import Mathlib.Topology.Spectral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
 
@@ -25,21 +28,19 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 
 ## Inspiration/contributors
 
-The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
-which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
-and Chris Hughes (on an earlier repository).
+The contents of this file draw inspiration from [
+https://github.com/ramonfmir/lean-scheme](https://github.com/ramonfmir/lean-scheme) which has
+contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau, and Chris Hughes (on an earlier
+repository).
 
 ## Main definitions
 
 * `PrimeSpectrum.zariskiTopology`: the Zariski topology on the prime spectrum, whose closed sets
   are zero loci (`zeroLocus`).
-
 * `PrimeSpectrum.basicOpen`: the complement of the zero locus of a single element.
   The `basicOpen`s form a topological basis of the Zariski topology:
   `PrimeSpectrum.isTopologicalBasis_basic_opens`.
-
 * `PrimeSpectrum.comap`: the continuous map between prime spectra induced by a ring homomorphism.
-
 * `IsLocalRing.closedPoint`: the maximal ideal of a local ring is the unique closed point in its
   prime spectrum.
 
@@ -48,36 +49,26 @@ and Chris Hughes (on an earlier repository).
 * `PrimeSpectrum.instSpectralSpace`: every prime spectrum is a spectral space, i.e. it is
   quasi-compact, sober (in particular T0), quasi-separated, and its compact open subsets form
   a topological basis.
-
 * `PrimeSpectrum.discreteTopology_iff_finite_and_krullDimLE_zero`: the prime spectrum of a
   commutative semiring is discrete iff it is finite and the semiring has zero Krull dimension
   or is trivial.
-
 * `PrimeSpectrum.localization_comap_range`, `PrimeSpectrum.localization_comap_isEmbedding`:
   localization at a submonoid of a commutative semiring induces an embedding between the prime
   spectra, with range consisting of prime ideals disjoint from the submonoid.
-
 * `PrimeSpectrum.localization_away_comap_range`: for localization away from an element, the
   range of the embedding is the `basicOpen` associated to the element.
-
 * `PrimeSpectrum.comap_isEmbedding_of_surjective`: a surjective ring homomorphism between
   commutative semirings induces an embedding between the prime spectra.
-
 * `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`: a surjective ring homomorphism between
   commutative rings induces a closed embedding between the prime spectra.
-
 * `PrimeSpectrum.primeSpectrumProdHomeo`: the prime spectrum of a product semiring is homeomorphic
   to the disjoint union of the prime spectra.
-
 * `PrimeSpectrum.stableUnderSpecialization_range_iff`: the range of `PrimeSpectrum.comap _` is
   closed iff it is stable under specialization.
-
 * `PrimeSpectrum.denseRange_comap_iff_minimalPrimes`,
   `PrimeSpectrum.denseRange_comap_iff_ker_le_nilRadical`: the range of `comap f` is dense
   iff it contains all minimal primes, iff the kernel of `f` is contained in the nilradical.
-
 * `PrimeSpectrum.isClosedMap_comap_of_isIntegral`: `comap f` is a closed map if `f` is integral.
-
 * `PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom`: `f : R →+* S` is integral if
   `comap (Polynomial.mapRingHom f : R[X] →+* S[X])` is a closed map.
 
@@ -86,20 +77,14 @@ In the prime spectrum of a commutative semiring:
 * `PrimeSpectrum.isClosed_iff_zeroLocus_radical_ideal`, `PrimeSpectrum.isRadical_vanishingIdeal`,
   `PrimeSpectrum.zeroLocus_eq_iff`, `PrimeSpectrum.vanishingIdeal_anti_mono_iff`:
   closed subsets correspond to radical ideals.
-
 * `PrimeSpectrum.isClosed_singleton_iff_isMaximal`: closed points correspond to maximal ideals.
-
 * `PrimeSpectrum.isIrreducible_iff_vanishingIdeal_isPrime`: irreducible closed subsets correspond
   to prime ideals.
-
 * `minimalPrimes.equivIrreducibleComponents`: irreducible components correspond to minimal primes.
-
 * `PrimeSpectrum.mulZeroAddOneEquivClopens`: clopen subsets correspond to pairs of elements
   that add up to 1 and multiply to 0 in the semiring.
-
 * `PrimeSpectrum.isIdempotentElemEquivClopens`: (if the semiring is a ring) clopen subsets
   correspond to idempotents in the ring.
-
 -/
 
 @[expose] public section
@@ -812,7 +797,7 @@ end DiscreteTopology
 section Order
 
 /-!
-## The specialization order
+# The specialization order
 
 We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if `y ∈ closure {x}`.
 -/

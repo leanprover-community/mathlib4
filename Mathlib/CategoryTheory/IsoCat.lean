@@ -7,11 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.EqToHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Isomorphisms of categories
 
 An `IsoCat C D` is an isomorphism of categories: a pair of functors `C ⥤ D` and `D ⥤ C`
-whose composites are *equal* (not merely naturally isomorphic) to the identity functors.
+whose composites are _equal_ (not merely naturally isomorphic) to the identity functors.
 This is a strict notion, stronger than an equivalence of categories `C ≌ D`.
 We also define `Functor.IsIso` as a property saying that a functor is fully faithful and
 bijective on objects. We develop basic api for these two concepts.

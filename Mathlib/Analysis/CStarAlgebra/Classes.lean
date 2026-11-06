@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Topology.Algebra.NonUnitalStarAlgebra
 public import Mathlib.Topology.Algebra.StarSubalgebra
 
-/-! # Classes of C⋆-algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Classes of C⋆-algebras
 
 This file defines classes for complex C⋆-algebras. These are (unital or non-unital, commutative or
 noncommutative) Banach algebra over `ℂ` with an antimultiplicative conjugate-linear involution
@@ -19,7 +23,6 @@ noncommutative) Banach algebra over `ℂ` with an antimultiplicative conjugate-l
 
 These classes are not defined in `Mathlib/Analysis/CStarAlgebra/Basic.lean` because they require
 heavier imports.
-
 -/
 
 public section
@@ -77,25 +80,29 @@ noncomputable instance : CommCStarAlgebra ℂ where
 
 namespace IsMulCommutative
 
-/-- A `NonUnitalCStarAlgebra` which `IsMulCommutative` is a `NonUnitalCommCStarAlgebra`.
+/--
+A `NonUnitalCStarAlgebra` which `IsMulCommutative` is a `NonUnitalCommCStarAlgebra`.
 
 This is primarily used to deduce the bundled version from the unbundled one for commutative
 subobjects in a noncommutative ambient type. As such this is only available inside the
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative subobjects]. -/
+See note \[commutative subobjects\].
+-/
 scoped instance (priority := 50) {A : Type*} [NonUnitalCStarAlgebra A] [IsMulCommutative A] :
     NonUnitalCommCStarAlgebra A where
 
-/-- A `CStarAlgebra` which `IsMulCommutative` is a `CommCStarAlgebra`.
+/--
+A `CStarAlgebra` which `IsMulCommutative` is a `CommCStarAlgebra`.
 
 This is primarily used to deduce the bundled version from the unbundled one for commutative
 subobjects in a noncommutative ambient type. As such this is only available inside the
 `IsMulCommutative` scope so as to avoid deleterious effects to type class synthesis for bundled
 commutativity.
 
-See note [commutative subobjects]. -/
+See note \[commutative subobjects\].
+-/
 scoped instance (priority := 50) {A : Type*} [CStarAlgebra A] [IsMulCommutative A] :
     CommCStarAlgebra A where
 
@@ -171,10 +178,12 @@ noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
 end MulOpposite
 
 attribute [local instance] IsUnital.toMulOneClass in
-/-- A unital non-unital C⋆-algebra is a C⋆-algebra.
+/--
+A unital non-unital C⋆-algebra is a C⋆-algebra.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra A] [IsUnital A] :
     CStarAlgebra A where
   __ := ‹NonUnitalCStarAlgebra A›
@@ -182,9 +191,11 @@ noncomputable abbrev IsUnital.toCStarAlgebra {A : Type*} [NonUnitalCStarAlgebra 
   __ := toAlgebra
 
 attribute [local instance] IsUnital.toCStarAlgebra in
-/-- A unital non-unital commutative C⋆-algebra is a commutative C⋆-algebra.
+/--
+A unital non-unital commutative C⋆-algebra is a commutative C⋆-algebra.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toCommCStarAlgebra {A : Type*} [NonUnitalCommCStarAlgebra A]
     [IsUnital A] : CommCStarAlgebra A where

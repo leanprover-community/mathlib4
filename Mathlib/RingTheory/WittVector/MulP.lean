@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.WittVector.IsPoly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplication by `n` in the ring of Witt vectors
 
@@ -20,9 +23,8 @@ and Verschiebung is equal to multiplication by `p`.
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section

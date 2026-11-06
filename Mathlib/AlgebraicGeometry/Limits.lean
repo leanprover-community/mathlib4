@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects -- shake: 
 -- This import adds an instance which, despite failing to trigger,
 -- is necessary for some typeclass syntheses in this file to succeed.
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)Limits of Schemes
 
@@ -25,7 +28,6 @@ We construct various limits and colimits in the category of schemes.
 ## TODO
 
 * Spec preserves finite coproducts.
-
 -/
 
 @[expose] public section

@@ -8,14 +8,17 @@ module
 public import Mathlib.Analysis.BoxIntegral.Partition.Additive
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Box-additive functions defined by measures
 
 In this file we prove a few simple facts about rectangular boxes, partitions, and measures:
 
-- given a box `I : Box ι`, its coercion to `Set (ι → ℝ)` and `I.Icc` are measurable sets;
-- if `μ` is a locally finite measure, then `(I : Set (ι → ℝ))` and `I.Icc` have finite measure;
-- if `μ` is a locally finite measure, then `fun J ↦ μ.real J` is a box additive function.
+* given a box `I : Box ι`, its coercion to `Set (ι → ℝ)` and `I.Icc` are measurable sets;
+* if `μ` is a locally finite measure, then `(I : Set (ι → ℝ))` and `I.Icc` have finite measure;
+* if `μ` is a locally finite measure, then `fun J ↦ μ.real J` is a box additive function.
 
 For the last statement, we both prove it as a proposition and define a bundled
 `BoxIntegral.BoxAdditiveMap` function.

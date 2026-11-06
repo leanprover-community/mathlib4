@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Newton's Identities
 
@@ -28,13 +31,12 @@ terms).
 
 * `MvPolynomial.mul_esymm_eq_sum`: a recurrence relation for the `k`th elementary
   symmetric polynomial in terms of lower-degree elementary symmetric polynomials and power sums.
-
 * `MvPolynomial.psum_eq_mul_esymm_sub_sum`: a recurrence relation for the degree-`k` power sum
   in terms of lower-degree elementary symmetric polynomials and power sums.
 
 ## References
 
-See [zeilberger1984] for the combinatorial proof of Newton's identities.
+See \[zeilberger1984\] for the combinatorial proof of Newton's identities.
 -/
 
 public section

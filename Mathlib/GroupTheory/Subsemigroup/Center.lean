@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Center
 public import Mathlib.Algebra.Group.Subsemigroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centers of semigroups, as subsemigroups.
 
@@ -21,15 +24,17 @@ We provide `Submonoid.center`, `AddSubmonoid.center`, `Subgroup.center`, `AddSub
 
 ## References
 
-* [Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1]
-  [cabreragarciarodriguezpalacios2014]
+* ‍\[Cabrera García and Rodríguez Palacios, Non-associative normed algebras. Volume 1\]
+  ‍\[cabreragarciarodriguezpalacios2014\]
 -/
 
 @[expose] public section
 
 assert_not_exists RelIso Finset
 
-/-! ### `Set.center` as a `Subsemigroup`. -/
+/-!
+# `Set.center` as a `Subsemigroup`.
+-/
 
 variable (M)
 namespace Subsemigroup

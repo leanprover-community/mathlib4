@@ -8,15 +8,18 @@ module
 public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Declaration type linters
 
 We bundle a number of linters that act on declaration types into a single linter:
 
-- The concrete instances linter, which is defined in this file
-- The overlapping instances linter
-- The unused `Fintype` in type linter
-- The unused `Decidable` in type linter
+* The concrete instances linter, which is defined in this file
+* The overlapping instances linter
+* The unused `Fintype` in type linter
+* The unused `Decidable` in type linter
 
 We bundle them because each of them acts on the `Lean.Elab.Term.BodyInfo` in the info tree,
 and it is expensive to do this search many times over.

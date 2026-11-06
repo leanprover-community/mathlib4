@@ -8,12 +8,14 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 public import Mathlib.CategoryTheory.MorphismProperty.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pairs of simplicial sets
 
 In this file, we define the category `SSetPair` of pairs of simplicial
 sets, which consist of monomorphisms `i : X ⟶ Y` of simplicial sets.
-
 -/
 
 @[expose] public section

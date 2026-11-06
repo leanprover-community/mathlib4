@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Units.Defs
 
-/-! # Group actions on and by `Mˣ`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Group actions on and by `Mˣ`
 
 This file provides the action of a unit on a type `α`, `SMul Mˣ α`, in the presence of
 `SMul M α`, with the obvious definition stated in `Units.smul_def`. This definition preserves
@@ -65,7 +69,9 @@ instance smulCommClass_right [Monoid N] [SMul M α] [SMul N α] [SMulCommClass M
 instance [Monoid M] [SMul M N] [SMul M α] [SMul N α] [IsScalarTower M N α] :
     IsScalarTower Mˣ N α where smul_assoc m n := smul_assoc (m : M) n
 
-/-! ### Action of a group `G` on units of `M` -/
+/-!
+# Action of a group `G` on units of `M`
+-/
 
 /-- If an action `G` associates and commutes with multiplication on `M`, then it lifts to an
 action on `Mˣ`. Notably, this provides `MulAction Mˣ Nˣ` under suitable conditions. -/
@@ -79,18 +85,24 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
   one_smul _ := Units.ext <| one_smul _ _
   mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
-/-- `Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
+/--
+`Units.mulAction' : MulAction G Mˣ` creates a diamond when `G = Mˣ` and `M` is commutative.
 
-Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+Discussed [on
+Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399).
+-/
 example {M} [CommMonoid M] :
     (mulAction'.toSMul : SMul Mˣ Mˣ) = instSMulOfMul := by
   fail_if_success rfl -- there is an instance diamond here
   ext
   rfl
 
-/-- This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
+/--
+This is not the usual `smul_eq_mul` because `mulAction'` creates a diamond.
 
-Discussed [on Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399). -/
+Discussed [on
+Zulip](https://leanprover.zulipchat.com/#narrow/channel/113488-general/topic/units.2Emul_action'.20diamond/near/246400399).
+-/
 @[simp]
 lemma smul_eq_mul {M} [CommMonoid M] (u₁ u₂ : Mˣ) :
     u₁ • u₂ = u₁ * u₂ := by
@@ -133,7 +145,8 @@ example [Monoid M] [Monoid N] [MulAction M N] [SMulCommClass M N N] [IsScalarTow
 section MulDistribMulAction
 variable {M N : Type*} [Monoid M] [Monoid N] [MulDistribMulAction M N]
 
-/-- Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
+/--
+Note this has different defeqs than `Units.mulAction'`, but doesn't create a diamond
 with it in non-degenerate situations. Indeed, to get a diamond on `MulDistribMulAction G Mˣ`,
 we would need both instances to fire. But `Units.mulAction'` assumes `SMulCommClass G M M`,
 i.e. `∀ (g : G) (m₁ m₂ : M), g • (m₁ * m₂) = m₁ * g • m₂`, while
@@ -146,7 +159,8 @@ This however does create a (propeq) diamond for `MulDistribMulAction (ConjAct M�
 `ConjAct.unitsMulDistribMulAction` and `ConjAct.instMulDistribMulAction`. Indeed, if we go down
 one way then `u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * v⁻¹ * ofConjAct u⁻¹, _, _⟩`,
 while the other way is
-`u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * (v⁻¹ * ofConjAct u⁻¹), _, _⟩`. -/
+`u • v := ⟨ofConjAct u * v * ofConjAct u⁻¹, ofConjAct u * (v⁻¹ * ofConjAct u⁻¹), _, _⟩`.
+-/
 abbrev mulDistribMulActionRight : MulDistribMulAction M Nˣ where
   smul m u := ⟨m • u, m • u⁻¹, by simp [← smul_mul', smul_one], by simp [← smul_mul', smul_one]⟩
   one_smul u := Units.ext <| one_smul ..

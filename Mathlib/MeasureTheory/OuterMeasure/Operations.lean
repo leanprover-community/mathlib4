@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Order.Group.Indicator
 public import Mathlib.MeasureTheory.OuterMeasure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on outer measures
 
@@ -18,12 +21,11 @@ We also show that outer measures on a type `α` form a complete lattice.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Outer_measure>
+* [https://en.wikipedia.org/wiki/Outer\_measure](https://en.wikipedia.org/wiki/Outer_measure)
 
 ## Tags
 
 outer measure
-
 -/
 
 @[expose] public section

@@ -12,6 +12,9 @@ import Mathlib.Analysis.BoundedVariation
 import Mathlib.Analysis.Distribution.AEEqOfIntegralContDiff
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rademacher's theorem: a Lipschitz function is differentiable almost everywhere
 
@@ -24,6 +27,7 @@ given (see `LipschitzOnWith.ae_differentiableWithinAt`).
 
 There are many proofs of Rademacher's theorem. We follow the one by Morrey, which is not the most
 elementary but maybe the most elegant once necessary prerequisites are set up.
+
 * Step 0: without loss of generality, one may assume that `f` is real-valued.
 * Step 1: Since a one-dimensional Lipschitz function has bounded variation, it is differentiable
   almost everywhere. With a Fubini argument, it follows that given any vector `v` then `f` is ae
@@ -40,7 +44,7 @@ elementary but maybe the most elegant once necessary prerequisites are set up.
 
 ## References
 
-* [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
+* ‍\[Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3\]\[Federer1996\]
 -/
 
 public section
@@ -57,7 +61,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 namespace LipschitzWith
 
 /-!
-### Step 1: A Lipschitz function is ae differentiable in any given direction
+# Step 1: A Lipschitz function is ae differentiable in any given direction
 
 This follows from the one-dimensional result that a Lipschitz function on `ℝ` has bounded
 variation, and is therefore ae differentiable, together with a Fubini argument.
@@ -93,7 +97,7 @@ theorem locallyIntegrable_lineDeriv (hf : LipschitzWith C f) (v : E) :
   (hf.memLp_lineDeriv v).locallyIntegrable le_top
 
 /-!
-### Step 2: the ae line derivative is linear
+# Step 2: the ae line derivative is linear
 
 Surprisingly, this is the hardest step. We prove it using an elegant but slightly sophisticated
 argument by Morrey, with a distributional flavor: we integrate against a smooth function, and push
@@ -240,7 +244,7 @@ theorem ae_lineDeriv_sum_eq
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!
-### Step 3: construct the derivative using the line derivatives along a basis
+# Step 3: construct the derivative using the line derivatives along a basis
 -/
 
 theorem ae_exists_fderiv_of_countable
@@ -357,8 +361,10 @@ theorem ae_differentiableWithinAt_of_mem_pi
   filter_upwards [ae_all_iff.2 this] with x hx xs
   exact differentiableWithinAt_pi.2 (fun i ↦ hx i xs)
 
-/-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywhere in this set. -/
+/--
+_Rademacher's theorem_: a function between finite-dimensional real vector spaces which is
+Lipschitz on a set is differentiable almost everywhere in this set.
+-/
 theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f s) :
     ∀ᵐ x ∂μ, x ∈ s → DifferentiableWithinAt ℝ f s x := by
   have A := (Basis.ofVectorSpace ℝ F).equivFun.toContinuousLinearEquiv
@@ -371,8 +377,10 @@ theorem ae_differentiableWithinAt_of_mem {f : E → F} (hf : LipschitzOnWith C f
   apply ae_differentiableWithinAt_of_mem_pi
   exact A.lipschitzWith.comp_lipschitzOnWith hf
 
-/-- *Rademacher's theorem*: a function between finite-dimensional real vector spaces which is
-Lipschitz on a set is differentiable almost everywhere in this set. -/
+/--
+_Rademacher's theorem_: a function between finite-dimensional real vector spaces which is
+Lipschitz on a set is differentiable almost everywhere in this set.
+-/
 theorem ae_differentiableWithinAt {f : E → F} (hf : LipschitzOnWith C f s)
     (hs : MeasurableSet s) :
     ∀ᵐ x ∂(μ.restrict s), DifferentiableWithinAt ℝ f s x := by
@@ -381,8 +389,10 @@ theorem ae_differentiableWithinAt {f : E → F} (hf : LipschitzOnWith C f s)
 
 end LipschitzOnWith
 
-/-- *Rademacher's theorem*: a Lipschitz function between finite-dimensional real vector spaces is
-differentiable almost everywhere. -/
+/--
+_Rademacher's theorem_: a Lipschitz function between finite-dimensional real vector spaces is
+differentiable almost everywhere.
+-/
 theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
   rw [← lipschitzOnWith_univ] at h

@@ -11,8 +11,10 @@ public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Ideals over a ring
 
 This file contains an assortment of definitions and results for `Ideal R`,
@@ -284,10 +286,12 @@ theorem not_isField_iff_exists_prime [Nontrivial R] :
   obtain ⟨I, hI, hIm⟩ := exists_maximal_of_not_isField h
   exact ⟨I, hI, hIm.isPrime⟩
 
-/-- Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
+/--
+Also see `Ideal.isSimpleOrder` for the forward direction as an instance when `R` is a
 division (semi)ring.
 
-This result actually holds for all division semirings, but we lack the predicate to state it. -/
+This result actually holds for all division semirings, but we lack the predicate to state it.
+-/
 theorem isField_iff_isSimpleOrder_ideal : IsField R ↔ IsSimpleOrder (Ideal R) := by
   cases subsingleton_or_nontrivial R
   · exact

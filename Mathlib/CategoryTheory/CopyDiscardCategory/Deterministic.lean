@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Deterministic Morphisms in Copy-Discard Categories
 
@@ -42,9 +45,11 @@ open MonoidalCategory ComonObj
 
 variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [CopyDiscardCategory.{v} C]
 
-/-- A morphism is deterministic if it preserves the comonoid structure.
+/--
+A morphism is deterministic if it preserves the comonoid structure.
 
-In probabilistic contexts, these are morphisms without randomness. -/
+In probabilistic contexts, these are morphisms without randomness.
+-/
 abbrev Deterministic {X Y : C} (f : X ⟶ Y) := IsComonHom f
 
 namespace Deterministic

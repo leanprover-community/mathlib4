@@ -10,6 +10,9 @@ public import Mathlib.Data.Vector.Basic
 public import Mathlib.Order.Setoid.Basic
 public import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric powers
 
@@ -26,7 +29,6 @@ needs a fleshed-out interface.
 ## Tags
 
 symmetric powers
-
 -/
 
 @[expose] public section
@@ -51,9 +53,10 @@ deriving [DecidableEq α] → DecidableEq _
 instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
   ⟨Sym.toMultiset⟩
 
-/-- This is the `List.Perm` setoid lifted to `Vector`.
+/--
+This is the `List.Perm` setoid lifted to `Vector`.
 
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
@@ -563,7 +566,9 @@ end Sym
 
 section Equiv
 
-/-! ### Combinatorial equivalences -/
+/-!
+# Combinatorial equivalences
+-/
 
 
 variable {α : Type*} {n : ℕ}

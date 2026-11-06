@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Action.Basic
 public import Mathlib.CategoryTheory.Monoidal.Opposite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Actions from the monoidal opposite of a category.
 
 In this file, given a monoidal category `C` and a category `D`,
@@ -23,7 +25,6 @@ on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
 
 These constructions are not made instances in order to avoid instance loops,
 you should bring them as local instances if you intend to use them.
-
 -/
 
 @[expose] public section

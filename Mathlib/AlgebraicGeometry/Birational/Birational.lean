@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.AffineSpace
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birationality and Rationality of schemes.
 
@@ -16,14 +19,13 @@ birationality and rationality.
 
 ## Main definitions
 
-- `Scheme.PartialIso X Y`: an isomorphism between a dense open subscheme of `X` and a
+* `Scheme.PartialIso X Y`: an isomorphism between a dense open subscheme of `X` and a
   dense open subscheme of `Y`.
-- `Scheme.Birational X Y`: `X` and `Y` are birational, i.e. there exists a `PartialIso X Y`.
-- `Scheme.BirationalOver sX sY`: `X` and `Y` are birational over `S` via structure maps
+* `Scheme.Birational X Y`: `X` and `Y` are birational, i.e. there exists a `PartialIso X Y`.
+* `Scheme.BirationalOver sX sY`: `X` and `Y` are birational over `S` via structure maps
   `sX : X ⟶ S` and `sY : Y ⟶ S`.
-- `Scheme.IsRationalOver sX`: `X` is rational over `S` via structure map `sX : X ⟶ S`,
+* `Scheme.IsRationalOver sX`: `X` is rational over `S` via structure map `sX : X ⟶ S`,
   i.e. birational over `S` to some affine space `𝔸(n; S)`.
-
 -/
 
 @[expose] public section

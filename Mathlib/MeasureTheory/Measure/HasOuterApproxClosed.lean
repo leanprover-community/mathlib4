@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 import Mathlib.MeasureTheory.Integral.IntegrableOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spaces where indicators of closed sets have decreasing approximations by continuous functions
 
@@ -35,7 +38,6 @@ convergence in distribution for random variables behave somewhat well in spaces 
   closed set tend to the measure of the set.
 * `ext_of_forall_lintegral_eq_of_IsFiniteMeasure`: Two finite measures are equal if the integrals
   of all bounded continuous functions with respect to both agree.
-
 -/
 
 @[expose] public section
@@ -49,10 +51,12 @@ namespace MeasureTheory
 
 variable {Ω : Type*} [TopologicalSpace Ω] [MeasurableSpace Ω] [OpensMeasurableSpace Ω]
 
-/-- A bounded convergence theorem for a finite measure:
+/--
+A bounded convergence theorem for a finite measure:
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
 limit, then their integrals against the finite measure tend to the integral of the limit.
 This formulation assumes:
+
 * the functions tend to a limit along a countably generated filter;
 * the limit is in the almost everywhere sense;
 * boundedness holds almost everywhere;
@@ -70,9 +74,11 @@ theorem tendsto_lintegral_nn_filter_of_le_const {ι : Type*} {L : Filter ι} [L.
   · simpa only [Function.comp_apply, ENNReal.coe_le_coe] using fs_le_const
   · simpa only [Function.comp_apply, ENNReal.tendsto_coe] using fs_lim
 
-/-- If bounded continuous functions tend to the indicator of a measurable set and are
+/--
+If bounded continuous functions tend to the indicator of a measurable set and are
 uniformly bounded, then their integrals against a finite measure tend to the measure of the set.
 This formulation assumes:
+
 * the functions tend to a limit along a countably generated filter;
 * the limit is in the almost everywhere sense;
 * boundedness holds almost everywhere.
@@ -89,7 +95,8 @@ theorem measure_of_cont_bdd_of_tendsto_filter_indicator {ι : Type*} {L : Filter
   simp_rw [← aux, lintegral_indicator E_mble]
   simp only [lintegral_one, Measure.restrict_apply, MeasurableSet.univ, univ_inter]
 
-/-- If a sequence of bounded continuous functions tends to the indicator of a measurable set and
+/--
+If a sequence of bounded continuous functions tends to the indicator of a measurable set and
 the functions are uniformly bounded, then their integrals against a finite measure tend to the
 measure of the set.
 

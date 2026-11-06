@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 
-/-! # `lp ∞ A` as a C⋆-algebra
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `lp ∞ A` as a C⋆-algebra
 
 We place these here because, for reasons related to the import hierarchy, they should not be placed
 in earlier files.

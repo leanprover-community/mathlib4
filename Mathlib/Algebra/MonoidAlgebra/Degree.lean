@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Group.Subsemigroup.Operations
 public import Mathlib.Algebra.MonoidAlgebra.Support
 public import Mathlib.Order.Filter.Extr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about the `sup` and `inf` of the support of `AddMonoidAlgebra`
 
 ## TODO
+
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 
@@ -27,22 +31,24 @@ variable {R R' A T B ι : Type*}
 namespace AddMonoidAlgebra
 
 /-!
-
-## sup-degree and inf-degree of an `AddMonoidAlgebra`
+# sup-degree and inf-degree of an `AddMonoidAlgebra`
 
 Let `R` be a semiring and let `A` be a `SemilatticeSup`.
 For an element `f : R[A]`, this file defines
+
 * `AddMonoidAlgebra.supDegree`: the sup-degree taking values in `WithBot A`,
 * `AddMonoidAlgebra.infDegree`: the inf-degree taking values in `WithTop A`.
 
 If the grading type `A` is a linearly ordered additive monoid, then these two notions of degree
 coincide with the standard one:
+
 * the sup-degree is the maximum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊥`, if `f = 0`;
 * the inf-degree is the minimum of the exponents of the monomials that appear with non-zero
   coefficient in `f`, or `⊤`, if `f = 0`.
 
 The main results are
+
 * `AddMonoidAlgebra.supDegree_mul_le`:
   the sup-degree of a product is at most the sum of the sup-degrees,
 * `AddMonoidAlgebra.le_infDegree_mul`:
@@ -52,11 +58,12 @@ The main results are
 * `AddMonoidAlgebra.le_infDegree_add`:
   the inf-degree of a sum is at least the inf of the inf-degrees.
 
-### Implementation notes
+## Implementation notes
 
 The current plan is to state and prove lemmas about `Finset.sup (Finsupp.support f) D` with a
 "generic" degree/weight function `D` from the grading Type `A` to a somewhat ordered Type `B`.
 Next, the general lemmas get specialized twice:
+
 * once for `supDegree` (essentially a simple application) and
 * once for `infDegree` (a simple application, via `OrderDual`).
 
@@ -78,9 +85,8 @@ variable [Semiring R]
 section ExplicitDegrees
 
 /-!
-
 In this section, we use `degb` and `degt` to denote "degree functions" on `A` with values in
-a type with *b*ot or *t*op respectively.
+a type with _b_ot or _t_op respectively.
 -/
 
 
@@ -218,9 +224,12 @@ end CommutativeLemmas
 end GeneralResultsAssumingSemilatticeSup
 
 
-/-! ### Shorthands for special cases
+/-!
+# Shorthands for special cases
+
 Note that these definitions are reducible, in order to make it easier to apply the more generic
-lemmas above. -/
+lemmas above.
+-/
 
 
 section Degrees
@@ -231,7 +240,8 @@ section SupDegree
 
 variable [SemilatticeSup B] [OrderBot B] (D : A → B)
 
-/-- Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
+/--
+Let `R` be a semiring, let `A` be an `AddZeroClass`, let `B` be an `OrderBot`,
 and let `D : A → B` be a "degree" function.
 For an element `f : R[A]`, the element `supDegree f : B` is the supremum of all the elements in the
 support of `f`, or `⊥` if `f` is zero.
@@ -244,7 +254,8 @@ the induced linear order on `Lex A` equips `MvPolynomial` ring with a
 [monomial order](https://en.wikipedia.org/wiki/Monomial_order) (i.e. a linear order on `A`, the
 type of (monic) monomials in `R[A]`, that respects addition). We make use of this monomial order
 by taking `D := toLex`, and different monomial orders could be accessed via different type
-synonyms once they are added. -/
+synonyms once they are added.
+-/
 abbrev supDegree (f : R[A]) : B :=
   f.coeff.support.sup D
 

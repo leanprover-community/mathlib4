@@ -10,13 +10,15 @@ public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Sym.Basic
 public import Mathlib.Order.Preorder.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
 
 This defines `Finsupp.toMultiset` the equivalence between `α →₀ ℕ` and `Multiset α`, along
 with `Multiset.toFinsupp` the reverse equivalence and `Finsupp.orderIsoMultiset` (the equivalence
 promoted to an order isomorphism).
-
 -/
 
 @[expose] public section
@@ -27,12 +29,14 @@ variable {α β ι : Type*}
 
 namespace Finsupp
 
-/-- Given `f : α →₀ ℕ`, `f.toMultiset` is the multiset with multiplicities given by the values of
+/--
+Given `f : α →₀ ℕ`, `f.toMultiset` is the multiset with multiplicities given by the values of
 `f` on the elements of `α`. We define this function as an `AddMonoidHom`.
 
 Under the additional assumption of `[DecidableEq α]`, this is available as
 `Multiset.toFinsupp : Multiset α ≃+ (α →₀ ℕ)`; the two declarations are separate as this assumption
-is only needed for one direction. -/
+is only needed for one direction.
+-/
 def toMultiset : (α →₀ ℕ) →+ Multiset α where
   toFun f := Finsupp.sum f fun a n => n • {a}
   -- Porting note: have to specify `h` or add a `dsimp only` before `sum_add_index'`.
@@ -191,7 +195,9 @@ theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Mult
     Finsupp.toMultiset f = s ↔ f = Multiset.toFinsupp s :=
   Multiset.toFinsupp.symm_apply_eq
 
-/-! ### As an order isomorphism -/
+/-!
+# As an order isomorphism
+-/
 
 namespace Finsupp
 /-- `Finsupp.toMultiset` as an order isomorphism. -/
@@ -237,10 +243,12 @@ namespace Sym
 variable (α)
 variable [DecidableEq α] (n : ℕ)
 
-/-- The `n`th symmetric power of a type `α` is naturally equivalent to the subtype of
+/--
+The `n`th symmetric power of a type `α` is naturally equivalent to the subtype of
 finitely-supported maps `α →₀ ℕ` with total mass `n`.
 
-See also `Sym.equivNatSumOfFintype` when `α` is finite. -/
+See also `Sym.equivNatSumOfFintype` when `α` is finite.
+-/
 noncomputable def equivNatSum :
     Sym α n ≃ {P : α →₀ ℕ // P.sum (fun _ ↦ id) = n} :=
   Multiset.toFinsupp.toEquiv.subtypeEquiv <| by simp
@@ -253,10 +261,12 @@ noncomputable def equivNatSum :
     ((equivNatSum α n).symm P : Multiset α) = Finsupp.toMultiset P :=
   rfl
 
-/-- The `n`th symmetric power of a finite type `α` is naturally equivalent to the subtype of maps
+/--
+The `n`th symmetric power of a finite type `α` is naturally equivalent to the subtype of maps
 `α → ℕ` with total mass `n`.
 
-See also `Sym.equivNatSum` when `α` is not necessarily finite. -/
+See also `Sym.equivNatSum` when `α` is not necessarily finite.
+-/
 noncomputable def equivNatSumOfFintype [Fintype α] :
     Sym α n ≃ {P : α → ℕ // ∑ i, P i = n} :=
   (equivNatSum α n).trans <| Finsupp.equivFunOnFinite.subtypeEquiv <| by simp [Finsupp.sum_fintype]

@@ -9,6 +9,9 @@ public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Order.ProjIcc
 public import Mathlib.Topology.UnitInterval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Paths in topological spaces
 
@@ -54,7 +57,9 @@ open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
-/-! ### Paths -/
+/-!
+# Paths
+-/
 
 /-- Continuous path connecting two points `x` and `y` in a topological space -/
 structure Path (x y : X) extends C(I, X) where
@@ -102,8 +107,10 @@ protected theorem source : γ 0 = x :=
 protected theorem target : γ 1 = y :=
   γ.target'
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def simps.apply : I → X :=
   γ
 
@@ -169,7 +176,9 @@ theorem refl_symm {a : X} : (Path.refl a).symm = Path.refl a := rfl
 theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ :=
   symm_involutive.surjective.range_comp γ
 
-/-! #### Space of paths -/
+/-!
+# Space of paths
+-/
 
 
 open ContinuousMap
@@ -192,7 +201,9 @@ theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
 def extend : C(ℝ, X) where
   toFun := IccExtend zero_le_one γ
 
-/-- See Note [continuity lemma statement]. -/
+/--
+See Note \[continuity lemma statement\].
+-/
 @[continuity, fun_prop]
 theorem _root_.Continuous.pathExtend {γ : Y → Path x y} {f : Y → ℝ} (hγ : Continuous ↿γ)
     (hf : Continuous f) : Continuous fun t => (γ t).extend (f t) :=
@@ -459,7 +470,9 @@ theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z 
   fun_prop
 
 
-/-! #### Product of paths -/
+/-!
+# Product of paths
+-/
 section Prod
 
 variable {a₁ a₂ a₃ : X} {b₁ b₂ b₃ : Y}
@@ -510,7 +523,9 @@ theorem trans_pi_eq_pi_trans (γ₀ : ∀ i, Path (as i) (bs i)) (γ₁ : ∀ i,
 
 end Pi
 
-/-! #### Pointwise operations on paths in a topological (additive) group -/
+/-!
+# Pointwise operations on paths in a topological (additive) group
+-/
 
 
 /-- Pointwise multiplication of paths in a topological group. -/
@@ -525,7 +540,9 @@ def inv {a b : X} [Inv X] [ContinuousInv X] (γ : Path a b) :
     Path a⁻¹ b⁻¹ :=
   γ.map continuous_inv
 
-/-! #### Truncating a path -/
+/-!
+# Truncating a path
+-/
 
 
 /-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the time interval `[t₀, t₁]`
@@ -602,7 +619,9 @@ theorem truncate_zero_one {a b : X} (γ : Path a b) :
   have : ↑x ∈ (Icc 0 1 : Set ℝ) := x.2
   rw [truncate, coe_mk_mk, max_eq_left this.1, min_eq_left this.2, extend_extends']
 
-/-! #### Reparametrising a path -/
+/-!
+# Reparametrising a path
+-/
 
 
 /-- Given a path `γ` and a function `f : I → I` where `f 0 = 0` and `f 1 = 1`, `γ.reparam f` is the

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Separation.GDelta
 public import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Perfectly normal topological spaces.
 
@@ -16,7 +19,6 @@ This file proves some properties of a perfectly normal space.
 ## TODO
 
 Prove that the product of a perfectly normal space and a metric space is perfectly normal.
-
 -/
 
 public section

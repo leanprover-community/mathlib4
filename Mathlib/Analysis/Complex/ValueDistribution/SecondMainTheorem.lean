@@ -9,13 +9,16 @@ public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 
 import Mathlib.Topology.MetricSpace.Infsep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Second Main Theorem of Value Distribution Theory
 
 This file will, in the future, establish the second main theorem of Value Distribution Theory. At
 present, it collects material that will be used in the proof.
 
-See Section VI.4 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] for a detailed
+See Section VI.4 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] for a detailed
 discussion. A full formalized proof of the second main theorem is available at
 https://github.com/kebekus/ProjectVD
 -/
@@ -27,9 +30,9 @@ open Finset
 namespace Real
 
 /-!
-## The Separation Lemma
+# The Separation Lemma
 
-This section proves the pointwise **separation lemma**, over a general normed field.
+This section proves the pointwise *separation lemma*, over a general normed field.
 -/
 
 variable {𝕜 : Type*} [NormedField 𝕜]

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Grothendieck
 public import Mathlib.CategoryTheory.FiberedCategory.HasFibers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Grothendieck construction gives a fibered category
 
@@ -18,9 +21,9 @@ We also provide a `HasFibers` instance to `∫ᶜ F`, such that the fiber over `
 category `F(S)`.
 
 ## References
-[Vistoli2008] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
-Angelo Vistoli
 
+‍\[Vistoli2008\] "Notes on Grothendieck Topologies, Fibered Categories and Descent Theory" by
+Angelo Vistoli
 -/
 
 @[expose] public section

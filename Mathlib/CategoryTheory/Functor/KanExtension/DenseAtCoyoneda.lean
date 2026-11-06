@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The co-Yoneda embedding is dense
 
@@ -17,7 +20,6 @@ are dualised here for the co-Yoneda embedding.
 ## References
 
 * https://ncatlab.org/nlab/show/dense+subcategory
-
 -/
 
 @[expose] public section

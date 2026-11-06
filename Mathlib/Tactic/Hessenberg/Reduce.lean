@@ -7,6 +7,9 @@ module
 
 public meta import Mathlib.Data.Rat.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reduction of a matrix over ℚ to Hessenberg form
 
@@ -16,11 +19,11 @@ lower triangular matrix `L` and an upper Hessenberg matrix `H` such that `Aσ * 
 
 ## Implementation notes
 
-`reduce` follows steps 1 to 4 of [Cohen][cohen1993], Algorithm 2.2.9.
+`reduce` follows steps 1 to 4 of \[Cohen\]\[cohen1993\], Algorithm 2.2.9.
 
 ## References
 
-* [H. Cohen, *A Course in Computational Algebraic Number Theory*][cohen1993], Algorithm 2.2.9
+* ‍\[H. Cohen, _A Course in Computational Algebraic Number Theory_\]\[cohen1993\], Algorithm 2.2.9
 -/
 
 public meta section

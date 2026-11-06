@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Finiteness.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.Noetherian.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local cohomology.
 
@@ -24,13 +27,13 @@ Ext into `M`.  One can, of course, take the collection to simply be the integral
 
 ## References
 
-* [M. Hochster, *Local cohomology*][hochsterunpublished]
-  <https://dept.math.lsa.umich.edu/~hochster/615W22/lcc.pdf>
-* [R. Hartshorne, *Local cohomology: A seminar given by A. Grothendieck*][hartshorne61]
-* [M. Brodmann and R. Sharp, *Local cohomology: An algebraic introduction with geometric
-  applications*][brodmannsharp13]
-* [S. Iyengar, G. Leuschke, A. Leykin, Anton, C. Miller, E. Miller, A. Singh, U. Walther,
-  *Twenty-four hours of local cohomology*][iyengaretal13]
+* ‍\[M. Hochster, _Local cohomology_\]\[hochsterunpublished\] [
+  https://dept.math.lsa.umich.edu/~hochster/615W22/lcc.pdf](https://dept.math.lsa.umich.edu/~hochster/615W22/lcc.pdf)
+* ‍\[R. Hartshorne, _Local cohomology: A seminar given by A. Grothendieck_\]\[hartshorne61\]
+* ‍\[M. Brodmann and R. Sharp, _Local cohomology: An algebraic introduction with geometric
+  applications_\]\[brodmannsharp13\]
+* ‍\[S. Iyengar, G. Leuschke, A. Leykin, Anton, C. Miller, E. Miller, A. Singh, U. Walther,
+  _Twenty-four hours of local cohomology_\]\[iyengaretal13\]
 
 ## Tags
 
@@ -39,9 +42,10 @@ local cohomology, local cohomology modules
 ## Future work
 
 * Prove that this definition is equivalent to:
-    * the right-derived functor definition
-    * the characterization as the limit of Koszul homology
-    * the characterization as the cohomology of a Cech-like complex
+
+  * the right-derived functor definition
+  * the characterization as the limit of Koszul homology
+  * the characterization as the cohomology of a Cech-like complex
 * Establish long exact sequence(s) in local cohomology
 -/
 
@@ -156,9 +160,11 @@ end Diagrams
 
 end localCohomology
 
-/-! We give two models for the local cohomology with support in an ideal `J`: first in terms of
-the powers of `J` (`localCohomology`), then in terms of *all* ideals with radical
-containing `J` (`localCohomology.ofSelfLERadical`). -/
+/-!
+We give two models for the local cohomology with support in an ideal `J`: first in terms of
+the powers of `J` (`localCohomology`), then in terms of _all_ ideals with radical
+containing `J` (`localCohomology.ofSelfLERadical`).
+-/
 
 
 section ModelsForLocalCohomology
@@ -173,8 +179,10 @@ of `Ext^i(R/J^t, M)` over all powers `t : ℕ`. -/
 def localCohomology (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
   ofDiagram (idealPowersDiagram J) i
 
-/-- Local cohomology as the direct limit of `Ext^i(R/J', M)` over *all* ideals `J'` with radical
-containing `J`. -/
+/--
+Local cohomology as the direct limit of `Ext^i(R/J', M)` over _all_ ideals `J'` with radical
+containing `J`.
+-/
 def localCohomology.ofSelfLERadical (J : Ideal R) (i : ℕ) : ModuleCat.{u} R ⥤ ModuleCat.{u} R :=
   ofDiagram.{u} (selfLERadicalDiagram.{u} J) i
 
@@ -184,10 +192,11 @@ namespace localCohomology
 
 /-!
 Showing equivalence of different definitions of local cohomology.
-  * `localCohomology.isoSelfLERadical` gives the isomorphism
-      `localCohomology J i ≅ localCohomology.ofSelfLERadical J i`
-  * `localCohomology.isoOfSameRadical` gives the isomorphism
-      `localCohomology J i ≅ localCohomology K i` when `J.radical = K.radical`.
+
+* `localCohomology.isoSelfLERadical` gives the isomorphism
+  `localCohomology J i ≅ localCohomology.ofSelfLERadical J i`
+* `localCohomology.isoOfSameRadical` gives the isomorphism
+  `localCohomology J i ≅ localCohomology K i` when `J.radical = K.radical`.
 -/
 
 section LocalCohomologyEquiv

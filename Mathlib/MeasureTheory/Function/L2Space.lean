@@ -10,13 +10,17 @@ public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
-/-! # `L^2` space
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `L^2` space
 
 If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
 (defined in `Mathlib/MeasureTheory/Function/LpSpace/Basic.lean`)
 is also an inner product space, with inner product defined as `inner f g := ∫ a, ⟪f a, g a⟫ ∂μ`.
 
-### Main results
+## Main results
 
 * `mem_L1_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product `fun x ↦ ⟪f x, g x⟫`
   belongs to `Lp 𝕜 1 μ`.

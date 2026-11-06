@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
 public import Mathlib.NumberTheory.ZetaValues
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Special values of Hurwitz and Riemann zeta functions
 
@@ -22,11 +25,11 @@ sums in the convergence range.)
 
 ## Main results
 
-- `hurwitzZeta_neg_nat`: for `k : ℕ` with `k ≠ 0`, and any `x ∈ ℝ / ℤ`, the special value
+* `hurwitzZeta_neg_nat`: for `k : ℕ` with `k ≠ 0`, and any `x ∈ ℝ / ℤ`, the special value
   `hurwitzZeta x (-k)` is equal to `-(Polynomial.bernoulli (k + 1) x) / (k + 1)`.
-- `riemannZeta_neg_nat_eq_bernoulli` : for any `k ∈ ℕ` we have the formula
+* `riemannZeta_neg_nat_eq_bernoulli` : for any `k ∈ ℕ` we have the formula
   `riemannZeta (-k) = (-1) ^ k * bernoulli (k + 1) / (k + 1)`
-- `riemannZeta_two_mul_nat`: formula for `ζ(2 * k)` for `k ∈ ℕ, k ≠ 0` in terms of Bernoulli
+* `riemannZeta_two_mul_nat`: formula for `ζ(2 * k)` for `k ∈ ℕ, k ≠ 0` in terms of Bernoulli
   numbers
 
 ## TODO
@@ -182,10 +185,12 @@ private lemma hurwitzZeta_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : �
   obtain ⟨k, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hk
   simpa using hurwitzZetaEven_neg_two_mul_nat_add_one x k
 
-/-- Values of Hurwitz zeta functions at (strictly) negative integers.
+/--
+Values of Hurwitz zeta functions at (strictly) negative integers.
 
 TODO: This formula is also correct for `k = 0`; but our current proof does not work in this
-case. -/
+case.
+-/
 theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-k) =
     -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
@@ -197,12 +202,14 @@ end HurwitzZeta
 
 open HurwitzZeta
 
-/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`, in terms of the Bernoulli number
+/--
+Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ` with `k ≠ 0`, in terms of the Bernoulli number
 `bernoulli (2 * k)`.
 
 Compare `hasSum_zeta_nat` for a version formulated in terms of a sum over `1 / n ^ (2 * k)`, and
 `riemannZeta_neg_nat_eq_bernoulli` for values at negative integers (equivalent to the above via
-the functional equation). -/
+the functional equation).
+-/
 theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by

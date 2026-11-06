@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Derived.LeftDerived
 public import Mathlib.CategoryTheory.Localization.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left derived bifunctors
 
@@ -24,7 +27,6 @@ category of `C₁ × C₂` with respect to `W₁.prod W₂ : MorphismProperty (C
 In the `CategoryTheory.Functor` namespace, we introduce `HasLeftDerivedFunctor₂`,
 `IsLeftDerivedFunctor₂`, `leftDerived₂` and`leftDerived₂Lift` as `2`-variable versions
 of `HasLeftDerivedFunctor`, `IsLeftDerivedFunctor`, `leftDerived` and `leftDerivedLift`.
-
 -/
 
 @[expose] public section

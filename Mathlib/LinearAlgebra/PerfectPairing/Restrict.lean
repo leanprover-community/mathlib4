@@ -10,18 +10,21 @@ public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Matrix.BaseChange
 import Mathlib.LinearAlgebra.Matrix.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.
 
 We provide API for restricting perfect pairings to submodules and for restricting their scalars.
 
 ## Main definitions
+
 * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
 * `PerfectPairing.restrictScalars`: restriction of scalars for a perfect pairing taking values in a
   subring.
 * `PerfectPairing.restrictScalarsField`: simultaneously restrict both the domains and scalars
   of a perfect pairing with coefficients in a field.
-
 -/
 
 public section
@@ -149,9 +152,11 @@ variable {K L M N : Type*} [Field K] [Field L] [Algebra K L]
   (p : M →ₗ[L] N →ₗ[L] L) [p.IsPerfPair]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If a perfect pairing over a field `L` takes values in a subfield `K` along two `K`-subspaces
+/--
+If a perfect pairing over a field `L` takes values in a subfield `K` along two `K`-subspaces
 whose `L` span is full, then these subspaces induce a `K`-structure in the sense of
-[*Algebra I*, Bourbaki : Chapter II, §8.1 Definition 1][bourbaki1989]. -/
+‍\[_Algebra I_, Bourbaki : Chapter II, §8.1 Definition 1\]\[bourbaki1989\].
+-/
 lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
     (M' : Submodule K M) (N' : Submodule K N)
     (hM : span L (M' : Set M) = ⊤)

@@ -10,13 +10,15 @@ public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
 
 import Mathlib.Analysis.Convex.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative of Γ at positive integers
 
 We prove the formula for the derivative of `Real.Gamma` at a positive integer:
 
 `deriv Real.Gamma (n + 1) = Nat.factorial n * (-Real.eulerMascheroniConstant + harmonic n)`
-
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.AddContent
 public import Mathlib.MeasureTheory.Measure.Trim
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Carathéodory's extension theorem
 
@@ -25,6 +28,7 @@ the outer measure induced by `m`. The induced outer measure is equal to `m` on `
   defined on this measurable structure.
 
 ## Main results
+
 * `MeasureTheory.AddContent.inducedOuterMeasure_eq`: The outer measure induced by
   a sigma-subadditive content on a semiring is equal to the content on the sets of the semiring.
 * `MeasureTheory.AddContent.isCaratheodory_inducedOuterMeasure_of_mem`: all sets of the semiring are

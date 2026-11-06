@@ -10,6 +10,9 @@ public import Mathlib.Basic.ENNReal.Inv
 public import Mathlib.Topology.UniformSpace.Basic
 public import Mathlib.Topology.UniformSpace.OfFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended metric spaces
 
@@ -103,7 +106,8 @@ to the original one. -/
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩) basis
 
-/-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
+/--
+A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
 inequality `edist x z ≤ edist x y + edist y z`.
 
@@ -118,7 +122,8 @@ We make the uniformity/topology part of the data instead of deriving it from the
 ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See Note [forgetful inheritance]. -/
+See Note \[forgetful inheritance\].
+-/
 class PseudoEMetricSpace (α : Type u) : Type u extends EDist α where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
@@ -195,13 +200,15 @@ theorem EMetric.isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, eball x ε �
 
 end
 
-/-- A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
-which is *almost* an extended pseudometric space: the `edist` is reflexive, commutative and
-satisfies the triangle inequality, but the topology on `α` need not *equal* the topology induced
+/--
+A `WeakPseudoEMetricSpace` is a topological space endowed with a `ℝ≥0∞`-value distance `edist`
+which is _almost_ an extended pseudometric space: the `edist` is reflexive, commutative and
+satisfies the triangle inequality, but the topology on `α` need not _equal_ the topology induced
 by the `edist`. (It must be at least as fine, and agree with it on eballs of finite radius.)
 
 This generalises both pseudo extended metric spaces and `ℝ≥0∞` (which have an extended distance,
-which does not induce the order topology there). -/
+which does not induce the order topology there).
+-/
 class WeakPseudoEMetricSpace
     (α : Type u) [τ : TopologicalSpace α] : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
@@ -290,11 +297,13 @@ section
 
 variable [PseudoEMetricSpace α]
 
-/-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
+/--
+Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
 For specific bases see `uniformity_basis_edist`, `uniformity_basis_edist'`,
-`uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`. -/
+`uniformity_basis_edist_nnreal`, and `uniformity_basis_edist_inv_nat`.
+-/
 protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop}
     {f : β → ℝ≥0∞} (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 < f x } := by
@@ -305,10 +314,12 @@ protected theorem EMetric.mk_uniformity_basis {β : Type*} {p : β → Prop}
     exact ⟨i, hi, fun x hx => hε <| lt_of_lt_of_le hx.out H⟩
   · exact fun ⟨i, hi, H⟩ => ⟨f i, hf₀ i hi, H⟩
 
-/-- Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
+/--
+Given `f : β → ℝ≥0∞`, if `f` sends `{i | p i}` to a set of positive numbers
 accumulating to zero, then closed `f i`-neighborhoods of the diagonal form a basis of `𝓤 α`.
 
-For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`. -/
+For specific bases see `uniformity_basis_edist_le` and `uniformity_basis_edist_le'`.
+-/
 protected theorem EMetric.mk_uniformity_basis_le {β : Type*} {p : β → Prop} {f : β → ℝ≥0∞}
     (hf₀ : ∀ x, p x → 0 < f x) (hf : ∀ ε, 0 < ε → ∃ x, p x ∧ f x ≤ ε) :
     (𝓤 α).HasBasis p fun x => { p : α × α | edist p.1 p.2 ≤ f x } := by
@@ -398,12 +409,13 @@ end
 
 open EMetric
 
-/-- Auxiliary function to replace the uniformity on a pseudoemetric space with
+/--
+Auxiliary function to replace the uniformity on a pseudoemetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct a pseudoemetric space with a
-specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
+specified uniformity. See Note \[forgetful inheritance\] explaining why having definitionally
 the right uniformity is often important.
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : PseudoEMetricSpace α)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : PseudoEMetricSpace α where
@@ -414,8 +426,10 @@ abbrev PseudoEMetricSpace.replaceUniformity {α} [U : UniformSpace α] (m : Pseu
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist α _)
 
-/-- The extended pseudometric induced by a function taking values in a pseudoemetric space.
-See note [reducible non-instances]. -/
+/--
+The extended pseudometric induced by a function taking values in a pseudoemetric space.
+See note \[reducible non-instances\].
+-/
 abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpace β) :
     PseudoEMetricSpace α where
   edist x y := edist (f x) (f y)
@@ -780,7 +794,8 @@ theorem image_closedEBall (a : {a // p a}) (r : ℝ≥0∞) :
 
 end Subtype
 
-/-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
+/--
+An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.
 
@@ -794,7 +809,8 @@ We make the uniformity/topology part of the data instead of deriving it from the
 This e.g. ensures that we do not get a diamond when doing
 `[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
 The product metric and product topology agree, but not definitionally so.
-See Note [forgetful inheritance]. -/
+See Note \[forgetful inheritance\].
+-/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
@@ -853,12 +869,13 @@ theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
   eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
-/-- Auxiliary function to replace the uniformity on an emetric space with
+/--
+Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct an emetric space with a
-specified uniformity. See Note [forgetful inheritance] explaining why having definitionally
+specified uniformity. See Note \[forgetful inheritance\] explaining why having definitionally
 the right uniformity is often important.
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpace γ)
     (H : 𝓤[U] = 𝓤[PseudoEMetricSpace.toUniformSpace]) : EMetricSpace γ where
@@ -870,12 +887,13 @@ abbrev EMetricSpace.replaceUniformity {γ} [U : UniformSpace γ] (m : EMetricSpa
   toUniformSpace := U
   uniformity_edist := H.trans (@PseudoEMetricSpace.uniformity_edist γ _)
 
-/-- Auxiliary function to replace the topology on an emetric space with
+/--
+Auxiliary function to replace the topology on an emetric space with
 a topology which is equal to the original one, but maybe not defeq.
 This is useful if one wants to construct an emetric space with a
-specified topology. See Note [forgetful inheritance] explaining why having definitionally
+specified topology. See Note \[forgetful inheritance\] explaining why having definitionally
 the right topology is often important.
-See note [reducible non-instances].
+See note \[reducible non-instances\].
 -/
 abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricSpace γ)
     (H : T = m.toUniformSpace.toTopologicalSpace) : EMetricSpace γ where
@@ -887,8 +905,10 @@ abbrev EMetricSpace.replaceTopology {γ} [T : TopologicalSpace γ] (m : EMetricS
   toUniformSpace := m.toUniformSpace.replaceTopology H
   uniformity_edist := PseudoEMetricSpace.uniformity_edist
 
-/-- The extended metric induced by an injective function taking values in an emetric space.
-See Note [reducible non-instances]. -/
+/--
+The extended metric induced by an injective function taking values in an emetric space.
+See Note \[reducible non-instances\].
+-/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
@@ -912,7 +932,7 @@ theorem uniformity_edist {γ} [EMetricSpace γ] :
   PseudoEMetricSpace.uniformity_edist
 
 /-!
-### `Additive`, `Multiplicative`
+# `Additive`, `Multiplicative`
 
 The distance on those type synonyms is inherited without change.
 -/
@@ -951,7 +971,7 @@ instance [EMetricSpace X] : EMetricSpace (Additive X) := ‹EMetricSpace X›
 instance [EMetricSpace X] : EMetricSpace (Multiplicative X) := ‹EMetricSpace X›
 
 /-!
-### Order dual
+# Order dual
 
 The distance on this type synonym is inherited without change.
 -/

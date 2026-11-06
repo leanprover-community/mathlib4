@@ -8,9 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.Op
 public import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a subcomplex
-
 -/
 
 @[expose] public section

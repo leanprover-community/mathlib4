@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Zero morphisms and zero objects
 
@@ -22,8 +25,8 @@ zero object provides zero morphisms, as the unique morphisms factoring through t
 
 ## References
 
-* https://en.wikipedia.org/wiki/Zero_morphism
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
+* https://en.wikipedia.org/wiki/Zero\_morphism
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 2_\]\[borceux-vol2\]
 -/
 
 @[expose] public section
@@ -85,7 +88,8 @@ private theorem ext_aux (I J : HasZeroMorphisms C)
   · apply proof_irrel_heq
   · apply proof_irrel_heq
 
-/-- If you're tempted to use this lemma "in the wild", you should probably
+/--
+If you're tempted to use this lemma "in the wild", you should probably
 carefully consider whether you've made a mistake in allowing two
 instances of `HasZeroMorphisms` to exist at all.
 
@@ -198,14 +202,16 @@ theorem of_epi {X Y : C} (f : X ⟶ Y) [Epi f] (i : IsZero X) : IsZero Y := by
 
 end IsZero
 
-/-- A category with a zero object has zero morphisms.
+/--
+A category with a zero object has zero morphisms.
 
 It is rarely a good idea to use this. Many categories that have a zero object have zero
 morphisms for some other reason, for example from additivity. Library code that uses
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObject`. -/
+asks for an instance of `HasZeroObject`.
+-/
 @[instance_reducible]
 def IsZero.hasZeroMorphisms {O : C} (hO : IsZero O) : HasZeroMorphisms C where
   zero X Y := { zero := hO.from_ X ≫ hO.to_ Y }
@@ -226,14 +232,16 @@ variable [HasZeroObject C]
 
 open ZeroObject
 
-/-- A category with a zero object has zero morphisms.
+/--
+A category with a zero object has zero morphisms.
 
 It is rarely a good idea to use this. Many categories that have a zero object have zero
 morphisms for some other reason, for example from additivity. Library code that uses
 `zeroMorphismsOfZeroObject` will then be incompatible with these categories because
 the `HasZeroMorphisms` instances will not be definitionally equal. For this reason library
 code should generally ask for an instance of `HasZeroMorphisms` separately, even if it already
-asks for an instance of `HasZeroObject`. -/
+asks for an instance of `HasZeroObject`.
+-/
 @[instance_reducible]
 def zeroMorphismsOfZeroObject : HasZeroMorphisms C where
   zero X _ := { zero := (default : X ⟶ 0) ≫ default }
@@ -317,7 +325,8 @@ theorem zero_of_source_iso_zero' {X Y : C} (f : X ⟶ Y) (i : IsIsomorphic X 0) 
 theorem epi_of_target_iso_zero {X Y : C} (f : X ⟶ Y) (i : Y ≅ 0) : Epi f :=
   ⟨fun {Z} g h _ => by rw [zero_of_source_iso_zero g i, zero_of_source_iso_zero h i]⟩
 
-/-- An object `X` has `𝟙 X = 0` if and only if it is isomorphic to the zero object.
+/--
+An object `X` has `𝟙 X = 0` if and only if it is isomorphic to the zero object.
 
 Because `X ≅ 0` contains data (even if a subsingleton), we express this `↔` as an `≃`.
 -/

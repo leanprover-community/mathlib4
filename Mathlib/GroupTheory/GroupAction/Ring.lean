@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutativity and associativity of action of integers on rings
 

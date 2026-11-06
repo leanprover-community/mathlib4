@@ -8,10 +8,14 @@ module
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.TraceForm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras with non-degenerate Killing forms.
 
 In characteristic zero, the following three conditions are equivalent:
+
 1. The solvable radical of a Lie algebra is trivial
 2. A Lie algebra is a direct sum of its simple ideals
 3. A Lie algebra has non-degenerate Killing form
@@ -34,7 +38,6 @@ This file contains basic definitions and results for such Lie algebras.
   has non-singular Killing form then it has trivial radical.
 * `LieIdeal.isCompl_killingCompl`: if a Lie algebra has non-singular Killing form then for all
   ideals, an ideal and its Killing orthogonal complement are complements.
-
 -/
 
 public section
@@ -43,10 +46,12 @@ variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [Li
 
 namespace LieAlgebra
 
-/-- We say a Lie algebra is Killing if its Killing form is non-singular.
+/--
+We say a Lie algebra is Killing if its Killing form is non-singular.
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
-property). -/
+property).
+-/
 class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
@@ -81,12 +86,14 @@ instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L :
   · intro I h₁ h₂
     exact h₁.1 <| IsKilling.ideal_eq_bot_of_isLieAbelian I
 
-/-- The converse of this is true in characteristic zero; it is
+/--
+The converse of this is true in characteristic zero; it is
 `LieAlgebra.HasTrivialRadical.instIsKilling`. There are counterexamples
 over fields with positive characteristic.
 
 Note that when the coefficients are a field this instance is redundant since we have
-`LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`. -/
+`LieAlgebra.IsKilling.instSemisimple` and `LieAlgebra.IsSemisimple.instHasTrivialRadical`.
+-/
 instance instHasTrivialRadical
     [Module.Free R L] [Module.Finite R L] [IsDomain R] [IsPrincipalIdealRing R] :
     HasTrivialRadical R L :=

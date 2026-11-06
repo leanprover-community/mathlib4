@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.SModEq.Pointwise
 public import Mathlib.RingTheory.AdicCompletion.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of adic completions
 
@@ -15,14 +18,13 @@ In this file we establish functorial properties of the adic completion.
 
 ## Main definitions
 
-- `AdicCauchySequence.map I f`: the linear map on `I`-adic Cauchy sequences induced by `f`
-- `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
+* `AdicCauchySequence.map I f`: the linear map on `I`-adic Cauchy sequences induced by `f`
+* `AdicCompletion.map I f`: the linear map on `I`-adic completions induced by `f`
 
 ## Main results
 
-- `sumEquivOfFintype`: adic completion commutes with finite sums
-- `piEquivOfFintype`: adic completion commutes with finite products
-
+* `sumEquivOfFintype`: adic completion commutes with finite sums
+* `piEquivOfFintype`: adic completion commutes with finite products
 -/
 
 @[expose] public section
@@ -204,18 +206,18 @@ theorem congr_symm_apply (f : M ≃ₗ[R] N) (x : AdicCompletion I N) :
 
 section Families
 
-/-! ### Adic completion in families
+/-!
+# Adic completion in families
 
 In this section we consider a family `M : ι → Type*` of `R`-modules. Purely from
 the formal properties of adic completions we obtain two canonical maps
 
-- `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
-- `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
+* `AdicCompletion I (∀ j, M j) →ₗ[R] ∀ j, AdicCompletion I (M j)`
+* `(⨁ j, (AdicCompletion I (M j))) →ₗ[R] AdicCompletion I (⨁ j, M j)`
 
 If `ι` is finite, both are isomorphisms and, modulo
 the equivalence `⨁ j, (AdicCompletion I (M j)` and `∀ j, AdicCompletion I (M j)`,
 inverse to each other.
-
 -/
 
 variable {ι : Type*} (M : ι → Type*) [∀ i, AddCommGroup (M i)]

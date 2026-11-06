@@ -13,10 +13,13 @@ import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Group.Units.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characters from additive to multiplicative monoids
 
-Let `A` be an additive monoid, and `M` a multiplicative one. An *additive character* of `A` with
+Let `A` be an additive monoid, and `M` a multiplicative one. An _additive character_ of `A` with
 values in `M` is simply a map `A → M` which intertwines the addition operation on `A` with the
 multiplicative operation on `M`.
 
@@ -48,7 +51,7 @@ additive character
 @[expose] public section
 
 /-!
-### Definitions related to and results on additive characters
+# Definitions related to and results on additive characters
 -/
 
 open Function Multiplicative
@@ -63,25 +66,32 @@ variable (A : Type*) [AddMonoid A]
 -- The target
 variable (M : Type*) [Monoid M]
 
-/-- `AddChar A M` is the type of maps `A → M`, for `A` an additive monoid and `M` a multiplicative
+/--
+`AddChar A M` is the type of maps `A → M`, for `A` an additive monoid and `M` a multiplicative
 monoid, which intertwine addition in `A` with multiplication in `M`.
 
 We only put the typeclasses needed for the definition, although in practice we are usually
 interested in much more specific cases (e.g. when `A` is a group and `M` a commutative ring).
 -/
 structure AddChar where
-  /-- The underlying function.
+  /--
+  The underlying function.
 
   Do not use this function directly. Instead use the coercion coming from the `FunLike`
-  instance. -/
+instance.
+  -/
   toFun : A → M
-  /-- The function maps `0` to `1`.
+  /--
+  The function maps `0` to `1`.
 
-  Do not use this directly. Instead use `AddChar.map_zero_eq_one`. -/
+  Do not use this directly. Instead use `AddChar.map_zero_eq_one`.
+  -/
   map_zero_eq_one' : toFun 0 = 1
-  /-- The function maps addition in `A` to multiplication in `M`.
+  /--
+  The function maps addition in `A` to multiplication in `M`.
 
-  Do not use this directly. Instead use `AddChar.map_add_eq_mul`. -/
+  Do not use this directly. Instead use `AddChar.map_add_eq_mul`.
+  -/
   map_add_eq_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b
 
 end AddCharDef
@@ -370,16 +380,18 @@ lemma sum_ne_zero_iff_eq_zero : ∑ x, ψ x ≠ 0 ↔ ψ = 0 := sum_eq_zero_iff_
 end CommSemiring
 
 /-!
-## Additive characters of additive abelian groups
+# Additive characters of additive abelian groups
 -/
 section fromAddCommGroup
 
 variable {A M : Type*} [AddCommGroup A] [CommMonoid M]
 
-/-- The additive characters on a commutative additive group form a commutative group.
+/--
+The additive characters on a commutative additive group form a commutative group.
 
 Note that the inverse is defined using negation on the domain; we do not assume `M` has an
-inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below). -/
+inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
+-/
 instance instCommGroup : CommGroup (AddChar A M) where
   inv ψ := ψ.compAddMonoidHom negAddMonoidHom
   inv_mul_cancel ψ := by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]
@@ -451,7 +463,7 @@ variable {A M₀ : Type*} [AddGroup A] [MonoidWithZero M₀] [Nontrivial M₀]
 end MonoidWithZero
 
 /-!
-## Additive characters of rings
+# Additive characters of rings
 -/
 section Ring
 

@@ -7,21 +7,24 @@ module
 
 public import Mathlib.Data.Set.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Undirected hypergraphs
 
-An *undirected hypergraph* (here abbreviated as *hypergraph*) `H` is a generalization of a graph
+An _undirected hypergraph_ (here abbreviated as _hypergraph_) `H` is a generalization of a graph
 (see `Mathlib.Combinatorics.Graph` or `Mathlib.Combinatorics.SimpleGraph`) and consists of a set of
-*vertices*, usually denoted `V` or `V(H)`, and a set of *hyperedges*, here called *edges* and
+_vertices_, usually denoted `V` or `V(H)`, and a set of _hyperedges_, here called _edges_ and
 denoted `E` or `E(H)`. In contrast with a graph, where edges are unordered pairs of vertices, in
 hypergraphs, edges are unordered sets of vertices; i.e., they are subsets of the vertex set `V`.
 
-A hypergraph where `V = ∅` and `E = ∅` is *empty*, denoted `⊥`. A hypergraph with a nonempty
-vertex set (`V ≠ ∅`) and empty edge set is *trivial*. A hypergraph where the edge set is the power
+A hypergraph where `V = ∅` and `E = ∅` is _empty_, denoted `⊥`. A hypergraph with a nonempty
+vertex set (`V ≠ ∅`) and empty edge set is _trivial_. A hypergraph where the edge set is the power
 set of the vertex set (or, equivalently, where all possible subsets of the vertex sets are in the
-edge set) is *complete*.
+edge set) is _complete_.
 
-If a edge `e` contains only one vertex (i.e., `|e| = 1`), then it is a *loop*.
+If a edge `e` contains only one vertex (i.e., `|e| = 1`), then it is a _loop_.
 
 This module defines `Hypergraph α` for a vertex type `α` (edges are defined as `Set (Set α)`).
 
@@ -52,8 +55,7 @@ Paraphrasing `Mathlib.Combinatorics.Graph.Basic`:
 the vertex or edge set. This is an issue, but is likely amenable to automation."
 
 Because `edgeSet` is a `Set (Set α)`, rather than a multiset, here we are assuming that
-all hypergraphs are *without repeated edge*.
-
+all hypergraphs are _without repeated edge_.
 -/
 
 public section
@@ -82,7 +84,9 @@ namespace Hypergraph
 
 variable {H : Hypergraph α}
 
-/-! ## Notation -/
+/-!
+# Notation
+-/
 
 /-- `V(H)` denotes the `vertexSet` of a hypergraph `H` -/
 scoped notation "V(" H ")" => Hypergraph.vertexSet H
@@ -91,7 +95,9 @@ scoped notation "V(" H ")" => Hypergraph.vertexSet H
 scoped notation "E(" H ")" => Hypergraph.edgeSet H
 
 
-/-! ## Vertex-Hyperedge Incidence -/
+/-!
+# Vertex-Hyperedge Incidence
+-/
 
 @[simp]
 lemma subset_vertexSet_of_mem_edgeSet (he : e ∈ E(H)) : e ⊆ V(H) :=
@@ -111,7 +117,9 @@ lemma edgeSet.ext_iff (he : e ∈ E(H)) (he' : e' ∈ E(H)) : e = e' ↔ ∀ x �
 lemma sUnion_edgeSet_subset_vertexSet : ⋃₀ E(H) ⊆ V(H) :=
   subset_powerset_iff.mp edgeSet_subset_powerset_vertexSet
 
-/-! ## Vertex and Hyperedge Adjacency -/
+/-!
+# Vertex and Hyperedge Adjacency
+-/
 
 /--
 Predicate for adjacency. Two vertices `x` and `y` are adjacent if there is some edge `e ∈ E(H)`
@@ -147,11 +155,15 @@ lemma EAdj.inter_nonempty (hef : H.EAdj e f) : (e ∩ f).Nonempty :=
 
 lemma eAdj_comm (e f) : H.EAdj e f ↔ H.EAdj f e := ⟨.symm, .symm⟩
 
-/-! ## Basic Hypergraph Definitions & Predicates-/
+/-!
+# Basic Hypergraph Definitions & Predicates
+-/
 
-/-- The *image* of a hypergraph `H : Hypergraph α` under a function `f : α → β` is the hypergraph
+/--
+The _image_ of a hypergraph `H : Hypergraph α` under a function `f : α → β` is the hypergraph
 `Hᶠ : Hypergraph β` where the vertex set of `Hᶠ` is the image of `V(H)` under `f` and the edge set
-of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`. -/
+of `Hᶠ` is the set of images of the edges (subsets of vertices) in `E(H)`.
+-/
 @[simps, expose]
 protected def image (H : Hypergraph α) (f : α → β) : Hypergraph β where
   vertexSet := V(H).image f

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Notation.Defs
 public import Mathlib.Order.Lex
 public import Mathlib.Order.OrderDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group structure on the order type synonyms
 
@@ -23,7 +26,9 @@ open OrderDual
 
 variable {α β : Type*}
 
-/-! ### `OrderDual` -/
+/-!
+# `OrderDual`
+-/
 
 namespace OrderDual
 
@@ -172,7 +177,9 @@ lemma isRegular_ofDual {a : αᵒᵈ} : IsRegular (ofDual a) ↔ IsRegular a := 
 
 end Monoid
 
-/-! ### Lexicographical order -/
+/-!
+# Lexicographical order
+-/
 
 
 namespace Lex
@@ -330,7 +337,9 @@ lemma isRegular_ofLex {a : Lex α} : IsRegular (ofLex a) ↔ IsRegular a := .rfl
 
 end Monoid
 
-/-! ### Colexicographical order -/
+/-!
+# Colexicographical order
+-/
 
 
 namespace Colex

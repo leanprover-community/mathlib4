@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.Algebra.Module.Presentation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of finitely presented modules
 
 A module is finitely presented (in the sense of `Module.FinitePresentation`) iff
 it admits a presentation with finitely many generators and relations.
-
 -/
 
 public section

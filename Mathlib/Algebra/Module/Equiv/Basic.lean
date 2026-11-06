@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.Algebra.Module.LinearMap.End
 public import Mathlib.Algebra.Module.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further results on (semi)linear equivalences.
 -/
@@ -36,11 +39,13 @@ variable (R)
 variable [Module R M] [Module R M₂] [Module S M] [Module S M₂]
   [LinearMap.CompatibleSMul M M₂ R S]
 
-/-- If `M` and `M₂` are both `R`-semimodules and `S`-semimodules and `R`-semimodule structures
+/--
+If `M` and `M₂` are both `R`-semimodules and `S`-semimodules and `R`-semimodule structures
 are defined by an action of `R` on `S` (formally, we have two scalar towers), then any `S`-linear
 equivalence from `M` to `M₂` is also an `R`-linear equivalence.
 
-See also `LinearMap.restrictScalars`. -/
+See also `LinearMap.restrictScalars`.
+-/
 @[simps!, simps toLinearMap]
 def restrictScalars (f : M ≃ₗ[S] M₂) : M ≃ₗ[R] M₂ where
   toLinearMap := f.toLinearMap.restrictScalars R
@@ -121,9 +126,11 @@ def automorphismGroup.toLinearMapMonoidHom : (M ≃ₗ[R] M) →* M →ₗ[R] M 
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- The tautological action by `M ≃ₗ[R] M` on `M`.
+/--
+The tautological action by `M ≃ₗ[R] M` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyDistribMulAction : DistribMulAction (M ≃ₗ[R] M) M where
   smul := (· ·)
   smul_zero := map_zero
@@ -192,16 +199,20 @@ namespace DistribMulAction
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
 variable [Group S] [DistribMulAction S M] [SMulCommClass S R M]
 
-/-- Each element of the group defines a linear equivalence.
+/--
+Each element of the group defines a linear equivalence.
 
-This is a stronger version of `DistribMulAction.toAddEquiv`. -/
+This is a stronger version of `DistribMulAction.toAddEquiv`.
+-/
 @[simps!]
 def toLinearEquiv (s : S) : M ≃ₗ[R] M :=
   { toAddEquiv M s, DistribSMul.toLinearMap R M s with }
 
-/-- Each element of the group defines a module automorphism.
+/--
+Each element of the group defines a module automorphism.
 
-This is a stronger version of `DistribMulAction.toAddAut`. -/
+This is a stronger version of `DistribMulAction.toAddAut`.
+-/
 @[simps]
 def toModuleAut : S →* M ≃ₗ[R] M where
   toFun := toLinearEquiv R M
@@ -352,13 +363,14 @@ theorem piApply_apply_apply {V : M → Type*}
 variable (R S M)
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M]
 
-/-- The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
+/--
+The equivalence between R-linear maps from `R` to `M`, and points of `M` itself.
 This says that the forgetful functor from `R`-modules to types is representable, by `R`.
 
 This is an `S`-linear equivalence, under the assumption that `S` acts on `M` commuting with `R`.
 When `R` is commutative, we can take this to be the usual action with `S = R`.
 Otherwise, `S = ℕ` shows that the equivalence is additive.
-See note [bundled maps over different rings].
+See note \[bundled maps over different rings\].
 -/
 @[simps]
 def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
@@ -573,10 +585,12 @@ variable [RingHomInvPair σ₁'₂' σ₂'₁'] [RingHomInvPair σ₂'₁' σ₁
 variable [RingHomCompTriple σ₁₁' σ₁'₂' σ₁₂'] [RingHomCompTriple σ₂₁ σ₁₂' σ₂₂']
 variable [RingHomCompTriple σ₂₂' σ₂'₁' σ₂₁'] [RingHomCompTriple σ₁₂ σ₂₁' σ₁₁']
 
-/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
+/--
+A linear isomorphism between the domains and codomains of two spaces of linear maps gives an
 additive isomorphism between the two function spaces.
 
-See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
+See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism.
+-/
 @[simps] def arrowCongrAddEquiv (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') :
     (M₁ →ₛₗ[σ₁₁'] M₁') ≃+ (M₂ →ₛₗ[σ₂₂'] M₂') where
   toFun f := (e₂.comp f).comp e₁.symm.toLinearMap
@@ -591,10 +605,12 @@ See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
     ext x
     simp only [map_add, LinearMap.add_apply, Function.comp_apply, coe_comp, coe_coe]
 
-/-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
+/--
+If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
 are isomorphic.
 
-See `LinearEquiv.conj` for the linear version of this isomorphism. -/
+See `LinearEquiv.conj` for the linear version of this isomorphism.
+-/
 @[simps!] def conjRingEquiv (e : M₁ ≃ₛₗ[σ₁₂] M₂) : Module.End R₁ M₁ ≃+* Module.End R₂ M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
@@ -628,6 +644,7 @@ section arrowCongr
 -- Difference from above: `R₁` and `R₂` are commutative
 /-!
 The modules for `arrowCongr` and its lemmas below are related via the semilinearities
+
 ```
 M₁  ←⎯⎯⎯σ₁₂⎯⎯⎯→ M₂  ←⎯⎯⎯σ₂₃⎯⎯⎯→ M₃
 ⏐               ⏐               ⏐
@@ -639,6 +656,7 @@ M₁' ←⎯⎯σ₁'₂'⎯⎯→ M₂' ←⎯⎯σ₂'₃'⎯⎯→ M₃
 ↓               ↓
 M₁''←⎯σ₁''₂''⎯→ M₂''
 ```
+
 where the horizontal direction corresponds to the `≃ₛₗ`s, and is needed for `arrowCongr_trans`,
 while the vertical direction corresponds to the `→ₛₗ`s, and is needed `arrowCongr_comp`.
 
@@ -693,11 +711,13 @@ variable [RingHomCompTriple σ₂'₂'' σ₂''₁'' σ₂'₁''] [RingHomCompTr
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₃₂ σ₂₁ σ₃₁]
 variable [RingHomCompTriple σ₁'₂' σ₂'₃' σ₁'₃'] [RingHomCompTriple σ₃'₂' σ₂'₁' σ₃'₁']
 
-/-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
+/--
+A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
 linear isomorphism between the two function spaces.
 
 See `LinearEquiv.arrowCongrAddEquiv` for the additive version of this isomorphism that works
-over a not necessarily commutative semiring. -/
+over a not necessarily commutative semiring.
+-/
 def arrowCongr (e₁ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂ : M₁' ≃ₛₗ[σ₁'₂'] M₂') :
     (M₁ →ₛₗ[σ₁₁'] M₁') ≃ₛₗ[σ₁'₂'] (M₂ →ₛₗ[σ₂₂'] M₂') where
   __ := arrowCongrAddEquiv e₁ e₂
@@ -727,11 +747,13 @@ theorem arrowCongr_trans
       arrowCongr (e₁.trans e₂) (e₁'.trans e₂') :=
   rfl
 
-/-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
+/--
+If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
 themselves are linearly isomorphic.
 
 See `LinearEquiv.conjRingEquiv` for the isomorphism between endomorphism rings,
-which works over a not necessarily commutative semiring. -/
+which works over a not necessarily commutative semiring.
+-/
 -- TODO: upgrade to AlgEquiv (but this file currently cannot import AlgEquiv)
 def conj (e : M₁' ≃ₛₗ[σ₁'₂'] M₂') : Module.End R₁' M₁' ≃ₛₗ[σ₁'₂'] Module.End R₂' M₂' :=
   arrowCongr e e
@@ -890,7 +912,8 @@ section Pi
 
 namespace LinearEquiv
 
-/-- The product over `S ⊕ T` of a family of modules is isomorphic to the product of
+/--
+The product over `S ⊕ T` of a family of modules is isomorphic to the product of
 (the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
@@ -903,7 +926,8 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Typ
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- The product `Π t : α, f t` of a family of modules is linearly isomorphic to the module
+/--
+The product `Π t : α, f t` of a family of modules is linearly isomorphic to the module
 `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `LinearEquiv`.

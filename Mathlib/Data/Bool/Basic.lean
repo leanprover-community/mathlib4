@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Logic.Basic
 public import Mathlib.Order.Defs.LinearOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Booleans
 
@@ -15,8 +18,8 @@ This file proves various trivial lemmas about Booleans and their
 relation to decidable propositions.
 
 ## Tags
-bool, boolean, Bool, De Morgan
 
+bool, boolean, Bool, De Morgan
 -/
 
 @[expose] public section
@@ -137,7 +140,9 @@ attribute [simp] xor_assoc
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 
-/-! ### De Morgan's laws for Booleans -/
+/-!
+# De Morgan's laws for Booleans
+-/
 
 instance linearOrder : LinearOrder Bool where
   le_refl := by decide

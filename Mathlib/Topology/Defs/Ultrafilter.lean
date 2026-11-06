@@ -8,13 +8,15 @@ module
 public import Mathlib.Order.Filter.Ultrafilter.Defs
 public import Mathlib.Topology.Defs.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit of an ultrafilter.
 
 * `Ultrafilter.lim f`: a limit of an ultrafilter `f`,
   defined as the limit of `(f : Filter X)`
   with a proof of `Nonempty X` deduced from existence of an ultrafilter on `X`.
-
 -/
 
 @[expose] public section

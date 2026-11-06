@@ -13,8 +13,10 @@ public import Mathlib.CategoryTheory.Preadditive.Opposite
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The alternating face map complex of a simplicial object in a preadditive category
 
 We construct the alternating face map complex, as a
@@ -31,9 +33,9 @@ We also construct the natural transformation
 when `A` is an abelian category.
 
 ## References
+
 * https://stacks.math.columbia.edu/tag/0194
 * https://ncatlab.org/nlab/show/Moore+complex
-
 -/
 
 @[expose] public section
@@ -54,7 +56,7 @@ namespace AlgebraicTopology
 namespace AlternatingFaceMapComplex
 
 /-!
-## Construction of the alternating face map complex
+# Construction of the alternating face map complex
 -/
 
 
@@ -69,7 +71,7 @@ def objD (n : ℕ) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   ∑ i : Fin (n + 2), (-1 : ℤ) ^ (i : ℕ) • X.δ i
 
 /-!
-## The chain complex relation `d ≫ d`
+# The chain complex relation `d ≫ d`
 -/
 
 theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
@@ -116,7 +118,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
       simpa [S] using! hij
 
 /-!
-## Construction of the alternating face map complex functor
+# Construction of the alternating face map complex functor
 -/
 
 
@@ -228,13 +230,17 @@ def ε [Limits.HasZeroObject C] :
     apply add_neg_cancel
   naturality X Y f := by
     apply HomologicalComplex.to_single_hom_ext
-    #adaptation_note /-- This proof broke at nightly-2026-04-28. It used to be:
-    ```
-    dsimp
-    simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
-    ```
-    The proof below is an emergency repair, and I've asked the authors of this file to review.
-    -/
+    #adaptation_note /--
+                     This proof broke at nightly-2026-04-28. It used to be:
+
+                     ```
+dsimp
+simp [ChainComplex.toSingle₀Equiv, SimplicialObject.Augmented.w₀]
+```
+
+                     The proof below is an emergency repair, and I've asked the authors of this file
+to review.
+                     -/
     change f.left.app _ ≫ _ = _ ≫ ((ChainComplex.single₀ _).map f.right).f 0
     rw [ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
       ChainComplex.toSingle₀Equiv_symm_apply_f_zero,
@@ -253,7 +259,7 @@ lemma ε_app_f_succ [Limits.HasZeroObject C] (X : SimplicialObject.Augmented C) 
 end AlternatingFaceMapComplex
 
 /-!
-## Construction of the natural inclusion of the normalized Moore complex
+# Construction of the natural inclusion of the normalized Moore complex
 -/
 
 variable {A : Type*} [Category* A] [Abelian A]

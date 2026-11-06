@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.AlgebraicTopology.DoldKan.Notations
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Construction of homotopies for the Dold-Kan correspondence
 
 (The general strategy of proof of the Dold-Kan correspondence is explained
@@ -28,13 +30,13 @@ In `PInfty.lean`, this endomorphism `PInfty` shall be obtained by
 passing to the limit idempotent endomorphisms `P q` for all `(q : ℕ)`.
 These endomorphisms `P q` are defined by induction. The idea is to
 start from the identity endomorphism `P 0` of `K[X]` and to ensure by
-induction that the `q` higher face maps (except $d_0$) vanish on the
+induction that the `q` higher face maps (except $`d_0`) vanish on the
 image of `P q`. Then, in a certain degree `n`, the image of `P q` for
 a big enough `q` will be contained in the normalized subcomplex. This
 construction is done in `Projections.lean`.
 
 It would be easy to define the `P q` degreewise (similarly as it is done
-in *Simplicial Homotopy Theory* by Goerss-Jardine p. 149), but then we would
+in _Simplicial Homotopy Theory_ by Goerss-Jardine p. 149), but then we would
 have to prove that they are compatible with the differential (i.e. they
 are chain complex maps), and also that they are homotopic to the identity.
 These two verifications are quite technical. In order to reduce the number
@@ -52,9 +54,9 @@ In this file `Homotopies.lean`, we define the null homotopic maps
 compatible with the application of additive functors (see `map_Hσ`).
 
 ## References
-* [Albrecht Dold, *Homology of Symmetric Products and Other Functors of Complexes*][dold1958]
-* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
+* ‍\[Albrecht Dold, _Homology of Symmetric Products and Other Functors of Complexes_\]\[dold1958\]
+* ‍\[Paul G. Goerss, John F. Jardine, _Simplicial Homotopy Theory_\]\[goerss-jardine-2009\]
 -/
 
 @[expose] public section
@@ -122,7 +124,9 @@ theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
   rw [hσ'_eq ha rfl, eqToHom_refl, comp_id]
 
-/-- The null homotopic map $(hσ q) ∘ d + d ∘ (hσ q)$ -/
+/--
+The null homotopic map $`(hσ q) ∘ d + d ∘ (hσ q)`
+-/
 def Hσ (q : ℕ) : K[X] ⟶ K[X] :=
   nullHomotopicMap' (hσ' q)
 

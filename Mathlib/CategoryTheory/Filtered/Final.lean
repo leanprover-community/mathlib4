@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Final.Connected
 public import Mathlib.CategoryTheory.Limits.Sifted
 public import Mathlib.CategoryTheory.Limits.Types.Filtered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Final functors with filtered (co)domain
 
@@ -32,8 +35,7 @@ final can be restated. We show:
 
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Section 3.2
-
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Section 3.2
 -/
 
 public section

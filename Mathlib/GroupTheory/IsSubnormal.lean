@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Subgroup.Pointwise
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 public import Mathlib.GroupTheory.Subgroup.Simple
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subnormal subgroups
 
@@ -21,6 +24,7 @@ These should cover most of the results needed in this case.
 ## Main Definition
 
 `IsSubnormal H`: A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
@@ -48,13 +52,16 @@ public section
 
 namespace Subgroup
 
-/-- A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+/--
+A subgroup `H` of a group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is a subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
 
 Equivalently, `H.IsSubnormal` means that there is a chain of subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
+
 * `H = H₀`,
 * `G = Hₙ`,
 * for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal subgroup of `Hᵢ₊₁`.
@@ -69,13 +76,16 @@ inductive IsSubnormal : Subgroup G → Prop where
   | step : ∀ H K, (h_le : H ≤ K) → (hSubn : IsSubnormal K) → (hN : (H.subgroupOf K).Normal) →
     IsSubnormal H
 
-/-- An additive subgroup `H` of an additive group `G` satisfies `IsSubnormal` if
+/--
+An additive subgroup `H` of an additive group `G` satisfies `IsSubnormal` if
+
 * either `H = ⊤`;
 * or there is an additive subgroup `K` of `G` containing `H` and such that `H` is normal in `K` and
   `K` satisfies `IsSubnormal`.
 
 Equivalently, `H.IsSubnormal` means that there is a chain of additive subgroups
 `H₀ ≤ H₁ ≤ ... ≤ Hₙ` such that
+
 * `H = H₀`,
 * `G = Hₙ`,
 * for each `i ∈ {0, ..., n - 1}`, `Hᵢ` is a normal additive subgroup of `Hᵢ₊₁`.
@@ -170,10 +180,12 @@ the following one.
 
 The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
 -/
-@[to_additive /-- A characterisation of satisfying `IsSubnormal` in terms of chains of additive
+@[to_additive /--
+              A characterisation of satisfying `IsSubnormal` in terms of chains of additive
 subgroups, each normal in the following one.
 
-The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`. -/]
+              The sequence stabilises once it reaches `⊤`, which is guaranteed at the asserted `n`.
+              -/]
 lemma isSubnormal_iff : H.IsSubnormal ↔
     ∃ n, ∃ f : ℕ → Subgroup G,
     (Monotone f) ∧ (∀ i, ((f i).subgroupOf (f (i + 1))).Normal) ∧
@@ -208,9 +220,11 @@ Subnormality is transitive.
 
 This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not.
 -/
-@[to_additive /-- Subnormality is transitive.
+@[to_additive /--
+              Subnormality is transitive.
 
-This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not. -/]
+              This version involves an explicit `subtype`; the version `IsSubnormal.trans` does not.
+              -/]
 protected
 lemma trans' {H : Subgroup K} (Hsn : IsSubnormal H) (Ksn : IsSubnormal K) :
     IsSubnormal (H.map K.subtype) := by

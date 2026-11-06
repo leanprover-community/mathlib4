@@ -10,8 +10,10 @@ public import Mathlib.Data.Set.Basic
 
 import Batteries.Tactic.Congr
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Partial Equivalences
 
 In this file, we define partial equivalences `PEquiv`, which are a bijection between a subset of `α`
@@ -22,11 +24,11 @@ then `g b` is `some a`.
 
 ## Main results
 
-- `PEquiv.ofSet`: creates a `PEquiv` from a set `s`,
+* `PEquiv.ofSet`: creates a `PEquiv` from a set `s`,
   which sends an element to itself if it is in `s`.
-- `PEquiv.single`: given two elements `a : α` and `b : β`, create a `PEquiv` that sends them to
+* `PEquiv.single`: given two elements `a : α` and `b : β`, create a `PEquiv` that sends them to
   each other, and ignores all other elements.
-- `PEquiv.injective_of_forall_ne_isSome`/`injective_of_forall_isSome`: If the domain of a `PEquiv`
+* `PEquiv.injective_of_forall_ne_isSome`/`injective_of_forall_isSome`: If the domain of a `PEquiv`
   is all of `α` (except possibly one point), its `toFun` is injective.
 
 ## Canonical order
@@ -39,7 +41,6 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 ## Tags
 
 pequiv, partial equivalence
-
 -/
 
 @[expose] public section

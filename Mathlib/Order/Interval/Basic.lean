@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.SetLike.Basic
 public import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order intervals
 
@@ -27,10 +30,12 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
-/-- The nonempty closed intervals in an order.
+/--
+The nonempty closed intervals in an order.
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
-elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
+elements between these endpoints, use the coercion `NonemptyInterval α → Set α`.
+-/
 @[ext (flat := false)]
 structure NonemptyInterval (α : Type*) [LE α] extends Prod α α where
   /-- The starting point of an interval is smaller than the endpoint. -/
@@ -277,11 +282,13 @@ end Lattice
 
 end NonemptyInterval
 
-/-- The closed intervals in an order.
+/--
+The closed intervals in an order.
 
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
-`Interval α → Set α`. -/
+`Interval α → Set α`.
+-/
 def Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α)
 deriving Inhabited, LE, OrderBot

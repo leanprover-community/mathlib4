@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cylinders
 
@@ -31,9 +34,9 @@ The existence of very good cylinder objects in model categories is stated
 in the lemma `Cylinder.exists_very_good`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-* https://ncatlab.org/nlab/show/cylinder+object
 
+* ‍\[Daniel G. Quillen, Homotopical algebra\]\[Quillen1967\]
+* https://ncatlab.org/nlab/show/cylinder+object
 -/
 
 @[expose] public section
@@ -87,9 +90,11 @@ section
 
 variable [HasBinaryCoproduct A A]
 
-/-- the map from the coproduct of two copies of `A` to `P.I`, when `P` is
-a cylinder object for `A`. `P` shall be a *good* cylinder object
-when this morphism is a cofibration. -/
+/--
+the map from the coproduct of two copies of `A` to `P.I`, when `P` is
+a cylinder object for `A`. `P` shall be a _good_ cylinder object
+when this morphism is a cofibration.
+-/
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
 
 @[reassoc (attr := simp)]

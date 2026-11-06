@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.InnerProductSpace.GramSchmidtOrtho
 public import Mathlib.Analysis.Matrix.PosDef
 
-/-! # LDL decomposition
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# LDL decomposition
 
 This file proves the LDL-decomposition of matrices: Any positive definite matrix `S` can be
 decomposed as `S = LDLᴴ` where `L` is a lower-triangular matrix and `D` is a diagonal matrix.

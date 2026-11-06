@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Exact.Basic
 public import Mathlib.Topology.Algebra.Group.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Short exact sequences of topological groups
 
@@ -18,7 +21,6 @@ followed by an open quotient map `ψ` satisfying `φ.range = ψ.ker`.
 
 * `TopologicalGroup.IsSES φ ψ`: A predicate stating that `φ` is a closed embedding, `ψ` is an open
   quotient map, and `φ.range = ψ.ker`.
-
 -/
 
 public section

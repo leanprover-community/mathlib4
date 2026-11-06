@@ -12,6 +12,9 @@ public import Mathlib.Data.Subtype
 public import Mathlib.Order.Notation
 public import Mathlib.Tactic.CrossRefAttribute
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic definitions about sets
 
@@ -21,39 +24,39 @@ More advanced theorems about these definitions are located in other files in `Ma
 
 ## Main definitions
 
-- complement of a set and set difference;
-- `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
-- `Set.range f`: the range of a function;
+* complement of a set and set difference;
+* `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
+* `Set.range f`: the range of a function;
   it is more general than `f '' univ` because it allows functions from `Sort*`;
-- `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
-- `Set.diagonal`: the diagonal in `α × α`;
-- `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
-- `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
+* `s ×ˢ t`: product of `s : Set α` and `t : Set β` as a set in `α × β`;
+* `Set.diagonal`: the diagonal in `α × α`;
+* `Set.offDiag s`: the part of `s ×ˢ s` that is off the diagonal;
+* `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
-- `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
-- `Set.MapsTo f s t`: the predicate saying that `f` sends all points of `s` to `t`;
-- `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
-- `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
-- `Set.InjOn`: the predicate saying that `f` is injective on a set;
-- `Set.SurjOn f s t`: the predicate saying that `t ⊆ f '' s`;
-- `Set.BijOn f s t`: the predicate saying that `f` is injective on `s` and `f '' s = t`;
-- `Set.graphOn`: the graph of a function on a set;
-- `Set.LeftInvOn`, `Set.RightInvOn`, `Set.InvOn`:
+* `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
+* `Set.MapsTo f s t`: the predicate saying that `f` sends all points of `s` to `t`;
+* `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
+* `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
+* `Set.InjOn`: the predicate saying that `f` is injective on a set;
+* `Set.SurjOn f s t`: the predicate saying that `t ⊆ f '' s`;
+* `Set.BijOn f s t`: the predicate saying that `f` is injective on `s` and `f '' s = t`;
+* `Set.graphOn`: the graph of a function on a set;
+* `Set.LeftInvOn`, `Set.RightInvOn`, `Set.InvOn`:
   the predicates saying that `f'` is a left, right or two-sided inverse of `f` on `s`, `t`, or both;
-- `Set.image2`: the image of a pair of sets under a binary operation,
+* `Set.image2`: the image of a pair of sets under a binary operation,
   mostly useful to define pointwise algebraic operations on sets;
-- `Set.seq`: monadic `seq` operation on sets;
+* `Set.seq`: monadic `seq` operation on sets;
   we don't use monadic notation to ensure support for maps between different universes.
 
 ## Notation
 
-- `f '' s`: image of a set;
-- `f ⁻¹' s`: preimage of a set;
-- `s ×ˢ t`: the product of sets;
-- `s ∪ t`: the union of two sets;
-- `s ∩ t`: the intersection of two sets;
-- `sᶜ`: the complement of a set;
-- `s \ t`: the difference of two sets.
+* `f '' s`: image of a set;
+* `f ⁻¹' s`: preimage of a set;
+* `s ×ˢ t`: the product of sets;
+* `s ∪ t`: the union of two sets;
+* `s ∩ t`: the intersection of two sets;
+* `sᶜ`: the complement of a set;
+* `s \ t`: the difference of two sets.
 
 ## Keywords
 
@@ -68,7 +71,9 @@ namespace Set
 
 variable {α : Type u} {β : Type v} {γ : Type w}
 
-/-! ### Lemmas about `mem` and `Set.ofPred` -/
+/-!
+# Lemmas about `mem` and `Set.ofPred`
+-/
 
 @[simp, mfld_simps, push]
 theorem mem_ofPred_eq {x : α} {p : α → Prop} : (x ∈ {y | p y}) = p x := rfl
@@ -104,7 +109,9 @@ theorem notMem_ofPred_iff {a : α} {p : α → Prop} : a ∉ { x | p x } ↔ ¬p
 @[simp, mfld_simps, grind ←, push]
 theorem mem_univ (x : α) : x ∈ @univ α := trivial
 
-/-! ### Operations -/
+/-!
+# Operations
+-/
 
 instance : Compl (Set α) := ⟨fun s ↦ {x | x ∉ s}⟩
 
@@ -161,10 +168,12 @@ section Range
 
 variable {ι : Sort*} {f : ι → α}
 
-/-- Range of a function.
+/--
+Range of a function.
 
 This function is more flexible than `f '' univ`, as the image requires that the domain is in Type
-and not an arbitrary Sort. -/
+and not an arbitrary Sort.
+-/
 def range (f : ι → α) : Set α := {x | ∃ y, f y = x}
 
 @[simp, grind =, push] theorem mem_range {x : α} : x ∈ range f ↔ ∃ y, f y = x := Iff.rfl

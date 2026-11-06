@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.LinearAlgebra.GeneralLinearGroup.AlgEquiv
 import Mathlib.RingTheory.SimpleRing.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Determinant of families of vectors
 
@@ -89,9 +92,11 @@ theorem det_comm' [DecidableEq m] [DecidableEq n] {M : Matrix n m A} {N : Matrix
   rw [← det_submatrix_equiv_self e, ← submatrix_mul_equiv _ _ _ (Equiv.refl n) _, det_comm,
     submatrix_mul_equiv, Equiv.coe_refl, submatrix_id_id]
 
-/-- If `M'` is a two-sided inverse for `M` (indexed differently), `det (M * N * M') = det N`.
+/--
+If `M'` is a two-sided inverse for `M` (indexed differently), `det (M * N * M') = det N`.
 
-See `Matrix.det_conj` and `Matrix.det_conj'` for the case when `M' = M⁻¹` or vice versa. -/
+See `Matrix.det_conj` and `Matrix.det_conj'` for the case when `M' = M⁻¹` or vice versa.
+-/
 theorem det_conj_of_mul_eq_one [DecidableEq m] [DecidableEq n] {M : Matrix m n A}
     {M' : Matrix n m A} {N : Matrix n n A} (hMM' : M * M' = 1) (hM'M : M' * M = 1) :
     det (M * N * M') = det N := by
@@ -103,7 +108,9 @@ end Conjugate
 
 namespace LinearMap
 
-/-! ### Determinant of a linear map -/
+/-!
+# Determinant of a linear map
+-/
 
 
 variable {A : Type*} [CommRing A] [Module A M]
@@ -117,7 +124,8 @@ theorem det_toMatrix_eq_det_toMatrix [DecidableEq κ] (b : Basis ι A M) (c : Ba
     rw [Basis.toMatrix_mul_toMatrix, Basis.toMatrix_self]
 
 
-/-- The determinant of an endomorphism given a basis.
+/--
+The determinant of an endomorphism given a basis.
 
 See `LinearMap.det` for a version that populates the basis non-computably.
 
@@ -131,7 +139,8 @@ or avoid mentioning a basis at all using `LinearMap.det`.
     (fun b : Basis ι A M => detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
     fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
 
-/-- Unfold lemma for `detAux`.
+/--
+Unfold lemma for `detAux`.
 
 See also `detAux_def''` which allows you to vary the basis.
 -/
@@ -157,7 +166,8 @@ section
 
 open scoped Classical in
 -- Stop the elaborator from unfolding `det` and producing a huge term by marking it `no_expose`.
-/-- The determinant of an endomorphism independent of basis.
+/--
+The determinant of an endomorphism independent of basis.
 
 If there is no finite basis on `M`, the result is `1` instead.
 -/

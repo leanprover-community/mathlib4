@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.MapDomain
 public import Mathlib.Algebra.Ring.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid algebras and the opposite ring
 -/

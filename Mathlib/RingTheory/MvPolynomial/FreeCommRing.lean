@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.FreeCommRing
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Constructing Ring terms from MvPolynomial
 
 This file provides tools for constructing ring terms that can be evaluated to particular
@@ -21,7 +23,6 @@ formulas whose realization is a property of an `MvPolynomial`
   `monoms : ι → Finset (κ →₀ ℕ)` returns a function `ι → FreeCommRing ((Σ i : ι, monoms i) ⊕ κ)`
   such that `genericPolyMap monoms i` is a ring term that can be evaluated to a polynomial
   `p : MvPolynomial κ R` such that `p.support ⊆ monoms i`.
-
 -/
 
 @[expose] public section

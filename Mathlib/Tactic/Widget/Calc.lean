@@ -15,7 +15,11 @@ public import Mathlib.Tactic.Widget.SelectPanelUtils
 
 meta import ProofWidgets.Component.Basic
 
-/-! # Calc widget
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Calc widget
 
 This file redefines the `calc` tactic so that it displays a widget panel allowing to create
 new calc steps with holes specified by selected sub-expressions in the goal.

@@ -9,6 +9,9 @@ public import Batteries.Util.ExtendedBinder
 public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.ToDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets
 
@@ -29,7 +32,6 @@ Given a type `X` and a predicate `p : X → Prop`:
 
 `Set X` is a one-field structure wrapping a predicate `X → Prop`.
 This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean`.
-
 -/
 
 @[expose] public section
@@ -39,11 +41,13 @@ open Lean Elab Term Meta Batteries.ExtendedBinder
 universe u
 variable {α : Type u}
 
-/-- A set is a collection of elements of some type `α`.
+/--
+A set is a collection of elements of some type `α`.
 
 To build a set (an element of `Set α`) out of a predicate `p : α → Prop`, use the set builder
 notation `{a | p a}`. To get a predicate `α → Prop` from a set `s : Set α`, use the `∈` notation,
-as in `a ∈ s` or `(· ∈ s)`. -/
+as in `a ∈ s` or `(· ∈ s)`.
+-/
 @[use_set_notation_for_order]
 structure Set (α : Type u) where
   /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
@@ -79,9 +83,11 @@ latter is removed from the goal as early as possible if accidentally exposed. We
 theorem ext {a b : Set α} (h : ∀ (x : α), x ∈ a ↔ x ∈ b) : a = b :=
   congrArg ofPred (funext fun x ↦ propext (h x))
 
-/-- The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
+/--
+The subset relation on sets. `s ⊆ t` means that all elements of `s` are elements of `t`.
 
-Note that you should **not** use this definition directly, but instead write `s ⊆ t`. -/
+Note that you should *not* use this definition directly, but instead write `s ⊆ t`.
+-/
 protected def Subset (s₁ s₂ : Set α) :=
   ∀ ⦃a⦄, a ∈ s₁ → a ∈ s₂
 
@@ -94,9 +100,11 @@ end Set
 
 namespace Mathlib.Meta
 
-/-- Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
+/--
+Set builder syntax. This can be elaborated to either a `Set` or a `Finset` depending on context.
 
 The elaborators for this syntax are located in:
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator for syntax of the form `{x | p x}`,
   `{x : α | p x}`, `{binder x | p x}`.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator for syntax of the form
@@ -108,13 +116,15 @@ The elaborators for this syntax are located in:
 -/
 syntax (name := setBuilder) "{" extBinder " | " term "}" : term
 
-/-- Elaborate set builder notation for `Set`.
+/--
+Elaborate set builder notation for `Set`.
 
 * `{x | p x}` is elaborated as `Set.ofPred fun x ↦ p x`
 * `{x : α | p x}` is elaborated as `Set.ofPred fun x : α ↦ p x`
 * `{binder x | p x}`, where `x` is bound by the `binder` binder, is elaborated as
   `{x | binder x ∧ p x}`. The typical example is `{x ∈ s | p x}`, which is elaborated as
   `{x | x ∈ s ∧ p x}`. The possible binders are
+
   * `· ∈ s`, `· ∉ s`
   * `· ⊆ s`, `· ⊂ s`, `· ⊇ s`, `· ⊃ s`
   * `· ≤ a`, `· ≥ a`, `· < a`, `· > a`, `· ≠ a`
@@ -123,6 +133,7 @@ syntax (name := setBuilder) "{" extBinder " | " term "}" : term
   more info.
 
 See also
+
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.
 * `Data.Fintype.Basic` for the `Finset` builder notation elaborator partly overriding this one for
@@ -203,50 +214,64 @@ namespace Set
 instance : EmptyCollection (Set α) :=
   ⟨{_a | False}⟩
 
-/-- The universal set on a type `α` is the set containing all elements of `α`.
+/--
+The universal set on a type `α` is the set containing all elements of `α`.
 
 This is conceptually the "same as" `α` (in set theory, it is actually the same), but type theory
 makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
-itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
+itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`.
+-/
 def univ : Set α := {_a | True}
 
-/-- `Set.insert a s` is the set `{a} ∪ s`.
+/--
+`Set.insert a s` is the set `{a} ∪ s`.
 
-Note that you should **not** use this definition directly, but instead write `insert a s` (which is
-mediated by the `Insert` typeclass). -/
+Note that you should *not* use this definition directly, but instead write `insert a s` (which is
+mediated by the `Insert` typeclass).
+-/
 protected def insert (a : α) (s : Set α) : Set α := {b | b = a ∨ b ∈ s}
 
 instance : Insert α (Set α) := ⟨Set.insert⟩
 
-/-- The singleton of an element `a` is the set with `a` as a single element.
+/--
+The singleton of an element `a` is the set with `a` as a single element.
 
-Note that you should **not** use this definition directly, but instead write `{a}`. -/
+Note that you should *not* use this definition directly, but instead write `{a}`.
+-/
 protected def singleton (a : α) : Set α := {b | b = a}
 
 instance instSingletonSet : Singleton α (Set α) := ⟨Set.singleton⟩
 
-/-- The union of two sets `s` and `t` is the set of elements contained in either `s` or `t`.
+/--
+The union of two sets `s` and `t` is the set of elements contained in either `s` or `t`.
 
-Note that you should **not** use this definition directly, but instead write `s ∪ t`. -/
+Note that you should *not* use this definition directly, but instead write `s ∪ t`.
+-/
 protected def union (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∨ a ∈ s₂}
 
 instance : Max (Set α) := ⟨Set.union⟩
 
-/-- The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
+/--
+The intersection of two sets `s` and `t` is the set of elements contained in both `s` and `t`.
 
-Note that you should **not** use this definition directly, but instead write `s ∩ t`. -/
+Note that you should *not* use this definition directly, but instead write `s ∩ t`.
+-/
 protected def inter (s₁ s₂ : Set α) : Set α := {a | a ∈ s₁ ∧ a ∈ s₂}
 
 instance : Min (Set α) := ⟨Set.inter⟩
 
-/-- The complement of a set `s` is the set of elements not contained in `s`.
+/--
+The complement of a set `s` is the set of elements not contained in `s`.
 
-Note that you should **not** use this definition directly, but instead write `sᶜ`. -/
+Note that you should *not* use this definition directly, but instead write `sᶜ`.
+-/
 protected def compl (s : Set α) : Set α := {a | a ∉ s}
 
-/-- The difference of two sets `s` and `t` is the set of elements contained in `s` but not in `t`.
+/--
+The difference of two sets `s` and `t` is the set of elements contained in `s` but not in `t`.
 
-Note that you should **not** use this definition directly, but instead write `s \ t`. -/
+Note that you should *not* use this definition directly, but instead write `s \ t`.
+-/
 protected def diff (s t : Set α) : Set α := {a ∈ s | a ∉ t}
 
 instance : SDiff (Set α) := ⟨Set.diff⟩

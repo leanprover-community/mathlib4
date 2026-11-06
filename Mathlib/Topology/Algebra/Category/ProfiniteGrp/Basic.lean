@@ -10,8 +10,10 @@ public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Category.Profinite.Basic
 public import Mathlib.Topology.Separation.Connected
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Category of Profinite Groups
 
 We say `G` is a profinite group if it is a topological group which is compact and totally
@@ -20,14 +22,10 @@ disconnected.
 ## Main definitions and results
 
 * `ProfiniteGrp` is the category of profinite groups.
-
 * `ProfiniteGrp.pi` : An arbitrary product of profinite groups is also a profinite group.
-
 * `ofFiniteGrp` : A `FiniteGrp` when given the discrete topology can be considered as a
   profinite group.
-
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
-
 -/
 
 @[expose] public section
@@ -292,14 +290,12 @@ instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
 end ProfiniteGrp
 
 /-!
-### Limits in the category of profinite groups
+# Limits in the category of profinite groups
 
 In this section, we construct limits in the category of profinite groups.
 
 * `ProfiniteGrp.limitCone` : The explicit limit cone in `ProfiniteGrp`.
-
 * `ProfiniteGrp.limitConeIsLimit`: `ProfiniteGrp.limitCone` is a limit cone.
-
 -/
 
 section Limits

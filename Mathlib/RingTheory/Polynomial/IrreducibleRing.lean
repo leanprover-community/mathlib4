@@ -9,8 +9,10 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 
 import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Polynomials over an irreducible ring
 
 This file contains results about the polynomials over an irreducible ring (i.e. a ring with only
@@ -18,14 +20,13 @@ one minimal prime ideal, equivalently, whose spectrum is an irreducible topologi
 
 ## Main results
 
-- `Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical`: a monic polynomial over
+* `Polynomial.Monic.irreducible_of_irreducible_map_of_isPrime_nilradical`: a monic polynomial over
   an irreducible ring is irreducible if it is irreducible after mapping into an integral domain.
   A generalization to `Polynomial.Monic.irreducible_of_irreducible_map`.
 
 ## Tags
 
 polynomial, irreducible ring, nilradical, prime ideal
-
 -/
 
 public section

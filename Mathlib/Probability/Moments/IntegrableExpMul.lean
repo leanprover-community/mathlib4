@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Domain of the moment-generating function
 
@@ -33,7 +36,6 @@ We prove the integrability of other functions for `t` in the interior of that in
   `|X| ^ p * exp (v * X)` is integrable.
 * `ProbabilityTheory.memLp_of_mem_interior_integrableExpSet`: if 0 belongs to the interior of
   `integrableExpSet X μ`, then `X` is in `ℒp` for all finite `p`.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.RingTheory.TensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Bimodules
 
@@ -73,11 +77,13 @@ variable [Algebra R A] [Algebra R B]
 variable [IsScalarTower R A M] [IsScalarTower R B M]
 variable [SMulCommClass A B M]
 
-/-- A constructor for a subbimodule which demands closure under the two sets of scalars
+/--
+A constructor for a subbimodule which demands closure under the two sets of scalars
 individually, rather than jointly via their tensor product.
 
 Note that `R` plays no role but it is convenient to make this generalisation to support the cases
-`R = ℕ` and `R = ℤ` which both show up naturally. See also `Subbimodule.baseChange`. -/
+`R = ℕ` and `R = ℤ` which both show up naturally. See also `Subbimodule.baseChange`.
+-/
 @[simps]
 def mk (p : AddSubmonoid M) (hA : ∀ (a : A) {m : M}, m ∈ p → a • m ∈ p)
     (hB : ∀ (b : B) {m : M}, m ∈ p → b • m ∈ p) : Submodule (A ⊗[R] B) M :=

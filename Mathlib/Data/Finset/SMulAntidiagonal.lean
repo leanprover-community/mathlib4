@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Data.Set.SMulAntidiagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal for scalar multiplication as a `Finset`.
 
@@ -16,9 +19,9 @@ the `Finset` of all pairs of an element in `s` and an element in `t` that scalar
 assuming that set is finite.
 
 ## Definitions
+
 * Finset.SMulAntidiagonal : Finset antidiagonal for PWO inputs.
 * Finset.VAddAntidiagonal : Finset antidiagonal for PWO inputs.
-
 -/
 
 @[expose] public section

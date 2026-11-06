@@ -9,32 +9,37 @@ public import Mathlib.Algebra.Lie.Free
 public import Mathlib.Algebra.Lie.Quotient
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Serre construction of Lie algebras from Cartan matrices
 
 This file provides the Serre construction of Lie algebras from Cartan matrices.
 Given a Cartan matrix `A`, we construct a Lie algebra as a quotient of the free Lie algebra
 on generators `{H_i, E_i, F_i}` by the Serre relations:
-$$
-\begin{align}
-  [H_i, H_j] &= 0\\
-  [E_i, F_i] &= H_i\\
-  [E_i, F_j] &= 0 \quad\text{if $i \ne j$}\\
-  [H_i, E_j] &= A_{ij}E_j\\
-  [H_i, F_j] &= -A_{ij}F_j\\
-  ad(E_i)^{1 - A_{ij}}(E_j) &= 0 \quad\text{if $i \ne j$}\\
-  ad(F_i)^{1 - A_{ij}}(F_j) &= 0 \quad\text{if $i \ne j$}\\
-\end{align}
-$$
+‍\$\$
+‍\\begin\{align\}
+‍\[H\_i, H\_j\] &= 0\\
+‍\[E\_i, F\_i\] &= H\_i\\
+‍\[E\_i, F\_j\] &= 0 \\quad\\text\{if $`i \ne j`\}\\
+‍\[H\_i, E\_j\] &= A\_\{ij\}E\_j\\
+‍\[H\_i, F\_j\] &= -A\_\{ij\}F\_j\\
+ad(E\_i)^\{1 - A\_\{ij\}\}(E\_j) &= 0 \\quad\\text\{if $`i \ne j`\}\\
+ad(F\_i)^\{1 - A\_\{ij\}\}(F\_j) &= 0 \\quad\\text\{if $`i \ne j`\}\\
+‍\\end\{align\}
+‍\$\$
 
 ## Main definitions
 
 * `Matrix.ToLieAlgebra` : The Lie algebra constructed from a Cartan matrix via Serre relations
 
 ### Exceptional Lie algebras
+
 * `LieAlgebra.e₆`, `LieAlgebra.e₇`, `LieAlgebra.e₈`, `LieAlgebra.f₄`, `LieAlgebra.g₂`
 
 ### Classical Lie algebras
+
 * `CartanMatrix.aₙ`, `CartanMatrix.bₙ`, `CartanMatrix.cₙ`, `CartanMatrix.dₙ`
 
 ## Alternative construction
@@ -47,9 +52,9 @@ However the difference is illusory since the construction stays inside the Lie s
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968]
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 7--9*][bourbaki1975b] chapter VIII, §4.3
-* [J.P. Serre, *Complex Semisimple Lie Algebras*][serre1965] chapter VI, appendix
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 4--6_\]\[bourbaki1968\]
+* ‍\[N. Bourbaki, _Lie Groups and Lie Algebras, Chapters 7--9_\]\[bourbaki1975b\] chapter VIII, §4.3
+* ‍\[J.P. Serre, _Complex Semisimple Lie Algebras_\]\[serre1965\] chapter VI, appendix
 
 ## Tags
 
@@ -138,10 +143,12 @@ end CartanMatrix
 
 variable [DecidableEq B]
 
-/-- The Lie algebra corresponding to a Cartan matrix.
+/--
+The Lie algebra corresponding to a Cartan matrix.
 
 Note that it is defined for any matrix of integers. Its value for non-Cartan matrices should be
-regarded as junk. -/
+regarded as junk.
+-/
 def Matrix.ToLieAlgebra :=
   FreeLieAlgebra R _ ⧸ CartanMatrix.Relations.toIdeal R CM
 deriving LieRing, Inhabited, LieAlgebra R

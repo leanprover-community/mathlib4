@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 public import Mathlib.RingTheory.TensorProduct.IncludeLeftSubRight
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equalizer of inclusions to pushouts in `CommRingCat`
 
@@ -31,13 +34,17 @@ section Fork
 
 variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 
-/-- If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
+/--
+If `f : R ⟶ S` is a faithfully flat map in `CommRingCat`, then the fork
+
 ```
         S ---inl---> pushout f f
 R --f-->
         S ---inr---> pushout f f
 ```
-is an equalizer diagram. -/
+
+is an equalizer diagram.
+-/
 noncomputable def isLimitForkPushoutSelfOfFaithfullyFlat (hf : f.hom.FaithfullyFlat) :
     IsLimit (Fork.ofι f pushout.condition) := by
   algebraize [f.hom]

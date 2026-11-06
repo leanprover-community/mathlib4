@@ -7,13 +7,16 @@ module
 
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
-/-! # Ideals in free modules over PIDs
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Ideals in free modules over PIDs
 
 ## Main results
 
-- `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
+* `Ideal.quotientEquivPiSpan`: `S ⧸ I`, if `S` is finite free as a module over a PID `R`,
   can be written as a product of quotients of `R` by principal ideals.
-
 -/
 
 @[expose] public section

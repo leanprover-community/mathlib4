@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 
 import Mathlib.Topology.Instances.Irrational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Liouville numbers with a given exponent
 
@@ -19,11 +22,9 @@ number `C` such that for infinitely many denominators `n` there exists a numerat
 `Liouville` if it is `LiouvilleWith` any real exponent, see `forall_liouvilleWith_iff`.
 
 * If `p ≤ 1`, then this condition is trivial.
-
 * If `1 < p ≤ 2`, then this condition is equivalent to `Irrational x`. The forward implication
   does not require `p ≤ 2` and is formalized as `LiouvilleWith.irrational`; the other implication
   follows from approximations by continued fractions and is not formalized yet.
-
 * If `p > 2`, then this is a non-trivial condition on irrational numbers. In particular,
   [Thue–Siegel–Roth theorem](https://en.wikipedia.org/wiki/Roth's_theorem) states that such numbers
   must be transcendental.
@@ -43,12 +44,14 @@ open Filter Real Set
 
 open scoped Filter Topology
 
-/-- We say that a real number `x` is a Liouville number with exponent `p : ℝ` if there exists a real
+/--
+We say that a real number `x` is a Liouville number with exponent `p : ℝ` if there exists a real
 number `C` such that for infinitely many denominators `n` there exists a numerator `m` such that
 `x ≠ m / n` and `|x - m / n| < C / n ^ p`.
 
 A number is a Liouville number in the sense of `Liouville` if it is `LiouvilleWith` any real
-exponent. -/
+exponent.
+-/
 def LiouvilleWith (p x : ℝ) : Prop :=
   ∃ C, ∃ᶠ n : ℕ in atTop, ∃ m : ℤ, x ≠ m / n ∧ |x - m / n| < C / n ^ p
 

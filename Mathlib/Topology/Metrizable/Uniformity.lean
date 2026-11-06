@@ -8,22 +8,23 @@ module
 public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Topology.MetricSpace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metrizable uniform spaces
 
 In this file we prove that a uniform space with countably generated uniformity filter is
 pseudometrizable: there exists a `PseudoMetricSpace` structure that generates the same uniformity.
-The proof follows [Sergey Melikhov, Metrizable uniform spaces][melikhov2011].
+The proof follows \[Sergey Melikhov, Metrizable uniform spaces\]\[melikhov2011\].
 
 ## Main definitions
 
 * `PseudoMetricSpace.ofPreNNDist`: given a function `d : X → X → ℝ≥0` such that `d x x = 0` and
   `d x y = d y x` for all `x y : X`, constructs the maximal pseudometric space structure such that
   `NNDist x y ≤ d x y` for all `x y : X`.
-
 * `UniformSpace.pseudoMetricSpace`: given a uniform space `X` with countably generated `𝓤 X`,
   constructs a `PseudoMetricSpace X` instance that is compatible with the uniform space structure.
-
 * `UniformSpace.metricSpace`: given a T₀ uniform space `X` with countably generated `𝓤 X`,
   constructs a `MetricSpace X` instance that is compatible with the uniform space structure.
 
@@ -32,10 +33,8 @@ The proof follows [Sergey Melikhov, Metrizable uniform spaces][melikhov2011].
 * `UniformSpace.metrizable_uniformity`: if `X` is a uniform space with countably generated `𝓤 X`,
   then there exists a `PseudoMetricSpace` structure that is compatible with this `UniformSpace`
   structure. Use `UniformSpace.pseudoMetricSpace` or `UniformSpace.metricSpace` instead.
-
 * `UniformSpace.pseudoMetrizableSpace`: a uniform space with countably generated `𝓤 X` is
   pseudometrizable.
-
 * `UniformSpace.metrizableSpace`: a T₀ uniform space with countably generated `𝓤 X` is
   metrizable. This is not an instance to avoid loops.
 

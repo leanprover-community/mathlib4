@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associator for actions of bifunctors on homological complexes
 
@@ -33,7 +36,6 @@ commutation of certain functors to certain coproducts.
 
 The main application of these results shall be the construction of
 the associator for the monoidal category structure on homological complexes.
-
 -/
 
 @[expose] public section

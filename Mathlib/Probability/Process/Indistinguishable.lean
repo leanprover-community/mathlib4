@@ -7,15 +7,17 @@ module
 
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Indistinguishability of processes
 
 In Mathlib, `E`-valued stochastic processes over a probability space `Ω` and indexed by a type `ι`
 are represented as a family of `E`-valued random variables `X : ι → Ω → E` rather than as an
 `ι → E`-valued random variable, following the convention on paper.
 
-Two stochastic processes are said to be *indistinguishable* if they are almost everywhere equal
+Two stochastic processes are said to be _indistinguishable_ if they are almost everywhere equal
 as `ι → E`-valued random variable, i.e. `(fun ω t ↦ X t ω) =ᵐ[P] (fun ω t ↦ Y t ω)`. This spelling
 creates a lot of friction when manipulating indistinguishable processes, making it harder to use
 for instance the `gcongr` tactic.
@@ -24,7 +26,6 @@ In this file we introduce a predicate `Indistinguishable P X Y`, denoted `X ≡�
 that `∀ᵐ ω ∂P, ∀ t, X t ω = Y t ω`. The symbol `≡` can be typed with `\==`.
 
 The recommended spelling for `Indistinguishable` in names is `indist`.
-
 -/
 
 public section

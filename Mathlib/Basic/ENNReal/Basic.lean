@@ -13,6 +13,9 @@ public import Mathlib.Order.Interval.Set.WithBotTop
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended non-negative reals
 
@@ -34,48 +37,38 @@ making it into a `DivInvOneMonoid`.
 As a consequence of being a `DivInvOneMonoid`, `ℝ≥0∞` inherits a power operation with integer
 exponent: this and other properties is shown in `Mathlib.Basic.ENNReal.Inv`.
 
-
 ## Main definitions
 
 * `ℝ≥0∞`: the extended nonnegative real numbers `[0, ∞]`; defined as `WithTop ℝ≥0`; it is
   equipped with the following structures:
 
-  - coercion from `ℝ≥0` defined in the natural way;
-
-  - the natural structure of a complete dense linear order: `↑p ≤ ↑q ↔ p ≤ q` and `∀ a, a ≤ ∞`;
-
-  - `a + b` is defined so that `↑p + ↑q = ↑(p + q)` for `(p q : ℝ≥0)` and `a + ∞ = ∞ + a = ∞`;
-
-  - `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and
+  * coercion from `ℝ≥0` defined in the natural way;
+  * the natural structure of a complete dense linear order: `↑p ≤ ↑q ↔ p ≤ q` and `∀ a, a ≤ ∞`;
+  * `a + b` is defined so that `↑p + ↑q = ↑(p + q)` for `(p q : ℝ≥0)` and `a + ∞ = ∞ + a = ∞`;
+  * `a * b` is defined so that `↑p * ↑q = ↑(p * q)` for `(p q : ℝ≥0)`, `0 * ∞ = ∞ * 0 = 0`, and
     `a * ∞ = ∞ * a = ∞` for `a ≠ 0`;
-
-  - `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
+  * `a - b` is defined as the minimal `d` such that `a ≤ d + b`; this way we have
     `↑p - ↑q = ↑(p - q)`, `∞ - ↑p = ∞`, `↑p - ∞ = ∞ - ∞ = 0`; note that there is no negation, only
     subtraction;
 
   The addition and multiplication defined this way together with `0 = ↑0` and `1 = ↑1` turn
   `ℝ≥0∞` into a canonically ordered commutative semiring of characteristic zero.
 
-  - `a⁻¹` is defined as `Inf {b | 1 ≤ a * b}`. This way we have `(↑p)⁻¹ = ↑(p⁻¹)` for
+  * `a⁻¹` is defined as `Inf {b | 1 ≤ a * b}`. This way we have `(↑p)⁻¹ = ↑(p⁻¹)` for
     `p : ℝ≥0`, `p ≠ 0`, `0⁻¹ = ∞`, and `∞⁻¹ = 0`.
-  - `a / b` is defined as `a * b⁻¹`.
+  * `a / b` is defined as `a * b⁻¹`.
 
   This inversion and division include `Inv` and `Div` instances on `ℝ≥0∞`,
   making it into a `DivInvOneMonoid`. Further properties of these are shown in
   `Mathlib.Basic.ENNReal.Inv`.
-
 * Coercions to/from other types:
 
-  - coercion `ℝ≥0 → ℝ≥0∞` is defined as `Coe`, so one can use `(p : ℝ≥0)` in a context that
+  * coercion `ℝ≥0 → ℝ≥0∞` is defined as `Coe`, so one can use `(p : ℝ≥0)` in a context that
     expects `a : ℝ≥0∞`, and Lean will apply `coe` automatically;
-
-  - `ENNReal.toNNReal` sends `↑p` to `p` and `∞` to `0`;
-
-  - `ENNReal.toReal := coe ∘ ENNReal.toNNReal` sends `↑p`, `p : ℝ≥0` to `(↑p : ℝ)` and `∞` to `0`;
-
-  - `ENNReal.ofReal := coe ∘ Real.toNNReal` sends `x : ℝ` to `↑⟨max x 0, _⟩`
-
-  - `ENNReal.neTopEquivNNReal` is an equivalence between `{a : ℝ≥0∞ // a ≠ 0}` and `ℝ≥0`.
+  * `ENNReal.toNNReal` sends `↑p` to `p` and `∞` to `0`;
+  * `ENNReal.toReal := coe ∘ ENNReal.toNNReal` sends `↑p`, `p : ℝ≥0` to `(↑p : ℝ)` and `∞` to `0`;
+  * `ENNReal.ofReal := coe ∘ Real.toNNReal` sends `x : ℝ` to `↑⟨max x 0, _⟩`
+  * `ENNReal.neTopEquivNNReal` is an equivalence between `{a : ℝ≥0∞ // a ≠ 0}` and `ℝ≥0`.
 
 ## Implementation notes
 
@@ -89,7 +82,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 * `ℝ≥0∞`: the type of the extended nonnegative real numbers;
 * `ℝ≥0`: the type of nonnegative real numbers `[0, ∞)`; defined in `Mathlib.Basic.NNReal.Defs`;
 * `∞`: a localized notation in `ENNReal` for `⊤ : ℝ≥0∞`.
-
 -/
 
 @[expose] public section
@@ -100,8 +92,10 @@ open Function Set NNReal
 
 variable {α : Type*}
 
-/-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
-  and is relevant as the codomain of a measure. -/
+/--
+The extended nonnegative real numbers. This is usually denoted \[0, ∞\],
+and is relevant as the codomain of a measure.
+-/
 def ENNReal := WithTop ℝ≥0
 
 @[inherit_doc]

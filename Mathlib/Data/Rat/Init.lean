@@ -8,6 +8,9 @@ module
 public import Batteries.Classes.RatCast
 public import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic definitions around the rational numbers
 
@@ -26,29 +29,35 @@ def NNRat := {q : ℚ // 0 ≤ q}
 @[inherit_doc] notation "ℚ≥0" => NNRat
 
 /-!
-### Cast from `NNRat`
+# Cast from `NNRat`
 
 This section sets up the typeclasses necessary to declare the canonical embedding `ℚ≥0` to any
 semifield.
 -/
 
-/-- Typeclass for the canonical homomorphism `ℚ≥0 → K`.
+/--
+Typeclass for the canonical homomorphism `ℚ≥0 → K`.
 
 This should be considered as a notation typeclass. The sole purpose of this typeclass is to be
-extended by `DivisionSemiring`. -/
+extended by `DivisionSemiring`.
+-/
 class NNRatCast (K : Type*) where
-  /-- The canonical homomorphism `ℚ≥0 → K`.
+  /--
+  The canonical homomorphism `ℚ≥0 → K`.
 
-  Do not use directly. Use the coercion instead. -/
+  Do not use directly. Use the coercion instead.
+  -/
   protected nnratCast : ℚ≥0 → K
 
 instance NNRat.instNNRatCast : NNRatCast ℚ≥0 where nnratCast q := q
 
 variable {K : Type*} [NNRatCast K]
 
-/-- Canonical homomorphism from `ℚ≥0` to a division semiring `K`.
+/--
+Canonical homomorphism from `ℚ≥0` to a division semiring `K`.
 
-This is just the bare function in order to aid in creating instances of `DivisionSemiring`. -/
+This is just the bare function in order to aid in creating instances of `DivisionSemiring`.
+-/
 @[coe, reducible, match_pattern] protected def NNRat.cast : ℚ≥0 → K := NNRatCast.nnratCast
 
 -- See note [coercion into rings]
@@ -59,7 +68,9 @@ instance NNRatCast.toCoeHTCT : CoeHTCT ℚ≥0 K where coe := NNRat.cast
 
 instance Rat.instNNRatCast : NNRatCast ℚ := ⟨Subtype.val⟩
 
-/-! ### Numerator and denominator of a nonnegative rational -/
+/-!
+# Numerator and denominator of a nonnegative rational
+-/
 
 namespace NNRat
 

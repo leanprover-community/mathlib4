@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Fintype.EquivFin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `Finite` and `Set`s
 

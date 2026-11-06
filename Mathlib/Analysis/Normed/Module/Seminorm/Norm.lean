@@ -9,10 +9,13 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Module.Seminorm.Basic
 
-/-! # The norm as a seminorm
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The norm as a seminorm
 
 In this file, we define the norm of a normed space as a bundled seminorm.
-
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `mulExpNegMulSq` and properties
 
@@ -20,13 +23,13 @@ boundedness and convergence properties.
 
 ## Main Properties
 
-- `abs_mulExpNegMulSq_le`: For fixed `ε > 0`, the mapping `x ↦ mulExpNegMulSq ε x` is
+* `abs_mulExpNegMulSq_le`: For fixed `ε > 0`, the mapping `x ↦ mulExpNegMulSq ε x` is
   bounded by `Real.sqrt ε⁻¹`;
-- `tendsto_mulExpNegMulSq`: For fixed `x : ℝ`, the mapping `mulExpNegMulSq ε x`
+* `tendsto_mulExpNegMulSq`: For fixed `x : ℝ`, the mapping `mulExpNegMulSq ε x`
   converges pointwise to `x` as `ε → 0`;
-- `lipschitzWith_one_mulExpNegMulSq`: For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is
+* `lipschitzWith_one_mulExpNegMulSq`: For fixed `ε > 0`, the mapping `mulExpNegMulSq ε` is
   Lipschitz with constant `1`;
-- `abs_mulExpNegMulSq_comp_le_norm`: For a fixed bounded continuous function `g`, the mapping
+* `abs_mulExpNegMulSq_comp_le_norm`: For a fixed bounded continuous function `g`, the mapping
   `mulExpNegMulSq ε ∘ g` is bounded by `norm g`, uniformly in `ε ≥ 0`;
 -/
 
@@ -38,7 +41,9 @@ open scoped Topology
 
 namespace Real
 
-/-! ### Definition and properties of `fun x => x * Real.exp (- (ε * x * x))` -/
+/-!
+# Definition and properties of `fun x => x * Real.exp (- (ε * x * x))`
+-/
 
 /--
 Mapping `fun ε x => x * Real.exp (- (ε * x * x))`. By composition, it can be used to transform

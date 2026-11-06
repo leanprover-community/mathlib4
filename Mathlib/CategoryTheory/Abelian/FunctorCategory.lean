@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.Abelian.Basic
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Finite
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If `D` is abelian, then the functor category `C ⥤ D` is also abelian.
-
 -/
 
 @[expose] public section

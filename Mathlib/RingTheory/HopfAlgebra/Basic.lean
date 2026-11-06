@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Bialgebra.Basic
 public import Mathlib.RingTheory.Coalgebra.Convolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hopf algebras
 
@@ -31,7 +34,6 @@ In this file we define `HopfAlgebra`, and provide instances for:
 ## TODO
 
 * If `A` is commutative then `antipode` is an algebra homomorphism.
-
 * If `A` is commutative then `antipode` is necessarily a bijection and its square is
   the identity.
 
@@ -40,11 +42,8 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Hopf_algebra>
-
-* [C. Kassel, *Quantum Groups* (§III.3)][Kassel1995]
-
-
+* [https://en.wikipedia.org/wiki/Hopf\_algebra](https://en.wikipedia.org/wiki/Hopf_algebra)
+* ‍\[C. Kassel, _Quantum Groups_ (§III.3)\]\[Kassel1995\]
 -/
 
 public section

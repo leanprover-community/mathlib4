@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Colimit.Finiteness
 public import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product with direct limit of finitely generated submodules
 

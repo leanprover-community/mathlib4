@@ -8,17 +8,21 @@ module
 public import Mathlib.RingTheory.HahnSeries.HEval
 public import Mathlib.RingTheory.PowerSeries.Binomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial expansions of powers of Hahn Series
 
 We introduce binomial expansions using `embDomain`.
 
 ## Main Definitions
-  * `HahnSeries.binomialFamily`
+
+* `HahnSeries.binomialFamily`
 
 ## Main results
-  * coefficients of powers of binomials
 
+* coefficients of powers of binomials
 -/
 
 @[expose] public section

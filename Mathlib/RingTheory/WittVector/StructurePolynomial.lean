@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.WittVector.WittPolynomial
 
 import Mathlib.NumberTheory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Witt structure polynomials
 
@@ -19,9 +22,11 @@ with polynomials variables indexed by an arbitrary type `idx`.
 
 Then there exists a unique family of polynomials `φ : ℕ → MvPolynomial (idx × ℕ) Φ`
 such that for all `n : ℕ` we have (`wittStructureInt_existsUnique`)
+
 ```
 bind₁ φ (wittPolynomial p ℤ n) = bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
@@ -54,6 +59,7 @@ Proving this claim is the essential core of this file, and culminates in
 of `wittStructureInt Φ n` from the integers to the rationals,
 one obtains `wittStructureRat Φ n`.
 Ultimately, the proof of `map_wittStructureInt` relies on
+
 ```
 dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
     (p : R) ∣ a - b → ∀ (k : ℕ), (p : R) ^ (k + 1) ∣ a ^ p ^ k - b ^ p ^ k
@@ -71,20 +77,20 @@ dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} :
 * `wittStructureInt_prop`: the proof that `wittStructureInt` indeed satisfies the property.
 * Five families of polynomials that will be used to define the ring structure
   on the ring of Witt vectors:
-  - `WittVector.wittZero`
-  - `WittVector.wittOne`
-  - `WittVector.wittAdd`
-  - `WittVector.wittMul`
-  - `WittVector.wittNeg`
+
+  * `WittVector.wittZero`
+  * `WittVector.wittOne`
+  * `WittVector.wittAdd`
+  * `WittVector.wittMul`
+  * `WittVector.wittNeg`
 
   (We also define `WittVector.wittSub`, and later we will prove that it describes subtraction,
   which is defined as `fun a b ↦ a + -b`. See `WittVector.sub_coeff` for this proof.)
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -120,12 +126,15 @@ set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W" => wittPolynomial p _
 
-/-- `wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
+/--
+`wittStructureRat Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℚ`
 that are uniquely characterised by the property that
+
 ```
 bind₁ (wittStructureRat p Φ) (wittPolynomial p ℚ n) =
 bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℚ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureRat Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
@@ -137,7 +146,8 @@ These polynomials turn out to have integral coefficients,
 but it requires some effort to show this.
 See `wittStructureInt` for the version with integral coefficients,
 and `map_wittStructureInt` for the fact that it is equal to `wittStructureRat`
-when mapped to polynomials over the rationals. -/
+when mapped to polynomials over the rationals.
+-/
 noncomputable def wittStructureRat (Φ : MvPolynomial idx ℚ) (n : ℕ) : MvPolynomial (idx × ℕ) ℚ :=
   bind₁ (fun k => bind₁ (fun i => rename (Prod.mk i) (W_ ℚ k)) Φ) (xInTermsOfW p ℚ n)
 
@@ -188,18 +198,22 @@ theorem wittStructureRat_rec (Φ : MvPolynomial idx ℚ) (n : ℕ) :
   rw [mul_left_comm, ← C_mul, div_mul_cancel₀, C_1, mul_one]
   exact pow_ne_zero _ (Nat.cast_ne_zero.2 hp.1.ne_zero)
 
-/-- `wittStructureInt Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℤ`
+/--
+`wittStructureInt Φ` is a family of polynomials `ℕ → MvPolynomial (idx × ℕ) ℤ`
 that are uniquely characterised by the property that
+
 ```
 bind₁ (wittStructureInt p Φ) (wittPolynomial p ℤ n) =
 bind₁ (fun i ↦ (rename (prod.mk i) (wittPolynomial p ℤ n))) Φ
 ```
+
 In other words: evaluating the `n`-th Witt polynomial on the family `wittStructureInt Φ`
 is the same as evaluating `Φ` on the (appropriately renamed) `n`-th Witt polynomials.
 
 See `wittStructureInt_prop` for this property,
 and `wittStructureInt_existsUnique` for the fact that `wittStructureInt`
-gives the unique family of polynomials with this property. -/
+gives the unique family of polynomials with this property.
+-/
 noncomputable def wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) : MvPolynomial (idx × ℕ) ℤ :=
   .ofCoeff <| .mapRange Rat.num (Rat.num_intCast 0) <| AddMonoidAlgebra.coeff <|
     wittStructureRat p (map (Int.castRingHom ℚ) Φ) n

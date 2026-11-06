@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Finsupp.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on `Finsupp`s with an `Option` domain
 
@@ -30,7 +33,6 @@ We prove a variety of API lemmas, see `Mathlib/Data/Finsupp/Fin.lean` for compar
 ## Implementation notes
 
 This file is a `noncomputable theory` and uses classical logic throughout.
-
 -/
 
 @[expose] public section

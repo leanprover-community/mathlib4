@@ -11,13 +11,16 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.Category.FinPartOrd
 public import Mathlib.Order.Category.LinOrd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonempty finite linear orders
 
 This defines `NonemptyFinLinOrd`, the category of nonempty finite linear
 orders with monotone maps. This is the index category for simplicial objects.
 
-Note: `NonemptyFinLinOrd` is *not* a subcategory of `FinBddDistLat` because its morphisms do not
+Note: `NonemptyFinLinOrd` is _not_ a subcategory of `FinBddDistLat` because its morphisms do not
 preserve `⊥` and `⊤`.
 -/
 

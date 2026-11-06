@@ -10,13 +10,15 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
 import Mathlib.CategoryTheory.Limits.Types.Coproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gluing data
 
 We define `GlueData` as a family of data needed to glue topological spaces, schemes, etc. We
 provide the API to realize it as a multispan diagram, and also state lemmas about its
 interaction with a functor that preserves certain pullbacks.
-
 -/
 
 @[expose] public section
@@ -32,7 +34,9 @@ universe v u₁ u₂
 
 variable (C : Type u₁) [Category.{v} C] {C' : Type u₂} [Category.{v} C']
 
-/-- A gluing datum consists of
+/--
+A gluing datum consists of
+
 1. An index type `J`
 2. An object `U i` for each `i : J`.
 3. An object `V i j` for each `i j : J`.
@@ -44,7 +48,7 @@ such that
 7. `t i i` is the identity.
 8. The pullback for `f i j` and `f i k` exists.
 9. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-    `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+`t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
 structure GlueData where

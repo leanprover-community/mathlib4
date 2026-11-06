@@ -13,6 +13,9 @@ import Mathlib.Analysis.Analytic.Polynomial
 import Mathlib.Analysis.Complex.Polynomial.Basic
 import Mathlib.Analysis.Convex.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mahler measure of complex polynomials
 
@@ -21,24 +24,24 @@ properties.
 
 ## Main definitions
 
-- `Polynomial.logMahlerMeasure p`: the logarithmic Mahler measure of a polynomial `p` defined as
+* `Polynomial.logMahlerMeasure p`: the logarithmic Mahler measure of a polynomial `p` defined as
   `(2 * π)⁻¹ * ∫ x ∈ (0, 2 * π), log ‖p (e ^ (i * x))‖`.
-- `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
+* `Polynomial.mahlerMeasure p`: the (exponential) Mahler measure of a polynomial `p`, which is equal
   to `e ^ p.logMahlerMeasure` if `p` is nonzero, and `0` otherwise.
-- `Polynomial.mapMahlerMeasure p v`: the (exponential) Mahler measure of a polynomial `p` over a
+* `Polynomial.mapMahlerMeasure p v`: the (exponential) Mahler measure of a polynomial `p` over a
   ring `A` whose coefficients are mapped to `ℂ` via `v : A →+* ℂ`
 
 ## Main results
 
-- `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
+* `Polynomial.mahlerMeasure_mul`: the Mahler measure of the product of two polynomials is the
   product of their Mahler measures.
-- `mahlerMeasure_eq_leadingCoeff_mul_prod_roots`: the Mahler measure of a polynomial is the absolute
+* `mahlerMeasure_eq_leadingCoeff_mul_prod_roots`: the Mahler measure of a polynomial is the absolute
   value of its leading coefficient times the product of the absolute values of its roots lying
   outside the unit disk.
-- `mahlerMeasure_le_sqrt_sum_sq_norm_coeff`: **Landau's inequality** — the Mahler measure is
+* `mahlerMeasure_le_sqrt_sum_sq_norm_coeff`: *Landau's inequality* — the Mahler measure is
   at most the ℓ² norm of the coefficient vector.
-- `norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure`: **Mignotte's coefficient
-  bound** — if `f = g * h` with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
+* `norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure`: *Mignotte's coefficient
+  bound* — if `f = g * h` with `M(h) ≥ 1`, then `‖g.coeff n‖ ≤ C(deg g, n) · M(f)`.
 -/
 
 @[expose] public section
@@ -233,7 +236,7 @@ theorem mahlerMeasure_eq_leadingCoeff_mul_prod_roots (p : ℂ[X]) : p.mahlerMeas
   simp [this, exp_multiset_sum, posLog_eq_log_max_one, exp_log]
 
 /-!
-### Estimates for the Mahler measure
+# Estimates for the Mahler measure
 -/
 
 lemma one_le_prod_max_one_norm_roots (p : ℂ[X]) : 1 ≤ (p.roots.map (fun a ↦ max 1 ‖a‖)).prod := by
@@ -291,7 +294,8 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
     simp
 
 open MeasureTheory Set in
-/-- **Landau's inequality**: the Mahler measure of a polynomial is at most the ℓ² norm
+/--
+*Landau's inequality*: the Mahler measure of a polynomial is at most the ℓ² norm
 of its coefficient vector, `√(∑ ‖coeff i‖²)`.
 
 This is the classical inequality due to Landau (1905). Combined with the multiplicativity of the
@@ -299,7 +303,8 @@ Mahler measure (`mahlerMeasure_mul`), it gives the Mignotte bound on coefficient
 factors.
 
 TODO: restate using a dedicated polynomial ℓ² norm once one is defined (see the TODO in
-`Mathlib.Analysis.Polynomial.Norm`). -/
+`Mathlib.Analysis.Polynomial.Norm`).
+-/
 theorem mahlerMeasure_le_sqrt_sum_sq_norm_coeff (p : Polynomial ℂ) :
     p.mahlerMeasure ≤ √(∑ i ∈ p.support, ‖p.coeff i‖ ^ 2) := by
   -- Proof: Jensen's inequality (twice) + Parseval's identity
@@ -417,10 +422,11 @@ theorem supNorm_le_choose_natDegree_div_two_mul_mahlerMeasure (p : Polynomial �
         p.mahlerMeasure_nonneg
 
 /-!
-### The Mignotte bound
+# The Mignotte bound
 -/
 
-/-- **Mignotte's coefficient bound**: if `f = g * h` and `h` has Mahler measure at least 1
+/--
+*Mignotte's coefficient bound*: if `f = g * h` and `h` has Mahler measure at least 1
 (which holds in particular when `h` has integer coefficients with nonzero leading coefficient),
 then the coefficients of `g` are bounded by a binomial coefficient times the Mahler measure
 of `g * h`.
@@ -428,7 +434,8 @@ of `g * h`.
 Combined with `mahlerMeasure_le_sqrt_sum_sq_norm_coeff` (Landau's inequality), this gives
 the classical Mignotte bound
 `‖g.coeff n‖ ≤ C(deg g, n) · √(∑ i ∈ f.support, ‖f.coeff i‖ ^ 2)`
-used in polynomial factorization algorithms (Berlekamp–Zassenhaus). -/
+used in polynomial factorization algorithms (Berlekamp–Zassenhaus).
+-/
 theorem norm_coeff_le_choose_mul_mahlerMeasure_of_one_le_mahlerMeasure (n : ℕ) (g h : ℂ[X])
     (hh : 1 ≤ h.mahlerMeasure) :
     ‖g.coeff n‖ ≤ g.natDegree.choose n * (g * h).mahlerMeasure :=
@@ -442,7 +449,7 @@ end Polynomial
 section generic
 
 /-!
-### Mahler Measure on Other Rings
+# Mahler Measure on Other Rings
 
 While the Mahler measure is an inherently Complex concept, we often want to work with it for
 polynomials with coefficients in subrings of `ℂ`. To do so, we introduce `mapMahlerMeasure`. This

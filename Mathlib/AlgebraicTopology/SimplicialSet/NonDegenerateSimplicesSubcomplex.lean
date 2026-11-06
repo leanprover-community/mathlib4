@@ -8,13 +8,15 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplices
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The type of nondegenerate simplices not in a subcomplex
 
 In this file, given a subcomplex `A` of a simplicial set `X`,
 we introduce the type `A.N` of nondegenerate simplices of `X`
 that are not in `A`.
-
 -/
 
 @[expose] public section

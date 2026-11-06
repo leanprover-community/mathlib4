@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.Algebra.Order.Field.Pointwise
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generalized polar coordinate change
 
@@ -233,13 +236,15 @@ theorem toSphereBallBound_mul_measure_unitBall_le_toSphere_ball {ε : ℝ}
       toSphereBallBound, mul_assoc, ENNReal.ofNNReal_toNNReal, this, hdim, hε]
   · simp
 
-/-- A ball of radius `ε` on the unit sphere in a real normed space
+/--
+A ball of radius `ε` on the unit sphere in a real normed space
 has measure at least `toSphereBallBound n ε * μ (ball 0 1)`,
 where `n` is the dimension of the space,
 `toSphereBallBound n ε` is a lower estimate that depends only on the dimension and `ε`,
 which is positive for positive `n` and `ε`.
 
-This is a version stated in terms `MeasureTheory.Measure.real`. -/
+This is a version stated in terms `MeasureTheory.Measure.real`.
+-/
 theorem toSphereBallBound_mul_measureReal_unitBall_le_toSphere_ball
     {ε : ℝ} (hε : 0 < ε) (x : sphere (0 : E) 1) :
     toSphereBallBound (Module.finrank ℝ E) ε * μ.real (ball 0 1) ≤

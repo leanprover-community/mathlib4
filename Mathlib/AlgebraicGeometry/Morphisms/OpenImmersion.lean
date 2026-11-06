@@ -7,8 +7,10 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Open immersions
 
 A morphism is an open immersion if the underlying map of spaces is an open embedding
@@ -16,7 +18,6 @@ A morphism is an open immersion if the underlying map of spaces is an open embed
 
 Most of the theories are developed in `AlgebraicGeometry/OpenImmersion`, and we provide the
 remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
-
 -/
 
 public section

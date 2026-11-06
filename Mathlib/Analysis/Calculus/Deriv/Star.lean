@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Star operations on derivatives
 
@@ -28,7 +31,9 @@ variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [StarRing 𝕜]
   {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [StarAddMonoid F] [StarModule 𝕜 F]
   [ContinuousStar F] {f : 𝕜 → F} {f' : F} {x : 𝕜}
 
-/-! ### Derivative of `x ↦ star x` -/
+/-!
+# Derivative of `x ↦ star x`
+-/
 
 section TrivialStar
 

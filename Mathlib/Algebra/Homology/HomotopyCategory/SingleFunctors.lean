@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.CategoryTheory.Shift.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Single functors from the homotopy category
 
@@ -17,7 +20,6 @@ along with their compatibilities with shifts into the definition
 `CochainComplex.singleFunctors C : SingleFunctors C (CochainComplex C ℤ) ℤ`.
 Similarly, we define
 `HomotopyCategory.singleFunctors C : SingleFunctors C (HomotopyCategory C (ComplexShape.up ℤ)) ℤ`.
-
 -/
 
 @[expose] public section

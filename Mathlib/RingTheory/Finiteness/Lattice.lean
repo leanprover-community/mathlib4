@@ -9,9 +9,11 @@ public import Mathlib.RingTheory.Finiteness.Basic
 
 import Mathlib.Data.Fintype.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite suprema of finite modules
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Insert
 public import Mathlib.Data.Multiset.Range
 public import Mathlib.Order.Interval.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets made of a range of elements.
 
@@ -23,7 +26,6 @@ public import Mathlib.Order.Interval.Set.Defs
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -40,7 +42,9 @@ namespace Finset
 
 open Multiset
 
-/-! ### range -/
+/-!
+# range
+-/
 
 
 section Range

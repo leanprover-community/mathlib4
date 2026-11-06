@@ -9,12 +9,13 @@ public import Mathlib.RingTheory.Jacobson.Ideal
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Maximal ideal of local rings
 
 We prove basic properties of the maximal ideal of a local ring.
-
 -/
 
 public section

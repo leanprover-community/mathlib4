@@ -7,17 +7,20 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hofer's lemma
 
 This is an elementary lemma about complete metric spaces. It is motivated by an
 application to the bubbling-off analysis for holomorphic curves in symplectic topology.
-We are *very* far away from having these applications, but the proof here is a nice
+We are _very_ far away from having these applications, but the proof here is a nice
 example of a proof needing to construct a sequence by induction in the middle of the proof.
 
 ## References:
 
-* H. Hofer and C. Viterbo, *The Weinstein conjecture in the presence of holomorphic spheres*
+* H. Hofer and C. Viterbo, _The Weinstein conjecture in the presence of holomorphic spheres_
 -/
 
 public section

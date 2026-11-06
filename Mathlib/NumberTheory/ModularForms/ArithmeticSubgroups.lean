@@ -9,10 +9,13 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.IsUniformGroup.DiscreteSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arithmetic subgroups of `GL(2, ℝ)`
 
-We define a subgroup of `GL (Fin 2) ℝ` to be *arithmetic* if it is commensurable with the image
+We define a subgroup of `GL (Fin 2) ℝ` to be _arithmetic_ if it is commensurable with the image
 of `SL(2, ℤ)`.
 -/
 

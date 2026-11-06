@@ -8,13 +8,16 @@ module
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 public import Mathlib.CategoryTheory.Localization.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivability structures
 
 Let `Φ : LocalizerMorphism W₁ W₂` be a localizer morphism, i.e. `W₁ : MorphismProperty C₁`,
 `W₂ : MorphismProperty C₂`, and `Φ.functor : C₁ ⥤ C₂` is a functor which maps `W₁` to `W₂`.
 Following the definition introduced by Bruno Kahn and Georges Maltsiniotis in
-[Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008],
+‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\],
 we say that `Φ` is a right derivability structure if `Φ` has right resolutions and
 the following 2-square is Guitart exact, where `L₁ : C₁ ⥤ D₁` and `L₂ : C₂ ⥤ D₂` are
 localization functors for `W₁` and `W₂`, and `F : D₁ ⥤ D₂` is the induced functor
@@ -50,8 +53,8 @@ not depend on the choice of the localization functors.
   functors in several variables
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 public section

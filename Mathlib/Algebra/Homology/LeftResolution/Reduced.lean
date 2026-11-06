@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left resolutions which preserve the zero object
 
@@ -32,7 +35,6 @@ on the elements of `M`. Then, `Λ.reduced.F.obj M` will be obtained
 from the free `R`-module on `M` by factoring out the direct factor
 corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.Polish.Basic
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Countable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Giry monad
 
@@ -16,14 +19,14 @@ forms a measurable space. This construction forms a monad on
 measurable spaces and measurable functions, called the Giry monad.
 
 Note that most sources use the term "Giry monad" for the restriction
-to *probability* measures. Here we include all measures on X.
+to _probability_ measures. Here we include all measures on X.
 
 See also `Mathlib/MeasureTheory/Category/MeasCat.lean`, containing an upgrade of the type-level
 monad to an honest monad of the functor `measure : MeasCat ⥤ MeasCat`.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/Giry+monad>
+* [https://ncatlab.org/nlab/show/Giry+monad](https://ncatlab.org/nlab/show/Giry+monad)
 
 ## Tags
 

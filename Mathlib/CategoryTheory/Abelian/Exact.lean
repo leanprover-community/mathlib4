@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ImageToKernel
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exact sequences in abelian categories
 
@@ -15,6 +18,7 @@ In an abelian category, we get several interesting results related to exactness 
 true in more general settings.
 
 ## Main results
+
 * A short complex `S` is exact iff `imageSubobject S.f = kernelSubobject S.g`.
 * If `(f, g)` is exact, then `image.ι f` has the universal property of the kernel of `g`.
 * `f` is a monomorphism iff `kernel.ι f = 0` iff `Exact 0 f`, and `f` is an epimorphism iff
@@ -25,7 +29,6 @@ true in more general settings.
   `0 ⟶ X ⟶ Y ⟶ Z` is exact if and only if the first map is a kernel of the second.
 * A functor `F` such that for all `S`, we have `S.Exact → (S.map F).Exact` preserves both
   finite limits and colimits.
-
 -/
 
 @[expose] public section

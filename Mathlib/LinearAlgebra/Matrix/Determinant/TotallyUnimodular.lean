@@ -9,6 +9,9 @@ public import Mathlib.Basic.Sign.Basic
 public import Mathlib.Data.Matrix.ColumnRowPartitioned
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Totally unimodular matrices
 
@@ -16,15 +19,14 @@ This file defines totally unimodular matrices and provides basic API for them.
 
 ## Main definitions
 
-- `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
+* `Matrix.IsTotallyUnimodular`: a matrix is totally unimodular iff every square submatrix
   (not necessarily contiguous) has determinant `0` or `1` or `-1`.
 
 ## Main results
 
-- `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
+* `Matrix.isTotallyUnimodular_iff`: a matrix is totally unimodular iff every square submatrix
   (possibly with repeated rows and/or repeated columns) has determinant `0` or `1` or `-1`.
-- `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
-
+* `Matrix.IsTotallyUnimodular.apply`: entry in a totally unimodular matrix is `0` or `1` or `-1`.
 -/
 
 @[expose] public section

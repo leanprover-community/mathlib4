@@ -7,17 +7,19 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Quasi-affine schemes
 
 ## Main results
-- `IsQuasiAffine`:
+
+* `IsQuasiAffine`:
   A scheme `X` is quasi-affine if it is quasi-compact and `X ⟶ Spec Γ(X, ⊤)` is an immersion.
   This actually implies that `X ⟶ Spec Γ(X, ⊤)` is an open immersion.
-- `IsQuasiAffine.of_isImmersion`:
+* `IsQuasiAffine.of_isImmersion`:
   Any quasi-compact locally closed subscheme of a quasi-affine scheme is quasi-affine.
-
 -/
 
 @[expose] public section

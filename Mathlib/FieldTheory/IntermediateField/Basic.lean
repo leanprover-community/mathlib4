@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.LocalRing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intermediate fields
 
@@ -37,6 +40,7 @@ Intermediate fields are defined with a structure extending `Subfield` and `Subal
 A `Subalgebra` is closed under all operations except `⁻¹`,
 
 ## Tags
+
 intermediate field, field extension
 -/
 
@@ -141,7 +145,8 @@ theorem copy_eq (S : IntermediateField K L) (s : Set L) (hs : s = ↑S) : S.copy
 
 section InheritedLemmas
 
-/-! ### Lemmas inherited from more general structures
+/-!
+# Lemmas inherited from more general structures
 
 The declarations in this section derive from the fact that an `IntermediateField` is also a
 subalgebra or subfield. Their use should be replaceable with the corresponding lemma from a
@@ -596,9 +601,11 @@ theorem aeval_coe {R : Type*} [CommSemiring R] [Algebra R K] [Algebra R L] [IsSc
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P :=
   aeval_algHom_apply (S.val.restrictScalars R) x P
 
-/-- The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
+/--
+The map `E → F` when `E` is an intermediate field contained in the intermediate field `F`.
 
-This is the intermediate field version of `Subalgebra.inclusion`. -/
+This is the intermediate field version of `Subalgebra.inclusion`.
+-/
 def inclusion {E F : IntermediateField K L} (hEF : E ≤ F) : E →ₐ[K] F :=
   Subalgebra.inclusion hEF
 

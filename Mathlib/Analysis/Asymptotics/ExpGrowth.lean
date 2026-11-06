@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Asymptotics.LinearGrowth
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLogExp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponential growth
 
@@ -16,8 +19,8 @@ versions, using a `liminf` and a `limsup` respectively.
 
 ## Main definitions
 
-- `expGrowthInf`, `expGrowthSup`: respectively, `liminf` and `limsup` of `log (u n) / n`.
-- `expGrowthInfTopHom`, `expGrowthSupBotHom`: the functions `expGrowthInf`, `expGrowthSup`
+* `expGrowthInf`, `expGrowthSup`: respectively, `liminf` and `limsup` of `log (u n) / n`.
+* `expGrowthInfTopHom`, `expGrowthSupBotHom`: the functions `expGrowthInf`, `expGrowthSup`
   as homomorphisms preserving finitary `Inf`/`Sup` respectively.
 
 ## Tags
@@ -32,7 +35,9 @@ namespace ExpGrowth
 open ENNReal EReal Filter Function LinearGrowth
 open scoped Topology
 
-/-! ### Definition -/
+/-!
+# Definition
+-/
 
 /-- Lower exponential growth of a sequence of extended nonnegative real numbers. -/
 noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := liminf (fun n ↦ log (u n) / n) atTop
@@ -48,7 +53,9 @@ lemma expGrowthSup_def {u : ℕ → ℝ≥0∞} :
     expGrowthSup u = linearGrowthSup (log ∘ u) := by
   rfl
 
-/-! ### Basic properties -/
+/-!
+# Basic properties
+-/
 
 section basic_properties
 
@@ -147,7 +154,9 @@ lemma _root_.Frequently.le_expGrowthSup (h : ∃ᶠ n : ℕ in atTop, exp (a * n
     a ≤ expGrowthSup u :=
   le_expGrowthSup_iff.2 fun c c_u ↦ h.mono fun n hn ↦ hn.trans' <| by gcongr
 
-/-! ### Special cases -/
+/-!
+# Special cases
+-/
 
 lemma expGrowthSup_zero : expGrowthSup 0 = ⊥ := by
   rw [← linearGrowthSup_bot, expGrowthSup_def]
@@ -197,7 +206,9 @@ lemma expGrowthSup_exp : expGrowthSup (fun n ↦ exp (a * n)) = a :=
   le_antisymm (Eventually.expGrowthSup_le (Eventually.of_forall fun _ ↦ le_refl _))
     (Frequently.le_expGrowthSup (Frequently.of_forall fun _ ↦ le_refl _))
 
-/-! ### Multiplication and inversion -/
+/-!
+# Multiplication and inversion
+-/
 
 lemma le_expGrowthInf_mul :
     expGrowthInf u + expGrowthInf v ≤ expGrowthInf (u * v) := by
@@ -244,7 +255,9 @@ lemma expGrowthSup_inv : expGrowthSup u⁻¹ = - expGrowthInf u := by
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.inv_apply, div_eq_mul_inv, div_eq_mul_inv, ← EReal.neg_mul, log_inv]
 
-/-! ### Comparison -/
+/-!
+# Comparison
+-/
 
 -- Bound on `expGrowthInf` under a `IsBigO` hypothesis. However, `ℝ≥0∞` is not normed, so the
 -- `IsBigO` property is spelt out.
@@ -285,7 +298,9 @@ lemma expGrowthSup_of_eventually_ge (hb : b ≠ 0) (h : ∀ᶠ n in atTop, b * u
   · exact expGrowthInf_top ▸ le_add_of_nonneg_left le_top
   · rw [expGrowthInf_const hb b_top.ne, zero_add]
 
-/-! ### Infimum and supremum -/
+/-!
+# Infimum and supremum
+-/
 
 lemma expGrowthInf_inf : expGrowthInf (u ⊓ v) = expGrowthInf u ⊓ expGrowthInf v := by
   rw [expGrowthInf, expGrowthInf, expGrowthInf, ← liminf_min]
@@ -331,7 +346,9 @@ lemma expGrowthSup_iSup {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞)
     expGrowthSup (⨆ i, u i) = ⨆ i, expGrowthSup (u i) := by
   rw [← iSup_univ, expGrowthSup_biSup u Set.finite_univ, iSup_univ]
 
-/-! ### Addition -/
+/-!
+# Addition
+-/
 
 lemma le_expGrowthInf_add : expGrowthInf u ⊔ expGrowthInf v ≤ expGrowthInf (u + v) :=
   sup_le (expGrowthInf_monotone le_self_add) (expGrowthInf_monotone le_add_self)
@@ -359,7 +376,9 @@ lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset 
 
 end basic_properties
 
-/-! ### Composition -/
+/-!
+# Composition
+-/
 
 section composition
 
@@ -378,7 +397,9 @@ lemma expGrowthSup_comp_le (hu : ∃ᶠ n in atTop, 1 ≤ u n)
   apply linearGrowthSup_comp_le (u := log ∘ u) (hu.mono fun n h ↦ ?_) hv₀ hv₁ hv₂
   rwa [comp_apply, zero_le_log_iff]
 
-/-! ### Monotone sequences -/
+/-!
+# Monotone sequences
+-/
 
 lemma _root_.Monotone.expGrowthInf_nonneg (h : Monotone u) (h' : u ≠ 0) :
     0 ≤ expGrowthInf u := by

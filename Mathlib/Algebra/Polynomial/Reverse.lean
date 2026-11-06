@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 public import Mathlib.Algebra.Polynomial.EraseLead
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reverse of a univariate polynomial
 
@@ -79,12 +82,14 @@ theorem revAt_add {N O n o : ℕ} (hn : n ≤ N) (ho : o ≤ O) :
 
 theorem revAt_zero (N : ℕ) : revAt N 0 = N := by simp
 
-/-- `reflect N f` is the polynomial such that `(reflect N f).coeff i = f.coeff (revAt N i)`.
+/--
+`reflect N f` is the polynomial such that `(reflect N f).coeff i = f.coeff (revAt N i)`.
 In other words, the terms with exponent `[0, ..., N]` now have exponent `[N, ..., 0]`.
 
 In practice, `reflect` is only used when `N` is at least as large as the degree of `f`.
 
-Eventually, it will be used with `N` exactly equal to the degree of `f`. -/
+Eventually, it will be used with `N` exactly equal to the degree of `f`.
+-/
 noncomputable def reflect (N : ℕ) : R[X] → R[X]
   | ⟨f⟩ => .ofCoeff <| f.embDomain (revAt N)
 

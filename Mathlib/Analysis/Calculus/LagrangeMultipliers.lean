@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
 
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lagrange multipliers
 
@@ -26,7 +29,6 @@ Formalize Karush-Kuhn-Tucker theorem
 ## Tags
 
 lagrange multiplier, local extremum
-
 -/
 
 public section
@@ -97,14 +99,16 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt_1d {f : E → ℝ}
     have H₂ : f' x * Λ 1 + Λ₀ * φ' x = 0 := by simpa only [smul_eq_mul, H₁] using hfΛ x
     simpa [mul_comm] using H₂
 
-/-- Lagrange multipliers theorem, 1d version. Let `f : ι → E → ℝ` be a finite family of functions.
+/--
+Lagrange multipliers theorem, 1d version. Let `f : ι → E → ℝ` be a finite family of functions.
 Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x = f i x₀}` at `x₀`.
 Suppose that all functions `f i` as well as `φ` are strictly differentiable at `x₀`.
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : StrongDual ℝ E` are linearly dependent:
 there exist `Λ : ι → ℝ` and `Λ₀ : ℝ`, `(Λ, Λ₀) ≠ 0`, such that `∑ i, Λ i • f' i + Λ₀ • φ' = 0`.
 
 See also `IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt` for a version that
-states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`. -/
+states `¬LinearIndependent ℝ _` instead of existence of `Λ` and `Λ₀`.
+-/
 theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fintype ι]
     {f : ι → E → ℝ} {f' : ι → StrongDual ℝ E} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :
@@ -120,14 +124,16 @@ theorem IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt {ι : Type*} [Fint
   · simpa only [Ne, Prod.ext_iff, LinearEquiv.map_eq_zero_iff, Prod.fst_zero] using! h0
   · ext x; simpa [mul_comm] using hsum x
 
-/-- Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
+/--
+Lagrange multipliers theorem. Let `f : ι → E → ℝ` be a finite family of functions.
 Suppose that `φ : E → ℝ` has a local extremum on the set `{x | ∀ i, f i x = f i x₀}` at `x₀`.
 Suppose that all functions `f i` as well as `φ` are strictly differentiable at `x₀`.
 Then the derivatives `f' i : E → L[ℝ] ℝ` and `φ' : StrongDual ℝ E` are linearly dependent.
 
 See also `IsLocalExtrOn.exists_multipliers_of_hasStrictFDerivAt` for a version
 that states existence of Lagrange multipliers `Λ` and `Λ₀` instead of using
-`¬LinearIndependent ℝ _` -/
+`¬LinearIndependent ℝ _`
+-/
 theorem IsLocalExtrOn.linear_dependent_of_hasStrictFDerivAt {ι : Type*} [Finite ι] {f : ι → E → ℝ}
     {f' : ι → StrongDual ℝ E} (hextr : IsLocalExtrOn φ {x | ∀ i, f i x = f i x₀} x₀)
     (hf' : ∀ i, HasStrictFDerivAt (f i) (f' i) x₀) (hφ' : HasStrictFDerivAt φ φ' x₀) :

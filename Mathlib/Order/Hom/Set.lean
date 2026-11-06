@@ -10,6 +10,9 @@ public import Mathlib.Order.Hom.Basic
 public import Mathlib.Order.Interval.Set.Defs
 public import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order homomorphisms and sets
 -/

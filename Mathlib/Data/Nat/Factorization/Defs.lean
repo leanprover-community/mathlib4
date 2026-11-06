@@ -12,11 +12,15 @@ public import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 import Batteries.Data.List.Count
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime factorizations
 
 `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
-mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
+mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 \* 5^3,
+
 * `factorization 2000 2` is 4
 * `factorization 2000 5` is 3
 * `factorization 2000 k` is 0 for all other `k : ℕ`.
@@ -30,13 +34,10 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
   and the material in `Data/PNat/Factors`.  Move some of this material to this file,
   prove results about the relationships between these definitions,
   and (where appropriate) choose a uniform canonical way of expressing these ideas.
-
 * Moreover, the results here should be generalised to an arbitrary unique factorization monoid
   with a normalization function, and then deduplicated.  The basics of this have been started in
   `Mathlib/RingTheory/UniqueFactorizationDomain/`.
-
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
-
 -/
 
 @[expose] public section
@@ -94,7 +95,9 @@ theorem multiplicity_eq_factorization {n p : ℕ} (pp : p.Prime) :
     multiplicity p n = n.factorization p := by
   rw [factorization_def n pp]
 
-/-! ### Basic facts about factorization -/
+/-!
+# Basic facts about factorization
+-/
 
 
 @[simp]
@@ -123,7 +126,9 @@ theorem factorization_zero : factorization 0 = 0 := by ext; simp [factorization]
 @[simp]
 theorem factorization_one : factorization 1 = 0 := by ext; simp [factorization]
 
-/-! ## Lemmas characterising when `n.factorization p = 0` -/
+/-!
+# Lemmas characterising when `n.factorization p = 0`
+-/
 
 theorem factorization_eq_zero_iff (n p : ℕ) :
     n.factorization p = 0 ↔ ¬p.Prime ∨ ¬p ∣ n ∨ n = 0 := by
@@ -149,7 +154,9 @@ theorem factorization_eq_zero_of_remainder {p r : ℕ} (i : ℕ) (hr : ¬p ∣ r
   apply factorization_eq_zero_of_not_dvd
   rwa [← Nat.dvd_add_iff_right (Dvd.intro i rfl)]
 
-/-! ## Lemmas about factorizations of products and powers -/
+/-!
+# Lemmas about factorizations of products and powers
+-/
 
 /-- For nonzero `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
 @[simp]
@@ -191,7 +198,9 @@ theorem factorization_pow (n k : ℕ) : factorization (n ^ k) = k • n.factoriz
     rw [Nat.pow_succ, mul_comm, factorization_mul hn (pow_ne_zero _ hn), ih,
       add_smul, one_smul, add_comm]
 
-/-! ## Criterion for a natural number or integer being a square through even factorization -/
+/-!
+# Criterion for a natural number or integer being a square through even factorization
+-/
 
 /-- `n` is a square if and only if for any prime `p`, the power of `p` in `n` is even. -/
 theorem isSquare_iff_even_factorization {n : ℕ} :
@@ -226,7 +235,9 @@ theorem isSquare_iff_nonneg_even_factorization {n : ℤ} :
 
 end Int
 
-/-! ## Lemmas about factorizations of primes and prime powers -/
+/-!
+# Lemmas about factorizations of primes and prime powers
+-/
 
 namespace Nat
 variable {a b m n p : ℕ}
@@ -254,7 +265,9 @@ lemma factorization_minFac_ne_zero {n : ℕ} (hn : 1 < n) :
   push Not
   exact ⟨minFac_prime (by lia), minFac_dvd n, Nat.ne_zero_of_lt hn⟩
 
-/-! ### Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes. -/
+/-!
+# Equivalence between `ℕ+` and `ℕ →₀ ℕ` with support in the primes.
+-/
 
 variable {f : ℕ →₀ ℕ}
 
@@ -306,7 +319,9 @@ def factorizationEquiv : ℕ+ ≃ { f : ℕ →₀ ℕ // ∀ p ∈ f.support, P
   left_inv := fun ⟨_, hx⟩ => Subtype.ext <| prod_factorization_pow_eq_self hx.ne.symm
   right_inv := fun ⟨_, hf⟩ => Subtype.ext <| factorization_prod_pow_eq_self hf
 
-/-! ### Factorization and coprimes -/
+/-!
+# Factorization and coprimes
+-/
 
 
 /-- For coprime `a` and `b`, the power of `p` in `a * b` is the sum of the powers in `a` and `b` -/
@@ -321,13 +336,17 @@ theorem factorization_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
   ext q
   rw [Finsupp.add_apply, factorization_mul_apply_of_coprime hab]
 
-/-! ### Generalisation of the "even part" and "odd part" of a natural number -/
+/-!
+# Generalisation of the "even part" and "odd part" of a natural number
+-/
 
-/-- We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
+/--
+We introduce the notations `ordProj[p] n` for the largest power of the prime `p` that
 divides `n` and `ordCompl[p] n` for the complementary part. The `ord` naming comes from
-the $p$-adic order/valuation of a number, and `proj` and `compl` are for the projection and
-complementary projection. The term `n.factorization p` is the $p$-adic order itself.
-For example, `ordProj[2] n` is the even part of `n` and `ordCompl[2] n` is the odd part. -/
+the $`p`-adic order/valuation of a number, and `proj` and `compl` are for the projection and
+complementary projection. The term `n.factorization p` is the $`p`-adic order itself.
+For example, `ordProj[2] n` is the even part of `n` and `ordCompl[2] n` is the odd part.
+-/
 notation "ordProj[" p "] " n:arg => p ^ Nat.factorization n p
 
 @[inherit_doc «termOrdProj[_]_»]
@@ -347,7 +366,9 @@ lemma ordProj_dvd_ordProj_iff_dvd (ha : a ≠ 0) (hb : b ≠ 0) :
   congr! 1 with p
   obtain _ | _ | p := p <;> simp [Nat.pow_dvd_pow_iff_le_right]
 
-/-! ### Factorization LCM definitions -/
+/-!
+# Factorization LCM definitions
+-/
 
 
 /-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMLeft = ∏ pᵢ ^ kᵢ`, where
@@ -357,15 +378,17 @@ def factorizationLCMLeft (a b : ℕ) : ℕ :=
   (Nat.lcm a b).factorization.prod fun p n ↦
     if b.factorization p ≤ a.factorization p then p ^ n else 1
 
-/-- If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMRight = ∏ pᵢ ^ kᵢ`, where
+/--
+If `a = ∏ pᵢ ^ nᵢ` and `b = ∏ pᵢ ^ mᵢ`, then `factorizationLCMRight = ∏ pᵢ ^ kᵢ`, where
 `kᵢ = mᵢ` if `nᵢ < mᵢ` and `0` otherwise. Note that the product is over the divisors of `lcm a b`,
 so if one of `a` or `b` is `0` then the result is `1`.
 
-Note that `factorizationLCMRight a b` is *not* `factorizationLCMLeft b a`: the difference is
+Note that `factorizationLCMRight a b` is _not_ `factorizationLCMLeft b a`: the difference is
 that in `factorizationLCMLeft a b` there are the primes whose exponent in `a` is bigger or equal
 than the exponent in `b`, while in `factorizationLCMRight a b` there are the primes whose
 exponent in `b` is strictly bigger than in `a`. For example `factorizationLCMLeft 2 2 = 2`, but
-`factorizationLCMRight 2 2 = 1`. -/
+`factorizationLCMRight 2 2 = 1`.
+-/
 def factorizationLCMRight (a b : ℕ) :=
   (Nat.lcm a b).factorization.prod fun p n ↦
     if b.factorization p ≤ a.factorization p then 1 else p ^ n

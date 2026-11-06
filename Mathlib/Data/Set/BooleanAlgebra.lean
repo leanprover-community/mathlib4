@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.CompleteBooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets are a complete atomic Boolean algebra.
 
@@ -27,7 +30,9 @@ variable {α : Type*}
 
 namespace Set
 
-/-! ### Complete lattice and complete Boolean algebra instances -/
+/-!
+# Complete lattice and complete Boolean algebra instances
+-/
 
 instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) where
   isLUB_sSup _ := ⟨fun s hs _ hx ↦ ⟨s, hs, hx⟩, fun _ h _ ⟨_, ⟨hs, hx⟩⟩ => h hs hx⟩

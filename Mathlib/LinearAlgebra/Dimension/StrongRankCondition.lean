@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about rank and `finrank` in rings satisfying strong rank condition.
 
@@ -41,7 +44,6 @@ For modules over rings with invariant basis number
 
 * `Algebra.IsQuadraticExtension`: An extension of rings `R ⊆ S` is quadratic if `S` is a
   free `R`-algebra of rank `2`.
-
 -/
 
 @[expose] public section
@@ -101,7 +103,8 @@ section RankCondition
 
 variable [RankCondition R]
 
-/-- An auxiliary lemma for `Basis.le_span`.
+/--
+An auxiliary lemma for `Basis.le_span`.
 
 If `R` satisfies the rank condition,
 then for any finite basis `b : Basis ι R M`,
@@ -298,12 +301,13 @@ theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Semiring R] [St
   simpa using linearIndependent_le_basis (Pi.basisFun R (Fin n)) v h
 
 -- When the basis is not infinite this need not be true!
-/-- Over any ring `R` satisfying the strong rank condition,
+/--
+Over any ring `R` satisfying the strong rank condition,
 if `b` is an infinite basis for a module `M`,
 then every maximal linearly independent set has the same cardinality as `b`.
 
 This proof (along with some of the lemmas above) comes from
-[Les familles libres maximales d'un module ont-elles le meme cardinal?][lazarus1973]
+‍\[Les familles libres maximales d'un module ont-elles le meme cardinal?\]\[lazarus1973\]
 -/
 theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι R M) [Infinite ι]
     {κ : Type w} (v : κ → M) (i : LinearIndependent R v) (m : i.Maximal) : #κ = #ι := by
@@ -603,12 +607,14 @@ theorem strongRankCondition_iff_forall_zero_lt_finrank [Nontrivial R] :
     rw [← n.succ_pred_eq_of_pos pos] at eq ⊢
     exact eq ⟨.single R (fun _ ↦ _) 0, Pi.single_injective (M := fun _ ↦ _) _⟩
 
-/-- If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
+/--
+If each `Rⁿ` is a Noetherian `R`-module, then `R` satisfies the strong rank condition.
 Not an instance for performance reasons.
 
 If `R` is a ring, the assumption is equivalent to `R` being a left-Noetherian ring, but this
 is not necessarily the case for semirings: `ℕ` is a Noetherian semiring but `ℕ²` is not a
-Noetherian `ℕ`-module. (`ℕ` does satisfy the strong rank condition.) -/
+Noetherian `ℕ`-module. (`ℕ` does satisfy the strong rank condition.)
+-/
 theorem StrongRankCondition.of_isNoetherian [Nontrivial R] [∀ n, IsNoetherian R (Fin n → R)] :
     StrongRankCondition R :=
   (strongRankCondition_iff_succ R).2 fun n f hf ↦

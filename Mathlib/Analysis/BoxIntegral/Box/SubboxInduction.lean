@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Box.Basic
 public import Mathlib.Analysis.SpecificLimits.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induction on subboxes
 
@@ -98,12 +101,12 @@ theorem upper_sub_lower_splitCenterBox (I : Box ι) (s : Set ι) (i : ι) :
     (I.splitCenterBox s).upper i - (I.splitCenterBox s).lower i = (I.upper i - I.lower i) / 2 := by
   by_cases i ∈ s <;> simp [field, splitCenterBox, *] <;> ring
 
-/-- Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
+/--
+Let `p` be a predicate on `Box ι`, let `I` be a box. Suppose that the following two properties
 hold true.
 
 * `H_ind` : Consider a smaller box `J ≤ I`. The hyperplanes passing through the center of `J` split
   it into `2 ^ n` boxes. If `p` holds true on each of these boxes, then it true on `J`.
-
 * `H_nhds` : For each `z` in the closed box `I.Icc` there exists a neighborhood `U` of `z` within
   `I.Icc` such that for every box `J ≤ I` such that `z ∈ J.Icc ⊆ U`, if `J` is homothetic to `I`
   with a coefficient of the form `1 / 2 ^ m`, then `p` is true on `J`.
@@ -112,7 +115,8 @@ Then `p I` is true. See also `BoxIntegral.Box.subbox_induction_on` for a version
 `BoxIntegral.Prepartition.splitCenter` instead of `BoxIntegral.Box.splitCenterBox`.
 
 The proof still works if we assume `H_ind` only for subboxes `J ≤ I` that are homothetic to `I` with
-a coefficient of the form `2⁻ᵐ` but we do not need this generalization yet. -/
+a coefficient of the form `2⁻ᵐ` but we do not need this generalization yet.
+-/
 @[elab_as_elim]
 theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     (H_ind : ∀ J ≤ I, (∀ s, p (splitCenterBox J s)) → p J)

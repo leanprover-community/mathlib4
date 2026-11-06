@@ -16,6 +16,9 @@ import Mathlib.Analysis.SpecialFunctions.Complex.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of power function on `ℂ`, `ℝ`, `ℝ≥0`, and `ℝ≥0∞`
 
@@ -247,9 +250,11 @@ theorem Complex.deriv_const_cpow_id (c : ℂ) (x : ℂ) :
     deriv (fun z ↦ c ^ z) x = log c * c ^ x := by
   simpa using Complex.deriv_const_cpow (differentiableAt_id (x := x)) c
 
-/-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
+/--
+Although `fun x => x ^ r` for fixed `r` is _not_ complex-differentiable along the negative real
 line, it is still real-differentiable, and the derivative is what one would formally expect.
-See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
+See `hasDerivAt_ofReal_cpow_const` for an alternate formulation.
+-/
 theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr

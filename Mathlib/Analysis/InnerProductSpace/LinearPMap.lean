@@ -10,8 +10,10 @@ public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 public import Mathlib.Topology.Algebra.Module.LinearPMap
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Partially defined linear operators on Hilbert spaces
 
 We will develop the basics of the theory of unbounded operators on Hilbert spaces.
@@ -44,7 +46,7 @@ We use the junk value pattern to define the adjoint for all `LinearPMap`s. In th
 
 ## References
 
-* [J. Weidmann, *Linear Operators in Hilbert Spaces*][weidmann_linear]
+* ‍\[J. Weidmann, _Linear Operators in Hilbert Spaces_\]\[weidmann\_linear\]
 
 ## Tags
 
@@ -82,10 +84,12 @@ protected theorem IsFormalAdjoint.symm (h : T.IsFormalAdjoint S) :
 
 variable (T)
 
-/-- The domain of the adjoint operator.
+/--
+The domain of the adjoint operator.
 
 This definition is needed to construct the adjoint operator and the preferred version to use is
-`T.adjoint.domain` instead of `T.adjointDomain`. -/
+`T.adjoint.domain` instead of `T.adjointDomain`.
+-/
 def adjointDomain : Submodule 𝕜 F where
   carrier := {y | Continuous ((innerₛₗ 𝕜 y).comp T.toFun)}
   zero_mem' := by
@@ -121,10 +125,12 @@ variable [CompleteSpace E]
 
 variable (hT : Dense (T.domain : Set E))
 
-/-- The adjoint as a linear map from its domain to `E`.
+/--
+The adjoint as a linear map from its domain to `E`.
 
 This is an auxiliary definition needed to define the adjoint operator as a `LinearPMap` without
-the assumption that `T.domain` is dense. -/
+the assumption that `T.domain` is dense.
+-/
 def adjointAux : T.adjointDomain →ₗ[𝕜] E where
   toFun y := (InnerProductSpace.toDual 𝕜 E).symm (adjointDomainMkCLMExtend T y)
   map_add' x y :=
@@ -233,11 +239,13 @@ variable {A : E →ₗ.[𝕜] E}
 
 theorem isSelfAdjoint_def : IsSelfAdjoint A ↔ A† = A := Iff.rfl
 
-/-- Every self-adjoint `LinearPMap` has dense domain.
+/--
+Every self-adjoint `LinearPMap` has dense domain.
 
 This is not true by definition since we define the adjoint without the assumption that the
 domain is dense, but the choice of the junk value implies that a `LinearPMap` cannot be self-adjoint
-if it does not have dense domain. -/
+if it does not have dense domain.
+-/
 theorem _root_.IsSelfAdjoint.dense_domain (hA : IsSelfAdjoint A) : Dense (A.domain : Set E) := by
   by_contra h
   rw [isSelfAdjoint_def] at hA
@@ -254,14 +262,18 @@ end LinearPMap
 
 end Star
 
-/-! ### The graph of the adjoint -/
+/-!
+# The graph of the adjoint
+-/
 
 namespace Submodule
 
-/-- The adjoint of a submodule
+/--
+The adjoint of a submodule
 
 Note that the adjoint is taken with respect to the L^2 inner product on `E × F`, which is defined
-as `WithLp 2 (E × F)`. -/
+as `WithLp 2 (E × F)`.
+-/
 protected noncomputable
 def adjoint (g : Submodule 𝕜 (E × F)) : Submodule 𝕜 (F × E) :=
   (g.map ((LinearEquiv.skewSwap 𝕜 F E).symm.trans
@@ -323,7 +335,9 @@ theorem _root_.LinearPMap.graph_adjoint_toLinearPMap_eq_adjoint (hT : Dense (T.d
 
 end Submodule
 
-/-! ### Closedness -/
+/-!
+# Closedness
+-/
 
 namespace LinearPMap
 

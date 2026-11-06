@@ -8,14 +8,15 @@ module
 public import Mathlib.Tactic.GCongr  -- shake: keep (for the `@[gcongr]` lemmas that `grw` uses)
 public import Mathlib.Tactic.GRewrite.Elab
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The generalized rewriting tactic
 
 The `grw`/`grewrite` tactic is a generalization of the `rewrite` tactic that works with relations
 other than equality. The core implementation of `grewrite` is in the file
 `Mathlib/Tactic/GRewrite/Core.lean`
-
 -/
 
 public meta section

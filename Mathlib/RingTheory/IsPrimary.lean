@@ -9,11 +9,14 @@ public import Mathlib.RingTheory.Ideal.Colon
 
 import Mathlib.LinearAlgebra.Quotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primary submodules
 
 A proper submodule `S : Submodule R M` is primary iff
-  `r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
+`r • x ∈ S` implies `x ∈ S` or `∃ n : ℕ, r ^ n • (⊤ : Submodule R M) ≤ S`.
 
 ## Main results
 
@@ -29,9 +32,8 @@ to define the nilpotency of `r : R`.
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
   Chapter 4, Exercise 21.
-
 -/
 
 @[expose] public section

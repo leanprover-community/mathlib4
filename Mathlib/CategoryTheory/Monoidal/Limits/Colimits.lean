@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Sifted
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product of colimits
 
@@ -23,7 +26,6 @@ cocones `c₁` and `c₂` for two functors `F₁ : J ⥤ C` and `F₂ : J ⥤ C`
 produces a cocone for `F₁ ⊗ F₂ : J ⥤ C` with point `c₁.pt ⊗ c₂.pt` and we show
 that it is a colimit cocone when `PreservesColimit₂ F₁ F₂ (curriedTensor C)`
 holds and `J` is sifted.
-
 -/
 
 @[expose] public section

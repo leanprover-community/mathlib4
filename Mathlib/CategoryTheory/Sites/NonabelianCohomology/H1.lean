@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Basic
 
-/-! # The cohomology of a sheaf of groups in degree 1
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The cohomology of a sheaf of groups in degree 1
 
 In this file, we shall define the cohomology in degree 1 of a sheaf
 of groups (TODO).
@@ -38,8 +42,7 @@ case, it would be a particular case of Čech cohomology (TODO).
 
 ## References
 
-* [J. Frenkel, *Cohomologie non abélienne et espaces fibrés*][frenkel1957]
-
+* ‍\[J. Frenkel, _Cohomologie non abélienne et espaces fibrés_\]\[frenkel1957\]
 -/
 
 @[expose] public section

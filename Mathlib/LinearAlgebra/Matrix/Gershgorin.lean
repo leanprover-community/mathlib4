@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gershgorin's circle theorem
 
@@ -17,7 +20,7 @@ of matrices and some applications.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Gershgorin_circle_theorem
+* https://en.wikipedia.org/wiki/Gershgorin\_circle\_theorem
 -/
 
 public section

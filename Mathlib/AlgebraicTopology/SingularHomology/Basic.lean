@@ -12,12 +12,14 @@ public import Mathlib.CategoryTheory.Adjunction.Whiskering
 
 import Mathlib.CategoryTheory.Limits.MonoCoprod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Singular homology
 
 In this file, we define the singular chain complex and singular homology of a topological space.
 We also calculate the homology of a totally disconnected space as an example.
-
 -/
 
 @[expose] public section

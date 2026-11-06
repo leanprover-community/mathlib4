@@ -8,15 +8,19 @@ module
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.Dual.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases of dual vector spaces
 
-The dual space of an $R$-module $M$ is the $R$-module of $R$-linear maps $M \to R$.
+The dual space of an $`R`-module $`M` is the $`R`-module of $`R`-linear maps $`M \to R`.
 This file concerns bases on dual vector spaces.
 
 ## Main definitions
 
 * Bases:
+
   * `Basis.toDual` produces the map `M →ₗ[R] Dual R M` associated to a basis for an `R`-module `M`.
   * `Basis.toDualEquiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
   * `Basis.dualBasis` is a basis for `Dual R M` given a finite basis for `M`.
@@ -26,6 +30,7 @@ This file concerns bases on dual vector spaces.
 ## Main results
 
 * Bases:
+
   * `Module.DualBases.basis` and `Module.DualBases.coe_basis`: if `e` and `ε` form a dual pair,
     then `e` is a basis.
   * `Module.DualBases.coe_dualBasis`: if `e` and `ε` form a dual pair,
@@ -269,7 +274,9 @@ theorem coeffs_lc (l : ι →₀ R) : h.coeffs (DualBases.lc e l) = l := by
   ext i
   rw [h.coeffs_apply, h.dual_lc]
 
-/-- For any `m : M n`, $\sum_{p ∈ Q n} (ε p m) • e p = m$ -/
+/--
+For any `m : M n`, $`\sum_{p ∈ Q n} (ε p m) • e p = m`
+-/
 @[simp]
 theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := h.total <| by simp [h.dual_lc]
 

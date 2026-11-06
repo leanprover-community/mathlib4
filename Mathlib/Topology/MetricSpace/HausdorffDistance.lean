@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecificLimits.Basic
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff distance
 
@@ -21,12 +24,14 @@ expressed in the setting of emetric spaces.
 ## Main definitions
 
 This file introduces:
+
 * `Metric.infEDist x s`, the infimum edistance of a point `x` to a set `s` in an emetric space
 * `Metric.hausdorffEDist s t`, the Hausdorff edistance of two sets in an emetric space
 * Versions of these notions on metric spaces, called respectively `Metric.infDist`
   and `Metric.hausdorffDist`
 
 ## Main results
+
 * `infEDist_closure`: the edistance to a set and its closure coincide
 * `Metric.mem_closure_iff_infEDist_zero`: a point `x` belongs to the closure of `s` iff
   `infEDist x s = 0`
@@ -34,19 +39,18 @@ This file introduces:
   which attains this edistance
 * `IsOpen.exists_iUnion_isClosed`: every open set `U` can be written as the increasing union
   of countably many closed subsets of `U`
-
 * `hausdorffEDist_closure`: replacing a set by its closure does not change the Hausdorff edistance
 * `hausdorffEDist_zero_iff_closure_eq_closure`: two sets have Hausdorff edistance zero
   iff their closures coincide
 * the Hausdorff edistance is symmetric and satisfies the triangle inequality
 * in particular, closed sets in an emetric space are an emetric space
   (this is shown in `EMetricSpace.Closeds.emetricSpace`)
-
 * versions of these notions on metric spaces
 * `hausdorffEDist_ne_top_of_nonempty_of_bounded`: if two sets in a metric space
   are nonempty and bounded in a metric space, they are at finite Hausdorff edistance.
 
 ## Tags
+
 metric space, Hausdorff distance
 -/
 
@@ -69,7 +73,9 @@ section InfEDist
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x y : α} {s t : Set α} {Φ : α → β}
 
-/-! ### Distance of a point to a set as a function into `ℝ≥0∞`. -/
+/-!
+# Distance of a point to a set as a function into `ℝ≥0∞`.
+-/
 
 /-- The minimal edistance of a point to a set -/
 def infEDist (x : α) (s : Set α) : ℝ≥0∞ :=
@@ -252,7 +258,9 @@ theorem infEDist_prod (x : α × β) (s : Set α) (t : Set β) :
 
 end InfEDist
 
-/-! ### The Hausdorff distance as a function into `ℝ≥0∞`. -/
+/-!
+# The Hausdorff distance as a function into `ℝ≥0∞`.
+-/
 
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
@@ -458,7 +466,9 @@ section
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {s t u : Set α} {x y : α} {Φ : α → β}
 
-/-! ### Distance of a point to a set as a function into `ℝ`. -/
+/-!
+# Distance of a point to a set as a function into `ℝ`.
+-/
 
 /-- The minimal distance of a point to a set -/
 def infDist (x : α) (s : Set α) : ℝ :=
@@ -630,7 +640,9 @@ theorem exists_mem_closure_infDist_eq_dist [ProperSpace α] (hne : s.Nonempty) (
     ∃ y ∈ closure s, infDist x s = dist x y := by
   simpa only [infDist_closure] using isClosed_closure.exists_infDist_eq_dist hne.closure x
 
-/-! ### Distance of a point to a set as a function into `ℝ≥0`. -/
+/-!
+# Distance of a point to a set as a function into `ℝ≥0`.
+-/
 
 /-- The minimal distance of a point to a set as a `ℝ≥0` -/
 def infNndist (x : α) (s : Set α) : ℝ≥0 :=
@@ -653,7 +665,9 @@ theorem uniformContinuous_infNndist_pt (s : Set α) : UniformContinuous fun x =>
 theorem continuous_infNndist_pt (s : Set α) : Continuous fun x => infNndist x s :=
   (uniformContinuous_infNndist_pt s).continuous
 
-/-! ### The Hausdorff distance as a function into `ℝ`. -/
+/-!
+# The Hausdorff distance as a function into `ℝ`.
+-/
 
 /-- The Hausdorff distance between two sets is the smallest nonnegative `r` such that each set is
 included in the `r`-neighborhood of the other. If there is no such `r`, it is defined to

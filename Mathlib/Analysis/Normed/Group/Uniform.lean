@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 public import Mathlib.Topology.MetricSpace.Algebra
 public import Mathlib.Topology.MetricSpace.IsometricSMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed groups are uniform groups
 
@@ -389,7 +392,9 @@ instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGrou
 instance (priority := 100) SeminormedCommGroup.toIsTopologicalGroup : IsTopologicalGroup E :=
   inferInstance
 
-/-! ### SeparationQuotient -/
+/-!
+# SeparationQuotient
+-/
 
 namespace SeparationQuotient
 

@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Idempotence of the Karoubi envelope
 
 In this file, we construct the equivalence of categories
 `KaroubiKaroubi.equivalence C : Karoubi C ≌ Karoubi (Karoubi C)` for any category `C`.
-
 -/
 
 @[expose] public section

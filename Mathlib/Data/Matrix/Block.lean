@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Matrix.Composition
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Block Matrices
 
@@ -319,7 +322,8 @@ section Zero
 
 variable [Zero α] [Zero β]
 
-/-- `Matrix.blockDiagonal M` turns a homogeneously-indexed collection of matrices
+/--
+`Matrix.blockDiagonal M` turns a homogeneously-indexed collection of matrices
 `M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along
 the diagonal and zero elsewhere.
 
@@ -456,9 +460,11 @@ end BlockDiagonal
 
 section BlockDiag
 
-/-- Extract a block from the diagonal of a block diagonal matrix.
+/--
+Extract a block from the diagonal of a block diagonal matrix.
 
-This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDiagonal`. -/
+This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDiagonal`.
+-/
 def blockDiag (M : Matrix (m × o) (n × o) α) (k : o) : Matrix m n α :=
   of fun i j => M (i, k) (j, k)
 
@@ -561,11 +567,13 @@ section Zero
 
 variable [Zero α] [Zero β]
 
-/-- `Matrix.blockDiagonal' M` turns `M : Π i, Matrix (m i) (n i) α` into a
+/--
+`Matrix.blockDiagonal' M` turns `M : Π i, Matrix (m i) (n i) α` into a
 `Σ i, m i`-by-`Σ i, n i` block matrix which has the entries of `M` along the diagonal
 and zero elsewhere.
 
-This is the dependently-typed version of `Matrix.blockDiagonal`. -/
+This is the dependently-typed version of `Matrix.blockDiagonal`.
+-/
 def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σ i, m' i) (Σ i, n' i) α :=
   of
     (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast congr(n' $h.symm) j) else 0 :
@@ -714,9 +722,11 @@ end BlockDiagonal'
 
 section BlockDiag'
 
-/-- Extract a block from the diagonal of a block diagonal matrix.
+/--
+Extract a block from the diagonal of a block diagonal matrix.
 
-This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDiagonal'`. -/
+This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDiagonal'`.
+-/
 def blockDiag' (M : Matrix (Σ i, m' i) (Σ i, n' i) α) (k : o) : Matrix (m' k) (n' k) α :=
   of fun i j => M ⟨k, i⟩ ⟨k, j⟩
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Ring.TransferInstance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer algebraic structures across `Equiv`s
 

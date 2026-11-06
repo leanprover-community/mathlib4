@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Subquiver
 public import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Arborescences
 
@@ -17,13 +20,13 @@ that for every `b : V` there is a unique path from `root` to `b`.
 
 ## Main definitions
 
-- `Quiver.Arborescence V`: a typeclass asserting that `V` is an arborescence
-- `arborescenceMk`: a convenient way of proving that a quiver is an arborescence
-- `RootedConnected r`: a typeclass asserting that there is at least one path from `r` to `b` for
+* `Quiver.Arborescence V`: a typeclass asserting that `V` is an arborescence
+* `arborescenceMk`: a convenient way of proving that a quiver is an arborescence
+* `RootedConnected r`: a typeclass asserting that there is at least one path from `r` to `b` for
   every `b`.
-- `geodesicSubtree r`: given `[RootedConnected r]`, this is a subquiver of `V` which contains
+* `geodesicSubtree r`: given `[RootedConnected r]`, this is a subquiver of `V` which contains
   just enough edges to include a shortest path from `r` to `b` for every `b`.
-- `geodesicArborescence : Arborescence (geodesicSubtree r)`: an instance saying that the geodesic
+* `geodesicArborescence : Arborescence (geodesicSubtree r)`: an instance saying that the geodesic
   subtree is an arborescence. This proves the directed analogue of 'every connected graph has a
   spanning tree'. This proof avoids the use of Zorn's lemma.
 -/
@@ -49,11 +52,14 @@ def root (V : Type u) [Quiver V] [Arborescence V] : V :=
 instance {V : Type u} [Quiver V] [Arborescence V] (b : V) : Unique (Path (root V) b) :=
   Arborescence.uniquePath b
 
-/-- To show that `[Quiver V]` is an arborescence with root `r : V`, it suffices to
-  - provide a height function `V → ℕ` such that every arrow goes from a
-    lower vertex to a higher vertex,
-  - show that every vertex has at most one arrow to it, and
-  - show that every vertex other than `r` has an arrow to it. -/
+/--
+To show that `[Quiver V]` is an arborescence with root `r : V`, it suffices to
+
+* provide a height function `V → ℕ` such that every arrow goes from a
+  lower vertex to a higher vertex,
+* show that every vertex has at most one arrow to it, and
+* show that every vertex other than `r` has an arrow to it.
+-/
 @[instance_reducible]
 noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V → ℕ)
     (height_lt : ∀ ⦃a b⦄, (a ⟶ b) → height a < height b)

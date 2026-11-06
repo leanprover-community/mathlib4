@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Prime.Pow
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime powers
 

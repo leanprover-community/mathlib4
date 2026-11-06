@@ -12,8 +12,10 @@ public import Mathlib.Order.Prod.Lex.Basic
 import Mathlib.Data.Fintype.Fin
 import Mathlib.Order.Interval.Finset.Fin
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Sorting tuples by their values
 
 Given an `n`-tuple `f : Fin n → α` where `α` is ordered,
@@ -29,7 +31,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
   order
 * `Tuple.antitone_sortDesc`: `f ∘ Tuple.sortDesc f` is `Antitone`
 * `Tuple.comp_sort_comp_rev_eq_comp_sortDesc`: sorting descending equals sorting ascending, reversed
-
 -/
 
 @[expose] public section
@@ -100,14 +101,16 @@ theorem monotone_sort (f : Fin n → α) : Monotone (f ∘ sort f) := by
   rw [self_comp_sort]
   exact (monotone_proj f).comp (graphEquiv₂ f).monotone
 
-/-- `sortDesc f` is the permutation that orders `Fin n` according to the reverse order of the
+/--
+`sortDesc f` is the permutation that orders `Fin n` according to the reverse order of the
 outputs of `f`, so that `f ∘ sortDesc f` is decreasing.
 
 Unlike `sort f ∘ Fin.revPerm`, which also arranges `f` in decreasing order, `sortDesc f` is a
-*stable* sort: among indices with equal `f`-value it keeps their original order
+_stable_ sort: among indices with equal `f`-value it keeps their original order
 (`isStable_sortDesc`), whereas `sort f ∘ Fin.revPerm` reverses it and so is stable only when `f`
 is injective (`isStable_sort_comp_rev_iff`), in which case the two coincide
-(`sort_comp_rev_eq_sortDesc_of_injective`). -/
+(`sort_comp_rev_eq_sortDesc_of_injective`).
+-/
 def sortDesc (f : Fin n → α) : Equiv.Perm (Fin n) :=
   sort (OrderDual.toDual ∘ f)
 
@@ -286,8 +289,10 @@ theorem isStable_iff {α γ : Type*} [LinearOrder α] (f : α → γ) (σ : Equi
   · intro h i j hfij
     exact (h hfij).mpr
 
-/-- `sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
-them by *decreasing* index, the opposite of the stable `sortDesc f`. -/
+/--
+`sort f ∘ Fin.rev` is a stable sort exactly when `f` is injective: on tied values it orders
+them by _decreasing_ index, the opposite of the stable `sortDesc f`.
+-/
 theorem isStable_sort_comp_rev_iff :
     IsStable f (sort f ∘ Fin.rev) ↔ Function.Injective f := by
   refine ⟨fun hσ => ?_, fun inj => ?_⟩

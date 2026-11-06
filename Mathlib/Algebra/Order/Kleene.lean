@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Ring.Prod
 
 import Mathlib.Tactic.Monotonicity.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kleene algebras
 
@@ -36,11 +39,11 @@ Kleene star, such that (informally) `a∗ = 1 + a + a * a + a * a * a + ...`
 
 ## References
 
-* [D. Kozen, *A completeness theorem for Kleene algebras and the algebra of regular events*]
-  [kozen1994]
+* ‍\[D. Kozen, _A completeness theorem for Kleene algebras and the algebra of regular events_\]
+  ‍\[kozen1994\]
 * https://planetmath.org/idempotentsemiring
-* https://encyclopediaofmath.org/wiki/Idempotent_semi-ring
-* https://planetmath.org/kleene_algebra
+* https://encyclopediaofmath.org/wiki/Idempotent\_semi-ring
+* https://planetmath.org/kleene\_algebra
 
 ## TODO
 
@@ -75,8 +78,10 @@ class KStar (α : Type*) where
 
 open scoped Computability
 
-/-- A Kleene algebra is an idempotent semiring with an additional unary operator `kstar`
+/--
+A Kleene algebra is an idempotent semiring with an additional unary operator `kstar`
 (for Kleene star) that satisfies the following properties:
+
 * `1 ≤ a∗`
 * `a * a∗ ≤ a∗`
 * `a∗ * a ≤ a∗`

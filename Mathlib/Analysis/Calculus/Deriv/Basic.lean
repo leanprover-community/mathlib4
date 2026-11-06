@@ -11,6 +11,10 @@ public import Mathlib.Analysis.Calculus.TangentCone.Real
 
 import Mathlib.Analysis.Normed.Operator.Bilinear
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 
 # One-dimensional derivatives
@@ -110,35 +114,41 @@ variable {F : Type v} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 section
 variable [ContinuousSMul 𝕜 F]
 
-/-- `f` has the derivative `f'` along the filter `L`.
+/--
+`f` has the derivative `f'` along the filter `L`.
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `(x', x)` converges along the filter `L`.
 -/
 def HasDerivAtFilter (f : 𝕜 → F) (f' : F) (L : Filter (𝕜 × 𝕜)) :=
   HasFDerivAtFilter f (toSpanSingleton 𝕜 f') L
 
-/-- `f` has the derivative `f'` at the point `x` within the subset `s`.
+/--
+`f` has the derivative `f'` at the point `x` within the subset `s`.
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x` inside `s`.
 -/
 def HasDerivWithinAt (f : 𝕜 → F) (f' : F) (s : Set 𝕜) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝[s] x ×ˢ pure x)
 
-/-- `f` has the derivative `f'` at the point `x`.
+/--
+`f` has the derivative `f'` at the point `x`.
 
 That is, `f x' = f x + (x' - x) • f' + o(x' - x)` where `x'` converges to `x`.
 -/
 def HasDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝 x ×ˢ pure x)
 
-/-- `f` has the derivative `f'` at the point `x` in the sense of strict differentiability.
+/--
+`f` has the derivative `f'` at the point `x` in the sense of strict differentiability.
 
-That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`. -/
+That is, `f y - f z = (y - z) • f' + o(y - z)` as `y, z → x`.
+-/
 def HasStrictDerivAt (f : 𝕜 → F) (f' : F) (x : 𝕜) :=
   HasDerivAtFilter f f' (𝓝 (x, x))
 
 end
-/-- Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
+/--
+Derivative of `f` at the point `x` within the set `s`, if it exists.  Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 `f x' = f x + (x' - x) • derivWithin f s x + o(x' - x)` where `x'` converges to `x` inside `s`.
@@ -146,7 +156,8 @@ If the derivative exists (i.e., `∃ f', HasDerivWithinAt f f' s x`), then
 def derivWithin (f : 𝕜 → F) (s : Set 𝕜) (x : 𝕜) :=
   fderivWithin 𝕜 f s x 1
 
-/-- Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
+/--
+Derivative of `f` at the point `x`, if it exists.  Zero otherwise.
 
 If the derivative exists (i.e., `∃ f', HasDerivAt f f' x`), then
 `f x' = f x + (x' - x) • deriv f x + o(x' - x)` where `x'` converges to `x`.
@@ -301,11 +312,13 @@ theorem HasDerivAtFilter.isBigO_sub (h : HasDerivAtFilter f f' L) :
 theorem HasDerivAt.isBigO_sub (h : HasDerivAt f f' x) : (f · - f x) =O[𝓝 x] (· - x) :=
   h.hasFDerivAt.isBigO_sub
 
-/-- This theorem holds for any T2 TVS, see `isClosedEmbedding_smul_left`,
+/--
+This theorem holds for any T2 TVS, see `isClosedEmbedding_smul_left`,
 but this would require more imports.
 
 The proof for a TVS is more complicated, and we wouldn't benefit from that form here,
-so we prove a weaker version as a private lemma instead. -/
+so we prove a weaker version as a private lemma instead.
+-/
 private lemma isInducing_toSpanSingleton (hf' : f' ≠ 0) :
     Topology.IsInducing (toSpanSingleton 𝕜 f') := by
   refine AntilipschitzWith.isInducing (K := ‖f'‖₊⁻¹) ?_ (map_continuous _)
@@ -582,12 +595,13 @@ theorem Filter.EventuallyEq.hasDerivWithinAt_iff_of_mem (h₁ : f₁ =ᶠ[𝓝[s
   ⟨fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁.symm hx,
   fun h' ↦ h'.congr_of_eventuallyEq_of_mem h₁ hx⟩
 
-/-- If `f` has derivative `f'` in the strict sense and `f x' = f₁ x'` near `x`,
+/--
+If `f` has derivative `f'` in the strict sense and `f x' = f₁ x'` near `x`,
 then `f₁` has the same derivative in the strict sense.
 
 Note that this lemma assumes `f =ᶠ[𝓝 x] f₁`, while other lemmas in this file assume `f₁ =ᶠ[𝓝 x] f`.
-This is done for backward compatibility, and may change in the future.
-See [Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/MyProp.2Econgr_*.20lemmas.2C.20LHS.20vs.20RHS/with/572593573).
+This is done for backward compatibility, and may change in the future. See [Zulip
+discussion](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/MyProp.2Econgr_*.20lemmas.2C.20LHS.20vs.20RHS/with/572593573).
 -/
 theorem HasStrictDerivAt.congr_of_eventuallyEq (h : HasStrictDerivAt f f' x) (h₁ : f =ᶠ[𝓝 x] f₁) :
     HasStrictDerivAt f₁ f' x :=

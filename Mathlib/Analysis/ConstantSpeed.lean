@@ -11,6 +11,9 @@ import Mathlib.Algebra.Order.BigOperators.Expect
 import Mathlib.Analysis.Real.Sqrt
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constant speed
 
@@ -223,7 +226,9 @@ theorem unique_unit_speed_on_Icc_zero {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) 
   simp only [tsub_zero, this, add_zero]
   rfl
 
-/-- The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
+/--
+The natural parameterization of `f` on `s`, which, if `f` has locally bounded variation on `s`,
+
 * has unit speed on `s` (by `has_unit_speed_naturalParameterization`).
 * composed with `variationOnFromTo f s a`, is at distance zero from `f`
   (by `edist_naturalParameterization_eq_zero`).

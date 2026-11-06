@@ -8,14 +8,16 @@ module
 public import Mathlib.Algebra.MvPolynomial.Degrees
 public import Mathlib.Data.Finsupp.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Variables of polynomials
 
 This file establishes many results about the variable sets of a multivariate polynomial.
 
-The *variable set* of a polynomial $P \in R[X]$ is a `Finset` containing each $x \in X$
-that appears in a monomial in $P$.
-
+The _variable set_ of a polynomial $`P \in R[X]` is a `Finset` containing each $`x \in X`
+that appears in a monomial in $`P`.
 
 ## Main declarations
 
@@ -26,19 +28,13 @@ that appears in a monomial in $P$.
 
 As in other polynomial files, we typically use the notation:
 
-+ `σ τ : Type*` (indexing the variables)
-
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ τ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`.
-
-+ `r : R`
-
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-
-+ `p : MvPolynomial σ R`
-
+* `r : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 -/
 
 @[expose] public section
@@ -62,7 +58,9 @@ variable [CommSemiring R] {p q : MvPolynomial σ R}
 
 section Vars
 
-/-! ### `vars` -/
+/-!
+# `vars`
+-/
 
 
 /-- `vars p` is the set of variables appearing in the polynomial `p` -/
@@ -279,7 +277,9 @@ end Vars
 
 section EvalVars
 
-/-! ### `vars` and `eval` -/
+/-!
+# `vars` and `eval`
+-/
 
 
 variable [CommSemiring S]

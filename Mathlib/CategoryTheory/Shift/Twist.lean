@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Center.Basic
 public import Mathlib.CategoryTheory.Shift.CommShift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Twisting a shift
 
@@ -17,7 +20,6 @@ invertible elements in the center of the category `C` (typically, `C` will
 be preadditive, and these will be signs), which allow to introduce a type
 synonym category `t.Category` with identical shift functors as `C` but where
 the isomorphisms `shiftFunctorAdd` have been modified.
-
 -/
 
 @[expose] public section

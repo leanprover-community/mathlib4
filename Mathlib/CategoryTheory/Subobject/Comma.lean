@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Comma.LocallySmall
 public import Mathlib.CategoryTheory.Limits.Comma
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects in the category of structured arrows
 
@@ -17,17 +20,18 @@ and `S : D` as a subtype of the subobjects of `A.right`. We deduce that `Structu
 well-powered if `C` is.
 
 ## Main declarations
+
 * `StructuredArrow.subobjectEquiv`: the order-equivalence between `Subobject A` and a subtype of
   `Subobject A.right`.
 
 ## Implementation notes
+
 Our computation requires that `C` has all limits and `T` preserves all limits. Furthermore, we
 require that the morphisms of `C` and `D` are in the same universe. It is possible that both of
 these requirements can be relaxed by refining the results about limits in comma categories.
 
 We also provide the dual results. As usual, we use `Subobject (op A)` for the quotient objects of
 `A`.
-
 -/
 
 @[expose] public section

@@ -13,6 +13,9 @@ import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.Span.TensorProduct
 import Mathlib.RingTheory.Flat.TorsionFree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Root pairings taking values in a subring
 
@@ -28,7 +31,6 @@ of this theory is the theory of crystallographic root systems, where `S = ℤ`.
   between a root and coroot is always an integer.
 * `RootPairing.pairingIn`: The `S`-valued pairing between roots and coroots.
 * `RootPairing.coxeterWeightIn`: The product of `pairingIn i j` and `pairingIn j i`.
-
 -/
 
 @[expose] public section
@@ -44,10 +46,12 @@ namespace RootPairing
 variable {ι R S M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
   [Module R N] (P : RootPairing ι R M N) (i j : ι)
 
-/-- If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
+/--
+If `R` is an `S`-algebra, a root pairing over `R` is said to be valued in `S` if the pairing
 between a root and coroot always belongs to `S`.
 
-Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`. -/
+Of particular interest is the case `S = ℤ`. See `RootPairing.IsCrystallographic`.
+-/
 @[mk_iff]
 class IsValuedIn (S : Type*) [CommRing S] [Algebra S R] : Prop where
   exists_value : ∀ i j, ∃ s, algebraMap S R s = P.pairing i j
@@ -72,11 +76,13 @@ instance [P.IsValuedIn S] : P.flip.IsValuedIn S := by
   rw [isValuedIn_iff, forall_comm]
   exact P.exists_value
 
-/-- A variant of `RootPairing.pairing` for root pairings which are valued in a smaller set of
+/--
+A variant of `RootPairing.pairing` for root pairings which are valued in a smaller set of
 coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
-`[FaithfulSMul S R]`. -/
+`[FaithfulSMul S R]`.
+-/
 def pairingIn [P.IsValuedIn S] (i j : ι) : S :=
   (P.exists_value i j).choose
 
@@ -316,11 +322,13 @@ lemma reflection_apply_root' (S : Type*) [CommRing S] [Algebra S R]
     P.reflection i (P.root j) = P.root j - (P.pairingIn S j i) • P.root i := by
   rw [reflection_apply_root, ← P.algebraMap_pairingIn S, algebraMap_smul]
 
-/-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
+/--
+A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.
 
 Note that it is uniquely-defined only when the map `S → R` is injective, i.e., when we have
-`[FaithfulSMul S R]`. -/
+`[FaithfulSMul S R]`.
+-/
 def coxeterWeightIn (S : Type*) [CommRing S] [Algebra S R] [P.IsValuedIn S] (i j : ι) : S :=
   P.pairingIn S i j * P.pairingIn S j i
 

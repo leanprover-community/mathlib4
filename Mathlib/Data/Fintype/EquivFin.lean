@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Card
 public import Mathlib.Data.List.NodupEquivFin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences between `Fintype`, `Fin` and `Finite`
 
@@ -30,9 +33,9 @@ See `Infinite.of_injective` and `Infinite.of_surjective`.
 ## Instances
 
 We provide `Infinite` instances for
+
 * specific types: `ℕ`, `ℤ`, `String`
 * type constructors: `Multiset α`, `List α`
-
 -/
 
 @[expose] public section
@@ -49,7 +52,8 @@ open Finset
 
 namespace Fintype
 
-/-- There is (computably) an equivalence between `α` and `Fin (card α)`.
+/--
+There is (computably) an equivalence between `α` and `Fin (card α)`.
 
 Since it is not unique and depends on which permutation
 of the universe list is used, the equivalence is wrapped in `Trunc` to
@@ -71,7 +75,8 @@ def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card �
       (fun l (h : ∀ x : α, x ∈ l) (nd : l.Nodup) => Trunc.mk (nd.getEquivOfForallMemList _ h).symm)
       mem_univ_val univ.2
 
-/-- There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
+/--
+There is (noncomputably) an equivalence between `α` and `Fin (card α)`.
 
 See `Fintype.truncEquivFin` for the computable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq`
@@ -81,7 +86,8 @@ noncomputable def equivFin (α) [Fintype α] : α ≃ Fin (card α) :=
   letI := Classical.decEq α
   (truncEquivFin α).out
 
-/-- There is (computably) a bijection between `Fin (card α)` and `α`.
+/--
+There is (computably) a bijection between `Fin (card α)` and `α`.
 
 Since it is not unique and depends on which permutation
 of the universe list is used, the bijection is wrapped in `Trunc` to
@@ -108,7 +114,8 @@ section
 
 variable [Fintype α] [Fintype β]
 
-/-- If the cardinality of `α` is `n`, there is computably a bijection between `α` and `Fin n`.
+/--
+If the cardinality of `α` is `n`, there is computably a bijection between `α` and `Fin n`.
 
 See `Fintype.equivFinOfCardEq` for the noncomputable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
@@ -116,7 +123,8 @@ and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin
 def truncEquivFinOfCardEq [DecidableEq α] {n : ℕ} (h : Fintype.card α = n) : Trunc (α ≃ Fin n) :=
   (truncEquivFin α).map fun e => e.trans (finCongr h)
 
-/-- If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
+/--
+If the cardinality of `α` is `n`, there is noncomputably a bijection between `α` and `Fin n`.
 
 See `Fintype.truncEquivFinOfCardEq` for the computable definition,
 and `Fintype.truncEquivFin` and `Fintype.equivFin` for the bijection `α ≃ Fin (card α)`.
@@ -125,7 +133,8 @@ noncomputable def equivFinOfCardEq {n : ℕ} (h : Fintype.card α = n) : α ≃ 
   letI := Classical.decEq α
   (truncEquivFinOfCardEq h).out
 
-/-- Two `Fintype`s with the same cardinality are (computably) in bijection.
+/--
+Two `Fintype`s with the same cardinality are (computably) in bijection.
 
 See `Fintype.equivOfCardEq` for the noncomputable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
@@ -134,7 +143,8 @@ the specialization to `Fin`.
 def truncEquivOfCardEq [DecidableEq α] [DecidableEq β] (h : card α = card β) : Trunc (α ≃ β) :=
   (truncEquivFinOfCardEq h).bind fun e => (truncEquivFin β).map fun e' => e.trans e'.symm
 
-/-- Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
+/--
+Two `Fintype`s with the same cardinality are (noncomputably) in bijection.
 
 See `Fintype.truncEquivOfCardEq` for the computable version,
 and `Fintype.truncEquivFinOfCardEq` and `Fintype.equivFinOfCardEq` for
@@ -156,7 +166,7 @@ theorem card_eq {α β} [_F : Fintype α] [_G : Fintype β] : card α = card β 
 end Fintype
 
 /-!
-### Relation to `Finite`
+# Relation to `Finite`
 
 In this section we prove that `α : Type*` is `Finite` if and only if `Fintype α` is nonempty.
 -/
@@ -416,7 +426,8 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 section
 
 open scoped Classical in
-/-- Any type is (classically) either a `Fintype`, or `Infinite`.
+/--
+Any type is (classically) either a `Fintype`, or `Infinite`.
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.
 -/

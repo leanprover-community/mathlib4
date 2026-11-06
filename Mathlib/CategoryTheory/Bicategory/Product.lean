@@ -7,18 +7,21 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.StrictPseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian products of bicategories
 
 We define the bicategory instance on `B × C` when `B` and `C` are bicategories.
 
 We define:
+
 * `sectL B c` : the strictly unitary pseudofunctor `B ⥤ B × C` given by `X ↦ ⟨X, c⟩`
 * `sectR b C` : the strictly unitary pseudofunctor `C ⥤ B × C` given by `Y ↦ ⟨b, Y⟩`
 * `fst`       : the strict pseudofunctor `⟨X, Y⟩ ↦ X`
 * `snd`       : the strict pseudofunctor `⟨X, Y⟩ ↦ Y`
 * `swap`      : the strict pseudofunctor `B × C ⥤ C × B` given by `⟨X, Y⟩ ↦ ⟨Y, X⟩`
-
 -/
 
 @[expose] public section

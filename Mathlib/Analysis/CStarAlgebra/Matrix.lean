@@ -10,6 +10,9 @@ public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.UniformSpace.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Analytic properties of the `star` operation on matrices
 
@@ -30,7 +33,6 @@ This transports the operator norm on `EuclideanSpace 𝕜 n →L[𝕜] Euclidean
 
 We take care to ensure the topology and uniformity induced by `Matrix.instMetricSpaceL2Op`
 coincide with the existing topology and uniformity on matrices.
-
 -/
 
 @[expose] public section
@@ -93,11 +95,13 @@ open LinearMap
 variable [RCLike 𝕜]
 variable [Fintype m] [Fintype n] [DecidableEq n] [Fintype l] [DecidableEq l]
 
-/-- The natural star algebra equivalence between matrices and continuous linear endomorphisms
+/--
+The natural star algebra equivalence between matrices and continuous linear endomorphisms
 of Euclidean space induced by the orthonormal basis `EuclideanSpace.basisFun`.
 
 This is a more-bundled version of `Matrix.toEuclideanLin`, for the special case of square matrices,
-followed by a more-bundled version of `LinearMap.toContinuousLinearMap`. -/
+followed by a more-bundled version of `LinearMap.toContinuousLinearMap`.
+-/
 def toEuclideanCLM :
     Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
   toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|

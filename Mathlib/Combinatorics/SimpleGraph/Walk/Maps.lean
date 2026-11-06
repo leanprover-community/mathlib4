@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.DeleteEdges
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mapping walks between graphs
 
@@ -26,6 +29,7 @@ Functions that map walks between different graphs.
   Map a walk that avoids an edge to the subgraph with that edge deleted
 
 ## Tags
+
 walks
 -/
 
@@ -39,7 +43,9 @@ universe u v w
 variable {V : Type u} {V' : Type v} {V'' : Type w}
 variable {G : SimpleGraph V} {G' : SimpleGraph V'} {G'' : SimpleGraph V''}
 
-/-! ### Mapping walks -/
+/-!
+# Mapping walks
+-/
 
 /-- Given a graph homomorphism, map walks to walks. -/
 protected def map (f : G →g G') {u v : V} : G.Walk u v → G'.Walk (f u) (f v)
@@ -151,7 +157,9 @@ theorem mapLe_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) :
 
 end mapLe
 
-/-! ### Transferring between graphs -/
+/-!
+# Transferring between graphs
+-/
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
 @[simp]
@@ -216,7 +224,9 @@ theorem reverse_transfer (hp) :
       p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
   induction p <;> simp [*]
 
-/-! ### Inducing a walk -/
+/-!
+# Inducing a walk
+-/
 
 variable {s s' : Set V}
 
@@ -248,7 +258,9 @@ lemma map_induce_induceHomOfLE (hs : s ⊆ s') {u v : V} : ∀ (w : G.Walk u v) 
   | .nil, hw => rfl
   | .cons (v := u') huu' w, hw => by simp [map_induce_induceHomOfLE]
 
-/-! ## Deleting edges -/
+/-!
+# Deleting edges
+-/
 
 /-- Given a walk that avoids a set of edges, produce a walk in the graph
 with those edges deleted. -/

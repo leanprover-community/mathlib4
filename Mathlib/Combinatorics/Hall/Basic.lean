@@ -9,24 +9,27 @@ public import Mathlib.CategoryTheory.CofilteredSystem
 
 import Mathlib.Combinatorics.Hall.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hall's Marriage Theorem
 
-Given a list of finite subsets $X_1, X_2, \dots, X_n$ of some given set
-$S$, P. Hall in [Hall1935] gave a necessary and sufficient condition for
-there to be a list of distinct elements $x_1, x_2, \dots, x_n$ with
-$x_i\in X_i$ for each $i$: it is when for each $k$, the union of every
-$k$ of these subsets has at least $k$ elements.
+Given a list of finite subsets $`X_1, X_2, \dots, X_n` of some given set
+$`S`, P. Hall in \[Hall1935\] gave a necessary and sufficient condition for
+there to be a list of distinct elements $`x_1, x_2, \dots, x_n` with
+$`x_i\in X_i` for each $`i`: it is when for each $`k`, the union of every
+$`k` of these subsets has at least $`k` elements.
 
 Rather than a list of finite subsets, one may consider indexed families
 `t : ι → Finset α` of finite subsets with `ι` a `Fintype`, and then the list
 of distinct representatives is given by an injective function `f : ι → α`
-such that `∀ i, f i ∈ t i`, called a *matching*.
+such that `∀ i, f i ∈ t i`, called a _matching_.
 This version is formalized as `Finset.all_card_le_biUnion_card_iff_exists_injective'`
 in a separate module.
 
 The theorem can be generalized to remove the constraint that `ι` be a `Fintype`.
-As observed in [Halpern1966], one may use the constrained version of the theorem
+As observed in \[Halpern1966\], one may use the constrained version of the theorem
 in a compactness argument to remove this constraint.
 The formulation of compactness we use is that inverse limits of nonempty finite sets
 are nonempty (`nonempty_sections_of_finite_inverse_system`), which uses the
@@ -103,7 +106,8 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     rw [funext_iff] at h
     simpa [g] using h a
 
-/-- This is the version of **Hall's Marriage Theorem** in terms of indexed
+/--
+This is the version of *Hall's Marriage Theorem* in terms of indexed
 families of finite sets `t : ι → Finset α`.  It states that there is a
 set of distinct representatives if and only if every union of `k` of the
 sets has at least `k` elements.
@@ -163,7 +167,8 @@ instance {α : Type u} {β : Type v} [DecidableEq β] (R : SetRel α β)
   apply FinsetCoe.fintype
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- This is a version of **Hall's Marriage Theorem** in terms of a relation
+/--
+This is a version of *Hall's Marriage Theorem* in terms of a relation
 between types `α` and `β` such that `α` is finite and the image of
 each `x : α` is finite (it suffices for `β` to be finite; see
 `Fintype.all_card_le_filter_rel_iff_exists_injective`).  There is
@@ -188,7 +193,8 @@ theorem Fintype.all_card_le_rel_image_card_iff_exists_injective {α : Type u} {�
   simp only [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 
-/-- This is a version of **Hall's Marriage Theorem** in terms of a relation to a finite type.
+/--
+This is a version of *Hall's Marriage Theorem* in terms of a relation to a finite type.
 There is a transversal of the relation (an injective function `α → β` whose graph is a subrelation
 of the relation) iff every subset of `k` terms of `α` is related to at least `k` terms of `β`.
 

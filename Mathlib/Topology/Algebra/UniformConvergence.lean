@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Topology.Algebra.UniformMulAction
 public import Mathlib.Topology.UniformSpace.UniformConvergenceTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic facts about the topology of uniform convergence
 
@@ -30,13 +33,12 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 
 ## References
 
-* [N. Bourbaki, *General Topology, Chapter X*][bourbaki1966]
-* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[N. Bourbaki, _General Topology, Chapter X_\]\[bourbaki1966\]
+* ‍\[N. Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
 uniform convergence, strong dual
-
 -/
 
 public section

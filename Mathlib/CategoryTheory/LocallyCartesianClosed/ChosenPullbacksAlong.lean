@@ -10,29 +10,29 @@ public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chosen pullbacks along a morphism
 
 ## Main declarations
 
-- `ChosenPullbacksAlong` : For a morphism `f : Y ⟶ X` in `C`, the type class
+* `ChosenPullbacksAlong` : For a morphism `f : Y ⟶ X` in `C`, the type class
   `ChosenPullbacksAlong f` provides the data of a pullback functor `Over X ⥤ Over Y`
   as a right adjoint to `Over.map f`.
 
 ## Main results
 
-- We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
+* We prove that `ChosenPullbacksAlong` has good closure properties: isos have chosen pullbacks,
   and composition of morphisms with chosen pullbacks have chosen pullbacks.
-
-- We prove that chosen pullbacks yield usual pullbacks: `ChosenPullbacksAlong.isPullback`
+* We prove that chosen pullbacks yield usual pullbacks: `ChosenPullbacksAlong.isPullback`
   proves that for morphisms `f` and `g` with the same codomain, the object
   `ChosenPullbacksAlong.pullbackObj f g` together with morphisms
   `ChosenPullbacksAlong.fst f g` and `ChosenPullbacksAlong.snd f g` form a pullback square
   over `f` and `g`.
-
-- We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
+* We prove that in cartesian monoidal categories, morphisms to the terminal tensor unit and
   the product projections have chosen pullbacks.
-
 -/
 
 @[expose] public section
@@ -245,9 +245,11 @@ section PullbackMap
 
 variable (f g)
 
-/-- The functoriality of `pullbackObj f g` in both arguments: Given a map from the pullback cospans
+/--
+The functoriality of `pullbackObj f g` in both arguments: Given a map from the pullback cospans
 of `f' : Y' ⟶ X'` and `g' : Z' ⟶ X'` to the pullback cospan of `f : Y ⟶ X` and `g : Z ⟶ X`
 as in the diagram below
+
 ```
 Y' ⟶ Y
   ↘   ↘
@@ -255,6 +257,7 @@ Y' ⟶ Y
   ↗   ↗
 Z' ⟶ Z
 ```
+
 if the morphisms `g'` and `g` both have chosen pullbacks, then we get an induced morphism
 `pullbackMap f g f' g' comm₁ comm₂` from the chosen pullback of
 `f' : Y' ⟶ X'` along `g'` to the chosen pullback of `f : Y ⟶ X` along `g`.

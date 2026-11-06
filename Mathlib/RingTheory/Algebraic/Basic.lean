@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Algebraic.Defs
 public import Mathlib.RingTheory.Polynomial.Tower
 public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic elements and algebraic extensions
 

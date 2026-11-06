@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered scalar multiplication and vector addition
 
@@ -19,12 +22,14 @@ series.  In the multiplicative case, a standard example is the action of non-neg
 an ordered field.
 
 ## Implementation notes
+
 * Because these classes mix the algebra and order hierarchies, we write them as `Prop`-valued
   mixins.
 * Despite the file name, Ordered AddTorsors are not defined as a separate class.  To implement them,
   combine `[AddTorsor G P]` with `[IsOrderedCancelVAdd G P]`
 
 ## Definitions
+
 * IsOrderedSMul : inequalities are preserved by scalar multiplication.
 * IsOrderedVAdd : inequalities are preserved by translation.
 * IsCancelSMul : the scalar multiplication version of cancellative multiplication
@@ -33,6 +38,7 @@ an ordered field.
 * IsOrderedCancelVAdd : inequalities are preserved and reflected by translation.
 
 ## Instances
+
 * `IsOrderedMonoid.toIsOrderedSMul`
 * `IsOrderedAddMonoid.toIsOrderedVAdd`
 * `IsOrderedSMul.toCovariantClassLeft`
@@ -45,6 +51,7 @@ an ordered field.
 * `IsOrderedCancelVAdd.toContravariantClassLeft`
 
 ## TODO
+
 * (lex) prod instances
 * Pi instances
 * WithTop (in a different file?)

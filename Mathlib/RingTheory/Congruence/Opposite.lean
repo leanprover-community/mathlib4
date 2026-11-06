@@ -8,12 +8,14 @@ module
 public import Mathlib.GroupTheory.Congruence.Opposite
 public import Mathlib.RingTheory.Congruence.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruences on the opposite ring
 
 This file defines the order isomorphism between the congruences on a ring `R` and the congruences on
 the opposite ring `Rᵐᵒᵖ`.
-
 -/
 
 @[expose] public section

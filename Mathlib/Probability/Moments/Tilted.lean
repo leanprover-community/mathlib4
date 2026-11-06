@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Tilted
 public import Mathlib.Probability.Moments.MGFAnalytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results relating `Measure.tilted` to `mgf` and `cgf`
 
@@ -23,7 +26,6 @@ of `X`.
 * `variance_tilted_mul`: the variance of `X` under the tilted measure `μ.tilted (t * X ·)`
   is the second derivative of the cumulant-generating function of `X` at `t`.
   `Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t`
-
 -/
 
 public section
@@ -39,7 +41,9 @@ namespace ProbabilityTheory
 
 section Apply
 
-/-! ### Apply lemmas for `tilted` expressed with `mgf` or `cgf`. -/
+/-!
+# Apply lemmas for `tilted` expressed with `mgf` or `cgf`.
+-/
 
 lemma tilted_mul_apply_mgf' {s : Set Ω} (hs : MeasurableSet s) :
     μ.tilted (t * X ·) s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
@@ -90,7 +94,9 @@ end Apply
 
 section Integral
 
-/-! ### Integral of `tilted` expressed with `mgf` or `cgf`. -/
+/-!
+# Integral of `tilted` expressed with `mgf` or `cgf`.
+-/
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 

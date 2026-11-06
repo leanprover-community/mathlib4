@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monad.Limits
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 public import Mathlib.CategoryTheory.Subterminal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponential ideals
 
@@ -19,6 +22,7 @@ preserve the principle of equivalence.
 
 We additionally show that if `C` is Cartesian closed and `i : D ⥤ C` is a reflective functor, the
 following are equivalent.
+
 * The left adjoint to `i` preserves binary (equivalently, finite) products.
 * `i` is an exponential ideal.
 -/
@@ -41,7 +45,8 @@ section Ideal
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
 variable (i) [CartesianMonoidalCategory C] [MonoidalClosed C]
 
-/-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
+/--
+The subcategory `D` of `C` expressed as an inclusion functor is an _exponential ideal_ if
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.
 -/
 class ExponentialIdeal : Prop where
@@ -182,14 +187,16 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
 
 variable [ExponentialIdeal i]
 
-/-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
+/--
+If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
 To allow for better control of definitional equality, this construction
 takes in an explicit choice of lift of the essential image of `i` to `D`, in the form of a functor
 `l : i.EssImageSubcategory ⥤ D` and natural isomorphism `φ : l ⋙ i ≅ i.essImage.ι`. When
 `l ⋙ i` is defeq to `i.essImage.ι`, images of exponential objects in `D` under `i` will be defeq
-to the respective exponential objects in `C`. -/
+to the respective exponential objects in `C`.
+-/
 @[instance_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
@@ -209,13 +216,15 @@ def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i
         · exact (i.essImage.liftCompιIso _ _).symm.trans <|
             (Functor.isoWhiskerLeft _ φ.symm).trans (Functor.associator _ _ _).symm }
 
-/-- If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
+/--
+If `i` witnesses that `D` is a reflective subcategory and an exponential ideal, then `D` is
 itself Cartesian closed.
 
 Unlike `cartesianClosedOfReflective'` this construction lifts exponential objects in `C` to
 exponential objects in `D` by applying the reflector to them, even though they already lie in the
 essential image of `i`; if you need better control over definitional equality, use
-`cartesianClosedOfReflective'` instead. -/
+`cartesianClosedOfReflective'` instead.
+-/
 @[instance_reducible]
 def cartesianClosedOfReflective : MonoidalClosed D :=
   cartesianClosedOfReflective' i (i.essImage.ι ⋙ reflector i)
@@ -225,14 +234,16 @@ def cartesianClosedOfReflective : MonoidalClosed D :=
 
 variable [BraidedCategory C]
 
-/-- We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
+/--
+We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
 This bijection has two key properties:
+
 * It is natural in `X`: See `bijection_natural`.
 * When `X = LA ⨯ LB`, then the backwards direction sends the identity morphism to the product
   comparison morphism: See `bijection_symm_apply_id`.
 
 Together these help show that `L` preserves binary products. This should be considered
-*internal implementation* towards `preservesBinaryProductsOfExponentialIdeal`.
+_internal implementation_ towards `preservesBinaryProductsOfExponentialIdeal`.
 -/
 noncomputable def bijection (A B : C) (X : D) :
     ((reflector i).obj (A ⊗ B) ⟶ X) ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=

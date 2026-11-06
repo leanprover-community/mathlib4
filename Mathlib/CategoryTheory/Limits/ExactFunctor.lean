@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ObjectProperty.FunctorCategory.PreservesLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bundled exact functors
 
@@ -14,7 +17,6 @@ We say that a functor `F` is left exact if it preserves finite limits, it is rig
 preserves finite colimits, and it is exact if it is both left exact and right exact.
 
 In this file, we define the categories of bundled left exact, right exact and exact functors.
-
 -/
 
 @[expose] public section

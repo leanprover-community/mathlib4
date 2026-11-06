@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group and ring filter bases
 
@@ -32,7 +35,7 @@ Given a group `G` and a ring `R`:
 
 ## References
 
-* [N. Bourbaki, *General Topology*][bourbaki1966]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
 -/
 
 @[expose] public section
@@ -360,7 +363,8 @@ section Ring
 variable {R M : Type*} [Ring R] [TopologicalSpace R] [AddCommGroup M] [Module R M]
   (B : ModuleFilterBasis R M)
 
-/-- A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
+/--
+A topological additive group with a basis of `𝓝 0` satisfying the axioms of `ModuleFilterBasis`
 is a topological module.
 
 This lemma is mathematically useless because one could obtain such a result by applying
@@ -368,7 +372,8 @@ This lemma is mathematically useless because one could obtain such a result by a
 by their neighborhoods of 0 to obtain the `ContinuousSMul` on the pre-existing topology.
 
 But it turns out it's just easier to get it as a byproduct of the proof, so this is just a free
-quality-of-life improvement. -/
+quality-of-life improvement.
+-/
 theorem _root_.ContinuousSMul.of_basis_zero {ι : Type*} [IsTopologicalRing R] [TopologicalSpace M]
     [IsTopologicalAddGroup M] {p : ι → Prop} {b : ι → Set M} (h : HasBasis (𝓝 0) p b)
     (hsmul : ∀ {i}, p i → ∃ V ∈ 𝓝 (0 : R), ∃ j, p j ∧ V • b j ⊆ b i)

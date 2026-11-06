@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinary
 public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories with chosen finite products
 
@@ -34,10 +37,9 @@ instead turn on the corresponding `ofChosenFiniteProducts` declaration for that 
 
 ## Projects
 
-- Construct an instance of chosen finite products in the category of affine scheme, using
+* Construct an instance of chosen finite products in the category of affine scheme, using
   the tensor product.
-- Construct chosen finite products in other categories appearing "in nature".
-
+* Construct chosen finite products in other categories appearing "in nature".
 -/
 
 @[expose] public section
@@ -871,10 +873,12 @@ instance (X Y : C) : IsIso (δ F X Y) :=
   δ_of_cartesianMonoidalCategory F X Y ▸ isIso_prodComparison_of_preservesLimit_pair F X Y
 
 omit [F.OplaxMonoidal] in
-/-- Any functor between Cartesian-monoidal categories is oplax monoidal.
+/--
+Any functor between Cartesian-monoidal categories is oplax monoidal.
 
 This is not made an instance because it would create a diamond for the oplax monoidal structure on
-the identity and composition of functors. -/
+the identity and composition of functors.
+-/
 @[instance_reducible]
 def ofChosenFiniteProducts (F : C ⥤ D) : F.OplaxMonoidal where
   η := terminalComparison F
@@ -929,10 +933,12 @@ lemma μ_of_cartesianMonoidalCategory (X Y : C) : μ F X Y = (prodComparisonIso 
 
 attribute [local instance] Functor.OplaxMonoidal.ofChosenFiniteProducts in
 omit [F.Monoidal] in
-/-- A finite-product-preserving functor between Cartesian monoidal categories is monoidal.
+/--
+A finite-product-preserving functor between Cartesian monoidal categories is monoidal.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
-the identity and composition of functors. -/
+the identity and composition of functors.
+-/
 @[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Monoidal :=
   .ofOplaxMonoidal F
@@ -967,10 +973,12 @@ namespace Braided
 variable [BraidedCategory C] [BraidedCategory D]
 
 attribute [local instance] Functor.Monoidal.ofChosenFiniteProducts in
-/-- A finite-product-preserving functor between Cartesian monoidal categories is braided.
+/--
+A finite-product-preserving functor between Cartesian monoidal categories is braided.
 
 This is not made an instance because it would create a diamond for the monoidal structure on
-the identity and composition of functors. -/
+the identity and composition of functors.
+-/
 @[instance_reducible]
 noncomputable def ofChosenFiniteProducts (F : C ⥤ D) [PreservesFiniteProducts F] : F.Braided where
   braided X Y := by rw [← cancel_mono (Monoidal.μIso _ _ _).inv]; ext <;> simp [← F.map_comp]

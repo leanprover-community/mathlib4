@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Subobject.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subobjects in adhesive categories
 
 ## Main Results
-- Subobjects in adhesive categories have binary coproducts
 
+* Subobjects in adhesive categories have binary coproducts
 -/
 
 @[expose] public section

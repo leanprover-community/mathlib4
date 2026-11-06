@@ -10,11 +10,16 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 
 import Mathlib.Algebra.CharP.Invertible
 
-/-! # Extreme points of (strictly convex) sets
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Extreme points of (strictly convex) sets
 
 This file collects some results of extreme points of (strictly convex) sets.
 
 ## Main results
+
 * `disjoint_interior_extremePoints`: the interior and extreme points of a set in a
   nontrivial topological vector space are disjoint.
 * `StrictConvex.sdiff_interior_subset_extremePoints`:
@@ -25,7 +30,8 @@ This file collects some results of extreme points of (strictly convex) sets.
 Corollaries of the above is that, in a nontrivial normed space, the extreme points of the
 closed ball is contained in the sphere (see `extremePoints_closedBall_subset_sphere`).
 And in a nontrivial strictly convex space, the extreme points of the closed ball is exactly the
-sphere (see `StrictConvexSpace.extremePoints_closedBall_eq_sphere`). -/
+sphere (see `StrictConvexSpace.extremePoints_closedBall_eq_sphere`).
+-/
 
 public section
 

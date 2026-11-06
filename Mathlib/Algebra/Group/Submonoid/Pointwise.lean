@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Submonoid.Membership
 public import Mathlib.Algebra.Order.BigOperators.Group.List
 public import Mathlib.Order.WellFoundedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
 
@@ -217,9 +220,11 @@ section Monoid
 variable [Monoid α] [MulDistribMulAction α M]
 
 -- todo: add `to_additive`?
-/-- The action on a submonoid corresponding to applying the action to every element.
+/--
+The action on a submonoid corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseMulAction : MulAction α (Submonoid M) where
   smul a S := S.map (MulDistribMulAction.toMonoidEnd _ M a)

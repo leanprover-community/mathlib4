@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Localization.Monoidal.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Multifunctor
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization of symmetric monoidal categories
 
 Let `C` be a monoidal category equipped with a class of morphisms `W` which

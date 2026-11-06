@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of continuously-differentiable functions
 
@@ -32,7 +35,9 @@ variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup
   {s t : Set E} {f : E → F} {x : E} {b : E × F → G} {m n : ℕ∞ω}
   {p : E → FormalMultilinearSeries 𝕜 E F}
 
-/-! ### Constants -/
+/-!
+# Constants
+-/
 section constants
 
 theorem iteratedFDerivWithin_succ_const (n : ℕ) (c : F) :
@@ -145,7 +150,9 @@ theorem contDiffWithinAt_singleton : ContDiffWithinAt 𝕜 n f {x} x :=
 
 end constants
 
-/-! ### Smoothness of linear functions -/
+/-!
+# Smoothness of linear functions
+-/
 section linear
 
 /-- Unbundled bounded linear functions are `C^n`. -/
@@ -510,7 +517,9 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 end linear
 
-/-! ### The Cartesian product of two C^n functions is C^n. -/
+/-!
+# The Cartesian product of two C^n functions is C^n.
+-/
 section prod
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the Cartesian
@@ -586,7 +595,9 @@ theorem iteratedFDeriv_prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 
 
 end prod
 
-/-! ### Being `C^k` on a union of open sets can be tested on each set -/
+/-!
+# Being `C^k` on a union of open sets can be tested on each set
+-/
 section contDiffOn_union
 
 /-- If a function is `C^k` on two open sets, it is also `C^n` on their union. -/
@@ -631,16 +642,18 @@ lemma contDiff_of_contDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set E}
 
 end contDiffOn_union
 
-/-- The natural equivalence `(E × F) × G ≃ E × (F × G)` is smooth.
+/--
+The natural equivalence `(E × F) × G ≃ E × (F × G)` is smooth.
 
 Warning: if you think you need this lemma, it is likely that you can simplify your proof by
 reformulating the lemma that you're applying next using the tips in
-Note [continuity lemma statement]
+Note \[continuity lemma statement\]
 -/
 theorem contDiff_prodAssoc {n : ℕ∞ω} : ContDiff 𝕜 n <| Equiv.prodAssoc E F G :=
   (LinearIsometryEquiv.prodAssoc 𝕜 E F G).contDiff
 
-/-- The natural equivalence `E × (F × G) ≃ (E × F) × G` is smooth.
+/--
+The natural equivalence `E × (F × G) ≃ (E × F) × G` is smooth.
 
 Warning: see remarks attached to `contDiff_prodAssoc`
 -/

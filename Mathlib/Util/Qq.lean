@@ -11,6 +11,9 @@ public import Qq
 import Mathlib.Init
 import Qq.Typ
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extra `Qq` helpers
 
@@ -44,18 +47,24 @@ def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) 
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
 
-/-- Return a local declaration whose type is definitionally equal to `sort`.
+/--
+Return a local declaration whose type is definitionally equal to `sort`.
 
-This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
+This is a Qq version of `Lean.Meta.findLocalDeclWithType?`
+-/
 def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
   let some fvarId ← findLocalDeclWithType? q($sort) | return none
   return some <| .fvar fvarId
 
-/-- Returns a proof of `p : Prop` using `decide p`.
+/--
+Returns a proof of `p : Prop` using `decide p`.
 
-This is a Qq version of `Lean.Meta.mkDecideProof`. -/
+This is a Qq version of `Lean.Meta.mkDecideProof`.
+-/
 def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 
+
+set_option doc.verso false
 /-- Join a list of elements of type `α` into a container `β`.
 
 Usually `β` is `q(Multiset α)` or `q(Finset α)` or `q(Set α)`.
@@ -77,16 +86,22 @@ def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
   | [x] => q({$x})
   | x :: xs => q(Insert.insert $x $(mkSetLiteralQ β xs))
 
-/-- Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
+
+set_option doc.verso true
+/--
+Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
 application. Recall that all theorems and definitions containing numeric literals are encoded using
 `OfNat.ofNat` applications in the frontend.
 
-This is a Qq version of `Lean.mkNatLit`. -/
+This is a Qq version of `Lean.mkNatLit`.
+-/
 def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
 
-/-- Returns the integer literal `n`.
+/--
+Returns the integer literal `n`.
 
-This is a Qq version of `Lean.mkIntLit`. -/
+This is a Qq version of `Lean.mkIntLit`.
+-/
 def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
 
 /-- Build the numeral of the integer `i` in `α`: `mkNumeral` on the absolute value, negated if
@@ -142,17 +157,21 @@ def unconsListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) :
   have : $l =Q $hd :: $tl := ⟨⟩
   return ⟨hd, tl, ⟨⟩⟩
 
-/-- Instantiate the level metavariables in `u`, remembering that the result is defeq to `u`.
+/--
+Instantiate the level metavariables in `u`, remembering that the result is defeq to `u`.
 
-This is a `Qq` version of `Lean.instantiateLevelMVars`. -/
+This is a `Qq` version of `Lean.instantiateLevelMVars`.
+-/
 -- The `u'` binder is used in the return type, but the linter cannot see through `=QL`
 def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (_u' =QL u)) :=
   return ⟨← instantiateLevelMVars u, ⟨⟩⟩
 
-/-- Instantiate the metavariables in `e`, remembering that the result is defeq to `e`.
+/--
+Instantiate the metavariables in `e`, remembering that the result is defeq to `e`.
 
 This is a variant of `Qq.instantiateMVarsQ` which returns the Qq-fact that the new expression is
-equal to the previous one. -/
+equal to the previous one.
+-/
 def instantiateMVarsQ' {u : Level} {α : Q(Sort u)} (e : Q($α)) :
     MetaM ((e' : Q($α)) ×' $e' =Q $e) :=
   return ⟨← instantiateMVarsQ e, ⟨⟩⟩

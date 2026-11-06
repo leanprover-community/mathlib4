@@ -8,18 +8,20 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The nerve of a category
 
 This file provides the definition of the nerve of a category `C`,
-which is a simplicial set `nerve C` (see [goerss-jardine-2009], Example I.1.4).
+which is a simplicial set `nerve C` (see \[goerss-jardine-2009\], Example I.1.4).
 By definition, the type of `n`-simplices of `nerve C` is `ComposableArrows C n`,
 which is the category `Fin (n + 1) ⥤ C`.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
+* ‍\[Paul G. Goerss, John F. Jardine, _Simplicial Homotopy Theory_\]\[goerss-jardine-2009\]
 -/
 
 @[expose] public section

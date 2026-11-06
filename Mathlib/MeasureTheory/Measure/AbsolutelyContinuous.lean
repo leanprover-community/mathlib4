@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Map
 public import Mathlib.MeasureTheory.Measure.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute Continuity of Measures
 
@@ -29,7 +32,6 @@ It is equivalent to an inequality of the almost everywhere filters of the measur
 
 * `μ ≪ ν`: `MeasureTheory.Measure.AbsolutelyContinuous μ ν`. That is: `μ` is absolutely continuous
   with respect to `ν`
-
 -/
 
 @[expose] public section
@@ -99,9 +101,11 @@ protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ�
     c • μ ≪ ν := fun s hνs => by
   simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
 
-/-- If `μ ≪ ν`, then `c • μ ≪ c • ν`.
+/--
+If `μ ≪ ν`, then `c • μ ≪ c • ν`.
 
-Earlier, this name was used for what's now called `AbsolutelyContinuous.smul_left`. -/
+Earlier, this name was used for what's now called `AbsolutelyContinuous.smul_left`.
+-/
 protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ c • ν := by
   intro s hνs

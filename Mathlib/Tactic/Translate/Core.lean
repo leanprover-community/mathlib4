@@ -19,6 +19,9 @@ public import Mathlib.Tactic.Eqns
 public import Mathlib.Tactic.Translate.Attributes
 public import Mathlib.Tactic.Translate.Expr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The translation attribute.
 
@@ -68,9 +71,11 @@ syntax relevantArgOption := &"relevant_arg" " := " hole <|> ident <|> num
 /--
 `(dont_translate := ...)` takes a list of type variables (separated by spaces) that should not be
 considered for translation. For example in
+
 ```
 lemma foo {α β : Type} [Group α] [Group β] (a : α) (b : β) : a * a⁻¹ = 1 ↔ b * b⁻¹ = 1
 ```
+
 we can choose to only translate `α` by writing `to_additive (dont_translate := β)`.
 -/
 
@@ -90,17 +95,16 @@ syntax renameOption := &"rename" " := " renameRule,+
 syntax bracketedOption := "(" attrOption <|> reorderOption <|>
   relevantArgOption <|> dontTranslateOption <|> renameOption ")"
 
-/-- A hint about the translated declaration
+/--
+A hint about the translated declaration
 
-- `existing` indicates that the translated form of the declaration is a pre-existing declaration.
+* `existing` indicates that the translated form of the declaration is a pre-existing declaration.
   This is useful when the value cannot be translated, either because of a limitation in the
   translation heuristics, or because the value/proof is genuinely different.
-
-- `self` indicates that the declaration translates to itself, up to some reordering of arguments.
+* `self` indicates that the declaration translates to itself, up to some reordering of arguments.
   If no arguments are reordered then the attribute is redundant, which the `translate.redundant`
   linter will warn about.
-
-- `none` indicates that the translated declaration should not get a user-facing name,
+* `none` indicates that the translated declaration should not get a user-facing name,
   instead being named like an auxiliary declaration. This is particularly useful for `to_dual` when
   using the `reassoc` attribute, because the dual of a right associated term is left associated,
   but we only want user-facing lemmas with right associated terms.
@@ -303,13 +307,15 @@ def updateDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     type ← b.unfoldInsertions type
   return (decl.updateType type, .min relevantArg₁ relevantArg₂)
 
-/-- Translate the source declaration and then run `addDecl`. If the kernel throws an error,
+/--
+Translate the source declaration and then run `addDecl`. If the kernel throws an error,
 try to emit a better error message.
 
 For efficiency in `to_dual`, we first run `updateDecl` without any `UnfoldBoundaries`,
 and only if that fails do we try to include them.
 The reason is that in the most common case, `to_dual` succeeds without needing to insert
-unfold boundaries, and figuring out whether to insert them can be quite expensive. -/
+unfold boundaries, and figuring out whether to insert them can be quite expensive.
+-/
 def updateAndAddDecl (t : TranslateData) (tgt : Name) (srcDecl : ConstantInfo)
     (reorder : ArgReorder) (dont : List Nat) (rename : NameMap Name) :
     MetaM (ConstantInfo × RelevantArg) :=
@@ -410,7 +416,8 @@ def findAuxDecls (decl : ConstantInfo) (pre : Name) : CoreM (Array Name) := do
     else
       l
 
-/-- Return the `relevant_arg` option based on the computed `relevantArg`
+/--
+Return the `relevant_arg` option based on the computed `relevantArg`
 and optionally the given `relevant_arg` (`given?`).
 
 For terms, `relevantArg` can always be inferred from the type, so we trust `relevantArg`.
@@ -434,7 +441,8 @@ def getRelevantArg (t : TranslateData) (relevantArg : RelevantArg) (given? : Opt
         rather than `(relevant_arg := {relevantArg'})`.\nYou may remove the option."
   return relevantArg'
 
-/-- If `src` is a class projection or class constructor, ensure that the class itself
+/--
+If `src` is a class projection or class constructor, ensure that the class itself
 has a translation. This ensures that `relevant_arg` will be inferred correctly.
 
 For example, for `LE.le` and `GE.ge` we infer `(relevant_arg := α)` because `α` appears in `LE α`,
@@ -460,12 +468,13 @@ where
         (isMainTranslation := false)
       modifyEnv (t.translations.addEntry · (cls, { translation := cls, relevantArg }))
 
-/-- Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
+/--
+Translate the declaration `src` and recursively all declarations `rootSrc._proof_i`
 occurring in `src` using the `translations` dictionary.
 
-- `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
-- `src` is assumed to have a value available in the environment.
-- `reorder` and `rename` are only used for the translation of `src`.
+* `rootSrc` is the declaration that got the translation attribute and `rootTgt` is its target.
+* `src` is assumed to have a value available in the environment.
+* `reorder` and `rename` are only used for the translation of `src`.
 -/
 partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt src : Name)
     (reorder : ArgReorder := {}) (rename : NameMap Name := {}) : CoreM Unit := do
@@ -566,9 +575,11 @@ partial def transformDeclRec (t : TranslateData) (cfg : Config) (rootSrc rootTgt
   -- necessary so that e.g. match equations can be generated for `tgt`
   enableRealizationsForConst tgt
 
-/-- Copy the instance attribute in a `to_additive`
+/--
+Copy the instance attribute in a `to_additive`
 
-[todo] it seems not to work when the `to_additive` is added as an attribute later. -/
+‍\[todo\] it seems not to work when the `to_additive` is added as an attribute later.
+-/
 def copyInstanceAttribute (src tgt : Name) : CoreM Unit := do
   if let some prio ← getInstancePriority? src then
     let attr_kind := (← getInstanceAttrKind? src).getD .global
@@ -874,14 +885,17 @@ def translateAttribute (t : TranslateData) (attr : Attribute) : CoreM Attribute 
     return { attr with stx := ← `(attr| inherit_doc $name)}
   | _ => return attr
 
-/-- Elaboration of the configuration options for a translation attribute. It is assumed that
-- `stx[0]` is the attribute (e.g. `to_additive`)
-- `stx[1]` is the optional tracing `?`
-- `stx[2]` is the remaining `attrArgs`
+/--
+Elaboration of the configuration options for a translation attribute. It is assumed that
+
+* `stx[0]` is the attribute (e.g. `to_additive`)
+* `stx[1]` is the optional tracing `?`
+* `stx[2]` is the remaining `attrArgs`
 
 TODO: Currently, we don't deduce any `dont_translate` arguments based on the type of `declName`.
 In the future we would like that the presence of `MonoidAlgebra k G` will automatically
-flag `k` as a type to not be translated. -/
+flag `k` as a type to not be translated.
+-/
 def elabTranslationAttr (declName : Name) (stx : Syntax) : CoreM Config := do
   match stx[2] with
   | `(attrArgs| $hint $[$opts:bracketedOption]* $[$tgt]? $[$doc]?) =>

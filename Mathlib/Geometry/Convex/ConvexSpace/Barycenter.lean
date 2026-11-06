@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The barycenter of the standard simplex
-
 -/
 
 @[expose] public section

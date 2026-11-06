@@ -9,6 +9,9 @@ public import Mathlib.Algebra.MonoidAlgebra.Basic
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.NumberTheory.Padics.Measure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributions on a topological monoid
 
@@ -28,7 +31,7 @@ section Monoid
 variable [Monoid G] [ContinuousMul G]
 
 /-!
-### Convolution of a measure and a function
+# Convolution of a measure and a function
 
 When `G` has a continuous multiplication law, we can define the convolution of a measure with a
 function.
@@ -87,7 +90,7 @@ section LocallyCompact
 variable [LocallyCompactSpace G]
 
 /-!
-### Convolution of two measures
+# Convolution of two measures
 -/
 @[simps! (isSimp := false)]
 instance : Mul D(G, R) where
@@ -169,7 +172,7 @@ end Monoid
 section CommMonoid
 
 /-!
-## Commutativity for compact abelian `G`
+# Commutativity for compact abelian `G`
 
 We show that if `G` is compact, Hausdorff, and commutative, then `D(G, R)` is a
 commutative ring.

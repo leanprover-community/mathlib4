@@ -15,6 +15,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.NumberTheory.Niven
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev polynomials over the reals: roots and extrema
 

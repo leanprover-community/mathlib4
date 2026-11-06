@@ -12,15 +12,19 @@ public import Mathlib.RingTheory.Finiteness.Finsupp
 public import Mathlib.RingTheory.Ideal.Prod
 public import Mathlib.RingTheory.Noetherian.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian rings and modules
 
 The following are equivalent for a module M over a ring R:
+
 1. Every increasing chain of submodules M₁ ⊆ M₂ ⊆ M₃ ⊆ ⋯ eventually stabilises.
 2. Every submodule is finitely generated.
 
-A module satisfying these equivalent conditions is said to be a *Noetherian* R-module.
-A ring is a *Noetherian ring* if it is Noetherian as a module over itself.
+A module satisfying these equivalent conditions is said to be a _Noetherian_ R-module.
+A ring is a _Noetherian ring_ if it is Noetherian as a module over itself.
 
 (Note that we do not assume yet that our rings are commutative,
 so perhaps this should be called "left-Noetherian".
@@ -39,18 +43,17 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
 * `isNoetherian_iff` is the theorem that an R-module M is Noetherian iff `>` is well-founded on
   `Submodule R M`.
 
-Note that the Hilbert basis theorem, that if a commutative ring R is Noetherian then so is R[X],
+Note that the Hilbert basis theorem, that if a commutative ring R is Noetherian then so is R\[X\],
 is proved in `RingTheory.Polynomial`.
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noetherian module
-
 -/
 
 public section
@@ -269,8 +272,10 @@ theorem LinearIndependent.finite_of_isNoetherian [Nontrivial R] {ι} {v : ι →
 
 variable [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P] [Nontrivial P]
 
-/-- If `P × N` embeds into `N` for some nontrivial module `P`, then `N` cannot be a Noetherian
-module. Lemma 1.36 of Chapter 1 in [lam_1999]. -/
+/--
+If `P × N` embeds into `N` for some nontrivial module `P`, then `N` cannot be a Noetherian
+module. Lemma 1.36 of Chapter 1 in \[lam\_1999\].
+-/
 theorem IsNoetherian.subsingleton_of_injective {P : Type*} [AddCommMonoid P] [Module R P]
     {f : P × M →ₗ[R] M} (inj : Injective f) : Subsingleton P :=
   subsingleton_of_forall_eq 0 fun p ↦ by_contra fun _ ↦

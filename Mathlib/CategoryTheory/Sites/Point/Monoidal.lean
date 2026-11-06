@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Sites.Point.Skyscraper
 
 import Mathlib.CategoryTheory.Monoidal.Limits.Colimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fiber functors are monoidal
 
@@ -18,7 +21,6 @@ Let `Φ` be a point of a site `(C, J)`. Let `A` be a monoidal category where
 the tensor product commutes with filtered colimits in both variables.
 We show that the fiber functors `Φ.presheafFiber : (Cᵒᵖ ⥤ A) ⥤ A`
 and `Φ.sheafFiber : Sheaf J A ⥤ A` are monoidal.
-
 -/
 
 public section

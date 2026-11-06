@@ -7,14 +7,16 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The covariant involution of the simplex category
 
 In this file, we introduce the functor `rev : SimplexCategory ⥤ SimplexCategory`
 which, via the equivalence between the simplex category and the
 category of nonempty finite linearly ordered types, corresponds to
-the *covariant* functor which sends a type `α` to `αᵒᵈ`.
-
+the _covariant_ functor which sends a type `α` to `αᵒᵈ`.
 -/
 
 @[expose] public section
@@ -24,12 +26,14 @@ open CategoryTheory
 namespace SimplexCategory
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- The covariant involution `rev : SimplexCategory ⥤ SimplexCategory` which,
+/--
+The covariant involution `rev : SimplexCategory ⥤ SimplexCategory` which,
 via the equivalence between the simplex category and the
 category of nonempty finite linearly ordered types, corresponds to
-the *covariant* functor which sends a type `α` to `αᵒᵈ`.
+the _covariant_ functor which sends a type `α` to `αᵒᵈ`.
 This functor sends the object `⦋n⦌` to `⦋n⦌` and a map `f : ⦋n⦌ ⟶ ⦋m⦌`
-is sent to the monotone map `(i : Fin (n + 1)) ↦ (f i.rev).rev`. -/
+is sent to the monotone map `(i : Fin (n + 1)) ↦ (f i.rev).rev`.
+-/
 @[simps obj, simps -isSimp map, implicit_reducible]
 def rev : SimplexCategory ⥤ SimplexCategory where
   obj n := n

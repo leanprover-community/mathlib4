@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Row and column matrices
 
@@ -18,7 +21,6 @@ This file provides results about row and column matrices.
 * `Matrix.replicateCol ι c : Matrix m ι α`: the matrix where every column is the vector `c : m → α`
 * `Matrix.updateRow M i r`: update the `i`th row of `M` to `r`
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
-
 -/
 
 @[expose] public section
@@ -195,7 +197,9 @@ theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v :
   ext
   simp [vecMulVec, Matrix.mul_apply]
 
-/-! ### Updating rows and columns -/
+/-!
+# Updating rows and columns
+-/
 
 /-- Update, i.e. replace the `i`th row of matrix `A` with the values in `b`. -/
 def updateRow [DecidableEq m] (M : Matrix m n α) (i : m) (b : n → α) : Matrix m n α :=

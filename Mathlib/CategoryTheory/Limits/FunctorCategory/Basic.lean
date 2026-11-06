@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Limits.Preserves.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits in functor categories.
 

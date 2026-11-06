@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.GDelta.Basic
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Separation properties of topological spaces.
 
@@ -19,7 +22,6 @@ public import Mathlib.Topology.Separation.Regular
 
 Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
 occasionally the literature swaps definitions for e.g. T₃ and regular.
-
 -/
 
 public section
@@ -61,8 +63,10 @@ theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs 
 
 section PerfectlyNormal
 
-/-- A topological space `X` is a *perfectly normal space* provided it is normal and
-closed sets are Gδ. -/
+/--
+A topological space `X` is a _perfectly normal space_ provided it is normal and
+closed sets are Gδ.
+-/
 class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] : Prop extends NormalSpace X where
     closed_gdelta : ∀ ⦃h : Set X⦄, IsClosed h → IsGδ h
 

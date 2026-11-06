@@ -14,6 +14,9 @@ import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Data.Pi.Interval
 import Mathlib.NumberTheory.NumberField.InfinitePlace.Embeddings
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mahler measure of integer polynomials
 
@@ -21,14 +24,15 @@ The main purpose of this file is to prove some facts about the Mahler measure of
 polynomials, in particular Northcott's Theorem for the Mahler measure.
 
 ## Main results
-- `Polynomial.finite_mahlerMeasure_le`: Northcott's Theorem: the set of integer polynomials of
+
+* `Polynomial.finite_mahlerMeasure_le`: Northcott's Theorem: the set of integer polynomials of
   degree at most `n` and Mahler measure at most `B` is finite.
-- `Polynomial.card_mahlerMeasure_le_prod`: an upper bound on the number of integer polynomials
+* `Polynomial.card_mahlerMeasure_le_prod`: an upper bound on the number of integer polynomials
   of degree at most `n` and Mahler measure at most `B`.
-- `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
-- `Polynomial.pow_eq_one_of_mahlerMeasure_eq_one`: if an integer polynomial has Mahler measure equal
+* `Polynomial.cyclotomic_mahlerMeasure_eq_one`: the Mahler measure of a cyclotomic polynomial is 1.
+* `Polynomial.pow_eq_one_of_mahlerMeasure_eq_one`: if an integer polynomial has Mahler measure equal
   to 1, then all its complex nonzero roots are roots of unity.
-- `Polynomial.cyclotomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
+* `Polynomial.cyclotomic_dvd_of_mahlerMeasure_eq_one`: if an integer non-constant polynomial has
   Mahler measure equal to 1 and is not a multiple of X, then it is divisible by a cyclotomic
   polynomial.
 -/

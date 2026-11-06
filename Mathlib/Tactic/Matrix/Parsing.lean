@@ -14,6 +14,9 @@ import Mathlib.Tactic.Bound.Init
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Tactic.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Parsing matrix literals
 
@@ -26,7 +29,7 @@ it if the array form can be read directly.
 
 ## Main definitions
 
-- `matchMatrixLit?`: match a matrix literal, closed by default.
+* `matchMatrixLit?`: match a matrix literal, closed by default.
 -/
 
 public meta section

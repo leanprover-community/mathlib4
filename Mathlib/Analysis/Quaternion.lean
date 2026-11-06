@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Quaternion
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quaternions as a normed algebra
 

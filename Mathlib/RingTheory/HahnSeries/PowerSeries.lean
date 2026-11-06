@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison between Hahn series and power series
 
@@ -20,20 +23,24 @@ coefficients in `R`, whose supports are partially well-ordered. With further str
 we get the more familiar semiring of formal power series with coefficients in `R`.
 
 ## Main Definitions
+
 * `toPowerSeries` the isomorphism from `R⟦ℕ⟧` to `PowerSeries R`.
 * `ofPowerSeries` the inverse, casting a `PowerSeries R` to a `R⟦ℕ⟧`.
 
 ## Instances
+
 * For `Finite σ`, the instance `NoZeroDivisors R⟦σ →₀ ℕ⟧`,
   deduced from the case of `MvPowerSeries`
   The case of `R⟦ℕ⟧` is taken care of by `instNoZeroDivisors`.
 
 ## TODO
+
 * Build an API for the variable `X` (defined to be `single 1 1 : R⟦Γ⟧`) in analogy to
   `X : R[X]` and `X : PowerSeries R`
 
 ## References
-- [J. van der Hoeven, *Operators on Generalized Power Series*][van_der_hoeven]
+
+* ‍\[J. van der Hoeven, _Operators on Generalized Power Series_\]\[van\_der\_hoeven\]
 -/
 
 @[expose] public section

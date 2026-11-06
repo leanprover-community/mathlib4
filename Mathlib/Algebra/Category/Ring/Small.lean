@@ -8,7 +8,12 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.FiniteType
 
 
-/-! # Smallness results on the category of `CommRing` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smallness results on the category of `CommRing`
+-/
 
 public section
 

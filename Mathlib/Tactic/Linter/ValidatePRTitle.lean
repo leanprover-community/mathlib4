@@ -11,6 +11,9 @@ import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
 import Std.Internal.Parsec.Basic
 import Std.Internal.Parsec.String
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Checker for well-formed title and labels
 
@@ -80,8 +83,8 @@ def isAbbreviation (word : String.Slice) : Bool :=
 
 open Mathlib.Linter.TextBased in
 /--
-Check if `title` matches the mathlib conventions for PR titles
-(documented at <https://leanprover-community.github.io/contribute/commit.html>).
+Check if `title` matches the mathlib conventions for PR titles (documented at [
+https://leanprover-community.github.io/contribute/commit.html](https://leanprover-community.github.io/contribute/commit.html)).
 
 Not all checks are implemented: for instance, no effort is made to verify if the title or body
 are written in present imperative tense.

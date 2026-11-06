@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Algebraic.MvPolynomial
 public import Mathlib.RingTheory.AlgebraicIndependent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic Independence
 
@@ -18,8 +21,8 @@ This file relates algebraic independence and transcendence (or algebraicity) of 
 * [Stacks: Transcendence](https://stacks.math.columbia.edu/tag/030D)
 
 ## Tags
-transcendence
 
+transcendence
 -/
 
 public section

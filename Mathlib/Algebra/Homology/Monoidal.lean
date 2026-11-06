@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.Single
 public import Mathlib.CategoryTheory.GradedObject.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on homological complexes
 
@@ -21,7 +24,6 @@ coproducts and both left/right tensoring commute with these.
 
 In particular, we obtain a monoidal category structure on
 `ChainComplex C ℕ` when `C` is an additive monoidal category.
-
 -/
 
 @[expose] public section

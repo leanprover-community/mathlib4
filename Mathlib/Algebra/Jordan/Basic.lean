@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Jordan rings
 

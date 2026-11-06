@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.Coprime.Ideal
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 public import Mathlib.RingTheory.SimpleModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Torsion submodules
 

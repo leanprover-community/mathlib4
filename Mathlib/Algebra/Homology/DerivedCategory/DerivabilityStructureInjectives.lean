@@ -15,6 +15,9 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.InjectiveObject
 import Mathlib.CategoryTheory.GuitartExact.Quotient
 import Mathlib.CategoryTheory.Localization.DerivabilityStructure.OfLocalizedEquivalences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The injective derivability structure
 
@@ -35,7 +38,6 @@ The consequence is that any functor from the category `HomotopyCategory.Plus C`
 has a right derived functor, and we show that the unit natural transformation for
 such a derived functor is an isomorphism on objects coming from
 `HomotopyCategory.Plus (InjectiveObject C)`.
-
 -/
 
 @[expose] public section
@@ -227,12 +229,14 @@ instance :
 
 namespace isRightDerivabilityStructure
 
-/-! The following private definitions are used to deduce that
+/-!
+The following private definitions are used to deduce that
 `HomotopyCategory.Plus.localizerMorphism` is a right derivability structure
 from the fact that `CochainComplex.Plus.localizerMorphism` is.
 
 The strategy is to observe that the following commutative square
 of localizer morphisms gives a Guitart exact square:
+
 ```
                            CochainComplex.Plus.localizerMorphism C
 CochainComplex.Plus (InjectiveObject C) ----------> CochainComplex.Plus C
@@ -242,10 +246,10 @@ CochainComplex.Plus (InjectiveObject C) ----------> CochainComplex.Plus C
 HomotopyCategory.Plus (InjectiveObject C) --------> HomotopyCategory.Plus C
                            HomotopyCategory.Plus.localizerMorphism C
 ```
+
 That the square is Guitart exact will follow from the lemma
 `TwoSquare.GuitartExact.quotient_of_nonempty_rightHomotopy`
 from the file `Mathlib/CategoryTheory/GuitartExact/Quotient.lean`.
-
 -/
 
 open MorphismProperty

@@ -17,6 +17,9 @@ public import Mathlib.Tactic.Abel
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multilinear maps
 
@@ -662,9 +665,11 @@ theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g
 
 end ApplySum
 
-/-- Restrict the codomain of a multilinear map to a submodule.
+/--
+Restrict the codomain of a multilinear map to a submodule.
 
-This is the multilinear version of `LinearMap.codRestrict`. -/
+This is the multilinear version of `LinearMap.codRestrict`.
+-/
 @[simps]
 def codRestrict (f : (Π i, M₁ i) →ₘₗ[R] M₂) (p : Submodule R M₂) (h : ∀ v, f v ∈ p) :
     (Π i, M₁ i) →ₘₗ[R] p where
@@ -695,10 +700,12 @@ section
 
 variable {ι₁ ι₂ ι₃ : Type*}
 
-/-- Transfer the arguments to a map along an equivalence between argument indices.
+/--
+Transfer the arguments to a map along an equivalence between argument indices.
 
 The naming is derived from `Finsupp.domCongr`, noting that here the permutation applies to the
-domain of the domain. -/
+domain of the domain.
+-/
 @[simps apply]
 def domDomCongr (σ : ι₁ ≃ ι₂) (m : (ι₁ → M₂) →ₘₗ[R] M₃) : (ι₂ → M₂) →ₘₗ[R] M₃ where
   toFun v := m fun i => v (σ i)
@@ -719,9 +726,11 @@ theorem domDomCongr_mul (σ₁ : Equiv.Perm ι₁) (σ₂ : Equiv.Perm ι₁) (m
     m.domDomCongr (σ₂ * σ₁) = (m.domDomCongr σ₁).domDomCongr σ₂ :=
   rfl
 
-/-- `MultilinearMap.domDomCongr` as an equivalence.
+/--
+`MultilinearMap.domDomCongr` as an equivalence.
 
-This is declared separately because it does not work with dot notation. -/
+This is declared separately because it does not work with dot notation.
+-/
 @[simps apply symm_apply]
 def domDomCongrEquiv (σ : ι₁ ≃ ι₂) : ((ι₁ → M₂) →ₘₗ[R] M₃) ≃+ ((ι₂ → M₂) →ₘₗ[R] M₃) where
   toFun := domDomCongr σ
@@ -762,7 +771,8 @@ lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [Decidabl
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   simpa only [dite_not] using domDomRestrict_aux _ z (fun j ↦ x ⟨j.1, not_not.mp j.2⟩) i c
 
-/-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
+/--
+Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M₁ i`, construct a multilinear map on
 `(i : {a // P a}) → M₁ i` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
 `x i` if `P i` and `z i` otherwise.
@@ -932,10 +942,12 @@ def _root_.LinearMap.compMultilinearMapₗ [LinearMap.CompatibleSMul M₂ M₃ S
   map_smul' := g.compMultilinearMap_smul
 
 variable (S) in
-/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+/--
+An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `LinearMap.compMultilinearMap` as an `S`-linear equivalence,
-and the multilinear version of `LinearEquiv.congrRight`. -/
+and the multilinear version of `LinearEquiv.congrRight`.
+-/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.multilinearMapCongrRight
     [LinearMap.CompatibleSMul M₂ M₃ S R] [LinearMap.CompatibleSMul M₃ M₂ S R] (g : M₂ ≃ₗ[R] M₃) :
@@ -1077,14 +1089,16 @@ noncomputable def iteratedFDerivComponent {α : Type*}
   map_update_smul' := by intros; ext; simp
 
 open scoped Classical in
-/-- The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
+/--
+The `k`-th iterated derivative of a multilinear map `f` at the point `x`. It is a multilinear
 map of `k` vectors `v₁, ..., vₖ` (with the same type as `x`), mapping them
 to `∑ f (x₁, (v_{i₁})₂, x₃, ...)`, where at each index `j` one uses either `xⱼ` or one
 of the `(vᵢ)ⱼ`, and each `vᵢ` has to be used exactly once.
 The sum is parameterized by the embeddings of `Fin k` in the index type `ι` (or, equivalently,
 by the subsets `s` of `ι` of cardinality `k` and then the bijections between `Fin k` and `s`).
 
-For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`. -/
+For the continuous version, see `ContinuousMultilinearMap.iteratedFDeriv`.
+-/
 protected noncomputable def iteratedFDeriv [Fintype ι]
     (f : (Π i, M₁ i) →ₘₗ[R] M₂) (k : ℕ) (x : (i : ι) → M₁ i) : (Fin k → (Π i, M₁ i)) →ₘₗ[R] M₂ :=
   ∑ e : Fin k ↪ ι, iteratedFDerivComponent f e.toEquivRange (fun i ↦ x i)
@@ -1097,10 +1111,12 @@ sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g
   map_add' := fun _ _ ↦ rfl
   map_smul' := fun _ _ ↦ rfl
 
-/-- An isomorphism of multilinear maps given an isomorphism between their domains.
+/--
+An isomorphism of multilinear maps given an isomorphism between their domains.
 
 This is `MultilinearMap.compLinearMap` as a linear equivalence,
-and the multilinear version of `LinearEquiv.congrLeft`. -/
+and the multilinear version of `LinearEquiv.congrLeft`.
+-/
 @[simps! apply symm_apply]
 def _root_.LinearEquiv.multilinearMapCongrLeft (e : Π (i : ι), M₁ i ≃ₗ[R] M₁' i) :
     ((Π i, M₁' i) →ₘₗ[R] M₂) ≃ₗ[R] (Π i, M₁ i) →ₘₗ[R] M₂ where
@@ -1182,9 +1198,11 @@ theorem map_update_smul_left [DecidableEq ι] [Fintype ι]
     map_piecewise_smul f _ _ _
   simpa [← Function.update_smul c m] using this
 
-/-- If two `R`-multilinear maps from `R` are equal on 1, then they are equal.
+/--
+If two `R`-multilinear maps from `R` are equal on 1, then they are equal.
 
-This is the multilinear version of `LinearMap.ext_ring`. -/
+This is the multilinear version of `LinearMap.ext_ring`.
+-/
 @[ext]
 theorem ext_ring [Finite ι] ⦃f g : (ι → R) →ₘₗ[R] M₂⦄ (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) :
     f = g := by
@@ -1199,11 +1217,13 @@ section
 variable (R ι)
 variable (A : Type*) [CommSemiring A] [Algebra R A] [Fintype ι]
 
-/-- Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating
+/--
+Given an `R`-algebra `A`, `mkPiAlgebra` is the multilinear map on `A^ι` associating
 to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebraFin` for a version that works with a non-commutative
-algebra `A` but requires `ι = Fin n`. -/
+algebra `A` but requires `ι = Fin n`.
+-/
 protected def mkPiAlgebra : (ι → A) →ₘₗ[R] A where
   toFun m := ∏ i, m i
   map_update_add' m i x y := by simp [Finset.prod_update_of_mem, add_mul]
@@ -1222,11 +1242,13 @@ section
 variable (R n)
 variable (A : Type*) [Semiring A] [Algebra R A]
 
-/-- Given an `R`-algebra `A`, `mkPiAlgebraFin` is the multilinear map on `A^n` associating
+/--
+Given an `R`-algebra `A`, `mkPiAlgebraFin` is the multilinear map on `A^n` associating
 to `m` the product of all the `m i`.
 
 See also `MultilinearMap.mkPiAlgebra` for a version that assumes `[CommSemiring A]` but works
-for `A^ι` with any finite type `ι`. -/
+for `A^ι` with any finite type `ι`.
+-/
 protected def mkPiAlgebraFin : (Fin n → A) →ₘₗ[R] A :=
   MultilinearMap.mk' (fun m ↦ (List.ofFn m).prod)
     (fun m i x y ↦ by
@@ -1426,9 +1448,11 @@ section Submodule
 variable [Ring R] [∀ i, AddCommMonoid (M₁ i)] [AddCommMonoid M'] [AddCommMonoid M₂]
   [∀ i, Module R (M₁ i)] [Module R M'] [Module R M₂]
 
-/-- The pushforward of an indexed collection of submodule `p i ⊆ M₁ i` by `f : M₁ → M₂`.
+/--
+The pushforward of an indexed collection of submodule `p i ⊆ M₁ i` by `f : M₁ → M₂`.
 
-Note that this is not a submodule - it is not closed under addition. -/
+Note that this is not a submodule - it is not closed under addition.
+-/
 def map [Nonempty ι] (f : (Π i, M₁ i) →ₘₗ[R] M₂) (p : ∀ i, Submodule R (M₁ i)) :
     SubMulAction R M₂ where
   carrier := f '' { v | ∀ i, v i ∈ p i }

@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.Algebra.Module.Torsion.Prod
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quaternions
 
@@ -20,9 +23,9 @@ algebraic structures on `ℍ[R]`.
 ## Main definitions
 
 * `QuaternionAlgebra R a b c`, `ℍ[R, a, b, c]` :
-  [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b`, `c`
-  (Many other references such as Wikipedia assume $\operatorname{char} R ≠ 2$ therefore one can
-  complete the square and WLOG assume $b = 0$.)
+  ‍\[Bourbaki, _Algebra I_\]\[bourbaki1989\] with coefficients `a`, `b`, `c`
+  (Many other references such as Wikipedia assume $`\operatorname{char} R ≠ 2` therefore one can
+  complete the square and WLOG assume $`b = 0`.)
 * `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a.
   `QuaternionAlgebra R (-1) (0) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
@@ -58,9 +61,11 @@ quaternion
 
 open Module
 
-/-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$,
+/--
+Quaternion algebra over a type with fixed coefficients where $`i^2 = a + bi` and $`j^2 = c`,
 denoted as `ℍ[R,a,b]`.
-Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
+Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`.
+-/
 @[ext]
 structure QuaternionAlgebra (R : Type*) (a b c : R) where
   /-- Real part of a quaternion. -/
@@ -114,11 +119,13 @@ instance [Nontrivial R] : Nontrivial ℍ[R,c₁,c₂,c₃] := (equivTuple c₁ c
 section Zero
 variable [Zero R]
 
-/-- The imaginary part of a quaternion.
+/--
+The imaginary part of a quaternion.
 
 Note that unless `c₂ = 0`, this definition is not particularly well-behaved;
 for instance, `QuaternionAlgebra.star_im` only says that the star of an imaginary quaternion
-is imaginary under this condition. -/
+is imaginary under this condition.
+-/
 def im (x : ℍ[R,c₁,c₂,c₃]) : ℍ[R,c₁,c₂,c₃] :=
   ⟨0, x.imI, x.imJ, x.imK⟩
 
@@ -285,7 +292,8 @@ end AddGroup
 section Ring
 variable [Ring R]
 
-/-- Multiplication is given by
+/--
+Multiplication is given by
 
 * `1 * x = x * 1 = x`;
 * `i * i = c₁ + c₂ * i`;
@@ -293,7 +301,8 @@ variable [Ring R]
 * `i * j = k`, `j * i = c₂ * j - k`;
 * `k * k = - c₁ * c₃`;
 * `i * k = c₁ * j + c₂ * k`, `k * i = -c₁ * j`;
-* `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`. -/
+* `j * k = c₂ * c₃ - c₃ * i`, `k * j = c₃ * i`.
+-/
 @[simps]
 instance : Mul ℍ[R,c₁,c₂,c₃] where
   mul a b :=
@@ -1218,7 +1227,8 @@ theorem mk_univ_quaternionAlgebra : #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R
 theorem mk_univ_quaternionAlgebra_of_infinite [Infinite R] :
     #(Set.univ : Set ℍ[R,c₁,c₂,c₃]) = #R := by rw [mk_univ_quaternionAlgebra, pow_four]
 
-/-- Show the quaternion `⟨w, x, y, z⟩` as a string `"{ re := w, imI := x, imJ := y, imK := z }"`.
+/--
+Show the quaternion `⟨w, x, y, z⟩` as a string `"{ re := w, imI := x, imJ := y, imK := z }"`.
 
 For the typical case of quaternions over ℝ, each component will show as a Cauchy sequence due to
 the way Real numbers are represented.

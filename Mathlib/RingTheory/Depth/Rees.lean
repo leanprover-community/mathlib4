@@ -13,8 +13,10 @@ import Mathlib.Algebra.Category.Grp.Zero
 import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The Rees theorem
 
 In this file we prove the Rees theorem for depth, which relates the vanishing of
@@ -25,6 +27,7 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 * `ModuleCat.exists_isRegular_tfae` (Rees theorem) : For any `n : ℕ`, Noetherian ring `R`,
   `I : Ideal R`, and finitely generated and nontrivial `R`-module `M` satisfying `IM < M`,
   the following are equivalent:
+
   * for any `N : ModuleCat R` finitely generated and nontrivial such that `Supp N ⊆ V(I)`,
     `∀ i < n, Ext N M i = 0`
   * `∀ i < n, Ext (R ⧸ I) M i = 0`
@@ -34,8 +37,7 @@ certain `Ext` groups and the length of a maximal regular sequence in a certain i
 
 ## References
 
-* [Commutative Algebra, Theorem 28][matsumuraCommAlg]
-
+* ‍\[Commutative Algebra, Theorem 28\]\[matsumuraCommAlg\]
 -/
 
 public section
@@ -147,9 +149,10 @@ lemma subsingleton_ext_of_exists_isRegular [Small.{v} R] [IsNoetherianRing R] (I
         exact AddCommGrpCat.subsingleton_of_isZero (IsZero.of_mono_eq_zero _ zero_gk)
 
 /--
-**The Rees theorem**
+*The Rees theorem*
 For any `n : ℕ`, Noetherian ring `R`, `I : Ideal R`, and finitely generated and nontrivial
 `R`-module `M` satisfying `IM < M`, the following are equivalent:
+
 * for any `N : ModuleCat R` finitely generated and nontrivial with support contained in the
   zero locus of `I`, `∀ i < n, Ext N M i = 0`
 * `∀ i < n, Ext (R ⧸ I) M i = 0`

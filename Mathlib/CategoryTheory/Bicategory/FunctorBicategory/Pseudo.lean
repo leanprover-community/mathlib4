@@ -7,10 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Pseudo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bicategory of pseudofunctors
 
 Given bicategories `B` and `C`, we define a bicategory structure on `Pseudofunctor B C` whose
+
 * objects are pseudofunctors,
 * 1-morphisms are strong natural transformations, and
 * 2-morphisms are modifications.
@@ -78,9 +82,11 @@ abbrev rightUnitor (η : F ⟶ G) : η ≫ 𝟙 G ≅ η :=
 variable (B C)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- A bicategory structure on pseudofunctors, with strong transformations as 1-morphisms.
+/--
+A bicategory structure on pseudofunctors, with strong transformations as 1-morphisms.
 
-Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace. -/
+Note that this instance is scoped to the `Pseudofunctor.StrongTrans` namespace.
+-/
 @[simps! whiskerLeft_as_app whiskerRight_as_app associator_hom_as_app associator_inv_as_app
 rightUnitor_hom_as_app rightUnitor_inv_as_app leftUnitor_hom_as_app leftUnitor_inv_as_app]
 scoped instance : Bicategory (Pseudofunctor B C) where

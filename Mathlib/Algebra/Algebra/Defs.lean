@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Algebras over commutative semirings
 
@@ -88,7 +92,8 @@ assert_not_exists Field Finset Module.End
 
 universe u v w u₁ v₁
 
-/-- An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
+/--
+An associative unital `R`-algebra is a semiring `A` equipped with a map into its center `R → A`.
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
@@ -162,12 +167,14 @@ end CommRingRing
 
 end algebraMap
 
-/-- Creating an algebra from a morphism to the center of a semiring.
-See note [reducible non-instances].
+/--
+Creating an algebra from a morphism to the center of a semiring.
+See note \[reducible non-instances\].
 
-*Warning:* In general this should not be used if `S` already has a `SMul R S`
+_Warning:_ In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
-this will likely create a diamond. -/
+this will likely create a diamond.
+-/
 abbrev RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
     (h : ∀ c x, i c * x = x * i c) : Algebra R S where
   smul c x := i c * x
@@ -188,12 +195,14 @@ theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R
     @algebraMap R S _ _ (i.toAlgebra' h) = i :=
   rfl
 
-/-- Creating an algebra from a morphism to a commutative semiring.
-See note [reducible non-instances].
+/--
+Creating an algebra from a morphism to a commutative semiring.
+See note \[reducible non-instances\].
 
-*Warning:* In general this should not be used if `S` already has a `SMul R S`
+_Warning:_ In general this should not be used if `S` already has a `SMul R S`
 instance, since this creates another `SMul R S` instance from the supplied `RingHom` and
-this will likely create a diamond. -/
+this will likely create a diamond.
+-/
 abbrev RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
   i.toAlgebra' fun _ => mul_comm _
 
@@ -210,11 +219,13 @@ namespace Algebra
 
 variable {R : Type u} {S : Type v} {A : Type w}
 
-/-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
+/--
+Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
 If `(r • 1) * x = x * (r • 1) = r • x` for all `r : R` and `x : A`, then `A` is an `Algebra`
 over `R`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
@@ -227,11 +238,13 @@ abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
   commutes' r x := by simp [h₁, h₂]
   smul_def' r x := by simp [h₁]
 
-/-- Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
+/--
+Let `R` be a commutative semiring, let `A` be a semiring with a `Module R` structure.
 If `(r • x) * y = x * (r • y) = r • (x * y)` for all `r : R` and `x y : A`, then `A`
 is an `Algebra` over `R`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev ofModule [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x y : A), r • x * y = r • (x * y))
     (h₂ : ∀ (r : R) (x y : A), x * r • y = r • (x * y)) : Algebra R A :=
@@ -423,10 +436,12 @@ theorem algebraMap.smul' [Monoid A] [MulDistribMulAction A C] [SMulDistribClass 
 end algebraMap
 
 attribute [local instance] IsUnital.toSemiring in
-/-- A unital non-unital algebra is an algebra.
+/--
+A unital non-unital algebra is an algebra.
 
 This constructor is primarily intended to be used within proofs since it creates bad definitional
-equalities. -/
+equalities.
+-/
 noncomputable abbrev IsUnital.toAlgebra {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
     [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] [IsUnital A] : Algebra R A :=
   .ofModule smul_mul_assoc mul_smul_comm

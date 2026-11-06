@@ -7,29 +7,29 @@ module
 
 public import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Liouville constants
 
-This file contains a construction of a family of Liouville numbers, indexed by a natural number $m$.
-The most important property is that they are examples of transcendental real numbers.
-This fact is recorded in `transcendental_liouvilleNumber`.
+This file contains a construction of a family of Liouville numbers, indexed by a natural number
+$`m`. The most important property is that they are examples of transcendental real numbers. This
+fact is recorded in `transcendental_liouvilleNumber`.
 
-More precisely, for a real number $m$, Liouville's constant is
-$$
-\sum_{i=0}^\infty\frac{1}{m^{i!}}.
-$$
-The series converges only for $1 < m$. However, there is no restriction on $m$, since,
+More precisely, for a real number $`m`, Liouville's constant is
+$$`  \sum_{i=0}^\infty\frac{1}{m^{i!}}.  `
+The series converges only for $`1 < m`. However, there is no restriction on $`m`, since,
 if the series does not converge, then the sum of the series is defined to be zero.
 
-We prove that, for $m \in \mathbb{N}$ satisfying $2 \le m$, Liouville's constant associated to $m$
-is a transcendental number. Classically, the Liouville number for $m = 2$ is the one called
+We prove that, for $`m \in \mathbb{N}` satisfying $`2 \le m`, Liouville's constant associated to
+$`m` is a transcendental number. Classically, the Liouville number for $`m = 2` is the one called
 "Liouville's constant".
 
 ## Implementation notes
 
-The indexing $m$ is eventually a natural number satisfying $2 ≤ m$. However, we prove the first few
-lemmas for $m \in \mathbb{R}$.
+The indexing $`m` is eventually a natural number satisfying $`2 ≤ m`. However, we prove the first
+few lemmas for $`m \in \mathbb{R}`.
 -/
 
 @[expose] public section
@@ -41,10 +41,9 @@ open scoped Nat
 
 open Real Finset
 
-/-- For a real number `m`, Liouville's constant is
-$$
-\sum_{i=0}^\infty\frac{1}{m^{i!}}.
-$$
+/--
+For a real number `m`, Liouville's constant is
+$$`  \sum_{i=0}^\infty\frac{1}{m^{i!}}.  `
 The series converges only for `1 < m`. However, there is no restriction on `m`, since,
 if the series does not converge, then the sum of the series is defined to be zero.
 -/
@@ -53,20 +52,18 @@ def liouvilleNumber (m : ℝ) : ℝ :=
 
 namespace LiouvilleNumber
 
-/-- `LiouvilleNumber.partialSum` is the sum of the first `k + 1` terms of Liouville's constant,
+/--
+`LiouvilleNumber.partialSum` is the sum of the first `k + 1` terms of Liouville's constant,
 i.e.
-$$
-\sum_{i=0}^k\frac{1}{m^{i!}}.
-$$
+$$`  \sum_{i=0}^k\frac{1}{m^{i!}}.  `
 -/
 def partialSum (m : ℝ) (k : ℕ) : ℝ :=
   ∑ i ∈ range (k + 1), 1 / m ^ i !
 
-/-- `LiouvilleNumber.remainder` is the sum of the series of the terms in `liouvilleNumber m`
+/--
+`LiouvilleNumber.remainder` is the sum of the series of the terms in `liouvilleNumber m`
 starting from `k+1`, i.e
-$$
-\sum_{i=k+1}^\infty\frac{1}{m^{i!}}.
-$$
+$$`  \sum_{i=k+1}^\infty\frac{1}{m^{i!}}.  `
 -/
 def remainder (m : ℝ) (k : ℕ) : ℝ :=
   ∑' i, 1 / m ^ (i + (k + 1))!

@@ -10,12 +10,14 @@ public import Mathlib.Algebra.Lie.Semisimple.Basic
 
 import Mathlib.Algebra.Lie.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products of bases Lie algebras
 
 Given two finite-dimensional simple Lie algebras, if they admit bases with matching Cartan matrices,
 they must be isomorphic. This file provides a proof of this as `LieAlgebra.Basis.equivOfReindex`.
-
 -/
 
 noncomputable section
@@ -58,10 +60,12 @@ lemma h_mem_prod (i : ι₁) :
     (b₁.h i, b₂.h (eι i)) ∈ b₁.prod eι b₂ :=
   subset_lieSpan <| by aesop
 
-/-- A distinguished subalgebra of the Lie algebra defined by `LieAlgebra.Basis.prod`.
+/--
+A distinguished subalgebra of the Lie algebra defined by `LieAlgebra.Basis.prod`.
 
 Subject to the assumptions demanded by `LieAlgebra.Basis.isCartanSubalgebra` this will be a Cartan
-subalgebra of `LieAlgebra.Basis.prod`. -/
+subalgebra of `LieAlgebra.Basis.prod`.
+-/
 def prodCartan :
     LieSubalgebra R (prod eι b₁ b₂) :=
   .lieSpan _ _ {⟨(b₁.h i, b₂.h (eι i)), h_mem_prod eι b₁ b₂ i⟩ | i : ι₁}

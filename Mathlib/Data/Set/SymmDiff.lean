@@ -8,7 +8,12 @@ module
 public import Mathlib.Order.BooleanAlgebra.Set
 public import Mathlib.Order.SymmDiff
 
-/-! # Symmetric differences of sets -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Symmetric differences of sets
+-/
 
 public section
 

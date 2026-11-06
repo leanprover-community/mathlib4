@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.MutuallySingular
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.VectorMeasure.Relations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jordan decomposition
 
@@ -217,14 +220,16 @@ theorem toJordanDecomposition_spec (s : SignedMeasure α) :
   obtain ⟨hi₁, hi₂, hi₃⟩ := s.exists_compl_positive_negative.choose_spec
   exact ⟨i, hi₁, hi₂, hi₃, rfl, rfl⟩
 
-/-- **The Jordan decomposition theorem**: Given a signed measure `s`, there exists a pair of
+/--
+*The Jordan decomposition theorem*: Given a signed measure `s`, there exists a pair of
 mutually singular measures `μ` and `ν` such that `s = μ - ν`. In this case, the measures `μ`
 and `ν` are given by `s.toJordanDecomposition.posPart` and
 `s.toJordanDecomposition.negPart` respectively.
 
 Note that we use `MeasureTheory.JordanDecomposition.toSignedMeasure` to represent the
 signed measure corresponding to
-`s.toJordanDecomposition.posPart - s.toJordanDecomposition.negPart`. -/
+`s.toJordanDecomposition.posPart - s.toJordanDecomposition.negPart`.
+-/
 @[simp]
 theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
     s.toJordanDecomposition.toSignedMeasure = s := by

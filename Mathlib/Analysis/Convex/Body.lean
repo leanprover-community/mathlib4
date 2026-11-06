@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex bodies
 
@@ -21,9 +24,9 @@ If `V` is a normed space, `ConvexBody V` is a metric space.
 
 ## TODO
 
-- define positive convex bodies, requiring the interior to be nonempty
-- introduce support sets
-- Characterise the interaction of the distance with algebraic operations, e.g.
+* define positive convex bodies, requiring the interior to be nonempty
+* introduce support sets
+* Characterise the interaction of the distance with algebraic operations, e.g.
   `dist (a • K) (a • L) = ‖a‖ * dist K L`, `dist (a +ᵥ K) (a +ᵥ L) = dist K L`
 
 ## Tags
@@ -162,7 +165,9 @@ variable [ContinuousAdd V]
 noncomputable instance : DistribMulAction ℝ (ConvexBody V) :=
   SetLike.coe_injective.distribMulAction ⟨⟨_, coe_zero⟩, coe_add⟩ coe_smul
 
-/-- The convex bodies in a fixed space $V$ form a module over the nonnegative reals. -/
+/--
+The convex bodies in a fixed space $`V` form a module over the nonnegative reals.
+-/
 noncomputable instance : Module ℝ≥0 (ConvexBody V) where
   add_smul c d K := SetLike.ext' <| Convex.add_smul K.convex c.coe_nonneg d.coe_nonneg
   zero_smul K := SetLike.ext' <| Set.zero_smul_set K.nonempty
@@ -180,8 +185,10 @@ theorem hausdorffEDist_ne_top {K L : ConvexBody V} : Metric.hausdorffEDist (K : 
   apply_rules [Metric.hausdorffEDist_ne_top_of_nonempty_of_bounded, ConvexBody.nonempty,
     ConvexBody.isBounded]
 
-/-- Convex bodies in a fixed seminormed space $V$ form a pseudo-metric space under the Hausdorff
-metric. -/
+/--
+Convex bodies in a fixed seminormed space $`V` form a pseudo-metric space under the Hausdorff
+metric.
+-/
 noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist K L := Metric.hausdorffDist (K : Set V) L
   dist_self _ := Metric.hausdorffDist_self_zero

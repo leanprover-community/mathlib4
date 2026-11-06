@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polynomials of specific degree
 

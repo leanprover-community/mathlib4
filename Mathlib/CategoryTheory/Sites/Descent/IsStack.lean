@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Sites.Descent.DescentData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stacks: effectiveness of descent
 
@@ -24,9 +27,9 @@ constructor `IsStack.of_isStackFor` which assumes that these functors are
 equivalences of categories.
 
 ## References
-* [Jean Giraud, *Cohomologie non abélienne*][giraud1971]
-* [Gérard Laumon and Laurent Moret-Bailly, *Champs algébriques*][laumon-morel-bailly-2000]
 
+* ‍\[Jean Giraud, _Cohomologie non abélienne_\]\[giraud1971\]
+* ‍\[Gérard Laumon and Laurent Moret-Bailly, _Champs algébriques_\]\[laumon-morel-bailly-2000\]
 -/
 
 public section

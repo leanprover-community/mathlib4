@@ -9,6 +9,9 @@ public import Mathlib.Data.Multiset.MapFold
 public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtering multisets by a predicate
 
@@ -31,7 +34,9 @@ variable {α : Type*} {β : Type v} {γ : Type*}
 
 namespace Multiset
 
-/-! ### `Multiset.filter` -/
+/-!
+# `Multiset.filter`
+-/
 
 
 section
@@ -171,7 +176,9 @@ lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (
   · contrapose!
     exact fun H ↦ ⟨s.filter P, filter_le _ _, H, fun a ha ↦ (mem_filter.mp ha).2⟩
 
-/-! ### Simultaneously filter and map elements of a multiset -/
+/-!
+# Simultaneously filter and map elements of a multiset
+-/
 
 
 /-- `filterMap f s` is a combination filter/map operation on `s`.
@@ -266,7 +273,9 @@ theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred
     simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_ite]; clear ih; congr
     split_ifs <;> simp
 
-/-! ### countP -/
+/-!
+# countP
+-/
 
 theorem countP_eq_card_filter (s) : countP p s = card (filter p s) :=
   Quot.inductionOn s fun l => l.countP_eq_length_filter (p := (p ·))
@@ -293,7 +302,9 @@ lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
 
 end
 
-/-! ### Multiplicity of an element -/
+/-!
+# Multiplicity of an element
+-/
 
 
 section
@@ -353,7 +364,9 @@ theorem filter_eq (s : Multiset α) (b : α) : s.filter (Eq b) = replicate (coun
 
 end
 
-/-! ### Subtraction -/
+/-!
+# Subtraction
+-/
 
 section sub
 variable [DecidableEq α] {s t : Multiset α} {a : α}

@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Finset
 
 import Mathlib.Data.Finset.Lattice.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets closed under join/meet
 
@@ -42,8 +45,12 @@ section Set
 variable {ι : Sort*} {S : Set (Set α)} {f : ι → Set α} {s t : Set α} {a : α}
 open Set
 
-/-- A set `s` is *sup-closed* if `a ⊔ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/
-@[to_dual /-- A set `s` is *inf-closed* if `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`. -/]
+/--
+A set `s` is _sup-closed_ if `a ⊔ b ∈ s` for all `a ∈ s`, `b ∈ s`.
+-/
+@[to_dual /--
+          A set `s` is _inf-closed_ if `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`.
+          -/]
 def SupClosed (s : Set α) : Prop := ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → a ⊔ b ∈ s
 
 @[to_dual (attr := simp)] lemma supClosed_empty : SupClosed (∅ : Set α) := by simp [SupClosed]
@@ -144,9 +151,11 @@ variable {ι : Sort*} [Lattice α] [Lattice β] {S : Set (Set α)} {f : ι → S
 
 open Set
 
-/-- A set `s` is a *sublattice* if `a ⊔ b ∈ s` and `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`.
+/--
+A set `s` is a _sublattice_ if `a ⊔ b ∈ s` and `a ⊓ b ∈ s` for all `a ∈ s`, `b ∈ s`.
 Note: This is not the preferred way to declare a sublattice. One should instead use `Sublattice`.
-TODO: Define `Sublattice`. -/
+TODO: Define `Sublattice`.
+-/
 structure IsSublattice (s : Set α) : Prop where
   supClosed : SupClosed s
   infClosed : InfClosed s
@@ -217,7 +226,9 @@ variable [LinearOrder α]
 
 end LinearOrder
 
-/-! ## Closure -/
+/-!
+# Closure
+-/
 
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] {s t : Set α} {a b : α}

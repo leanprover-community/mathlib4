@@ -9,7 +9,11 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Invertible
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
-/-! # Continuous linear maps with a continuous left/right inverse
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Continuous linear maps with a continuous left/right inverse
 
 This file defines continuous linear maps which admit a continuous left/right inverse.
 
@@ -32,7 +36,6 @@ This concept is used to give an equivalent definition of immersions and submersi
   which is a continuous linear map itself
 * `ContinuousLinearMap.HasRightInverse`: a continuous linear map admits a right inverse
   which is a continuous linear map itself
-
 * `ContinuousLinearMap.HasLeftInverse.isClosed_range`: if `f` has a continuous left inverse,
   its range is closed
 * `ContinuousLinearMap.HasLeftInverse.closedComplemented_range`: if `f` has a continuous left
@@ -41,7 +44,6 @@ This concept is used to give an equivalent definition of immersions and submersi
 * `ContinuousLinearMap.HasLeftInverse.of_injective_of_isClosed_range_of_closedComplement_range`:
   if `f` is injective and has closed range with a closed complement, it admits a continuous left
   inverse
-
 * `ContinuousLinearEquiv.hasLeftInverse` and `ContinuousLinearEquiv.hasRightInverse`:
   a continuous linear equivalence admits a continuous left (resp. right) inverse
 * `ContinuousLinearMap.HasLeftInverse.comp`, `ContinuousLinearMap.HasRightInverse.comp`:
@@ -67,7 +69,6 @@ This concept is used to give an equivalent definition of immersions and submersi
 * Suppose `E` and `F` are Banach and `f : E → F` is Fredholm.
   If `f` is surjective, it has a continuous right inverse.
   If `f` is injective, it has a continuous left inverse.
-
 -/
 
 public section

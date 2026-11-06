@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Traversal
 
 import Mathlib.Data.List.Zip
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on walks
 
@@ -26,6 +29,7 @@ Operations on walks that produce a new walk in the same graph.
 * `SimpleGraph.Walk.dropLast`: Remove the last dart of a walk
 
 ## Tags
+
 walks
 -/
 
@@ -40,12 +44,14 @@ namespace Walk
 universe u
 variable {V : Type u} {G : SimpleGraph V} {u v w : V}
 
-/-- Change the endpoints of a walk using equalities. This is helpful for relaxing
+/--
+Change the endpoints of a walk using equalities. This is helpful for relaxing
 definitional equality constraints and to be able to state otherwise difficult-to-state
 lemmas. While this is a simple wrapper around `Eq.rec`, it gives a canonical way to write it.
 
 The simp-normal form is for the `copy` to be pushed outward. That way calculations can
-occur within the "copy context." -/
+occur within the "copy context."
+-/
 protected def copy {u v u' v'} (p : G.Walk u v) (hu : u = u') (hv : v = v') : G.Walk u' v' :=
   hu ▸ hv ▸ p
 
@@ -276,10 +282,12 @@ def concatRecAux {u v : V} : (p : G.Walk u v) → motive v u p.reverse
   | nil => Hnil
   | cons h p => reverse_cons h p ▸ Hconcat p.reverse h.symm (concatRecAux p)
 
-/-- Recursor on walks by inducting on `SimpleGraph.Walk.concat`.
+/--
+Recursor on walks by inducting on `SimpleGraph.Walk.concat`.
 
 This is inducting from the opposite end of the walk compared
-to `SimpleGraph.Walk.rec`, which inducts on `SimpleGraph.Walk.cons`. -/
+to `SimpleGraph.Walk.rec`, which inducts on `SimpleGraph.Walk.cons`.
+-/
 @[elab_as_elim]
 def concatRec {u v : V} (p : G.Walk u v) : motive u v p :=
   reverse_reverse p ▸ concatRecAux @Hnil @Hconcat p.reverse

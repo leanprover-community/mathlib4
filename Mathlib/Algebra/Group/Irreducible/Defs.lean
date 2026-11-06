@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Units.Defs
 
 import Mathlib.Basic.Logic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducible elements in a monoid
 
@@ -37,10 +40,12 @@ structure AddIrreducible [AddMonoid M] (p : M) : Prop where
 section Monoid
 variable [Monoid M] {p a b : M}
 
-/-- `Irreducible p` states that `p` is non-unit and only factors into units.
+/--
+`Irreducible p` states that `p` is non-unit and only factors into units.
 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
-monoid allows us to reuse irreducible for associated elements. -/
+monoid allows us to reuse irreducible for associated elements.
+-/
 @[to_additive (attr := wikidata Q2989575)]
 structure Irreducible (p : M) : Prop where
   /-- An irreducible element is not a unit. -/

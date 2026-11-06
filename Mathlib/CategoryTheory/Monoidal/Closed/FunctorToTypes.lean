@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.FunctorHom
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors to Type are closed.
 
@@ -15,8 +18,8 @@ Show that `C ⥤ Type max w v u` is monoidal closed for `C` a category in `Type 
 `Type v`, and `w` an arbitrary universe.
 
 ## TODO
-It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 
+It should be shown that `C ⥤ Type max w v u` is Cartesian closed.
 -/
 
 @[expose] public section

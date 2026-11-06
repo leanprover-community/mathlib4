@@ -9,6 +9,9 @@ public import Mathlib.Analysis.LocallyConvex.Bounded
 
 import Mathlib.Analysis.SpecificLimits.Normed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity and Von Neumann boundedness
 
@@ -18,8 +21,7 @@ if `E` is first countable, then every locally bounded linear map `E →ₛₗ[σ
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 -/
 
 @[expose] public section

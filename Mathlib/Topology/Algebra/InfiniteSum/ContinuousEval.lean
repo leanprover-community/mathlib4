@@ -10,7 +10,11 @@ public import Mathlib.Topology.Hom.ContinuousEvalConst
 
 import Mathlib.Algebra.Group.FunLike
 
-/-! # Applying an infinite sum of functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Applying an infinite sum of functions
 
 This file provides lemmas for `(∏'[L] n, f n) x` and `(∑'[L] n, f n) x` where `f` is a family of
 functions. We state this for `FunLike` objects that are `ContinuousEvalConst`. This is applicable

@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
 public import Mathlib.RingTheory.Localization.NumDen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rational root theorem and integral root theorem
 
@@ -23,7 +26,7 @@ Finally, we use this to show unique factorization domains are integrally closed.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Rational_root_theorem
+* https://en.wikipedia.org/wiki/Rational\_root\_theorem
 -/
 
 public section

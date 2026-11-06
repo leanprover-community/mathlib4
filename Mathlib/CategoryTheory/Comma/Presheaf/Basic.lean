@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.HomCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computation of `Over A` for a presheaf `A`
 
@@ -37,6 +40,7 @@ to interact with the actual construction, the mere existence of the equivalence 
 triangle should generally be sufficient.
 
 ## Main results
+
 * `overEquivPresheafCostructuredArrow`:
   the equivalence `Over A ≌ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
 * `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`: the natural isomorphism
@@ -54,14 +58,16 @@ the form `F.map (eqToHom _)` for these correction terms and try to push them as 
 possible.
 
 ## Future work
+
 * If needed, it should be possible to show that the equivalence is natural in `A`.
 
 ## References
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 1.4.12
+
+* ‍\[M. Kashiwara, P. Schapira, _Categories and Sheaves_\]\[Kashiwara2006\], Lemma 1.4.12
 
 ## Tags
-presheaf, over category, coyoneda
 
+presheaf, over category, coyoneda
 -/
 
 @[expose] public section
@@ -76,7 +82,9 @@ variable {C : Type u} [Category.{v} C] {A : Cᵒᵖ ⥤ Type v}
 
 namespace OverPresheafAux
 
-/-! ### Construction of the forward functor `Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v` -/
+/-!
+# Construction of the forward functor `Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v`
+-/
 
 /-- Via the Yoneda lemma, `u : F.obj (op X)` defines a natural transformation `yoneda.obj X ⟶ F`
 and via the element `η.app (op X) u` also a morphism `yoneda.obj X ⟶ A`. This structure
@@ -217,7 +225,8 @@ This is basically just `yoneda : Over A ⥤ (Over A)ᵒᵖ ⥤ Type (max u v)` r
 argument along the forgetful functor `CostructuredArrow yoneda A ⥤ Over A`, but done in a way
 that we land in a smaller universe.
 
-This is one direction of the equivalence we're constructing. -/
+This is one direction of the equivalence we're constructing.
+-/
 @[simps]
 def restrictedYoneda (A : Cᵒᵖ ⥤ Type v) :
     Over A ⥤ (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v where
@@ -235,8 +244,11 @@ def toOverYonedaCompRestrictedYoneda (A : Cᵒᵖ ⥤ Type v) :
     (fun s => NatIso.ofComponents (fun _ => OverArrows.costructuredArrowIso _ _) (by cat_disch))
     (by cat_disch)
 
-/-! ### Construction of the backward functor
-`((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A` -/
+/-!
+# Construction of the backward functor
+
+`((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) ⥤ Over A`
+-/
 
 lemma map_mkPrecomp_eqToHom {F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v} {X Y : C} {f : X ⟶ Y}
     {g g' : yoneda.obj Y ⟶ A} (h : g = g')
@@ -255,7 +267,8 @@ We would prefer to think of this sigma type to be indexed by natural transformat
 `yoneda.obj X ⟶ A` instead of `A.obj (op X)`. These are equivalent by the Yoneda lemma, but
 we cannot use the former because that type lives in the wrong universe. Hence, we will provide
 a lot of API that will enable us to pretend that we are really indexing over
-`yoneda.obj X ⟶ A`. -/
+`yoneda.obj X ⟶ A`.
+-/
 def YonedaCollection (F : (CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) (X : C) : Type v :=
   Σ s : A.obj (op X), F.obj (op (CostructuredArrow.mk (yonedaEquiv.symm s)))
 
@@ -421,7 +434,9 @@ def costructuredArrowPresheafToOver (A : Cᵒᵖ ⥤ Type v) :
 
 section unit
 
-/-! ### Construction of the unit -/
+/-!
+# Construction of the unit
+-/
 
 /-- Forward direction of the unit. -/
 def unitForward {F : Cᵒᵖ ⥤ Type v} (η : F ⟶ A) (X : C) :
@@ -497,7 +512,9 @@ def unit (A : Cᵒᵖ ⥤ Type v) : 𝟭 (Over A) ≅ restrictedYoneda A ⋙ cos
 
 end unit
 
-/-! ### Construction of the counit -/
+/-!
+# Construction of the counit
+-/
 
 section counit
 
@@ -600,7 +617,8 @@ If `A : Cᵒᵖ ⥤ Type v` is a presheaf, then we have an equivalence between p
 triangle involving this equivalence, see
 `CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow`.
 
-This is Lemma 1.4.12 in [Kashiwara2006]. -/
+This is Lemma 1.4.12 in \[Kashiwara2006\].
+-/
 def overEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
     Over A ≌ ((CostructuredArrow yoneda A)ᵒᵖ ⥤ Type v) :=
   .mk (restrictedYoneda A) (costructuredArrowPresheafToOver A) (unit A) (counit A)
@@ -610,7 +628,8 @@ If `A : Cᵒᵖ ⥤ Type v` is a presheaf, then the Yoneda embedding for
 `CostructuredArrow yoneda A` factors through `Over A` via a forgetful functor and an
 equivalence.
 
-This is Lemma 1.4.12 in [Kashiwara2006]. -/
+This is Lemma 1.4.12 in \[Kashiwara2006\].
+-/
 def CostructuredArrow.toOverCompOverEquivPresheafCostructuredArrow (A : Cᵒᵖ ⥤ Type v) :
     CostructuredArrow.toOver yoneda A ⋙ (overEquivPresheafCostructuredArrow A).functor ≅ yoneda :=
   toOverYonedaCompRestrictedYoneda A

@@ -16,10 +16,14 @@ public import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.Algebra.Module.Torsion.Field
 import Mathlib.Algebra.Order.Monoid.Submonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Complex number as a vector space over `ℝ`
 
 This file contains the following instances:
+
 * Any `•`-structure (`SMul`, `MulAction`, `DistribMulAction`, `Module`, `Algebra`) on
   `ℝ` imbues a corresponding structure on `ℂ`. This includes the statement that `ℂ` is an `ℝ`
   algebra.
@@ -287,9 +291,11 @@ variable {A : Type*} [Ring A] [Algebra ℝ A]
 
 open Algebra
 
-/-- There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
+/--
+There is an `AlgHom` from `ℂ` to any `ℝ`-algebra with an element that squares to `-1`.
 
-See `Complex.lift` for this as an equiv. -/
+See `Complex.lift` for this as an equiv.
+-/
 def liftAux (I' : A) (hf : I' * I' = -1) : ℂ →ₐ[ℝ] A :=
   AlgHom.ofLinearMap
     ((Algebra.linearMap ℝ A).comp reLm + (LinearMap.toSpanSingleton _ _ I').comp imLm)
@@ -324,12 +330,14 @@ theorem adjoin_I : ℝ[I] = ⊤ := by
 theorem range_liftAux (I' : A) (hI') : (liftAux I' hI').range = ℝ[I'] := by
   simp_rw [← Algebra.map_top, ← adjoin_I, AlgHom.map_adjoin, Set.image_singleton, liftAux_apply_I]
 
-/-- A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
+/--
+A universal property of the complex numbers, providing a unique `ℂ →ₐ[ℝ] A` for every element
 of `A` which squares to `-1`.
 
 This can be used to embed the complex numbers in the `Quaternion`s.
 
-This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
+This isomorphism is named to match the very similar `Zsqrtd.lift`.
+-/
 @[simps +simpRhs]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop

@@ -14,6 +14,9 @@ public import Mathlib.Topology.Order.MonotoneContinuity
 public import Mathlib.Topology.Order.Real
 public import Mathlib.Topology.UniformSpace.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological algebra properties of ℝ
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free groupoid on a quiver
 
@@ -17,18 +20,17 @@ extension as a functor from the free groupoid, and proves uniqueness of this ext
 
 Given the type `V` and a quiver instance on `V`:
 
-- `Quiver.FreeGroupoid V`: a type synonym for `V`.
-- `Quiver.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `Quiver.FreeGroupoid V`.
-- `lift`: the lifting of a prefunctor from `V` to `V'` where `V'` is a groupoid, to a functor.
+* `Quiver.FreeGroupoid V`: a type synonym for `V`.
+* `Quiver.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `Quiver.FreeGroupoid V`.
+* `lift`: the lifting of a prefunctor from `V` to `V'` where `V'` is a groupoid, to a functor.
   `Quiver.FreeGroupoid V ⥤ V'`.
-- `lift_spec` and `lift_unique`: the proofs that, respectively, `lift` indeed is a lifting
+* `lift_spec` and `lift_unique`: the proofs that, respectively, `lift` indeed is a lifting
   and is the unique one.
 
 ## Implementation notes
 
 The free groupoid is first defined by symmetrifying the quiver, taking the induced path category
 and finally quotienting by the reducibility relation.
-
 -/
 
 @[expose] public section

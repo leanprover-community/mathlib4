@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Ring
 
 import Mathlib.Data.Nat.GCD.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Central binomial coefficients
 
@@ -88,9 +91,10 @@ theorem succ_mul_centralBinom_succ (n : ℕ) :
     _ = 2 * ((2 * n).choose n * (2 * n + 1)) := by rw [choose_mul_succ_eq]
     _ = 2 * (2 * n + 1) * (2 * n).choose n := by rw [mul_assoc, mul_comm (2 * n + 1)]
 
-/-- An exponential lower bound on the central binomial coefficient.
+/--
+An exponential lower bound on the central binomial coefficient.
 This bound is of interest because it appears in
-[Tochiori's refinement of Erdős's proof of Bertrand's postulate][tochiori_bertrand].
+‍\[Tochiori's refinement of Erdős's proof of Bertrand's postulate\]\[tochiori\_bertrand\].
 -/
 theorem four_pow_lt_mul_centralBinom (n : ℕ) (n_big : 4 ≤ n) : 4 ^ n < n * centralBinom n := by
   induction n using Nat.strong_induction_on with | _ n IH

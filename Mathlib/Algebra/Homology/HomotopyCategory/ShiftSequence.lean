@@ -11,14 +11,17 @@ public import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
-/-! # Compatibilities of the homology functor with the shift
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Compatibilities of the homology functor with the shift
 
 This file studies how homology of cochain complexes behaves with respect to
 the shift: there is a natural isomorphism `(K⟦n⟧).homology a ≅ K.homology a`
 when `n + a = a'`. This is summarized by instances
 `(homologyFunctor C (ComplexShape.up ℤ) 0).ShiftSequence ℤ` in the `CochainComplex`
 and `HomotopyCategory` namespaces.
-
 -/
 
 @[expose] public section

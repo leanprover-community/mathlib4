@@ -12,15 +12,18 @@ import Mathlib.RingTheory.Ideal.MinimalPrime.Localization
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Krull dimension and non-zero-divisors
 
 ## Main results
-- `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
+
+* `ringKrullDim_quotient_succ_le_of_nonZeroDivisor`: If `r` is not a zero divisor, then
   `dim R/r + 1 ≤ dim R`.
-- `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
-- `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
+* `ringKrullDim_succ_le_ringKrullDim_polynomial`: `dim R + 1 ≤ dim R[X]`.
+* `ringKrullDim_add_enatCard_le_ringKrullDim_mvPolynomial`: `dim R + #σ ≤ dim R[σ]`.
 -/
 
 public section

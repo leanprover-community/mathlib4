@@ -8,10 +8,11 @@ module
 public import Mathlib.CategoryTheory.IsConnected
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Pullbacks commute with connected limits
-
 -/
 
 @[expose] public section

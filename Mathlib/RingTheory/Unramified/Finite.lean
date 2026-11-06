@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Unramified.Basic
 
 import Mathlib.RingTheory.Ideal.IdempotentFG
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Various results about unramified algebras
 
@@ -20,27 +23,27 @@ of formally unramified algebras which are essentially of finite type.
 
 Let `S/R` be formally unramified and essentially of finite type.
 
-- `Algebra.FormallyUnramified.elem R S`: the idempotent of the diagonal.
-- `Algebra.FormallyUnramified.sec R S M`: For an `S`-module `M`, this is an `S`-linear section of
+* `Algebra.FormallyUnramified.elem R S`: the idempotent of the diagonal.
+* `Algebra.FormallyUnramified.sec R S M`: For an `S`-module `M`, this is an `S`-linear section of
   the map `S ⊗[R] M →ₗ[S] M` defined by `s ⊗ m ↦ s • m`
-- `Algebra.FormallyUnramified.equalizerIdempotent f g`: For algebra homomorphisms `f g : S →ₐ[R] A`,
+* `Algebra.FormallyUnramified.equalizerIdempotent f g`: For algebra homomorphisms `f g : S →ₐ[R] A`,
   this is the idempotent defining the subset of `Spec A` where `f` and `g` agree.
 
 ## Main results
 
-- `Algebra.FormallyUnramified.iff_exists_tensorProduct`:
+* `Algebra.FormallyUnramified.iff_exists_tensorProduct`:
   A finite-type `R`-algebra `S` is (formally) unramified iff
   there exists a `t : S ⊗[R] S` satisfying
+
   1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
   2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
-- `Algebra.FormallyUnramified.finite_of_free`: An unramified free algebra is finitely generated.
-- `Algebra.FormallyUnramified.flat_of_restrictScalars`:
+* `Algebra.FormallyUnramified.finite_of_free`: An unramified free algebra is finitely generated.
+* `Algebra.FormallyUnramified.flat_of_restrictScalars`:
   If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat.
 
 ## References
 
-- [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
+* ‍\[B. Iversen, _Generic Local Structure of the Morphisms in Commutative Algebra_\]\[iversen\]
 -/
 
 @[expose] public section
@@ -55,8 +58,9 @@ variable (N : Type*) [AddCommGroup N] [Module R N] [Module S N] [IsScalarTower R
 namespace Algebra.FormallyUnramified
 
 /--
-Proposition I.2.3 + I.2.6 of [iversen]
+Proposition I.2.3 + I.2.6 of \[iversen\]
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
+
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
 -/
@@ -141,6 +145,7 @@ variable [FormallyUnramified R S] [EssFiniteType R S]
 variable (R S) in
 /--
 A finite-type `R`-algebra `S` is (formally) unramified iff there exists a `t : S ⊗[R] S` satisfying
+
 1. `t` annihilates every `1 ⊗ s - s ⊗ 1`.
 2. the image of `t` is `1` under the map `S ⊗[R] S → S`.
 
@@ -250,9 +255,10 @@ lemma finite_of_free [Module.Free R S] : Module.Finite R S := by
   use j, hj, i, hi
 
 /--
-Proposition I.2.3 of [iversen]
+Proposition I.2.3 of \[iversen\]
 If `S` is an unramified `R`-algebra, and `M` is an `S`-module, then the map
-`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits an `S`-linear section. -/
+`S ⊗[R] M →ₗ[S] M` taking `(b, m) ↦ b • m` admits an `S`-linear section.
+-/
 noncomputable
 def sec :
     M →ₗ[S] S ⊗[R] M where

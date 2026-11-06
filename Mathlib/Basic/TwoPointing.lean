@@ -10,6 +10,9 @@ public import Mathlib.Basic.Nonempty
 public import Mathlib.Basic.Nontrivial.Defs
 public import Mathlib.Tactic.Simps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Two-pointings
 
@@ -22,7 +25,7 @@ bipointed types. Two-pointed types form a full subcategory of those.
 
 ## References
 
-* [nLab, *Coalgebra of the real interval*]
+* ‍\[nLab, _Coalgebra of the real interval_\]
   (https://ncatlab.org/nlab/show/coalgebra+of+the+real+interval)
 -/
 

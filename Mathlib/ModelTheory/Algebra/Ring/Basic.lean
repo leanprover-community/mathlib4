@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.ModelTheory.Semantics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First-Order Language of Rings
 
@@ -16,11 +19,11 @@ etc. on terms in the language.
 
 ## Main Definitions
 
-- `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
-- `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and
+* `FirstOrder.Language.ring` : the language of rings, with function symbols `+`, `*`, `-`, `0`, `1`
+* `FirstOrder.Ring.CompatibleRing` : A class stating that a type is a `Language.ring.Structure`, and
   that this structure is the same as the structure given by the classes `Add`, `Mul`, etc. already
   on `R`.
-- `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
+* `FirstOrder.Ring.compatibleRingOfRing` : Given a type `R` with instances for each of the `Ring`
   operations, make a `compatibleRing` instance.
 
 ## Implementation Notes
@@ -144,12 +147,14 @@ theorem card_ring : card Language.ring = 5 := by
 
 open Structure
 
-/-- A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
+/--
+A Type `R` is a `CompatibleRing` if it is a structure for the language of rings and this
 structure is the same as the structure already given on `R` by the classes `Add`, `Mul` etc.
 
 It is recommended to use this type class as a hypothesis to any theorem whose statement
 requires a type to have be both a `Ring` (or `Field` etc.) and a
-`Language.ring.Structure` -/
+`Language.ring.Structure`
+-/
 /- This class does not extend `Add` etc, because this way it can be used in
 combination with a `Ring`, or `Field` instance without having multiple different
 `Add` structures on the Type. -/
@@ -204,7 +209,8 @@ theorem realize_one (v : α → R) : Term.realize v (1 : ring.Term α) = 1 := by
 
 end
 
-/-- Given a Type `R` with instances for each of the `Ring` operations, make a
+/--
+Given a Type `R` with instances for each of the `Ring` operations, make a
 `Language.ring.Structure R` instance, along with a proof that the operations given
 by the `Language.ring.Structure` are the same as those given by the `Add` or `Mul` etc.
 instances.
@@ -256,38 +262,48 @@ def languageEquivEquivRingEquiv {R S : Type*}
 
 variable (R : Type*) [Language.ring.Structure R]
 
-/-- A def to put an `Add` instance on a type with a `Language.ring.Structure` instance.
+/--
+A def to put an `Add` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
-`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K`
+-/
 abbrev addOfRingStructure : Add R :=
   { add := fun x y => funMap addFunc ![x, y] }
 
-/-- A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
+/--
+A def to put an `Mul` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
-`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K`
+-/
 abbrev mulOfRingStructure : Mul R :=
   { mul := fun x y => funMap mulFunc ![x, y] }
 
-/-- A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
+/--
+A def to put an `Neg` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
-`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K`
+-/
 abbrev negOfRingStructure : Neg R :=
   { neg := fun x => funMap negFunc ![x] }
 
-/-- A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
+/--
+A def to put an `Zero` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
-`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K`
+-/
 abbrev zeroOfRingStructure : Zero R :=
   { zero := funMap zeroFunc ![] }
 
-/-- A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
+/--
+A def to put an `One` instance on a type with a `Language.ring.Structure` instance.
 
 To be used sparingly, usually only when defining a more useful definition like,
-`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K` -/
+`[Language.ring.Structure K] -> [Theory.field.Model K] -> Field K`
+-/
 abbrev oneOfRingStructure : One R :=
   { one := funMap oneFunc ![] }
 

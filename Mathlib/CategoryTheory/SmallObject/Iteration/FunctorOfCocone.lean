@@ -7,13 +7,15 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.Iteration.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The functor from `Set.Iic j` deduced from a cocone
 
 Given a functor `F : Set.Iio j ⥤ C` and `c : Cocone F`, we define
 an extension of `F` as a functor `Set.Iic j ⥤ C` for which
 the top element is mapped to `c.pt`.
-
 -/
 
 @[expose] public section

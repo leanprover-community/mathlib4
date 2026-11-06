@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Positivity.Core
 
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute values
 
@@ -77,7 +80,9 @@ theorem coe_mk (f : R →ₙ* S) {h₁ h₂ h₃} : (AbsoluteValue.mk f h₁ h�
 theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
   DFunLike.ext _ _
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.apply (f : AbsoluteValue R S) : R → S :=
   f
 
@@ -299,7 +304,9 @@ section trivial
 variable {R : Type*} [Semiring R] [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
 variable {S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S] [Nontrivial S]
 
-/-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
+/--
+The _trivial_ absolute value takes the value `1` on all nonzero elements.
+-/
 protected
 def trivial : AbsoluteValue R S where
   toFun x := if x = 0 then 0 else 1
@@ -331,11 +338,13 @@ section OrderedSemiring
 
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S] [PartialOrder S] [IsOrderedRing S]
 
-/-- An absolute value on a semiring `R` without zero divisors is *nontrivial* if it takes
+/--
+An absolute value on a semiring `R` without zero divisors is _nontrivial_ if it takes
 a value `≠ 1` on a nonzero element.
 
 This has the advantage over `v ≠ .trivial` that it does not require decidability
-of `· = 0` in `R`. -/
+of `· = 0` in `R`.
+-/
 def IsNontrivial (v : AbsoluteValue R S) : Prop :=
   ∃ x ≠ 0, v x ≠ 1
 
@@ -391,7 +400,8 @@ end nontrivial
 
 end AbsoluteValue
 
-/-- A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
+/--
+A function `f` is an absolute value if it is nonnegative, zero only at 0, additive, and
 multiplicative.
 
 See also the type `AbsoluteValue` which represents a bundled version of absolute values.

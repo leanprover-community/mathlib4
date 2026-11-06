@@ -14,15 +14,17 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.CategoryTheory.Abelian.Exact
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Bijections Between Ext
 
 In this file, we show that the maps between `Ext` induced
 by a fully faithful exact functor `F : C ⥤ D` are bijective when either
+
 1. `F` preserves projective objects and `C` has enough projectives, or
 2. `F` preserves injective objects and `C` has enough injectives.
-
 -/
 
 public section

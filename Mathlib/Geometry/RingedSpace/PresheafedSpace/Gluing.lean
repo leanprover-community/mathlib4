@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.HasColimits
 public import Mathlib.Topology.Gluing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gluing structured spaces
 
@@ -45,13 +48,12 @@ Since `Γ(𝒪_X, ι i '' U)` is the limit of `diagram_over_open`, the component
 sheaves of the spaces in the gluing diagram, we need to construct a map
 `ιInvApp_π_app : Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_V, U_V)` for each `V` in the gluing diagram.
 
-We will refer to ![this diagram](https://i.imgur.com/P0phrwr.png) in the following docstrings.
+We will refer to this diagram in the following docstrings.
 The `X` is the glued space, and the dotted arrow is a partial inverse guaranteed by the fact
 that it is an open immersion. The map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{U_j}, _)` is given by the composition
 of the red arrows, and the map `Γ(𝒪_{U_i}, U) ⟶ Γ(𝒪_{V_{jk}}, _)` is given by the composition of the
 blue arrows. To lift this into a map from `Γ(𝒪_X, ι i '' U)`, we also need to show that these
 commute with the maps in the diagram (the green arrows), which is just a lengthy diagram-chasing.
-
 -/
 
 @[expose] public section
@@ -75,7 +77,9 @@ variable (C : Type u) [Category.{v} C]
 
 namespace PresheafedSpace
 
-/-- A family of gluing data consists of
+/--
+A family of gluing data consists of
+
 1. An index type `J`
 2. A presheafed space `U i` for each `i : J`.
 3. A presheafed space `V i j` for each `i j : J`.
@@ -88,7 +92,7 @@ such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+`t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -491,7 +495,8 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
+/--
+The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
 ```
 Vᵢⱼ ⟶ Uᵢ
@@ -536,7 +541,9 @@ end PresheafedSpace
 
 namespace SheafedSpace
 
-/-- A family of gluing data consists of
+/--
+A family of gluing data consists of
+
 1. An index type `J`
 2. A sheafed space `U i` for each `i : J`.
 3. A sheafed space `V i j` for each `i j : J`.
@@ -549,7 +556,7 @@ such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+`t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -593,7 +600,8 @@ instance ιIsOpenImmersion (i : D.J) : IsOpenImmersion (𝖣.ι i) := by
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).hom.base y = x :=
   𝖣.ι_jointly_surjective (SheafedSpace.forget _ ⋙ CategoryTheory.forget TopCat) x
 
-/-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
+/--
+The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
 
 ```
 Vᵢⱼ ⟶ Uᵢ
@@ -612,7 +620,9 @@ end SheafedSpace
 
 namespace LocallyRingedSpace
 
-/-- A family of gluing data consists of
+/--
+A family of gluing data consists of
+
 1. An index type `J`
 2. A locally ringed space `U i` for each `i : J`.
 3. A locally ringed space `V i j` for each `i j : J`.
@@ -625,7 +635,7 @@ such that
 6. `f i i` is an isomorphism.
 7. `t i i` is the identity.
 8. `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through `V j k ×[U j] V j i ⟶ V j i` via some
-   `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
+`t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 9. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 
 We can then glue the spaces `U i` together by identifying `V i j` with `V j i`, such
@@ -672,7 +682,9 @@ theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (�
     ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCat.{u}) ⋙
       forget TopCat.{u}) x
 
-/-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
+/--
+The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
+
 ```
 Vᵢⱼ ⟶ Uᵢ
  |      |

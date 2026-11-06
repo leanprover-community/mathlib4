@@ -9,28 +9,36 @@ public import Mathlib.RingTheory.Artinian.Module
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Jacobson.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobson Rings
 
 The following conditions are equivalent for a ring `R`:
+
 1. Every radical ideal `I` is equal to its Jacobson radical
 2. Every radical ideal `I` can be written as an intersection of maximal ideals
 3. Every prime ideal `I` is equal to its Jacobson radical
 
 Any ring satisfying any of these equivalent conditions is said to be Jacobson.
 Some particular examples of Jacobson rings are also proven.
-- `isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
-- `isJacobsonRing_localization` says the localization of a Jacobson ring
+
+* `isJacobsonRing_quotient` says that the quotient of a Jacobson ring is Jacobson.
+* `isJacobsonRing_localization` says the localization of a Jacobson ring
   to a single element is Jacobson.
-- `isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
+* `isJacobsonRing_polynomial_iff_isJacobsonRing` says polynomials over a Jacobson ring
   form a Jacobson ring.
 
 ## Main definitions
+
 Let `R` be a commutative ring. Jacobson rings are defined using the first of the above conditions
+
 * `IsJacobsonRing R` is the proposition that `R` is a Jacobson ring. It is a class,
   implemented as the predicate that for any ideal, `I.isRadical` implies `I.jacobson = I`.
 
 ## Main statements
+
 * `isJacobsonRing_iff_prime_eq` is the equivalence between conditions 1 and 3 above.
 * `isJacobsonRing_iff_sInf_maximal` is the equivalence between conditions 1 and 2 above.
 * `isJacobsonRing_of_surjective` says that if `R` is a Jacobson ring and
@@ -39,6 +47,7 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
   over a Jacobson ring are Jacobson.
 
 ## Tags
+
 Jacobson, Jacobson Ring
 -/
 

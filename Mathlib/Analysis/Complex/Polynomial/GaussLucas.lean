@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gauss-Lucas Theorem
 
@@ -51,8 +54,9 @@ theorem sum_derivRootWeight_pos (hP : 0 < degree P) (z : ℂ) :
       apply Splits.roots_ne_zero (IsAlgClosed.splits _)
       rwa [← pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
 
-/-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
-then all zeros of $P'$ belong to the convex hull of the set of zeros of $P$.
+/--
+_Gauss-Lucas Theorem_: if $`P` is a nonconstant polynomial with complex coefficients,
+then all zeros of $`P'` belong to the convex hull of the set of zeros of $`P`.
 
 This version provides explicit formulas for the coefficients of the convex combination.
 See also `rootSet_derivative_subset_convexHull_rootSet` below.
@@ -88,8 +92,9 @@ theorem eq_centerMass_of_eval_derivative_eq_zero (hP : 0 < P.degree)
       rw [← (IsAlgClosed.splits _).eval_derivative_div_eval_of_ne_zero hzP]
       simp [hz]
 
-/-- *Gauss-Lucas Theorem*: if $P$ is a nonconstant polynomial with complex coefficients,
-then all zeros of $P'$ belong to the convex hull of the set of zeros of $P$.
+/--
+_Gauss-Lucas Theorem_: if $`P` is a nonconstant polynomial with complex coefficients,
+then all zeros of $`P'` belong to the convex hull of the set of zeros of $`P`.
 
 See also `eq_centerMass_of_eval_derivative_eq_zero`
 for a version that provides explicit coefficients of the convex combination.

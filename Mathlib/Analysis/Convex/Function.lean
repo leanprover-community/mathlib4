@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Order.Filter.Extr
 public import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex and concave functions
 

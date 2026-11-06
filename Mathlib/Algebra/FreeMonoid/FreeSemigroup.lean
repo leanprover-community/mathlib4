@@ -13,12 +13,16 @@ public import Mathlib.Data.Set.Operations
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between the free semigroup and the free monoid
 
 We provide some constructions relating the free semigroup and the free monoid on the same type.
 
 ## Main definitions
+
 * `FreeSemigroup.toFreeMonoid`: the natural embedding of the free semigroup into the free monoid.
 * `FreeMonoid.equivWithOneFreeSemigroup`: the free monoid is isomorphic to the free semigroup
   with a `1` added.

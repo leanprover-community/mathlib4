@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute values and matrices
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.PolynomialGaloisGroup
 public import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois group of cyclotomic extensions
 
@@ -35,7 +38,6 @@ it is always a subgroup, and if the `n`th cyclotomic polynomial is irreducible, 
   `PowerBasis.map_conjugate`; but figuring out the exact correct assumptions + proof for this is
   mathematically nontrivial. (Current thoughts: the correct condition is that the annihilating
   ideal of both elements is equal. This may not hold in an ID, and definitely holds in an ICD.)
-
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 
 import Mathlib.Tactic.MoveAdd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal power series (in one variable)
 
@@ -27,6 +30,7 @@ The file sets up the (semi)ring structure on univariate power series.
 We provide the natural inclusion from polynomials to formal power series.
 
 Additional results can be found in:
+
 * `Mathlib/RingTheory/PowerSeries/Trunc.lean`, truncation of power series;
 * `Mathlib/RingTheory/PowerSeries/Inverse.lean`, about inverses of power series,
   and the fact that power series over a local ring form a local ring;
@@ -36,14 +40,13 @@ Additional results can be found in:
 ## Implementation notes
 
 Because of its definition,
-  `PowerSeries R := MvPowerSeries Unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 a lot of proofs and properties from the multivariate case
 can be ported to the single variable case.
 However, it means that formal power series are indexed by `Unit →₀ ℕ`,
 which is of course canonically isomorphic to `ℕ`.
 We then build some glue to treat formal power series as if they were indexed by `ℕ`.
 Occasionally this leads to proofs that are uglier than expected.
-
 -/
 
 @[expose] public section

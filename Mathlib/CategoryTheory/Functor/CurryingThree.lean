@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.Functor.Currying
 public import Mathlib.CategoryTheory.Functor.Trifunctor
 public import Mathlib.CategoryTheory.Products.Associator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying of functors in three variables
 
 We study the equivalence of categories
 `currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`.
-
 -/
 
 @[expose] public section

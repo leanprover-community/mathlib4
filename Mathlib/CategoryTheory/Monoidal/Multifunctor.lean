@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Constructing monoidal categories and monoidal functors from multifunctors
 
 This file first constructs monoidal category structures from a tensor bifunctor, associator and
@@ -43,7 +45,8 @@ abbrev source : C ⥤ C ⥤ C ⥤ C ⥤ C :=
 abbrev target : C ⥤ C ⥤ C ⥤ C ⥤ C :=
   trifunctorComp₂₃₄ tensor (bifunctorComp₂₃ tensor tensor)
 
-/-- The three-associator path along the top and right of the monoidal pentagon.
+/--
+The three-associator path along the top and right of the monoidal pentagon.
 
 ```
 ((X₁ ⊗ X₂) ⊗ X₃) ⊗ X₄  ---->  (X₁ ⊗ (X₂ ⊗ X₃)) ⊗ X₄
@@ -97,7 +100,8 @@ def leftUnitorMap (unit : C) (leftUnitor : tensor.obj unit ≅ 𝟭 C) :
     middle tensor unit ⟶ tensor where
   app X := { app Y := (tensor.obj X).map (leftUnitor.hom.app Y) }
 
-/-- The path around the top and right of the monoidal triangle through the associator and left
+/--
+The path around the top and right of the monoidal triangle through the associator and left
 unitor.
 
 ```
@@ -235,14 +239,13 @@ open MonoidalCategory
 namespace Functor.LaxMonoidal
 
 /-!
-
-## Lax monoidal functors
+# Lax monoidal functors
 
 Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.LaxMonoidal.ofBifunctor : F.LaxMonoidal`.
 
-### Associativity hexagon
+## Associativity hexagon
 
 ```
       (F - ⊗ F -) ⊗ F -
@@ -257,7 +260,7 @@ F ((- ⊗ -) ⊗ -)    F - ⊗ F (- ⊗ -)
        F (- ⊗ (- ⊗ -))
 ```
 
-### Left unitality square
+## Left unitality square
 
 ```
 𝟙 ⊗ F - ⟶ F 𝟙 ⊗ F -
@@ -266,7 +269,7 @@ F ((- ⊗ -) ⊗ -)    F - ⊗ F (- ⊗ -)
   F    ←   F (𝟙 ⊗ -)
 ```
 
-### Right unitality square
+## Right unitality square
 
 ```
 F - ⊗ 𝟙 ⟶ F - ⊗ F 𝟙
@@ -428,14 +431,13 @@ end LaxMonoidal
 namespace OplaxMonoidal
 
 /-!
-
-## Oplax monoidal functors
+# Oplax monoidal functors
 
 Given a counit morphism `η : F.obj (𝟙_ C) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`
 such that the diagrams below commute, we define
 `CategoryTheory.Functor.OplaxMonoidal.ofBifunctor : F.OplaxMonoidal`.
 
-### Oplax associativity hexagon
+## Oplax associativity hexagon
 
 ```
       F ((- ⊗ -) ⊗ -)
@@ -450,7 +452,7 @@ F (- ⊗ -) ⊗ F -      F (- ⊗ (- ⊗ -))
        F - ⊗ (F - ⊗ F -)
 ```
 
-### Oplax left unitality square
+## Oplax left unitality square
 
 ```
   F   ⟶  F (𝟙 ⊗ -)
@@ -459,7 +461,7 @@ F (- ⊗ -) ⊗ F -      F (- ⊗ (- ⊗ -))
 𝟙 ⊗ F - ← F 𝟙 ⊗ F -
 ```
 
-### Oplax right unitality square
+## Oplax right unitality square
 
 ```
   F  ⟶   F (- ⊗ 𝟙)

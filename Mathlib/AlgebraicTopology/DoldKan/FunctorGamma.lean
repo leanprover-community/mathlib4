@@ -8,10 +8,11 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Construction of the inverse functor of the Dold-Kan equivalence
-
 
 In this file, we construct the functor `Γ₀ : ChainComplex C ℕ ⥤ SimplicialObject C`
 which shall be the inverse functor of the Dold-Kan equivalence in the case of abelian categories,
@@ -27,7 +28,6 @@ We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialO
 which shall be an equivalence for any additive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section

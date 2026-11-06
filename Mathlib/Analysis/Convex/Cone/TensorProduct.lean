@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Convex.Cone.TensorProduct
 
 import Mathlib.Topology.Algebra.Module.TopDualPairing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor Products of Pointed Cones
 
@@ -28,30 +31,32 @@ to avoid explicit topology assumptions on `Module.Dual`.
 
 The proof relies on the following result:
 
-* **Bipolar theorem** (`ProperCone.dual_dual_flip`): The double dual of a proper cone is itself.
+* *Bipolar theorem* (`ProperCone.dual_dual_flip`): The double dual of a proper cone is itself.
 
 This requires:
-- Local convexity and Hausdorff separation (for Hahn-Banach)
-- A continuous perfect pairing between the module and its dual.
+
+* Local convexity and Hausdorff separation (for Hahn-Banach)
+* A continuous perfect pairing between the module and its dual.
 
 ## Main results
 
 * `PointedCone.minTensorProduct_eq_max_of_simplicial_generating_left`:
   If `C₁` is simplicial and generating and `C₂` is proper, then the minimal and
   maximal tensor products are equal.
-
 * `PointedCone.minTensorProduct_eq_max_of_simplicial_generating_right`:
   If `C₁` is a proper cone and `C₂` is a simplicial and generating cone, then their minimal
   and maximal tensor products are equal.
 
 ## References
 
-* [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
+* ‍\[Aubrun et al. _Entangleability of cones_\]\[aubrunEntangleabilityCones2021\]
 -/
 
 public section
 
-/-! ### Equality of minimal and maximal tensor products -/
+/-!
+# Equality of minimal and maximal tensor products
+-/
 
 namespace PointedCone
 

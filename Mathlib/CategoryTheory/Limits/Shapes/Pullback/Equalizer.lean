@@ -7,11 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equalizers as pullbacks of products
 
 Also see `CategoryTheory.Limits.Constructions.Equalizers` for very similar results.
-
 -/
 
 public section

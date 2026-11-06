@@ -11,13 +11,14 @@ public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.CategoryTheory.Limits.Elements
 public import Mathlib.CategoryTheory.Sites.Point.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The étale site
 
 In this file we define the big étale site, i.e. the étale topology as a Grothendieck topology
 on the category of schemes.
-
 -/
 
 @[expose] public section

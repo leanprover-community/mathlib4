@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
-/-! # Properties of C⋆-algebra homomorphisms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of C⋆-algebra homomorphisms
 
 Here we collect properties of C⋆-algebra homomorphisms.
 
 ## Main declarations
 
-+ `NonUnitalStarAlgHom.norm_map`: A non-unital star algebra monomorphism of complex C⋆-algebras
+* `NonUnitalStarAlgHom.norm_map`: A non-unital star algebra monomorphism of complex C⋆-algebras
   is isometric.
 -/
 

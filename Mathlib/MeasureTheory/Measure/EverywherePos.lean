@@ -9,11 +9,14 @@ public import Mathlib.MeasureTheory.Group.Measure
 
 import Mathlib.Topology.UrysohnsLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Everywhere positive sets in measure spaces
 
-A set `s` in a topological space with a measure `μ` is *everywhere positive* (also called
-*self-supporting*) if any neighborhood `n` of any point of `s` satisfies `μ (s ∩ n) > 0`.
+A set `s` in a topological space with a measure `μ` is _everywhere positive_ (also called
+_self-supporting_) if any neighborhood `n` of any point of `s` satisfies `μ (s ∩ n) > 0`.
 
 ## Main definitions and results
 
@@ -47,9 +50,11 @@ namespace MeasureTheory.Measure
 
 variable {α : Type*} [TopologicalSpace α] [MeasurableSpace α]
 
-/-- A set `s` is *everywhere positive* (also called *self-supporting*) with respect to a
+/--
+A set `s` is _everywhere positive_ (also called _self-supporting_) with respect to a
 measure `μ` if it has positive measure around each of its points, i.e., if all neighborhoods `n`
-of points of `s` satisfy `μ (s ∩ n) > 0`. -/
+of points of `s` satisfy `μ (s ∩ n) > 0`.
+-/
 def IsEverywherePos (μ : Measure α) (s : Set α) : Prop :=
   ∀ x ∈ s, ∀ n ∈ 𝓝[s] x, 0 < μ n
 

@@ -7,31 +7,35 @@ module
 
 public import Mathlib.Control.Bitraversable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitraversable Lemmas
 
 ## Main definitions
-  * tfst - traverse on first functor argument
-  * tsnd - traverse on second functor argument
+
+* tfst - traverse on first functor argument
+* tsnd - traverse on second functor argument
 
 ## Lemmas
 
 Combination of
-  * bitraverse
-  * tfst
-  * tsnd
+
+* bitraverse
+* tfst
+* tsnd
 
 with the applicatives `id` and `comp`
 
 ## References
 
-* Hackage: <https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html>
+* Hackage: [
+  https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html)
 
 ## Tags
 
 traversable bitraversable functor bifunctor applicative
-
-
 -/
 
 public section

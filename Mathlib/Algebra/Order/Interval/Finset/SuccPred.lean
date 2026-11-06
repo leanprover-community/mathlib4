@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.SuccPred
 public import Mathlib.Order.Interval.Finset.SuccPred
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finset intervals in an additive successor-predecessor order
 
@@ -17,6 +20,7 @@ order.
 ## Notes
 
 Please keep in sync with:
+
 * `Mathlib/Algebra/Order/Interval/Set/SuccPred.lean`
 * `Mathlib/Order/Interval/Finset/SuccPred.lean`
 * `Mathlib/Order/Interval/Set/SuccPred.lean`
@@ -35,7 +39,9 @@ variable {α : Type*}
 namespace Finset
 variable [LinearOrder α] [One α]
 
-/-! ### Two-sided intervals -/
+/-!
+# Two-sided intervals
+-/
 
 section LocallyFiniteOrder
 variable [LocallyFiniteOrder α]
@@ -44,9 +50,9 @@ section SuccAddOrder
 variable [Add α] [SuccAddOrder α] {a b : α}
 
 /-!
-#### Orders possibly with maximal elements
+# Orders possibly with maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 lemma Ico_add_one_left_eq_Ioo (a b : α) : Ico (a + 1) b = Ioo a b := by
@@ -65,7 +71,9 @@ lemma Ico_add_one_add_one_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (a + 1) (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ico_succ_succ_eq_Ioc_of_not_isMax hb a
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Icc_add_one_left_eq_Icc (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   simpa [succ_eq_add_one] using insert_Icc_succ_left_eq_Icc h
@@ -89,9 +97,9 @@ lemma insert_Ioc_add_one_left_eq_Ioc (h : a < b) : insert (a + 1) (Ioc (a + 1) b
   simpa [succ_eq_add_one] using insert_Ioc_succ_left_eq_Ioc h
 
 /-!
-#### Orders with no maximal elements
+# Orders with no maximal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 variable [NoMaxOrder α]
@@ -108,7 +116,9 @@ lemma Ioo_add_one_right_eq_Ioc (a b : α) : Ioo a (b + 1) = Ioc a b := by
 lemma Ico_add_one_add_one_eq_Ioc (a b : α) : Ico (a + 1) (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ico_succ_succ_eq_Ioc a b
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Ico_right_eq_Ico_add_one (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ h
@@ -122,9 +132,9 @@ section PredSubOrder
 variable [Sub α] [PredSubOrder α] {a b : α}
 
 /-!
-#### Orders possibly with minimal elements
+# Orders possibly with minimal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 lemma Ioc_sub_one_right_eq_Ioo (a b : α) : Ioc a (b - 1) = Ioo a b := by
@@ -146,7 +156,9 @@ lemma Ioc_sub_one_sub_one_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico_of_not_isMin ha b
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Icc_sub_one_right_eq_Icc (h : a ≤ b) : insert b (Icc a (b - 1)) = Icc a b := by
   simpa [pred_eq_sub_one] using insert_Icc_pred_right_eq_Icc h
@@ -170,9 +182,9 @@ lemma insert_Ico_sub_one_right_eq_Ico (h : a < b) : insert (b - 1) (Ico a (b - 1
   simpa [pred_eq_sub_one] using insert_Ico_pred_right_eq_Ico h
 
 /-!
-#### Orders with no minimal elements
+# Orders with no minimal elements
 
-##### Equalities of intervals
+## Equalities of intervals
 -/
 
 variable [NoMinOrder α]
@@ -191,7 +203,9 @@ lemma Ioo_sub_one_left_eq_Ico (a b : α) : Ioo (a - 1) b = Ico a b := by
 lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico a b
 
-/-! ##### Inserting into intervals -/
+/-!
+# Inserting into intervals
+-/
 
 lemma insert_Ioc_left_eq_Ioc_sub_one (h : a ≤ b) : insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred h
@@ -210,7 +224,9 @@ lemma Icc_add_one_sub_one_eq_Ioo (a b : α) : Icc (a + 1) (b - 1) = Ioo a b := b
 end SuccAddPredSubOrder
 end LocallyFiniteOrder
 
-/-! ### One-sided interval towards `⊥` -/
+/-!
+# One-sided interval towards `⊥`
+-/
 
 section LocallyFiniteOrderBot
 variable [LocallyFiniteOrderBot α]
@@ -242,7 +258,9 @@ lemma Iic_sub_one_eq_Iio (b : α) : Iic (b - 1) = Iio b := by
 end PredSubOrder
 end LocallyFiniteOrderBot
 
-/-! ### One-sided interval towards `⊤` -/
+/-!
+# One-sided interval towards `⊤`
+-/
 
 section LocallyFiniteOrderTop
 variable [LocallyFiniteOrderTop α]

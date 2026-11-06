@@ -10,18 +10,20 @@ public import Mathlib.RingTheory.LinearDisjoint
 
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Linearly disjoint fields
 
-This file contains basics about the linearly disjoint fields.
-We adapt the definitions in <https://en.wikipedia.org/wiki/Linearly_disjoint>.
-See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean`
-and `Mathlib/RingTheory/LinearDisjoint.lean` for details.
+This file contains basics about the linearly disjoint fields. We adapt the definitions in [
+https://en.wikipedia.org/wiki/Linearly\_disjoint](https://en.wikipedia.org/wiki/Linearly_disjoint).
+See the file `Mathlib/LinearAlgebra/LinearDisjoint.lean` and
+`Mathlib/RingTheory/LinearDisjoint.lean` for details.
 
 ## Main definitions
 
-- `IntermediateField.LinearDisjoint`: an intermediate field `A` of `E / F`
+* `IntermediateField.LinearDisjoint`: an intermediate field `A` of `E / F`
   and an abstract field `L` between `E / F`
   (as a special case, two intermediate fields) are linearly disjoint over `F`,
   if they are linearly disjoint as subalgebras (`Subalgebra.LinearDisjoint`).
@@ -29,44 +31,39 @@ and `Mathlib/RingTheory/LinearDisjoint.lean` for details.
 ## Implementation notes
 
 The `Subalgebra.LinearDisjoint` is stated for two `Subalgebra`s. The original design of
-`IntermediateField.LinearDisjoint` is also stated for two `IntermediateField`s
-(see `IntermediateField.linearDisjoint_iff'` for the original statement).
-But it's probably useful if one of them can be generalized to an abstract field
-(see <https://github.com/leanprover-community/mathlib4/pull/9651#discussion_r1464070324>).
-This leads to the current design of `IntermediateField.LinearDisjoint`
-which is for one `IntermediateField` and one abstract field.
-It is not generalized to two abstract fields as this will break the dot notation.
+`IntermediateField.LinearDisjoint` is also stated for two `IntermediateField`s (see
+`IntermediateField.linearDisjoint_iff'` for the original statement). But it's probably useful if one
+of them can be generalized to an abstract field (see [
+https://github.com/leanprover-community/mathlib4/pull/9651#discussion\_r1464070324](https://github.com/leanprover-community/mathlib4/pull/9651#discussion_r1464070324)).
+This leads to the current design of `IntermediateField.LinearDisjoint` which is for one
+`IntermediateField` and one abstract field. It is not generalized to two abstract fields as this
+will break the dot notation.
 
 ## Main results
 
 ### Equivalent characterization of linear disjointness
 
-- `IntermediateField.LinearDisjoint.linearIndependent_left`:
+* `IntermediateField.LinearDisjoint.linearIndependent_left`:
   if `A` and `L` are linearly disjoint, then any `F`-linearly independent family on `A` remains
   linearly independent over `L`.
-
-- `IntermediateField.LinearDisjoint.of_basis_left`:
+* `IntermediateField.LinearDisjoint.of_basis_left`:
   conversely, if there exists an `F`-basis of `A` which remains linearly independent over `L`, then
   `A` and `L` are linearly disjoint.
-
-- `IntermediateField.LinearDisjoint.linearIndependent_right`:
+* `IntermediateField.LinearDisjoint.linearIndependent_right`:
   `IntermediateField.LinearDisjoint.linearIndependent_right'`:
   if `A` and `L` are linearly disjoint, then any `F`-linearly independent family on `L` remains
   linearly independent over `A`.
-
-- `IntermediateField.LinearDisjoint.of_basis_right`:
+* `IntermediateField.LinearDisjoint.of_basis_right`:
   `IntermediateField.LinearDisjoint.of_basis_right'`:
   conversely, if there exists an `F`-basis of `L` which remains linearly independent over `A`, then
   `A` and `L` are linearly disjoint.
-
-- `IntermediateField.LinearDisjoint.linearIndependent_mul`:
+* `IntermediateField.LinearDisjoint.linearIndependent_mul`:
   `IntermediateField.LinearDisjoint.linearIndependent_mul'`:
   if `A` and `L` are linearly disjoint, then for any family of
   `F`-linearly independent elements `{ a_i }` of `A`, and any family of
   `F`-linearly independent elements `{ b_j }` of `L`, the family `{ a_i * b_j }` in `S` is
   also `F`-linearly independent.
-
-- `IntermediateField.LinearDisjoint.of_basis_mul`:
+* `IntermediateField.LinearDisjoint.of_basis_mul`:
   `IntermediateField.LinearDisjoint.of_basis_mul'`:
   conversely, if `{ a_i }` is an `F`-basis of `A`, if `{ b_j }` is an `F`-basis of `L`,
   such that the family `{ a_i * b_j }` in `E` is `F`-linearly independent,
@@ -75,26 +72,23 @@ It is not generalized to two abstract fields as this will break the dot notation
 ### Equivalent characterization by `IsDomain` or `IsField` of tensor product
 
 The following results are related to the equivalent characterizations in
-<https://mathoverflow.net/questions/8324>.
+[https://mathoverflow.net/questions/8324](https://mathoverflow.net/questions/8324).
 
-- `IntermediateField.LinearDisjoint.isDomain'`,
+* `IntermediateField.LinearDisjoint.isDomain'`,
   `IntermediateField.LinearDisjoint.exists_field_of_isDomain`:
   if `A` and `B` are field extensions of `F`, then `A ⊗[F] B`
   is a domain if and only if there exists a field extension of `F` that `A` and `B`
   embed into with linearly disjoint images.
-
-- `IntermediateField.LinearDisjoint.isField_of_forall`,
+* `IntermediateField.LinearDisjoint.isField_of_forall`,
   `IntermediateField.LinearDisjoint.of_isField'`:
   if `A` and `B` are field extensions of `F`, then `A ⊗[F] B`
   is a field if and only if for any field extension of `F` that `A` and `B` embed into, their
   images are linearly disjoint.
-
-- `Algebra.TensorProduct.isField_of_isAlgebraic`:
+* `Algebra.TensorProduct.isField_of_isAlgebraic`:
   if `E` and `K` are field extensions of `F`, one of them is algebraic, and
   `E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field.
   See `Algebra.TensorProduct.isAlgebraic_of_isField` for its converse (in an earlier file).
-
-- `IntermediateField.LinearDisjoint.isField_of_isAlgebraic`,
+* `IntermediateField.LinearDisjoint.isField_of_isAlgebraic`,
   `IntermediateField.LinearDisjoint.isField_of_isAlgebraic'`:
   if `A` and `B` are field extensions of `F`, one of them is algebraic, such that they are linearly
   disjoint (more generally, if there exists a field extension of `F` that they embed into with
@@ -102,36 +96,29 @@ The following results are related to the equivalent characterizations in
 
 ### Other main results
 
-- `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_comm`:
+* `IntermediateField.LinearDisjoint.symm`, `IntermediateField.linearDisjoint_comm`:
   linear disjointness is symmetric.
-
-- `IntermediateField.LinearDisjoint.map`:
+* `IntermediateField.LinearDisjoint.map`:
   linear disjointness is preserved by algebra homomorphism.
-
-- `IntermediateField.LinearDisjoint.rank_sup`,
+* `IntermediateField.LinearDisjoint.rank_sup`,
   `IntermediateField.LinearDisjoint.finrank_sup`:
   if `A` and `B` are linearly disjoint,
   then the rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`.
-
-- `IntermediateField.LinearDisjoint.of_finrank_sup`:
+* `IntermediateField.LinearDisjoint.of_finrank_sup`:
   conversely, if `A` and `B` are finite extensions,
   such that rank of `A ⊔ B` is equal to the product of the rank of `A` and `B`,
   then `A` and `B` are linearly disjoint.
-
-- `IntermediateField.LinearDisjoint.of_finrank_coprime`:
+* `IntermediateField.LinearDisjoint.of_finrank_coprime`:
   if the rank of `A` and `B` are coprime,
   then `A` and `B` are linearly disjoint.
-
-- `IntermediateField.LinearDisjoint.inf_eq_bot`:
+* `IntermediateField.LinearDisjoint.inf_eq_bot`:
   if `A` and `B` are linearly disjoint, then they are disjoint.
-
-- `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
+* `IntermediateField.LinearDisjoint.algEquiv_of_isAlgebraic`:
   linear disjointness is preserved by isomorphisms, provided that one of the field is algebraic.
 
 ## Tags
 
 linearly disjoint, linearly independent, tensor product
-
 -/
 
 @[expose] public section

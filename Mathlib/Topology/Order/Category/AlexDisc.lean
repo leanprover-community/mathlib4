@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Specialization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of Alexandrov-discrete topological spaces
 

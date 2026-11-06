@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ExtractGoal
 public import Mathlib.Tactic.TacticAnalysis
 public import Mathlib.Util.ParseCommand
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tactic linters
 
@@ -393,7 +396,8 @@ register_option linter.tacticAnalysis.tryAtEachStep.selfReplacements : Bool := {
   defValue := true
 }
 
-/-- Run a tactic at each proof step, with optional timing.
+/--
+Run a tactic at each proof step, with optional timing.
 
 `label` is an optional human-readable name for output. If `none`, the tactic syntax is used.
 
@@ -453,7 +457,8 @@ def Mathlib.TacticAnalysis.tryAtEachStep
     (tac : Syntax → MVarId → CommandElabM (TSyntax `tactic)) : TacticAnalysis.Config :=
   tryAtEachStepCore tac
 
-/-- Run a tactic (given as a string) at each proof step, with optional timing.
+/--
+Run a tactic (given as a string) at each proof step, with optional timing.
 
 `label` is the human-readable name shown in output (e.g., "grind").
 `tacticStr` is the tactic syntax as a string (e.g., "grind").
@@ -480,6 +485,8 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromStrings
     let tac : TSyntax `tactic := ⟨mkNode ``Lean.Parser.Tactic.tacticSeq1Indented #[tacSeq]⟩
     (tryAtEachStepCore (fun _ _ => pure tac) label).run seq
 
+
+set_option doc.verso false
 /-- Run a custom tactic at each proof step, configured via environment variables.
 
 Reads from environment variables:
@@ -508,6 +515,8 @@ def Mathlib.TacticAnalysis.tryAtEachStepFromEnvImpl : TacticAnalysis.Config wher
     let label := (← IO.getEnv "TRY_AT_EACH_STEP_LABEL").getD tacticStr
     (tryAtEachStepFromStrings label tacticStr).run seq
 
+
+set_option doc.verso true
 /-- Run `grind` at every step in proofs, reporting where it succeeds. -/
 register_option linter.tacticAnalysis.tryAtEachStepGrind : Bool := {
   defValue := false
@@ -556,7 +565,8 @@ register_option linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions : Bool := 
    inherit_doc linter.tacticAnalysis.tryAtEachStepSimpAllSuggestions]
 def tryAtEachStepSimpAllSuggestions := tryAtEachStep fun _ _ => `(tactic| simp_all? +suggestions)
 
-/-- Run a custom tactic at every step in proofs, configured via environment variables.
+/--
+Run a custom tactic at every step in proofs, configured via environment variables.
 
 Set `TRY_AT_EACH_STEP_TACTIC` to the tactic syntax to try (required).
 Set `TRY_AT_EACH_STEP_LABEL` to the label for output messages (optional, defaults to tactic).
@@ -631,11 +641,13 @@ private def parseSuggestionToTactic (s : Lean.Meta.Tactic.TryThis.Suggestion) :
       `(tactic| ($tacSeq:tacticSeq))
     | .error err => throwError "Failed to parse suggestion: {str}\n{err}"
 
-/-- Verify that TryThis suggestions from a tactic actually work.
+/--
+Verify that TryThis suggestions from a tactic actually work.
 
 Runs the given tactic at each proof step, captures any "Try this:" suggestions,
 then re-runs the suggested tactic to verify it succeeds.
-Only reports failures (where the suggestion doesn't close the goal). -/
+Only reports failures (where the suggestion doesn't close the goal).
+-/
 def Mathlib.TacticAnalysis.verifyTryThisSuggestions
     (tac : Syntax → MVarId → CommandElabM (Option (TSyntax `tactic)))
     (label : String) : TacticAnalysis.Config where

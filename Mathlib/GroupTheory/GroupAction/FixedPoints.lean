@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 
 import Mathlib.Algebra.Group.Commute.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of `fixedPoints` and `fixedBy`
 
@@ -133,7 +136,7 @@ end FixedPoints
 section Pointwise
 
 /-!
-### `fixedBy` sets of the pointwise group action
+# `fixedBy` sets of the pointwise group action
 
 The theorems below need the `Pointwise` scoped to be opened (using `open Pointwise`)
 to be used effectively.
@@ -159,10 +162,13 @@ If `s ⊆ fixedBy α g`, then `g • s = s`, which means that `s ∈ fixedBy (Se
 Note that the reverse implication is in general not true, as `s ∈ fixedBy (Set α) g` is a
 weaker statement (it allows for points `x ∈ s` for which `g • x ≠ x` and `g • x ∈ s`).
 -/
-@[to_additive /-- If `s ⊆ fixedBy α g`, then `g +ᵥ s = s`, which means that `s ∈ fixedBy (Set α) g`.
+@[to_additive /--
+              If `s ⊆ fixedBy α g`, then `g +ᵥ s = s`, which means that `s ∈ fixedBy (Set α) g`.
 
-Note that the reverse implication is in general not true, as `s ∈ fixedBy (Set α) g` is a
-weaker statement (it allows for points `x ∈ s` for which `g +ᵥ x ≠ x` and `g +ᵥ x ∈ s`). -/]
+              Note that the reverse implication is in general not true, as `s ∈ fixedBy (Set α) g`
+is a weaker statement (it allows for points `x ∈ s` for which `g +ᵥ x ≠ x` and
+`g +ᵥ x ∈ s`).
+              -/]
 theorem set_mem_fixedBy_of_subset_fixedBy {s : Set α} {g : G} (s_ss_fixedBy : s ⊆ fixedBy α g) :
     s ∈ fixedBy (Set α) g := by
   rw [← fixedBy_inv]
@@ -201,7 +207,7 @@ end Pointwise
 section Commute
 
 /-!
-## Pointwise image of the `fixedBy` set by a commuting group element
+# Pointwise image of the `fixedBy` set by a commuting group element
 
 If two group elements `g` and `h` commute, then `g` fixes `h • x` (resp. `h +ᵥ x`)
 if and only if `g` fixes `x`.

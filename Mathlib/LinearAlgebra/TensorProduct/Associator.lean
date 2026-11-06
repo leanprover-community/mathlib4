@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Algebra.Hom
 public import Mathlib.LinearAlgebra.TensorProduct.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Associators and unitors for tensor products of modules over a commutative ring.
-
 -/
 
 @[expose] public section
@@ -263,7 +265,8 @@ lemma rightComm_def : rightComm R M N P =
 
 variable (M N P Q)
 
-/-- This special case is worth defining explicitly since it is useful for defining multiplication
+/--
+This special case is worth defining explicitly since it is useful for defining multiplication
 on tensor products of modules carrying multiplications (e.g., associative rings, Lie rings, ...).
 
 E.g., suppose `M = P` and `N = Q` and that `M` and `N` carry bilinear multiplications:
@@ -272,7 +275,8 @@ combined with this definition, yields a bilinear multiplication on `M ⊗ N`:
 `(M ⊗ N) ⊗ (M ⊗ N) → M ⊗ N`. In particular we could use this to define the multiplication in
 the `TensorProduct.semiring` instance (currently defined "by hand" using `TensorProduct.mul`).
 
-See also `mul_mul_mul_comm`. -/
+See also `mul_mul_mul_comm`.
+-/
 def tensorTensorTensorComm : M ⊗[R] N ⊗[R] (P ⊗[R] Q) ≃ₗ[R] M ⊗[R] P ⊗[R] (N ⊗[R] Q) :=
   (TensorProduct.assoc R (M ⊗[R] N) P Q).symm
     ≪≫ₗ congr (TensorProduct.rightComm R M N P) (.refl R Q)
@@ -304,7 +308,8 @@ theorem tensorTensorTensorComm_comp_map {V W : Type*}
 
 variable (M N P Q)
 
-/-- This special case is useful for describing the interplay between `dualTensorHomEquiv` and
+/--
+This special case is useful for describing the interplay between `dualTensorHomEquiv` and
 composition of linear maps.
 
 E.g., composition of linear maps gives a map `(M → N) ⊗ (N → P) → (M → P)`, and applying

@@ -11,6 +11,9 @@ public import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence of `p`-series
 
@@ -29,7 +32,7 @@ p-series, Cauchy condensation test
 @[expose] public section
 
 /-!
-### Schlömilch's generalization of the Cauchy condensation test
+# Schlömilch's generalization of the Cauchy condensation test
 
 In this section we prove the Schlömilch's generalization of the Cauchy condensation test:
 for a strictly increasing `u : ℕ → ℕ` with ratio of successive differences bounded and an
@@ -42,7 +45,7 @@ partial sums of the other series.
 /--
 A sequence `u` has the property that its ratio of successive differences is bounded
 when there is a positive real number `C` such that, for all n ∈ ℕ,
-(u (n + 2) - u (n + 1)) ≤ C * (u (n + 1) - u n)
+(u (n + 2) - u (n + 1)) ≤ C \* (u (n + 1) - u n)
 -/
 def SuccDiffBounded (C : ℕ) (u : ℕ → ℕ) : Prop :=
   ∀ n : ℕ, u (n + 2) - u (n + 1) ≤ C • (u (n + 1) - u n)
@@ -262,13 +265,14 @@ theorem summable_condensed_iff_of_eventually_nonneg {f : ℕ → ℝ} (h_nonneg 
 section p_series
 
 /-!
-### Convergence of the `p`-series
+# Convergence of the `p`-series
 
 In this section we prove that for a real number `p`, the series `∑' n : ℕ, 1 / (n ^ p)` converges if
 and only if `1 < p`. There are many different proofs of this fact. The proof in this file uses the
 Cauchy condensation test we formalized above. This test implies that `∑ n, 1 / (n ^ p)` converges if
 and only if `∑ n, 2 ^ n / ((2 ^ n) ^ p)` converges, and the latter series is a geometric series with
-common ratio `2 ^ {1 - p}`. -/
+common ratio `2 ^ {1 - p}`.
+-/
 
 namespace Real
 
@@ -444,7 +448,7 @@ lemma Real.not_summable_indicator_one_div_natCast {m : ℕ} (hm : m ≠ 0) (k : 
   exact mt (summable_nat_add_iff (f := fun n : ℕ ↦ 1 / (n : ℝ)) 1).mp not_summable_one_div_natCast
 
 /-!
-## Translating the `p`-series by a real number
+# Translating the `p`-series by a real number
 -/
 section shifted
 

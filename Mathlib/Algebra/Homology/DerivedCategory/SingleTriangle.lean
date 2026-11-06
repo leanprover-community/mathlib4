@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The distinguished triangle of a short exact sequence in an abelian category
 
@@ -15,10 +18,10 @@ the associated distinguished triangle in the derived category:
 `(singleFunctor C 0).obj S.X₁ ⟶ (singleFunctor C 0).obj S.X₂ ⟶ (singleFunctor C 0).obj S.X₃ ⟶ ...`
 
 ## TODO
+
 * when the canonical t-structure on the derived category is formalized, refactor
   this definition to make it a particular case of the triangle induced by a short
   exact sequence in the heart of a t-structure
-
 -/
 
 @[expose] public section

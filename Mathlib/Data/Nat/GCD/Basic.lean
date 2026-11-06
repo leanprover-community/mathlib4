@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Nat.Units
 public import Mathlib.Algebra.GroupWithZero.Divisibility
 public import Mathlib.Algebra.GroupWithZero.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
 
@@ -30,7 +33,9 @@ assert_not_exists IsOrderedMonoid
 namespace Nat
 variable {a a₁ a₂ b b₁ b₂ c : ℕ}
 
-/-! ### `gcd` -/
+/-!
+# `gcd`
+-/
 
 theorem gcd_greatest {a b d : ℕ} (hda : d ∣ a) (hdb : d ∣ b) (hd : ∀ e : ℕ, e ∣ a → e ∣ b → e ∣ d) :
     d = a.gcd b :=
@@ -72,7 +77,9 @@ theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
   replace hb : c % b < b := mod_lt c hb
   rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
 
-/-! ### `lcm` and divisibility -/
+/-!
+# `lcm` and divisibility
+-/
 
 theorem dvd_lcm_of_dvd_left (h : a ∣ b) (c : ℕ) : a ∣ lcm b c :=
   h.trans (dvd_lcm_left b c)
@@ -91,7 +98,7 @@ theorem dvd_of_lcm_left_dvd {a b c : ℕ} (h : lcm a b ∣ c) : b ∣ c :=
   (dvd_lcm_right a b).trans h
 
 /-!
-### `Coprime`
+# `Coprime`
 
 See also `Nat.coprime_of_dvd` and `Nat.coprime_of_dvd'` to prove `Nat.Coprime m n`.
 -/

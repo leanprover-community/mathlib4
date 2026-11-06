@@ -8,11 +8,13 @@ module
 public import Mathlib.CategoryTheory.Bicategory.FunctorBicategory.Pseudo
 public import Mathlib.CategoryTheory.Bicategory.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # 2-Yoneda embedding
 
 In this file we define the bicategorical Yoneda embedding.
-
 -/
 
 @[expose] public section
@@ -78,12 +80,15 @@ def associatorNatIsoLeftCat (a : B) {b c d : B} (g : b ⟶ c) (h : c ⟶ d) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- The map on objects underlying the Yoneda embedding. It sends an object `x` to
+/--
+The map on objects underlying the Yoneda embedding. It sends an object `x` to
 the pseudofunctor defined by:
+
 * Objects: `a ↦ (a ⟶ x)`
 * Higher morphisms get sent to the corresponding "precomposing" operation.
 
-This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred. -/
+This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred.
+-/
 @[simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => ↧(unop y ⟶ x))
@@ -101,10 +106,12 @@ def postcomp₂ {a b : B} (f : a ⟶ b) : yoneda₀ a ⟶ yoneda₀ b where
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
+/--
+Postcomposing of `1`-morphisms seen as a functor from `a ⟶ b` to the hom-category of the
 corresponding pseudofunctors.
 
-This is an implementation detail, and `Bicategory.yoneda.map` should be preferred. -/
+This is an implementation detail, and `Bicategory.yoneda.map` should be preferred.
+-/
 @[simps!]
 def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) where
   obj := postcomp₂
@@ -112,12 +119,15 @@ def postcomposing₂ (a b : B) : (a ⟶ b) ⥤ (yoneda₀ a ⟶ yoneda₀ b) whe
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
+/--
+The Yoneda pseudofunctor from `B` to `Bᵒᵖ ⥤ᵖ Cat`.
 
 It consists of the following:
+
 * On objects: sends `x : B` to the pseudofunctor `Bᵒᵖ ⥤ᵖ Cat` given by
   `a ↦ (a ⟶ x)` on objects and on 1- and 2-morphisms given by "precomposing"
-* On 1- and 2-morphisms it is given by "postcomposing" -/
+* On 1- and 2-morphisms it is given by "postcomposing"
+-/
 @[simps!]
 def yoneda : B ⥤ᵖ Bᵒᵖ ⥤ᵖ Cat.{w, v} where
   toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (yoneda₀ ·) postcomposing₂

@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 
 import Mathlib.Topology.LocalAtTarget
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Proper group action
 
@@ -30,7 +33,7 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
 
 ## References
 
-* [N. Bourbaki, *General Topology*][bourbaki1966]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
 
 ## Tags
 
@@ -206,11 +209,15 @@ instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G} [IsCl
     T2Space (G ⧸ H) :=
   t2Space_quotient_mulAction_of_properSMul
 
-/-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g • t, t)` is still
-proper for *any* subset `T` of `X`. -/
+/--
+If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g • t, t)` is still
+proper for _any_ subset `T` of `X`.
+-/
 @[to_additive
-/-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g +ᵥ t, t)` is still
-proper for *any* subset `T` of `X`. -/]
+/--
+If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g +ᵥ t, t)` is still
+proper for _any_ subset `T` of `X`.
+-/]
 lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
     IsProperMap (fun (gx : G × t) ↦ ((gx.1 • gx.2, gx.2) : X × t)) := by
   let Φ : G × X → X × X := fun gx ↦ (gx.1 • gx.2, gx.2)
@@ -225,18 +232,22 @@ lemma ProperSMul.isProperMap_smul_pair_set [ProperSMul G X] {t : Set X} :
   exact β.symm.isProperMap.comp (Φ_proper.restrictPreimage (snd ⁻¹' t)) |>.comp α.isProperMap
 
 open scoped Pointwise in
-/-- If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is *closed* and
-`t : Set X` is *compact*.
+/--
+If `G` acts on `X` properly, the set `s • t` is closed when `s : Set G` is _closed_ and
+`t : Set X` is _compact_.
 
 See also `IsClosed.smul_left_of_isCompact` for a version with the assumptions on `s` and `t`
-reversed. -/
+reversed.
+-/
 @[to_additive
-/-- If `G` acts on `X` properly, the set `s +ᵥ t` is closed when `s : Set G` is *closed* and
-`t : Set X` is *compact*. In particular, this applies when the action comes from an
+/--
+If `G` acts on `X` properly, the set `s +ᵥ t` is closed when `s : Set G` is _closed_ and
+`t : Set X` is _compact_. In particular, this applies when the action comes from an
 `IsTopologicalAddTorsor`.
 
 See also `IsClosed.vadd_left_of_isCompact` for a version with the assumptions on `s` and `t`
-reversed. -/]
+reversed.
+-/]
 theorem IsClosed.smul_right_of_isCompact [ProperSMul G X] {s : Set G} {t : Set X} (hs : IsClosed s)
     (ht : IsCompact t) : IsClosed (s • t) := by
   let Ψ : G × t → X × t := fun gx ↦ (gx.1 • gx.2, gx.2)
@@ -256,16 +267,20 @@ closed and `t` is compact, but `s +ᵥ t` is the set of all rationals, which is 
 closed in `ℝ`. -/
 
 open scoped Pointwise in
-/-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+/--
+If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g • U` intersects `V` is compact.
 
 See `MulAction.properSMul_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
-under additional conditions on `G` and `X`. -/
-@[to_additive /-- If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
+under additional conditions on `G` and `X`.
+-/
+@[to_additive /--
+              If `G` acts properly on `X`, then for each pair of compacts `U, V ⊆ X`,
 the set of `g` such that `g +ᵥ U` intersects `V` is compact.
 
-See `AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty` for the two-way implication
-under additional conditions on `G` and `X`. -/]
+              See `AddAction.properVAdd_iff_isCompact_setOfPred_inter_nonempty` for the two-way
+implication under additional conditions on `G` and `X`.
+              -/]
 lemma ProperSMul.isCompact_setOfPred_inter_nonempty
     {G : Type*} [Group G] [MulAction G X] [TopologicalSpace G] [ProperSMul G X]
     {U V : Set X} (hU : IsCompact U) (hV : IsCompact V) :

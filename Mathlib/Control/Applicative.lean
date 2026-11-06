@@ -11,10 +11,14 @@ public import Mathlib.Control.Functor
 
 import Mathlib.Tactic.Attr.Register
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `applicative` instances
 
 This file provides `Applicative` instances for concrete functors:
+
 * `id`
 * `Functor.comp`
 * `Functor.const`

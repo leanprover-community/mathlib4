@@ -14,6 +14,9 @@ public import Mathlib.Topology.Constructions.SumProd
 
 import Mathlib.Topology.WithTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions of new topological spaces from old ones
 
@@ -35,7 +38,6 @@ neighborhood filters and so on.
 ## Tags
 
 product, subspace, quotient space
-
 -/
 
 @[expose] public section
@@ -70,7 +72,7 @@ instance ULift.topologicalSpace [t : TopologicalSpace X] : TopologicalSpace (ULi
   t.induced ULift.down
 
 /-!
-### `Additive`, `Multiplicative`
+# `Additive`, `Multiplicative`
 
 The topology on those type synonyms is inherited without change.
 -/
@@ -145,7 +147,7 @@ theorem nhds_toAdd (x : Multiplicative X) : 𝓝 x.toAdd = map toAdd (𝓝 x) :=
 end
 
 /-!
-### Order dual
+# Order dual
 
 The topology on this type synonym is inherited without change.
 -/
@@ -621,18 +623,22 @@ protected lemma Topology.IsClosedEmbedding.inclusion (hst : s ⊆ t) (hs : IsClo
   toIsEmbedding := .inclusion _
   isClosed_range := by rwa [range_inclusion]
 
-/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
+/--
+Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and the topology induced
 by `X` on `s` is discrete, then also the topology induces on `t` is discrete.
 
-(Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.) -/
+(Compare `IsDiscrete.mono` which is the same thing stated without using subtypes.)
+-/
 theorem DiscreteTopology.of_subset {X : Type*} [TopologicalSpace X] {s t : Set X}
     (_ : DiscreteTopology s) (ts : t ⊆ s) : DiscreteTopology t :=
   (IsEmbedding.inclusion ts).discreteTopology
 
-/-- Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
+/--
+Let `s, t ⊆ X` be two subsets of a topological space `X`.  If `t ⊆ s` and `s` is discrete,
 then `t` is discrete.
 
-(Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.) -/
+(Compare `DiscreteTopology.of_subset` which is the same thing stated in terms of subtypes.)
+-/
 lemma IsDiscrete.mono {t : Set X} (hs : IsDiscrete s) (hst : t ⊆ s) : IsDiscrete t :=
   ⟨.of_subset hs.to_subtype hst⟩
 

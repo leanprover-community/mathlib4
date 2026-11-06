@@ -8,6 +8,9 @@ module
 public import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 public import Mathlib.Topology.DerivedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cantor-Bendixson derivatives and perfect kernel
 
@@ -50,7 +53,6 @@ Cantor-Bendixson derivative sequence of a closed set.
 * Pointwise and setwise Cantor-Bendixson ranks.
 * A generalized Cantor-Bendixson decomposition theorem for arbitrary topological spaces and
   arbitrary cardinalities of topological bases.
-
 -/
 
 @[expose] public section

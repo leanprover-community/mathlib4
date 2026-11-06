@@ -9,18 +9,21 @@ public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 
 import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Local frames in a vector bundle
 
 Let `V → M` be a finite rank smooth vector bundle with standard fiber `F`.
-A family of sections `s i` of `V → M` is called a **C^k local frame** on a set `U ⊆ M` iff each
+A family of sections `s i` of `V → M` is called a *C^k local frame* on a set `U ⊆ M` iff each
 section `s i` is `C^k` on `U`, and the section values `s i x` form a basis for each `x ∈ U`.
 We define a predicate `IsLocalFrame` for a collection of sections to be a local frame on a set,
 and define basic notions (such as the coefficients of a section w.r.t. a local frame, and
 checking the smoothness of `t` via its coefficients in a local frame).
 
 Given a basis `b` for `F` and a local trivialisation `e` for `V`, we construct a
-**smooth local frame** on `V` w.r.t. `e` and `b`, i.e. a collection of sections `sᵢ` of `V`
+*smooth local frame* on `V` w.r.t. `e` and `b`, i.e. a collection of sections `sᵢ` of `V`
 which is smooth on `e.baseSet` such that `{sᵢ x}` is a basis of `V x` for each `x ∈ e.baseSet`.
 Any section `s` of `e` can be uniquely written as `s = ∑ i, f^i sᵢ` near `x`,
 and `s` is smooth at `x` iff the functions `f^i` are.
@@ -33,11 +36,12 @@ has smooth partitions of unity.
 
 ## Main definitions and results
 
-* `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a **C^k local frame** on a set
+* `IsLocalFrameOn`: a family of sections `s i` of `V → M` is called a *C^k local frame* on a set
   `U ⊆ M` iff each section `s i` is `C^k` on `U`, and the section values `s i x` form a basis for
   each `x ∈ U`
 
 Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
+
 * `IsLocalFrameOn.toBasisAt hs`: for each `x ∈ U`, the vectors `sᵢ x` form a basis of `F`
 * `IsLocalFrameOn.coeff hs` describes the coefficient of sections of `V` w.r.t. `{sᵢ}`.
   `hs.coeff i` is a family of fiberwise linear maps `Π x, V x →ₗ[𝕜] 𝕜`.
@@ -60,6 +64,7 @@ Suppose `{sᵢ}` is a local frame on `U`, and `hs : IsLocalFrameOn s U`.
 
 In the following lemmas, let `e` be a compatible local trivialisation of `V`, and `b` a basis of
 the model fiber `F`.
+
 * `Bundle.Trivialization.basisAt e b`: for each `x ∈ e.baseSet`,
   return the basis of `V x` induced by `e` and `b`
 * `e.localFrame b`: the local frame on `V` induced by `e` and `b`.
@@ -90,8 +95,8 @@ Local frames use the junk value pattern: they are defined on all of `M`, but the
 only meaningful on the set on which they are a local frame.
 
 ## Tags
-vector bundle, local frame, smoothness
 
+vector bundle, local frame, smoothness
 -/
 
 @[expose] public section
@@ -122,9 +127,10 @@ variable {ι : Type*} {s s' : ι → (x : M) → V x} {u u' : Set M} {x : M} {n 
 
 variable (I F n) in
 /--
-A family of sections `s i` of `V → M` is called a **C^k local frame** on a set `U ⊆ M` iff
-- the section values `s i x` form a basis for each `x ∈ U`,
-- each section `s i` is `C^k` on `U`.
+A family of sections `s i` of `V → M` is called a *C^k local frame* on a set `U ⊆ M` iff
+
+* the section values `s i x` form a basis for each `x ∈ U`,
+* each section `s i` is `C^k` on `U`.
 -/
 structure IsLocalFrameOn (s : ι → (x : M) → V x) (u : Set M) where
   linearIndependent {x : M} (hx : x ∈ u) : LinearIndependent 𝕜 (s · x)
@@ -333,10 +339,12 @@ def basisAt (hx : x ∈ e.baseSet) : Basis ι 𝕜 (V x) :=
   b.map (e.linearEquivAt (R := 𝕜) x hx).symm
 
 open scoped Classical in
-/-- The local frame on `V` induced by a compatible local trivialization `e` of `V` and a basis
+/--
+The local frame on `V` induced by a compatible local trivialization `e` of `V` and a basis
 `b` of the model fiber `F`. Use `e.localFrame b i` to access the `i`-th section in that frame.
 
-If `x` is outside of `e.baseSet`, this returns the junk value 0. -/
+If `x` is outside of `e.baseSet`, this returns the junk value 0.
+-/
 def localFrame : ι → (x : M) → V x :=
   fun i x ↦ if hx : x ∈ e.baseSet then e.basisAt b hx i else 0
 
@@ -376,9 +384,11 @@ lemma _root_.contMDiffAt_localFrame_of_mem (i : ι) (hx : x ∈ e.baseSet) :
 variable [ContMDiffVectorBundle 1 F V I]
 
 variable (I) in
-/-- Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
+/--
+Coefficients of a section `s` of `V` w.r.t. the local frame `b.localFrame e i`.
 
-If x is outside of `e.baseSet`, this returns the junk value 0. -/
+If x is outside of `e.baseSet`, this returns the junk value 0.
+-/
 def localFrameCoeff (i : ι) : Π x : M, (V x →ₗ[𝕜] 𝕜) :=
   (e.isLocalFrameOn_localFrame_baseSet I 1 b).coeff i
 
@@ -449,10 +459,12 @@ lemma localFrameCoeff_eq_coeff (hxe : x ∈ e.baseSet) {i : ι} :
 
 end Bundle.Trivialization
 
-/-! ### Determining smoothness of a section via its local frame coefficients
+/-!
+# Determining smoothness of a section via its local frame coefficients
+
 We show that for finite rank bundles over a complete field, a section is smooth iff its coefficients
 in a local frame induced by a local trivialisation are. In many contexts, this statement holds for
-*any* local frame (e.g., for all real bundles which admit a continuous bundle metric, as is
+_any_ local frame (e.g., for all real bundles which admit a continuous bundle metric, as is
 proven in `OrthonormalFrame.lean`).
 -/
 

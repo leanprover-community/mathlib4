@@ -8,8 +8,10 @@ module
 public import Mathlib.Geometry.Manifold.DerivationBundle
 public import Mathlib.RingTheory.Derivation.Lie
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Left invariant derivations
 
 In this file we define the concept of left invariant derivations for a Lie group. The concept is
@@ -39,7 +41,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (G : Type*)
   [TopologicalSpace G] [ChartedSpace H G] [Monoid G] [ContMDiffMul I ∞ G] (g h : G)
 
-/-- Left-invariant global derivations.
+/--
+Left-invariant global derivations.
 
 A global derivation is left-invariant if it is equal to its pullback along left multiplication by
 an arbitrary element of `G`.

@@ -10,10 +10,14 @@ public import Mathlib.CategoryTheory.Limits.Connected
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation of morphism properties with limits
 
 The following predicates are introduces for morphism properties `P`:
+
 * `IsStableUnderBaseChange`: `P` is stable under base change if in all pullback
   squares, the left map satisfies `P` if the right map satisfies it.
 * `IsStableUnderCobaseChange`: `P` is stable under cobase change if in all pushout
@@ -23,7 +27,6 @@ We define `P.universally` for the class of morphisms which satisfy `P` after any
 
 We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimitsOfShape`,
 `IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
-
 -/
 
 @[expose] public section

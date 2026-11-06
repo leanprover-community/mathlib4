@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Instances.NNReal.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Square root of a real number
 
@@ -105,9 +108,11 @@ end NNReal
 
 namespace Real
 
-/-- The square root of a real number. This returns 0 for negative inputs.
+/--
+The square root of a real number. This returns 0 for negative inputs.
 
-This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`. -/
+This has notation `√x`. Note that `√x⁻¹` is parsed as `√(x⁻¹)`.
+-/
 @[irreducible] noncomputable def sqrt (x : ℝ) : ℝ :=
   NNReal.sqrt (Real.toNNReal x)
 

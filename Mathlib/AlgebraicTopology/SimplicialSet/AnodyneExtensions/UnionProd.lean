@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A pairing for the pushout-product of a horn inclusion and a boundary inclusion
 
@@ -46,10 +49,9 @@ The type (I) simplices for the pairing are those `x` such that there exists `l`
 such that the predicate `IsIndex` hold. The corresponding type (II) simplex
 is obtained by removing `x (l.pred _)` from the walk.
 
-
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 open scoped Finset

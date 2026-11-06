@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Grade
 public import Mathlib.Data.Finset.Sups
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shadows
 
@@ -26,6 +29,7 @@ to projecting each finset down once in all available directions.
 ## Notation
 
 We define notation in scope `FinsetFamily`:
+
 * `∂ 𝒜`: Shadow of `𝒜`.
 * `∂⁺ 𝒜`: Upper shadow of `𝒜`.
 
@@ -96,9 +100,11 @@ lemma mem_shadow_iff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∈ s, erase s a
 theorem erase_mem_shadow (hs : s ∈ 𝒜) (ha : a ∈ s) : erase s a ∈ ∂ 𝒜 :=
   mem_shadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 
-/-- `t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜`.
+/--
+`t ∈ ∂𝒜` iff `t` is exactly one element less than something from `𝒜`.
 
-See also `Finset.mem_shadow_iff_exists_mem_card_add_one`. -/
+See also `Finset.mem_shadow_iff_exists_mem_card_add_one`.
+-/
 lemma mem_shadow_iff_exists_sdiff : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #(s \ t) = 1 := by
   simp_rw [mem_shadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
 
@@ -108,9 +114,11 @@ lemma mem_shadow_iff_insert_mem : t ∈ ∂ 𝒜 ↔ ∃ a ∉ t, insert a t ∈
   simp_rw [mem_shadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
   aesop
 
-/-- `s ∈ ∂ 𝒜` iff `s` is exactly one element less than something from `𝒜`.
+/--
+`s ∈ ∂ 𝒜` iff `s` is exactly one element less than something from `𝒜`.
 
-See also `Finset.mem_shadow_iff_exists_sdiff`. -/
+See also `Finset.mem_shadow_iff_exists_sdiff`.
+-/
 lemma mem_shadow_iff_exists_mem_card_add_one : t ∈ ∂ 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #s = #t + 1 := by
   refine mem_shadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
     and_congr_right fun hst ↦ ?_
@@ -125,9 +133,11 @@ lemma mem_shadow_iterate_iff_exists_card :
     simp only [mem_shadow_iff_insert_mem, ih, Function.iterate_succ_apply', card_eq_succ]
     aesop
 
-/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
+/--
+`t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
 
-See also `Finset.mem_shadow_iff_exists_mem_card_add`. -/
+See also `Finset.mem_shadow_iff_exists_mem_card_add`.
+-/
 lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #(s \ t) = k := by
   rw [mem_shadow_iterate_iff_exists_card]
   constructor
@@ -137,9 +147,11 @@ lemma mem_shadow_iterate_iff_exists_sdiff : t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ �
     refine ⟨s \ t, rfl, disjoint_sdiff, ?_⟩
     rwa [union_sdiff_self_eq_union, union_eq_right.2 hts]
 
-/-- `t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
+/--
+`t ∈ ∂^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
 
-See also `Finset.mem_shadow_iterate_iff_exists_sdiff`. -/
+See also `Finset.mem_shadow_iterate_iff_exists_sdiff`.
+-/
 lemma mem_shadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂^[k] 𝒜 ↔ ∃ s ∈ 𝒜, t ⊆ s ∧ #s = #t + k := by
   refine mem_shadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
@@ -206,9 +218,11 @@ lemma mem_upShadow_iff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, ∃ a ∉ s, inse
 theorem insert_mem_upShadow (hs : s ∈ 𝒜) (ha : a ∉ s) : insert a s ∈ ∂⁺ 𝒜 :=
   mem_upShadow_iff.2 ⟨s, hs, a, ha, rfl⟩
 
-/-- `t` is in the upper shadow of `𝒜` iff `t` is exactly one element more than something from `𝒜`.
+/--
+`t` is in the upper shadow of `𝒜` iff `t` is exactly one element more than something from `𝒜`.
 
-See also `Finset.mem_upShadow_iff_exists_mem_card_add_one`. -/
+See also `Finset.mem_upShadow_iff_exists_mem_card_add_one`.
+-/
 lemma mem_upShadow_iff_exists_sdiff : t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #(t \ s) = 1 := by
   simp_rw [mem_upShadow_iff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_insert]
 
@@ -218,9 +232,11 @@ lemma mem_upShadow_iff_erase_mem : t ∈ ∂⁺ 𝒜 ↔ ∃ a, a ∈ t ∧ eras
   simp_rw [mem_upShadow_iff_exists_sdiff, ← covBy_iff_card_sdiff_eq_one, covBy_iff_exists_erase]
   aesop
 
-/-- `t` is in the upper shadow of `𝒜` iff `t` is exactly one element less than something from `𝒜`.
+/--
+`t` is in the upper shadow of `𝒜` iff `t` is exactly one element less than something from `𝒜`.
 
-See also `Finset.mem_upShadow_iff_exists_sdiff`. -/
+See also `Finset.mem_upShadow_iff_exists_sdiff`.
+-/
 lemma mem_upShadow_iff_exists_mem_card_add_one :
     t ∈ ∂⁺ 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #t = #s + 1 := by
   refine mem_upShadow_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦
@@ -242,9 +258,11 @@ lemma mem_upShadow_iterate_iff_exists_card :
       rw [insert_subset_iff] at hut
       exact ⟨a, hut.1, _, rfl, ⟨hut.2, hau⟩, htu⟩
 
-/-- `t` is in the upper shadow of `𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
+/--
+`t` is in the upper shadow of `𝒜` iff `t` is exactly `k` elements less than something from `𝒜`.
 
-See also `Finset.mem_upShadow_iff_exists_mem_card_add`. -/
+See also `Finset.mem_upShadow_iff_exists_mem_card_add`.
+-/
 lemma mem_upShadow_iterate_iff_exists_sdiff : t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #(t \ s) = k := by
   rw [mem_upShadow_iterate_iff_exists_card]
   constructor
@@ -253,9 +271,11 @@ lemma mem_upShadow_iterate_iff_exists_sdiff : t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s �
   · rintro ⟨s, hs, hst, rfl⟩
     exact ⟨_, rfl, sdiff_subset, by rwa [sdiff_sdiff_eq_self hst]⟩
 
-/-- `t ∈ ∂⁺^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
+/--
+`t ∈ ∂⁺^k 𝒜` iff `t` is exactly `k` elements less than something in `𝒜`.
 
-See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`. -/
+See also `Finset.mem_upShadow_iterate_iff_exists_sdiff`.
+-/
 lemma mem_upShadow_iterate_iff_exists_mem_card_add :
     t ∈ ∂⁺^[k] 𝒜 ↔ ∃ s ∈ 𝒜, s ⊆ t ∧ #t = #s + k := by
   refine mem_upShadow_iterate_iff_exists_sdiff.trans <| exists_congr fun t ↦ and_congr_right fun _ ↦

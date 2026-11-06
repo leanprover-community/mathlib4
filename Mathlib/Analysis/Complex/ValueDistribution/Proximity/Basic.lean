@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Integrability.PosLog
 public import Mathlib.MeasureTheory.Integral.CircleAverage
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Proximity Function of Value Distribution Theory
 
@@ -20,9 +23,9 @@ The proximity function is a logarithmically weighted measure quantifying how wel
 function `f` approximates the constant function `a` on the circle of radius `R` in the complex
 plane.  The definition ensures that large values correspond to good approximation.
 
-See Section VI.2 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
-[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
-Approximation*][MR3156076] for a detailed discussion.
+See Section VI.2 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] or Section 1.1
+of ‍\[Noguchi-Winkelmann, _Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation_\]\[MR3156076\] for a detailed discussion.
 -/
 
 open scoped Finset
@@ -75,7 +78,7 @@ Expand the definition of `proximity f a` in case where `a₀ = ⊤`.
 lemma proximity_top : proximity f ⊤ = circleAverage (log⁺ ‖f ·‖) 0 := rfl
 
 /-!
-## Elementary Properties of the Proximity Function
+# Elementary Properties of the Proximity Function
 -/
 
 /--
@@ -162,7 +165,7 @@ If `f` is continuous, then so is its proximity function at `⊤`.
   fun_prop
 
 /-!
-## Behaviour under Arithmetic Operations
+# Behaviour under Arithmetic Operations
 -/
 
 /--

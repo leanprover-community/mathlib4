@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.SetFamily.Compression.Down
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Harris-Kleitman inequality
 
@@ -25,7 +28,7 @@ correlate in the uniform measure.
 
 ## References
 
-* [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
+* ‍\[D. J. Kleitman, _Families of non-disjoint subsets_\]\[kleitman1966\]
 -/
 
 public section

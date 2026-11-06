@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Valuation.Discrete.IsDiscreteValuationRing
 
 import Mathlib.GroupTheory.ArchimedeanDensely
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reduction of Weierstrass curves over local fields
 
@@ -36,7 +39,7 @@ fraction fields of discrete valuation rings.
 
 ## References
 
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -351,11 +354,13 @@ class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W
 
 -- TODO: add characterization in terms of the discriminant when the characteristic is not 2
 open Polynomial in
-/-- A minimal Weierstrass equation has split multiplicative reduction if and only if
+/--
+A minimal Weierstrass equation has split multiplicative reduction if and only if
 the polynomial `c₄ T ^ 2 + a₁ c₄ T - (54 b₆ - 3 b₂ b₄ + a₂ c₄)` splits in the residue field.
 
 To see how this expression arises, note that the node `(x₀, y₀)` has second order Taylor expansion
-`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`. -/
+`(Y - y₀)^2 + a_1(X - x₀)(Y - y₀) - (3x₀ + a_2)(X - x₀)^2` where `x₀ = (18 b₆ - b₂ b₄) / c₄`.
+-/
 @[mk_iff]
 class HasSplitMultiplicativeReduction (W : WeierstrassCurve K) : Prop
     extends W.HasMultiplicativeReduction R where

@@ -10,8 +10,10 @@ public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
 public import Mathlib.Order.Setoid.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Sets invariant to a `MulAction`
 
 In this file we define `SubMulAction R M`; a subset of a `MulAction R M` which is closed with
@@ -41,7 +43,8 @@ universe u u' u'' v
 
 variable {S : Type u'} {T : Type u''} {R : Type u} {M : Type v}
 
-/-- `SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
+/--
+`SMulMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 scalar action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
@@ -52,11 +55,13 @@ class SMulMemClass (S : Type*) (R : outParam Type*) (M : Type*) [SMul R M] [SetL
   /-- Multiplication by a scalar on an element of the set remains in the set. -/
   smul_mem : ∀ {s : S} (r : R) {m : M}, m ∈ s → r • m ∈ s
 
-/-- `VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
+/--
+`VAddMemClass S R M` says `S` is a type of subsets `s ≤ M` that are closed under the
 additive action of `R` on `M`.
 
 Note that only `R` is marked as an `outParam` here, since `M` is supplied by the `SetLike`
-class instead. -/
+class instead.
+-/
 class VAddMemClass (S : Type*) (R : outParam Type*) (M : Type*) [VAdd R M] [SetLike S M] :
     Prop where
   /-- Addition by a scalar with an element of the set remains in the set. -/
@@ -224,10 +229,14 @@ theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (
 theorem ext {p q : SubMulAction R M} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
-/-- Copy of a sub_mul_action with a new `carrier` equal to the old one. Useful to fix definitional
-equalities. -/
-@[to_additive /-- Copy of a sub_mul_action with a new `carrier` equal to the old one.
-  Useful to fix definitional equalities. -/]
+/--
+Copy of a sub\_mul\_action with a new `carrier` equal to the old one. Useful to fix definitional
+equalities.
+-/
+@[to_additive /--
+              Copy of a sub\_mul\_action with a new `carrier` equal to the old one.
+Useful to fix definitional equalities.
+              -/]
 protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAction R M where
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'

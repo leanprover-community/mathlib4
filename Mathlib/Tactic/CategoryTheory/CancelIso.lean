@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Iso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simproc for canceling morphisms with their inverses
 
@@ -51,16 +54,19 @@ lemma hom_inv_id_of_eq_assoc {C : Type*} [Category* C] {x y : C}
   rw [← h]
   exact IsIso.hom_inv_id_assoc f k
 
-/-- Given expressions `C x y z f g` assumed to represent
+/--
+Given expressions `C x y z f g` assumed to represent
 composable morphisms `f : x ⟶ y` and `g : y ⟶ z` in a category `C`,
 check if `g` is equal to the inverse of `f` by
+
 1. first checking the objects match (i.e x = z).
 2. Checking that `f` is an isomorphism by looking for an `IsIso` instance,
-  allowing us to write `inv f`.
+   allowing us to write `inv f`.
 3. running `push inv` on both `inv f` and `g`, and checking that the results are equal.
 
 If they are inverse, return a proof of `inv f = g`.
-If any of the tests above fail, return none. -/
+If any of the tests above fail, return none.
+-/
 def tryCancelPair (C x y z f g : Expr) : MetaM (Option Expr) := do
   -- Check the objects match
   unless ← withNewMCtxDepth (isDefEq z x) do return none
@@ -75,7 +81,8 @@ def tryCancelPair (C x y z f g : Expr) : MetaM (Option Expr) := do
     (← pushed_inv.proof?.getDM (mkEqRefl inv_f))
     (← (← pushed_g.proof?.mapM mkEqSymm).getDM (mkEqRefl g))
 
-/-- `cancelIso` simplifies the composition of a morphism and its inverse,
+/--
+`cancelIso` simplifies the composition of a morphism and its inverse,
 given an expression of the form `f ≫ g`.
 
 Assuming `f` is not a composition (as `Category.assoc` is tagged `@[simp]`),
@@ -94,7 +101,8 @@ because `CategoryTheory.Functor.map_inv` is a `@[push ←]` lemma, and
 `CategoryTheory.IsIso.Iso.inv_hom` is a `@[push]` lemma.
 
 This procedure is mostly intended as a post-procedure: it will work better if `f` and `g`
-have already been traversed beforehand. -/
+have already been traversed beforehand.
+-/
 def cancelIsoSimproc : Simp.Simproc := fun e => do
   let_expr CategoryStruct.comp C instCat x y t f g := e | return .continue
   match_expr g with

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.Translate.TagUnfoldBoundary
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `@[to_dual]` attribute.
 
@@ -14,12 +17,13 @@ The `@[to_dual]` attribute is used to translate declarations to their dual equiv
 See the docstrings of `to_dual` and `to_additive` for more information.
 
 Known limitations:
-- When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
+
+* When combining `to_additive` and `to_dual`, we need to make sure that all translations are added.
   For example `attribute [to_dual (attr := to_additive) le_mul] mul_le` should generate
   `le_mul`, `le_add` and `add_le`, and in particular should realize that `le_add` and `add_le`
   are dual to each other. Currently, this requires writing
   `attribute [to_dual existing le_add] add_le`.
-- It is currently not possible for a constant to have multiple possible duals.
+* It is currently not possible for a constant to have multiple possible duals.
   This would be useful for constants that have orders on different types, such as `Monotone f`.
   If the domain and codomain of `f` are both dualized, then `Monotone f` is simply dual to itself.
   But there are also cases where only the domain or only the codomain should be dualized.
@@ -45,7 +49,8 @@ syntax (name := to_dual_do_translate) "to_dual_do_translate" : attr
 @[inherit_doc TranslateData.dontTranslateAttr]
 syntax (name := to_dual_dont_translate) "to_dual_dont_translate" : attr
 
-/-- The attribute `to_dual` can be used to automatically transport theorems
+/--
+The attribute `to_dual` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) to their dual version.
 It uses the same implementation as `to_additive`.
 
@@ -87,6 +92,7 @@ Use the `to_dual existing` syntax to use an existing dual declaration,
 instead of automatically generating it.
 
 Use the `(attr := ...)` syntax to apply attributes to both the original and the dual version:
+
 ```
 @[to_dual (attr := simp)] lemma min_self (a : α) : min a a = a := sorry
 ```
@@ -101,9 +107,10 @@ declaration, overriding the automatic translation of names. For example, `(renam
 will translate `lemma min_foo (x y z : α) ...` to `lemma max_foo (a z y : α) ...`.
 
 Some definitions are dual to something other than the dual of their value. Some examples:
-- `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
-- `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
-- `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.
+
+* `Ico a b := { x | a ≤ x ∧ x < b }` is dual to `Ioc b a := { x | b < x ∧ x ≤ a }`.
+* `Monotone f := ∀ ⦃a b⦄, a ≤ b → f a ≤ f b` is dual to itself.
+* `DecidableLE α := ∀ a b : α, Decidable (a ≤ b)` is dual to itself.
 
 To be able to translate a term involving such constants, `to_dual` needs to insert casts,
 so that the term's correctness doesn't rely on unfolding them.
@@ -351,11 +358,12 @@ elab "to_dual_name_hint" hints:(ident ident),* : command => do
     guessNameExt.addTranslation ⟨hint[0]⟩ ⟨hint[1]⟩
     guessNameExt.addTranslation ⟨hint[1]⟩ ⟨hint[0]⟩
 
-/-- `to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
+/--
+`to_dual_for src := e` tells `to_dual` to translate the constant `src` to `e`,
 where `e` can be an arbitrary expression.
 
 TODO: this currently doesn't accept the `(dont_translate := ...)`/`(relevant_arg := ...)` syntax.
-  This can be added if necessary.
+This can be added if necessary.
 -/
 elab tk:"to_dual_for" src:ident " := " tgt:term : command => Command.liftTermElabM do
   let src ← realizeGlobalConstNoOverloadWithInfo src

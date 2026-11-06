@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.RightHomology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of short complexes
 
@@ -28,8 +31,7 @@ have homology data.
 Note: This definition arose by the end of the Liquid Tensor Experiment which
 contained a structure `has_homology` which is quite similar to `S.HomologyData`.
 After the category `ShortComplex C` was introduced by J. Riou, A. Topaz suggested
-such a structure could be used as a basis for the *definition* of homology.
-
+such a structure could be used as a basis for the _definition_ of homology.
 -/
 
 @[expose] public section

@@ -15,6 +15,9 @@ public import Mathlib.Tactic.NormNum
 import Mathlib.Algebra.Module.Shrink
 import Mathlib.LinearAlgebra.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective modules
 
@@ -23,6 +26,7 @@ import Mathlib.LinearAlgebra.Pi
 * `Module.Injective`: an `R`-module `Q` is injective if and only if every injective `R`-linear
   map descends to a linear map to `Q`, i.e. in the following diagram, if `f` is injective then there
   is an `R`-linear map `h : Y ⟶ Q` such that `g = h ∘ f`
+
   ```
   X --- f ---> Y
   |
@@ -36,7 +40,6 @@ import Mathlib.LinearAlgebra.Pi
 ## Main statements
 
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
-
 -/
 
 @[expose] public section
@@ -53,13 +56,14 @@ variable (R : Type u) [Ring R] (Q : Type v) [AddCommGroup Q] [Module R Q]
 An `R`-module `Q` is injective if and only if every injective `R`-linear map descends to a linear
 map to `Q`, i.e. in the following diagram, if `f` is injective then there is an `R`-linear map
 `h : Y ⟶ Q` such that `g = h ∘ f`
-  ```
-  X --- f ---> Y
-  |
-  | g
-  v
-  Q
-  ```
+
+```
+X --- f ---> Y
+|
+| g
+v
+Q
+```
 -/
 @[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]

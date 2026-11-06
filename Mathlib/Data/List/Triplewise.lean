@@ -8,13 +8,15 @@ module
 import Batteries.Data.List.Lemmas
 import Mathlib.Tactic.MkIffOfInductiveProp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triplewise predicates on list.
 
 ## Main definitions
 
 * `List.Triplewise` says that a predicate applies to all ordered triples of elements of a list.
-
 -/
 
 public section

@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Data.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions about upper/lower bounds
 
 In this file we define:
+
 * `upperBounds`, `lowerBounds` : the set of upper bounds (resp., lower bounds) of a set;
 * `BddAbove s`, `BddBelow s` : the set `s` is bounded above (resp., below), i.e., the set of upper
   (resp., lower) bounds of `s` is nonempty;

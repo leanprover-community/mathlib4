@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 
-/-! # Induced shift sequences
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Induced shift sequences
 
 When `G : C ⥤ A` is a functor from a category equipped with a shift by a
 monoid `M`, we have defined in the file `Mathlib/CategoryTheory/Shift/ShiftSequence.lean`
@@ -24,7 +28,6 @@ category (see the file `Mathlib/CategoryTheory/Shift/Induced.lean`), this file s
 under certain assumptions, there is an induced "shift sequence". The main application
 will be the construction of a shift sequence for the homology functor on the
 homotopy category of cochain complexes (TODO), and also on the derived category (TODO).
-
 -/
 
 @[expose] public section

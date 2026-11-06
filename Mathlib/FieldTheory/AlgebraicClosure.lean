@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.FieldTheory.Normal.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative Algebraic Closure
 
@@ -15,9 +18,8 @@ In this file we construct the relative algebraic closure of a field extension.
 
 ## Main Definitions
 
-- `algebraicClosure F E` is the relative algebraic closure (i.e. the maximal algebraic subextension)
+* `algebraicClosure F E` is the relative algebraic closure (i.e. the maximal algebraic subextension)
   of the field extension `E / F`, which is defined to be the integral closure of `F` in `E`.
-
 -/
 
 @[expose] public section
@@ -29,8 +31,8 @@ variable (F E : Type*) [Field F] [Field E] [Algebra F E]
 variable {K : Type*} [Field K] [Algebra F K]
 
 /--
-The *relative algebraic closure* of a field `F` in a field extension `E`,
-also called the *maximal algebraic subextension* of `E / F`,
+The _relative algebraic closure_ of a field `F` in a field extension `E`,
+also called the _maximal algebraic subextension_ of `E / F`,
 is defined to be the subalgebra `integralClosure F E`
 upgraded to an intermediate field (since `F` and `E` are both fields).
 This is exactly the intermediate field of `E / F` consisting of all integral/algebraic elements.

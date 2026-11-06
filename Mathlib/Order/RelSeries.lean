@@ -16,12 +16,14 @@ public import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Series of a relation
 
 If `r` is a relation on `α` then a relation series of length `n` is a series
 `a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
-
 -/
 
 @[expose] public section
@@ -221,14 +223,18 @@ theorem length_pos [r.IsIrrefl] : 0 < s.length ↔ {x | x ∈ s}.Nontrivial :=
 lemma length_eq_zero [r.IsIrrefl] : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
   rw [← not_ne_iff, length_ne_zero, Set.not_nontrivial_iff]
 
-/-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
+/--
+Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
 
-Since a relation series is assumed to be non-empty, this is well defined. -/
+Since a relation series is assumed to be non-empty, this is well defined.
+-/
 def head (x : RelSeries r) : α := x 0
 
-/-- End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.
+/--
+End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.
 
-Since a relation series is assumed to be non-empty, this is well defined. -/
+Since a relation series is assumed to be non-empty, this is well defined.
+-/
 def last (x : RelSeries r) : α := x <| Fin.last _
 
 lemma apply_zero (p : RelSeries r) : p 0 = p.head := rfl

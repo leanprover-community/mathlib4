@@ -12,18 +12,21 @@ import Mathlib.Algebra.Order.Field.Pointwise
 import Mathlib.Analysis.Calculus.Deriv.AffineMap
 import Mathlib.Analysis.Calculus.Deriv.Shift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral of a 1-form along a path
 
 In this file we define the integral of a 1-form along a path indexed by `[0, 1]`
 and prove basic properties of this operation.
 
-The integral `∫ᶜ x in γ, ω x` is defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
+The integral `∫ᶜ x in γ, ω x` is defined as $`\int_0^1 \omega(\gamma(t))(\gamma'(t))`.
 More precisely, we use
 
-- `Path.extend γ t` instead of `γ t`, because both derivatives and `intervalIntegral`
+* `Path.extend γ t` instead of `γ t`, because both derivatives and `intervalIntegral`
   expect globally defined functions;
-- `derivWithin γ.extend (Set.Icc 0 1) t`, not `deriv γ.extend t`, for the derivative,
+* `derivWithin γ.extend (Set.Icc 0 1) t`, not `deriv γ.extend t`, for the derivative,
   so that it takes meaningful values at `t = 0` and `t = 1`,
   even though this does not affect the integral.
 
@@ -35,15 +38,15 @@ allows us to avoid inserting `ContinuousLinearMap.restrictScalars` here and ther
 
 ## Main definitions
 
-- `curveIntegral ω γ`, notation `∫ᶜ x in γ, ω x`, is the integral of a 1-form `ω` along a path `γ`.
-- `CurveIntegrable ω γ` is the predicate saying that the above integral makes sense.
+* `curveIntegral ω γ`, notation `∫ᶜ x in γ, ω x`, is the integral of a 1-form `ω` along a path `γ`.
+* `CurveIntegrable ω γ` is the predicate saying that the above integral makes sense.
 
 ## Main results
 
 We prove that `curveIntegral` behaves well with respect to
 
-- operations on `Path`s, see `curveIntegral_refl`, `curveIntegral_symm`, `curveIntegral_trans` etc;
-- algebraic operations on 1-forms, see `curveIntegral_add` etc.
+* operations on `Path`s, see `curveIntegral_refl`, `curveIntegral_symm`, `curveIntegral_trans` etc;
+* algebraic operations on 1-forms, see `curveIntegral_add` etc.
 
 We also show that the derivative of `fun b ↦ ∫ᶜ x in Path.segment a b, ω x`
 has derivative `ω a` at `b = a`.
@@ -59,10 +62,9 @@ is called “line integral”, “path integral”, “curve integral”, or “
 
 We use the name “curve integral” instead of other names for the following reasons:
 
-- for many people whose mother tongue is not English,
+* for many people whose mother tongue is not English,
   “line integral” sounds like an integral along a straight line;
-
-- we reserve the name "path integral" for Feynman-style integrals over the space of paths.
+* we reserve the name "path integral" for Feynman-style integrals over the space of paths.
 
 ### Usage of `ContinuousLinearMap`s for 1-forms
 
@@ -72,7 +74,7 @@ this file uses `E → E →L[𝕜] F` instead of continuous alternating maps for
 
 ### Differentiability assumptions
 
-The definitions in this file make sense if the path is a piecewise $C^1$ curve.
+The definitions in this file make sense if the path is a piecewise $`C^1` curve.
 Poincaré lemma (formalization WIP, see #24019) implies that for a closed 1-form on an open set `U`,
 the integral depends on the homotopy class of the path only,
 thus we can define the integral along a continuous path
@@ -97,17 +99,20 @@ section Defs
 variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {a b : E}
 
-/-- The function `t ↦ ω (γ t) (γ' t)` which appears in the definition of a curve integral.
+/--
+The function `t ↦ ω (γ t) (γ' t)` which appears in the definition of a curve integral.
 
 This definition is used to factor out common parts of lemmas
-about `CurveIntegrable` and `curveIntegral`. -/
+about `CurveIntegrable` and `curveIntegral`.
+-/
 @[no_expose] noncomputable def curveIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
 
 alias curveIntegralFun_def' := curveIntegralFun.eq_def
 
-/-- A 1-form `ω` is *curve integrable* along a path `γ`,
+/--
+A 1-form `ω` is _curve integrable_ along a path `γ`,
 if the function `curveIntegralFun ω γ t = ω (γ t) (γ' t)` is integrable on `[0, 1]`.
 
 The actual definition uses `Path.extend γ`,
@@ -116,12 +121,14 @@ because both interval integrals and derivatives expect globally defined function
 def CurveIntegrable (ω : E → E →L[𝕜] F) (γ : Path a b) : Prop :=
   IntervalIntegrable (curveIntegralFun ω γ) volume 0 1
 
-/-- Integral of a 1-form `ω : E → E →L[𝕜] F` along a path `γ`,
-defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
+/--
+Integral of a 1-form `ω : E → E →L[𝕜] F` along a path `γ`,
+defined as $`\int_0^1 \omega(\gamma(t))(\gamma'(t))`.
 
 The actual definition uses `curveIntegralFun` which uses `Path.extend γ`
 and `derivWithin (Path.extend γ) (Set.Icc 0 1) t`,
-because calculus-related definitions in Mathlib expect globally defined functions as arguments. -/
+because calculus-related definitions in Mathlib expect globally defined functions as arguments.
+-/
 @[no_expose] noncomputable def curveIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   ∫ t in 0..1, curveIntegralFun ω γ t
@@ -157,7 +164,7 @@ theorem curveIntegral_eq_intervalIntegral_deriv [NormedSpace ℝ E] [NormedSpace
 end Defs
 
 /-!
-### Operations on paths
+# Operations on paths
 -/
 
 section PathOperations
@@ -329,8 +336,10 @@ theorem norm_curveIntegral_segment_le [NormedSpace ℝ E] {C : ℝ} (h : ∀ z �
     apply_rules [(ω _).le_of_opNorm_le, mem_image_of_mem, Ioc_subset_Icc_self]
   _ = C * ‖b - a‖ := by simp
 
-/-- If a 1-form `ω` is continuous on a set `s`,
-then it is curve integrable along any $C^1$ path in this set. -/
+/--
+If a 1-form `ω` is continuous on a set `s`,
+then it is curve integrable along any $`C^1` path in this set.
+-/
 theorem ContinuousOn.curveIntegrable_of_contDiffOn [NormedSpace ℝ E] {s : Set E}
     (hω : ContinuousOn ω s) (hγ : ContDiffOn ℝ 1 γ.extend I) (hγs : ∀ t, γ t ∈ s) :
     CurveIntegrable ω γ := by
@@ -343,7 +352,7 @@ theorem ContinuousOn.curveIntegrable_of_contDiffOn [NormedSpace ℝ E] {s : Set 
 end PathOperations
 
 /-!
-### Algebraic operations on the 1-form
+# Algebraic operations on the 1-form
 -/
 
 section Algebra
@@ -492,7 +501,7 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
   {a b : E} {s : Set E} {ω : E → E →L[𝕜] F}
 
 /-!
-### Derivative of the curve integral w.r.t. the right endpoint
+# Derivative of the curve integral w.r.t. the right endpoint
 
 In this section we prove that the integral of `ω` along `[a -[ℝ] b]`, as a function of `b`,
 has derivative `ω a` at `b = a`.

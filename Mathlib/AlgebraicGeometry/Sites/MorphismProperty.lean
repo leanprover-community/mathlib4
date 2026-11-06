@@ -9,14 +9,15 @@ public import Mathlib.AlgebraicGeometry.OpenImmersion
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Site defined by a morphism property
 
 Given a multiplicative morphism property `P` that is stable under base change, we define the
 associated precoverage on the category of schemes, where coverings are given
 by jointly surjective families of morphisms satisfying `P`.
-
 -/
 
 @[expose] public section
@@ -29,14 +30,16 @@ namespace AlgebraicGeometry
 
 namespace Scheme
 
-/-- A morphism property of schemes is said to preserve joint surjectivity, if
+/--
+A morphism property of schemes is said to preserve joint surjectivity, if
 for any pair of morphisms `f : X ⟶ S` and `g : Y ⟶ S` where `g` satisfies `P`,
 any pair of points `x : X` and `y : Y` with `f x = g y` can be lifted to a point
 of `X ×[S] Y`.
 
 In later files, this will be automatic, since this holds for any morphism `g`
 (see `AlgebraicGeometry.Scheme.isJointlySurjectivePreserving`). But at
-this early stage in the import tree, we only know it for open immersions. -/
+this early stage in the import tree, we only know it for open immersions.
+-/
 class IsJointlySurjectivePreserving (P : MorphismProperty Scheme.{u}) where
   exists_preimage_fst_triplet_of_prop {X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S} [HasPullback f g]
     (hg : P g) (x : X) (y : Y) (h : f x = g y) :

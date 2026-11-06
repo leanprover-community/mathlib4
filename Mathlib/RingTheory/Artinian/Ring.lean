@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Localization.Defs
 
 import Mathlib.Algebra.Field.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian rings
 
@@ -25,7 +28,6 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 * `IsArtinianRing.localization_surjective`: the canonical homomorphism from a commutative Artinian
   ring to any localization of itself is surjective.
-
 * `IsArtinianRing.isNilpotent_jacobson`: the Jacobson radical of a commutative Artinian ring
   is a nilpotent ideal.
 
@@ -36,13 +38,12 @@ so that we can apply basic API on Artinian modules to division rings without a h
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Artinian, artinian, Artinian ring, artinian ring
-
 -/
 
 public section

@@ -13,9 +13,11 @@ public import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Order.Int.LeastGreatest
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The real numbers are an Archimedean floor ring, and a conditionally complete linear order.
-
 -/
 
 @[expose] public section
@@ -215,33 +217,41 @@ theorem sSup_neg (s : Set ℝ) : sSup (-s) = -sInf s := by
 theorem sInf_neg (s : Set ℝ) : sInf (-s) = -sSup s := by
   rw [← neg_eq_iff_eq_neg, ← Real.sSup_neg, neg_neg]
 
-/-- As `sSup s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
+/--
+As `sSup s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
 are at most some nonnegative number `a` to show that `sSup s ≤ a`.
 
-See also `csSup_le`. -/
+See also `csSup_le`.
+-/
 protected lemma sSup_le (hs : ∀ x ∈ s, x ≤ a) (ha : 0 ≤ a) : sSup s ≤ a := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   exacts [sSup_empty.trans_le ha, csSup_le hs' hs]
 
-/-- As `⨆ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
+/--
+As `⨆ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
 that all values of `f` are at most some nonnegative number `a` to show that `⨆ i, f i ≤ a`.
 
-See also `ciSup_le`. -/
+See also `ciSup_le`.
+-/
 protected lemma iSup_le (hf : ∀ i, f i ≤ a) (ha : 0 ≤ a) : ⨆ i, f i ≤ a :=
   Real.sSup_le (Set.forall_mem_range.2 hf) ha
 
-/-- As `sInf s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
+/--
+As `sInf s = 0` when `s` is an empty set of reals, it suffices to show that all elements of `s`
 are at least some nonpositive number `a` to show that `a ≤ sInf s`.
 
-See also `le_csInf`. -/
+See also `le_csInf`.
+-/
 protected lemma le_sInf (hs : ∀ x ∈ s, a ≤ x) (ha : a ≤ 0) : a ≤ sInf s := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   exacts [ha.trans_eq sInf_empty.symm, le_csInf hs' hs]
 
-/-- As `⨅ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
+/--
+As `⨅ i, f i = 0` when the domain of the real-valued function `f` is empty, it suffices to show
 that all values of `f` are at least some nonpositive number `a` to show that `a ≤ ⨅ i, f i`.
 
-See also `le_ciInf`. -/
+See also `le_ciInf`.
+-/
 protected lemma le_iInf (hf : ∀ i, a ≤ f i) (ha : a ≤ 0) : a ≤ ⨅ i, f i :=
   Real.le_sInf (Set.forall_mem_range.2 hf) ha
 

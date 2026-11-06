@@ -11,14 +11,17 @@ public import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.RingHom.Finite
 import Mathlib.RingTheory.RingHom.FiniteType
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descent of finiteness conditions under faithfully flat maps
 
 In this file we show that
 
-- `Algebra.FiniteType`:
-- `Algebra.FinitePresentation`:
-- `Module.Finite`:
+* `Algebra.FiniteType`:
+* `Algebra.FinitePresentation`:
+* `Module.Finite`:
 
 descend along faithfully flat base change.
 -/

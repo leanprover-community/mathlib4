@@ -11,6 +11,9 @@ public import Mathlib.Order.Fin.Basic
 
 import Mathlib.Data.Set.Insert
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operation on tuples
 
@@ -54,8 +57,10 @@ ways to move between tuples of length `n` and of length `n + 1` by adding/removi
 
 ### Adding in the middle
 
-For a **pivot** `p : Fin (n + 1)`,
+For a *pivot* `p : Fin (n + 1)`,
+
 * `Fin.succAbove`: Send `i : Fin n` to
+
   * `i : Fin (n + 1)` if `i < p`,
   * `i + 1 : Fin (n + 1)` if `p ≤ i`.
 * `Fin.succAboveCases`: Induction/recursion principle for `Fin`: To prove a property/define a
@@ -77,7 +82,6 @@ For a **pivot** `p : Fin (n + 1)`,
   hypothesis that `h : ∃ i, p i`.
 * `Fin.append a b` : append two tuples.
 * `Fin.repeat n a` : repeat a tuple `n` times.
-
 -/
 
 @[expose] public section
@@ -176,10 +180,12 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
 theorem cons_zero_succ : (cons 0 Fin.succ : Fin (n + 1) → Fin (n + 1)) = id :=
   cons_self_tail id
 
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+/--
+Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the first element of the tuple.
 
-This is `Fin.cons` as an `Equiv`. -/
+This is `Fin.cons` as an `Equiv`.
+-/
 @[simps symm_apply]
 def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
   toFun f := cons f.1 f.2
@@ -714,10 +720,12 @@ theorem comp_init {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
   ext j
   simp [init]
 
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+/--
+Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the last element of the tuple.
 
-This is `Fin.snoc` as an `Equiv`. -/
+This is `Fin.snoc` as an `Equiv`.
+-/
 @[simps symm_apply]
 def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
   toFun f := Fin.snoc f.2 f.1
@@ -1071,10 +1079,12 @@ theorem insertNth_update (p : Fin (n + 1)) (x : α p) (i : Fin n) (y : α (p.suc
     p.insertNth x (update f i y) = update (p.insertNth x f) (p.succAbove i) y := by
   simp [insertNth_eq_iff]
 
-/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+/--
+Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
 given by separating out the `p`-th element of the tuple.
 
-This is `Fin.insertNth` as an `Equiv`. -/
+This is `Fin.insertNth` as an `Equiv`.
+-/
 @[simps symm_apply]
 def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
     α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
@@ -1111,13 +1121,15 @@ theorem removeNth_removeNth_heq_swap {α : Fin (n + 2) → Sort*} (m : ∀ i, α
   apply congr_arg_heq
   rw [succAbove_succAbove_succAbove_predAbove]
 
-/-- Given an `(n + 2)`-tuple `m` and two indexes `i : Fin (n + 1)` and `j : Fin (n + 2)`,
+/--
+Given an `(n + 2)`-tuple `m` and two indexes `i : Fin (n + 1)` and `j : Fin (n + 2)`,
 one can remove `j`th element from `m`, then remove `i`th element from the result,
 or one can remove `(j.succAbove i)`th element from `m`,
 then remove `(i.predAbove j)`th element from the result.
 
 These two operations correspond to removing the same two elements in a different order,
-so they result in the same `n`-tuple. -/
+so they result in the same `n`-tuple.
+-/
 theorem removeNth_removeNth_eq_swap {α : Sort*} (m : Fin (n + 2) → α)
     (i : Fin (n + 1)) (j : Fin (n + 2)) :
     i.removeNth (j.removeNth m) = (i.predAbove j).removeNth ((j.succAbove i).removeNth m) :=

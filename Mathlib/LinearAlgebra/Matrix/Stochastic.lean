@@ -7,14 +7,17 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Row- and Column-stochastic matrices
 
-A square matrix `M` is *row-stochastic* if all its entries are non-negative and `M *ᵥ 1 = 1`.
-Likewise, `M` is *column-stochastic* if all its entries are non-negative and `1 ᵥ* M = 1`. This
+A square matrix `M` is _row-stochastic_ if all its entries are non-negative and `M *ᵥ 1 = 1`.
+Likewise, `M` is _column-stochastic_ if all its entries are non-negative and `1 ᵥ* M = 1`. This
 file defines these concepts and provides basic API for them.
 
-Note that *doubly stochastic* matrices (i.e. matrices that are both row- and column-stochastic)
+Note that _doubly stochastic_ matrices (i.e. matrices that are both row- and column-stochastic)
 are defined in `Mathlib/Analysis/Convex/DoublyStochasticMatrix.lean`.
 
 ## Main definitions
@@ -23,7 +26,6 @@ are defined in `Mathlib/Analysis/Convex/DoublyStochasticMatrix.lean`.
   of `Matrix n n R`.
 * `colStochastic R n`: column-stochastic matrices indexed by `n` with entries in `R`, as a
   submonoid of `Matrix n n R`.
-
 -/
 
 @[expose] public section

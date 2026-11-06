@@ -10,17 +10,19 @@ public import Mathlib.Algebra.Order.Floor.Ring
 
 import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results about big operators with values in floor rings
 
 This file proves the classical Hermite identity for the floor function: for every
 element `x` of a linearly ordered floor field and every natural number `n`,
-$$ \sum_{i=0}^{n-1} \left\lfloor x + \frac{i}{n} \right\rfloor = \lfloor n x \rfloor. $$
+$$`  \sum_{i=0}^{n-1} \left\lfloor x + \frac{i}{n} \right\rfloor = \lfloor n x \rfloor.  `
 
 ## Main statements
 
 * `Int.sum_floor_add_div`: Hermite's identity, `∑ i ∈ Finset.range n, ⌊x + i / n⌋ = ⌊n * x⌋`.
-
 -/
 
 namespace Int

@@ -14,6 +14,9 @@ public import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 import Mathlib.FieldTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed field under a group action.
 
@@ -26,7 +29,7 @@ then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
 
-- `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
+* `FixedPoints.subfield G F`, the subfield consisting of elements of `F` fixed by every
   element of `G`, where `G` is a group that acts on `F`.
 -/
 
@@ -340,8 +343,10 @@ namespace FixedPoints
 
 variable (G F : Type*) [Group G] [Field F] [MulSemiringAction G F]
 
-/-- Let $F$ be a field. Let $G$ be a finite group acting faithfully on $F$.
-Then $[F : F^G] = |G|$. -/
+/--
+Let $`F` be a field. Let $`G` be a finite group acting faithfully on $`F`.
+Then $`[F : F^G] = |G|`.
+-/
 @[stacks 09I3 "second part"]
 theorem finrank_eq_card [Fintype G] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=

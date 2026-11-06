@@ -14,6 +14,10 @@ public meta import ProofWidgets.Presentation.Expr
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # String Diagram Widget
 
@@ -421,6 +425,7 @@ open Command
 Display the string diagram for a given term.
 
 Example usage:
+
 ```
 /- String diagram for the equality theorem. -/
 #string_diagram MonoidalCategory.whisker_exchange

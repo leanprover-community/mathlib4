@@ -8,16 +8,18 @@ module
 public import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 public import Mathlib.Topology.Homotopy.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopic maps induce naturally isomorphic functors
 
 ## Main definitions
 
-- `FundamentalGroupoidFunctor.homotopicMapsNatIso H` The natural isomorphism
+* `FundamentalGroupoidFunctor.homotopicMapsNatIso H` The natural isomorphism
   between the induced functors `f : π(X) ⥤ π(Y)` and `g : π(X) ⥤ π(Y)`, given a homotopy
   `H : f ∼ g`
-
-- `FundamentalGroupoidFunctor.equivOfHomotopyEquiv hequiv` The equivalence of the categories
+* `FundamentalGroupoidFunctor.equivOfHomotopyEquiv hequiv` The equivalence of the categories
   `π(X)` and `π(Y)` given a homotopy equivalence `hequiv : X ≃ₕ Y` between them.
 -/
 
@@ -30,12 +32,14 @@ universe u v
 open FundamentalGroupoid CategoryTheory FundamentalGroupoidFunctor
 open scoped FundamentalGroupoid unitInterval
 
-/-- Let `F` be a homotopy between two continuous maps `f g : C(X, Y)`.
+/--
+Let `F` be a homotopy between two continuous maps `f g : C(X, Y)`.
 Given a path `p : Path x₁ x₂` in the domain, consider the following two paths in the codomain.
 One path goes along the image of `p` under `f`, then along the trajectory of `x₂` under `F`.
 The other path goes along the trajectory of `x₁` under `F`, then along the image of `p` under `g`.
 
-These two paths are homotopic. -/
+These two paths are homotopic.
+-/
 theorem Path.Homotopic.map_trans_evalAt {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {f g : C(X, Y)} (F : f.Homotopy g) {x₁ x₂ : X} (p : Path x₁ x₂) :
     ((p.map (map_continuous f)).trans (F.evalAt x₂)).Homotopic
@@ -91,15 +95,15 @@ def equivOfHomotopyEquiv {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 end FundamentalGroupoidFunctor
 
 /-!
-### Old proof
+# Old proof
 
 The rest of the file contains definitions and theorems required to write the same proof
 in a slightly different manner.
 
 The proof was rewritten in 2025 for two reasons:
 
-- the new proof is much more straightforward;
-- the new proof is fully universe polymorphic.
+* the new proof is much more straightforward;
+* the new proof is fully universe polymorphic.
 
 TODO: review which of these definitions and theorems are useful for other reasons,
 then deprecate the rest of them.

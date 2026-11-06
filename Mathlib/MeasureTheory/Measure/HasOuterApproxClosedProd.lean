@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Prod
 public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterization of a finite measure by the integrals of products of bounded functions
 
@@ -21,8 +24,7 @@ In particular, if `μ` and `ν` are two finite measures over `Π i, X i` and `Π
 then their product is the only finite measure `ξ` over `(Π i, X i) × (Π j, Y j)`
 such that for any two families bounded continuous functions
 `f : (i : ι) → X i → ℝ` and `g : (j : κ) → Y j → ℝ` we have
-`∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ =
-(∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
+`∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ = (∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
 
 We specialize these results to the cases where one of the families contains only one type.
 
@@ -39,8 +41,7 @@ We specialize these results to the cases where one of the families contains only
 * `eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction`: The product of two finite measures
   `μ` and `ν` is the only finite measure `ξ` over `(Π i, X i) × (Π j, Y j)` such that for all
   families of real bounded continuous functions `f` and `g` we have
-  `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ =
-  (∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
+  `∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ = (∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
 * `ext_of_integral_mul_boundedContinuousFunction`: A finite measure `μ` over `X × Y` is determined
   by the values `∫ p, f p.1 * g p.2 ∂μ`, for `f : X → ℝ` and `g : Y → ℝ`
   any bounded continuous functions.
@@ -191,10 +192,11 @@ lemma ext_of_integral_prod_mul_prod_boundedContinuousFunction
           (∏ j, (g j).compContinuous ⟨Function.eval j ∘ Prod.snd, by fun_prop⟩))).ne
     simp
 
-/-- The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
+/--
+The product of two finite measures `μ` and `ν` is the only finite measure `ξ` such that
 for all families of real bounded continuous functions `f` and `g` we have
-`∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ =
-(∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`. -/
+`∫ p, (Π i, f i (p.1 i)) * (Π j, g j (p.2 j)) ∂ξ = (∫ x, Π i, f i (x i) ∂μ) * (∫ y, Π j, g j (y j) ∂ν)`.
+-/
 lemma eq_prod_of_integral_prod_mul_prod_boundedContinuousFunction {μ : Measure (Π i, X i)}
     {ν : Measure (Π j, Y j)} {ξ : Measure ((Π i, X i) × (Π j, Y j))}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν] [IsFiniteMeasure ξ]

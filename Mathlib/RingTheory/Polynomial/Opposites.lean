@@ -9,11 +9,16 @@ public import Mathlib.Algebra.Polynomial.Degree.Support
 
 import Mathlib.Tactic.NoncommRing
 
-/-! # Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Interactions between `R[X]` and `Rᵐᵒᵖ[X]`
 
 This file contains the basic API for "pushing through" the isomorphism
 `opRingEquiv : R[X]ᵐᵒᵖ ≃+* Rᵐᵒᵖ[X]`.  It allows going back and forth between a polynomial ring
-over a semiring and the polynomial ring over the opposite semiring. -/
+over a semiring and the polynomial ring over the opposite semiring.
+-/
 
 @[expose] public section
 

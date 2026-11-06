@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of filtered colimits and cofiltered limits.
 
@@ -18,7 +21,6 @@ Note also that using the results in the file `Mathlib/CategoryTheory/Presentable
 in order to show that a functor preserves filtered colimits, it would be
 sufficient to check that it preserves colimits indexed by nonempty directed
 types.
-
 -/
 
 public section

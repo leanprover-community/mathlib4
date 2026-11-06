@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Ring.Associated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`
 
@@ -33,30 +36,21 @@ For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib/Algebra
 * `NormalizationMonoid` is defined by assigning to each element a `normUnit` such that multiplying
   by that unit normalizes the monoid, and `normalize` is an idempotent function. This
   definition as currently implemented does casework on `0`.
-
 * `StrongNormalizationMonoid` further requires `normalize` to be a monoid homomorphism.
-
 * `GCDMonoid` contains the definitions of `gcd` and `lcm` with the usual properties. They are
   both determined up to a unit.
-
 * `IsGCDMonoid` is the predicate for the existence of a `GCDMonoid` structure.
-
 * `NormalizedGCDMonoid` extends `NormalizationMonoid`, so the `gcd` and `lcm` are always
   normalized. This makes `gcd`s of polynomials easier to work with, but excludes Euclidean domains,
   and monoids without zero.
-
 * `StrongNormalizedGCDMonoid` similarly extends `StrongNormalizationMonoid`.
-
 * `gcdMonoidOfGCD` and `normalizedGCDMonoidOfGCD` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `gcd` and its properties.
-
 * `gcdMonoidOfExistsGCD` and `normalizedGCDMonoidOfExistsGCD` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `gcd`.
-
 * `gcdMonoidOfLCM` and `normalizedGCDMonoidOfLCM` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `lcm` and its properties.
-
 * `gcdMonoidOfExistsLCM` and `normalizedGCDMonoidOfExistsLCM` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `lcm`.
@@ -575,11 +569,13 @@ theorem dvd_mul_gcd_of_dvd_mul [GCDMonoid α] {m n k : α} (H : k ∣ m * n) : k
 theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n ↔ k ∣ m * n :=
   ⟨fun h => h.trans (mul_dvd_mul dvd_rfl (gcd_dvd_right k n)), dvd_mul_gcd_of_dvd_mul⟩
 
-/-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
+/--
+Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
 
 Note: In general, this representation is highly non-unique.
 
-See `Nat.dvdProdDvdOfDvdProd` for a constructive version on `ℕ`. -/
+See `Nat.dvdProdDvdOfDvdProd` for a constructive version on `ℕ`.
+-/
 instance [h : IsGCDMonoid α] : DecompositionMonoid α where
   primal k m n H := by
     cases h

@@ -8,8 +8,10 @@ module
 public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Process.LimitProcess
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Martingale convergence theorems
 
 The martingale convergence theorems are a collection of theorems characterizing the convergence
@@ -39,7 +41,6 @@ theorems.
 * `MeasureTheory.Integrable.tendsto_eLpNorm_condExp`: part c the L¹ martingale convergence theorem:
   given a `⨆ n, ℱ n`-measurable function `g` where `ℱ` is a filtration, `𝔼[g | ℱ n]` converges in
   L¹ to `g`.
-
 -/
 
 public section
@@ -57,8 +58,7 @@ variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 section AeConvergence
 
 /-!
-
-### Almost everywhere martingale convergence theorem
+# Almost everywhere martingale convergence theorem
 
 We will now prove the almost everywhere martingale convergence theorem.
 
@@ -66,43 +66,37 @@ The a.e. martingale convergence theorem states: if `f` is an L¹-bounded `ℱ`-s
 it converges almost everywhere to an integrable function which is measurable with respect to
 the σ-algebra `ℱ∞ := ⨆ n, ℱ n`.
 
-Mathematically, we proceed by first noting that a real sequence $(x_n)$ converges if
-(a) $\limsup_{n \to \infty} |x_n| < \infty$, (b) for all $a < b \in \mathbb{Q}$ we have the
-number of upcrossings of $(x_n)$ from below $a$ to above $b$ is finite.
-Thus, for all $\omega$ satisfying $\limsup_{n \to \infty} |f_n(\omega)| < \infty$ and the number of
-upcrossings of $(f_n(\omega))$ from below $a$ to above $b$ is finite for all $a < b \in \mathbb{Q}$,
-we have $(f_n(\omega))$ is convergent.
+Mathematically, we proceed by first noting that a real sequence $`(x_n)` converges if (a)
+$`\limsup_{n \to \infty} |x_n| < \infty`, (b) for all $`a < b \in \mathbb{Q}` we have the number of
+upcrossings of $`(x_n)` from below $`a` to above $`b` is finite. Thus, for all $`\omega` satisfying
+$`\limsup_{n \to \infty} |f_n(\omega)| < \infty` and the number of upcrossings of $`(f_n(\omega))`
+from below $`a` to above $`b` is finite for all $`a < b \in \mathbb{Q}`, we have $`(f_n(\omega))` is
+convergent.
 
-Hence, assuming $(f_n)$ is L¹-bounded, using Fatou's lemma, we have
-$$
-  \mathbb{E} \limsup_{n \to \infty} |f_n| \le \limsup_{n \to \infty} \mathbb{E}|f_n| < \infty
-$$
-implying $\limsup_{n \to \infty} |f_n| < \infty$ a.e. Furthermore, by the upcrossing estimate,
-the number of upcrossings is finite almost everywhere implying $f$ converges pointwise almost
+Hence, assuming $`(f_n)` is L¹-bounded, using Fatou's lemma, we have
+$$`  \mathbb{E} \limsup_{n \to \infty} |f_n| \le \limsup_{n \to \infty} \mathbb{E}|f_n| < \infty  `
+implying $`\limsup_{n \to \infty} |f_n| < \infty` a.e. Furthermore, by the upcrossing estimate,
+the number of upcrossings is finite almost everywhere implying $`f` converges pointwise almost
 everywhere.
 
-Thus, denoting $g$ the a.e. limit of $(f_n)$, $g$ is $\mathcal{F}_\infty$-measurable as for all
-$n$, $f_n$ is $\mathcal{F}_n$-measurable and $\mathcal{F}_n \le \mathcal{F}_\infty$. Finally, $g$
-is integrable as $|g| \le \liminf_{n \to \infty} |f_n|$ so
-$$
-  \mathbb{E}|g| \le \mathbb{E} \limsup_{n \to \infty} |f_n| \le
-    \limsup_{n \to \infty} \mathbb{E}|f_n| < \infty
-$$
+Thus, denoting $`g` the a.e. limit of $`(f_n)`, $`g` is $`\mathcal{F}_\infty`-measurable as for all
+$`n`, $`f_n` is $`\mathcal{F}_n`-measurable and $`\mathcal{F}_n \le \mathcal{F}_\infty`. Finally,
+$`g` is integrable as $`|g| \le \liminf_{n \to \infty} |f_n|` so
+$$`  \mathbb{E}|g| \le \mathbb{E} \limsup_{n \to \infty} |f_n| \le \limsup_{n \to \infty} \mathbb{E}|f_n| < \infty  `
 as required.
 
 In terms of implementation, we have `tendsto_of_no_upcrossings` which shows that
-a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
-for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
-that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
-bounded, then either $f_n(\omega) \to \pm \infty$ or one of $\limsup f_n(\omega)$ or
-$\liminf f_n(\omega)$ equals $\pm \infty$ while the other is finite. But the first case
-contradicts $\liminf |f_n(\omega)| < \infty$ while the second case contradicts finite upcrossings.
+a bounded sequence converges if it does not visit below $`a` and above $`b` infinitely often
+for all $`a, b ∈ s` for some dense set $`s`. So, we may skip the first step provided we can prove
+that the realizations are bounded almost everywhere. Indeed, suppose $`|f_n(\omega)|` is not
+bounded, then either $`f_n(\omega) \to \pm \infty` or one of $`\limsup f_n(\omega)` or
+$`\liminf f_n(\omega)` equals $`\pm \infty` while the other is finite. But the first case
+contradicts $`\liminf |f_n(\omega)| < \infty` while the second case contradicts finite upcrossings.
 
 Furthermore, we introduce `Filtration.limitProcess` which chooses the limiting random variable
 of a stochastic process if it exists, otherwise returning 0. Hence, instead of showing an
 existence statement, we phrase the a.e. martingale convergence theorem by showing that a
 submartingale converges to its `limitProcess` almost everywhere.
-
 -/
 
 
@@ -133,11 +127,13 @@ theorem upcrossings_eq_top_of_frequently_lt (hab : a < b) (h₁ : ∃ᶠ n in at
     (h₂ : ∃ᶠ n in atTop, b < f n ω) : upcrossings a b f ω = ∞ :=
   by_contradiction fun h => not_frequently_of_upcrossings_lt_top hab h ⟨h₁, h₂⟩
 
-/-- A realization of a stochastic process with bounded upcrossings and bounded limit inferiors is
+/--
+A realization of a stochastic process with bounded upcrossings and bounded limit inferiors is
 convergent.
 
 We use the spelling `< ∞` instead of the standard `≠ ∞` in the assumptions since it is not as easy
-to change `<` to `≠` under binders. -/
+to change `<` to `≠` under binders.
+-/
 theorem tendsto_of_upcrossings_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ : ℝ≥0∞)) atTop < ∞)
     (hf₂ : ∀ a b : ℚ, a < b → upcrossings a b f ω < ∞) :
     ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
@@ -244,18 +240,17 @@ section L1Convergence
 variable [IsFiniteMeasure μ] {g : Ω → ℝ}
 
 /-!
-
-### L¹ martingale convergence theorem
+# L¹ martingale convergence theorem
 
 We will now prove the L¹ martingale convergence theorems.
 
 The L¹ martingale convergence theorem states that:
 (a) if `f` is a uniformly integrable (in the probability sense) submartingale strongly adapted to
-  the filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
-  respect to `ℱ∞ := ⨆ n, ℱ n` and
+the filtration `ℱ`, it converges in L¹ to an integrable function `g` which is measurable with
+respect to `ℱ∞ := ⨆ n, ℱ n` and
 (b) if `f` is actually a martingale, `f n = 𝔼[g | ℱ n]` almost everywhere.
 (c) Finally, if `h` is integrable and measurable with respect to `ℱ∞`, `(𝔼[h | ℱ n])ₙ` is a
-  uniformly integrable martingale which converges to `h` almost everywhere and in L¹.
+uniformly integrable martingale which converges to `h` almost everywhere and in L¹.
 
 The proof is quite simple. (a) follows directly from the a.e. martingale convergence theorem
 and the Vitali convergence theorem as our definition of uniform integrability (in the probability
@@ -263,39 +258,28 @@ sense) directly implies L¹-uniform boundedness. We note that our definition of 
 integrability is slightly non-standard but is equivalent to the usual literary definition. This
 equivalence is provided by `MeasureTheory.uniformIntegrable_iff`.
 
-(b) follows since given $n$, we have for all $m \ge n$,
-$$
-  \|f_n - \mathbb{E}[g \mid \mathcal{F}_n]\|_1 =
-    \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|f_m - g\|_1.
-$$
-Thus, taking $m \to \infty$ provides the almost everywhere equality.
+(b) follows since given $`n`, we have for all $`m \ge n`,
+$$`  \|f_n - \mathbb{E}[g \mid \mathcal{F}_n]\|_1 = \|\mathbb{E}[f_m - g \mid \mathcal{F}_n]\|_1 \le \|f_m - g\|_1.  `
+Thus, taking $`m \to \infty` provides the almost everywhere equality.
 
-Finally, to prove (c), we define $f_n := \mathbb{E}[h \mid \mathcal{F}_n]$. It is clear that
-$(f_n)_n$ is a martingale by the tower property for conditional expectations. Furthermore,
-$(f_n)_n$ is uniformly integrable in the probability sense. Indeed, as a single function is
-uniformly integrable in the measure theory sense, for all $\epsilon > 0$, there exists some
-$\delta > 0$ such that for all measurable set $A$ with $\mu(A) < δ$, we have
-$\mathbb{E}|h|\mathbf{1}_A < \epsilon$. So, since for sufficiently large $\lambda$, by the Markov
-inequality, we have for all $n$,
-$$
-  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb{E}|h| < \delta,
-$$
-we have for sufficiently large $\lambda$, for all $n$,
-$$
-  \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le
-    \mathbb{E}|h|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,
-$$
-implying $(f_n)_n$ is uniformly integrable. Now, to prove $f_n \to h$ almost everywhere and in
-L¹, it suffices to show that $h = g$ almost everywhere where $g$ is the almost everywhere and L¹
-limit of $(f_n)_n$ from part (b) of the theorem. By noting that, for all $s \in \mathcal{F}_n$,
+Finally, to prove (c), we define $`f_n := \mathbb{E}[h \mid \mathcal{F}_n]`. It is clear that
+$`(f_n)_n` is a martingale by the tower property for conditional expectations. Furthermore,
+$`(f_n)_n` is uniformly integrable in the probability sense. Indeed, as a single function is
+uniformly integrable in the measure theory sense, for all $`\epsilon > 0`, there exists some
+$`\delta > 0` such that for all measurable set $`A` with $`\mu(A) < δ`, we have
+$`\mathbb{E}|h|\mathbf{1}_A < \epsilon`. So, since for sufficiently large $`\lambda`, by the Markov
+inequality, we have for all $`n`,
+$$`  \mu(|f_n| \ge \lambda) \le \lambda^{-1}\mathbb{E}|f_n| \le \lambda^{-1}\mathbb{E}|h| < \delta,  `
+we have for sufficiently large $`\lambda`, for all $`n`,
+$$`  \mathbb{E}|f_n|\mathbf{1}_{|f_n| \ge \lambda} \le \mathbb{E}|h|\mathbf{1}_{|f_n| \ge \lambda} < \epsilon,  `
+implying $`(f_n)_n` is uniformly integrable. Now, to prove $`f_n \to h` almost everywhere and in
+L¹, it suffices to show that $`h = g` almost everywhere where $`g` is the almost everywhere and L¹
+limit of $`(f_n)_n` from part (b) of the theorem. By noting that, for all $`s \in \mathcal{F}_n`,
 we have
-$$
-  \mathbb{E}g\mathbf{1}_s = \mathbb{E}[\mathbb{E}[g \mid \mathcal{F}_n]\mathbf{1}_s] =
-    \mathbb{E}[\mathbb{E}[h \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}h\mathbf{1}_s
-$$
-where $\mathbb{E}[g \mid \mathcal{F}_n] = \mathbb{E}[h \mid \mathcal{F}_n]$ almost everywhere
-by part (b); the equality also holds for all $s \in \mathcal{F}_\infty$ by Dynkin's theorem.
-Thus, as both $h$ and $g$ are $\mathcal{F}_\infty$-measurable, $h = g$ almost everywhere as
+$$`  \mathbb{E}g\mathbf{1}_s = \mathbb{E}[\mathbb{E}[g \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}[\mathbb{E}[h \mid \mathcal{F}_n]\mathbf{1}_s] = \mathbb{E}h\mathbf{1}_s  `
+where $`\mathbb{E}[g \mid \mathcal{F}_n] = \mathbb{E}[h \mid \mathcal{F}_n]` almost everywhere
+by part (b); the equality also holds for all $`s \in \mathcal{F}_\infty` by Dynkin's theorem.
+Thus, as both $`h` and $`g` are $`\mathcal{F}_\infty`-measurable, $`h = g` almost everywhere as
 required.
 
 Similar to the a.e. martingale convergence theorem, rather than showing the existence of the
@@ -303,7 +287,6 @@ limiting process, we phrase the L¹-martingale convergence theorem by proving th
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
 theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
-
 -/
 
 
@@ -352,12 +335,14 @@ theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     ((memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hR).integrable le_rfl)
     (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd) n
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
+/--
+Part c of the *L¹ martingale convergence theorem*: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges almost everywhere to `g`.
 
 This martingale also converges to `g` in L¹ and this result is provided by
-`MeasureTheory.Integrable.tendsto_eLpNorm_condExp` -/
+`MeasureTheory.Integrable.tendsto_eLpNorm_condExp`
+-/
 theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g | ℱ n]) x) atTop (𝓝 (g x)) := by
@@ -406,12 +391,14 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
       integral_iUnion (fun n => hle _ (hfmeas n)) hf hlimint.integrableOn]
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
+/--
+Part c of the *L¹ martingale convergence theorem*: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
 
 This martingale also converges to `g` almost everywhere and this result is provided by
-`MeasureTheory.Integrable.tendsto_ae_condExp` -/
+`MeasureTheory.Integrable.tendsto_ae_condExp`
+-/
 theorem Integrable.tendsto_eLpNorm_condExp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     Tendsto (fun n => eLpNorm (μ[g | ℱ n] - g) 1 μ) atTop (𝓝 0) :=

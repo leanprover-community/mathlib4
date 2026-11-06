@@ -9,18 +9,19 @@ public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization and multivariate polynomial rings
 
 In this file we show some results connecting multivariate polynomial rings and localization.
 
 ## Main results
 
-- `MvPolynomial.isLocalization`: If `S` is the localization of `R` at a submonoid `M`, then
+* `MvPolynomial.isLocalization`: If `S` is the localization of `R` at a submonoid `M`, then
   `MvPolynomial σ S` is the localization of `MvPolynomial σ R` at the image of `M` in
   `MvPolynomial σ R`.
-
 -/
 
 @[expose] public section
@@ -38,7 +39,8 @@ attribute [local instance] algebraMvPolynomial
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
 
-See also `Polynomial.isLocalization` for the univariate case. -/
+See also `Polynomial.isLocalization` for the univariate case.
+-/
 instance isLocalization : IsLocalization (M.map <| C (σ := σ)) (MvPolynomial σ S) :=
   isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange M S _).mpr <|
     .of_equiv (algebraTensorAlgEquiv _ _).toLinearEquiv fun _ ↦ by simp

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of zero objects and zero morphisms
 
@@ -16,12 +19,12 @@ We define the class `PreservesZeroMorphisms` and show basic properties.
 ## Main results
 
 We provide the following results:
+
 * Left adjoints and right adjoints preserve zero morphisms;
 * full functors preserve zero morphisms;
 * if both categories involved have a zero object, then a functor preserves zero morphisms if and
   only if it preserves the zero object;
 * functors which preserve initial or terminal objects preserve zero morphisms.
-
 -/
 
 @[expose] public section

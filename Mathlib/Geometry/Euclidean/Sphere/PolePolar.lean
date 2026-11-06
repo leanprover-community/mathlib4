@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Euclidean.Inversion.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.OrthRadius
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poles and polars
 
@@ -17,7 +20,6 @@ This file defines poles and polars for spheres in Euclidean spaces.
 
 * `EuclideanGeometry.Sphere.pole`: the inversion in the sphere of the point in an affine subspace
   closest to the center. This maps an affine subspace (typically of codimension one) to a point.
-
 * `EuclideanGeometry.Sphere.polar`: the affine subspace orthogonal to the radius vector at a point
   and passing through its inversion in the sphere. This maps a point to an affine subspace
   (typically of codimension one, for a point not the center of the sphere).
@@ -25,7 +27,6 @@ This file defines poles and polars for spheres in Euclidean spaces.
 ## Main theorems
 
 * `EuclideanGeometry.Sphere.mem_polar_iff_mem_polar`: La Hire's theorem.
-
 -/
 
 @[expose] public noncomputable section

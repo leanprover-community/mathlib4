@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.OuterMeasure.AE
 public import Mathlib.MeasureTheory.OuterMeasure.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measure spaces
 
@@ -16,6 +19,7 @@ See `MeasureTheory.MeasureSpace` for their properties and for extended documenta
 
 Given a measurable space `α`, a measure on `α` is a function that sends measurable sets to the
 extended nonnegative reals that satisfies the following conditions:
+
 1. `μ ∅ = 0`;
 2. `μ` is countably additive. This means that the measure of a countable union of pairwise disjoint
    sets is equal to the sum of the measures of the individual sets.
@@ -31,7 +35,7 @@ Measures on `α` form a complete lattice, and are closed under scalar multiplica
 
 ## Implementation notes
 
-Given `μ : Measure α`, `μ s` is the value of the *outer measure* applied to `s`.
+Given `μ : Measure α`, `μ s` is the value of the _outer measure_ applied to `s`.
 This conveniently allows us to apply the measure to sets without proving that they are measurable.
 We get countable subadditivity for all sets, but only countable additivity for measurable sets.
 
@@ -45,8 +49,10 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Measure_(mathematics)>
-* <https://en.wikipedia.org/wiki/Almost_everywhere>
+* [
+  https://en.wikipedia.org/wiki/Measure\_(mathematics)](https://en.wikipedia.org/wiki/Measure_(mathematics))
+* [
+  https://en.wikipedia.org/wiki/Almost\_everywhere](https://en.wikipedia.org/wiki/Almost_everywhere)
 
 ## Tags
 
@@ -67,7 +73,8 @@ variable {α β δ : Type*} {ι : Sort*}
 
 namespace MeasureTheory
 
-/-- A measure is defined to be an outer measure that is countably additive on
+/--
+A measure is defined to be an outer measure that is countably additive on
 measurable sets, with the additional assumption that the outer measure is the canonical
 extension of the restricted measure.
 
@@ -116,7 +123,9 @@ namespace Measure
 theorem trimmed (μ : Measure α) : μ.toOuterMeasure.trim = μ.toOuterMeasure :=
   le_antisymm μ.trim_le μ.1.le_trim
 
-/-! ### General facts about measures -/
+/-!
+# General facts about measures
+-/
 
 /-- Obtain a measure by giving a countably additive function that sends `∅` to `0`. -/
 def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m ∅ MeasurableSet.empty = 0)
@@ -288,19 +297,24 @@ theorem measure_inter_null_of_null_right (S : Set α) {T : Set α} (h : μ T = 0
 theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0) : μ (S ∩ T) = 0 :=
   measure_mono_null inter_subset_left h
 
-/-! ### The almost everywhere filter -/
+/-!
+# The almost everywhere filter
+-/
 section ae
 
-/-- Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
+/--
+Given a predicate on `β` and `Set α` where both `α` and `β` are measurable spaces, if the
 predicate holds for almost every `x : β` and
-- `∅ : Set α`
-- a family of sets generating the σ-algebra of `α`
+
+* `∅ : Set α`
+* a family of sets generating the σ-algebra of `α`
 
 Moreover, if for almost every `x : β`, the predicate is closed under complements and countable
 disjoint unions, then the predicate holds for almost every `x : β` and all measurable sets of `α`.
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
-on a measurable space `β`. -/
+on a measurable space `β`.
+-/
 theorem _root_.MeasurableSpace.ae_induction_on_inter
     {α β : Type*} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
@@ -365,16 +379,20 @@ add_decl_doc volume
 
 section MeasureSpace
 
-/-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+/--
+`∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
 
-This is notation for `Filter.Eventually P (MeasureTheory.ae MeasureSpace.volume)`. -/
+This is notation for `Filter.Eventually P (MeasureTheory.ae MeasureSpace.volume)`.
+-/
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.ae MeasureTheory.MeasureSpace.volume) => r
 
-/-- `∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
+/--
+`∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
 w.r.t. the volume measure.
 
-This is notation for `Filter.Frequently P (MeasureTheory.ae MeasureSpace.volume)`. -/
+This is notation for `Filter.Frequently P (MeasureTheory.ae MeasureSpace.volume)`.
+-/
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.ae MeasureTheory.MeasureSpace.volume) => r
 
@@ -393,7 +411,7 @@ section
 open MeasureTheory
 
 /-!
-### Almost everywhere measurable functions
+# Almost everywhere measurable functions
 
 A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function. We define this property, called `AEMeasurable f μ`. It's properties are discussed in
@@ -403,11 +421,13 @@ function. We define this property, called `AEMeasurable f μ`. It's properties a
 
 variable {m : MeasurableSpace α} [MeasurableSpace β] {f g : α → β} {μ : Measure α}
 
-/-- A function is almost everywhere measurable if it coincides almost everywhere with a measurable
+/--
+A function is almost everywhere measurable if it coincides almost everywhere with a measurable
 function.
 
 A similar notion is `MeasureTheory.NullMeasurable`. That notion is equivalent to `AEMeasurable` if
-the σ-algebra on the codomain is countably generated, but weaker in general. -/
+the σ-algebra on the codomain is countably generated, but weaker in general.
+-/
 @[fun_prop]
 def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g

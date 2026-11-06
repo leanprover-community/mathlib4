@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Iso
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conjugate morphisms by isomorphisms
 
@@ -16,9 +19,10 @@ cf. `Equiv.arrowCongr`,
 and `CategoryTheory.Iso.isoCongr : (f : X₁ ≅ X₂) → (g : Y₁ ≅ Y₂) → (X₁ ≅ Y₁) ≃ (X₂ ≅ Y₂)`.
 
 As corollaries, an isomorphism `α : X ≅ Y` defines
-- a monoid isomorphism
+
+* a monoid isomorphism
   `CategoryTheory.Iso.conj : End X ≃* End Y` by `α.conj f = α.inv ≫ f ≫ α.hom`;
-- a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
+* a group isomorphism `CategoryTheory.Iso.conjAut : Aut X ≃* Aut Y` by
   `α.conjAut f = α.symm ≪≫ f ≪≫ α`
   which can be found in  `CategoryTheory.Conj`.
 -/

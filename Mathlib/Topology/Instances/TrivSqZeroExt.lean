@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
 
 import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on `TrivSqZeroExt R M`
 
@@ -25,7 +28,6 @@ one value.
 ## Main results
 
 * `TrivSqZeroExt.topologicalRing`: the ring operations are continuous
-
 -/
 
 @[expose] public section

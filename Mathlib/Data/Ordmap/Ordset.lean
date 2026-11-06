@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Ordmap.Invariants
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Verification of `Ordnode`
 

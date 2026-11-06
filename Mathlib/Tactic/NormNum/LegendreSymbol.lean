@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.LegendreSymbol.JacobiSymbol
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A `norm_num` extension for Jacobi and Legendre symbols
 
@@ -22,20 +25,16 @@ of the gcd of `a` and `b`. More precisely, the computation is done in the follow
 
 * Use `J(a | 0) = 1` (an artifact of the definition) and `J(a | 1) = 1` to deal
   with corner cases.
-
 * Use `J(a | b) = J(a % b | b)` to reduce to the case that `a` is a natural number.
   We define a version of the Jacobi symbol restricted to natural numbers for use in
   the following steps; see `NormNum.jacobiSymNat`. (But we'll continue to write `J(a | b)`
   in this description.)
-
 * Remove powers of two from `b`. This is done via `J(2a | 2b) = 0` and
   `J(2a+1 | 2b) = J(2a+1 | b)` (another artifact of the definition).
-
 * Now `0 ≤ a < b` and `b` is odd. If `b = 1`, then the value is `1`.
   If `a = 0` (and `b > 1`), then the value is `0`. Otherwise, we remove powers of two from `a`
   via `J(4a | b) = J(a | b)` and `J(2a | b) = ±J(a | b)`, where the sign is determined
   by the residue class of `b` mod 8, to reduce to `a` odd.
-
 * Once `a` is odd, we use Quadratic Reciprocity (QR) in the form
   `J(a | b) = ±J(b % a | a)`, where the sign is determined by the residue classes
   of `a` and `b` mod 4. We are then back in the previous case.
@@ -58,7 +57,7 @@ def jacobiSymNat (a b : ℕ) : ℤ :=
   jacobiSym a b
 
 /-!
-### API Lemmas
+# API Lemmas
 
 We repeat part of the API for `jacobiSym` with `NormNum.jacobiSymNat` and without implicit
 arguments, in a form that is suitable for constructing proofs in `norm_num`.
@@ -197,7 +196,7 @@ meta section
 section Evaluation
 
 /-!
-### Certified evaluation of the Jacobi symbol
+# Certified evaluation of the Jacobi symbol
 
 The following functions recursively evaluate a Jacobi symbol and construct the
 corresponding proof term.
@@ -357,7 +356,7 @@ end Evaluation
 section Tactic
 
 /-!
-### The `norm_num` plug-in
+# The `norm_num` plug-in
 -/
 
 

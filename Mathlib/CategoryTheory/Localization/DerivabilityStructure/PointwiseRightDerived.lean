@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 import Mathlib.CategoryTheory.GuitartExact.KanExtension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of pointwise right derived functors via derivability structures
 
@@ -21,15 +24,15 @@ Then, the lemma `hasPointwiseRightDerivedFunctor_iff_of_isRightDerivabilityStruc
 says that `F` has a pointwise right derived functor with respect to `W₂`
 if and only if `Φ.functor ⋙ F` has a pointwise right derived functor
 with respect to `W₁`. This is essentially the Proposition 5.5 from the article
-*Structures de dérivabilité* by Bruno Kahn and Georges Maltsiniotis (there,
+_Structures de dérivabilité_ by Bruno Kahn and Georges Maltsiniotis (there,
 it was stated in terms of absolute derived functors).
 
 In particular, if `Φ.functor ⋙ F` inverts `W₁`, it follows that the
 right derived functor of `F` with respect to `W₂` exists.
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 @[expose] public section

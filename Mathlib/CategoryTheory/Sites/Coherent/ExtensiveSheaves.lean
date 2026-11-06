@@ -10,8 +10,10 @@ public import Mathlib.CategoryTheory.Sites.Coherent.Basic
 
 import Mathlib.CategoryTheory.Sites.Preserves
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Sheaves for the extensive topology
 
 This file characterises sheaves for the extensive topology.
@@ -34,8 +36,10 @@ variable {C : Type*} [Category* C] {D : Type*} [Category* D]
 
 variable [FinitaryPreExtensive C]
 
-/-- A presieve is *extensive* if it is finite and its arrows induce an isomorphism from the
-coproduct to the target. -/
+/--
+A presieve is _extensive_ if it is finite and its arrows induce an isomorphism from the
+coproduct to the target.
+-/
 class Presieve.Extensive {X : C} (R : Presieve X) : Prop where
   /-- `R` consists of a finite collection of arrows that together induce an isomorphism from the
   coproduct of their sources. -/

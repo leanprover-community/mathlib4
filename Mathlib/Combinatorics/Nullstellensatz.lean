@@ -9,42 +9,42 @@ public import Mathlib.RingTheory.MvPolynomial.MonomialOrder.DegLex
 
 import Mathlib.RingTheory.MvPolynomial.Groebner
 
-/-! # Alon's Combinatorial Nullstellensatz
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This is a formalization of Noga Alon's Combinatorial Nullstellensatz. It follows [Alon_1999].
+/-!
+# Alon's Combinatorial Nullstellensatz
+
+This is a formalization of Noga Alon's Combinatorial Nullstellensatz. It follows \[Alon\_1999\].
 
 We consider a family `S : σ → Finset R` of finite subsets of a domain `R`
 and a multivariate polynomial `f` in `MvPolynomial σ R`.
 The combinatorial Nullstellensatz gives combinatorial constraints for
 the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
 
-- `MvPolynomial.eq_zero_of_eval_zero_at_prod_finset` :
+* `MvPolynomial.eq_zero_of_eval_zero_at_prod_finset` :
   if `f` vanishes at any such point and `f.degreeOf s < #(S s)` for all `s`,
   then `f = 0`.
-
-- `combinatorial_nullstellensatz_exists_linearCombination`
+* `combinatorial_nullstellensatz_exists_linearCombination`
   If `f` vanishes at every such point, then it can be written as a linear combination
   `f = linearCombination (MvPolynomial σ R) (fun i ↦ ∏ r ∈ S i, (X i - C r)) h`,
   for some `h : σ →₀ MvPolynomial σ R` such that
   `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
-
-- `combinatorial_nullstellensatz_exists_eval_ne_zero`
+* `combinatorial_nullstellensatz_exists_eval_ne_zero`
   a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
   `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
   there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
 ## TODO
 
-- Applications
-- relation with Schwartz–Zippel lemma, as in [Rote_2023]
+* Applications
+* relation with Schwartz–Zippel lemma, as in \[Rote\_2023\]
 
 ## References
 
-- [Alon, *Combinatorial Nullstellensatz*][Alon_1999]
-
-- [Rote, *The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
-  Nullstellensatz Lemma*][Rote_2023]
-
+* ‍\[Alon, _Combinatorial Nullstellensatz_\]\[Alon\_1999\]
+* ‍\[Rote, _The Generalized Combinatorial Lasoń-Alon-Zippel-Schwartz
+  Nullstellensatz Lemma_\]\[Rote\_2023\]
 -/
 
 public section
@@ -189,7 +189,8 @@ private lemma Alon.of_mem_P_support {ι : Type*} (i : ι) (S : Finset R) (m : ι
 
 variable [Finite σ]
 
-/-- The **Combinatorial Nullstellensatz**.
+/--
+The *Combinatorial Nullstellensatz*.
 
 If `f` vanishes at every point `x : σ → R` such that `x s ∈ S s` for all `s`,
 then it can be written as a linear combination
@@ -197,7 +198,8 @@ then it can be written as a linear combination
 for some `h : σ →₀ MvPolynomial σ R` such that
 `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
-[Alon_1999], theorem 1. -/
+‍\[Alon\_1999\], theorem 1.
+-/
 theorem combinatorial_nullstellensatz_exists_linearCombination
     [IsDomain R] (S : σ → Finset R) (Sne : ∀ i, (S i).Nonempty)
     (f : MvPolynomial σ R) (Heval : ∀ (x : σ → R), (∀ i, x i ∈ S i) → eval x f = 0) :
@@ -226,13 +228,15 @@ theorem combinatorial_nullstellensatz_exists_linearCombination
     apply Finset.prod_eq_zero (hx i)
     simp
 
-/-- The **Combinatorial Nullstellensatz**.
+/--
+The *Combinatorial Nullstellensatz*.
 
 Given a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
 `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
 there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
-[Alon_1999], theorem 2 -/
+‍\[Alon\_1999\], theorem 2
+-/
 theorem combinatorial_nullstellensatz_exists_eval_ne_zero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)

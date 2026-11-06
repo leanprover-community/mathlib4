@@ -13,6 +13,9 @@ import Mathlib.MeasureTheory.Measure.IntegralCharFun
 import Mathlib.MeasureTheory.Measure.Prokhorov
 import Mathlib.MeasureTheory.Measure.TightNormed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lévy's convergence theorem
 
@@ -26,7 +29,6 @@ characteristic functions and convergence in distribution in finite dimensional i
   to a function which is continuous at 0, then `{μ n | n}` is tight.
 * `ProbabilityMeasure.tendsto_iff_tendsto_charFun`: the weak convergence of probability measures is
   equivalent to the pointwise convergence of their characteristic functions.
-
 -/
 
 public section

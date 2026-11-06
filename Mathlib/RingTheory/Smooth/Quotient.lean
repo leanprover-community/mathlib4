@@ -8,13 +8,14 @@ module
 public import Mathlib.RingTheory.RingHom.Flat
 public import Mathlib.RingTheory.RingHom.Smooth
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Some lemmas about formally smooth under quotient
 
-In this file, we formalize the result [Stacks 031L] : For flat ring homomorphism `f : R →+* S`,
+In this file, we formalize the result \[Stacks 031L\] : For flat ring homomorphism `f : R →+* S`,
 `I` an ideal of `R` which is square zero, if `R ⧸ I →+* S ⧸ IS` is formally smooth, so is `f`.
-
 -/
 
 public section

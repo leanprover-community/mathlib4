@@ -8,7 +8,11 @@ module
 public import ImportGraph.Widget.GoToModule
 public import Mathlib.Init
 
-/-! # The `upstreamableDecl` linter
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `upstreamableDecl` linter
 
 The `upstreamableDecl` linter detects declarations that could be moved to a file higher up in the
 import hierarchy. This is intended to assist with splitting files.
@@ -30,7 +34,8 @@ public def Lean.Name.isLocal (env : Environment) (decl : Name) : Bool :=
 
 open Mathlib.Command.MinImports
 
-/-- Does the declaration with this name depend on definitions in the current file?
+/--
+Does the declaration with this name depend on definitions in the current file?
 
 Here, "definition" means everything that is not a theorem, and so includes `def`,
 `structure`, `inductive`, etc.

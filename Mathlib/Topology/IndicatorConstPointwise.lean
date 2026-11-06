@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Topology.Separation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise convergence of indicator functions
 
@@ -26,9 +29,9 @@ equivalent:
 (c) `Tendsto As _ <| Filter.pi (pure <| · ∈ A)`.
 
 The results stating these in the case when the indicators take values in a Fréchet space are:
+
 * `tendsto_indicator_const_iff_forall_eventually` is the equivalence (a) ↔ (b);
 * `tendsto_indicator_const_iff_tendsto_pi_pure` is the equivalence (a) ↔ (c).
-
 -/
 
 public section

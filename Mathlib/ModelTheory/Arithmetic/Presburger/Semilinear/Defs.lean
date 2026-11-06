@@ -12,6 +12,9 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.LinearAlgebra.Dimension.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear and semilinear sets
 
@@ -24,18 +27,18 @@ which are linear sets with linearly independent submonoid generators (periods).
 
 ## Main Definitions
 
-- `IsLinearSet`: a set is linear if it is a coset of a finitely generated additive submonoid.
-- `IsSemilinearSet`: a set is semilinear if it is a finite union of linear sets.
-- `IsProperLinearSet`: a linear set is proper if its submonoid generators (periods) are linearly
+* `IsLinearSet`: a set is linear if it is a coset of a finitely generated additive submonoid.
+* `IsSemilinearSet`: a set is semilinear if it is a finite union of linear sets.
+* `IsProperLinearSet`: a linear set is proper if its submonoid generators (periods) are linearly
   independent.
-- `IsProperSemilinearSet`: a semilinear set is proper if it is a finite union of proper linear sets.
+* `IsProperSemilinearSet`: a semilinear set is proper if it is a finite union of proper linear sets.
 
 ## Main Results
 
-- `IsSemilinearSet` is closed under union, projection, set addition and additive closure.
-- `IsSemilinearSet.isProperSemilinearSet`: every semilinear set is a finite union of proper linear
+* `IsSemilinearSet` is closed under union, projection, set addition and additive closure.
+* `IsSemilinearSet.isProperSemilinearSet`: every semilinear set is a finite union of proper linear
   sets.
-- `Nat.isSemilinearSet_iff_ultimately_periodic`: A set of `ℕ` is semilinear if and only if it is
+* `Nat.isSemilinearSet_iff_ultimately_periodic`: A set of `ℕ` is semilinear if and only if it is
   ultimately periodic, i.e. periodic after some number `k`.
 
 ## Naming convention
@@ -46,8 +49,9 @@ of sets in form `{ x | ∃ y, p x y }`.
 
 ## References
 
-* [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
-* [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
+* ‍\[Seymour Ginsburg and Edwin H. Spanier, _Bounded ALGOL-Like Languages_\]\[ginsburg1964\]
+* ‍\[Samuel Eilenberg and M. P. Schützenberger, _Rational Sets in Commutative
+  Monoids_\]\[eilenberg1969\]
 -/
 
 open scoped Finset

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Presentable.StrongGenerator
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categories of presheaves are locally presentable
 
@@ -17,7 +20,6 @@ If `A` is a locally `κ`-presentable category and `C` is a small category,
 we show that `Cᵒᵖ ⥤ A` is also locally `κ`-presentable, under the
 additional assumption that `A` has pullbacks (a condition which should
 be automatically satisfied (TODO)).
-
 -/
 
 public section

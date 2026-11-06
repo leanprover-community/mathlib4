@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Floor.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rounding
 
@@ -32,7 +35,9 @@ variable {F α β : Type*}
 
 open Int
 
-/-! ### Round -/
+/-!
+# Round
+-/
 
 section round
 
@@ -66,9 +71,11 @@ theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
 variable [IsStrictOrderedRing α]
 
-/-- Formula for `round` in terms of `Int.floor`, a version that works over any ring.
+/--
+Formula for `round` in terms of `Int.floor`, a version that works over any ring.
 
-TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`. -/
+TODO: decide if we want to use this as a definition. It may be slightly faster over `ℚ`.
+-/
 theorem round_eq_div (x : α) : round x = (⌊2 * x⌋ + 1) / 2 := by
   rw [← floor_add_fract x, round, fract_intCast_add, fract_fract, floor_intCast_add, mul_add,
     ← Int.cast_ofNat, ← Int.cast_mul, floor_intCast_add, ceil_intCast_add, add_assoc,

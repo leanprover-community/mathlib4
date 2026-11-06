@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trails and Eulerian trails
 
@@ -54,11 +57,13 @@ theorem IsTrail.even_countP_edges_iff (ht : p.IsTrail) (x : V) :
   | nil => simp
   | cons huv p ih => grind [isTrail_cons, edges_cons, G.irrefl]
 
-/-- An *Eulerian trail* (also known as an "Eulerian path") is a walk
+/--
+An _Eulerian trail_ (also known as an "Eulerian path") is a walk
 `p` that visits every edge exactly once.  The lemma `SimpleGraph.Walk.IsEulerian.IsTrail` shows
 that these are trails.
 
-Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle"). -/
+Combine with `p.IsCircuit` to get an Eulerian circuit (also known as an "Eulerian cycle").
+-/
 def IsEulerian (p : G.Walk u v) : Prop :=
   ∀ e, e ∈ G.edgeSet → p.edges.count e = 1
 

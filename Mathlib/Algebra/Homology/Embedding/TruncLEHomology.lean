@@ -10,7 +10,11 @@ public import Mathlib.Algebra.Homology.Embedding.TruncLE
 public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.Algebra.Homology.HomologySequence
 
-/-! # The homology of a canonical truncation
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The homology of a canonical truncation
 
 Given an embedding of complex shapes `e : Embedding c c'`,
 we relate the homology of `K : HomologicalComplex C c'` and of
@@ -24,7 +28,6 @@ All the results are obtained by dualising the results in the file `Embedding.Tru
 
 Moreover, if `C` is an abelian category, we introduce the cokernel
 sequence `K.shortComplexTruncLE e` of the monomorphism `K.ιTruncLE e`.
-
 -/
 
 @[expose] public section

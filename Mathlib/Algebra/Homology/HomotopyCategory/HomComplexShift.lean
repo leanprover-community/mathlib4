@@ -11,7 +11,11 @@ public import Mathlib.Algebra.Module.Equiv.Basic
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 public import Mathlib.Tactic.Linarith
 
-/-! # Shifting cochains
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Shifting cochains
 
 Let `C` be a preadditive category. Given two cochain complexes (indexed by `ℤ`),
 the type of cochains `HomComplex.Cochain K L n` of degree `n` was introduced
@@ -25,11 +29,11 @@ This definition does not involve signs, but the analogous definition
 of `leftShiftAddEquiv K L n a n' h' : Cochain K L n ≃+ Cochain (K⟦a⟧) L n'`
 when `h' : n + a = n'` does involve signs, as we follow the conventions
 appearing in the introduction of
-[Brian Conrad's book *Grothendieck duality and base change*][conrad2000].
+‍\[Brian Conrad's book _Grothendieck duality and base change_\]\[conrad2000\].
 
 ## References
-* [Brian Conrad, Grothendieck duality and base change][conrad2000]
 
+* ‍\[Brian Conrad, Grothendieck duality and base change\]\[conrad2000\]
 -/
 
 @[expose] public section

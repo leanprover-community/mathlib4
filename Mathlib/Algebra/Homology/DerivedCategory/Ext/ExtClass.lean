@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Ext class of a short exact sequence
 
 In this file, given a short exact short complex `S : ShortComplex C`
 in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
-
 -/
 
 @[expose] public section

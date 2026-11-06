@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
 public import Mathlib.Probability.ConditionalProbability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # s-finite measures can be written as `withDensity` of a finite measure
 
@@ -18,9 +21,9 @@ As a corollary, `μ` can be represented as `μ.toFinite.withDensity (μ.rnDeriv 
 
 Our definition of `MeasureTheory.Measure.toFinite` ensures some extra properties:
 
-- if `μ` is a finite measure, then `μ.toFinite = μ[|univ] = (μ univ)⁻¹ • μ`;
-- in particular, `μ.toFinite = μ` for a probability measure;
-- if `μ ≠ 0`, then `μ.toFinite` is a probability measure.
+* if `μ` is a finite measure, then `μ.toFinite = μ[|univ] = (μ univ)⁻¹ • μ`;
+* in particular, `μ.toFinite = μ` for a probability measure;
+* if `μ ≠ 0`, then `μ.toFinite` is a probability measure.
 
 ## Main definitions
 
@@ -34,7 +37,6 @@ In this definition and the results below, `μ` is an s-finite measure (`SFinite 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
-
 -/
 
 @[expose] public section

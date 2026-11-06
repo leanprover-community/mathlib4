@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact operators
 
@@ -47,7 +50,7 @@ coercing from continuous linear maps to linear maps often needs type ascriptions
 
 ## References
 
-* [N. Bourbaki, *Théories Spectrales*, Chapitre 3][bourbaki2023]
+* ‍\[N. Bourbaki, _Théories Spectrales_, Chapitre 3\]\[bourbaki2023\]
 
 ## Tags
 
@@ -59,12 +62,14 @@ Compact operator
 
 open Function Set Filter Bornology Metric Pointwise Topology
 
-/-- A compact operator between two topological vector spaces. This definition is usually
+/--
+A compact operator between two topological vector spaces. This definition is usually
 given as "there exists a neighborhood of zero whose image is contained in a compact set",
 but we choose a definition which involves fewer existential quantifiers and replaces images
 with preimages.
 
-We prove the equivalence in `isCompactOperator_iff_exists_mem_nhds_image_subset_compact`. -/
+We prove the equivalence in `isCompactOperator_iff_exists_mem_nhds_image_subset_compact`.
+-/
 @[wikidata Q1780743]
 def IsCompactOperator {M₁ M₂ : Type*} [Zero M₁] [TopologicalSpace M₁] [TopologicalSpace M₂]
     (f : M₁ → M₂) : Prop :=
@@ -320,27 +325,31 @@ variable {R₁ R₂ : Type*} [Semiring R₁] [Semiring R₂]
   [AddCommMonoid M₁] [AddCommMonoid M₂] [Module R₁ M₁]
   [Module R₂ M₂]
 
-/-- If a compact operator preserves a closed submodule, its restriction to that submodule is
+/--
+If a compact operator preserves a closed submodule, its restriction to that submodule is
 compact.
 
 Note that, following mathlib's convention in linear algebra, `restrict` designates the restriction
 of an endomorphism `f : E →ₗ E` to an endomorphism `f' : ↥V →ₗ ↥V`. To prove that the restriction
 `f' : ↥U →ₛₗ ↥V` of a compact operator `f : E →ₛₗ F` is compact, apply
 `IsCompactOperator.codRestrict` to `f ∘ U.subtypeL`, which is compact by
-`IsCompactOperator.comp_clm`. -/
+`IsCompactOperator.comp_clm`.
+-/
 theorem IsCompactOperator.restrict {f : M₁ →ₗ[R₁] M₁} (hf : IsCompactOperator f)
     {V : Submodule R₁ M₁} (hV : ∀ v ∈ V, f v ∈ V) (h_closed : IsClosed (V : Set M₁)) :
     IsCompactOperator (f.restrict hV) :=
   (hf.comp_clm V.subtypeL).codRestrict (SetLike.forall.2 hV) h_closed
 
-/-- If a compact operator preserves a complete submodule, its restriction to that submodule is
+/--
+If a compact operator preserves a complete submodule, its restriction to that submodule is
 compact.
 
 Note that, following mathlib's convention in linear algebra, `restrict` designates the restriction
 of an endomorphism `f : E →ₗ E` to an endomorphism `f' : ↥V →ₗ ↥V`. To prove that the restriction
 `f' : ↥U →ₛₗ ↥V` of a compact operator `f : E →ₛₗ F` is compact, apply
 `IsCompactOperator.codRestrict` to `f ∘ U.subtypeL`, which is compact by
-`IsCompactOperator.comp_clm`. -/
+`IsCompactOperator.comp_clm`.
+-/
 theorem IsCompactOperator.restrict' [T0Space M₂] {f : M₂ →ₗ[R₂] M₂}
     (hf : IsCompactOperator f) {V : Submodule R₂ M₂} (hV : ∀ v ∈ V, f v ∈ V)
     [hcomplete : CompleteSpace V] : IsCompactOperator (f.restrict hV) :=

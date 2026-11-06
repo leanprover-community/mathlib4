@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended charts in smooth manifolds
 
@@ -29,10 +32,8 @@ in general, but we can still register them as `PartialEquiv`s.
 
 * `ModelWithCorners.contDiffOn_extendCoordChange`: if `f` and `f'` lie in the maximal atlas on `M`,
   `I.extendCoordChange f f'` is Cⁿ on its source
-
 * `contDiffOn_ext_coord_change`: for `x x' : M`, the coordinate change
   `(extChartAt I x').symm ≫ extChartAt I x` is continuous on its source
-
 * `Manifold.locallyCompact_of_finiteDimensional`: a finite-dimensional manifold
   modelled on a locally compact field (such as ℝ, ℂ or the `p`-adic numbers) is locally compact
 * `LocallyCompactSpace.of_locallyCompact_manifold`: a locally compact manifold must be modelled
@@ -48,7 +49,6 @@ appropriate models with corners. This is not a definition, so technically deviat
 convention.
 
 TODO: this file uses more made-up names; document these as well
-
 -/
 
 @[expose] public section

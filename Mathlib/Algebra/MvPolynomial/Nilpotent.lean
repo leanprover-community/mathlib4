@@ -8,13 +8,17 @@ module
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Polynomial.Nilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotents and units in multivariate polynomial rings
 
 We prove that
-- `MvPolynomial.isNilpotent_iff`:
+
+* `MvPolynomial.isNilpotent_iff`:
   A multivariate polynomial is nilpotent iff all its coefficients are.
-- `MvPolynomial.isUnit_iff`:
+* `MvPolynomial.isUnit_iff`:
   A multivariate polynomial is invertible iff its constant term is invertible
   and its other coefficients are nilpotent.
 -/

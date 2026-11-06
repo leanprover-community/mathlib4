@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 public import Mathlib.Data.Rat.BigOperators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
 
@@ -31,7 +34,6 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 ## TODO
 
 * Expand the list of definitions and important lemmas to the module docstring.
-
 -/
 
 @[expose] public section
@@ -45,7 +47,9 @@ variable {α β γ ι M N P G H R S : Type*}
 
 namespace Finsupp
 
-/-! ### Declarations about `graph` -/
+/-!
+# Declarations about `graph`
+-/
 
 
 section Graph
@@ -108,7 +112,9 @@ end Graph
 
 end Finsupp
 
-/-! ### Declarations about `mapRange` -/
+/-!
+# Declarations about `mapRange`
+-/
 
 
 section MapRange
@@ -129,7 +135,9 @@ end Finsupp
 
 end MapRange
 
-/-! ### Declarations about `equivCongrLeft` -/
+/-!
+# Declarations about `equivCongrLeft`
+-/
 
 
 section EquivCongrLeft
@@ -181,10 +189,12 @@ theorem prod_equivMapDomain [CommMonoid N] (f : α ≃ β) (l : α →₀ M) (g 
     prod (equivMapDomain f l) g = prod l (fun a m => g (f a) m) := by
   simp [prod, equivMapDomain]
 
-/-- Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
+/--
+Given `f : α ≃ β`, the finitely supported function spaces are also in bijection:
 `(α →₀ M) ≃ (β →₀ M)`.
 
-This is the finitely-supported version of `Equiv.piCongrLeft`. -/
+This is the finitely-supported version of `Equiv.piCongrLeft`.
+-/
 def equivCongrLeft (f : α ≃ β) : (α →₀ M) ≃ (β →₀ M) := by
   refine ⟨equivMapDomain f, equivMapDomain f.symm, fun f => ?_, fun f => ?_⟩ <;> ext x <;>
     simp only [equivMapDomain_apply, Equiv.symm_symm, Equiv.symm_apply_apply,
@@ -251,7 +261,9 @@ end Rat
 
 end CastFinsupp
 
-/-! ### Declarations about `mapDomain` -/
+/-!
+# Declarations about `mapDomain`
+-/
 
 
 namespace Finsupp
@@ -493,7 +505,9 @@ theorem equivMapDomain_eq_mapDomain {M} [AddCommMonoid M] (f : α ≃ β) (l : �
 
 end MapDomain
 
-/-! ### Declarations about `comapDomain` -/
+/-!
+# Declarations about `comapDomain`
+-/
 
 
 section ComapDomain
@@ -645,7 +659,9 @@ end FInjective
 end ComapDomain
 
 
-/-! ### Declarations about `Finsupp.filter` -/
+/-!
+# Declarations about `Finsupp.filter`
+-/
 
 
 section Filter
@@ -736,7 +752,9 @@ lemma filter_add_filter_not (f : α →₀ M) (p : α → Prop) [DecidablePred p
 end AddCommMonoid
 end Filter
 
-/-! ### Declarations about `frange` -/
+/-!
+# Declarations about `frange`
+-/
 
 
 section Frange
@@ -770,7 +788,9 @@ theorem finite_range (f : α →₀ M) : (Set.range f).Finite :=
 
 end Frange
 
-/-! ### Declarations about `Finsupp.subtypeDomain` -/
+/-!
+# Declarations about `Finsupp.subtypeDomain`
+-/
 
 
 section SubtypeDomain
@@ -923,7 +943,9 @@ theorem mem_support_finsetSum [AddCommMonoid M] {s : Finset ι} {h : ι → α �
   let ⟨c, hc, Eq⟩ := Multiset.mem_map.1 hf
   ⟨c, hc, Eq.symm ▸ hfa⟩
 
-/-! ### Declarations about `curry` and `uncurry` -/
+/-!
+# Declarations about `curry` and `uncurry`
+-/
 
 
 section Uncurry
@@ -1034,7 +1056,9 @@ noncomputable def curryAddEquiv : (α × β →₀ M) ≃+ (α →₀ β →₀ 
 
 end
 
-/-! ### Declarations about finitely supported functions whose support is a `Sum` type -/
+/-!
+# Declarations about finitely supported functions whose support is a `Sum` type
+-/
 
 
 section Sum
@@ -1114,9 +1138,11 @@ lemma sumElim_add [AddZeroClass M] (a b : α →₀ M) (c d : β →₀ M) :
     (a + b).sumElim (c + d) = a.sumElim c + b.sumElim d := by
   ext (_ | _) <;> simp
 
-/-- The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
+/--
+The equivalence between `(α ⊕ β) →₀ γ` and `(α →₀ γ) × (β →₀ γ)`.
 
-This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
+This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`.
+-/
 @[simps apply symm_apply]
 def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (α ⊕ β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
   toFun f :=
@@ -1146,9 +1172,11 @@ theorem sumFinsuppEquivProdFinsupp_symm_inr {α β γ : Type*} [Zero γ] (fg : (
 
 variable [AddMonoid M]
 
-/-- The additive equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
+/--
+The additive equivalence between `(α ⊕ β) →₀ M` and `(α →₀ M) × (β →₀ M)`.
 
-This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
+This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`.
+-/
 @[simps! apply symm_apply]
 def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
   { sumFinsuppEquivProdFinsupp with
@@ -1277,10 +1305,12 @@ the type of finitely supported functions from `s`. -/
     (restrictSupportEquiv s M).symm (single a x) = single (a : α) x := by
   classical simp
 
-/-- Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
+/--
+Given `AddCommMonoid M` and `e : α ≃ β`, `domCongr e` is the corresponding `Equiv` between
 `α →₀ M` and `β →₀ M`.
 
-This is `Finsupp.equivCongrLeft` as an `AddEquiv`. -/
+This is `Finsupp.equivCongrLeft` as an `AddEquiv`.
+-/
 @[simps apply]
 protected def domCongr [AddCommMonoid M] (e : α ≃ β) : (α →₀ M) ≃+ (β →₀ M) where
   toFun := equivMapDomain e
@@ -1314,14 +1344,17 @@ end Finsupp
 
 namespace Finsupp
 
-/-! ### Declarations about sigma types -/
+/-!
+# Declarations about sigma types
+-/
 
 
 section Sigma
 
 variable {αs : ι → Type*} [Zero M] (l : (Σ i, αs i) →₀ M)
 
-/-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `M` and
+/--
+Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `M` and
 an index element `i : ι`, `split l i` is the `i`th component of `l`,
 a finitely supported function from `as i` to `M`.
 
@@ -1374,10 +1407,12 @@ theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
 variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- On a `Fintype η`, `Finsupp.split` is an equivalence between `(Σ (j : η), ιs j) →₀ α`
+/--
+On a `Fintype η`, `Finsupp.split` is an equivalence between `(Σ (j : η), ιs j) →₀ α`
 and `Π j, (ιs j →₀ α)`.
 
-This is the `Finsupp` version of `Equiv.Pi_curry`. -/
+This is the `Finsupp` version of `Equiv.Pi_curry`.
+-/
 noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σ j, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
@@ -1395,7 +1430,8 @@ theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σ j, ιs j) →₀ α) (j i) :
     sigmaFinsuppEquivPiFinsupp f j i = f ⟨j, i⟩ :=
   rfl
 
-/-- On a `Fintype η`, `Finsupp.split` is an additive equivalence between
+/--
+On a `Fintype η`, `Finsupp.split` is an additive equivalence between
 `(Σ (j : η), ιs j) →₀ α` and `Π j, (ιs j →₀ α)`.
 
 This is the `AddEquiv` version of `Finsupp.sigmaFinsuppEquivPiFinsupp`.

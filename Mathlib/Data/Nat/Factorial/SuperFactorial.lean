@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Intervals
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Superfactorial
 

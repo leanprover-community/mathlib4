@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.SmoothNumbers
 
 import Mathlib.Data.Nat.Factorization.PrimePow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler Products
 
@@ -63,7 +66,7 @@ open Nat Finset
 section General
 
 /-!
-### General Euler Products
+# General Euler Products
 
 In this section we consider multiplicative (on coprime arguments) functions `f : ℕ → R`,
 where `R` is a complete normed commutative ring. The main result is `EulerProduct.eulerProduct`.
@@ -167,11 +170,13 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
 
 
 include hf₁ hmul in
-/-- The *Euler Product* for multiplicative (on coprime arguments) functions.
+/--
+The _Euler Product_ for multiplicative (on coprime arguments) functions.
 
 If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
-`∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`. This version is stated using `HasProd`. -/
+`∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`. This version is stated using `HasProd`.
+-/
 theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   let F : ℕ → R := fun n ↦ ∑' e, f (n ^ e)
@@ -188,12 +193,14 @@ theorem eulerProduct_hasProd (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   exact hN₀ s fun p hp ↦ hs <| mem_range.mpr <| lt_of_mem_primesBelow hp
 
 include hf₁ hmul in
-/-- The *Euler Product* for multiplicative (on coprime arguments) functions.
+/--
+The _Euler Product_ for multiplicative (on coprime arguments) functions.
 
 If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : ℕ, if p.Prime then ∑' e, f (p ^ e) else 1 = ∑' n, f n`.
-This version is stated using `HasProd` and `Set.mulIndicator`. -/
+This version is stated using `HasProd` and `Set.mulIndicator`.
+-/
 theorem eulerProduct_hasProd_mulIndicator (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     HasProd (Set.mulIndicator {p | Nat.Prime p} fun p ↦ ∑' e, f (p ^ e)) (∑' n, f n) := by
   rw [← hasProd_subtype_iff_mulIndicator]
@@ -201,12 +208,14 @@ theorem eulerProduct_hasProd_mulIndicator (hsum : Summable (‖f ·‖)) (hf₀ 
 
 open Filter in
 include hf₁ hmul in
-/-- The *Euler Product* for multiplicative (on coprime arguments) functions.
+/--
+The _Euler Product_ for multiplicative (on coprime arguments) functions.
 
 If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
 `∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`.
-This is a version using convergence of finite partial products. -/
+This is a version using convergence of finite partial products.
+-/
 theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) := by
   have := (eulerProduct_hasProd_mulIndicator hf₁ hmul hsum hf₀).tendsto_prod_nat
@@ -217,11 +226,13 @@ theorem eulerProduct (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
   simpa only [F, H]
 
 include hf₁ hmul in
-/-- The *Euler Product* for multiplicative (on coprime arguments) functions.
+/--
+The _Euler Product_ for multiplicative (on coprime arguments) functions.
 
 If `f : ℕ → R`, where `R` is a complete normed commutative ring, `f 0 = 0`, `f 1 = 1`, `f` is
 multiplicative on coprime arguments, and `‖f ·‖` is summable, then
-`∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`. -/
+`∏' p : {p : ℕ | p.Prime}, ∑' e, f (p ^ e) = ∑' n, f n`.
+-/
 theorem eulerProduct_tprod (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
     ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
   (eulerProduct_hasProd hf₁ hmul hsum hf₀).tprod_eq
@@ -229,35 +240,41 @@ theorem eulerProduct_tprod (hsum : Summable (‖f ·‖)) (hf₀ : f 0 = 0) :
 end EulerProduct
 
 /-!
-### Versions for arithmetic functions
+# Versions for arithmetic functions
 -/
 
 namespace ArithmeticFunction
 
 open EulerProduct
 
-/-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
+/--
+The _Euler Product_ for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`.
-This version is stated in terms of `HasProd`. -/
+This version is stated in terms of `HasProd`.
+-/
 nonrec theorem IsMultiplicative.eulerProduct_hasProd {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     HasProd (fun p : Primes ↦ ∑' e, f (p ^ e)) (∑' n, f n) :=
   eulerProduct_hasProd hf.1 hf.2 hsum f.map_zero
 
 open Filter in
-/-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
+/--
+The _Euler Product_ for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`.
-This version is stated in the form of convergence of finite partial products. -/
+This version is stated in the form of convergence of finite partial products.
+-/
 nonrec theorem IsMultiplicative.eulerProduct {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, ∑' e, f (p ^ e)) atTop (𝓝 (∑' n, f n)) :=
   eulerProduct hf.1 hf.2 hsum f.map_zero
 
-/-- The *Euler Product* for a multiplicative arithmetic function `f` with values in a
+/--
+The _Euler Product_ for a multiplicative arithmetic function `f` with values in a
 complete normed commutative ring `R`: if `‖f ·‖` is summable, then
-`∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`. -/
+`∏' p : Nat.Primes, ∑' e, f (p ^ e) = ∑' n, f n`.
+-/
 nonrec theorem IsMultiplicative.eulerProduct_tprod {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (hsum : Summable (‖f ·‖)) :
     ∏' p : Primes, ∑' e, f (p ^ e) = ∑' n, f n :=
@@ -270,7 +287,7 @@ end General
 section CompletelyMultiplicative
 
 /-!
-### Euler Products for completely multiplicative functions
+# Euler Products for completely multiplicative functions
 
 We now assume that `f` is completely multiplicative and has values in a complete normed field `F`.
 Then we can use the formula for geometric series to simplify the statement. This leads to
@@ -338,11 +355,13 @@ lemma prod_primesBelow_geometric_eq_tsum_smoothNumbers {f : ℕ →* F} (hsum : 
   rw [smoothNumbers_eq_factoredNumbers, primesBelow]
   exact prod_filter_prime_geometric_eq_tsum_factoredNumbers hsum _
 
-/-- The *Euler Product* for completely multiplicative functions.
+/--
+The _Euler Product_ for completely multiplicative functions.
 
 If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`.
-This version is stated in terms of `HasProd`. -/
+This version is stated in terms of `HasProd`.
+-/
 theorem eulerProduct_completely_multiplicative_hasProd {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     HasProd (fun p : Primes ↦ (1 - f p)⁻¹) (∑' n, f n) := by
   have H : (fun p : Primes ↦ (1 - f p)⁻¹) = fun p : Primes ↦ ∑' (e : ℕ), f (p ^ e) :=
@@ -350,20 +369,24 @@ theorem eulerProduct_completely_multiplicative_hasProd {f : ℕ →*₀ F} (hsum
   simpa only [map_pow, H]
     using eulerProduct_hasProd f.map_one (fun {m n} _ ↦ f.map_mul m n) hsum f.map_zero
 
-/-- The *Euler Product* for completely multiplicative functions.
+/--
+The _Euler Product_ for completely multiplicative functions.
 
 If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is summable, then
-`∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`. -/
+`∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`.
+-/
 theorem eulerProduct_completely_multiplicative_tprod {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     ∏' p : Primes, (1 - f p)⁻¹ = ∑' n, f n :=
   (eulerProduct_completely_multiplicative_hasProd hsum).tprod_eq
 
 open Filter in
-/-- The *Euler Product* for completely multiplicative functions.
+/--
+The _Euler Product_ for completely multiplicative functions.
 
 If `f : ℕ →*₀ F`, where `F` is a complete normed field and `‖f ·‖` is summable, then
 `∏' p : Nat.Primes, (1 - f p)⁻¹ = ∑' n, f n`.
-This version is stated in the form of convergence of finite partial products. -/
+This version is stated in the form of convergence of finite partial products.
+-/
 theorem eulerProduct_completely_multiplicative {f : ℕ →*₀ F} (hsum : Summable (‖f ·‖)) :
     Tendsto (fun n : ℕ ↦ ∏ p ∈ primesBelow n, (1 - f p)⁻¹) atTop (𝓝 (∑' n, f n)) := by
   have hmul {m n} (_ : Nat.Coprime m n) := f.map_mul m n
@@ -383,7 +406,9 @@ end CompletelyMultiplicative
 
 section PrimePow
 
-/-! ### Reindexing infinite sums and products over prime powers -/
+/-!
+# Reindexing infinite sums and products over prime powers
+-/
 
 open Nat.Primes
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor products of cones
 
@@ -39,8 +42,7 @@ We define the minimal and maximal tensor products of pointed cones:
 
 ## References
 
-* [Aubrun et al. *Entangleability of cones*][aubrunEntangleabilityCones2021]
-
+* ‍\[Aubrun et al. _Entangleability of cones_\]\[aubrunEntangleabilityCones2021\]
 -/
 
 @[expose] public section

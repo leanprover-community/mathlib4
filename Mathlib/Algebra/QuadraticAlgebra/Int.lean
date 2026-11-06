@@ -13,6 +13,9 @@ import Mathlib.Algebra.QuadraticAlgebra.Integral
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.RationalRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic algebras over `ℤ`
 
@@ -130,7 +133,9 @@ theorem isDomain_iff :
 instance [Fact (¬ IsSquare (discr a b))] : IsDomain (QuadraticAlgebra ℤ a b) :=
   isDomain_iff.mpr Fact.out
 
-/-! ### Maximality of the order -/
+/-!
+# Maximality of the order
+-/
 
 /-- The image of `QuadraticAlgebra ℤ a b` in `QuadraticAlgebra ℚ a b`. -/
 local notation "𝒪" => Set.range (algebraMap (QuadraticAlgebra ℤ a b) (QuadraticAlgebra ℚ a b))

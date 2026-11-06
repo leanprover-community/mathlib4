@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Alternating.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous alternating multilinear maps
 
@@ -30,12 +33,13 @@ multilinear map, alternating map, continuous
 open Function Matrix
 open scoped Nat
 
-/-- A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
+/--
+A continuous alternating map from `ι → M` to `N`, denoted `M [⋀^ι]→L[R] N`,
 is a continuous map that is
 
-- multilinear : `f (update m i (c • x)) = c • f (update m i x)` and
+* multilinear : `f (update m i (c • x)) = c • f (update m i x)` and
   `f (update m i (x + y)) = f (update m i x) + f (update m i y)`;
-- alternating : `f v = 0` whenever `v` has two equal coordinates.
+* alternating : `f v = 0` whenever `v` has two equal coordinates.
 -/
 structure ContinuousAlternatingMap (R M N ι : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     [TopologicalSpace M] [AddCommMonoid N] [Module R N] [TopologicalSpace N] extends
@@ -332,13 +336,15 @@ theorem _root_.ContinuousLinearMap.compContinuousAlternatingMap_coe (g : N →L[
     (f : M [⋀^ι]→L[R] N) : ⇑(g.compContinuousAlternatingMap f) = g ∘ f :=
   rfl
 
-/-- A continuous linear equivalence of domains
+/--
+A continuous linear equivalence of domains
 defines an equivalence between continuous alternating maps.
 
 This is available as a continuous linear isomorphism at
 `ContinuousLinearEquiv.continuousAlternatingMapCongrLeft`.
 
-This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence. -/
+This is `ContinuousAlternatingMap.compContinuousLinearMap` as an equivalence.
+-/
 @[simps -fullyApplied apply]
 def _root_.ContinuousLinearEquiv.continuousAlternatingMapCongrLeftEquiv (e : M ≃L[R] M') :
     M [⋀^ι]→L[R] N ≃ M' [⋀^ι]→L[R] N where
@@ -519,9 +525,11 @@ theorem map_smul_univ [Fintype ι] (c : ι → R) (m : ι → M) :
     (f fun i => c i • m i) = (∏ i, c i) • f m :=
   f.toMultilinearMap.map_smul_univ _ _
 
-/-- If two continuous `R`-alternating maps from `R` are equal on 1, then they are equal.
+/--
+If two continuous `R`-alternating maps from `R` are equal on 1, then they are equal.
 
-This is the alternating version of `ContinuousLinearMap.ext_ring`. -/
+This is the alternating version of `ContinuousLinearMap.ext_ring`.
+-/
 @[ext]
 theorem ext_ring [Finite ι] [TopologicalSpace R] ⦃f g : R [⋀^ι]→L[R] M⦄
     (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=

@@ -12,19 +12,21 @@ import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Results about coefficients of polynomials being integral
 
 ## Main results
-- `Polynomial.isIntegral_coeff_of_dvd`: If a monic polynomial `p` divides another monic polynomial
-  with integral coefficients, then the coefficients of `p` are themselves integral.
-- `Polynomial.isIntegral_iff_isIntegral_coeff`:
-  `p : S[X]` is integral over `R[X]` iff the coefficients of `p` are integral over `R`.
-- `MvPolynomial.isIntegral_iff_isIntegral_coeff`: `p : MvPolynomial σ S` is integral over
-  `MvPolynomial σ R` iff the coefficients of `p` are integral over `R`.
-- We also provide the instance `[IsIntegrallyClosed R] : IsIntegrallyClosed R[X]`.
 
+* `Polynomial.isIntegral_coeff_of_dvd`: If a monic polynomial `p` divides another monic polynomial
+  with integral coefficients, then the coefficients of `p` are themselves integral.
+* `Polynomial.isIntegral_iff_isIntegral_coeff`:
+  `p : S[X]` is integral over `R[X]` iff the coefficients of `p` are integral over `R`.
+* `MvPolynomial.isIntegral_iff_isIntegral_coeff`: `p : MvPolynomial σ S` is integral over
+  `MvPolynomial σ R` iff the coefficients of `p` are integral over `R`.
+* We also provide the instance `[IsIntegrallyClosed R] : IsIntegrallyClosed R[X]`.
 -/
 
 public section

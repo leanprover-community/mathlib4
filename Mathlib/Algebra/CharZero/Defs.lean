@@ -10,8 +10,10 @@ public import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Basic.Logic.Basic
 import Mathlib.Tactic.Basify.Attr
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Characteristic zero
 
 A ring `R` is called of characteristic zero if every natural number `n` is non-zero when considered
@@ -31,10 +33,12 @@ from the natural numbers into it is injective.
 
 public section
 
-/-- Typeclass for monoids with characteristic zero.
-  (This is usually stated on fields but it makes sense for any additive monoid with 1.)
+/--
+Typeclass for monoids with characteristic zero.
+(This is usually stated on fields but it makes sense for any additive monoid with 1.)
 
-*Warning*: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
+_Warning_: for a semiring `R`, `CharZero R` and `CharP R 0` need not coincide.
+
 * `CharZero R` requires an injection `ℕ ↪ R`;
 * `CharP R 0` asks that only `0 : ℕ` maps to `0 : R` under the map `ℕ → R`.
   For instance, endowing `{0, 1}` with addition given by `max` (i.e. `1` is absorbing), shows that

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.GroupTheory.GroupAction.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Minkowski functional, normed field version
 
@@ -34,7 +37,8 @@ open scoped Topology Pointwise ENNReal NNReal
 
 section SMul
 
-/-- The Minkowski functional for vector spaces over normed fields.
+/--
+The Minkowski functional for vector spaces over normed fields.
 Given a set `s` in a vector space over a normed field `𝕜`,
 `egauge s` is the functional which sends `x : E`
 to the infimum of `‖c‖ₑ` over `c` such that `x` belongs to `s` scaled by `c`.
@@ -43,7 +47,8 @@ The definition only requires `𝕜` to have a `ENorm` instance
 and `(· • ·) : 𝕜 → E → E` to be defined.
 This way the definition applies, e.g., to `𝕜 = ℝ≥0`.
 For `𝕜 = ℝ≥0`, the function is equal (up to conversion to `ℝ`)
-to the usual Minkowski functional defined in `gauge`. -/
+to the usual Minkowski functional defined in `gauge`.
+-/
 noncomputable def egauge (𝕜 : Type*) [ENorm 𝕜] {E : Type*} [SMul 𝕜 E] (s : Set E) (x : E) : ℝ≥0∞ :=
   ⨅ (c : 𝕜) (_ : x ∈ c • s), ‖c‖ₑ
 
@@ -108,16 +113,20 @@ section NormedDivisionRing
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
 
-/-- If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `(‖c‖₊⁻¹ : ℝ≥0)`.
+/--
+If `c • x ∈ s` and `c ≠ 0`, then `egauge 𝕜 s x` is at most `(‖c‖₊⁻¹ : ℝ≥0)`.
 
-See also `egauge_le_of_smul_mem`. -/
+See also `egauge_le_of_smul_mem`.
+-/
 lemma egauge_le_of_smul_mem_of_ne (h : c • x ∈ s) (hc : c ≠ 0) : egauge 𝕜 s x ≤ (‖c‖₊⁻¹ : ℝ≥0) := by
   rw [← nnnorm_inv]
   exact egauge_le_of_mem_smul <| (mem_inv_smul_set_iff₀ hc _ _).2 h
 
-/-- If `c • x ∈ s`, then `egauge 𝕜 s x` is at most `‖c‖ₑ⁻¹`.
+/--
+If `c • x ∈ s`, then `egauge 𝕜 s x` is at most `‖c‖ₑ⁻¹`.
 
-See also `egauge_le_of_smul_mem_of_ne`. -/
+See also `egauge_le_of_smul_mem_of_ne`.
+-/
 lemma egauge_le_of_smul_mem (h : c • x ∈ s) : egauge 𝕜 s x ≤ ‖c‖ₑ⁻¹ := by
   rcases eq_or_ne c 0 with rfl | hc
   · simp
@@ -237,16 +246,18 @@ section Pi
 variable {𝕜 : Type*} {ι : Type*} {E : ι → Type*}
 variable [NormedDivisionRing 𝕜] [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
 
-/-- The extended gauge of a point `x` in an indexed product
+/--
+The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
 (and the whole spaces for the other indices)
 is the supremum of the extended gauges of the components of `x`
 with respect to the corresponding balanced set.
 
 This version assumes the following technical condition:
-- either `I` is the universal set;
-- or one of `x i`, `i ∈ I`, is nonzero;
-- or `𝕜` is nontrivially normed.
+
+* either `I` is the universal set;
+* or one of `x i`, `i ∈ I`, is nonzero;
+* or `𝕜` is nontrivially normed.
 -/
 theorem egauge_pi' {I : Set ι} (hI : I.Finite)
     {U : ∀ i, Set (E i)} (hU : ∀ i ∈ I, Balanced 𝕜 (U i))
@@ -291,7 +302,8 @@ theorem egauge_univ_pi [Finite ι] {U : ∀ i, Set (E i)} (hU : ∀ i, Balanced 
     egauge 𝕜 (univ.pi U) x = ⨆ i, egauge 𝕜 (U i) (x i) :=
   egauge_pi' finite_univ (fun i _ ↦ hU i) x (.inl rfl) |>.trans <| by simp
 
-/-- The extended gauge of a point `x` in an indexed product
+/--
+The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
 (and the whole spaces for the other indices)
 is the supremum of the extended gauges of the components of `x`

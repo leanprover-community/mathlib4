@@ -9,13 +9,15 @@ public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Algebra.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological (sub)algebras over `Rat`
 
 ## Results
 
 This is just a minimal stub for now!
-
 -/
 
 public section

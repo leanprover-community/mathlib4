@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions which vanish as distributions vanish as functions
 

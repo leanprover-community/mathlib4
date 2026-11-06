@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Euclidean.Volume.Def
 import Mathlib.Geometry.Euclidean.Triangle
 import Mathlib.Geometry.Euclidean.Volume.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Area of a triangle
 
@@ -18,8 +21,8 @@ This file collects formulas for the area of a triangle and other related results
 
 ## Main theorems
 
-* `Affine.Triangle.volume_eq_height_mul`: $S = \frac{1}{2}hb$
-* `Affine.Triangle.volume_eq_mul_sin`: $S = \frac{1}{2}ab \sin C$
+* `Affine.Triangle.volume_eq_height_mul`: $`S = \frac{1}{2}hb`
+* `Affine.Triangle.volume_eq_mul_sin`: $`S = \frac{1}{2}ab \sin C`
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Complement
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semidirect product
 
@@ -27,6 +30,7 @@ condition `∀ n g, fn (φ g n) = fg g * fn n * fg g⁻¹`
 This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N G φ`
 
 ## Tags
+
 group, semidirect product
 -/
 

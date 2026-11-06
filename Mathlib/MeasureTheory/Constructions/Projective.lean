@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective measure families and projective limits
 
@@ -28,7 +31,6 @@ the projection from `∀ i, α i` to `∀ i : I, α i` maps `μ` to `P I`.
 
 * `MeasureTheory.IsProjectiveLimit.unique`: the projective limit of a family of finite measures
   is unique.
-
 -/
 
 @[expose] public section

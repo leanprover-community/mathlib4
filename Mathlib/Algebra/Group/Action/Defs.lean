@@ -11,6 +11,9 @@ public import Mathlib.Logic.Function.Iterate
 
 import Mathlib.Tactic.Spread
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of group actions
 
@@ -33,8 +36,8 @@ Also provided are typeclasses regarding the interaction of different group actio
 
 ## Notation
 
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+* `a • b` is used as notation for `SMul.smul a b`.
+* `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
 ## Implementation details
 
@@ -59,12 +62,16 @@ variable {M N G H α β γ δ : Type*}
 /- See also `Monoid.toMulAction` and `MulZeroClass.toSMulWithZero`. -/
 attribute [to_additive /-- See also `AddMonoid.toAddAction` -/] instSMulOfMul
 
-/-- Like `Mul.toSMul`, but multiplies on the right.
+/--
+Like `Mul.toSMul`, but multiplies on the right.
 
-See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`. -/
-@[to_additive /-- Like `Add.toVAdd`, but adds on the right.
+See also `Monoid.toOppositeMulAction` and `MonoidWithZero.toOppositeMulActionWithZero`.
+-/
+@[to_additive /--
+              Like `Add.toVAdd`, but adds on the right.
 
-  See also `AddMonoid.toOppositeAddAction`. -/]
+              See also `AddMonoid.toOppositeAddAction`.
+              -/]
 instance (priority := 910) Mul.toSMulMulOpposite (α : Type*) [Mul α] : SMul αᵐᵒᵖ α where
   smul a b := b * a.unop
 
@@ -77,7 +84,8 @@ lemma op_smul_eq_mul {α : Type*} [Mul α] (a b : α) : MulOpposite.op a • b =
 @[to_additive (attr := simp)]
 lemma MulOpposite.smul_eq_mul_unop [Mul α] (a : αᵐᵒᵖ) (b : α) : a • b = b * a.unop := rfl
 
-/-- Type class for actions by additive semigroups, with notation `g +ᵥ p`.
+/--
+Type class for actions by additive semigroups, with notation `g +ᵥ p`.
 
 The `AddSemigroupAction G P` typeclass says that the additive semigroup `G` acts additively on a
 type `P`.  More precisely this means that the action satisfies the axiom
@@ -85,19 +93,22 @@ type `P`.  More precisely this means that the action satisfies the axiom
 `G` acts on `P`.
 
 For example, if `A` is an additive semigroup and `X` is a type, if a mathematician says
-say "let `A` act on the set `X`" they will usually mean `[AddSemigroupAction A X]`. -/
+say "let `A` act on the set `X`" they will usually mean `[AddSemigroupAction A X]`.
+-/
 class AddSemigroupAction (G P : Type*) [AddSemigroup G] extends VAdd G P where
   /-- Associativity of `+ᵥ` and `+` -/
   add_vadd : ∀ (g₁ g₂ : G) (p : P), (g₁ + g₂) +ᵥ p = g₁ +ᵥ g₂ +ᵥ p
 
-/-- Type class for actions by semigroups, with notation `g • p`.
+/--
+Type class for actions by semigroups, with notation `g • p`.
 
 The `SemigroupAction G P` typeclass says that the semigroup `G` acts multiplicatively on a type `P`.
 More precisely this means that the action satisfies the axiom `(g₁ * g₂) • p = g₁ • (g₂ • p)`.
 A mathematician might simply say that the semigroup `G` acts on `P`.
 
 For example, if `G` is a semigroup and `X` is a type, if a mathematician says
-say "let `G` act on the set `X`" they will probably mean  `[SemigroupAction G X]`. -/
+say "let `G` act on the set `X`" they will probably mean  `[SemigroupAction G X]`.
+-/
 @[to_additive (attr := ext)]
 class SemigroupAction (α β : Type*) [Semigroup α] extends SMul α β where
   /-- Associativity of `•` and `*` -/
@@ -134,7 +145,9 @@ class MulAction (α : Type*) (β : Type*) [Monoid α] extends SemigroupAction α
   /-- One is the neutral element for `•` -/
   protected one_smul : ∀ b : β, (1 : α) • b = b
 
-/-! ### Scalar tower and commuting actions -/
+/-!
+# Scalar tower and commuting actions
+-/
 
 /-- A typeclass mixin saying that two additive actions on the same space commute. -/
 class VAddCommClass (M N α : Type*) [VAdd M α] [VAdd N α] : Prop where
@@ -153,21 +166,33 @@ export SMulCommClass (smul_comm)
 export VAddCommClass (vadd_comm)
 
 library_note «bundled maps over different rings» /--
-Frequently, we find ourselves wanting to express a bilinear map `M →ₗ[R] N →ₗ[R] P` or an
-equivalence between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')` where the maps have an associated ring
-`R`. Unfortunately, using definitions like these requires that `R` satisfy `CommSemiring R`, and
-not just `Semiring R`. Using `M →ₗ[R] N →+ P` and `(M →ₗ[R] N) ≃+ (M' →ₗ[R] N')` avoids this
-problem, but throws away structure that is useful for when we _do_ have a commutative (semi)ring.
+                                                 Frequently, we find ourselves wanting to express a
+bilinear map `M →ₗ[R] N →ₗ[R] P` or an equivalence
+between maps `(M →ₗ[R] N) ≃ₗ[R] (M' →ₗ[R] N')`
+where the maps have an associated ring `R`.
+Unfortunately, using definitions like these
+requires that `R` satisfy `CommSemiring R`, and not
+just `Semiring R`. Using `M →ₗ[R] N →+ P` and
+`(M →ₗ[R] N) ≃+ (M' →ₗ[R] N')` avoids this problem,
+but throws away structure that is useful for when
+we _do_ have a commutative (semi)ring.
 
-To avoid making this compromise, we instead state these definitions as `M →ₗ[R] N →ₗ[S] P` or
-`(M →ₗ[R] N) ≃ₗ[S] (M' →ₗ[R] N')` and require `SMulCommClass S R` on the appropriate modules. When
-the caller has `CommSemiring R`, they can set `S = R` and `smulCommClass_self` will populate the
-instance. If the caller only has `Semiring R` they can still set either `R = ℕ` or `S = ℕ`, and
-`AddCommMonoid.nat_smulCommClass` or `AddCommMonoid.nat_smulCommClass'` will populate
-the typeclass, which is still sufficient to recover a `≃+` or `→+` structure.
+                                                 To avoid making this compromise, we instead state
+these definitions as `M →ₗ[R] N →ₗ[S] P` or
+`(M →ₗ[R] N) ≃ₗ[S] (M' →ₗ[R] N')` and require
+`SMulCommClass S R` on the appropriate modules.
+When the caller has `CommSemiring R`, they can set
+`S = R` and `smulCommClass_self` will populate the
+instance. If the caller only has `Semiring R` they
+can still set either `R = ℕ` or `S = ℕ`, and
+`AddCommMonoid.nat_smulCommClass` or
+`AddCommMonoid.nat_smulCommClass'` will populate
+the typeclass, which is still sufficient to recover
+a `≃+` or `→+` structure.
 
-An example of where this is used is `LinearMap.prod_equiv`.
--/
+                                                 An example of where this is used is
+`LinearMap.prod_equiv`.
+                                                 -/
 
 /-- Commutativity of actions is a symmetric relation. This lemma can't be an instance because this
 would cause a loop in the instance search graph. -/
@@ -216,14 +241,16 @@ lemma smul_assoc {M N} [SMul M N] [SMul N α] [SMul M α] [IsScalarTower M N α]
 @[to_additive]
 instance Semigroup.isScalarTower [Semigroup α] : IsScalarTower α α α := ⟨mul_assoc⟩
 
-/-- An instance of `SMulDistribClass G R S` states that the multiplicative
+/--
+An instance of `SMulDistribClass G R S` states that the multiplicative
 action of `G` on `S` is determined by the multiplicative actions of `G` on `R`
 and `R` on `S`.
 
 This is similar to `IsScalarTower` except that the action of `G` distributes
 over the action of `R` on `S`.
 
-E.g. if `M/L/K` is a tower of galois extensions then `SMulDistribClass Gal(M/K) L M`. -/
+E.g. if `M/L/K` is a tower of galois extensions then `SMulDistribClass Gal(M/K) L M`.
+-/
 class SMulDistribClass (G R S : Type*) [SMul G R] [SMul G S] [SMul R S] : Prop where
   smul_distrib_smul (g : G) (r : R) (s : S) : g • r • s = (g • r) • (g • s)
 
@@ -298,18 +325,22 @@ abbrev comp (g : N → M) : SMul N α where smul := SMul.comp.smul g
 
 variable {α}
 
-/-- Given a tower of scalar actions `M → α → β`, if we use `SMul.comp`
+/--
+Given a tower of scalar actions `M → α → β`, if we use `SMul.comp`
 to pull back both of `M`'s actions by a map `g : N → M`, then we obtain a new
 tower of scalar actions `N → α → β`.
 
 This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
-are still metavariables. -/
+are still metavariables.
+-/
 @[to_additive
-/-- Given a tower of additive actions `M → α → β`, if we use `SMul.comp` to pull back both of
+/--
+Given a tower of additive actions `M → α → β`, if we use `SMul.comp` to pull back both of
 `M`'s actions by a map `g : N → M`, then we obtain a new tower of scalar actions `N → α → β`.
 
 This cannot be an instance because it can cause infinite loops whenever the `SMul` arguments
-are still metavariables. -/]
+are still metavariables.
+-/]
 lemma comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β where
   __ := comp α g
@@ -435,8 +466,10 @@ theorem smul_iterate (a : M) : ∀ n : ℕ, (a • · : α → α)^[n] = (a ^ n 
 lemma smul_iterate_apply (a : M) (n : ℕ) (x : α) : (a • ·)^[n] x = a ^ n • x := by
   rw [smul_iterate]
 
-/-- Pullback a multiplicative action along an injective map respecting `•`.
-See note [reducible non-instances]. -/
+/--
+Pullback a multiplicative action along an injective map respecting `•`.
+See note \[reducible non-instances\].
+-/
 @[to_additive
     /-- Pullback an additive action along an injective map respecting `+ᵥ`. -/]
 protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : Injective f)
@@ -444,8 +477,10 @@ protected abbrev Function.Injective.mulAction [SMul M β] (f : β → α) (hf : 
   one_smul x := hf <| (smul _ _).trans <| one_smul _ (f x)
   mul_smul c₁ c₂ x := hf <| by simp only [smul, mul_smul]
 
-/-- Pushforward a multiplicative action along a surjective map respecting `•`.
-See note [reducible non-instances]. -/
+/--
+Pushforward a multiplicative action along a surjective map respecting `•`.
+See note \[reducible non-instances\].
+-/
 @[to_additive
     /-- Pushforward an additive action along a surjective map respecting `+ᵥ`. -/]
 protected abbrev Function.Surjective.mulAction [SMul M β] (f : α → β) (hf : Surjective f)
@@ -457,13 +492,17 @@ section
 variable (M)
 
 -- see Note [higher instance priority]
-/-- The regular action of a monoid on itself by left multiplication.
+/--
+The regular action of a monoid on itself by left multiplication.
 
-This is promoted to a module by `Semiring.toModule`. -/
+This is promoted to a module by `Semiring.toModule`.
+-/
 @[to_additive
-/-- The regular action of a monoid on itself by left addition.
+/--
+The regular action of a monoid on itself by left addition.
 
-This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`. -/]
+This is promoted to an `AddTorsor` by `addGroup_is_addTorsor`.
+-/]
 instance (priority := 1100) Monoid.toMulAction : MulAction M M where
   smul := (· * ·)
   one_smul := one_mul
@@ -613,15 +652,17 @@ scalar towers, then `Q / P / N` is also a scalar tower.
 
 end CompatibleScalar
 
-/-- Typeclass for multiplicative actions on multiplicative structures.
+/--
+Typeclass for multiplicative actions on multiplicative structures.
 
 The key axiom here is `smul_mul : g • (x * y) = (g • x) * (g • y)`.
 If `G` is a multiplicative group with automorphism group `Γ`, then there is a natural instance of
 `MulDistribMulAction Γ G`.
 
-The axiom is also satisfied by a Galois group $Gal(L/K)$ acting on the field `L`,
+The axiom is also satisfied by a Galois group $`Gal(L/K)` acting on the field `L`,
 but here you can use the even stronger class `MulSemiringAction`, which captures
-how the action plays with both multiplication and addition. -/
+how the action plays with both multiplication and addition.
+-/
 @[ext]
 class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction M N where
   /-- Multiplying `1` by a scalar gives `1` -/
@@ -629,11 +670,13 @@ class MulDistribMulAction (M N : Type*) [Monoid M] [Monoid N] extends MulAction 
   /-- Distributivity of `•` across `*` -/
   smul_mul : ∀ (r : M) (x y : N), r • (x * y) = r • x * r • y
 
-/-- Typeclass for additive actions on additive structures.
+/--
+Typeclass for additive actions on additive structures.
 
 The key axiom here is `vadd_add : g +ᵥ (x + y) = (g +ᵥ x) + (g +ᵥ y)`.
 If `G` is an additive group with additive automorphism group `Γ`, then there is a natural instance
-of `AddDistribAddAction Γ G`. -/
+of `AddDistribAddAction Γ G`.
+-/
 @[ext]
 class AddDistribAddAction (M N : Type*) [AddMonoid M] [AddMonoid N] extends AddAction M N where
   /-- Acting on `0` by a scalar gives `0` -/
@@ -677,17 +720,21 @@ lemma IsLeftCancelSMul.left_cancel {G P} [SMul G P] [IsLeftCancelSMul G P] (a : 
 instance [Mul G] [IsLeftCancelMul G] : IsLeftCancelSMul G G where
   left_cancel' := IsLeftCancelMul.mul_left_cancel
 
-/-- A vector addition is cancellative if it is pointwise injective on the left and right.
+/--
+A vector addition is cancellative if it is pointwise injective on the left and right.
 
-A group action is cancellative in this sense if and only if it is **free**.
-See `isCancelVAdd_iff_eq_zero_of_vadd_eq` for a more familiar condition. -/
+A group action is cancellative in this sense if and only if it is *free*.
+See `isCancelVAdd_iff_eq_zero_of_vadd_eq` for a more familiar condition.
+-/
 class IsCancelVAdd [VAdd G P] : Prop extends IsLeftCancelVAdd G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a +ᵥ c = b +ᵥ c → a = b
 
-/-- A scalar multiplication is cancellative if it is pointwise injective on the left and right.
+/--
+A scalar multiplication is cancellative if it is pointwise injective on the left and right.
 
-A group action is cancellative in this sense if and only if it is **free**.
-See `isCancelSMul_iff_eq_one_of_smul_eq` for a more familiar condition. -/
+A group action is cancellative in this sense if and only if it is *free*.
+See `isCancelSMul_iff_eq_one_of_smul_eq` for a more familiar condition.
+-/
 @[to_additive]
 class IsCancelSMul [SMul G P] : Prop extends IsLeftCancelSMul G P where
   protected right_cancel' : ∀ (a b : G) (c : P), a • c = b • c → a = b

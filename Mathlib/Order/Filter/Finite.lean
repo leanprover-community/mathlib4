@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Finite.Lattice
 public import Mathlib.Order.CompleteLattice.Finset
 public import Mathlib.Order.Filter.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results relating filters to finiteness
 
@@ -148,7 +151,9 @@ theorem mem_biInf_principal {ι : Type*} {p : ι → Prop} {s : ι → Set α} {
     refine mem_iInf_of_iInter hIf (fun i ↦ ?_) hst
     simp [hpI i i.2]
 
-/-! ### Lattice equations -/
+/-!
+# Lattice equations
+-/
 
 theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {l : ι → Filter α}
     (hd : Pairwise (Disjoint on l)) :
@@ -202,7 +207,9 @@ theorem mem_iInf_finset {s : Finset α} {f : α → Filter β} {t : Set β} :
   · rintro ⟨p, hpf, rfl⟩
     exact iInter_mem.2 fun a => mem_iInf_of_mem a (hpf a a.2)
 
-/-! #### `principal` equations -/
+/-!
+# `principal` equations
+-/
 
 @[simp]
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
@@ -241,7 +248,9 @@ theorem principal_surjective [Finite α] : Surjective (𝓟 : Set α → Filter 
 
 end Lattice
 
-/-! ### Eventually and Frequently -/
+/-!
+# Eventually and Frequently
+-/
 
 @[simp]
 theorem eventually_all {ι : Sort*} [Finite ι] {l} {p : ι → α → Prop} :
@@ -286,7 +295,7 @@ lemma eventually_subset_of_finite {ι : Type*} {f : Filter ι} {s : ι → Set �
   simpa [Set.subset_def, eventually_all_finite ht] using hs
 
 /-!
-### Relation “eventually equal”
+# Relation “eventually equal”
 -/
 
 section EventuallyEq

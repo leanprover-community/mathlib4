@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Limits.Types.Yoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtered categories and limits
 
@@ -34,10 +37,12 @@ section NonemptyLimit
 
 open CategoryTheory.Limits Opposite
 
-/-- `C` is filtered if and only if for every functor `F : J ⥤ C` from a finite category there is
-    some `X : C` such that `lim Hom(F·, X)` is nonempty.
+/--
+`C` is filtered if and only if for every functor `F : J ⥤ C` from a finite category there is
+some `X : C` such that `lim Hom(F·, X)` is nonempty.
 
-    Lemma 3.1.2 of [Kashiwara2006] -/
+Lemma 3.1.2 of \[Kashiwara2006\]
+-/
 theorem IsFiltered.iff_nonempty_limit : IsFiltered C ↔
     ∀ {J : Type v} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
       ∃ (X : C), Nonempty (limit (F.op ⋙ yoneda.obj X)) := by

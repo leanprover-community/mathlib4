@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.Sequence
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chebyshev polynomials
 
@@ -21,9 +24,9 @@ with integral coefficients.
 * `Polynomial.Chebyshev.T`: the Chebyshev polynomials of the first kind.
 * `Polynomial.Chebyshev.U`: the Chebyshev polynomials of the second kind.
 * `Polynomial.Chebyshev.C`: the rescaled Chebyshev polynomials of the first kind (also known as the
-  Vieta–Lucas polynomials), given by $C_n(2x) = 2T_n(x)$.
+  Vieta–Lucas polynomials), given by $`C_n(2x) = 2T_n(x)`.
 * `Polynomial.Chebyshev.S`: the rescaled Chebyshev polynomials of the second kind (also known as the
-  Vieta–Fibonacci polynomials), given by $S_n(2x) = U_n(x)$.
+  Vieta–Fibonacci polynomials), given by $`S_n(2x) = U_n(x)`.
 
 ## Main statements
 
@@ -46,8 +49,8 @@ and do not have `map (Int.castRingHom R)` interfering all the time.
 
 ## References
 
-[Lionel Ponton, _Roots of the Chebyshev polynomials: A purely algebraic approach_]
-[ponton2020chebyshev]
+‍\[Lionel Ponton, _Roots of the Chebyshev polynomials: A purely algebraic approach_\]
+‍\[ponton2020chebyshev\]
 
 ## TODO
 
@@ -513,8 +516,10 @@ theorem U_mem_span_T (n : ℕ) : U R n ∈ Submodule.span ℕ ((fun m : ℕ => T
     refine Submodule.add_mem _ ?_ ((Submodule.span_mono (by grind)) h₀)
     exact Submodule.smul_of_tower_mem _ 2 (Submodule.mem_span_of_mem ⟨n + 2, by simp⟩)
 
-/-- `C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
-polynomial), given by $C_n(2x) = 2T_n(x)$. See `Polynomial.Chebyshev.C_comp_two_mul_X`. -/
+/--
+`C n` is the `n`th rescaled Chebyshev polynomial of the first kind (also known as a Vieta–Lucas
+polynomial), given by $`C_n(2x) = 2T_n(x)`. See `Polynomial.Chebyshev.C_comp_two_mul_X`.
+-/
 noncomputable def C : ℤ → R[X]
   | 0 => 2
   | 1 => X
@@ -622,9 +627,11 @@ theorem T_eq_half_mul_C_comp_two_mul_X [Invertible (2 : R)] (n : ℤ) :
   rw [C_comp_two_mul_X, ← mul_assoc, ← map_ofNat Polynomial.C 2, ← map_mul, invOf_mul_self',
     map_one, one_mul]
 
-/-- `S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
-Vieta–Fibonacci polynomial), given by $S_n(2x) = U_n(x)$. See
-`Polynomial.Chebyshev.S_comp_two_mul_X`. -/
+/--
+`S n` is the `n`th rescaled Chebyshev polynomial of the second kind (also known as a
+Vieta–Fibonacci polynomial), given by $`S_n(2x) = U_n(x)`. See
+`Polynomial.Chebyshev.S_comp_two_mul_X`.
+-/
 noncomputable def S : ℤ → R[X]
   | 0 => 1
   | 1 => X

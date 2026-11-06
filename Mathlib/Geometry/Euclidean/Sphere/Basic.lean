@@ -12,6 +12,9 @@ public import Mathlib.Geometry.Euclidean.Projection
 
 import Mathlib.Analysis.Normed.Affine.Convex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spheres
 
@@ -21,18 +24,13 @@ Euclidean affine spaces.
 ## Main definitions
 
 * `EuclideanGeometry.Sphere` bundles a `center` and a `radius`.
-
 * `EuclideanGeometry.Sphere.IsDiameter` is the property of two points being the two endpoints
   of a diameter of a sphere.
-
 * `EuclideanGeometry.Sphere.ofDiameter` constructs the sphere on a given diameter.
-
 * `EuclideanGeometry.Cospherical` is the property of a set of points being equidistant from some
   point.
-
 * `EuclideanGeometry.Concyclic` is the property of a set of points being cospherical and
   coplanar.
-
 -/
 
 @[expose] public section

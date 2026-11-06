@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Graph.Basic
 public import Mathlib.Tactic.TFAE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgraphs of multigraphs
 
@@ -17,12 +20,12 @@ and the bottom element `⊥`.
 
 ## Main definitions
 
-- `H ≤ G`: the subgraph relation as a partial order on graphs. This is the preferred spelling over
+* `H ≤ G`: the subgraph relation as a partial order on graphs. This is the preferred spelling over
   `H.IsSubgraph G` which it is definitionally equal to.
-- `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
-- `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
-- `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
-- `⊥`: empty graph with no vertices or edges as its bottom element.
+* `H ≤s G` (`Graph.IsSpanningSubgraph`): `H` has the same vertex set as `G`.
+* `H ≤i G` (`Graph.IsInducedSubgraph`): `H` contains every ambient link between its vertices.
+* `H ≤c G` (`Graph.IsClosedSubgraph`): `H` is a union of components of `G`.
+* `⊥`: empty graph with no vertices or edges as its bottom element.
 
 ## Implementation notes
 
@@ -198,7 +201,9 @@ end Subgraph
 
 section SpanningSubgraph
 
-/-! ### Spanning Subgraphs -/
+/-!
+# Spanning Subgraphs
+-/
 
 /-- `H ≤s G` (`Graph.IsSpanningSubgraph`) is a subgraph of `G` with the same vertex set. -/
 @[mk_iff]
@@ -241,7 +246,9 @@ end SpanningSubgraph
 
 section InducedSubgraph
 
-/-! ### Induced Subgraphs -/
+/-!
+# Induced Subgraphs
+-/
 
 /-- `H ≤i G` (`Graph.IsInducedSubgraph`) is a subgraph of `G` such that every link of `G`
 involving two vertices of `H` is also a link of `H`. -/
@@ -298,7 +305,9 @@ end InducedSubgraph
 
 section ClosedSubgraph
 
-/-! ### Closed Subgraphs -/
+/-!
+# Closed Subgraphs
+-/
 
 /-- `H ≤c G` (`Graph.IsClosedSubgraph`) is a union of components of `G`. -/
 @[mk_iff]

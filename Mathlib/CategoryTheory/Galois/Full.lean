@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Galois.Action
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -18,14 +20,13 @@ follows easily from the faithfulness of `F`. In this file we show that `H` is al
 
 ## Main results
 
-- `PreGaloisCategory.exists_lift_of_mono`: If `Y` is a sub-`Aut F`-set of `F.obj X`, there exists
+* `PreGaloisCategory.exists_lift_of_mono`: If `Y` is a sub-`Aut F`-set of `F.obj X`, there exists
   a sub-object `Z` of `X` such that `F.obj Z ≅ Y` as `Aut F`-sets.
-- `PreGaloisCategory.functorToAction_full`: The induced functor `H` from above is full.
+* `PreGaloisCategory.functorToAction_full`: The induced functor `H` from above is full.
 
 The main input for this is that the induced functor `H : C ⥤ Action FintypeCat (Aut F)`
 preserves connectedness, which translates to the fact that `Aut F` acts transitively on
 the fibers of connected objects.
-
 -/
 
 public section

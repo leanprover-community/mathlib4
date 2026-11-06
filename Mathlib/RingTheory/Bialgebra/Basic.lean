@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Coalgebra.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bialgebras
 
@@ -38,7 +41,7 @@ homomorphisms that satisfy the coalgebra axioms to define a bialgebra structure 
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Bialgebra>
+* [https://en.wikipedia.org/wiki/Bialgebra](https://en.wikipedia.org/wiki/Bialgebra)
 
 ## Tags
 
@@ -59,27 +62,31 @@ class Bialgebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends
   -- The counit is an algebra morphism
   /-- The counit on a bialgebra preserves 1. -/
   counit_one : counit 1 = 1
-  /-- The counit on a bialgebra preserves multiplication. Note that this is written
-  in a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R]` are equal.
-  The two corresponding equal linear maps `A ⊗[R] A →ₗ[R]`
-  are the following: the first factors through `A` and is multiplication on `A` followed
-  by `counit`. The second factors through `R ⊗[R] R`, and is `counit ⊗ counit` followed by
-  multiplication on `R`.
+  /--
+  The counit on a bialgebra preserves multiplication. Note that this is written
+in a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R]` are equal.
+The two corresponding equal linear maps `A ⊗[R] A →ₗ[R]`
+are the following: the first factors through `A` and is multiplication on `A` followed
+by `counit`. The second factors through `R ⊗[R] R`, and is `counit ⊗ counit` followed by
+multiplication on `R`.
 
   See `Bialgebra.mk'` for a constructor for bialgebras which uses
-  the more familiar but mathematically equivalent `counit (a * b) = counit a * counit b`. -/
+the more familiar but mathematically equivalent `counit (a * b) = counit a * counit b`.
+  -/
   mul_compr₂_counit : (LinearMap.mul R A).compr₂ counit = (LinearMap.mul R R).compl₁₂ counit counit
   -- The comultiplication is an algebra morphism
   /-- The comultiplication on a bialgebra preserves `1`. -/
   comul_one : comul 1 = 1
-  /-- The comultiplication on a bialgebra preserves multiplication. This is written in
-  a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
-  are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
-  are firstly multiplication followed by `comul`, and secondly `comul ⊗ comul` followed
-  by multiplication on `A ⊗[R] A`.
+  /--
+  The comultiplication on a bialgebra preserves multiplication. This is written in
+a rather obscure way: it says that two bilinear maps `A →ₗ[R] A →ₗ[R] (A ⊗[R] A)`
+are equal. The corresponding equal linear maps `A ⊗[R] A →ₗ[R] A ⊗[R] A`
+are firstly multiplication followed by `comul`, and secondly `comul ⊗ comul` followed
+by multiplication on `A ⊗[R] A`.
 
   See `Bialgebra.mk'` for a constructor for bialgebras which uses the more familiar
-  but mathematically equivalent `comul (a * b) = comul a * comul b`. -/
+but mathematically equivalent `comul (a * b) = comul a * comul b`.
+  -/
   mul_compr₂_comul :
     (LinearMap.mul R A).compr₂ comul = (LinearMap.mul R (A ⊗[R] A)).compl₁₂ comul comul
 

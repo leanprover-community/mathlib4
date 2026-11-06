@@ -9,10 +9,13 @@ public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
 import Mathlib.CategoryTheory.Abelian.Exact
 
-/-! # Short Exact Sequences in Abelian Categories
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Short Exact Sequences in Abelian Categories
 
 This file contains lemmas about short exact sequences in abelian categories.
-
 -/
 
 public section

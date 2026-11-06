@@ -11,11 +11,14 @@ public meta import Std.Data.HashMap.AdditionalOperations
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Std.Data.HashMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Fourier-Motzkin elimination procedure
 
-The Fourier-Motzkin procedure is a variable elimination method for linear inequalities.
-<https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin_elimination>
+The Fourier-Motzkin procedure is a variable elimination method for linear inequalities. [
+https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin\_elimination](https://en.wikipedia.org/wiki/Fourier%E2%80%93Motzkin_elimination)
 
 Given a set of linear inequalities `comps = {tᵢ Rᵢ 0}`,
 we aim to eliminate a single variable `a` from the set.
@@ -41,7 +44,7 @@ open Std (format ToFormat TreeSet)
 namespace Mathlib.Tactic.Linarith
 
 /-!
-### Datatypes
+# Datatypes
 
 The `CompSource` and `PComp` datatypes are specific to the FM elimination routine;
 they are not shared with other components of `linarith`.
@@ -86,22 +89,24 @@ instance : ToFormat CompSource :=
 A `PComp` stores a linear comparison `Σ cᵢ*xᵢ R 0`,
 along with information about how this comparison was derived.
 The original expressions fed into `linarith` are each assigned a unique natural number label.
-The *historical set* `PComp.history` stores the labels of expressions
+The _historical set_ `PComp.history` stores the labels of expressions
 that were used in deriving the current `PComp`.
 Variables are also indexed by natural numbers. The sets `PComp.effective`, `PComp.implicit`,
 and `PComp.vars` contain variable indices.
+
 * `PComp.vars` contains the variables that appear in any inequality in the historical set.
 * `PComp.effective` contains the variables that have been effectively eliminated from `PComp`.
-  A variable `n` is said to be *effectively eliminated* in `p : PComp` if the elimination of `n`
+  A variable `n` is said to be _effectively eliminated_ in `p : PComp` if the elimination of `n`
   produced at least one of the ancestors of `p` (or `p` itself).
 * `PComp.implicit` contains the variables that have been implicitly eliminated from `PComp`.
-  A variable `n` is said to be *implicitly eliminated* in `p` if it satisfies the following
+  A variable `n` is said to be _implicitly eliminated_ in `p` if it satisfies the following
   properties:
-  - `n` appears in some inequality in the historical set (i.e. in `p.vars`).
-  - `n` does not appear in `p.c.vars` (i.e. it has been eliminated).
-  - `n` was not effectively eliminated.
 
-We track these sets in order to compute whether the history of a `PComp` is *minimal*.
+  * `n` appears in some inequality in the historical set (i.e. in `p.vars`).
+  * `n` does not appear in `p.c.vars` (i.e. it has been eliminated).
+  * `n` was not effectively eliminated.
+
+We track these sets in order to compute whether the history of a `PComp` is _minimal_.
 Checking this directly is expensive, but effective approximations can be defined in terms of these
 sets. During the variable elimination process, a `PComp` with non-minimal history can be discarded.
 -/
@@ -113,12 +118,16 @@ structure PComp : Type where
   src : CompSource
   /-- The set of original assumptions which have been used in constructing this comparison. -/
   history : TreeSet ℕ Ord.compare
-  /-- The variables which have been *effectively eliminated*,
-  i.e. by running the elimination algorithm on that variable. -/
+  /--
+  The variables which have been _effectively eliminated_,
+i.e. by running the elimination algorithm on that variable.
+  -/
   effective : TreeSet ℕ Ord.compare
-  /-- The variables which have been *implicitly eliminated*.
-  These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective`. -/
+  /--
+  The variables which have been _implicitly eliminated_.
+These are variables that appear in the historical set,
+do not appear in `c` itself, and are not in `effective`.
+  -/
   implicit : TreeSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
@@ -165,6 +174,7 @@ The computation assumes, but does not enforce, that `elimVar` appears in both `c
 and does not appear in the sum.
 Computing the sum of the two comparisons is easy; the complicated details lie in tracking the
 additional fields of `PComp`.
+
 * The historical set `pcomp.history` of `c1 + c2` is the union of the two historical sets.
 * `vars` is the union of `c1.vars` and `c2.vars`.
 * The effectively eliminated variables of `c1 + c2` are the union of the two effective sets,
@@ -210,7 +220,9 @@ instance : ToString PComp :=
 /-- A collection of comparisons. -/
 abbrev PCompSet := TreeSet PComp PComp.cmp
 
-/-! ### Elimination procedure -/
+/-!
+# Elimination procedure
+-/
 
 /-- If `c1` and `c2` both contain variable `a` with opposite coefficients,
 produces `v1` and `v2` such that `a` has been cancelled in `v1*c1 + v2*c2`. -/
@@ -248,6 +260,7 @@ def elimWithSet (a : ℕ) (p : PComp) (comps : PCompSet) : PCompSet :=
 
 /--
 The state for the elimination monad.
+
 * `maxVar`: the largest variable index that has not been eliminated.
 * `comps`: a set of comparisons
 
@@ -291,6 +304,7 @@ def update (maxVar : ℕ) (comps : PCompSet) : LinarithM Unit := do
 
 /--
 `splitSetByVarSign a comps` partitions the set `comps` into three parts.
+
 * `pos` contains the elements of `comps` in which `a` has a positive coefficient.
 * `neg` contains the elements of `comps` in which `a` has a negative coefficient.
 * `notPresent` contains the elements of `comps` in which `a` has coefficient 0.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fin.SuccPred
 public import Mathlib.Logic.Embedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Embeddings of `Fin n`
 
@@ -24,7 +27,6 @@ This file defines embeddings between `Fin n` and other types.
 * `Fin.addNatEmb m i` : `Fin.addNat` as an `Embedding`, add `m` on `i` on the right,
   generalizes `Fin.succ`;
 * `Fin.natAddEmb n i` : `Fin.natAdd` as an `Embedding`, adds `n` on `i` on the left;
-
 -/
 
 @[expose] public section
@@ -40,7 +42,7 @@ variable {n m : ℕ}
 section Order
 
 /-!
-### order
+# order
 -/
 
 /-- The inclusion map `Fin n → ℕ` is an embedding. -/
@@ -58,7 +60,7 @@ end Order
 section Succ
 
 /-!
-### succ and casts into larger Fin types
+# succ and casts into larger Fin types
 -/
 
 /-- `Fin.succ` as an `Embedding` -/

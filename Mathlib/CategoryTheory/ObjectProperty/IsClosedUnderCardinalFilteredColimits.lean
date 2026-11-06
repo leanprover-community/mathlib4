@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Accessibly embedded full subcategories
 
@@ -23,8 +26,9 @@ the condition `P.IsClosedUnderCardinalFilteredColimits κ` means
 that the subcategory `P.FullSubcategory` is accessibly embedded in `C`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section

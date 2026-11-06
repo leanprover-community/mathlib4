@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Borel sigma-algebra on Polish spaces
 
@@ -68,17 +71,21 @@ open Set Function PolishSpace PiNat TopologicalSpace Bornology Metric Filter Mea
 
 open scoped Topology
 
-/-! ### Standard Borel Spaces -/
+/-!
+# Standard Borel Spaces
+-/
 
 variable (α : Type*)
 
-/-- A standard Borel space is a measurable space arising as the Borel sets of some Polish topology.
+/--
+A standard Borel space is a measurable space arising as the Borel sets of some Polish topology.
 This is useful in situations where a space has no natural topology or
 the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
 `letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
-rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology. -/
+rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.
+-/
 @[wikidata Q25378068]
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
@@ -89,12 +96,14 @@ Instead one should use `letI := upgradeStandardBorel α`. -/
 class UpgradedStandardBorel extends MeasurableSpace α, TopologicalSpace α,
   BorelSpace α, PolishSpace α
 
-/-- Use as `letI := upgradeStandardBorel α` to endow a standard Borel space `α` with
+/--
+Use as `letI := upgradeStandardBorel α` to endow a standard Borel space `α` with
 a compatible Polish topology.
 
 Warning: following this with `borelize α` will cause an error. Instead, one can
 rewrite with `eq_borel_upgradeStandardBorel α`.
-TODO: fix the corresponding bug in `borelize`. -/
+TODO: fix the corresponding bug in `borelize`.
+-/
 @[instance_reducible]
 noncomputable
 def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
@@ -172,9 +181,12 @@ namespace MeasureTheory
 
 variable [TopologicalSpace α]
 
-/-! ### Analytic sets -/
+/-!
+# Analytic sets
+-/
 
-/-- An analytic set is a set which is the continuous image of some Polish space. There are several
+/--
+An analytic set is a set which is the continuous image of some Polish space. There are several
 equivalent characterizations of this definition. For the definition, we pick one that avoids
 universe issues: a set is analytic if and only if it is a continuous image of `ℕ → ℕ` (or if it
 is empty). The above more usual characterization is given
@@ -182,7 +194,8 @@ in `analyticSet_iff_exists_polishSpace_range`.
 
 Warning: these are analytic sets in the context of descriptive set theory (which is why they are
 registered in the namespace `MeasureTheory`). They have nothing to do with analytic sets in the
-context of complex analysis. -/
+context of complex analysis.
+-/
 @[no_expose] def AnalyticSet (s : Set α) : Prop :=
   s = ∅ ∨ ∃ f : (ℕ → ℕ) → α, Continuous f ∧ range f = s
 
@@ -372,7 +385,9 @@ protected lemma AnalyticSet.preimage {X Y : Type*} [TopologicalSpace X] [Topolog
   ext x
   simp [eq_comm]
 
-/-! ### Separating sets with measurable sets -/
+/-!
+# Separating sets with measurable sets
+-/
 
 /-- Two sets `u` and `v` in a measurable space are measurably separable if there
 exists a measurable set containing `u` and disjoint from `v`.
@@ -530,7 +545,7 @@ theorem AnalyticSet.measurableSet_of_compl [T2Space α] [MeasurableSpace α] [Op
 end MeasureTheory
 
 /-!
-### Measurability of preimages under measurable maps
+# Measurability of preimages under measurable maps
 -/
 
 namespace Measurable
@@ -651,7 +666,9 @@ instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace 
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   ⟨continuous_mk.map_eq_borel mk_surjective⟩
 
-/-! ### Injective images of Borel sets -/
+/-!
+# Injective images of Borel sets
+-/
 
 variable {γ : Type*}
 
@@ -1174,7 +1191,9 @@ theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
 
 end StandardBorelSpace
 
-/-! ### The Borel Isomorphism Theorem -/
+/-!
+# The Borel Isomorphism Theorem
+-/
 
 namespace PolishSpace
 

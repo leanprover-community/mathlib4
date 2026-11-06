@@ -8,12 +8,13 @@ module
 public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Cardinality of localizations of commutative monoids
 
 This file contains some results on cardinality of localizations.
-
 -/
 
 public section

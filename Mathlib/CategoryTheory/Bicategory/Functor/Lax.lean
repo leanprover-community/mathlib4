@@ -8,10 +8,14 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
 public import Mathlib.Tactic.CategoryTheory.ToApp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lax functors
 
 A lax functor `F` between bicategories `B` and `C` consists of
+
 * a function between objects `F.obj : B → C`,
 * a family of functions between 1-morphisms `F.map : (a ⟶ b) → (F.obj a ⟶ F.obj b)`,
 * a family of functions between 2-morphisms `F.map₂ : (f ⟶ g) → (F.map f ⟶ F.map g)`,
@@ -32,7 +36,6 @@ A lax functor `F` between bicategories `B` and `C` consists of
 Some constructions in the bicategory library have only been done in terms of oplax functors,
 since lax functors had not yet been added (e.g `FunctorBicategory.lean`). A possible project would
 be to mirror these constructions for lax functors.
-
 -/
 
 @[expose] public section
@@ -45,7 +48,8 @@ open Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
-/-- A lax functor `F` between bicategories `B` and `C` consists of a function between objects
+/--
+A lax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
 Unlike functors between categories, `F.map` does not need to strictly commute with composition,
@@ -204,9 +208,11 @@ def comp {D : Type u₃} [Bicategory.{w₃, v₃} D] (F : B ⥤ᴸ C) (G : C ⥤
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, assoc, mapComp_naturality_right_assoc,
       Bicategory.whiskerLeft_comp]
 
-/-- A structure on a lax functor that promotes a lax functor to a pseudofunctor.
+/--
+A structure on a lax functor that promotes a lax functor to a pseudofunctor.
 
-See `Pseudofunctor.mkOfLax`. -/
+See `Pseudofunctor.mkOfLax`.
+-/
 structure PseudoCore (F : B ⥤ᴸ C) where
   /-- The isomorphism giving rise to the lax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)

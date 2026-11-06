@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.Index
 public import Mathlib.Topology.Algebra.Group.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closed subgroups of a topological group
 
@@ -17,7 +20,6 @@ and its additive version `ClosedAddSubgroup`.
 ## Main definitions and results
 
 * `normalCore_isClosed`: The `normalCore` of a closed subgroup is closed.
-
 * `finindex_closedSubgroup_isOpen`: A closed subgroup with finite index is open.
 
 ## TODO

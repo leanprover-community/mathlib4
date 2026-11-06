@@ -9,6 +9,9 @@ public meta import Lean.Elab.Tactic.RCases
 public import Mathlib.Data.PFunctor.Multivariate.M
 public import Mathlib.Data.QPF.Multivariate.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The final co-algebra of a multivariate qpf is again a qpf.
 
@@ -23,7 +26,7 @@ and take a fixed point again.
 * `Cofix.dest`   - destructor
 * `Cofix.corec`  - corecursor: useful for formulating infinite, productive computations
 * `Cofix.bisim`  - bisimulation: proof technique to show the equality of possibly infinite values
-                    of `Cofix F α`
+  of `Cofix F α`
 
 ## Implementation notes
 
@@ -31,12 +34,12 @@ For `F` a QPF, we define `Cofix F α` in terms of the M-type of the polynomial f
 We define the relation `Mcongr` and take its quotient as the definition of `Cofix F α`.
 
 `Mcongr` is taken as the weakest bisimulation on M-type. See
-[avigad-carneiro-hudon2019] for more details.
+‍\[avigad-carneiro-hudon2019\] for more details.
 
 ## Reference
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+  ‍\[_Data Types as Quotients of Polynomial Functors_\]\[avigad-carneiro-hudon2019\]
 -/
 
 @[expose] public section
@@ -75,6 +78,8 @@ def IsPrecongr {α : TypeVec n} (r : q.P.M α → q.P.M α → Prop) : Prop :=
 def Mcongr {α : TypeVec n} (x y : q.P.M α) : Prop :=
   ∃ r, IsPrecongr r ∧ r x y
 
+
+set_option doc.verso false
 /-- Greatest fixed point of functor F. The result is a functor with one fewer parameters
 than the input. For `F a b c` a ternary functor, fix F is a binary functor such that
 
@@ -85,6 +90,8 @@ Cofix F a b = F a b (Cofix F a b)
 def Cofix (F : TypeVec (n + 1) → Type u) [MvQPF F] (α : TypeVec n) :=
   Quot (@Mcongr _ F _ α)
 
+
+set_option doc.verso true
 instance {α : TypeVec n} [Inhabited q.P.A] [∀ i : Fin2 n, Inhabited (α i)] :
     Inhabited (Cofix F α) :=
   ⟨Quot.mk _ default⟩
@@ -177,7 +184,7 @@ def Cofix.mk {α : TypeVec n} : F (α.append1 <| Cofix F α) → Cofix F α :=
   Cofix.corec fun x => (appendFun id fun i : Cofix F α => Cofix.dest.{u} i) <$$> x
 
 /-!
-## Bisimulation principles for `Cofix F`
+# Bisimulation principles for `Cofix F`
 
 The following theorems are bisimulation principles. The general idea
 is to use a bisimulation relation to prove the equality between
@@ -188,7 +195,6 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 * holds for `x y`: `R x y`
 * for any values `x y` that satisfy `R`, their root has the same shape
   and their children can be paired in such a way that they satisfy `R`.
-
 -/
 
 

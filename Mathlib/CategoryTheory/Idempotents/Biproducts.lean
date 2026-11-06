@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Biproducts in the idempotent completion of a preadditive category
 
 In this file, we define an instance expressing that if `C` is an additive category
@@ -18,7 +20,6 @@ We also obtain that for all `P : Karoubi C` where `C` is a preadditive category 
 is a canonical isomorphism `P ⊞ P.complement ≅ (toKaroubi C).obj P.X` in the category
 `Karoubi C` where `P.complement` is the formal direct factor of `P.X` corresponding to
 the idempotent endomorphism `𝟙 P.X - P.p`.
-
 -/
 
 @[expose] public section

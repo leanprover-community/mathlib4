@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 public import Mathlib.MeasureTheory.Integral.ExpDecay
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gamma function
 
@@ -81,9 +84,11 @@ namespace Complex
 /- Technical note: In defining the Gamma integrand exp (-x) * x ^ (s - 1) for s complex, we have to
 make a choice between ↑(Real.exp (-x)), Complex.exp (↑(-x)), and Complex.exp (-↑x), all of which are
 equal but not definitionally so. We use the first of these throughout. -/
-/-- The integral defining the `Γ` function converges for complex `s` with `0 < re s`.
+/--
+The integral defining the `Γ` function converges for complex `s` with `0 < re s`.
 
-This is proved by reduction to the real case. -/
+This is proved by reduction to the real case.
+-/
 theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
     IntegrableOn (fun x => (-x).exp * x ^ (s - 1) : ℝ → ℂ) (Ioi 0) := by
   constructor
@@ -102,11 +107,13 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
       norm_cpow_eq_rpow_re_of_pos hx _]
     simp
 
-/-- Euler's integral for the `Γ` function (of a complex variable `s`), defined as
+/--
+Euler's integral for the `Γ` function (of a complex variable `s`), defined as
 `∫ x in Ioi 0, exp (-x) * x ^ (s - 1)`.
 
 See `Complex.GammaIntegral_convergent` for a proof of the convergence of the integral for
-`0 < re s`. -/
+`0 < re s`.
+-/
 @[expose] def GammaIntegral (s : ℂ) : ℂ :=
   ∫ x in Ioi (0 : ℝ), ↑(-x).exp * ↑x ^ (s - 1)
 

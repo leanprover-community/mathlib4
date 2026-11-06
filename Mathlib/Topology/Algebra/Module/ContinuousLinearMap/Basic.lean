@@ -15,6 +15,9 @@ public import Mathlib.Topology.Algebra.Group.ZPow
 public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 public import Mathlib.Topology.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous linear maps
 
@@ -43,7 +46,6 @@ Later files endow it with a topological structure, see the docstring of
 * `M →L⋆[σ] N`: the type of conjugate-linear (antilinear) continuous maps from `M` to `N`;
 * `f ∘L g`: the composition of two continuous linear maps;
 * `f ∘SL g`: the composition of two continuous semilinear maps.
-
 -/
 
 @[expose] public section
@@ -90,9 +92,11 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam Type*) [Semiring R]
     [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M] [Module R M₂] [FunLike F M M₂] :=
   ContinuousSemilinearMapClass F (RingHom.id R) M M₂
 
-/-- The *strong dual* of a topological vector space `M` over a ring `R`. This is the space of
+/--
+The _strong dual_ of a topological vector space `M` over a ring `R`. This is the space of
 continuous linear functionals and is equipped with the topology of uniform convergence
-on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`. -/
+on bounded subsets. `StrongDual R M` is an abbreviation for `M →L[R] R`.
+-/
 abbrev StrongDual (R : Type*) [Semiring R] [TopologicalSpace R]
   (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [Module R M] : Type _ := M →L[R] R
 
@@ -101,7 +105,7 @@ namespace ContinuousLinearMap
 section Semiring
 
 /-!
-### Properties that hold for non-necessarily commutative semirings.
+# Properties that hold for non-necessarily commutative semirings.
 -/
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃]
@@ -169,12 +173,16 @@ theorem toContinuousAddMonoidHom_inj {f g : M₁ →SL[σ₁₂] M₂} :
     (f : ContinuousAddMonoidHom M₁ M₂) = g ↔ f = g :=
   toContinuousAddMonoidHom_injective.eq_iff
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
   h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (h : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂ :=
   h
 
@@ -640,9 +648,11 @@ section ApplyAction
 
 variable [ContinuousAdd M₁]
 
-/-- The tautological action by `M₁ →L[R₁] M₁` on `M`.
+/--
+The tautological action by `M₁ →L[R₁] M₁` on `M`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance applyModule : Module (M₁ →L[R₁] M₁) M₁ :=
   Module.compHom _ toLinearMapRingHom
 

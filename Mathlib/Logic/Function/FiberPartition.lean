@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Data.Set.Insert
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 This file defines the type `f.Fiber` of fibers of a function `f : Y → Z`, and provides some API
 to work with and construct terms of this type.
 

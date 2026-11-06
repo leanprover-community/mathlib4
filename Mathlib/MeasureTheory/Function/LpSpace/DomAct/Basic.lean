@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Action of `Mᵈᵐᵃ` on `Lᵖ` spaces
 

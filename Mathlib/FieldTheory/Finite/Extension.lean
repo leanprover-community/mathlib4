@@ -7,6 +7,9 @@ module
 
 public import Mathlib.FieldTheory.Finite.GaloisField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extensions of finite fields
 
@@ -18,7 +21,6 @@ non-unique isomorphism) extension `l` of `k` of any given degree `n > 0`.
 This extension is Galois with cyclic Galois group of degree `n`, and the (arithmetic) Frobenius map
 `x ↦ x ^ q` is a generator.
 
-
 ## Main definition
 
 * `FiniteField.Extension k p n` is a non-canonically chosen extension of `k` of degree `n`
@@ -28,7 +30,6 @@ This extension is Galois with cyclic Galois group of degree `n`, and the (arithm
 
 * `FiniteField.algEquivExtension`: any other field extension `l/k` of degree `n` is (non-uniquely)
   isomorphic to our chosen `FiniteField.Extension k p n`.
-
 -/
 
 @[expose] public section

@@ -9,7 +9,11 @@ module
 public import Mathlib.Data.Set.PowersetCard
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.MaximalSubgroups
 
-/-! # Combinations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Combinations
 
 Combinations in a type are finite subsets of given cardinality.
 This file provides some API for handling them in the context of a group action.
@@ -21,20 +25,15 @@ This induces a `MulAction G (powersetCard α n)` instance. Then:
 
 * `Set.powerSetCard.mulActionHom_of_embedding`:
   the equivariant map from `Fin n ↪ α` to `powersetCard α n`.
-
 * `Set.powersetCard.isPretransitive_of_isMultiplyPretransitive`
   shows the pretransitivity of that action if the action of `G` on `α` is `n`-pretransitive.
-
 * `Set.powersetCard.isPretransitive` shows that `Equiv.Perm α`
   acts pretransitively on `powersetCard α n`, for all `n`.
-
 * `Set.powersetCard.compl`: Given an equality `m + n = Fintype.card α`,
   the complement of an `n`-combination, as an `m`-combination.
   This map is an equivariant map with respect to a group action on `α`.
-
 * `Set.powersetCard.mulActionHom_singleton`:
   The obvious map from `α` to `powersetCard α 1`, as an equivariant map.
-
 -/
 
 @[expose] public section
@@ -213,11 +212,13 @@ theorem mulActionHom_singleton_bijective :
 
 variable {α}
 
-/-- The action of `Equiv.Perm α` on `Set.powersetCard α n` is preprimitive
+/--
+The action of `Equiv.Perm α` on `Set.powersetCard α n` is preprimitive
 provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`.
 
 This is a consequence that the stabilizer of such a combination
-is a maximal subgroup. -/
+is a maximal subgroup.
+-/
 theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (Perm α) (powersetCard α n) := by
@@ -244,11 +245,13 @@ theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
   · rwa [ncard_eq]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `Set.powersetCard α n`.
+/--
+If `3 ≤ Nat.card α`, then `alternatingGroup α` acts transitively on `Set.powersetCard α n`.
 
 If `Nat.card α ≤ 2`, then `alternatingGroup α` is trivial, and
 the result only holds in the trivial case where `powersetCard α n` is a subsingleton,
-that is, when `n = 0` or `Nat.card α ≤ n`. -/
+that is, when `n = 0` or `Nat.card α ≤ n`.
+-/
 theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) :
     IsPretransitive (alternatingGroup α) (powersetCard α n) := by
   wlog! hn : 2 * n ≤ Nat.card α

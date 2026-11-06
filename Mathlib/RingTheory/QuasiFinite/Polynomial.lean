@@ -8,7 +8,12 @@ module
 public import Mathlib.RingTheory.LocalRing.ResidueField.Polynomial
 public import Mathlib.RingTheory.QuasiFinite.Weakly
 
-/-! # Quasi-finite primes in polynomial algebras -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Quasi-finite primes in polynomial algebras
+-/
 
 public section
 
@@ -86,7 +91,8 @@ lemma not_ker_le_map_C_of_surjective_of_weaklyQuasiFiniteAt
 If `P` is a prime of `R[X]/I` that is quasi finite over `R`,
 then `I` is not contained in `(P ∩ R)[X]`.
 
-For usability, we replace `I` by the kernel of a surjective map `R[X] →ₐ[R] S`. -/
+For usability, we replace `I` by the kernel of a surjective map `R[X] →ₐ[R] S`.
+-/
 lemma not_ker_le_map_C_of_surjective_of_quasiFiniteAt
     (f : R[X] →ₐ[R] S) (hf : Function.Surjective f)
     (P : Ideal S) [P.IsPrime] [Algebra.QuasiFiniteAt R P] :

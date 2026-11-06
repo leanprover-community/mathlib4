@@ -9,26 +9,30 @@ public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.SkewAdjoint
 public import Mathlib.LinearAlgebra.SymplecticGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Classical Lie algebras
 
 This file is the place to find definitions and basic properties of the classical Lie algebras:
-  * Aₗ = sl(l+1)
-  * Bₗ ≃ so(l+1, l) ≃ so(2l+1)
-  * Cₗ = sp(l)
-  * Dₗ ≃ so(l, l) ≃ so(2l)
+
+* Aₗ = sl(l+1)
+* Bₗ ≃ so(l+1, l) ≃ so(2l+1)
+* Cₗ = sp(l)
+* Dₗ ≃ so(l, l) ≃ so(2l)
 
 ## Main definitions
 
-  * `LieAlgebra.SpecialLinear.sl`
-  * `LieAlgebra.Symplectic.sp`
-  * `LieAlgebra.Orthogonal.so`
-  * `LieAlgebra.Orthogonal.so'`
-  * `LieAlgebra.Orthogonal.soIndefiniteEquiv`
-  * `LieAlgebra.Orthogonal.typeD`
-  * `LieAlgebra.Orthogonal.typeB`
-  * `LieAlgebra.Orthogonal.typeDEquivSo'`
-  * `LieAlgebra.Orthogonal.typeBEquivSo'`
+* `LieAlgebra.SpecialLinear.sl`
+* `LieAlgebra.Symplectic.sp`
+* `LieAlgebra.Orthogonal.so`
+* `LieAlgebra.Orthogonal.so'`
+* `LieAlgebra.Orthogonal.soIndefiniteEquiv`
+* `LieAlgebra.Orthogonal.typeD`
+* `LieAlgebra.Orthogonal.typeB`
+* `LieAlgebra.Orthogonal.typeDEquivSo'`
+* `LieAlgebra.Orthogonal.typeBEquivSo'`
 
 ## Implementation notes
 
@@ -44,12 +48,7 @@ which approach should be preferred so the choice should be assumed to be somewha
 
 For the algebras of type `B` and `D`, there are two natural definitions. For example since the
 `2l × 2l` matrix:
-$$
-  J = \left[\begin{array}{cc}
-              0_l & 1_l\\
-              1_l & 0_l
-            \end{array}\right]
-$$
+$$`  J = \left[\begin{array}{cc} 0_l & 1_l\\ 1_l & 0_l \end{array}\right]  `
 defines a symmetric bilinear form equivalent to that defined by the identity matrix `I`, we can
 define the algebras of type `D` to be the Lie subalgebra of skew-adjoint matrices either for `J` or
 for `I`. Both definitions have their advantages (in particular the `J`-skew-adjoint matrices define
@@ -100,9 +99,11 @@ section ElementaryBasis
 
 variable {n R} [Fintype n] (i j k : n)
 
-/-- When `i ≠ j`, the single-element matrices are elements of `sl n R`.
+/--
+When `i ≠ j`, the single-element matrices are elements of `sl n R`.
 
-Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`. -/
+Along with some elements produced by `singleSubSingle`, these form a natural basis of `sl n R`.
+-/
 def single (h : i ≠ j) : R →ₗ[R] sl n R :=
   Matrix.singleLinearMap R i j |>.codRestrict _ fun r => Matrix.trace_single_eq_of_ne i j r h
 
@@ -235,7 +236,8 @@ theorem soIndefiniteEquiv_apply {i : R} (hi : i * i = -1) (A : so' p q R) :
   rw [soIndefiniteEquiv, LieEquiv.trans_apply, LieEquiv.ofEq_apply]
   simp only [so', skewAdjointMatricesLieSubalgebraEquiv_apply]
 
-/-- A matrix defining a canonical even-rank symmetric bilinear form.
+/--
+A matrix defining a canonical even-rank symmetric bilinear form.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 
@@ -252,7 +254,8 @@ def JD : Matrix (l ⊕ l) (l ⊕ l) R :=
 def typeD [Fintype l] :=
   skewAdjointMatricesLieSubalgebra (JD l R)
 
-/-- A matrix transforming the bilinear form defined by the matrix `JD` into a split-signature
+/--
+A matrix transforming the bilinear form defined by the matrix `JD` into a split-signature
 diagonal matrix.
 
 It looks like this as a `2l x 2l` matrix of `l x l` blocks:
@@ -260,7 +263,8 @@ It looks like this as a `2l x 2l` matrix of `l x l` blocks:
 ```
 [ 1 -1 ]
 [ 1  1 ]
-``` -/
+```
+-/
 def PD : Matrix (l ⊕ l) (l ⊕ l) R :=
   Matrix.fromBlocks 1 (-1) 1 1
 
@@ -295,7 +299,8 @@ noncomputable def typeDEquivSo' [Fintype l] [Invertible (2 : R)] : typeD l R ≃
     mem_skewAdjointMatricesLieSubalgebra_unit_smul]
   rfl
 
-/-- A matrix defining a canonical odd-rank symmetric bilinear form.
+/--
+A matrix defining a canonical odd-rank symmetric bilinear form.
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
 
@@ -321,7 +326,8 @@ def JB :=
 def typeB [Fintype l] :=
   skewAdjointMatricesLieSubalgebra (JB l R)
 
-/-- A matrix transforming the bilinear form defined by the matrix `JB` into an
+/--
+A matrix transforming the bilinear form defined by the matrix `JB` into an
 almost-split-signature diagonal matrix.
 
 It looks like this as a `(2l+1) x (2l+1)` matrix of blocks:
@@ -338,7 +344,8 @@ where sizes of the blocks are:
 [`1 x 1` `1 x l` `1 x l`]
 [`l x 1` `l x l` `l x l`]
 [`l x 1` `l x l` `l x l`]
-``` -/
+```
+-/
 def PB :=
   Matrix.fromBlocks (1 : Matrix Unit Unit R) 0 0 (PD l R)
 

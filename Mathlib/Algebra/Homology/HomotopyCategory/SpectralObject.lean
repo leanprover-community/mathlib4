@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectral object with values in the homotopy category
 
@@ -17,7 +20,6 @@ category of `ℤ`-indexed cochain complexes `C` that is indexed
 by the category `CochainComplex C ℤ`.
 (It follows that to any functor `ι ⥤ CochainComplex C ℤ` (e.g. a filtered
 complex), there is an associated spectral object indexed by `ι`.)
-
 -/
 
 @[expose] public section

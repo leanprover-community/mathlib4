@@ -9,6 +9,9 @@ module
 public import Mathlib.AlgebraicGeometry.Geometrically.Basic
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically connected schemes
 
@@ -19,11 +22,10 @@ of a geometrically connected scheme over a field.
 
 ## Main results
 
-- `AlgebraicGeometry.GeometricallyConnected`: A morphism `f : X ⟶ Y` is geometrically connected if
+* `AlgebraicGeometry.GeometricallyConnected`: A morphism `f : X ⟶ Y` is geometrically connected if
   for all `Spec K ⟶ Y` with `K` a field, `X ×[Y] Spec K` is connected.
-- `GeometricallyConnected.iff_geometricallyConnected_fiber`: A scheme is geometrically connected
+* `GeometricallyConnected.iff_geometricallyConnected_fiber`: A scheme is geometrically connected
   over `S` iff the fibers of all `s : S` are geometrically connected.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.DivInvMonoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Groups
 
@@ -22,7 +25,8 @@ open Function
 
 variable {G : Type*}
 
-/-- A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
+/--
+A `Group` is a `Monoid` with an operation `⁻¹` satisfying `a⁻¹ * a = 1`.
 
 There is also a division operation `/` such that `a / b = a * b⁻¹`,
 with a default so that `a / b = a * b⁻¹` holds by definition.
@@ -33,7 +37,8 @@ on a type with the minimum proof obligations.
 class Group (G : Type*) extends DivInvMonoid G where
   protected inv_mul_cancel : ∀ a : G, a⁻¹ * a = 1
 
-/-- An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
+/--
+An `AddGroup` is an `AddMonoid` with a unary `-` satisfying `-a + a = 0`.
 
 There is also a binary operation `-` such that `a - b = a + -b`,
 with a default so that `a - b = a + -b` holds by definition.
@@ -144,11 +149,13 @@ lemma mul_inv_cancel_comm (a b : G) : a * b * a⁻¹ = b := by rw [mul_comm, inv
 end CommGroup
 
 
-/-! We initialize the projections for the group structures for `@[simps]` here.
+/-!
+We initialize the projections for the group structures for `@[simps]` here.
 
-The lemmas generated for the `npow`/`zpow` projections will *not* apply to `x ^ y`, since the
+The lemmas generated for the `npow`/`zpow` projections will _not_ apply to `x ^ y`, since the
 argument order of these projections does not match the argument order of `^`. The `nsmul`/`zsmul`
-lemmas are correct. -/
+lemmas are correct.
+-/
 initialize_simps_projections Group
 initialize_simps_projections AddGroup
 initialize_simps_projections CommGroup

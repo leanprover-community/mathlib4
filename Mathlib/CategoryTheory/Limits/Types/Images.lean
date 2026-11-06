@@ -8,12 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Images
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images in the category of types
 
 In this file, it is shown that the category of types has categorical images,
 and that these agree with the range of a function.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right-angled triangles
 
@@ -22,9 +25,8 @@ triangle unnecessarily.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Pythagorean_theorem
-* https://en.wikipedia.org/wiki/Geometric_mean_theorem
-
+* https://en.wikipedia.org/wiki/Pythagorean\_theorem
+* https://en.wikipedia.org/wiki/Geometric\_mean\_theorem
 -/
 
 public section

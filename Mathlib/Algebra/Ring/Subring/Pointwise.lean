@@ -9,7 +9,11 @@ public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Ring.Subring.Basic
 public import Mathlib.Algebra.Ring.Subsemiring.Pointwise
 
-/-! # Pointwise instances on `Subring`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise instances on `Subring`s
 
 This file provides the action `Subring.pointwiseMulAction` which matches the action of
 `mulActionSet`.
@@ -20,7 +24,6 @@ This actions is available in the `Pointwise` locale.
 
 This file is almost identical to the file `Mathlib/Algebra/Ring/Subsemiring/Pointwise.lean`. Where
 possible, try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -46,9 +49,11 @@ section Monoid
 
 variable [Monoid M] [Ring R] [MulSemiringAction M R]
 
-/-- The action on a subring corresponding to applying the action to every element.
+/--
+The action on a subring corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseMulAction : MulAction M (Subring R) where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)

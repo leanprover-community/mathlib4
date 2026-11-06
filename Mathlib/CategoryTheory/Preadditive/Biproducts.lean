@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Preadditive.Basic
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic facts about biproducts in preadditive categories.
 
@@ -21,28 +24,21 @@ In (or between) preadditive categories,
 * Any biproduct satisfies the equality
   `total : ∑ j : J, biproduct.π f j ≫ biproduct.ι f j = 𝟙 (⨁ f)`,
   or, in the binary case, `total : fst ≫ inl + snd ≫ inr = 𝟙 X`.
-
 * Any (binary) `product` or (binary) `coproduct` is a (binary) `biproduct`.
-
 * In any category (with zero morphisms), if `biprod.map f g` is an isomorphism,
   then both `f` and `g` are isomorphisms.
-
 * If `f` is a morphism `X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂` whose `X₁ ⟶ Y₁` entry is an isomorphism,
   then we can construct isomorphisms `L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂` and `R : Y₁ ⊞ Y₂ ≅ Y₁ ⊞ Y₂`
   so that `L.hom ≫ g ≫ R.hom` is diagonal (with `X₁ ⟶ Y₁` component still `f`),
   via Gaussian elimination.
-
 * As a corollary of the previous two facts,
   if we have an isomorphism `X₁ ⊞ X₂ ≅ Y₁ ⊞ Y₂` whose `X₁ ⟶ Y₁` entry is an isomorphism,
   we can construct an isomorphism `X₂ ≅ Y₂`.
-
 * If `f : W ⊞ X ⟶ Y ⊞ Z` is an isomorphism, either `𝟙 W = 0`,
   or at least one of the component maps `W ⟶ Y` and `W ⟶ Z` is nonzero.
-
 * If `f : ⨁ S ⟶ ⨁ T` is an isomorphism,
   then every column (corresponding to a nonzero summand in the domain)
   has some nonzero matrix entry.
-
 * A functor preserves a biproduct if and only if it preserves
   the corresponding product if and only if it preserves the corresponding coproduct.
 
@@ -51,7 +47,6 @@ matrices over a ring, in particular the Schur complement (see
 `Mathlib/LinearAlgebra/Matrix/SchurComplement.lean`). In particular, the declarations
 `CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
-
 -/
 
 @[expose] public section
@@ -81,7 +76,8 @@ section Fintype
 
 variable {J : Type*} [Fintype J]
 
-/-- In a preadditive category, we can construct a biproduct for `f : J → C` from
+/--
+In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
 
 (That is, such a bicone is a limit cone and a colimit cocone.)
@@ -126,7 +122,8 @@ theorem IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
     cases j
     simp [sum_comp, b.ι_π, comp_dite]
 
-/-- In a preadditive category, we can construct a biproduct for `f : J → C` from
+/--
+In a preadditive category, we can construct a biproduct for `f : J → C` from
 any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.X`.
 
 (That is, such a bicone is a limit cone and a colimit cocone.)
@@ -290,7 +287,8 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
         ← Equiv.eq_symm_apply, h]
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
+/--
+In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
 
 (That is, such a bicone is a limit cone and a colimit cocone.)
@@ -320,7 +318,8 @@ theorem IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit
     b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt :=
   i.isLimit.hom_ext fun j => by rcases j with ⟨⟨⟩⟩ <;> simp
 
-/-- In a preadditive category, we can construct a binary biproduct for `X Y : C` from
+/--
+In a preadditive category, we can construct a binary biproduct for `X Y : C` from
 any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.X`.
 
 (That is, such a bicone is a limit cone and a colimit cocone.)
@@ -713,11 +712,14 @@ theorem Biprod.ofComponents_comp {X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C} (f₁₁ : 
       biprod.inl_snd, biprod.inr_fst, biprod.inr_snd, biprod.inl_fst_assoc, biprod.inl_snd_assoc,
       biprod.inr_fst_assoc, biprod.inr_snd_assoc, comp_zero, zero_comp, Category.assoc]
 
-/-- The unipotent upper triangular matrix
+/--
+The unipotent upper triangular matrix
+
 ```
 (1 r)
 (0 1)
 ```
+
 as an isomorphism.
 -/
 @[simps]
@@ -725,11 +727,14 @@ def Biprod.unipotentUpper {X₁ X₂ : C} (r : X₁ ⟶ X₂) : X₁ ⊞ X₂ �
   hom := Biprod.ofComponents (𝟙 _) r 0 (𝟙 _)
   inv := Biprod.ofComponents (𝟙 _) (-r) 0 (𝟙 _)
 
-/-- The unipotent lower triangular matrix
+/--
+The unipotent lower triangular matrix
+
 ```
 (1 0)
 (r 1)
 ```
+
 as an isomorphism.
 -/
 @[simps]
@@ -737,7 +742,8 @@ def Biprod.unipotentLower {X₁ X₂ : C} (r : X₂ ⟶ X₁) : X₁ ⊞ X₂ �
   hom := Biprod.ofComponents (𝟙 _) 0 r (𝟙 _)
   inv := Biprod.ofComponents (𝟙 _) 0 (-r) (𝟙 _)
 
-/-- If `f` is a morphism `X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂` whose `X₁ ⟶ Y₁` entry is an isomorphism,
+/--
+If `f` is a morphism `X₁ ⊞ X₂ ⟶ Y₁ ⊞ Y₂` whose `X₁ ⟶ Y₁` entry is an isomorphism,
 then we can construct isomorphisms `L : X₁ ⊞ X₂ ≅ X₁ ⊞ X₂` and `R : Y₁ ⊞ Y₂ ≅ Y₁ ⊞ Y₂`
 so that `L.hom ≫ g ≫ R.hom` is diagonal (with `X₁ ⟶ Y₁` component still `f`),
 via Gaussian elimination.

@@ -11,7 +11,11 @@ public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Pi
 
-/-! # Joint eigenspaces of commuting symmetric operators
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Joint eigenspaces of commuting symmetric operators
 
 This file collects various decomposition results for joint eigenspaces of commuting
 symmetric operators on a finite-dimensional inner product space.
@@ -37,7 +41,6 @@ and a proof obligation that the basis vectors are eigenvectors.
 ## Tags
 
 symmetric operator, simultaneous eigenspaces, joint eigenspaces
-
 -/
 
 public section

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Combinatorics.Young.YoungDiagram
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Semistandard Young tableaux
 
@@ -47,12 +51,14 @@ Semistandard Young tableau
 @[expose] public section
 
 
-/-- A semistandard Young tableau is a filling of the cells of a Young diagram by natural
+/--
+A semistandard Young tableau is a filling of the cells of a Young diagram by natural
 numbers, such that the entries in each row are weakly increasing (left to right), and the entries
 in each column are strictly increasing (top to bottom).
 
 Here, a semistandard Young tableau is represented as an unrestricted function `ℕ → ℕ → ℕ` that, for
-reasons of extensionality, is required to vanish outside `μ`. -/
+reasons of extensionality, is required to vanish outside `μ`.
+-/
 structure SemistandardYoungTableau (μ : YoungDiagram) where
   /-- `entry i j` is value of the `(i, j)` entry of the SSYT `μ`. -/
   entry : ℕ → ℕ → ℕ

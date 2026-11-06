@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submodule quotients and direct sums
 
@@ -18,7 +21,6 @@ and the direct sum of quotients of modules by submodules.
 * `Submodule.piQuotientLift`: create a map out of the direct sum of quotients
 * `Submodule.quotientPiLift`: create a map out of the quotient of a direct sum
 * `Submodule.quotientPi`: the quotient of a direct sum is the direct sum of quotients.
-
 -/
 
 @[expose] public section

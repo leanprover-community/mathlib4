@@ -15,6 +15,9 @@ import Mathlib.Data.Sym.Sym2
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Schauder Bases and Generalized Bases
 
@@ -23,7 +26,7 @@ sequential notion with modern generalized bases.
 
 ## Overview
 
-A **basis** in a normed space allows every vector to be expanded as a (potentially infinite) linear
+A *basis* in a normed space allows every vector to be expanded as a (potentially infinite) linear
 combination of basis vectors. Historically, this was defined strictly for sequences with convergence
 of partial sums (the "classical Schauder basis").
 
@@ -32,9 +35,10 @@ However, modern functional analysis requires bases indexed by arbitrary sets
 is defined via nets over finite subsets (unconditional convergence).
 
 This file provides a unified structure `GeneralSchauderBasis` that captures both:
-* **Classical Schauder Bases:** Indexed by `ℕ`, using `SummationFilter.conditional`
+
+* *Classical Schauder Bases:* Indexed by `ℕ`, using `SummationFilter.conditional`
   to enforce sequential convergence of partial sums.
-* **Unconditional/Extended Bases:** Indexed by an arbitrary type `β`, using
+* *Unconditional/Extended Bases:* Indexed by an arbitrary type `β`, using
   `SummationFilter.unconditional` to enforce convergence of the net of all finite subsets.
 
 ## Main Definitions
@@ -71,10 +75,10 @@ This file provides a unified structure `GeneralSchauderBasis` that captures both
 
 ## References
 
-* [Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space Theory][Albiac_Kalton_2016].
-* [Singer, Ivan, Bases in Banach spaces][Singer_1970].
-* [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969].
-
+* ‍\[Albiac, Fernando. and Kalton, Nigel J., Topics in Banach Space
+  Theory\]\[Albiac\_Kalton\_2016\].
+* ‍\[Singer, Ivan, Bases in Banach spaces\]\[Singer\_1970\].
+* ‍\[Marti, Jürg T., Introduction to the theory of bases\]\[MartiJurg1969\].
 -/
 
 @[expose] public section
@@ -93,6 +97,7 @@ open scoped Classical in
 A generalized Schauder basis indexed by `β` with summation along filter `L`.
 
 The key fields are:
+
 * `basis`: The basis vectors `e i` for `i : β`
 * `coord`: The coordinate functionals `f i` for `i : β` in the dual space
 * `ortho`: Biorthogonality condition `f i (e j) = if i = j then 1 else 0`
@@ -126,10 +131,11 @@ abbrev SchauderBasis (𝕜 : Type*) (X : Type*) [NontriviallyNormedField 𝕜]
 An unconditional Schauder basis indexed by `β`.
 
 In the literature, this is known as:
-* An **Extended Basis** [Marti, Jürg T., Introduction to the theory of bases][MartiJurg1969]:
-Defined via convergence of the net of finite partial sums.
-* An **Unconditional Basis** [Singer, Ivan., Bases in Banach spaces][Singer_1970]: On an arbitrary
-set, convergence is necessarily unconditional.
+
+* An *Extended Basis* \[Marti, Jürg T., Introduction to the theory of bases\]\[MartiJurg1969\]:
+  Defined via convergence of the net of finite partial sums.
+* An *Unconditional Basis* \[Singer, Ivan., Bases in Banach spaces\]\[Singer\_1970\]: On an
+  arbitrary set, convergence is necessarily unconditional.
 
 This structure generalizes the classical Schauder basis by replacing sequential
 convergence with summability over the directed set of finite subsets.
@@ -206,7 +212,9 @@ theorem finrank_range_proj (A : Finset β) :
 
 end GeneralSchauderBasis
 
-/-! ### Unconditional Schauder bases -/
+/-!
+# Unconditional Schauder bases
+-/
 
 namespace UnconditionalSchauderBasis
 
@@ -268,7 +276,9 @@ theorem norm_proj_le_nnnormProjBound [CompleteSpace X] (A : Finset β) :
 
 end UnconditionalSchauderBasis
 
-/-! ### ℕ-indexed Schauder bases with conditional convergence -/
+/-!
+# ℕ-indexed Schauder bases with conditional convergence
+-/
 
 namespace SchauderBasis
 
@@ -356,13 +366,14 @@ theorem norm_proj_le_nnnormProjBound [CompleteSpace X] (n : ℕ) :
   mod_cast b.nnnorm_proj_le_nnnormProjBound n
 
 /-!
-### Construction of Schauder basis
+# Construction of Schauder basis
 
 We explain how to construct a Schauder basis from a sequence `P n` of projections
 satisfying `P n ∘ P m = P (min n m)`, converging to the identity pointwise, and such that each
 `P (n+1) - P n` has rank one. The idea is to define the basis vectors as
 `e n = (P (n+1) - P n) x` for some `x` such that this is non-zero, and then
-show that these vectors form a Schauder basis. -/
+show that these vectors form a Schauder basis.
+-/
 
 /-- The difference operator `P (n + 1) - P n`. -/
 def succSub (P : ℕ → X →L[𝕜] X) (n : ℕ) : X →L[𝕜] X := P (n + 1) - P n
@@ -424,9 +435,11 @@ lemma finrank_range_succSub_eq_one {P : ℕ → X →L[𝕜] X}
   exact Nat.add_right_cancel h_dim.symm
 
 variable (𝕜 X) in
-/-- Data for constructing a Schauder basis from a sequence of finite-rank projections.
+/--
+Data for constructing a Schauder basis from a sequence of finite-rank projections.
 
 Given a sequence of continuous linear maps `P n : X →L[𝕜] X` satisfying:
+
 * `P 0 = 0` and `finrank(range(P n)) = n`,
 * `P n ∘ P m = P (min n m)` (the projections are nested and commute),
 * `P n x → x` for every `x` (pointwise convergence to the identity),
@@ -435,7 +448,8 @@ the differences `succSub P n = P (n+1) - P n` are rank-one operators
 (see `finrank_range_succSub_eq_one`). Choosing a nonzero vector `e n` in the range of each
 `succSub P n` yields a Schauder basis for `X`.
 
-Use `RankOneDecomposition.basis` to construct the `SchauderBasis` from this data. -/
+Use `RankOneDecomposition.basis` to construct the `SchauderBasis` from this data.
+-/
 structure RankOneDecomposition where
   /-- The sequence of finite-rank projections. -/
   P : ℕ → X →L[𝕜] X

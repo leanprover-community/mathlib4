@@ -7,13 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presentation of a colimit of objects equipped with a presentation
 
 ## Main definition:
-- `CategoryTheory.Limits.ColimitPresentation.bind`: Given a colimit presentation of `X` and
-  colimit presentations of the components, this is the colimit presentation over the sigma type.
 
+* `CategoryTheory.Limits.ColimitPresentation.bind`: Given a colimit presentation of `X` and
+  colimit presentations of the components, this is the colimit presentation over the sigma type.
 -/
 
 @[expose] public section

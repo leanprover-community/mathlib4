@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.IsSheafFor
 public import Mathlib.CategoryTheory.Sites.Precoverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheafification of subpresheafs for precoverages
 
@@ -17,14 +20,14 @@ the smallest subsheaf of `F` containing `𝒮`.
 
 ## Main declarations
 
-- `CategoryTheory.Precoverage.subsheafify`: `K`-sheafification of family of sets `𝒮` in a presheaf
+* `CategoryTheory.Precoverage.subsheafify`: `K`-sheafification of family of sets `𝒮` in a presheaf
   `F`. This is only a sheaf if `F` itself is a sheaf.
-- `CategoryTheory.Precoverage.small_subsheafify_of_small`: If all the sets in the family `𝒮`
+* `CategoryTheory.Precoverage.small_subsheafify_of_small`: If all the sets in the family `𝒮`
   are small, then the `K`-sheafification is again small.
 
 ## TODOs
 
-- Relate `Precoverage.subsheafify K` with `Subfunctor.sheafify` for the Grothendieck topology
+* Relate `Precoverage.subsheafify K` with `Subfunctor.sheafify` for the Grothendieck topology
   `Precoverage.toGrothendieck K`.
 -/
 

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono
 public import Mathlib.CategoryTheory.MorphismProperty.Factorization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Categorical images
 
@@ -20,6 +23,7 @@ so that `m` factors through the `m'` in any other such factorisation.
 * A `MonoFactorisation` is a factorisation `f = e ≫ m`, where `m` is a monomorphism
 * `IsImage F` means that a given mono factorisation `F` has the universal property of the image.
 * `HasImage f` means that there is some image factorization for the morphism `f : X ⟶ Y`.
+
   * In this case, `image f` is some image object (selected with choice), `image.ι f : image f ⟶ Y`
     is the monomorphism `m` of the factorisation and `factorThruImage f : X ⟶ image f` is the
     morphism `e`.
@@ -48,9 +52,9 @@ so that `m` factors through the `m'` in any other such factorisation.
 * When `C` has strong epi images, then these images admit image maps.
 
 ## Future work
+
 * TODO: coimages, and abelian categories.
 * TODO: connect this with existing work in the group theory and ring theory libraries.
-
 -/
 
 @[expose] public section

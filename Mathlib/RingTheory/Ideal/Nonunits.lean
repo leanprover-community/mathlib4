@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Maximal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The set of non-invertible elements of a monoid
 

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order filters
 
@@ -15,21 +18,21 @@ public import Mathlib.Order.Ideal
 Throughout this file, `P` is at least a preorder, but some sections require more structure,
 such as a bottom element, a top element, or a join-semilattice structure.
 
-- `Order.PFilter P`: The type of nonempty, downward directed, upward closed subsets of `P`.
-               This is dual to `Order.Ideal`, so it simply wraps `Order.Ideal Pᵒᵈ`.
-- `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
+* `Order.PFilter P`: The type of nonempty, downward directed, upward closed subsets of `P`.
+  This is dual to `Order.Ideal`, so it simply wraps `Order.Ideal Pᵒᵈ`.
+* `Order.IsPFilter P`: a predicate for when a `Set P` is a filter.
 
 Note the relation between `Order/Filter` and `Order/PFilter`: for any type `α`,
 `Filter α` represents the same mathematical object as `PFilter (Set α)`.
 
 ## References
 
-- <https://en.wikipedia.org/wiki/Filter_(mathematics)>
+* [
+  https://en.wikipedia.org/wiki/Filter\_(mathematics)](https://en.wikipedia.org/wiki/Filter_(mathematics))
 
 ## Tags
 
 pfilter, filter, ideal, dual
-
 -/
 
 @[expose] public section
@@ -38,10 +41,13 @@ open OrderDual
 
 namespace Order
 
-/-- A filter on a preorder `P` is a subset of `P` that is
-  - nonempty
-  - downward directed
-  - upward closed. -/
+/--
+A filter on a preorder `P` is a subset of `P` that is
+
+* nonempty
+* downward directed
+* upward closed.
+-/
 structure PFilter (P : Type*) [Preorder P] where
   dual : Ideal Pᵒᵈ
 

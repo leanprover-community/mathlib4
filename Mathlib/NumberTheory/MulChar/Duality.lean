@@ -8,6 +8,9 @@ module
 public import Mathlib.GroupTheory.FiniteAbelian.Duality
 public import Mathlib.NumberTheory.MulChar.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Duality for multiplicative characters
 
@@ -18,16 +21,12 @@ where `n` is the exponent of `M`. Then the main results of this file are as foll
 
 * `MulChar.exists_apply_ne_one_of_hasEnoughRootsOfUnity`: multiplicative characters
   `M → R` separate elements of `Mˣ`.
-
 * `MulChar.mulEquiv_units`: the group of multiplicative characters `M → R` is
   (noncanonically) isomorphic to `Mˣ`.
-
 * `MulChar.mulCharEquiv`: the `MulEquiv` between the double dual `MulChar (MulChar M R) R` of `M`
   and `Mˣ`.
-
 * `MulChar.subgroupOrderIsoSubgroupMulChar`: The order reversing bijection that sends a
   subgroup of `Mˣ` to its dual subgroup in `MulChar M R`.
-
 -/
 
 @[expose] public section

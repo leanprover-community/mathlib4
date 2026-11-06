@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.MorphismProperty.OfObjectProperty
 public import Mathlib.CategoryTheory.ObjectProperty.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are (co)kernels of morphisms
 
@@ -19,7 +22,6 @@ satisfying `W`.
 Given an object property `P`, we also introduce two predicates
 `P.IsClosedUnderKernels` and `P.IsClosedUnderCokernels`, stating that all
 (co)kernels of morphisms between objects in `P` remain in `P`.
-
 -/
 
 @[expose] public section

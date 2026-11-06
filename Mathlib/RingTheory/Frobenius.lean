@@ -11,12 +11,15 @@ public import Mathlib.RingTheory.Unramified.Locus
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frobenius elements
 
 In algebraic number theory, if `L/K` is a finite Galois extension of number fields, with rings of
 integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime ideal `p` of `𝓞K`, then
-there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
+there exists a *Frobenius element* `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
 Following `Mathlib/RingTheory/Invariant/Basic.lean`, we develop the theory in the setting that
@@ -27,23 +30,23 @@ there is a finite group `G` acting on a ring `S`, and `R` is the fixed subring o
 Let `S/R` be an extension of rings, `Q` be a prime of `S`,
 and `P := R ∩ Q` with finite residue field of cardinality `q`.
 
-- `AlgHom.IsArithFrobAt`: We say that a `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q`
+* `AlgHom.IsArithFrobAt`: We say that a `φ : S →ₐ[R] S` is an (arithmetic) Frobenius at `Q`
   if `φ x ≡ x ^ q (mod Q)` for all `x : S`.
-- `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`:
+* `AlgHom.IsArithFrobAt.apply_of_pow_eq_one`:
   Suppose `S` is a domain and `φ` is a Frobenius at `Q`,
   then `φ ζ = ζ ^ q` for any `m`-th root of unity `ζ` with `q ∤ m`.
-- `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
+* `AlgHom.IsArithFrobAt.eq_of_isUnramifiedAt`:
   Suppose `S` is Noetherian, `Q` contains all zero-divisors, and the extension is unramified at `Q`.
   Then the Frobenius is unique (if exists).
 
 Let `G` be a finite group acting on a ring `S`, and `R` is the fixed subring of `S`.
 
-- `IsArithFrobAt`: We say that a `σ : G` is an (arithmetic) Frobenius at `Q`
+* `IsArithFrobAt`: We say that a `σ : G` is an (arithmetic) Frobenius at `Q`
   if `σ • x ≡ x ^ q (mod Q)` for all `x : S`.
-- `IsArithFrobAt.mul_inv_mem_inertia`:
+* `IsArithFrobAt.mul_inv_mem_inertia`:
   Two Frobenius elements at `Q` differ by an element in the inertia subgroup of `Q`.
-- `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
-- `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
+* `IsArithFrobAt.conj`: If `σ` is a Frobenius at `Q`, then `τστ⁻¹` is a Frobenius at `σ • Q`.
+* `IsArithFrobAt.exists_of_isInvariant`: Frobenius element exists.
 -/
 
 @[expose] public section

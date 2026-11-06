@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Projectivization.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subspaces of Projective Space
 
@@ -22,10 +25,10 @@ also in the subset.
 
 ## Results
 
-- There is a Galois insertion between the subsets of points of a projective space
+* There is a Galois insertion between the subsets of points of a projective space
   and the subspaces of the projective space, which is given by taking the span of the set of points.
-- The subspaces of a projective space form a complete lattice under inclusion.
-- There is a one-to-one order-preserving correspondence between subspaces of a
+* The subspaces of a projective space form a complete lattice under inclusion.
+* There is a one-to-one order-preserving correspondence between subspaces of a
   projective space and the submodules of the underlying vector space.
 -/
 

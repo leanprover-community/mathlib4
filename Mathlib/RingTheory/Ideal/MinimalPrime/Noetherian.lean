@@ -9,14 +9,15 @@ module
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Finiteness of minimal primes
 
 We prove finiteness of minimal primes above an ideal.
 
 This is proved without reference to `PrimeSpectrum` to avoid heavy imports.
-
 -/
 
 public section

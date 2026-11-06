@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Unramified.Finite
 public import Mathlib.RingTheory.Unramified.Locus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unramified algebras over fields
 
@@ -17,17 +20,16 @@ public import Mathlib.RingTheory.Unramified.Locus
 
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
-- `Algebra.FormallyUnramified.bijective_of_isAlgClosed_of_isLocalRing`:
-    If `A` is `K`-unramified and `K` is alg-closed, then `K = A`.
-- `Algebra.FormallyUnramified.isReduced_of_field`:
-    If `A` is `K`-unramified then `A` is reduced.
-- `Algebra.FormallyUnramified.iff_isSeparable`:
-    `L` is unramified over `K` iff `L` is separable over `K`.
+* `Algebra.FormallyUnramified.bijective_of_isAlgClosed_of_isLocalRing`:
+  If `A` is `K`-unramified and `K` is alg-closed, then `K = A`.
+* `Algebra.FormallyUnramified.isReduced_of_field`:
+  If `A` is `K`-unramified then `A` is reduced.
+* `Algebra.FormallyUnramified.iff_isSeparable`:
+  `L` is unramified over `K` iff `L` is separable over `K`.
 
 ## References
 
-- [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
+* ‍\[B. Iversen, _Generic Local Structure of the Morphisms in Commutative Algebra_\]\[iversen\]
 -/
 
 public section

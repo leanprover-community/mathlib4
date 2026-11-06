@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Filter.CountableInter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filters with countable intersections and countable separating families
 
@@ -22,7 +25,7 @@ existence of a countable separating family satisfying this predicate by searchin
 
 ## Main definitions
 
-- `HasCountableSeparatingOn α p t`: a typeclass saying that there exists a countable set family
+* `HasCountableSeparatingOn α p t`: a typeclass saying that there exists a countable set family
   `S : Set (Set α)` such that all `s ∈ S` satisfy the predicate `p` and any two distinct points
   `x y ∈ t`, `x ≠ y`, can be separated by a set `s ∈ S`. For technical reasons, we formulate the
   latter property as "for all `x y ∈ t`, if `x ∈ s ↔ y ∈ s` for all `s ∈ S`, then `x = y`".
@@ -76,7 +79,8 @@ public section
 
 open Function Set Filter
 
-/-- We say that a type `α` has a *countable separating family of sets* satisfying a predicate
+/--
+We say that a type `α` has a _countable separating family of sets_ satisfying a predicate
 `p : Set α → Prop` on a set `t` if there exists a countable family of sets `S : Set (Set α)` such
 that all sets `s ∈ S` satisfy `p` and any two distinct points `x y ∈ t`, `x ≠ y`, can be separated
 by `s ∈ S`: there exists `s ∈ S` such that exactly one of `x` and `y` belongs to `s`.
@@ -145,7 +149,7 @@ namespace Filter
 variable {α β : Type*} {l : Filter α} [CountableInterFilter l] {f g : α → β}
 
 /-!
-### Filters supported on a (sub)singleton
+# Filters supported on a (sub)singleton
 
 In this section we prove several versions of the following theorem. Let `l : Filter α` be a filter
 with countable intersections property. Let `p : Set α → Prop` be a property such that there exists a
@@ -201,7 +205,7 @@ theorem exists_singleton_mem_of_forall_separating [Nonempty α] (p : Set α → 
   exists_singleton_mem_of_mem_of_forall_separating p univ_mem hl
 
 /-!
-### Eventually constant functions
+# Eventually constant functions
 
 In this section we apply theorems from the previous section to the filter `Filter.map f l` to show
 that `f : α → β` is eventually constant along `l` if for every `U` from the separating family,
@@ -229,7 +233,7 @@ theorem exists_eventuallyEq_const_of_forall_separating [Nonempty β] (p : Set β
 namespace EventuallyEq
 
 /-!
-### Eventually equal functions
+# Eventually equal functions
 
 In this section we show that two functions are equal along a filter with countable intersections
 property if the preimages of all sets from a countable separating family of sets are equal along

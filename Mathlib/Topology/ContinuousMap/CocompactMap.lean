@@ -7,12 +7,16 @@ module
 
 public import Mathlib.Topology.ContinuousMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cocompact continuous maps
 
-The type of *cocompact continuous maps* are those which tend to the cocompact filter on the
+The type of _cocompact continuous maps_ are those which tend to the cocompact filter on the
 codomain along the cocompact filter on the domain. When the domain and codomain are Hausdorff, this
-is equivalent to many other conditions, including that preimages of compact sets are compact. -/
+is equivalent to many other conditions, including that preimages of compact sets are compact.
+-/
 
 @[expose] public section
 
@@ -21,17 +25,21 @@ universe u v w
 
 open Filter Set
 
-/-! ### Cocompact continuous maps -/
+/-!
+# Cocompact continuous maps
+-/
 
 
-/-- A *cocompact continuous map* is a continuous function between topological spaces which
+/--
+A _cocompact continuous map_ is a continuous function between topological spaces which
 tends to the cocompact filter along the cocompact filter. Functions for which preimages of compact
 sets are compact always satisfy this property, and the converse holds for cocompact continuous maps
 when the codomain is Hausdorff (see `CocompactMap.tendsto_of_forall_preimage` and
 `CocompactMap.isCompact_preimage`).
 
 Cocompact maps thus generalise proper maps, with which they correspond when the codomain is
-Hausdorff. -/
+Hausdorff.
+-/
 structure CocompactMap (α : Type u) (β : Type v) [TopologicalSpace α] [TopologicalSpace β] :
     Type max u v
     extends ContinuousMap α β where
@@ -40,9 +48,11 @@ structure CocompactMap (α : Type u) (β : Type v) [TopologicalSpace α] [Topolo
 
 section
 
-/-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
+/--
+`CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
-You should also extend this typeclass when you extend `CocompactMap`. -/
+You should also extend this typeclass when you extend `CocompactMap`.
+-/
 class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/

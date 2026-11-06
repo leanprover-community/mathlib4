@@ -9,19 +9,19 @@ public import Mathlib.GroupTheory.SpecificGroups.Cyclic.Subgroup
 
 import Mathlib.Data.Fintype.Perm
 
-/-! # Properties of `Equiv.Perm` on `Finite` types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Properties of `Equiv.Perm` on `Finite` types
 
 Let `α` be a `Finite` type.
 
 * `Nat.card_perm`: cardinality of `Equiv.Perm α`.
-
 * `Equiv.Perm.isCyclic_of_card_le_two`: if `Nat.card α ≤ 2`,
   then `Equiv.Perm α` is cyclic.
-
 * `Equiv.Perm.isCyclic_iff_card_le_two`: `Equiv.Perm α` is cyclic iff `Nat.card α ≤ 2`.
-
 * `Equiv.Perm.isMulCommutative_iff_card_le_two`: `Equiv.Perm α` is commutative iff `Nat.card α ≤ 2`.
-
 -/
 
 public section

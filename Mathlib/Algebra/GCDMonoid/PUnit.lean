@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GCDMonoid.Basic
 public import Mathlib.Algebra.Ring.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `PUnit` is a GCD monoid
 

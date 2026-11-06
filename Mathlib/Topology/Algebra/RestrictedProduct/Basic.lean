@@ -10,17 +10,20 @@ public import Mathlib.Algebra.Ring.Subring.Defs
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.Order.Filter.Cofinite  -- shake: keep (used in notation only)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restricted products of sets, groups and rings
 
-We define the **restricted product** of `R : ι → Type*` of types, relative to
+We define the *restricted product* of `R : ι → Type*` of types, relative to
 a family of subsets `A : (i : ι) → Set (R i)` and a filter `𝓕 : Filter ι`. This
 is the set of all `x : Π i, R i` such that the set `{j | x j ∈ A j}` belongs to `𝓕`.
 We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
 
 The main case of interest, which we shall refer to as the "classical restricted product",
 is that of `𝓕 = cofinite`. Recall that this is the filter of all subsets of `ι`, which are
-*cofinite* in the sense that they have finite complement.
+_cofinite_ in the sense that they have finite complement.
 Hence, the associated restricted product is the set of all `x : Π i, R i` such that
 `x j ∈ A j` for all but finitely many `j`s. We denote it simply by `Πʳ i, [R i, A i]`.
 
@@ -62,10 +65,11 @@ variable {ι : Type*}
 variable (R : ι → Type*) (A : (i : ι) → Set (R i))
 
 /-!
-## Definition and elementary maps
+# Definition and elementary maps
 -/
 
-/-- The **restricted product** of a family `R : ι → Type*` of types, relative to subsets
+/--
+The *restricted product* of a family `R : ι → Type*` of types, relative to subsets
 `A : (i : ι) → Set (R i)` and the filter `𝓕 : Filter ι`, is the set of all `x : Π i, R i`
 such that the set `{j | x j ∈ A j}` belongs to `𝓕`. We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
 
@@ -74,7 +78,8 @@ of all `x : Π i, R i` such that `x j ∈ A j` for all but finitely many `j`. We
 by `Πʳ i, [R i, A i]`.
 
 Similarly, if `S` is a principal filter, the restricted product `Πʳ i, [R i, A i]_[𝓟 s]`
-is the set of all `x : Π i, R i` such that `∀ j ∈ S, x j ∈ A j`. -/
+is the set of all `x : Π i, R i` such that `∀ j ∈ S, x j ∈ A j`.
+-/
 def RestrictedProduct (𝓕 : Filter ι) : Type _ := {x : Π i, R i // ∀ᶠ i in 𝓕, x i ∈ A i}
 
 open Batteries.ExtendedBinder
@@ -124,8 +129,10 @@ lemma range_coe_principal {S : Set ι} :
 @[simp] lemma eventually (x : Πʳ i, [R i, A i]_[𝓕]) : ∀ᶠ i in 𝓕, x i ∈ A i := x.2
 
 variable (𝓕) in
-/-- The *structure map* of the restricted product is the obvious inclusion from `Π i, A i`
-into `Πʳ i, [R i, A i]_[𝓕]`. -/
+/--
+The _structure map_ of the restricted product is the obvious inclusion from `Π i, A i`
+into `Πʳ i, [R i, A i]_[𝓕]`.
+-/
 def structureMap (x : Π i, A i) : Πʳ i, [R i, A i]_[𝓕] :=
   ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
 
@@ -184,7 +191,7 @@ lemma coe_comp_structureMap :
 
 section Algebra
 /-!
-## Algebraic instances on restricted products
+# Algebraic instances on restricted products
 
 In this section, we endow the restricted product with its algebraic instances.
 To avoid any unnecessary coercions, we use subobject classes for the subset `B i` of each `R i`.

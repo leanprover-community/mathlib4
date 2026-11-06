@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Separation.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending a function from a subset
 
@@ -21,7 +24,6 @@ The main theorem we prove about this definition is `continuousOn_extendFrom`
 which states that, for `extendFrom A f` to be continuous on a set `B ⊆ closure A`,
 it suffices that `f` converges within `A` at any point of `B`, provided that
 `f` is a function to a T₃ space.
-
 -/
 
 @[expose] public section

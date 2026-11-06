@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Multiset.Powerset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The antidiagonal on a multiset.
 

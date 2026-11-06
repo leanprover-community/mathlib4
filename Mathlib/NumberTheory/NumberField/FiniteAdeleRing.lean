@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.DedekindDomain.FiniteAdeleRing
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The finite adele ring of a number field
 
@@ -20,9 +23,10 @@ Later, these results are applied to the case where `K` is a number field and `R`
 
 ## Main definitions
 
-- `NumberField.FiniteAdeleRing.instNormFiniteAdeleRing` : the norm on the finite adele ring.
+* `NumberField.FiniteAdeleRing.instNormFiniteAdeleRing` : the norm on the finite adele ring.
 
 ## Tags
+
 adele ring, number field
 -/
 

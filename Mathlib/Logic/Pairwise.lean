@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Logic.Function.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relations holding pairwise
 
@@ -78,7 +81,9 @@ theorem pairwise_fin_succ_iff_of_isSymm {n : ℕ} {R : Fin n.succ → Fin n.succ
 
 namespace Set
 
-/-- The relation `r` holds pairwise on the set `s` if `r x y` for all *distinct* `x y ∈ s`. -/
+/--
+The relation `r` holds pairwise on the set `s` if `r x y` for all _distinct_ `x y ∈ s`.
+-/
 protected def Pairwise (s : Set α) (r : α → α → Prop) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → x ≠ y → r x y
 

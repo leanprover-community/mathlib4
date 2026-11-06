@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.RootSystem.Irreducible
 public import Mathlib.LinearAlgebra.RootSystem.Reduced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structural lemmas about finite crystallographic root pairings
 
@@ -24,7 +27,6 @@ root pairings.
 * `RootPairing.root_add_root_mem_of_pairingIn_neg`: if `α ≠ -β` are both roots of a finite
   crystallographic root pairing, and the pairing of `α` with `β` is negative, then `α + β` is also
   a root.
-
 -/
 
 public section
@@ -219,9 +221,11 @@ lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i �
     · rw [and_comm] at hij
       simp [(P.pairingIn_one_four_iff ℤ j i).mp hij, two_smul]
 
-/-- If two roots make an obtuse angle then their sum is a root (provided it is not zero).
+/--
+If two roots make an obtuse angle then their sum is a root (provided it is not zero).
 
-See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse. -/
+See `RootPairing.pairingIn_le_zero_of_root_add_mem` for a partial converse.
+-/
 lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α i ≠ -α j) :
     α i + α j ∈ Φ := by
   let _i := P.indexNeg

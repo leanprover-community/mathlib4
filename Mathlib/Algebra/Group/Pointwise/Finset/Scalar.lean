@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Pointwise.Set.Finite
 public import Mathlib.Data.Finset.NAry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations of finsets
 
@@ -30,12 +33,12 @@ For finsets `s` and `t`:
 For `α` a semigroup/monoid, `Finset α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between
 pointwise scaling and repeated pointwise addition; the former has `(2 : ℕ) • {1, 2} = {2, 4}`, while
-the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note [pointwise nat action].
+the latter has `(2 : ℕ) • {1, 2} = {2, 3, 4}`. See note \[pointwise nat action\].
 
 ## Implementation notes
 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
-default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+default. Note that we do not mark them as reducible (as argued by note \[reducible non-instances\])
 since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`).
 
@@ -59,7 +62,9 @@ namespace Finset
 
 open scoped Pointwise
 
-/-! ### Scalar addition/multiplication of finsets -/
+/-!
+# Scalar addition/multiplication of finsets
+-/
 
 section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ : Finset α} {t t₁ t₂ u : Finset β} {a : α} {b : β}
@@ -149,7 +154,9 @@ lemma subset_smul {s : Set α} {t : Set β} :
 
 end SMul
 
-/-! ### Translation/scaling of finsets -/
+/-!
+# Translation/scaling of finsets
+-/
 
 section SMul
 variable [DecidableEq β] [SMul α β] {s s₁ s₂ t : Finset β} {a : α} {b : β}
@@ -221,11 +228,15 @@ end SMul
 
 open scoped Pointwise
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 open scoped Pointwise
 
-/-! ### Scalar division and subtraction of finsets -/
+/-!
+# Scalar division and subtraction of finsets
+-/
 
 section SDiv
 

@@ -11,6 +11,9 @@ public import Mathlib.Order.Filter.CountablyGenerated
 
 import Mathlib.Algebra.Order.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Filter.atTop` filter and archimedean (semi)rings/fields
 

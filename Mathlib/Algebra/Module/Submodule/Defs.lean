@@ -7,15 +7,16 @@ module
 
 public import Mathlib.GroupTheory.GroupAction.SubMulAction
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Submodules of a module
 
 In this file we define
 
 * `Submodule R M` : a subset of a `Module` `M` that contains zero and is closed with respect to
   addition and scalar multiplication.
-
 * `Subspace k M` : an abbreviation for `Submodule` assuming that `k` is a `Field`.
 
 ## Tags

@@ -8,6 +8,9 @@ module
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for algebraic operations
 
@@ -26,9 +29,8 @@ Note `Zero` has already been defined in core Lean.
 
 ## Notation
 
-- `a • b` is used as notation for `HSMul.hSMul a b`.
-- `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
-
+* `a • b` is used as notation for `HSMul.hSMul a b`.
+* `a +ᵥ b` is used as notation for `HVAdd.hVAdd a b`.
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.InnerProductSpace.Defs
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of inner product spaces
 
@@ -17,15 +20,14 @@ This file proves many basic properties of inner product spaces (real or complex)
 
 ## Main results
 
-- `inner_mul_inner_self_le`: the Cauchy-Schwarz inequality (one of many variants).
-- `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwarz inequality (also in many
+* `inner_mul_inner_self_le`: the Cauchy-Schwarz inequality (one of many variants).
+* `norm_inner_eq_norm_iff`: the equality criterion in the Cauchy-Schwarz inequality (also in many
   variants).
-- `inner_eq_sum_norm_sq_div_four`: the polarization identity.
+* `inner_eq_sum_norm_sq_div_four`: the polarization identity.
 
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
@@ -126,9 +128,11 @@ theorem inner_smul_real_right (x y : E) (r : ℝ) : ⟪x, (r : 𝕜) • y⟫ = 
 
 variable (𝕜)
 
-/-- The inner product as a sesquilinear map.
+/--
+The inner product as a sesquilinear map.
 
-Note that in the case `𝕜 = ℝ` this is a bilinear form. -/
+Note that in the case `𝕜 = ℝ` this is a bilinear form.
+-/
 def innerₛₗ : E →ₗ⋆[𝕜] E →ₗ[𝕜] 𝕜 :=
   LinearMap.mk₂'ₛₗ _ _ (fun v w => ⟪v, w⟫) inner_add_left (fun _ _ _ => inner_smul_left _ _ _)
     inner_add_right fun _ _ _ => inner_smul_right _ _ _
@@ -886,10 +890,12 @@ section Induced
 variable {G : Type*} [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E] [AddCommGroup G]
     [Module 𝕜 G]
 
-/-- A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
+/--
+A linear map from a `Module` to an `InnerProductSpace` induces an `InnerProductSpace`
 structure on the domain using the `SeminormedAddCommGroup.induced` norm.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev InnerProductSpace.induced {F : Type*} [FunLike F G E] [LinearMapClass F 𝕜 G E] (f : F) :
     letI := SeminormedAddCommGroup.induced G E f
     InnerProductSpace 𝕜 G :=
@@ -943,15 +949,18 @@ since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 @[instance_reducible]
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
-/-- A general inner product space structure implies a real inner product structure.
+/--
+A general inner product space structure implies a real inner product structure.
 
 This is not registered as an instance since
+
 * `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
 * It is likely to create instance diamonds, as it builds upon the diamond-prone
   `NormedSpace.restrictScalars`.
 
 However, it can be used in a proof to obtain a real inner product space structure from a given
-`𝕜`-inner product space structure. -/
+`𝕜`-inner product space structure.
+-/
 -- See note [reducible non-instances]
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,

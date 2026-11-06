@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inheritance of normed algebraic structures by bounded continuous functions
 
@@ -540,11 +543,13 @@ theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 :
 
 variable {𝕜} [SeminormedAddCommGroup β] [NormedSpace 𝕜 β]
 
-/-! ### Structure as normed module over scalar functions
+/-!
+# Structure as normed module over scalar functions
 
 If `β` is a normed `𝕜`-space, then we show that the space of bounded continuous
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
-functions from `α` to `𝕜`. -/
+functions from `α` to `𝕜`.
+-/
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Quotient.Defs
 public import Mathlib.RingTheory.Congruence.Defs
 public import Mathlib.RingTheory.Ideal.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideal quotients
 
@@ -19,11 +22,11 @@ See `RingCon.Quotient` for quotients of (possibly non-commutative) semirings.
 
 ## Main definitions
 
-- `Ideal.instHasQuotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
-- `Ideal.Quotient.commRing`: the ring structure of the ideal quotient
-- `Ideal.Quotient.mk`: map an element of `R` to the quotient `R ⧸ I`
-- `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
-- `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
+* `Ideal.instHasQuotient`: the quotient of a commutative ring `R` by an ideal `I : Ideal R`
+* `Ideal.Quotient.commRing`: the ring structure of the ideal quotient
+* `Ideal.Quotient.mk`: map an element of `R` to the quotient `R ⧸ I`
+* `Ideal.Quotient.lift`: turn a map `R → S` into a map `R ⧸ I → S`
+* `Ideal.quotEquivOfEq`: quotienting by equal ideals gives isomorphic rings
 -/
 
 @[expose] public section
@@ -90,10 +93,12 @@ def mk : R →+* R ⧸ I where
 instance : Coe R (R ⧸ I) :=
   ⟨Ideal.Quotient.mk I⟩
 
-/-- Two `RingHom`s from the quotient by an ideal are equal if their
+/--
+Two `RingHom`s from the quotient by an ideal are equal if their
 compositions with `Ideal.Quotient.mk'` are equal.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
@@ -163,12 +168,14 @@ theorem lift_surjective_of_surjective {f : R →+* S} (H : ∀ a : R, a ∈ I �
 
 variable {S T U : Ideal R} [S.IsTwoSided] [T.IsTwoSided] [U.IsTwoSided]
 
-/-- The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
+/--
+The ring homomorphism from the quotient by a smaller ideal to the quotient by a larger ideal.
 
 This is the `Ideal.Quotient` version of `Quot.Factor`
 
 When the two ideals are of the form `I^m` and `I^n` and `n ≤ m`,
-please refer to the dedicated version `Ideal.Quotient.factorPow`. -/
+please refer to the dedicated version `Ideal.Quotient.factorPow`.
+-/
 def factor (H : S ≤ T) : R ⧸ S →+* R ⧸ T :=
   Ideal.Quotient.lift S (mk T) fun _ hx => eq_zero_iff_mem.2 (H hx)
 
@@ -205,7 +212,8 @@ end Quotient
 
 variable {I J} [I.IsTwoSided] [J.IsTwoSided]
 
-/-- Quotienting by equal ideals gives equivalent rings.
+/--
+Quotienting by equal ideals gives equivalent rings.
 
 See also `Submodule.quotEquivOfEq` and `Ideal.quotientEquivAlgOfEq`.
 -/

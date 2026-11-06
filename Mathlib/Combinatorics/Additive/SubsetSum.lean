@@ -15,6 +15,9 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Max
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subset sums
 
@@ -22,7 +25,7 @@ This file defines the subset sum of a finite subset of a commutative monoid.
 
 ## References
 
-* [Melvyn B. Nathanson, *Inverse theorems for subset sums*][Nathanson1995]
+* ‍\[Melvyn B. Nathanson, _Inverse theorems for subset sums_\]\[Nathanson1995\]
 -/
 
 public section

@@ -13,11 +13,14 @@ public import Mathlib.Analysis.Normed.Operator.Mul
 import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gelfand's formula and other results on the spectrum in complex Banach algebras
 
 This file contains results on the spectrum of elements in a complex Banach algebra, including
-**Gelfand's formula** and the **Gelfand-Mazur theorem** and the fact that every element in a
+*Gelfand's formula* and the *Gelfand-Mazur theorem* and the fact that every element in a
 complex Banach algebra has nonempty spectrum.
 
 ## Main results
@@ -27,7 +30,7 @@ complex Banach algebra has nonempty spectrum.
 * `spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius`: Gelfand's formula for the
   spectral radius in Banach algebras over `ℂ`.
 * `spectrum.nonempty`: the spectrum of any element in a complex Banach algebra is nonempty.
-* `NormedRing.algEquivComplexOfComplete`: **Gelfand-Mazur theorem** For a complex
+* `NormedRing.algEquivComplexOfComplete`: *Gelfand-Mazur theorem* For a complex
   Banach division algebra, the natural `algebraMap ℂ A` is an algebra isomorphism whose inverse
   is given by selecting the (unique) element of `spectrum ℂ a`
 
@@ -36,7 +39,6 @@ complex Banach algebra has nonempty spectrum.
 Note that it is important here that the complex analysis files are privately imported, since the
 material proven here gets used in contexts that have nothing to do with complex analysis
 (i.e. C⋆-algebras, etc).
-
 -/
 
 @[expose] public section
@@ -196,7 +198,8 @@ theorem algebraMap_eq_of_mem (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) {a : A} {z
     (h : z ∈ spectrum ℂ a) : algebraMap ℂ A z = a := by
   rwa [mem_iff, hA, Classical.not_not, sub_eq_zero] at h
 
-/-- **Gelfand-Mazur theorem**: For a complex Banach division algebra, the natural `algebraMap ℂ A`
+/--
+*Gelfand-Mazur theorem*: For a complex Banach division algebra, the natural `algebraMap ℂ A`
 is an algebra isomorphism whose inverse is given by selecting the (unique) element of
 `spectrum ℂ a`. In addition, `algebraMap_isometry` guarantees this map is an isometry.
 
@@ -204,7 +207,8 @@ Note: because `NormedDivisionRing` requires the field `norm_mul : ∀ a b, ‖a 
 don't use this type class and instead opt for a `NormedRing` in which the nonzero elements are
 precisely the units. This allows for the application of this isomorphism in broader contexts, e.g.,
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
-`NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`. -/
+`NormedDivisionRing`, one may fill in the argument `hA` with the lemma `isUnit_iff_ne_zero`.
+-/
 @[simps]
 noncomputable def _root_.NormedRing.algEquivComplexOfComplete (hA : ∀ {a : A}, IsUnit a ↔ a ≠ 0) :
     ℂ ≃ₐ[ℂ] A :=

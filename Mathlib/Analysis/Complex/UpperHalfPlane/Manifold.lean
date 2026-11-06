@@ -16,6 +16,9 @@ import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 import Mathlib.LinearAlgebra.Complex.Determinant
 import Mathlib.RingTheory.Complex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Manifold structure on the upper half plane.
 
@@ -147,7 +150,7 @@ lemma prod_eq_zero_iff {ι : Type*} {f : ι → ℍ → ℂ} {s : Finset ι}
 
 section deriv
 /-!
-## Explicit calculations of the derivative of `τ ↦ g • τ`
+# Explicit calculations of the derivative of `τ ↦ g • τ`
 
 TODO: would it be better to reimplement these using `mfderiv` together with a trivialization of
 the tangent space of `ℍ`, rather than using `ofComplex` as we currently do? Or would that bring
@@ -158,7 +161,9 @@ TODO(MR): investigate if using `mvfderiv` can avoid the "pain" above, and be a c
 
 section Complex
 
-/-- Derivative of `z ↦ (denom g z) ^ k`: $\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
+/--
+Derivative of `z ↦ (denom g z) ^ k`: $`\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}`.
+-/
 lemma hasDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
     HasDerivAt (fun z ↦ denom g z ^ k) (k * g 1 0 * denom g τ ^ (k - 1)) τ := by
   have hd : HasDerivAt (denom g ·) (g 1 0) τ := by
@@ -166,8 +171,10 @@ lemma hasDerivAt_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
   have := (hasDerivAt_zpow k (denom g τ) (Or.inl (denom_ne_zero g τ))).comp _ hd
   simpa only [Function.comp_def, mul_right_comm] using this
 
-/-- Derivative of `z ↦ (denom g z) ^ k`:
-$\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}$. -/
+/--
+Derivative of `z ↦ (denom g z) ^ k`:
+$`\frac{d}{dz}[(cz+d)^k] = k \cdot c \cdot (cz+d)^{k-1}`.
+-/
 lemma deriv_denom_zpow (g : GL (Fin 2) ℝ) (k : ℤ) (τ : ℍ) :
     deriv (fun z ↦ denom g z ^ k) τ = k * g 1 0 * denom g τ ^ (k - 1) :=
   (hasDerivAt_denom_zpow g k τ).deriv

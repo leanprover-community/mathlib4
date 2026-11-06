@@ -9,18 +9,21 @@ public import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 import Mathlib.RepresentationTheory.Submodule
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Irreducible root pairings
 
 This file contains basic definitions and results about irreducible root systems.
 
 ## Main definitions / results:
+
 * `RootPairing.isSimpleModule_weylGroupRootRep_iff`: a criterion for the representation of the Weyl
   group on root space to be irreducible.
 * `RootPairing.IsIrreducible`: a typeclass encoding the fact that a root pairing is irreducible.
 * `RootPairing.IsIrreducible.mk'`: an alternative constructor for irreducibility when the
   coefficients are a field.
-
 -/
 
 @[expose] public section

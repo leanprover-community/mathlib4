@@ -12,10 +12,13 @@ public meta import Lean.Parser.Syntax
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 public import Batteries.Tactic.Unreachable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The unused tactic linter
 
-The unused linter makes sure that every tactic call actually changes *something*.
+The unused linter makes sure that every tactic call actually changes _something_.
 
 The inner workings of the linter are as follows.
 
@@ -23,6 +26,7 @@ The linter inspects the goals before and after each tactic execution.
 If they are not identical, the linter is happy.
 If they are identical, then the linter checks if the tactic is whitelisted.
 Possible reason for whitelisting are
+
 * tactics that emit messages, such as `extract_goal` or `says`;
 * tactics that are in place to assert something, such as `guard`;
 * tactics that allow to work on a specific goal, such as `on_goal`;
@@ -30,12 +34,12 @@ Possible reason for whitelisting are
 
 ## Special cases
 
-- `swap_var`: the only change that `swap_var` makes is to rename local declarations.
+* `swap_var`: the only change that `swap_var` makes is to rename local declarations.
   Thus, to check that `swap_var` was used, we inspect the names of all the local declarations
   before and after and see if there is some change.
-- `try`: the only thing `try` does is to do nothing if the inner tactic throws an error.
+* `try`: the only thing `try` does is to do nothing if the inner tactic throws an error.
   So, to check that `try` was used, we check that the goals did not change.
-- `<;>`/`all_goals`/`any_goals`: if there is exactly 1 goal, then these are redundant.
+* `<;>`/`all_goals`/`any_goals`: if there is exactly 1 goal, then these are redundant.
   If there are no goals, then these could in principle not be redundant,
   but we lint against such cases as well.
   We also warn if `any_goals` can be replaced with `all_goals`, or with `on_goal n =>`.
@@ -46,13 +50,13 @@ Possible reason for whitelisting are
   the linter assumes that the tactic is doing something and does not recurse into each
   `tac1, tac2, ...`.
   This is just for lack of an implementation: it may not be hard to do this.
-
 * The tactic does not check the discharger for `linear_combination`,
   but checks `linear_combination` itself.
   The main reason is that `skip` is a common discharger tactic and the linter would
   then always fail whenever the user explicitly chose to pass `skip` as a discharger tactic.
 
 ## TODO
+
 * The linter seems to be silenced by `set_option ... in`: maybe it should enter `in`s?
 
 ## Implementation notes
@@ -67,7 +71,7 @@ open Lean Elab Std Linter
 namespace Mathlib.Linter
 
 /--
-The unused tactic linter makes sure that every tactic call actually changes *something*.
+The unused tactic linter makes sure that every tactic call actually changes _something_.
 It has special support for tactics `<;>`, `try`, `all_goals`, `any_goals` and `swap_var`.
 -/
 public register_option linter.unusedTactic : Bool := {
@@ -131,6 +135,8 @@ def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
     m Unit :=
   stxNodes.foldM (init := ()) fun _ d => modifyEnv (allowedUnusedTacticExt.addEntry · d)
 
+
+set_option doc.verso false
 /--
 `allow_unused_tactic` takes as input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:
@@ -163,6 +169,8 @@ elab (name := allowUnusedTactic) attrKind:attrKind "allow_unused_tactic"
       if (← getEnv).isImportedConst id then
         recordIndirectModUse "allow_unused_tactic" id
 
+
+set_option doc.verso true
 /-- `#allow_unused_tactic` is deprecated in favour of `allow_unused_tactic` -/
 syntax (name := hashStx) "#allow_unused_tactic" ("!")? ppSpace colGt ident* : command
 
@@ -173,6 +181,8 @@ macro_rules
 deprecated_syntax hashStx "use `allow_usused_tactic` instead of `#allow_unused_tactic"
   (since := "2026-08-07")
 
+
+set_option doc.verso false
 /--
 `#show_kind tac` takes as input the syntax of a tactic and returns the `SyntaxNodeKind`
 at the head of the tactic syntax tree.
@@ -187,6 +197,8 @@ The trailing underscore `_` makes the syntax valid, since `refine` expects somet
 elab "#show_kind " stx:tactic : command =>
   logInfoAt stx m!"The `{.ofConstName ``SyntaxNodeKind}` is `{stx.raw.getKind}`."
 
+
+set_option doc.verso true
 /--
 A list of blocklisted syntax kinds, which are expected to have subterms that contain
 unused tactics.
@@ -254,8 +266,9 @@ def getNames (mctx : MetavarContext) : List Name :=
 
 /--
 For each `TacticInfo` in the info tree that corresponds to a tactic syntax:
-- If the tactic is used, erase it from the set of tactics.
-- If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
+
+* If the tactic is used, erase it from the set of tactics.
+* If the tactic is unused, add a message to this tactic, if it doesn't have a message already.
 -/
 def eraseUsedTactics (exceptions : Std.HashSet SyntaxNodeKind)
     (trees : PersistentArray InfoTree)

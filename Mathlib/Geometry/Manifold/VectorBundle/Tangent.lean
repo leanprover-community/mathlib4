@@ -9,7 +9,11 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 import Mathlib.Geometry.Manifold.Notation
 
-/-! # Tangent bundles
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tangent bundles
 
 This file defines the tangent bundle as a `C^n` vector bundle.
 
@@ -21,17 +25,18 @@ In this file, when `M` is `C^1`, we construct a vector bundle structure
 on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
 with fibers `E`. Given two charts `i, j : OpenPartialHomeomorph M H`, the coordinate change
 between `i` and `j` at a point `x : M` is the derivative of the composite
+
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
 ```
+
 within the set `range I ⊆ E` at `I (i x) : E`.
 This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 
 ## Main definitions and results
 
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
-
 * When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
   structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
   and a `C^n` manifold.
@@ -75,15 +80,19 @@ open IsManifold
 variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 variable (I M) in
-/-- Let `M` be a `C^1` manifold with model `I` on `(E, H)`.
+/--
+Let `M` be a `C^1` manifold with model `I` on `(E, H)`.
 Then `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
+
 ```
   I.symm   i.symm    j     I
 E -----> H -----> M --> H --> E
 ```
-within the set `range I ⊆ E` at `I (i x) : E`. -/
+
+within the set `range I ⊆ E` at `I (i x) : E`.
+-/
 @[simps indexAt coordChange]
 def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   baseSet i := i.1.source
@@ -135,12 +144,14 @@ theorem tangentBundleCore_coordChange_achart (x x' z : M) :
 section tangentCoordChange
 
 variable (I) in
-/-- In a manifold `M`, given two preferred charts indexed by `x y : M`, `tangentCoordChange I x y`
+/--
+In a manifold `M`, given two preferred charts indexed by `x y : M`, `tangentCoordChange I x y`
 is the family of derivatives of the corresponding change-of-coordinates map. It takes junk values
 outside the intersection of the sources of the two charts.
 
 Note that this definition takes advantage of the fact that `tangentBundleCore` has the same base
-sets as the preferred charts of the base manifold. -/
+sets as the preferred charts of the base manifold.
+-/
 abbrev tangentCoordChange (x y : M) : M → E →L[𝕜] E :=
   (tangentBundleCore I M).coordChange (achart H x) (achart H y)
 
@@ -261,22 +272,26 @@ theorem coe_chartAt_symm_fst (p : H × E) (q : TM) :
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The trivialization of the tangent space can be expressed in terms of the tangent bundle core.
+/--
+The trivialization of the tangent space can be expressed in terms of the tangent bundle core.
 To write it as the manifold derivative of `extChartAt`, see
 `TangentBundle.continuousLinearMapAt_trivializationAt`.
 
-Use with care as it abuses the defeq `TangentSpace I b = E`. -/
+Use with care as it abuses the defeq `TangentSpace I b = E`.
+-/
 theorem continuousLinearMapAt_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).continuousLinearMapAt 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b) (achart H b₀) b := by
   simp [hb]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
+/--
+The inverse trivialization of the tangent space can be expressed in terms of the tangent bundle
 core. To write it as the manifold derivative of `(extChartAt I b₀).symm`, see
 `TangentBundle.symmL_trivializationAt`.
 
-Use with care as it abuses the defeq `TangentSpace I b = E`. -/
+Use with care as it abuses the defeq `TangentSpace I b = E`.
+-/
 theorem symmL_trivializationAt_eq_core {b₀ b : M} (hb : b ∈ (chartAt H b₀).source) :
     (trivializationAt E (TangentSpace I) b₀).symmL 𝕜 b =
       (tangentBundleCore I M).coordChange (achart H b₀) (achart H b) b := by
@@ -345,7 +360,9 @@ instance [h : IsManifold I 2 M] :
 
 end TangentBundleInstances
 
-/-! ## The tangent bundle to the model space -/
+/-!
+# The tangent bundle to the model space
+-/
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, mfld_simps]
@@ -505,7 +522,8 @@ theorem inCoordinates_tangent_bundle_core_model_space (x₀ x : H) (y₀ y : H')
     ContinuousLinearMap.id_comp, ContinuousLinearMap.comp_id]
 
 variable (I I') in
-/-- When `ϕ x` is a continuous linear map that changes vectors in charts around `f x` to vectors
+/--
+When `ϕ x` is a continuous linear map that changes vectors in charts around `f x` to vectors
 in charts around `g x`, `inTangentCoordinates I I' f g ϕ x₀ x` is a coordinate change of
 this continuous linear map that makes sense from charts around `f x₀` to charts around `g x₀`
 by composing it with appropriate coordinate changes.

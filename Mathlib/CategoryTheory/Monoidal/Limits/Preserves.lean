@@ -8,10 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Miscellany about preservation of (co)limits in monoidal categories
 
-This file records some `PreservesColimits` instances on tensor products in monoidal categories. -/
+This file records some `PreservesColimits` instances on tensor products in monoidal categories.
+-/
 
 public section
 

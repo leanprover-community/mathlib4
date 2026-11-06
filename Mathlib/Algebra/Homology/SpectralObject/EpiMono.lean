@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.SpectralObject.Differentials
 public import Mathlib.CategoryTheory.ComposableArrows.Four
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced morphisms that are epi or mono
 
@@ -16,8 +19,8 @@ morphisms `E^n(f₁, f₂, f₃) ⟶ E^n(f₁', f₂', f₃')` are monomorphisms
 epimorphisms or isomorphisms.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_, II.4\]\[verdier1996\]
 -/
 
 @[expose] public section

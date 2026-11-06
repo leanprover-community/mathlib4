@@ -9,13 +9,15 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.Rank
 
 import Mathlib.Basic.Finite.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of a rank function to natural numbers
 
 In this file, we show that if `P : A.Pairing` is
 a regular pairing of subcomplex `A` of a simplicial set `X`,
 then there exists a rank function for `P` with values in `ℕ`.
-
 -/
 
 @[expose] public section

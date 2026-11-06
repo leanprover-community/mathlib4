@@ -10,10 +10,13 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.CircleMap
 public import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral over a circle in `ℂ`
 
-In this file we define `∮ z in C(c, R), f z` to be the integral $\oint_{|z-c|=|R|} f(z)\,dz$ and
+In this file we define `∮ z in C(c, R), f z` to be the integral $`\oint_{|z-c|=|R|} f(z)\,dz` and
 prove some properties of this integral. We give definition and prove most lemmas for a function
 `f : ℂ → E`, where `E` is a complex Banach space. For this reason,
 some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
@@ -22,12 +25,10 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 * `CircleIntegrable f c R`: a function `f : ℂ → E` is integrable on the circle with center `c` and
   radius `R` if `f ∘ circleMap c R` is integrable on `[0, 2π]`;
-
-* `circleIntegral f c R`: the integral $\oint_{|z-c|=|R|} f(z)\,dz$, defined as
-  $\int_{0}^{2π}(c + Re^{θ i})' f(c+Re^{θ i})\,dθ$;
-
+* `circleIntegral f c R`: the integral $`\oint_{|z-c|=|R|} f(z)\,dz`, defined as
+  $`\int_{0}^{2π}(c + Re^{θ i})' f(c+Re^{θ i})\,dθ`;
 * `cauchyPowerSeries f c R`: the power series that is equal to
-  $\sum_{n=0}^{\infty} \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
+  $`\sum_{n=0}^{\infty} \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz` at
   `w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
   series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R`
   and `w` belongs to the corresponding open ball.
@@ -37,18 +38,15 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 * `hasFPowerSeriesOn_cauchy_integral`: for any circle integrable function `f`, the power series
   `cauchyPowerSeries f c R`, `R > 0`, converges to the Cauchy integral
   `(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z` on the open disc `Metric.ball c R`;
-
 * `circleIntegral.integral_sub_zpow_of_undef`, `circleIntegral.integral_sub_zpow_of_ne`, and
   `circleIntegral.integral_sub_inv_of_mem_ball`: formulas for `∮ z in C(c, R), (z - w) ^ n`,
   `n : ℤ`. These lemmas cover the following cases:
 
-  - `circleIntegral.integral_sub_zpow_of_undef`, `n < 0` and `|w - c| = |R|`: in this case the
+  * `circleIntegral.integral_sub_zpow_of_undef`, `n < 0` and `|w - c| = |R|`: in this case the
     function is not integrable, so the integral is equal to its default value (zero);
-
-  - `circleIntegral.integral_sub_zpow_of_ne`, `n ≠ -1`: in the cases not covered by the previous
+  * `circleIntegral.integral_sub_zpow_of_ne`, `n ≠ -1`: in the cases not covered by the previous
     lemma, we have `(z - w) ^ n = ((z - w) ^ (n + 1) / (n + 1))'`, thus the integral equals zero;
-
-  - `circleIntegral.integral_sub_inv_of_mem_ball`, `n = -1`, `|w - c| < R`: in this case the
+  * `circleIntegral.integral_sub_inv_of_mem_ball`, `n = -1`, `|w - c| < R`: in this case the
     integral is equal to `2πi`.
 
   The case `n = -1`, `|w -c| > R` is not covered by these lemmas. While it is possible to construct
@@ -57,8 +55,8 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 ## Notation
 
-- `∮ z in C(c, R), f z`: notation for the integral $\oint_{|z-c|=|R|} f(z)\,dz$, defined as
-  $\int_{0}^{2π}(c + Re^{θ i})' f(c+Re^{θ i})\,dθ$.
+* `∮ z in C(c, R), f z`: notation for the integral $`\oint_{|z-c|=|R|} f(z)\,dz`, defined as
+  $`\int_{0}^{2π}(c + Re^{θ i})' f(c+Re^{θ i})\,dθ`.
 
 ## Tags
 
@@ -76,7 +74,7 @@ open scoped Real NNReal Interval Pointwise Topology
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
 /-!
-### Facts about `circleMap`
+# Facts about `circleMap`
 -/
 
 /-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
@@ -165,15 +163,17 @@ theorem circleMap_neg_radius {r x : ℝ} {c : ℂ} :
   simp [circleMap, add_mul, Complex.exp_add]
 
 /-!
-### Integrability of a function on a circle
+# Integrability of a function on a circle
 -/
 
-/-- We say that a function `f : ℂ → E` is integrable on the circle with center `c` and radius `R` if
+/--
+We say that a function `f : ℂ → E` is integrable on the circle with center `c` and radius `R` if
 the function `f ∘ circleMap c R` is integrable on `[0, 2π]`.
 
 Note that the actual function used in the definition of `circleIntegral` is
 `(deriv (circleMap c R) θ) • f (circleMap c R θ)`. Integrability of this function is equivalent
-to integrability of `f ∘ circleMap c R` whenever `R ≠ 0`. -/
+to integrability of `f ∘ circleMap c R` whenever `R ≠ 0`.
+-/
 @[fun_prop]
 def CircleIntegrable (f : ℂ → E) (c : ℂ) (R : ℝ) : Prop :=
   IntervalIntegrable (fun θ : ℝ ↦ f (circleMap c R θ)) volume 0 (2 * π)
@@ -431,11 +431,15 @@ theorem CircleIntegrable.sub_zpow_smul {f : ℂ → E} {c w : ℂ} {R : ℝ} (n 
   hf.fun_continuousOn_smul <| (continuousOn_id.sub continuousOn_const).zpow₀ n
     fun _ hz ↦ Or.inl (sub_ne_zero.2 (ne_of_mem_of_not_mem hz hw))
 
-/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
+/--
+Definition for $`\oint_{|z-c|=R} f(z)\,dz`
+-/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in 0..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
-/-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
+/--
+`∮ z in C(c, R), f z` is the circle integral $`\oint_{|z-c|=R} f(z)\,dz`.
+-/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:60:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
@@ -632,13 +636,14 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
 
 end circleIntegral
 
-/-- The power series that is equal to
-$\frac{1}{2πi}\sum_{n=0}^{\infty}
-  \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz$ at
-`w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
+/--
+The power series that is equal to
+$`\frac{1}{2πi}\sum_{n=0}^{\infty} \oint_{|z-c|=R} \left(\frac{w-c}{z - c}\right)^n \frac{1}{z-c}f(z)\,dz`
+at `w - c`. The coefficients of this power series depend only on `f ∘ circleMap c R`, and the power
 series converges to `f w` if `f` is differentiable on the closed ball `Metric.closedBall c R` and
 `w` belongs to the corresponding open ball. For any circle integrable function `f`, this power
-series converges to the Cauchy integral for `f`. -/
+series converges to the Cauchy integral for `f`.
+-/
 def cauchyPowerSeries (f : ℂ → E) (c : ℂ) (R : ℝ) : FormalMultilinearSeries ℂ ℂ E := fun n =>
   ContinuousMultilinearMap.mkPiRing ℂ _ <|
     (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - c)⁻¹ ^ n • (z - c)⁻¹ • f z
@@ -744,7 +749,9 @@ theorem hasFPowerSeriesOn_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0
 
 namespace circleIntegral
 
-/-- Integral $\oint_{|z-c|=R} \frac{dz}{z-w} = 2πi$ whenever $|w-c| < R$. -/
+/--
+Integral $`\oint_{|z-c|=R} \frac{dz}{z-w} = 2πi` whenever $`|w-c| < R`.
+-/
 theorem integral_sub_inv_of_mem_ball {c w : ℂ} {R : ℝ} (hw : w ∈ ball c R) :
     (∮ z in C(c, R), (z - w)⁻¹) = 2 * π * I := by
   have hR : 0 < R := dist_nonneg.trans_lt hw

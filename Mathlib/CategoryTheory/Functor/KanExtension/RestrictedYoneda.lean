@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtYoneda
 public import Mathlib.CategoryTheory.Functor.KanExtension.Pointwise
 public import Mathlib.CategoryTheory.RestrictedYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise left Kan extension along the Yoneda embedding
 
@@ -24,9 +27,9 @@ Under such assumptions, we show that `L` has a right adjoint
 see `Presheaf.restrictedShrinkYonedaAdjunction`.
 
 ## References
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-* https://ncatlab.org/nlab/show/Yoneda+extension
 
+* ‍\[S. MacLane, I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
+* https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
 
@@ -23,7 +26,6 @@ We also prove that multiplication distributes over arbitrarily indexed sums in a
 ring. That is, let `R` be a nonarchimedean ring, let `f : α → R` be a function that sums to `a : R`,
 and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × β) ↦ (f i.1) * (g i.2)`
 sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
-
 -/
 
 public section

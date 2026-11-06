@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of `C^n` functions between manifolds
 
 In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
+
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
@@ -19,8 +23,8 @@ In this file, we show that standard operations on `C^n` maps between manifolds a
   embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
-chain rule, manifolds, higher derivative
 
+chain rule, manifolds, higher derivative
 -/
 
 public section
@@ -49,7 +53,9 @@ variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {f : M → M'} {s : Set M} {x : M} {n : ℕ∞ω}
 
-/-! ### Regularity of the composition of `C^n` functions between manifolds -/
+/-!
+# Regularity of the composition of `C^n` functions between manifolds
+-/
 
 section Composition
 
@@ -81,7 +87,9 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
   · simp only [e, e', comp_apply, extChartAt_to_inv,
       writtenInExtChartAt_apply_extChartAt (mem_extChartAt_source x)]
 
-/-- See note [comp_of_eq lemmas] -/
+/--
+See note \[comp\_of\_eq lemmas\]
+-/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}
     (hg : ContMDiffWithinAt I' I'' n g t y) (hf : ContMDiffWithinAt I I' n f s x)
     (st : MapsTo f s t) (hx : f x = y) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
@@ -128,7 +136,9 @@ nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'
     (hf : ContMDiffAt I I' n f x) : ContMDiffAt I I'' n (g ∘ f) x :=
   hg.comp x hf (mapsTo_univ _ _)
 
-/-- See note [comp_of_eq lemmas] -/
+/--
+See note \[comp\_of\_eq lemmas\]
+-/
 theorem ContMDiffAt.comp_of_eq {g : M' → M''} {x : M} {y : M'} (hg : ContMDiffAt I' I'' n g y)
     (hf : ContMDiffAt I I' n f x) (hx : f x = y) : ContMDiffAt I I'' n (g ∘ f) x := by
   subst hx; exact hg.comp x hf
@@ -143,7 +153,9 @@ theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiff
 
 end Composition
 
-/-! ### The identity is `C^n` -/
+/-!
+# The identity is `C^n`
+-/
 
 section id
 
@@ -162,7 +174,9 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
-/-! ### Iterated functions -/
+/-!
+# Iterated functions
+-/
 
 section Iterate
 
@@ -181,7 +195,9 @@ theorem ContMDiff.iterate {f : M → M} (hf : ContMDiff I I n f) (k : ℕ) :
 
 end Iterate
 
-/-! ### Constants are `C^n` -/
+/-!
+# Constants are `C^n`
+-/
 
 section const
 variable {c : M'}
@@ -305,7 +321,9 @@ lemma ContMDiff.piecewise_Iic
     ContMDiff 𝓘(ℝ) I n (Set.piecewise (Iic s) f g) :=
   hf.piecewise hg (by simpa using hfg)
 
-/-! ### Being `C^k` on a union of open sets can be tested on each set -/
+/-!
+# Being `C^k` on a union of open sets can be tested on each set
+-/
 section contMDiff_union
 
 variable {s t : Set M}
@@ -354,7 +372,9 @@ lemma contMDiff_of_contMDiffOn_iUnion_of_isOpen {ι : Type*} {s : ι → Set M}
 end contMDiff_union
 
 
-/-! ### The inclusion map from one open set to another is `C^n` -/
+/-!
+# The inclusion map from one open set to another is `C^n`
+-/
 
 section Inclusion
 
@@ -404,7 +424,9 @@ lemma ContMDiff.subtypeVal_comp_iff (U : TopologicalSpace.Opens M') (f : M → U
 
 end ChartedSpace
 
-/-! ### Open embeddings and their inverses are `C^n` -/
+/-!
+# Open embeddings and their inverses are `C^n`
+-/
 
 section
 
@@ -459,10 +481,12 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
 variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
-/-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
+/--
+Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
 space `H'`. If `e' ∘ f : M → H'` is `C^n`, then `f` is `C^n`.
 
-This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
+This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`.
+-/
 lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :
     haveI := h'.singletonChartedSpace; ContMDiff I I' n f := by
   have : f = (h'.toOpenPartialHomeomorph e').symm ∘ e' ∘ f := by

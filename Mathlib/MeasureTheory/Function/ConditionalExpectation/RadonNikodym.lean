@@ -11,6 +11,9 @@ import Mathlib.MeasureTheory.Function.ConditionalExpectation.LebesgueBochner
 import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
 import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radon-Nikodym derivatives and conditional expectations
 
@@ -31,7 +34,6 @@ In all statements, `μ` and `ν` are measures with `μ ≪ ν`.
 We have two versions of the above statements, one with a.e. equality to the conditional expectation
 `condLExp` built from the Lebesgue integral, and one with a.e. equality to the
 conditional expectation `condExp` built from the Bochner integral.
-
 -/
 
 public section
@@ -42,12 +44,14 @@ namespace MeasureTheory
 
 variable {𝓧 𝓨 : Type*} {m m𝓧 : MeasurableSpace 𝓧} {m𝓨 : MeasurableSpace 𝓨} {μ ν : Measure 𝓧}
 
-/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+/--
+The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
 a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
 with respect to the comap by `g` of the sigma-algebra on `𝓨`.
 
 See `toReal_rnDeriv_map_ae_eq_trim` for the same statement, but with a.e. equality with respect to
-the trimmed measure `ν.trim hg.comap_le`. -/
+the trimmed measure `ν.trim hg.comap_le`.
+-/
 lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [hσ : SigmaFinite (ν.map g)] :
     (fun a ↦ ((μ.map g).rnDeriv (ν.map g) (g a)).toReal) =ᵐ[ν]
@@ -73,12 +77,14 @@ lemma toReal_rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
   · refine (Measurable.ennreal_toReal fun s hs ↦ ?_).aestronglyMeasurable
     exact ⟨_, Measure.measurable_rnDeriv _ _ hs, rfl⟩
 
-/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+/--
+The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
 a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
 with respect to the comap by `g` of the sigma-algebra on `𝓨`.
 
 See `rnDeriv_map_ae_eq_trim` for the same statement, but with a.e. equality with respect to
-the trimmed measure `ν.trim hg.comap_le`. -/
+the trimmed measure `ν.trim hg.comap_le`.
+-/
 lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [hσ : SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν] ν⁻[μ.rnDeriv ν|m𝓨.comap g] := by
@@ -94,11 +100,13 @@ lemma rnDeriv_map [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     with x hx h_condExp h_ne_top1 h_ne_top2
   rwa [← h_condExp, ENNReal.toReal_eq_toReal_iff' h_ne_top1 h_ne_top2] at hx
 
-/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+/--
+The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
 a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
 with respect to the comap by `g` of the sigma-algebra on `𝓨`.
 
-See `rnDeriv_map` for the same statement, but with a.e. equality with respect to the measure `ν`. -/
+See `rnDeriv_map` for the same statement, but with a.e. equality with respect to the measure `ν`.
+-/
 lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [SigmaFinite (ν.map g)] :
     (fun a ↦ (μ.map g).rnDeriv (ν.map g) (g a)) =ᵐ[ν.trim hg.comap_le]
@@ -109,12 +117,14 @@ lemma rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     exact ⟨((μ.map g).rnDeriv (ν.map g)) ⁻¹' s, hs.preimage (by fun_prop), by grind⟩
   · fun_prop
 
-/-- The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
+/--
+The Radon-Nikodym derivative `∂(μ.map g)/∂(ν.map g)` of the pushforward of measures by
 a function `g : 𝓧 → 𝓨` evaluated at `g x` is a.e.-equal to the conditional expectation of `∂μ/∂ν`
 with respect to the comap by `g` of the sigma-algebra on `𝓨`.
 
 See `toReal_rnDeriv_map` for the same statement, but with a.e. equality with respect to
-the measure `ν`. -/
+the measure `ν`.
+-/
 lemma toReal_rnDeriv_map_ae_eq_trim [IsFiniteMeasure μ] (hμν : μ ≪ ν)
     {g : 𝓧 → 𝓨} (hg : Measurable g) [SigmaFinite (ν.map g)] :
     (fun a ↦ ((μ.map g).rnDeriv (ν.map g) (g a)).toReal) =ᵐ[ν.trim hg.comap_le]

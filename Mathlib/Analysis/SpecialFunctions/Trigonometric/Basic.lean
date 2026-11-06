@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Algebra.QuadraticDiscriminant
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trigonometric functions
 
@@ -119,11 +122,13 @@ theorem exists_cos_eq_zero : 0 ∈ cos '' Icc (1 : ℝ) 2 :=
   intermediate_value_Icc' (by simp) continuousOn_cos
     ⟨le_of_lt cos_two_neg, le_of_lt cos_one_pos⟩
 
-/-- The number π = 3.14159265... Defined here using choice as twice a zero of cos in [1,2],
+/--
+The number π = 3.14159265... Defined here using choice as twice a zero of cos in \[1,2\],
 from which one can derive all its properties. For explicit bounds on π,
 see `Mathlib/Analysis/Real/Pi/Bounds.lean`.
 
-Denoted `π`, once the `Real` namespace is opened. -/
+Denoted `π`, once the `Real` namespace is opened.
+-/
 @[wikidata Q167, oeis A000796 "decimal expansion"]
 protected noncomputable def pi : ℝ :=
   2 * Classical.choose exists_cos_eq_zero
@@ -1264,9 +1269,10 @@ theorem exp_add_pi_mul_I (z : ℂ) : exp (z + π * I) = -exp z :=
 theorem exp_sub_pi_mul_I (z : ℂ) : exp (z - π * I) = -exp z :=
   exp_antiperiodic.sub_eq z
 
-/-- A supporting lemma for the **Phragmen-Lindelöf principle** in a horizontal strip. If `z : ℂ`
+/--
+A supporting lemma for the *Phragmen-Lindelöf principle* in a horizontal strip. If `z : ℂ`
 belongs to a horizontal strip `|Complex.im z| ≤ b`, `b ≤ π / 2`, and `a ≤ 0`, then
-$$\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.$$
+$$`\left|exp^{a\left(e^{z}+e^{-z}\right)}\right| \le e^{a\cos b \exp^{|re z|}}.`
 -/
 theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) {z : ℂ}
     (hz : |z.im| ≤ b) (hb : b ≤ π / 2) :

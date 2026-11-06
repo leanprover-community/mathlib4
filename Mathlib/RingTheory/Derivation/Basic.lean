@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivations
 
@@ -17,32 +20,35 @@ This file defines derivation. A derivation `D` from the `R`-algebra `A` to the `
 
 ## Main results
 
-- `Derivation`: The type of `R`-derivations from `A` to `M`. This has an `A`-module structure.
-- `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
+* `Derivation`: The type of `R`-derivations from `A` to `M`. This has an `A`-module structure.
+* `Derivation.llcomp`: We may compose linear maps and derivations to obtain a derivation,
   and the composition is bilinear.
 
 See `Mathlib/RingTheory/Derivation/Lie.lean` for
-- `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
+
+* `Derivation.instLieAlgebra`: The `R`-derivations from `A` to `A` form a Lie algebra over `R`.
 
 and `Mathlib/RingTheory/Derivation/ToSquareZero.lean` for
-- `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
+
+* `derivationToSquareZeroEquivLift`: The `R`-derivations from `A` into a square-zero ideal `I`
   of `B` corresponds to the lifts `A →ₐ[R] B` of the map `A →ₐ[R] B ⧸ I`.
 
 ## Future project
 
-- Generalize derivations into bimodules.
-
+* Generalize derivations into bimodules.
 -/
 
 @[expose] public section
 
 open Algebra
 
-/-- `D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
+/--
+`D : Derivation R A M` is an `R`-linear map from `A` to `M` that satisfies the `leibniz`
 equality. We also require that `D 1 = 0`. See `Derivation.mk'` for a constructor that deduces this
 assumption from the Leibniz rule when `M` is cancellative.
 
-TODO: update this when bimodules are defined. -/
+TODO: update this when bimodules are defined.
+-/
 structure Derivation (R : Type*) (A : Type*) (M : Type*)
     [CommSemiring R] [CommSemiring A] [AddCommMonoid M] [Algebra R A] [Module A M] [Module R M]
     extends A →ₗ[R] M where
@@ -77,7 +83,9 @@ instance : AddMonoidHomClass (Derivation R A M) A M where
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (D : Derivation R A M) : A → M := D
 
 initialize_simps_projections Derivation (toFun → apply)
@@ -383,8 +391,8 @@ variable {F : Type*} [FunLike F A M] [AlgHomClass F R A M]
 
 /--
 Lift a derivation via an algebra homomorphism `f` with a right inverse such that
-`f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`.
-This is needed for an argument in [Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
+`f(x) = 0 → f(d(x)) = 0`. This gives the derivation `f ∘ d ∘ f⁻¹`. This is needed for an argument in
+‍\[Rosenlicht, M. Integration in finite terms\]\[Rosenlicht\_1972\].
 -/
 def liftOfRightInverse {f : F} {f_inv : M → A} (hf : Function.RightInverse f_inv f)
     ⦃d : Derivation R A A⦄ (hd : ∀ x, f x = 0 → f (d x) = 0) : Derivation R M M where

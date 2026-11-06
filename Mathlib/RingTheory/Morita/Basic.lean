@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morita equivalence
 
@@ -18,27 +21,26 @@ relation and that isomorphic algebras are Morita equivalent.
 
 ## Main definitions
 
-- `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
+* `MoritaEquivalence R A B`: a structure containing an `R`-linear equivalence of categories between
   the module categories of `A` and `B`.
-- `IsMoritaEquivalent R A B`: a predicate asserting that `R`-algebras `A` and `B` are Morita
+* `IsMoritaEquivalent R A B`: a predicate asserting that `R`-algebras `A` and `B` are Morita
   equivalent.
 
 ## TODO
 
-- For any ring `R`, `R` and `Matₙ(R)` are Morita equivalent.
-- Morita equivalence in terms of projective generators.
-- Morita equivalence in terms of full idempotents.
-- Morita equivalence in terms of existence of an invertible bimodule.
-- If `R ≈ S`, then `R` is simple iff `S` is simple.
+* For any ring `R`, `R` and `Matₙ(R)` are Morita equivalent.
+* Morita equivalence in terms of projective generators.
+* Morita equivalence in terms of full idempotents.
+* Morita equivalence in terms of existence of an invertible bimodule.
+* If `R ≈ S`, then `R` is simple iff `S` is simple.
 
 ## References
 
-* [Nathan Jacobson, *Basic Algebra II*][jacobson1989]
+* ‍\[Nathan Jacobson, _Basic Algebra II_\]\[jacobson1989\]
 
 ## Tags
 
 Morita Equivalence, Category Theory, Noncommutative Ring, Module Theory
-
 -/
 
 @[expose] public section

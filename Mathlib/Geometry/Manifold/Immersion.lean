@@ -12,7 +12,11 @@ public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
 import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 import Mathlib.Topology.Algebra.Module.TransferInstance
 
-/-! # Smooth immersions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Smooth immersions
 
 In this file, we define `C^n` immersions between `C^n` manifolds.
 The correct definition in the infinite-dimensional setting differs from the standard
@@ -86,6 +90,7 @@ This shortens the overall argument, as the definition of submersions has the sam
   `IsImmersion(At)OfComplement.small` and `IsImmersion(At)OfComplement.smallEquiv`.
 
 ## TODO
+
 * The converse to `IsImmersionAtOfComplement.congr_F` also holds: any two complements are
   isomorphic, as they are isomorphic to the cokernel of the differential `mfderiv I J f x`.
 * If `f` is an immersion at `x`, its differential splits, hence is injective.
@@ -103,8 +108,8 @@ This shortens the overall argument, as the definition of submersions has the sam
 
 ## References
 
-* [Juan Margalef-Roig and Enrique Outerelo Dominguez, *Differential topology*][roigdomingues1992]
-
+* ‍\[Juan Margalef-Roig and Enrique Outerelo Dominguez, _Differential
+  topology_\]\[roigdomingues1992\]
 -/
 
 open scoped Topology ContDiff
@@ -133,13 +138,15 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : ℕ∞ω}
 
 variable (F I J M N) in
-/-- The local property of being an immersion at a point: `f : M → N` is an immersion at `x` if
+/--
+The local property of being an immersion at a point: `f : M → N` is an immersion at `x` if
 there exist charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that in these
 charts, `f` looks like the inclusion `u ↦ (u, 0)`.
 
 This definition has a fixed parameter `F`, which is a choice of complement of `E` in the model
 normed space `E'` of `N`: being an immersion at `x` includes a choice of linear isomorphism
-between `E × F` and `E'`. -/
+between `E × F` and `E'`.
+-/
 def ImmersionAtProp : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop :=
   fun f domChart codChart ↦ ∃ equiv : (E × F) ≃L[𝕜] E'',
     EqOn ((codChart.extend J) ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
@@ -157,7 +164,8 @@ lemma isLocalSourceTargetProperty_immersionAtProp :
     grind
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/--
+`f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -176,7 +184,8 @@ def IsImmersionAtOfComplement (f : M → N) (x : M) : Prop :=
 
 -- Lift the universe from `E''`, to avoid a free universe parameter.
 variable (I J n) in
-/-- `f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+/--
+`f : M → N` is a `C^n` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
 around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
 Additionally, we demand that `f` map `φ.source` into `ψ.source`.
 
@@ -288,12 +297,12 @@ lemma property (h : IsImmersionAtOfComplement F I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target `(h.domChart.extend I).target`
 to its codomain chart's target `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domingues' \[roigdomingues1992\] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
-is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
+is _slightly_ weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
+but that does _not_ imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.
@@ -389,7 +398,8 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
   rw [φ₁.extend_prod φ₂, ψ₁.extend_prod, PartialEquiv.prod_target, eqOn_prod_iff]
   exact ⟨fun x ⟨hx, hx'⟩ ↦ by simpa using hfprop hx, fun x ⟨hx, hx'⟩ ↦ by simpa using hgprop hx'⟩
 
-/-- If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
+/--
+If `f` is an immersion at `x` w.r.t. some complement `F`, it is an immersion at `x`.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
 while being an immersion at `x` requires the existence of a complement in the same universe as
@@ -661,12 +671,12 @@ lemma property (h : IsImmersionAt I J n f x) :
 If `f` is an immersion at `x`, it maps its domain chart's target to its codomain chart's target:
 `(h.domChart.extend I).target` to `(h.domChart.extend J).target`.
 
-Roig and Domingues' [roigdomingues1992] definition of immersions only asks for this inclusion
+Roig and Domingues' \[roigdomingues1992\] definition of immersions only asks for this inclusion
 between the targets of the local charts: using mathlib's formalisation conventions, that condition
-is *slightly* weaker than `source_subset_preimage_source`: the latter implies that
+is _slightly_ weaker than `source_subset_preimage_source`: the latter implies that
 `h.codChart.extend J ∘ f` maps `h.domChart.source` to
 `(h.codChart.extend J).target = (h.codChart.extend I) '' h.codChart.source`,
-but that does *not* imply `f` maps `h.domChart.source` to `h.codChart.source`;
+but that does _not_ imply `f` maps `h.domChart.source` to `h.codChart.source`;
 a priori `f` could map some point `f ∘ h.domChart.extend I x ∉ h.codChart.source` into the target.
 Note that this difference only occurs because of our design using junk values;
 this is not a mathematically meaningful difference.
@@ -774,7 +784,8 @@ lemma mfderiv_injective (h : IsImmersionAt I J n f x) (hn : n ≠ 0) : Injective
 end IsImmersionAt
 
 variable (F I J n) in
-/-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
+/--
+`f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 
@@ -787,7 +798,8 @@ being an immersion at `x` includes a choice of linear isomorphism between `E × 
 def IsImmersionOfComplement (f : M → N) : Prop := ∀ x, IsImmersionAtOfComplement F I J n f x
 
 variable (I J n) in
-/-- `f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
+/--
+`f : M → N` is a `C^n` immersion if around each point `x ∈ M`,
 there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
 such that in these charts, `f` looks like `u ↦ (u, 0)`.
 
@@ -832,7 +844,8 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsImmersionOfComplement (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
   fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
-/-- If `f` is an immersion w.r.t. some complement `F`, it is an immersion.
+/--
+If `f` is an immersion w.r.t. some complement `F`, it is an immersion.
 
 Note that the proof contains a small formalisation-related subtlety: `F` can live in any universe,
 while being an immersion requires the existence of a complement in the same universe as
@@ -939,7 +952,8 @@ lemma isImmersionOfComplement_complement (h : IsImmersion I J n f) :
     IsImmersionOfComplement h.complement I J n f :=
   Classical.choose_spec <| Classical.choose_spec <| Classical.choose_spec h
 
-/-- If `f` is an immersion, it is an immersion at each point.
+/--
+If `f` is an immersion, it is an immersion at each point.
 
 Note that the converse statement is false in general:
 if `f` is an immersion at each `x`, but with the choice of complement possibly depending on `x`,

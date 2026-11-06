@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 import Mathlib.Analysis.Convex.ContinuousLinearEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Strict) convexity and linear isometries
 
@@ -67,11 +70,13 @@ lemma LinearIsometry.strictConvexSpace [StrictConvexSpace 𝕜 F] (f : E →ₗ�
     rw [← f.isometry.preimage_closedBall]
     exact (strictConvex_closedBall _ _ _).linearIsometry_preimage _
 
-/-- A vector subspace of a strict convex space is a strict convex space.
+/--
+A vector subspace of a strict convex space is a strict convex space.
 
 This instance has priority 900
 to make sure that instances like `LinearIsometry.strictConvexSpace_range`
-are tried before this one. -/
+are tried before this one.
+-/
 instance (priority := 900) Submodule.instStrictConvexSpace [StrictConvexSpace 𝕜 E]
     (p : Submodule 𝕜 E) : StrictConvexSpace 𝕜 p :=
   p.subtypeₗᵢ.strictConvexSpace

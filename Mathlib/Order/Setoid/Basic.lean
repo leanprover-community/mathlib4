@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence relations
 
@@ -392,10 +395,12 @@ def quotientKerEquivOfRightInverse (g : β → α) (hf : Function.RightInverse g
   left_inv a := Quotient.inductionOn' a fun a => Quotient.sound' <| hf (f a)
   right_inv := hf
 
-/-- The quotient of α by the kernel of a surjective function f bijects with f's codomain.
+/--
+The quotient of α by the kernel of a surjective function f bijects with f's codomain.
 
 If a specific right-inverse of `f` is known, `Setoid.quotientKerEquivOfRightInverse` can be
-definitionally more useful. -/
+definitionally more useful.
+-/
 noncomputable def quotientKerEquivOfSurjective (hf : Surjective f) : Quotient (ker f) ≃ β :=
   quotientKerEquivOfRightInverse _ (Function.surjInv hf) (rightInverse_surjInv hf)
 
@@ -435,10 +440,12 @@ theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
     map r f = mapOfSurjective r f h hf := by
   rw [← eqvGen_of_setoid (mapOfSurjective r f h hf)]; rfl
 
-/-- Given a function `f : α → β`, an equivalence relation `r` on `β` induces an equivalence
+/--
+Given a function `f : α → β`, an equivalence relation `r` on `β` induces an equivalence
 relation on `α` defined by '`x ≈ y` iff `f(x)` is related to `f(y)` by `r`'.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev comap (f : α → β) (r : Setoid β) : Setoid α :=
   ⟨r on f, r.iseqv.comap _⟩
 

@@ -8,12 +8,14 @@ module
 public import Mathlib.Condensed.Functors
 public import Mathlib.Condensed.Limits
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Solid modules
 
 This file contains the definition of a solid `R`-module: `CondensedMod.isSolid R`. Solid modules
-groups were introduced in [scholze2019condensed], Definition 5.1.
+groups were introduced in \[scholze2019condensed\], Definition 5.1.
 
 ## Main definition
 

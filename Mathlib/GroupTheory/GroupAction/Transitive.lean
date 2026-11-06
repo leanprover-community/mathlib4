@@ -8,26 +8,28 @@ module
 public import Mathlib.GroupTheory.GroupAction.Defs
 public import Mathlib.GroupTheory.GroupAction.Hom
 
-/-! # Complements to pretransitive actions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Complements to pretransitive actions
 
 When `f : X →ₑ[φ] Y` is an equivariant map with respect to a map
 of monoids `φ: M → N`,
 
-- `MulAction.IsPretransitive.of_surjective_map` shows that
+* `MulAction.IsPretransitive.of_surjective_map` shows that
   the action of `N` on `Y` is pretransitive
   if that of `M` on `X`  is pretransitive.
-
-- `MulAction.isPretransitive_congr` shows that when
+* `MulAction.isPretransitive_congr` shows that when
   `φ` is surjective, the action of `N` on `Y` is pretransitive
   iff that of `M` on `X`  is pretransitive.
 
 Given `MulAction G X` where `G` is a group,
-- `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
+
+* `MulAction.isPretransitive_iff_base G a` shows that `IsPretransitive G X`
   iff every element is translated from `a`
-
-- `MulAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MulAction.IsPretransitive G X`
+* `MulAction.isPretransitive_iff_orbit_eq_univ G a` shows that `MulAction.IsPretransitive G X`
   iff `MulAction.orbit G a` is full.
-
 -/
 
 public section

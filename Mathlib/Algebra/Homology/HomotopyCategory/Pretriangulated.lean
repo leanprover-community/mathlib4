@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexShift
 public import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
 public import Mathlib.CategoryTheory.Triangulated.Functor
 
-/-! # The pretriangulated structure on the homotopy category of complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The pretriangulated structure on the homotopy category of complexes
 
 In this file, we define the pretriangulated structure on the homotopy
 category `HomotopyCategory C (ComplexShape.up ℤ)` of an additive category `C`.
@@ -21,15 +25,15 @@ cochain complexes `φ : K ⟶ L`.
 This result first appeared in the Liquid Tensor Experiment. In the LTE, the
 formalization followed the Stacks Project: in particular, the distinguished
 triangles were defined using degreewise-split short exact sequences of cochain
-complexes. Here, we follow the original definitions in [Verdier's thesis, I.3][verdier1996]
+complexes. Here, we follow the original definitions in \[Verdier's thesis, I.3\]\[verdier1996\]
 (with the better sign conventions from the introduction of
-[Brian Conrad's book *Grothendieck duality and base change*][conrad2000]).
+‍\[Brian Conrad's book _Grothendieck duality and base change_\]\[conrad2000\]).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
-* [Brian Conrad, Grothendieck duality and base change][conrad2000]
-* https://stacks.math.columbia.edu/tag/014P
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
+* ‍\[Brian Conrad, Grothendieck duality and base change\]\[conrad2000\]
+* https://stacks.math.columbia.edu/tag/014P
 -/
 
 @[expose] public section

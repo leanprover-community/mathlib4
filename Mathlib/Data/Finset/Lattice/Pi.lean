@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Lattice.Prod
 public import Mathlib.Data.Finset.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lattice operations on finsets of functions
 

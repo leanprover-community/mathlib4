@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Products in the over category
 
@@ -36,17 +39,19 @@ variable {C : Type u} [Category.{v} C]
 variable {X Y Z : C}
 
 /-!
-### Binary products
+# Binary products
 
 In this section we construct binary products in `Over X` and binary coproducts in `Under X`
 explicitly as the pullbacks and pushouts of binary (co)fans in the base category.
 
 For `Over X`, one could construct these binary products from the general theory of arbitrary
 products from the next section, i.e.
+
 ```
 (Cone.postcomposeEquivalence (diagramIsoCospan _).symm).trans
   (Over.ConstructProducts.conesEquiv _ (pair (Over.mk f) (Over.mk g)))
 ```
+
 but this gives worse defeqs.
 
 For `Under X`, there is currently no general theory of arbitrary coproducts.
@@ -211,7 +216,7 @@ lemma prodLeftIsoPullback_inv_snd :
 end BinaryProduct
 
 /-!
-### Arbitrary products
+# Arbitrary products
 
 In this section, we prove that `J`-indexed products in `Over X` correspond to `J`-indexed pullbacks
 in `C`.

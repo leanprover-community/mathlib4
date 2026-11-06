@@ -7,17 +7,19 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # circleMap
 
-This file defines the circle map $θ ↦ c + R e^{θi}$, a parametrization of a circle.
+This file defines the circle map $`θ ↦ c + R e^{θi}`, a parametrization of a circle.
 
 ## Main definitions
 
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$.
+* `circleMap c R`: the exponential map $`θ ↦ c + R e^{θi}`.
 
 ## Tags
-
 -/
 
 @[expose] public section
@@ -27,8 +29,10 @@ open Complex Function Metric Real
 
 open scoped ComplexConjugate
 
-/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
-`c` and radius `|R|`. -/
+/--
+The exponential map $`θ ↦ c + R e^{θi}`. The range of this map is the circle in `ℂ` with center
+`c` and radius `|R|`.
+-/
 def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
 
 @[simp]

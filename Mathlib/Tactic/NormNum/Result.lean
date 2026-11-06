@@ -12,8 +12,11 @@ public import Mathlib.Algebra.Ring.Nat
 
 import Mathlib.Data.Int.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## The `Result` type for `norm_num`
+# The `Result` type for `norm_num`
 
 We set up predicates `IsNat`, `IsInt`, and `IsRat`,
 stating that an element of a ring is equal to the "normal form" of a natural number, integer,
@@ -22,7 +25,6 @@ or rational number coerced into that ring.
 We then define `Result e`, which contains a proof that a typed expression `e : Q($α)`
 is equal to the coercion of an explicit natural number, integer, or rational number,
 or is either `true` or `false`.
-
 -/
 
 public section

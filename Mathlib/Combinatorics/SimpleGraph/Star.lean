@@ -8,8 +8,10 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Acyclic
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Star Graphs
 
 ## Main definitions
@@ -20,7 +22,6 @@ public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
 ## Main statements
 
 * `SimpleGraph.isTree_starGraph` proves the star graph is a tree.
-
 
 ## Tags
 

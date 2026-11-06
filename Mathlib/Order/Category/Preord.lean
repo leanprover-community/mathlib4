@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.Category.Preorder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of preorders
 

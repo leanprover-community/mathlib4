@@ -9,13 +9,14 @@ public import Mathlib.Algebra.Module.Basic
 public import Mathlib.Dynamics.BirkhoffSum.Basic
 public import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birkhoff average
 
 In this file we define `birkhoffAverage f g n x` to be
-$$
-\frac{1}{n}\sum_{k=0}^{n-1}g(f^{[k]}(x)),
-$$
+$$`  \frac{1}{n}\sum_{k=0}^{n-1}g(f^{[k]}(x)),  `
 where `f : α → α` is a self-map on some type `α`,
 `g : α → M` is a function from `α` to a module over a division semiring `R`,
 and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
@@ -23,7 +24,6 @@ and `R` is used to formalize division by `n` as `(n : R)⁻¹ • _`.
 While we need an auxiliary division semiring `R` to define `birkhoffAverage`,
 the definition does not depend on the choice of `R`,
 see `birkhoffAverage_congr_ring`.
-
 -/
 
 @[expose] public section
@@ -34,7 +34,8 @@ section birkhoffAverage
 
 variable (R : Type*) {α M : Type*} [DivisionSemiring R] [AddCommMonoid M] [Module R M]
 
-/-- The average value of `g` on the first `n` points of the orbit of `x` under `f`,
+/--
+The average value of `g` on the first `n` points of the orbit of `x` under `f`,
 i.e. the Birkhoff sum `∑ k ∈ Finset.range n, g (f^[k] x)` divided by `n`.
 
 This average appears in many ergodic theorems
@@ -43,7 +44,8 @@ converges to the "space average" `⨍ x, g x ∂μ` as `n → ∞`.
 
 We use an auxiliary `[DivisionSemiring R]` to define division by `n`.
 However, the definition does not depend on the choice of `R`,
-see `birkhoffAverage_congr_ring`. -/
+see `birkhoffAverage_congr_ring`.
+-/
 def birkhoffAverage (f : α → α) (g : α → M) (n : ℕ) (x : α) : M := (n : R)⁻¹ • birkhoffSum f g n x
 
 theorem birkhoffAverage_zero_apply (f : α → α) (g : α → M) (x : α) :

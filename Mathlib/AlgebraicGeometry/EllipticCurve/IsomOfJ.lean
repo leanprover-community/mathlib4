@@ -8,16 +8,17 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.NormalForms
 public import Mathlib.FieldTheory.IsSepClosed
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Elliptic curves with same j-invariants are isomorphic
 
 ## Main results
 
-- `WeierstrassCurve.exists_variableChange_of_j_eq`: if `E` and `E'` are elliptic curves with the
+* `WeierstrassCurve.exists_variableChange_of_j_eq`: if `E` and `E'` are elliptic curves with the
   same `j`-invariants defined over a separably closed field, then there exists a change of variables
   over that field which change `E` into `E'`.
-
 -/
 
 public section

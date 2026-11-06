@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bochner integrals of convolutions
 

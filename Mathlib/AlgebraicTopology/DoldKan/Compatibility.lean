@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Equivalence
 
-/-! # Tools for compatibilities between Dold-Kan equivalences
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tools for compatibilities between Dold-Kan equivalences
 
 The purpose of this file is to introduce tools which will enable the
 construction of the Dold-Kan equivalence `SimplicialObject C ≌ ChainComplex C ℕ`
@@ -25,19 +29,19 @@ if the inverse functor of the equivalence was exactly the functor
 In this file, given four categories `A`, `A'`, `B`, `B'`, equivalences `eA : A ≌ A'`,
 `eB : B ≌ B'`, `e' : A' ≌ B'`, functors `F : A ⥤ B'`, `G : B ⥤ A` equipped with certain
 compatibilities, we construct successive equivalences:
-- `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
-- `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
+
+* `equivalence₀` from `A` to `B'`, which is the composition of `eA` and `e'`.
+* `equivalence₁` from `A` to `B'`, with the same inverse functor as `equivalence₀`,
   but whose functor is `F`.
-- `equivalence₂` from `A` to `B`, which is the composition of `equivalence₁` and the
+* `equivalence₂` from `A` to `B`, which is the composition of `equivalence₁` and the
   inverse of `eB`:
-- `equivalence` from `A` to `B`, which has the same functor `F ⋙ eB.inverse` as `equivalence₂`,
+* `equivalence` from `A` to `B`, which has the same functor `F ⋙ eB.inverse` as `equivalence₂`,
   but whose inverse functor is `G`.
 
 When extra assumptions are given, we shall also provide simplification lemmas for the
 unit and counit isomorphisms of `equivalence`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 set_option backward.defeqAttrib.useBackward true

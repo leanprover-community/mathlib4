@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The natural numbers form a monoid
 
 This file contains the additive and multiplicative monoid instances on the natural numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -21,7 +24,9 @@ assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 instance instMulOneClass : MulOneClass ℕ where
   one_mul := Nat.one_mul
@@ -61,7 +66,7 @@ instance : HasUniqueDiv ℕ where
   nsmul_right_injective _n hn _x _y hxy := Nat.mul_left_cancel (Nat.pos_of_ne_zero hn) hxy
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
@@ -79,7 +84,9 @@ instance instOne              : One ℕ              := inferInstance
 
 set_option linter.style.whitespace true
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 -- We set the simp priority slightly lower than default; later more general lemmas will replace it.
 @[simp 900] protected lemma nsmul_eq_mul (m n : ℕ) : m • n = m * n := rfl

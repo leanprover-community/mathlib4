@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak dual topology
 
@@ -35,12 +38,11 @@ with the respective topology instances on it.
 
 ## References
 
-* [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
+* ‍\[H. H. Schaefer, _Topological Vector Spaces_\]\[schaefer1966\]
 
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section

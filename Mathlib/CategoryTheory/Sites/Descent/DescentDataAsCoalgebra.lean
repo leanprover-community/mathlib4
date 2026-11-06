@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Bicategory.Adjunction.Cat
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 public import Mathlib.CategoryTheory.Monad.Adjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descent data as coalgebras
 
@@ -31,9 +34,9 @@ identifies to the category of coalgebras for the comonad attached
 to the adjunction `(F.map f.op.toLoc).adj`.
 
 ## TODO (@joelriou, @chrisflav)
+
 * Compare `DescentDataAsCoalgebra` with `DescentData` when suitable
   pullbacks exist and certain base change morphisms are isomorphisms
-
 -/
 
 @[expose] public section

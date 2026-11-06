@@ -9,8 +9,10 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Defs
 public import Mathlib.Topology.Algebra.InfiniteSum.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Vector-valued measures
 
 This file defines vector-valued measures, which are σ-additive functions from a set to an

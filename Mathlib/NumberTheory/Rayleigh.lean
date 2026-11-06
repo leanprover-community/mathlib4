@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Real.ConjExponents
 public import Mathlib.NumberTheory.Real.Irrational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rayleigh's theorem on Beatty sequences
 
@@ -40,7 +43,7 @@ The main statements are:
 
 ## References
 
-* [Wikipedia, *Beatty sequence*](https://en.wikipedia.org/wiki/Beatty_sequence)
+* [Wikipedia, _Beatty sequence_](https://en.wikipedia.org/wiki/Beatty_sequence)
 
 ## Tags
 

@@ -12,6 +12,9 @@ import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Translation and scaling of integral curves
 
@@ -31,7 +34,9 @@ variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {γ : ℝ → E} {v : ℝ → E → E} {s : Set ℝ} {t₀ : ℝ}
 
-/-! ### Translation lemmas -/
+/-!
+# Translation lemmas
+-/
 
 section Translation
 
@@ -101,7 +106,9 @@ lemma IsIntegralCurve.comp_sub (hγ : IsIntegralCurve γ v) (dt : ℝ) :
 
 end Translation
 
-/-! ### Scaling lemmas -/
+/-!
+# Scaling lemmas
+-/
 
 section Scaling
 

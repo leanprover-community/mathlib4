@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 import Mathlib.CategoryTheory.Adjunction.Additive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The adjoint functor is triangulated
 
@@ -28,7 +31,6 @@ is triangulated as soon as one of the adjoint functors is triangulated.
 We finally specialize these structures to equivalences of categories, and prove that,
 if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
-
 -/
 
 public section

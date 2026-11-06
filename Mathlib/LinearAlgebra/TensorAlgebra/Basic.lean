@@ -10,6 +10,9 @@ public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 public import Mathlib.RingTheory.Congruence.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor Algebras
 
@@ -21,16 +24,16 @@ This is the free `R`-algebra generated (`R`-linearly) by the module `M`.
 1. `TensorAlgebra R M` is the tensor algebra itself. It is endowed with an R-algebra structure.
 2. `TensorAlgebra.ι R` is the canonical R-linear map `M → TensorAlgebra R M`.
 3. Given a linear map `f : M → A` to an R-algebra `A`, `lift R f` is the lift of `f` to an
-  `R`-algebra morphism `TensorAlgebra R M → A`.
+   `R`-algebra morphism `TensorAlgebra R M → A`.
 
 ## Theorems
 
 1. `ι_comp_lift` states that the composition `(lift R f) ∘ (ι R)` is identical to `f`.
 2. `lift_unique` states that whenever an R-algebra morphism `g : TensorAlgebra R M → A` is
-  given whose composition with `ι R` is `f`, then one has `g = lift R f`.
+   given whose composition with `ι R` is `f`, then one has `g = lift R f`.
 3. `hom_ext` is a variant of `lift_unique` in the form of an extensionality theorem.
 4. `lift_comp_ι` is a combination of `ι_comp_lift` and `lift_unique`. It states that the lift
-  of the composition of an algebra morphism with `ι` is the algebra morphism itself.
+   of the composition of an algebra morphism with `ι` is the algebra morphism itself.
 
 ## Implementation details
 
@@ -179,7 +182,9 @@ theorem lift_comp_ι {A : Type*} [Semiring A] [Algebra R A] (g : TensorAlgebra R
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : TensorAlgebra R M →ₐ[R] A}
     (w : f.toLinearMap.comp (ι R) = g.toLinearMap.comp (ι R)) : f = g := by
@@ -266,10 +271,12 @@ theorem toTrivSqZeroExt_ι (x : M) [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
     toTrivSqZeroExt (ι R x) = TrivSqZeroExt.inr x :=
   lift_ι_apply _ _
 
-/-- The left-inverse of `ι`.
+/--
+The left-inverse of `ι`.
 
 As an implementation detail, we implement this using `TrivSqZeroExt` which has a suitable
-algebra structure. -/
+algebra structure.
+-/
 def ιInv : TensorAlgebra R M →ₗ[R] M := by
   letI : Module Rᵐᵒᵖ M := Module.compHom _ ((RingHom.id R).fromOpposite mul_comm)
   haveI : IsCentralScalar R M := ⟨fun r m => rfl⟩
@@ -317,9 +324,11 @@ theorem ι_range_disjoint_one :
 
 variable (R M)
 
-/-- Construct a product of `n` elements of the module within the tensor algebra.
+/--
+Construct a product of `n` elements of the module within the tensor algebra.
 
-See also `PiTensorProduct.tprod`. -/
+See also `PiTensorProduct.tprod`.
+-/
 def tprod (n : ℕ) : (Fin n → M) →ₘₗ[R] TensorAlgebra R M :=
   (MultilinearMap.mkPiAlgebraFin R n (TensorAlgebra R M)).compLinearMap fun _ => ι R
 

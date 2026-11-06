@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Limits.Cones
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and colimits
 
@@ -16,15 +19,17 @@ In this introduction we only describe the setup for limits;
 it is repeated, with slightly different names, for colimits.
 
 The main structures defined in this file is
+
 * `IsLimit c`, for `c : Cone F`, `F : J ⥤ C`, expressing that `c` is a limit cone,
 
 See also `CategoryTheory.Limits.HasLimits` which further builds:
+
 * `LimitCone F`, which consists of a choice of cone for `F` and the fact it is a limit cone, and
 * `HasLimit F`, asserting the mere existence of some limit cone for `F`.
 
 ## References
-* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 
+* [Stacks: Limits and colimits](https://stacks.math.columbia.edu/tag/002D)
 -/
 
 @[expose] public section
@@ -414,7 +419,9 @@ def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
   equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
 
 set_option backward.defeqAttrib.useBackward true in
-/-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
+/--
+We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
+
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.
@@ -424,7 +431,9 @@ allowing relabelling of both the indexing category (up to equivalence)
 and the functor (up to natural isomorphism).
 -/
 @[to_dual (attr := simps)
-/-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
+/--
+We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
+
 * both cocones are colimit cocones
 * their indexing categories are equivalent via some `e : J ≌ K`,
 * the triangle of functors commutes up to a natural isomorphism: `e.functor ⋙ G ≅ F`.

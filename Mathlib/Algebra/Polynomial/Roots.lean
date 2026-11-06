@@ -12,6 +12,9 @@ public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.Coprime.Lemmas
 public import Mathlib.RingTheory.Localization.FractionRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
@@ -28,7 +31,6 @@ We define the multiset of roots of a polynomial, and prove basic results about i
 * `Polynomial.C_leadingCoeff_mul_prod_multiset_X_sub_C`: If a polynomial has as many roots as its
   degree, it can be written as the product of its leading coefficient with `∏ (X - a)` where `a`
   ranges through its roots.
-
 -/
 
 @[expose] public section
@@ -589,10 +591,12 @@ theorem aroots_map (p : T[X]) [CommRing S] [Algebra T S] [Algebra S R] [Algebra 
     (p.map (algebraMap T S)).aroots R = p.aroots R := by
   rw [aroots_def, aroots_def, map_map, IsScalarTower.algebraMap_eq T S R]
 
-/-- The set of distinct roots of `p` in `S`.
+/--
+The set of distinct roots of `p` in `S`.
 
 If you have a non-separable polynomial, use `Polynomial.aroots` for the multiset
-where multiple roots have the appropriate multiplicity. -/
+where multiple roots have the appropriate multiplicity.
+-/
 def rootSet (p : T[X]) (S) [CommRing S] [IsDomain S] [Algebra T S] : Set S :=
   haveI := Classical.decEq S
   (p.aroots S).toFinset
@@ -904,7 +908,8 @@ theorem roots_eq_zero_of_irreducible_of_natDegree_ne_one (hirr : Irreducible p)
   have ⟨x, hx⟩ := exists_isRoot_of_roots_ne_zero h
   exact natDegree_eq_of_degree_eq_some <| degree_eq_one_of_irreducible_of_root hirr hx
 
-/-- To check a monic polynomial is irreducible, it suffices to check only for
+/--
+To check a monic polynomial is irreducible, it suffices to check only for
 divisors that have smaller degree.
 
 See also: `Polynomial.Monic.irreducible_iff_natDegree`.

@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.Topology.Algebra.Valued.WithVal
 public import Mathlib.Topology.GDelta.MetrizableSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `ℚ_[p]` and `(Rat.padicValuation p).Completion`
 
@@ -24,7 +27,6 @@ which is shorthand for `UniformSpace.Completion (WithVal (Rat.padicValuation p))
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
 * `Padic.withValUniformEquiv`: the uniform space isomorphism between
   `(Rat.padicValuation p).Completion` and `ℚ_[p]`
-
 -/
 
 @[expose] public section

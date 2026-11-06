@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.EssentiallySmall
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comma categories are locally small
 
 We introduce instances showing that the various comma categories
 are locally small when the relevant categories that are
 involved are locally small.
-
 -/
 
 public section

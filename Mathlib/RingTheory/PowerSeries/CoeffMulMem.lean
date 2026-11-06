@@ -10,30 +10,29 @@ public import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Ideal.BigOperators
 import Mathlib.RingTheory.Ideal.Operations
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Some results on the coefficients of multiplication of two power series
 
 ## Main results
 
-- `PowerSeries.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal`,
+* `PowerSeries.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal`,
   `PowerSeries.coeff_mul_mem_ideal_mul_ideal_of_coeff_mem_ideal'`:
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `f` and `g` are
   in ideals `I` and `J`, respectively, then for all `i ≤ n` (resp. for all `i`), the `i`-th
   coefficients of `f * g` are in `I * J`.
-
-- `PowerSeries.coeff_mul_mem_ideal_of_coeff_right_mem_ideal`,
+* `PowerSeries.coeff_mul_mem_ideal_of_coeff_right_mem_ideal`,
   `PowerSeries.coeff_mul_mem_ideal_of_coeff_right_mem_ideal'`:
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `g` are
   in ideal `I`, then for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of `f * g` are
   in `I`.
-
-- `PowerSeries.coeff_mul_mem_ideal_of_coeff_left_mem_ideal`,
+* `PowerSeries.coeff_mul_mem_ideal_of_coeff_left_mem_ideal`,
   `PowerSeries.coeff_mul_mem_ideal_of_coeff_left_mem_ideal'`:
   if for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of power series `f` are
   in ideal `I`, then for all `i ≤ n` (resp. for all `i`), the `i`-th coefficients of `f * g` are
   in `I`.
-
 -/
 
 public section

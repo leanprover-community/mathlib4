@@ -7,24 +7,25 @@ module
 
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
+# The Fourier transform on $`L^p`
 
-# The Fourier transform on $L^p$
-
-In this file we define the Fourier transform on $L^2$ as a linear isometry equivalence.
+In this file we define the Fourier transform on $`L^2` as a linear isometry equivalence.
 
 ## Main definitions
 
-* `MeasureTheory.Lp.fourierTransformₗᵢ`: The Fourier transform on $L^2$ as a linear isometry
+* `MeasureTheory.Lp.fourierTransformₗᵢ`: The Fourier transform on $`L^2` as a linear isometry
   equivalence.
 
 ## Main statements
 
 * `SchwartzMap.toLp_fourier_eq`: The Fourier transform on `𝓢(E, F)` agrees with the Fourier
-  transform on $L^2$.
-* `MeasureTheory.Lp.fourier_toTemperedDistribution_eq`: The Fourier transform on $L^2$ agrees with
+  transform on $`L^2`.
+* `MeasureTheory.Lp.fourier_toTemperedDistribution_eq`: The Fourier transform on $`L^2` agrees with
   the Fourier transform on `𝓢'(E, F)`.
-
 -/
 
 @[expose] public section

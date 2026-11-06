@@ -12,6 +12,9 @@ import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 import Mathlib.Topology.TietzeExtension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite measures
 
@@ -25,6 +28,7 @@ measure is continuous.
 ## Main definitions
 
 The main definitions are
+
 * `MeasureTheory.FiniteMeasure Ω`: The type of finite measures on `Ω` with the topology of weak
   convergence of measures.
 * `MeasureTheory.FiniteMeasure.toWeakDualBCNN : FiniteMeasure Ω → (WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0))`:
@@ -64,10 +68,13 @@ The implementation of `MeasureTheory.FiniteMeasure Ω` and is directly as a subt
 and the coercion to function of `MeasureTheory.Measure Ω`. Another alternative would have been to
 use a bijection with `MeasureTheory.VectorMeasure Ω ℝ≥0` as an intermediate step. Some
 considerations:
+
 * Potential advantages of using the `NNReal`-valued vector measure alternative:
+
   * The coercion to function would avoid need to compose with `ENNReal.toNNReal`, the
     `NNReal`-valued API could be more directly available.
 * Potential drawbacks of the vector measure alternative:
+
   * The coercion to function would lose monotonicity, as non-measurable sets would be defined to
     have measure 0.
   * No integration theory directly. E.g., the topology definition requires
@@ -75,12 +82,11 @@ considerations:
 
 ## References
 
-* [Billingsley, *Convergence of probability measures*][billingsley1999]
+* ‍\[Billingsley, _Convergence of probability measures_\]\[billingsley1999\]
 
 ## Tags
 
 weak convergence of measures, finite measure
-
 -/
 
 @[expose] public section
@@ -97,7 +103,8 @@ namespace FiniteMeasure
 
 section FiniteMeasure
 
-/-! ### Finite measures
+/-!
+# Finite measures
 
 In this section we define the `Type` of `MeasureTheory.FiniteMeasure Ω`, when `Ω` is a measurable
 space. Finite measures on `Ω` are a module over `ℝ≥0`.
@@ -620,7 +627,8 @@ end FiniteMeasure
 -- section
 section FiniteMeasureBoundedConvergence
 
-/-! ### Bounded convergence results for finite measures
+/-!
+# Bounded convergence results for finite measures
 
 This section is about bounded convergence theorems for finite measures.
 -/
@@ -628,7 +636,8 @@ This section is about bounded convergence theorems for finite measures.
 
 variable {Ω : Type*} [MeasurableSpace Ω] [TopologicalSpace Ω] [OpensMeasurableSpace Ω]
 
-/-- A bounded convergence theorem for a finite measure:
+/--
+A bounded convergence theorem for a finite measure:
 If a sequence of bounded continuous non-negative functions are uniformly bounded by a constant
 and tend pointwise to a limit, then their integrals (`MeasureTheory.lintegral`) against the finite
 measure tend to the integral of the limit.
@@ -644,10 +653,12 @@ theorem tendsto_lintegral_nn_of_le_const (μ : FiniteMeasure Ω) {fs : ℕ → �
     (.of_forall fun n ↦ .of_forall (fs_le_const n))
     (.of_forall fs_lim)
 
-/-- A bounded convergence theorem for a finite measure:
+/--
+A bounded convergence theorem for a finite measure:
 If bounded continuous non-negative functions are uniformly bounded by a constant and tend to a
 limit, then their integrals against the finite measure tend to the integral of the limit.
 This formulation assumes:
+
 * the functions tend to a limit along a countably generated filter;
 * the limit is in the almost everywhere sense;
 * boundedness holds almost everywhere;
@@ -665,12 +676,14 @@ theorem tendsto_testAgainstNN_filter_of_le_const {ι : Type*} {L : Filter ι}
   apply (ENNReal.tendsto_toNNReal (f.lintegral_lt_top_of_nnreal (μ : Measure Ω)).ne).comp
   exact tendsto_lintegral_nn_filter_of_le_const (Ω := Ω) μ fs_le_const fs_lim
 
-/-- A bounded convergence theorem for a finite measure:
+/--
+A bounded convergence theorem for a finite measure:
 If a sequence of bounded continuous non-negative functions are uniformly bounded by a constant and
 tend pointwise to a limit, then their integrals (`MeasureTheory.FiniteMeasure.testAgainstNN`)
 against the finite measure tend to the integral of the limit.
 
 Related results:
+
 * `MeasureTheory.FiniteMeasure.tendsto_testAgainstNN_filter_of_le_const`:
   more general assumptions
 * `MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_of_le_const`:
@@ -689,7 +702,8 @@ end FiniteMeasureBoundedConvergence
 -- section
 section FiniteMeasureConvergenceByBoundedContinuousFunctions
 
-/-! ### Weak convergence of finite measures with bounded continuous real-valued functions
+/-!
+# Weak convergence of finite measures with bounded continuous real-valued functions
 
 In this section we characterize the weak convergence of finite measures by the usual (defining)
 condition that the integrals of all bounded continuous real-valued functions converge.

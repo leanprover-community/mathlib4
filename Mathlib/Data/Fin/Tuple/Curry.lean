@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Mathlib.Logic.Function.OfArity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying and uncurrying of n-ary functions
 
@@ -23,7 +26,6 @@ n-ary generalizations of the binary `curry` and `uncurry`.
   function from `(i : Fin n) → p i`.
 * `Function.FromTypes.curry`: convert a function from `(i : Fin n) → p i` to a
   `p`-ary heterogeneous function.
-
 -/
 
 @[expose] public section
@@ -35,10 +37,12 @@ namespace Function.FromTypes
 open Matrix (vecCons vecHead vecTail vecEmpty)
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- Uncurry all the arguments of `Function.FromTypes p τ` to get
+/--
+Uncurry all the arguments of `Function.FromTypes p τ` to get
 a function from a tuple.
 
-Note this can be used on raw functions if used. -/
+Note this can be used on raw functions if used.
+-/
 def uncurry : {n : ℕ} → {p : Fin n → Type u} → {τ : Type u} →
     (f : Function.FromTypes p τ) → ((i : Fin n) → p i) → τ
   | 0    , _, _, f => fun _    => f
@@ -109,9 +113,11 @@ namespace Function.OfArity
 
 variable {α β : Type u}
 
-/-- Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
+/--
+Uncurry all the arguments of `Function.OfArity α n` to get a function from a tuple.
 
-Note this can be used on raw functions if used. -/
+Note this can be used on raw functions if used.
+-/
 def uncurry {n} (f : Function.OfArity α β n) : (Fin n → α) → β := FromTypes.uncurry f
 
 /-- Curry all the arguments of `Function.OfArity α β n` to get a function from a tuple. -/

@@ -11,6 +11,9 @@ public meta import Lean.Parser.Command
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linter against deprecated syntax
 
@@ -42,7 +45,8 @@ open Lean Elab Linter
 
 namespace Mathlib.Linter.Style
 
-/-- The option `linter.style.refine` of the deprecated syntax linter flags usages of
+/--
+The option `linter.style.refine` of the deprecated syntax linter flags usages of
 the `refine'` tactic.
 
 The tactics `refine`, `apply` and `refine'` are similar, but they handle metavariables slightly
@@ -100,7 +104,8 @@ public register_option linter.style.nativeDecide : Bool := {
   descr := "deprecated: use the `linter.style.native` option instead"
 }
 
-/-- The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
+/--
+The option `linter.style.maxHeartbeats` of the deprecated syntax linter flags usages of
 `set_option <name-containing-maxHeartbeats> n in cmd` that do not add a comment explaining
 the reason for the modification of the `maxHeartbeats`.
 
@@ -111,8 +116,10 @@ public register_option linter.style.maxHeartbeats : Bool := {
   descr := "enable the maxHeartbeats linter"
 }
 
-/-- If the input syntax is of the form `set_option <option> num in <string> cmd`,
+/--
+If the input syntax is of the form `set_option <option> num in <string> cmd`,
 where `<option>` contains `maxHeartbeats`, then it returns
+
 * the `<option>`, as a name (typically, `maxHeartbeats` or `synthInstance.maxHeartbeats`);
 * the number `num` and
 * whatever is in `<string>`. Note that `<string>` can only consist of whitespace and comments.
@@ -198,7 +205,8 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
 
 -- TODO: Remove this `set_option` with `linter.style.nativeDecide`.
 set_option linter.deprecated false in
-/-- The deprecated syntax linter flags usages of deprecated syntax and suggests
+/--
+The deprecated syntax linter flags usages of deprecated syntax and suggests
 replacement syntax. For each individual case, linting can be turned on or off separately.
 
 * `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)

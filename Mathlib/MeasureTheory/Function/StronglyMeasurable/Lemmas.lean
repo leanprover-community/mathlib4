@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasur
 public import Mathlib.MeasureTheory.Measure.WithDensity
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strongly measurable and finitely strongly measurable functions
 
@@ -18,9 +21,8 @@ functions, started in `Mathlib/MeasureTheory/Function/StronglyMeasurable/Basic.l
 
 ## References
 
-* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
+* ‍\[Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.\]\[Hytonen\_VanNeerven\_Veraar\_Wies\_2016\]
 -/
 
 public section

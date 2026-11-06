@@ -8,12 +8,14 @@ module
 
 public import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dissipate
 
 The function `dissipate` takes `s : α → Set β` with `LE α` and returns `⋂ y ≤ x, s y`.
 It is related to `accumulate s := ⋃ y ≤ x, s y`.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Maps.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Open quotient maps
 
@@ -16,9 +19,9 @@ We use the latter characterization as a definition.
 
 Many important quotient maps are open quotient maps, including
 
-- the quotient map from a topological space to its quotient by the action of a group;
-- the quotient map from a topological group to its quotient by a normal subgroup;
-- the quotient map from a topological space to its separation quotient.
+* the quotient map from a topological space to its quotient by the action of a group;
+* the quotient map from a topological group to its quotient by a normal subgroup;
+* the quotient map from a topological space to its separation quotient.
 
 Contrary to general quotient maps,
 the category of open quotient maps is closed under `Prod.map`.
@@ -103,6 +106,7 @@ Given the following diagram with `f` inducing, `p` surjective,
 `q` an open quotient map, and `g` injective. Suppose the image of `A` in `B` is stable
 under the equivalence mod `q`, then the coinduced topology on `C` (from `A`)
 coincides with the induced topology (from `D`).
+
 ```
 A -f→ B
 ∣     ∣

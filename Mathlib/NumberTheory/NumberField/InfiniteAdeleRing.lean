@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.NumberField.Completion.InfinitePlace
 
 import Mathlib.Algebra.Group.Pi.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The infinite adele ring of a number field
 
@@ -18,19 +21,22 @@ finite product of completions over its infinite places.
 
 ## Main definitions
 
-- `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
+* `NumberField.InfiniteAdeleRing` of a number field `K` is defined as the product of
   the completions of `K` over its infinite places.
-- `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
+* `NumberField.InfiniteAdeleRing.ringEquiv_mixedSpace` is the ring isomorphism between
   the infinite adele ring of `K` and `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of `K`.
 
 ## Main results
-- `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
+
+* `NumberField.InfiniteAdeleRing.locallyCompactSpace` : the infinite adele ring is a
   locally compact space.
 
 ## References
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
 
 ## Tags
+
 infinite adele ring, number field
 -/
 
@@ -42,7 +48,8 @@ namespace NumberField
 
 open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 
-/-! ## The infinite adele ring
+/-!
+# The infinite adele ring
 
 The infinite adele ring is the finite product of completions of a number field over its
 infinite places. See `NumberField.InfinitePlace` for the definition of an infinite place and
@@ -102,9 +109,9 @@ theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
   ext v <;> simp
 
 /--
-*Weak approximation for the infinite adele ring*
+_Weak approximation for the infinite adele ring_
 
-The number field $K$ is dense in the infinite adele ring $\prod_v K_v$.
+The number field $`K` is dense in the infinite adele ring $`\prod_v K_v`.
 -/
 theorem denseRange_algebraMap [NumberField K] : DenseRange <| algebraMap K K∞ := by
   have h : ⇑(algebraMap K K∞) = (Pi.map fun v (x : WithAbs v.1) => (x : v.Completion)) ∘

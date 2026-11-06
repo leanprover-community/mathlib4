@@ -8,11 +8,15 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 public import Mathlib.Data.Finsupp.WellFounded
 
-/-! # Monomial orders
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Monomial orders
 
 ## Monomial orders
 
-A *monomial order* is a well ordering relation on a type of the form `σ →₀ ℕ` which
+A _monomial order_ is a well ordering relation on a type of the form `σ →₀ ℕ` which
 is compatible with addition and for which `0` is the smallest element.
 Since several monomial orders may have to be used simultaneously, one cannot
 get them as instances.
@@ -44,14 +48,13 @@ and `MonomialOrder.lex_lt_iff` rewrite the ordering as comparisons in the type `
 
 ## References
 
-* [Cox, Little and O'Shea, *Ideals, varieties, and algorithms*][coxlittleoshea1997]
-* [Becker and Weispfenning, *Gröbner bases*][Becker-Weispfenning1993]
+* ‍\[Cox, Little and O'Shea, _Ideals, varieties, and algorithms_\]\[coxlittleoshea1997\]
+* ‍\[Becker and Weispfenning, _Gröbner bases_\]\[Becker-Weispfenning1993\]
 
 ## Note
 
 In algebraic geometry, when the finitely many variables are indexed by integers,
-it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > … `
-
+it is customary to order them using the opposite order : `MvPolynomial.X 0 > MvPolynomial.X 1 > …  `
 -/
 
 @[expose] public section
@@ -186,7 +189,9 @@ noncomputable instance {α N : Type*} [LinearOrder α]
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa using h
 
-/-- for the lexicographic ordering, X 0 * X 1 < X 0 ^ 2 -/
+/--
+for the lexicographic ordering, X 0 \* X 1 < X 0 ^ 2
+-/
 example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
   use 0; simp
 

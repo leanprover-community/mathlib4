@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Embedding.Basic
 public import Mathlib.Order.RelClasses
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation homomorphisms, embeddings, isomorphisms
 
@@ -55,7 +58,8 @@ infixl:25 " →r " => RelHom
 
 section
 
-/-- `RelHomClass F r s` asserts that `F` is a type of functions such that all `f : F`
+/--
+`RelHomClass F r s` asserts that `F` is a type of functions such that all `f : F`
 satisfy `r a b → s (f a) (f b)`.
 
 The relations `r` and `s` are `outParam`s since figuring them out from a goal is a higher-order
@@ -628,12 +632,16 @@ theorem ext ⦃f g : r ≃r s⦄ (h : ∀ x, f x = g x) : f = g :=
 protected def symm (f : r ≃r s) : s ≃r r :=
   ⟨f.toEquiv.symm, @fun a b => by erw [← f.map_rel_iff, f.1.apply_symm_apply, f.1.apply_symm_apply]⟩
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because `RelIso` defines custom coercions other than the ones given by `DFunLike`. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because `RelIso` defines custom coercions other than the ones given by `DFunLike`.
+-/
 def Simps.apply (h : r ≃r s) : α → β :=
   h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
 
@@ -806,9 +814,11 @@ noncomputable def embeddingSurjectiveEquivIso :
   left_inv _ := rfl
   right_inv _ := by ext; rfl
 
-/-- Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
+/--
+Transport a `RelHom` across a pair of `RelIso`s, by pre- and post-composition.
 
-This is `Equiv.arrowCongr` for `RelHom`. -/
+This is `Equiv.arrowCongr` for `RelHom`.
+-/
 @[simps apply symm_apply]
 def relHomCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
@@ -821,9 +831,11 @@ def relHomCongr {α₁ β₁ α₂ β₂}
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relHomCongr
 
-/-- Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
+/--
+Transport a `RelEmbedding` across a pair of `RelIso`s, by pre- and post-composition.
 
-This is `Equiv.embeddingCongr` for `RelEmbedding`. -/
+This is `Equiv.embeddingCongr` for `RelEmbedding`.
+-/
 @[simps apply symm_apply]
 def relEmbeddingCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}
@@ -836,9 +848,11 @@ def relEmbeddingCongr {α₁ β₁ α₂ β₂}
 
 attribute [simps! -isSimp apply_apply symm_apply_apply] relEmbeddingCongr
 
-/-- Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
+/--
+Transport a `RelIso` across a pair of `RelIso`s, by pre- and post-composition.
 
-This is `Equiv.equivCongr` for `RelIso`. -/
+This is `Equiv.equivCongr` for `RelIso`.
+-/
 @[simps apply symm_apply]
 def relIsoCongr {α₁ β₁ α₂ β₂}
     {r₁ : α₁ → α₁ → Prop} {s₁ : β₁ → β₁ → Prop} {r₂ : α₂ → α₂ → Prop} {s₂ : β₂ → β₂ → Prop}

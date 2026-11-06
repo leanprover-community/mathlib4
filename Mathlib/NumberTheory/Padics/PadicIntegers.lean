@@ -10,11 +10,15 @@ public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 
 import Mathlib.Tactic.Bound
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-adic integers
 
 This file defines the `p`-adic integers `ℤ_[p]` as the subtype of `ℚ_[p]` with norm `≤ 1`.
 We show that `ℤ_[p]`
+
 * is complete,
 * is nonarchimedean,
 * is a normed ring,
@@ -40,9 +44,9 @@ Coercions into `ℤ_[p]` are set up to work with the `norm_cast` tactic.
 
 ## References
 
-* [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
-* [R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019]
-* <https://en.wikipedia.org/wiki/P-adic_number>
+* ‍\[F. Q. Gouvêa, _p-adic numbers_\]\[gouvea1997\]
+* ‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\]
+* [https://en.wikipedia.org/wiki/P-adic\_number](https://en.wikipedia.org/wiki/P-adic_number)
 
 ## Tags
 
@@ -77,7 +81,9 @@ notation "ℤ_[" p "]" => PadicInt p
 namespace PadicInt
 variable {p} {x y : ℤ_[p]}
 
-/-! ### Ring structure and coercion to `ℚ_[p]` -/
+/-!
+# Ring structure and coercion to `ℚ_[p]`
+-/
 
 instance : Coe ℤ_[p] ℚ_[p] :=
   ⟨Subtype.val⟩
@@ -184,9 +190,11 @@ def ofIntSeq (seq : ℕ → ℤ) (h : IsCauSeq (padicNorm p) fun n => seq n) : �
       split_ifs with hne <;> norm_cast
       apply padicNorm.of_int⟩
 
-/-! ### Instances
+/-!
+# Instances
 
 We now show that `ℤ_[p]` is a
+
 * complete metric space
 * normed ring
 * integral domain
@@ -222,7 +230,9 @@ instance : IsDomain ℤ_[p] := NoZeroDivisors.to_isDomain _
 
 variable {p}
 
-/-! ### Norm -/
+/-!
+# Norm
+-/
 
 @[bound]
 theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
@@ -329,7 +339,9 @@ lemma norm_intCast_lt_one_iff {z : ℤ} :
     ‖(z : ℤ_[p])‖ < 1 ↔ (p : ℤ) ∣ z := by
   rw [norm_def, coe_intCast, Padic.norm_intCast_lt_one_iff]
 
-/-! ### Valuation on `ℤ_[p]` -/
+/-!
+# Valuation on `ℤ_[p]`
+-/
 
 lemma valuation_coe_nonneg : 0 ≤ (x : ℚ_[p]).valuation := by
   obtain rfl | hx := eq_or_ne x 0
@@ -371,7 +383,9 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
 
 section Units
 
-/-! ### Units of `ℤ_[p]` -/
+/-!
+# Units of `ℤ_[p]`
+-/
 
 theorem mul_inv {z : ℤ_[p]} (h : ‖z‖ = 1) : z * z.inv = 1 := by
   have hz : z ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)
@@ -462,7 +476,9 @@ end Units
 
 section NormLeIff
 
-/-! ### Various characterizations of open unit balls -/
+/-!
+# Various characterizations of open unit balls
+-/
 
 theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ n ≤ x.valuation := by
@@ -513,7 +529,9 @@ end NormLeIff
 
 section Dvr
 
-/-! ### Discrete valuation ring -/
+/-!
+# Discrete valuation ring
+-/
 
 instance : IsLocalRing ℤ_[p] :=
   IsLocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add

@@ -13,17 +13,23 @@ import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bernstein polynomials
 
 The definition of the Bernstein polynomials
+
 ```
 bernsteinPolynomial (R : Type*) [CommRing R] (n ν : ℕ) : R[X] :=
 (choose n ν) * X^ν * (1 - X)^(n - ν)
 ```
+
 and the fact that for `ν : Fin (n+1)` these are linearly independent over `ℚ`.
 
 We prove the basic identities
+
 * `(Finset.range (n + 1)).sum (fun ν ↦ bernsteinPolynomial R n ν) = 1`
 * `(Finset.range (n + 1)).sum (fun ν ↦ ν • bernsteinPolynomial R n ν) = n • X`
 * `(Finset.range (n + 1)).sum (fun ν ↦ (ν * (ν-1)) • bernsteinPolynomial R n ν) = (n * (n-1)) • X^2`
@@ -48,7 +54,8 @@ open scoped Polynomial
 
 variable (R : Type*) [CommRing R]
 
-/-- `bernsteinPolynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
+/--
+`bernsteinPolynomial R n ν` is `(choose n ν) * X^ν * (1 - X)^(n - ν)`.
 
 Although the coefficients are integers, it is convenient to work over an arbitrary commutative ring.
 -/
@@ -259,7 +266,8 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       · intro x y _ _ hx hy; simp [hx, hy]
       · intro a x _ h; simp [h]
 
-/-- The Bernstein polynomials are linearly independent.
+/--
+The Bernstein polynomials are linearly independent.
 
 We prove by induction that the collection of `bernsteinPolynomial n ν` for `ν = 0, ..., k`
 are linearly independent.

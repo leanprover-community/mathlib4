@@ -9,7 +9,11 @@ public meta import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Data.Nat.Fib.Basic
 public import Mathlib.Tactic.NormNum
 
-/-! # `norm_num` extension for `Nat.fib`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extension for `Nat.fib`
 
 This `norm_num` extension uses a strategy parallel to that of `Nat.fastFib`, but it instead
 produces proofs of what `Nat.fib` evaluates to.

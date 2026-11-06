@@ -11,6 +11,9 @@ public import Mathlib.Topology.Separation.CompletelyRegular
 
 import Mathlib.Analysis.MeanInequalitiesPow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Snowflaking of a metric space
 
@@ -20,18 +23,18 @@ The metric space determined by this new metric is said to be the `α`-snowflakin
 of `X`. In this file we define `Metric.Snowflaking X α hα₀ hα₁` to be a one-field structure wrapper
 around `X` with metric given by this formula.
 
-The use of the term *snowflaking* arises from the fact that if one chooses `X := Set.Icc 0 1` and
+The use of the term _snowflaking_ arises from the fact that if one chooses `X := Set.Icc 0 1` and
 `α := log 3 / log 4`, then `Metric.Snowflaking X α … …` is isometric to the von Koch snowflake,
 where we equip that space with the natural metric induced by the `α⁻¹`-Hausdorff measure of paths.
 
 Snowflake metrics are used regularly in the geometry of metric spaces where, among other things,
 they characterize doubling metrics. In particular, a metric is doubling if and only
 if every `α`-snowflaking (with `0 < α < 1`) of it is bilipschitz equivalent to a subset of some
-Euclidean space (the dimension of the Euclidean space depends on `α`). See [heinonen2001].
+Euclidean space (the dimension of the Euclidean space depends on `α`). See \[heinonen2001\].
 
 Another reason to introduce this definition is the following.
 In the proof of his version of the Morse-Sard theorem,
-Moreira [Moreira2001] studies maps of two variables that are Lipschitz continuous in one variable,
+Moreira \[Moreira2001\] studies maps of two variables that are Lipschitz continuous in one variable,
 but satisfy a stronger assumption `‖f (a, y) - f (a, b)‖ = O(‖y - b‖ ^ (k + α))`
 along the second variable, as long as `(a, b)` is one of the "interesting" points.
 
@@ -45,8 +48,9 @@ However, if we change the metric on the first component to the one introduced in
 then these sets become balls, and we can apply Vitali theorem.
 
 ## References
-* [Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_]
-  [Moreira2001]
+
+* ‍\[Carlos Gustavo T. de A. Moreira, _Hausdorff measures and the Morse-Sard theorem_\]
+  ‍\[Moreira2001\]
 -/
 
 @[expose] public section
@@ -58,9 +62,11 @@ noncomputable section
 
 namespace Metric
 
-/-- A copy of a type with metric given by `dist x y = (dist x.val y.val) ^ α`.
+/--
+A copy of a type with metric given by `dist x y = (dist x.val y.val) ^ α`.
 
-This is defined as a one-field structure. -/
+This is defined as a one-field structure.
+-/
 @[ext]
 structure Snowflaking (X : Type*) (α : ℝ) (hα₀ : 0 < α) (hα₁ : α ≤ 1) where
   /-- The value wrapped in `x : Snowflaking X α hα₀ hα₁`. -/
@@ -149,7 +155,7 @@ theorem image_ofSnowflaking_image_toSnowflaking (s : Set X) :
   ofSnowflaking.image_symm_image _
 
 /-!
-### Topological space structure
+# Topological space structure
 
 The topology on `Snowflaking X α hα₀ hα₁` is induced from `X`.
 -/
@@ -193,7 +199,7 @@ instance [SecondCountableTopology X] : SecondCountableTopology (Snowflaking X α
 end TopologicalSpace
 
 /-!
-### Bornology
+# Bornology
 
 The bornology on `Snowflaking X α hα₀ hα₁` is induced from `X`.
 -/
@@ -229,7 +235,7 @@ theorem isBounded_preimage_ofSnowflaking_iff {s : Set X} :
 end Bornology
 
 /-!
-### Uniform space structure
+# Uniform space structure
 
 The uniform space structure on `Snowflaking X α hα₀ hα₁` is induced from `X`.
 -/
@@ -260,7 +266,7 @@ def uniformEquiv : Snowflaking X α hα₀ hα₁ ≃ᵤ X where
 end UniformSpace
 
 /-!
-### Extended distance and a (pseudo) extended metric space structure
+# Extended distance and a (pseudo) extended metric space structure
 
 Th extended distance on `Snowflaking X α hα₀ hα₁`
 is given by `edist x y = (edist x.ofSnowflaking y.ofSnowflaking) ^ α`.
@@ -388,7 +394,7 @@ instance [EMetricSpace X] : EMetricSpace (Snowflaking X α hα₀ hα₁) :=
   .ofT0PseudoEMetricSpace _
 
 /-!
-### Distance and a (pseudo) metric space structure
+# Distance and a (pseudo) metric space structure
 
 Th extended distance on `Snowflaking X α hα₀ hα₁`
 is given by `dist x y = (dist x.ofSnowflaking y.ofSnowflaking) ^ α`.

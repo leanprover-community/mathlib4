@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 public import Mathlib.CategoryTheory.Sites.InducedTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced Topology
 
@@ -26,10 +29,9 @@ Given a fully faithful cover-dense functor `G : C ⥤ (D, K)` between small site
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
+* ‍\[Elephant\]: _Sketches of an Elephant_, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
-
 -/
 
 @[expose] public section
@@ -151,7 +153,8 @@ instance over_forget_locallyCoverDense (X : C) : (Over.forget X).LocallyCoverDen
     · intro hf
       exact ⟨Over.mk (f ≫ Y.hom), Over.homMk f, 𝟙 _, hf, (Category.id_comp _).symm⟩
 
-/-- Cover-dense functors induce an equivalence of categories of sheaves.
+/--
+Cover-dense functors induce an equivalence of categories of sheaves.
 
 This is known as the comparison lemma. It requires that the sites are small and the value category
 is complete.

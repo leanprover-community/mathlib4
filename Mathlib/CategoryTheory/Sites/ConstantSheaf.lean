@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The constant sheaf
 
 We define the constant sheaf functor (the sheafification of the constant presheaf)
@@ -23,10 +25,8 @@ essential image of the constant sheaf functor.
 * `Sheaf.isConstant_iff_isIso_counit_app`: Provided that the constant sheaf functor is fully
   faithful, a sheaf is constant if and only if the counit of the constant sheaf adjunction applied
   to it is an isomorphism.
-
 * `Sheaf.isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant
   under equivalence of sheaf categories.
-
 * `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
   constant if and only if the sheaf given by postcomposition with `U` is constant.
 -/

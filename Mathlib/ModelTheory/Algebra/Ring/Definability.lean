@@ -10,12 +10,13 @@ public import Mathlib.ModelTheory.Definability
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Definable Subsets in the language of rings
 
 This file proves that the set of zeros of a multivariable polynomial is a definable subset.
-
 -/
 
 public section

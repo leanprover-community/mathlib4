@@ -9,26 +9,28 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Non-local rings
 
 This file gathers some results about non-local rings.
 
 ## Main results
 
-- `not_isLocalRing_of_nontrivial_pi`: for an index type `ι` with at least two elements and
+* `not_isLocalRing_of_nontrivial_pi`: for an index type `ι` with at least two elements and
   an indexed family of (semi)rings `R : ι → Type*`, the indexed product (semi)ring
   `Π i, R i` is not local.
-- `not_isLocalRing_of_prod_of_nontrivial`: the product of two nontrivial (semi)rings is not
+* `not_isLocalRing_of_prod_of_nontrivial`: the product of two nontrivial (semi)rings is not
   local.
-- `not_isLocalRing_tfae`: the following conditions are equivalent for a commutative (semi)ring `R`:
-    * `R` is not local,
-    * the maximal spectrum of `R` is nontrivial,
-    * `R` has two distinct maximal ideals.
-- `exists_surjective_of_not_isLocalRing`: there exists a surjective ring homomorphism from
-  a non-local commutative ring onto a product of two fields.
+* `not_isLocalRing_tfae`: the following conditions are equivalent for a commutative (semi)ring `R`:
 
+  * `R` is not local,
+  * the maximal spectrum of `R` is nontrivial,
+  * `R` has two distinct maximal ideals.
+* `exists_surjective_of_not_isLocalRing`: there exists a surjective ring homomorphism from
+  a non-local commutative ring onto a product of two fields.
 -/
 
 public section
@@ -61,7 +63,9 @@ theorem not_isLocalRing_of_prod_of_nontrivial (R₁ R₂ : Type*) [Semiring R₁
     fun h ↦ not_isUnit_zero (M₀ := R₂) (by simpa using h.map (RingHom.fst R₁ R₂))
   not_isLocalRing_def ha hb (by simp)
 
-/-- The following conditions are equivalent for a commutative (semi)ring `R`:
+/--
+The following conditions are equivalent for a commutative (semi)ring `R`:
+
 * `R` is not local,
 * the maximal spectrum of `R` is nontrivial,
 * `R` has two distinct maximal ideals.

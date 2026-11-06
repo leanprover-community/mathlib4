@@ -12,7 +12,11 @@ public meta import Lean.Util.Heartbeats
 public meta import Mathlib.Lean.Elab.Tactic.Meta
 public import Mathlib.Lean.ContextInfo
 
-/-! # Tactic analysis framework
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Tactic analysis framework
 
 In this file we define a framework for analyzing sequences of tactics.
 This can be used for linting (for instance: report when two `rw` calls can be merged into one),
@@ -65,22 +69,27 @@ structure TacticNode where
   /-- `TacticInfo` at the infotree node. -/
   tacI : TacticInfo
 
-/-- Run tactic code, given by a piece of syntax, in the context of a tactic info node.
+/--
+Run tactic code, given by a piece of syntax, in the context of a tactic info node.
 
-Convenience abbreviation for `ContextInfo.runTacticCode`. -/
+Convenience abbreviation for `ContextInfo.runTacticCode`.
+-/
 abbrev TacticNode.runTacticCode (i : TacticNode) :
     MVarId → Syntax → CommandElabM (List MVarId) :=
   i.ctxI.runTacticCode i.tacI
 
-/-- Run tactic code, capturing InfoTrees for extracting "Try this:" suggestions.
+/--
+Run tactic code, capturing InfoTrees for extracting "Try this:" suggestions.
 
 Returns both the resulting goals and the InfoTrees produced during tactic execution.
-Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions. -/
+Use `collectTryThisSuggestions` from `Mathlib.Lean.Elab.InfoTree` to extract suggestions.
+-/
 abbrev TacticNode.runTacticCodeCapturingInfoTree (i : TacticNode) :
     MVarId → Syntax → CommandElabM (List MVarId × PersistentArray InfoTree) :=
   i.ctxI.runTacticCodeCapturingInfoTree i.tacI
 
-/-- Stores the configuration for a tactic analysis pass.
+/--
+Stores the configuration for a tactic analysis pass.
 
 This provides the low-level interface into the tactic analysis framework.
 -/
@@ -95,7 +104,8 @@ structure Config where
 extending `Config` with some declaration meta-information.
 -/
 structure Pass extends Config where
-  /-- The option corresponding to this pass, used to enable it.
+  /--
+  The option corresponding to this pass, used to enable it.
 
   Example: `linter.tacticAnalysis.grindReplacement`.
   -/
@@ -161,17 +171,21 @@ initialize registerBuiltinAttribute {
     | _ => throwUnsupportedSyntax
 }
 
-/-- Parse an infotree to find all the sequences of tactics contained in the original syntax.
+/--
+Parse an infotree to find all the sequences of tactics contained in the original syntax.
 
 We consider a sequence here to be a maximal interval of tactics joined by `;` or newlines.
 This function returns an array of sequences. For example, a proof of the form:
+
 ```
 by
   tac1
   · tac2; tac3
   · tac4; tac5
 ```
+
 would result in three sequences:
+
 * `#[tac1, (· tac2; tac3), (· tac4; tac5)]`
 * `#[tac2, tac3]`
 * `#[tac4, tac5]`
@@ -199,12 +213,14 @@ def findTacticSeqs (tree : InfoTree) : Array (Array TacticNode) :=
       return seqs
     return seqs.push tacs
 
-/-- Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
+/--
+Tag `msg` as a finding of the pass enabled by `opt`, copying the shape of
 `Lean.Linter.logLint` (core has no `MessageData`-level helper for this, so keep the two in sync):
 the kind becomes `opt.name`, `Lean.Linter.linterMessageTag` sits directly inside it, and a note
 on how to disable the pass is appended.
 
-Errors, and messages that are already linter messages, are returned unchanged. -/
+Errors, and messages that are already linter messages, are returned unchanged.
+-/
 def tagLintMessage (opt : Lean.Option Bool) (msg : Message) : Message :=
   if msg.severity == .error || msg.data.isLinterMessage then
     msg
@@ -240,7 +256,8 @@ def runPasses (configs : Array Pass) (trees : PersistentArray InfoTree) : Comman
       for (opt, config) in enabledConfigs do
         withLintTagging opt <| config.run seq
 
-/-- A tactic analysis framework.
+/--
+A tactic analysis framework.
 It is aimed at allowing developers to specify refactoring patterns,
 which will be tested against a whole project,
 to report proposed changes.
@@ -262,12 +279,12 @@ initialize addLinter tacticAnalysis
 section ComplexConfig
 
 /-!
-### Work in progress: `Config` building blocks
+# Work in progress: `Config` building blocks
 
 In this section we define `ComplexConfig` which is supposed to make it easier to build standard
 analysis rounds.
 
-**Work in progress** note: This interface does not feel intuitive yet and might be redesigned.
+*Work in progress* note: This interface does not feel intuitive yet and might be redesigned.
 Please do not rely on it being stable!
 -/
 
@@ -286,13 +303,14 @@ inductive TriggerCondition (ctx : Type _)
   | accept (context : ctx)
 deriving BEq
 
-/-- Specifies which analysis steps to take.
+/--
+Specifies which analysis steps to take.
 
 The overall design will have three user-supplied components:
 
-  * **trigger** on a piece of syntax (which could contain multiple tactic calls);
-  * **test** if a suggested change is indeed an improvement;
-  * **tell** the user where changes can be made.
+* *trigger* on a piece of syntax (which could contain multiple tactic calls);
+* *test* if a suggested change is indeed an improvement;
+* *tell* the user where changes can be made.
 -/
 structure ComplexConfig where
   /-- Type returned by the `.test` function. -/
@@ -300,13 +318,14 @@ structure ComplexConfig where
   /-- Type returned by the `.trigger` function. -/
   ctx : Type
 
-  /-- Determines which (sequences of) tactics to analyze.
+  /--
+  Determines which (sequences of) tactics to analyze.
 
   `context` is `some ctx` whenever the previous trigger returned `continue ctx`,
-  `none` at the start of a tactic sequence or after a `skip`/`accept`.
+`none` at the start of a tactic sequence or after a `skip`/`accept`.
 
   If the last returned value is `continue` at the end of the sequence, the framework inserts an
-  extra `done` to run the `trigger` on.
+extra `done` to run the `trigger` on.
   -/
   trigger (context : Option ctx) (currentTactic : Syntax) : TriggerCondition ctx
   /-- Code to run in the context of the tactic, for example an alternative tactic. -/

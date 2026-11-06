@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tooling to make copies of lattice structures
 

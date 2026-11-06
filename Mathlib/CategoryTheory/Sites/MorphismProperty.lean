@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.Coverage
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The site induced by a morphism property
 
@@ -17,7 +20,6 @@ whose elements satisfy `P`.
 
 Standard examples of pretopologies in algebraic geometry, such as the étale site, are obtained from
 this construction by intersecting with the pretopology of surjective families.
-
 -/
 
 @[expose] public section

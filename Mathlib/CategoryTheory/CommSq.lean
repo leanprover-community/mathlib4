@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Arrow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative squares
 
@@ -22,7 +25,6 @@ as `IsPullback` and `IsPushout` in order to define pullback and pushout squares.
 ## Future work
 
 Refactor `LiftStruct` from `Arrow.lean` and lifting properties using `CommSq.lean`.
-
 -/
 
 @[expose] public section
@@ -33,7 +35,9 @@ namespace CategoryTheory
 variable {C : Type*} [Category* C]
 
 set_option linter.translate.warnInvalid false in
-/-- The proposition that a square
+/--
+The proposition that a square
+
 ```
   W ---f---> X
   |          |
@@ -43,6 +47,7 @@ set_option linter.translate.warnInvalid false in
   Y ---i---> Z
 
 ```
+
 is a commuting square.
 -/
 @[to_dual self (reorder := W Z, X Y, f i, g h)]
@@ -88,7 +93,9 @@ theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
     CommSq f.inv h g i.inv :=
   flip (vert_inv (flip p))
 
-/-- The horizontal composition of two commutative squares as below is a commutative square.
+/--
+The horizontal composition of two commutative squares as below is a commutative square.
+
 ```
   W ---f---> X ---f'--> X'
   |          |          |
@@ -105,7 +112,9 @@ lemma horiz_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y}
     CommSq (f ≫ f') g h' (i ≫ i') :=
   ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
 
-/-- The vertical composition of two commutative squares as below is a commutative square.
+/--
+The vertical composition of two commutative squares as below is a commutative square.
+
 ```
   W ---f---> X
   |          |
@@ -164,7 +173,9 @@ namespace CommSq
 variable {A B X Y : C} {f : A ⟶ X} {i : A ⟶ B} {p : X ⟶ Y} {g : B ⟶ Y}
 
 set_option linter.translate.warnInvalid false in
-/-- Now we consider a square:
+/--
+Now we consider a square:
+
 ```
   A ---f---> X
   |          |
@@ -175,7 +186,8 @@ set_option linter.translate.warnInvalid false in
 ```
 
 The datum of a lift in a commutative square, i.e. an up-right-diagonal
-morphism which makes both triangles commute. -/
+morphism which makes both triangles commute.
+-/
 @[ext, to_dual self]
 structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/

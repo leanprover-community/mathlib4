@@ -10,6 +10,9 @@ public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative inverse and iteration of real logarithm
 
@@ -17,8 +20,8 @@ We prove properties of the functions `x ↦ (log x)⁻¹` and `x ↦ log (log x)
 
 ## Main results
 
-- `deriv_inv_log` gives a formula for the derivative of `x ↦ (log x)⁻¹` which holds for all values.
-- `deriv_log_log` gives a formula for the derivative of `x ↦ log (log x)` which holds for all
+* `deriv_inv_log` gives a formula for the derivative of `x ↦ (log x)⁻¹` which holds for all values.
+* `deriv_log_log` gives a formula for the derivative of `x ↦ log (log x)` which holds for all
   values.
 -/
 

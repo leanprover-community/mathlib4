@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Group.Commute.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units (i.e., invertible elements) of a monoid
 
@@ -24,7 +27,7 @@ See also `Prime`, `Associated`, and `Irreducible` in
 ## Notation
 
 We provide `Mˣ` as notation for `Units M`,
-resembling the notation $R^{\times}$ for the units of a ring, which is common in mathematics.
+resembling the notation $`R^{\times}` for the units of a ring, which is common in mathematics.
 
 ## TODO
 
@@ -41,11 +44,13 @@ universe u
 
 variable {α : Type u}
 
-/-- Units of a `Monoid`, bundled version. Notation: `αˣ`.
+/--
+Units of a `Monoid`, bundled version. Notation: `αˣ`.
 
 An element of a `Monoid` is a unit if it has a two-sided inverse.
 This version bundles the inverse element so that it can be computed.
-For a predicate see `IsUnit`. -/
+For a predicate see `IsUnit`.
+-/
 structure Units (α : Type u) [Monoid α] where
   /-- The underlying value in the base `Monoid`. -/
   val : α
@@ -62,11 +67,13 @@ attribute [coe] Units.val
 postfix:1024 "ˣ" => Units
 
 -- We don't provide notation for the additive version, because its use is somewhat rare.
-/-- Units of an `AddMonoid`, bundled version.
+/--
+Units of an `AddMonoid`, bundled version.
 
 An element of an `AddMonoid` is a unit if it has a two-sided additive inverse.
 This version bundles the inverse element so that it can be computed.
-For a predicate see `isAddUnit`. -/
+For a predicate see `isAddUnit`.
+-/
 structure AddUnits (α : Type u) [AddMonoid α] where
   /-- The underlying value in the base `AddMonoid`. -/
   val : α
@@ -95,9 +102,13 @@ instance instInv : Inv αˣ :=
   ⟨fun u => ⟨u.2, u.1, u.4, u.3⟩⟩
 attribute [instance] AddUnits.instNeg
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 @[to_additive
-/-- See Note [custom simps projection] -/]
+/--
+See Note \[custom simps projection\]
+-/]
 def Simps.val_inv (u : αˣ) : α := ↑(u⁻¹)
 
 initialize_simps_projections Units (as_prefix val, val_inv → null, inv → val_inv, as_prefix val_inv)
@@ -348,7 +359,7 @@ theorem val_div_eq_divp (u₁ u₂ : αˣ) : ↑(u₁ / u₂) = ↑u₁ /ₚ u�
 end Monoid
 
 /-!
-### `IsUnit` predicate
+# `IsUnit` predicate
 -/
 
 section IsUnit

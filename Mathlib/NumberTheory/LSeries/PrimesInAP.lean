@@ -10,14 +10,18 @@ public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 import Mathlib.NumberTheory.LSeries.Linearity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dirichlet's Theorem on primes in arithmetic progression
 
-The goal of this file is to prove **Dirichlet's Theorem**: If `q` is a positive natural number
+The goal of this file is to prove *Dirichlet's Theorem*: If `q` is a positive natural number
 and `a : ZMod q` is invertible, then there are infinitely many prime numbers `p` such that
 `(p : ZMod q) = a`.
 
 The main steps of the proof are as follows.
+
 1. Define `ArithmeticFunction.vonMangoldt.residueClass a` for `a : ZMod q`, which is
    a function `ℕ → ℝ` taking the value zero when `(n : ZMod q) ≠ a` and `Λ n` else
    (where `Λ` is the von Mangoldt function `ArithmeticFunction.vonMangoldt`; we have
@@ -37,16 +41,16 @@ The main steps of the proof are as follows.
    `ArithmeticFunction.vonMangoldt.residueClass` up to the term `(q.totient)⁻¹/(s-1)`.
 5. Show that the auxiliary function is continuous on `re s ≥ 1`;
    see `ArithmeticFunction.vonMangoldt.continuousOn_LFunctionResidueClassAux`.
-   This relies heavily on the non-vanishing of Dirichlet L-functions on the *closed*
+   This relies heavily on the non-vanishing of Dirichlet L-functions on the _closed_
    half-plane `re s ≥ 1` (`DirichletCharacter.LFunction_ne_zero_of_one_le_re`), which
    in turn can only be stated since we know that the L-series of a Dirichlet character
    extends to an entire function (unless the character is trivial; then there is a
    simple pole at `s = 1`); see `DirichletCharacter.LFunction_eq_LSeries`
    (contributed by David Loeffler).
-6. Show that the sum of `Λ n / n` over any residue class, but *excluding* the primes, converges.
+6. Show that the sum of `Λ n / n` over any residue class, but _excluding_ the primes, converges.
    See `ArithmeticFunction.vonMangoldt.summable_residueClass_non_primes_div`.
 7. Combining these ingredients, we can deduce that the sum of `Λ n / n` over
-   the *primes* in a residue class must diverge.
+   the _primes_ in a residue class must diverge.
    See `ArithmeticFunction.vonMangoldt.not_summable_residueClass_prime_div`.
 8. This finally easily implies that there must be infinitely many primes in the residue class.
 
@@ -57,7 +61,8 @@ The main steps of the proof are as follows.
 
 ## Main Result
 
-We give two versions of **Dirichlet's Theorem**:
+We give two versions of *Dirichlet's Theorem*:
+
 * `Nat.infinite_setOfPred_prime_and_eq_mod` states that the set of primes `p`
   such that `(p : ZMod q) = a` is infinite (when `a` is invertible in `ZMod q`).
 * `Nat.forall_exists_prime_gt_and_eq_mod` states that for any natural number `n`
@@ -71,7 +76,7 @@ prime number, arithmetic progression, residue class, Dirichlet's Theorem
 @[expose] public section
 
 /-!
-### The L-series of the von Mangoldt function restricted to a residue class
+# The L-series of the von Mangoldt function restricted to a residue class
 -/
 
 section arith_prog
@@ -414,7 +419,7 @@ end ArithmeticFunction.vonMangoldt
 end arith_prog
 
 /-!
-### Dirichlet's Theorem
+# Dirichlet's Theorem
 -/
 
 section DirichletsTheorem

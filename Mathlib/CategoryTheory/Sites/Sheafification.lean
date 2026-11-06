@@ -10,8 +10,10 @@ public import Mathlib.CategoryTheory.Adjunction.Unique
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Sites.Sheaf
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Sheafification
 
 Given a site `(C, J)` we define a typeclass `HasSheafify J A` saying that the inclusion functor from

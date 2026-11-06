@@ -10,9 +10,11 @@ public import Mathlib.Topology.Maps.Proper.Basic
 
 import Mathlib.Topology.Algebra.Group.Subgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations on sets in topological groups
-
 -/
 
 public section
@@ -25,7 +27,7 @@ variable {G : Type w} {H : Type x} {α : Type u} {β : Type v}
 
 
 /-!
-### Topological operations on pointwise sums and products
+# Topological operations on pointwise sums and products
 
 A few results about interior and closure of the pointwise addition/multiplication of sets in groups
 with continuous addition/multiplication. See also `Submonoid.top_closure_mul_self_eq` in
@@ -51,17 +53,21 @@ variable [TopologicalSpace α] [TopologicalSpace β] [Group α] [MulAction α β
   [ContinuousSMul α β] {s : Set α} {t : Set β}
 
 open Prod in
-/-- If `G` acts on `X` continuously, the set `s • t` is closed when `s : Set G` is *compact* and
-`t : Set X` is *closed*.
+/--
+If `G` acts on `X` continuously, the set `s • t` is closed when `s : Set G` is _compact_ and
+`t : Set X` is _closed_.
 
 See also `IsClosed.smul_right_of_isCompact` for a version with the assumptions on `s` and `t`
-reversed, assuming that the action is *proper*. -/
+reversed, assuming that the action is _proper_.
+-/
 @[to_additive
-/-- If `G` acts on `X` continuously, the set `s +ᵥ t` is closed when `s : Set G` is *compact* and
-`t : Set X` is *closed*.
+/--
+If `G` acts on `X` continuously, the set `s +ᵥ t` is closed when `s : Set G` is _compact_ and
+`t : Set X` is _closed_.
 
 See also `IsClosed.vadd_right_of_isCompact` for a version with the assumptions on `s` and `t`
-reversed, assuming that the action is *proper*. -/]
+reversed, assuming that the action is _proper_.
+-/]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   let Φ : s × β ≃ₜ s × β :=

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Algebra
 
 import Mathlib.Algebra.Algebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Pochhammer polynomials
 
@@ -31,6 +34,7 @@ In an integral domain `S`, we show that `ascPochhammer S n` is zero iff
 ## TODO
 
 There is lots more in this direction:
+
 * q-factorials, q-binomials, q-Pochhammer.
 -/
 
@@ -430,8 +434,10 @@ theorem ascPochhammer_eval_neg_natCast_of_lt {n k : ℕ} (h : k < n) :
 @[deprecated (since := "2026-10-13")]
 alias ascPochhammer_eval_neg_coe_nat_of_lt := ascPochhammer_eval_neg_natCast_of_lt
 
-/-- Over an integral domain, the Pochhammer polynomial of degree `n` has roots *only* at
-`0`, `-1`, ..., `-(n - 1)`. -/
+/--
+Over an integral domain, the Pochhammer polynomial of degree `n` has roots _only_ at
+`0`, `-1`, ..., `-(n - 1)`.
+-/
 @[simp]
 theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
     (n : ℕ) (r : R) : (ascPochhammer R n).eval r = 0 ↔ ∃ k < n, k = -r := by

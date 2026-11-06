@@ -9,6 +9,9 @@ module
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Defs
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.QExpansion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Summability of E2
 
@@ -20,10 +23,9 @@ prove how it transforms under the slash action.
 The key results concern the difference between two different orders of summation for the
 telescoping series `∑_{m,n} (1/(mz + n) - 1/(mz + n + 1))`:
 
-1. **`tsum_symmetricIco_tsum_sub_eq`**: Summing first over `n` (in symmetric intervals), then `m`:
+1. *`tsum_symmetricIco_tsum_sub_eq`*: Summing first over `n` (in symmetric intervals), then `m`:
    `∑'[symmetricIco] n : ℤ, ∑' m : ℤ, (1/(mz+n) - 1/(mz+n+1)) = -2πi/z`
-
-2. **`tsum_tsum_symmetricIco_sub_eq`**: Summing first over `m`, then `n` (in symmetric intervals):
+2. *`tsum_tsum_symmetricIco_sub_eq`*: Summing first over `m`, then `n` (in symmetric intervals):
    `∑' m : ℤ, ∑'[symmetricIco] n : ℤ, (1/(mz+n) - 1/(mz+n+1)) = 0`
 
 The difference `-2πi/z` between these two orderings is precisely the correction term
@@ -33,10 +35,8 @@ The difference `-2πi/z` between these two orderings is precisely the correction
 
 1. For fixed `m ≠ 0`, the inner sum over `n` telescopes to zero (each term cancels with its
    neighbor), establishing the first identity.
-
 2. For fixed `n`, the inner sum over `m` can be computed using the cotangent series expansion.
    As `n → ±∞` in symmetric intervals, these sums contribute `-2πi/z`.
-
 -/
 
 open UpperHalfPlane hiding I σ

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.MetricSpace.Dilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruences
 
@@ -21,7 +24,8 @@ distances or the existence of an isometric equivalence — we have opted for the
 equal pairwise distances. This notion is commonly employed in the literature across various metric
 spaces that lack an isometric equivalence.
 
-For more details see the [Zulip discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry).
+For more details see the [Zulip
+discussion](https://leanprover.zulipchat.com/#narrow/stream/217875-Is-there-code-for-X.3F/topic/Euclidean.20Geometry).
 
 ## Notation
 

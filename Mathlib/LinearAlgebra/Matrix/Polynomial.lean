@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.BigOperators
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Mathlib.Tactic.ComputeDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices of polynomials and polynomials of matrices
 
@@ -18,7 +21,7 @@ In particular, we give results about the polynomial given by
 
 ## References
 
-  * "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
+* "The trace Cayley-Hamilton theorem" by Darij Grinberg, Section 5.3
 
 ## Tags
 

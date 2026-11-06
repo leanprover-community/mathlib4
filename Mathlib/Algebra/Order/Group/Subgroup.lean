@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Order.Hom.Monoid
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linearly ordered subgroups
 
@@ -15,7 +18,6 @@ public import Mathlib.Algebra.Order.Hom.Monoid
 
 * `Subgroup.topOrderMonoidIso` : the order preserving isomorphism from the top subgroup
   to the group.
-
 -/
 
 public section

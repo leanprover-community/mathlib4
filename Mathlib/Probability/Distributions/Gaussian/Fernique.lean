@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Distributions.Fernique
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fernique's theorem for Gaussian measures
 
@@ -18,7 +21,7 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 
 ## Main statements
 
-* `IsGaussian.exists_integrable_exp_sq`: **Fernique's theorem**. For a Gaussian measure on a
+* `IsGaussian.exists_integrable_exp_sq`: *Fernique's theorem*. For a Gaussian measure on a
   second-countable normed space, there exists `C > 0` such that the function
   `x ↦ exp (C * ‖x‖ ^ 2)` is integrable.
 * `IsGaussian.memLp_id`: a Gaussian measure in a second-countable Banach space has finite moments
@@ -26,8 +29,7 @@ As a consequence, a Gaussian measure has finite moments of all orders.
 
 ## References
 
-* [Martin Hairer, *An introduction to stochastic PDEs*][hairer2009introduction]
-
+* ‍\[Martin Hairer, _An introduction to stochastic PDEs_\]\[hairer2009introduction\]
 -/
 
 public section

@@ -8,12 +8,16 @@ module
 public meta import Batteries.Data.Nat.Basic
 public import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` extension for `IsSquare`
 
 The extension in this file handles natural, integer, and rational numbers.
 
 ## TODO
+
 Add extensions for `ℚ≥0`, `ℝ`, `ℝ≥0`, `ℝ≥0∞`, `ℂ` (or any algebraically closed field?), `ZMod n`.
 Probably, these extensions should go to different files.
 -/

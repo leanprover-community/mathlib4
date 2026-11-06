@@ -7,12 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.TensorPower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pairing between the tensor power of the dual and the tensor power
 
 We construct the pairing
 `TensorPower.pairingDual : ⨂[R]^n (Module.Dual R M) →ₗ[R] (Module.Dual R (⨂[R]^n M))`.
-
 -/
 
 @[expose] public section

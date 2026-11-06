@@ -8,8 +8,10 @@ module
 public import Mathlib.RingTheory.Discriminant
 public import Mathlib.RingTheory.Norm.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Field/algebra norm / trace and localization
 
 This file contains results on the combination of `IsLocalization` and `Algebra.norm`,
@@ -20,11 +22,9 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 * `Algebra.norm_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
   of `R S` respectively. Then the norm of `a : Sₘ` over `Rₘ` is the norm of `a : S` over `R`
   if `S` is free as `R`-module.
-
 * `Algebra.trace_localization`: let `S` be an extension of `R` and `Rₘ Sₘ` be localizations at `M`
   of `R S` respectively. Then the trace of `a : Sₘ` over `Rₘ` is the trace of `a : S` over `R`
   if `S` is free as `R`-module.
-
 * `Algebra.discr_localizationLocalization`: let `S` be an extension of `R` and `Rₘ Sₘ` be
   localizations at `M` of `R S` respectively. Let `b` be an `R`-basis of `S`. Then discriminant of
   the `Rₘ`-basis of `Sₘ` induced by `b` is the discriminant of `b`.
@@ -32,7 +32,6 @@ This file contains results on the combination of `IsLocalization` and `Algebra.n
 ## Tags
 
 field norm, algebra norm, localization
-
 -/
 
 public section

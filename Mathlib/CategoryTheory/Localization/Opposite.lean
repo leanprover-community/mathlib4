@@ -7,13 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Equivalence
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization of the opposite category
 
 If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, it
 is shown in this file that `L.op : Cᵒᵖ ⥤ Dᵒᵖ` is also a localization functor.
-
 -/
 
 @[expose] public section

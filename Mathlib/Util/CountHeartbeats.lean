@@ -9,16 +9,21 @@ public meta import Lean.Meta.Tactic.TryThis
 public meta import Lean.Util.Heartbeats
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Counting heartbeats
 
 Defines a command wrapper that prints the number of heartbeats used in the enclosed command.
 
 For example
+
 ```
 #count_heartbeats in
 theorem foo : 42 = 6 * 7 := rfl
 ```
+
 will produce an info message containing a number around 51.
 If this number is above the current `maxHeartbeats`, we also print a `Try this:` suggestion.
 -/
@@ -70,7 +75,8 @@ def logVariation {m} [Monad m] [MonadLog m] [AddMessageContext m] [MonadOptions 
   -- convert `[min, max, stddev]` to user-facing heartbeats
   logInfo s!"Min: {min / 1000} Max: {max / 1000} StdDev: {stddev / 10}%"
 
-/-- `#count_heartbeats tac` counts the heartbeats used by the tactic sequence `tac`
+/--
+`#count_heartbeats tac` counts the heartbeats used by the tactic sequence `tac`
 and prints an info line with the number of heartbeats.
 
 * `#count_heartbeats! n in tac`, where `n` is an optional natural number literal, runs `tac`
@@ -114,7 +120,7 @@ def roundDownIf (n : Nat) (approx : Bool) : String :=
 set_option linter.style.maxHeartbeats false in
 /--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
-Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
+Use `#count_heartbeats` to count the heartbeats in _all_ the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
 for long-running declarations.
@@ -208,10 +214,12 @@ def elabForHeartbeats (cmd : TSyntax `command) (revert : Bool := true) : Command
 standard deviation. The command `#count_heartbeats! n in cmd` runs it `n` times instead.
 
 Example usage:
+
 ```
 #count_heartbeats! in
 def f := 37
 ```
+
 displays the info message `Min: 7 Max: 8 StdDev: 14%`.
 -/
 elab "#count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
@@ -229,7 +237,7 @@ end CountHeartbeats
 end Mathlib
 
 /-!
-## The "countHeartbeats" linter
+# The "countHeartbeats" linter
 
 The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/

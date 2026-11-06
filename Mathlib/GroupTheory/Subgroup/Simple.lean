@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Order.Atoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple groups
 
@@ -16,11 +19,11 @@ subgroups.
 
 ## Main definitions
 
-- `IsSimpleGroup G`, a class indicating that a group has exactly two normal subgroups.
+* `IsSimpleGroup G`, a class indicating that a group has exactly two normal subgroups.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.ContinuousMap.Ordered
 public import Mathlib.Topology.UnitInterval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy between functions
 
@@ -50,7 +53,7 @@ and for `ContinuousMap.homotopic` and `ContinuousMap.homotopic_rel`, we also def
 
 ## References
 
-- [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
+* [HOL-Analysis formalisation](https://isabelle.in.tum.de/library/HOL/HOL-Analysis/Homotopy.html)
 -/
 
 @[expose] public section
@@ -66,12 +69,14 @@ open unitInterval
 
 namespace ContinuousMap
 
-/-- `ContinuousMap.Homotopy f₀ f₁` is the type of homotopies from `f₀` to `f₁`.
+/--
+`ContinuousMap.Homotopy f₀ f₁` is the type of homotopies from `f₀` to `f₁`.
 
 When possible, instead of parametrizing results over `(f : ContinuousMap.Homotopy f₀ f₁)`,
 you should parametrize over `{F : Type*} [HomotopyLike F f₀ f₁] (f : F)`.
 
-When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`. -/
+When you extend this structure, make sure to extend `ContinuousMap.HomotopyLike`.
+-/
 @[wikidata Q746083]
 structure Homotopy (f₀ f₁ : C(X, Y)) extends C(I × X, Y) where
   /-- value of the homotopy at 0 -/
@@ -81,10 +86,12 @@ structure Homotopy (f₀ f₁ : C(X, Y)) extends C(I × X, Y) where
 
 section
 
-/-- `ContinuousMap.HomotopyLike F f₀ f₁` states that `F` is a type of homotopies between `f₀` and
+/--
+`ContinuousMap.HomotopyLike F f₀ f₁` states that `F` is a type of homotopies between `f₀` and
 `f₁`.
 
-You should extend this class when you extend `ContinuousMap.Homotopy`. -/
+You should extend this class when you extend `ContinuousMap.Homotopy`.
+-/
 class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y] : Prop
     extends ContinuousMapClass F (I × X) Y where
@@ -118,8 +125,10 @@ instance : HomotopyLike (Homotopy f₀ f₁) f₀ f₁ where
 theorem ext {F G : Homotopy f₀ f₁} (h : ∀ x, F x = G x) : F = G :=
   DFunLike.ext _ _ h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (F : Homotopy f₀ f₁) : I × X → Y :=
   F
 
@@ -410,8 +419,10 @@ theorem coeFn_injective : @Function.Injective (HomotopyWith f₀ f₁ P) (I × X
 @[ext]
 theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := DFunLike.ext F G h
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 
 initialize_simps_projections HomotopyWith (toFun → apply, -toHomotopy_toContinuousMap)

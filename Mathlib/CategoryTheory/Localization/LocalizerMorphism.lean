@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Localization.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of localizers
 
@@ -22,8 +25,8 @@ of categories. This condition is independent of the choice of the
 localized categories.
 
 ## References
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 @[expose] public section

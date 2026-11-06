@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Uniform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Radial functions
 
-A function on a space equipped with a norm is *radial* if its value at a point depends only on the
+A function on a space equipped with a norm is _radial_ if its value at a point depends only on the
 norm of that point, that is, if it factors through the norm. This file introduces the predicate
 `Function.IsRadial` and develops basic API.
 
@@ -31,7 +34,9 @@ variable {D E F : Type*}
 
 namespace Function
 
-/-- A function on a space with a norm is *radial* if it factors through the norm. -/
+/--
+A function on a space with a norm is _radial_ if it factors through the norm.
+-/
 @[fun_prop]
 def IsRadial [Norm E] (f : E → F) : Prop := f.FactorsThrough (‖·‖ : E → ℝ)
 

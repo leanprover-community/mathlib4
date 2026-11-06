@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Antidiag.Finsupp
 public import Mathlib.Combinatorics.Enumerative.Composition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions
 
@@ -36,7 +39,8 @@ Partition
 
 ## References
 
-<https://en.wikipedia.org/wiki/Partition_(number_theory)>
+[
+https://en.wikipedia.org/wiki/Partition\_(number\_theory)](https://en.wikipedia.org/wiki/Partition_(number_theory))
 -/
 
 @[expose] public section

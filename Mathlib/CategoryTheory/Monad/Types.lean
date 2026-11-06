@@ -9,12 +9,13 @@ public import Mathlib.CategoryTheory.Category.KleisliCat
 public import Mathlib.CategoryTheory.Monad.Kleisli
 public import Mathlib.Control.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
 
 This allows us to use these monads in category theory.
-
 -/
 
 @[expose] public section

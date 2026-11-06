@@ -14,6 +14,9 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Descent Theorem
 
@@ -24,6 +27,7 @@ subgroup of `G` into itself (e.g., `f = fun g ↦ g ^ n` when `G` is commutative
 
 If there is a finite subset `s : Set G` and there exists a "height" function `h : G → ℝ`
 and constants `a, b, c : ℝ` such that
+
 * `s` surjects onto the quotient `G ⧸ f(G)`,
 * for all `g ∈ s` and `x : G`, `h x ≤ a * h (g * x) + c`,
 * for all `x : G`, `h (f x) ≥ b * h x - c`,
@@ -40,12 +44,12 @@ See `CommGroup.fg_of_descent` / `AddCommGroup.fg_of_descent` and
 `CommGroup.fg_of_descent'` / `AddCommGroup.fg_of_descent'`.
 
 This last version is one of the main ingredients of the standard proof of the
-**Mordell-Weil Theorem**. It allows to reduce the statement to showing that `G / 2 • G` is finite
+*Mordell-Weil Theorem*. It allows to reduce the statement to showing that `G / 2 • G` is finite
 (where `G` is the Mordell-Weil group).
 
 We also provide versions that prove that the torsion subgroup is finite under weaker assumptions.
 
-### Implementation note
+## Implementation note
 
 Replacing `ℝ` by an ordered field (`{R : Type*} [LinearOrder R] [Field R] [IsOrderedRing R]`)
 works, but makes the type check quite slow (and `to_additive` needs some  help...).
@@ -93,6 +97,7 @@ theorem Group.fg_of_descent {G : Type*} [Group G] {f : G →* G} (hf : ∀ U : S
 open Subgroup QuotientGroup in
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / G ^ n` is finite,
 * for all `g x : G`, `h x ≤ a * h (g * x) + c g`,
 * for all `x : G`, `h (x ^ n) ≥ b * h x - c₀`,
@@ -100,13 +105,17 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely generated.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
-* `G / n • G` is finite,
+@[to_additive /--
+              If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
+              * `G / n • G` is finite,
 * for all `g x : G`, `h x ≤ a * h (g + x) + c g`,
 * for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
-where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely generated. -/]
+              where `0 ≤ a < b` and `c₀` are real numbers, `c : G → ℝ`, then `G` is finitely
+generated.
+              -/]
 theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ} {a b c₀ : ℝ}
     {c : G → ℝ} (ha : 0 ≤ a) (H₀ : a < b) (H₁ : (powMonoidHom (α := G) n).range.FiniteIndex)
     (H₂ : ∀ g x, h x ≤ a * h (g * x) + c g) (H₃ : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
@@ -130,6 +139,7 @@ theorem CommGroup.fg_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → �
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * `G / G ^ 2` is finite,
 * `0 ≤ h x` for all `x : G`,
 * there is `C : ℝ` such that for all `x y : G`, `|h (x * y) + h(x / y) - 2 * (h x + h y)| ≤ C`,
@@ -137,13 +147,17 @@ If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
 
 then `G` is finitely generated.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
-* `G / 2 • G` is finite,
+@[to_additive /--
+              If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
+              * `G / 2 • G` is finite,
 * `0 ≤ h x` for all `x : G`,
-* there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
+* there is `C : ℝ` such that for all `x y : G`,
+  `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
-then `G` is finitely generated. -/]
+              then `G` is finitely generated.
+              -/]
 theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
     (H₁ : (powMonoidHom (α := G) 2).range.FiniteIndex) (H₂ : ∀ x, 0 ≤ h x)
     (H₃ : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
@@ -154,17 +168,21 @@ theorem CommGroup.fg_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : 
 
 /--
 If `M` is a monoid and `n : ℕ`, `h : M → ℝ` satisfy
+
 * for all `M : G`, `h (x ^ n) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : M` such that `h x ≤ B`,
 
 where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in `M` is finite.
 -/
-@[to_additive /-- If `M` is an additive monoid and `n : ℕ`, `h : M → ℝ` satisfy
-* for all `x : M`, `h (n • x) ≥ b * h x - c₀`,
+@[to_additive /--
+              If `M` is an additive monoid and `n : ℕ`, `h : M → ℝ` satisfy
+
+              * for all `x : M`, `h (n • x) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : M` such that `h x ≤ B`,
 
-where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in `M`
-is finite. -/]
+              where `1 < b` and `c₀` are real numbers, then the set of elements of finite order in
+`M` is finite.
+              -/]
 theorem Monoid.finite_set_isOfFiniteOrder_of_descent {M : Type*} [Monoid M] {n : ℕ} {h : M → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite { x : M | IsOfFinOrder x } := by
@@ -180,16 +198,20 @@ theorem Monoid.finite_set_isOfFiniteOrder_of_descent {M : Type*} [Monoid M] {n :
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * for all `x : G`, `h (x ^ n) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
-* for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
+@[to_additive /--
+              If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
+              * for all `x : G`, `h (n • x) ≥ b * h x - c₀`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
-where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite. -/]
+              where `1 < b` and `c₀` are real numbers, then the torsion subgroup of `G` is finite.
+              -/]
 theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} {h : G → ℝ}
     {b c₀ : ℝ} (hb : 1 < b) (H : ∀ x, b * h x - c₀ ≤ h (x ^ n)) [Northcott h] :
     Finite (torsion G) :=
@@ -197,16 +219,21 @@ theorem CommGroup.finite_torsion_of_descent {G : Type*} [CommGroup G] {n : ℕ} 
 
 /--
 If `G` is a commutative group and `n : ℕ`, `h : G → ℝ` satisfy
+
 * there is `C : ℝ` such that for all `x y : G`, `|h (x * y) + h(x / y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
 then the torsion subgroup of `G` is finite.
 -/
-@[to_additive /-- If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
-* there is `C : ℝ` such that for all `x y : G`, `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
+@[to_additive /--
+              If `G` is a commutative additive group and `n : ℕ`, `h : G → ℝ` satisfy
+
+              * there is `C : ℝ` such that for all `x y : G`,
+  `|h (x + y) + h(x - y) - 2 * (h x + h y)| ≤ C`,
 * for all `B : ℝ`, there are only finitely many `x : G` such that `h x ≤ B`,
 
-then the torsion subgroup of `G` is finite. -/]
+              then the torsion subgroup of `G` is finite.
+              -/]
 theorem CommGroup.finite_torsion_of_descent' {G : Type*} [CommGroup G] {h : G → ℝ} {C : ℝ}
     (H : ∀ x y, |h (x * y) + h (x / y) - 2 * (h x + h y)| ≤ C) [Northcott h] :
     Finite (torsion G) := by

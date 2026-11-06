@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Group.Real
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics
 
@@ -28,7 +31,7 @@ similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this f
 Often the ranges of `f` and `g` will be the real numbers, in which case the norm is the absolute
 value. In general, we have
 
-  `f =O[l] g ↔ (fun x ↦ ‖f x‖) =O[l] (fun x ↦ ‖g x‖)`,
+`f =O[l] g ↔ (fun x ↦ ‖f x‖) =O[l] (fun x ↦ ‖g x‖)`,
 
 and similarly for `IsLittleO`. But our setup allows us to use the notions e.g. with functions
 to the integers, rationals, complex numbers, or any normed vector space without mentioning the
@@ -37,17 +40,16 @@ norm explicitly.
 If `f` and `g` are functions to a normed field like the reals or complex numbers and `g` is always
 nonzero, we have
 
-  `f =o[l] g ↔ Tendsto (fun x ↦ f x / (g x)) l (𝓝 0)`.
+`f =o[l] g ↔ Tendsto (fun x ↦ f x / (g x)) l (𝓝 0)`.
 
 In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
 it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
 the Fréchet derivative.)
 
 Sometimes Landau notation may be embedded in more complex expressions, such as
-$f(n) = n ^ {1 + O(g(n))}$. This can be expressed using the existential pattern, for example:
+$`f(n) = n ^ {1 + O(g(n))}`. This can be expressed using the existential pattern, for example:
 
-  `∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
-
+`∃ (e : ℕ → ℝ) (he : e =O[l] g), f =ᶠ[l] fun n ↦ n ^ (1 + e n)`.
 -/
 
 @[expose] public section
@@ -64,7 +66,9 @@ variable [Norm E] [Norm F] [SeminormedAddGroup E']
 
 section Defs
 
-/-! ### Definitions -/
+/-!
+# Definitions
+-/
 
 /-- This version of the Landau notation `IsBigOWith C l f g` where `f` and `g` are two functions on
 a type `α` and `l` is a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by `C * ‖g‖`.

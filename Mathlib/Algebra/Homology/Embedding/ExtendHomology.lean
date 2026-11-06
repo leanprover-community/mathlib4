@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.Embedding.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of the extension of a homological complex
 
@@ -14,7 +17,6 @@ Given an embedding `e : c.Embedding c'` and `K : HomologicalComplex C c`, we sha
 compute the homology of `K.extend e`. In degrees that are not in the image of `e.f`,
 the homology is obviously zero. When `e.f j = j`, we construct an isomorphism
 `(K.extend e).homology j' ≅ K.homology j`.
-
 -/
 
 @[expose] public section

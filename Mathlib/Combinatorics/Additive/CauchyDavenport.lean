@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.Additive.ETransform
 public import Mathlib.GroupTheory.Order.Min
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Cauchy-Davenport theorem
 
@@ -21,6 +24,7 @@ example is `s = {0, ..., m}`, `t = {0, ..., n}` in the integers, which gives
 `s + t = {0, ..., m + n}` and `|s + t| = m + n + 1 = |s| + |t| - 1`.
 
 There are two kinds of proof of Cauchy-Davenport:
+
 * The first one works in linear orders by writing `a₁ < ... < aₖ` the elements of `s`,
   `b₁ < ... < bₗ` the elements of `t`, and arguing that `a₁ + b₁ < ... < aₖ + b₁ < ... < aₖ + bₗ`
   are distinct elements of `s + t`.
@@ -44,7 +48,7 @@ Version for `circle`.
 
 ## References
 
-* Matt DeVos, *On a generalization of the Cauchy-Davenport theorem*
+* Matt DeVos, _On a generalization of the Cauchy-Davenport theorem_
 
 ## Tags
 
@@ -58,22 +62,30 @@ open scoped Pointwise
 
 variable {G α : Type*}
 
-/-! ### General case -/
+/-!
+# General case
+-/
 
 section General
 variable [Group α] [DecidableEq α] {x y : Finset α × Finset α} {s t : Finset α}
 
-/-- The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
+/--
+The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
 `(s₁, t₁) < (s₂, t₂)` iff
+
 * `|s₁ * t₁| < |s₂ * t₂|`
 * or `|s₁ * t₁| = |s₂ * t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
-* or `|s₁ * t₁| = |s₂ * t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`. -/
+* or `|s₁ * t₁| = |s₂ * t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`.
+-/
 @[to_additive
-/-- The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
+/--
+The relation we induct along in the proof by DeVos of the Cauchy-Davenport theorem.
 `(s₁, t₁) < (s₂, t₂)` iff
+
 * `|s₁ + t₁| < |s₂ + t₂|`
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
-* or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`. -/]
+* or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`.
+-/]
 private def DevosMulRel : Finset α × Finset α → Finset α × Finset α → Prop :=
   Prod.Lex (· < ·) (Prod.Lex (· > ·) (· < ·)) on fun x ↦ (#(x.1 * x.2), #x.1 + #x.2, #x.1)
 
@@ -191,7 +203,9 @@ lemma cauchy_davenport_of_isMulTorsionFree [DecidableEq G] [Group G] [IsMulTorsi
   simpa only [Monoid.minOrder_eq_top, min_eq_right, le_top, Nat.cast_le]
     using cauchy_davenport_minOrder_mul hs ht
 
-/-! ### $ℤ/nℤ$ -/
+/-!
+# $`ℤ/nℤ`
+-/
 
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in `ℤ/pℤ`, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
@@ -200,7 +214,9 @@ lemma ZMod.cauchy_davenport {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs
   simpa only [ZMod.minOrder_of_prime hp, min_le_iff, Nat.cast_le]
     using cauchy_davenport_minOrder_add hs ht
 
-/-! ### Linearly ordered cancellative semigroups -/
+/-!
+# Linearly ordered cancellative semigroups
+-/
 
 /-- The **Cauchy-Davenport Theorem** for linearly ordered cancellative semigroups. The size of
 `s * t` is lower-bounded by `|s| + |t| - 1`. -/

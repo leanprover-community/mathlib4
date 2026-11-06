@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.RingTheory.Ideal.Lattice
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Prime ideals
 
 This file contains the definition of `Ideal.IsPrime` for prime ideals.

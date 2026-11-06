@@ -8,26 +8,29 @@ module
 public import Mathlib.Algebra.Homology.ConcreteCategory
 public import Mathlib.RepresentationTheory.Homological.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The group cohomology of a `k`-linear `G`-representation
 
 Let `k` be a commutative ring and `G` a group. This file defines the group cohomology of
 `A : Rep k G` to be the cohomology of the complex
-$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
-with differential $d^n$ sending $f: G^n \to A$ to the function mapping $(g_0, \dots, g_n)$ to
-$$\rho(g_0)(f(g_1, \dots, g_n))$$
-$$+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)$$
-$$+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})$$ (where `ρ` is the representation attached to `A`).
+$$`0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots`
+with differential $`d^n` sending $`f: G^n \to A` to the function mapping $`(g_0, \dots, g_n)` to
+$$`\rho(g_0)(f(g_1, \dots, g_n))`
+$$`+ \sum_{i = 0}^{n - 1} (-1)^{i + 1}\cdot f(g_0, \dots, g_ig_{i + 1}, \dots, g_n)`
+$$`+ (-1)^{n + 1}\cdot f(g_0, \dots, g_{n - 1})` (where `ρ` is the representation attached to `A`).
 
 We have a `k`-linear isomorphism
-$\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)$, where
-the right-hand side is morphisms in `Rep k G`, and $k[G]$ is equipped with the left regular
-representation. If we conjugate the $n$th differential in $\mathrm{Hom}(P, A)$ by this isomorphism,
-where `P` is the bar resolution of `k` as a trivial `k`-linear `G`-representation, then the
-resulting map agrees with the differential $d^n$ defined above, a fact we prove.
+$`\mathrm{Fun}(G^n, A) \cong \mathrm{Hom}(\bigoplus_{G^n} k[G], A)`, where the right-hand side is
+morphisms in `Rep k G`, and $`k[G]` is equipped with the left regular representation. If we
+conjugate the $`n$th differential in  `\\mathrm\{Hom\}(P, A)\$ by this isomorphism, where `P` is the
+bar resolution of `k` as a trivial `k`-linear `G`-representation, then the resulting map agrees with
+the differential $`d^n` defined above, a fact we prove.
 
-This gives us for free a proof that our $d^n$ squares to zero. It also gives us an isomorphism
-$\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),$ where $\mathrm{Ext}$ is taken in the category
+This gives us for free a proof that our $`d^n` squares to zero. It also gives us an isomorphism
+$`\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A),` where $`\mathrm{Ext}` is taken in the category
 `Rep k G`.
 
 To talk about cohomology in low degree, please see the file
@@ -37,13 +40,14 @@ specialized to `H⁰`, `H¹`, `H²`.
 ## Main definitions
 
 * `groupCohomology.inhomogeneousCochains A`: a complex whose objects are
-  $\mathrm{Fun}(G^n, A)$ and whose cohomology is the group cohomology $\mathrm{H}^n(G, A).$
+  $`\mathrm{Fun}(G^n, A)` and whose cohomology is the group cohomology $`\mathrm{H}^n(G, A).`
 * `groupCohomology.inhomogeneousCochainsIso A`: an isomorphism between the above complex and the
-  complex $\mathrm{Hom}(P, A),$ where `P` is the bar resolution of `k` as a trivial resolution.
-* `groupCohomology A n`: this is $\mathrm{H}^n(G, A),$ defined as the $n$th cohomology of
+  complex $`\mathrm{Hom}(P, A),` where `P` is the bar resolution of `k` as a trivial resolution.
+* `groupCohomology A n`: this is $`\mathrm{H}^n(G, A),` defined as the \$n\$th cohomology of
   `inhomogeneousCochains A`.
-* `groupCohomologyIsoExt A n`: an isomorphism $\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)$
-  (where $\mathrm{Ext}$ is taken in the category `Rep k G`) induced by `inhomogeneousCochainsIso A`.
+* `groupCohomologyIsoExt A n`: an isomorphism $`\mathrm{H}^n(G, A) \cong \mathrm{Ext}^n(k, A)`
+  (where $`\mathrm{Ext}` is taken in the category `Rep k G`) induced by
+  `inhomogeneousCochainsIso A`.
 
 ## Implementation notes
 
@@ -59,6 +63,7 @@ possible scalar action diamonds.
 * Profinite cohomology.
 
 Longer term:
+
 * The Hochschild-Serre spectral sequence (this is perhaps a good toy example for the theory of
   spectral sequences in general).
 -/
@@ -115,9 +120,11 @@ variable [Group G] (n) (A : Rep.{u} k G)
 open inhomogeneousCochains Rep
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
-$$0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots$$
-which calculates the group cohomology of `A`. -/
+/--
+Given a `k`-linear `G`-representation `A`, this is the complex of inhomogeneous cochains
+$$`0 \to \mathrm{Fun}(G^0, A) \to \mathrm{Fun}(G^1, A) \to \mathrm{Fun}(G^2, A) \to \dots`
+which calculates the group cohomology of `A`.
+-/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ↧((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d A n) fun n => by

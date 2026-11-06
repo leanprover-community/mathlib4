@@ -10,8 +10,10 @@ public import Mathlib.Condensed.TopComparison
 public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from the category of sets to the
@@ -42,7 +44,6 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
   inclusion map `ιᵢ : Sᵢ ⟶ S`, `X(ιᵢ)(x) = X(ιᵢ)(y)`.
   Here it is important that we set everything up in such a way that the `Sᵢ` are literally subtypes
   of `S`.
-
 * `incl_of_counitAppApp`: given  `S`, `Y` and `f : LocallyConstant S Y(*)` like above, we have
   `Y(ιᵢ)(ε_{S, Y}(f)) = gᵢ(yᵢ)` where `ε` denotes the counit and the other notation is like above.
 
@@ -51,21 +52,18 @@ naturality proofs in this file (both lemmas are in the `CompHausLike.LocallyCons
 * `CompHausLike.LocallyConstant.functor`: the functor from the category of sets to the category of
   sheaves for the coherent topology on `CompHausLike P`, which takes a set `X` to
   `LocallyConstant - X`
-  - `CondensedSet.LocallyConstant.functor` is the above functor in the case of condensed sets.
-  - `LightCondSet.LocallyConstant.functor` is the above functor in the case of light condensed sets.
 
+  * `CondensedSet.LocallyConstant.functor` is the above functor in the case of condensed sets.
+  * `LightCondSet.LocallyConstant.functor` is the above functor in the case of light condensed sets.
 * `CompHausLike.LocallyConstant.adjunction`: the functor described above is left adjoint to the
   "underlying set" functor `(sheafSections _ _).obj ⟨CompHausLike.of P PUnit.{u + 1}⟩`, which takes
   a sheaf `X` to the set `X(*)`.
-
 * `CondensedSet.LocallyConstant.iso`: the functor `CondensedSet.LocallyConstant.functor` is
   isomorphic to the functor `Condensed.discrete (Type _)` (the constant sheaf functor from sets to
   condensed sets).
-
 * `LightCondSet.LocallyConstant.iso`: the functor `LightCondSet.LocallyConstant.functor` is
   isomorphic to the functor `LightCondensed.discrete (Type _)` (the constant sheaf functor from sets
   to light condensed sets).
-
 -/
 
 @[expose] public section

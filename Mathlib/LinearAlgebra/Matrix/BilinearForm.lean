@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bilinear form
 
@@ -23,13 +26,13 @@ This file defines the conversion between bilinear forms and matrices.
 ## Notation
 
 In this file we use the following type variables:
-- `M₁` is a module over the commutative semiring `R₁`,
-- `M₂` is a module over the commutative ring `R₂`.
+
+* `M₁` is a module over the commutative semiring `R₁`,
+* `M₂` is a module over the commutative ring `R₂`.
 
 ## Tags
 
 bilinear form, bilin form, BilinearForm, matrix, basis
-
 -/
 
 @[expose] public section
@@ -48,9 +51,11 @@ open Finset LinearMap Matrix
 
 open Matrix
 
-/-- The map from `Matrix n n R` to bilinear forms on `n → R`.
+/--
+The map from `Matrix n n R` to bilinear forms on `n → R`.
 
-This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`.
+-/
 def Matrix.toBilin'Aux [Fintype n] (M : Matrix n n R₁) : BilinForm R₁ (n → R₁) :=
   Matrix.toLinearMap₂'Aux _ _ M
 
@@ -58,9 +63,11 @@ theorem Matrix.toBilin'Aux_single [Fintype n] [DecidableEq n] (M : Matrix n n R�
     M.toBilin'Aux (Pi.single i 1) (Pi.single j 1) = M i j :=
   Matrix.toLinearMap₂'Aux_single _ _ _ _ _
 
-/-- The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
+/--
+The linear map from bilinear forms to `Matrix n n R` given an `n`-indexed basis.
 
-This is an auxiliary definition for the equivalence `Matrix.toBilin'`. -/
+This is an auxiliary definition for the equivalence `Matrix.toBilin'`.
+-/
 def LinearMap.BilinForm.toMatrixAux (b : n → M₁) : BilinForm R₁ M₁ →ₗ[R₁] Matrix n n R₁ :=
   LinearMap.toMatrix₂Aux R₁ b b
 
@@ -77,7 +84,8 @@ theorem LinearMap.toBilin'Aux_toMatrixAux [DecidableEq n] (B₂ : BilinForm R₁
 
 section ToMatrix'
 
-/-! ### `ToMatrix'` section
+/-!
+# `ToMatrix'` section
 
 This section deals with the conversion between matrices and bilinear forms on `n → R₂`.
 -/
@@ -173,7 +181,8 @@ end ToMatrix'
 
 section ToMatrix
 
-/-! ### `ToMatrix` section
+/-!
+# `ToMatrix` section
 
 This section deals with the conversion between matrices and bilinear forms on
 a module with a fixed basis.
@@ -425,7 +434,8 @@ theorem _root_.Matrix.separatingRight_toBilin_iff {M : Matrix ι ι R₂} (b : B
     (Matrix.toBilin b M).SeparatingRight ↔ M.SeparatingRight :=
   Matrix.separatingRight_toLinearMap₂_iff b b
 
-/-! Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
+/-!
+Lemmas transferring nondegeneracy between a bilinear form and its associated matrix
 
 These are just aliases of lemmas about `LinearMap.toMatrix₂` specialized to the cases where the
 left and right spaces are the same.

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Ideal.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals in product rings
 

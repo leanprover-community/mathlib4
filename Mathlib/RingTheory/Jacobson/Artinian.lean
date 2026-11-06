@@ -7,13 +7,16 @@ module
 
 public import Mathlib.RingTheory.HopkinsLevitzki
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian rings over Jacobson rings
 
 ## Main results
-- `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an Artinian ring `R`,
-  then `A` is finite over `R` if and only if `A` is an Artinian ring.
 
+* `Module.finite_iff_isArtinianRing`: If `A` is a finite type algebra over an Artinian ring `R`,
+  then `A` is finite over `R` if and only if `A` is an Artinian ring.
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The maximal power of one natural number dividing another
 
@@ -27,7 +30,7 @@ namespace Nat
 Find largest `k : ℕ` such that `p ^ k ∣ n` for any `p : ℕ`, as well as the ratio `n / p ^ k`.
 
 The implementation recurses from `(p, n)` to `(p * p, n)`,
-so the recursion depth is $$O(\log(\nu_p(n)))$$, thus it is $$O(\log(\log(n)))$$.
+so the recursion depth is $$`O(\log(\nu_p(n)))`, thus it is $$`O(\log(\log(n)))`.
 -/
 def maxPowDvdDiv (p n : ℕ) : ℕ × ℕ :=
   if H : 1 < p ∧ n ≠ 0 then

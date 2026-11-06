@@ -11,8 +11,10 @@ public import Mathlib.Geometry.Convex.ConvexSpace.AffineSpace
 
 import Mathlib.Algebra.Order.Algebra
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Convex spaces with compatible metric structure
 
 A convex space has a compatible metric structure if `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`.
@@ -24,18 +26,18 @@ that has little to do with this definition.
 
 ## Main results
 
-- `Convexity.IsConvexDist`: The (`Prop`-valued) class of convex spaces with
+* `Convexity.IsConvexDist`: The (`Prop`-valued) class of convex spaces with
   compatible metric structure.
-- `Convexity.continuous_convexCombPair`: Binary convex combination is continuous.
-- `Convexity.IsConvexDist.of_convex`:
+* `Convexity.continuous_convexCombPair`: Binary convex combination is continuous.
+* `Convexity.IsConvexDist.of_convex`:
   Convex subspaces of normed spaces are convex metric spaces.
 
 ## TODO
 
-- Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
+* Equip `StdSimplex` with a topology and show the analogous continuity result for n-ary
   convex combinations.
-- Tidy up the imports with `Mathlib.Geometric.Convex.ConvexSpace.AffineSpace`.
-- Define convex functions with domain a convex space, and redefine `IsConvexDist` as saying that
+* Tidy up the imports with `Mathlib.Geometric.Convex.ConvexSpace.AffineSpace`.
+* Define convex functions with domain a convex space, and redefine `IsConvexDist` as saying that
   `dist : X × X → ℝ` is convex.
 -/
 
@@ -46,7 +48,8 @@ namespace Convexity
 variable {I X : Type*}
 
 variable (X) in
-/-- A convex metric space is a real convex space with a compatible metric structure.
+/--
+A convex metric space is a real convex space with a compatible metric structure.
 Concretely, we ask for `dist(∑ tᵢ xᵢ, ∑ tᵢ yᵢ) ≤ ∑ tᵢ dist(xᵢ, yᵢ)`,
 which is what one would expect from the triangle inequality.
 
@@ -54,7 +57,8 @@ In particular, convex subsets of normed affine spaces are convex metric spaces.
 
 Note that there is a separate notion of
 [convex metric spaces](https://en.wikipedia.org/wiki/Convex_metric_space) in the literature
-that has little to do with this definition. -/
+that has little to do with this definition.
+-/
 class IsConvexDist [inst₁ : ConvexSpace ℝ X] [inst₂ : MetricSpace X] : Prop where
   /-- Use `dist_iConvexComb_le` instead. -/
   dist_iConvexComb_fst_snd_le [inst₁] [inst₂] (f : StdSimplex ℝ (X × X)) :
@@ -121,10 +125,12 @@ lemma dist_right_convexCombPair
     dist y (convexCombPair s t hs ht h x y) = s * dist x y := by
   rw [dist_comm, dist_convexCombPair_right]
 
-/-- `dist(sx + (1-s)y, s'x + (1-s')y) = |s - s'| dist(x, y)`.
+/--
+`dist(sx + (1-s)y, s'x + (1-s')y) = |s - s'| dist(x, y)`.
 
 See `dist_convexCombPair_convexCombPair_le`
-for the version where the weights are fixed and the points change. -/
+for the version where the weights are fixed and the points change.
+-/
 lemma dist_convexCombPair_convexCombPair
     {s t s' t' : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1)
     (hs' : 0 ≤ s') (ht' : 0 ≤ t') (h' : s' + t' = 1) (x y : X) :
@@ -157,10 +163,12 @@ lemma dist_convexCombPair_convexCombPair
     simp [StdSimplex.duple, StdSimplex.map, Finsupp.mapDomain,
       Finsupp.sum_fintype, Fin.sum_univ_succ, f, show t' = s - s' + t by grind]
 
-/-- `dist(sx + (1-s)y, sx' + (1-s)y') ≤ s dist(x, x') + (1-s) dist(y, y')`.
+/--
+`dist(sx + (1-s)y, sx' + (1-s)y') ≤ s dist(x, x') + (1-s) dist(y, y')`.
 
 See `dist_convexCombPair_convexCombPair`
-for the version where the points are fixed and the weights change. -/
+for the version where the points are fixed and the weights change.
+-/
 lemma dist_convexCombPair_convexCombPair_le
     {s t : ℝ} (hs : 0 ≤ s) (ht : 0 ≤ t) (h : s + t = 1) (x y x' y' : X) :
     dist (convexCombPair s t hs ht h x y) (convexCombPair s t hs ht h x' y') ≤

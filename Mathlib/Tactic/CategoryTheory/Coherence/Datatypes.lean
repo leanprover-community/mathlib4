@@ -8,32 +8,36 @@ module
 public meta import Lean.Meta.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Datatypes for bicategory like structures
 
 This file defines the basic datatypes for bicategory like structures. We will use these datatypes
 to write tactics that can be applied to both monoidal categories and bicategories:
-- `Obj`: objects type
-- `Atom₁`: atomic 1-morphisms type
-- `Mor₁`: 1-morphisms type
-- `Atom`: atomic non-structural 2-morphisms type
-- `Mor₂`: 2-morphisms type
-- `AtomIso`: atomic non-structural 2-isomorphisms type
-- `Mor₂Iso`: 2-isomorphisms type
-- `NormalizedHom`: normalized 1-morphisms type
+
+* `Obj`: objects type
+* `Atom₁`: atomic 1-morphisms type
+* `Mor₁`: 1-morphisms type
+* `Atom`: atomic non-structural 2-morphisms type
+* `Mor₂`: 2-morphisms type
+* `AtomIso`: atomic non-structural 2-isomorphisms type
+* `Mor₂Iso`: 2-isomorphisms type
+* `NormalizedHom`: normalized 1-morphisms type
 
 A term of these datatypes wraps the corresponding `Expr` term, which can be extracted by
 e.g. `η.e` for `η : Mor₂`.
 
 The operations of these datatypes are defined in a monad `m` with the corresponding typeclasses:
-- `MonadMor₁`: operations on `Mor₁`
-- `MonadMor₂Iso`: operations on `Mor₂Iso`
-- `MonadMor₂`: operations on `Mor₂`
+
+* `MonadMor₁`: operations on `Mor₁`
+* `MonadMor₂Iso`: operations on `Mor₂Iso`
+* `MonadMor₂`: operations on `Mor₂`
 
 For example, a monad `m` with `[MonadMor₂ m]` provides the operation
 `MonadMor₂.comp₂M : Mor₂Iso → Mor₂Iso → m Mor₂Iso`, which constructs the expression for the
 composition `η ≫ θ` of 2-morphisms `η` and `θ` in the monad `m`.
-
 -/
 
 public meta section
@@ -324,10 +328,12 @@ structure Atom where
   tgt : Mor₁
   deriving Inhabited
 
-/-- `Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
+/--
+`Mor₂` expressions defined below will have the `isoLift? : Option IsoLift` field.
 For `η : Mor₂` such that `η.isoLift? = some isoLift`, we have the following data:
-- `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
-- `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
+
+* `isoLift.e`: an expression for a 2-isomorphism `η'`, given as a `Mor₂Iso` term,
+* `isoLift.eq`: a lean expression for the proof that `η'.hom = η`.
 -/
 structure IsoLift where
   /-- The expression for the 2-isomorphism. -/

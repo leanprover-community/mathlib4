@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Invertible
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `invOf` in ordered (semi)rings.
 -/

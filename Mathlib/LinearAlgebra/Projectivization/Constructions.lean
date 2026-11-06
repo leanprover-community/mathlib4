@@ -10,18 +10,20 @@ public import Mathlib.LinearAlgebra.Projectivization.Basic
 
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Dot Product and Cross Product on Projective Spaces
 
 This file defines the dot product and cross product on projective spaces.
 
 ## Definitions
-- `Projectivization.orthogonal v w` is defined as vanishing of the dot product.
-- `Projectivization.cross v w` for `v w : ℙ F (Fin 3 → F)` is defined as the cross product of
+
+* `Projectivization.orthogonal v w` is defined as vanishing of the dot product.
+* `Projectivization.cross v w` for `v w : ℙ F (Fin 3 → F)` is defined as the cross product of
   `v` and `w` provided that `v ≠ w`. If `v = w`, then the cross product would be zero, so we
   instead define `cross v v = v`.
-
 -/
 
 @[expose] public section

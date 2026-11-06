@@ -10,17 +10,19 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.Solvable
 public import Mathlib.GroupTheory.SpecificGroups.Alternating.KleinFour
 
-/-! # The alternating group is simple
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The alternating group is simple
 
 ## Main results
 
 * `Equiv.Perm.alternatingGroup_le_of_normal`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup
   of `Equiv.Perm α` contains the alternating group.
-
 * `alternatingGroup.normal_subgroup_eq_bot_or_eq_top`:
   If `α` has at least 5 elements, then a nontrivial normal subgroup of `alternatingGroup` is `⊤`.
-
 * `alternatingGroup.isSimpleGroup`:
   If `α` has at least 5 elements, then `alternatingGroup α` is a simple group.
 
@@ -37,13 +39,11 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
   the natural `IwasawaStructure` of `Equiv.Perm α` acting on `Set.powersetCard α 2`.
   Its commutative subgroups consist of the permutations with support in a given element
   of `Set.powersetCard α 2`. They are cyclic of order 2.
-
 * `alternatingGroup.iwasawaStructure_three`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 3`.
 
   Its commutative subgroups consist of the permutations with support
   in a given element of `Set.powersetCard α 2`. They are cyclic of order 3.
-
 * `alternatingGroup.iwasawaStructure_four`:
   the natural `IwasawaStructure` of `alternatingGroup α` acting on `Set.powersetCard α 4`
 
@@ -54,7 +54,6 @@ for `n = 3` or `n = 4`, this gives an Iwasawa structure of `alternatingGroup α`
 
 This file contains one uncomfortable use of `convert`: on line 78, to identify `MulAut.conj`
 and `ConjAct.toConjAct`.
-
 -/
 
 @[expose] public section

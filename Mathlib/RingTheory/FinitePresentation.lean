@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.MvPolynomial.Tower
 
 import Mathlib.Basic.Finite.Sum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness conditions in commutative algebra
 
@@ -18,13 +21,12 @@ In this file we define several notions of finiteness that are common in commutat
 
 ## Main declarations
 
-- `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
-  all of these express that some object is finitely generated *as module* over some base ring.
-- `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
-  all of these express that some object is finitely generated *as algebra* over some base ring.
-- `Algebra.FinitePresentation`, `RingHom.FinitePresentation`, `AlgHom.FinitePresentation`
-  all of these express that some object is finitely presented *as algebra* over some base ring.
-
+* `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
+  all of these express that some object is finitely generated _as module_ over some base ring.
+* `Algebra.FiniteType`, `RingHom.FiniteType`, `AlgHom.FiniteType`
+  all of these express that some object is finitely generated _as algebra_ over some base ring.
+* `Algebra.FinitePresentation`, `RingHom.FinitePresentation`, `AlgHom.FinitePresentation`
+  all of these express that some object is finitely presented _as algebra_ over some base ring.
 -/
 
 @[expose] public section
@@ -453,7 +455,8 @@ universe u v
 
 open Polynomial
 
-/-- Induction principle for finitely presented ring homomorphisms.
+/--
+Induction principle for finitely presented ring homomorphisms.
 
 For a property to hold for all finitely presented ring homs, it suffices for it to hold for
 `Polynomial.C : R → R[X]`, surjective ring homs with finitely generated kernels, and to be closed
@@ -461,6 +464,7 @@ under composition.
 
 Note that to state this conveniently for ring homs between rings of different universes, we carry
 around two predicates `P` and `Q`, which should be "the same" apart from universes:
+
 * `P`, for ring homs `(R : Type u) → (S : Type u)`.
 * `Q`, for ring homs `(R : Type u) → (S : Type v)`.
 -/

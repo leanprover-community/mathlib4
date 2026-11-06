@@ -9,16 +9,19 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Mathlib.Analysis.Normed.Module.Bases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hilbert sum of a family of inner product spaces
 
 Given a family `(G : ι → Type*) [Π i, InnerProductSpace 𝕜 (G i)]` of inner product spaces, this
 file equips `lp G 2` with an inner product space structure, where `lp G 2` consists of those
 dependent functions `f : Π i, G i` for which `∑' i, ‖f i‖ ^ 2`, the sum of the norms-squared, is
-summable.  This construction is sometimes called the *Hilbert sum* of the family `G`.  By choosing
+summable.  This construction is sometimes called the _Hilbert sum_ of the family `G`.  By choosing
 `G` to be `ι → 𝕜`, the Hilbert space `ℓ²(ι, 𝕜)` may be seen as a special case of this construction.
 
-We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →ₗᵢ[𝕜] E`, expressing that
+We also define a _predicate_ `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →ₗᵢ[𝕜] E`, expressing that
 `V` is an `OrthogonalFamily` and that the associated map `lp G 2 →ₗᵢ[𝕜] E` is surjective.
 
 ## Main definitions
@@ -27,36 +30,28 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
   spaces and a family `V : Π i, G i →ₗᵢ[𝕜] E` of isometric embeddings of the `G i` into `E` with
   mutually-orthogonal images, there is an induced isometric embedding of the Hilbert sum of `G`
   into `E`.
-
 * `IsHilbertSum`: Given a Hilbert space `E`, a family `G` of inner product
   spaces and a family `V : Π i, G i →ₗᵢ[𝕜] E` of isometric embeddings of the `G i` into `E`,
   `IsHilbertSum 𝕜 G V` means that `V` is an `OrthogonalFamily` and that the above
   linear isometry is surjective.
-
 * `IsHilbertSum.linearIsometryEquiv`: If a Hilbert space `E` is a Hilbert sum of the
   inner product spaces `G i` with respect to the family `V : Π i, G i →ₗᵢ[𝕜] E`, then the
   corresponding `OrthogonalFamily.linearIsometry` can be upgraded to a `LinearIsometryEquiv`.
-
-* `HilbertBasis`: We define a *Hilbert basis* of a Hilbert space `E` to be a structure whose single
+* `HilbertBasis`: We define a _Hilbert basis_ of a Hilbert space `E` to be a structure whose single
   field `HilbertBasis.repr` is an isometric isomorphism of `E` with `ℓ²(ι, 𝕜)` (i.e., the Hilbert
   sum of `ι` copies of `𝕜`).  This parallels the definition of `Basis`, in `LinearAlgebra.Basis`,
   as an isomorphism of an `R`-module with `ι →₀ R`.
-
 * `HilbertBasis.instCoeFun`: More conventionally a Hilbert basis is thought of as a family
   `ι → E` of vectors in `E` satisfying certain properties (orthonormality, completeness).  We obtain
   this interpretation of a Hilbert basis `b` by defining `⇑b`, of type `ι → E`, to be the image
   under `b.repr` of `lp.single 2 i (1:𝕜)`.  This parallels the definition `Basis.coeFun` in
   `LinearAlgebra.Basis`.
-
 * `HilbertBasis.mk`: Make a Hilbert basis of `E` from an orthonormal family `v : ι → E` of vectors
   in `E` whose span is dense.  This parallels the definition `Basis.mk` in `LinearAlgebra.Basis`.
-
 * `HilbertBasis.mkOfOrthogonalEqBot`: Make a Hilbert basis of `E` from an orthonormal family
   `v : ι → E` of vectors in `E` whose span has trivial orthogonal complement.
-
 * `HilbertBasis.toUnconditionalSchauderBasis`: Convert a Hilbert basis of `E` into an unconditional
   Schauder basis (`UnconditionalSchauderBasis`), with coordinate functionals `x ↦ ⟪b i, x⟫`.
-
 * `HilbertBasis.toSchauderBasis`: Convert a Hilbert basis of `E` indexed by `ℕ` into a classical
   Schauder basis (`SchauderBasis`).
 
@@ -67,19 +62,15 @@ We also define a *predicate* `IsHilbertSum 𝕜 G V`, where `V : Π i, G i →�
   already held a normed space instance (`lp.normedSpace`), and if each `G i` is a Hilbert space
   (i.e., complete), then `lp G 2` was already known to be complete (`lp.completeSpace`). So the work
   here is to define the inner product and show it is compatible.
-
 * `OrthogonalFamily.range_linearIsometry`: Given a family `G` of inner product spaces and a family
   `V : Π i, G i →ₗᵢ[𝕜] E` of isometric embeddings of the `G i` into `E` with mutually-orthogonal
   images, the image of the embedding `OrthogonalFamily.linearIsometry` of the Hilbert sum of `G`
   into `E` is the closure of the span of the images of the `G i`.
-
 * `HilbertBasis.repr_apply_apply`: Given a Hilbert basis `b` of `E`, the entry `b.repr x i` of
   `x`'s representation in `ℓ²(ι, 𝕜)` is the inner product `⟪b i, x⟫`.
-
 * `HilbertBasis.hasSum_repr`: Given a Hilbert basis `b` of `E`, a vector `x` in `E` can be
   expressed as the "infinite linear combination" `∑' i, b.repr x i • b i` of the basis vectors
   `b i`, with coefficients given by the entries `b.repr x i` of `x`'s representation in `ℓ²(ι, 𝕜)`.
-
 * `exists_hilbertBasis`: A Hilbert space admits a Hilbert basis.
 
 ## Keywords
@@ -100,7 +91,9 @@ variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProdu
 
 local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
-/-! ### Inner product space structure on `lp G 2` -/
+/-!
+# Inner product space structure on `lp G 2`
+-/
 
 
 namespace lp
@@ -172,7 +165,9 @@ theorem inner_single_right [DecidableEq ι] (i : ι) (a : G i) (f : lp G 2) :
 
 end lp
 
-/-! ### Identification of a general Hilbert space `E` with a Hilbert sum -/
+/-!
+# Identification of a general Hilbert space `E` with a Hilbert sum
+-/
 
 
 namespace OrthogonalFamily
@@ -257,12 +252,14 @@ section IsHilbertSum
 variable (𝕜 G)
 variable [CompleteSpace E] (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
-/-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
+/--
+Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
 space `E` and an orthogonal family `V : Π i, G i →ₗᵢ[𝕜] E` such that the induced isometry
 `Φ : lp G 2 → E` is surjective.
 
 Keeping in mind that `lp G 2` is "the" external Hilbert sum of `G : ι → Type*`, this is analogous
-to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules. -/
+to `DirectSum.IsInternal`, except that we don't express it in terms of actual submodules.
+-/
 structure IsHilbertSum : Prop where
   ofSurjective ::
   /-- The orthogonal family constituting the summands in the Hilbert sum. -/
@@ -290,10 +287,12 @@ theorem IsHilbertSum.mkInternal [∀ i, CompleteSpace <| F i]
     IsHilbertSum 𝕜 (fun i => F i) fun i => (F i).subtypeₗᵢ :=
   IsHilbertSum.mk hFortho (by simpa [subtypeₗᵢ_toLinearMap, range_subtype] using hFtotal)
 
-/-- *A* Hilbert sum `(E, V)` of `G` is canonically isomorphic to *the* Hilbert sum of `G`,
+/--
+_A_ Hilbert sum `(E, V)` of `G` is canonically isomorphic to _the_ Hilbert sum of `G`,
 i.e `lp G 2`.
 
-Note that this goes in the opposite direction from `OrthogonalFamily.linearIsometry`. -/
+Note that this goes in the opposite direction from `OrthogonalFamily.linearIsometry`.
+-/
 noncomputable def IsHilbertSum.linearIsometryEquiv (hV : IsHilbertSum 𝕜 G V) : E ≃ₗᵢ[𝕜] lp G 2 :=
   LinearIsometryEquiv.symm <|
     LinearIsometryEquiv.ofSurjective hV.OrthogonalFamily.linearIsometry hV.surjective_isometry
@@ -364,7 +363,9 @@ theorem Submodule.isHilbertSumOrthogonal (K : Submodule 𝕜 E) [hK : CompleteSp
 
 end IsHilbertSum
 
-/-! ### Hilbert bases -/
+/-!
+# Hilbert bases
+-/
 
 
 section

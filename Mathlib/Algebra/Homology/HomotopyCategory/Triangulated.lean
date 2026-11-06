@@ -7,11 +7,14 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 
-/-! # The triangulated structure on the homotopy category of complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The triangulated structure on the homotopy category of complexes
 
 In this file, we show that for any additive category `C`,
 the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is triangulated.
-
 -/
 
 @[expose] public section

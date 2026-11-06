@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
 public import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences of sheaf categories
 
@@ -23,19 +26,14 @@ sufficiently small limits in the sheaf category on the essentially small site.
 ## Main definitions
 
 * `CategoryTheory.Equivalence.sheafCongr` is the equivalence of sheaf categories.
-
 * `CategoryTheory.Equivalence.transportAndSheafify` is the functor which takes a presheaf on `C`,
   transports it over the equivalence to `D`, sheafifies there and then transports back to `C`.
-
 * `CategoryTheory.Equivalence.transportSheafificationAdjunction`: `transportAndSheafify` is
   left adjoint to the functor taking a sheaf to its underlying presheaf.
-
 * `CategoryTheory.smallSheafify` is the functor which takes a presheaf on an essentially small site
   `(C, J)`, transports to a small model, sheafifies there and then transports back to `C`.
-
 * `CategoryTheory.smallSheafificationAdjunction`: `smallSheafify` is left adjoint to the functor
   taking a sheaf to its underlying presheaf.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RingTheory.Flat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensoring with a flat module is an exact functor
 
@@ -16,16 +19,14 @@ In this file we prove that tensoring with a flat module is an exact functor.
 
 ## Main results
 
-- `Module.Flat.iff_lTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
+* `Module.Flat.iff_lTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
   for every exact sequence `A ⟶ B ⟶ C`, `M ⊗ A ⟶ M ⊗ B ⟶ M ⊗ C` is also exact.
-
-- `Module.Flat.iff_rTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
+* `Module.Flat.iff_rTensor_preserves_shortComplex_exact`: an `R`-module `M` is flat if and only if
   for every short exact sequence `A ⟶ B ⟶ C`, `A ⊗ M ⟶ B ⊗ M ⟶ C ⊗ M` is also exact.
 
 ## TODO
 
-- Relate flatness with `Tor`
-
+* Relate flatness with `Tor`
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
 import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Objects that are colimits of objects satisfying a certain property
 
@@ -41,7 +44,6 @@ to `limitsOfShape` in the opposite category `Cᵒᵖ` and vice versa.
   iterating over `ℕ`), and more generally the closure under colimits
   indexed by a category whose type of arrows has a cardinality
   that is bounded by a certain regular cardinal (@joelriou)
-
 -/
 
 @[expose] public section
@@ -56,8 +58,10 @@ variable {C D : Type*} [Category* C] [Category* D] (P : ObjectProperty C)
   (J : Type u') [Category.{v'} J]
   {J' : Type u''} [Category.{v''} J']
 
-/-- The property of objects that are *equal* to `colimit F` for some
-functor `F : J ⥤ C` where all `F.obj j` satisfy `P`. -/
+/--
+The property of objects that are _equal_ to `colimit F` for some
+functor `F : J ⥤ C` where all `F.obj j` satisfy `P`.
+-/
 inductive strictColimitsOfShape : ObjectProperty C
   | colimit (F : J ⥤ C) [HasColimit F] (hF : ∀ j, P (F.obj j)) :
     strictColimitsOfShape (colimit F)

@@ -7,24 +7,24 @@ module
 
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Relative rank of subfields and intermediate fields
 
 This file contains basics about the relative rank of subfields and intermediate fields.
 
 ## Main definitions
 
-- `Subfield.relrank A B`, `IntermediateField.relrank A B`:
+* `Subfield.relrank A B`, `IntermediateField.relrank A B`:
   defined to be `[B : A ⊓ B]` as a `Cardinal`.
   In particular, when `A ≤ B` it is `[B : A]`, the degree of the field extension `B / A`.
   This is similar to `Subgroup.relIndex` but it is `Cardinal` valued.
-
-- `Subfield.relfinrank A B`, `IntermediateField.relfinrank A B`:
+* `Subfield.relfinrank A B`, `IntermediateField.relfinrank A B`:
   the `Nat` version of `Subfield.relrank A B` and `IntermediateField.relrank A B`, respectively.
   If `B / A ⊓ B` is an infinite extension, then it is zero.
   This is similar to `Subgroup.relIndex`.
-
 -/
 
 @[expose] public section

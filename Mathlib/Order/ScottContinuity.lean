@@ -12,6 +12,9 @@ public import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Order.Bounds.Image
 import Mathlib.Tactic.ToFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scott continuity
 
@@ -29,9 +32,8 @@ in this file, and ωScott Continuity on chains later in
 
 ## References
 
-* [Abramsky and Jung, *Domain Theory*][abramsky_gabbay_maibaum_1994]
-* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-
+* ‍\[Abramsky and Jung, _Domain Theory_\]\[abramsky\_gabbay\_maibaum\_1994\]
+* ‍\[Gierz et al, _A Compendium of Continuous Lattices_\]\[GierzEtAl1980\]
 -/
 
 @[expose] public section
@@ -49,6 +51,8 @@ variable [Preorder α] [Preorder β] [Preorder γ] {D D₁ D₂ : Set (Set α)}
 attribute [local push ←] Function.comp_def
 attribute [local push] Function.const_def
 
+
+set_option doc.verso false
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
 preserves `IsLUB` on elements of `D`.
 
@@ -64,6 +68,8 @@ does not appear to play a significant role in the literature, so is omitted here
 def ScottContinuousOn (D : Set (Set α)) (f : α → β) : Prop :=
   ∀ ⦃d : Set α⦄, d ∈ D → d.Nonempty → DirectedOn (· ≤ ·) d → ∀ ⦃a⦄, IsLUB d a → IsLUB (f '' d) (f a)
 
+
+set_option doc.verso true
 lemma ScottContinuousOn.mono (hD : D₁ ⊆ D₂) (hf : ScottContinuousOn D₂ f) :
     ScottContinuousOn D₁ f := fun _ hdD₁ hd₁ hd₂ _ hda => hf (hD hdD₁) hd₁ hd₂ hda
 

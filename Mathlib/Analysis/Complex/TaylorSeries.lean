@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.CauchyIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence of Taylor series of holomorphic functions
 

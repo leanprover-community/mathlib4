@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Submodule.EqLocus
 public import Mathlib.RingTheory.Finiteness.Cofinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `HasFiniteRange` predicate on linear maps, and the associated equivalence relation
 
@@ -20,7 +23,7 @@ In this file, we define:
   is always stable by addition, whereas `HasFiniteRange` might not be. The two notions agree
   over noetherian rings (hence, in particular, over fields).
 * `LinearMap.finiteRange`: the submodule of `E →ₗ[K] F` consisting of linear maps with
-  *noetherian* ranges. We allow ourself this slightly abusive name because the more natural
+  _noetherian_ ranges. We allow ourself this slightly abusive name because the more natural
   definition (the submodule of linear maps with finitely generated ranges) only makes sense over a
   noetherian ring, in which case the two notions agree.
 * `LinearMap.FiniteRangeSetoid.setoid`: the setoid on `E →ₗ[K] F` associated to
@@ -32,9 +35,8 @@ In this file, we define:
   noetherian ring, in which case the two notions agree.
   This is an instance in the scope `LinearMap.FiniteRangeSetoid`,
   so opening this scope allows this relation to be denoted by `≈`.
-* `LinearMap.IsQuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
+* `LinearMap.IsQuasiInverse`: two linear maps `u` and `v` are *quasi-inverses* if we have
   `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo linear maps with noetherian ranges.
-
 -/
 
 @[expose] public section
@@ -219,13 +221,15 @@ variable [CommRing K]
 
 namespace FiniteRangeSetoid
 
-/-- This is the equivalence relation on linear maps such that `u ≈ v` precisely
+/--
+This is the equivalence relation on linear maps such that `u ≈ v` precisely
 when `u - v` is a linear map with noetherian range. We allow ourself this slightly abusive name
 because the more natural definition (`u - v` has finitely generated range) only yields a
 well-behaved relation (more precisely, an additive congruence relation compatible with composition
 on both sides) over a noetherian ring, in which case the two notions agree.
 
-This setoid is declared as an instance in scope `LinearMap.FiniteRangeSetoid`. -/
+This setoid is declared as an instance in scope `LinearMap.FiniteRangeSetoid`.
+-/
 scoped instance setoid : Setoid (V →ₗ[K] V₂) := (LinearMap.finiteRange K V V₂).quotientRel
 
 lemma equiv_iff_hasNoetherianRange {u v : V →ₗ[K] V₂} : u ≈ v ↔ (u - v).HasNoetherianRange :=

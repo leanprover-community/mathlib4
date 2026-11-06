@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Sort
 public import Mathlib.LinearAlgebra.Multilinear.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Currying of multilinear maps
 
@@ -20,7 +23,6 @@ between spaces of multilinear functions in `n+1` variables and spaces of linear 
 multilinear functions in `n` variables (resp. multilinear functions in `n` variables taking values
 in linear functions), called respectively `multilinearCurryLeftEquiv` and
 `multilinearCurryRightEquiv`.
-
 -/
 
 @[expose] public section
@@ -33,7 +35,7 @@ variable {R : Type uR} {ι : Type uι} {ι' : Type uι'} {n : ℕ}
   {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M' : Type v'}
 
 /-!
-### Currying
+# Currying
 
 We associate to a multilinear map in `n+1` variables (i.e., based on `Fin n.succ`) two
 curried functions, named `f.curryLeft` (which is a linear map on `E 0` taking values
@@ -52,7 +54,9 @@ open MultilinearMap
 variable [CommSemiring R] [∀ i, AddCommMonoid (M i)] [AddCommMonoid M'] [AddCommMonoid M₂]
   [∀ i, Module R (M i)] [Module R M'] [Module R M₂]
 
-/-! #### Left currying -/
+/-!
+# Left currying
+-/
 
 
 /-- Given a linear map `f` from `M 0` to multilinear maps on `n` variables,
@@ -99,13 +103,15 @@ theorem MultilinearMap.uncurry_curryLeft (f : (Π i, M i) →ₘₗ[R] M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
+/--
+The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from `M 0` to the space of multilinear maps on
 `Π (i : Fin n), M i.succ`, by separating the first variable. We register this isomorphism as a
 linear isomorphism in `multilinearCurryLeftEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.curryLeft` and `f.uncurryLeft`. Use these
-unless you need the full framework of linear equivs. -/
+unless you need the full framework of linear equivs.
+-/
 @[simps]
 def multilinearCurryLeftEquiv :
     ((Π i, M i) →ₘₗ[R] M₂) ≃ₗ[R] M 0 →ₗ[R] (Π i : Fin n, M i.succ) →ₘₗ[R] M₂ where
@@ -118,7 +124,9 @@ def multilinearCurryLeftEquiv :
 
 variable {R M M₂}
 
-/-! #### Right currying -/
+/-!
+# Right currying
+-/
 
 /-- Given a multilinear map `f` in `n` variables to the space of linear maps from `M (last n)` to
 `M₂`, construct the corresponding multilinear map on `n+1` variables obtained by concatenating
@@ -166,13 +174,15 @@ theorem MultilinearMap.uncurry_curryRight (f : (Π i, M i) →ₘₗ[R] M₂) :
 
 variable (R M M₂)
 
-/-- The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
+/--
+The space of multilinear maps on `Π (i : Fin (n+1)), M i` is canonically isomorphic to
 the space of linear maps from the space of multilinear maps on `Π (i : Fin n), M (castSucc i)` to
 the space of linear maps on `M (last n)`, by separating the last variable. We register this
 isomorphism as a linear isomorphism in `multilinearCurryRightEquiv R M M₂`.
 
 The direct and inverse maps are given by `f.curryRight` and `f.uncurryRight`. Use these
-unless you need the full framework of linear equivs. -/
+unless you need the full framework of linear equivs.
+-/
 def multilinearCurryRightEquiv :
     ((Π i, M i) →ₘₗ[R] M₂) ≃ₗ[R] (Π i : Fin n, M (castSucc i)) →ₘₗ[R] M (last n) →ₗ[R] M₂ where
   toFun := MultilinearMap.curryRight

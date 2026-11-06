@@ -10,6 +10,9 @@ public import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 public import Mathlib.AlgebraicTopology.SimplicialSet.HoFunctorMonoidal
 public import Mathlib.CategoryTheory.Bicategory.CatEnriched
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The strict bicategory of quasicategories
 
@@ -33,9 +36,8 @@ This strict bicategory serves as a setting to develop the formal category theory
 
 ## References
 
-* [Emily Riehl and Dominic Verity, Elements of ∞-Category Theory][RiehlVerity2022]
-* [Emily Riehl and Dominic Verity, The 2-category theory of quasi-categories][RiehlVerity2015]
-
+* ‍\[Emily Riehl and Dominic Verity, Elements of ∞-Category Theory\]\[RiehlVerity2022\]
+* ‍\[Emily Riehl and Dominic Verity, The 2-category theory of quasi-categories\]\[RiehlVerity2015\]
 -/
 
 @[expose] public section

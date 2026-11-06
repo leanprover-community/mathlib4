@@ -8,12 +8,15 @@ module
 public import Mathlib.Order.Category.PartOrd
 public import Mathlib.Order.Hom.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of lattices
 
 This defines `Lat`, the category of lattices.
 
-Note that `Lat` doesn't correspond to the literature definition of [`Lat`]
+Note that `Lat` doesn't correspond to the literature definition of \[`Lat`\]
 (https://ncatlab.org/nlab/show/Lat) as we don't require bottom or top elements. Instead, `Lat`
 corresponds to `BddLat`.
 

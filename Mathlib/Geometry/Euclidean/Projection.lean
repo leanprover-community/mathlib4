@@ -9,6 +9,9 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Reflection
 public import Mathlib.Geometry.Euclidean.PerpBisector
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal projection in affine spaces
 
@@ -19,10 +22,8 @@ and reflection of a point in an affine subspace.
 
 * `EuclideanGeometry.orthogonalProjection` is the orthogonal
   projection of a point onto an affine subspace.
-
 * `EuclideanGeometry.reflection` is the reflection of a point in an
   affine subspace.
-
 -/
 
 @[expose] public section
@@ -69,10 +70,12 @@ theorem orthogonalProjection_apply_mem (s : AffineSubspace 𝕜 P) [Nonempty s]
     Submodule.starProjection_eq_self_iff]
   exact s.vsub_mem_direction (SetLike.coe_mem _) hx
 
-/-- Since both instance arguments are propositions, allow `simp` to rewrite them
+/--
+Since both instance arguments are propositions, allow `simp` to rewrite them
 alongside the `s` argument.
 
-Note that without the coercion to `P`, the LHS and RHS would have different types. -/
+Note that without the coercion to `P`, the LHS and RHS would have different types.
+-/
 @[congr]
 theorem orthogonalProjection_congr {s₁ s₂ : AffineSubspace 𝕜 P} {p₁ p₂ : P}
     [Nonempty s₁] [s₁.direction.HasOrthogonalProjection]

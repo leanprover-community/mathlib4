@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Traces in inner product spaces
 

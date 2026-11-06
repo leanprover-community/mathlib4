@@ -9,8 +9,10 @@ public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Continuous Monoid Homs
 
 This file defines the space of continuous homomorphisms between two topological groups.
@@ -34,25 +36,29 @@ variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]
 variable [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C] [TopologicalSpace D]
 
-/-- The type of continuous additive monoid homomorphisms from `A` to `B`.
+/--
+The type of continuous additive monoid homomorphisms from `A` to `B`.
 
 When possible, instead of parametrizing results over `(f : ContinuousAddMonoidHom A B)`,
 you should parametrize
 over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [AddMonoidHomClass F A B] (f : F)`.
 
 When you extend this structure,
-make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed. -/
+make sure to extend `ContinuousMapClass` and/or `AddMonoidHomClass`, if needed.
+-/
 structure ContinuousAddMonoidHom (A B : Type*) [AddMonoid A] [AddMonoid B] [TopologicalSpace A]
   [TopologicalSpace B] extends A →+ B, C(A, B)
 
-/-- The type of continuous monoid homomorphisms from `A` to `B`.
+/--
+The type of continuous monoid homomorphisms from `A` to `B`.
 
 When possible, instead of parametrizing results over `(f : ContinuousMonoidHom A B)`,
 you should parametrize
 over `(F : Type*) [FunLike F A B] [ContinuousMapClass F A B] [MonoidHomClass F A B] (f : F)`.
 
 When you extend this structure,
-make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed. -/
+make sure to extend `ContinuousMapClass` and/or `MonoidHomClass`, if needed.
+-/
 @[to_additive]
 structure ContinuousMonoidHom extends A →* B, C(A, B)
 
@@ -290,8 +296,7 @@ end
 section
 
 /-!
-
-### Continuous MulEquiv
+# Continuous MulEquiv
 
 This section defines the space of continuous isomorphisms between two topological groups.
 -/
@@ -436,8 +441,12 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun }
 
-/-- See Note [custom simps projection] -/
-@[to_additive /-- See Note [custom simps projection] -/]
+/--
+See Note \[custom simps projection\]
+-/
+@[to_additive /--
+              See Note \[custom simps projection\]
+              -/]
 def Simps.symm_apply [Mul G] [Mul H] (e : G ≃ₜ* H) : H → G :=
   e.symm
 

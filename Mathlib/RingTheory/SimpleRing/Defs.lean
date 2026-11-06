@@ -8,14 +8,17 @@ module
 public import Mathlib.Order.Atoms
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
-/-! # Simple rings
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-A ring `R` is **simple** if it has only two two-sided ideals, namely `⊥` and `⊤`.
+/-!
+# Simple rings
+
+A ring `R` is *simple* if it has only two two-sided ideals, namely `⊥` and `⊤`.
 
 ## Main definitions
 
-- `IsSimpleRing`: a predicate expressing that a ring is simple.
-
+* `IsSimpleRing`: a predicate expressing that a ring is simple.
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Filtered.Basic
 public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of `1`-hypercovers up to homotopy
 
@@ -17,14 +20,14 @@ In this file we define the category of `1`-hypercovers up to homotopy. This is t
 
 ## Main definitions
 
-- `CategoryTheory.PreOneHypercover.Homotopy`: A homotopy of refinements `E ⟶ F` is a family of
+* `CategoryTheory.PreOneHypercover.Homotopy`: A homotopy of refinements `E ⟶ F` is a family of
   morphisms `Xᵢ ⟶ Yₐ` where `Yₐ` is a component of the cover of `X_{f(i)} ×[S] X_{g(i)}`.
-- `CategoryTheory.GrothendieckTopology.HOneHypercover`: The category of `1`-hypercovers
+* `CategoryTheory.GrothendieckTopology.HOneHypercover`: The category of `1`-hypercovers
   with respect to a Grothendieck topology and morphisms up to homotopy.
 
 ## Main results
 
-- `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
+* `CategoryTheory.GrothendieckTopology.HOneHypercover.isCofiltered_of_hasPullbacks`: The
   category of `1`-hypercovers up to homotopy is cofiltered if `C` has pullbacks.
 -/
 

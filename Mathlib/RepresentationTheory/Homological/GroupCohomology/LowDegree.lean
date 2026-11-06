@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 public import Mathlib.RepresentationTheory.Invariants
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The low-degree cohomology of a `k`-linear `G`-representation
 
@@ -49,7 +52,6 @@ The file also contains an identification between the definitions in
 
 * The relationship between `H2` and group extensions
 * Nonabelian group cohomology
-
 -/
 
 @[expose] public section
@@ -142,9 +144,11 @@ def d₂₃ : ModuleCat.of k (G × G → A) ⟶ ModuleCat.of k (G × G × G → 
           add_sub_assoc, add_sub_assoc]
     map_smul' r x := funext fun g => by dsimp; simp only [map_smul, smul_add, smul_sub] }
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `d₀₁` gives a simpler expression for the 0th differential: that is, the following
 square commutes:
+
 ```
   C⁰(G, A) --d 0 1--> C¹(G, A)
   |                     |
@@ -153,6 +157,7 @@ square commutes:
   v                     v
   A ------d₀₁-----> Fun(G, A)
 ```
+
 where the vertical arrows are `cochainsIso₀` and `cochainsIso₁` respectively.
 -/
 theorem comp_d₀₁_eq :
@@ -178,9 +183,11 @@ theorem eq_d₀₁_comp_inv :
       d₀₁ A ≫ (cochainsIso₁ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₀₁_eq A⟩).w
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `d₁₂` gives a simpler expression for the 1st differential: that is, the following
 square commutes:
+
 ```
   C¹(G, A) ---d 1 2---> C²(G, A)
     |                      |
@@ -189,6 +196,7 @@ square commutes:
     v                      v
   Fun(G, A) --d₁₂--> Fun(G × G, A)
 ```
+
 where the vertical arrows are `cochainsIso₁` and `cochainsIso₂` respectively.
 -/
 theorem comp_d₁₂_eq :
@@ -208,9 +216,11 @@ theorem eq_d₁₂_comp_inv :
       d₁₂ A ≫ (cochainsIso₂ A).inv :=
   (CommSq.horiz_inv ⟨comp_d₁₂_eq A⟩).w
 
-/-- Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
+/--
+Let `C(G, A)` denote the complex of inhomogeneous cochains of `A : Rep k G`. This lemma
 says `d₂₃` gives a simpler expression for the 2nd differential: that is, the following
 square commutes:
+
 ```
       C²(G, A) ----d 2 3----> C³(G, A)
         |                         |
@@ -219,6 +229,7 @@ square commutes:
         v                         v
   Fun(G × G, A) --d₂₃--> Fun(G × G × G, A)
 ```
+
 where the vertical arrows are `cochainsIso₂` and `cochainsIso₃` respectively.
 -/
 theorem comp_d₂₃_eq :

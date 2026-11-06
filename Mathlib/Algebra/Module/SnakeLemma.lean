@@ -7,18 +7,20 @@ module
 
 public import Mathlib.Algebra.Exact.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The snake lemma in terms of modules
 
 The snake lemma is proven in `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian
 categories, but for definitional equality and universe issues we reprove them here for modules.
 
 ## Main results
-- `SnakeLemma.δ`: The connecting homomorphism guaranteed by the snake lemma.
-- `SnakeLemma.exact_δ_left`: The connecting homomorphism is exact on the right.
-- `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 
+* `SnakeLemma.δ`: The connecting homomorphism guaranteed by the snake lemma.
+* `SnakeLemma.exact_δ_left`: The connecting homomorphism is exact on the right.
+* `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
 -/
 
 @[expose] public section
@@ -28,6 +30,7 @@ open Function
 
 /-!
 Suppose we have an exact commutative diagram
+
 ```
         K₂ -F-→ K₃
         |       |
@@ -44,6 +47,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁ -G-→ C₂
 
 ```
+
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`, and that `ι₃` is injective and `π₁` is surjective.
 -/
@@ -83,8 +87,9 @@ lemma SnakeLemma.eq_of_eq (x : K₃)
   exact ⟨_, rfl⟩
 
 /--
-**Snake Lemma**
+*Snake Lemma*
 Suppose we have an exact commutative diagram
+
 ```
                 K₃
                 |
@@ -101,6 +106,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁
 
 ```
+
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`,
 then the map `π₁ ∘ ρ ∘ i₂ ∘ σ ∘ ι₃` is a linear map from `K₃` to `C₁`.
@@ -129,6 +135,7 @@ lemma SnakeLemma.δ_eq (x : K₃) (y) (hy : f₂ y = ι₃ x) (z) (hz : g₁ z =
 include hι₂ in
 /--
 Suppose we have an exact commutative diagram
+
 ```
         K₂ -F-→ K₃
         |       |
@@ -145,6 +152,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁
 
 ```
+
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
@@ -168,6 +176,7 @@ lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ 
 include hπ₂ in
 /--
 Suppose we have an exact commutative diagram
+
 ```
                 K₃
                 |
@@ -184,6 +193,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁ -G-→ C₂
 
 ```
+
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
 (set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
@@ -204,6 +214,7 @@ lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π
 
 /--
 Suppose we have an exact commutative diagram
+
 ```
                 K₃
                 |
@@ -220,6 +231,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁
 
 ```
+
 such that `f₂` is surjective and `g₁` is injective,
 then this is the linear map `K₃ → C₁` given by the snake lemma.
 
@@ -236,6 +248,7 @@ lemma SnakeLemma.δ'_eq (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
 include hι₂ in
 /--
 Suppose we have an exact commutative diagram
+
 ```
         K₂ -F-→ K₃
         |       |
@@ -252,6 +265,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁
 
 ```
+
 such that `f₂` is surjective, `g₁` is injective, and `ι₃` is injective,
 then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
@@ -263,6 +277,7 @@ lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g�
 include hπ₂ in
 /--
 Suppose we have an exact commutative diagram
+
 ```
                 K₃
                 |
@@ -279,6 +294,7 @@ N₁ -g₁→ N₂ -g₂→ N₃
 C₁ -G-→ C₂
 
 ```
+
 such that `f₂` is surjective, `g₁` is injective, and `π₁` is surjective,
 then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/

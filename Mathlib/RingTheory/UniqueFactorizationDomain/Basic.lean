@@ -12,10 +12,14 @@ public import Mathlib.Tactic.Bound.Init
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.ENat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on unique factorization monoids
 
 ## Main results
+
 * `prime_factors_unique`: the prime factors of an element in a cancellative
   commutative monoid with zero (e.g. an integral domain) are unique up to associates
 * `UniqueFactorizationMonoid.factors_unique`: the irreducible factors of an element

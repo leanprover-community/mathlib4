@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 public import Mathlib.Topology.MetricSpace.Ultra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric norms
 

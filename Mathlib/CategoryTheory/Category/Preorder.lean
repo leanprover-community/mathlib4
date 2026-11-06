@@ -10,8 +10,10 @@ public import Mathlib.Order.Hom.Basic
 
 import Mathlib.Data.ULift
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Preorders as categories
 
 We install a category instance on any preorder. This is not to be confused with the category _of_
@@ -25,7 +27,6 @@ categories.
 * `homOfLE` and `leOfHom` provide translations between inequalities in the preorder, and
   morphisms in the associated category.
 * `Monotone.functor` is the functor associated to a monotone function.
-
 -/
 
 @[expose] public section
@@ -43,7 +44,8 @@ The category structure coming from a preorder. There is a morphism `X ⟶ Y` if 
 
 Because we don't allow morphisms to live in `Prop`,
 we have to define `X ⟶ Y` as `ULift (PLift (X ≤ Y))`.
-See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`. -/
+See `CategoryTheory.homOfLE` and `CategoryTheory.leOfHom`.
+-/
 @[stacks 00D3]
 instance (priority := 100) smallCategory (α : Type u) [Preorder α] : SmallCategory α where
   Hom U V := ULift (PLift (U ≤ V))

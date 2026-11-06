@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Logic.Equiv.PartialEquiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equidecompositions
 
@@ -18,13 +21,13 @@ This file develops the basic theory of equidecompositions.
 
 Let `G` be a group acting on a space `X`, and `A B : Set X`.
 
-An *equidecomposition* of `A` and `B` is typically defined as a finite partition of `A` together
+An _equidecomposition_ of `A` and `B` is typically defined as a finite partition of `A` together
 with a finite list of elements of `G` of the same size such that applying each element to the
 matching piece of the partition yields a partition of `B`.
 
 This yields a bijection `f : A ≃ B` where, given `a : A`, `f a = γ • a` for `γ : G` the group
 element for `a`'s piece of the partition. Reversing this is easy, and so we get an equivalent
-(up to the choice of group elements) definition: an *Equidecomposition* of `A` and `B` is a
+(up to the choice of group elements) definition: an _Equidecomposition_ of `A` and `B` is a
 bijection `f : A ≃ B` such that for some `S : Finset G`, `f a ∈ S • a` for all `a`.
 
 We take this as our definition as it is easier to work with. It is implemented as an element
@@ -35,9 +38,7 @@ We take this as our definition as it is easier to work with. It is implemented a
 * Equidecompositions are implemented as elements of `PartialEquiv X X` together with a
   `Finset` of elements of the acting group and a proof that every point in the source is moved
   by an element in the finset.
-
 * The requirement that `G` be a group is relaxed where possible.
-
 * We introduce a non-standard predicate, `IsDecompOn`, to state that a function satisfies the main
   combinatorial property of equidecompositions, even if it is not injective or surjective.
 
@@ -49,7 +50,6 @@ We take this as our definition as it is easier to work with. It is implemented a
   prove that its induced equivalence relation is equidecomposability.
 * Prove the definition of equidecomposition used here is equivalent to the more familiar one
   using partitions.
-
 -/
 
 @[expose] public section
@@ -64,17 +64,20 @@ section SMul
 
 variable [SMul G X]
 
-/-- Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a decomposition on `A`
+/--
+Let `G` act on a space `X` and `A : Set X`. We say `f : X → X` is a decomposition on `A`
 as witnessed by some `S : Finset G` if for all `a ∈ A`, the value `f a` can be obtained
 by applying some element of `S` to `a` instead.
 
 More familiarly, the restriction of `f` to `A` is the result of partitioning `A` into finitely many
-pieces, then applying a single element of `G` to each piece. -/
+pieces, then applying a single element of `G` to each piece.
+-/
 def IsDecompOn (f : X → X) (A : Set X) (S : Finset G) : Prop := ∀ a ∈ A, ∃ g ∈ S, f a = g • a
 
 variable (X G)
 
-/-- Let `G` act on a space `X`. An `Equidecomposition` with respect to `X` and `G` is a partial
+/--
+Let `G` act on a space `X`. An `Equidecomposition` with respect to `X` and `G` is a partial
 bijection `f : PartialEquiv X X` with the property that for some set `elements : Finset G`,
 (which we record), for each `a ∈ f.source`, `f a` can be obtained by applying some `g ∈ elements`
 instead. We call `f` an equidecomposition of `f.source` with `f.target`.

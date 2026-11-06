@@ -8,6 +8,10 @@ module
 public meta import Lean.DocString
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # `extend_doc` command
 

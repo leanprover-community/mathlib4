@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.CWComplex.Classical.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness notions on CW complexes
 
@@ -15,6 +18,7 @@ finite. We define constructors with relaxed conditions for CW complexes of finit
 finite CW complexes.
 
 ## Main definitions
+
 * `RelCWComplex.FiniteDimensional`: a CW complex is finite dimensional if it has only finitely many
   nonempty indexing types for the cells.
 * `RelCWComplex.FiniteType`: a CW complex is of finite type if it has only finitely many cells in
@@ -22,6 +26,7 @@ finite CW complexes.
 * `RelCWComplex.Finite`: a CW complex is finite if it is finite dimensional and of finite type.
 
 ## Main statements
+
 * `RelCWComplex.mkFiniteType`: if we want to construct a CW complex of finite type, we can relax the
   condition `mapsTo`.
 * `RelCWComplex.mkFinite`: if we want to construct a finite CW complex, we can relax the condition

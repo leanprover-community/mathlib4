@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Algebra.Basic
 public import Mathlib.Tactic.Algebra.Lemmas  -- shake: keep (Qq output dependency)
 public import Mathlib.Tactic.Ring.RingNF  -- shake: keep (`initialize`s `Ring.ringCleanupRef`)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `algebra` tactic
 
@@ -20,24 +23,25 @@ Based largely on the implementation of `ring`. The `algebra` normal form mirrors
 except that the constants are expressions in the base ring that are kept in ring normal form.
 
 ## Organization
+
 This tactic is implemented using the machinery of `Ring.Common`
 
 * Normalized expressions are stored as an `Common.ExSum`, with a custom type for
-representing coefficients in `R`.
+  representing coefficients in `R`.
 * While `ring` stores coefficients as rational numbers normalized by `norm_num`, `algebra` stores
-coefficients as expressions in the base ring `R`, normalized by `ring`.
+  coefficients as expressions in the base ring `R`, normalized by `ring`.
 * These coefficients are sums, not products. The normal form of `a • x + b • x` is `(a + b) • x`.
 
 This tactic is used internally to implement the `polynomial` tactic.
 
 ## Limitations
+
 The main limitation of the current implementation is that it does not handle rational constants
 when the algebra `A` is a field but the base ring `R` is not. This is never an issue when working
 with polynomials, but would be an issue when working with a number field over its ring of integers.
 
 When inferring the base ring, we assume that any two rings `R` and `S` that appear are comparable,
 in the sense that either `R` is an `S`-algebra or `S` is an `R`-algebra.
-
 -/
 
 open Lean hiding Module
@@ -72,10 +76,12 @@ section BaseType
 variable {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (a : Q($A)) (b : Q($A))
 
-/-- The type used to store the coefficients of the algebra tactic, which are expressions in `R`
-  kept in ring normal form and mapped into `A` by the algebraMap.
+/--
+The type used to store the coefficients of the algebra tactic, which are expressions in `R`
+kept in ring normal form and mapped into `A` by the algebraMap.
 
-  Note that these are sums, not products! -/
+Note that these are sums, not products!
+-/
 inductive BaseType : (a : Q($A)) → Type
   | mk (r : Q($R)) (_ : Ring.ExSum q($sR) r) : BaseType q(algebraMap $R $A $r)
 
@@ -308,7 +314,8 @@ def preprocess (e : Expr) : MetaM Simp.Result := do
   let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   return (← Simp.main e ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
 
-/-- Collect all scalar rings from scalar multiplications using a state monad for performance.
+/--
+Collect all scalar rings from scalar multiplications using a state monad for performance.
 
 Note: The match in this definition should be kept up to date with the `Common.eval` function.
 -/
@@ -418,7 +425,8 @@ where
       have : $a =Q $b := ⟨⟩
       return q($pb ▸ $pa)
 
-/-- `algebra` solves equalities in the language of algebras: ring operations and scalar
+/--
+`algebra` solves equalities in the language of algebras: ring operations and scalar
 multiplications.
 
 Given a goal which is an equality in a commutative `R`-algebra `A`, `algebra` parses the LHS and
@@ -432,7 +440,7 @@ and `S` that appear are comparable, in the sense that either `R` is an `S`-algeb
 `R`-algebra.
 
 * `algebra with R` uses the term `R` as the scalar ring, instead of attempting to infer it
-automatically.
+  automatically.
 -/
 elab (name := algebra) "algebra":tactic =>
   withMainContext do

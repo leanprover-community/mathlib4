@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Sigma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product and sums indexed by finite sets in sigma types.
-
 -/
 
 public section
@@ -27,14 +29,18 @@ section CommMonoid
 
 variable [CommMonoid β]
 
-/-- The product over a sigma type equals the product of the fiberwise products.
+/--
+The product over a sigma type equals the product of the fiberwise products.
 For rewriting in the reverse direction, use `Finset.prod_sigma'`.
 
-See also `Fintype.prod_sigma` for the product over the whole type. -/
-@[to_additive /-- The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
+See also `Fintype.prod_sigma` for the product over the whole type.
+-/
+@[to_additive /--
+              The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
 in the reverse direction, use `Finset.sum_sigma'`.
 
-See also `Fintype.sum_sigma` for the sum over the whole type. -/]
+              See also `Fintype.sum_sigma` for the sum over the whole type.
+              -/]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]

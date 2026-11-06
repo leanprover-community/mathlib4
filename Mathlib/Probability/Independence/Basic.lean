@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.Probability.Independence.Kernel.IndepFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
 
@@ -45,6 +48,7 @@ The definitions of independence in this file are a particular case of independen
 kernel and a measure, as defined in the file `Kernel.lean`.
 
 We provide four definitions of independence:
+
 * `iIndepSets`: independence of a family of sets of sets `pi : ι → Set (Set Ω)`. This is meant to
   be used with π-systems.
 * `iIndep`: independence of a family of measurable space structures `m : ι → MeasurableSpace Ω`,
@@ -430,7 +434,9 @@ lemma indepSets_iff_singleton_indepSets {𝒜 ℬ : Set (Set Ω)} :
 
 end Indep
 
-/-! ### Deducing `Indep` from `iIndep` -/
+/-!
+# Deducing `Indep` from `iIndep`
+-/
 
 
 section FromIndepToIndep
@@ -454,7 +460,7 @@ theorem iIndepFun.indepFun {β : ι → Type*}
 end FromIndepToIndep
 
 /-!
-## π-system lemma
+# π-system lemma
 
 Independence of measurable spaces is equivalent to independence of generating π-systems.
 -/
@@ -464,7 +470,9 @@ section FromMeasurableSpacesToSetsOfSets
 
 variable {m : ι → MeasurableSpace Ω} {_mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
-/-! ### Independence of measurable space structures implies independence of generating π-systems -/
+/-!
+# Independence of measurable space structures implies independence of generating π-systems
+-/
 
 theorem iIndep.iIndepSets
     {s : ι → Set (Set Ω)} (hms : ∀ n, m n = generateFrom (s n)) (h_indep : iIndep m μ) :
@@ -482,7 +490,9 @@ section FromPiSystemsToMeasurableSpaces
 
 variable {m : ι → MeasurableSpace Ω} {m1 m2 _mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 
-/-! ### Independence of generating π-systems implies independence of measurable space structures -/
+/-!
+# Independence of generating π-systems implies independence of measurable space structures
+-/
 
 theorem IndepSets.indep [IsZeroOrProbabilityMeasure μ]
     {p1 p2 : Set (Set Ω)} (h1 : m1 ≤ _mΩ) (h2 : m2 ≤ _mΩ) (hp1 : IsPiSystem p1)
@@ -560,9 +570,11 @@ end FromPiSystemsToMeasurableSpaces
 
 section IndepSet
 
-/-! ### Independence of measurable sets
+/-!
+# Independence of measurable sets
 
 We prove the following equivalences on `IndepSet`, for measurable sets `s, t`.
+
 * `IndepSet s t μ ↔ μ (s ∩ t) = μ s * μ t`,
 * `IndepSet s t μ ↔ IndepSets {s} {t} μ`.
 -/
@@ -633,8 +645,8 @@ end IndepSet
 
 section IndepFun
 
-/-! ### Independence of random variables
-
+/-!
+# Independence of random variables
 -/
 
 

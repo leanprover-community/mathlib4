@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Diffeomorphisms
 
@@ -28,6 +31,7 @@ This file implements diffeomorphisms.
   model `I` and `M` with model `I.transContinuousLinearEquiv e`.
 
 This file also provides diffeomorphisms related to products and disjoint unions.
+
 * `Diffeomorph.prodCongr`: the product of two diffeomorphisms
 * `Diffeomorph.prodComm`: `M × N` is diffeomorphic to `N × M`
 * `Diffeomorph.prodAssoc`: `(M × N) × N'` is diffeomorphic to `M × (N × N')`

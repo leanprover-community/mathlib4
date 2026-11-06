@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.ChevalleyWarning
 
 import Mathlib.Data.Multiset.Fintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Erdős–Ginzburg–Ziv theorem
 
@@ -48,10 +51,12 @@ private lemma totalDegree_f₁_add_totalDegree_f₂ {a : ι → ZMod p} :
       · exact (totalDegree_smul_le ..).trans (totalDegree_X_pow ..).le
     _ < 2 * p - 1 := by have := (Fact.out : p.Prime).two_le; lia
 
-/-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ/pℤ`.
+/--
+The prime case of the *Erdős–Ginzburg–Ziv theorem* for `ℤ/pℤ`.
 
 Any sequence of `2 * p - 1` elements of `ZMod p` contains a subsequence of `p` elements whose sum is
-zero. -/
+zero.
+-/
 private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 * p - 1) :
     ∃ t ⊆ s, #t = p ∧ ∑ i ∈ t, a i = 0 := by
   have : NeZero p := inferInstance
@@ -88,10 +93,12 @@ private theorem ZMod.erdos_ginzburg_ziv_prime (a : ι → ZMod p) (hs : #s = 2 *
   -- From `f₂ x = 0`, we get that `p` divides the sum of the `a ∈ s` such that `x a ≠ 0`.
   · simpa [f₂, ZMod.pow_card_sub_one, Finset.sum_filter] using x.2.2
 
-/-- The prime case of the **Erdős–Ginzburg–Ziv theorem** for `ℤ`.
+/--
+The prime case of the *Erdős–Ginzburg–Ziv theorem* for `ℤ`.
 
 Any sequence of `2 * p - 1` elements of `ℤ` contains a subsequence of `p` elements whose sum is
-divisible by `p`. -/
+divisible by `p`.
+-/
 private theorem Int.erdos_ginzburg_ziv_prime (a : ι → ℤ) (hs : #s = 2 * p - 1) :
     ∃ t ⊆ s, #t = p ∧ ↑p ∣ ∑ i ∈ t, a i := by
   simpa [← Int.cast_sum, ZMod.intCast_zmod_eq_zero_iff_dvd]
@@ -102,10 +109,12 @@ end prime
 section composite
 variable {n : ℕ} {s : Finset ι}
 
-/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ`.
+/--
+The *Erdős–Ginzburg–Ziv theorem* for `ℤ`.
 
 Any sequence of at least `2 * n - 1` elements of `ℤ` contains a subsequence of `n` elements whose
-sum is divisible by `n`. -/
+sum is divisible by `n`.
+-/
 theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
     ∃ t ⊆ s, #t = n ∧ ↑n ∣ ∑ i ∈ t, a i := by
   classical
@@ -175,27 +184,33 @@ theorem Int.erdos_ginzburg_ziv (a : ι → ℤ) (hs : 2 * n - 1 ≤ #s) :
     · simp only [cons_eq_insert, mem_insert, forall_eq_or_imp, and_assoc]
       exact ⟨ht₀.trans sdiff_subset, ht₀card, ht₀sum, h𝒜⟩
 
-/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ/nℤ`.
+/--
+The *Erdős–Ginzburg–Ziv theorem* for `ℤ/nℤ`.
 
 Any sequence of at least `2 * n - 1` elements of `ZMod n` contains a subsequence of `n` elements
-whose sum is zero. -/
+whose sum is zero.
+-/
 theorem ZMod.erdos_ginzburg_ziv (a : ι → ZMod n) (hs : 2 * n - 1 ≤ #s) :
     ∃ t ⊆ s, #t = n ∧ ∑ i ∈ t, a i = 0 := by
   simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd] using Int.erdos_ginzburg_ziv (ZMod.cast ∘ a) hs
 
-/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ` for multiset.
+/--
+The *Erdős–Ginzburg–Ziv theorem* for `ℤ` for multiset.
 
 Any multiset of at least `2 * n - 1` elements of `ℤ` contains a submultiset of `n` elements whose
-sum is divisible by `n`. -/
+sum is divisible by `n`.
+-/
 theorem Int.erdos_ginzburg_ziv_multiset (s : Multiset ℤ) (hs : 2 * n - 1 ≤ Multiset.card s) :
     ∃ t ≤ s, Multiset.card t = n ∧ ↑n ∣ t.sum := by
   obtain ⟨t, hts, ht⟩ := Int.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)
   exact ⟨t.1.map Prod.fst, Multiset.map_fst_le_of_subset_toEnumFinset hts, by simpa using ht⟩
 
-/-- The **Erdős–Ginzburg–Ziv theorem** for `ℤ/nℤ` for multiset.
+/--
+The *Erdős–Ginzburg–Ziv theorem* for `ℤ/nℤ` for multiset.
 
 Any multiset of at least `2 * n - 1` elements of `ℤ` contains a submultiset of `n` elements whose
-sum is divisible by `n`. -/
+sum is divisible by `n`.
+-/
 theorem ZMod.erdos_ginzburg_ziv_multiset (s : Multiset (ZMod n))
     (hs : 2 * n - 1 ≤ Multiset.card s) : ∃ t ≤ s, Multiset.card t = n ∧ t.sum = 0 := by
   obtain ⟨t, hts, ht⟩ := ZMod.erdos_ginzburg_ziv (s := s.toEnumFinset) Prod.fst (by simpa using hs)

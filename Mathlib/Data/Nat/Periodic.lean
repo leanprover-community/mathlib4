@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Periodic
 public import Mathlib.Data.Nat.Count
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodic Functions on ℕ
 

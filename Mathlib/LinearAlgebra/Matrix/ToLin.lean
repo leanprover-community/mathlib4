@@ -18,6 +18,9 @@ public import Mathlib.RingTheory.AlgebraTower
 
 import Mathlib.RingTheory.Ideal.Span
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear maps and matrices
 
@@ -66,7 +69,7 @@ and (presumably) adding `_left` where necessary.
 
 ## Tags
 
-linear_map, matrix, linear_equiv, diagonal, det, trace
+linear\_map, matrix, linear\_equiv, diagonal, det, trace
 -/
 
 @[expose] public section
@@ -76,7 +79,7 @@ noncomputable section
 open LinearMap Matrix Module Set Submodule
 
 /-!
-### Bilinear versions of matrix products
+# Bilinear versions of matrix products
 
 The definitions in this section are stated with two extra rings, to allow for non-commutative rings.
 -/
@@ -89,9 +92,11 @@ variable [SMulCommClass S R A] [SMulCommClass S A A] [IsScalarTower R A A]
 
 variable (R S)
 
-/-- `Matrix.vecMul` as a bilinear map.
+/--
+`Matrix.vecMul` as a bilinear map.
 
-When `A` is non-commutative, this can be instantiated as `vecMulBilin A Aᵐᵒᵖ` -/
+When `A` is non-commutative, this can be instantiated as `vecMulBilin A Aᵐᵒᵖ`
+-/
 def Matrix.vecMulBilin [Fintype m] : (m → A) →ₗ[R] Matrix m n A →ₗ[S] (n → A) where
   toFun x :=
   { toFun M := x ᵥ* M
@@ -106,9 +111,11 @@ theorem Matrix.vecMulBilin_apply [Fintype m] (v : m → A) (M : Matrix m n A) :
 
 example {A} [Semiring A] [Fintype m] := (vecMulBilin A Aᵐᵒᵖ : _ →ₗ[_] Matrix m n A →ₗ[_] _)
 
-/-- `Matrix.mulVec` as a bilinear map.
+/--
+`Matrix.mulVec` as a bilinear map.
 
-When `A` is non-commutative, this can be instantiated as `mulVecBilin A Aᵐᵒᵖ` -/
+When `A` is non-commutative, this can be instantiated as `mulVecBilin A Aᵐᵒᵖ`
+-/
 def Matrix.mulVecBilin [Fintype n] : Matrix m n A →ₗ[R] (n → A) →ₗ[S] (m → A) where
   toFun M :=
   { toFun x := M *ᵥ x
@@ -123,9 +130,11 @@ theorem Matrix.mulVecBilin_apply [Fintype n] (M : Matrix m n A) (v : n → A) :
 
 example {A} [Semiring A] [Fintype n] := (mulVecBilin A Aᵐᵒᵖ : Matrix m n A →ₗ[_] _ →ₗ[_] _)
 
-/-- `vecMulVec` as a bilinear map.
+/--
+`vecMulVec` as a bilinear map.
 
-When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecBilin A Aᵐᵒᵖ`. -/
+When `A` is noncommutative, `R` and `S` can be instantiated as `vecMulVecBilin A Aᵐᵒᵖ`.
+-/
 @[simps]
 def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
   toFun x :=
@@ -137,9 +146,11 @@ def vecMulVecBilin : (m → A) →ₗ[R] (n → A) →ₗ[S] Matrix m n A where
 
 example {A} [Semiring A] := (vecMulVecBilin A Aᵐᵒᵖ : (m → A) →ₗ[_] (n → A) →ₗ[_] _)
 
-/-- `dotProduct` as a bilinear map.
+/--
+`dotProduct` as a bilinear map.
 
-When `A` is noncommutative, `R` and `S` can be instantiated as `dotProductBilin A Aᵐᵒᵖ`. -/
+When `A` is noncommutative, `R` and `S` can be instantiated as `dotProductBilin A Aᵐᵒᵖ`.
+-/
 @[simps]
 def dotProductBilin [Fintype m] : (m → A) →ₗ[R] (m → A) →ₗ[S] A where
   toFun x :=
@@ -157,9 +168,11 @@ section ToMatrixRight
 variable {R : Type*} [Semiring R]
 variable {l m n : Type*}
 
-/-- `Matrix.vecMul M` is a linear map.
+/--
+`Matrix.vecMul M` is a linear map.
 
-Note this is a special case of `Matrix.vecMulBilin`. -/
+Note this is a special case of `Matrix.vecMulBilin`.
+-/
 abbrev Matrix.vecMulLinear [Fintype m] (M : Matrix m n R) : (m → R) →ₗ[R] n → R :=
   Matrix.vecMulBilin R Rᵐᵒᵖ |>.flip M
 
@@ -280,9 +293,11 @@ section mulVec
 variable {R : Type*} [CommSemiring R]
 variable {k l m n : Type*}
 
-/-- `Matrix.mulVec M` as a linear map.
+/--
+`Matrix.mulVec M` as a linear map.
 
-Note this is a special case of `Matrix.mulVecBilin`. -/
+Note this is a special case of `Matrix.mulVecBilin`.
+-/
 abbrev Matrix.mulVecLin [Fintype n] (M : Matrix m n R) : (n → R) →ₗ[R] m → R := mulVecBilin R R M
 
 theorem Matrix.coe_mulVecLin [Fintype n] (M : Matrix m n R) :
@@ -380,9 +395,11 @@ def LinearMap.toMatrix' : ((n → R) →ₗ[R] m → R) ≃ₗ[R] Matrix m n R w
     ext i j
     simp only [Pi.smul_apply, LinearMap.smul_apply, RingHom.id_apply, of_apply, Matrix.smul_apply]
 
-/-- A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
+/--
+A `Matrix m n R` is linearly equivalent to a linear map `(n → R) →ₗ[R] (m → R)`.
 
-Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`. -/
+Note that the forward-direction does not require `DecidableEq` and is `Matrix.mulVecLin`.
+-/
 def Matrix.toLin' : Matrix m n R ≃ₗ[R] (n → R) →ₗ[R] m → R :=
   LinearMap.toMatrix'.symm
 
@@ -939,7 +956,8 @@ theorem toMatrix_lsmul (x : R) :
     LinearMap.toMatrix b b (Algebra.lsmul R R S x) = Matrix.diagonal fun _ ↦ x :=
   toMatrix_distrib_mul_action_toLinearMap b x
 
-/-- `leftMulMatrix b x` is the matrix corresponding to the linear map `fun y ↦ x * y`.
+/--
+`leftMulMatrix b x` is the matrix corresponding to the linear map `fun y ↦ x * y`.
 
 `leftMulMatrix_eq_repr_mul` gives a formula for the entries of `leftMulMatrix`.
 
@@ -1063,14 +1081,16 @@ variable [Fintype ι] [Fintype ι₁] [Fintype ι₂]
 variable [DecidableEq ι] [DecidableEq ι₁]
 variable (b : Basis ι R M) (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂)
 
-/-- The standard basis of the space linear maps between two modules
+/--
+The standard basis of the space linear maps between two modules
 induced by a basis of the domain and codomain.
 
 If `M₁` and `M₂` are modules with basis `b₁` and `b₂` respectively indexed
 by finite types `ι₁` and `ι₂`,
 then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed by `ι₂ × ι₁`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
-and sends all other basis vectors to `0`. -/
+and sends all other basis vectors to `0`.
+-/
 @[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
@@ -1090,13 +1110,15 @@ lemma linearMap_apply_apply (ij : ι₂ × ι₁) (k : ι₁) :
   dsimp only [Matrix.single, of_apply]
   simp_rw [ite_smul, one_smul, zero_smul, ite_and, Finset.sum_ite_eq, Finset.mem_univ, ite_true]
 
-/-- The standard basis of the endomorphism algebra of a module
+/--
+The standard basis of the endomorphism algebra of a module
 induced by a basis of the module.
 
 If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
-and sends all other basis vectors to `0`. -/
+and sends all other basis vectors to `0`.
+-/
 @[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 abbrev «end» (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=

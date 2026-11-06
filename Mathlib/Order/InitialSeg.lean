@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Hom.Lex
 public import Mathlib.Order.UpperLower.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Initial and principal segments
 
@@ -42,7 +45,9 @@ These notations belong to the `InitialSeg` locale.
 
 @[expose] public section
 
-/-! ### Initial segment embeddings -/
+/-!
+# Initial segment embeddings
+-/
 
 universe u
 
@@ -185,9 +190,11 @@ theorem antisymm_symm [IsWellOrder α r] [IsWellOrder β s] (f : r ≼i s) (g : 
     (antisymm f g).symm = antisymm g f :=
   RelIso.coe_fn_injective rfl
 
-/-- An initial segment embedding is either an isomorphism, or a principal segment embedding.
+/--
+An initial segment embedding is either an isomorphism, or a principal segment embedding.
 
-See also `InitialSeg.ltOrEq`. -/
+See also `InitialSeg.ltOrEq`.
+-/
 theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
     Surjective f ∨ ∃ b, ∀ x, x ∈ Set.range f ↔ s x b := by
   apply or_iff_not_imp_right.2
@@ -234,7 +241,9 @@ protected theorem acc (f : r ≼i s) (a : α) : Acc r a ↔ Acc s (f a) :=
 
 end InitialSeg
 
-/-! ### Principal segments -/
+/-!
+# Principal segments
+-/
 
 /-- If `r` is a relation on `α` and `s` in a relation on `β`, then `f : r ≺i s` is an initial
 segment embedding whose range is `Set.Iio x` for some element `x`. If `β` is a well order, this is
@@ -465,7 +474,9 @@ theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsT
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
     wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
 
-/-! ### Properties of initial and principal segments -/
+/-!
+# Properties of initial and principal segments
+-/
 
 namespace InitialSeg
 
@@ -525,10 +536,12 @@ private theorem collapseF_not_lt [IsWellOrder β s] (f : r ↪r s) (a : α) {b}
   dsimp only
   exact WellFounded.not_lt_min _ {b | ∀ a', r a' a → s (collapseF f a') b} h
 
-/-- Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
+/--
+Construct an initial segment embedding `r ≼i s` by "filling in the gaps". That is, each
 subsequent element in `α` is mapped to the least element in `β` that hasn't been used yet.
 
-This construction is guaranteed to work as long as there exists some relation embedding `r ↪r s`. -/
+This construction is guaranteed to work as long as there exists some relation embedding `r ↪r s`.
+-/
 @[no_expose]
 noncomputable def RelEmbedding.collapse [IsWellOrder β s] (f : r ↪r s) : r ≼i s :=
   have H := RelEmbedding.isWellOrder f
@@ -567,7 +580,9 @@ noncomputable def PrincipalSeg.trichotomy (r s) [IsWellOrder α r] [IsWellOrder 
   | .inl f => f.principalSumRelIso.elim .inl (.inr ∘ .inl)
   | .inr g => g.principalSumRelIso.elim (.inr ∘ .inr) (.inr ∘ .inl ∘ .symm)
 
-/-! ### Initial or principal segments with `<` -/
+/-!
+# Initial or principal segments with `<`
+-/
 
 namespace InitialSeg
 

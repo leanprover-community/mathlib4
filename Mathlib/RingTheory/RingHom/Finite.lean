@@ -10,8 +10,10 @@ public import Mathlib.RingTheory.Localization.Finiteness
 
 import Mathlib.RingTheory.TensorProduct.Finite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The meta properties of finite ring homomorphisms.
 
 ## Main results
@@ -22,7 +24,6 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite `R' = M⁻¹R`-algebra.
 * `finite_ofLocalizationSpan` : `S` is a finite `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra.
-
 -/
 
 public section

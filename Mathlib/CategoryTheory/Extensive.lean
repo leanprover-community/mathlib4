@@ -14,33 +14,37 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Extensive categories
 
 ## Main definitions
-- `CategoryTheory.FinitaryExtensive`: A category is (finitary) extensive if it has finite
+
+* `CategoryTheory.FinitaryExtensive`: A category is (finitary) extensive if it has finite
   coproducts, and binary coproducts are van Kampen.
 
 ## Main Results
-- `CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive`: The initial object
+
+* `CategoryTheory.hasStrictInitialObjects_of_finitaryExtensive`: The initial object
   in extensive categories is strict.
-- `CategoryTheory.FinitaryExtensive.mono_inr_of_isColimit`: Coproduct injections are monic in
+* `CategoryTheory.FinitaryExtensive.mono_inr_of_isColimit`: Coproduct injections are monic in
   extensive categories.
-- `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
+* `CategoryTheory.BinaryCofan.isPullback_initial_to_of_isVanKampen`: In extensive categories,
   sums are disjoint, i.e. the pullback of `X ⟶ X ⨿ Y` and `Y ⟶ X ⨿ Y` is the initial object.
-- `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
-- `CategoryTheory.FinitaryExtensive_TopCat`:
+* `CategoryTheory.types.finitaryExtensive`: The category of types is extensive.
+* `CategoryTheory.FinitaryExtensive_TopCat`:
   The category `Top` is extensive.
-- `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
+* `CategoryTheory.FinitaryExtensive_functor`: The category `C ⥤ D` is extensive if `D`
   has all pullbacks and is extensive.
-- `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`: Finite coproducts in a
+* `CategoryTheory.FinitaryExtensive.isVanKampen_finiteCoproducts`: Finite coproducts in a
   finitary extensive category are van Kampen.
 
 ## References
-- https://ncatlab.org/nlab/show/extensive+category
-- [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 
+* https://ncatlab.org/nlab/show/extensive+category
+* ‍\[Carboni et al, Introduction to extensive and distributive categories\]\[CARBONI1993145\]
 -/
 
 @[expose] public section

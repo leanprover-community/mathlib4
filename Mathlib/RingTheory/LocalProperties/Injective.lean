@@ -11,18 +11,18 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.RingTheory.LocalProperties.Exactness
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Being injective is a local property
 
 ## Main Results
 
 * `Module.injective_of_isLocalizedModule` : For module `M` over Noetherian ring `R`,
   being injective is preserved under localization.
-
 * `Module.injective_of_localization_maximal` : For module `M` over Noetherian ring `R`,
   being injective can be checked at localization at maximal ideals.
-
 -/
 
 universe u v

@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Triangles
 
@@ -31,11 +34,10 @@ unnecessarily.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Law_of_cosines
-* https://en.wikipedia.org/wiki/Pons_asinorum
-* https://en.wikipedia.org/wiki/Sum_of_angles_of_a_triangle
-* https://en.wikipedia.org/wiki/Law_of_sines
-
+* https://en.wikipedia.org/wiki/Law\_of\_cosines
+* https://en.wikipedia.org/wiki/Pons\_asinorum
+* https://en.wikipedia.org/wiki/Sum\_of\_angles\_of\_a\_triangle
+* https://en.wikipedia.org/wiki/Law\_of\_sines
 -/
 
 public section
@@ -45,7 +47,7 @@ open scoped CharZero Real RealInnerProductSpace
 namespace InnerProductGeometry
 
 /-!
-### Geometrical results on triangles in real inner product spaces
+# Geometrical results on triangles in real inner product spaces
 
 This section develops some results on (possibly degenerate) triangles
 in real inner product spaces, where those definitions and results can
@@ -225,7 +227,7 @@ end Orientation
 namespace EuclideanGeometry
 
 /-!
-### Geometrical results on triangles in Euclidean affine spaces
+# Geometrical results on triangles in Euclidean affine spaces
 
 This section develops some geometrical definitions and results on
 (possibly degenerate) triangles in Euclidean affine spaces.

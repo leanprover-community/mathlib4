@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.ObjectProperty.ColimitsCardinalClosure
 public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally presentable categories and strong generators
 
@@ -19,8 +22,9 @@ In particular, if a category is locally `κ`-presentable, it is also
 locally `κ'`-presentable for any regular cardinal `κ'` such that `κ ≤ κ'`.
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 public section

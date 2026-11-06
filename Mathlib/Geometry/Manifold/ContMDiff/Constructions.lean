@@ -7,17 +7,20 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smoothness of standard maps associated to the product of manifolds
 
 This file contains results about smoothness of standard maps associated to products and sums
 (disjoint unions) of smooth manifolds:
-- if `f` and `g` are `C^n`, so is their point-wise product.
-- the component projections from a product of manifolds are smooth.
-- functions into a product (*pi type*) are `C^n` iff their components are
-- if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
-  `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 
+* if `f` and `g` are `C^n`, so is their point-wise product.
+* the component projections from a product of manifolds are smooth.
+* functions into a product (_pi type_) are `C^n` iff their components are
+* if `M` and `N` are manifolds modelled over the same space, `Sum.inl` and `Sum.inr` are
+  `C^n`, as are `Sum.elim`, `Sum.map` and `Sum.swap`.
 -/
 
 assert_not_exists mfderiv
@@ -347,7 +350,7 @@ end prodMap
 section PiSpace
 
 /-!
-### Regularity of functions with codomain `Π i, M i`
+# Regularity of functions with codomain `Π i, M i`
 -/
 
 variable {ι : Type*} [Fintype ι] {Mi Hi Ei : ι → Type*}

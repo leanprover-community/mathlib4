@@ -14,6 +14,9 @@ public import Mathlib.Topology.Order.Real
 
 import Mathlib.Tactic.Basify.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi)normed groups: definitions
 
@@ -104,10 +107,12 @@ lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [enorm]
 
 end ENorm
 
-/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
+/--
+A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
 
 NB. We do not demand that the topology is somehow defined by the enorm:
-for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
+for `ℝ≥0∞` (the motivating example behind this definition), this is not true.
+-/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_enorm : Continuous enorm
 
@@ -146,24 +151,28 @@ definiteness condition added. -/
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
   enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
-/-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
+/--
+An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
 enorm.
 
 We don't have `ESeminormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
-the topology coming from `edist`. -/
+the topology coming from `edist`.
+-/
 class ESeminormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddMonoid E, AddCommMonoid E where
 
 -- see Note [lower instance priority]
 attribute [instance 10] ESeminormedAddCommMonoid.toAddCommMonoid
 
-/-- An enormed commutative monoid is an additive commutative monoid
+/--
+An enormed commutative monoid is an additive commutative monoid
 endowed with a continuous enorm which is positive definite.
 
 We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
 is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
-the topology coming from `edist`. -/
+the topology coming from `edist`.
+-/
 class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedAddCommMonoid E, ENormedAddMonoid E where
 

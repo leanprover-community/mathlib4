@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 import Mathlib.CategoryTheory.LiftingProperties.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left and right lifting properties
 
@@ -17,7 +20,6 @@ Given a morphism property `T`, we define the left and right lifting property wit
 
 We show that the left lifting property is stable under retracts, cobase change, coproducts,
 and composition, with dual statements for the right lifting property.
-
 -/
 
 @[expose] public section
@@ -185,14 +187,17 @@ lemma Functor.hasLiftingProperty_iff_of_isEquivalence
     {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
     HasLiftingProperty (G.map i) (G.map p) ↔
       HasLiftingProperty i p := by
-  #adaptation_note /-- Prior to nightly-2026-05-07, the next three lines were just
-  ```
-  simp only [dsimp% G.asEquivalence.toAdjunction.hasLiftingProperty_iff,
-    ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
-  ```
-  This is a temporary repair, and authors/maintainers are encouraged to either find a better repair,
-  or identify a minimal example of an underlying problem in Lean.
-  -/
+  #adaptation_note /--
+                   Prior to nightly-2026-05-07, the next three lines were just
+
+                   ```
+simp only [dsimp% G.asEquivalence.toAdjunction.hasLiftingProperty_iff,
+  ← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]
+```
+
+                   This is a temporary repair, and authors/maintainers are encouraged to either find
+a better repair, or identify a minimal example of an underlying problem in Lean.
+                   -/
   change HasLiftingProperty (G.asEquivalence.functor.map i) (G.asEquivalence.functor.map p) ↔ _
   rw [G.asEquivalence.toAdjunction.hasLiftingProperty_iff]
   simp only [← MorphismProperty.rlp_ofHoms_iff_hasLiftingProperty Unit]

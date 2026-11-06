@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Thickening
 
 import Mathlib.Analysis.Normed.Group.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of pointwise addition of sets in normed groups
 

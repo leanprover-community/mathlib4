@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.PSeries
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # L-series
 
@@ -18,13 +21,10 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 
 * `LSeries.term f s n` is the `n`th term of the L-series of the sequence `f` at `s : ℂ`.
   We define it to be zero when `n = 0`.
-
 * `LSeries f` is the L-series with a given sequence `f` as its coefficients. This is not the
   analytic continuation (which does not necessarily exist), just the sum of the infinite series if
   it exists and zero otherwise.
-
 * `LSeriesSummable f s` indicates that the L-series of `f` converges at `s : ℂ`.
-
 * `LSeriesHasSum f s a` expresses that the L-series of `f` converges (absolutely) at `s : ℂ` to
   `a : ℂ`.
 
@@ -32,7 +32,6 @@ Given a sequence `f: ℕ → ℂ`, we define the corresponding L-series.
 
 * `LSeriesSummable_of_isBigO_rpow`: the `LSeries` of a sequence `f` such that `f = O(n^(x-1))`
   converges at `s` when `x < s.re`.
-
 * `LSeriesSummable.isBigO_rpow`: if the `LSeries` of `f` is summable at `s`, then `f = O(n^(re s))`.
 
 ## Notation
@@ -59,7 +58,7 @@ L-series
 open Complex
 
 /-!
-### The terms of an L-series
+# The terms of an L-series
 
 We define the `n`th term evaluated at a complex number `s` of the L-series associated
 to a sequence `f : ℕ → ℂ`, `LSeries.term f s n`, and provide some basic API.
@@ -148,7 +147,7 @@ end positivity
 end LSeries
 
 /-!
-### Definition of the L-series and related statements
+# Definition of the L-series and related statements
 
 We define `LSeries f s` of `f : ℕ → ℂ` as the sum over `LSeries.term f s`.
 We also provide predicates `LSeriesSummable f s` stating that `LSeries f s` is summable
@@ -251,24 +250,26 @@ def LSeries.delta (n : ℕ) : ℂ :=
   if n = 1 then 1 else 0
 
 /-!
-### Notation
+# Notation
 -/
 
 @[inherit_doc]
 scoped[LSeries.notation] notation "L" => LSeries
 
-/-- We introduce notation `↗f` for `f` interpreted as a function `ℕ → ℂ`.
+/--
+We introduce notation `↗f` for `f` interpreted as a function `ℕ → ℂ`.
 
 Let `R` be a ring with a coercion to `ℂ`. Then we can write `↗χ` when `χ : DirichletCharacter R`
 or `↗f` when `f : ArithmeticFunction R` or simply `f : N → R` with a coercion from `ℕ` to `N`
-as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc. -/
+as an argument to `LSeries`, `LSeriesHasSum`, `LSeriesSummable` etc.
+-/
 scoped[LSeries.notation] notation:max "↗" f:max => fun n : ℕ ↦ (f n : ℂ)
 
 @[inherit_doc]
 scoped[LSeries.notation] notation "δ" => delta
 
 /-!
-### LSeries of 0 and δ
+# LSeries of 0 and δ
 -/
 
 @[simp]
@@ -315,7 +316,7 @@ end delta
 
 
 /-!
-### Criteria for and consequences of summability of L-series
+# Criteria for and consequences of summability of L-series
 
 We relate summability of L-series with bounds on the coefficients in terms of powers of `n`.
 -/

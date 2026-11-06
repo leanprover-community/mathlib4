@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.Action.End
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.Hom.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composing modules with a ring hom
 
@@ -38,7 +41,8 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] (r s : R) (x : M)
 
 variable (R)
 
-/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
+/--
+Push forward the action of `R` on `M` along a compatible surjective map `f : R →+* S`.
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
@@ -51,9 +55,11 @@ abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoi
 
 variable {R} (M)
 
-/-- Compose a `Module` with a `RingHom`, with action `f s • m`.
+/--
+Compose a `Module` with a `RingHom`, with action `f s • m`.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
@@ -65,8 +71,10 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
 
 end AddCommMonoid
 
-/-- A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
-See note [reducible non-instances]. -/
+/--
+A ring homomorphism `f : R →+* M` defines a module structure by `r • x = f r * x`.
+See note \[reducible non-instances\].
+-/
 abbrev RingHom.toModule [Semiring R] [Semiring S] (f : R →+* S) : Module R S :=
   Module.compHom S f
 
@@ -75,12 +83,14 @@ lemma RingHom.toModule_smul [Semiring R] [Semiring S] (f : R →+* S) (x : R) (y
     x • y = f x * y :=
   rfl
 
-/-- If the module action of `R` on `S` is compatible with multiplication on `S`, then
+/--
+If the module action of `R` on `S` is compatible with multiplication on `S`, then
 `fun x ↦ x • 1` is a ring homomorphism from `R` to `S`.
 
 This is the `RingHom` version of `MonoidHom.smulOneHom`.
 
-When `R` is commutative, usually `algebraMap` should be preferred. -/
+When `R` is commutative, usually `algebraMap` should be preferred.
+-/
 @[simps!] def RingHom.smulOneHom
     [Semiring R] [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] : R →+* S where
   __ := MonoidHom.smulOneHom

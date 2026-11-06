@@ -8,12 +8,16 @@ module
 public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.Order.Northcott
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on the Northcott property for heights
 
 Assume that `K` is a field with a family of admissible absolute values that satisfies
 the Northcott property for `mulHeight₁`.
 We provide instances showing that `K` also satisfies the Northcott property
+
 * for `logHeight₁`,
 * (TODO) for `Projectivization.mulHeight`,
 * (TODO) for `Projectivization.logHeight`.

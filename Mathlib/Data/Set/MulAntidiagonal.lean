@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Order.WellFoundedSet
 
-/-! # Multiplication antidiagonal -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Multiplication antidiagonal
+-/
 
 @[expose] public section
 

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Ring.Defs
 
 import Mathlib.Algebra.GroupWithZero.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pulling back rings along injective maps, and pushing them forward along surjective maps
 -/

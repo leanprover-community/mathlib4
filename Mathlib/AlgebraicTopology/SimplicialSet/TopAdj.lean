@@ -9,18 +9,21 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Monoidal
 public import Mathlib.AlgebraicTopology.SingularSet
 public import Mathlib.Topology.Category.TopCat.Monoidal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of the geometric realization
 
 In this file, we introduce some API in order to study the geometric
 realization functor (and its right adjoint the singular simplicial set functor):
+
 * `SimplexCategory.toTopHomeo`: the homeomorphism between the geometric
-realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
+  realization of `Δ[n]` and `stdSimplex ℝ (Fin (n + 1))`;
 * `TopCat.toSSetObj₀Equiv : toSSet.obj X _⦋0⦌ ≃ X` for `X : TopCat`;
 * `SSet.stdSimplex.toTopObjIsoI : |Δ[1]| ≅ TopCat.I`;
 * `SSet.stdSimplex.toSSetObjI : Δ[1] ⟶ TopCat.toSSet.obj TopCat.I`:
-the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
-
+  the morphism corresponding to `toTopObjIsoI.hom` by adjunction.
 -/
 
 @[expose] public section

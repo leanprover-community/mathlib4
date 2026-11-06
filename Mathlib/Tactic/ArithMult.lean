@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Tactic.ArithMult.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicativity
 
 We define the `arith_mult` tactic using aesop
-
 -/
 
 public meta section

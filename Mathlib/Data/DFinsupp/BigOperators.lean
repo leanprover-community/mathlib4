@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Data.DFinsupp.Ext
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dependent functions with finite support
 
@@ -419,7 +422,8 @@ end ProdAndSum
 
 end DFinsupp
 
-/-! ### Product and sum lemmas for bundled morphisms.
+/-!
+# Product and sum lemmas for bundled morphisms.
 
 In this section, we provide analogues of `AddMonoidHom.map_sum`, `AddMonoidHom.coe_finsetSum`,
 and `AddMonoidHom.finsetSum_apply` for `DFinsupp.sum` and `DFinsupp.sumAddHom` instead of

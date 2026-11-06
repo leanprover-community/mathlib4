@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Trace.Defs
 
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trace for (finite) ring extensions.
 
@@ -40,8 +43,7 @@ the roots of the minimal polynomial of `s` over `R`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Field_trace
-
+* https://en.wikipedia.org/wiki/Field\_trace
 -/
 
 @[expose] public section
@@ -496,8 +498,10 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [Fintype ι] [DecidableE
 
 variable (K L)
 
-/-- Let $L/K$ be a finite extension of fields. If $L/K$ is separable,
-then `traceForm` is nondegenerate. -/
+/--
+Let $`L/K` be a finite extension of fields. If $`L/K` is separable,
+then `traceForm` is nondegenerate.
+-/
 @[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=

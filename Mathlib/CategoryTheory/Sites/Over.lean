@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Sites.Equivalence
 
-/-! # Localization
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Localization
 
 In this file, given a Grothendieck topology `J` on a category `C` and `X : C`, we construct
 a Grothendieck topology `J.over X` on the category `Over X`. In order to do this,
@@ -17,7 +21,6 @@ for all `Y : Over X`. Then, as it is stated in SGA 4 III 5.2.1, a sieve of `Y : 
 is covering for `J.over X` if and only if the corresponding sieve of `Y.left`
 is covering for `J`. As a result, the forgetful functor
 `Over.forget X : Over X ⥤ X` is both cover-preserving and cover-lifting.
-
 -/
 
 @[expose] public section

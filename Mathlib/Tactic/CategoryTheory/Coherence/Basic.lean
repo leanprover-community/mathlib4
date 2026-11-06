@@ -11,18 +11,21 @@ public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.Tactic.CategoryTheory.Coherence.Normalize
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Core function for `monoidal` and `bicategory` tactics
 
 This file provides the function `BicategoryLike.main` for proving equalities in monoidal categories
 and bicategories. Using `main`, we will define the following tactics:
-- `monoidal` at `Mathlib/Tactic/CategoryTheory/Monoidal/Basic.lean`
-- `bicategory` at `Mathlib/Tactic/CategoryTheory/Bicategory/Basic.lean`
+
+* `monoidal` at `Mathlib/Tactic/CategoryTheory/Monoidal/Basic.lean`
+* `bicategory` at `Mathlib/Tactic/CategoryTheory/Bicategory/Basic.lean`
 
 The `main` first normalizes the both sides using `eval`, then compares the corresponding components.
 It closes the goal at non-structural parts with `rfl` and the goal at structural parts by
 `pureCoherence`.
-
 -/
 
 public meta section
@@ -85,7 +88,9 @@ def ofNormalizedEq (mvarId : MVarId) : MetaM (List MVarId) := do
       | _, _ => throwError "failed to make a normalized equality for {e}"
     | _, _ => throwError "failed to make a normalized equality for {e}"
 
-/-- List.splitEvenOdd [0, 1, 2, 3, 4] = ([0, 2, 4], [1, 3]) -/
+/--
+List.splitEvenOdd \[0, 1, 2, 3, 4\] = (\[0, 2, 4\], \[1, 3\])
+-/
 def List.splitEvenOdd {α : Type u} : List α → List α × List α
   | [] => ([], [])
   | [a] => ([a], [])

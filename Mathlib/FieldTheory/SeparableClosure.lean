@@ -8,57 +8,49 @@ module
 public import Mathlib.FieldTheory.SeparableDegree
 public import Mathlib.RingTheory.AlgebraicIndependent.AlgebraicClosure
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Separable closure
 
 This file contains basics about the (relative) separable closure of a field extension.
 
 ## Main definitions
 
-- `separableClosure`: the relative separable closure of `F` in `E`, or called maximal separable
+* `separableClosure`: the relative separable closure of `F` in `E`, or called maximal separable
   subextension of `E / F`, is defined to be the intermediate field of `E / F` consisting of all
   separable elements.
-
-- `SeparableClosure`: the absolute separable closure, defined to be the relative separable
+* `SeparableClosure`: the absolute separable closure, defined to be the relative separable
   closure inside the algebraic closure.
-
-- `Field.sepDegree F E`: the (infinite) separable degree $[E:F]_s$ of an algebraic extension
+* `Field.sepDegree F E`: the (infinite) separable degree $`[E:F]_s` of an algebraic extension
   `E / F` of fields, defined to be the degree of `separableClosure F E / F`. Later we will show
   that (`Field.finSepDegree_eq`, not in this file), if `Field.Emb F E` is finite, then this
   coincides with `Field.finSepDegree F E`.
-
-- `Field.insepDegree F E`: the (infinite) inseparable degree $[E:F]_i$ of an algebraic extension
+* `Field.insepDegree F E`: the (infinite) inseparable degree $`[E:F]_i` of an algebraic extension
   `E / F` of fields, defined to be the degree of `E / separableClosure F E`.
-
-- `Field.finInsepDegree F E`: the finite inseparable degree $[E:F]_i$ of an algebraic extension
+* `Field.finInsepDegree F E`: the finite inseparable degree $`[E:F]_i` of an algebraic extension
   `E / F` of fields, defined to be the degree of `E / separableClosure F E` as a natural number.
   It is zero if such field extension is not finite.
 
 ## Main results
 
-- `le_separableClosure_iff`: an intermediate field of `E / F` is contained in the
+* `le_separableClosure_iff`: an intermediate field of `E / F` is contained in the
   separable closure of `F` in `E` if and only if it is separable over `F`.
-
-- `separableClosure.normalClosure_eq_self`: the normal closure of the separable
+* `separableClosure.normalClosure_eq_self`: the normal closure of the separable
   closure of `F` in `E` is equal to itself.
-
-- `separableClosure.isGalois`: the separable closure in a normal extension is Galois
+* `separableClosure.isGalois`: the separable closure in a normal extension is Galois
   (namely, normal and separable).
-
-- `separableClosure.isSepClosure`: the separable closure in a separably closed extension
+* `separableClosure.isSepClosure`: the separable closure in a separably closed extension
   is a separable closure of the base field.
-
-- `IntermediateField.isSeparable_adjoin_iff_isSeparable`: `F(S) / F` is a separable extension if and
+* `IntermediateField.isSeparable_adjoin_iff_isSeparable`: `F(S) / F` is a separable extension if and
   only if all elements of `S` are separable elements.
-
-- `separableClosure.eq_top_iff`: the separable closure of `F` in `E` is equal to `E`
+* `separableClosure.eq_top_iff`: the separable closure of `F` in `E` is equal to `E`
   if and only if `E / F` is separable.
 
 ## Tags
 
 separable degree, degree, separable closure
-
 -/
 
 @[expose] public section

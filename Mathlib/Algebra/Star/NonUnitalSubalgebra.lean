@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Star.Prod
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Algebra.Star.StarAlgHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-unital Star Subalgebras
 
@@ -489,9 +492,11 @@ theorem injective_codRestrict
     Function.Injective (NonUnitalStarAlgHom.codRestrict f S hf) ↔ Function.Injective f :=
   ⟨fun H _x _y hxy => H <| Subtype.ext hxy, fun H _x _y hxy => H congr($(hxy).val)⟩
 
-/-- Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
+/--
+Restrict the codomain of a non-unital star algebra homomorphism `f` to `f.range`.
 
-This is the bundled version of `Set.rangeFactorization`. -/
+This is the bundled version of `Set.rangeFactorization`.
+-/
 abbrev rangeRestrict (f : A →⋆ₙₐ[R] B) :
     A →⋆ₙₐ[R] (NonUnitalStarAlgHom.range f : NonUnitalStarSubalgebra R B) :=
   NonUnitalStarAlgHom.codRestrict f (NonUnitalStarAlgHom.range f)
@@ -515,10 +520,12 @@ variable [CommSemiring R]
   [NonUnitalSemiring B] [Module R B] [Star B]
   [NonUnitalSemiring C] [Module R C] [Star C]
 
-/-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
+/--
+Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
 
-This is a computable alternative to `StarAlgEquiv.ofInjective`. -/
+This is a computable alternative to `StarAlgEquiv.ofInjective`.
+-/
 def ofLeftInverse' {g : B → A} {f : A →⋆ₙₐ[R] B} (h : Function.LeftInverse g f) :
     A ≃⋆ₐ[R] NonUnitalStarAlgHom.range f :=
   { NonUnitalStarAlgHom.rangeRestrict f with
@@ -552,7 +559,9 @@ theorem ofInjective'_apply (f : A →⋆ₙₐ[R] B) (hf : Function.Injective f)
 
 end StarAlgEquiv
 
-/-! ### The star closure of a subalgebra -/
+/-!
+# The star closure of a subalgebra
+-/
 
 namespace NonUnitalSubalgebra
 
@@ -907,7 +916,8 @@ The map `S → T` when `S` is a non-unital star subalgebra contained in the non-
 algebra `T`.
 
 This is the non-unital star subalgebra version of `Submodule.inclusion`, or
-`NonUnitalSubalgebra.inclusion` -/
+`NonUnitalSubalgebra.inclusion`
+-/
 def inclusion {S T : NonUnitalStarSubalgebra R A} (h : S ≤ T) : S →⋆ₙₐ[R] T where
   toNonUnitalAlgHom := NonUnitalSubalgebra.inclusion h
   map_star' _ := rfl

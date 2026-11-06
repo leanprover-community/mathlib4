@@ -12,6 +12,9 @@ public import Mathlib.Analysis.SpecialFunctions.Sqrt
 import Mathlib.Analysis.Calculus.ContDiff.WithLp
 import Mathlib.Analysis.Calculus.FDeriv.WithLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Calculus in inner product spaces
 
@@ -283,7 +286,9 @@ end DerivInner
 
 section PiLike
 
-/-! ### Convenience aliases of `PiLp` lemmas for `EuclideanSpace` -/
+/-!
+# Convenience aliases of `PiLp` lemmas for `EuclideanSpace`
+-/
 
 open ContinuousLinearMap
 

@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Max
 public import Mathlib.Data.Set.Card
 public import Mathlib.Data.Sym.Card
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions for finite and locally finite graphs
 
@@ -151,7 +154,7 @@ end EdgeFinset
 section FiniteAt
 
 /-!
-## Finiteness at a vertex
+# Finiteness at a vertex
 
 This section contains definitions and lemmas concerning vertices that
 have finitely many adjacent vertices.  We denote this condition by

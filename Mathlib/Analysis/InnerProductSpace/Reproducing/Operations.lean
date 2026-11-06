@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.ProdL2
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on RKHS
 
@@ -15,10 +18,11 @@ This file implements the maps that show how RKHSs created from kernels formed by
 to a set of kernels relate to the RKHSs of the constituant kernels.
 
 ## main definitions
- - `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
- - `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
-    quotient space over `OfKernel K × OfKernel K'`.
- - `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
+
+* `generator`: the operator `(f, g) ↦ ⇑f + ⇑g` inducing the RKHS `H + H'`.
+* `OfKernelAddEquiv`: isometric equivalence between the RKHS `OfKernel (K + K')` and the
+  quotient space over `OfKernel K × OfKernel K'`.
+* `projection`: isometry yielding the elements of `H × H'` achieving the norm of `H + H'`.
 -/
 
 public noncomputable section

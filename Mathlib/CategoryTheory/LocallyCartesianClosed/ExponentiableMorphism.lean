@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.LocallyCartesianClosed.ChosenPullbacksAlong
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponentiable morphisms
 
@@ -17,13 +20,12 @@ the pushforward functor along `f`.
 
 ## Main results
 
-- The identity morphisms are exponentiable.
-- The composition of exponentiable morphisms is exponentiable.
+* The identity morphisms are exponentiable.
+* The composition of exponentiable morphisms is exponentiable.
 
 ### TODO
 
-- Any pullback of an exponentiable morphism is exponentiable.
-
+* Any pullback of an exponentiable morphism is exponentiable.
 -/
 
 @[expose] public section

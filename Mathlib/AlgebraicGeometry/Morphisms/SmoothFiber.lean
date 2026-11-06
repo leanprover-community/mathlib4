@@ -8,14 +8,16 @@ module
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth morphisms and their fibers
 
 ## Main results
 
-- `Smooth.of_smooth_fiberToSpecResidueField`: A flat morphism, locally of
+* `Smooth.of_smooth_fiberToSpecResidueField`: A flat morphism, locally of
   finite presentation and smooth fibers is smooth.
-
 -/
 
 public section

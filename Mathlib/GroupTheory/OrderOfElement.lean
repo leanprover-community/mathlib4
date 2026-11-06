@@ -18,6 +18,9 @@ public import Mathlib.GroupTheory.Index
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.Order.Interval.Set.Infinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order of an element
 
@@ -34,6 +37,7 @@ This file defines the order of an element of a finite group. For a finite group 
 * `addOrderOf` is the additive analogue of `orderOf`.
 
 ## Tags
+
 order of an element
 -/
 

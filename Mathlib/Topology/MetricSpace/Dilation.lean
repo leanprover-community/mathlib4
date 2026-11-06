@@ -10,6 +10,9 @@ public import Mathlib.Topology.MetricSpace.Isometry
 
 import Mathlib.Topology.MetricSpace.Lipschitz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dilations
 
@@ -28,7 +31,7 @@ infinite distance.
 
 ## Notation
 
-- `α →ᵈ β`: notation for `Dilation α β`.
+* `α →ᵈ β`: notation for `Dilation α β`.
 
 ## Implementation notes
 
@@ -41,13 +44,13 @@ needed.
 
 ## TODO
 
-- Introduce dilation equivs.
-- Refactor the `Isometry` API to match the `*HomClass` API below.
+* Introduce dilation equivs.
+* Refactor the `Isometry` API to match the `*HomClass` API below.
 
 ## References
 
-- https://en.wikipedia.org/wiki/Dilation_(metric_space)
-- [Marcel Berger, *Geometry*][berger1987]
+* https://en.wikipedia.org/wiki/Dilation\_(metric\_space)
+* ‍\[Marcel Berger, _Geometry_\]\[berger1987\]
 -/
 
 @[expose] public section
@@ -63,9 +66,11 @@ variable (α : Type*) (β : Type*) [PseudoEMetricSpace α] [PseudoEMetricSpace �
 
 /-- A dilation is a map that uniformly scales the edistance between any two points. -/
 structure Dilation where
-  /-- The underlying function.
+  /--
+  The underlying function.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
@@ -445,11 +450,13 @@ lemma isClosedEmbedding [CompleteSpace α] [EMetricSpace β] [DilationClass F α
 
 end EMetricDilation
 
-/-- Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
+/--
+Ratio of the composition `g.comp f` of two dilations is the product of their ratios. We assume
 that the domain `α` of `f` is a nontrivial metric space, otherwise
 `Dilation.ratio f = Dilation.ratio (g.comp f) = 1` but `Dilation.ratio g` may have any value.
 
-See also `Dilation.ratio_comp'` for a version that works for more general spaces. -/
+See also `Dilation.ratio_comp'` for a version that works for more general spaces.
+-/
 @[simp]
 theorem ratio_comp [MetricSpace α] [Nontrivial α] [PseudoEMetricSpace β]
     [PseudoEMetricSpace γ] {g : β →ᵈ γ} {f : α →ᵈ β} : ratio (g.comp f) = ratio g * ratio f :=

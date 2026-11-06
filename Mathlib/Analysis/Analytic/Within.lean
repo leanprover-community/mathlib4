@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Analytic.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of analyticity restricted to a set
 
@@ -33,7 +36,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-!
-### Basic properties
+# Basic properties
 -/
 
 /-- `AnalyticWithinAt` is trivial if `{x} ∈ 𝓝[s] x` -/
@@ -98,7 +101,7 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
       simp only [mem_ball, dist_self_add_left, ym.1] }⟩
 
 /-!
-### Equivalence to analyticity of a local extension
+# Equivalence to analyticity of a local extension
 
 We show that `HasFPowerSeriesWithinOnBall`, `HasFPowerSeriesWithinAt`, and `AnalyticWithinAt` are
 equivalent to the existence of a local extension with full analyticity.  We do not yet show a

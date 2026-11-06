@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.CompleteLattice.Lemmas
 public import Mathlib.Order.GaloisConnection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras
 
@@ -15,13 +18,14 @@ In this file we define and provide API for (co)frames, completely distributive l
 complete Boolean algebras.
 
 We distinguish two different distributivity properties:
+
 1. `inf_iSup_eq : (a ⊓ ⨆ i, f i) = ⨆ i, a ⊓ f i` (finite `⊓` distributes over infinite `⨆`).
-  This is required by `Frame`, `CompleteDistribLattice`, and `CompleteBooleanAlgebra`
-  (`Coframe`, etc., require the dual property).
+   This is required by `Frame`, `CompleteDistribLattice`, and `CompleteBooleanAlgebra`
+   (`Coframe`, etc., require the dual property).
 2. `iInf_iSup_eq : (⨅ i, ⨆ j, f i j) = ⨆ s, ⨅ i, f i (s i)`
-  (infinite `⨅` distributes over infinite `⨆`).
-  This stronger property is called "completely distributive",
-  and is required by `CompletelyDistribLattice` and `CompleteAtomicBooleanAlgebra`.
+   (infinite `⨅` distributes over infinite `⨆`).
+   This stronger property is called "completely distributive",
+   and is required by `CompletelyDistribLattice` and `CompleteAtomicBooleanAlgebra`.
 
 ## Typeclasses
 
@@ -43,8 +47,8 @@ distributive lattice.
 
 ## References
 
-* [Wikipedia, *Complete Heyting algebra*](https://en.wikipedia.org/wiki/Complete_Heyting_algebra)
-* [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
+* [Wikipedia, _Complete Heyting algebra_](https://en.wikipedia.org/wiki/Complete_Heyting_algebra)
+* ‍\[Francis Borceux, _Handbook of Categorical Algebra III_\]\[borceux-vol3\]
 -/
 
 @[expose] public section
@@ -55,19 +59,23 @@ universe u v w w'
 
 variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
-/-- Structure containing the minimal axioms required to check that an order is a frame. Do NOT use,
+/--
+Structure containing the minimal axioms required to check that an order is a frame. Do NOT use,
 except for implementing `Order.Frame` via `Order.Frame.ofMinimalAxioms`.
 
 This structure omits the `himp`, `compl` fields, which can be recovered using
-`Order.Frame.ofMinimalAxioms`. -/
+`Order.Frame.ofMinimalAxioms`.
+-/
 structure Order.Frame.MinimalAxioms (α : Type u) [CompleteLattice α] where
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 
-/-- Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
+/--
+Structure containing the minimal axioms required to check that an order is a coframe. Do NOT
 use, except for implementing `Order.Coframe` via `Order.Coframe.ofMinimalAxioms`.
 
 This structure omits the `sdiff`, `hnot` fields, which can be recovered using
-`Order.Coframe.ofMinimalAxioms`. -/
+`Order.Coframe.ofMinimalAxioms`.
+-/
 @[to_dual Frame.MinimalAxioms]
 structure Order.Coframe.MinimalAxioms (α : Type u) [CompleteLattice α] where
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
@@ -88,12 +96,14 @@ open Order
 theorem inf_sSup_eq [Frame α] {s : Set α} {a : α} : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
   gc_inf_himp.l_sSup
 
-/-- Structure containing the minimal axioms required to check that an order is a complete
+/--
+Structure containing the minimal axioms required to check that an order is a complete
 distributive lattice. Do NOT use, except for implementing `CompleteDistribLattice` via
 `CompleteDistribLattice.ofMinimalAxioms`.
 
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
-`CompleteDistribLattice.ofMinimalAxioms`. -/
+`CompleteDistribLattice.ofMinimalAxioms`.
+-/
 structure CompleteDistribLattice.MinimalAxioms (α : Type u) [CompleteLattice α] extends
     toFrame : Frame.MinimalAxioms α, toCoframe : Coframe.MinimalAxioms α where
 
@@ -109,12 +119,14 @@ class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, Biheytin
 
 attribute [to_dual existing] CompleteDistribLattice.toFrame
 
-/-- Structure containing the minimal axioms required to check that an order is a completely
+/--
+Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
 `CompletelyDistribLattice.ofMinimalAxioms`.
 
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
-`CompletelyDistribLattice.ofMinimalAxioms`. -/
+`CompletelyDistribLattice.ofMinimalAxioms`.
+-/
 structure CompletelyDistribLattice.MinimalAxioms (α : Type u) [CompleteLattice α] where
   protected iInf_iSup_eq {ι : Type u} {κ : ι → Type u} (f : ∀ a, κ a → α) :
     (⨅ a, ⨆ b, f a b) = ⨆ g : ∀ a, κ a, ⨅ a, f a (g a)
@@ -168,9 +180,11 @@ theorem of [Frame α] : MinimalAxioms α where
 
 end MinimalAxioms
 
-/-- Construct a frame instance using the minimal amount of work needed.
+/--
+Construct a frame instance using the minimal amount of work needed.
 
-This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`. -/
+This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}` and `aᶜ := a ⇨ ⊥`.
+-/
 -- See note [reducible non-instances]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Frame α where
   compl a := sSup {c | c ⊓ a ≤ ⊥}
@@ -183,9 +197,11 @@ end Order.Frame
 
 namespace Order.Coframe
 
-/-- Construct a coframe instance using the minimal amount of work needed.
+/--
+Construct a coframe instance using the minimal amount of work needed.
 
-This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`. -/
+This sets `a \ b := sInf {c | a ≤ b ⊔ c}` and `￢a := ⊤ \ a`.
+-/
 -- See note [reducible non-instances]
 @[to_dual existing]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) : Coframe α where
@@ -210,10 +226,12 @@ variable [CompleteLattice α] (minAx : MinimalAxioms α)
 
 end MinimalAxioms
 
-/-- Construct a complete distrib lattice instance using the minimal amount of work needed.
+/--
+Construct a complete distrib lattice instance using the minimal amount of work needed.
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
-`￢a := ⊤ \ a`. -/
+`￢a := ⊤ \ a`.
+-/
 -- See note [reducible non-instances]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) :
     CompleteDistribLattice α where
@@ -280,10 +298,12 @@ theorem of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDi
 
 end MinimalAxioms
 
-/-- Construct a completely distributive lattice instance using the minimal amount of work needed.
+/--
+Construct a completely distributive lattice instance using the minimal amount of work needed.
 
 This sets `a ⇨ b := sSup {c | c ⊓ a ≤ b}`, `aᶜ := a ⇨ ⊥`, `a \ b := sInf {c | a ≤ b ⊔ c}` and
-`￢a := ⊤ \ a`. -/
+`￢a := ⊤ \ a`.
+-/
 -- See note [reducible non-instances]
 abbrev ofMinimalAxioms [CompleteLattice α] (minAx : MinimalAxioms α) :
     CompletelyDistribLattice α := fast_instance%
@@ -652,7 +672,7 @@ end CompleteBooleanAlgebra
 A complete atomic Boolean algebra is a complete Boolean algebra
 that is also completely distributive.
 
-We take iSup_iInf_eq as the definition here,
+We take iSup\_iInf\_eq as the definition here,
 and prove later on that this implies atomicity.
 -/
 -- We do not directly extend `CompletelyDistribLattice` to avoid having the `hnot` field

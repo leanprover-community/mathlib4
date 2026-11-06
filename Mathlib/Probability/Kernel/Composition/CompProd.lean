@@ -8,6 +8,9 @@ module
 public import Mathlib.Probability.Kernel.Composition.Comp
 public import Mathlib.Probability.Kernel.Composition.ParallelComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Composition-product of kernels
 
@@ -16,7 +19,7 @@ We define the composition-product `κ ⊗ₖ η` of two s-finite kernels `κ : K
 
 A note on names:
 The composition-product `Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)` is named composition in
-[kallenberg2021] and product on the wikipedia article on transition kernels.
+‍\[kallenberg2021\] and product on the wikipedia article on transition kernels.
 Most papers studying categories of kernels call composition the map we call composition. We adopt
 that convention because it fits better with the use of the name `comp` elsewhere in mathlib.
 
@@ -35,7 +38,6 @@ that convention because it fits better with the use of the name `comp` elsewhere
 ## Notation
 
 * `κ ⊗ₖ η = ProbabilityTheory.Kernel.compProd κ η`
-
 -/
 
 public section
@@ -54,7 +56,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 section CompositionProduct
 
 /-!
-### Composition-Product of kernels
+# Composition-Product of kernels
 
 We define a kernel composition-product
 `compProd : Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)`.
@@ -216,7 +218,9 @@ lemma compProd_deterministic_apply [MeasurableSingletonClass γ] {f : α × β �
 
 section Ae
 
-/-! ### `ae` filter of the composition-product -/
+/-!
+# `ae` filter of the composition-product
+-/
 
 
 variable {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel (α × β) γ} [IsSFiniteKernel η] {a : α}
@@ -306,7 +310,9 @@ end Restrict
 
 section Lintegral
 
-/-! ### Lebesgue integral -/
+/-!
+# Lebesgue integral
+-/
 
 
 /-- Lebesgue integral against the composition-product of two kernels. -/

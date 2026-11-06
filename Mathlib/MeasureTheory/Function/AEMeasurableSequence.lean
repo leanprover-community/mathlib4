@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
 
@@ -16,6 +19,7 @@ Given a sequence of a.e.-measurable functions `f : ι → α → β` with hypoth
 `hf : ∀ i, AEMeasurable (f i) μ`, and a pointwise property `p : α → (ι → β) → Prop` such that we
 have `hp : ∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, we define a sequence of measurable functions `aeSeq hf p`
 and a measurable set `aeSeqSet hf p`, such that
+
 * `μ (aeSeqSet hf p)ᶜ = 0`
 * `x ∈ aeSeqSet hf p → ∀ i : ι, aeSeq hf hp i x = f i x`
 * `x ∈ aeSeqSet hf p → p x (fun n ↦ f n x)`

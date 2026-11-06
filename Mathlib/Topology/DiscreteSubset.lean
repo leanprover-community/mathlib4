@@ -9,6 +9,9 @@ public import Mathlib.Tactic.TautoSet
 public import Mathlib.Topology.LocallyClosed
 public import Mathlib.Topology.Separation.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete subsets of topological spaces
 
@@ -18,10 +21,10 @@ This file contains various additional properties of discrete subsets of topologi
 
 Given a topological space `X` together with a subset `s ⊆ X`, there are two distinct concepts of
 "discreteness" which may hold. These are:
-  (i) Every point of `s` is isolated (i.e., the subset topology induced on `s` is the discrete
-      topology).
- (ii) Every compact subset of `X` meets `s` only finitely often (i.e., the inclusion map `s → X`
-      tends to the cocompact filter along the cofinite filter on `s`).
+(i) Every point of `s` is isolated (i.e., the subset topology induced on `s` is the discrete
+topology).
+(ii) Every compact subset of `X` meets `s` only finitely often (i.e., the inclusion map `s → X`
+tends to the cocompact filter along the cofinite filter on `s`).
 
 When `s` is closed, the two conditions are equivalent provided `X` is locally compact and T1,
 see `IsClosed.tendsto_coe_cofinite_iff`.
@@ -36,7 +39,6 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
 This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
 `Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
-
 -/
 
 @[expose] public section
@@ -407,10 +409,12 @@ theorem compl_finite_mem_codiscreteWithin {X : Type*} [TopologicalSpace X] [T1Sp
     have : (insert τ t)ᶜ = {τ}ᶜ ∩ tᶜ := by aesop
     simp_all
 
-/-- In any topological space, the open sets with discrete complement form a filter,
+/--
+In any topological space, the open sets with discrete complement form a filter,
 defined as the supremum of all punctured neighborhoods.
 
-See `Filter.mem_codiscrete'` for the equivalence. -/
+See `Filter.mem_codiscrete'` for the equivalence.
+-/
 def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
 
 lemma mem_codiscrete {S : Set X} :
@@ -552,7 +556,9 @@ theorem codiscrete_eq_cofinite [T1Space X] [CompactSpace X] : codiscrete X = cof
 
 end codiscrete_filter
 
-/-! ### Finite union of discrete closed sets -/
+/-!
+# Finite union of discrete closed sets
+-/
 
 section discrete_union
 

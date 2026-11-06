@@ -16,6 +16,9 @@ public import Batteries.Util.ExtendedBinder
 public import Mathlib.Lean.Elab.Term
 public import Mathlib.Tactic.ScopedNS
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The notation3 macro, simulating Lean 3's notation.
 -/
@@ -31,7 +34,9 @@ open Batteries.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
-/-! ### Syntaxes supporting `notation3` -/
+/-!
+# Syntaxes supporting `notation3`
+-/
 
 /--
 Expands binders into nested combinators.
@@ -94,7 +99,8 @@ syntax identOptScoped :=
 -- so that the space in the literals themselves stands out
 syntax notation3Item := strLit <|> bindersItem <|> identOptScoped <|> foldAction
 
-/-! ### Expression matching
+/-!
+# Expression matching
 
 A more complicated part of `notation3` is the delaborator generator.
 While `notation` relies on generating app unexpanders, we instead generate a
@@ -254,15 +260,18 @@ def DelabKey.key : DelabKey → Name
   | .app (some n) _ => `app ++ n
   | .other key      => key
 
-/-- Given an expression, generate a matcher for it.
+/--
+Given an expression, generate a matcher for it.
 The `boundFVars` hash map records which state variables certain fvars correspond to.
 The `localFVars` hash map records which local variable the matcher should use for an exact
 expression match.
 
 If it succeeds generating a matcher, returns
+
 1. a list of keys that should be used for the `delab` attribute
    when defining the elaborator
-2. a `Term` that represents a `Matcher` for the given expression `e`. -/
+2. a `Term` that represents a `Matcher` for the given expression `e`.
+-/
 partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
     (localFVars : Std.HashMap FVarId Term) (e : Expr) :
     OptionT TermElabM (List DelabKey × Term) := do
@@ -347,12 +356,14 @@ partial def exprToMatcher (boundFVars : Std.HashMap FVarId Name)
     trace[notation3] "can't generate matcher for {e}"
     failure
 
-/-- Returns a `Term` that represents a `Matcher` for the given pattern `stx`.
+/--
+Returns a `Term` that represents a `Matcher` for the given pattern `stx`.
 The `boundNames` set determines which identifiers are variables in the pattern.
 Fails in the `OptionT` sense if it comes across something it's unable to handle.
 
 Also returns constant names that could serve as a key for a delaborator.
-For example, if it's for a function `f`, then `app.f`. -/
+For example, if it's for a function `f`, then `app.f`.
+-/
 partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
     OptionT TermElabM (List DelabKey × Term) := do
   let (lctx, boundFVars) ← setupLCtx (← getLCtx) boundNames
@@ -369,11 +380,13 @@ partial def mkExprMatcher (stx : Term) (boundNames : Array Name) :
     trace[notation3] "Generating matcher for pattern {patt}"
     exprToMatcher boundFVars {} patt
 
-/-- Matcher for processing `scoped` syntax. Assumes the expression to be matched
+/--
+Matcher for processing `scoped` syntax. Assumes the expression to be matched
 against is in the `lit` variable.
 
 Runs `smatcher`, extracts the resulting `scopeId` variable, processes this value
-(which must be a lambda) to produce a binder, and loops. -/
+(which must be a lambda) to produce a binder, and loops.
+-/
 partial def matchScoped (lit scopeId : Name) (smatcher : Matcher) : Matcher := go #[] where
   /-- Variant of `matchScoped` after some number of `binders` have already been captured. -/
   go (binders : Array (TSyntax ``extBinderParenthesized)) : Matcher := fun s => do
@@ -464,7 +477,9 @@ partial def mkFoldrMatcher (lit x y : Name) (scopedTerm init : Term) (boundNames
   -- N.B. by swapping `x` and `y` we can just use the foldl matcher
   return (keys ++ keys', ← ``(matchFoldl $(quote lit) $(quote y) $(quote x) $smatcher $sinit))
 
-/-! ### The `notation3` command -/
+/-!
+# The `notation3` command
+-/
 
 /-- Used when processing different kinds of variables when building the
 final delaborator. -/
@@ -509,10 +524,12 @@ def withHeadRefIfTagAppFns (d : Delab) : Delab := do
 `notation3` declares notation using Lean-3-style syntax.
 
 Examples:
+
 ```
 notation3 "∀ᶠ " (...) " in " f ", " r:(scoped p => Filter.eventually p f) => r
 notation3 "MyList[" (x", "* => foldr (a b => MyList.cons a b) MyList.nil) "]" => x
 ```
+
 By default notation is unable to mention any variables defined using `variable`, but
 `local notation3` is able to use such local variables.
 

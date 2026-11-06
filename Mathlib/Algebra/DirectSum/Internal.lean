@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.Algebra.Order.Antidiag.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Internally graded rings and algebras
 
@@ -37,13 +40,17 @@ mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 This file also provides some extra structure on `A 0`, namely:
+
 * `SetLike.GradeZero.subsemiring`, which leads to
+
   * `SetLike.GradeZero.instSemiring`
   * `SetLike.GradeZero.instCommSemiring`
 * `SetLike.GradeZero.subring`, which leads to
+
   * `SetLike.GradeZero.instRing`
   * `SetLike.GradeZero.instCommRing`
 * `SetLike.GradeZero.subalgebra`, which leads to
+
   * `SetLike.GradeZero.instAlgebra`
 
 ## Tags
@@ -85,7 +92,9 @@ section DirectSum
 
 variable [DecidableEq ι]
 
-/-! #### From `AddSubmonoid`s and `AddSubgroup`s -/
+/-!
+# From `AddSubmonoid`s and `AddSubgroup`s
+-/
 
 
 namespace SetLike
@@ -270,7 +279,9 @@ end CanonicallyOrderedAddCommMonoid
 
 end DirectSum
 
-/-! #### From `Submodule`s -/
+/-!
+# From `Submodule`s
+-/
 
 namespace Submodule
 
@@ -322,7 +333,9 @@ theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Alg
 
 end DirectSum
 
-/-! ### Facts about grade zero -/
+/-!
+# Facts about grade zero
+-/
 
 namespace SetLike.GradeZero
 
@@ -423,7 +436,9 @@ theorem SetLike.Homogeneous.smul [CommSemiring S] [Semiring R] [Algebra S R] {A 
 
 end HomogeneousElement
 
-/-! ### Gradings by canonically linearly ordered additive monoids -/
+/-!
+# Gradings by canonically linearly ordered additive monoids
+-/
 
 section LinearOrderedAddCommMonoid
 

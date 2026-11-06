@@ -12,15 +12,19 @@ public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 public import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves taking values in a category
 
-If C is a category with a Grothendieck topology, we define the notion of a sheaf taking values in
-an arbitrary category `A`. We follow the definition in https://stacks.math.columbia.edu/tag/00VR,
+If C is a category with a Grothendieck topology, we define the notion of a sheaf taking values in an
+arbitrary category `A`. We follow the definition in https://stacks.math.columbia.edu/tag/00VR,
 noting that the presheaf of sets "defined above" can be seen in the comments between tags 00VQ and
-00VR on the page <https://stacks.math.columbia.edu/tag/00VL>. The advantage of this definition is
-that we need no assumptions whatsoever on `A` other than the assumption that the morphisms in `C`
-and `A` live in the same universe.
+00VR on the page [
+https://stacks.math.columbia.edu/tag/00VL](https://stacks.math.columbia.edu/tag/00VL). The advantage
+of this definition is that we need no assumptions whatsoever on `A` other than the assumption that
+the morphisms in `C` and `A` live in the same universe.
 
 * An `A`-valued presheaf `P : Cᵒᵖ ⥤ A` is defined to be a sheaf (for the topology `J`) iff for
   every `E : A`, the type-valued presheaves of sets given by sending `U : Cᵒᵖ` to `Hom_{A}(E, P U)`
@@ -32,7 +36,7 @@ and `A` live in the same universe.
 * An alternate definition when `C` is small, has pullbacks and `A` has products is given by an
   equalizer condition `CategoryTheory.Presheaf.IsSheaf'`. This is equivalent to the earlier
   definition, shown in `CategoryTheory.Presheaf.isSheaf_iff_isSheaf'`.
-* When `A = Type`, this is *definitionally* equal to the equalizer condition for presieves in
+* When `A = Type`, this is _definitionally_ equal to the equalizer condition for presieves in
   `CategoryTheory.Sites.SheafOfTypes`.
 * When `A` has limits and there is a functor `s : A ⥤ Type` which is faithful, reflects isomorphisms
   and preserves limits, then `P : Cᵒᵖ ⥤ A` is a sheaf iff the underlying presheaf of types
@@ -49,7 +53,6 @@ in a sufficiently large universe. Rather than use `UnivLE` we prove some results
 a category `A'` instead, whose morphism universe of `A'` is defined to be `max u₁ v₁`, where
 `u₁, v₁` are the universes for `C`. Perhaps after we get better at handling universe
 inequalities this can be changed.
-
 -/
 
 @[expose] public section
@@ -586,14 +589,18 @@ section
 variable [HasProducts.{max u₁ v₁} A]
 variable [HasProducts.{max u₁ v₁} A']
 
-/-- The middle object of the fork diagram given in Equation (3) of [MM92], as well as the fork
-diagram of the Stacks entry. -/
+/--
+The middle object of the fork diagram given in Equation (3) of \[MM92\], as well as the fork
+diagram of the Stacks entry.
+-/
 @[stacks 00VM "The middle object of the fork diagram there."]
 def firstObj : A :=
   ∏ᶜ fun f : Σ V, { f : V ⟶ U // R f } => P.obj (op f.1)
 
-/-- The left morphism of the fork diagram given in Equation (3) of [MM92], as well as the fork
-diagram of the Stacks entry. -/
+/--
+The left morphism of the fork diagram given in Equation (3) of \[MM92\], as well as the fork
+diagram of the Stacks entry.
+-/
 @[stacks 00VM "The left morphism the fork diagram there."]
 def forkMap : P.obj (op U) ⟶ firstObj R P :=
   Pi.lift fun f => P.map f.2.1.op

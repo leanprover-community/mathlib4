@@ -11,6 +11,9 @@ public import Mathlib.Data.Finset.Option
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Vector.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turing machines
 
@@ -77,7 +80,7 @@ open StateTransition
 namespace Turing
 
 /-!
-## The TM0 model
+# The TM0 model
 
 A TM0 Turing machine is essentially a Post-Turing machine, adapted for type theory.
 
@@ -120,15 +123,17 @@ inductive Stmt
 instance Stmt.inhabited [Inhabited Γ] : Inhabited (Stmt Γ) :=
   ⟨Stmt.write default⟩
 
-/-- A Post-Turing machine with symbol type `Γ` and label type `Λ`
-  is a function which, given the current state `q : Λ` and
-  the tape head `a : Γ`, either halts (returns `none`) or returns
-  a new state `q' : Λ` and a `Stmt` describing what to do,
-  either a move left or right, or a write command.
+/--
+A Post-Turing machine with symbol type `Γ` and label type `Λ`
+is a function which, given the current state `q : Λ` and
+the tape head `a : Γ`, either halts (returns `none`) or returns
+a new state `q' : Λ` and a `Stmt` describing what to do,
+either a move left or right, or a write command.
 
-  Both `Λ` and `Γ` are required to be inhabited; the default value
-  for `Γ` is the "blank" tape value, and the default value of `Λ` is
-  the initial state. -/
+Both `Λ` and `Γ` are required to be inhabited; the default value
+for `Γ` is the "blank" tape value, and the default value of `Λ` is
+the initial state.
+-/
 @[nolint unusedArguments] -- this is a deliberate addition, see comment
 def Machine [Inhabited Λ] :=
   Λ → Γ → Option (Λ × (Stmt Γ))
@@ -252,7 +257,7 @@ end
 end TM0
 
 /-!
-## The TM1 model
+# The TM1 model
 
 The TM1 model is a simplification and extension of TM0 (Post-Turing model) in the direction of
 Wang B-machines. The machine's internal state is extended with a (finite) store `σ` of variables
@@ -458,7 +463,7 @@ end
 end TM1
 
 /-!
-## TM1 emulator in TM0
+# TM1 emulator in TM0
 
 To prove that TM1 computable functions are TM0 computable, we need to reduce each TM1 program to a
 TM0 program. So suppose a TM1 program is given. We take the following:
@@ -601,7 +606,7 @@ theorem tr_supports {S : Finset Λ} (ss : TM1.Supports M S) :
 end TM1to0
 
 /-!
-## TM1(Γ) emulator in TM1(Bool)
+# TM1(Γ) emulator in TM1(Bool)
 
 The most parsimonious Turing machine model that is still Turing complete is `TM0` with `Γ = Bool`.
 Because our construction in the previous section reducing `TM1` to `TM0` doesn't change the
@@ -945,7 +950,7 @@ theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
 end TM1to1
 
 /-!
-## TM0 emulator in TM1
+# TM0 emulator in TM1
 
 To establish that TM0 and TM1 are equivalent computational models, we must also have a TM0 emulator
 in TM1. The main complication here is that TM0 allows an action to depend on the value at the head

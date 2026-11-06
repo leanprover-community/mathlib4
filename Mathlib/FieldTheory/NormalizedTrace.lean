@@ -7,11 +7,13 @@ module
 
 public import Mathlib.RingTheory.Trace.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Normalized trace
 
-This file defines the *normalized trace* map; that is, an `F`-linear map from the algebraic closure
+This file defines the _normalized trace_ map; that is, an `F`-linear map from the algebraic closure
 of `F` to `F` defined as the trace of an element from its adjoin extension divided by its degree.
 
 To avoid heavy imports, we define it here as a map from an arbitrary algebraic (equivalently
@@ -19,18 +21,17 @@ integral) extension of `F`.
 
 ## Main definitions
 
-- `normalizedTrace`: the trace of an element from the simple adjoin divided by the degree;
+* `normalizedTrace`: the trace of an element from the simple adjoin divided by the degree;
   it is a non-trivial `F`-linear map from an arbitrary algebraic extension `K` to `F`.
 
 ## Main results
 
-- `normalizedTrace_intermediateField`: for a tower `K / E / F` of algebraic extensions,
+* `normalizedTrace_intermediateField`: for a tower `K / E / F` of algebraic extensions,
   `normalizedTrace F E` agrees with `normalizedTrace F K` on `E`.
-- `normalizedTrace_trans`: for a tower `K / E / F` of algebraic extensions, the normalized trace
+* `normalizedTrace_trans`: for a tower `K / E / F` of algebraic extensions, the normalized trace
   from `K` to `E` composed with the normalized trace from `E` to `F` equals the normalized trace
   from `K` to `F`.
-- `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
-
+* `normalizedTrace_self`: `normalizedTrace F F` is the identity map.
 -/
 
 @[expose] public section

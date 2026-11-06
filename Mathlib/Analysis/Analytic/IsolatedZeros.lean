@@ -12,6 +12,9 @@ public import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.Analysis.Analytic.Constructions
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Principle of isolated zeros
 
@@ -106,9 +109,11 @@ end HasFPowerSeriesAt
 
 namespace AnalyticAt
 
-/-- The *principle of isolated zeros* for an analytic function, local version: if a function is
+/--
+The _principle of isolated zeros_ for an analytic function, local version: if a function is
 analytic at `z₀`, then either it is identically zero in a neighborhood of `z₀`, or it does not
-vanish in a punctured neighborhood of `z₀`. -/
+vanish in a punctured neighborhood of `z₀`.
+-/
 theorem eventually_eq_zero_or_eventually_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     (∀ᶠ z in 𝓝 z₀, f z = 0) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ 0 := by
   rcases hf with ⟨p, hp⟩
@@ -202,11 +207,13 @@ namespace AnalyticOnNhd
 
 variable {U : Set 𝕜}
 
-/-- The *principle of isolated zeros* for an analytic function, global version: if a function is
+/--
+The _principle of isolated zeros_ for an analytic function, global version: if a function is
 analytic on a connected set `U` and vanishes in arbitrary neighborhoods of a point `z₀ ∈ U`, then
 it is identically zero in `U`.
 For higher-dimensional versions requiring that the function vanishes in a neighborhood of `z₀`,
-see `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero`. -/
+see `AnalyticOnNhd.eqOn_zero_of_preconnected_of_eventuallyEq_zero`.
+-/
 theorem eqOn_zero_of_preconnected_of_frequently_eq_zero (hf : AnalyticOnNhd 𝕜 f U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfw : ∃ᶠ z in 𝓝[≠] z₀, f z = 0) : EqOn f 0 U :=
   hf.eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀
@@ -226,11 +233,13 @@ theorem eqOn_zero_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (
   hf.eqOn_zero_of_preconnected_of_frequently_eq_zero hU h₀
     (mem_closure_ne_iff_frequently_within.mp hfz₀)
 
-/-- The *identity principle* for analytic functions, global version: if two functions are
+/--
+The _identity principle_ for analytic functions, global version: if two functions are
 analytic on a connected set `U` and coincide at points which accumulate to a point `z₀ ∈ U`, then
 they coincide globally in `U`.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`. -/
+see `AnalyticOnNhd.eqOn_of_preconnected_of_eventuallyEq`.
+-/
 theorem eqOn_of_preconnected_of_frequently_eq (hf : AnalyticOnNhd 𝕜 f U) (hg : AnalyticOnNhd 𝕜 g U)
     (hU : IsPreconnected U) (h₀ : z₀ ∈ U) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : EqOn f g U := by
   have hfg' : ∃ᶠ z in 𝓝[≠] z₀, (f - g) z = 0 :=
@@ -249,11 +258,13 @@ theorem eqOn_of_preconnected_of_mem_closure (hf : AnalyticOnNhd 𝕜 f U) (hg : 
     EqOn f g U :=
   hf.eqOn_of_preconnected_of_frequently_eq hg hU h₀ (mem_closure_ne_iff_frequently_within.mp hfg)
 
-/-- The *identity principle* for analytic functions, global version: if two functions on a normed
+/--
+The _identity principle_ for analytic functions, global version: if two functions on a normed
 field `𝕜` are analytic everywhere and coincide at points which accumulate to a point `z₀`, then
 they coincide globally.
 For higher-dimensional versions requiring that the functions coincide in a neighborhood of `z₀`,
-see `AnalyticOnNhd.eq_of_eventuallyEq`. -/
+see `AnalyticOnNhd.eq_of_eventuallyEq`.
+-/
 theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f univ)
     (hg : AnalyticOnNhd 𝕜 g univ) (hfg : ∃ᶠ z in 𝓝[≠] z₀, f z = g z) : f = g :=
   funext fun x =>
@@ -261,7 +272,7 @@ theorem eq_of_frequently_eq [ConnectedSpace 𝕜] (hf : AnalyticOnNhd 𝕜 f uni
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+# Vanishing of products of analytic functions
 -/
 
 variable {A : Type*} [NormedRing A] [IsDomain A] [NormedAlgebra 𝕜 A]
@@ -302,7 +313,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+# Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete
@@ -348,7 +359,8 @@ theorem AnalyticOnNhd.preimage_mem_codiscreteWithin {U : Set 𝕜} {s : Set E} {
   apply mem_of_superset ((hfU x hx).preimage_of_nhdsNE (h₂f x hx) (hs (f x) (by tauto)))
   grind
 
-/-- Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
+/--
+Preimages of codiscrete sets, filter version: if `f` is analytic on a neighbourhood of `U` and
 not locally constant, then the push-forward of the filter of sets codiscrete within `U` is less
 than or equal to the filter of sets codiscrete within `f '' U`.
 

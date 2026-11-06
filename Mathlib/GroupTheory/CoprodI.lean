@@ -12,6 +12,9 @@ public import Mathlib.GroupTheory.Congruence.Basic
 public import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 public import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The coproduct (a.k.a. the free product) of groups or monoids
 
@@ -30,16 +33,16 @@ When `M i` are all groups, `Monoid.CoprodI M` is also a group
 
 ## Main definitions
 
-- `Monoid.CoprodI M`: the free product, defined as a quotient of a free monoid.
-- `Monoid.CoprodI.of {i} : M i →* Monoid.CoprodI M`.
-- `Monoid.CoprodI.lift : (∀ {i}, M i →* N) ≃ (Monoid.CoprodI M →* N)`: the universal property.
-- `Monoid.CoprodI.Word M`: the type of reduced words.
-- `Monoid.CoprodI.Word.equiv M : Monoid.CoprodI M ≃ word M`.
-- `Monoid.CoprodI.NeWord M i j`: an inductive description of non-empty words
+* `Monoid.CoprodI M`: the free product, defined as a quotient of a free monoid.
+* `Monoid.CoprodI.of {i} : M i →* Monoid.CoprodI M`.
+* `Monoid.CoprodI.lift : (∀ {i}, M i →* N) ≃ (Monoid.CoprodI M →* N)`: the universal property.
+* `Monoid.CoprodI.Word M`: the type of reduced words.
+* `Monoid.CoprodI.Word.equiv M : Monoid.CoprodI M ≃ word M`.
+* `Monoid.CoprodI.NeWord M i j`: an inductive description of non-empty words
   with first letter from `M i` and last letter from `M j`,
   together with an API (`singleton`, `append`, `head`, `tail`, `to_word`, `Prod`, `inv`).
   Used in the proof of the Ping-Pong-lemma.
-- `Monoid.CoprodI.lift_injective_of_ping_pong`: The Ping-Pong-lemma,
+* `Monoid.CoprodI.lift_injective_of_ping_pong`: The Ping-Pong-lemma,
   proving injectivity of the `lift`. See the documentation of that theorem for more information.
 
 ## Remarks
@@ -76,8 +79,7 @@ could be obtained by showing that `Monoid.CoprodI.Rel` is confluent.
 
 ## References
 
-[van der Waerden, *Free products of groups*][MR25465]
-
+‍\[van der Waerden, _Free products of groups_\]\[MR25465\]
 -/
 
 @[expose] public section
@@ -126,7 +128,9 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext 1100] -- This needs a higher `ext` priority
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
@@ -887,7 +891,8 @@ theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
   exact lift_word_prod_nontrivial_of_not_empty f hcard X hXnonempty hXdisj hpp w h
 
 include hcard in
-/-- The **Ping-Pong-Lemma**.
+/--
+The *Ping-Pong-Lemma*.
 
 Given a group action of `G` on `X` so that the `H i` acts in a specific way on disjoint subsets
 `X i` we can prove that `lift f` is injective, and thus the image of `lift f` is isomorphic to the
@@ -959,7 +964,8 @@ variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
 include hXnonempty hXdisj hYdisj hXYdisj hX hY in
-/-- The Ping-Pong-Lemma.
+/--
+The Ping-Pong-Lemma.
 
 Given a group action of `G` on `X` so that the generators of the free groups act in specific
 ways on disjoint subsets `X i` and `Y i` we can prove that `lift f` is injective, and thus the image

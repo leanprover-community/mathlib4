@@ -12,13 +12,15 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.DeltaZeroIter
 public import Mathlib.AlgebraicTopology.SimplicialObject.Homotopy
 public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Augmented simplicial objects with an extra degeneracy
 
 In simplicial homotopy theory, in order to prove that the connected components
 of a simplicial set `X` are contractible, it suffices to construct an extra
-degeneracy as it is defined in *Simplicial Homotopy Theory* by Goerss-Jardine p. 190.
+degeneracy as it is defined in _Simplicial Homotopy Theory_ by Goerss-Jardine p. 190.
 It consists of a series of maps `π₀ X → X _⦋0⦌` and `X _⦋n⦌ → X _⦋n+1⦌` which
 behave formally like an extra degeneracy `σ (-1)`. It can be thought as a datum
 associated to the augmented simplicial set `X → π₀ X`.
@@ -28,26 +30,26 @@ simplicial objects in any category.
 
 ## Main definitions
 
-- the structure `ExtraDegeneracy X` for any `X : SimplicialObject.Augmented C`
-- `ExtraDegeneracy.map`: extra degeneracies are preserved by the application of any
+* the structure `ExtraDegeneracy X` for any `X : SimplicialObject.Augmented C`
+* `ExtraDegeneracy.map`: extra degeneracies are preserved by the application of any
   functor `C ⥤ D`
-- `SSet.Augmented.StandardSimplex.extraDegeneracy`: the standard `n`-simplex has
+* `SSet.Augmented.StandardSimplex.extraDegeneracy`: the standard `n`-simplex has
   an extra degeneracy
-- `Arrow.AugmentedCechNerve.extraDegeneracy`: the Čech nerve of a split
+* `Arrow.AugmentedCechNerve.extraDegeneracy`: the Čech nerve of a split
   epimorphism has an extra degeneracy
-- `ExtraDegeneracy.homotopyEquiv`: in the case the category `C` is preadditive,
+* `ExtraDegeneracy.homotopyEquiv`: in the case the category `C` is preadditive,
   if we have an extra degeneracy on `X : SimplicialObject.Augmented C`, then
   the augmentation on the alternating face map complex of `X` is a homotopy
   equivalence.
-- `ExtraDegeneracy.homotopy`: if we have an extra degeneracy `ed` on
+* `ExtraDegeneracy.homotopy`: if we have an extra degeneracy `ed` on
   `X : SimplicialObject.Augmented C` (for any category `C`), then
   the morphism `X.hom ≫ ed.section_` is homotopic to `𝟙 X.left`.
 
 ## References
-* [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
-* [M. Barr, J. Kennison, J. and R. Robert,
-  *Contractible simplicial objects*][barr-kennison-robert-2019]
 
+* ‍\[Paul G. Goerss, John F. Jardine, _Simplicial Homotopy Theory_\]\[goerss-jardine-2009\]
+* ‍\[M. Barr, J. Kennison, J. and R. Robert,
+  _Contractible simplicial objects_\]\[barr-kennison-robert-2019\]
 -/
 
 set_option backward.defeqAttrib.useBackward true

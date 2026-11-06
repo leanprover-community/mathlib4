@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.Hom.InjSurj
 public import Mathlib.RingTheory.Localization.Integral
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrally closed rings
 
@@ -29,12 +32,12 @@ integral over `R`. A special case of integrally closed rings are the Dedekind do
 
 The following definitions are closely related, especially in their applications in Mathlib.
 
-A *normal domain* is a domain that is integrally closed in its field of fractions.
-[Stacks: normal domain](https://stacks.math.columbia.edu/tag/037B#0309)
-Normal domains are the major use case of `IsIntegrallyClosed` at the time of writing, and we have
-quite a few results that can be moved wholesale to a new `NormalDomain` definition.
-In fact, before PR https://github.com/leanprover-community/mathlib4/pull/6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
-(So you might want to copy some of its API when you define normal domains.)
+A _normal domain_ is a domain that is integrally closed in its field of fractions. [Stacks: normal
+domain](https://stacks.math.columbia.edu/tag/037B#0309) Normal domains are the major use case of
+`IsIntegrallyClosed` at the time of writing, and we have quite a few results that can be moved
+wholesale to a new `NormalDomain` definition. In fact, before PR
+https://github.com/leanprover-community/mathlib4/pull/6126 `IsIntegrallyClosed` was exactly defined
+to be a normal domain. (So you might want to copy some of its API when you define normal domains.)
 
 A normal ring means that localizations at all prime ideals are normal domains.
 [Stacks: normal ring](https://stacks.math.columbia.edu/tag/037B#00GV)
@@ -66,7 +69,8 @@ open Polynomial
 abbrev IsIntegrallyClosedIn (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] :=
   IsIntegralClosure R R A
 
-/-- `R` is integrally closed if all integral elements of `Frac(R)` are also elements of `R`.
+/--
+`R` is integrally closed if all integral elements of `Frac(R)` are also elements of `R`.
 
 This definition uses `FractionRing R` to denote `Frac(R)`. See `isIntegrallyClosed_iff`
 if you want to choose another field of fractions for `R`.

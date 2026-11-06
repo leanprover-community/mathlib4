@@ -9,7 +9,11 @@ module
 public import Mathlib.Combinatorics.Enumerative.Partition.Basic
 public import Mathlib.Data.Nat.Choose.Multinomial
 
-/-! # Bell numbers for multisets
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Bell numbers for multisets
 
 For `n : ℕ`, the `n`th Bell number is the number of partitions of a set of cardinality `n`.
 Here, we define a refinement of these numbers, that count, for any `m : Multiset ℕ`,
@@ -19,20 +23,14 @@ given by `m`.
 The definition presents it as a natural number.
 
 * `Multiset.bell`: number of partitions of a set whose parts have cardinalities a given multiset
-
 * `Nat.uniformBell m n` : short name for `Multiset.bell (replicate m n)`
-
 * `Multiset.bell_mul_eq` shows that
   `m.bell * (m.map (fun j ↦ j !)).prod * Π j ∈ (m.toFinset.erase 0), (m.count j)! = m.sum !`
-
 * `Nat.uniformBell_mul_eq`  shows that
   `uniformBell m n * n ! ^ m * m ! = (m * n) !`
-
 * `Nat.uniformBell_succ_left` computes `Nat.uniformBell (m + 1) n` from `Nat.uniformBell m n`
-
 * `Nat.bell n`: the `n`th standard Bell number,
   which counts the number of partitions of a set of cardinality `n`
-
 * `Nat.bell_succ n` shows that
   `Nat.bell (n + 1) = ∑ k ∈ Finset.range (n + 1), Nat.choose n k * Nat.bell (n - k)`
 
@@ -40,7 +38,6 @@ The definition presents it as a natural number.
 
 Prove that it actually counts the number of partitions as indicated.
 (When `m` contains `0`, the result requires to admit repetitions of the empty set as a part.)
-
 -/
 
 @[expose] public section

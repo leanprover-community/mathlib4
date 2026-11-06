@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple functions
 
-A function `f` from a measurable space to any type is called *simple*, if every preimage `f ⁻¹' {x}`
+A function `f` from a measurable space to any type is called _simple_, if every preimage `f ⁻¹' {x}`
 is measurable, and the range is finite. In this file, we define simple functions and establish their
 basic properties; and we construct a sequence of simple functions approximating an arbitrary Borel
 measurable function `f : α → ℝ≥0∞`.
@@ -41,9 +44,11 @@ namespace MeasureTheory
 
 variable {α β γ δ : Type*}
 
-/-- A function `f` from a measurable space to any type is called *simple*,
+/--
+A function `f` from a measurable space to any type is called _simple_,
 if every preimage `f ⁻¹' {x}` is measurable, and the range is finite. This structure bundles
-a function with these properties. -/
+a function with these properties.
+-/
 structure SimpleFunc.{u, v} (α : Type u) [MeasurableSpace α] (β : Type v) where
   /-- The underlying function -/
   toFun : α → β
@@ -1223,7 +1228,8 @@ lemma measure_support_lt_top_of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (hf 
 
 end FinMeasSupp
 
-/-- To prove something for an arbitrary simple function, it suffices to show
+/--
+To prove something for an arbitrary simple function, it suffices to show
 that the property holds for (multiples of) characteristic functions and is closed under
 addition (of functions with disjoint support).
 
@@ -1231,7 +1237,8 @@ It is possible to make the hypotheses in `h_add` a bit stronger, and such condit
 once we need them (for example it is only necessary to consider the case where `g` is a multiple
 of a characteristic function, and that this multiple doesn't appear in the image of `f`).
 
-To use in an induction proof, the syntax is `induction f using SimpleFunc.induction with`. -/
+To use in an induction proof, the syntax is `induction f using SimpleFunc.induction with`.
+-/
 @[elab_as_elim]
 protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     {motive : SimpleFunc α γ → Prop}
@@ -1270,11 +1277,13 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ]
     rintro y
     by_cases hy : y ∈ f ⁻¹' {x} <;> simp [g, hy]
 
-/-- To prove something for an arbitrary simple function, it suffices to show
+/--
+To prove something for an arbitrary simple function, it suffices to show
 that the property holds for constant functions and that it is closed under piecewise combinations
 of functions.
 
-To use in an induction proof, the syntax is `induction f with`. -/
+To use in an induction proof, the syntax is `induction f with`.
+-/
 @[induction_eliminator]
 protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : SimpleFunc α γ → Prop}
     (const : ∀ (c), P (SimpleFunc.const _ c))
@@ -1331,14 +1340,16 @@ open MeasureTheory MeasureTheory.SimpleFunc
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α}
 
-/-- To prove something for an arbitrary measurable function into `ℝ≥0∞`, it suffices to show
+/--
+To prove something for an arbitrary measurable function into `ℝ≥0∞`, it suffices to show
 that the property holds for (multiples of) characteristic functions and is closed under addition
 and supremum of increasing sequences of functions.
 
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`). -/
+of their images is a subset of `{0}`).
+-/
 @[elab_as_elim]
 theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → motive (Set.indicator s fun _ => c))
@@ -1353,7 +1364,8 @@ theorem Measurable.ennreal_induction {motive : (α → ℝ≥0∞) → Prop}
       SimpleFunc.induction (fun c s hs => indicator c hs)
         (fun f g hfg hf hg => add hfg f.measurable g.measurable hf hg) (eapprox f n)
 
-/-- To prove something for an arbitrary measurable function into `ℝ≥0∞`, it suffices to show
+/--
+To prove something for an arbitrary measurable function into `ℝ≥0∞`, it suffices to show
 that the property holds for (multiples of) characteristic functions with finite mass according to
 some sigma-finite measure and is closed under addition and supremum of increasing sequences of
 functions.
@@ -1361,7 +1373,8 @@ functions.
 It is possible to make the hypotheses in the induction steps a bit stronger, and such conditions
 can be added once we need them (for example in `h_add` it is only necessary to consider the sum of
 a simple function with a multiple of a characteristic function and that the intersection
-of their images is a subset of `{0}`). -/
+of their images is a subset of `{0}`).
+-/
 @[elab_as_elim]
 lemma Measurable.ennreal_sigmaFinite_induction [SigmaFinite μ] {motive : (α → ℝ≥0∞) → Prop}
     (indicator : ∀ (c : ℝ≥0∞) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (Set.indicator s fun _ ↦ c))

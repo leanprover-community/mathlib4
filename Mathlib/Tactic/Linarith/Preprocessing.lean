@@ -13,6 +13,9 @@ public import Mathlib.Tactic.CancelDenoms.Core
 public import Mathlib.Tactic.Linarith.Datatypes
 public import Mathlib.Tactic.Zify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linarith preprocessing
 
@@ -33,7 +36,9 @@ public meta section
 
 namespace Mathlib.Tactic.Linarith
 
-/-! ### Preprocessing -/
+/-!
+# Preprocessing
+-/
 
 open Lean
 open Elab Tactic Meta

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Fintype.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinalities of finite types
 
@@ -19,7 +22,6 @@ We also include some elementary results on the values of `Fintype.card` on speci
 * `Fintype.card α`: Cardinality of a fintype. Equal to `Finset.univ.card`.
 * `Finite.surjective_of_injective`: an injective function from a finite type to
   itself is also surjective.
-
 -/
 
 @[expose] public section
@@ -469,7 +471,8 @@ def truncOfCardPos {α} [Fintype α] (h : 0 < Fintype.card α) : Trunc α :=
 
 end Trunc
 
-/-- A custom induction principle for fintypes. The base case is a subsingleton type,
+/--
+A custom induction principle for fintypes. The base case is a subsingleton type,
 and the induction step is for non-trivial types, and one can assume the hypothesis for
 smaller types (via `Fintype.card`).
 

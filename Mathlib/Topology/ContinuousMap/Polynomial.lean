@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.Topology.ContinuousMap.Star
 public import Mathlib.Topology.UnitInterval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructions relating polynomial functions and continuous functions.
 
@@ -21,7 +24,6 @@ public import Mathlib.Topology.UnitInterval
 * `polynomialFunctions (X : Set R) : Subalgebra R C(X, R)`: polynomial functions as a subalgebra.
 * `polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints`:
   the polynomial functions separate points.
-
 -/
 
 @[expose] public section
@@ -48,7 +50,8 @@ open ContinuousMap in
 lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
   ext; simp
 
-/-- A polynomial as a continuous function,
+/--
+A polynomial as a continuous function,
 with domain restricted to some subset of the semiring of coefficients.
 
 (This is particularly useful when restricting to compact sets, e.g. `[0,1]`.)

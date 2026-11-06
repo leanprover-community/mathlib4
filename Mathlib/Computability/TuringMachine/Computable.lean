@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Computability.Encoding
 public import Mathlib.Computability.TuringMachine.StackTuringMachine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computable functions
 
@@ -19,8 +22,8 @@ any time function) of a function between two types that have an encoding (as in 
 
 ## Main theorems
 
-- `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
-- `idComputable`           : a TM + a proof it computes the identity on a type.
+* `idComputableInPolyTime` : a TM + a proof it computes the identity on a type in polytime.
+* `idComputable`           : a TM + a proof it computes the identity on a type.
 
 ## Implementation notes
 

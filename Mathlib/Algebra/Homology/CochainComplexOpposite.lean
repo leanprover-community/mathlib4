@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.Restriction
 public import Mathlib.Algebra.Homology.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposite categories of cochain complexes
 
@@ -15,7 +18,6 @@ We construct an equivalence of categories `CochainComplex.opEquivalence C`
 between `(CochainComplex C ℤ)ᵒᵖ` and `CochainComplex Cᵒᵖ ℤ`, and we show
 that two morphisms in `CochainComplex C ℤ` are homotopic iff they are
 homotopic as morphisms in `CochainComplex Cᵒᵖ ℤ`.
-
 -/
 
 @[expose] public section

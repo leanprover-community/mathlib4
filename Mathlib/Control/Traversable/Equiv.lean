@@ -11,6 +11,9 @@ public import Mathlib.Logic.Equiv.Defs
 import Batteries.Tactic.SeqFocus
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transferring `Traversable` instances along isomorphisms
 

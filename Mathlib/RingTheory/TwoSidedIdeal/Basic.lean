@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Congruence.Opposite
 public import Mathlib.Tactic.Abel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Two Sided Ideals
 
@@ -20,7 +23,6 @@ In this file, for any `Ring R`, we reinterpret `I : RingCon R` as a two-sided-id
 * `TwoSidedIdeal.setLike`: Every `I : TwoSidedIdeal R` can be interpreted as a set of `R` where
   `x ∈ I` if and only if `I.ringCon x 0`.
 * `TwoSidedIdeal.addCommGroup`: Every `I : TwoSidedIdeal R` is an abelian group.
-
 -/
 
 @[expose] public section
@@ -148,12 +150,13 @@ lemma zsmul_mem {x} (n : ℤ) (hx : x ∈ I) : n • x ∈ I := _root_.zsmul_mem
 
 /--
 The "set-theoretic-way" of constructing a two-sided ideal by providing:
-- the underlying set `S`;
-- a proof that `0 ∈ S`;
-- a proof that `x + y ∈ S` if `x ∈ S` and `y ∈ S`;
-- a proof that `-x ∈ S` if `x ∈ S`;
-- a proof that `x * y ∈ S` if `y ∈ S`;
-- a proof that `x * y ∈ S` if `x ∈ S`.
+
+* the underlying set `S`;
+* a proof that `0 ∈ S`;
+* a proof that `x + y ∈ S` if `x ∈ S` and `y ∈ S`;
+* a proof that `-x ∈ S` if `x ∈ S`;
+* a proof that `x * y ∈ S` if `y ∈ S`;
+* a proof that `x * y ∈ S` if `x ∈ S`.
 -/
 def mk' (carrier : Set R)
     (zero_mem : 0 ∈ carrier)

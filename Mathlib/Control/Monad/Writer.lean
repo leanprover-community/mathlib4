@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Writer monads
 
@@ -16,20 +19,23 @@ Common applications are logging monads where the monad logs messages as the
 computation progresses.
 
 ## References
-- https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
-- [Original Mark P Jones article introducing `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 
+* https://hackage.haskell.org/package/mtl-2.2.1/docs/Control-Monad-Writer-Class.html
+* [Original Mark P Jones article introducing
+  `Writer`](https://web.cecs.pdx.edu/~mpj/pubs/springschool.html)
 -/
 
 @[expose] public section
 
 universe u v
 
-/-- Adds a writable output of type `ω` to a monad.
+/--
+Adds a writable output of type `ω` to a monad.
 
 The instances on this type assume that either `[Monoid ω]` or `[EmptyCollection ω] [Append ω]`.
 
-Use `WriterT.run` to obtain the final value of this output. -/
+Use `WriterT.run` to obtain the final value of this output.
+-/
 def WriterT (ω : Type u) (M : Type u → Type v) (α : Type u) : Type v :=
   M (α × ω)
 
@@ -73,7 +79,8 @@ protected theorem ext {ω : Type u} (x x' : WriterT ω M α) (h : x.run = x'.run
 
 variable [Monad M]
 
-/-- Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
+/--
+Creates an instance of `Monad`, with explicitly given `empty` and `append` operations.
 
 Previously, this would have used an instance of `[Monoid ω]` as input.
 In practice, however, `WriterT` is used for logging and creating lists so restricting to
@@ -179,9 +186,11 @@ instance : MonadFunctor M (WriterT ω M) where
 
 end WriterT
 
-/-- Adapt a monad stack, changing the type of its top-most environment.
+/--
+Adapt a monad stack, changing the type of its top-most environment.
 
-This class is comparable to [Control.Lens.Magnify](https://hackage.haskell.org/package/lens-4.15.4/docs/Control-Lens-Zoom.html#t:Magnify),
+This class is comparable to [
+Control.Lens.Magnify](https://hackage.haskell.org/package/lens-4.15.4/docs/Control-Lens-Zoom.html#t:Magnify),
 but does not use lenses (why would it), and is derived automatically for any transformer
 implementing `MonadFunctor`.
 -/
@@ -191,9 +200,11 @@ class MonadWriterAdapter (ω : outParam (Type u)) (m : Type u → Type v) where
 export MonadWriterAdapter (adaptWriter)
 
 variable {m : Type u → Type*}
-/-- Transitivity.
+/--
+Transitivity.
 
-see Note [lower instance priority] -/
+see Note \[lower instance priority\]
+-/
 instance (priority := 100) monadWriterAdapterTrans {n : Type u → Type v}
     [MonadWriterAdapter ω m] [MonadFunctor m n] : MonadWriterAdapter ω n where
   adaptWriter f := monadMap (fun {α} ↦ (adaptWriter f : m α → m α))

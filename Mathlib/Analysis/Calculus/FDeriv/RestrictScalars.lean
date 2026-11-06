@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative of the scalar restriction of a linear map
 
@@ -25,7 +28,7 @@ open Filter ContinuousLinearMap Set
 section RestrictScalars
 
 /-!
-### Restricting from `ℂ` to `ℝ`, or generally from `𝕜'` to `𝕜`
+# Restricting from `ℂ` to `ℝ`, or generally from `𝕜'` to `𝕜`
 
 If a function is differentiable over `ℂ`, then it is differentiable over `ℝ`. In this paragraph,
 we give variants of this statement, in the general situation where `ℂ` and `ℝ` are replaced

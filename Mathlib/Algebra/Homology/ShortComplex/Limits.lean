@@ -10,12 +10,14 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and colimits in the category of short complexes
 
 In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasi-compact morphisms
 
@@ -15,7 +18,6 @@ quasi-compact.
 
 It suffices to check that preimages of affine open sets are compact
 (`quasiCompact_iff_forall_isAffineOpen`).
-
 -/
 
 public section

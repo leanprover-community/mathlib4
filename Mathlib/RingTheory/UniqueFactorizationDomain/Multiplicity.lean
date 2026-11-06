@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 import Mathlib.Algebra.FiniteSupport.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unique factorization and multiplicity
 
@@ -19,10 +22,8 @@ import Mathlib.Algebra.FiniteSupport.Basic
 * `UniqueFactorizationMonoid.emultiplicity_eq_count_normalizedFactors`: The multiplicity of an
   irreducible factor of a nonzero element is exactly the number of times the normalized factor
   occurs in the `normalizedFactors`.
-
 * `UniqueFactorizationMonoid.dvd_iff_multiplicity_le`: A nonzero element divides a nonzero element
   iff its multiplicity at every prime is at most that of the other.
-
 * `UniqueFactorizationMonoid.associated_iff_multiplicity_eq`: Two nonzero elements are associated
   iff they have the same multiplicity at every prime.
 -/
@@ -93,7 +94,8 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
 
 variable [DecidableEq R]
 
-/-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
+/--
+The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
 the normalized factor occurs in the `normalizedFactors`.
 
 For a version using `multiplicity`, see `multiplicity_eq_count_normalizedFactors`.
@@ -110,17 +112,20 @@ theorem emultiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) 
     simp
   rw [le_emultiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
-/-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
+/--
+The multiplicity of an irreducible factor of a nonzero element is exactly the number of times
 the normalized factor occurs in the `normalizedFactors`.
 
-For a version using `emultiplicity`, see `emultiplicity_eq_count_normalizedFactors`. -/
+For a version using `emultiplicity`, see `emultiplicity_eq_count_normalizedFactors`.
+-/
 theorem multiplicity_eq_count_normalizedFactors {a b : R} (ha : Irreducible a) (hb : b ≠ 0) :
     multiplicity a b = (normalizedFactors b).count (normalize a) := by
   have := emultiplicity_eq_count_normalizedFactors ha hb
   rwa [(finiteMultiplicity_of_emultiplicity_eq_natCast this).emultiplicity_eq_multiplicity,
     ENat.natCast_inj] at this
 
-/-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
+/--
+The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
 
 See also `multiplicity_eq_count_normalizedFactors` if `n` is given by `multiplicity p x`.
@@ -135,7 +140,8 @@ theorem count_normalizedFactors_eq {p x : R} (hp : Irreducible p) (hnorm : norma
   · exact hnorm.symm
   exact (emultiplicity_eq_coe.mpr ⟨hle, hlt⟩).symm
 
-/-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
+/--
+The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`. This is a slightly more general version of
 `UniqueFactorizationMonoid.count_normalizedFactors_eq` that allows `p = 0`.
 

@@ -8,13 +8,15 @@ module
 public import Mathlib.Order.SetIsMax
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit elements in Set.Ici
 
 If `J` is a linearly ordered type, `j : J`,
 and `m : Set.Ici j` is successor limit, then
 `↑m : J` is also successor limit.
-
 -/
 
 public section

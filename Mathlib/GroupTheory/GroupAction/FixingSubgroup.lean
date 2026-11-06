@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.GroupTheory.GroupAction.FixedPoints
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Fixing submonoid, fixing subgroup of an action
 
 In the presence of an action of a monoid or a group,
@@ -20,22 +22,17 @@ and relates it to the set of fixed points via a Galois connection.
 
 * `fixingSubmonoid M s` : in the presence of `MulAction M α` (with `Monoid M`)
   it is the `Submonoid M` consisting of elements which fix `s : Set α` pointwise.
-
 * `fixingSubmonoid_fixedPoints_gc M α` is the `GaloisConnection`
   that relates `fixingSubmonoid` with `fixedPoints`.
-
 * `fixingSubgroup M s` : in the presence of `MulAction M α` (with `Group M`)
   it is the `Subgroup M` consisting of elements which fix `s : Set α` pointwise.
-
 * `fixingSubgroup_fixedPoints_gc M α` is the `GaloisConnection`
   that relates `fixingSubgroup` with `fixedPoints`.
 
 TODO :
 
 * Maybe other lemmas are useful
-
 * Treat semigroups ?
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Geometry.Convex.AffineMap.Defs
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The module of affine maps from a convex space to a module
 
@@ -94,7 +97,9 @@ instance : AddCommGroup (ConvexSpace.AffineMap R X M) :=
 end AddCommGroup
 end ConvexSpace.AffineMap
 
-/-! ### Compatibility with the pointwise convex space structure -/
+/-!
+# Compatibility with the pointwise convex space structure
+-/
 
 section Pointwise
 variable {R S : Type*} [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] [Semiring S]

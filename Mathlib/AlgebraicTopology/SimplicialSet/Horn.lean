@@ -10,11 +10,13 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexOp
 
 import Mathlib.CategoryTheory.Subfunctor.Equalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Horns
 
 This file introduces horns `Λ[n, i]`.
-
 -/
 
 @[expose] public section
@@ -194,9 +196,11 @@ lemma const_val_apply {m : ℕ} (a : Fin (m + 1)) :
 
 end
 
-/-- The edge of `Λ[n, i]` with endpoints `a` and `b`.
+/--
+The edge of `Λ[n, i]` with endpoints `a` and `b`.
 
-This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
+This edge only exists if `{i, a, b}` has cardinality less than `n`.
+-/
 @[simps]
 def edge (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     (Λ[n, i] : SSet.{u}).obj (op ⦋1⦌) :=
@@ -224,10 +228,12 @@ def edge₃ (n : ℕ) (i a b : Fin (n + 1)) (hab : a ≤ b) (H : 3 ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   edge n i a b hab <| Finset.card_le_three.trans H
 
-/-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
+/--
+The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
 
 This constructor assumes `0 < i < n`,
-which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
+which is the type of horn that occurs in the horn-filling condition of quasicategories.
+-/
 @[simps!]
 def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
@@ -240,10 +246,12 @@ def primitiveEdge {n : ℕ} {i : Fin (n + 1)}
   · revert i j; decide
   · exact Finset.card_le_three.trans hn
 
-/-- The triangle in the standard simplex with vertices `k`, `k+1`, and `k+2`.
+/--
+The triangle in the standard simplex with vertices `k`, `k+1`, and `k+2`.
 
 This constructor assumes `0 < i < n`,
-which is the type of horn that occurs in the horn-filling condition of quasicategories. -/
+which is the type of horn that occurs in the horn-filling condition of quasicategories.
+-/
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n + 4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 3))

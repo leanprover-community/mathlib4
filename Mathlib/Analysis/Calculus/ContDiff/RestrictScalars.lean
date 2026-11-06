@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Defs
 
 import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restricting Scalars in Iterated Fréchet Derivatives
 

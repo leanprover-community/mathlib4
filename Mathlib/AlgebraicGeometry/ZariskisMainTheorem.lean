@@ -12,8 +12,10 @@ public import Mathlib.AlgebraicGeometry.Normalization
 
 import Mathlib.RingTheory.Etale.QuasiFinite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Zariski's Main Theorem
 
 In this file we prove Grothendieck's reformulation of Zariski's main theorem, namely if
@@ -21,14 +23,14 @@ In this file we prove Grothendieck's reformulation of Zariski's main theorem, na
 `f` to the relative normalization `X'` of `Y` in `X` is an open immersion.
 
 We then have the following corollaries
-- `Scheme.Hom.isOpen_quasiFiniteAt` : If `f` is separated and of finite type, then the quasi-finite
+
+* `Scheme.Hom.isOpen_quasiFiniteAt` : If `f` is separated and of finite type, then the quasi-finite
   locus of `f` is open.
-- If `f` is itself quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an open immersion.
+* If `f` is itself quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an open immersion.
   This can be accessed via `inferInstance`.
-- `IsFinite.of_isProper_of_locallyQuasiFinite`:
+* `IsFinite.of_isProper_of_locallyQuasiFinite`:
   If `f` is proper and quasi-finite, then the map `f.toNormalization : X ⟶ X'` is an isomorphism,
   which implies that `f` itself is finite.
-
 -/
 
 open CategoryTheory Limits
@@ -190,7 +192,7 @@ lemma Scheme.Hom.exists_mem_and_isIso_morphismRestrict_toNormalization
 
 set_option backward.isDefEq.respectTransparency.types false in
 /--
-**Zariski's main theorem**
+*Zariski's main theorem*
 
 Recall that any qcqs morphism `f : X ⟶ Y` factors through the relative normalization via
 `f.toNormalization : X ⟶ f.normalization` (a dominant morphism) and
@@ -199,6 +201,7 @@ Recall that any qcqs morphism `f : X ⟶ Y` factors through the relative normali
 Let `f : X ⟶ Y` be separated and of finite type.
 
 then there exists `U : f.normalization.Opens`, such that
+
 1. `f.toNormalization ∣_ U` is an isomorphism
 2. `f.toNormalization ⁻¹ᵁ U` is the quasi-finite locus of `f`
 -/

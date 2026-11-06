@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.CWComplex.Classical.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subcomplexes
 
@@ -14,11 +17,13 @@ In this file we discuss subcomplexes of CW complexes.
 The definition of subcomplexes is in the file `Mathlib/Topology/CWComplex/Classical/Basic.lean`.
 
 ## Main results
+
 * `RelCWComplex.Subcomplex.instRelCWComplex`: a subcomplex of a (relative) CW complex is again a
   (relative) CW complex.
 
 ## References
-* [K. Jänich, *Topology*][Janich1984]
+
+* ‍\[K. Jänich, _Topology_\]\[Janich1984\]
 -/
 
 public section

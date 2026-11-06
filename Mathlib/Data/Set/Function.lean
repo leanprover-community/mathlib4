@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Prod
 public import Mathlib.Data.Set.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions over sets
 
@@ -32,7 +35,9 @@ open Equiv Equiv.Perm Function
 
 namespace Set
 
-/-! ### Equality on a set -/
+/-!
+# Equality on a set
+-/
 section equality
 
 variable {s s₁ s₂ : Set α} {f₁ f₂ f₃ : α → β} {g : β → γ} {a : α}
@@ -239,7 +244,9 @@ theorem MapsTo.mem_iff (h : MapsTo f s t) (hc : MapsTo f sᶜ tᶜ) {x} : f x �
 
 end MapsTo
 
-/-! ### Injectivity on a set -/
+/-!
+# Injectivity on a set
+-/
 section injOn
 
 theorem Subsingleton.injOn (hs : s.Subsingleton) (f : α → β) : InjOn f s := fun _ hx _ hy _ =>
@@ -447,7 +454,9 @@ lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
 
 end graphOn
 
-/-! ### Surjectivity on a set -/
+/-!
+# Surjectivity on a set
+-/
 section surjOn
 
 theorem SurjOn.subset_range (h : SurjOn f s t) : t ⊆ range f :=
@@ -602,7 +611,9 @@ theorem _root_.Subtype.coind_bijective {α β} {f : α → β} {p : Set β} (h :
 
 end surjOn
 
-/-! ### Bijectivity -/
+/-!
+# Bijectivity
+-/
 section bijOn
 
 theorem BijOn.mapsTo (h : BijOn f s t) : MapsTo f s t :=
@@ -787,7 +798,9 @@ theorem BijOn.sdiff_singleton (h₁ : BijOn f s t) (h₂ : a ∈ s) :
 
 end bijOn
 
-/-! ### left inverse -/
+/-!
+# left inverse
+-/
 namespace LeftInvOn
 
 theorem eqOn (h : LeftInvOn f' f s) : EqOn (f' ∘ f) id s :=
@@ -848,7 +861,9 @@ theorem image_image' (hf : LeftInvOn f' f s) (hs : s₁ ⊆ s) : f' '' f '' s₁
 
 end LeftInvOn
 
-/-! ### Right inverse -/
+/-!
+# Right inverse
+-/
 section RightInvOn
 namespace RightInvOn
 
@@ -913,7 +928,9 @@ theorem image_eq_preimage_of_leftInvOn_injOn {f : α → β} {g : β → α} {s 
 
 end RightInvOn
 
-/-! ### Two-side inverses -/
+/-!
+# Two-side inverses
+-/
 namespace InvOn
 
 lemma _root_.Set.invOn_id (s : Set α) : InvOn id id s s := ⟨s.leftInvOn_id, s.rightInvOn_id⟩
@@ -940,7 +957,9 @@ end InvOn
 
 end Set
 
-/-! ### `invFunOn` is a left/right inverse -/
+/-!
+# `invFunOn` is a left/right inverse
+-/
 namespace Function
 
 variable {s : Set α} {f : α → β} {a : α} {b : β}
@@ -1222,7 +1241,9 @@ lemma apply_eq_of_range_eq_singleton {f : α → β} {b : β} (h : range f = {b}
 
 end Function
 
-/-! ### Equivalences, permutations -/
+/-!
+# Equivalences, permutations
+-/
 namespace Set
 
 variable {p : β → Prop} [DecidablePred p] {f : α ≃ Subtype p} {g g₁ g₂ : Perm α} {s t : Set α}

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Primes congruent to one
 

@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 public import Mathlib.CategoryTheory.ObjectProperty.FullSubcategory
 public import Mathlib.Order.CompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ObjectProperty is a complete lattice
-
 -/
 
 public section

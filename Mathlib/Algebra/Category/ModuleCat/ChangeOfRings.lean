@@ -13,6 +13,9 @@ public import Mathlib.CategoryTheory.Adjunction.Mates
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Change Of Rings
 
@@ -22,12 +25,10 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
   then `restrictScalars : ModuleCat S ⥤ ModuleCat R` is defined by `M ↦ M` where an `S`-module `M`
   is seen as an `R`-module by `r • m := f r • m` and `S`-linear map `l : M ⟶ M'` is `R`-linear as
   well.
-
-* `ModuleCat.extendScalars`: given **commutative** rings `R, S` and ring homomorphism
+* `ModuleCat.extendScalars`: given *commutative* rings `R, S` and ring homomorphism
   `f : R ⟶ S`, then `extendScalars : ModuleCat R ⥤ ModuleCat S` is defined by `M ↦ S ⨂ M` where the
   module structure is defined by `s • (s' ⊗ m) := (s * s') ⊗ m` and `R`-linear map `l : M ⟶ M'`
   is sent to `S`-linear map `s ⊗ m ↦ s ⊗ l m : S ⨂ M ⟶ S ⨂ M'`.
-
 * `ModuleCat.coextendScalars`: given rings `R, S` and a ring homomorphism `R ⟶ S`
   then `coextendScalars : ModuleCat R ⥤ ModuleCat S` is defined by `M ↦ (S →ₗ[R] M)` where `S` is
   seen as an `R`-module by restriction of scalars and `l ↦ l ∘ _`.
@@ -40,7 +41,9 @@ public import Mathlib.LinearAlgebra.TensorProduct.Tower
   `f : R ⟶ S` then `coextendScalars f` is the right adjoint of `restrictScalars f`.
 
 ## Notation
+
 Let `R, S` be rings and `f : R →+* S`
+
 * if `M` is an `R`-module, `s : S` and `m : M`, then `s ⊗ₜ[R, f] m` is the pure tensor
   `s ⊗ m : S ⊗[R, f] M`.
 -/
@@ -78,7 +81,9 @@ def map' {M M' : ModuleCat.{v} S} (g : M ⟶ M') : obj' f M ⟶ obj' f M' :=
 
 end RestrictScalars
 
-/-- The restriction of scalars operation is functorial. For any `f : R →+* S` a ring homomorphism,
+/--
+The restriction of scalars operation is functorial. For any `f : R →+* S` a ring homomorphism,
+
 * an `S`-module `M` can be considered as `R`-module by `r • m = f r • m`
 * an `S`-linear map is also `R`-linear
 -/
@@ -352,10 +357,12 @@ section ModuleCat.Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
-/-- Tensor product of elements along a base change.
+/--
+Tensor product of elements along a base change.
 
 This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
-without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`. -/
+without this notation, one needs to work with `s : (restrictScalars f).obj ⟨S⟩`.
+-/
 scoped[ChangeOfRings] notation:100 s:100 " ⊗ₜ[" R "," f "] " m:101 =>
   @TensorProduct.tmul R _ _ _ _ _ (Module.compHom _ f) _ s m
 
@@ -489,7 +496,8 @@ end Unbundled
 
 variable (M : ModuleCat.{v} R)
 
-/-- If `M` is an `R`-module, then the set of `R`-linear maps `S →ₗ[R] M` is an `S`-module with
+/--
+If `M` is an `R`-module, then the set of `R`-linear maps `S →ₗ[R] M` is an `S`-module with
 scalar multiplication defined by `s • l := x ↦ l (x • s)`.
 
 This is an implementation detail: use `(coextendScalars f).obj` instead.

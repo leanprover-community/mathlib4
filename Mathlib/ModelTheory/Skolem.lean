@@ -7,23 +7,26 @@ module
 
 public import Mathlib.ModelTheory.ElementarySubstructures
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skolem Functions and Downward Löwenheim–Skolem
 
 ## Main Definitions
 
-- `FirstOrder.Language.skolem₁` is a language consisting of Skolem functions for another language.
+* `FirstOrder.Language.skolem₁` is a language consisting of Skolem functions for another language.
 
 ## Main Results
 
-- `FirstOrder.Language.exists_elementarySubstructure_card_eq` is the Downward Löwenheim–Skolem
+* `FirstOrder.Language.exists_elementarySubstructure_card_eq` is the Downward Löwenheim–Skolem
   theorem: If `s` is a set in an `L`-structure `M` and `κ` an infinite cardinal such that
   `max (#s, L.card) ≤ κ` and `κ ≤ # M`, then `M` has an elementary substructure containing `s` of
   cardinality `κ`.
 
 ## TODO
 
-- Use `skolem₁` recursively to construct an actual Skolemization of a language.
+* Use `skolem₁` recursively to construct an actual Skolemization of a language.
 -/
 
 @[expose] public section

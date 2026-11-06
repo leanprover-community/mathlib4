@@ -12,6 +12,9 @@ public import Mathlib.Order.Partition.Finpartition
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite equipartitions
 
@@ -153,7 +156,9 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : âˆ
   simp_rw [z', z, Equiv.ofBijective_apply, hf a b, Nat.mul_add_mod,
     Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
 
-/-! ### Discrete and indiscrete finpartitions -/
+/-!
+# Discrete and indiscrete finpartitions
+-/
 
 
 variable (s)

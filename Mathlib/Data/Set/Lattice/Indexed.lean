@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.BooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed unions and intersections of sets
 
@@ -28,7 +31,9 @@ variable {α β γ : Type*} {ι ι' ι₂ : Sort*} {κ : ι → Sort*} {κ' : ι
 
 namespace Set
 
-/-! ### Basic membership lemmas -/
+/-!
+# Basic membership lemmas
+-/
 
 theorem mem_iUnion₂ {x : γ} {s : ∀ i, κ i → Set γ} : (x ∈ ⋃ (i) (j), s i j) ↔ ∃ i j, x ∈ s i j := by
   simp_rw [mem_iUnion]
@@ -50,7 +55,9 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
     a ∈ ⋂ (i) (j), s i j :=
   mem_iInter₂.2 h
 
-/-! ### Union and intersection over an indexed family of sets -/
+/-!
+# Union and intersection over an indexed family of sets
+-/
 
 @[congr]
 theorem iUnion_congr_Prop {p q : Prop} {f₁ : p → Set α} {f₂ : q → Set α} (pq : p ↔ q)
@@ -477,7 +484,9 @@ theorem iInter_ite (f g : ι → Set α) :
 
 end
 
-/-! ### Unions and intersections indexed by `Prop` -/
+/-!
+# Unions and intersections indexed by `Prop`
+-/
 
 theorem iInter_false {s : False → Set α} : iInter s = univ :=
   iInf_false

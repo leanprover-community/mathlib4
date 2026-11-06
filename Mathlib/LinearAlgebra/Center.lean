@@ -8,11 +8,14 @@ module
 
 public import Mathlib.LinearAlgebra.Transvection.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Center of the algebra of linear endomorphisms
 
 If `V` is an `R`-module, we say that an endomorphism `f : Module.End R V`
-is a *homothety* with central ratio if there exists `a ∈ Set.center R`
+is a _homothety_ with central ratio if there exists `a ∈ Set.center R`
 such that `f x = a • x` for all `x`.
 By `Module.End.mem_subsemiringCenter_iff`, these linear maps constitute
 the center of `Module.End R V`.
@@ -24,16 +27,13 @@ In what follows, `V` is assumed to be a free `R`-module.
   if an endomorphism `f : V →ₗ[R] V` commutes with every elementary transvection
   (in a given basis), then it is a homothety with central ratio.
   (Assumes that the basis is provided and has a non trivial set of indices.)
-
 * `LinearMap.exists_eq_smul_id_of_forall_notLinearIndependent`:
   over a commutative ring `R` which is a domain, an endomorphism `f : V →ₗ[R] V`
   of a free module such that `v` and `f v` are not linearly independent,
   for all `v : V`, is a homothety.
-
 * `LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent`:
   a variant that does not assume that `R` is commutative.
   Then the homothety has central ratio.
-
 * `LinearMap.exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis`:
   a variant that does not assume that `R` has the strong rank condition,
   but requires a basis.
@@ -43,7 +43,6 @@ when the rank is equal to 1. Indeed, right multiplications
 with noncentral ratio of the `R`-module `R` satisfy the property
 that `f v` and `v` are linearly dependent, for all `v : V`,
 but they are not left multiplication by some element.
-
 -/
 
 public section
@@ -95,7 +94,8 @@ theorem commute_transvections_iff_of_basis
   intro j _
   simp [Subring.smul_def, h_allEq i j, hcomm j]
 
-/-- Over a domain, an endomorphism `f` of a free module `V`
+/--
+Over a domain, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
 
@@ -106,8 +106,9 @@ which switches the use of `StrongRankInduction` and `finrank`
 for the cardinality of a given basis.
 
 When `finrank R V = 1`, up to a linear equivalence `V ≃ₗ[R] R`,
-then any `f` is *right*-multiplication by some `a : R`,
-but not necessarily *left*-multiplication by an element of the center of `R`. -/
+then any `f` is _right_-multiplication by some `a : R`,
+but not necessarily _left_-multiplication by an element of the center of `R`.
+-/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
     [Ring R] [IsDomain R] [AddCommGroup V] [Module R V]
     {f : V →ₗ[R] V}
@@ -183,7 +184,8 @@ theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent_of_basis
   apply b.ext
   simpa [Subring.smul_def] using feq i
 
-/-- Over a domain `R`, an endomorphism `f` of a free module `V`
+/--
+Over a domain `R`, an endomorphism `f` of a free module `V`
 of rank ≠ 1 such that `f v` and `v` are collinear, for all `v : V`,
 consists of homotheties with central ratio.
 
@@ -191,8 +193,9 @@ When `R` does not satisfy `StrongRankCondition`, use
 `LinearMap.exists_mem_center_apply_eq_smul_of_basis`.
 
 When `finrank R V = 1`, up to a linear equivalence `V ≃ₗ[R] R`,
-then any `f` is *right*-multiplication by some `a : R`,
-but not necessarily *left*-multiplication by an element of the center of `R`. -/
+then any `f` is _right_-multiplication by some `a : R`,
+but not necessarily _left_-multiplication by an element of the center of `R`.
+-/
 theorem exists_mem_center_apply_eq_smul_of_forall_notLinearIndependent
     [Ring R] [IsDomain R] [StrongRankCondition R]
     [AddCommGroup V] [Module R V] [Free R V]

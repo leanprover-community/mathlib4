@@ -11,11 +11,14 @@ public import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Data.ZMod.QuotientGroup
 
-/-! # Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Index of submodules of free ℤ-modules (considered as an `AddSubgroup`).
 
 This file provides lemmas about when a submodule of a free ℤ-module is a subgroup of finite
 index.
-
 -/
 
 public section

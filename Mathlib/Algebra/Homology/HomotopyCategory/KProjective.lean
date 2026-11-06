@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.CochainComplexOpposite
 public import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # K-projective cochain complexes
 
@@ -15,11 +18,12 @@ We define the notion of K-projective cochain complex in an abelian category,
 and show that bounded above complexes of projective objects are K-projective.
 
 ## TODO (@joelriou)
+
 * Provide an API for computing `Ext`-groups using a projective resolution
 
 ## References
-* [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
 
+* ‍\[N. Spaltenstein, _Resolutions of unbounded complexes_\]\[spaltenstein1998\]
 -/
 
 @[expose] public section

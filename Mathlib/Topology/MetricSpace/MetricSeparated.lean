@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Topology.MetricSpace.Antilipschitz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Metric separation
 
 This file defines a few notions of separations of sets in a metric space.
-
 
 The first notion (`Metric.IsSeparated`) is quantitative and describes a single set: a set `s` is
 `ε`-separated if the distance between any two distinct elements is strictly greater than `ε`
@@ -33,7 +35,7 @@ variable {X Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y]
 variable {s t : Set X} {ε δ : ℝ≥0∞} {x : X} {y : Y}
 
 /-!
-### Metric-separated sets
+# Metric-separated sets
 
 In this section we define the predicate `Metric.IsSeparated` for `ε`-separated sets.
 -/
@@ -85,17 +87,19 @@ lemma IsSeparated.image_antilipschitz {ε K₁ : ℝ≥0} {f : X → Y}
   exact ENNReal.coe_div hK₁.ne' ▸ ENNReal.div_lt_of_lt_mul hmul
 
 /-!
-### Metric separated pairs of sets
+# Metric separated pairs of sets
 
 In this section we define the predicate `Metric.AreSeparated`. We say that two sets in an
-(extended) metric space are *metric separated* if the (extended) distance between `x ∈ s` and
+(extended) metric space are _metric separated_ if the (extended) distance between `x ∈ s` and
 `y ∈ t` is bounded from below by a positive constant.
 
 This notion is useful, e.g., to define metric outer measures.
 -/
 
-/-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
-between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
+/--
+Two sets in an (extended) metric space are called _metric separated_ if the (extended) distance
+between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant.
+-/
 def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
 
 namespace AreSeparated

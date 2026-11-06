@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SuccPred.Limit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfinite iteration of a function `I → I`
 
@@ -25,11 +28,11 @@ there exists `j : J` such that `transfiniteIteration φ i₀ j = ⊤` if we assu
 when we know `Cardinal.mk I < Cardinal.mk J`).
 
 ## TODO (@joelriou)
-* deduce that in a Grothendieck abelian category, there is a *set* `I` of monomorphisms
+
+* deduce that in a Grothendieck abelian category, there is a _set_ `I` of monomorphisms
   such that any monomorphism is a transfinite composition of pushouts of morphisms in `I`,
   and then an object `X` is injective iff `X ⟶ 0` has the right lifting
   property with respect to `I`.
-
 -/
 
 @[expose] public section

@@ -17,11 +17,15 @@ import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Finset.Attr
 import Mathlib.Order.Filter.Ultrafilter.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise operations on filters
 
 This file defines pointwise operations on filters. This is useful because usual algebraic operations
 distribute over pointwise operations. For example,
+
 * `(f₁ * f₂).map m = f₁.map m * f₂.map m`
 * `𝓝 (x * y) = 𝓝 x * 𝓝 y`
 
@@ -50,12 +54,12 @@ distribute over pointwise operations. For example,
 
 For `α` a semigroup/monoid, `Filter α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • f`, where `n : ℕ`, is ambiguous between
-pointwise scaling and repeated pointwise addition. See note [pointwise nat action].
+pointwise scaling and repeated pointwise addition. See note \[pointwise nat action\].
 
 ## Implementation notes
 
 We put all instances in the scope `Pointwise`, so that these instances are not available by
-default. Note that we do not mark them as reducible (as argued by note [reducible non-instances])
+default. Note that we do not mark them as reducible (as argued by note \[reducible non-instances\])
 since we expect the scope to be open whenever the instances are actually used (and making the
 instances reducible changes the behavior of `simp`).
 
@@ -73,7 +77,9 @@ variable {F α β γ : Type*}
 
 namespace Filter
 
-/-! ### `0`/`1` as filters -/
+/-!
+# `0`/`1` as filters
+-/
 
 
 section One
@@ -165,7 +171,9 @@ protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map
 
 end One
 
-/-! ### Filter negation/inversion -/
+/-!
+# Filter negation/inversion
+-/
 
 
 section Inv
@@ -277,7 +285,9 @@ lemma inv_atTop {G : Type*} [CommGroup G] [Preorder G] [IsOrderedMonoid G] :
     (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 
-/-! ### Filter addition/multiplication -/
+/-!
+# Filter addition/multiplication
+-/
 
 section Mul
 
@@ -387,7 +397,9 @@ theorem pureMulHom_apply (a : α) : pureMulHom a = pure a :=
 
 end Mul
 
-/-! ### Filter subtraction/division -/
+/-!
+# Filter subtraction/division
+-/
 
 section Div
 
@@ -491,19 +503,27 @@ instance covariant_swap_div : CovariantClass (Filter α) (Filter α) (swap (· /
 
 end Div
 
-/-- Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
-`Filter`. See Note [pointwise nat action]. -/
+/--
+Repeated pointwise multiplication (not the same as pointwise repeated multiplication!) of a
+`Filter`. See Note \[pointwise nat action\].
+-/
 @[to_additive (attr := instance_reducible)
-/-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
-Note [pointwise nat action]. -/]
+/--
+Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Filter`. See
+Note \[pointwise nat action\].
+-/]
 protected def instNPow [One α] [Mul α] : Pow (Filter α) ℕ :=
   ⟨fun s n => npowRec n s⟩
 
-/-- Repeated pointwise multiplication/division (not the same as pointwise repeated
-multiplication/division!) of a `Filter`. See Note [pointwise nat action]. -/
+/--
+Repeated pointwise multiplication/division (not the same as pointwise repeated
+multiplication/division!) of a `Filter`. See Note \[pointwise nat action\].
+-/
 @[to_additive (attr := instance_reducible)
-/-- Repeated pointwise addition/subtraction (not the same as pointwise repeated
-addition/subtraction!) of a `Filter`. See Note [pointwise nat action]. -/]
+/--
+Repeated pointwise addition/subtraction (not the same as pointwise repeated
+addition/subtraction!) of a `Filter`. See Note \[pointwise nat action\].
+-/]
 protected def instZPow [One α] [Mul α] [Inv α] : Pow (Filter α) ℤ :=
   ⟨fun s n => zpowRec npowRec n s⟩
 
@@ -794,7 +814,9 @@ theorem NeBot.zero_div_nonneg (hg : g.NeBot) : 0 ≤ 0 / g :=
 
 end GroupWithZero
 
-/-! ### Scalar addition/multiplication of filters -/
+/-!
+# Scalar addition/multiplication of filters
+-/
 
 
 section SMul
@@ -897,7 +919,9 @@ instance covariant_smul : CovariantClass (Filter α) (Filter β) (· • ·) (·
 
 end SMul
 
-/-! ### Scalar division of filters -/
+/-!
+# Scalar division of filters
+-/
 
 
 section SDiv
@@ -988,7 +1012,9 @@ theorem le_sdiv_iff : h ≤ f /ₛ g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t
 
 end SDiv
 
-/-! ### Translation/scaling of filters -/
+/-!
+# Translation/scaling of filters
+-/
 
 
 section SMul

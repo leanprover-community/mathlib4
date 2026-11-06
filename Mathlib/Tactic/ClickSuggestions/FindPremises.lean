@@ -12,15 +12,19 @@ public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public import Mathlib.Tactic.ClickSuggestions.GRewrite
 public import Mathlib.Tactic.ClickSuggestions.Rewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generating a shortlist of candidate lemmas for suggestions
 
 ## Discrimination tree lookup
 
 This file defines how to build and match with the discrimination trees, for premises that are
-- imported
-- from the current module
-- local hypotheses
+
+* imported
+* from the current module
+* local hypotheses
 
 ## Performance note
 
@@ -28,9 +32,9 @@ When importing all of mathlib, building the discrimination trees takes on the or
 seconds. This is because of two distinct performance bottlenecks:
 
 1. Looping through the environment, and computing all of the discrimination tree entries is
-  expensive, and is done in parallel to speed it up.
+   expensive, and is done in parallel to speed it up.
 2. Building the final discrimination tree by inserting all of the computed entries is less
-  expensive, but it cannot be done in parallel, because a single datastructure is being built.
+   expensive, but it cannot be done in parallel, because a single datastructure is being built.
 
 These two bottlenecks cost about the same amount of time. Luckily, we can already start doing (2)
 as soon as any of the parallel tasks from (1) have finished. So, we build the discrimination tree
@@ -212,7 +216,8 @@ def PreDiscrTrees.append (pres : PreDiscrTrees) (maps : Entries) : PreDiscrTrees
   app := maps.app.foldl (init := pres.app) fun pre (key, e) ↦ pre.push key e
   appAt := maps.appAt.foldl (init := pres.appAt) fun pre (key, e) ↦ pre.push key e
 
-/-- The configuration used when indexing into the discrimination tree, and when looking up in it.
+/--
+The configuration used when indexing into the discrimination tree, and when looking up in it.
 
 We do not reduce projections so that e.g. `Fin.val_mk : ⟨m, h⟩.val = m` can be indexed properly.
 

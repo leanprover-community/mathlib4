@@ -15,10 +15,13 @@ public import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Laurent Series
 
-In this file we define `LaurentSeries R`, the formal Laurent series over `R`, here an *arbitrary*
+In this file we define `LaurentSeries R`, the formal Laurent series over `R`, here an _arbitrary_
 type with a zero. They are denoted `R⸨X⸩`.
 
 ## Main Definitions
@@ -43,6 +46,7 @@ type with a zero. They are denoted `R⸨X⸩`.
 * Basic properties of Hasse derivatives
 
 ### About the `X`-Adic valuation:
+
 * The (integral) valuation of a power series is the order of the first non-zero coefficient, see
   `LaurentSeries.intValuation_le_iff_coeff_lt_eq_zero`.
 * The valuation of a Laurent series is the order of the first non-zero coefficient, see
@@ -76,14 +80,13 @@ type with a zero. They are denoted `R⸨X⸩`.
   that it is complete and contains `K⟮X⟯` as a dense subspace. The isomorphism is the
   comparison equivalence, expressing the mathematical idea that the completion "is unique". It is
   `LaurentSeries.comparePkg`.
-* For applications to `K⟦X⟧` it is actually more handy to use the *inverse* of the above
-  equivalence: `LaurentSeries.LaurentSeriesAlgEquiv` is the *topological, algebra equivalence*
+* For applications to `K⟦X⟧` it is actually more handy to use the _inverse_ of the above
+  equivalence: `LaurentSeries.LaurentSeriesAlgEquiv` is the _topological, algebra equivalence_
   `K⸨X⸩ ≃ₐ[K] RatFuncAdicCompl K`.
 * In order to compare `K⟦X⟧` with the valuation subring in the `X`-adic completion of
   `K⟮X⟯` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
   that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
   to `K⟦X⟧`.
-
 -/
 
 @[expose] public section
@@ -94,9 +97,10 @@ open HahnSeries Polynomial
 
 noncomputable section
 
-/-- `LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
+/--
+`LaurentSeries R` is the type of formal Laurent series with coefficients in `R`, denoted `R⸨X⸩`.
 
-  It is implemented as a `HahnSeries` with value group `ℤ`.
+It is implemented as a `HahnSeries` with value group `ℤ`.
 -/
 abbrev LaurentSeries (R : Type u) [Zero R] := R⟦ℤ⟧
 

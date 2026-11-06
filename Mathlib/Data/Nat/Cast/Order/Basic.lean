@@ -10,9 +10,11 @@ public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Cast.NeZero
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers: lemmas about order
-
 -/
 
 @[expose] public section

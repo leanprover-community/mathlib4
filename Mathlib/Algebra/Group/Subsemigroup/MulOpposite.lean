@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Group.Subsemigroup.Basic
 public import Mathlib.Algebra.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsemigroup of opposite semigroups
 
 For every semigroup `M`, we construct an equivalence between subsemigroups of `M` and that of
 `Mᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -50,7 +52,9 @@ theorem unop_op (S : Subsemigroup M) : S.op.unop = S := rfl
 @[to_additive (attr := simp)]
 theorem op_unop (S : Subsemigroup Mᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 @[to_additive]
 theorem op_le_iff {S₁ : Subsemigroup M} {S₂ : Subsemigroup Mᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=

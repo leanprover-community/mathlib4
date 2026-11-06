@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Subgroup.Basic
 public import Mathlib.Algebra.Group.Subgroup.MulOpposite
 public import Mathlib.Logic.Encodable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mul-opposite subgroups
 
@@ -17,8 +20,8 @@ that rely on further theory to define. As such it is a somewhat arbitrary assort
 which might be organized and split up further.
 
 ## Tags
-subgroup, subgroups
 
+subgroup, subgroups
 -/
 
 public section
@@ -27,14 +30,17 @@ variable {ι : Sort*} {G : Type*} [Group G]
 
 namespace Subgroup
 
-/-- We redeclare this instance to get keys
-`SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
-  (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
+/--
+We redeclare this instance to get keys
+`SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _) (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
 compared to the keys for `Submonoid.smul`
-`SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _` -/
+`SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _`
+-/
 @[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 @[to_additive (attr := simp)]
 theorem op_bot : (⊥ : Subgroup G).op = ⊥ := opEquiv.map_bot

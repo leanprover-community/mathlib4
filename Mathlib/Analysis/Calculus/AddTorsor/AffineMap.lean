@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth affine maps
 
@@ -17,7 +20,6 @@ This file contains results about smoothness of affine maps.
 * `ContinuousAffineMap.contDiff`: a continuous affine map is smooth.
 * `AffineMap.contDiff_lineMap_uncurry`: `AffineMap.lineMap` is smooth in its three arguments,
   jointly and pointwise.
-
 -/
 
 public section

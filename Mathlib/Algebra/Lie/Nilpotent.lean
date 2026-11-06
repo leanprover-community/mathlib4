@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Lie.Solvable
 public import Mathlib.Algebra.Order.Archimedean.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent Lie algebras
 
@@ -18,10 +21,10 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 
 ## Main definitions
 
-  * `LieModule.lowerCentralSeries`
-  * `LieModule.IsNilpotent`
-  * `LieModule.maxNilpotentSubmodule`
-  * `LieAlgebra.maxNilpotentIdeal`
+* `LieModule.lowerCentralSeries`
+* `LieModule.IsNilpotent`
+* `LieModule.maxNilpotentSubmodule`
+* `LieAlgebra.maxNilpotentIdeal`
 
 ## Tags
 
@@ -41,7 +44,8 @@ variable (k : ℕ) (N : LieSubmodule R L M)
 
 namespace LieSubmodule
 
-/-- A generalisation of the lower central series. The zeroth term is a specified Lie submodule of
+/--
+A generalisation of the lower central series. The zeroth term is a specified Lie submodule of
 a Lie module. In the case when we specify the top ideal `⊤` of the Lie algebra, regarded as a Lie
 module over itself, we get the usual lower central series of a Lie algebra.
 
@@ -51,7 +55,8 @@ expression of the fact that the terms of the Lie submodule's lower central serie
 submodules of the enclosing Lie module.
 
 See also `LieSubmodule.lowerCentralSeries_eq_lcs_comap` and
-`LieSubmodule.lowerCentralSeries_map_eq_lcs` below, as well as `LieSubmodule.ucs`. -/
+`LieSubmodule.lowerCentralSeries_map_eq_lcs` below, as well as `LieSubmodule.ucs`.
+-/
 def lcs : LieSubmodule R L M → LieSubmodule R L M :=
   (fun N => ⁅(⊤ : LieIdeal R L), N⁆)^[k]
 
@@ -347,12 +352,14 @@ theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
   obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
 
-/-- If the quotient of a Lie module `M` by a Lie submodule on which the Lie algebra acts trivially
+/--
+If the quotient of a Lie module `M` by a Lie submodule on which the Lie algebra acts trivially
 is nilpotent then `M` is nilpotent.
 
 This is essentially the Lie module equivalent of the fact that a central
 extension of nilpotent Lie algebras is nilpotent. See `LieAlgebra.nilpotent_of_nilpotent_quotient`
-below for the corresponding result for Lie algebras. -/
+below for the corresponding result for Lie algebras.
+-/
 theorem nilpotentOfNilpotentQuotient {N : LieSubmodule R L M} (h₁ : N ≤ maxTrivSubmodule R L M)
     (h₂ : IsNilpotent L (M ⧸ N)) : IsNilpotent L M := by
   rw [isNilpotent_iff R L] at h₂ ⊢
@@ -379,10 +386,12 @@ theorem iInf_lcs_le_of_isNilpotent_quot (h : IsNilpotent L (M ⧸ N)) :
 
 end
 
-/-- Given a nilpotent Lie module `M` with lower central series `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is
+/--
+Given a nilpotent Lie module `M` with lower central series `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is
 the natural number `k` (the number of inclusions).
 
-For a non-nilpotent module, we use the junk value 0. -/
+For a non-nilpotent module, we use the junk value 0.
+-/
 noncomputable def nilpotencyLength : ℕ :=
   sInf {k | lowerCentralSeries ℤ L M k = ⊥}
 
@@ -432,11 +441,13 @@ theorem isTrivial_of_nilpotencyLength_le_one [IsNilpotent L M] (h : nilpotencyLe
 
 end
 
-/-- Given a non-trivial nilpotent Lie module `M` with lower central series
+/--
+Given a non-trivial nilpotent Lie module `M` with lower central series
 `M = C₀ ≥ C₁ ≥ ⋯ ≥ Cₖ = ⊥`, this is the `k-1`th term in the lower central series (the last
 non-trivial term).
 
-For a trivial or non-nilpotent module, this is the bottom submodule, `⊥`. -/
+For a trivial or non-nilpotent module, this is the bottom submodule, `⊥`.
+-/
 noncomputable def lowerCentralSeriesLast : LieSubmodule R L M :=
   match nilpotencyLength L M with
   | 0 => ⊥
@@ -474,11 +485,13 @@ theorem lowerCentralSeriesLast_le_of_not_isTrivial [IsNilpotent L M] (h : ¬ IsT
 variable [LieModule R L M]
 attribute [local instance 100] LieRing.ofAssociativeRing
 
-/-- For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
+/--
+For a nilpotent Lie module `M` of a Lie algebra `L`, the first term in the lower central series
 of `M` contains a non-zero element on which `L` acts trivially unless the entire action is trivial.
 
 Taking `M = L`, this provides a useful characterisation of Abelian-ness for nilpotent Lie
-algebras. -/
+algebras.
+-/
 lemma disjoint_lowerCentralSeries_maxTrivSubmodule_iff [IsNilpotent L M] :
     Disjoint (lowerCentralSeries R L M 1) (maxTrivSubmodule R L M) ↔ IsTrivial L M := by
   refine ⟨fun h ↦ ?_, fun h ↦ by simp⟩
@@ -523,9 +536,11 @@ namespace LieSubmodule
 variable {N₁ N₂ : LieSubmodule R L M}
 variable [LieModule R L M]
 
-/-- The upper (aka ascending) central series.
+/--
+The upper (aka ascending) central series.
 
-See also `LieSubmodule.lcs`. -/
+See also `LieSubmodule.lcs`.
+-/
 def ucs (k : ℕ) : LieSubmodule R L M → LieSubmodule R L M :=
   normalizer^[k]
 
@@ -553,11 +568,13 @@ theorem ucs_eq_self_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ)
   | zero => simp
   | succ k ih => rwa [ucs_succ, ih]
 
-/-- If a Lie module `M` contains a self-normalizing Lie submodule `N`, then all terms of the upper
+/--
+If a Lie module `M` contains a self-normalizing Lie submodule `N`, then all terms of the upper
 central series of `M` are contained in `N`.
 
 An important instance of this situation arises from a Cartan subalgebra `H ⊆ L` with the roles of
-`L`, `M`, `N` played by `H`, `L`, `H`, respectively. -/
+`L`, `M`, `N` played by `H`, `L`, `H`, respectively.
+-/
 theorem ucs_le_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) :
     (⊥ : LieSubmodule R L M).ucs k ≤ N₁ := by
   rw [← ucs_eq_self_of_normalizer_eq_self h k]
@@ -760,11 +777,13 @@ variable {R L L'}
 
 open LieModule (lowerCentralSeries)
 
-/-- Given an ideal `I` of a Lie algebra `L`, the lower central series of `L ⧸ I` is the same
+/--
+Given an ideal `I` of a Lie algebra `L`, the lower central series of `L ⧸ I` is the same
 whether we regard `L ⧸ I` as an `L` module or an `L ⧸ I` module.
 
 TODO: This result obviously generalises but the generalisation requires the missing definition of
-morphisms between Lie modules over different Lie algebras. -/
+morphisms between Lie modules over different Lie algebras.
+-/
 -- Porting note: added `LieSubmodule.toSubmodule` in the statement
 theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
     LieSubmodule.toSubmodule (lowerCentralSeries R L (L ⧸ I) k) =
@@ -879,12 +898,14 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R
 variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable (k : ℕ)
 
-/-- Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
+/--
+Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
 lower central series of `M` as an `I`-module. The advantage of using this definition instead of
 `LieModule.lowerCentralSeries R I M` is that its terms are Lie submodules of `M` as an
 `L`-module, rather than just as an `I`-module.
 
-See also `LieIdeal.coe_lcs_eq`. -/
+See also `LieIdeal.coe_lcs_eq`.
+-/
 def lcs : LieSubmodule R L M :=
   (fun N => ⁅I, N⁆)^[k] ⊤
 

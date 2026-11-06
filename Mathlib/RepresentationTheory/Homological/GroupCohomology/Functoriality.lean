@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functoriality of group cohomology
 
@@ -25,7 +28,6 @@ We also provide extra API for these maps in degrees 0, 1, 2.
 * `groupCohomology.HInfRes A S` is the short complex `Hⁿ(G ⧸ S, A^S) ⟶ Hⁿ(G, A) ⟶ Hⁿ(S, A)` for
   a normal subgroup `S ≤ G` and a `G`-representation `A`. In case `n := 1`, it is
   exact (see `groupCohomology.H1InfRes_exact`).
-
 -/
 
 @[expose] public section

@@ -9,8 +9,10 @@ public import Mathlib.Tactic.ClickSuggestions.Util
 
 import ProofWidgets.Component.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Interactive unfolding
 
 This file defines the interactive tactic `unfold?`.
@@ -21,12 +23,14 @@ It can be used on its own, but it can also be used as part of the library rewrit
 where these unfoldings are a subset of the suggestions.
 
 For example, if the goal contains `1+1`, then it will suggest rewriting this into one of
-- `Nat.add 1 1`
-- `2`
+
+* `Nat.add 1 1`
+* `2`
 
 Clicking on a suggestion pastes a rewrite into the editor, which will be of the form
-- `rw [show 1+1 = Nat.add 1 1 from rfl]`
-- `rw [show 1+1 = 2 from rfl]`
+
+* `rw [show 1+1 = Nat.add 1 1 from rfl]`
+* `rw [show 1+1 = 2 from rfl]`
 
 It also takes into account the position of the selected expression if it appears in multiple places,
 and whether the rewrite is in the goal or a local hypothesis.
@@ -49,7 +53,6 @@ This is implemented with `unfoldProjDefaultInst?`.
 Additionally, we don't want to unfold into expressions involving `match` terms or other
 constants marked as `Name.isInternalDetail`, and we don't want raw projections.
 So, all such results are filtered out. This is implemented with `isUserFriendly`.
-
 -/
 
 meta section

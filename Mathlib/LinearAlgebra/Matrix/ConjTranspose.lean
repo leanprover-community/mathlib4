@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Star.Module
 public import Mathlib.Algebra.Star.StarAlgHom
 public import Mathlib.Data.Matrix.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices over star rings.
 
@@ -18,7 +21,6 @@ public import Mathlib.Data.Matrix.Basis
 The scope `Matrix` gives the following notation:
 
 * `ᴴ` for `Matrix.conjTranspose`
-
 -/
 
 @[expose] public section
@@ -32,9 +34,11 @@ variable {R : Type*} {α : Type v} {β : Type w}
 namespace Matrix
 
 
-/-- The conjugate transpose of a matrix defined in term of `star`.
+/--
+The conjugate transpose of a matrix defined in term of `star`.
 
 This is available in bundled forms as:
+
 * `Matrix.conjTransposeAddEquiv`
 * `Matrix.conjTransposeLinearEquiv`
 * `Matrix.conjTransposeRingEquiv`
@@ -132,9 +136,10 @@ section ConjTranspose
 
 open Matrix
 
-/-- Tell `simp` what the entries are in a conjugate transposed matrix.
+/--
+Tell `simp` what the entries are in a conjugate transposed matrix.
 
-  Compare with `mul_apply`, `diagonal_apply_eq`, etc.
+Compare with `mul_apply`, `diagonal_apply_eq`, etc.
 -/
 @[simp]
 theorem conjTranspose_apply [Star α] (M : Matrix m n α) (i j) :
@@ -270,8 +275,10 @@ theorem conjTranspose_sub [AddGroup α] [StarAddMonoid α] (M N : Matrix m n α)
     (M - N)ᴴ = Mᴴ - Nᴴ :=
   Matrix.ext <| by simp
 
-/-- Note that `StarModule` is quite a strong requirement; as such we also provide the following
+/--
+Note that `StarModule` is quite a strong requirement; as such we also provide the following
 variants which this lemma would not apply to:
+
 * `Matrix.conjTranspose_smul_non_comm`
 * `Matrix.conjTranspose_nsmul`
 * `Matrix.conjTranspose_zsmul`

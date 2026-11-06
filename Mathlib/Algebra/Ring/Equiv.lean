@@ -15,6 +15,9 @@ public import Mathlib.Util.Delaborators
 
 import Mathlib.Tactic.DSimpPercent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi)ring equivs
 
@@ -314,7 +317,9 @@ end symm
 
 section simps
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : R ≃+* S) : S → R :=
   e.symm
 
@@ -470,10 +475,12 @@ def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAss
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
 
-/-- `Equiv.cast (congrArg _ h)` as a ring equiv.
+/--
+`Equiv.cast (congrArg _ h)` as a ring equiv.
 
 Note that unlike `Equiv.cast`, this takes an equality of indices rather than an equality of types,
-to avoid having to deal with an equality of the algebraic structure itself. -/
+to avoid having to deal with an equality of the algebraic structure itself.
+-/
 @[simps!]
 protected def cast
     {ι : Type*} {R : ι → Type*} [∀ i, Mul (R i)] [∀ i, Add (R i)] {i j : ι} (h : i = j) :
@@ -481,7 +488,8 @@ protected def cast
   __ := AddEquiv.cast h
   __ := MulEquiv.cast h
 
-/-- A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
+/--
+A family of ring isomorphisms `∀ j, (R j ≃+* S j)` generates a
 ring isomorphisms between `∀ j, R j` and `∀ j, S j`.
 
 This is the `RingEquiv` version of `Equiv.piCongrRight`, and the dependent version of
@@ -513,9 +521,11 @@ theorem piCongrRight_trans {ι : Type*} {R S T : ι → Type*}
     (piCongrRight e).trans (piCongrRight f) = piCongrRight fun i => (e i).trans (f i) :=
   rfl
 
-/-- Transport dependent functions through an equivalence of the base space.
+/--
+Transport dependent functions through an equivalence of the base space.
 
-This is `Equiv.piCongrLeft'` as a `RingEquiv`. -/
+This is `Equiv.piCongrLeft'` as a `RingEquiv`.
+-/
 @[simps!]
 def piCongrLeft' {ι ι' : Type*} (R : ι → Type*) (e : ι ≃ ι')
     [∀ i, NonUnitalNonAssocSemiring (R i)] :
@@ -532,9 +542,11 @@ theorem piCongrLeft'_symm {R : Type*} [NonUnitalNonAssocSemiring R] (e : α ≃ 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-/-- Transport dependent functions through an equivalence of the base space.
+/--
+Transport dependent functions through an equivalence of the base space.
 
-This is `Equiv.piCongrLeft` as a `RingEquiv`. -/
+This is `Equiv.piCongrLeft` as a `RingEquiv`.
+-/
 @[simps!]
 def piCongrLeft {ι ι' : Type*} (S : ι' → Type*) (e : ι ≃ ι')
     [∀ i, NonUnitalNonAssocSemiring (S i)] :

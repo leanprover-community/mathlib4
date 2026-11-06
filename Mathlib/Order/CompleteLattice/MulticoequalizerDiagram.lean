@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.Data.Finset.Attr
 import Mathlib.Tactic.SetLike
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multicoequalizer diagrams in complete lattices
 
@@ -26,7 +29,6 @@ we introduce a property `MulticoequalizerDiagram x u v` which says that `x` is
 the supremum of `u`, and that for all `i` and `j`, `v i j` is the minimum of `u i` and `u j`.
 Again, when `T := Set X`, we shall show (TODO) that we obtain a multicoequalizer diagram
 in the category of types.
-
 -/
 
 @[expose] public section

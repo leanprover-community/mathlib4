@@ -11,6 +11,9 @@ public meta import Lean.Meta.TryThis
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `haveI`/`letI` linter
 
@@ -29,6 +32,7 @@ This linter flags every use of the `haveI` or `letI` tactic whose main goal is a
 proposition.
 
 TODO:
+
 * also lint the term-mode `haveI`/`letI`
 -/
 

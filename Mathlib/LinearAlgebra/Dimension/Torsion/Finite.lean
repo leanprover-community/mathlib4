@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results relating rank and torsion.
-
 -/
 
 public section

@@ -11,25 +11,29 @@ public import Mathlib.RingTheory.Nakayama
 public import Mathlib.RingTheory.QuotSMulTop
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Support of a module
 
 ## Main results
-- `Module.support`: The support of an `R`-module as a subset of `Spec R`.
-- `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
-- `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
-- `Module.support_of_exact`: `Supp N = Supp M ∪ Supp P` for an exact sequence `0 → M → N → P → 0`.
-- `Module.support_eq_zeroLocus`: If `M` is `R`-finite, then `Supp M = Z(Ann(M))`.
-- `LocalizedModule.exists_subsingleton_away`:
+
+* `Module.support`: The support of an `R`-module as a subset of `Spec R`.
+* `Module.mem_support_iff_exists_annihilator`: `p ∈ Supp M ↔ ∃ m, Ann(m) ≤ p`.
+* `Module.support_eq_empty_iff`: `Supp M = ∅ ↔ M = 0`
+* `Module.support_of_exact`: `Supp N = Supp M ∪ Supp P` for an exact sequence `0 → M → N → P → 0`.
+* `Module.support_eq_zeroLocus`: If `M` is `R`-finite, then `Supp M = Z(Ann(M))`.
+* `LocalizedModule.exists_subsingleton_away`:
   If `M` is `R`-finite and `Mₚ = 0`, then `M[1/f] = 0` for some `p ∈ D(f)`.
 
 Also see `Mathlib/RingTheory/Spectrum/Prime/Module.lean` for other results
 depending on the Zariski topology.
 
 ## TODO
-- Connect to associated primes once we have them in mathlib.
-- Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
+
+* Connect to associated primes once we have them in mathlib.
+* Given an `R`-algebra `f : R → A` and a finite `R`-module `M`,
   `Supp_A (A ⊗ M) = f♯ ⁻¹ Supp M` where `f♯ : Spec A → Spec R`. (stacks#0BUR)
 -/
 

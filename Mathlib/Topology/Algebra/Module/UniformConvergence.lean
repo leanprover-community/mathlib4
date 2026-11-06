@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.UniformConvergence
 
 import Mathlib.Topology.Algebra.FilterBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic facts about the topology of uniform convergence
 
@@ -32,13 +35,12 @@ to `β` endowed with the structures of uniform convergence and `𝔖`-convergenc
 
 ## References
 
-* [N. Bourbaki, *General Topology, Chapter X*][bourbaki1966]
-* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[N. Bourbaki, _General Topology, Chapter X_\]\[bourbaki1966\]
+* ‍\[N. Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
 uniform convergence, strong dual
-
 -/
 
 public section
@@ -53,13 +55,15 @@ variable (𝕜 α E H : Type*) {hom : Type*} [NormedField 𝕜] [AddCommGroup H]
   [ContinuousSMul 𝕜 E] {𝔖 : Set <| Set α}
   [FunLike hom H (α → E)] [LinearMapClass hom 𝕜 H (α → E)]
 
-/-- Let `E` be a topological vector space over a normed field `𝕜`, let `α` be any type.
+/--
+Let `E` be a topological vector space over a normed field `𝕜`, let `α` be any type.
 Let `H` be a submodule of `α →ᵤ E` such that the range of each `f ∈ H` is von Neumann bounded.
 Then `H` is a topological vector space over `𝕜`,
 i.e., the pointwise scalar multiplication is continuous in both variables.
 
 For convenience we require that `H` is a vector space over `𝕜`
-with a topology induced by `UniformFun.ofFun ∘ φ`, where `φ : H →ₗ[𝕜] (α → E)`. -/
+with a topology induced by `UniformFun.ofFun ∘ φ`, where `φ : H →ₗ[𝕜] (α → E)`.
+-/
 lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     (hφ : IsInducing (ofFun ∘ φ)) (h : ∀ u : H, Bornology.IsVonNBounded 𝕜 (Set.range (φ u))) :
     ContinuousSMul 𝕜 H := by
@@ -87,14 +91,16 @@ lemma UniformFun.continuousSMul_induced_of_range_bounded (φ : hom)
     simp only [Set.mem_ofPred_eq, map_smul, Pi.smul_apply]
     simpa only [Set.mapsTo_range_iff] using (h u hU).eventually_nhds_zero (mem_of_mem_nhds hU)
 
-/-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
+/--
+Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
 equipped with the topology of `𝔖`-convergence, is a TVS.
 
 For convenience, we don't literally ask for `H : Submodule (α →ᵤ[𝔖] E)`. Instead, we prove the
 result for any vector space `H` equipped with a linear inducing to `α →ᵤ[𝔖] E`, which is often
 easier to use. We also state the `Submodule` version as
-`UniformOnFun.continuousSMul_submodule_of_image_bounded`. -/
+`UniformOnFun.continuousSMul_submodule_of_image_bounded`.
+-/
 lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsInducing (ofFun 𝔖 ∘ φ))
     (h : ∀ u : H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 ((φ u : α → E) '' s)) :
     ContinuousSMul 𝕜 H := by
@@ -110,11 +116,13 @@ lemma UniformOnFun.continuousSMul_induced_of_image_bounded (φ : hom) (hφ : IsI
   refine UniformFun.continuousSMul_induced_of_range_bounded 𝕜 s E H φ' ⟨rfl⟩ fun u ↦ ?_
   simpa only [Set.image_eq_range] using! h u s hs
 
-/-- Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
+/--
+Let `E` be a TVS, `𝔖 : Set (Set α)` and `H` a submodule of `α →ᵤ[𝔖] E`. If the image of any
 `S ∈ 𝔖` by any `u ∈ H` is bounded (in the sense of `Bornology.IsVonNBounded`), then `H`,
 equipped with the topology of `𝔖`-convergence, is a TVS.
 
-If you have a hard time using this lemma, try the one above instead. -/
+If you have a hard time using this lemma, try the one above instead.
+-/
 theorem UniformOnFun.continuousSMul_submodule_of_image_bounded (H : Submodule 𝕜 (α →ᵤ[𝔖] E))
     (h : ∀ u ∈ H, ∀ s ∈ 𝔖, Bornology.IsVonNBounded 𝕜 (u '' s)) :
     @ContinuousSMul 𝕜 H _ _ ((UniformOnFun.topologicalSpace α E 𝔖).induced ((↑) : H → α →ᵤ[𝔖] E)) :=

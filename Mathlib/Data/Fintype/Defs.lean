@@ -9,6 +9,9 @@ public import Mathlib.Basic.Finite.Defs
 public import Mathlib.Data.Finset.Filter
 public import Mathlib.Order.Lex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite types
 
@@ -27,6 +30,7 @@ the equivalence with `Fin (Fintype.card α)`, and pigeonhole principles.
 ## Instances
 
 Instances for `Fintype` for
+
 * `{x // p x}` are in this file as `Fintype.subtype`
 * `Option α` are in `Data.Fintype.Option`
 * `α × β` are in `Data.Fintype.Prod`
@@ -60,7 +64,9 @@ class Fintype (α : Type*) where
   /-- A proof that `elems` contains every element of the type -/
   complete : ∀ x : α, x ∈ elems
 
-/-! ### Preparatory lemmas -/
+/-!
+# Preparatory lemmas
+-/
 
 namespace Finset
 
@@ -119,7 +125,8 @@ end Finset
 namespace Mathlib.Meta
 open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Delaborator SubExpr
 
-/-- Elaborate set builder notation for `Finset`.
+/--
+Elaborate set builder notation for `Finset`.
 
 * `{x | p x}` is elaborated as `Finset.filter (fun x ↦ p x) Finset.univ` if the expected type is
   `Finset ?α`.
@@ -131,6 +138,7 @@ open Lean Elab Term Meta Batteries.ExtendedBinder Parser.Term PrettyPrinter.Dela
   `Finset ?α`.
 
 See also
+
 * `Data.Set.Defs` for the `Set` builder notation elaborator that this elaborator partly overrides.
 * `Data.Finset.Basic` for the `Finset` builder notation elaborator partly overriding this one for
   syntax of the form `{x ∈ s | p x}`.

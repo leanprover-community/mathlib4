@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.ConvexSpace.Module
 public import Mathlib.LinearAlgebra.AffineSpace.Combination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine spaces are convex spaces
 
@@ -100,10 +103,12 @@ end AddTorsor
 
 namespace Convexity
 
-/-- Any affine space is a convex space.
+/--
+Any affine space is a convex space.
 
 This is not an instance because its convex combination operation is defined through the choice of an
-arbitrary basepoint, which makes it very diamond-prone. -/
+arbitrary basepoint, which makes it very diamond-prone.
+-/
 @[implicit_reducible]
 def ConvexSpace.ofAddTorsor : ConvexSpace R P where
   sConvexComb := AddTorsor.convexCombination

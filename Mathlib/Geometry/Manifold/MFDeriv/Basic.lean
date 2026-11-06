@@ -11,18 +11,21 @@ public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 
 import Mathlib.Geometry.Manifold.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of the manifold Fréchet derivative
 
 In this file, we show various properties of the manifold Fréchet derivative,
 mimicking the API for Fréchet derivatives.
-- basic properties of unique differentiability sets
-- various general lemmas about the manifold Fréchet derivative
-- deducing differentiability from smoothness,
-- deriving continuity from differentiability on manifolds,
-- congruence lemmas for derivatives on manifolds
-- composition lemmas and the chain rule
 
+* basic properties of unique differentiability sets
+* various general lemmas about the manifold Fréchet derivative
+* deducing differentiability from smoothness,
+* deriving continuity from differentiability on manifolds,
+* congruence lemmas for derivatives on manifolds
+* composition lemmas and the chain rule
 -/
 
 public section
@@ -34,7 +37,9 @@ open Function Set Bundle ChartedSpace
 
 section DerivativesProperties
 
-/-! ### Unique differentiability sets in manifolds -/
+/-!
+# Unique differentiability sets in manifolds
+-/
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -159,7 +164,8 @@ theorem MDifferentiable.mdifferentiableAt (hf : MDiff f) : MDiffAt f x :=
   hf x
 
 /-!
-### Relating differentiability in a manifold and differentiability in the model space
+# Relating differentiability in a manifold and differentiability in the model space
+
 through extended charts
 -/
 
@@ -444,7 +450,9 @@ theorem mdifferentiable_iff_target :
 
 end IsManifold
 
-/-! ### Deducing differentiability from smoothness -/
+/-!
+# Deducing differentiability from smoothness
+-/
 
 variable {n : WithTop ℕ∞}
 
@@ -472,7 +480,9 @@ theorem ContMDiffOn.mdifferentiableOn (hf : CMDiff[s] n f) (hn : n ≠ 0) : MDif
 theorem ContMDiff.mdifferentiable (hf : CMDiff n f) (hn : n ≠ 0) : MDiff f :=
   fun x => (hf x).mdifferentiableAt hn
 
-/-! ### Deriving continuity from differentiability on manifolds -/
+/-!
+# Deriving continuity from differentiability on manifolds
+-/
 
 @[fun_prop]
 theorem MDifferentiableOn.continuousOn (h : MDiff[s] f) : ContinuousOn f s :=
@@ -505,7 +515,7 @@ protected theorem UniqueMDiffOn.eq (U : UniqueMDiff[s]) (hx : x ∈ s)
   UniqueMDiffWithinAt.eq (U _ hx) h h₁
 
 /-!
-### General lemmas on derivatives of functions between manifolds
+# General lemmas on derivatives of functions between manifolds
 
 We mimic the API for functions between vector spaces
 -/
@@ -760,7 +770,9 @@ mdifferentiableWithinAt_insert
 protected theorem MDifferentiableWithinAt.insert (h : MDiffAt[s] f x) : MDiffAt[insert x s] f x :=
   h.insert'
 
-/-! ### Being differentiable on a union of open sets can be tested on each set -/
+/-!
+# Being differentiable on a union of open sets can be tested on each set
+-/
 
 section mdifferentiableOn_union
 
@@ -804,7 +816,9 @@ lemma mdifferentiable_of_mdifferentiableOn_iUnion_of_isOpen {ι : Type*} {s : ι
 
 end mdifferentiableOn_union
 
-/-! ### Deriving continuity from differentiability on manifolds -/
+/-!
+# Deriving continuity from differentiability on manifolds
+-/
 
 theorem HasMFDerivWithinAt.continuousWithinAt (h : HasMFDerivAt[s] f x f') :
     ContinuousWithinAt f s x :=
@@ -871,7 +885,9 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
 alias preimage_extChartAt_eventuallyEq_compl_singleton :=
   preimage_extChartAt_eventuallyEqSet_compl_singleton
 
-/-! ### Congruence lemmas for derivatives on manifolds -/
+/-!
+# Congruence lemmas for derivatives on manifolds
+-/
 
 /-- If two sets coincide locally, except maybe at a point, then it is equivalent to have a manifold
 derivative within one or the other. -/
@@ -1112,7 +1128,9 @@ definitionally equal to `E'`. -/
 theorem mfderiv_congr {f' : M → M'} (h : f = f') :
     @Eq (E →L[𝕜] E') (mfderiv% f x) (mfderiv% f' x) := by subst h; rfl
 
-/-! ### Composition lemmas -/
+/-!
+# Composition lemmas
+-/
 
 variable (x)
 

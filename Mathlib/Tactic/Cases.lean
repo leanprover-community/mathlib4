@@ -12,6 +12,9 @@ public import Mathlib.Init
 
 import all Lean.Elab.Tactic.Induction -- for `getElimNameInfo`
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Backward compatible implementation of lean 3 `cases` tactic
 
@@ -73,7 +76,8 @@ def ElimApp.evalNames (elimInfo : ElimInfo) (alts : Array ElimApp.Alt) (withArg 
     subgoals := subgoals.push g
   pure subgoals
 
-/-- `induction' x` applies induction on the variable `x` of the inductive type `t` to the main goal,
+/--
+`induction' x` applies induction on the variable `x` of the inductive type `t` to the main goal,
 producing one goal for each constructor of `t`, in which `x` is replaced by that constructor
 applied to newly introduced variables. `induction'` adds an inductive hypothesis for
 each recursive argument to the constructor. This is a backwards-compatible variant of the
@@ -95,6 +99,7 @@ Prefer `induction` when possible, because it promotes structured proofs.
   inductive hypothesis.
 
 Example:
+
 ```
 open Nat
 
@@ -149,7 +154,8 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
           (generalized := fvarIds) (toClear := targetFVarIds) (toTag := toTag)
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
-/-- `cases' x`, where the variable `x` has inductive type `t`, splits the main goal,
+/--
+`cases' x`, where the variable `x` has inductive type `t`, splits the main goal,
 producing one goal for each constructor of `t`, in which `x` is replaced by that constructor
 applied to newly introduced variables. This is a backwards-compatible variant of the
 `cases` tactic in Lean 4 core.
@@ -169,6 +175,7 @@ structured proofs.
   bound variables.
 
 Example:
+
 ```
 example (h : p ∨ q) : q ∨ p := by
   cases' h with hp hq

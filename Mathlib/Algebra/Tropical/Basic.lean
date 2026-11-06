@@ -11,8 +11,10 @@ public import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Order.Hom.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Tropical algebraic structures
 
 This file defines algebraic structures of the min/max-tropical numbers, up to the tropical semiring.
@@ -23,10 +25,10 @@ provided, as well as the expected implementations of tropical addition and tropi
 ## Main declarations
 
 * `MinTropical R`: The type synonym of the tropical interpretation of `R`.
-    If `[LinearOrder R]`, then addition on `R` is via `min`.
+  If `[LinearOrder R]`, then addition on `R` is via `min`.
 * `Semiring (MinTropical R)`: A `LinearOrderedAddCommMonoidWithTop R`
-    induces a `Semiring (MinTropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
-    then the "tropicalization of `R`" would be `MinTropical (WithTop R)`.
+  induces a `Semiring (MinTropical R)`. If one solely has `[LinearOrderedAddCommMonoid R]`,
+  then the "tropicalization of `R`" would be `MinTropical (WithTop R)`.
 
 ## Implementation notes
 
@@ -39,8 +41,7 @@ most references rely on `Semiring (MinTropical R)` for building up the whole the
 ## References followed
 
 * https://arxiv.org/pdf/math/0408099.pdf
-* https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
-
+* https://www.mathenjeans.fr/sites/default/files/sujets/tropical\_geometry\_-\_casagrande.pdf
 -/
 
 @[expose] public section

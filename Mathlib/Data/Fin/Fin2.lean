@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Finset.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Inductive type variant of `Fin`
 
@@ -75,10 +78,13 @@ def left (k) : ∀ {n}, Fin2 n → Fin2 (k + n)
   | _, @fz _ => fz
   | _, @fs _ i => fs (left k i)
 
-/-- `insertPerm a` is a permutation of `Fin2 n` with the following properties:
-  * `insertPerm a i = i+1` if `i < a`
-  * `insertPerm a a = 0`
-  * `insertPerm a i = i` if `i > a` -/
+/--
+`insertPerm a` is a permutation of `Fin2 n` with the following properties:
+
+* `insertPerm a i = i+1` if `i < a`
+* `insertPerm a a = 0`
+* `insertPerm a i = i` if `i > a`
+-/
 def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
   | _, @fz _, @fz _ => fz
   | _, @fz _, @fs _ j => fs j

@@ -8,6 +8,9 @@ module
 
 public import Mathlib.CategoryTheory.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Forgetful functors
 
@@ -18,13 +21,13 @@ A concrete category is a category `C` where the objects and morphisms correspond
 Each concrete category `C` comes with a canonical faithful functor `forget C : C ⥤ Type*`.
 We impose no restrictions on the category `C`, so `Type` has the identity forgetful functor.
 
-We say that a concrete category `C` admits a *forgetful functor* to a concrete category `D`, if it
+We say that a concrete category `C` admits a _forgetful functor_ to a concrete category `D`, if it
 has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`, see
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
 automatically, see `HasForget₂.mk'`.
 
-We say that a concrete category `C` admits a *forgetful functor* to a concrete category `D`, if it
+We say that a concrete category `C` admits a _forgetful functor_ to a concrete category `D`, if it
 has a functor `forget₂ C D : C ⥤ D` such that `(forget₂ C D) ⋙ (forget D) = forget C`, see
 `class HasForget₂`.  Due to `Faithful.div_comp`, it suffices to verify that `forget₂.obj` and
 `forget₂.map` agree with the equality above; then `forget₂` will satisfy the functor laws
@@ -32,7 +35,7 @@ automatically, see `HasForget₂.mk'`.
 
 ## References
 
-See [Ahrens and Lumsdaine, *Displayed Categories*][ahrens2017] for
+See \[Ahrens and Lumsdaine, _Displayed Categories_\]\[ahrens2017\] for
 related work.
 -/
 

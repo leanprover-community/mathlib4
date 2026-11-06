@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.CommSq
 public import Mathlib.CategoryTheory.Abelian.Refinements
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The exact sequence attached to a pushout square
 
@@ -25,7 +28,6 @@ l|    |r
 
 We study the associated exact sequence `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0`.
 We also show that the induced morphism `kernel t ⟶ kernel b` is an epimorphism.
-
 -/
 
 public section
@@ -58,17 +60,21 @@ lemma exact_shortComplex (h : IsPushout t l r b) : h.shortComplex.Exact :=
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a pushout square in an abelian category
+/--
+Given a pushout square in an abelian category
+
 ```
 X₁ ⟶ X₂
 |    |
 v    v
 X₃ ⟶ X₄
 ```
+
 the morphism `X₂ ⊞ X₃ ⟶ X₄` is an epimorphism. This lemma translates this
 as the existence of liftings up to refinements: a morphism `z : T ⟶ X₄`
 can be written as a sum of a morphism to `X₂` and a morphism to `X₃`,
-at least if we allow a precomposition with an epimorphism `π : T' ⟶ T`. -/
+at least if we allow a precomposition with an epimorphism `π : T' ⟶ T`.
+-/
 lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶ X₄) :
     ∃ (T' : C) (π : T' ⟶ T) (_ : Epi π) (x₂ : T' ⟶ X₂) (x₃ : T' ⟶ X₃),
       π ≫ x₄ = x₂ ≫ r + x₃ ≫ b := by
@@ -81,6 +87,7 @@ lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶
 
 /--
 Given a commutative diagram in an abelian category
+
 ```
 X₁ ⟶ X₂
 |    |  \
@@ -90,6 +97,7 @@ X₃ ⟶ X₄   \
   \     \> X₅
    \_____>
 ```
+
 where the top/left square is a pushout square,
 the outer square involving `X₁`, `X₂`, `X₃` and `X₅`
 is a pullback square, and `X₂ ⟶ X₅` is mono,

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Hom.GroupNorm
 public import Mathlib.Algebra.Order.Ring.Defs
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic order homomorphism classes
 
@@ -18,6 +21,7 @@ This file defines hom classes for common properties at the intersection of order
 ## Typeclasses
 
 Ring norms
+
 * `RingSeminormClass`: Homs are submultiplicative group norms.
 * `RingNormClass`: Homs are ring seminorms that are also additive group norms.
 * `MulRingSeminormClass`: Homs are ring seminorms that are multiplicative.
@@ -42,26 +46,34 @@ variable {F α β : Type*}
 
 variable [FunLike F α β]
 
-/-! ### Ring (semi)norms -/
+/-!
+# Ring (semi)norms
+-/
 
-/-- `RingSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the ring `α`.
+/--
+`RingSeminormClass F α` states that `F` is a type of `β`-valued seminorms on the ring `α`.
 
-You should extend this class when you extend `RingSeminorm`. -/
+You should extend this class when you extend `RingSeminorm`.
+-/
 class RingSeminormClass (F : Type*) (α β : outParam Type*)
     [NonUnitalNonAssocRing α] [Semiring β] [PartialOrder β] [FunLike F α β] : Prop
   extends AddGroupSeminormClass F α β, SubmultiplicativeHomClass F α β
 
-/-- `RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
+/--
+`RingNormClass F α` states that `F` is a type of `β`-valued norms on the ring `α`.
 
-You should extend this class when you extend `RingNorm`. -/
+You should extend this class when you extend `RingNorm`.
+-/
 class RingNormClass (F : Type*) (α β : outParam Type*)
     [NonUnitalNonAssocRing α] [Semiring β] [PartialOrder β] [FunLike F α β] : Prop
   extends RingSeminormClass F α β, AddGroupNormClass F α β
 
-/-- `MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
+/--
+`MulRingSeminormClass F α` states that `F` is a type of `β`-valued multiplicative seminorms
 on the ring `α`.
 
-You should extend this class when you extend `MulRingSeminorm`. -/
+You should extend this class when you extend `MulRingSeminorm`.
+-/
 class MulRingSeminormClass (F : Type*) (α β : outParam Type*)
     [NonAssocRing α] [Semiring β] [PartialOrder β] [FunLike F α β] : Prop
   extends AddGroupSeminormClass F α β, MonoidWithZeroHomClass F α β
@@ -70,10 +82,12 @@ class MulRingSeminormClass (F : Type*) (α β : outParam Type*)
 attribute [instance 50]
   MulRingSeminormClass.toMonoidHomClass MulRingSeminormClass.toMonoidWithZeroHomClass
 
-/-- `MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
+/--
+`MulRingNormClass F α` states that `F` is a type of `β`-valued multiplicative norms on the
 ring `α`.
 
-You should extend this class when you extend `MulRingNorm`. -/
+You should extend this class when you extend `MulRingNorm`.
+-/
 class MulRingNormClass (F : Type*) (α β : outParam Type*)
     [NonAssocRing α] [Semiring β] [PartialOrder β] [FunLike F α β] : Prop
   extends MulRingSeminormClass F α β, AddGroupNormClass F α β

@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 public import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue decomposition
 
@@ -147,12 +150,14 @@ nonrec theorem mutuallySingular_singularPart (s : SignedMeasure α) (μ : Measur
 
 end
 
-/-- The Radon-Nikodym derivative between a signed measure and a positive measure.
+/--
+The Radon-Nikodym derivative between a signed measure and a positive measure.
 
 `rnDeriv s μ` satisfies `μ.withDensityᵥ (s.rnDeriv μ) = s`
 if and only if `s` is absolutely continuous with respect to `μ` and this fact is known as
 `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`
-and can be found in `Mathlib/MeasureTheory/Measure/Decomposition/RadonNikodym.lean`. -/
+and can be found in `Mathlib/MeasureTheory/Measure/Decomposition/RadonNikodym.lean`.
+-/
 def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
   (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal

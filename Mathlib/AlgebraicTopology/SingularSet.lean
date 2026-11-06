@@ -9,14 +9,17 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.StdSimplex
 public import Mathlib.AlgebraicTopology.TopologicalSimplex
 public import Mathlib.CategoryTheory.Functor.KanExtension.RestrictedYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The singular simplicial set of a topological space and geometric realization of a simplicial set
 
-The *singular simplicial set* `TopCat.toSSet.obj X` of a topological space `X`
+The _singular simplicial set_ `TopCat.toSSet.obj X` of a topological space `X`
 has `n`-simplices which identify to continuous maps `StdSimplex ℝ (Fin (n + 1)) → X`,
 where `StdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex.
 
-The *geometric realization* functor `SSet.toTop` is left adjoint to `TopCat.toSSet`.
+The _geometric realization_ functor `SSet.toTop` is left adjoint to `TopCat.toSSet`.
 It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
 ## Main definitions
@@ -29,9 +32,8 @@ It is the left Kan extension of `SimplexCategory.toTop` along the Yoneda embeddi
 
 ## TODO (@joelriou)
 
-- Show that the singular simplicial set is a Kan complex.
-- Show the adjunction `sSetTopAdj` is a Quillen equivalence.
-
+* Show that the singular simplicial set is a Kan complex.
+* Show the adjunction `sSetTopAdj` is a Quillen equivalence.
 -/
 
 @[expose] public section
@@ -40,13 +42,15 @@ universe u
 
 open CategoryTheory Convexity
 
-/-- The functor associating the *singular simplicial set* to a topological space.
+/--
+The functor associating the _singular simplicial set_ to a topological space.
 
 Let `X : TopCat.{u}` be a topological space.
 Then the singular simplicial set of `X`
 has as `n`-simplices the continuous maps `ULift.{u} (stdSimplex ℝ (Fin (n + 1))) → X`.
 Here, `stdSimplex ℝ (Fin (n + 1))` is the standard topological `n`-simplex,
-defined as `{ f : Fin (n + 1) → ℝ // (∀ i, 0 ≤ f i) ∧ ∑ i, f i = 1 }` with its subspace topology. -/
+defined as `{ f : Fin (n + 1) → ℝ // (∀ i, 0 ≤ f i) ∧ ∑ i, f i = 1 }` with its subspace topology.
+-/
 noncomputable def TopCat.toSSet : TopCat.{u} ⥤ SSet.{u} :=
   Presheaf.restrictedULiftYoneda.{0} SimplexCategory.toTop.{u}
 
@@ -58,10 +62,12 @@ noncomputable def TopCat.toSSetObjEquiv (X : TopCat.{u}) (n : SimplexCategoryᵒ
   Equiv.ulift.{0}.trans (ConcreteCategory.homEquiv.trans
     (Homeomorph.ulift.continuousMapCongr (.refl _)))
 
-/-- The *geometric realization functor* is
+/--
+The _geometric realization functor_ is
 the left Kan extension of `SimplexCategory.toTop` along the Yoneda embedding.
 
-It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`. -/
+It is left adjoint to `TopCat.toSSet`, as witnessed by `sSetTopAdj`.
+-/
 @[no_expose]
 noncomputable def SSet.toTop : SSet.{u} ⥤ TopCat.{u} :=
   stdSimplex.{u}.leftKanExtension SimplexCategory.toTop

@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Homology.ExactSequence
 public import Mathlib.CategoryTheory.Shift.ShiftSequence
 public import Mathlib.CategoryTheory.Triangulated.Subcategory
 
-/-! # Homological functors
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Homological functors
 
 In this file, given a functor `F : C ⥤ A` from a pretriangulated category to
 an abelian category, we define the type class `F.IsHomological`, which is the property
@@ -40,8 +44,8 @@ called cohomological functors, while certain authors use "cohomological functors
 for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Arctan
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.ComplexDeriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of the `tan` and `arctan` functions.
 
@@ -106,10 +109,11 @@ end Real
 section
 
 /-!
-### Lemmas for derivatives of the composition of `Real.arctan` with a differentiable function
+# Lemmas for derivatives of the composition of `Real.arctan` with a differentiable function
 
 In this section we register lemmas for the derivatives of the composition of `Real.arctan` with a
-differentiable function, for standalone use and use with `simp`. -/
+differentiable function, for standalone use and use with `simp`.
+-/
 
 
 open Real

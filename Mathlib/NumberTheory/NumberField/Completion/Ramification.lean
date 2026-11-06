@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.Completion.LiesOverInstances
 public import Mathlib.RingTheory.RamificationInertia.Inertia
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification theory of completions of number fields
 
@@ -15,13 +18,13 @@ This file studies the ramification of completions of number fields.
 
 ## Main definitions
 
-- `NumberField.InfinitePlace.inertiaDeg` : the inertia degree of a place `w` of `L` over a
+* `NumberField.InfinitePlace.inertiaDeg` : the inertia degree of a place `w` of `L` over a
   place `v` of `K`, defined as the local degree of the extension of completions at `w` and
   `v` if `w` lies over `v` and zero otherwise.
 
 ## Main results
 
-- `NumberField.InfinitePlace.sum_inertiaDeg_eq_finrank` : the degree of `L` over `K` is equal to
+* `NumberField.InfinitePlace.sum_inertiaDeg_eq_finrank` : the degree of `L` over `K` is equal to
   the sum of the inertia degrees of the places of `L` over `v`.
 
 ## Tags

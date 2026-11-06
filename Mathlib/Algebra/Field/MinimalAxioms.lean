@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Ring.MinimalAxioms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal Axioms for a Field
 
@@ -17,16 +20,17 @@ a minimum number of equalities.
 ## Main Definitions
 
 * `Field.ofMinimalAxioms`: Define a `Field` structure on a Type by proving a minimal set of axioms
-
 -/
 
 public section
 
 universe u
 
-/-- Define a `Field` structure on a Type by proving a minimal set of axioms.
+/--
+Define a `Field` structure on a Type by proving a minimal set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul`, `div` and `sub`.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev Field.ofMinimalAxioms (K : Type u)
     [Add K] [Mul K] [Neg K] [Inv K] [Zero K] [One K]
     (add_assoc : ∀ a b c : K, a + b + c = a + (b + c))

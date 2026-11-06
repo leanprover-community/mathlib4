@@ -9,6 +9,10 @@ public import Mathlib.MeasureTheory.Integral.Pi
 public import Mathlib.Probability.Independence.Integrable
 public import Mathlib.Probability.Notation
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Integration in Probability Theory
 
@@ -150,10 +154,12 @@ section Integral
 
 variable {𝓧 𝓨 E F G : Type*} [MeasurableSpace 𝓧] [MeasurableSpace 𝓨]
 
-/-- If `X` and `Y` are two independent and integrable random variables, and `B` is a function of
+/--
+If `X` and `Y` are two independent and integrable random variables, and `B` is a function of
 two variables such that `‖B x y‖ₑ ≤ C * ‖x‖ₑ * ‖y‖ₑ`, then `B X Y` is integrable.
 
-This is useful in particular if `B` is a continuous bilinear map. -/
+This is useful in particular if `B` is a continuous bilinear map.
+-/
 theorem IndepFun.integrable_op
     [TopologicalSpace E] [ContinuousENorm E] [MeasurableSpace E] [OpensMeasurableSpace E]
     [TopologicalSpace F] [ContinuousENorm F] [MeasurableSpace F] [OpensMeasurableSpace F]
@@ -186,11 +192,13 @@ theorem IndepFun.integrable_bilin {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   rw [← toReal_le_toReal (by finiteness) (by finiteness)]
   simp [B.le_opNorm₂]
 
-/-- If `X` and `Y` are two independent random variables, `B X Y` is integrable, `Y` is not
+/--
+If `X` and `Y` are two independent random variables, `B X Y` is integrable, `Y` is not
 almost-surely `0` and `c * ‖x‖ₑ * ‖y‖ₑ ≤ ‖B x y‖ₑ`, then `X` is integrable.
 
 This is useful for the case where `B` is scalar multiplication, as it will allow to drop
-integrability hypotheses. -/
+integrability hypotheses.
+-/
 theorem IndepFun.integrable_left_of_integrable_op
     [TopologicalSpace E] [ContinuousENorm E] [MeasurableSpace E] [OpensMeasurableSpace E]
     [NormedAddGroup F] [MeasurableSpace F] [OpensMeasurableSpace F]
@@ -219,11 +227,13 @@ theorem IndepFun.integrable_left_of_integrable_op
     _ < ∞ := h'XY.2
   contradiction
 
-/-- If `X` and `Y` are two independent random variables, `B X Y` is integrable, `X` is not
+/--
+If `X` and `Y` are two independent random variables, `B X Y` is integrable, `X` is not
 almost-surely `0` and `c * ‖x‖ₑ * ‖y‖ₑ ≤ ‖B x y‖ₑ`, then `Y` is integrable.
 
 This is useful for the case where `B` is scalar multiplication, as it will allow to drop
-integrability hypotheses. -/
+integrability hypotheses.
+-/
 theorem IndepFun.integrable_right_of_integrable_op
     [NormedAddGroup E] [MeasurableSpace E] [OpensMeasurableSpace E]
     [TopologicalSpace F] [ContinuousENorm F] [MeasurableSpace F] [OpensMeasurableSpace F]
@@ -264,13 +274,15 @@ theorem IndepFun.integral_bilin_comp_comp
   exact Continuous.comp_aestronglyMeasurable₂ (g := (B · ·)) (by fun_prop)
     hf.1.comp_fst hg.1.comp_snd
 
-/-- If `X` and `Y` are random variables and `B` is a continuous bilinear map
+/--
+If `X` and `Y` are random variables and `B` is a continuous bilinear map
 such that `∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖`, then
 `∫ ω, B (f (X ω)) (g (Y ω)) ∂μ = B (∫ ω, f (X ω) ∂μ) (∫ ω, g (Y ω) ∂μ).`
 
 The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin_comp_comp`, which is useful for the versions where `B` is the scalar
-multiplication or the multiplication. -/
+multiplication or the multiplication.
+-/
 theorem IndepFun.integral_bilin_comp_comp'
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedSpace 𝕜 E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F] [CompleteSpace F]
@@ -326,12 +338,14 @@ theorem IndepFun.integral_bilin
     ((integrable_map_measure hY.aestronglyMeasurable.aestronglyMeasurable_id_map hY.aemeasurable).2
       hY) B
 
-/-- If `X` and `Y` are random variables and `B` is a continuous bilinear map
+/--
+If `X` and `Y` are random variables and `B` is a continuous bilinear map
 such that `∀ x y, c * ‖x‖ * ‖y‖ ≤ ‖B x y‖`, then `∫ ω, B (X ω) (Y ω) ∂μ = B μ[X] μ[Y].`
 
 The assumption on `B` allows to drop the integrability condition in
 `IndepFun.integral_bilin'`, which is useful for the versions where `B` is the scalar
-multiplication or the multiplication. -/
+multiplication or the multiplication.
+-/
 theorem IndepFun.integral_bilin'
     [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
     [MeasurableSpace E] [BorelSpace E]

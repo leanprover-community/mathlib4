@@ -8,13 +8,16 @@ module
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.Complex.Basic
 
-/-! # Conditions on unitary elements imposed by the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditions on unitary elements imposed by the continuous functional calculus
 
 ## Main theorems
 
 * `unitary_iff_isStarNormal_and_spectrum_subset_unitary`: An element is unitary if and only if it is
   star-normal and its spectrum lies on the unit circle.
-
 -/
 
 public section

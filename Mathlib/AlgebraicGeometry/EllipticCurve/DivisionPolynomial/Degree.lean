@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.DivisionPolynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division polynomials of Weierstrass curves
 
@@ -17,6 +20,7 @@ Weierstrass curves defined in
 ## Mathematical background
 
 Let `W` be a Weierstrass curve over a commutative ring `R`. By strong induction,
+
 * `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
 * `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
 * `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and
@@ -42,7 +46,7 @@ polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading t
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 

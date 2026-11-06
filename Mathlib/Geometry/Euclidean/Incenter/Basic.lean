@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Positivity.Finset
 
 import Mathlib.Topology.Instances.Sign
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Incenters and excenters of simplices.
 
@@ -40,9 +43,11 @@ duplicated.
   indices, if it exists, as an affine combination of the vertices.
 * `Affine.Simplex.exsphere` is the exsphere with the given set of indices, if it exists, with
   shorthands:
+
   * `Affine.Simplex.excenter` for the center of this sphere
   * `Affine.Simplex.exradius` for the radius of this sphere
 * `Affine.Simplex.insphere` is the insphere, with shorthands:
+
   * `Affine.Simplex.incenter` for the center of this sphere
   * `Affine.Simplex.inradius` for the radius of this sphere
 * `Affine.Simplex.touchpoint` for the point where an exsphere of a simplex is tangent to one of
@@ -52,9 +57,8 @@ duplicated.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Incircle_and_excircles
+* https://en.wikipedia.org/wiki/Incircle\_and\_excircles
 * https://en.wikipedia.org/wiki/Incenter
-
 -/
 
 @[expose] public section
@@ -827,10 +831,12 @@ lemma ExcenterExists.signedInfDist_excenter {signs : Finset (Fin (n + 1))}
   congr
   rw [← mul_eq_one_iff_inv_eq₀ h, ← mul_assoc, self_mul_sign, ← abs_mul, mul_inv_cancel₀ h, abs_one]
 
-/-- The signed distance between the incenter and its projection in the plane of each face is the
+/--
+The signed distance between the incenter and its projection in the plane of each face is the
 inradius.
 
-In other words, the incenter is _internally_ tangent to the faces. -/
+In other words, the incenter is _internally_ tangent to the faces.
+-/
 lemma signedInfDist_incenter (i : Fin (n + 1)) : s.signedInfDist i s.incenter = s.inradius := by
   rw [incenter, exsphere_center, s.excenterExists_empty.signedInfDist_excenter]
   simp (discharger := positivity)

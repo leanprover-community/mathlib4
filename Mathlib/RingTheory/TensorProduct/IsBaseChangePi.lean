@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Localization.BaseChange
 
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Base change properties
 
@@ -21,9 +24,7 @@ commute with base change, as expressed by `IsBaseChange`.
 In particular, localization of modules commutes with binary and finite products.
 
 * `IsBaseChange.directSum`: base change for direct sums
-
 * Homomorphism modules
-
 -/
 
 public section

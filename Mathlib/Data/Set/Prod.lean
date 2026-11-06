@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Image
 public import Mathlib.Data.Sum.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets in product and pi types
 
@@ -32,7 +35,9 @@ open Function
 
 namespace Set
 
-/-! ### Cartesian binary product of sets -/
+/-!
+# Cartesian binary product of sets
+-/
 
 
 section Prod
@@ -406,7 +411,8 @@ lemma eqOn_prodMap_iff {f f' : α → γ} {g g' : β → δ}
 
 end Prod
 
-/-! ### Diagonal
+/-!
+# Diagonal
 
 In this section we prove some lemmas about the diagonal set `{p | p.1 = p.2}` and the diagonal map
 `fun x ↦ (x, x)`.
@@ -472,10 +478,14 @@ open Set
 
 variable {X Y Z}
 
-/-- The fiber product $X \times_Y Z$. -/
+/--
+The fiber product $`X \times_Y Z`.
+-/
 abbrev Function.Pullback (f : X → Y) (g : Z → Y) := {p : X × Z // f p.1 = g p.2}
 
-/-- The fiber product $X \times_Y X$. -/
+/--
+The fiber product $`X \times_Y X`.
+-/
 abbrev Function.PullbackSelf (f : X → Y) := f.Pullback f
 
 /-- The projection from the fiber product to the first factor. -/
@@ -488,15 +498,21 @@ open Function.Pullback in
 lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
     f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
 
-/-- The diagonal map $\Delta: X \to X \times_Y X$. -/
+/--
+The diagonal map $`\Delta: X \to X \times_Y X`.
+-/
 @[simps]
 def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 
-/-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
+/--
+The diagonal $`\Delta(X) \subseteq X \times_Y X`.
+-/
 def Function.pullbackDiagonal (f : X → Y) : Set (f.Pullback f) := {p | p.fst = p.snd}
 
-/-- Three functions between the three pairs of spaces $X_i, Y_i, Z_i$ that are compatible
-  induce a function $X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2$. -/
+/--
+Three functions between the three pairs of spaces $`X_i, Y_i, Z_i` that are compatible
+induce a function $`X_1 \times_{Y_1} Z_1 \to X_2 \times_{Y_2} Z_2`.
+-/
 def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     {f₁ : X₁ → Y₁} {g₁ : Z₁ → Y₁} {f₂ : X₂ → Y₂} {g₂ : Z₂ → Y₂}
     (mapX : X₁ → X₂) (mapY : Y₁ → Y₂) (mapZ : Z₁ → Z₂)
@@ -506,13 +522,17 @@ def Function.mapPullback {X₁ X₂ Y₁ Y₂ Z₁ Z₂}
     (congr_fun commX _).trans <| (congr_arg mapY p.2).trans <| congr_fun commZ.symm _⟩
 
 open Function.Pullback in
-/-- The projection $(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X$. -/
+/--
+The projection $`(X \times_Y Z) \times_Z (X \times_Y Z) \to X \times_Y X`.
+-/
 def Function.PullbackSelf.map_fst {f : X → Y} {g : Z → Y} :
     (@snd X Y Z f g).PullbackSelf → f.PullbackSelf :=
   mapPullback fst g fst (pullback_comm_sq f g) (pullback_comm_sq f g)
 
 open Function.Pullback in
-/-- The projection $(X \times_Y Z) \times_X (X \times_Y Z) \to Z \times_Y Z$. -/
+/--
+The projection $`(X \times_Y Z) \times_X (X \times_Y Z) \to Z \times_Y Z`.
+-/
 def Function.PullbackSelf.map_snd {f : X → Y} {g : Z → Y} :
     (@fst X Y Z f g).PullbackSelf → g.PullbackSelf :=
   mapPullback snd f snd (pullback_comm_sq f g).symm (pullback_comm_sq f g).symm
@@ -613,7 +633,9 @@ theorem offDiag_insert (ha : a ∉ s) : (insert a s).offDiag = s.offDiag ∪ {a}
 
 end OffDiag
 
-/-! ### Cartesian set-indexed product of sets -/
+/-!
+# Cartesian set-indexed product of sets
+-/
 
 
 section Pi
@@ -983,13 +1005,17 @@ lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β →
 
 end graphOn
 
-/-! ### Vertical line test -/
+/-!
+# Vertical line test
+-/
 
-/-- **Vertical line test** for functions.
+/--
+*Vertical line test* for functions.
 
 Let `f : α → β × γ` be a function to a product. Assume that `f` is surjective on the first factor
 and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` at most once.
-Then the image of `f` is the graph of some monoid homomorphism `f' : β → γ`. -/
+Then the image of `f` is the graph of some monoid homomorphism `f' : β → γ`.
+-/
 lemma exists_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : β → γ, range f = univ.graphOn f' := by
@@ -1000,12 +1026,14 @@ lemma exists_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Pr
   rintro ⟨g, rfl⟩
   exact hf _ _ (hf₁ (f g).1).choose_spec
 
-/-- **Line test** for equivalences.
+/--
+*Line test* for equivalences.
 
 Let `f : α → β × γ` be a homomorphism to a product of monoids. Assume that `f` is surjective on both
 factors and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` and every
 "horizontal line" `{(b, c) | b : β}` at most once. Then the image of `f` is the graph of some
-equivalence `f' : β ≃ γ`. -/
+equivalence `f' : β ≃ γ`.
+-/
 lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : β ≃ γ, range f = univ.graphOn e := by
@@ -1021,10 +1049,12 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
     left_inv := fun h ↦ by rw [← he₁₂]
     right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
 
-/-- **Vertical line test** for functions.
+/--
+*Vertical line test* for functions.
 
 Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
-Then `s` is the graph of some function `f : β → γ`. -/
+Then `s` is the graph of some function `f : β → γ`.
+-/
 lemma exists_eq_graphOn_univ {s : Set (β × γ)}
     (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
   simpa using exists_range_eq_graphOn_univ hs₁.surjective

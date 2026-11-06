@@ -13,6 +13,9 @@ public import Mathlib.Data.Nat.ModEq
 
 import Mathlib.Algebra.Ring.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definition of `ZMod n` + basic results.
 
@@ -29,7 +32,6 @@ for example, the `smul` on the `GaloisField` `CharP` instance should be equal to
 its `SplittingField` structure); there is only one possible `ZMod p` algebra for any `p`, so this
 is not an issue mathematically. For this to be possible, however, we need `CharP.Lemmas` to be
 able to import some part of `ZMod`.
-
 -/
 
 @[expose] public section
@@ -38,7 +40,7 @@ able to import some part of `ZMod`.
 namespace Fin
 
 /-!
-## Ring structure on `Fin n`
+# Ring structure on `Fin n`
 
 We define a commutative ring structure on `Fin n`.
 Afterwards, when we define `ZMod n` in terms of `Fin n`, we use these definitions

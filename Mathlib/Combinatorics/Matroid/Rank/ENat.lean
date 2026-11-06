@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Tactic.TautoSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ℕ∞`-valued rank
 
@@ -23,6 +26,7 @@ This file defines these two concepts as a term `Matroid.eRank M : ℕ∞`
 and a function `Matroid.eRk M : Set α → ℕ∞` respectively.
 
 The rank function `Matroid.eRk` satisfies three properties, often known as (R1), (R2), (R3):
+
 * `M.eRk X ≤ Set.encard X`,
 * `M.eRk X ≤ M.eRk Y` for all `X ⊆ Y`,
 * `M.eRk X + M.eRk Y ≥ M.eRk (X ∪ Y) + M.eRk (X ∩ Y)` for all `X, Y`.
@@ -267,7 +271,9 @@ lemma eRk_eq_zero_iff (hX : X ⊆ M.E := by aesop_mat) : M.eRk X = 0 ↔ X ⊆ M
 lemma eRk_loops : M.eRk M.loops = 0 := by
   simp [eRk_eq_zero_iff']
 
-/-! ### Submodularity -/
+/-!
+# Submodularity
+-/
 
 /-- The `ℕ∞`-valued rank function is submodular. -/
 lemma eRk_inter_add_eRk_union_le (M : Matroid α) (X Y : Set α) :
@@ -345,7 +351,9 @@ lemma eRank_le_encard_add_eRk_compl (M : Matroid α) (X : Set α) :
 
 end Basic
 
-/-! ### Finiteness -/
+/-!
+# Finiteness
+-/
 
 lemma eRank_ne_top_iff (M : Matroid α) : M.eRank ≠ ⊤ ↔ M.RankFinite := by
   obtain ⟨B, hB⟩ := M.exists_isBase
@@ -403,7 +411,9 @@ lemma IsRkFinite.closure_eq_closure_of_subset_of_eRk_ge_eRk (hX : M.IsRkFinite X
     ← hJ.isBasis_inter_ground.closure_eq_closure, Finite.eq_of_subset_of_encard_le
       (hI.indep.finite_of_subset_isRkFinite hI.subset hX) hIJ hr]
 
-/-! ### Insertion -/
+/-!
+# Insertion
+-/
 
 lemma eRk_insert_le_add_one (M : Matroid α) (e : α) (X : Set α) :
     M.eRk (insert e X) ≤ M.eRk X + 1 :=
@@ -436,7 +446,9 @@ lemma eRk_eq_of_eRk_insert_le_forall (hXY : X ⊆ Y)
   · rw [← eRk_closure_eq, hX.closure_eq_closure_of_subset_of_forall_insert hXY hY, eRk_closure_eq]
   rw [eRk_eq_top_iff.2 hX, eRk_eq_top_iff.2 (mt (fun h ↦ h.subset hXY) hX)]
 
-/-! ### Independence -/
+/-!
+# Independence
+-/
 
 lemma indep_iff_eRk_eq_encard_of_finite (hI : I.Finite) : M.Indep I ↔ M.eRk I = I.encard := by
   refine ⟨fun h ↦ by rw [h.eRk_eq_encard], fun h ↦ ?_⟩
@@ -513,7 +525,9 @@ lemma IsCircuit.eRk_add_one_eq {C : Set α} (hC : M.IsCircuit C) : M.eRk C + 1 =
   obtain ⟨e, ⟨heC, heI⟩, rfl⟩ := hC.isBasis_iff_insert_eq.1 hI
   rw [hI.eRk_eq_encard, encard_insert_of_notMem heI]
 
-/-! ### Singletons -/
+/-!
+# Singletons
+-/
 
 lemma IsLoop.eRk_eq (he : M.IsLoop e) : M.eRk {e} = 0 := by
   rw [← eRk_closure_eq, he.closure, loops, eRk_closure_eq, eRk_empty]
@@ -558,7 +572,9 @@ lemma eRk_le_one_iff [M.Nonempty] (hX : X ⊆ M.E := by aesop_mat) :
   rw [eRk_closure_eq, ← encard_singleton e]
   exact M.eRk_le_encard {e}
 
-/-! ### Spanning Sets -/
+/-!
+# Spanning Sets
+-/
 
 lemma Spanning.eRk_eq (hX : M.Spanning X) : M.eRk X = M.eRank := by
   obtain ⟨B, hB⟩ := M.exists_isBasis X
@@ -578,7 +594,9 @@ lemma spanning_iff_eRk_le [RankFinite M] (hX : X ⊆ M.E := by aesop_mat) :
 lemma Spanning.eRank_restrict (hX : M.Spanning X) : (M ↾ X).eRank = M.eRank := by
   rw [eRank_def, restrict_ground_eq, restrict_eRk_eq _ rfl.subset, hX.eRk_eq]
 
-/-! ### Constructions -/
+/-!
+# Constructions
+-/
 
 @[simp]
 lemma eRank_map {β : Type*} {f : α → β} (M : Matroid α) (hf : InjOn f M.E) :
@@ -632,7 +650,9 @@ lemma eRk_freeOn (hXY : X ⊆ Y) : (freeOn Y).eRk X = X.encard := by
   obtain ⟨I, hI⟩ := (freeOn Y).exists_isBasis X
   rw [hI.eRk_eq_encard, (freeOn_indep hXY).eq_of_isBasis hI]
 
-/-! ### Duality -/
+/-!
+# Duality
+-/
 
 lemma IsBase.encard_compl_eq (hB : M.IsBase B) : (M.E \ B).encard = M✶.eRank :=
   (hB.compl_isBase_dual).encard_eq_eRank

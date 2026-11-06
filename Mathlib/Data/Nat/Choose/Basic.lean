@@ -9,6 +9,9 @@ module
 public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.Order.Monotone.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial coefficients
 
@@ -307,7 +310,9 @@ def fast_choose n k := Nat.descFactorial n k / Nat.factorial k
   funext (fun _ => funext (Nat.choose_eq_descFactorial_div_factorial _))
 
 
-/-! ### Inequalities -/
+/-!
+# Inequalities
+-/
 
 
 /-- Show that `Nat.choose` is increasing for small values of the right argument. -/
@@ -337,7 +342,9 @@ theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
   · rw [choose_eq_zero_of_lt b]
     apply zero_le
 
-/-! #### Inequalities about increasing the first argument -/
+/-!
+# Inequalities about increasing the first argument
+-/
 
 
 theorem choose_le_succ (a c : ℕ) : choose a c ≤ choose a.succ c := by
@@ -360,7 +367,8 @@ theorem choose_eq_one_iff {n k : ℕ} : n.choose k = 1 ↔ k = 0 ∨ n = k := by
   · simp
   · grind
 
-/-! #### Multichoose
+/-!
+# Multichoose
 
 Whereas `choose n k` is the number of subsets of cardinality `k` from a type of cardinality `n`,
 `multichoose n k` is the number of multisets of cardinality `k` from a type of cardinality `n`.
@@ -370,9 +378,8 @@ i.e. ways to select `k` items (up to permutation) from `n` items without replace
 `multichoose n k` counts the number of multicombinations,
 i.e. ways to select `k` items (up to permutation) from `n` items with replacement.
 
-Note that `multichoose` is *not* the multinomial coefficient, although it can be computed
+Note that `multichoose` is _not_ the multinomial coefficient, although it can be computed
 in terms of multinomial coefficients. For details see https://mathworld.wolfram.com/Multichoose.html
-
 -/
 
 /--

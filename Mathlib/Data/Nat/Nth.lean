@@ -13,6 +13,9 @@ public import Mathlib.Order.SuccPred.Nat
 import Mathlib.Data.List.GetD
 import Mathlib.Order.Interval.Set.Monotone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `n`th Number Satisfying a Predicate
 
@@ -42,7 +45,6 @@ There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
-
 -/
 
 @[expose] public section
@@ -65,7 +67,7 @@ noncomputable def nth (p : ℕ → Prop) (n : ℕ) : ℕ := by
 variable {p}
 
 /-!
-### Lemmas about `Nat.nth` on a finite set
+# Lemmas about `Nat.nth` on a finite set
 -/
 
 
@@ -129,7 +131,7 @@ theorem exists_lt_card_finite_nth_eq (hf : (Set.ofPred p).Finite) {x} (h : p x) 
   rwa [← @Set.mem_ofPred_eq _ _ p, ← image_nth_Iio_card hf] at h
 
 /-!
-### Lemmas about `Nat.nth` on an infinite set
+# Lemmas about `Nat.nth` on an infinite set
 -/
 
 /-- When `s` is an infinite set, `nth` agrees with `Nat.Subtype.orderIsoOfNat`. -/
@@ -168,7 +170,7 @@ theorem nth_mem_of_infinite (hf : (Set.ofPred p).Infinite) (n : ℕ) : p (nth p 
   Set.range_subset_iff.1 (range_nth_of_infinite hf).le n
 
 /-!
-### Lemmas that work for finite and infinite sets
+# Lemmas that work for finite and infinite sets
 -/
 
 theorem exists_lt_card_nth_eq {x} (h : p x) :

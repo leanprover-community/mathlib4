@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.Topology.Sheaves.Sheaf
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck
@@ -19,7 +21,6 @@ on spaces.
 We also specialize results about sheaves on sites to sheaves on spaces; we show that the inclusion
 functor from a topological basis to `TopologicalSpace.Opens` is cover dense, that open maps
 induce cover-preserving functors, and that open embeddings induce continuous functors.
-
 -/
 
 @[expose] public section

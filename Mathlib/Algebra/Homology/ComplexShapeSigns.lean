@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Homology.ComplexShape
 public import Mathlib.Algebra.Ring.NegOnePow
 public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
-/-! # Signs in constructions on homological complexes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Signs in constructions on homological complexes
 
 In this file, we shall introduce various typeclasses which will allow
 the construction of the total complex of a bicomplex and of the
@@ -23,7 +27,6 @@ when suitable coproducts exist).
 In particular, we construct an instance of `TotalComplexShape c c c` when `c : ComplexShape I`
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
-
 -/
 
 @[expose] public section

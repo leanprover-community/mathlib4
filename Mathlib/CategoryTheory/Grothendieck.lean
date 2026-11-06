@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Category.Cat.AsSmall
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 public import Mathlib.CategoryTheory.Elements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Grothendieck construction
 
@@ -32,13 +35,13 @@ where morphisms consist again of `β : b ⟶ b'` and `φ : f ⟶ (G.map (op β))
 
 ## Notable constructions
 
-- `Grothendieck F` is the Grothendieck construction.
-- Elements of `Grothendieck F` whose base is `c : C` can be transported along `f : c ⟶ d` using
+* `Grothendieck F` is the Grothendieck construction.
+* Elements of `Grothendieck F` whose base is `c : C` can be transported along `f : c ⟶ d` using
   `transport`.
-- A natural transformation `α : F ⟶ G` induces `map α : Grothendieck F ⥤ Grothendieck G`.
-- The Grothendieck construction and `map` together form a functor (`functor`) from the functor
+* A natural transformation `α : F ⟶ G` induces `map α : Grothendieck F ⥤ Grothendieck G`.
+* The Grothendieck construction and `map` together form a functor (`functor`) from the functor
   category `E ⥤ Cat` to the over category `Over E`.
-- A functor `G : D ⥤ C` induces `pre F G : Grothendieck (G ⋙ F) ⥤ Grothendieck F`.
+* A functor `G : D ⥤ C` induces `pre F G : Grothendieck (G ⋙ F) ⥤ Grothendieck F`.
 
 ## References
 
@@ -46,7 +49,6 @@ See also `CategoryTheory.Functor.Elements` for the category of elements of a fun
 
 * https://stacks.math.columbia.edu/tag/02XV
 * https://ncatlab.org/nlab/show/Grothendieck+construction
-
 -/
 
 @[expose] public section
@@ -65,6 +67,7 @@ variable (F : C ⥤ Cat.{v₂, u₂})
 /--
 The Grothendieck construction (often written as `∫ F` in mathematics) for a functor `F : C ⥤ Cat`
 gives a category whose
+
 * objects `X` consist of `X.base : C` and `X.fiber : F.obj base`
 * morphisms `f : X ⟶ Y` consist of
   `base : X.base ⟶ Y.base` and

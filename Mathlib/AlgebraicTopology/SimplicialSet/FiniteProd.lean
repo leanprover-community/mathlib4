@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialSet.ProdStdSimplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A binary product of finite simplicial sets is finite
 
@@ -14,7 +17,6 @@ If `X₁` and `X₂` are respectively of dimensions `≤ d₁` and `≤ d₂`,
 then `X₁ ⊗ X₂` has dimension `≤ d₁ + d₂`.
 
 We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also finite.
-
 -/
 
 public section

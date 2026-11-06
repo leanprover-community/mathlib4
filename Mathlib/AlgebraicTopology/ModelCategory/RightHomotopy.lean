@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.LeftHomotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.PathObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Right homotopies in model categories
 
@@ -23,8 +26,8 @@ relation on `X ⟶ Y`.
 (This file dualizes the definitions in `Mathlib/AlgebraicTopology/ModelCategory/LeftHomotopy.lean`.)
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra, section I.1][Quillen1967]
 
+* ‍\[Daniel G. Quillen, Homotopical algebra, section I.1\]\[Quillen1967\]
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Tactic.Nontriviality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets
 
@@ -32,7 +35,7 @@ construction. This gives a way to actually compute a `Finset` that represents th
 may be accessed using `Set.toFinset`. This gets the `Finset` in the correct form, since otherwise
 `Finset.univ : Finset s` is a `Finset` for the subtype for `s`. The second component is
 "constructors" for `Set.Finite` that give proofs that `Fintype` instances exist classically given
-other `Set.Finite` proofs. Unlike the `Fintype` instances, these *do not* use any decidability
+other `Set.Finite` proofs. Unlike the `Fintype` instances, these _do not_ use any decidability
 instances since they do not compute anything.
 
 ## Tags
@@ -62,11 +65,13 @@ protected alias ⟨Finite.nonempty_fintype, _⟩ := finite_def
 protected theorem Finite.ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) : p.Finite :=
   have := Fintype.ofFinset s H; p.toFinite
 
-/-- A finite set coerced to a type is a `Fintype`.
+/--
+A finite set coerced to a type is a `Fintype`.
 This is the `Fintype` projection for a `Set.Finite`.
 
 Note that because `Finite` isn't a typeclass, this definition will not fire if it
-is made into an instance -/
+is made into an instance
+-/
 @[instance_reducible]
 protected noncomputable def Finite.fintype {s : Set α} (h : s.Finite) : Fintype s :=
   h.nonempty_fintype.some
@@ -95,7 +100,9 @@ theorem Finite.exists_finset_coe {s : Set α} (h : s.Finite) : ∃ s' : Finset �
 /-- Finite sets can be lifted to finsets. -/
 instance : CanLift (Set α) (Finset α) (↑) Set.Finite where prf _ hs := hs.exists_finset_coe
 
-/-! ### Basic properties of `Set.Finite.toFinset` -/
+/-!
+# Basic properties of `Set.Finite.toFinset`
+-/
 
 
 namespace Finite
@@ -228,7 +235,8 @@ protected theorem toFinset_nontrivial (h : s.Finite) : h.toFinset.Nontrivial ↔
 
 end Finite
 
-/-! ### Fintype instances
+/-!
+# Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
 -/
@@ -307,14 +315,16 @@ def fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
 def fintypeInsertOfMem {a : α} (s : Set α) [Fintype s] (h : a ∈ s) : Fintype (insert a s : Set α) :=
   Fintype.ofFinset s.toFinset <| by simp [h]
 
-/-- The `Set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
+/--
+The `Set.fintypeInsert` instance requires decidable equality, but when `a ∈ s`
 is decidable for this particular `a` we can still get a `Fintype` instance by using
 `Set.fintypeInsertOfNotMem` or `Set.fintypeInsertOfMem`.
 
 This instance pre-dates `Set.fintypeInsert`, and it is less efficient.
 When `Set.decidableMemOfFintype` is made a local instance, then this instance would
 override `Set.fintypeInsert` if not for the fact that its priority has been
-adjusted. See Note [lower instance priority]. -/
+adjusted. See Note \[lower instance priority\].
+-/
 instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a ∈ s] [Fintype s] :
     Fintype (insert a s : Set α) :=
   if h : a ∈ s then fintypeInsertOfMem s h else fintypeInsertOfNotMem s h
@@ -353,7 +363,9 @@ end FintypeInstances
 
 end Set
 
-/-! ### Finset -/
+/-!
+# Finset
+-/
 
 namespace Finset
 
@@ -421,7 +433,8 @@ theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
 instance : WellFoundedLT {s : Set α // s.Finite} :=
   OrderIso.finsetSetFinite.symm.toOrderEmbedding.wellFoundedLT
 
-/-! ### Finite instances
+/-!
+# Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
 in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
@@ -480,7 +493,8 @@ end Finite.Set
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).
@@ -678,7 +692,9 @@ theorem finite_range_const {c : β} : (range fun _ : α => c).Finite :=
 
 end SetFiniteConstructors
 
-/-! ### Properties -/
+/-!
+# Properties
+-/
 
 instance Finite.inhabited : Inhabited { s : Set α // s.Finite } :=
   ⟨⟨∅, finite_empty⟩⟩
@@ -716,11 +732,13 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
     ((h.image some).insert none).subset fun x =>
       x.casesOn (fun _ => Or.inl rfl) fun _ hx => Or.inr <| mem_image_of_mem _ hx⟩
 
-/-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
+/--
+Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
 enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
 See also `Set.Finite.induction_on_subset` for the version requiring to check
-`motive t → motive ({a} ∪ t)` only for `t ⊆ s`. -/
+`motive t → motive ({a} ∪ t)` only for `t ⊆ s`.
+-/
 @[elab_as_elim]
 theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
     (empty : motive ∅ finite_empty)
@@ -732,11 +750,13 @@ theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Se
   | empty => simpa
   | cons a s ha ih => simpa using @insert a s ha (Set.toFinite _) (ih _)
 
-/-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
+/--
+Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
 to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t ⊆ s`.
 
 This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
-requiring `motive t → motive ({a} ∪ t)` for all `t`. -/
+requiring `motive t → motive ({a} ∪ t)` for all `t`.
+-/
 @[elab_as_elim]
 theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
     (hs : s.Finite) (empty : motive ∅ finite_empty)
@@ -752,7 +772,8 @@ section
 
 attribute [local instance] Nat.fintypeIio
 
-/-- If `P` is some relation between terms of `γ` and sets in `γ`, such that every finite set
+/--
+If `P` is some relation between terms of `γ` and sets in `γ`, such that every finite set
 `t : Set γ` has some `c : γ` related to it, then there is a recursively defined sequence `u` in `γ`
 so `u n` is related to the image of `{0, 1, ..., n-1}` under `u`.
 
@@ -771,7 +792,9 @@ theorem seq_of_forall_finite_exists {γ : Type*} {P : γ → Set γ → Prop}
 
 end
 
-/-! ### Cardinality -/
+/-!
+# Cardinality
+-/
 
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
@@ -829,7 +852,9 @@ theorem card_ne_eq [Fintype α] (a : α) [Fintype { x : α | x ≠ a }] :
   rw [← toFinset_card, toFinset_ofPred, Finset.filter_ne',
     Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ]
 
-/-! ### Infinite sets -/
+/-!
+# Infinite sets
+-/
 
 variable {s t : Set α}
 

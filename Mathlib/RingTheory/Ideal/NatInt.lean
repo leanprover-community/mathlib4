@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.KrullDimension.Basic
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime ideals in ℕ and ℤ
 
@@ -16,7 +19,6 @@ public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 * `Ideal.isPrime_nat_iff`: the prime ideals in ℕ are ⟨0⟩, ⟨p⟩ (for prime `p`), and `⟨2, 3⟩ = {1}ᶜ`.
   The proof follows https://math.stackexchange.com/a/4224486.
-
 * `Ideal.isPrime_int_iff` : the prime ideals in ℤ are ⟨0⟩ and ⟨p⟩ (for prime `p`).
 -/
 

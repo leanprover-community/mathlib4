@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Subwalks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Decomposing walks
 
 ## Main definitions
-- `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
-- `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
-- `rotate`: Rotate a loop walk such that it is centered at the given vertex.
+
+* `takeUntil`: The path obtained by taking edges of an existing path until a given vertex.
+* `dropUntil`: The path obtained by dropping edges of an existing path until a given vertex.
+* `rotate`: Rotate a loop walk such that it is centered at the given vertex.
 -/
 
 @[expose] public section
@@ -24,7 +28,9 @@ universe u
 
 variable {V : Type u} {G : SimpleGraph V} {v w u : V}
 
-/-! ### Walk decompositions -/
+/-!
+# Walk decompositions
+-/
 
 section WalkDecomp
 

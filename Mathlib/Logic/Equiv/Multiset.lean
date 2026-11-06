@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Multiset.Sort
 public import Mathlib.Logic.Equiv.List
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Encodable` and `Denumerable` instances for `Multiset`
 -/
@@ -81,8 +84,10 @@ theorem isChain_cons_raise (l n) : List.IsChain (· ≤ ·) (n :: raise l n) :=
 /-- `raise l n` is a non-decreasing sequence. -/
 theorem raise_sorted (l n) : List.SortedLE (raise l n) := (isChain_raise _ _).sortedLE
 
-/-- If `α` is denumerable, then so is `Multiset α`. Warning: this is *not* the same encoding as used
-in `Multiset.encodable`. -/
+/--
+If `α` is denumerable, then so is `Multiset α`. Warning: this is _not_ the same encoding as used
+in `Multiset.encodable`.
+-/
 instance multiset : Denumerable (Multiset α) :=
   mk'
     ⟨fun s : Multiset α => encode <| lower (s.map encode).sort 0,

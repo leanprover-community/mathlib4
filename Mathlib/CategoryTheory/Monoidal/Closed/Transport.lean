@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.Monoidal.Transport
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Transporting a closed monoidal structure along an equivalence of categories
 -/
 

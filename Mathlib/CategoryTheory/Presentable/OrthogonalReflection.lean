@@ -14,6 +14,9 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 
 import Mathlib.CategoryTheory.Adjunction.PartialAdjoint
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Orthogonal-reflection construction
 
@@ -23,6 +26,7 @@ any `Z : C`. This morphism belongs to `W.isLocal.isLocal` and
 is an isomorphism iff `Z` belongs to `W.isLocal` (see the lemma `isIso_toSucc_iff`).
 The morphism `toSucc W Z : Z ⟶ succ W Z` is defined as a composition
 of two morphisms that are roughly described as follows:
+
 * `toStep W Z : Z ⟶ step W Z`: for any morphism `f : X ⟶ Y` satisfying `W`
   and any morphism `X ⟶ Z`, we "attach" a morphism `Y ⟶ step W Z` (using
   coproducts and a pushout in essentially the same way as it is done in
@@ -49,6 +53,7 @@ under the assumption that `W : MorphismProperty C` is a `w`-small property
 of morphisms in a locally `κ`-presentable category `C` (with `κ : Cardinal.{w}`
 a regular cardinal) such that the domains and codomains of the morphisms
 satisfying `W` are `κ`-presentable:
+
 * `MorphismProperty.isRightAdjoint_ι_isLocal`: existence of the left adjoint
   of the inclusion `W.isLocal ⥤ C`;
 * `MorphismProperty.isLocallyPresentable_isLocal`: the full subcategory
@@ -59,8 +64,9 @@ in the book by Adámek and Rosický (note that according to the
 errata to this book, the implication (ii) → (i) is wrong when `κ = ℵ₀`).
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section
@@ -189,6 +195,8 @@ lemma D₁.ιLeft_comp_t {X Y : C} (f : X ⟶ Y) (hf : W f) (g : X ⟶ Z) :
 
 variable [HasPushouts C]
 
+
+set_option doc.verso false
 /-- The intermediate object in the definition of the morphism `toSucc W Z : Z ⟶ succ W Z`.
 It is the pushout of the following square:
 ```lean
@@ -202,6 +210,8 @@ satisfying `W` and a morphism `X ⟶ Z`. The top map is the coproduct of all of 
 -/
 noncomputable abbrev step := pushout (D₁.t W Z) (D₁.l W Z)
 
+
+set_option doc.verso true
 /-- The canonical map from `Z` to the pushout of `D₁.t W Z` and `D₁.l W Z`. -/
 noncomputable abbrev toStep : Z ⟶ step W Z := pushout.inr _ _
 

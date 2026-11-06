@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Trimming of multiseries
 
-A multiseries is *trimmed* when its leading coefficient (the head of its expansion) is itself
+A multiseries is _trimmed_ when its leading coefficient (the head of its expansion) is itself
 trimmed and non-zero. For a trimmed multiseries, the leading monomial captures the main
 asymptotic behavior of the approximated function.
 
@@ -24,7 +27,6 @@ asymptotic behavior of the approximated function.
 
 We also prove structural lemmas relating these predicates to `seq` and to the `cons`/`nil`
 constructors.
-
 -/
 
 @[expose] public section

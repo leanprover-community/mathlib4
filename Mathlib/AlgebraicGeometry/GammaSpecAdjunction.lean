@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.CommAlgCat.Basic
 public import Mathlib.AlgebraicGeometry.Restrict
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunction between `Γ` and `Spec`
 
@@ -29,7 +32,6 @@ case the unit and the counit would switch to each other.
   `CommRingᵒᵖ` to `LocallyRingedSpace`.
 * `AlgebraicGeometry.ΓSpec.adjunction` : The adjunction `Γ ⊣ Spec` from
   `CommRingᵒᵖ` to `Scheme`.
-
 -/
 
 @[expose] public section

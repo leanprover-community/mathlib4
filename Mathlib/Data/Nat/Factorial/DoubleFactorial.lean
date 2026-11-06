@@ -9,11 +9,14 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Double factorials
 
 This file defines the double factorial,
-  `n‼ := n * (n - 2) * (n - 4) * ...`.
+`n‼ := n * (n - 2) * (n - 4) * ...`.
 
 ## Main declarations
 

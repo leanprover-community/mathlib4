@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological entropy via nets
 
@@ -31,24 +34,29 @@ Instead of defining a new notion of topological entropy, we prove that
 `coverEntropy` coincides with `⨆ U ∈ 𝓤 X, netEntropyEntourage T F U`.
 
 ## Main definitions
-- `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
-- `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
-- `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
+
+* `IsDynNetIn`: property that dynamical balls centered on a subset `s` of `F` are disjoint.
+* `netMaxcard`: maximal cardinality of a dynamical net. Takes values in `ℕ∞`.
+* `netEntropyInfEntourage`/`netEntropyEntourage`: exponential growth of `netMaxcard`. The former is
   defined with a `liminf`, the latter with a `limsup`. Take values in `EReal`.
 
 ## Implementation notes
+
 As when using covers, there are two competing definitions `netEntropyInfEntourage` and
 `netEntropyEntourage` in this file: one uses a `liminf`, the other a `limsup`. When using covers,
 we chose the `limsup` definition as the default.
 
 ## Main results
-- `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
+
+* `coverEntropy_eq_iSup_netEntropyEntourage`: equality between the notions of topological entropy
   defined with covers and with nets. Has a variant for `coverEntropyInf`.
 
 ## Tags
+
 net, entropy
 
 ## TODO
+
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
 
@@ -62,7 +70,9 @@ namespace Dynamics
 
 variable {X : Type*} {T : X → X} {U V : SetRel X X} {m n : ℕ} {F s : Set X} {x : X}
 
-/-! ### Dynamical nets -/
+/-!
+# Dynamical nets
+-/
 
 /-- Given a subset `F`, an entourage `U` and an integer `n`, a subset `s` of `F` is a
 `(U, n)`-dynamical net of `F` if no two orbits of length `n` of points in `s` shadow each other. -/
@@ -96,7 +106,9 @@ lemma IsDynNetIn.card_le_card_of_isDynCoverOf {s t : Finset X}
   exact fun x x_s y y_s Fx_Fy ↦
     PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
 
-/-! ### Maximal cardinality of dynamical nets -/
+/-!
+# Maximal cardinality of dynamical nets
+-/
 
 /-- The largest cardinality of a `(U, n)`-dynamical net of `F`. Takes values in `ℕ∞`, and is
 infinite if and only if `F` admits nets of arbitrarily large size. -/
@@ -244,7 +256,9 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   exact x_uncov x x_s (SetRel.ball_mono (dynEntourage_monotone T n SetRel.left_subset_comp) x <|
     SetRel.rfl (dynEntourage T U n))
 
-/-! ### Net entropy of entourages -/
+/-!
+# Net entropy of entourages
+-/
 
 open ENNReal EReal ExpGrowth Filter
 
@@ -322,7 +336,9 @@ lemma coverEntropyEntourage_le_netEntropyEntourage (T : X → X) (F : Set X) [U.
     coverEntropyEntourage T F (U ○ U) ≤ netEntropyEntourage T F U :=
   expGrowthSup_monotone fun n ↦ ENat.toENNReal_mono (coverMincard_le_netMaxcard T F n)
 
-/-! ### Relationship with entropy via covers -/
+/-!
+# Relationship with entropy via covers
+-/
 
 variable [UniformSpace X] (T : X → X) (F : Set X)
 

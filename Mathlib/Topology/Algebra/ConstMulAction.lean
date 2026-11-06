@@ -14,6 +14,9 @@ public import Mathlib.Topology.Algebra.Support
 
 import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid actions continuous in the second variable
 
@@ -43,7 +46,6 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 ## Tags
 
 Hausdorff, discrete group, properly discontinuous, quotient space
-
 -/
 
 @[expose] public section
@@ -52,22 +54,26 @@ assert_not_exists IsOrderedRing
 
 open Topology Pointwise Filter Set TopologicalSpace
 
-/-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
+/--
+Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of multiplicative
 actions, including (semi)modules and algebras.
 
 Note that both `ContinuousConstSMul α α` and `ContinuousConstSMul αᵐᵒᵖ α` are
-weaker versions of `ContinuousMul α`. -/
+weaker versions of `ContinuousMul α`.
+-/
 class ContinuousConstSMul (Γ : Type*) (T : Type*) [TopologicalSpace T] [SMul Γ T] : Prop where
   /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_smul : ∀ γ : Γ, Continuous fun x : T => γ • x
 
-/-- Class `ContinuousConstVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
+/--
+Class `ContinuousConstVAdd Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
 is continuous in the second argument. We use the same class for all kinds of additive actions,
 including (semi)modules and algebras.
 
 Note that both `ContinuousConstVAdd α α` and `ContinuousConstVAdd αᵐᵒᵖ α` are
-weaker versions of `ContinuousVAdd α`. -/
+weaker versions of `ContinuousVAdd α`.
+-/
 class ContinuousConstVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ T] : Prop where
   /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
@@ -212,9 +218,11 @@ section Homeomorph
 
 variable {X : Type*} [TopologicalSpace X]
 
-/-- The tautological action by `X ≃ₜ X` on `X`.
+/--
+The tautological action by `X ≃ₜ X` on `X`.
 
-This generalizes `Equiv.Perm.applyMulAction`. -/
+This generalizes `Equiv.Perm.applyMulAction`.
+-/
 instance Homeomorph.applyMulAction : MulAction (X ≃ₜ X) X where
   smul f x := f x
   one_smul _ := rfl
@@ -434,10 +442,12 @@ open scoped Pointwise in
 lemma punctured_nhds_smul₀ {c : G₀} (hc : c ≠ 0) (x : α) : 𝓝[≠] (c • x) = c • 𝓝[≠] x :=
   punctured_nhds_smul (Units.mk0 c hc) x
 
-/-- `smul` is a closed map in the second argument.
+/--
+`smul` is a closed map in the second argument.
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
-normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`. -/
+normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`.
+-/
 theorem isClosedMap_smul_of_ne_zero {c : G₀} (hc : c ≠ 0) : IsClosedMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isClosedMap
 
@@ -445,10 +455,12 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
     IsClosed (c • s) :=
   isClosedMap_smul_of_ne_zero hc s hs
 
-/-- `smul` is a closed map in the second argument.
+/--
+`smul` is a closed map in the second argument.
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
-normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`. -/
+normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`.
+-/
 theorem isClosedMap_smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
     [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) : IsClosedMap fun x : E => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)

@@ -8,14 +8,19 @@ module
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Content
 
-/-! # The Eisenstein criterion
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-- `Polynomial.generalizedEisenstein` :
+/-!
+# The Eisenstein criterion
+
+* `Polynomial.generalizedEisenstein` :
   Let `R` be an integral domain
   and let `K` an `R`-algebra which is a field
   Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
   Let `f : R[X]` be a polynomial of strictly positive degree
   satisfying the following properties:
+
   * the image of `f` in `K[X]` is a power of `q`.
   * the leading coefficient of `f` is not zero in `K`
   * the polynomial `f` is primitive.
@@ -46,11 +51,9 @@ There are two obstructions, though :
 * Usually, one will only obtain irreducibility in `F[X]`, where `F` is the field
   of fractions of `R`. (If `R` is a UFD, this will be close to what is wanted,
   but not in general.)
-
 * The mod `P ^ 2` hypothesis will have to be rephrased to a condition
   in the second symbolic power of `P`. When `P` is a maximal ideal,
   that symbolic power coincides with `P ^ 2`, but not in general.
-
 -/
 
 public section
@@ -109,7 +112,8 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
   rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, ite_eq_right hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
-/-- A generalized Eisenstein criterion
+/--
+A generalized Eisenstein criterion
 
 Let `R` be an integral domain and `K` an `R`-algebra which is a domain.
 Let `q : R[X]` be a monic polynomial which is prime in `K[X]`.
@@ -118,7 +122,8 @@ whose leading coefficient is not zero in `K`
 and such that the image `f` in `K[X]` is a power of `q`.
 Assume moreover that `f.modByMonic q` is not zero in `(R ⧸ (P ^ 2))[X]`,
 where `P` is the kernel of `algebraMap R K`.
-Then `f` is irreducible. -/
+Then `f` is irreducible.
+-/
 theorem generalizedEisenstein {q f : R[X]} {p : ℕ}
     (hq_irr : Irreducible (q.map (algebraMap R K))) (hq_monic : q.Monic)
     (hf_prim : f.IsPrimitive)

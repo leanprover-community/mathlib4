@@ -7,31 +7,32 @@ module
 
 public import Mathlib.RingTheory.Extension.Cotangent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation of smoothness and `Ω[S⁄R]`
 
 ## Main results
 
-- `retractionKerToTensorEquivSection`:
+* `retractionKerToTensorEquivSection`:
   Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`,
   there is a one-to-one correspondence between `P`-linear retractions of `I →ₗ[P] S ⊗[P] Ω[P/R]`
   and algebra homomorphism sections of `f`.
-- `retractionKerCotangentToTensorEquivSection`:
+* `retractionKerCotangentToTensorEquivSection`:
   Given a surjective algebra homomorphism `f : P →ₐ[R] S` with kernel `I`,
   there is a one-to-one correspondence between `P`-linear retractions of `I/I² →ₗ[P] S ⊗[P] Ω[P/R]`
   and algebra homomorphism sections of `f‾ : P/I² → S`.
 
 ## Future projects
 
-- Show that being smooth is local on stalks.
-- Show that being formally smooth is Zariski-local (very hard).
+* Show that being smooth is local on stalks.
+* Show that being formally smooth is Zariski-local (very hard).
 
 ## References
 
-- https://stacks.math.columbia.edu/tag/00TH
-- [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
-
-
+* https://stacks.math.columbia.edu/tag/00TH
+* ‍\[B. Iversen, _Generic Local Structure of the Morphisms in Commutative Algebra_\]\[iversen\]
 -/
 
 @[expose] public section

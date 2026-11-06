@@ -7,6 +7,9 @@ module
 
 import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Propositional typeclasses on several maps
 
@@ -18,8 +21,8 @@ by Frédéric Dupuis and Heather Macbeth for linear maps.
 * `CompTriple.IsId φ`, which expresses that `φ = id`
 
 TODO :
-* align with RingHomCompTriple
 
+* align with RingHomCompTriple
 -/
 
 public section

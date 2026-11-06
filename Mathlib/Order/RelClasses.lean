@@ -10,6 +10,9 @@ public import Mathlib.Order.OrderDual
 
 import Mathlib.Tactic.CrossRefAttribute
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Unbundled relation classes
 
@@ -70,9 +73,11 @@ theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap 
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 
-/-- Construct a partial order from an `isStrictOrder` relation.
+/--
+Construct a partial order from an `isStrictOrder` relation.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
@@ -91,9 +96,11 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
-/-- Construct a linear order from an `IsStrictTotalOrder` relation.
+/--
+Construct a linear order from an `IsStrictTotalOrder` relation.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
   let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
     ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
@@ -112,7 +119,9 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
 theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
   inferInstance
 
-/-! ### Order connection -/
+/-!
+# Order connection
+-/
 
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
@@ -139,7 +148,9 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
-/-! ### Inverse Image -/
+/-!
+# Inverse Image
+-/
 
 namespace InvImage
 
@@ -192,7 +203,9 @@ theorem isStrictTotalOrder [IsStrictTotalOrder α r] (hf : Function.Injective f)
 
 end InvImage
 
-/-! ### Well-order -/
+/-!
+# Well-order
+-/
 
 -- TODO: upstream this attribute to core?
 attribute [class] WellFounded
@@ -501,7 +514,9 @@ theorem isStrictTotalOrder [IsStrictTotalOrder α r] {f : β → α} (hf : f.Inj
 
 end Order.Preimage
 
-/-! ### Strict-non strict relations -/
+/-!
+# Strict-non strict relations
+-/
 
 
 /-- An unbundled relation class stating that `r` is the nonstrict relation corresponding to the
@@ -524,7 +539,9 @@ theorem right_iff_left_not_left_of (r s : α → α → Prop) [IsNonstrictStrict
 instance {s : α → α → Prop} [IsNonstrictStrictOrder α r s] : Std.Irrefl s :=
   ⟨fun _ h => ((right_iff_left_not_left_of r s).1 h).2 ((right_iff_left_not_left_of r s).1 h).1⟩
 
-/-! #### `⊆` and `⊂` -/
+/-!
+# `⊆` and `⊂`
+-/
 
 section Subset
 
@@ -616,7 +633,9 @@ alias ssubset_iff_subset_ne := ssubset_iff_subset_and_ne
 
 end SubsetSSubset
 
-/-! ### Conversion of bundled order typeclasses to unbundled relation typeclasses -/
+/-!
+# Conversion of bundled order typeclasses to unbundled relation typeclasses
+-/
 
 
 @[to_dual instReflGe]

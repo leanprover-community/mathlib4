@@ -11,16 +11,20 @@ public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 import Mathlib.CategoryTheory.Abelian.Subobject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A complete abelian category with enough injectives and a separator has an injective coseparator
 
 ## Future work
+
 * Once we know that Grothendieck categories have enough injectives, we can use this to conclude
   that Grothendieck categories have an injective coseparator.
 
 ## References
-* [Peter J Freyd, *Abelian Categories* (Theorem 3.37)][freyd1964abelian]
 
+* ‍\[Peter J Freyd, _Abelian Categories_ (Theorem 3.37)\]\[freyd1964abelian\]
 -/
 
 public section

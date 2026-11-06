@@ -7,13 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced categories and full subcategories
 
 Given a category `D` and a function `F : C → D` from a type `C` to the
 objects of `D`, there is an essentially unique way to give `C` a
 category structure such that `F` becomes a fully faithful functor,
-namely by taking $ Hom_C(X, Y) = Hom_D(FX, FY) $. We call this the
+namely by taking $`  Hom_C(X, Y) = Hom_D(FX, FY)  `. We call this the
 category induced from `D` along `F`.
 
 ## Implementation notes
@@ -22,7 +25,6 @@ The type of morphisms between `X` and `Y` in `InducedCategory D F` is
 not definitionally equal to `F X ⟶ F Y`. Instead, this type is made
 a `1`-field structure. Use `InducedCategory.homMk` to construct
 morphisms in induced categories.
-
 -/
 
 @[expose] public section

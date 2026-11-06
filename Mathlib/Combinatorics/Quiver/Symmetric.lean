@@ -8,8 +8,11 @@ module
 public import Mathlib.Combinatorics.Quiver.Path
 public import Mathlib.Combinatorics.Quiver.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Symmetric quivers and arrow reversal
+# Symmetric quivers and arrow reversal
 
 This file contains constructions related to symmetric quivers:
 

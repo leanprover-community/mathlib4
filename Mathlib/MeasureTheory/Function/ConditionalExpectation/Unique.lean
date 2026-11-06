@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.AEMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniqueness of the conditional expectation
 
@@ -24,7 +27,6 @@ defined in this file but is introduced in
 * `ae_eq_of_forall_setIntegral_eq_of_sigma_finite'`: two functions verifying the equality of
   integrals defining the conditional expectation are equal almost everywhere.
   Requires `[SigmaFinite (μ.trim hm)]`.
-
 -/
 
 public section
@@ -45,7 +47,9 @@ variable {α E' F' 𝕜 : Type*} {p : ℝ≥0∞} {m m0 : MeasurableSpace α} {�
 
 section UniquenessOfConditionalExpectation
 
-/-! ## Uniqueness of the conditional expectation -/
+/-!
+# Uniqueness of the conditional expectation
+-/
 
 theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpMeas E' 𝕜 m p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)

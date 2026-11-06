@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.SupIndep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partitions
 
@@ -56,7 +59,6 @@ proved separately.
 
 * Link this to `Finpartition`.
 * Show that when `α` is a frame `Partition α` also has finite joins, i.e. that it is a lattice.
-
 -/
 
 @[expose] public section
@@ -86,7 +88,9 @@ instance {s : α} : SetLike (Partition s) α where
   coe := Partition.parts
   coe_injective p p' h := by cases p; cases p'; simpa using h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe {s : α} (P : Partition s) : Set α := P
 
 initialize_simps_projections Partition (parts → coe, as_prefix coe)
@@ -234,12 +238,14 @@ lemma top_def : (⊤ : Partition s) = removeBot {s} (sSupIndep_singleton s) sSup
 
 lemma parts_top_subset : ((⊤ : Partition s) : Set α) ⊆ {s} := by simp
 
-/-- When `α` is a frame, the meet `P ⊓ Q` of two partitions is the partition consisting of all
+/--
+When `α` is a frame, the meet `P ⊓ Q` of two partitions is the partition consisting of all
 non-bottom meets `p ⊓ q` for `p ∈ P` and `q ∈ Q`.
 
 Note that while finite meets of partitions can be constructed in this way, arbitrary meets generally
 do not exist: for example when `α` is the frame of open subsets of the Cantor space, `Partition α`
-has no bottom element. -/
+has no bottom element.
+-/
 instance instSemilatticeInf {α : Type*} [Order.Frame α] (s : α) : SemilatticeInf (Partition s) where
   inf P Q := removeBot {a | ∃ p ∈ P, ∃ q ∈ Q, a = p ⊓ q} (by
       rw [sSupIndep_iff_pairwiseDisjoint]
@@ -318,7 +324,9 @@ noncomputable def rep (P : Partition u) (ht : t ∈ P) : α := (P.nonempty_of_me
 
 end Set
 
-/-! ### Induced relation -/
+/-!
+# Induced relation
+-/
 
 section Rel
 
@@ -424,7 +432,8 @@ lemma rel_iff_partOf_eq_partOf (P : Partition u) :
 
 end partOf
 
-/-! ### Representative functions
+/-!
+# Representative functions
 
 See the module docstring for motivation (graph simplification, minors, and why we use an explicit
 `IsRepFun` hypothesis rather than a global choice of representatives).

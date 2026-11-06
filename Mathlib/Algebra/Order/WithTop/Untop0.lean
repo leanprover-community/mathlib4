@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.AddGroupWithTop
 public import Mathlib.Algebra.Order.Ring.WithTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conversion from WithTop to Base Type
 
@@ -30,7 +33,7 @@ variable [Zero α]
 def untop₀ (a : WithTop α) : α := a.untopD 0
 
 /-!
-## Simplifying Lemmas in cases where α is an Instance of Zero
+# Simplifying Lemmas in cases where α is an Instance of Zero
 -/
 
 @[simp]
@@ -54,7 +57,7 @@ lemma coe_untop₀_of_ne_top {a : WithTop α} (ha : a ≠ ⊤) :
 end Zero
 
 /-!
-## Simplifying Lemmas involving addition and negation
+# Simplifying Lemmas involving addition and negation
 -/
 
 @[simp]

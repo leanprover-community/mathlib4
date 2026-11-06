@@ -7,13 +7,14 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # `Π Rᵢ`-Points of Schemes
 
 We show that the canonical map `X(Π Rᵢ) ⟶ Π X(Rᵢ)` (`AlgebraicGeometry.pointsPi`)
 is injective and surjective under various assumptions.
-
 -/
 
 @[expose] public section

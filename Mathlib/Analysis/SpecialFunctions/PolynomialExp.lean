@@ -8,14 +8,17 @@ module
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Analysis.SpecialFunctions.Exp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits of `P(x) / e ^ x` for a polynomial `P`
 
-In this file we prove that $\lim_{x\to\infty}\frac{P(x)}{e^x}=0$ for any polynomial `P`.
+In this file we prove that $`\lim_{x\to\infty}\frac{P(x)}{e^x}=0` for any polynomial `P`.
 
 ## TODO
 
-Add more similar lemmas: limit at `-∞`, versions with $e^{cx}$ etc.
+Add more similar lemmas: limit at `-∞`, versions with $`e^{cx}` etc.
 
 ## Keywords
 

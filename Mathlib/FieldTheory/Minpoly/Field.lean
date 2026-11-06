@@ -8,13 +8,15 @@ module
 public import Mathlib.FieldTheory.Minpoly.Basic
 public import Mathlib.RingTheory.Algebraic.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal polynomials on an algebra over a field
 
 This file specializes the theory of minpoly to the setting of field extensions
 and derives some well-known properties, amongst which the fact that minimal polynomials
 are irreducible, and uniquely determined by their defining property.
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Sites.Small
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.OneHypercoverDense
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Small affine site induced by a morphism property
 

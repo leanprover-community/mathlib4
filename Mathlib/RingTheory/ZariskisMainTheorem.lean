@@ -13,6 +13,9 @@ public import Mathlib.RingTheory.QuasiFinite.Polynomial
 import Mathlib.Algebra.Algebra.Shrink
 import Mathlib.RingTheory.IntegralClosure.GoingDown
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic Zariski's Main Theorem
 
@@ -23,37 +26,38 @@ closure of `R` in `S`.
 
 We follow https://stacks.math.columbia.edu/tag/00PI and proceed in the following steps
 
-1. `Algebra.ZariskisMainProperty.of_adjoin_eq_top`:
-  The case where `S = R[X]/I`.
-  The key is `Polynomial.not_ker_le_map_C_of_surjective_of_quasiFiniteAt`
-  which shows that there exists some `g ∈ I` such that some coefficient `gᵢ ∉ p`.
-  Then one basically takes `f = gᵢ` and `g` becomes monic in `R[1/gᵢ][X]` up to some minor technical
-  issues, and then `S[1/gᵢ]` is basically integral over `R[1/gᵢ]`.
+1. `Algebra.ZariskisMainProperty.of_adjoin_eq_top`: The case where `S = R[X]/I`. The key is
+   `Polynomial.not_ker_le_map_C_of_surjective_of_quasiFiniteAt` which shows that there exists some
+   `g ∈ I` such that some coefficient `gᵢ ∉ p`. Then one basically takes `f = gᵢ` and `g` becomes
+   monic in `R[1/gᵢ][X]` up to some minor technical issues, and then `S[1/gᵢ]` is basically integral
+   over `R[1/gᵢ]`.
 2. `Algebra.ZariskisMainProperty.of_algHom_polynomial`:
-  The case where `S` is finite over `R⟨x⟩` for some `x : S`.
-  The following key results are first established:
-  - `isStronglyTranscendental_mk_radical_conductor`:
-    Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
-    `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
-  - `Algebra.not_quasiFiniteAt_of_stronglyTranscendental`:
-    If `S` is reduced, then `x : S` is not strongly transcendental over `R`.
-    One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
-    A going down theorem is now available, which could be applied to
-    `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
+   The case where `S` is finite over `R⟨x⟩` for some `x : S`.
+   The following key results are first established:
 
-  The second result applied to `S/√𝔣` together with the first result implies that
-  `p` does not contain `𝔣`.
-  The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
+* `isStronglyTranscendental_mk_radical_conductor`:
+  Let `𝔣` be the conductor of `x` (i.e. the largest `S`-ideal in `R⟨x⟩`).
+  `x` as an element of `S/√𝔣` is strongly transcendental over `R`.
+* `Algebra.not_quasiFiniteAt_of_stronglyTranscendental`:
+  If `S` is reduced, then `x : S` is not strongly transcendental over `R`.
+  One first reduces to when `R ⊆ S` are domains, and then to when `R` is integrally closed.
+  A going down theorem is now available, which could be applied to
+  `Polynomial.map_under_lt_comap_of_quasiFiniteAt`:`(p ∩ R)[X] < p ∩ R<x>` to get a contradiction.
+
+The second result applied to `S/√𝔣` together with the first result implies that
+`p` does not contain `𝔣`.
+The claim then follows from `Localization.localRingHom_bijective_of_not_conductor_le`.
 3. `Algebra.ZariskisMainProperty.of_algHom_mvPolynomial`:
-  The case where `S` is finite over `R⟨x₁,...,xₙ⟩`. This is proved using induction on `n`.
+The case where `S` is finite over `R⟨x₁,...,xₙ⟩`. This is proved using induction on `n`.
 
 ## Main definition and results
-- `Algebra.ZariskisMainProperty`:
+
+* `Algebra.ZariskisMainProperty`:
   We say that an `R` algebra `S` satisfies the Zariski's main property at a prime `p` of `S`
   if there exists `r ∉ p` in the integral closure `S'` of `R` in `S`, such that `S'[1/r] = S[1/r]`.
-- `Algebra.ZariskisMainProperty.of_finiteType`:
+* `Algebra.ZariskisMainProperty.of_finiteType`:
   If `S` is finite type over `R` and quasi-finite at `p`, then `ZariskisMainProperty` holds.
-- `Algebra.QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective`:
+* `Algebra.QuasiFiniteAt.exists_fg_and_exists_notMem_and_awayMap_bijective`:
   If `S` is finite type over `R` and quasi-finite at `p`,
   then there exists a subalgebra `S'` of `R` that is finitely generated as an `R`-module,
   and some `r ∈ S'` such that `r ∉ p` and `S'[1/r] = S[1/r]`.
@@ -343,11 +347,13 @@ private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isIntegrall
   ext
   simp [Ideal.mem_map_C_iff, coeff_C, apply_ite]
 
-/-- This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
+/--
+This asks for an explicit `K = Frac(R)`, `L = Frac(S)`,
 `R'` the integral closure of `R` in `K`, and `S' ⊆ L` the subalgebra spanned by `R'` and `S`,
 to aid typeclass synthesis.
 
-Use `not_isStronglyTranscendental_of_quasiFiniteAt` below instead. -/
+Use `not_isStronglyTranscendental_of_quasiFiniteAt` below instead.
+-/
 @[stacks 00Q1]
 private lemma not_isStronglyTranscendental_of_weaklyQuasiFiniteAt_of_isDomain_aux
     (K L : Type*) [Field K] [Field L] [Algebra R K] [Algebra R L] [Algebra S L] [Algebra K L]

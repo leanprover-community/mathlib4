@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 public import Mathlib.RingTheory.Localization.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integer elements of a localization
 
@@ -21,6 +24,7 @@ public import Mathlib.RingTheory.Localization.Defs
 See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
+
 localization, ring localization, commutative ring localization, characteristic predicate,
 commutative ring, field of fractions
 -/
@@ -69,7 +73,8 @@ theorem isInteger_smul {a : R} {b : S} (hb : IsInteger R b) : IsInteger R (a •
 variable (M)
 variable [IsLocalization M S]
 
-/-- Each element `a : S` has an `M`-multiple which is an integer.
+/--
+Each element `a : S` has an `M`-multiple which is an integer.
 
 This version multiplies `a` on the right, matching the argument order in `LocalizationMap.surj`.
 -/
@@ -77,7 +82,8 @@ theorem exists_integer_multiple' (a : S) : ∃ b : M, IsInteger R (a * algebraMa
   let ⟨⟨Num, denom⟩, h⟩ := IsLocalization.surj _ a
   ⟨denom, Set.mem_range.mpr ⟨Num, h.symm⟩⟩
 
-/-- Each element `a : S` has an `M`-multiple which is an integer.
+/--
+Each element `a : S` has an `M`-multiple which is an integer.
 
 This version multiplies `a` on the left, matching the argument order in the `SMul` instance.
 -/

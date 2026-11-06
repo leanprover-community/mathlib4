@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
 import Mathlib.Analysis.Analytic.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discreteness of the zeros of the Riemann zeta function
 
@@ -22,9 +25,7 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 ## Main results
 
 * `isClosed_riemannZetaZeros`: `riemannZetaZeros` is closed.
-
 * `isDiscrete_riemannZetaZeros`: `riemannZetaZeros` is discrete.
-
 * `IsCompact.inter_riemannZetaZeros_finite`: for any compact set `S : Set ℂ`, the intersection
   `S ∩ riemannZetaZeros` is finite.
 -/

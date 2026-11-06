@@ -10,25 +10,27 @@ public import Mathlib.LinearAlgebra.Basis.Prod
 public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank of various constructions
 
 ## Main statements
 
-- `rank_quotient_add_rank_le` : `rank M/N + rank N ≤ rank M`.
-- `lift_rank_add_lift_rank_le_rank_prod`: `rank M × N ≤ rank M + rank N`.
-- `rank_span_le_of_finite`: `rank (span s) ≤ #s` for finite `s`.
+* `rank_quotient_add_rank_le` : `rank M/N + rank N ≤ rank M`.
+* `lift_rank_add_lift_rank_le_rank_prod`: `rank M × N ≤ rank M + rank N`.
+* `rank_span_le_of_finite`: `rank (span s) ≤ #s` for finite `s`.
 
 For free modules, we have
 
-- `rank_prod` : `rank M × N = rank M + rank N`.
-- `rank_finsupp` : `rank (ι →₀ M) = #ι * rank M`
-- `rank_directSum`: `rank (⨁ Mᵢ) = ∑ rank Mᵢ`
-- `rank_tensorProduct`: `rank (M ⊗ N) = rank M * rank N`.
+* `rank_prod` : `rank M × N = rank M + rank N`.
+* `rank_finsupp` : `rank (ι →₀ M) = #ι * rank M`
+* `rank_directSum`: `rank (⨁ Mᵢ) = ∑ rank Mᵢ`
+* `rank_tensorProduct`: `rank (M ⊗ N) = rank M * rank N`.
 
 Lemmas for ranks of submodules and subalgebras are also provided.
 We have `finrank` variants for most lemmas as well.
-
 -/
 
 @[expose] public section

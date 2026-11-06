@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.IsSimpleRing
 public import Mathlib.Topology.Algebra.UniformField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Faithfulness of Scalar Multiplication on Completions
 

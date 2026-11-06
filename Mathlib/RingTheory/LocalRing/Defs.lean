@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Group.Units.Defs
 public import Mathlib.Algebra.Ring.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Local rings
 
 Define the notion of a local ring for non-commutative semirings. In the commutative case,
@@ -20,7 +22,6 @@ maximal ideal in `IsLocalRing.of_unique_max_ideal` and `IsLocalRing.maximal_idea
 
 * `IsLocalRing`: A predicate on semirings, stating that for any pair of elements that
   adds up to `1`, one of them is a unit.
-
 -/
 
 public section

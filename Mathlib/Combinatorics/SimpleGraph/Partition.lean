@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Graph partitions
 
@@ -14,7 +17,6 @@ This module provides an interface for dealing with partitions on simple graphs. 
 a graph `G`, with vertices `V`, is a set `P` of disjoint nonempty subsets of `V` such that:
 
 * The union of the subsets in `P` is `V`.
-
 * Each element of `P` is an independent set. (Each subset contains no pair of adjacent vertices.)
 
 Graph partitions are graph colorings that do not name their colors.  They are adjoint in the
@@ -27,21 +29,16 @@ graph colorings and back is the identity.
 ## Main definitions
 
 * `SimpleGraph.Partition` is a structure to represent a partition of a simple graph.
-
 * `SimpleGraph.Partition.PartsCardLe` is whether a given partition is an `n`-partition.
   (a partition with at most `n` parts).
-
 * `SimpleGraph.Partitionable n` is whether a given graph is `n`-partite.
-
 * `SimpleGraph.Partition.toColoring` creates colorings from partitions.
-
 * `SimpleGraph.Coloring.toPartition` creates partitions from colorings.
 
 ## Main statements
 
 * `SimpleGraph.partitionable_iff_colorable` is that `n`-partitionability and
   `n`-colorability are equivalent.
-
 -/
 
 @[expose] public section
@@ -54,7 +51,9 @@ namespace SimpleGraph
 
 variable {V : Type u} (G : SimpleGraph V)
 
-/-- A `Partition` of a simple graph `G` is a structure constituted by:
+/--
+A `Partition` of a simple graph `G` is a structure constituted by:
+
 * `parts`: a set of subsets of the vertices `V` of `G`.
 * `isPartition`: a proof that `parts` is a proper partition of `V`.
 * `independent`: a proof that each element of `parts` doesn't have a pair of adjacent vertices.

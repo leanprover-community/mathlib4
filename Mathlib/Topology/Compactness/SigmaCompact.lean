@@ -9,14 +9,17 @@ public import Mathlib.Topology.Bases
 public import Mathlib.Topology.Compactness.LocallyCompact
 public import Mathlib.Topology.Compactness.LocallyFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sigma-compactness in topological spaces
 
 ## Main definitions
+
 * `IsSigmaCompact`: a set that is the union of countably many compact sets.
 * `SigmaCompactSpace X`: `X` is a σ-compact topological space; i.e., is the union
   of a countable collection of compact subspaces.
-
 -/
 
 @[expose] public section
@@ -313,13 +316,15 @@ theorem countable_cover_nhds_of_sigmaCompact {f : X → Set X} (hf : ∀ x, f x 
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
 end
 
-/-- An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a
+/--
+An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a
 topological space is a sequence of compact sets `K n` such that `K n ⊆ interior (K (n + 1))` and
 `⋃ n, K n = univ`.
 
 If `X` is a locally compact sigma compact space, then `CompactExhaustion.choice X` provides
 a choice of an exhaustion by compact sets. This choice is also available as
-`(default : CompactExhaustion X)`. -/
+`(default : CompactExhaustion X)`.
+-/
 structure CompactExhaustion (X : Type*) [TopologicalSpace X] where
   /-- The sequence of compact sets that form a compact exhaustion. -/
   toFun : ℕ → Set X

@@ -10,6 +10,9 @@ public import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rigid (autonomous) monoidal categories
 
@@ -52,12 +55,12 @@ and `ExactPairing X Y` is in bijection with adjunctions compatible with this rig
 
 ## References
 
-* <https://ncatlab.org/nlab/show/rigid+monoidal+category>
+* [
+  https://ncatlab.org/nlab/show/rigid+monoidal+category](https://ncatlab.org/nlab/show/rigid+monoidal+category)
 
 ## Tags
 
 rigid category, monoidal category
-
 -/
 
 @[expose] public section
@@ -76,13 +79,17 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C]
 /-- An exact pairing is a pair of objects `X Y : C` which admit
   a coevaluation and evaluation morphism which fulfill two triangle equalities. -/
 class ExactPairing (X Y : C) where
-  /-- Coevaluation of an exact pairing.
+  /--
+  Coevaluation of an exact pairing.
 
-  Do not use directly. Use `ExactPairing.coevaluation` instead. -/
+  Do not use directly. Use `ExactPairing.coevaluation` instead.
+  -/
   coevaluation' : 𝟙_ C ⟶ X ⊗ Y
-  /-- Evaluation of an exact pairing.
+  /--
+  Evaluation of an exact pairing.
 
-  Do not use directly. Use `ExactPairing.evaluation` instead. -/
+  Do not use directly. Use `ExactPairing.evaluation` instead.
+  -/
   evaluation' : Y ⊗ X ⟶ 𝟙_ C
   coevaluation_evaluation' :
     Y ◁ coevaluation' ≫ (α_ _ _ _).inv ≫ evaluation' ▷ Y = (ρ_ Y).hom ≫ (λ_ Y).inv := by
@@ -375,7 +382,8 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
     _ = η_ (ᘁX) X ≫ (ᘁX) ◁ f ≫ (ᘁX) ◁ g := by
       rw [coevaluation_evaluation'']; monoidal
 
-/-- Given an exact pairing on `Y Y'`,
+/--
+Given an exact pairing on `Y Y'`,
 we get a bijection on hom-sets `(Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z)`
 by "pulling the string on the left" up or down.
 

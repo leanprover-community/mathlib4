@@ -11,8 +11,10 @@ public import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Algebra.Order.Archimedean.IndicatorCard
 import Mathlib.Probability.Martingale.Convergence
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Generalized Borel-Cantelli lemma
 
 This file proves Lévy's generalized Borel-Cantelli lemma which is a generalization of the
@@ -20,19 +22,18 @@ Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel
 by choosing appropriate filtrations. This file also contains the one-sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
 
-**Note**: the usual Borel-Cantelli lemmas are not in this file.
+*Note*: the usual Borel-Cantelli lemmas are not in this file.
 See `MeasureTheory.measure_limsup_atTop_eq_zero` for the first (which does not depend on
 the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 ## Main results
 
-- `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one-sided martingale bound: given
+* `MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto`: the one-sided martingale bound: given
   a submartingale `f` with uniformly bounded differences, the set for which `f` converges is almost
   everywhere equal to the set for which it is bounded.
-- `MeasureTheory.ae_mem_limsup_atTop_iff`: Lévy's generalized Borel-Cantelli:
+* `MeasureTheory.ae_mem_limsup_atTop_iff`: Lévy's generalized Borel-Cantelli:
   given a filtration `ℱ` and a sequence of sets `s` such that `s n ∈ ℱ n` for all `n`,
   `limsup atTop s` is almost everywhere equal to the set for which `∑ ℙ[s (n + 1)∣ℱ n] = ∞`.
-
 -/
 
 @[expose] public section
@@ -46,7 +47,7 @@ namespace MeasureTheory
 
 variable {ι Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 /-!
-### One-sided martingale bound
+# One-sided martingale bound
 -/
 
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
@@ -187,24 +188,20 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
       simpa only [g, sub_add_cancel]
 
 /-!
-### Lévy's generalization of the Borel-Cantelli lemma
+# Lévy's generalization of the Borel-Cantelli lemma
 
 Lévy's generalization of the Borel-Cantelli lemma states that: given a natural number indexed
-filtration $(\mathcal{F}_n)$, and a sequence of sets $(s_n)$ such that for all
-$n$, $s_n \in \mathcal{F}_n$, $limsup_n s_n$ is almost everywhere equal to the set for which
-$\sum_n \mathbb{P}[s_n \mid \mathcal{F}_n] = \infty$.
+filtration $`(\mathcal{F}_n)`, and a sequence of sets $`(s_n)` such that for all
+$`n`, $`s_n \in \mathcal{F}_n`, $`limsup_n s_n` is almost everywhere equal to the set for which
+$`\sum_n \mathbb{P}[s_n \mid \mathcal{F}_n] = \infty`.
 
 The proof strategy follows by constructing a martingale satisfying the one-sided martingale bound.
 In particular, we define
-$$
-  f_n := \sum_{k < n} \big(\mathbf{1}_{s_{k + 1}} - \mathbb{P}[s_{k + 1} \mid \mathcal{F}_k]\big).
-$$
+$$`  f_n := \sum_{k < n} \big(\mathbf{1}_{s_{k + 1}} - \mathbb{P}[s_{k + 1} \mid \mathcal{F}_k]\big).  `
 Then, as a martingale is both a sub- and a super-martingale, the set for which it is unbounded from
 above must agree with the set for which it is unbounded from below almost everywhere. Thus, it
-can only converge to $\pm \infty$ with probability 0. Thus, by considering
-$$
-  \limsup_n s_n = \{\sum_n \mathbf{1}_{s_n} = \infty\}
-$$
+can only converge to $`\pm \infty` with probability 0. Thus, by considering
+$$`  \limsup_n s_n = \{\sum_n \mathbf{1}_{s_n} = \infty\}  `
 almost everywhere, the result follows.
 -/
 

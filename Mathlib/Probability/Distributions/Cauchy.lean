@@ -10,7 +10,11 @@ public import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
-/-! # Cauchy Distribution over ℝ
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Cauchy Distribution over ℝ
 
 Define the Cauchy distribution with location parameter `x₀` and scale parameter `γ`.
 
@@ -25,7 +29,6 @@ Note that we use "location" and "scale" to refer to these parameters in theorem 
 * `cauchyMeasure`: a Cauchy measure on `ℝ`, parametrized by a location parameter `x₀ : ℝ` and a
   scale parameter `γ : ℝ≥0`.  If `γ = 0`, this is `dirac x₀`, otherwise it is defined as the
   measure with density `cauchyPDF x₀ γ` with respect to the Lebesgue measure.
-
 -/
 
 @[expose] public section

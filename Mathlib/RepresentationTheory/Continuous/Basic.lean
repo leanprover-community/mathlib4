@@ -11,6 +11,9 @@ public import Mathlib.Topology.ContinuousMap.Algebra
 
 import Mathlib.CategoryTheory.Category.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous representations
 
@@ -21,25 +24,22 @@ related basic results.
 
 * `ContRepresentation R G V` is the type of continuous representations of a monoid `G` on a
   `R`-module `V` which is a topological addgroup (where the action of `G` on `V` is
-  *not* assumed to be continuous). The reason for this more general definition is that it allows us
+  _not_ assumed to be continuous). The reason for this more general definition is that it allows us
   to define the coinduced representation of a continuous representation as also a continuous
   representation without any restriction on the topology on `G`.
-
 * `ContIntertwiningMap π₁ π₂` is the type of continuous intertwining maps between two continuous
   representations `π₁` and `π₂`.
-
 * `ContRepresentation.coind₁ π` is the coinduced continuous representation on the space of
   continuous functions from `G` to `V` for a continuous representation `π`.
-
 * `ContIntertwiningMap.mapInvariantsOfRes φ f` is the continuous linear map
   `π.invariants →L[R] π'.invariants` induced by a monoid homomorphism `φ : H →* G` and a
   continuous intertwining map `f : π.restrict φ →ⁱL π'`.
-
 * `ContRepresentation.coind₁ResMap φ f` is the continuous intertwining map
   `π.coind₁.restrict φ →ⁱL π'.coind₁` induced by a continuous group homomorphism `φ : H →ₜ* G`
   and a continuous intertwining map `f : π.restrict φ →ⁱL π'`, given by `F ↦ f ∘ F ∘ φ`.
 
 ## Tags
+
 continuous representation, algebra
 -/
 

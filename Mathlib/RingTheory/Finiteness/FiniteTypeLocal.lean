@@ -8,17 +8,18 @@ module
 public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Finiteness
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Locality of `Algebra.FiniteType`
 
 In this file we show that finite-type is local on the source and the target.
 
 ## Main results
 
-- `Algebra.FiniteType.of_span_eq_top_source`: finite-type is local on the (algebraic) source
-- `Algebra.FiniteType.of_span_eq_top_target`: finite-type is local on the (algebraic) target
-
+* `Algebra.FiniteType.of_span_eq_top_source`: finite-type is local on the (algebraic) source
+* `Algebra.FiniteType.of_span_eq_top_target`: finite-type is local on the (algebraic) target
 -/
 
 public section

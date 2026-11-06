@@ -9,7 +9,11 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Topology.Compactness.CompactSystem
 
-/-! # Cylinders with closed compact bases
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Cylinders with closed compact bases
 
 We define the set of all cylinders with closed compact bases. Those sets play a role in the
 proof of Kolmogorov's extension theorem.
@@ -25,7 +29,6 @@ proof of Kolmogorov's extension theorem.
   cylinder.
 * `isCompactSystem_closedCompactCylinders`: cylinders with compact closed bases form a compact
   system.
-
 -/
 
 @[expose] public section

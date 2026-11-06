@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.IsoCat
 public import Mathlib.CategoryTheory.IsomorphismClasses
 public import Mathlib.CategoryTheory.Thin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skeleton of a category
 

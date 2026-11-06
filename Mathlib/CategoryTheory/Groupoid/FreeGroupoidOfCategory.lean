@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Groupoid.FreeGroupoid
 public import Mathlib.CategoryTheory.Groupoid.Grpd.Basic
 public import Mathlib.CategoryTheory.Localization.Predicate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free groupoid on a category
 
@@ -20,24 +23,23 @@ extension as a functor from the free groupoid, and proves uniqueness of this ext
 
 Given a type `C` and a category instance on `C`:
 
-- `CategoryTheory.FreeGroupoid C`: the underlying type of the free groupoid on `C`.
-- `CategoryTheory.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid C`.
-- `CategoryTheory.FreeGroupoid.lift`: the lifting of a functor `C ⥤ G` where `G` is a
+* `CategoryTheory.FreeGroupoid C`: the underlying type of the free groupoid on `C`.
+* `CategoryTheory.FreeGroupoid.instGroupoid`: the `Groupoid` instance on `FreeGroupoid C`.
+* `CategoryTheory.FreeGroupoid.lift`: the lifting of a functor `C ⥤ G` where `G` is a
   groupoid, to a functor `CategoryTheory.FreeGroupoid C ⥤ G`.
-- `CategoryTheory.FreeGroupoid.lift_spec` and
+* `CategoryTheory.FreeGroupoid.lift_spec` and
   `CategoryTheory.FreeGroupoid.lift_unique`:
   the proofs that, respectively, `CategoryTheory.FreeGroupoid.lift` indeed is a lifting
   and is the unique one.
-- `CategoryTheory.Grpd.free`: the free functor from `Grpd` to `Cat`
-- `CategoryTheory.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
+* `CategoryTheory.Grpd.free`: the free functor from `Grpd` to `Cat`
+* `CategoryTheory.Grpd.freeForgetAdjunction`: that `free` is left adjoint to
   `Grpd.forgetToCat`.
 
 ## Implementation notes
 
 The free groupoid on a category `C` is first defined by taking the free groupoid `G`
-on the underlying *quiver* of `C`. Then the free groupoid on the *category* `C` is defined as
+on the underlying _quiver_ of `C`. Then the free groupoid on the _category_ `C` is defined as
 the quotient of `G` by the relation that makes the inclusion prefunctor `C ⥤q G` a functor.
-
 -/
 
 @[expose] public section
@@ -51,9 +53,11 @@ universe v u v₁ u₁ v₂ u₂
 variable (C : Type u) [Category.{v} C]
 
 open Quiver in
-/-- The relation on the free groupoid on the underlying *quiver* of C that
+/--
+The relation on the free groupoid on the underlying _quiver_ of C that
 promotes the prefunctor `C ⥤q FreeGroupoid C` into a functor
-`C ⥤ Quotient (FreeGroupoid.homRel C)`. -/
+`C ⥤ Quotient (FreeGroupoid.homRel C)`.
+-/
 inductive FreeGroupoid.homRel : HomRel (Quiver.FreeGroupoid C) where
 | map_id (X : C) : homRel ((FreeGroupoid.of C).map (𝟙 X)) (𝟙 ((FreeGroupoid.of C).obj X))
 | map_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : homRel ((FreeGroupoid.of C).map (f ≫ g))

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.MonCat.Basic
 public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Mon Type u ≌ MonCat.{u}`
 
@@ -58,13 +61,17 @@ noncomputable def inverse : MonCat.{u} ⥤ Mon (Type u) where
           mul_assoc := by ext ⟨⟨x, y⟩, z⟩; simp [_root_.mul_assoc] } }
   map f := .mk' (↾f)
     (one_f := by
-      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-      this argument was provided by the auto_param. -/
+      #adaptation_note /--
+                       Prior to https://github.com/leanprover/lean4/pull/12244
+this argument was provided by the auto\_param.
+                       -/
       simp +instances only
       cat_disch)
     (mul_f := by
-      #adaptation_note /-- Prior to https://github.com/leanprover/lean4/pull/12244
-      this argument was provided by the auto_param. -/
+      #adaptation_note /--
+                       Prior to https://github.com/leanprover/lean4/pull/12244
+this argument was provided by the auto\_param.
+                       -/
       simp +instances only
       cat_disch)
 

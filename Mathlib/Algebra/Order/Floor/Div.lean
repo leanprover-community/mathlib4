@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Order.Preorder.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Flooring, ceiling division
 
@@ -37,6 +40,7 @@ In order theory terms, those operations are respectively the right and left adjo
 * `CeilDiv`: Typeclass for the existence of a ceiling division, denoted `b ⌈/⌉ a`.
 
 Note in both cases we only allow dividing by positive inputs. We enforce the following junk values:
+
 * `b ⌊/⌋ a = b ⌈/⌉ a = 0` if `a ≤ 0`
 * `0 ⌊/⌋ a = 0 ⌈/⌉ a = 0`
 

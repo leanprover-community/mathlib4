@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 public import Mathlib.Topology.Algebra.Nonarchimedean.Bases
 public import Mathlib.Topology.Algebra.UniformFilterBasis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology on a valued ring
 
@@ -17,11 +20,10 @@ In this file, we define the non-Archimedean topology induced by a valuation on a
 The main definition is a `Valued` type class which equips a ring with a valuation taking
 values in a group with zero. Other instances are then deduced from this.
 
-*NOTE* (2025-07-02):
+_NOTE_ (2025-07-02):
 The `Valued` class defined in this file will eventually get replaced with `ValuativeRel`
 from `Mathlib.RingTheory.Valuation.ValuativeRel.Basic`. New developments on valued rings/fields
 should take this into consideration.
-
 -/
 
 @[expose] public section
@@ -114,13 +116,15 @@ theorem subgroups_basis :
 
 end Valuation
 
-/-- A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
+/--
+A valued ring is a ring that comes equipped with a distinguished valuation. The class `Valued`
 is designed for the situation that there is a canonical valuation on the ring.
 
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
 
-See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
+See Note \[forgetful inheritance\] for why we extend `UniformSpace`, `IsUniformAddGroup`.
+-/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
   [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀

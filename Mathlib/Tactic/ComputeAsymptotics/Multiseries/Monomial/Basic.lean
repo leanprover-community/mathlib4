@@ -8,8 +8,10 @@ module
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Basis
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Monomial.Predicates
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Computing limits of monomials
 
 In this file we define the `Monomial` structure, representing monomials in a basis, i.e.
@@ -29,7 +31,6 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
   `t.toFun` from `FirstNonzeroIsPos`/`FirstNonzeroIsNeg`/`AllZero`.
 * `IsLittleO_of_lt_exps` and its variants are used to asymptotically compare two monomials.
-
 -/
 
 @[expose] public section

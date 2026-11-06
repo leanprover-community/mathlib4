@@ -11,6 +11,9 @@ public import Mathlib.Order.Nat
 
 import Mathlib.Tactic.Subsingleton
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on `Filter.atTop` and `Filter.atBot` filters
 
@@ -109,7 +112,7 @@ theorem frequently_atTop' [NoMaxOrder α] : (∃ᶠ x in atTop, p x) ↔ ∀ a, 
 end IsDirected
 
 /-!
-### Sequences
+# Sequences
 -/
 
 theorem extraction_of_frequently_atTop {P : ℕ → Prop} (h : ∃ᶠ n in atTop, P n) :

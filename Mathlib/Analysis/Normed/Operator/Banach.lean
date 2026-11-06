@@ -12,6 +12,9 @@ public import Mathlib.Topology.Baire.CompleteMetrizable
 
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Banach open mapping theorem
 
@@ -36,9 +39,11 @@ linear itself but which satisfies a bound `‖inverse x‖ ≤ C * ‖x‖`. A s
 map doesn't always have a continuous linear right inverse, but it always has a nonlinear inverse
 in this sense, by Banach's open mapping theorem. -/
 structure NonlinearRightInverse where
-  /-- The underlying function.
+  /--
+  The underlying function.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   toFun : F → E
   /-- The bound `C` so that `‖inverse x‖ ≤ C * ‖x‖` for all `x`. -/
   nnnorm : ℝ≥0
@@ -75,7 +80,9 @@ noncomputable instance [RingHomInvPair σ' σ] (f : E ≃SL[σ] F) :
     Inhabited (ContinuousLinearMap.NonlinearRightInverse (f : E →SL[σ] F)) :=
   ⟨f.toNonlinearRightInverse⟩
 
-/-! ### Proof of the Banach open mapping theorem -/
+/-!
+# Proof of the Banach open mapping theorem
+-/
 
 
 variable [CompleteSpace F]
@@ -260,7 +267,9 @@ theorem _root_.AffineMap.isOpenMap {F : Type*} [NormedAddCommGroup F] [NormedSpa
     ContinuousLinearMap.isOpenMap { f.linear with cont := AffineMap.continuous_linear_iff.mpr hf }
       (f.linear_surjective_iff.mpr surj)
 
-/-! ### Applications of the Banach open mapping theorem -/
+/-!
+# Applications of the Banach open mapping theorem
+-/
 
 section
 include σ'
@@ -490,10 +499,12 @@ theorem spectrum_eq {f : E →L[𝕜] E} :
   rw [spectrum.mem_iff, spectrum.mem_iff, ContinuousLinearMap.isUnit_iff_isUnit_toLinearMap]
   rfl
 
-/-- Intermediate definition used to show
+/--
+Intermediate definition used to show
 `ContinuousLinearMap.closed_complemented_range_of_isCompl_of_ker_eq_bot`.
 
-This is `f.coprod G.subtypeL` as a `ContinuousLinearEquiv`. -/
+This is `f.coprod G.subtypeL` as a `ContinuousLinearEquiv`.
+-/
 noncomputable def coprodSubtypeLEquivOfIsCompl {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
     [CompleteSpace F] (f : E →L[𝕜] F) {G : Submodule 𝕜 F}
     (h : IsCompl f.range G) [CompleteSpace G] (hker : f.ker = ⊥) : (E × G) ≃L[𝕜] F :=

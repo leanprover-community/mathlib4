@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Quaternion
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `NormedSpace.exp` on `Quaternion`s
 
@@ -20,7 +23,6 @@ This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 * `Quaternion.exp_of_re_eq_zero`: the special case when the quaternion has a zero real part.
 * `Quaternion.norm_exp`: the norm of the quaternion exponential is the norm of the exponential of
   the real part.
-
 -/
 
 public section
@@ -35,7 +37,9 @@ namespace Quaternion
 theorem exp_coe (r : ℝ) : exp (r : ℍ[ℝ]) = ↑(exp r) :=
   (map_exp (algebraMap ℝ ℍ[ℝ]) (continuous_algebraMap _ _) _).symm
 
-/-- The even terms of `expSeries` are real, and correspond to the series for $\cos ‖q‖$. -/
+/--
+The even terms of `expSeries` are real, and correspond to the series for $`\cos ‖q‖`.
+-/
 theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
     expSeries ℝ (Quaternion ℝ) (2 * n) (fun _ => q) =
       ↑((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n) / (2 * n)!) := by
@@ -54,8 +58,10 @@ theorem expSeries_even_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : �
     norm_cast
     ring_nf
 
-/-- The odd terms of `expSeries` are real, and correspond to the series for
-$\frac{q}{‖q‖} \sin ‖q‖$. -/
+/--
+The odd terms of `expSeries` are real, and correspond to the series for
+$`\frac{q}{‖q‖} \sin ‖q‖`.
+-/
 theorem expSeries_odd_of_imaginary {q : Quaternion ℝ} (hq : q.re = 0) (n : ℕ) :
     expSeries ℝ (Quaternion ℝ) (2 * n + 1) (fun _ => q) =
       (((-1 : ℝ) ^ n * ‖q‖ ^ (2 * n + 1) / (2 * n + 1)!) / ‖q‖) • q := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Order
 public import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of field embeddings
 
@@ -18,9 +21,8 @@ extends to an embedding of E/F into K/F.
 
 ## References
 
-[Isaacs1980] *Roots of Polynomials in Algebraic Extensions of Fields*,
+‍\[Isaacs1980\] _Roots of Polynomials in Algebraic Extensions of Fields_,
 The American Mathematical Monthly
-
 -/
 
 @[expose] public section
@@ -95,12 +97,14 @@ theorem le_of_carrier_le_iSup {ι} {ρ : ι → Lifts F E K} {σ τ : Lifts F E 
     have ⟨i, hx⟩ := Set.mem_iUnion.mp hx
     ((hτ i).2 ⟨x, hx⟩).trans ((hσ i).2 ⟨x, hx⟩).symm⟩
 
-/-- `σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in [Isaacs1980]) if for every
+/--
+`σ : L →ₐ[F] K` is an extendible lift ("extendible pair" in \[Isaacs1980\]) if for every
 intermediate field `M` that is finite-dimensional over `L`, `σ` extends to some `M →ₐ[F] K`.
 In our definition we only require `M` to be finitely generated over `L`, which is equivalent
 if the ambient field `E` is algebraic over `F` (which is the case in our main application).
 We also allow the domain of the extension to be an intermediate field that properly contains `M`,
-since one can always restrict the domain to `M`. -/
+since one can always restrict the domain to `M`.
+-/
 def IsExtendible (σ : Lifts F E K) : Prop :=
   ∀ S : Finset E, ∃ τ ≥ σ, (S : Set E) ⊆ τ.carrier
 

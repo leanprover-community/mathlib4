@@ -9,14 +9,15 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 
 import Mathlib.Algebra.CharP.Algebra
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Characteristic of intermediate fields
 
 This file contains some convenient instances for determining the characteristic of
 intermediate fields. Some char zero instances are not provided, since they are already
 covered by `SubsemiringClass.instCharZero`.
-
 -/
 
 public section

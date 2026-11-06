@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.SimplicialSet.AnodyneExtensions.PairingCore
 public import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank functions for pairings
 
@@ -23,10 +26,9 @@ then `P.RankFunction ℕ` is non empty (TODO @joelriou).
 
 (We also introduce similar definitions for the structure `PairingCore`.)
 
-
 ## References
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 @[expose] public section

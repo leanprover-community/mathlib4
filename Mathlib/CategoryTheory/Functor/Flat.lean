@@ -16,13 +16,16 @@ import Mathlib.CategoryTheory.Filtered.Connected
 import Mathlib.CategoryTheory.Limits.Bicones
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representably flat functors
 
 We define representably flat functors as functors such that the category of structured arrows
-over `X` is cofiltered for each `X`. This concept is also known as flat functors as in [Elephant]
+over `X` is cofiltered for each `X`. This concept is also known as flat functors as in \[Elephant\]
 Remark C2.3.7, and this name is suggested by Mike Shulman in
-https://golem.ph.utexas.edu/category/2011/06/flat_functors_and_morphisms_of.html to avoid
+https://golem.ph.utexas.edu/category/2011/06/flat\_functors\_and\_morphisms\_of.html to avoid
 confusion with other notions of flatness (e.g. see the notion of flat type-valued
 functor in the file `Mathlib/CategoryTheory/Functor/TypeValuedFlat.lean`).
 
@@ -43,7 +46,6 @@ This definition is equivalent to left exact functors (functors that preserves fi
 * `preservesFiniteLimits_iff_lanPreservesFiniteLimits`: If `C`, `D` are small and `C` has all
   finite limits, then `F` preserves finite limits iff `Lan F.op : (Cᵒᵖ ⥤ Type*) ⥤ (Dᵒᵖ ⥤ Type*)`
   does.
-
 -/
 
 @[expose] public section

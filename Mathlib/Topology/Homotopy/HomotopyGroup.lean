@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.EckmannHilton
 
 import Mathlib.Algebra.Group.Ext
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `n`th homotopy group
 
@@ -36,9 +39,8 @@ We provide a group instance using path composition and show commutativity when `
 
 * `Ω^M (Ω^N X) ≃ₜ Ω^(M⊕N) X`, and `Ω^M X ≃ₜ Ω^N X` when `M ≃ N`. Similarly for `π_`.
 * Examples with `𝕊^n`: `π_n (𝕊^n) = ℤ`, `π_m (𝕊^n)` trivial for `m < n`.
-* Actions of π_1 on π_n.
+* Actions of π\_1 on π\_n.
 * Lie algebra: `⁅π_(n+1), π_(m+1)⁆` contained in `π_(n+m+1)`.
-
 -/
 
 @[expose] public section
@@ -62,13 +64,17 @@ def boundary (N : Type*) : Set (I^N) :=
 
 variable {N : Type*} [DecidableEq N]
 
-/-- The forward direction of the homeomorphism
-  between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
+/--
+The forward direction of the homeomorphism
+between the cube $`I^N` and $`I × I^{N\setminus\{j\}}`.
+-/
 abbrev splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
   funSplitAt I i
 
-/-- The backward direction of the homeomorphism
-  between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
+/--
+The backward direction of the homeomorphism
+between the cube $`I^N` and $`I × I^{N\setminus\{j\}}`.
+-/
 abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 
@@ -262,7 +268,9 @@ section LoopHomeo
 
 variable [DecidableEq N]
 
-/-- Loop from a generalized loop by currying $I^N → X$ into $I → (I^{N\setminus\{j\}} → X)$. -/
+/--
+Loop from a generalized loop by currying $`I^N → X` into $`I → (I^{N\setminus\{j\}} → X)`.
+-/
 @[simps]
 def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
@@ -282,7 +290,9 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
           continuous_id)
       _
 
-/-- Generalized loop from a loop by uncurrying $I → (I^{N\setminus\{j\}} → X)$ into $I^N → X$. -/
+/--
+Generalized loop from a loop by uncurrying $`I → (I^{N\setminus\{j\}} → X)` into $`I^N → X`.
+-/
 @[simps]
 def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
   ⟨(ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ p.toContinuousMap).uncurry.comp

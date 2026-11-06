@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Convex.StrictConvexSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniformly convex spaces
 
@@ -33,9 +36,11 @@ convex, uniformly convex
 
 public section
 
-/-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
+/--
+A _uniformly convex space_ is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
-by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
+by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant.
+-/
 class UniformConvexSpace (E : Type*) [SeminormedAddCommGroup E] : Prop where
   uniform_convex : ∀ ⦃ε : ℝ⦄,
     0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ

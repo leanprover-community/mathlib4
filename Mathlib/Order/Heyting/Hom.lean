@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Hom.BoundedLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Heyting algebra morphisms
 
@@ -63,9 +66,11 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
   /-- The proposition that a bi-Heyting homomorphism preserves the difference operation. -/
   protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 
-/-- `HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
+/--
+`HeytingHomClass F α β` states that `F` is a type of Heyting homomorphisms.
 
-You should extend this class when you extend `HeytingHom`. -/
+You should extend this class when you extend `HeytingHom`.
+-/
 class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [FunLike F α β] : Prop
     extends LatticeHomClass F α β where
   /-- The proposition that a Heyting homomorphism preserves the bottom element. -/
@@ -73,9 +78,11 @@ class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] 
   /-- The proposition that a Heyting homomorphism preserves the Heyting implication. -/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
 
-/-- `CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
+/--
+`CoheytingHomClass F α β` states that `F` is a type of co-Heyting homomorphisms.
 
-You should extend this class when you extend `CoheytingHom`. -/
+You should extend this class when you extend `CoheytingHom`.
+-/
 class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [FunLike F α β] :
     Prop
   extends LatticeHomClass F α β where
@@ -84,9 +91,11 @@ class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebr
   /-- The proposition that a co-Heyting homomorphism preserves the difference operation. -/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 
-/-- `BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
+/--
+`BiheytingHomClass F α β` states that `F` is a type of bi-Heyting homomorphisms.
 
-You should extend this class when you extend `BiheytingHom`. -/
+You should extend this class when you extend `BiheytingHom`.
+-/
 class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [FunLike F α β] :
     Prop
   extends LatticeHomClass F α β where
@@ -105,7 +114,9 @@ section Hom
 
 variable [FunLike F α β]
 
-/-! This section passes in some instances implicitly. See note [implicit instance arguments] -/
+/-!
+This section passes in some instances implicitly. See note \[implicit instance arguments\]
+-/
 
 -- See note [lower instance priority]
 instance (priority := 100) HeytingHomClass.toBoundedLatticeHomClass [HeytingAlgebra α]

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.RamificationInertia.Ramification
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Factorization of ideals and fractional ideals of Dedekind domains
 
@@ -22,36 +25,40 @@ Similarly, every nonzero fractional ideal `I` of a Dedekind domain `R` can be fa
 prove some of its properties. If `I = 0`, we define `val_v(I) = 0`.
 
 ## Main definitions
-- `FractionalIdeal.count` : If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of
+
+* `FractionalIdeal.count` : If `I` is a nonzero fractional ideal, `a ∈ R`, and `J` is an ideal of
   `R` such that `I = a⁻¹J`, then we define `val_v(I)` as `(val_v(J) - val_v(a))`. If `I = 0`, we
   set `val_v(I) = 0`.
 
 ## Main results
-- `Ideal.finite_factors` : Only finitely many maximal ideals of `R` divide a given nonzero ideal.
-- `Ideal.finprod_heightOneSpectrum_factorization` : The ideal `I` equals the finprod
+
+* `Ideal.finite_factors` : Only finitely many maximal ideals of `R` divide a given nonzero ideal.
+* `Ideal.finprod_heightOneSpectrum_factorization` : The ideal `I` equals the finprod
   `∏_v v^(val_v(I))`, where `val_v(I)` denotes the multiplicity of `v` in the factorization of `I`
   and `v` runs over the maximal ideals of `R`.
-- `FractionalIdeal.finprod_heightOneSpectrum_factorization` : If `I` is a nonzero fractional ideal,
+* `FractionalIdeal.finprod_heightOneSpectrum_factorization` : If `I` is a nonzero fractional ideal,
   `a ∈ R`, and `J` is an ideal of `R` such that `I = a⁻¹J`, then `I` is equal to the product
   `∏_v v^(val_v(J) - val_v(a))`.
-- `FractionalIdeal.finprod_heightOneSpectrum_factorization'` : If `I` is a nonzero fractional
+* `FractionalIdeal.finprod_heightOneSpectrum_factorization'` : If `I` is a nonzero fractional
   ideal, then `I` is equal to the product `∏_v v^(val_v(I))`.
-- `FractionalIdeal.finprod_heightOneSpectrum_factorization_principal` : For a nonzero `k = r/s ∈ K`,
+* `FractionalIdeal.finprod_heightOneSpectrum_factorization_principal` : For a nonzero `k = r/s ∈ K`,
   the fractional ideal `(k)` is equal to the product `∏_v v^(val_v(r) - val_v(s))`.
-- `FractionalIdeal.finite_factors` : If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many
+* `FractionalIdeal.finite_factors` : If `I ≠ 0`, then `val_v(I) = 0` for all but finitely many
   maximal ideals of `R`.
-- `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
+* `IsDedekindDomain.exists_sup_span_eq`: For all ideals `0 < I ≤ J`,
   there exists `a` such that `J = I + ⟨a⟩`.
-- `ClassGroup.exists_mk0_eq_and_isCoprime`: every ideal class contains an integral ideal coprime
+* `ClassGroup.exists_mk0_eq_and_isCoprime`: every ideal class contains an integral ideal coprime
   to a given nonzero ideal.
-- `Ideal.map_algebraMap_eq_finsetProd_pow`: if `p` is a maximal ideal, then the lift of `p`
+* `Ideal.map_algebraMap_eq_finsetProd_pow`: if `p` is a maximal ideal, then the lift of `p`
   in an extension is the product of the primes over `p` to the power the ramification index.
 
 ## Implementation notes
+
 Since we are only interested in the factorization of nonzero fractional ideals, we define
 `val_v(0) = 0` so that every `val_v` is in `ℤ` and we can avoid having to use `WithTop ℤ`.
 
 ## Tags
+
 dedekind domain, fractional ideal, ideal, factorization
 -/
 
@@ -65,7 +72,9 @@ open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.He
 
 variable {R : Type*} [CommRing R] {K : Type*} [Field K] [Algebra R K] [IsFractionRing R K]
 
-/-! ### Factorization of ideals of Dedekind domains -/
+/-!
+# Factorization of ideals of Dedekind domains
+-/
 
 variable [IsDedekindDomain R] (v : HeightOneSpectrum R)
 
@@ -234,7 +243,9 @@ theorem finprod_heightOneSpectrum_factorization_coe {I : Ideal R} (hI : I ≠ 0)
 
 end Ideal
 
-/-! ### Factorization of fractional ideals of Dedekind domains -/
+/-!
+# Factorization of fractional ideals of Dedekind domains
+-/
 
 namespace FractionalIdeal
 
@@ -846,7 +857,7 @@ theorem Ideal.map_algebraMap_eq_finsetProd_pow {p : Ideal S} [p.IsMaximal] (hp :
 end primesOver
 
 /-!
-### Conversion between various multiplicities
+# Conversion between various multiplicities
 
 We provide some lemmas that convert various ways of expressing the multiplicity of
 a prime ideal `p` in the factorization of some ideal `I` into `multiplicity p.asIdeal I`.
@@ -891,7 +902,7 @@ end IsDedekindDomain.HeightOneSpectrum
 end conversion
 
 /-!
-### Lemmas about multiplicities
+# Lemmas about multiplicities
 
 We collect here lemmas about the multiplicity of a prime ideal `p` in the factorization
 of some ideal `I`.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Logic.Function.Conjugate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Iterations of a function
 
@@ -15,19 +18,14 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 * `iterate_zero`, `iterate_succ`, `iterate_succ'`, `iterate_add`, `iterate_mul`:
   formulas for `f^[0]`, `f^[n+1]` (two versions), `f^[n+m]`, and `f^[n*m]`;
-
 * `iterate_id` : `id^[n]=id`;
-
 * `Injective.iterate`, `Surjective.iterate`, `Bijective.iterate` :
   iterates of an injective/surjective/bijective function belong to the same class;
-
 * `LeftInverse.iterate`, `RightInverse.iterate`, `Commute.iterate_left`, `Commute.iterate_right`,
   `Commute.iterate_iterate`:
   some properties of pairs of functions survive under iterations
-
 * `iterate_fixed`, `Function.Semiconj.iterate_*`, `Function.Semiconj₂.iterate`:
   if `f` fixes a point (resp., semiconjugates unary/binary operations), then so does `f^[n]`.
-
 -/
 
 @[expose] public section

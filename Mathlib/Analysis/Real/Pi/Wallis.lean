@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
-/-! # The Wallis formula for Pi
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The Wallis formula for Pi
 
 This file establishes the Wallis product for `π` (`Real.tendsto_prod_pi_div_two`). Our proof is
 largely about analyzing the behaviour of the sequence `∫ x in 0..π, sin x ^ n` as `n → ∞`.
-See: https://en.wikipedia.org/wiki/Wallis_product
+See: https://en.wikipedia.org/wiki/Wallis\_product
 
 The proof can be broken down into two pieces. The first step (carried out in
 `Mathlib/Analysis/SpecialFunctions/Integrals/Basic.lean`) is to use repeated integration by parts to

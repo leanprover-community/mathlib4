@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak limits
 
@@ -27,8 +30,7 @@ if it has weak kernels.
 
 ## References
 
-* [Peter J Freyd, *Representations in Abelian categories*, p. 99][freyd1966repabelian]
-
+* ‍\[Peter J Freyd, _Representations in Abelian categories_, p. 99\]\[freyd1966repabelian\]
 -/
 
 @[expose] public section

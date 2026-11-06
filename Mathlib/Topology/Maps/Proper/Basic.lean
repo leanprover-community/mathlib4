@@ -7,17 +7,21 @@ module
 
 public import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Proper maps between topological spaces
 
 This file develops the basic theory of proper maps between topological spaces. A map `f : X → Y`
-between two topological spaces is said to be **proper** if it is continuous and satisfies
+between two topological spaces is said to be *proper* if it is continuous and satisfies
 the following equivalent conditions:
+
 1. `f` is closed and has compact fibers.
-2. `f` is **universally closed**, in the sense that for any topological space `Z`, the map
-  `Prod.map f id : X × Z → Y × Z` is closed.
+2. `f` is *universally closed*, in the sense that for any topological space `Z`, the map
+   `Prod.map f id : X × Z → Y × Z` is closed.
 3. For any `ℱ : Filter X`, all cluster points of `map f ℱ` are images by `f` of some cluster point
-  of `ℱ`.
+   of `ℱ`.
 
 We take 3 as the definition in `IsProperMap`, and we show the equivalence with 1, 2, and some
 other variations.
@@ -32,10 +36,10 @@ other variations.
 
 ## Implementation notes
 
-In algebraic geometry, it is common to also ask that proper maps are *separated*, in the sense of
+In algebraic geometry, it is common to also ask that proper maps are _separated_, in the sense of
 [Stacks: definition OCY1](https://stacks.math.columbia.edu/tag/0CY1). We don't follow this
 convention because it is unclear whether it would give the right notion in all cases, and in
-particular for the theory of proper group actions. That means that our terminology does **NOT**
+particular for the theory of proper group actions. That means that our terminology does *NOT*
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
 
@@ -45,7 +49,7 @@ as usual. In particular, their arguments rely heavily on restriction of closed m
 In contrast, the filter-based proofs work really well thanks to the existing API.
 
 In fact, the filter proofs work so well that I thought this would be a great pedagogical resource
-about how we use filters. For that reason, **all interesting proofs in this file are commented**,
+about how we use filters. For that reason, *all interesting proofs in this file are commented*,
 so don't hesitate to have a look!
 
 ## TODO
@@ -56,7 +60,7 @@ so don't hesitate to have a look!
 
 ## References
 
-* [N. Bourbaki, *General Topology*][bourbaki1966]
+* ‍\[N. Bourbaki, _General Topology_\]\[bourbaki1966\]
 * [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M)
 -/
 
@@ -347,10 +351,12 @@ theorem IsProperMap.universally_closed (Z) [TopologicalSpace Z] (h : IsProperMap
   -- `f × id` is proper as a product of proper maps, hence closed.
   (h.prodMap isProperMap_id).isClosedMap
 
-/-- A function into a compact space with a closed graph is continuous.
+/--
+A function into a compact space with a closed graph is continuous.
 
 For the closed graph theorem of functional analysis, about linear maps between Banach spaces, see
-`LinearMap.continuous_of_isClosed_graph`. -/
+`LinearMap.continuous_of_isClosed_graph`.
+-/
 theorem continuous_of_isClosed_graph [CompactSpace Y] (hf : IsClosed f.graph) : Continuous f := by
   rw [continuous_iff_isClosed]
   intro C hC

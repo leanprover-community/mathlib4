@@ -10,7 +10,11 @@ public import Mathlib.Analysis.Normed.Module.Multilinear.Basic
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
 
-/-! # Completeness of spaces of linear and multilinear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Completeness of spaces of linear and multilinear maps
 
 If `E` is a nontrivial normed space over a nontrivially normed field `𝕜`, and `E` has a
 separating dual, then for any normed space `F`, the completeness of the space of continuous

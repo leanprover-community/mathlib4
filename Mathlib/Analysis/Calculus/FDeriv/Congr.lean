@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Fréchet derivative: congruence properties
 
@@ -15,7 +18,6 @@ Lemmas about congruence properties of the Fréchet derivative under change of fu
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
-
 -/
 
 public section
@@ -37,7 +39,9 @@ variable {L : Filter (E × E)}
 
 section congr
 
-/-! ### congr properties of the derivative -/
+/-!
+# congr properties of the derivative
+-/
 
 theorem hasFDerivWithinAt_congr_set_nhdsNE (h : s =ᶠ[𝓝[≠] x] t) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivWithinAt f f' t x :=

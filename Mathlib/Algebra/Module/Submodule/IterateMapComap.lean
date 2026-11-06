@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Iterate maps and comaps of submodules
 
 Some preliminary work for establishing the strong rank condition for Noetherian rings.
@@ -28,8 +30,7 @@ then `f` is injective. This is the key result for establishing the strong rank c
 for Noetherian rings.
 
 The construction here is adapted from the proof in Djoković's paper
-*Epimorphisms of modules which must be isomorphisms* [djokovic1973].
-
+_Epimorphisms of modules which must be isomorphisms_ \[djokovic1973\].
 -/
 
 @[expose] public section

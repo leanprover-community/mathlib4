@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restrict the domain of a function to a set
 
@@ -24,7 +27,9 @@ open Equiv.Perm Function
 
 namespace Set
 
-/-! ### Domain restriction -/
+/-!
+# Domain restriction
+-/
 section domRestrict
 
 /-- Restrict domain of a function `f` to a set `s`. Same as `Subtype.restrict` but this version
@@ -279,7 +284,9 @@ theorem surjective_mapsTo_image_restrict (f : α → β) (s : Set α) :
 
 end MapsTo
 
-/-! ### Restriction onto preimage -/
+/-!
+# Restriction onto preimage
+-/
 section
 
 variable (t)
@@ -323,7 +330,9 @@ alias _root_.Function.Bijective.restrictPreimage := Set.restrictPreimage_bijecti
 
 end
 
-/-! ### Injectivity on a set -/
+/-!
+# Injectivity on a set
+-/
 section injOn
 
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.domRestrict f) :=
@@ -338,7 +347,9 @@ theorem MapsTo.restrict_inj (h : MapsTo f s t) : Injective (h.restrict f s t) �
 
 end injOn
 
-/-! ### Surjectivity on a set -/
+/-!
+# Surjectivity on a set
+-/
 section surjOn
 
 theorem surjOn_iff_surjective : SurjOn f s univ ↔ Surjective (s.domRestrict f) :=

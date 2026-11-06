@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.BoxIntegral.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divergence integral for Henstock-Kurzweil integral
 
@@ -136,7 +139,8 @@ theorem norm_volume_sub_integral_face_upper_sub_lower_smul_le {f : (Fin (n + 1) 
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
-/-- If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
+/--
+If `f : ℝⁿ⁺¹ → E` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the partial derivative `fun x ↦ f' x (Pi.single i 1)` is Henstock-Kurzweil integrable with integral
 equal to the difference of integrals of `f` over the faces `x i = I.upper i` and `x i = I.lower i`.
 
@@ -145,7 +149,8 @@ we allow `f` to be non-differentiable (but still continuous) at a countable set 
 
 TODO: If `n > 0`, then the condition at `x ∈ s` can be replaced by a much weaker estimate but this
 requires either better integrability theorems, or usage of a filter depending on the countable set
-`s` (we need to ensure that none of the faces of a partition contain a point from `s`). -/
+`s` (we need to ensure that none of the faces of a partition contain a point from `s`).
+-/
 theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] E) (s : Set (Fin (n + 1) → ℝ))
     (hs : s.Countable) (Hs : ∀ x ∈ s, ContinuousWithinAt f (Box.Icc I) x)
@@ -251,14 +256,16 @@ theorem hasIntegral_GP_pderiv (f : (Fin (n + 1) → ℝ) → E)
       gcongr
       exacts [by dsimp; positivity, by simp]
 
-/-- Divergence theorem for a Henstock-Kurzweil style integral.
+/--
+Divergence theorem for a Henstock-Kurzweil style integral.
 
 If `f : ℝⁿ⁺¹ → Eⁿ⁺¹` is differentiable on a closed rectangular box `I` with derivative `f'`, then
 the divergence `∑ i, f' x (Pi.single i 1) i` is Henstock-Kurzweil integrable with integral equal to
 the sum of integrals of `f` over the faces of `I` taken with appropriate signs.
 
 More precisely, we use a non-standard generalization of the Henstock-Kurzweil integral and
-we allow `f` to be non-differentiable (but still continuous) at a countable set of points. -/
+we allow `f` to be non-differentiable (but still continuous) at a countable set of points.
+-/
 theorem hasIntegral_GP_divergence_of_forall_hasDerivWithinAt
     (f : (Fin (n + 1) → ℝ) → Fin (n + 1) → E)
     (f' : (Fin (n + 1) → ℝ) → (Fin (n + 1) → ℝ) →L[ℝ] (Fin (n + 1) → E))

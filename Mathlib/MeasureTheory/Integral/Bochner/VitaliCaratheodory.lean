@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vitali-Carathéodory theorem
 
@@ -64,8 +67,7 @@ See result `MeasureTheory.Lp.boundedContinuousFunction_dense`, in the file
 
 ## References
 
-[Rudin, *Real and Complex Analysis* (Theorem 2.24)][rudin1987]
-
+‍\[Rudin, _Real and Complex Analysis_ (Theorem 2.24)\]\[rudin1987\]
 -/
 
 public section
@@ -82,7 +84,9 @@ namespace MeasureTheory
 
 local infixr:25 " →ₛ " => SimpleFunc
 
-/-! ### Lower semicontinuous upper bound for nonnegative functions -/
+/-!
+# Lower semicontinuous upper bound for nonnegative functions
+-/
 
 
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
@@ -298,7 +302,9 @@ theorem exists_lt_lowerSemicontinuous_integral_gt_nnreal [SigmaFinite μ] (f : �
     · apply Filter.Eventually.of_forall fun x => _; simp
     · apply gcont.measurable.ennreal_toReal.aemeasurable.aestronglyMeasurable
 
-/-! ### Upper semicontinuous lower bound for nonnegative functions -/
+/-!
+# Upper semicontinuous lower bound for nonnegative functions
+-/
 
 
 /-- Given a simple function `f` with values in `ℝ≥0`, there exists an upper semicontinuous
@@ -414,7 +420,9 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
     · apply Filter.Eventually.of_forall; simp
     · exact fint.aestronglyMeasurable
 
-/-! ### Vitali-Carathéodory theorem -/
+/-!
+# Vitali-Carathéodory theorem
+-/
 
 
 /-- **Vitali-Carathéodory Theorem**: given an integrable real function `f`, there exists an

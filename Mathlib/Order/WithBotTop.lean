@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adding both `⊥` and `⊤` to a type
 

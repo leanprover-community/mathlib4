@@ -8,9 +8,11 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.Probability.Kernel.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bochner integrals of kernels
-
 -/
 
 public section

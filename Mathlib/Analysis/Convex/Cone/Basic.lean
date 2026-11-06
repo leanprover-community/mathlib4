@@ -12,10 +12,13 @@ public import Mathlib.Topology.Algebra.Order.Module
 public import Mathlib.Topology.Order.DenselyOrdered
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Proper cones
 
-We define a *proper cone* as a closed, pointed cone. Proper cones are used in defining conic
+We define a _proper cone_ as a closed, pointed cone. Proper cones are used in defining conic
 programs which generalize linear programs. A linear program is a conic program for the positive
 cone. We then prove Farkas' lemma for conic programs following the proof in the reference below.
 Farkas' lemma is equivalent to strong duality. So, once we have the definitions of conic and
@@ -31,16 +34,16 @@ assuming `𝕜` is a dense topological field.
 ## TODO
 
 The next steps are:
-- Add `ConvexConeClass` that extends `SetLike` and replace the below instance
-- Define primal and dual cone programs and prove weak duality.
-- Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
-- Define linear programs and prove LP duality as a special case of cone duality.
-- Find a better reference (textbook instead of lecture notes).
+
+* Add `ConvexConeClass` that extends `SetLike` and replace the below instance
+* Define primal and dual cone programs and prove weak duality.
+* Prove regular and strong duality for cone programs using Farkas' lemma (see reference).
+* Define linear programs and prove LP duality as a special case of cone duality.
+* Find a better reference (textbook instead of lecture notes).
 
 ## References
 
-- [B. Gartner and J. Matousek, Cone Programming][gartnerMatousek]
-
+* ‍\[B. Gartner and J. Matousek, Cone Programming\]\[gartnerMatousek\]
 -/
 
 @[expose] public section
@@ -64,9 +67,11 @@ namespace ProperCone
 section Module
 variable {C C₁ C₂ : ProperCone R E} {r : R} {x : E}
 
-/-- Any proper cone can be seen as a pointed cone.
+/--
+Any proper cone can be seen as a pointed cone.
 
-This is an alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability. -/
+This is an alias of `ClosedSubmodule.toSubmodule` for convenience and discoverability.
+-/
 @[coe] abbrev toPointedCone (C : ProperCone R E) : PointedCone R E := C.toSubmodule
 
 instance : Coe (ProperCone R E) (PointedCone R E) := ⟨toPointedCone⟩
@@ -121,9 +126,11 @@ lemma mem_comap {C : ProperCone R F} {f : E →L[R] F} : x ∈ C.comap f ↔ f x
 
 variable [ContinuousAdd F] [ContinuousConstSMul R F]
 
-/-- The closure of image of a proper cone under a linear map is a proper cone.
+/--
+The closure of image of a proper cone under a linear map is a proper cone.
 
-We use continuous maps here to match `ProperCone.comap`. -/
+We use continuous maps here to match `ProperCone.comap`.
+-/
 abbrev map (f : E →L[R] F) (C : ProperCone R E) : ProperCone R F :=
   ClosedSubmodule.map (f.restrictScalars R≥0) C
 
@@ -157,7 +164,7 @@ end PositiveCone
 end ProperCone
 
 /-!
-### Topological properties of convex cones
+# Topological properties of convex cones
 
 This section proves topological results about convex cones.
 -/

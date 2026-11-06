@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Ring.CentroidHom
 public import Mathlib.Algebra.Star.StarRingHom
 public import Mathlib.Algebra.Star.Subsemiring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centroid homomorphisms on Star Rings
 

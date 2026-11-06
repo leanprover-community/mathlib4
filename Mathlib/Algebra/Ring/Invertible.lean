@@ -8,9 +8,11 @@ module
 public import Mathlib.Algebra.GroupWithZero.Invertible
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theorems about additively and multiplicatively invertible elements in rings
-
 -/
 
 @[expose] public section

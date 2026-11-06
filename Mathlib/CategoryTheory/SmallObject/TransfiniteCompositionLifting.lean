@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 public import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 public import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The left lifting property is stable under transfinite composition
 
@@ -43,12 +46,13 @@ F.obj j     | p
    v    g   v
   c.pt ---> Y
 ```
+
 This is constructed by transfinite induction on `j`:
+
 * When `j = ⊥`, this is `f`;
 * In order to pass from `j` to `Order.succ j`, we use the assumption that
   `F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
 * When `j` is a limit element, we use the "continuity" of `F`.
-
 -/
 
 @[expose] public section
@@ -70,7 +74,8 @@ namespace transfiniteComposition
 variable {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
   {X Y : C} (p : X ⟶ Y) (f : F.obj ⊥ ⟶ X) (g : c.pt ⟶ Y)
 
-/-- Given a cocone `c` for a functor `F : J ⥤ C` from a well-ordered type,
+/--
+Given a cocone `c` for a functor `F : J ⥤ C` from a well-ordered type,
 and maps `p : X ⟶ Y`, `f : F.obj ⊥ ⟶ X`, `g : c.pt ⟶ Y`, this structure
 contains the data of a map `F.obj j ⟶ X` such that `F.map (homOfLE bot_le) ≫ f' = f`
 and `f' ≫ p = c.ι.app j ≫ g`. (This implies that the outer square below
@@ -109,6 +114,7 @@ lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
 
 /--
 Given `sq' : SqStruct c p f g j`, this is the commutative square
+
 ```
                sq'.f'
 F.obj j --------------------> X
@@ -120,7 +126,8 @@ F.obj (succ j) ---> c.pt ---> Y
 
 (Using the lifting property for this square is the key ingredient
 in the proof that the left lifting property with respect to `p`
-is stable under transfinite composition.) -/
+is stable under transfinite composition.)
+-/
 lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp

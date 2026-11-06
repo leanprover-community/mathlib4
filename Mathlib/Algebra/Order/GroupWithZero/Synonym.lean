@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Defs
 public import Mathlib.Algebra.Order.Group.Synonym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group with zero structure on the order type synonyms
 
@@ -19,7 +22,9 @@ public section
 variable {α : Type*}
 
 
-/-! ### Order dual -/
+/-!
+# Order dual
+-/
 
 
 namespace OrderDual
@@ -51,7 +56,9 @@ instance [CommGroupWithZero α] : CommGroupWithZero αᵒᵈ := inferInstanceAs 
 
 end OrderDual
 
-/-! ### Lexicographic order -/
+/-!
+# Lexicographic order
+-/
 
 
 namespace Lex

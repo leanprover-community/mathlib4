@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences and sets
 
@@ -43,9 +46,11 @@ end EquivLike
 namespace Set
 variable {α : Type*} {s t : Set α}
 
-/-- The subtypes corresponding to equal sets are equivalent.
+/--
+The subtypes corresponding to equal sets are equivalent.
 
-See also `Finset.equivOfEq`. -/
+See also `Finset.equivOfEq`.
+-/
 @[simps! apply symm_apply]
 def equivOfEq (h : s = t) : s ≃ t := Equiv.subtypeEquivProp <| h ▸ rfl
 
@@ -170,9 +175,11 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   toFun x := ⟨x.1.1, x.1.2, by simp⟩
   invFun x := ⟨(x.1, x.2.1), x.2.2⟩
 
-/-- If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
+/--
+If `α` is equivalent to `β`, then `Set α` is equivalent to `Set β`.
 
-See also `Equiv.finsetCongr`. -/
+See also `Equiv.finsetCongr`.
+-/
 @[simps]
 def setCongr {α β : Type*} (e : α ≃ β) : Set α ≃ Set β :=
   ⟨fun s => e '' s, fun t => e.symm '' t, symm_image_image e, symm_image_image e.symm⟩
@@ -301,9 +308,11 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
     Equiv.Set.insert H ⟨b, Or.inr b.2⟩ = Sum.inl b :=
   (Equiv.Set.insert H).eq_symm_apply.1 rfl
 
-/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
+/--
+If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
 
-See also `Equiv.sumCompl`. -/
+See also `Equiv.sumCompl`.
+-/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
   Equiv.sumCompl (· ∈ s)
 
@@ -513,13 +522,15 @@ def rangeInr (α β : Type*) : Set.range (Sum.inr : β → α ⊕ β) ≃ β whe
 
 end Set
 
-/-- If `f : α → β` has a left-inverse when `α` is nonempty, then `α` is computably equivalent to the
+/--
+If `f : α → β` has a left-inverse when `α` is nonempty, then `α` is computably equivalent to the
 range of `f`.
 
 While awkward, the `Nonempty α` hypothesis on `f_inv` and `hf` allows this to be used when `α` is
 empty too. This hypothesis is absent on analogous definitions on stronger `Equiv`s like
 `LinearEquiv.ofLeftInverse` and `RingEquiv.ofLeftInverse` as their typeclass assumptions
-are already sufficient to ensure non-emptiness. -/
+are already sufficient to ensure non-emptiness.
+-/
 @[simps]
 def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β → α)
     (hf : ∀ h : Nonempty α, LeftInverse (f_inv h) f) :
@@ -530,10 +541,12 @@ def ofLeftInverse {α β : Sort _} (f : α → β) (f_inv : Nonempty α → β �
   right_inv := fun ⟨b, a, ha⟩ =>
     Subtype.ext <| show f (f_inv ⟨a⟩ b) = b from Eq.trans (congr_arg f <| ha ▸ hf _ a) ha
 
-/-- If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
+/--
+If `f : α → β` has a left-inverse, then `α` is computably equivalent to the range of `f`.
 
 Note that if `α` is empty, no such `f_inv` exists and so this definition can't be used, unlike
-the stronger but less convenient `ofLeftInverse`. -/
+the stronger but less convenient `ofLeftInverse`.
+-/
 abbrev ofLeftInverse' {α β : Sort _} (f : α → β) (f_inv : β → α) (hf : LeftInverse f_inv f) :
     α ≃ range f :=
   ofLeftInverse f (fun _ => f_inv) fun _ => hf

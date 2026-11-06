@@ -11,10 +11,14 @@ import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Subobject.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoint functor theorem
 
 This file proves the (general) adjoint functor theorem, in the form:
+
 * If `G : D ⥤ C` preserves limits and `D` has limits, and satisfies the solution set condition,
   then it has a left adjoint: `isRightAdjoint_of_preservesLimits_of_solutionSetCondition`.
 
@@ -22,20 +26,21 @@ We show that the converse holds, i.e. that if `G` has a left adjoint then it sat
 set condition, see `solutionSetCondition_of_isRightAdjoint`
 (the file `CategoryTheory/Adjunction/Limits` already shows it preserves limits).
 
-We define the *solution set condition* for the functor `G : D ⥤ C` to mean, for every object
-`A : C`, there is a set-indexed family ${f_i : A ⟶ G (B_i)}$ such that any morphism `A ⟶ G X`
+We define the _solution set condition_ for the functor `G : D ⥤ C` to mean, for every object
+`A : C`, there is a set-indexed family $`{f_i : A ⟶ G (B_i)}` such that any morphism `A ⟶ G X`
 factors through one of the `f_i`.
 
 This file also proves the special adjoint functor theorem, in the form:
+
 * If `G : D ⥤ C` preserves limits and `D` is complete, well-powered and has a small coseparating
   set, then `G` has a left adjoint: `isRightAdjoint_of_preservesLimits_of_isCoseparating`
 
 Finally, we prove the following corollaries of the special adjoint functor theorem:
+
 * If `C` is complete, well-powered and has a small coseparating set, then it is cocomplete:
   `hasColimits_of_hasLimits_of_isCoseparating`, `hasColimits_of_hasLimits_of_hasCoseparator`
 * If `C` is cocomplete, co-well-powered and has a small separating set, then it is complete:
   `hasLimits_of_hasColimits_of_isSeparating`, `hasLimits_of_hasColimits_of_hasSeparator`
-
 -/
 
 @[expose] public section
@@ -49,7 +54,8 @@ open Limits
 
 variable {C : Type u} [Category.{v} C]
 
-/-- The functor `G : D ⥤ C` satisfies the *solution set condition* if for every `A : C`, there is a
+/--
+The functor `G : D ⥤ C` satisfies the _solution set condition_ if for every `A : C`, there is a
 family of morphisms `{f_i : A ⟶ G (B_i) // i ∈ ι}` such that given any morphism `h : A ⟶ G X`,
 there is some `i ∈ ι` such that `h` factors through `f_i`.
 

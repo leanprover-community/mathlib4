@@ -16,6 +16,9 @@ public import Mathlib.Analysis.Normed.Ring.Finite
 public import Mathlib.Analysis.Real.Sqrt
 public import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `RCLike`: a typeclass for ℝ or ℂ
 
@@ -38,7 +41,7 @@ The coercion from reals into an `RCLike` field is done by registering `RCLike.of
 a `CoeTC`. For this to work, we must proceed carefully to avoid problems involving circular
 coercions in the case `K=ℝ`; in particular, we cannot use the plain `Coe` and must set
 priorities carefully. This problem was already solved for `ℕ`, and we copy the solution detailed
-in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note [coercion into rings] for more details.
+in `Mathlib/Data/Nat/Cast/Defs.lean`. See also Note \[coercion into rings\] for more details.
 
 In addition, several lemmas need to be set at priority 900 to make sure that they do not override
 their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter errors).
@@ -97,8 +100,10 @@ namespace RCLike
 /-- Coercion from `ℝ` to an `RCLike` field. -/
 @[coe] abbrev ofReal : ℝ → K := Algebra.cast
 
-/-- The priority must be set at 900 to ensure that coercions are tried in the right order.
-See Note [coercion into rings], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details. -/
+/--
+The priority must be set at 900 to ensure that coercions are tried in the right order.
+See Note \[coercion into rings\], or `Mathlib/Data/Nat/Cast/Basic.lean` for more details.
+-/
 noncomputable instance (priority := 900) algebraMapCoe : CoeTC ℝ K :=
   ⟨ofReal⟩
 
@@ -255,7 +260,9 @@ theorem re_ofReal_pow (a : ℝ) (n : ℕ) : re ((a : K) ^ n) = a ^ n := by
 theorem im_ofReal_pow (a : ℝ) (n : ℕ) : im ((a : K) ^ n) = 0 := by
   rw [← @ofReal_pow, @ofReal_im_ax]
 
-/-! ### Characteristic zero -/
+/-!
+# Characteristic zero
+-/
 
 -- see Note [lower instance priority]
 /-- ℝ and ℂ are both of characteristic zero. -/
@@ -273,7 +280,9 @@ lemma ofReal_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) (i : ι) :
 @[simp] lemma ofReal_comp_balance {ι : Type*} [Fintype ι] (f : ι → ℝ) :
     ofReal ∘ balance f = balance (ofReal ∘ f : ι → K) := funext <| ofReal_balance _
 
-/-! ### The imaginary unit, `I` -/
+/-!
+# The imaginary unit, `I`
+-/
 
 /-- The imaginary unit. -/
 @[simp, rclike_simps]
@@ -481,7 +490,9 @@ theorem normSq_sub (z w : K) : normSq (z - w) = normSq z + normSq w - 2 * re (z 
 theorem sqrt_normSq_eq_norm {z : K} : √(normSq z) = ‖z‖ := by
   rw [normSq_eq_def', Real.sqrt_sq (norm_nonneg _)]
 
-/-! ### Inversion -/
+/-!
+# Inversion
+-/
 
 @[rclike_simps, norm_cast]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : K) = (r : K)⁻¹ :=
@@ -578,7 +589,9 @@ instance : StarModule ℝ K where
   star_smul r a := by
     apply RCLike.ext <;> simp [RCLike.smul_re, RCLike.smul_im]
 
-/-! ### Cast lemmas -/
+/-!
+# Cast lemmas
+-/
 
 @[rclike_simps, norm_cast]
 theorem ofReal_natCast (n : ℕ) : ((n : ℝ) : K) = n :=
@@ -652,7 +665,9 @@ theorem ofScientific_re (m : ℕ) (s : Bool) (e : ℕ) :
 theorem ofScientific_im (m : ℕ) (s : Bool) (e : ℕ) :
     im (ofScientific m s e : K) = 0 := by rw [← ofReal_ofScientific, ofReal_im]
 
-/-! ### Norm -/
+/-!
+# Norm
+-/
 
 theorem norm_of_nonneg {r : ℝ} (h : 0 ≤ r) : ‖(r : K)‖ = r :=
   (norm_ofReal _).trans (abs_of_nonneg h)
@@ -749,7 +764,9 @@ instance : NormSMulClass ℤ K where
   norm_smul r x := by
     rw [zsmul_eq_mul, norm_mul, ← ofReal_intCast, norm_ofReal, Int.norm_eq_abs]
 
-/-! ### Cauchy sequences -/
+/-!
+# Cauchy sequences
+-/
 
 theorem isCauSeq_re (f : CauSeq K norm) : IsCauSeq abs fun n => re (f n) := fun _ ε0 =>
   (f.cauchy ε0).imp fun i H j ij =>
@@ -933,10 +950,12 @@ protected lemma inv_pos : 0 < z⁻¹ ↔ 0 < z := by
   rw [← inv_inv z]
   exact RCLike.inv_pos_of_pos h
 
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
+/--
+With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
-Note this is only an instance with `open scoped ComplexOrder`. -/
+Note this is only an instance with `open scoped ComplexOrder`.
+-/
 lemma toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
@@ -960,9 +979,11 @@ lemma toIsOrderedAddMonoid : IsOrderedAddMonoid K where
 
 scoped[ComplexOrder] attribute [instance] RCLike.toIsOrderedAddMonoid
 
-/-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
+/--
+With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are strictly ordered rings.
 
-Note this is only an instance with `open scoped ComplexOrder`. -/
+Note this is only an instance with `open scoped ComplexOrder`.
+-/
 lemma toIsStrictOrderedRing : IsStrictOrderedRing K :=
   .of_mul_pos fun z w hz hw ↦ by
     rw [lt_iff_re_im, map_zero] at hz hw ⊢
@@ -1238,7 +1259,7 @@ scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosedTopology
 end LinearMaps
 
 /-!
-### ℝ-dependent results
+# ℝ-dependent results
 
 Here we gather results that depend on whether `K` is `ℝ`.
 -/

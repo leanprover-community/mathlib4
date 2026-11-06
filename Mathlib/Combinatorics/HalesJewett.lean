@@ -12,22 +12,25 @@ import Mathlib.Basic.Finite.Prod
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Hales-Jewett theorem
 
 We prove the Hales-Jewett theorem. We deduce Van der Waerden's theorem and the multidimensional
 Hales-Jewett theorem as corollaries.
 
-The Hales-Jewett theorem is a result in Ramsey theory dealing with *combinatorial lines*. Given
+The Hales-Jewett theorem is a result in Ramsey theory dealing with _combinatorial lines_. Given
 an 'alphabet' `α : Type*` and `a b : α`, an example of a combinatorial line in `α^5` is
 `{ (a, x, x, b, x) | x : α }`. See `Combinatorics.Line` for a precise general definition. The
 Hales-Jewett theorem states that for any fixed finite types `α` and `κ`, there exists a (potentially
 huge) finite type `ι` such that whenever `ι → α` is `κ`-colored (i.e. for any coloring
 `C : (ι → α) → κ`), there exists a monochromatic line. We prove the Hales-Jewett theorem using
-the idea of *color focusing* and a *product argument*. See the proof of
+the idea of _color focusing_ and a _product argument_. See the proof of
 `Combinatorics.Line.exists_mono_in_high_dimension'` for details.
 
-*Combinatorial subspaces* are higher-dimensional analogues of combinatorial lines. See
+_Combinatorial subspaces_ are higher-dimensional analogues of combinatorial lines. See
 `Combinatorics.Subspace`. The multidimensional Hales-Jewett theorem generalises the statement above
 from combinatorial lines to combinatorial subspaces of a fixed dimension.
 
@@ -38,9 +41,9 @@ to `∑ i : ι, v i`, which sends a combinatorial line to a homothetic copy of `
 
 ## Main results
 
-- `Combinatorics.Line.exists_mono_in_high_dimension`: The Hales-Jewett theorem.
-- `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
-- `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
+* `Combinatorics.Line.exists_mono_in_high_dimension`: The Hales-Jewett theorem.
+* `Combinatorics.Subspace.exists_mono_in_high_dimension`: The multidimensional Hales-Jewett theorem.
+* `Combinatorics.exists_mono_homothetic_copy`: A generalization of Van der Waerden's theorem.
 
 ## Implementation details
 
@@ -51,10 +54,9 @@ allows us to work directly with `α`, `Option α`, `(ι → α) → κ`, and `ι
 
 ## TODO
 
-- Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
+* Prove a finitary version of Van der Waerden's theorem (either by compactness or by modifying the
   current proof).
-
-- One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
+* One could reformulate the proof of Hales-Jewett to give explicit upper bounds on the number of
   coordinates needed.
 
 ## Tags
@@ -63,8 +65,7 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 ### References
 
-* https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett_theorem
-
+* https://en.wikipedia.org/wiki/Hales%E2%80%93Jewett\_theorem
 -/
 
 @[expose] public section
@@ -77,7 +78,8 @@ variable {η α ι κ : Type*}
 
 namespace Combinatorics
 
-/-- The type of combinatorial subspaces. A subspace `l : Subspace η α ι` in the hypercube `ι → α`
+/--
+The type of combinatorial subspaces. A subspace `l : Subspace η α ι` in the hypercube `ι → α`
 defines a function `(η → α) → ι → α` from `η → α` to the hypercube, such that for each coordinate
 `i : ι` and direction `e : η`, the function `fun x ↦ l x i` is either `fun x ↦ x e` for some
 direction `e : η` or constant. We require subspaces to be non-degenerate in the sense that, for
@@ -87,7 +89,8 @@ Formally, a subspace is represented by a word `l.idxFun : ι → α ⊕ η` whic
 `fun x ↦ l x i` is `fun x ↦ x e` (corresponding to `l.idxFun i = Sum.inr e`) or constantly `a`
 (corresponding to `l.idxFun i = Sum.inl a`).
 
-When `α` has size `1` there can be many elements of `Subspace η α ι` defining the same function. -/
+When `α` has size `1` there can be many elements of `Subspace η α ι` defining the same function.
+-/
 @[ext]
 structure Subspace (η α ι : Type*) where
   /-- The word representing a combinatorial subspace. `l.idxfun i = Sum.inr e` means that
@@ -162,7 +165,8 @@ protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι �
 
 end Subspace
 
-/-- The type of combinatorial lines. A line `l : Line α ι` in the hypercube `ι → α` defines a
+/--
+The type of combinatorial lines. A line `l : Line α ι` in the hypercube `ι → α` defines a
 function `α → ι → α` from `α` to the hypercube, such that for each coordinate `i : ι`, the function
 `fun x ↦ l x i` is either `id` or constant. We require lines to be nontrivial in the sense that
 `fun x ↦ l x i` is `id` for at least one `i`.
@@ -171,7 +175,8 @@ Formally, a line is represented by a word `l.idxFun : ι → Option α` which sa
 `fun x ↦ l x i` is `id` (corresponding to `l.idxFun i = none`) or constantly `y` (corresponding to
 `l.idxFun i = some y`).
 
-When `α` has size `1` there can be many elements of `Line α ι` defining the same function. -/
+When `α` has size `1` there can be many elements of `Line α ι` defining the same function.
+-/
 @[ext]
 structure Line (α ι : Type*) where
   /-- The word representing a combinatorial line. `l.idxfun i = none` means that
@@ -260,12 +265,15 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
       color := default
       has_color := fun _ ↦ rfl}⟩
 
-/-- The type of collections of lines such that
-- each line is only one color except possibly at its endpoint
-- the lines all have the same endpoint
-- the colors of the lines are distinct.
+/--
+The type of collections of lines such that
 
-Used in the proof `exists_mono_in_high_dimension`. -/
+* each line is only one color except possibly at its endpoint
+* the lines all have the same endpoint
+* the colors of the lines are distinct.
+
+Used in the proof `exists_mono_in_high_dimension`.
+-/
 structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
   /-- The underlying multiset of almost monochromatic lines of a color-focused collection. -/
   lines : Multiset (AlmostMono C)

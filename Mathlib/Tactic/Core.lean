@@ -11,9 +11,11 @@ public meta import Lean.Elab.Tactic.ElabTerm
 public meta import Lean.Elab.Tactic.RCases
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generally useful tactics.
-
 -/
 
 public meta section
@@ -164,13 +166,15 @@ def getFVarIdAt (goal : MVarId) (id : Syntax) : TacticM FVarId := withRef id do
   | Expr.fvar fvarId => return fvarId
   | _                => throwError "unexpected term '{e}'; expected single reference to variable"
 
-/-- Get the array of `FVarId`s in the local context of the given `goal`.
+/--
+Get the array of `FVarId`s in the local context of the given `goal`.
 
 If `ids` is specified, elaborate them in the local context of the given goal to obtain the array of
 `FVarId`s.
 
 If `includeImplementationDetails` is `false` (the default), we filter out implementation details
-(`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s. -/
+(`implDecl`s and `auxDecl`s) from the resulting list of `FVarId`s.
+-/
 def getFVarIdsAt (goal : MVarId) (ids : Option (Array Syntax) := none)
     (includeImplementationDetails : Bool := false) : TacticM (Array FVarId) :=
   goal.withContext do

@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Rel
 public import Mathlib.ModelTheory.Semantics
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definable Sets
 
@@ -15,25 +18,24 @@ This file defines what it means for a set over a first-order structure to be def
 
 ## Main Definitions
 
-- `Set.Definable` is defined so that `A.Definable L s` indicates that the
+* `Set.Definable` is defined so that `A.Definable L s` indicates that the
   set `s` of a finite Cartesian power of `M` is definable with parameters in `A`.
-- `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
+* `Set.Definable₁` is defined so that `A.Definable₁ L s` indicates that
   `(s : Set M)` is definable with parameters in `A`.
-- `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
+* `Set.Definable₂` is defined so that `A.Definable₂ L s` indicates that
   `(s : Set (M × M))` is definable with parameters in `A`.
-- A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
+* A `FirstOrder.Language.DefinableSet` is defined so that `L.DefinableSet A α` is the Boolean
   algebra of subsets of `α → M` defined by formulas with parameters in `A`.
-- `Set.TermDefinable` functions are those equivalent to some term expressible in the language.
-- `Set.TermDefinable₁` specialize this to case of unary functions.
+* `Set.TermDefinable` functions are those equivalent to some term expressible in the language.
+* `Set.TermDefinable₁` specialize this to case of unary functions.
 
 ## Main Results
 
-- `L.DefinableSet A α` forms a `BooleanAlgebra`
-- `Set.Definable.image_comp` shows that definability is closed under projections in finite
+* `L.DefinableSet A α` forms a `BooleanAlgebra`
+* `Set.Definable.image_comp` shows that definability is closed under projections in finite
   dimensions.
-- The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
+* The `Set.TermDefinable` property is transitive, and `TermDefinable` functions are closed under
   composition.
-
 -/
 
 @[expose] public section

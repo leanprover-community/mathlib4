@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Faithful
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scalar actions on and by `Mᵐᵒᵖ`
 
@@ -33,7 +36,8 @@ assert_not_exists Ring
 
 variable {M α : Type*}
 
-/-! ### Actions _on_ the opposite type
+/-!
+# Actions _on_ the opposite type
 
 Actions on the opposite type just act on the underlying type.
 -/
@@ -65,7 +69,8 @@ instance instMulDistribMulAction [Monoid M] [Monoid α] [MulDistribMulAction M �
 end MulOpposite
 
 
-/-! ### Actions _by_ the opposite type (right actions)
+/-!
+# Actions _by_ the opposite type (right actions)
 
 In `Mul.toSMul` in another file, we define the left action `a₁ • a₂ = a₁ * a₂`. For the
 multiplicative opposite, we define `MulOpposite.op a₁ • a₂ = a₂ * a₁`, with the multiplication

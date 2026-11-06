@@ -7,7 +7,11 @@ module
 
 public import Mathlib.GroupTheory.Perm.MaximalSubgroups
 
-/-! # Maximal subgroups of the alternating group
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Maximal subgroups of the alternating group
 
 * `alternatingGroup.isCoatom_stabilizer`: if neither `s : Set α` nor its complement is empty,
   and if, moreover, `Nat.card α ≠ 2 * s.ncard`,
@@ -20,18 +24,16 @@ Compare with `Equiv.Perm.isCoatom_stabilizer` for the case of the permutation gr
 
 ## TODO
 
-  * Application to primitivity of the action
-    of `alternatingGroup α` on finite combinations of `α`.
-
-  * Formalize the other cases of the classification.
-    The next one should be the *imprimitive case*.
+* Application to primitivity of the action
+  of `alternatingGroup α` on finite combinations of `α`.
+* Formalize the other cases of the classification.
+  The next one should be the _imprimitive case_.
 
 ## References
 
-The argument is taken from [M. Liebeck, C. Praeger, J. Saxl,
-*A classification of the maximal subgroups of the finite
-alternating and symmetric groups*, 1987][LiebeckPraegerSaxl-1987].
-
+The argument is taken from \[M. Liebeck, C. Praeger, J. Saxl,
+_A classification of the maximal subgroups of the finite
+alternating and symmetric groups_, 1987\]\[LiebeckPraegerSaxl-1987\].
 -/
 
 public section
@@ -285,10 +287,12 @@ theorem isCoatom_stabilizer_singleton (h3 : 3 ≤ Nat.card α)
     alternatingGroup.isPreprimitive_of_three_le_card α h3
   apply IsPreprimitive.isCoatom_stabilizer_of_isPreprimitive
 
-/-- `MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
+/--
+`MulAction.stabilizer (alternatingGroup α) s` is a maximal subgroup of `alternatingGroup α`,
 provided `s ≠ ∅`, `sᶜ ≠ ∅` and `Nat.card α ≠ 2 * s.ncard`.
 
-This is the intransitive case of the O'Nan–Scott classification. -/
+This is the intransitive case of the O'Nan–Scott classification.
+-/
 theorem isCoatom_stabilizer {s : Set α}
     (h0 : s.Nonempty) (h1 : sᶜ.Nonempty) (hs : Nat.card α ≠ 2 * ncard s) :
     IsCoatom (stabilizer (alternatingGroup α) s) := by

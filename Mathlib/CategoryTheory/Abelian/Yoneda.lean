@@ -12,6 +12,9 @@ import Mathlib.Algebra.Category.Grp.Abelian
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fullness of restrictions of `preadditiveCoyonedaObj`
 

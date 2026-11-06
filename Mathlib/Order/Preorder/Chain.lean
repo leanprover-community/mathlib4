@@ -12,6 +12,9 @@ public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Order.Directed
 public import Mathlib.Order.Hom.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chains and flags
 
@@ -37,7 +40,9 @@ open Set Set.Notation
 
 variable {α β F : Type*}
 
-/-! ### Chains -/
+/-!
+# Chains
+-/
 
 
 section Chain
@@ -316,7 +321,9 @@ theorem List.IsChain.isChain_setOfPred_mem [IsTrans α r] {l : List α} (h : l.I
 
 end Chain
 
-/-! ### Flags -/
+/-!
+# Flags
+-/
 
 
 /-- The type of flags, aka maximal chains, of an order. -/

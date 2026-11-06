@@ -11,12 +11,16 @@ import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic and cardinality
 
 We prove some results relating characteristic and cardinality of finite rings
 
 ## Tags
+
 characteristic, cardinality, ring
 -/
 

@@ -8,28 +8,25 @@ module
 public import Mathlib.Algebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on finitely supported functions.
 
 * `TensorProduct.finsuppLeft`, the tensor product of `ι →₀ M` and `N`
   is linearly equivalent to `ι →₀ M ⊗[R] N`
-
 * `TensorProduct.finsuppScalarLeft`, the tensor product of `ι →₀ R` and `N`
   is linearly equivalent to `ι →₀ N`
-
 * `TensorProduct.finsuppRight`, the tensor product of `M` and `ι →₀ N`
   is linearly equivalent to `ι →₀ M ⊗[R] N`
-
 * `TensorProduct.finsuppScalarRight`, the tensor product of `M` and `ι →₀ R`
   is linearly equivalent to `ι →₀ N`
-
 * `TensorProduct.finsuppLeft'`, if `M` is an `S`-module,
   then the tensor product of `ι →₀ M` and `N` is `S`-linearly equivalent
   to `ι →₀ M ⊗[R] N`
-
 * `finsuppTensorFinsupp`, the tensor product of `ι →₀ M` and `κ →₀ N`
   is linearly equivalent to `(ι × κ) →₀ (M ⊗ N)`.
-
 -/
 
 @[expose] public section

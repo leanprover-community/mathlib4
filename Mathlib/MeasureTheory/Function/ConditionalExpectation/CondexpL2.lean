@@ -8,7 +8,11 @@ module
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Unique
 public import Mathlib.MeasureTheory.Function.L2Space
 
-/-! # Conditional expectation in L2
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Conditional expectation in L2
 
 This file contains one step of the construction of the conditional expectation, which is completed
 in `Mathlib/MeasureTheory/Function/ConditionalExpectation/Basic.lean`. See that file for a
@@ -26,10 +30,10 @@ orthogonal projection on the subspace of almost everywhere `m`-measurable functi
 
 Most of the results in this file are valid for a complete real normed space `F`.
 However, some lemmas also use `𝕜 : RCLike`:
+
 * `condExpL2` is defined only for an `InnerProductSpace` for now, and we use `𝕜` for its field.
 * results about scalar multiplication are stated not only for `ℝ` but also for `𝕜` if we happen to
   have `NormedSpace 𝕜 F`.
-
 -/
 
 @[expose] public section

@@ -8,8 +8,10 @@ module
 public import Mathlib.Combinatorics.Digraph.Basic
 public import Mathlib.Combinatorics.SimpleGraph.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Graph Orientation
 
 This module introduces conversion operations between `Digraph`s and `SimpleGraph`s, by forgetting
@@ -17,16 +19,16 @@ the edge orientations of `Digraph`.
 
 ## Main Definitions
 
-- `Digraph.toSimpleGraphInclusive`: Converts a `Digraph` to a `SimpleGraph` by creating an
+* `Digraph.toSimpleGraphInclusive`: Converts a `Digraph` to a `SimpleGraph` by creating an
   undirected edge if either orientation exists in the digraph.
-- `Digraph.toSimpleGraphStrict`: Converts a `Digraph` to a `SimpleGraph` by creating an undirected
+* `Digraph.toSimpleGraphStrict`: Converts a `Digraph` to a `SimpleGraph` by creating an undirected
   edge only if both orientations exist in the digraph.
 
 ## TODO
 
-- Show that there is an isomorphism between loopless complete digraphs and oriented graphs.
-- Define more ways to orient a `SimpleGraph`.
-- Provide lemmas on how `toSimpleGraphInclusive` and `toSimpleGraphStrict` relate to other lattice
+* Show that there is an isomorphism between loopless complete digraphs and oriented graphs.
+* Define more ways to orient a `SimpleGraph`.
+* Provide lemmas on how `toSimpleGraphInclusive` and `toSimpleGraphStrict` relate to other lattice
   structures on `SimpleGraph`s and `Digraph`s.
 
 ## Tags
@@ -42,7 +44,9 @@ namespace Digraph
 
 section toSimpleGraph
 
-/-! ### Orientation-forgetting maps on digraphs -/
+/-!
+# Orientation-forgetting maps on digraphs
+-/
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if

@@ -7,30 +7,37 @@ module
 
 public import Mathlib.Algebra.Lie.Ideal
 
-/-! # Products of Lie algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Products of Lie algebras
 
 This file defines the Lie algebra structure the Product of two Lie algebras
 
 ## Main definitions
 
-- products in the domain:
-  - `LieHom.fst` The first projection of a product is a Lie algebra map.
-  - `LieHom.snd` The second projection of a product is a Lie algebra map.
-  - `LieHom.prod_ext` Split equality of Lie algebra homomorphisms from a product into Lie algebra
-  homomorphism over each component,
-- products in the codomain:
-  - `LieHom.inl` The left injection into a product is a Lie algebra map.
-  - `LieHom.inr` The right injection into a product is a Lie algebra map.
-  - `LieHom.prod` The prod of two Lie algebra homomorphisms is a Lie algebra homomorphism.
-- products in both domain and codomain:
-  - `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
+* products in the domain:
+
+  * `LieHom.fst` The first projection of a product is a Lie algebra map.
+  * `LieHom.snd` The second projection of a product is a Lie algebra map.
+  * `LieHom.prod_ext` Split equality of Lie algebra homomorphisms from a product into Lie algebra
+    homomorphism over each component,
+* products in the codomain:
+
+  * `LieHom.inl` The left injection into a product is a Lie algebra map.
+  * `LieHom.inr` The right injection into a product is a Lie algebra map.
+  * `LieHom.prod` The prod of two Lie algebra homomorphisms is a Lie algebra homomorphism.
+* products in both domain and codomain:
+
+  * `LieHom.prodMap` the `Prod.map` of two Lie algebra homomorphisms is a Lie algebra homomorphism.
 
 ## TODO
 
 Extend to further functionality from `LinearMap.prod`, e.g.
-- Lie Equivalences related to products
-- Lie Submodule statements
 
+* Lie Equivalences related to products
+* Lie Submodule statements
 -/
 
 @[expose] public section
@@ -174,7 +181,8 @@ theorem prod_ext_iff {f g : L₁ × L₂ →ₗ⁅R⁆ L} :
 Split equality of Lie algebra homomorphisms from a product into Lie algebra homomorphism over
 each component, to allow `ext` to apply lemmas specific to `L₁ →ₗ L` and `L₂ →ₗ L`.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext 1100]
 theorem prod_ext {f g : L₁ × L₂ →ₗ⁅R⁆ L} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g := by

@@ -9,8 +9,10 @@ public import Mathlib.GroupTheory.MonoidLocalization.Basic
 public import Mathlib.RingTheory.OreLocalization.Ring
 public import Mathlib.Topology.Algebra.Ring.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization of topological rings
 
 The topological localization of a topological commutative ring `R` at a submonoid `M` is the ring
@@ -19,9 +21,8 @@ to the equivalence class of `(x, 1)` in the localization of `R` at an `M`.
 
 ## Main Results
 
-- `Localization.ringTopology`: The localization of a topological commutative ring at a submonoid
+* `Localization.ringTopology`: The localization of a topological commutative ring at a submonoid
   is a topological ring.
-
 -/
 
 @[expose] public section

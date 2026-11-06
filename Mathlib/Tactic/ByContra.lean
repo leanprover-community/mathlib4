@@ -8,6 +8,9 @@ module
 public import Batteries.Tactic.Init
 public import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `by_contra` tactic
 
@@ -19,6 +22,8 @@ public meta section
 namespace Mathlib.Tactic.ByContra
 open Lean Parser.Tactic
 
+
+set_option doc.verso false
 /--
 If the target of the main goal is a proposition `p`,
 `by_contra!` reduces the goal to proving `False` using the additional hypothesis `this : ¬ p`.
@@ -48,6 +53,8 @@ example : 1 < 2 := by
 syntax (name := byContra!)
   "by_contra!" optConfig (ppSpace colGt rcasesPatMed)? (" : " term)? : tactic
 
+
+set_option doc.verso true
 local elab "try_push_not_at" cfg:optConfig h:ident : tactic => do
   Push.push (← Push.elabPushConfig cfg) none (.const ``Not) (.targets #[h] false)
     (ifUnchanged := .warning)

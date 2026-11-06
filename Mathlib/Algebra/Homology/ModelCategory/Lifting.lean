@@ -8,11 +8,15 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties in cochain complexes
 
 Let `C` be an abelian category. Consider a commutative diagram
 in the category `CochainComplex C ℤ`.
+
 ```
    t
  A ⟶ X
@@ -21,11 +25,11 @@ i|   |p
  B ⟶ Y
    b
 ```
+
 Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`. In this situation,
 we construct a cocycle in `Cocycle Q K 1` and show that there exists
 a lifting `B ⟶ X` if this cocycle is a coboundary.
-
 -/
 
 @[expose] public section
@@ -128,6 +132,7 @@ lemma comp_coe_cocycle₁_comp :
 /--
 Consider a commutative square in the category `CochainComplex C ℤ`
 where `C` is an abelian category.
+
 ```
    t
  A ⟶ X
@@ -136,10 +141,12 @@ i|   |p
  B ⟶ Y
    b
 ```
+
 Assume that there exists a degreewise lifting `B.X n ⟶ X.X n` for any `n : ℤ`,
 that `Q` is a cokernel of `i`, and `K` is a kernel of `p`.
 If the cocycle `cocycle₁ sq hsq hQ hK : Cocycle Q K 1` is a coboundary,
-we show that the square admits a lifting `B ⟶ X`. -/
+we show that the square admits a lifting `B ⟶ X`.
+-/
 lemma hasLift (α : Cochain Q K 0) (hα : δ 0 1 α = (cocycle₁ sq hsq hQ hK).1) :
     sq.HasLift where
   exists_lift := by

@@ -7,11 +7,13 @@ module
 
 public import Mathlib.RepresentationTheory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subrepresentations
 
 This file defines subrepresentations of a monoid representation.
-
 -/
 
 @[expose] public section

@@ -9,10 +9,13 @@ public import Mathlib.Algebra.Ring.SumsOfSquares
 
 import Mathlib.RingTheory.Nilpotent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formally real rings
 
-A ring `R` is *formally real* if, whenever `∑ i, x i ^ 2 = 0`, in fact `x i = 0` for all `i`.
+A ring `R` is _formally real_ if, whenever `∑ i, x i ^ 2 = 0`, in fact `x i = 0` for all `i`.
 
 We define formally real rings in an index-free manner using the inductive predicate
 `IsSumNonzeroSq`, which asserts that an element is a finite sum of squares of nonzero elements.
@@ -20,8 +23,7 @@ A ring is then formally real if `¬ IsSumNonzeroSq 0`.
 
 ## Main declaration
 
-- `IsFormallyReal`: typeclass stating that a ring is formally real.
-
+* `IsFormallyReal`: typeclass stating that a ring is formally real.
 -/
 
 @[expose] public section

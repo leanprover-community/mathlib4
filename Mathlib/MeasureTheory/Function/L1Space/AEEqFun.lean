@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `L¹` space
 
@@ -24,7 +27,6 @@ classes of integrable functions, already defined as a special case of `L^p` spac
 ## Tags
 
 function space, l1
-
 -/
 
 @[expose] public section

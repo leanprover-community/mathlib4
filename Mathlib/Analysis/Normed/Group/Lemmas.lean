@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas about normed groups
 
@@ -16,8 +19,7 @@ This file contains further lemmas about normed groups, requiring heavier imports
 
 ## TODO
 
-- Move lemmas from `Basic` to other places, including this file.
-
+* Move lemmas from `Basic` to other places, including this file.
 -/
 
 public section
@@ -39,9 +41,11 @@ section Dense
 
 open Metric
 
-/-- Let `G` be a seminormed group. If a subgroup `H` is `ε`-dense for
+/--
+Let `G` be a seminormed group. If a subgroup `H` is `ε`-dense for
 some `ε < 1`, that is `infDist g H ≤ ε * ‖g‖` for every `g : G`, then `H` is
-dense. This is [BGR, Prop 1.1.4./2][bosch-guntzer-remmert]. -/
+dense. This is \[BGR, Prop 1.1.4./2\]\[bosch-guntzer-remmert\].
+-/
 @[to_additive]
 lemma Subgroup.dense_of_infDist_le {G : Type*} [SeminormedGroup G]
     (H : Subgroup G) (ε : ℝ) (h1 : 0 < ε) (h2 : ε < 1)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Process.Filtration
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtration built from the finite partitions of a countably generated measurable space
 
@@ -33,7 +36,6 @@ function on `α`.
 
 * `ProbabilityTheory.iSup_partitionFiltration`: `⨆ n, partitionFiltration α n` is the measurable
   space on `α`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.Order.DirectedInverseSystem
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of direct limits
 

@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Multiplicity
 public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.NumberTheory.Divisors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `p`-adic Valuation
 
@@ -35,23 +38,20 @@ by taking `[Fact p.Prime]` as a type class argument.
 * `multiplicity_factorial`: Legendre's Theorem. The `p`-adic valuation of `n!` is the sum of the
   quotients `n / p ^ i`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound
   greater than `log p n`.
-
 * `Nat.Prime.sub_one_mul_multiplicity_factorial`: Legendre's Theorem.  Taking (`p - 1`) times
   the `p`-adic valuation of `n!` equals `n` minus the sum of base `p` digits of `n`.
-
 * `multiplicity_choose`: Kummer's Theorem. The `p`-adic valuation of `n.choose k` is the number
   of carries when `k` and `n - k` are added in base `p`. This sum is expressed over the finset
   `Ico 1 b` where `b` is any bound greater than `log p n`.
-
 * `sub_one_mul_multiplicity_choose_eq_sub_sum_digits`: Kummer's Theorem. Taking (`p - 1`) times the
   `p`-adic valuation of the binomial `n` over `k` equals the sum of the digits of `k` plus the sum
   of the digits of `n - k` minus the sum of digits of `n`, all base `p`.
 
 ## References
 
-* [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
-* [R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019]
-* <https://en.wikipedia.org/wiki/P-adic_number>
+* ‍\[F. Q. Gouvêa, _p-adic numbers_\]\[gouvea1997\]
+* ‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\]
+* [https://en.wikipedia.org/wiki/P-adic\_number](https://en.wikipedia.org/wiki/P-adic_number)
 
 ## Tags
 
@@ -676,10 +676,12 @@ largest multiple of `p` below `n`, i.e. `(p * ⌊n / p⌋)!`. -/
 @[deprecated (since := "2026-10-28")] alias padicValNat_mul_div_factorial :=
   multiplicity_mul_div_factorial
 
-/-- **Legendre's Theorem**
+/--
+*Legendre's Theorem*
 
 The `p`-adic valuation of `n!` is the sum of the quotients `n / p ^ i`. This sum is expressed
-over the finset `Ico 1 b` where `b` is any bound greater than `log p n`. -/
+over the finset `Ico 1 b` where `b` is any bound greater than `log p n`.
+-/
 theorem multiplicity_factorial {n b : ℕ} [hp : Fact p.Prime] (hnb : log p n < b) :
     multiplicity p (n !) = ∑ i ∈ Finset.Ico 1 b, n / p ^ i := by
   exact_mod_cast ((multiplicity_eq_emultiplicity (p := p) <| factorial_ne_zero _) ▸
@@ -722,11 +724,13 @@ theorem multiplicity_factorial_le [hp : Fact p.Prime] (n : ℕ) : multiplicity p
 
 variable {p}
 
-/-- **Kummer's Theorem**
+/--
+*Kummer's Theorem*
 
 The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n - k` are added
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
-`log p n`. -/
+`log p n`.
+-/
 theorem multiplicity_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     multiplicity p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   exact_mod_cast (multiplicity_eq_emultiplicity (p := p) (choose_ne_zero hkn)) ▸
@@ -734,11 +738,13 @@ theorem multiplicity_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (h
 
 @[deprecated (since := "2026-10-28")] alias padicValNat_choose := multiplicity_choose
 
-/-- **Kummer's Theorem**
+/--
+*Kummer's Theorem*
 
 The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` and `n` are added
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
-`log p (n + k)`. -/
+`log p (n + k)`.
+-/
 theorem multiplicity_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
     multiplicity p (choose (n + k) k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   exact_mod_cast (multiplicity_eq_emultiplicity (p := p) <| choose_ne_zero <|

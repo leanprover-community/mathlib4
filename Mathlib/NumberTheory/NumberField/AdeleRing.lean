@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.FiniteAdeleRing
 public import Mathlib.NumberTheory.NumberField.InfiniteAdeleRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The adele ring of a number field
 
@@ -16,17 +19,19 @@ direct product of the infinite adele ring and the finite adele ring.
 
 ## Main definitions
 
-- `NumberField.AdeleRing K` is the adele ring of a number field `K`.
-- `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
+* `NumberField.AdeleRing K` is the adele ring of a number field `K`.
+* `NumberField.AdeleRing.principalSubgroup K` is the subgroup of principal adeles `(x)ᵥ`.
 
 ## Main results
 
-- `NumberField.AdeleRing.norm_algebraMap_eq_one_of_ne_zero` is the idelic product formula.
+* `NumberField.AdeleRing.norm_algebraMap_eq_one_of_ne_zero` is the idelic product formula.
 
 ## References
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
+
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
 
 ## Tags
+
 adele ring, number field
 -/
 
@@ -39,12 +44,15 @@ namespace NumberField
 open AbsoluteValue.Completion InfinitePlace.Completion IsDedekindDomain
 open scoped FiniteAdeleRing
 
-/-! ## The adele ring  -/
+/-!
+# The adele ring
+-/
 
 variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
-/-- `AdeleRing (𝓞 K) K` is the adele ring of a number field `K`.
+/--
+`AdeleRing (𝓞 K) K` is the adele ring of a number field `K`.
 
 More generally `AdeleRing R K` can be used if `K` is the field of fractions
 of the Dedekind domain `R`. This enables use of rings like `AdeleRing ℤ ℚ`, which

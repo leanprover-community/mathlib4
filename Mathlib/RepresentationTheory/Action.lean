@@ -9,16 +9,18 @@ public import Mathlib.CategoryTheory.Action.Monoidal
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-## Main Purpose
+/-!
+# Main Purpose
+
 This file is the preliminary for the `linearize` functor from `Action (Type w) G` to `Rep k G`,
 constructing the functor from the `Representation` would reduce the amount of DefEq abuses that we
 currently are doing in the `Rep` file.
 
 TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
 reconstruct the current `linearize` functor using this file.
-
 -/
 
 universe w w' u u' v v'

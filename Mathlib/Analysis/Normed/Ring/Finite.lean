@@ -11,13 +11,15 @@ public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.GroupTheory.OrderOfElement
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite order elements in normed rings.
 
 A finite order element in a normed ring has norm 1.
 
 The values of additive characters on finite cancellative monoids have norm 1.
-
 -/
 
 public section

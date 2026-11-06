@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.PowerSeries.Exp
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.RingTheory.PowerSeries.WellKnown
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Logarithmic Power Series
 
@@ -83,7 +86,9 @@ theorem derivative_log : d⁄dX (log A) = mk fun n ↦ (-1 : A) ^ n := by
 theorem derivative_log_mul_one_add_X : d⁄dX (log A) * (1 + X) = 1 := by
   rw [derivative_log, mk_neg_one_pow_mul_one_add_eq_one]
 
-/-! ## Substitution -/
+/-!
+# Substitution
+-/
 
 theorem HasSubst.log : HasSubst (log A) :=
   HasSubst.of_constantCoeff_zero' constantCoeff_log
@@ -109,7 +114,9 @@ variable (A) in
 theorem logOf_one_add_X : logOf (1 + X : A⟦X⟧) = log A := by
   rw [logOf_eq, add_sub_cancel_left, X_subst]
 
-/-! ## Log and exp as inverses -/
+/-!
+# Log and exp as inverses
+-/
 
 omit [Algebra ℚ A] in
 theorem eq_of_derivative_mul_one_add_X_eq_self [HasUniqueDiv A]

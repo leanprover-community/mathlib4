@@ -9,6 +9,9 @@ module
 public import Mathlib.Algebra.Divisibility.Basic
 public import Mathlib.Algebra.Group.Units.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility and units
 
@@ -16,7 +19,6 @@ public import Mathlib.Algebra.Group.Units.Basic
 
 * `IsRelPrime x y`: that `x` and `y` are relatively prime, defined to mean that the only common
   divisors of `x` and `y` are the units.
-
 -/
 
 @[expose] public section
@@ -235,9 +237,11 @@ theorem IsRelPrime.mul_dvd_of_left_isPrimal (H : IsRelPrime x y) (H1 : x ∣ z) 
     (hx : IsPrimal x) : x * y ∣ z := by
   rw [mul_comm]; exact H.symm.mul_dvd_of_right_isPrimal H2 H1 hx
 
-/-! `IsRelPrime` enjoys desirable properties in a decomposition monoid.
-See Lemma 6.3 in *On properties of square-free elements in commutative cancellative monoids*,
-https://doi.org/10.1007/s00233-019-10022-3. -/
+/-!
+`IsRelPrime` enjoys desirable properties in a decomposition monoid.
+See Lemma 6.3 in _On properties of square-free elements in commutative cancellative monoids_,
+https://doi.org/10.1007/s00233-019-10022-3.
+-/
 
 variable [DecompositionMonoid α]
 

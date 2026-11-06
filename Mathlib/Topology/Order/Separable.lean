@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Order.T5
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hereditary separability of linear orders
 
@@ -26,7 +29,6 @@ In this file we prove some results about a separable linearly ordered topologica
 ## TODO
 
 Define the class of GO-spaces and generalize the hereditary separability result.
-
 -/
 
 public section

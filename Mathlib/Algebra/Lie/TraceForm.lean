@@ -14,6 +14,9 @@ public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.LinearAlgebra.PID
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The trace and Killing forms of a Lie algebra.
 
@@ -67,9 +70,11 @@ lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := ⟨LieModule.trac
 @[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
-/-- The trace form of a Lie module is compatible with the action of the Lie algebra.
+/--
+The trace form of a Lie module is compatible with the action of the Lie algebra.
 
-See also `LieModule.traceForm_apply_lie_apply'`. -/
+See also `LieModule.traceForm_apply_lie_apply'`.
+-/
 lemma traceForm_apply_lie_apply (x y z : L) :
     traceForm R L M ⁅x, y⁆ z = traceForm R L M x ⁅y, z⁆ := by
   calc traceForm R L M ⁅x, y⁆ z
@@ -368,9 +373,11 @@ end LieSubmodule
 
 section LieAlgebra
 
-/-- A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
+/--
+A finite, free (as an `R`-module) Lie algebra `L` carries a bilinear form on `L`.
 
-This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
+This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`.
+-/
 noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
 
 open LieAlgebra in

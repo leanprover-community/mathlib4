@@ -17,6 +17,9 @@ public import Mathlib.Tactic.TFAE
 
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compactness properties for complete lattices
 
@@ -25,19 +28,23 @@ is well-founded. In this file we define three especially-useful characterisation
 proofs that they are indeed equivalent to well-foundedness.
 
 ## Main definitions
+
 * `CompleteLattice.IsSupClosedCompact`
 * `CompleteLattice.IsSupFiniteCompact`
 * `IsCompactElement`
 * `IsCompactlyGenerated`
 
 ## Main results
+
 The main result is that the following four conditions are equivalent for a complete lattice:
+
 * `well_founded (>)`
 * `CompleteLattice.IsSupClosedCompact`
 * `CompleteLattice.IsSupFiniteCompact`
 * `∀ k, IsCompactElement k`
 
 This is demonstrated by means of the following four lemmas:
+
 * `CompleteLattice.WellFounded.isSupFiniteCompact`
 * `CompleteLattice.IsSupFiniteCompact.isSupClosedCompact`
 * `CompleteLattice.IsSupClosedCompact.wellFounded`
@@ -47,7 +54,8 @@ We also show well-founded lattices are compactly generated
 (`CompleteLattice.isCompactlyGenerated_of_wellFounded`).
 
 ## References
-- [G. Călugăreanu, *Lattice Concepts of Module Theory*][calugareanu]
+
+* ‍\[G. Călugăreanu, _Lattice Concepts of Module Theory_\]\[calugareanu\]
 
 ## Tags
 
@@ -673,7 +681,9 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
       rw [← Subtype.coe_le_coe, Subtype.coe_mk] at hac
       exact ⟨a, ha.of_isAtom_coe_Iic, hac.trans hcb⟩⟩
 
-/-- See [Lemma 5.1][calugareanu]. -/
+/--
+See \[Lemma 5.1\]\[calugareanu\].
+-/
 instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLattice α] :
     IsAtomistic α :=
   CompleteLattice.isAtomistic_iff.2 fun b =>
@@ -768,14 +778,18 @@ theorem exists_sSupIndep_of_sSup_atoms_eq_top (h : sSup {a : α | IsAtom a} = �
     ∃ s : Set α, sSupIndep s ∧ sSup s = ⊤ ∧ ∀ ⦃a⦄, a ∈ s → IsAtom a :=
   exists_sSupIndep_of_sSup_atoms ⊤ (by simpa)
 
-/-- See [Theorem 6.6][calugareanu]. -/
+/--
+See \[Theorem 6.6\]\[calugareanu\].
+-/
 theorem complementedLattice_of_sSup_atoms_eq_top (h : sSup { a : α | IsAtom a } = ⊤) :
     ComplementedLattice α where
   exists_isCompl b :=
     let ⟨s, _, hcompl, _⟩ := exists_sSupIndep_isCompl_sSup_atoms (by simpa) b
     ⟨sSup s, hcompl⟩
 
-/-- See [Theorem 6.6][calugareanu]. -/
+/--
+See \[Theorem 6.6\]\[calugareanu\].
+-/
 theorem complementedLattice_of_isAtomistic [IsAtomistic α] : ComplementedLattice α :=
   complementedLattice_of_sSup_atoms_eq_top sSup_atoms_eq_top
 

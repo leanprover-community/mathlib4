@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Init
 
-/-! # Attribute grouping the `field_simp` simprocs -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Attribute grouping the `field_simp` simprocs
+-/
 
 public meta section
 

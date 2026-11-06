@@ -7,8 +7,10 @@ module
 
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Decomposition of the Q endomorphisms
 
 In this file, we obtain a lemma `decomposition_Q` which expresses
@@ -28,7 +30,6 @@ role in the proof that the functor
 reflects isomorphisms.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
@@ -47,12 +48,14 @@ namespace DoldKan
 
 variable {C : Type*} [Category* C] [Preadditive C] {X X' : SimplicialObject C}
 
-/-- In each positive degree, this lemma decomposes the idempotent endomorphism
+/--
+In each positive degree, this lemma decomposes the idempotent endomorphism
 `Q q` as a sum of morphisms which are postcompositions with suitable degeneracies.
 As `Q q` is the complement projection to `P q`, this implies that in the case of
-simplicial abelian groups, any $(n+1)$-simplex $x$ can be decomposed as
-$x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)$ where $x'$ is in the image of `P q` and
-the $y_i$ are in degree $n$. -/
+simplicial abelian groups, any $`(n+1)`-simplex $`x` can be decomposed as
+$`x = x' + \sum (i=0}^{q-1} σ_{n-i}(y_i)` where $`x'` is in the image of `P q` and
+the $`y_i` are in degree $`n`.
+-/
 theorem decomposition_Q (n q : ℕ) :
     ((Q q).f (n + 1) : X _⦋n + 1⦌ ⟶ X _⦋n + 1⦌) =
       ∑ i : Fin (n + 1) with i.val < q, (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by

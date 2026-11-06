@@ -8,9 +8,11 @@ module
 public meta import Lean.Elab.DeclarationRange
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `addRelatedDecl`
-
 -/
 
 public meta section
@@ -54,7 +56,8 @@ private def checkImplicitTransparency (declType : Expr) : MetaM (Option (List Na
   modify ({ · with diag := origDiag })
   return result
 
-/-- Extension of `linter.tacticCheckInstances` to lemmas produced by Mathlib attributes such as
+/--
+Extension of `linter.tacticCheckInstances` to lemmas produced by Mathlib attributes such as
 `@[simps]`, `@[reassoc]`, and `@[elementwise]`. Call sites pass the syntax of the user's
 attribute (`ref`), the name of the generated lemma (`declName`), and the lemma's type
 (`declType`); a warning is emitted at `ref` if `declType` is type-correct at `.default` but
@@ -62,8 +65,9 @@ not at `.implicit`, listing the semireducible definitions that would need to be
 marked `@[implicit_reducible]` to fix the mismatch.
 
 The check is gated by the existing core option `linter.tacticCheckInstances` and is silent
-otherwise; following the convention of the core linter, it does *not* participate in
-`linter.all`. -/
+otherwise; following the convention of the core linter, it does _not_ participate in
+`linter.all`.
+-/
 def warnIfImplicitIllTyped (ref : Syntax) (declName : Name) (declType : Expr) : MetaM Unit := do
   let lintOpt : Lean.Option Bool :=
     { name := `linter.tacticCheckInstances, defValue := false }
@@ -76,13 +80,15 @@ def warnIfImplicitIllTyped (ref : Syntax) (declName : Name) (declType : Expr) : 
       `.implicit` transparency; consider marking some of the following as \
       `@[implicit_reducible]`:{indentD bullets}"
 
-/-- A helper function for constructing a related declaration from an existing one.
+/--
+A helper function for constructing a related declaration from an existing one.
 
 This is currently used by the attributes `reassoc` and `elementwise`,
 and has been factored out to avoid code duplication.
 Feel free to add features as needed for other applications.
 
 This helper:
+
 * throws an error if a declaration named `tgt` already exists
   (in the current module or in an imported one),
 * calls `addDeclarationRangesFromSyntax`, so jump-to-definition works,
@@ -90,6 +96,7 @@ This helper:
 * supports copying attributes.
 
 Arguments:
+
 * `src : Name` is the existing declaration that we are modifying.
 * `prefix_ : String` will be prepended and `suffix : String` will be appended to `src`
   to form the name of the new declaration.

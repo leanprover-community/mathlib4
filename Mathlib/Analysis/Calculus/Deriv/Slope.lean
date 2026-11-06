@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.LinearAlgebra.AffineSpace.Slope
 public import Mathlib.Topology.Algebra.Module.PerfectSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivative as the limit of the slope
 
@@ -219,7 +222,9 @@ end Order
 
 end NormedField
 
-/-! ### Upper estimates on liminf and limsup -/
+/-!
+# Upper estimates on liminf and limsup
+-/
 
 section Real
 
@@ -261,13 +266,15 @@ theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (
   simp only [norm_smul, mem_Iio, norm_inv]
   exact fun _ => id
 
-/-- If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio
+/--
+If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio
 `(‖f z‖ - ‖f x‖) / ‖z - x‖` is less than `r` in some neighborhood of `x` within `s`.
 In other words, the limit superior of this ratio as `z` tends to `x` along `s`
 is less than or equal to `‖f'‖`.
 
 This lemma is a weaker version of `HasDerivWithinAt.limsup_norm_slope_le`
-where `‖f z‖ - ‖f x‖` is replaced by `‖f z - f x‖`. -/
+where `‖f z‖ - ‖f x‖` is replaced by `‖f z - f x‖`.
+-/
 theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (hr : ‖f'‖ < r) :
     ∀ᶠ z in 𝓝[s] x, ‖z - x‖⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   apply (hf.limsup_norm_slope_le hr).mono
@@ -283,7 +290,8 @@ theorem HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' 
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r :=
   (hf.Ioi_of_Ici.limsup_norm_slope_le hr).frequently
 
-/-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
+/--
+If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
 `(‖f z‖ - ‖f x‖) / (z - x)` is frequently less than `r` as `z → x+0`.
 In other words, the limit inferior of this ratio as `z` tends to `x+0`
 is less than or equal to `‖f'‖`.
@@ -293,7 +301,8 @@ See also
 * `HasDerivWithinAt.limsup_norm_slope_le` for a stronger version using
   limit superior and any set `s`;
 * `HasDerivWithinAt.liminf_right_norm_slope_le` for a stronger version using
-  `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`. -/
+  `‖f z - f xp‖` instead of `‖f z‖ - ‖f x‖`.
+-/
 theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, (z - x)⁻¹ * (‖f z‖ - ‖f x‖) < r := by
   have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).frequently

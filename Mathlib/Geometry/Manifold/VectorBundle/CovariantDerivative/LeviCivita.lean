@@ -10,14 +10,17 @@ public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 
 import Mathlib.Analysis.InnerProductSpace.Dual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Levi-Civita connection on a Riemannian manifold
 
 This file defines the Levi-Civita connection on a (finite-dimensional) Riemannian manifold `(M, g)`.
 A connection `∇` on the tangent bundle of a Riemannian manifold `(M, g)` is called a
-*Levi-Civita connection* if it is both compatible with the metric `g` and torsion-free.
+_Levi-Civita connection_ if it is both compatible with the metric `g` and torsion-free.
 Any two such connections are equal (on differentiable vector fields), which is why one speaks of
-*the* Levi-Civita connection on `TM`. We prove this uniqueness, construct a Levi-Civita connection
+_the_ Levi-Civita connection on `TM`. We prove this uniqueness, construct a Levi-Civita connection
 and prove that is defines a compatible torsion-free connection.
 
 Future PRs will prove smoothness: if `M` is `C^{n+2}` and `g` is `C^{n+1}`, the Levi-Civita
@@ -27,18 +30,14 @@ connection is a `C^n` connection.
 
 * `CovariantDerivative.IsLeviCivitaConnection`: a covariant derivative `∇` on `(M, g)` is a
   Levi-Civita connection if and only if it is both torsion-free and compatible with `g`
-
-* `CovariantDerivative.IsLeviCivitaConnection.apply_eq`: the **Koszul formula**, expressing the term
+* `CovariantDerivative.IsLeviCivitaConnection.apply_eq`: the *Koszul formula*, expressing the term
   `⟨∇ X Y, Z⟩` for all differentiable vector fields `X`, `Y` and `Z`, without reference to `∇`.
-
 * `CovariantDerivative.IsLeviCivitaConnection.uniqueness`: a Levi-Civita connection on `(M, g)` is
   uniquely determined on differentiable vector fields
-
 * `CovariantDerivative.leviCivitaConnection`: a choice of Levi-Civita connection on the tangent
   bundle `TM` of a Riemannian manifold `(M, g)`: this is unique up to the value on
   non-differentiable vector fields.
   If you know the Levi-Civita connection already, you can use `IsLeviCivitaConnection` instead.
-
 * `CovariantDerivative.isLeviCivitaConnection_leviCivitaConnection`:
   `leviCivitaConnection` is a Levi-Civita connection (i.e., compatible and torsion-free)
 
@@ -57,7 +56,6 @@ connection is a `C^n` connection.
 ## Tags
 
 Levi-Civita connection, metric, torsion-free, Koszul formula, musical isomorphism
-
 -/
 
 open Bundle FiberBundle Function NormedSpace VectorField
@@ -249,10 +247,12 @@ public lemma IsLeviCivitaConnection.apply_eq_extend
   simp_rw [h.apply_eq _ (mdifferentiableAt_extend _ _ X₀) hY hZ]
   simp
 
-/-- The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
+/--
+The Levi-Civita connection on `(M, g)` is uniquely determined on differentiable vector fields.
 
 Note that the differentiability hypothesis on `Y` is required, since `CovariantDerivative` objects
-are unconstrained in their behaviour on non-differentiable vector fields. -/
+are unconstrained in their behaviour on non-differentiable vector fields.
+-/
 public theorem IsLeviCivitaConnection.uniqueness
     (hcov : cov.IsLeviCivitaConnection) (hcov' : cov'.IsLeviCivitaConnection)
     (hY : MDiffAt (T% Y) x) (X₀ : TangentSpace% x) :

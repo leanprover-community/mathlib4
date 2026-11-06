@@ -11,10 +11,14 @@ public import Mathlib.Data.Nat.Cast.Commute
 public import Mathlib.Tactic.HaveI
 public import Mathlib.Tactic.NormNum.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `norm_num` basic plugins
 
 This file adds `norm_num` plugins for
+
 * constructors and constants
 * `Nat.cast`, `Int.cast`, and `mkRat`
 * `+`, `-`, `*`, and `/`
@@ -49,7 +53,9 @@ meta section
 
 open Lean Meta Qq
 
-/-! ### Constructors and constants -/
+/-!
+# Constructors and constants
+-/
 
 theorem isNat_zero (α) [AddMonoidWithOne α] : IsNat (Zero.zero : α) (nat_lit 0) :=
   ⟨Nat.cast_zero.symm⟩
@@ -99,9 +105,11 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
 theorem isInt_negOfNat (m n : ℕ) (h : IsNat m n) : IsInt (Int.negOfNat m) (.negOfNat n) :=
   ⟨congr(Int.negOfNat $(h.1))⟩
 
-/-- `norm_num` extension for `Int.negOfNat`.
+/--
+`norm_num` extension for `Int.negOfNat`.
 
-It's useful for calling `derive` with the numerator of an `.isNegNNRat` branch. -/
+It's useful for calling `derive` with the numerator of an `.isNegNNRat` branch.
+-/
 @[norm_num Int.negOfNat _]
 def evalNegOfNat : NormNumExt where eval {u αZ} e := do
   match u, αZ, e with
@@ -128,7 +136,9 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
   | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
   | _ => failure
 
-/-! ### Casts -/
+/-!
+# Casts
+-/
 
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
@@ -164,21 +174,33 @@ theorem isintCast {R} [Ring R] (n m : ℤ) :
     return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
-/-! ### Arithmetic -/
+/-!
+# Arithmetic
+-/
 
 library_note «norm_num lemma function equality» /--
-Note: Many of the lemmas in this file use a function equality hypothesis like `f = HAdd.hAdd`
-below. The reason for this is that when this is applied, to prove e.g. `100 + 200 = 300`, the
-`+` here is `HAdd.hAdd` with an instance that may not be syntactically equal to the one supplied
-by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
-will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
-ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
+                                                Note: Many of the lemmas in this file use a function
+equality hypothesis like `f = HAdd.hAdd` below. The
+reason for this is that when this is applied, to
+prove e.g. `100 + 200 = 300`, the `+` here is
+`HAdd.hAdd` with an instance that may not be
+syntactically equal to the one supplied by the
+`AddMonoidWithOne` instance, and rather than
+attempting to prove the instances equal lean will
+sometimes decide to evaluate `100 + 200` directly
+(into whatever `+` is defined to do in this ring),
+which is definitely not what we want; if the
+subterms are expensive to kernel-reduce then this
+could cause a `(kernel) deep recursion detected`
+error (see
+https://github.com/leanprover/lean4/issues/2171,
+https://github.com/leanprover-community/mathlib4/pull/4048).
 
-By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
-opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
-easy).
--/
+                                                By using an equality for the unapplied `+` function
+and proving it by `rfl` we take away the opportunity
+for lean to unfold the numerals (and the instance
+defeq problem is usually comparatively easy).
+                                                -/
 
 -- see note [norm_num lemma function equality]
 theorem isNat_add {α} [AddMonoidWithOne α] : ∀ {f : α → α → α} {a b : α} {a' b' c : ℕ},
@@ -583,7 +605,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     assumeInstancesCommute
     return .isRat dα qa na da q(isRat_div $pa)
 
-/-! ### Logic -/
+/-!
+# Logic
+-/
 
 /-- The `norm_num` extension which identifies `True`. -/
 @[norm_num True] def evalTrue : NormNumExt where eval {u α} e :=
@@ -603,7 +627,9 @@ such that `norm_num` successfully recognises `a`. -/
   | true => return .isFalse q(not_not_intro $p)
   | false => return .isTrue q($p)
 
-/-! ### (In)equalities -/
+/-!
+# (In)equalities
+-/
 
 variable {α : Type u}
 
@@ -630,7 +656,9 @@ theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (·
 theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
 theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
-/-! ### Nat operations -/
+/-!
+# Nat operations
+-/
 
 theorem isNat_natSucc : {a : ℕ} → {a' c : ℕ} →
     IsNat a a' → Nat.succ a' = c → IsNat (a.succ) c

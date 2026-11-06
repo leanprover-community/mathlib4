@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Ring.Action.End
 public import Mathlib.RingTheory.Ideal.Maps
 
-/-! # Pointwise instances on `Ideal`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise instances on `Ideal`s
 
 This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of
 `mulActionSet` (though here an extra `Ideal.span` is inserted).
@@ -19,7 +23,6 @@ This action is available in the `Pointwise` locale.
 
 This file is similar (but not identical) to `Mathlib/Algebra/Ring/Subsemiring/Pointwise.lean`.
 Where possible, try to keep them in sync.
-
 -/
 
 @[expose] public section
@@ -35,9 +38,11 @@ section Monoid
 
 variable [Monoid M] [Monoid N] [Semiring R] [MulSemiringAction M R] [MulSemiringAction N R]
 
-/-- The action on an ideal corresponding to applying the action to every element.
+/--
+The action on an ideal corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseDistribMulAction : DistribMulAction M (Ideal R) where
   smul a := Ideal.map (MulSemiringAction.toRingHom _ _ a)
@@ -52,9 +57,11 @@ scoped[Pointwise] attribute [instance] Ideal.pointwiseDistribMulAction
 
 open scoped Pointwise
 
-/-- The action on an ideal corresponding to applying the action to every element.
+/--
+The action on an ideal corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseMulSemiringAction {R : Type*} [CommRing R] [MulSemiringAction M R] :
     MulSemiringAction M (Ideal R) where

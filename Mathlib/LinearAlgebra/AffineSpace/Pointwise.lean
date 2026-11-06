@@ -7,11 +7,14 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 
-/-! # Pointwise instances on `AffineSubspace`s
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pointwise instances on `AffineSubspace`s
 
 This file provides the additive action `AffineSubspace.pointwiseAddAction` in the
 `Pointwise` locale.
-
 -/
 
 @[expose] public section
@@ -32,9 +35,11 @@ variable [AddCommGroup V] [Module k V] [AffineSpace V P]
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
-/-- The additive action on an affine subspace corresponding to applying the action to every element.
+/--
+The additive action on an affine subspace corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseVAdd : VAdd V (AffineSubspace k P) where
   vadd x s := s.map (AffineEquiv.constVAdd k P x)
@@ -44,9 +49,11 @@ scoped[Pointwise] attribute [instance] AffineSubspace.pointwiseVAdd
 @[simp, norm_cast] lemma coe_pointwise_vadd (v : V) (s : AffineSubspace k P) :
     ((v +ᵥ s : AffineSubspace k P) : Set P) = v +ᵥ (s : Set P) := rfl
 
-/-- The additive action on an affine subspace corresponding to applying the action to every element.
+/--
+The additive action on an affine subspace corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 protected def pointwiseAddAction : AddAction V (AffineSubspace k P) :=
   SetLike.coe_injective.addAction _ coe_pointwise_vadd
@@ -86,13 +93,15 @@ section SMul
 variable [DistribSMul M V] [SMulCommClass M k V] {a : M} {s : AffineSubspace k V}
   {p : V}
 
-/-- The multiplicative action on an affine subspace corresponding to applying the action to every
+/--
+The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
 This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
-`VAdd` version of a `DistribMulAction`. -/
+`VAdd` version of a `DistribMulAction`.
+-/
 @[instance_reducible]
 protected def pointwiseSMul : SMul M (AffineSubspace k V) where
   smul a s := s.map (DistribSMul.toLinearMap k _ a).toAffineMap
@@ -119,13 +128,15 @@ section MulAction
 variable [Monoid M] [DistribMulAction M V] [SMulCommClass M k V] {a : M} {s : AffineSubspace k V}
   {p : V}
 
-/-- The multiplicative action on an affine subspace corresponding to applying the action to every
+/--
+The multiplicative action on an affine subspace corresponding to applying the action to every
 element.
 
 This is available as an instance in the `Pointwise` locale.
 
 TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineSubspace k P)`, which acts on `P` with a
-`VAdd` version of a `DistribMulAction`. -/
+`VAdd` version of a `DistribMulAction`.
+-/
 @[instance_reducible]
 protected def mulAction : MulAction M (AffineSubspace k V) :=
   SetLike.coe_injective.mulAction _ coe_smul

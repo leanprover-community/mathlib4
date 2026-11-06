@@ -9,9 +9,11 @@ public import Mathlib.Algebra.BigOperators.Finsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.GroupTheory.Congruence.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interactions between `∑, ∏` and `(Add)Con`
-
 -/
 
 public section

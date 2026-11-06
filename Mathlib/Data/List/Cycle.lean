@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.OfMap
 
 import Mathlib.Data.Fin.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cycles of a list
 
@@ -22,7 +25,6 @@ We also define a representation of concrete cycles, available when viewing them 
 via `#eval`, when over representable types. For example, the cycle `(2 1 4 3)` will be shown
 as `c[2, 1, 4, 3]`. Two equal cycles may be printed differently if their internal representation
 is different.
-
 -/
 
 @[expose] public section
@@ -104,11 +106,13 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   · exact hxs' _ (mem_cons_of_mem _ mem_cons_self)
   · exact ih fun _ h => hxs' _ (mem_cons_of_mem _ h)
 
-/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the next
+/--
+Given an element `x : α` of `l : List α` such that `x ∈ l`, get the next
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
 For example:
+
 * `next [1, 2, 3] 2 _ = 3`
 * `next [1, 2, 3] 3 _ = 1`
 * `next [1, 2, 3, 2, 4] 2 _ = 3`
@@ -118,7 +122,8 @@ For example:
 def next (l : List α) (x : α) (h : x ∈ l) : α :=
   nextOr l x (l.get ⟨0, length_pos_of_mem h⟩)
 
-/-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the previous
+/--
+Given an element `x : α` of `l : List α` such that `x ∈ l`, get the previous
 element of `l`. This works from head to tail, (including a check for last element)
 so it will match on first hit, ignoring later duplicates.
 
@@ -787,9 +792,11 @@ is different.
 unsafe instance [Repr α] : Repr (Cycle α) :=
   ⟨fun s _ => "c[" ++ Std.Format.joinSep (s.map repr).lists.unquot.head! ", " ++ "]"⟩
 
-/-- `chain R s` means that `R` holds between adjacent elements of `s`.
+/--
+`chain R s` means that `R` holds between adjacent elements of `s`.
 
-`chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a` -/
+`chain R ([a, b, c] : Cycle α) ↔ R a b ∧ R b c ∧ R c a`
+-/
 nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
   Quotient.liftOn' c
     (fun l =>

@@ -13,6 +13,9 @@ public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 import Mathlib.RingTheory.PowerSeries.Ideal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalences related to power series rings
 
@@ -21,17 +24,13 @@ is patterned after `Mathlib/Algebra/MvPolynomial/Equiv.lean`.
 
 * `MvPowerSeries.isEmptyEquiv` : The isomorphism between multivariable power series
   in no variables and the ground ring.
-
 * `MvPowerSeries.optionEquivLeft` : The isomorphism between multivariable power series
   in `Option σ` and power series with coefficients in `MvPowerSeries σ R`.
-
 * `MvPowerSeries.finSuccEquiv` : The isomorphism between multivariable power series
   in `Fin (n + 1)` and power series over multivariable power series in `Fin n`.
-
 * `MvPowerSeries.toAdicCompletionAlgEquiv` : the canonical isomorphism from
   multivariate power series to the adic completion of multivariate polynomials
   with respect to the ideal spanned by all variables when the index is finite.
-
 -/
 
 @[expose] public section

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Covariant instances on `WithZero`
 
 Adding a zero to a type with a preorder and multiplication which satisfies some
@@ -24,7 +26,6 @@ which is `PosMulStrictMono (WithZero α)`.
 
 The type `ℤᵐ⁰ := WithZero (Multiplicative ℤ)` is used a lot in mathlib's valuation
 theory. These instances enable lemmas such as `mul_pos` to fire on `ℤᵐ⁰`.
-
 -/
 
 @[expose] public section

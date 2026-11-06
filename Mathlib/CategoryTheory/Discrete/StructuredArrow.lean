@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structured arrows when the target category is discrete
 
@@ -14,7 +17,6 @@ When `T` is a type with a unique element `t`, we show that
 if `F : C ⥤ Discrete T`, then the categories
 `StructuredArrow (Discrete.mk t) F` and
 `CostructuredArrow (Discrete.mk t) F` are equivalent to `C`.
-
 -/
 
 @[expose] public section

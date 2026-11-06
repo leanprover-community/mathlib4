@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.Have
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending `replace`
 

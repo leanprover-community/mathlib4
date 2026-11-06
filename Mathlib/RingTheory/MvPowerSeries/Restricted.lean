@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Algebra.Order.Antidiag.Tendsto
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate restricted power series
 
@@ -19,18 +22,20 @@ In this file we introduce the theory of restricted multivariate power series (hi
 Tate algebras when `c` = 1).
 
 Specifically we define the predicate:
+
 * `IsRestricted` : a multivariate power series over a normed ring `R` is restricted for a
-tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the cofinite filter.
+  tuple `c` if `‖coeff t f‖ * ∏ i ∈ t.support, c i ^ t i → 0` under the cofinite filter.
 
 And then promote it to a type:
+
 * `Restricted`: the set of restricted multivariate power series over a normed ring `R` for a tuple
-`c`.
+  `c`.
 
 When `R` is an ultrametric (non-archimedean) normed ring we have the following key properties:
+
 * `MvPowerSeries.instRingRestricted`: `Restricted R c` is a ring
 * `MvPowerSeries.instModuleRestricted`: `Restricted R c` is an `R`-module
 * `MvPowerSeries.instAlgebraRestricted`: `Restricted R c` is an `R`-algebra
-
 -/
 
 @[expose] public section

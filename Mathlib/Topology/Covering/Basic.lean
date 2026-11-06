@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.FiberBundle.Basic
 public import Mathlib.Topology.IsLocalHomeomorph
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering Maps
 
@@ -30,12 +33,14 @@ open Bundle Topology
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 
-/-- A point `x : X` is evenly covered by `f : E → X` if `x` has an evenly covered neighborhood.
+/--
+A point `x : X` is evenly covered by `f : E → X` if `x` has an evenly covered neighborhood.
 
-**Remark**: `DiscreteTopology I ∧ ∃ Trivialization I f, x ∈ t.baseSet` would be a simpler
+*Remark*: `DiscreteTopology I ∧ ∃ Trivialization I f, x ∈ t.baseSet` would be a simpler
 definition, but unfortunately it does not work if `E` is nonempty but nonetheless `f` has empty
 fibers over `s`. If `OpenPartialHomeomorph` could be refactored to work with an empty space and a
-nonempty space while preserving the APIs, we could switch back to the definition. -/
+nonempty space while preserving the APIs, we could switch back to the definition.
+-/
 def IsEvenlyCovered (x : X) (I : Type*) [TopologicalSpace I] :=
   DiscreteTopology I ∧ ∃ U : Set X, x ∈ U ∧ IsOpen U ∧ IsOpen (f ⁻¹' U) ∧
     ∃ H : f ⁻¹' U ≃ₜ U × I, ∀ x, (H x).1.1 = f x
@@ -363,7 +368,9 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
 
 variable {A} [TopologicalSpace A] {s : Set A} {g g₁ g₂ : A → E}
 
-/-- Proposition 1.34 of [hatcher02]. -/
+/--
+Proposition 1.34 of \[hatcher02\].
+-/
 theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : f ∘ g₁ = f ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ :=
   hf.isSeparatedMap.eq_of_comp_eq hf.isLocalHomeomorph.isLocallyInjective h₁ h₂ he a ha
@@ -426,7 +433,8 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
 
 open Function in
-/-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
+/--
+Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
 `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
 that covers `f⁻¹(V)` such that for every `i`,
 
@@ -434,7 +442,8 @@ that covers `f⁻¹(V)` such that for every `i`,
 2. `V` is contained in the image `f(Uᵢ)`,
 3. the open sets in `V` are determined by their preimages in `Uᵢ`.
 
-Then `f` admits a `Bundle.Trivialization` over the base set `V`. -/
+Then `f` admits a `Bundle.Trivialization` over the base set `V`.
+-/
 @[simps source target baseSet] noncomputable def IsOpen.trivializationDiscrete [Nonempty (X → E)]
     {ι} [Nonempty ι] [TopologicalSpace ι] [DiscreteTopology ι] (U : ι → Set E) (V : Set X)
     (open_V : IsOpen V) (open_iff : ∀ i {W}, W ⊆ V → (IsOpen W ↔ IsOpen (f ⁻¹' W ∩ U i)))
@@ -578,13 +587,15 @@ theorem IsEvenlyCovered.of_openPartialHomeomorph
   hf.isClosedMap.isEvenlyCovered_of_openPartialHomeomorph
     ((isClosed_singleton.preimage hf).isCompact.finite (.of_openPartialHomeomorph f subset_rfl h)) h
 
-/-- If `f : E → X` is a continuous map between Hausdorff spaces with `E` compact, `s` is a subset
+/--
+If `f : E → X` is a continuous map between Hausdorff spaces with `E` compact, `s` is a subset
 of `X` such that `f` restricts to a homeomorphism on a neighborhood of every point of `f ⁻¹' s`,
 then `f` is a covering map on `s`.
 
 For example, `s` can be taken to be the set of regular values of a C¹ map `f : E → X`
 where `E` and `X` are manifolds of the same dimension with `E` compact, according to
-the inverse function theorem (see `ContDiffAt.toOpenPartialHomeomorph`). -/
+the inverse function theorem (see `ContDiffAt.toOpenPartialHomeomorph`).
+-/
 theorem IsCoveringMapOn.of_isLocalHomeomorphOn
     [T2Space E] [T2Space X] [CompactSpace E] (hf : Continuous f)
     (h : IsLocalHomeomorphOn f (f ⁻¹' s)) :

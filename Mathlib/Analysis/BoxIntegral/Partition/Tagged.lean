@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.BoxIntegral.Partition.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tagged partitions
 
@@ -15,7 +18,7 @@ A tagged (pre)partition is a (pre)partition `π` enriched with a tagged point fo
 on all boxes `J : Box ι` but use its values only on boxes of the partition. Given
 `π : BoxIntegral.TaggedPrepartition I`, we require that each `BoxIntegral.TaggedPrepartition π J`
 belongs to `BoxIntegral.Box.Icc I`. If for every `J ∈ π`, `π.tag J` belongs to `J.Icc`, then `π` is
-called a *Henstock* partition. We do not include this assumption into the definition of a tagged
+called a _Henstock_ partition. We do not include this assumption into the definition of a tagged
 (pre)partition because McShane integral is defined as a limit along tagged partitions without this
 requirement.
 
@@ -154,11 +157,13 @@ namespace TaggedPrepartition
 
 variable {I J : Box ι} {π π₁ π₂ : TaggedPrepartition I} {x : ι → ℝ}
 
-/-- Given a tagged partition `π` of `I` and a (not tagged) partition `πi J hJ` of each `J ∈ π`,
+/--
+Given a tagged partition `π` of `I` and a (not tagged) partition `πi J hJ` of each `J ∈ π`,
 returns the tagged partition of `I` into all the boxes of all `πi J hJ`. The tag of a box `J`
 is defined to be the `π.tag` of the box of the partition `π` that includes `J`.
 
-Note that usually the result is not a Henstock partition. -/
+Note that usually the result is not a Henstock partition.
+-/
 @[simps -fullyApplied tag]
 def biUnionPrepartition (π : TaggedPrepartition I) (πi : ∀ J : Box ι, Prepartition J) :
     TaggedPrepartition I where
@@ -171,10 +176,12 @@ theorem IsPartition.biUnionPrepartition {π : TaggedPrepartition I} (h : IsParti
     (π.biUnionPrepartition πi).IsPartition :=
   h.biUnion hi
 
-/-- Given two partitions `π₁` and `π₁`, one of them tagged and the other is not, returns the tagged
+/--
+Given two partitions `π₁` and `π₁`, one of them tagged and the other is not, returns the tagged
 partition with `toPrepartition = π₁.toPrepartition ⊓ π₂` and tags coming from `π₁`.
 
-Note that usually the result is not a Henstock partition. -/
+Note that usually the result is not a Henstock partition.
+-/
 def infPrepartition (π : TaggedPrepartition I) (π' : Prepartition I) : TaggedPrepartition I :=
   π.biUnionPrepartition fun J => π'.restrict J
 

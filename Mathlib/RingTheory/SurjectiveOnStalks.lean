@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring Homomorphisms surjective on stalks
 
@@ -17,7 +20,6 @@ the development of immersions in algebraic geometry.
 A ring homomorphism `R →+* S` is surjective on stalks if `R_p →+* S_q` is surjective for all pairs
 of primes `p = f⁻¹(q)`. We show that this property is stable under composition and base change, and
 that surjections and localizations satisfy this.
-
 -/
 
 @[expose] public section

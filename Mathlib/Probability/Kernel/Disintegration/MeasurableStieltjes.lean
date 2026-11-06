@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.Measure.Stieltjes
 
 import Mathlib.Analysis.Normed.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measurable parametric Stieltjes functions
 
@@ -41,7 +44,6 @@ Finally, we define `stieltjesOfMeasurableRat`, composition of `toRatCDF` and
 
 * `stieltjesOfMeasurableRat`: turn a measurable function `f : α → ℚ → ℝ` into a measurable
   function `α → StieltjesFunction ℝ`.
-
 -/
 
 @[expose] public section
@@ -125,7 +127,8 @@ lemma IsRatStieltjesPoint.ite {f g : α → ℚ → ℝ} {a : α} (p : α → Pr
 
 variable [MeasurableSpace α]
 
-/-- A function `f : α → ℚ → ℝ` is a (kernel) rational cumulative distribution function if it is
+/--
+A function `f : α → ℚ → ℝ` is a (kernel) rational cumulative distribution function if it is
 measurable in the first argument and if `f a` satisfies a list of properties for all `a : α`:
 monotonicity between 0 at -∞ and 1 at +∞ and a form of continuity.
 

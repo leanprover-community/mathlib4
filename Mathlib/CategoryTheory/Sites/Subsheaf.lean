@@ -9,23 +9,25 @@ public import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 public import Mathlib.CategoryTheory.Subfunctor.Image
 public import Mathlib.CategoryTheory.Subfunctor.Sieves
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subsheaf of types
 
 We define the subsheaf of a type-valued presheaf.
 
 ## Main results
 
-- `CategoryTheory.Subfunctor.sheafify` :
+* `CategoryTheory.Subfunctor.sheafify` :
   The sheafification of a subpresheaf as a subpresheaf. Note that this is a sheaf only when the
   whole sheaf is.
-- `CategoryTheory.Subfunctor.sheafify_isSheaf` :
+* `CategoryTheory.Subfunctor.sheafify_isSheaf` :
   The sheafification is a sheaf
-- `CategoryTheory.Subfunctor.sheafifyLift` :
+* `CategoryTheory.Subfunctor.sheafifyLift` :
   The descent of a map into a sheaf to the sheafification.
-- `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
-- `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
+* `CategoryTheory.GrothendieckTopology.imageSheaf` : The image sheaf of a morphism.
+* `CategoryTheory.GrothendieckTopology.imageFactorization` : The image sheaf as a
   `Limits.imageFactorization`.
 -/
 

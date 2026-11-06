@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.InvariantBasisNumber
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invertible matrices over a ring with invariant basis number are square.
 -/
@@ -52,8 +55,10 @@ theorem invariantBasisNumber_iff_matrix : InvariantBasisNumber R ↔ ∀ n m
       h (toLinearEquivRight'OfInv hfg hgf).symm) fun h n m e ↦ h n m (toMatrixRight' e)
     (toMatrixRight' e.symm) (by simp [← toMatrixRight'_comp]) (by simp [← toMatrixRight'_comp])
 
-/-- The rank condition is left-right symmetric. Note that the strong rank condition
-is not left-right symmetric, see Remark (1.32) in §1.1D of [lam_1999]. -/
+/--
+The rank condition is left-right symmetric. Note that the strong rank condition
+is not left-right symmetric, see Remark (1.32) in §1.1D of \[lam\_1999\].
+-/
 protected theorem MulOpposite.rankCondition_iff : RankCondition Rᵐᵒᵖ ↔ RankCondition R := by
   simp_rw [rankCondition_iff_matrix, ← opEquiv.mapMatrix.forall_congr_right,
     ← opEquiv.mapMatrix.symm.injective.eq_iff]
@@ -94,9 +99,11 @@ theorem Matrix.square_of_invertible (M : Matrix n m R) (N : Matrix m n R) (h : M
   card_eq_of_linearEquiv R (Matrix.toLinearEquivRight'OfInv h' h)
 
 open Function in
-/-- Nontrivial commutative semirings `R` satisfy the rank condition.
+/--
+Nontrivial commutative semirings `R` satisfy the rank condition.
 
 If `R` is moreover a ring, then it satisfies the strong rank condition, see
-`commRing_strongRankCondition`. It is unclear whether this generalizes to semirings. -/
+`commRing_strongRankCondition`. It is unclear whether this generalizes to semirings.
+-/
 instance (priority := 100) rankCondition_of_nontrivial_of_commSemiring {R : Type*}
     [CommSemiring R] [Nontrivial R] : RankCondition R := inferInstance

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of arrows
 
@@ -305,8 +308,10 @@ theorem square_from_iso_invert {X Y : T} (i : X ≅ Y) (p : Arrow T) (sq : Arrow
 
 variable {C : Type u} [Category.{v} C]
 
-/-- A helper construction: given a square between `i` and `f ≫ g`, produce a square between
+/--
+A helper construction: given a square between `i` and `f ≫ g`, produce a square between
 `i` and `g`, whose top leg uses `f`:
+
 ```
 A  → X
      ↓f

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine spaces
 
@@ -19,7 +22,6 @@ and the affine span of a set of points.
 
 * `AffineSubspace.Parallel`, notation `∥`, gives the property of two affine subspaces being
   parallel (one being a translate of the other).
-
 -/
 
 @[expose] public section
@@ -625,9 +627,11 @@ lemma map_mk' (p : P₁) (direction : Submodule k V₁) :
 section inclusion
 variable {S₁ S₂ : AffineSubspace k P₁} [Nonempty S₁]
 
-/-- Affine map from a smaller to a larger subspace of the same space.
+/--
+Affine map from a smaller to a larger subspace of the same space.
 
-This is the affine version of `Submodule.inclusion`. -/
+This is the affine version of `Submodule.inclusion`.
+-/
 @[simps linear]
 def inclusion (h : S₁ ≤ S₂) :
     letI := Nonempty.map (Set.inclusion h) ‹_›
@@ -696,9 +700,11 @@ theorem ext_on {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AddTorso
 section ofEq
 variable (S₁ S₂ : AffineSubspace k P₁) [Nonempty S₁] [Nonempty S₂]
 
-/-- Affine equivalence between two equal affine subspace.
+/--
+Affine equivalence between two equal affine subspace.
 
-This is the affine version of `LinearEquiv.ofEq`. -/
+This is the affine version of `LinearEquiv.ofEq`.
+-/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
   toEquiv := Set.equivOfEq <| congr_arg _ h

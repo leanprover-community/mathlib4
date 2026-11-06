@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphism properties that are inverted by a functor
 
@@ -16,7 +19,6 @@ that the morphisms satisfying `P : MorphismProperty C` are mapped to
 isomorphisms by a functor `F : C ⥤ D`.
 
 This is used in the localization of categories API (folder `CategoryTheory.Localization`).
-
 -/
 
 @[expose] public section

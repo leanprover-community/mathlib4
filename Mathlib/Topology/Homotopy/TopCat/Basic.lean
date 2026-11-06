@@ -8,12 +8,14 @@ module
 public import Mathlib.Topology.Category.TopCat.Monoidal
 public import Mathlib.Topology.Homotopy.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopies between morphisms in `TopCat`
 
 In this file, we define the type `TopCat.Homotopy` of homotopies
 between two morphisms in the category `TopCat`.
-
 -/
 
 @[expose] public section

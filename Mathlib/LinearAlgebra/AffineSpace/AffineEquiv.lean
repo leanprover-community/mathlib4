@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine equivalences
 
@@ -18,9 +21,7 @@ affine maps.
 We define the following equivalences:
 
 * `AffineEquiv.refl k P`: the identity map as an `AffineEquiv`;
-
 * `e.symm`: the inverse map of an `AffineEquiv` as an `AffineEquiv`;
-
 * `e.trans e'`: composition of two `AffineEquiv`s; note that the order follows `mathlib`'s
   `CategoryTheory` convention (apply `e`, then `e'`), not the convention used in function
   composition and compositions of bundled morphisms.
@@ -39,11 +40,13 @@ open Function Set
 
 open scoped Affine
 
-/-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
+/--
+An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
 such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
-to allow affine equivalences with good definitional equalities. -/
+to allow affine equivalences with good definitional equalities.
+-/
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [AddCommGroup V₂]
   [Module k V₁] [Module k V₂] [AddTorsor V₁ P₁] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
   /-- The underlying linear equiv of modules. -/
@@ -180,11 +183,15 @@ theorem coe_symm_toEquiv (e : P₁ ≃ᵃ[k] P₂) : ⇑e.toEquiv.symm = e.symm 
 theorem linear_symm (e : P₁ ≃ᵃ[k] P₂) : e.symm.linear = e.linear.symm :=
   rfl
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (e : P₁ ≃ᵃ[k] P₂) : P₁ → P₂ :=
   e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : P₁ ≃ᵃ[k] P₂) : P₂ → P₁ :=
   e.symm
 
@@ -355,9 +362,11 @@ def linearHom : (P₁ ≃ᵃ[k] P₁) →* V₁ ≃ₗ[k] V₁ where
   map_one' := rfl
   map_mul' _ _ := rfl
 
-/-- The group of `AffineEquiv`s are equivalent to the group of units of `AffineMap`.
+/--
+The group of `AffineEquiv`s are equivalent to the group of units of `AffineMap`.
 
-This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`. -/
+This is the affine version of `LinearMap.GeneralLinearGroup.generalLinearEquiv`.
+-/
 @[simps -isSimp]
 def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ where
   toFun e :=
@@ -454,10 +463,12 @@ theorem coe_constVSub_symm (p : P₁) : ⇑(constVSub k p).symm = fun v : V₁ =
 
 variable (P₁)
 
-/-- The map `p ↦ v +ᵥ p` as an affine automorphism of an affine space.
+/--
+The map `p ↦ v +ᵥ p` as an affine automorphism of an affine space.
 
 Note that there is no need for an `AffineMap.constVAdd` as it is always an equivalence.
-This is roughly to `DistribMulAction.toLinearEquiv` as `+ᵥ` is to `•`. -/
+This is roughly to `DistribMulAction.toLinearEquiv` as `+ᵥ` is to `•`.
+-/
 @[simps! apply linear]
 def constVAdd (v : V₁) : P₁ ≃ᵃ[k] P₁ where
   toEquiv := Equiv.constVAdd P₁ v
@@ -596,11 +607,13 @@ section ofLinearEquiv
 variable {k V P : Type*}
 variable [Ring k] [AddCommGroup V] [Module k V] [AddTorsor V P]
 
-/-- Construct an affine equivalence from a linear equivalence and two base points.
+/--
+Construct an affine equivalence from a linear equivalence and two base points.
 
 Given a linear equivalence `A : V ≃ₗ[k] V` and base points `p₀ p₁ : P`, this constructs
 the affine equivalence `T x = A (x -ᵥ p₀) +ᵥ p₁`. This is the standard way to convert
-a linear automorphism into an affine automorphism with specified base point mapping. -/
+a linear automorphism into an affine automorphism with specified base point mapping.
+-/
 def ofLinearEquiv (A : V ≃ₗ[k] V) (p₀ p₁ : P) : P ≃ᵃ[k] P :=
   (vaddConst k p₀).symm.trans (A.toAffineEquiv.trans (vaddConst k p₁))
 
@@ -633,11 +646,13 @@ section arrowCongrEquiv
 
 variable (e₁ : P₁ ≃ᵃ[k] P₂) (e₂ : P₃ ≃ᵃ[k] P₄)
 
-/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give a
+/--
+Affine isomorphisms between the domains and codomains of two spaces of affine maps give a
 bijection between the two function spaces.
 
 See `AffineEquiv.arrowCongr` and `AffineEquiv.arrowCongrₗ` for the affine and linear versions of
-this bijection. -/
+this bijection.
+-/
 def arrowCongrEquiv : (P₁ →ᵃ[k] P₃) ≃ (P₂ →ᵃ[k] P₄) where
   toFun f := e₂.toAffineMap.comp <| f.comp e₁.symm.toAffineMap
   invFun f := e₂.symm.toAffineMap.comp <| f.comp e₁.toAffineMap
@@ -664,10 +679,12 @@ section arrowCongrₗ
 
 variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : V₃ ≃ₗ[R] V₄)
 
-/-- An affine isomorphism between the domains and a linear isomorphism between the codomains of two
+/--
+An affine isomorphism between the domains and a linear isomorphism between the codomains of two
 spaces of affine maps give a linear isomorphism between the two function spaces.
 
-See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongr`. -/
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongr`.
+-/
 def arrowCongrₗ : (P₁ →ᵃ[R] V₃) ≃ₗ[R] (P₂ →ᵃ[R] V₄) where
   __ := e₁.arrowCongrEquiv e₂.toAffineEquiv
   map_add' _ _ := by ext; simp
@@ -689,10 +706,12 @@ section arrowCongr
 
 variable (e₁ : P₁ ≃ᵃ[R] P₂) (e₂ : P₃ ≃ᵃ[R] P₄)
 
-/-- Affine isomorphisms between the domains and codomains of two spaces of affine maps give an
+/--
+Affine isomorphisms between the domains and codomains of two spaces of affine maps give an
 affine isomorphism between the two function spaces.
 
-See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongrₗ`. -/
+See also `AffineEquiv.arrowCongrEquiv` and `AffineEquiv.arrowCongrₗ`.
+-/
 @[simps linear]
 def arrowCongr : (P₁ →ᵃ[R] P₃) ≃ᵃ[R] (P₂ →ᵃ[R] P₄) where
   __ := e₁.arrowCongrEquiv e₂

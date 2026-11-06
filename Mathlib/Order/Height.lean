@@ -8,8 +8,10 @@ module
 public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Maximal length of chains
 
 This file contains lemmas to work with the maximal lengths of chains of arbitrary relations. See
@@ -17,16 +19,15 @@ This file contains lemmas to work with the maximal lengths of chains of arbitrar
 
 ## Main definition
 
-- `Set.chainHeight`: The maximal length of a chain in a set `s` with relation `r`.
+* `Set.chainHeight`: The maximal length of a chain in a set `s` with relation `r`.
 
 ## Main results
 
-- `Set.exists_isChain_of_le_chainHeight`: For each `n : ℕ` such that `n ≤ s.chainHeight`, there
+* `Set.exists_isChain_of_le_chainHeight`: For each `n : ℕ` such that `n ≤ s.chainHeight`, there
   exists a subset `t` of length `n` such that `IsChain r t`.
-- `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
-- `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
+* `Set.chainHeight_mono`: If `s ⊆ t` then `s.chainHeight ≤ t.chainHeight`.
+* `Set.chainHeight_eq_of_relEmbedding`: If `f` is an relation embedding, then
   `(f '' s).chainHeight = s.chainHeight`.
-
 -/
 
 @[expose] public section

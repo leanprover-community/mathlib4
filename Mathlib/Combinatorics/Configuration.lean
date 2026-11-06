@@ -10,12 +10,16 @@ public import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 import Mathlib.Combinatorics.Hall.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Configurations of Points and lines
 
 This file introduces abstract configurations of points and lines, and proves some basic properties.
 
 ## Main definitions
+
 * `Configuration.Nondegenerate`: Excludes certain degenerate configurations,
   and imposes uniqueness of intersection points.
 * `Configuration.HasPoints`: A nondegenerate configuration in which
@@ -26,6 +30,7 @@ This file introduces abstract configurations of points and lines, and proves som
 * `Configuration.pointCount`: The number of lines through a given line.
 
 ## Main statements
+
 * `Configuration.HasLines.card_le`: `HasLines` implies `|P| ≤ |L|`.
 * `Configuration.HasPoints.card_le`: `HasPoints` implies `|L| ≤ |P|`.
 * `Configuration.HasLines.hasPoints`: `HasLines` and `|P| = |L|` implies `HasPoints`.
@@ -33,7 +38,6 @@ This file introduces abstract configurations of points and lines, and proves som
 
 Together, these four statements say that any two of the following properties imply the third:
 (a) `HasLines`, (b) `HasPoints`, (c) `|P| = |L|`.
-
 -/
 
 @[expose] public section
@@ -62,13 +66,16 @@ set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
-/-- A configuration is nondegenerate if:
-  1) there does not exist a line that passes through all of the points,
-  2) there does not exist a point that is on all of the lines,
-  3) there is at most one line through any two points,
-  4) any two lines have at most one intersection point.
+/--
+A configuration is nondegenerate if:
 
-  Conditions 3 and 4 are equivalent. -/
+1. there does not exist a line that passes through all of the points,
+2. there does not exist a point that is on all of the lines,
+3. there is at most one line through any two points,
+4. any two lines have at most one intersection point.
+
+Conditions 3 and 4 are equivalent.
+-/
 class Nondegenerate : Prop where
   exists_point : ∀ l : L, ∃ p, p ∉ l
   exists_line : ∀ p, ∃ l : L, p ∉ l

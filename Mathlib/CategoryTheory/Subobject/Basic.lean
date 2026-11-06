@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects
 
@@ -26,6 +29,7 @@ There is a coercion from `Subobject X` back to the ambient category `C`
 `P.arrow : (P : C) ⟶ X` is the inclusion morphism.
 
 We provide
+
 * `def pullback [HasPullbacks C] (f : X ⟶ Y) : Subobject Y ⥤ Subobject X`
 * `def map (f : X ⟶ Y) [Mono f] : Subobject X ⥤ Subobject Y`
 * `def «exists_» [HasImages C] (f : X ⟶ Y) : Subobject X ⥤ Subobject Y`
@@ -68,7 +72,6 @@ When a morphism `f` has an image, the image represents the same pseudoelement.
 In a category with images `Pseudoelements X` could be constructed as a quotient of `MonoOver X`.
 In fact, in an abelian category (I'm not sure in what generality beyond that),
 `Pseudoelements X` agrees with `Subobject X`, but we haven't developed this in mathlib yet.
-
 -/
 
 @[expose] public section
@@ -174,7 +177,8 @@ lemma thinSkeleton_mk_representative_eq_self {X : C} (A : Subobject X) :
     ThinSkeleton.mk (representative.obj A) = A :=
   Subobject.skeletal _ ⟨((equivMonoOver X).unitIso.app _).symm⟩
 
-/-- Use choice to pick a representative underlying object in `C` for any `Subobject X`.
+/--
+Use choice to pick a representative underlying object in `C` for any `Subobject X`.
 
 Prefer to use the coercion `P : C` rather than explicitly writing `underlying.obj P`.
 -/
@@ -606,20 +610,21 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
         (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
         (by simp) (by simp) (by simp) (by simp)
 
-/-- For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
-    projection in the following pullback square:
+/--
+For any morphism `f : X ⟶ Y` and subobject `y` of `Y`, `Subobject.pullbackπ f y` is the first
+projection in the following pullback square:
 
-    ```
-    (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
-             |                                            |
-    ((Subobject.pullback f).obj y).arrow               y.arrow
-             |                                            |
-             v                                            v
-             X ---------------------f-------------------> Y
-    ```
+```
+(Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
+         |                                            |
+((Subobject.pullback f).obj y).arrow               y.arrow
+         |                                            |
+         v                                            v
+         X ---------------------f-------------------> Y
+```
 
-    For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
-    elements of `X` that are in the preimage of `y ⊆ Y`.
+For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
+elements of `X` that are in the preimage of `y ⊆ Y`.
 -/
 noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
     ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
@@ -725,8 +730,9 @@ section Exists
 
 variable [HasImages C]
 
-/-- The functor from subobjects of `X` to subobjects of `Y` given by
-sending the subobject `S` to its "image" under `f`, usually denoted $\exists_f$.
+/--
+The functor from subobjects of `X` to subobjects of `Y` given by
+sending the subobject `S` to its "image" under `f`, usually denoted $`\exists_f`.
 For instance, when `C` is the category of types,
 viewing `Subobject X` as `Set X` this is just `Set.image f`.
 

@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.Complex.HalfPlane
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability and derivatives of L-series
 
@@ -19,9 +22,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 * We show that the `LSeries` of `f` is differentiable at `s` when `re s` is greater than
   the abscissa of absolute convergence of `f` (`LSeries.hasDerivAt`) and that its derivative
   there is the negative of the `LSeries` of the point-wise product `log * f` (`LSeries.deriv`).
-
 * We prove similar results for iterated derivatives (`LSeries.iteratedDeriv`).
-
 * We use this to show that `LSeries f` is holomorphic on the right half-plane of
   absolute convergence (`LSeries.analyticOnNhd`).
 
@@ -36,7 +37,7 @@ public section
 open Complex LSeries
 
 /-!
-### The derivative of an L-series
+# The derivative of an L-series
 -/
 
 /-- The (point-wise) product of `log : ℕ → ℂ` with `f`. -/
@@ -116,7 +117,7 @@ lemma LSeries.abscissaOfAbsConv_logMul {f : ℕ → ℂ} :
     simpa using Real.log_le_log (Real.exp_pos 1) <| Nat.ceil_le.mp <| (le_max_right _ _).trans hn
 
 /-!
-### Higher derivatives of L-series
+# Higher derivatives of L-series
 -/
 
 /-- The abscissa of absolute convergence of the point-wise product of a power of `log` and `f`
@@ -148,7 +149,7 @@ lemma LSeries_iteratedDeriv {f : ℕ → ℂ} (m : ℕ) {s : ℂ} (h : abscissaO
       LSeries_deriv <| abscissaOfAbsConv_logPowMul.symm ▸ h, -Function.iterate_succ]
 
 /-!
-### The L-series is holomorphic
+# The L-series is holomorphic
 -/
 
 /-- The L-series of `f` is complex differentiable in its open half-plane of absolute

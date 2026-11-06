@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.ContinuousMap.Bounded.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Thickened indicators
 
@@ -27,11 +30,11 @@ members of the approximating sequence are nonnegative bounded continuous functio
 
 * For a sequence of thickening radii tending to 0, the `δ`-thickened indicators of a set `E` tend
   pointwise to the indicator of `closure E`.
-  - `thickenedIndicatorAux_tendsto_indicator_closure`: The version is for the
-    unbundled `ℝ≥0∞`-valued functions.
-  - `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
-    bounded continuous functions.
 
+  * `thickenedIndicatorAux_tendsto_indicator_closure`: The version is for the
+    unbundled `ℝ≥0∞`-valued functions.
+  * `thickenedIndicator_tendsto_indicator_closure`: The version is for the bundled `ℝ≥0`-valued
+    bounded continuous functions.
 -/
 
 @[expose] public section
@@ -44,12 +47,14 @@ noncomputable section thickenedIndicator
 
 variable {α : Type*} [PseudoEMetricSpace α]
 
-/-- The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
+/--
+The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
 and `0` outside a `δ`-thickening of `E` and interpolates (continuously) between
 these values using `infEDist _ E`.
 
 `thickenedIndicatorAux` is the unbundled `ℝ≥0∞`-valued function. See `thickenedIndicator`
-for the (bundled) bounded continuous function with `ℝ≥0`-values. -/
+for the (bundled) bounded continuous function with `ℝ≥0`-values.
+-/
 def thickenedIndicatorAux (δ : ℝ) (E : Set α) : α → ℝ≥0∞ :=
   fun x : α => (1 : ℝ≥0∞) - infEDist x E / ENNReal.ofReal δ
 
@@ -119,13 +124,15 @@ lemma thickenedIndicatorAux_mono_infEDist (δ : ℝ) {E : Set α} {x y : α}
   · rw [tsub_eq_zero_of_le hle, tsub_eq_zero_of_le]
     exact hle.trans (by gcongr)
 
-/-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
+/--
+As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise (i.e., w.r.t. the product topology on `α → ℝ≥0∞`) to the indicator function of the
 closure of E.
 
 This statement is for the unbundled `ℝ≥0∞`-valued functions `thickenedIndicatorAux δ E`, see
 `thickenedIndicator_tendsto_indicator_closure` for the version for bundled `ℝ≥0`-valued
-bounded continuous functions. -/
+bounded continuous functions.
+-/
 theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
     Tendsto (fun n => thickenedIndicatorAux (δseq n) E) atTop
@@ -151,12 +158,14 @@ theorem thickenedIndicatorAux_tendsto_indicator_closure {δseq : ℕ → ℝ}
     apply (thickenedIndicatorAux_mono (lt_of_abs_lt (hN n n_large)).le E x).trans
     exact (thickenedIndicatorAux_zero ε_pos E key).le
 
-/-- The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
+/--
+The `δ`-thickened indicator of a set `E` is the function that equals `1` on `E`
 and `0` outside a `δ`-thickening of `E` and interpolates (continuously) between
 these values using `infEDist _ E`.
 
 `thickenedIndicator` is the (bundled) bounded continuous function with `ℝ≥0`-values.
-See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function. -/
+See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function.
+-/
 @[simps]
 def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
   toFun := fun x : α => (thickenedIndicatorAux δ E x).toNNReal
@@ -235,12 +244,14 @@ lemma thickenedIndicator_mono_infEDist {δ : ℝ} (δ_pos : 0 < δ) {E : Set α}
   · finiteness
   · exact thickenedIndicatorAux_mono_infEDist δ h
 
-/-- As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
+/--
+As the thickening radius δ tends to 0, the δ-thickened indicator of a set E (in α) tends
 pointwise to the indicator function of the closure of E.
 
 Note: This version is for the bundled bounded continuous functions, but the topology is not
 the topology on `α →ᵇ ℝ≥0`. Coercions to functions `α → ℝ≥0` are done first, so the topology
-instance is the product topology (the topology of pointwise convergence). -/
+instance is the product topology (the topology of pointwise convergence).
+-/
 theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δseq_pos : ∀ n, 0 < δseq n)
     (δseq_lim : Tendsto δseq atTop (𝓝 0)) (E : Set α) :
     Tendsto (fun n : ℕ => ((↑) : (α →ᵇ ℝ≥0) → α → ℝ≥0) (thickenedIndicator (δseq_pos n) E)) atTop

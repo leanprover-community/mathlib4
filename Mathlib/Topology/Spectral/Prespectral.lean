@@ -10,12 +10,13 @@ public import Mathlib.Topology.Sets.Compacts
 public import Mathlib.Topology.Sets.OpenCover
 public import Mathlib.Topology.Spectral.Hom
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Prespectral spaces
 
 In this file, we define prespectral spaces as spaces whose lattice of compact opens forms a basis.
-
 -/
 
 @[expose] public section

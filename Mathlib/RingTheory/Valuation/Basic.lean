@@ -11,16 +11,19 @@ public import Mathlib.RingTheory.Ideal.Maps
 
 import Mathlib.Algebra.Order.Ring.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The basics of valuation theory.
 
 The basic theory of valuations (non-archimedean norms) on a commutative ring,
-following T. Wedhorn's unpublished notes “Adic Spaces” ([wedhorn_adic]).
+following T. Wedhorn's unpublished notes “Adic Spaces” (\[wedhorn\_adic\]).
 
-The definition of a valuation we use here is Definition 1.22 of [wedhorn_adic].
+The definition of a valuation we use here is Definition 1.22 of \[wedhorn\_adic\].
 A valuation on a ring `R` is a monoid homomorphism `v` to a linearly ordered
 commutative monoid with zero, that in addition satisfies the following two axioms:
+
 * `v 0 = 0`
 * `∀ x y, v (x + y) ≤ max (v x) (v y)`
 
@@ -28,12 +31,12 @@ commutative monoid with zero, that in addition satisfies the following two axiom
 function. If `v` is a valuation from `R` to `Γ₀` then the induced group
 homomorphism `Units(R) → Γ₀` is called `unit_map v`.
 
-The equivalence "relation" `IsEquiv v₁ v₂ : Prop` defined in 1.27 of [wedhorn_adic] is not strictly
-speaking a relation, because `v₁ : Valuation R Γ₁` and `v₂ : Valuation R Γ₂` might
-not have the same type. This corresponds in ZFC to the set-theoretic difficulty
-that the class of all valuations (as `Γ₀` varies) on a ring `R` is not a set.
-The "relation" is however reflexive, symmetric and transitive in the obvious
-sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equivalence.
+The equivalence "relation" `IsEquiv v₁ v₂ : Prop` defined in 1.27 of \[wedhorn\_adic\] is not
+strictly speaking a relation, because `v₁ : Valuation R Γ₁` and `v₂ : Valuation R Γ₂` might not have
+the same type. This corresponds in ZFC to the set-theoretic difficulty that the class of all
+valuations (as `Γ₀` varies) on a ring `R` is not a set. The "relation" is however reflexive,
+symmetric and transitive in the obvious sense. Note that we use 1.27(iii) of \[wedhorn\_adic\] as
+the definition of equivalence.
 
 ## Main definitions
 
@@ -46,7 +49,6 @@ sense. Note that we use 1.27(iii) of [wedhorn_adic] as the definition of equival
   equivalent valuations.
 * `orderMonoidIso₀` is the ordered isomorphism between the `ValueGroup₀`'s of two
   equivalent valuations.
-
 * `AddValuation R Γ₀`, the type of additive valuations on `R` with values in a
   linearly ordered additive commutative group with a top element, `Γ₀`.
 
@@ -76,16 +78,20 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
-/-- The type of `Γ₀`-valued valuations on `R`.
+/--
+The type of `Γ₀`-valued valuations on `R`.
 
-When you extend this structure, make sure to extend `ValuationClass`. -/
+When you extend this structure, make sure to extend `ValuationClass`.
+-/
 structure Valuation extends R →*₀ Γ₀ where
   /-- The valuation of a sum is less than or equal to the maximum of the valuations. -/
   map_add_le_max' : ∀ x y, toFun (x + y) ≤ max (toFun x) (toFun y)
 
-/-- `ValuationClass F α β` states that `F` is a type of valuations.
+/--
+`ValuationClass F α β` states that `F` is a type of valuations.
 
-You should also extend this typeclass when you extend `Valuation`. -/
+You should also extend this typeclass when you extend `Valuation`.
+-/
 class ValuationClass (F) (R Γ₀ : outParam Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
     [FunLike F R Γ₀] : Prop
   extends MonoidWithZeroHomClass F R Γ₀ where
@@ -684,11 +690,13 @@ section IsTrivialOn
 
 variable [LinearOrderedCommMonoidWithZero Γ₀]
 
-/-- A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
-  base ring `A` are mapped to `1`.
+/--
+A valuation on an `A`-algebra `B` is trivial on constants if the nonzero elements of the
+base ring `A` are mapped to `1`.
 
-  This is true, for example, when `A` is a finite field.
-  See `Valuation.FiniteField.instIsTrivialOn`. -/
+This is true, for example, when `A` is a finite field.
+See `Valuation.FiniteField.instIsTrivialOn`.
+-/
 class IsTrivialOn {B : Type*} (A : Type*) [CommSemiring A] [Ring B] [Algebra A B]
     (v : Valuation B Γ₀) where
   eq_one : ∀ a : A, a ≠ 0 → v (algebraMap A B a) = 1

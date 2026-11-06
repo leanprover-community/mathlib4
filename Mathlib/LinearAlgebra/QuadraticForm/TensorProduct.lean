@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The quadratic form on a tensor product
 
@@ -17,7 +20,6 @@ import Mathlib.Tactic.LinearCombination
 
 * `QuadraticForm.tensorDistrib (Q₁ ⊗ₜ Q₂)`: the quadratic form on `M₁ ⊗ M₂` constructed by applying
   `Q₁` on `M₁` and `Q₂` on `M₂`. This construction is not available in characteristic two.
-
 -/
 
 @[expose] public section
@@ -42,10 +44,12 @@ variable [Invertible (2 : R)]
 namespace QuadraticMap
 
 variable (R A) in
-/-- The tensor product of two quadratic maps injects into quadratic maps on tensor products.
+/--
+The tensor product of two quadratic maps injects into quadratic maps on tensor products.
 
 Note this is heterobasic; the quadratic map on the left can take values in a module over a larger
-ring than the one on the right. -/
+ring than the one on the right.
+-/
 def tensorDistrib :
     QuadraticMap A M₁ N₁ ⊗[R] QuadraticMap R M₂ N₂ →ₗ[A] QuadraticMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   letI : Invertible (2 : A) := (Invertible.map (algebraMap R A) 2).copy 2 (map_ofNat _ _).symm
@@ -86,10 +90,12 @@ end QuadraticMap
 namespace QuadraticForm
 
 variable (R A) in
-/-- The tensor product of two quadratic forms injects into quadratic forms on tensor products.
+/--
+The tensor product of two quadratic forms injects into quadratic forms on tensor products.
 
 Note this is heterobasic; the quadratic form on the left can take values in a larger ring than
-the one on the right. -/
+the one on the right.
+-/
 def tensorDistrib :
     QuadraticForm A M₁ ⊗[R] QuadraticForm R M₂ →ₗ[A] QuadraticForm A (M₁ ⊗[R] M₂) :=
   (AlgebraTensorModule.rid R A A).congrQuadraticMap.toLinearMap ∘ₗ QuadraticMap.tensorDistrib R A
@@ -150,11 +156,13 @@ end QuadraticForm
 end InvertibleTwo
 
 set_option backward.defeqAttrib.useBackward true in
-/-- If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
+/--
+If two quadratic maps from `A ⊗[R] M₂` agree on elements of the form `1 ⊗ m`, they are equal.
 
 In other words, if a base change exists for a quadratic map, it is unique.
 
-Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`. -/
+Note that unlike `QuadraticForm.baseChange`, this does not need `Invertible (2 : R)`.
+-/
 @[ext]
 theorem baseChange_ext ⦃Q₁ Q₂ : QuadraticMap A (A ⊗[R] M₂) N₁⦄
     (h : ∀ m, Q₁ (1 ⊗ₜ m) = Q₂ (1 ⊗ₜ m)) :

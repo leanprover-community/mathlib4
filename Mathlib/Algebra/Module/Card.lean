@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Torsion.Free
 public import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of a module
 

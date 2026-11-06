@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kan extensions
 
@@ -28,8 +31,8 @@ which assert the existence of a right or left Kan extension, and chosen Kan exte
 are obtained as `leftKanExtension L F` and `rightKanExtension L F`.
 
 ## References
-* https://ncatlab.org/nlab/show/Kan+extension
 
+* https://ncatlab.org/nlab/show/Kan+extension
 -/
 
 @[expose] public section

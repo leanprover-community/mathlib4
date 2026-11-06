@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Presentation.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.OfAlternating
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exterior powers
 
@@ -16,22 +19,19 @@ We study the exterior powers of a module `M` over a commutative ring `R`.
 ## Definitions
 
 * `exteriorPower.ιMulti` is the canonical alternating map on `M` with values in `⋀[R]^n M`.
-
 * `exteriorPower.presentation R n M` is the standard presentation of the `R`-module `⋀[R]^n M`.
-
 * `exteriorPower.map n f : ⋀[R]^n M →ₗ[R] ⋀[R]^n N` is the linear map on `nth` exterior powers
   induced by a linear map `f : M →ₗ[R] N`. (See the file
   `Mathlib/Algebra/Category/ModuleCat/ExteriorPower.lean` for the corresponding functor
   `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
-* `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
+* `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
   expresses the universal property of the exterior power as a
   linear equivalence `(M [⋀^Fin n]→ₗ[R] N) ≃ₗ[R] ⋀[R]^n M →ₗ[R] N` between
   alternating maps and linear maps from the exterior power.
-
 -/
 
 @[expose] public section

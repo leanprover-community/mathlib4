@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.Profinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compact subsets of products as limits in `Profinite`
 
@@ -15,18 +18,17 @@ Hausdorff spaces as a cofiltered limit in `Profinite` indexed by `Finset ι`.
 
 ## Main definitions
 
-- `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
+* `Profinite.indexFunctor` is the functor `(Finset ι)ᵒᵖ ⥤ Profinite` indexing the limit. It maps
   `J` to the restriction of `C` to `J`
-- `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
+* `Profinite.indexCone` is a cone on `Profinite.indexFunctor` with cone point `C`
 
 ## Main results
 
-- `Profinite.isIso_indexCone_lift` says that the natural map from the cone point of the explicit
+* `Profinite.isIso_indexCone_lift` says that the natural map from the cone point of the explicit
   limit cone in `Profinite` on `indexFunctor` to the cone point of `indexCone` is an
   isomorphism
-- `Profinite.asLimitindexConeIso` is the induced isomorphism of cones.
-- `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
-
+* `Profinite.asLimitindexConeIso` is the induced isomorphism of cones.
+* `Profinite.indexCone_isLimit` says that `indexCone` is a limit cone.
 -/
 
 @[expose] public section

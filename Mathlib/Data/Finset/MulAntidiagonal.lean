@@ -9,11 +9,16 @@ public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Monoid.Defs
 public import Mathlib.Data.Set.MulAntidiagonal
 
-/-! # Multiplication antidiagonal as a `Finset`.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Multiplication antidiagonal as a `Finset`.
 
 We construct the `Finset` of all pairs
 of an element in `s` and an element in `t` that multiply to `a`,
-given that `s` and `t` are well-ordered. -/
+given that `s` and `t` are well-ordered.
+-/
 
 @[expose] public section
 

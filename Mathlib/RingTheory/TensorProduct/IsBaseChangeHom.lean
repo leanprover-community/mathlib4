@@ -10,21 +10,22 @@ public import Mathlib.RingTheory.TensorProduct.IsBaseChangeFree
 
 import Mathlib.LinearAlgebra.TensorProduct.Prod
 
-/-! # Base change properties for modules of linear maps
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Base change properties for modules of linear maps
 
 * `IsBaseChange.linearMapRight`:
   If `M` is finite free and `P` is a base change of `N` to `S`,
   then `M →ₗ[R] P` is a base change of `M →ₗ[R] N` to `S`.
-
 * `IsBaseChange.linearMapLeftRight`:
   If `M` is finite free and `P` is a base change of `M` to `S`,
   if `Q` is a base change of `N` to `S`,
   then `P →ₗ[S] Q` is a base change of `M →ₗ[R] N` to `S`.
-
 * `IsBaseChange.end`:
   If `M` is finite free and `P` is a base change of `M` to `S`,
   then `P →ₗ[S] P` is a base change of `M →ₗ[R] M` to `S`.
-
 -/
 
 @[expose] public section

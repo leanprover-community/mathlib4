@@ -9,15 +9,19 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 
 import Mathlib.Algebra.Algebra.Spectrum.Pi
 
-/-! # The continuous functional calculus on product types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The continuous functional calculus on product types
 
 This file contains results about the continuous functional calculus on (indexed) product types.
 
 ## Main theorems
 
-+ `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i => cfc f (a i)`
+* `cfc_map_pi` and `cfcₙ_map_pi`: given `a : ∀ i, A i`, then `cfc f a = fun i => cfc f (a i)`
   (and likewise for the non-unital version)
-+ `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
+* `cfc_map_prod` and `cfcₙ_map_prod`: given `a : A` and `b : B`, then
   `cfc f (a, b) = (cfc f a, cfc f b)` (and likewise for the non-unital version)
 -/
 

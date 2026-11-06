@@ -10,6 +10,9 @@ public import Mathlib.Algebra.MvPolynomial.Basic
 
 import Mathlib.Data.Finsupp.Weight
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division of `MvPolynomial` by monomials
 
@@ -28,7 +31,6 @@ import Mathlib.Data.Finsupp.Weight
 
 Where possible, the results in this file should be first proved in the generality of
 `AddMonoidAlgebra`, and then the versions specialized to `MvPolynomial` proved in terms of these.
-
 -/
 
 @[expose] public section
@@ -181,7 +183,9 @@ theorem X_dvd_iff_modMonomial_eq_zero {i : σ} {x : MvPolynomial σ R} :
 
 end XLemmas
 
-/-! ### Some results about dvd (`∣`) on `monomial` and `X` -/
+/-!
+# Some results about dvd (`∣`) on `monomial` and `X`
+-/
 
 
 theorem monomial_dvd_monomial {r s : R} {i j : σ →₀ ℕ} :

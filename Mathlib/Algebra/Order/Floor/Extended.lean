@@ -11,6 +11,9 @@ public import Mathlib.Data.ENat.Lattice
 
 import Mathlib.Basic.ENNReal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended floor and ceil
 

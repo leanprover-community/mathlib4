@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.NormLeOne
 public import Mathlib.NumberTheory.NumberField.ClassNumber
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics on integral ideals of a number field
 
@@ -19,7 +22,6 @@ We prove several asymptotics involving integral ideals of a number field.
   integral ideals of bounded norm in a fixed class of the class group.
 * `NumberField.ideal.tendsto_norm_le_div_atTop`: asymptotics for the number of integral ideals
   of bounded norm.
-
 -/
 
 public section

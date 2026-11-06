@@ -9,32 +9,38 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
 public import Mathlib.CategoryTheory.Sites.Sieves.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The sheaf condition for a presieve
 
-We define what it means for a presheaf `P : Cᵒᵖ ⥤ Type v` to be a sheaf *for* a particular
+We define what it means for a presheaf `P : Cᵒᵖ ⥤ Type v` to be a sheaf _for_ a particular
 presieve `R` on `X`:
-* A *family of elements* `x` for `P` at `R` is an element `x_f` of `P Y` for every `f : Y ⟶ X` in
+
+* A _family of elements_ `x` for `P` at `R` is an element `x_f` of `P Y` for every `f : Y ⟶ X` in
   `R`. See `FamilyOfElements`.
-* The family `x` is *compatible* if, for any `f₁ : Y₁ ⟶ X` and `f₂ : Y₂ ⟶ X` both in `R`,
+* The family `x` is _compatible_ if, for any `f₁ : Y₁ ⟶ X` and `f₂ : Y₂ ⟶ X` both in `R`,
   and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂` such that `g₁ ≫ f₁ = g₂ ≫ f₂`, the restriction of
   `x_f₁` along `g₁` agrees with the restriction of `x_f₂` along `g₂`.
   See `FamilyOfElements.Compatible`.
-* An *amalgamation* `t` for the family is an element of `P X` such that for every `f : Y ⟶ X` in
+* An _amalgamation_ `t` for the family is an element of `P X` such that for every `f : Y ⟶ X` in
   `R`, the restriction of `t` on `f` is `x_f`.
   See `FamilyOfElements.IsAmalgamation`.
 
-We then say `P` is *separated* for `R` if every compatible family has at most one amalgamation,
-and it is a *sheaf* for `R` if every compatible family has a unique amalgamation.
+We then say `P` is _separated_ for `R` if every compatible family has at most one amalgamation,
+and it is a _sheaf_ for `R` if every compatible family has a unique amalgamation.
 See `IsSeparatedFor` and `IsSheafFor`.
 
 In the special case where `R` is a sieve, the compatibility condition can be simplified:
-* The family `x` is *compatible* if, for any `f : Y ⟶ X` in `R` and `g : Z ⟶ Y`, the restriction of
+
+* The family `x` is _compatible_ if, for any `f : Y ⟶ X` in `R` and `g : Z ⟶ Y`, the restriction of
   `x_f` along `g` agrees with `x_(g ≫ f)` (which is well defined since `g ≫ f` is in `R`).
   See `FamilyOfElements.SieveCompatible` and `compatible_iff_sieveCompatible`.
 
 In the special case where `C` has pullbacks, the compatibility condition can be simplified:
-* The family `x` is *compatible* if, for any `f : Y ⟶ X` and `g : Z ⟶ X` both in `R`,
+
+* The family `x` is _compatible_ if, for any `f : Y ⟶ X` and `g : Z ⟶ X` both in `R`,
   the restriction of `x_f` along `π₁ : pullback f g ⟶ Y` agrees with the restriction of `x_g`
   along `π₂ : pullback f g ⟶ Z`.
   See `FamilyOfElements.PullbackCompatible` and `pullbackCompatible_iff`.
@@ -44,12 +50,12 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 * Stacks: The condition of https://stacks.math.columbia.edu/tag/00Z8 is virtually identical to the
   statement of `isSheafFor_iff_yonedaSheafCondition` (since the bijection described there carries
   the same information as the unique existence.)
-
-* Maclane-Moerdijk [MM92]: Using `compatible_iff_sieveCompatible`, the definitions of `IsSheaf`
+* Maclane-Moerdijk \[MM92\]: Using `compatible_iff_sieveCompatible`, the definitions of `IsSheaf`
   are equivalent. There are also alternate definitions given:
-  - Yoneda condition: Defined in `yonedaSheafCondition` and equivalence in
+
+  * Yoneda condition: Defined in `yonedaSheafCondition` and equivalence in
     `isSheafFor_iff_yonedaSheafCondition`.
-  - Matching family for presieves with pullback: `pullbackCompatible_iff`.
+  * Matching family for presieves with pullback: `pullbackCompatible_iff`.
 
 ## Implementation
 
@@ -60,12 +66,11 @@ which can be convenient.
 
 ## References
 
-* [MM92]: *Sheaves in geometry and logic*, Saunders MacLane, and Ieke Moerdijk:
+* ‍\[MM92\]: _Sheaves in geometry and logic_, Saunders MacLane, and Ieke Moerdijk:
   Chapter III, Section 4.
-* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.1.
+* ‍\[Elephant\]: _Sketches of an Elephant_, P. T. Johnstone: C2.1.
 * https://stacks.math.columbia.edu/tag/00VL (sheaves on a pretopology or site)
 * https://stacks.math.columbia.edu/tag/00ZB (sheaves on a topology)
-
 -/
 
 @[expose] public section
@@ -83,14 +88,15 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {P Q U : Cᵒᵖ ⥤ Type w}
 variable {X Y : C} {S : Sieve X} {R : Presieve X}
 
-/-- A family of elements for a presheaf `P` given a collection of arrows `R` with fixed codomain `X`
+/--
+A family of elements for a presheaf `P` given a collection of arrows `R` with fixed codomain `X`
 consists of an element of `P Y` for every `f : Y ⟶ X` in `R`.
-A presheaf is a sheaf (resp, separated) if every *compatible* family of elements has exactly one
+A presheaf is a sheaf (resp, separated) if every _compatible_ family of elements has exactly one
 (resp, at most one) amalgamation.
 
-This data is referred to as a `family` in [MM92], Chapter III, Section 4. It is also a concrete
-version of the elements of the middle object in the Stacks entry which is
-more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
+This data is referred to as a `family` in \[MM92\], Chapter III, Section 4. It is also a concrete
+version of the elements of the middle object in the Stacks entry which is more useful for direct
+calculations. It is also used implicitly in Definition C2.1.2 in \[Elephant\].
 -/
 @[stacks 00VM "This is a concrete version of the elements of the middle object there."]
 def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
@@ -141,7 +147,8 @@ lemma FamilyOfElements.singletonEquiv_symm_apply_self {X Y : C} (f : X ⟶ Y) (x
     (singletonEquiv P f).symm x f ⟨⟩ = x := by
   simp [singletonEquiv_symm_apply]
 
-/-- A family of elements for the arrow set `R` is *compatible* if for any `f₁ : Y₁ ⟶ X` and
+/--
+A family of elements for the arrow set `R` is _compatible_ if for any `f₁ : Y₁ ⟶ X` and
 `f₂ : Y₂ ⟶ X` in `R`, and any `g₁ : Z ⟶ Y₁` and `g₂ : Z ⟶ Y₂`, if the square `g₁ ≫ f₁ = g₂ ≫ f₂`
 commutes then the elements of `P Z` obtained by restricting the element of `P Y₁` along `g₁` and
 restricting the element of `P Y₂` along `g₂` are the same.
@@ -149,7 +156,7 @@ restricting the element of `P Y₂` along `g₂` are the same.
 In special cases, this condition can be simplified, see `pullbackCompatible_iff` and
 `compatible_iff_sieveCompatible`.
 
-This is referred to as a "compatible family" in Definition C2.1.2 of [Elephant], and on nlab:
+This is referred to as a "compatible family" in Definition C2.1.2 of \[Elephant\], and on nlab:
 https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents
 
 For a more explicit version in the case where `R` is of the form `Presieve.ofArrows`, see
@@ -166,7 +173,7 @@ given elements for `f` and `g` to the pullback agree.
 This is equivalent to being compatible (provided `C` has pullbacks), shown in
 `pullbackCompatible_iff`.
 
-This is the definition for a "matching" family given in [MM92], Chapter III, Section 4,
+This is the definition for a "matching" family given in \[MM92\], Chapter III, Section 4,
 Equation (5). Viewing the type `FamilyOfElements` as the middle object of the fork in
 https://stacks.math.columbia.edu/tag/00VM, this condition expresses that `pr₀* (x) = pr₁* (x)`,
 using the notation defined there.
@@ -197,8 +204,9 @@ theorem FamilyOfElements.Compatible.restrict {R₁ R₂ : Presieve X} (h : R₁ 
     {x : FamilyOfElements P R₂} : x.Compatible → (x.restrict h).Compatible :=
   fun q _ _ _ g₁ g₂ _ _ h₁ h₂ comm => q g₁ g₂ (h _ _ h₁) (h _ _ h₂) comm
 
-/-- Extend a family of elements to the sieve generated by an arrow set.
-This is the construction described as "easy" in Lemma C2.1.3 of [Elephant].
+/--
+Extend a family of elements to the sieve generated by an arrow set.
+This is the construction described as "easy" in Lemma C2.1.3 of \[Elephant\].
 -/
 noncomputable def FamilyOfElements.sieveExtend (x : FamilyOfElements P R) :
     FamilyOfElements P (generate R : Presieve X) := fun _ _ hf =>
@@ -241,9 +249,9 @@ If the arrow set for a family of elements is actually a sieve (i.e. it is downwa
 consistency condition can be simplified.
 This is an equivalent condition, see `compatible_iff_sieveCompatible`.
 
-This is the notion of "matching" given for families on sieves given in [MM92], Chapter III,
+This is the notion of "matching" given for families on sieves given in \[MM92\], Chapter III,
 Section 4, Equation 1, and nlab: https://ncatlab.org/nlab/show/matching+family.
-See also the discussion before Lemma C2.1.4 of [Elephant].
+See also the discussion before Lemma C2.1.4 of \[Elephant\].
 -/
 def FamilyOfElements.SieveCompatible (x : FamilyOfElements P (S : Presieve X)) : Prop :=
   ∀ ⦃Y Z⦄ (f : Y ⟶ X) (g : Z ⟶ Y) (hf), x (g ≫ f) (S.downward_closed hf g) = P.map g.op (x f hf)
@@ -374,11 +382,11 @@ theorem FamilyOfElements.Compatible.map (f : P ⟶ Q) {x : FamilyOfElements P R}
   rwa [← NatTrans.naturality_apply, ← NatTrans.naturality_apply, h]
 
 /--
-The given element `t` of `P.obj (op X)` is an *amalgamation* for the family of elements `x` if every
+The given element `t` of `P.obj (op X)` is an _amalgamation_ for the family of elements `x` if every
 restriction `P.map f.op t = x_f` for every arrow `f` in the presieve `R`.
 
 This is the definition given in https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents,
-and https://ncatlab.org/nlab/show/matching+family, as well as [MM92], Chapter III, Section 4,
+and https://ncatlab.org/nlab/show/matching+family, as well as \[MM92\], Chapter III, Section 4,
 equation (2).
 -/
 def FamilyOfElements.IsAmalgamation (x : FamilyOfElements P R) (t : P.obj (op X)) : Prop :=
@@ -450,36 +458,41 @@ theorem isSeparatedFor_top (P : Cᵒᵖ ⥤ Type w) : IsSeparatedFor P (⊤ : Pr
   simp only [op_id, Functor.map_id, id_apply] at q₁ q₂
   rw [q₁, q₂]
 
-/-- We define `P` to be a sheaf for the presieve `R` if every compatible family has a unique
+/--
+We define `P` to be a sheaf for the presieve `R` if every compatible family has a unique
 amalgamation.
 
-This is the definition of a sheaf for the given presieve given in C2.1.2 of [Elephant], and
+This is the definition of a sheaf for the given presieve given in C2.1.2 of \[Elephant\], and
 https://ncatlab.org/nlab/show/sheaf#GeneralDefinitionInComponents.
 Using `compatible_iff_sieveCompatible`,
-this is equivalent to the definition of a sheaf in [MM92], Chapter III, Section 4.
+this is equivalent to the definition of a sheaf in \[MM92\], Chapter III, Section 4.
 -/
 def IsSheafFor (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) : Prop :=
   ∀ x : FamilyOfElements P R, x.Compatible → ∃! t, x.IsAmalgamation t
 
-/-- This is an equivalent condition to be a sheaf, which is useful for the abstraction to local
+/--
+This is an equivalent condition to be a sheaf, which is useful for the abstraction to local
 operators on elementary toposes. However this definition is defined only for sieves, not presieves.
 The equivalence between this and `IsSheafFor` is given in `isSheafFor_iff_yonedaSheafCondition`.
 This version is also useful to establish that being a sheaf is preserved under isomorphism of
 presheaves.
 
-See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
-[Elephant]. -/
+See the discussion before Equation (3) of \[MM92\], Chapter III, Section 4. See also C2.1.4 of
+‍\[Elephant\].
+-/
 @[stacks 00Z8 "Direct reformulation"]
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- (Implementation). This is a (primarily internal) equivalence between natural transformations
+/--
+(Implementation). This is a (primarily internal) equivalence between natural transformations
 and compatible families.
 
-Cf the discussion after Lemma 7.47.10 in <https://stacks.math.columbia.edu/tag/00YW>. See also
-the proof of C2.1.4 of [Elephant], and the discussion in [MM92], Chapter III, Section 4.
+Cf the discussion after Lemma 7.47.10 in [
+https://stacks.math.columbia.edu/tag/00YW](https://stacks.math.columbia.edu/tag/00YW). See also the
+proof of C2.1.4 of \[Elephant\], and the discussion in \[MM92\], Chapter III, Section 4.
 -/
 @[simps]
 noncomputable def shrinkFunctorHomEquiv [LocallySmall.{w} C] {F : Cᵒᵖ ⥤ Type w} :
@@ -533,9 +546,10 @@ lemma isSheafFor_iff_bijective_shrinkFunctor_ι_comp [LocallySmall.{w} C] {X : C
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- The yoneda version of the sheaf condition is equivalent to the sheaf condition.
+/--
+The yoneda version of the sheaf condition is equivalent to the sheaf condition.
 
-C2.1.4 of [Elephant].
+C2.1.4 of \[Elephant\].
 -/
 theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
     IsSheafFor P (S : Presieve X) ↔ YonedaSheafCondition P S := by
@@ -557,6 +571,7 @@ theorem isSheafFor_iff_yonedaSheafCondition {P : Cᵒᵖ ⥤ Type v₁} :
 /--
 If `P` is a sheaf for the sieve `S` on `X`, a natural transformation from `S` (viewed as a functor)
 to `P` can be (uniquely) extended to all of `yoneda.obj X`.
+
 ```
       f
    S  →  P
@@ -571,6 +586,7 @@ noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor 
 /--
 Show that the extension of `f : S.functor ⟶ P` to all of `yoneda.obj X` is in fact an extension,
 i.e. that the triangle below commutes, provided `P` is a sheaf for `S`
+
 ```
       f
    S  →  P
@@ -639,7 +655,9 @@ theorem IsSheafFor.valid_glue (t : IsSheafFor P R) {x : FamilyOfElements P R} (h
     (f : Y ⟶ X) (Hf : R f) : P.map f.op (t.amalgamate x hx) = x f Hf :=
   t.isAmalgamation hx f Hf
 
-/-- C2.1.3 in [Elephant] -/
+/--
+C2.1.3 in \[Elephant\]
+-/
 theorem isSheafFor_iff_generate (R : Presieve X) :
     IsSheafFor P R ↔ IsSheafFor P (generate R : Presieve X) := by
   rw [← isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor]
@@ -656,9 +674,10 @@ theorem isSheafFor_iff_generate (R : Presieve X) :
     intro t ht
     simpa [hx] using isAmalgamation_restrict (le_generate R) _ _ ht
 
-/-- Every presheaf is a sheaf for the family `{𝟙 X}`.
+/--
+Every presheaf is a sheaf for the family `{𝟙 X}`.
 
-[Elephant] C2.1.5(i)
+‍\[Elephant\] C2.1.5(i)
 -/
 theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) :
     IsSheafFor P (Presieve.singleton (𝟙 X)) := by
@@ -669,9 +688,10 @@ theorem isSheafFor_singleton_iso (P : Cᵒᵖ ⥤ Type w) :
   · intro t ht
     simpa using ht _ (Presieve.singleton_self _)
 
-/-- Every presheaf is a sheaf for the maximal sieve.
+/--
+Every presheaf is a sheaf for the maximal sieve.
 
-[Elephant] C2.1.5(ii)
+‍\[Elephant\] C2.1.5(ii)
 -/
 theorem isSheafFor_top (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P (⊤ : Presieve X) := by
   rw [← arrows_top, ← generate_of_singleton_isSplitEpi (𝟙 X)]
@@ -743,14 +763,15 @@ lemma IsSeparatedFor.of_mono (f : P ⟶ Q) [Mono f] (h : R.IsSeparatedFor Q) :
   exact injective_of_mono _ <|  h (x.map f) _ _ (ht₁.map f) (ht₂.map f)
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If a presieve `R` on `X` has a subsieve `S` such that:
+/--
+If a presieve `R` on `X` has a subsieve `S` such that:
 
 * `P` is a sheaf for `S`.
 * For every `f` in `R`, `P` is separated for the pullback of `S` along `f`,
 
 then `P` is a sheaf for `R`.
 
-This is closely related to [Elephant] C2.1.6(i).
+This is closely related to \[Elephant\] C2.1.6(i).
 -/
 theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (hS : IsSheafFor P (S : Presieve X))
@@ -774,7 +795,7 @@ theorem isSheafFor_subsieve_aux (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Pres
 /--
 If `P` is a sheaf for every pullback of the sieve `S`, then `P` is a sheaf for any presieve which
 contains `S`.
-This is closely related to [Elephant] C2.1.6.
+This is closely related to \[Elephant\] C2.1.6.
 -/
 theorem isSheafFor_subsieve (P : Cᵒᵖ ⥤ Type w) {S : Sieve X} {R : Presieve X}
     (h : (S : Presieve X) ≤ R) (trans : ∀ ⦃Y⦄ (f : Y ⟶ X),
@@ -1035,7 +1056,7 @@ To show `P` is a sheaf for the binding of `U` with `B`, it suffices to show that
 sieve in `B`.
 
 This is mostly an auxiliary lemma to show `Presieve.isSheafFor_trans`.
-Adapted from [Elephant], Lemma C2.1.7(i) with suggestions as mentioned in
+Adapted from \[Elephant\], Lemma C2.1.7(i) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709/
 -/
 theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X)
@@ -1084,13 +1105,15 @@ theorem isSheafFor_bind (P : Cᵒᵖ ⥤ Type*) (U : Sieve X)
     rw [← comp_apply, ← Functor.map_comp, ← op_comp, hy _ (Presieve.bind_comp _ _ hg),
       hU.valid_glue _ _ hf, ht hf _ hg]
 
-/-- Given two sieves `R` and `S`, to show that `P` is a sheaf for `S`, we can show:
+/--
+Given two sieves `R` and `S`, to show that `P` is a sheaf for `S`, we can show:
+
 * `P` is a sheaf for `R`
 * `P` is a sheaf for the pullback of `S` along any arrow in `R`
 * `P` is separated for the pullback of `R` along any arrow in `S`.
 
 This is mostly an auxiliary lemma to construct `Sheaf.finestTopology`.
-Adapted from [Elephant], Lemma C2.1.7(ii) with suggestions as mentioned in
+Adapted from \[Elephant\], Lemma C2.1.7(ii) with suggestions as mentioned in
 https://math.stackexchange.com/a/358709
 -/
 theorem isSheafFor_trans (P : Cᵒᵖ ⥤ Type*) (R S : Sieve X)

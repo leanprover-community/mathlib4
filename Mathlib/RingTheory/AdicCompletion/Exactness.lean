@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.AdicCompletion.Functoriality
 public import Mathlib.RingTheory.Filtration
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exactness of adic completion
 
@@ -15,16 +18,15 @@ In this file we establish exactness properties of adic completions. In particula
 
 ## Main results
 
-- `AdicCompletion.map_surjective`: Adic completion preserves surjectivity.
-- `AdicCompletion.map_injective`: Adic completion preserves injectivity
+* `AdicCompletion.map_surjective`: Adic completion preserves surjectivity.
+* `AdicCompletion.map_injective`: Adic completion preserves injectivity
   of maps between finite modules over a Noetherian ring.
-- `AdicCompletion.map_exact`: Over a Noetherian ring adic completion is exact on finite
+* `AdicCompletion.map_exact`: Over a Noetherian ring adic completion is exact on finite
   modules.
 
 ## Implementation details
 
 All results are proven directly without using Mittag-Leffler systems.
-
 -/
 
 public section

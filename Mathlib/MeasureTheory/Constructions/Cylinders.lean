@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 public import Mathlib.MeasureTheory.PiSystem
 public import Mathlib.Topology.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # π-systems of cylinders and square cylinders
 
@@ -39,7 +42,6 @@ a product set.
   σ-algebra
 * `generateFrom_measurableCylinders`: cylinders formed from measurable sets generate the
   product σ-algebra
-
 -/
 
 @[expose] public section
@@ -396,7 +398,9 @@ theorem measurableCylinders_nat {X : ℕ → Type*} [∀ n, MeasurableSpace (X n
 
 end cylinders
 
-/-! ### Cylinder events as a sigma-algebra -/
+/-!
+# Cylinder events as a sigma-algebra
+-/
 
 section cylinderEvents
 

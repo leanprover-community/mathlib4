@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.OuterMeasure.OfFunction
 public import Mathlib.MeasureTheory.PiSystem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Carathéodory σ-algebra of an outer measure
 
@@ -21,13 +24,13 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Outer_measure>
-* <https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s_criterion>
+* [https://en.wikipedia.org/wiki/Outer\_measure](https://en.wikipedia.org/wiki/Outer_measure)
+* [
+  https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s\_criterion](https://en.wikipedia.org/wiki/Carath%C3%A9odory%27s_criterion)
 
 ## Tags
 
 Carathéodory-measurable, Carathéodory's criterion
-
 -/
 
 @[expose] public section

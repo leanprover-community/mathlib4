@@ -9,8 +9,10 @@ public import Mathlib.CategoryTheory.Galois.Prorepresentability
 public import Mathlib.Topology.Algebra.ContinuousMonoidHom
 public import Mathlib.Topology.Algebra.Group.ContinuousInv
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Topology of fundamental group
 
 In this file we define a natural topology on the automorphism group of a functor
@@ -20,8 +22,7 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
-
+* [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 -/
 
 @[expose] public section

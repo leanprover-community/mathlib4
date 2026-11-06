@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Basic.SetLike.Basic
 
-/-! # Class of grading-preserving functions and isomorphisms
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Class of grading-preserving functions and isomorphisms
 
 We define `GradedFunLike F 𝒜 ℬ` where `𝒜` and `ℬ` represent some sort of grading. This class
 assumes `FunLike A B` where `A` and `B` are the underlying types.

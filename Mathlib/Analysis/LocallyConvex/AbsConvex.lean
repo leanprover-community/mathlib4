@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Convex.TotallyBounded
 public import Mathlib.Analysis.LocallyConvex.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolutely convex sets
 
@@ -354,7 +357,9 @@ lemma zero_mem_absConvexHull {s : Set E} [SeminormedRing 𝕜] [PartialOrder �
     [Module 𝕜 E] [Nonempty s] : 0 ∈ absConvexHull 𝕜 s :=
   balanced_absConvexHull.zero_mem (Nonempty.mono subset_absConvexHull Set.Nonempty.of_subtype)
 
-/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+/--
+‍\[Bourbaki, _Topological Vector Spaces_, III §1.6\]\[bourbaki1987\]
+-/
 theorem isCompact_closedAbsConvexHull_of_totallyBounded {E : Type*} [AddCommGroup E] [Module ℝ E]
     [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E]
     [QuasiCompleteSpace ℝ E] {s : Set E} (ht : TotallyBounded s) :

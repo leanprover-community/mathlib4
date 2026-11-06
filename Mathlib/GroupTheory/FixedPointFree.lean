@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fixed-point-free automorphisms
 

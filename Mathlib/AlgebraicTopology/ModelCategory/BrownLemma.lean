@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The factorization lemma by K. S. Brown
 
@@ -26,8 +29,9 @@ morphisms `i`, `p` and `s` are weak equivalences.
 between fibrant objects.)
 
 ## References
-* [Brown, Kenneth S., *Abstract homotopy theory and generalized sheaf cohomology*, §I.1][brown-1973]
 
+* ‍\[Brown, Kenneth S., _Abstract homotopy theory and generalized sheaf cohomology_,
+  §I.1\]\[brown-1973\]
 -/
 
 @[expose] public section

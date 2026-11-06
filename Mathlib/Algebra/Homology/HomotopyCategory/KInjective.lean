@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Acyclic
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexInduction
 public import Mathlib.CategoryTheory.Triangulated.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # K-injective cochain complexes
 
@@ -17,11 +20,12 @@ We define the notion of K-injective cochain complex in an abelian category,
 and show that bounded below complexes of injective objects are K-injective.
 
 ## TODO (@joelriou)
+
 * Provide an API for computing `Ext`-groups using an injective resolution
 
 ## References
-* [N. Spaltenstein, *Resolutions of unbounded complexes*][spaltenstein1998]
 
+* ‍\[N. Spaltenstein, _Resolutions of unbounded complexes_\]\[spaltenstein1998\]
 -/
 
 @[expose] public section

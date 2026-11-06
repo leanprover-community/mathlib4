@@ -10,14 +10,17 @@ public import Mathlib.RingTheory.RingHom.FaithfullyFlat
 import Mathlib.RingTheory.RingHom.Injective
 import Mathlib.RingTheory.RingHom.Surjective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties satisfying faithfully flat descent for rings
 
 We show the following properties of ring homomorphisms descend under faithfully flat ring maps:
 
-- injective
-- surjective
-- bijective
+* injective
+* surjective
+* bijective
 -/
 
 public section

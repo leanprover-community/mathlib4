@@ -7,9 +7,14 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Basic
 
-/-! # Unitary maps in C⋆-algebras
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file defines some basic maps by unitaries in C⋆-algebras. -/
+/-!
+# Unitary maps in C⋆-algebras
+
+This file defines some basic maps by unitaries in C⋆-algebras.
+-/
 
 @[expose] public section
 

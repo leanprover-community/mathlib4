@@ -8,13 +8,16 @@ module
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Factorial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of factorials
 
 This file allows calculating factorials (including ascending and descending ones) as elements of a
 semiring.
 
-This is particularly crucial for `Nat.descFactorial` as subtraction on `ℕ` does **not** correspond
+This is particularly crucial for `Nat.descFactorial` as subtraction on `ℕ` does *not* correspond
 to subtraction on a general semiring. For example, we can't rely on existing cast lemmas to prove
 `↑(a.descFactorial 2) = ↑a * (↑a - 1)`. We must use the fact that, whenever `↑(a - 1)` is not equal
 to `↑a - 1`, the other factor is `0` anyway.

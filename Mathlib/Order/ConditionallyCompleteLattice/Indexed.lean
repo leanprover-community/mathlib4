@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indexed sup / inf in conditionally complete lattices
 
@@ -372,7 +375,7 @@ lemma ciInf_eq_iff [Nonempty ι] (f : ι → α) (n : α) :
 end ConditionallyCompleteLinearOrder
 
 /-!
-### Lemmas about a conditionally complete linear order with bottom element
+# Lemmas about a conditionally complete linear order with bottom element
 
 In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonempty` assumptions.
 -/

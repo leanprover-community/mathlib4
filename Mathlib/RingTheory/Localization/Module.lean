@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Localization.Integer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules / vector spaces over localizations / fraction fields
 
@@ -160,7 +163,8 @@ theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) 
 
 namespace Module.Basis
 
-/-- If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
+/--
+If `A` has an `R`-basis, then localizing `A` at `S` has a basis over `R` localized at `S`.
 
 A suitable instance for `[Algebra A Aₛ]` is `localizationAlgebra`.
 -/

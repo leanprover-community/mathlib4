@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.LinearAlgebra.Projection
 public import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases in a vector space
 
@@ -28,7 +31,6 @@ import cycle.
 ## Tags
 
 basis, bases
-
 -/
 
 @[expose] public section
@@ -66,9 +68,11 @@ theorem range_extend (hs : LinearIndepOn K id s) :
     range (Basis.extend hs) = hs.extend (subset_univ _) := by
   rw [coe_extend, Subtype.range_coe_subtype, ofPred_mem_eq]
 
-/-- Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
+/--
+Auxiliary definition: the index for the new basis vectors in `Basis.sumExtend`.
 
-The specific value of this definition should be considered an implementation detail. -/
+The specific value of this definition should be considered an implementation detail.
+-/
 -- Note: `Set` has no computational content, but Lean still attempts to compile it.
 -- See https://github.com/leanprover/lean4/issues/14084.
 noncomputable def sumExtendIndex (hs : LinearIndependent K v) : Set V :=
@@ -259,9 +263,11 @@ theorem LinearMap.exists_leftInverse_of_injective (f : V →ₗ[K] V') (hf_inj :
   rw [Basis.ofVectorSpace_apply_self, fb_eq, hC.constr_basis]
   exact leftInverse_invFun (LinearMap.ker_eq_bot.1 hf_inj) _
 
-/-- The left inverse of `f : E →ₗ[𝕜] F`.
+/--
+The left inverse of `f : E →ₗ[𝕜] F`.
 
-If `f` is not injective, then we use the junk value `0`. -/
+If `f` is not injective, then we use the junk value `0`.
+-/
 noncomputable
 def LinearMap.leftInverse (f : V →ₗ[K] V') : V' →ₗ[K] V :=
   if h_inj : LinearMap.ker f = ⊥ then

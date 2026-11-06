@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.AddTorsor
 public import Mathlib.Order.WellFoundedSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal for scalar multiplication
 
@@ -16,6 +19,7 @@ element `a` in `P` and subsets `s` in `G` and `t` in `P`, the set of all pairs o
 and an element in `t` that scalar-multiply to `a`.
 
 ## Definitions
+
 * SMul.antidiagonal : Set-valued antidiagonal for SMul.
 * VAdd.antidiagonal : Set-valued antidiagonal for VAdd.
 -/

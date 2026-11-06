@@ -13,6 +13,9 @@ public import Mathlib.Tactic.Lift
 public import Mathlib.Tactic.Subsingleton
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Units (i.e., invertible elements) of a monoid
 
@@ -212,7 +215,7 @@ theorem divp_mul_divp (x y : α) (ux uy : αˣ) : x /ₚ ux * (y /ₚ uy) = x * 
 end CommMonoid
 
 /-!
-### `IsUnit` predicate
+# `IsUnit` predicate
 -/
 
 

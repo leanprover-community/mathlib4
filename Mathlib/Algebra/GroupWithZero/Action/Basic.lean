@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions of group actions
 
@@ -33,8 +36,8 @@ interaction of different group actions,
 
 ## Notation
 
-- `a • b` is used as notation for `SMul.smul a b`.
-- `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
+* `a • b` is used as notation for `SMul.smul a b`.
+* `a +ᵥ b` is used as notation for `VAdd.vadd a b`.
 
 ## Implementation details
 
@@ -72,9 +75,11 @@ section DistribMulAction
 variable [Group G] [AddMonoid A]
 variable (A)
 
-/-- Each element of the group defines an additive monoid isomorphism.
+/--
+Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `MulAction.toPerm`. -/
+This is a stronger version of `MulAction.toPerm`.
+-/
 @[simps +simpRhs]
 def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
   __ := DistribSMul.toAddMonoidHom A x
@@ -82,9 +87,11 @@ def DistribMulAction.toAddEquiv [DistribMulAction G A] (x : G) : A ≃+ A where
 
 variable (G)
 
-/-- Each element of the group defines an additive monoid isomorphism.
+/--
+Each element of the group defines an additive monoid isomorphism.
 
-This is a stronger version of `MulAction.toPermHom`. -/
+This is a stronger version of `MulAction.toPermHom`.
+-/
 @[simps]
 def DistribMulAction.toAddAut [DistribMulAction G A] : G →* Multiplicative (AddAut A) where
   toFun := toAddEquiv _

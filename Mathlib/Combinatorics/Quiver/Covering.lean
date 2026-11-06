@@ -13,6 +13,9 @@ import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Data.Sum.Basic
 import Mathlib.Tactic.Attr.Core
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covering
 

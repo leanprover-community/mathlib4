@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of star monoids
 
@@ -19,8 +22,8 @@ a corresponding morphism between the unitary groups in a star monoid.
 
 ## Main definitions
 
-  * `StarMonoidHom`
-  * `StarMulEquiv`
+* `StarMonoidHom`
+* `StarMulEquiv`
 
 ## Tags
 
@@ -31,9 +34,13 @@ monoid, star
 
 variable {F A B C D : Type*}
 
-/-! ### Star monoid homomorphisms -/
+/-!
+# Star monoid homomorphisms
+-/
 
-/-- A *star monoid homomorphism* is a monoid homomorphism which is `star`-preserving. -/
+/--
+A _star monoid homomorphism_ is a monoid homomorphism which is `star`-preserving.
+-/
 structure StarMonoidHom (A B : Type*) [Monoid A] [Star A] [Monoid B] [Star B]
     extends A →* B where
   /-- By definition, a star monoid homomorphism preserves the `star` operation. -/
@@ -62,7 +69,9 @@ instance : MonoidHomClass (A →⋆* B) A B where
 instance : StarHomClass (A →⋆* B) A B where
   map_star f := f.map_star'
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.coe (f : A →⋆* B) : A → B := f
 
 initialize_simps_projections StarMonoidHom (toFun → coe)
@@ -164,10 +173,14 @@ end Comp
 
 end StarMonoidHom
 
-/-! ### Star monoid equivalences -/
+/-!
+# Star monoid equivalences
+-/
 
-/-- A *star monoid equivalence* is an equivalence preserving multiplication and the star
-operation. -/
+/--
+A _star monoid equivalence_ is an equivalence preserving multiplication and the star
+operation.
+-/
 structure StarMulEquiv (A B : Type*) [Mul A] [Mul B] [Star A] [Star B]
     extends A ≃* B where
   /-- By definition, a star monoid equivalence preserves the `star` operation. -/
@@ -226,10 +239,14 @@ nonrec def symm (e : A ≃⋆* B) : B ≃⋆* A :=
       simpa only [EquivLike.apply_inv_apply, EquivLike.inv_apply_apply] using!
         congr(EquivLike.inv e $((map_star e (EquivLike.inv e b)).symm)) }
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply (e : A ≃⋆* B) : A → B := e
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : A ≃⋆* B) : B → A :=
   e.symm
 

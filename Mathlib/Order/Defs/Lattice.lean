@@ -10,6 +10,9 @@ public import Mathlib.Order.Notation
 
 import Mathlib.Tactic.GRewrite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Semi-)lattices
 
@@ -35,7 +38,6 @@ of `sup` over `inf`, on the left or on the right.
 ## Tags
 
 semilattice, lattice
-
 -/
 
 @[expose] public section
@@ -47,7 +49,7 @@ universe u v
 variable {α : Type u} {β : Type v}
 
 /-!
-### Semilattices
+# Semilattices
 -/
 
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
@@ -60,7 +62,9 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   protected le_sup_left : ∀ a b : α, a ≤ sup a b
   /-- The supremum is an upper bound on the second argument -/
   protected le_sup_right : ∀ a b : α, b ≤ sup a b
-  /-- The supremum is the *least* upper bound -/
+  /--
+  The supremum is the _least_ upper bound
+  -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
 /-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
@@ -74,7 +78,9 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   protected inf_le_left : ∀ a b : α, inf a b ≤ a
   /-- The infimum is a lower bound on the second argument -/
   protected inf_le_right : ∀ a b : α, inf a b ≤ b
-  /-- The infimum is the *greatest* lower bound -/
+  /--
+  The infimum is the _greatest_ lower bound
+  -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
 attribute [to_dual existing] SemilatticeSup.casesOn
@@ -218,7 +224,7 @@ theorem sup_sup_distrib_right (a b c : α) : a ⊔ b ⊔ c = a ⊔ c ⊔ (b ⊔ 
 end SemilatticeSup
 
 /-!
-### Lattices
+# Lattices
 -/
 
 
@@ -258,7 +264,7 @@ lemma inf_right_le_sup_right : (b ⊓ a) ≤ (b ⊔ c) := le_trans inf_le_left l
 lemma inf_left_le_sup_left : (a ⊓ b) ≤ (c ⊔ b) := le_trans inf_le_right le_sup_right
 
 /-!
-#### Distributivity laws
+# Distributivity laws
 -/
 
 
@@ -276,11 +282,12 @@ theorem sup_eq_iff_inf_eq : a ⊔ b = b ↔ a ⊓ b = a := by rw [sup_eq_right, 
 end Lattice
 
 /-!
-### Distributive lattices
+# Distributive lattices
 -/
 
 
-/-- A distributive lattice is a lattice that satisfies any of four
+/--
+A distributive lattice is a lattice that satisfies any of four
 equivalent distributive properties (of `sup` over `inf` or `inf` over `sup`,
 on the left or right).
 
@@ -290,7 +297,8 @@ from the dual law, use `DistribLattice.ofInfSupLe`.
 A classic example of a distributive lattice
 is the lattice of subsets of a set, and in fact this example is
 generic in the sense that every distributive lattice is realizable
-as a sublattice of a powerset lattice. -/
+as a sublattice of a powerset lattice.
+-/
 class DistribLattice (α) extends Lattice α where
   /-- The infimum distributes over the supremum -/
   protected le_sup_inf : ∀ x y z : α, (x ⊔ y) ⊓ (x ⊔ z) ≤ x ⊔ y ⊓ z

@@ -13,6 +13,9 @@ import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Decomposing a locally finite ordered ring into boxes
 
@@ -21,12 +24,14 @@ differences of consecutive intervals.
 
 ## Implementation notes
 
-We don't need the full ring structure, only that there is an order embedding `ℤ → `
+We don't need the full ring structure, only that there is an order embedding `ℤ →  `
 -/
 
 @[expose] public section
 
-/-! ### General locally finite ordered ring -/
+/-!
+# General locally finite ordered ring
+-/
 
 namespace Finset
 variable {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α] [LocallyFiniteOrder α] {n : ℕ}
@@ -67,7 +72,9 @@ end Finset
 
 open Finset
 
-/-! ### Product of locally finite ordered rings -/
+/-!
+# Product of locally finite ordered rings
+-/
 
 namespace Prod
 variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
@@ -85,7 +92,9 @@ variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
 
 end Prod
 
-/-! ### `ℤ × ℤ` -/
+/-!
+# `ℤ × ℤ`
+-/
 
 namespace Int
 variable {x : ℤ × ℤ}

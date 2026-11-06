@@ -12,11 +12,13 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 
 import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The fixed submodule of a linear map
 
-- `LinearMap.fixedSubmodule`: the submodule of a linear map consisting of its fixed points.
-
+* `LinearMap.fixedSubmodule`: the submodule of a linear map consisting of its fixed points.
 -/
 
 @[expose] public section

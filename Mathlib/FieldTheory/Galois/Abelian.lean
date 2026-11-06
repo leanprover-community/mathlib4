@@ -7,12 +7,13 @@ module
 
 public import Mathlib.FieldTheory.Galois.Infinite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Abelian extensions
 
 In this file, we define the typeclass of abelian extensions and provide some basic API.
-
 -/
 
 public section

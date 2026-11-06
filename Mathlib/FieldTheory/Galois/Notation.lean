@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Equiv
 
 meta import Lean.PrettyPrinter.Delaborator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation for Galois group
 

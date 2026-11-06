@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.MvPolynomial.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multivariate polynomials
 
@@ -14,19 +17,19 @@ This file defines functions for evaluating multivariate polynomials.
 These include generically evaluating a polynomial given a valuation of all its variables,
 and more advanced evaluations that allow one to map the coefficients to different rings.
 
-### Notation
+## Notation
 
 In the definitions below, we use the following notation:
 
-+ `σ : Type*` (indexing the variables)
-+ `R : Type*` `[CommSemiring R]` (the coefficients)
-+ `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
+* `σ : Type*` (indexing the variables)
+* `R : Type*` `[CommSemiring R]` (the coefficients)
+* `s : σ →₀ ℕ`, a function from `σ` to `ℕ` which is zero away from a finite set.
   This will give rise to a monomial in `MvPolynomial σ R` which mathematicians might call `X^s`
-+ `a : R`
-+ `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
-+ `p : MvPolynomial σ R`
+* `a : R`
+* `i : σ`, with corresponding monomial `X i`, often denoted `X_i` by mathematicians
+* `p : MvPolynomial σ R`
 
-### Definitions
+## Definitions
 
 * `eval₂ (f : R → S₁) (g : σ → S₁) p` : given a semiring homomorphism from `R` to another
   semiring `S₁`, and a map `σ → S₁`, evaluates `p` at this valuation, returning a term of type `S₁`.
@@ -38,7 +41,6 @@ In the definitions below, we use the following notation:
   coefficient semiring corresponding to `f`
 * `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
   of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
-
 -/
 
 @[expose] public section
@@ -561,7 +563,9 @@ end Map
 
 section Aeval
 
-/-! ### The algebra of multivariate polynomials -/
+/-!
+# The algebra of multivariate polynomials
+-/
 
 
 variable [Algebra R S₁] [CommSemiring S₂]

@@ -11,8 +11,10 @@ public import Lean.Meta.ExprLens
 
 import Mathlib.Init
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Find the positions of a pattern in an expression
 
 This file defines some tools for dealing with subexpressions and occurrence numbers.
@@ -24,7 +26,6 @@ the subexpression using `kabstract` (which is what `rw` uses to find the positio
 
 `rw` can fail if the motive is not type correct. `kabstractIsTypeCorrect` checks
 whether this is the case.
-
 -/
 
 public section
@@ -78,7 +79,8 @@ def viewKAbstractSubExpr (e : Expr) (pos : SubExpr.Pos) : MetaM (Option (Expr ×
   let some n := positions.idxOf? pos | unreachable!
   return some (subExpr, if positions.size == 1 then none else some (n + 1))
 
-/-- Determine whether the result of abstracting `subExpr` from `e` at position `pos` results
+/--
+Determine whether the result of abstracting `subExpr` from `e` at position `pos` results
 in a well-typed expression. This is important if you want to rewrite at this position.
 
 Here is an example of what goes wrong with an ill-typed kabstract result:

@@ -9,19 +9,21 @@ public import Mathlib.Algebra.Group.Embedding
 public import Mathlib.Algebra.Group.Finsupp
 public import Mathlib.Data.List.GetD
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Lists as finsupp
 
 ## Main definitions
 
-- `List.toFinsupp`: Interpret a list as a finitely supported function, where the indexing type is
+* `List.toFinsupp`: Interpret a list as a finitely supported function, where the indexing type is
   `ℕ`, and the values are either the elements of the list (accessing by indexing) or `0` outside of
   the list.
 
 ## Main theorems
 
-- `List.toFinsupp_eq_sum_map_enum_single`: A `l : List M` over `M` an `AddMonoid`, when interpreted
+* `List.toFinsupp_eq_sum_map_enum_single`: A `l : List M` over `M` an `AddMonoid`, when interpreted
   as a finitely supported function, is equal to the sum of `Finsupp.single` produced by mapping over
   `List.enum l`.
 
@@ -40,7 +42,8 @@ namespace List
 
 variable {M : Type*} [Zero M] (l : List M) [DecidablePred (getD l · 0 ≠ 0)] (n : ℕ)
 
-/-- Indexing into a `l : List M`, as a finitely-supported function,
+/--
+Indexing into a `l : List M`, as a finitely-supported function,
 where the support are all the indices within the length of the list
 that index to a non-zero value. Indices beyond the end of the list are sent to 0.
 

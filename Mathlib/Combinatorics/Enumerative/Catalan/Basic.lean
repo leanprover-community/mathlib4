@@ -13,6 +13,9 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
 import Mathlib.Tactic.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Catalan numbers
 
@@ -39,7 +42,6 @@ The proof of `catalan_eq_centralBinom_div` follows https://math.stackexchange.co
 * Prove that the Catalan numbers enumerate many interesting objects.
 * Provide the many variants of Catalan numbers, e.g. associated to complex reflection groups,
   Fuss-Catalan, etc.
-
 -/
 
 @[expose] public section

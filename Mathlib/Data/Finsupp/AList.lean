@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.List.AList
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connections between `Finsupp` and `AList`
 
@@ -16,7 +19,6 @@ public import Mathlib.Data.List.AList
 * `Finsupp.toAList`
 * `AList.lookupFinsupp`: converts an association list into a finitely supported function
   via `AList.lookup`, sending absent keys to zero.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The small object argument
 
@@ -27,6 +30,7 @@ presentable object of `C`, see the file `Mathlib/CategoryTheory/Presentable/Basi
 
 Assuming `I` permits the small object argument, the two main results
 obtained in this file are:
+
 * the class `I.rlp.llp` of morphisms that have the left lifting property with
   respect to the maps that have the right lifting property with respect
   to `I` are exactly the retracts of transfinite compositions (indexed
@@ -40,7 +44,7 @@ argument (originally for `J := ℕ`). Actually, the more general construction by
 transfinite induction already appeared in the proof of the existence of enough
 injectives in abelian categories with AB5 and a generator by Grothendieck, who then
 wrote that the "proof was essentially known". Indeed, the argument appeared
-in *Homological algebra* by Cartan and Eilenberg (p. 9-10) in the case of modules,
+in _Homological algebra_ by Cartan and Eilenberg (p. 9-10) in the case of modules,
 and they mention that the result was initially obtained by Baer.
 
 ## Structure of the proof
@@ -62,11 +66,10 @@ the file `Mathlib/CategoryTheory/SmallObject/TransfiniteCompositionLifting.lean`
 
 ## References
 
-- [Henri Cartan and Samuel Eilenberg, *Homological algebra*][cartan-eilenberg-1956]
-- [Alexander Grothendieck, *Sur quelques points d'algèbre homologique*][grothendieck-1957]
-- [Daniel G. Quillen, *Homotopical algebra*][Quillen1967]
-- https://ncatlab.org/nlab/show/small+object+argument
-
+* ‍\[Henri Cartan and Samuel Eilenberg, _Homological algebra_\]\[cartan-eilenberg-1956\]
+* ‍\[Alexander Grothendieck, _Sur quelques points d'algèbre homologique_\]\[grothendieck-1957\]
+* ‍\[Daniel G. Quillen, _Homotopical algebra_\]\[Quillen1967\]
+* https://ncatlab.org/nlab/show/small+object+argument
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reindexed basis
 

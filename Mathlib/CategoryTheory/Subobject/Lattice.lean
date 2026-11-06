@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Subobject.FactorThru
 public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.Data.Finset.Lattice.Fold
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The lattice of subobjects
 
@@ -127,7 +130,8 @@ section Inf
 
 variable [HasPullbacks C]
 
-/-- When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
+/--
+When `[HasPullbacks C]`, `MonoOver A` has "intersections", functorial in both arguments.
 
 As `MonoOver A` is only a preorder, this doesn't satisfy the axioms of `SemilatticeInf`,
 but we reuse all the names from `SemilatticeInf` because they will be used to construct

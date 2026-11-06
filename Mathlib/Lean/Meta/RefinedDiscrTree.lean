@@ -8,6 +8,9 @@ module
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
 public import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Refined discrimination trees
 
@@ -18,7 +21,7 @@ and includes many more features.
 
 ## New features
 
-- The keys `Key.lam`, `Key.forall` and `Key.bvar` have been introduced in order to allow for
+* The keys `Key.lam`, `Key.forall` and `Key.bvar` have been introduced in order to allow for
   matching under lambda and forall binders. `Key.lam` has arity 1 and indexes the body.
   `Key.forall` has arity 2 and indexes the domain and the body. The reason for not indexing the
   domain of a lambda expression is that it is usually already determined, for example in
@@ -30,36 +33,30 @@ and includes many more features.
   For example, this allows for more specific matching with the left-hand side of
   `∑ i ∈ Finset.range n, i = n * (n - 1) / 2`, which is indexed by
   `[⟨Finset.sum, 5⟩, ⟨Nat, 0⟩, ⟨Nat, 0⟩, *0, ⟨Finset.Range, 1⟩, *1, λ, ⟨#0, 0⟩]`.
-
-- The key `Key.star` takes a `Nat` identifier as an argument. For example,
+* The key `Key.star` takes a `Nat` identifier as an argument. For example,
   the library pattern `?a + ?a` is encoded as `@HAdd.hAdd *0 *0 *1 *2 *3 *3`.
   `*0` corresponds to the type of `?a`, `*1` to the outParam of `HAdd.hAdd`,
   `*2` to the `HAdd` instance, and `*3` to `a`. This means that it will only match an expression
   `x + y` if `x` is indexed the same as `y`. The matching algorithm ensures that both
   instances of `*3` match with the same pattern in the lookup expression.
-
-- We evaluate the matching score of a unification.
+* We evaluate the matching score of a unification.
   This score represents the number of keys that had to be the same for the unification to succeed.
   For example, matching `(1 + 2) + 3` with `add_comm` gives a score of 2,
   since the pattern of `add_comm` is `@HAdd.hAdd *0 *0 *0 *1 *2 *3`: matching `HAdd.hAdd`
   gives 1 point, and matching `*0` again after its first appearance gives another point.
   Similarly, matching it with `Nat.add_comm` gives a score of 3, and `add_assoc` gives a score of 5.
-
-- Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
+* Patterns that have the potential to be η-reduced are put into the `RefinedDiscrTree` under all
   possible reduced key sequences. This is for terms of the form `fun x => f (?m x₁ .. xₙ)`, where
   `?m` is a metavariable, one of `x₁, .., xₙ` is `x`, and `f` is not a metavariable.
   For example, the pattern `Continuous fun y => Real.exp (f y)])` is indexed by
   both `@Continuous *0 ℝ *1 *2 (λ, Real.exp *3)`
   and  `@Continuous *0 ℝ *1 *2 Real.exp`,
   so that it also comes up if you look up `Continuous Real.exp`.
-
-- How to deal with number literals is waiting for this issue to be resolved:
+* How to deal with number literals is waiting for this issue to be resolved:
   https://github.com/leanprover/lean4/issues/2867
-
-- The key `Key.opaque` only matches with a `Key.star` key.
+* The key `Key.opaque` only matches with a `Key.star` key.
   Depending on the configuration, β-reduction and ζ-reduction may be disabled, so the resulting
   applied lambda expressions or let-expressions are indexed by `Key.opaque`.
-
 
 ## Lazy computation
 
@@ -70,7 +67,6 @@ and lazy entries, or returns `none` if the last key has been reached already.
 
 The `RefinedDiscrTree` then stores these `LazyEntries` at its leaves, and evaluates them
 only if the lookup algorithm reaches this leaf.
-
 
 ## Alternative optimizations
 
@@ -83,10 +79,10 @@ data-structure linearly, since copies of the data structure must regularly be st
 environment. For `fun_prop` this is not a serious problem since it doesn't have that many
 different lemmas anyways.
 
-#### Future work:
+### Future work:
+
 Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
 `fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy structure.
-
 
 ## Matching vs Unification
 
@@ -96,9 +92,9 @@ Most applications use matching, and the only common use case where unification i
 type class search. Since the intended applications of the `RefinedDiscrTree` currently use
 matching, the lookup algorithm is most optimized for matching.
 
-#### Future work:
-Improve the unification lookup.
+### Future work:
 
+Improve the unification lookup.
 -/
 
 public section

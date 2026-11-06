@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.UnionLift
 public import Mathlib.Topology.Separation.Hausdorff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps
 
@@ -35,7 +38,9 @@ theorem map_continuousWithinAt (f : F) (s : Set α) (a : α) : ContinuousWithinA
 
 end ContinuousMapClass
 
-/-! ### Continuous maps -/
+/-!
+# Continuous maps
+-/
 
 
 namespace ContinuousMap
@@ -477,6 +482,7 @@ noncomputable def lift : C(Y, Z) where
 
 /--
 The obvious triangle induced by `IsQuotientMap.lift` commutes:
+
 ```
      g
   X --→ Z

@@ -10,7 +10,12 @@ public import Mathlib.Algebra.Group.InjSurj
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.Pi.Torsion
 
-/-! # Group instances for `FunLike` types
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Group instances for `FunLike` types
+
 In this file we define various instances related to groups for `FunLike` types.
 
 For example given a `FunLike F α β` with `IsMulApply F` and `Semigroup β`, then `F` is naturally
@@ -19,7 +24,6 @@ avoid long typeclass searches.
 
 Moreover, we define the homomorphism `FunLike.coeMulHom : F →* α → β` that acts by coercion. This
 definition is mainly needed to define a module instance on `F`.
-
 -/
 
 @[expose] public section

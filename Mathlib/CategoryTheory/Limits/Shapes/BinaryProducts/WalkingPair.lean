@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Discrete.Basic
 public import Mathlib.Tactic.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Walking pairs
 
@@ -16,6 +19,7 @@ A convenience method `pair X Y`, for `X, Y` objects of some category `C`, constr
 functor from the walking pair, hitting the given objects.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/

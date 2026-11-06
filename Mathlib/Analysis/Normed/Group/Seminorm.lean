@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group seminorms
 
@@ -39,7 +42,7 @@ having a superfluous `add_le'` field in the resulting structure. The same applie
 
 ## References
 
-* [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
+* ‍\[H. H. Schaefer, _Topological Vector Spaces_\]\[schaefer1966\]
 
 ## Tags
 
@@ -117,10 +120,12 @@ structure NonarchAddGroupNorm (G : Type*) [AddGroup G] extends NonarchAddGroupSe
   /-- If the image under the norm is zero, then the argument is zero. -/
   protected eq_zero_of_map_eq_zero' : ∀ x, toFun x = 0 → x = 0
 
-/-- `NonarchAddGroupSeminormClass F α` states that `F` is a type of nonarchimedean seminorms on
+/--
+`NonarchAddGroupSeminormClass F α` states that `F` is a type of nonarchimedean seminorms on
 the additive group `α`.
 
-You should extend this class when you extend `NonarchAddGroupSeminorm`. -/
+You should extend this class when you extend `NonarchAddGroupSeminorm`.
+-/
 class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
     [AddGroup α] [FunLike F α ℝ] : Prop
     extends NonarchimedeanHomClass F α ℝ where
@@ -129,10 +134,12 @@ class NonarchAddGroupSeminormClass (F : Type*) (α : outParam Type*)
   /-- The seminorm is invariant under negation. -/
   protected map_neg_eq_map' (f : F) (a : α) : f (-a) = f a
 
-/-- `NonarchAddGroupNormClass F α` states that `F` is a type of nonarchimedean norms on the
+/--
+`NonarchAddGroupNormClass F α` states that `F` is a type of nonarchimedean norms on the
 additive group `α`.
 
-You should extend this class when you extend `NonarchAddGroupNorm`. -/
+You should extend this class when you extend `NonarchAddGroupNorm`.
+-/
 class NonarchAddGroupNormClass (F : Type*) (α : outParam Type*) [AddGroup α] [FunLike F α ℝ] : Prop
     extends NonarchAddGroupSeminormClass F α where
   /-- If the image under the norm is zero, then the argument is zero. -/
@@ -168,7 +175,9 @@ instance (priority := 100) NonarchAddGroupNormClass.toAddGroupNormClass
     map_add_le_add := map_add_le_add
     map_neg_eq_map := NonarchAddGroupSeminormClass.map_neg_eq_map' }
 
-/-! ### Seminorms -/
+/-!
+# Seminorms
+-/
 
 
 namespace GroupSeminorm
@@ -673,7 +682,9 @@ theorem smul_sup (r : R) (p q : NonarchAddGroupSeminorm E) : r • (p ⊔ q) = r
 
 end NonarchAddGroupSeminorm
 
-/-! ### Norms -/
+/-!
+# Norms
+-/
 
 
 namespace GroupNorm

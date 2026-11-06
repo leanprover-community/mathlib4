@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Category.CoalgCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 public import Mathlib.RingTheory.Coalgebra.TensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on `R`-coalgebras
 
@@ -20,7 +23,6 @@ In this file, we declare a `MonoidalCategory` instance on the category of coalge
 fields given by the definitions in `Mathlib/RingTheory/Coalgebra/TensorProduct.lean`, and Prop
 fields proved by pulling back the `MonoidalCategory` instance on the category of modules,
 using `Monoidal.induced`.
-
 -/
 
 @[expose] public section

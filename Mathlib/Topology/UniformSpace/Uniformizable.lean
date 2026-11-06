@@ -10,6 +10,9 @@ public import Mathlib.Topology.UrysohnsLemma
 
 import Mathlib.Topology.UniformSpace.OfCompactT2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniformizable Spaces
 
@@ -30,7 +33,8 @@ Urysohn's lemma is reused in the proof of `UniformSpace.completelyRegularSpace`.
 
 ## References
 
-* <https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf>
+* [
+  https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf](https://www.math.wm.edu/~vinroot/PadicGroups/519probset1.pdf)
 -/
 
 variable {X : Type*}

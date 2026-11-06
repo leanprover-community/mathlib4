@@ -7,22 +7,25 @@ module
 
 public import Mathlib.Data.Sym.Sym2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multigraphs
 
 A multigraph is a set of vertices and a set of edges,
 together with incidence data that associates each edge `e`
-with an unordered pair `s(x,y)` of vertices called the *ends* of `e`.
-The pair of `e` and `s(x,y)` is called a *link*.
-The vertices `x` and `y` may be equal, in which case `e` is a *loop*.
+with an unordered pair `s(x,y)` of vertices called the _ends_ of `e`.
+The pair of `e` and `s(x,y)` is called a _link_.
+The vertices `x` and `y` may be equal, in which case `e` is a _loop_.
 There may be more than one edge with the same ends.
 
-If a multigraph has no loops and has at most one edge for every given ends, it is called *simple*,
+If a multigraph has no loops and has at most one edge for every given ends, it is called _simple_,
 and these objects are also formalized as `SimpleGraph`.
 
 This module defines `Graph α β` for a vertex type `α` and an edge type `β`,
 and gives basic API for incidence, adjacency and extensionality.
-The design broadly follows [Chou1994].
+The design broadly follows \[Chou1994\].
 
 ## Main definitions
 
@@ -75,7 +78,8 @@ variable {α β : Type*} {x y z u v w : α} {e f : β}
 
 open Set
 
-/-- A multigraph with vertices of type `α` and edges of type `β`,
+/--
+A multigraph with vertices of type `α` and edges of type `β`,
 as described by vertex and edge sets `vertexSet : Set α` and `edgeSet : Set β`,
 and a predicate `IsLink` describing whether an edge `e : β` has vertices `x y : α` as its ends.
 
@@ -116,7 +120,9 @@ scoped notation "V(" G ")" => Graph.vertexSet G
 /-- `E(G)` denotes the `edgeSet` of a graph `G`. -/
 scoped notation "E(" G ")" => Graph.edgeSet G
 
-/-! ### Edge-vertex-vertex incidence -/
+/-!
+# Edge-vertex-vertex incidence
+-/
 
 lemma IsLink.edge_mem (h : G.IsLink e x y) : e ∈ E(G) :=
   (edge_mem_iff_exists_isLink ..).2 ⟨x, y, h⟩
@@ -183,7 +189,9 @@ lemma IsLink.isLink_iff_sym2_eq (h : G.IsLink e x y) {x' y' : α} :
     G.IsLink e x' y' ↔ s(x, y) = s(x', y') := by
   rw [h.isLink_iff, Sym2.eq_iff]
 
-/-! ### Edge-vertex incidence -/
+/-!
+# Edge-vertex incidence
+-/
 
 /-- The unary incidence predicate of `G`. `G.Inc e x` means that the vertex `x`
 is one or both of the ends of the edge `e`.
@@ -309,7 +317,9 @@ lemma isLoopAt_iff_inc_not_isNonloopAt : G.IsLoopAt e x ↔ G.Inc e x ∧ ¬ G.I
 lemma Inc.isLoopAt_or_isNonloopAt (h : G.Inc e x) : G.IsLoopAt e x ∨ G.IsNonloopAt e x := by
   simp [isNonloopAt_iff_inc_not_isLoopAt, h, em]
 
-/-! ### Adjacency -/
+/-!
+# Adjacency
+-/
 
 /-- `G.Adj x y` means that `G` has an edge whose ends are the vertices `x` and `y`. -/
 def Adj (G : Graph α β) (x y : α) : Prop := ∃ e, G.IsLink e x y
@@ -335,7 +345,9 @@ lemma Adj.right_mem (h : G.Adj x y) : y ∈ V(G) :=
 lemma IsLink.adj (h : G.IsLink e x y) : G.Adj x y :=
   ⟨e, h⟩
 
-/-! ### Extensionality -/
+/-!
+# Extensionality
+-/
 
 /-- `edgeSet` can be determined using `IsLink`, so the graph constructed from `G.vertexSet` and
 `G.IsLink` using any value for `edgeSet` is equal to `G` itself. -/
@@ -395,7 +407,9 @@ lemma copy_eq (G : Graph α β) {V : Set α} {E : Set β} {IsLink : β → α �
     G.copy hV hE h_isLink = G := by
   ext <;> simp_all [copy]
 
-/-! ### Sets of edges or loops incident to a vertex -/
+/-!
+# Sets of edges or loops incident to a vertex
+-/
 
 /-- `G.incidenceSet x` is the set of edges incident to `x` in `G`. -/
 def incidenceSet (x : α) : Set β := {e | G.Inc e x}
@@ -418,7 +432,7 @@ theorem mem_loopSet (x : α) (e : β) : e ∈ G.loopSet x ↔ G.IsLoopAt e x :=
 theorem loopSet_subset_incidenceSet (x : α) : G.loopSet x ⊆ G.incidenceSet x := fun _ he ↦ ⟨x, he⟩
 
 /-!
-### Compatibility of Graphs
+# Compatibility of Graphs
 
 We define two graphs to be `Compatible` if for each edge belonging to their shared edge set,
 the incidence relation (i.e., which pairs of vertices it links) is the same in both graphs.
@@ -468,7 +482,9 @@ lemma IsNonloopAt.of_compatible (hGH : G.Compatible H) (heH : e ∈ E(H)) (h : G
   obtain ⟨y, hne, hy⟩ := h
   exact ⟨y, hne, hy.of_compatible hGH heH⟩
 
-/-! ### Graphs with no edges -/
+/-!
+# Graphs with no edges
+-/
 
 /-- The graph with vertex set `vertexSet` and no edges -/
 @[simps (attr := grind =) vertexSet edgeSet]
@@ -492,7 +508,9 @@ lemma edgeSet_eq_empty : E(G) = ∅ ↔ G = noEdge V(G) β := by
   have := h ▸ he.edge_mem
   simp at this
 
-/-! ### Graphs with two vertices -/
+/-!
+# Graphs with two vertices
+-/
 
 /-- A graph with exactly two vertices and no loops. -/
 @[simps (attr := grind =)]
@@ -533,7 +551,9 @@ lemma banana_adj : (banana u v edgeSet).Adj x y ↔ edgeSet.Nonempty ∧ s(x, y)
 lemma banana_empty : banana u v ∅ = Graph.noEdge {u, v} β := by
   ext <;> simp
 
-/-! ### Graphs with one vertex  -/
+/-!
+# Graphs with one vertex
+-/
 
 /-- A graph with one vertex and loops at that vertex. This is an abbreviation for the special case
   of `banana` where the two vertices are the same. Most lemmas about `bouquet` should instead be

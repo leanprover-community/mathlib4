@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Polynomial.Order
 public import Mathlib.FieldTheory.IsRealClosed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The real numbers form a real closed field
 -/

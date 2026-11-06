@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely strongly measurable functions in `Lp`
 
@@ -20,9 +23,8 @@ Functions in `Lp` for `0 < p < ∞` are finitely strongly measurable.
 
 ## References
 
-* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
-
+* ‍\[Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.\]\[Hytonen\_VanNeerven\_Veraar\_Wies\_2016\]
 -/
 
 public section

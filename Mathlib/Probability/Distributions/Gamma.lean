@@ -8,18 +8,22 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 public import Mathlib.Probability.CDF
 
-/-! # Gamma distributions over ℝ
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Gamma distributions over ℝ
 
 Define the gamma measure over the reals.
 
 ## Main definitions
+
 * `gammaPDFReal`: the function `a r x ↦ r ^ a / (Gamma a) * x ^ (a - 1) * exp (-(r * x))`
   for `0 ≤ x` or `0` else, which is the probability density function of a gamma distribution with
-  shape `a` and rate `r` (when `ha : 0 < a ` and `hr : 0 < r`).
+  shape `a` and rate `r` (when `ha : 0 < a  ` and `hr : 0 < r`).
 * `gammaPDF`: `ℝ≥0∞`-valued pdf,
   `gammaPDF a r = ENNReal.ofReal (gammaPDFReal a r)`.
 * `gammaMeasure`: a gamma measure on `ℝ`, parametrized by its shape `a` and rate `r`.
-
 -/
 
 @[expose] public section

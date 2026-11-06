@@ -12,6 +12,9 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Absolute value defined via the continuous functional calculus
 
@@ -20,8 +23,7 @@ and provides basic API.
 
 ## Main declarations
 
-+ `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
-
+* `CFC.abs`: The absolute value as `abs a := CFC.sqrt (star a * a)`.
 -/
 
 @[expose] public section

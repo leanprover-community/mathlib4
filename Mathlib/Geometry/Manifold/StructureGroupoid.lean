@@ -10,6 +10,9 @@ public import Mathlib.Topology.OpenPartialHomeomorph.Composition
 
 import Mathlib.Data.EReal.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Structure groupoids
 
@@ -56,11 +59,14 @@ open Set OpenPartialHomeomorph
 
 open scoped Manifold
 
-/-! ### Structure groupoids -/
+/-!
+# Structure groupoids
+-/
 
 section Groupoid
 
-/-! One could add to the definition of a structure groupoid the fact that the restriction of an
+/-!
+One could add to the definition of a structure groupoid the fact that the restriction of an
 element of the groupoid to any open set still belongs to the groupoid.
 (This is in Kobayashi-Nomizu.)
 I am not sure I want this, for instance on `H × E` where `E` is a vector space, and the groupoid is

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.GroupTheory.FiniteIndexNormalSubgroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Residually Finite Groups
 
@@ -14,9 +17,8 @@ In this file we define residually finite groups and prove some basic properties.
 
 ## Main definitions
 
-- `Group.ResiduallyFinite G`: A group `G` is residually finite if the intersection of all
+* `Group.ResiduallyFinite G`: A group `G` is residually finite if the intersection of all
   finite index normal subgroups is trivial.
-
 -/
 
 public section

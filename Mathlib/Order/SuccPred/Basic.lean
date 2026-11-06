@@ -9,6 +9,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Cover
 public import Mathlib.Order.Iterate
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Successor and predecessor
 
@@ -25,12 +28,14 @@ order...
 ## Implementation notes
 
 Maximal elements don't have a sensible successor. Thus the naïve typeclass
+
 ```lean
 class NaiveSuccOrder (α : Type*) [Preorder α] where
   (succ : α → α)
   (succ_le_iff : ∀ {a b}, succ a ≤ b ↔ a < b)
   (lt_succ_iff : ∀ {a b}, a < succ b ↔ a ≤ b)
 ```
+
 can't apply to an `OrderTop` because plugging in `a = b = ⊤` into either of `succ_le_iff` and
 `lt_succ_iff` yields `⊤ < ⊤` (or more generally `m < m` for a maximal element `m`).
 The solution taken here is to remove the implications `≤ → <` and instead require that `a < succ a`
@@ -123,7 +128,9 @@ noncomputable def SuccOrder.ofLinearWellFoundedLT [WellFoundedLT α] : SuccOrder
 
 end LinearOrder
 
-/-! ### Successor and predecessor orders -/
+/-!
+# Successor and predecessor orders
+-/
 
 namespace Order
 
@@ -643,7 +650,9 @@ theorem isMin_iterate_pred_of_eq_of_ne {n m : ℕ} (h_eq : pred^[n] a = pred^[m]
 
 end Preorder
 
-/-! ### Successor-predecessor orders -/
+/-!
+# Successor-predecessor orders
+-/
 
 section SuccPredOrder
 section Preorder
@@ -699,11 +708,14 @@ end Order
 
 open Order
 
-/-! ### `WithBot`, `WithTop`
+/-!
+# `WithBot`, `WithTop`
+
 Adding a greatest/least element to a `SuccOrder` or to a `PredOrder`.
 
 As far as successors and predecessors are concerned, there are four ways to add a bottom or top
 element to an order:
+
 * Adding a `⊤` to an `OrderTop`: Preserves `succ` and `pred`.
 * Adding a `⊤` to a `NoMaxOrder`: Preserves `succ`. Never preserves `pred`.
 * Adding a `⊥` to an `OrderBot`: Preserves `succ` and `pred`.

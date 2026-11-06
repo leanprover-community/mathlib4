@@ -10,7 +10,11 @@ public import Mathlib.Order.Partition.Finpartition
 public import Mathlib.Order.SetAccumulate
 public import Mathlib.Order.SupClosed
 
-/-! # Semirings and rings of sets
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Semirings and rings of sets
 
 A semi-ring of sets `C` (in the sense of measure theory) is a family of sets containing `∅`,
 stable by intersection and such that for all `s, t ∈ C`, `t \ s` is equal to a disjoint union of
@@ -34,7 +38,6 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
   `s \ ⋃₀ I = ⋃₀ hC.disjointOfDiffUnion hs hI`.
 * `MeasureTheory.IsSetSemiring.disjointOfUnion hJ`: for `hJ ⊆ C`, this is a
   `Finset` of pairwise disjoint sets such that `⋃₀ J = ⋃₀ hC.disjointOfUnion hJ`.
-
 * `MeasureTheory.IsSetRing`: property of being a ring of sets.
 
 ## Main statements
@@ -44,10 +47,10 @@ A ring of sets is a set of sets containing `∅`, stable by union, set differenc
 * `MeasureTheory.IsSetSemiring.disjointOfUnion_props`: In a `hC : IsSetSemiring C`,
   for a `J : Finset (Set α)` with `J ⊆ C`, there is
   for every `x in J` some `K x ⊆ C` finite, such that
+
   * `⋃ x ∈ J, K x` are pairwise disjoint and do not contain ∅,
   * `⋃ s ∈ K x, s ⊆ x`,
   * `⋃ x ∈ J, x = ⋃ x ∈ J, ⋃ s ∈ K x, s`.
-
 -/
 
 public section
@@ -219,11 +222,13 @@ theorem isSetRing_supClosure (hC : IsSetSemiring C) : IsSetRing (supClosure C) w
 
 section disjointOfDiff
 
-/-- In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
+/--
+In a semi-ring of sets `C`, for all sets `s, t ∈ C`, `s \ t` is equal to a disjoint union of
 finitely many sets in `C`. The finite set of sets in the union is not unique, but this definition
 gives an arbitrary `Finset (Set α)` that satisfies the equality.
 
-We remove the empty set to ensure that `t ∉ hC.disjointOfDiff hs ht` even if `t = ∅`. -/
+We remove the empty set to ensure that `t ∉ hC.disjointOfDiff hs ht` even if `t = ∅`.
+-/
 noncomputable def disjointOfDiff (hC : IsSetSemiring C) (hs : s ∈ C) (ht : t ∈ C) :
     Finset (Set α) :=
   (hC.exists_finpartition_sdiff hs ht).choose.parts

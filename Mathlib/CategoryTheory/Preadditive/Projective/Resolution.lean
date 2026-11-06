@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.QuasiIso
 public import Mathlib.Algebra.Homology.SingleHomology
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Projective resolutions
 
@@ -16,7 +19,6 @@ A projective resolution `P : ProjectiveResolution Z` of an object `Z : C` consis
 an `ℕ`-indexed chain complex `P.complex` of projective objects,
 along with a quasi-isomorphism `P.π` from `C` to the chain complex consisting just
 of `Z` in degree zero.
-
 -/
 
 @[expose] public section

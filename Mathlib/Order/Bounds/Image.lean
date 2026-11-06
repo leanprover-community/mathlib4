@@ -8,8 +8,10 @@ module
 public import Mathlib.Data.Set.NAry
 public import Mathlib.Order.Bounds.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Images of upper/lower bounds under monotone functions
 
 In this file we prove various results about the behaviour of bounds under monotone/antitone maps.

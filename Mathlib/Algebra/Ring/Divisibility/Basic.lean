@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Divisibility.Hom
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about divisibility in rings
 

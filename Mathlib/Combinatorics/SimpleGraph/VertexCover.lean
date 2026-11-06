@@ -11,10 +11,13 @@ public import Mathlib.Data.ENat.Lattice
 import Mathlib.SetTheory.Cardinal.NatCard
 import Mathlib.Tactic.ENatToNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertex cover
 
-A *vertex cover* of a simple graph is a set of vertices such that every edge is incident to at least
+A _vertex cover_ of a simple graph is a set of vertices such that every edge is incident to at least
 one of the vertices in the set.
 
 ## Main definitions

@@ -8,18 +8,20 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudofunctors
 
 A pseudofunctor is an oplax (or lax) functor whose `mapId` and `mapComp` are isomorphisms.
 We provide several constructors for pseudofunctors:
+
 * `Pseudofunctor.mk` : the default constructor, which requires `map₂_whiskerLeft` and
   `map₂_whiskerRight` instead of naturality of `mapComp`.
-
 * `Pseudofunctor.mkOfOplax` : construct a pseudofunctor from an oplax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
 * `Pseudofunctor.mkOfOplax'` : similar to `mkOfOplax`, but uses `IsIso` to describe isomorphisms.
-
 * `Pseudofunctor.mkOfLax` : construct a pseudofunctor from a lax functor whose
   `mapId` and `mapComp` are isomorphisms. This constructor uses `Iso` to describe isomorphisms.
 * `Pseudofunctor.mkOfLax'` : similar to `mkOfLax`, but uses `IsIso` to describe isomorphisms.
@@ -29,7 +31,6 @@ We provide several constructors for pseudofunctors:
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
   denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
-
 -/
 
 @[expose] public section
@@ -43,7 +44,8 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
-/-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
+/--
+A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
 Unlike functors between categories, `F.map` does not need to strictly commute with composition,

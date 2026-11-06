@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 
-/-! # Local properties of smooth functions which depend on both the source and target
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Local properties of smooth functions which depend on both the source and target
 
 In this file, we consider local properties of functions between manifolds, which depend on both the
 source and the target: more precisely, properties `P` of functions `f : M → N` such that
@@ -35,7 +39,6 @@ local property of this form.
   and `g` equals `f` near `x`, then `g` also has property `P` at `x`.
 * `IsOpen.liftSourceTargetPropertyAt`: the set of points at which `LiftSourceTargetPropertyAt`
   holds is open
-
 -/
 
 public section
@@ -57,11 +60,13 @@ variable {𝕜 E E' F F' H H' G G' : Type*} [NontriviallyNormedField 𝕜]
 
 namespace Manifold
 
-/-- Structure recording good behaviour of a property of functions `M → N` w.r.t. compatible
+/--
+Structure recording good behaviour of a property of functions `M → N` w.r.t. compatible
 choices of both a chart on `M` and `N`. Currently, we ask for the property to be stable under
 restriction of the domain chart, and local in the target.
 
-Motivating examples are immersions and submersions of smooth manifolds. -/
+Motivating examples are immersions and submersions of smooth manifolds.
+-/
 structure IsLocalSourceTargetProperty
     (P : (M → N) → OpenPartialHomeomorph M H → OpenPartialHomeomorph N G → Prop) : Prop where
   mono_source : ∀ {f : M → N}, ∀ {φ : OpenPartialHomeomorph M H}, ∀ {ψ : OpenPartialHomeomorph N G},
@@ -89,7 +94,8 @@ structure LocalPresentationAt (f : M → N) (x : M)
   property : P f domChart codChart
 
 variable (I J n) in
-/-- The induced property by a local property `P`: it is satisfied for `f` at `x` iff there exist
+/--
+The induced property by a local property `P`: it is satisfied for `f` at `x` iff there exist
 charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively, such that `f` satisfies `P`
 w.r.t. `φ` and `ψ`.
 

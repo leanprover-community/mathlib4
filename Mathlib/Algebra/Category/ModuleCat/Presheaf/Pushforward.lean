@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.ChangeOfRings
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushforward of presheaves of modules
 
@@ -18,7 +21,6 @@ on presheaves of modules.
 In case we have a morphism of presheaves of rings `S ⟶ F.op ⋙ R`, we also construct
 a functor `pushforward : PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} S`, and
 we show that they interact with the composition of morphisms similarly as pseudofunctors.
-
 -/
 
 @[expose] public section

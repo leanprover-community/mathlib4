@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Analysis.Normed.Algebra.GelfandRadius
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Golfand radius of matrices
 

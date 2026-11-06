@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Formula
 public import Mathlib.LinearAlgebra.FreeModule.Norm
 public import Mathlib.RingTheory.ClassGroup.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular points and the group law in affine coordinates
 
@@ -19,7 +22,7 @@ group law, with `𝓞` as the identity nonsingular point, which is uniquely dete
 in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine/Formula.lean`.
 
 With this description, there is an addition-preserving injection from the nonsingular points to the
-ideal class group of the *affine coordinate ring* `F[W] := F[X, Y] / ⟨W(X, Y)⟩`. This is given by
+ideal class group of the _affine coordinate ring_ `F[W] := F[X, Y] / ⟨W(X, Y)⟩`. This is given by
 mapping `𝓞` to the trivial ideal class and a nonsingular affine point `(x, y)` to the ideal class of
 the invertible ideal `⟨X - x, Y - y⟩`. Proving that this is well-defined and preserves addition
 reduces to equalities of ideals checked in `WeierstrassCurve.Affine.CoordinateRing.XYIdeal_neg_mul`
@@ -51,7 +54,7 @@ This file defines the group law on nonsingular points in affine coordinates.
 
 ## References
 
-* [J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+* ‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 * https://drops.dagstuhl.de/storage/00lipics/lipics-vol268-itp2023/LIPIcs.ITP.2023.6/LIPIcs.ITP.2023.6.pdf
 
 ## Tags
@@ -82,7 +85,9 @@ variable {R : Type r} {S : Type s} {A F : Type u} {B K : Type v} {L : Type w} [C
 
 namespace Affine
 
-/-! ## The affine coordinate ring -/
+/-!
+# The affine coordinate ring
+-/
 
 variable (W') in
 /-- The affine coordinate ring `R[W] := R[X, Y] / ⟨W(X, Y)⟩` of a Weierstrass curve `W`. -/
@@ -207,7 +212,9 @@ instance [IsDomain R] : IsDomain W'.CoordinateRing :=
     AdjoinRoot.isDomain_of_prime irreducible_polynomial.prime
   (map_injective <| IsFractionRing.injective R <| FractionRing R).isDomain
 
-/-! ## Ideals in the affine coordinate ring -/
+/-!
+# Ideals in the affine coordinate ring
+-/
 
 variable (W') in
 /-- The class of the element `X - x` in `R[W]` for some `x` in `R`. -/
@@ -401,7 +408,9 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' [DecidableEq F] {x₁ x₂ y₁ y₂ : F} (h�
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (coeIdeal_mul ..).symm <| XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero _, YClass_ne_zero _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩
 
-/-! ## Norms on the affine coordinate ring -/
+/-!
+# Norms on the affine coordinate ring
+-/
 
 lemma norm_smul_basis (p q : R[X]) : Algebra.norm R[X] (p • (1 : W'.CoordinateRing) + q • mk W' Y) =
     p ^ 2 - p * q * (C W'.a₁ * X + C W'.a₃) -
@@ -468,7 +477,9 @@ lemma natDegree_norm_ne_one [IsDomain R] (x : W'.CoordinateRing) :
 
 end CoordinateRing
 
-/-! ## Nonsingular points in affine coordinates -/
+/-!
+# Nonsingular points in affine coordinates
+-/
 
 variable (W') in
 /-- A nonsingular point on a Weierstrass curve `W` in affine coordinates. This is either the unique
@@ -602,7 +613,9 @@ end IsElliptic
 
 namespace Point
 
-/-! ## Group law in affine coordinates -/
+/-!
+# Group law in affine coordinates
+-/
 
 instance : Inhabited W'.Point :=
   ⟨zero⟩
@@ -616,9 +629,11 @@ lemma zero_def : 0 = (zero : W'.Point) :=
 lemma some_ne_zero {x y : R} (h : W'.Nonsingular x y) : some _ _ h ≠ 0 := by
   rintro (_ | _)
 
-/-- The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
+/--
+The negation of a nonsingular point on a Weierstrass curve in affine coordinates.
 
-Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`. -/
+Given a nonsingular point `P` in affine coordinates, use `-P` instead of `neg P`.
+-/
 def neg : W'.Point → W'.Point
   | 0 => 0
   | some _ _ h => some _ _ <| (nonsingular_neg ..).mpr h
@@ -652,9 +667,11 @@ lemma X_eq_iff {x₁ y₁ x₂ y₂ : F} {h₁ : W.Nonsingular x₁ y₁} {h₂ 
 
 variable [DecidableEq F] [DecidableEq K] [DecidableEq L]
 
-/-- The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
+/--
+The addition of two nonsingular points on a Weierstrass curve in affine coordinates.
 
-Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`. -/
+Given two nonsingular points `P` and `Q` in affine coordinates, use `P + Q` instead of `add P Q`.
+-/
 def add : W.Point → W.Point → W.Point
   | 0, P => P
   | P, 0 => P
@@ -811,7 +828,9 @@ instance : AddCommGroup W.Point where
   add_zero := add_zero
   neg_add_cancel _ := by rw [add_eq_zero]
 
-/-! ## Maps and base changes -/
+/-!
+# Maps and base changes
+-/
 
 variable [Algebra R S] [Algebra R F] [Algebra S F] [IsScalarTower R S F] [Algebra R K] [Algebra S K]
   [IsScalarTower R S K] [Algebra R L] [Algebra S L] [IsScalarTower R S L] (f : F →ₐ[S] K)
@@ -867,7 +886,7 @@ lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalar
 end Point
 
 /-!
-### The x-coordinate map to ℙ¹
+# The x-coordinate map to ℙ¹
 
 We define the map from points on an affine Weierstrass curve over `R` to the projective line
 by producing a coordinate vector in `Fin 2 → R` that represents the projective point.
@@ -875,14 +894,16 @@ by producing a coordinate vector in `Fin 2 → R` that represents the projective
 
 namespace Point
 
-/-- This map sends a point `P` on a Weierstrass curve `W'` in affine coordinates
+/--
+This map sends a point `P` on a Weierstrass curve `W'` in affine coordinates
 to a representative of its image on ℙ¹ under the x-coordinate map.
 We take `![1, 0]` for the point at infinity and `![x, 1]`,
 where `x` is the x-coordinate of `P`, for an affine point.
 
 We define it in the general setting of a commutative base ring, even though the definition
 of points in this setting is not really correct. For Weierstrass curves over fields, this
-gives the correct notion. -/
+gives the correct notion.
+-/
 noncomputable def xRep : W'.Point → Fin 2 → R
   | 0 => ![1, 0]
   | some x _ _ => ![x, 1]

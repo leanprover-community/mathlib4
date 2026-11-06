@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.Padics.PadicNumbers
 public import Mathlib.Topology.Algebra.Valued.NormedValued
 public import Mathlib.Topology.Algebra.Valued.ValuedField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The field `ℂ_[p]` of `p`-adic complex numbers.
 
@@ -19,6 +22,7 @@ an algebraic closure of `ℚ_[p]`. We endow `ℂ_[p]` with both a normed field a
 structure, induced by the unique extension of the `p`-adic norm to `ℂ_[p]`.
 
 ## Main Definitions
+
 * `PadicAlgCl p` : the algebraic closure of `ℚ_[p]`.
 * `PadicComplex p` : the type of `p`-adic complex numbers, denoted by `ℂ_[p]`.
 * `PadicComplexInt p` : the ring of integers of `ℂ_[p]`.

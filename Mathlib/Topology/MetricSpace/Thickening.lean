@@ -7,20 +7,24 @@ module
 
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Thickenings in pseudo-metric spaces
 
 ## Main definitions
+
 * `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
 * `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
   space.
 
 ## Main results
+
 * `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
 * `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
 * `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,
   some `cthickening` of `s` is contained in `t`.
-
 * `Metric.hasBasis_nhdsSet_cthickening`: the `cthickening`s of a compact set `K` form a basis
   of the neighbourhoods of `K`
 * `Metric.closure_eq_iInter_cthickening'`: the closure of a set equals the intersection
@@ -28,7 +32,6 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
   The same holds for open thickenings.
 * `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
   of `closedBall`s of radius `δ` around `x : E`.
-
 -/
 
 @[expose] public section
@@ -545,10 +548,12 @@ theorem cthickening_subset_iUnion_closedBall_of_lt {α : Type*} [PseudoMetricSpa
   obtain ⟨y, hy₁, hy₂⟩ := mem_thickening_iff.mp hx
   exact mem_iUnion₂.mpr ⟨y, hy₁, hy₂.le⟩
 
-/-- The closed thickening of a compact set `E` is the union of the balls `Metric.closedBall x δ`
+/--
+The closed thickening of a compact set `E` is the union of the balls `Metric.closedBall x δ`
 over `x ∈ E`.
 
-See also `Metric.cthickening_eq_biUnion_closedBall`. -/
+See also `Metric.cthickening_eq_biUnion_closedBall`.
+-/
 theorem _root_.IsCompact.cthickening_eq_biUnion_closedBall {α : Type*} [PseudoMetricSpace α]
     {δ : ℝ} {E : Set α} (hE : IsCompact E) (hδ : 0 ≤ δ) :
     cthickening δ E = ⋃ x ∈ E, closedBall x δ := by

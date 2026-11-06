@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtrations
 
@@ -27,7 +30,7 @@ inclusions into `X` are bundled together and functorial in the index category.
 
 ## References
 
-* [P. Deligne, *Théorie de Hodge : II*][deligne_hodge2]
+* ‍\[P. Deligne, _Théorie de Hodge : II_\]\[deligne\_hodge2\]
 -/
 
 @[expose] public section

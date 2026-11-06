@@ -8,8 +8,10 @@ module
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Colimits in `P.Over ⊤ S`
 
 Let `P` be a morphism property in the category of schemes and `S` be a scheme. Let
@@ -18,14 +20,13 @@ Let `P` be a morphism property in the category of schemes and `S` be a scheme. L
 Suppose the restrictions of `D` to `Dᵢ : J ⥤ P.Over ⊤ (𝒰.X i)` have a colimit for every `i`,
 then we show that also `D` has a colimit under the following assumptions:
 
-- `P` is local on the source.
-- For `i ⟶ j`, the transition map `𝒰.X i ⟶ 𝒰.X j` satisfies `P`.
-- For `i ⟶ j`, the base change functor `P.Over ⊤ (𝒰.X j) ⥤ P.Over ⊤ (𝒰.X i)` preserves
+* `P` is local on the source.
+* For `i ⟶ j`, the transition map `𝒰.X i ⟶ 𝒰.X j` satisfies `P`.
+* For `i ⟶ j`, the base change functor `P.Over ⊤ (𝒰.X j) ⥤ P.Over ⊤ (𝒰.X i)` preserves
   colimits of shape `J`.
 
 This can be used to reduce existence of certain colimits in `P.Over ⊤ S` to the case where
 `S` is affine.
-
 -/
 
 @[expose] public section

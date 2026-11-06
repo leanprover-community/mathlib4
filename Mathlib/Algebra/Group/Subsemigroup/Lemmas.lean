@@ -11,6 +11,9 @@ public import Mathlib.Data.Finset.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Membership
 import Mathlib.Order.CompleteLattice.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subsemigroup lemmas
 

@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Sites.CoversTop.Over
 
 import Mathlib.CategoryTheory.Limits.Shapes.Connected
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quasicoherent sheaves
 
@@ -22,7 +25,6 @@ When these coproducts are finite, we say that the sheaf is of finite presentatio
 ## References
 
 * https://stacks.math.columbia.edu/tag/01BD
-
 -/
 
 @[expose] public section

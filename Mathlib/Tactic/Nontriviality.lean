@@ -7,6 +7,11 @@ module
 
 public import Mathlib.Tactic.Nontriviality.Core
 
-/-! # The `nontriviality` tactic. -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The `nontriviality` tactic.
+-/
 
 public meta section

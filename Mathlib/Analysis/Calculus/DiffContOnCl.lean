@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions differentiable on a domain and continuous on its closure
 

@@ -10,6 +10,9 @@ public import Mathlib.Topology.Algebra.Group.Quotient
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Sets.Opens
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Open subgroups of a topological group
 
@@ -25,10 +28,11 @@ Note that this notion is especially relevant in a non-archimedean context, for i
 
 * `OpenSubgroup.isClosed`: An open subgroup is automatically closed.
 * `Subgroup.isOpen_mono`: A subgroup containing an open subgroup is open.
-                           There are also versions for additive groups, submodules and ideals.
+  There are also versions for additive groups, submodules and ideals.
 * `OpenSubgroup.comap`: Open subgroups can be pulled back by a continuous group morphism.
 
 ## TODO
+
 * Prove that the identity component of a locally path connected group is an open subgroup.
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
@@ -449,11 +453,10 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
 end Ideal
 
 /-!
-### Open normal subgroups of a topological group
+# Open normal subgroups of a topological group
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
-
 -/
 
 section
@@ -536,7 +539,7 @@ end OpenNormalSubgroup
 end
 
 /-!
-### Existence of an open subgroup in any clopen neighborhood of the neutral element
+# Existence of an open subgroup in any clopen neighborhood of the neutral element
 
 This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,

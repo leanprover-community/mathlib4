@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Positivity
 
 meta import Batteries.Data.Float.Rat  -- shake: keep (for `#eval` sanity check)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chudnovsky's formula for π
 
@@ -33,9 +36,9 @@ but at present we are a long way off.
   Eisenstein series.
 
 ## References
-* [Milla, *A detailed proof of the Chudnovsky formula*][Milla_2018]
-* [Chen and Glebov, *On Chudnovsky--Ramanujan type formulae*][Chen_Glebov_2018]
 
+* ‍\[Milla, _A detailed proof of the Chudnovsky formula_\]\[Milla\_2018\]
+* ‍\[Chen and Glebov, _On Chudnovsky--Ramanujan type formulae_\]\[Chen\_Glebov\_2018\]
 -/
 
 @[expose] public section

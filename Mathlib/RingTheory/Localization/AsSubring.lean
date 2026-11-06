@@ -7,14 +7,15 @@ module
 
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localizations of domains as subalgebras of the fraction field.
 
 Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which
 does not contain zero, this file constructs the localization of `A` at `S`
 as a subalgebra of the field `K` over `A`.
-
 -/
 
 @[expose] public section
@@ -71,7 +72,8 @@ instance isFractionRing_range_mapToFractionRing (B : Type*) [CommRing B] [Algebr
     [IsLocalization S B] (hS : S ≤ A⁰) : IsFractionRing (mapToFractionRing K S B hS).range K :=
   IsFractionRing.isFractionRing_of_isLocalization S _ _ hS
 
-/-- Given a commutative ring `A` with fraction ring `K`, and a submonoid `S` of `A` which
+/--
+Given a commutative ring `A` with fraction ring `K`, and a submonoid `S` of `A` which
 contains no zero divisor, this is the localization of `A` at `S`, considered as
 a subalgebra of `K` over `A`.
 
@@ -115,7 +117,8 @@ theorem mem_range_mapToFractionRing_iff_ofField (B : Type*) [CommRing B] [Algebr
   rw [Units.val_inv_eq_inv_val]
   rfl
 
-/-- Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which
+/--
+Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which
 contains no zero divisor, this is the localization of `A` at `S`, considered as
 a subalgebra of `K` over `A`.
 

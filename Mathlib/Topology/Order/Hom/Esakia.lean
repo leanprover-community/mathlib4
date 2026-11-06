@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Hom.Bounded
 public import Mathlib.Topology.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Esakia morphisms
 
@@ -29,7 +32,7 @@ be satisfied by itself and all stricter types.
 
 ## References
 
-* [Wikipedia, *Esakia space*](https://en.wikipedia.org/wiki/Esakia_space)
+* [Wikipedia, _Esakia space_](https://en.wikipedia.org/wiki/Esakia_space)
 -/
 
 @[expose] public section
@@ -50,17 +53,21 @@ structure EsakiaHom (α β : Type*) [TopologicalSpace α] [Preorder α] [Topolog
 
 section
 
-/-- `PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
+/--
+`PseudoEpimorphismClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
-You should extend this class when you extend `PseudoEpimorphism`. -/
+You should extend this class when you extend `PseudoEpimorphism`.
+-/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam Type*)
     [Preorder α] [Preorder β] [FunLike F α β] : Prop
     extends OrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 
-/-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
+/--
+`EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
-You should extend this class when you extend `EsakiaHom`. -/
+You should extend this class when you extend `EsakiaHom`.
+-/
 class EsakiaHomClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α] [Preorder α]
     [TopologicalSpace β] [Preorder β] [FunLike F α β] : Prop
     extends ContinuousOrderHomClass F α β where
@@ -103,7 +110,9 @@ instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] 
   exists_map_eq_of_map_le f _a b h :=
     ⟨EquivLike.inv f b, (le_map_inv_iff f).2 h, EquivLike.right_inv _ _⟩
 
-/-! ### Pseudo-epimorphisms -/
+/-!
+# Pseudo-epimorphisms
+-/
 
 
 namespace PseudoEpimorphism
@@ -205,7 +214,9 @@ theorem cancel_left {g : PseudoEpimorphism β γ} {f₁ f₂ : PseudoEpimorphism
 
 end PseudoEpimorphism
 
-/-! ### Esakia morphisms -/
+/-!
+# Esakia morphisms
+-/
 
 
 namespace EsakiaHom

@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.SimpleGraph.Dart
 public import Mathlib.Data.FunLike.Fintype
 public import Mathlib.Logic.Embedding.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Maps between graphs
 
@@ -47,13 +50,17 @@ namespace SimpleGraph
 
 variable {V W X Y : Type*} (G : SimpleGraph V) (G' : SimpleGraph W) {u v : V}
 
-/-! ## Map and comap -/
+/-!
+# Map and comap
+-/
 
 
-/-- Given a function, there is a covariant induced map on graphs by pushing forward
+/--
+Given a function, there is a covariant induced map on graphs by pushing forward
 the adjacency relation.
 
-This is injective when the function is (see `SimpleGraph.map_injective`). -/
+This is injective when the function is (see `SimpleGraph.map_injective`).
+-/
 protected def map (f : V → W) (G : SimpleGraph V) : SimpleGraph W where
   Adj := Ne ⊓ Relation.Map G.Adj f f
   symm.symm a b := by aesop (add norm unfold Relation.Map) (add forward safe Adj.symm)
@@ -116,11 +123,13 @@ theorem support_map (f : V ↪ W) (G : SimpleGraph V) :
     (G.map f).support = f '' G.support := by
   ext; simp [mem_support]
 
-/-- Given a function, there is a contravariant induced map on graphs by pulling back the
+/--
+Given a function, there is a contravariant induced map on graphs by pulling back the
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
 
-This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
+This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`).
+-/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm.symm _ _ h := h.symm
@@ -213,7 +222,9 @@ protected def _root_.Equiv.simpleGraph (e : V ≃ W) : SimpleGraph V ≃ SimpleG
 @[simp]
 lemma _root_.Equiv.symm_simpleGraph (e : V ≃ W) : e.simpleGraph.symm = e.symm.simpleGraph := rfl
 
-/-! ## Induced graphs -/
+/-!
+# Induced graphs
+-/
 
 
 /- Given a set `s` of vertices, we can restrict a graph to those vertices by restricting its
@@ -282,23 +293,30 @@ theorem IsCompleteBetween.induce {s t : Set V} (h : G.IsCompleteBetween s t) (u 
   rw [comap_adj, Embedding.coe_subtype]
   exact h hs ht
 
-/-! ## Homomorphisms, embeddings and isomorphisms -/
+/-!
+# Homomorphisms, embeddings and isomorphisms
+-/
 
 
-/-- A graph homomorphism is a map on vertex sets that respects adjacency relations.
+/--
+A graph homomorphism is a map on vertex sets that respects adjacency relations.
 
-The notation `G →g G'` represents the type of graph homomorphisms. -/
+The notation `G →g G'` represents the type of graph homomorphisms.
+-/
 abbrev Hom :=
   RelHom G.Adj G'.Adj
 
-/-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
+/--
+A graph embedding is an embedding `f` such that for vertices `v w : V`,
 `G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
-The notation `G ↪g G'` represents the type of graph embeddings. -/
+The notation `G ↪g G'` represents the type of graph embeddings.
+-/
 abbrev Embedding :=
   RelEmbedding G.Adj G'.Adj
 
-/-- A graph isomorphism is a bijective map on vertex sets that respects adjacency relations.
+/--
+A graph isomorphism is a bijective map on vertex sets that respects adjacency relations.
 
 The notation `G ≃g G'` represents the type of graph isomorphisms.
 -/
@@ -525,10 +543,12 @@ protected def map (f : V ↪ W) (G : SimpleGraph V) : G ↪g G.map f where
 theorem map_apply (f : V ↪ W) (G : SimpleGraph V) (v : V) : Embedding.map f G v = f v :=
   rfl
 
-/-- Induced graphs embed in the original graph.
+/--
+Induced graphs embed in the original graph.
 
 Note that if `G.induce s = ⊤` (i.e., if `s` is a clique) then this gives the embedding of a
-complete graph. -/
+complete graph.
+-/
 protected abbrev induce (s : Set V) : G.induce s ↪g G :=
   .comap (.subtype _) G
 

@@ -9,6 +9,9 @@ module
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Geometrically-`P` schemes over a field
 
@@ -22,8 +25,8 @@ morphism `Spec K ⟶ Y`, the base change `X ×[Y] Spec K` satisfies `P`.
 
 ## Main definitions and results
 
-- `AlgebraicGeometry.geometrically`: The morphism property of geometrically-`P` morphisms
-- `AlgebraicGeometry.geometrically_iff_forall_fiberToSpecResidueField`: `f : X ⟶ Y` is
+* `AlgebraicGeometry.geometrically`: The morphism property of geometrically-`P` morphisms
+* `AlgebraicGeometry.geometrically_iff_forall_fiberToSpecResidueField`: `f : X ⟶ Y` is
   geometrically-`P` if and only if for every `y : Y`, the fiber `f ⁻¹ {y}` is geometrically-`P`
   over `Spec κ(y)`.
 

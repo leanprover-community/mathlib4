@@ -15,6 +15,9 @@ public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 import Mathlib.Analysis.Real.Cardinality
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cauchy integral formula
 
@@ -30,23 +33,21 @@ differentiability at all but countably many points of the set mentioned below.
 ### Rectangle integrals
 
 * `Complex.integral_boundary_rect_of_hasFDerivAt_real_off_countable`: If a function
-  `f : ℂ → E` is continuous on a closed rectangle and *real* differentiable on its interior, then
+  `f : ℂ → E` is continuous on a closed rectangle and _real_ differentiable on its interior, then
   its integral over the boundary of this rectangle is equal to the integral of
   `I • f' (x + y * I) 1 - f' (x + y * I) I` over the rectangle, where `f' z w : E` is the derivative
   of `f` at `z` in the direction `w` and `I = Complex.I` is the imaginary unit.
-
 * `Complex.integral_boundary_rect_eq_zero_of_differentiable_on_off_countable`: If a function
-  `f : ℂ → E` is continuous on a closed rectangle and is *complex* differentiable on its interior,
+  `f : ℂ → E` is continuous on a closed rectangle and is _complex_ differentiable on its interior,
   then its integral over the boundary of this rectangle is equal to zero.
 
 ### Unbounded rectangle integrals
 
 * `Complex.integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_countable`: If a
-  function `f : ℂ → E` is continuous on an unbounded rectangle `[[x₁, x₂]] ×ℂ Ici y`, is *complex*
+  function `f : ℂ → E` is continuous on an unbounded rectangle `[[x₁, x₂]] ×ℂ Ici y`, is _complex_
   differentiable on its interior, tends to zero as the imaginary part of its argument tends to
   infinity inside the strip `[[x₁, x₂]] ×ℂ Ici y`, and its integrals along the two vertical sides
   converge, then its integral over the boundary of this rectangle is equal to zero.
-
 * `Complex.tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides`: In
   the same setting, the integrals along one vertical side tend to the sum of the integral along
   the horizontal side and the limit of the integrals along the other vertical side.
@@ -57,7 +58,6 @@ differentiability at all but countably many points of the set mentioned below.
   function `f : ℂ → E` is continuous on a closed annulus `{z | r ≤ |z - c| ≤ R}` and is complex
   differentiable on its interior `{z | r < |z - c| < R}`, then the integrals of `(z - c)⁻¹ • f z`
   over the outer boundary and over the inner boundary are equal.
-
 * `Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto`,
   `Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable`:
   If a function `f : ℂ → E` is continuous on a punctured closed disc `{z | |z - c| ≤ R ∧ z ≠ c}`, is
@@ -65,10 +65,9 @@ differentiability at all but countably many points of the set mentioned below.
   `z ≠ c`, then the integral of `(z - c)⁻¹ • f z` over the circle `|z - c| = R` is equal to
   `2πiy`. In particular, if `f` is continuous on the whole closed disc and is complex differentiable
   on the corresponding open disc, then this integral is equal to `2πif(c)`.
-
 * `Complex.circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`,
   `Complex.two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable`
-  **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
+  *Cauchy integral formula*: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
   complex differentiable on the corresponding open disc, then for any `w` in the corresponding open
   disc the integral of `(z - w)⁻¹ • f z` over the boundary of the disc is equal to `2πif(w)`.
   Two versions of the lemma put the multiplier `2πi` at the different sides of the equality.
@@ -79,15 +78,12 @@ differentiability at all but countably many points of the set mentioned below.
   on a closed disc of positive radius and is complex differentiable on the corresponding open disc,
   then it is analytic on the corresponding open disc, and the coefficients of the power series are
   given by Cauchy integral formulas.
-
 * `DifferentiableOn.hasFPowerSeriesOnBall`: If `f : ℂ → E` is complex differentiable on a
   closed disc of positive radius, then it is analytic on the corresponding open disc, and the
   coefficients of the power series are given by Cauchy integral formulas.
-
 * `DifferentiableOn.analyticAt`, `Differentiable.analyticAt`: If `f : ℂ → E` is differentiable
   on a neighborhood of a point, then it is analytic at this point. In particular, if `f : ℂ → E`
   is differentiable on the whole `ℂ`, then it is analytic at every point `z : ℂ`.
-
 * `Differentiable.hasFPowerSeriesOnBall`: If `f : ℂ → E` is differentiable everywhere then the
   `cauchyPowerSeries f z R` is a formal power series representing `f` at `z` with infinite
   radius of convergence (this holds for any choice of `0 < R`).
@@ -96,7 +92,7 @@ differentiability at all but countably many points of the set mentioned below.
 
 * `Complex.circleIntegral_one_div_sub_pow_smul_of_differentiable_on_off_countable`,
   `Complex.circleIntegral_one_div_sub_center_pow_smul_of_differentiable_on_off_countable`
-  **Cauchy integral formula for derivatives**: formula for the higher derivatives of `f` at a point
+  *Cauchy integral formula for derivatives*: formula for the higher derivatives of `f` at a point
   in a disc in terms of circle integrals of `f z / (z - w) ^ (n + 1)` around the boundary circle,
   together with the specialization to the centre of the disc.
 
@@ -109,49 +105,40 @@ divergence theorem, see `MeasureTheory.integral_divergence_of_hasFDerivAt_off_co
 `MeasureTheory.integral2_divergence_prod_of_hasFDerivWithinAt_off_countable` (versions for
 functions defined on `ℝ × ℝ`).
 
-Usually, the divergence theorem is formulated for a $C^1$ smooth function. The theorems formulated
+Usually, the divergence theorem is formulated for a $`C^1` smooth function. The theorems formulated
 above deal with a function that is
 
 * continuous on a closed box/rectangle;
 * differentiable at all but countably many points of its interior;
 * have divergence integrable over the closed box/rectangle.
 
-First, we reformulate the theorem for a *real*-differentiable map `ℂ → E`, and relate the integral
+First, we reformulate the theorem for a _real_-differentiable map `ℂ → E`, and relate the integral
 of `f` over the boundary of a rectangle in `ℂ` to the integral of the derivative
-$\frac{\partial f}{\partial \bar z}$ over the interior of this box. In particular, for a *complex*
+$`\frac{\partial f}{\partial \bar z}` over the interior of this box. In particular, for a _complex_
 differentiable function, the latter derivative is zero, hence the integral over the boundary of a
 rectangle is zero. Thus we get the Cauchy-Goursat theorem for a rectangle in `ℂ`.
 
-Next, we apply this theorem to the function $F(z)=f(c+e^{z})$ on the rectangle
-$[\ln r, \ln R]\times [0, 2\pi]$ to prove that
-$$
-  \oint_{|z-c|=r}\frac{f(z)\,dz}{z-c}=\oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}
-$$
+Next, we apply this theorem to the function $`F(z)=f(c+e^{z})` on the rectangle
+$`[\ln r, \ln R]\times [0, 2\pi]` to prove that
+$$`  \oint_{|z-c|=r}\frac{f(z)\,dz}{z-c}=\oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}  `
 provided that `f` is continuous on the closed annulus `r ≤ |z - c| ≤ R` and is complex
 differentiable on its interior `r < |z - c| < R` (possibly, at all but countably many points).
 
-Here and below, we write $\frac{f(z)}{z-c}$ in the documentation while the actual lemmas use
+Here and below, we write $`\frac{f(z)}{z-c}` in the documentation while the actual lemmas use
 `(z - c)⁻¹ • f z` because `f z` belongs to some Banach space over `ℂ` and `f z / (z - c)` is
 undefined.
 
 Taking the limit of this equality as `r` tends to `𝓝[>] 0`, we prove
-$$
-  \oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}=2\pi if(c)
-$$
+$$`  \oint_{|z-c|=R}\frac{f(z)\,dz}{z-c}=2\pi if(c)  `
 provided that `f` is continuous on the closed disc `|z - c| ≤ R` and is differentiable at all but
 countably many points of its interior. This is the Cauchy integral formula for the center of a
 circle. In particular, if we apply this function to `F z = (z - c) • f z`, then we get
-$$
-  \oint_{|z-c|=R} f(z)\,dz=0.
-$$
+$$`  \oint_{|z-c|=R} f(z)\,dz=0.  `
 
 In order to deduce the Cauchy integral formula for any point `w`, `|w - c| < R`, we consider the
 slope function `g : ℂ → E` given by `g z = (z - w)⁻¹ • (f z - f w)` if `z ≠ w` and `g w = f' w`.
 This function satisfies assumptions of the previous theorem, so we have
-$$
-  \oint_{|z-c|=R} \frac{f(z)\,dz}{z-w}=\oint_{|z-c|=R} \frac{f(w)\,dz}{z-w}=
-  \left(\oint_{|z-c|=R} \frac{dz}{z-w}\right)f(w).
-$$
+$$`  \oint_{|z-c|=R} \frac{f(z)\,dz}{z-w}=\oint_{|z-c|=R} \frac{f(w)\,dz}{z-w}= \left(\oint_{|z-c|=R} \frac{dz}{z-w}\right)f(w).  `
 The latter integral was computed in `circleIntegral.integral_sub_inv_of_mem_ball` and is equal to
 `2 * π * Complex.I`.
 
@@ -192,15 +179,17 @@ namespace Complex
 
 section rectangle
 /-!
-## Functions on rectangles
+# Functions on rectangles
 -/
 
-/-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
-`z w : ℂ`, is *real* differentiable at all but countably many points of the corresponding open
-rectangle, and $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then the
+/--
+Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
+`z w : ℂ`, is _real_ differentiable at all but countably many points of the corresponding open
+rectangle, and $`\frac{\partial f}{\partial \bar z}` is integrable on this rectangle. Then the
 integral of `f` over the boundary of the rectangle is equal to the integral of
-$2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
-over the rectangle. -/
+$`2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}`
+over the rectangle.
+-/
 theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
     (z w : ℂ) (s : Set ℂ) (hs : s.Countable)
     (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
@@ -239,12 +228,14 @@ theorem integral_boundary_rect_of_hasFDerivAt_real_off_countable (f : ℂ → E)
     (MeasurableEquiv.measurableEmbedding _)] at Hi
   simpa only [hF'] using! Hi.neg
 
-/-- Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
-`z w : ℂ`, is *real* differentiable on the corresponding open rectangle, and
-$\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then the integral of `f` over
+/--
+Suppose that a function `f : ℂ → E` is continuous on a closed rectangle with opposite corners at
+`z w : ℂ`, is _real_ differentiable on the corresponding open rectangle, and
+$`\frac{\partial f}{\partial \bar z}` is integrable on this rectangle. Then the integral of `f` over
 the boundary of the rectangle is equal to the integral of
-$2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
-over the rectangle. -/
+$`2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}`
+over the rectangle.
+-/
 theorem integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → E) (f' : ℂ → ℂ →L[ℝ] E)
     (z w : ℂ) (Hc : ContinuousOn f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hd : ∀ x ∈ Ioo (min z.re w.re) (max z.re w.re) ×ℂ Ioo (min z.im w.im) (max z.im w.im),
@@ -257,11 +248,13 @@ theorem integral_boundary_rect_of_continuousOn_of_hasFDerivAt_real (f : ℂ → 
   integral_boundary_rect_of_hasFDerivAt_real_off_countable f f' z w ∅ countable_empty Hc
     (fun x hx => Hd x hx.1) Hi
 
-/-- Suppose that a function `f : ℂ → E` is *real* differentiable on a closed rectangle with opposite
-corners at `z w : ℂ` and $\frac{\partial f}{\partial \bar z}$ is integrable on this rectangle. Then
+/--
+Suppose that a function `f : ℂ → E` is _real_ differentiable on a closed rectangle with opposite
+corners at `z w : ℂ` and $`\frac{\partial f}{\partial \bar z}` is integrable on this rectangle. Then
 the integral of `f` over the boundary of the rectangle is equal to the integral of
-$2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}$
-over the rectangle. -/
+$`2i\frac{\partial f}{\partial \bar z}=i\frac{\partial f}{\partial x}-\frac{\partial f}{\partial y}`
+over the rectangle.
+-/
 theorem integral_boundary_rect_of_differentiableOn_real (f : ℂ → E) (z w : ℂ)
     (Hd : DifferentiableOn ℝ f ([[z.re, w.re]] ×ℂ [[z.im, w.im]]))
     (Hi : IntegrableOn (fun z => I • fderiv ℝ f z 1 - fderiv ℝ f z I)
@@ -323,7 +316,7 @@ end rectangle
 
 section annulus
 /-!
-## Functions on annuli
+# Functions on annuli
 -/
 
 /-- If `f : ℂ → E` is continuous on the closed annulus `r ≤ ‖z - c‖ ≤ R`, `0 < r ≤ R`,
@@ -386,13 +379,15 @@ variable [CompleteSpace E]
 
 section circle
 /-!
-## Circle integrals
+# Circle integrals
 -/
 
-/-- **Cauchy integral formula** for the value at the center of a disc. If `f` is continuous on a
+/--
+*Cauchy integral formula* for the value at the center of a disc. If `f` is continuous on a
 punctured closed disc of radius `R`, is differentiable at all but countably many points of the
 interior of this disc, and has a limit `y` at the center of the disc, then the integral
-$\oint_{‖z-c‖=R} \frac{f(z)}{z-c}\,dz$ is equal to `2πiy`. -/
+$`\oint_{‖z-c‖=R} \frac{f(z)}{z-c}\,dz` is equal to `2πiy`.
+-/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto {c : ℂ}
     {R : ℝ} (h0 : 0 < R) {f : ℂ → E} {y : E} {s : Set ℂ} (hs : s.Countable)
     (hc : ContinuousOn f (closedBall c R \ {c}))
@@ -440,9 +435,9 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     _ = ε := by field
 
 /--
-**Cauchy integral formula** for the value at the center of a disc. If `f : ℂ → E` is continuous on a
+*Cauchy integral formula* for the value at the center of a disc. If `f : ℂ → E` is continuous on a
 closed disc of radius `R` and center `c`, and is complex differentiable at all but countably many
-points of its interior, then the integral $\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz$ is equal to
+points of its interior, then the integral $`\oint_{|z-c|=R} \frac{f(z)}{z-c}\,dz` is equal to
 `2πi • f c`.
 -/
 theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 < R)
@@ -454,9 +449,11 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable {R
     (hc.continuousAt <| closedBall_mem_nhds _ h0).continuousWithinAt
 
 omit [CompleteSpace E] in
-/-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
+/--
+*Cauchy-Goursat theorem* for a disk: if `f : ℂ → E` is continuous on a closed disk
 `{z | ‖z - c‖ ≤ R}` and is complex differentiable at all but countably many points of its interior,
-then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
+then the integral $`\oint_{|z-c|=R}f(z)\,dz` equals zero.
+-/
 theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} {s : Set ℂ} (hs : s.Countable) (hc : ContinuousOn f (closedBall c R))
     (hd : ∀ z ∈ ball c R \ s, DifferentiableAt ℂ f z) : (∮ z in C(c, R), f z) = 0 := by
@@ -473,9 +470,11 @@ theorem circleIntegral_eq_zero_of_differentiable_on_off_countable {R : ℝ} (h0 
     _ = 0 := by rw [sub_self, zero_smul, smul_zero]
 
 omit [CompleteSpace E] in
-/-- **Cauchy-Goursat theorem** for a disk: if `f : ℂ → E` is continuous on a closed disk
+/--
+*Cauchy-Goursat theorem* for a disk: if `f : ℂ → E` is continuous on a closed disk
 `{z | ‖z - c‖ ≤ R}` and is complex differentiable on the open disk,
-then the integral $\oint_{|z-c|=R}f(z)\,dz$ equals zero. -/
+then the integral $`\oint_{|z-c|=R}f(z)\,dz` equals zero.
+-/
 theorem _root_.DiffContOnCl.circleIntegral_eq_zero {R : ℝ} (h0 : 0 ≤ R) {f : ℂ → E}
     {c : ℂ} (hc : DiffContOnCl ℂ f (ball c R)) : ∮ z in C(c, R), f z = 0 :=
   circleIntegral_eq_zero_of_differentiable_on_off_countable h0 countable_empty
@@ -509,9 +508,10 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
   exacts [(hc'.smul (hc.mono sphere_subset_closedBall)).circleIntegrable hR.le,
     (hc'.smul continuousOn_const).circleIntegrable hR.le]
 
-/-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
+/--
+*Cauchy integral formula*: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
 complex differentiable at all but countably many points of its interior, then for any `w` in this
-interior we have $\frac{1}{2πi}\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=f(w)$.
+interior we have $`\frac{1}{2πi}\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=f(w)`.
 -/
 theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ}
     {c w : ℂ} {f : ℂ → E} {s : Set ℂ} (hs : s.Countable) (hw : w ∈ ball c R)
@@ -545,9 +545,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     exact this.not_gt Cardinal.aleph0_lt_continuum
   exact ⟨g x, (hlu_sub hx.1).1, (hlu_sub hx.1).2, hx.2⟩
 
-/-- **Cauchy integral formula**: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
+/--
+*Cauchy integral formula*: if `f : ℂ → E` is continuous on a closed disc of radius `R` and is
 complex differentiable at all but countably many points of its interior, then for any `w` in this
-interior we have $\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$.
+interior we have $`\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)`.
 -/
 theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ} {c w : ℂ} {f : ℂ → E}
     {s : Set ℂ} (hs : s.Countable) (hw : w ∈ ball c R) (hc : ContinuousOn f (closedBall c R))
@@ -557,18 +558,22 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable {R : ℝ}
     hs hw hc hd, smul_inv_smul₀]
   simp [Real.pi_ne_zero, I_ne_zero]
 
-/-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on an open disc and is
+/--
+*Cauchy integral formula*: if `f : ℂ → E` is complex differentiable on an open disc and is
 continuous on its closure, then for any `w` in this open ball we have
-$\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$. -/
+$`\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)`.
+-/
 theorem _root_.DiffContOnCl.circleIntegral_sub_inv_smul {R : ℝ} {c w : ℂ} {f : ℂ → E}
     (h : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w :=
   circleIntegral_sub_inv_smul_of_differentiable_on_off_countable countable_empty hw
     h.continuousOn_ball fun _x hx => h.differentiableAt isOpen_ball hx.1
 
-/-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on an open disc and is
+/--
+*Cauchy integral formula*: if `f : ℂ → E` is complex differentiable on an open disc and is
 continuous on its closure, then for any `w` in this open ball we have
-$\frac{1}{2πi}\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=f(w)$. -/
+$`\frac{1}{2πi}\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=f(w)`.
+-/
 theorem _root_.DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul {R : ℝ} {c w : ℂ}
     {f : ℂ → E} (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) = f w := by
@@ -578,16 +583,19 @@ theorem _root_.DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul {R : �
   · simpa only [closure_ball c hR.ne.symm] using hf.continuousOn
   · simpa only [sdiff_empty] using fun z hz => hf.differentiableAt isOpen_ball hz
 
-/-- **Cauchy integral formula**: if `f : ℂ → E` is complex differentiable on a closed disc of radius
-`R`, then for any `w` in its interior we have $\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)$. -/
+/--
+*Cauchy integral formula*: if `f : ℂ → E` is complex differentiable on a closed disc of radius
+`R`, then for any `w` in its interior we have $`\oint_{|z-c|=R}(z-w)^{-1}f(z)\,dz=2πif(w)`.
+-/
 theorem _root_.DifferentiableOn.circleIntegral_sub_inv_smul {R : ℝ} {c w : ℂ} {f : ℂ → E}
     (hd : DifferentiableOn ℂ f (closedBall c R)) (hw : w ∈ ball c R) :
     (∮ z in C(c, R), (z - w)⁻¹ • f z) = (2 * π * I : ℂ) • f w :=
   (hd.mono closure_ball_subset_closedBall).diffContOnCl.circleIntegral_sub_inv_smul hw
 
-/-- **Cauchy integral formula**: if `f : ℂ → ℂ` is continuous on a closed disc of radius `R` and is
+/--
+*Cauchy integral formula*: if `f : ℂ → ℂ` is continuous on a closed disc of radius `R` and is
 complex differentiable at all but countably many points of its interior, then for any `w` in this
-interior we have $\oint_{|z-c|=R}\frac{f(z)}{z-w}dz=2\pi i\,f(w)$.
+interior we have $`\oint_{|z-c|=R}\frac{f(z)}{z-w}dz=2\pi i\,f(w)`.
 -/
 theorem circleIntegral_div_sub_of_differentiable_on_off_countable {R : ℝ} {c w : ℂ} {s : Set ℂ}
     (hs : s.Countable) (hw : w ∈ ball c R) {f : ℂ → ℂ} (hc : ContinuousOn f (closedBall c R))
@@ -678,7 +686,7 @@ end circle
 
 section analyticity
 /-!
-## Applications to analyticity
+# Applications to analyticity
 -/
 
 /-- If `f : ℂ → E` is continuous on a closed ball of positive radius and is differentiable at all
@@ -808,7 +816,7 @@ end analyticity
 section unbounded
 
 /-!
-## Integrals over unbounded rectangular contours
+# Integrals over unbounded rectangular contours
 -/
 
 open Set Real Complex intervalIntegral Metric Filter MeasureTheory
@@ -819,11 +827,13 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] {f : ℂ → E} 
 
 section tendsto_zero
 
-/-- If a family of functions `g m` tends to zero uniformly along the product filter
+/--
+If a family of functions `g m` tends to zero uniformly along the product filter
 `atTop ×ˢ (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))` (i.e., as `m → ∞` and the imaginary part of
 the input → ∞ jointly, within `[[x₁, x₂]] ×ℂ Ici y`), then
-$\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0$. This generalises
-`tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`. -/
+$`\lim_{m \to \infty} \int_{x_1}^{x_2} g(m, x + m I) \, dx = 0`. This generalises
+`tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero`.
+-/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : ℝ → ℂ → E}
     (htendsto : TendstoUniformlyOnFilter g 0 atTop (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ Ici y))) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, g m (x + m * I)) atTop (𝓝 0) := by
@@ -836,8 +846,10 @@ lemma tendsto_integral_atTop_nhds_zero_of_tendsto_unif_im_atTop_nhds_zero {g : �
       tendsto_snd.eventually (eventually_principal.mpr fun _ h ↦ h)] with q hq₁ hq₂
     simpa [Complex.mem_reProdIm] using ⟨hq₂, hq₁⟩
 
-/-- If $f(z) \to 0$ as $\Im(z) \to \infty$ within `[[x₁, x₂]] ×ℂ univ`, then
-$\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0$. -/
+/--
+If $`f(z) \to 0` as $`\Im(z) \to \infty` within `[[x₁, x₂]] ×ℂ univ`, then
+$`\lim_{m \to \infty} \int_{x_1}^{x_2} f(x + mI) dx = 0`.
+-/
 lemma tendsto_integral_atTop_nhds_zero_of_tendsto_im_atTop_nhds_zero
     (htendsto : Tendsto f (comap im atTop ⊓ 𝓟 ([[x₁, x₂]] ×ℂ univ)) (𝓝 0)) :
     Tendsto (fun (m : ℝ) ↦ ∫ (x : ℝ) in x₁..x₂, f (x + m * I)) atTop (𝓝 0) :=
@@ -901,7 +913,8 @@ theorem integral_boundary_unbounded_rect_eq_zero_of_differentiable_on_off_counta
     tendsto_integral_boundary_unbounded_rect_one_side_atTop_nhds_sum_other_two_sides
       y hcont s hs hdiff hC₂ htendsto).symm
 
-/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+/--
+*Deformation of unbounded rectangular contours:* Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them, the limit of interval integrals
 along the first contour equals the sum of a translation integral and the limit of interval integrals
 along the second integral.
@@ -925,7 +938,8 @@ end tendsto
 
 section integrable
 
-/-- **Deformation of unbounded rectangular contours:** Given two infinite vertical contours such
+/--
+*Deformation of unbounded rectangular contours:* Given two infinite vertical contours such
 that a function satisfies Cauchy-Goursat conditions between them and is integrable along both
 vertical contours, the improper integral along the first contour equals the sum of a translation
 integral and the improper integrals along the second integral.
@@ -956,7 +970,7 @@ end unbounded
 section derivatives
 
 /-!
-## Circle integrals for higher derivatives
+# Circle integrals for higher derivatives
 -/
 
 variable {R : ℝ} {f : ℂ → E} {c w : ℂ} {s : Set ℂ}

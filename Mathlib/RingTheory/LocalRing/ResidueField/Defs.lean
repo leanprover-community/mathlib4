@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Residue Field of local rings
 
 ## Main definitions

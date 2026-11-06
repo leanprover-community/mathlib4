@@ -8,23 +8,24 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
 public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # `1`-hypercovers and (pre)sheaves of types
 
 In this file we provide some API for working with `1`-hypercovers for sheaves of types.
 
 ## Main declarations
 
-- `CategoryTheory.PreOneHypercover.IsStronglySheafFor`: A pre-`1`-hypercover `E`
+* `CategoryTheory.PreOneHypercover.IsStronglySheafFor`: A pre-`1`-hypercover `E`
   satisfies the strong sheaf condition for a presheaf of types `F` if
   `F` is a sheaf for the `0`-covering and separated for the `1`-coverings.
-- `CategoryTheory.PreOneHypercover.IsStronglySheafFor.amalgamate`: Glue
+* `CategoryTheory.PreOneHypercover.IsStronglySheafFor.amalgamate`: Glue
   a family of compatible sections along `E` if `E` satisfies the strong sheaf condition.
-- `CategoryTheory.PreOneHypercover.IsStronglySheafFor.isLimitMultifork`: If `E`
+* `CategoryTheory.PreOneHypercover.IsStronglySheafFor.isLimitMultifork`: If `E`
   satisfies the strong sheaf condition for `F`, then the multiequalizer diagram
   for `E` is limiting.
-
 -/
 
 universe w
@@ -196,8 +197,8 @@ Being a sheaf for a presieve `R` is local on the target in the following sense: 
 is a pre-`1`-hypercover for which `F` is separated and a sheaf for the `0`-components, then to
 check that `F` is a sheaf for `R` it suffices to check:
 
-- `F` is a sheaf for the pullbacks of `R` along the maps from the `0`-components.
-- `F` is separated for the pullbacks of `R` along the maps from the `1`-components.
+* `F` is a sheaf for the pullbacks of `R` along the maps from the `0`-components.
+* `F` is separated for the pullbacks of `R` along the maps from the `1`-components.
 -/
 lemma IsStronglySheafFor.isSheafFor_of_pullback (h₁ : E.IsStronglySheafFor F)
     (h₂ : ∀ ⦃Y : C⦄ (f : Y ⟶ X), Presieve.IsSeparatedFor F (E.sieve₀.pullback f).arrows)

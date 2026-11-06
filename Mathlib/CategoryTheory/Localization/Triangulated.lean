@@ -11,7 +11,11 @@ public import Mathlib.CategoryTheory.Triangulated.Functor
 
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions.ComposableArrows
 
-/-! # Localization of triangulated categories
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Localization of triangulated categories
 
 If `L : C ⥤ D` is a localization functor for a class of morphisms `W` that is compatible
 with the triangulation on the category `C` and admits a left calculus of fractions,
@@ -19,8 +23,8 @@ it is shown in this file that `D` can be equipped with a pretriangulated categor
 and that it is triangulated.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section

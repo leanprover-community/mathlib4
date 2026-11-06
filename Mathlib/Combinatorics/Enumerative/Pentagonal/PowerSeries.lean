@@ -12,14 +12,17 @@ public import Mathlib.RingTheory.PowerSeries.PiTopology
 import Mathlib.Combinatorics.Enumerative.Pentagonal.Ring
 import Mathlib.RingTheory.Nilpotent.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pentagonal number theorem for power series
 
 This file proves the pentagonal number theorem for power series:
 
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k} $$
+$$`  \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=-\infty}^{\infty} (-1)^k x^{a_k}  `
 
-where $a_k = k(3k - 1)/2$ are the pentagonal numbers. We state the theorem in two parts by
+where $`a_k = k(3k - 1)/2` are the pentagonal numbers. We state the theorem in two parts by
 introducing the intermediate power series `PowerSeries.pentagonalSeries`, whose coefficients are
 defined using pentagonal numbers. We then show that this series is equal to both sides.
 
@@ -76,7 +79,9 @@ public section Public
 namespace PowerSeries
 
 open Classical in
-/-- The power series $\sum_{k=-\infty}^{\infty}(-1)^k x^{k * (3k - 1) / 2}$. -/
+/--
+The power series $`\sum_{k=-\infty}^{\infty}(-1)^k x^{k * (3k - 1) / 2}`.
+-/
 noncomputable
 def pentagonalSeries : R⟦X⟧ :=
   .mk fun n ↦ if h : ∃ k, pentagonal k = n then

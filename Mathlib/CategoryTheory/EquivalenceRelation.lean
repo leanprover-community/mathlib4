@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a
@@ -22,8 +24,7 @@ In general, kernel pairs in any category are internal equivalence relations.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/congruence>
-
+* [https://ncatlab.org/nlab/show/congruence](https://ncatlab.org/nlab/show/congruence)
 -/
 
 @[expose] public section

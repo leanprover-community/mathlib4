@@ -9,13 +9,16 @@ public import Mathlib.Analysis.Fourier.FourierTransform
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 public import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fourier theory on `ZMod N`
 
 Basic definitions and properties of the discrete Fourier transform for functions on `ZMod N`
 (taking values in an arbitrary `ℂ`-vector space).
 
-### Main definitions and results
+## Main definitions and results
 
 * `ZMod.dft`: the Fourier transform, with respect to the standard additive character
   `ZMod.stdAddChar` (mapping `j mod N` to `exp (2 * π * I * j / N)`). The notation `𝓕`, scoped in
@@ -142,7 +145,7 @@ end defs
 
 section arith
 /-!
-## Compatibility with scalar multiplication
+# Compatibility with scalar multiplication
 
 These lemmas are more general than `LinearEquiv.map_mul` etc, since they allow any scalars that
 commute with the `ℂ`-action, rather than just `ℂ` itself.

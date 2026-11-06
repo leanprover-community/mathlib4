@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Abelian
 public import Mathlib.Algebra.Lie.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The normalizer of Lie submodules and subalgebras.
 
@@ -24,9 +27,9 @@ consider the normalizer. This turns out to be a Lie subalgebra.
 
 ## Main definitions
 
-  * `LieSubmodule.normalizer`
-  * `LieSubalgebra.normalizer`
-  * `LieSubmodule.gc_top_lie_normalizer`
+* `LieSubmodule.normalizer`
+* `LieSubalgebra.normalizer`
+* `LieSubmodule.gc_top_lie_normalizer`
 
 ## Tags
 
@@ -45,9 +48,11 @@ namespace LieSubmodule
 
 variable (N : LieSubmodule R L M) {N₁ N₂ : LieSubmodule R L M}
 
-/-- The normalizer of a Lie submodule.
+/--
+The normalizer of a Lie submodule.
 
-See also `LieSubmodule.idealizer`. -/
+See also `LieSubmodule.idealizer`.
+-/
 def normalizer : LieSubmodule R L M where
   carrier := {m | ∀ x : L, ⁅x, m⁆ ∈ N}
   add_mem' hm₁ hm₂ x := by rw [lie_add]; exact N.add_mem' (hm₁ x) (hm₂ x)
@@ -93,9 +98,11 @@ theorem normalizer_bot_eq_maxTrivSubmodule :
     (⊥ : LieSubmodule R L M).normalizer = LieModule.maxTrivSubmodule R L M :=
   rfl
 
-/-- The idealizer of a Lie submodule.
+/--
+The idealizer of a Lie submodule.
 
-See also `LieSubmodule.normalizer`. -/
+See also `LieSubmodule.normalizer`.
+-/
 def idealizer : LieIdeal R L where
   carrier := {x : L | ∀ m : M, ⁅x, m⁆ ∈ N}
   add_mem' := fun {x} {y} hx hy m ↦ by rw [add_lie]; exact N.add_mem (hx m) (hy m)

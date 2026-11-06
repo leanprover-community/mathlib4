@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Opposites
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Opposites of functors between pretriangulated categories,
 
@@ -19,7 +22,6 @@ gives one on `F.op` (for the shifts on `Cᵒᵖ` and `Dᵒᵖ` defined in
 that `F.mapTriangle.op` and `F.op.mapTriangle` correspond to each other via the
 equivalences `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` and `(Triangle D)ᵒᵖ ≌ Triangle Dᵒᵖ`
 given by `CategoryTheory.Pretriangulated.triangleOpEquivalence`.
-
 -/
 
 @[expose] public section

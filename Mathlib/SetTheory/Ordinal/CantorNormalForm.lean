@@ -11,6 +11,9 @@ public import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Finsupp.AList
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cantor Normal Form
 
@@ -24,12 +27,12 @@ We implement `Ordinal.CNF` as an association list, where keys are exponents and 
 coefficients. This is because this structure intrinsically reflects two key properties of the Cantor
 normal form:
 
-- It is ordered.
-- It has finitely many entries.
+* It is ordered.
+* It has finitely many entries.
 
 ## Todo
 
-- Prove the basic results relating the CNF to the arithmetic operations on ordinals.
+* Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
 
 public noncomputable section
@@ -40,7 +43,9 @@ open List
 
 namespace Ordinal.CNF
 
-/-! ### Cantor normal form as a list -/
+/-!
+# Cantor normal form as a list
+-/
 
 /-- Inducts on the base `b` expansion of an ordinal. -/
 @[elab_as_elim]
@@ -60,12 +65,14 @@ theorem rec_pos (b : Ordinal) {o : Ordinal} {C : Ordinal → Sort*} (ho : o ≠ 
     CNF.rec b H0 H o = H o ho (@CNF.rec b C H0 H _) := by
   rw [CNF.rec, dite_eq_right]
 
-/-- The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
+/--
+The Cantor normal form of an ordinal `o` is the list of coefficients and exponents in the
 base-`b` expansion of `o`.
 
 We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 
-`CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]` -/
+`CNF b (b ^ u₁ * v₁ + b ^ u₂ * v₂) = [(u₁, v₁), (u₂, v₂)]`
+-/
 @[pp_nodot]
 def _root_.Ordinal.CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNF.rec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
@@ -159,7 +166,9 @@ private theorem nodupKeys (b o : Ordinal) : (map Prod.toSigma (CNF b o)).NodupKe
   rw [NodupKeys, List.keys, map_map, Prod.fst_comp_toSigma]
   exact (CNF.sortedGT ..).nodup
 
-/-! ### Cantor normal form as a finsupp -/
+/-!
+# Cantor normal form as a finsupp
+-/
 
 open AList Finsupp
 
@@ -249,7 +258,9 @@ theorem coeff_opow_mul_add {b e x y : Ordinal}
       rw [CNF.opow_mul_add hb hx hxb hy]
       simp_all
 
-/-! ### Evaluate a Cantor normal form -/
+/-!
+# Evaluate a Cantor normal form
+-/
 
 /-- `CNF.eval f` evaluates a Finsupp `f : Ordinal →₀ Ordinal`, interpreted as a
 base `b` expansion on ordinals. -/

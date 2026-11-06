@@ -7,10 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Modification.Lax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bicategories of lax functors
 
 Given bicategories `B` and `C`, we give bicategory structures on `LaxFunctor B C` whose
+
 * objects are lax functors,
 * 1-morphisms are lax or oplax natural transformations, and
 * 2-morphisms are modifications.

@@ -9,14 +9,18 @@ public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.Algebra.Homology.TotalComplexShift
 public import Mathlib.CategoryTheory.Shift.CommShiftTwo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behavior of the action of a bifunctor on cochain complexes with respect to shifts
 
 In this file, given cochain complexes `K₁ : CochainComplex C₁ ℤ`, `K₂ : CochainComplex C₂ ℤ` and
 a functor `F : C₁ ⥤ C₂ ⥤ D`, we define an isomorphism of cochain complexes in `D`:
-- `CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F x` of type
+
+* `CochainComplex.mapBifunctorShift₁Iso K₁ K₂ F x` of type
   `mapBifunctor (K₁⟦x⟧) K₂ F ≅ (mapBifunctor K₁ K₂ F)⟦x⟧` for `x : ℤ`.
-- `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type
+* `CochainComplex.mapBifunctorShift₂Iso K₁ K₂ F y` of type
   `mapBifunctor K₁ (K₂⟦y⟧) F ≅ (mapBifunctor K₁ K₂ F)⟦y⟧` for `y : ℤ`.
 
 In the lemma `CochainComplex.mapBifunctorShift₁Iso_trans_mapBifunctorShift₂Iso`, we obtain
@@ -27,7 +31,6 @@ that the two ways to deduce an isomorphism
 These definitions and properties can be summarised by saying that the bifunctor
 `F.map₂CochainComplex : CochainComplex C₁ ℤ ⥤ CochainComplex C₂ ℤ ⥤ CochainComplex D ℤ`
 commutes with shifts by `ℤ`.
-
 -/
 
 @[expose] public section

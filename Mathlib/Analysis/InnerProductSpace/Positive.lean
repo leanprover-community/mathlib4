@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Analysis.Matrix.Hermitian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Positive operators
 
@@ -29,13 +32,13 @@ of requiring self adjointness in the definition.
 
 * `ContinuousLinearMap.IsPositive.conj_adjoint` : if `T : E →L[𝕜] E` is positive,
   then for any `S : E →L[𝕜] F`, `S ∘L T ∘L S†` is also positive.
-* `ContinuousLinearMap.isPositive_iff_complex` : in a ***complex*** Hilbert space,
+* `ContinuousLinearMap.isPositive_iff_complex` : in a _*complex*_ Hilbert space,
   checking that `⟪T x, x⟫` is a nonnegative real number for all `x` suffices to prove that
   `T` is positive.
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
@@ -307,17 +310,21 @@ alias ⟨_, IsPositive.toLinearMap⟩ := isPositive_toLinearMap_iff
 theorem IsPositive.re_inner_nonneg_right {T : E →L[𝕜] E} (hT : IsPositive T) (x : E) :
     0 ≤ re ⟪x, T x⟫ := hT.toLinearMap.re_inner_nonneg_right x
 
-/-- An operator is positive iff it is symmetric and `0 ≤ ⟪T x, x⟫`.
+/--
+An operator is positive iff it is symmetric and `0 ≤ ⟪T x, x⟫`.
 
 For the version with `IsSelfAdjoint` instead of `IsSymmetric`, see
-`ContinuousLinearMap.isPositive_iff'`. -/
+`ContinuousLinearMap.isPositive_iff'`.
+-/
 theorem isPositive_iff (T : E →L[𝕜] E) :
     IsPositive T ↔ T.IsSymmetric ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := LinearMap.isPositive_iff _
 
-/-- An operator is positive iff it is self-adjoint and `0 ≤ ⟪T x, x⟫`.
+/--
+An operator is positive iff it is self-adjoint and `0 ≤ ⟪T x, x⟫`.
 
 For the version with `IsSymmetric` instead of `IsSelfAdjoint`, see
-`ContinuousLinearMap.isPositive_iff`. -/
+`ContinuousLinearMap.isPositive_iff`.
+-/
 theorem isPositive_iff' [CompleteSpace E] (T : E →L[𝕜] E) :
     IsPositive T ↔ IsSelfAdjoint T ∧ ∀ x, 0 ≤ ⟪T x, x⟫ := by
   simp [isSelfAdjoint_iff_isSymmetric, isPositive_iff]
@@ -500,20 +507,25 @@ theorem IsIdempotentElem.isPositive_iff_isSelfAdjoint [CompleteSpace E]
   rw [← isPositive_toLinearMap_iff, IsIdempotentElem.isPositive_iff_isSymmetric hp.toLinearMap]
   exact isSelfAdjoint_iff_isSymmetric.symm
 
-/-- A star projection operator is positive.
+/--
+A star projection operator is positive.
 
 The proof of this will soon be simplified to `IsStarProjection.nonneg` when we
-have `StarOrderedRing (E →L[𝕜] E)`. -/
+have `StarOrderedRing (E →L[𝕜] E)`.
+-/
 @[aesop 10% apply, grind →]
 theorem IsPositive.of_isStarProjection [CompleteSpace E] {p : E →L[𝕜] E}
     (hp : IsStarProjection p) : p.IsPositive :=
   hp.isIdempotentElem.isPositive_iff_isSelfAdjoint.mpr hp.isSelfAdjoint
 
-/-- For an idempotent operator `p`, TFAE:
+/--
+For an idempotent operator `p`, TFAE:
+
 * `(range p)ᗮ = ker p`
 * `p` is normal
 * `p` is self-adjoint
-* `p` is positive -/
+* `p` is positive
+-/
 theorem IsIdempotentElem.TFAE [CompleteSpace E] {p : E →L[𝕜] E} (hp : IsIdempotentElem p) :
     [p.rangeᗮ = p.ker,
       IsStarNormal p,

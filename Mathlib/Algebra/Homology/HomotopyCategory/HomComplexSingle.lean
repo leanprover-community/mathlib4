@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexCohomology
 public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cochains from or to single complexes
 
 We introduce constructors `Cochain.fromSingleMk` and `Cocycle.fromSingleMk`
 for cochains and cocycles from a single complex. We also introduce similar
 definitions for cochains and cocycles to a single complex.
-
 -/
 
 @[expose] public section

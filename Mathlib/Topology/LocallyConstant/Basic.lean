@@ -9,6 +9,9 @@ public import Mathlib.Order.Filter.EventuallyConst
 public import Mathlib.Topology.Connected.LocallyConnected
 public import Mathlib.Topology.Sets.Closeds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally constant functions
 
@@ -17,7 +20,7 @@ This file sets up the theory of locally constant function from a topological spa
 ## Main definitions and constructions
 
 * `IsLocallyConstant f` : a map `f : X → Y` where `X` is a topological space is locally
-                            constant if every set in `Y` has an open preimage.
+  constant if every set in `Y` has an open preimage.
 * `LocallyConstant X Y` : the type of locally constant maps from `X` to `Y`
 * `LocallyConstant.map` : push-forward of locally constant maps
 * `LocallyConstant.comap` : pull-back of locally constant maps
@@ -225,7 +228,9 @@ instance : FunLike (LocallyConstant X Y) X Y where
   coe := LocallyConstant.toFun
   coe_injective := by rintro ⟨_, _⟩ ⟨_, _⟩ _; congr
 
-/-- See Note [custom simps projections]. -/
+/--
+See Note \[custom simps projections\].
+-/
 def Simps.apply (f : LocallyConstant X Y) : X → Y := f
 
 initialize_simps_projections LocallyConstant (toFun → apply)
@@ -523,11 +528,13 @@ end Equiv
 
 section Piecewise
 
-/-- Given two closed sets covering a topological space, and locally constant maps on these two sets,
+/--
+Given two closed sets covering a topological space, and locally constant maps on these two sets,
 then if these two locally constant maps agree on the intersection, we get a piecewise defined
 locally constant map on the whole space.
 
-TODO: Generalise this construction to `ContinuousMap`. -/
+TODO: Generalise this construction to `ContinuousMap`.
+-/
 def piecewise {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : IsClosed C₂) (h : C₁ ∪ C₂ = Set.univ)
     (f : LocallyConstant C₁ Z) (g : LocallyConstant C₂ Z)
     (hfg : ∀ (x : X) (hx : x ∈ C₁ ∩ C₂), f ⟨x, hx.1⟩ = g ⟨x, hx.2⟩)
@@ -573,9 +580,11 @@ lemma piecewise_apply_right {C₁ C₂ : Set X} (h₁ : IsClosed C₁) (h₂ : I
   · exact hfg x ⟨h, hx⟩
   · rfl
 
-/-- A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
+/--
+A variant of `LocallyConstant.piecewise` where the two closed sets cover a subset.
 
-TODO: Generalise this construction to `ContinuousMap`. -/
+TODO: Generalise this construction to `ContinuousMap`.
+-/
 def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :

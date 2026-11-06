@@ -8,6 +8,9 @@ module
 public import Mathlib.Control.Bifunctor
 public import Mathlib.Control.Traversable.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bitraversable type class
 
@@ -31,8 +34,8 @@ and value respectively with `bitraverse f g : AList key val → IO (AList key' v
 
 ## References
 
-The concepts and laws are taken from
-<https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html>
+The concepts and laws are taken from [
+https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html](https://hackage.haskell.org/package/base-4.12.0.0/docs/Data-Bitraversable.html)
 
 ## Tags
 

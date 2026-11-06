@@ -8,11 +8,14 @@ module
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # H-spaces
 
 This file defines H-spaces mainly following the approach proposed by Serre in his paper
-*Homologie singulière des espaces fibrés*. The idea beneath `H-spaces` is that they are topological
+_Homologie singulière des espaces fibrés_. The idea beneath `H-spaces` is that they are topological
 spaces with a binary operation `⋀ : X → X → X` that is a homotopy-theoretic weakening of an
 operation that would make `X` into a topological monoid.
 In particular, there exists a "neutral element" `e : X` such that `fun x ↦ e ⋀ x` and
@@ -20,6 +23,7 @@ In particular, there exists a "neutral element" `e : X` such that `fun x ↦ e �
 [the Wikipedia page of H-spaces](https://en.wikipedia.org/wiki/H-space).
 
 Some notable properties of `H-spaces` are
+
 * Their fundamental group is always abelian (by the same argument for topological groups);
 * Their cohomology ring comes equipped with a structure of a Hopf-algebra;
 * The loop space based at every `x : X` carries a structure of an `H-space`.
@@ -45,8 +49,8 @@ Some notable properties of `H-spaces` are
 
 ## References
 
-* [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
-  Ann. of Math (2) 1951, 54, 425–505][serre1951]
+* ‍\[J.-P. Serre, _Homologie singulière des espaces fibrés. Applications_,
+  Ann. of Math (2) 1951, 54, 425–505\]\[serre1951\]
 -/
 
 @[expose] public section
@@ -146,8 +150,10 @@ end IsTopologicalGroup
 
 namespace unitInterval
 
-/-- `qRight` is analogous to the function `Q` defined on p. 475 of [serre1951] that helps proving
-continuity of `delayReflRight`. -/
+/--
+`qRight` is analogous to the function `Q` defined on p. 475 of \[serre1951\] that helps proving
+continuity of `delayReflRight`.
+-/
 def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 
@@ -189,8 +195,10 @@ open unitInterval
 
 variable {X : Type u} [TopologicalSpace X] {x y : X}
 
-/-- This is the function analogous to the one on p. 475 of [serre1951], defining a homotopy from
-the product path `γ ∧ e` to `γ`. -/
+/--
+This is the function analogous to the one on p. 475 of \[serre1951\], defining a homotopy from
+the product path `γ ∧ e` to `γ`.
+-/
 def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
   continuous_toFun := by fun_prop
@@ -217,8 +225,10 @@ theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
   congrm γ $(qRight_one_right t)
 
-/-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
-product path `e ∧ γ`. -/
+/--
+This is the function on p. 475 of \[serre1951\], defining a homotopy from a path `γ` to the
+product path `e ∧ γ`.
+-/
 def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
   (delayReflRight θ γ.symm).symm
 

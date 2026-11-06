@@ -7,12 +7,17 @@ module
 
 public import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 
-/-! # κ-Filtered colimits in the category of types.
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# κ-Filtered colimits in the category of types.
 
 In this file, we show that in a `κ`-filtered colimit of types (where `κ` is a regular cardinal),
 any family of elements of size < κ in the colimit can be lifted to a common stage of the
 diagram, and that a κ-small family in the diagram that collapses to the same element in the colimit
-can be equalized at some stage of the diagram. -/
+can be equalized at some stage of the diagram.
+-/
 
 @[expose] public section
 

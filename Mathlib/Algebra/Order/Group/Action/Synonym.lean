@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Order.Group.Synonym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by and on order synonyms
 

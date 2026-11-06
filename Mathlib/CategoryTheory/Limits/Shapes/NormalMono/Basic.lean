@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
 
@@ -21,7 +24,6 @@ normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
-
 -/
 
 @[expose] public section
@@ -86,7 +88,8 @@ def NormalMono.lift' {W : C} (f : X ⟶ Y) [hf : NormalMono f] (k : W ⟶ Y) (h 
     { l : W ⟶ X // l ≫ f = k } :=
   KernelFork.IsLimit.lift' NormalMono.isLimit _ h
 
-/-- The second leg of a pullback cone is a normal monomorphism if the right component is too.
+/--
+The second leg of a pullback cone is a normal monomorphism if the right component is too.
 
 See also `pullback.sndOfMono` for the basic monomorphism version, and
 `normalOfIsPullbackFstOfNormal` for the flipped version.
@@ -106,7 +109,8 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
     have q := (HasZeroMorphisms.comp_zero k hn.Z).symm
     convert! gr.isLimit
 
-/-- The first leg of a pullback cone is a normal monomorphism if the left component is too.
+/--
+The first leg of a pullback cone is a normal monomorphism if the left component is too.
 
 See also `pullback.fstOfMono` for the basic monomorphism version, and
 `normalOfIsPullbackSndOfNormal` for the flipped version.
@@ -204,7 +208,8 @@ def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h :
     { l : Y ⟶ W // f ≫ l = k } :=
   CokernelCofork.IsColimit.desc' NormalEpi.isColimit _ h
 
-/-- The second leg of a pushout cocone is a normal epimorphism if the right component is too.
+/--
+The second leg of a pushout cocone is a normal epimorphism if the right component is too.
 
 See also `pushout.sndOfEpi` for the basic epimorphism version, and
 `normalOfIsPushoutFstOfNormal` for the flipped version.
@@ -224,7 +229,8 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
     have q : 0 = (0 : gn.W ⟶ P) ≫ f := zero_comp.symm
     convert! hn.isColimit
 
-/-- The first leg of a pushout cocone is a normal epimorphism if the left component is too.
+/--
+The first leg of a pushout cocone is a normal epimorphism if the left component is too.
 
 See also `pushout.fstOfEpi` for the basic epimorphism version, and
 `normalOfIsPushoutSndOfNormal` for the flipped version.

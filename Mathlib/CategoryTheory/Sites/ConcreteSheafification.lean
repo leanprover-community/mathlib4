@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.ConcreteCategory
 public import Mathlib.CategoryTheory.Sites.Plus
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Sheafification
 
 We construct the sheafification of a presheaf over a site `C` with values in `D` whenever
@@ -17,7 +19,6 @@ We construct the sheafification of a presheaf over a site `C` with values in `D`
 and reflects isomorphisms.
 
 We generally follow the approach of https://stacks.math.columbia.edu/tag/00W1
-
 -/
 
 @[expose] public section
@@ -436,8 +437,10 @@ variable (J)
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
-/-- The sheafification of a presheaf `P`.
-*NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
+/--
+The sheafification of a presheaf `P`.
+_NOTE:_ Additional hypotheses are needed to obtain a proof that this is a sheaf!
+-/
 noncomputable def sheafify (P : Cᵒᵖ ⥤ D) : Cᵒᵖ ⥤ D :=
   J.plusObj (J.plusObj P)
 
@@ -468,8 +471,10 @@ theorem toSheafify_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
 
 variable (D)
 
-/-- The sheafification of a presheaf `P`, as a functor.
-*NOTE:* Additional hypotheses are needed to obtain a proof that this is a sheaf! -/
+/--
+The sheafification of a presheaf `P`, as a functor.
+_NOTE:_ Additional hypotheses are needed to obtain a proof that this is a sheaf!
+-/
 noncomputable def sheafification : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D :=
   J.plusFunctor D ⋙ J.plusFunctor D
 
@@ -482,8 +487,10 @@ theorem sheafification_map {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
     (J.sheafification D).map η = J.sheafifyMap η :=
   rfl
 
-/-- The canonical map from `P` to its sheafification, as a natural transformation.
-*Note:* We only show this is a sheaf under additional hypotheses on `D`. -/
+/--
+The canonical map from `P` to its sheafification, as a natural transformation.
+_Note:_ We only show this is a sheaf under additional hypotheses on `D`.
+-/
 noncomputable def toSheafification : 𝟭 _ ⟶ sheafification J D :=
   J.toPlusNatTrans D ≫ Functor.whiskerRight (J.toPlusNatTrans D) (J.plusFunctor D)
 

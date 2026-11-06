@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Order.Interval.Set.Instances
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological (sub)algebras
 
@@ -28,7 +31,6 @@ algebra homomorphisms between the topological `R`-algebras `A` and `B` is denote
 
 See also `ContinuousAlgEquiv R A B`, denoted by `A ≃A[R] B`, for the type of isomorphisms between
 the topological `R`-algebras `A` and `B`.
-
 -/
 
 @[expose] public section
@@ -101,12 +103,14 @@ lemma ContinuousLinearMap.toSpanSingleton_one_eq_algebraMapCLM :
 
 end
 
-/-- If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
+/--
+If `R` is a discrete topological ring, then any topological ring `S` which is an `R`-algebra
 is also a topological `R`-algebra.
 
 NB: This could be an instance but the signature makes it very expensive in search.
 See https://github.com/leanprover-community/mathlib4/pull/15339
-for the regressions caused by making this an instance. -/
+for the regressions caused by making this an instance.
+-/
 theorem DiscreteTopology.instContinuousSMul [IsTopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
@@ -187,11 +191,15 @@ protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [Uni
     [IsUniformAddGroup E₂] (f : E₁ →A[R] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : A →A[R] B) : A → B := h
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (h : A →A[R] B) : A →ₐ[R] B := h
 
 initialize_simps_projections ContinuousAlgHom (toFun → apply, toAlgHom → coe)
@@ -626,9 +634,11 @@ instance Subalgebra.isMulCommutative_topologicalClosure [T2Space A] (s : Subalge
   s.toSubsemiring.isMulCommutative_topologicalClosure
 
 open scoped IsMulCommutative in
-/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
+/--
+If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commSemiringTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
@@ -707,8 +717,10 @@ variable [Ring A]
 variable [Algebra R A] [IsSemitopologicalRing A]
 
 open scoped IsMulCommutative in
-/-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
-See note [reducible non-instances]. -/
+/--
+If a subalgebra of a topological algebra is commutative, then so is its topological closure.
+See note \[reducible non-instances\].
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev Subalgebra.commRingTopologicalClosure [T2Space A] (s : Subalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=

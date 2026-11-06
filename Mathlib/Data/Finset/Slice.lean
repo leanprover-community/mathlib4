@@ -9,13 +9,16 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Fintype.Powerset
 public import Mathlib.Order.Interval.Finset.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `r`-sets and slice
 
 This file defines the `r`-th slice of a set family and provides a way to say that a set family is
 made of `r`-sets.
 
-An `r`-set is a finset of cardinality `r` (aka of *size* `r`). The `r`-th slice of a set family is
+An `r`-set is a finset of cardinality `r` (aka of _size_ `r`). The `r`-th slice of a set family is
 the set family made of its `r`-sets.
 
 ## Main declarations
@@ -39,7 +42,9 @@ namespace Set
 
 variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
-/-! ### Families of `r`-sets -/
+/-!
+# Families of `r`-sets
+-/
 
 
 /-- `Sized r A` means that every Finset in `A` has size `r`. -/
@@ -105,7 +110,9 @@ theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 
 end Sized
 
-/-! ### Slices -/
+/-!
+# Slices
+-/
 
 
 section Slice

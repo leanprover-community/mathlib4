@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomologySequence
 public import Mathlib.Algebra.Homology.ShortComplex.ConcreteCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homology of complexes in concrete categories
 
@@ -17,7 +20,6 @@ we introduce specific definitions and lemmas for the homology
 of homological complexes in concrete categories. In particular,
 we give a computation of the connecting homomorphism of
 the homology sequence in terms of (co)cycles.
-
 -/
 
 @[expose] public section
@@ -72,6 +74,7 @@ lemma δ_apply' (x₃ : (forget₂ C Ab).obj (S.X₃.homology i))
 include hS in
 /--
 In the short exact sequence of complexes
+
 ```
        0            0            0
        |            |            |
@@ -88,7 +91,9 @@ In the short exact sequence of complexes
        v            v            v
        0            0            0
 ```
-if `x₁ ∈ X_1,j` and `x₂ ∈ X_2,i` and if `f(x₁) = d(x₂)` then `d(x₁) = 0`. -/
+
+if `x₁ ∈ X_1,j` and `x₂ ∈ X_2,i` and if `f(x₁) = d(x₂)` then `d(x₁) = 0`.
+-/
 theorem d_eq_zero_of_f_eq_d_apply
     (x₂ : ((forget₂ C Ab).obj (S.X₂.X i))) (x₁ : ((forget₂ C Ab).obj (S.X₁.X j)))
     (hx₁ : ((forget₂ C Ab).map (S.f.f j)) x₁ = ((forget₂ C Ab).map (S.X₂.d i j)) x₂) (k : ι) :

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 public import Mathlib.CategoryTheory.Triangulated.LocalizingSubcategory
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Induced
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bounded below derived category
 
@@ -21,7 +24,6 @@ of the bounded below homotopy category `HomotopyCategory.Plus C`
 with respect to quasi-isomorphisms. We also show that it is the
 localization of the category `CochainComplex.Plus C` of bounded
 below cochain complexes with respect to quasi-isomorphisms.
-
 -/
 
 @[expose] public section

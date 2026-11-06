@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Category.Grp.Basic
 public import Mathlib.Basic.Finite.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finite groups
 
 ## Main definitions and results
 
 * `FiniteGrp` is the category of finite groups.
-
 -/
 
 @[expose] public section

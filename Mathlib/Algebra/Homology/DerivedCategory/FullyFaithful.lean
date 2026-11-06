@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 public import Mathlib.Algebra.Homology.SingleHomology
 
-/-! # The fully faithful embedding of the abelian category in its derived category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The fully faithful embedding of the abelian category in its derived category
 
 In this file, we show that for any `n : ℤ`, the functor
 `singleFunctor C n : C ⥤ DerivedCategory C` is fully faithful.
-
 -/
 
 @[expose] public section

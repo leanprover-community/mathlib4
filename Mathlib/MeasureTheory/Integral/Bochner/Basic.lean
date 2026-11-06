@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Integral.Bochner.L1
 public import Mathlib.MeasureTheory.Integral.SetToL1.ChangeMeasure
 public import Mathlib.MeasureTheory.Integral.SetToL1.DominatedConvergence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bochner integral
 
@@ -34,40 +37,39 @@ file `Mathlib/MeasureTheory/Integral/SetToL1.lean`).
 1. Basic properties of the Bochner integral on functions of type `α → E`, where `α` is a measure
    space and `E` is a real normed space.
 
-  * `integral_zero`                  : `∫ 0 ∂μ = 0`
-  * `integral_add`                   : `∫ x, f x + g x ∂μ = ∫ x, f ∂μ + ∫ x, g x ∂μ`
-  * `integral_neg`                   : `∫ x, - f x ∂μ = - ∫ x, f x ∂μ`
-  * `integral_sub`                   : `∫ x, f x - g x ∂μ = ∫ x, f x ∂μ - ∫ x, g x ∂μ`
-  * `integral_smul`                  : `∫ x, r • f x ∂μ = r • ∫ x, f x ∂μ`
-  * `integral_congr_ae`              : `f =ᵐ[μ] g → ∫ x, f x ∂μ = ∫ x, g x ∂μ`
-  * `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
+* `integral_zero`                  : `∫ 0 ∂μ = 0`
+* `integral_add`                   : `∫ x, f x + g x ∂μ = ∫ x, f ∂μ + ∫ x, g x ∂μ`
+* `integral_neg`                   : `∫ x, - f x ∂μ = - ∫ x, f x ∂μ`
+* `integral_sub`                   : `∫ x, f x - g x ∂μ = ∫ x, f x ∂μ - ∫ x, g x ∂μ`
+* `integral_smul`                  : `∫ x, r • f x ∂μ = r • ∫ x, f x ∂μ`
+* `integral_congr_ae`              : `f =ᵐ[μ] g → ∫ x, f x ∂μ = ∫ x, g x ∂μ`
+* `norm_integral_le_integral_norm` : `‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ`
 
 2. Basic order properties of the Bochner integral on functions of type `α → E`, where `α` is a
    measure space and `E` is a real ordered Banach space.
 
-  * `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
-  * `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
-  * `integral_mono_ae`      : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
-  * `integral_nonneg`       : `0 ≤ f → 0 ≤ ∫ x, f x ∂μ`
-  * `integral_nonpos`       : `f ≤ 0 → ∫ x, f x ∂μ ≤ 0`
-  * `integral_mono`         : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
+* `integral_nonneg_of_ae` : `0 ≤ᵐ[μ] f → 0 ≤ ∫ x, f x ∂μ`
+* `integral_nonpos_of_ae` : `f ≤ᵐ[μ] 0 → ∫ x, f x ∂μ ≤ 0`
+* `integral_mono_ae`      : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
+* `integral_nonneg`       : `0 ≤ f → 0 ≤ ∫ x, f x ∂μ`
+* `integral_nonpos`       : `f ≤ 0 → ∫ x, f x ∂μ ≤ 0`
+* `integral_mono`         : `f ≤ᵐ[μ] g → ∫ x, f x ∂μ ≤ ∫ x, g x ∂μ`
 
 3. Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
    which is called `lintegral` and has the notation `∫⁻`.
 
-  * `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
-    `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
-    where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
-  * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
+* `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
+  `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
+  where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
+* `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
 4. (In the file `Mathlib/MeasureTheory/Integral/DominatedConvergence.lean`)
-  `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
-
+   `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 5. (In `Mathlib/MeasureTheory/Integral/Bochner/Set.lean`) integration commutes with continuous
-  linear maps.
+   linear maps.
 
-  * `ContinuousLinearMap.integral_comp_comm`
-  * `LinearIsometry.integral_comp_comm`
+* `ContinuousLinearMap.integral_comp_comm`
+* `LinearIsometry.integral_comp_comm`
 
 ## Notes
 
@@ -93,21 +95,20 @@ functions :
 
    For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal <| ‖f a‖)`, that is the norm of
    `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
-
 2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.
-
 3. Show that the property holds for all simple functions `s` in `L¹` space.
 
    Typically, you need to convert various notions to their `SimpleFunc` counterpart, using lemmas
    like `L1.integral_coe_eq_integral`.
-
 4. Since simple functions are dense in `L¹`,
+
    ```
    univ = closure {s simple}
         = closure {s simple | ∫ s = ∫⁻ s⁺ - ∫⁻ s⁻} : the property holds for all simple functions
         ⊆ closure {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}
         = {f | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻} : closure of a closed set is itself
    ```
+
    Use `isClosed_property` or `DenseRange.induction_on` for this argument.
 
 ## Notation
@@ -126,7 +127,6 @@ Note : `ₛ` is typed using `\_s`. Sometimes it shows as a box if the font is mi
 ## Tags
 
 Bochner integral, simple function, function space, Lebesgue dominated convergence theorem
-
 -/
 
 @[expose] public section
@@ -143,7 +143,7 @@ variable {α E F 𝕜 : Type*}
 local infixr:25 " →ₛ " => SimpleFunc
 
 /-!
-## The Bochner integral on functions
+# The Bochner integral on functions
 
 Define the Bochner integral on functions generally to be the `L1` Bochner integral, for integrable
 functions, and 0 otherwise; prove its basic properties.
@@ -267,10 +267,12 @@ theorem integral_sub' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g
     ∫ a, (f - g) a ∂μ = ∫ a, f a ∂μ - ∫ a, g a ∂μ :=
   integral_sub hf hg
 
-/-- The Bochner integral is linear. Note this requires `𝕜` to be a normed division ring, in order
+/--
+The Bochner integral is linear. Note this requires `𝕜` to be a normed division ring, in order
 to ensure that for `c ≠ 0`, the function `c • f` is integrable iff `f` is. For an analogous
-statement for more general rings with an *a priori* integrability assumption on `f`, see
-`MeasureTheory.Integrable.integral_smul`. -/
+statement for more general rings with an _a priori_ integrability assumption on `f`, see
+`MeasureTheory.Integrable.integral_smul`.
+-/
 @[integral_simps]
 theorem integral_smul [Module 𝕜 G] [NormSMulClass 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
     ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
@@ -1402,10 +1404,12 @@ namespace Mathlib.Meta.Positivity
 open Qq Lean Meta MeasureTheory
 
 attribute [local instance] monadLiftOptionMetaM in
-/-- Positivity extension for integrals.
+/--
+Positivity extension for integrals.
 
 This extension only proves non-negativity, strict positivity is more delicate for integration and
-requires more assumptions. -/
+requires more assumptions.
+-/
 @[positivity MeasureTheory.integral _ _]
 meta def evalIntegral : PositivityExt where eval {u α} zα pα? e :=
   match pα? with | none => pure .none | some pα => do

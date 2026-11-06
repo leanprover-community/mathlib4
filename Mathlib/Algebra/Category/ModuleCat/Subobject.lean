@@ -8,12 +8,14 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
 public import Mathlib.CategoryTheory.Subobject.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subobjects in the category of `R`-modules
 
 We construct an explicit order isomorphism between the categorical subobjects of an `R`-module `M`
 and its submodules. This immediately implies that the category of `R`-modules is well-powered.
-
 -/
 
 @[expose] public section
@@ -78,7 +80,8 @@ theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10959): the whole proof was just `simp [toKernelSubobject]`.
   simp [toKernelSubobject, -hom_comp, ← CategoryTheory.comp_apply]
 
-/-- An extensionality lemma showing that two elements of a cokernel by an image
+/--
+An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.
 
 The application is for homology:

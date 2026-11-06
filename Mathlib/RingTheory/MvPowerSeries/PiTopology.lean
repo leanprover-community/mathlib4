@@ -11,7 +11,11 @@ public import Mathlib.Topology.Algebra.IsUniformGroup.Constructions
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 public import Mathlib.Topology.Instances.ENat
 
-/-! # Product topology on multivariate power series
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Product topology on multivariate power series
 
 Let `R` be with `Semiring R` and `TopologicalSpace R`
 In this file we define the topology on `MvPowerSeries σ R`
@@ -23,54 +27,51 @@ When `R` has `UniformSpace R`, we define the corresponding uniform structure.
 This topology can be included by writing `open scoped MvPowerSeries.WithPiTopology`.
 
 When the type of coefficients has the discrete topology, it corresponds to the topology defined by
-[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2][bourbaki1981].
+‍\[N. Bourbaki, _Algebra II_, Chapter 4, §4, n°2\]\[bourbaki1981\].
 
-It is *not* the adic topology in general.
+It is _not_ the adic topology in general.
 
 ## Main results
 
-- `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
+* `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent`,
   `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero`: if the constant
   coefficient of `f` is nilpotent, or vanishes, then `f` is topologically nilpotent.
-
-- `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
+* `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent` :
   assuming the base ring has the discrete topology, `f` is topologically nilpotent iff the constant
   coefficient of `f` is nilpotent.
-
-- `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
+* `MvPowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
   series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
 ## Instances
 
-- If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
-- If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
-- If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
-- If `R` is complete, then so is `MvPowerSeries σ R`.
+* If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
+* If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
+* If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
+* If `R` is complete, then so is `MvPowerSeries σ R`.
 
 ## Implementation Notes
 
 In `Mathlib/RingTheory/MvPowerSeries/LinearTopology.lean`, we generalize the criterion for
-topological nilpotency by proving that, if the base ring is equipped with a *linear* topology, then
+topological nilpotency by proving that, if the base ring is equipped with a _linear_ topology, then
 a power series is topologically nilpotent if and only if its constant coefficient is.
 This is lemma `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
 
 Mathematically, everything proven in this file follows from that general statement. However,
 formalizing this yields a few (minor) annoyances:
 
-- we would need to push the results in this file slightly lower in the import tree
+* we would need to push the results in this file slightly lower in the import tree
   (likely, in a new dedicated file);
-- we would have to work in `CommRing`s rather than `CommSemiring`s (this probably does not
+* we would have to work in `CommRing`s rather than `CommSemiring`s (this probably does not
   matter in any way though);
-- because `isTopologicallyNilpotent_of_constantCoeff_isNilpotent` holds for *any* topology,
+* because `isTopologicallyNilpotent_of_constantCoeff_isNilpotent` holds for _any_ topology,
   not necessarily discrete nor linear, the proof going through the general case involves
   juggling a bit with the topologies.
 
 Since the code duplication is rather minor (the interesting part of the proof is already extracted
 as `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`), we just leave this as is for now.
 But future contributors wishing to clean this up should feel free to give it a try!
-
 -/
 
 public section
@@ -218,11 +219,13 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
   rw [hf]
   exact IsNilpotent.zero
 
-/-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
+/--
+Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, corollary of prop. 3][bourbaki1981]
+‍\[N. Bourbaki, _Algebra II_, Chapter 4, §4, n°2, corollary of prop. 3\]\[bourbaki1981\]
 
-See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
+See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`.
+-/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : MvPowerSeries σ R) :
     IsTopologicallyNilpotent f ↔ IsNilpotent (constantCoeff f) := by

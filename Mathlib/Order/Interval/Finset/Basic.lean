@@ -9,6 +9,9 @@ public import Mathlib.Order.Cover
 public import Mathlib.Order.Interval.Finset.Defs
 public import Mathlib.Order.Preorder.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals as finsets
 
@@ -31,7 +34,7 @@ generalize these lemmas properly and many lemmas about `Icc`, `Ioc`, `Ioo` are m
 what's to do is taking the lemmas in `Data.X.Intervals` and abstract away the concrete structure.
 
 Complete the API. See
-https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
+https://github.com/leanprover-community/mathlib/pull/14448#discussion\_r906109235
 for some ideas.
 -/
 
@@ -1083,7 +1086,9 @@ theorem uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] :=
 end LinearOrder
 end Finset
 
-/-! ### `⩿`, `⋖` and monotonicity -/
+/-!
+# `⩿`, `⋖` and monotonicity
+-/
 
 section Cover
 

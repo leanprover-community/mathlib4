@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
 
-/-! # Restriction of the continuous functional calculus to a scalar subring
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Restriction of the continuous functional calculus to a scalar subring
 
 The main declaration in this file is:
 
-+ `SpectrumRestricts.cfc`: builds a continuous functional calculus over a subring of scalars.
+* `SpectrumRestricts.cfc`: builds a continuous functional calculus over a subring of scalars.
   This is used for automatically deriving the continuous functional calculi on selfadjoint or
   positive elements from the one for normal elements.
 

@@ -8,39 +8,36 @@ module
 public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Tower law for purely inseparable extensions
 
 This file contains results related to `Field.sepDegree`, `Field.insepDegree` and the tower law.
 
 ## Main results
 
-- `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the separable degrees satisfy the
-  tower law: $[E:F]_s [K:E]_s = [K:F]_s$.
-
-- `Field.lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic`:
+* `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`: the separable degrees satisfy the
+  tower law: $`[E:F]_s [K:E]_s = [K:F]_s`.
+* `Field.lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic`:
   `Field.finInsepDegree_mul_finInsepDegree_of_isAlgebraic`: the inseparable degrees satisfy the
-  tower law: $[E:F]_i [K:E]_i = [K:F]_i$.
-
-- `IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable`,
+  tower law: $`[E:F]_i [K:E]_i = [K:F]_i`.
+* `IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable`,
   `IntermediateField.sepDegree_adjoin_eq_of_isAlgebraic_of_isPurelyInseparable'`:
   if `K / E / F` is a field extension tower, such that `E / F` is purely inseparable, then
   for any subset `S` of `K` such that `F(S) / F` is algebraic, the `E(S) / E` and `F(S) / F` have
   the same separable degree. In particular, if `S` is an intermediate field of `K / F` such that
   `S / F` is algebraic, the `E(S) / E` and `S / F` have the same separable degree.
-
-- `minpoly.map_eq_of_isSeparable_of_isPurelyInseparable`: if `K / E / F` is a field extension tower,
+* `minpoly.map_eq_of_isSeparable_of_isPurelyInseparable`: if `K / E / F` is a field extension tower,
   such that `E / F` is purely inseparable, then for any element `x` of `K` separable over `F`,
   it has the same minimal polynomials over `F` and over `E`.
-
-- `Polynomial.Separable.map_irreducible_of_isPurelyInseparable`: if `E / F` is purely inseparable,
+* `Polynomial.Separable.map_irreducible_of_isPurelyInseparable`: if `E / F` is purely inseparable,
   `f` is a separable irreducible polynomial over `F`, then it is also irreducible over `E`.
 
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 public section
@@ -115,10 +112,12 @@ lemma sepDegree_eq_of_isPurelyInseparable_of_isSeparable
     |>.adjoin_rank_eq_rank_left_of_isAlgebraic_left |>.symm
   rwa [separableClosure.adjoin_eq_of_isAlgebraic_of_isSeparable K, rank_top'] at h
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
-then $[E:F] [K:E]_s = [K:F]_s$.
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is separable,
+then $`[E:F] [K:E]_s = [K:F]_s`.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
-intermediate result used to prove it. -/
+intermediate result used to prove it.
+-/
 lemma lift_rank_mul_lift_sepDegree_of_isSeparable [Algebra.IsSeparable F E] :
     Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (sepDegree E K) =
     Cardinal.lift.{v} (sepDegree F K) := by
@@ -131,19 +130,23 @@ lemma rank_mul_sepDegree_of_isSeparable (K : Type v) [Field K] [Algebra F K]
     Module.rank F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_sepDegree_of_isSeparable F E K
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is separable,
-then $[K:F]_i = [K:E]_i$.
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is separable,
+then $`[K:F]_i = [K:E]_i`.
 It is a special case of `Field.lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic`, and is an
-intermediate result used to prove it. -/
+intermediate result used to prove it.
+-/
 lemma insepDegree_eq_of_isSeparable [Algebra.IsSeparable F E] :
     insepDegree F K = insepDegree E K := by
   rw [insepDegree, insepDegree, separableClosure.eq_restrictScalars_of_isSeparable F E K]
   rfl
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
-then $[K:F]_s = [K:E]_s$.
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
+then $`[K:F]_s = [K:E]_s`.
 It is a special case of `Field.lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic`, and is an
-intermediate result used to prove it. -/
+intermediate result used to prove it.
+-/
 lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
     sepDegree F K = sepDegree E K := by
   convert! sepDegree_eq_of_isPurelyInseparable_of_isSeparable F E (separableClosure E K)
@@ -153,10 +156,12 @@ lemma sepDegree_eq_of_isPurelyInseparable [IsPurelyInseparable F E] :
   exact (separableClosure F (separableClosure E K)).equivMap
     (IsScalarTower.toAlgHom F (separableClosure E K) K) |>.symm.toLinearEquiv.rank_eq
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
-then $[E:F] [K:E]_i = [K:F]_i$.
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is purely inseparable,
+then $`[E:F] [K:E]_i = [K:F]_i`.
 It is a special case of `Field.lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic`, and is an
-intermediate result used to prove it. -/
+intermediate result used to prove it.
+-/
 lemma lift_rank_mul_lift_insepDegree_of_isPurelyInseparable [IsPurelyInseparable F E] :
     Cardinal.lift.{w} (Module.rank F E) * Cardinal.lift.{v} (insepDegree E K) =
     Cardinal.lift.{v} (insepDegree F K) := by
@@ -170,8 +175,10 @@ lemma rank_mul_insepDegree_of_isPurelyInseparable (K : Type v) [Field K] [Algebr
     Module.rank F E * insepDegree E K = insepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_rank_mul_lift_insepDegree_of_isPurelyInseparable F E K
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
-separable degrees satisfy the tower law: $[E:F]_s [K:E]_s = [K:F]_s$. -/
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
+separable degrees satisfy the tower law: $`[E:F]_s [K:E]_s = [K:F]_s`.
+-/
 theorem lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     Cardinal.lift.{w} (sepDegree F E) * Cardinal.lift.{v} (sepDegree E K) =
     Cardinal.lift.{v} (sepDegree F K) := by
@@ -185,8 +192,10 @@ theorem sepDegree_mul_sepDegree_of_isAlgebraic (K : Type v) [Field K] [Algebra F
     sepDegree F E * sepDegree E K = sepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_sepDegree_mul_lift_sepDegree_of_isAlgebraic F E K
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
-inseparable degrees satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$. -/
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
+inseparable degrees satisfy the tower law: $`[E:F]_i [K:E]_i = [K:F]_i`.
+-/
 theorem lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     Cardinal.lift.{w} (insepDegree F E) * Cardinal.lift.{v} (insepDegree E K) =
     Cardinal.lift.{v} (insepDegree F K) := by
@@ -200,8 +209,10 @@ theorem insepDegree_mul_insepDegree_of_isAlgebraic (K : Type v) [Field K] [Algeb
     insepDegree F E * insepDegree E K = insepDegree F K := by
   simpa only [Cardinal.lift_id] using lift_insepDegree_mul_lift_insepDegree_of_isAlgebraic F E K
 
-/-- If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
-inseparable degrees, as natural numbers, satisfy the tower law: $[E:F]_i [K:E]_i = [K:F]_i$. -/
+/--
+If `K / E / F` is a field extension tower, such that `E / F` is algebraic, then their
+inseparable degrees, as natural numbers, satisfy the tower law: $`[E:F]_i [K:E]_i = [K:F]_i`.
+-/
 @[stacks 09HK "Part 2, `finInsepDegree` variant"]
 theorem finInsepDegree_mul_finInsepDegree_of_isAlgebraic [Algebra.IsAlgebraic F E] :
     finInsepDegree F E * finInsepDegree E K = finInsepDegree F K := by

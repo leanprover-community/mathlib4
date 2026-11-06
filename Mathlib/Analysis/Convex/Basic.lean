@@ -12,10 +12,14 @@ public import Mathlib.Tactic.Field
 import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Tactic.NoncommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convex sets
 
 In a 𝕜-vector space, we define the following property:
+
 * `Convex 𝕜 s`: A set `s` is convex if for any two points `x y ∈ s` it includes `segment 𝕜 x y`.
 
 We provide various equivalent versions, and prove that some specific sets are convex.
@@ -34,7 +38,9 @@ open LinearMap Set
 
 open scoped Convex Pointwise
 
-/-! ### Convexity of sets -/
+/-!
+# Convexity of sets
+-/
 
 
 section OrderedSemiring
@@ -583,7 +589,8 @@ end AddCommGroup
 end LinearOrderedField
 
 /-!
-#### Convex sets in an ordered space
+# Convex sets in an ordered space
+
 Relates `Convex` and `OrdConnected`.
 -/
 
@@ -612,7 +619,9 @@ alias ⟨Convex.ordConnected, _⟩ := convex_iff_ordConnected
 
 end
 
-/-! #### Convexity of submodules/subspaces -/
+/-!
+# Convexity of submodules/subspaces
+-/
 
 
 namespace Submodule

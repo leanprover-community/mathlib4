@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform time lemma for the global existence of integral curves
 
@@ -18,7 +21,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
 
 ## References
 
-* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
+* ‍\[Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.\]\[lee2012\]
 
 ## Tags
 
@@ -124,14 +127,16 @@ lemma eqOn_piecewise_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hγ'.mono (Ioo_subset_Ioo (le_max_right ..) (min_le_right ..))) h
   exact ⟨max_lt ht₀.1.1 ht₀.2.1, lt_min ht₀.1.2 ht₀.2.2⟩
 
-/-- The extension of an integral curve by another integral curve is an integral curve.
+/--
+The extension of an integral curve by another integral curve is an integral curve.
 
 If two integral curves are defined on overlapping open intervals, and they agree at a point in
 their common domain, then they can be patched together to form a longer integral curve.
 
 This is stated for manifolds without boundary for simplicity. We actually only need to assume that
 the images of `γ` and `γ'` lie in the interior of the manifold.
-TODO: Generalise to manifolds with boundary. -/
+TODO: Generalise to manifolds with boundary.
+-/
 lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     {a b a' b' : ℝ} (hγ : IsMIntegralCurveOn γ v (Ioo a b))
@@ -159,11 +164,13 @@ lemma isMIntegralCurveOn_piecewise [BoundarylessManifold I M]
     rw [(isOpen_Ioo.union isOpen_Ioo).nhdsWithin_eq ht']
     exact Ioo_mem_nhds (ht hmem).1 (ht hmem).2
 
-/-- If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
+/--
+If there exists `ε > 0` such that the local integral curve at each point `x : M` is defined at
 least on an open interval `Ioo (-ε) ε`, then every point on `M` has a global integral curve
 passing through it.
 
-See Lemma 9.15, [J.M. Lee (2012)][lee2012]. -/
+See Lemma 9.15, \[J.M. Lee (2012)\]\[lee2012\].
+-/
 lemma exists_isMIntegralCurve_of_isMIntegralCurveOn [BoundarylessManifold I M]
     {v : (x : M) → TangentSpace I x}
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))

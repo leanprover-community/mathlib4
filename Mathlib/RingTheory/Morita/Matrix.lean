@@ -8,22 +8,26 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Module
 public import Mathlib.RingTheory.Morita.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morita Equivalence between `R` and `Mₙ(R)`
 
 ## Main definitions
-- `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
+
+* `ModuleCat.toMatrixModCat`: The functor from `Mod-R` to `Mod-Mₙ(R)` induced by
   `LinearMap.mapMatrixModule` and `Matrix.Module.matrixModule`.
-- `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
+* `MatrixModCat.toModuleCat`: The functor from `Mod-Mₙ(R)` to `Mod-R` induced by sending `M` to
   the image of `Eᵢᵢ • ·` where `Eᵢᵢ` is the elementary matrix.
-- `ModuleCat.matrixEquivalence`: An equivalence of categories composed by
+* `ModuleCat.matrixEquivalence`: An equivalence of categories composed by
   `ModuleCat.toMatrixModCat R ι`.
   and `MatrixModCat.toModuleCat R i`.
-- `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
+* `moritaEquivalentToMatrix`: `moritaEquivalentToMatrix` is a `MoritaEquivalence`.
 
 ## Main results
-- `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
 
+* `IsMoritaEquivalent.matrix`: `R` and `Mₙ(R)` are Morita equivalent.
 -/
 
 set_option backward.defeqAttrib.useBackward true

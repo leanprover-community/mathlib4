@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.MeasureTheory.Function.EssSup
 public import Mathlib.MeasureTheory.Function.StronglyMeasurable.AEStronglyMeasurable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ℒp space
 
@@ -29,7 +32,6 @@ and is almost everywhere strongly measurable.
 * `MemLp f p μ` : property that the function `f` is almost everywhere strongly measurable and has
   finite `p`-seminorm for the measure `μ` (`eLpNorm f p μ < ∞`)
 * `inhmgELpNorm`: An inhomogeneous version of `eLpNorm`, defined differently for `p < 1`.
-
 -/
 
 @[expose] public section
@@ -46,7 +48,7 @@ namespace MeasureTheory
 section Lp
 
 /-!
-### ℒp seminorm
+# ℒp seminorm
 
 We define the ℒp seminorm, denoted by `eLpNorm f p μ`. For real `p`, it is given by an integral
 formula (for which we use the notation `eLpNorm' f p μ`), and for `p = ∞` it is the essential
@@ -61,11 +63,13 @@ deduce it for `eLpNorm`, and translate it in terms of `MemLp`.
 -/
 
 
-/-- `(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
+/--
+`(∫ ‖f a‖^q ∂μ) ^ (1/q)`, which is a seminorm on the space of measurable functions for which
 this quantity is finite.
 
 Note: this is a purely auxiliary quantity; lemmas about `eLpNorm'` should only be used to
-prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` version. -/
+prove results about `eLpNorm`; every `eLpNorm'` lemma should have a `eLpNorm` version.
+-/
 def eLpNorm' {_ : MeasurableSpace α} (f : α → ε) (q : ℝ) (μ : Measure α) : ℝ≥0∞ :=
   (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q)
 
@@ -177,10 +181,12 @@ lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p :
   simp [eLpNorm_eq_eLpNorm' (mod_cast hp) ENNReal.coe_ne_top hf,
     lintegral_rpow_enorm_eq_rpow_eLpNorm' ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp)]
 
-/-- Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
+/--
+Real-valued `ℒp` seminorm, equal to `0` for `p = 0`, to `(∫ ‖f a‖^p ∂μ) ^ p⁻¹` for `0 < p < ∞`
 and to `essSup ‖f‖ μ` for `p = ∞`.
 
-This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`. -/
+This is well-defined only if `MemLp f p μ`. Otherwise, it equals `0`.
+-/
 noncomputable def lpNorm (f : α → E) (p : ℝ≥0∞) (μ : Measure α) : ℝ :=
   (eLpNorm f p μ).toReal
 
@@ -190,12 +196,14 @@ section Inhomogeneous
 
 variable [TopologicalSpace ε]
 
-/-- An inhomogeneous version of the `eLpNorm`;
+/--
+An inhomogeneous version of the `eLpNorm`;
 agreeing with it on `1 ≤ p`, equal to `∫ ‖f a‖^p ∂μ` for `0 < p ≤ 1`
 and  `μ (Function.support fun x ↦ ‖f x‖ₑ)` for `p = 0`.
 
 Under this modification, the triangle inequality holds for all `p` and
-is thus sometimes more convenient. -/
+is thus sometimes more convenient.
+-/
 def inhmgELpNorm {_ : MeasurableSpace α}
     (f : α → ε) (p : ℝ≥0∞) (μ : Measure α := by volume_tac) : ℝ≥0∞ :=
   open scoped Classical in

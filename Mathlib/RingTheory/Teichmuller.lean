@@ -10,14 +10,17 @@ public import Mathlib.RingTheory.Perfection
 
 import Mathlib.LinearAlgebra.SModEq.Pow
 
-/-! # Teichmüller map
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Teichmüller map
 
 Let `R` be an `I`-adically complete ring, and `p` be a prime number with `p ∈ I`.
 
 Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall call
 `Perfection.teichmuller`, such that it composed with the quotient map `R →+* R ⧸ I` is the
 "0-th coefficient" map `Perfection (R ⧸ I) p →+* R ⧸ I`.
-
 -/
 
 @[expose] public section
@@ -53,11 +56,13 @@ theorem exists_teichmullerFun (x : Perfection (R ⧸ I) p) :
     ∃ y : R, ∀ n, teichmullerAux x n ≡ y [SMOD I ^ n • (⊤ : Ideal R)] :=
   IsPrecomplete.prec' _ (teichmullerCauchy x).2
 
-/-- Given an `I`-adically **pre**complete ring `R`, where `p ∈ I`, this is the underlying function
+/--
+Given an `I`-adically *pre*complete ring `R`, where `p ∈ I`, this is the underlying function
 of the Teichmüller map. It is defined as the limit of `p^n`-th powers of arbitrary lifts in `R` of
 the `n`-th component from the perfection of `R ⧸ I`.
 
-The simp NF is `teichmuller₀` when `R` is `I`-adically complete. -/
+The simp NF is `teichmuller₀` when `R` is `I`-adically complete.
+-/
 noncomputable def teichmullerFun (x : Perfection (R ⧸ I) p) : R :=
   (exists_teichmullerFun x).choose
 
@@ -92,12 +97,14 @@ theorem teichmullerFun_spec {x : Perfection (R ⧸ I) p} {y : R}
   teichmullerFun_spec' ⟨0, fun n _ ↦ h n⟩
 
 variable (p I) in
-/-- Given an `I`-adically complete ring `R`, and a prime number `p` with `p ∈ I`, this is the
+/--
+Given an `I`-adically complete ring `R`, and a prime number `p` with `p ∈ I`, this is the
 multiplicative map from `Perfection (R ⧸ I) p` to `R` itself. Specifically, it is defined as the
 limit of `p^n`-th powers of arbitrary lifts in `R` of the `n`-th component from the perfection of
 `R ⧸ I`.
 
-The simp NF is `teichmuller₀`. -/
+The simp NF is `teichmuller₀`.
+-/
 noncomputable def teichmuller : Perfection (R ⧸ I) p →* R where
   toFun := teichmullerFun
   map_one' := teichmullerFun_spec fun _ ↦ ⟨1, by simp⟩
@@ -187,11 +194,13 @@ theorem mk_comp_teichmuller' :
     Ideal.Quotient.mk I ∘ (teichmuller p I) = coeff (R ⧸ I) p 0 :=
   funext mk_teichmuller
 
-/-- If `R` is `I`-adically complete and `R ⧸ I` has characteristic `p`, then
+/--
+If `R` is `I`-adically complete and `R ⧸ I` has characteristic `p`, then
 `Perfection R p` and `Perfection (R ⧸ I) p` are isomorphic as monoids.
 
 Note that `Perfection R p` is generally not a ring, and the forward map is induced by
-the quotient map, and the backwards map is constructed using the Teichmüller map. -/
+the quotient map, and the backwards map is constructed using the Teichmüller map.
+-/
 noncomputable def quotientMulEquiv (p : ℕ) [Fact p.Prime]
     {R : Type*} [CommRing R] (I : Ideal R) [CharP (R ⧸ I) p] [IsAdicComplete I R] :
     Perfection R p ≃* Perfection (R ⧸ I) p := MonoidHom.toMulEquiv

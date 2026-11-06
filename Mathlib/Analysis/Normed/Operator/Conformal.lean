@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conformal Linear Maps
 
@@ -25,9 +28,9 @@ a nonzero multiple of a linear isometry.
 * `isConformalMap_of_subsingleton`: all continuous linear maps on singleton spaces are conformal
 
 See `Analysis.InnerProductSpace.ConformalLinearMap` for
+
 * `isConformalMap_iff`: a map between inner product spaces is conformal
   iff it preserves inner products up to a fixed scalar factor.
-
 
 ## Tags
 

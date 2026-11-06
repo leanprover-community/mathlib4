@@ -12,24 +12,24 @@ public import Mathlib.GroupTheory.GroupAction.Hom
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise actions of equivariant maps
 
-- `image_smul_setₛₗ` : under a `σ`-equivariant map,
+* `image_smul_setₛₗ` : under a `σ`-equivariant map,
   one has `f '' (c • s) = (σ c) • f '' s`.
-
-- `preimage_smul_setₛₗ'` is a general version of the equality
+* `preimage_smul_setₛₗ'` is a general version of the equality
   `f ⁻¹' (σ c • s) = c • f⁻¹' s`.
   It requires that `c` acts surjectively and `σ c` acts injectively and
   is provided with specific versions:
-  - `preimage_smul_setₛₗ_of_isUnit_isUnit` when `c` and `σ c` are units
-  - `IsUnit.preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass` and `c` is a unit
-  - `MonoidHom.preimage_smul_setₛₗ` when `σ` is a `MonoidHom` and `c` is a unit
-  - `Group.preimage_smul_setₛₗ` : when the types of `c` and `σ c` are groups.
-
-- `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
+* `preimage_smul_setₛₗ_of_isUnit_isUnit` when `c` and `σ c` are units
+* `IsUnit.preimage_smul_setₛₗ` when `σ` belongs to a `MonoidHomClass` and `c` is a unit
+* `MonoidHom.preimage_smul_setₛₗ` when `σ` is a `MonoidHom` and `c` is a unit
+* `Group.preimage_smul_setₛₗ` : when the types of `c` and `σ c` are groups.
+* `image_smul_set`, `preimage_smul_set` and `Group.preimage_smul_set` are
   the variants when `σ` is the identity.
-
 -/
 
 public section

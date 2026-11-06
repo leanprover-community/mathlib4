@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The pretriangulated structure on the opposite category
 
@@ -23,17 +26,17 @@ an equivalence `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ`, called
 Here, we defined the notion of distinguished triangles in `Cᵒᵖ`, such that
 `triangleOpEquivalence` sends distinguished triangles in `C` to distinguished triangles
 in `Cᵒᵖ`. In other words, if `X ⟶ Y ⟶ Z ⟶ X⟦1⟧` is a distinguished triangle in `C`,
-then the triangle `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` that is deduced *without introducing signs*
+then the triangle `op Z ⟶ op Y ⟶ op X ⟶ (op Z)⟦1⟧` that is deduced _without introducing signs_
 shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the definition
-in [Verdier's thesis, p. 96][verdier1996] which would require that the triangle
-`(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
+in \[Verdier's thesis, p. 96\]\[verdier1996\] which would require that the triangle
+`(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is _antidistinguished_.
 
 In the file `Mathlib.Triangulated.Opposite.Triangulated`, we show that `Cᵒᵖ` is
 triangulated if `C` is triangulated.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section

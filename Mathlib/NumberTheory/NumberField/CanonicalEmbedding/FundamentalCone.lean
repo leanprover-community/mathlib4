@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.RingTheory.ClassGroup.Basic
 public import Mathlib.RingTheory.Ideal.IsPrincipal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental Cone
 
@@ -20,15 +23,12 @@ mixed space that is a fundamental domain for the action of `(𝓞 K)ˣ` modulo t
 
 * `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on the mixed space defined, for
   `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
-
 * `NumberField.mixedEmbedding.fundamentalCone`: a cone in the mixed space, i.e. a subset stable
   by multiplication by a nonzero real number, see `smul_mem_of_mem`, that is also a fundamental
   domain for the action of `(𝓞 K)ˣ` modulo torsion, see `exists_unit_smul_mem` and
   `torsion_unit_smul_mem_of_mem`.
-
 * `NumberField.mixedEmbedding.fundamentalCone.idealSet`: for `J` an integral ideal, the intersection
   between the fundamental cone and the `idealLattice` defined by the image of `J`.
-
 * `NumberField.mixedEmbedding.fundamentalCone.idealSetEquivNorm`: for `J` an integral ideal and `n`
   a natural integer, the equivalence between the elements of `idealSet K` of norm `n` and the
   product of the set of nonzero principal ideals of `K` divisible by `J` of norm `n` and the
@@ -268,8 +268,10 @@ theorem mem_integerSet {a : mixedSpace K} :
   simp only [integerSet, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
     AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply]
 
-/-- If `a` is in `integerSet`, then there is a *unique* algebraic integer in `𝓞 K` such
-that `mixedEmbedding K x = a`. -/
+/--
+If `a` is in `integerSet`, then there is a _unique_ algebraic integer in `𝓞 K` such
+that `mixedEmbedding K x = a`.
+-/
 theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ integerSet K) :
     ∃! x : 𝓞 K, mixedEmbedding K x = a := by
   obtain ⟨_, ⟨x, rfl⟩⟩ := mem_integerSet.mp ha

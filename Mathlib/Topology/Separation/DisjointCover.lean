@@ -13,6 +13,9 @@ public import Mathlib.Topology.Sets.OpenCover
 
 import Mathlib.Order.Disjointed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint covers of profinite spaces
 
@@ -20,7 +23,6 @@ We prove various results about covering profinite spaces by disjoint clopens, in
 
 * `TopologicalSpace.IsOpenCover.exists_finite_nonempty_disjoint_clopen_cover`: any open cover of a
   profinite space can be refined to a finite cover by pairwise disjoint nonempty clopens.
-
 * `ContinuousMap.exists_finite_approximation_of_mem_nhds_diagonal`: if `f : X → V` is continuous
   with `X` profinite, and `S` is a neighbourhood of the diagonal in `V × V`, then `f` can be
   `S`-approximated by a function factoring through `Fin n` for some `n`.
@@ -85,7 +87,8 @@ lemma exists_open_prod_subset_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (diagonal
 
 variable [CompactSpace X]
 
-/-- If `S` is any neighbourhood of the diagonal in a compact topological space `X`, then there
+/--
+If `S` is any neighbourhood of the diagonal in a compact topological space `X`, then there
 exists a finite cover of `X` by opens `U i` such that `U i ×ˢ U i ⊆ S` for all `i`.
 
 That the indexing set is a finset of `X` is an artifact of the proof; it could be any finite type.
@@ -160,11 +163,14 @@ structure, then we can approximate `f` by finite products of indicator functions
 
 (Note no compatibility is assumed between the monoid structure on `V` and the topology.)
 -/
-@[to_additive /-- If `f` is a continuous map from a profinite space to a topological space with a
-commutative additive monoid structure, then we can approximate `f` by finite sums of indicator
-functions of clopen sets.
+@[to_additive /--
+              If `f` is a continuous map from a profinite space to a topological space with a
+commutative additive monoid structure, then we can approximate `f` by finite sums of
+indicator functions of clopen sets.
 
-(Note no compatibility is assumed between the monoid structure on `V` and the topology.) -/]
+              (Note no compatibility is assumed between the monoid structure on `V` and the
+topology.)
+              -/]
 lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [CommMonoid V]
     (hS : S ∈ nhdsSet (diagonal V)) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),

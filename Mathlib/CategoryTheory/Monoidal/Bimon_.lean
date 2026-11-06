@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of bimonoids in a braided monoidal category.
 
@@ -16,6 +19,7 @@ as comonoid objects in the category of monoid objects in `C`.
 We verify that this is equivalent to the monoid objects in the category of comonoid objects.
 
 ## TODO
+
 * Construct the category of modules, and show that it is monoidal with a monoidal forgetful functor
   to `C`.
 * Some form of Tannaka reconstruction:
@@ -233,7 +237,9 @@ def equivMonComon : Bimon C ≌ Mon (Comon C) where
   unitIso := NatIso.ofComponents equivMonComonUnitIsoApp
   counitIso := NatIso.ofComponents equivMonComonCounitIsoApp
 
-/-! ### The trivial bimonoid -/
+/-!
+# The trivial bimonoid
+-/
 
 variable (C) in
 /-- The trivial bimonoid object. -/
@@ -252,7 +258,9 @@ set_option backward.isDefEq.respectTransparency.types false in
 def toTrivial (A : Bimon C) : A ⟶ trivial C :=
   (default : @Quiver.Hom (Comon (Mon C)) _ A (Comon.trivial (Mon C)))
 
-/-! ### Additional lemmas -/
+/-!
+# Additional lemmas
+-/
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem BimonObjAux_counit (M : Bimon C) :

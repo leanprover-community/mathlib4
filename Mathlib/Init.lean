@@ -43,12 +43,16 @@ public import Batteries.Tactic.Alias
 -- This import makes the `proof_wanted` command available globally.
 public import Batteries.Util.ProofWanted
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.
+This is the root file in Mathlib: it is imported by virtually _all_ Mathlib files.
 For this reason, the imports of this file are carefully curated.
 Any modification involving a change in the imports of this file should be discussed beforehand.
 
 Here are some general guidelines:
+
 * no bucket imports (e.g. `Batteries`/`Lean`/etc);
 * every import needs to have a comment explaining why the import is there;
 * strong preference for avoiding files that themselves have imports beyond `Lean`, and
@@ -60,26 +64,27 @@ A linter verifies that every file in Mathlib imports `Mathlib.Init`
 If you're adding a new import to ensure that some command is available in all of mathlib,
 add a line to `MathlibTest/BasicFiles/Init.lean` to ensure this stays true.
 
-## Linters
+# Linters
 
 All syntax linters defined in Mathlib which are active by default are imported here.
 Syntax linters need to be imported to take effect, hence we would like them to be imported
 as early as possible.
 
 All linters imported here have no bulk imports;
-**Not** imported in this file are
-- the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
-- the `haveLet` linter, as it is currently disabled by default due to crashes
-- the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
-- the `minImports` linter, as that linter is disabled by default (and has an informational function;
-  it is useful for debugging, but not as a permanently enabled lint)
-- the `upstreamableDecls` linter, as it is also mostly informational
+*Not* imported in this file are
 
+* the text-based linters in `Mathlib/Tactic/Linter/TextBased.lean`, as they can be imported later
+* the `haveLet` linter, as it is currently disabled by default due to crashes
+* the `ppRoundTrip` linter, which is currently disabled (as this is not mature enough)
+* the `minImports` linter, as that linter is disabled by default (and has an informational function;
+  it is useful for debugging, but not as a permanently enabled lint)
+* the `upstreamableDecls` linter, as it is also mostly informational
 -/
 
 public section
 
-/-- Define a linter set of all mathlib syntax linters which are enabled by default.
+/--
+Define a linter set of all mathlib syntax linters which are enabled by default.
 
 Projects depending on mathlib can use `set_option linter.mathlibStandardSet true` to enable
 all these linters, or add the `weak.linter.mathlibStandardSet` option to their lakefile.

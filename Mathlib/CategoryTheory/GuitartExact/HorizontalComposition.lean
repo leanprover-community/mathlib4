@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.GuitartExact.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Horizontal composition of Guitart exact squares
 
 In this file, we show that the horizontal composition of Guitart exact squares
 is Guitart exact.
-
 -/
 
 @[expose] public section

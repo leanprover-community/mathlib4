@@ -10,16 +10,18 @@ public import Mathlib.RingTheory.Finiteness.Cardinality
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A "module topology" for modules over a topological ring
 
 If `R` is a topological ring acting on an additive abelian group `A`, we define the
-*module topology* to be the finest topology on `A` making both the maps
+_module topology_ to be the finest topology on `A` making both the maps
 `• : R × A → A` and `+ : A × A → A` continuous (with all the products having the
 product topology). Note that `- : A → A` is also automatically continuous as it is `a ↦ (-1) • a`.
 
 This topology was suggested by Will Sawin [here](https://mathoverflow.net/a/477763/1384).
-
 
 ## Mathematical details
 
@@ -29,7 +31,7 @@ so I expand some of the details here.
 First note that the definition makes sense in far more generality (for example `R` just needs to
 be a topological space acting on an additive monoid).
 
-Next note that there *is* a finest topology with this property! Indeed, topologies on a fixed
+Next note that there _is_ a finest topology with this property! Indeed, topologies on a fixed
 type form a complete lattice (infinite infs and sups exist). So if `τ` is the Inf of all
 the topologies on `A` which make `+` and `•` continuous, then the claim is that `+` and `•`
 are still continuous for `τ` (note that topologies are ordered so that finer topologies
@@ -41,7 +43,7 @@ However pushforward and products are monotone, so `τ × τ ≤ σ × σ`, and t
 `σ × σ` is `≤ σ` because that's precisely the statement that `+` is continuous for `σ`.
 The proof for `•` follows mutatis mutandis.
 
-A *topological module* for a topological ring `R` is an `R`-module `A` with a topology
+A _topological module_ for a topological ring `R` is an `R`-module `A` with a topology
 making `+` and `•` continuous. The discussion so far has shown that the module topology makes
 an `R`-module `A` into a topological module, and moreover is the finest topology with this property.
 
@@ -72,10 +74,10 @@ This file develops the theory of the module topology.
 ## Main theorems
 
 * `IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R`. The module
-    topology on `R` is `R`'s topology.
+  topology on `R` is `R`'s topology.
 * `IsModuleTopology.iso [IsModuleTopology R A] (e : A ≃L[R] B) : IsModuleTopology R B`. If `A` and
-    `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
-    and if `A` has the module topology, then `B` has the module topology.
+  `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
+  and if `A` has the module topology, then `B` has the module topology.
 * `IsModuleTopology.instProd` : If `M` and `N` are `R`-modules each equipped with the module
   topology, then the product topology on `M × N` is the module topology.
 * `IsModuleTopology.instPi` : Given a finite collection of `R`-modules each of which has
@@ -106,7 +108,6 @@ the module topology.
 
 * The module topology is a functor from the category of `R`-modules
   to the category of topological `R`-modules, and it's an adjoint to the forgetful functor.
-
 -/
 
 public section

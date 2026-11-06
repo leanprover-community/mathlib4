@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.Topology.Algebra.AffineSubspace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine isometries
 
@@ -31,7 +34,6 @@ We introduce the notation `P →ᵃⁱ[𝕜] P₂` for `AffineIsometry 𝕜 P P�
 for isometric equivalences, etc., the "i" here is a superscript.  This is for aesthetic reasons to
 match the superscript "a" (note that in mathlib `→ᵃ` is an affine map, since `→ₐ` has been taken by
 algebra-homomorphisms.)
-
 -/
 
 @[expose] public section
@@ -846,7 +848,8 @@ section isometryEquivMap
 variable {V₁' P₁' : Type*} [SeminormedAddCommGroup V₁'] [NormedSpace 𝕜 V₁'] [MetricSpace P₁']
   [NormedAddTorsor V₁' P₁']
 
-/-- Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
+/--
+Restricts an affine isometry to an affine isometry equivalence between a nonempty affine
 subspace `E` and its image.
 
 This is an isometry version of `AffineSubspace.equivMap`, having a stronger premise and a stronger

@@ -9,10 +9,14 @@ public import Mathlib.Data.List.Basic
 public import Mathlib.Data.Nat.Basic
 public import Mathlib.Order.RelClasses
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lexicographic ordering of lists.
 
 The lexicographic order on `List α` is defined by `L < M` iff
+
 * `[] < (a :: L)` for any `a` and `L`,
 * `(a :: L) < (b :: M)` where `a < b`, or
 * `(a :: L) < (a :: M)` where `L < M`.
@@ -20,6 +24,7 @@ The lexicographic order on `List α` is defined by `L < M` iff
 ## See also
 
 Related files are:
+
 * `Mathlib/Combinatorics/Colex.lean`: Colexicographic order on finite sets.
 * `Mathlib/Order/PSigma.lean`: Lexicographic order on `Σ' i, α i`.
 * `Mathlib/Order/PiLex.lean`: Lexicographic order on `Πₗ i, α i`.
@@ -38,7 +43,9 @@ universe u
 
 variable {α : Type u}
 
-/-! ### lexicographic ordering -/
+/-!
+# lexicographic ordering
+-/
 
 theorem lex_cons_iff {r : α → α → Prop} [Std.Irrefl r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=

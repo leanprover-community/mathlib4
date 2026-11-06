@@ -12,6 +12,9 @@ public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.GroupTheory.Coset.Basic
 public import Mathlib.GroupTheory.QuotientGroup.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quotients of groups by normal subgroups
 
@@ -150,7 +153,8 @@ def quotientKerEquivOfRightInverse (ψ : H → G) (hφ : RightInverse ψ φ) : G
 def quotientBot : G ⧸ (⊥ : Subgroup G) ≃* G :=
   quotientKerEquivOfRightInverse (MonoidHom.id G) id fun _x => rfl
 
-/-- The canonical isomorphism `G/(ker φ) ≃* H` induced by a surjection `φ : G →* H`.
+/--
+The canonical isomorphism `G/(ker φ) ≃* H` induced by a surjection `φ : G →* H`.
 
 For a `computable` version, see `QuotientGroup.quotientKerEquivOfRightInverse`.
 -/
@@ -187,7 +191,8 @@ theorem quotientMapSubgroupOfOfLe_mk {A' A B' B : Subgroup G} [_hAN : (A'.subgro
     quotientMapSubgroupOfOfLe h' h x = ↑(Subgroup.inclusion h x : B) :=
   rfl
 
-/-- Let `A', A, B', B` be subgroups of `G`.
+/--
+Let `A', A, B', B` be subgroups of `G`.
 If `A' = B'` and `A = B`, then the quotients `A / (A' ⊓ A)` and `B / (B' ⊓ B)` are isomorphic.
 
 Applying this equiv is nicer than rewriting along the equalities, since the type of

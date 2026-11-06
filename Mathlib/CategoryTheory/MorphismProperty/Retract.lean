@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Retract
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stability under retracts
 
 Given `P : MorphismProperty C`, we introduce a typeclass `P.IsStableUnderRetracts` which
 is the property that `P` is stable under retracts.
-
 -/
 
 @[expose] public section

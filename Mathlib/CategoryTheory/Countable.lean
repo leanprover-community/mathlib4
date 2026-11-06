@@ -9,11 +9,13 @@ public import Mathlib.Basic.Countable.Small
 public import Mathlib.CategoryTheory.EssentiallySmall
 public import Mathlib.CategoryTheory.FinCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable categories
 
 A category is countable in this sense if it has countably many objects and countably many morphisms.
-
 -/
 
 @[expose] public section
@@ -61,7 +63,9 @@ instance : CountableCategory (ObjAsType α) where
 noncomputable def objAsTypeEquiv : ObjAsType α ≌ α :=
   (inducedFunctor (equivShrink.{0} α).symm).asEquivalence
 
-/-- A countable category `α` is equivalent to a *small* category with objects in `Type`. -/
+/--
+A countable category `α` is equivalent to a _small_ category with objects in `Type`.
+-/
 def HomAsType := ShrinkHoms (ObjAsType α)
 
 instance : LocallySmall.{0} (ObjAsType α) where

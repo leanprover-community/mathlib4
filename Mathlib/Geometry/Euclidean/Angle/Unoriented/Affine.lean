@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Between
 public import Mathlib.Analysis.Normed.Affine.Isometry
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Angles between points
 

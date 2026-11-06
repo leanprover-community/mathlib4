@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.RingTheory.HopkinsLevitzki
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian and Locally Artinian Schemes
 
@@ -18,7 +21,6 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsLocallyArtinian`: A scheme is locally Artinian if for all open affines,
   the section ring is an Artinian ring.
-
 * `AlgebraicGeometry.IsArtinianScheme`: A scheme is Artinian if it is locally Artinian and
   quasi-compact.
 
@@ -26,15 +28,11 @@ We define and prove basic properties about Artinian and locally Artinian Schemes
 
 * `AlgebraicGeometry.IsLocallyArtinian.iff_isLocallyNoetherian_and_discreteTopology`: A scheme is
   locally Artinian if and only if it is LocallyNoetherian and it has the discrete topology.
-
 * `AlgebraicGeometry.IsArtinianScheme.iff_isNoetherian_and_discreteTopology`: A scheme is Artinian
   if and only if it is Noetherian and has the discrete topology.
-
 * `AlgebraicGeometry.IsArtinianScheme.finite`: An Artinian scheme is finite.
-
 * `AlgebraicGeometry.Scheme.isArtinianScheme_Spec`: A commutative ring R is Artinian if and only if
   Spec R is Artinian.
-
 -/
 
 public section

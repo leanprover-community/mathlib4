@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.OrderDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal/maximal and bottom/top elements
 
@@ -15,10 +18,10 @@ saying that there are no such elements.
 
 ## Predicates
 
-* `IsBot`: An element is *bottom* if all elements are greater than it.
-* `IsTop`: An element is *top* if all elements are less than it.
-* `IsMin`: An element is *minimal* if no element is strictly less than it.
-* `IsMax`: An element is *maximal* if no element is strictly greater than it.
+* `IsBot`: An element is _bottom_ if all elements are greater than it.
+* `IsTop`: An element is _top_ if all elements are less than it.
+* `IsMin`: An element is _minimal_ if no element is strictly less than it.
+* `IsMax`: An element is _maximal_ if no element is strictly greater than it.
 
 See also `isBot_iff_isMin` and `isTop_iff_isMax` for the equivalences in a (co)directed order.
 

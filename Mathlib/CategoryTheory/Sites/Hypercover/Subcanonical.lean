@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Local
 public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Hypercover.SheafOfTypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Covers in subcanonical topologies
 
@@ -93,19 +96,23 @@ set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /--
 To show that
+
 ```
 P ---> X
 |      |
 v      v
 Y ---> Z
 ```
+
 is a pullback square, it suffices to check that
+
 ```
 P ×[X] Uᵢ ---> Uᵢ
    |           |
    v           v
    Y --------> Z
 ```
+
 is a pullback square for all `Uᵢ` in a cover of `X` for some subcanonical topology.
 -/
 lemma isPullback_of_forall_isPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)

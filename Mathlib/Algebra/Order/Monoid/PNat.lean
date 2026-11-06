@@ -9,6 +9,9 @@ public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 public import Mathlib.Algebra.Order.Hom.Monoid
 public import Mathlib.Data.PNat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `ℕ+` and `nonZeroDivisors ℕ`
 -/

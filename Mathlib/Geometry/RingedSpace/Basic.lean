@@ -12,14 +12,17 @@ public import Mathlib.Geometry.RingedSpace.SheafedSpace
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Order.Group.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ringed spaces
 
 We introduce the category of ringed spaces, as an alias for `SheafedSpace CommRingCat`.
 
 The facts collected in this file are typically stated for locally ringed spaces, but never actually
-make use of the locality of stalks. See for instance <https://stacks.math.columbia.edu/tag/01HZ>.
-
+make use of the locality of stalks. See for instance [
+https://stacks.math.columbia.edu/tag/01HZ](https://stacks.math.columbia.edu/tag/01HZ).
 -/
 
 @[expose] public section

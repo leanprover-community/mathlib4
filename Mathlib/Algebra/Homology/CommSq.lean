@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Defs
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relation between pullback/pushout squares and kernel/cokernel sequences
 
@@ -28,7 +31,6 @@ via the obvious map `X₂ ⊞ X₃ ⟶ X₄`.
 Similarly, it is a pullback square iff the object `X₁`
 identifies to the kernel of the difference map `X₂ ⊞ X₃ ⟶ X₄`
 via the obvious map `X₁ ⟶ X₂ ⊞ X₃`.
-
 -/
 
 @[expose] public section

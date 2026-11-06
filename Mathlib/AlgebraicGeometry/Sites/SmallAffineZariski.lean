@@ -8,8 +8,10 @@ module
 public import Mathlib.AlgebraicGeometry.RelativeGluing
 public import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The small affine Zariski site
 
 `X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
@@ -25,7 +27,6 @@ which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
 Zariski site are arbitrary inclusions.
-
 -/
 
 @[expose] public section
@@ -239,7 +240,7 @@ noncomputable instance : (Scheme.AffineZariskiSite.directedCover X).LocallyDirec
 section PreservesLocalization
 
 /-!
-## "Quasi-coherent `𝒪ₓ`-algebras"
+# "Quasi-coherent `𝒪ₓ`-algebras"
 
 A presheaf `F` of rings on `X.AffineZariskiSite` with a structural morphism `α : 𝒪ₓ ⟶ F`
 is said to be `Coequifibered` if `F(D(f)) = F(U)[1/f]`

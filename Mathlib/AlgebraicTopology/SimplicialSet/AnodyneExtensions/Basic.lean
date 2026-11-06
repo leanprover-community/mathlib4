@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.SmallObject.Basic
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Presentable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Anodyne extensions
 
@@ -37,6 +40,7 @@ in terms of such regular pairings, and using the main result of the file
 we show that a strong anodyne extension is an anodyne extension.
 
 ## TODO
+
 * introduce inner variants of these definitions
 * show that strong anodyne extensions are indeed stable under coproducts,
   transfinite compositions and pushouts (the proof should reduce to the
@@ -47,9 +51,10 @@ we show that a strong anodyne extension is an anodyne extension.
 * show that anodyne extensions are stable under the subdivision functor (@joelriou)
 
 ## References
-* [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*, IV.2][gabriel-zisman-1967]
-* [Sean Moss, *Another approach to the Kan-Quillen model structure*][moss-2020]
 
+* ‍\[P. Gabriel, M. Zisman, _Calculus of fractions and homotopy theory_,
+  IV.2\]\[gabriel-zisman-1967\]
+* ‍\[Sean Moss, _Another approach to the Kan-Quillen model structure_\]\[moss-2020\]
 -/
 
 @[expose] public section

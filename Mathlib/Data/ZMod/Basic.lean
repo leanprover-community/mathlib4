@@ -12,23 +12,23 @@ public import Mathlib.GroupTheory.GroupAction.SubMulAction
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.FinCases
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integers mod `n`
 
 Definition of the integers mod n, and the field structure on the integers mod p.
 
-
 ## Definitions
 
 * `ZMod n`, which is for integers modulo a nat `n : ℕ`
-
 * `val a` is defined as a natural number:
-  - for `a : ZMod 0` it is the absolute value of `a`
-  - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
+  * for `a : ZMod 0` it is the absolute value of `a`
+  * for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 * A coercion `cast` is defined from `ZMod n` into any ring.
   This is a ring hom if the ring has characteristic dividing `n`
-
 -/
 
 @[expose] public section
@@ -48,9 +48,11 @@ def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
 
 instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
-/-- `val a` is a natural number defined as:
-  - for `a : ZMod 0` it is the absolute value of `a`
-  - for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
+/--
+`val a` is a natural number defined as:
+
+* for `a : ZMod 0` it is the absolute value of `a`
+* for `a : ZMod n` with `0 < n` it is the least natural number in the equivalence class
 
 See `ZMod.valMinAbs` for a variant that takes values in the integers.
 -/
@@ -324,7 +326,8 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = ca
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
-/-- The canonical ring homomorphism from `ZMod n` to a ring of characteristic dividing `n`.
+/--
+The canonical ring homomorphism from `ZMod n` to a ring of characteristic dividing `n`.
 
 See also `ZMod.lift` for a generalized version working in `AddGroup`s.
 -/
@@ -411,10 +414,12 @@ of characteristic `n` and cardinality `n`. -/
 noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* R :=
   RingEquiv.ofBijective _ (ZMod.castHom_bijective R h)
 
-/-- The unique ring isomorphism between `ZMod p` and a ring `R` of cardinality a prime `p`.
+/--
+The unique ring isomorphism between `ZMod p` and a ring `R` of cardinality a prime `p`.
 
 If you need any property of this isomorphism, first of all use `ringEquivOfPrime_eq_ringEquiv`
-below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod.ringEquiv`. -/
+below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod.ringEquiv`.
+-/
 noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
     ZMod p ≃+* R :=
   have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
@@ -880,8 +885,9 @@ def unitsEquivCoprime {n : ℕ} [NeZero n] : (ZMod n)ˣ ≃ { x : ZMod n // Nat.
   right_inv := fun ⟨_, _⟩ => by simp
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The **Chinese remainder theorem**. For a pair of coprime natural numbers, `m` and `n`,
-  the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
+/--
+The *Chinese remainder theorem*. For a pair of coprime natural numbers, `m` and `n`,
+the rings `ZMod (m * n)` and `ZMod m × ZMod n` are isomorphic.
 
 See `Ideal.quotientInfRingEquivPiQuotient` for the Chinese remainder theorem for ideals in any
 ring.
@@ -1187,7 +1193,7 @@ end lift
 end ZMod
 
 /-!
-### Groups of bounded torsion
+# Groups of bounded torsion
 
 For `G` a group and `n` a natural number, `G` having torsion dividing `n`
 (`∀ x : G, n • x = 0`) can be derived from `Module R G` where `R` has characteristic dividing `n`.

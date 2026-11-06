@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 public import Mathlib.Topology.Algebra.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-unital topological (sub)algebras
 
@@ -19,7 +22,6 @@ typeclass `ContinuousSMul` to express the latter condition.
 
 Any non-unital subalgebra of a non-unital topological algebra is itself a non-unital
 topological algebra, and its closure is again a non-unital subalgebra.
-
 -/
 
 @[expose] public section
@@ -68,10 +70,12 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalSubalgebr
   s.toSubsemigroup.isMulCommutative_topologicalClosure
 
 open scoped IsMulCommutative in
-/-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
+/--
+If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
@@ -120,10 +124,12 @@ instance instIsSemitopologicalRing [IsSemitopologicalRing A] (s : NonUnitalSubal
 variable [IsSemitopologicalRing A]
 
 open scoped IsMulCommutative in
-/-- If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
+/--
+If a non-unital subalgebra of a non-unital topological algebra is commutative, then so is its
 topological closure.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=

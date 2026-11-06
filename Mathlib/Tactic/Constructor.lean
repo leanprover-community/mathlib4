@@ -9,13 +9,17 @@ public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Meta.Tactic.Constructor
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `fconstructor` and `econstructor` tactics
 
 The `fconstructor` and `econstructor` tactics are variants of the `constructor` tactic in Lean core,
 except that
-- `fconstructor` does not reorder goals
-- `econstructor` adds only non-dependent premises as new goals.
+
+* `fconstructor` does not reorder goals
+* `econstructor` adds only non-dependent premises as new goals.
 -/
 
 public meta section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.ZFC.Ordinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # ZFC classes
 
@@ -30,10 +33,12 @@ universe u
 namespace ZFClass
 variable {A B C : ZFClass.{u}} {x y : ZFSet.{u}}
 
-/-- Membership of classes. `A ᶜ∈ B` if `A` is a ZFC set which satisfies `B`.
+/--
+Membership of classes. `A ᶜ∈ B` if `A` is a ZFC set which satisfies `B`.
 
 Note that the `A ∈ B` notation is already taken for the case where `A : ZFSet` instead
-(the `OutParam` in `Mem` forces the type of `A` to be uniquely inferrable from the type of `B`). -/
+(the `OutParam` in `Mem` forces the type of `A` to be uniquely inferrable from the type of `B`).
+-/
 protected def CMem (A B : ZFClass.{u}) : Prop :=
   ∃ x : ZFSet, ↑x = A ∧ x ∈ B
 
@@ -64,10 +69,12 @@ lemma cmem_asymm : A ᶜ∈ B → B ᶜ∉ A := asymm_of ZFClass.CMem
 
 lemma cmem_irrefl : A ᶜ∉ A := irrefl_of _ _
 
-/-- **There is no universal set.**
+/--
+*There is no universal set.*
 
 This is stated as `univ ᶜ∉ univ`, meaning that `univ` (the class of all sets) is proper
-(does not belong to the class of all sets). -/
+(does not belong to the class of all sets).
+-/
 lemma univ_notCMem_univ : .univ ᶜ∉ .univ := cmem_irrefl
 
 /-- Convert a conglomerate (a collection of classes) into a class -/

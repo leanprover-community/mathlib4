@@ -8,6 +8,9 @@ module
 public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Order.BooleanAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric difference and bi-implication
 
@@ -16,6 +19,7 @@ This file defines the symmetric difference and bi-implication operators in (co-)
 ## Examples
 
 Some examples are
+
 * The symmetric difference of two sets is the set of elements that are in either but not both.
 * The symmetric difference on propositions is `Xor`.
 * The symmetric difference on `Bool` is `Bool.xor`.
@@ -43,7 +47,8 @@ In generalized Boolean algebras, the symmetric difference operator is:
 The proof of associativity follows the note "Associativity of the Symmetric Difference of Sets: A
 Proof from the Book" by John McCuan:
 
-* <https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf>
+* [
+  https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf](https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf)
 
 ## Tags
 
@@ -584,7 +589,9 @@ theorem Codisjoint.bihimp_inf_bihimp_le_right (h : Codisjoint b c) : a ⇔ b ⊓
 
 end BooleanAlgebra
 
-/-! ### Prod -/
+/-!
+# Prod
+-/
 
 
 section Prod
@@ -601,7 +608,9 @@ theorem symmDiff_snd [GeneralizedCoheytingAlgebra α] [GeneralizedCoheytingAlgeb
 
 end Prod
 
-/-! ### Pi -/
+/-!
+# Pi
+-/
 
 
 namespace Pi

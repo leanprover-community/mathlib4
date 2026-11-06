@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.Derived.RightDerived
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Comparison morphism for the composition of right derived functors
 
@@ -18,6 +21,7 @@ L₁|  L₂|   L₃|
   D₁ ⥤ D₂ ⥤ D₃
    RF₁₂   RF₂₃
 ```
+
 In the situation above, when we have natural transformations
 `α₁₂ : F₁₂ ⋙ L₂ ⟶ L₁ ⋙ RF₁₂`, `α₂₃ : F₂₃ ⋙ L₃ ⟶ L₂ ⋙ RF₂₃`,
 an isomorphism `e : F₁₂ ⋙ F₂₃ ≅ F₁₃` where `F₁₃ : C₁ ⥤ C₃`,
@@ -31,7 +35,6 @@ composition of right derived functors, even though the
 definition only assumes that `RF₁₃` is a right derived functor.
 (In applications, both `RF₁₂` and `RF₂₃` would usually
 be derived functors as well.)
-
 -/
 
 @[expose] public section

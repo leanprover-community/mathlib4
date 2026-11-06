@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Calculus.FDeriv.Basic
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The derivative of bounded linear maps
 
@@ -33,7 +36,7 @@ variable {s : Set E}
 variable {L : Filter (E × E)}
 
 /-!
-### Bundled continuous linear maps
+# Bundled continuous linear maps
 
 There are currently two variants of these in mathlib, the bundled version
 (named `ContinuousLinearMap`, and denoted `E →L[𝕜] F`, works for topological vector spaces),
@@ -86,7 +89,9 @@ protected theorem fderivWithin (hxs : UniqueDiffWithinAt 𝕜 s x) :
 
 end ContinuousLinearMap
 
-/-! ### Unbundled continuous linear maps -/
+/-!
+# Unbundled continuous linear maps
+-/
 
 namespace IsBoundedLinearMap
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]

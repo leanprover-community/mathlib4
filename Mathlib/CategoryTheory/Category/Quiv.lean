@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Category.Cat
 public import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of quivers
 

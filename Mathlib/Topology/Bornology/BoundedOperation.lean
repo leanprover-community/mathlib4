@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded operations
 
@@ -20,7 +23,6 @@ we can equip bounded continuous functions with the corresponding operations.
 * `BoundedAdd R`: a class guaranteeing boundedness of addition.
 * `BoundedSub R`: a class guaranteeing boundedness of subtraction.
 * `BoundedMul R`: a class guaranteeing boundedness of multiplication.
-
 -/
 
 public section
@@ -29,7 +31,7 @@ open scoped NNReal
 
 section bounded_sub
 /-!
-### Bounded subtraction
+# Bounded subtraction
 -/
 
 open scoped Pointwise
@@ -70,7 +72,7 @@ end bounded_sub
 
 section bounded_mul
 /-!
-### Bounded multiplication and addition
+# Bounded multiplication and addition
 -/
 
 open scoped Pointwise
@@ -148,7 +150,7 @@ end bounded_mul
 
 section SeminormedAddCommGroup
 /-!
-### Bounded operations in seminormed additive commutative groups
+# Bounded operations in seminormed additive commutative groups
 -/
 
 variable {R : Type*} [SeminormedAddCommGroup R]
@@ -204,7 +206,7 @@ end SeminormedAddCommGroup
 
 section NonUnitalSeminormedRing
 /-!
-### Bounded operations in non-unital seminormed rings
+# Bounded operations in non-unital seminormed rings
 -/
 
 variable {R : Type*} [NonUnitalSeminormedRing R]
@@ -235,7 +237,7 @@ end NonUnitalSeminormedRing
 
 section NNReal
 /-!
-### Bounded operations in ℝ≥0
+# Bounded operations in ℝ≥0
 -/
 
 instance : BoundedSub ℝ≥0 := boundedSub_of_lipschitzWith_sub NNReal.lipschitzWith_sub

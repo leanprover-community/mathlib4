@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.PFunctor.Multivariate.Basic
 public import Mathlib.Data.PFunctor.Univariate.M
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The M construction as a multivariate polynomial functor.
 
@@ -43,7 +46,7 @@ that `A` is a possibly infinite tree.
 ## Reference
 
 * Jeremy Avigad, Mario M. Carneiro and Simon Hudon.
-  [*Data Types as Quotients of Polynomial Functors*][avigad-carneiro-hudon2019]
+  ‍\[_Data Types as Quotients of Polynomial Functors_\]\[avigad-carneiro-hudon2019\]
 -/
 
 @[expose] public section

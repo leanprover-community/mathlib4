@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.VectorBundle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The vector bundle of continuous (semi)linear maps
 
@@ -319,7 +322,8 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
+/--
+Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 
@@ -356,7 +360,8 @@ lemma ContinuousWithinAt.clm_apply_of_inCoordinates
   filter_upwards [A, A'] with m hm h'm using by simp [inCoordinates_eq hm h'm, hm]
 
 
-/-- Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
+/--
+Consider a continuous map `v : M → E₁` to a vector bundle, over a base map `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 continuously on `m`, one can apply `ϕ m` to `g m`, and the resulting map is continuous.
 

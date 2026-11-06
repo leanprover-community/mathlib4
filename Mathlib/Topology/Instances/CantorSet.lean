@@ -12,6 +12,9 @@ public import Mathlib.Data.Stream.Init
 
 import Mathlib.Algebra.CharP.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ternary Cantor Set
 
@@ -21,7 +24,7 @@ This file defines the Cantor ternary set and proves a few properties.
 
 * `preCantorSet n`: The order `n` pre-Cantor set, defined inductively as the union of the images
   under the functions `(· / 3)` and `((2 + ·) / 3)`, with `preCantorSet 0 := Set.Icc 0 1`, i.e.
-  `preCantorSet 0` is the unit interval [0,1].
+  `preCantorSet 0` is the unit interval \[0,1\].
 * `cantorSet`: The ternary Cantor set, defined as the intersection of all pre-Cantor sets.
 * `cantorToTernary`: given a number `x` in the Cantor set, returns its ternary representation
   `(d₀, d₁, ...)` consisting only of digits `0` and `2`, such that `x = 0.d₀d₁...`
@@ -58,7 +61,7 @@ noncomputable def cantorSet : Set ℝ := ⋂ n, preCantorSet n
 
 
 /-!
-## Simple Properties
+# Simple Properties
 -/
 
 lemma quarters_mem_preCantorSet (n : ℕ) : 1 / 4 ∈ preCantorSet n ∧ 3 / 4 ∈ preCantorSet n := by
@@ -97,7 +100,9 @@ lemma preCantorSet_subset_unitInterval {n : ℕ} : preCantorSet n ⊆ Set.Icc 0 
   rw [← preCantorSet_zero]
   exact preCantorSet_antitone (by simp)
 
-/-- The ternary Cantor set is a subset of [0,1]. -/
+/--
+The ternary Cantor set is a subset of \[0,1\].
+-/
 lemma cantorSet_subset_unitInterval : cantorSet ⊆ Set.Icc 0 1 :=
   Set.iInter_subset _ 0
 
@@ -137,7 +142,7 @@ lemma isCompact_cantorSet : IsCompact cantorSet :=
   isCompact_Icc.of_isClosed_subset isClosed_cantorSet cantorSet_subset_unitInterval
 
 /-!
-## The Cantor set as the set of 0–2 numbers in the ternary system.
+# The Cantor set as the set of 0–2 numbers in the ternary system.
 -/
 
 section ternary02
@@ -314,7 +319,7 @@ theorem cantorSet_eq_zero_two_ofDigits :
 end ternary02
 
 /-!
-## The Cantor set is homeomorphic to `ℕ → Bool`
+# The Cantor set is homeomorphic to `ℕ → Bool`
 -/
 
 open Real

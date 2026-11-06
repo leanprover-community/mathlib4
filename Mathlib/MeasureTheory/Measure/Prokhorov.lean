@@ -12,6 +12,9 @@ import Mathlib.MeasureTheory.Integral.Regular
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 import Mathlib.MeasureTheory.Measure.LevyProkhorovMetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prokhorov theorem
 
@@ -45,7 +48,7 @@ we rely on the compactness of the space of measures inside each compact set to g
 of the restriction there, and argue that the full measure converges to the sum of the individual
 limits of the disjointed components. There is a subtlety that the space of finite measures
 giving mass `uₙ` to `Kₙᶜ` doesn't have to be closed in our general setting, but we only need to
-find *a* limit satisfying this condition. To ensure this, we need a technical condition
+find _a_ limit satisfying this condition. To ensure this, we need a technical condition
 (monotonicity of `K` or normality of the space). In the first case, the bound follows readily
 from the construction. In the second case, we modify the individual limits
 (again using Riesz-Markov-Kakutani) to make sure that they are inner-regular, and then one can

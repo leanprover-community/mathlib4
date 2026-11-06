@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pushing out a short complex
 
@@ -15,7 +18,6 @@ Given a short complex `S` and a morphism `f : S.X₁ ⟶ Y`, we construct the sh
 if the ambient category is abelian.
 
 This is dual to `ShortComplex.pull`, see `Mathlib/Algebra/Homology/ShortComplex/Pullback.lean`.
-
 -/
 
 @[expose] public section

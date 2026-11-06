@@ -8,12 +8,14 @@ module
 public import Mathlib.LinearAlgebra.FreeModule.Basic
 public import Mathlib.RingTheory.TensorProduct.IsBaseChangePi
 
-/-! # Base change of a free module
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Base change of a free module
 
 * `IsBaseChange.basis` : the natural basis of the base change of a module with a basis
-
 * `IsBaseChange.free` : a base change of a free module is free.
-
 -/
 
 @[expose] public section

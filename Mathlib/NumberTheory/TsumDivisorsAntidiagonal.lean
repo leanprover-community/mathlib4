@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas on infinite sums over the antidiagonal of the divisors function
 
@@ -19,7 +22,6 @@ We then prove some identities about the infinite sums over this antidiagonal, su
 `∑' n : ℕ+, n ^ k * r ^ n / (1 - r ^ n) = ∑' n : ℕ+, σ k n * r ^ n`
 which are used for Eisenstein series and their q-expansions. This is also a special case of
 Lambert series.
-
 -/
 
 @[expose] public section

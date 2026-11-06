@@ -13,6 +13,9 @@ public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.Group.TypeTags.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on `Submonoid`s
 
@@ -76,7 +79,7 @@ open Function
 variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass P] (S : Submonoid M)
 
 /-!
-### Conversion to/from `Additive`/`Multiplicative`
+# Conversion to/from `Additive`/`Multiplicative`
 -/
 
 
@@ -168,7 +171,7 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 open Set
 
 /-!
-### `comap` and `map`
+# `comap` and `map`
 -/
 
 /-- The preimage of a `Submonoid` along a `MonoidHom` is a `Submonoid`. -/
@@ -613,6 +616,8 @@ variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
+
+set_option doc.verso false
 library_note «range copy pattern» /--
 For many categories (monoids, modules, rings, ...) the set-theoretic image of a morphism `f` is
 a subobject of the codomain. When this is the case, it is useful to define the range of a morphism
@@ -644,7 +649,11 @@ def mrange (f : M →* N) : Submonoid N :=
 ```
 -/
 
-/-- The range of a `MonoidHom` is a `Submonoid`. See Note [range copy pattern]. -/
+
+set_option doc.verso true
+/--
+The range of a `MonoidHom` is a `Submonoid`. See Note \[range copy pattern\].
+-/
 @[to_additive /-- The range of an `AddMonoidHom` is an `AddSubmonoid`. -/]
 def mrange (f : F) : Submonoid N :=
   ((⊤ : Submonoid M).map f).copy (Set.range f) Set.image_univ.symm

@@ -8,11 +8,13 @@ module
 public import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Smooth.Locus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth ring homomorphisms
 
 In this file we define smooth ring homomorphisms and show their meta properties.
-
 -/
 
 @[expose] public section

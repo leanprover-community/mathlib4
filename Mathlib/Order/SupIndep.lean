@@ -14,6 +14,9 @@ public import Mathlib.Tactic.FinCases
 
 import Mathlib.Data.Finset.Lattice.Union
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Supremum independence
 
@@ -29,10 +32,12 @@ sup-independent if, for all `a`, `f a` and the supremum of the rest are disjoint
 ## Main statements
 
 * In a distributive lattice, supremum independence is equivalent to pairwise disjointness:
+
   * `Finset.supIndep_iff_pairwiseDisjoint`
   * `CompleteLattice.sSupIndep_iff_pairwiseDisjoint`
   * `CompleteLattice.iSupIndep_iff_pairwiseDisjoint`
 * Otherwise, supremum independence is stronger than pairwise disjointness:
+
   * `Finset.SupIndep.pairwiseDisjoint`
   * `sSupIndep.pairwiseDisjoint`
   * `iSupIndep.pairwiseDisjoint`
@@ -49,7 +54,9 @@ For the finite version, we avoid the "obvious" definition
 
 variable {α β ι ι' : Type*}
 
-/-! ### On lattices with a bottom element, via `Finset.sup` -/
+/-!
+# On lattices with a bottom element, via `Finset.sup`
+-/
 
 
 namespace Finset
@@ -71,7 +78,8 @@ theorem supIndep_iff_disjoint_erase [DecidableEq ι] :
   ⟨fun hs _ hi => hs (erase_subset _ _) hi (notMem_erase _ _), fun hs _ ht i hi hit =>
     (hs i hi).mono_right (sup_mono fun _ hj => mem_erase.2 ⟨ne_of_mem_of_not_mem hj hit, ht hj⟩)⟩
 
-/-- If both the index type and the lattice have decidable equality,
+/--
+If both the index type and the lattice have decidable equality,
 then the `SupIndep` predicate is decidable.
 
 TODO: speedup the definition and drop the `[DecidableEq ι]` assumption
@@ -81,7 +89,8 @@ or by generating both `f i` and `(s.erase i).sup f` in one loop over `s`.
 Yet another possible optimization is to precompute partial suprema of `f`
 over the inits and tails of the list representing `s`,
 store them in 2 `Array`s,
-then compute each `sup` in 1 operation. -/
+then compute each `sup` in 1 operation.
+-/
 instance [DecidableEq ι] [DecidableEq α] : Decidable (SupIndep s f) :=
   have : ∀ i, Decidable (Disjoint (f i) ((s.erase i).sup f)) := fun _ ↦
     decidable_of_iff _ disjoint_iff.symm
@@ -294,7 +303,9 @@ end DistribLattice
 
 end Finset
 
-/-! ### On complete lattices via `sSup` -/
+/-!
+# On complete lattices via `sSup`
+-/
 
 section CompleteLattice
 variable [CompleteLattice α]
@@ -344,15 +355,17 @@ theorem sSupIndep.disjoint_sSup {x : α} {y : Set α} (hx : x ∈ s) (hy : y ⊆
   rw [insert_sdiff_of_mem _ (mem_singleton _), sdiff_singleton_eq_self hxy] at this
   exact this
 
-/-- An independent indexed family of elements in a complete lattice is one in which every element
-  is disjoint from the `iSup` of the rest.
+/--
+An independent indexed family of elements in a complete lattice is one in which every element
+is disjoint from the `iSup` of the rest.
 
-  Example: an indexed family of non-zero elements in a
-  vector space is linearly independent iff the indexed family of subspaces they generate is
-  independent in this sense.
+Example: an indexed family of non-zero elements in a
+vector space is linearly independent iff the indexed family of subspaces they generate is
+independent in this sense.
 
-  Example: an indexed family of submodules of a module is independent in this sense if
-  and only the natural map from the direct sum of the submodules to the module is injective. -/
+Example: an indexed family of submodules of a module is independent in this sense if
+and only the natural map from the direct sum of the submodules to the module is injective.
+-/
 def iSupIndep {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) : Prop :=
   ∀ i : ι, Disjoint (t i) (⨆ (j) (_ : j ≠ i), t j)
 

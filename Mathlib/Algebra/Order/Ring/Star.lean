@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Commutative star-ordered rings are ordered rings
 
@@ -17,7 +20,7 @@ to be an ordered ring is that all nonnegative elements commute.  Consequently, i
 ring is spanned by it nonnegative elements (as is the case for C⋆-algebras) and it is also an
 ordered ring, then it is commutative.
 
-In this file we prove the converse: a *commutative* star-ordered ring is an ordered ring.
+In this file we prove the converse: a _commutative_ star-ordered ring is an ordered ring.
 -/
 
 public section

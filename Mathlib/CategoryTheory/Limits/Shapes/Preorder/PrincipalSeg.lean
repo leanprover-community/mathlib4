@@ -9,13 +9,15 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Cones
 public import Mathlib.Order.InitialSeg
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cocones associated to principal segments
 
 If `f : α <i β` is a principal segment and `F : β ⥤ C`,
 there is a cocone for `f.monotone.functor ⋙ F : α ⥤ C`
 the point of which is `F.obj f.top`.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Interval.Set.Basic
 public import Mathlib.Order.RelClasses
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded and unbounded sets
 
@@ -31,7 +34,9 @@ namespace Set
 
 variable {α : Type*} {r : α → α → Prop} {s t : Set α}
 
-/-! ### Subsets of bounded and unbounded sets -/
+/-!
+# Subsets of bounded and unbounded sets
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -43,7 +48,9 @@ theorem Unbounded.mono (hst : s ⊆ t) (hs : Unbounded r s) : Unbounded r t := f
   let ⟨b, hb, hb'⟩ := hs a
   ⟨b, hst hb, hb'⟩
 
-/-! ### Alternate characterizations of unboundedness on orders -/
+/-!
+# Alternate characterizations of unboundedness on orders
+-/
 
 
 @[to_dual (attr := deprecated "deprecated without replacement" (since := "2026-04-16"))
@@ -70,10 +77,14 @@ theorem unbounded_lt_of_forall_exists_le [Preorder α] (h : ∀ a, ∃ b ∈ s, 
 theorem unbounded_lt_iff [LinearOrder α] : Unbounded (· < ·) s ↔ ∀ a, ∃ b ∈ s, a ≤ b := by
   simp only [Unbounded, not_lt]
 
-/-! ### Relation between boundedness by strict and nonstrict orders. -/
+/-!
+# Relation between boundedness by strict and nonstrict orders.
+-/
 
 
-/-! #### Less and less or equal -/
+/-!
+# Less and less or equal
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -108,7 +119,9 @@ theorem unbounded_lt_iff_unbounded_le [Preorder α] [NoMaxOrder α] :
     Unbounded (· < ·) s ↔ Unbounded (· ≤ ·) s := by
   simp_rw [← not_bounded_iff, bounded_le_iff_bounded_lt]
 
-/-! #### Greater and greater or equal -/
+/-!
+# Greater and greater or equal
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -132,7 +145,9 @@ theorem unbounded_gt_iff_unbounded_ge [Preorder α] [NoMinOrder α] :
     Unbounded (· > ·) s ↔ Unbounded (· ≥ ·) s :=
   @unbounded_lt_iff_unbounded_le αᵒᵈ _ _ _
 
-/-! ### The universal set -/
+/-!
+# The universal set
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -153,14 +168,18 @@ theorem unbounded_ge_univ [LE α] [NoBotOrder α] : Unbounded (· ≥ ·) (@Set.
 theorem unbounded_gt_univ [Preorder α] [NoBotOrder α] : Unbounded (· > ·) (@Set.univ α) :=
   unbounded_gt_of_unbounded_ge unbounded_ge_univ
 
-/-! ### Bounded and unbounded intervals -/
+/-!
+# Bounded and unbounded intervals
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
 theorem bounded_self (a : α) : Bounded r { b | r b a } :=
   ⟨a, fun _ => id⟩
 
-/-! #### Half-open bounded intervals -/
+/-!
+# Half-open bounded intervals
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -195,7 +214,9 @@ theorem bounded_ge_Ici [Preorder α] (a : α) : Bounded (· ≥ ·) (Ici a) :=
 theorem bounded_gt_Ici [Preorder α] [NoMinOrder α] (a : α) : Bounded (· > ·) (Ici a) := by
   simp only [← bounded_ge_iff_bounded_gt, bounded_ge_Ici]
 
-/-! #### Other bounded intervals -/
+/-!
+# Other bounded intervals
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -262,7 +283,9 @@ theorem bounded_ge_Ico [Preorder α] (a b : α) : Bounded (· ≥ ·) (Ico a b) 
 theorem bounded_ge_Icc [Preorder α] (a b : α) : Bounded (· ≥ ·) (Icc a b) :=
   (bounded_ge_Ici a).mono Set.Icc_subset_Ici_self
 
-/-! #### Unbounded intervals -/
+/-!
+# Unbounded intervals
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -285,7 +308,9 @@ theorem unbounded_lt_Ioi [SemilatticeSup α] [NoMaxOrder α] (a : α) :
 theorem unbounded_lt_Ici [SemilatticeSup α] (a : α) : Unbounded (· < ·) (Ici a) := fun b =>
   ⟨a ⊔ b, le_sup_left, le_sup_right.not_gt⟩
 
-/-! ### Bounded initial segments -/
+/-!
+# Bounded initial segments
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -301,7 +326,9 @@ theorem unbounded_inter_not (H : ∀ a b, ∃ m, ∀ c, r c a ∨ r c b → r c 
     Unbounded r (s ∩ { b | ¬r b a }) ↔ Unbounded r s := by
   simp_rw [← not_bounded_iff, bounded_inter_not H]
 
-/-! #### Less or equal -/
+/-!
+# Less or equal
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -339,7 +366,9 @@ theorem unbounded_le_inter_le [LinearOrder α] (a : α) :
   rw [← not_bounded_iff, ← not_bounded_iff, not_iff_not]
   exact bounded_le_inter_le a
 
-/-! #### Less than -/
+/-!
+# Less than
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -377,7 +406,9 @@ theorem unbounded_lt_inter_lt [LinearOrder α] [NoMaxOrder α] (a : α) :
   rw [← not_bounded_iff, ← not_bounded_iff, not_iff_not]
   exact bounded_lt_inter_lt a
 
-/-! #### Greater or equal -/
+/-!
+# Greater or equal
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]
@@ -410,7 +441,9 @@ theorem unbounded_ge_iff_unbounded_inter_ge [LinearOrder α] (a : α) :
     Unbounded (· ≥ ·) (s ∩ { b | b ≤ a }) ↔ Unbounded (· ≥ ·) s :=
   @unbounded_le_inter_le αᵒᵈ s _ a
 
-/-! #### Greater than -/
+/-!
+# Greater than
+-/
 
 
 @[deprecated "deprecated without replacement" (since := "2026-04-16")]

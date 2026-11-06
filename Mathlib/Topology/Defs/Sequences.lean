@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Topology.Defs.Filter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sequences in topological spaces
 
@@ -16,6 +19,7 @@ In this file we define sequential closure, continuity, compactness etc.
 ## Main definitions
 
 ### Set operation
+
 * `seqClosure s`: sequential closure of a set, the set of limits of sequences of points of `s`;
 
 ### Predicates
@@ -29,9 +33,9 @@ In this file we define sequential closure, continuity, compactness etc.
 
 ### Type classes
 
-* `FrechetUrysohnSpace X`: a typeclass saying that a topological space is a *Fréchet-Urysohn
-  space*, i.e., the sequential closure of any set is equal to its closure.
-* `SequentialSpace X`: a typeclass saying that a topological space is a *sequential space*, i.e.,
+* `FrechetUrysohnSpace X`: a typeclass saying that a topological space is a _Fréchet-Urysohn
+  space_, i.e., the sequential closure of any set is equal to its closure.
+* `SequentialSpace X`: a typeclass saying that a topological space is a _sequential space_, i.e.,
   any sequentially closed set in this space is closed. This condition is weaker than being a
   Fréchet-Urysohn space.
 * `SeqCompactSpace X`: a typeclass saying that a topological space is sequentially compact, i.e.,
@@ -81,14 +85,18 @@ class SeqCompactSpace : Prop where
 
 export SeqCompactSpace (isSeqCompact_univ)
 
-/-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
+/--
+A topological space is called a _Fréchet-Urysohn space_, if the sequential closure of any set
 is equal to its closure. Since one of the inclusions is trivial, we require only the non-trivial one
-in the definition. -/
+in the definition.
+-/
 class FrechetUrysohnSpace : Prop where
   closure_subset_seqClosure : ∀ s : Set X, closure s ⊆ seqClosure s
 
-/-- A topological space is said to be a *sequential space* if any sequentially closed set in this
-space is closed. This condition is weaker than being a Fréchet-Urysohn space. -/
+/--
+A topological space is said to be a _sequential space_ if any sequentially closed set in this
+space is closed. This condition is weaker than being a Fréchet-Urysohn space.
+-/
 class SequentialSpace : Prop where
   isClosed_of_seq : ∀ s : Set X, IsSeqClosed s → IsClosed s
 

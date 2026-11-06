@@ -10,11 +10,14 @@ public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
 import Mathlib.LinearAlgebra.Matrix.ToLin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Linear independence and nonsingularity of matrices
 
-In this file we formalize several theorems proved by Yi-Jia Tan in his paper [Tan2016]
-*Free sets and free subsemimodules in a semimodule*. As consequences, we show that
+In this file we formalize several theorems proved by Yi-Jia Tan in his paper \[Tan2016\]
+_Free sets and free subsemimodules in a semimodule_. As consequences, we show that
 commutative semirings satisfy the strong rank condition, and that the columns of a square matrix
 are linearly independent if and only if the matrix is nonsingular (over a commutative ring,
 a matrix is nonsingular if and only if its determinant is not a zero divisor).
@@ -22,12 +25,10 @@ a matrix is nonsingular if and only if its determinant is not a zero divisor).
 ## Main theorems
 
 * `Matrix.Nonsingular.of_linearIndependent_col`: if the columns of a square matrix are linearly
-  independent, then the matrix is nonsingular. Corollary 3.2(1) of [Tan2016].
-
+  independent, then the matrix is nonsingular. Corollary 3.2(1) of \[Tan2016\].
 * `Matrix.Nonsingular.linearIndependent_col`: if a matrix over a commutative semiring with
   cancellative addition is nonsingular, then its columns are linearly independent.
-  Corollary 3.2(2) of [Tan2016].
-
+  Corollary 3.2(2) of \[Tan2016\].
 * `CommSemiring.strongRankCondition_of_nontrivial`: a commutative semiring satisfies the strong
   rank condition.
 -/

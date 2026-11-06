@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.Basic
 
 import Mathlib.Tactic.Push
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
@@ -21,7 +24,9 @@ namespace Nat
 
 section Find
 
-/-! ### `Nat.find` -/
+/-!
+# `Nat.find`
+-/
 
 private def lbp (m n : ℕ) : Prop :=
   m = n + 1 ∧ ∀ k ≤ n, ¬p k
@@ -53,7 +58,8 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun _ h => absurd h (Nat.not_lt_zero _)
 
-/-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
+/--
+If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
 smallest natural number satisfying `p`. Note that `Nat.find` is protected,
 meaning that you can't just write `find`, even if the `Nat` namespace is open.
@@ -155,7 +161,9 @@ lemma find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.fin
 
 end Find
 
-/-! ### `Nat.findGreatest` -/
+/-!
+# `Nat.findGreatest`
+-/
 
 section FindGreatest
 

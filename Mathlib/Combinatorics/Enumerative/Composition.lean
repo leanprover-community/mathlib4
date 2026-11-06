@@ -9,6 +9,9 @@ public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Data.Finset.Sort
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Compositions
 
@@ -36,21 +39,22 @@ between the two types.
   nat subtraction).
 
 Let `c : Composition n` be a composition of `n`. Then
+
 * `c.blocks` is the list of blocks in `c`.
 * `c.length` is the number of blocks in the composition.
 * `c.blocksFun : Fin c.length → ℕ` is the realization of `c.blocks` as a function on
   `Fin c.length`. This is the main object when using compositions to understand the composition of
-    analytic functions.
+  analytic functions.
 * `c.sizeUpTo : ℕ → ℕ` is the sum of the size of the blocks up to `i`.;
 * `c.embedding i : Fin (c.blocksFun i) → Fin n` is the increasing embedding of the `i`-th block in
   `Fin n`;
 * `c.index j`, for `j : Fin n`, is the index of the block containing `j`.
-
 * `Composition.ones n` is the composition of `n` made of ones, i.e., `[1, ..., 1]`.
 * `Composition.single n (hn : 0 < n)` is the composition of `n` made of a single block of size `n`.
 
 Compositions can also be used to split lists. Let `l` be a list of length `n` and `c` a composition
 of `n`.
+
 * `l.splitWrtComposition c` is a list of lists, made of the slices of `l` corresponding to the
   blocks of `c`.
 * `join_splitWrtComposition` states that splitting a list and then joining it gives back the
@@ -85,7 +89,8 @@ Composition, partition
 
 ## References
 
-<https://en.wikipedia.org/wiki/Composition_(combinatorics)>
+[
+https://en.wikipedia.org/wiki/Composition\_(combinatorics)](https://en.wikipedia.org/wiki/Composition_(combinatorics))
 -/
 
 @[expose] public section
@@ -130,7 +135,7 @@ instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
 attribute [simp] CompositionAsSet.zero_mem CompositionAsSet.getLast_mem
 
 /-!
-### Compositions
+# Compositions
 
 A composition of an integer `n` is a decomposition `n = i₀ + ... + i_{k-1}` of `n` into a sum of
 positive integers.
@@ -450,7 +455,9 @@ lemma prod_prod_apply_embedding {A : Type*} [CommMonoid A] (a : Fin n → A) (x 
     ∏ i, ∏ j, a (x.embedding i j) = ∏ i, a i := by
   simpa [Finset.prod_sigma', Finset.univ_sigma_univ] using! x.blocksFinEquiv.prod_comp a
 
-/-! ### The composition `Composition.ones` -/
+/-!
+# The composition `Composition.ones`
+-/
 
 
 /-- The composition made of blocks all of size `1`. -/
@@ -522,7 +529,9 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
 theorem eq_ones_iff_le_length {c : Composition n} : c = ones n ↔ n ≤ c.length := by
   simp [eq_ones_iff_length, le_antisymm_iff, c.length_le]
 
-/-! ### The composition `Composition.single` -/
+/-!
+# The composition `Composition.single`
+-/
 
 /-- The composition made of a single block of size `n`. -/
 def single (n : ℕ) (h : 0 < n) : Composition n :=
@@ -682,7 +691,7 @@ def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : C
 end Composition
 
 /-!
-### Splitting a list
+# Splitting a list
 
 Given a list of length `n` and a composition `c` of `n`, one can split `l` into `c.length` sublists
 of respective lengths `c.blocksFun 0`, ..., `c.blocksFun (c.length-1)`. This is inverse to the
@@ -805,7 +814,7 @@ theorem splitWrtComposition_flatten (L : List (List α)) (c : Composition L.flat
 end List
 
 /-!
-### Compositions as sets
+# Compositions as sets
 
 Combinatorial viewpoints on compositions, seen as finite subsets of `Fin (n+1)` containing `0` and
 `n`, where the points of the set (other than `n`) correspond to the leftmost points of each block.
@@ -959,7 +968,7 @@ def toComposition : Composition n where
 end CompositionAsSet
 
 /-!
-### Equivalence between compositions and compositions as sets
+# Equivalence between compositions and compositions as sets
 
 In this section, we explain how to go back and forth between a `Composition` and a
 `CompositionAsSet`, by showing that their `blocks` and `length` and `boundaries` correspond to

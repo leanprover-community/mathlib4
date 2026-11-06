@@ -12,7 +12,12 @@ public import Mathlib.Data.Int.Cast.Pi
 public import Mathlib.Data.Nat.Cast.Pi
 public import Mathlib.Logic.Function.Iterate
 
-/-! # Typeclasses for `FunLike` and algebraic operations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Typeclasses for `FunLike` and algebraic operations
+
 In this file we provide typeclasses for the compatibility of algebraic structures and `FunLike`
 instances.
 
@@ -24,6 +29,7 @@ The algebraic `FunLike` typeclasses provide a `simp` lemma of the form `add_appl
 lemma `coe_add`.
 
 The following pointwise `Is*Apply` typeclasses are available:
+
 * `IsZeroApply`, `IsOneApply`: `0 x = 0` and `1 x = 1`, respectively
 * `IsAddApply`, `IsMulApply`: `(f + g) x = f x + g x` and `(f * g) x = f x * g x`, respectively
 * `IsSubApply`, `IsDivApply`: `(f - g) x = f x - g x` and `(f / g) x = f x / g x`, respectively
@@ -33,6 +39,7 @@ The following pointwise `Is*Apply` typeclasses are available:
 * `IsNatCastApply`, `IsIntCastApply`: `(n : F) x = n` for `n : ℕ` and `n : ℤ`, respectively
 
 For endomorphism-like objects, we have additionally:
+
 * `IsOneApplyEqSelf`: `1 x = x`
 * `IsMulApplyEqComp`: `(f * g) x = f (g x)`
 * `IsNatCastApplyEqSMul`, `IsIntCastApplyEqSMul`: `(n : F) x = n • x` for `n : ℕ` and `n : ℤ`,
@@ -42,11 +49,11 @@ For every type that declares a `FunLike` instance and an `Add` instance, there s
 an `IsAddApply` instance with the proof usually being solved automatically using `rfl`.
 So for instance for the continuous linear maps equipped with the uniform convergence topology,
 we have the instance
+
 ```
 instance instIsAddApply [TopologicalSpace F] [IsTopologicalAddGroup F] (𝔖 : Set (Set E)) :
     IsAddApply (E →SLᵤ[σ, 𝔖] F) where
 ```
-
 
 There are a few lemmas that apply to any function space as long as they have an `IsAddApply`
 instance. Then it is now possible to define generic lemmas as follows:
@@ -67,7 +74,6 @@ theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
 
 end FunLike
 ```
-
 -/
 
 

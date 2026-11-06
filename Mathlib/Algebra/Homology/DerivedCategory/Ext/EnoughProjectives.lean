@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smallness of Ext-groups from the existence of enough projectives
 
@@ -20,7 +23,6 @@ for a given category `C`, there may be different reasonable choices for the univ
 and if we have two `HasExt.{w₁}` and `HasExt.{w₂}` instances, we would have
 to specify the universe explicitly almost everywhere, which would be an inconvenience.
 So we must be very selective regarding `HasExt` instances.
-
 -/
 
 public section

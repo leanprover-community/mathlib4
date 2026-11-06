@@ -19,6 +19,9 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.Localization.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semilinear sets are closed under intersection, set difference and complement
 
@@ -29,23 +32,24 @@ any commutative monoid.
 
 ## Main Results
 
-- `isSemilinearSet_setOfPred_eq`: the set of solutions to a linear equation `a + f x = b + g y` is
+* `isSemilinearSet_setOfPred_eq`: the set of solutions to a linear equation `a + f x = b + g y` is
   semilinear.
-- `IsSemilinearSet.inter`, `IsSemilinearSet.diff`: semilinear sets are closed under intersection and
+* `IsSemilinearSet.inter`, `IsSemilinearSet.diff`: semilinear sets are closed under intersection and
   set difference.
-- `IsSemilinearSet.compl`: semilinear sets in a finitely generated commutative monoid are closed
+* `IsSemilinearSet.compl`: semilinear sets in a finitely generated commutative monoid are closed
   under complement.
 
 ## References
 
-* [Seymour Ginsburg and Edwin H. Spanier, *Bounded ALGOL-Like Languages*][ginsburg1964]
-* [Samuel Eilenberg and M. P. Schützenberger, *Rational Sets in Commutative Monoids*][eilenberg1969]
+* ‍\[Seymour Ginsburg and Edwin H. Spanier, _Bounded ALGOL-Like Languages_\]\[ginsburg1964\]
+* ‍\[Samuel Eilenberg and M. P. Schützenberger, _Rational Sets in Commutative
+  Monoids_\]\[eilenberg1969\]
 -/
 
 open Set Pointwise AddSubmonoid Matrix
 
 /-!
-### Semilinearity from slice property
+# Semilinearity from slice property
 
 A set `s` is said to have slice property if `a + b + c ∈ s` whenever `a ∈ s`, `a + b ∈ s` and
 `a + c ∈ s`. In `ℕ ^ k`, any set that has slice property is a semilinear set. This is an important
@@ -158,7 +162,9 @@ private theorem Nat.isSemilinearSet_of_isSlice {ι : Type*} [Finite ι] {s : Set
     apply ih _ (Finset.erase_ssubset hi) (hs.sep_apply_eq _ _) (Function.update a i j)
     grind [Function.update]
 
-/-! ### Semilinearity of linear equations and preimages -/
+/-!
+# Semilinearity of linear equations and preimages
+-/
 
 variable {M N ι κ : Type*} [AddCommMonoid M] [AddCommMonoid N] {s s₁ s₂ : Set M}
 
@@ -241,7 +247,9 @@ public theorem IsSemilinearSet.preimage [AddMonoid.FG M] {F : Type*} [FunLike F 
   rw [← preimage_comp, ← AddMonoidHom.coe_ofClass, ← AddMonoidHom.coe_comp]
   exact Nat.isSemilinearSet_preimage hs _
 
-/-! ### Semilinear sets are included in finitely generated submonoids -/
+/-!
+# Semilinear sets are included in finitely generated submonoids
+-/
 
 public lemma IsLinearSet.exists_fg_eq_subtypeVal (hs : IsLinearSet s) :
     ∃ (P : AddSubmonoid M) (s' : Set P), P.FG ∧ IsLinearSet s' ∧ s = Subtype.val '' s' := by
@@ -273,7 +281,9 @@ public lemma IsSemilinearSet.exists_fg_eq_subtypeVal₂ (hs₁ : IsSemilinearSet
     (AddSubmonoid.inclusion le_sup_right) '' s₂', hP₁.sup hP₂, hs₁'.image _, ?_, hs₂'.image _, ?_⟩
     <;> simp_rw [image_image, AddSubmonoid.coe_inclusion]
 
-/-! ### Semilinearity of intersection -/
+/-!
+# Semilinearity of intersection
+-/
 
 private lemma Nat.isSemilinearSet_inter_of_isLinearSet [Finite ι] {s₁ s₂ : Set (ι → ℕ)}
     (hs₁ : IsLinearSet s₁) (hs₂ : IsLinearSet s₂) : IsSemilinearSet (s₁ ∩ s₂) := by
@@ -335,20 +345,20 @@ public theorem IsSemilinearSet.biInter_finset [AddMonoid.FG M] {s : Finset ι} {
   biInter s.finite_toSet ht
 
 /-!
-### Semilinearity of complement and set difference
+# Semilinearity of complement and set difference
 
 We first show that the complement of a proper linear set `s` in `ℕ ^ k` is semilinear, through
 several private definitions:
 
 1. `base`, `periods`: the base vector and the set of periods of the proper linear set `s`.
 2. `basisSet`, `basis`: the linearly independent periods of `s` can be extended to a basis of
-  `ℚ ^ k`.
+   `ℚ ^ k`.
 3. `fundamentalDomain`: the set of vectors in `ℕ ^ k`, starting from `base`, with coordinates under
-  `basis` in `[0, 1) ^ k`.
+   `basis` in `[0, 1) ^ k`.
 4. `floor`, `fract`: every vector in `ℕ ^ k` can be decomposed into a `ℤ`-linear combination of
-  `basisSet` and a vector in `fundamentalDomain`.
+   `basisSet` and a vector in `fundamentalDomain`.
 5. `setOfFractNe`, `setOfFloorNeg`, `setOfFloorPos`: the complement of `s` is decomposed into three
-  semilinear sets.
+   semilinear sets.
 
 Closure of semilinear sets under complement and set difference follows.
 -/

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariance of measures along a kernel
 
@@ -16,7 +19,6 @@ kernel `μ.bind κ` is the same measure.
 ## Main definitions
 
 * `ProbabilityTheory.Kernel.Invariant`: invariance of a given measure with respect to a kernel.
-
 -/
 
 @[expose] public section
@@ -32,7 +34,9 @@ variable {α : Type*} {mα : MeasurableSpace α}
 
 namespace Kernel
 
-/-! ### Invariant measures of kernels -/
+/-!
+# Invariant measures of kernels
+-/
 
 /-- A measure `μ` is invariant with respect to the kernel `κ` if the push-forward measure of `μ`
 along `κ` equals `μ`. -/
@@ -51,7 +55,9 @@ theorem Invariant.comp (hκ : Invariant κ μ) (hη : Invariant η μ) :
     Invariant (κ ∘ₖ η) μ := by
   rw [Invariant, ← Measure.comp_assoc, hη, hκ]
 
-/-! ### Reversibility of kernels -/
+/-!
+# Reversibility of kernels
+-/
 
 /-- Reversibility (detailed balance) of a Markov kernel `κ` w.r.t. a measure `π`:
 for all measurable sets `A B`, the mass flowing from `A` to `B` equals that from `B` to `A`. -/

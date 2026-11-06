@@ -10,16 +10,15 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.NumberTheory.NumberField.Basic
 public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dirichlet density of a set of prime ideals
 
 Let `K` be a number field. Given a set `S` of nonzero prime ideals of `𝓞 K`, its Dirichlet
 density is
-$$
-\delta(S) = \lim_{s \to 1^+}
-  \frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}}
-    {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},
-$$
+$$`  \delta(S) = \lim_{s \to 1^+} \frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}} {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},  `
 when this limit exists. The sum in the denominator runs over all nonzero prime ideals of `𝓞 K`.
 
 This is captured by the predicate `HasDirichletDensity S δ`, stating that the ratio tends to `δ`,
@@ -33,7 +32,6 @@ it does not exist).
 * `NumberField.hasDirichletDensity_empty` — the empty set has Dirichlet density `0`.
 * `NumberField.dirichletDensity_nonneg` — the Dirichlet density is nonnegative.
 * `NumberField.dirichletDensity_le_one` — the Dirichlet density is at most `1`.
-
 -/
 
 public section
@@ -50,7 +48,9 @@ open NumberField
 
 variable {K : Type*} [Field K] [NumberField K] (S : Set (HeightOneSpectrum (𝓞 K)))
 
-/-- The partial Dirichlet series $\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$. -/
+/--
+The partial Dirichlet series $`\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}`.
+-/
 def primeIdealZetaSum (S : Set (HeightOneSpectrum (𝓞 K))) (s : ℝ) : ℝ :=
   ∑' 𝔭 : S, (Ideal.absNorm 𝔭.1.asIdeal : ℝ) ^ (-s)
 
@@ -62,22 +62,23 @@ theorem primeIdealZetaSum_nonneg (s : ℝ) :
   tsum_nonneg fun _ ↦ by positivity
 
 variable {S} in
-/-- For a finite set `S` of prime ideals, the partial sum
-$\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}$ is bounded above by the number of
-elements of `S`. -/
+/--
+For a finite set `S` of prime ideals, the partial sum
+$`\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}` is bounded above by the number of
+elements of `S`.
+-/
 theorem primeIdealZetaSum_le_card_of_finite (hS : S.Finite) {s : ℝ} (hs : 0 ≤ s) :
     S.primeIdealZetaSum s ≤ S.ncard := by
   replace hS := hS.to_subtype
   grw [primeIdealZetaSum_def, Real.rpow_le_one_of_one_le_of_nonpos] <;>
   simp [Summable.of_finite, Nat.one_le_iff_ne_zero, hs, HeightOneSpectrum.ne_bot]
 
-/-- `S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
+/--
+`S` has Dirichlet density `δ` when the ratio of the partial sum over `S` to the sum over all
 nonzero prime ideals,
-$$
-\frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}}
-  {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},
-$$
-tends to `δ` as $s \to 1^+$. -/
+$$`  \frac{\sum_{\mathfrak p \in S} \operatorname{N} \mathfrak p^{-s}} {\sum_{\mathfrak p} \operatorname{N} \mathfrak p^{-s}},  `
+tends to `δ` as $`s \to 1^+`.
+-/
 def HasDirichletDensity (δ : ℝ) : Prop :=
   Tendsto (fun s : ℝ ↦ S.primeIdealZetaSum s /
     primeIdealZetaSum (univ : Set (HeightOneSpectrum (𝓞 K))) s) (𝓝[>] 1) (𝓝 δ)

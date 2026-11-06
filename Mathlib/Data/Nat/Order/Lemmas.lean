@@ -10,6 +10,9 @@ public import Mathlib.Data.Set.Basic
 
 import Mathlib.Tactic.ByContra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Further lemmas about the natural numbers
 
@@ -24,7 +27,9 @@ assert_not_exists RelIso
 
 namespace Nat
 
-/-! ### Sets -/
+/-!
+# Sets
+-/
 
 
 instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] : OrderBot s where

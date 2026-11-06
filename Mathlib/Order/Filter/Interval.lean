@@ -10,6 +10,9 @@ public import Mathlib.Order.Interval.Set.OrdConnected
 
 import Mathlib.Order.Filter.Bases.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence of intervals
 
@@ -72,7 +75,6 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ici a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
 | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` | `𝓝[Set.Ioi a] b` |
 | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` | `𝓝[Set.Iio a] b` |
-
 -/
 
 public section
@@ -86,7 +88,8 @@ namespace Filter
 
 section Preorder
 
-/-- A pair of filters `l₁`, `l₂` has `TendstoIxxClass Ixx` property if `Ixx a b` tends to
+/--
+A pair of filters `l₁`, `l₂` has `TendstoIxxClass Ixx` property if `Ixx a b` tends to
 `l₂.small_sets` as `a` and `b` tend to `l₁`. In all instances `Ixx` is one of `Set.Icc`, `Set.Ico`,
 `Set.Ioc`, or `Set.Ioo`. The instances provide the best `l₂` for a given `l₁`. In many cases
 `l₁ = l₂` but sometimes we can drop an endpoint from an interval: e.g., we prove
@@ -95,12 +98,15 @@ eventually to `Set.Iic a`, then the interval `Set.Ico (u₁ n) (u₂ n)` is even
 `Set.Iio a`.
 
 We mark `l₂` as an `outParam` so that Lean can automatically find an appropriate `l₂` based on
-`Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`. -/
+`Ixx` and `l₁`. This way, e.g., `tendsto.Ico h₁ h₂` works without specifying explicitly `l₂`.
+-/
 class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : outParam <| Filter α) : Prop where
-  /-- `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
-  `s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
+  /--
+  `Function.uncurry Ixx` tends to `l₂.smallSets` along `l₁ ×ˢ l₁`. In other words, for any
+`s ∈ l₂` there exists `t ∈ l₁` such that `Ixx x y ⊆ s` whenever `x ∈ t` and `y ∈ t`.
 
-  Use lemmas like `Filter.Tendsto.Icc` instead. -/
+  Use lemmas like `Filter.Tendsto.Icc` instead.
+  -/
   tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 
 theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :

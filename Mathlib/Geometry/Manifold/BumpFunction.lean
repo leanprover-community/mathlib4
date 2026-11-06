@@ -13,6 +13,9 @@ import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 import Mathlib.Geometry.Manifold.Notation
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Smooth bump functions on a smooth manifold
 
@@ -48,13 +51,14 @@ open scoped Topology Manifold ContDiff
 noncomputable section
 
 /-!
-### Smooth bump function
+# Smooth bump function
 
 In this section we define a structure for a bundled smooth bump function and prove its properties.
 -/
 
 variable (I) in
-/-- Given a smooth manifold modelled on a finite-dimensional space `E`,
+/--
+Given a smooth manifold modelled on a finite-dimensional space `E`,
 `f : SmoothBumpFunction I M` is a smooth function on `M` such that in the extended chart `e` at
 `f.c`:
 
@@ -65,7 +69,8 @@ variable (I) in
 The structure contains data required to construct a function with these properties. The function is
 available as `⇑f` or `f x`. Formal statements of the properties listed above involve some
 (pre)images under `extChartAt I f.c` and are given as lemmas in the `SmoothBumpFunction`
-namespace. -/
+namespace.
+-/
 structure SmoothBumpFunction (c : M) extends ContDiffBump (extChartAt I c c) where
   closedBall_subset : closedBall (extChartAt I c c) rOut ∩ range I ⊆ (extChartAt I c).target
 

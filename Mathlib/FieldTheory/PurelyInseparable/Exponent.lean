@@ -7,8 +7,10 @@ module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The exponent of purely inseparable extensions
 
 This file defines the exponent of a purely inseparable extension (if one exists) and
@@ -20,22 +22,21 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
 
 ## Main definitions
 
-- `IsPurelyInseparable.HasExponent`: typeclass to assert a purely inseparable field extension
+* `IsPurelyInseparable.HasExponent`: typeclass to assert a purely inseparable field extension
   `L / K` has an exponent, that is a smallest natural number `e` such that
   `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`.
-- `IsPurelyInseparable.exponent`: the exponent of a purely inseparable field extension.
-- `IsPurelyInseparable.elemExponent`: the exponent of an element of a purely inseparable
+* `IsPurelyInseparable.exponent`: the exponent of a purely inseparable field extension.
+* `IsPurelyInseparable.elemExponent`: the exponent of an element of a purely inseparable
   field extension, that is the smallest natural number `e` such that `a ^ ringExpChar K ^ e ∈ K`.
-- `IsPurelyInseparable.iterateFrobenius`: the iterated Frobenius map (ring homomorphism) `L →+* K`
+* `IsPurelyInseparable.iterateFrobenius`: the iterated Frobenius map (ring homomorphism) `L →+* K`
   for purely inseparable field extension `L / K` with exponent; for `n ≥ exponent K L`, it acts like
   `x ↦ x ^ p ^ n` but the codomain is the base field `K`.
-- `IsPurelyInseparable.iterateFrobeniusₛₗ`: version of `iterateFrobenius` as a semilinear map over
+* `IsPurelyInseparable.iterateFrobeniusₛₗ`: version of `iterateFrobenius` as a semilinear map over
   a subfield `F` of `K`, w.r.t. the iterated Frobenius homomorphism on `F`.
 
 ## Tags
 
 purely inseparable
-
 -/
 
 @[expose] public section
@@ -60,8 +61,10 @@ theorem hasExponent_iff' (p : ℕ) [ExpChar K p] :
   ringExpChar.eq K p ▸ hasExponent_iff K L
 
 open scoped Classical in
-/-- The *exponent* of a purely inseparable extension is the smallest
-natural number `e` such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`. -/
+/--
+The _exponent_ of a purely inseparable extension is the smallest
+natural number `e` such that `a ^ ringExpChar K ^ e ∈ K` for all `a ∈ L`.
+-/
 noncomputable def exponent [HasExponent K L] : ℕ :=
   Nat.find ‹HasExponent K L›.has_exponent
 

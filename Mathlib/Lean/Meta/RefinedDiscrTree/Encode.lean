@@ -10,6 +10,9 @@ public import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 
 import Lean.Meta.DiscrTree
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Encoding an `Expr` as a sequence of `Key`s
 
@@ -25,10 +28,10 @@ The first step, which is used when initializing the tree,
 is computed by `initializeLazyEntryWithEta`.
 
 To compute all the keys at once, we have
+
 * `encodeExprWithEta`, which computes all possible key sequences.
 * `encodeExpr`, which computes the canonical key sequence.
   This will be used for expressions that are looked up in a `RefinedDiscrTree` using `getMatch`.
-
 -/
 
 public section

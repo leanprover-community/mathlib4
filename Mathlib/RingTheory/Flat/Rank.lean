@@ -10,8 +10,10 @@ public import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
 import Mathlib.LinearAlgebra.Trace
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Results for the rank of a finite flat algebra
 
 In this file we study a finite, flat `R`-algebra `S` and relate injectivity and
@@ -19,13 +21,12 @@ bijectivity of `R → S` with the rank of `S` over `R`.
 
 ## Main results
 
-- `PrimeSpectrum.comap_surjective_iff_injective_of_finite`: `Spec S → Spec R` is surjective
+* `PrimeSpectrum.comap_surjective_iff_injective_of_finite`: `Spec S → Spec R` is surjective
   if and only if `R → S` is injective.
-- `Module.Flat.tfae_algebraMap_surjective`: `R → S` is surjective iff `S ⊗[R] S → S` is an
+* `Module.Flat.tfae_algebraMap_surjective`: `R → S` is surjective iff `S ⊗[R] S → S` is an
   isomorphism iff the rank of `S` is at most `1` at all primes.
-- `Module.algebraMap_bijective_iff_rankAtStalk`: `S` is of constant `R`-rank `1` if and only if
+* `Module.algebraMap_bijective_iff_rankAtStalk`: `S` is of constant `R`-rank `1` if and only if
   `S` is isomorphic to `R`.
-
 -/
 
 public section

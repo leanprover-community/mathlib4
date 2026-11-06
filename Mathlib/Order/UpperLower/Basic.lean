@@ -11,6 +11,9 @@ public import Mathlib.Order.SetNotation
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.WellFounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of unbundled upper/lower sets
 

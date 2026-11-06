@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.Quotient.Basic
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
 
@@ -20,9 +23,10 @@ We also include results about the relation between quotients of submodules and q
 ideals here.
 
 ## Main definitions
-- `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
+
+* `Submodule.factorPow`: the linear map from `M ⧸ I ^ m • ⊤` to `M ⧸ I ^ n • ⊤` induced by
   the natural inclusion `I ^ n • ⊤ → I ^ m • ⊤`.
-- `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
+* `Ideal.Quotient.factorPow`: the ring homomorphism from `R ⧸ I ^ m`
   to `R ⧸ I ^ n` induced by the natural inclusion `I ^ n → I ^ m`.
 
 ## Main results

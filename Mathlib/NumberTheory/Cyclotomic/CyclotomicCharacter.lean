@@ -12,8 +12,10 @@ public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.Topology.Algebra.Group.Units
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the
@@ -37,7 +39,6 @@ of `1` in `L`.
 * `modularCyclotomicCharacter L n hn : (L ≃+* L) →* (ZMod n)ˣ` sends `g` to the unique `j` such
   that `g(ζ)=ζ^j` for all `ζ : rootsOfUnity n L`. Here `hn` is a proof that there
   are `n` `n`th roots of unity in `L`.
-
 * `cyclotomicCharacter L p : (L ≃+* L) →* ℤ_[p]ˣ` sends `g` to the unique `j` such
   that `g(ζ) = ζ ^ (j mod pⁱ)` for all `pⁱ`-th roots of unity `ζ`.
 

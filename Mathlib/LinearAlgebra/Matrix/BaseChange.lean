@@ -8,17 +8,20 @@ module
 public import Mathlib.Algebra.Field.Subfield.Defs
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices and base change
 
 This file is a home for results about base change for matrices.
 
 ## Main results:
+
 * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_right`: if an invertible matrix over `L` takes
   values in subfield `K ⊆ L`, then so does its (right) inverse.
 * `Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left`: if an invertible matrix over `L` takes
   values in subfield `K ⊆ L`, then so does its (left) inverse.
-
 -/
 
 public section

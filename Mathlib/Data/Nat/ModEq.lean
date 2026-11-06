@@ -13,6 +13,9 @@ public import Mathlib.Data.Nat.GCD.Basic
 
 import Mathlib.Data.Nat.Cast.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Congruences modulo a natural number
 
@@ -223,9 +226,11 @@ protected lemma sub_left (hba : b ≤ a) (hca : c ≤ a) (hbc : b ≡ c [MOD n])
 protected lemma sub_right (hab : a ≤ b) (hac : a ≤ c) (hbc : b ≡ c [MOD n]) :
     b - a ≡ c - a [MOD n] := .sub hab hac hbc .rfl
 
-/-- Cancel left multiplication on both sides of the `≡` and in the modulus.
+/--
+Cancel left multiplication on both sides of the `≡` and in the modulus.
 
-For cancelling left multiplication in the modulus, see `Nat.ModEq.of_mul_left`. -/
+For cancelling left multiplication in the modulus, see `Nat.ModEq.of_mul_left`.
+-/
 protected theorem mul_left_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] → a ≡ b [MOD m] := by
   simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.mul_sub]
@@ -235,9 +240,11 @@ protected theorem mul_left_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     c * a ≡ c * b [MOD c * m] ↔ a ≡ b [MOD m] :=
   ⟨ModEq.mul_left_cancel' hc, ModEq.mul_left' _⟩
 
-/-- Cancel right multiplication on both sides of the `≡` and in the modulus.
+/--
+Cancel right multiplication on both sides of the `≡` and in the modulus.
 
-For cancelling right multiplication in the modulus, see `Nat.ModEq.of_mul_right`. -/
+For cancelling right multiplication in the modulus, see `Nat.ModEq.of_mul_right`.
+-/
 protected theorem mul_right_cancel' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] → a ≡ b [MOD m] := by
   simp only [modEq_iff_dvd, Int.natCast_mul, ← Int.sub_mul]
@@ -247,16 +254,20 @@ protected theorem mul_right_cancel_iff' {a b c m : ℕ} (hc : c ≠ 0) :
     a * c ≡ b * c [MOD m * c] ↔ a ≡ b [MOD m] :=
   ⟨ModEq.mul_right_cancel' hc, ModEq.mul_right' _⟩
 
-/-- Cancel left multiplication in the modulus.
+/--
+Cancel left multiplication in the modulus.
 
-For cancelling left multiplication on both sides of the `≡`, see `nat.modeq.mul_left_cancel'`. -/
+For cancelling left multiplication on both sides of the `≡`, see `nat.modeq.mul_left_cancel'`.
+-/
 lemma of_mul_left (m : ℕ) (h : a ≡ b [MOD m * n]) : a ≡ b [MOD n] := by
   rw [modEq_iff_dvd] at *
   exact (dvd_mul_left (n : ℤ) (m : ℤ)).trans h
 
-/-- Cancel right multiplication in the modulus.
+/--
+Cancel right multiplication in the modulus.
 
-For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.mul_right_cancel'`. -/
+For cancelling right multiplication on both sides of the `≡`, see `nat.modeq.mul_right_cancel'`.
+-/
 lemma of_mul_right (m : ℕ) : a ≡ b [MOD n * m] → a ≡ b [MOD n] := mul_comm m n ▸ of_mul_left _
 
 theorem of_div (h : a / c ≡ b / c [MOD m / c]) (ha : c ∣ a) (ha : c ∣ b) (ha : c ∣ m) :

@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Algebra.Homology.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes in full subcategories
-
 -/
 
 @[expose] public section

@@ -10,7 +10,11 @@ public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 
 import Mathlib.MeasureTheory.Integral.IntervalIntegral.ContDiff
 
-/-! # Riemannian manifolds
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Riemannian manifolds
 
 A Riemannian manifold `M` is a real manifold such that its tangent spaces are endowed with an
 inner product, depending smoothly on the point, and such that `M` has an emetric space
@@ -28,6 +32,7 @@ may endow the manifold with an emetric space structure, see `EMetricSpace.ofRiem
 By definition, it then satisfies the predicate `IsRiemannianManifold I M`.
 
 The following code block is the standard way to say "Let `M` be a `C^∞` Riemannian manifold".
+
 ```
 open scoped Bundle
 variable
@@ -38,6 +43,7 @@ variable
   [IsContMDiffRiemannianBundle I ∞ E (fun (x : M) ↦ TangentSpace I x)]
   [IsRiemannianManifold I M]
 ```
+
 To register a `C^n` manifold for a general `n`, one should replace `[IsManifold I ∞ M]` with
 `[IsManifold I n M] [IsManifold I 1 M]`, where the second one is needed to ensure that the
 tangent bundle is well behaved (not necessary when `n` is concrete like 2 or 3 as there are
@@ -68,15 +74,17 @@ variable [PseudoEMetricSpace M] [ChartedSpace H M]
   [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
 
 variable (I M) in
-/-- Consider a manifold in which the tangent spaces are already endowed with an inner product, and
+/--
+Consider a manifold in which the tangent spaces are already endowed with an inner product, and
 the space is already endowed with an extended distance. We say that this is a Riemannian manifold
 if the distance is given by the infimum of the lengths of `C^1` paths, measured using the norm in
 the tangent spaces.
 
 This is a `Prop`-valued typeclass, on top of existing data.
 
-If you need to *construct* a distance using a Riemannian structure,
-see `EMetricSpace.ofRiemannianMetric`. -/
+If you need to _construct_ a distance using a Riemannian structure,
+see `EMetricSpace.ofRiemannianMetric`.
+-/
 class IsRiemannianManifold : Prop where
   out (x y : M) : edist x y = riemannianEDist I x y
 
@@ -85,7 +93,7 @@ end
 section
 
 /-!
-### Riemannian structure on an inner product vector space
+# Riemannian structure on an inner product vector space
 
 We endow an inner product vector space with the canonical Riemannian metric, given by the
 inner product of the vector space in each of the tangent spaces, and we show that this construction
@@ -183,7 +191,7 @@ end
 section
 
 /-!
-### Constructing a distance from a Riemannian structure
+# Constructing a distance from a Riemannian structure
 
 Let `M` be a real manifold with a Riemannian structure. We construct the associated distance and
 show that the associated topology coincides with the pre-existing topology. Therefore, one may
@@ -212,11 +220,13 @@ open scoped NNReal
 variable [RiemannianBundle (fun (x : M) ↦ TangentSpace% x)]
   [IsManifold I 1 M] [IsContinuousRiemannianBundle E (fun (x : M) ↦ TangentSpace% x)]
 
-/-- Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
+/--
+Register on the tangent space to a normed vector space the same `NormedAddCommGroup` structure
 as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
-structure for inner product spaces, but can be activated locally. -/
+structure for inner product spaces, but can be activated locally.
+-/
 @[instance_reducible]
 def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
     NormedAddCommGroup (TangentSpace% x) :=
@@ -224,11 +234,13 @@ def normedAddCommGroupTangentSpaceVectorSpace (x : E) :
 
 attribute [local instance] normedAddCommGroupTangentSpaceVectorSpace
 
-/-- Register on the tangent space to a normed vector space the same `NormedSpace` structure
+/--
+Register on the tangent space to a normed vector space the same `NormedSpace` structure
 as in the vector space.
 
 Should not be a global instance, as it does not coincide definitionally with the Riemannian
-structure for inner product spaces, but can be activated locally. -/
+structure for inner product spaces, but can be activated locally.
+-/
 @[instance_reducible]
 def normedSpaceTangentSpaceVectorSpace (x : E) : NormedSpace ℝ (TangentSpace% x) :=
   inferInstanceAs (NormedSpace ℝ E)
@@ -512,12 +524,14 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds' [RegularSpace M] {x : M} {s : Se
 alias setOf_riemannianEDist_lt_subset_nhds' := setOfPred_riemannianEDist_lt_subset_nhds'
 
 variable (M) in
-/-- The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
+/--
+The pseudoemetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
-additionally the predicate `IsRiemannianManifold I M`. -/
+additionally the predicate `IsRiemannianManifold I M`.
+-/
 @[reducible] def PseudoEMetricSpace.ofRiemannianMetric [RegularSpace M] : PseudoEMetricSpace M :=
   PseudoEMetricSpace.ofEDistOfTopology (riemannianEDist I (M := M))
     (fun _ ↦ riemannianEDist_self)
@@ -537,12 +551,14 @@ instance [RegularSpace M] :
   exact ⟨fun x y ↦ rfl⟩
 
 variable (M) in
-/-- The emetric space structure associated to a Riemannian metric on a manifold. Designed
+/--
+The emetric space structure associated to a Riemannian metric on a manifold. Designed
 so that the topology is defeq to the original one.
 
 This should only be used when constructing data in specific situations. To develop the theory,
 one should rather assume that there is an already existing emetric space structure, which satisfies
-additionally the predicate `IsRiemannianManifold I M`. -/
+additionally the predicate `IsRiemannianManifold I M`.
+-/
 @[reducible] def EMetricSpace.ofRiemannianMetric [T3Space M] : EMetricSpace M :=
   letI : PseudoEMetricSpace M := .ofRiemannianMetric I M
   EMetricSpace.ofT0PseudoEMetricSpace M

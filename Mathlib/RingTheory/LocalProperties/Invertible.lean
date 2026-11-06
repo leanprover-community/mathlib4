@@ -11,12 +11,16 @@ public import Mathlib.RingTheory.PicardGroup
 import Mathlib.RingTheory.Flat.Localization
 import Mathlib.RingTheory.LocalProperties.FinitePresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Module.Invertible` is a local property
 
 In this file, we prove that `Module.Invertible` is a local property.
 
 ## Main results
+
 * `Module.Invertible.of_isLocalized_maximal`: Let `M` be a finite `R`-module, then `M` is invertible
   if `Mₘ` is invertible for any maximal ideal `m` of `R`.
 * `FinitePresentation.of_finite_of_flat_of_rankAtStalk_constant`:

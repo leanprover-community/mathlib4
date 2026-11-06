@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.Stonean.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjunctions involving the category of Stonean spaces
 

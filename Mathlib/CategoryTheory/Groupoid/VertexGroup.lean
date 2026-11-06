@@ -9,10 +9,13 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vertex group
 
-This file defines the vertex group (*aka* isotropy group) of a groupoid at a vertex.
+This file defines the vertex group (_aka_ isotropy group) of a groupoid at a vertex.
 
 ## Implementation notes
 

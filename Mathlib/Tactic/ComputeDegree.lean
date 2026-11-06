@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 
 # `compute_degree` and `monicity`: tactics for explicit polynomials
@@ -152,9 +156,11 @@ end SMul
 
 section congr_lemmas
 
-/-- The following two lemmas should be viewed as a hand-made "congr"-lemmas.
+/--
+The following two lemmas should be viewed as a hand-made "congr"-lemmas.
 They achieve the following goals.
-* They introduce *two* fresh metavariables replacing the given one `deg`,
+
+* They introduce _two_ fresh metavariables replacing the given one `deg`,
   one for the `natDegree ≤` computation and one for the `coeff =` computation.
   This helps `compute_degree`, since it does not "pre-estimate" the degree,
   but it "picks it up along the way".
@@ -213,14 +219,17 @@ section Tactic
 
 open Lean Elab Tactic Meta Expr
 
-/-- `twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
+/--
+`twoHeadsArgs e` takes an `Expr`ession `e` as input and recurses into `e` to make sure
 that `e` looks like `lhs ≤ rhs`, `lhs < rhs` or `lhs = rhs` and that `lhs` is one of
 `natDegree f, degree f, coeff f d`.
 It returns
+
 * the function being applied on the LHS (`natDegree`, `degree`, or `coeff`),
   or else `.anonymous` if it's none of these;
 * the name of the relation (`Eq`, `LE.le` or `LT.lt`), or else `.anonymous` if it's none of these;
 * either
+
   * `.inl zero`, `.inl one`, or `.inl many` if the polynomial in a numeral;
   * or `.inr` of the head symbol of `f`;
   * or `.inl .anonymous` if inapplicable;
@@ -231,6 +240,7 @@ This is all the data needed to figure out whether `compute_degree` can make prog
 and, if so, which lemma it should apply.
 
 Sample outputs:
+
 * `natDegree (f + g) ≤ d => (natDegree, LE.le, HAdd.hAdd, d.isMVar, none)` (similarly for `=`);
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
@@ -270,15 +280,17 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
 /--
 `getCongrLemma (lhs_name, rel_name, Mvars?)` returns the name of a lemma that preprocesses
 one of the seven targets
-*  `natDegree f ≤ d`;
-*  `natDegree f < d`;
-*  `natDegree f = d`;
-*  `degree f ≤ d`;
-*  `degree f < d`;
-*  `degree f = d`.
-*  `coeff f d = r`.
+
+* `natDegree f ≤ d`;
+* `natDegree f < d`;
+* `natDegree f = d`;
+* `degree f ≤ d`;
+* `degree f < d`;
+* `degree f = d`.
+* `coeff f d = r`.
 
 The end goals are of the form
+
 * `natDegree f ≤ ?_`, `degree f ≤ ?_`, `coeff f ?_ = ?_`, or `?_ < d` with fresh metavariables;
 * `coeff f m ≠ s` with `m, s` not necessarily metavariables;
 * several equalities/inequalities between expressions and assignments for metavariables.
@@ -375,7 +387,8 @@ def dispatchLemma
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
-/-- `tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
+/--
+`tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
@@ -414,7 +427,8 @@ namely, goals of the form
 `splitApply` determines which of these goals are actually within the scope, it applies the relevant
 lemma and returns two lists: the left-over goals of all the applications, followed by the
 concatenation of the previous `static` list, followed by the newly discovered goals outside of the
-scope of `compute_degree`. -/
+scope of `compute_degree`.
+-/
 def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
   let (can_progress, curr_static) ← mvs.partitionM fun mv => do
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
@@ -423,7 +437,9 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
     mv.applyConst lem
   return (progress.flatten, static ++ curr_static)
 
-/-- `miscomputedDegree? deg false_goals` takes as input
+/--
+`miscomputedDegree? deg false_goals` takes as input
+
 * an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
 * a list of `MVarId`s `false_goals`.
@@ -431,6 +447,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
+
 * `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0` —
   reducing to `False` means that the coefficient that was supposed to vanish, does not;
 * `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial` —
@@ -458,11 +475,12 @@ def miscomputedDegree? (deg : Expr) : List Expr → List MessageData
 
 /--
 `compute_degree` is a tactic to solve goals of the form
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `coeff f d = r`, if `d` is the degree of `f`.
+
+* `natDegree f = d`,
+* `degree f = d`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `coeff f d = r`, if `d` is the degree of `f`.
 
 The tactic may leave goals of the form `d' = d`, `d' ≤ d`, `d' < d`, or `r ≠ 0`, where `d'` in `ℕ`
 or `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
@@ -521,7 +539,8 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
             throwError Lean.MessageData.joinSep
               (m!"The given degree is '{deg}'.  However,\n" :: errors) "\n"
 
-/-- `monicity` tries to solve a goal of the form `Monic f`.
+/--
+`monicity` tries to solve a goal of the form `Monic f`.
 It converts the goal into a goal of the form `natDegree f ≤ n` and one of the form `f.coeff n = 1`
 and calls `compute_degree` on those two goals.
 

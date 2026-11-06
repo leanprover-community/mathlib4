@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
 public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The homotopy category of fibrant objects
 
@@ -21,8 +24,8 @@ This file was obtained by dualizing the definitions in
 `Mathlib/AlgebraicTopology/ModelCategory/CofibrantObjectHomotopy.lean`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
 
+* ‍\[Daniel G. Quillen, Homotopical algebra\]\[Quillen1967\]
 -/
 
 @[expose] public section

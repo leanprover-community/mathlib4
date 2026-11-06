@@ -10,6 +10,9 @@ public import Mathlib.Order.Irreducible
 public import Mathlib.Topology.Order.LowerUpperTopology
 public import Mathlib.Topology.Sets.Closeds
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hull-Kernel Topology
 
@@ -25,12 +28,12 @@ topology" also occur in the literature.
 
 ## Main statements
 
-- `PrimitiveSpectrum.isTopologicalBasis_relativeLower` - the sets `(hull a)ᶜ` form a basis for the
+* `PrimitiveSpectrum.isTopologicalBasis_relativeLower` - the sets `(hull a)ᶜ` form a basis for the
   relative lower topology on `T`.
-- `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `(hull a)ᶜ` are the relative
+* `PrimitiveSpectrum.isOpen_iff` - for a complete lattice, the sets `(hull a)ᶜ` are the relative
   topology.
-- `PrimitiveSpectrum.gc` - the `kernel` and the `hull` form a Galois connection
-- `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
+* `PrimitiveSpectrum.gc` - the `kernel` and the `hull` form a Galois connection
+* `PrimitiveSpectrum.gi` - when `T` generates `α`, the Galois connection becomes an insertion.
 
 ## Implementation notes
 
@@ -44,13 +47,13 @@ primitive spectrum of the lattice of M-ideals of a Banach space.
 
 ## References
 
-* [Gierz et al, *A Compendium of Continuous Lattices*][GierzEtAl1980]
-* [Henriksen et al, *Joincompact spaces, continuous lattices and C⋆-algebras*][henriksen_et_al1997]
+* ‍\[Gierz et al, _A Compendium of Continuous Lattices_\]\[GierzEtAl1980\]
+* ‍\[Henriksen et al, _Joincompact spaces, continuous lattices and
+  C⋆-algebras_\]\[henriksen\_et\_al1997\]
 
 ## Tags
 
 lower topology, hull-kernel topology, Jacobson topology, structure topology, primitive spectrum
-
 -/
 
 @[expose] public section

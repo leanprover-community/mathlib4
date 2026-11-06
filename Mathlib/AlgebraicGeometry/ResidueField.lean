@@ -8,24 +8,24 @@ module
 public import Mathlib.AlgebraicGeometry.Stalk
 public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Residue fields of points
 
 ## Main definitions
 
 The following are in the `AlgebraicGeometry.Scheme` namespace:
 
-- `AlgebraicGeometry.Scheme.residueField`: The residue field of the stalk at `x`.
-- `AlgebraicGeometry.Scheme.evaluation`: For open subsets `U` of `X` containing `x`,
+* `AlgebraicGeometry.Scheme.residueField`: The residue field of the stalk at `x`.
+* `AlgebraicGeometry.Scheme.evaluation`: For open subsets `U` of `X` containing `x`,
   the evaluation map from sections over `U` to the residue field at `x`.
-- `AlgebraicGeometry.Scheme.Hom.residueFieldMap`: A morphism of schemes induce a homomorphism of
+* `AlgebraicGeometry.Scheme.Hom.residueFieldMap`: A morphism of schemes induce a homomorphism of
   residue fields.
-- `AlgebraicGeometry.Scheme.fromSpecResidueField`: The canonical map `Spec κ(x) ⟶ X`.
-- `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
+* `AlgebraicGeometry.Scheme.fromSpecResidueField`: The canonical map `Spec κ(x) ⟶ X`.
+* `AlgebraicGeometry.Scheme.SpecToEquivOfField`: morphisms `Spec K ⟶ X` for a field `K` correspond
   to pairs of `x : X` with embedding `κ(x) ⟶ K`.
-
-
 -/
 
 @[expose] public section

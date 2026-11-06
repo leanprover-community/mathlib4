@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.Connected
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Connectivity of subgraphs and induced graphs
 
@@ -15,7 +18,6 @@ public import Mathlib.Combinatorics.SimpleGraph.Walk.Chord
 
 * `SimpleGraph.Subgraph.Preconnected` and `SimpleGraph.Subgraph.Connected` give subgraphs
   connectivity predicates via `SimpleGraph.Subgraph.coe`.
-
 -/
 
 @[expose] public section
@@ -27,9 +29,11 @@ variable {V : Type u} {V' : Type v} {G : SimpleGraph V} {G' : SimpleGraph V'}
 
 namespace Subgraph
 
-/-- A subgraph is preconnected if it is preconnected when coerced to be a simple graph.
+/--
+A subgraph is preconnected if it is preconnected when coerced to be a simple graph.
 
-Note: This is a structure to make it so one can be precise about how dot notation resolves. -/
+Note: This is a structure to make it so one can be precise about how dot notation resolves.
+-/
 protected structure Preconnected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Preconnected
 
@@ -41,9 +45,11 @@ instance {H : G.Subgraph} : CoeFun H.Preconnected (fun _ => ∀ u v : H.verts, H
 protected lemma preconnected_iff {H : G.Subgraph} :
     H.Preconnected ↔ H.coe.Preconnected := ⟨fun ⟨h⟩ => h, .mk⟩
 
-/-- A subgraph is connected if it is connected when coerced to be a simple graph.
+/--
+A subgraph is connected if it is connected when coerced to be a simple graph.
 
-Note: This is a structure to make it so one can be precise about how dot notation resolves. -/
+Note: This is a structure to make it so one can be precise about how dot notation resolves.
+-/
 protected structure Connected (H : G.Subgraph) : Prop where
   protected coe : H.coe.Connected
 
@@ -169,7 +175,9 @@ theorem maximal_subgraph_connected_iff (G' : G.Subgraph) :
 
 end ConnectedComponent
 
-/-! ### Walks as subgraphs -/
+/-!
+# Walks as subgraphs
+-/
 
 namespace Walk
 

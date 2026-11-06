@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.ClusterPt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuity in topological spaces
 
@@ -75,9 +78,11 @@ theorem ContinuousAt.preimage_mem_nhds {t : Set Y} (h : ContinuousAt f x)
     (ht : t ∈ 𝓝 (f x)) : f ⁻¹' t ∈ 𝓝 x :=
   h ht
 
-/-- If `f x ∈ s ∈ 𝓝 (f x)` for continuous `f`, then `f y ∈ s` near `x`.
+/--
+If `f x ∈ s ∈ 𝓝 (f x)` for continuous `f`, then `f y ∈ s` near `x`.
 
-This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases when applied. -/
+This is essentially `Filter.Tendsto.eventually_mem`, but infers in more cases when applied.
+-/
 theorem ContinuousAt.eventually_mem {f : X → Y} {x : X} (hf : ContinuousAt f x) {s : Set Y}
     (hs : s ∈ 𝓝 (f x)) : ∀ᶠ y in 𝓝 x, f y ∈ s :=
   hf hs
@@ -133,7 +138,9 @@ nonrec theorem ContinuousAt.comp {g : Y → Z} (hg : ContinuousAt g (f x))
 theorem ContinuousAt.comp' {g : Y → Z} {x : X} (hg : ContinuousAt g (f x))
     (hf : ContinuousAt f x) : ContinuousAt (fun x => g (f x)) x := ContinuousAt.comp hg hf
 
-/-- See note [comp_of_eq lemmas] -/
+/--
+See note \[comp\_of\_eq lemmas\]
+-/
 theorem ContinuousAt.comp_of_eq {g : Y → Z} (hg : ContinuousAt g y)
     (hf : ContinuousAt f x) (hy : f x = y) : ContinuousAt (g ∘ f) x := by subst hy; exact hg.comp hf
 
@@ -253,7 +260,7 @@ theorem tendsto_lift'_closure_nhds (hf : Continuous f) (x : X) :
   (hf.tendsto x).lift'_closure hf
 
 /-!
-### Function with dense range
+# Function with dense range
 -/
 
 section DenseRange
@@ -332,6 +339,8 @@ theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
 
 end DenseRange
 
+
+set_option doc.verso false
 library_note «continuity lemma statement» /--
 The library contains many lemmas stating that functions/operations are continuous. There are many
 ways to formulate the continuity of operations. Some are more convenient than others.
@@ -430,6 +439,10 @@ With `ContinuousAt` you can be even more precise about what to prove in case of 
 see e.g. `ContinuousAt.comp_div_cases`.
 -/
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 library_note «comp_of_eq lemmas» /--
 Lean's elaborator has trouble elaborating applications of lemmas that state that the composition of
 two functions satisfy some property at a point, like `ContinuousAt.comp` / `ContDiffAt.comp` and
@@ -457,3 +470,5 @@ example [TopologicalSpace X] [TopologicalSpace Y] {x₀ : X} (f : X → X → Y)
   -- hf.comp_of_eq (continuousAt_id.prod continuousAt_id) rfl -- works
 ```
 -/
+
+set_option doc.verso true

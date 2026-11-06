@@ -10,6 +10,9 @@ public import Mathlib.Order.IsNormal
 public import Mathlib.Order.Shrink
 public import Mathlib.SetTheory.Cardinal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordinals
 
@@ -36,7 +39,6 @@ initial segment (or, equivalently, in any way). This total order is well founded
   and so that the omega function can be named `Ordinal.omega`. This definition is universe
   polymorphic: `Ordinal.omega0.{u} : Ordinal.{u}` (contrast with `ℕ : Type`, which lives in
   a specific universe). In some cases the universe level has to be given explicitly.
-
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
   every element of `o₁` is smaller than every element of `o₂`.
   The main properties of addition (and the other operations on ordinals) are stated and proved in
@@ -70,7 +72,9 @@ universe u v w
 variable {α : Type u} {β : Type v} {γ : Type w}
   {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
-/-! ### Definition of ordinals -/
+/-!
+# Definition of ordinals
+-/
 
 
 /-- Bundled structure registering a well order on a type. Ordinals will be defined as a quotient
@@ -106,7 +110,9 @@ def Ordinal : Type (u + 1) :=
 
 namespace Ordinal
 
-/-! ### Basic properties of the order type -/
+/-!
+# Basic properties of the order type
+-/
 
 /-- The order type of a well order is an ordinal. -/
 def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
@@ -188,26 +194,32 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, one_ne_zero⟩⟩
 
-/-- `Quotient.inductionOn` specialized to ordinals.
+/--
+`Quotient.inductionOn` specialized to ordinals.
 
-Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`.
+-/
 @[elab_as_elim]
 theorem inductionOn {motive : Ordinal → Prop} (o : Ordinal)
     (type : ∀ (α r) [IsWellOrder α r], motive (type r)) : motive o :=
   Quot.inductionOn o fun ⟨α, r, _⟩ ↦ type α r
 
-/-- `Quotient.inductionOn₂` specialized to ordinals.
+/--
+`Quotient.inductionOn₂` specialized to ordinals.
 
-Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`.
+-/
 @[elab_as_elim]
 theorem inductionOn₂ {motive : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (type : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], motive (type r) (type s)) :
     motive o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, _⟩ ⟨β, s, _⟩ ↦ type α r β s
 
-/-- `Quotient.inductionOn₃` specialized to ordinals.
+/--
+`Quotient.inductionOn₃` specialized to ordinals.
 
-Not to be confused with well-founded induction `WellFoundedLT.induction`. -/
+Not to be confused with well-founded induction `WellFoundedLT.induction`.
+-/
 @[elab_as_elim]
 theorem inductionOn₃ {motive : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (type : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
@@ -222,10 +234,12 @@ theorem inductionOnWellOrder {motive : Ordinal → Prop} (o : Ordinal)
   inductionOn o fun α r wo ↦ @type α (linearOrderOfSTO r) wo.wf
 
 open scoped Classical in
-/-- To define a function on ordinals, it suffices to define them on order types of well-orders.
+/--
+To define a function on ordinals, it suffices to define them on order types of well-orders.
 
 Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
-`Quotient.liftOn_mk` which is always def-eq. -/
+`Quotient.liftOn_mk` which is always def-eq.
+-/
 def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
     (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
       typeLT α = typeLT β → f α = f β) : δ :=
@@ -245,15 +259,17 @@ theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellF
   congr
   exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
 
-/-! ### The order on ordinals -/
+/-!
+# The order on ordinals
+-/
 
 /--
 For `Ordinal`:
 
 * less-equal is defined such that well orders `r` and `s` satisfy `type r ≤ type s` if there exists
-  a function embedding `r` as an *initial* segment of `s`.
+  a function embedding `r` as an _initial_ segment of `s`.
 * less-than is defined such that well orders `r` and `s` satisfy `type r < type s` if there exists
-  a function embedding `r` as a *principal* segment of `s`.
+  a function embedding `r` as a _principal_ segment of `s`.
 
 Note that most of the relevant results on initial and principal segments are proved in the
 `Mathlib/Order/InitialSeg.lean` file.
@@ -329,11 +345,15 @@ theorem type_mono [LinearOrder α] [WellFoundedLT α] {s t : Set α} (h : s ⊆ 
   refine ⟨⟨embeddingOfSubset _ _ h, ?_⟩⟩
   aesop
 
-/-! ### Enumerating elements in a well-order with ordinals -/
+/-!
+# Enumerating elements in a well-order with ordinals
+-/
 
-/-- The order type of an element inside a well order.
+/--
+The order type of an element inside a well order.
 
-This is registered as a principal segment embedding into the ordinals, with top `type r`. -/
+This is registered as a principal segment embedding into the ordinals, with top `type r`.
+-/
 def typein (r : α → α → Prop) [IsWellOrder α r] : @PrincipalSeg α Ordinal.{u} r (· < ·) := by
   refine ⟨RelEmbedding.ofMonotone (fun a ↦ type (Subrel r (r · a))) fun a b ha ↦
     ((PrincipalSeg.ofElement r a).codRestrict {x | r x b} ?_ ?_).ordinal_type_lt, type r,
@@ -397,11 +417,13 @@ theorem type_Iio_lt [LinearOrder α] [WellFoundedLT α] (x : α) :
     type (α := Iio x) LT.lt = typein LT.lt x :=
   rfl
 
-/-- A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
+/--
+A well order `r` is order-isomorphic to the set of ordinals smaller than `type r`.
 `enum r ⟨o, h⟩` is the `o`-th element of `α` ordered by `r`.
 
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
-the elements of `α`. -/
+the elements of `α`.
+-/
 @[simps! symm_apply_coe]
 def enum (r : α → α → Prop) [IsWellOrder α r] : (· < · : Iio (type r) → Iio (type r) → Prop) ≃r r :=
   (typein r).subrelIso
@@ -475,7 +497,9 @@ theorem typein_apply {α β} {r : α → α → Prop} {s : β → β → Prop} [
     (f : r ≼i s) (a : α) : typein s (f a) = typein r a := by
   rw [← f.transPrincipal_apply _ a, (f.transPrincipal _).eq]
 
-/-! ### Cardinality of ordinals -/
+/-!
+# Cardinality of ordinals
+-/
 
 /-- The cardinal of an ordinal is the cardinality of any type on which a relation with that order
 type is defined. -/
@@ -527,7 +551,9 @@ theorem mk_le_of_forall_mk_setOfPred_lt {α β : Type u} {c : Cardinal}
   obtain ⟨a, rfl⟩ := typein_surj (· < ·) hd
   exact Ordinal.card_monotone.reflect_lt (H a)
 
-/-! ### Lifting ordinals to a higher universe -/
+/-!
+# Lifting ordinals to a higher universe
+-/
 
 /-- The universe lift operation for ordinals, which embeds `Ordinal.{u}` as
   a proper initial segment of `Ordinal.{v}` for `v > u`. For the initial segment version,
@@ -563,17 +589,21 @@ theorem type_lift_preimage (r : α → α → Prop) [IsWellOrder α r]
     (f : β ≃ α) : lift.{u} (type (f ⁻¹'o r)) = lift.{v} (type r) :=
   (RelIso.preimage f r).ordinal_lift_type_eq
 
-/-- `lift.{max u v, u}` equals `lift.{v, u}`.
+/--
+`lift.{max u v, u}` equals `lift.{v, u}`.
 
-Unfortunately, the simp lemma doesn't seem to work. -/
+Unfortunately, the simp lemma doesn't seem to work.
+-/
 theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
   funext fun a =>
     inductionOn a fun _ r _ =>
       Quotient.sound ⟨(RelIso.preimage Equiv.ulift r).trans (RelIso.preimage Equiv.ulift r).symm⟩
 
-/-- An ordinal lifted to a lower or equal universe equals itself.
+/--
+An ordinal lifted to a lower or equal universe equals itself.
 
-Unfortunately, the simp lemma doesn't work. -/
+Unfortunately, the simp lemma doesn't work.
+-/
 theorem lift_id' (a : Ordinal) : lift a = a :=
   inductionOn a fun _ r _ => Quotient.sound ⟨RelIso.preimage Equiv.ulift r⟩
 
@@ -635,9 +665,12 @@ theorem typein_ordinal (o : Ordinal.{u}) : typein LT.lt o = lift.{u + 1} o := by
 
 theorem type_lt_Iio (o : Ordinal.{u}) : typeLT (Iio o) = lift.{u + 1} o := by simp
 
-/-! ### A small type with a given order type -/
+/-!
+# A small type with a given order type
+-/
 
-/-- A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. It is
+/--
+A "canonical" type order-isomorphic to the ordinal `o`, living in the same universe. It is
 defined as `Shrink (Iio o)`, which shrinks `Iio o : Type (u + 1)` down to `Type u` through the
 axiom of choice; in particular, it has no useful def-eqs.
 
@@ -756,7 +789,9 @@ theorem cardinalMk_Iio (o : Ordinal.{u}) :
 
 @[deprecated (since := "2026-10-20")] alias _root_.Cardinal.mk_Iio_ordinal := cardinalMk_Iio
 
-/-! ### The first infinite ordinal ω -/
+/-!
+# The first infinite ordinal ω
+-/
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : Ordinal.{u} :=
@@ -779,7 +814,7 @@ theorem lift_omega0 : lift ω = ω :=
   lift_lift _
 
 /-!
-### Definition and first properties of addition on ordinals
+# Definition and first properties of addition on ordinals
 
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
@@ -877,7 +912,9 @@ protected theorem max_eq_zero {a b : Ordinal} : max a b = 0 ↔ a = 0 ∧ b = 0 
 theorem sInf_empty : sInf (∅ : Set Ordinal) = 0 :=
   dite_eq_right Set.not_nonempty_empty
 
-/-! ### Successor order properties -/
+/-!
+# Successor order properties
+-/
 
 private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b := by
   refine inductionOn₂ a b fun α r _ β s _ ↦ ⟨?_, ?_⟩ <;> rintro ⟨f⟩
@@ -947,7 +984,9 @@ theorem isSuccPrelimit_type_lt [LinearOrder α] [WellFoundedLT α] [h : NoMaxOrd
     IsSuccPrelimit (typeLT α) :=
   isSuccPrelimit_type_lt_iff.2 h
 
-/-! ### Extra properties of typein and enum -/
+/-!
+# Extra properties of typein and enum
+-/
 
 -- TODO: use `ToType.mk` for lemmas on `ToType` rather than `enum` and `typein`.
 
@@ -969,7 +1008,9 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).ToType) :
 
 end Ordinal
 
-/-! ### Representing a cardinal with an ordinal -/
+/-!
+# Representing a cardinal with an ordinal
+-/
 
 namespace Cardinal
 
@@ -1319,7 +1360,9 @@ theorem finite_Iio_of_lt_omega0 {o} (h : o < ω) : (Iio o).Finite := by
 
 end Ordinal
 
-/-! ### Sorted lists -/
+/-!
+# Sorted lists
+-/
 
 theorem List.SortedGT.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List α}
     {o : Ordinal} (hm : m.SortedGT) (hmltl : m < l)

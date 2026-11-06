@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.Perm.Closure
 public import Mathlib.GroupTheory.Perm.Cycle.Factors
 public import Mathlib.Tactic.NormNum.GCD
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cycle Types
 
@@ -18,16 +21,16 @@ In this file we define the cycle type of a permutation.
 
 ## Main definitions
 
-- `Equiv.Perm.cycleType σ` where `σ` is a permutation of a `Fintype`
-- `Equiv.Perm.partition σ` where `σ` is a permutation of a `Fintype`
+* `Equiv.Perm.cycleType σ` where `σ` is a permutation of a `Fintype`
+* `Equiv.Perm.partition σ` where `σ` is a permutation of a `Fintype`
 
 ## Main results
 
-- `sum_cycleType` : The sum of `σ.cycleType` equals `σ.support.card`
-- `lcm_cycleType` : The lcm of `σ.cycleType` equals `orderOf σ`
-- `isConj_iff_cycleType_eq` : Two permutations are conjugate if and only if they have the same
+* `sum_cycleType` : The sum of `σ.cycleType` equals `σ.support.card`
+* `lcm_cycleType` : The lcm of `σ.cycleType` equals `orderOf σ`
+* `isConj_iff_cycleType_eq` : Two permutations are conjugate if and only if they have the same
   cycle type.
-- `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
+* `exists_prime_orderOf_dvd_card`: For every prime `p` dividing the order of a finite group `G`
   there exists an element of order `p` in `G`. This is known as Cauchy's theorem.
 -/
 
@@ -610,7 +613,7 @@ theorem IsSwap.orderOf {σ : Equiv.Perm α} (h : σ.IsSwap) :
 end IsSwap
 
 /-!
-### 3-cycles
+# 3-cycles
 -/
 
 /-- A three-cycle is a cycle of length 3. -/

@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartesian closed categories
 
@@ -16,7 +19,6 @@ instances. There used to be a separate definition `CartesianClosed`, with its ow
 this ended up as a duplicate of the former. Now, `CartesianClosed` and the surrounding API has been
 deprecated, and the API for `MonoidalClosed` should be used instead. This file now contains a few
 basic constructions for cartesian closed categories.
-
 -/
 
 @[expose] public section
@@ -129,7 +131,8 @@ section Functor
 
 variable [CartesianMonoidalCategory D]
 
-/-- Transport the property of being Cartesian closed across an equivalence of categories.
+/--
+Transport the property of being Cartesian closed across an equivalence of categories.
 
 Note we didn't require any coherence between the choice of finite products here, since we transport
 along the `prodComparison` isomorphism.

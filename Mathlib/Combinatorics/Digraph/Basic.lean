@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Fintype.Pi
 public import Mathlib.Order.CompleteBooleanAlgebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Digraphs
 
@@ -28,7 +31,6 @@ of digraphs on `V`.
 
 * `Digraph` is a structure for relations. Unlike `SimpleGraph`, the relation does not need to be
   symmetric or irreflexive.
-
 * `CompleteAtomicBooleanAlgebra` instance: Under the subgraph relation, `Digraph` forms a
   `CompleteAtomicBooleanAlgebra`. In other words, this is the complete lattice of spanning subgraphs
   of the complete graph.

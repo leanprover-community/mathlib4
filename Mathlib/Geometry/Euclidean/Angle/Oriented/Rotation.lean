@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Geometry.Euclidean.Angle.Oriented.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rotations by oriented angles.
 
@@ -16,7 +19,6 @@ This file defines rotations by oriented angles in real inner product spaces.
 ## Main definitions
 
 * `Orientation.rotation` is the rotation by an oriented angle with respect to an orientation.
-
 -/
 
 @[expose] public section

@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 
-/-! # Calculus of fractions in the derived category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Calculus of fractions in the derived category
 
 We obtain various consequences of the calculus of left and right fractions
 for `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)` as lemmas about
@@ -18,7 +22,6 @@ a right fraction `inv (Q.map s) ≫ Q.map g` or as a left fraction
 `Q.map g ≫ inv (Q.map s)`, with `s` a quasi-isomorphism (to `X` or from `Y`).
 When strict bounds are known on `X` or `Y`, certain bounds may also be ensured
 on the auxiliary object appearing in the fraction.
-
 -/
 
 public section

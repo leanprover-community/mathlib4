@@ -10,12 +10,15 @@ public import Mathlib.Algebra.NeZero
 public import Mathlib.Data.Fin.Rev
 public import Mathlib.Data.Nat.Cast.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fin is a group
 
 This file contains the additive and multiplicative monoid instances on `Fin n`.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 @[expose] public section
@@ -27,7 +30,9 @@ open Nat
 namespace Fin
 variable {n : ℕ}
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 instance addCommSemigroup (n : ℕ) : AddCommSemigroup (Fin n) where
   add_assoc := by simp [add_def, Nat.add_assoc]
@@ -93,7 +98,9 @@ instance instAddLeftCancelSemigroup (n : ℕ) : AddLeftCancelSemigroup (Fin n) :
 instance instAddRightCancelSemigroup (n : ℕ) : AddRightCancelSemigroup (Fin n) :=
   { Fin.addCommSemigroup n, Fin.instIsCancelAdd n with }
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 open scoped Fin.NatCast Fin.IntCast in
 /-- Variant of `Fin.intCast_def` with `Nat.cast` on the RHS. -/

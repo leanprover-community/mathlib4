@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 
 import Mathlib.Data.List.FinRange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additively-graded multiplicative structures
 
@@ -106,7 +109,9 @@ instance {A : ι → Type*} [Inhabited ι] [Inhabited (A default)] : Inhabited (
 def mk {A : ι → Type*} : ∀ i, A i → GradedMonoid A :=
   Sigma.mk
 
-/-! ### Actions -/
+/-!
+# Actions
+-/
 
 section actions
 variable {α β} {A : ι → Type*}
@@ -142,7 +147,9 @@ instance [Monoid α] [∀ i, MulAction α (A i)] :
 
 end actions
 
-/-! ### Typeclasses -/
+/-!
+# Typeclasses
+-/
 
 section Defs
 
@@ -208,10 +215,12 @@ macro "apply_gmonoid_gnpowRec_zero_tac" : tactic => `(tactic| apply GMonoid.gnpo
 /-- A tactic to for use as an optional value for `GMonoid.gnpow_succ'`. -/
 macro "apply_gmonoid_gnpowRec_succ_tac" : tactic => `(tactic| apply GMonoid.gnpowRec_succ)
 
-/-- A graded version of `Monoid`
+/--
+A graded version of `Monoid`
 
 Like `Monoid.npow`, this has an optional `GMonoid.gnpow` field to allow definitional control of
-natural powers of a graded monoid. -/
+natural powers of a graded monoid.
+-/
 class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   /-- Multiplication by `one` on the left is the identity -/
   one_mul (a : GradedMonoid A) : 1 * a = a
@@ -261,7 +270,8 @@ instance GCommMonoid.toCommMonoid [AddCommMonoid ι] [GCommMonoid A] :
 
 end Defs
 
-/-! ### Instances for `A 0`
+/-!
+# Instances for `A 0`
 
 The various `g*` instances are enough to promote the `AddCommMonoid (A 0)` structure to various
 types of multiplicative structure.
@@ -361,7 +371,9 @@ end GradeZero
 
 end GradedMonoid
 
-/-! ### Dependent products of graded elements -/
+/-!
+# Dependent products of graded elements
+-/
 
 
 section DProd
@@ -388,11 +400,13 @@ theorem List.dProdIndex_eq_map_sum (l : List α) (fι : α → ι) :
   | [] => simp
   | head::tail => simp [List.dProdIndex_eq_map_sum tail fι]
 
-/-- A dependent product for graded monoids represented by the indexed family of types `A i`.
+/--
+A dependent product for graded monoids represented by the indexed family of types `A i`.
 This is a dependent version of `(l.map fA).prod`.
 
 For a list `l : List α`, this computes the product of `fA a` over `a`, where each `fA` is of type
-`A (fι a)`. -/
+`A (fι a)`.
+-/
 def List.dProd (l : List α) (fι : α → ι) (fA : ∀ a, A (fι a)) : A (l.dProdIndex fι) :=
   l.foldrRecOn _ GradedMonoid.GOne.one fun _ x a _ => GradedMonoid.GMul.mul (fA a) x
 
@@ -429,7 +443,9 @@ theorem GradedMonoid.list_prod_ofFn_eq_dProd {n : ℕ} (f : Fin n → GradedMono
 
 end DProd
 
-/-! ### Concrete instances -/
+/-!
+# Concrete instances
+-/
 
 
 section
@@ -473,7 +489,9 @@ theorem List.dProd_monoid {α} [AddMonoid ι] [Monoid R] (l : List α) (fι : α
 
 end
 
-/-! ### Shorthands for creating instance of the above typeclasses for collections of subobjects -/
+/-!
+# Shorthands for creating instance of the above typeclasses for collections of subobjects
+-/
 
 
 section Subobjects

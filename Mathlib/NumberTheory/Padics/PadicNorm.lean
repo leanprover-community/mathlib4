@@ -10,6 +10,9 @@ public import Mathlib.NumberTheory.Padics.PadicVal.Basic
 
 import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # p-adic norm
 
@@ -29,9 +32,9 @@ by taking `[Fact p.Prime]` as a type class argument.
 
 ## References
 
-* [F. Q. Gouvêa, *p-adic numbers*][gouvea1997]
-* [R. Y. Lewis, *A formal proof of Hensel's lemma over the p-adic integers*][lewis2019]
-* <https://en.wikipedia.org/wiki/P-adic_number>
+* ‍\[F. Q. Gouvêa, _p-adic numbers_\]\[gouvea1997\]
+* ‍\[R. Y. Lewis, _A formal proof of Hensel's lemma over the p-adic integers_\]\[lewis2019\]
+* [https://en.wikipedia.org/wiki/P-adic\_number](https://en.wikipedia.org/wiki/P-adic_number)
 
 ## Tags
 
@@ -76,15 +79,19 @@ protected theorem zero : padicNorm p 0 = 0 := by simp [padicNorm]
 /-- The `p`-adic norm of `1` is `1`. -/
 protected theorem one : padicNorm p 1 = 1 := by simp [padicNorm]
 
-/-- The `p`-adic norm of `p` is `p⁻¹` if `p > 1`.
+/--
+The `p`-adic norm of `p` is `p⁻¹` if `p > 1`.
 
-See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime. -/
+See also `padicNorm.padicNorm_p_of_prime` for a version assuming `p` is prime.
+-/
 theorem padicNorm_p (hp : 1 < p) : padicNorm p p = (p : ℚ)⁻¹ := by
   simp [padicNorm, (pos_of_gt hp).ne', Nat.multiplicity_self hp]
 
-/-- The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
+/--
+The `p`-adic norm of `p` is `p⁻¹` if `p` is prime.
 
-See also `padicNorm.padicNorm_p` for a version assuming `1 < p`. -/
+See also `padicNorm.padicNorm_p` for a version assuming `1 < p`.
+-/
 @[simp]
 theorem padicNorm_p_of_prime [Fact p.Prime] : padicNorm p p = (p : ℚ)⁻¹ :=
   padicNorm_p <| Nat.Prime.one_lt Fact.out
@@ -96,16 +103,20 @@ theorem padicNorm_of_prime_of_ne {q : ℕ} [p_prime : Fact p.Prime] [q_prime : F
   rw [padicNorm, p]
   simp [q_prime.1.ne_zero]
 
-/-- The `p`-adic norm of `p` is less than `1` if `1 < p`.
+/--
+The `p`-adic norm of `p` is less than `1` if `1 < p`.
 
-See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime. -/
+See also `padicNorm.padicNorm_p_lt_one_of_prime` for a version assuming `p` is prime.
+-/
 theorem padicNorm_p_lt_one (hp : 1 < p) : padicNorm p p < 1 := by
   rw [padicNorm_p hp, inv_lt_one_iff₀]
   exact mod_cast Or.inr hp
 
-/-- The `p`-adic norm of `p` is less than `1` if `p` is prime.
+/--
+The `p`-adic norm of `p` is less than `1` if `p` is prime.
 
-See also `padicNorm.padicNorm_p_lt_one` for a version assuming `1 < p`. -/
+See also `padicNorm.padicNorm_p_lt_one` for a version assuming `1 < p`.
+-/
 theorem padicNorm_p_lt_one_of_prime [Fact p.Prime] : padicNorm p p < 1 :=
   padicNorm_p_lt_one <| Nat.Prime.one_lt Fact.out
 

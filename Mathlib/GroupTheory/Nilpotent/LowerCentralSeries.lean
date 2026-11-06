@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Solvable
 
 import Mathlib.GroupTheory.Commutator.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lower Central Series
 
@@ -21,15 +24,15 @@ by the commutators `h * k * h⁻¹ * k⁻¹`. Recall also Lean's conventions tha
 subgroup `G` of `G`, and `⊥` denotes the trivial subgroup `{1}`.
 
 * `Subgroup.lowerCentralSeries (H : Subgroup G) : ℕ → Subgroup G` : the lower central series of `H`,
-    computed in the ambient group `G`. These are the iterated commutators
-    `H, ⁅H, H⁆, ⁅⁅H, H⁆, H⁆, …`. The classical lower central series of `G` is the case `H = ⊤`.
+  computed in the ambient group `G`. These are the iterated commutators
+  `H, ⁅H, H⁆, ⁅⁅H, H⁆, H⁆, …`. The classical lower central series of `G` is the case `H = ⊤`.
 * `IsDescendingCentralSeries (H : ℕ → Subgroup G) : Prop` : Note that in the literature
-    a "central series" for a group is usually defined to be a *finite* sequence of normal subgroups
-    `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
-    central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
-    on an infinite sequence of subgroups `H n` of `G`: we say a sequence is a *descending central
-    series* if it starts at `G` and `⁅H n, ⊤⁆ ⊆ H (n + 1)` for all `n`. Note that this series
-    may not terminate at `⊥`, and the `H i` need not be normal.
+  a "central series" for a group is usually defined to be a _finite_ sequence of normal subgroups
+  `H 0`, `H 1`, ..., starting at `⊤`, finishing at `⊥`, and with each `H n / H (n + 1)`
+  central in `G / H (n + 1)`. In this formalisation it is convenient to have a weaker predicate
+  on an infinite sequence of subgroups `H n` of `G`: we say a sequence is a _descending central
+  series_ if it starts at `G` and `⁅H n, ⊤⁆ ⊆ H (n + 1)` for all `n`. Note that this series
+  may not terminate at `⊥`, and the `H i` need not be normal.
 -/
 
 @[expose] public section

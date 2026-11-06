@@ -7,16 +7,18 @@ module
 
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Circle integral transform
 
 In this file we define the circle integral transform of a function `f` with complex domain. This is
-defined as $(2πi)^{-1}\frac{f(x)}{x-w}$ where `x` moves along a circle. We then prove some basic
+defined as $`(2πi)^{-1}\frac{f(x)}{x-w}` where `x` moves along a circle. We then prove some basic
 facts about these functions.
 
 These results are useful for proving that the uniform limit of a sequence of holomorphic functions
 is holomorphic.
-
 -/
 
 @[expose] public section
@@ -32,11 +34,13 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (R : ℝ) (z w :
 
 namespace Complex
 
-/-- Given a function `f : ℂ → E`, `circleTransform R z w f` is the function mapping `θ` to
+/--
+Given a function `f : ℂ → E`, `circleTransform R z w f` is the function mapping `θ` to
 `(2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • ((circleMap z R θ) - w)⁻¹ • f (circleMap z R θ)`.
 
 If `f` is differentiable and `w` is in the interior of the ball, then the integral from `0` to
-`2 * π` of this gives the value `f(w)`. -/
+`2 * π` of this gives the value `f(w)`.
+-/
 def circleTransform (f : ℂ → E) (θ : ℝ) : E :=
   (2 * ↑π * I)⁻¹ • deriv (circleMap z R) θ • (circleMap z R θ - w)⁻¹ • f (circleMap z R θ)
 

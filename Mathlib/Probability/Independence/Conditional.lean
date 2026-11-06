@@ -10,6 +10,9 @@ public import Mathlib.Probability.Kernel.Condexp
 
 import Mathlib.Probability.Kernel.CompProdEqIff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditional Independence
 
@@ -27,6 +30,7 @@ We use this property as the definition of conditional independence.
 ## Main definitions
 
 We provide four definitions of conditional independence:
+
 * `iCondIndepSets`: conditional independence of a family of sets of sets `pi : ι → Set (Set Ω)`.
   This is meant to be used with π-systems.
 * `iCondIndep`: conditional independence of a family of measurable space structures
@@ -60,7 +64,6 @@ The definitions of conditional independence in this file are a particular case o
 respect to a kernel and a measure, as defined in the file
 `Mathlib/Probability/Independence/Kernel.lean`.
 The kernel used is `ProbabilityTheory.condExpKernel`.
-
 -/
 
 @[expose] public section
@@ -473,7 +476,9 @@ theorem condIndep_of_condIndep_of_le_right {m' m₁ m₂ m₃ : MeasurableSpace 
 
 end CondIndep
 
-/-! ### Deducing `CondIndep` from `iCondIndep` -/
+/-!
+# Deducing `CondIndep` from `iCondIndep`
+-/
 
 
 section FromiCondIndepToCondIndep
@@ -501,7 +506,7 @@ theorem iCondIndepFun.condIndepFun {β : ι → Type*}
 end FromiCondIndepToCondIndep
 
 /-!
-## π-system lemma
+# π-system lemma
 
 Conditional independence of measurable spaces is equivalent to conditional independence of
 generating π-systems.
@@ -510,8 +515,11 @@ generating π-systems.
 
 section FromMeasurableSpacesToSetsOfSets
 
-/-! ### Conditional independence of σ-algebras implies conditional independence of
-  generating π-systems -/
+/-!
+# Conditional independence of σ-algebras implies conditional independence of
+
+generating π-systems
+-/
 
 variable {m' : MeasurableSpace Ω}
   {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
@@ -532,8 +540,11 @@ end FromMeasurableSpacesToSetsOfSets
 
 section FromPiSystemsToMeasurableSpaces
 
-/-! ### Conditional independence of generating π-systems implies conditional independence of
-  σ-algebras -/
+/-!
+# Conditional independence of generating π-systems implies conditional independence of
+
+σ-algebras
+-/
 
 variable {m' m₁ m₂ : MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
   {hm' : m' ≤ mΩ} {μ : Measure Ω} [IsFiniteMeasure μ]
@@ -619,8 +630,8 @@ end FromPiSystemsToMeasurableSpaces
 
 section CondIndepSet
 
-/-! ### Conditional independence of measurable sets
-
+/-!
+# Conditional independence of measurable sets
 -/
 
 variable {m' m₁ m₂ : MeasurableSpace Ω} {mΩ : MeasurableSpace Ω} [StandardBorelSpace Ω]
@@ -648,8 +659,8 @@ end CondIndepSet
 
 section CondIndepFun
 
-/-! ### Conditional independence of random variables
-
+/-!
+# Conditional independence of random variables
 -/
 
 variable {β β' : Type*} {m' : MeasurableSpace Ω}
@@ -758,7 +769,8 @@ lemma condIndepFun_self_right {mβ : MeasurableSpace β} {mβ' : MeasurableSpace
     X ⟂ᵢ[Z, hZ; μ] Z :=
   condIndepFun_of_measurable_right hX (comap_measurable Z)
 
-/-- Two random variables are conditionally independent iff they satisfy the almost sure equality
+/--
+Two random variables are conditionally independent iff they satisfy the almost sure equality
 of conditional expectations `μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧ =ᵐ[μ] μ⟦f ⁻¹' s | m'⟧ * μ⟦g ⁻¹' t | m'⟧`
 for all measurable sets `s` and `t` (see `condIndepFun_iff_condExp_inter_preimage_eq_mul`).
 Here, this is phrased with Markov kernels associated to the conditional expectations, and the
@@ -767,7 +779,8 @@ equivalent to a.e. equality. See `condIndepFun_iff_map_prod_eq_prod_map_map` for
 version with kernels.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`.
+-/
 theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ
@@ -775,13 +788,15 @@ theorem condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map
         = (μ.trim hm') ⊗ₘ ((condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g) :=
   Kernel.indepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg
 
-/-- Two random variables are conditionally independent iff they satisfy the almost sure equality
+/--
+Two random variables are conditionally independent iff they satisfy the almost sure equality
 of conditional expectations `μ⟦f ⁻¹' s ∩ g ⁻¹' t | m'⟧ =ᵐ[μ] μ⟦f ⁻¹' s | m'⟧ * μ⟦g ⁻¹' t | m'⟧`
 for all measurable sets `s` and `t` (see `condIndepFun_iff_condExp_inter_preimage_eq_mul`).
 Here, this is phrased with Markov kernels associated to the conditional expectations.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`.
+-/
 theorem condIndepFun_iff_map_prod_eq_prod_map_map
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} [CountableOrCountablyGenerated Ω (β × β')]
     (hf : Measurable f) (hg : Measurable g) :
@@ -790,12 +805,14 @@ theorem condIndepFun_iff_map_prod_eq_prod_map_map
         =ᵐ[μ.trim hm'] (condExpKernel μ m').map f ×ₖ (condExpKernel μ m').map g := by
   rw [condIndepFun_iff_compProd_map_prod_eq_compProd_prod_map_map hf hg, ← Kernel.compProd_eq_iff]
 
-/-- Two random variables are conditionally independent with respect to `m'` iff the law of
+/--
+Two random variables are conditionally independent with respect to `m'` iff the law of
 `(id, f, g)` under `μ`, in which the identity is to the space with σ-algebra `m'`, can be written
 as a product involving the conditional expectations of `f` and `g` given `m'`.
 
 For a random variable `f`, `(condExpKernel μ m').map f` is the law of the conditional expectation
-of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`. -/
+of `f` given `m'`: almost surely, `(condExpKernel μ m').map f ω s = μ⟦f ⁻¹' s | m'⟧ ω`.
+-/
 lemma condIndepFun_iff_map_prod_eq_prod_comp_trim
     {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'} (hf : Measurable f) (hg : Measurable g) :
     CondIndepFun m' hm' f g μ

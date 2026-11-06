@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Logic.OpClass
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bird–Wadler duality of list folds
 
-In their 1988 book _Introduction to Functional Programming_ [birdwadler],
+In their 1988 book _Introduction to Functional Programming_ \[birdwadler\],
 Richard Bird and Philip Wadler stated three duality theorems between `foldl` and `foldr`.
 Denoting the combining function as `f`, the theorems are:
 
@@ -20,7 +23,7 @@ Denoting the combining function as `f`, the theorems are:
 
 Note that `f`'s type differs between Lean's `foldl` (`β → α → β`) and `foldr` (`α → β → β`),
 so `flip`s need to be inserted judiciously. For the history behind this type difference
-see the appendix to [danvy], which uses a version of `foldl` where `f : α → β → β` to derive
+see the appendix to \[danvy\], which uses a version of `foldl` where `f : α → β → β` to derive
 among other things a slight generalisation of the first theorem:
 
 1. If `α = β`, `f` is associative and `a` commutes with all `x : α`, `l.foldl f a = l.foldr f a`

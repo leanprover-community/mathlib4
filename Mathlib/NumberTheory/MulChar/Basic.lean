@@ -12,11 +12,14 @@ public import Mathlib.GroupTheory.OrderOfElement
 
 import Mathlib.Algebra.CharP.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Multiplicative characters of finite rings and fields
 
 Let `R` and `R'` be commutative rings.
-A *multiplicative character* of `R` with values in `R'` is a morphism of
+A _multiplicative character_ of `R` with values in `R'` is a morphism of
 monoids from the multiplicative monoid of `R` into that of `R'`
 that sends non-units to zero.
 
@@ -28,7 +31,7 @@ We show that the multiplicative characters form a group (if `R'` is commutative)
 see `MulChar.commGroup`. We also provide an equivalence with the
 homomorphisms `Rˣ →* R'ˣ`; see `MulChar.equivToUnitHom`.
 
-We define a multiplicative character to be *quadratic* if its values
+We define a multiplicative character to be _quadratic_ if its values
 are among `0`, `1` and `-1`, and we prove some properties of quadratic characters.
 
 Finally, we show that the sum of all values of a nontrivial multiplicative
@@ -45,7 +48,7 @@ open scoped Ring
 
 
 /-!
-### Definitions related to multiplicative characters
+# Definitions related to multiplicative characters
 
 Even though the intended use is when domain and target of the characters
 are commutative rings, we define them in the more general setting when
@@ -141,7 +144,7 @@ theorem ext {χ χ' : MulChar R R'} (h : ∀ a : Rˣ, χ a = χ' a) : χ = χ' :
   · rw [map_nonunit χ ha, map_nonunit χ' ha]
 
 /-!
-### Equivalence of multiplicative characters with homomorphisms on units
+# Equivalence of multiplicative characters with homomorphisms on units
 
 We show that restriction / extension by zero gives an equivalence
 between `MulChar R R'` and `Rˣ →* R'ˣ`.
@@ -221,7 +224,7 @@ theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
   simpa using χ.apply_ne_zero_iff.not
 
 /-!
-### Commutative group structure on multiplicative characters
+# Commutative group structure on multiplicative characters
 
 The multiplicative characters `R → R'` form a commutative group.
 -/
@@ -406,7 +409,7 @@ noncomputable def domRestrictHom {S : Type*} [SetLike S R] [SubmonoidClass S R] 
 end Group
 
 /-!
-### Properties of multiplicative characters
+# Properties of multiplicative characters
 
 We introduce the properties of being nontrivial or quadratic and prove
 some basic facts about them.
@@ -439,7 +442,9 @@ section quadratic_and_comp
 
 variable {R : Type*} [CommMonoid R] {R' : Type*} [CommRing R'] {R'' : Type*} [CommRing R'']
 
-/-- A multiplicative character is *quadratic* if it takes only the values `0`, `1`, `-1`. -/
+/--
+A multiplicative character is _quadratic_ if it takes only the values `0`, `1`, `-1`.
+-/
 def IsQuadratic (χ : MulChar R R') : Prop :=
   ∀ a, χ a = 0 ∨ χ a = 1 ∨ χ a = -1
 
@@ -576,7 +581,7 @@ end quadratic_and_comp
 end Properties
 
 /-!
-### Multiplicative characters with finite domain
+# Multiplicative characters with finite domain
 -/
 
 section Finite
@@ -631,7 +636,7 @@ theorem sum_one_eq_card_units [DecidableEq R] :
 end sum
 
 /-!
-### Multiplicative characters on rings
+# Multiplicative characters on rings
 -/
 
 section Ring

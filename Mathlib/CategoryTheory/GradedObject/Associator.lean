@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Trifunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The associator for actions of bifunctors on graded objects
 
@@ -25,7 +28,6 @@ satisfy suitable assumptions, we construct an isomorphism
 
 This construction shall be used in the definition of the monoidal category structure
 on graded objects indexed by an additive monoid.
-
 -/
 
 @[expose] public section

@@ -8,7 +8,11 @@ module
 public import Mathlib.Geometry.Manifold.ContMDiffMap
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
-/-! # Pullbacks of `C^n` vector bundles
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Pullbacks of `C^n` vector bundles
 
 This file defines pullbacks of `C^n` vector bundles over a manifold.
 
@@ -16,7 +20,6 @@ This file defines pullbacks of `C^n` vector bundles over a manifold.
 
 * `ContMDiffVectorBundle.pullback`: For a `C^n` vector bundle `E` over a manifold `B` and a `C^n`
   map `f : B' → B`, the pullback vector bundle `f *ᵖ E` is a `C^n` vector bundle.
-
 -/
 
 public section

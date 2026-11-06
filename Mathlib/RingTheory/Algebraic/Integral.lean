@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Polynomial.Subring
 
 import Mathlib.Algebra.Ring.Hom.InjSurj
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic elements and integral elements
 
@@ -226,7 +229,8 @@ The next theorem may fail if only `R` is assumed to be a domain but `S` is not: 
 However, `XY` is a transcendental element in `A` over `R`, because `∑ᵢ rᵢ(XY)ⁱ = 0` in `S[Y]`
 implies all `rᵢXⁱ = 0` (i.e., `r₀ = 0` and `rᵢX = 0` for `i > 0`) in `S`,
 which implies `rᵢ = 0` in `R`. This example is inspired by the comment
-https://mathoverflow.net/questions/482944/when-do-algebraic-elements-form-a-subalgebra#comment1257632_482944. -/
+https://mathoverflow.net/questions/482944/when-do-algebraic-elements-form-a-subalgebra#comment1257632\_482944.
+-/
 
 theorem restrictScalars_of_isIntegral [int : Algebra.IsIntegral R S]
     {a : A} (h : IsAlgebraic S a) : IsAlgebraic R a := by

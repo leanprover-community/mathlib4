@@ -14,7 +14,11 @@ import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Is
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
-/-! # Facts about star-ordered rings that depend on the continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Facts about star-ordered rings that depend on the continuous functional calculus
 
 This file contains various basic facts about star-ordered rings (i.e. mainly C⋆-algebras)
 that depend on the continuous functional calculus.

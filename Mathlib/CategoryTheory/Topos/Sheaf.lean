@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # (Elementary) Sheaf Topos
 
 We define a subobject classifier for categories of sheaves of (large enough) types.
@@ -34,7 +36,6 @@ Let `C` refer to a category with (when relevant) Grothendieck topology `J`.
 ## TODOS:
 
 * generalize `Presheaf.isClosed_χ_app_apply_of` to only assuming `G` is separated
-
 -/
 
 @[expose] public section

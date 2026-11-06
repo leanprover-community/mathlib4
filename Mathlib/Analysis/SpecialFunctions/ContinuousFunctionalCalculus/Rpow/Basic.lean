@@ -12,6 +12,9 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real powers defined via the continuous functional calculus
 
@@ -21,10 +24,10 @@ square root is also defined via the non-unital CFC.
 
 ## Main declarations
 
-+ `CFC.nnrpow`: the `ℝ≥0` power function based on the non-unital CFC, i.e. `cfcₙ NNReal.rpow`
+* `CFC.nnrpow`: the `ℝ≥0` power function based on the non-unital CFC, i.e. `cfcₙ NNReal.rpow`
   composed with `(↑) : ℝ≥0 → ℝ`.
-+ `CFC.sqrt`: the square root function based on the non-unital CFC, i.e. `cfcₙ NNReal.sqrt`
-+ `CFC.rpow`: the real power function based on the unital CFC, i.e. `cfc NNReal.rpow`
+* `CFC.sqrt`: the square root function based on the non-unital CFC, i.e. `cfcₙ NNReal.sqrt`
+* `CFC.rpow`: the real power function based on the unital CFC, i.e. `cfc NNReal.rpow`
 
 ## Implementation notes
 
@@ -36,16 +39,16 @@ only makes sense for nonnegative exponents, and hence we define it such that the
 
 ## Notation
 
-+ We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
+* We define a `Pow A ℝ` instance for `CFC.rpow`, i.e `a ^ y` with `A` an operator and `y : ℝ` works
   as expected. Likewise, we define a `Pow A ℝ≥0` instance for `CFC.nnrpow`. Note that these are
   low-priority instances, in order to avoid overriding instances such as `Pow ℝ ℝ`,
   `Pow (A × B) ℝ` or `Pow (∀ i, A i) ℝ`.
 
 ## TODO
 
-+ Relate these to the log and exp functions
-+ Lemmas about how these functions interact with commuting `a` and `b`.
-+ Prove the order properties (operator monotonicity and concavity/convexity)
+* Relate these to the log and exp functions
+* Lemmas about how these functions interact with commuting `a` and `b`.
+* Prove the order properties (operator monotonicity and concavity/convexity)
 -/
 
 @[expose] public section
@@ -336,7 +339,9 @@ lemma sqrt_map_pi {c : ∀ i, C i} (hc : ∀ i, 0 ≤ c i := by cfc_tac) :
 
 end pi
 
-/-- For an element `a` in a C⋆-algebra, TFAE:
+/--
+For an element `a` in a C⋆-algebra, TFAE:
+
 1. `0 ≤ a`
 2. `a = sqrt a * sqrt a`
 3. `a = b * b` for some nonnegative `b`
@@ -345,7 +350,8 @@ end pi
 6. `a = b * star b` for some `b`
 7. `a = a⁺`
 8. `a` is self-adjoint and `a⁻ = 0`
-9. `a` is self-adjoint and has nonnegative spectrum -/
+9. `a` is self-adjoint and has nonnegative spectrum
+-/
 theorem _root_.CStarAlgebra.nonneg_tfae {a : A} :
     [ 0 ≤ a,
       a = sqrt a * sqrt a,
@@ -799,7 +805,9 @@ lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
       · simp [inverse_non_unit _ hunit]
     · simp [inverse_non_unit _ ha', inverse_non_unit _ H]
 
-/-- For an element `a` in a C⋆-algebra, TFAE:
+/--
+For an element `a` in a C⋆-algebra, TFAE:
+
 1. `a` is strictly positive,
 2. `sqrt a` is strictly positive and `a = sqrt a * sqrt a`,
 3. `sqrt a` is invertible and `a = sqrt a * sqrt a`,
@@ -808,7 +816,8 @@ lemma sqrt_ringInverse {a : A} : sqrt a⁻¹ʳ = (sqrt a)⁻¹ʳ := by
 6. `a = star b * b` for some invertible `b`,
 7. `a = b * star b` for some invertible `b`,
 8. `0 ≤ a` and `a` is invertible,
-9. `a` is self-adjoint and has positive spectrum. -/
+9. `a` is self-adjoint and has positive spectrum.
+-/
 theorem _root_.CStarAlgebra.isStrictlyPositive_tfae {a : A} :
     [IsStrictlyPositive a,
      IsStrictlyPositive (sqrt a) ∧ a = sqrt a * sqrt a,

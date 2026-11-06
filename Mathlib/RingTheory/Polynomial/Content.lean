@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.CancelLeads
 public import Mathlib.Algebra.Polynomial.FieldDivision
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # GCD structures on polynomials
 
@@ -15,18 +18,20 @@ Definitions and basic results about polynomials over GCD domains, particularly t
 and primitive polynomials.
 
 ## Main Definitions
+
 Let `p : R[X]`.
-- `p.content` is the `gcd` of the coefficients of `p`.
-- `p.IsPrimitive` indicates that `p.content = 1`.
+
+* `p.content` is the `gcd` of the coefficients of `p`.
+* `p.IsPrimitive` indicates that `p.content = 1`.
 
 ## Main Results
-- `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
-- `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
+
+* `Polynomial.content_mul`: if `p q : R[X]`, then `(p * q).content = p.content * q.content`.
+* `Polynomial.NormalizedGcdMonoid`: the polynomial ring of a GCD domain is itself a GCD domain.
 
 ## Note
 
 This has nothing to do with minimal polynomials of primitive elements in finite fields.
-
 -/
 
 @[expose] public section

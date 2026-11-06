@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.TStructure.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The heart of a t-structure
 
@@ -20,11 +23,12 @@ with the full subcategory defined by `t.heart`, we introduce a typeclass
 the full subcategory `t.heart`.
 
 ## TODO (@joelriou)
+
 * Show that the heart is an abelian category.
 
 ## References
-* [Beilinson, Bernstein, Deligne, Gabber, *Faisceaux pervers*][bbd-1982]
 
+* ‍\[Beilinson, Bernstein, Deligne, Gabber, _Faisceaux pervers_\]\[bbd-1982\]
 -/
 
 @[expose] public section

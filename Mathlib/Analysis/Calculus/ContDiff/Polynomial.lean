@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Higher smoothness of polynomials
 

@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Distribution.FourierMultiplier
 public import Mathlib.Analysis.Fourier.LpSpace
 
-/-! # Sobolev tempered distributions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Sobolev tempered distributions
 
 In this file we define Sobolev spaces on normed vector spaces via the Fourier transform.
 These spaces are also known as Bessel potential spaces. The Bessel potential operator
@@ -42,11 +46,10 @@ The bundled variant of `TemperedDistribution.MemSobolev` is called `BesselPotent
 * `TemperedDistribution.MemSobolev.laplacian`: If `u` is a Sobolev function of order `s`, then
   `Δ u` is a Sobolev function of order `s - 2`.
 
-
 ## References
-* [M. Taylor, *Partial Differential Equations 1*][taylorPDE1]
-* [W. McLean, *Strongly Elliptic Systems and Boundary Integral Equations*][mclean2000]
 
+* ‍\[M. Taylor, _Partial Differential Equations 1_\]\[taylorPDE1\]
+* ‍\[W. McLean, _Strongly Elliptic Systems and Boundary Integral Equations_\]\[mclean2000\]
 -/
 
 @[expose] public noncomputable section
@@ -65,11 +68,13 @@ section normed
 variable [NormedSpace ℂ F]
 
 variable (E F) in
-/-- The Bessel potential operator is the Fourier multiplier with the function
+/--
+The Bessel potential operator is the Fourier multiplier with the function
 `(1 + ‖x‖ ^ 2) ^ (s / 2)`.
 
 Note that due to the convention of the Fourier transform, this is the operator
-`(1 - (2 * π) ^ (-2) • Δ) ^ (s / 2)` not `(1 - Δ) ^ (s / 2)`. -/
+`(1 - (2 * π) ^ (-2) • Δ) ^ (s / 2)` not `(1 - Δ) ^ (s / 2)`.
+-/
 def besselPotential (s : ℝ) : 𝓢'(E, F) →L[ℂ] 𝓢'(E, F) :=
   fourierMultiplierCLM F (fun x ↦ ((1 + ‖x‖ ^ 2) ^ (s / 2) : ℝ))
 
@@ -146,10 +151,12 @@ section normed
 
 variable [NormedSpace ℂ F] [CompleteSpace F]
 
-/-- A tempered distribution `f` is a Sobolev function of order `s` if there exists an `Lp` function
+/--
+A tempered distribution `f` is a Sobolev function of order `s` if there exists an `Lp` function
 `f'` such that `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 f = f'`.
 
-The bundled variant of these variant of Sobolev functions is called `BesselPotentialSpace`. -/
+The bundled variant of these variant of Sobolev functions is called `BesselPotentialSpace`.
+-/
 def MemSobolev (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] (f : 𝓢'(E, F)) : Prop :=
   ∃ (f' : Lp F p (volume : Measure E)),
     besselPotential E F s f = f'
@@ -238,10 +245,12 @@ theorem memSobolev_zero_iff_exists_fourier {f : 𝓢'(E, F)} :
     MemSobolev 0 2 f ↔ ∃ (f' : Lp F 2 (volume : Measure E)), 𝓕 f = f' := by
   simp [memSobolev_iff_exists_smulLeftCLM_fourier]
 
-/-- The Fourier transform of a Sobolev function of order `s` with `s > d / 2` can be represented by
+/--
+The Fourier transform of a Sobolev function of order `s` with `s > d / 2` can be represented by
 a `L1` function.
 
-This is the main calculation of the Sobolev embedding theorem. -/
+This is the main calculation of the Sobolev embedding theorem.
+-/
 theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {f : 𝓢'(E, F)}
     (hf : MemSobolev s 2 f) :
     ∃ (v : Lp F 1 (volume : Measure E)), 𝓕 f = (v : 𝓢'(E, F)) := by

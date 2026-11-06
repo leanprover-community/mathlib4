@@ -9,10 +9,13 @@ public import Mathlib.CategoryTheory.Limits.ExactFunctor
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additive Functors
 
-A functor between two preadditive categories is called *additive*
+A functor between two preadditive categories is called _additive_
 provided that the induced map on hom types is a morphism of abelian
 groups.
 
@@ -26,7 +29,6 @@ We also define the category of bundled additive functors.
 
 `Functor.Additive` is a `Prop`-valued class, defined by saying that for every two objects `X` and
 `Y`, the map `F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)` is a morphism of abelian groups.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The restricted Yoneda functor
 
@@ -17,8 +20,8 @@ which sends `Y : D` and `X : Cᵒᵖ` to a type that is equivalent to
 `restrictedULiftYoneda` variants.)
 
 ## References
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
 
+* ‍\[S. MacLane, I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
 -/
 
 @[expose] public section

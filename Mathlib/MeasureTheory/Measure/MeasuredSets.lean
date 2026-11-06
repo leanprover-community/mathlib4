@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.SetSemiring
 
 import Mathlib.Topology.MetricSpace.Lipschitz
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Measured sets
 
@@ -53,9 +56,11 @@ noncomputable instance : PseudoEMetricSpace (MeasuredSets μ) where
 
 lemma MeasuredSets.edist_def (s t : MeasuredSets μ) : edist s t = μ ((s : Set α) ∆ t) := rfl
 
-/-- Measure on `MeasuredSets` is a 1-lipschitz function.
+/--
+Measure on `MeasuredSets` is a 1-lipschitz function.
 
-We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`. -/
+We cannot state this in terms of `LipschitzWith`, because `ℝ≥0∞` is not a `PseudoEMetricSpace`.
+-/
 lemma MeasuredSets.sub_le_edist (s t : MeasuredSets μ) : μ s - μ t ≤ edist s t :=
   le_measure_sdiff.trans <| measure_mono subset_union_left
 

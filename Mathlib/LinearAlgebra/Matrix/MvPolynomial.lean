@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Eval
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices of multivariate polynomials
 
@@ -41,11 +44,13 @@ theorem mvPolynomialX_apply [CommSemiring R] (i j) :
 
 variable {m n R}
 
-/-- Any matrix `A` can be expressed as the evaluation of `Matrix.mvPolynomialX`.
+/--
+Any matrix `A` can be expressed as the evaluation of `Matrix.mvPolynomialX`.
 
 This is of particular use when `MvPolynomial (m × n) R` is an integral domain but `S` is
 not, as if the `MvPolynomial.eval₂` can be pulled to the outside of a goal, it can be solved in
-under cancellative assumptions. -/
+under cancellative assumptions.
+-/
 theorem mvPolynomialX_map_eval₂ [CommSemiring R] [CommSemiring S] (f : R →+* S) (A : Matrix m n S) :
     (mvPolynomialX m n R).map (MvPolynomial.eval₂ f fun p : m × n => A p.1 p.2) = A :=
   ext fun i j => MvPolynomial.eval₂_X _ (fun p : m × n => A p.1 p.2) (i, j)

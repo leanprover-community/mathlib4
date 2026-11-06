@@ -9,13 +9,15 @@ public import Mathlib.Algebra.Homology.Double
 public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.CategoryTheory.Generator.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Generators of the category of homological complexes
 
 Let `c : ComplexShape ι` be a complex shape with no loop.
 If a category `C` has a separator, then `HomologicalComplex C c`
 has a separating family, and a separator when suitable coproducts exist.
-
 -/
 
 @[expose] public section

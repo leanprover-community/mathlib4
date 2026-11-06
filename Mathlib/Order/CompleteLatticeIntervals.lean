@@ -9,7 +9,11 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 public import Mathlib.Order.Interval.Set.OrdConnected
 public import Mathlib.Order.LatticeIntervals
 
-/-! # Subtypes of conditionally complete linear orders
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Subtypes of conditionally complete linear orders
 
 In this file we give conditions on a subset of a conditionally complete linear order, to ensure that
 the subtype is itself conditionally complete.
@@ -119,10 +123,12 @@ section OrdConnected
 
 variable [ConditionallyCompleteLinearOrder α]
 
-/-- For a nonempty subset of a conditionally complete linear order to be a conditionally complete
+/--
+For a nonempty subset of a conditionally complete linear order to be a conditionally complete
 linear order, it suffices that it contain the `sSup` of all its nonempty bounded-above subsets, and
 the `sInf` of all its nonempty bounded-below subsets.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 noncomputable abbrev subsetConditionallyCompleteLinearOrder [Inhabited s]
     (h_Sup : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddAbove t), sSup ((↑) '' t : Set α) ∈ s)
     (h_Inf : ∀ {t : Set s} (_ : t.Nonempty) (_h_bdd : BddBelow t), sInf ((↑) '' t : Set α) ∈ s) :

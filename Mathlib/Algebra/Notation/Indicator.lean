@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Notation.Support
 public import Mathlib.Data.Set.Piecewise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function
 
@@ -16,8 +19,8 @@ This file defines the indicator function of a set. More lemmas can be found in
 
 ## Main declarations
 
-- `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
-- `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
+* `Set.indicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `0` otherwise.
+* `Set.mulIndicator (s : Set α) (f : α → β) (a : α)` is `f a` if `a ∈ s` and is `1` otherwise.
 
 ## Implementation note
 

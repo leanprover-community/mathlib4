@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases for direct sum of modules
 

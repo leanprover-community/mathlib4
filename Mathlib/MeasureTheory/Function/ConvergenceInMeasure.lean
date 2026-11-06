@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.Egorov
 public import Mathlib.MeasureTheory.Function.LpSpace.Complete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence in measure
 
@@ -79,11 +82,13 @@ theorem tendstoInMeasure_iff_enorm [SeminormedAddCommGroup E] {l : Filter ι} {f
   simp_rw [← edist_eq_enorm_sub]
   exact ⟨fun h ε hε hε_top ↦ h ε hε, tendstoInMeasure_of_ne_top⟩
 
-/-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with
+/--
+`TendstoInMeasure` expressed with the real-valued measure of a set defined with
 an extended norm.
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
-the measure of the set is infinite. -/
+the measure of the set is infinite.
+-/
 theorem tendstoInMeasure_iff_measureReal_enorm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
     {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔
@@ -103,10 +108,12 @@ lemma tendstoInMeasure_iff_dist [PseudoMetricSpace E] {f : ι → α → E} {l :
     convert! h ε.toReal (ENNReal.toReal_pos hε.ne' hε_top) with i a
     rw [edist_dist, ENNReal.le_ofReal_iff_toReal_le hε_top (by positivity)]
 
-/-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with a distance.
+/--
+`TendstoInMeasure` expressed with the real-valued measure of a set defined with a distance.
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
-the measure of the set is infinite. -/
+the measure of the set is infinite.
+-/
 lemma tendstoInMeasure_iff_measureReal_dist [PseudoMetricSpace E] [IsFiniteMeasure μ]
     {f : ι → α → E} {l : Filter ι} {g : α → E} :
     TendstoInMeasure μ f l g ↔
@@ -122,10 +129,12 @@ theorem tendstoInMeasure_iff_norm [SeminormedAddCommGroup E] {l : Filter ι} {f 
       ∀ ε, 0 < ε → Tendsto (fun i => μ { x | ε ≤ ‖f i x - g x‖ }) l (𝓝 0) := by
   simp_rw [tendstoInMeasure_iff_dist, dist_eq_norm_sub]
 
-/-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with a norm.
+/--
+`TendstoInMeasure` expressed with the real-valued measure of a set defined with a norm.
 
 The `IsFiniteMeasure` hypothesis is necessary, otherwise `μ.real {...}` could be zero because
-the measure of the set is infinite. -/
+the measure of the set is infinite.
+-/
 lemma tendstoInMeasure_iff_measureReal_norm [SeminormedAddCommGroup E] [IsFiniteMeasure μ]
     {l : Filter ι} {f : ι → α → E} {g : α → E} :
     TendstoInMeasure μ f l g ↔

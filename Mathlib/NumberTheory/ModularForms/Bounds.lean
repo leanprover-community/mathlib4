@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Fourier.AddCircle
 public import Mathlib.NumberTheory.ModularForms.NormTrace
 public import Mathlib.NumberTheory.ModularForms.Petersson
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounds for the norm of a modular form
 
@@ -19,7 +22,7 @@ bounds for its q-expansion coefficients. The main results are
   is bounded by a constant multiple of `max 1 (1 / (im τ) ^ k)`.
 * `CuspFormClass.exists_bound`: a cusp form of weight `k` (for an arithmetic subgroup `Γ`)
   is bounded by a constant multiple of `1 / (im τ) ^ (k / 2)`.
-* `hasSum_norm_sq_qExpansion_coeff_mul_exp`: **Parseval's identity** for `q`-expansions, expressing
+* `hasSum_norm_sq_qExpansion_coeff_mul_exp`: *Parseval's identity* for `q`-expansions, expressing
   the mean square of `f` along a horizontal line as a weighted sum of the squared norms of the
   `q`-expansion coefficients.
 * `CuspFormClass.exists_sum_range_norm_sq_qExpansion_coeff_le_of_mem_strictPeriods` and
@@ -29,7 +32,7 @@ bounds for its q-expansion coefficients. The main results are
   `CuspFormClass.sum_range_norm_sq_qExpansion_coeff_isBigO`).
 * `ModularFormClass.qExpansion_isBigO`: for a a modular form of weight `k` (for an arithmetic
   subgroup `Γ`), the `n`-th q-expansion coefficient is `O(n ^ k)`.
-* `CuspFormClass.qExpansion_isBigO`: **Hecke's bound** for a a cusp form of weight `k` (for
+* `CuspFormClass.qExpansion_isBigO`: *Hecke's bound* for a a cusp form of weight `k` (for
   an arithmetic subgroup `Γ`): the `n`-th q-expansion coefficient is `O(n ^ (k / 2))`.
 -/
 
@@ -71,11 +74,13 @@ lemma exists_bound_fundamental_domain_of_isBigO
   · rw [← div_le_iff₀ (by positivity)]
     exact (hE τ ⟨hτ, hτ'⟩).trans (le_max_right _ _)
 
-/-- A function on `ℍ` which is invariant under `SL(2, ℤ)`, and is `O ((im τ) ^ t)` at `I∞` for
+/--
+A function on `ℍ` which is invariant under `SL(2, ℤ)`, and is `O ((im τ) ^ t)` at `I∞` for
 some `0 ≤ t`, is bounded on `ℍ` by a constant multiple of `(max (im τ) (1 / im τ)) ^ t`.
 
 This will be applied to `f τ * (im τ) ^ (k / 2)` for `f` a modular form of weight `k`, taking
-`t = 0` if `f` is cuspidal, and `t = k / 2` otherwise. -/
+`t = 0` if `f` is cuspidal, and `t = k / 2` otherwise.
+-/
 lemma exists_bound_of_invariant_of_isBigO {f : ℍ → E} (hf_cont : Continuous f) {t : ℝ} (ht : 0 ≤ t)
     (hf_infinity : f =O[atImInfty] fun z ↦ (im z) ^ t)
     (hf_inv : ∀ (g : SL(2, ℤ)) τ, f (g • τ) = f τ) :
@@ -464,13 +469,15 @@ lemma qExpansion_coeff_isBigO_of_norm_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2
   · exact continuous_const.intervalIntegrable ..
   · simp [field, intervalIntegral.integral_const, hne]
 
-/-- Bound for the coefficients of a modular form: if `f` is a weight `k` modular form for an
+/--
+Bound for the coefficients of a modular form: if `f` is a weight `k` modular form for an
 arithmetic subgroup, then its `q`-expansion coefficients are `O (n ^ k)`.
 
 This is not optimal -- the optimal exponent is `k - 1 + ε` for any `0 < ε`, at least for congruence
 levels -- but is much easier to prove than the optimal result.
 
-See `CuspFormClass.qExpansion_isBigO` for a sharper bound assuming `f` is cuspidal. -/
+See `CuspFormClass.qExpansion_isBigO` for a sharper bound assuming `f` is cuspidal.
+-/
 lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [ModularFormClass F Γ k] (f : F) :
     (fun n ↦ (qExpansion Γ.strictWidthInfty f).coeff n) =O[atTop] fun n ↦ (n : ℝ) ^ k := by
@@ -484,11 +491,13 @@ lemma ModularFormClass.qExpansion_isBigO {k : ℤ} (hk : 0 ≤ k) {Γ : Subgroup
   rw [max_eq_right, zpow_neg, Real.norm_of_nonneg (by positivity), one_div]
   exact one_le_one_div (by positivity) (zpow_le_one₀ τ.im_pos hτ hk)
 
-/-- **Hecke's bound** for the coefficients of a cusp form: if `f` is a weight `k` modular form for
+/--
+*Hecke's bound* for the coefficients of a cusp form: if `f` is a weight `k` modular form for
 an arithmetic subgroup, then its `q`-expansion coefficients are `O (n ^ (k / 2))`.
 
 This is not optimal -- the optimal exponent is `(k - 1) / 2 + ε` for any `0 < ε`, at least for
-congruence levels -- but is much easier to prove than the optimal result. -/
+congruence levels -- but is much easier to prove than the optimal result.
+-/
 lemma CuspFormClass.qExpansion_isBigO {k : ℤ} {Γ : Subgroup (GL (Fin 2) ℝ)}
     [Γ.IsArithmetic] {F : Type*} [FunLike F ℍ ℂ] [CuspFormClass F Γ k] (f : F) :
     (fun n ↦ (UpperHalfPlane.qExpansion Γ.strictWidthInfty f).coeff n)

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Lie.Derivation.Basic
 public import Mathlib.Algebra.Lie.Extension
 public import Mathlib.Algebra.Lie.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semi-direct products
 
@@ -19,11 +22,9 @@ algebra homomorphism  `ψ : L → LieDerivation  R K K`, the underlying set of t
 itself a Lie algebra and that it fits into an exact sequence `H → (SemiDirectSum K L ψ) → L`, i.e.
 forms an extension of `L`.
 
-
 ## References
 
-* https://en.wikipedia.org/wiki/Lie_algebra_extension#By_semidirect_sum
-
+* https://en.wikipedia.org/wiki/Lie\_algebra\_extension#By\_semidirect\_sum
 -/
 
 

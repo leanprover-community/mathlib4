@@ -7,18 +7,21 @@ module
 
 public import Mathlib.MeasureTheory.Group.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Definitions about invariant measures
 
 In this file we define typeclasses for measures invariant under (scalar) multiplication.
 
-- `MeasureTheory.SMulInvariantMeasure M α μ`
+* `MeasureTheory.SMulInvariantMeasure M α μ`
   says that the measure `μ` is invariant under scalar multiplication by `c : M`;
-- `MeasureTheory.VAddInvariantMeasure M α μ` is the additive version of this typeclass;
-- `MeasureTheory.Measure.IsMulLeftInvariant μ`, `MeasureTheory.Measure.IsMulRightInvariant μ`
+* `MeasureTheory.VAddInvariantMeasure M α μ` is the additive version of this typeclass;
+* `MeasureTheory.Measure.IsMulLeftInvariant μ`, `MeasureTheory.Measure.IsMulRightInvariant μ`
   say that the measure `μ` is invariant under multiplication on the left and on the right,
   respectively.
-- `MeasureTheory.Measure.IsAddLeftInvariant μ`, `MeasureTheory.Measure.IsAddRightInvariant μ`
+* `MeasureTheory.Measure.IsAddLeftInvariant μ`, `MeasureTheory.Measure.IsAddRightInvariant μ`
   are the additive versions of these typeclasses.
 
 For basic facts about the first two typeclasses, see `Mathlib/MeasureTheory/Group/Action`.

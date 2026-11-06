@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `simp_rw` tactic
 
@@ -42,6 +45,8 @@ def withSimpRWRulesSeq (rwRulesSeqStx : Syntax)
         -- let processId (id : Syntax) : TacticM Unit := do
         x symm term
 
+
+set_option doc.verso false
 /--
 `simp_rw` functions as a mix of `simp` and `rw`. Like `rw`, it applies each
 rewrite rule in the given order, but like `simp` it repeatedly applies these
@@ -74,4 +79,6 @@ elab s:"simp_rw " cfg:optConfig rws:rwRuleSeq g:(location)? : tactic => focus do
       else
         `(tactic| simp%$e $cfg only [$e:term] $g ?))
 
+
+set_option doc.verso true
 end Mathlib.Tactic

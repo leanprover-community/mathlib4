@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 public import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
 public import Mathlib.MeasureTheory.Measure.Sub
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lebesgue decomposition
 
@@ -395,12 +398,14 @@ lemma rnDeriv_ne_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.
 
 end RNDerivFinite
 
-/-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
+/--
+Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `s = μ.singularPart μ`.
 
 This theorem provides the uniqueness of the `singularPart` in the Lebesgue decomposition theorem,
 while `MeasureTheory.Measure.eq_rnDeriv` provides the uniqueness of the
-`rnDeriv`. -/
+`rnDeriv`.
+-/
 theorem eq_singularPart {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurable f) (hs : s ⟂ₘ ν)
     (hadd : μ = s + ν.withDensity f) : s = μ.singularPart ν := by
   have : HaveLebesgueDecomposition μ ν := ⟨⟨⟨s, f⟩, hf, hs, hadd⟩⟩
@@ -512,13 +517,15 @@ lemma measure_sub_rnDeriv (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
   nth_rw 1 [← singularPart_add_rnDeriv μ ν]
   exact Measure.add_sub_cancel
 
-/-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
+/--
+Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
 This theorem provides the uniqueness of the `rnDeriv` in the Lebesgue decomposition
 theorem, while `MeasureTheory.Measure.eq_singularPart` provides the uniqueness of the
 `singularPart`. Here, the uniqueness is given in terms of the measures, while the uniqueness in
-terms of the functions is given in `eq_rnDeriv`. -/
+terms of the functions is given in `eq_rnDeriv`.
+-/
 theorem eq_withDensity_rnDeriv {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurable f) (hs : s ⟂ₘ ν)
     (hadd : μ = s + ν.withDensity f) : ν.withDensity f = ν.withDensity (μ.rnDeriv ν) := by
   have : HaveLebesgueDecomposition μ ν := ⟨⟨⟨s, f⟩, hf, hs, hadd⟩⟩
@@ -569,13 +576,15 @@ theorem eq_rnDeriv₀ [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞}
   (withDensity_eq_iff_of_sigmaFinite hf (measurable_rnDeriv _ _).aemeasurable).mp
     (eq_withDensity_rnDeriv₀ hf hs hadd)
 
-/-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
+/--
+Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
 This theorem provides the uniqueness of the `rnDeriv` in the Lebesgue decomposition
 theorem, while `MeasureTheory.Measure.eq_singularPart` provides the uniqueness of the
 `singularPart`. Here, the uniqueness is given in terms of the functions, while the uniqueness in
-terms of the functions is given in `eq_withDensity_rnDeriv`. -/
+terms of the functions is given in `eq_withDensity_rnDeriv`.
+-/
 theorem eq_rnDeriv [SigmaFinite ν] {s : Measure α} {f : α → ℝ≥0∞} (hf : Measurable f) (hs : s ⟂ₘ ν)
     (hadd : μ = s + ν.withDensity f) : f =ᵐ[ν] μ.rnDeriv ν :=
   eq_rnDeriv₀ hf.aemeasurable hs hadd
@@ -696,10 +705,12 @@ lemma rnDeriv_add (ν₁ ν₂ μ : Measure α) [IsFiniteMeasure ν₁] [IsFinit
   · exact ((measurable_rnDeriv _ _).add (measurable_rnDeriv _ _)).aemeasurable
   · exact (lintegral_rnDeriv_lt_top (ν₁ + ν₂) μ).ne
 
-/-- If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
+/--
+If two finite measures `μ` and `ν` are not mutually singular, there exists some `ε > 0` and
 a measurable set `E`, such that `ν(E) > 0` and `E` is positive with respect to `μ - εν`.
 
-This lemma is useful for the Lebesgue decomposition theorem. -/
+This lemma is useful for the Lebesgue decomposition theorem.
+-/
 theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMeasure μ]
     [IsFiniteMeasure ν] (h : ¬ μ ⟂ₘ ν) :
     ∃ ε : ℝ≥0, 0 < ε ∧
@@ -762,10 +773,12 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
 
 namespace LebesgueDecomposition
 
-/-- Given two measures `μ` and `ν`, `measurableLE μ ν` is the set of measurable
+/--
+Given two measures `μ` and `ν`, `measurableLE μ ν` is the set of measurable
 functions `f`, such that, for all measurable sets `A`, `∫⁻ x in A, f x ∂μ ≤ ν A`.
 
-This is useful for the Lebesgue decomposition theorem. -/
+This is useful for the Lebesgue decomposition theorem.
+-/
 def measurableLE (μ ν : Measure α) : Set (α → ℝ≥0∞) :=
   {f | Measurable f ∧ ∀ (A : Set α), MeasurableSet A → (∫⁻ x in A, f x ∂μ) ≤ ν A}
 
@@ -843,12 +856,14 @@ end LebesgueDecomposition
 
 open LebesgueDecomposition
 
-/-- Any pair of finite measures `μ` and `ν`, `HaveLebesgueDecomposition`. That is to say,
+/--
+Any pair of finite measures `μ` and `ν`, `HaveLebesgueDecomposition`. That is to say,
 there exist a measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular
 with respect to `ν` and `μ = ξ + ν.withDensity f`.
 
 This is not an instance since this is also shown for the more general σ-finite measures with
-`MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite`. -/
+`MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite`.
+-/
 theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     HaveLebesgueDecomposition μ ν where
   lebesgue_decomposition := by

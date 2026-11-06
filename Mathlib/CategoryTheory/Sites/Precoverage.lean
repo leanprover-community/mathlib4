@@ -10,28 +10,29 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.IsPullback.Basic
 public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Precoverages
 
 A precoverage `K` on a category `C` is a set of presieves associated to every object `X : C`,
 called "covering presieves".
 There are no conditions on this set. Common extensions of a precoverage are:
 
-- `CategoryTheory.Coverage`: A coverage is a precoverage that satisfies a pullback compatibility
+* `CategoryTheory.Coverage`: A coverage is a precoverage that satisfies a pullback compatibility
   condition, saying that whenever `S` is a covering presieve on `X` and `f : Y ⟶ X` is a morphism,
   then there exists some covering sieve `T` on `Y` such that `T` factors through `S` along `f`.
-- `CategoryTheory.Pretopology`: If `C` has pullbacks, a pretopology on `C` is a precoverage that
+* `CategoryTheory.Pretopology`: If `C` has pullbacks, a pretopology on `C` is a precoverage that
   has isomorphisms and is stable under pullback and refinement.
 
 These two are defined in later files. For precoverages, we define stability conditions:
 
-- `CategoryTheory.Precoverage.HasIsos`: Singleton presieves by isomorphisms are covering.
-- `CategoryTheory.Precoverage.IsStableUnderBaseChange`: The pullback of a covering presieve is again
+* `CategoryTheory.Precoverage.HasIsos`: Singleton presieves by isomorphisms are covering.
+* `CategoryTheory.Precoverage.IsStableUnderBaseChange`: The pullback of a covering presieve is again
   covering.
-- `CategoryTheory.Precoverage.IsStableUnderComposition`: Refining a covering presieve by covering
+* `CategoryTheory.Precoverage.IsStableUnderComposition`: Refining a covering presieve by covering
   presieves yields a covering presieve.
-
 -/
 
 @[expose] public section
@@ -40,8 +41,10 @@ universe w w' v u
 
 namespace CategoryTheory
 
-/-- A precoverage is a collection of *covering* presieves on every object `X : C`.
-See `CategoryTheory.Coverage` and `CategoryTheory.Pretopology` for common extensions of this. -/
+/--
+A precoverage is a collection of _covering_ presieves on every object `X : C`.
+See `CategoryTheory.Coverage` and `CategoryTheory.Pretopology` for common extensions of this.
+-/
 @[ext]
 structure Precoverage (C : Type*) [Category* C] where
   /-- The collection of covering presieves for an object `X`. -/

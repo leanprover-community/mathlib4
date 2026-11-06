@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 public import Mathlib.CategoryTheory.Limits.Shapes.StrongEpi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation and reflection of monomorphisms and epimorphisms
 

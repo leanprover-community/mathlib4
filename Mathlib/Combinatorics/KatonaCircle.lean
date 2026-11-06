@@ -11,6 +11,9 @@ public import Mathlib.Data.Nat.Choose.Cast
 
 import Mathlib.Data.Fintype.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Katona circle method
 

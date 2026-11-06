@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Calculus.Deriv.Shift
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derivatives of `x ^ m`, `m : ℤ`
 
@@ -36,7 +39,9 @@ variable {x : 𝕜}
 variable {s : Set 𝕜}
 variable {m : ℤ}
 
-/-! ### Derivative of `x ↦ x^m` for `m : ℤ` -/
+/-!
+# Derivative of `x ↦ x^m` for `m : ℤ`
+-/
 
 theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x := by

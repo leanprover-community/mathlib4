@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.ProbabilityMassFunction.Constructions
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform distributions and probability mass functions
 
@@ -17,6 +20,7 @@ This file defines two related notions of uniform distributions, which will be un
 Defines the uniform distribution for any set with finite measure.
 
 ### Main definitions
+
 * `IsUniform X s P μ` : A random variable `X` has uniform distribution on `s` under `P` if the
   push-forward measure agrees with the rescaled restricted measure `μ`.
 
@@ -26,12 +30,12 @@ This file defines a number of uniform distributions from various inputs,
 uniformly drawing from the corresponding object.
 
 ### Main definitions
+
 `uniformOfFinset` gives each element in the set equal probability,
 with `0` probability for elements not in the set.
 
 `ofMultiset` draws randomly from the given `Multiset`, treating duplicate values as distinct.
 Each probability is given by the count of the element divided by the size of the `Multiset`
-
 -/
 
 @[expose] public section

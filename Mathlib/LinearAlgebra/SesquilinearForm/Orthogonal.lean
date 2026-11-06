@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 
 import Mathlib.Algebra.Module.Torsion.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal complement
 
@@ -27,7 +30,9 @@ variable {R R₁ R₂ M M₁ M₂ : Type*}
 
 namespace Submodule
 
-/-! ### The orthogonal complement -/
+/-!
+# The orthogonal complement
+-/
 
 variable [CommSemiring R] [CommSemiring R₁] [CommSemiring R₂]
 variable [AddCommMonoid M] [Module R M]
@@ -38,13 +43,15 @@ variable {B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M}
 variable {S T : Submodule R₁ M₁}
 
 variable (B S) in
-/-- The orthogonal complement of a submodule `N` with respect to some bilinear map is the set of
+/--
+The orthogonal complement of a submodule `N` with respect to some bilinear map is the set of
 elements `x` which are orthogonal to all elements of `N`; i.e., for all `y` in `N`, `B x y = 0`.
 
 Note that for general (neither symmetric nor antisymmetric) bilinear maps this definition has a
 chirality; in addition to this "left" orthogonal complement one could define a "right" orthogonal
 complement for which, for all `y` in `N`, `B y x = 0`.  This variant definition is not currently
-provided in mathlib. -/
+provided in mathlib.
+-/
 def orthogonalBilin : Submodule R₂ M₂ where
   carrier := {y | ∀ x ∈ S, B x y = 0}
   zero_mem' := by simp

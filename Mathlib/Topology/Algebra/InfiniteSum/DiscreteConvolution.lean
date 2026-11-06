@@ -11,6 +11,9 @@ public import Mathlib.Data.Set.MulAntidiagonal
 public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Discrete Convolution
 
@@ -23,7 +26,7 @@ supported.
 Uses a bilinear map `L : E →ₗ[S] E' →ₗ[S] F` to combine values, following
 `MeasureTheory.convolution`.
 
-The index monoid `M` can be non-commutative (group algebras R[G] with non-abelian G).
+The index monoid `M` can be non-commutative (group algebras R\[G\] with non-abelian G).
 
 `@[to_additive]` generates multiplicative and additive versions from a single definition.
 The `mul/add` distinction refers to the index monoid `M`: multiplicative sums over
@@ -76,7 +79,9 @@ namespace DiscreteConvolution
 
 variable {M S E E' F F' R : Type*}
 
-/-! ### Multiplication Fiber -/
+/-!
+# Multiplication Fiber
+-/
 
 section Fiber
 
@@ -94,7 +99,9 @@ lemma mulFiber_one_mem : (1, 1) ∈ mulFiber (1 : M) := by simp [mulFiber]
 
 end Fiber
 
-/-! ### Convolution Definition and Existence -/
+/-!
+# Convolution Definition and Existence
+-/
 
 section Definition
 
@@ -168,15 +175,19 @@ variable [TopologicalSpace F]
 def ConvolutionExistsAt (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') (x : M) : Prop :=
   Summable fun ab : mulFiber x => L (f ab.1.1) (g ab.1.2)
 
-/-- The convolution of `f` and `g` with bilinear map `L` exists at every point, that is,
+/--
+The convolution of `f` and `g` with bilinear map `L` exists at every point, that is,
 `ConvolutionExistsAt L f g x` holds for every `x`.
 
-This does not assert that the resulting function `convolution L f g` is summable over `M`. -/
+This does not assert that the resulting function `convolution L f g` is summable over `M`.
+-/
 @[to_additive (dont_translate := S E E' F) AddConvolutionExists
-  /-- The additive convolution of `f` and `g` with bilinear map `L` exists at every point, that
-  is, `AddConvolutionExistsAt L f g x` holds for every `x`.
+  /--
+  The additive convolution of `f` and `g` with bilinear map `L` exists at every point, that
+is, `AddConvolutionExistsAt L f g x` holds for every `x`.
 
-  This does not assert that the resulting function `addConvolution L f g` is summable over `M`. -/]
+  This does not assert that the resulting function `addConvolution L f g` is summable over `M`.
+  -/]
 def ConvolutionExists (L : E →ₗ[S] E' →ₗ[S] F) (f : M → E) (g : M → E') : Prop :=
   ∀ x, ConvolutionExistsAt L f g x
 
@@ -225,7 +236,9 @@ lemma ConvolutionExistsAt.convolution_smul {c : S} {f : M → E} {g : M → E'} 
 
 end ExistenceProperties
 
-/-! ### Finite Multiplication Fibers -/
+/-!
+# Finite Multiplication Fibers
+-/
 
 section HasMulAntidiagonal
 
@@ -271,7 +284,9 @@ lemma convolutionExists_of_hasMulAntidiagonal
 
 end HasMulAntidiagonal
 
-/-! ### Commutativity -/
+/-!
+# Commutativity
+-/
 
 section CommMonoid
 
@@ -293,7 +308,9 @@ theorem convolution_comm (L : E →ₗ[S] E →ₗ[S] E) (f g : M → E) (hL : �
 
 end CommMonoid
 
-/-! ### Convolution with Multiplication -/
+/-!
+# Convolution with Multiplication
+-/
 
 section RingConvolution
 

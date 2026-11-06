@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.ModularForms.CongruenceSubgroups
 public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein Series
 
@@ -18,11 +21,11 @@ public import Mathlib.NumberTheory.ModularForms.SlashInvariantForms
   coprime integers congruent to a fixed pair `(a, b)` modulo `N`. Note that by using `(Fin 2 → ℤ)`
   instead of `ℤ × ℤ` we can state all of the required equivalences using matrices and vectors, which
   makes working with them more convenient.
-
 * We show that they define a slash invariant form of level `Γ(N)` and weight `k`.
 
 ## References
-* [F. Diamond and J. Shurman, *A First Course in Modular Forms*][diamondshurman2005]
+
+* ‍\[F. Diamond and J. Shurman, _A First Course in Modular Forms_\]\[diamondshurman2005\]
 -/
 
 @[expose] public section

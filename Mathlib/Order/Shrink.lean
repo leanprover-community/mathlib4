@@ -8,12 +8,14 @@ module
 public import Mathlib.Logic.Small.Defs
 public import Mathlib.Order.SuccPred.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Order instances on Shrink
 
 If `α : Type v` is `u`-small, we transport various order related
 instances on `α` to `Shrink.{u} α`.
-
 -/
 
 @[expose] public section

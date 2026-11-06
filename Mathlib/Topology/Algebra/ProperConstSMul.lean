@@ -8,34 +8,42 @@ module
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Maps.Proper.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Actions by proper maps
 
 In this file we define `ProperConstSMul M X` to be a mixin `Prop`-value class
 stating that `(c • ·)` is a proper map for all `c`.
 
-Note that this is **not** the same as a proper action (not yet in `Mathlib`)
+Note that this is *not* the same as a proper action (not yet in `Mathlib`)
 which requires `(c, x) ↦ (c • x, x)` to be a proper map.
 
 We also provide 4 instances:
-- for a continuous action on a compact Hausdorff space,
-- and for a continuous group action on a general space;
-- for the action on `X × Y`;
-- for the action on `∀ i, X i`.
+
+* for a continuous action on a compact Hausdorff space,
+* and for a continuous group action on a general space;
+* for the action on `X × Y`;
+* for the action on `∀ i, X i`.
 -/
 
 public section
 
-/-- A mixin typeclass saying that the `(c +ᵥ ·)` is a proper map for all `c`.
+/--
+A mixin typeclass saying that the `(c +ᵥ ·)` is a proper map for all `c`.
 
-Note that this is **not** the same as a proper additive action (not yet in `Mathlib`). -/
+Note that this is *not* the same as a proper additive action (not yet in `Mathlib`).
+-/
 class ProperConstVAdd (M X : Type*) [VAdd M X] [TopologicalSpace X] : Prop where
   /-- `(c +ᵥ ·)` is a proper map. -/
   isProperMap_vadd (c : M) : IsProperMap ((c +ᵥ ·) : X → X)
 
-/-- A mixin typeclass saying that `(c • ·)` is a proper map for all `c`.
+/--
+A mixin typeclass saying that `(c • ·)` is a proper map for all `c`.
 
-Note that this is **not** the same as a proper multiplicative action (not yet in `Mathlib`). -/
+Note that this is *not* the same as a proper multiplicative action (not yet in `Mathlib`).
+-/
 @[to_additive]
 class ProperConstSMul (M X : Type*) [SMul M X] [TopologicalSpace X] : Prop where
   /-- `(c • ·)` is a proper map. -/

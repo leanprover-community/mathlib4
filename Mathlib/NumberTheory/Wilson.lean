@@ -9,6 +9,9 @@ public import Mathlib.FieldTheory.Finite.Basic
 
 import Mathlib.Data.ZMod.Factorial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wilson's theorem.
 

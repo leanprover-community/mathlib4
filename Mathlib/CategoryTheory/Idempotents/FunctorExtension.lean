@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Karoubi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of functors to the idempotent completion
 
@@ -19,7 +22,6 @@ We also construct an extension `functorExtension₂` of functors
 when `D` is idempotent complete, we get equivalences
 `karoubiUniversal₂ C D : C ⥤ D ≌ Karoubi C ⥤ Karoubi D`
 and `karoubiUniversal C D : C ⥤ D ≌ Karoubi C ⥤ D`.
-
 -/
 
 @[expose] public section

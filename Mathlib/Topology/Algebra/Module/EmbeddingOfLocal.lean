@@ -9,6 +9,9 @@ public import Mathlib.Analysis.SpecificLimits.Normed
 
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A linear map which is locally an embedding is an embedding
 
@@ -17,6 +20,7 @@ Fix `𝕜` a `NontriviallyNormedField`, `E`, `F` two topological vector spaces o
 such that the restriction `V → F` is an embedding, then `f` itself is an embedding.
 
 Note that this result is false for topological groups, as shown by the following counterexamples:
+
 * first, in the group setting, there are local embeddings (even local homeomorphisms) which
   are not globally injective; an example is the quotient map `ℝ → 𝕋 := ℝ ⧸ ℤ`;
 * even if assume that `f` is globally injective, the theorem still fails. Consider for example
@@ -39,14 +43,14 @@ Note that this result is false for topological groups, as shown by the following
 
 ## TODO
 
-We will also need the fact that if the restriction `V → F` is a *closed* embedding, then
-`f : E → F` is a *closed* embedding. This will follow from the fact that a subgroup which is
+We will also need the fact that if the restriction `V → F` is a _closed_ embedding, then
+`f : E → F` is a _closed_ embedding. This will follow from the fact that a subgroup which is
 locally closed at `0` is in fact closed, which we don't have yet
 
 ## Implementation details
 
 The content of this file is essentially (variations of)
-[N. Bourbaki, *Théories Spectrales*, Chapitre III, § 5, n° 1, lemme 1][bourbaki2023], except
+‍\[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 5, n° 1, lemme 1\]\[bourbaki2023\], except
 Bourbaki's proof is very specific to `𝕜 = ℝ` or `𝕜 = ℂ`, since it relies crucially on balanced
 sets being connected.
 
@@ -58,8 +62,7 @@ proof for more details.
 
 ## References
 
-* [N. Bourbaki, *Théories Spectrales*, Chapitre III, § 5, n° 1, lemme 1][bourbaki2023]
-
+* ‍\[N. Bourbaki, _Théories Spectrales_, Chapitre III, § 5, n° 1, lemme 1\]\[bourbaki2023\]
 -/
 
 public section
@@ -71,11 +74,13 @@ variable {𝕜₁ 𝕜₂ E F : Type*} [NontriviallyNormedField 𝕜₁] [Nontri
   [AddCommGroup E] [AddCommGroup F] [Module 𝕜₁ E] [Module 𝕜₂ F] {σ : 𝕜₁ →+* 𝕜₂} {f : E →ₛₗ[σ] F}
 
 variable (𝕜₁) in
-/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two
+/--
+Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two
 vector space topologies on `E`.
 
 Assume that there is a `t₁`-neighborhood of zero `V` such that the two topogies induce the
-same filter of neighborhoods of `0` *in the subspace `V`*. Then `t₁ = t₂`. -/
+same filter of neighborhoods of `0` _in the subspace `V`_. Then `t₁ = t₂`.
+-/
 lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : TopologicalSpace E)
     [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
     [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]
@@ -123,11 +128,13 @@ lemma ContinuousSMul.topology_eq_of_nhds_inf_principal_eq (t₁ t₂ : Topologic
   rwa [pow_add, pow_one, mul_comm, mul_smul, smul_mem_smul_set_iff₀ c_ne V] at this
 
 variable (𝕜₁) in
-/-- Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
+/--
+Consider a vector space `E` over a `NontriviallyNormedField` `𝕜`, and `t₁`, `t₂` two topologies
 on `E` which are compatible with the vector space structure.
 
 Assume that there is a `t₁`-neighborhood of zero `V` such that the two topogies induce the
-same topology *on the subspace `V`*. Then `t₁ = t₂`. -/
+same topology _on the subspace `V`_. Then `t₁ = t₂`.
+-/
 lemma ContinuousSMul.topology_eq_of_induced_eq (t₁ t₂ : TopologicalSpace E)
     [@IsTopologicalAddGroup E t₁ _] [@IsTopologicalAddGroup E t₂ _]
     [@ContinuousSMul 𝕜₁ E _ _ t₁] [@ContinuousSMul 𝕜₁ E _ _ t₂]

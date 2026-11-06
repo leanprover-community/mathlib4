@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Notation.Indicator
 public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Order.Filter.Subsingleton
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functions that are eventually constant along a filter
 
@@ -71,10 +74,12 @@ theorem eventuallyConst_pred {p : α → Prop} :
     EventuallyConst p l ↔ (∀ᶠ x in l, p x) ∨ (∀ᶠ x in l, ¬p x) := by
   simp [eventuallyConst_pred', or_comm, EventuallyEq]
 
-/-- A set `s` is *eventually empty or eventually universal* along a filter `l` if it is eventually
+/--
+A set `s` is _eventually empty or eventually universal_ along a filter `l` if it is eventually
 equal to `∅` or to `univ`.
 
-This is the specialization of `Filter.EventuallyConst` to `s : Set α`. -/
+This is the specialization of `Filter.EventuallyConst` to `s : Set α`.
+-/
 def EventuallyEmptyOrUniv (s : Set α) (l : Filter α) : Prop := EventuallyConst (· ∈ s) l
 
 theorem eventuallyEmptyOrUniv_iff' {s : Set α} :

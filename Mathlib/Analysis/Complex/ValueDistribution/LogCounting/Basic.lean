@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.Complex.JensenFormula
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Logarithmic Counting Function of Value Distribution Theory
 
@@ -18,23 +21,22 @@ The logarithmic counting function of a meromorphic function `f` is a logarithmic
 measure of the number of times the function `f` takes a given value `a` within the disk `∣z∣ ≤ r`,
 taking multiplicities into account.
 
-See Section VI.1 of [Lang, *Introduction to Complex Hyperbolic Spaces*][MR886677] or Section 1.1 of
-[Noguchi-Winkelmann, *Nevanlinna Theory in Several Complex Variables and Diophantine
-Approximation*][MR3156076] for a detailed discussion.
+See Section VI.1 of \[Lang, _Introduction to Complex Hyperbolic Spaces_\]\[MR886677\] or Section 1.1
+of ‍\[Noguchi-Winkelmann, _Nevanlinna Theory in Several Complex Variables and Diophantine
+Approximation_\]\[MR3156076\] for a detailed discussion.
 
 ## Implementation Notes
 
-- This file defines the logarithmic counting function first for functions with locally finite
+* This file defines the logarithmic counting function first for functions with locally finite
   support on `𝕜` and then specializes to the setting where the function with locally finite support
   is the pole or zero-divisor of a meromorphic function.
-
-- Even though value distribution theory is best developed for meromorphic functions on the complex
+* Even though value distribution theory is best developed for meromorphic functions on the complex
   plane (and therefore placed in the complex analysis section of Mathlib), we introduce the
   logarithmic counting function for arbitrary normed fields.
 
 ## TODO
 
-- Discuss the logarithmic counting function for rational functions, add a forward reference to the
+* Discuss the logarithmic counting function for rational functions, add a forward reference to the
   upcoming converse, formulated in terms of the Nevanlinna height.
 -/
 
@@ -43,7 +45,7 @@ Approximation*][MR3156076] for a detailed discussion.
 open Filter Function MeromorphicOn Metric Real Set
 
 /-!
-## Supporting Notation
+# Supporting Notation
 -/
 
 namespace Function.locallyFinsuppWithin
@@ -78,7 +80,7 @@ lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] 
   simp_all [toClosedBall_apply, restrict_apply]
 
 /-!
-## The Logarithmic Counting Function of a Function with Locally Finite Support
+# The Logarithmic Counting Function of a Function with Locally Finite Support
 -/
 
 /--
@@ -142,7 +144,7 @@ The logarithmic counting function of a singleton indicator is asymptotically equ
     grind
 
 /-!
-### Elementary Properties of Logarithmic Counting Functions
+# Elementary Properties of Logarithmic Counting Functions
 -/
 
 /--
@@ -330,7 +332,7 @@ theorem sum_toClosedBall_le_logCounting {D : Function.locallyFinsupp ℂ ℤ} {�
 end Function.locallyFinsuppWithin
 
 /-!
-## The Logarithmic Counting Function of a Meromorphic Function
+# The Logarithmic Counting Function of a Meromorphic Function
 -/
 
 namespace ValueDistribution
@@ -459,7 +461,7 @@ theorem logCounting_eventually_nonneg {f : 𝕜 → E} {e : WithTop E} :
   filter_upwards [eventually_ge_atTop 1] using fun _ hr ↦ by simp [logCounting_nonneg hr]
 
 /-!
-## Elementary Properties of the Logarithmic Counting Function
+# Elementary Properties of the Logarithmic Counting Function
 -/
 
 /-- The logCounting function at top is invariant under scaling. -/
@@ -517,7 +519,7 @@ counting function for the poles.
   simpa [sub_eq_add_neg] using! logCounting_add_const hf
 
 /-!
-## Behaviour under Arithmetic Operations
+# Behaviour under Arithmetic Operations
 -/
 
 /--
@@ -580,9 +582,9 @@ an inequality between functions. This could be interpreted as claiming that the 
 ALL values of `r`, which is not true. For a counterexample, take `f₁ : z → z` and `f₂ : z → z⁻¹`.
 Then,
 
-- `logCounting f₁ 0 = log`
-- `logCounting f₂ 0 = 0`
-- `logCounting (f₁ * f₂) 0 = 0`
+* `logCounting f₁ 0 = log`
+* `logCounting f₂ 0 = 0`
+* `logCounting (f₁ * f₂) 0 = 0`
 
 But `log r` is negative for small `r`.
 -/
@@ -651,7 +653,7 @@ the logarithmic counting function for the poles of `f`.
 end ValueDistribution
 
 /-!
-## Representation by Integrals
+# Representation by Integrals
 
 For `𝕜 = ℂ`, the theorems below describe the logarithmic counting function in terms of circle
 averages.

@@ -7,14 +7,17 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preorder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits and colimits indexed by preorders
 
 In this file, we obtain the following very basic results
 about limits and colimits indexed by a preordered type `J`:
+
 * a least element in `J` implies the existence of all limits indexed by `J`
 * a greatest element in `J` implies the existence of all colimits indexed by `J`
-
 -/
 
 public section

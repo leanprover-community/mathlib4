@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Star.NonUnitalSubalgebra
 public import Mathlib.Topology.Algebra.NonUnitalAlgebra
 public import Mathlib.Topology.Algebra.Star
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Non-unital topological star (sub)algebras
 
@@ -21,7 +24,6 @@ of `R` and a continuous `star` operation. We reuse typeclasses `ContinuousSMul` 
 
 Any non-unital star subalgebra of a non-unital topological star algebra is itself a
 non-unital topological star algebra, and its closure is again a non-unital star subalgebra.
-
 -/
 
 @[expose] public section
@@ -72,10 +74,12 @@ instance isMulCommutative_topologicalClosure [T2Space A] (s : NonUnitalStarSubal
   s.toNonUnitalSubalgebra.isMulCommutative_topologicalClosure
 
 open scoped IsMulCommutative in
-/-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
+/--
+If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommSemiringTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommSemiring s.topologicalClosure :=
@@ -127,10 +131,12 @@ instance instIsSemitopologicalRing [IsSemitopologicalRing A] (s : NonUnitalStarS
 variable [IsSemitopologicalRing A]
 
 open scoped IsMulCommutative in
-/-- If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
+/--
+If a non-unital star subalgebra of a non-unital topological star algebra is commutative, then
 so is its topological closure.
 
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 @[deprecated isMulCommutative_topologicalClosure +typeChanged (since := "2026-07-29")]
 abbrev nonUnitalCommRingTopologicalClosure [T2Space A] (s : NonUnitalStarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : NonUnitalCommRing s.topologicalClosure :=

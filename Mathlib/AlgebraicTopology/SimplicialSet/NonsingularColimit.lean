@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplexCategory.SemiSimplexCategory
 public import Mathlib.AlgebraicTopology.SimplicialSet.NonDegenerateSimplicesColimit
 public import Mathlib.AlgebraicTopology.SimplicialSet.Nonsingular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonsingular simplicial sets, as colimits of standard simplices
 
@@ -19,7 +22,6 @@ of nondegenerate simplices) of its monogenous subcomplexes.
 In this file, we assume that `X` is nonsingular, in which case its monogenous subcomplexes
 identify to standard simplices. This allows to show that `X` is the colimit
 of `Δ[x.dim]` for `x : X.N`.
-
 -/
 
 @[expose] public section

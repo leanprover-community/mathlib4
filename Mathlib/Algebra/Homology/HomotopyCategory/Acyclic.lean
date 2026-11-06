@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.Localization
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The triangulated subcategory of acyclic complex in the homotopy category
 
@@ -19,7 +22,6 @@ In the lemma `HomotopyCategory.quasiIso_eq_subcategoryAcyclic_W` we obtain
 that the class of quasiisomorphisms `HomotopyCategory.quasiIso C (ComplexShape.up ℤ)`
 consists of morphisms whose cone belongs to the triangulated subcategory
 `HomotopyCategory.subcategoryAcyclic C` of acyclic complexes.
-
 -/
 
 @[expose] public section

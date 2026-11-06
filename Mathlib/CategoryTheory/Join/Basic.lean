@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Products.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Joins of categories
 
@@ -31,7 +34,6 @@ there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 ## References
 
 * [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
-
 -/
 
 @[expose] public section

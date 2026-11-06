@@ -8,12 +8,14 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.ZPow
 public import Mathlib.Analysis.Calculus.MeanValue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Logarithmic Derivatives
 
 We define the logarithmic derivative of a function `f` as `deriv f / f`. We then prove some basic
 facts about this, including how it changes under multiplication and composition.
-
 -/
 
 @[expose] public section

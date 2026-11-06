@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Subgroup.Defs
 public import Mathlib.Analysis.Normed.Group.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Subgroups of normed (semi)groups
 
@@ -20,7 +23,9 @@ normed group
 
 public section
 
-/-! ### Subgroups of normed groups -/
+/-!
+# Subgroups of normed groups
+-/
 
 variable {E : Type*}
 
@@ -44,14 +49,19 @@ its norm in `s` is equal to its norm in `E`. -/]
 theorem coe_norm (x : s) : ‖x‖ = ‖(x : E)‖ :=
   rfl
 
-/-- If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
+/--
+If `x` is an element of a subgroup `s` of a seminormed group `E`, its norm in `s` is equal to
 its norm in `E`.
 
-This is a reversed version of the `simp` lemma `Subgroup.coe_norm` for use by `norm_cast`. -/
-@[to_additive (attr := norm_cast) /-- If `x` is an element of a subgroup `s` of a seminormed group
+This is a reversed version of the `simp` lemma `Subgroup.coe_norm` for use by `norm_cast`.
+-/
+@[to_additive (attr := norm_cast) /--
+                                  If `x` is an element of a subgroup `s` of a seminormed group
 `E`, its norm in `s` is equal to its norm in `E`.
 
-This is a reversed version of the `simp` lemma `AddSubgroup.coe_norm` for use by `norm_cast`. -/]
+                                  This is a reversed version of the `simp` lemma
+`AddSubgroup.coe_norm` for use by `norm_cast`.
+                                  -/]
 theorem norm_coe {s : Subgroup E} (x : s) : ‖(x : E)‖ = ‖x‖ :=
   rfl
 
@@ -71,7 +81,9 @@ instance normedCommGroup [NormedCommGroup E] {s : Subgroup E} : NormedCommGroup 
 
 end Subgroup
 
-/-! ### Subgroup classes of normed groups -/
+/-!
+# Subgroup classes of normed groups
+-/
 
 
 namespace SubgroupClass

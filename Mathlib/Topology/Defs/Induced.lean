@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Set.Lattice.Image
 public import Mathlib.Topology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Induced and coinduced topologies
 
@@ -20,30 +23,23 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
   the induced topology on `X` is the collection of sets
   that are preimages of some open set in `Y`.
   This is the coarsest topology that makes `f` continuous.
-
 * `TopologicalSpace.coinduced`: given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
   This is the finest topology that makes `f` continuous.
-
-* `IsInducing`: a map `f : X → Y` is called *inducing*,
+* `IsInducing`: a map `f : X → Y` is called _inducing_,
   if the topology on the domain is equal to the induced topology.
-
-* `IsCoinducing`: a map `f : X → Y` is called *coinducing*,
+* `IsCoinducing`: a map `f : X → Y` is called _coinducing_,
   if the topology on the codomain is equal to the coinduced topology.
-
-* `IsEmbedding`: a map `f : X → Y` is an *embedding*,
+* `IsEmbedding`: a map `f : X → Y` is an _embedding_,
   if it is a topology inducing map and it is injective.
-
-* `IsOpenEmbedding`: a map `f : X → Y` is an *open embedding*,
+* `IsOpenEmbedding`: a map `f : X → Y` is an _open embedding_,
   if it is an embedding and its range is open.
   An open embedding is an open map.
-
-* `IsClosedEmbedding`: a map `f : X → Y` is an *open embedding*,
+* `IsClosedEmbedding`: a map `f : X → Y` is an _open embedding_,
   if it is an embedding and its range is open.
   An open embedding is an open map.
-
-* `IsQuotientMap`: a map `f : X → Y` is a *quotient map*,
+* `IsQuotientMap`: a map `f : X → Y` is a _quotient map_,
   if it is surjective
   and the topology on the codomain is equal to the coinduced topology.
 -/
@@ -115,13 +111,14 @@ end WithTopology
 namespace Topology
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
 
-/-- We say that restrictions of the topology on `X` to sets from a family `S`
+/--
+We say that restrictions of the topology on `X` to sets from a family `S`
 generates the original topology,
 if either of the following equivalent conditions hold:
 
-- a set which is relatively open in each `s ∈ S` is open;
-- a set which is relatively closed in each `s ∈ S` is closed;
-- for any topological space `Y`, a function `f : X → Y` is continuous
+* a set which is relatively open in each `s ∈ S` is open;
+* a set which is relatively closed in each `s ∈ S` is closed;
+* for any topological space `Y`, a function `f : X → Y` is continuous
   provided that it is continuous on each `s ∈ S`.
 -/
 structure IsCoherentWith (S : Set (Set X)) : Prop where

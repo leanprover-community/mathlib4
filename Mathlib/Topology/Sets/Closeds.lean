@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Clopen
 public import Mathlib.Topology.Sets.Opens
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closed sets
 
@@ -16,6 +19,7 @@ We define a few types of closed sets in a topological space.
 ## Main Definitions
 
 For a topological space `α`,
+
 * `TopologicalSpace.Closeds α`: The type of closed sets.
 * `TopologicalSpace.Clopens α`: The type of clopen sets.
 -/
@@ -30,7 +34,9 @@ variable {ι α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 namespace TopologicalSpace
 
-/-! ### Closed sets -/
+/-!
+# Closed sets
+-/
 
 
 /-- The type of closed subsets of a topological space. -/
@@ -53,7 +59,9 @@ instance : CanLift (Set α) (Closeds α) (↑) IsClosed where
 theorem isClosed (s : Closeds α) : IsClosed (s : Set α) :=
   s.isClosed'
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (s : Closeds α) : Set α := s
 
 initialize_simps_projections Closeds (carrier → coe, as_prefix coe)
@@ -299,7 +307,9 @@ theorem Opens.isCoatom_iff [T1Space α] {s : Opens α} :
   simp only [(Closeds.complOrderIso α).isAtom_iff, Closeds.isAtom_iff,
     Closeds.compl_bijective.injective.eq_iff]
 
-/-! ### Clopen sets -/
+/-!
+# Clopen sets
+-/
 
 
 /-- The type of clopen sets of a topological space. -/
@@ -323,7 +333,9 @@ lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
 
 lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (s : Clopens α) : Set α := s
 
 initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
@@ -387,7 +399,9 @@ lemma coe_disjoint {s t : Clopens α} : Disjoint (s : Set α) t ↔ Disjoint s t
 
 end Clopens
 
-/-! ### Irreducible closed sets -/
+/-!
+# Irreducible closed sets
+-/
 
 /-- The type of irreducible closed subsets of a topological space. -/
 structure IrreducibleCloseds (α : Type*) [TopologicalSpace α] where
@@ -411,7 +425,9 @@ theorem isIrreducible (s : IrreducibleCloseds α) : IsIrreducible (s : Set α) :
 
 theorem isClosed (s : IrreducibleCloseds α) : IsClosed (s : Set α) := s.isClosed'
 
-/-- See Note [custom simps projection]. -/
+/--
+See Note \[custom simps projection\].
+-/
 def Simps.coe (s : IrreducibleCloseds α) : Set α := s
 
 initialize_simps_projections IrreducibleCloseds (carrier → coe, as_prefix coe)
@@ -473,7 +489,9 @@ order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
-/-! ### Partial order structure on irreducible closed sets and maps thereof.-/
+/-!
+# Partial order structure on irreducible closed sets and maps thereof.
+-/
 
 /-- The map on irreducible closed sets induced by a continuous map `f`. -/
 def map (f : β → α) (hf : Continuous f)

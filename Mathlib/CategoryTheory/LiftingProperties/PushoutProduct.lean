@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.PushoutProduct
 
 import Mathlib.CategoryTheory.LiftingProperties.ParametrizedAdjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lifting properties and pushout-products / pullback-homs
 
@@ -20,7 +23,7 @@ Special cases are considered when any of `A = ∅`, `K = ∅`, or `Y = ⋆` are 
 
 ## References
 
-* [Charles Rezk, *Introduction to Quasi-categories*, Proposition 21.5][Rezk2022]
+* ‍\[Charles Rezk, _Introduction to Quasi-categories_, Proposition 21.5\]\[Rezk2022\]
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public meta import Lean.Meta.Tactic.Refl
 public import Mathlib.Basic.Logic.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `subsingleton` tactic
 
@@ -109,14 +112,15 @@ namespace Mathlib.Tactic
 
 /--
 `subsingleton` proves the main goal of the form `∀ a ... b, x = y` or `∀ a ... b, x ≍ y` using the
-fact that the type(s) of `x` and `y` are *subsingletons* (a type with exactly zero or one elements).
+fact that the type(s) of `x` and `y` are _subsingletons_ (a type with exactly zero or one elements).
 If `subsingleton` cannot close the goal, it fails.
 
 Techniques the `subsingleton` tactic can apply:
-- proof irrelevance
-- heterogeneous proof irrelevance (via `proof_irrel_heq`)
-- using `Subsingleton` (via `Subsingleton.elim`)
-- proving instances of the type `BEq α` are equal if they are both lawful
+
+* proof irrelevance
+* heterogeneous proof irrelevance (via `proof_irrel_heq`)
+* using `Subsingleton` (via `Subsingleton.elim`)
+* proving instances of the type `BEq α` are equal if they are both lawful
   (via `lawful_beq_subsingleton`)
 
 * `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances

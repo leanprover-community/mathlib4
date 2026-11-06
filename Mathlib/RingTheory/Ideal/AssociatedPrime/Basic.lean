@@ -11,21 +11,25 @@ public import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime.Colon
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Associated primes of a module
 
 We provide the definition and related lemmas about associated primes of modules.
 
 ## Main definition
-- `IsAssociatedPrime`: `IsAssociatedPrime I M` if the prime ideal `I` is the
+
+* `IsAssociatedPrime`: `IsAssociatedPrime I M` if the prime ideal `I` is the
   radical of the annihilator of some `x : M`.
-- `associatedPrimes`: The set of associated primes of a module.
+* `associatedPrimes`: The set of associated primes of a module.
 
 ## Main results
-- `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
+
+* `exists_le_isAssociatedPrime_of_isNoetherianRing`: In a Noetherian ring, any `ann(x)` is
   contained in an associated prime for `x ≠ 0`.
-- `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
+* `associatedPrimes.eq_singleton_of_isPrimary`: In a Noetherian ring, `I.radical` is the only
   associated prime of `R ⧸ I` when `I` is primary.
 
 ## Implementation details
@@ -45,7 +49,7 @@ Generalize this to a non-commutative setting once there are annihilator for non-
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
 -/
 
 @[expose] public section

@@ -9,8 +9,10 @@ public import Mathlib.Condensed.Discrete.LocallyConstant
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Topology.Category.LightProfinite.Extend
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The condensed set given by left Kan extension from `FintypeCat` to `Profinite`.
 
 This file provides the necessary API to prove that a condensed set `X` is discrete if and only if

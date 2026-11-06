@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.NonUnitalHom
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Star.StarRingHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Morphisms of star algebras
 
@@ -32,8 +35,8 @@ of unital C⋆-algebras (with `StarAlgHom`s) and of C⋆-algebras (with `NonUnit
 
 ## Main definitions
 
-  * `NonUnitalStarAlgHom`
-  * `StarAlgHom`
+* `NonUnitalStarAlgHom`
+* `StarAlgHom`
 
 ## Tags
 
@@ -44,12 +47,16 @@ non-unital, algebra, morphism, star
 
 open EquivLike
 
-/-! ### Non-unital star algebra homomorphisms -/
+/-!
+# Non-unital star algebra homomorphisms
+-/
 
 
-/-- A *non-unital ⋆-algebra homomorphism* is a non-unital algebra homomorphism between
+/--
+A _non-unital ⋆-algebra homomorphism_ is a non-unital algebra homomorphism between
 non-unital `R`-algebras `A` and `B` equipped with a `star` operation, and this homomorphism is
-also `star`-preserving. -/
+also `star`-preserving.
+-/
 structure NonUnitalStarAlgHom (R A B : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
   [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B]
   [Star B] extends A →ₙₐ[R] B where
@@ -271,13 +278,17 @@ end RestrictScalars
 
 end NonUnitalStarAlgHom
 
-/-! ### Unital star algebra homomorphisms -/
+/-!
+# Unital star algebra homomorphisms
+-/
 
 
 section Unital
 
-/-- A *⋆-algebra homomorphism* is an algebra homomorphism between `R`-algebras `A` and `B`
-equipped with a `star` operation, and this homomorphism is also `star`-preserving. -/
+/--
+A _⋆-algebra homomorphism_ is an algebra homomorphism between `R`-algebras `A` and `B`
+equipped with a `star` operation, and this homomorphism is also `star`-preserving.
+-/
 structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
   [Semiring B] [Algebra R B] [Star B] extends AlgHom R A B where
   /-- By definition, a ⋆-algebra homomorphism preserves the `star` operation. -/
@@ -458,9 +469,11 @@ end StarAlgHom
 
 end Unital
 
-/-! ### Operations on the product type
+/-!
+# Operations on the product type
 
-Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg). -/
+Note that this is copied from [`Algebra.Hom.NonUnitalAlg`](../Hom/NonUnitalAlg).
+-/
 
 
 namespace NonUnitalStarAlgHom
@@ -616,11 +629,15 @@ def prodEquiv : (A →⋆ₐ[R] B) × (A →⋆ₐ[R] C) ≃ (A →⋆ₐ[R] B �
 
 end StarAlgHom
 
-/-! ### Star algebra equivalences -/
+/-!
+# Star algebra equivalences
+-/
 
-/-- A *⋆-algebra* equivalence is an equivalence preserving addition, multiplication, scalar
+/--
+A _⋆-algebra_ equivalence is an equivalence preserving addition, multiplication, scalar
 multiplication and the star operation, which allows for considering both unital and non-unital
-equivalences with a single structure. -/
+equivalences with a single structure.
+-/
 structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A] [SMul R B]
   [Star A] [Star B] extends A ≃⋆+* B where
   /-- By definition, a ⋆-algebra equivalence commutes with the action of scalars. -/
@@ -634,7 +651,8 @@ structure StarAlgEquiv (R A B : Type*) [Add A] [Add B] [Mul A] [Mul B] [SMul R A
 the scalar multiplication. -/
 add_decl_doc StarAlgEquiv.toStarRingEquiv
 
-/-- The class that directly extends `RingEquivClass` and `SMulHomClass`.
+/--
+The class that directly extends `RingEquivClass` and `SMulHomClass`.
 
 Mostly an implementation detail for the ⋆-algebra equivalence class
 which is currently: `[NonUnitalAlgEquivClass]` and `[StarHomClass]`.
@@ -735,7 +753,9 @@ nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
       simpa only [apply_inv_apply, inv_apply_apply] using!
         congr(inv e $((map_smul e r (inv e b)).symm)) }
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (e : A ≃⋆ₐ[R] B) : B → A :=
   e.symm
 
@@ -904,10 +924,12 @@ lemma toNonUnitalStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ �
     e₂.toNonUnitalStarAlgHom.comp e₁.toNonUnitalStarAlgHom =
       (e₁.trans e₂).toNonUnitalStarAlgHom := rfl
 
-/-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
+/--
+If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
 of maps `A₁ →⋆ₙₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₙₐ[R] A₂'`.
 
-For unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr`. -/
+For unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr`.
+-/
 @[simps apply]
 def arrowCongr' (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') :
     (A₁ →⋆ₙₐ[R] A₂) ≃ (A₁' →⋆ₙₐ[R] A₂') where
@@ -997,10 +1019,12 @@ lemma toStarAlgHom_refl : (StarAlgEquiv.refl R A₁).toStarAlgHom = .id R A₁ :
 lemma toStarAlgHom_comp (e₁ : A₁ ≃⋆ₐ[R] A₂) (e₂ : A₂ ≃⋆ₐ[R] A₃) :
     e₂.toStarAlgHom.comp e₁.toStarAlgHom = (e₁.trans e₂).toStarAlgHom := rfl
 
-/-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
+/--
+If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'` as star algebras, then the type
 of maps `A₁ →⋆ₐ[R] A₂` is equivalent to the type of maps `A₁' →⋆ₐ[R] A₂'`.
 
-For non-unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr'`. -/
+For non-unital star algebra homomorphisms, see `StarAlgEquiv.arrowCongr'`.
+-/
 @[simps apply]
 def arrowCongr (e₁ : A₁ ≃⋆ₐ[R] A₁') (e₂ : A₂ ≃⋆ₐ[R] A₂') : (A₁ →⋆ₐ[R] A₂) ≃ (A₁' →⋆ₐ[R] A₂') where
   toFun f := (e₂.toStarAlgHom.comp f).comp e₁.symm.toStarAlgHom

@@ -8,17 +8,17 @@ module
 public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Module
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The explicit sheaf condition for condensed sets
 
 We give the following three explicit descriptions of condensed objects:
 
 * `Condensed.ofSheafStonean`: A finite-product-preserving presheaf on `Stonean`.
-
 * `Condensed.ofSheafProfinite`: A finite-product-preserving presheaf on `Profinite`, satisfying
   `EqualizerCondition`.
-
 * `Condensed.ofSheafCompHaus`: A finite-product-preserving presheaf on `CompHaus`, satisfying
   `EqualizerCondition`.
 

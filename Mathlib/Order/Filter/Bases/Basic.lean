@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Sigma
 public import Mathlib.Order.Closure
 public import Mathlib.Order.Filter.Map
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic results on filter bases
 
@@ -37,17 +40,13 @@ destruction of `h.mem_iff.mpr ht` using `cases` or `let`.
 
 * `Filter.HasBasis.mem_iff`, `HasBasis.mem_of_superset`, `HasBasis.mem_of_mem` : restate `t ∈ f` in
   terms of a basis;
-
 * `Filter.HasBasis.le_iff`, `Filter.HasBasis.ge_iff`, `Filter.HasBasis.le_basis_iff` : restate
   `l ≤ l'` in terms of bases.
-
 * `Filter.basis_sets` : all sets of a filter form a basis;
-
 * `Filter.HasBasis.inf`, `Filter.HasBasis.inf_principal`, `Filter.HasBasis.prod`,
   `Filter.HasBasis.prod_self`, `Filter.HasBasis.map`, `Filter.HasBasis.comap` : combinators to
   construct filters of `l ⊓ l'`, `l ⊓ 𝓟 t`, `l ×ˢ l'`, `l ×ˢ l`, `l.map f`, `l.comap f`
   respectively;
-
 * `Filter.HasBasis.tendsto_right_iff`, `Filter.HasBasis.tendsto_left_iff`,
   `Filter.HasBasis.tendsto_iff` : restate `Tendsto f l l'` in terms of bases.
 

@@ -10,8 +10,10 @@ public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Affine morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is affine if the preimage
@@ -21,15 +23,14 @@ It is equivalent to ask only that `Y` is covered by affine opens whose preimage 
 
 ## Main results
 
-- `AlgebraicGeometry.IsAffineHom`: The class of affine morphisms.
-- `AlgebraicGeometry.isAffineOpen_of_isAffineOpen_basicOpen`:
+* `AlgebraicGeometry.IsAffineHom`: The class of affine morphisms.
+* `AlgebraicGeometry.isAffineOpen_of_isAffineOpen_basicOpen`:
   If `s` is a spanning set of `Γ(X, U)`, such that each `X.basicOpen i` is affine,
   then `U` is also affine.
-- `AlgebraicGeometry.isAffineHom_isStableUnderBaseChange`:
+* `AlgebraicGeometry.isAffineHom_isStableUnderBaseChange`:
   Affine morphisms are stable under base change.
 
 We also provide the instance `HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X`.
-
 -/
 
 public section

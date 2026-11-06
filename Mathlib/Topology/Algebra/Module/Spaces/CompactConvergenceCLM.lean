@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Spaces.UniformConvergenceCLM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology of compact convergence on the space of continuous linear maps
 
@@ -17,6 +20,7 @@ More concretely, `CompactConvergenceCLM` is an abbreviation for
 `UniformConvergenceCLM σ F {(S : Set E) | IsCompact S}`. We denote it by `E →SL_c[σ] F`.
 
 Here is a list of type aliases for `E →L[𝕜] F` endowed with various topologies :
+
 * `ContinuousLinearMap`: topology of bounded convergence
 * `UniformConvergenceCLM`: topology of `𝔖`-convergence, for a general `𝔖 : Set (Set E)`
 * `CompactConvergenceCLM`: topology of compact convergence
@@ -27,7 +31,7 @@ Here is a list of type aliases for `E →L[𝕜] F` endowed with various topolog
 
 ## References
 
-* [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
+* ‍\[N. Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 
 ## Tags
 
@@ -41,7 +45,9 @@ open scoped UniformConvergence Uniformity
 
 section CompactSets
 
-/-! ### Topology of compact convergence for continuous linear maps -/
+/-!
+# Topology of compact convergence for continuous linear maps
+-/
 
 variable {𝕜₁ 𝕜₂ 𝕜₃ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] [NormedField 𝕜₃] {σ : 𝕜₁ →+* 𝕜₂}
   {τ : 𝕜₂ →+* 𝕜₃} {ρ : 𝕜₁ →+* 𝕜₃} [RingHomCompTriple σ τ ρ] {E F G : Type*}
@@ -122,7 +128,9 @@ def ContinuousLinearMap.postcompCompactConvergenceCLM [IsTopologicalAddGroup F]
 
 end comp
 
-/-! ### Continuous linear equivalences -/
+/-!
+# Continuous linear equivalences
+-/
 
 section Pi
 

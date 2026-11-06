@@ -8,13 +8,17 @@ module
 public import Mathlib.Analysis.Complex.Exponential
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rational
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Exponential enclosures for interval_dyadic_real
+# Exponential enclosures for interval\_dyadic\_real
 
 This file defines an inclusion operation for the `interval_dyadic_real` inclusion family that
 encloses `Real.exp` of an interval.
 
 ## Implementation notes
+
 The `exp` of the endpoints is constructed by evaluating the Taylor partial sum up to the required
 precision level. The exponent is rewritten as `exp x = exp (x / m) ^ m`, where `m` is an integer
 chosen so that `|x / m| < 1 / 32`, so that the Taylor series converges faster.
@@ -78,20 +82,23 @@ theorem expRatTaylor_mem (a : ℤ) {b : ℕ} (hb : b ≠ 0) (hab : a.natAbs ≤ 
   push_cast
   field_simp
 
-/-- An enclosure of `exp x` by rewriting as `exp (x / m) ^ m` so that `|x / m| < 1 / 32` to make
+/--
+An enclosure of `exp x` by rewriting as `exp (x / m) ^ m` so that `|x / m| < 1 / 32` to make
 the Taylor series converge quickly. The interval is rounded outward after the power to drop the
 redundant bits for the consumers.
 
 Some relevant precision constants are chosen as follows:
-- `m = 16 (⌊2 |x|⌋ + 1)` to shrink the exponent below `1/32`.
-- `precTaylor` is the precision of `exp (x / m)` requested. The power turns an absolute error `δ` on
+
+* `m = 16 (⌊2 |x|⌋ + 1)` to shrink the exponent below `1/32`.
+* `precTaylor` is the precision of `exp (x / m)` requested. The power turns an absolute error `δ` on
   `exp (x / m)` into about `m * exp x * δ` on `exp x`, since its derivative is
   `m * exp (x / m) ^ (m - 1)`. So `precTaylor` adds three amounts to `prec`.
-  + `powerBits` is at least `⌈ log₂ m ⌉`.
-  + `sizeBits = ⌊ 1.5x ⌋ + 1` (`1.5 > log₂ e`) which bounds the number of bits above 1 for `exp x`.
-  + a constant (`8` here) so that the powered interval is narrower than the requested
-  precision, to make it more likely that the resulting interval has width `2^{-prec}`.
-- `taylorTerms` terms bring the Taylor remainder below `2 ^{-precTaylor}`. Each term shrinks the
+
+  * `powerBits` is at least `⌈ log₂ m ⌉`.
+  * `sizeBits = ⌊ 1.5x ⌋ + 1` (`1.5 > log₂ e`) which bounds the number of bits above 1 for `exp x`.
+  * a constant (`8` here) so that the powered interval is narrower than the requested
+    precision, to make it more likely that the resulting interval has width `2^{-prec}`.
+* `taylorTerms` terms bring the Taylor remainder below `2 ^{-precTaylor}`. Each term shrinks the
   remainder by at least 5 bits due to the `1/32` bound on the exponent, with further shrinking
   from the factorial. It's sufficient for the number of terms `n` to satisfy
   `5n + log₂ (n!) ≥ precTaylor + 1`, and we take a very crude bound here using `log₂(n!) ≥ n - 1`.

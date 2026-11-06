@@ -8,13 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # A product as a binary product
 
 We write a product indexed by `I` as a binary product of the products indexed by a subset of `I`
 and its complement.
-
 -/
 
 @[expose] public section

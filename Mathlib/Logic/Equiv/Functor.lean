@@ -8,6 +8,10 @@ module
 public import Mathlib.Control.Bifunctor
 public import Mathlib.Logic.Equiv.Defs
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Functor and bifunctors can be applied to `Equiv`s.
 

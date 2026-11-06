@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Function.L1Space.AEEqFun
 public import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Density of simple functions
 
@@ -59,7 +62,9 @@ local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
 
-/-! ### Lp approximation by simple functions -/
+/-!
+# Lp approximation by simple functions
+-/
 
 section Lp
 
@@ -220,7 +225,9 @@ theorem _root_.MeasureTheory.MemLp.exists_simpleFunc_eLpNorm_sub_lt {E : Type*}
 
 end Lp
 
-/-! ### L1 approximation by simple functions -/
+/-!
+# L1 approximation by simple functions
+-/
 
 
 section Integrable
@@ -266,11 +273,12 @@ variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 /-!
-### Properties of simple functions in `Lp` spaces
+# Properties of simple functions in `Lp` spaces
 
 A simple function `f : α →ₛ E` into a normed group `E` verifies, for a measure `μ`:
-- `MemLp f 0 μ` and `MemLp f ∞ μ`, since `f` is a.e.-measurable and bounded,
-- for `0 < p < ∞`,
+
+* `MemLp f 0 μ` and `MemLp f ∞ μ`, since `f` is a.e.-measurable and bounded,
+* for `0 < p < ∞`,
   `MemLp f p μ ↔ Integrable f μ ↔ f.FinMeasSupp μ ↔ ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞`.
 -/
 
@@ -804,8 +812,10 @@ end Lp
 
 variable [MeasurableSpace α] [NormedAddCommGroup E] {f : α → E} {p : ℝ≥0∞} {μ : Measure α}
 
-/-- To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
+/--
+To prove something for an arbitrary `Lp` function in a second countable Borel normed group, it
 suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in `Lp` for which the property holds is closed.
@@ -823,8 +833,10 @@ theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp 
   · exact fun c s => indicatorConst c
   · exact fun f g hf hg => add hf hg
 
-/-- To prove something for an arbitrary `MemLp` function in a second countable
+/--
+To prove something for an arbitrary `MemLp` function in a second countable
 Borel normed group, it suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in the `Lᵖ` space for which the property holds is closed.
@@ -927,8 +939,10 @@ protected theorem L1.SimpleFunc.integrable (f : α →₁ₛ[μ] E) :
     Integrable (Lp.simpleFunc.toSimpleFunc f) μ := by
   rw [← memLp_one_iff_integrable]; exact Lp.simpleFunc.memLp f
 
-/-- To prove something for an arbitrary integrable function in a normed group,
+/--
+To prove something for an arbitrary integrable function in a normed group,
 it suffices to show that
+
 * the property holds for (multiples of) characteristic functions;
 * is closed under addition;
 * the set of functions in the `L¹` space for which the property holds is closed.

@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Matrix.Rank
 
 import Mathlib.FieldTheory.Finiteness
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal of the general linear group over finite rings
 

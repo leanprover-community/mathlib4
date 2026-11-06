@@ -9,6 +9,9 @@ public import Mathlib.Data.Num.Lemmas
 public import Mathlib.SetTheory.Cardinal.Basic
 public import Mathlib.Tactic.DeriveFintype
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Encodings
 
@@ -18,12 +21,12 @@ It also contains several examples:
 
 ## Examples
 
-- `encodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
-- `encodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
-- `unaryEncodingNat` : a unary encoding of `ℕ`
-- `encodingBoolBool` : an encoding of `Bool`.
-- `encodingList`     : an encoding of `List α` in the alphabet `α`.
-- `encodingProd`     : an encoding of `α × β` from encodings of `α` and `β`.
+* `encodingNatBool`  : a binary encoding of `ℕ` in a simple alphabet.
+* `encodingNatΓ'`    : a binary encoding of `ℕ` in the alphabet used for TM's.
+* `unaryEncodingNat` : a unary encoding of `ℕ`
+* `encodingBoolBool` : an encoding of `Bool`.
+* `encodingList`     : an encoding of `List α` in the alphabet `α`.
+* `encodingProd`     : an encoding of `α × β` from encodings of `α` and `β`.
 -/
 
 @[expose] public section
@@ -205,7 +208,9 @@ def encodingProd {α β Γ₁ Γ₂ : Type*} (ea : Encoding α Γ₁) (eb : Enco
       (eb.decode (x.filterMap Sum.getRight?))
   decode_encode x := by simp
 
-/-! ### Deprecated aliases for `FinEncoding` and unbundled `Γ` -/
+/-!
+# Deprecated aliases for `FinEncoding` and unbundled `Γ`
+-/
 
 /-- Deprecated: Use `Encoding α Γ` along with `[Fintype Γ]` instead. -/
 @[reducible, nolint unusedArguments,

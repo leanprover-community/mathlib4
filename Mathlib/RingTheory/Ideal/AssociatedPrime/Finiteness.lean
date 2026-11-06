@@ -9,8 +9,10 @@ public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Finitely generated module over Noetherian ring have finitely many associated primes.
 
 In this file we proved that any finitely generated module over a Noetherian ring have finitely many
@@ -22,19 +24,16 @@ associated primes.
   and `M` is a finitely generated `A`-module, then there exists a chain of submodules
   `0 = M₀ ≤ M₁ ≤ M₂ ≤ ... ≤ Mₙ = M` of `M`, such that for each `0 ≤ i < n`,
   `Mᵢ₊₁ / Mᵢ` is isomorphic to `A / pᵢ` for some prime ideal `pᵢ` of `A`.
-
 * `IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime`: If a property on
   finitely generated modules over a Noetherian ring satisfies that:
 
-  - it holds for zero module,
-  - it holds for any module isomorphic to some `A ⧸ p` where `p` is a prime ideal of `A`,
-  - it is stable by short exact sequences,
+  * it holds for zero module,
+  * it holds for any module isomorphic to some `A ⧸ p` where `p` is a prime ideal of `A`,
+  * it is stable by short exact sequences,
 
   then the property holds for every finitely generated modules.
-
 * `associatedPrimes.finite`: There are only finitely many associated primes of a
   finitely generated module over a Noetherian ring.
-
 -/
 
 @[expose] public section
@@ -100,18 +99,20 @@ theorem IsNoetherianRing.exists_relSeries_isQuotientEquivQuotientPrime :
   have := Submodule.isQuotientEquivQuotientPrime_iff.mpr ⟨x, hp, rfl⟩
   refine ⟨_, by simpa [hs₂], s.snoc _ (hs₂ ▸ this), by simpa, rfl⟩
 
-/-- If a property on finitely generated modules over a Noetherian ring satisfies that:
+/--
+If a property on finitely generated modules over a Noetherian ring satisfies that:
 
-- it holds for zero module (it's formalized as it holds for any module which is subsingleton),
-- it holds for `A ⧸ p` for every prime ideal `p` of `A` (to avoid universe problem,
+* it holds for zero module (it's formalized as it holds for any module which is subsingleton),
+* it holds for `A ⧸ p` for every prime ideal `p` of `A` (to avoid universe problem,
   it's formalized as it holds for any module isomorphic to `A ⧸ p`),
-- it is stable by short exact sequences,
+* it is stable by short exact sequences,
 
 then the property holds for every finitely generated modules.
 
 NOTE: This should be the induction principle for `M`, but due to the bug
 https://github.com/leanprover/lean4/issues/4246
-currently it is induction for `Module.Finite A M`. -/
+currently it is induction for `Module.Finite A M`.
+-/
 @[elab_as_elim]
 theorem IsNoetherianRing.induction_on_isQuotientEquivQuotientPrime
     ⦃M : Type v⦄ [AddCommGroup M] [Module A M] (_ : Module.Finite A M)
@@ -181,14 +182,16 @@ instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
 
 variable {A}
 
-/-- An ideal consisting of zero divisors in a commutative Noetherian ring is annihilated by
+/--
+An ideal consisting of zero divisors in a commutative Noetherian ring is annihilated by
 some nonzero element. This is not true in general for finitely generated modules in commutative
 rings, see https://math.stackexchange.com/q/1189814 and http://dx.doi.org/10.2140/pjm.1979.83.375
 (keywords: Property (A), Quentel's Condition (C)).
 
 It is also not true that every finitely generated module over every commutative Noetherian ring
 is annihilated by some nonzero element if each element is annihilated by some nonzero element,
-see https://math.stackexchange.com/a/3187153. -/
+see https://math.stackexchange.com/a/3187153.
+-/
 theorem Ideal.bot_lt_annihilator_of_disjoint_nonZeroDivisors {I : Ideal A}
     (h : Disjoint (I : Set A) (nonZeroDivisors A)) : ⊥ < Module.annihilator A I := by
   obtain ⟨P, h, hP⟩ : ∃ P ∈ associatedPrimes A A, I ≤ P :=

@@ -9,8 +9,10 @@ public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Order.Atoms
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`
@@ -19,21 +21,21 @@ of length `n + 1`, meaning that we can find a strictly increasing bijection betw
 and the set of factors of `a`.
 
 ## Main results
-- `DivisorChain.exists_chain_of_prime_pow` : existence of a chain for prime powers.
-- `DivisorChain.is_prime_pow_of_has_chain` : elements that have a chain are prime powers.
-- `multiplicity_prime_eq_multiplicity_image_by_factor_orderIso` : if there is a
+
+* `DivisorChain.exists_chain_of_prime_pow` : existence of a chain for prime powers.
+* `DivisorChain.is_prime_pow_of_has_chain` : elements that have a chain are prime powers.
+* `multiplicity_prime_eq_multiplicity_image_by_factor_orderIso` : if there is a
   monotone bijection `d` between the set of factors of `a : Associates M` and the set of factors of
   `b : Associates N` then for any prime `p ∣ a`, `multiplicity p a = multiplicity (d p) b`.
-- `multiplicity_eq_multiplicity_factor_dvd_iso_of_mem_normalizedFactors` : if there is a bijection
+* `multiplicity_eq_multiplicity_factor_dvd_iso_of_mem_normalizedFactors` : if there is a bijection
   between the set of factors of `a : M` and `b : N` then for any prime `p ∣ a`,
   `multiplicity p a = multiplicity (d p) b`
 
-
 ## TODO
-- Create a structure for chains of divisors.
-- Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
-  `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
 
+* Create a structure for chains of divisors.
+* Simplify proof of `mem_normalizedFactors_factor_dvd_iso_of_mem_normalizedFactors` using
+  `mem_normalizedFactors_factor_order_iso_of_mem_normalizedFactors` or vice versa.
 -/
 
 @[expose] public section

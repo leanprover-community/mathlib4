@@ -7,40 +7,38 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Trail, Path, and Cycle
 
 In a simple graph,
 
-* A *trail* is a walk whose edges each appear no more than once.
-
-* A *circuit* is a nonempty trail whose first and last vertices are the
+* A _trail_ is a walk whose edges each appear no more than once.
+* A _circuit_ is a nonempty trail whose first and last vertices are the
   same.
-
-* A *path* is a trail whose vertices appear no more than once.
-
-* A *cycle* is a nonempty trail whose first and last vertices are the
+* A _path_ is a trail whose vertices appear no more than once.
+* A _cycle_ is a nonempty trail whose first and last vertices are the
   same and whose vertices except for the first appear no more than once.
 
-**Warning:** graph theorists mean something different by "path" than
+*Warning:* graph theorists mean something different by "path" than
 do homotopy theorists.  A "walk" in graph theory is a "path" in
 homotopy theory.  Another warning: some graph theorists use "path" and
 "simple path" for "walk" and "path."
 
 Some definitions and theorems have inspiration from multigraph
-counterparts in [Chou1994].
+counterparts in \[Chou1994\].
 
 ## Main definitions
 
 * `SimpleGraph.Walk.IsTrail`, `SimpleGraph.Walk.IsPath`, and `SimpleGraph.Walk.IsCycle`.
-
 * `SimpleGraph.Path`
-
 * `SimpleGraph.Path.map` for the induced map on paths,
   given an (injective) graph homomorphism.
 
 ## Tags
+
 trails, paths, circuits, cycles
 -/
 
@@ -59,25 +57,35 @@ namespace Walk
 
 variable {G G'} {u u' v w : V} {p : G.Walk u v} {f : G →g G'}
 
-/-! ### Trails, paths, circuits, cycles -/
+/-!
+# Trails, paths, circuits, cycles
+-/
 
-/-- A *trail* is a walk with no repeating edges. -/
+/--
+A _trail_ is a walk with no repeating edges.
+-/
 @[mk_iff isTrail_def]
 structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
   edges_nodup : p.edges.Nodup
 
-/-- A *path* is a walk with no repeating vertices.
-Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
+/--
+A _path_ is a walk with no repeating vertices.
+Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor.
+-/
 structure IsPath {u v : V} (p : G.Walk u v) : Prop extends isTrail : IsTrail p where
   support_nodup : p.support.Nodup
 
-/-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
+/--
+A _circuit_ at `u : V` is a nonempty trail beginning and ending at `u`.
+-/
 @[mk_iff isCircuit_def]
 structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends isTrail : IsTrail p where
   ne_nil : p ≠ nil
 
-/-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
-is `u` (which appears exactly twice). -/
+/--
+A _cycle_ at `u : V` is a circuit at `u` whose only repeating vertex
+is `u` (which appears exactly twice).
+-/
 structure IsCycle {u : V} (p : G.Walk u u) : Prop extends isCircuit : IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
@@ -449,7 +457,9 @@ lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [N : None
   have := hn ⟨u', v', p', hp', Eq.refl p'.length⟩
   lia
 
-/-! ### About paths -/
+/-!
+# About paths
+-/
 
 instance [DecidableEq V] {u v : V} (p : G.Walk u v) : Decidable p.IsPath := by
   rw [isPath_def]
@@ -583,7 +593,9 @@ theorem IsPath.injOn_support_of_isPath_map (h : (p.map f).IsPath) :
   apply this
   simpa
 
-/-! ### About cycles -/
+/-!
+# About cycles
+-/
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -652,7 +664,9 @@ theorem isCycle_iff_isPath_dropLast_and_le_length {p : G.Walk v v} :
     p.IsCycle ↔ p.dropLast.IsPath ∧ 3 ≤ p.length := by
   rw [isPath_dropLast_iff_isPath_tail, isCycle_iff_isPath_tail_and_le_length]
 
-/-! ### Walk decompositions -/
+/-!
+# Walk decompositions
+-/
 
 section WalkDecomp
 
@@ -754,7 +768,9 @@ theorem IsTrail.isPath_iff_isSubwalk_imp_not_isCycle {u v} {p : G.Walk u v} (ht 
 
 end Walk
 
-/-! ### Type of paths -/
+/-!
+# Type of paths
+-/
 
 /-- The type for paths between two vertices. -/
 abbrev Path (u v : V) := { p : G.Walk u v // p.IsPath }
@@ -815,7 +831,9 @@ theorem cons_isCycle {u v : V} (p : G.Path v u) (h : G.Adj u v)
 end Path
 
 
-/-! ### Walks to paths -/
+/-!
+# Walks to paths
+-/
 
 namespace Walk
 
@@ -1030,10 +1048,12 @@ theorem edges_toPath_subset_edges (p : G.Walk u v) : (p.toPath : G.Walk u v).edg
 
 @[deprecated (since := "2026-05-25")] alias edges_toPath_subset := edges_toPath_subset_edges
 
-/-- Bypass repeated vertices like `Walk.bypass`, except the starting vertex.
+/--
+Bypass repeated vertices like `Walk.bypass`, except the starting vertex.
 
 This is intended to be used for closed walks, for which `Walk.bypass` unhelpfully returns the empty
-walk. -/
+walk.
+-/
 def cycleBypass : G.Walk v v → G.Walk v v
   | .nil => .nil
   | .cons hvv' w => .cons hvv' w.bypass
@@ -1118,11 +1138,13 @@ theorem exists_minimalFor_isCycle_length {v : V} (h : ∃ p : G.Walk v v, p.IsCi
   exact exists_minimalFor_of_wellFoundedLT _ _ <| h.imp' _ fun _ ↦ (·.isCycle_cycleBypass)
 
 omit [DecidableEq V] in
-/-- For every vertex that lies on some circuit there exists a shortest cycle among circuits
+/--
+For every vertex that lies on some circuit there exists a shortest cycle among circuits
 containing that vertex.
 
 For circuits not fixed to a specific vertex use `exists_girth_eq_length` and
-`IsCircuit.girth_le_length`. -/
+`IsCircuit.girth_le_length`.
+-/
 theorem exists_isCycle_forall_isCircuit_length_le_length {v : V}
     (h : ∃ p : G.Walk v v, p.IsCircuit) :
     ∃ p : G.Walk v v, p.IsCycle ∧ ∀ p' : G.Walk v v, p'.IsCircuit → p.length ≤ p'.length := by
@@ -1132,7 +1154,9 @@ theorem exists_isCycle_forall_isCircuit_length_le_length {v : V}
 
 end Walk
 
-/-! ### Mapping paths -/
+/-!
+# Mapping paths
+-/
 
 namespace Walk
 
@@ -1260,7 +1284,9 @@ theorem mapEmbedding_injective (f : G ↪g G') (u v : V) :
 
 end Path
 
-/-! ### Transferring between graphs -/
+/-!
+# Transferring between graphs
+-/
 
 namespace Walk
 
@@ -1293,7 +1319,9 @@ protected alias ⟨_, IsCycle.transfer⟩ := isCycle_transfer
 
 end Walk
 
-/-! ## Deleting edges -/
+/-!
+# Deleting edges
+-/
 
 namespace Walk
 

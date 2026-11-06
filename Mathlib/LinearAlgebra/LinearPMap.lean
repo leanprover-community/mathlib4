@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Module.Torsion.Field
 public import Mathlib.LinearAlgebra.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partially defined linear maps
 
@@ -24,15 +27,15 @@ We define a `SemilatticeInf` with `OrderBot` instance on this, and define three 
   partial linear map on the `sSup` of their domains that extends all these maps.
 
 Moreover, we define
-* `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`.
-TODO: This should be also generalized to semilinear maps, but one has to define a new type where `R`
-acts on `E` normally while `R` acts on `F` through `σ`.
+
+* `LinearPMap.graph` is the graph of the partial linear map viewed as a submodule of `E × F`. TODO:
+  This should be also generalized to semilinear maps, but one has to define a new type where `R`
+  acts on `E` normally while `R` acts on `F` through `σ`.
 
 Partially defined maps are currently used in `Mathlib` to prove the Hahn-Banach theorem
 and its variations. Namely, `LinearPMap.sSup` implies that every chain of `LinearPMap`s
 is bounded above.
 They are also the basis for the theory of unbounded operators.
-
 -/
 
 @[expose] public section
@@ -385,7 +388,9 @@ theorem sup_h_of_disjoint (f g : E →ₛₗ.[σ] F) (h : Disjoint f.domain g.do
   have hx : x = 0 := Subtype.ext (hxy.trans <| congr_arg _ hy)
   simp [*]
 
-/-! ### Algebraic operations -/
+/-!
+# Algebraic operations
+-/
 
 
 section Zero
@@ -782,7 +787,9 @@ theorem domRestrict_apply {f : E →ₛₗ.[σ] F} {S : Submodule R E} ⦃x : �
 theorem domRestrict_le {f : E →ₛₗ.[σ] F} {S : Submodule R E} : f.domRestrict S ≤ f :=
   ⟨by simp, fun _ _ hxy => domRestrict_apply hxy⟩
 
-/-! ### Graph -/
+/-!
+# Graph
+-/
 
 
 section Graph
@@ -968,9 +975,11 @@ theorem valFromGraph_mem {g : Submodule R (E × F)}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : (a, valFromGraph hg ha) ∈ g :=
   (ExistsUnique.exists (existsUnique_from_graph @hg ha)).choose_spec
 
-/-- Define a `LinearMap` from its graph.
+/--
+Define a `LinearMap` from its graph.
 
-Helper definition for `LinearPMap`. -/
+Helper definition for `LinearPMap`.
+-/
 noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.map (LinearMap.fst R E F) →ₗ[R] F where
@@ -989,10 +998,12 @@ noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     exact (existsUnique_from_graph @hg hsmul).unique hav hav'
 
 open scoped Classical in
-/-- Define a `LinearPMap` from its graph.
+/--
+Define a `LinearPMap` from its graph.
 
 In the case that the submodule is not a graph of a `LinearPMap` then the underlying linear map
-is just the zero map. -/
+is just the zero map.
+-/
 noncomputable def toLinearPMap (g : Submodule R (E × F)) : E →ₗ.[R] F where
   domain := g.map (LinearMap.fst R E F)
   toFun := if hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0 then
@@ -1061,9 +1072,11 @@ theorem inverse_domain : f.inverse.domain = f.toFun.range := by
   rw [inverse, Submodule.toLinearPMap_domain, ← graph_map_snd_eq_range,
     ← LinearEquiv.fst_comp_prodComm, Submodule.map_comp]
 
-/-- The graph of the inverse generates a `LinearPMap`.
+/--
+The graph of the inverse generates a `LinearPMap`.
 
-This should not be used directly, all properties about the inverse follow from `inverse_graph`. -/
+This should not be used directly, all properties about the inverse follow from `inverse_graph`.
+-/
 private theorem mem_inverse_graph_snd_eq_zero (hf : f.ker = ⊥) (x : F × E)
     (hv : x ∈ f.graph.map (LinearEquiv.prodComm R E F : (E × F) →ₗ[R] (F × E)))
     (hv' : x.fst = 0) : x.snd = 0 := by

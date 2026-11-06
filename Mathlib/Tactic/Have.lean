@@ -10,6 +10,9 @@ public meta import Lean.Elab.SyntheticMVars
 public meta import Lean.Meta.Tactic.Assert
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending `have`, `let` and `suffices`
 
@@ -35,6 +38,8 @@ def optBinderIdent : Parser := leading_parser
 def optBinderIdent.name (id : TSyntax ``optBinderIdent) : Name :=
   if id.raw[0].isIdent then id.raw[0].getId else HygieneInfo.mkIdent ⟨id.raw[0]⟩ `this |>.getId
 
+
+set_option doc.verso false
 /--
 Uses `checkColGt` to prevent
 
@@ -53,6 +58,8 @@ def haveIdLhs' : Parser :=
   optBinderIdent >> many (ppSpace >>
     checkColGt "expected to be indented" >> letIdBinder) >> optType
 
+
+set_option doc.verso true
 @[tactic_alt Lean.Parser.Tactic.tacticHave__]
 syntax "have" haveIdLhs' : tactic
 @[tactic_alt Lean.Parser.Tactic.tacticLet__]

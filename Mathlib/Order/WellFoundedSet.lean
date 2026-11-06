@@ -11,6 +11,9 @@ public import Mathlib.Order.Sigma.Lex
 public import Mathlib.Order.WellQuasiOrder
 public import Mathlib.Tactic.TFAE
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Well-founded sets
 
@@ -44,8 +47,9 @@ This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 * Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
-* [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
-* [Nash-Williams, *On Well-Quasi-Ordering Finite Trees*][Nash-Williams63]
+
+* ‍\[Higman, _Ordering by Divisibility in Abstract Algebras_\]\[Higman52\]
+* ‍\[Nash-Williams, _On Well-Quasi-Ordering Finite Trees_\]\[Nash-Williams63\]
 -/
 
 @[expose] public section
@@ -58,7 +62,9 @@ variable {ι α β γ : Type*} {π : ι → Type*}
 
 namespace Set
 
-/-! ### Relations well-founded on sets -/
+/-!
+# Relations well-founded on sets
+-/
 
 /-- `s.WellFoundedOn r` indicates that the relation `r` is `WellFounded` when restricted to `s`. -/
 def WellFoundedOn (s : Set α) (r : α → α → Prop) : Prop :=
@@ -194,7 +200,9 @@ end IsStrictOrder
 
 end WellFoundedOn
 
-/-! ### Sets well-founded w.r.t. the strict inequality -/
+/-!
+# Sets well-founded w.r.t. the strict inequality
+-/
 
 section LT
 
@@ -239,16 +247,20 @@ theorem isWF_iff_no_descending_seq :
 
 end Preorder
 
-/-! ### Partially well-ordered sets -/
+/-!
+# Partially well-ordered sets
+-/
 
-/-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is `WellQuasiOrdered` when
+/--
+`s.PartiallyWellOrderedOn r` indicates that the relation `r` is `WellQuasiOrdered` when
 restricted to `s`.
 
 A set is partially well-ordered by a relation `r` when any infinite sequence contains two elements
 where the first is related to the second by `r`. Equivalently, any antichain (see `IsAntichain`) is
 finite, see `Set.partiallyWellOrderedOn_iff_finite_antichains`.
 
-TODO: rename this to `WellQuasiOrderedOn` to match `WellQuasiOrdered`. -/
+TODO: rename this to `WellQuasiOrderedOn` to match `WellQuasiOrdered`.
+-/
 def PartiallyWellOrderedOn (s : Set α) (r : α → α → Prop) : Prop :=
   WellQuasiOrdered (Subrel r (· ∈ s))
 

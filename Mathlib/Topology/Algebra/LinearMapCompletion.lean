@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Algebra.GroupCompletion
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Extend
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of continuous (semi-)linear maps:
 

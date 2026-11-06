@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.NoncommPiCoprod
 public import Mathlib.GroupTheory.Perm.Cycle.Basic
 public import Mathlib.Tactic.Group
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cycle factors of a permutation
 
@@ -30,7 +33,7 @@ variable {α β : Type*}
 namespace Equiv.Perm
 
 /-!
-### `cycleOf`
+# `cycleOf`
 -/
 
 section CycleOf
@@ -347,7 +350,7 @@ end CycleOf
 
 
 /-!
-### `cycleFactors`
+# `cycleFactors`
 -/
 
 section cycleFactors
@@ -745,10 +748,12 @@ theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
   apply hc
   simp_all
 
-/-- If a permutation commutes with every cycle of `g`, then it commutes with `g`
+/--
+If a permutation commutes with every cycle of `g`, then it commutes with `g`
 
 NB. The converse is false. Commuting with every cycle of `g` means that we belong
-to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset` -/
+to the kernel of the action of `Equiv.Perm α` on `g.cycleFactorsFinset`
+-/
 theorem commute_of_mem_cycleFactorsFinset_commute (k g : Perm α)
     (hk : ∀ c ∈ g.cycleFactorsFinset, Commute k c) :
     Commute k g := by

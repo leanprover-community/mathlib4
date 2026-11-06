@@ -9,6 +9,9 @@ public import Mathlib.Order.SuccPred.Archimedean
 
 import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Intervals `Ixx (f x) (f (Order.succ x))`
 
@@ -17,7 +20,6 @@ In this file we prove
 * `Monotone.biUnion_Ico_Ioc_map_succ`: if `α` is a linear archimedean succ order and `β` is a linear
   order, then for any monotone function `f` and `m n : α`, the union of intervals
   `Set.Ioc (f i) (f (Order.succ i))`, `m ≤ i < n`, is equal to `Set.Ioc (f m) (f n)`;
-
 * `Monotone.pairwise_disjoint_on_Ioc_succ`: if `α` is a linear succ order, `β` is a preorder, and
   `f : α → β` is a monotone function, then the intervals `Set.Ioc (f n) (f (Order.succ n))` are
   pairwise disjoint.

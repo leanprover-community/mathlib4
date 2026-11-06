@@ -12,12 +12,14 @@ public import Mathlib.Topology.Algebra.GroupWithZero
 public import Mathlib.Topology.Algebra.Ring.Basic
 public import Mathlib.Topology.Order.LocalExtr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological fields
 
 A topological division ring is a topological ring whose inversion function is continuous at every
 non-zero element.
-
 -/
 
 @[expose] public section

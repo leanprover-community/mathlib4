@@ -9,6 +9,9 @@ public import Mathlib.Data.Analysis.Filter
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.LocallyFinite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Computational realization of topological spaces (experimental)
 

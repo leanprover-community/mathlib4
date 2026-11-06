@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Analysis.Complex.MeanValue
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson Integral Formula
 
-We present two versions of the **Poisson Integral Formula** for ℂ-differentiable functions on
+We present two versions of the *Poisson Integral Formula* for ℂ-differentiable functions on
 arbitrary disks in the complex plane, formulated with the real part of the Herglotz–Riesz kernel of
 integration and with the Poisson kernel, respectively.
 -/
@@ -24,7 +27,7 @@ variable
   {f : ℂ → E} {R : ℝ} {w c : ℂ} {s : Set ℂ}
 
 /-!
-## Kernels of Integration
+# Kernels of Integration
 
 For convenience, this preliminary section discussed the kernels on integration that appear in the
 various versions of the Poisson Formula.
@@ -172,7 +175,7 @@ theorem re_circleAverage_herglotzRieszKernel_smul {g : ℂ → ℝ}
         simp [Function.comp_def, Complex.mul_re, Pi.mul_def]
 
 /-!
-## Integral Formulas
+# Integral Formulas
 -/
 
 -- Trigonometric identity used in the computation of
@@ -290,7 +293,7 @@ theorem DiffContOnCl.circleAverage_poissonKernel_smul' [CompleteSpace E] {c : �
   apply hf.circleAverage_poissonKernel_smul hw
 
 /-!
-## Derivative of the Herglotz–Riesz Kernel Integral
+# Derivative of the Herglotz–Riesz Kernel Integral
 -/
 
 /--

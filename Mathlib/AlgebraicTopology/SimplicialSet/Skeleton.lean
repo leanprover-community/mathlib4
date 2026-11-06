@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.Types.Monomorphisms
 
 import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The skeleton of a simplicial set
 
@@ -28,8 +31,8 @@ with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]` for all
 nondegenerate `d`-simplices of `Y` which do not belong to the range of `i`.
 
 ## TODO
-* show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 
+* show that `(SSet.sk n).obj X` is isomorphic to `X.skeleton (n + 1)`
 -/
 
 @[expose] public section
@@ -188,6 +191,7 @@ namespace relativeCellComplexOfMono
 /-!
 The main next technical result is that if `i : X ⟶ Y` is a monomorphism
 of simplicial sets and `d : ℕ`, there is a pushout square:
+
 ```
                                 t i d
 ∐ fun (c : Cell i d) ↦ ∂Δ[d] ----------> skeletonOfMono i d
@@ -199,7 +203,6 @@ of simplicial sets and `d : ℕ`, there is a pushout square:
 
 The index type `Cell i d` identifies to the type of nondegenerate `d`-simplices
 of `Y` not in the range of `i`.
-
 -/
 
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets and `d : ℕ`, this is

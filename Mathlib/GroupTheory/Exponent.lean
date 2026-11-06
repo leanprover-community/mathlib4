@@ -10,6 +10,9 @@ public import Mathlib.Data.Nat.Factorization.LCM
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Tactic.Peel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exponent of a group
 
@@ -39,6 +42,7 @@ it is equal to the lowest common multiple of the order of all elements of the gr
   exponent of `M₁`.
 
 ## TODO
+
 * Refactor the characteristic of a ring to be the exponent of its underlying additive group.
 -/
 
@@ -615,7 +619,9 @@ theorem Monoid.exponent_prod {M₁ M₂ : Type*} [Monoid M₁] [Monoid M₂] :
 
 end PiProd
 
-/-! ### Properties of monoids with exponent two -/
+/-!
+# Properties of monoids with exponent two
+-/
 
 section ExponentTwo
 

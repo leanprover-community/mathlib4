@@ -7,39 +7,58 @@ module
 
 import Mathlib.Tactic.Translate.ToAdditive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notations for operations involving order and algebraic structure
 
 ## Notation
 
-* `a⁺ᵐ = a ⊔ 1`: *Positive component* of an element `a` of a multiplicative lattice ordered group
-* `a⁻ᵐ = a⁻¹ ⊔ 1`: *Negative component* of an element `a` of a multiplicative lattice ordered group
-* `a⁺ = a ⊔ 0`: *Positive component* of an element `a` of a lattice ordered group
-* `a⁻ = (-a) ⊔ 0`: *Negative component* of an element `a` of a lattice ordered group
+* `a⁺ᵐ = a ⊔ 1`: _Positive component_ of an element `a` of a multiplicative lattice ordered group
+* `a⁻ᵐ = a⁻¹ ⊔ 1`: _Negative component_ of an element `a` of a multiplicative lattice ordered group
+* `a⁺ = a ⊔ 0`: _Positive component_ of an element `a` of a lattice ordered group
+* `a⁻ = (-a) ⊔ 0`: _Negative component_ of an element `a` of a lattice ordered group
 -/
 
 public section
 
-/-- A notation class for the *positive part* function: `a⁺`. -/
+/--
+A notation class for the _positive part_ function: `a⁺`.
+-/
 class PosPart (α : Type*) where
-  /-- The *positive part* of an element `a`. -/
+  /--
+  The _positive part_ of an element `a`.
+  -/
   posPart : α → α
 
-/-- A notation class for the *positive part* function (multiplicative version): `a⁺ᵐ`. -/
+/--
+A notation class for the _positive part_ function (multiplicative version): `a⁺ᵐ`.
+-/
 @[to_additive]
 class OneLePart (α : Type*) where
-  /-- The *positive part* of an element `a`. -/
+  /--
+  The _positive part_ of an element `a`.
+  -/
   oneLePart : α → α
 
-/-- A notation class for the *negative part* function: `a⁻`. -/
+/--
+A notation class for the _negative part_ function: `a⁻`.
+-/
 class NegPart (α : Type*) where
-  /-- The *negative part* of an element `a`. -/
+  /--
+  The _negative part_ of an element `a`.
+  -/
   negPart : α → α
 
-/-- A notation class for the *negative part* function (multiplicative version): `a⁻ᵐ`. -/
+/--
+A notation class for the _negative part_ function (multiplicative version): `a⁻ᵐ`.
+-/
 @[to_additive]
 class LeOnePart (α : Type*) where
-  /-- The *negative part* of an element `a`. -/
+  /--
+  The _negative part_ of an element `a`.
+  -/
   leOnePart : α → α
 
 export OneLePart (oneLePart)

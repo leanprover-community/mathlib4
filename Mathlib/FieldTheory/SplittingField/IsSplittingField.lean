@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Adjoin.Field
 
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Splitting fields
 
@@ -28,7 +31,6 @@ if it is the smallest field extension of `K` such that `f` splits.
 
 * `Polynomial.IsSplittingField.lift`: An embedding of a splitting field of the polynomial `f` into
   another field such that `f` splits.
-
 -/
 
 @[expose] public section

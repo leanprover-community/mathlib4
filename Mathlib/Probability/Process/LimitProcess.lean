@@ -8,8 +8,10 @@ module
 public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.Indistinguishable
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Limit of a stochastic process
 
 Under certain assumptions, classical familes of processes such as martingales converge as time
@@ -32,7 +34,6 @@ under continuous maps.
 Because several properties often rely on the fact that the limit exists, we also define a predicate
 `HasLimitProcess X 𝓕 P` which states that `X` does converge `P`-almost surely towards a
 `⨆ t, 𝓕 t`-strongly measurable function.
-
 -/
 
 public section
@@ -48,7 +49,9 @@ variable {ι Ω E F G : Type*} [Preorder ι] {mΩ : MeasurableSpace Ω} [Topolog
 
 section HasLimitProcess
 
-/-! ### `HasLimitProcess` predicate -/
+/-!
+# `HasLimitProcess` predicate
+-/
 
 /-- A stochastic process `X` satisfies `𝓕.HasLimitProcess X P` if it converges `P`-almost surely
 towards a `⨆ t, 𝓕 t`-strongly measurable random variable. -/
@@ -146,20 +149,24 @@ end HasLimitProcess
 
 section limitProcess
 
-/-! ### The limit of a process -/
+/-!
+# The limit of a process
+-/
 
 section Def
 
 variable [Zero E]
 
 open scoped Classical in
-/-- Given a process `X` and a filtration `𝓕`, if `X` converges to some `g` almost everywhere and
+/--
+Given a process `X` and a filtration `𝓕`, if `X` converges to some `g` almost everywhere and
 `g` is `⨆ t, 𝓕 t`-measurable (i.e. `HasLimitProcess X 𝓕 P` holds),
 then `limitProcess X 𝓕 P` chooses said `g`, else it returns 0.
 
 This definition is used to phrase the a.e. martingale convergence theorem
 `Submartingale.ae_tendsto_limitProcess` where an L¹-bounded submartingale `X` adapted to `𝓕`
-converges to `limitProcess X 𝓕 P` `P`-almost everywhere. -/
+converges to `limitProcess X 𝓕 P` `P`-almost everywhere.
+-/
 noncomputable def limitProcess (X : ι → Ω → E) (𝓕 : Filtration ι mΩ) (P : Measure Ω) :=
   if h : 𝓕.HasLimitProcess X P then h.choose else 0
 

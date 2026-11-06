@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.Quasicoherent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally Free Sheaves
 
@@ -14,13 +17,11 @@ A sheaf of modules is locally free if it is locally isomorphic to a free module.
 
 ## Main Definitions
 
-- `SheafOfModules.LocalGeneratorsData.IsLocallyFreeData`: This is defined as a predicate on
+* `SheafOfModules.LocalGeneratorsData.IsLocallyFreeData`: This is defined as a predicate on
   `SheafOfModules.LocalGeneratorData` where `q : M.LocalGeneratorData` is said to be locally
   free data if `(q.generators i).π` is an isomorphism for all `i` in `q.I`.
-
-- `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
+* `SheafOfModules.IsLocallyFree`: `M : SheafOfModules R` is locally free is there exists locally
   free data for it.
-
 -/
 
 public section

@@ -8,6 +8,9 @@ module
 public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Attribute to pretty-print universe level parameters by default
 

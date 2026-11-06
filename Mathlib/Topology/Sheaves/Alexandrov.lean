@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Quiver.ReflQuiver
 public import Mathlib.Topology.Order.UpperLowerSetTopology
 public import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sheaves on the Alexandrov topology of a preorder
 
@@ -19,7 +22,6 @@ functor `X ⥤ (Opens X)ᵒᵖ` sending `x : X` to the principal open `{y | x �
 Alexandrov topology.
 
 This file proves that this presheaf is a sheaf.
-
 -/
 
 @[expose] public section
@@ -80,7 +82,8 @@ abbrev generator (U : Opens X) :
     StructuredArrow (.op U) (principals X) ⥤ X :=
   StructuredArrow.proj (.op U) (principals X)
 
-/-- Given a structured arrow `f` with domain `iSup Us` over `principals X`,
+/--
+Given a structured arrow `f` with domain `iSup Us` over `principals X`,
 where `Us` is a family of `Opens X`, this functor sends `f` to the principal open
 associated with it, considered as an object in the full subcategory of all `V : Opens X`
 such that `V ≤ Us i` for some `i`.

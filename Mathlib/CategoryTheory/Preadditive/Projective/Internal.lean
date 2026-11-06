@@ -8,8 +8,10 @@ module
 public import Mathlib.CategoryTheory.Monoidal.Closed.Basic
 public import Mathlib.CategoryTheory.ObjectProperty.Retract
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Internal projectivity
 
 This file defines internal projectivity of objects `P` in a category `C` as a class
@@ -19,7 +21,7 @@ is internally projective (see `InternallyProjective.ofRetract`).
 
 This property is important in the setting of light condensed abelian groups, when establishing
 the solid theory (see the lecture series on analytic stacks:
-https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf_Rl_6Mm7juZO).
+https://www.youtube.com/playlist?list=PLx5f8IelFRgGmu6gmL-Kf\_Rl\_6Mm7juZO).
 -/
 
 @[expose] public section
@@ -35,13 +37,13 @@ namespace CategoryTheory
 variable {C : Type*} [Category* C] [MonoidalCategory C] [MonoidalClosed C]
 
 /--
-An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs
+An object `P : C` is _internally projective_ if the functor `P ⟶[C] -` taking internal homs
 out of `P` preserves epimorphisms.
 -/
 def isInternallyProjective : ObjectProperty C := fun P ↦ (ihom P).PreservesEpimorphisms
 
 /--
-An object `P : C` is *internally projective* if the functor `P ⟶[C] -` taking internal homs
+An object `P : C` is _internally projective_ if the functor `P ⟶[C] -` taking internal homs
 out of `P` preserves epimorphisms.
 -/
 abbrev InternallyProjective (P : C) := isInternallyProjective.Is P

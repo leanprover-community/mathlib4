@@ -10,8 +10,10 @@ public import Mathlib.RingTheory.IsTensorProduct
 
 import Mathlib.Algebra.FiveLemma
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that for an `R`-algebra `S` taking cokernels commutes with base change
@@ -34,7 +36,6 @@ N₁ --g₁--> N₂ --g₂--> N₃
 
 * `IsBaseChange.of_right_exact` : If `f₂` and `g₂` are surjective,
   `i₁` and `i₂` is base change by `S`, then `i₃` is base change by `S`.
-
 -/
 
 public section

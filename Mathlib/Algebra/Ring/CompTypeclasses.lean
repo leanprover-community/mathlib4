@@ -7,10 +7,14 @@ module
 
 public import Mathlib.Algebra.Ring.Equiv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Propositional typeclasses on several ring homs
 
 This file contains three typeclasses used in the definition of (semi)linear maps:
+
 * `RingHomId σ`, which expresses the fact that `σ₂₃ = id`
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
@@ -22,6 +26,7 @@ A typical use-case is conjugate-linear maps, i.e. when `σ = Complex.conj`; this
 composing two conjugate-linear maps is a linear map, and not a `conj.comp conj`-linear map.
 
 Instances of these typeclasses mostly involving `RingHom.id` are also provided:
+
 * `RingHomInvPair (RingHom.id R) (RingHom.id R)`
 * `[RingHomInvPair σ₁₂ σ₂₁] : RingHomCompTriple σ₁₂ σ₂₁ (RingHom.id R₁)`
 * `RingHomCompTriple (RingHom.id R₁) σ₁₂ σ₁₂`
@@ -33,7 +38,6 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 * For the typeclass `RingHomInvPair σ₁₂ σ₂₁`, `σ₂₁` is marked as an `outParam`,
   as it must typically be found via the typeclass inference system.
-
 * Likewise, for `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, `σ₁₃` is marked as an `outParam`,
   for the same reason.
 
@@ -116,7 +120,8 @@ variable (σ σ') in
 @[simps!]
 def toRingEquiv : R₁ ≃+* R₂ := .ofRingHom σ σ' comp_eq₂ comp_eq
 
-/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
+/--
+Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.
@@ -124,7 +129,8 @@ would be `RingHomInvPair e e`.
 lemma of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 
-/-- Construct a `RingHomInvPair` from both directions of a ring equiv.
+/--
+Construct a `RingHomInvPair` from both directions of a ring equiv.
 
 This is not an instance, as for equivalences that are involutions, a better instance
 would be `RingHomInvPair e e`.

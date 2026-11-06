@@ -11,10 +11,14 @@ public import Mathlib.Algebra.Ring.Semireal.Defs
 
 import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real Closed Field
 
 A field `R` is real closed if all of the following hold:
+
 1. `R` is real (that is, `-1` is not a sum of squares in `R`).
 2. for every `x` in `R`, one of `x` or `-x` is a square.
 3. every odd-degree polynomial over `R` has a root in `R`.
@@ -31,12 +35,11 @@ TODO (Artie Khovanov) : real algebraic numbers, hyperreals form a real closed fi
 
 ## Main Definitions
 
-- `IsRealClosed R` is the typeclass saying `R` is a real closed field.
+* `IsRealClosed R` is the typeclass saying `R` is a real closed field.
 
 ## Tags
 
 real closed, rcf
-
 -/
 
 public section
@@ -45,6 +48,7 @@ open Polynomial
 
 /--
 A field `R` is real closed if all of the following hold:
+
 1. `R` is real (that is, `-1` is not a sum of squares in `R`).
 2. for every `x` in `R`, one of `x` or `-x` is a square.
 3. every odd-degree polynomial over `R` has a root in `R`.

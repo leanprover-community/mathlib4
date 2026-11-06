@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Complex.Harmonic.Poisson
 public import Mathlib.Analysis.SpecialFunctions.Integrals.PosLog
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jensen's Formula of Complex Analysis
 
@@ -31,7 +34,7 @@ open scoped ComplexConjugate
 
 
 /-!
-## Preparatory Material
+# Preparatory Material
 
 In preparation to the proof of Jensen's formula, compute several circle averages and reformulate
 some of the terms that appear in the formula and its proof.
@@ -193,14 +196,13 @@ theorem circleAverage_re_herglotzRieszKernel_mul_log₀ {w ρ : ℂ} {R : ℝ} (
   aesop
 
 /--
-Analogue of the **Poisson Integral Formula** for the circle average function `log ‖· - ρ‖` along the
+Analogue of the *Poisson Integral Formula* for the circle average function `log ‖· - ρ‖` along the
 circle with radius `‖ρ‖`.
 
-- See `InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul` in the file
+* See `InnerProductSpace.HarmonicContOnCl.circleAverage_re_herglotzRieszKernel_smul` in the file
   `Mathlib/Analysis/Complex/Harmonic/Poisson` for the classic Poisson Integral Formula, for harmonic
   functions without logarithmic poles.
-
-- See `MeromorphicOn.extract_zeros_poles` in the file
+* See `MeromorphicOn.extract_zeros_poles` in the file
   `Mathlib/Analysis/Meromorphic/FactorizedRational` for a construction that splits factors of the
   form `· - ρ` off arbitrary meromorphic functions.
 -/
@@ -293,11 +295,11 @@ lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ
       ring
 
 /-!
-## Jensen's Formula
+# Jensen's Formula
 -/
 
 /--
-**Jensen's Formula**: If `f : ℂ → ℂ` is meromorphic on the closed ball with center `c` and radius
+*Jensen's Formula*: If `f : ℂ → ℂ` is meromorphic on the closed ball with center `c` and radius
 `R`, then the `circleAverage (log ‖f ·‖) c R` equals `log ‖meromorphicTrailingCoeffAt f c‖` plus a
 correction term that accounts for the zeros and poles of `f` within the ball.
 

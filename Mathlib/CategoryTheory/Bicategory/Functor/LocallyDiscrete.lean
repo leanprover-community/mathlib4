@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 public import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pseudofunctors from locally discrete bicategories
 
@@ -25,7 +28,6 @@ the source bicategory is of the form `B := LocallyDiscrete B₀` for a category 
 We also prove that a functor `F : I ⥤ B` with `B` a strict bicategory can be promoted
 to a pseudofunctor (or oplax functor) (`Functor.toPseudofunctor`) with domain
 `LocallyDiscrete I`.
-
 -/
 
 @[expose] public section

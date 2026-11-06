@@ -9,20 +9,23 @@ public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 
 import Mathlib.Analysis.Calculus.ParametricIntegral
 
-/-! # The Mellin transform
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The Mellin transform
 
 We define the Mellin transform of a locally integrable function on `Ioi 0`, and show it is
 differentiable in a suitable vertical strip.
 
 ## Main statements
 
-- `mellin` : the Mellin transform `∫ (t : ℝ) in Ioi 0, t ^ (s - 1) • f t`,
+* `mellin` : the Mellin transform `∫ (t : ℝ) in Ioi 0, t ^ (s - 1) • f t`,
   where `s` is a complex number.
-- `HasMellin`: shorthand asserting that the Mellin transform exists and has a given value
+* `HasMellin`: shorthand asserting that the Mellin transform exists and has a given value
   (analogous to `HasSum`).
-- `mellin_differentiableAt_of_isBigO_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
+* `mellin_differentiableAt_of_isBigO_rpow` : if `f` is `O(x ^ (-a))` at infinity, and
   `O(x ^ (-b))` at 0, then `mellin f` is holomorphic on the domain `b < re s < a`.
-
 -/
 
 @[expose] public section
@@ -102,9 +105,11 @@ theorem mellin_cpow_smul (f : ℝ → E) (s a : ℂ) :
   refine setIntegral_congr_fun measurableSet_Ioi fun t ht => ?_
   simp_rw [← sub_add_eq_add_sub, cpow_add _ _ (ofReal_ne_zero.2 <| ne_of_gt ht), mul_smul]
 
-/-- Compatibility with scalar multiplication by a normed field. For scalar multiplication by more
-general rings assuming *a priori* that the Mellin transform is defined, see
-`hasMellin_const_smul`. -/
+/--
+Compatibility with scalar multiplication by a normed field. For scalar multiplication by more
+general rings assuming _a priori_ that the Mellin transform is defined, see
+`hasMellin_const_smul`.
+-/
 theorem mellin_const_smul (f : ℝ → E) (s : ℂ) {𝕜 : Type*}
     [NormedField 𝕜] [NormedSpace 𝕜 E] [SMulCommClass ℂ 𝕜 E] (c : 𝕜) :
     mellin (fun t => c • f t) s = c • mellin f s := by
@@ -181,7 +186,9 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 section MellinConvergent
 
-/-! ## Convergence of Mellin transform integrals -/
+/-!
+# Convergence of Mellin transform integrals
+-/
 
 /-- Auxiliary lemma to reduce convergence statements from vector-valued functions to real
 scalar-valued functions. -/
@@ -431,7 +438,7 @@ end ExpDecay
 section MellinIoc
 
 /-!
-## Mellin transforms of functions on `Ioc 0 1`
+# Mellin transforms of functions on `Ioc 0 1`
 -/
 
 /-- The Mellin transform of the indicator function of `Ioc 0 1`. -/

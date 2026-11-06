@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of (co)limits in the functor category
 
@@ -24,8 +27,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 ## References
 
-https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation_by_functor_categories_and_localizations
-
+https://ncatlab.org/nlab/show/commutativity+of+limits+and+colimits#preservation\_by\_functor\_categories\_and\_localizations
 -/
 
 @[expose] public section
@@ -44,7 +46,8 @@ section
 variable {C : Type u} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{u} D]
 
-/-- If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
+/--
+If `X × -` preserves colimits in `D` for any `X : D`, then the product functor `F ⨯ -` for
 `F : C ⥤ D` also preserves colimits.
 
 Note this is (mathematically) a special case of the statement that
@@ -52,8 +55,7 @@ Note this is (mathematically) a special case of the statement that
 but the story in Lean is a bit more complex, and this statement isn't directly a special case.
 That is, even with a formalised proof of the general statement, there would still need to be some
 work to convert to this version: namely, the natural isomorphism
-`(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅
-  prod.functor.obj F ⋙ (evaluation C D).obj k`
+`(evaluation C D).obj k ⋙ prod.functor.obj (F.obj k) ≅ prod.functor.obj F ⋙ (evaluation C D).obj k`
 -/
 lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits D]
     [∀ X : D, PreservesColimits (prod.functor.obj X)] (F : C ⥤ D) :

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Measure.FiniteMeasure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Probability measures
 
@@ -22,6 +25,7 @@ case of the topology of weak convergence of finite measures.
 ## Main definitions
 
 The main definitions are
+
 * the type `MeasureTheory.ProbabilityMeasure Ω` with the topology of convergence in
   distribution (a.k.a. convergence in law, weak convergence of measures);
 * `MeasureTheory.ProbabilityMeasure.toFiniteMeasure`: Interpret a probability measure as
@@ -51,6 +55,7 @@ The main definitions are
   approximating sequences (in particular on any pseudo-metrizable spaces).
 
 TODO:
+
 * Probability measures form a convex space.
 
 ## Implementation notes
@@ -65,12 +70,11 @@ composition `ENNReal.toNNReal` and the coercion to function of `MeasureTheory.Me
 
 ## References
 
-* [Billingsley, *Convergence of probability measures*][billingsley1999]
+* ‍\[Billingsley, _Convergence of probability measures_\]\[billingsley1999\]
 
 ## Tags
 
 convergence in distribution, convergence in law, weak convergence of measures, probability measure
-
 -/
 
 @[expose] public section
@@ -85,7 +89,8 @@ namespace MeasureTheory
 
 section ProbabilityMeasure
 
-/-! ### Probability measures
+/-!
+# Probability measures
 
 In this section we define the type of probability measures on a measurable space `Ω`, denoted by
 `MeasureTheory.ProbabilityMeasure Ω`.
@@ -276,9 +281,11 @@ lemma measurableSet_isProbabilityMeasure :
   ext _
   apply isProbabilityMeasure_iff
 
-/-- The monoidal product is a measurable function from the product of probability spaces over
-`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of [A synthetic approach to
-Markov kernels, conditional independence and theorems on sufficient statistics][fritz2020]. -/
+/--
+The monoidal product is a measurable function from the product of probability spaces over
+`α` and `β` into the type of probability spaces over `α × β`. Lemma 4.1 of \[A synthetic approach to
+Markov kernels, conditional independence and theorems on sufficient statistics\]\[fritz2020\].
+-/
 theorem measurable_fun_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
     Measurable (fun (μ : ProbabilityMeasure α × ProbabilityMeasure β)
       ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
@@ -452,7 +459,8 @@ end ProbabilityMeasure
 -- section
 section NormalizeFiniteMeasure
 
-/-! ### Normalization of finite measures to probability measures
+/-!
+# Normalization of finite measures to probability measures
 
 This section is about normalizing finite measures to probability measures.
 

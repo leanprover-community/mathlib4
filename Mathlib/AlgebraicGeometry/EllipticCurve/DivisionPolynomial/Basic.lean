@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Point
 public import Mathlib.NumberTheory.EllipticDivisibilitySequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Division polynomials of Weierstrass curves
 
@@ -19,6 +22,7 @@ These are defined in terms of the auxiliary sequences for normalised elliptic di
 
 Let `W` be a Weierstrass curve over a commutative ring `R`. The sequence of `n`-division polynomials
 `ψₙ ∈ R[X, Y]` of `W` is the normalised EDS with initial values
+
 * `ψ₀ := 0`,
 * `ψ₁ := 1`,
 * `ψ₂ := 2Y + a₁X + a₃`,
@@ -26,6 +30,7 @@ Let `W` be a Weierstrass curve over a commutative ring `R`. The sequence of `n`-
 * `ψ₄ := ψ₂ ⬝ (2X⁶ + b₂X⁵ + 5b₄X⁴ + 10b₆X³ + 10b₈X² + (b₂b₈ - b₄b₆)X + (b₄b₈ - b₆²))`.
 
 Furthermore, define the associated sequences `φₙ, ωₙ ∈ R[X, Y]` by
+
 * `φₙ := Xψₙ² - ψₙ₊₁ ⬝ ψₙ₋₁`, and
 * `ωₙ := (ψ₂ₙ / ψₙ - ψₙ ⬝ (a₁φₙ + a₃ψₙ²)) / 2`.
 
@@ -41,6 +46,7 @@ Now, in the coordinate ring `R[W]`, note that `ψ₂²` is congruent to the poly
 `Ψ₂Sq := 4X³ + b₂X² + 2b₄X + b₆ ∈ R[X]`. As such, the recurrences of a normalised EDS show that
 `ψₙ / ψ₂` are congruent to certain polynomials in `R[W]`. In particular, define `preΨₙ ∈ R[X]` as
 the auxiliary sequence for a normalised EDS with extra parameter `Ψ₂Sq²` and initial values
+
 * `preΨ₀ := 0`,
 * `preΨ₁ := 1`,
 * `preΨ₂ := 1`,
@@ -48,10 +54,12 @@ the auxiliary sequence for a normalised EDS with extra parameter `Ψ₂Sq²` and
 * `preΨ₄ := ψ₄ / ψ₂`.
 
 The corresponding normalised EDS `Ψₙ ∈ R[X, Y]` is then given by
+
 * `Ψₙ := preΨₙ ⬝ ψ₂` if `n` is even, and
 * `Ψₙ := preΨₙ` if `n` is odd.
 
 Furthermore, define the associated sequences `ΨSqₙ, Φₙ ∈ R[X]` by
+
 * `ΨSqₙ := preΨₙ² ⬝ Ψ₂Sq` if `n` is even,
 * `ΨSqₙ := preΨₙ²` if `n` is odd,
 * `Φₙ := XΨSqₙ - preΨₙ₊₁ ⬝ preΨₙ₋₁` if `n` is even, and
@@ -84,7 +92,7 @@ TODO: implementation notes for the definition of `ωₙ`.
 
 ## References
 
-[J Silverman, *The Arithmetic of Elliptic Curves*][silverman2009]
+‍\[J Silverman, _The Arithmetic of Elliptic Curves_\]\[silverman2009\]
 
 ## Tags
 
@@ -107,7 +115,9 @@ variable {R : Type r} {S : Type s} [CommRing R] [CommRing S] (W : WeierstrassCur
 
 section Ψ₂Sq
 
-/-! ### The univariate polynomial `Ψ₂Sq` -/
+/-!
+# The univariate polynomial `Ψ₂Sq`
+-/
 
 /-- The `2`-division polynomial `ψ₂ = Ψ₂`. -/
 noncomputable def ψ₂ : R[X][Y] :=
@@ -136,7 +146,9 @@ end Ψ₂Sq
 
 section preΨ'
 
-/-! ### The univariate polynomials `preΨₙ` for `n ∈ ℕ` -/
+/-!
+# The univariate polynomials `preΨₙ` for `n ∈ ℕ`
+-/
 
 /-- The `3`-division polynomial `ψ₃ = Ψ₃`. -/
 noncomputable def Ψ₃ : R[X] :=
@@ -187,7 +199,9 @@ end preΨ'
 
 section preΨ
 
-/-! ### The univariate polynomials `preΨₙ` for `n ∈ ℤ` -/
+/-!
+# The univariate polynomials `preΨₙ` for `n ∈ ℤ`
+-/
 
 /-- The univariate polynomials `preΨₙ` for `n ∈ ℤ`, which are auxiliary to the bivariate polynomials
 `Ψₙ` congruent to the bivariate `n`-division polynomials `ψₙ`. -/
@@ -236,7 +250,9 @@ end preΨ
 
 section ΨSq
 
-/-! ### The univariate polynomials `ΨSqₙ` -/
+/-!
+# The univariate polynomials `ΨSqₙ`
+-/
 
 /-- The univariate polynomials `ΨSqₙ` congruent to `ψₙ²`. -/
 noncomputable def ΨSq (n : ℤ) : R[X] :=
@@ -284,7 +300,9 @@ end ΨSq
 
 section Ψ
 
-/-! ### The bivariate polynomials `Ψₙ` -/
+/-!
+# The bivariate polynomials `Ψₙ`
+-/
 
 /-- The bivariate polynomials `Ψₙ` congruent to the `n`-division polynomials `ψₙ`. -/
 protected noncomputable def Ψ (n : ℤ) : R[X][Y] :=
@@ -343,7 +361,9 @@ end Ψ
 
 section Φ
 
-/-! ### The univariate polynomials `Φₙ` -/
+/-!
+# The univariate polynomials `Φₙ`
+-/
 
 /-- The univariate polynomials `Φₙ` congruent to `φₙ`. -/
 protected noncomputable def Φ (n : ℤ) : R[X] :=
@@ -395,7 +415,9 @@ end Φ
 
 section ψ
 
-/-! ### The bivariate polynomials `ψₙ` -/
+/-!
+# The bivariate polynomials `ψₙ`
+-/
 
 /-- The bivariate `n`-division polynomials `ψₙ`. -/
 protected noncomputable def ψ (n : ℤ) : R[X][Y] :=
@@ -442,7 +464,9 @@ end ψ
 
 section φ
 
-/-! ### The bivariate polynomials `φₙ` -/
+/-!
+# The bivariate polynomials `φₙ`
+-/
 
 /-- The bivariate polynomials `φₙ`. -/
 protected noncomputable def φ (n : ℤ) : R[X][Y] :=
@@ -488,7 +512,9 @@ end φ
 
 section Map
 
-/-! ### Maps across ring homomorphisms -/
+/-!
+# Maps across ring homomorphisms
+-/
 
 open WeierstrassCurve (Ψ Φ ψ φ)
 
@@ -545,7 +571,9 @@ end Map
 
 section BaseChange
 
-/-! ### Base changes across algebra homomorphisms -/
+/-!
+# Base changes across algebra homomorphisms
+-/
 
 variable [Algebra R S] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
   {B : Type v} [CommRing B] [Algebra R B] [Algebra S B] [IsScalarTower R S B] (f : A →ₐ[S] B)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Free.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal coherence theorem
 
@@ -29,9 +32,8 @@ is thin.
 
 ## References
 
-* [Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
-  proof of normalization for monoids][beylin1996]
-
+* ‍\[Ilya Beylin and Peter Dybjer, Extracting a proof of coherence for monoidal categories from a
+  proof of normalization for monoids\]\[beylin1996\]
 -/
 
 @[expose] public section

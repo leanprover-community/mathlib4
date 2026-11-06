@@ -7,12 +7,17 @@ module
 
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
-/-! # Bicategories of spans in a category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Bicategories of spans in a category
 
 In this file, given a category `C` and two morphism properties
 `Wₗ` and `Wᵣ` in `C` that are stable under compositions, contain identities and
 such that for any morphism `b : x₃ ⟶ x₄` in Wₗ and any morphism `r : x₂ ⟶ x₃` in `Wᵣ`,
 there exists a pullback square
+
 ```
      t
   x₁ --> x₂
@@ -22,10 +27,10 @@ l |      | r
   x₃ --> x₄
      b
 ```
+
 in `C` such that `t` satisfies `Wₗ` and `l` satisfies `Wᵣ`,
 we construct the bicategory of spans in `C` with left morphism in `Wₗ` and right morphism
 in `Wᵣ`.
-
 -/
 
 @[expose] public section
@@ -116,9 +121,11 @@ def id (c : C) :
   wr := MorphismProperty.ContainsIdentities.id_mem _
 
 open Limits MorphismProperty in
-/-- The composition of two spans: if the relevant pullback exists and if the
+/--
+The composition of two spans: if the relevant pullback exists and if the
 morphism properties are stable under the relevant base change, it is given by the
 total span
+
 ```
      P
     /  \
@@ -127,6 +134,7 @@ total span
  /  \   /  \
 c     c'    c''
 ```
+
 where the top diamond is a pullback square
 -/
 @[simps (attr := grind =), implicit_reducible]
@@ -218,7 +226,8 @@ abbrev mkIso₂ {X Y : SpanBicat C Wₗ Wᵣ} {S S' : X ⟶ Y}
 
 section compAPI
 
-/-! The goal of this section is to abstract as much as possible the fact that the
+/-!
+The goal of this section is to abstract as much as possible the fact that the
 composition uses an arbitrary pullback, and provides some "proxy" for working
 with the fact that apices of compositions of spans are pullbacks.
 
@@ -229,7 +238,8 @@ as long as they are careful to use the API provided here.
 The primitives of this API are the data of the two projections
 `πₗ : (S₁ ≫ S₂).apex ⟶ S₁.apex` and `πᵣ : (S₁ ≫ S₂).apex ⟶ S₂.apex`, the
 equalities `(S₁ ≫ S₂).l = πₗ ≫ S₁.l` and `(S₁ ≫ S₂).r = πᵣ ≫ S₂.r`,
-the commutative square `πₗ ≫ S₁.r = πᵣ ≫ S₂.l` and the fact that this defines a pullback square. -/
+the commutative square `πₗ ≫ S₁.r = πᵣ ≫ S₂.l` and the fact that this defines a pullback square.
+-/
 
 variable {X Y Z : SpanBicat C Wₗ Wᵣ} (S₁ : X ⟶ Y) (S₂ : Y ⟶ Z)
 

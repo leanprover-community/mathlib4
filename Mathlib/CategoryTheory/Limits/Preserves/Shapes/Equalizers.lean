@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preserving (co)equalizers
 

@@ -11,6 +11,9 @@ public import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 public import Mathlib.RingTheory.TensorProduct.Finite
 public import Mathlib.RingTheory.TensorProduct.Free
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic polynomials of linear families of endomorphisms
 
@@ -42,7 +45,7 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   are homogeneous polynomials in the parameters.
 * `LinearMap.nilRank`: the smallest index at which `polyCharpoly` has a non-zero coefficient,
   which is independent of the choice of basis for `L`.
-* `LinearMap.IsNilRegular`: an element `x` of `L` is *nil-regular* with respect to `φ`
+* `LinearMap.IsNilRegular`: an element `x` of `L` is _nil-regular_ with respect to `φ`
   if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
   where `n` denotes the nil-rank of `φ`.
 
@@ -59,8 +62,7 @@ The proof concludes because characteristic polynomials are independent of the ch
 
 ## References
 
-* [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
+* ‍\[barnes1967\]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 -/
 
 @[expose] public section
@@ -225,7 +227,8 @@ variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
 open Matrix
 
-/-- (Implementation detail, see `LinearMap.polyCharpoly`.)
+/--
+(Implementation detail, see `LinearMap.polyCharpoly`.)
 
 Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear map.
@@ -234,7 +237,8 @@ Then `LinearMap.polyCharpolyAux φ b bₘ` is the polynomial that evaluates on e
 to the characteristic polynomial of `φ x` acting on `M`.
 
 This definition does not depend on the choice of `bₘ`
-(see `LinearMap.polyCharpolyAux_basisIndep`). -/
+(see `LinearMap.polyCharpolyAux_basisIndep`).
+-/
 noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
@@ -323,9 +327,11 @@ lemma polyCharpolyAux_map_aeval
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
 open Algebra.TensorProduct MvPolynomial in
-/-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
+/--
+`LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
 
 Proof strategy:
+
 1. Rewrite `polyCharpolyAux` as the (honest, ordinary) characteristic polynomial
    of the base change of `φ` to the multivariate polynomial ring `MvPolynomial ι R`.
 2. Use that the characteristic polynomial of a linear map is independent of the choice of basis.
@@ -423,14 +429,16 @@ lemma polyCharpoly_coeff_eq_zero_iff_of_basis (b : Basis ι R L) (b' : Basis ι'
 
 section aux
 
-/-- (Implementation detail, see `LinearMap.nilRank`.)
+/--
+(Implementation detail, see `LinearMap.nilRank`.)
 
 Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
 Then `LinearMap.nilRankAux φ b` is the smallest index
 at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
 
-This number does not depend on the choice of `b`, see `nilRankAux_basis_indep`. -/
+This number does not depend on the choice of `b`, see `nilRankAux_basis_indep`.
+-/
 noncomputable
 def nilRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
   (polyCharpoly φ b).natTrailingDegree
@@ -454,13 +462,15 @@ end aux
 
 variable [Module.Finite R L] [Module.Free R L]
 
-/-- Let `L` and `M` be finite free modules over `R`,
+/--
+Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
 Then `LinearMap.nilRank φ b` is the smallest index
 at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
 
 This number does not depend on the choice of `b`,
-see `LinearMap.nilRank_eq_polyCharpoly_natTrailingDegree`. -/
+see `LinearMap.nilRank_eq_polyCharpoly_natTrailingDegree`.
+-/
 noncomputable
 def nilRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
   nilRankAux φ (Module.Free.chooseBasis R L)
@@ -499,12 +509,14 @@ lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
 
 end
 
-/-- Let `L` and `M` be finite free modules over `R`,
+/--
+Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
 and denote `n := nilRank φ`.
 
-An element `x : L` is *nil-regular* with respect to `φ`
-if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
+An element `x : L` is _nil-regular_ with respect to `φ`
+if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero.
+-/
 def IsNilRegular (x : L) : Prop :=
   (φ x).charpoly.coeff (nilRank φ) ≠ 0
 

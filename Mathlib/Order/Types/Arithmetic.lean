@@ -10,30 +10,32 @@ public import Mathlib.SetTheory.Cardinal.Order
 
 import Mathlib.Basic.Real.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-## Main definitions
+/-!
+# Main definitions
 
 * `OrderType.card o`: the cardinality of an OrderType `o`.
 * `o₁ + o₂`: the lexicographic sum of order types, which forms an `AddMonoid`.
 * `o₁ * o₂`: the lexicographic product of order types, which forms a `MonoidWithZero`.
 
-## Notation
+# Notation
 
 The following are notations in the `OrderType` namespace:
 
 * `η` is a notation for the order type of `ℚ` with its natural order.
 * `θ` is a notation for the order type of `ℝ` with its natural order.
 
-## References
+# References
 
-* <https://en.wikipedia.org/wiki/Order_type>
-* [Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
-  NJ: Princeton University Press, 1990.][dauben_1990]
-* [Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
-  1977.][enderton_1977]
+* [https://en.wikipedia.org/wiki/Order\_type](https://en.wikipedia.org/wiki/Order_type)
+* ‍\[Dauben, J. W., Georg Cantor: His Mathematics and Philosophy of the Infinite. Princeton,
+  NJ: Princeton University Press, 1990.\]\[dauben\_1990\]
+* ‍\[Enderton, Herbert B., Elements of Set Theory. United Kingdom: Academic Press,
+  1977.\]\[enderton\_1977\]
 
-## Tags
+# Tags
 
 order type, order isomorphism, linear order
 -/

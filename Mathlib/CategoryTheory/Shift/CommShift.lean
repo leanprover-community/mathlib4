@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Shift.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Functors which commute with shifts
 
@@ -23,8 +26,8 @@ identify to `A`. The choice of a cleavage for this fibered category gives the in
 shift functors.)
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section
@@ -603,6 +606,7 @@ end Functor
 
 /--
 Assume that we have a diagram of categories
+
 ```
 C₁ ⥤ D₁
 ‖     ‖
@@ -612,6 +616,7 @@ C₂ ⥤ D₂
 v     v
 C₃ ⥤ D₃
 ```
+
 with functors `F₁₂ : C₁ ⥤ C₂`, `F₂₃ : C₂ ⥤ C₃` and `F₁₃ : C₁ ⥤ C₃` on the first
 column that are related by a natural transformation `α : F₁₃ ⟶ F₁₂ ⋙ F₂₃`
 and similarly `β : G₁₂ ⋙ G₂₃ ⟶ G₁₃` on the second column. Assume that we have
@@ -622,7 +627,8 @@ are denoted `L₁`, `L₂` and `L₃`. Assume that `e₁₃` is determined by th
 natural transformations `α`, `e₂₃`, `e₁₂` and `β`. Then, if all these categories
 are equipped with a shift by an additive monoid `A`, and all these functors commute with
 these shifts, then the natural transformation `e₁₃` of the outer square commutes with the
-shift if all `α`, `e₂₃`, `e₁₂` and `β` do. -/
+shift if all `α`, `e₂₃`, `e₁₂` and `β` do.
+-/
 lemma NatTrans.CommShift.verticalComposition {C₁ C₂ C₃ D₁ D₂ D₃ : Type*}
     [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]
     {F₁₂ : C₁ ⥤ C₂} {F₂₃ : C₂ ⥤ C₃} {F₁₃ : C₁ ⥤ C₃} (α : F₁₃ ⟶ F₁₂ ⋙ F₂₃)

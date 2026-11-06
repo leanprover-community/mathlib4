@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Basic
 public import Mathlib.RingTheory.Noetherian.Orzech
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invariant basis number property
 
@@ -16,62 +19,52 @@ public import Mathlib.RingTheory.PrincipalIdealDomain
 
 Let `R` be a (not necessary commutative) ring.
 
-- `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)`
-  implies `n = m`, a property known as the *invariant basis number property.*
+* `InvariantBasisNumber R` is a type class stating that `(Fin n → R) ≃ₗ[R] (Fin m → R)`
+  implies `n = m`, a property known as the _invariant basis number property._
 
   This assumption implies that there is a well-defined notion of the rank
   of a finitely generated free (left) `R`-module.
 
 It is also useful to consider the following stronger conditions:
 
-- The *rank condition*, witnessed by the type class `RankCondition R`, states that
+* The _rank condition_, witnessed by the type class `RankCondition R`, states that
   the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`.
-
-- The *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
+* The _strong rank condition_, witnessed by the type class `StrongRankCondition R`, states
   that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
   implies `n ≤ m`.
-
-- `OrzechProperty R`, defined in `Mathlib/RingTheory/OrzechProperty.lean`,
+* `OrzechProperty R`, defined in `Mathlib/RingTheory/OrzechProperty.lean`,
   states that for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
   from a submodule `N` of `M` to `M` is injective.
 
-
 ## Instances
 
-- `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian/Orzech.lean`) :
+* `IsNoetherianRing.orzechProperty` (defined in `Mathlib/RingTheory/Noetherian/Orzech.lean`) :
   any left-Noetherian ring satisfies the Orzech property.
   This applies in particular to division rings.
-
-- `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
+* `strongRankCondition_of_orzechProperty` : the Orzech property implies the strong rank condition
   (for non-trivial rings).
-
-- `IsNoetherianRing.strongRankCondition` : every nontrivial left-Noetherian ring satisfies the
+* `IsNoetherianRing.strongRankCondition` : every nontrivial left-Noetherian ring satisfies the
   strong rank condition (and so in particular every division ring or field).
-
-- `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
-
-- `invariantBasisNumber_of_rankCondition` : the rank condition implies the
+* `rankCondition_of_strongRankCondition` : the strong rank condition implies the rank condition.
+* `invariantBasisNumber_of_rankCondition` : the rank condition implies the
   invariant basis number property.
-
-- `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
+* `invariantBasisNumber_of_nontrivial_of_commRing`: a nontrivial commutative ring satisfies
   the invariant basis number property.
 
 More generally, every commutative ring satisfies the Orzech property,
 hence the strong rank condition, which is proved in `Mathlib/RingTheory/FiniteType.lean`.
 We keep `invariantBasisNumber_of_nontrivial_of_commRing` here since it imports fewer files.
 
-
 ## Counterexamples to converse results
 
-The following examples can be found in the book of Lam [lam_1999]
-(see also <https://math.stackexchange.com/questions/4711904>):
+The following examples can be found in the book of Lam \[lam\_1999\] (see also [
+https://math.stackexchange.com/questions/4711904](https://math.stackexchange.com/questions/4711904)):
 
-- Let `k` be a field, then the free (non-commutative) algebra `k⟨x, y⟩` satisfies
+* Let `k` be a field, then the free (non-commutative) algebra `k⟨x, y⟩` satisfies
   the rank condition but not the strong rank condition.
-- The free (non-commutative) algebra `ℚ⟨a, b, c, d⟩` quotient by the
+* The free (non-commutative) algebra `ℚ⟨a, b, c, d⟩` quotient by the
   two-sided ideal `(ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
   but not the rank condition.
-
 
 ## Future work
 
@@ -87,18 +80,17 @@ variants) should be formalized.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Invariant_basis_number
+* https://en.wikipedia.org/wiki/Invariant\_basis\_number
 * https://mathoverflow.net/a/2574/
-* [Lam, T. Y. *Lectures on Modules and Rings*][lam_1999]
-* [Orzech, Morris. *Onto endomorphisms are isomorphisms*][orzech1971]
-* [Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*][djokovic1973]
-* [Ribenboim, Paulo.
-  *Épimorphismes de modules qui sont nécessairement des isomorphismes*][ribenboim1971]
+* ‍\[Lam, T. Y. _Lectures on Modules and Rings_\]\[lam\_1999\]
+* ‍\[Orzech, Morris. _Onto endomorphisms are isomorphisms_\]\[orzech1971\]
+* ‍\[Djoković, D. Ž. _Epimorphisms of modules which must be isomorphisms_\]\[djokovic1973\]
+* ‍\[Ribenboim, Paulo.
+  _Épimorphismes de modules qui sont nécessairement des isomorphismes_\]\[ribenboim1971\]
 
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section
@@ -253,17 +245,18 @@ instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCond
 end
 
 /-!
-  We want to show that nontrivial commutative rings have invariant basis number. The idea is to
-  take a maximal ideal `I` of `R` and use an isomorphism `R^n ≃ R^m` of `R` modules to produce an
-  isomorphism `(R/I)^n ≃ (R/I)^m` of `R/I`-modules, which will imply `n = m` since `R/I` is a field
-  and we know that fields have invariant basis number.
+We want to show that nontrivial commutative rings have invariant basis number. The idea is to
+take a maximal ideal `I` of `R` and use an isomorphism `R^n ≃ R^m` of `R` modules to produce an
+isomorphism `(R/I)^n ≃ (R/I)^m` of `R/I`-modules, which will imply `n = m` since `R/I` is a field
+and we know that fields have invariant basis number.
 
-  We construct the isomorphism in two steps:
-  1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
-     isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
-    `Ideal.piQuotEquiv` and is located in the file `Mathlib/RingTheory/Ideal/Quotient/Basic.lean`.
-  2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
-     `R^n ≃ R^m`.
+We construct the isomorphism in two steps:
+
+1. We construct the ring `R^n/I^n`, show that it is an `R/I`-module and show that there is an
+   isomorphism of `R/I`-modules `R^n/I^n ≃ (R/I)^n`. This isomorphism is called
+   `Ideal.piQuotEquiv` and is located in the file `Mathlib/RingTheory/Ideal/Quotient/Basic.lean`.
+2. We construct an isomorphism of `R/I`-modules `R^n/I^n ≃ R^m/I^m` using the isomorphism
+   `R^n ≃ R^m`.
 -/
 
 
@@ -301,13 +294,14 @@ attribute [local instance] Ideal.Quotient.field
 Nontrivial commutative rings satisfy the invariant basis number property.
 
 There are two stronger results in mathlib:
-1.  `CommRing.orzechProperty` in `Mathlib.RingTheory.FiniteType`,
-    which says that any commutative ring satisfies the Orzech property, and hence
-    (by `strongRankCondition_of_orzechProperty`) that nontrivial commutative rings satisfy
-    the strong rank condition. A shortcut instance `commRing_strongRankCondition` is also provided.
-2.  `rankCondition_of_nontrivial_of_commSemiring` in
-    `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that
-    any nontrivial commutative semiring satisfies the rank condition.
+
+1. `CommRing.orzechProperty` in `Mathlib.RingTheory.FiniteType`,
+   which says that any commutative ring satisfies the Orzech property, and hence
+   (by `strongRankCondition_of_orzechProperty`) that nontrivial commutative rings satisfy
+   the strong rank condition. A shortcut instance `commRing_strongRankCondition` is also provided.
+2. `rankCondition_of_nontrivial_of_commSemiring` in
+   `Mathlib.LinearAlgebra.Matrix.InvariantBasisNumber`, which says that
+   any nontrivial commutative semiring satisfies the rank condition.
 
 We prove this instance here anyway to reduce the required imports.
 -/

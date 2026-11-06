@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Sites.CoverLifting
 public import Mathlib.CategoryTheory.Sites.Point.OfIsCofiltered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The image of a point by a cocontinuous functor
 
@@ -17,7 +20,6 @@ of `(D, K)` and show that there are natural isomorphisms
 `(Φ.map F K).presheafFiber ≅ (Functor.whiskeringLeft _ _ A).obj F.op ⋙ Φ.presheafFiber`
 and `(Φ.map F K).sheafFiber ≅ F.sheafPushforwardContinuous A J K ⋙ Φ.sheafFiber`
 (the latter is defined only if `F` is also continuous).
-
 -/
 
 @[expose] public section

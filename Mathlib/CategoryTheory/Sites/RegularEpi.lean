@@ -11,8 +11,10 @@ import Mathlib.CategoryTheory.EffectiveEpi.Comp
 import Mathlib.CategoryTheory.Functor.RegularEpi
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Images
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The category of type-valued sheaves is a regular epi category
 
 ## Main results
@@ -31,8 +33,8 @@ already follows from the sheaf category being abelian.
 
 ## References
 
-We follow the proof of Proposition 3.4.13 in [borceux-vol3]
-*Handbook of Categorical Algebra: Volume 3, Sheaf Theory*, by Borceux, 1994.
+We follow the proof of Proposition 3.4.13 in \[borceux-vol3\]
+_Handbook of Categorical Algebra: Volume 3, Sheaf Theory_, by Borceux, 1994.
 The first part of that proof, the result for presheaf categories, is proved in the file
 `Mathlib.CategoryTheory.Functor.RegularEpi`.
 -/

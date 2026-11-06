@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strict initial objects
 
@@ -16,7 +19,7 @@ namely that the only function to the empty set is from itself.
 
 We say `C` has strict initial objects if every initial object is strict, i.e. given any morphism
 `f : A ⟶ I` where `I` is initial, then `f` is an isomorphism.
-Strictly speaking, this says that *any* initial object must be strict, rather than that strict
+Strictly speaking, this says that _any_ initial object must be strict, rather than that strict
 initial objects exist, which turns out to be a more useful notion to formalise.
 
 If the binary product of `X` with a strict initial object exists, it is also initial.
@@ -34,6 +37,7 @@ The dual notion (strict terminal objects) occurs much less frequently in practic
 * Show Cartesian closed categories have strict initials
 
 ## References
+
 * https://ncatlab.org/nlab/show/strict+initial+object
 -/
 
@@ -52,10 +56,11 @@ variable (C : Type u) [Category.{v} C]
 
 section StrictInitial
 
-/-- We say `C` has strict initial objects if every initial object is strict, i.e. given any morphism
+/--
+We say `C` has strict initial objects if every initial object is strict, i.e. given any morphism
 `f : A ⟶ I` where `I` is initial, then `f` is an isomorphism.
 
-Strictly speaking, this says that *any* initial object must be strict, rather than that strict
+Strictly speaking, this says that _any_ initial object must be strict, rather than that strict
 initial objects exist.
 -/
 class HasStrictInitialObjects : Prop where
@@ -148,8 +153,10 @@ theorem initialMul_inv (X : C) [HasBinaryProduct (⊥_ C) X] : (initialMul X).in
 
 end
 
-/-- If `C` has an initial object such that every morphism *to* it is an isomorphism, then `C`
-has strict initial objects. -/
+/--
+If `C` has an initial object such that every morphism _to_ it is an isomorphism, then `C`
+has strict initial objects.
+-/
 theorem hasStrictInitialObjects_of_initial_is_strict [HasInitial C]
     (h : ∀ (A) (f : A ⟶ ⊥_ C), IsIso f) : HasStrictInitialObjects C :=
   { out := fun {I A} f hI =>
@@ -165,10 +172,11 @@ end StrictInitial
 
 section StrictTerminal
 
-/-- We say `C` has strict terminal objects if every terminal object is strict, i.e. given any
+/--
+We say `C` has strict terminal objects if every terminal object is strict, i.e. given any
 morphism `f : I ⟶ A` where `I` is terminal, then `f` is an isomorphism.
 
-Strictly speaking, this says that *any* terminal object must be strict, rather than that strict
+Strictly speaking, this says that _any_ terminal object must be strict, rather than that strict
 terminal objects exist.
 -/
 class HasStrictTerminalObjects : Prop where
@@ -247,8 +255,10 @@ theorem terminal.subsingleton_to {A : C} : Subsingleton (⊤_ C ⟶ A) :=
 
 end
 
-/-- If `C` has an object such that every morphism *from* it is an isomorphism, then `C`
-has strict terminal objects. -/
+/--
+If `C` has an object such that every morphism _from_ it is an isomorphism, then `C`
+has strict terminal objects.
+-/
 theorem hasStrictTerminalObjects_of_terminal_is_strict (I : C) (h : ∀ (A) (f : I ⟶ A), IsIso f) :
     HasStrictTerminalObjects C :=
   { out := fun {I' A} f hI' =>

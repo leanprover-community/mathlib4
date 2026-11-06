@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Manifold.Algebra.SMul
 public import Mathlib.Geometry.Manifold.Algebra.Structures
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraic structures over `C^n` functions
 
@@ -73,7 +76,7 @@ theorem coe_pow {G : Type*} [Monoid G] [TopologicalSpace G] [ChartedSpace H' G]
 section GroupStructure
 
 /-!
-### Group structure
+# Group structure
 
 In this section we show that `C^n` functions valued in a Lie group inherit a group structure
 under pointwise multiplication.
@@ -162,7 +165,7 @@ end GroupStructure
 section RingStructure
 
 /-!
-### Ring structure
+# Ring structure
 
 In this section we show that `C^n` functions valued in a `C^n` ring `R` inherit a ring structure
 under pointwise multiplication.
@@ -227,7 +230,7 @@ end RingStructure
 section ModuleStructure
 
 /-!
-### Semimodule structure
+# Semimodule structure
 
 In this section we show that `C^n` functions valued in a vector space `M` over a normed
 field `𝕜` inherit a vector space structure.
@@ -265,7 +268,7 @@ end ModuleStructure
 section AlgebraStructure
 
 /-!
-### Algebra structure
+# Algebra structure
 
 In this section we show that `C^n` functions valued in a normed algebra `A` over a normed field `𝕜`
 inherit an algebra structure.
@@ -304,10 +307,11 @@ end AlgebraStructure
 section ModuleOverContinuousFunctions
 
 /-!
-### Structure as module over scalar functions
+# Structure as module over scalar functions
 
 If `V` is a module over `𝕜`, then we show that the space of `C^n` functions from `N` to `V`
-is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`. -/
+is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`.
+-/
 
 /-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
 instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :

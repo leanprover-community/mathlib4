@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
 public import Mathlib.Topology.Algebra.GroupWithZero
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The topology on linearly ordered commutative groups with zero
 
@@ -53,7 +56,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ
   exact le_iInf₂ fun γ hγ ↦ le_principal_iff.2 <| zero_lt_iff.2 hγ
 
 /-!
-### Neighbourhoods of zero
+# Neighbourhoods of zero
 -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
@@ -78,7 +81,7 @@ theorem tendsto_zero : Tendsto f l (𝓝 (0 : Γ₀)) ↔ ∀ (γ₀) (_ : γ₀
   simp [nhds_zero]
 
 /-!
-### Neighbourhoods of non-zero elements
+# Neighbourhoods of non-zero elements
 -/
 
 /-- The neighbourhood filter of a nonzero element consists of all sets containing that
@@ -119,7 +122,7 @@ theorem Iio_mem_nhds (h : γ₁ < γ₂) : Iio γ₂ ∈ 𝓝 γ₁ := by
   rcases eq_or_ne γ₁ 0 with (rfl | h₀) <;> simp [*, h.ne', Iio_mem_nhds_zero]
 
 /-!
-### Open/closed sets
+# Open/closed sets
 -/
 
 theorem isOpen_iff {s : Set Γ₀} : IsOpen s ↔ (0 : Γ₀) ∉ s ∨ ∃ γ, γ ≠ 0 ∧ Iio γ ⊆ s := by
@@ -135,7 +138,7 @@ theorem isOpen_Iio {a : Γ₀} : IsOpen (Iio a) :=
   isOpen_iff.mpr <| imp_iff_not_or.mp fun ha => ⟨a, ne_of_gt ha, Subset.rfl⟩
 
 /-!
-### Instances
+# Instances
 -/
 
 /-- The topology on a linearly ordered group with zero element adjoined is compatible with the order

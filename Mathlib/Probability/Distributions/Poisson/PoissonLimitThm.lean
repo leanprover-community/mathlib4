@@ -10,6 +10,9 @@ public import Mathlib.Probability.Distributions.Poisson.Basic
 
 import Mathlib.Analysis.SpecialFunctions.Choose
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Poisson limit of binomial probabilities
 
@@ -22,7 +25,6 @@ Fix `k : ℕ`. Assuming `n * p n → r` as `n → ∞`, we show
 
 * `ProbabilityTheory.tendsto_choose_mul_pow_of_tendsto_mul_atTop`:
   if `n * p n → r`, then `n.choose k * (p n)^k * (1 - p n)^(n - k) → exp (-r) * r^k / k!`.
-
 * `ProbabilityTheory.binomial_tendsto_poissonPMFReal_atTop`:
   convergence of `PMF.binomial` to `poissonPMF` in `ℝ≥0∞` under the natural hypotheses
   (`p n ≤ 1` and `n * p n → r`).

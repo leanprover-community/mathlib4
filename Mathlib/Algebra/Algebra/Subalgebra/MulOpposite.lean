@@ -8,13 +8,14 @@ module
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Ring.Subring.MulOpposite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subalgebras of opposite rings
 
 For every ring `A` over a commutative ring `R`, we construct an equivalence between
 subalgebras of `A / R` and that of `Aᵐᵒᵖ / R`.
-
 -/
 
 @[expose] public section
@@ -53,7 +54,9 @@ theorem unop_op (S : Subalgebra R A) : S.op.unop = S := rfl
 @[simp]
 theorem op_unop (S : Subalgebra R Aᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 theorem op_le_iff {S₁ : Subalgebra R A} {S₂ : Subalgebra R Aᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=
   MulOpposite.op_surjective.forall

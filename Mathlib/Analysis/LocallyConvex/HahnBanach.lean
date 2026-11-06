@@ -11,6 +11,9 @@ public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 import Mathlib.Analysis.Convex.Cone.Extension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hahn-Banach theorem for polynormable spaces
 
@@ -20,12 +23,12 @@ it to the entire space. Note that we cannot use `LocallyConvexSpace` because an
 `IsRCLikeNormedField` has no order structure.
 
 We prove
+
 * `Module.Dual.exists_continuous_extension_of_le_seminorm`: Hahn-Banach theorem for linear
   functionals dominated by a continuous seminorm on polynormable spaces over a field satisfying
   `IsRCLikeNormedField`.
 * `StrongDual.exists_extension`: Hahn-Banach theorem for continuous linear functionals on
   polynormable spaces over fields satisfying `IsRCLikeNormedField`.
-
 -/
 
 public section

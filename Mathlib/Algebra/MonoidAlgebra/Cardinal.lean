@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MonoidAlgebra.Defs
 public import Mathlib.SetTheory.Cardinal.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of monoid algebras
 

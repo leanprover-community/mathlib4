@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed affine spaces over an inner product space
 -/
@@ -43,7 +46,8 @@ In this section, the first `left`/`right` indicates where the common argument to
 and the section refers to the argument of `inner` that ends up in the `dist`.
 
 The lemma shapes are such that the relevant argument of `inner` remains unchanged,
-and that the other `vsub` preserves the position of the unchanging argument. -/
+and that the other `vsub` preserves the position of the unchanging argument.
+-/
 
 theorem inner_vsub_vsub_left_eq_dist_sq_left_iff {a b c : P} :
     ⟪a -ᵥ b, a -ᵥ c⟫ = dist a b ^ 2 ↔ ⟪a -ᵥ b, b -ᵥ c⟫ = 0 := by

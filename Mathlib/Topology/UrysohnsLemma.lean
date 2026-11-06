@@ -13,6 +13,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Ordered
 public import Mathlib.Topology.Algebra.Affine
 public import Mathlib.Topology.ContinuousMap.Algebra
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Urysohn's lemma
 
@@ -232,7 +235,8 @@ theorem approx_le_succ (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ c.approx 
 theorem approx_mono (c : CU P) (x : X) : Monotone fun n => c.approx n x :=
   monotone_nat_of_le_succ fun n => c.approx_le_succ n x
 
-/-- A continuous function `f : X → ℝ` such that
+/--
+A continuous function `f : X → ℝ` such that
 
 * `0 ≤ f x ≤ 1` for all `x`;
 * `f` equals zero on `c.C` and equals one outside of `c.U`;
@@ -311,7 +315,8 @@ end CU
 
 end Urysohns
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
+/--
+Urysohn's lemma: if `s` and `t` are two disjoint closed sets in a normal topological space `X`,
 then there exists a continuous function `f : X → ℝ` such that
 
 * `f` equals zero on `s`;
@@ -338,7 +343,8 @@ theorem exists_continuous_zero_one_of_isClosed [NormalSpace X]
   exact ⟨⟨c.lim, c.continuous_lim⟩, c.lim_of_mem_C, fun x hx => c.lim_of_notMem_U _ fun h => h hx,
     c.lim_mem_Icc⟩
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+/--
+Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous
 function `f : X → ℝ` such that
 
@@ -369,7 +375,8 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
   exact ⟨⟨c.lim, c.continuous_lim⟩, fun x hx ↦ c.lim_of_mem_C _ (sk.trans interior_subset hx),
     fun x hx => c.lim_of_notMem_U _ fun h => h hx, c.lim_mem_Icc⟩
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+/--
+Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous
 function `f : X → ℝ` such that
 
@@ -393,7 +400,8 @@ theorem exists_continuous_zero_one_of_isCompact' [RegularSpace X] [LocallyCompac
   · intro x
     simpa [and_comm] using hicc x
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+/--
+Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
 
@@ -420,7 +428,8 @@ theorem exists_continuous_one_zero_of_isCompact [RegularSpace X] [LocallyCompact
   · have : 0 ≤ f x ∧ f x ≤ 1 := by simpa using h'f x
     simp [this]
 
-/-- Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
+/--
+Urysohn's lemma: if `s` and `t` are two disjoint sets in a regular locally compact topological
 space `X`, with `s` compact and `t` closed, then there exists a continuous compactly supported
 function `f : X → ℝ` such that
 

@@ -10,6 +10,9 @@ public import Mathlib.Computability.TuringMachine.StackTuringMachine
 public import Mathlib.Data.Num.Lemmas
 public import Mathlib.Tactic.DeriveFintype  -- shake: keep (deriving handlers not tracked yet)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modelling partial recursive functions using Turing machines
 
@@ -21,7 +24,6 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 ## Main definitions
 
 * `PartrecToTM2.tr`: A TM2 Turing machine which can evaluate `code` programs
-
 -/
 
 @[expose] public section
@@ -35,7 +37,7 @@ open Relation StateTransition
 namespace Turing
 
 /-!
-## Simulating sequentialized partial recursive functions in TM2
+# Simulating sequentialized partial recursive functions in TM2
 
 At this point we have a sequential model of partial recursive functions: the `Cfg` type and
 `step : Cfg → Option Cfg` function from `TMConfig.lean`. The key feature of this model is that
@@ -111,6 +113,7 @@ prove that only finitely many labels are accessible.) The labels are:
   before then `n :: v` will be on `main` after and we transition to `q₂`.
 * `ret k`: call continuation `k`. Each continuation has its own interpretation of the data in
   `stack` and sets up the data for the next continuation.
+
   * `ret (cons₁ fs k)`: `v :: KData` on `stack` and `ns` on `main`, and the next step expects
     `v` on `main` and `ns :: KData` on `stack`. So we have to do a little dance here with six
     reverse-moves using the `aux` stack to perform a three-point swap, each of which involves two
@@ -123,6 +126,7 @@ prove that only finitely many labels are accessible.) The labels are:
 
 In addition to these basic states, we define some additional subroutines that are used in the
 above:
+
 * `push'`, `peek'`, `pop'` are special versions of the builtins that use the local store to supply
   inputs and outputs.
 * `unrev`: special case `move false rev main` to move everything from `rev` back to `main`. Used as
@@ -406,7 +410,8 @@ def trCont : Cont → Cont'
   | Cont.comp c k => Cont'.comp c (trCont k)
   | Cont.fix c k => Cont'.fix c (trCont k)
 
-/-- We use `PosNum` to define the translation of binary natural numbers. A natural number is
+/--
+We use `PosNum` to define the translation of binary natural numbers. A natural number is
 represented as a little-endian list of `bit0` and `bit1` elements:
 
 ```
@@ -416,13 +421,15 @@ represented as a little-endian list of `bit0` and `bit1` elements:
     4 = [bit0, bit0, bit1]
 ```
 
-In particular, this representation guarantees no trailing `bit0`'s at the end of the list. -/
+In particular, this representation guarantees no trailing `bit0`'s at the end of the list.
+-/
 def trPosNum : PosNum → List Γ'
   | PosNum.one => [Γ'.bit1]
   | PosNum.bit0 n => Γ'.bit0 :: trPosNum n
   | PosNum.bit1 n => Γ'.bit1 :: trPosNum n
 
-/-- We use `Num` to define the translation of binary natural numbers. Positive numbers are
+/--
+We use `Num` to define the translation of binary natural numbers. Positive numbers are
 translated using `trPosNum`, and `trNum 0 = []`. So there are never any trailing `bit0`'s in
 a translated `Num`.
 
@@ -450,7 +457,8 @@ theorem trNat_zero : trNat 0 = [] := by rw [trNat, Nat.cast_zero]; rfl
 theorem trNat_default : trNat default = [] :=
   trNat_zero
 
-/-- Lists are translated with a `cons` after each encoded number.
+/--
+Lists are translated with a `cons` after each encoded number.
 For example:
 
 ```
@@ -465,7 +473,8 @@ def trList : List ℕ → List Γ'
   | [] => []
   | n::ns => trNat n ++ Γ'.cons :: trList ns
 
-/-- Lists of lists are translated with a `consₗ` after each encoded list.
+/--
+Lists of lists are translated with a `consₗ` after each encoded list.
 For example:
 
 ```

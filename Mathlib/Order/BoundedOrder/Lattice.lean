@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bounded lattices
 
@@ -26,7 +29,9 @@ public section
 
 variable {α : Type*}
 
-/-! ### Top, bottom element -/
+/-!
+# Top, bottom element
+-/
 
 section SemilatticeSupTop
 
@@ -73,7 +78,9 @@ lemma min_ne_bot {a b : α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : min a b ≠ ⊥ 
 
 end LinearOrder
 
-/-! ### Induction on `WellFoundedGT` and `WellFoundedLT` -/
+/-!
+# Induction on `WellFoundedGT` and `WellFoundedLT`
+-/
 
 section WellFounded
 

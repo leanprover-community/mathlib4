@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 public import Mathlib.Data.Fin.Tuple.NatAntidiagonal
 public import Mathlib.Data.Finset.Sym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Antidiagonal of functions as finsets
 
@@ -53,7 +56,7 @@ section AddCommMonoid
 variable [DecidableEq ι] [AddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ] {n : μ}
 
 /-!
-### `Fin d → μ`
+# `Fin d → μ`
 
 In this section, we define the antidiagonals in `Fin d → μ` by recursion on `d`. Note that this is
 computationally efficient, although probably not as efficient as `Finset.Nat.antidiagonalTuple`.
@@ -86,16 +89,18 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
         · intro hf
           exact ⟨_, _, hf, _, rfl, Fin.cons_self_tail f⟩ }
 
-/-- `finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
+/--
+`finAntidiagonal d n` is the type of `d`-tuples with sum `n`.
 
-TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`. -/
+TODO: deduplicate with the less general `Finset.Nat.antidiagonalTuple`.
+-/
 def finAntidiagonal (d : ℕ) (n : μ) : Finset (Fin d → μ) := finAntidiagonal.aux d n
 
 @[simp] lemma mem_finAntidiagonal {d : ℕ} {f : Fin d → μ} :
     f ∈ finAntidiagonal d n ↔ ∑ i, f i = n := (finAntidiagonal.aux d n).prop f
 
 /-!
-### `ι → μ`
+# `ι → μ`
 
 In this section, we transfer the antidiagonals in `Fin s.card → μ` to antidiagonals in `ι → s` by
 choosing an identification `s ≃ Fin s.card` and proving that the end result does not depend on that

@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Artinian.Ring
 public import Mathlib.RingTheory.Ideal.MinimalPrime.Noetherian
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime spectra of Noetherian and Artinian rings
 

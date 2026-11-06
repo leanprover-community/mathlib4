@@ -7,14 +7,18 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
-/-! # Isometric continuous functional calculus
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file adds a class for an *isometric* continuous functional calculus. This is separate from the
+/-!
+# Isometric continuous functional calculus
+
+This file adds a class for an _isometric_ continuous functional calculus. This is separate from the
 usual `ContinuousFunctionalCalculus` class because we prefer not to require a metric (or a norm) on
 the algebra for reasons discussed in the module documentation for that file.
 
 Of course, with a metric on the algebra and an isometric continuous functional calculus, the
-algebra must *be* a C⋆-algebra already. As such, it may seem like this class is not useful. However,
+algebra must _be_ a C⋆-algebra already. As such, it may seem like this class is not useful. However,
 the main purpose is to allow for the continuous functional calculus to be an isometry for the other
 scalar rings `ℝ` and `ℝ≥0` too.
 -/
@@ -24,7 +28,9 @@ public section
 local notation "σ" => spectrum
 local notation "σₙ" => quasispectrum
 
-/-! ### Isometric continuous functional calculus for unital algebras -/
+/-!
+# Isometric continuous functional calculus for unital algebras
+-/
 section Unital
 
 /-- An extension of the `ContinuousFunctionalCalculus` requiring that `cfcHom` is an isometry. -/
@@ -218,7 +224,9 @@ end SpectrumRestricts
 
 end Unital
 
-/-! ### Isometric continuous functional calculus for non-unital algebras -/
+/-!
+# Isometric continuous functional calculus for non-unital algebras
+-/
 
 section NonUnital
 
@@ -430,7 +438,8 @@ end QuasispectrumRestricts
 
 end NonUnital
 
-/-! ### Instances of isometric continuous functional calculi
+/-!
+# Instances of isometric continuous functional calculi
 
 The instances for `ℝ` and `ℂ` can be found in
 `Mathlib/Analysis/CStarAlgebra/ContinuousFunctionalCalculus/Basic.lean`, as those require an actual
@@ -471,7 +480,9 @@ end NonUnital
 
 end Instances
 
-/-! ### Properties specific to `ℝ≥0` -/
+/-!
+# Properties specific to `ℝ≥0`
+-/
 
 section NNReal
 
@@ -622,7 +633,9 @@ end NonUnital
 
 end NNReal
 
-/-! ### Non-unital instance for unital algebras -/
+/-!
+# Non-unital instance for unital algebras
+-/
 
 namespace IsometricContinuousFunctionalCalculus
 

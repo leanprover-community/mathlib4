@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Ray
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orientations of modules
 
@@ -18,7 +21,6 @@ This file defines orientations of modules.
 * `Orientation` is a type synonym for `Module.Ray` for the case where the module is that of
   alternating maps from a module to its underlying ring.  An orientation may be associated with an
   alternating map or with a basis.
-
 * `Module.Oriented` is a type class for a choice of orientation of a module that is considered
   the positive orientation.
 
@@ -29,8 +31,7 @@ that index type is a `Fintype` and there exists a basis of the same cardinality.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Orientation_(vector_space)
-
+* https://en.wikipedia.org/wiki/Orientation\_(vector\_space)
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 
 public import Mathlib.Topology.UniformSpace.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform isomorphisms
 
@@ -18,7 +21,6 @@ directions uniformly continuous. We denote uniform isomorphisms with the notatio
 
 * `UniformEquiv α β`: The type of uniform isomorphisms from `α` to `β`.
   This type can be denoted using the following notation: `α ≃ᵤ β`.
-
 -/
 
 @[expose] public section
@@ -67,12 +69,16 @@ protected def symm (h : α ≃ᵤ β) : β ≃ᵤ α where
   uniformContinuous_invFun := h.uniformContinuous_toFun
   toEquiv := h.toEquiv.symm
 
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+/--
+See Note \[custom simps projection\]. We need to specify this projection explicitly in this case,
+because it is a composition of multiple projections.
+-/
 def Simps.apply (h : α ≃ᵤ β) : α → β :=
   h
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.symm_apply (h : α ≃ᵤ β) : β → α :=
   h.symm
 

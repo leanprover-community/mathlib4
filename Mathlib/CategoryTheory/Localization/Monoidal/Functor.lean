@@ -10,8 +10,10 @@ public import Mathlib.CategoryTheory.Monoidal.Multifunctor
 public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.Tactic.CategoryTheory.Coherence
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Universal property of localized monoidal categories
 
 This file proves that, given a monoidal localization functor `L : C ⥤ D`, and a functor

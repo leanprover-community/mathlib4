@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extending an alternating map to the exterior algebra
 
@@ -21,7 +24,6 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 
 * `ExteriorAlgebra.lhom_ext`: linear maps from the exterior algebra agree if they agree on the
   exterior powers.
-
 -/
 
 @[expose] public section
@@ -146,10 +148,12 @@ def liftAlternatingEquiv : (∀ i, M [⋀^Fin i]→ₗ[R] N) ≃ₗ[R] ExteriorA
   right_inv F :=
     (liftAlternating_comp _ _).trans <| by rw [liftAlternating_ιMulti, LinearMap.comp_id]
 
-/-- To show that two linear maps from the exterior algebra agree, it suffices to show they agree on
+/--
+To show that two linear maps from the exterior algebra agree, it suffices to show they agree on
 the exterior powers.
 
-See note [partially-applied ext lemmas] -/
+See note \[partially-applied ext lemmas\]
+-/
 @[ext]
 theorem lhom_ext ⦃f g : ExteriorAlgebra R M →ₗ[R] N⦄
     (h : ∀ i, f.compAlternatingMap (ιMulti R i) = g.compAlternatingMap (ιMulti R i)) : f = g :=

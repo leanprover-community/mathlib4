@@ -15,10 +15,13 @@ import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Analytic part of the Lindemann-Weierstrass theorem
 
-The proof is partially based on [Jacobson, *Basic Algebra I, 4.12*][jacobson1974].
+The proof is partially based on \[Jacobson, _Basic Algebra I, 4.12_\]\[jacobson1974\].
 -/
 
 noncomputable section

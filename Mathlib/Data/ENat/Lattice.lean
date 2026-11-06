@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.Lattice.Nat
 public import Mathlib.Order.SuccPred.ENat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extended natural numbers form a complete linear order
 
@@ -17,7 +20,6 @@ This instance is not in `Data.ENat.Basic` to avoid dependency on `Finset`s.
 
 We also restate some lemmas about `WithTop` for `ENat` to have versions that use `Nat.cast` instead
 of `WithTop.some`.
-
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Additivity on measurable sets with finite measure
 
@@ -21,9 +24,9 @@ set functions with this stronger property to integrable (L1) functions.
 
 ## Main definitions
 
-- `FinMeasAdditive μ T`: the property that `T` is additive on measurable sets with finite measure.
+* `FinMeasAdditive μ T`: the property that `T` is additive on measurable sets with finite measure.
   For two such sets, `Disjoint s t → T (s ∪ t) = T s + T t`.
-- `DominatedFinMeasAdditive μ T C`: `FinMeasAdditive μ T ∧ ∀ s, ‖T s‖ ≤ C * μ.real s`.
+* `DominatedFinMeasAdditive μ T C`: `FinMeasAdditive μ T ∧ ∀ s, ‖T s‖ ≤ C * μ.real s`.
   This is the property needed to perform the extension from indicators to L1.
 
 ## Implementation notes

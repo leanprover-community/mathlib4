@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Function.L1Space.Integrable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Uniform integrability
 
@@ -40,6 +43,7 @@ formulate the martingale convergence theorem.
   and converges in measure.
 
 ## Tags
+
 uniformly integrable, uniformly absolutely continuous integral, Vitali convergence theorem
 -/
 
@@ -57,13 +61,15 @@ open ENNReal Filter Set
 variable {α β ι : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup β]
   {f g : ι → α → β} {p : ℝ≥0∞}
 
-/-- Uniform integrability in the measure theory sense.
+/--
+Uniform integrability in the measure theory sense.
 
 A sequence of functions `f` is said to be uniformly integrable if for all `ε > 0`, there exists
 some `δ > 0` such that for all sets `s` with measure less than `δ`, the Lp-norm of `f i`
 restricted to `s` is less than `ε`.
 
-Uniform integrability is also known as uniformly absolutely continuous integrals. -/
+Uniform integrability is also known as uniformly absolutely continuous integrals.
+-/
 def UnifIntegrable {_ : MeasurableSpace α} (f : ι → α → β) (p : ℝ≥0∞) (μ : Measure α) : Prop :=
   Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : μ s ≤ ε), eLpNorm (f i) p (μ.restrict s)) (𝓝 0) (𝓝 0)
 
@@ -104,9 +110,11 @@ end UniformIntegrable
 
 section UnifIntegrable
 
-/-! ### `UnifIntegrable`
+/-!
+# `UnifIntegrable`
 
-This section deals with uniform integrability in the measure theory sense. -/
+This section deals with uniform integrability in the measure theory sense.
+-/
 
 theorem unifIntegrable_iff_tendsto :
     UnifIntegrable f p μ ↔ Tendsto (fun ε ↦ ⨆ (i : ι) (s : Set α) (_ : MeasurableSet s)
@@ -673,7 +681,8 @@ end UnifIntegrable
 
 section UniformIntegrable
 
-/-! `UniformIntegrable`
+/-!
+`UniformIntegrable`
 
 In probability theory, uniform integrability normally refers to the condition that a sequence
 of function `(fₙ)` satisfies for all `ε > 0`, there exists some `C ≥ 0` such that

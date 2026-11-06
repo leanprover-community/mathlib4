@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.SpectralObject.Basic
 
 import Mathlib.CategoryTheory.Abelian.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kernel and cokernel of the differential of a spectral object
 
@@ -33,7 +36,8 @@ We also provide a constructor `X.liftCycles` for morphisms
 to cycles and `X.descOpcycles` for morphisms from opcycles.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*, II.4][verdier1996]
+
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_, II.4\]\[verdier1996\]
 -/
 
 @[expose] public section

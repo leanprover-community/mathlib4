@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disintegration of measures and kernels
 
@@ -32,7 +35,7 @@ disintegrated by some kernel, then `κ` itself is disintegrated by a kernel, nam
 
 ## See also
 
-`Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a **construction** of
+`Mathlib/Probability/Kernel/Disintegration/StandardBorel.lean` for a *construction* of
 disintegrating kernels.
 -/
 
@@ -44,7 +47,7 @@ open scoped ENNReal MeasureTheory Topology
 variable {α β Ω : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mΩ : MeasurableSpace Ω}
 
 /-!
-### Disintegration of measures
+# Disintegration of measures
 
 This section provides a predicate for a kernel to disintegrate a measure.
 -/
@@ -108,7 +111,7 @@ lemma IsCondKernel.isMarkovKernel [MeasurableSingletonClass α] (hρ : ∀ a, ρ
 end MeasureTheory.Measure
 
 /-!
-### Disintegration of kernels
+# Disintegration of kernels
 
 This section provides a predicate for a kernel to disintegrate a kernel. It also proves that if `κ`
 is an s-finite kernel from a countable `α` such that each measure `κ a` is disintegrated by some
@@ -119,7 +122,9 @@ kernel, then `κ` itself is disintegrated by a kernel, namely
 namespace ProbabilityTheory.Kernel
 variable (κ : Kernel α (β × Ω)) (κCond : Kernel (α × β) Ω)
 
-/-! #### Predicate for a kernel to disintegrate a kernel -/
+/-!
+# Predicate for a kernel to disintegrate a kernel
+-/
 
 /-- A kernel `κCond` is a conditional kernel for a kernel `κ` if it disintegrates it in the sense
 that `κ.fst ⊗ₖ κCond = κ`. -/
@@ -184,15 +189,19 @@ lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKer
     finiteness
 
 
-/-! #### Existence of a disintegrating kernel in a countable space -/
+/-!
+# Existence of a disintegrating kernel in a countable space
+-/
 
 section Countable
 variable [Countable α] (κCond : α → Kernel β Ω)
 
-/-- Auxiliary definition for `ProbabilityTheory.Kernel.condKernel`.
+/--
+Auxiliary definition for `ProbabilityTheory.Kernel.condKernel`.
 
 A conditional kernel for `κ : Kernel α (β × Ω)` where `α` is countable and `Ω` is a measurable
-space. -/
+space.
+-/
 noncomputable def condKernelCountable (h_atom : ∀ x y, x ∈ measurableAtom y → κCond x = κCond y) :
     Kernel (α × β) Ω where
   toFun p := κCond p.1 p.2

@@ -9,6 +9,9 @@ public meta import Lean.Meta.Tactic.ElimInfo
 public meta import Lean.Meta.Tactic.Simp.RegisterCommand
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Attributes for the `basify` tactic
 
@@ -28,7 +31,9 @@ register_simp_attr basify_simp
 
 namespace Mathlib.Tactic.Basify
 
-/-! ### The registries -/
+/-!
+# The registries
+-/
 
 /-- Information about an eliminator registered with `@[basify_elim]`. -/
 structure ElimEntry where
@@ -128,14 +133,16 @@ def analyzeOp (opName : Name) : MetaM (Array (Name × Name)) := do
         there is no operation for `basify` to register"
     return pairs
 
-/-- `@[basify_elim]` registers an eliminator for `basify` to case split with. The declaration must
+/--
+`@[basify_elim]` registers an eliminator for `basify` to case split with. The declaration must
 be usable as `cases x using foo`: it takes a motive, some minor premises and a single target. The
 type it destructs and the shape of each of its cases are read off from its type.
 
 A subtype is registered the same way, with an eliminator that has a single minor premise. It must
 present the value through a properly typed constructor rather than `Subtype.mk`: `ℝ≥0` and `ℕ+` are
 semireducible definitions, so a goal mentioning `⟨x, hx⟩ : ℝ≥0` is not type-correct at the
-transparency `simp` checks at. See `NNReal.recToNNReal`, which uses `Real.toNNReal`. -/
+transparency `simp` checks at. See `NNReal.recToNNReal`, which uses `Real.toNNReal`.
+-/
 syntax (name := basifyElim) "basify_elim" : attr
 
 initialize registerBuiltinAttribute {
@@ -147,7 +154,8 @@ initialize registerBuiltinAttribute {
     elimExt.add (← MetaM.run' <| analyzeElim declName) kind
 }
 
-/-- `@[basify_op]` registers an operation of a registered type as one that `basify` knows
+/--
+`@[basify_op]` registers an operation of a registered type as one that `basify` knows
 how to see inside of, by tagging the lemma that relates it to the corresponding operation of the
 underlying type, such as `ENNReal.coe_add : ↑(a + b) = ↑a + ↑b`. Anything else of a registered type
 is an atom: `basify` generalizes it and case splits on it rather than descending into it.
@@ -155,7 +163,8 @@ is an atom: `basify` generalizes it and case splits on it rather than descending
 The lemma is also added to `basify_simp`, reversed if `←` is given, so that what `basify` looks
 inside of it can also rewrite through. That rules out a lemma unusable as a rewrite:
 `ENNReal.coe_ofNat` has a `no_index`ed right-hand side that would match everything when reversed,
-so `Mathlib/Tactic/Basify/ENNReal.lean` restates it. -/
+so `Mathlib/Tactic/Basify/ENNReal.lean` restates it.
+-/
 syntax (name := basifyOp) "basify_op" (" ←")? : attr
 
 initialize registerBuiltinAttribute {

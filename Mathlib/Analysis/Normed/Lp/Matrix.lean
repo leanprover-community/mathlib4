@@ -9,6 +9,9 @@ module
 public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.LinearAlgebra.Determinant
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrices are isomorphic with linear maps between Lp spaces
 

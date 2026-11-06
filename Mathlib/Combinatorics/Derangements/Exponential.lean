@@ -11,6 +11,9 @@ public import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Data.Nat.Cast.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Derangement exponential series
 

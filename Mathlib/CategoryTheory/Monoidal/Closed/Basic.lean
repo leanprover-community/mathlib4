@@ -12,12 +12,16 @@ public import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 public import Mathlib.CategoryTheory.Monoidal.Functor
 public import Mathlib.Tactic.BDSimp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Closed monoidal categories
 
 Define (right) closed objects and (right) closed monoidal categories.
 
 ## TODO
+
 Some theorems about Cartesian closed categories
 should be generalised and moved to this file.
 -/
@@ -373,9 +377,11 @@ section Enriched
 used to equip `C` with the structure of a `C`-category -/
 def id (x : C) [Closed x] : 𝟙_ C ⟶ (ihom x).obj x := curry (ρ_ x).hom
 
-/-- The *uncurried* composition morphism
-  `x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
-The `C`-composition morphism will be defined as the adjoint transpose of this map. -/
+/--
+The _uncurried_ composition morphism
+`x ⊗ (hom(x, y) ⊗ hom(y, z)) ⟶ (x ⊗ hom(x, y)) ⊗ hom(y, z) ⟶ y ⊗ hom(y, z) ⟶ z`.
+The `C`-composition morphism will be defined as the adjoint transpose of this map.
+-/
 def compTranspose (x y z : C) [Closed x] [Closed y] : x ⊗ (ihom x).obj y ⊗ (ihom y).obj z ⟶ z :=
   (α_ x ((ihom x).obj y) ((ihom y).obj z)).inv ≫
     (ihom.ev x).app y ▷ ((ihom y).obj z) ≫ (ihom.ev y).app z
@@ -402,9 +408,10 @@ lemma comp_eq (x y z : C) [Closed x] [Closed y] : comp x y z = curry (compTransp
 
 /-!
 The proofs of associativity and unitality use the following outline:
-  1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
-  2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
-  3. Conclude with simp
+
+1. Take adjoint transpose on each side of the equality (`uncurry_injective`)
+2. Do whatever rewrites/simps are necessary to apply `uncurry_curry`
+3. Conclude with simp
 -/
 
 /-- Left unitality of the enriched structure -/

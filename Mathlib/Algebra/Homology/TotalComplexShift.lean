@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.Shift
 public import Mathlib.Algebra.Homology.TotalComplex
 public import Mathlib.Tactic.Linarith
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Behaviour of the total complex with respect to shifts
 
 There are two ways to shift objects in `HomologicalComplex₂ C (up ℤ) (up ℤ)`:
+
 * by shifting the first indices (and changing signs of horizontal differentials),
   which corresponds to the shift by `ℤ` on `CochainComplex (CochainComplex C ℤ) ℤ`.
 * by shifting the second indices (and changing signs of vertical differentials).
@@ -33,7 +37,6 @@ Depending on the order of the "composition" of the two isomorphisms
 two ways to identify `((shiftFunctor₁ C x).obj ((shiftFunctor₂ C y).obj K)).total (up ℤ)`
 and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShift₂Iso` shows that
 these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
-
 -/
 
 @[expose] public section

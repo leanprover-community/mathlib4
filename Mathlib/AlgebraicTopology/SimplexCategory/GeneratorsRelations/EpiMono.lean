@@ -7,7 +7,11 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.Basic
 
-/-! # Epi-mono factorization in the simplex category presented by generators and relations
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Epi-mono factorization in the simplex category presented by generators and relations
 
 This file aims to establish that there is a nice epi-mono factorization in `SimplexCategoryGenRel`.
 More precisely, we introduce two morphism properties `P_δ` and `P_σ` that
@@ -15,7 +19,6 @@ single out morphisms that are compositions of `δ i` (resp. `σ i`).
 
 The main result of this file is `exists_P_σ_P_δ_factorization`, which asserts that every
 morphism as a decomposition of a `P_σ` followed by a `P_δ`.
-
 -/
 
 @[expose] public section
@@ -140,8 +143,10 @@ private lemma factor_δ_σ {n : ℕ} (i : Fin (n + 1)) (i' : Fin (n + 2)) :
     · exact ⟨_, _, _, P_σ.id_mem _, P_δ.id_mem _, by simp [h]⟩
     · exact ⟨_, _, _, P_σ.σ _, P_δ.δ _, h⟩
 
-/-- An auxiliary lemma that shows there exists a factorization as a P_δ followed by a P_σ for
-morphisms of the form `P_δ ≫ σ`. -/
+/--
+An auxiliary lemma that shows there exists a factorization as a P\_δ followed by a P\_σ for
+morphisms of the form `P_δ ≫ σ`.
+-/
 private lemma factor_P_δ_σ {n : ℕ} (i : Fin (n + 1)) {x : SimplexCategoryGenRel}
     (f : x ⟶ mk (n + 1)) (hf : P_δ f) : ∃ (z : SimplexCategoryGenRel) (e : x ⟶ z) (m : z ⟶ mk n)
       (_ : P_σ e) (_ : P_δ m), f ≫ σ i = e ≫ m := by

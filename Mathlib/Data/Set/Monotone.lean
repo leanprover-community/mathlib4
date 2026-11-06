@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Set.Function
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monotone functions over sets
 -/
@@ -20,7 +23,9 @@ open Equiv Equiv.Perm Function
 namespace Set
 
 
-/-! ### Congruence lemmas for monotonicity and antitonicity -/
+/-!
+# Congruence lemmas for monotonicity and antitonicity
+-/
 section Order
 
 variable {s : Set α} {f₁ f₂ : α → β} [Preorder α] [Preorder β]
@@ -56,7 +61,9 @@ theorem EqOn.congr_strictAntiOn (h : s.EqOn f₁ f₂) : StrictAntiOn f₁ s ↔
 
 end Order
 
-/-! ### Monotonicity lemmas -/
+/-!
+# Monotonicity lemmas
+-/
 section Mono
 
 variable {s s₂ : Set α} {f : α → β} [Preorder α] [Preorder β]
@@ -107,7 +114,9 @@ end Set
 
 open Function
 
-/-! ### Monotone -/
+/-!
+# Monotone
+-/
 namespace Monotone
 
 variable [Preorder α] [Preorder β] {f : α → β}

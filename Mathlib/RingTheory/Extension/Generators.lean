@@ -10,33 +10,36 @@ public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Generators of algebras
 
 ## Main definition
 
-- `Algebra.Generators`: Given a type `ι` of variables, a family of generators of an `R`-algebra
+* `Algebra.Generators`: Given a type `ι` of variables, a family of generators of an `R`-algebra
   `S` consists of
-  1. `val : ι → S`: The assignment of each variable to a value.
-  2. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
-     write `R[X]` for `R[ι]`.
 
-- `Algebra.Generators.Hom`: Given a commuting square
-  ```
-  R --→ P = R[X] ---→ S
-  |                   |
-  ↓                   ↓
-  R' -→ P' = R'[X'] → S
-  ```
-  A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
+1. `val : ι → S`: The assignment of each variable to a value.
+2. `σ`: A set-theoretic section of the induced `R`-algebra homomorphism `R[X] → S`, where we
+   write `R[X]` for `R[ι]`.
 
-- `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
+* `Algebra.Generators.Hom`: Given a commuting square
+
+```
+R --→ P = R[X] ---→ S
+|                   |
+↓                   ↓
+R' -→ P' = R'[X'] → S
+```
+
+A hom between `P` and `P'` is an assignment `X → P'` such that the arrows commute.
+
+* `Algebra.Generators.Cotangent`: The cotangent space w.r.t. `P = R[X] → S`, i.e. the
   space `I/I²` with `I` being the kernel of the presentation.
-
-- `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
+* `Algebra.Generators.mvPolynomial`: The canonical `R`-generators of the polynomial algebra
   `MvPolynomial ι R`, indexed by `ι` via the variables `X`.
-
 -/
 
 @[expose] public section
@@ -47,9 +50,12 @@ open TensorProduct MvPolynomial
 
 variable (R : Type u) (S : Type v) (ι : Type w) [CommRing R] [CommRing S] [Algebra R S]
 
-/-- Given a type `ι` of variables, a family of generators of an `R`-algebra `S` consists of
+/--
+Given a type `ι` of variables, a family of generators of an `R`-algebra `S` consists of
+
 1. `val : ι → S`: The assignment of each variable to a value in `S`.
-2. `σ`: A section of `R[X] → S`, where we write `R[X]` for `R[ι]`. -/
+2. `σ`: A section of `R[X] → S`, where we write `R[X]` for `R[ι]`.
+-/
 structure Algebra.Generators where
   /-- The assignment of each variable to a value in `S`. -/
   val : ι → S
@@ -78,7 +84,9 @@ instance : Algebra P.Ring S := P.algebra
 /-- The designated section w.r.t. a family of generators. -/
 def σ : S → P.Ring := P.σ'
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.σ : S → P.Ring := P.σ
 
 initialize_simps_projections Algebra.Generators (σ' → σ)
@@ -388,11 +396,12 @@ section
 variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
 
-/-- Given a commuting square
-R --→ P = R[X] ---→ S
+/--
+Given a commuting square
+R --→ P = R\[X\] ---→ S
 |                   |
 ↓                   ↓
-R' -→ P' = R'[X'] → S
+R' -→ P' = R'\[X'\] → S
 A hom between `P` and `P'` is an assignment `I → P'` such that the arrows commute.
 Also see `Algebra.Generators.Hom.equivAlgHom`.
 -/

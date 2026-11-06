@@ -10,12 +10,15 @@ public import Mathlib.Order.CompleteLattice.Basic
 
 import Mathlib.Tactic.Variable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of quantales
 
 Quantales are the non-commutative generalization of locales/frames and as such are linked
 to point-free topology and order theory. Applications are found throughout logic,
-quantum mechanics, and computer science (see e.g. [Vickers1989] and [Mulvey1986]).
+quantum mechanics, and computer science (see e.g. \[Vickers1989\] and \[Mulvey1986\]).
 
 The most general definition of quantale occurring in literature, is that a quantale is a semigroup
 distributing over a complete sup-semilattice. In our definition below, we use the fact that
@@ -34,29 +37,24 @@ integral, and involutive quantales easier to add on later.
 * `IsQuantale` and `IsAddQuantale` : Typeclass mixin for a (additive) semigroup distributing
   over a complete lattice, i.e satisfying `x * (sSup s) = ⨆ y ∈ s, x * y` and
   `(sSup s) * y = ⨆ x ∈ s, x * y`;
-
 * `Quantale` and `AddQuantale` : Structures serving as a typeclass alias, so one can write
   `variable? [Quantale α]` instead of `variable [Semigroup α] [CompleteLattice α] [IsQuantale α]`,
   and similarly for the additive variant.
-
 * `leftMulResiduation`, `rightMulResiduation`, `leftAddResiduation`, `rightAddResiduation` :
   Defining the left- and right- residuations of the semigroup (see notation below).
-
 * Finally, we provide basic distributivity laws for sSup into iSup and sup, monotonicity of
   the semigroup operator, and basic equivalences for left- and right-residuation.
 
 ## Notation
 
 * `x ⇨ₗ y` : `sSup {z | z * x ≤ y}`, the `leftMulResiduation` of `y` over `x`;
-
 * `x ⇨ᵣ y` : `sSup {z | x * z ≤ y}`, the `rightMulResiduation` of `y` over `x`;
 
 ## References
 
-<https://en.wikipedia.org/wiki/Quantale>
-<https://encyclopediaofmath.org/wiki/Quantale>
-<https://ncatlab.org/nlab/show/quantale>
-
+[https://en.wikipedia.org/wiki/Quantale](https://en.wikipedia.org/wiki/Quantale)
+[https://encyclopediaofmath.org/wiki/Quantale](https://encyclopediaofmath.org/wiki/Quantale)
+[https://ncatlab.org/nlab/show/quantale](https://ncatlab.org/nlab/show/quantale)
 -/
 
 @[expose] public section

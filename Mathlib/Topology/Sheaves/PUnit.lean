@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Sheaves.SheafCondition.Sites
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Presheaves on `PUnit`
 

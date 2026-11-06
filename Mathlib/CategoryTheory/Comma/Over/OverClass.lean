@@ -7,10 +7,13 @@ module
 
 public import Mathlib.CategoryTheory.Comma.Over.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for `S`-objects and `S`-morphisms
 
-**Warning**: This is not usually how typeclasses should be used.
+*Warning*: This is not usually how typeclasses should be used.
 This is only a sensible approach when the morphism is considered as a structure on `X`,
 typically in algebraic geometry.
 
@@ -19,11 +22,11 @@ This is analogous to how we view ringhoms as structures via the `Algebra` typecl
 For other applications use unbundled arrows or `CategoryTheory.Over`.
 
 ## Main definition
-- `CategoryTheory.OverClass`: `OverClass X S` equips `X` with a morphism into `S`.
-  `X ↘ S : X ⟶ S` is the structure morphism.
-- `CategoryTheory.HomIsOver`:
-  `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 
+* `CategoryTheory.OverClass`: `OverClass X S` equips `X` with a morphism into `S`.
+  `X ↘ S : X ⟶ S` is the structure morphism.
+* `CategoryTheory.HomIsOver`:
+  `HomIsOver f S` asserts that `f` commutes with the structure morphisms.
 -/
 
 @[expose] public section
@@ -53,7 +56,9 @@ def over (X S : C) (_ : OverClass X S := by infer_instance) : X ⟶ S := OverCla
 /-- The structure morphism `X ↘ S : X ⟶ S` given `OverClass X S`. -/
 notation:90 X:90 " ↘ " S:90 => CategoryTheory.over X S inferInstance
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def OverClass.Simps.over (X S : C) [OverClass X S] : X ⟶ S := X ↘ S
 
 initialize_simps_projections OverClass (hom → over)
@@ -65,7 +70,9 @@ and that `S` is (uniquely) inferable from the structure of `X`.
 -/
 class CanonicallyOverClass (X : C) (S : semiOutParam C) extends OverClass X S where
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def CanonicallyOverClass.Simps.over (X S : C) [CanonicallyOverClass X S] : X ⟶ S := X ↘ S
 
 initialize_simps_projections CanonicallyOverClass (hom → over)

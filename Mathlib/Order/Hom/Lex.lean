@@ -10,6 +10,9 @@ public import Mathlib.Order.Prod.Lex.Basic
 public import Mathlib.Order.RelIso.Set
 public import Mathlib.Order.Sum.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lexicographic order and order isomorphisms
 
@@ -27,7 +30,9 @@ open Set
 
 variable {α : Type*}
 
-/-! ### Relation isomorphism -/
+/-!
+# Relation isomorphism
+-/
 
 namespace RelIso
 
@@ -75,7 +80,9 @@ theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumComp
 
 end RelIso
 
-/-! ### Order isomorphism -/
+/-!
+# Order isomorphism
+-/
 
 namespace OrderIso
 
@@ -145,7 +152,9 @@ theorem sumLexIicIoi_symm_apply_Ioi (a : Ioi x) : (sumLexIicIoi x).symm a = Sum.
 
 end OrderIso
 
-/-! ### Degenerate products -/
+/-!
+# Degenerate products
+-/
 
 namespace Prod.Lex
 variable (α β : Type*)
@@ -190,10 +199,12 @@ def prodLexAssoc (α β γ : Type*)
       Equiv.prodAssoc_apply]
     grind [EmbeddingLike.apply_eq_iff_eq, ofLex_toLex]
 
-/-- `Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
+/--
+`Equiv.sumProdDistrib` promoted to an order isomorphism of lexicographic products.
 
 Right distributivity doesn't hold. A counterexample is `ℕ ×ₗ (Unit ⊕ₗ Unit) ≃o ℕ`
-which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ ℕ`. -/
+which is not isomorphic to `ℕ ×ₗ Unit ⊕ₗ ℕ ×ₗ Unit ≃o ℕ ⊕ₗ ℕ`.
+-/
 @[simps!]
 def sumLexProdLexDistrib (α β γ : Type*)
     [Preorder α] [Preorder β] [Preorder γ] : (α ⊕ₗ β) ×ₗ γ ≃o α ×ₗ γ ⊕ₗ β ×ₗ γ where

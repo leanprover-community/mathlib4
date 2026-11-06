@@ -11,6 +11,9 @@ public import Mathlib.SetTheory.Cardinal.ToNat
 
 import Mathlib.SetTheory.Ordinal.Principal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Omega, aleph, and beth functions
 
@@ -32,12 +35,12 @@ and "preliminary" versions which include finite values and are sometimes more co
 
 The following notations are scoped to the `Ordinal` namespace.
 
-- `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`.
+* `ω_ o` is notation for `Ordinal.omega o`. `ω₁` is notation for `ω_ 1`.
 
 The following notations are scoped to the `Cardinal` namespace.
 
-- `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
-- `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
+* `ℵ_ o` is notation for `aleph o`. `ℵ₁` is notation for `ℵ_ 1`.
+* `ℶ_ o` is notation for `beth o`. The value `ℶ_ 1` equals the continuum `𝔠`, which is defined in
   `Mathlib/SetTheory/Cardinal/Continuum.lean`.
 -/
 
@@ -51,13 +54,17 @@ open Function Set Cardinal Equiv Order Ordinal
 
 universe u v w
 
-/-! ### Omega ordinals -/
+/-!
+# Omega ordinals
+-/
 
 namespace Ordinal
 
-/-- An ordinal is initial when it is the first ordinal with a given cardinality.
+/--
+An ordinal is initial when it is the first ordinal with a given cardinality.
 
-This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`. -/
+This is written as `o.card.ord = o`, i.e. `o` is the smallest ordinal with cardinality `o.card`.
+-/
 def IsInitial (o : Ordinal) : Prop :=
   o.card.ord = o
 
@@ -115,10 +122,12 @@ def isInitialIso : {x // IsInitial x} ≃o Cardinal where
   right_inv x := card_ord x
   map_rel_iff' {a _} := a.2.card_le_card
 
-/-- The "pre-omega" function gives the initial ordinals listed by their ordinal index.
+/--
+The "pre-omega" function gives the initial ordinals listed by their ordinal index.
 `preOmega n = n`, `preOmega ω = ω`, `preOmega (ω + 1) = ω₁`, etc.
 
-For the more common omega function skipping over finite ordinals, see `Ordinal.omega`. -/
+For the more common omega function skipping over finite ordinals, see `Ordinal.omega`.
+-/
 def preOmega : Ordinal.{u} ↪o Ordinal.{u} where
   toFun x := Order.enum _ isCofinal_setOfPred_isInitial x
   inj' _ _ h := Subtype.coe_injective.comp (OrderIso.injective _) h
@@ -196,12 +205,14 @@ theorem omega0_le_preOmega_iff {x : Ordinal} : ω ≤ preOmega x ↔ ω ≤ x :=
 theorem omega0_lt_preOmega_iff {x : Ordinal} : ω < preOmega x ↔ ω < x := by
   conv_lhs => rw [← preOmega_omega0, preOmega_lt_preOmega]
 
-/-- The `omega` function gives the infinite initial ordinals listed by their ordinal index.
+/--
+The `omega` function gives the infinite initial ordinals listed by their ordinal index.
 `omega 0 = ω`, `omega 1 = ω₁` is the first uncountable ordinal, and so on.
 
 This is not to be confused with the first infinite ordinal `Ordinal.omega0`.
 
-For a version including finite ordinals, see `Ordinal.preOmega`. -/
+For a version including finite ordinals, see `Ordinal.preOmega`.
+-/
 def omega : Ordinal ↪o Ordinal :=
   (OrderEmbedding.addLeft ω).trans preOmega
 
@@ -279,14 +290,18 @@ theorem preOmega_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preOmega o 
 
 end Ordinal
 
-/-! ### Aleph cardinals -/
+/-!
+# Aleph cardinals
+-/
 
 namespace Cardinal
 
-/-- The "pre-aleph" function gives the cardinals listed by their ordinal index. `preAleph n = n`,
+/--
+The "pre-aleph" function gives the cardinals listed by their ordinal index. `preAleph n = n`,
 `preAleph ω = ℵ₀`, `preAleph (ω + 1) = succ ℵ₀`, etc.
 
-For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`. -/
+For the more common aleph function skipping over finite cardinals, see `Cardinal.aleph`.
+-/
 def preAleph : Ordinal.{u} ≃o Cardinal.{u} :=
   (enum _ isCofinal_setOfPred_isInitial).trans isInitialIso
 
@@ -401,10 +416,12 @@ theorem _root_.Ordinal.card_le_preAleph_iff {x y : Ordinal} :
     x.card ≤ preAleph y ↔ x < preOmega (y + 1) := by
   rw [card_le_iff, succ_preAleph, ord_preAleph]
 
-/-- The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
+/--
+The `aleph` function gives the infinite cardinals listed by their ordinal index. `aleph 0 = ℵ₀`,
 `aleph 1 = succ ℵ₀` is the first uncountable cardinal, and so on.
 
-For a version including finite cardinals, see `Cardinal.preAleph`. -/
+For a version including finite cardinals, see `Cardinal.preAleph`.
+-/
 def aleph : Ordinal ↪o Cardinal :=
   (OrderEmbedding.addLeft ω).trans preAleph
 
@@ -537,15 +554,19 @@ theorem countable_Iio_of_lt_omega_one {o : Ordinal} (h : o < ω₁) : (Iio o).Co
 
 end Cardinal
 
-/-! ### Beth cardinals -/
+/-!
+# Beth cardinals
+-/
 
 namespace Cardinal
 
-/-- The "pre-beth" function is defined so that `preBeth o` is the supremum of `2 ^ preBeth a` for
+/--
+The "pre-beth" function is defined so that `preBeth o` is the supremum of `2 ^ preBeth a` for
 `a < o`. This implies `beth 0 = 0`, `beth (succ o) = 2 ^ beth o`, and that for a limit ordinal `o`,
 `beth o` is the supremum of `beth a` for `a < o`.
 
-For the usual function starting at `ℵ₀`, see `Cardinal.beth`. -/
+For the usual function starting at `ℵ₀`, see `Cardinal.beth`.
+-/
 def preBeth (o : Ordinal.{u}) : Cardinal.{u} :=
   ⨆ a : Iio o, 2 ^ preBeth a
 termination_by o
@@ -671,13 +692,15 @@ theorem lift_preBeth (o : Ordinal) : lift.{v} (preBeth o) = preBeth (Ordinal.lif
       rw [mem_Iio, Ordinal.lift_lt] at hi
       exact ⟨⟨i, hi⟩, IH _ hi⟩
 
-/-- The Beth function is defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ beth o`, and that for a
+/--
+The Beth function is defined so that `beth 0 = ℵ₀`, `beth (succ o) = 2 ^ beth o`, and that for a
 limit ordinal `o`, `beth o` is the supremum of `beth a` for `a < o`.
 
 Assuming the generalized continuum hypothesis, which is undecidable in ZFC, we have `ℶ_ o = ℵ_ o`
 for all ordinals.
 
-For a version which starts at zero, see `Cardinal.preBeth`. -/
+For a version which starts at zero, see `Cardinal.preBeth`.
+-/
 def beth (o : Ordinal.{u}) : Cardinal.{u} :=
   preBeth (ω + o)
 
@@ -754,7 +777,9 @@ theorem preBeth_of_omega0_sq_le {o : Ordinal} (ho : ω ^ 2 ≤ o) : preBeth o = 
   apply left_lt_opow one_lt_omega0
   simp
 
-/-! ### Simp lemmas with `lift` -/
+/-!
+# Simp lemmas with `lift`
+-/
 
 section lift
 variable {c : Cardinal.{u}} {n : ℕ}

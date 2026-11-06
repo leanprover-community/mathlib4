@@ -15,6 +15,9 @@ public import Mathlib.FieldTheory.Perfect
 
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite fields
 
@@ -30,10 +33,12 @@ cyclic group, as well as the fact that every finite integral domain is a field
 
 1. `Fintype.card_units`: The unit group of a finite field has cardinality `q - 1`.
 2. `sum_pow_units`: The sum of `x^i`, where `x` ranges over the units of `K`, is
-  - `q-1` if `q-1 ∣ i`
-  - `0`   otherwise
+
+* `q-1` if `q-1 ∣ i`
+* `0`   otherwise
+
 3. `FiniteField.card`: The cardinality `q` is a power of the characteristic of `K`.
-  See `FiniteField.card'` for a variant.
+   See `FiniteField.card'` for a variant.
 
 ## Notation
 
@@ -45,7 +50,6 @@ and `q` is notation for the cardinality of `K`.
 While `Fintype Kˣ` can be inferred from `Fintype K` in the presence of `DecidableEq K`,
 in this file we take the `Fintype Kˣ` argument directly to reduce the chance of typeclass
 diamonds, as `Fintype` carries data.
-
 -/
 
 @[expose] public section

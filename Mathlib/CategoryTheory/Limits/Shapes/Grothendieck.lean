@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Grothendieck
 public import Mathlib.CategoryTheory.Limits.HasLimits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Co)limits on the (strict) Grothendieck Construction
 
@@ -19,7 +22,6 @@ public import Mathlib.CategoryTheory.Limits.HasLimits
   "fibered colimits", i.e. of applying the colimit to each fiber of the functor.
 * Derives `HasColimitsOfShape (Grothendieck F) H` with `F : C ⥤ Cat` from the presence of colimits
   on each fiber shape `F.obj X` and on the base category `C`.
-
 -/
 
 @[expose] public section

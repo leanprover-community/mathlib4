@@ -8,21 +8,25 @@ module
 public import Mathlib.Data.Fintype.EquivFin
 public import Mathlib.Data.Fintype.Inv
 
-/-! # Equivalence between fintypes
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Equivalence between fintypes
 
 This file contains some basic results on equivalences where one or both
 sides of the equivalence are `Fintype`s.
 
 ## Main definitions
 
-- `Function.Embedding.toEquivRange`: computably turn an embedding of a
+* `Function.Embedding.toEquivRange`: computably turn an embedding of a
   fintype into an `Equiv` of the domain to its range
-- `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
+* `Equiv.Perm.viaFintypeEmbedding : Perm α → (α ↪ β) → Perm β` extends the domain of
   a permutation, fixing everything outside the range of the embedding
 
 ## Implementation details
 
-- `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
+* `Function.Embedding.toEquivRange` uses a computable inverse, but one that has poor
   computational performance, since it operates by exhaustive search over the input `Fintype`s.
 -/
 
@@ -108,11 +112,13 @@ noncomputable def setDiffEquiv {s t : Set α} [Fintype s] [Fintype t]
   exact ((Fintype.card_eq (_F := (_)) (_G := (_))).mp hc).some
 
 open scoped Classical in
-/-- If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
+/--
+If `e` is an equivalence between two subtypes of a type `α`, `e.toCompl`
 is an equivalence between the complement of those subtypes.
 
 See also `Equiv.compl`, for a computable version when a term of type
-`{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known. -/
+`{e' : α ≃ α // ∀ x : {x // p x}, e' x = e x}` is known.
+-/
 noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
     (e : { x | p x } ≃ { x | q x }) : { x | ¬p x } ≃ { x | ¬q x } :=
   let sp : Set α := {x | p x}
@@ -128,10 +134,12 @@ noncomputable def toCompl {p q : α → Prop} [Finite {x | p x}]
 
 variable {p q : α → Prop} [DecidablePred p] [DecidablePred q] [Finite {x | p x}]
 
-/-- If `e` is an equivalence between two subtypes of a type `α`, `e.extendSubtype`
+/--
+If `e` is an equivalence between two subtypes of a type `α`, `e.extendSubtype`
 is a permutation of `α` acting like `e` on the subtypes and doing something arbitrary outside.
 
-Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used instead. -/
+Note that when `p = q`, `Equiv.Perm.subtypeCongr e (Equiv.refl _)` can be used instead.
+-/
 noncomputable abbrev extendSubtype (e : { x // p x } ≃ { x // q x }) : Perm α :=
   subtypeCongr e e.toCompl
 

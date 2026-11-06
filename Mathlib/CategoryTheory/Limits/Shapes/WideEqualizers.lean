@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wide equalizers and wide coequalizers
 
@@ -22,6 +25,7 @@ nonempty.
 * `WalkingParallelFamily` is the indexing category used for wide (co)equalizer diagrams
 * `parallelFamily` is a functor from `WalkingParallelFamily` to our category `C`.
 * a `Trident` is a cone over a parallel family.
+
   * there is really only one interesting morphism in a trident: the arrow from the vertex of the
     trident to the domain of f and g. It is called `Trident.ι`.
 * a `wideEqualizer` is now just a `limit (parallelFamily f)`
@@ -33,13 +37,14 @@ Each of these has a dual.
 * `wideEqualizer.ι_mono` states that every wideEqualizer map is a monomorphism
 
 ## Implementation notes
+
 As with the other special shapes in the limits library, all the definitions here are given as
 `abbrev`s of the general statements for limits, so all the `simp` lemmas and theorems about
 general limits can be used.
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 1*][borceux-vol1]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 1_\]\[borceux-vol1\]
 -/
 
 @[expose] public section
@@ -409,14 +414,16 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
   (Category.assoc _ _ _).symm
 
 set_option backward.isDefEq.respectTransparency false in
-/-- This is a helper construction that can be useful when verifying that a category has certain wide
-    equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (fun j ↦ F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
-    we get a cone on `F`.
+/--
+This is a helper construction that can be useful when verifying that a category has certain wide
+equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
+`parallelFamily (fun j ↦ F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
+we get a cone on `F`.
 
-    If you're thinking about using this, have a look at
-    `hasWideEqualizers_of_hasLimit_parallelFamily`, which you may find to be an easier way of
-    achieving your goal. -/
+If you're thinking about using this, have a look at
+`hasWideEqualizers_of_hasLimit_parallelFamily`, which you may find to be an easier way of
+achieving your goal.
+-/
 def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j)) :
     Cone F where
   pt := t.pt
@@ -425,14 +432,16 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
       naturality := fun j j' g => by cases g <;> cat_disch }
 
 set_option backward.isDefEq.respectTransparency false in
-/-- This is a helper construction that can be useful when verifying that a category has all
-    coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (fun j ↦ F.map (line j))`, and a cotrident on `fun j ↦ F.map (line j)` we get a
-    cocone on `F`.
+/--
+This is a helper construction that can be useful when verifying that a category has all
+coequalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
+`parallelFamily (fun j ↦ F.map (line j))`, and a cotrident on `fun j ↦ F.map (line j)` we get a
+cocone on `F`.
 
-    If you're thinking about using this, have a look at
-    `hasWideCoequalizers_of_hasColimit_parallelFamily`, which you may find to be an easier way
-    of achieving your goal. -/
+If you're thinking about using this, have a look at
+`hasWideCoequalizers_of_hasColimit_parallelFamily`, which you may find to be an easier way
+of achieving your goal.
+-/
 def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j => F.map (line j)) :
     Cocone F where
   pt := t.pt

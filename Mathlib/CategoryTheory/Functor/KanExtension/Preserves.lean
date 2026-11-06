@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of Kan extensions
 
@@ -18,7 +21,6 @@ When the Kan extension is pointwise, it suffices that `G` preserves (co)limits o
 diagrams.
 
 We introduce the dual typeclass `G.PreservesRightKanExtension`.
-
 -/
 
 @[expose] public section

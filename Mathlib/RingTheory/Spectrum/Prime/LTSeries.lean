@@ -7,15 +7,19 @@ module
 
 public import Mathlib.RingTheory.Ideal.KrullsHeightTheorem
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about `LTSeries` in the prime spectrum
 
 ## Main results
 
-* `PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last`: Let $R$ be a Noetherian ring,
-  $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a chain of primes, $x \in \mathfrak{p}_n$.
-  Then we can find another chain of primes $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that
-  $x \in \mathfrak{q}_1$, $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$.
+* `PrimeSpectrum.exist_ltSeries_mem_one_of_mem_last`: Let $`R` be a Noetherian ring,
+  $`\mathfrak{p}_0 < \dots < \mathfrak{p}_n` be a chain of primes, $`x \in \mathfrak{p}_n`. Then we
+  can find another chain of primes $`\mathfrak{q}_0 < \dots < \mathfrak{q}_n` such that
+  $`x \in \mathfrak{q}_1`, $`\mathfrak{p}_0 = \mathfrak{q}_0` and
+  $`\mathfrak{p}_n = \mathfrak{q}_n`.
 -/
 
 public section
@@ -73,10 +77,12 @@ theorem exist_mem_one_of_mem_two {p₁ p₀ p₂ : PrimeSpectrum R}
     ⟨(p₂.1.under_map_of_isLocalizationAtPrime hq.le).le hxq, e.symm.lt_iff_lt.mp h₀, hq⟩
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Let $R$ be a Noetherian ring, $\mathfrak{p}_0 < \dots < \mathfrak{p}_n$ be a
-  chain of primes, $x \in \mathfrak{p}_n$. Then we can find another chain of primes
-  $\mathfrak{q}_0 < \dots < \mathfrak{q}_n$ such that $x \in \mathfrak{q}_1$,
-  $\mathfrak{p}_0 = \mathfrak{q}_0$ and $\mathfrak{p}_n = \mathfrak{q}_n$. -/
+/--
+Let $`R` be a Noetherian ring, $`\mathfrak{p}_0 < \dots < \mathfrak{p}_n` be a
+chain of primes, $`x \in \mathfrak{p}_n`. Then we can find another chain of primes
+$`\mathfrak{q}_0 < \dots < \mathfrak{q}_n` such that $`x \in \mathfrak{q}_1`,
+$`\mathfrak{p}_0 = \mathfrak{q}_0` and $`\mathfrak{p}_n = \mathfrak{q}_n`.
+-/
 theorem exist_ltSeries_mem_one_of_mem_last (p : LTSeries (PrimeSpectrum R))
     {x : R} (hx : x ∈ p.last.asIdeal) : ∃ q : LTSeries (PrimeSpectrum R),
     x ∈ (q 1).asIdeal ∧ p.length = q.length ∧ p.head = q.head ∧ p.last = q.last := by

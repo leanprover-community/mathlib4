@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Operations on two-sided ideals
 
@@ -15,23 +18,20 @@ This file defines operations on two-sided ideals of a ring `R`.
 
 ## Main definitions and results
 
-- `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
-- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in an associative but non-unital
+* `TwoSidedIdeal.span`: the span of `s ⊆ R` is the smallest two-sided ideal containing the set.
+* `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure_nonunital`: in an associative but non-unital
   ring, an element `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure
   of `s ∪ {y * a | y ∈ s, a ∈ R} ∪ {a * y | y ∈ s, a ∈ R} ∪ {a * y * b | y ∈ s, a, b ∈ R}` as an
   additive subgroup.
-- `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure`: in a unital and associative ring, an
+* `TwoSidedIdeal.mem_span_iff_mem_addSubgroup_closure`: in a unital and associative ring, an
   element  `x` is in the two-sided ideal spanned by `s` if and only if `x` is in the closure of
   `{a*y*b | a, b ∈ R, y ∈ s}` as an additive subgroup.
-
-
-- `TwoSidedIdeal.comap`: pullback of a two-sided ideal; defined as the preimage of a
+* `TwoSidedIdeal.comap`: pullback of a two-sided ideal; defined as the preimage of a
   two-sided ideal.
-- `TwoSidedIdeal.map`: pushforward of a two-sided ideal; defined as the span of the image of a
+* `TwoSidedIdeal.map`: pushforward of a two-sided ideal; defined as the span of the image of a
   two-sided ideal.
-- `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided ideal.
-
-- `TwoSidedIdeal.gc`: `fromIdeal` and `asIdeal` form a Galois connection where
+* `TwoSidedIdeal.ker`: the kernel of a ring homomorphism as a two-sided ideal.
+* `TwoSidedIdeal.gc`: `fromIdeal` and `asIdeal` form a Galois connection where
   `fromIdeal : Ideal R → TwoSidedIdeal R` is defined as the smallest two-sided ideal containing an
   ideal and `asIdeal : TwoSidedIdeal R → Ideal R` the inclusion map.
 -/
@@ -77,11 +77,13 @@ lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
   exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
 
-/-- An induction principle for span membership.
+/--
+An induction principle for span membership.
 
 If `p` holds for 0 and all elements of `s`,
 and is preserved under addition and left and right multiplication,
-then `p` holds for all elements of the span of `s`. -/
+then `p` holds for all elements of the span of `s`.
+-/
 @[elab_as_elim]
 theorem span_induction {s : Set R}
     {p : (x : R) → x ∈ TwoSidedIdeal.span s → Prop}

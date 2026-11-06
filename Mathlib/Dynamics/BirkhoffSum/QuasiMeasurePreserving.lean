@@ -8,17 +8,18 @@ module
 public import Mathlib.Dynamics.BirkhoffSum.Average
 public import Mathlib.MeasureTheory.Measure.QuasiMeasurePreserving
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Birkhoff sum and average for quasi-measure-preserving maps
 
 Given a map `f` and measure `μ`, under the assumption of `QuasiMeasurePreserving f μ μ` we prove:
 
-- `birkhoffSum_ae_eq_of_ae_eq`: if observables  `φ` and `ψ` are `μ`-a.e. equal then the
+* `birkhoffSum_ae_eq_of_ae_eq`: if observables  `φ` and `ψ` are `μ`-a.e. equal then the
   corresponding `birkhoffSum f` are `μ`-a.e. equal.
-
-- `birkhoffAverage_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
+* `birkhoffAverage_ae_eq_of_ae_eq`: if observables `φ` and `ψ` are `μ`-a.e. equal then the
   corresponding `birkhoffAverage R f` are `μ`-a.e. equal.
-
 -/
 
 public section

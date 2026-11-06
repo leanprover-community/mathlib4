@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.EReal.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Addition, negation, subtraction and multiplication on extended real numbers
 
@@ -40,7 +43,9 @@ noncomputable section
 
 namespace EReal
 
-/-! ### Addition -/
+/-!
+# Addition
+-/
 
 @[simp]
 theorem add_bot (x : EReal) : x + ⊥ = ⊥ :=
@@ -195,7 +200,9 @@ lemma add_ne_top_iff_ne_top_right {x y : EReal} (hx : x ≠ ⊥) (hx' : x ≠ �
 @[simp] lemma coe_add_eq_top_iff {x : ℝ} {y : EReal} : x + y = ⊤ ↔ y = ⊤ := by
   simp [add_eq_top_iff_eq_top_right]
 
-/-! ### Negation -/
+/-!
+# Negation
+-/
 
 /-- negation on `EReal` -/
 protected def neg : EReal → EReal
@@ -336,7 +343,7 @@ theorem recENNReal_neg_coe_ennreal {motive : EReal → Sort*} (coe : ∀ x : ℝ
   rfl
 
 /-!
-### Subtraction
+# Subtraction
 
 Subtraction on `EReal` is defined by `x - y = x + (-y)`. Since addition is badly behaved at some
 points, so is subtraction. There is no standard algebraic typeclass involving subtraction that is
@@ -522,7 +529,9 @@ lemma sub_lt_sub_of_le_of_gt {x y z t : EReal} (h : x ≤ y) (h' : z < t)
   · rw [← add_zero x]
     exact add_lt_add (by grind) (sub_pos.mpr h')
 
-/-! ### Addition and order -/
+/-!
+# Addition and order
+-/
 
 set_option backward.isDefEq.respectTransparency false in
 lemma le_of_forall_lt_iff_le {x y : EReal} : (∀ z : ℝ, x < z → y ≤ z) ↔ y ≤ x := by
@@ -566,7 +575,9 @@ lemma _root_.ENNReal.toEReal_sub {x y : ℝ≥0∞} (hy_top : y ≠ ∞) (h_le :
   | coe x =>
     simp only [coe_nnreal_eq_coe_real, ← ENNReal.coe_sub, NNReal.coe_sub (mod_cast h_le), coe_sub]
 
-/-! ### Multiplication -/
+/-!
+# Multiplication
+-/
 
 @[simp] lemma top_mul_top : (⊤ : EReal) * ⊤ = ⊤ := rfl
 

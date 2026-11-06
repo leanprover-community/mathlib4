@@ -15,6 +15,9 @@ public import Mathlib.CategoryTheory.Limits.Types.Coproducts
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limits in concrete categories
 
@@ -31,7 +34,6 @@ to compatible tuples of elements in `X₁ × X₂`.
 
 Some results are also obtained for the terminal object, binary products,
 wide-pullbacks, wide-pushouts, multiequalizers and cokernels.
-
 -/
 
 @[expose] public section

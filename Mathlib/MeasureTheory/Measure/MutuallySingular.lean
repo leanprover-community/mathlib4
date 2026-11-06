@@ -7,7 +7,11 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Restrict
 
-/-! # Mutually singular measures
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Mutually singular measures
 
 Two measures `μ`, `ν` are said to be mutually singular (`MeasureTheory.Measure.MutuallySingular`,
 localized notation `μ ⟂ₘ ν`) if there exists a measurable set `s` such that `μ s = 0` and

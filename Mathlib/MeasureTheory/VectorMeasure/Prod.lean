@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of vector measures
 
@@ -113,10 +116,12 @@ theorem integrable_vectorMeasure_prodMk_left [IsFiniteMeasure μ.variation]
   · exact (stronglyMeasurable_vectorMeasure_prodMk_left hs).aestronglyMeasurable
   · exact Eventually.of_forall (fun x ↦ norm_apply_le_bound)
 
-/-- The product of two vector measures when the first one has finite variation, obtained by
+/--
+The product of two vector measures when the first one has finite variation, obtained by
 integrating the measure of the fibers, as in the definition of the product of positive measures.
-*Do not use*: This is only used to instantiate the typeclass `HasProd`. Instead, use `μ.prod ν B`,
-which uses the typeclass instance. -/
+_Do not use_: This is only used to instantiate the typeclass `HasProd`. Instead, use `μ.prod ν B`,
+which uses the typeclass instance.
+-/
 private noncomputable def prodOfIsFiniteMeasureLeft
     (μ : VectorMeasure X E) (ν : VectorMeasure Y F) (B : E →L[ℝ] F →L[ℝ] G)
     [IsFiniteMeasure μ.variation] :

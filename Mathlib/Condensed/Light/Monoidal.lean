@@ -11,8 +11,10 @@ public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 public import Mathlib.CategoryTheory.Sites.Monoidal
 public import Mathlib.Condensed.Light.Module
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Closed symmetric monoidal structure on light condensed modules
 
 We define a symmetric monoidal structure on light condensed modules by localizing the symmetric

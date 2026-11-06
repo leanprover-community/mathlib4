@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 public import Mathlib.Algebra.Homology.Refinements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The mapping cone of a monomorphism, up to a quasi-isomorphism
 
@@ -19,7 +22,6 @@ we construct a quasi-isomorphism `descShortComplex S : mappingCone S.f ‚ü∂ S.X‚Ç
 We obtain this by comparing the homology sequence of `S` and the homology
 sequence of the homology functor on the homotopy category, applied to the
 distinguished triangle attached to the mapping cone of `S.f`.
-
 -/
 
 @[expose] public section

@@ -16,13 +16,16 @@ public import Mathlib.Tactic.Module
 
 import Mathlib.GroupTheory.GroupAction.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Binomial rings
 
 In this file we introduce the binomial property as a mixin, and define the `multichoose`
 and `choose` functions generalizing binomial coefficients.
 
-According to our main reference [elliott2006binomial] (which lists many equivalent conditions), a
+According to our main reference \[elliott2006binomial\] (which lists many equivalent conditions), a
 binomial ring is a torsion-free commutative ring `R` such that for any `x ∈ R` and any `k ∈ ℕ`, the
 product `x(x-1)⋯(x-k+1)` is divisible by `k!`. The torsion-free condition lets us divide by `k!`
 unambiguously, so we get uniquely defined binomial coefficients.
@@ -51,18 +54,18 @@ of cardinality `n`.
 
 ## References
 
-* [J. Elliott, *Binomial rings, integer-valued polynomials, and λ-rings*][elliott2006binomial]
+* ‍\[J. Elliott, _Binomial rings, integer-valued polynomials, and λ-rings_\]\[elliott2006binomial\]
 
 ## TODO
 
 Further results in Elliot's paper:
+
 * A CommRing is binomial if and only if it admits a λ-ring structure with trivial Adams operations.
 * The free commutative binomial ring on a set `X` is the ring of integer-valued polynomials in the
   variables `X`.  (also, noncommutative version?)
 * Given a commutative binomial ring `A` and an `A`-algebra `B` that is complete with respect to an
   ideal `I`, formal exponentiation induces an `A`-module structure on the multiplicative subgroup
   `1 + I`.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,10 @@ module
 
 public import Mathlib.Order.Defs.LinearOrder
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Converting Std order typeclasses into Mathlib ones
 
@@ -92,7 +96,8 @@ structure Preorder.OfStdArgs (α : Type*) where
             make sure you have an `Std.IsPreorder` instance \
             or `Std.LawfulOrderOrd` and `Std.TransOrd` instances"
 
-/-- Create a `Preorder` from a type satisfying `Std.IsPreorder`.
+/--
+Create a `Preorder` from a type satisfying `Std.IsPreorder`.
 
 If an `LE` instance exists, either an `Std.IsPreorder` instance must exist, or there must be an
 `Ord` instance together with `Std.LawfulOrderOrd` and `Std.TransOrd` instances.
@@ -100,7 +105,8 @@ If an `LE` instance exists, either an `Std.IsPreorder` instance must exist, or t
 If no `LE` instance exists, it can be generated from `Ord` and `Std.TransOrd` instances.
 
 If an `LT` instance exists, an `Std.LawfulOrderLT` instance must exist also; otherwise, a suitable
-`LT` instance will be generated. -/
+`LT` instance will be generated.
+-/
 @[expose, implicit_reducible]
 def Preorder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : Preorder α where
   toLE := args.le
@@ -123,7 +129,8 @@ structure PartialOrder.OfStdArgs (α : Type*) extends toPreorderArgs : Preorder.
             make sure you have an `Std.IsPartialOrder` instance \
             or `LawfulOrderOrd`, `LawfulEqOrd` and `TransOrd` instances"
 
-/-- Create a `PartialOrder` from a type satisfying `Std.IsPartialOrder`.
+/--
+Create a `PartialOrder` from a type satisfying `Std.IsPartialOrder`.
 
 If an `LE` instance exists, either an `Std.IsPartialOrder` instance must exist, or there must be an
 `Ord` instance together with `Std.LawfulOrderOrd`, `Std.LawfulEqOrd`, and `Std.TransOrd` instances.
@@ -132,7 +139,8 @@ If no `LE` instance exists, it can be generated from `Ord`, `Std.LawfulEqOrd`, a
 instances.
 
 If an `LT` instance exists, an `Std.LawfulOrderLT` instance must exist also; otherwise, a suitable
-`LT` instance will be generated. -/
+`LT` instance will be generated.
+-/
 @[expose, implicit_reducible]
 def PartialOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : PartialOrder α where
   toPreorder := .ofStd α args.toPreorderArgs
@@ -230,7 +238,8 @@ structure LinearOrder.OfStdArgs (α : Type*) extends
     | exact _root_.Std.LawfulOrderCmp.compareOfLessAndEq _
     | infer_instance
 
-/-- Create a `LinearOrder` from a type satisfying `Std.IsLinearOrder`.
+/--
+Create a `LinearOrder` from a type satisfying `Std.IsLinearOrder`.
 
 If an `LE` instance exists, either an `Std.IsLinearOrder` instance must exist, or there must be an
 `Ord` instance together with `Std.LawfulOrderOrd`, `Std.LawfulEqOrd`, and `Std.TransOrd` instances.
@@ -252,7 +261,8 @@ If `Min` and `Max` instances exist, they will be used, in which case the user mu
 will be generated.
 
 If an `Ord` instance exists, it will be used, in which case the user must provide an
-`Std.LawfulOrderOrd` instance. Otherwise, it will be generated. -/
+`Std.LawfulOrderOrd` instance. Otherwise, it will be generated.
+-/
 @[expose, implicit_reducible]
 def LinearOrder.ofStd (α : Type*) (args : OfStdArgs α := by exact {}) : LinearOrder α :=
   let := args.le

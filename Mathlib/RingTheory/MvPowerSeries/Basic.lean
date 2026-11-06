@@ -11,6 +11,9 @@ public import Mathlib.Data.Finsupp.Weight
 public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.Tactic.NormNum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Formal (multivariate) power series
 
@@ -23,43 +26,33 @@ We provide the natural inclusion from multivariate polynomials to multivariate f
 
 ## Main definitions
 
-- `MvPowerSeries.C`: constant power series
-
-- `MvPowerSeries.X`: the indeterminates
-
-- `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
+* `MvPowerSeries.C`: constant power series
+* `MvPowerSeries.X`: the indeterminates
+* `MvPowerSeries.coeff`, `MvPowerSeries.constantCoeff`:
   the coefficients of a `MvPowerSeries`, its constant coefficient
-
-- `MvPowerSeries.monomial`: the monomials
-
-- `MvPowerSeries.coeff_mul`: computes the coefficients of the product of two `MvPowerSeries`
-
-- `MvPowerSeries.coeff_prod` : computes the coefficients of products of `MvPowerSeries`
-
-- `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
-
-- `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
+* `MvPowerSeries.monomial`: the monomials
+* `MvPowerSeries.coeff_mul`: computes the coefficients of the product of two `MvPowerSeries`
+* `MvPowerSeries.coeff_prod` : computes the coefficients of products of `MvPowerSeries`
+* `MvPowerSeries.coeff_pow` : computes the coefficients of powers of a `MvPowerSeries`
+* `MvPowerSeries.coeff_eq_zero_of_constantCoeff_nilpotent`: if the constant coefficient
   of a `MvPowerSeries` is nilpotent, then some coefficients of its powers are automatically zero
-
-- `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
-
-- `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
+* `MvPowerSeries.map`: apply a `RingHom` to the coefficients of a `MvPowerSeries` (as a `RingHom`).
+* `MvPowerSeries.X_pow_dvd_iff`, `MvPowerSeries.X_dvd_iff`: equivalent
   conditions for (a power of) an indeterminate to divide a `MvPowerSeries`
-
-- `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
-
+* `MvPolynomial.toMvPowerSeries`: the canonical coercion from `MvPolynomial` to `MvPowerSeries`
 
 ## Note
 
 This file sets up the (semi)ring structure on multivariate power series:
 additional results are in:
+
 * `Mathlib/RingTheory/MvPowerSeries/Inverse.lean` : invertibility,
   formal power series over a local ring form a local ring;
 * `Mathlib/RingTheory/MvPowerSeries/Trunc.lean`: truncation of power series.
 
 In `Mathlib/RingTheory/PowerSeries/Basic.lean`, formal power series in one variable
 will be obtained as a particular case, defined by
-  `PowerSeries R := MvPowerSeries Unit R`.
+`PowerSeries R := MvPowerSeries Unit R`.
 See that file for a specific description.
 
 ## Implementation notes
@@ -71,7 +64,6 @@ Unfortunately there is not yet enough API to show that they are the completion
 of the ring of multivariate polynomials. However, we provide most of the infrastructure
 that is needed to do this. Once I-adic completion (topological or algebraic) is available
 it should not be hard to fill in the details.
-
 -/
 
 @[expose] public section
@@ -728,9 +720,11 @@ theorem monomial_pow (m : σ →₀ ℕ) (a : R) (n : ℕ) :
   rw [Finset.pow_eq_prod_const, prod_monomial, ← Finset.nsmul_eq_sum_const,
     ← Finset.pow_eq_prod_const]
 
-/-- Vanishing of coefficients of powers of multivariate power series
+/--
+Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
-[N. Bourbaki, *Algebra II*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
+‍\[N. Bourbaki, _Algebra II_, Chapter 4, §4, n°2, proposition 3\]\[bourbaki1981\]
+-/
 theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : ℕ}
     (hf : constantCoeff f ^ m = 0) {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) :
     coeff d (f ^ n) = 0 := by

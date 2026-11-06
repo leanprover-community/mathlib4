@@ -8,20 +8,23 @@ module
 public import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 public import Mathlib.AlgebraicGeometry.Morphisms.Flat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scheme-theoretically dominant morphisms
 
 In this file, we define scheme-theoretically dominant morphisms as morphisms with trivial kernel.
 
 ## Main results
-- `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
+
+* `AlgebraicGeometry.IsSchemeTheoreticallyDominant`:
   The class of scheme-theoretically dominant morphisms.
-- `AlgebraicGeometry.isSchemeTheoreticallyDominant_iff_isDominant`:
+* `AlgebraicGeometry.isSchemeTheoreticallyDominant_iff_isDominant`:
   If the target is reduced and the map is quasi-compact, then scheme-theoretically dominant
   is equivalent to dominant.
-- `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
+* `AlgebraicGeometry.IsSchemeTheoreticallyDominant.of_isPullback`:
   quasicompact + scheme-theoretically dominant is stable under flat base change.
-
 -/
 
 public section

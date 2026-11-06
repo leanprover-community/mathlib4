@@ -8,6 +8,9 @@ module
 public import Mathlib.Basic.Countable.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basics on First-Order Structures
 
@@ -17,28 +20,29 @@ structures.
 
 ## Main Definitions
 
-- A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
+* A `FirstOrder.Language` defines a language as a pair of functions from the natural numbers to
   `Type l`. One sends `n` to the type of `n`-ary functions, and the other sends `n` to the type of
   `n`-ary relations.
-- A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
+* A `FirstOrder.Language.Structure` interprets the symbols of a given `FirstOrder.Language` in the
   context of a given type.
-- A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
+* A `FirstOrder.Language.Hom`, denoted `M →[L] N`, is a map from the `L`-structure `M` to the
   `L`-structure `N` that commutes with the interpretations of functions, and which preserves the
   interpretations of relations (although only in the forward direction).
-- A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
+* A `FirstOrder.Language.Embedding`, denoted `M ↪[L] N`, is an embedding from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
-- A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
+* A `FirstOrder.Language.Equiv`, denoted `M ≃[L] N`, is an equivalence from the `L`-structure `M`
   to the `L`-structure `N` that commutes with the interpretations of functions, and which preserves
   the interpretations of relations in both directions.
 
 ## References
 
 For the Flypitch project:
-- [J. Han, F. van Doorn, *A formal proof of the independence of the continuum hypothesis*]
-  [flypitch_cpp]
-- [J. Han, F. van Doorn, *A formalization of forcing and the unprovability of
-  the continuum hypothesis*][flypitch_itp]
+
+* ‍\[J. Han, F. van Doorn, _A formal proof of the independence of the continuum hypothesis_\]
+  ‍\[flypitch\_cpp\]
+* ‍\[J. Han, F. van Doorn, _A formalization of forcing and the unprovability of
+  the continuum hypothesis_\]\[flypitch\_itp\]
 -/
 
 @[expose] public section
@@ -49,7 +53,9 @@ open Cardinal
 
 namespace FirstOrder
 
-/-! ### Languages and Structures -/
+/-!
+# Languages and Structures
+-/
 
 
 -- intended to be used with explicit universe parameters
@@ -169,7 +175,9 @@ open Structure
 def Inhabited.trivialStructure {α : Type*} [Inhabited α] : L.Structure α :=
   ⟨default, default⟩
 
-/-! ### Maps -/
+/-!
+# Maps
+-/
 
 
 /-- A homomorphism between first-order structures is a function that commutes with the

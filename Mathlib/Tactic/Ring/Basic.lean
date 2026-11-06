@@ -9,22 +9,27 @@ public meta import Mathlib.Algebra.Order.Ring.Unbundled.Rat -- for the `Ord Rat`
 public meta import Mathlib.Tactic.Ring.Common
 public import Mathlib.Tactic.Ring.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `ring` tactic
 
-A tactic for solving equations in commutative (semi)rings,
-where the exponents can also contain variables.
-Based on <http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf> .
+A tactic for solving equations in commutative (semi)rings, where the exponents can also contain
+variables. Based on [
+http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf](http://www.cs.ru.nl/~freek/courses/tt-2014/read/10.1.1.61.3041.pdf)
+.
 
 More precisely, expressions of the following form are supported:
-- constants (non-negative integers)
-- variables
-- coefficients (any rational number, embedded into the (semi)ring)
-- addition of expressions
-- multiplication of expressions (`a * b`)
-- scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ` or `ℤ`)
-- exponentiation of expressions (the exponent must have type `ℕ`)
-- subtraction and negation of expressions (if the base is a full ring)
+
+* constants (non-negative integers)
+* variables
+* coefficients (any rational number, embedded into the (semi)ring)
+* addition of expressions
+* multiplication of expressions (`a * b`)
+* scalar multiplication of expressions (`n • a`; the multiplier must have type `ℕ` or `ℤ`)
+* exponentiation of expressions (the exponent must have type `ℕ`)
+* subtraction and negation of expressions (if the base is a full ring)
 
 The extension to exponents means that something like `2 * 2^n * b = b * 2^(n+1)` can be proved,
 even though it is not strictly speaking an equation in the language of commutative rings.
@@ -143,7 +148,8 @@ def ExProd.mkNegNNRat (_ : Q(DivisionRing $α)) (q : ℚ) (n : Q(ℕ)) (d : Q(�
   ⟨q(Rat.rawCast (.negOfNat $n) $d : $α), .const ⟨q, h⟩⟩
 end
 
-/-- Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
+/--
+Converts a proof by `norm_num` that `e` is a numeral, into a normalization as a monomial:
 
 * `e = 0` if `norm_num` returns `IsNat e 0`
 * `e = Nat.rawCast n + 0` if `norm_num` returns `IsNat e n`
@@ -175,7 +181,9 @@ section
 
 variable {R : Type*} [CommSemiring R] {n : ℕ} {a₁ a₂ a₃ : ℕ} {b₁ b₂ b₃ : R}
 
-/-! ### Scalar multiplication by `ℕ` -/
+/-!
+# Scalar multiplication by `ℕ`
+-/
 
 theorem natCast_nat (n) : ((Nat.rawCast n : ℕ) : R) = Nat.rawCast n := by simp
 
@@ -194,7 +202,8 @@ mutual -- partial only to speed up compilation
 variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
   (_ : v =QL 0) (_ : $β =Q ℕ) (_ : $sβ =Q inferInstance)
 
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
+/--
+Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
 
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalNatCast`.
@@ -208,7 +217,8 @@ partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sβ a) : AtomM (Result 
     let ⟨_, vc, p⟩ ← ExSum.evalNatCast va
     pure ⟨_, .sum vc, p⟩
 
-/-- Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
+/--
+Applies `Nat.cast` to a nat monomial to produce a monomial in `α`.
 
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
@@ -225,7 +235,8 @@ partial def ExProd.evalNatCast {a : Q(ℕ)} (va : ExProd sβ a) : AtomM (Result 
     assumeInstancesCommute
     pure ⟨_, .mul vb₁ va₂ vb₃, q(natCast_mul $a₂ $pb₁ $pb₃)⟩
 
-/-- Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
+/--
+Applies `Nat.cast` to a nat polynomial to produce a polynomial in `α`.
 
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
@@ -241,7 +252,9 @@ partial def ExSum.evalNatCast {a : Q(ℕ)} (va : ExSum sβ a) : AtomM (Result (E
 
 end
 
-/-! ### Scalar multiplication by `ℤ` -/
+/-!
+# Scalar multiplication by `ℤ`
+-/
 
 theorem natCast_int {R} [CommRing R] (n) : ((Nat.rawCast n : ℤ) : R) = Nat.rawCast n := by simp
 
@@ -264,7 +277,8 @@ mutual
 variable {v : Lean.Level} {β : Q(Type v)} (sβ : Q(CommSemiring $β))
   (_ : v =QL 0) (_ : $β =Q ℤ) (_ : $sβ =Q inferInstance)
 
-/-- Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
+/--
+Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
 
 * An atom `e` causes `↑e` to be allocated as a new atom.
 * A sum delegates to `ExSum.evalIntCast`.
@@ -281,7 +295,8 @@ def ExBase.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExBase sβ a) 
     pure ⟨_, .sum vc, p⟩
 
 
-/-- Applies `Int.cast` to an int monomial to produce a monomial in `α`.
+/--
+Applies `Int.cast` to an int monomial to produce a monomial in `α`.
 
 * `↑c = c` if `c` is a numeric literal
 * `↑(a ^ n * b) = ↑a ^ n * ↑b`
@@ -302,7 +317,8 @@ def ExProd.evalIntCast {a : Q(ℤ)} (rα : Q(CommRing $α)) (va : ExProd sβ a) 
     assumeInstancesCommute
     pure ⟨_, .mul vb₁ va₂ vb₃, (q(intCast_mul $a₂ $pb₁ $pb₃))⟩
 
-/-- Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
+/--
+Applies `Int.cast` to an int polynomial to produce a polynomial in `α`.
 
 * `↑0 = 0`
 * `↑(a + b) = ↑a + ↑b`
@@ -432,9 +448,11 @@ partial def neg {u : Lean.Level} {α : Q(Type u)}
   let ⟨_, vc, pc⟩ ← RatCoeff.ofResult res
   return ⟨_, vc, q($pc)⟩
 
-/-- Raise a rational number expression to the power of a natural number.
+/--
+Raise a rational number expression to the power of a natural number.
 
-Fails if the exponent is not a literal. -/
+Fails if the exponent is not a literal.
+-/
 partial def pow {u : Lean.Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     {a : Q($α)} {b : Q(ℕ)} (za : RatCoeff a)
     (vb : Common.ExProdNat q($b)) :
@@ -586,7 +604,7 @@ where
       return q(of_eq $pa $pb)
 
 /--
-`ring1` solves the goal when it is an equality in *commutative* (semi)rings,
+`ring1` solves the goal when it is an equality in _commutative_ (semi)rings,
 allowing variables in the exponent.
 
 This version of `ring` fails if the target is not an equality.

@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Field.Equiv
 public import Mathlib.RingTheory.SimpleRing.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simple ring and fields
 
 ## Main results
-- `IsSimpleRing.center_isField`: the center of a simple ring is a field.
-- `isSimpleRing_iff_isField`: a commutative ring is simple if and only if it is a field.
 
+* `IsSimpleRing.center_isField`: the center of a simple ring is a field.
+* `isSimpleRing_iff_isField`: a commutative ring is simple if and only if it is a field.
 -/
 
 public section

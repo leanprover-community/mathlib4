@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Shift.Pullback
 
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The shift on the opposite category of a pretriangulated category
 
@@ -31,8 +34,8 @@ the equivalence of categories `opShiftFunctorEquivalence C n : Cᵒᵖ ≌ Cᵒ�
 functor is `shiftFunctor Cᵒᵖ n` and whose inverse functor is `(shiftFunctor C n).op`.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 @[expose] public section
@@ -82,11 +85,13 @@ def shiftFunctorOpIso (n m : ℤ) (hnm : n + m = 0) :
 
 variable {C}
 
-/-- `shiftFunctor Cᵒᵖ n` is *definitionally* `(shiftFunctor C (-n)).op`, but the projection out of
+/--
+`shiftFunctor Cᵒᵖ n` is _definitionally_ `(shiftFunctor C (-n)).op`, but the projection out of
 the `HasShift Cᵒᵖ ℤ` instance does not reduce at the transparency `rw` and `simp` use, so a goal
 mixing the two spellings of an object is defeq without being syntactically equal. Normalising with
 this lemma (which `dsimp` can apply, as it is `rfl`) is what lets the proofs below use `rw`/`simp`
-rather than `erw`. Outside this file, use `shiftFunctorOpIso` instead. -/
+rather than `erw`. Outside this file, use `shiftFunctorOpIso` instead.
+-/
 private lemma shiftFunctor_op_obj (X : Cᵒᵖ) (n : ℤ) :
     (shiftFunctor Cᵒᵖ n).obj X = Opposite.op (X.unop⟦-n⟧) := rfl
 

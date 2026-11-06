@@ -8,7 +8,11 @@ module
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 
-/-! # Support of distributions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Support of distributions
 
 We define the support of a distribution, `dsupport u`, as the intersection of all closed sets for
 which `u` vanishes on the complement.
@@ -19,15 +23,16 @@ These definitions work independently of a specific class of distributions (class
 compactly supported) and all basic properties are proved in an abstract setting using `FunLike`.
 
 ## Main definitions
+
 * `IsVanishingOn`: A distribution vanishes on a set if it acts trivially on all test functions
   supported in that subset.
 * `dsupport`: The support of a distribution is the intersection of all closed sets for which that
   distribution vanishes on the complement of the set.
 
 ## Main statements
+
 * `dsupport_delta`: The support of the delta distribution is a single point. Available for tempered
   and classical distributions.
-
 -/
 
 @[expose] public noncomputable section
@@ -44,17 +49,21 @@ variable [FunLike F α β] [TopologicalSpace α] [Zero β]
 
 variable {f : F → V} {s s₁ s₂ : Set α}
 
-/-! ### Vanishing of distributions -/
+/-!
+# Vanishing of distributions
+-/
 
 section Zero
 
 variable [Zero V]
 
-/-- A distribution `f` vanishes on a set `s` if it vanishes for all test functions `u` with
+/--
+A distribution `f` vanishes on a set `s` if it vanishes for all test functions `u` with
 `tsupport u ⊆ s`.
 
 To make this definition work for all types of distributions, we define it for any function from
-a `FunLike` type to a type with zero. -/
+a `FunLike` type to a type with zero.
+-/
 @[fun_prop]
 def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
@@ -78,7 +87,9 @@ end IsVanishingOn
 
 section dsupport
 
-/-! ### Support -/
+/-!
+# Support
+-/
 
 section Zero
 
@@ -86,11 +97,13 @@ variable [FunLike F α β] [TopologicalSpace α] [Zero β] [Zero V]
 
 variable {f g : F → V} {s : Set α}
 
-/-- The distributional support of `f` is the intersection of all closed sets `s` such that `f`
+/--
+The distributional support of `f` is the intersection of all closed sets `s` such that `f`
 vanishes on the complement of `s`.
 
 To make this definition work for all types of distributions, we define it for any function from
-a `FunLike` type to a type with zero. -/
+a `FunLike` type to a type with zero.
+-/
 def dsupport (f : F → V) : Set α := ⋂₀ { s | IsVanishingOn f sᶜ ∧ IsClosed s}
 
 theorem mem_dsupport_iff (x : α) :
@@ -159,7 +172,9 @@ variable [FunLike F α β] [PseudoMetricSpace α] [Zero β] [Zero V]
 
 variable {f : F → V}
 
-/-- The complement of the support is given by all *bounded* open sets on which `f` vanishes. -/
+/--
+The complement of the support is given by all _bounded_ open sets on which `f` vanishes.
+-/
 theorem compl_dsupport_eq_sUnion_isBounded :
     (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a ∧ Bornology.IsBounded a } := by
   ext x
@@ -167,7 +182,9 @@ theorem compl_dsupport_eq_sUnion_isBounded :
 
 end normed
 
-/-! ## Tempered distributions -/
+/-!
+# Tempered distributions
+-/
 
 open SchwartzMap Distribution TemperedDistribution
 
@@ -257,7 +274,9 @@ end Support
 
 end TemperedDistribution
 
-/-! ## Classical distributions -/
+/-!
+# Classical distributions
+-/
 
 open TopologicalSpace
 

@@ -9,6 +9,9 @@ public import Mathlib.Tactic.CategoryTheory.Coherence.Basic
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Normalize
 public import Mathlib.Tactic.CategoryTheory.Monoidal.PureCoherence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `monoidal` tactic
 
@@ -21,7 +24,6 @@ string diagrams.
 The core function for the `monoidal` tactic is provided in
 `Mathlib/Tactic/CategoryTheory/Coherence/Basic.lean`. See this file for more details about the
 implementation.
-
 -/
 
 public meta section

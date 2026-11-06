@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Coalgebra.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homomorphisms of `R`-coalgebras
 
@@ -22,7 +25,6 @@ This file defines bundled homomorphisms of `R`-coalgebras. We largely mimic
 ## Notation
 
 * `A →ₗc[R] B` : `R`-coalgebra homomorphism from `A` to `B`.
-
 -/
 
 @[expose] public section
@@ -113,7 +115,9 @@ instance coalgHomClass : CoalgHomClass (A →ₗc[R] B) R A B where
   counit_comp := fun f => f.counit_comp
   map_comp_comul := fun f => f.map_comp_comul
 
-/-- See Note [custom simps projection] -/
+/--
+See Note \[custom simps projection\]
+-/
 def Simps.apply {R α β : Type*} [CommSemiring R]
     [AddCommMonoid α] [Module R α] [AddCommMonoid β]
     [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]

@@ -9,15 +9,17 @@ public import Mathlib.NumberTheory.RamificationInertia.Galois
 
 import Mathlib.LinearAlgebra.Dimension.Domain
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Decomposition and inertia rings
 
 We develop Hilbert's theory of the splitting of a prime ideal in a Galois extension, working
 throughout at the level of rings.
 
 Let `A ⊆ B` be commutative rings with `B` Galois over `A` with group `G`, let `p` be a prime of `A`
-and `P` a prime of `B` lying over `p`. The *decomposition ring* `R` and the *inertia ring* `R'` of
+and `P` a prime of `B` lying over `p`. The _decomposition ring_ `R` and the _inertia ring_ `R'` of
 `P` are the intermediate rings fixed by the decomposition and inertia subgroups of `P`; since the
 inertia group is contained in the decomposition group, they fit into a tower `A ⊆ R ⊆ R' ⊆ B`.
 
@@ -25,15 +27,16 @@ inertia group is contained in the decomposition group, they fit into a tower `A 
 
 For an intermediate ring `R` of `B`, we introduce two characteristic predicates:
 
-* `Ideal.IsDecompositionRing G P R`: `B` is Galois over `R` with Galois group the *decomposition
-  group* of `P`, that is the stabilizer of `P` in `G`;
-* `Ideal.IsInertiaRing G P R`: `B` is Galois over `R` with Galois group the *inertia group* of `P`,
+* `Ideal.IsDecompositionRing G P R`: `B` is Galois over `R` with Galois group the _decomposition
+  group_ of `P`, that is the stabilizer of `P` in `G`;
+* `Ideal.IsInertiaRing G P R`: `B` is Galois over `R` with Galois group the _inertia group_ of `P`,
   that is the subgroup of `G` acting trivially modulo `P`.
 
 ## Main results
 
 Writing `e`, `f` for the ramification index and inertia degree of `P` over `p` and `g` for the
 number of primes of `B` above `p`, the degrees in the tower `A ⊆ R ⊆ R' ⊆ B` are:
+
 ```
 degree
         B
@@ -49,7 +52,7 @@ degree
 
 In the classical setting `L/K` is a Galois extension of fields with `G = Gal(L/K)`, and `A`, `B` are
 subrings of `K`, `L` with `K` the fraction field of `A`, `L` that of `B`, and `B` the integral
-closure of `A` in `L`. The decomposition (resp. inertia) *field* is the subfield of `L` fixed by the
+closure of `A` in `L`. The decomposition (resp. inertia) _field_ is the subfield of `L` fixed by the
 decomposition (resp. inertia) group of `P`, and the associated ring is the integral closure of `A`
 in this field. Decomposition and inertia rings arising this way are provided by
 `Ideal.IsDecompositionRing.of_isFractionRing` and `Ideal.IsInertiaRing.of_isFractionRing`, and the
@@ -58,7 +61,6 @@ degrees of the fields follow from those of the rings via `IsFractionRing.finrank
 The field-level predicates `IsDecompositionField` and `IsInertiaField` defined below will be
 deprecated in favor of the ring-level predicates `Ideal.IsDecompositionRing` and
 `Ideal.IsInertiaRing`.
-
 -/
 
 @[expose] public section
@@ -72,23 +74,27 @@ open MulAction Pointwise
 
 section basic
 
-/-- `P.IsDecompositionRing G R` states that the intermediate ring `R` of `B` is a *decomposition
-ring* of the prime `P`: the ring `B` is Galois over `R` with Galois group the *decomposition group*
+/--
+`P.IsDecompositionRing G R` states that the intermediate ring `R` of `B` is a _decomposition
+ring_ of the prime `P`: the ring `B` is Galois over `R` with Galois group the _decomposition group_
 of `P`, that is the stabilizer of `P` under the action of `G`.
 
-This is the ring-level characteristic predicate; the classical decomposition *field* is
-recovered by passing to fraction fields. -/
+This is the ring-level characteristic predicate; the classical decomposition _field_ is
+recovered by passing to fraction fields.
+-/
 @[mk_iff]
 class IsDecompositionRing extends IsGaloisGroup (stabilizer G P) R B
 
 instance [IsGaloisGroup (stabilizer G P) R B] : IsDecompositionRing G P R where
 
-/-- `P.IsInertiaRing G R` states that the intermediate ring `R` of `B` is an *inertia ring* of the
-prime `P`: the ring `B` is Galois over `R` with Galois group the *inertia group* of `P`, that is the
+/--
+`P.IsInertiaRing G R` states that the intermediate ring `R` of `B` is an _inertia ring_ of the
+prime `P`: the ring `B` is Galois over `R` with Galois group the _inertia group_ of `P`, that is the
 elements of `G` acting trivially modulo `P` (a subgroup of the decomposition group).
 
-This is the ring-level characteristic predicate; the classical inertia *field* is recovered by
-passing to fraction fields. -/
+This is the ring-level characteristic predicate; the classical inertia _field_ is recovered by
+passing to fraction fields.
+-/
 @[mk_iff]
 class IsInertiaRing extends IsGaloisGroup (inertia G P) R B
 
@@ -121,7 +127,9 @@ end basic
 
 section rank
 
-/-! ## Degree formulas -/
+/-!
+# Degree formulas
+-/
 
 variable [IsDomain B] {A : Type*} [CommRing A] [IsDomain A] [Algebra A B] [Module.Finite A B]
   [Module.Flat A B] [FaithfulSMul R B] [IsGaloisGroup G A B] (p : Ideal A) [p.IsPrime]

@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Polynomial.HasseDeriv
 
 import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Taylor expansions of polynomials
 
@@ -20,7 +23,6 @@ import Mathlib.Algebra.Polynomial.Eval.SMul
   `(Polynomial.hasseDeriv k f).eval r`
 * `Polynomial.eq_zero_of_hasseDeriv_eq_zero`:
   the identity principle: a polynomial is 0 iff all its Hasse derivatives are zero
-
 -/
 
 @[expose] public section

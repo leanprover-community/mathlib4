@@ -15,11 +15,14 @@ import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Topology.Semicontinuity.Hemicontinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectrum of elements in a complete normed algebra
 
 This file contains the basic theory for the resolvent and spectrum of a Banach algebra.
-Theorems specific to *complex* Banach algebras, such as *Gelfand's formula* can be found in
+Theorems specific to _complex_ Banach algebras, such as _Gelfand's formula_ can be found in
 `Mathlib/Analysis/Normed/Algebra/GelfandFormula.lean`.
 
 ## Main definitions
@@ -67,7 +70,8 @@ assert_not_exists HasFDerivAt
 open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
 
-/-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the
+/--
+The _spectral radius_ is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the
 quasispectrum, coerced into an element of `ℝ≥0∞`.
 
 It is also possible that `quasispectrum 𝕜 a` be unbounded (though not for Banach
@@ -76,7 +80,8 @@ algebras, see `spectrum.isBounded`/`quasispectrum.isBounded`, below). In this ca
 
 When `A` is unital, `spectrum` and `quasispectrum` differ only by the inclusion of `0` which does
 not affect the spectral radius, so in the unital case, one may take the spectral radius to be the
-supremum over the spectrum instead of the quasispectrum (see `spectralRadius_eq_of_unital`). -/
+supremum over the spectrum instead of the quasispectrum (see `spectralRadius_eq_of_unital`).
+-/
 @[wikidata Q249748]
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*}
     [NormedField 𝕜] [NonUnitalRing A] [Module 𝕜 A]

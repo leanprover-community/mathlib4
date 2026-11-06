@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 import Mathlib.LinearAlgebra.Quotient.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Jacobson radical of modules and rings
 
@@ -25,7 +28,8 @@ it is in fact a two-sided ideal, and equals the intersection of all maximal righ
 
 ## References
 
-* [F. Lorenz, *Algebra: Volume II: Fields with Structure, Algebras and Advanced Topics*][Lorenz2008]
+* ‍\[F. Lorenz, _Algebra: Volume II: Fields with Structure, Algebras and Advanced
+  Topics_\]\[Lorenz2008\]
 -/
 
 @[expose] public section

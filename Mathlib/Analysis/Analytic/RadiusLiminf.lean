@@ -8,11 +8,14 @@ module
 public import Mathlib.Analysis.Analytic.ConvergenceRadius
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`
 
 In this file we prove that the radius of convergence of a `FormalMultilinearSeries` is equal to
-$\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. This lemma can't go to `Analysis.Analytic.Basic`
+$`\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}`. This lemma can't go to `Analysis.Analytic.Basic`
 because this would create a circular dependency once we redefine `exp` using
 `FormalMultilinearSeries`.
 -/
@@ -31,9 +34,11 @@ namespace FormalMultilinearSeries
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
-/-- The radius of a formal multilinear series is equal to
-$\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
-coercions. -/
+/--
+The radius of a formal multilinear series is equal to
+$`\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}`. The actual statement uses `ℝ≥0` and some
+coercions.
+-/
 theorem radius_eq_liminf :
     p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   have :
@@ -61,8 +66,10 @@ theorem radius_eq_liminf :
     filter_upwards [eventually_lt_of_lt_liminf hr, eventually_gt_atTop 0] with n hn hn₀
     simpa using NNReal.coe_le_coe.2 ((this _ hn₀).1 hn.le)
 
-/-- The **Cauchy-Hadamard theorem** for formal multilinear series: The inverse of the radius
-is equal to $\limsup_{n\to\infty} \sqrt[n]{‖p n‖}$. -/
+/--
+The *Cauchy-Hadamard theorem* for formal multilinear series: The inverse of the radius
+is equal to $`\limsup_{n\to\infty} \sqrt[n]{‖p n‖}`.
+-/
 theorem radius_inv_eq_limsup :
     p.radius⁻¹ = limsup (fun n ↦ ((‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
   simpa [ENNReal.inv_liminf] using congr($p.radius_eq_liminf⁻¹)

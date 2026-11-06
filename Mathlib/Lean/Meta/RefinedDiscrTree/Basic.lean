@@ -8,10 +8,14 @@ module
 public import Lean.Meta.Basic
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Definitions for `RefinedDiscrTree`
 
 We define
+
 * `Key`, the discrimination tree key
 * `LazyEntry`, the partial, lazy computation of a sequence of `Key`s
 * `Trie`, a node of the discrimination tree, which is indexed with `Key`s
@@ -51,7 +55,8 @@ inductive Key where
   | proj (typeName : Name) (idx nargs : Nat)
   deriving Inhabited, BEq
 
-/-- Compute the hash of a `RefinedDiscrTree.Key`.
+/--
+Compute the hash of a `RefinedDiscrTree.Key`.
 
 Note: at the root, `.const` is the most common key, and it is very uncommon
 to get the same constant name with a different arity.
@@ -193,19 +198,19 @@ This is used for computing the keys one by one. -/
 structure LazyEntry where
   /--
   If an expression creates more entries in the stack, for example because it is an application,
-  then instead of pushing to the stack greedily, we only extend the stack once we need to.
-  So, the field `previous` is used to extend the `stack` before looking in the `stack`.
+then instead of pushing to the stack greedily, we only extend the stack once we need to.
+So, the field `previous` is used to extend the `stack` before looking in the `stack`.
 
   For example in `10.add (20.add 30)`, after computing the key `⟨Nat.add, 2⟩`, the stack is still
-  empty, and `previous` will be `10.add (20.add 30)`.
+empty, and `previous` will be `10.add (20.add 30)`.
   -/
   previous : Option ExprInfo := none
   /--
   The stack, used to emulate recursion. It contains the list of all expressions for which the
-  keys still need to be computed, in that order.
+keys still need to be computed, in that order.
 
   For example in `10.add (20.add 30)`, after computing the keys `⟨Nat.add, 2⟩` and `10`, the stack
-  will be a list of length 1 containing the expression `20.add 30`.
+will be a list of length 1 containing the expression `20.add 30`.
   -/
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
@@ -220,8 +225,8 @@ structure LazyEntry where
   The `Key`s that have already been computed.
 
   Sometimes, more than one `Key` ends up being computed in one go. This happens when
-  there are lambda binders (because it depends on the body whether the lambda key
-  should be indexed or not). In that case the remaining `Key`s are stored in `results`.
+there are lambda binders (because it depends on the body whether the lambda key
+should be indexed or not). In that case the remaining `Key`s are stored in `results`.
   -/
   computedKeys  : List Key := []
 deriving Inhabited
@@ -251,10 +256,11 @@ abbrev TrieIndex := Nat
 Discrimination tree trie. See `RefinedDiscrTree`.
 
 A `Trie` will normally have exactly one of the following
-- nonempty `values`
-- nonempty `stars`, `labelledStars` and/or `children`
-- nonempty `pending`
-But defining it as a structure that can have all at the same time turns out to be easier.
+
+* nonempty `values`
+* nonempty `stars`, `labelledStars` and/or `children`
+* nonempty `pending`
+  But defining it as a structure that can have all at the same time turns out to be easier.
 -/
 structure Trie (α : Type) where
   node ::
@@ -293,13 +299,16 @@ namespace RefinedDiscrTree
 
 variable {α : Type}
 
-/-- Format a `RefinedDiscrTree` as a flowchart.
-- Non-terminal nodes are of the form `{key} =>`, followed by all of the following nodes,
+/--
+Format a `RefinedDiscrTree` as a flowchart.
+
+* Non-terminal nodes are of the form `{key} =>`, followed by all of the following nodes,
   indented with 2 more spaces.
-- Terminal nodes have either "entries", containing the return values,
+* Terminal nodes have either "entries", containing the return values,
   or "pending entries", for nodes that have not been evaluated/expanded.
 
 For example:
+
 ```
 Discrimination tree flowchart:
 ⟨HMul.hMul, 6⟩ =>

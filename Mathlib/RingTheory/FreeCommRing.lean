@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.Equiv
 public import Mathlib.RingTheory.FreeRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Free commutative rings
 
@@ -20,7 +23,7 @@ in `α`
 * `FreeCommRing α`   : the free commutative ring on a type α
 * `lift (f : α → R)` : the ring hom `FreeCommRing α →+* R` induced by functoriality from `f`.
 * `map (f : α → β)`  : the ring hom `FreeCommRing α →*+ FreeCommRing β` induced by
-                           functoriality from f.
+  functoriality from f.
 
 ## Main results
 
@@ -30,9 +33,8 @@ In this file we have:
 * `of : α → FreeCommRing α`
 * `lift (f : α → R) : FreeCommRing α →+* R`
 * `map (f : α → β) : FreeCommRing α →+* FreeCommRing β`
-
 * `freeCommRingEquivMvPolynomialInt : FreeCommRing α ≃+* MvPolynomial α ℤ` :
-    `FreeCommRing α` is isomorphic to a polynomial ring.
+  `FreeCommRing α` is isomorphic to a polynomial ring.
 
 ## Implementation notes
 

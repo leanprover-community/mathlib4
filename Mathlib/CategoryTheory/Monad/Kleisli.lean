@@ -8,7 +8,11 @@ module
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.CategoryTheory.Monad.Basic
 
-/-! # Kleisli category on a (co)monad
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Kleisli category on a (co)monad
 
 This file defines the Kleisli category on a monad `(T, η_ T, μ_ T)` as well as the co-Kleisli
 category on a comonad `(U, ε_ U, δ_ U)`. It also defines the Kleisli adjunction which gives rise to
@@ -16,7 +20,8 @@ the monad `(T, η_ T, μ_ T)` as well as the co-Kleisli adjunction which gives r
 `(U, ε_ U, δ_ U)`.
 
 ## References
-* [Riehl, *Category theory in context*, Definition 5.2.9][riehl2017]
+
+* ‍\[Riehl, _Category theory in context_, Definition 5.2.9\]\[riehl2017\]
 -/
 
 @[expose] public section
@@ -73,8 +78,10 @@ instance [Inhabited C] (T : Monad C) : Inhabited (Kleisli T) := ⟨.mk T default
 variable (T)
 
 set_option linter.translate.warnInvalid false in
-/-- The Kleisli category on a monad `T`.
-cf Definition 5.2.9 in [Riehl][riehl2017]. -/
+/--
+The Kleisli category on a monad `T`.
+cf Definition 5.2.9 in \[Riehl\]\[riehl2017\].
+-/
 @[to_dual (attr := simps!) /-- The co-Kleisli category on a comonad `T`. -/]
 instance category : Category (Kleisli T) where
   Hom X Y := Hom X Y
@@ -115,8 +122,10 @@ def fromKleisli : Kleisli T ⥤ C where
   map_comp {X} {Y} {Z} f g := by
     simp [← T.μ.naturality_assoc g.of, T.assoc]
 
-/-- The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
-cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
+/--
+The Kleisli adjunction which gives rise to the monad `(T, η_ T, μ_ T)`.
+cf Lemma 5.2.11 of \[Riehl\]\[riehl2017\].
+-/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }

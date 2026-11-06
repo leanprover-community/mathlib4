@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 import Mathlib.Tactic.NoncommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie algebras of skew-adjoint endomorphisms of a bilinear form
 
@@ -23,10 +26,10 @@ results for the Lie algebra of square matrices.
 
 ## Main definitions
 
-  * `skewAdjointLieSubalgebra`
-  * `skewAdjointLieSubalgebraEquiv`
-  * `skewAdjointMatricesLieSubalgebra`
-  * `skewAdjointMatricesLieSubalgebraEquiv`
+* `skewAdjointLieSubalgebra`
+* `skewAdjointLieSubalgebraEquiv`
+* `skewAdjointMatricesLieSubalgebra`
+* `skewAdjointMatricesLieSubalgebraEquiv`
 
 ## Tags
 

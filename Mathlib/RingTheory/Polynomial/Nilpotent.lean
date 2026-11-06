@@ -11,15 +11,18 @@ public import Mathlib.Algebra.Polynomial.Identities
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Nilpotent.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotency in polynomial rings.
 
 This file is a place for results related to nilpotency in (single-variable) polynomial rings.
 
 ## Main results:
+
 * `Polynomial.isNilpotent_iff`
 * `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`
-
 -/
 
 public section
@@ -105,10 +108,12 @@ protected lemma isNilpotent_iff :
     IsNilpotent P.reverse ↔ IsNilpotent P :=
   isNilpotent_reflect_iff (le_refl _)
 
-/-- Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
+/--
+Let `P` be a polynomial over `R`. If its constant term is a unit and its other coefficients are
 nilpotent, then `P` is a unit.
 
-See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
+See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`.
+-/
 theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     (hnil : ∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) : IsUnit P := by
   induction h : P.natDegree using Nat.strong_induction_on generalizing P with | _ k hind
@@ -129,10 +134,12 @@ theorem isUnit_of_coeff_isUnit_isNilpotent (hunit : IsUnit (P.coeff 0))
     · simp_rw [P₁, eraseLead_coeff_of_ne _ (ne_of_lt (lt_of_le_of_lt H hdeg₂)), hnil i hi]
     · simp_rw [coeff_eq_zero_of_natDegree_lt H, IsNilpotent.zero]
 
-/-- Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
+/--
+Let `P` be a polynomial over `R`. If `P` is a unit, then all its coefficients are nilpotent,
 except its constant term which is a unit.
 
-See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`. -/
+See also `Polynomial.isUnit_iff_coeff_isUnit_isNilpotent`.
+-/
 theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) := by
   obtain ⟨Q, hQ⟩ := IsUnit.exists_right_inv hunit
@@ -153,10 +160,12 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     rw [coe_mapRingHom, coeff_map, ← RingHom.mem_ker, Ideal.mk_ker] at hcoeff
     exact hcoeff
 
-/-- Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
+/--
+Let `P` be a polynomial over `R`. `P` is a unit if and only if all its coefficients are
 nilpotent, except its constant term which is a unit.
 
-See also `Polynomial.isUnit_iff'`. -/
+See also `Polynomial.isUnit_iff'`.
+-/
 theorem isUnit_iff_coeff_isUnit_isNilpotent :
     IsUnit P ↔ IsUnit (P.coeff 0) ∧ (∀ i, i ≠ 0 → IsNilpotent (P.coeff i)) :=
   ⟨coeff_isUnit_isNilpotent_of_isUnit, fun H => isUnit_of_coeff_isUnit_isNilpotent H.1 H.2⟩

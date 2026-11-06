@@ -7,13 +7,15 @@ module
 
 public import Mathlib.Basic.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quivers
 
 This module defines quivers. A quiver on a type `V` of vertices assigns to every
 pair `a b : V` of vertices a type `a ⟶ b` of arrows from `a` to `b`. This
 is a generalization of `Digraph V`, which can be thought of as "a proposition `a ⟶ b` of arrows".
-
 -/
 
 @[expose] public section
@@ -24,7 +26,8 @@ open Opposite
 -- See note [category theory universes]
 universe v v₁ v₂ u u₁ u₂
 
-/-- A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
+/--
+A quiver `G` on a type `V` of vertices assigns to every pair `a b : V` of vertices
 a type `a ⟶ b` of arrows from `a` to `b`. This is hence a form of directed multigraphs.
 
 For graphs with no repeated edges, one can either use `Quiver.IsThin` to demand

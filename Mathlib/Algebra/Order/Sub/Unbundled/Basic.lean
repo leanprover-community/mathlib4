@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 public import Mathlib.Algebra.Order.Sub.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about subtraction in an unbundled canonically ordered monoids
 -/
@@ -62,7 +65,9 @@ theorem tsub_add_tsub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) =
 theorem tsub_tsub_tsub_cancel_right (h : c ≤ b) : a - c - (b - c) = a - b := by
   rw [tsub_tsub, add_tsub_cancel_of_le h]
 
-/-! #### Lemmas that assume that an element is `AddLECancellable`. -/
+/-!
+# Lemmas that assume that an element is `AddLECancellable`.
+-/
 
 
 namespace AddLECancellable
@@ -174,7 +179,9 @@ end AddLECancellable
 
 section Contra
 
-/-! ### Lemmas where addition is order-reflecting. -/
+/-!
+# Lemmas where addition is order-reflecting.
+-/
 
 
 variable [AddLeftReflectLE α]

@@ -14,12 +14,15 @@ import Mathlib.Analysis.Normed.Unbundled.SeminormFromConst
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.Topology.Algebra.Module.FiniteDimension
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The spectral norm and the norm extension theorem
 
 This file shows that if `K` is a nonarchimedean normed field and `L/K` is an algebraic extension,
 then there is a natural extension of the norm on `K` to a `K`-algebra norm on `L`, the so-called
-*spectral norm*. The spectral norm of an element of `L` only depends on its minimal polynomial
+_spectral norm_. The spectral norm of an element of `L` only depends on its minimal polynomial
 over `K`, so for `K ⊆ L ⊆ M` two extensions of `K`, the spectral norm on `M` restricts to the
 spectral norm on `L`. This work can be used to uniquely extend the `p`-adic norm on `ℚ_[p]` to an
 algebraic closure of `ℚ_[p]`, for example.
@@ -27,8 +30,8 @@ algebraic closure of `ℚ_[p]`, for example.
 ## Details
 
 We define the spectral value and the spectral norm. We prove the norm extension theorem
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Theorem 3.2.1/2)]
-[bosch-guntzer-remmert] : given a nonarchimedean normed field `K` and an algebraic
+‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_ (Theorem 3.2.1/2)\]
+‍\[bosch-guntzer-remmert\] : given a nonarchimedean normed field `K` and an algebraic
 extension `L/K`, the spectral norm is a power-multiplicative `K`-algebra norm on `L` extending
 the norm on `K`. All `K`-algebra automorphisms of `L` are isometries with respect to this norm.
 If `L/K` is finite, we get a formula relating the spectral norm on `L` with any other
@@ -38,11 +41,11 @@ Moreover, we also prove the unique norm extension theorem: if `K` is a field com
 to a nontrivial nonarchimedean multiplicative norm and `L/K` is an algebraic extension, then the
 spectral norm on `L` is a nonarchimedean multiplicative norm, and any power-multiplicative
 `K`-algebra norm on `L` coincides with the spectral norm. More over, if `L/K` is finite, then `L`
-is a complete space. This result is [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
-(Theorem 3.2.4/2)][bosch-guntzer-remmert].
+is a complete space. This result is \[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_
+(Theorem 3.2.4/2)\]\[bosch-guntzer-remmert\].
 
-As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
-*Non-Archimedean Analysis* (Proposition 3.1.2/1)][bosch-guntzer-remmert].
+As a prerequisite, we formalize the proof of \[S. Bosch, U. Güntzer, R. Remmert,
+_Non-Archimedean Analysis_ (Proposition 3.1.2/1)\]\[bosch-guntzer-remmert\].
 
 ## Main Definitions
 
@@ -70,7 +73,8 @@ As a prerequisite, we formalize the proof of [S. Bosch, U. Güntzer, R. Remmert,
   with respect to topology induced by the spectral norm.
 
 ## References
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
 
@@ -231,9 +235,11 @@ open Real
 variable {K : Type*} [NormedField K] {L : Type*} [Field L] [Algebra K L]
 
 open Nat in
-/-- The norm of any root of `p` is bounded by the spectral value of `p`. See
-[S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis* (Proposition 3.1.2/1(1))]
-[bosch-guntzer-remmert]. -/
+/--
+The norm of any root of `p` is bounded by the spectral value of `p`. See
+‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_ (Proposition 3.1.2/1(1))\]
+‍\[bosch-guntzer-remmert\].
+-/
 theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) {p : K[X]} (hp : p.Monic) {x : L} (hx : aeval x p = 0) :
     f x ≤ spectralValue p := by
@@ -287,10 +293,12 @@ theorem norm_root_le_spectralValue {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
 open Multiset
 
 set_option backward.isDefEq.respectTransparency.types false in
-/-- If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral
-value of a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the
-maximum of the norms of the roots. See [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*
-(Proposition 3.1.2/1(2))][bosch-guntzer-remmert]. -/
+/--
+If `f` is a nonarchimedean, power-multiplicative `K`-algebra norm on `L`, then the spectral value of
+a polynomial `p : K[X]` that decomposes into linear factors in `L` is equal to the maximum of the
+norms of the roots. See \[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_ (Proposition
+3.1.2/1(2))\]\[bosch-guntzer-remmert\].
+-/
 theorem max_norm_root_eq_spectralValue [DecidableEq L] {f : AlgebraNorm K L} (hf_pm : IsPowMul f)
     (hf_na : IsNonarchimedean f) (hf1 : f 1 = 1) (p : K[X]) (s : Multiset L)
     (hp : mapAlg K L p = (map (fun a : L ↦ X - C a) s).prod) :

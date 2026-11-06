@@ -9,6 +9,9 @@ public import Mathlib.Topology.UniformSpace.Basic
 
 import Mathlib.Order.Lattice.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dynamical entourages
 
@@ -22,7 +25,7 @@ about these objects.
 
 ## Main definitions
 
-- `dynEntourage`: dynamical entourage associated with a given transformation `T`, entourage `U`
+* `dynEntourage`: dynamical entourage associated with a given transformation `T`, entourage `U`
   and time `n`.
 
 ## Tags

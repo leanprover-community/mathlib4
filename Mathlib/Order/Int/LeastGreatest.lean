@@ -10,7 +10,11 @@ public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.Bounds.Defs
 
-/-! # Least upper bound and greatest lower bound properties for integers
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Least upper bound and greatest lower bound properties for integers
 
 In this file we prove that a bounded above nonempty set of integers has the greatest element, and a
 counterpart of this statement for the least element.
@@ -28,9 +32,7 @@ counterpart of this statement for the least element.
 * `Int.exists_least_of_bdd`: if `P : ℤ → Prop` is a predicate such that the set `{m : P m}` is
   bounded below and nonempty, then this set has the least element. This lemma uses classical logic
   to avoid assumption `[DecidablePred P]`. See `Int.leastOfBdd` for a constructive counterpart.
-
 * `Int.coe_leastOfBdd_eq`: `(Int.leastOfBdd b Hb Hinh : ℤ)` does not depend on `b`.
-
 * `Int.exists_greatest_of_bdd`, `Int.coe_greatest_of_bdd_eq`: versions of the above lemmas with all
   inequalities reversed.
 

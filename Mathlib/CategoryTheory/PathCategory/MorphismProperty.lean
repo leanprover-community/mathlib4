@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
 public import Mathlib.CategoryTheory.PathCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properties of morphisms in a path category.
 
@@ -16,7 +19,8 @@ We provide a formulation of induction principles for morphisms in a path categor
 order to reduce transitive imports.
 
 We also define a morphism property `W.paths : MorphismProperty (Paths C)` for any
-`W : MorphismProperty C`, consisting of all paths in `C` that consist only of morphisms in `W`. -/
+`W : MorphismProperty C`, consisting of all paths in `C` that consist only of morphisms in `W`.
+-/
 
 @[expose] public section
 

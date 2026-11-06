@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # British flag theorem
 
@@ -23,15 +26,14 @@ proved along the way.
 ## Main results
 
 * `EuclideanGeometry.dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_of_angle_eq_pi_div_two`: the
-  **British flag theorem**.
+  *British flag theorem*.
 * `EuclideanGeometry.dist_sq_add_dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two`: the
   if-and-only-if form: among parallelograms, the conclusion of the British flag theorem
   characterizes rectangles.
 
 ## References
 
-* https://en.wikipedia.org/wiki/British_flag_theorem
-
+* https://en.wikipedia.org/wiki/British\_flag\_theorem
 -/
 
 public section

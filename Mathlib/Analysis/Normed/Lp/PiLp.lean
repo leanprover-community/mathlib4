@@ -10,6 +10,9 @@ public import Mathlib.Data.Fintype.Order
 public import Mathlib.LinearAlgebra.Matrix.Basis
 public import Mathlib.Topology.Algebra.Module.Equiv.Pi
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `L^p` distance on finite products of metric spaces
 
@@ -17,10 +20,8 @@ Given finitely many metric spaces, one can put the max distance on their product
 a whole family of natural distances, indexed by a parameter `p : ℝ≥0∞`, that also induce
 the product topology. We define them in this file. For `0 < p < ∞`, the distance on `Π i, α i`
 is given by
-$$
-d(x, y) = \left(\sum d(x_i, y_i)^p\right)^{1/p}.
-$$,
-whereas for `p = 0` it is the cardinality of the set ${i | d (x_i, y_i) ≠ 0}$. For `p = ∞` the
+$$`  d(x, y) = \left(\sum d(x_i, y_i)^p\right)^{1/p}.  `,
+whereas for `p = 0` it is the cardinality of the set $`{i | d (x_i, y_i) ≠ 0}`. For `p = ∞` the
 distance is the supremum of the distances.
 
 We give instances of this construction for emetric spaces, metric spaces, normed groups and normed
@@ -41,18 +42,14 @@ If you wish to endow a type synonym of `Π i, α i` with the `L^p` distance, you
 We only deal with the `L^p` distance on a product of finitely many metric spaces, which may be
 distinct. A closely related construction is `lp`, the `L^p` norm on a product of (possibly
 infinitely many) normed spaces, where the norm is
-$$
-\left(\sum ‖f (x)‖^p \right)^{1/p}.
-$$
+$$`  \left(\sum ‖f (x)‖^p \right)^{1/p}.  `
 However, the topology induced by this construction is not the product topology, and some functions
 have infinite `L^p` norm. These subtleties are not present in the case of finitely many metric
 spaces, hence it is worth devoting a file to this specific case which is particularly well behaved.
 
 Another related construction is `MeasureTheory.Lp`, the `L^p` norm on the space of functions from
 a measure space to a normed space, where the norm is
-$$
-\left(\int ‖f (x)‖^p dμ\right)^{1/p}.
-$$
+$$`  \left(\int ‖f (x)‖^p dμ\right)^{1/p}.  `
 This has all the same subtleties as `lp`, and the further subtlety that this only
 defines a seminorm (as almost everywhere zero functions have zero `L^p` norm).
 The construction `PiLp` corresponds to the special case of `MeasureTheory.Lp` in which the basis
@@ -237,7 +234,7 @@ section DistNorm
 variable [Fintype ι]
 
 /-!
-### Definition of `edist`, `dist` and `norm` on `PiLp`
+# Definition of `edist`, `dist` and `norm` on `PiLp`
 
 In this section we define the `edist`, `dist` and `norm` functions on `PiLp p α` without assuming
 `[Fact (1 ≤ p)]` or metric properties of the spaces `α i`. This allows us to provide the rewrite
@@ -249,13 +246,15 @@ section EDist
 
 variable [∀ i, EDist (β i)]
 
-/-- Endowing the space `PiLp p β` with the `L^p` edistance. We register this instance
+/--
+Endowing the space `PiLp p β` with the `L^p` edistance. We register this instance
 separate from `pi_Lp.pseudo_emetric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future emetric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
-literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
+literature, but it is sometimes called a _quasi-metric_ or _semi-metric_.
+-/
 instance : EDist (PiLp p β) where
   edist f g :=
     if p = 0 then {i | edist (f i) (g i) ≠ 0}.toFinite.toFinset.card
@@ -304,13 +303,15 @@ section Dist
 
 variable [∀ i, Dist (α i)]
 
-/-- Endowing the space `PiLp p β` with the `L^p` distance. We register this instance
+/--
+Endowing the space `PiLp p β` with the `L^p` distance. We register this instance
 separate from `pi_Lp.pseudo_metric` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future metric-like structure on `PiLp p β` for `p < 1`
 satisfying a relaxed triangle inequality. The terminology for this varies throughout the
-literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
+literature, but it is sometimes called a _quasi-metric_ or _semi-metric_.
+-/
 instance : Dist (PiLp p α) where
   dist f g :=
     if p = 0 then {i | dist (f i) (g i) ≠ 0}.toFinite.toFinset.card
@@ -336,12 +337,14 @@ section Norm
 
 variable [∀ i, Norm (β i)]
 
-/-- Endowing the space `PiLp p β` with the `L^p` norm. We register this instance
+/--
+Endowing the space `PiLp p β` with the `L^p` norm. We register this instance
 separate from `PiLp.seminormedAddCommGroup` since the latter requires the type class hypothesis
 `[Fact (1 ≤ p)]` in order to prove the triangle inequality.
 
 Registering this separately allows for a future norm-like structure on `PiLp p β` for `p < 1`
-satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
+satisfying a relaxed triangle inequality. These are called _quasi-norms_.
+-/
 instance instNorm : Norm (PiLp p β) where
   norm f :=
     if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
@@ -366,7 +369,7 @@ end DistNorm
 section Aux
 
 /-!
-### The uniformity on finite `L^p` products is the product uniformity
+# The uniformity on finite `L^p` products is the product uniformity
 
 In this section, we put the `L^p` edistance on `PiLp p α`, and we check that the uniformity
 coming from this edistance coincides with the product uniformity, by showing that the canonical
@@ -375,7 +378,7 @@ antiLipschitz.
 
 We only register this emetric space structure as a temporary instance, as the true instance (to be
 registered later) will have as uniformity exactly the product uniformity, instead of the one coming
-from the edistance (which is equal to it, but not defeq). See Note [forgetful inheritance]
+from the edistance (which is equal to it, but not defeq). See Note \[forgetful inheritance\]
 explaining why having definitionally the right uniformity is often important.
 
 TODO: the results about uniformity and bornology should be using the tools in
@@ -430,7 +433,8 @@ theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
 
-/-- Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
+/--
+Endowing the space `PiLp p α` with the `L^p` pseudometric structure. This definition is not
 satisfactory, as it does not register the fact that the topology, the uniform structure, and the
 bornology coincide with the product ones. Therefore, we do not register it as an instance. Using
 this as a temporary pseudoemetric space instance, we will show that the uniform structure is equal
@@ -438,7 +442,8 @@ this as a temporary pseudoemetric space instance, we will show that the uniform 
 structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
-See note [reducible non-instances] -/
+See note \[reducible non-instances\]
+-/
 abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
@@ -529,7 +534,9 @@ private lemma cobounded_aux : @cobounded _ PseudoMetricSpace.toBornology = cobou
 
 end Aux
 
-/-! ### Instances on finite `L^p` products -/
+/-!
+# Instances on finite `L^p` products
+-/
 
 instance topologicalSpace [∀ i, TopologicalSpace (β i)] : TopologicalSpace (PiLp p β) :=
   Pi.topologicalSpace.induced ofLp
@@ -906,10 +913,12 @@ section piLpCongrRight
 variable {β}
 
 variable (p) in
-/-- A family of linearly isometric equivalences in the codomain induces an isometric equivalence
+/--
+A family of linearly isometric equivalences in the codomain induces an isometric equivalence
 between Pi types with the Lp norm.
 
-This is the isometry version of `LinearEquiv.piCongrRight`. -/
+This is the isometry version of `LinearEquiv.piCongrRight`.
+-/
 protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
     PiLp p α ≃ₗᵢ[𝕜] PiLp p β where
   toLinearEquiv :=
@@ -1228,7 +1237,7 @@ nonrec theorem basis_toMatrix_basisFun_mul [Fintype ι]
 section toPi
 
 /-!
-### `L^p` distance on a product space
+# `L^p` distance on a product space
 
 In this section we define a pseudometric space structure on `Π i, α i`, as well as a seminormed
 group structure. These are meant to be used to put the desired instances on type synonyms

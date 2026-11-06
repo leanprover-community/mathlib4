@@ -9,6 +9,9 @@ public import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 public import Mathlib.Analysis.Normed.Module.Seminorm.Norm
 public import Mathlib.GroupTheory.GroupAction.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Von Neumann Boundedness
 
@@ -33,8 +36,7 @@ This file defines natural or von Neumann bounded sets and proves elementary prop
 
 ## References
 
-* [Bourbaki, *Topological Vector Spaces*][bourbaki1987]
-
+* ‍\[Bourbaki, _Topological Vector Spaces_\]\[bourbaki1987\]
 -/
 
 @[expose] public section
@@ -360,10 +362,12 @@ theorem sUnion_isVonNBounded_eq_univ : ⋃₀ Set.ofPred (IsVonNBounded 𝕜) = 
 variable (𝕜 E)
 
 -- See note [reducible non-instances]
-/-- The von Neumann bornology defined by the von Neumann bounded sets.
+/--
+The von Neumann bornology defined by the von Neumann bounded sets.
 
 Note that this is not registered as an instance, in order to avoid diamonds with the
-metric bornology. -/
+metric bornology.
+-/
 abbrev vonNBornology : Bornology E :=
   Bornology.ofBounded (Set.ofPred (IsVonNBounded 𝕜)) (isVonNBounded_empty 𝕜 E)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) isVonNBounded_singleton
@@ -544,7 +548,9 @@ variable {𝕜 : Type*} {E : Type*} [Zero E] [UniformSpace E] [SeminormedRing �
 instance [CompleteSpace E] : QuasiCompleteSpace 𝕜 E where
   quasiComplete _ _ := IsClosed.isComplete
 
-/-- [Bourbaki, *Topological Vector Spaces*, III §1.6][bourbaki1987] -/
+/--
+‍\[Bourbaki, _Topological Vector Spaces_, III §1.6\]\[bourbaki1987\]
+-/
 theorem isCompact_closure_of_totallyBounded_quasiComplete {E : Type*} {𝕜 : Type*} [NormedField 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
     [QuasiCompleteSpace 𝕜 E] {s : Set E} (hs : TotallyBounded s) : IsCompact (closure s) :=

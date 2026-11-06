@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.AdjoinRoot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finitely presented algebras and finitely presented modules
 
@@ -16,14 +19,14 @@ finitely presented as a module.
 
 ## Main results:
 
-- `Algebra.FinitePresentation.of_finitePresentation`: If `S` is finitely presented as a
+* `Algebra.FinitePresentation.of_finitePresentation`: If `S` is finitely presented as a
   module over `R`, then it is finitely presented as an algebra over `R`.
-- `Module.FinitePresentation.of_finite_of_finitePresentation`: If `S` is finite as a module over `R`
+* `Module.FinitePresentation.of_finite_of_finitePresentation`: If `S` is finite as a module over `R`
   and finitely presented as an algebra over `R`, then it is finitely presented as a module over `R`.
 
 ## References
 
-- [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
+* ‍\[Grothendieck, EGA IV₁ 1.4.7\]\[ega-iv-1\]
 -/
 
 public section

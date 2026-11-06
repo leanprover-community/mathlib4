@@ -7,14 +7,16 @@ module
 
 public import Mathlib.RingTheory.WittVector.IsPoly
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Verschiebung operator
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -30,7 +32,8 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 
 noncomputable section
 
-/-- `verschiebungFun x` shifts the coefficients of `x` up by one,
+/--
+`verschiebungFun x` shifts the coefficients of `x` up by one,
 by inserting 0 as the 0th coefficient.
 `x.coeff i` then becomes `(verschiebungFun x).coeff (i + 1)`.
 

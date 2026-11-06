@@ -11,6 +11,9 @@ public import Mathlib.GroupTheory.PGroup
 
 import Mathlib.Data.Fintype.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sylow theorems
 
@@ -479,7 +482,9 @@ private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     QuotientGroup.ker_mk'] at hp
   exact hp.ne' (P.maximal_isPGroup.eq_of_ge hQ hp.le)
 
-/-- A Sylow p-subgroup has index indivisible by `p`, assuming [N(P) : P] < ∞. -/
+/--
+A Sylow p-subgroup has index indivisible by `p`, assuming \[N(P) : P\] < ∞.
+-/
 theorem not_dvd_index' [hp : Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hP : P.relIndex (normalizer P) ≠ 0) : ¬ p ∣ P.index := by
   rw [← relIndex_mul_index le_normalizer, P.coe_coe, ← card_eq_index_normalizer]

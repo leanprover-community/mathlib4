@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.OfCommRing
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The monoidal category structure on presheaves of modules
 
@@ -20,7 +23,6 @@ as the presheaf of modules which sends `X : Cᵒᵖ` to `M₁.obj X ⊗ M₂.obj
 
 This contribution was created as part of the AIM workshop
 "Formalizing algebraic geometry" in June 2024.
-
 -/
 
 @[expose] public section
@@ -50,11 +52,13 @@ its instance-implicit-argument metavariables is rejected because the metavariabl
 type of the assigned value do not match at `.instances` transparency. The metavariable's expected
 type is `DistribMulAction ↑(R.obj Y) ↑(M₂.obj Y)`, whereas the assigned value
 `ModuleCat.instModuleCarrierObjRestrictScalars.toDistribMulAction` has type
+
 ```
 DistribMulAction ↑((R ⋙ forget₂ CommRingCat RingCat).obj Y)
   ↑((ModuleCat.restrictScalars (RingCat.Hom.hom ((R ⋙ forget₂ CommRingCat RingCat).map f))).obj
       (M₂.obj Y))
 ```
+
 Lean falls back to synthesize an instance of the correct type, but it returns
 `(M₂.obj Y).isModule.toDistribMulAction`, which is again not defeq to the assigned value. Both
 comparisons bottom out at `↑(R.obj Y) =?= ↑((R ⋙ forget₂ CommRingCat RingCat).obj Y)`, the same
@@ -63,7 +67,7 @@ unfolding `⋙`, which is `@[implicit_reducible]`.
 
 Potential fix: Concentrate on removing `respectTransparency false` first.
 For example, do this by making `ModuleCat.RestrictScalars.obj'` and `ModuleCat.restrictScalars`
-implicit-reducible *at their definition site*.
+implicit-reducible _at their definition site_.
 Without the backward-compatibility flag `respectTransparency false`, Lean bumps transparency for
 instance-implicit arguments to `implicit`, thereby comparing the synthesized and unified instances
 at implicit transparency instead of the stricter instance transparency.

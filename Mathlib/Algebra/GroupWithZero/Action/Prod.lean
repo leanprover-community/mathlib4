@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Group.Action.Prod
 public import Mathlib.Algebra.GroupWithZero.Action.End
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prod instances for multiplicative actions with zero
 
@@ -66,7 +69,9 @@ instance mulActionWithZero {R : Type*} [MonoidWithZero R] [Zero M] [Zero N] [Mul
 
 end Prod
 
-/-! ### Scalar multiplication as a homomorphism -/
+/-!
+# Scalar multiplication as a homomorphism
+-/
 
 section Action_by_Prod
 

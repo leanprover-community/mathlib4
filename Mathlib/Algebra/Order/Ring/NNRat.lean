@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.Ring.Rat
 public import Mathlib.Data.NNRat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The nonnegative rational numbers form a linear ordered commutative semiring
 

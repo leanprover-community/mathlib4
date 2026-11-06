@@ -7,10 +7,13 @@ module
 
 public import Mathlib.Tactic.Push.Attr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nontrivial types
 
-A type is *nontrivial* if it contains at least two elements. This is useful in particular for rings
+A type is _nontrivial_ if it contains at least two elements. This is useful in particular for rings
 (where it is equivalent to the fact that zero is different from one) and for vector spaces
 (where it is equivalent to the fact that the dimension is positive).
 
@@ -79,7 +82,8 @@ theorem Function.nontrivial_of_nontrivial (α β : Type*) [Nontrivial (α → β
 instance : Nontrivial Prop :=
   ⟨⟨True, False, true_ne_false⟩⟩
 
-/-- See Note [lower instance priority]
+/--
+See Note \[lower instance priority\]
 
 Note that since this and `instNonemptyOfInhabited` are the most "obvious" way to find a nonempty
 instance if no direct instance can be found, we give this a higher priority than the usual `100`.

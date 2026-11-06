@@ -9,6 +9,9 @@ public meta import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.PureCoherence
 public import Mathlib.Tactic.CategoryTheory.Monoidal.Datatypes
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Coherence tactic for monoidal categories
 
@@ -16,7 +19,6 @@ We provide a `monoidal_coherence` tactic,
 which proves that any two morphisms (with the same source and target)
 in a monoidal category which are built out of associators and unitors
 are equal.
-
 -/
 
 public meta section
@@ -264,6 +266,8 @@ instance : MkEqOfNaturality MonoidalM where
 
 open Elab.Tactic
 
+
+set_option doc.verso false
 /-- Close the goal of the form `η = θ`, where `η` and `θ` are 2-isomorphisms made up only of
 associators, unitors, and identities.
 ```lean
@@ -275,6 +279,8 @@ example {C : Type} [Category* C] [MonoidalCategory C] :
 def pureCoherence (mvarId : MVarId) : MetaM (List MVarId) :=
   BicategoryLike.pureCoherence Monoidal.Context `monoidal mvarId
 
+
+set_option doc.verso true
 @[inherit_doc pureCoherence]
 elab "monoidal_coherence" : tactic => withMainContext do
   replaceMainGoal <| ← Monoidal.pureCoherence <| ← getMainGoal

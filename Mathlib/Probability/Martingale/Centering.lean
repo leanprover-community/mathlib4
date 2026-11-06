@@ -7,12 +7,15 @@ module
 
 public import Mathlib.Probability.Martingale.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centering lemma for stochastic processes
 
 Any `ℕ`-indexed stochastic process which is strongly adapted and integrable can be written as the
 sum of a martingale and a predictable process. This result is also known as
-**Doob's decomposition theorem**. From a process `f`, a filtration `ℱ` and a measure `μ`, we define
+*Doob's decomposition theorem*. From a process `f`, a filtration `ℱ` and a measure `μ`, we define
 two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
 
 ## Main definitions
@@ -28,7 +31,6 @@ two processes `martingalePart f ℱ μ` and `predictablePart f ℱ μ`.
   is strongly adapted.
   That is, `predictablePart` is predictable.
 * `MeasureTheory.martingale_martingalePart`: `martingalePart f ℱ μ` is a martingale.
-
 -/
 
 @[expose] public section

@@ -12,6 +12,9 @@ public import Mathlib.Tactic.ToAdditive
 import Mathlib.Data.Finset.Attr
 import Mathlib.Topology.Compactness.Compact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Combinatorial compactness and the Rado selection lemma
 
@@ -32,11 +35,8 @@ subtypes are easier to prove and often easier to apply, so they are provided too
   `χ` and `g t` agree on `s`.
   In fact, we can more generally allow each `g s` to be a dependent function, as `(a : α) → β a`, so
   the type of `g` will be `Finset α → (a : α) → β a`.
-
 * `Finset.rado_selection_subtype`: A variant where `g` takes elements in the subtype.
-
 * `Set.Finite.rado_selection`: A variant using `Set.Finite`.
-
 * `Set.Finite.rado_selection`: A variant using `Set.Finite` and where `g` takes elements in the
   subtype.
 
@@ -51,7 +51,6 @@ have the finite intersection property, so their intersection is nonempty.
 * de Bruijn, N. G.; Erdős, P. (1951). "A colour problem for infinite graphs and a problem
   in the theory of relations".
 * Rado, R. (1949). "Axiomatic treatment of rank in infinite sets".
-
 -/
 
 public section

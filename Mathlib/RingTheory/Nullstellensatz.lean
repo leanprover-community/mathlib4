@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
 public import Mathlib.RingTheory.Jacobson.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nullstellensatz
 
@@ -16,11 +19,11 @@ The main statement of the theorem is `MvPolynomial.vanishingIdeal_zeroLocus_eq_r
 
 The statement is in terms of new definitions `vanishingIdeal` and `zeroLocus`.
 Mathlib already has versions of these in terms of the prime spectrum of a ring,
-  but those are not well-suited for expressing this result.
+but those are not well-suited for expressing this result.
 Suggestions for better ways to state this theorem or organize things are welcome.
 
 The machinery around `vanishingIdeal` and `zeroLocus` is also minimal, I only added lemmas
-  directly needed in this proof, since I'm not sure if they are the right approach.
+directly needed in this proof, since I'm not sure if they are the right approach.
 -/
 
 @[expose] public section

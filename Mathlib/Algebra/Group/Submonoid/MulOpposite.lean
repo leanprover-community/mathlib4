@@ -10,11 +10,13 @@ public import Mathlib.Algebra.Group.Opposite
 public import Mathlib.Algebra.Group.Submonoid.Basic
 public import Mathlib.Algebra.Group.Subsemigroup.MulOpposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submonoid of opposite monoids
 
 For every monoid `M`, we construct an equivalence between submonoids of `M` and that of `Mᵐᵒᵖ`.
-
 -/
 
 @[expose] public section
@@ -65,7 +67,9 @@ theorem unop_op (S : Submonoid M) : S.op.unop = S := rfl
 @[to_additive (attr := simp)]
 theorem op_unop (S : Submonoid Mᵐᵒᵖ) : S.unop.op = S := rfl
 
-/-! ### Lattice results -/
+/-!
+# Lattice results
+-/
 
 @[to_additive]
 theorem op_le_iff {S₁ : Submonoid M} {S₂ : Submonoid Mᵐᵒᵖ} : S₁.op ≤ S₂ ↔ S₁ ≤ S₂.unop :=

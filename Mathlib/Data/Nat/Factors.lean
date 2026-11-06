@@ -12,6 +12,9 @@ public import Mathlib.Data.List.Sort
 public import Mathlib.Data.Nat.GCD.Basic
 public import Mathlib.Data.Nat.Prime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime numbers
 
@@ -19,9 +22,8 @@ This file deals with the factors of natural numbers.
 
 ## Important declarations
 
-- `Nat.primeFactorsList n`: the prime factorization of `n`
-- `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
-
+* `Nat.primeFactorsList n`: the prime factorization of `n`
+* `Nat.primeFactorsList_unique`: uniqueness of the prime factorisation
 -/
 
 @[expose] public section

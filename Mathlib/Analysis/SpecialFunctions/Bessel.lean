@@ -10,27 +10,27 @@ public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Bessel function
 
 We introduce Bessel functions in this file. Bessel functions commonly take two complex parameters
 `a` and `x`. They are analytic for `x ∈ Complex.slitPlane`. We also provide scoped notation in
 the namespace `Complex` for these functions.
 
-## `Complex.besselJ a x`: Bessel function of the first kind $J_a(x)$
+## `Complex.besselJ a x`: Bessel function of the first kind $`J_a(x)`
 
-The Bessel function $J_a(x)$ has the representation
-$$
-J_a(x) = (x / 2)^a \frac{₀F₁(-; a + 1; -(x/2)^2)} {Γ(a + 1)}
-$$
-where $₀F₁$ is the hypergeometric function.
+The Bessel function $`J_a(x)` has the representation
+$$`  J_a(x) = (x / 2)^a \frac{₀F₁(-; a + 1; -(x/2)^2)} {Γ(a + 1)}  `
+where $`₀F₁` is the hypergeometric function.
 Based on this, we define `Complex.besselJ a x` using `Complex.regularizedHGFun` for the fraction
-part which removes the singularity for negative integer $a$.
+part which removes the singularity for negative integer $`a`.
 
 This function is analytic for all `x` when `a` is an integer. (see `Complex.analyticAt_besselJ_int`)
 
-$J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
+$`J_a(0) = 0` for all complex $`a \ne 0`. For $`a = 0`, we have $`J_0(0) = 1`.
 (See `Complex.besselJ_zero`)
 
 ## TODO
@@ -39,7 +39,6 @@ $J_a(0) = 0$ for all complex $a \ne 0$. For $a = 0$, we have $J_0(0) = 1$.
 * Differential equations
 * Generating functions
 * Bessel's integrals
-
 -/
 
 @[expose] public noncomputable section
@@ -50,7 +49,9 @@ namespace Complex
 
 local notation "F₀₁(" a ")" => regularizedHGFun 0 {(a : ℂ)}
 
-/-- Bessel function of the first kind $J_a(x)$. -/
+/--
+Bessel function of the first kind $`J_a(x)`.
+-/
 @[pp_nodot, dlmf 10.2.E2]
 noncomputable def besselJ (a x : ℂ) := (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2)
 
@@ -58,7 +59,9 @@ local notation "J" => besselJ
 
 theorem besselJ_def : J = fun a x ↦ (x / 2) ^ a * F₀₁(a + 1) (- (x / 2) ^ 2) := rfl
 
-/-- `J a` is even or odd when $a$ is even or odd, respectively. -/
+/--
+`J a` is even or odd when $`a` is even or odd, respectively.
+-/
 theorem besselJ_int_neg (a : ℤ) (x : ℂ) : J a (-x) = (-1) ^ a * J a x := by
   simp [besselJ_def, ← mul_assoc, neg_div, ← mul_zpow]
 

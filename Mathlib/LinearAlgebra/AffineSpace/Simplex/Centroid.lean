@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Centroid of a simplex in affine space
 
@@ -26,19 +29,15 @@ of the simplex.
 ## Main definitions
 
 * `centroid` is the centroid of a simplex, defined via `Finset.univ.centroid` on its vertices.
-
 * `faceOppositeCentroid` is the centroid of the facet obtained by removing one vertex from the
   simplex.
-
 * `median` is the line connecting a vertex to the corresponding faceOppositeCentroid.
-
 * `medial` is the simplex formed by all `faceOppositeCentroid`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Median_(geometry)
-* https://en.wikipedia.org/wiki/Commandino%27s_theorem
-
+* https://en.wikipedia.org/wiki/Median\_(geometry)
+* https://en.wikipedia.org/wiki/Commandino%27s\_theorem
 -/
 
 @[expose] public section
@@ -342,8 +341,10 @@ theorem point_vsub_faceOppositeCentroid_eq_smul_vsub [CharZero k] (s : Simplex k
   rw [← neg_vsub_eq_vsub_rev, faceOppositeCentroid_vsub_point_eq_smul_vsub, ← neg_smul,
     ← neg_smul_neg, neg_vsub_eq_vsub_rev, neg_neg]
 
-/-- *Commandino's theorem* : For n-simplex, the vector from a vertex to the `centroid`
-equals `n` times the vector from the `centroid` to the corresponding `faceOppositeCentroid`. -/
+/--
+_Commandino's theorem_ : For n-simplex, the vector from a vertex to the `centroid`
+equals `n` times the vector from the `centroid` to the corresponding `faceOppositeCentroid`.
+-/
 theorem point_vsub_centroid_eq_smul_vsub [CharZero k] (s : Simplex k P n) (i : Fin (n + 1)) :
     s.points i -ᵥ s.centroid = (n : k) • (s.centroid -ᵥ s.faceOppositeCentroid i) := by
   symm

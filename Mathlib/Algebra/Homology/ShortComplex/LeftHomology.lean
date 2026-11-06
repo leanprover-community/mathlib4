@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Left Homology of short complexes
 
@@ -27,7 +30,6 @@ The dual notion is defined in `RightHomologyData.lean`. In `Homology.lean`,
 when `S` has two compatible left and right homology data (i.e. they give
 the same `H` up to a canonical isomorphism), we shall define `[S.HasHomology]`
 and `S.homology`.
-
 -/
 
 @[expose] public section

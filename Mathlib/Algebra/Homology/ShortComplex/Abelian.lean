@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Homology.ShortComplex.Limits
 public import Mathlib.Algebra.Homology.ShortComplex.Preadditive
 public import Mathlib.CategoryTheory.Abelian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Abelian categories have homology
 
@@ -29,7 +32,6 @@ We also provide a constructor `HomologyData.ofEpiMonoFactorisation`
 which takes as an input an epi-mono factorization `kf.pt ⟶ H ⟶ cc.pt`
 of `kf.ι ≫ cc.π` where `kf` is a limit kernel fork of `S.g` and
 `cc` is a limit cokernel cofork of `S.f`.
-
 -/
 
 @[expose] public section

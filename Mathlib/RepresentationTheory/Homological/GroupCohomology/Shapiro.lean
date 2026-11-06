@@ -8,6 +8,9 @@ module
 public import Mathlib.RepresentationTheory.Coinduced
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shapiro's lemma for group cohomology
 
@@ -26,7 +29,8 @@ Shapiro's lemma for group cohomology: `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A)` for
 * `groupCohomology.coindIso A n`: Shapiro's lemma for group cohomology: an isomorphism
   `Hⁿ(G, Coind_S^G(A)) ≅ Hⁿ(S, A)`, given a subgroup `S ≤ G` and an `S`-representation `A`.
 
-!-/
+!
+-/
 
 @[expose] public section
 

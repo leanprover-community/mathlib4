@@ -8,15 +8,17 @@ module
 public import Mathlib.Order.Bounds.Lattice
 public import Mathlib.Order.ScottContinuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Scott continuity on product spaces
 
 ## Main result
 
-- `ScottContinuous_prod_of_ScottContinuous`: A function is Scott continuous on a product space if it
+* `ScottContinuous_prod_of_ScottContinuous`: A function is Scott continuous on a product space if it
   is Scott continuous in each variable.
-- `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
-
+* `ScottContinuousOn.inf₂`: For complete linear orders, the meet operation is Scott continuous.
 -/
 
 public section

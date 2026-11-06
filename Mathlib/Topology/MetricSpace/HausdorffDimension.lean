@@ -10,14 +10,17 @@ public import Mathlib.MeasureTheory.Measure.Hausdorff
 
 import Mathlib.Analysis.Convex.Intrinsic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hausdorff dimension
 
 The Hausdorff dimension of a set `X` in an (extended) metric space is the unique number
 `dimH s : ℝ≥0∞` such that for any `d : ℝ≥0` we have
 
-- `μH[d] s = 0` if `dimH s < d`, and
-- `μH[d] s = ∞` if `d < dimH s`.
+* `μH[d] s = 0` if `dimH s < d`, and
+* `μH[d] s = ∞` if `d < dimH s`.
 
 In this file we define `dimH s` to be the Hausdorff dimension of `s`, then prove some basic
 properties of Hausdorff dimension.
@@ -39,8 +42,8 @@ properties of Hausdorff dimension.
   dimensions.
 * `dimH_iUnion`, `dimH_bUnion`, `dimH_sUnion`: the Hausdorff dimension of a countable union of sets
   is the supremum of their Hausdorff dimensions;
-* `dimH_empty`, `dimH_singleton`, `Set.Subsingleton.dimH_zero`, `Set.Countable.dimH_zero` : `dimH s
-  = 0` whenever `s` is countable;
+* `dimH_empty`, `dimH_singleton`, `Set.Subsingleton.dimH_zero`, `Set.Countable.dimH_zero` :
+  `dimH s = 0` whenever `s` is countable;
 
 ### (Pre)images under (anti)lipschitz and Hölder continuous maps
 
@@ -67,7 +70,7 @@ properties of Hausdorff dimension.
 We use the following notation localized in `MeasureTheory`. It is defined in
 `MeasureTheory.Measure.Hausdorff`.
 
-- `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
+* `μH[d]` : `MeasureTheory.Measure.hausdorffMeasure d`
 
 ## Implementation notes
 
@@ -77,7 +80,6 @@ We use the following notation localized in `MeasureTheory`. It is defined in
 
   Lemma `dimH_def` unfolds this definition using whatever `[MeasurableSpace X]` instance we have in
   the environment (as long as it is equal to `borel X`).
-
 * The definition `dimH` is irreducible; use API lemmas or `dimH_def` instead.
 
 ## Tags
@@ -99,7 +101,7 @@ variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
   borelize X; exact ⨆ (d : ℝ≥0) (_ : @hausdorffMeasure X _ _ ⟨rfl⟩ d s = ∞), d
 
 /-!
-### Basic properties
+# Basic properties
 -/
 
 
@@ -227,7 +229,7 @@ theorem dimH_coe_finset (s : Finset X) : dimH (s : Set X) = 0 :=
 alias Finset.dimH_zero := dimH_coe_finset
 
 /-!
-### Hausdorff dimension as the supremum of local Hausdorff dimensions
+# Hausdorff dimension as the supremum of local Hausdorff dimensions
 -/
 
 
@@ -272,7 +274,7 @@ theorem iSup_limsup_dimH (s : Set X) : ⨆ x, limsup dimH (𝓝[s] x).smallSets 
 end
 
 /-!
-### Hausdorff dimension and Hölder continuity
+# Hausdorff dimension and Hölder continuity
 -/
 
 
@@ -332,7 +334,7 @@ theorem dimH_range_le_of_locally_holder_on [SecondCountableTopology X] {r : ℝ�
   simpa only [exists_prop, nhdsWithin_univ] using hf x
 
 /-!
-### Hausdorff dimension and Lipschitz continuity
+# Hausdorff dimension and Lipschitz continuity
 -/
 
 
@@ -389,7 +391,7 @@ theorem le_dimH_image (hf : AntilipschitzWith K f) (s : Set X) : dimH s ≤ dimH
 end AntilipschitzWith
 
 /-!
-### Isometries preserve Hausdorff dimension
+# Isometries preserve Hausdorff dimension
 -/
 
 
@@ -431,7 +433,7 @@ theorem dimH_univ (e : E ≃L[𝕜] F) : dimH (univ : Set E) = dimH (univ : Set 
 end ContinuousLinearEquiv
 
 /-!
-### Hausdorff dimension in a real vector space
+# Hausdorff dimension in a real vector space
 -/
 
 
@@ -532,7 +534,7 @@ theorem dense_compl_of_dimH_lt_finrank {E : Type*} [NormedAddCommGroup E] [Norme
   exact dimH_mono he
 
 /-!
-### Hausdorff dimension and differentiable maps
+# Hausdorff dimension and differentiable maps
 
 Differentiable maps (in particular `C¹`-smooth maps) do not increase Hausdorff dimension. In fact,
 they satisfy the Luzin N property with respect to the Hausdorff measure `μH[d]` for every

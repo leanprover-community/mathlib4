@@ -9,11 +9,14 @@ public import Mathlib.AlgebraicGeometry.AffineScheme
 public import Mathlib.AlgebraicGeometry.Gluing
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Over
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fibred products of schemes
 
 In this file we construct the fibred product of schemes via gluing.
-We roughly follow [har77] Theorem 3.3.
+We roughly follow \[har77\] Theorem 3.3.
 
 In particular, the main construction is to show that for an open cover `{ Uᵢ }` of `X`, if there
 exist fibred products `Uᵢ ×[Z] Y` for each `i`, then there exists a fibred product `X ×[Z] Y`.
@@ -21,7 +24,6 @@ exist fibred products `Uᵢ ×[Z] Y` for each `i`, then there exists a fibred pr
 Then, for constructing the fibred product for arbitrary schemes `X, Y, Z`, we can use the
 construction to reduce to the case where `X, Y, Z` are all affine, where fibred products are
 constructed via tensor products.
-
 -/
 
 @[expose] public section
@@ -40,7 +42,9 @@ namespace Pullback
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ Z)
 variable [∀ i, HasPullback (𝒰.f i ≫ f) g]
 
-/-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
+/--
+The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×\[Z\] Y) ×\[X\] Uⱼ
+-/
 @[instance_reducible]
 def v (i j : 𝒰.I₀) : Scheme :=
   pullback ((pullback.fst (𝒰.f i ≫ f) g) ≫ 𝒰.f i) (𝒰.f j)
@@ -239,10 +243,12 @@ theorem p_comm : p1 𝒰 f g ≫ f = p2 𝒰 f g ≫ g := by
 variable (s : PullbackCone f g)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- (Implementation)
+/--
+(Implementation)
 The canonical map `(s.X ×[X] Uᵢ) ×[s.X] (s.X ×[X] Uⱼ) ⟶ (Uᵢ ×[Z] Y) ×[X] Uⱼ`
 
-This is used in `gluedLift`. -/
+This is used in `gluedLift`.
+-/
 def gluedLiftPullbackMap (i j : 𝒰.I₀) :
     pullback ((𝒰.pullback₁ s.fst).f i) ((𝒰.pullback₁ s.fst).f j) ⟶
       (gluing 𝒰 f g).V ⟨i, j⟩ := by
@@ -271,7 +277,8 @@ theorem gluedLiftPullbackMap_snd (i j : 𝒰.I₀) :
   simp [gluedLiftPullbackMap]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The lifted map `s.X ⟶ (gluing 𝒰 f g).glued` in order to show that `(gluing 𝒰 f g).glued` is
+/--
+The lifted map `s.X ⟶ (gluing 𝒰 f g).glued` in order to show that `(gluing 𝒰 f g).glued` is
 indeed the pullback.
 
 Given a pullback cone `s`, we have the maps `s.fst ⁻¹' Uᵢ ⟶ Uᵢ` and
@@ -318,11 +325,13 @@ theorem gluedLift_p2 : gluedLift 𝒰 f g s ≫ p2 𝒰 f g = s.snd := by
   simp_rw [(Cover.ι_glueMorphisms <| 𝒰.pullback₁ s.fst)]
   simp [p2]
 
-/-- (Implementation)
+/--
+(Implementation)
 The canonical map `(W ×[X] Uᵢ) ×[W] (Uⱼ ×[Z] Y) ⟶ (Uⱼ ×[Z] Y) ×[X] Uᵢ = V j i` where `W` is
 the glued fibred product.
 
-This is used in `lift_comp_ι`. -/
+This is used in `lift_comp_ι`.
+-/
 def pullbackFstιToV (i j : 𝒰.I₀) :
     pullback (pullback.fst (p1 𝒰 f g) (𝒰.f i)) ((gluing 𝒰 f g).ι j) ⟶
       v 𝒰 f g j i :=
@@ -343,11 +352,13 @@ theorem pullbackFstιToV_snd (i j : 𝒰.I₀) :
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
-/-- We show that the map `W ×[X] Uᵢ ⟶ Uᵢ ×[Z] Y ⟶ W` is the first projection, where the
+/--
+We show that the map `W ×[X] Uᵢ ⟶ Uᵢ ×[Z] Y ⟶ W` is the first projection, where the
 first map is given by the lift of `W ×[X] Uᵢ ⟶ Uᵢ` and `W ×[X] Uᵢ ⟶ W ⟶ Y`.
 
 It suffices to show that the two map agrees when restricted onto `Uⱼ ×[Z] Y`. In this case,
-both maps factor through `V j i` via `pullback_fst_ι_to_V` -/
+both maps factor through `V j i` via `pullback_fst_ι_to_V`
+-/
 theorem lift_comp_ι (i : 𝒰.I₀) :
     pullback.lift (pullback.snd _ _) (pullback.fst _ _ ≫ p2 𝒰 f g)
           (by rw [← pullback.condition_assoc, Category.assoc, p_comm]) ≫

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Average
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # First mean value theorem for set integrals
 
@@ -15,9 +18,9 @@ We prove versions of the first mean value theorem for set integrals.
 ## Main results
 
 * `exists_eq_const_mul_setIntegral_of_ae_nonneg` (a.e. nonnegativity of `g` on `s`):
-    `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
+  `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
 * `exists_eq_const_mul_setIntegral_of_nonneg` (pointwise nonnegativity of `g` on `s`):
-    `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
+  `∃ c ∈ s, (∫ x in s, f x * g x ∂μ) = f c * (∫ x in s, g x ∂μ)`.
 
 ## Tags
 

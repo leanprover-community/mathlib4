@@ -10,6 +10,9 @@ public import Mathlib.Data.Set.Functor
 
 import Mathlib.Basic.Finite.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of the Set monad operations
 
@@ -30,7 +33,8 @@ variable {α : Type u} {β : Type v}
 
 namespace Set
 
-/-! ### Fintype instances
+/-!
+# Fintype instances
 
 Every instance here should have a corresponding `Set.Finite` constructor in the next section.
 -/
@@ -69,7 +73,8 @@ end FintypeInstances
 
 end Set
 
-/-! ### Finite instances
+/-!
+# Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
 in `Data.Set.Finite`. While every `Fintype` instance gives a `Finite` instance, those
@@ -94,7 +99,8 @@ end Finite.Set
 
 namespace Set
 
-/-! ### Constructors for `Set.Finite`
+/-!
+# Constructors for `Set.Finite`
 
 Every constructor here should have a corresponding `Fintype` instance in the previous section
 (or in the `Fintype` module).

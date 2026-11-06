@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.AddTorsor
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Simplices in torsors over normed spaces.
 
@@ -18,7 +21,6 @@ This file defines properties of simplices in a `NormedAddTorsor`.
 * `Affine.Simplex.Scalene`
 * `Affine.Simplex.Equilateral`
 * `Affine.Simplex.Regular`
-
 -/
 
 @[expose] public section

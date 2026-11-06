@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Fintype.Vector
 public import Mathlib.Data.Multiset.Sym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric powers of a finset
 

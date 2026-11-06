@@ -11,6 +11,9 @@ public import Mathlib.NumberTheory.NumberField.Ideal.KummerDedekind
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Factorization
 import Mathlib.RingTheory.RootsOfUnity.CyclotomicUnits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideals in cyclotomic fields
 
@@ -20,25 +23,18 @@ In this file, we prove results about ideals in cyclotomic extensions of `ℚ`.
 
 * `IsCyclotomicExtension.Rat.ncard_primesOver_of_prime_pow`: there is only one prime ideal above
   the prime `p` in `ℚ(ζ_pᵏ)`
-
 * `IsCyclotomicExtension.Rat.inertiaDeg_eq_of_prime_pow`: the residual degree of the prime ideal
   above `p` in `ℚ(ζ_pᵏ)` is `1`.
-
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq_of_prime_pow`: the ramification index of the prime
   ideal above `p` in `ℚ(ζ_pᵏ)` is `p ^ (k - 1) * (p - 1)`.
-
 * `IsCyclotomicExtension.Rat.inertiaDegIn_eq_of_not_dvd`: if the prime `p` does not divide `m`, then
   the inertia degree of `p` in `ℚ(ζₘ)` is the order of `p` modulo `m`.
-
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq_of_not_dvd`: if the prime `p` does not divide `m`,
   then the ramification index of `p` in `ℚ(ζₘ)` is `1`.
-
 * `IsCyclotomicExtension.Rat.inertiaDegIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p` does
   not divide `m`, then the inertia degree of `p` in `ℚ(ζₙ)` is the order of `p` modulo `m`.
-
 * `IsCyclotomicExtension.Rat.ramificationIdxIn_eq`: write `n = p ^ (k + 1) * m` where the prime `p`
   does not divide `m`, then the ramification index of `p` in `ℚ(ζₙ)` is `p ^ k * (p - 1)`.
-
 -/
 
 public section

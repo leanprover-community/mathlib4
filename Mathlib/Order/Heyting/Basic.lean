@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.GaloisConnection.Defs
 public import Mathlib.Order.PropInstances
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Heyting algebras
 
@@ -43,7 +46,7 @@ use of `to_dual none`.
 
 ## References
 
-* [Francis Borceux, *Handbook of Categorical Algebra III*][borceux-vol3]
+* ‍\[Francis Borceux, _Handbook of Categorical Algebra III_\]\[borceux-vol3\]
 
 ## Tags
 
@@ -63,7 +66,9 @@ universe u
 
 variable {ι α β : Type*}
 
-/-! ### Notation -/
+/-!
+# Notation
+-/
 
 @[to_dual]
 instance Prod.instHImp [HImp α] [HImp β] : HImp (α × β) :=
@@ -89,19 +94,23 @@ theorem fst_hnot [HNot α] [HNot β] (a : α × β) : (￢a).1 = ￢a.1 :=
 theorem snd_hnot [HNot α] [HNot β] (a : α × β) : (￢a).2 = ￢a.2 :=
   rfl
 
-/-- A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
+/--
+A generalized Heyting algebra is a lattice with an additional binary operation `⇨` called
 Heyting implication such that `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)`.
 
-This generalizes `HeytingAlgebra` by not requiring a bottom element. -/
+This generalizes `HeytingAlgebra` by not requiring a bottom element.
+-/
 class GeneralizedHeytingAlgebra (α : Type*) extends Lattice α, OrderTop α, HImp α where
   /-- `(a ⇨ ·)` is right adjoint to `(a ⊓ ·)` -/
   le_himp_iff (a b c : α) : a ≤ b ⇨ c ↔ a ⊓ b ≤ c
 
 set_option linter.translate.warnInvalid false in
-/-- A generalized co-Heyting algebra is a lattice with an additional binary
+/--
+A generalized co-Heyting algebra is a lattice with an additional binary
 difference operation `\` such that `(· \ a)` is left adjoint to `(· ⊔ a)`.
 
-This generalizes `CoheytingAlgebra` by not requiring a top element. -/
+This generalizes `CoheytingAlgebra` by not requiring a top element.
+-/
 @[to_dual]
 class GeneralizedCoheytingAlgebra (α : Type*) extends Lattice α, OrderBot α, SDiff α where
   /-- `(· \ a)` is left adjoint to `(· ⊔ a)` -/
@@ -171,12 +180,14 @@ abbrev CoheytingAlgebra.ofHNot [DistribLattice α] [BoundedOrder α] (hnot : α 
   sdiff_le_iff := sdiff_le_iff
   top_sdiff _ := top_inf_eq _
 
-/-! In this section, we'll give interpretations of these results in the Heyting algebra model of
+/-!
+In this section, we'll give interpretations of these results in the Heyting algebra model of
 intuitionistic logic,- where `≤` can be interpreted as "validates", `⇨` as "implies", `⊓` as "and",
 `⊔` as "or", `⊥` as "false" and `⊤` as "true". Note that we confuse `→` and `⊢` because those are
 the same in this logic.
 
-See also `Prop.heytingAlgebra`. -/
+See also `Prop.heytingAlgebra`.
+-/
 section GeneralizedHeytingAlgebra
 
 @[simp low] -- low priority so that it doesn't overwrite user-provided simp lemmas
@@ -784,9 +795,12 @@ theorem compl_iff_not (p : Prop) : pᶜ ↔ ¬p :=
 
 variable (α) in
 -- See note [reducible non-instances]
-/-- A bounded linear order is a bi-Heyting algebra by setting
+/--
+A bounded linear order is a bi-Heyting algebra by setting
+
 * `a ⇨ b = ⊤` if `a ≤ b` and `a ⇨ b = b` otherwise.
-* `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise. -/
+* `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise.
+-/
 abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=
   { LinearOrder.toLattice, ‹BoundedOrder α› with
     himp := fun a b => if a ≤ b then ⊤ else b,

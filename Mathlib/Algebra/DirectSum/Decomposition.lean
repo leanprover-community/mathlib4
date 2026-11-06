@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.DirectSum.Module
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Decompositions of additive monoids, groups, and modules into direct sums
 
@@ -15,7 +18,6 @@ public import Mathlib.Algebra.DirectSum.Module
 * `DirectSum.Decomposition ℳ`: A typeclass to provide a constructive decomposition from
   an additive monoid `M` into a family of additive submonoids `ℳ`
 * `DirectSum.decompose ℳ`: The canonical equivalence provided by the above typeclass
-
 
 ## Main statements
 
@@ -43,7 +45,8 @@ section AddCommMonoid
 variable [DecidableEq ι] [AddCommMonoid M]
 variable [SetLike σ M] [AddSubmonoidClass σ M] (ℳ : ι → σ)
 
-/-- A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
+/--
+A decomposition is an equivalence between an additive monoid `M` and a direct sum of additive
 submonoids `ℳ i` of that `M`, such that the "recomposition" is canonical. This definition also
 works for additive groups and modules.
 
@@ -51,7 +54,8 @@ This is a version of `DirectSum.IsInternal` which comes with a constructive inve
 canonical "recomposition" rather than just a proof that the "recomposition" is bijective.
 
 Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
-`Decomposition.ofLinearMap`. -/
+`Decomposition.ofLinearMap`.
+-/
 class Decomposition where
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -283,9 +287,11 @@ theorem decompose_smul (r : R) (x : M) : decompose ℳ (r • x) = r • decompo
     decomposeLinearEquiv ℳ x = lof R _ _ i x :=
   (LinearEquiv.eq_symm_apply _).mp (decomposeLinearEquiv_symm_lof ..).symm
 
-/-- Two linear maps from a module with a decomposition agree if they agree on every piece.
+/--
+Two linear maps from a module with a decomposition agree if they agree on every piece.
 
-Note this cannot be `@[ext]` as `ℳ` cannot be inferred. -/
+Note this cannot be `@[ext]` as `ℳ` cannot be inferred.
+-/
 theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[R] N⦄
     (h : ∀ i, f ∘ₗ (ℳ i).subtype = g ∘ₗ (ℳ i).subtype) : f = g :=
   LinearMap.ext <| (decomposeLinearEquiv ℳ).symm.surjective.forall.mpr <|

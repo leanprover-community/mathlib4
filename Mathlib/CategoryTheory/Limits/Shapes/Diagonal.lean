@@ -9,12 +9,14 @@ public import Mathlib.CategoryTheory.Comma.Over.Pullback
 public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Assoc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The diagonal object of a morphism.
 
 We provide various API and isomorphisms considering the diagonal object `Δ_{Y/X} := pullback f f`
 of a morphism `f : X ⟶ Y`.
-
 -/
 
 @[expose] public section
@@ -134,7 +136,8 @@ abbrev pullbackDiagonalMapIso.inv : pullback i₁ i₂ ⟶
         · simp only [condition_assoc, Category.assoc, diagonal_snd, Category.comp_id, limit.lift_π,
           PullbackCone.mk_π_app, limit.lift_π_assoc, cospan_right])
 
-/-- This iso witnesses the fact that
+/--
+This iso witnesses the fact that
 given `f : X ⟶ Y`, `i : U ⟶ Y`, and `i₁ : V₁ ⟶ X ×[Y] U`, `i₂ : V₂ ⟶ X ×[Y] U`, the diagram
 
 ```
@@ -209,7 +212,8 @@ section
 
 variable {S T : C} (f : X ⟶ T) (g : Y ⟶ T) (i : T ⟶ S)
 
-/-- This iso witnesses the fact that
+/--
+This iso witnesses the fact that
 given `f : X ⟶ T`, `g : Y ⟶ T`, and `i : T ⟶ S`, the diagram
 
 ```
@@ -379,7 +383,8 @@ lemma pullback_lift_diagonal_isPullback (g : Y ⟶ X) (f : X ⟶ S) :
 
 end
 
-/-- Given the following diagram with `S ⟶ S'` a monomorphism,
+/--
+Given the following diagram with `S ⟶ S'` a monomorphism,
 
 ```
     X ⟶ X'
@@ -529,6 +534,7 @@ variable [HasPushouts C]
 
 /--
 Given `f : T ⟶ X`, `g : T ⟶ Y`, and `i : S ⟶ T`, the diagram
+
 ```
 X ⨿ₛ Y ⟶ X ⨿ₜ Y
   ↑        ↑
@@ -536,6 +542,7 @@ X ⨿ₛ Y ⟶ X ⨿ₜ Y
   |        |
 T ⨿ₛ T  ⟶  T
 ```
+
 is a pushout square.
 -/
 theorem isPushout_map_codiagonal {S T : C} (f : T ⟶ X) (g : T ⟶ Y) (i : S ⟶ T) :

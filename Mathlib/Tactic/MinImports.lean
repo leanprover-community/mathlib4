@@ -14,6 +14,10 @@ public meta import Lean.Util.CollectAxioms
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-! # `#min_imports in` a command to find minimal imports
 
 `#min_imports in stx` scans the syntax `stx` to find a collection of minimal imports that should be
@@ -188,8 +192,10 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
 
-/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--
+`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
+
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
@@ -212,8 +218,10 @@ def getAllDependencies (cmd id : Syntax) :
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--
+`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
+
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
@@ -247,6 +255,8 @@ closure is enough to parse (and elaborate) `cmd`. -/
 def getIrredundantImports (env : Environment) (importNames : NameSet) : NameSet :=
   importNames \ (env.findRedundantImports importNames.toArray)
 
+
+set_option doc.verso false
 /-- `minImpsCore stx id` is the internal function to elaborate the `#min_imports in` command.
 It collects the irredundant imports to parse and elaborate `stx` and logs
 ```lean
@@ -263,6 +273,8 @@ def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
     let fileNames := (tot.toArray.filter (!isInitImport ·)).qsort Name.lt
     logInfoAt (← getRef) m!"{"\n".intercalate (fileNames.map (s!"public import {·}")).toList}"
 
+
+set_option doc.verso true
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
 syntax (name := minImpsStx) "#min_imports" " in " command : command

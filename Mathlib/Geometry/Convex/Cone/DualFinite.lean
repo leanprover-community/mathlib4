@@ -8,6 +8,9 @@ module
 public import Mathlib.Geometry.Convex.Cone.Dual
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Duals of finitely generated cones
 
@@ -23,8 +26,7 @@ In this case, V- and H-cones are known as polyhedral cones.
 
 ## Main declarations
 
-- `PointedCone.DualFG` expresses that a cone is the dual of a finite set.
-
+* `PointedCone.DualFG` expresses that a cone is the dual of a finite set.
 -/
 
 @[expose] public section

@@ -10,8 +10,11 @@ public import Mathlib.Algebra.Ring.Subring.Units
 public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# The General Linear group $GL(n, R)$
+# The General Linear group $`GL(n, R)`
 
 This file defines the elements of the General Linear group `Matrix.GeneralLinearGroup n R`,
 consisting of all invertible `n` by `n` `R`-matrices.

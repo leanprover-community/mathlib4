@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.HomologicalComplex
 public import Mathlib.CategoryTheory.DifferentialObject
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homological complexes are differential graded objects.
 

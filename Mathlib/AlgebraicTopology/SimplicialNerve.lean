@@ -7,14 +7,16 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialCategory.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The simplicial nerve of a simplicial category
 
 This file defines the simplicial nerve (sometimes called homotopy coherent nerve) of a simplicial
 category.
 
-We define the *simplicial thickening* of a linear order `J` as the simplicial category whose hom
+We define the _simplicial thickening_ of a linear order `J` as the simplicial category whose hom
 objects `i ⟶ j` are given by the nerve of the poset of "paths" from `i` to `j` in `J`. This is the
 poset of subsets of the interval `[i, j]` in `J`, containing the endpoints.
 
@@ -34,7 +36,8 @@ the linear order `Fin (n + 1)` to `C`, in other words
 * Define the functor from topological spaces to anima.
 
 ## References
-* [Jacob Lurie, *Higher Topos Theory*, Section 1.1.5][LurieHTT]
+
+* ‍\[Jacob Lurie, _Higher Topos Theory_, Section 1.1.5\]\[LurieHTT\]
 -/
 
 @[expose] public section

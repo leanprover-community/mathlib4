@@ -7,12 +7,16 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product comparison morphisms
 
 Naturality of the product and coproduct constructions with respect to functors.
 
 ## References
+
 * [Stacks: Products of pairs](https://stacks.math.columbia.edu/tag/001R)
 * [Stacks: coproducts of pairs](https://stacks.math.columbia.edu/tag/04AN)
 -/
@@ -34,15 +38,19 @@ variable [HasBinaryProduct ((F ⋙ G).obj A) ((F ⋙ G).obj B)]
 
 to_dual_name_hint Prod Coprod
 
-/-- The product comparison morphism.
+/--
+The product comparison morphism.
 
 In `CategoryTheory/Limits/Preserves` we show this is always an iso iff
-`F` preserves binary products. -/
+`F` preserves binary products.
+-/
 @[to_dual
-/-- The coproduct comparison morphism.
+/--
+The coproduct comparison morphism.
 
 In `CategoryTheory/Limits/Preserves` we show this is always an iso iff
-`F` preserves binary coproducts. -/]
+`F` preserves binary coproducts.
+-/]
 def prodComparison (F : C ⥤ D) (A B : C) [HasBinaryProduct A B]
     [HasBinaryProduct (F.obj A) (F.obj B)] : F.obj (A ⨯ B) ⟶ F.obj A ⨯ F.obj B :=
   prod.lift (F.map prod.fst) (F.map prod.snd)

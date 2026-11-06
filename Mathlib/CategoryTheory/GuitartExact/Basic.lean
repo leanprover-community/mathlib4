@@ -8,11 +8,15 @@ module
 public import Mathlib.CategoryTheory.Functor.TwoSquare
 public import Mathlib.CategoryTheory.Limits.Final
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Guitart exact squares
 
 Given four functors `T`, `L`, `R` and `B`, a 2-square `TwoSquare T L R B` consists of
 a natural transformation `w : T ⋙ R ⟶ L ⋙ B`:
+
 ```
      T
   C₁ ⥤ C₂
@@ -38,14 +42,14 @@ derived functors.
 ## TODO
 
 * Define the notion of derivability structure from
-  [the paper by Kahn and Maltsiniotis][KahnMaltsiniotis2008] using Guitart exact squares
+  ‍\[the paper by Kahn and Maltsiniotis\]\[KahnMaltsiniotis2008\] using Guitart exact squares
   and construct (pointwise) derived functors using this notion
 
 ## References
-* https://ncatlab.org/nlab/show/exact+square
-* [René Guitart, *Relations et carrés exacts*][Guitart1980]
-* [Bruno Kahn and Georges Maltsiniotis, *Structures de dérivabilité*][KahnMaltsiniotis2008]
 
+* https://ncatlab.org/nlab/show/exact+square
+* ‍\[René Guitart, _Relations et carrés exacts_\]\[Guitart1980\]
+* ‍\[Bruno Kahn and Georges Maltsiniotis, _Structures de dérivabilité_\]\[KahnMaltsiniotis2008\]
 -/
 
 @[expose] public section

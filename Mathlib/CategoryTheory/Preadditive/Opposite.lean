@@ -9,9 +9,11 @@ public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.Algebra.Ring.Opposite
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # If `C` is preadditive, `Cᵒᵖ` has a natural preadditive structure.
-
 -/
 
 @[expose] public section

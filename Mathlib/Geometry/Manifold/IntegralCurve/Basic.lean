@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral curves of vector fields on a manifold
 
@@ -15,6 +18,7 @@ curve of `v` is a function `γ : ℝ → M` such that the derivative of `γ` at 
 integral curve may only be defined for all `t` within some subset of `ℝ`.
 
 This is the first of a series of files, organised as follows:
+
 * `Mathlib/Geometry/Manifold/IntegralCurve/Basic.lean` (this file): Basic definitions and lemmas
   relating them to each other and to continuity and differentiability
 * `Mathlib/Geometry/Manifold/IntegralCurve/Transform.lean`: Lemmas about translating or scaling the
@@ -25,6 +29,7 @@ This is the first of a series of files, organised as follows:
 ## Main definitions
 
 Let `v : M → TM` be a vector field on `M`, and let `γ : ℝ → M`.
+
 * `IsMIntegralCurve γ v`: `γ t` is tangent to `v (γ t)` for all `t : ℝ`. That is, `γ` is a global
   integral curve of `v`.
 * `IsMIntegralCurveOn γ v s`: `γ t` is tangent to `v (γ t)` for all `t ∈ s`, where `s : Set ℝ`.
@@ -41,7 +46,7 @@ junk.
 
 ## References
 
-* [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
+* ‍\[Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.\]\[lee2012\]
 
 ## Tags
 
@@ -59,9 +64,11 @@ variable
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-/-- If `γ : ℝ → M` is $C^1$ on `s : Set ℝ` and `v` is a vector field on `M`,
+/--
+If `γ : ℝ → M` is $`C^1` on `s : Set ℝ` and `v` is a vector field on `M`,
 `IsMIntegralCurveOn γ v s` means `γ t` is tangent to `v (γ t)` for all `t ∈ s`. The value of `γ`
-outside of `s` is irrelevant and considered junk. -/
+outside of `s` is irrelevant and considered junk.
+-/
 def IsMIntegralCurveOn (γ : ℝ → M) (v : (x : M) → TangentSpace% x) (s : Set ℝ) : Prop :=
   ∀ t ∈ s, HasMFDerivAt[s] γ t ((1 : ℝ →L[ℝ] ℝ).smulRight <| v (γ t))
 

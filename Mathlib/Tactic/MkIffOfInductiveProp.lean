@@ -11,6 +11,10 @@ public meta import Mathlib.Lean.Meta
 public meta import Mathlib.Lean.Name
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # mk_iff_of_inductive_prop
 
@@ -48,6 +52,8 @@ private def select (m n : Nat) (goal : MVarId) : MetaM MVarId :=
     select m n new_goal
   | _, _             => failure
 
+
+set_option doc.verso false
 /-- `compactRelation bs as_ps`: Produce a relation of the form:
 ```lean
 R := fun as ↦ ∃ bs, ⋀_i a_i = p_i[bs]
@@ -69,6 +75,8 @@ partial def compactRelation :
         compactRelation (bs.map i) ((ps₁ ++ ps₂).map (fun ⟨a, p⟩ ↦ (a, i p)))
       (none :: bs, as_ps', i ∘ subst)
 
+
+set_option doc.verso true
 private def updateLambdaBinderInfoD! (e : Expr) : Expr :=
   match e with
   | .lam n domain body _ => .lam n domain body .default
@@ -106,6 +114,8 @@ def List.init {α : Type*} : List α → List α
   | [_]    => []
   | a::l => a::init l
 
+
+set_option doc.verso false
 /-- Auxiliary data associated with a single constructor of an inductive declaration.
 -/
 structure Shape : Type where
@@ -134,6 +144,8 @@ structure Shape : Type where
   -/
   neqs : Option Nat
 
+
+set_option doc.verso true
 /-- Converts an inductive constructor `c` into a `Shape` that will be used later in
 while proving the iff theorem, and a proposition representing the constructor.
 -/
@@ -240,6 +252,7 @@ result and continue with the tail of first list. Otherwise, wrap the first eleme
 list with `some` and continue with the tails of both lists. Return when either list is empty.
 
 Example:
+
 ```
 listBoolMerge [false, true, false, true] [0, 1, 2, 3, 4] = [none, (some 0), none, (some 1)]
 ```
@@ -335,6 +348,8 @@ def mkIffOfInductivePropImpl (ind : Name) (rel : Name) (relStx : Syntax) : MetaM
   addDeclarationRangesFromSyntax rel (← getRef) relStx
   Term.addTermInfo' relStx (← mkConstWithLevelParams rel) (isBinder := true) |>.run'
 
+
+set_option doc.verso false
 /--
 Applying the `mk_iff` attribute to an inductively-defined proposition `mk_iff` makes an `iff` rule
 `r` with the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
@@ -379,6 +394,10 @@ See also the user command `mk_iff_of_inductive_prop`.
 -/
 syntax (name := mkIff) "mk_iff" (ppSpace ident)? : attr
 
+
+set_option doc.verso true
+
+set_option doc.verso false
 /--
 `mk_iff_of_inductive_prop i r` makes an `iff` rule for the inductively-defined proposition `i`.
 The new rule `r` has the shape `∀ ps is, i as ↔ ⋁_j, ∃ cs, is = cs`, where
@@ -403,6 +422,8 @@ See also the `mk_iff` user attribute.
 -/
 syntax (name := mkIffOfInductiveProp) "mk_iff_of_inductive_prop " ident ppSpace ident : command
 
+
+set_option doc.verso true
 elab_rules : command
 | `(command| mk_iff_of_inductive_prop $i:ident $r:ident) =>
     Command.liftCoreM <| MetaM.run' do

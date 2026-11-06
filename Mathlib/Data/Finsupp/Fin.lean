@@ -7,11 +7,15 @@ module
 
 public import Mathlib.Data.Finsupp.Single
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
 
 We interpret maps `Fin n →₀ M` as `n`-tuples of elements of `M`.
 We define the following operations:
+
 * `Finsupp.tail` : the tail of a map `Fin (n + 1) →₀ M`, i.e., its last `n` entries;
 * `Finsupp.cons` : adding an element at the beginning of an `n`-tuple, to get an `n + 1`-tuple;
 

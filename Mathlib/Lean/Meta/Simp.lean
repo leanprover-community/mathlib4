@@ -9,10 +9,13 @@ public import Lean.Elab.Tactic.Simp
 public import Lean.Meta.DiscrTree
 public import Mathlib.Init
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Helper functions for using the simplifier.
 
-[TODO] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
+‍\[TODO\] Needs documentation, cleanup, and possibly reunification of `mkSimpContext'` with core.
 -/
 
 public section
@@ -161,7 +164,8 @@ def getAllSimpAttrs (decl : Name) : CoreM (Array Name) := do
       simpAttrs := simpAttrs.push simpAttr
   return simpAttrs
 
-/-- Run `e` while the entries in `declNames` are erased from the `simp` set, while preserving the
+/--
+Run `e` while the entries in `declNames` are erased from the `simp` set, while preserving the
 rest of the `simp` configuration.
 
 Performance note: the code in `e` will be run with a new cache (which is discarded at the end of the

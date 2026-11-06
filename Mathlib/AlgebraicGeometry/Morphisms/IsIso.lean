@@ -7,10 +7,11 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.OpenImmersion
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # Being an isomorphism is local at the target
-
 -/
 
 universe u

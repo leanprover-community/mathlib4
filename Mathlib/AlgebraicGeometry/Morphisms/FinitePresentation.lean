@@ -12,8 +12,10 @@ public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 import Mathlib.AlgebraicGeometry.Properties
 import Mathlib.RingTheory.RingHom.FinitePresentation
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Morphisms of finite presentation
 
 A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y` and
@@ -24,7 +26,6 @@ quasi-compact, and quasi-separated. We do not provide a separate declaration for
 simply assume all conditions.
 
 We show that these properties are local, and are stable under compositions.
-
 -/
 
 public section

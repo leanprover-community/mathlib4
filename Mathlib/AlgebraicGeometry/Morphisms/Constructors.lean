@@ -8,28 +8,29 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 public import Mathlib.RingTheory.RingHomProperties
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Constructors for properties of morphisms between schemes
 
 This file provides some constructors to obtain morphism properties of schemes from other morphism
 properties:
 
-- `AffineTargetMorphismProperty.diagonal` : Given an affine target morphism property `P`,
+* `AffineTargetMorphismProperty.diagonal` : Given an affine target morphism property `P`,
   `P.diagonal f` holds if `P (pullback.mapDesc f₁ f₂ f)` holds for two affine open
   immersions `f₁` and `f₂`.
-- `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
+* `AffineTargetMorphismProperty.of`: Given a morphism property `P` of schemes,
   this is the restriction of `P` to morphisms with affine target. If `P` is local at the
   target, we have `(toAffineTargetMorphismProperty P).targetAffineLocally = P`, see:
   `MorphismProperty.targetAffineLocally_toAffineTargetMorphismProperty_eq_of_isZariskiLocalAtTarget`
-- `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
+* `MorphismProperty.topologically`: Given a property `P` of maps of topological spaces,
   `(topologically P) f` holds if `P` holds for the underlying continuous map of `f`.
-- `MorphismProperty.stalkwise`: Given a property `P` of ring homomorphisms,
+* `MorphismProperty.stalkwise`: Given a property `P` of ring homomorphisms,
   `(stalkwise P) f` holds if `P` holds for all stalk maps.
 
 Also provides API for showing the standard locality and stability properties for these
 types of properties.
-
 -/
 
 @[expose] public section

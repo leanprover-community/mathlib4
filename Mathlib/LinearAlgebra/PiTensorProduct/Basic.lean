@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 
 import Mathlib.Tactic.AdaptationNote
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
 
@@ -273,9 +276,11 @@ instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
 variable (R) in
-/-- The canonical `(Π i, s i) →ₘₗ[R] ⨂[R] i, s i`.
+/--
+The canonical `(Π i, s i) →ₘₗ[R] ⨂[R] i, s i`.
 
-`tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
+`tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`.
+-/
 def tprod : (Π i, s i) →ₘₗ[R] ⨂[R] i, s i where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
@@ -590,7 +595,8 @@ lemma piTensorHomMap_tprod_eq_map (f : Π i, s i →ₗ[R] t i) :
     piTensorHomMap (tprod R f) = map f := by
   ext; simp
 
-/-- If `s i` and `t i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
+/--
+If `s i` and `t i` are linearly equivalent for every `i` in `ι`, then `⨂[R] i, s i` and
 `⨂[R] i, t i` are linearly equivalent.
 
 This is the n-ary version of `TensorProduct.congr`
@@ -884,10 +890,12 @@ end tmulEquivDep
 
 section tmulEquiv
 
-/-- Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
+/--
+Equivalence between a `TensorProduct` of `PiTensorProduct`s and a single
 `PiTensorProduct` indexed by a `Sum` type.
 
-See `PiTensorProduct.tmulEquivDep` for the dependent version. -/
+See `PiTensorProduct.tmulEquivDep` for the dependent version.
+-/
 def tmulEquiv :
     (⨂[R] (_ : ι), M) ⊗[R] (⨂[R] (_ : ι₂), M) ≃ₗ[R] ⨂[R] (_ : ι ⊕ ι₂), M :=
   tmulEquivDep R (fun _ ↦ M)

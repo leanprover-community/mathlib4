@@ -11,6 +11,9 @@ public import Mathlib.Geometry.Euclidean.Sphere.Tangent
 import Mathlib.Geometry.Euclidean.Angle.Sphere
 import Mathlib.Geometry.Euclidean.Similarity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Power of a point (intersecting chords and secants)
 
@@ -41,7 +44,7 @@ variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 namespace InnerProductGeometry
 
 /-!
-### Geometrical results on spheres in real inner product spaces
+# Geometrical results on spheres in real inner product spaces
 
 This section develops some results on spheres in real inner product spaces,
 which are used to deduce corresponding results for Euclidean affine spaces.
@@ -70,7 +73,7 @@ end InnerProductGeometry
 namespace EuclideanGeometry
 
 /-!
-### Geometrical results on spheres in Euclidean affine spaces
+# Geometrical results on spheres in Euclidean affine spaces
 
 This section develops some results on spheres in Euclidean affine spaces.
 -/

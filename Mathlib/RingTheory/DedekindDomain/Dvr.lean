@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 public import Mathlib.RingTheory.LocalProperties.IntegrallyClosed
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dedekind domains
 
@@ -15,9 +18,10 @@ This file defines an equivalent notion of a Dedekind domain (or Dedekind ring),
 namely a Noetherian integral domain where the localization at every nonzero prime ideal is a DVR.
 
 ## Main results
-- `IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain` shows that
+
+* `IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain` shows that
   `IsDedekindDomain` implies the localization at each nonzero prime ideal is a DVR.
-- `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` proves the equivalence of
+* `isDedekindDomain_iff_isDiscreteValuationRing_atPrime` proves the equivalence of
   the two notions of Dedekind domain
 
 ## Implementation notes
@@ -30,9 +34,9 @@ to add a `(h : ¬ IsField A)` assumption whenever this is explicitly needed.
 
 ## References
 
-* [D. Marcus, *Number Fields*][marcus1977number]
-* [J.W.S. Cassels, A. Fröhlich, *Algebraic Number Theory*][cassels1967algebraic]
-* [J. Neukirch, *Algebraic Number Theory*][Neukirch1992]
+* ‍\[D. Marcus, _Number Fields_\]\[marcus1977number\]
+* ‍\[J.W.S. Cassels, A. Fröhlich, _Algebraic Number Theory_\]\[cassels1967algebraic\]
+* ‍\[J. Neukirch, _Algebraic Number Theory_\]\[Neukirch1992\]
 
 ## Tags
 
@@ -45,7 +49,8 @@ open scoped nonZeroDivisors Polynomial
 
 public section
 
-/-- Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
+/--
+Localizing a domain of Krull dimension `≤ 1` gives another ring of Krull dimension `≤ 1`.
 
 Note that the same proof can/should be generalized to preserving any Krull dimension,
 once we have a suitable definition.

@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 public import Mathlib.CategoryTheory.Subfunctor.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Submodules of presheaves of modules
 
@@ -18,9 +21,9 @@ we construct the corresponding subobject of `M` in the category
 
 ## Main definitions
 
-- `PresheafOfModules.Submodule M`: a family of submodules of `M`, stable
+* `PresheafOfModules.Submodule M`: a family of submodules of `M`, stable
   under restriction.
-- `PresheafOfModules.Submodule.toPresheafOfModules`: the associated
+* `PresheafOfModules.Submodule.toPresheafOfModules`: the associated
   presheaf of modules.
 
 The families of submodules of `M` form a `CompleteLattice`, with all the lattice

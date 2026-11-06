@@ -9,6 +9,9 @@ public import Mathlib.Topology.Algebra.UniformField
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completion of valuations
 
@@ -17,21 +20,21 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 
 ## Main definitions
 
-- `Valuation.extension` : extends a valuation on a field `K` to `Completion K`, provided
+* `Valuation.extension` : extends a valuation on a field `K` to `Completion K`, provided
   the valuation is compatible with the topology on `K`.
-- `UniformSpace.Completion.valuativeRel` : the valuative relation on `Completion K`,
+* `UniformSpace.Completion.valuativeRel` : the valuative relation on `Completion K`,
   extending the one on `K` that is compatible (in the sense of `Valuation.Compatible`)
   with the topology.
 
 ## Main statements
 
-- `Valuation.hasBasis_nhds_coe_zero` : the neighbourhoods of `0` in the completion of `K`
+* `Valuation.hasBasis_nhds_coe_zero` : the neighbourhoods of `0` in the completion of `K`
   have a basis given by the open balls of `v.extension.restrict`.
-- `UniformSpace.Completion.isValuativeTopology` : the extended valuative relation on
+* `UniformSpace.Completion.isValuativeTopology` : the extended valuative relation on
   `Completion K` is compatible with the topology.
-- `Valuation.compatible_extension` : if `v` is compatible with the valuative relation on `K`,
+* `Valuation.compatible_extension` : if `v` is compatible with the valuative relation on `K`,
   then `v.extension` is compatible with the valuative relation on `Completion K`.
-- `Valuation.isEquiv_extension` : if `v` and `v'` are two valuations compatible with the
+* `Valuation.isEquiv_extension` : if `v` and `v'` are two valuations compatible with the
   valuative relation on `K`, then `v.extension` and `v'.extension` are equivalent to each other.
 
 ## TODO
@@ -39,11 +42,11 @@ This file defines the extension of a valuation on a field `K` to its uniform com
 The current approach relies on the field structure of `K`, it can be generalized to
 arbitrary commutative rings.
 
-- Generalize `WithZeroTopology.topologicalSpace` to `LinearOrderedCommMonoidWithZero`
-and upgrade it to `WithZeroTopology.uniformSpace`.
-- Generalize `Valuation.extension` from fields to arbitrary commutative rings by first
-showing that the original valuation is uniformly continuous.
-- Split this file into two parts: one about valuation extension in general, and another
+* Generalize `WithZeroTopology.topologicalSpace` to `LinearOrderedCommMonoidWithZero`
+  and upgrade it to `WithZeroTopology.uniformSpace`.
+* Generalize `Valuation.extension` from fields to arbitrary commutative rings by first
+  showing that the original valuation is uniformly continuous.
+* Split this file into two parts: one about valuation extension in general, and another
   about the theory specific to valued fields (the `DivisionRing` and `Field` sections).
 -/
 
@@ -111,8 +114,10 @@ variable [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
 
 -- This instance will be tried in all `IsTopologicalDivisionRing` synthesis, but it will
 -- never fire outside the valuation theory. Lower priority improves performance.
-/-- The topology coming from a valuation on a division ring makes it a topological division ring
-[bourbaki1989b], VI.5.1 middle of Proposition 1. -/
+/--
+The topology coming from a valuation on a division ring makes it a topological division ring
+‍\[bourbaki1989b\], VI.5.1 middle of Proposition 1.
+-/
 instance (priority := 100) : IsTopologicalDivisionRing K where
   continuousAt_inv₀ x x_ne s s_in := by
     obtain ⟨γ, hs⟩ := (valuation K).mem_nhds_iff.mp s_in
@@ -342,7 +347,9 @@ lemma closure_image_coe_le : closure ((Prod.map (↑) (↑)) '' {(x, y) : K × K
     obtain ⟨r, s, hU, hvr, hvs⟩ := v.exists_coe_mem_extension_eq₂ hU
     exact ⟨(r, s), hU, (r, s), by simpa [hvr, hvs] using h, rfl⟩
 
-/-- [bourbaki1989b] VI §5 no.3 Proposition 5 (d) -/
+/--
+‍\[bourbaki1989b\] VI §5 no.3 Proposition 5 (d)
+-/
 theorem closure_image_coe_ofPred_map_lt {r : Γ₀} (hr : r ≠ 0) :
     closure ((↑) '' {x : K | v x < r}) = {x : Completion K | v.extension x < r} := by
   ext x

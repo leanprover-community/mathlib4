@@ -10,6 +10,9 @@ public import Mathlib.Data.Finset.Lattice.Prod
 
 import Mathlib.Data.Set.Lattice.Image
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # N-ary images of finsets
 
@@ -239,7 +242,7 @@ theorem biUnion_image_right : (t.biUnion fun b => s.image fun a => f a b) = imag
     exact Set.iUnion_image_right _
 
 /-!
-### Algebraic replacement rules
+# Algebraic replacement rules
 
 A collection of lemmas to transfer associativity, commutativity, distributivity, ... of operations
 to the associativity, commutativity, distributivity, ... of `Finset.image₂` of those operations.

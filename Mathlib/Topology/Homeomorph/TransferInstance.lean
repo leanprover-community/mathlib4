@@ -7,12 +7,14 @@ module
 
 public import Mathlib.Topology.Homeomorph.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer topological structure across `Equiv`s
 
 We show how to transport a topological space structure across an `Equiv` and prove that this
 make the equivalence a homeomorphism between the original space and the transported topology.
-
 -/
 
 @[expose] public section

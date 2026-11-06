@@ -9,6 +9,9 @@ public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Order.MinMax
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Distributive lattice structure on multisets
 
@@ -37,7 +40,9 @@ namespace Multiset
 section sub
 variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
-/-! ### Union -/
+/-!
+# Union
+-/
 
 /-- `s ∪ t` is the multiset such that the multiplicity of each `a` in it is the maximum of the
 multiplicity of `a` in `s` and `t`. This is the supremum of multisets. -/
@@ -80,7 +85,9 @@ lemma count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count 
 @[simp] lemma filter_union (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
     filter p (s ∪ t) = filter p s ∪ filter p t := by simp [union_def]
 
-/-! ### Intersection -/
+/-!
+# Intersection
+-/
 
 /-- `s ∩ t` is the multiset such that the multiplicity of each `a` in it is the minimum of the
 multiplicity of `a` in `s` and `t`. This is the infimum of multisets. -/
@@ -245,7 +252,9 @@ theorem inter_add_sub_of_add_eq_add [DecidableEq α] {M N P Q : Multiset α} (h 
     simp_all only [Multiset.count_add]
   omega
 
-/-! ### Disjoint multisets -/
+/-!
+# Disjoint multisets
+-/
 
 theorem disjoint_left {s t : Multiset α} : Disjoint s t ↔ ∀ {a}, a ∈ s → a ∉ t := by
   refine ⟨fun h a hs ht ↦ ?_, fun h u hs ht ↦ ?_⟩

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Group.Int
 public import Mathlib.Analysis.Normed.Group.Subgroup
 public import Mathlib.Analysis.Normed.Group.Uniform
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed groups homomorphisms
 
@@ -50,15 +53,19 @@ namespace AddMonoidHom
 variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
   {f : NormedAddGroupHom V W}
 
-/-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
+/--
+Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
-See `AddMonoidHom.mkNormedAddGroupHom'` for a version that uses `ℝ≥0` for the bound. -/
+See `AddMonoidHom.mkNormedAddGroupHom'` for a version that uses `ℝ≥0` for the bound.
+-/
 def mkNormedAddGroupHom (f : V →+ W) (C : ℝ) (h : ∀ v, ‖f v‖ ≤ C * ‖v‖) : NormedAddGroupHom V W :=
   { f with bound' := ⟨C, h⟩ }
 
-/-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
+/--
+Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
-See `AddMonoidHom.mkNormedAddGroupHom` for a version that uses `ℝ` for the bound. -/
+See `AddMonoidHom.mkNormedAddGroupHom` for a version that uses `ℝ` for the bound.
+-/
 def mkNormedAddGroupHom' (f : V →+ W) (C : ℝ≥0) (hC : ∀ x, ‖f x‖₊ ≤ C * ‖x‖₊) :
     NormedAddGroupHom V W :=
   { f with bound' := ⟨C, hC⟩ }
@@ -177,7 +184,9 @@ theorem SurjectiveOnWith.surjOn {f : NormedAddGroupHom V₁ V₂} {K : AddSubgro
     (h : f.SurjectiveOnWith K C) : Set.SurjOn f Set.univ K := fun x hx =>
   (h x hx).imp fun _a ⟨ha, _⟩ => ⟨Set.mem_univ _, ha⟩
 
-/-! ### The operator norm -/
+/-!
+# The operator norm
+-/
 
 
 /-- The operator norm of a seminormed group homomorphism is the inf of all its bounds. -/
@@ -283,7 +292,9 @@ alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le := mkNormedAddGroupHom_nor
 
 alias _root_.AddMonoidHom.mkNormedAddGroupHom_norm_le' := mkNormedAddGroupHom_norm_le'
 
-/-! ### Addition of normed group homs -/
+/-!
+# Addition of normed group homs
+-/
 
 
 /-- Addition of normed group homs. -/
@@ -309,7 +320,9 @@ theorem add_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
     (f + g) v = f v + g v :=
   rfl
 
-/-! ### The zero normed group hom -/
+/-!
+# The zero normed group hom
+-/
 
 
 instance zero : Zero (NormedAddGroupHom V₁ V₂) :=
@@ -351,7 +364,9 @@ theorem zero_apply (v : V₁) : (0 : NormedAddGroupHom V₁ V₂) v = 0 :=
 
 variable {f g}
 
-/-! ### The identity normed group hom -/
+/-!
+# The identity normed group hom
+-/
 
 
 variable (V)
@@ -378,7 +393,9 @@ theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
 
-/-! ### The negation of a normed group hom -/
+/-!
+# The negation of a normed group hom
+-/
 
 
 /-- Opposite of a normed group hom. -/
@@ -397,7 +414,9 @@ theorem neg_apply (f : NormedAddGroupHom V₁ V₂) (v : V₁) :
 theorem opNorm_neg (f : NormedAddGroupHom V₁ V₂) : ‖-f‖ = ‖f‖ := by
   simp only [norm_def, coe_neg, norm_neg, Pi.neg_apply]
 
-/-! ### Subtraction of normed group homs -/
+/-!
+# Subtraction of normed group homs
+-/
 
 
 /-- Subtraction of normed group homs. -/
@@ -417,7 +436,9 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
     (f - g : NormedAddGroupHom V₁ V₂) v = f v - g v :=
   rfl
 
-/-! ### Scalar actions on normed group homs -/
+/-!
+# Scalar actions on normed group homs
+-/
 
 
 section SMul
@@ -498,7 +519,9 @@ theorem coe_zsmul (r : ℤ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r
 theorem zsmul_apply (r : ℤ) (f : NormedAddGroupHom V₁ V₂) (v : V₁) : (r • f) v = r • f v :=
   rfl
 
-/-! ### Normed group structure on normed group homs -/
+/-!
+# Normed group structure on normed group homs
+-/
 
 
 /-- Homs between two given normed groups form a commutative additive group. -/
@@ -541,7 +564,9 @@ theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ 
 theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V₁ V₂) (v : V₁) :
     (∑ i ∈ s, f i) v = ∑ i ∈ s, f i v := by simp only [coe_sum, Finset.sum_apply]
 
-/-! ### Module structure on normed group homs -/
+/-!
+# Module structure on normed group homs
+-/
 
 
 instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
@@ -552,7 +577,9 @@ instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 
-/-! ### Composition of normed group homs -/
+/-!
+# Composition of normed group homs
+-/
 
 
 /-- The composition of continuous normed group homs. -/
@@ -630,7 +657,9 @@ def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=
   rfl
 
-/-!### Kernel -/
+/-!
+# Kernel
+-/
 
 
 section Kernels
@@ -672,7 +701,9 @@ theorem isClosed_ker {V₂ : Type*} [NormedAddCommGroup V₂] (f : NormedAddGrou
 
 end Kernels
 
-/-! ### Range -/
+/-!
+# Range
+-/
 
 
 section Range
@@ -707,7 +738,9 @@ end Range
 
 variable {f : NormedAddGroupHom V W}
 
-/-- A `NormedAddGroupHom` is *norm-nonincreasing* if `‖f v‖ ≤ ‖v‖` for all `v`. -/
+/--
+A `NormedAddGroupHom` is _norm-nonincreasing_ if `‖f v‖ ≤ ‖v‖` for all `v`.
+-/
 def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
   ∀ v, ‖f v‖ ≤ ‖v‖
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Bases
 public import Mathlib.Topology.UniformSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ultrametric (nonarchimedean) uniform spaces
 
@@ -41,9 +44,8 @@ but rather extend the relation properties as needed.
 
 ## References
 
-* [D. Windisch, *Equivalent characterizations of non-Archimedean uniform spaces*][windisch2021]
-* [A. C. M. van Rooij, *Non-Archimedean uniformities*][vanrooij1970]
-
+* ‍\[D. Windisch, _Equivalent characterizations of non-Archimedean uniform spaces_\]\[windisch2021\]
+* ‍\[A. C. M. van Rooij, _Non-Archimedean uniformities_\]\[vanrooij1970\]
 -/
 
 public section

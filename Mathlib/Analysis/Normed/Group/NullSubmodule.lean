@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.MulAction
 
 import Mathlib.Analysis.Normed.Group.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The null subgroup in a seminormed commutative group
 
@@ -26,7 +29,6 @@ If `E` is a vector space over `𝕜` with an appropriate continuous action, we a
 subspace as a submodule of `E`.
 
 * `nullSubmodule` : the subspace of elements `x` with `‖x‖ = 0`.
-
 -/
 
 @[expose] public section

@@ -11,10 +11,11 @@ public import Mathlib.Algebra.Lie.Weights.RootSystem
 public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-
 # The root system base associated to a Lie algebra basis
-
 -/
 
 @[expose] public section

@@ -11,6 +11,10 @@ public import Mathlib.Order.UpperLower.Basic
 
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Young diagrams
 
@@ -57,12 +61,14 @@ Young diagram
 
 open Function
 
-/-- A Young diagram is a finite collection of cells on the `ℕ × ℕ` grid such that whenever
+/--
+A Young diagram is a finite collection of cells on the `ℕ × ℕ` grid such that whenever
 a cell is present, so are all the ones above and to the left of it. Like matrices, an `(i, j)` cell
 is a cell in row `i` and column `j`, where rows are enumerated downward and columns rightward.
 
 Young diagrams are modeled as finite sets in `ℕ × ℕ` that are lower sets with respect to the
-standard order on products. -/
+standard order on products.
+-/
 @[ext]
 structure YoungDiagram where
   /-- A finite set which represents a finite collection of cells on the `ℕ × ℕ` grid. -/

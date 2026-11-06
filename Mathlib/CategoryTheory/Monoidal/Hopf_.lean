@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.Monoidal.Bimon_
 
 import Mathlib.CategoryTheory.Monoidal.Conv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of Hopf monoids in a braided monoidal category.
-
 
 ## TODO
 
@@ -139,7 +141,7 @@ theorem antipode_counit (A : C) [HopfObj A] : 𝒮[A] ≫ ε[A] = ε[A] := by
   simpa [unitors_equal]
 
 /-!
-## The antipode is an antihomomorphism with respect to both the monoid and comonoid structures.
+# The antipode is an antihomomorphism with respect to both the monoid and comonoid structures.
 -/
 
 theorem antipode_comul₁ (A : C) [HopfObj A] :

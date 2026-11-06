@@ -9,8 +9,10 @@ public import Mathlib.CategoryTheory.Preadditive.Projective.Internal
 public import Mathlib.Condensed.Light.Epi
 public import Mathlib.Condensed.Light.Monoidal
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Characterization of internal projectivity in light condensed modules
 
 This file gives an explicit condition on light condensed modules over a ring `R` to be internally
@@ -20,12 +22,14 @@ projective, namely the following:
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
+
 ```
 P ⊗ R[S'] --> A
   |           |
   v           v
 P ⊗ R[S]  --> B
 ```
+
 commute.
 
 We also provide the analogous characterization with the tensor product commuted the other way around
@@ -92,12 +96,14 @@ lemma ihomPoints_symm_comp (B P : LightCondMod.{u} R) (S S' : LightProfinite) (�
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : P ⊗ R[S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : P ⊗ R[S'] ⟶ A`, making the diagram
+
 ```
 P ⊗ R[S'] --> A
   |           |
   v           v
 P ⊗ R[S]  --> B
 ```
+
 commute.
 -/
 lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : InternallyProjective P ↔
@@ -131,12 +137,14 @@ lemma internallyProjective_iff_tensor_condition (P : LightCondMod R) : Internall
 only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S] ⊗ P ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : R[S'] ⊗ P ⟶ A`, making the diagram
+
 ```
 R[S'] ⊗ P --> A
   |           |
   v           v
 R[S] ⊗ P  --> B
 ```
+
 commute.
 -/
 lemma internallyProjective_iff_tensor_condition' (P : LightCondMod R) : InternallyProjective P ↔
@@ -160,12 +168,14 @@ Given a `P : LightCondSet`, the light free light condensed module `R[P]` is inte
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
+
 ```
 R[P × S'] --> A
   |           |
   v           v
 R[P × S]  --> B
 ```
+
 commute.
 -/
 lemma free_internallyProjective_iff_tensor_condition (P : LightCondSet.{u}) :
@@ -197,12 +207,14 @@ Given a `P : LightCondSet`, the light free light condensed module `R[P]` is inte
 and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
+
 ```
 R[S' × P] --> A
   |           |
   v           v
 R[S × P]  --> B
 ```
+
 commute.
 -/
 lemma free_internallyProjective_iff_tensor_condition' (P : LightCondSet.{u}) :
@@ -235,12 +247,14 @@ Given a `P : LightProfinite`, the light free light condensed module `R[P]` is in
 if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[P × S] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : R[P × S'] ⟶ A`, making the diagram
+
 ```
 R[P × S'] --> A
   |           |
   v           v
 R[P × S]  --> B
 ```
+
 commute.
 -/
 lemma free_lightProfinite_internallyProjective_iff_tensor_condition (P : LightProfinite.{u}) :
@@ -269,12 +283,14 @@ Given a `P : LightProfinite`, the light free light condensed module `R[P]` is in
 if and only if, for all `A B : LightCondMod R`, for all epimorphisms `e : A ⟶ B`, for all
 `S : LightProfinite` and all morphisms `g : R[S × P] ⟶ B`, there exists a `S' : LightProfinite`
 with a surjection `π : S' ⟶ S` and a morphism `g' : R[S' × P] ⟶ A`, making the diagram
+
 ```
 R[S' × P] --> A
   |           |
   v           v
 R[S × P]  --> B
 ```
+
 commute.
 -/
 lemma free_lightProfinite_internallyProjective_iff_tensor_condition' (P : LightProfinite.{u}) :

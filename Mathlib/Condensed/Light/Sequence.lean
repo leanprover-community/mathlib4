@@ -10,8 +10,10 @@ public import Mathlib.Condensed.Light.InternallyProjective
 import Mathlib.Condensed.Light.EffectiveEpi
 import Mathlib.Topology.Category.LightProfinite.Injective
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The free light condensed `R`-module `R[ℕ∪∞]` is internally projective
 -/
 
@@ -135,17 +137,21 @@ def sectionOfFibreIncl (π : T → S × Option X) (σ : Option X → S → T)
     (hσ' : ∀ (x : Option X) (s : S), (π (σ x s)).2 = x) : S → (Prod.snd ∘ π_r π σ) ⁻¹' {none} :=
   fun s ↦ ⟨⟨σ none s, by grind⟩, by grind⟩
 
-/-- Given a map `π : T → S × OnePoint X`, define a new space `S'` and a map `y : S' ⟶ S` which has
+/--
+Given a map `π : T → S × OnePoint X`, define a new space `S'` and a map `y : S' ⟶ S` which has
 the property that in the Cartesian diagram
+
 ```
 T' -> S' ⨯ OnePoint X
 |         |
 v         v
 T  -> S  ⨯ OnePoint X
 ```
+
 there are maps `σ x : S' ⟶ T'` for each `x : OnePoint X` such that
 `S' ⨯ OnePoint X ⟶ S' ⟶ T' ⟶ S' ⨯ OnePoint X` is the identity for
-all points `⟨s, x⟩ : S' ⨯ OnePoint X`. -/
+all points `⟨s, x⟩ : S' ⨯ OnePoint X`.
+-/
 def S' (π : T → S × OnePoint X) : Set (∀ x : OnePoint X, (Prod.snd ∘ π) ⁻¹' {x}) :=
   {x | ∀ n m, (π (x n).val).1 = (π (x m).val).1}
 
@@ -244,16 +250,20 @@ noncomputable def cocone {X : LightCondMod R} {S T : LightProfinite} (π : T ⟶
     simp [pullback.condition]
 
 set_option backward.isDefEq.respectTransparency false in
-/-- Given a surjective map of light profinite spaces `T ⟶ S ⊗ ℕ∪{∞}`,
+/--
+Given a surjective map of light profinite spaces `T ⟶ S ⊗ ℕ∪{∞}`,
 construct a (non-cartesian) commutative square
+
 ```
 T' -> S' ⨯ OnePoint X
 |         |
 v         v
 T  -> S  ⨯ OnePoint X
 ```
+
 where every map is epi. The map `(π ≫ Prod.snd) ⁻¹' ∞ ⟶ T' ⟶ S' ⨯ ℕ∪{∞}` is split epi and
-`cover` is epi. `S'` is constructed as the pullback of all the fibres. -/
+`cover` is epi. `S'` is constructed as the pullback of all the fibres.
+-/
 lemma aux {S T : LightProfinite} (π : T ⟶ S ⊗ ℕ∪{∞}) [Epi π] :
     ∃ (S' T' : LightProfinite) (y' : S' ⟶ S) (π' : T' ⟶ S' ⊗ ℕ∪{∞}) (g' : T' ⟶ T),
       Epi π' ∧ Epi y' ∧ π' ≫ (y' ▷ ℕ∪{∞}) = g' ≫ π ∧

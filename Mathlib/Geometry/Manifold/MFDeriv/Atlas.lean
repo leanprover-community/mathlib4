@@ -9,16 +9,21 @@ public import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 public import Mathlib.Geometry.Manifold.Notation
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of models with corners and (extended) charts
 
 In this file, we analyse the differentiability of charts, models with corners and extended charts.
 We show that
+
 * models with corners are differentiable
 * charts are differentiable on their source
 * `mdifferentiableOn_extChartAt`: `extChartAt` is differentiable on its source
 
 Suppose an open partial homeomorphism `e` is differentiable. This file shows
+
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `OpenPartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
   there are also spellings with trivial kernel and full range
@@ -26,6 +31,7 @@ Suppose an open partial homeomorphism `e` is differentiable. This file shows
 In particular, (extended) charts have bijective differential.
 
 ## Tags
+
 charts, differentiable, bijective
 -/
 
@@ -52,7 +58,9 @@ namespace ModelWithCorners
 this section is about `I` as a map, not as a parameter. Therefore, we make it explicit. -/
 variable (I)
 
-/-! #### Model with corners -/
+/-!
+# Model with corners
+-/
 
 protected theorem hasMFDerivAt {x} : HasMFDerivAt I 𝓘(𝕜, E) I x (ContinuousLinearMap.id _ _) :=
   ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' I.rightInvOn (mem_range_self _)⟩
@@ -125,7 +133,9 @@ theorem mdifferentiable_chart (x : M) : (chartAt H x).MDifferentiable I I :=
 
 end Charts
 
-/-! ### Differentiable open partial homeomorphisms -/
+/-!
+# Differentiable open partial homeomorphisms
+-/
 
 namespace OpenPartialHomeomorph.MDifferentiable
 variable {e : OpenPartialHomeomorph M M'} (he : e.MDifferentiable I I')
@@ -209,7 +219,9 @@ theorem trans (he' : e'.MDifferentiable I' I'') : (e.trans e').MDifferentiable I
 
 end OpenPartialHomeomorph.MDifferentiable
 
-/-! ### Differentiability of `extChartAt` -/
+/-!
+# Differentiability of `extChartAt`
+-/
 
 section
 

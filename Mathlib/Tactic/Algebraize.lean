@@ -9,16 +9,18 @@ public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
 public import Mathlib.Algebra.Algebra.Tower
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-## Algebraize tactic
+/-!
+# Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to
 automatically add `Algebra` instances given `RingHom`s. For example, `algebraize [f, g]` where
 `f : A →+* B` and `g : B →+* C` are `RingHom`s, will add the instances `Algebra A B` and
 `Algebra B C` corresponding to these `RingHom`s.
 
-## Further functionality
+# Further functionality
 
 When given a composition of `RingHom`s, e.g. `algebraize [g.comp f]`, the tactic will also try to
 add the instance `IsScalarTower A B C` if possible.
@@ -30,7 +32,7 @@ the instance `Algebra A B` and the corresponding property `Algebra.FiniteType A 
 which `RingHom` properties have a corresponding `Algebra` property through the `algebraize`
 attribute.
 
-## Algebraize attribute
+# Algebraize attribute
 
 The `algebraize` attribute is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. It assumes that the tagged declaration has a name of the form `RingHom.Property` and
@@ -50,26 +52,31 @@ specified declaration should be one of the following:
    constructor.
 
 Here are three examples of properties tagged with the `algebraize` attribute:
+
 ```
 @[algebraize]
 def RingHom.FiniteType (f : A →+* B) : Prop :=
   @Algebra.FiniteType A B _ _ f.toAlgebra
 ```
+
 An example when the `Name` is provided (as the `Algebra` does not have the expected name):
+
 ```
 @[algebraize Module.Finite]
 def RingHom.Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.Finite A B
 ```
+
 An example with a constructor as parameter (as the two properties are not definitionally the same):
+
 ```
 @[algebraize Algebra.Flat.out]
 class RingHom.Flat {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) : Prop where
   out : f.toAlgebra.Flat := by infer_instance
 ```
 
-## `algebraize_only`
+# `algebraize_only`
 
 To avoid searching through the local context and adding corresponding `Algebra` properties, use
 `algebraize_only` which only adds `Algebra` and `IsScalarTower` instances.
@@ -97,7 +104,8 @@ def algebraizeGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
       throwError "theorem name must be of the form `RingHom.Property` if no argument is provided"
   | _ => throwError "unexpected algebraize argument"
 
-/-- A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
+/--
+A user attribute that is used to tag `RingHom` properties that can be converted to `Algebra`
 properties. Using an (optional) parameter, it will also generate a `Name` of a declaration which
 will help the `algebraize` tactic access the corresponding `Algebra` property.
 
@@ -113,7 +121,8 @@ There are two cases for what declaration corresponding to this `Name` can be.
 
 Finally, if no argument is provided to the `algebraize` attribute, it is assumed that the tagged
 declaration has name `RingHom.Property` and that the corresponding `Algebra` property has name
-`Algebra.Property`. The attribute then returns `Algebra.Property` (so assume case 1 above). -/
+`Algebra.Property`. The attribute then returns `Algebra.Property` (so assume case 1 above).
+-/
 initialize algebraizeAttr : ParametricAttribute Name ←
   registerParametricAttribute {
     name := `algebraize,
@@ -128,12 +137,14 @@ namespace Mathlib.Tactic
 
 namespace Algebraize
 
-/-- Given an expression `f` of type `RingHom A B` where `A` and `B` are commutative semirings,
+/--
+Given an expression `f` of type `RingHom A B` where `A` and `B` are commutative semirings,
 this function adds the instance `Algebra A B` to the context (if it does not already exist).
 
 This function also requires the type of `f`, given by the parameter `ft`. The reason this is done
 (even though `ft` can be inferred from `f`) is to avoid recomputing `ft` in the `algebraize` tactic,
-as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`. -/
+as when `algebraize` calls `addAlgebraInstanceFromRingHom` it has already computed `ft`.
+-/
 def addAlgebraInstanceFromRingHom (f ft : Expr) : TacticM Unit := withMainContext do
   let (_, l) := ft.getAppFnArgs
   -- The type of the corresponding algebra instance
@@ -247,7 +258,8 @@ open Algebraize Lean.Parser.Tactic
 /-- A list of terms passed to `algebraize` as argument. -/
 syntax algebraizeTermSeq := " [" withoutPosition(term,*,?) "]"
 
-/-- Tactic that, given `RingHom`s, adds the corresponding `Algebra` and (if possible)
+/--
+Tactic that, given `RingHom`s, adds the corresponding `Algebra` and (if possible)
 `IsScalarTower` instances, as well as `Algebra` corresponding to `RingHom` properties available
 as hypotheses.
 
@@ -260,7 +272,8 @@ The tactic also comes with a configuration option `properties`. If set to `true`
 tactic searches through the local context for `RingHom` properties that can be converted to
 `Algebra` properties. The macro `algebraize_only` calls
 `algebraize -properties`,
-so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
+so in other words it only adds `Algebra` and `IsScalarTower` instances.
+-/
 syntax "algebraize " optConfig (algebraizeTermSeq)? : tactic
 
 elab_rules : tactic

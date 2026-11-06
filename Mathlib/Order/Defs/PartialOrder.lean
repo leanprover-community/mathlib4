@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Tactic.ToDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orders
 
@@ -14,8 +17,8 @@ Defines classes for preorders and partial orders
 and proves some basic lemmas about them.
 
 We also define covering relations on a preorder.
-We say that `b` *covers* `a` if `a < b` and there is no element in between.
-We say that `b` *weakly covers* `a` if `a ≤ b` and there is no element between `a` and `b`.
+We say that `b` _covers_ `a` if `a < b` and there is no element in between.
+We say that `b` _weakly covers_ `a` if `a ≤ b` and there is no element between `a` and `b`.
 In a partial order this is equivalent to `a ⋖ b ∨ a = b`,
 in a preorder this is equivalent to `a ⋖ b ∨ (a ≤ b ∧ b ≤ a)`
 
@@ -32,7 +35,7 @@ variable {α : Type*}
 section Preorder
 
 /-!
-### Definition of `Preorder` and lemmas about types with a `Preorder`
+# Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
 /--
@@ -168,7 +171,7 @@ end Preorder
 section PartialOrder
 
 /-!
-### Definition of `PartialOrder` and lemmas about types with a partial order
+# Definition of `PartialOrder` and lemmas about types with a partial order
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/

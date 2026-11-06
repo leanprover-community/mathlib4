@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 public import Mathlib.CategoryTheory.Localization.HasLocalization
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The preadditive category structure on the localized category
 
@@ -29,7 +32,6 @@ Preadditive category instances are defined on the categories `W.Localization`
 (It would be easy to deduce from the results in this file that if `W` has a right calculus
 of fractions, then the localized category can also be equipped with
 a preadditive structure, but only one of these two constructions can be made an instance!)
-
 -/
 
 @[expose] public section

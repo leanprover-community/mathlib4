@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicGeometry.Cover.Directed
 public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Relative gluing
 
@@ -58,12 +61,14 @@ variable {S : Scheme.{u}} (𝒰 : S.OpenCover) [Category 𝒰.I₀] [𝒰.Locall
 /--
 A relative gluing datum over a locally directed cover `𝒰` of `S` is a scheme `Xᵢ` for every
 `i : 𝒰.I₀` and natural maps `Xᵢ ⟶ Uᵢ` such that for every `i ⟶ j`, the diagram
+
 ```
 Xᵢ --> Uᵢ
 |      |
 v      v
 Xⱼ --> Uⱼ
 ```
+
 is a pullback square. We bundle this in the form of a functor and an equifibered natural
 transformation.
 The `Xᵢ` then glue to a scheme over `S`

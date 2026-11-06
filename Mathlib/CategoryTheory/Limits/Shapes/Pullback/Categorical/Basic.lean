@@ -7,7 +7,11 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Categorical.CatCospanTransform
 
-/-! # Categorical pullbacks
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Categorical pullbacks
 
 This file defines the basic properties of categorical pullbacks.
 
@@ -37,11 +41,13 @@ equivalent to `CatCommSqOver F G X`.
   `CategoricalPullback (whiskeringRight X A B|>.obj F) (whiskeringRight X C B|>.obj G)`.
 
 ## References
+
 * [Kerodon: section 1.4.5.2](https://kerodon.net/tag/032Y)
-* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055),
+* [Niles Johnson, Donald Yau, _2-Dimensional Categories_](https://arxiv.org/abs/2002.06055),
   example 5.3.9, although we take a slightly different (equivalent) model of the object.
 
 ## TODOs:
+
 * 2-functoriality of the construction with respect to "transformation of categorical
   cospans".
 * Full equivalence-invariance of the notion (follows from suitable 2-functoriality).
@@ -55,6 +61,7 @@ equivalent to `CatCommSqOver F G X`.
 * Stability of (co)fibered categories under categorical pullbacks.
 
 ### Implementations note:
+
 In this file, a few proofs could be removed in favor of letting autoParams fill them
 in automatically: they are kept intentionally for performance reasons.
 -/
@@ -201,13 +208,15 @@ open CategoryTheory.Functor
 variable (X : Type u₄) [Category.{v₄} X]
 
 variable (F G) in
-/-- The data of a categorical commutative square over a cospan `F, G` with cone point `X` is
+/--
+The data of a categorical commutative square over a cospan `F, G` with cone point `X` is
 that of a functor `T : X ⥤ A`, a functor `L : X ⥤ C`, and a `CatCommSq T L F G`.
-Note that this is *exactly* what an object of
+Note that this is _exactly_ what an object of
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)` is,
 so `CatCommSqOver F G X` is in equivalent to
 `((whiskeringRight X A B).obj F) ⊡ ((whiskeringRight X C B).obj G)`,
-though it is defined separately for performance reasons. -/
+though it is defined separately for performance reasons.
+-/
 structure CatCommSqOver where
   /-- The first projection functor. -/
   fst : X ⥤ A

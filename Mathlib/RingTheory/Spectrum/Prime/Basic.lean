@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Nilpotent.Lemmas
 public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Prime spectrum of a commutative (semi)ring
 
@@ -32,13 +35,15 @@ whereas we denote subsets of prime spectra with `t`, `t'`, etc...
 
 ## Inspiration/contributors
 
-The contents of this file draw inspiration from <https://github.com/ramonfmir/lean-scheme>
-which has contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau,
-and Chris Hughes (on an earlier repository).
+The contents of this file draw inspiration from [
+https://github.com/ramonfmir/lean-scheme](https://github.com/ramonfmir/lean-scheme) which has
+contributions from Ramon Fernandez Mir, Kevin Buzzard, Kenny Lau, and Chris Hughes (on an earlier
+repository).
 
 ## References
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 -/
 
 @[expose] public section
@@ -126,7 +131,8 @@ theorem primeSpectrumProd_symm_inr_asIdeal (x : PrimeSpectrum S) :
   cases x
   rfl
 
-/-- The zero locus of a set `s` of elements of a commutative (semi)ring `R` is the set of all
+/--
+The zero locus of a set `s` of elements of a commutative (semi)ring `R` is the set of all
 prime ideals of the ring that contain the set `s`.
 
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
@@ -146,7 +152,8 @@ theorem zeroLocus_span (s : Set R) : zeroLocus (Ideal.span s : Set R) = zeroLocu
   ext x
   exact (Submodule.gi R R).gc s x.asIdeal
 
-/-- The vanishing ideal of a set `t` of points of the prime spectrum of a commutative ring `R` is
+/--
+The vanishing ideal of a set `t` of points of the prime spectrum of a commutative ring `R` is
 the intersection of all the prime ideals in the set `t`.
 
 An element `f` of `R` can be thought of as a dependent function on the prime spectrum of `R`.
@@ -431,8 +438,10 @@ open Submodule
 variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 
-/-- In a Noetherian ring, every ideal contains a product of prime ideals
-([samuel1967, § 3.3, Lemma 3]). -/
+/--
+In a Noetherian ring, every ideal contains a product of prime ideals
+(\[samuel1967, § 3.3, Lemma 3\]).
+-/
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   induction I using IsNoetherian.induction with | hgt M hgt =>
@@ -460,9 +469,11 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
   apply sup_le (show span R {x} * M ≤ M from Ideal.mul_le_right)
   rwa [span_mul_span, Set.singleton_mul_singleton, span_singleton_le_iff_mem]
 
-/-- In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
-  product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
-  product or prime ideals ([samuel1967, § 3.3, Lemma 3]) -/
+/--
+In a Noetherian integral domain which is not a field, every non-zero ideal contains a non-zero
+product of prime ideals; in a field, the whole ring is a non-zero ideal containing only 0 as
+product or prime ideals (\[samuel1967, § 3.3, Lemma 3\])
+-/
 theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {I : Ideal A}
     (h_nzI : I ≠ ⊥) :
     ∃ Z : Multiset (PrimeSpectrum A),

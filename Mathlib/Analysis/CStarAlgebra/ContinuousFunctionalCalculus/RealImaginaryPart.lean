@@ -7,7 +7,12 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 
-/-! # Interactions of the continuous functional calculus with the real and imaginary part -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Interactions of the continuous functional calculus with the real and imaginary part
+-/
 
 public section
 

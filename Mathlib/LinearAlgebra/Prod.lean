@@ -9,7 +9,11 @@ public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Group.Graph
 public import Mathlib.LinearAlgebra.Span.Basic
 
-/-! # Products of modules
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Products of modules
 
 This file defines constructors for linear maps whose domains or codomains are products.
 
@@ -18,22 +22,26 @@ It contains theorems relating these to each other, as well as to `Submodule.prod
 
 ## Main definitions
 
-- products in the domain:
-  - `LinearMap.fst`
-  - `LinearMap.snd`
-  - `LinearMap.coprod`
-  - `LinearMap.prod_ext`
-- products in the codomain:
-  - `LinearMap.inl`
-  - `LinearMap.inr`
-  - `LinearMap.prod`
-- products in both domain and codomain:
-  - `LinearMap.prodMap`
-  - `LinearEquiv.prodMap`
-  - `LinearEquiv.skewProd`
-- product with the trivial module:
-  - `LinearEquiv.prodUnique`
-  - `LinearEquiv.uniqueProd`
+* products in the domain:
+
+  * `LinearMap.fst`
+  * `LinearMap.snd`
+  * `LinearMap.coprod`
+  * `LinearMap.prod_ext`
+* products in the codomain:
+
+  * `LinearMap.inl`
+  * `LinearMap.inr`
+  * `LinearMap.prod`
+* products in both domain and codomain:
+
+  * `LinearMap.prodMap`
+  * `LinearEquiv.prodMap`
+  * `LinearEquiv.skewProd`
+* product with the trivial module:
+
+  * `LinearEquiv.prodUnique`
+  * `LinearEquiv.uniqueProd`
 -/
 
 @[expose] public section
@@ -113,10 +121,12 @@ theorem prod_comp (f : M₂ →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄)
     (h : M →ₗ[R] M₂) : (f.prod g).comp h = (f.comp h).prod (g.comp h) :=
   rfl
 
-/-- Taking the product of two maps with the same domain is equivalent to taking the product of
+/--
+Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
+-/
 @[simps]
 def prodEquiv [Module S M₂] [Module S M₃] [SMulCommClass R S M₂] [SMulCommClass R S M₃] :
     ((M →ₗ[R] M₂) × (M →ₗ[R] M₃)) ≃ₗ[S] M →ₗ[R] M₂ × M₃ where
@@ -249,10 +259,12 @@ theorem coprod_comp_inl_inr (f : M × M₂ →ₗ[R] M₃) :
     (f.comp (inl R M M₂)).coprod (f.comp (inr R M M₂)) = f := by
   rw [← comp_coprod, coprod_inl_inr, comp_id]
 
-/-- Taking the product of two maps with the same codomain is equivalent to taking the product of
+/--
+Taking the product of two maps with the same codomain is equivalent to taking the product of
 their domains.
 
-See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
+See note \[bundled maps over different rings\] for why separate `R` and `S` semirings are used.
+-/
 @[simps]
 def coprodEquiv [Module S M₃] [SMulCommClass R S M₃] :
     ((M →ₗ[R] M₃) × (M₂ →ₗ[R] M₃)) ≃ₗ[S] M × M₂ →ₗ[R] M₃ where
@@ -276,7 +288,8 @@ theorem prod_ext_iff {f g : M × M₂ →ₗ[R] M₃} :
 Split equality of linear maps from a product into linear maps over each component, to allow `ext`
 to apply lemmas specific to `M →ₗ M₃` and `M₂ →ₗ M₃`.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext 1100]
 theorem prod_ext {f g : M × M₂ →ₗ[R] M₃} (hl : f.comp (inl _ _ _) = g.comp (inl _ _ _))
     (hr : f.comp (inr _ _ _) = g.comp (inr _ _ _)) : f = g :=
@@ -920,11 +933,13 @@ variable {R S G H I : Type*}
   [AddCommMonoid H] [Module S H]
   [AddCommMonoid I] [Module S I]
 
-/-- **Vertical line test** for linear maps.
+/--
+*Vertical line test* for linear maps.
 
 Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
 the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
-most once. Then the image of `f` is the graph of some linear map `f' : H → I`. -/
+most once. Then the image of `f` is the graph of some linear map `f' : H → I`.
+-/
 lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
     ∃ f' : H →ₗ[S] I, LinearMap.range f = LinearMap.graph f' := by
@@ -946,21 +961,25 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
     coe_mk, AddHom.coe_mk, AddMonoidHom.coe_ofClass, Set.mem_range] using hf' x
 
-/-- **Vertical line test** for linear maps.
+/--
+*Vertical line test* for linear maps.
 
 Let `G ≤ H × I` be a submodule of a product of modules. Assume that `G` maps bijectively to the
-first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`. -/
+first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`.
+-/
 lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
       (fun a b h ↦ congr((Prod.snd ∘ G.subtype) $(hf₁.injective h)))
 
-/-- **Line test** for module isomorphisms.
+/--
+*Line test* for module isomorphisms.
 
 Let `f : G → H × I` be a linear (or semilinear) map to a product of modules. Assume that `f` is
 surjective onto both factors and that the image of `f` intersects every "vertical line"
 `{(h, i) | i : I}` and every "horizontal line" `{(h, i) | h : H}` at most once. Then the image of
-`f` is the graph of some module isomorphism `f' : H ≃ I`. -/
+`f` is the graph of some module isomorphism `f' : H ≃ I`.
+-/
 lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃ₗ[S] I, range f = e.toLinearMap.graph := by
@@ -980,10 +999,12 @@ lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ 
     left_inv := fun h ↦ by rw [← he₁₂]
     right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
 
-/-- **Goursat's lemma** for module isomorphisms.
+/--
+*Goursat's lemma* for module isomorphisms.
 
 Let `G ≤ H × I` be a submodule of a product of modules. Assume that the natural maps from `G` to
-both factors are bijective. Then `G` is the graph of some module isomorphism `f : H ≃ I`. -/
+both factors are bijective. Then `G` is the graph of some module isomorphism `f : H ≃ I`.
+-/
 lemma Submodule.exists_equiv_eq_graph {G : Submodule S (H × I)}
     (hG₁ : Bijective (Prod.fst ∘ G.subtype)) (hG₂ : Bijective (Prod.snd ∘ G.subtype)) :
     ∃ e : H ≃ₗ[S] I, G = e.toLinearMap.graph := by

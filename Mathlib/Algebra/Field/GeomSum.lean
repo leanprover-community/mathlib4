@@ -8,16 +8,19 @@ module
 public import Mathlib.Algebra.Field.Basic
 public import Mathlib.Algebra.Ring.GeomSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Partial sums of geometric series in a field
 
-This file determines the values of the geometric series $\sum_{i=0}^{n-1} x^i$ and
-$\sum_{i=0}^{n-1} x^i y^{n-1-i}$ and variants thereof.
+This file determines the values of the geometric series $`\sum_{i=0}^{n-1} x^i` and
+$`\sum_{i=0}^{n-1} x^i y^{n-1-i}` and variants thereof.
 
 ## Main statements
 
-* `geom_sum_Ico` proves that $\sum_{i=m}^{n-1} x^i=\frac{x^n-x^m}{x-1}$ in a division ring.
-* `geom_sum₂_Ico` proves that $\sum_{i=m}^{n-1} x^iy^{n - 1 - i}=\frac{x^n-y^{n-m}x^m}{x-y}$
+* `geom_sum_Ico` proves that $`\sum_{i=m}^{n-1} x^i=\frac{x^n-x^m}{x-1}` in a division ring.
+* `geom_sum₂_Ico` proves that $`\sum_{i=m}^{n-1} x^iy^{n - 1 - i}=\frac{x^n-y^{n-m}x^m}{x-y}`
   in a field.
 
 Several variants are recorded, generalising in particular to the case of a division ring in

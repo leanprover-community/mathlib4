@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Calculus.ContDiff.Operations
 
 import Mathlib.Analysis.Calculus.ContDiff.CPolynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The iterated derivative of an analytic function
 

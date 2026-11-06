@@ -10,6 +10,9 @@ public import Mathlib.Algebra.MvPolynomial.Nilpotent
 
 import Mathlib.Algebra.Order.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Expand multivariate polynomials
 
@@ -31,9 +34,11 @@ section CommSemiring
 
 variable {σ τ R S : Type*} [CommSemiring R] [CommSemiring S] (p : ℕ)
 
-/-- Expand the polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
+/--
+Expand the polynomial by a factor of p, so `∑ aₙ xⁿ` becomes `∑ aₙ xⁿᵖ`.
 
-See also `Polynomial.expand`. -/
+See also `Polynomial.expand`.
+-/
 noncomputable def expand : MvPolynomial σ R →ₐ[R] MvPolynomial σ R :=
   bind₁ fun i ↦ X i ^ p
 

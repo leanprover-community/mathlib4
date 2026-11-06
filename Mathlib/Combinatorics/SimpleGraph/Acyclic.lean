@@ -9,11 +9,13 @@ public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.Connectivity.EdgeConnectivity
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Acyclic graphs and trees
 
-This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
+This module introduces _acyclic graphs_ (a.k.a. _forests_) and _trees_.
 
 ## Main definitions
 
@@ -33,7 +35,7 @@ This module introduces *acyclic graphs* (a.k.a. *forests*) and *trees*.
 
 The structure of the proofs for `SimpleGraph.IsAcyclic` and `SimpleGraph.IsTree`, including
 supporting lemmas about `SimpleGraph.IsBridge`, generally follows the high-level description
-for these theorems for multigraphs from [Chou1994].
+for these theorems for multigraphs from \[Chou1994\].
 
 ## Tags
 
@@ -49,10 +51,14 @@ open Walk
 
 variable {V V' : Type*} (G : SimpleGraph V) (G' : SimpleGraph V')
 
-/-- A graph is *acyclic* (or a *forest*) if it has no cycles. -/
+/--
+A graph is _acyclic_ (or a _forest_) if it has no cycles.
+-/
 def IsAcyclic : Prop := ∀ ⦃v : V⦄ (c : G.Walk v v), ¬c.IsCycle
 
-/-- A *tree* is a connected acyclic graph. -/
+/--
+A _tree_ is a connected acyclic graph.
+-/
 @[mk_iff]
 structure IsTree : Prop extends
   connected : G.Connected where

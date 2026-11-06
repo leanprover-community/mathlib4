@@ -8,13 +8,15 @@ module
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.RepresentationTheory.Rep.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Restriction of representations
 
 Given a group homomorphism `f : H →* G`, we have the restriction functor
 `resFunctor f : Rep k G ⥤ Rep k H` which sends a `G`-representation `ρ` to the
 `H`-representation `ρ.comp f`.
-
 -/
 
 public section

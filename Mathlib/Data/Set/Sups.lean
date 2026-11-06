@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.SupClosed
 public import Mathlib.Order.UpperLower.Closure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Set family operations
 
@@ -21,12 +24,13 @@ This file defines a few binary operations on `Set α` for use in set family comb
 ## Notation
 
 We define the following notation in scope `SetFamily`:
+
 * `s ⊻ t`
 * `s ⊼ t`
 
 ## References
 
-[B. Bollobás, *Combinatorics*][bollobas1986]
+‍\[B. Bollobás, _Combinatorics_\]\[bollobas1986\]
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Sites.Grothendieck
 public import Mathlib.CategoryTheory.Sites.Precoverage
 public import Mathlib.Data.Set.Lattice.Bounded
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Grothendieck pretopologies
 
@@ -27,9 +30,9 @@ coverage, pretopology, site
 
 ## References
 
-* [nLab, *Grothendieck pretopology*](https://ncatlab.org/nlab/show/Grothendieck+pretopology)
-* [S. MacLane, I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-* [Stacks, *00VG*](https://stacks.math.columbia.edu/tag/00VG)
+* [nLab, _Grothendieck pretopology_](https://ncatlab.org/nlab/show/Grothendieck+pretopology)
+* ‍\[S. MacLane, I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
+* [Stacks, _00VG_](https://stacks.math.columbia.edu/tag/00VG)
 -/
 
 @[expose] public section
@@ -50,6 +53,7 @@ variable (C)
 A (Grothendieck) pretopology on `C` consists of a collection of families of morphisms with a fixed
 target `X` for every object `X` in `C`, called "coverings" of `X`, which satisfies the following
 three axioms:
+
 1. Every family consisting of a single isomorphism is a covering family.
 2. The collection of covering families is stable under pullback.
 3. Given a covering family, and a covering family on each domain of the former, the composition
@@ -58,8 +62,9 @@ three axioms:
 In some sense, a pretopology can be seen as Grothendieck topology with weaker saturation conditions,
 in that each covering is not necessarily downward closed.
 
-See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or [MM92] Chapter III,
-Section 2, Definition 2. -/
+See: https://ncatlab.org/nlab/show/Grothendieck+pretopology or \[MM92\] Chapter III,
+Section 2, Definition 2.
+-/
 @[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
 and [MM92] calls this a basis for a topology."]
 structure Pretopology extends Precoverage C where
@@ -104,10 +109,11 @@ instance : Inhabited (Pretopology C) :=
 
 variable {C}
 
-/-- A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
+/--
+A pretopology `K` can be completed to a Grothendieck topology `J` by declaring a sieve to be
 `J`-covering if it contains a family in `K`.
 
-See also [MM92] Chapter III, Section 2, Equation (2).
+See also \[MM92\] Chapter III, Section 2, Equation (2).
 -/
 @[stacks 00ZC]
 def toGrothendieck (K : Pretopology C) : GrothendieckTopology C where
@@ -133,9 +139,10 @@ theorem mem_toGrothendieck (K : Pretopology C) (X S) :
 end Pretopology
 
 variable {C} in
-/-- The largest pretopology generating the given Grothendieck topology.
+/--
+The largest pretopology generating the given Grothendieck topology.
 
-See [MM92] Chapter III, Section 2, Equations (3,4).
+See \[MM92\] Chapter III, Section 2, Equations (3,4).
 -/
 def GrothendieckTopology.toPretopology (J : GrothendieckTopology C) : Pretopology C where
   coverings X := {R | Sieve.generate R ∈ J X}

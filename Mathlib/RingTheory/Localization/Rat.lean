@@ -8,6 +8,9 @@ module
 public import Mathlib.RingTheory.Int.Basic
 public import Mathlib.RingTheory.Localization.NumDen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ring-theoretic fractions in `ℚ`
 -/

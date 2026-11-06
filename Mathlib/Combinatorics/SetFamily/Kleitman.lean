@@ -8,6 +8,9 @@ module
 public import Mathlib.Combinatorics.SetFamily.HarrisKleitman
 public import Mathlib.Combinatorics.SetFamily.Intersecting
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kleitman's bound on the size of intersecting families
 
@@ -22,7 +25,7 @@ Kleitman's bound stipulates that `k` intersecting families cover at most `2ⁿ -
 
 ## References
 
-* [D. J. Kleitman, *Families of non-disjoint subsets*][kleitman1966]
+* ‍\[D. J. Kleitman, _Families of non-disjoint subsets_\]\[kleitman1966\]
 -/
 
 public section

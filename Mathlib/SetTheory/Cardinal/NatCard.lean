@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Data.Set.Card
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Cardinality of finite types
 
 The cardinality of a finite type `α` is given by `Nat.card α`. This function has
@@ -24,7 +26,6 @@ complicated dependent type that easily leads to "motive not type correct" errors
 Theorems about `Nat.card` are sometimes incidentally true for both finite and infinite
 types. If removing a finiteness constraint results in no loss in legibility, we remove
 it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
-
 -/
 
 @[expose] public section

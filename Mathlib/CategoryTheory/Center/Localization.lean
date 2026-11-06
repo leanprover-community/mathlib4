@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Center.Preadditive
 public import Mathlib.CategoryTheory.Localization.Predicate
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Localization of the center of a category
 
@@ -16,7 +19,6 @@ Given a localization functor `L : C ⥤ D` with respect to `W : MorphismProperty
 we define a localization map `CatCenter C → CatCenter D` for the centers
 of these categories. In case `L` is an additive functor between preadditive
 categories, we promote this to a ring morphism `CatCenter C →+* CatCenter D`.
-
 -/
 
 @[expose] public section

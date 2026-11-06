@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicGeometry.Noetherian
 public import Mathlib.AlgebraicGeometry.Properties
 public import Mathlib.AlgebraicGeometry.Stalk
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spreading out morphisms
 
@@ -16,8 +19,10 @@ Under certain conditions, a morphism on stalks `Spec 𝒪_{X, x} ⟶ Spec 𝒪_{
 out into a neighborhood of `x`.
 
 ## Main result
+
 Given `S`-schemes `X Y` and points `x : X` `y : Y` over `s : S`.
 Suppose we have the following diagram of `S`-schemes
+
 ```
 Spec 𝒪_{X, x} ⟶ X
     |
@@ -25,7 +30,9 @@ Spec 𝒪_{X, x} ⟶ X
     ↓
 Spec 𝒪_{Y, y} ⟶ Y
 ```
+
 We would like to spread `Spec(φ)` out to an `S`-morphism on an open subscheme `U ⊆ X`
+
 ```
 Spec 𝒪_{X, x} ⟶ U ⊆ X
     |             |
@@ -33,15 +40,15 @@ Spec 𝒪_{X, x} ⟶ U ⊆ X
     ↓             ↓
 Spec 𝒪_{Y, y} ⟶ Y
 ```
-- `AlgebraicGeometry.spread_out_unique_of_isGermInjective`:
+
+* `AlgebraicGeometry.spread_out_unique_of_isGermInjective`:
   The lift is "unique" if the germ map is injective at `x`.
-- `AlgebraicGeometry.spread_out_of_isGermInjective`:
+* `AlgebraicGeometry.spread_out_of_isGermInjective`:
   The lift exists if `Y` is locally of finite type and the germ map is injective at `x`.
 
 ## TODO
 
 Show that certain morphism properties can also be spread out.
-
 -/
 
 public section
@@ -271,11 +278,13 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
 Suppose `X` is a scheme, `x : X` such that the germ map at `x` is (locally) injective,
 and `U` is a neighborhood of `x`.
 Given a commutative diagram of `CommRingCat`
+
 ```
 R ⟶ Γ(X, U)
 ↓    ↓
 A ⟶ 𝒪_{X, x}
 ```
+
 such that `R` is of finite type over `A`, we may lift `A ⟶ 𝒪_{X, x}` to some `A ⟶ Γ(X, V)`.
 -/
 lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens} (hxU : x ∈ U)
@@ -310,6 +319,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /--
 Given `S`-schemes `X Y` and points `x : X` `y : Y` over `s : S`.
 Suppose we have the following diagram of `S`-schemes
+
 ```
 Spec 𝒪_{X, x} ⟶ X
     |
@@ -317,7 +327,9 @@ Spec 𝒪_{X, x} ⟶ X
     ↓
 Spec 𝒪_{Y, y} ⟶ Y
 ```
+
 Then the map `Spec(φ)` spreads out to an `S`-morphism on an open subscheme `U ⊆ X`,
+
 ```
 Spec 𝒪_{X, x} ⟶ U ⊆ X
     |             |
@@ -325,6 +337,7 @@ Spec 𝒪_{X, x} ⟶ U ⊆ X
     ↓             ↓
 Spec 𝒪_{Y, y} ⟶ Y
 ```
+
 provided that `Y` is locally of finite type over `S` and
 `X` is "germ-injective" at `x` (e.g. when it's integral or locally Noetherian).
 

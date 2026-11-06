@@ -9,8 +9,10 @@ public import Mathlib.Data.Seq.Basic
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Corecursion
 public import Mathlib.Tactic.ComputeAsymptotics.Multiseries.Majorized
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Multiseries definitions
 
 In this file, we define the multiseries and its main properties: sortedness and approximation.
@@ -36,7 +38,6 @@ in the basis `[b₂, ..., bₙ]` (`basis_tl`).
 
 * `Multiseries basis_hd basis_tl` is defined as a `Seq (ℝ × MultiseriesExpansion basis_tl)`, so
   we need to port some `Seq` API to `Multiseries`.
-
 -/
 
 @[expose] public section
@@ -50,7 +51,8 @@ open scoped Topology
 /-- List of functions used to construct monomials in multiseries. -/
 abbrev Basis := List (ℝ → ℝ)
 
-/-- Multiseries representing a given function `f : ℝ → ℝ`.
+/--
+Multiseries representing a given function `f : ℝ → ℝ`.
 `MultiseriesExpansion []` is just `ℝ`: multiseries representing constant functions.
 Otherwise it is a pair of a `Multiseries basis_hd basis_tl` and a function `ℝ → ℝ`. We call
 the former an expansion of the latter.
@@ -66,7 +68,8 @@ def MultiseriesExpansion (basis : Basis) : Type :=
 namespace MultiseriesExpansion
 
 set_option linter.unusedVariables false in
-/-- Multiseries in a basis `basis_hd :: basis_tl`. It is a generalisation of asymptotic expansions.
+/--
+Multiseries in a basis `basis_hd :: basis_tl`. It is a generalisation of asymptotic expansions.
 A multiseries in a basis `[b₁, ..., bₙ]` is a formal series made from monomials
 `b₁ ^ e₁ * ... * bₙ ^ eₙ` where `e₁, ..., eₙ` are real numbers. We treat multivariate series in
 a basis `[b₁, ..., bₙ]` as a univariate series in the variable `b₁` (`basis_hd`) with coefficients
@@ -808,7 +811,9 @@ end Sorted
 
 section Approximates
 
-/-- Coinductive predicate stating that `ms` approximates its attached function on `basis`.
+/--
+Coinductive predicate stating that `ms` approximates its attached function on `basis`.
+
 * If `basis = []`, i.e. `ms` is just a real number, `Approximates` holds unconditionally.
 * If `basis = basis_hd :: basis_tl` and `ms = nil`, then `f =ᶠ[atTop] 0`.
 * If `basis = basis_hd :: basis_tl` and `ms = cons exp coef tl`, then

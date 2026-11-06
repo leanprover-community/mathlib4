@@ -9,9 +9,11 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The full subcategory of injective objects
-
 -/
 
 public section

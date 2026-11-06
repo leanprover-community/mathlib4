@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Ring.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Minimal Axioms for a Ring
 
@@ -20,16 +23,17 @@ a minimum number of equalities.
 * `Ring.ofMinimalAxioms`: Define a `Ring` structure on a Type by proving a minimized set of axioms
 * `CommRing.ofMinimalAxioms`: Define a `CommRing` structure on a Type by proving a minimized set of
   axioms
-
 -/
 
 public section
 
 universe u
 
-/-- Define a `Ring` structure on a Type by proving a minimized set of axioms.
+/--
+Define a `Ring` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev Ring.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))
@@ -71,9 +75,11 @@ abbrev Ring.ofMinimalAxioms {R : Type u}
     mul_one := mul_one
     neg_add_cancel := neg_add_cancel }
 
-/-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
+/--
+Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev CommRing.ofMinimalAxioms {R : Type u}
     [Add R] [Mul R] [Neg R] [Zero R] [One R]
     (add_assoc : ∀ a b c : R, a + b + c = a + (b + c))

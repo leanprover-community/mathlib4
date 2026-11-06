@@ -11,6 +11,9 @@ public import Mathlib.Tactic.Matrix.OfLists
 public import Mathlib.Tactic.Matrix.Parsing
 public import Mathlib.Tactic.NormNum.Basic  -- shake: keep (`+`/`*` extensions run by `norm_matmul`)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `norm_matmul` simproc
 

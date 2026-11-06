@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Weak dual topology
 
@@ -26,10 +29,12 @@ The main definition is the type `WeakBilin B`.
 ## Main results
 
 We establish that `WeakBilin B` has the following structure:
+
 * `WeakBilin.instContinuousAdd`: The addition in `WeakBilin B` is continuous.
 * `WeakBilin.instContinuousSMul`: The scalar multiplication in `WeakBilin B` is continuous.
 
 We prove the following results characterizing the weak topology:
+
 * `eval_continuous`: For any `y : F`, the evaluation mapping `fun x => B x y` is continuous.
 * `continuous_of_continuous_eval`: For a mapping to `WeakBilin B` to be continuous,
   it suffices that its compositions with pairing with `B` at all points `y : F` is continuous.
@@ -38,12 +43,11 @@ We prove the following results characterizing the weak topology:
 
 ## References
 
-* [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
+* ‍\[H. H. Schaefer, _Topological Vector Spaces_\]\[schaefer1966\]
 
 ## Tags
 
 weak-star, weak dual, duality
-
 -/
 
 @[expose] public section

@@ -14,6 +14,9 @@ import Mathlib.LinearAlgebra.ExteriorPower.Basis
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.RingTheory.Spectrum.Prime.FreeLocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Invertible finite stably free modules are free
 

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Normed.Field.Basic
 
 import Mathlib.Topology.MetricSpace.Cauchy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
 

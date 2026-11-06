@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Conditionally complete lattice structure on `WithTop` and `WithBot`
 
@@ -238,7 +241,7 @@ end WithTop
 section WithTopBot
 
 /-!
-### Complete lattice structure on `WithTop (WithBot α)`
+# Complete lattice structure on `WithTop (WithBot α)`
 
 If `α` is a `ConditionallyCompleteLattice`, then we show that `WithTop α` and `WithBot α`
 also inherit the structure of conditionally complete lattices. Furthermore, we show

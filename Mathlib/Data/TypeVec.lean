@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Data.Fin.Fin2
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Tuples of types, and their categorical structure.
 
 ## Features

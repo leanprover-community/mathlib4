@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Constructions.Projective
 public import Mathlib.Probability.IdentDistrib
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite-dimensional distributions of a stochastic process
 
@@ -28,7 +31,6 @@ finite-dimensional distributions.
   their finite-dimensional distributions are equal.
 * `map_eq_of_forall_ae_eq`: if two processes are modifications of each other, then they have the
   same law.
-
 -/
 
 public section

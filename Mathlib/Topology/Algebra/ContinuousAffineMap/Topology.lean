@@ -8,11 +8,15 @@ module
 public import Mathlib.Topology.Algebra.ContinuousAffineEquiv
 public import Mathlib.Topology.Algebra.Module.Spaces.ContinuousLinearMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topology on the space of continuous affine maps
 
 This file defines a topology on the space of continuous affine maps between topological affine
 spaces. This is the coarsest topology satisfying the following two properties:
+
 * For every point `p`, the evaluation map `fun f ↦ f p` is continuous.
 * The map `fun f ↦ f.contLinear` is continuous.
 -/

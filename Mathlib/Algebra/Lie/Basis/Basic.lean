@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Lie.Sl2
 public import Mathlib.Algebra.Lie.Weights.Cartan
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bases of semisimple Lie algebras
 
@@ -15,6 +18,7 @@ In this file we define bases of semisimple Lie algebras. Given an indexing type 
 Lie algebra consists of a non-degenerate matrix of integers `A` indexed by `ι × ι` and generators
 `h i`, `e i`, `f i` indexed by `ι`, each forming an `sl₂` triple, and satisfying the Chevalley-Serre
 relations:
+
 * `⁅h i, h j⁆ = 0`
 * `⁅h j, e i⁆ =  A i j • e i`
 * `⁅h j, f i⁆ = -A i j • f i`
@@ -23,7 +27,7 @@ relations:
 This concept appears not to have a name in the informal literature and so we call it simply a basis.
 With further axioms (constraining the structure constants which appear in products of the form
 `⁅e i, e j⁆`, `⁅f i, f j⁆`) one obtains the concept of a Weyl or Chevalley basis.
-See e.g., [serre1965](Ch. V, §4, §6).
+See e.g., \[serre1965\](Ch. V, §4, §6).
 
 ## Main definitions / results:
 
@@ -35,7 +39,6 @@ See e.g., [serre1965](Ch. V, §4, §6).
 
 * Show that every semisimple Lie algebra has a basis.
 * Define Weyl, Chevalley bases.
-
 -/
 
 @[expose] public section
@@ -216,7 +219,9 @@ private lemma iSup_cartan_borelLower_borelUpper_eq_top_aux
       · rw [← lie_skew, neg_mem_iff]
         exact LieSubmodule.mem_sup_right <| LieSubalgebra.lie_mem _ hyu hv
 
-/-- Lemma 4.5 from [Geck][Geck2017]. -/
+/--
+Lemma 4.5 from \[Geck\]\[Geck2017\].
+-/
 lemma iSup_cartan_borelLower_borelUpper_eq_top :
     iSup ![H.toLieSubmodule, b.borelLower, b.borelUpper] = ⊤ := by
   suffices H.toLieSubmodule ⊔ b.borelLower ⊔ b.borelUpper = ⊤ by simpa
@@ -330,7 +335,9 @@ lemma linearIndependent_baseSupp [IsDomain R] [CharZero R] :
 
 variable [IsDomain R] [CharZero R]
 
-/-- Lemma 4.4 from [Geck][Geck2017]. -/
+/--
+Lemma 4.4 from \[Geck\]\[Geck2017\].
+-/
 lemma borelUpper_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelUpper ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • b.baseSupp i) := by
@@ -374,7 +381,9 @@ lemma borelUpper_le_biSup :
     convert mem_biSup_genWeightSpace_of hs hu hv
     rw [iSup_subtype', iSup_subtype', ← e.iSup_comp]; rfl
 
-/-- Lemma 4.4 from [Geck][Geck2017]. -/
+/--
+Lemma 4.4 from \[Geck\]\[Geck2017\].
+-/
 lemma borelLower_le_biSup :
     letI := b.isLieAbelian_cartan
     b.borelLower ≤ ⨆ (n : ι → ℕ) (_ : n ≠ 0), rootSpace H (∑ i, n i • (-b.baseSupp) i) := by

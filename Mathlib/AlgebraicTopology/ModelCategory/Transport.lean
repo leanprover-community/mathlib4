@@ -8,6 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.ModelCategory.Basic
 public import Mathlib.CategoryTheory.Adjunction.Limits
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transport a model category via an equivalence
 
@@ -20,7 +23,6 @@ are the inverse images of the corresponding properties of
 morphisms by the functor `e.functor : C ⥤ D`. Under these
 assumptions, we show that the model category axioms for `C`
 hold if they hold for `D`.
-
 -/
 
 @[expose] public section

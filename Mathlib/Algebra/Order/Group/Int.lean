@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Group.Int.Defs
 public import Mathlib.Algebra.Order.Monoid.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The integers form a linear ordered group
 
 This file contains the instance necessary to show that the integers are a linear ordered
 additive group.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section

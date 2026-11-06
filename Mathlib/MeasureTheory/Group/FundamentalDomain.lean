@@ -7,16 +7,17 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental domain of a group action
 
-A set `s` is said to be a *fundamental domain* of an action of a group `G` on a measurable space `α`
+A set `s` is said to be a _fundamental domain_ of an action of a group `G` on a measurable space `α`
 with respect to a measure `μ` if
 
 * `s` is a measurable set;
-
 * the sets `g • s` over all `g : G` cover almost all points of the whole space;
-
 * the sets `g • s`, are pairwise a.e. disjoint, i.e., `μ (g₁ • s ∩ g₂ • s) = 0` whenever `g₁ ≠ g₂`;
   we require this for `g₂ = 1` in the definition, then deduce it for any two `g₁ ≠ g₂`.
 
@@ -29,7 +30,6 @@ We also generate additive versions of all theorems in this file using the `to_ad
 * We define the `HasFundamentalDomain` typeclass, in particular to be able to define the `covolume`
   of a quotient of `α` by a group `G`, which under reasonable conditions does not depend on the
   choice of fundamental domain.
-
 * We define the `QuotientMeasureEqMeasurePreimage` typeclass to describe a situation in which a
   measure `μ` on `α ⧸ G` can be computed by taking a measure `ν` on `α` of the intersection of the
   pullback with a fundamental domain.
@@ -53,18 +53,22 @@ open MeasureTheory MeasureTheory.Measure Set Function TopologicalSpace Filter
 
 namespace MeasureTheory
 
-/-- A measurable set `s` is a *fundamental domain* for an additive action of an additive group `G`
+/--
+A measurable set `s` is a _fundamental domain_ for an additive action of an additive group `G`
 on a measurable space `α` with respect to a measure `μ` if the sets `g +ᵥ s`, `g : G`, are pairwise
-a.e. disjoint and cover the whole space. -/
+a.e. disjoint and cover the whole space.
+-/
 structure IsAddFundamentalDomain (G : Type*) {α : Type*} [Zero G] [VAdd G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
   protected nullMeasurableSet : NullMeasurableSet s μ
   protected ae_covers : ∀ᵐ x ∂μ, ∃ g : G, g +ᵥ x ∈ s
   protected aedisjoint : Pairwise (AEDisjoint μ on fun g : G => g +ᵥ s)
 
-/-- A measurable set `s` is a *fundamental domain* for an action of a group `G` on a measurable
+/--
+A measurable set `s` is a _fundamental domain_ for an action of a group `G` on a measurable
 space `α` with respect to a measure `μ` if the sets `g • s`, `g : G`, are pairwise a.e. disjoint and
-cover the whole space. -/
+cover the whole space.
+-/
 @[to_additive IsAddFundamentalDomain]
 structure IsFundamentalDomain (G : Type*) {α : Type*} [One G] [SMul G α] [MeasurableSpace α]
     (s : Set α) (μ : Measure α := by volume_tac) : Prop where
@@ -468,7 +472,9 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
 
 end IsFundamentalDomain
 
-/-! ### Interior/frontier of a fundamental domain -/
+/-!
+# Interior/frontier of a fundamental domain
+-/
 
 section MeasurableSpace
 
@@ -644,7 +650,8 @@ lemma IsFundamentalDomain.quotientMeasure_eq [Countable G] {s t : Set α}
 
 end FundamentalDomainMeasure
 
-/-! ## `HasFundamentalDomain` typeclass
+/-!
+# `HasFundamentalDomain` typeclass
 
 We define `HasFundamentalDomain` in order to be able to define the `covolume` of a quotient of `α`
 by a group `G`, which under reasonable conditions does not depend on the choice of fundamental
@@ -652,7 +659,6 @@ domain. Even though any "sensible" action should have a fundamental domain, this
 delicate question which was recently addressed by Misha Kapovich: https://arxiv.org/abs/2301.05325
 
 TODO: Formalize the existence of a Dirichlet domain as in Kapovich's paper.
-
 -/
 
 section HasFundamentalDomain
@@ -702,7 +708,8 @@ lemma IsFundamentalDomain.covolume_eq_volume (ν : Measure α) [Countable G]
 
 end HasFundamentalDomain
 
-/-! ## `QuotientMeasureEqMeasurePreimage` typeclass
+/-!
+# `QuotientMeasureEqMeasurePreimage` typeclass
 
 This typeclass describes a situation in which a measure `μ` on `α ⧸ G` can be computed by
 taking a measure `ν` on `α` of the intersection of the pullback with a fundamental domain.
@@ -712,7 +719,6 @@ be pulled back. And yet here, we are describing a situation involving measures i
 
 Another viewpoint is that if a set is small enough to fit in a single fundamental domain, then its
 `ν` measure in `α` is the same as the `μ` measure of its pushforward in `α ⧸ G`.
-
 -/
 
 section QuotientMeasureEqMeasurePreimage

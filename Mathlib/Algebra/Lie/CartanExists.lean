@@ -8,11 +8,14 @@ module
 public import Mathlib.Algebra.Lie.CartanSubalgebra
 public import Mathlib.Algebra.Lie.Rank
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Existence of Cartan subalgebras
 
 In this file we prove existence of Cartan subalgebras in finite-dimensional Lie algebras,
-following [barnes1967].
+following \[barnes1967\].
 
 ## Main results
 
@@ -24,8 +27,7 @@ following [barnes1967].
 
 ## References
 
-* [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
-
+* ‍\[barnes1967\]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 -/
 
 @[expose] public section
@@ -49,7 +51,7 @@ variable (K)
 namespace engel_isBot_of_isMin
 
 /-!
-## Implementation details for the proof of `LieAlgebra.engel_isBot_of_isMin`
+# Implementation details for the proof of `LieAlgebra.engel_isBot_of_isMin`
 
 In this section we provide some auxiliary definitions and lemmas
 that are used in the proof of `LieAlgebra.engel_isBot_of_isMin`,
@@ -60,7 +62,7 @@ Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ eng
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
 Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
-We follow the proof strategy of Lemma 2 in [barnes1967].
+We follow the proof strategy of Lemma 2 in \[barnes1967\].
 -/
 
 variable (R M)
@@ -128,12 +130,14 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
-/-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
+/--
+Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
 Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
-Lemma 2 in [barnes1967]. -/
+Lemma 2 in \[barnes1967\].
+-/
 lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     (E : {engel K x | x ∈ U}) (hUle : U ≤ E) (hmin : IsMin E) :
     IsBot E := by

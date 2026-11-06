@@ -10,6 +10,9 @@ public import Mathlib.GroupTheory.Finiteness
 public import Mathlib.RingTheory.Ideal.Span
 public import Mathlib.Tactic.Algebraize
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness conditions in commutative algebra
 
@@ -17,17 +20,15 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 ## Main declarations
 
-- `Submodule.FG`, `Ideal.FG`
-  These express that some object is finitely generated as *submodule* over some base ring.
-
-- `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
-  all of these express that some object is finitely generated *as module* over some base ring.
+* `Submodule.FG`, `Ideal.FG`
+  These express that some object is finitely generated as _submodule_ over some base ring.
+* `Module.Finite`, `RingHom.Finite`, `AlgHom.Finite`
+  all of these express that some object is finitely generated _as module_ over some base ring.
 
 ## TODO
 
 Redefine `Submodule.FG` to be in terms of `Module.FG` (rather than the other way around) to match
 finite generation in the group theory folder.
-
 -/
 
 @[expose] public section
@@ -105,9 +106,11 @@ namespace Ideal
 
 variable {R : Type*} [Semiring R]
 
-/-- An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
+/--
+An ideal of `R` is finitely generated if it is the span of a finite subset of `R`.
 
-This is defeq to `Submodule.FG`, but unfolds more nicely. -/
+This is defeq to `Submodule.FG`, but unfolds more nicely.
+-/
 def FG (I : Ideal R) : Prop :=
   ∃ S : Finset R, span ↑S = I
 

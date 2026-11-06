@@ -8,11 +8,13 @@ module
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # A finite direct sum of finite modules is finite
 
 This file defines a `Module.Finite` instance for a finite direct sum of finite modules.
-
 -/
 
 public section

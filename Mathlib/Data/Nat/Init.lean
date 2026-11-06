@@ -10,12 +10,17 @@ public import Batteries.Util.LibraryNote
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic operations on the natural numbers
 
 This file contains:
+
 * some basic lemmas about natural numbers
 * extra recursors:
+
   * `leRecOn`, `le_induction`: recursion and induction principles starting at non-zero numbers
   * `decreasing_induction`: recursion growing downwards
   * `le_rec_on'`, `decreasing_induction'`: versions with slightly weaker assumptions
@@ -25,31 +30,46 @@ This file contains:
 This file should not depend on anything defined in Mathlib (except for notation), so that it can be
 upstreamed to Batteries or the Lean standard library easily.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 @[expose] public section
 
 library_note «foundational algebra order theory» /--
-Batteries has a home-baked development of the algebraic and order-theoretic theory of `ℕ` and `ℤ`
-which, in particular, is not typeclass-mediated. This is useful to set up the algebra and finiteness
-libraries in mathlib (naturals and integers show up as indices/offsets in lists, cardinality in
+                                                 Batteries has a home-baked development of the
+algebraic and order-theoretic theory of `ℕ` and `ℤ`
+which, in particular, is not typeclass-mediated.
+This is useful to set up the algebra and finiteness
+libraries in mathlib (naturals and integers show up
+as indices/offsets in lists, cardinality in
 finsets, powers in groups, ...).
 
-Less basic uses of `ℕ` and `ℤ` should however use the typeclass-mediated development.
+                                                 Less basic uses of `ℕ` and `ℤ` should however use
+the typeclass-mediated development.
 
-The relevant files are:
-* `Mathlib/Data/Nat/Basic.lean` for the continuation of the home-baked development on `ℕ`
-* `Mathlib/Data/Int/Init.lean` for the continuation of the home-baked development on `ℤ`
-* `Mathlib/Algebra/Group/Nat/Defs.lean` for the monoid instances on `ℕ`
-* `Mathlib/Algebra/Group/Int/Defs.lean` for the group instance on `ℤ`
-* `Mathlib/Algebra/Ring/Nat.lean` for the semiring instance on `ℕ`
-* `Mathlib/Algebra/Ring/Int/Defs.lean` for the ring instance on `ℤ`
-* `Mathlib/Algebra/Order/Group/Nat.lean` for the ordered monoid instance on `ℕ`
-* `Mathlib/Algebra/Order/Group/Int.lean` for the ordered group instance on `ℤ`
-* `Mathlib/Algebra/Order/Ring/Nat.lean` for the ordered semiring instance on `ℕ`
-* `Mathlib/Algebra/Order/Ring/Int.lean` for the ordered ring instance on `ℤ`
--/
+                                                 The relevant files are:
+
+                                                 * `Mathlib/Data/Nat/Basic.lean` for the
+  continuation of the home-baked development on `ℕ`
+* `Mathlib/Data/Int/Init.lean` for the continuation
+  of the home-baked development on `ℤ`
+* `Mathlib/Algebra/Group/Nat/Defs.lean` for the
+  monoid instances on `ℕ`
+* `Mathlib/Algebra/Group/Int/Defs.lean` for the
+  group instance on `ℤ`
+* `Mathlib/Algebra/Ring/Nat.lean` for the semiring
+  instance on `ℕ`
+* `Mathlib/Algebra/Ring/Int/Defs.lean` for the ring
+  instance on `ℤ`
+* `Mathlib/Algebra/Order/Group/Nat.lean` for the
+  ordered monoid instance on `ℕ`
+* `Mathlib/Algebra/Order/Group/Int.lean` for the
+  ordered group instance on `ℤ`
+* `Mathlib/Algebra/Order/Ring/Nat.lean` for the
+  ordered semiring instance on `ℕ`
+* `Mathlib/Algebra/Order/Ring/Int.lean` for the
+  ordered ring instance on `ℤ`
+                                                 -/
 
 /- We don't want to import the algebraic hierarchy in this file. -/
 assert_not_exists Monoid
@@ -57,7 +77,9 @@ assert_not_exists Monoid
 namespace Nat
 variable {a b c m n k : ℕ} {p : ℕ → Prop}
 
-/-! ### `succ`, `pred` -/
+/-!
+# `succ`, `pred`
+-/
 
 lemma succ_pos' : 0 < succ n := succ_pos n
 
@@ -76,11 +98,17 @@ lemma two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
   | 1 => by simp
   | n + 2 => by simp
 
-/-! ### `add` -/
+/-!
+# `add`
+-/
 
-/-! ### `sub` -/
+/-!
+# `sub`
+-/
 
-/-! ### `mul` -/
+/-!
+# `mul`
+-/
 
 lemma mul_def : Nat.mul m n = m * n := mul_eq
 
@@ -88,7 +116,9 @@ lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
 
-/-! ### `div` -/
+/-!
+# `div`
+-/
 
 lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
   rw [Nat.le_div_iff_mul_le Nat.zero_lt_two, ← Int.ofNat_le, Int.natCast_mul, Int.ofNat_two]
@@ -100,14 +130,16 @@ lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   lia
 
-/-! ### `pow` -/
+/-!
+# `pow`
+-/
 
 lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n := one_le_pow n (m + 1) (succ_pos m)
 
 alias sq_sub_sq := pow_two_sub_pow_two
 
 /-!
-### Recursion and induction principles
+# Recursion and induction principles
 
 This section is here due to dependencies -- the lemmas here require some of the lemmas
 proved above, and some of the results in later sections depend on the definitions in this section.
@@ -125,12 +157,14 @@ lemma rec_add_one {motive : ℕ → Sort*} (zero : motive 0) (succ : ∀ n, moti
     (succ : ∀ n, motive n → motive (n + 1)) :
     @Nat.rec motive zero succ 1 = succ 0 zero := rfl
 
-/-- Recursion starting at a non-zero number:
+/--
+Recursion starting at a non-zero number:
 given a map `motive k → motive (k + 1)` for each `k ≥ n`,
 there is a map from `motive n` to each `motive m`, `n ≤ m`.
 
 This is a version of `Nat.le.rec` that works for `Sort u`.
 Similarly to `Nat.le.rec`, it can be used as
+
 ```
 induction hle using Nat.leRec with
 | refl => sorry
@@ -228,10 +262,12 @@ lemma leRecOn_succ_left {motive : ℕ → Sort*} {n m}
       (@leRecOn motive n m (Nat.le_of_add_right_le hm) @next base : motive m) :=
   leRec_succ_left (motive := fun n _ => motive n) _ (fun _ _ => @next _) _ _
 
-/-- Induction principle starting at a non-zero number.
+/--
+Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction`.
 
-This is an alias of `Nat.leRec`, specialized to `Prop`. -/
+This is an alias of `Nat.leRec`, specialized to `Prop`.
+-/
 @[elab_as_elim]
 lemma le_induction {m : ℕ} {motive : ∀ n, m ≤ n → Prop} (base : motive m m.le_refl)
     (succ : ∀ n hmn, motive n hmn → motive (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, motive n hmn :=
@@ -245,12 +281,15 @@ def twoStepInduction {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
   | 1 => one
   | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
 
-/-- Induction principle deriving the next case from the `k` previous ones. Use as
+/--
+Induction principle deriving the next case from the `k` previous ones. Use as
+
 ```
 induction n using stepInduction 3 with
 | base n hn => ...
 | step n ih => ...
-``` -/
+```
+-/
 @[elab_as_elim]
 def stepInduction {motive : ℕ → Sort*} (k : ℕ) (base : ∀ i < k, motive i)
     (step : ∀ n, (∀ i < k, motive (n + i)) → motive (n + k)) (a : ℕ) : motive a :=
@@ -266,10 +305,12 @@ protected theorem case_strong_induction_on {motive : ℕ → Prop} (a : ℕ) (ze
     (succ : ∀ n, (∀ m ≤ n, motive m) → motive (n + 1)) : motive a :=
   Nat.caseStrongRecOn a zero succ
 
-/-- Decreasing induction: if `motive (k + 1)` implies `motive k` for all `k < n`,
+/--
+Decreasing induction: if `motive (k + 1)` implies `motive k` for all `k < n`,
 then `motive n` implies `motive m` for all `m ≤ n`. Also works for functions to `Sort*`.
 
-For a version also assuming `m ≤ k`, see `Nat.decreasingInduction'`. -/
+For a version also assuming `m ≤ k`, see `Nat.decreasingInduction'`.
+-/
 @[elab_as_elim]
 def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
     (of_succ : ∀ k (h : k < n), motive (k + 1) h → motive k (le_of_succ_le h))
@@ -324,12 +365,14 @@ def strongSubRecursion {motive : ℕ → ℕ → Sort*}
     ∀ n m : ℕ, motive n m
   | n, m => ind n m fun x y _ _ ↦ strongSubRecursion ind x y
 
-/-- Given `motive : ℕ → ℕ → Sort*`, if we have `motive m 0` and `motive 0 n` for all `m n : ℕ`,
+/--
+Given `motive : ℕ → ℕ → Sort*`, if we have `motive m 0` and `motive 0 n` for all `m n : ℕ`,
 and for any `m n : ℕ` we can extend `motive` from `(m, n + 1)` and `(m + 1, n)` to `(m + 1, n + 1)`
 then we have `motive m n` for all `m n : ℕ`.
 
 Note that for non-`Prop` output it is preferable to use the equation compiler directly if possible,
-since this produces equation lemmas. -/
+since this produces equation lemmas.
+-/
 @[elab_as_elim]
 def pincerRecursion {motive : ℕ → ℕ → Sort*}
     (zero_right : ∀ m : ℕ, motive m 0) (zero_left : ∀ n : ℕ, motive 0 n)
@@ -341,10 +384,12 @@ def pincerRecursion {motive : ℕ → ℕ → Sort*}
     ind _ _ (pincerRecursion zero_right zero_left ind _ _)
       (pincerRecursion zero_right zero_left ind _ _)
 
-/-- Decreasing induction: if `motive (k + 1)` implies `motive k` for all `m ≤ k < n`,
+/--
+Decreasing induction: if `motive (k + 1)` implies `motive k` for all `m ≤ k < n`,
 then `motive n` implies `motive m`. Also works for functions to `Sort*`.
 
-Weakens the assumptions of `Nat.decreasingInduction`. -/
+Weakens the assumptions of `Nat.decreasingInduction`.
+-/
 @[elab_as_elim]
 def decreasingInduction' {motive : ℕ → Sort*}
     (ind : ∀ k < n, m ≤ k → motive (k + 1) → motive k)
@@ -374,7 +419,9 @@ theorem diag_induction (motive : ℕ → ℕ → Prop)
     apply diag_induction motive diag zero_succ ind a (b + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
 
-/-! ### `mod`, `dvd` -/
+/-!
+# `mod`, `dvd`
+-/
 
 lemma not_pos_pow_dvd {a n : ℕ} (ha : 1 < a) (hn : 1 < n) : ¬ a ^ n ∣ a :=
   not_dvd_of_pos_of_lt (Nat.lt_trans Nat.zero_lt_one ha)
@@ -407,7 +454,9 @@ lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
 
-/-! ### Decidability of predicates -/
+/-!
+# Decidability of predicates
+-/
 
 instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x < hi → P x) :=
@@ -425,9 +474,12 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
 instance (n : ℤ) [NeZero n] : NeZero n.natAbs where
   out := n.natAbs_ne_zero.mpr (NeZero.ne n)
 
-/-! ### `Nat.AtLeastTwo` -/
+/-!
+# `Nat.AtLeastTwo`
+-/
 
-/-- A type class for natural numbers which are greater than or equal to `2`.
+/--
+A type class for natural numbers which are greater than or equal to `2`.
 
 `NeZero` and `AtLeastTwo` are used for numeric literals, and also for groups of related lemmas
 sharing a common value of `n` that needs to be nonzero, or at least `2`, and where it is
@@ -437,7 +489,8 @@ required conditions, such as `m + 1`. Less widely used cases may be defined as l
 global instances and then made into instances locally where needed. If implicit arguments,
 appearing before other explicit arguments, are allowed to be `autoParam`s in a future version of
 Lean, such an `autoParam` that is proved `by lia` might be a more general replacement for the
-use of typeclass inference for this purpose. -/
+use of typeclass inference for this purpose.
+-/
 class AtLeastTwo (n : ℕ) : Prop where
   prop : 2 ≤ n
 

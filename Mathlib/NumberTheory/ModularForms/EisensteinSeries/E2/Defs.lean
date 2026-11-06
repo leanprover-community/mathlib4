@@ -13,12 +13,14 @@ public import Mathlib.Topology.Algebra.InfiniteSum.ConditionalInt
 
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Summable
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eisenstein Series E2
 
 We define the Eisenstein series `E2` of weight `2` and level `1` as a limit of partial sums
 over non-symmetric intervals.
-
 -/
 
 open UpperHalfPlane hiding I

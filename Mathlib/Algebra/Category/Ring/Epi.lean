@@ -10,11 +10,15 @@ public import Mathlib.Algebra.Category.Ring.Basic
 
 import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Epimorphisms in `CommRingCat`
 
 ## Main results
-- `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
+
+* `RingHom.surjective_iff_epi_and_finite`: surjective <=> epi + finite
 -/
 
 public section

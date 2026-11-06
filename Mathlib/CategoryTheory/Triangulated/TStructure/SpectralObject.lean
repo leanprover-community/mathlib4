@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.SpectralObject
 public import Mathlib.CategoryTheory.Triangulated.TStructure.ETrunc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Spectral objects attached to t-structures
 
@@ -26,7 +29,6 @@ In other words, for each `X : C`, we define a spectral
 object `t.spectralObject X : SpectralObject C EInt` in the
 triangulated category `C`, and this extends to a functor
 `t.spectralObjectFunctor : C ⥤ SpectralObject C EInt`.
-
 -/
 
 @[expose] public section

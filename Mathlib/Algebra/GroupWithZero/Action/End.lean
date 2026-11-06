@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Equiv.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.Units
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Group actions and (endo)morphisms
 -/
@@ -21,7 +24,8 @@ open Function
 
 variable {M N A α β : Type*}
 
-/-- Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
+/--
+Push forward the action of `R` on `M` along a compatible surjective map `f : R →* S`.
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.moduleLeft`.
 -/
@@ -34,8 +38,10 @@ section AddMonoid
 
 variable (A) [AddMonoid A] [Monoid M] [DistribMulAction M A]
 
-/-- Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
+/--
+Compose a `DistribMulAction` with a `MonoidHom`, with action `f r' • m`.
+See note \[reducible non-instances\].
+-/
 abbrev DistribMulAction.compHom [Monoid N] (f : N →* M) : DistribMulAction N A :=
   { DistribSMul.compFun A f, MulAction.compHom A f with }
 
@@ -45,8 +51,10 @@ section Monoid
 
 variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 
-/-- Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
-See note [reducible non-instances]. -/
+/--
+Compose a `MulDistribMulAction` with a `MonoidHom`, with action `f r' • m`.
+See note \[reducible non-instances\].
+-/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
     smul_one := fun x => smul_one (f x),
@@ -54,9 +62,11 @@ abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulActi
 
 end Monoid
 
-/-- The tautological action by `AddMonoid.End α` on `α`.
+/--
+The tautological action by `AddMonoid.End α` on `α`.
 
-This generalizes `Function.End.applyMulAction`. -/
+This generalizes `Function.End.applyMulAction`.
+-/
 instance AddMonoid.End.applyDistribMulAction [AddMonoid α] :
     DistribMulAction (AddMonoid.End α) α where
   smul := (· ·)

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Matrix.Mul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Orthogonal
 
@@ -14,9 +17,9 @@ This file contains definitions and properties concerning orthogonality of rows a
 
 ## Main results
 
-- `matrix.HasOrthogonalRows`:
+* `matrix.HasOrthogonalRows`:
   `A.HasOrthogonalRows` means `A` has orthogonal (with respect to `dotProduct`) rows.
-- `matrix.HasOrthogonalCols`:
+* `matrix.HasOrthogonalCols`:
   `A.HasOrthogonalCols` means `A` has orthogonal (with respect to `dotProduct`) columns.
 
 ## Tags

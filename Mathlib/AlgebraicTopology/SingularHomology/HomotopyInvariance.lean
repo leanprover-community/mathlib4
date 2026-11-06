@@ -9,6 +9,9 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.HomotopyInvarianc
 public import Mathlib.AlgebraicTopology.SingularHomology.Basic
 public import Mathlib.Topology.Homotopy.TopCat.ToSSet
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Homotopy invariance of singular homology
 
@@ -29,7 +32,6 @@ is the definition `TopCat.Homotopy.toSSet` which appeared in the file
 
 This result was first formalized in Lean 3 in 2022 by
 Brendan Seamus Murphy (with a different proof).
-
 -/
 
 @[expose] public section

@@ -11,6 +11,9 @@ public import Mathlib.Algebra.GroupWithZero.NeZero
 public import Mathlib.Basic.Unique
 public import Mathlib.Tactic.Conv
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Groups with an adjoined zero element
 
@@ -34,7 +37,6 @@ To reduce import dependencies, the type-classes themselves are in
 
 As is usual in mathlib, we extend the inverse function to the zero element,
 and require `0⁻¹ = 0`.
-
 -/
 
 @[expose] public section
@@ -104,10 +106,12 @@ variable [MulZeroOneClass M₀]
 theorem eq_zero_of_zero_eq_one (h : (0 : M₀) = 1) (a : M₀) : a = 0 := by
   rw [← mul_one a, ← h, mul_zero]
 
-/-- In a monoid with zero, if zero equals one, then zero is the unique element.
+/--
+In a monoid with zero, if zero equals one, then zero is the unique element.
 
 Somewhat arbitrarily, we define the default element to be `0`.
-All other elements will be provably equal to it, but not necessarily definitionally equal. -/
+All other elements will be provably equal to it, but not necessarily definitionally equal.
+-/
 @[instance_reducible]
 def uniqueOfZeroEqOne (h : (0 : M₀) = 1) : Unique M₀ where
   default := 0
@@ -145,11 +149,13 @@ section Nilpotent
 
 variable {R S : Type*} {x : R}
 
-/-- An element is said to be nilpotent if some natural-number-power of it equals zero.
+/--
+An element is said to be nilpotent if some natural-number-power of it equals zero.
 
 Note that we require only the bare minimum assumptions for the definition to make sense. Even
 `MonoidWithZero` is too strong since nilpotency is important in the study of rings that are only
-power-associative. -/
+power-associative.
+-/
 def IsNilpotent [Zero R] [Pow R ℕ] (x : R) : Prop :=
   ∃ n : ℕ, x ^ n = 0
 

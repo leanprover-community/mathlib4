@@ -14,10 +14,13 @@ public import Mathlib.RingTheory.Jacobson.Semiprimary
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Artinian rings and modules
 
-A module satisfying these equivalent conditions is said to be an *Artinian* R-module
+A module satisfying these equivalent conditions is said to be an _Artinian_ R-module
 if every decreasing chain of submodules is eventually constant, or equivalently,
 if the relation `<` on submodules is well founded.
 
@@ -28,26 +31,22 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 * `IsArtinianRing.primeSpectrum_finite`, `IsArtinianRing.isMaximal_of_isPrime`: there are only
   finitely prime ideals in a commutative Artinian ring, and each of them is maximal.
-
 * `IsArtinianRing.equivPi`: a reduced commutative Artinian ring `R` is isomorphic to a finite
   product of fields (and therefore is a semisimple ring and a decomposition monoid; moreover
   `R[X]` is also a decomposition monoid).
-
 * `IsArtinian.isSemisimpleModule_iff_jacobson`: an Artinian module is semisimple
   iff its Jacobson radical is zero.
-
 * `instIsSemiprimaryRingOfIsArtinianRing`: an Artinian ring `R` is semiprimary, in particular
   the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson`).
 
 ## References
 
-* [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
+* ‍\[M. F. Atiyah and I. G. Macdonald, _Introduction to commutative algebra_\]\[atiyah-macdonald\]
+* ‍\[P. Samuel, _Algebraic Theory of Numbers_\]\[samuel1967\]
 
 ## Tags
 
 Artinian, artinian, Artinian ring, Artinian module, artinian ring, artinian module
-
 -/
 
 @[expose] public section
@@ -301,18 +300,22 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : Module.End R M) :
     ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
 
-/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+/--
+This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
 
-See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
+See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling.
+-/
 theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : Module.End R M) :
     ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
   filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
     f.eventually_codisjoint_ker_pow_range_pow] with n hn
   simpa only [isCompl_iff]
 
-/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+/--
+This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
 
-See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
+See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling.
+-/
 theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
     IsCompl (⨆ n, LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
   obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|

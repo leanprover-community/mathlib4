@@ -8,13 +8,18 @@ module
 public import Mathlib.Algebra.Module.Submodule.Pointwise
 public import Mathlib.LinearAlgebra.Finsupp.Supported
 
-/-! # Results for pointwise instances on `Submodule`s using Finsupp
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Results for pointwise instances on `Submodule`s using Finsupp
 
 This file provides the following results in the `Pointwise` locale:
 
 When we consider subsets of `R` acting on `M`
-- `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
-- `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
+
+* `Submodule.pointwiseSetDistribMulAction` : the action described above is distributive.
+* `Submodule.mem_set_smul` : `x ∈ s • N` iff `x` can be written as `r₀ n₀ + ... + rₖ nₖ` where
   `rᵢ ∈ s` and `nᵢ ∈ N`.
 -/
 

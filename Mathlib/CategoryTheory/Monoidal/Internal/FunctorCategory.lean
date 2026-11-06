@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Monoidal.CommMon_
 public import Mathlib.CategoryTheory.Monoidal.Comon_
 public import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Mon (C ⥤ D) ≌ C ⥤ Mon D`
 
@@ -16,6 +19,7 @@ When `D` is a monoidal category,
 monoid objects in `C ⥤ D` are the same thing as functors from `C` into the monoid objects of `D`.
 
 This is formalised as:
+
 * `monFunctorCategoryEquivalence : Mon (C ⥤ D) ≌ C ⥤ Mon D`
 
 The intended application is that as `Ring ≌ Mon Ab` (not yet constructed!),
@@ -23,6 +27,7 @@ we have `presheaf Ring X ≌ presheaf (Mon Ab) X ≌ Mon (presheaf Ab X)`,
 and we can model a module over a presheaf of rings as a module object in `presheaf Ab X`.
 
 ## Future work
+
 Presumably this statement is not specific to monoids,
 and could be generalised to any internal algebraic objects,
 if the appropriate framework was available.

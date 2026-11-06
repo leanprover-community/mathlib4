@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.MvPolynomial.PDeriv
 public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Euler's homogeneous identity
 

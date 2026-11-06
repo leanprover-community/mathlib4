@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.ModelCategory.Cylinder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Path objects
 
@@ -32,9 +35,9 @@ The existence of very good path objects in model categories is stated
 in the lemma `PathObject.exists_very_good`.
 
 ## References
-* [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-* https://ncatlab.org/nlab/show/path+space+object
 
+* ‍\[Daniel G. Quillen, Homotopical algebra\]\[Quillen1967\]
+* https://ncatlab.org/nlab/show/path+space+object
 -/
 
 @[expose] public section
@@ -88,9 +91,11 @@ section
 
 variable [HasBinaryProduct A A]
 
-/-- The map from `P.P` to the product of two copies of `A`, when `P` is
-a pre-path object for `A`. `P` shall be a *good* path object
-when this morphism is a fibration. -/
+/--
+The map from `P.P` to the product of two copies of `A`, when `P` is
+a pre-path object for `A`. `P` shall be a _good_ path object
+when this morphism is a fibration.
+-/
 noncomputable def p : P.P ⟶ A ⨯ A := prod.lift P.p₀ P.p₁
 
 @[reassoc (attr := simp)]

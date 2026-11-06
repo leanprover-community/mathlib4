@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preservation of multicoequalizers
 
@@ -19,7 +22,6 @@ obtain a bijection `IsColimit (F.mapCocone c) ≃ IsColimit (c.map F)`
 (see `Multicofork.isColimitMapEquiv`). As a result, if `F` preserves
 the colimit of `d.multispan`, we deduce that if `c` is a colimit,
 then `c.map F` also is (see `Multicofork.isColimitMapOfPreserves`).
-
 -/
 
 @[expose] public section

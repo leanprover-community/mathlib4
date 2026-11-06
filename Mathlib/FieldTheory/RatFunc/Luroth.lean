@@ -10,6 +10,9 @@ public import Mathlib.FieldTheory.RatFunc.IntermediateField
 import Mathlib.Algebra.Polynomial.Basis
 import Mathlib.FieldTheory.Relrank
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lüroth's theorem
 
@@ -26,10 +29,9 @@ extension is infinite, this holds even when `f` is constant.
 
 References:
 
-- https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
-- [P. M. Cohn, *Basic Algebra: Groups, Rings and Fields*][cohn_2003], Theorem 11.3.4
-- [N. Jacobson, *Basic Algebra II: Second Edition*][jacobson1989], Theorem 8.38
-
+* https://github.com/leanprover-community/mathlib4/pull/7788#issuecomment-1788132019
+* ‍\[P. M. Cohn, _Basic Algebra: Groups, Rings and Fields_\]\[cohn\_2003\], Theorem 11.3.4
+* ‍\[N. Jacobson, _Basic Algebra II: Second Edition_\]\[jacobson1989\], Theorem 8.38
 -/
 
 variable {K : Type*} [Field K]

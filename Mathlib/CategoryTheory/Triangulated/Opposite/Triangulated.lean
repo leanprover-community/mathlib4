@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The opposite of a triangulated category is triangulated
 
@@ -15,8 +18,8 @@ The pretriangulated structure on `Cᵒᵖ` was constructed in the file
 that `Cᵒᵖ` is triangulated if `C` is triangulated.
 
 ## References
-* [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
+* ‍\[Jean-Louis Verdier, _Des catégories dérivées des catégories abéliennes_\]\[verdier1996\]
 -/
 
 public section

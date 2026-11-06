@@ -9,7 +9,11 @@ public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.Order.Fin.Basic
 public import Mathlib.Util.Superscript
 
-/-! # The simplex category
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# The simplex category
 
 We construct a skeletal model of the simplex category, with an object `⦋n⦌` for each `n : ℕ`, and
 morphisms `⦋n⦌ ⟶ ⦋m⦌` identify to monotone maps from `Fin (n + 1)` to `Fin (m + 1)`.
@@ -20,12 +24,13 @@ is equivalent to `NonemptyFinLinOrd`.
 ## Remarks
 
 We provide the following functions to work with these objects:
+
 1. `SimplexCategory.mk` creates an object of `SimplexCategory` out of a natural number.
-  Use the notation `⦋n⦌` in the `Simplicial` locale.
+   Use the notation `⦋n⦌` in the `Simplicial` locale.
 2. `SimplexCategory.len` gives the "length" of an object of `SimplexCategory`, as a natural.
 3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
-  term of `SimplexCategory.Hom`.
+   term of `SimplexCategory.Hom`.
 
 ## Notation
 
@@ -42,7 +47,9 @@ universe v
 
 open CategoryTheory
 
-/-- The simplex category:
+/--
+The simplex category:
+
 * for each `n : ℕ`, there is an object `⦋n⦌`;
 * morphisms `⦋n⦌ ⟶ ⦋m⦌` are monotone functions `Fin (n+1) → Fin (m+1)`
 -/

@@ -11,15 +11,18 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.Tactic.Qify
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pell's Equation
 
-*Pell's Equation* is the equation $x^2 - d y^2 = 1$, where $d$ is a positive integer
-that is not a square, and one is interested in solutions in integers $x$ and $y$.
+_Pell's Equation_ is the equation $`x^2 - d y^2 = 1`, where $`d` is a positive integer
+that is not a square, and one is interested in solutions in integers $`x` and $`y`.
 
-In this file, we aim at providing all of the essential theory of Pell's Equation for general $d$
+In this file, we aim at providing all of the essential theory of Pell's Equation for general $`d`
 (as opposed to the contents of `NumberTheory.PellMatiyasevic`, which is specific to the case
-$d = a^2 - 1$ for some $a > 1$).
+$`d = a^2 - 1` for some $`a > 1`).
 
 We begin by defining a type `Pell.Solution₁ d` for solutions of the equation,
 show that it has a natural structure as an abelian group, and prove some basic
@@ -27,13 +30,13 @@ properties.
 
 We then prove the following
 
-**Theorem.** Let $d$ be a positive integer that is not a square. Then the equation
-$x^2 - d y^2 = 1$ has a nontrivial (i.e., with $y \ne 0$) solution in integers.
+*Theorem.* Let $`d` be a positive integer that is not a square. Then the equation
+$`x^2 - d y^2 = 1` has a nontrivial (i.e., with $`y \ne 0`) solution in integers.
 
 See `Pell.exists_of_not_isSquare` and `Pell.Solution₁.exists_nontrivial_of_not_isSquare`.
 
-We then define the *fundamental solution* to be the solution
-with smallest $x$ among all solutions satisfying $x > 1$ and $y > 0$.
+We then define the _fundamental solution_ to be the solution
+with smallest $`x` among all solutions satisfying $`x > 1` and $`y > 0`.
 We show that every solution is a power (in the sense of the group structure mentioned above)
 of the fundamental solution up to a (common) sign,
 see `Pell.IsFundamental.eq_zpow_or_neg_zpow`, and that a (positive) solution has this property
@@ -41,8 +44,8 @@ if and only if it is fundamental, see `Pell.pos_generator_iff_fundamental`.
 
 ## References
 
-* [K. Ireland, M. Rosen, *A classical introduction to modern number theory* (Section 17.5)]
-  [IrelandRosen1990]
+* ‍\[K. Ireland, M. Rosen, _A classical introduction to modern number theory_ (Section 17.5)\]
+  ‍\[IrelandRosen1990\]
 
 ## Tags
 
@@ -60,7 +63,7 @@ Pell's equation
 namespace Pell
 
 /-!
-### Group structure of the solution set
+# Group structure of the solution set
 
 We define a structure of a commutative multiplicative group with distributive negation
 on the set of all solutions to the Pell equation `x^2 - d*y^2 = 1`.
@@ -79,10 +82,12 @@ We then set up an API for `Pell.Solution₁ d`.
 
 open CharZero Zsqrtd
 
-/-- An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
+/--
+An element of `ℤ√d` has norm one (i.e., `a.re^2 - d*a.im^2 = 1`) if and only if
 it is contained in the submonoid of unitary elements.
 
-TODO: merge this result with `Pell.isPell_iff_mem_unitary`. -/
+TODO: merge this result with `Pell.isPell_iff_mem_unitary`.
+-/
 theorem is_pell_solution_iff_mem_unitary {d : ℤ} {a : ℤ√d} :
     a.re ^ 2 - d * a.im ^ 2 = 1 ↔ a ∈ unitary (ℤ√d) := by
   rw [← norm_eq_one_iff_mem_unitary, norm_def, sq, sq, ← mul_assoc]
@@ -311,7 +316,7 @@ end Solution₁
 section Existence
 
 /-!
-### Existence of nontrivial solutions
+# Existence of nontrivial solutions
 -/
 
 
@@ -416,9 +421,10 @@ end Solution₁
 
 end Existence
 
-/-! ### Fundamental solutions
+/-!
+# Fundamental solutions
 
-We define the notion of a *fundamental solution* of Pell's equation and
+We define the notion of a _fundamental solution_ of Pell's equation and
 show that it exists and is unique (when `d` is positive and non-square)
 and generates the group of solutions up to sign.
 -/
@@ -426,8 +432,10 @@ and generates the group of solutions up to sign.
 
 variable {d : ℤ}
 
-/-- We define a solution to be *fundamental* if it has `x > 1` and `y > 0`
-and its `x` is the smallest possible among solutions with `x > 1`. -/
+/--
+We define a solution to be _fundamental_ if it has `x > 1` and `y > 0`
+and its `x` is the smallest possible among solutions with `x > 1`.
+-/
 def IsFundamental (a : Solution₁ d) : Prop :=
   1 < a.x ∧ 0 < a.y ∧ ∀ {b : Solution₁ d}, 1 < b.x → a.x ≤ b.x
 

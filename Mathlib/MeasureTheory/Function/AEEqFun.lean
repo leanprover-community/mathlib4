@@ -11,8 +11,10 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.Add
 public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical
@@ -41,7 +43,6 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 
   See `mk_add_mk`, `neg_mk`, `mk_sub`, `smul_mk`,
   `coeFn_add`, `coeFn_neg`, `coeFn_sub`, `coeFn_smul`
-
 * The order structure of `L⁰` :
   `≤` can be defined in a similar way: `[f] ≤ [g]` if `f a ≤ g a` for almost all `a` in domain.
   And `α →ₘ β` inherits the preorder and partial order of `β`.
@@ -52,22 +53,20 @@ See `Mathlib/MeasureTheory/Function/L1Space/AEEqFun.lean` for `L¹` space.
 ## Implementation notes
 
 * `f.cast`:      To find a representative of `f : α →ₘ β`, use the coercion `(f : α → β)`, which
-                 is implemented as `f.toFun`.
-                 For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
-                 characterizing, say, `(f op g : α → β)`.
+  is implemented as `f.toFun`.
+  For each operation `op` in `L⁰`, there is a lemma called `coe_fn_op`,
+  characterizing, say, `(f op g : α → β)`.
 * `AEEqFun.mk`:  To construct an `L⁰` function `α →ₘ β` from an almost everywhere strongly
-                 measurable function `f : α → β`, use `ae_eq_fun.mk`
+  measurable function `f : α → β`, use `ae_eq_fun.mk`
 * `comp`:        Use `comp g f` to get `[g ∘ f]` from `g : β → γ` and `[f] : α →ₘ γ` when `g` is
-                 continuous. Use `compMeasurable` if `g` is only measurable (this requires the
-                 target space to be second countable).
+  continuous. Use `compMeasurable` if `g` is only measurable (this requires the
+  target space to be second countable).
 * `comp₂`:       Use `comp₂ g f₁ f₂` to get `[fun a ↦ g (f₁ a) (f₂ a)]`.
-                 For example, `[f + g]` is `comp₂ (+)`
-
+  For example, `[f + g]` is `comp₂ (+)`
 
 ## Tags
 
-function space, almost everywhere equal, `L⁰`, ae_eq_fun
-
+function space, almost everywhere equal, `L⁰`, ae\_eq\_fun
 -/
 
 @[expose] public section
@@ -134,7 +133,9 @@ def cast (f : α →ₘ[μ] β) : α → β :=
     const α <| Classical.choose h else
     AEStronglyMeasurable.mk _ (Quotient.out f : { f : α → β // AEStronglyMeasurable f μ }).2
 
-/-- A measurable representative of an `AEEqFun` [f] -/
+/--
+A measurable representative of an `AEEqFun` \[f\]
+-/
 instance instCoeFun : CoeFun (α →ₘ[μ] β) fun _ => α → β := ⟨cast⟩
 
 @[fun_prop]
@@ -204,16 +205,18 @@ theorem induction_on₃ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpac
 end
 
 /-!
-### Composition of an a.e. equal function with a (quasi-)measure-preserving function
+# Composition of an a.e. equal function with a (quasi-)measure-preserving function
 -/
 
 section compQuasiMeasurePreserving
 
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
 
-/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
+/--
+Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
-See also `AEEqFun.compMeasurePreserving`. -/
+See also `AEEqFun.compMeasurePreserving`.
+-/
 def compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : QuasiMeasurePreserving f μ ν) :
     α →ₘ[μ] γ :=
   Quotient.liftOn' g (fun g ↦ mk (g ∘ f) <| g.2.comp_quasiMeasurePreserving hf) fun _ _ h ↦
@@ -273,10 +276,12 @@ section compMeasurePreserving
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β}
   {f : α → β} {g : β → γ}
 
-/-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
+/--
+Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
 This is an important special case of `AEEqFun.compQuasiMeasurePreserving`. We use a separate
-definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas. -/
+definition so that lemmas that need `f` to be measure preserving can be `@[simp]` lemmas.
+-/
 def compMeasurePreserving (g : β →ₘ[ν] γ) (f : α → β) (hf : MeasurePreserving f μ ν) : α →ₘ[μ] γ :=
   g.compQuasiMeasurePreserving f hf.quasiMeasurePreserving
 

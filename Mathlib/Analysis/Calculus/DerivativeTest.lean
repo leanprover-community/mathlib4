@@ -10,16 +10,20 @@ public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 
 import Mathlib.LinearAlgebra.AffineSpace.Ordered
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The First- and Second-Derivative Tests
 
-We prove the first-derivative test from calculus, in the strong form given on [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
+We prove the first-derivative test from calculus, in the strong form given on [
+Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#First-derivative_test).
 
 The test is proved over the real numbers ℝ
 using `monotoneOn_of_deriv_nonneg` from `Mathlib/Analysis/Calculus/Deriv/MeanValue.lean`.
 
-We prove the second-derivative test using the first-derivative test.
-Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
+We prove the second-derivative test using the first-derivative test. Source: [
+Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_second-derivative_test).
 
 ## Main results
 
@@ -31,15 +35,10 @@ Source: [Wikipedia](https://en.wikipedia.org/wiki/Derivative_test#Proof_of_the_s
   If there exists a positive number `r > 0` such that for every `x` in `Ioo (a − r) a`
   we have `f′(x) ≥ 0`, and for every `x` in `Ioo a (a + r)` we have `f′(x) ≤ 0`,
   then `f` has a local maximum at `a`.
-
 * `isLocalMin_of_deriv_Ioo`: The dual of `first_derivative_max`, for minima.
-
 * `isLocalMax_of_deriv`: 1st derivative test for maxima using filters.
-
 * `isLocalMin_of_deriv`: 1st derivative test for minima using filters.
-
 * `isLocalMin_of_deriv_deriv_pos`: The second-derivative test, minimum version.
-
 
 ## Tags
 

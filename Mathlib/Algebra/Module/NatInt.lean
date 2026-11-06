@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Int.Cast.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over `ℕ` and `ℤ`
 
@@ -84,9 +87,11 @@ theorem DistribSMul.toAddMonoidHom_eq_zsmulAddGroupHom :
 end AddCommGroup
 
 variable (R) in
-/-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
+/--
+An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
-See note [reducible non-instances]. -/
+See note \[reducible non-instances\].
+-/
 abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M where
   neg := fun a => (-1 : R) • a

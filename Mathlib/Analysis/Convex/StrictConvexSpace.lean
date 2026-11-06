@@ -10,11 +10,14 @@ public import Mathlib.Analysis.Normed.Module.Ray
 
 import Mathlib.Analysis.Normed.Module.Ball.Pointwise
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strictly convex spaces
 
 This file defines strictly convex spaces. A normed space is strictly convex if all closed balls are
-strictly convex. This does **not** mean that the norm is strictly convex (in fact, it never is).
+strictly convex. This does *not* mean that the norm is strictly convex (in fact, it never is).
 
 ## Main definitions
 
@@ -27,22 +30,21 @@ from this assumption.
 
 In a strictly convex space, we prove
 
-- `strictConvex_closedBall`: a closed ball is strictly convex.
-- `combo_mem_ball_of_ne`, `openSegment_subset_ball_of_ne`, `norm_combo_lt_of_ne`:
+* `strictConvex_closedBall`: a closed ball is strictly convex.
+* `combo_mem_ball_of_ne`, `openSegment_subset_ball_of_ne`, `norm_combo_lt_of_ne`:
   a nontrivial convex combination of two points in a closed ball belong to the corresponding open
   ball;
-- `norm_add_lt_of_not_sameRay`, `sameRay_iff_norm_add`, `dist_add_dist_eq_iff`:
+* `norm_add_lt_of_not_sameRay`, `sameRay_iff_norm_add`, `dist_add_dist_eq_iff`:
   the triangle inequality `dist x y + dist y z ≤ dist x z` is a strict inequality unless `y` belongs
   to the segment `[x -[ℝ] z]`.
-- `Isometry.affineIsometryOfStrictConvexSpace`: an isometry of `NormedAddTorsor`s for real
+* `Isometry.affineIsometryOfStrictConvexSpace`: an isometry of `NormedAddTorsor`s for real
   normed spaces, strictly convex in the case of the codomain, is an affine isometry.
 
 We also provide several lemmas that can be used as alternative constructors for `StrictConvex ℝ E`:
 
-- `StrictConvexSpace.of_strictConvex_unitClosedBall`: if `closed_ball (0 : E) 1` is strictly
+* `StrictConvexSpace.of_strictConvex_unitClosedBall`: if `closed_ball (0 : E) 1` is strictly
   convex, then `E` is a strictly convex space;
-
-- `StrictConvexSpace.of_norm_add`: if `‖x + y‖ = ‖x‖ + ‖y‖` implies `SameRay ℝ x y` for all
+* `StrictConvexSpace.of_norm_add`: if `‖x + y‖ = ‖x‖ + ‖y‖` implies `SameRay ℝ x y` for all
   nonzero `x y : E`, then `E` is a strictly convex space.
 
 ## Implementation notes
@@ -59,11 +61,13 @@ public section
 
 open Convex Set Metric
 
-/-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
+/--
+A _strictly convex space_ is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
-See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
+See also `StrictConvexSpace.of_strictConvex_unitClosedBall`.
+-/
 @[mk_iff]
 class StrictConvexSpace (𝕜 E : Type*) [NormedField 𝕜] [PartialOrder 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : Prop where

@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.Finset.Sort
 public import Mathlib.Order.Prod.Lex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaps of disjoint closed intervals
 
@@ -18,14 +21,16 @@ If `LinearOrder α`, `F` is a finite subset of `α × α` such that for any `(x,
 `a ≤ x ≤ y ≤ b` and all such `[x, y]`'s are pairwise disjoint, `h` is a proof of `#F = k`,
 `i` is in `Fin (k + 1)`, we order `F` from left to right as
 `(x 0, y 0), ..., (x (k - 1), y (k - 1))`, then `F.intervalGapsWithin h a b i` is
-- `(a, b)` if `0 = i = k`;
-- `(a, x 0)` if `0 = i < k`;
-- `(y (i - 1), x i)` if `0 < i < k`;
-- `(y (i - 1), b)` if `0 < i = k`.
+
+* `(a, b)` if `0 = i = k`;
+* `(a, x 0)` if `0 = i < k`;
+* `(y (i - 1), x i)` if `0 < i < k`;
+* `(y (i - 1), b)` if `0 < i = k`.
 
 Technically, the definition `F.intervalGapsWithin a b` does not require `F` to be pairwise disjoint
 or endpoints to be within `[a, b]` or even require that `a ≤ b`, but it makes the most sense if
 they are actually satisfied. If they are actually satisfied, then we show that
+
 * `Finset.intervalGapsWithin_mapsTo`, `Finset.intervalGapsWithin_injective`,
   `Finset.intervalGapsWithin_surjOn`:
   `(fun j ↦ ((F.intervalGapsWithin h a b j.castSucc).2, (F.intervalGapsWithin h a b j.succ).1))` is
@@ -52,12 +57,14 @@ namespace Finset
 variable {α : Type*} [LinearOrder α] (F : Finset (α × α)) {k : ℕ} (h : #F = k) (a b : α)
   (j : ℕ)
 
-/-- We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.
+/--
+We order `F` in the lexicographic order as `(x 0, y 0), ..., (x (k - 1), y (k - 1))`.
 Then `F.intervalGapsWithin h a b i` is
-- `(a, b)` if `0 = i = k`;
-- `(a, x 0)` if `0 = i < k`;
-- `(y (i - 1), x i)` if `0 < i < k`;
-- `(y (i - 1), b)` if `0 < i = k`.
+
+* `(a, b)` if `0 = i = k`;
+* `(a, x 0)` if `0 = i < k`;
+* `(y (i - 1), x i)` if `0 < i < k`;
+* `(y (i - 1), b)` if `0 < i = k`.
 -/
 noncomputable def intervalGapsWithin (i : Fin (k + 1)) : α × α := (fst, snd) where
   /-- The first coordinate of `F.intervalGapsWithin h a b i` is `a` if `i = 0`,

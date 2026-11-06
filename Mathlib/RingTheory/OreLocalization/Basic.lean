@@ -8,21 +8,22 @@ module
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.OreLocalization.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Localization over left Ore sets.
 
 This file proves results on the localization of rings (monoids with zeros) over a left Ore set.
 
 ## References
 
-* <https://ncatlab.org/nlab/show/Ore+localization>
-* [Zoran Škoda, *Noncommutative localization in noncommutative geometry*][skoda2006]
-
+* [https://ncatlab.org/nlab/show/Ore+localization](https://ncatlab.org/nlab/show/Ore+localization)
+* ‍\[Zoran Škoda, _Noncommutative localization in noncommutative geometry_\]\[skoda2006\]
 
 ## Tags
-localization, Ore, non-commutative
 
+localization, Ore, non-commutative
 -/
 
 @[expose] public section

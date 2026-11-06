@@ -13,6 +13,9 @@ public import Mathlib.Data.Int.Cast.Lemmas
 public import Mathlib.Data.Rat.Lemmas
 public import Mathlib.Order.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Casts for Rational Numbers
 
@@ -233,9 +236,11 @@ lemma ext_nnrat' (h : ∀ n : ℕ, f n = g n) : f = g :=
     rw [← r.num_div_den, div_eq_mul_inv, map_mul, map_mul, h, eq_on_inv₀ f g]
     apply h
 
-/-- If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal.
+/--
+If monoid with zero homs `f` and `g` from `ℚ≥0` agree on the naturals then they are equal.
 
-See note [partially-applied ext lemmas] for why `comp` is used here. -/
+See note \[partially-applied ext lemmas\] for why `comp` is used here.
+-/
 @[ext]
 lemma ext_nnrat {f g : ℚ≥0 →*₀ M₀} (h : f.comp (Nat.castRingHom ℚ≥0) =
     g.comp (Nat.castRingHom ℚ≥0 : ℕ →*₀ ℚ≥0)) : f = g :=
@@ -260,9 +265,11 @@ theorem ext_rat' (h : ∀ m : ℤ, f m = g m) : f = g :=
       eq_on_inv₀ f g]
     apply h
 
-/-- If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
+/--
+If monoid with zero homs `f` and `g` from `ℚ` agree on the integers then they are equal.
 
-See note [partially-applied ext lemmas] for why `comp` is used here. -/
+See note \[partially-applied ext lemmas\] for why `comp` is used here.
+-/
 @[ext]
 theorem ext_rat {f g : ℚ →*₀ M₀}
     (h : f.comp (Int.castRingHom ℚ) = g.comp (Int.castRingHom ℚ : ℤ →*₀ ℚ)) : f = g :=

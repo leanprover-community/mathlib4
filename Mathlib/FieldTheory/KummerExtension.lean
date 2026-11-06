@@ -11,6 +11,9 @@ public import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Norm.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kummer Extensions
 
@@ -19,33 +22,34 @@ Kummer theory is about the classification of finite extensions of `L` whose Galo
 of order `n`.
 
 ## Main result
-- `isCyclic_tfae`:
+
+* `isCyclic_tfae`:
   Suppose `L/K` is a finite extension of dimension `n`
   Then `L/K` is cyclic iff
   `L` is a splitting field of some irreducible polynomial of the form `Xⁿ - a : K[X]` iff
   `L = K[α]` for some `αⁿ ∈ K`.
-
-- `autEquivRootsOfUnity`:
+* `autEquivRootsOfUnity`:
   Given an instance `IsSplittingField K L (X ^ n - C a)`
   (perhaps via `isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top`),
   then the Galois group is isomorphic to `rootsOfUnity n K`, by sending
   `σ ↦ σ α / α` for `α ^ n = a`, and the inverse is given by `μ ↦ (α ↦ μ • α)`.
-
-- `autEquivZmod`:
+* `autEquivZmod`:
   Furthermore, given an explicit choice `ζ` of a primitive `n`-th root of unity, the Galois group is
   then isomorphic to `Multiplicative (ZMod n)` whose inverse is given by
   `i ↦ (α ↦ ζⁱ • α)`.
 
 ## Other results
+
 Criteria for `X ^ n - C a` to be irreducible is given:
-- `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
+
+* `X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two`:
   For `n = p ^ k` an odd prime power, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power.
-- `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
+* `X_pow_sub_C_irreducible_iff_forall_prime_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `p`-th power for all prime `p ∣ n`.
-- `X_pow_sub_C_irreducible_iff_of_odd`:
+* `X_pow_sub_C_irreducible_iff_of_odd`:
   For `n` odd, `X ^ n - C a` is irreducible iff `a` is not a `d`-th power for `d ∣ n` and `d ≠ 1`.
 
-TODO: criteria for even `n`. See [serge_lang_algebra] VI,§9.
+TODO: criteria for even `n`. See \[serge\_lang\_algebra\] VI,§9.
 
 TODO: relate Kummer extensions of degree 2 with the class `Algebra.IsQuadraticExtension`.
 
@@ -53,7 +57,6 @@ TODO: treat the case where the characteristic `p` of the field divides `n`, so t
 contains a primitive `n`-th root of unity.
 For the Galois group part, this is Artin-Schreier theory;
 it also holds that `X ^ p - C a` is irreducible iff `a` is not a `p`-th power in `K`.
-
 -/
 
 @[expose] public section
@@ -187,7 +190,8 @@ alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
 end Irreducible
 
 /-!
-### Galois Group of `K[n√a]`
+# Galois Group of `K[n√a]`
+
 We first develop the theory for a specific `K[n√a] := AdjoinRoot (X ^ n - C a)`.
 The main result is the description of the Galois group: `autAdjoinRootXPowSubCEquiv`.
 -/
@@ -327,7 +331,9 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul [NeZero n] (σ) :
 
 end AdjoinRoot
 
-/-! ### Galois Group of `IsSplittingField K L (X ^ n - C a)` -/
+/-!
+# Galois Group of `IsSplittingField K L (X ^ n - C a)`
+-/
 
 section IsSplittingField
 
@@ -488,7 +494,9 @@ lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
 
 end IsSplittingField
 
-/-! ### Cyclic extensions of order `n` when `K` has all `n`-th roots of unity. -/
+/-!
+# Cyclic extensions of order `n` when `K` has all `n`-th roots of unity.
+-/
 
 section IsCyclic
 

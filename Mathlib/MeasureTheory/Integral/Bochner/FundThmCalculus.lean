@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Fundamental theorem of calculus for set integrals
 
@@ -30,7 +33,8 @@ open scoped Topology
 variable {X E ι : Type*} [MeasurableSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
   [CompleteSpace E]
 
-/-- Fundamental theorem of calculus for set integrals:
+/--
+Fundamental theorem of calculus for set integrals:
 if `μ` is a measure that is finite at a filter `l` and
 `f` is a measurable function that has a finite limit `b` at `l ⊓ ae μ`, then
 `∫ x in s i, f x ∂μ = μ (s i) • b + o(μ (s i))` at a filter `li` provided that
@@ -39,7 +43,8 @@ Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the actual
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
-arguments, `m i = μ.real (s i)` is used in the output. -/
+arguments, `m i = μ.real (s i)` is used in the output.
+-/
 theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     {μ : Measure X} {l : Filter X} [l.IsMeasurablyGenerated] {f : X → E} {b : E}
     (h : Tendsto f (l ⊓ ae μ) (𝓝 b)) (hfm : StronglyMeasurableAtFilter f l μ)
@@ -63,7 +68,8 @@ theorem Filter.Tendsto.integral_sub_linear_isLittleO_ae
     Real.norm_eq_abs, abs_of_nonneg measureReal_nonneg]
   exact norm_setIntegral_le_of_norm_le_const_ae' hμs h_norm
 
-/-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
+/--
+Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
 finite measure and `f` is an almost everywhere measurable function that is continuous at a point `a`
 within a measurable set `t`, then `∫ x in s i, f x ∂μ = μ (s i) • f a + o(μ (s i))` at a filter `li`
 provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.  Since `μ (s i)` is an `ℝ≥0∞`
@@ -71,7 +77,8 @@ number, we use `μ.real (s i)` in the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
-arguments, `m i = μ.real (s i)` is used in the output. -/
+arguments, `m i = μ.real (s i)` is used in the output.
+-/
 theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
     [OpensMeasurableSpace X] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hx : ContinuousWithinAt f t x)
@@ -83,7 +90,8 @@ theorem ContinuousWithinAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X]
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhdsWithin x t) hs m
     hsμ
 
-/-- Fundamental theorem of calculus for set integrals, `nhds` version: if `μ` is a locally finite
+/--
+Fundamental theorem of calculus for set integrals, `nhds` version: if `μ` is a locally finite
 measure and `f` is an almost everywhere measurable function that is continuous at a point `a`, then
 `∫ x in s i, f x ∂μ = μ (s i) • f a + o(μ (s i))` at `li` provided that `s` tends to
 `(𝓝 a).smallSets` along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in
@@ -91,7 +99,8 @@ the actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
-arguments, `m i = μ.real (s i)` is used in the output. -/
+arguments, `m i = μ.real (s i)` is used in the output.
+-/
 theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
     {μ : Measure X} [IsLocallyFiniteMeasure μ] {x : X}
     {f : X → E} (hx : ContinuousAt f x) (hfm : StronglyMeasurableAtFilter f (𝓝 x) μ) {s : ι → Set X}
@@ -100,14 +109,17 @@ theorem ContinuousAt.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [Open
     (fun i => (∫ x in s i, f x ∂μ) - m i • f x) =o[li] m :=
   (hx.mono_left inf_le_left).integral_sub_linear_isLittleO_ae hfm (μ.finiteAt_nhds x) hs m hsμ
 
-/-- Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally
-finite measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then `∫ x in (s i), f x ∂μ =
-μ (s i) • f a + o(μ (s i))` at `li` provided that `s i` tends to `(𝓝[t] a).smallSets` along `li`.
-Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the actual statement.
+/--
+Fundamental theorem of calculus for set integrals, `nhdsWithin` version: if `μ` is a locally finite
+measure, `f` is continuous on a measurable set `t`, and `a ∈ t`, then
+`∫ x in (s i), f x ∂μ = μ (s i) • f a + o(μ (s i))` at `li` provided that `s i` tends to
+`(𝓝[t] a).smallSets` along `li`. Since `μ (s i)` is an `ℝ≥0∞` number, we use `μ.real (s i)` in the
+actual statement.
 
 Often there is a good formula for `μ.real (s i)`, so the formalization can take an optional
 argument `m` with this formula and a proof of `(fun i => μ.real (s i)) =ᶠ[li] m`. Without these
-arguments, `m i = μ.real (s i)` is used in the output. -/
+arguments, `m i = μ.real (s i)` is used in the output.
+-/
 theorem ContinuousOn.integral_sub_linear_isLittleO_ae [TopologicalSpace X] [OpensMeasurableSpace X]
     [SecondCountableTopologyEither X E] {μ : Measure X}
     [IsLocallyFiniteMeasure μ] {x : X} {t : Set X} {f : X → E} (hft : ContinuousOn f t) (hx : x ∈ t)

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.Polynomial.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Polynomial sequences
 
 We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` such that the polynomial
@@ -25,9 +27,10 @@ We define polynomial sequences – sequences of polynomials `a₀, a₁, ...` su
 ## TODO
 
 Generalize linear independence to:
-  * `IsCancelAdd` semirings
-  * just require coefficients are regular
-  * arbitrary sets of polynomials which are pairwise different degree.
+
+* `IsCancelAdd` semirings
+* just require coefficients are regular
+* arbitrary sets of polynomials which are pairwise different degree.
 -/
 
 @[expose] public section

@@ -10,6 +10,9 @@ public import Mathlib.Logic.Function.Iterate
 public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Take` and `Drop` lemmas for lists
 
@@ -32,7 +35,9 @@ universe u v w
 
 variable {α : Type u} {l₁ l₂ : List α}
 
-/-! ### take, drop -/
+/-!
+# take, drop
+-/
 
 theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length) :
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
@@ -159,7 +164,9 @@ theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD 
 
 end TakeD
 
-/-! ### filter -/
+/-!
+# filter
+-/
 
 section Filter
 
@@ -179,7 +186,9 @@ theorem span_eq_takeWhile_dropWhile (l : List α) : span p l = (takeWhile p l, d
 
 end Filter
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 theorem dropSlice_eq (xs : List α) (n m : ℕ) : dropSlice n m xs = xs.take n ++ xs.drop (n + m) := by
   induction n generalizing xs with cases xs with grind [dropSlice]

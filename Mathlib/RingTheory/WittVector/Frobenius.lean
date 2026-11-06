@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.WittVector.IsPoly
 
 import Mathlib.Algebra.Algebra.ZMod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Frobenius operator
 
@@ -40,9 +43,8 @@ and bundle it into `WittVector.frobenius`.
 
 ## References
 
-* [Hazewinkel, *Witt Vectors*][Haze09]
-
-* [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
+* ‍\[Hazewinkel, _Witt Vectors_\]\[Haze09\]
+* ‍\[Commelin and Lewis, _Formalizing the Ring of Witt Vectors_\]\[CL21\]
 -/
 
 @[expose] public section
@@ -197,9 +199,11 @@ theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
   rw [frobeniusFun, coeff_mk]
 
 variable (p) in
-/-- `frobeniusFun` is tautologically a polynomial function.
+/--
+`frobeniusFun` is tautologically a polynomial function.
 
-See also `frobenius_isPoly`. -/
+See also `frobenius_isPoly`.
+-/
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
 
@@ -208,7 +212,8 @@ theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
   simp only [ghostComponent_apply, frobeniusFun, ← bind₁_frobeniusPoly_wittPolynomial, aeval_bind₁]
 
-/-- If `R` has characteristic `p`, then there is a ring endomorphism
+/--
+If `R` has characteristic `p`, then there is a ring endomorphism
 that raises `r : R` to the power `p`.
 By applying `WittVector.map` to this endomorphism,
 we obtain a ring endomorphism `frobenius R p : 𝕎 R →+* 𝕎 R`.

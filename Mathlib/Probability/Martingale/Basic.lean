@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Function.ConditionalExpectation.PullOut
 public import Mathlib.Probability.Process.Predictable
 public import Mathlib.Probability.Process.Stopping
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Martingales
 
@@ -20,7 +23,7 @@ with respect to the filtration `ℱ` if `f i` is integrable, `f` is strongly ada
 submartingale with respect to the filtration `ℱ` if `f i` is integrable, `f` is strongly adapted
 with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 
-### Definitions
+## Definitions
 
 * `MeasureTheory.Martingale f ℱ μ`: `f` is a martingale with respect to filtration `ℱ` and
   measure `μ`.
@@ -29,11 +32,10 @@ with respect to `ℱ` and for all `i ≤ j`, `f i ≤ᵐ[μ] μ[f j | ℱ i]`.
 * `MeasureTheory.Submartingale f ℱ μ`: `f` is a submartingale with respect to filtration `ℱ` and
   measure `μ`.
 
-### Results
+## Results
 
 * `MeasureTheory.martingale_condExp f ℱ μ`: the sequence `fun i => μ[f | ℱ i]` is a
   martingale with respect to `ℱ` and `μ`.
-
 -/
 
 @[expose] public section

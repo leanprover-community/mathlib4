@@ -11,9 +11,11 @@ public import Mathlib.Algebra.MonoidAlgebra.Module
 public import Mathlib.LinearAlgebra.BilinearMap
 public import Mathlib.RingTheory.Finiteness.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finiteness of (sub)modules and finitely supported functions
-
 -/
 
 public section
@@ -148,9 +150,11 @@ theorem fg_ker_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P)
   · rwa [inf_of_le_right (show (LinearMap.ker f) ≤
       (LinearMap.ker g).comap f from comap_mono bot_le)]
 
-/-- If $M → N → P → 0$ is exact and $M$ and $P$ are finitely generated then so is $N$.
+/--
+If $`M → N → P → 0` is exact and $`M` and $`P` are finitely generated then so is $`N`.
 
-This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`. -/
+This is the `Module.Finite` version of `Submodule.fg_of_fg_map_of_fg_inf_ker`.
+-/
 @[stacks 0519 "(1)"]
 lemma _root_.Module.Finite.of_exact {f : M →ₗ[R] N} {g : N →ₗ[R] P}
     (h_exact : Function.Exact f g) (h_surj : Function.Surjective g)

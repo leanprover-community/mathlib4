@@ -7,7 +7,11 @@ module
 
 public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
-/-! # Type classes for the Fourier transform
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Type classes for the Fourier transform
 
 In this file we define type classes for the Fourier transform and the inverse Fourier transform.
 We introduce the notation `𝓕` and `𝓕⁻` in these classes to denote the Fourier transform and

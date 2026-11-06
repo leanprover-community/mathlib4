@@ -10,22 +10,24 @@ public import Mathlib.LinearAlgebra.Eigenspace.Zero
 public import Mathlib.RingTheory.AdjoinRoot
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Prime spectrum of (multivariate) polynomials
 
 Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary schemes.
 
 ## Main results
-- `isNilpotent_tensor_residueField_iff`:
+
+* `isNilpotent_tensor_residueField_iff`:
   If `A` is a finite free `R`-algebra, then `f : A` is nilpotent on `κ(𝔭) ⊗ A` for some
   prime `𝔭 ◃ R` if and only if every non-leading coefficient of `charpoly(f)` is in `𝔭`.
-- `Polynomial.exists_image_comap_of_monic`:
+* `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
-- `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`:
+* `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
+* `MvPolynomial.isOpenMap_comap_C`:
   The structure map `Spec (MvPolynomial σ R) → Spec R` is an open map.
-
 -/
 
 public section

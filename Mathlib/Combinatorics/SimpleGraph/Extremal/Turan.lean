@@ -10,6 +10,9 @@ public import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 public import Mathlib.Combinatorics.SimpleGraph.Extremal.Basic
 public import Mathlib.Order.Partition.Equipartition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turán's theorem
 
@@ -39,7 +42,7 @@ the property through `turanGraph n r` using the isomorphism provided by the forw
 
 ## References
 
-* https://en.wikipedia.org/wiki/Turán%27s_theorem
+* https://en.wikipedia.org/wiki/Turán%27s\_theorem
 -/
 
 @[expose] public section
@@ -247,9 +250,11 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (card V) r := b
   convert G.card_edgeFinset_sup_edge _ hn
   rwa [h.not_adj_iff_part_eq]
 
-/-- **Turán's theorem**, forward direction.
+/--
+*Turán's theorem*, forward direction.
 
-Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`. -/
+Any `r + 1`-cliquefree Turán-maximal graph on `n` vertices is isomorphic to `turanGraph n r`.
+-/
 theorem nonempty_iso_turanGraph :
     Nonempty (G ≃g turanGraph (card V) r) := by
   classical
@@ -268,9 +273,11 @@ theorem nonempty_iso_turanGraph :
 
 end IsTuranMaximal
 
-/-- **Turán's theorem**, reverse direction.
+/--
+*Turán's theorem*, reverse direction.
 
-Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`. -/
+Any graph isomorphic to `turanGraph n r` is itself Turán-maximal if `0 < r`.
+-/
 theorem isTuranMaximal_of_iso (f : G ≃g turanGraph n r) (hr : 0 < r) : G.IsTuranMaximal r := by
   obtain ⟨J, _, j⟩ := exists_isTuranMaximal (V := V) hr
   obtain ⟨g⟩ := j.nonempty_iso_turanGraph
@@ -313,17 +320,21 @@ theorem extremalNumber_top :
     rw [← Fintype.card_fin n]
   exact (card_edgeFinset_of_isExtremal_free isExtremal_top_free_turanGraph).symm
 
-/-- The `turanGraph` is, up to isomorphism, the unique extremal graph forbidding `⊤`.
+/--
+The `turanGraph` is, up to isomorphism, the unique extremal graph forbidding `⊤`.
 
-This is **Turán's theorem** restated in terms of the extremal numbers of `⊤`.
-See `SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph`. -/
+This is *Turán's theorem* restated in terms of the extremal numbers of `⊤`.
+See `SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph`.
+-/
 theorem card_edgeFinset_eq_extremalNumber_top_iff_nonempty_iso_turanGraph :
     (⊤ : SimpleGraph α).Free G ∧ #G.edgeFinset = extremalNumber (card V) (⊤ : SimpleGraph α)
       ↔ Nonempty (G ≃g turanGraph (card V) (card α - 1)) := by
   rw [← isTuranMaximal_iff_nonempty_iso_turanGraph (Nat.sub_pos_iff_lt.mpr one_lt_card),
     ← isExtremal_top_free_iff_isTuranMaximal, isExtremal_free_iff]
 
-/-! ### Number of edges in the Turán graph -/
+/-!
+# Number of edges in the Turán graph
+-/
 
 /-- The number of edges in `turanGraph n r`. -/
 abbrev turanNumber (n r : ℕ) : ℕ := #(turanGraph n r).edgeFinset

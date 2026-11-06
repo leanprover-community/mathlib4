@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.Sym.Sym2
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Game addition relation
 
@@ -19,12 +22,11 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 
 ## Main definitions and results
 
-- `Prod.GameAdd`: the game addition relation on ordered pairs.
-- `WellFounded.prod_gameAdd`: formalizes induction on ordered pairs, where exactly one entry
+* `Prod.GameAdd`: the game addition relation on ordered pairs.
+* `WellFounded.prod_gameAdd`: formalizes induction on ordered pairs, where exactly one entry
   decreases at a time.
-
-- `Sym2.GameAdd`: the game addition relation on unordered pairs.
-- `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
+* `Sym2.GameAdd`: the game addition relation on unordered pairs.
+* `WellFounded.sym2_gameAdd`: formalizes induction on unordered pairs, where exactly one entry
   decreases at a time.
 -/
 
@@ -32,22 +34,26 @@ We also define `Sym2.GameAdd`, which is the unordered pair analog of `Prod.GameA
 
 variable {α β : Type*} {rα : α → α → Prop} {rβ : β → β → Prop} {a : α} {b : β}
 
-/-! ### `Prod.GameAdd` -/
+/-!
+# `Prod.GameAdd`
+-/
 
 namespace Prod
 
 variable (rα rβ)
 
-/-- `Prod.GameAdd rα rβ x y` means that `x` can be reached from `y` by decreasing either entry with
-  respect to the relations `rα` and `rβ`.
+/--
+`Prod.GameAdd rα rβ x y` means that `x` can be reached from `y` by decreasing either entry with
+respect to the relations `rα` and `rβ`.
 
-  It is so called, as it models game addition within combinatorial game theory. If `rα a₁ a₂` means
-  that `a₂ ⟶ a₁` is a valid move in game `α`, and `rβ b₁ b₂` means that `b₂ ⟶ b₁` is a valid move
-  in game `β`, then `GameAdd rα rβ` specifies the valid moves in the juxtaposition of `α` and `β`:
-  the player is free to choose one of the games and make a move in it, while leaving the other game
-  unchanged.
+It is so called, as it models game addition within combinatorial game theory. If `rα a₁ a₂` means
+that `a₂ ⟶ a₁` is a valid move in game `α`, and `rβ b₁ b₂` means that `b₂ ⟶ b₁` is a valid move
+in game `β`, then `GameAdd rα rβ` specifies the valid moves in the juxtaposition of `α` and `β`:
+the player is free to choose one of the games and make a move in it, while leaving the other game
+unchanged.
 
-  See `Sym2.GameAdd` for the unordered pair analog. -/
+See `Sym2.GameAdd` for the unordered pair analog.
+-/
 inductive GameAdd : α × β → α × β → Prop
   | fst {a₁ a₂ b} : rα a₁ a₂ → GameAdd (a₁, b) (a₂, b)
   | snd {a b₁ b₂} : rβ b₁ b₂ → GameAdd (a, b₁) (a, b₂)
@@ -96,9 +102,11 @@ theorem Acc.prod_gameAdd (ha : Acc rα a) (hb : Acc rβ b) :
   rintro (⟨ra⟩ | ⟨rb⟩)
   exacts [iha _ ra (Acc.intro b hb), ihb _ rb]
 
-/-- The `Prod.GameAdd` relation on well-founded inputs is well-founded.
+/--
+The `Prod.GameAdd` relation on well-founded inputs is well-founded.
 
-  In particular, the sum of two well-founded games is well-founded. -/
+In particular, the sum of two well-founded games is well-founded.
+-/
 theorem WellFounded.prod_gameAdd (hα : WellFounded rα) (hβ : WellFounded rβ) :
     WellFounded (Prod.GameAdd rα rβ) :=
   ⟨fun ⟨a, b⟩ => (hα.apply a).prod_gameAdd (hβ.apply b)⟩
@@ -122,14 +130,18 @@ theorem GameAdd.recursion_eq {motive : α → β → Sort*} (hα : WellFounded r
 
 end Prod
 
-/-! ### `Sym2.GameAdd` -/
+/-!
+# `Sym2.GameAdd`
+-/
 
 namespace Sym2
 
-/-- `Sym2.GameAdd rα x y` means that `x` can be reached from `y` by decreasing either entry with
-  respect to the relation `rα`.
+/--
+`Sym2.GameAdd rα x y` means that `x` can be reached from `y` by decreasing either entry with
+respect to the relation `rα`.
 
-  See `Prod.GameAdd` for the ordered pair analog. -/
+See `Prod.GameAdd` for the ordered pair analog.
+-/
 def GameAdd (rα : α → α → Prop) : Sym2 α → Sym2 α → Prop :=
   Sym2.lift₂
     ⟨fun a₁ b₁ a₂ b₂ => Prod.GameAdd rα rα (a₁, b₁) (a₂, b₂) ∨ Prod.GameAdd rα rα (b₁, a₁) (a₂, b₂),

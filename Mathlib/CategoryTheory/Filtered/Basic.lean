@@ -8,11 +8,15 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.Data.Fin.VecNotation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Filtered categories
 
 A category is filtered if every finite diagram admits a cocone.
 We give a simple characterisation of this condition as
+
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
@@ -31,6 +35,7 @@ Filtered categories are nice because colimits indexed by filtered categories ten
 easier to describe than general colimits (and more often preserved by functors).
 
 In this file we show that any functor from a finite category to a filtered category admits a cocone:
+
 * `cocone_nonempty [FinCategory J] [IsFiltered C] (F : J ⥤ C) : Nonempty (Cocone F)`
 
 More generally,
@@ -51,13 +56,13 @@ All of the above API, except for the `bowtie` and the `tulip`, is also provided 
 categories.
 
 ## See also
+
 In `Mathlib/CategoryTheory/Limits/FilteredColimitCommutesFiniteLimit.lean` we show that filtered
 colimits commute with finite limits.
 
 There is another characterization of filtered categories, namely that whenever `F : J ⥤ C` is a
 functor from a finite category, there is `X : C` such that `Nonempty (limit (F.op ⋙ yoneda.obj X))`.
 This is shown in `Mathlib/CategoryTheory/Limits/Filtered.lean`.
-
 -/
 
 @[expose] public section
@@ -74,7 +79,9 @@ attribute [local instance] uliftCategory
 
 variable (C : Type u) [Category.{v} C]
 
-/-- A category `IsFilteredOrEmpty` if
+/--
+A category `IsFilteredOrEmpty` if
+
 1. for every pair of objects there exists another object "to the right", and
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal.
@@ -86,11 +93,14 @@ class IsFilteredOrEmpty : Prop where
   so the compositions are equal -/
   cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h
 
-/-- A category `IsFiltered` if
+/--
+A category `IsFiltered` if
+
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
-3. there exists some object. -/
+3. there exists some object.
+-/
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
   /-- a filtered category must be non-empty -/
@@ -445,7 +455,9 @@ theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
   let ⟨k, e, he⟩ := IsFilteredOrEmpty.cocone_maps (f ≫ G) (f' ≫ G')
   ⟨k, G ≫ e, G' ≫ e, by simpa only [← Category.assoc] ⟩
 
-/-- Given a "bowtie" of morphisms
+/--
+Given a "bowtie" of morphisms
+
 ```
  j₁   j₂
  |\  /|
@@ -455,6 +467,7 @@ theorem span {i j j' : C} (f : i ⟶ j) (f' : i ⟶ j') :
  vv  vv
  k₁  k₂
 ```
+
 in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
 making the resulting squares commute.
 -/
@@ -465,7 +478,9 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
   simp_rw [Category.assoc] at hs
   exact ⟨s, k₁t ≫ ts, k₂t ≫ ts, by simp only [← Category.assoc, ht], hs⟩
 
-/-- Given a "crown" of morphisms
+/--
+Given a "crown" of morphisms
+
 ```
   j₁   j₂   j₃  ... jₙ
  /  \  /\  /  \
@@ -477,6 +492,7 @@ theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : j₁ ⟶ k₁) (g₁ : j₁ ⟶
    vvv    vvv
     k₁    k₂
 ```
+
 in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
 making the resulting squares commute.
 -/
@@ -494,7 +510,9 @@ theorem crown
     obtain ⟨t, α, β, h₁, h₂⟩ := bowtie α₁ α₂ β₁ β₂
     exact ⟨t, α₁ ≫ α, β₁ ≫ α, Option.rec (by grind) (by grind)⟩
 
-/-- Given a "crown" of morphisms
+/--
+Given a "crown" of morphisms
+
 ```
   j₁   j₂   j₃
  /  \  /\  /  \
@@ -506,6 +524,7 @@ theorem crown
    vvv    vvv
     k₁    k₂
 ```
+
 in a filtered category, we can construct an object `s` and two morphisms from `k₁` and `k₂` to `s`,
 making the resulting squares commute.
 -/
@@ -528,7 +547,9 @@ theorem crown₄
      (Fin.cons g₁ (Fin.cons g₂ (Fin.cons g₃ (Fin.cons g₄ nofun))))
   exact ⟨s, α, β, H 0, H 1, H 2, H 3⟩
 
-/-- Given a "tulip" of morphisms
+/--
+Given a "tulip" of morphisms
+
 ```
  j₁    j₂    j₃
  |\   / \   / |
@@ -542,6 +563,7 @@ theorem crown₄
       v v
        l
 ```
+
 in a filtered category, we can construct an object `s` and three morphisms from `k₁`, `k₂` and `l`
 to `s`, making the resulting squares commute.
 -/
@@ -569,6 +591,7 @@ end IsFiltered
 
 /--
 A category `IsCofilteredOrEmpty` if
+
 1. for every pair of objects there exists another object "to the left", and
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal.
@@ -580,11 +603,14 @@ class IsCofilteredOrEmpty : Prop where
   so the compositions are equal -/
   cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g
 
-/-- A category `IsCofiltered` if
+/--
+A category `IsCofiltered` if
+
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal, and
-3. there exists some object. -/
+3. there exists some object.
+-/
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
   /-- a cofiltered category must be non-empty -/
@@ -685,7 +711,9 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
     simp_rw [F.map_comp] <;>
     convert! Set.range_comp_subset_range _ _
 
-/-- Given a "bowtie" of morphisms
+/--
+Given a "bowtie" of morphisms
+
 ```
  k₁   k₂
  |\  /|
@@ -695,6 +723,7 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
  vv  vv
  j₁  j₂
 ```
+
 in a cofiltered category, we can construct an object `s` and two morphisms
 from `s` to `k₁` and `k₂`, making the resulting squares commute.
 -/

@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.CategoryTheory.Endomorphism
 public import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Preadditive categories
 
@@ -38,7 +41,7 @@ is simplified to `f ≫ g`.
 
 ## References
 
-* [F. Borceux, *Handbook of Categorical Algebra 2*][borceux-vol2]
+* ‍\[F. Borceux, _Handbook of Categorical Algebra 2_\]\[borceux-vol2\]
 
 ## Tags
 

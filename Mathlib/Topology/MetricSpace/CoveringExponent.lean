@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 public import Mathlib.Topology.MetricSpace.CoveringNumbers
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sets with bounded covering exponent
 
@@ -27,7 +30,6 @@ for a stochastic process to have a modification with Hölder continuous paths.
 * `HasCoveringExponent.subset`: if `A` has bounded covering exponent with constant `c` and
   exponent `d`, then any subset of `A` has bounded covering exponent with constant `2^d * c` and
   exponent `d`.
-
 -/
 
 @[expose] public section

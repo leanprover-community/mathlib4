@@ -8,7 +8,12 @@ module
 public meta import Lean.Elab.Tactic.ElabTerm
 public import Mathlib.Init
 
-/-! # `clear!` tactic -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `clear!` tactic
+-/
 
 public meta section
 

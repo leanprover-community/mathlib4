@@ -15,7 +15,12 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
-/-! # Functions and measures of temperate growth -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Functions and measures of temperate growth
+-/
 
 @[expose] public section
 
@@ -38,7 +43,8 @@ polynomially bounded. -/
 def HasTemperateGrowth (f : E → F) : Prop :=
   ContDiff ℝ ∞ f ∧ ∀ n : ℕ, ∃ (k : ℕ) (C : ℝ), ∀ x, ‖iteratedFDeriv ℝ n f x‖ ≤ C * (1 + ‖x‖) ^ k
 
-/-- A function has temperate growth if and only if it is smooth and its `n`-th iterated
+/--
+A function has temperate growth if and only if it is smooth and its `n`-th iterated
 derivative is `O((1 + ‖x‖) ^ k)` for some `k : ℕ` (depending on `n`).
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
@@ -53,7 +59,8 @@ theorem hasTemperateGrowth_iff_isBigO {f : E → F} :
   congrm ContDiff ℝ ∞ f ∧ (∀ n, ∃ k C, ∀ x, _ ≤ C * ?_)
   rw [norm_pow, Real.norm_of_nonneg (by positivity)]
 
-/-- If `f` has temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
+/--
+If `f` has temperate growth, then its `n`-th iterated derivative is `O((1 + ‖x‖) ^ k)` for
 some `k : ℕ` (depending on `n`).
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
@@ -63,7 +70,8 @@ theorem HasTemperateGrowth.isBigO {f : E → F}
     ∃ k, iteratedFDeriv ℝ n f =O[⊤] (fun x ↦ (1 + ‖x‖) ^ k) :=
   Function.hasTemperateGrowth_iff_isBigO.mp hf_temperate |>.2 n
 
-/-- If `f` has temperate growth, then for any `N : ℕ` one can find `k` such that *all* iterated
+/--
+If `f` has temperate growth, then for any `N : ℕ` one can find `k` such that _all_ iterated
 derivatives of `f` of order `≤ N` are `O((1 + ‖x‖) ^ k)`.
 
 Note that the `O` here is with respect to the `⊤` filter, meaning that the bound holds everywhere.
@@ -125,10 +133,12 @@ lemma _root_.HasCompactSupport.hasTemperateGrowth {f : E → F} (h₁ : HasCompa
   refine ⟨0, g x₀, fun x ↦ ?_⟩
   simpa using hx₀ x
 
-/-- Composition of two temperate growth functions is of temperate growth.
+/--
+Composition of two temperate growth functions is of temperate growth.
 
 Version where the outer function `g` is only of temperate growth on the image of inner function
-`f`. -/
+`f`.
+-/
 theorem HasTemperateGrowth.comp' [NormedAddCommGroup D] [NormedSpace ℝ D] {g : E → F} {f : D → E}
     {t : Set E} (ht : Set.range f ⊆ t) (ht' : UniqueDiffOn ℝ t) (hg₁ : ContDiffOn ℝ ∞ g t)
     (hg₂ : ∀ N, ∃ k C, ∃ (_hC : 0 ≤ C), ∀ n ≤ N, ∀ x ∈ t,
@@ -228,9 +238,11 @@ variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
   [NormedAddCommGroup G] [NormedSpace ℝ G]
   [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
-/-- The product of two functions of temperate growth is again of temperate growth.
+/--
+The product of two functions of temperate growth is again of temperate growth.
 
-Version for bilinear maps. -/
+Version for bilinear maps.
+-/
 @[fun_prop]
 theorem _root_.ContinuousLinearMap.bilinear_hasTemperateGrowth [NormedSpace 𝕜 E]
     (B : E →L[𝕜] F →L[𝕜] G) {f : D → E} {g : D → F} (hf : f.HasTemperateGrowth)
@@ -262,9 +274,11 @@ lemma HasTemperateGrowth.id : Function.HasTemperateGrowth (id : E → E) := by
 lemma HasTemperateGrowth.id' : Function.HasTemperateGrowth (fun (x : E) ↦ x) :=
   Function.HasTemperateGrowth.id
 
-/-- The product of two functions of temperate growth is again of temperate growth.
+/--
+The product of two functions of temperate growth is again of temperate growth.
 
-Version for scalar multiplication. -/
+Version for scalar multiplication.
+-/
 @[to_fun (attr := fun_prop)]
 theorem HasTemperateGrowth.smul {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
     (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=

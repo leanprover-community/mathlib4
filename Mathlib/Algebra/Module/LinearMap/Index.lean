@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 import Mathlib.Algebra.Exact.Sequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The index of a linear map
 
@@ -18,7 +21,6 @@ In this file we define the index of a linear map and provide some basic API.
 
 * `LinearMap.index`: the index of a linear map, with sign convention `index = dim ker - dim coker`.
 * `LinearMap.index_comp`: the index is additive under composition.
-
 -/
 
 noncomputable section
@@ -33,9 +35,11 @@ section Ring
 
 variable {R : Type*} [Ring R] [Module R M] [Module R N] (f : M →ₗ[R] N)
 
-/-- The index of a linear map with sign convention `index = dim ker - dim coker`.
+/--
+The index of a linear map with sign convention `index = dim ker - dim coker`.
 
-In the case that either the kernel or cokernel has infinite rank, the value is junk. -/
+In the case that either the kernel or cokernel has infinite rank, the value is junk.
+-/
 public def index : ℤ := finrank R f.ker - finrank R (N ⧸ f.range)
 
 variable {f}

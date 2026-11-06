@@ -9,6 +9,9 @@ public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosedProd
 public import Mathlib.Probability.Independence.Process.Basic
 public import Mathlib.Probability.Notation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characterizing independence via bounded continuous functions
 
@@ -111,9 +114,11 @@ lemma pi_indepFun_pi_of_prod_bcf (mX : ∀ s, AEMeasurable (X s) P)
   all_goals exact Measurable.aestronglyMeasurable (by fun_prop)
 
 omit [Fintype S] [Fintype T] in variable [Finite S] [Finite T] in
-/-- Two families of random variables $(X_1, ..., X_p)$ and $(Y_1, ..., Y_q)$ are independent if
-for all real bounded continuous functions $f$ and $g$,
-$$P[f(X_1, ..., X_p) g(Y_1, ..., Y_q)] = P[f(X_1, ..., X_p)] * P[g(Y_1, ..., Y_q)].$$ -/
+/--
+Two families of random variables $`(X_1, ..., X_p)` and $`(Y_1, ..., Y_q)` are independent if
+for all real bounded continuous functions $`f` and $`g`,
+$$`P[f(X_1, ..., X_p) g(Y_1, ..., Y_q)] = P[f(X_1, ..., X_p)] * P[g(Y_1, ..., Y_q)].`
+-/
 lemma pi_indepFun_pi_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
     (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (f : (Π s, E s) →ᵇ ℝ) (g : (Π t, F t) →ᵇ ℝ),
@@ -169,9 +174,11 @@ lemma pi_indepFun_of_bcf (mX : ∀ s, AEMeasurable (X s) P)
   refine pi_indepFun_of_prod_bcf mX mU fun f g ↦ ?_
   convert! h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) g <;> simp
 
-/-- Two random variables $X$ and $Y$ are independent if
-for all real bounded continuous functions $f$ and $g$,
-$$P[f(X) g(Y)] = P[f(X)] * P[g(Y)].$$ -/
+/--
+Two random variables $`X` and $`Y` are independent if
+for all real bounded continuous functions $`f` and $`g`,
+$$`P[f(X) g(Y)] = P[f(X)] * P[g(Y)].`
+-/
 lemma indepFun_of_bcf (mZ : AEMeasurable Z P) (mU : AEMeasurable U P)
     (h : ∀ (f : G →ᵇ ℝ) (g : H →ᵇ ℝ), P[f ∘ Z * g ∘ U] = P[f ∘ Z] * P[g ∘ U]) :
     IndepFun Z U P := by
@@ -227,9 +234,11 @@ lemma indicator_indepFun_pi_of_prod_bcf
   · exact hg.indicator₀ mA
 
 omit [Fintype S] in variable [Finite S] in
-/-- The indicator of a set $A$ and a family of random variables $(X_1, ..., X_p)$ are independent
-if for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].$$ -/
+/--
+The indicator of a set $`A` and a family of random variables $`(X_1, ..., X_p)` are independent
+if for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].`
+-/
 lemma indicator_indepFun_pi_of_bcf
     {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ f : (Π s, E s) →ᵇ ℝ, ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
@@ -238,9 +247,11 @@ lemma indicator_indepFun_pi_of_bcf
   refine indicator_indepFun_pi_of_prod_bcf mA mX fun f ↦ ?_
   convert! h (∏ s, (f s).compContinuous ⟨Function.eval s, by fun_prop⟩) <;> simp
 
-/-- The indicator of a set $A$ and a random variable $X$ are independent
-if for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X)] = P(A) P[f(X)].$$ -/
+/--
+The indicator of a set $`A` and a random variable $`X` are independent
+if for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X)] = P(A) P[f(X)].`
+-/
 lemma indicator_indepFun_of_bcf
     {A : Set Ω} (mA : NullMeasurableSet A P) (mZ : AEMeasurable Z P)
     (h : ∀ f : G →ᵇ ℝ, ∫ ω in A, f (Z ω) ∂P = P.real A * ∫ ω, f (Z ω) ∂P) :
@@ -289,9 +300,11 @@ lemma indep_comap_pi_of_prod_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s
     (indepSets_comap_pi_of_prod_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
 
 omit [Fintype S] in variable [Finite S] in
-/-- A sigma-algebra $\mathcal{A}$ and a family of random variables $(X_1, ..., X_p)$ are independent
-if for all set $A \in \mathcal{A}$ and for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].$$ -/
+/--
+A sigma-algebra $`\mathcal{A}` and a family of random variables $`(X_1, ..., X_p)` are independent
+if for all set $`A \in \mathcal{A}` and for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X_1, ..., X_p)] = P(A) P[f(X_1, ..., X_p)].`
+-/
 lemma indep_comap_pi_of_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A, MeasurableSet[m] A → ∀ f : (Π s, E s) →ᵇ ℝ,
       ∫ ω in A, f (X · ω) ∂P = P.real A * ∫ ω, f (X · ω) ∂P) :
@@ -299,9 +312,11 @@ lemma indep_comap_pi_of_bcf (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
   (Indep_iff_IndepSets _ _ P).2
     (indepSets_comap_pi_of_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
 
-/-- A sigma-algebra $\mathcal{A}$ and a random variable $X$ are independent
-if for all set $A \in \mathcal{A}$ and for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X)] = P(A) P[f(X)].$$ -/
+/--
+A sigma-algebra $`\mathcal{A}` and a random variable $`X` are independent
+if for all set $`A \in \mathcal{A}` and for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X)] = P(A) P[f(X)].`
+-/
 lemma indep_comap_of_bcf (hm : m ≤ mΩ) (mZ : AEMeasurable Z P)
     (h : ∀ A, MeasurableSet[m] A → ∀ f : G →ᵇ ℝ,
       ∫ ω in A, f (Z ω) ∂P = P.real A * ∫ ω, f (Z ω) ∂P) :
@@ -327,11 +342,12 @@ lemma process_indepFun_process_of_prod_bcf
   IndepFun.process_indepFun_process₀ mX mY
     fun I J ↦ pi_indepFun_pi_of_prod_bcf (by fun_prop) (by fun_prop) (h I J)
 
-/-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
-for all $s_1, ..., s_p \in S, t_1, ..., t_q \in T$ and
-for all real bounded continuous functions $f$ and $g$,
-$$P[f(X_{s_1}, ..., X_{s_p}) g(Y_{t_1}, ..., Y_{t_q})] =
-P[f(X_{s_1}, ..., X_{s_p})] * P[g(Y_{t_1}, ..., Y_{t_q})].$$ -/
+/--
+Two stochastic processes $`(X_s)_{s \in S}` and $`(Y_t)_{t \in T}` are independent if
+for all $`s_1, ..., s_p \in S, t_1, ..., t_q \in T` and
+for all real bounded continuous functions $`f` and $`g`,
+$$`P[f(X_{s_1}, ..., X_{s_p}) g(Y_{t_1}, ..., Y_{t_q})] = P[f(X_{s_1}, ..., X_{s_p})] * P[g(Y_{t_1}, ..., Y_{t_q})].`
+-/
 lemma process_indepFun_process_of_bcf
     (mX : ∀ s, AEMeasurable (X s) P) (mY : ∀ t, AEMeasurable (Y t) P)
     (h : ∀ (I : Finset S) (J : Finset T) (f : (Π s : I, E s) →ᵇ ℝ) (g : (Π t : J, F t) →ᵇ ℝ),
@@ -383,10 +399,11 @@ lemma indicator_indepFun_process_of_prod_bcf
   IndepFun.indepFun_process₀ ((aemeasurable_indicator_const_iff 1).2 mA) mX
     fun I ↦ indicator_indepFun_pi_of_prod_bcf mA (by fun_prop) (h I)
 
-/-- The indicator of a set $A$ and a stochastic process $(X_s)_{s \in S}$ are independent if
-for all $s_1, ..., s_p \in S$ and for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] =
-P(A) P[f(X_{s_1}, ..., X_{s_p})].$$ -/
+/--
+The indicator of a set $`A` and a stochastic process $`(X_s)_{s \in S}` are independent if
+for all $`s_1, ..., s_p \in S` and for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] = P(A) P[f(X_{s_1}, ..., X_{s_p})].`
+-/
 lemma indicator_indepFun_process_of_bcf
     {A : Set Ω} (mA : NullMeasurableSet A P) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ),
@@ -427,11 +444,12 @@ lemma indep_comap_process_of_prod_bcf
   (Indep_iff_IndepSets _ _ P).2
     (indepSets_comap_process_of_prod_bcf (fun A hA ↦ (hm A hA).nullMeasurableSet) mX h)
 
-/-- A sigma-algebra $\mathcal{A}$ and a stochastic process $(X_s)_{s \in S}$ are independent if
-for all $A \in \mathcal{A}$, for all $s_1, ..., s_p \in S$ and
-for all real bounded continuous function $f$,
-$$P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] =
-P(A) P[f(X_{s_1}, ..., X_{s_p})].$$ -/
+/--
+A sigma-algebra $`\mathcal{A}` and a stochastic process $`(X_s)_{s \in S}` are independent if
+for all $`A \in \mathcal{A}`, for all $`s_1, ..., s_p \in S` and
+for all real bounded continuous function $`f`,
+$$`P[\mathbb{I}_A f(X_{s_1}, ..., X_{s_p})] = P(A) P[f(X_{s_1}, ..., X_{s_p})].`
+-/
 lemma indep_comap_process_of_bcf
     (hm : m ≤ mΩ) (mX : ∀ s, AEMeasurable (X s) P)
     (h : ∀ A, MeasurableSet[m] A → ∀ (I : Finset S) (f : (Π s : I, E s) →ᵇ ℝ),

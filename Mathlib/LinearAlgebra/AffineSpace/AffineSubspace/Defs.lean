@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.AffineSpace.Defs
 public import Mathlib.LinearAlgebra.Span.Defs
 public import Mathlib.Order.Atoms
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Affine spaces
 
@@ -42,8 +45,8 @@ topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
 
 ## References
 
-* https://en.wikipedia.org/wiki/Affine_space
-* https://en.wikipedia.org/wiki/Principal_homogeneous_space
+* https://en.wikipedia.org/wiki/Affine\_space
+* https://en.wikipedia.org/wiki/Principal\_homogeneous\_space
 
 ## TODO
 
@@ -290,7 +293,8 @@ lemma vsub_self_of_zero_mem {s : AffineSubspace k V} (hs : 0 ∈ s) :
   rw [← h, mem_vsub]
   aesop
 
-/-- The direction of an affine subspace is the submodule spanned by
+/--
+The direction of an affine subspace is the submodule spanned by
 the pairwise differences of points.  (Except in the case of an empty
 affine subspace, where the direction is the zero submodule, every
 vector in the direction is the difference of two points in the affine

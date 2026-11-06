@@ -10,7 +10,12 @@ public import Mathlib.RingTheory.Localization.FractionRing
 
 import Mathlib.FieldTheory.Minpoly.Basic
 
-/-! # Almost integral elements -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Almost integral elements
+-/
 
 @[expose] public section
 

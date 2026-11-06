@@ -10,6 +10,9 @@ public import Mathlib.Algebra.Order.Floor.Ring
 
 import Mathlib.Algebra.ContinuedFractions.Translations
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
 
@@ -18,6 +21,7 @@ import Mathlib.Algebra.ContinuedFractions.Translations
 This is a collection of simple lemmas between the different structures used for the computation
 of continued fractions defined in `Mathlib/Algebra/ContinuedFractions/Computation/Basic.lean`.
 The file consists of three sections:
+
 1. Recurrences and inversion lemmas for `IntFractPair.stream`: these lemmas give us inversion
    rules and recurrences for the computation of the stream of integer and fractional parts of
    a value.
@@ -31,11 +35,11 @@ The file consists of three sections:
 
 ## Main Theorems
 
-- `succ_nth_stream_eq_some_iff` gives a recurrence to compute the `n + 1`th value of the sequence
+* `succ_nth_stream_eq_some_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of non-termination.
-- `succ_nth_stream_eq_none_iff` gives a recurrence to compute the `n + 1`th value of the sequence
+* `succ_nth_stream_eq_none_iff` gives a recurrence to compute the `n + 1`th value of the sequence
   of integer and fractional parts of a value in case of termination.
-- `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
+* `get?_of_eq_some_of_succ_get?_intFractPair_stream` and
   `get?_of_eq_some_of_get?_intFractPair_stream_fr_ne_zero` show how the entries of the sequence
   of the computed continued fraction can be obtained from the stream of integer and fractional
   parts.
@@ -55,7 +59,7 @@ variable {K : Type*} [DivisionRing K] [LinearOrder K] [FloorRing K] {v : K}
 namespace IntFractPair
 
 /-!
-### Recurrences and Inversion Lemmas for `IntFractPair.stream`
+# Recurrences and Inversion Lemmas for `IntFractPair.stream`
 
 Here we state some lemmas that give us inversion rules and recurrences for the computation of the
 stream of integer and fractional parts of a value.
@@ -144,7 +148,7 @@ end IntFractPair
 section Head
 
 /-!
-### Translation of the Head Term
+# Translation of the Head Term
 
 Here we state some lemmas that show us that the head term of the computed continued fraction of a
 value `v` is `⌊v⌋` and how this head term is moved along the structures used in the computation
@@ -170,7 +174,7 @@ end Head
 section sequence
 
 /-!
-### Translation of the Sequences
+# Translation of the Sequences
 
 Here we state some lemmas that show how the sequences of the involved structures
 (`IntFractPair.stream`, `IntFractPair.seq1`, and `GenContFract.of`) are connected, i.e. how the
@@ -188,7 +192,7 @@ theorem IntFractPair.get?_seq1_eq_succ_get?_stream :
 section Termination
 
 /-!
-#### Translation of the Termination of the Sequences
+# Translation of the Termination of the Sequences
 
 Let's first show how the termination of one sequence implies the termination of another sequence.
 -/
@@ -208,7 +212,7 @@ end Termination
 section Values
 
 /-!
-#### Translation of the Values of the Sequence
+# Translation of the Values of the Sequence
 
 Now let's show how the values of the sequences correspond to one another.
 -/

@@ -9,11 +9,14 @@ public import Mathlib.Analysis.Normed.Field.Lemmas
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
 public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Polar set
 
 In this file we define the polar set. There are different notions of the polar, we will define the
-*absolute polar*. The advantage over the real polar is that we can define the absolute polar for
+_absolute polar_. The advantage over the real polar is that we can define the absolute polar for
 any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a normed commutative ring and
 `E` and `F` are modules over `𝕜`.
 
@@ -29,7 +32,7 @@ any bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`, where `𝕜` is a no
 
 ## References
 
-* [H. H. Schaefer, *Topological Vector Spaces*][schaefer1966]
+* ‍\[H. H. Schaefer, _Topological Vector Spaces_\]\[schaefer1966\]
 
 ## Tags
 

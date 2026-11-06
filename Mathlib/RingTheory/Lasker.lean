@@ -9,21 +9,23 @@ public import Mathlib.Algebra.Module.LocalizedModule.Submodule
 public import Mathlib.Order.Irreducible
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lasker ring
 
 ## Main declarations
 
-- `IsLasker`: An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
+* `IsLasker`: An `R`-module `M` satisfies `IsLasker R M` when any `N : Submodule R M` can be
   decomposed into finitely many primary submodules.
-- `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
+* `IsLasker.exists_isMinimalPrimaryDecomposition`: Any `N : Submodule R N` in an `R`-module `M`
   satisfying `IsLasker R M` can be decomposed into finitely many primary submodules `Nᵢ`, such
   that the decomposition is minimal: each `Nᵢ` is necessary, and the `√Ann(M/Nᵢ)` are distinct.
-- `IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes`: The first uniqueness theorem
+* `IsMinimalPrimaryDecomposition.image_radical_eq_associated_primes`: The first uniqueness theorem
   for primary decomposition, Theorem 4.5 in Atiyah-Macdonald: In any minimal primary decomposition
   `I = ⨅ i, q_i`, the ideals `radical (q_i.colon M)` are exactly the associated primes of `I`.
-- `Submodule.isLasker`: Every Noetherian module is Lasker.
-
+* `Submodule.isLasker`: Every Noetherian module is Lasker.
 -/
 
 @[expose] public section

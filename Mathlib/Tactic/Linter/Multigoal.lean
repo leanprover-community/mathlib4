@@ -11,11 +11,14 @@ public meta import Lean.Parser.Term
 -- this file has a valid copyright header and module docstring.
 public meta import Mathlib.Tactic.Linter.Header  -- shake: keep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The "multiGoal" linter
 
 The "multiGoal" linter emits a warning where there is more than a single goal in scope.
-There is an exception: a tactic that closes *all* remaining goals is allowed.
+There is an exception: a tactic that closes _all_ remaining goals is allowed.
 
 There are a few tactics, such as `skip`, `swap` or the `try` combinator, that are intended to work
 specifically in such a situation.
@@ -26,12 +29,15 @@ Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `
 also serve a similar purpose.
 
 TODO:
+
 * Should the linter flag unnecessary scoping as well?
   For instance, should
+
   ```lean
   example : True := by
     · · exact .intro
   ```
+
   raise a warning?
 * Custom support for "accumulating side-goals", so that once they are all in scope
   they can be solved in bulk via `all_goals` or a similar tactic.
@@ -54,9 +60,11 @@ public register_option linter.style.multiGoal : Bool := {
 
 namespace Style.multiGoal
 
-/-- The `SyntaxNodeKind`s in `exclusions` correspond to tactics that the linter allows,
+/--
+The `SyntaxNodeKind`s in `exclusions` correspond to tactics that the linter allows,
 even though there are multiple active goals.
 Reasons for admitting a kind in `exclusions` include
+
 * the tactic focuses on one goal, e.g. `·`, `focus`, `on_goal i =>`, ...;
 * the tactic is reordering the goals, e.g. `swap`, `rotate_left`, ...;
 * the tactic is structuring a proof, e.g. `skip`, `<;>`, ...;
@@ -121,11 +129,13 @@ abbrev exclusions : Std.HashSet SyntaxNodeKind := .ofArray #[
     `tacticSleep_heartbeats_
   ]
 
-/-- The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
+/--
+The `SyntaxNodeKind`s in `ignoreBranch` correspond to tactics that disable the linter from
 their first application until the corresponding proof branch is closed.
 Reasons for ignoring these tactics include
+
 * the linter gets confused by the proof management, e.g. `conv`;
-* the tactics are *intended* to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
+* the tactics are _intended_ to act on multiple goals, e.g. `repeat`, `any_goals`, `all_goals`, ...
 
 There is some overlap in scope between `exclusions` and `ignoreBranch`.
 -/
@@ -148,8 +158,10 @@ abbrev ignoreBranch : Std.HashSet SyntaxNodeKind := .ofArray #[
     `Mathlib.Tactic.successIfFailWithMsg
   ]
 
-/-- `getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
+/--
+`getManyGoals t` returns the syntax nodes of the `InfoTree` `t` corresponding to tactic calls
 which
+
 * leave at least one goal that was present before it ran
   (with the exception of tactics that leave the sole goal unchanged);
 * are not excluded through `exclusions` or `ignoreBranch`;

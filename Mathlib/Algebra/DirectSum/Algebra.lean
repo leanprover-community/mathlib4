@@ -8,7 +8,11 @@ module
 public import Mathlib.Algebra.DirectSum.Module
 public import Mathlib.Algebra.DirectSum.Ring
 
-/-! # Additively-graded algebra structures on `⨁ i, A i`
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Additively-graded algebra structures on `⨁ i, A i`
 
 This file provides `R`-algebra structures on external direct sums of `R`-modules.
 
@@ -22,7 +26,6 @@ where all `A i` are `R`-modules. This is the extra structure needed to promote `
 
 * `DirectSum.GAlgebra R A`, the typeclass.
 * `DirectSum.toAlgebra` extends `DirectSum.toSemiring` to produce an `AlgHom`.
-
 -/
 
 @[expose] public section
@@ -105,13 +108,15 @@ theorem algebraMap_toAddMonoid_hom :
     ↑(algebraMap R (⨁ i, A i)) = (DirectSum.of A 0).comp (GAlgebra.toFun : R →+ A 0) :=
   rfl
 
-/-- A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
+/--
+A family of `LinearMap`s preserving `DirectSum.GOne.one` and `DirectSum.GMul.mul`
 describes an `AlgHom` on `⨁ i, A i`. This is a stronger version of `DirectSum.toSemiring`.
 
 Of particular interest is the case when `A i` are bundled subobjects, `f` is the family of
 coercions such as `Submodule.subtype (A i)`, and the `[GMonoid A]` structure originates from
 `DirectSum.GMonoid.ofAddSubmodules`, in which case the proofs about `GOne` and `GMul`
-can be discharged by `rfl`. -/
+can be discharged by `rfl`.
+-/
 @[simps]
 def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1)
     (hmul : ∀ {i j} (ai : A i) (aj : A j), f _ (GradedMonoid.GMul.mul ai aj) = f _ ai * f _ aj) :
@@ -123,9 +128,11 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
 
-/-- Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
+/--
+Two `AlgHom`s out of a direct sum are equal if they agree on the generators.
 
-See note [partially-applied ext lemmas]. -/
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
     (h : ∀ i, f.toLinearMap.comp (lof _ _ A i) = g.toLinearMap.comp (lof _ _ A i)) : f = g :=
@@ -134,9 +141,11 @@ theorem algHom_ext' ⦃f g : (⨁ i, A i) →ₐ[R] B⦄
 theorem algHom_ext ⦃f g : (⨁ i, A i) →ₐ[R] B⦄ (h : ∀ i x, f (of A i x) = g (of A i x)) : f = g :=
   algHom_ext' R A fun i => LinearMap.ext <| h i
 
-/-- The piecewise multiplication from the `Mul` instance, as a bundled linear map.
+/--
+The piecewise multiplication from the `Mul` instance, as a bundled linear map.
 
-This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom` -/
+This is the graded version of `LinearMap.mul`, and the linear version of `DirectSum.gMulHom`
+-/
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
@@ -150,7 +159,9 @@ def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
 
 end DirectSum
 
-/-! ### Concrete instances -/
+/-!
+# Concrete instances
+-/
 
 
 /-- A direct sum of copies of an `Algebra` inherits the algebra structure. -/

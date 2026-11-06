@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Data.Fin.Tuple.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rings and `Fin`
 
@@ -16,7 +19,6 @@ This file collects some basic results involving rings and the `Fin` type
 ## Main results
 
 * `RingEquiv.piFinTwo`: The product over `Fin 2` of some rings is the Cartesian product
-
 -/
 
 @[expose] public section

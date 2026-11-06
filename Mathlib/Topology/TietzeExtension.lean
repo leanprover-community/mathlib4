@@ -10,6 +10,9 @@ public import Mathlib.Topology.UrysohnsBounded
 
 import Mathlib.Order.Interval.Set.IsoIoo
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tietze extension theorem
 
@@ -20,15 +23,16 @@ function belong to some (finite or infinite, open or closed) interval, then the 
 chosen so that it takes values in the same interval. In particular, if the original function is a
 bounded function, then there exists a bounded extension of the same norm.
 
-The proof mostly follows <https://ncatlab.org/nlab/show/Tietze+extension+theorem>. We patch a small
-gap in the proof for unbounded functions, see
+The proof mostly follows [
+https://ncatlab.org/nlab/show/Tietze+extension+theorem](https://ncatlab.org/nlab/show/Tietze+extension+theorem).
+We patch a small gap in the proof for unbounded functions, see
 `exists_extension_forall_exists_le_ge_of_isClosedEmbedding`.
 
 In addition we provide a class `TietzeExtension` encoding the idea that a topological space
 satisfies the Tietze extension theorem. This allows us to get a version of the Tietze extension
 theorem that simultaneously applies to `ℝ`, `ℝ × ℝ`, `ℂ`, `ι → ℝ`, `ℝ≥0` et cetera. At some point
 in the future, it may be desirable to provide instead a more general approach via
-*absolute retracts*, but the current implementation covers the most common use cases easily.
+_absolute retracts_, but the current implementation covers the most common use cases easily.
 
 ## Implementation notes
 
@@ -44,7 +48,9 @@ public section
 
 open Topology
 
-/-!  ### The `TietzeExtension` class -/
+/-!
+# The `TietzeExtension` class
+-/
 
 section TietzeExtensionClass
 
@@ -81,23 +87,27 @@ theorem ContinuousMap.exists_extension (he : IsClosedEmbedding e) (f : C(X₁, Y
   obtain ⟨g, hg⟩ := (f.comp e'.symm).exists_restrict_eq he.isClosed_range
   exact ⟨g, by ext x; simpa using! congr($hg ⟨e' x, x, rfl⟩)⟩
 
-/-- **Tietze extension theorem** for `TietzeExtension` spaces. Let `e` be a closed embedding of a
+/--
+*Tietze extension theorem* for `TietzeExtension` spaces. Let `e` be a closed embedding of a
 nonempty topological space `X₁` into a normal topological space `X`. Let `f` be a continuous
 function on `X₁` with values in a `TietzeExtension` space `Y`. Then there exists a
 continuous function `g : C(X, Y)` such that `g ∘ e = f`.
 
 This version is provided for convenience and backwards compatibility. Here the composition is
-phrased in terms of bare functions. -/
+phrased in terms of bare functions.
+-/
 theorem ContinuousMap.exists_extension' (he : IsClosedEmbedding e) (f : C(X₁, Y)) :
     ∃ (g : C(X, Y)), g ∘ e = f :=
   f.exists_extension he |>.imp fun g hg ↦ by ext x; congrm($(hg) x)
 
-/-- This theorem is not intended to be used directly because it is rare for a set alone to
+/--
+This theorem is not intended to be used directly because it is rare for a set alone to
 satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
 the radius is strictly positive, so finding this as an instance will fail.
 
-Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
-`[TietzeExtension t]` under some hypotheses. -/
+Instead, it is intended to be used as a constructor for theorems about sets which _do_ satisfy
+`[TietzeExtension t]` under some hypotheses.
+-/
 theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
     {Y : Type v} [TopologicalSpace Y] (f : C(s, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
@@ -105,12 +115,14 @@ theorem ContinuousMap.exists_forall_mem_restrict_eq (hs : IsClosed s)
   obtain ⟨g, hg⟩ := mk _ (map_continuous f |>.codRestrict hf) |>.exists_restrict_eq hs
   exact ⟨comp ⟨Subtype.val, by fun_prop⟩ g, by simp, by ext x; congrm(($(hg) x : Y))⟩
 
-/-- This theorem is not intended to be used directly because it is rare for a set alone to
+/--
+This theorem is not intended to be used directly because it is rare for a set alone to
 satisfy `[TietzeExtension t]`. For example, `Metric.ball` in `ℝ` only satisfies it when
 the radius is strictly positive, so finding this as an instance will fail.
 
-Instead, it is intended to be used as a constructor for theorems about sets which *do* satisfy
-`[TietzeExtension t]` under some hypotheses. -/
+Instead, it is intended to be used as a constructor for theorems about sets which _do_ satisfy
+`[TietzeExtension t]` under some hypotheses.
+-/
 theorem ContinuousMap.exists_extension_forall_mem (he : IsClosedEmbedding e)
     {Y : Type v} [TopologicalSpace Y] (f : C(X₁, Y))
     {t : Set Y} (hf : ∀ x, f x ∈ t) [ht : TietzeExtension.{u, v} t] :
@@ -288,14 +300,16 @@ theorem exists_norm_eq_domRestrict_eq_of_closed {s : Set Y} (f : s →ᵇ ℝ) (
 @[deprecated (since := "2026-07-19")]
 alias exists_norm_eq_restrict_eq_of_closed := exists_norm_eq_domRestrict_eq_of_closed
 
-/-- **Tietze extension theorem** for real-valued bounded continuous maps, a version for a closed
+/--
+*Tietze extension theorem* for real-valued bounded continuous maps, a version for a closed
 embedding and a bounded continuous function that takes values in a non-trivial closed interval.
 See also `exists_extension_forall_mem_of_isClosedEmbedding` for a more general statement that works
 for any interval (finite or infinite, open or closed).
 
 If `e : X → Y` is a closed embedding and `f : X →ᵇ ℝ` is a bounded continuous function such that
 `f x ∈ [a, b]` for all `x`, where `a ≤ b`, then there exists a bounded continuous function
-`g : Y →ᵇ ℝ` such that `g y ∈ [a, b]` for all `y` and `g ∘ e = f`. -/
+`g : Y →ᵇ ℝ` such that `g y ∈ [a, b]` for all `y` and `g ∘ e = f`.
+-/
 theorem exists_extension_forall_mem_Icc_of_isClosedEmbedding (f : X →ᵇ ℝ) {a b : ℝ} {e : X → Y}
     (hf : ∀ x, f x ∈ Icc a b) (hle : a ≤ b) (he : IsClosedEmbedding e) :
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ Icc a b) ∧ g ∘ e = f := by

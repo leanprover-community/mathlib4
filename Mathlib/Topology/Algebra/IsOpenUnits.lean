@@ -11,8 +11,10 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 import Mathlib.Topology.Algebra.Group.Units
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Topological monoids with open units
 
 We say that a topological monoid `M` has open units (`IsOpenUnits`) if `Mˣ` is open in `M` and
@@ -99,7 +101,7 @@ lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTop
   exact Ideal.mul_mem_left _ _ hx
 
 /-!
-### Units of products
+# Units of products
 
 This section contains the instances that the units in a product of two or finitely many topological
 monoids with open units are open.

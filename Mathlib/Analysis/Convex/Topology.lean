@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Convex.Strict
 public import Mathlib.Geometry.Convex.ConvexSpace.ModuleTopology
 public import Mathlib.Topology.Algebra.Affine
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological properties of convex sets
 
@@ -47,7 +50,9 @@ end Real
 
 alias ⟨_, IsPreconnected.convex⟩ := Real.convex_iff_isPreconnected
 
-/-! ### Topological vector spaces -/
+/-!
+# Topological vector spaces
+-/
 section TopologicalSpace
 
 variable [Ring 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [DenselyOrdered 𝕜]
@@ -383,10 +388,12 @@ variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddG
 
 open AffineMap
 
-/-- If we dilate the interior of a convex set about a point in its interior by a scale `t > 1`,
+/--
+If we dilate the interior of a convex set about a point in its interior by a scale `t > 1`,
 the result includes the closure of the original set.
 
-TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
+TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`.
+-/
 theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs : Convex ℝ s)
     {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) :
     closure s ⊆ homothety x t '' interior s := by
@@ -399,20 +406,24 @@ theorem Convex.closure_subset_image_homothety_interior_of_one_lt {s : Set E} (hs
     image_image, homothety_eq_lineMap]
   exact mem_image_of_mem _ ht
 
-/-- If we dilate a convex set about a point in its interior by a scale `t > 1`, the interior of
+/--
+If we dilate a convex set about a point in its interior by a scale `t > 1`, the interior of
 the result includes the closure of the original set.
 
-TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
+TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`.
+-/
 theorem Convex.closure_subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Convex ℝ s)
     {x : E} (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) :
     closure s ⊆ interior (homothety x t '' s) :=
   (hs.closure_subset_image_homothety_interior_of_one_lt hx t ht).trans <|
     (homothety_isOpenMap x t (one_pos.trans ht).ne').image_interior_subset _
 
-/-- If we dilate a convex set about a point in its interior by a scale `t > 1`, the interior of
+/--
+If we dilate a convex set about a point in its interior by a scale `t > 1`, the interior of
 the result includes the closure of the original set.
 
-TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`. -/
+TODO Generalise this from convex sets to sets that are balanced / star-shaped about `x`.
+-/
 theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Convex ℝ s) {x : E}
     (hx : x ∈ interior s) (t : ℝ) (ht : 1 < t) : s ⊆ interior (homothety x t '' s) :=
   subset_closure.trans <| hs.closure_subset_interior_image_homothety_of_one_lt hx t ht

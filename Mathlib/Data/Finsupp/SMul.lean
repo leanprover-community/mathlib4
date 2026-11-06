@@ -10,13 +10,15 @@ public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.GroupTheory.GroupAction.Hom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Declarations about scalar multiplication on `Finsupp`
 
 ## Implementation notes
 
 This file is a `noncomputable theory` and uses classical logic throughout.
-
 -/
 
 @[expose] public section
@@ -44,10 +46,12 @@ section
 
 variable [Monoid G] [MulAction G α] [AddCommMonoid M]
 
-/-- Scalar multiplication acting on the domain.
+/--
+Scalar multiplication acting on the domain.
 
 This is not an instance as it would conflict with the action on the range.
-See the `instance_diamonds` test for examples of such conflicts. -/
+See the `instance_diamonds` test for examples of such conflicts.
+-/
 @[instance_reducible]
 def comapSMul : SMul G (α →₀ M) where smul g := mapDomain (g • ·)
 
@@ -102,7 +106,7 @@ section
 
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
-`[]`. See note [implicit instance arguments].
+`[]`. See note \[implicit instance arguments\].
 -/
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
@@ -196,9 +200,11 @@ instance moduleIsTorsionFree [Semiring R] [AddCommMonoid M] [Module R M] {ι : T
 section DistribMulActionSemiHom
 variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
-/-- `Finsupp.single` as a `DistribMulActionSemiHom`.
+/--
+`Finsupp.single` as a `DistribMulActionSemiHom`.
 
-See also `Finsupp.lsingle` for the version as a linear map. -/
+See also `Finsupp.lsingle` for the version as a linear map.
+-/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
   { singleAddHom a with
     map_smul' := fun k m => by simp }
@@ -207,7 +213,9 @@ theorem distribMulActionHom_ext {f g : (α →₀ M) →+[R] N}
     (h : ∀ (a : α) (m : M), f (single a m) = g (single a m)) : f = g :=
   DistribMulActionHom.toAddMonoidHom_injective <| addHom_ext h
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 @[ext]
 theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
     (h : ∀ a : α, f.comp (DistribMulActionHom.single a) = g.comp (DistribMulActionHom.single a)) :

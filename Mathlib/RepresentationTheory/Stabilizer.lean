@@ -7,13 +7,15 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Stabilizers in representations
 
 This file defines the stabilizer of a vector in a representation and proves basic lemmas about
 stabilizers of zero vectors, scalar multiples, sums, intertwining maps, and translates by group
 elements.
-
 -/
 
 @[expose] public section

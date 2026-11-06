@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.RingTheory.DedekindDomain.Different
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjoint extensions with coprime different ideals
 
@@ -25,7 +28,6 @@ and `Frac R` denotes the fraction field of a domain `R`.
   `A`-basis of `R₂`.
 * `IsDedekindDomain.range_sup_range_eq_top_of_isCoprime_differentIdeal`: `B` is generated
   (as an `A`-algebra) by `R₁` and `R₂`.
-
 -/
 
 @[expose] public section

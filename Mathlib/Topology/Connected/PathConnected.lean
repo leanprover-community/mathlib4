@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Path
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Path connectedness
 
@@ -55,7 +58,9 @@ open Topology Filter unitInterval Set Function Pointwise Fin
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
 
-/-! ### Being joined by a path -/
+/-!
+# Being joined by a path
+-/
 
 
 /-- The relation "being joined by a path". This is an equivalence relation. -/
@@ -167,7 +172,9 @@ end ZerothHomotopy
 
 variable {X}
 
-/-! ### Being joined by a path inside a set -/
+/-!
+# Being joined by a path inside a set
+-/
 
 
 /-- The relation "being joined by a path in `F`". Not quite an equivalence relation since it's not
@@ -285,7 +292,9 @@ theorem JoinedIn.inv {G : Type*} [InvolutiveInv G] [TopologicalSpace G] [Continu
     JoinedIn s⁻¹ a⁻¹ b⁻¹ :=
   ⟨hs.somePath.inv, fun t ↦ Set.inv_mem_inv.mpr (hs.somePath_mem t)⟩
 
-/-! ### Path component -/
+/-!
+# Path component
+-/
 
 /-- The path component of `x` is the set of points that can be joined to `x`. -/
 def pathComponent (x : X) :=
@@ -380,7 +389,9 @@ theorem pathComponentIn_mono {G : Set X} (h : F ⊆ G) :
     pathComponentIn F x ⊆ pathComponentIn G x :=
   fun _ ⟨γ, hγ⟩ ↦ ⟨γ, fun t ↦ h (hγ t)⟩
 
-/-! ### Path component of the identity in a group -/
+/-!
+# Path component of the identity in a group
+-/
 
 /-- The path component of the identity in a topological monoid, as a submonoid. -/
 @[to_additive (attr := simps) /-- The path component of the identity in an additive topological
@@ -405,7 +416,9 @@ instance Subgroup.Normal.pathComponentOne (G : Type*) [Group G] [TopologicalSpac
     [IsTopologicalGroup G] : (Subgroup.pathComponentOne G).Normal where
   conj_mem _ := fun ⟨γ⟩ g ↦ ⟨⟨⟨(g * γ · * g⁻¹), by fun_prop⟩, by simp, by simp⟩⟩
 
-/-! ### Path connected sets -/
+/-!
+# Path connected sets
+-/
 
 
 /-- A set `F` is path connected if it contains a point that can be joined to all other in `F`. -/
@@ -568,7 +581,9 @@ theorem IsPathConnected.exists_path_through_family' {n : ℕ}
   choose! t ht using h₂
   exact ⟨γ, t, h₁, ht⟩
 
-/-! ### Path connected spaces -/
+/-!
+# Path connected spaces
+-/
 
 
 /-- A topological space is path-connected if it is non-empty and every two points can be
@@ -639,7 +654,9 @@ instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
   joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
 
-/-! ### Products and pi types -/
+/-!
+# Products and pi types
+-/
 
 section Prod
 
@@ -726,10 +743,12 @@ instance (priority := 100) PathConnectedSpace.connectedSpace [PathConnectedSpace
   rw [← univ_subset_iff]
   exact (by simpa using hx : pathComponent x = univ) ▸ pathComponent_subset_component x
 
-/-- A path-connected set is connected.
+/--
+A path-connected set is connected.
 
 (See `Counterexamples.TopologistsSineCurve` for the standard counterexample showing that the
-converse is false.) -/
+converse is false.)
+-/
 theorem IsPathConnected.isConnected (hF : IsPathConnected F) : IsConnected F := by
   rw [isConnected_iff_connectedSpace]
   rw [isPathConnected_iff_pathConnectedSpace] at hF

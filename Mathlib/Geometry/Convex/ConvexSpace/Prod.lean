@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Product of convex spaces
 

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Category
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Actions from a monoidal category on a category
 
 Given a monoidal category `C`, and a category `D`, we define a left action of
@@ -21,11 +23,13 @@ We also define right actions, for these, the notation for the action of `c`
 on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
 `- ⊙ᵣ (- ⊗ -) ≅ (- ⊙ᵣ -) ⊙ᵣ -` and `- ⊙ₗ 𝟙_ C ≅ -`.
 
-
 ## References
-* [Janelidze, G, and Kelly, G.M., *A note on actions of a monoidal category*][JanelidzeKelly2001]
+
+* ‍\[Janelidze, G, and Kelly, G.M., _A note on actions of a monoidal
+  category_\]\[JanelidzeKelly2001\]
 
 ## TODOs/Projects
+
 * Equivalence between actions of `C` on `D` and pseudofunctors from the
   classifying bicategory of `C` to `Cat`.
 * Left/Right Modules in `D` over a monoid object in `C`.
@@ -34,7 +38,6 @@ on `d` is `d ⊙ᵣ c`, and the structure isomorphisms are of the form
   on `M.toMon : Mon (C ⥤ C)`.
 * Canonical left action of `Type u` on `u`-small cocomplete categories via the
   copower.
-
 -/
 
 @[expose] public section
@@ -103,20 +106,23 @@ scoped notation "λₗ["J"]" => MonoidalLeftActionStruct.actionUnitIso (C := J)
 end MonoidalLeftAction
 
 open scoped MonoidalLeftAction in
-/-- A `MonoidalLeftAction C D` is the data of:
-- For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
-- For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
+/--
+A `MonoidalLeftAction C D` is the data of:
+
+* For every object `c : C` and `d : D`, an object `c ⊙ₗ d` of `D`.
+* For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ₗ d : c ⊙ₗ d ⟶ c' ⊙ₗ d`.
-- For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
+* For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
   `c ⊴ₗ f : c ⊙ₗ d ⟶ c ⊙ₗ d'`.
-- For every pair of morphisms `f : (c : C) ⟶ c'` and
+* For every pair of morphisms `f : (c : C) ⟶ c'` and
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ₗ f' : c ⊙ₗ d ⟶ c' ⊙ₗ d'`.
-- A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
-- A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
+* A structure isomorphism `αₗ c c' d : c ⊗ c' ⊙ₗ d ≅ c ⊙ₗ c' ⊙ₗ d`.
+* A structure isomorphism `λₗ d : (𝟙_ C) ⊙ₗ d ≅ d`.
 
 Furthermore, we require identities that turn `- ⊙ₗ -` into a bifunctor,
 ensure naturality of `αₗ` and `λₗ`, and ensure compatibilities with
-the associator and unitor isomorphisms in `C`. -/
+the associator and unitor isomorphisms in `C`.
+-/
 class MonoidalLeftAction [MonoidalCategory C] extends
     MonoidalLeftActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : c ⟶ c') (g : d ⟶ d') :
@@ -417,20 +423,23 @@ scoped notation "ρᵣ[" J "]" => MonoidalRightActionStruct.actionUnitIso (C := 
 end MonoidalRightAction
 
 open scoped MonoidalRightAction in
-/-- A `MonoidalRightAction C D` is the data of:
-- For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
-- For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
+/--
+A `MonoidalRightAction C D` is the data of:
+
+* For every object `c : C` and `d : D`, an object `c ⊙ᵣ d` of `D`.
+* For every morphism `f : (c : C) ⟶ c'` and every `d : D`, a morphism
   `f ⊵ᵣ d : c ⊙ᵣ d ⟶ c' ⊙ᵣ d`.
-- For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
+* For every morphism `f : (d : D) ⟶ d'` and every `c : C`, a morphism
   `c ⊴ᵣ f : c ⊙ᵣ d ⟶ c ⊙ᵣ d'`.
-- For every pair of morphisms `f : (c : C) ⟶ c'` and
+* For every pair of morphisms `f : (c : C) ⟶ c'` and
   `f : (d : D) ⟶ d'`, a morphism `f ⊙ᵣₘ f' : c ⊙ᵣ d ⟶ c' ⊙ᵣ d'`.
-- A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
-- A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
+* A structure isomorphism `αᵣ c c' d : c ⊗ c' ⊙ᵣ d ≅ c ⊙ᵣ c' ⊙ᵣ d`.
+* A structure isomorphism `ρᵣ d : (𝟙_ C) ⊙ᵣ d ≅ d`.
 
 Furthermore, we require identities that turn `- ⊙ᵣ -` into a bifunctor,
 ensure naturality of `αᵣ` and `ρᵣ`, and ensure compatibilities with
-the associator and unitor isomorphisms in `C`. -/
+the associator and unitor isomorphisms in `C`.
+-/
 class MonoidalRightAction [MonoidalCategory C] extends
     MonoidalRightActionStruct C D where
   actionHom_def {c c' : C} {d d' : D} (f : d ⟶ d') (g : c ⟶ c') :

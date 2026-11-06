@@ -10,6 +10,9 @@ public import Mathlib.Topology.Sheaves.Stalks
 
 import Mathlib.Topology.Sheaves.PUnit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Skyscraper (pre)sheaves
 
@@ -35,7 +38,6 @@ TODO: generalize universe level when calculating stalks, after generalizing univ
 TODO(@joelriou): refactor the definitions in this file so as to make them
 particular cases of general constructions for points of sites from
 `Mathlib/CategoryTheory/Sites/Point/Skyscraper.lean`.
-
 -/
 
 @[expose] public section

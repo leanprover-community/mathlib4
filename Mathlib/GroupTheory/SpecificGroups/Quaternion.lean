@@ -7,15 +7,18 @@ module
 
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quaternion Groups
 
 We define the (generalised) quaternion groups `QuaternionGroup n` of order `4n`, also known as
 dicyclic groups, with elements `a i` and `xa i` for `i : ZMod n`. The (generalised) quaternion
 groups can be defined by the presentation
-$\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
-$a^i$ and `xa i` for $x * a^i$. For `n=2` the quaternion group `QuaternionGroup 2` is isomorphic to
-the unit integral quaternions `(Quaternion ℤ)ˣ`.
+$`\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle`. We write `a i` for $`a^i` and
+`xa i` for $`x * a^i`. For `n=2` the quaternion group `QuaternionGroup 2` is isomorphic to the unit
+integral quaternions `(Quaternion ℤ)ˣ`.
 
 ## Main definition
 
@@ -32,21 +35,21 @@ inconvenient to carry around this condition we define `QuaternionGroup` also for
 
 ## References
 
-* https://en.wikipedia.org/wiki/Dicyclic_group
-* https://en.wikipedia.org/wiki/Quaternion_group
+* https://en.wikipedia.org/wiki/Dicyclic\_group
+* https://en.wikipedia.org/wiki/Quaternion\_group
 
 ## TODO
 
 Show that `QuaternionGroup 2 ≃* (Quaternion ℤ)ˣ`.
-
 -/
 
 @[expose] public section
 
 
-/-- The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
-presentation $\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle$. We write `a i` for
-$a^i$ and `xa i` for $x * a^i$.
+/--
+The (generalised) quaternion group `QuaternionGroup n` of order `4n`. It can be defined by the
+presentation $`\langle a, x | a^{2n} = 1, x^2 = a^n, x^{-1}ax=a^{-1}\rangle`. We write `a i` for
+$`a^i` and `xa i` for $`x * a^i`.
 -/
 inductive QuaternionGroup (n : ℕ) : Type
   | a : ZMod (2 * n) → QuaternionGroup n

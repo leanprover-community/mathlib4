@@ -9,6 +9,9 @@ public import Mathlib.Tactic.LinearCombination.Lemmas
 public import Mathlib.Tactic.Positivity.Core
 public import Mathlib.Tactic.Ring.Compare
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `linear_combination` Tactic
 
@@ -32,8 +35,8 @@ Lastly, calls a normalization tactic on this target.
 
 ## References
 
-* <https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196>
-
+* [
+  https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196](https://leanprover.zulipchat.com/#narrow/stream/239415-metaprogramming-.2F.20tactics/topic/Linear.20algebra.20tactic/near/213928196)
 -/
 
 public meta section
@@ -49,9 +52,11 @@ inductive Expanded
   /-- A value, equivalently a proof of `c = c`. -/
   | const (c : Syntax.Term)
 
-/-- The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
+/--
+The handling in `linear_combination` of left- and right-multiplication and scalar-multiplication
 and of division all five proceed according to the same logic, specified here: given a proof `p` of
 an (in)equality and a constant `c`,
+
 * if `p` is a proof of an equation, multiply/divide through by `c`;
 * if `p` is a proof of a non-strict inequality, run `positivity` to find a proof that `c` is
   nonnegative, then multiply/divide through by `c`, invoking the nonnegativity of `c` where needed;
@@ -60,7 +65,8 @@ an (in)equality and a constant `c`,
   positivity or nonnegativity of `c` where needed.
 
 This generic logic takes as a parameter the object `lems`: the four lemmas corresponding to the four
-cases. -/
+cases.
+-/
 def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term) :
     Ineq → TermElabM Expanded
   | eq => do
@@ -81,6 +87,7 @@ def rescale (lems : Ineq.WithStrictness → Name) (ty : Option Expr) (p c : Term
 /--
 Performs macro expansion of a linear combination expression,
 using `+`/`-`/`*`/`/` on equations and values.
+
 * `.proof eq p` means that `p` is a syntax corresponding to a proof of an equation.
   For example, if `h : a = b` then `expandLinearCombo (2 * h)` returns `.proof (c_add_pf 2 h)`
   which is a proof of `2 * a = 2 * b`.
@@ -226,6 +233,7 @@ specified linear combination of (in)equality hypotheses, or other (in)equality p
 which by default is ring-normalization.
 
 Example usage:
+
 ```
 example {a b : ℚ} (h1 : a = 1) (h2 : b = 3) : (a + b) / 2 = 2 := by
   linear_combination (h1 + h2) / 2
@@ -275,6 +283,7 @@ call.
 
 The variant `linear_combination (norm := tac) e` specifies explicitly the "normalization tactic"
 `tac` to be run on the subgoal(s) after constructing the linear combination.
+
 * The default normalization tactic is `ring1` (for equalities) or `Mathlib.Tactic.Ring.prove{LE,LT}`
   (for inequalities). These are finishing tactics: they close the goal or fail.
 * When working in algebraic categories other than commutative rings -- for example fields, abelian

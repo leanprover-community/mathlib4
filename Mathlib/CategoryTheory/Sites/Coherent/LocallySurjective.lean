@@ -9,8 +9,10 @@ public import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveTopology
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Locally surjective morphisms of coherent sheaves
 
 This file characterises locally surjective morphisms of presheaves for the coherent, regular
@@ -21,11 +23,9 @@ and extensive topologies.
 * `regularTopology.isLocallySurjective_iff` A morphism of presheaves `f : F ⟶ G` is locally
   surjective for the regular topology iff for every object `X` of `C`, and every `y : G(X)`, there
   is an effective epimorphism `φ : X' ⟶ X` and an `x : F(X)` such that `f_{X'}(x) = G(φ)(y)`.
-
 * `coherentTopology.isLocallySurjective_iff` a morphism of sheaves for the coherent topology on a
   preregular finitary extensive category is locally surjective if and only if it is
   locally surjective for the regular topology.
-
 * `extensiveTopology.isLocallySurjective_iff` a morphism of sheaves for the extensive topology on a
   finitary extensive category is locally surjective iff it is objectwise surjective.
 -/

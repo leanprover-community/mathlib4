@@ -14,12 +14,17 @@ public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.Analysis.Normed.Operator.Compact.FredholmAlternative
 import Mathlib.LinearAlgebra.Eigenspace.ContinuousLinearMap
 
-/-! # Spectral theory of self-adjoint operators
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Spectral theory of self-adjoint operators
 
 This file covers the spectral theory of self-adjoint operators on an inner product space.
 
 The first part of the file covers general properties, true without any condition on boundedness or
 compactness of the operator or finite-dimensionality of the underlying space, notably:
+
 * `LinearMap.IsSymmetric.conj_eigenvalue_eq_self`: the eigenvalues are real
 * `LinearMap.IsSymmetric.orthogonalFamily_eigenspaces`: the eigenspaces are orthogonal
 * `LinearMap.IsSymmetric.orthogonalComplement_iSup_eigenspaces`: the restriction of the operator to
@@ -27,6 +32,7 @@ compactness of the operator or finite-dimensionality of the underlying space, no
 
 The second part of the file covers properties of self-adjoint operators in finite dimension.
 Letting `T` be a self-adjoint operator on a finite-dimensional inner product space `T`,
+
 * The definition `LinearMap.IsSymmetric.diagonalization` provides a linear isometry equivalence `E`
   to the direct sum of the eigenspaces of `T`.  The theorem
   `LinearMap.IsSymmetric.diagonalization_apply_self_apply` states that, when `T` is transferred via
@@ -47,10 +53,11 @@ Letting `T` be a self-adjoint operator on a finite-dimensional inner product spa
   of the matrix representation of a selfadjoint linear map is majorized by the eigenvalue sequence
   listed in decreasing order.
 
-These are forms of the *diagonalization theorem* for self-adjoint operators on finite-dimensional
+These are forms of the _diagonalization theorem_ for self-adjoint operators on finite-dimensional
 inner product spaces.
 
 The third part of the file covers properties of compact self-adjoint operators:
+
 * `orthogonalComplement_iSup_eigenspaces_eq_bot`: the eigenspaces of a compact self-adjoint operator
   have trivial orthogonal complement.
 * `finite_dimensional_eigenspace`: the eigenspaces of a compact self-adjoint operator are
@@ -63,7 +70,6 @@ Spectral theory for bounded self-adjoint operators.
 ## Tags
 
 self-adjoint operator, spectral theorem, diagonalization theorem
-
 -/
 
 @[expose] public section
@@ -129,7 +135,9 @@ theorem orthogonalComplement_iSup_eigenspaces (hT : T.IsSymmetric) (μ : 𝕜) :
   have H₂ : eigenspace T μ ⟂ p := (Submodule.isOrtho_orthogonal_right _).mono_left (le_iSup _ _)
   exact H₂.disjoint
 
-/-! ### Finite-dimensional theory -/
+/-!
+# Finite-dimensional theory
+-/
 
 variable [FiniteDimensional 𝕜 E]
 
@@ -149,10 +157,12 @@ theorem orthogonalComplement_iSup_eigenspaces_eq_bot' (hT : T.IsSymmetric) :
   show (⨆ μ : { μ // eigenspace T μ ≠ ⊥ }, eigenspace T μ)ᗮ = ⊥ by
     rw [iSup_ne_bot_subtype, hT.orthogonalComplement_iSup_eigenspaces_eq_bot]
 
-/-- The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
+/--
+The eigenspaces of a self-adjoint operator on a finite-dimensional inner product space `E` gives
 an internal direct sum decomposition of `E`.
 
-Note this takes `hT` as a `Fact` to allow it to be an instance. -/
+Note this takes `hT` as a `Fact` to allow it to be an instance.
+-/
 noncomputable instance directSumDecomposition [hT : Fact T.IsSymmetric] :
     DirectSum.Decomposition fun μ : Eigenvalues T => eigenspace T μ :=
   haveI h : ∀ μ : Eigenvalues T, CompleteSpace (eigenspace T μ) := fun μ => by infer_instance
@@ -186,9 +196,11 @@ theorem diagonalization_symm_apply (hT : T.IsSymmetric)
   hT.direct_sum_isInternal.isometryL2OfOrthogonalFamily_symm_apply
     hT.orthogonalFamily_eigenspaces' w
 
-/-- *Diagonalization theorem*, *spectral theorem*; version 1: A self-adjoint operator `T` on a
+/--
+_Diagonalization theorem_, _spectral theorem_; version 1: A self-adjoint operator `T` on a
 finite-dimensional inner product space `E` acts diagonally on the decomposition of `E` into the
-direct sum of the eigenspaces of `T`. -/
+direct sum of the eigenspaces of `T`.
+-/
 theorem diagonalization_apply_self_apply (hT : T.IsSymmetric) (v : E) (μ : Eigenvalues T) :
     hT.diagonalization (T v) μ = (μ : 𝕜) • hT.diagonalization v μ := by
   suffices
@@ -320,9 +332,11 @@ theorem apply_eigenvectorBasis (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E 
     T (hT.eigenvectorBasis hn i) = (hT.eigenvalues hn i : 𝕜) • hT.eigenvectorBasis hn i :=
   mem_eigenspace_iff.mp (hT.hasEigenvector_eigenvectorBasis hn i).1
 
-/-- *Diagonalization theorem*, *spectral theorem*; version 2: A self-adjoint operator `T` on a
+/--
+_Diagonalization theorem_, _spectral theorem_; version 2: A self-adjoint operator `T` on a
 finite-dimensional inner product space `E` acts diagonally on the identification of `E` with
-Euclidean space induced by an orthonormal basis of eigenvectors of `T`. -/
+Euclidean space induced by an orthonormal basis of eigenvectors of `T`.
+-/
 theorem eigenvectorBasis_apply_self_apply (hT : T.IsSymmetric) (hn : Module.finrank 𝕜 E = n)
     (v : E) (i : Fin n) :
     (hT.eigenvectorBasis hn).repr (T v) i =

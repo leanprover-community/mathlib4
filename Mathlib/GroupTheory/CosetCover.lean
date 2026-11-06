@@ -11,26 +11,26 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Rat
 
-/-! # Lemma of B. H. Neumann on coverings of a group by cosets.
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-Let the group $G$ be the union of finitely many, let us say $n$, left cosets
-of subgroups $C₁$, $C₂$, ..., $Cₙ$:
-$$ G = ⋃_{i = 1}^n C_i g_i. $$
+/-!
+# Lemma of B. H. Neumann on coverings of a group by cosets.
+
+Let the group $`G` be the union of finitely many, let us say $`n`, left cosets
+of subgroups $`C₁`, $`C₂`, ..., $`Cₙ`:
+$$`  G = ⋃_{i = 1}^n C_i g_i.  `
 
 * `Subgroup.exists_finiteIndex_of_leftCoset_cover`
-  at least one subgroup $C_i$ has finite index in $G$.
-
+  at least one subgroup $`C_i` has finite index in $`G`.
 * `Subgroup.leftCoset_cover_filter_FiniteIndex`
   the cosets of subgroups of infinite index may be omitted from the covering.
-
 * `Subgroup.exists_index_le_card_of_leftCoset_cover` :
-  the index of (at least) one of these subgroups does not exceed $n$.
-
+  the index of (at least) one of these subgroups does not exceed $`n`.
 * `Subgroup.one_le_sum_inv_index_of_leftCoset_cover` :
-  the sum of the inverses of the indexes of the $C_i$ is greater than or equal to 1.
-
+  the sum of the inverses of the indexes of the $`C_i` is greater than or equal to 1.
 * `Subgroup.pairwiseDisjoint_leftCoset_cover_of_sum_inv_index_eq_one`
-  If the sum of the inverses of the indexes of the subgroups $C_i$ is equal to 1,
+  If the sum of the inverses of the indexes of the subgroups $`C_i` is equal to 1,
   then the cosets of the subgroups of finite index are pairwise disjoint.
 
 A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
@@ -41,10 +41,9 @@ A corollary of `Subgroup.exists_finiteIndex_of_leftCoset_cover` is:
 This can be used to show that an algebraic extension of fields is determined by the
 set of all minimal polynomials (not proved here).
 
-[1] [Neumann-1954], *Groups Covered By Permutable Subsets*, Lemma 4.1
-[2] <https://mathoverflow.net/a/17398/3332>
-[3] <http://alpha.math.uga.edu/~pete/Neumann54.pdf>
-
+‍\[1\] \[Neumann-1954\], _Groups Covered By Permutable Subsets_, Lemma 4.1 ‍\[2\] [
+https://mathoverflow.net/a/17398/3332](https://mathoverflow.net/a/17398/3332) ‍\[3\] [
+http://alpha.math.uga.edu/~pete/Neumann54.pdf](http://alpha.math.uga.edu/~pete/Neumann54.pdf)
 -/
 
 public section

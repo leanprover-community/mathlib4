@@ -12,6 +12,9 @@ public import Mathlib.Tactic.ApplyFun
 
 import Mathlib.Algebra.Group.Int.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Turing machine tapes
 
@@ -25,7 +28,6 @@ All but finitely many of the cells are required to hold the blank symbol `defaul
   of `List Γ` by extension by blanks at the end.
 * `Tape Γ` is the type of Turing machine tapes with alphabet `Γ`. Implemented as two
   `ListBlank Γ` instances, one for each direction, as well as a head symbol.
-
 -/
 
 @[expose] public section

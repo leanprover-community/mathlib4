@@ -9,18 +9,23 @@ public import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalent power-multiplicative norms
 
-In this file, we prove [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]: if `R` is a normed
+In this file, we prove \[BGR, Proposition 3.1.5/1\]\[bosch-guntzer-remmert\]: if `R` is a normed
 commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra norms on `S`, then if
 `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it follows that `f₁ = f₂`.
 
 ## Main Results
-* `eq_of_powMul_faithful` : the proof of [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert].
+
+* `eq_of_powMul_faithful` : the proof of \[BGR, Proposition 3.1.5/1\]\[bosch-guntzer-remmert\].
 
 ## References
-* [S. Bosch, U. Güntzer, R. Remmert, *Non-Archimedean Analysis*][bosch-guntzer-remmert]
+
+* ‍\[S. Bosch, U. Güntzer, R. Remmert, _Non-Archimedean Analysis_\]\[bosch-guntzer-remmert\]
 
 ## Tags
 
@@ -78,9 +83,11 @@ theorem eq_seminorms {F : Type*} {α : outParam (Type*)} [Ring α] [FunLike F α
 
 variable {R S : Type*} [NormedCommRing R] [CommRing S] [Algebra R S]
 
-/-- If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
-  norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
-  follows that `f₁ = f₂` [BGR, Proposition 3.1.5/1][bosch-guntzer-remmert]. -/
+/--
+If `R` is a normed commutative ring and `f₁` and `f₂` are two power-multiplicative `R`-algebra
+norms on `S`, then if `f₁` and `f₂` are equivalent on every subring `R[y]` for `y : S`, it
+follows that `f₁ = f₂` \[BGR, Proposition 3.1.5/1\]\[bosch-guntzer-remmert\].
+-/
 theorem eq_of_powMul_faithful (f₁ : AlgebraNorm R S) (hf₁_pm : IsPowMul f₁) (f₂ : AlgebraNorm R S)
     (hf₂_pm : IsPowMul f₂)
     (h_eq : ∀ y : S, ∃ (C₁ C₂ : ℝ) (_ : 0 < C₁) (_ : 0 < C₂),

@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.RingTheory.TensorProduct.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The bilinear form on a tensor product
 
@@ -18,7 +21,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
   applying `B₁` on `M₁` and `B₂` on `M₂`.
 * `LinearMap.BilinMap.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite
   free modules.
-
 -/
 
 @[expose] public section
@@ -45,10 +47,12 @@ variable [Module R M₂] [Module R N₂]
 namespace BilinMap
 
 variable (R A) in
-/-- The tensor product of two bilinear maps injects into bilinear maps on tensor products.
+/--
+The tensor product of two bilinear maps injects into bilinear maps on tensor products.
 
 Note this is heterobasic; the bilinear map on the left can take values in a module over a
-(commutative) algebra over the ring of the module in which the right bilinear map is valued. -/
+(commutative) algebra over the ring of the module in which the right bilinear map is valued.
+-/
 def tensorDistrib :
     (BilinMap A M₁ N₁ ⊗[R] BilinMap R M₂ N₂) →ₗ[A] BilinMap A (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂) :=
   (TensorProduct.lift.equiv (.id A) (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) (N₁ ⊗[R] N₂)).symm.toLinearMap ∘ₗ
@@ -101,10 +105,12 @@ end BilinMap
 namespace BilinForm
 
 variable (R A) in
-/-- The tensor product of two bilinear forms injects into bilinear forms on tensor products.
+/--
+The tensor product of two bilinear forms injects into bilinear forms on tensor products.
 
 Note this is heterobasic; the bilinear form on the left can take values in an (commutative) algebra
-over the ring in which the right bilinear form is valued. -/
+over the ring in which the right bilinear form is valued.
+-/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
   (AlgebraTensorModule.rid R A A).congrRight₂.toLinearMap ∘ₗ (BilinMap.tensorDistrib R A)
 

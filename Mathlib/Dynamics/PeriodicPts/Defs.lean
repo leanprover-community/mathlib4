@@ -13,6 +13,9 @@ public import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Periodic points
 
@@ -40,8 +43,7 @@ is a periodic point of `f` of period `n` if and only if `minimalPeriod f x | n`.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Periodic_point
-
+* https://en.wikipedia.org/wiki/Periodic\_point
 -/
 
 @[expose] public section
@@ -395,10 +397,12 @@ theorem minimalPeriod_iterate_eq_div_gcd' (h : x ∈ periodicPts f) :
   minimalPeriod_iterate_eq_div_gcd_aux <|
     gcd_pos_of_pos_left n (minimalPeriod_pos_iff_mem_periodicPts.mpr h)
 
-/-- The orbit of a periodic point `x` of `f` is the cycle `[x, f x, f (f x), ...]`. Its length is
+/--
+The orbit of a periodic point `x` of `f` is the cycle `[x, f x, f (f x), ...]`. Its length is
 the minimal period of `x`.
 
-If `x` is not a periodic point, then this is the empty (aka nil) cycle. -/
+If `x` is not a periodic point, then this is the empty (aka nil) cycle.
+-/
 def periodicOrbit (f : α → α) (x : α) : Cycle α :=
   (List.range (minimalPeriod f x)).map fun n => f^[n] x
 
@@ -573,7 +577,8 @@ lemma isPeriodicPt_smul_iff {m : M} {a : α} {n : ℕ} :
     IsPeriodicPt (m • ·) n a ↔ m ^ n • a = a := by
   rw [← smul_iterate_apply, IsPeriodicPt, IsFixedPt]
 
-/-! ### Multiples of `MulAction.period`
+/-!
+# Multiples of `MulAction.period`
 
 It is easy to convince oneself that if `g ^ n • a = a` (resp. `(n • g) +ᵥ a = a`),
 then `n` must be a multiple of `period g a`.

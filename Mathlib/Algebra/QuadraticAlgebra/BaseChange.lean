@@ -8,23 +8,27 @@ module
 public import Mathlib.Algebra.QuadraticAlgebra.Basic
 public import Mathlib.RingTheory.IsTensorProduct
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic algebras are stable under base change
 
-Let `R → S` be a base change. We show that `QuadraticAlgebra S (algebraMap R S a)
-(algebraMap R S b)` is the base change of `QuadraticAlgebra R a b` along it, that is, that the
-square
+Let `R → S` be a base change. We show that
+`QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b)` is the base change of
+`QuadraticAlgebra R a b` along it, that is, that the square
+
 ```
           R             →               S
           ↓                             ↓
 QuadraticAlgebra R a b  →  QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b)
 ```
+
 is a pushout.
 
 ## Main results
 
 * `QuadraticAlgebra.isPushout`: the base change square is a pushout.
-
 * `QuadraticAlgebra.baseChangeEquiv`: the resulting isomorphism
   `S ⊗[R] QuadraticAlgebra R a b ≃ₐ[S] QuadraticAlgebra S (algebraMap R S a) (algebraMap R S b)`
 

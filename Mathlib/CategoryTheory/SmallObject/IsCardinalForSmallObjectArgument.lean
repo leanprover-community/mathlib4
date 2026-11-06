@@ -12,6 +12,9 @@ public import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 public import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 public import Mathlib.SetTheory.Cardinal.Regular
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinals that are suitable for the small object argument
 
@@ -52,8 +55,8 @@ the retracts of the transfinite compositions (of shape `κ.ord.ToType`) of
 pushouts of coproducts of morphisms in `I`.
 
 ## References
-- https://ncatlab.org/nlab/show/small+object+argument
 
+* https://ncatlab.org/nlab/show/small+object+argument
 -/
 
 @[expose] public section

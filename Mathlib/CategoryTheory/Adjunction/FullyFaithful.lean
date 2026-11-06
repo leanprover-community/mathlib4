@@ -7,20 +7,25 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjoints of fully faithful functors
 
 A left adjoint is
+
 * faithful, if and only if the unit is a monomorphism
 * full, if and only if the unit is a split epimorphism
 * fully faithful, if and only if the unit is an isomorphism
 
 A right adjoint is
+
 * faithful, if and only if the counit is an epimorphism
 * full, if and only if the counit is a split monomorphism
 * fully faithful, if and only if the counit is an isomorphism
 
-This is Lemma 4.5.13 in Riehl's *Category Theory in Context* [riehl2017].
+This is Lemma 4.5.13 in Riehl's _Category Theory in Context_ \[riehl2017\].
 See also https://stacks.math.columbia.edu/tag/07RB for the statements about fully faithful functors.
 
 In the file `Mathlib/CategoryTheory/Monad/Adjunction.lean`, we prove that in fact, if there exists

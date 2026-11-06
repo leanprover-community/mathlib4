@@ -7,6 +7,9 @@ module
 
 public import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of continuum
 
@@ -15,7 +18,7 @@ We also prove some `simp` lemmas about cardinal arithmetic involving `𝔠`.
 
 ## Notation
 
-- `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
+* `𝔠` : notation for `Cardinal.continuum` in scope `Cardinal`.
 -/
 
 @[expose] public section
@@ -58,7 +61,7 @@ theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 :=
   rw [← lift_continuum.{v, u}, lift_lt]
 
 /-!
-### Inequalities
+# Inequalities
 -/
 
 
@@ -95,7 +98,7 @@ theorem continuum_toENat : toENat continuum = ⊤ :=
   (toENat_eq_top.2 aleph0_le_continuum)
 
 /-!
-### Addition
+# Addition
 -/
 
 
@@ -128,7 +131,7 @@ theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + ofNat(n) = �
   continuum_add_nat n
 
 /-!
-### Multiplication
+# Multiplication
 -/
 
 
@@ -161,7 +164,7 @@ theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * ofNat(n) = �
   continuum_mul_nat (OfNat.ofNat_ne_zero n)
 
 /-!
-### Power
+# Power
 -/
 
 

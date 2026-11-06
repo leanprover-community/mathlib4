@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Valuation.ValuationSubring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extension of Valuations
 
@@ -24,7 +27,6 @@ to allow for possible normalization. As an example, consider a finite extension 
 which is a discretely valued field. We may choose the valuation on `K` to be either:
 
 1. the valuation where the uniformizer is mapped to one (more precisely, `-1` in `ℤᵐ⁰`) or
-
 2. the valuation where `p` is mapped to one.
 
 For the algebraic closure of `ℚ_[p]`, if we choose the valuation of `p` to be one, then the
@@ -36,19 +38,19 @@ without first determining the normalizations once and for all.
 
 * `Valuation.HasExtension vR vA` : The valuation `vA` on `A` is an extension of the valuation
   `vR` on `R`.
-
 * `Valuation.HasExtension.mapValueGroup₀ vR vA` : The extension of valuation groups associated to
   an extension of the valuation `vR` on `R` to `vA` on `A`, which is uniquely characterized by the
   lemmas `mapValueGroup₀_strictMono`, `mapValueGroup₀_strictMono`, and `mapValueGroup₀_uniq`.
 
 ## References
 
-* [N. Bourbaki, *Commutative Algebra*][bourbaki1989b] Chapter VI §3, Valuations.
-* <https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations>
+* ‍\[N. Bourbaki, _Commutative Algebra_\]\[bourbaki1989b\] Chapter VI §3, Valuations.
+* [
+  https://en.wikipedia.org/wiki/Valuation\_(algebra)#Extension\_of\_valuations](https://en.wikipedia.org/wiki/Valuation_(algebra)#Extension_of_valuations)
 
 ## Tags
-Valuation, Extension of Valuations
 
+Valuation, Extension of Valuations
 -/
 
 public section

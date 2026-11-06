@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.Dimension.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite dimension of vector spaces
 
@@ -45,7 +48,8 @@ namespace Module
 
 section Semiring
 
-/-- The rank of a module as a natural number.
+/--
+The rank of a module as a natural number.
 
 For a finite-dimensional vector space `V` over a field `k`, `Module.finrank k V` is equal to
 the dimension of `V` over `k`.
@@ -57,7 +61,8 @@ cardinal-valued version where infinite rank modules have rank an infinite cardin
 
 Note that if `R` is not a field then there can exist modules `M` with `¬(Module.Finite R M)` but
 `finrank R M ≠ 0`. For example `ℚ` has `finrank` equal to `1` over `ℤ`, because the nonempty
-`ℤ`-linearly independent subsets of `ℚ` are precisely the nonzero singletons. -/
+`ℤ`-linearly independent subsets of `ℚ` are precisely the nonzero singletons.
+-/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 

@@ -11,13 +11,15 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.Algebra.Field.Opposite
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Erdős-Kaplansky theorem
 
-* `rank_dual_eq_card_dual_of_aleph0_le_rank`: The **Erdős-Kaplansky Theorem** which says that
+* `rank_dual_eq_card_dual_of_aleph0_le_rank`: The *Erdős-Kaplansky Theorem* which says that
   the dimension of an infinite-dimensional dual space over a division ring has dimension
   equal to its cardinality.
-
 -/
 
 public section

@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.Algebraic.Basic
 
 import Mathlib.RingTheory.Algebraic.Integral
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank theorems over domains
 
@@ -20,12 +23,13 @@ This file proves some `Module.rank` and `Module.finrank` theorems for modules ov
 Let `M/S/R` be a tower where `R`, `S` are domains.
 
 We obtain the following tower laws:
-- `Module.rank_mul_rank_of_isFractionRing_isLocalization` & variants: when `(R⁰)⁻¹ S = (S⁰)⁻¹ S`.
-- `Module.rank_mul_rank_of_field_isLocalization` & variants:
+
+* `Module.rank_mul_rank_of_isFractionRing_isLocalization` & variants: when `(R⁰)⁻¹ S = (S⁰)⁻¹ S`.
+* `Module.rank_mul_rank_of_field_isLocalization` & variants:
   wrapper for the above that only asks `(R⁰)⁻¹ S` to be a field.
-- `Module.IsTorsionFree.erank_mul_erank`, `Module.IsTorsionFree.finrank_mul_finrank`:
+* `Module.IsTorsionFree.erank_mul_erank`, `Module.IsTorsionFree.finrank_mul_finrank`:
   when `M` is torsion-free over `S`. We only get truncated cardinalities.
-- `Algebra.IsAlgebraic.rank_mul_rank` & variants: when `S/R` is algebraic.
+* `Algebra.IsAlgebraic.rank_mul_rank` & variants: when `S/R` is algebraic.
 -/
 
 public section
@@ -77,7 +81,8 @@ variable
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 include h
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
 we obtain a tower law.
 
@@ -89,7 +94,8 @@ theorem lift_rank_mul_lift_rank_of_isFractionRing_isLocalization :
     .of_algEquiv <| IsLocalization.algEquiv (algebraMapSubmonoid S R⁰) FS _
   lift_rank_mul_lift_rank_of_isFractionRing_localization ..
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
 we obtain a tower law.
 
@@ -99,7 +105,8 @@ theorem rank_mul_rank_of_isFractionRing_isLocalization :
     rank R S * rank S M₁ = rank R M₁ := by
   simpa using lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS M₁
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S = (S⁰)⁻¹ S`,
 we obtain a tower law.
 
@@ -121,7 +128,8 @@ variable
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 include h
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S` is a field,
 we obtain a tower law.
 
@@ -132,7 +140,8 @@ theorem lift_rank_mul_lift_rank_of_field_isLocalization :
   have : IsFractionRing S FS := .of_semifield_isLocalization (algebraMapSubmonoid S R⁰) _
   lift_rank_mul_lift_rank_of_isFractionRing_isLocalization R S FS ..
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S` is a field,
 we obtain a tower law.
 
@@ -143,7 +152,8 @@ theorem rank_mul_rank_of_field_isLocalization :
   have : IsFractionRing S FS := .of_semifield_isLocalization (algebraMapSubmonoid S R⁰) _
   rank_mul_rank_of_isFractionRing_isLocalization R S FS ..
 
-/-- **Tower law over domains.**
+/--
+*Tower law over domains.*
 When `M` is a module over an algebra `S/R` of domains such that `(R⁰)⁻¹ S` is a field,
 we obtain a tower law.
 
@@ -204,12 +214,14 @@ variable [Algebra.IsAlgebraic R S]
   (M : Type w) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
   (M₁ : Type v) [AddCommGroup M₁] [Module R M₁] [Module S M₁] [IsScalarTower R S M₁]
 
-/-- **Tower law over algebraic extensions of domains.**
+/--
+*Tower law over algebraic extensions of domains.*
 If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
-$$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
+$$`\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)`.
 
 See `Algebra.IsAlgebraic.rank_mul_rank` for a non–universe polymorphic version, and
-`_root_.lift_rank_mul_lift_rank` for when your modules are free. -/
+`_root_.lift_rank_mul_lift_rank` for when your modules are free.
+-/
 theorem lift_rank_mul_lift_rank :
     lift.{w} (rank R S) * lift.{v} (rank S M) = lift.{v} (rank R M) := by
   by_cases h : FaithfulSMul R S
@@ -218,12 +230,14 @@ theorem lift_rank_mul_lift_rank :
     simp [rank_eq_zero_of_not_faithfulSMul, h, this]
   apply lift_rank_mul_lift_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
-/-- **Tower law over algebraic extensions of domains.**
+/--
+*Tower law over algebraic extensions of domains.*
 If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
-$$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
+$$`\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)`.
 
 See `Algebra.IsAlgebraic.lift_rank_mul_lift_rank` for a universe polymorphic version, and
-`_root_.rank_mul_rank` for when your modules are free. -/
+`_root_.rank_mul_rank` for when your modules are free.
+-/
 theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ := by
   by_cases h : FaithfulSMul R S
   case neg =>
@@ -231,11 +245,13 @@ theorem rank_mul_rank : rank R S * rank S M₁ = rank R M₁ := by
     simp [rank_eq_zero_of_not_faithfulSMul, h, this]
   apply rank_mul_rank_of_isFractionRing_isLocalization (FS := FractionRing S) ..
 
-/-- **Tower law over algebraic extensions of domains.**
+/--
+*Tower law over algebraic extensions of domains.*
 If `S` has no zero divisors, `S` is algebraic over `R`, and `M` is a `S`-module, then
-$$\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)$$.
+$$`\operatorname{rank}_R(S) * \operatorname{rank}_S(M) = \operatorname{rank}_R(M)`.
 
-See `Module.finrank_mul_finrank` for when your modules are free. -/
+See `Module.finrank_mul_finrank` for when your modules are free.
+-/
 theorem finrank_mul_finrank : finrank R S * finrank S M = finrank R M := by
   by_cases h : FaithfulSMul R S
   case neg =>

@@ -8,13 +8,15 @@ module
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
 public import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Yoneda embedding for `R`-linear categories
 
 The Yoneda embedding for `R`-linear categories `C`,
 sends an object `X : C` to the `ModuleCat R`-valued presheaf on `C`,
 with value on `Y : Cᵒᵖ` given by `ModuleCat.of R (unop Y ⟶ X)`.
-
 -/
 
 @[expose] public section

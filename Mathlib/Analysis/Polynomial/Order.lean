@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Polynomial.Basic
 
 import Mathlib.Topology.Algebra.Polynomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Eventual sign of polynomials
 

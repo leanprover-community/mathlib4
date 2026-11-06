@@ -10,6 +10,9 @@ public import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.RankNullity
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Dimension of vector spaces
 
@@ -27,7 +30,6 @@ For vector spaces (i.e. modules over a division ring), we have
   is at most the `R`-rank of `M`.
 
 See also `Mathlib/LinearAlgebra/Dimension/ErdosKaplansky.lean` for the Erdős-Kaplansky theorem.
-
 -/
 
 public section
@@ -150,11 +152,13 @@ theorem rank_span_eq_rank_of_linearIndepOn
   exact (linearIndepOn_id_range_iff hli.injective).mp
     (H _ (Set.range_subset_iff.mpr fun x ↦ (x : M).2) hli.linearIndepOn_id)
 
-/-- If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
+/--
+If every `R`-linearly independent subset of `M` is `K`-linearly independent, then the
 `K`-rank of the `K`-span of `M` equals the `R`-rank of `M`.
 
 This is the `Module.finrank` version of `Submodule.rank_span_eq_rank_of_linearIndepOn`; see also
-`Submodule.finrank_span_eq_finrank` for an equality in a different setting. -/
+`Submodule.finrank_span_eq_finrank` for an equality in a different setting.
+-/
 theorem finrank_span_eq_finrank_of_linearIndepOn
     (H : ∀ s ⊆ (M : Set V), LinearIndepOn R id s → LinearIndepOn K id s) :
     finrank K (span K (M : Set V)) = finrank R M :=

@@ -9,6 +9,9 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Multilinear.Basis
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Alternating Maps
 
@@ -16,6 +19,7 @@ We construct the bundled function `AlternatingMap`, which extends `MultilinearMa
 arguments of the same type.
 
 ## Main definitions
+
 * `AlternatingMap R M N ι` is the space of `R`-linear alternating maps from `ι → M` to `N`.
 * `f.map_eq_zero_of_eq` expresses that `f` is zero when two inputs are equal.
 * `f.map_swap` expresses that `f` is negated when two inputs are swapped.
@@ -28,6 +32,7 @@ arguments of the same type.
   by `Fin n.succ`.
 
 ## Implementation notes
+
 `AlternatingMap` is defined in terms of `map_eq_zero_of_eq`, as this is easier to work with than
 using `map_swap` as a definition, and does not require `Neg N`.
 
@@ -145,7 +150,7 @@ theorem coe_multilinearMap_mk (f : (ι → M) → N) (h₁ h₂ h₃) :
 end Coercions
 
 /-!
-### Simp-normal forms of the structure fields
+# Simp-normal forms of the structure fields
 
 These are expressed in terms of `⇑f` instead of `f.toFun`.
 -/
@@ -193,7 +198,7 @@ theorem map_eq_zero_of_not_injective (v : ι → M) (hv : ¬Function.Injective v
   exact f.map_eq_zero_of_eq v heq hne
 
 /-!
-### Algebraic structure inherited from `MultilinearMap`
+# Algebraic structure inherited from `MultilinearMap`
 
 `AlternatingMap` carries the same `AddCommMonoid`, `AddCommGroup`, and `Module` structure
 as `MultilinearMap`
@@ -409,7 +414,7 @@ def codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N) (h : ∀ v, f v 
 end AlternatingMap
 
 /-!
-### Composition with linear maps
+# Composition with linear maps
 -/
 
 
@@ -554,9 +559,11 @@ theorem compLinearMap_inj (f : M₂ →ₗ[R] M) (hf : Function.Surjective f)
     (g₁ g₂ : M [⋀^ι]→ₗ[R] N) : g₁.compLinearMap f = g₂.compLinearMap f ↔ g₁ = g₂ :=
   (compLinearMap_injective _ hf).eq_iff
 
-/-- If two `R`-alternating maps from `R` are equal on 1, then they are equal.
+/--
+If two `R`-alternating maps from `R` are equal on 1, then they are equal.
 
-This is the alternating version of `LinearMap.ext_ring`. -/
+This is the alternating version of `LinearMap.ext_ring`.
+-/
 @[ext]
 theorem ext_ring {R} [CommSemiring R] [Module R N] [Finite ι] ⦃f g : R [⋀^ι]→ₗ[R] N⦄
     (h : f (fun _ ↦ 1) = g (fun _ ↦ 1)) : f = g :=
@@ -572,11 +579,13 @@ section DomLcongr
 variable (ι R N)
 variable (S : Type*) [Semiring S] [Module S N] [SMulCommClass R S N]
 
-/-- Construct a linear equivalence between maps from a linear equivalence between domains.
+/--
+Construct a linear equivalence between maps from a linear equivalence between domains.
 
 This is `AlternatingMap.compLinearMap` as an isomorphism,
 and the alternating version of `LinearEquiv.multilinearMapCongrLeft`.
-It could also have been called `LinearEquiv.alternatingMapCongrLeft`. -/
+It could also have been called `LinearEquiv.alternatingMapCongrLeft`.
+-/
 @[simps apply]
 def domLCongr (e : M ≃ₗ[R] M₂) : M [⋀^ι]→ₗ[R] N ≃ₗ[S] (M₂ [⋀^ι]→ₗ[R] N) where
   toFun f := f.compLinearMap e.symm
@@ -615,7 +624,7 @@ variable (v : ι → M) (v' : ι → M')
 open Function
 
 /-!
-### Other lemmas from `MultilinearMap`
+# Other lemmas from `MultilinearMap`
 -/
 
 
@@ -638,7 +647,7 @@ theorem map_smul_univ {R : Type*} [CommSemiring R] {M : Type*} [AddCommMonoid M]
 end
 
 /-!
-### Theorems specific to alternating maps
+# Theorems specific to alternating maps
 
 Various properties of reordered and repeated inputs which follow from
 `AlternatingMap.map_eq_zero_of_eq`.
@@ -682,9 +691,11 @@ theorem map_congr_perm [DecidableEq ι] [Fintype ι] (σ : Equiv.Perm ι) :
 
 section DomDomCongr
 
-/-- Transfer the arguments to a map along an equivalence between argument indices.
+/--
+Transfer the arguments to a map along an equivalence between argument indices.
 
-This is the alternating version of `MultilinearMap.domDomCongr`. -/
+This is the alternating version of `MultilinearMap.domDomCongr`.
+-/
 @[simps]
 def domDomCongr (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι']→ₗ[R] N :=
   { f.toMultilinearMap.domDomCongr σ with
@@ -715,9 +726,11 @@ theorem domDomCongr_smul {S : Type*} [Monoid S] [DistribMulAction S N] [SMulComm
     (c • f).domDomCongr σ = c • f.domDomCongr σ :=
   rfl
 
-/-- `AlternatingMap.domDomCongr` as an equivalence.
+/--
+`AlternatingMap.domDomCongr` as an equivalence.
 
-This is declared separately because it does not work with dot notation. -/
+This is declared separately because it does not work with dot notation.
+-/
 @[simps apply symm_apply]
 def domDomCongrEquiv (σ : ι ≃ ι') : M [⋀^ι]→ₗ[R] N ≃+ M [⋀^ι']→ₗ[R] N where
   toFun := domDomCongr σ
@@ -916,10 +929,12 @@ variable {R' : Type*} {M'' M₂'' N'' N₂'' : Type*} [CommSemiring R'] [AddComm
   [AddCommMonoid M₂''] [AddCommMonoid N''] [AddCommMonoid N₂''] [Module R' M''] [Module R' M₂'']
   [Module R' N''] [Module R' N₂'']
 
-/-- An isomorphism of multilinear maps given an isomorphism between their codomains.
+/--
+An isomorphism of multilinear maps given an isomorphism between their codomains.
 
 This is `Linear.compAlternatingMap` as an isomorphism,
-and the alternating version of `LinearEquiv.multilinearMapCongrRight`. -/
+and the alternating version of `LinearEquiv.multilinearMapCongrRight`.
+-/
 @[simps!]
 def LinearEquiv.alternatingMapCongrRight (e : N'' ≃ₗ[R'] N₂'') :
     M'' [⋀^ι]→ₗ[R'] N'' ≃ₗ[R'] (M'' [⋀^ι]→ₗ[R'] N₂'') where

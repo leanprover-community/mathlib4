@@ -9,12 +9,16 @@ public import Mathlib.Analysis.Normed.Group.Basic
 
 import Mathlib.Algebra.Order.Group.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Indicator function and (e)norm
 
 This file contains a few simple lemmas about `Set.indicator`, `norm` and `enorm`.
 
 ## Tags
+
 indicator, norm
 -/
 

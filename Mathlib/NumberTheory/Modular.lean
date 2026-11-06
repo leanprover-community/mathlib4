@@ -12,6 +12,9 @@ import Mathlib.Topology.Instances.Matrix
 import Mathlib.Topology.Instances.ZMultiples
 import Mathlib.Topology.OpenPartialHomeomorph.Continuity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The action of the modular group SL(2, ℤ) on the upper half-plane
 
@@ -61,7 +64,7 @@ instead using abstract theory on the properness of certain maps (phrased in term
 existence of `g` maximizing `(g•z).im` (see `ModularGroup.exists_max_im`), and then among
 those, to minimize `|(g•z).re|` (see `ModularGroup.exists_row_one_eq_and_min_re`).
 
-The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows Theorem VII.1 [serre1973].
+The characterization of cases with `z ∈ 𝒟` and `g • z ∈ 𝒟` follows Theorem VII.1 \[serre1973\].
 -/
 
 @[expose] public section
@@ -170,8 +173,10 @@ theorem lcRow0_apply (p : Fin 2 → ℤ) (g : Matrix (Fin 2) (Fin 2) ℝ) :
     lcRow0 p g = p 0 * g 0 0 + p 1 * g 0 1 :=
   rfl
 
-/-- Linear map sending the matrix [a, b; c, d] to the matrix [ac₀ + bd₀, - ad₀ + bc₀; c, d], for
-some fixed `(c₀, d₀)`. -/
+/--
+Linear map sending the matrix \[a, b; c, d\] to the matrix \[ac₀ + bd₀, - ad₀ + bc₀; c, d\], for
+some fixed `(c₀, d₀)`.
+-/
 @[simps!]
 def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
@@ -798,7 +803,7 @@ end UniqueRepresentative
 
 section Topology
 /-!
-## Topological properties of the fundamental domain
+# Topological properties of the fundamental domain
 -/
 
 lemma isClosed_fd : IsClosed 𝒟 := by

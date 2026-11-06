@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.GaloisConnection.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nonnegative rationals
 
@@ -40,15 +43,22 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 assert_not_exists CompleteLattice IsOrderedMonoid
 
 library_note «specialised high priority simp lemma» /--
-It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
-using later, more general simp lemmas. In that case, the following reasons might be arguments for
-the early lemma to be tagged `@[simp high]` (rather than `@[simp, nolint simpNF]` or
-un-`@[simp]`ed):
-1. There is a significant portion of the library which needs the early lemma to be available via
-  `simp` and which doesn't have access to the more general lemmas.
-2. The more general lemmas have more complicated typeclass assumptions, causing rewrites with them
-  to be slower.
--/
+                                                    It sometimes happens that a `@[simp]` lemma
+declared early in the library can be proved by
+`simp` using later, more general simp lemmas. In
+that case, the following reasons might be
+arguments for the early lemma to be tagged
+`@[simp high]` (rather than
+`@[simp, nolint simpNF]` or un-`@[simp]`ed):
+
+                                                    1. There is a significant portion of the library
+   which needs the early lemma to be available
+   via `simp` and which doesn't have access to
+   the more general lemmas.
+2. The more general lemmas have more complicated
+   typeclass assumptions, causing rewrites with
+   them to be slower.
+                                                    -/
 
 open Function
 
@@ -321,7 +331,9 @@ def Rat.nnabs (x : ℚ) : ℚ≥0 :=
 @[norm_cast, simp]
 theorem Rat.coe_nnabs (x : ℚ) : (Rat.nnabs x : ℚ) = abs x := rfl
 
-/-! ### Numerator and denominator -/
+/-!
+# Numerator and denominator
+-/
 
 
 namespace NNRat
@@ -358,9 +370,11 @@ theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
 theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=
   ⟨by rintro rfl; exact ⟨rfl, rfl⟩, fun h ↦ ext_num_den h.1 h.2⟩
 
-/-- Form the quotient `n / d` where `n d : ℕ`.
+/--
+Form the quotient `n / d` where `n d : ℕ`.
 
-See also `Rat.divInt` and `mkRat`. -/
+See also `Rat.divInt` and `mkRat`.
+-/
 def divNat (n d : ℕ) : ℚ≥0 :=
   ⟨.divInt n d, Rat.divInt_nonneg (Int.natCast_nonneg n) (Int.natCast_nonneg d)⟩
 

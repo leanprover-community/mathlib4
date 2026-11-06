@@ -9,22 +9,26 @@ public import Mathlib.Order.Bounds.Defs
 public import Mathlib.Order.Directed
 public import Mathlib.Order.SetNotation
 
-/-! # Conditionally complete partial orders
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
-This file defines *conditionally complete partial orders* with suprema, infima or both. These are
+/-!
+# Conditionally complete partial orders
+
+This file defines _conditionally complete partial orders_ with suprema, infima or both. These are
 partial orders where every nonempty, upwards (downwards) directed set which is
 bounded above (below) has a least upper bound (greatest lower bound). This class extends `SupSet`
 (`InfSet`) and the requirement is that `sSup` (`sInf`) must be the least upper bound.
 
 The three classes defined herein are:
 
-+ `ConditionallyCompletePartialOrderSup` for partial orders with suprema,
-+ `ConditionallyCompletePartialOrderInf` for partial orders with infima, and
-+ `ConditionallyCompletePartialOrder` for partial orders with both suprema and infima
+* `ConditionallyCompletePartialOrderSup` for partial orders with suprema,
+* `ConditionallyCompletePartialOrderInf` for partial orders with infima, and
+* `ConditionallyCompletePartialOrder` for partial orders with both suprema and infima
 
 One common use case for these classes is the order on a von Neumann algebra, or W⋆-algebra.
 This is the strongest order-theoretic structure satisfied by a von Neumann algebra;
-in particular it is *not* a conditionally complete *lattice*, and indeed it is a lattice if and only
+in particular it is _not_ a conditionally complete _lattice_, and indeed it is a lattice if and only
 if the algebra is commutative. In addition, `ℂ` can be made to satisfy this class (one must provide
 a suitable `SupSet` instance), with the order `w ≤ z ↔ w.re ≤ z.re ∧ w.im = z.im`, which is
 available in the `ComplexOrder` namespace.
@@ -37,7 +41,6 @@ has an antitone involution (e.g., if it is an ordered ring, then negation would 
 then any `ConditionallyCompletePartialOrder{Sup,Inf}` is automatically a
 `ConditionallyCompletePartialOrder`. Because of the `to_dual` attribute, the additional overhead
 required to add and maintain the infimum version is minimal.
-
 -/
 
 public section

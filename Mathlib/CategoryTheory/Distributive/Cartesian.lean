@@ -9,8 +9,10 @@ public import Mathlib.CategoryTheory.Distributive.Monoidal
 public import Mathlib.CategoryTheory.Limits.MonoCoprod
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Distributive categories
 
 ## Main definitions
@@ -26,20 +28,18 @@ monoidal distributive.
 
 ## Main results
 
-- The coproduct coprojections are monic in a Cartesian distributive category.
-
+* The coproduct coprojections are monic in a Cartesian distributive category.
 
 ## TODO
 
-- Every Cartesian distributive category is finitary distributive, meaning that
+* Every Cartesian distributive category is finitary distributive, meaning that
   the left tensor product functor `X ⊗ -` preserves all finite coproducts.
-
-- Show that any extensive distributive category can be embedded into a topos.
+* Show that any extensive distributive category can be embedded into a topos.
 
 ## References
 
-- [J.R.B.Cockett, Introduction to distributive categories, 1993][cockett1993]
-- [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
+* ‍\[J.R.B.Cockett, Introduction to distributive categories, 1993\]\[cockett1993\]
+* ‍\[Carboni et al, Introduction to extensive and distributive categories\]\[CARBONI1993145\]
 -/
 
 public section

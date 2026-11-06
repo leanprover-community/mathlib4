@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Creating (co)limits
 
@@ -33,7 +36,8 @@ section Creates
 variable {D : Type u₂} [Category.{v₂} D]
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
-/-- Define the lift of a cone: For a cone `c` for `K ⋙ F`, give a cone for `K`
+/--
+Define the lift of a cone: For a cone `c` for `K ⋙ F`, give a cone for `K`
 which is a lift of `c`, i.e. the image of it under `F` is (iso) to `c`.
 
 We will then use this as part of the definition of creation of limits:
@@ -47,7 +51,8 @@ structure LiftableCone (K : J ⥤ C) (F : C ⥤ D) (c : Cone (K ⋙ F)) where
   /-- the isomorphism expressing that `liftedCone` lifts the given cone -/
   validLift : F.mapCone liftedCone ≅ c
 
-/-- Define the lift of a cocone: For a cocone `c` for `K ⋙ F`, give a cocone for
+/--
+Define the lift of a cocone: For a cocone `c` for `K ⋙ F`, give a cocone for
 `K` which is a lift of `c`, i.e. the image of it under `F` is (iso) to `c`.
 
 We will then use this as part of the definition of creation of colimits:
@@ -61,7 +66,8 @@ structure LiftableCocone (K : J ⥤ C) (F : C ⥤ D) (c : Cocone (K ⋙ F)) wher
   /-- the isomorphism expressing that `liftedCocone` lifts the given cocone -/
   validLift : F.mapCocone liftedCocone ≅ c
 
-/-- Definition 3.3.1 of [Riehl].
+/--
+Definition 3.3.1 of \[Riehl\].
 We say that `F` creates limits of `K` if, given any limit cone `c` for `K ⋙ F`
 (i.e. below) we can lift it to a cone "above", and further that `F` reflects
 limits for `K`.
@@ -95,7 +101,8 @@ class CreatesLimitsOfSize (F : C ⥤ D) where
 abbrev CreatesLimits (F : C ⥤ D) :=
   CreatesLimitsOfSize.{v₂, v₂} F
 
-/-- Dual of definition 3.3.1 of [Riehl].
+/--
+Dual of definition 3.3.1 of \[Riehl\].
 We say that `F` creates colimits of `K` if, given any limit cocone `c` for
 `K ⋙ F` (i.e. below) we can lift it to a cocone "above", and further that `F`
 reflects limits for `K`.

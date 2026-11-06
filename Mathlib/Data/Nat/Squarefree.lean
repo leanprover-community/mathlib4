@@ -11,18 +11,22 @@ public import Mathlib.Data.Nat.Factorization.Basic
 public import Mathlib.NumberTheory.Divisors
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Nat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lemmas about squarefreeness of natural numbers
 
 A number is squarefree when it is not divisible by any squares except the squares of units.
 
 ## Main Results
-- `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
+
+* `Nat.squarefree_iff_nodup_primeFactorsList`: A positive natural number `x` is squarefree iff
   the list `factors x` has no duplicate factors.
 
 ## Tags
-squarefree, multiplicity
 
+squarefree, multiplicity
 -/
 
 @[expose] public section
@@ -129,9 +133,12 @@ def minSqFac (n : ℕ) : Option ℕ :=
     if 2 ∣ n' then some 2 else minSqFacAux n' 3
   else minSqFacAux n 3
 
-/-- The correctness property of the return value of `minSqFac`.
-  * If `none`, then `n` is squarefree;
-  * If `some d`, then `d` is a minimal square factor of `n` -/
+/--
+The correctness property of the return value of `minSqFac`.
+
+* If `none`, then `n` is squarefree;
+* If `some d`, then `d` is a minimal square factor of `n`
+-/
 def MinSqFacProp (n : ℕ) : Option ℕ → Prop
   | none => Squarefree n
   | some d => Prime d ∧ d * d ∣ n ∧ ∀ p, Prime p → p * p ∣ n → d ≤ p

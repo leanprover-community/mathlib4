@@ -8,13 +8,14 @@ module
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Effective epimorphisms in `TopCat`
 
 This file proves the result `TopCat.effectiveEpi_iff_isQuotientMap`:
 The effective epimorphisms in `TopCat` are precisely the quotient maps.
-
 -/
 
 @[expose] public section

@@ -7,25 +7,30 @@ module
 
 public import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Strictly unitary lax functors and pseudofunctors
 
 In this file, we define strictly unitary lax functors and
 strictly unitary pseudofunctors between bicategories.
 
-A lax functor `F` is said to be *strictly unitary* (sometimes, it is also
-called *normal*) if there is an equality `F.map (𝟙 X) = 𝟙 (F.obj X)` and the
+A lax functor `F` is said to be _strictly unitary_ (sometimes, it is also
+called _normal_) if there is an equality `F.map (𝟙 X) = 𝟙 (F.obj X)` and the
 unit 2-morphism `𝟙 (F.obj X) ⟶ F.map (𝟙 X)` is the identity 2-morphism induced
 by this equality.
 
-A pseudofunctor is called *strictly unitary* (or a *normal homomorphism*) if it
+A pseudofunctor is called _strictly unitary_ (or a _normal homomorphism_) if it
 satisfies the same condition (i.e. its "underlying" lax functor is strictly
 unitary).
 
 ## References
-- [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
+
+* [Kerodon, section 2.2.2.4](https://kerodon.net/tag/008G)
 
 ## TODOs
+
 * Define lax-composable (resp. pseudo-composable) arrows as strictly unitary
   lax (resp. pseudo-) functors out of `LocallyDiscrete Fin n`.
 * Define identity-component oplax natural transformations ("icons") between
@@ -33,7 +38,6 @@ unitary).
   bicategories, strictly unitary pseudofunctors and icons.
 * Construct the Duskin nerve of a bicategory using lax-composable arrows
 * Construct the 2-nerve of a bicategory using pseudo-composable arrows
-
 -/
 
 @[expose] public section

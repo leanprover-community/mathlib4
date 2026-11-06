@@ -9,6 +9,9 @@ public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 public import Mathlib.LinearAlgebra.SesquilinearForm.Orthogonal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Quadratic maps
 
@@ -21,7 +24,7 @@ that:
   `QuadraticMap.polar_smul_left`, `QuadraticMap.polar_smul_right`:
   the map `QuadraticMap.polar Q := fun x y ↦ Q (x + y) - Q x - Q y` is bilinear.
 
-This notion generalizes to commutative semirings using the approach in [izhakian2016][] which
+This notion generalizes to commutative semirings using the approach in \[izhakian2016\]\[\] which
 requires that there be a (possibly non-unique) companion bilinear map `B` such that
 `∀ x y, Q (x + y) = Q x + Q y + B x y`. Over a ring, this `B` is precisely `QuadraticMap.polar Q`.
 
@@ -58,16 +61,17 @@ The variable `S` is used when `R` itself has a `•` action.
 
 While the definition and many results make sense if we drop commutativity assumptions,
 the correct definition of a quadratic maps in the noncommutative setting would require
-substantial refactors from the current version, such that $Q(rm) = rQ(m)r^*$ for some
-suitable conjugation $r^*$.
+substantial refactors from the current version, such that $`Q(rm) = rQ(m)r^*` for some
+suitable conjugation $`r^*`.
 
-The [Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Quadratic.20Maps/near/395529867)
+The [Zulip
+thread](https://leanprover.zulipchat.com/#narrow/stream/116395-maths/topic/Quadratic.20Maps/near/395529867)
 has some further discussion.
 
 ## References
 
-* https://en.wikipedia.org/wiki/Quadratic_form
-* https://en.wikipedia.org/wiki/Discriminant#Quadratic_forms
+* https://en.wikipedia.org/wiki/Quadratic\_form
+* https://en.wikipedia.org/wiki/Discriminant#Quadratic\_forms
 
 ## Tags
 
@@ -89,9 +93,10 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 
 namespace QuadraticMap
 
-/-- Up to a factor 2, `Q.polar` is the associated bilinear map for a quadratic map `Q`.
+/--
+Up to a factor 2, `Q.polar` is the associated bilinear map for a quadratic map `Q`.
 
-Source of this name: https://en.wikipedia.org/wiki/Quadratic_form#Generalization
+Source of this name: https://en.wikipedia.org/wiki/Quadratic\_form#Generalization
 -/
 def polar (f : M → N) (x y : M) :=
   f (x + y) - f x - f y
@@ -140,14 +145,18 @@ end QuadraticMap
 
 end Polar
 
-/-- A quadratic map on a module.
+/--
+A quadratic map on a module.
 
-For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`. -/
+For a more familiar constructor when `R` is a ring, see `QuadraticMap.ofPolar`.
+-/
 structure QuadraticMap (R : Type u) (M : Type v) (N : Type w) [CommSemiring R] [AddCommMonoid M]
     [Module R M] [AddCommMonoid N] [Module R N] where
-  /-- The underlying function.
+  /--
+  The underlying function.
 
-  Do NOT use directly. Use the coercion instead. -/
+  Do NOT use directly. Use the coercion instead.
+  -/
   toFun : M → N
   toFun_smul : ∀ (a : R) (x : M), toFun (a • x) = (a * a) • toFun x
   exists_companion' : ∃ B : BilinMap R M N, ∀ x y, toFun (x + y) = toFun x + toFun y + B x y
@@ -392,9 +401,11 @@ section SMul
 variable [Monoid S] [Monoid T] [DistribMulAction S N] [DistribMulAction T N]
 variable [SMulCommClass S R N] [SMulCommClass T R N]
 
-/-- `QuadraticMap R M N` inherits the scalar action from any algebra over `R`.
+/--
+`QuadraticMap R M N` inherits the scalar action from any algebra over `R`.
 
-This provides an `R`-action via `Algebra.id`. -/
+This provides an `R`-action via `Algebra.id`.
+-/
 instance : SMul S (QuadraticMap R M N) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
@@ -557,10 +568,12 @@ def _root_.LinearMap.compQuadraticMap' [CommSemiring S] [Algebra S R] [Module S 
     (f : N →ₗ[S] P) (Q : QuadraticMap R M N) : QuadraticMap S M P :=
   _root_.LinearMap.compQuadraticMap f Q.restrictScalars
 
-/-- When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
+/--
+When `N` and `P` are equivalent, quadratic maps on `M` into `N` are equivalent to quadratic
 maps on `M` into `P`.
 
-See `LinearMap.BilinMap.congr₂` for the bilinear map version. -/
+See `LinearMap.BilinMap.congr₂` for the bilinear map version.
+-/
 @[simps apply]
 def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
     QuadraticMap R M N ≃ₗ[R] QuadraticMap R M P where
@@ -637,7 +650,7 @@ end NonUnitalNonAssocSemiring
 end QuadraticMap
 
 /-!
-### Associated bilinear maps
+# Associated bilinear maps
 
 If multiplication by 2 is invertible on the target module `N` of
 `QuadraticMap R M N`, then there is a linear bijection `QuadraticMap.associated`
@@ -841,13 +854,15 @@ variable (S) [CommSemiring S] [Algebra S R] [Module S N] [IsScalarTower S R N]
 -- the requirement that multiplication by `2` is invertible on the target module `N`
 variable [Invertible (2 : Module.End R N)]
 
-/-- `associatedHom` is the map that sends a quadratic map on a module `M` over `R` to its
+/--
+`associatedHom` is the map that sends a quadratic map on a module `M` over `R` to its
 associated symmetric bilinear map.  As provided here, this has the structure of an `S`-linear map
 where `S` is a commutative ring and `R` is an `S`-algebra.
 
 Over a commutative ring, use `QuadraticMap.associated`, which gives an `R`-linear map.  Over a
 general ring with no nontrivial distinguished commutative subring, use `QuadraticMap.associated'`,
-which gives an additive homomorphism (or more precisely a `ℤ`-linear map.) -/
+which gives an additive homomorphism (or more precisely a `ℤ`-linear map.)
+-/
 def associatedHom : QuadraticMap R M N →ₗ[S] (BilinMap R M N) where
   toFun Q := ⅟(2 : Module.End R N) • polarBilin Q
   map_add' _ _ := LinearMap.ext₂ fun _ _ ↦ by simp [polar_add]
@@ -988,7 +1003,9 @@ end Associated
 
 section IsOrtho
 
-/-! ### Orthogonality -/
+/-!
+# Orthogonality
+-/
 
 section CommSemiring
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
@@ -1139,7 +1156,7 @@ end QuadraticMap
 section
 
 /-!
-### Quadratic forms and matrices
+# Quadratic forms and matrices
 
 Connect quadratic forms and matrices, in order to explicitly compute with them.
 The convention is twos out, so there might be a factor 2⁻¹ in the entries of the
@@ -1401,10 +1418,12 @@ section
 
 variable (R)
 
-/-- The weighted sum of squares with respect to some weight as a quadratic form.
+/--
+The weighted sum of squares with respect to some weight as a quadratic form.
 
 The weights are applied using `•`; typically this definition is used either with `S = R` or
-`[Algebra S R]`, although this is stated more generally. -/
+`[Algebra S R]`, although this is stated more generally.
+-/
 def weightedSumSquares [Monoid S] [DistribMulAction S R] [SMulCommClass S R R] (w : ι → S) :
     QuadraticMap R (ι → R) R :=
   ∑ i : ι, w i • (proj (R := R) (n := ι) i i)

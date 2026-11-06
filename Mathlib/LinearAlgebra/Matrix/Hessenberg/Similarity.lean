@@ -8,6 +8,9 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 public import Mathlib.LinearAlgebra.Matrix.Hessenberg.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hessenberg similarity certificates
 
@@ -16,11 +19,11 @@ an upper Hessenberg matrix.
 
 ## Main definitions
 
-- `Matrix.Hessenberg.Similarity`: the certificate structure.
+* `Matrix.Hessenberg.Similarity`: the certificate structure.
 
 ## Main results
 
-- `Matrix.Hessenberg.Similarity.charpoly_eq`: The characteristic polynomial of `A` is equal to the
+* `Matrix.Hessenberg.Similarity.charpoly_eq`: The characteristic polynomial of `A` is equal to the
   characteristic polynomial of its Hessenberg matrix.
 -/
 
@@ -30,7 +33,8 @@ namespace Matrix.Hessenberg
 
 variable {m R : Type*} [CommRing R] [Fintype m] [DecidableEq m] [LinearOrder m] [SuccOrder m]
 
-/-- A certificate of a Hessenberg similarity of `A` consisting of a permutation `σ` of its rows and
+/--
+A certificate of a Hessenberg similarity of `A` consisting of a permutation `σ` of its rows and
 columns, a lower triangular matrix `L` with nonzero diagonal and an upper Hessenberg matrix `H`
 satisfying `A.reindex σ σ * L = L * H`.
 

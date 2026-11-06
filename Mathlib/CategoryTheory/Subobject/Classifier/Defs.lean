@@ -9,22 +9,23 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subobject Classifier
 
 We define a structure containing the data of a subobject classifier in a category `C` as
 `CategoryTheory.Subobject.Classifier C`.
 
 c.f. the following Lean 3 code, where similar work was done:
-https://github.com/b-mehta/topos/blob/master/src/subobject_classifier.lean
+https://github.com/b-mehta/topos/blob/master/src/subobject\_classifier.lean
 
 ## Main definitions
 
 Let `C` refer to a category with a terminal object.
 
 * `CategoryTheory.Subobject.Classifier C` is the data of a subobject classifier in `C`.
-
 * `CategoryTheory.HasSubobjectClassifier C` says that there is at least one subobject classifier.
   `Ω C` denotes a choice of subobject classifier.
 
@@ -32,25 +33,20 @@ Let `C` refer to a category with a terminal object.
 
 * It is a theorem that the truth morphism `⊤_ C ⟶ Ω C` is a (split, and therefore regular)
   monomorphism, simply because its source is the terminal object.
-
 * An instance of `IsRegularMonoCategory C` is exhibited for any category with a subobject
   classifier.
-
 * `CategoryTheory.Subobject.Classifier.representableBy`: any subobject classifier `Ω` in `C`
   represents the subobjects functor `CategoryTheory.Subobject.presheaf C`, assuming `C` has
   pullbacks.
-
 * `CategoryTheory.SubobjectRepresentableBy.classifier`: any representation `Ω` of
   `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
-
 * `CategoryTheory.hasClassifier_isRepresentable_iff`: from the two above mappings, we get that a
   category `C` with pullbacks has a subobject classifier if and only if the subobjects presheaf
-  `CategoryTheory.Subobject.presheaf C` is representable (Proposition 1 in Section I.3 of [MM92]).
+  `CategoryTheory.Subobject.presheaf C` is representable (Proposition 1 in Section I.3 of \[MM92\]).
 
 ## References
 
-* [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-
+* ‍\[S. MacLane and I. Moerdijk, _Sheaves in Geometry and Logic_\]\[MM92\]
 -/
 
 @[expose] public section
@@ -65,9 +61,11 @@ variable {C : Type u} [Category.{v} C]
 
 namespace Subobject
 
-/-- A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
+/--
+A monomorphism `truth : Ω₀ ⟶ Ω` is a subobject classifier if, for every monomorphism
 `m : U ⟶ X` in `C`, there is a unique map `χ : X ⟶ Ω` such that for some (necessarily unique)
 `χ₀ : U ⟶ Ω₀` the following square is a pullback square:
+
 ```
       U ---------m----------> X
       |                       |
@@ -76,6 +74,7 @@ namespace Subobject
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 An equivalent formulation replaces `Ω₀` with the terminal object.
 -/
 structure Classifier (C : Type u) [Category.{v} C] where
@@ -167,7 +166,9 @@ variable {C} {U X : C} (m : U ⟶ X) [Mono m]
 def χ : X ⟶ Ω C :=
   HasSubobjectClassifier.exists_classifier.some.χ m
 
-/-- The diagram
+/--
+The diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -176,12 +177,15 @@ def χ : X ⟶ Ω C :=
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 is a pullback square.
 -/
 lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
   Classifier.isPullback _ m
 
-/-- The diagram
+/--
+The diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -190,6 +194,7 @@ lemma isPullback_χ : IsPullback m (Classifier.χ₀ _ U) (χ m) (truth C) :=
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 commutes.
 -/
 @[reassoc]
@@ -210,7 +215,9 @@ noncomputable def truthIsRegularMono : RegularMono (truth C) :=
 
 instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
 
-/-- The following diagram
+/--
+The following diagram
+
 ```
       U ---------m----------> X
       |                       |
@@ -219,6 +226,7 @@ instance : IsRegularMono (truth C) := ⟨⟨truthIsRegularMono⟩⟩
       v                       v
       Ω₀ ------truth--------> Ω
 ```
+
 being a pullback for any monic `m` means that every monomorphism
 in `C` is the pullback of a regular monomorphism; since regularity
 is stable under base change, every monomorphism is regular.
@@ -248,13 +256,17 @@ instance reflectsIsomorphismsOp (D : Type u₀) [Category.{v₀} D] (F : Cᵒᵖ
 end
 end HasSubobjectClassifier
 
-/-! ### The representability theorem of subobject classifiers -/
+/-!
+# The representability theorem of subobject classifiers
+-/
 
 section Representability
 
 namespace Subobject.Classifier
 
-/-! #### From classifiers to representations -/
+/-!
+# From classifiers to representations
+-/
 
 section RepresentableBy
 
@@ -302,7 +314,9 @@ noncomputable def representableBy :
 end RepresentableBy
 end Subobject.Classifier
 
-/-! #### From representations to classifiers -/
+/-!
+# From representations to classifiers
+-/
 
 section FromRepresentation
 
@@ -347,16 +361,17 @@ noncomputable def iso : MonoOver.mk m ≅
   (Subobject.representativeIso (.mk m)).symm ≪≫ Subobject.representative.mapIso
     (eqToIso (h.pullback_homEquiv_symm_obj_Ω₀ (.mk m)).symm)
 
-/-- `h.π m` is the first projection in the following pullback square:
+/--
+`h.π m` is the first projection in the following pullback square:
 
-    ```
-    U --h.π m--> (Ω₀ : C)
-    |                |
-    m             Ω₀.arrow
-    |                |
-    v                v
-    X -----h.χ m---> Ω
-    ```
+```
+U --h.π m--> (Ω₀ : C)
+|                |
+m             Ω₀.arrow
+|                |
+v                v
+X -----h.χ m---> Ω
+```
 -/
 noncomputable def π : U ⟶ Subobject.underlying.obj h.Ω₀ :=
   (h.iso m).hom.hom.left ≫ Subobject.pullbackπ (h.χ m) h.Ω₀

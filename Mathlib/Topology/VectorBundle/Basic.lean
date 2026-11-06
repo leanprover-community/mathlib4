@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 public import Mathlib.Topology.FiberBundle.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Vector bundles
 
@@ -53,6 +56,7 @@ The implementation choices in the vector bundle definition are discussed in the 
 notes" section of `Mathlib/Topology/FiberBundle/Basic.lean`.
 
 ## Tags
+
 Vector bundle
 -/
 
@@ -548,7 +552,9 @@ lemma VectorBundle.completeSpace [CompleteSpace F]
   let e := VectorBundle.continuousLinearEquivAt R F E b
   rwa [completeSpace_congr (e := e.toEquiv) e.isUniformEmbedding]
 
-/-! ### Constructing vector bundles -/
+/-!
+# Constructing vector bundles
+-/
 
 variable (B F)
 
@@ -802,7 +808,9 @@ end VectorBundleCore
 
 end
 
-/-! ### Vector prebundle -/
+/-!
+# Vector prebundle
+-/
 
 section
 
@@ -813,7 +821,8 @@ open TopologicalSpace
 
 open VectorBundle
 
-/-- This structure permits to define a vector bundle when trivializations are given as local
+/--
+This structure permits to define a vector bundle when trivializations are given as local
 equivalences but there is not yet a topology on the total space or the fibers.
 The total space is hence given a topology in such a way that there is a fiber bundle structure for
 which the partial equivalences are also open partial homeomorphisms and hence vector bundle
@@ -822,7 +831,8 @@ trivializations. The topology on the fibers is induced from the one on the total
 The field `exists_coordChange` is stated as an existential statement (instead of 3 separate
 fields), since it depends on propositional information (namely `e e' ∈ pretrivializationAtlas`).
 This makes it inconvenient to explicitly define a `coordChange` function when constructing a
-`VectorPrebundle`. -/
+`VectorPrebundle`.
+-/
 structure VectorPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivialization_linear' : ∀ e, e ∈ pretrivializationAtlas → e.IsLinear R
@@ -958,7 +968,8 @@ variable [FiberBundle F E] [VectorBundle 𝕜₁ F E]
 variable [∀ x, TopologicalSpace (E' x)] [FiberBundle F' E'] [VectorBundle 𝕜₂ F' E']
 variable (F' E')
 
-/-- When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector
+/--
+When `ϕ` is a continuous (semi)linear map between the fibers `E x` and `E' y` of two vector
 bundles `E` and `E'`, `ContinuousLinearMap.inCoordinates F E F' E' x₀ x y₀ y ϕ` is a coordinate
 change of this continuous linear map w.r.t. the chart around `x₀` and the chart around `y₀`.
 

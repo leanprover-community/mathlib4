@@ -10,6 +10,9 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts
 
 import Mathlib.Analysis.Calculus.Deriv.Pow
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Taylor's formula with an integral remainder in higher dimensions
 
@@ -18,7 +21,6 @@ In this file we prove Taylor's formula with the remainder term in integral form.
 * `map_add_eq_sum_add_integral_iteratedFDeriv`: version for higher dimensions with `iteratedFDeriv`
 
 TODO: add a version that assumes `ContDiffOn f (closedBall x (‖y‖))`
-
 -/
 
 public section
@@ -59,13 +61,15 @@ variable {f : E → F} {x y : E} {n : ℕ}
 
 variable [CompleteSpace F]
 
-/-- *Taylor's theorem with remainder in integral form*. If `f` is `n + 1` times continuously
+/--
+_Taylor's theorem with remainder in integral form_. If `f` is `n + 1` times continuously
 differentiable, then `f (x + y)` is given by
 `∑ k in 0..n, D^k f(x; y,..,y) / k! + 1/n! ∫ t in 0..1, (1 - t) ^ n • D^{n+1}f (x + t • y; y,..,y)`,
 where `D^k f` denotes the iterated derivative of `f`.
 
 In the case that `n = 1`, this is a reformulation of the fundamental theorem of calculus, namely
-`f (x + y) = f x + ∫ t in 0..1, D f(x + t • y; y)`. -/
+`f (x + y) = f x + ∫ t in 0..1, D f(x + t • y; y)`.
+-/
 theorem map_add_eq_sum_add_integral_iteratedFDeriv (hf : ∀ (t : ℝ) (_ht : t ∈ Set.Icc 0 1),
     ContDiffAt ℝ (n + 1) f (x + t • y)) :
     f (x + y) = ∑ k ∈ Finset.range (n + 1), (k ! : ℝ)⁻¹ • (iteratedFDeriv ℝ k f x (fun _ ↦ y)) +

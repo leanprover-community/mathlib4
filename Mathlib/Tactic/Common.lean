@@ -125,6 +125,9 @@ public meta import Lean.Elab.Tactic.Try
 public meta import Lean.Meta.Tactic.Try.Collect
 
 -- Preserve custom import ordering:
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 set_option linter.style.header.imports false
 
 /-!
@@ -144,7 +147,7 @@ import hierarchy.
 public meta section
 
 /-!
-### Register tactics with `hint`. Tactics with larger priority run first.
+# Register tactics with `hint`. Tactics with larger priority run first.
 -/
 
 section Hint
@@ -164,7 +167,7 @@ register_hint 80 aesop
 end Hint
 
 /-!
-### Register tactics with `try?`. Tactics with larger priority run first.
+# Register tactics with `try?`. Tactics with larger priority run first.
 -/
 
 section Try

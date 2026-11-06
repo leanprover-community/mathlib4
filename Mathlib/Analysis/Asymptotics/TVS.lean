@@ -11,6 +11,9 @@ public import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Tactic.Peel
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotics in a Topological Vector Space
 
@@ -20,14 +23,14 @@ from normed spaces to topological vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
-we say that $f = o(g)$ (resp., $f = O(g)$)
+we say that $`f = o(g)` (resp., $`f = O(g)`)
 if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
-such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$
-(resp., $\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))$),
-where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
+such that $`\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))`
+(resp., $`\operatorname{gauge}_{K, U} (f(x)) = O(\operatorname{gauge}_{K, V} (g(x)))`),
+where $`\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}`.
 
-We say that $f=Θ(g)$, if both $f=O(g)$ and $g=O(f)$.
+We say that $`f=Θ(g)`, if both $`f=O(g)` and $`g=O(f)`.
 
 In a normed space, we can use balls of positive radius as both `U` and `V`,
 thus reducing the definition to the classical one.
@@ -38,28 +41,26 @@ This is exactly the tradeoff we want in `HasFDerivAtFilter`,
 as there the base field is already chosen,
 and this removes the choice of norm being part of the statement.
 
-These definitions were added to the library in order to migrate Fréchet derivatives
-from normed vector spaces to topological vector spaces.
-The definitions are motivated by
-https://en.wikipedia.org/wiki/Fr%C3%A9chet_derivative#Generalization_to_topological_vector_spaces
-but the definition there doesn't work for topological vector spaces over general normed fields.
-[This Zulip discussion](https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS)
-led to the current choice of the definition of `Asymptotics.IsLittleOTVS`,
-and `Asymptotics.IsBigOTVS` was defined in a similar manner.
+These definitions were added to the library in order to migrate Fréchet derivatives from normed
+vector spaces to topological vector spaces. The definitions are motivated by
+https://en.wikipedia.org/wiki/Fr%C3%A9chet\_derivative#Generalization\_to\_topological\_vector\_spaces
+but the definition there doesn't work for topological vector spaces over general normed fields. [
+This Zulip
+discussion](https://leanprover.zulipchat.com/#narrow/channel/116395-maths/topic/generalizing.20deriv.20to.20TVS)
+led to the current choice of the definition of `Asymptotics.IsLittleOTVS`, and
+`Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 ## Main results
 
 * `isLittleOTVS_iff_isLittleO`: the equivalence between these two definitions in the case of a
   normed space.
-
 * `isLittleOTVS_iff_tendsto_inv_smul`: the equivalence to convergence of the ratio to zero
   in case of a topological vector space.
 
 ## TODO
 
-- Add `Asymptotics.IsEquivalentTVS`.
-- Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
-
+* Add `Asymptotics.IsEquivalentTVS`.
+* Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
 -/
 
 @[expose] public section
@@ -74,18 +75,20 @@ section Defs
 variable (𝕜 : Type*) {α E F : Type*}
   [ENorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
 
-/-- `f =o[𝕜; l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
+/--
+`f =o[𝕜; l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `K`,
-we say that $f = o(g)$ if for any neighborhood of zero `U` in the codomain of `f`
+we say that $`f = o(g)` if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
-such that $\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))$,
-where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
+such that $`\operatorname{gauge}_{K, U} (f(x)) = o(\operatorname{gauge}_{K, V} (g(x)))`,
+where $`\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}`.
 
 We use an `ENNReal`-valued function `egauge` for the gauge,
-so we unfold the definition of little o instead of reusing it. -/
+so we unfold the definition of little o instead of reusing it.
+-/
 @[mk_iff]
 structure IsLittleOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
   exists_eventuallyLE_mul : ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
@@ -94,15 +97,16 @@ structure IsLittleOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop wher
 @[inherit_doc]
 notation:100 f " =o[" 𝕜 "; " l "] " g:100 => IsLittleOTVS 𝕜 l f g
 
-/-- `f =O[𝕜; l] g` (`IsBigOTVS 𝕜 l f g`) is a generalization of `f =O[l] g` (`IsBigO l f g`)
+/--
+`f =O[𝕜; l] g` (`IsBigOTVS 𝕜 l f g`) is a generalization of `f =O[l] g` (`IsBigO l f g`)
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
 over a normed field `𝕜`,
-we say that $f = O(g)$ if for any neighborhood of zero `U` in the codomain of `f`
+we say that $`f = O(g)` if for any neighborhood of zero `U` in the codomain of `f`
 there exists a neighborhood of zero `V` in the codomain of `g`
-such that $\operatorname{gauge}_{K, U} (f(x)) \le \operatorname{gauge}_{K, V} (g(x))$,
-where $\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}$.
+such that $`\operatorname{gauge}_{K, U} (f(x)) \le \operatorname{gauge}_{K, V} (g(x))`,
+where $`\operatorname{gauge}_{K, U}(y) = \inf \{‖c‖ \mid y ∈ c • U\}`.
 -/
 @[mk_iff]
 structure IsBigOTVS (l : Filter α) (f : α → E) (g : α → F) : Prop where
@@ -227,7 +231,7 @@ theorem IsThetaTVS.symm (h : f =Θ[𝕜; l] g) : g =Θ[𝕜; l] f := And.symm h
 theorem isThetaTVS_comm : f =Θ[𝕜; l] g ↔ g =Θ[𝕜; l] f := and_comm
 
 /-!
-### Transitivity lemmas
+# Transitivity lemmas
 -/
 
 section Trans
@@ -346,12 +350,14 @@ protected theorem _root_.Filter.HasBasis.isBigOTVS_iff
     exact ⟨V, hV₀, hV.mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
   · exact fun s t hsub h ↦ h.mono fun x hx ↦ hx.trans <| egauge_anti 𝕜 hsub (g x)
 
-/-- The definition of `IsBigOTVS` says that
+/--
+The definition of `IsBigOTVS` says that
 for each neighborhood `U` of the origin in the codomain of `f`,
 there exists a neighborhood `V` of the origin in the codomain of `g` such that
 `egauge 𝕜 U (f x) ≤ egauge 𝕜 V (g x)` eventually along `l`.
 
-This lemma shows that it suffices to make this inequality work up to a constant multiplier. -/
+This lemma shows that it suffices to make this inequality work up to a constant multiplier.
+-/
 theorem IsBigOTVS.of_egauge_le_mul [ContinuousConstSMul 𝕜 F] {ι} {p : ι → Prop} {U : ι → Set E}
     (hb : (𝓝 0).HasBasis p U)
     (h : ∀ i, p i → ∃ C : ℝ≥0, ∃ V ∈ 𝓝 (0 : F),

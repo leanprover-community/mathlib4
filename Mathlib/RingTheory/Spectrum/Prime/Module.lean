@@ -8,18 +8,20 @@ module
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Support
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Subsets of prime spectra related to modules
 
 ## Main results
 
-- `LocalizedModule.subsingleton_iff_disjoint` : `M[1/f] = 0 ↔ D(f) ∩ Supp M = 0`.
-- `Module.isClosed_support` : If `M` is a finite `R`-module, then `Supp M` is closed.
+* `LocalizedModule.subsingleton_iff_disjoint` : `M[1/f] = 0 ↔ D(f) ∩ Supp M = 0`.
+* `Module.isClosed_support` : If `M` is a finite `R`-module, then `Supp M` is closed.
 
 ## TODO
-- If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 
+* If `M` is finitely presented, the complement of `Supp M` is quasi-compact. (stacks#051B)
 -/
 
 public section

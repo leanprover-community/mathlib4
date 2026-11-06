@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Deterministic
 public import Mathlib.CategoryTheory.MarkovCategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Positive Categories
 
@@ -23,7 +26,6 @@ Markov categories where deletion is natural for all morphisms.
 * `copy_comp_natural` - Given morphisms `f : X ⟶ Y` and `g : Y ⟶ Z`, if their composition is
   deterministic, then process `f`, copy and then process `g` equals copy and process `f` and `g`
   independently.
-
 * All isomorphisms in a positive Markov category are deterministic.
 
 ## Implementation notes
@@ -37,9 +39,10 @@ deterministic process.
 
 ## References
 
-* [Fritz, *A synthetic approach to Markov kernels, conditional independence
-  and theorems on sufficient statistics*, Def. 11.22][fritz2020]
-* [Moss and Perrone, *A category-theoretic proof of the ergodic decomposition theorem*][moss2023]
+* ‍\[Fritz, _A synthetic approach to Markov kernels, conditional independence
+  and theorems on sufficient statistics_, Def. 11.22\]\[fritz2020\]
+* ‍\[Moss and Perrone, _A category-theoretic proof of the ergodic decomposition
+  theorem_\]\[moss2023\]
 -/
 
 public section

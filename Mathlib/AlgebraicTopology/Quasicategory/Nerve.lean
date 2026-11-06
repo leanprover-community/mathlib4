@@ -7,6 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.Quasicategory.StrictSegal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The nerve of a category is a quasicategory
 

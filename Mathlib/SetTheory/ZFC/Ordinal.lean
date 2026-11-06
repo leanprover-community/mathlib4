@@ -9,6 +9,9 @@ public import Mathlib.Order.GameAdd
 public import Mathlib.SetTheory.ZFC.Cardinal
 public import Mathlib.SetTheory.ZFC.Rank
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Von Neumann ordinals
 
@@ -17,10 +20,10 @@ under `∈`.
 
 ## Definitions
 
-- `ZFSet.IsTransitive` means that every element of a set is a subset.
-- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`. We show multiple
+* `ZFSet.IsTransitive` means that every element of a set is a subset.
+* `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`. We show multiple
   equivalences to this definition.
-- `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
+* `Ordinal.toZFSet` converts Lean's type-theoretic ordinals into ZFC ordinals. We prove that these
   two notions are order-isomorphic.
 -/
 
@@ -34,11 +37,15 @@ open Set
 
 namespace ZFSet
 
-/-! ### Transitive sets -/
+/-!
+# Transitive sets
+-/
 
-/-- A transitive set is one where every element is a subset.
+/--
+A transitive set is one where every element is a subset.
 
-This is equivalent to being an infinite-open interval in the transitive closure of membership. -/
+This is equivalent to being an infinite-open interval in the transitive closure of membership.
+-/
 def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
@@ -101,13 +108,17 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
-/-! ### Ordinals -/
+/-!
+# Ordinals
+-/
 
-/-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
+/--
+A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
 prove that this further implies that `x` is well-ordered under `∈` in `isOrdinal_iff_isWellOrder`.
 
 The transitivity condition `a ∈ b → b ∈ c → a ∈ c` can be written without assuming `a ∈ x` and
-`b ∈ x`. The lemma `isOrdinal_iff_isTrans` shows this condition is equivalent to the usual one. -/
+`b ∈ x`. The lemma `isOrdinal_iff_isTrans` shows this condition is equivalent to the usual one.
+-/
 structure IsOrdinal (x : ZFSet) : Prop where
   /-- An ordinal is a transitive set. -/
   isTransitive : x.IsTransitive
@@ -263,14 +274,18 @@ theorem isOrdinal_succ {x : ZFSet} (h : IsOrdinal x) : IsOrdinal (insert x x) :=
 
 end ZFSet
 
-/-! ### Type-theoretic ordinals to von Neumann ordinals -/
+/-!
+# Type-theoretic ordinals to von Neumann ordinals
+-/
 
 namespace Ordinal
 open ZFSet
 
-/-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `PSet`.
+/--
+The von Neumann ordinal corresponding to a given `Ordinal`, as a `PSet`.
 
-The elements of `o.toPSet` are all `a.toPSet` with `a < o`. -/
+The elements of `o.toPSet` are all `a.toPSet` with `a < o`.
+-/
 noncomputable def toPSet (o : Ordinal.{u}) : PSet.{u} :=
   ⟨o.ToType, fun a ↦ toPSet a⟩
 termination_by o
@@ -293,9 +308,11 @@ theorem rank_toPSet (o : Ordinal) : o.toPSet.rank = o := by
 termination_by o
 decreasing_by rename_i x; exact x.2
 
-/-- The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
+/--
+The von Neumann ordinal corresponding to a given `Ordinal`, as a `ZFSet`.
 
-The elements of `o.toZFSet` are all `a.toZFSet` with `a < o`. -/
+The elements of `o.toZFSet` are all `a.toZFSet` with `a < o`.
+-/
 noncomputable def toZFSet (o : Ordinal.{u}) : ZFSet.{u} :=
   .mk o.toPSet
 

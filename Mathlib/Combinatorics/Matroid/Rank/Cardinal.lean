@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Matroid.Rank.ENat
 
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinal-valued rank
 
@@ -57,7 +60,6 @@ which sometimes makes their proofs longer than they would be with the instance.
 
 * Higgs' theorem : if the generalized continuum hypothesis holds,
   then every matroid is `InvariantCardinalRank`.
-
 -/
 
 @[expose] public section

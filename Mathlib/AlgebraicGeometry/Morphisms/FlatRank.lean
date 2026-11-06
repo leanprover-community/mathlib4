@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Flat.Rank
 
 import Mathlib.RingTheory.Finiteness.ModuleFinitePresentation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Rank of a finite flat morphism of schemes
 
@@ -21,23 +24,23 @@ schemes `f : X ⟶ Y`. It is locally constant and is characterized by the condit
 
 ## Main definitions
 
-- `AlgebraicGeometry.Scheme.Hom.finrank`: For a morphism `f : X ⟶ Y` of schemes, the function
+* `AlgebraicGeometry.Scheme.Hom.finrank`: For a morphism `f : X ⟶ Y` of schemes, the function
   `Y → ℕ` sending `y` to the rank of `f_* 𝒪_X` over `𝒪_Y` at `y`. Instead of talking about
   sheaves, we define it by choosing an open neighbourhood of `y`.
   This is sometimes also called the degree of a morphism in the literature.
 
 ## Main results
 
-- `AlgebraicGeometry.Scheme.Hom.isLocallyConstant_finrank`: The rank function of a finite flat
+* `AlgebraicGeometry.Scheme.Hom.isLocallyConstant_finrank`: The rank function of a finite flat
   locally finitely presented morphism is locally constant.
-- `AlgebraicGeometry.Scheme.Hom.one_le_finrank_iff_surjective`: The rank function is at least `1`
+* `AlgebraicGeometry.Scheme.Hom.one_le_finrank_iff_surjective`: The rank function is at least `1`
   everywhere if and only if the morphism is surjective.
-- `AlgebraicGeometry.Scheme.Hom.isIso_iff_finrank_eq`: A finite flat locally finitely presented
+* `AlgebraicGeometry.Scheme.Hom.isIso_iff_finrank_eq`: A finite flat locally finitely presented
   morphism is an isomorphism if and only if its rank is constant equal to `1`.
 
 ## TODO
 
-- Relate `Hom.finrank f y` to the rank of `f_* 𝒪_X` over `𝒪_Y` at `y` when the API for
+* Relate `Hom.finrank f y` to the rank of `f_* 𝒪_X` over `𝒪_Y` at `y` when the API for
   locally free sheaves of modules is developed.
 -/
 

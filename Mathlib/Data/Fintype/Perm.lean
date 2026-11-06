@@ -12,12 +12,15 @@ public import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Fintype` instances for `Equiv` and `Perm`
 
 Main declarations:
-* `permsOfFinset s`: The finset of permutations of the finset `s`.
 
+* `permsOfFinset s`: The finset of permutations of the finset `s`.
 -/
 
 @[expose] public section

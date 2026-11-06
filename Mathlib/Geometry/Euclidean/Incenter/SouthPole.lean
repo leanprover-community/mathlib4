@@ -9,6 +9,9 @@ public import Mathlib.Geometry.Euclidean.Circumcenter
 public import Mathlib.Geometry.Euclidean.Incenter.Basic
 public import Mathlib.Geometry.Euclidean.Sphere.SecondInter
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # South and north poles of simplices.
 
@@ -28,7 +31,6 @@ the incenter or an excenter.
 ## References
 
 * Paul Averous, [Problèmes du Club de Maths](https://doi.org/10.13140/RG.2.2.18317.10726)
-
 -/
 
 @[expose] public noncomputable section

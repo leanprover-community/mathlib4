@@ -9,6 +9,9 @@ public import Mathlib.Data.Finset.Lattice.Fold
 public import Mathlib.Data.Set.Sigma
 public import Mathlib.Order.CompleteLattice.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets in a sigma type
 

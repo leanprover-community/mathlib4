@@ -9,6 +9,10 @@ public import Mathlib.Topology.Order
 
 import Mathlib.Topology.NhdsSet
 
+set_option doc.verso true
+set_option doc.verso.module false
+set_option doc.verso.suggestions false
+
 /-!
 # Specific classes of maps between topological spaces
 
@@ -253,10 +257,12 @@ lemma closure_eq_preimage_closure_image (hf : IsEmbedding f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) :=
   hf.1.closure_eq_preimage_closure_image s
 
-/-- The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
+/--
+The topology induced under an inclusion `f : X → Y` from a discrete topological space `Y`
 is the discrete topology on `X`.
 
-See also `DiscreteTopology.of_continuous_injective`. -/
+See also `DiscreteTopology.of_continuous_injective`.
+-/
 lemma discreteTopology [DiscreteTopology Y] (hf : IsEmbedding f) : DiscreteTopology X :=
   .of_continuous_injective hf.continuous hf.injective
 
@@ -490,11 +496,13 @@ theorem clusterPt_comap_iff (hf : IsOpenMap f) (hfc : Continuous f) {x : X} {l :
 
 end IsOpenMap
 
-/-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed.
+/--
+A map is open if and only if the `Set.kernImage` of every _closed_ set is closed.
 
 One way to understand this result is that `f : X → Y` is open if and only if its fibers vary in a
-**lower hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
-`(f ⁻¹' {y} ∩ U).Nonempty` is open in `Y`. See `isOpenMap_iff_lowerHemicontinuous`. -/
+*lower hemicontinuous* way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
+`(f ⁻¹' {y} ∩ U).Nonempty` is open in `Y`. See `isOpenMap_iff_lowerHemicontinuous`.
+-/
 lemma isOpenMap_iff_kernImage :
     IsOpenMap f ↔ ∀ {u : Set X}, IsClosed u → IsClosed (kernImage f u) := by
   rw [IsOpenMap, compl_surjective.forall]
@@ -516,7 +524,9 @@ theorem isOpenMap_iff_image_interior : IsOpenMap f ↔ ∀ s, f '' interior s �
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
     subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
 
-/-- A map is open if and only if the `Set.kernImage` of every *closed* set is closed. -/
+/--
+A map is open if and only if the `Set.kernImage` of every _closed_ set is closed.
+-/
 lemma isOpenMap_iff_closure_kernImage :
     IsOpenMap f ↔ ∀ {s : Set X}, closure (kernImage f s) ⊆ kernImage f (closure s) := by
   rw [isOpenMap_iff_image_interior, compl_surjective.forall]
@@ -580,11 +590,13 @@ theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
 
 end IsClosedMap
 
-/-- A map is closed if and only if the `Set.kernImage` of every *open* set is open.
+/--
+A map is closed if and only if the `Set.kernImage` of every _open_ set is open.
 
 One way to understand this result is that `f : X → Y` is closed if and only if its fibers vary in an
-**upper hemicontinuous** way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
-`f ⁻¹' {y} ⊆ U` is open in `Y`. See `isClosedMap_iff_upperHemicontinuous`. -/
+*upper hemicontinuous* way: for any open subset `U ⊆ X`, the set of all `y ∈ Y` such that
+`f ⁻¹' {y} ⊆ U` is open in `Y`. See `isClosedMap_iff_upperHemicontinuous`.
+-/
 lemma isClosedMap_iff_kernImage :
     IsClosedMap f ↔ ∀ {u : Set X}, IsOpen u → IsOpen (kernImage f u) := by
   rw [IsClosedMap, compl_surjective.forall]

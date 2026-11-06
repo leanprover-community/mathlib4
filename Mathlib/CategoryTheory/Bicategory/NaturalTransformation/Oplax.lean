@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.Tactic.CategoryTheory.Bicategory.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transformations between oplax functors
 
@@ -15,6 +18,7 @@ Just as there are natural transformations between functors, there are transforma
 between oplax functors. The equality in the naturality condition of a natural transformation gets
 replaced by a specified 2-morphism. Now, there are three possible types of transformations (between
 oplax functors):
+
 * oplax natural transformations;
 * lax natural transformations;
 * strong natural transformations.
@@ -40,14 +44,15 @@ Using these, we define three (scoped) `CategoryStruct` instances on `B ⥤ᵒᵖ
 transformations respectively.
 
 We also provide API for going between oplax transformations and strong transformations:
+
 * `OplaxTrans.StrongCore η`: a structure on an oplax transformation between oplax functors that
   promotes it to a strong transformation.
 * `StrongTrans.mkOfOplax η η'`: given an oplax transformation `η` such that each component
   2-morphism is an isomorphism, `mkOfOplax` gives the corresponding strong transformation.
 
 ## References
-* [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
 
+* [Niles Johnson, Donald Yau, _2-Dimensional Categories_](https://arxiv.org/abs/2002.06055)
 -/
 
 @[expose] public section
@@ -306,10 +311,12 @@ scoped instance categoryStruct : CategoryStruct (B ⥤ᵒᵖᴸ C) where
 
 end OplaxTrans
 
-/-- A strong natural transformation between oplax functors `F` and `G` is a natural transformation
+/--
+A strong natural transformation between oplax functors `F` and `G` is a natural transformation
 that is "natural up to 2-isomorphisms".
 
 More precisely, it consists of the following:
+
 * a 1-morphism `η.app a : F.obj a ⟶ G.obj a` for each object `a : B`.
 * a 2-isomorphism `η.naturality f : F.map f ≫ app b ≅ app a ≫ G.map f` for each 1-morphism
   `f : a ⟶ b`.
@@ -338,9 +345,11 @@ attribute [nolint docBlame] CategoryTheory.Oplax.StrongTrans.app
 attribute [reassoc (attr := simp)] StrongTrans.naturality_naturality
   StrongTrans.naturality_id StrongTrans.naturality_comp
 
-/-- A structure on an oplax transformation that promotes it to a strong transformation.
+/--
+A structure on an oplax transformation that promotes it to a strong transformation.
 
-See `StrongTrans.mkOfOplax`. -/
+See `StrongTrans.mkOfOplax`.
+-/
 structure OplaxTrans.StrongCore {F G : B ⥤ᵒᵖᴸ C} (η : F ⟶ G) where
   /-- The underlying 2-isomorphisms of the naturality constraint. -/
   naturality {a b : B} (f : a ⟶ b) : F.map f ≫ η.app b ≅ η.app a ≫ G.map f

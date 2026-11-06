@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Triangulated.TStructure.TruncLTGE
 public import Mathlib.Order.WithBotTop
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Truncations for a t-structure
 
@@ -15,7 +18,6 @@ Let `t` be a t-structure on a triangulated category `C`.
 In this file, we extend the definition of the truncation functors
 `truncLT` and `truncGE` for indices in `ℤ` to `EInt`,
 as `t.eTruncLT : EInt ⥤ C ⥤ C` and `t.eTruncGE : EInt ⥤ C ⥤ C`.
-
 -/
 
 @[expose] public section

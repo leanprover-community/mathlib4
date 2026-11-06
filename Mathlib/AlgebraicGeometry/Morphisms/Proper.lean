@@ -7,20 +7,22 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Proper morphisms
 
 A morphism of schemes is proper if it is separated, universally closed and (locally) of finite type.
 Note that we don't require quasi-compact, since this is implied by universally closed.
 
 ## Main results
-- `AlgebraicGeometry.isField_of_universallyClosed`:
+
+* `AlgebraicGeometry.isField_of_universallyClosed`:
   If `X` is an integral scheme that is universally closed over `Spec K`, then `Γ(X, ⊤)` is a field.
-- `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
+* `AlgebraicGeometry.finite_appTop_of_universallyClosed`:
   If `X` is an integral scheme that is universally closed and of finite type over `Spec K`,
   then `Γ(X, ⊤)` is finite dimensional over `K`.
-
 -/
 
 public section

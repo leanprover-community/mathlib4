@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Polynomial.Degree.Defs
 public import Mathlib.Algebra.Polynomial.Eval.Defs
 public import Mathlib.Tactic.Algebraize
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral closure of a subring.
 
@@ -20,9 +23,8 @@ with coefficients in R.
 Let `R` be a `CommRing` and let `A` be an R-algebra.
 
 * `RingHom.IsIntegralElem (f : R →+* A) (x : A)` : `x` is integral with respect to the map `f`,
-
 * `IsIntegral (x : A)`  : `x` is integral over `R`, i.e., is a root of a monic polynomial with
-                          coefficients in `R`.
+  coefficients in `R`.
 -/
 
 @[expose] public section
@@ -47,9 +49,11 @@ def RingHom.IsIntegral (f : R →+* A) :=
 
 variable [Algebra R A] (R)
 
-/-- An element `x` of an algebra `A` over a commutative ring `R` is said to be *integral*,
+/--
+An element `x` of an algebra `A` over a commutative ring `R` is said to be _integral_,
 if it is a root of some monic polynomial `p : R[X]`.
-Equivalently, the element is integral over `R` with respect to the induced `algebraMap` -/
+Equivalently, the element is integral over `R` with respect to the induced `algebraMap`
+-/
 def IsIntegral (x : A) : Prop :=
   (algebraMap R A).IsIntegralElem x
 

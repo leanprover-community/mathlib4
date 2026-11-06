@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.EpiMono
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Balanced categories
 
@@ -15,7 +18,6 @@ A category is called balanced if any morphism that is both monic and epic is an 
 Balanced categories arise frequently. For example, categories in which every monomorphism
 (or epimorphism) is strong are balanced. Examples of this are abelian categories and toposes, such
 as the category of types.
-
 -/
 
 public section

@@ -10,14 +10,17 @@ public import Mathlib.Data.Multiset.Defs
 public import Mathlib.Data.Set.Pairwise.Basic
 public import Mathlib.Order.Hom.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite sets
 
 Terms of type `Finset α` are one way of talking about finite subsets of `α` in Mathlib.
 Below, `Finset α` is defined as a structure with 2 fields:
 
-  1. `val` is a `Multiset α` of elements;
-  2. `nodup` is a proof that `val` has no duplicates.
+1. `val` is a `Multiset α` of elements;
+2. `nodup` is a proof that `val` has no duplicates.
 
 Finsets in Lean are constructive in that they have an underlying `List` that enumerates their
 elements. In particular, any function that uses the data of the underlying list cannot depend on its
@@ -26,8 +29,8 @@ worry about it explicitly.
 
 Finsets give a basic foundation for defining finite sums and products over types:
 
-  1. `∑ i ∈ (s : Finset α), f i`;
-  2. `∏ i ∈ (s : Finset α), f i`.
+1. `∑ i ∈ (s : Finset α), f i`;
+2. `∏ i ∈ (s : Finset α), f i`.
 
 Lean refers to these operations as big operators.
 More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset/Defs.lean`.
@@ -54,7 +57,6 @@ Most constructions involving `Finset`s have been split off to their own files.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -95,7 +97,9 @@ theorem val_inj {s t : Finset α} : s.1 = t.1 ↔ s = t :=
 instance decidableEq [DecidableEq α] : DecidableEq (Finset α)
   | _, _ => decidable_of_iff _ val_inj
 
-/-! ### set coercion -/
+/-!
+# set coercion
+-/
 
 /-- Convert a finset to a set in the natural way. -/
 instance : SetLike (Finset α) α where
@@ -141,7 +145,9 @@ theorem mk_coe {s : Finset α} (x : (s : Set α)) {h} : (⟨x, h⟩ : (s : Set �
 instance decidableMem' [DecidableEq α] (a : α) (s : Finset α) : Decidable (a ∈ (s : Set α)) :=
   s.decidableMem _
 
-/-! ### extensionality -/
+/-!
+# extensionality
+-/
 
 @[ext, grind ext]
 theorem ext {s₁ s₂ : Finset α} (h : ∀ a, a ∈ s₁ ↔ a ∈ s₂) : s₁ = s₂ :=
@@ -154,7 +160,9 @@ theorem coe_inj {s₁ s₂ : Finset α} : (s₁ : Set α) = s₂ ↔ s₁ = s₂
 @[grind inj]
 theorem coe_injective {α} : Injective ((↑) : Finset α → Set α) := fun _s _t => coe_inj.1
 
-/-! ### type coercion -/
+/-!
+# type coercion
+-/
 
 
 protected theorem forall_coe {α : Type*} (s : Finset α) (p : s → Prop) :
@@ -180,7 +188,9 @@ instance FinsetCoe.canLift (s : Finset α) : CanLift α s (↑) fun a => a ∈ s
 theorem coe_sort_coe (s : Finset α) : ((s : Set α) : Sort _) = s :=
   rfl
 
-/-! ### Subset and strict subset relations -/
+/-!
+# Subset and strict subset relations
+-/
 
 
 section Subset
@@ -299,7 +309,9 @@ end Subset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### Order embedding from `Finset α` to `Set α` -/
+/-!
+# Order embedding from `Finset α` to `Set α`
+-/
 
 
 /-- Coercion to `Set α` as an `OrderEmbedding`. -/
@@ -310,7 +322,8 @@ def coeEmb : Finset α ↪o Set α :=
 theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α → Set α) :=
   rfl
 
-/-! ### Assorted results
+/-!
+# Assorted results
 
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/

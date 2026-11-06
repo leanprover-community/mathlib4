@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Topology.Category.LightProfinite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Light profinite sets as limits of finite sets.
 
@@ -16,7 +19,6 @@ The limit cone for `S : LightProfinite` is `S.asLimitCone`, the fact that it's a
 `S.asLimit`.
 
 We also prove that the projection and transition maps in this limit are surjective.
-
 -/
 
 @[expose] public section

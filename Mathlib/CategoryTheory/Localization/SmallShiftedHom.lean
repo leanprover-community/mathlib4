@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Localization.SmallHom
 public import Mathlib.CategoryTheory.Shift.Localization
 public import Mathlib.CategoryTheory.Shift.ShiftedHom
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shrinking morphisms in localized categories equipped with shifts
 
@@ -21,7 +24,6 @@ we define types `SmallShiftedHom.{w} W X Y m : Type w` for all `m : M`,
 and endow these with a composition which transports the composition
 on the types `ShiftedHom (L.obj X) (L.obj Y) m` when `L : C ⥤ D` is
 any localization functor for `W`.
-
 -/
 
 @[expose] public section

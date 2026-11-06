@@ -8,7 +8,12 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Instances.RealVectorSpace
 
-/-! # Further lemmas about `RCLike` -/
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Further lemmas about `RCLike`
+-/
 
 public section
 
@@ -65,10 +70,12 @@ instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_on
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
 
-/-- A finite-dimensional vector space over an `RCLike` is a proper metric space.
+/--
+A finite-dimensional vector space over an `RCLike` is a proper metric space.
 
 This is not an instance because it would cause a search for `FiniteDimensional ?x E` before
-`RCLike ?x`. -/
+`RCLike ?x`.
+-/
 theorem proper_rclike [FiniteDimensional K E] : ProperSpace E := by
   -- Using `have` not `let` since it is only existence of `NormedSpace` structure that we need.
   have : NormedSpace ℝ E := .restrictScalars ℝ K E

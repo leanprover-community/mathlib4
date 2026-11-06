@@ -7,8 +7,11 @@ module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-# Basic inclusion extensions for interval_dyadic_real
+# Basic inclusion extensions for interval\_dyadic\_real
 
 This file defines basic operations for the `interval_dyadic_real` inclusion family.
 -/
@@ -139,11 +142,13 @@ end Props
 
 section Rounding
 
-/-- Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
+/--
+Round the lower endpoint of `I` down and the upper endpoint up, each to a multiple of
 `2 ^ (-prec)`. Infinite endpoints are left unchanged, so the result always contains `I`.
 
 This drops surplus bits so that later computations don't have to carry them. For example, a large
-power of an interval (as in `expPoint`) has endpoints with very long binary expansions. -/
+power of an interval (as in `expPoint`) has endpoints with very long binary expansions.
+-/
 def roundOut (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic :=
   ⟨I.lb.map (fun l ↦ Dyadic.roundDown l prec), I.ub.map (fun u ↦ Dyadic.roundUp u prec)⟩
 

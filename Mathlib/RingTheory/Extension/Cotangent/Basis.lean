@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Extension.Cotangent.LocalizationAway
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basis of cotangent space can be realized as a presentation
 
@@ -19,7 +22,7 @@ free on the images of the relations of `P'`.
 
 ## References
 
-- https://stacks.math.columbia.edu/tag/07CF
+* https://stacks.math.columbia.edu/tag/07CF
 -/
 
 open scoped Pointwise

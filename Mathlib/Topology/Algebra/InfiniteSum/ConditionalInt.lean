@@ -14,6 +14,9 @@ import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Order.Filter.AtTopBot.Interval
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Sums over symmetric integer intervals
 
@@ -22,7 +25,6 @@ example in the definition of the Eisenstein series `E2`.
 In particular we define `symmetricIcc`, `symmetricIco`, `symmetricIoc` and `symmetricIoo` as
 `SummationFilter`s corresponding to the intervals `Icc -N N`, `Ico -N N`, `Ioc -N N` respectively.
 We also prove that these filters are all `NeBot` and `LeAtTop`.
-
 -/
 
 @[expose] public section

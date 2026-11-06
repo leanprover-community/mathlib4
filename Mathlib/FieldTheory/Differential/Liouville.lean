@@ -12,11 +12,14 @@ import Mathlib.Algebra.BigOperators.Field
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Liouville's theorem
 
 A proof of Liouville's theorem. Follows
-[Rosenlicht, M. Integration in finite terms][Rosenlicht_1972].
+‍\[Rosenlicht, M. Integration in finite terms\]\[Rosenlicht\_1972\].
 
 ## Liouville field extension
 
@@ -25,10 +28,10 @@ a slight generalization of Liouville's theorem. Note that this definition doesn'
 literature, and we introduce it as part of the formalization of Liouville's theorem.
 
 ## Main declarations
-- `IsLiouville`: A field extension being Liouville
-- `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
-  (of a field with characteristic 0) are Liouville.
 
+* `IsLiouville`: A field extension being Liouville
+* `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
+  (of a field with characteristic 0) are Liouville.
 -/
 
 public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Data.PNat.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Typeclasses for power-associative structures
 
@@ -16,23 +19,22 @@ powers are considered.
 
 ## Results
 
-- `ppow_add` a defining property: `x ^ (k + n) = x ^ k * x ^ n`
-- `ppow_one` a defining property: `x ^ 1 = x`
-- `ppow_assoc` strictly positive powers of an element have associative multiplication.
-- `ppow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
-- `ppow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
-- `ppow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
+* `ppow_add` a defining property: `x ^ (k + n) = x ^ k * x ^ n`
+* `ppow_one` a defining property: `x ^ 1 = x`
+* `ppow_assoc` strictly positive powers of an element have associative multiplication.
+* `ppow_comm` `x ^ m * x ^ n = x ^ n * x ^ m` for strictly positive `m` and `n`.
+* `ppow_mul` `x ^ (m * n) = (x ^ m) ^ n` for strictly positive `m` and `n`.
+* `ppow_eq_pow` monoid exponentiation coincides with semigroup exponentiation.
 
 ## Instances
 
-- PNatPowAssoc for products and Pi types
+* PNatPowAssoc for products and Pi types
 
 ## TODO
 
 * `NatPowAssoc` for `MulOneClass` - more or less the same flow
 * It seems unlikely that anyone will want `NatSMulAssoc` and `PNatSMulAssoc` as additive versions of
   power-associativity, but we have found that it is not hard to write.
-
 -/
 
 public section

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Pullbacks
 
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing equalizers from pullbacks and binary products.
 

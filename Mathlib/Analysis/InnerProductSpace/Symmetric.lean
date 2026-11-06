@@ -10,10 +10,13 @@ public import Mathlib.Analysis.Normed.Operator.Banach
 
 import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Symmetric linear maps in an inner product space
 
-This file defines and proves basic theorems about symmetric **not necessarily bounded** operators
+This file defines and proves basic theorems about symmetric *not necessarily bounded* operators
 on an inner product space, i.e linear maps `T : E → E` such that `∀ x y, ⟪T x, y⟫ = ⟪x, T y⟫`.
 
 In comparison to `IsSelfAdjoint`, this definition works for non-continuous linear maps, and
@@ -50,7 +53,9 @@ local notation "⟪" x ", " y "⟫" => inner 𝕜 x y
 
 namespace LinearMap
 
-/-! ### Symmetric operators -/
+/-!
+# Symmetric operators
+-/
 
 
 /-- A (not necessarily bounded) operator on an inner product space is symmetric, if for all

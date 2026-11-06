@@ -8,14 +8,19 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Properties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ideal sheaves on schemes
 
 We define ideal sheaves of schemes and provide various constructors for it.
 
 ## Main definition
+
 * `AlgebraicGeometry.Scheme.IdealSheafData`: A structure that contains the data to uniquely define
   an ideal sheaf, consisting of
+
   1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
   2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`.
 * `AlgebraicGeometry.Scheme.IdealSheafData.ofIdeals`:
@@ -27,6 +32,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 * `AlgebraicGeometry.Scheme.Hom.ker`: The kernel of a morphism.
 
 ## Main results
+
 * `AlgebraicGeometry.Scheme.IdealSheafData.gc`:
   `support` and `vanishingIdeal` forms a Galois connection.
 * `AlgebraicGeometry.Scheme.Hom.support_ker`: The support of a kernel of a quasi-compact morphism
@@ -39,7 +45,6 @@ Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
 ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
-
 -/
 
 @[expose] public section
@@ -54,6 +59,7 @@ variable {X : Scheme.{u}}
 
 /--
 A structure that contains the data to uniquely define an ideal sheaf, consisting of
+
 1. an ideal `I(U) ≤ Γ(X, U)` for every affine open `U`
 2. a proof that `I(D(f)) = I(U)_f` for every affine open `U` and every section `f : Γ(X, U)`
 3. a subset of `X` equal to the support.

@@ -12,6 +12,9 @@ public import Mathlib.RingTheory.Localization.Integral
 
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Algebraically Closed Field
 
@@ -20,17 +23,14 @@ and prove some of their properties.
 
 ## Main Definitions
 
-- `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
+* `IsAlgClosed k` is the typeclass saying `k` is an algebraically closed field, i.e. every
   polynomial in `k` splits.
-
-- `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
+* `IsAlgClosure R K` is the typeclass saying `K` is an algebraic closure of `R`, where `R` is a
   commutative ring. This means that the map from `R` to `K` is injective, and `K` is
   algebraically closed and algebraic over `R`
-
-- `IsAlgClosed.lift` is a map from an algebraic extension `L` of `R`, into any algebraically
+* `IsAlgClosed.lift` is a map from an algebraic extension `L` of `R`, into any algebraically
   closed extension of `R`.
-
-- `IsAlgClosure.equiv` is a proof that any two algebraic closures of the
+* `IsAlgClosure.equiv` is a proof that any two algebraic closures of the
   same field are isomorphic.
 
 ## Tags
@@ -39,13 +39,14 @@ algebraic closure, algebraically closed
 
 ## Main results
 
-- `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
+* `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
   For the stronger fact that only requires every such polynomial has a root in `K`,
   see `IsAlgClosure.of_exists_root`.
 
-  Reference: <https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf>, Theorem 2
-
+  Reference: [
+  https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf](https://kconrad.math.uconn.edu/blurbs/galoistheory/algclosure.pdf),
+  Theorem 2
 -/
 
 @[expose] public section

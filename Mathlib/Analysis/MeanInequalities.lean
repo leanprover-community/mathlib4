@@ -12,6 +12,9 @@ public import Mathlib.Basic.Real.ConjExponents
 
 import Mathlib.Analysis.Convex.Jensen
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mean value inequalities
 
@@ -25,33 +28,28 @@ integrals of some of these inequalities are available in
 ### AM-GM inequality:
 
 The inequality says that the geometric mean of a tuple of non-negative numbers is less than or equal
-to their arithmetic mean. We prove the weighted version of this inequality: if $w$ and $z$
-are two non-negative vectors and $\sum_{i\in s} w_i=1$, then
-$$
-\prod_{i\in s} z_i^{w_i} ≤ \sum_{i\in s} w_iz_i.
-$$
-The classical version is a special case of this inequality for $w_i=\frac{1}{n}$.
+to their arithmetic mean. We prove the weighted version of this inequality: if $`w` and $`z`
+are two non-negative vectors and $`\sum_{i\in s} w_i=1`, then
+$$`  \prod_{i\in s} z_i^{w_i} ≤ \sum_{i\in s} w_iz_i.  `
+The classical version is a special case of this inequality for $`w_i=\frac{1}{n}`.
 
 We prove a few versions of this inequality. Each of the following lemmas comes in three versions:
 a version for real-valued non-negative functions is in the `Real` namespace, a version for
 `NNReal`-valued functions is in the `NNReal` namespace, and a version for `ENNReal`-valued functions
 is in the `ENNReal` namespace.
 
-- `geom_mean_le_arith_mean_weighted` : weighted version for functions on `Finset`s;
-- `geom_mean_le_arith_mean2_weighted` : weighted version for two numbers;
-- `geom_mean_le_arith_mean3_weighted` : weighted version for three numbers;
-- `geom_mean_le_arith_mean4_weighted` : weighted version for four numbers.
-
+* `geom_mean_le_arith_mean_weighted` : weighted version for functions on `Finset`s;
+* `geom_mean_le_arith_mean2_weighted` : weighted version for two numbers;
+* `geom_mean_le_arith_mean3_weighted` : weighted version for three numbers;
+* `geom_mean_le_arith_mean4_weighted` : weighted version for four numbers.
 
 ### HM-GM inequality:
 
 The inequality says that the harmonic mean of a tuple of positive numbers is less than or equal
-to their geometric mean. We prove the weighted version of this inequality: if $w$ and $z$
-are two positive vectors and $\sum_{i\in s} w_i=1$, then
-$$
-1/(\sum_{i\in s} w_i/z_i) ≤ \prod_{i\in s} z_i^{w_i}
-$$
-The classical version is proven as a special case of this inequality for $w_i=\frac{1}{n}$.
+to their geometric mean. We prove the weighted version of this inequality: if $`w` and $`z`
+are two positive vectors and $`\sum_{i\in s} w_i=1`, then
+$$`  1/(\sum_{i\in s} w_i/z_i) ≤ \prod_{i\in s} z_i^{w_i}  `
+The classical version is proven as a special case of this inequality for $`w_i=\frac{1}{n}`.
 
 The inequalities are proven only for real-valued positive functions on `Finset`s, and namespaced in
 `Real`. The weighted version follows as a corollary of the weighted AM-GM inequality.
@@ -59,10 +57,8 @@ The inequalities are proven only for real-valued positive functions on `Finset`s
 ### Young's inequality
 
 Young's inequality says that for non-negative numbers `a`, `b`, `p`, `q` such that
-$\frac{1}{p}+\frac{1}{q}=1$ we have
-$$
-ab ≤ \frac{a^p}{p} + \frac{b^q}{q}.
-$$
+$`\frac{1}{p}+\frac{1}{q}=1` we have
+$$`  ab ≤ \frac{a^p}{p} + \frac{b^q}{q}.  `
 
 This inequality is a special case of the AM-GM inequality. It is then used to prove Hölder's
 inequality (see below).
@@ -70,41 +66,36 @@ inequality (see below).
 ### Hölder's inequality
 
 The inequality says that for two conjugate exponents `p` and `q` (i.e., for two positive numbers
-such that $\frac{1}{p}+\frac{1}{q}=1$) and any two non-negative vectors their inner product is
-less than or equal to the product of the $L_p$ norm of the first vector and the $L_q$ norm of the
+such that $`\frac{1}{p}+\frac{1}{q}=1`) and any two non-negative vectors their inner product is
+less than or equal to the product of the $`L_p` norm of the first vector and the $`L_q` norm of the
 second vector:
-$$
-\sum_{i\in s} a_ib_i ≤ \sqrt[p]{\sum_{i\in s} a_i^p}\sqrt[q]{\sum_{i\in s} b_i^q}.
-$$
+$$`  \sum_{i\in s} a_ib_i ≤ \sqrt[p]{\sum_{i\in s} a_i^p}\sqrt[q]{\sum_{i\in s} b_i^q}.  `
 
 We give versions of this result in `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 
 There are at least two short proofs of this inequality. In our proof we prenormalize both vectors,
-then apply Young's inequality to each $a_ib_i$. Another possible proof would be to deduce this
+then apply Young's inequality to each $`a_ib_i`. Another possible proof would be to deduce this
 inequality from the generalized mean inequality for well-chosen vectors and weights.
 
 ### Minkowski's inequality
 
 The inequality says that for `p ≥ 1` the function
-$$
-\|a\|_p=\sqrt[p]{\sum_{i\in s} a_i^p}
-$$
-satisfies the triangle inequality $\|a+b\|_p\le \|a\|_p+\|b\|_p$.
+$$`  \|a\|_p=\sqrt[p]{\sum_{i\in s} a_i^p}  `
+satisfies the triangle inequality $`\|a+b\|_p\le \|a\|_p+\|b\|_p`.
 
 We give versions of this result in `Real`, `ℝ≥0` and `ℝ≥0∞`.
 
-We deduce this inequality from Hölder's inequality. Namely, Hölder inequality implies that $\|a\|_p$
-is the maximum of the inner product $\sum_{i\in s}a_ib_i$ over `b` such that $\|b\|_q\le 1$. Now
-Minkowski's inequality follows from the fact that the maximum value of the sum of two functions is
-less than or equal to the sum of the maximum values of the summands.
+We deduce this inequality from Hölder's inequality. Namely, Hölder inequality implies that
+$`\|a\|_p` is the maximum of the inner product $`\sum_{i\in s}a_ib_i` over `b` such that
+$`\|b\|_q\le 1`. Now Minkowski's inequality follows from the fact that the maximum value of the sum
+of two functions is less than or equal to the sum of the maximum values of the summands.
 
 ## TODO
 
-- each inequality `A ≤ B` should come with a theorem `A = B ↔ _`; one of the ways to prove them
+* each inequality `A ≤ B` should come with a theorem `A = B ↔ _`; one of the ways to prove them
   is to define `StrictConvexOn` functions.
-- generalized mean inequality with any `p ≤ q`, including negative numbers;
-- prove that the power mean tends to the geometric mean as the exponent tends to zero.
-
+* generalized mean inequality with any `p ≤ q`, including negative numbers;
+* prove that the power mean tends to the geometric mean as the exponent tends to zero.
 -/
 
 public section
@@ -119,7 +110,9 @@ variable {ι : Type u} (s : Finset ι)
 
 section GeomMeanLEArithMean
 
-/-! ### AM-GM inequality -/
+/-!
+# AM-GM inequality
+-/
 
 
 namespace Real
@@ -194,12 +187,14 @@ theorem geom_mean_eq_arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i := by
   rw [geom_mean_weighted_of_constant, arith_mean_weighted_of_constant] <;> assumption
 
-/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
-*positive* weighted version of the AM-GM inequality for real-valued nonnegative functions.
+/--
+*AM-GM inequality - equality condition*: This theorem provides the equality condition for the
+_positive_ weighted version of the AM-GM inequality for real-valued nonnegative functions.
 
 The condition is that all elements of `z` are equal to their center of mass `∑ i ∈ s, w i * z i`;
 see `geom_mean_eq_arith_mean_weighted_iff_of_pos` for a version that compares the elements to each
-other instead. -/
+other instead.
+-/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, z j = ∑ i ∈ s, w i * z i := by
@@ -239,12 +234,14 @@ theorem geom_mean_eq_arith_mean_weighted_iff_of_pos' (w z : ι → ℝ) (hw : �
 @[deprecated (since := "2026-06-07")]
 alias geom_mean_eq_arith_mean_weighted_iff' := geom_mean_eq_arith_mean_weighted_iff_of_pos'
 
-/-- **AM-GM inequality - equality condition**: This theorem provides the equality condition for the
+/--
+*AM-GM inequality - equality condition*: This theorem provides the equality condition for the
 weighted version of the AM-GM inequality for real-valued nonnegative functions.
 
 The condition is that all elements of `z` with a nonzero weight are equal to their center of mass
 `∑ i ∈ s, w i * z i`; see `geom_mean_eq_arith_mean_weighted_iff_of_nonneg` for a version that
-compares the elements to each other instead. -/
+compares the elements to each other instead.
+-/
 theorem geom_mean_eq_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 ≤ w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i = ∑ i ∈ s, w i * z i ↔ ∀ j ∈ s, w j ≠ 0 → z j = ∑ i ∈ s, w i * z i := by
@@ -309,13 +306,15 @@ theorem geom_mean_lt_arith_mean_weighted_iff_of_nonneg' (w z : ι → ℝ) (hw :
       (sum_filter_ne_zero _ |>.trans hw') (hz _ <| mem_of_mem_filter · ·)
   grind [prod_filter_of_ne, sum_filter_of_ne, rpow_zero]
 
-/-- **AM-GM inequality - strict inequality condition**: This theorem provides the strict inequality
-condition for the *positive* weighted version of the AM-GM inequality for real-valued nonnegative
+/--
+*AM-GM inequality - strict inequality condition*: This theorem provides the strict inequality
+condition for the _positive_ weighted version of the AM-GM inequality for real-valued nonnegative
 functions.
 
 The condition is that not all elements of `z` are equal to each other;
 see `geom_mean_lt_arith_mean_weighted_iff_of_pos'` for a version that compares the elements to their
-center of mass `∑ i ∈ s, w i * z i` instead. -/
+center of mass `∑ i ∈ s, w i * z i` instead.
+-/
 theorem geom_mean_lt_arith_mean_weighted_iff_of_pos (w z : ι → ℝ) (hw : ∀ i ∈ s, 0 < w i)
     (hw' : ∑ i ∈ s, w i = 1) (hz : ∀ i ∈ s, 0 ≤ z i) :
     ∏ i ∈ s, z i ^ w i < ∑ i ∈ s, w i * z i ↔ ∃ j ∈ s, ∃ k ∈ s, z j ≠ z k := by
@@ -482,7 +481,9 @@ end GeomMeanLEArithMean
 
 section HarmMeanLEGeomMean
 
-/-! ### HM-GM inequality -/
+/-!
+# HM-GM inequality
+-/
 
 namespace Real
 
@@ -531,7 +532,9 @@ end HarmMeanLEGeomMean
 
 section Young
 
-/-! ### Young's inequality -/
+/-!
+# Young's inequality
+-/
 
 
 namespace Real
@@ -621,7 +624,9 @@ end Young
 
 section HoelderMinkowski
 
-/-! ### Hölder's and Minkowski's inequalities -/
+/-!
+# Hölder's and Minkowski's inequalities
+-/
 
 
 namespace NNReal

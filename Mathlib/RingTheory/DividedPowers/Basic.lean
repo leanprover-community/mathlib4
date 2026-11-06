@@ -9,10 +9,14 @@ public import Mathlib.Combinatorics.Enumerative.Bell
 public import Mathlib.RingTheory.Ideal.Maps
 public import Mathlib.RingTheory.PowerSeries.Basic
 
-/-! # Divided powers
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Divided powers
 
 Let `A` be a commutative (semi)ring and `I` be an ideal of `A`.
-A *divided power* structure on `I` is the datum of operations `a n ↦ dpow a n`
+A _divided power_ structure on `I` is the datum of operations `a n ↦ dpow a n`
 satisfying relations that model the intuitive formula `dpow n a = a ^ n / n !` and
 collected by the structure `DividedPowers`. The list of axioms is embedded in the structure:
 To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, extended by 0.
@@ -21,6 +25,7 @@ To avoid coercions, we rather consider `DividedPowers.dpow : ℕ → A → A`, e
 * `DividedPowers.dpow_mem` : `dpow n x ∈ I` for `n ≠ 0`
 
 For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
+
 * `DividedPowers.dpow_zero` : `dpow 0 x = 1`
 * `DividedPowers.dpow_one` : `dpow 1 x = 1`
 * `DividedPowers.dpow_add` :
@@ -42,16 +47,13 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
 
 ## References
 
-* [P. Berthelot (1974), *Cohomologie cristalline des schémas de
-  caractéristique $p$ > 0*][Berthelot-1974]
-
-* [P. Berthelot and A. Ogus (1978), *Notes on crystalline
-  cohomology*][BerthelotOgus-1978]
-
-* [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
-  modules*][Roby-1963]
-
-* [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
+* ‍\[P. Berthelot (1974), _Cohomologie cristalline des schémas de
+  caractéristique $`p` > 0_\]\[Berthelot-1974\]
+* ‍\[P. Berthelot and A. Ogus (1978), _Notes on crystalline
+  cohomology_\]\[BerthelotOgus-1978\]
+* ‍\[N. Roby (1963), _Lois polynomes et lois formelles en théorie des
+  modules_\]\[Roby-1963\]
+* ‍\[N. Roby (1965), _Les algèbres à puissances dividées_\]\[Roby-1965\]
 
 ## Discussion
 
@@ -59,9 +61,7 @@ For `x y : A` and `m n : ℕ` such that `x ∈ I` and `y ∈ I`, one has
   but several ideals of the same ring might be considered.
   Without any explicit mention of the ideal, it is not clear whether such structures
   should be provided as instances.
-
 * We do not provide any notation such as `a ^[n]` for `dpow a n`.
-
 -/
 
 @[expose] public section
@@ -195,7 +195,9 @@ theorem exp_add (hI : DividedPowers I) (ha : a ∈ I) (hb : b ∈ I) :
 
 variable (hI : DividedPowers I)
 
-/-! ## Rewriting lemmas -/
+/-!
+# Rewriting lemmas
+-/
 
 theorem dpow_smul {n : ℕ} (ha : a ∈ I) :
     hI.dpow n (b • a) = b ^ n • hI.dpow n a := by
@@ -223,10 +225,12 @@ theorem dpow_eval_zero {n : ℕ} (hn : n ≠ 0) : hI.dpow n 0 = 0 := by
   rw [← MulZeroClass.mul_zero (0 : A), hI.dpow_mul I.zero_mem,
     zero_pow hn, zero_mul, zero_mul]
 
-/-- If an element of a divided power ideal is killed by multiplication
+/--
+If an element of a divided power ideal is killed by multiplication
 by some nonzero integer `n`, then its `n`th power is zero.
 
-Proposition 1.2.7 of [Berthelot-1974], part (i). -/
+Proposition 1.2.7 of \[Berthelot-1974\], part (i).
+-/
 theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y}, y ∈ I → n • y = 0)
     (hI : DividedPowers I) (ha : a ∈ I) : a ^ n = 0 := by
   have h_fac : (n ! : A) * hI.dpow n a = n • ((n - 1)! : A) * hI.dpow n a := by
@@ -234,10 +238,12 @@ theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y}, y ∈ 
   rw [← hI.factorial_mul_dpow_eq_pow ha, h_fac, smul_mul_assoc]
   exact hnI (I.mul_mem_left ((n - 1)! : A) (hI.dpow_mem hn ha))
 
-/-- If J is another ideal of A with divided powers,
+/--
+If J is another ideal of A with divided powers,
 then the divided powers of I and J coincide on I • J
 
-[Berthelot-1974], 1.6.1 (ii) -/
+‍\[Berthelot-1974\], 1.6.1 (ii)
+-/
 theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a ∈ I • J) :
     hI.dpow n a = hJ.dpow n a := by
   induction ha using Submodule.smul_induction_on' generalizing n with
@@ -252,9 +258,11 @@ theorem coincide_on_smul {J : Ideal A} (hJ : DividedPowers J) {n : ℕ} (ha : a 
     intro k _
     rw [hx', hy']
 
-/-- A product of divided powers is a multinomial coefficient times the divided power
+/--
+A product of divided powers is a multinomial coefficient times the divided power
 
-[Roby-1965], formula (III') -/
+‍\[Roby-1965\], formula (III')
+-/
 theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
     (s.prod fun i ↦ hI.dpow (n i) a) = multinomial s n * hI.dpow (s.sum n) a := by
   classical

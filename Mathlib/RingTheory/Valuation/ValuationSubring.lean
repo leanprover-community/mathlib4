@@ -10,14 +10,15 @@ public import Mathlib.Algebra.Ring.Subring.Pointwise
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Valuation subrings of a field
 
 ## Projects
 
 The order structure on `ValuationSubring K`.
-
 -/
 
 @[expose] public section
@@ -28,7 +29,8 @@ noncomputable section
 
 variable (K : Type u) [Field K]
 
-/-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
+/--
+A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
 either `x ∈ A` or `x⁻¹ ∈ A`.
 
 This is equivalent to being maximal in the domination order
@@ -592,7 +594,8 @@ def nonunitsOrderEmbedding : ValuationSubring K ↪o (NonUnitalSubring K)ᵒᵈ 
 
 variable {A}
 
-/-- The elements of `A.nonunits` are those of the maximal ideal of `A` after coercion to `K`.
+/--
+The elements of `A.nonunits` are those of the maximal ideal of `A` after coercion to `K`.
 
 See also `mem_nonunits_iff_exists_mem_maximalIdeal`, which gets rid of the coercion to `K`,
 at the expense of a more complicated right-hand side.
@@ -606,7 +609,8 @@ theorem nonunits_le : A.nonunits ≤ A.toNonUnitalSubring := fun _a ha =>
 theorem nonunits_subset : (A.nonunits : Set K) ⊆ A :=
   nonunits_le
 
-/-- The elements of `A.nonunits` are those of the maximal ideal of `A`.
+/--
+The elements of `A.nonunits` are those of the maximal ideal of `A`.
 
 See also `coe_mem_nonunits_iff`, which has a simpler right-hand side but requires the element
 to be in `A` already.
@@ -757,7 +761,8 @@ theorem unitsModPrincipalUnitsEquivResidueFieldUnits_comp_quotientGroup_mk_apply
 
 end PrincipalUnitGroup
 
-/-! ### Pointwise actions
+/-!
+# Pointwise actions
 
 This transfers the action from `Subring.pointwiseMulAction`, noting that it only applies when
 the action is by a group. Notably this provides an instances when `G` is `K ≃+* K`.
@@ -775,9 +780,11 @@ open scoped Pointwise
 
 variable {G : Type*} [Group G] [MulSemiringAction G K]
 
-/-- The action on a valuation subring corresponding to applying the action to every element.
+/--
+The action on a valuation subring corresponding to applying the action to every element.
 
-This is available as an instance in the `Pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale.
+-/
 @[instance_reducible]
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
   smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
@@ -797,11 +804,13 @@ theorem coe_pointwise_smul (g : G) (S : ValuationSubring K) : ↑(g • S) = g �
 theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
     (g • S).toSubring = g • S.toSubring := rfl
 
-/-- The action on a valuation subring corresponding to applying the action to every element.
+/--
+The action on a valuation subring corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale.
 
-This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
+This is a stronger version of `ValuationSubring.pointwiseSMul`.
+-/
 @[instance_reducible]
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=
   toSubring_injective.mulAction toSubring pointwise_smul_toSubring

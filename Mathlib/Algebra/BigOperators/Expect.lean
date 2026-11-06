@@ -15,6 +15,9 @@ public import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
 import Mathlib.Algebra.BigOperators.Ring.Finset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Average over a finset
 
@@ -34,6 +37,7 @@ This file defines `Finset.expect`, the average (aka expectation) of a function o
 
 This definition is a special case of the general convex combination operator in a convex space.
 However:
+
 1. We don't yet have general convex spaces.
 2. The uniform weights case is an overwhelmingly useful special case which should have its own API.
 
@@ -73,7 +77,8 @@ open Batteries.ExtendedBinder Lean Meta
 
 These support destructuring, for example `𝔼 ⟨i, j⟩ ∈ s ×ˢ t, f i j`.
 
-Notation: `"𝔼" bigOpBinders* ("with" term)? "," term` -/
+Notation: `"𝔼" bigOpBinders* ("with" term)? "," term`
+-/
 scoped syntax (name := bigexpect) "𝔼 " bigOpBinders ("with " term)? ", " term:67 : term
 
 scoped macro_rules (kind := bigexpect)
@@ -196,44 +201,51 @@ end DecidableEq
 section bij
 variable {t : Finset κ} {g : κ → M}
 
-/-- Reorder an average.
+/--
+Reorder an average.
 
 The difference with `Finset.expect_bij'` is that the bijection is specified as a surjective
 injection, rather than by an inverse function.
 
 The difference with `Finset.expect_nbij` is that the bijection is allowed to use membership of the
-domain of the average, rather than being a non-dependent function. -/
+domain of the average, rather than being a non-dependent function.
+-/
 lemma expect_bij (i : ∀ a ∈ s, κ) (hi : ∀ a ha, i a ha ∈ t) (h : ∀ a ha, f a = g (i a ha))
     (i_inj : ∀ a₁ ha₁ a₂ ha₂, i a₁ ha₁ = i a₂ ha₂ → a₁ = a₂)
     (i_surj : ∀ b ∈ t, ∃ a ha, i a ha = b) : 𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by
   simp_rw [expect, card_bij i hi i_inj i_surj, sum_bij i hi i_inj i_surj h]
 
-/-- Reorder an average.
+/--
+Reorder an average.
 
 The difference with `Finset.expect_bij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
 
 The difference with `Finset.expect_nbij'` is that the bijection and its inverse are allowed to use
-membership of the domains of the averages, rather than being non-dependent functions. -/
+membership of the domains of the averages, rather than being non-dependent functions.
+-/
 lemma expect_bij' (i : ∀ a ∈ s, κ) (j : ∀ a ∈ t, ι) (hi : ∀ a ha, i a ha ∈ t)
     (hj : ∀ a ha, j a ha ∈ s) (left_inv : ∀ a ha, j (i a ha) (hi a ha) = a)
     (right_inv : ∀ a ha, i (j a ha) (hj a ha) = a) (h : ∀ a ha, f a = g (i a ha)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by
   simp_rw [expect, card_bij' i j hi hj left_inv right_inv, sum_bij' i j hi hj left_inv right_inv h]
 
-/-- Reorder an average.
+/--
+Reorder an average.
 
 The difference with `Finset.expect_nbij'` is that the bijection is specified as a surjective
 injection, rather than by an inverse function.
 
 The difference with `Finset.expect_bij` is that the bijection is a non-dependent function, rather
-than being allowed to use membership of the domain of the average. -/
+than being allowed to use membership of the domain of the average.
+-/
 lemma expect_nbij (i : ι → κ) (hi : ∀ a ∈ s, i a ∈ t) (h : ∀ a ∈ s, f a = g (i a))
     (i_inj : (s : Set ι).InjOn i) (i_surj : (s : Set ι).SurjOn i t) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by
   simp_rw [expect, card_nbij i hi i_inj i_surj, sum_nbij i hi i_inj i_surj h]
 
-/-- Reorder an average.
+/--
+Reorder an average.
 
 The difference with `Finset.expect_nbij` is that the bijection is specified with an inverse, rather
 than as a surjective injection.
@@ -242,7 +254,8 @@ The difference with `Finset.expect_bij'` is that the bijection and its inverse a
 functions, rather than being allowed to use membership of the domains of the averages.
 
 The difference with `Finset.expect_equiv` is that bijectivity is only required to hold on the
-domains of the averages, rather than on the entire types. -/
+domains of the averages, rather than on the entire types.
+-/
 lemma expect_nbij' (i : ι → κ) (j : κ → ι) (hi : ∀ a ∈ s, i a ∈ t) (hj : ∀ a ∈ t, j a ∈ s)
     (left_inv : ∀ a ∈ s, j (i a) = a) (right_inv : ∀ a ∈ t, i (j a) = a)
     (h : ∀ a ∈ s, f a = g (i a)) : 𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by
@@ -254,16 +267,20 @@ most arguments. -/
 lemma expect_equiv (e : ι ≃ κ) (hst : ∀ i, i ∈ s ↔ e i ∈ t) (hfg : ∀ i ∈ s, f i = g (e i)) :
     𝔼 i ∈ s, f i = 𝔼 i ∈ t, g i := by simp_rw [expect, card_equiv e hst, sum_equiv e hst hfg]
 
-/-- Expectation over a product set equals the expectation of the fiberwise expectations.
+/--
+Expectation over a product set equals the expectation of the fiberwise expectations.
 
-For rewriting in the reverse direction, use `Finset.expect_product'`. -/
+For rewriting in the reverse direction, use `Finset.expect_product'`.
+-/
 lemma expect_product (s : Finset ι) (t : Finset κ) (f : ι × κ → M) :
     𝔼 x ∈ s ×ˢ t, f x = 𝔼 i ∈ s, 𝔼 j ∈ t, f (i, j) := by
   simp only [expect, card_product, sum_product, smul_sum, mul_inv, mul_smul, Nat.cast_mul]
 
-/-- Expectation over a product set equals the expectation of the fiberwise expectations.
+/--
+Expectation over a product set equals the expectation of the fiberwise expectations.
 
-For rewriting in the reverse direction, use `Finset.expect_product`. -/
+For rewriting in the reverse direction, use `Finset.expect_product`.
+-/
 lemma expect_product' (s : Finset ι) (t : Finset κ) (f : ι → κ → M) :
     𝔼 i ∈ s ×ˢ t, f i.1 i.2 = 𝔼 i ∈ s, 𝔼 j ∈ t, f i j := by
   simp only [expect, card_product, sum_product', smul_sum, mul_inv, mul_smul, Nat.cast_mul]
@@ -397,19 +414,23 @@ variable [Fintype ι] [Fintype κ]
 section AddCommMonoid
 variable [AddCommMonoid M] [Module ℚ≥0 M]
 
-/-- `Fintype.expect_bijective` is a variant of `Finset.expect_bij` that accepts
+/--
+`Fintype.expect_bijective` is a variant of `Finset.expect_bij` that accepts
 `Function.Bijective`.
 
-See `Function.Bijective.expect_comp` for a version without `h`. -/
+See `Function.Bijective.expect_comp` for a version without `h`.
+-/
 lemma expect_bijective (e : ι → κ) (he : Bijective e) (f : ι → M) (g : κ → M)
     (h : ∀ i, f i = g (e i)) : 𝔼 i, f i = 𝔼 i, g i :=
   expect_nbij e (fun _ _ ↦ mem_univ _) (fun i _ ↦ h i) he.injective.injOn <| by
     simpa using he.surjective
 
-/-- `Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
+/--
+`Fintype.expect_equiv` is a specialization of `Finset.expect_bij` that automatically fills in
 most arguments.
 
-See `Equiv.expect_comp` for a version without `h`. -/
+See `Equiv.expect_comp` for a version without `h`.
+-/
 lemma expect_equiv (e : ι ≃ κ) (f : ι → M) (g : κ → M) (h : ∀ i, f i = g (e i)) :
     𝔼 i, f i = 𝔼 i, g i := expect_bijective _ e.bijective f g h
 

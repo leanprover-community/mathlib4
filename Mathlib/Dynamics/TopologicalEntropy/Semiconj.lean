@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Dynamics.TopologicalEntropy.CoverEntropy
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Topological entropy of the image of a set under a semiconjugacy
 
 Consider two dynamical systems `(X, S)` and `(Y, T)` together with a semiconjugacy `φ`:
-
 
 ```
 X ---S--> X
@@ -39,18 +41,21 @@ definition of the topological entropy of a subset, so as to avoid working with s
 `coverEntropy_restrict` shows that this choice is coherent with the literature.
 
 ## Implementation notes
+
 We use only the definition of the topological entropy using covers; the simplest version of
 `IsDynCoverOf.image` for nets fails.
 
 ## Main results
-- `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
+
+* `coverEntropy_image_of_comap`/`coverEntropyInf_image_of_comap`: the entropy of `φ '' F` equals
   the entropy of `F` if `X` is endowed with the pullback by `φ` of the uniform structure of `Y`.
-- `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
+* `coverEntropy_image_le_of_uniformContinuous`/`coverEntropyInf_image_le_of_uniformContinuous`:
   the entropy of `φ '' F` is lower than the entropy of `F` if `φ` is uniformly continuous.
-- `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
+* `coverEntropy_restrict`: the entropy of the restriction of `S` to an invariant set `F` is
   `coverEntropy S F`.
 
 ## Tags
+
 entropy, semiconjugacy
 -/
 

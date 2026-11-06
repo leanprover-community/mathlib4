@@ -9,8 +9,10 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Separated
 
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces
@@ -18,13 +20,13 @@ is a locally closed embedding, and the induced morphisms of stalks are all surje
 if and only if it can be factored into a closed immersion followed by an open immersion.
 
 ## Main results
-- `isImmersion_iff_exists`:
+
+* `isImmersion_iff_exists`:
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
-- `isImmersion_iff_exists_of_quasiCompact`:
+* `isImmersion_iff_exists_of_quasiCompact`:
   A quasicompact morphism is a (locally-closed) immersion if and only if it can be factored into
   an open immersion followed by a closed immersion.
-
 -/
 
 @[expose] public section
@@ -37,10 +39,13 @@ namespace AlgebraicGeometry
 
 variable {X Y Z : Scheme.{u}} (f : X ⟶ Y)
 
-/-- A morphism of schemes `f : X ⟶ Y` is an immersion if
+/--
+A morphism of schemes `f : X ⟶ Y` is an immersion if
+
 1. the underlying map of topological spaces is an embedding
 2. the range of the map is locally closed
-3. the induced morphisms of stalks are all surjective. -/
+3. the induced morphisms of stalks are all surjective.
+-/
 @[mk_iff]
 class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
   isLocallyClosed_range : IsLocallyClosed (Set.range f)

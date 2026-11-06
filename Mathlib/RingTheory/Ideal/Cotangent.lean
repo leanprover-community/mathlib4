@@ -15,6 +15,9 @@ public import Mathlib.RingTheory.Nakayama
 
 import Mathlib.LinearAlgebra.Dimension.Finite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The module `I ⧸ I ^ 2`
 
@@ -23,7 +26,6 @@ definition is a quotient module of `I`, but the alternative definition as an ide
 also given, and the two are `R`-equivalent as in `Ideal.cotangentEquivIdeal`.
 
 Additional support is also given to the cotangent space `m ⧸ m ^ 2` of a local ring.
-
 -/
 
 @[expose] public section

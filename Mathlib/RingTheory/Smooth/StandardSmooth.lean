@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Standard smooth algebras
 
@@ -22,34 +25,33 @@ generates the unit ideal, such that `Sₜ` is `R`-standard smooth for every `t` 
 
 All of these are in the `Algebra` namespace. Let `S` be an `R`-algebra.
 
-- `Algebra.IsStandardSmooth`: `S` is `R`-standard smooth if `S` admits a submersive
+* `Algebra.IsStandardSmooth`: `S` is `R`-standard smooth if `S` admits a submersive
   `R`-presentation.
-- `Algebra.IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
+* `Algebra.IsStandardSmooth.relativeDimension`: If `S` is `R`-standard smooth this is the dimension
   of an arbitrary submersive `R`-presentation of `S`. This is independent of the choice
   of the presentation (TODO, see below).
-- `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
+* `Algebra.IsStandardSmoothOfRelativeDimension n`: `S` is `R`-standard smooth of relative dimension
   `n` if it admits a submersive `R`-presentation of dimension `n`.
 
 ## Main results
 
-- `Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial`: If `ι` is finite, the polynomial
+* `Algebra.IsStandardSmoothOfRelativeDimension.mvPolynomial`: If `ι` is finite, the polynomial
   algebra `MvPolynomial ι R` is `R`-standard smooth of relative dimension `Nat.card ι`.
-- Standard smoothness is stable under composition
+* Standard smoothness is stable under composition
   (`Algebra.IsStandardSmooth.trans`), base change (`Algebra.IsStandardSmooth.baseChange`) and
   localization away from an element (`Algebra.IsStandardSmooth.localization_away`), and similarly
   for standard smoothness of a fixed relative dimension.
-- `Algebra.IsStandardSmooth.finitePresentation`: A standard smooth algebra is of finite
+* `Algebra.IsStandardSmooth.finitePresentation`: A standard smooth algebra is of finite
   presentation.
 
 ## TODO
 
-- Show that locally on the target, smooth algebras are standard smooth.
+* Show that locally on the target, smooth algebras are standard smooth.
 
 ## Notes
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section

@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 public import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 public import Mathlib.CategoryTheory.ShrinkYoneda
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Limit properties relating to the (co)yoneda embedding.
 

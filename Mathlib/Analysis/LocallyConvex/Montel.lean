@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Montel spaces
 
@@ -21,11 +24,11 @@ space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
 * `ContinuousLinearEquiv.toCompactConvergenceCLM`: if `E` is a Montel space then topology of compact
   convergence and the strong topology on `E →SL[σ] F` coincide. We record this as a continuous
   linear equivalence between `E →SL[σ] F` and `E →SL_c[σ] F`. This is Proposition 34.5 in
-  [F. Trèves][treves1967].
+  ‍\[F. Trèves\]\[treves1967\].
 
 ## References
-* [F. Trèves, *Topological vector spaces, distributions and kernels*][treves1967]
 
+* ‍\[F. Trèves, _Topological vector spaces, distributions and kernels_\]\[treves1967\]
 -/
 
 @[expose] public section
@@ -38,11 +41,13 @@ variable {𝕜 E : Type*}
 variable [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
   [TopologicalSpace E]
 
-/-- A Montel space is a topological vector space that has the Heine-Borel property: every closed and
+/--
+A Montel space is a topological vector space that has the Heine-Borel property: every closed and
 (von Neumann) bounded set is compact.
 
 Note that we are not requiring that `E` is a barrelled space, so the usual definition of a Montel
-space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`. -/
+space would be `[MontelSpace 𝕜 E] [BarrelledSpace 𝕜 E]`.
+-/
 class MontelSpace (𝕜 E : Type*) [SeminormedRing 𝕜] [Zero E] [SMul 𝕜 E]
     [TopologicalSpace E] : Prop where
   heine_borel : ∀ s : Set E, IsClosed s → IsVonNBounded 𝕜 s → IsCompact s
@@ -86,10 +91,12 @@ open CompactConvergenceCLM
 
 set_option backward.privateInPublic true in
 variable (σ E F) in
-/-- The linear equivalence that sends a continuous linear map to the type copy endowed with the
+/--
+The linear equivalence that sends a continuous linear map to the type copy endowed with the
 topology of compact convergence.
 
-This definition is only used to prove the continuous linear equivalence. -/
+This definition is only used to prove the continuous linear equivalence.
+-/
 private def _root_.LinearEquiv.toCompactConvergenceCLM :
     (E →SL[σ] F) ≃ₗ[𝕜₂] E →SL_c[σ] F :=
   LinearEquiv.refl 𝕜₂ _
@@ -97,10 +104,12 @@ private def _root_.LinearEquiv.toCompactConvergenceCLM :
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 variable (σ E F) in
-/-- If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
+/--
+If `E` is a Montel space, then the strong topology on `E →L[𝕜] F` coincides with the topology
 of compact convergence.
 
-We realize this equality in terms of a continuous linear equivalence between the type synonyms. -/
+We realize this equality in terms of a continuous linear equivalence between the type synonyms.
+-/
 def _root_.ContinuousLinearEquiv.toCompactConvergenceCLM [T1Space E] [MontelSpace 𝕜₁ E] :
     (E →SL[σ] F) ≃L[𝕜₂] E →SL_c[σ] F where
   __ := LinearEquiv.toCompactConvergenceCLM σ E F

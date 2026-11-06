@@ -8,13 +8,16 @@ module
 public import Mathlib.Algebra.Group.UniqueProds.Basic
 public import Mathlib.Algebra.MonoidAlgebra.Opposite
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
 
 This file studies the interaction between typeclass assumptions on two Types `R` and `A` and
 whether `R[A]` has non-zero zero-divisors.  For some background on related
 questions, see [Kaplansky's Conjectures](https://en.wikipedia.org/wiki/Kaplansky%27s_conjectures),
-especially the *zero divisor conjecture*.
+especially the _zero divisor conjecture_.
 
 _Conjecture._
 Let `K` be a field, and `G` a torsion-free group. The group ring `K[G]` does not contain
@@ -41,6 +44,7 @@ The actual assumptions on `R` are weaker.
   `NoZeroDivisors R[A]`.
 
 TODO: move the rest of the docs to UniqueProds?
+
 * `NoZeroDivisors.of_left_ordered` shows that if `R` is a semiring with no non-zero
   zero-divisors, `A` is a linearly ordered, add right cancel semigroup with strictly monotone
   left addition, then `R[A]` has no non-zero zero-divisors.
@@ -53,7 +57,7 @@ The conditions on `A` imposed in `NoZeroDivisors.of_left_ordered` are sometimes 
 The conditions on `A` imposed in `NoZeroDivisors.of_right_ordered` are sometimes referred to as
 `right-ordered`.
 
-These conditions are sufficient, but not necessary.  As mentioned above, *Kaplansky's Conjecture*
+These conditions are sufficient, but not necessary.  As mentioned above, _Kaplansky's Conjecture_
 asserts that `A` being torsion-free may be enough.
 -/
 

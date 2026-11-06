@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Bicategory.Adjunction.Basic
 public import Mathlib.CategoryTheory.HomCongr
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mates in bicategories
 
@@ -27,7 +30,6 @@ For the bicategory `Cat`, the definitions in this file are provided in
 `Mathlib/CategoryTheory/Adjunction/Mates.lean`, where you can find more detailed documentation
 about mates.
 
-
 ## Implementation
 
 The correspondence between mates is obtained by combining
@@ -41,7 +43,6 @@ by using the first bijection applied to `l₁ ⊣ r₁`.
 
 To be precise, the definitions in `Mathlib/CategoryTheory/Adjunction/Mates.lean` are universe
 polymorphic, so they are not simple specializations of the definitions in this file.
-
 -/
 
 @[expose] public section
@@ -121,8 +122,10 @@ section
 variable {c d e f : B} {g : c ⟶ e} {h : d ⟶ f} {l₁ : c ⟶ d} {r₁ : d ⟶ c} {l₂ : e ⟶ f} {r₂ : f ⟶ e}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
-/-- Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
+/--
+Suppose we have a square of 1-morphisms (where the top and bottom are adjunctions `l₁ ⊣ r₁`
 and `l₂ ⊣ r₂` respectively).
+
 ```
       c ↔ d
     g ↓   ↓ h
@@ -383,7 +386,8 @@ variable {c d : B}
 variable {l₁ l₂ : c ⟶ d} {r₁ r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂)
 
-/-- Given two adjunctions `l₁ ⊣ r₁` and `l₂ ⊣ r₂` both between objects `c`, `d`, there is a
+/--
+Given two adjunctions `l₁ ⊣ r₁` and `l₂ ⊣ r₂` both between objects `c`, `d`, there is a
 bijection between 2-morphisms `l₂ ⟶ l₁` and 2-morphisms `r₁ ⟶ r₂`. This is
 defined as a special case of `mateEquiv`, where the two "vertical" 1-morphisms are identities.
 This bijection is `conjugateEquiv`; the image of a 2-morphism under it is called its conjugate.
@@ -636,7 +640,9 @@ variable {f₁ : a ⟶ c} {u₁ : c ⟶ a} {f₂ : b ⟶ d} {u₂ : d ⟶ b}
 variable {l₁ : a ⟶ b} {r₁ : b ⟶ a} {l₂ : c ⟶ d} {r₂ : d ⟶ c}
 variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u₁) (adj₄ : f₂ ⊣ u₂)
 
-/-- When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+/--
+When all four morphisms in a square are left adjoints, the mates operation can be iterated:
+
 ```
          l₁                  r₁                  r₁
       a --→ b             a ←-- b             a ←-- b
@@ -644,6 +650,7 @@ variable (adj₁ : l₁ ⊣ r₁) (adj₂ : l₂ ⊣ r₂) (adj₃ : f₁ ⊣ u�
       c --→ d             c ←-- d             c ←-- d
          l₂                  r₂                  r₂
 ```
+
 In this case the iterated mate equals the conjugate of the original 2-morphism and is thus an
 isomorphism if and only if the original 2-morphism is. This explains why some Beck-Chevalley
 2-morphisms are isomorphisms.

@@ -11,6 +11,9 @@ public import Mathlib.Topology.Compactification.StoneCech
 
 import Mathlib.Topology.Algebra.Semigroup
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Hindman's theorem on finite sums
 
@@ -35,13 +38,12 @@ partition of a `U`-large set, one of the parts is `U`-large.
 
 ## Main results
 
-- `FS_partition_regular`: the strong form of Hindman's theorem
-- `exists_FS_of_finite_cover`: the weak form of Hindman's theorem
+* `FS_partition_regular`: the strong form of Hindman's theorem
+* `exists_FS_of_finite_cover`: the weak form of Hindman's theorem
 
 ## Tags
 
 Ramsey theory, ultrafilter
-
 -/
 
 @[expose] public section

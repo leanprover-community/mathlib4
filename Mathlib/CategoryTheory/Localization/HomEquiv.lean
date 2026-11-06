@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.HomCongr
 public import Mathlib.CategoryTheory.Localization.LocalizerMorphism
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Bijections between morphisms in two localized categories
 
@@ -20,7 +23,6 @@ More generally, given a localizer morphism `Φ : LocalizerMorphism W₁ W₂`, w
 `Φ.homMap L₁ L₂ : (L₁.obj X ⟶ L₁.obj Y) ⟶ (L₂.obj (Φ.functor.obj X) ⟶ L₂.obj (Φ.functor.obj Y))`.
 The definition `Localization.homEquiv` is obtained by applying the construction
 to the identity localizer morphism.
-
 -/
 
 @[expose] public section

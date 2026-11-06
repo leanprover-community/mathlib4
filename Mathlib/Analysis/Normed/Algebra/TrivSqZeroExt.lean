@@ -9,13 +9,16 @@ public import Mathlib.Analysis.Normed.Algebra.Exponential
 public import Mathlib.Analysis.Normed.Lp.ProdLp
 public import Mathlib.Topology.Instances.TrivSqZeroExt
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
 
 This file contains results about `NormedSpace.exp` for `TrivSqZeroExt`.
 
-It also contains a definition of the $ℓ^1$ norm,
-which defines $\|r + m\| \coloneqq \|r\| + \|m\|$.
+It also contains a definition of the $`ℓ^1` norm,
+which defines $`\|r + m\| \coloneqq \|r\| + \|m\|`.
 This is not a particularly canonical choice of definition,
 but it is sufficient to provide a `NormedAlgebra` instance,
 and thus enables `NormedSpace.exp_add_of_commute` to be used on `TrivSqZeroExt`.
@@ -28,7 +31,8 @@ we could keep the collection of instances behind an `open scoped`.
 * `TrivSqZeroExt.snd_exp`
 * `TrivSqZeroExt.exp_inl`
 * `TrivSqZeroExt.exp_inr`
-* The $ℓ^1$ norm on `TrivSqZeroExt`:
+* The $`ℓ^1` norm on `TrivSqZeroExt`:
+
   * `TrivSqZeroExt.instL1SeminormedAddCommGroup`
   * `TrivSqZeroExt.instL1SeminormedRing`
   * `TrivSqZeroExt.instL1SeminormedCommRing`
@@ -45,8 +49,7 @@ we could keep the collection of instances behind an `open scoped`.
   we should expect
   `(exp x).snd = ∫ t in 0..1, exp (t • x.fst) • op (exp ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
-  https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
-
+  https://link.springer.com/chapter/10.1007/978-3-540-44953-9\_2).
 -/
 
 public section
@@ -189,7 +192,7 @@ end Field
 end Topology
 
 /-!
-### The $ℓ^1$ norm on the trivial square zero extension
+# The $`ℓ^1` norm on the trivial square zero extension
 -/
 
 noncomputable section Seminormed

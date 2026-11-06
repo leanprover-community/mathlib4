@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Polynomial.Eval.Algebra
 public import Mathlib.Algebra.Polynomial.Eval.Degree
 public import Mathlib.Algebra.Polynomial.Monomial
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 
@@ -20,12 +23,10 @@ We promote `eval₂` to an algebra hom in `aeval`.
 
 ## Main definitions
 
-- `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
+* `Polynomial.aeval`: given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
   the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
-
-- `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
+* `Polynomial.mapAlgHom` : given `φ : S →ₐ[R] S'`, `mapAlgHom φ` applies `φ` on the
   coefficients of a polynomial in `S[X]`.
-
 -/
 
 @[expose] public section
@@ -64,7 +65,8 @@ theorem ofFinsupp_algebraMap (r : R) :
     (ofFinsupp (algebraMap R _ r) : A[X]) = algebraMap R A[X] r :=
   toFinsupp_injective (toFinsupp_algebraMap _).symm
 
-/-- When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
+/--
+When we have `[CommSemiring R]`, the function `C` is the same as `algebraMap R R[X]`.
 
 (But note that `C` is defined when `R` is not necessarily commutative, in which case
 `algebraMap` is not available.)
@@ -146,9 +148,11 @@ theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] �
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
 
-/-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
+/--
+`Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
-This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
+This is `Polynomial.eval₂RingHom'` for `AlgHom`s.
+-/
 @[simps!]
 def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
   toRingHom := eval₂RingHom' f b hf
@@ -156,9 +160,11 @@ def eval₂AlgHom (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[
 
 section Map
 
-/-- `Polynomial.map` as an `AlgHom` for noncommutative algebras.
+/--
+`Polynomial.map` as an `AlgHom` for noncommutative algebras.
 
-  This is the algebra version of `Polynomial.mapRingHom`. -/
+This is the algebra version of `Polynomial.mapRingHom`.
+-/
 def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
   toRingHom := mapRingHom f.toRingHom
   commutes' := by simp
@@ -248,10 +254,12 @@ def aevalEquiv : A ≃ (R[X] →ₐ[R] A) where
   left_inv := eval₂_X _
   right_inv _ := algHom_ext' (Subsingleton.elim ..) <| eval₂_X ..
 
-/-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
+/--
+Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
 
-This is a stronger variant of the linear map `Polynomial.leval`. -/
+This is a stronger variant of the linear map `Polynomial.leval`.
+-/
 def aeval : R[X] →ₐ[R] A :=
   aevalEquiv R A x
 
@@ -633,7 +641,8 @@ section Ring
 
 variable [Ring R]
 
-/-- The evaluation map is not generally multiplicative when the coefficient ring is noncommutative,
+/--
+The evaluation map is not generally multiplicative when the coefficient ring is noncommutative,
 but nevertheless any polynomial of the form `p * (X - C r)` is sent to zero when evaluated at `r`.
 
 This is the key step in our proof of the Cayley-Hamilton theorem.
@@ -754,8 +763,10 @@ termination_by Q.natDegree
 
 open nonZeroDivisors
 
-/-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
-such that `a ≠ 0` and `a • P = 0`. -/
+/--
+_McCoy theorem_: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`
+such that `a ≠ 0` and `a • P = 0`.
+-/
 theorem notMem_nonZeroDivisors_iff {P : R[X]} : P ∉ R[X]⁰ ↔ ∃ a : R, a ≠ 0 ∧ a • P = 0 := by
   refine ⟨fun hP ↦ ?_, fun ⟨a, ha, h⟩ h1 ↦ ha <| C_eq_zero.1 <| (h1.2 _) <| smul_eq_C_mul a ▸ h⟩
   by_contra! h

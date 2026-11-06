@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Derivation.Lie
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lie-Rinehart algebras
 
@@ -18,9 +21,8 @@ terms of the Chevalley-Eilenberg algebra of a Lie-Rinehart algebra.
 
 ## References
 
-* [Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
-  Trans. Am. Math. Soc. 108, 195-222 (1963).][rinehart_1963]
-
+* ‍\[Rinehart, G. S., Differential forms on general commutative algebras. Zbl 0113.26204
+  Trans. Am. Math. Soc. 108, 195-222 (1963).\]\[rinehart\_1963\]
 -/
 
 @[expose] public section
@@ -33,13 +35,15 @@ class LieRinehartRing (A L : Type*) [CommRing A] [LieRing L]
   leibniz_mul_right' (x : L) (a b : A) : ⁅x, a * b⁆ = a • ⁅x, b⁆ + ⁅x, a⁆ * b
   leibniz_smul_right' (x y : L) (a : A) : ⁅x, a • y⁆ = a • ⁅x, y⁆ + ⁅x, a⁆ • y
 
-/-- A Lie-Rinehart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
+/--
+A Lie-Rinehart algebra with coefficients in a commutative ring `R`, is a pair consisting of a
 commutative `R`-algebra `A` and a Lie algebra `L` with coefficients in `R`, such that `A` and `L`
 are each a module over the other, satisfying compatibility conditions.
 
 As shown below, this data determines a linear map `L → Derivation R A A` satisfying a Leibniz-like
 compatibility condition. This could even be taken as a definition, however the definition here has
-the advantage of being `Prop`-valued, thus mitigating potential diamonds. -/
+the advantage of being `Prop`-valued, thus mitigating potential diamonds.
+-/
 class LieRinehartAlgebra (R A L : Type*) [CommRing A] [LieRing L]
     [Module A L] [LieRingModule L A] [LieRinehartRing A L]
     [CommRing R] [Algebra R A] [LieAlgebra R L] : Prop extends
@@ -72,14 +76,16 @@ instance : LieRinehartAlgebra R A₁ (Derivation R A₁ A₁) where
 
 namespace LieRinehartAlgebra
 
-/-- A morphism of Lie-Rinehart algebras, from `(A₁, L₁)` to `(A₂, L₂)`, consists of a pair of maps
+/--
+A morphism of Lie-Rinehart algebras, from `(A₁, L₁)` to `(A₂, L₂)`, consists of a pair of maps
 `(σ, F)` where `σ : A₁ → A₂` is a morphism of algebras and `F` is a morphism of Lie algebras, which
 respect the module structures.
 
 Here we define the type of such morphisms with fixed `σ` (which can be regarded as functions
 `L₁ → L₂`). In the future it may be useful to define the type of such morphisms with fixed `F`
 (which can be regarded as functions `A₁ → A₂`) and the type of all such morphisms (which can be
-regarded as functions `A₁ × L₁ → A₂ × L₂`). -/
+regarded as functions `A₁ × L₁ → A₂ × L₂`).
+-/
 structure Hom (σ : A₁ →ₐ[R] A₂) (L₁ L₂ : Type*)
     [LieRing L₁] [Module A₁ L₁] [LieRingModule L₁ A₁] [LieAlgebra R L₁]
     [LieRing L₂] [Module A₂ L₂] [LieRingModule L₂ A₂] [LieAlgebra R L₂]

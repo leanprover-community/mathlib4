@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Long exact sequence for the kernel and cokernel of a composition
 
@@ -16,13 +19,16 @@ abelian category, we construct a long exact sequence:
 
 This is obtained by applying the snake lemma to the following morphism of
 exact sequences, where the rows are the obvious split exact sequences
+
 ```
 0 ⟶ X ⟶ X ⊞ Y ⟶ Y ⟶ 0
     |f    |φ    |g
     v     v     v
 0 ⟶ Y ⟶ Y ⊞ Z ⟶ Z ⟶ 0
 ```
+
 and `φ` is given by the following matrix:
+
 ```
 (f  -𝟙 Y)
 (0     g)
@@ -31,7 +37,6 @@ and `φ` is given by the following matrix:
 Indeed the snake lemma gives an exact sequence involving the kernels and cokernels
 of the vertical maps: in order to get the expected long exact sequence, it suffices
 to obtain isomorphisms `ker φ ≅ ker (f ≫ g)` and `coker φ ≅ coker (f ≫ g)`.
-
 -/
 
 @[expose] public section
@@ -59,8 +64,10 @@ lemma ι_fst : ι f g ≫ biprod.fst = kernel.ι (f ≫ g) := by simp [ι]
 @[reassoc (attr := simp)]
 lemma ι_snd : ι f g ≫ biprod.snd = kernel.ι (f ≫ g) ≫ f := by simp [ι]
 
-/-- If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
+/--
+If `f : X ⟶ Y` and `g : Y ⟶ Z` are composable morphisms,
 this is the morphism `X ⊞ Y ⟶ Y ⊞ Z` given by the matrix
+
 ```
 (f  -𝟙 Y)
 (0     g)

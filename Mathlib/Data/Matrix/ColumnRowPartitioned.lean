@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 
-/-! # Block Matrices from Rows and Columns
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Block Matrices from Rows and Columns
 
 This file provides the basic definitions of matrices composed from columns and rows.
 The concatenation of two matrices with the same row indices can be expressed as
@@ -19,6 +23,7 @@ We then provide a few lemmas that deal with the products of these with each othe
 with block matrices
 
 ## Tags
+
 column matrices, row matrices, column row block matrices
 -/
 
@@ -29,13 +34,17 @@ namespace Matrix
 variable {R : Type*}
 variable {m m₁ m₂ n n₁ n₂ : Type*}
 
-/-- Concatenate together two matrices A₁[m₁ × N] and A₂[m₂ × N] with the same columns (N) to get a
-bigger matrix indexed by [(m₁ ⊕ m₂) × N] -/
+/--
+Concatenate together two matrices A₁\[m₁ × N\] and A₂\[m₂ × N\] with the same columns (N) to get a
+bigger matrix indexed by \[(m₁ ⊕ m₂) × N\]
+-/
 def fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) : Matrix (m₁ ⊕ m₂) n R :=
   of (Sum.elim A₁ A₂)
 
-/-- Concatenate together two matrices B₁[m × n₁] and B₂[m × n₂] with the same rows (M) to get a
-bigger matrix indexed by [m × (n₁ ⊕ n₂)] -/
+/--
+Concatenate together two matrices B₁\[m × n₁\] and B₂\[m × n₂\] with the same rows (M) to get a
+bigger matrix indexed by \[m × (n₁ ⊕ n₂)\]
+-/
 def fromCols (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂ R) : Matrix m (n₁ ⊕ n₂) R :=
   of fun i => Sum.elim (B₁ i) (B₂ i)
 
@@ -269,7 +278,8 @@ section CommRing
 
 variable [CommRing R]
 
-/-- Multiplication of a matrix by its inverse is commutative.
+/--
+Multiplication of a matrix by its inverse is commutative.
 This is the column and row partitioned matrix form of `Matrix.mul_eq_one_comm`.
 
 The condition `e : n ≃ n₁ ⊕ n₂` states that `fromCols A₁ A₂` and `fromRows B₁ B₂` are "square".

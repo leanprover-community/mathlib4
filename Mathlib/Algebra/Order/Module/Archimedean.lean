@@ -9,10 +9,14 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Algebra.Order.Archimedean.Class
 public import Mathlib.Algebra.Order.Module.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Archimedean classes for ordered module
 
 ## Main definitions
+
 * `ArchimedeanClass.ball` are `ArchimedeanClass.ballAddSubgroup` as a submodules.
 * `ArchimedeanClass.closedBall` are `ArchimedeanClass.closedBallAddSubgroup` as a submodules.
 -/
@@ -47,10 +51,12 @@ namespace FiniteArchimedeanClass
 
 variable (K)
 
-/-- Given an upper set `s` of finite archimedean classes in a linearly ordered module `M` with
+/--
+Given an upper set `s` of finite archimedean classes in a linearly ordered module `M` with
 Archimedean scalars, all elements belonging to these classes together with 0 form a submodule.
 
-This has the same carrier as `FiniteArchimedeanClass.addSubgroup`. -/
+This has the same carrier as `FiniteArchimedeanClass.addSubgroup`.
+-/
 noncomputable
 def submodule (s : UpperSet (FiniteArchimedeanClass M)) : Submodule K M where
   __ := addSubgroup s
@@ -59,16 +65,20 @@ def submodule (s : UpperSet (FiniteArchimedeanClass M)) : Submodule K M where
 
 theorem submodule_strictAnti : StrictAnti (submodule K (M := M)) := addSubgroup_strictAnti
 
-/-- An open ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ioi c`.
+/--
+An open ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ioi c`.
 For `c = ⊤`, we assign the junk value `⊥`.
 
-This has the same carrier as `ArchimedeanClass.ballAddSubgroup`'s. -/
+This has the same carrier as `ArchimedeanClass.ballAddSubgroup`'s.
+-/
 noncomputable
 abbrev ball (c : FiniteArchimedeanClass M) := submodule K (UpperSet.Ioi c)
 
-/-- A closed ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ici c`.
+/--
+A closed ball defined by `ArchimedeanClass.submodule` of `UpperSet.Ici c`.
 
-This has the same carrier as `ArchimedeanClass.closedBallAddSubgroup`'s. -/
+This has the same carrier as `ArchimedeanClass.closedBallAddSubgroup`'s.
+-/
 noncomputable
 abbrev closedBall (c : FiniteArchimedeanClass M) := submodule K (UpperSet.Ici c)
 

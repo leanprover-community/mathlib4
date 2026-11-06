@@ -9,6 +9,9 @@ public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Cover
 public import Mathlib.Order.LatticeIntervals
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modular Lattices
 
@@ -28,29 +31,30 @@ We define (semi)modularity typeclasses as Prop-valued mixins.
   covers `a ⊓ b`.
 * `IsLowerModularLattice`: Lower modular lattices. Lattices where `a` covers `a ⊓ b` if `a ⊔ b`
   covers `b`.
-- `IsModularLattice`: Modular lattices. Lattices where `a ≤ c → (a ⊔ b) ⊓ c = a ⊔ (b ⊓ c)`. We
+
+* `IsModularLattice`: Modular lattices. Lattices where `a ≤ c → (a ⊔ b) ⊓ c = a ⊔ (b ⊓ c)`. We
   only require an inequality because the other direction holds in all lattices.
 
 ## Main Definitions
 
-- `infIccOrderIsoIccSup` gives an order isomorphism between the intervals
+* `infIccOrderIsoIccSup` gives an order isomorphism between the intervals
   `[a ⊓ b, a]` and `[b, a ⊔ b]`.
   This corresponds to the diamond (or second) isomorphism theorems of algebra.
 
 ## Main Results
 
-- `isModularLattice_iff_inf_sup_inf_assoc`:
+* `isModularLattice_iff_inf_sup_inf_assoc`:
   Modularity is equivalent to the `inf_sup_inf_assoc`: `(x ⊓ z) ⊔ (y ⊓ z) = ((x ⊓ z) ⊔ y) ⊓ z`
-- `DistribLattice.isModularLattice`: Distributive lattices are modular.
+* `DistribLattice.isModularLattice`: Distributive lattices are modular.
 
 ## References
 
-* [Manfred Stern, *Semimodular lattices. Theory and applications*][stern2009]
+* ‍\[Manfred Stern, _Semimodular lattices. Theory and applications_\]\[stern2009\]
 * [Wikipedia, Modular Lattice](https://en.wikipedia.org/wiki/Modular_lattice)
 
 ## TODO
 
-- Relate atoms and coatoms in modular lattices
+* Relate atoms and coatoms in modular lattices
 -/
 
 @[expose] public section

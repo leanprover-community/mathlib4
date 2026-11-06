@@ -12,6 +12,9 @@ import Mathlib.Analysis.SpecialFunctions.Log.InvLog
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Tactic.Positivity
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Akra-Bazzi theorem: the sum transform
 
@@ -22,23 +25,22 @@ We develop further preliminaries required for the theorem, up to the sum transfo
 * `AkraBazziRecurrence T g a b r`: the predicate stating that `T : ℕ → ℝ` satisfies an Akra-Bazzi
   recurrence with parameters `g`, `a`, `b` and `r` as above, together with basic bounds on `r i n`
   and positivity of `T`.
-* `AkraBazziRecurrence.smoothingFn`: the smoothing function $\varepsilon(x) = 1 / \log x$ used in
+* `AkraBazziRecurrence.smoothingFn`: the smoothing function $`\varepsilon(x) = 1 / \log x` used in
   the inductive estimates, along with monotonicity, differentiability, and asymptotic properties.
-* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by $\sum_i a_i\,(b_i)^p = 1$
-  and supporting analytical lemmas such as continuity and injectivity of the defining sum.
+* `AkraBazziRecurrence.p`: the unique Akra–Bazzi exponent characterized by
+  $`\sum_i a_i\,(b_i)^p = 1` and supporting analytical lemmas such as continuity and injectivity of
+  the defining sum.
 * `AkraBazziRecurrence.sumTransform`: the transformation that turns a function `g` into
   `n^p * ∑ u ∈ Finset.Ico n₀ n, g u / u^(p+1)` and its eventual comparison with multiples of `g n`.
 * `AkraBazziRecurrence.asympBound`: the asymptotic bound satisfied by an Akra-Bazzi recurrence,
   namely `n^p (1 + ∑ g(u) / u^(p+1))`, together with positivity statements along the branches
   `r i n`.
 
-
 ## References
 
 * Mohamad Akra and Louay Bazzi, On the solution of linear recurrence equations
 * Tom Leighton, Notes on better master theorems for divide-and-conquer recurrences
 * Manuel Eberl, Asymptotic reasoning in a proof assistant
-
 -/
 
 @[expose] public section
@@ -47,7 +49,7 @@ open Finset Real Filter Asymptotics
 open scoped Topology
 
 /-!
-### Definition of Akra-Bazzi recurrences
+# Definition of Akra-Bazzi recurrences
 
 This section defines the predicate `AkraBazziRecurrence T g a b r` which states that `T`
 satisfies the recurrence relation
@@ -256,7 +258,7 @@ lemma T_nonneg (n : ℕ) : 0 ≤ T n := le_of_lt <| R.T_pos n
 end
 
 /-!
-### Smoothing function
+# Smoothing function
 
 We define `ε` as the "smoothing function" `fun n => 1 / log n`, which will be used in the form of a
 factor of `1 ± ε n` needed to make the induction step go through.
@@ -480,12 +482,13 @@ lemma isTheta_smoothingFn_sub_self (i : α) :
       rw [← isTheta_const_mul_right this]
 
 /-!
-### Akra-Bazzi exponent `p`
+# Akra-Bazzi exponent `p`
 
 Every Akra-Bazzi recurrence has an associated exponent, denoted by `p : ℝ`, such that
 `∑ a_i b_i^p = 1`. This section shows the existence and uniqueness of this exponent `p` for any
 `R : AkraBazziRecurrence`. These results are used in the next section to define the asymptotic
-bound expression. -/
+bound expression.
+-/
 
 @[continuity, fun_prop]
 lemma continuous_sumCoeffsExp : Continuous (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) := by
@@ -522,7 +525,9 @@ lemma one_mem_range_sumCoeffsExp : 1 ∈ Set.range (fun (p : ℝ) => ∑ i, a i 
   case ge_one =>
     exact R.tendsto_atTop_sumCoeffsExp.eventually_ge_atTop _ |>.exists
 
-/-- The function x ↦ ∑ a_i b_i^x is injective. This implies the uniqueness of `p`. -/
+/--
+The function x ↦ ∑ a\_i b\_i^x is injective. This implies the uniqueness of `p`.
+-/
 lemma injective_sumCoeffsExp : Function.Injective (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) :=
     R.strictAnti_sumCoeffsExp.injective
 
@@ -539,7 +544,7 @@ lemma sumCoeffsExp_p_eq_one : ∑ i, a i * (b i) ^ p a b = 1 := by
   exact Function.invFun_eq (by rw [← Set.mem_range]; exact R.one_mem_range_sumCoeffsExp)
 
 /-!
-### The sum transform
+# The sum transform
 
 This section defines the "sum transform" of a function `g` as
 `∑ u ∈ Finset.Ico n₀ n, g u / u ^ (p + 1)`, and uses it to define `asympBound` as the bound

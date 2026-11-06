@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.DirectSum.Algebra
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Tensor power of a semimodule over a commutative semiring
 
@@ -32,8 +35,10 @@ tensor powers. Elsewhere, using `1` and `*` on `GradedMonoid` should be preferre
 
 open scoped TensorProduct
 
-/-- Homogeneous tensor powers $M^{\otimes n}$. `⨂[R]^n M` is a shorthand for
-`⨂[R] (i : Fin n), M`. -/
+/--
+Homogeneous tensor powers $`M^{\otimes n}`. `⨂[R]^n M` is a shorthand for
+`⨂[R] (i : Fin n), M`.
+-/
 abbrev TensorPower (R : Type*) (n : ℕ) (M : Type*) [CommSemiring R] [AddCommMonoid M]
     [Module R M] : Type _ :=
   ⨂[R] _ : Fin n, M
@@ -235,9 +240,11 @@ instance gsemiring : DirectSum.GSemiring fun i => ⨂[R]^i M :=
 example : Semiring (⨁ n : ℕ, ⨂[R]^n M) := by infer_instance
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The tensor powers form a graded algebra.
+/--
+The tensor powers form a graded algebra.
 
-Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`. -/
+Note that this instance implies `Algebra R (⨁ n : ℕ, ⨂[R]^n M)` via `DirectSum.Algebra`.
+-/
 instance galgebra : DirectSum.GAlgebra R fun i => ⨂[R]^i M where
   toFun := (algebraMap₀ : R ≃ₗ[R] (⨂[R]^0) M).toLinearMap.toAddMonoidHom
   map_one := algebraMap₀_one

@@ -13,6 +13,9 @@ import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Order.CountableDenseLinearOrder
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered First-Ordered Structures
 
@@ -20,37 +23,36 @@ This file defines ordered first-order languages and structures, as well as their
 
 ## Main Definitions
 
-- `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
-- `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
-- `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
+* `FirstOrder.Language.order` is the language consisting of a single relation representing `≤`.
+* `FirstOrder.Language.IsOrdered` points out a specific symbol in a language as representing `≤`.
+* `FirstOrder.Language.OrderedStructure` indicates that the `≤` symbol in an ordered language
   is interpreted as the actual relation `≤` in a particular structure.
-- `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
+* `FirstOrder.Language.linearOrderTheory` and similar define the theories of preorders,
   partial orders, and linear orders.
-- `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
+* `FirstOrder.Language.dlo` defines the theory of dense linear orders without endpoints, a
   particularly useful example in model theory.
-- `FirstOrder.Language.orderStructure` is the structure on an ordered type, assigning the symbol
+* `FirstOrder.Language.orderStructure` is the structure on an ordered type, assigning the symbol
   representing `≤` to the actual relation `≤`.
-- Conversely, `FirstOrder.Language.LEOfStructure`, `FirstOrder.Language.preorderOfModels`,
+* Conversely, `FirstOrder.Language.LEOfStructure`, `FirstOrder.Language.preorderOfModels`,
   `FirstOrder.Language.partialOrderOfModels`, and `FirstOrder.Language.linearOrderOfModels`
   are the orders induced by first-order structures modelling the relevant theory.
 
 ## Main Results
 
-- `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
+* `PartialOrder`s model the theory of partial orders, `LinearOrder`s model the theory of
   linear orders, and dense linear orders without endpoints model `Language.dlo`.
-- Under `L.orderedStructure` assumptions, elements of any `L.HomClass M N` are monotone, and
+* Under `L.orderedStructure` assumptions, elements of any `L.HomClass M N` are monotone, and
   strictly monotone if injective.
-- Under `Language.order.orderedStructure` assumptions, any `OrderHomClass` has an instance of
+* Under `Language.order.orderedStructure` assumptions, any `OrderHomClass` has an instance of
   `L.HomClass M N`, while `M ↪o N` and any `OrderIsoClass` have an instance of
   `L.StrongHomClass M N`.
-- `FirstOrder.Language.isFraisseLimit_of_countable_nonempty_dlo` shows that any countable nonempty
+* `FirstOrder.Language.isFraisseLimit_of_countable_nonempty_dlo` shows that any countable nonempty
   model of the theory of linear orders is a Fraïssé limit of the class of finite models of the
   theory of linear orders.
-- `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
+* `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
   theory of linear orders is Fraïssé.
-- `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
+* `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
   `ℵ₀`-categorical, and thus complete.
-
 -/
 
 @[expose] public section
@@ -169,18 +171,24 @@ instance : Theory.IsUniversal L.linearOrderTheory :=
 example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
 
-/-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$. -/
+/--
+A sentence indicating that an order has no top element:
+$`\forall x, \exists y, \neg y \le x`.
+-/
 def noTopOrderSentence : L.Sentence :=
   ∀' ∃' ∼((&1).le &0)
 
-/-- A sentence indicating that an order has no bottom element:
-$\forall x, \exists y, \neg x \le y$. -/
+/--
+A sentence indicating that an order has no bottom element:
+$`\forall x, \exists y, \neg x \le y`.
+-/
 def noBotOrderSentence : L.Sentence :=
   ∀' ∃' ∼((&0).le &1)
 
-/-- A sentence indicating that an order is dense:
-$\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y$. -/
+/--
+A sentence indicating that an order is dense:
+$`\forall x, \forall y, x < y \to \exists z, x < z \wedge z < y`.
+-/
 def denselyOrderedSentence : L.Sentence :=
   ∀' ∀' ((&0).lt &1 ⟹ ∃' ((&0).lt &2 ⊓ (&2).lt &1))
 

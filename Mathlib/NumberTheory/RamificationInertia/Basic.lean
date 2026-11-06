@@ -8,13 +8,16 @@ module -- shake: keep-all
 public import Mathlib.NumberTheory.RamificationInertia.Inertia
 public import Mathlib.NumberTheory.RamificationInertia.Ramification
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ramification index and inertia degree
 
 Given `P : Ideal S` lying over `p : Ideal R` for the ring extension `f : R →+* S`
 (assuming `P` and `p` are prime or maximal where needed),
-the **ramification index** `Ideal.ramificationIdx f p P` is the multiplicity of `P` in `map f p`,
-and the **inertia degree** `Ideal.inertiaDeg f p P` is the degree of the field extension
+the *ramification index* `Ideal.ramificationIdx f p P` is the multiplicity of `P` in `map f p`,
+and the *inertia degree* `Ideal.inertiaDeg f p P` is the degree of the field extension
 `(S / P) : (R / p)`.
 
 ## Main results
@@ -26,6 +29,7 @@ The main theorem `Ideal.sum_ramification_inertia` states that for all coprime `P
 ## Implementation notes
 
 Often the above theory is set up in the case where:
+
 * `R` is the ring of integers of a number field `K`,
 * `L` is a finite separable extension of `K`,
 * `S` is the integral closure of `R` in `L`,
@@ -38,7 +42,6 @@ We will try to relax the above hypotheses as much as possible.
 
 In this file, `e` stands for the ramification index and `f` for the inertia degree of `P` over `p`,
 leaving `p` and `P` implicit.
-
 -/
 
 deprecated_module "Use RingTheory.RamificationInertia.Basic" (since := "2026-07-01")
@@ -77,9 +80,11 @@ variable (K)
 open scoped Matrix
 
 variable {K} in
-/-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
+/--
+If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
+
 * `p` is an ideal of `R` such that `R / p` is nontrivial
 * `K` is a field that has an embedding of `R` (in particular we can take `K = Frac(R)`)
 * `L` is a field extension of `K`
@@ -178,11 +183,13 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
 
 variable [hRK : IsFractionRing R K]
 
-/-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
+/--
+Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
 and `V'` a module over `S`. If `b`, in the intersection `V''` of `V` and `V'`,
 is linear independent over `S` in `V'`, then it is linear independent over `R` in `V`.
 
 The statement we prove is actually slightly more general:
+
 * it suffices that the inclusion `algebraMap R S : R → S` is nontrivial
 * the function `f' : V'' → V'` doesn't need to be injective
 -/
@@ -286,7 +293,8 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk (P ^ e) (f x) := rfl
 
-/-- If `P` lies over `p`, then `R / p` has a canonical map to `S / P`.
+/--
+If `P` lies over `p`, then `R / p` has a canonical map to `S / P`.
 
 This can't be an instance since the map `f : R → S` is generally not inferable.
 -/
@@ -498,7 +506,9 @@ end FactLeComap
 
 section FactorsMap
 
-/-! ## Properties of the factors of `p.map (algebraMap R S)` -/
+/-!
+# Properties of the factors of `p.map (algebraMap R S)`
+-/
 
 
 variable [IsDedekindDomain S]

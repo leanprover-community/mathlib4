@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.Basic
 public import Mathlib.Combinatorics.Quiver.Symmetric
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Groupoids
 

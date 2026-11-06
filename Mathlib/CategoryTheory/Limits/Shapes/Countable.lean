@@ -9,6 +9,9 @@ public import Mathlib.CategoryTheory.Countable
 public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Countable limits and colimits
 
@@ -22,9 +25,7 @@ limits, see `sequentialFunctor_initial`.
 * There is a series of `proof_wanted` in `Wanted/CategoryTheory/Limits/Shapes/Countable.lean`,
   implying that all cofiltered limits over countable categories are isomorphic to sequential
   limits.
-
 * Prove the dual result for filtered colimits.
-
 -/
 
 @[expose] public section

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.RingTheory.Noetherian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Co-finitely generated submodules
 
@@ -16,8 +19,7 @@ generated (i.e. FG).
 
 ## Main declarations
 
-- `Submodule.CoFG` expresses that a submodule is co-finitely generated.
-
+* `Submodule.CoFG` expresses that a submodule is co-finitely generated.
 -/
 
 public section

@@ -13,6 +13,9 @@ import Mathlib.Analysis.Convex.Approximation
 import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Composition.RadonNikodym
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integrals of functions of Radon-Nikodym derivatives
 
@@ -23,7 +26,6 @@ import Mathlib.Probability.Kernel.Composition.RadonNikodym
   `ν.real univ * f (μ.real univ / ν.real univ) ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`.
 * `ConvexOn.integrable_apply_rnDeriv_of_integrable_compProd`: for `f` a convex function on `[0, ∞)`,
   if `f ((μ ⊗ₘ κ).rnDeriv (ν ⊗ₘ η) (a, b))` is integrable, then `f (μ.rnDeriv ν a)` is integrable.
-
 -/
 
 public section

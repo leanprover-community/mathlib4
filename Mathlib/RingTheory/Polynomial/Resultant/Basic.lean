@@ -8,6 +8,9 @@ module
 public import Mathlib.FieldTheory.SplittingField.Construction
 public import Mathlib.RingTheory.Polynomial.DegreeLT
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Resultant of two polynomials
 
@@ -40,7 +43,8 @@ section sylvester
 
 variable {R S : Type*} [Semiring R] [Semiring S]
 
-/-- The Sylvester matrix of two polynomials `f` and `g` of degrees `m` and `n` respectively is a
+/--
+The Sylvester matrix of two polynomials `f` and `g` of degrees `m` and `n` respectively is a
 `(m+n) × (m+n)` matrix with the coefficients of `f` and `g` arranged in a specific way. Here, `m`
 and `n` are free variables, not necessarily equal to the actual degrees of the polynomials `f` and
 `g`.
@@ -970,10 +974,12 @@ lemma discr_of_degree_eq_two {f : R[X]} (hf : f.degree = 2) :
     Matrix.cons_val_fin_one, Matrix.cons_val_one, Matrix.cons_val, hf]
   ring_nf
 
-/-- Relation between the resultant and the discriminant.
+/--
+Relation between the resultant and the discriminant.
 
 (Note this is actually false when `f` is a constant polynomial not equal to 1, so the assumption on
-the degree is genuinely needed.) -/
+the degree is genuinely needed.)
+-/
 lemma resultant_deriv {f : R[X]} (hf : 0 < f.degree) :
     resultant f f.derivative f.natDegree (f.natDegree - 1) =
       (-1) ^ (f.natDegree * (f.natDegree - 1) / 2) * f.leadingCoeff * f.discr := by

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.Compactification.StoneCech
 public import Mathlib.Topology.Homeomorph.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Extremally disconnected spaces
 
@@ -27,7 +30,7 @@ compact Hausdorff spaces.
 
 ## References
 
-[Gleason, *Projective topological spaces*][gleason1958]
+‍\[Gleason, _Projective topological spaces_\]\[gleason1958\]
 -/
 
 @[expose] public section
@@ -136,10 +139,12 @@ section
 
 variable {A D E : Type u} [TopologicalSpace A] [TopologicalSpace D] [TopologicalSpace E]
 
-/-- Lemma 2.4 in [Gleason, *Projective topological spaces*][gleason1958]:
-a continuous surjection $\pi$ from a compact space $D$ to a Fréchet space $A$ restricts to
-a compact subset $E$ of $D$, such that $\pi$ maps $E$ onto $A$ and satisfies the
-"Zorn subset condition", where $\pi(E_0) \ne A$ for any proper closed subset $E_0 \subsetneq E$. -/
+/--
+Lemma 2.4 in \[Gleason, _Projective topological spaces_\]\[gleason1958\]:
+a continuous surjection $`\pi` from a compact space $`D` to a Fréchet space $`A` restricts to
+a compact subset $`E` of $`D`, such that $`\pi` maps $`E` onto $`A` and satisfies the
+"Zorn subset condition", where $`\pi(E_0) \ne A` for any proper closed subset $`E_0 \subsetneq E`.
+-/
 lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D → A}
     (X_cont : Continuous X) (X_surj : X.Surjective) : ∃ E : Set D, CompactSpace E ∧ X '' E = univ ∧
     ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → E.domRestrict X '' E₀ ≠ univ := by
@@ -175,10 +180,12 @@ lemma exists_compact_surjective_zorn_subset [T1Space A] [CompactSpace D] {X : D 
     all_goals exact (C_sub c.mem).left.inter <| (T1Space.t1 a).preimage X_cont
   · rw [@iInter_of_empty _ _ <| not_nonempty_iff.mp hC, image_univ_of_surjective X_surj]
 
-/-- Lemma 2.1 in [Gleason, *Projective topological spaces*][gleason1958]:
-if $\rho$ is a continuous surjection from a topological space $E$ to a topological space $A$
-satisfying the "Zorn subset condition", then $\rho(G)$ is contained in
-the closure of $A \setminus \rho(E \setminus G)$ for any open set $G$ of $E$. -/
+/--
+Lemma 2.1 in \[Gleason, _Projective topological spaces_\]\[gleason1958\]:
+if $`\rho` is a continuous surjection from a topological space $`E` to a topological space $`A`
+satisfying the "Zorn subset condition", then $`\rho(G)` is contained in
+the closure of $`A \setminus \rho(E \setminus G)` for any open set $`G` of $`E`.
+-/
 lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont : Continuous ρ)
     (ρ_surj : ρ.Surjective) (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ)
     {G : Set E} (hG : IsOpen G) : ρ '' G ⊆ closure ((ρ '' Gᶜ)ᶜ) := by
@@ -203,9 +210,11 @@ lemma image_subset_closure_compl_image_compl_of_isOpen {ρ : E → A} (ρ_cont :
     have hy : y ∈ G ∩ ρ ⁻¹' N := by simpa using mt (mem_image_of_mem ρ) <| mem_compl hx
     exact ⟨ρ y, mem_inter (mem_preimage.mp <| mem_of_mem_inter_right hy) hx'⟩
 
-/-- Lemma 2.2 in [Gleason, *Projective topological spaces*][gleason1958]:
-in an extremally disconnected space, if $U_1$ and $U_2$ are disjoint open sets,
-then $\overline{U_1}$ and $\overline{U_2}$ are also disjoint. -/
+/--
+Lemma 2.2 in \[Gleason, _Projective topological spaces_\]\[gleason1958\]:
+in an extremally disconnected space, if $`U_1` and $`U_2` are disjoint open sets,
+then $`\overline{U_1}` and $`\overline{U_2}` are also disjoint.
+-/
 lemma ExtremallyDisconnected.disjoint_closure_of_disjoint_isOpen [ExtremallyDisconnected A]
     {U₁ U₂ : Set A} (h : Disjoint U₁ U₂) (hU₁ : IsOpen U₁) (hU₂ : IsOpen U₂) :
     Disjoint (closure U₁) (closure U₂) :=
@@ -242,18 +251,22 @@ private lemma ExtremallyDisconnected.homeoCompactToT2_injective [ExtremallyDisco
 
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
-/-- Lemma 2.3 in [Gleason, *Projective topological spaces*][gleason1958]:
+/--
+Lemma 2.3 in \[Gleason, _Projective topological spaces_\]\[gleason1958\]:
 a continuous surjection from a compact Hausdorff space to an extremally disconnected Hausdorff space
-satisfying the "Zorn subset condition" is a homeomorphism. -/
+satisfying the "Zorn subset condition" is a homeomorphism.
+-/
 noncomputable def ExtremallyDisconnected.homeoCompactToT2 [ExtremallyDisconnected A] [T2Space A]
     [T2Space E] [CompactSpace E] {ρ : E → A} (ρ_cont : Continuous ρ) (ρ_surj : ρ.Surjective)
     (zorn_subset : ∀ E₀ : Set E, E₀ ≠ univ → IsClosed E₀ → ρ '' E₀ ≠ univ) : E ≃ₜ A :=
   ρ_cont.homeoOfEquivCompactToT2
     (f := Equiv.ofBijective ρ ⟨homeoCompactToT2_injective ρ_cont ρ_surj zorn_subset, ρ_surj⟩)
 
-/-- Theorem 2.5 in [Gleason, *Projective topological spaces*][gleason1958]:
+/--
+Theorem 2.5 in \[Gleason, _Projective topological spaces_\]\[gleason1958\]:
 in the category of compact spaces and continuous maps,
-the projective spaces are precisely the extremally disconnected spaces. -/
+the projective spaces are precisely the extremally disconnected spaces.
+-/
 protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconnected A]
     [CompactSpace A] [T2Space A] : CompactT2.Projective A := by
   -- let $B$ and $C$ be compact; let $f : B \twoheadrightarrow C$ and $\phi : A \to C$ be continuous

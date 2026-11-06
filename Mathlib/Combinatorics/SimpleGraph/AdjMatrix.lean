@@ -12,6 +12,9 @@ public import Mathlib.LinearAlgebra.Matrix.Symmetric
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Combinatorics.SimpleGraph.DegreeSum
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Adjacency Matrices
 
@@ -24,19 +27,14 @@ properties to computational properties of the matrix.
   (1) every entry of `A` is `0` or `1`,
   (2) `A` is symmetric,
   (3) every diagonal entry of `A` is `0`.
-
 * `Matrix.IsAdjMatrix.toGraph`: for `A : Matrix V V α` and `h : A.IsAdjMatrix`,
   `h.toGraph` is the simple graph induced by `A`.
-
 * `Matrix.compl`: for `A : Matrix V V α`, `A.compl` is supposed to be
   the adjacency matrix of the complement graph of the graph induced by `A`.
-
 * `SimpleGraph.adjMatrix`: the adjacency matrix of a `SimpleGraph`.
-
 * `SimpleGraph.adjMatrix_pow_apply_eq_card_walk`: each entry of the `n`th power of
   a graph's adjacency matrix counts the number of length-`n` walks between the corresponding
   pair of vertices.
-
 -/
 
 @[expose] public section

@@ -10,12 +10,13 @@ public import Mathlib.RingTheory.Ideal.Over
 public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Residue Field of local rings
 
 We prove basic properties of the residue field of a local ring.
-
 -/
 
 @[expose] public section
@@ -220,9 +221,11 @@ omit [IsLocalRing R]
 
 variable [Algebra R S] [Algebra R T]
 
-/-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
+/--
+A local algebra homomorphism induces an algebra homomorphism on the residue fields.
 
-See `mapAlgHom'` for a variant where the base ring `R` is also quotiented. -/
+See `mapAlgHom'` for a variant where the base ring `R` is also quotiented.
+-/
 noncomputable def mapAlgHom (e : S →ₐ[R] T) [IsLocalHom e] :
     ResidueField S →ₐ[R] ResidueField T where
   __ := map e
@@ -235,9 +238,11 @@ theorem mapAlgHom_residue (e : S →ₐ[R] T) [IsLocalHom e] (x : S) :
     mapAlgHom e (residue S x) = residue T (e x) :=
   rfl
 
-/-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
+/--
+A local algebra isomorphism induces an algebra isomorphism on the residue fields.
 
-See `mapAlgEquiv'` for a variant where the base ring `R` is also quotiented. -/
+See `mapAlgEquiv'` for a variant where the base ring `R` is also quotiented.
+-/
 noncomputable def mapAlgEquiv (e : S ≃ₐ[R] T) : ResidueField S ≃ₐ[R] ResidueField T where
   __ := mapAlgHom e.toAlgHom
   __ := mapEquiv e.toRingEquiv
@@ -249,9 +254,11 @@ theorem mapAlgEquiv_residue (e : S ≃ₐ[R] T) (x : S) :
 
 variable [IsLocalHom (algebraMap R S)] [IsLocalHom (algebraMap R T)]
 
-/-- A local algebra homomorphism induces an algebra homomorphism on the residue fields.
+/--
+A local algebra homomorphism induces an algebra homomorphism on the residue fields.
 
-See `mapAlgHom` for a variant where the base ring `R` is not quotiented. -/
+See `mapAlgHom` for a variant where the base ring `R` is not quotiented.
+-/
 noncomputable def mapAlgHom' (e : S →ₐ[R] T) [IsLocalHom e] :
     ResidueField S →ₐ[ResidueField R] ResidueField T :=
   (mapAlgHom e).extendScalarsOfSurjective residue_surjective
@@ -261,9 +268,11 @@ theorem mapAlgHom'_residue [IsLocalRing R] (e : S →ₐ[R] T) [IsLocalHom e] (x
     mapAlgHom' e (residue S x) = residue T (e x) :=
   rfl
 
-/-- A local algebra isomorphism induces an algebra isomorphism on the residue fields.
+/--
+A local algebra isomorphism induces an algebra isomorphism on the residue fields.
 
-See `mapAlgEquiv` for a variant where the base ring `R` is not quotiented. -/
+See `mapAlgEquiv` for a variant where the base ring `R` is not quotiented.
+-/
 noncomputable def mapAlgEquiv' (e : S ≃ₐ[R] T) :
     ResidueField S ≃ₐ[ResidueField R] ResidueField T :=
   (mapAlgEquiv e).extendScalarsOfSurjective residue_surjective

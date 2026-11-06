@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Matrix algebra is an Azumaya algebra over R
 
@@ -16,8 +19,7 @@ is an Azumaya algebra where `R` is a commutative ring.
 
 ## Main Results
 
-- `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
-
+* `IsAzumaya.Matrix`: Finite-dimensional matrix algebra over `R` is Azumaya.
 -/
 
 public section

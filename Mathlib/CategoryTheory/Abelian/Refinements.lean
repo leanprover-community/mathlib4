@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Refinements
 
@@ -64,10 +67,10 @@ with morphisms `A ⟶ X` in `C` which we may consider as being
 these morphisms and sometimes introducing an auxiliary epimorphism `A' ⟶ A`.
 
 ## References
+
 * George Bergman, A note on abelian categories – translating element-chasing proofs,
   and exact embedding in abelian groups (1974)
   http://math.berkeley.edu/~gbergman/papers/unpub/elem-chase.pdf
-
 -/
 
 public section

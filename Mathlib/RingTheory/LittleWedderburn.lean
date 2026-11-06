@@ -12,6 +12,9 @@ import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Wedderburn's Little Theorem
 
@@ -24,19 +27,19 @@ This file proves Wedderburn's Little Theorem.
 ## Future work
 
 A couple simple generalisations are possible:
+
 * A finite ring is commutative iff all its nilpotents lie in the center.
-  [Chintala, Vineeth, *Sorry, the Nilpotents Are in the Center*][chintala2020]
+  ‍\[Chintala, Vineeth, _Sorry, the Nilpotents Are in the Center_\]\[chintala2020\]
 * A ring is commutative if all its elements have finite order.
-  [Dolan, S. W., *A Proof of Jacobson's Theorem*][dolan1975]
+  ‍\[Dolan, S. W., _A Proof of Jacobson's Theorem_\]\[dolan1975\]
 
 When alternativity is added to Mathlib, one could formalise the Artin-Zorn theorem, which states
 that any finite alternative division ring is in fact a field.
-https://en.wikipedia.org/wiki/Artin%E2%80%93Zorn_theorem
+https://en.wikipedia.org/wiki/Artin%E2%80%93Zorn\_theorem
 
 If interested, generalisations to semifields could be explored. The theory of semi-vector spaces is
 not clear, but assuming that such a theory could be found where every module considered in the
 below proof is free, then the proof works nearly verbatim.
-
 -/
 
 open scoped Polynomial

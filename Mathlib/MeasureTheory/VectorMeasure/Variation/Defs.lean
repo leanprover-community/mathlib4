@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Group.InfiniteSum
 public import Mathlib.MeasureTheory.Measure.PreVariation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Total variation for vector-valued measures
 
@@ -26,8 +29,7 @@ not less than this function. It turns out that this function is a measure.
 
 ## References
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
-
+* ‍\[Walter Rudin, Real and Complex Analysis.\]\[Rud87\]
 -/
 
 @[expose] public section

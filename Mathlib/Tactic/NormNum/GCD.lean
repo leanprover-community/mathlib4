@@ -9,7 +9,11 @@ public meta import Mathlib.Data.Int.GCD
 public import Mathlib.Algebra.Ring.Divisibility.Basic
 public import Mathlib.Tactic.NormNum
 
-/-! # `norm_num` extensions for GCD-adjacent functions
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# `norm_num` extensions for GCD-adjacent functions
 
 This module defines some `norm_num` extensions for functions such as
 `Nat.gcd`, `Nat.lcm`, `Int.gcd`, and `Int.lcm`.

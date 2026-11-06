@@ -8,8 +8,10 @@ module
 public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Order on tropical algebraic structure
 
 This file defines the orders induced on tropical algebraic structures by the underlying type.
@@ -24,7 +26,6 @@ This file defines the orders induced on tropical algebraic structures by the und
 
 The order induced is the definitionally equal underlying order, which makes the proofs and
 constructions quicker to implement.
-
 -/
 
 public section

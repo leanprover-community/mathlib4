@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # An exact functor induces a functor on derived categories
 
@@ -16,7 +19,6 @@ abelian categories, then there is an induced triangulated functor
 We study some of the pseudofunctorial properties of this construction,
 but we do not define the pseudofunctor which sends an abelian category
 to its derived category (TODO).
-
 -/
 
 @[expose] public section

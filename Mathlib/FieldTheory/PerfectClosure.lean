@@ -7,45 +7,39 @@ module
 
 public import Mathlib.FieldTheory.Perfect
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # The perfect closure of a characteristic `p` ring
 
 ## Main definitions
 
-- `PerfectClosure`: the perfect closure of a characteristic `p` ring, which is the smallest
+* `PerfectClosure`: the perfect closure of a characteristic `p` ring, which is the smallest
   extension that makes frobenius surjective.
-
-- `PerfectClosure.mk K p (n, x)`: for `n : ℕ` and `x : K` this is `x ^ (p ^ -n)` viewed as
+* `PerfectClosure.mk K p (n, x)`: for `n : ℕ` and `x : K` this is `x ^ (p ^ -n)` viewed as
   an element of `PerfectClosure K p`. Every element of `PerfectClosure K p` is of this form
   (`PerfectClosure.mk_surjective`).
-
-- `PerfectClosure.of`: the structure map from `K` to `PerfectClosure K p`.
-
-- `PerfectClosure.lift`: given a ring `K` of characteristic `p` and a perfect ring `L` of the same
+* `PerfectClosure.of`: the structure map from `K` to `PerfectClosure K p`.
+* `PerfectClosure.lift`: given a ring `K` of characteristic `p` and a perfect ring `L` of the same
   characteristic, any homomorphism `K →+* L` can be lifted to `PerfectClosure K p`.
 
 ## Main results
 
-- `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
+* `PerfectClosure.induction_on`: to prove a result for all elements of the perfect closure, one only
   needs to prove it for all elements of the form `x ^ (p ^ -n)`.
-
-- `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
+* `PerfectClosure.mk_mul_mk`, `PerfectClosure.one_def`, `PerfectClosure.mk_add_mk`,
   `PerfectClosure.neg_mk`, `PerfectClosure.zero_def`, `PerfectClosure.mk_zero_zero`,
   `PerfectClosure.mk_zero`, `PerfectClosure.mk_inv`, `PerfectClosure.mk_pow`:
   how to do multiplication, addition, etc. on elements of form `x ^ (p ^ -n)`.
-
-- `PerfectClosure.mk_eq_iff`: when does `x ^ (p ^ -n)` equal.
-
-- `PerfectClosure.eq_iff`: same as `PerfectClosure.mk_eq_iff` but with additional assumption that
+* `PerfectClosure.mk_eq_iff`: when does `x ^ (p ^ -n)` equal.
+* `PerfectClosure.eq_iff`: same as `PerfectClosure.mk_eq_iff` but with additional assumption that
   `K` being reduced, hence gives a simpler criterion.
-
-- `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
+* `PerfectClosure.instPerfectRing`: `PerfectClosure K p` is a perfect ring.
 
 ## Tags
 
 perfect ring, perfect closure
-
 -/
 
 @[expose] public section

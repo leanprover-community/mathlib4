@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Order.Filter.AtTopBot.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Convergence to ±infinity in linear ordered (semi)fields
 -/
@@ -24,7 +27,7 @@ variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
   {l : Filter β} {f : β → α} {r c : α} {n : ℕ}
 
 /-!
-### Multiplication by constant: iff lemmas
+# Multiplication by constant: iff lemmas
 -/
 
 /-- If `r` is a positive constant, `fun x ↦ r * f x` tends to infinity along a filter

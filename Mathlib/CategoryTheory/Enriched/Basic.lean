@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Enriched categories
 
@@ -32,8 +35,8 @@ We verify that when `V = Type v`, all these notions reduce to the usual ones.
 
 ## References
 
-* [Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_]
-  [morrison-penney-enriched]
+* ‍\[Kim Morrison, David Penneys, _Monoidal Categories Enriched in Braided Monoidal Categories_\]
+  ‍\[morrison-penney-enriched\]
 -/
 
 @[expose] public section
@@ -51,7 +54,8 @@ open MonoidalCategory
 
 variable (V : Type v) [Category.{w} V] [MonoidalCategory V]
 
-/-- A `V`-category is a category enriched in a monoidal category `V`.
+/--
+A `V`-category is a category enriched in a monoidal category `V`.
 
 Note that we do not assume that `V` is a concrete category,
 so there may not be an "honest" underlying category at all!
@@ -188,7 +192,8 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
-/-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
+/--
+A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
 
@@ -387,9 +392,11 @@ We now turn to natural transformations between `V`-functors.
 
 The most commonly encountered definition of an enriched natural transformation
 is a collection of morphisms
+
 ```
 (𝟙_ W) ⟶ (F.obj X ⟶[V] G.obj X)
 ```
+
 satisfying an appropriate analogue of the naturality square.
 (c.f. https://ncatlab.org/nlab/show/enriched+natural+transformation)
 
@@ -414,9 +421,11 @@ whether or not that object actually exists.
 This presheaf has components `(enrichedNatTransYoneda F G).obj A`
 what we call the `A`-graded enriched natural transformations,
 which are collections of morphisms
+
 ```
 A ⟶ (F.obj X ⟶[V] G.obj X)
 ```
+
 satisfying a similar analogue of the naturality square,
 this time incorporating a half-braiding on `A`.
 

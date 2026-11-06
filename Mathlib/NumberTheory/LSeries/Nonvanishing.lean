@@ -8,6 +8,9 @@ module
 public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 public import Mathlib.NumberTheory.LSeries.DirichletContinuation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The L-function of a Dirichlet character does not vanish on Re(s) ≥ 1
 
@@ -19,8 +22,8 @@ As a consequence, we have the corresponding statement for the Riemann ζ functio
 `riemannZeta_ne_zero_of_one_le_re` (which does not require `s ≠ 1`, since the junk value at `s = 1`
 happens to be non-zero).
 
-These results are prerequisites for the **Prime Number Theorem** and
-**Dirichlet's Theorem** on primes in arithmetic progressions.
+These results are prerequisites for the *Prime Number Theorem* and
+*Dirichlet's Theorem* on primes in arithmetic progressions.
 
 Using the functional equation, these results are extended to the left half-plane in
 `LFunction_eq_zero_iff_of_re_nonpos` and `riemannZeta_eq_zero_iff_of_re_nonpos`, excluding negative
@@ -66,7 +69,7 @@ namespace DirichletCharacter
 section quadratic
 
 /-!
-### Convolution of a Dirichlet character with ζ
+# Convolution of a Dirichlet character with ζ
 
 We define `DirichletCharacter.zetaMul χ` to be the arithmetic function obtained by
 taking the product (as arithmetic functions = Dirichlet convolution) of the

@@ -9,6 +9,9 @@ public import Mathlib.Analysis.Convex.Gauge
 
 import Mathlib.Analysis.Normed.Module.Convex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # "Gauge rescale" homeomorphism between convex sets
 
@@ -30,12 +33,14 @@ section Module
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
-/-- The gauge rescale map `gaugeRescale s t` sends each point `x` to the point `y` on the same ray
+/--
+The gauge rescale map `gaugeRescale s t` sends each point `x` to the point `y` on the same ray
 that has the same gauge w.r.t. `t` as `x` has w.r.t. `s`.
 
 The characteristic property is satisfied if `gauge t x ≠ 0`, see `gauge_gaugeRescale'`.
 In particular, it is satisfied for all `x`,
-provided that `t` is absorbent and von Neumann bounded. -/
+provided that `t` is absorbent and von Neumann bounded.
+-/
 def gaugeRescale (s t : Set E) (x : E) : E := (gauge s x / gauge t x) • x
 
 theorem gaugeRescale_def (s t : Set E) (x : E) :
@@ -152,13 +157,15 @@ theorem image_gaugeRescaleHomeomorph_closure {s t : Set E}
   exact (mapsTo_gaugeRescale_closure htc ht₀ hsc
     (mem_of_mem_nhds hs₀) (absorbent_nhds_zero hs₀)).image_subset
 
-/-- Given two convex bounded sets in a topological vector space with nonempty interiors,
+/--
+Given two convex bounded sets in a topological vector space with nonempty interiors,
 there exists a homeomorphism of the ambient space
 that sends the interior, the closure, and the frontier of one set
 to the interior, the closure, and the frontier of the other set.
 
 In particular, if both `s` and `t` are open set or both `s` and `t` are closed sets,
-then `e` maps `s` to `t`. -/
+then `e` maps `s` to `t`.
+-/
 theorem exists_homeomorph_image_eq {s t : Set E}
     (hsc : Convex ℝ s) (hsne : (interior s).Nonempty) (hsb : IsVonNBounded ℝ s)
     (hst : Convex ℝ t) (htne : (interior t).Nonempty) (htb : IsVonNBounded ℝ t) :

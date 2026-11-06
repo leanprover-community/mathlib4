@@ -13,6 +13,9 @@ public import Mathlib.Data.Finsupp.Basic
 public import Mathlib.Data.Finsupp.SMulWithZero
 public import Mathlib.Order.Preorder.Finsupp
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pointwise order on finitely supported functions
 
@@ -39,7 +42,9 @@ namespace Finsupp
   simp [mapDomain_apply, Finsupp.sum, single_apply]
   grind [Finset.sum_eq_zero_iff_of_nonneg, Finsupp.le_def]
 
-/-! ### Order structures -/
+/-!
+# Order structures
+-/
 
 
 section Zero
@@ -135,7 +140,9 @@ lemma mapDomain_lt_mapDomain_iff_lt [Preorder α] {f : ι → κ} (h : f.Injecti
 
 end MapDomain
 
-/-! ### Algebraic order structures -/
+/-!
+# Algebraic order structures
+-/
 
 section OrderedAddCommMonoid
 variable [AddCommMonoid α] [Preorder α] [IsOrderedAddMonoid α]
@@ -304,11 +311,13 @@ lemma embDomain_tsub (f : ι ↪ κ) (f1 f2 : ι →₀ α) :
     (f1 - f2).embDomain f = f1.embDomain f - f2.embDomain f := by
   simp_rw [embDomain_eq_mapDomain, mapDomain_tsub f.injective]
 
-/-- The support of a sum is the union of the supports, when the coefficients satisfy
+/--
+The support of a sum is the union of the supports, when the coefficients satisfy
 `CanonicallyOrderedAdd`.
 
 In the case where the supports are disjoint, there is also `Finsupp.support_add_eq`,
-which holds in any `AddZeroClass`. -/
+which holds in any `AddZeroClass`.
+-/
 lemma support_add_eq_union {f1 f2 : ι →₀ α} [DecidableEq ι] :
     (f1 + f2).support = f1.support ∪ f2.support :=
   le_antisymm support_add <| Finset.union_subset
@@ -336,7 +345,9 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
 
 end LinearOrder
 
-/-! ### Some lemmas about `ℕ` -/
+/-!
+# Some lemmas about `ℕ`
+-/
 
 section Nat
 

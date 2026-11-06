@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Cospan
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # PullbackCone
 
@@ -17,6 +20,7 @@ This file provides API for interacting with cones (resp. cocones) in the case of
 
 * `PullbackCone f g`: Given morphisms `f : X ⟶ Z` and `g : Y ⟶ Z`, a term `t : PullbackCone f g`
   provides the data of a cone pictured as follows
+
   ```
   t.pt ---t.snd---> Y
     |               |
@@ -25,11 +29,12 @@ This file provides API for interacting with cones (resp. cocones) in the case of
     v               v
     X -----f------> Z
   ```
+
   The type `PullbackCone f g` is implemented as an abbreviation for `Cone (cospan f g)`, so general
   results about cones are also available for `PullbackCone f g`.
-
 * `PushoutCone f g`: Given morphisms `f : X ⟶ Y` and `g : X ⟶ Z`, a term `t : PushoutCone f g`
   provides the data of a cocone pictured as follows
+
   ```
     X -----f------> Y
     |               |
@@ -38,19 +43,23 @@ This file provides API for interacting with cones (resp. cocones) in the case of
     v               v
     Z ---t.inl---> t.pt
   ```
+
   Similar to `PullbackCone`, `PushoutCone f g` is implemented as an abbreviation for
   `Cocone (span f g)`, so general results about cocones are also available for `PushoutCone f g`.
 
 ## API
+
 We summarize the most important parts of the API for pullback cones here. The dual notions for
 pushout cones are also available in this file.
 
 Various ways of constructing pullback cones:
+
 * `PullbackCone.mk` constructs a term of `PullbackCone f g` given morphisms `fst` and `snd` such
   that `fst ≫ f = snd ≫ g`.
 * `PullbackCone.flip` is the `PullbackCone` obtained by flipping `fst` and `snd`.
 
 Interaction with `IsLimit`:
+
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
 * `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
@@ -61,10 +70,12 @@ Interaction with `IsLimit`:
   of a limit `PullbackCone` are equal.
 
 Interaction with `CommSq`:
+
 * `CommSq.cone` and `CommSq.cocone` provide the implicit (non-limiting) pullback cone and pushout
   cocone associated with a commuting square
 
 ## References
+
 * [Stacks: Fibre products](https://stacks.math.columbia.edu/tag/001U)
 * [Stacks: Pushouts](https://stacks.math.columbia.edu/tag/0025)
 -/
@@ -266,13 +277,15 @@ end Flip
 
 end PullbackCone
 
-/-- This is a helper construction that can be useful when verifying that a category has all
+/--
+This is a helper construction that can be useful when verifying that a category has all
 pullbacks. Given `F : WalkingCospan ⥤ C`, which is really the same as
 `cospan (F.map inl) (F.map inr)`, and a pullback cone on `F.map inl` and `F.map inr`, we
 get a cone on `F`.
 
 If you're thinking about using this, have a look at `hasPullbacks_of_hasLimit_cospan`,
-which you may find to be an easier way of achieving your goal. -/
+which you may find to be an easier way of achieving your goal.
+-/
 @[simps]
 def Cone.ofPullbackCone {F : WalkingCospan ⥤ C} (t : PullbackCone (F.map inl) (F.map inr)) :
     Cone F where
@@ -484,13 +497,15 @@ end Flip
 
 end PushoutCocone
 
-/-- This is a helper construction that can be useful when verifying that a category has all
+/--
+This is a helper construction that can be useful when verifying that a category has all
 pushout. Given `F : WalkingSpan ⥤ C`, which is really the same as
 `span (F.map fst) (F.map snd)`, and a pushout cocone on `F.map fst` and `F.map snd`,
 we get a cocone on `F`.
 
 If you're thinking about using this, have a look at `hasPushouts_of_hasColimit_span`, which
-you may find to be an easier way of achieving your goal. -/
+you may find to be an easier way of achieving your goal.
+-/
 @[simps]
 def Cocone.ofPushoutCocone {F : WalkingSpan ⥤ C} (t : PushoutCocone (F.map fst) (F.map snd)) :
     Cocone F where

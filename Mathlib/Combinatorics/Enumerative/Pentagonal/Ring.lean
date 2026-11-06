@@ -9,6 +9,9 @@ public import Mathlib.Combinatorics.Enumerative.Pentagonal.Basic
 public import Mathlib.Topology.Algebra.InfiniteSum.Ring
 public import Mathlib.Topology.Algebra.TopologicallyNilpotent
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Pentagonal number theorem
 
@@ -26,7 +29,6 @@ modulo summability and multipliability. The complete proof for formal power seri
 ## References
 
 https://math.stackexchange.com/questions/55738/how-to-prove-eulers-pentagonal-theorem-some-hints-will-help
-
 -/
 
 namespace Pentagonal
@@ -38,23 +40,28 @@ variable {R : Type*} [CommRing R]
 /--
 We define an auxiliary sequence
 
-$$ a_{k, n} = x^{(k+1)n} \prod_{i=0}^{n} (1 - x^{k + i + 1}) $$
+$$`  a_{k, n} = x^{(k+1)n} \prod_{i=0}^{n} (1 - x^{k + i + 1})  `
 
 We will also use its sum
 
-$$ A_k = \sum_{n=0}^{\infty} a_{k, n} $$ -/
+$$`  A_k = \sum_{n=0}^{\infty} a_{k, n}  `
+-/
 def powMulProdOneSubPow (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))
 
-/-- And a second auxiliary sequence
+/--
+And a second auxiliary sequence
 
-$$ b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} (1 - x^{k + i + 2}) $$ -/
+$$`  b_{k, n} = x^{(k+1)n} (x^{2k + n + 3} - 1) \prod_{i=0}^{n-1} (1 - x^{k + i + 2})  `
+-/
 def aux (k n : ℕ) (x : R) : R :=
   x ^ ((k + 1) * n) * (x ^ (2 * k + n + 3) - 1) * ∏ i ∈ Finset.range n, (1 - x ^ (k + i + 2))
 
-/-- `powMulProdOneSubPow` and `aux` have relation
+/--
+`powMulProdOneSubPow` and `aux` have relation
 
-$$ a_{k,n} + x^{3k + 5}a_{k + 1, n} = b_{k, n+1} - b_{k, n} $$ -/
+$$`  a_{k,n} + x^{3k + 5}a_{k + 1, n} = b_{k, n+1} - b_{k, n}  `
+-/
 theorem aux_sub_aux (k n : ℕ) (x : R) :
     powMulProdOneSubPow k n x + x ^ (3 * k + 5) * powMulProdOneSubPow (k + 1) n x =
     aux k (n + 1) x - aux k n x := by
@@ -64,9 +71,10 @@ theorem aux_sub_aux (k n : ℕ) (x : R) :
 
 variable [TopologicalSpace R] [IsTopologicalRing R] [T2Space R]
 
-/-- By summing with telescoping, we get a recurrence formula for $A$
+/--
+By summing with telescoping, we get a recurrence formula for $`A`
 
-$$ A_k = 1 - x^{2k + 3} - x^{3k + 5}A_{k + 1} $$
+$$`  A_k = 1 - x^{2k + 3} - x^{3k + 5}A_{k + 1}  `
 -/
 theorem tsum_powMulProdOneSubPow (k : ℕ) {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
@@ -87,9 +95,11 @@ theorem tsum_powMulProdOneSubPow (k : ℕ) {x : R} (hx : IsTopologicallyNilpoten
     convert h (k + 1) using 4
     ring
 
-/-- The Euler function is related to $A_0$ by
+/--
+The Euler function is related to $`A_0` by
 
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = 1 - x - x^2 A_0 $$ -/
+$$`  \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = 1 - x - x^2 A_0  `
+-/
 theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (h : ∀ k, Multipliable fun n ↦ 1 - x ^ (n + k + 1)) :
@@ -110,11 +120,11 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow_zero {x : R}
       ← pow_add x 1 1, one_add_one_eq_two, mul_assoc (x ^ 2)]
   simp [hsum.tsum_mul_left, powMulProdOneSubPow]
 
-/-- Applying the recurrence formula repeatedly, we get
+/--
+Applying the recurrence formula repeatedly, we get
 
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
-\left(\sum_{k=0}^{j} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) \right) +
-(-1)^{j+1}x^{(j+1)(3j+4)/2}A_j $$ -/
+$$`  \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \left(\sum_{k=0}^{j} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) \right) + (-1)^{j+1}x^{(j+1)(3j+4)/2}A_j  `
+-/
 theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable (powMulProdOneSubPow k · x))
     (h : ∀ k, Multipliable (fun n ↦ 1 - x ^ (n + k + 1))) :
@@ -139,10 +149,11 @@ theorem tprod_one_sub_pow_eq_powMulProdOneSubPow (j : ℕ) {x : R} (hx : IsTopol
     simp_rw [h]
     ring_nf
 
-/-- **Pentagonal number theorem**, assuming appropriate multipliability and summability.
+/--
+*Pentagonal number theorem*, assuming appropriate multipliability and summability.
 
-$$ \prod_{n = 0}^{\infty} (1 - x^{n + 1}) =
-\sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right) $$ -/
+$$`  \prod_{n = 0}^{\infty} (1 - x^{n + 1}) = \sum_{k=0}^{\infty} (-1)^k \left(x^{k(3k+1)/2} - x^{(k+1)(3k+2)/2}\right)  `
+-/
 public theorem tprod_one_sub_pow {x : R} (hx : IsTopologicallyNilpotent x)
     (hsum : ∀ k, Summable
       (fun n ↦ x ^ ((k + 1) * n) * ∏ i ∈ Finset.range (n + 1), (1 - x ^ (k + i + 1))))

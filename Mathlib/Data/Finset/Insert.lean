@@ -11,6 +11,9 @@ public import Mathlib.Data.Finset.Empty
 public import Mathlib.Data.Multiset.FinsetOps
 public import Mathlib.Util.Delaborators
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing finite sets by adding one element
 
@@ -30,7 +33,6 @@ all ways to construct a `Finset` by adding one element.
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -47,19 +49,24 @@ variable {α : Type*} {β : Type*}
 
 namespace Finset
 
-/-! ### Subset and strict subset relations -/
+/-!
+# Subset and strict subset relations
+-/
 
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
-/-! ### singleton -/
+/-!
+# singleton
+-/
 
 
 section Singleton
 
 variable {s : Finset α} {a b : α}
 
-/-- `{a} : Finset a` is the set `{a}` containing `a` and nothing else.
+/--
+`{a} : Finset a` is the set `{a}` containing `a` and nothing else.
 
 This differs from `insert a ∅` in that it does not require a `DecidableEq` instance for `α`.
 -/
@@ -231,7 +238,9 @@ instance Nontrivial.instDecidablePred : DecidablePred (Finset.Nontrivial (α := 
 
 end Singleton
 
-/-! ### cons -/
+/-!
+# cons
+-/
 
 
 section Cons
@@ -345,7 +354,9 @@ def consPiProdEquiv [DecidableEq α] {s : Finset α} (f : α → Type*) {a : α}
 
 end Cons
 
-/-! ### insert -/
+/-!
+# insert
+-/
 
 section Insert
 

@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.PropInstances
 public import Mathlib.Tactic.Lift
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Basic properties of sets
 
@@ -30,24 +33,20 @@ Lean.
 
 Notation used here:
 
--  `f : α → β` is a function,
-
--  `s : Set α` and `s₁ s₂ : Set α` are subsets of `α`
-
--  `t : Set β` is a subset of `β`.
+* `f : α → β` is a function,
+* `s : Set α` and `s₁ s₂ : Set α` are subsets of `α`
+* `t : Set β` is a subset of `β`.
 
 Definitions in the file:
 
 * `Nonempty s : Prop` : the predicate `s ≠ ∅`. Note that this is the preferred way to express the
   fact that `s` has an element (see the Implementation Notes).
-
 * `inclusion s₁ s₂ : ↥s₁ → ↥s₂` : the map `↥s₁ → ↥s₂` induced by an inclusion `s₁ ⊆ s₂`.
 
 ## Implementation notes
 
 * `s.Nonempty` is to be preferred to `s ≠ ∅` or `∃ x, x ∈ s`. It has the advantage that
   the `s.Nonempty` dot notation can be used.
-
 * For `s : Set α`, do not use `Subtype s`. Instead use `↥s` or `(s : Type*)` or `s`.
 
 ## Tags
@@ -59,7 +58,9 @@ set, sets, subset, subsets, union, intersection, insert, singleton, powerset
 
 assert_not_exists HeytingAlgebra RelIso
 
-/-! ### Set coercion to a type -/
+/-!
+# Set coercion to a type
+-/
 
 open Function
 
@@ -219,7 +220,9 @@ theorem ofPred_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := 
 
 @[deprecated (since := "2026-07-09")] alias setOf_inj := ofPred_inj
 
-/-! ### Lemmas about `mem` and `ofPred` -/
+/-!
+# Lemmas about `mem` and `ofPred`
+-/
 
 theorem ofPred_bijective : Bijective (ofPred : (α → Prop) → Set α) :=
   ⟨ofPred_injective, fun s => ⟨s.Mem, rfl⟩⟩
@@ -258,7 +261,9 @@ theorem ofPred_or {p q : α → Prop} : { a | p a ∨ q a } = { a | p a } ∪ { 
 
 @[deprecated (since := "2026-07-09")] alias setOf_or := ofPred_or
 
-/-! ### Subset and strict subset relations -/
+/-!
+# Subset and strict subset relations
+-/
 
 -- TODO(Jeremy): write a tactic to unfold specific instances of generic notation?
 @[grind =]
@@ -309,7 +314,9 @@ theorem not_univ_subset : ¬univ ⊆ s ↔ ∃ a, a ∉ s := by
 
 lemma eq_of_forall_subset_iff (h : ∀ u, s ⊆ u ↔ t ⊆ u) : s = t := eq_of_forall_ge_iff h
 
-/-! ### Definition of strict subsets `s ⊂ t` and basic properties. -/
+/-!
+# Definition of strict subsets `s ⊂ t` and basic properties.
+-/
 
 protected theorem eq_or_ssubset_of_subset (h : s ⊆ t) : s = t ∨ s ⊂ t :=
   eq_or_lt_of_le h
@@ -340,7 +347,9 @@ theorem notMem_empty (x : α) : x ∉ (∅ : Set α) :=
 theorem not_notMem : ¬a ∉ s ↔ a ∈ s :=
   not_not
 
-/-! ### Non-empty sets -/
+/-!
+# Non-empty sets
+-/
 
 theorem nonempty_coe_sort {s : Set α} : Nonempty ↥s ↔ s.Nonempty :=
   nonempty_subtype
@@ -429,7 +438,9 @@ instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
 
 theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
 
-/-! ### Lemmas about the empty set -/
+/-!
+# Lemmas about the empty set
+-/
 
 theorem empty_def : (∅ : Set α) = { _x : α | False } :=
   rfl
@@ -554,12 +565,10 @@ theorem empty_ssubset : ∅ ⊂ s ↔ s.Nonempty :=
 alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
 /-!
-
-### Universal set.
+# Universal set.
 
 In Lean `@univ α` (or `univ : Set α`) is the set that contains all elements of type `α`.
 Mathematically it is the same as `α` but it has a different type.
-
 -/
 
 
@@ -637,7 +646,9 @@ alias ⟨_, Nonempty.compl_ssubset_univ⟩ := compl_ssubset_univ
 instance nontrivial_of_nonempty [Nonempty α] : Nontrivial (Set α) :=
   ⟨⟨∅, univ, empty_ne_univ⟩⟩
 
-/-! ### Lemmas about union -/
+/-!
+# Lemmas about union
+-/
 
 theorem union_def {s₁ s₂ : Set α} : s₁ ∪ s₂ = { a | a ∈ s₁ ∨ a ∈ s₂ } :=
   rfl
@@ -755,7 +766,9 @@ theorem exists_mem_union {p : α → Prop} :
     (∃ x ∈ s ∪ t, p x) ↔ (∃ x ∈ s, p x) ∨ (∃ x ∈ t, p x) := by
   simp_rw [mem_union, or_and_right, exists_or]
 
-/-! ### Lemmas about intersection -/
+/-!
+# Lemmas about intersection
+-/
 
 theorem inter_def {s₁ s₂ : Set α} : s₁ ∩ s₂ = { a | a ∈ s₁ ∧ a ∈ s₂ } :=
   rfl
@@ -867,7 +880,9 @@ theorem inter_ssubset_right_iff : s ∩ t ⊂ t ↔ ¬ t ⊆ s :=
 theorem inter_ssubset_left_iff : s ∩ t ⊂ s ↔ ¬ s ⊆ t :=
   inf_lt_left
 
-/-! ### Distributivity laws -/
+/-!
+# Distributivity laws
+-/
 
 theorem inter_union_distrib_left (s t u : Set α) : s ∩ (t ∪ u) = s ∩ t ∪ s ∩ u :=
   inf_sup_left _ _ _
@@ -907,7 +922,9 @@ theorem exists_mem_inter {p : α → Prop} :
     (∃ x ∈ s ∩ t, p x) ↔ (∃ x ∈ s, x ∈ t ∧ p x) := by
   simp_rw [mem_inter_iff, and_assoc]
 
-/-! ### Lemmas about sets defined as `{x ∈ s | p x}`. -/
+/-!
+# Lemmas about sets defined as `{x ∈ s | p x}`.
+-/
 
 section Sep
 
@@ -983,7 +1000,9 @@ alias sep_setOf := sep_ofPred
 
 end Sep
 
-/-! ### Powerset -/
+/-!
+# Powerset
+-/
 
 theorem mem_powerset {x s : Set α} (h : x ⊆ s) : x ∈ 𝒫 s := @h
 
@@ -1014,7 +1033,9 @@ theorem powerset_empty : 𝒫 (∅ : Set α) = {∅} :=
 theorem powerset_univ : 𝒫 (univ : Set α) = univ :=
   eq_univ_of_forall subset_univ
 
-/-! ### Sets defined as an if-then-else -/
+/-!
+# Sets defined as an if-then-else
+-/
 
 theorem mem_dite_univ_right (p : Prop) [Decidable p] (t : p → Set α) (x : α) :
     (x ∈ if h : p then t h else univ) ↔ ∀ h : p, x ∈ t h := by
@@ -1084,7 +1105,9 @@ theorem mem_iff_nonempty {α : Type*} [Subsingleton α] {s : Set α} {x : α} : 
 
 end Subsingleton
 
-/-! ### Decidability instances for sets -/
+/-!
+# Decidability instances for sets
+-/
 
 namespace Set
 

@@ -9,6 +9,9 @@ public import Mathlib.NumberTheory.Padics.RingHoms
 
 import Mathlib.Analysis.Normed.Field.ProperSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Properness of the p-adic numbers
 
@@ -17,18 +20,18 @@ and that `ℚ_[p]` is proper.
 
 ## Main results
 
-- `PadicInt.totallyBounded_univ` : The set of p-adic integers `ℤ_[p]` is totally bounded.
-- `PadicInt.compactSpace` : The set of p-adic integers `ℤ_[p]` is a compact topological space.
-- `Padic.instProperSpace` : The field of p-adic numbers `ℚ_[p]` is a proper metric space.
+* `PadicInt.totallyBounded_univ` : The set of p-adic integers `ℤ_[p]` is totally bounded.
+* `PadicInt.compactSpace` : The set of p-adic integers `ℤ_[p]` is a compact topological space.
+* `Padic.instProperSpace` : The field of p-adic numbers `ℚ_[p]` is a proper metric space.
 
 ## Notation
 
-- `p` : Is a natural prime.
+* `p` : Is a natural prime.
 
 ## References
 
 Gouvêa, F. Q. (2020) p-adic Numbers An Introduction. 3rd edition.
-  Cham, Springer International Publishing
+Cham, Springer International Publishing
 -/
 
 public section

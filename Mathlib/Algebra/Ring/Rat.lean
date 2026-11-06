@@ -11,12 +11,15 @@ public import Mathlib.Algebra.Ring.Basic
 public import Mathlib.Algebra.Ring.Int.Defs
 public import Mathlib.Data.Rat.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The rational numbers are a commutative ring
 
 This file contains the commutative ring instance on the rational numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 -/
 
 public section
@@ -25,7 +28,9 @@ assert_not_exists IsOrderedMonoid Field PNat Nat.gcd_greatest
 
 namespace Rat
 
-/-! ### Instances -/
+/-!
+# Instances
+-/
 
 instance commRing : CommRing ℚ where
   __ := addCommGroup
@@ -57,7 +62,7 @@ instance isDomain : IsDomain ℚ := NoZeroDivisors.to_isDomain _
 instance instCharZero : CharZero ℚ where cast_injective a b hab := by simpa using congr(num $hab)
 
 /-!
-### Extra instances to short-circuit type class resolution
+# Extra instances to short-circuit type class resolution
 
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
@@ -65,7 +70,9 @@ These also prevent non-computable instances being used to construct these instan
 instance commSemiring : CommSemiring ℚ := by infer_instance
 instance semiring : Semiring ℚ := by infer_instance
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 lemma divInt_div_divInt_cancel_left {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
     n /. x / (d /. x) = n /. d := by

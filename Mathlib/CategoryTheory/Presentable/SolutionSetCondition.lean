@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 public import Mathlib.CategoryTheory.Presentable.Comma
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Accessible functors satisfy the solution set condition
 
@@ -16,8 +19,9 @@ then `F` satisfies the solution set condition (this is corollary 2.45 in
 the book by Adámek and Rosický).
 
 ## References
-* [Adámek, J. and Rosický, J., *Locally presentable and accessible categories*][Adamek_Rosicky_1994]
 
+* ‍\[Adámek, J. and Rosický, J., _Locally presentable and accessible
+  categories_\]\[Adamek\_Rosicky\_1994\]
 -/
 
 @[expose] public section
@@ -28,8 +32,10 @@ namespace CategoryTheory
 
 variable {C D : Type*} [Category* C] [Category* D]
 
-/-- An accessible functor between accessible categories satisfies the solution set condition.
-This is corollary 2.45 in [Adamek_Rosicky_1994]. -/
+/--
+An accessible functor between accessible categories satisfies the solution set condition.
+This is corollary 2.45 in \[Adamek\_Rosicky\_1994\].
+-/
 lemma SolutionSetCondition.of_isCardinalAccessible
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     (F : C ⥤ D) [Functor.IsAccessible.{w} F] :

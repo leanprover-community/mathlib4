@@ -9,6 +9,9 @@ public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ZMod.Defs
 public import Mathlib.SetTheory.Cardinal.ToNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Finite Cardinality Functions
 

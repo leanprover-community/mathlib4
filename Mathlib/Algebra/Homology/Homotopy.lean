@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Chain homotopies
 
@@ -490,7 +493,8 @@ variable (e : P ⟶ Q) (zero : P.X 0 ⟶ Q.X 1) (comm_zero : e.f 0 = zero ≫ Q.
       Σ' f'' : P.X (n + 2) ⟶ Q.X (n + 3),
         e.f (n + 2) = P.d (n + 2) (n + 1) ≫ p.2.1 + f'' ≫ Q.d (n + 3) (n + 2))
 
-/-- An auxiliary construction for `mkInductive`.
+/--
+An auxiliary construction for `mkInductive`.
 
 Here we build by induction a family of diagrams,
 but don't require at the type level that these successive diagrams actually agree.
@@ -545,7 +549,8 @@ theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
   rcases i with (_ | _ | i) <;> simp [mkInductiveAux₂]
 
 set_option backward.defeqAttrib.useBackward true in
-/-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
+/--
+A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed chain complexes,
 working by induction.
 
 You need to provide the components of the homotopy in degrees 0 and 1,
@@ -623,7 +628,8 @@ variable (e : P ⟶ Q) (zero : P.X 1 ⟶ Q.X 0) (comm_zero : e.f 0 = P.d 0 1 ≫
       Σ' f'' : P.X (n + 3) ⟶ Q.X (n + 2),
         e.f (n + 2) = p.2.1 ≫ Q.d (n + 1) (n + 2) + P.d (n + 2) (n + 3) ≫ f'')
 
-/-- An auxiliary construction for `mkCoinductive`.
+/--
+An auxiliary construction for `mkCoinductive`.
 
 Here we build by induction a family of diagrams,
 but don't require at the type level that these successive diagrams actually agree.
@@ -677,7 +683,8 @@ theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
   rcases i with (_ | _ | i) <;> simp [mkCoinductiveAux₂]
 
 set_option backward.defeqAttrib.useBackward true in
-/-- A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
+/--
+A constructor for a `Homotopy e 0`, for `e` a chain map between `ℕ`-indexed cochain complexes,
 working by induction.
 
 You need to provide the components of the homotopy in degrees 0 and 1,
@@ -731,7 +738,8 @@ lemma nullHomotopicMap_f_succ (n : ℕ) :
 
 end ChainComplex
 
-/-- A homotopy equivalence between two chain complexes consists of a chain map each way,
+/--
+A homotopy equivalence between two chain complexes consists of a chain map each way,
 and homotopies from the compositions to the identity chain maps.
 
 Note that this contains data;

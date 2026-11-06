@@ -11,6 +11,9 @@ public meta import Qq
 public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Notation classes for lattice operations
 
@@ -34,7 +37,6 @@ if and only if the order on `α` does not have a `LinearOrder α` instance (wher
 This is so that in a lattice we can use the same underlying constants `max`/`min`
 as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`.
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
-
 -/
 
 public section
@@ -52,7 +54,9 @@ postfix:1024 "ᶜ" => compl
 
 initialize_simps_projections Compl
 
-/-! ### `Sup` and `Inf` -/
+/-!
+# `Sup` and `Inf`
+-/
 
 attribute [ext] Min Max
 
@@ -142,7 +146,8 @@ attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
 set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
-/-- Syntax typeclass for Heyting negation `￢`.
+/--
+Syntax typeclass for Heyting negation `￢`.
 
 The difference between `Compl` and `HNot` is that the former belongs to Heyting algebras,
 while the latter belongs to co-Heyting algebras. They are both pseudo-complements, but `compl`

@@ -8,6 +8,9 @@ module
 public import Mathlib.MeasureTheory.Integral.Average
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Integral average over an interval
 
@@ -18,18 +21,17 @@ formulas for this average:
 * `interval_average_eq`: `⨍ x in a..b, f x = (b - a)⁻¹ • ∫ x in a..b, f x`;
 * `interval_average_eq_div`: `⨍ x in a..b, f x = (∫ x in a..b, f x) / (b - a)`;
 * `exists_eq_interval_average_of_measure`:
-    `∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ`.
+  `∃ c ∈ Ι a b, f c = ⨍ x in Ι a b, f x ∂μ`.
 * `exists_eq_interval_average_of_nullSingletonClass`:
-    `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`.
+  `∃ c ∈ uIoo a b, f c = ⨍ x in Ι a b, f x ∂μ`.
 * `exists_eq_interval_average`:
-    `∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x`.
+  `∃ c ∈ uIoo a b, f c = ⨍ x in a..b, f x`.
 
 We also prove that `⨍ x in a..b, f x = ⨍ x in b..a, f x`, see `interval_average_symm`.
 
 ## Notation
 
 `⨍ x in a..b, f x`: average of `f` over the interval `Ι a b` w.r.t. the Lebesgue measure.
-
 -/
 
 public section

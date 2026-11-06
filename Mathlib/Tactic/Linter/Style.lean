@@ -16,31 +16,35 @@ public import Mathlib.Tactic.DeclarationNames
 
 meta import Lean.Parser.Command
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
-## Style linters
+# Style linters
 
 This file contain linters about stylistic aspects: these are only about coding style,
 but do not affect correctness nor global coherence of mathlib.
 
 This file defines the following linters:
-- the `setOption` linter checks for the presence of `set_option` commands activating
+
+* the `setOption` linter checks for the presence of `set_option` commands activating
   options disallowed in mathlib: these are meant to be temporary, and not for polished code.
   It also checks for `maxHeartbeats` options being present which are not scoped to single commands.
-- the `missingEnd` linter checks for sections or namespaces which are not closed by the end
+* the `missingEnd` linter checks for sections or namespaces which are not closed by the end
   of the file: enforcing this invariant makes minimising files or moving code between files easier
-- the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
+* the `cdotLinter` linter checks for focusing dots `·` which are typed using a `.` instead:
   this is allowed Lean syntax, but it is nicer to be uniform
-- the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
+* the `dollarSyntax` linter checks for use of the dollar sign `$` instead of the `<|` pipe operator:
   similarly, both symbols have the same meaning, but mathlib prefers `<|` for the symmetry with
   the `|>` symbol
-- the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
+* the `lambdaSyntax` linter checks for uses of the `λ` symbol for anonymous functions,
   instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
-- the `longFile` linter checks for files which have more than 1500 lines
-- the `longLine` linter checks for lines which have more than 100 characters
-- the `openClassical` linter checks for `open (scoped) Classical` statements which are not
+* the `longFile` linter checks for files which have more than 1500 lines
+* the `longLine` linter checks for lines which have more than 100 characters
+* the `openClassical` linter checks for `open (scoped) Classical` statements which are not
   scoped to a single declaration
-- the `show` linter checks for `show`s that change the goal and should be replaced by `change`
-- the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
+* the `show` linter checks for `show`s that change the goal and should be replaced by `change`
+* the `nameCheck` linter checks for declarations whose names are in non-standard style, such as
   by containing a double underscore. The `defsWithUnderscore` environment linter checks for
   definitions whose name contains an underscore: that is also very likely to be a violation of
   mathlib's naming convention.
@@ -79,20 +83,21 @@ def parseSetOption : Syntax → Option Name
 public def isSetOption : Syntax → Bool :=
   fun stx ↦ parseSetOption stx matches some _name
 
-/-- The `setOption` linter: this lints any `set_option` command, term or tactic
+/--
+The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `debug`, `pp`, `profiler` or `trace` option.
 This also warns if an option containing `maxHeartbeats` (typically, the `maxHeartbeats` or
 `synthInstance.maxHeartbeats` option) or the `linter.flexible` or
-`backward.inferInstanceAs.wrap.reuseSubInstances ` option is set.
+`backward.inferInstanceAs.wrap.reuseSubInstances  ` option is set.
 
-**Why is this bad?** The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
+*Why is this bad?* The `debug`, `pp`, `profiler` and `trace` options are good for debugging,
 but should not be used in production code.
 
 `maxHeartbeats` options should be scoped as `set_option opt in ...` (and be followed by a comment
 explaining the need for them; another linter enforces this).
 The `linter.flexible` option should be scoped as `set_option opt in ...`.
 
-**How to fix this?** The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
+*How to fix this?* The `maxHeartbeats` and `linter.flexible` option changes can be scoped to
 individual commands, if they are truly necessary.
 New `backward.inferInstanceAs.wrap.reuseSubInstances` instances are technical debt,
 and should not be introduced.
@@ -176,7 +181,7 @@ initialize addModuleLinter missingEndLinter
 end Style.missingEnd
 
 /-!
-### The `cdot` linter
+# The `cdot` linter
 
 The `cdot` linter is a syntax-linter that flags uses of the "cdot" `·` that are achieved
 by typing a character different from `·`.
@@ -247,7 +252,7 @@ initialize addLinter cdotLinter
 end Style
 
 /-!
-### The `dollarSyntax` linter
+# The `dollarSyntax` linter
 
 The `dollarSyntax` linter flags uses of `<|` that are achieved by typing `$`.
 These are disallowed by the mathlib style guide, as using `<|` pairs better with `|>`.
@@ -287,7 +292,7 @@ initialize addLinter dollarSyntaxLinter
 end Style.dollarSyntax
 
 /-!
-### The `lambdaSyntax` linter
+# The `lambdaSyntax` linter
 
 The `lambdaSyntax` linter is a syntax linter that flags uses of the symbol `λ` to define anonymous
 functions, as opposed to the `fun` keyword. These are syntactically equivalent; mathlib style
@@ -333,7 +338,7 @@ initialize addLinter lambdaSyntaxLinter
 end Style.lambdaSyntax
 
 /-!
-### The "longFile" linter
+# The "longFile" linter
 
 The "longFile" linter emits a warning on files which are longer than a certain number of lines
 (1500 by default).
@@ -418,7 +423,9 @@ initialize addLinter longFileLinter
 
 end Style.longFile
 
-/-! ### The "longLine linter" -/
+/-!
+# The "longLine linter"
+-/
 
 /-- The "longLine" linter emits a warning on lines longer than
 `linter.style.longLine.maxLineLength` (which defaults to 100) characters.
@@ -483,12 +490,13 @@ initialize addLinter longLineLinter
 
 end Style.longLine
 
-/-- The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
+/--
+The `nameCheck` linter emits a warning on declarations whose name is non-standard style.
 (Currently, this only includes declarations whose name includes a double underscore.)
 
-**Why is this bad?** Double underscores in theorem names can be considered non-standard style and
+*Why is this bad?* Double underscores in theorem names can be considered non-standard style and
 probably have been introduced by accident.
-**How to fix this?** Use single underscores to separate parts of a name, following standard naming
+*How to fix this?* Use single underscores to separate parts of a name, following standard naming
 conventions.
 -/
 public register_option linter.style.nameCheck : Bool := {
@@ -520,8 +528,10 @@ def doubleUnderscore : Linter where run := withSetOptionIn fun stx => do
 
 initialize addLinter doubleUnderscore
 
-/-- Check `name` is a `Name` containing an underscore that should be linted against
+/--
+Check `name` is a `Name` containing an underscore that should be linted against
 by the `defsWithUnderscore` linter. Namely, we do not lint
+
 * names ending in an underscore, or in a namespace ending with an underscore,
 * names containing guillemets `«»` (these tend to be `term<something>` declarations,
   i.e. internal names for notation, not user-facing commands),
@@ -570,7 +580,9 @@ such names violate the naming convention. -/
 
 end Style.nameCheck
 
-/-! ### The "openClassical" linter -/
+/-!
+# The "openClassical" linter
+-/
 
 /-- The "openClassical" linter emits a warning on `open Classical` statements which are not
 scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
@@ -583,7 +595,8 @@ public register_option linter.style.openClassical : Bool := {
 
 namespace Style.openClassical
 
-/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+/--
+If `stx` is syntax describing an `open` command, `extractOpenNames stx`
 returns an array of the syntax corresponding to the opened names,
 omitting any renamed or hidden items.
 
@@ -620,7 +633,9 @@ initialize addLinter openClassicalLinter
 
 end Style.openClassical
 
-/-! ### The "show" linter -/
+/-!
+# The "show" linter
+-/
 
 /--
 The "show" linter emits a warning if the `show` tactic changed the goal. `show` should only be used
@@ -659,7 +674,7 @@ elab (name := «show») (priority := high) "show " newType:term : tactic => elab
 end Style
 
 /-!
-### The extended binder linter
+# The extended binder linter
 
 In mathlib we prefer writing the basic `∀`/`∃` binders over `∀ᵉ`/`∃ᵉ`. This is because the latter
 was used quite infrequently, so the cost of needing to learn this notation was greater

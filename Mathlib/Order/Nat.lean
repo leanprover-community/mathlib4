@@ -9,16 +9,20 @@ public import Mathlib.Data.Nat.Find
 public import Mathlib.Order.BoundedOrder.Basic
 public import Mathlib.Order.Bounds.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The natural numbers form a linear order
 
 This file contains the linear order instance on the natural numbers.
 
-See note [foundational algebra order theory].
+See note \[foundational algebra order theory\].
 
 ## TODO
 
-Move the `LinearOrder ℕ` instance here (https://github.com/leanprover-community/mathlib4/pull/13092).
+Move the `LinearOrder ℕ` instance here
+(https://github.com/leanprover-community/mathlib4/pull/13092).
 -/
 
 public section
@@ -32,7 +36,9 @@ instance instOrderBot : OrderBot ℕ where
 instance instNoMaxOrder : NoMaxOrder ℕ where
   exists_gt n := ⟨n + 1, n.lt_succ_self⟩
 
-/-! ### Miscellaneous lemmas -/
+/-!
+# Miscellaneous lemmas
+-/
 
 @[simp high] protected lemma bot_eq_zero : ⊥ = 0 := rfl
 

@@ -10,10 +10,13 @@ public import Mathlib.Data.Nat.Init
 public import Mathlib.Tactic.OfNat
 public import Mathlib.Tactic.SplitIfs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cast of natural numbers
 
-This file defines the *canonical* homomorphism from the natural numbers into an
+This file defines the _canonical_ homomorphism from the natural numbers into an
 `AddMonoid` with a one.  In additive monoids with one, there exists a unique
 such homomorphism and we store it in the `natCast : ℕ → R` field.
 
@@ -52,13 +55,16 @@ in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 Rather than referencing this library note, use `ofNat(n)` as a shorthand for
 `no_index (OfNat.ofNat n)`.
 
-Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
+Some discussion is [on Zulip
+here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
 
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
     (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
-/-! ### Additive monoids with one -/
+/-!
+# Additive monoids with one
+-/
 
 /-- An `AddMonoidWithOne` is an `AddMonoid` with a `1`.
 It also contains data for the unique homomorphism `ℕ → R`. -/

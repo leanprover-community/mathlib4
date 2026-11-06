@@ -7,11 +7,14 @@ module
 
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Locally integrable functions
 
-A function is called *locally integrable* (`MeasureTheory.LocallyIntegrable`) if it is integrable
-on a neighborhood of every point. More generally, it is *locally integrable on `s`* if it is
+A function is called _locally integrable_ (`MeasureTheory.LocallyIntegrable`) if it is integrable
+on a neighborhood of every point. More generally, it is _locally integrable on `s`_ if it is
 locally integrable on a neighbourhood within `s` of any point of `s`.
 
 This file contains properties of locally integrable functions, and integrability results
@@ -40,13 +43,15 @@ namespace MeasureTheory
 
 section LocallyIntegrableOn
 
-/-- A function `f : X → E` is *locally integrable on s*, for `s ⊆ X`, if for every `x ∈ s` there is
+/--
+A function `f : X → E` is _locally integrable on s_, for `s ⊆ X`, if for every `x ∈ s` there is
 a neighbourhood of `x` within `s` on which `f` is integrable.
 
 Note that this is, in general, strictly weaker than local integrability with respect to
 `μ.restrict s`. For example, `fun (x : ℝ) ↦ 1/x` is locally integrable on `Set.Ioo 0 1` with
-respect to the Lebesgue measure, but it is *not* locally integrable with respect to the
-Lebesgue measure restricted to `Set.Ioo 0 1`. -/
+respect to the Lebesgue measure, but it is _not_ locally integrable with respect to the
+Lebesgue measure restricted to `Set.Ioo 0 1`.
+-/
 def LocallyIntegrableOn (f : X → ε) (s : Set X) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, x ∈ s → IntegrableAtFilter f (𝓝[s] x) μ
 
@@ -233,9 +238,11 @@ protected theorem LocallyIntegrableOn.smul {𝕜 : Type*} [NormedField 𝕜] [No
 
 end LocallyIntegrableOn
 
-/-- A function `f : X → ε` is *locally integrable* if it is integrable on a neighborhood of every
+/--
+A function `f : X → ε` is _locally integrable_ if it is integrable on a neighborhood of every
 point. In particular, it is integrable on all compact sets,
-see `LocallyIntegrable.integrableOn_isCompact`. -/
+see `LocallyIntegrable.integrableOn_isCompact`.
+-/
 def LocallyIntegrable (f : X → ε) (μ : Measure X := by volume_tac) : Prop :=
   ∀ x : X, IntegrableAtFilter f (𝓝 x) μ
 

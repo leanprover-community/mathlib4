@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.Interval.Set.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Interval properties in linear orders
 
@@ -127,7 +130,9 @@ theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := 
   obtain ⟨c, bc, ca⟩ : ∃ c, b < c ∧ c < a := exists_between (not_le.mp ba)
   exact lt_irrefl _ (ca.trans_le (h bc))
 
-/-! ### Two infinite intervals -/
+/-!
+# Two infinite intervals
+-/
 
 @[to_dual]
 theorem Iic_union_Ioi_of_le (h : a ≤ b) : Iic b ∪ Ioi a = univ :=
@@ -161,7 +166,9 @@ theorem Iic_union_Ioi : Iic a ∪ Ioi a = univ :=
 theorem Iio_union_Ioi : Iio a ∪ Ioi a = {a}ᶜ :=
   ext fun _ => lt_or_lt_iff_ne
 
-/-! ### A finite and an infinite interval -/
+/-!
+# A finite and an infinite interval
+-/
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   grind
@@ -226,7 +233,9 @@ theorem Ico_union_Ioi_eq_Ici_sdiff_singleton (a_le_b : a ≤ b) :
     Ico a b ∪ Ioi b = Ici a \ {b} := by
   simp [← Icc_union_Ioi_eq_Ici a_le_b, union_sdiff_distrib]
 
-/-! ### An infinite and a finite interval -/
+/-!
+# An infinite and a finite interval
+-/
 
 theorem Iic_subset_Iio_union_Icc : Iic b ⊆ Iio a ∪ Icc a b := fun x hx =>
   (lt_or_ge x a).elim (fun hxa => Or.inl hxa) fun hxa => Or.inr ⟨hxa, hx⟩
@@ -296,7 +305,9 @@ theorem Iio_union_Ioc_eq_Iic_sdiff_singleton (a_le_b : a ≤ b) :
     Iio a ∪ Ioc a b = Iic b \ {a} := by
   simp [← Iio_union_Icc_eq_Iic a_le_b, union_sdiff_distrib]
 
-/-! ### Two finite intervals, `I?o` and `Ic?` -/
+/-!
+# Two finite intervals, `I?o` and `Ic?`
+-/
 
 theorem Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
   (lt_or_ge x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
@@ -344,7 +355,9 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
     (fun _ hx => hx.elim (fun hx => ⟨hx.1, hx.2.le.trans h₂⟩) fun hx => ⟨h₁.trans_le hx.1, hx.2⟩)
     Ioc_subset_Ioo_union_Icc
 
-/-! ### Two finite intervals, `I?c` and `Io?` -/
+/-!
+# Two finite intervals, `I?c` and `Io?`
+-/
 
 @[to_dual none]
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
@@ -394,7 +407,9 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
     ((min_le_left ..).trans (h₂.trans (le_max_right ..)))
     ((min_le_left ..).trans (h₁.trans (le_max_right ..)))
 
-/-! ### Two finite intervals with a common point -/
+/-!
+# Two finite intervals with a common point
+-/
 
 @[to_dual none]
 theorem Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
@@ -472,7 +487,9 @@ theorem Ioo_union_Ioc_eq_Ioc_sdiff_singleton (a_le_b : a ≤ b) (b_le_c : b ≤ 
     Ioo a b ∪ Ioc b c = Ioc a c \ {b} := by
   simp [← Ioc_union_Ioc_eq_Ioc a_le_b b_le_c, union_sdiff_distrib]
 
-/-! ### Intersection, difference, complement -/
+/-!
+# Intersection, difference, complement
+-/
 
 @[to_dual (attr := simp)]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=

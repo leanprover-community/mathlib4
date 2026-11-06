@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.Filter.CountableInter
 public import Mathlib.Topology.Compactness.SigmaCompact
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Lindelöf sets and Lindelöf spaces
 

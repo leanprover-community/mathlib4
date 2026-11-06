@@ -14,6 +14,9 @@ public import Mathlib.Topology.Metrizable.CompletelyMetrizable
 
 import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kolmogorov extension theorem
 
@@ -29,7 +32,7 @@ second-countable and completely pseudo-metrizable (for example Polish spaces).
 
 * `projectiveFamilyContent_iUnion_eq_tsum_of_innerRegular`: the content `projectiveFamilyContent hP`
   is σ-additive if the measures `P J` are inner regular with respect to compact closed sets.
-* `isProjectiveLimit_projectiveLimit`: **Kolmogorov extension theorem**, `projectiveLimit P hP` is
+* `isProjectiveLimit_projectiveLimit`: *Kolmogorov extension theorem*, `projectiveLimit P hP` is
   the projective limit of `P`.
 -/
 

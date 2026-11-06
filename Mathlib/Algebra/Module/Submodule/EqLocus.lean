@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.Submodule.Ker
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The submodule of elements `x : M` such that `f x = g x`
 
@@ -15,8 +18,8 @@ public import Mathlib.Algebra.Module.Submodule.Ker
 * `LinearMap.eqLocus`: the submodule of elements `x : M` such that `f x = g x`
 
 ## Tags
-linear algebra, vector space, module
 
+linear algebra, vector space, module
 -/
 
 @[expose] public section
@@ -24,7 +27,9 @@ linear algebra, vector space, module
 variable {R : Type*} {R₂ : Type*}
 variable {M : Type*} {M₂ : Type*}
 
-/-! ### Properties of linear maps -/
+/-!
+# Properties of linear maps
+-/
 
 
 namespace LinearMap

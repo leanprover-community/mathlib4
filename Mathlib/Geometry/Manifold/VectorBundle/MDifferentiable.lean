@@ -7,9 +7,11 @@ module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Differentiability of functions in vector bundles
-
 -/
 
 public section
@@ -502,11 +504,13 @@ lemma MDifferentiable.sum_section {ι : Type*} {s : Finset ι} {t : ι → (x : 
     MDiff (T% (fun x ↦ ∑ i ∈ s, (t i x))) :=
   fun x₀ ↦ .sum_section fun i hi ↦ (hs i) hi x₀
 
-/-- The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
+/--
+The scalar product `ψ • s` of a differentiable function `ψ : M → 𝕜` and a section `s` of a
 vector bundle `V → M` is differentiable once `s` is differentiable on an open set containing
 `tsupport ψ`.
 
-See `ContMDiffOn.smul_section_of_tsupport` for the analogous result about `C^n` sections. -/
+See `ContMDiffOn.smul_section_of_tsupport` for the analogous result about `C^n` sections.
+-/
 lemma MDifferentiableOn.smul_section_of_tsupport {s : Π (x : B), E x} {ψ : B → 𝕜}
     (hψ : MDiff[u] ψ) (ht : IsOpen u) (ht' : tsupport ψ ⊆ u) (hs : MDiff[u] (T% s)) :
     MDiff (T% (ψ • s)) := by
@@ -629,7 +633,8 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+/--
+Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 
@@ -665,7 +670,8 @@ lemma MDifferentiableWithinAt.clm_apply_of_inCoordinates
   rw [inCoordinates_eq hm h'm]
   simp [hm]
 
-/-- Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+/--
+Consider a differentiable map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending
 differentiably on `m`, one can apply `ϕ m` to `g m`, and the resulting map is differentiable.
 

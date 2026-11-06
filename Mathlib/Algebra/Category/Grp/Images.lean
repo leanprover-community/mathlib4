@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Category.Grp.Abelian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of commutative additive groups has images.
 

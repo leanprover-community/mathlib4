@@ -8,15 +8,18 @@ module
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Kähler differential module under base change
 
 ## Main results
-- `KaehlerDifferential.tensorKaehlerEquivBase`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
-- `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
-- `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
-  `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 
+* `KaehlerDifferential.tensorKaehlerEquivBase`: `(S ⊗[R] Ω[A⁄R]) ≃ₗ[S] Ω[B⁄S]` for `B = S ⊗[R] A`.
+* `KaehlerDifferential.tensorKaehlerEquiv`: `(B ⊗[A] Ω[A⁄R]) ≃ₗ[B] Ω[B⁄S]` for `B = S ⊗[R] A`.
+* `KaehlerDifferential.isLocalizedModule_of_isLocalizedModule`:
+  `Ω[Aₚ/Rₚ]` is the localization of `Ω[A/R]` at `p`.
 -/
 
 @[expose] public section

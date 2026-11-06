@@ -9,19 +9,23 @@ public import Mathlib.Computability.DFA
 
 import Mathlib.Data.Set.Finite.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Myhill–Nerode theorem
 
 This file proves the Myhill–Nerode theorem using left quotients.
 
-Given a language `L` and a word `x`, the *left quotient* of `L` by `x` is the set of suffixes `y`
-such that `x ++ y` is in `L`. The *Myhill–Nerode theorem* shows that each left quotient, in fact,
+Given a language `L` and a word `x`, the _left quotient_ of `L` by `x` is the set of suffixes `y`
+such that `x ++ y` is in `L`. The _Myhill–Nerode theorem_ shows that each left quotient, in fact,
 corresponds to the state of an automaton that matches `L`, and that `L` is regular if and only if
 there are finitely many such states.
 
 ## References
 
-* <https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem>
+* [
+  https://en.wikipedia.org/wiki/Syntactic\_monoid#Myhill%E2%80%93Nerode\_theorem](https://en.wikipedia.org/wiki/Syntactic_monoid#Myhill%E2%80%93Nerode_theorem)
 -/
 
 @[expose] public section
@@ -32,7 +36,9 @@ variable {α : Type u} {σ : Type v} {L : Language α}
 namespace Language
 
 variable (L) in
-/-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
+/--
+The _left quotient_ of `x` is the set of suffixes `y` such that `x ++ y` is in `L`.
+-/
 def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
 
 variable (L) in

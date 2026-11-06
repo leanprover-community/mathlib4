@@ -7,6 +7,9 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Shifting an affine subspace towards a point
 
@@ -21,6 +24,7 @@ With this convention, this transformation is also equivalent to `AffineSubspace.
 when `r` is a unit.
 
 ## Main declarations
+
 * `AffineSubspace.shift` defines the shift transformation.
 * `AffineSubspace.shift_eq` shows the shift transformation is equivalent to translation.
 * `AffineSubspace.shift_eq_map_homothety` shows the shift transformation is equivalent to homothety.
@@ -38,12 +42,14 @@ section Ring
 variable [Ring k] [AddCommGroup V] [AddTorsor V P] [Module k V]
 
 open scoped Classical in
-/-- `AffineSubspace.shift s c r` is an affine subspace parallel to `s`, where an arbitrary point on
+/--
+`AffineSubspace.shift s c r` is an affine subspace parallel to `s`, where an arbitrary point on
 `s` is moved towards `c` with linear interpolation by `r`. When `r = 0`, that point is moved onto
 `c`. When `r = 1`, that point stays at the original position. A different choice of the point will
 not affect the output (See `AffineSubspace.shift_eq`).
 
-We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_bot`). -/
+We define `AffineSubspace.shift ⊥ c r = ⊥` (See `AffineSubspace.shift_bot`).
+-/
 noncomputable
 def shift (s : AffineSubspace k P) (c : P) (r : k) : AffineSubspace k P :=
   if h : Nonempty s then
@@ -209,8 +215,10 @@ theorem closedInterior_inter_shift_zero [ZeroLEOneClass k] :
     sum_eq_zero_iff_of_nonneg fun j _ ↦ (hp j).1] at hw
   simp [hw j (by simpa using hj), hj]
 
-/-- The base of a simplex shifted with parameter outside $[0, 1]$ does not intersect the closed
-interior. -/
+/--
+The base of a simplex shifted with parameter outside $`[0, 1]` does not intersect the closed
+interior.
+-/
 theorem disjoint_closedInterior_shift {x : k} (hx : x < 0 ∨ 1 < x) :
     Disjoint s.closedInterior <| (affineSpan k (s.points '' {i}ᶜ)).shift (s.points i) x := by
   refine Set.disjoint_left.mpr fun p hleft hright ↦ ?_

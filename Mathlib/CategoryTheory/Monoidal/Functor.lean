@@ -8,11 +8,15 @@ module
 public import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Category
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # (Lax) monoidal functors
 
 A lax monoidal functor `F` between monoidal categories `C` and `D`
 is a functor between the underlying categories equipped with morphisms
+
 * `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` (called the unit morphism)
 * `μ X Y : (F.obj X) ⊗ (F.obj Y) ⟶ F.obj (X ⊗ Y)` (called the tensorator, or strength).
 
@@ -35,7 +39,7 @@ to monoid objects.
 
 ## References
 
-See <https://stacks.math.columbia.edu/tag/0FFL>.
+See [https://stacks.math.columbia.edu/tag/0FFL](https://stacks.math.columbia.edu/tag/0FFL).
 -/
 
 @[expose] public section
@@ -156,9 +160,11 @@ lemma whiskerLeft_μ_comp_μ (X Y Z : C) :
       μ F X Y ▷ F.obj Z ≫ μ F (X ⊗ Y) Z ≫ F.map (α_ X Y Z).hom := by
   rw [associativity, Iso.inv_hom_id_assoc]
 
-/-- Copy of a lax monoidal structure with new `ε` and `μ` fields equal to the old ones.
+/--
+Copy of a lax monoidal structure with new `ε` and `μ` fields equal to the old ones.
 
-This is useful to fix definitional equalities. -/
+This is useful to fix definitional equalities.
+-/
 @[implicit_reducible]
 def copy {F : C ⥤ D} (hF : F.LaxMonoidal) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
     (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y))
@@ -339,10 +345,12 @@ lemma δ_comp_whiskerLeft_δ (X Y Z : C) :
 
 end
 
-/-- Copy of an oplax monoidal structure on a functor `F` with new `η` and `δ` fields equal to the
+/--
+Copy of an oplax monoidal structure on a functor `F` with new `η` and `δ` fields equal to the
 old ones.
 
-This is useful to fix definitional equalities. -/
+This is useful to fix definitional equalities.
+-/
 @[implicit_reducible]
 def copy {F : C ⥤ D} (hF : F.OplaxMonoidal) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)
     (δ' : ∀ X Y : C, F.obj (X ⊗ Y) ⟶ F.obj X ⊗ F.obj Y)
@@ -593,10 +601,12 @@ lemma toOplaxMonoidal_injective : Function.Injective
   · congrm ($eq).η
   · congrm ($eq).δ
 
-/-- Copy of a monoidal structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
+/--
+Copy of a monoidal structure on a functor `F` with new `ε`, `μ`, `η` and `δ` fields equal to the
 old ones.
 
-This is useful to fix definitional equalities. -/
+This is useful to fix definitional equalities.
+-/
 @[implicit_reducible]
 def copy {F : C ⥤ D} (hF : F.Monoidal) (ε' : 𝟙_ D ⟶ F.obj (𝟙_ C))
     (μ' : ∀ X Y : C, F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)) (η' : F.obj (𝟙_ C) ⟶ 𝟙_ D)

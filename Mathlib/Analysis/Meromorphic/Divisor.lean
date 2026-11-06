@@ -10,6 +10,9 @@ public import Mathlib.Topology.LocallyFinsupp
 
 import Mathlib.Analysis.Meromorphic.IsolatedZeros
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Divisor of a meromorphic function
 
@@ -30,7 +33,7 @@ open scoped Topology
 namespace MeromorphicOn
 
 /-!
-## Definition of the Divisor
+# Definition of the Divisor
 -/
 
 open scoped Classical in
@@ -81,7 +84,7 @@ lemma AnalyticOnNhd.divisor_apply {f : 𝕜 → E} (hf : AnalyticOnNhd 𝕜 f U)
   rw [hf.meromorphicOn.divisor_apply hz, (hf z hz).meromorphicOrderAt_eq]
 
 /-!
-## Support Properties
+# Support Properties
 -/
 
 /--
@@ -115,7 +118,7 @@ lemma divisor_ball_support_finite [ProperSpace 𝕜] {f : 𝕜 → E} {R : ℝ} 
   hf.divisor_support_finite_of_subset (isCompact_closedBall c R) ball_subset_closedBall
 
 /-!
-## Congruence Lemmas
+# Congruence Lemmas
 -/
 
 /--
@@ -178,7 +181,7 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (h₁ : f₁ =�
   · simp [divisor, hf₁, (meromorphicOn_congr_codiscreteWithin h₁ h₂).not.1 hf₁]
 
 /-!
-## Divisors of Analytic Functions
+# Divisors of Analytic Functions
 -/
 
 /-- Analytic functions have non-negative divisors. -/
@@ -226,7 +229,7 @@ The divisor of a constant function is `0`.
   simp [Semiring.toGrindSemiring_ofNat 𝕜 n]
 
 /-!
-## Behavior under Standard Operations
+# Behavior under Standard Operations
 -/
 
 /--

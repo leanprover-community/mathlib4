@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Notation.Prod
 public import Mathlib.Algebra.Regular.SMul
 public import Mathlib.Algebra.Ring.Action.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivariant homomorphisms
 
@@ -28,6 +31,7 @@ public import Mathlib.Algebra.Ring.Action.Basic
   `M` acting on the ring `R` and `N` acting on the ring `S`.
 
 The above types have corresponding classes:
+
 * `MulActionHomClass F φ X Y` states that `F` is a type of bundled `X → Y` homs
   which are `φ`-equivariant;
   `AddActionHomClass F φ X Y` is its additive version.
@@ -39,12 +43,14 @@ The above types have corresponding classes:
 ## Notation
 
 We introduce the following notation to code equivariant maps
-(the subscript index `ₑ` is for *equivariant*) :
+(the subscript index `ₑ` is for _equivariant_) :
+
 * `X →ₑ[φ] Y` is `MulActionHom φ X Y` and `AddActionHom φ X Y`
 * `A →ₑ+[φ] B` is `DistribMulActionHom φ A B`.
 * `R →ₑ+*[φ] S` is `MulSemiringActionHom φ R S`.
 
 When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notation :
+
 * `X →[M] Y` is `MulActionHom (@id M) X Y` and `AddActionHom (@id M) X Y`
 * `A →+[M] B` is `DistribMulActionHom (MonoidHom.id M) A B`
 * `R →+*[M] S` is `MulSemiringActionHom (MonoidHom.id M) R S`
@@ -52,7 +58,6 @@ When `M = N` and `φ = MonoidHom.id M`, we provide the backward compatible notat
 The notation for `MulActionHom` and `AddActionHom` is the same, because it is unlikely
 that it could lead to confusion — unless one needs types `M` and `X` with simultaneous
 instances of `Mul M`, `Add M`, `SMul M X` and `VAdd M X`…
-
 -/
 
 @[expose] public section
@@ -95,32 +100,40 @@ notation:25 (name := «MulActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => Mu
 This is the same as `X →ₑ[@id M] Y`. -/
 notation:25 (name := «MulActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => MulActionHom (@id M) X Y
 
-/-- `φ`-equivariant functions `X → Y`,
+/--
+`φ`-equivariant functions `X → Y`,
 where `φ : M → N`, where `M` and `N` act additively on `X` and `Y` respectively
 
-We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
+We use the same notation as for multiplicative actions, as conflicts are unlikely.
+-/
 notation:25 (name := «AddActionHomLocal≺») X " →ₑ[" φ:25 "] " Y:0 => AddActionHom φ X Y
 
-/-- `M`-equivariant functions `X → Y` with respect to the additive action of `M`.
+/--
+`M`-equivariant functions `X → Y` with respect to the additive action of `M`.
 This is the same as `X →ₑ[@id M] Y`.
 
-We use the same notation as for multiplicative actions, as conflicts are unlikely. -/
+We use the same notation as for multiplicative actions, as conflicts are unlikely.
+-/
 notation:25 (name := «AddActionHomIdLocal≺») X " →[" M:25 "] " Y:0 => AddActionHom (@id M) X Y
 
-/-- `AddActionSemiHomClass F φ X Y` states that
-  `F` is a type of morphisms which are `φ`-equivariant.
+/--
+`AddActionSemiHomClass F φ X Y` states that
+`F` is a type of morphisms which are `φ`-equivariant.
 
-You should extend this class when you extend `AddActionHom`. -/
+You should extend this class when you extend `AddActionHom`.
+-/
 class AddActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
     (X Y : outParam Type*) [VAdd M X] [VAdd N Y] [FunLike F X Y] : Prop where
   /-- The proposition that the function preserves the action. -/
   map_vaddₛₗ : ∀ (f : F) (c : M) (x : X), f (c +ᵥ x) = (φ c) +ᵥ (f x)
 
-/-- `MulActionSemiHomClass F φ X Y` states that
-  `F` is a type of morphisms which are `φ`-equivariant.
+/--
+`MulActionSemiHomClass F φ X Y` states that
+`F` is a type of morphisms which are `φ`-equivariant.
 
-You should extend this class when you extend `MulActionHom`. -/
+You should extend this class when you extend `MulActionHom`.
+-/
 @[to_additive]
 class MulActionSemiHomClass (F : Type*)
     {M N : outParam Type*} (φ : outParam (M → N))
@@ -889,10 +902,12 @@ notation:25 (name := «MulSemiringActionHomLocal≺»)
 notation:25 (name := «MulSemiringActionHomIdLocal≺»)
   R " →+*[" M:25 "] " S:0 => MulSemiringActionHom (MonoidHom.id M) R S
 
-/-- `MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
+/--
+`MulSemiringActionHomClass F φ R S` states that `F` is a type of morphisms preserving
 the ring structure and equivariant with respect to `φ`.
 
-You should extend this class when you extend `MulSemiringActionHom`. -/
+You should extend this class when you extend `MulSemiringActionHom`.
+-/
 class MulSemiringActionSemiHomClass (F : Type*)
     {M N : outParam Type*} [Monoid M] [Monoid N]
     (φ : outParam (M → N))

@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Order.BoundedOrder.Lattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Disjointness and complements
 
@@ -19,7 +22,6 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
   non-distributive lattice, an element can have several complements.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
-
 -/
 
 @[expose] public section
@@ -34,17 +36,21 @@ section PartialOrderBot
 
 variable [PartialOrder α] [OrderBot α] {a b c d : α}
 
-/-- Two elements of a lattice are disjoint if their inf is the bottom element.
-  (This generalizes disjoint sets, viewed as members of the subset lattice.)
+/--
+Two elements of a lattice are disjoint if their inf is the bottom element.
+(This generalizes disjoint sets, viewed as members of the subset lattice.)
 
 Note that we define this without reference to `⊓`, as this allows us to talk about orders where
 the infimum is not unique, or where implementing `Inf` would require additional `Decidable`
-arguments. -/
-@[to_dual /-- Two elements of a lattice are codisjoint if their sup is the top element.
+arguments.
+-/
+@[to_dual /--
+          Two elements of a lattice are codisjoint if their sup is the top element.
 
-Note that we define this without reference to `⊔`, as this allows us to talk about orders where
-the supremum is not unique, or where implementing `Sup` would require additional `Decidable`
-arguments. -/]
+          Note that we define this without reference to `⊔`, as this allows us to talk about orders
+where the supremum is not unique, or where implementing `Sup` would require additional
+`Decidable` arguments.
+          -/]
 def Disjoint (a b : α) : Prop :=
   ∀ ⦃x⦄, x ≤ a → x ≤ b → x ≤ ⊥
 
@@ -473,7 +479,9 @@ section Lattice
 
 variable [Lattice α] [BoundedOrder α]
 
-/-- An element is *complemented* if it has a complement. -/
+/--
+An element is _complemented_ if it has a complement.
+-/
 def IsComplemented (a : α) : Prop :=
   ∃ b, IsCompl a b
 

@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.LinearAlgebra.Span.Basic
 
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Towers of algebras
 
@@ -19,7 +22,6 @@ An algebra tower A/S/R is expressed by having instances of `Algebra A S`,
 compatibility condition `(r • s) • a = r • (s • a)`.
 
 An important definition is `toAlgHom R S A`, the canonical `R`-algebra homomorphism `S →ₐ[R] A`.
-
 -/
 
 @[expose] public section
@@ -39,6 +41,8 @@ variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable {A}
 
 
+
+set_option doc.verso false
 /-- The `R`-algebra morphism `A → End (M)` corresponding to the representation of the algebra `A`
 on the `B`-module `M`.
 
@@ -73,6 +77,8 @@ def lsmul : A →ₐ[R] Module.End B M where
   map_add' _a _b := LinearMap.ext fun _ => add_smul _ _ _
   commutes' r := LinearMap.ext <| algebraMap_smul A r
 
+
+set_option doc.verso true
 @[simp]
 theorem lsmul_coe (a : A) : (lsmul R B M a : M → M) = (a • ·) := rfl
 
@@ -115,7 +121,9 @@ theorem of_algebraMap_eq [Algebra R A]
     (h : ∀ x, algebraMap R A x = algebraMap S A (algebraMap R S x)) : IsScalarTower R S A :=
   ⟨fun x y z => by simp_rw [Algebra.smul_def, map_mul, mul_assoc, h]⟩
 
-/-- See note [partially-applied ext lemmas]. -/
+/--
+See note \[partially-applied ext lemmas\].
+-/
 theorem of_algebraMap_eq' [Algebra R A]
     (h : algebraMap R A = (algebraMap S A).comp (algebraMap R S)) : IsScalarTower R S A :=
   of_algebraMap_eq <| RingHom.ext_iff.1 h

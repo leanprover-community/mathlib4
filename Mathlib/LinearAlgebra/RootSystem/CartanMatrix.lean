@@ -15,19 +15,22 @@ import Mathlib.Algebra.Module.Submodule.Union
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.ZMatrix
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cartan matrices for root systems
 
 This file contains definitions and basic results about Cartan matrices of root pairings / systems.
 
 ## Main definitions:
+
 * `RootPairing.Base.cartanMatrix`: the Cartan matrix of a crystallographic root pairing, with
   respect to a base `b`.
 * `RootPairing.Base.cartanMatrix_nondegenerate`: the Cartan matrix is non-degenerate.
 * `RootPairing.Base.induction_on_cartanMatrix`: an induction principle expressing the connectedness
   of the Dynkin diagram of an irreducible root pairing.
 * `RootPairing.Base.equivOfCartanMatrixEq`: a root system is determined by its Cartan matrix.
-
 -/
 
 @[expose] public section
@@ -47,9 +50,11 @@ namespace RootPairing.Base
 variable (S : Type*) [CommRing S] [Algebra S R]
   {P : RootPairing ι R M N} [P.IsValuedIn S] (b : P.Base)
 
-/-- The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
+/--
+The Cartan matrix of a root pairing, taking values in `S`, with respect to a base `b`.
 
-See also `RootPairing.Base.cartanMatrix`. -/
+See also `RootPairing.Base.cartanMatrix`.
+-/
 def cartanMatrixIn :
     Matrix b.support b.support S :=
   .of fun i j ↦ P.pairingIn S i j

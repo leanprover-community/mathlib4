@@ -11,13 +11,16 @@ public import Mathlib.Data.Multiset.Fold
 
 import Mathlib.Algebra.Order.Group.Multiset
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # GCD and LCM operations on multisets
 
 ## Main definitions
 
-- `Multiset.gcd` - the greatest common denominator of a `Multiset` of elements of a `GCDMonoid`
-- `Multiset.lcm` - the least common multiple of a `Multiset` of elements of a `GCDMonoid`
+* `Multiset.gcd` - the greatest common denominator of a `Multiset` of elements of a `GCDMonoid`
+* `Multiset.lcm` - the least common multiple of a `Multiset` of elements of a `GCDMonoid`
 
 ## Implementation notes
 
@@ -34,7 +37,9 @@ namespace Multiset
 
 variable {α : Type*} [CommMonoidWithZero α] [NormalizedGCDMonoid α]
 
-/-! ### LCM -/
+/-!
+# LCM
+-/
 
 
 section lcm
@@ -110,7 +115,9 @@ theorem lcm_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).lcm = GCDMonoid
 
 end lcm
 
-/-! ### GCD -/
+/-!
+# GCD
+-/
 
 
 section gcd

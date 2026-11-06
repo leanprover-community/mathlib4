@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Laplacian
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Harmonic Functions
 
@@ -29,7 +32,7 @@ open scoped Topology
 namespace InnerProductSpace
 
 /-!
-## Definition
+# Definition
 -/
 
 variable (f x) in
@@ -54,7 +57,7 @@ lemma HarmonicOnNhd.contDiffOn (hf : HarmonicOnNhd f s) : ContDiffOn ℝ 2 f s :
   fun x hx ↦ (hf x hx).1.contDiffWithinAt
 
 /-!
-## Elementary Properties
+# Elementary Properties
 -/
 
 /--
@@ -110,7 +113,7 @@ Harmonic functions are continuous.
   fun x hx ↦ (h x hx).1.continuousAt.continuousWithinAt (s := s)
 
 /-!
-## Vector Space Structure
+# Vector Space Structure
 -/
 
 /--
@@ -178,7 +181,7 @@ theorem HarmonicOnNhd.const_smul (h : HarmonicOnNhd f s) :
     HarmonicOnNhd (c • f) s := fun x hx ↦ (h x hx).const_smul
 
 /-!
-## Compatibility with Linear Maps
+# Compatibility with Linear Maps
 -/
 
 /--

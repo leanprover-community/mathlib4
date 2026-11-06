@@ -9,6 +9,9 @@ public import Mathlib.Algebra.Group.Submonoid.Defs
 public import Mathlib.Algebra.Order.Monoid.Basic
 public import Mathlib.Order.Interval.Set.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Ordered instances on submonoids
 -/

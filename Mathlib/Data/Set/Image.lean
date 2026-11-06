@@ -11,26 +11,26 @@ public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Images and preimages of sets
 
 ## Main definitions
 
 * `preimage f t : Set α` : the preimage f⁻¹(t) (written `f ⁻¹' t` in Lean) of a subset of β.
-
 * `range f : Set β` : the image of `univ` under `f`.
   Also works for `{p : Prop} (f : p → α)` (unlike `image`)
 
 ## Notation
 
 * `f ⁻¹' t` for `Set.preimage f t`
-
 * `f '' s` for `Set.image f s`
 
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section
@@ -45,7 +45,9 @@ namespace Set
 
 variable {α β γ : Type*} {ι : Sort*}
 
-/-! ### Inverse image -/
+/-!
+# Inverse image
+-/
 
 
 section Preimage
@@ -187,7 +189,9 @@ lemma preimage_subset {s t} (hs : s ⊆ f '' t) (hf : Set.InjOn f (f ⁻¹' s)) 
 
 end Preimage
 
-/-! ### Image of a set under a function -/
+/-!
+# Image of a set under a function
+-/
 
 
 section Image
@@ -560,7 +564,9 @@ theorem image_perm {s : Set α} {σ : Equiv.Perm α} (hs : { a : α | σ a ≠ a
 
 end Image
 
-/-! ### Lemmas about the powerset and image. -/
+/-!
+# Lemmas about the powerset and image.
+-/
 
 /-- The powerset of `{a} ∪ s` is `𝒫 s` together with `{a} ∪ t` for each `t ∈ 𝒫 s`. -/
 theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ insert a '' 𝒫 s := by
@@ -581,7 +587,9 @@ theorem powerset_insert_injOn {s : Set α} {a : α} (h : a ∉ s) :
     Set.InjOn (insert a) (𝒫 s) := fun u u_mem v v_mem eq ↦ by
   grind
 
-/-! ### Lemmas about range of a function. -/
+/-!
+# Lemmas about range of a function.
+-/
 
 
 section Range
@@ -1168,7 +1176,9 @@ variable {ι ι' : Sort*} {E : Type*} [EquivLike E ι ι']
 
 end EquivLike
 
-/-! ### Image and preimage on subtypes -/
+/-!
+# Image and preimage on subtypes
+-/
 
 
 namespace Subtype
@@ -1275,7 +1285,9 @@ theorem preimage_coe_compl' (s : Set α) :
 
 end Subtype
 
-/-! ### Images and preimages on `Option` -/
+/-!
+# Images and preimages on `Option`
+-/
 
 
 namespace Option
@@ -1307,7 +1319,9 @@ end Option
 
 namespace Set
 
-/-! ### Injectivity and surjectivity lemmas for image and preimage -/
+/-!
+# Injectivity and surjectivity lemmas for image and preimage
+-/
 
 
 section ImagePreimage
@@ -1337,7 +1351,9 @@ end ImagePreimage
 
 end Set
 
-/-! ### Disjoint lemmas for image and preimage -/
+/-!
+# Disjoint lemmas for image and preimage
+-/
 
 section Disjoint
 variable {α β γ : Type*} {f : α → β} {s t : Set α}

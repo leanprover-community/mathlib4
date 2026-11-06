@@ -9,16 +9,22 @@ public import Mathlib.Algebra.Homology.ExactSequence
 
 import Mathlib.CategoryTheory.Abelian.Refinements
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The snake lemma
 
 The snake lemma is a standard tool in homological algebra. The basic situation
 is when we have a diagram as follows in an abelian category `C`, with exact rows:
 
-    L₁.X₁ ⟶ L₁.X₂ ⟶ L₁.X₃ ⟶ 0
-      |       |       |
-      |v₁₂.τ₁ |v₁₂.τ₂ |v₁₂.τ₃
-      v       v       v
+```
+L₁.X₁ ⟶ L₁.X₂ ⟶ L₁.X₃ ⟶ 0
+  |       |       |
+  |v₁₂.τ₁ |v₁₂.τ₂ |v₁₂.τ₃
+  v       v       v
+```
+
 0 ⟶ L₂.X₁ ⟶ L₂.X₂ ⟶ L₂.X₃
 
 We shall think of this diagram as the datum of a morphism `v₁₂ : L₁ ⟶ L₂` in the
@@ -44,7 +50,6 @@ here are slightly easier because of the use of the category `ShortComplex C`,
 the use of duality (which allows to construct only half of the sequence, and deducing
 the other half by arguing in the opposite category), and the use of "refinements"
 (see `CategoryTheory.Abelian.Refinements`) instead of a weak form of pseudo-elements.
-
 -/
 
 @[expose] public section

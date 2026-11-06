@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Category.Ring.LinearAlgebra
 public import Mathlib.AlgebraicGeometry.ResidueField
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Underlying topological space of fibre product of schemes
 
@@ -16,14 +19,13 @@ topological space of `pullback f g`, i.e. the fiber product `X ×[S] Y`.
 
 ## Main results
 
-- `AlgebraicGeometry.Scheme.Pullback.carrierEquiv`: The bijective correspondence between the points
+* `AlgebraicGeometry.Scheme.Pullback.carrierEquiv`: The bijective correspondence between the points
   of `X ×[S] Y` and pairs `(z, p)` of triples `z = (x, y, s)` with `f x = s = g y` and
   prime ideals `q` of `κ(x) ⊗[κ(s)] κ(y)`.
-- `AlgebraicGeometry.Scheme.Pullback.exists_preimage`: For every triple `(x, y, s)` with
+* `AlgebraicGeometry.Scheme.Pullback.exists_preimage`: For every triple `(x, y, s)` with
   `f x = s = g y`, there exists `z : X ×[S] Y` lying above `x` and `y`.
 
 We also give the ranges of `pullback.fst`, `pullback.snd` and `pullback.map`.
-
 -/
 
 @[expose] public section

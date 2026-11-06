@@ -9,6 +9,9 @@ public import Mathlib.Data.Nat.GCD.BigOperators
 public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.Order.SupIndep
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Canonical homomorphism from a finite family of monoids
 
@@ -38,7 +41,6 @@ images of different morphisms commute, we obtain a canonical morphism
   of the `ϕ` are independent.
 * `Subgroup.independent_of_coprime_order`: If commuting normal subgroups `H i` have coprime orders,
   they are independent.
-
 -/
 
 @[expose] public section
@@ -136,12 +138,15 @@ The universal property of `MonoidHom.noncommPiCoprod`
 
 Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
-and it is given by `MonoidHom.noncommPiCoprod`. -/
-@[to_additive /-- The universal property of `MonoidHom.noncommPiCoprod`
+and it is given by `MonoidHom.noncommPiCoprod`.
+-/
+@[to_additive /--
+              The universal property of `MonoidHom.noncommPiCoprod`
 
-Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
+              Given monoid morphisms `φᵢ : Nᵢ → M` whose images pairwise commute,
 there exists a unique monoid morphism `φ : Πᵢ Nᵢ → M` that induces the `φᵢ`,
-and it is given by `AddMonoidHom.noncommPiCoprod`. -/]
+and it is given by `AddMonoidHom.noncommPiCoprod`.
+              -/]
 def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where

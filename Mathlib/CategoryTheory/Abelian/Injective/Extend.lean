@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Homology.Embedding.CochainComplex
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Injective resolutions as cochain complexes indexed by the integers
 
@@ -15,7 +18,6 @@ Given an injective resolution `R` of an object `X` in an abelian category `C`,
 we define `R.cochainComplex : CochainComplex C ℤ`, which is the extension
 of `R.cocomplex : CochainComplex C ℕ`, and the quasi-isomorphism
 `R.ι' : (CochainComplex.singleFunctor C 0).obj X ⟶ R.cochainComplex`.
-
 -/
 
 @[expose] public section

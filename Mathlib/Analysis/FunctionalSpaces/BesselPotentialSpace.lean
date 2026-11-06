@@ -7,13 +7,17 @@ module
 
 public import Mathlib.Analysis.Distribution.Sobolev
 
-/-! # Bessel potential spaces
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
+/-!
+# Bessel potential spaces
 
 We define the Bessel potential space or Fourier-theoretic Sobolev space, with smoothness parameter
 `s` and integrability parameter `p`. Informally, this space is given as the set of all tempered
 distributions `u` such that `𝓕⁻ (1 + ‖ξ‖ ^ 2) ^ (s / 2) 𝓕 u` is an `Lp` function.
 
-### Implementation notes
+## Implementation notes
 
 In `Mathlib.Analysis.Distribution.Sobolev` the unbundled version `TemperedDistribution.MemSobolev`
 is defined as `∃ v : Lp, besselPotential E F s u = v`. While it would be possible to define
@@ -38,12 +42,14 @@ open FourierTransform TemperedDistribution ENNReal MeasureTheory
 open scoped SchwartzMap
 
 variable (E F) in
-/-- The Bessel potential space of order `s : ℝ` and `p : ℝ≥0∞`, also known as the Sobolev space and
+/--
+The Bessel potential space of order `s : ℝ` and `p : ℝ≥0∞`, also known as the Sobolev space and
 usually denoted by `H^{s,p}`.
 
 It is defined as the set of all tempered distributions `u` such that
 `𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 u` can be represented by a `Lp` function `v`. Both `u` and `v` are
-stored as data to avoid using `Classical.choose`. -/
+stored as data to avoid using `Classical.choose`.
+-/
 structure BesselPotentialSpace [NormedSpace ℂ F] (s : ℝ) (p : ℝ≥0∞) [hp : Fact (1 ≤ p)] where
   /-- The underlying tempered distribution -/
   toDistr : 𝓢'(E, F)
@@ -202,9 +208,11 @@ instance : Module ℂ H^{s, p}(E, F) :=
   fast_instance% coeAddMonoidHom_injective.module ℂ (coeAddMonoidHom E F s p) fun _ _ => by rfl
 
 variable (E F s p) in
-/-- The map `u ↦ 𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 u` as a linear map from `H^{s,p}` to `Lp`.
+/--
+The map `u ↦ 𝓕⁻ (1 + ‖x‖ ^ 2) ^ (s / 2) 𝓕 u` as a linear map from `H^{s,p}` to `Lp`.
 
-See `toLpₗᵢ` for the linear isometry equivalence. -/
+See `toLpₗᵢ` for the linear isometry equivalence.
+-/
 def toLpₗ : H^{s, p}(E, F) →ₗ[ℂ] Lp F p (volume : Measure E) where
   toFun := toLp
   map_add' f g := by rfl

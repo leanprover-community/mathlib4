@@ -11,19 +11,22 @@ import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.Normed.Operator.Prod
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The two-variable Jacobi theta function
 
 This file defines the two-variable Jacobi theta function
 
-$$\theta(z, \tau) = \sum_{n \in \mathbb{Z}} \exp (2 i \pi n z + i \pi n ^ 2 \tau),$$
+$$`\theta(z, \tau) = \sum_{n \in \mathbb{Z}} \exp (2 i \pi n z + i \pi n ^ 2 \tau),`
 
 and proves the functional equation relating the values at `(z, τ)` and `(z / τ, -1 / τ)`,
 using Poisson's summation formula. We also show holomorphy (jointly in both variables).
 
 Additionally, we show some analogous results about the derivative (in the `z`-variable)
 
-$$\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n ^ 2 \tau).$$
+$$`\theta'(z, τ) = \sum_{n \in \mathbb{Z}} 2 \pi i n \exp (2 i \pi n z + i \pi n ^ 2 \tau).`
 
 (Note that the Mellin transform of `θ` will give us functional equations for `L`-functions
 of even Dirichlet characters, and that of `θ'` will do the same for odd Dirichlet characters.)
@@ -39,7 +42,7 @@ noncomputable section
 
 section term_defs
 /-!
-## Definitions of the summands
+# Definitions of the summands
 -/
 
 /-- Summand in the series for the Jacobi theta function. -/
@@ -66,7 +69,7 @@ end term_defs
 
 section term_bounds
 /-!
-## Bounds for the summands
+# Bounds for the summands
 
 We show that the sums of the three functions `jacobiTheta₂_term`, `jacobiTheta₂'_term` and
 `jacobiTheta₂_term_fderiv` are locally uniformly convergent in the domain `0 < im τ`, and diverge
@@ -243,7 +246,7 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
 end term_bounds
 
 /-!
-## Definitions of the functions
+# Definitions of the functions
 -/
 
 /-- The two-variable Jacobi theta function,
@@ -287,7 +290,7 @@ lemma jacobiTheta₂'_undef (z : ℂ) {τ : ℂ} (hτ : im τ ≤ 0) : jacobiThe
   exact not_lt.mpr hτ
 
 /-!
-## Derivatives and continuity
+# Derivatives and continuity
 -/
 
 lemma hasFDerivAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -370,7 +373,7 @@ lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   · exact norm_jacobiTheta₂'_term_le hT (le_of_lt hz') (le_of_lt hτ') n
 
 /-!
-## Periodicity and conjugation
+# Periodicity and conjugation
 -/
 
 /-- The two-variable Jacobi theta function is periodic in `τ` with period 2. -/
@@ -457,7 +460,7 @@ lemma jacobiTheta₂'_conj (z τ : ℂ) :
   ring_nf
 
 /-!
-## Functional equations
+# Functional equations
 -/
 
 /-- The functional equation for the Jacobi theta function: `jacobiTheta₂ z τ` is an explicit factor

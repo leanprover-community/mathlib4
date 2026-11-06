@@ -10,6 +10,9 @@ public import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 import Mathlib.Algebra.Polynomial.Eval.SMul
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
 
@@ -43,7 +46,8 @@ variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m
 variable (i j : n)
 
 
-/-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
+/--
+The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $`t I - M`.
 The determinant of this matrix is the characteristic polynomial.
 -/
 def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
@@ -135,7 +139,9 @@ lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n 
 
 alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
-/-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$. -/
+/--
+The characteristic polynomial of a matrix `M` is given by $`\det (t I - M)`.
+-/
 @[wikidata Q849705]
 def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
@@ -212,7 +218,8 @@ lemma charpoly_of_isUpperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.Is
 alias charpoly_of_upperTriangular := charpoly_of_isUpperTriangular
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
-/-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
+/--
+The *Cayley-Hamilton Theorem*, that the characteristic polynomial of a matrix,
 applied to the matrix itself, is zero.
 
 This holds over any commutative ring.

@@ -8,19 +8,23 @@ module
 public import Mathlib.Algebra.Module.BigOperators
 public import Mathlib.Data.Matrix.Basis
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Mₙ(R)-module structure on `Mⁿ`
 
 ## Main Results
 
-- `Matrix.Module.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and
+* `Matrix.Module.matrixModule`: This instance shows `ι → M` is a module over `Matrix ι ι R`, and
   the action of it is a generalization of `Matrix.mulVec`, this is only available in the
   `Matrix.Module` namespace.
-- `LinearMap.mapMatrixModule`: This defines a linear map from `ι → M` to `ι → N` over
+* `LinearMap.mapMatrixModule`: This defines a linear map from `ι → M` to `ι → N` over
   `Matrix ι ι R` induced by a linear map from `M` to `N` and together with `Matrix.matrixModule`
   it gives a functor from the category of `R`-modules to the category of `Matrix ι ι R`-modules.
 
 ## Tags
+
 matrix, module
 -/
 

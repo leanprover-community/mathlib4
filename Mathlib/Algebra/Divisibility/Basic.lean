@@ -12,6 +12,9 @@ public import Mathlib.Tactic.Common
 
 import Batteries.Tactic.SeqFocus
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Divisibility
 
@@ -24,9 +27,9 @@ This file defines the basics of the divisibility relation in the context of `(Co
 ## Implementation notes
 
 The divisibility relation is defined for all monoids, and as such, depends on the order of
-  multiplication if the monoid is not commutative. There are two possible conventions for
-  divisibility in the noncommutative context, and this relation follows the convention for ordinals,
-  so `a | b` is defined as `∃ c, b = a * c`.
+multiplication if the monoid is not commutative. There are two possible conventions for
+divisibility in the noncommutative context, and this relation follows the convention for ordinals,
+so `a | b` is defined as `∃ c, b = a * c`.
 
 ## Tags
 

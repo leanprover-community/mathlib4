@@ -7,8 +7,10 @@ module
 
 public import Mathlib.RingTheory.QuasiFinite.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Weakly Quasi-finite primes
 
 The definition `Algebra.QuasiFiniteAt` is equivalent to the usual definition "isolated in fibers"
@@ -30,7 +32,6 @@ This is fine mathematically because the set of quasi-finite primes is open
 to be stated with an a priori weaker notion of quasi-finite.
 Hence we introduce `Algebra.WeaklyQuasiFiniteAt` where we mod out all the primes that lie in a
 different fiber.
-
 -/
 
 @[expose] public section
@@ -40,13 +41,15 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (p : Ideal R) (q : Ideal S) [q.IsPrime]
 
 variable (R) in
-/-- (Implementation) An a priori weaker notion of being quasi-finite at a prime,
+/--
+(Implementation) An a priori weaker notion of being quasi-finite at a prime,
 which turns out to be equivalent to `Algebra.QuasiFiniteAt` (for finite type algebras)
 due to Zariski's main theorem.
 
 This class should not be used outside of this context,
 and `Algebra.QuasiFiniteAt` should be used instead.
-See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`. -/
+See `Algebra.QuasiFiniteAt.of_weaklyQuasiFiniteAt`.
+-/
 abbrev Algebra.WeaklyQuasiFiniteAt :=
   Algebra.QuasiFiniteAt R (q.map (Ideal.Quotient.mk ((q.under R).map (algebraMap R S))))
 

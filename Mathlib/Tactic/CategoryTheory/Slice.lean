@@ -7,12 +7,14 @@ module
 
 public import Mathlib.CategoryTheory.Category.Basic  -- shake: keep (tactic output dependency)
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The `slice` tactic
 
 Applies a tactic to an interval of terms from a term obtained by repeated application
 of `Category.comp`.
-
 -/
 
 public meta section
@@ -34,12 +36,13 @@ syntax (name := slice) "slice " num ppSpace num : conv
 
 /--
 `evalSlice`
-- rewrites the target expression using `Category.assoc`.
-- uses `rhs` to split off the first `a-1` terms
-- counts the number `k` of rewrites as it uses `← Category.assoc` to bring the target to
+
+* rewrites the target expression using `Category.assoc`.
+* uses `rhs` to split off the first `a-1` terms
+* counts the number `k` of rewrites as it uses `← Category.assoc` to bring the target to
   left associated form; from the first step this is the total number of remaining terms from `C`
-- it now splits off `b-a` terms from target using `lhs` leaving the desired subterm
-- finally, it rewrites it once more using `Category.assoc` to bring it to right-associated
+* it now splits off `b-a` terms from target using `lhs` leaving the desired subterm
+* finally, it rewrites it once more using `Category.assoc` to bring it to right-associated
   normal form
 -/
 def evalSlice (a b : Nat) : TacticM Unit := do

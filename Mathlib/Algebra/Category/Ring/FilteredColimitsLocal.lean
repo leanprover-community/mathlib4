@@ -10,8 +10,10 @@ public import Mathlib.Algebra.Field.Subfield.Basic
 public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Filtered colimits of local rings via local homomorphisms are local rings
 
 In this file, we deal with filtered colimits of local rings via local homomorphisms, proving that
@@ -26,14 +28,11 @@ able to directly write that the residue field functor preserves colimits.
 
 * `CommRingCat.FilteredColimit.isLocalRing_of_isColimit` : a filtered colimit of local rings
   via local homomorphisms is a local ring.
-
 * `CommRingCat.FilteredColimit.maximalIdeal_eq_iUnion_of_isColimit` : the maximal ideal of a
   filtered colimit of local rings via local homomorphisms is the union of the images of the
   maximal ideals.
-
 * `CommRingCat.FilteredColimit.isColimitResidueFieldCocone` : the residue field of a filtered
   colimit of local rings via local homomorphisms is the colimit of the residue fields.
-
 -/
 
 @[expose] public section

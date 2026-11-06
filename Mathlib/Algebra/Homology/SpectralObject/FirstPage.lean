@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Homology.SpectralObject.SpectralSequence
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The first page of the spectral sequence of a spectral object
 
@@ -18,7 +21,6 @@ to "compute" the objects of the `r₀`th page of the spectral
 sequence attached to `X` in terms of objects of the form `X.H`,
 and we compute the differential on the first page in terms of `X.δ`,
 see `spectralSequence_first_page_d_eq`.
-
 -/
 
 @[expose] public section

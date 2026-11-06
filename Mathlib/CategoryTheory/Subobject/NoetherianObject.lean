@@ -11,6 +11,9 @@ public import Mathlib.CategoryTheory.Subobject.Lattice
 
 import Mathlib.Order.OrderIsoNat
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Noetherian objects
 
@@ -24,7 +27,6 @@ closed under subobjects.
 
 * show that `isNoetherian` is a Serre class when `C` is an abelian category
   (TODO @joelriou)
-
 -/
 
 @[expose] public section

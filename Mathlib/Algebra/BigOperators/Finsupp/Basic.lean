@@ -12,6 +12,9 @@ public import Mathlib.Algebra.Group.Submonoid.BigOperators
 public import Mathlib.Data.Finsupp.Ext
 public import Mathlib.Data.Finsupp.Indicator
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators for finsupps
 
@@ -35,7 +38,7 @@ variable {β M M' N P G H R S : Type*}
 namespace Finsupp
 
 /-!
-### Declarations about `Finsupp.sum` and `Finsupp.prod`
+# Declarations about `Finsupp.sum` and `Finsupp.prod`
 
 In most of this section, the domain `β` is assumed to be an `AddMonoid`.
 -/
@@ -598,11 +601,13 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
-/-- Version of `Finsupp.sum_apply'` that applies in large generality to linear combinations
+/--
+Version of `Finsupp.sum_apply'` that applies in large generality to linear combinations
 of functions in any `FunLike` type on which addition is defined pointwise.
 
 At the time of writing Mathlib does not have a typeclass to express the condition
-that addition on a `FunLike` type is pointwise; hence this is asserted via explicit hypotheses. -/
+that addition on a `FunLike` type is pointwise; hence this is asserted via explicit hypotheses.
+-/
 theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [FunLike F γ B]
     (g : ι →₀ A) (k : ι → A → F) (x : γ)
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :

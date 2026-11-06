@@ -7,26 +7,28 @@ module
 
 public import Mathlib.FieldTheory.Separable
 
-/-!
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
+/-!
 # Separable degree
 
 This file contains basics about the separable degree of a polynomial.
 
 ## Main results
 
-- `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
+* `IsSeparableContraction`: is the condition that, for `g` a separable polynomial, we have that
   `g(x^(q^m)) = f(x)` for some `m : ℕ`.
-- `HasSeparableContraction`: the condition of having a separable contraction
-- `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
+* `HasSeparableContraction`: the condition of having a separable contraction
+* `HasSeparableContraction.degree`: the separable degree, defined as the degree of some
   separable contraction
-- `Irreducible.hasSeparableContraction`: any irreducible polynomial can be contracted
+* `Irreducible.hasSeparableContraction`: any irreducible polynomial can be contracted
   to a separable polynomial
-- `HasSeparableContraction.dvd_degree'`: the degree of a separable contraction divides the degree,
+* `HasSeparableContraction.dvd_degree'`: the degree of a separable contraction divides the degree,
   in function of the exponential characteristic of the field
-- `HasSeparableContraction.dvd_degree` and `HasSeparableContraction.eq_degree` specialize the
+* `HasSeparableContraction.dvd_degree` and `HasSeparableContraction.eq_degree` specialize the
   statement of `separable_degree_dvd_degree`
-- `IsSeparableContraction.degree_eq`: the separable degree is well-defined, implemented as the
+* `IsSeparableContraction.degree_eq`: the separable degree is well-defined, implemented as the
   statement that the degree of any separable contraction equals `HasSeparableContraction.degree`
 
 ## Tags

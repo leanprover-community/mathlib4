@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Ring.GeomSum
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.RingTheory.Nilpotent.Defs
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Nilpotent elements
 
@@ -19,13 +22,11 @@ nilpotent elements are closed under many operations.
 
 For the definition of `nilradical`, see `Mathlib/RingTheory/Nilpotent/Lemmas.lean`.
 
-
 ## Main definitions
 
-  * `isNilpotent_neg_iff`
-  * `Commute.isNilpotent_add`
-  * `Commute.isNilpotent_sub`
-
+* `isNilpotent_neg_iff`
+* `Commute.isNilpotent_add`
+* `Commute.isNilpotent_sub`
 -/
 
 public section
