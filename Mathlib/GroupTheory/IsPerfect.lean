@@ -33,9 +33,9 @@ Among the basic results, we show that
 
 public section
 
-/-- An additive group `G` is perfect if `G` equals its commutator subgroup. -/
+/-- An additive group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
 class AddGroup.IsPerfect (G : Type*) [AddGroup G] : Prop where
-  /-- The commutator of `G` with itself is the whole group `G`. -/
+  /-- The commutator of the group `G` with itself is the whole group `G`. -/
   addCommutator_eq_top : addCommutator G = (⊤ : AddSubgroup G)
 
 namespace Group
@@ -45,11 +45,11 @@ variable {G G' : Type*} [Group G] [Group G'] {H : Subgroup G} (f : G →* G')
 
 variable (G) in
 /-- A group `G` is perfect if `G` equals its commutator subgroup `⁅G, G⁆`. -/
+@[to_additive]
 class IsPerfect where
   /-- The commutator of the group `G` with itself is the whole group `G`. -/
   commutator_eq_top : commutator G = (⊤ : Subgroup G)
 
-attribute [to_additive] IsPerfect
 attribute [simp] IsPerfect.commutator_eq_top
 
 @[to_additive]
@@ -99,13 +99,13 @@ lemma not_isSolvable [Nontrivial G] [IsPerfect G] : ¬ IsSolvable G := by
 variable (G) in
 @[to_additive]
 lemma not_isNilpotent [Nontrivial G] [IsPerfect G] : ¬ IsNilpotent G :=
-  fun _ ↦ (not_isSolvable G) Group.IsNilpotent.to_isSolvable
+  fun _ ↦ not_isSolvable G inferInstance
 
 open scoped IsMulCommutative in
 variable (G) in
 @[to_additive]
 lemma not_isMulCommutative [Nontrivial G] [IsPerfect G] : ¬ IsMulCommutative G :=
-  fun _ ↦ (not_isSolvable G) inferInstance
+  fun _ ↦ not_isSolvable G inferInstance
 
 @[to_additive]
 instance subsingleton_of_isMulCommutative
