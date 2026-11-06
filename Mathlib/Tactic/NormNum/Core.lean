@@ -55,7 +55,7 @@ structure NormNumExt where
   /-- The extension should be run in the `pre` phase when used as simp plugin. -/
   pre := true
   /-- The extension should be run in the `post` phase when used as simp plugin. -/
-  post := true
+  post := !pre
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
   eval {u : Level} {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
   /-- The name of the `norm_num` extension. -/
