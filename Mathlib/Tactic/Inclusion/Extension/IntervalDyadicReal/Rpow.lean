@@ -24,9 +24,10 @@ namespace Inclusion
 namespace IntervalDyadicReal
 
 /-- Computes an enclosure of `log x` at precision `prec` for `x ∈ I` with `0 < x`. -/
+@[expose]
 def logPos (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
-  lb := if 0 < I.lb then I.lb.map (Dyadic.lowerLog · prec) else ⊥
-  ub := I.ub.map (Dyadic.upperLog · prec)
+  lb := if 0 < I.lb then I.lb.map (lowerLog · prec) else ⊥
+  ub := I.ub.map (upperLog · prec)
 
 theorem log_mem_logPos {x : ℝ} {I : Interval Dyadic}
     (hx : x ∈ I) (hx₀ : 0 < x) (prec : ℕ) :
@@ -37,22 +38,22 @@ theorem log_mem_logPos {x : ℝ} {I : Interval Dyadic}
     ⟨fun lb hlb => ?_, fun ub hub => ?_⟩
   · by_cases hl : 0 < I.lb
     · rw [ite_eq_left hl, WithBot.map_eq_some_iff] at hlb
-      obtain ⟨lb, hlb, rfl⟩ : ∃ lb' : Dyadic, I.lb = lb' ∧ lb'.lowerLog prec = lb := hlb
-      have hlb₀ : 0 < lb.toReal := by
+      obtain ⟨lb, hlb, rfl⟩ : ∃ lb' : Dyadic, I.lb = lb' ∧ lowerLog lb' prec = lb := hlb
+      have hlb₀ : 0 < Dyadic.toReal lb := by
         rw [← Dyadic.toReal_zero, Dyadic.toReal_lt_toReal]
         aesop
-      simpa [Dyadic.toReal] using lb.lowerLog_le prec |>.trans (log_le_log hlb₀ (hxl lb hlb))
+      simpa [Dyadic.toReal] using lowerLog_le lb prec |>.trans (log_le_log hlb₀ (hxl lb hlb))
     · rw [ite_eq_right hl] at hlb
       cases hlb
   · rw [WithTop.map_eq_some_iff] at hub
-    obtain ⟨ub, hub, rfl⟩ : ∃ ub' : Dyadic, I.ub = ub' ∧ ub'.upperLog prec = ub := hub
-    simpa [Dyadic.toReal] using log_le_log hx₀ (hxu ub hub) |>.trans <| ub.le_upperLog prec
+    obtain ⟨ub, hub, rfl⟩ : ∃ ub' : Dyadic, I.ub = ub' ∧ upperLog ub' prec = ub := hub
+    simpa [Dyadic.toReal] using log_le_log hx₀ (hxu ub hub) |>.trans <| le_upperLog ub prec
 
 /-- Reserved for an enclosure of `x ^ y` for `x < 0`. -/
 @[expose]
 def negRpow (_I _J : Interval Dyadic) (_prec : ℕ) : Interval Dyadic := .univ Dyadic
 
-/-- Computes an enclosure of `0 ^ y` for `y ∈ J`. -/
+/-- Computes an enclosure of `(0 : ℝ) ^ y` for `y ∈ J`. -/
 @[expose]
 def zeroRpow (J : Interval Dyadic) : Interval Dyadic :=
   if J.lb = 0 ∧ J.ub = 0 then

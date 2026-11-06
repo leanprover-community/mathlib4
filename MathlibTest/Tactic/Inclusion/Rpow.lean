@@ -3,7 +3,10 @@ Copyright (c) 2026 Emlis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emlis
 -/
-import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rpow
+module
+
+meta import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Rpow
+
 import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Tactic
 
 open Real
