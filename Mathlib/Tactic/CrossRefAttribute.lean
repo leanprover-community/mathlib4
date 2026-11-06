@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 module
 
+public meta import Batteries.Data.Char
 public meta import Lean.Elab.Command
 public import Mathlib.Init
 
@@ -147,7 +148,7 @@ def escapeFormatting (str : String) : String :=
   str.foldl (init := "") fun acc c =>
     -- Markdown allows escaping any ASCII punctuation character.
     -- Therefore, let's just escape everything and be sure it won't be misinterpreted.
-    if c.val < 128 && !c.isAlphanum then acc.push '\\' |>.push c else acc.push c
+    if c.isAscii && !c.isAlphanum then acc.push '\\' |>.push c else acc.push c
 
 /-- Append a cross-reference link to the docstring of `decl` and record it in `tagExt`.
 This is the database-agnostic core of every cross-reference attribute's `add` handler.
