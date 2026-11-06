@@ -276,7 +276,7 @@ theorem eNorm_starProjection_eq_infEDist
   simp [← Uᗮ.edist_starProjection_eq_infEDist y, eDist_eq_eNorm_sub]
 
 @[deprecated (since := "2026-11-06")]
-alias eNorm_starProjection_eq_infEDist := eNorm_starProjection_eq_infEDistn
+alias enorm_starProjection_eq_infEDist := eNorm_starProjection_eq_infEDist
 
 /-- The orthogonal projection sends elements of `K` to themselves. -/
 @[simp]
