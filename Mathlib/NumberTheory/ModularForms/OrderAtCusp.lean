@@ -32,30 +32,29 @@ open scoped MatrixGroups ModularForm Pointwise
 namespace UpperHalfPlane
 
 /-- The width-weighted order is unchanged by an upper triangular change of cusp coordinate. -/
-lemma width_mul_orderAtInfty_slash_of_upperTriangular {G : Subgroup (GL (Fin 2) ℝ)}
-    [DiscreteTopology G] (hw : 0 < G.widthInfty) (f : ℍ → ℂ) (k : ℤ) {g : GL (Fin 2) ℝ}
-    (hg : g 1 0 = 0) :
+lemma width_mul_orderAtInfty_slash_of_upperTriangular (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G] {g : GL (Fin 2) ℝ} (hg : g 1 0 = 0) (f : ℍ → ℂ) (k : ℤ) :
     (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) = G.widthInfty * orderAtInfty f := by
-  rw [Subgroup.widthInfty_conj_of_upperTriangular hw hg,
+  rw [Subgroup.widthInfty_conj_of_upperTriangular G hg,
     orderAtInfty_slash_of_upperTriangular f k g hg, ← mul_assoc, ← EReal.coe_mul, div_mul_cancel₀]
   grind [g.a_ne_zero_of_c_eq_zero hg, g.d_ne_zero_of_c_eq_zero hg]
 
 lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq {G : Subgroup (GL (Fin 2) ℝ)}
-    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hw : 0 < (toConjAct g⁻¹ • G).widthInfty)
-    (hcg : g • (∞ : OnePoint ℝ) = h • ∞) (f : ℍ → ℂ) (k : ℤ) :
+    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hcg : g • (∞ : OnePoint ℝ) = h • ∞)
+    (f : ℍ → ℂ) (k : ℤ) :
     (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
       (toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
   obtain ⟨t, rfl⟩ : ∃ t, h = g * t := ⟨g⁻¹ * h, (mul_inv_cancel_left g h).symm⟩
   have ht : t 1 0 = 0 := smul_infty_eq_self_iff.mp <| by simpa [mul_smul] using hcg.symm
   rw [mul_inv_rev, toConjAct_mul, mul_smul, SlashAction.slash_mul]
-  exact (width_mul_orderAtInfty_slash_of_upperTriangular hw _ k ht).symm
+  exact (width_mul_orderAtInfty_slash_of_upperTriangular _ ht _ _).symm
 
 section Cusps
 
 /-- Independence of the scaling matrix, allowing either orientation. -/
-lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' {G : Subgroup (GL (Fin 2) ℝ)}
-    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hw : 0 < (toConjAct g⁻¹ • G).widthInfty)
-    (hcg : g • (∞ : OnePoint ℝ) = h • ∞) (f : ℍ → ℂ) (k : ℤ) :
+lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' (G : Subgroup (GL (Fin 2) ℝ))
+    [DiscreteTopology G] {g h : GL (Fin 2) ℝ} (hcg : g • (∞ : OnePoint ℝ) = h • ∞)
+    (f : ℍ → ℂ) (k : ℤ) :
     (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) =
       (toConjAct h⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] h) := by
   let t := g⁻¹ * h
@@ -65,7 +64,7 @@ lemma width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' {G : Subgroup (GL (Fin 2
   have heq : (toConjAct t⁻¹ • (toConjAct g⁻¹ • G)).widthInfty *
       orderAtInfty ((f ∣[k] g) ∣[k] t) =
         (toConjAct g⁻¹ • G).widthInfty * orderAtInfty (f ∣[k] g) := by
-    rw [Subgroup.widthInfty_conj_of_upperTriangular hw ht,
+    rw [Subgroup.widthInfty_conj_of_upperTriangular _ ht,
       orderAtInfty_slash_of_upperTriangular _ k t ht, ← mul_assoc, ← EReal.coe_mul,
       div_mul_cancel₀ _ ha]
   simpa only [t, mul_inv_rev, inv_inv, ← toConjAct_mul, ← mul_smul,
@@ -97,7 +96,7 @@ lemma orderAtCusp_eq {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G] [G.Has
   have hw : 0 < (toConjAct (cuspScalingMatrix c)⁻¹ • G).widthInfty := by
     have heq : (cuspScalingMatrix c)⁻¹ • c = ∞ := inv_smul_eq_iff.mpr hchosen.symm
     simpa only [Subgroup.widthInfty_pos_iff, heq] using hc.smul (cuspScalingMatrix c)⁻¹
-  exact width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' hw (hchosen.trans hg.symm) f k
+  exact width_mul_orderAtInfty_slash_eq_of_smul_infty_eq' G (hchosen.trans hg.symm) f k
 
 /-- At infinity, the order at a cusp is the width times the exponential order. -/
 lemma orderAtCusp_infty {G : Subgroup (GL (Fin 2) ℝ)} [DiscreteTopology G]
@@ -153,8 +152,7 @@ end Cusps
 variable {F : Type*} {G : Subgroup (GL (Fin 2) ℝ)}
   [G.HasDetPlusMinusOne] (k : ℤ) [FunLike F ℍ ℂ] [ModularFormClass F G k]
 
-lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp ∞ G)]
-    [Decidable G.IsRegularAtInfty] (f : F) :
+lemma orderAtCusp_eq_qExpansion_order [DiscreteTopology G] [Fact (IsCusp ∞ G)] (f : F) :
     orderAtCusp G k ∞ f = (qExpansion G.strictWidthInfty f).order / G.regularityFactorInfty := by
   rw [orderAtCusp_infty Fact.out,
       orderAtInfty_eq_qExpansion_order (Subgroup.strictWidthInfty_pos_iff.mpr Fact.out)
@@ -215,16 +213,16 @@ lemma orderAtCuspOrbit_translate [DiscreteTopology G] (c : CuspOrbits G)
 lemma totalCuspOrder_translate [G.IsArithmetic] (f : F) (g : GL (Fin 2) ℝ)
     [(toConjAct g⁻¹ • G).IsArithmetic] :
     totalCuspOrder (toConjAct g⁻¹ • G) k (ModularForm.translate f g) = totalCuspOrder G k f := by
-  classical
   let := Fintype.ofFinite (CuspOrbits G)
   let := Fintype.ofFinite (CuspOrbits (toConjAct g⁻¹ • G))
   exact (Fintype.sum_bijective _ (CuspOrbits.conj_bijective G g⁻¹)
     _ _ (fun c ↦ (orderAtCuspOrbit_translate k c g f).symm)).symm
 
-lemma qExpansion_order_le_totalCuspOrder [G.IsArithmetic] [Decidable G.IsRegularAtInfty] (f : F) :
+lemma qExpansion_order_le_totalCuspOrder [G.IsArithmetic] (f : F) :
     (qExpansion G.strictWidthInfty f).order ≤ G.regularityFactorInfty * totalCuspOrder G k f := by
-  have hpos : 0 < G.regularityFactorInfty := by
-    simp [Subgroup.regularityFactorInfty, apply_ite]
+  have hpos : 0 < G.regularityFactorInfty := by by_cases G.IsRegularAtInfty <;>
+    grind [G.regularityFactorInfty_eq_one_of_isRegularAtInfty,
+      G.regularityFactorInfty_eq_two_of_not_isRegularAtInfty]
   rw [← EReal.div_le_iff_le_mul (mod_cast hpos) (EReal.natCast_ne_top _),
     ← orderAtCusp_eq_qExpansion_order]
   exact orderAtCuspOrbit_le_totalCuspOrder k ⟦⟨∞, (Fact.out : IsCusp _ G)⟩⟧ f

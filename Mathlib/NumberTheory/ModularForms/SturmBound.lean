@@ -185,7 +185,7 @@ private noncomputable def qExpansionCoeffMap {G : Subgroup (GL (Fin 2) ℝ)} [G.
     simp [ModularForm.qExpansion_smul G.strictWidthInfty_pos G.strictWidthInfty_mem_strictPeriods]
 
 private lemma qExpansionCoeffMap_injective {G : Subgroup (GL (Fin 2) ℝ)} [G.IsArithmetic]
-    [G.HasDetOne] [Decidable G.IsRegularAtInfty] {k : ℤ} {N : ℕ}
+    [G.HasDetOne] {k : ℤ} {N : ℕ}
     (hN : G.regularityFactorInfty * G.sturmBound k < N) :
     Function.Injective (qExpansionCoeffMap k N : ModularForm G k → Fin N → ℂ) := by
   refine (injective_iff_map_eq_zero _).mpr fun f hf ↦ of_not_not fun hne ↦ ?_
