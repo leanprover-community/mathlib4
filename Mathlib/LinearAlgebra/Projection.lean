@@ -288,16 +288,6 @@ theorem sub_projection_mem (h : IsCompl p q) (x : E) : x - p.projection q h x �
   rw [← projection_eq_self_sub_projection h]
   exact projection_apply_mem h.symm x
 
-theorem prodEquivOfIsCompl_symm_add (x : E) (hpq : IsCompl p q) :
-    ((prodEquivOfIsCompl _ _ hpq).symm x).1.val +
-      ((prodEquivOfIsCompl _ _ hpq).symm x).2.val = x := by
-  rw [show x = (p.projection q hpq + q.projection p hpq.symm) x by
-    simp [projection_add_projection_eq_id hpq]]
-  simp
-  congr
-  · simp [projection_apply_of_mem_right hpq]
-  · simp [projection_apply_of_mem_right ((isCompl_comm).mp hpq)]
-
 variable (p q) in
 /-- If `q` is a complement of `p`, then `M ⧸ p ≃ q`. The forward direction sends a quotient class
 to its projection onto `q` along `p`; the backward direction sends an element of `q` to its class
