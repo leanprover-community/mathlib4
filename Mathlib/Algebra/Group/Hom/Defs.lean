@@ -907,7 +907,7 @@ theorem MulHom.id_comp [Mul M] [Mul N] (f : M →ₙ* N) : (MulHom.id N).comp f 
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.id_comp [MulOne M] [MulOne N] (f : M →* N) :
-    (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
+    (MonoidHom.id N).comp f = f := rfl
 
 @[to_additive (reorder := a n)]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :

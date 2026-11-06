@@ -125,7 +125,7 @@ theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) 
 
 theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐ[μb] t) :
     f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
-  EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
+  EventuallySubset.antisymm (hf.preimage_mono_ae h.subset) (hf.preimage_mono_ae h.symm.subset)
 
 /-- The preimage of a null measurable set under a (quasi-)measure-preserving map is a null
 measurable set. -/
@@ -140,7 +140,7 @@ theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePr
   | zero => rfl
   | succ k ih =>
     rw [iterate_succ, preimage_comp]
-    exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
+    exact (hf.preimage_ae_eq ih).trans hs
 
 theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
     (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
@@ -204,7 +204,7 @@ theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : Measu
     {s t : Set α} {μ : Measure α} (g : G)
     (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
     (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
-  simpa only [← preimage_smul_inv] using! h_qmp.ae_eq_comp h_ae_eq
+  simpa only [← preimage_smul_inv] using! h_qmp.preimage_ae_eq h_ae_eq
 
 end QuasiMeasurePreserving
 

@@ -387,8 +387,10 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
 
 /-- If a normed space is (topologically) non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
-theorem nnnorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
+theorem nnNorm_id [NontrivialTopology E] : ‖ContinuousLinearMap.id 𝕜 E‖₊ = 1 :=
   NNReal.eq norm_id
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_id := nnNorm_id
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
     NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
