@@ -466,7 +466,7 @@ theorem finrank_span_eq_card {ι : Type*} [Fintype ι] {b : ι → M}
     (by
       have : Module.rank R (span R (Set.range b)) = #(Set.range b) := rank_span hb
       rwa [← lift_inj, mk_range_eq_of_injective hb.injective, Cardinal.mk_fintype, lift_natCast,
-        lift_eq_nat_iff] at this)
+        lift_eq_natCast_iff] at this)
 
 theorem finrank_span_set_eq_ncard {s : Set M} (hs : LinearIndepOn R id s) :
     finrank R (span R s) = s.ncard := by

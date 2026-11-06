@@ -623,6 +623,8 @@ theorem lift_inj {a b : Ordinal} : lift.{u, v} a = lift.{u, v} b ↔ a = b := by
 theorem lift_lt {a b : Ordinal} : lift.{u, v} a < lift.{u, v} b ↔ a < b := by
   simp_rw [lt_iff_le_not_ge, lift_le]
 
+theorem lift_injective : Function.Injective lift := fun _ ↦ by simp
+
 @[simp]
 theorem lift_typein_top {r : α → α → Prop} {s : β → β → Prop}
     [IsWellOrder α r] [IsWellOrder β s] (f : r ≺i s) : lift.{u} (typein s f.top) = lift (type r) :=
