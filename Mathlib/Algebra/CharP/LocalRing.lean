@@ -49,7 +49,7 @@ theorem charP_zero_or_prime_power (R : Type*) [CommRing R] [IsLocalRing R] (q : 
       rw [← IsLocalRing.mem_maximalIdeal] at g
       have a_cast_zero := Ideal.Quotient.eq_zero_iff_mem.2 g
       rw [map_natCast] at a_cast_zero
-      have r_dvd_a := (ringChar.spec K a).1 a_cast_zero
+      have r_dvd_a : r ∣ a := (CharP.cast_eq_zero_iff K r a).mp a_cast_zero
       exact absurd r_dvd_a r_ne_dvd_a
     have rn_cast_zero : ↑(r ^ n) = (0 : R) := by
       rw [← one_mul (↑(r ^ n) : R), ← a_unit.val_inv_mul, mul_assoc, ← Nat.cast_mul,

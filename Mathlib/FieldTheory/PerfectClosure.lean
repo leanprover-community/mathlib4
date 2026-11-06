@@ -374,8 +374,8 @@ theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = 
   rw [natCast K p 0, natCast K p 0, H]
 
 instance instCharP : CharP (PerfectClosure K p) p := by
-  constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
-  rw [← Nat.cast_zero, natCast_eq_iff, Nat.cast_zero]
+  refine CharP.of_cast_eq_zero_iff_dvd _ fun x => ?_
+  rw [← CharP.cast_eq_zero_iff K, ← Nat.cast_zero, natCast_eq_iff, Nat.cast_zero]
 
 theorem frobenius_mk (x : ℕ × K) :
     (frobenius (PerfectClosure K p) p : PerfectClosure K p → PerfectClosure K p) (mk K p x) =

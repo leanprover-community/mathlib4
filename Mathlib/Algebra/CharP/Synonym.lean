@@ -32,7 +32,7 @@ instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar Rᵒᵈ p :=
   inferInstanceAs <| ExpChar R p
 
 @[simp]
-theorem ringChar_eq [NonAssocSemiring R] : ringChar Rᵒᵈ = ringChar R :=
+theorem ringChar_eq [NonAssocSemiring R] [IsLeftCancelAdd R] : ringChar Rᵒᵈ = ringChar R :=
   ringChar.eq Rᵒᵈ (ringChar R)
 
 end OrderDual
@@ -49,7 +49,7 @@ instance {p : ℕ} [AddMonoidWithOne R] [ExpChar R p] : ExpChar (Lex R) p :=
   inferInstanceAs <| ExpChar R p
 
 @[simp]
-theorem ringChar_eq [NonAssocSemiring R] : ringChar (Lex R) = ringChar R :=
+theorem ringChar_eq [NonAssocSemiring R] [IsLeftCancelAdd R] : ringChar (Lex R) = ringChar R :=
   ringChar.eq (Lex R) (ringChar R)
 
 end Lex

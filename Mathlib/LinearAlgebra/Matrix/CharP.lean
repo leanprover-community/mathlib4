@@ -23,8 +23,8 @@ namespace Matrix
 variable {n : Type*} {R : Type*} [DecidableEq n] [Nonempty n] [AddMonoidWithOne R]
 
 instance instCharP (p : ℕ) [CharP R p] : CharP (Matrix n n R) p where
-  cast_eq_zero_iff k := by simp_rw [← diagonal_natCast, ← diagonal_zero, diagonal_eq_diagonal_iff,
-    CharP.cast_eq_zero_iff R p k, forall_const]
+  cast_eq_iff_mod_eq a b := by simp_rw [← diagonal_natCast, diagonal_eq_diagonal_iff,
+    CharP.cast_eq_iff_mod_eq, forall_const]
 
 instance instCharZero [CharZero R] : CharZero (Matrix n n R) where
   cast_injective _ _ h := by
