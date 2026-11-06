@@ -321,6 +321,8 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] theorem eNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
   ENNReal.coe_inj.mpr <| nnNorm_rankOne _ _
 
+@[deprecated (since := "2026-11-06")] alias enorm_rankOne := eNorm_rankOne
+
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
 lemma comp_rankOne {G : Type*} [SeminormedAddCommGroup G] [NormedSpace 𝕜 G]

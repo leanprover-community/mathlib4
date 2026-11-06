@@ -561,6 +561,8 @@ theorem eNorm_convolution_le {p q : ENNReal}
     _ ≤ eLpNorm (fun a ↦ L (f a) (g (x₀ - a))) 1 μ := lintegral_eNorm_le_eLpNorm_one
     _ ≤ ‖L‖ₑ * eLpNorm f p μ * eLpNorm g q μ := eLpNorm_convolution_integrand_le L hf hg x₀
 
+@[deprecated (since := "2026-11-06")] alias enorm_convolution_le := eNorm_convolution_le
+
 end IsAddLeftInvariant
 
 variable [TopologicalSpace G]

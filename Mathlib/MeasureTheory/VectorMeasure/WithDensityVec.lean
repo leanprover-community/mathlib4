@@ -103,6 +103,10 @@ lemma sum_eNorm_setIntegral_le_variation_withDensity {ι : Type*} (t : Finset ι
     _ ≤ ((μ.withDensity f B).restrict s).variation univ := measure_mono (subset_univ _)
     _ = (μ.withDensity f B).variation s := by rw [variation_restrict hs]; simp
 
+@[deprecated (since := "2026-11-06")]
+alias sum_enorm_setIntegral_le_variation_withDensity :=
+  sum_eNorm_setIntegral_le_variation_withDensity
+
 lemma variation_WithDensity_le :
     (μ.withDensity f B).variation ≤ (μ.transpose B).variation.withDensity (fun x ↦ ‖f x‖ₑ) := by
   by_cases hf : μ.Integrable f

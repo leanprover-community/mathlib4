@@ -332,6 +332,9 @@ theorem eNorm_integral_le_lintegral_eNorm (f : α → G) : ‖∫ a, f a ∂μ�
   simp only [integral_eq_setToFun]
   exact (eNorm_setToFun_le _ (by simp)).trans (by simp)
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_lintegral_enorm := eNorm_integral_le_lintegral_eNorm
+
 theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     dist (∫ a, f a ∂μ) (∫ a, g a ∂μ) ≤ (∫⁻ a, edist (f a) (g a) ∂μ).toReal := by
@@ -538,15 +541,24 @@ theorem integral_norm_eq_lintegral_eNorm {P : Type*} [NormedAddCommGroup P] {f :
   · simp_rw [ofReal_norm]
   · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 
+@[deprecated (since := "2026-11-06")]
+alias integral_norm_eq_lintegral_enorm := integral_norm_eq_lintegral_eNorm
+
 theorem ofReal_integral_norm_eq_lintegral_eNorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   rw [integral_norm_eq_lintegral_eNorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_eNorm.mpr hf.2)
 
+@[deprecated (since := "2026-11-06")]
+alias ofReal_integral_norm_eq_lintegral_enorm := ofReal_integral_norm_eq_lintegral_eNorm
+
 theorem eNorm_integral_norm_eq_lintegral_eNorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ‖∫ x, ‖f x‖ ∂μ‖ₑ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   convert ofReal_integral_norm_eq_lintegral_eNorm hf
   rw [integral_norm_eq_lintegral_eNorm hf.aestronglyMeasurable, Real.eNorm_eq_ofReal toReal_nonneg]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_norm_eq_lintegral_enorm := eNorm_integral_norm_eq_lintegral_eNorm
 
 theorem SimpleFunc.integral_eq_integral [CompleteSpace E] (f : α →ₛ E) (hfi : Integrable f μ) :
     f.integral μ = ∫ x, f x ∂μ := by

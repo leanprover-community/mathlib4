@@ -219,6 +219,9 @@ noncomputable def enormProjBound : ℝ≥0∞ := ⨆ A : Finset β, ‖b.proj A�
 theorem eNorm_proj_le_enormProjBound (A : Finset β) : ‖b.proj A‖ₑ ≤ b.enormProjBound :=
   le_iSup (fun A ↦ ‖b.proj A‖ₑ) A
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_proj_le_enormProjBound := eNorm_proj_le_enormProjBound
+
 /-- Projections are uniformly bounded for unconditional bases. -/
 theorem exists_norm_proj_le [CompleteSpace X] : ∃ C : ℝ, ∀ A : Finset β, ‖b.proj A‖ ≤ C := by
   classical
@@ -339,6 +342,9 @@ noncomputable def enormProjBound : ℝ≥0∞ := ⨆ n, ‖b.proj n‖ₑ
 /-- The eNorm of any projection is bounded by the basis constant. -/
 theorem eNorm_proj_le_enormProjBound (n : ℕ) : ‖b.proj n‖ₑ ≤ b.enormProjBound :=
   le_iSup (fun i ↦ ‖b.proj i‖ₑ) n
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_proj_le_enormProjBound := eNorm_proj_le_enormProjBound
 
 /-- The basis constant for Schauder bases (supremum over projections) as `nnNorm`.
     Requires completeness to guarantee the supremum is finite,

@@ -133,6 +133,9 @@ lemma etvDist_eq_iSup_finPartition_eNorm [IsFiniteMeasure μ] [IsFiniteMeasure �
   congrm ⨆ P, ∑ s ∈ _, ?_
   simp [s.2]
 
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_iSup_finPartition_enorm := etvDist_eq_iSup_finPartition_eNorm
+
 @[simp]
 lemma etvDist_self (μ : Measure 𝓧) [IsFiniteMeasure μ] : etvDist μ μ = 0 := by
   simp [etvDist_eq_etvDist_toSignedMeasure]

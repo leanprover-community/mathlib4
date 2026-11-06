@@ -79,6 +79,8 @@ theorem tendstoInMeasure_iff_eNorm [SeminormedAddCommGroup E] {l : Filter ι} {f
   simp_rw [← eDist_eq_eNorm_sub]
   exact ⟨fun h ε hε hε_top ↦ h ε hε, tendstoInMeasure_of_ne_top⟩
 
+@[deprecated (since := "2026-11-06")] alias tendstoInMeasure_iff_enorm := tendstoInMeasure_iff_eNorm
+
 /-- `TendstoInMeasure` expressed with the real-valued measure of a set defined with
 an extended norm.
 
@@ -91,6 +93,9 @@ theorem tendstoInMeasure_iff_measureReal_eNorm [SeminormedAddCommGroup E] [IsFin
   rw [tendstoInMeasure_iff_eNorm]
   congr! with ε hε hε_top
   simp_rw [measureReal_def, ENNReal.tendsto_toReal_zero_iff (fun _ ↦ measure_ne_top _ _)]
+
+@[deprecated (since := "2026-11-06")]
+alias tendstoInMeasure_iff_measureReal_enorm := tendstoInMeasure_iff_measureReal_eNorm
 
 /-- `TendstoInMeasure` expressed with a distance `dist` instead of an extended distance `edist`. -/
 lemma tendstoInMeasure_iff_dist [PseudoMetricSpace E] {f : ι → α → E} {l : Filter ι} {g : α → E} :

@@ -183,6 +183,9 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (E [⋀^ι]→L[�
 @[simp] theorem nnNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖₊ = ‖f‖₊ := rfl
 @[simp] theorem eNorm_toContinuousMultilinearMap (f : E [⋀^ι]→L[𝕜] F) : ‖f.1‖ₑ = ‖f‖ₑ := rfl
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousMultilinearMap := eNorm_toContinuousMultilinearMap
+
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_toContinuousMultilinearMap := nnNorm_toContinuousMultilinearMap
 

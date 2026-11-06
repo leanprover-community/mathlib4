@@ -44,6 +44,8 @@ theorem nnNorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖
 lemma eNorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
   simpa [eNorm, ← ENNReal.coe_mul] using nnNorm_smul_le ..
 
+@[deprecated (since := "2026-11-06")] alias enorm_smul_le := eNorm_smul_le
+
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
   simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
 
@@ -85,6 +87,9 @@ theorem IsBoundedSMul.of_eNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖
     IsBoundedSMul α β :=
   .of_norm_smul_le (by simpa [eNorm_eq_nnNorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
 
+@[deprecated (since := "2026-11-06")]
+alias IsBoundedSMul.of_enorm_smul_le := IsBoundedSMul.of_eNorm_smul_le
+
 theorem IsBoundedSMul.of_nnNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
 
@@ -120,6 +125,8 @@ class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop w
 lemma eNorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
     ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ :=
   ENormSMulClass.eNorm_smul r x
+
+@[deprecated (since := "2026-11-06")] alias enorm_smul := eNorm_smul
 
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 

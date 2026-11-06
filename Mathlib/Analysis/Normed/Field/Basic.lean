@@ -89,6 +89,8 @@ theorem nnNorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
 @[simp]
 lemma eNorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [eNorm, ENNReal.coe_inv, ha]
 
+@[deprecated (since := "2026-11-06")] alias enorm_inv := eNorm_inv
+
 @[simp]
 theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=
   map_zpow₀ (normHom : α →*₀ ℝ)
@@ -222,6 +224,8 @@ theorem exists_one_lt_nnNorm : ∃ x : α, 1 < ‖x‖₊ := exists_one_lt_norm 
 theorem exists_one_lt_eNorm : ∃ x : α, 1 < ‖x‖ₑ :=
   exists_one_lt_nnNorm α |>.imp fun _ => ENNReal.coe_lt_coe.mpr
 
+@[deprecated (since := "2026-11-06")] alias exists_one_lt_enorm := exists_one_lt_eNorm
+
 theorem exists_lt_norm (r : ℝ) : ∃ x : α, r < ‖x‖ :=
   let ⟨w, hw⟩ := exists_one_lt_norm α
   let ⟨n, hn⟩ := pow_unbounded_of_one_lt r hw
@@ -234,6 +238,8 @@ theorem exists_lt_nnNorm (r : ℝ≥0) : ∃ x : α, r < ‖x‖₊ := exists_lt
 theorem exists_lt_eNorm {r : ℝ≥0∞} (hr : r ≠ ∞) : ∃ x : α, r < ‖x‖ₑ := by
   lift r to ℝ≥0 using hr
   exact mod_cast exists_lt_nnNorm α r
+
+@[deprecated (since := "2026-11-06")] alias exists_lt_enorm := exists_lt_eNorm
 
 theorem exists_norm_lt {r : ℝ} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < r :=
   let ⟨w, hw⟩ := exists_lt_norm α r⁻¹
@@ -251,6 +257,8 @@ theorem exists_eNorm_lt {r : ℝ≥0∞} (hr : 0 < r) : ∃ x : α, 0 < ‖x‖�
   | (r : ℝ≥0) => exists_nnNorm_lt α (ENNReal.coe_pos.mp hr) |>.imp fun _ =>
     And.imp ENNReal.coe_pos.mpr ENNReal.coe_lt_coe.mpr
 
+@[deprecated (since := "2026-11-06")] alias exists_enorm_lt := exists_eNorm_lt
+
 theorem exists_norm_lt_one : ∃ x : α, 0 < ‖x‖ ∧ ‖x‖ < 1 :=
   exists_norm_lt α one_pos
 
@@ -259,6 +267,8 @@ theorem exists_nnNorm_lt_one : ∃ x : α, 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := 
 @[deprecated (since := "2026-10-31")] alias exists_nnnorm_lt_one := exists_nnNorm_lt_one
 
 theorem exists_eNorm_lt_one : ∃ x : α, 0 < ‖x‖ₑ ∧ ‖x‖ₑ < 1 := exists_eNorm_lt _ one_pos
+
+@[deprecated (since := "2026-11-06")] alias exists_enorm_lt_one := exists_eNorm_lt_one
 
 variable {α}
 

@@ -447,6 +447,8 @@ lemma nnNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 lemma eNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     ‖b i‖ₑ = 1 := b.orthonormal.eNorm_eq_one i
 
+@[deprecated (since := "2026-11-06")] alias enorm_eq_one := eNorm_eq_one
+
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
     ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij

@@ -236,6 +236,8 @@ omit [PseudoMetrizableSpace ε] in
 theorem eNorm (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖ₑ) μ a b :=
   ⟨h.1.eNorm, h.2.eNorm⟩
 
+@[deprecated (since := "2026-11-06")] alias enorm := eNorm
+
 theorem norm {f : ℝ → E} (h : IntervalIntegrable f μ a b) : IntervalIntegrable (‖f ·‖) μ a b :=
   ⟨h.1.norm, h.2.norm⟩
 
@@ -243,6 +245,9 @@ theorem intervalIntegrable_eNorm_iff {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
     IntervalIntegrable (fun t => ‖f t‖ₑ) μ a b ↔ IntervalIntegrable f μ a b := by
   simp_rw [intervalIntegrable_iff, IntegrableOn, integrable_eNorm_iff hf]
+
+@[deprecated (since := "2026-11-06")]
+alias intervalIntegrable_enorm_iff := intervalIntegrable_eNorm_iff
 
 theorem intervalIntegrable_norm_iff {f : ℝ → E} {μ : Measure ℝ} {a b : ℝ}
     (hf : AEStronglyMeasurable f (μ.restrict (Ι a b))) :
@@ -277,6 +282,8 @@ theorem mono_fun_eNorm [PseudoMetrizableSpace ε'] {g : ℝ → ε'}
     (hle : (‖g ·‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] (‖f ·‖ₑ)) : IntervalIntegrable g μ a b :=
   intervalIntegrable_iff.2 <| hf.def'.integrable.mono_eNorm hgm hle
 
+@[deprecated (since := "2026-11-06")] alias mono_fun_enorm := mono_fun_eNorm
+
 theorem mono_fun {f : ℝ → E} [NormedAddCommGroup F] {g : ℝ → F} (hf : IntervalIntegrable f μ a b)
     (hgm : AEStronglyMeasurable g (μ.restrict (Ι a b)))
     (hle : (fun x => ‖g x‖) ≤ᵐ[μ.restrict (Ι a b)] fun x => ‖f x‖) : IntervalIntegrable g μ a b :=
@@ -287,6 +294,8 @@ theorem mono_fun_eNorm' {f : ℝ → ε} {g : ℝ → ℝ≥0∞} (hg : Interval
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))
     (hle : (fun x => ‖f x‖ₑ) ≤ᵐ[μ.restrict (Ι a b)] g) : IntervalIntegrable f μ a b :=
   intervalIntegrable_iff.2 <| hg.def'.integrable.mono_eNorm hfm hle
+
+@[deprecated (since := "2026-11-06")] alias mono_fun_enorm' := mono_fun_eNorm'
 
 theorem mono_fun' {f : ℝ → E} {g : ℝ → ℝ} (hg : IntervalIntegrable g μ a b)
     (hfm : AEStronglyMeasurable f (μ.restrict (Ι a b)))

@@ -152,6 +152,8 @@ theorem eNorm_measure_le_variation (μ : VectorMeasure X V) (E : Set X) :
   grw [← preVariation.sum_le _ _ (Finpartition.indiscrete hE')]
   simp
 
+@[deprecated (since := "2026-11-06")] alias enorm_measure_le_variation := eNorm_measure_le_variation
+
 @[simp]
 lemma variation_zero : (0 : VectorMeasure X V).variation = 0 := by
   simp only [variation, zero_apply, eNorm_zero]
@@ -182,9 +184,15 @@ lemma variation_apply_le_of_forall_eNorm_le {m : Measure X} (hs : MeasurableSet 
       rw [sup_set_eq_biUnion]
       exact measure_mono <| Set.iUnion₂_subset fun _ hp => Subtype.coe_le_coe.mpr (i.le hp)
 
+@[deprecated (since := "2026-11-06")]
+alias variation_apply_le_of_forall_enorm_le := variation_apply_le_of_forall_eNorm_le
+
 lemma variation_le_of_forall_eNorm_le {m : Measure X} (h : ∀ E, MeasurableSet E → ‖μ E‖ₑ ≤ m E) :
     μ.variation ≤ m :=
   Measure.le_intro fun _ hs _ => variation_apply_le_of_forall_eNorm_le hs (fun E hE _ ↦ h E hE)
+
+@[deprecated (since := "2026-11-06")]
+alias variation_le_of_forall_enorm_le := variation_le_of_forall_eNorm_le
 
 lemma variation_add_le [ContinuousAdd V] : variation (μ + ν) ≤ variation μ + variation ν := by
   refine variation_le_of_forall_eNorm_le fun E _ => ?_

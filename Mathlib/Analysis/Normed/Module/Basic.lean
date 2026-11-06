@@ -293,6 +293,8 @@ theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 theorem eNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
   simp only [eNorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
+@[deprecated (since := "2026-11-06")] alias enorm_algebraMap := eNorm_algebraMap
+
 theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
   simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
@@ -317,6 +319,8 @@ theorem nnNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 
 @[simp]
 theorem eNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 𝕜') x‖ₑ = ‖x‖ₑ := by
   rw [eNorm_eq_iff_norm_eq, norm_algebraMap']
+
+@[deprecated (since := "2026-11-06")] alias enorm_algebraMap' := eNorm_algebraMap'
 
 /-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]

@@ -128,6 +128,9 @@ lemma etvDist_eq_lintegral_eNorm_rnDeriv_of_ac (hμν : μ ≪ ν) :
   conv_lhs => rw! [← μ.withDensity_rnDeriv_eq ν hμν,
     etvDist_withDensity_self_eq_lintegral Measure.integrable_rnDeriv]
 
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_lintegral_enorm_rnDeriv_of_ac := etvDist_eq_lintegral_eNorm_rnDeriv_of_ac
+
 lemma tvDist_add_of_ac_of_mutuallySingular {μ' : Measure 𝓧} [IsFiniteMeasure μ']
     (hμν : μ ≪ ν) (hμ'ν : μ' ⟂ₘ ν) :
     tvDist (μ + μ') ν = tvDist μ ν + μ'.real Set.univ := by
@@ -167,5 +170,9 @@ theorem etvDist_eq_lintegral_eNorm_rnDeriv_add_singularPart :
     exact Measure.integrable_toReal_rnDeriv
   · filter_upwards with
     positivity
+
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_lintegral_enorm_rnDeriv_add_singularPart :=
+  etvDist_eq_lintegral_eNorm_rnDeriv_add_singularPart
 
 end MeasureTheory

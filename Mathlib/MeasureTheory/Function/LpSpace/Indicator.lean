@@ -85,6 +85,9 @@ theorem _root_.HasCompactSupport.memLp_of_eNorm_bound {f : X → E} (hf : HasCom
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
 
+@[deprecated (since := "2026-11-06")]
+alias _root_.HasCompactSupport.memLp_of_enorm_bound := _root_.HasCompactSupport.memLp_of_eNorm_bound
+
 /-- A continuous function with compact support is in L^p. -/
 theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
     {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : MemLp f p μ := by
@@ -166,12 +169,17 @@ theorem eNorm_indicatorConstLp_le :
   simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.eNorm_def, ← eNorm_eq_nnNorm]
     using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
+@[deprecated (since := "2026-11-06")] alias enorm_indicatorConstLp_le := eNorm_indicatorConstLp_le
+
 theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
     ht.nullMeasurableSet, Lp.eNorm_toLp]
+
+@[deprecated (since := "2026-11-06")]
+alias edist_indicatorConstLp_eq_enorm := edist_indicatorConstLp_eq_eNorm
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =

@@ -57,6 +57,8 @@ theorem nnNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E
 lemma eNorm_coe {E} [SeminormedAddCommGroup E] (x : E) : ‖(x : Completion E)‖ₑ = ‖x‖ₑ := by
   simp [eNorm]
 
+@[deprecated (since := "2026-11-06")] alias enorm_coe := eNorm_coe
+
 end Completion
 
 end UniformSpace

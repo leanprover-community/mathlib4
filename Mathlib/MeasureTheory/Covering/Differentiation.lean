@@ -803,6 +803,10 @@ theorem ae_tendsto_lintegral_eNorm_sub_div'_of_integrable {f : α → E} (hf : I
         gcongr
     _ = ε * μ a := by rw [← add_mul, ENNReal.add_halves]
 
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div'_of_integrable :=
+  ae_tendsto_lintegral_eNorm_sub_div'_of_integrable
+
 theorem ae_tendsto_lintegral_eNorm_sub_div_of_integrable {f : α → E} (hf : Integrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
   have I : Integrable (hf.1.mk f) μ := hf.congr hf.1.ae_eq_mk
@@ -815,6 +819,10 @@ theorem ae_tendsto_lintegral_eNorm_sub_div_of_integrable {f : α → E} (hf : In
   apply ae_restrict_of_ae
   filter_upwards [hf.1.ae_eq_mk] with y hy
   rw [hy, h'x]
+
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div_of_integrable :=
+  ae_tendsto_lintegral_eNorm_sub_div_of_integrable
 
 theorem ae_tendsto_lintegral_eNorm_sub_div {f : α → E} (hf : LocallyIntegrable f μ) :
     ∀ᵐ x ∂μ, Tendsto (fun a => (∫⁻ y in a, ‖f y - f x‖ₑ ∂μ) / μ a) (v.filterAt x) (𝓝 0) := by
@@ -832,6 +840,9 @@ theorem ae_tendsto_lintegral_eNorm_sub_div {f : α → E} (hf : LocallyIntegrabl
   congr 1
   refine setLIntegral_congr_fun h'a (fun y hy ↦ ?_)
   rw [indicator_of_mem (ha hy) f, indicator_of_mem hn f]
+
+@[deprecated (since := "2026-11-06")]
+alias ae_tendsto_lintegral_enorm_sub_div := ae_tendsto_lintegral_eNorm_sub_div
 
 /-- *Lebesgue differentiation theorem*: for almost every point `x`, the
 average of `‖f y - f x‖` on `a` tends to `0` as `a` shrinks to `x` along a Vitali family. -/

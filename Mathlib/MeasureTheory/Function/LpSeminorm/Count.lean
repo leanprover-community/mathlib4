@@ -39,6 +39,8 @@ lemma eNorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
   apply eLpNorm_mono_measure
   exact le_sum dirac i
 
+@[deprecated (since := "2026-11-06")] alias enorm_le_eLpNorm_count := eNorm_le_eLpNorm_count
+
 lemma eLpNorm_count_lt_top_of_lt [Finite α]
     (h : ∀ i, ‖f i‖ₑ < ∞) : eLpNorm f p .count < ∞ := by
   have := Fintype.ofFinite α

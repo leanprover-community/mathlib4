@@ -87,6 +87,9 @@ theorem HasFiniteIntegral.restrict_of_bounded_eNorm {C : ℝ≥0∞} (hC : ‖C�
   haveI : IsFiniteMeasure (μ.restrict s) := ⟨by rw [Measure.restrict_apply_univ]; exact hs.lt_top⟩
   .of_bounded_eNorm hC hf
 
+@[deprecated (since := "2026-11-06")]
+alias HasFiniteIntegral.restrict_of_bounded_enorm := HasFiniteIntegral.restrict_of_bounded_eNorm
+
 /-- A function is `IntegrableOn` a set `s` if it is almost everywhere strongly measurable on `s`
 and if the integral of its pointwise norm over `s` is less than infinity. -/
 def IntegrableOn (f : α → ε) (s : Set α) (μ : Measure α := by volume_tac) : Prop :=
@@ -581,6 +584,9 @@ lemma IntegrableAtFilter.congr'_eNorm {ε'' : Type*} [TopologicalSpace ε''] [Co
     IntegrableAtFilter g l μ :=
   let ⟨s, hs, hf⟩ := hf; ⟨s, hs, hf.congr'_eNorm hg.restrict (ae_restrict_le h)⟩
 
+@[deprecated (since := "2026-11-06")]
+alias IntegrableAtFilter.congr'_enorm := IntegrableAtFilter.congr'_eNorm
+
 @[simp]
 lemma integrableAtFilter_zero : IntegrableAtFilter (0 : α → E) l μ :=
   ⟨univ, by simp, integrableOn_univ.mpr (integrable_zero ..)⟩
@@ -634,6 +640,8 @@ theorem integrableAtFilter_smul_iff {𝕜 : Type*} [NormedField 𝕜] [NormedSpa
 protected theorem IntegrableAtFilter.eNorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
   Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.eNorm⟩
+
+@[deprecated (since := "2026-11-06")] alias IntegrableAtFilter.enorm := IntegrableAtFilter.eNorm
 
 protected theorem IntegrableAtFilter.norm {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖) l μ :=

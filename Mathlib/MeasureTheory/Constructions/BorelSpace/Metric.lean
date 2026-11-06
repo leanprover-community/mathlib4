@@ -219,14 +219,20 @@ variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENor
 @[fun_prop]
 lemma measurable_eNorm : Measurable (eNorm : ε → ℝ≥0∞) := continuous_eNorm.measurable
 
+@[deprecated (since := "2026-11-06")] alias measurable_enorm := measurable_eNorm
+
 @[fun_prop]
 protected lemma Measurable.eNorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
   measurable_eNorm.comp hf
+
+@[deprecated (since := "2026-11-06")] protected alias Measurable.enorm := Measurable.eNorm
 
 @[fun_prop]
 protected lemma AEMeasurable.eNorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (‖f ·‖ₑ) μ :=
   measurable_eNorm.comp_aemeasurable hf
+
+@[deprecated (since := "2026-11-06")] protected alias AEMeasurable.enorm := AEMeasurable.eNorm
 
 end ContinuousENorm
 

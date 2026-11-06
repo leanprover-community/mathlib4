@@ -47,6 +47,9 @@ alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
 @[simp] lemma eNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
   congrArg _ f.nnNorm_toContinuousLinearMap
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
+
 end
 
 variable {σ₁₃ : 𝕜 →+* 𝕜₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
@@ -86,6 +89,9 @@ alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
 @[simp] lemma eNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
   e.toLinearIsometry.eNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
 
 end LinearIsometryEquiv
 end SeminormedAddCommGroup

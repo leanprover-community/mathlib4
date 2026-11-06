@@ -83,6 +83,8 @@ theorem eNorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) 
   apply le_of_eq
   rw [Integrable.norm_toL1_eq_lintegral_eNorm]
 
+@[deprecated (since := "2026-11-06")] alias enorm_setToFun_le := eNorm_setToFun_le
+
 theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ ≤ NNReal.mk C hC * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   by_cases hF : CompleteSpace F; swap

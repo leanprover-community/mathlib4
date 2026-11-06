@@ -466,6 +466,8 @@ lemma eNorm_inner_le_eNorm (x y : E) : ‖⟪x, y⟫‖ₑ ≤ ‖x‖ₑ * ‖y
   grw [← ofReal_norm, norm_inner_le_norm]
   simp
 
+@[deprecated (since := "2026-11-06")] alias enorm_inner_le_enorm := eNorm_inner_le_eNorm
+
 theorem re_inner_le_norm (x y : E) : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ :=
   le_trans (re_le_norm ⟪x, y⟫) (norm_inner_le_norm x y)
 

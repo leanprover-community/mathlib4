@@ -87,9 +87,15 @@ lemma eNorm_apply_le_semivariation : ‖μ s‖ₑ ≤ μ.semivariation s := by
   _ ≤ (μ.mapRange (ℓ : E →+ ℝ) ℓ.continuous).variation s := eNorm_measure_le_variation _ _
   _ ≤ μ.semivariation s := by apply le_biSup _ h'ℓ
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_apply_le_semivariation := eNorm_apply_le_semivariation
+
 lemma eNorm_apply_le_semivariation_of_subset (hst : s ⊆ t) :
     ‖μ s‖ₑ ≤ μ.semivariation t :=
   eNorm_apply_le_semivariation.trans (semivariation_mono hst)
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_apply_le_semivariation_of_subset := eNorm_apply_le_semivariation_of_subset
 
 lemma exists_subset_lt_eNorm_apply_of_lt_semivariation (hs : MeasurableSet s)
     {a : ℝ≥0∞} (ha : a < μ.semivariation s) :
@@ -102,6 +108,10 @@ lemma exists_subset_lt_eNorm_apply_of_lt_semivariation (hs : MeasurableSet s)
   refine ⟨t, ts, t_meas, ht.trans_le ?_⟩
   gcongr
   exact (ContinuousLinearMap.le_opENorm _ _).trans (mul_le_of_le_one_left (by positivity) hℓ)
+
+@[deprecated (since := "2026-11-06")]
+alias exists_subset_lt_enorm_apply_of_lt_semivariation :=
+  exists_subset_lt_eNorm_apply_of_lt_semivariation
 
 private lemma exists_one_le_eNorm_apply_of_semivariation_eq_top
     (hs : MeasurableSet s) (h's : μ.semivariation s = ∞) :
@@ -175,6 +185,8 @@ lemma semivariation_apply_le_bound : μ.semivariation s ≤ μ.bound := by
 
 lemma eNorm_apply_le_bound : ‖μ s‖ₑ ≤ μ.bound :=
   (eNorm_apply_le_semivariation).trans semivariation_apply_le_bound
+
+@[deprecated (since := "2026-11-06")] alias enorm_apply_le_bound := eNorm_apply_le_bound
 
 lemma nnNorm_apply_le_bound : ‖μ s‖₊ ≤ μ.bound := by
   rw [← ENNReal.coe_le_coe, ← eNorm_eq_nnNorm]

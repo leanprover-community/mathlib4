@@ -31,17 +31,29 @@ lemma eNorm_indicator_eq_indicator_eNorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
   congr($((indicator_comp_of_zero (eNorm_zero (E := ε))).symm) a)
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_eq_indicator_enorm := eNorm_indicator_eq_indicator_eNorm
+
 theorem eNorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
     ‖indicator s f a‖ₑ ≤ ‖indicator t f a‖ₑ := by
   simp only [eNorm_indicator_eq_indicator_eNorm]
   grw [h]
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_le_of_subset := eNorm_indicator_le_of_subset
+
 theorem indicator_eNorm_le_eNorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
   indicator_le_self' (fun _ _ ↦ zero_le) a
+
+@[deprecated (since := "2026-11-06")]
+alias indicator_enorm_le_enorm_self := indicator_eNorm_le_eNorm_self
 
 theorem eNorm_indicator_le_eNorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
   rw [eNorm_indicator_eq_indicator_eNorm]
   apply indicator_eNorm_le_eNorm_self
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_indicator_le_enorm_self := eNorm_indicator_le_eNorm_self
 
 end ESeminormedAddMonoid
 

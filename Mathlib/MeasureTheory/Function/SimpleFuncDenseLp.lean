@@ -240,6 +240,8 @@ theorem tendsto_approxOn_L1_eNorm [OpensMeasurableSpace E] {f : β → E} (hf : 
     Pi.sub_apply] at this
   exact this hi
 
+@[deprecated (since := "2026-11-06")] alias tendsto_approxOn_L1_enorm := tendsto_approxOn_L1_eNorm
+
 theorem integrable_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     (hf : Integrable f μ) {s : Set E} {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s]
     (hi₀ : Integrable (fun _ => y₀) μ) (n : ℕ) : Integrable (approxOn f fmeas s y₀ h₀ n) μ := by
@@ -253,6 +255,9 @@ theorem tendsto_approxOn_range_L1_eNorm [OpensMeasurableSpace E] {f : β → E} 
   apply tendsto_approxOn_L1_eNorm fmeas
   · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
+
+@[deprecated (since := "2026-11-06")]
+alias tendsto_approxOn_range_L1_enorm := tendsto_approxOn_range_L1_eNorm
 
 theorem integrable_approxOn_range [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas : Measurable f)
     [SeparableSpace (range f ∪ {0} : Set E)] (hf : Integrable f μ) (n : ℕ) :

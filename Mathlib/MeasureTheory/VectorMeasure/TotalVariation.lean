@@ -46,6 +46,9 @@ lemma etvDist_eq_iSup_finPartition_eNorm :
   simp [etvDist, variation, preVariation, ennrealPreVariation,
     ennrealToMeasure_apply .univ, preVariationFun]
 
+@[deprecated (since := "2026-11-06")]
+alias etvDist_eq_iSup_finPartition_enorm := etvDist_eq_iSup_finPartition_eNorm
+
 @[simp]
 lemma etvDist_self (μ : VectorMeasure 𝓧 M) : etvDist μ μ = 0 := by simp [etvDist]
 

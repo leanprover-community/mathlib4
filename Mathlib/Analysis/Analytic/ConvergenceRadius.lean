@@ -357,6 +357,9 @@ lemma eNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
   gcongr
   apply norm_compContinuousLinearMap_le
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_compContinuousLinearMap_le := eNorm_compContinuousLinearMap_le
+
 lemma nnNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=
   norm_compContinuousLinearMap_le p u n

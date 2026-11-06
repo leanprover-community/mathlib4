@@ -573,6 +573,8 @@ theorem norm_conj (z : K) : ‖conj z‖ = ‖z‖ := by simp only [← sqrt_nor
 
 @[simp 1100, rclike_simps] lemma eNorm_conj (z : K) : ‖conj z‖ₑ = ‖z‖ₑ := by simp [eNorm]
 
+@[deprecated (since := "2026-11-06")] alias enorm_conj := eNorm_conj
+
 instance (priority := 100) : CStarRing K where
   norm_mul_self_le x := le_of_eq ((norm_mul _ _).trans congr($(norm_conj _) * ‖x‖)).symm
 

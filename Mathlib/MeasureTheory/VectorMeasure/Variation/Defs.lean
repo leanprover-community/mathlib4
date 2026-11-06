@@ -47,6 +47,9 @@ lemma isSigmaSubadditiveSetFun_eNorm (μ : VectorMeasure X V) :
   have hmeas : ∀ i, MeasurableSet (s i).val := fun i => (s i).prop
   simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using eNorm_tsum_le_tsum_eNorm
 
+@[deprecated (since := "2026-11-06")]
+alias isSigmaSubadditiveSetFun_enorm := isSigmaSubadditiveSetFun_eNorm
+
 /-- The variation of a `VectorMeasure` as a `Measure`. -/
 noncomputable def variation (μ : VectorMeasure X V) : Measure X :=
   preVariation (‖μ ·‖ₑ) (isSigmaSubadditiveSetFun_eNorm μ) (by simp)

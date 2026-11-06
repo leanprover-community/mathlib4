@@ -210,6 +210,8 @@ theorem eNorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ =
   rw [Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun hf.aestronglyMeasurable,
     eLpNorm_one_eq_lintegral_eNorm hf.aestronglyMeasurable]
 
+@[deprecated (since := "2026-11-06")] alias enorm_toL1 := eNorm_toL1
+
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
   rw [norm_toL1, lintegral_norm_eq_lintegral_edist]
@@ -217,6 +219,9 @@ theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
 theorem norm_toL1_eq_lintegral_eNorm (f : α → β) (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = (∫⁻ a, ‖f a‖ₑ ∂μ).toReal := by
   simp_rw [norm_toL1, edist_zero_right]
+
+@[deprecated (since := "2026-11-06")]
+alias norm_toL1_eq_lintegral_enorm := norm_toL1_eq_lintegral_eNorm
 
 @[simp]
 theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrable g μ) :

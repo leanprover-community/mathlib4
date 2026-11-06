@@ -423,6 +423,9 @@ theorem eNorm_setIntegral_le_of_eNorm_le_const_ae {C : ℝ≥0∞}
   rw [variation_restrict hs, Measure.restrict_apply MeasurableSet.univ]
   simp
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_of_enorm_le_const_ae := eNorm_setIntegral_le_of_eNorm_le_const_ae
+
 theorem eNorm_setIntegral_le_of_eNorm_le_const {C : ℝ≥0∞}
     (hC : ∀ x ∈ s, ‖f x‖ₑ ≤ C) :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ C * ‖B‖ₑ * μ.variation s := by
@@ -431,6 +434,9 @@ theorem eNorm_setIntegral_le_of_eNorm_le_const {C : ℝ≥0∞}
   apply eNorm_setIntegral_le_of_eNorm_le_const_ae
   apply (ae_restrict_iff' hs).2
   filter_upwards with x using hC x
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_of_enorm_le_const := eNorm_setIntegral_le_of_eNorm_le_const
 
 theorem norm_setIntegral_le_of_norm_le_const_ae {C : ℝ}
     [h : IsFiniteMeasure (μ.variation.restrict s)]
@@ -465,9 +471,16 @@ theorem eNorm_setIntegral_le_lintegral_eNorm :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ‖B‖ₑ * ∫⁻ x in s, ‖f x‖ₑ ∂μ.variation := by
   grw [eNorm_integral_le_lintegral_eNorm, variation_restrict_le]
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_lintegral_enorm := eNorm_setIntegral_le_lintegral_eNorm
+
 theorem eNorm_setIntegral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ x in s, f x ∂[B; μ]‖ₑ ≤ ∫⁻ x in s, ‖f x‖ₑ ∂(μ.transpose B).variation := by
   grw [eNorm_integral_le_lintegral_eNorm_transpose, transpose_restrict,variation_restrict_le]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_setIntegral_le_lintegral_enorm_transpose :=
+  eNorm_setIntegral_le_lintegral_eNorm_transpose
 
 private theorem hasSum_setIntegral_iUnion_nat {s : ℕ → Set X}
     (hm : ∀ i, MeasurableSet (s i)) (hd : Pairwise (Disjoint on s))

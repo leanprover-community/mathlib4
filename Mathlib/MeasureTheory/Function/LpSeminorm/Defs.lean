@@ -73,12 +73,18 @@ lemma eLpNorm'_eq_lintegral_eNorm (f : α → ε) (q : ℝ) (μ : Measure α) :
     eLpNorm' f q μ = (∫⁻ a, ‖f a‖ₑ ^ q ∂μ) ^ (1 / q) :=
   rfl
 
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm'_eq_lintegral_enorm := eLpNorm'_eq_lintegral_eNorm
+
 /-- seminorm for `ℒ∞`, equal to the essential supremum of `‖f‖`. -/
 def eLpNormEssSup (f : α → ε) (μ : Measure α) :=
   essSup (fun x => ‖f x‖ₑ) μ
 
 lemma eLpNormEssSup_eq_essSup_eNorm (f : α → ε) (μ : Measure α) :
     eLpNormEssSup f μ = essSup (‖f ·‖ₑ) μ := rfl
+
+@[deprecated (since := "2026-11-06")]
+alias eLpNormEssSup_eq_essSup_enorm := eLpNormEssSup_eq_essSup_eNorm
 
 @[simp]
 lemma eLpNormEssSup_dirac [MeasurableSingletonClass α] (f : α → ε) (a : α) :
@@ -122,6 +128,9 @@ lemma eLpNorm_eq_lintegral_rpow_eNorm_toReal [TopologicalSpace ε]
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
   rw [eLpNorm_eq_eLpNorm' hp_ne_zero hp_ne_top hf, eLpNorm'_eq_lintegral_eNorm]
 
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_eq_lintegral_rpow_enorm_toReal := eLpNorm_eq_lintegral_rpow_eNorm_toReal
+
 lemma eLpNorm_nnreal_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
     eLpNorm f p μ = (∫⁻ x, ‖f x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ)) :=
@@ -133,11 +142,17 @@ theorem eLpNorm_one_eq_lintegral_eNorm [TopologicalSpace ε] {f : α → ε}
   simp_rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal one_ne_zero ENNReal.coe_ne_top hf,
     ENNReal.toReal_one, one_div_one, ENNReal.rpow_one]
 
+@[deprecated (since := "2026-11-06")]
+alias eLpNorm_one_eq_lintegral_enorm := eLpNorm_one_eq_lintegral_eNorm
+
 theorem lintegral_eNorm_le_eLpNorm_one [TopologicalSpace ε] {f : α → ε} :
     ∫⁻ x, ‖f x‖ₑ ∂μ ≤ eLpNorm f 1 μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · simp [eLpNorm_one_eq_lintegral_eNorm hf]
   · simp [eLpNorm_of_not_aestronglyMeasurable, hf]
+
+@[deprecated (since := "2026-11-06")]
+alias lintegral_enorm_le_eLpNorm_one := lintegral_eNorm_le_eLpNorm_one
 
 @[simp]
 theorem eLpNorm_exponent_top [TopologicalSpace ε] {f : α → ε} (hf : AEStronglyMeasurable f μ) :
@@ -170,6 +185,9 @@ theorem lintegral_rpow_eNorm_eq_rpow_eLpNorm' {f : α → ε} (hq0_lt : 0 < q) :
     ∫⁻ a, ‖f a‖ₑ ^ q ∂μ = eLpNorm' f q μ ^ q := by
   rw [eLpNorm'_eq_lintegral_eNorm, ← ENNReal.rpow_mul, one_div, inv_mul_cancel₀, ENNReal.rpow_one]
   exact hq0_lt.ne'
+
+@[deprecated (since := "2026-11-06")]
+alias lintegral_rpow_enorm_eq_rpow_eLpNorm' := lintegral_rpow_eNorm_eq_rpow_eLpNorm'
 
 lemma eLpNorm_nnreal_pow_eq_lintegral [TopologicalSpace ε] {f : α → ε} {p : ℝ≥0}
     (hp : p ≠ 0) (hf : AEStronglyMeasurable f μ) :
@@ -233,6 +251,9 @@ theorem _root_.Function.support_eNorm {α ε : Type*}
     Function.support (fun x ↦ ‖f x‖ₑ) = Function.support f := by
   ext
   simp
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.Function.support_enorm := _root_.Function.support_eNorm
 
 theorem inhmgELpNorm_pow_eq_eLpNorm (hp : p ≤ 1) (hp' : p ≠ 0) {f : α → ε} :
     inhmgELpNorm f p μ ^ p.toReal⁻¹ = eLpNorm f p μ := by

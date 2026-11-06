@@ -157,6 +157,8 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCo
 @[simp] theorem eNorm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ₑ = ‖x‖ₑ * ‖y‖ₑ := ENNReal.coe_inj.mpr <| by simp
 
+@[deprecated (since := "2026-11-06")] alias enorm_tmul := eNorm_tmul
+
 theorem dist_tmul_le (x x' : E) (y y' : F) :
     dist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ * ‖y‖ + ‖x'‖ * ‖y'‖ := by
   grw [dist_eq_norm, norm_sub_le]; simp
@@ -236,6 +238,7 @@ noncomputable def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H
     ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.eNorm_map x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
+@[deprecated (since := "2026-11-06")] alias enorm_map := eNorm_map
 
 @[simp] lemma mapIsometry_id_id :
     mapIsometry (.id : E →ₗᵢ[𝕜] E) (.id : F →ₗᵢ[𝕜] F) = .id := by ext; simp
@@ -368,6 +371,7 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
     ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.eNorm_map x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_comm := nnNorm_comm
+@[deprecated (since := "2026-11-06")] alias enorm_comm := eNorm_comm
 
 @[simp] theorem inner_lid_lid (x y : 𝕜 ⊗[𝕜] E) :
     inner 𝕜 (TensorProduct.lid 𝕜 E x) (TensorProduct.lid 𝕜 E y) = inner 𝕜 x y :=
@@ -398,6 +402,8 @@ lemma toContinuousLinearMap_symm_lidIsometry :
 @[simp] lemma eNorm_lid (x : 𝕜 ⊗[𝕜] E) :
     ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.eNorm_map x
 
+@[deprecated (since := "2026-11-06")] alias enorm_lid := eNorm_lid
+
 @[simp] theorem inner_rid_rid (x y : E ⊗[𝕜] 𝕜) :
     inner 𝕜 (TensorProduct.rid 𝕜 E x) (TensorProduct.rid 𝕜 E y) = inner 𝕜 x y := by
   simp [← lid_comm]
@@ -425,6 +431,8 @@ lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜
 
 @[simp] lemma eNorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ₑ = ‖x‖ₑ :=
   ridIsometry 𝕜 E |>.toLinearIsometry.eNorm_map x
+
+@[deprecated (since := "2026-11-06")] alias enorm_rid := eNorm_rid
 
 @[simp] lemma commIsometry_trans_lidIsometry :
     (commIsometry 𝕜 E 𝕜).trans (lidIsometry 𝕜 E) = ridIsometry 𝕜 E := by ext; simp
@@ -467,6 +475,8 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
 
 @[simp] lemma eNorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
     ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.eNorm_map x
+
+@[deprecated (since := "2026-11-06")] alias enorm_assoc := eNorm_assoc
 
 end isometry
 

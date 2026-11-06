@@ -241,6 +241,8 @@ theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
 theorem eNorm_eq_iSup_eNorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
   (mkOfCompact f).eNorm_eq_iSup_eNorm
 
+@[deprecated (since := "2026-11-06")] alias enorm_eq_iSup_enorm := eNorm_eq_iSup_eNorm
+
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
     CompactSpace (K : Set X) :=

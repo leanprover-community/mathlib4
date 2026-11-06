@@ -47,6 +47,10 @@ theorem MeasureTheory.eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm {f : α → E} {g
   eLpNorm_le_eLpNorm_mul_eLpNorm_of_eNorm (B · ·) ‖B‖ₑ B.continuous₂.comp_aestronglyMeasurable₂
     hf hg (.of_forall fun _ ↦ B.le_opENorm₂ ..)
 
+@[deprecated (since := "2026-11-06")]
+alias MeasureTheory.eLpNorm_le_enorm_mul_eLpNorm_mul_eLpNorm :=
+  MeasureTheory.eLpNorm_le_eNorm_mul_eLpNorm_mul_eLpNorm
+
 namespace ContinuousLinearMap
 
 variable (r) in

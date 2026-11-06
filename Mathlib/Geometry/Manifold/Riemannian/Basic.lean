@@ -141,6 +141,9 @@ lemma eNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
   simp [eNorm, nnNorm_tangentSpace_vectorSpace]
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_tangentSpace_vectorSpace := eNorm_tangentSpace_vectorSpace
+
 open MeasureTheory
 
 lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
@@ -262,6 +265,9 @@ lemma eventually_eNorm_mfderiv_extChartAt_lt (x : M) :
   simp only [eNorm, nnNorm]
   exact mod_cast hy
 
+@[deprecated (since := "2026-11-06")]
+alias eventually_enorm_mfderiv_extChartAt_lt := eventually_eNorm_mfderiv_extChartAt_lt
+
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
     ∃ C > 0, ∀ᶠ y in 𝓝 x, ‖mfderiv[range I] (extChartAt I x).symm (extChartAt I x y)‖ < C := by
@@ -301,6 +307,10 @@ lemma eventually_eNorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   filter_upwards [hC] with y hy
   simp only [eNorm, nnNorm]
   exact mod_cast hy
+
+@[deprecated (since := "2026-11-06")]
+alias eventually_enorm_mfderivWithin_symm_extChartAt_lt :=
+  eventually_eNorm_mfderivWithin_symm_extChartAt_lt
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance

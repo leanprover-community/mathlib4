@@ -47,6 +47,8 @@ theorem eNorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
     ENNReal.ofReal_le_ofReal (s.norm_le_totalVariation i)
   _ = _ := by rw [measureReal_def, ENNReal.ofReal_toReal (measure_ne_top _ _)]
 
+@[deprecated (since := "2026-11-06")] alias enorm_le_totalVariation := eNorm_le_totalVariation
+
 private lemma toMeasureOfZeroLE_apply_eq_eNorm {i j : Set X} (him : MeasurableSet i) (hi : 0 ≤[i] μ)
     (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : 0 ≤ μ (i ∩ j) :=

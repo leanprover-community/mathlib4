@@ -68,6 +68,9 @@ theorem meas_ge_le_mul_pow_eLpNorm_eNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p �
       ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
     exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
 
+@[deprecated (since := "2026-11-06")]
+alias meas_ge_le_mul_pow_eLpNorm_enorm := meas_ge_le_mul_pow_eLpNorm_eNorm
+
 theorem MemLp.meas_ge_lt_top'_eNorm {μ : Measure α} {f : α → ε'} (hℒp : MemLp f p μ)
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) (hε' : ε = ∞ → μ {x | ‖f x‖ₑ = ⊤} = 0) :
@@ -76,6 +79,9 @@ theorem MemLp.meas_ge_lt_top'_eNorm {μ : Measure α} {f : α → ε'} (hℒp : 
     |>.trans_lt (ENNReal.mul_lt_top ?_ ?_)
   · simp [hε, lt_top_iff_ne_top]
   · simp [hℒp.eLpNorm_lt_top.ne, lt_top_iff_ne_top]
+
+@[deprecated (since := "2026-11-06")]
+alias MemLp.meas_ge_lt_top'_enorm := MemLp.meas_ge_lt_top'_eNorm
 
 theorem MemLp.meas_ge_lt_top' {μ : Measure α} {f : α → E} (hℒp : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -88,6 +94,8 @@ theorem MemLp.meas_ge_lt_top_eNorm {μ : Measure α} {f : α → ε'} (hℒp : M
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖ₑ } < ∞ :=
   hℒp.meas_ge_lt_top'_eNorm hp_ne_zero hp_ne_top (by simp [hε]) (by simp)
+
+@[deprecated (since := "2026-11-06")] alias MemLp.meas_ge_lt_top_enorm := MemLp.meas_ge_lt_top_eNorm
 
 theorem MemLp.meas_ge_lt_top {μ : Measure α} {f : α → E} (hℒp : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :

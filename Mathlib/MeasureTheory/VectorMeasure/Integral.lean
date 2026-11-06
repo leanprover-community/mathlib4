@@ -640,12 +640,18 @@ theorem eNorm_integral_le_lintegral_eNorm :
   gcongr
   simp [← coe_nnNorm]
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_lintegral_enorm := eNorm_integral_le_lintegral_eNorm
+
 theorem eNorm_integral_le_lintegral_eNorm_transpose :
     ‖∫ᵛ a, f a ∂[B; μ]‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂(μ.transpose B).variation := by
   by_cases hf : μ.Integrable f
   · rw [integral_eq_setToFun_transpose hf]
     apply (eNorm_setToFun_le _ (by simp)).trans (by simp)
   · simp [integral_undef hf]
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_integral_le_lintegral_enorm_transpose := eNorm_integral_le_lintegral_eNorm_transpose
 
 theorem dist_integral_le_lintegral_edist (hf : μ.Integrable f) (hg : μ.Integrable g) :
     dist (∫ᵛ a, f a ∂[B; μ]) (∫ᵛ a, g a ∂[B; μ]) ≤

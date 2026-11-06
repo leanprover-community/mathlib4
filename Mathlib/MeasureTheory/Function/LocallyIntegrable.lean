@@ -60,6 +60,8 @@ theorem LocallyIntegrableOn.eNorm (hf : LocallyIntegrableOn f s μ) :
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
   ⟨U, hU_nhd, hU_int.eNorm⟩
 
+@[deprecated (since := "2026-11-06")] alias LocallyIntegrableOn.enorm := LocallyIntegrableOn.eNorm
+
 theorem LocallyIntegrableOn.norm {f : X → E} (hf : LocallyIntegrableOn f s μ) :
     LocallyIntegrableOn (fun x => ‖f x‖) s μ := fun t ht =>
   let ⟨U, hU_nhd, hU_int⟩ := hf t ht
@@ -71,6 +73,9 @@ theorem LocallyIntegrableOn.mono_eNorm (hf : LocallyIntegrableOn f s μ) {g : X 
   intro x hx
   rcases hf x hx with ⟨t, t_mem, ht⟩
   exact ⟨t, t_mem, ht.mono_eNorm hg.restrict (ae_restrict_of_ae h)⟩
+
+@[deprecated (since := "2026-11-06")]
+alias LocallyIntegrableOn.mono_enorm := LocallyIntegrableOn.mono_eNorm
 
 theorem LocallyIntegrableOn.mono {f : X → E} (hf : LocallyIntegrableOn f s μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
@@ -259,6 +264,9 @@ theorem LocallyIntegrable.mono_eNorm (hf : LocallyIntegrable f μ) {g : X → ε
   rw [← locallyIntegrableOn_univ] at hf ⊢
   exact hf.mono_eNorm hg h
 
+@[deprecated (since := "2026-11-06")]
+alias LocallyIntegrable.mono_enorm := LocallyIntegrable.mono_eNorm
+
 theorem LocallyIntegrable.mono {f : X → E} (hf : LocallyIntegrable f μ) {g : X → F}
     (hg : AEStronglyMeasurable g μ) (h : ∀ᵐ x ∂μ, ‖g x‖ ≤ ‖f x‖) :
     LocallyIntegrable g μ := by
@@ -361,6 +369,9 @@ theorem locallyIntegrable_const_eNorm [IsLocallyFiniteMeasure μ] {c : ε} (hc :
     LocallyIntegrable (fun _ => c) μ :=
   (memLp_top_const_eNorm hc).locallyIntegrable le_top
 
+@[deprecated (since := "2026-11-06")]
+alias locallyIntegrable_const_enorm := locallyIntegrable_const_eNorm
+
 theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
   locallyIntegrable_const_eNorm eNorm_ne_top
@@ -368,6 +379,9 @@ theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
 theorem locallyIntegrableOn_const_eNorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrableOn (fun _ => c) s μ :=
   (locallyIntegrable_const_eNorm hc).locallyIntegrableOn s
+
+@[deprecated (since := "2026-11-06")]
+alias locallyIntegrableOn_const_enorm := locallyIntegrableOn_const_eNorm
 
 theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrableOn (fun _ => c) s μ :=

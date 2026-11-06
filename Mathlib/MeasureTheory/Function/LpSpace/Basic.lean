@@ -245,6 +245,8 @@ protected theorem coe_nnNorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
 theorem eNorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
+@[deprecated (since := "2026-11-06")] alias enorm_def := eNorm_def
+
 @[simp]
 lemma norm_toLp (f : α → E) (hf : MemLp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (eLpNorm f p μ) := by
   rw [norm_def, eLpNorm_congr_ae (MemLp.coeFn_toLp hf)]
@@ -259,6 +261,8 @@ theorem nnNorm_toLp (f : α → E) (hf : MemLp f p μ) :
 @[simp]
 lemma eNorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
   simp_rw [eNorm, nnNorm_toLp f hf, ENNReal.coe_toNNReal hf.eLpNorm_ne_top]
+
+@[deprecated (since := "2026-11-06")] alias enorm_toLp := eNorm_toLp
 
 theorem dist_eq_eLpNorm_neg_add (f g : Lp E p μ) : dist f g = (eLpNorm (-⇑f + ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
@@ -323,6 +327,8 @@ theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ 
 
 @[simp] theorem eNorm_exponent_zero (f : Lp E 0 μ) : ‖f‖ₑ = 0 := by
   simp [eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_exponent_zero := eNorm_exponent_zero
 
 theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
   rw [Lp.ext_iff]
@@ -545,6 +551,8 @@ theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞
     mul_one]
   exact hf.eLpNorm_ne_top
 
+@[deprecated (since := "2026-11-06")] alias MemLp.enorm_rpow_div := MemLp.eNorm_rpow_div
+
 theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) :
     MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ := by
   have hfrpow : AEStronglyMeasurable (fun x : α => ‖f x‖ ^ q.toReal) μ :=
@@ -581,6 +589,8 @@ theorem memLp_eNorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMe
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 
+@[deprecated (since := "2026-11-06")] alias memLp_enorm_rpow_iff := memLp_eNorm_rpow_iff
+
 theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (fun x : α => ‖f x‖ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
   refine ⟨fun h => ?_, fun h => h.norm_rpow_div q⟩
@@ -597,6 +607,8 @@ theorem MemLp.eNorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠
     MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
   convert hf.eNorm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
+
+@[deprecated (since := "2026-11-06")] alias MemLp.enorm_rpow := MemLp.eNorm_rpow
 
 theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ ^ p.toReal) 1 μ := by
@@ -1052,11 +1064,15 @@ lemma pow_mul_meas_ge_le_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     pow_mul_meas_ge_le_eLpNorm μ hp_ne_zero hp_ne_top ε
 
+@[deprecated (since := "2026-11-06")] alias pow_mul_meas_ge_le_enorm := pow_mul_meas_ge_le_eNorm
+
 /-- A version of **Markov's inequality** with elements of Lp. -/
 lemma mul_meas_ge_le_pow_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) (ε : ℝ≥0∞) :
     ε * μ {x | ε ≤ ‖f x‖ₑ ^ p.toReal} ≤ ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top ε
+
+@[deprecated (since := "2026-11-06")] alias mul_meas_ge_le_pow_enorm := mul_meas_ge_le_pow_eNorm
 
 /-- A version of **Markov's inequality** with elements of Lp. -/
 theorem mul_meas_ge_le_pow_eNorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
@@ -1064,11 +1080,15 @@ theorem mul_meas_ge_le_pow_eNorm' (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top ε
 
+@[deprecated (since := "2026-11-06")] alias mul_meas_ge_le_pow_enorm' := mul_meas_ge_le_pow_eNorm'
+
 /-- A version of **Markov's inequality** with elements of Lp. -/
 theorem meas_ge_le_mul_pow_eNorm (f : Lp E p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞}
     (hε : ε ≠ 0) : μ {x | ε ≤ ‖f x‖ₑ} ≤ ε⁻¹ ^ p.toReal * ENNReal.ofReal ‖f‖ ^ p.toReal :=
   (ENNReal.ofReal_toReal (eLpNorm_ne_top f)).symm ▸
     meas_ge_le_mul_pow_eLpNorm_eNorm μ hp_ne_zero hp_ne_top hε (by simp)
+
+@[deprecated (since := "2026-11-06")] alias meas_ge_le_mul_pow_enorm := meas_ge_le_mul_pow_eNorm
 
 section Star
 

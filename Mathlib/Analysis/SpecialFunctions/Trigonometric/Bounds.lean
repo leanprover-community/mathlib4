@@ -294,6 +294,9 @@ theorem eNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : �
   iterate 2 rw [← eNorm_norm, Real.eNorm_of_nonneg (norm_nonneg _)]
   exact ENNReal.ofReal_le_ofReal norm_exp_I_mul_ofReal_sub_one_le
 
+@[deprecated (since := "2026-11-06")]
+alias enorm_exp_I_mul_ofReal_sub_one_le := eNorm_exp_I_mul_ofReal_sub_one_le
+
 theorem nnNorm_exp_I_mul_ofReal_sub_one_le {x : ℝ} : ‖.exp (.I * x) - (1 : ℂ)‖₊ ≤ ‖x‖₊ := by
   rw [← ENNReal.coe_le_coe]; exact eNorm_exp_I_mul_ofReal_sub_one_le
 
