@@ -108,6 +108,9 @@ instance hasLimit_of_hasLimit_comp_forget (F : J ⥤ Under X) [i : HasLimit (F �
 
 instance [HasLimitsOfShape J C] : HasLimitsOfShape J (Under X) where
 
+instance [HasFiniteLimits C] : HasFiniteLimits (Under X) where
+  out _ _ _ := inferInstance
+
 instance [HasLimits C] : HasLimits (Under X) :=
   ⟨inferInstance⟩
 

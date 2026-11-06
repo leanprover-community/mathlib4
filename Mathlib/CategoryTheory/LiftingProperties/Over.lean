@@ -42,6 +42,18 @@ lemma over {X₁ X₂ X₃ X₄ : Over S}
       (by rw [← Over.w b, ← sq'.fac_right_assoc, Over.w r])
   }⟩⟩
 
+lemma under {X₁ X₂ X₃ X₄ : Under S}
+    {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄} {sq : CommSq t l r b}
+    [CommSq.HasLift (f := t.right) (i := l.right) (p := r.right) (g := b.right)
+      (sq.map (Under.forget _))] :
+    sq.HasLift := by
+  let sq' := sq.map (Under.forget _)
+  dsimp at sq'
+  exact ⟨⟨{
+    l := Under.homMk sq'.lift
+      (by rw [← Under.w_assoc l, sq'.fac_left, Under.w t])
+  }⟩⟩
+
 end CommSq.HasLift
 
 namespace HasLiftingProperty
@@ -49,6 +61,10 @@ namespace HasLiftingProperty
 lemma over {A B X Y : Over S}
     (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.left p.left] :
     HasLiftingProperty i p := ⟨fun _ ↦ .over⟩
+
+lemma under {A B X Y : Under S}
+    (i : A ⟶ B) (p : X ⟶ Y) [HasLiftingProperty i.right p.right] :
+    HasLiftingProperty i p := ⟨fun _ ↦ .under⟩
 
 end HasLiftingProperty
 
