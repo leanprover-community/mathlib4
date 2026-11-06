@@ -348,7 +348,12 @@ lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegu
   have : Fact κ₁.IsRegular := ⟨by assumption⟩
   obtain ⟨κ₂, _, h₀, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
   have hκ₂ := hκ₁.of_le h₁.le
-  sorry
+  obtain ⟨κ₃, _, h₃, H⟩ :
+      ∃ (κ₃ : Cardinal.{w}) (_ : Fact κ₃.IsRegular) (h₃ : κ₂.SharplyLT κ₃),
+        h₃.HasEnoughPureSubobjects (C ⥤ Type w) := by
+    -- use `κ₂ ^ (< κ₂)`
+    sorry
+  exact ⟨κ₃, inferInstance, h₀.trans h₃, H.trans h₀⟩
 
 lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory
     {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] {h : κ.SharplyLT κ'}
