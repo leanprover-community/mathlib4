@@ -190,8 +190,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       eventuallyEqSet_iff, eventually_iff_exists_mem]
     grind
   tfae_have 4 ↔ 6 := by simp [eventuallyEqSet_iff, eventually_iff_exists_mem, Set.ext_iff]
-  tfae_have 6 → 7 := fun H ↦ H.symm.le
-  tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
+  tfae_have 6 → 7 := fun H ↦ H.symm.subset
+  tfae_have 7 → 6 := fun H ↦ EventuallySubset.antisymm (.of_forall subset_closure) H
   tfae_have 7 ↔ 8 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl
