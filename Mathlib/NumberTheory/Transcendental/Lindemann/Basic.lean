@@ -32,6 +32,8 @@ open Complex Finset Polynomial
 
 variable {ι : Type*}
 
+namespace Complex
+
 theorem linearIndependent_exp (u : ι → ℂ) (hu : ∀ i, IsAlgebraic ℚ (u i)) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) := by
   -- Start of proof of theorem 4.22 (Jacobson, p. 281).
@@ -187,17 +189,19 @@ theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
 theorem transcendental_e : Transcendental ℤ (exp 1) :=
   transcendental_exp one_ne_zero isAlgebraic_one
 
-theorem transcendental_pi : Transcendental ℤ Real.pi := by
-  intro h
-  have hpi : IsAlgebraic ℤ (Real.pi : ℂ) := by
-    simpa only [coe_algebraMap] using h.algebraMap (A := ℂ)
-  have hexp := transcendental_exp (a := Real.pi * I) (by simp [Real.pi_ne_zero])
-    (hpi.mul (Complex.isIntegral_I ℤ).isAlgebraic)
-  simp [Transcendental, isAlgebraic_one.neg] at hexp
-
 theorem transcendental_log {u : ℂ} (hu0 : Complex.log u ≠ 0) (hu : IsAlgebraic ℤ u) :
     Transcendental ℤ (Complex.log u) := by
   intro h
   have := transcendental_exp hu0 h
   rw [Complex.exp_log (by aesop)] at this
   contradiction
+
+end Complex
+
+theorem Real.transcendental_pi : Transcendental ℤ Real.pi := by
+  intro h
+  have hpi : IsAlgebraic ℤ (Real.pi : ℂ) := by
+    simpa only [coe_algebraMap] using h.algebraMap (A := ℂ)
+  have hexp := transcendental_exp (a := Real.pi * I) (by simp [Real.pi_ne_zero])
+    (hpi.mul (Complex.isIntegral_I ℤ).isAlgebraic)
+  simp [Transcendental, isAlgebraic_one.neg] at hexp
