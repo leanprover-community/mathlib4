@@ -6,7 +6,7 @@ Authors: Julian Kuelshammer
 module
 
 public import Mathlib.Algebra.Group.Equiv.Defs
-public import Mathlib.Algebra.PEmptyInstances
+public import Mathlib.Algebra.Group.Semigroup
 public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 

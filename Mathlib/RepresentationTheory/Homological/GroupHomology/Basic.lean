@@ -223,6 +223,7 @@ variable {k G : Type u} [CommRing k] [Group G] (A : Rep k G)
 
 /-- The group homology of a `k`-linear `G`-representation `A`, as the homology of its complex
 of inhomogeneous chains. -/
+@[implicit_reducible]
 def groupHomology (n : ℕ) : ModuleCat k :=
   (inhomogeneousChains A).homology n
 

@@ -438,7 +438,7 @@ variable (k : Type u) {G : Type v} [CommRing k] [Group G]
 
 /-- Given a normal subgroup `S ≤ G`, this is the functor sending a `G`-representation `A` to the
 `G ⧸ S`-representation it induces on `A_S`. -/
-@[simps! obj_V map_hom_toLinearMap]
+@[implicit_reducible, simps! obj_V map_hom_toLinearMap]
 noncomputable def quotientToCoinvariantsFunctor (S : Subgroup G) [S.Normal] :
     Rep.{w} k G ⥤ Rep k (G ⧸ S) where
   obj X := X.quotientToCoinvariants S

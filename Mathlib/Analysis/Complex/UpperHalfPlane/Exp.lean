@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Periodic
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Exp on the upper half plane
 
