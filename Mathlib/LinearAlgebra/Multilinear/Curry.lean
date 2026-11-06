@@ -335,8 +335,7 @@ multilinear maps on `fun i : Fin k => M'` taking values in the space of multilin
 on `fun i : Fin l => M'`. -/
 def curryFinFinset {k l n : ℕ} {s : Finset (Fin n)} (hk : #s = k) (hl : #sᶜ = l) :
     ((Fin n → M') →ₘₛₗ[σ] M₂) ≃ₗ[S] (Fin k → M') →ₘₛₗ[σ] (Fin l → M') →ₘₛₗ[σ] M₂ :=
-  (domDomCongrLinearEquiv S σ M' M₂ (finSumEquivOfFinset hk hl).symm).trans
-    currySumEquiv
+  (domDomCongrLinearEquiv S σ M' M₂ (finSumEquivOfFinset hk hl).symm).trans currySumEquiv
 
 variable {σ M₂ M'}
 
