@@ -6,8 +6,9 @@ Authors: Judith Ludwig, Christian Merten
 module
 
 public import Mathlib.RingTheory.Extension.Presentation.Core
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
 public import Mathlib.RingTheory.Smooth.StandardSmoothOfFree
+
+import Mathlib.RingTheory.MvPolynomial.Homogeneous
 
 /-!
 # Smooth algebras have Noetherian models
@@ -226,7 +227,7 @@ public theorem exists_subalgebra_fg [Smooth A B] :
     algHom_ext (by simp [hh])
   have (j : _) : Ideal.Quotient.mk (RingHom.ker f ^ 2) (aeval h (P.relation j)) = 0 := by
     suffices ho : σ (aeval P.val (P.relation j)) = 0 by
-      convert! ho
+      convert ho
       congrm $hdiag _
     simp
   simp_rw [Ideal.Quotient.eq_zero_iff_mem, hkerf,

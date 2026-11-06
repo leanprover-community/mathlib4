@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Homology.Bifunctor
 public import Mathlib.CategoryTheory.GradedObject.Associator
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
-public import Mathlib.Algebra.Homology.Bifunctor
 
 /-!
 # The associator for actions of bifunctors on homological complexes
@@ -743,7 +743,6 @@ lemma ιOrZero_mapBifunctorAssociatorX_hom (i₁ : ι₁) (i₂ : ι₂) (i₃ :
       mapBifunctor₂₃.ιOrZero_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h,
       zero_comp, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
@@ -764,7 +763,6 @@ lemma mapBifunctorAssociatorX_hom_D₁ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₁_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫
@@ -783,7 +781,6 @@ lemma mapBifunctorAssociatorX_hom_D₂ (j j' : ι₄) :
   · rw [mapBifunctor₁₂.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ h₁,
       mapBifunctor₂₃.d₂_eq_zero _ _ _ _ _ _ _ _ _ _ _ _ h₁, comp_zero, zero_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma mapBifunctorAssociatorX_hom_D₃ (j j' : ι₄) :
     (mapBifunctorAssociatorX associator K₁ K₂ K₃ c₁₂ c₂₃ c₄ j).hom ≫

@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Topology.Algebra.AsymptoticCone
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Asymptotic cones in normed spaces
 

@@ -5,8 +5,12 @@ Authors: Newell Jensen
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.Tactic.Rfl
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Mathlib.Tactic.liftReflToEq`

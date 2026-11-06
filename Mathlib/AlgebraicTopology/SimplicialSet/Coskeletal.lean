@@ -7,8 +7,9 @@ module
 
 public import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 public import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
-public import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-public import Mathlib.CategoryTheory.Functor.KanExtension.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Coskeletal simplicial sets
@@ -96,7 +97,6 @@ lemma fac_aux₁ {n : ℕ}
   rw [spineToSimplex_arrow]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma fac_aux₂ {n : ℕ}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙ (Truncated.inclusion 2).op ⋙ X))

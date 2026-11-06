@@ -495,6 +495,8 @@ variable {R}
 theorem ofId_apply (r) : ofId R A r = algebraMap R A r :=
   rfl
 
+@[simp] lemma ofId_toLinearMap : (ofId R A).toLinearMap = Algebra.linearMap R A := rfl
+
 /-- This is a special case of a more general instance that we define in a later file. -/
 instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
   ⟨fun f g => AlgHom.ext fun _ => (f.commutes _).trans (g.commutes _).symm⟩
@@ -561,6 +563,10 @@ def toAlgHom (m : M) : A →ₐ[R] A :=
 theorem toAlgHom_injective [FaithfulSMul M A] :
     Function.Injective (MulSemiringAction.toAlgHom R A : M → A →ₐ[R] A) := fun _m₁ _m₂ h =>
   eq_of_smul_eq_smul fun r => AlgHom.ext_iff.1 h r
+
+variable (M) in
+@[simp]
+theorem toAlgHom_one : toAlgHom R A (1 : M) = AlgHom.id R A := by ext; simp
 
 end MulSemiringAction
 

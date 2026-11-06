@@ -5,9 +5,10 @@ Authors: Thomas Browning
 -/
 module
 
-public import Mathlib.Combinatorics.Hall.Basic
 public import Mathlib.LinearAlgebra.Matrix.Rank
 public import Mathlib.LinearAlgebra.Projectivization.Constructions
+
+import Mathlib.Combinatorics.Hall.Basic
 
 /-!
 # Configurations of Points and lines
@@ -449,7 +450,7 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
   classical
     have h1 : Fintype.card { q // q ≠ p } + 1 = Fintype.card P := by
       apply (eq_tsub_iff_add_eq_of_le (Nat.succ_le_of_lt (Fintype.card_pos_iff.mpr ⟨p⟩))).mp
-      convert! (Fintype.card_subtype_compl _).trans (congr_arg _ (Fintype.card_subtype_eq p))
+      convert (Fintype.card_subtype_compl _).trans (congr_arg _ (Fintype.card_subtype_eq p))
     have h2 : ∀ l : { l : L // p ∈ l }, Fintype.card { q // q ∈ l.1 ∧ q ≠ p } = order P L := by
       intro l
       rw [← Fintype.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (· ∈ l.val) (· ≠ p)),
@@ -486,7 +487,7 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
-  rw [← Matrix.of_row (![a, b]), ← Matrix.of_row (![c, d])] at h
+  rw [← row_of ![a, b], ← row_of ![c, d]] at h
   let A : Matrix (Fin 2) (Fin 3) K := .of ![a, b]
   let B : Matrix (Fin 2) (Fin 3) K := .of ![c, d]
   have hAB : A * B.transpose = 0 := by

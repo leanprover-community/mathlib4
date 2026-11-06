@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Algebra.Order.CauSeq.Basic
 public import Mathlib.Algebra.Ring.Action.Rat
-public import Mathlib.Tactic.FastInstance
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Cauchy completion
@@ -328,12 +330,9 @@ theorem lim_add (f g : CauSeq β abv) : lim f + lim g = lim (f + g) :=
 theorem lim_mul_lim (f g : CauSeq β abv) : lim f * lim g = lim (f * g) :=
   eq_lim_of_const_equiv <|
     show LimZero (const abv (lim f * lim g) - f * g) by
-      have h :
-        const abv (lim f * lim g) - f * g =
+      have h : const abv (lim f * lim g) - f * g =
           (const abv (lim f) - f) * g + const abv (lim f) * (const abv (lim g) - g) := by
-              apply Subtype.ext
-              rw [coe_add]
-              simp [sub_mul, mul_sub]
+        ext; simp [sub_mul, mul_sub]
       rw [h]
       exact
         add_limZero (mul_limZero_left _ (Setoid.symm (equiv_lim _)))

@@ -5,11 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
 public import Mathlib.Algebra.CharP.Lemmas
 public import Mathlib.Algebra.Group.Submonoid.Units
 public import Mathlib.Algebra.GroupWithZero.Units.Fintype
 public import Mathlib.GroupTheory.OrderOfElement
+
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # Multiplicative characters of finite rings and fields
@@ -218,6 +219,9 @@ theorem apply_ne_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
 theorem apply_eq_zero_iff [Nontrivial R'] {χ : MulChar R R'} {a : R} :
     χ a = 0 ↔ ¬ IsUnit a := by
   simpa using χ.apply_ne_zero_iff.not
+
+instance [Nontrivial R'] (χ : MulChar R R') : IsLocalHom χ where
+  map_nonunit _ h := apply_ne_zero_iff.mp h.ne_zero
 
 /-!
 ### Commutative group structure on multiplicative characters

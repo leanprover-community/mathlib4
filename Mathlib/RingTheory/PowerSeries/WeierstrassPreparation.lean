@@ -5,11 +5,12 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 public import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
-public import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 public import Mathlib.RingTheory.PowerSeries.Inverse
 public import Mathlib.RingTheory.PowerSeries.Trunc
+
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 
 /-!
 
@@ -478,7 +479,7 @@ noncomputable def _root_.Polynomial.IsDistinguishedAt.algEquivQuotient :
       rw [Eq.comm, Ideal.Quotient.mk_eq_mk_iff_sub_mem, Ideal.mem_span_singleton']
       exact ⟨f /ₘ g, by rw [Polynomial.modByMonic_eq_sub_mul_div]; ring⟩
     have h1 : g.degree = ((g : A⟦X⟧).map (Ideal.Quotient.mk I)).order.toNat := by
-      convert!
+      convert
         H.degree_eq_coe_lift_order_map g 1 (by rwa [constantCoeff_one, ← Ideal.ne_top_iff_one])
           (by simp)
       exact (ENat.lift_eq_toNat_of_lt_top _).symm
@@ -667,7 +668,7 @@ theorem map_ne_zero_of_ne_top (hI : I ≠ ⊤) : g.map (Ideal.Quotient.mk I) ≠
   have := Ideal.Quotient.nontrivial_iff.mpr hI
   rw [congr(map (Ideal.Quotient.mk I) $H.eq_mul), map_mul, ← Polynomial.polynomial_map_coe, ne_eq,
     (H.isUnit.map _).mul_left_eq_zero]
-  exact_mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
+  exact mod_cast f.map_monic_ne_zero (f := Ideal.Quotient.mk I) H.isDistinguishedAt.monic
 
 theorem degree_eq_coe_lift_order_map_of_ne_top (hI : I ≠ ⊤) :
     f.degree = (g.map (Ideal.Quotient.mk I)).order.lift

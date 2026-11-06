@@ -22,7 +22,7 @@ We also prove that the restriction functor `Rep k H ⥤ Rep k G` along `φ` is r
 induction functor and hence that the induction functor preserves colimits.
 
 Additionally, we show that the functor `Rep k H ⥤ ModuleCat k` sending `B : Rep k H` to
-`(Ind(φ)(A) ⊗ B))_H` is naturally isomorphic to the one sending `B` to `(A ⊗ Res(φ)(B))_G`. This
+`(Ind(φ)(A) ⊗ B)_H` is naturally isomorphic to the one sending `B` to `(A ⊗ Res(φ)(B))_G`. This
 is used to prove Shapiro's lemma in
 `Mathlib/RepresentationTheory/Homological/GroupHomology/Shapiro.lean`.
 
@@ -36,7 +36,7 @@ is used to prove Shapiro's lemma in
   along `φ`.
 * `Rep.coinvariantsTensorIndNatIso φ A` : given a group homomorphism `φ : G →* H` and
   `A : Rep k G`, this is a natural isomorphism between the functor sending `B : Rep k H` to
-  `(Ind(φ)(A) ⊗ B))_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
+  `(Ind(φ)(A) ⊗ B)_H` and the one sending `B` to `(A ⊗ Res(φ)(B))_G`. Used to prove Shapiro's
   lemma.
 
 -/
@@ -330,7 +330,7 @@ instance : (resFunctor.{max u v' w} (k := k) φ).IsRightAdjoint :=
 variable {G H : Type u} [Group G] [Group H] (φ : G →* H) (A : Rep.{u} k G) (B : Rep.{u} k H)
 
 /-- Given a group hom `φ : G →* H`, `A : Rep k G` and `B : Rep k H`, this is the `k`-linear
-isomorphism `(Ind(φ)(A) ⊗ B))_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
+isomorphism `(Ind(φ)(A) ⊗ B)_H ⟶ (A ⊗ Res(φ)(B))_G` sending `⟦h ⊗ₜ a⟧ ⊗ₜ b` to `⟦a ⊗ ρ(h)(b)⟧`
 for all `h : H`, `a : A`, and `b : B`. -/
 @[simps! hom_hom inv_hom]
 noncomputable def coinvariantsTensorIndIso :

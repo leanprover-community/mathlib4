@@ -5,9 +5,7 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Equiv
 public import Mathlib.Algebra.Algebra.NonUnitalHom
-public import Mathlib.Algebra.Algebra.Prod
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.Star.StarRingHom
 
@@ -80,9 +78,6 @@ def _root_.NonUnitalStarAlgHom.ofClass [StarHomClass F A B] (f : F) : A →⋆�
     map_star' := map_star f }
 
 @[deprecated (since := "2026-09-02")] alias toNonUnitalStarAlgHom := NonUnitalStarAlgHom.ofClass
-
-instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
-  NonUnitalStarRingHomClass.mk
 
 end NonUnitalStarAlgHomClass
 

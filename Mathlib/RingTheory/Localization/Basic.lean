@@ -7,11 +7,9 @@ module
 
 public import Mathlib.Algebra.Algebra.Tower
 public import Mathlib.Algebra.Field.IsField
-public import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-public import Mathlib.Basic.Finite.Prod
-public import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 public import Mathlib.RingTheory.Localization.Defs
-public import Mathlib.RingTheory.OreLocalization.Ring
+
+import Mathlib.Basic.Finite.Prod
 
 /-!
 # Localizations of commutative rings
@@ -293,9 +291,6 @@ lemma of_le_isUnit_of_bijective {M : Submonoid R}
 lemma of_le_isUnit {S : Submonoid R} (hS : S ≤ IsUnit.submonoid R) : IsLocalization S R :=
   of_le_isUnit_of_bijective (by simpa) Function.bijective_id
 
-@[deprecated (since := "2026-04-15")]
-alias at_units := of_le_isUnit
-
 instance : IsLocalization (IsUnit.submonoid R) R := of_le_isUnit le_rfl
 
 instance : IsLocalization (Algebra.algebraMapSubmonoid S (IsUnit.submonoid R)) S :=
@@ -330,7 +325,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
     IsLocalization M P := by
   constructor; constructor
   · intro y
-    convert! (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
+    convert (IsLocalization.map_units S y).map h.toAlgHom.toRingHom.toMonoidHom
     exact (h.commutes y).symm
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)

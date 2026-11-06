@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # API for localized modules away from an element
 

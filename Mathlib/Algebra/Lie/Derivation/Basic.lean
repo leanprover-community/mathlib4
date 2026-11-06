@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
 public import Mathlib.RingTheory.Nilpotent.Exp
-public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -296,7 +294,7 @@ variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
   bracket D1 D2 := LieDerivation.mk ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ (fun a b => by
     simp only [Ring.lie_def, apply_lie_eq_add, coeFn_coe,
-      LinearMap.sub_apply, Module.End.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
+      LinearMap.sub_apply, mul_apply_eq_comp, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
 variable {D1 D2 : LieDerivation R L L}
@@ -408,10 +406,10 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     invFun x := IsNilpotent.exp (- D.toLinearMap) x
     left_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, Module.End.one_apply]
+        ← Module.End.mul_eq_comp, h.exp_neg_mul_exp_self, one_apply_eq_self]
     right_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
-        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, Module.End.one_apply] }
+        ← Module.End.mul_eq_comp, h.exp_mul_exp_neg_self, one_apply_eq_self] }
 
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap :=
