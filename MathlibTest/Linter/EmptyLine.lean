@@ -7,7 +7,6 @@ set_option linter.style.emptyLine true
 -/
 
 /-!
-
 -/
 
 /--

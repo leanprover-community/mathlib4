@@ -49,7 +49,6 @@ is its vertices are in `ι → ℤ`, then the corresponding prepartition is actu
 * `tendsto_card_div_pow_atTop_volume'`: a version of `tendsto_card_div_pow_atTop_volume` where we
   assume in addition that `x • s ⊆ y • s` whenever `0 < x ≤ y`. Then we get the same limit
   `card (s ∩ x⁻¹ • (ι → ℤ)) / x ^ card ι → volume s` but the limit is over a real variable `x`.
-
 -/
 
 @[expose] public section

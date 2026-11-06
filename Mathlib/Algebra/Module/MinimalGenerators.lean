@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Regular.RegularSequence
 /-!
 
 # Equivalence between two set of minimal generators over local ring
-
 -/
 
 public section

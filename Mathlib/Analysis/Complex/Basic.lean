@@ -37,7 +37,6 @@ namespace `Complex`.
 |`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
 We also register the fact that `ℂ` is an `RCLike` field.
-
 -/
 
 @[expose] public section

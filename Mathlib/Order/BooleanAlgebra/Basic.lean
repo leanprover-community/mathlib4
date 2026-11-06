@@ -23,7 +23,6 @@ classes related to Boolean algebras as defined in `Mathlib/Order/BooleanAlgebra/
 ## Tags
 
 generalized Boolean algebras, Boolean algebras, lattices, sdiff, compl
-
 -/
 
 public section
@@ -40,7 +39,6 @@ Some of the lemmas in this section are from:
 * [*Lattice Theory: Foundation*, George Grätzer][Gratzer2011]
 * <https://ncatlab.org/nlab/show/relative+complement>
 * <https://people.math.gatech.edu/~mccuan/courses/4317/symmetricdifference.pdf>
-
 -/
 
 -- We might want an `IsCompl_of` predicate (for relative complements) generalizing `IsCompl`,

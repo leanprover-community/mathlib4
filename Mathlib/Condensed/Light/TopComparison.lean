@@ -13,7 +13,6 @@ public import Mathlib.Condensed.TopComparison
 # The functor from topological spaces to light condensed sets
 
 We define the functor `topCatToLightCondSet : TopCat.{u} ⥤ LightCondSet.{u}`.
-
 -/
 
 public section

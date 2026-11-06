@@ -24,7 +24,6 @@ We call this the AKLB setup.
   defined to be the restriction of the trace map of `Frac(B)/Frac(A)`.
 - `Algebra.intNorm`: The norm map of a finite extension of integrally closed domains `B/A` is
   defined to be the restriction of the norm map of `Frac(B)/Frac(A)`.
-
 -/
 
 @[expose] public section

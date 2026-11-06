@@ -114,7 +114,6 @@ This file contains basics about the separable degree of a field extension.
 ## Tags
 
 separable degree, degree, polynomial
-
 -/
 
 @[expose] public section

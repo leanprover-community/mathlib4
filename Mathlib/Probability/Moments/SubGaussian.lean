@@ -116,7 +116,6 @@ a conditional expectation, `(μ.trim hm)`-almost surely:
 
 * [R. Vershynin, *High-dimensional probability: An introduction with applications in data
   science*][vershynin2018high]
-
 -/
 
 @[expose] public section

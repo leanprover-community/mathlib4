@@ -39,7 +39,6 @@ a definition of `⊥`, which is the empty `PEquiv` (sends all to `none`), which 
 ## Tags
 
 pequiv, partial equivalence
-
 -/
 
 @[expose] public section

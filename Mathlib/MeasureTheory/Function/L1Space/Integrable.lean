@@ -32,7 +32,6 @@ To prove something for an arbitrary integrable function, a useful theorem is
 ## Tags
 
 integrable
-
 -/
 
 @[expose] public section

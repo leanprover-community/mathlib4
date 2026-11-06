@@ -44,7 +44,6 @@ so we could deduce the facts here from an equivalence `HopfAlgCat R ≌ Hopf (Mo
 
 * [C. Kassel, *Quantum Groups* (§III.3)][Kassel1995]
 
-
 -/
 
 public section

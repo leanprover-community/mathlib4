@@ -16,7 +16,6 @@ In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):
 
 We follow the algebraic proof from
 https://en.wikipedia.org/wiki/Vandermonde%27s_identity#Algebraic_proof .
-
 -/
 
 public section

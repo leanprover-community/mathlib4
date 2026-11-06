@@ -17,7 +17,6 @@ import Mathlib.AlgebraicTopology.SimplicialSet.RegularEpi
 
 In this file, we show that finite simplicial sets are finitely presentable,
 which will allow the use of the small object argument in `SSet`.
-
 -/
 
 public section

@@ -23,7 +23,6 @@ to `ContinuousMap.id`.
 
 We introduce the notation `X ≃ₕ Y` for `ContinuousMap.HomotopyEquiv X Y` in the `ContinuousMap`
 locale.
-
 -/
 
 @[expose] public section

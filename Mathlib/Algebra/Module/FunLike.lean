@@ -17,7 +17,6 @@ typeclass searches.
 ## TODO:
 Add definitions and API for the coercion being a linear map, similar to `FunLike.coeMonoidHom`,
 and related definitions.
-
 -/
 
 public section

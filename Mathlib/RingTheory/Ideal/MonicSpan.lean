@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 /-!
 
 # Lemmas for ideal in polynomial span by monic polynomial
-
 -/
 
 public section

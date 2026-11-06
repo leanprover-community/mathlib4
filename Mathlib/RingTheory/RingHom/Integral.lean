@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.Integral
 /-!
 
 # The meta properties of integral ring homomorphisms.
-
 -/
 
 public section

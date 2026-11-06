@@ -28,7 +28,6 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 - `IsLiouville`: A field extension being Liouville
 - `isLiouville_of_finiteDimensional`: all finite-dimensional field extensions
   (of a field with characteristic 0) are Liouville.
-
 -/
 
 public section

@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Etale.Field
 
 We show that separably generated extensions of fields are smooth.
 In particular finitely generated field extensions over perfect fields are smooth.
-
 -/
 
 public section

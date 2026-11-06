@@ -13,7 +13,6 @@ public import Mathlib.Data.Fintype.BigOperators
 # Finiteness and infiniteness of `Finsupp`
 
 Some lemmas on the combination of `Finsupp`, `Fintype` and `Infinite`.
-
 -/
 
 public section

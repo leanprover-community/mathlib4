@@ -60,7 +60,6 @@ For example, in normal mathematics, we can demand that `(zeta p ℤ ℤ[ζₚ] :
 specify that our choices agree. This is not the case here, and it is indeed impossible to prove that
 these two are equal. Therefore, whenever possible, we prove our results for any primitive root,
 and only at the "final step", when we need to provide an "explicit" primitive root, we use `zeta`.
-
 -/
 
 @[expose] public section

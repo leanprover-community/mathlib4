@@ -559,7 +559,6 @@ alias ⟨_, Nonempty.empty_ssubset⟩ := empty_ssubset
 
 In Lean `@univ α` (or `univ : Set α`) is the set that contains all elements of type `α`.
 Mathematically it is the same as `α` but it has a different type.
-
 -/
 
 

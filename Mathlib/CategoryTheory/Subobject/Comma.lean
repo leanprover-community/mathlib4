@@ -27,7 +27,6 @@ these requirements can be relaxed by refining the results about limits in comma 
 
 We also provide the dual results. As usual, we use `Subobject (op A)` for the quotient objects of
 `A`.
-
 -/
 
 @[expose] public section

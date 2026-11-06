@@ -51,7 +51,6 @@ matrices over a ring, in particular the Schur complement (see
 `Mathlib/LinearAlgebra/Matrix/SchurComplement.lean`). In particular, the declarations
 `CategoryTheory.Biprod.isoElim`, `CategoryTheory.Biprod.gaussian`
 and `Matrix.invertibleOfFromBlocks₁₁Invertible` are all closely related.
-
 -/
 
 @[expose] public section

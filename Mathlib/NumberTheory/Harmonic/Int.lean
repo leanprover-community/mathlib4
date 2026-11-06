@@ -17,7 +17,6 @@ The nth Harmonic number is not an integer. We formalize the proof using
 
 Reference:
 https://kconrad.math.uconn.edu/blurbs/gradnumthy/padicharmonicsum.pdf
-
 -/
 
 public section

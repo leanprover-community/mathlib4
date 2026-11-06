@@ -17,7 +17,6 @@ In this file we define the induced map on prime spectra induced by a ring homomo
 
 * `PrimeSpectrum.comap`: The induced map on prime spectra by a ring homomorphism. The proof that
   it is continuous is in `Mathlib/RingTheory/Spectrum/Prime/Topology.lean`.
-
 -/
 
 @[expose] public section

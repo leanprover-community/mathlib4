@@ -30,7 +30,6 @@ This file declares the notations:
 
 Use the statement `open scoped nonZeroDivisors nonZeroSMulDivisors` to access this notation in
 your own code.
-
 -/
 
 @[expose] public section

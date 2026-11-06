@@ -32,7 +32,6 @@ import Mathlib.RingTheory.Flat.Equalizer
 ## Note
 
 For the converse that smooth implies flat, see `Mathlib/RingTheory/Smooth/Flat.lean`.
-
 -/
 
 open TensorProduct IsLocalRing

@@ -50,7 +50,6 @@ property.
 ## Tags
 
 stopping time, stochastic process
-
 -/
 
 @[expose] public section

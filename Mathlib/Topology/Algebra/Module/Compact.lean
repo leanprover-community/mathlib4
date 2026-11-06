@@ -13,7 +13,6 @@ import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 /-!
 
 # Compact submodules
-
 -/
 
 public section

@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.Span.Defs
 /-!
 
 # Additional results about finite spanning sets in linear algebra
-
 -/
 
 public section

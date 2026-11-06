@@ -15,7 +15,6 @@ public import Mathlib.RingTheory.Finiteness.Basic
 # Finite modules and types with finitely many elements
 
 This file relates `Module.Finite` and `_root_.Finite`.
-
 -/
 
 @[expose] public section

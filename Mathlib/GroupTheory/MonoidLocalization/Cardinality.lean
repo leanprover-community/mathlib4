@@ -13,7 +13,6 @@ public import Mathlib.GroupTheory.OreLocalization.Cardinality
 # Cardinality of localizations of commutative monoids
 
 This file contains some results on cardinality of localizations.
-
 -/
 
 public section

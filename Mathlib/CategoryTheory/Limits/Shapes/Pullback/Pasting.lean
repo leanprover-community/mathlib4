@@ -28,7 +28,6 @@ pullback.
   `W ×[X] (X ×[Z] Y) ≅ W ×[Z] Y`.
 * `pullbackLeftPullbackSndIso` shows, using the `pullback` API, that
   `(X ×[Z] Y) ×[Y] W ≅ X ×[Z] W`.
-
 -/
 
 @[expose] public section
@@ -157,7 +156,6 @@ Y₁ - i₁ -> X₁
 ```
 Let `t₁` denote the cone corresponding to the bottom square, and `t₂` denote the cone corresponding
 to the top square.
-
 -/
 variable {X₁ X₂ X₃ Y₁ : C} {f₁ : X₂ ⟶ X₁} {f₂ : X₃ ⟶ X₂} {i₁ : Y₁ ⟶ X₁}
 

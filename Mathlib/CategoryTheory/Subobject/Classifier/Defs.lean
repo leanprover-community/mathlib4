@@ -50,7 +50,6 @@ Let `C` refer to a category with a terminal object.
 ## References
 
 * [S. MacLane and I. Moerdijk, *Sheaves in Geometry and Logic*][MM92]
-
 -/
 
 @[expose] public section

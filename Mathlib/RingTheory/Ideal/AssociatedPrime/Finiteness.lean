@@ -34,7 +34,6 @@ associated primes.
 
 * `associatedPrimes.finite`: There are only finitely many associated primes of a
   finitely generated module over a Noetherian ring.
-
 -/
 
 @[expose] public section

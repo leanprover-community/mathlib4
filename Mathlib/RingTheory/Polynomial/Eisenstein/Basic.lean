@@ -28,7 +28,6 @@ Given an ideal `𝓟` of a commutative semiring `R`, we say that a polynomial `f
 We also define a notion `IsWeaklyEisensteinAt` requiring only that
 `∀ n < f.natDegree → f.coeff n ∈ 𝓟`. This makes certain results slightly more general and it is
 useful since it is sometimes better behaved (for example it is stable under `Polynomial.map`).
-
 -/
 
 public section

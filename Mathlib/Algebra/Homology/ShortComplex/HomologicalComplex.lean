@@ -20,7 +20,6 @@ is the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`.
 The homology `K.homology i` of a homological complex `K` in degree `i` is defined as
 the homology of the short complex `(shortComplexFunctor C c i).obj K`, which can be
 abbreviated as `K.sc i`.
-
 -/
 
 @[expose] public section

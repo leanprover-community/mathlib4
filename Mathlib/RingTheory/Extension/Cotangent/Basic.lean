@@ -34,7 +34,6 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 ## Implementation detail
 We actually develop these material for general extensions (i.e. surjection `P → S`) so that we can
 apply them to infinitesimal smooth (or versal) extensions later.
-
 -/
 
 @[expose] public noncomputable section

@@ -31,7 +31,6 @@ public import Mathlib.RingTheory.Extension.Cotangent.Basic
 - https://stacks.math.columbia.edu/tag/00TH
 - [B. Iversen, *Generic Local Structure of the Morphisms in Commutative Algebra*][iversen]
 
-
 -/
 
 @[expose] public section

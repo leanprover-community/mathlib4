@@ -25,7 +25,6 @@ subspaces of affine spaces.
 
 * `Collinear` defines collinear sets of points as those that span a
   subspace of dimension at most 1.
-
 -/
 
 @[expose] public section

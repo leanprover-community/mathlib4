@@ -40,7 +40,6 @@ It's proved in the above papers that
 ## Tags
 
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
-
 -/
 
 public section

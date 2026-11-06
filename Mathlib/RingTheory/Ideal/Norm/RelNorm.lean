@@ -31,7 +31,6 @@ spanned by the norms of elements in `I`.
 
 * `map_mul Ideal.relNorm`: multiplicativity of the relative ideal norm
 * `relNorm_relNorm`: transitivity of the relative ideal norm
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ Let `C` be a locally `w`-small category. We define the Yoneda
 embedding `shrinkYoneda : C ⥤ Cᵒᵖ ⥤ Type w`. (See the
 file `CategoryTheory.Yoneda` for the other variants `yoneda` and
 `uliftYoneda`.)
-
 -/
 
 @[expose] public section

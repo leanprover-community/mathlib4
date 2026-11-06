@@ -14,7 +14,6 @@ Things to note:
 * `guard_msgs ... in #exit` and `set_option ... in #exit` allow processing of the file *beyond*
   `#exit`, since they wrap `#exit` inside an anonymous section,
   making Lean active again *after* that anonymous section.
-
 -/
 
 section longFile

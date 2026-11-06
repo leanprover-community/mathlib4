@@ -45,7 +45,6 @@ public import Mathlib.FieldTheory.Perfect
 ## Tags
 
 perfect ring, perfect closure
-
 -/
 
 @[expose] public section

@@ -23,7 +23,6 @@ on `Dᵒᵖ` from left/right-actions of `C` on `D`, and vice-versa.
 
 These constructions are not made instances in order to avoid instance loops,
 you should bring them as local instances if you intend to use them.
-
 -/
 
 @[expose] public section

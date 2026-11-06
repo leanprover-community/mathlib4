@@ -27,7 +27,6 @@ In addition to comprehensive API on these two notions, the main results are the 
   is the Lie bracket of the pullbacks, when the second derivative is symmetric.
 * `VectorField.leibniz_identity_lieBracket` is the Leibniz
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
-
 -/
 
 @[expose] public section

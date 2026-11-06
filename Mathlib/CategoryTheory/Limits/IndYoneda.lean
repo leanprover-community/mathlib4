@@ -22,7 +22,6 @@ Notation: categories `C`, `I` and functors `D : Iᵒᵖ ⥤ C`, `F : C ⥤ Type`
   diagram `D` to `F` is limit of `F` evaluated at `D`.
 - `colimitCoyonedaHomIsoLimit'`: a variant of `colimitCoyonedaHomIsoLimit` for a covariant
   diagram.
-
 -/
 
 @[expose] public section

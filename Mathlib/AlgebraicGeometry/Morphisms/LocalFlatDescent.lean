@@ -22,7 +22,6 @@ descent:
 - smooth
 - formally unramified
 - étale
-
 -/
 
 public section
