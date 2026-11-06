@@ -36,11 +36,11 @@ public register_option linter.style.cdot : Bool := {
 
 /-- Run the cdot linter, given that `stx` has kind `cdotTk` or `Lean.Parser.Term.cdot`. -/
 def cdotLinter (stx : Syntax) : CommandElabM Unit := do
-  -- let .node info kind args := stx | unreachable!
+  -- Both `cdotTk` and `cdot` have `.atom ..` at `stx[0]`
   if let .atom _ dot := stx[0] then
     if dot != "·" then
       logLintIf linter.style.cdot stx
-        m!"Please, use '·' (typed as `\\.`) instead of '.' as 'cdot'."
+        m!"Please, use `·` (typed as `\\.`) instead of `.` as `cdot`."
   -- We also check for isolated cdot's, i.e. when the cdot is on its own line.
   -- Apply this only to cdot tactics
   if stx.isOfKind ``cdotTk then
@@ -64,7 +64,7 @@ public register_option linter.style.dollarSyntax : Bool := {
 /-- Run the dollar syntax linter, given that `stx` has kind `term_$__`. -/
 def dollarLinter (stx : Syntax) : CommandElabM Unit := do
   Linter.logLintIf linter.style.dollarSyntax stx
-    m!"Please use '<|' instead of '$' for the pipe operator."
+    m!"Please use `<|` instead of `$` for the pipe operator."
 
 
 /-! ### The `lambdaSyntax` linter -/
@@ -82,8 +82,8 @@ public register_option linter.style.lambdaSyntax : Bool := {
 def lambdaLinter (stx : Syntax) : CommandElabM Unit := do
   if let .atom _ "λ" := stx[0] then
     Linter.logLintIf linter.style.lambdaSyntax stx[0] m!"\
-      Please use 'fun' and not 'λ' to define anonymous functions.\n\
-      The 'λ' syntax is deprecated in mathlib4."
+      Please use `fun` and not `λ` to define anonymous functions.\n\
+      The `λ` syntax is deprecated in mathlib4."
 
 
 /-! ### The auxiliary declaration linter -/
