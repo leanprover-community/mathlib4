@@ -219,6 +219,7 @@ theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) 
   conv_lhs => rw [← map_mul_left_eq_self μ g]
   exact (absolutelyContinuous_inv μ).map (measurable_const_mul g)
 
+set_option linter.convertExclamation false in -- If the option is enabled we get an error.
 /-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/
 @[to_additive /-- This is the computation performed in the proof of [Halmos, §60 Th. A]. -/]
 theorem measure_mul_lintegral_eq [IsMulLeftInvariant ν] (sm : MeasurableSet s) (f : G → ℝ≥0∞)
