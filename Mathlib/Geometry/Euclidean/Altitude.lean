@@ -259,7 +259,7 @@ theorem closedInterior_inter_affineSubspaceMk'_lineMap_altitudeFoot {n : ℕ} [N
       (s.altitude i).directionᗮ =
         s.closedInterior ∩ (affineSpan ℝ (s.points '' {i}ᶜ)).shift (s.points i) x := by
   rw [← affineSubspaceMk'_lineMap_altitudeFoot_eq_shift, AffineSubspace.coe_inf, ← Set.inter_assoc,
-    Set.inter_right_comm, Set.inter_eq_left.mpr closedInterior_subset_affineSpan]
+    Set.inter_right_comm, Set.inter_eq_left_iff.mpr closedInterior_subset_affineSpan]
 
 /-- The height of a vertex of a simplex is the distance between it and the foot of the altitude
 from that vertex. -/

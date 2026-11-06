@@ -613,7 +613,7 @@ theorem isIso_of_subset {X Y : PresheafedSpace C} (f : X ⟶ Y)
     (hU : (U : Set Y.carrier) ⊆ Set.range f.base) : IsIso (f.c.app <| op U) := by
   have : U = H.base_open.functor.obj ((Opens.map f.base).obj U) := by
     ext1
-    exact (Set.inter_eq_left.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
+    exact (Set.inter_eq_left_iff.mpr hU).symm.trans Set.image_preimage_eq_inter_range.symm
   convert H.c_iso ((Opens.map f.base).obj U)
 
 end PresheafedSpace.IsOpenImmersion

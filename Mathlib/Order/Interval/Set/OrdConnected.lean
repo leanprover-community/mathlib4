@@ -77,22 +77,23 @@ variable {α β : Type*} [Preorder α] [Preorder β]
 
 theorem image_Icc (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
     e '' Icc x y = Icc (e x) (e y) := by
-  rw [← e.preimage_Icc, image_preimage_eq_inter_range, inter_eq_left.2 (he.out ⟨_, rfl⟩ ⟨_, rfl⟩)]
+  rw [← e.preimage_Icc, image_preimage_eq_inter_range,
+    inter_eq_left_iff.2 (he.out ⟨_, rfl⟩ ⟨_, rfl⟩)]
 
 theorem image_Ico (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
     e '' Ico x y = Ico (e x) (e y) := by
   rw [← e.preimage_Ico, image_preimage_eq_inter_range,
-    inter_eq_left.2 <| Ico_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+    inter_eq_left_iff.2 <| Ico_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
 
 theorem image_Ioc (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
     e '' Ioc x y = Ioc (e x) (e y) := by
   rw [← e.preimage_Ioc, image_preimage_eq_inter_range,
-    inter_eq_left.2 <| Ioc_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+    inter_eq_left_iff.2 <| Ioc_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
 
 theorem image_Ioo (e : α ↪o β) (he : OrdConnected (range e)) (x y : α) :
     e '' Ioo x y = Ioo (e x) (e y) := by
   rw [← e.preimage_Ioo, image_preimage_eq_inter_range,
-    inter_eq_left.2 <| Ioo_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
+    inter_eq_left_iff.2 <| Ioo_subset_Icc_self.trans <| he.out ⟨_, rfl⟩ ⟨_, rfl⟩]
 
 end OrderEmbedding
 

@@ -91,7 +91,7 @@ lemma IsSigmaCompact.of_isClosed_subset {s t : Set X} (ht : IsSigmaCompact t)
   rcases ht with ⟨K, hcompact, hcov⟩
   refine ⟨(fun n ↦ s ∩ (K n)), fun n ↦ (hcompact n).inter_left hs, ?_⟩
   rw [← inter_iUnion, hcov]
-  exact inter_eq_left.mpr h
+  exact inter_eq_left_iff.mpr h
 
 /-- If `s` is σ-compact and `f` is continuous on `s`, `f(s)` is σ-compact. -/
 lemma IsSigmaCompact.image_of_continuousOn {f : X → Y} {s : Set X} (hs : IsSigmaCompact s)
@@ -117,13 +117,13 @@ lemma Topology.IsInducing.isSigmaCompact_iff {f : X → Y} {s : Set X}
     refine ⟨fun n ↦ f ⁻¹' (L n) ∩ s, ?_, ?_⟩
     · intro n
       have : f '' (f ⁻¹' (L n) ∩ s) = L n := by
-        rw [image_preimage_inter, inter_eq_left.mpr]
+        rw [image_preimage_inter, inter_eq_left_iff.mpr]
         exact (subset_iUnion _ n).trans hcov.le
       apply hf.isCompact_iff.mpr (this.symm ▸ (hcomp n))
     · calc ⋃ n, f ⁻¹' L n ∩ s
         _ = f ⁻¹' (⋃ n, L n) ∩ s := by rw [preimage_iUnion, iUnion_inter]
         _ = f ⁻¹' (f '' s) ∩ s := by rw [hcov]
-        _ = s := inter_eq_right.mpr (subset_preimage_image _ _)
+        _ = s := inter_eq_right_iff.mpr (subset_preimage_image _ _)
 
 /-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is σ-compact
 if and only `s` is σ-compact. -/

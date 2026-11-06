@@ -415,7 +415,7 @@ theorem uniformSpace_eq_iInf_precomp_of_cover {δ : ι → Type*} [∀ i, Topolo
   have h_preimage : ∀ i, MapsTo (φ i ⁻¹' ·) 𝔖 (𝔗 i) := fun i K ↦ (h_proper i).isCompact_preimage
   have h_cover' : ∀ S ∈ 𝔖, ∃ I : Set ι, I.Finite ∧ S ⊆ ⋃ i ∈ I, range (φ i) := fun S hS ↦ by
     refine ⟨{i | (range (φ i) ∩ S).Nonempty}, h_lf.finite_nonempty_inter_compact hS,
-      inter_eq_right.mp ?_⟩
+      inter_eq_right_iff.mp ?_⟩
     simp_rw [iUnion₂_inter, mem_ofPred, iUnion_nonempty_self, ← iUnion_inter, h_cover, univ_inter]
   -- ... and we just pull it back.
   simp_rw +zetaDelta [compactConvergenceUniformSpace, replaceTopology_eq,

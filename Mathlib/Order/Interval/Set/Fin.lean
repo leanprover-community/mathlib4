@@ -70,27 +70,27 @@ theorem image_val_Ioi (i : Fin n) : (↑) '' Ioi i = Ioo (i : ℕ) n := by
 
 @[simp]
 theorem image_val_Iio (i : Fin n) : (↑) '' Iio i = Iio (i : ℕ) := by
-  rw [← preimage_val_Iio_val, image_preimage_eq_inter_range, range_val, inter_eq_left]
+  rw [← preimage_val_Iio_val, image_preimage_eq_inter_range, range_val, inter_eq_left_iff]
   exact Iio_subset_Iio i.is_lt.le
 
 @[simp]
 theorem image_val_Icc (i j : Fin n) : (↑) '' Icc i j = Icc (i : ℕ) j := by
-  rw [← preimage_val_Icc_val, image_preimage_eq_inter_range, range_val, inter_eq_left]
+  rw [← preimage_val_Icc_val, image_preimage_eq_inter_range, range_val, inter_eq_left_iff]
   exact fun k hk ↦ hk.2.trans_lt j.is_lt
 
 @[simp]
 theorem image_val_Ico (i j : Fin n) : (↑) '' Ico i j = Ico (i : ℕ) j := by
-  rw [← preimage_val_Ico_val, image_preimage_eq_inter_range, range_val, inter_eq_left]
+  rw [← preimage_val_Ico_val, image_preimage_eq_inter_range, range_val, inter_eq_left_iff]
   exact fun k hk ↦ hk.2.trans j.is_lt
 
 @[simp]
 theorem image_val_Ioc (i j : Fin n) : (↑) '' Ioc i j = Ioc (i : ℕ) j := by
-  rw [← preimage_val_Ioc_val, image_preimage_eq_inter_range, range_val, inter_eq_left]
+  rw [← preimage_val_Ioc_val, image_preimage_eq_inter_range, range_val, inter_eq_left_iff]
   exact fun k hk ↦ hk.2.trans_lt j.is_lt
 
 @[simp]
 theorem image_val_Ioo (i j : Fin n) : (↑) '' Ioo i j = Ioo (i : ℕ) j := by
-  rw [← preimage_val_Ioo_val, image_preimage_eq_inter_range, range_val, inter_eq_left]
+  rw [← preimage_val_Ioo_val, image_preimage_eq_inter_range, range_val, inter_eq_left_iff]
   exact fun k hk ↦ hk.2.trans j.is_lt
 
 @[simp] theorem image_val_uIcc (i j : Fin n) : (↑) '' uIcc i j = uIcc (i : ℕ) j := by simp [uIcc]

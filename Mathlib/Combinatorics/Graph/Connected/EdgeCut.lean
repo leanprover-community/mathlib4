@@ -116,7 +116,7 @@ lemma IsEdgeCut.inter_edgeSet_of_le (hHG : H ≤ G) (hF : G.IsEdgeCut F) :
 @[gcongr]
 lemma IsEdgeCut.anti_of_subset (hHG : H ≤ G) (hFH : F ⊆ E(H)) (hF : G.IsEdgeCut F) :
     H.IsEdgeCut F :=
-  inter_eq_right.mpr hFH ▸ hF.inter_edgeSet_of_le hHG
+  inter_eq_right_iff.mpr hFH ▸ hF.inter_edgeSet_of_le hHG
 
 @[gcongr]
 lemma IsEdgeCut.of_isClosedSubgraph (hGH : G ≤c H) (hF : G.IsEdgeCut F) : H.IsEdgeCut F := by
@@ -184,8 +184,8 @@ alias ⟨_, IsBridge.isBond_singleton⟩ := isBond_singleton_iff_isBridge
 lemma IsBond.isBridge_deleteEdges (heB : e ∈ B) (hB : G.IsBond B) :
     (G.deleteEdges (B \ {e})).IsBridge e := by
   have := hB.prop.1.inter_edgeSet_of_le (G.deleteEdges_le (F := B \ {e}))
-  rw [edgeSet_deleteEdges, inter_comm, inter_sdiff_distrib_left, inter_eq_left.mpr hB.subset,
-    inter_eq_right.mpr sdiff_subset] at this
+  rw [edgeSet_deleteEdges, inter_comm, inter_sdiff_distrib_left, inter_eq_left_iff.mpr hB.subset,
+    inter_eq_right_iff.mpr sdiff_subset] at this
   simpa [heB, IsBridge] using this
 
 lemma IsBond.of_isClosedSubgraph (hGH : G ≤c H) (hB : G.IsBond B) : H.IsBond B := by

@@ -455,7 +455,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   · replace ha : a ∈ s := hIoo ha.choose a ha.choose_spec.1 ha.choose_spec.2
     convert_to MeasurableSet (⋃ (l ∈ t) (_ : l < a), Ico l a)
     · symm
-      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right, subset_def, mem_iUnion,
+      simp only [← Ici_inter_Iio, ← iUnion_inter, inter_eq_right_iff, subset_def, mem_iUnion,
         mem_Ici, mem_Iio]
       intro x hx
       rcases htd.exists_le' (fun b hb => htb _ hb (hbot b hb)) x with ⟨z, hzt, hzx⟩

@@ -781,7 +781,8 @@ theorem measure_isHaarMeasure_eq_smul_of_isEverywherePos [LocallyCompactSpace G]
       have : IsClosed (k • k⁻¹) := IsClosed.smul_left_of_isCompact k_closed.inv k_comp
       exact (IsClosed.smul this (f j)).measurableSet
     simp only [mem_range, iUnion_exists, iUnion_iUnion_eq'] at sm
-    have s_eq : s = ⋃ n, s ∩ (f n • (k * k⁻¹)) := by rwa [← inter_iUnion, eq_comm, inter_eq_left]
+    have s_eq : s = ⋃ n, s ∩ (f n • (k * k⁻¹)) := by
+      rwa [← inter_iUnion, eq_comm, inter_eq_left_iff]
     have I : μ' s = ∑' n, μ' (disjointed (fun n ↦ s ∩ f n • (k * k⁻¹)) n) := by
       rw [← measure_iUnion (disjoint_disjointed _) M, iUnion_disjointed, ← s_eq]
     have J : ν s = ∑' n, ν (disjointed (fun n ↦ s ∩ f n • (k * k⁻¹)) n) := by

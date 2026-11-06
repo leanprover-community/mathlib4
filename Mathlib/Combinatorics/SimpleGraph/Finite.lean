@@ -713,7 +713,7 @@ theorem map_neighborFinset_induce [DecidableEq V] (v : s) :
 theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
     ((G.induce s).neighborFinset v).map (.subtype (· ∈ s)) = G.neighborFinset v := by
   classical
-  rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
+  rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left_iff,
     ← map_neighborFinset_induce v] at h
 
 /-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
@@ -787,7 +787,7 @@ theorem Embedding.degree_eq_of_neighborSet_subset_range {V V' : Type*} {G : Simp
     [Fintype <| G'.neighborSet <| f v] (h : G'.neighborSet (f v) ⊆ Set.range f) :
     G'.degree (f v) = G.degree v := by
   simp_rw [← ncard_neighborSet, ← Set.ncard_image_of_injective _ f.injective,
-    ← f.preimage_neighborSet, Set.image_preimage_eq_inter_range, Set.inter_eq_left.mpr h]
+    ← f.preimage_neighborSet, Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff.mpr h]
 
 end Map
 

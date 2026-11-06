@@ -360,7 +360,7 @@ lemma IsLinearSet.isProperSemilinearSet [IsCancelAdd M] (hs : IsLinearSet s) :
           (fun j => if j ∈ t' then g j - f j else g j + f j) (by simp [hi]) using 1
         conv_lhs => rw [← Finset.union_sdiff_of_subset ht']
         simp_rw [vadd_eq_add, add_left_cancel_iff, Finset.sum_union Finset.sdiff_disjoint.symm,
-          ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter, Finset.inter_eq_right.2 ht',
+          ite_smul, Finset.sum_ite, Finset.filter_mem_eq_inter, Finset.inter_eq_right_iff.2 ht',
           Finset.filter_notMem_eq_sdiff, add_smul, Finset.sum_add_distrib, ← heq, ← add_assoc,
           add_right_comm, ← Finset.sum_add_distrib]
         congr! 2 with j hj

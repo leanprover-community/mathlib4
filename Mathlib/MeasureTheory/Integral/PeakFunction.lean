@@ -209,11 +209,11 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
     hlφ hiφ h'iφ hmg hcg,
     (tendsto_order.1 (tendsto_iff_norm_sub_tendsto_zero.1 hiφ)).2 1 zero_lt_one] with i hi h'i
   simp only [h, Pi.sub_apply, smul_sub, ← indicator_smul_apply]
-  rw [integral_sub hi, setIntegral_indicator ht, inter_eq_right.mpr hts,
+  rw [integral_sub hi, setIntegral_indicator ht, inter_eq_right_iff.mpr hts,
     integral_smul_const, sub_add_cancel]
   rw [integrable_indicator_iff ht]
   apply Integrable.smul_const
-  rw [restrict_restrict ht, inter_eq_left.mpr hts]
+  rw [restrict_restrict ht, inter_eq_left_iff.mpr hts]
   exact .of_integral_ne_zero (fun h ↦ by simp [h] at h'i)
 
 /-- If a sequence of peak functions `φᵢ` converges uniformly to zero away from a point `x₀` and its

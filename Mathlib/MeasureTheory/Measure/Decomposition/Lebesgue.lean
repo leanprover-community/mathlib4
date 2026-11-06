@@ -721,7 +721,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
   have hA₂ (n : ℕ) (t : Set α) (ht : MeasurableSet t) :
       μ (t ∩ A) ≤ ((1 / (n + 1) : ℝ≥0) • ν) (t ∩ A) := by
     specialize hf₃ n (t ∩ A) (ht.inter hAmeas)
-    have : A ∩ (f n)ᶜ = A := inter_eq_left.mpr (iInter_subset _ n)
+    have : A ∩ (f n)ᶜ = A := inter_eq_left_iff.mpr (iInter_subset _ n)
     rwa [inter_assoc, this] at hf₃
   have hA₃ (n : ℕ) : μ A ≤ (1 / (n + 1) : ℝ≥0) * ν A := by simpa using hA₂ n univ .univ
   have hμ : μ A = 0 := by

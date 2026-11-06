@@ -323,7 +323,7 @@ theorem restrict_apply {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : Me
 
 theorem restrict_eq_self {i : Set α} (hi : MeasurableSet i) {j : Set α} (hj : MeasurableSet j)
     (hij : j ⊆ i) : v.restrict i j = v j := by
-  rw [restrict_apply v hi hj, Set.inter_eq_left.2 hij]
+  rw [restrict_apply v hi hj, Set.inter_eq_left_iff.2 hij]
 
 @[simp]
 theorem restrict_empty : v.restrict ∅ = 0 :=

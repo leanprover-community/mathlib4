@@ -254,12 +254,12 @@ private lemma subgroup_strong_bound_right (h : #(A * A) < (3 / 2 : ℚ) * #A) (a
   have : (A⁻¹ * A) * (A⁻¹ * A) = A⁻¹ * A := by
     rw [← coe_inj, coe_mul, coe_mul, ← invMulSubgroup_eq_inv_mul _ h, coe_mul_coe]
   have hl : l = A := by
-    rw [inter_eq_left, ← this, subset_smul_finset_iff]
+    rw [inter_eq_left_iff, ← this, subset_smul_finset_iff]
     simp only [← hz, mul_inv_rev, inv_inv, ← mul_assoc]
     refine smul_finset_subset_mul ?_
     simp [mul_mem_mul, ha, hb, hc]
   have hr : r = z • A⁻¹ := by
-    rw [inter_eq_right, ← this, mul_assoc _ A,
+    rw [inter_eq_right_iff, ← this, mul_assoc _ A,
       ← mul_inv_eq_inv_mul_of_doubling_lt_two (weaken_doubling h), subset_smul_finset_iff]
     simp only [← mul_assoc, smul_smul]
     refine smul_finset_subset_mul ?_

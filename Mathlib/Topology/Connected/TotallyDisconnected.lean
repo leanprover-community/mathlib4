@@ -159,7 +159,7 @@ lemma Topology.IsEmbedding.isTotallyDisconnected_image [TopologicalSpace β] {f 
     (hf : IsEmbedding f) : IsTotallyDisconnected (f '' s) ↔ IsTotallyDisconnected s := by
   refine ⟨hf.isTotallyDisconnected, fun hs u hus hu ↦ ?_⟩
   obtain ⟨v, hvs, rfl⟩ : ∃ v, v ⊆ s ∧ f '' v = u :=
-    ⟨f ⁻¹' u ∩ s, inter_subset_right, by rwa [image_preimage_inter, inter_eq_left]⟩
+    ⟨f ⁻¹' u ∩ s, inter_subset_right, by rwa [image_preimage_inter, inter_eq_left_iff]⟩
   rw [hf.isInducing.isPreconnected_image] at hu
   exact (hs v hvs hu).image _
 

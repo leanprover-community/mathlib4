@@ -592,7 +592,7 @@ theorem fromSpec_image_basicOpen :
   rw [← hU.fromSpec_preimage_basicOpen]
   ext1
   change hU.fromSpec '' hU.fromSpec ⁻¹' (X.basicOpen f : Set X) = _
-  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left, hU.range_fromSpec]
+  rw [Set.image_preimage_eq_inter_range, Set.inter_eq_left_iff, hU.range_fromSpec]
   exact Scheme.basicOpen_le _ _
 
 @[simp]
@@ -943,7 +943,7 @@ theorem iSup_basicOpen_eq_self_iff {s : Set Γ(X, U)} :
       apply_fun Set.image hU.fromSpec at h
       rw [Set.image_preimage_eq_inter_range, Set.image_preimage_eq_inter_range, hU.range_fromSpec]
         at h
-      simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right] at h
+      simp only [Set.inter_self, Opens.carrier_eq_coe, Set.inter_eq_right_iff] at h
       ext1
       refine Set.Subset.antisymm ?_ h
       simp only [Set.iUnion_subset_iff, SetCoe.forall, Opens.coe_iSup]

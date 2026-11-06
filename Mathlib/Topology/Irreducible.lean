@@ -368,7 +368,7 @@ theorem closure_sUnion_irreducibleComponents_sdiff_singleton
     rwa [Set.singleton_subset_iff]
   apply Set.Subset.antisymm
   · rwa [(isClosed_of_mem_irreducibleComponents Z hZ).closure_subset_iff]
-  · rw [← Set.inter_eq_right.mpr h]
+  · rw [← Set.inter_eq_right_iff.mpr h]
     apply subset_closure_inter_of_isPreirreducible_of_isOpen hZ.1.2
     · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
       exact hX.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1

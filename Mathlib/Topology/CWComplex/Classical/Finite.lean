@@ -216,7 +216,7 @@ def RelCWComplex.mkFinite.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     intro h
     -- `A = A ∩ C = A ∩ (D ∪ ⋃ n, ⋃ j, closedCell n j)` is closed by assumption since `C` has only
     -- finitely many cells.
-    rw [← inter_eq_left.2 asubc]
+    rw [← inter_eq_left_iff.2 asubc]
     simp_rw [Filter.eventually_atTop] at eventually_isEmpty_cell
     obtain ⟨N, hN⟩ := eventually_isEmpty_cell
     suffices IsClosed (A ∩ (D ∪ ⋃ (n : {n : ℕ // n < N}), ⋃ j, ↑(map n j) '' closedBall 0 1)) by

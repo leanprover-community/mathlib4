@@ -510,7 +510,7 @@ theorem subset_image_iff {t : Set β} :
     t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
   refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right, ?_⟩,
     fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
-  rwa [image_preimage_inter, inter_eq_left]
+  rwa [image_preimage_inter, inter_eq_left_iff]
 
 @[simp]
 lemma exists_subset_image_iff {p : Set β → Prop} : (∃ t ⊆ f '' s, p t) ↔ ∃ t ⊆ s, p (f '' t) := by

@@ -273,9 +273,13 @@ theorem union_subset_iff : s ∪ t ⊆ u ↔ s ⊆ u ∧ t ⊆ u :=
 theorem subset_inter_iff : s ⊆ t ∩ u ↔ s ⊆ t ∧ s ⊆ u :=
   (le_inf_iff : s ≤ t ⊓ u ↔ s ≤ t ∧ s ≤ u)
 
-lemma inter_eq_left : s ∩ t = s ↔ s ⊆ t := inf_eq_left
+lemma inter_eq_left_iff : s ∩ t = s ↔ s ⊆ t := inf_eq_left
 
-lemma inter_eq_right : t ∩ s = s ↔ s ⊆ t := inf_eq_right
+@[deprecated (since := "2026-11-03")] alias inter_eq_left := inter_eq_left_iff
+
+lemma inter_eq_right_iff : t ∩ s = s ↔ s ⊆ t := inf_eq_right
+
+@[deprecated (since := "2026-11-03")] alias inter_eq_right := inter_eq_right_iff
 
 theorem inter_congr_left (ht : s ∩ u ⊆ t) (hu : s ∩ t ⊆ u) : s ∩ t = s ∩ u :=
   inf_congr_left ht hu
