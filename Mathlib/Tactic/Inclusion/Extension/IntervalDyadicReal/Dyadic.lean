@@ -26,6 +26,8 @@ core.
 
 @[expose] public section
 
+namespace Inclusion.IntervalDyadicReal
+
 instance : LinearOrder Dyadic where
   le_refl := Std.IsPreorder.le_refl
   le_trans := Std.IsPreorder.le_trans
@@ -49,6 +51,7 @@ instance : AddCommGroup Dyadic where
   zsmul_succ' := by grind
   zsmul_neg' := by grind
 
+open Dyadic
 namespace Dyadic
 
 -- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
@@ -209,3 +212,5 @@ theorem sub_shiftRight_nat : (x - y) >>> m = x >>> m - y >>> m :=
 end Shift
 
 end Dyadic
+
+end Inclusion.IntervalDyadicReal

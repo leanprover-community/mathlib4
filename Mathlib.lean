@@ -4039,7 +4039,6 @@ public import Mathlib.Data.DFinsupp.Small
 public import Mathlib.Data.DFinsupp.Submonoid
 public import Mathlib.Data.DFinsupp.WellFounded
 public import Mathlib.Data.DList.Instances
-public import Mathlib.Data.Dyadic
 public import Mathlib.Data.ENNReal.Action
 public import Mathlib.Data.ENNReal.Basic
 public import Mathlib.Data.ENNReal.BigOperators
@@ -4057,6 +4056,7 @@ public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
+public import Mathlib.Data.EReal.DedekindCut
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Erased
@@ -5625,6 +5625,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 public import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 public import Mathlib.MeasureTheory.Constructions.Cylinders
+public import Mathlib.MeasureTheory.Constructions.Dieudonne
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 public import Mathlib.MeasureTheory.Constructions.KolmogorovExtension
 public import Mathlib.MeasureTheory.Constructions.Pi
@@ -7739,6 +7740,7 @@ public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
