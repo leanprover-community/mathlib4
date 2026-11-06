@@ -87,7 +87,7 @@ namespace NoAtoms
 /-- A constructor for `NoAtoms` in which the subset `t` need not be measurable. -/
 theorem mk' (h : ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) :
     NoAtoms μ := by
-  refine noAtoms_iff'.2 fun s hs hμs ↦ ?_
+  refine noAtoms_iff_forall_exists.2 fun s hs hμs ↦ ?_
   obtain ⟨t, hts, ht, hts'⟩ := h s hs hμs
   obtain ⟨u, htu, hu, hut⟩ := exists_measurable_superset μ t
   have : μ (u ∩ s) = μ t :=
@@ -99,7 +99,7 @@ variable [NoAtoms μ]
 
 theorem exists_measurable_subset_lt (hs : MeasurableSet s) (hμs : 0 < μ s) :
     ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s :=
-  noAtoms_iff'.1 ‹_› s hs hμs
+  noAtoms_iff_forall_exists.1 ‹_› s hs hμs
 
 theorem exists_measurable_subset_lt₀ (hs : NullMeasurableSet s μ) (hμs : 0 < μ s) :
     ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
