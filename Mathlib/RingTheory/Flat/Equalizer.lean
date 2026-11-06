@@ -39,6 +39,14 @@ lemma Module.Flat.ker_lTensor_eq [Module.Flat R M] :
   rw [← LinearMap.exact_iff]
   exact Module.Flat.lTensor_exact M (LinearMap.exact_subtype_ker_map f)
 
+lemma LinearMap.ker_baseChange [Module.Flat R S] :
+    (f.baseChange S).ker = f.ker.baseChange S := Module.Flat.ker_lTensor_eq ..
+
+lemma Submodule.baseChange_comap [Module.Flat R S] (p : Submodule R P) :
+    (p.comap f).baseChange S = (p.baseChange S).comap (f.baseChange S) := by
+  simp_rw [← p.ker_mkQ, ← LinearMap.ker_comp, ← LinearMap.ker_baseChange, LinearMap.baseChange_comp,
+    LinearMap.ker_comp]
+
 lemma Module.Flat.eqLocus_lTensor_eq [Module.Flat R M] :
     LinearMap.eqLocus (AlgebraTensorModule.lTensor S M f)
       (AlgebraTensorModule.lTensor S M g) =
