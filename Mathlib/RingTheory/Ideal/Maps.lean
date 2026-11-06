@@ -841,8 +841,9 @@ theorem ker_rangeRestrict (f : R →+* S) : ker f.rangeRestrict = ker f :=
 
 end RingRing
 
-/-- The kernel of a homomorphism to a domain is a prime ideal. -/
-theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [IsDomain S]
+/-- The kernel of a homomorphism to a nontrivial semiring with no zero divisors (such as a domain)
+is a prime ideal. -/
+theorem ker_isPrime {F : Type*} [Semiring R] [Semiring S] [Nontrivial S] [NoZeroDivisors S]
     [FunLike F R S] [RingHomClass F R S] (f : F) :
     (ker f).IsPrime :=
   inferInstanceAs (Ideal.comap f ⊥).IsPrime

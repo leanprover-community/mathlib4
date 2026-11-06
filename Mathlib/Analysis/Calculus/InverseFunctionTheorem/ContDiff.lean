@@ -30,7 +30,7 @@ variable [CompleteSpace E] (f : E → F) {f' : E ≃L[𝕂] F} {a : E} {n : With
 derivative at `a`, returns an `OpenPartialHomeomorph` with `to_fun = f` and `a ∈ source`. -/
 def toOpenPartialHomeomorph (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
     (hn : n ≠ 0) : OpenPartialHomeomorph E F :=
-  (hf.hasStrictFDerivAt' hf' hn).toOpenPartialHomeomorph f
+  (hf.hasStrictFDerivAt hf' hn).toOpenPartialHomeomorph f
 
 variable {f}
 
@@ -43,22 +43,22 @@ theorem toOpenPartialHomeomorph_coe (hf : ContDiffAt 𝕂 n f a)
 theorem mem_toOpenPartialHomeomorph_source (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) :
     a ∈ (hf.toOpenPartialHomeomorph f hf' hn).source :=
-  (hf.hasStrictFDerivAt' hf' hn).mem_toOpenPartialHomeomorph_source
+  (hf.hasStrictFDerivAt hf' hn).mem_toOpenPartialHomeomorph_source
 
 theorem image_mem_toOpenPartialHomeomorph_target (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) :
     f a ∈ (hf.toOpenPartialHomeomorph f hf' hn).target :=
-  (hf.hasStrictFDerivAt' hf' hn).image_mem_toOpenPartialHomeomorph_target
+  (hf.hasStrictFDerivAt hf' hn).image_mem_toOpenPartialHomeomorph_target
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, returns a function that is locally inverse to `f`. -/
 def localInverse (hf : ContDiffAt 𝕂 n f a) (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a)
     (hn : n ≠ 0) : F → E :=
-  (hf.hasStrictFDerivAt' hf' hn).localInverse f f' a
+  (hf.hasStrictFDerivAt hf' hn).localInverse f f' a
 
 theorem localInverse_apply_image (hf : ContDiffAt 𝕂 n f a)
     (hf' : HasFDerivAt f (f' : E →L[𝕂] F) a) (hn : n ≠ 0) : hf.localInverse hf' hn (f a) = a :=
-  (hf.hasStrictFDerivAt' hf' hn).localInverse_apply_image
+  (hf.hasStrictFDerivAt hf' hn).localInverse_apply_image
 
 /-- Given a `ContDiff` function over `𝕂` (which is `ℝ` or `ℂ`) with an invertible derivative
 at `a`, the inverse function (produced by `ContDiff.toOpenPartialHomeomorph`) is

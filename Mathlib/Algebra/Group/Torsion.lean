@@ -96,6 +96,17 @@ theorem IsMulTorsionFree.pow_right_inj (ha : a ≠ 1) {n m : ℕ} : a ^ n = a ^ 
 
 end CancelMonoid
 
+/-- A commutative torsion-free monoid has unique roots.
+
+This is not an instance, to avoid an expensive instance loop with
+`HasUniqueRoots M → IsMulTorsionFree M`. -/
+@[to_additive /-- A commutative torsion-free additive monoid has unique divisibility.
+
+This is not an instance, to avoid an expensive instance loop with
+`HasUniqueDiv M → IsAddTorsionFree M`. -/]
+lemma IsMulTorsionFree.hasUniqueRoots [CommMonoid M] [IsMulTorsionFree M] : HasUniqueRoots M where
+  pow_left_injective _ hn _ _ := (Commute.all _ _).eq_of_pow_eq_pow hn
+
 section Group
 variable [Group G] {n : ℤ} {a b : G}
 

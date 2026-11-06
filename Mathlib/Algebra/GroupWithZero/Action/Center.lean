@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.GroupWithZero.Units.Basic
 public import Mathlib.GroupTheory.Subgroup.Center
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The center of a group with zero
 -/

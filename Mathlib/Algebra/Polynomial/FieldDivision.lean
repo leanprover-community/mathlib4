@@ -26,7 +26,7 @@ This file starts looking like the ring theory of $R[X]$
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 open scoped Nat
 
 namespace Polynomial
@@ -241,12 +241,9 @@ theorem roots_normalize {R} [CommRing R] [IsDomain R] [NormalizationMonoid R] {p
     (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
 
-theorem normUnit_X : normUnit (X : R[X]) = 1 := by
-  have := coe_normUnit (R := R) (p := X)
-  rwa [leadingCoeff_X, normUnit_one, Units.val_one, map_one, Units.val_eq_one] at this
+theorem normUnit_X : normUnit (X : R[X]) = 1 := by simp [← Units.val_eq_one]
 
-theorem X_eq_normalize : X = normalize (X : R[X]) := by
-  simp only [normalize_apply, normUnit_X, Units.val_one, mul_one]
+theorem X_eq_normalize : X = normalize (X : R[X]) := monic_X.normalize_eq_self.symm
 
 end NormalizationMonoid
 
@@ -357,17 +354,15 @@ theorem mul_div_eq_iff_isRoot : (X - C a) * (p / (X - C a)) = p ↔ IsRoot p a :
 
 alias ⟨_, IsRoot.mul_div_eq⟩ := mul_div_eq_iff_isRoot
 
-instance instEuclideanDomain : EuclideanDomain R[X] :=
-  { Polynomial.commRing,
-    Polynomial.nontrivial with
-    quotient := (· / ·)
-    quotient_zero := by simp [div_def]
-    remainder := (· % ·)
-    r := _
-    r_wellFounded := degree_lt_wf
-    quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
-    remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+instance instEuclideanDomain : EuclideanDomain R[X] where
+  quotient := (· / ·)
+  quotient_zero := by simp [div_def]
+  remainder := (· % ·)
+  r := _
+  r_wellFounded := degree_lt_wf
+  quotient_mul_add_remainder_eq := private quotient_mul_add_remainder_eq_aux
+  remainder_lt := private fun _ _ hq => remainder_lt_aux _ hq
+  mul_left_not_lt _ _ hq := not_lt_of_ge (degree_le_mul_left _ hq)
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
@@ -538,6 +533,9 @@ theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
     simp [roots_degree_eq_one h]⟩
 
+theorem exists_root_of_natDegree_eq_one (h : natDegree p = 1) : ∃ x, IsRoot p x :=
+  exists_root_of_degree_eq_one (degree_eq_iff_natDegree_eq_of_neZero.mpr h)
+
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),
     coeff_C, coeff_C, inv_eq_one_div]
@@ -548,13 +546,11 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
   · simp
 
 theorem monic_normalize [DecidableEq R] (hp0 : p ≠ 0) : Monic (normalize p) := by
-  rw [Ne, ← leadingCoeff_eq_zero, ← Ne, ← isUnit_iff_ne_zero] at hp0
-  rw [Monic, leadingCoeff_normalize, normalize_eq_one]
-  apply hp0
+  simpa [Monic, leadingCoeff_normalize, normalize_eq_one]
 
 theorem normalize_eq_self_iff_monic [DecidableEq R] {p : R[X]} (hp : p ≠ 0) :
     normalize p = p ↔ p.Monic :=
-  ⟨fun h ↦ h ▸ monic_normalize hp, fun h ↦ Monic.normalize_eq_self h⟩
+  ⟨fun h ↦ h ▸ monic_normalize hp, Monic.normalize_eq_self⟩
 
 theorem leadingCoeff_div (hpq : q.degree ≤ p.degree) :
     (p / q).leadingCoeff = p.leadingCoeff / q.leadingCoeff := by
@@ -592,9 +588,7 @@ theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 
 theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
-    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by
-  have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
-  simp [CommGroupWithZero.coe_normUnit _ this]
+    (normUnit p : R[X]) = C p.leadingCoeff⁻¹ := by simp [hp]
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
