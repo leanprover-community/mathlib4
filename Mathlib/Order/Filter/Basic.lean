@@ -965,7 +965,7 @@ theorem eventuallyEqSet_empty {s : Set α} {l : Filter α} :
 
 @[simp]
 theorem eventuallyEqSet_univ {s : Set α} {l : Filter α} : s =ᶠ[l] univ ↔ s ∈ l := by
-  simp [EventuallyEqSet]
+  simp [eventuallyEqSet_iff]
 
 @[deprecated (since := "2026-08-14")] alias eventuallyEq_univ := eventuallyEqSet_univ
 
@@ -1146,7 +1146,7 @@ protected lemma symmDiff (h : s =ᶠ[l] t) {s' t' : Set α} (h' : s' =ᶠ[l] t')
 
 end EventuallyEqSet
 
-@[deprecated (since := "2026-08-14")] alias EventuallyEq.mem_iff := Iff.rfl
+@[deprecated (since := "2026-08-14")] alias EventuallyEq.mem_iff := EventuallyEqSet.mem_iff
 @[deprecated (since := "2026-08-14")] alias EventuallyEq.inter := EventuallyEqSet.inter
 @[deprecated (since := "2026-08-14")] alias EventuallyEq.union := EventuallyEqSet.union
 @[deprecated (since := "2026-08-14")] alias EventuallyEq.compl := EventuallyEqSet.compl
