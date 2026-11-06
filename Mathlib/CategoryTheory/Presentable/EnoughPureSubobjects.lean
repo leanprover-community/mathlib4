@@ -66,12 +66,6 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
-
-@[simps, implicit_reducible]
-def Subfunctor.toFunctorFunctor {F : C ⥤ Type w} : Subfunctor F ⥤ C ⥤ Type w where
-  obj A := A.toFunctor
-  map h := Subfunctor.homOfLe (leOfHom h)
-
 -- to be moved (refactor `SimplicialSet/SubcomplexEvaluation.lean`)
 instance {J : Type*} [Category* J] {F : C ⥤ Type w} [IsFilteredOrEmpty J] :
     PreservesColimitsOfShape J (Subfunctor.toFunctorFunctor (F := F)) where
