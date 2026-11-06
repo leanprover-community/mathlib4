@@ -107,13 +107,13 @@ def expPoint (x : Dyadic) (prec : ℕ) : Interval Dyadic :=
   let taylorTerms := (precTaylor + 2) / 6 + 1
   roundOut ((expRatTaylor r.num (r.den * m) taylorTerms precTaylor).pow m) prec
 
-theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x.toReal ∈ expPoint x prec := by
+theorem expPoint_mem (x : Dyadic) (prec : ℕ) : Real.exp x ∈ expPoint x prec := by
   have hb : x.toRat.den ≠ 0 := x.toRat.den_nz
   dsimp only [expPoint]
   generalize hm : 16 * (2 * x.toRat.num.natAbs / x.toRat.den + 1) = m
   have hm0 : m ≠ 0 := by lia
-  have hred : Real.exp x.toReal = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
-    rw [← Real.exp_nat_mul, Dyadic.toReal, Rat.cast_def]
+  have hred : Real.exp x = Real.exp (x.toRat.num / (x.toRat.den * m : ℕ)) ^ m := by
+    rw [← Real.exp_nat_mul, Rat.cast_def]
     push_cast
     field_simp
   have hab : x.toRat.num.natAbs ≤ x.toRat.den * m := by
@@ -138,8 +138,8 @@ def exp (I : Interval Dyadic) (prec : ℕ) : Interval Dyadic where
 theorem exp_mem {x : ℝ} {I : Interval Dyadic} (hx : x ∈ I) (prec : ℕ) :
     Real.exp x ∈ exp I prec := by
   rw [mem_iff_mem_map, Interval.mem_map_iff] at hx
-  have h0 : Dyadic.toReal 0 ≤ Real.exp x := by simpa [Dyadic.toReal] using (Real.exp_pos x).le
-  have h0I := Interval.mem_map_singleton (0 : Dyadic) Dyadic.toReal
+  have h0 : ((0 : Dyadic) : ℝ) ≤ Real.exp x := by simpa using (Real.exp_pos x).le
+  have h0I := Interval.mem_map_singleton (0 : Dyadic) ((↑) : Dyadic → ℝ)
   rw [mem_iff_mem_map]
   rcases I with ⟨_ | l, _ | u⟩ <;> simp only [exp]
   · exact Interval.mem_Ici_of_le h0 h0I

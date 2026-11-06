@@ -5,8 +5,14 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Basic.Real.Basic
-public import Mathlib.Data.Rat.Cast.Order
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.Rat
+public import Mathlib.Data.Dyadic.Basic
+public import Mathlib.Order.Hom.Basic
+
+import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Field.Rat
+import Mathlib.Tactic.NormNum.Basic
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
@@ -22,31 +28,42 @@ core.
 
 namespace Inclusion.IntervalDyadicReal
 
-instance : LinearOrder Dyadic where
-  le_refl := Std.IsPreorder.le_refl
-  le_trans := Std.IsPreorder.le_trans
-  le_antisymm := Std.IsPartialOrder.le_antisymm
-  lt_iff_le_not_ge := Std.LawfulOrderLT.lt_iff
-  le_total := Std.IsLinearOrder.le_total
-  toDecidableLE := Dyadic.instDecidableLE
-
-instance : AddCommGroup Dyadic where
-  nsmul := (· * ·)
-  zsmul := (· * ·)
-  add_zero := Dyadic.add_zero
-  zero_add := Dyadic.zero_add
-  add_assoc := Dyadic.add_assoc
-  sub_eq_add_neg _ _ := rfl
-  neg_add_cancel := Dyadic.neg_add_cancel
-  add_comm := Dyadic.add_comm
-  nsmul_zero := by grind
-  nsmul_succ := by grind
-  zsmul_zero' := by grind
-  zsmul_succ' := by grind
-  zsmul_neg' := by grind
-
 open Dyadic
 namespace Dyadic
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [coe] toRat
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+instance : Coe Dyadic Rat := ⟨toRat⟩
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [norm_cast] toRat_zero toRat_add toRat_neg toRat_sub toRat_mul toRat_pow
+  toRat_intCast toRat_natCast toRat_eq_zero_iff toRat_lt_toRat_iff toRat_le_toRat_iff
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [simp, norm_cast] toRat_inj
+
+/-- Coercion from dyadic rationals to rational numbers as a ring homomorphism. -/
+@[simps]
+def toRatRingHom : Dyadic →+* ℚ where
+  toFun := toRat
+  map_zero' := toRat_zero
+  map_one' := toRat_one
+  map_add' := toRat_add
+  map_mul' := toRat_mul
+
+@[simp, norm_cast]
+theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) :=
+  map_ofNat toRatRingHom n
+
+/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
+@[simps]
+def toRatOrderEmbedding : Dyadic ↪o ℚ where
+  toFun := toRat
+  inj' := fun _ _ ↦ toRat_inj.mp
+  map_rel_iff' := toRat_le_toRat_iff
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
@@ -171,51 +188,6 @@ theorem sub_shiftRight_nat : (x - y) >>> m = x >>> m - y >>> m :=
   sub_shiftRight_int x y m
 
 end Shift
-
-section Real
-
-/-- Interpret a dyadic rational as a real number. -/
-def toReal (d : Dyadic) : ℝ := d.toRat
-
-@[simp]
-lemma toReal_natCast (n : ℕ) : toReal (n : Dyadic) = (n : ℝ) := by simp [toReal]
-
-@[simp]
-lemma toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    toReal (ofNat(n) : Dyadic) = (ofNat(n) : ℝ) := by
-  rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := ℝ)]
-  exact toReal_natCast n
-
-@[simp]
-lemma toReal_intCast (z : ℤ) : toReal (z : Dyadic) = (z : ℝ) := by simp [toReal]
-
-@[simp]
-lemma toReal_add (a b : Dyadic) : toReal (a + b) = toReal a + toReal b := by simp [toReal]
-
-@[simp]
-lemma toReal_mul (a b : Dyadic) : toReal (a * b) = toReal a * toReal b := by simp [toReal]
-
-@[simp]
-lemma toReal_pow (a : Dyadic) (n : ℕ) : toReal (a ^ n) = toReal a ^ n := by
-  simpa [toReal] using map_pow (Rat.castHom ℝ) a.toRat n
-
-/-- `Dyadic.toReal` as an additive monoid homomorphism. -/
-def toRealAddMonoidHom : Dyadic →+ ℝ where
-  toFun := toReal
-  map_zero' := by simp [toReal]
-  map_add' := toReal_add
-
-@[simp]
-lemma toReal_le_toReal {a b : Dyadic} : toReal a ≤ toReal b ↔ a ≤ b := by simp [toReal]
-
-@[simp]
-lemma toReal_lt_toReal {a b : Dyadic} : toReal a < toReal b ↔ a < b := by simp [toReal]
-
-/-- `Dyadic.toReal` as an order embedding. -/
-def toRealOrderEmbedding : Dyadic ↪o ℝ :=
-  OrderEmbedding.ofStrictMono toReal fun _ _ h ↦ toReal_lt_toReal.mpr h
-
-end Real
 
 end Dyadic
 
