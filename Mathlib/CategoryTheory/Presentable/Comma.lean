@@ -66,7 +66,7 @@ variable [F₁.IsCardinalAccessible κ]
   [HasCardinalFilteredColimits C₁ κ] [HasCardinalFilteredColimits C₂ κ]
 
 instance : HasCardinalFilteredColimits (Comma F₁ F₂) κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₁ κ J
     have := HasCardinalFilteredColimits.hasColimitsOfShape C₂ κ J
     have := Functor.preservesColimitsOfShape_of_isCardinalAccessible F₁ κ J
