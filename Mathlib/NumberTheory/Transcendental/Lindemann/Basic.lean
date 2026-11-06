@@ -32,7 +32,7 @@ open Complex Finset Polynomial
 
 variable {ι : Type*}
 
-theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.Injective) :
+theorem linearIndependent_exp (u : ι → ℂ) (hu : ∀ i, IsAlgebraic ℚ (u i)) (u_inj : u.Injective) :
     LinearIndependent (integralClosure ℚ ℂ) fun i ↦ exp (u i) := by
   -- Start of proof of theorem 4.22 (Jacobson, p. 281).
   refine linearIndependent_iff_finset_linearIndependent.mpr fun s ↦
@@ -44,7 +44,7 @@ theorem linearIndependent_exp (u : ι → integralClosure ℚ ℂ) (u_inj : u.In
   -- polynomials with nonzero constant coefficients.
   obtain ⟨w, w0, w'', p0, h⟩ :=
     LindemannWeierstrass.exists_add_sum_map_aroots_eq_zero (ι := s)
-      expMonoidHom (u ·) (u · |>.2) (Subtype.val_injective.comp (u_inj.comp Subtype.val_injective))
+      expMonoidHom (u ·) (hu · |>.isIntegral) (u_inj.comp Subtype.val_injective)
       (v ·) (v · |>.2) (by simpa [funext_iff] using v0) (by simpa [Algebra.smul_def] using h)
   simp_rw [expMonoidHom_apply, toAdd_ofAdd] at h
   let p : w''.support → ℤ[X] := Subtype.val
@@ -170,16 +170,18 @@ theorem algebraicIndependent_exp (u : ι → integralClosure ℚ ℂ) (hu : Line
     ← exp_sum] at hp
   norm_cast at hp
   apply AddMonoidAlgebra.ext
-  apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ e.linearCombination _ u) _)
-  exacts [hp, hu]
+  apply linearIndependent_iff.mp (linearIndependent_exp (fun e ↦ ↑(e.linearCombination _ u))
+    (by simp [isAlgebraic_iff_isIntegral, ← mem_integralClosure_iff, SetLike.coe_mem]) _)
+  exacts [hp, Subtype.val_injective.comp hu]
 
 theorem transcendental_exp {a : ℂ} (a0 : a ≠ 0) (ha : IsAlgebraic ℤ a) :
     Transcendental ℤ (exp a) := by
   intro h
-  let a' : integralClosure ℚ ℂ := ⟨_, (ha.extendScalars (algebraMap ℤ ℚ).injective_int).isIntegral⟩
   let expa : integralClosure ℚ ℂ := ⟨_, (h.extendScalars (algebraMap ℤ ℚ).injective_int).isIntegral⟩
-  have hli := linearIndependent_exp ![a', 0] (by simpa [a', Subtype.ext_iff])
-  have := Fintype.linearIndependent_iff.mp hli ![1, -expa] (by simp [expa, a', Algebra.smul_def])
+  have hli := linearIndependent_exp ![a, 0]
+    (by simp [ha.extendScalars (algebraMap ℤ ℚ).injective_int, isAlgebraic_zero])
+    (by simpa [Subtype.ext_iff])
+  have := Fintype.linearIndependent_iff.mp hli ![1, -expa] (by simp [expa, Algebra.smul_def])
   simp at this
 
 theorem transcendental_e : Transcendental ℤ (exp 1) :=
