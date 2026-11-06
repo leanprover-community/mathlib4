@@ -33,9 +33,11 @@ The backend determines the destination, the credential variables (see
   (`https://host/bucket`) and uploads with a system
   [rclone](https://rclone.org) when one works on PATH, with curl (SigV4 per
   request) otherwise. rclone receives the S3 credentials through its
-  environment (`RCLONE_S3_*`) and runs 16 transfers in parallel; a
-  non-overwrite put passes `--ignore-existing` in place of
-  `If-None-Match: *`. Both tools upload only the command's file list.
+  environment (`RCLONE_S3_*`). `RCLONE_TRANSFERS` and `RCLONE_CHECKERS`
+  default to 128 uploads and existence checks in parallel.
+  `--no-traverse` checks each requested file without listing the destination.
+  A non-overwrite upload passes `--ignore-existing` to skip existing objects.
+  Both tools upload only the command's file list.
 - `azure` writes only through `MATHLIB_CACHE_PUT_URL`, without a container
   segment. The tool uploads with curl: parallel PUTs signed with the OIDC
   bearer token. A non-overwrite put skips objects that already exist at the
@@ -49,6 +51,11 @@ The curl tool's non-overwrite guard relies on the store honoring
 `If-None-Match: *`. The jobs that run the tool on a GitHub runner install a
 pinned curl release from [static-curl](https://github.com/leanprover-community/static-curl).
 
+A store can refuse every overwrite, for example under a bucket lock rule, and
+answer 409. A non-overwrite upload counts that answer as an existing object:
+curl skips the file, and rclone skips it on its next pass. An overwrite upload
+(`put!`) fails on such a store.
+
 ## Environment variables
 
 | Variable | Description |
@@ -60,6 +67,7 @@ pinned curl release from [static-curl](https://github.com/leanprover-community/s
 | `MATHLIB_CACHE_PUT_BASE_URL` | The upload base for `--backend=s3`: the bucket endpoint (`https://host/bucket`). The tool writes the `--container` files to `{base}/{container}/{key}` and keeps the container path policy. Required unless `MATHLIB_CACHE_PUT_URL` is set. |
 | `MATHLIB_CACHE_PUT_URL` | Upload under this URL without a container segment. The canonical repo uses a flat file layout; other repos use a repo scope and can write a commit marker. On `--backend=s3` the URL must include the bucket in its path (`https://host/bucket[/prefix]`). Required for `--backend=azure`. |
 | `MATHLIB_CACHE_PUT_FORCE_CURL` | Set to 1 or true to upload with curl on `--backend=s3`. Otherwise the tool uses rclone when it is available. |
+| `RCLONE_TRANSFERS`, `RCLONE_CHECKERS` | The rclone upload and existence-check limits (128 each by default). Rclone parses these values. |
 | `MATHLIB_CACHE_PARALLEL_MAX` | The parallel curl transfer limit for uploads and downloads (50 by default). |
 | `MATHLIB_CACHE_REPO_SCOPE` | The per-commit namespace for reads and repo-scoped uploads (see `--scope`, which takes precedence). Flat locations ignore it. |
 | `MATHLIB_CACHE_FROM` | Container list for reads, same shape as `--cache-from`, which takes precedence. CI sets it to widen reads per job. |
