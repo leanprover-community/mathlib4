@@ -224,7 +224,7 @@ lemma resIndAdjunction_homEquiv_apply (A : Rep.{max w u v} k S)
     (resIndAdjunction.{w, u, v} k S).homEquiv _ _ f =
       resCoindHomEquiv.{max w u v} S.subtype B A f ≫ (indCoindIso.{max w u v} A).inv := by
   rw [resIndAdjunction, Adjunction.homEquiv_ofNatIsoRight_apply]
-  simp [resCoindHomEquiv]
+  simp
 
 lemma resIndAdjunction_homEquiv_symm_apply (A : Rep.{max w u v} k S)
     {B : Rep.{max w u v} k G}
