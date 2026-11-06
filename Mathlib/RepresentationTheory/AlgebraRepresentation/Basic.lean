@@ -31,6 +31,13 @@ theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     LinearMap.restrictScalars_injective _
   classical exact IsAlgClosed.algebraMap_bijective_of_isIntegral (k := k)
 
+variable (V) in
+theorem IsSimpleModule.smul_eq_smul_of_mem_center {z : A} (hz : z ∈ Set.center A) :
+    ∃ r : k, ∀ v : V, z • v = r • v := by
+  let z' : Module.End A V := DistribSMul.toLinearMap A V (⟨z, hz⟩ : Subring.center A)
+  obtain ⟨r,hr⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).surjective z'
+  exact ⟨r, fun _ ↦ congr($hr.symm _)⟩
+
 variable (A V)
 
 open scoped IsMulCommutative in
