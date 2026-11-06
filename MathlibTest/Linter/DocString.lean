@@ -94,6 +94,7 @@ Note: This linter can be disabled with `set_option linter.style.docString false`
 def foo : Bool := by
   sorry
 ```
+
 -/
 example : Nat := 1
 
