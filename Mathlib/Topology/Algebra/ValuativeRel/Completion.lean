@@ -89,8 +89,7 @@ in the topology induced by a valuation on a division ring (i.e. the next instanc
 and the fact that a valued field is completable [bourbaki1989b], VI.5.1 Lemme 1. -/
 theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ}
     (h : v (x - y) < min (γ * (v y * v y)) (v y)) : v (x⁻¹ - y⁻¹) < γ := by
-  rcases eq_or_ne y 0 with rfl | y_ne
-  · simp at h
+  have y_ne : y ≠ 0 := by rintro rfl; simp at h
   have veq : v x = v y := Valuation.map_eq_of_sub_lt v (lt_of_lt_of_le h (min_le_right _ _))
   have x_ne : x ≠ 0 := fun _ ↦ by simp_all
   refine lt_of_eq_of_lt ?_ (mul_inv_lt_of_lt_mul₀ (lt_of_lt_of_le h (min_le_left _ _)) :
