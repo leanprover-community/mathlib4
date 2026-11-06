@@ -40,7 +40,7 @@ that factors through images of the functor for each object in `D`.
 
 ## References
 
-* [Elephant]: *Sketches of an Elephant*, ℱ. T. Johnstone: C2.2.
+* [Elephant]: *Sketches of an Elephant*, P. T. Johnstone: C2.2.
 * https://ncatlab.org/nlab/show/dense+sub-site
 * https://ncatlab.org/nlab/show/comparison+lemma
 
@@ -189,7 +189,6 @@ noncomputable def pushforwardFamily {X} (x : ℱ.obj (op X)) :
     pushforwardFamily α x = fun _ _ hf =>
     ℱ'.obj.map hf.some.lift.op <| α.app (op _) (ℱ.map hf.some.map.op x) := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 theorem pushforwardFamily_apply [G.IsLocallyFull K]
     {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y ⟶ X) :
@@ -477,7 +476,7 @@ lemma restrictHomEquivHom_naturality_left
 -/
 theorem iso_of_restrict_iso {ℱ ℱ' : Sheaf K A} (α : ℱ ⟶ ℱ') (i : IsIso (whiskerLeft G.op α.hom)) :
     IsIso α := by
-  convert! (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
+  convert (sheafIso (asIso (whiskerLeft G.op α.hom))).isIso_hom using 1
   ext1
   apply (sheafHom_eq _ _).symm
 
@@ -504,7 +503,6 @@ instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.hom⟩, Sheaf.hom_ext <| sheafHom_restrict_eq α.hom⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where
   map_injective := by

@@ -6,6 +6,7 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Topology.Sheaves.LocalPredicate
+
 import Mathlib.Topology.Sheaves.Skyscraper
 
 /-!

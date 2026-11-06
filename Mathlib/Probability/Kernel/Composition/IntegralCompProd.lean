@@ -49,8 +49,6 @@ composition-product requires s-finiteness while the composition does not.
 public section
 
 
-noncomputable section
-
 open Set Function Real ENNReal MeasureTheory Filter ProbabilityTheory ProbabilityTheory.Kernel
 open scoped Topology ENNReal MeasureTheory
 
@@ -234,7 +232,7 @@ theorem integral_compProd :
     ∀ {f : β × γ → E} (_ : Integrable f ((κ ⊗ₖ η) a)),
       ∫ z, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp_def,
@@ -250,7 +248,7 @@ theorem integral_compProd :
     simp_rw [integral_add' i_f i_g, Kernel.integral_integral_add' i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral
   · intro f g hfg _ hf
-    convert! hf using 1
+    convert hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_compProd hfg] with x hfgx using
@@ -412,7 +410,7 @@ theorem continuous_integral_integral_comp :
 theorem integral_comp : ∀ {f : γ → E} (_ : Integrable f ((η ∘ₖ κ) a)),
     ∫ z, f z ∂(η ∘ₖ κ) a = ∫ x, ∫ y, f y ∂η x ∂κ a := by
   by_cases hE : CompleteSpace E; swap
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
   apply Integrable.induction
   · intro c s hs ms
     simp_rw [integral_indicator hs, MeasureTheory.setIntegral_const, integral_smul_const,
@@ -425,7 +423,7 @@ theorem integral_comp : ∀ {f : γ → E} (_ : Integrable f ((η ∘ₖ κ) a))
     simp_rw [integral_add' i_f i_g, integral_integral_add'_comp i_f i_g, hf, hg]
   · exact isClosed_eq continuous_integral Kernel.continuous_integral_integral_comp
   · rintro f g hfg - hf
-    convert! hf using 1
+    convert hf using 1
     · exact integral_congr_ae hfg.symm
     · apply integral_congr_ae
       filter_upwards [ae_ae_of_ae_comp hfg] with x hfgx using integral_congr_ae (ae_eq_symm hfgx)

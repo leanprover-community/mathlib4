@@ -5,10 +5,13 @@ Authors: Monica Omar
 -/
 module
 
+public import Mathlib.Algebra.Module.Projective
 public import Mathlib.Algebra.Ring.Action.ConjAct
 
 import Mathlib.LinearAlgebra.Dual.Lemmas
-public import Mathlib.Algebra.Module.Projective
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebra isomorphisms between endomorphisms of projective modules are inner
@@ -42,7 +45,7 @@ public theorem AlgEquiv.eq_linearEquivConjAlgEquiv (f : End K V ≃ₐ[K] End K 
   set T := applyₗ z ∘ₗ f.toLinearMap ∘ₗ smulRightₗ v
   have hT x : T x = f (smulRight v x) z := rfl
   have this A x : T (A x) = f A (T x) := by
-    simp only [hT, ← End.mul_apply, ← map_mul]
+    simp only [hT, ← mul_apply_eq_comp, ← map_mul]
     congr; ext; simp
   have surj : Function.Surjective T := fun w ↦ by
     obtain ⟨d, hd⟩ := Projective.exists_dual_eq_one K hz

@@ -5,8 +5,8 @@ Authors: Kim Morrison, Justus Springer
 -/
 module
 
-public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.AlgebraicGeometry.StructureSheaf
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 
 /-!
 # $Spec$ as a functor to locally ringed spaces.

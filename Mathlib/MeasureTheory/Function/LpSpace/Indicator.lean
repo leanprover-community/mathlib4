@@ -5,10 +5,11 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 public import Mathlib.MeasureTheory.Measure.Real
 public import Mathlib.Order.Filter.IndicatorFunction
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Indicator of a set as an element of `Lp`
@@ -51,7 +52,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
       Filter.Tendsto (fun x : ℝ≥0 => ((‖c‖₊ * x ^ (1 / p.toReal) : ℝ≥0) : ℝ≥0∞)) (𝓝 0)
         (𝓝 (0 : ℝ≥0)) := by
       rw [ENNReal.tendsto_coe]
-      convert! (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
+      convert (NNReal.continuousAt_rpow_const (Or.inr hp₀')).tendsto.const_mul _
       simp [hp₀''.ne']
     have hε' : 0 < ε := hε.bot_lt
     obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
@@ -154,14 +155,16 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
 
-theorem nnnorm_indicatorConstLp_le :
+theorem nnNorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
   norm_indicatorConstLp_le
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_indicatorConstLp_le := nnNorm_indicatorConstLp_le
+
 theorem enorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
-  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnnorm]
-    using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs)
+  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← eNorm_eq_nnNorm]
+    using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
@@ -175,7 +178,7 @@ theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt 
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
   simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
-    Lp.coe_nnnorm]
+    Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
 if the underlying sets tend to the set in the sense of the measure of the symmetric difference. -/

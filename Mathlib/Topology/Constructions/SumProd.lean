@@ -694,6 +694,10 @@ theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
 theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
   rfl
 
+@[simp]
+theorem prodComm_trans_prodComm : (prodComm X Y).trans (prodComm Y X) = .refl _ := rfl
+
+set_option backward.defeqAttrib.useBackward true in
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
   toEquiv := Equiv.prodAssoc X Y Z
@@ -701,6 +705,7 @@ def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
 @[simp]
 lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
 def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
   toEquiv := Equiv.prodProdProdComm X Y W Z
@@ -709,6 +714,7 @@ def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
 theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
   rfl
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `X × {*}` is homeomorphic to `X`. -/
 @[simps! -fullyApplied apply]
 def prodPUnit : X × PUnit ≃ₜ X where
@@ -855,7 +861,7 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     exact ⟨h.comp IsClosedEmbedding.inl.isClosedMap, h.comp IsClosedEmbedding.inr.isClosedMap⟩
   · rintro h Z hZ
     rw [isClosed_sum_iff] at hZ
-    convert! (h.1 _ hZ.1).union (h.2 _ hZ.2)
+    convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
     ext
     simp only [mem_image, Sum.exists, mem_union, mem_preimage]
 
@@ -907,6 +913,7 @@ theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpac
 
 variable (W X Y Z)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
 def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
   toEquiv := Equiv.sumComm X Y
@@ -945,6 +952,7 @@ lemma sumSumSumComm_toEquiv : (sumSumSumComm W X Y Z).toEquiv = (Equiv.sumSumSum
 @[simp]
 lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
 
+set_option fun_prop.projDefaultTransparency true in
 /-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
 @[simps! -fullyApplied apply]
 def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
@@ -999,7 +1007,7 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   obtain x | x := x <;>
   simp only [comap_sumElim_eq, nhds_inl, nhds_inr, elim_inl, elim_inr, ← hf.nhds_eq_comap,
     ← hg.nhds_eq_comap, sup_le_iff, le_rfl, true_and, and_true] <;>
-  convert! bot_le (α := Filter (X ⊕ Y)) <;>
+  convert bot_le (α := Filter (X ⊕ Y)) <;>
   rw [map_eq_bot_iff, comap_eq_bot_iff_compl_range]
   · rw [← disjoint_principal_right]
     exact hfG.mono_left (nhds_le_nhdsSet (mem_range_self x))
