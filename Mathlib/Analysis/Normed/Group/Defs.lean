@@ -78,6 +78,9 @@ class ENorm (E : Type*) where
   /-- the `ℝ≥0∞`-valued norm function. -/
   eNorm : E → ℝ≥0∞
 
+@[deprecated (since := "2026-10-31")] alias ENorm.enorm := ENorm.eNorm
+export ENorm (enorm)
+
 export Norm (norm)
 export NNNorm (nnNorm)
 export ENorm (eNorm)
@@ -147,6 +150,11 @@ class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm
   eNorm_zero : ‖(1 : E)‖ₑ = 0
   eNorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias ESeminormedMonoid.enorm_zero := ESeminormedMonoid.eNorm_zero
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+protected alias ESeminormedMonoid.enorm_mul_le := ESeminormedMonoid.eNorm_mul_le
+
 -- see Note [lower instance priority]
 attribute [instance 10] ESeminormedMonoid.toMonoid
 
@@ -156,6 +164,9 @@ definiteness condition added. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
   eNorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+
+@[to_additive (attr := deprecated (since := "2026-11-06"))]
+alias ENormedMonoid.enorm_eq_zero := ENormedMonoid.eNorm_eq_zero
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
 eNorm.
