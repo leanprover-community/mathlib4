@@ -4885,6 +4885,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.UniformTime
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 public import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Mathlib.Geometry.Manifold.IsManifold.LocalHomeomorph
 public import Mathlib.Geometry.Manifold.LocalDiffeomorph
 public import Mathlib.Geometry.Manifold.LocalInvariantProperties
 public import Mathlib.Geometry.Manifold.LocalSourceTargetProperty
