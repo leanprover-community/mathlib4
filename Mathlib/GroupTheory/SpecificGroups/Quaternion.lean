@@ -5,7 +5,6 @@ Authors: Julian Kuelshammer
 -/
 module
 
-public import Mathlib.GroupTheory.SpecificGroups.Cyclic
 public import Mathlib.GroupTheory.SpecificGroups.Dihedral
 
 /-!
@@ -262,9 +261,9 @@ theorem exponent : Monoid.exponent (QuaternionGroup n) = 2 * lcm n 2 := by
     · rw [← orderOf_dvd_iff_pow_eq_one, orderOf_xa]
       exact dvd_lcm_right (2 * n) 4
   · apply lcm_dvd
-    · convert! Monoid.order_dvd_exponent (a 1)
+    · convert Monoid.order_dvd_exponent (a 1)
       exact orderOf_a_one.symm
-    · convert! Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
+    · convert Monoid.order_dvd_exponent (xa (0 : ZMod (2 * n)))
       exact (orderOf_xa 0).symm
 
 end QuaternionGroup

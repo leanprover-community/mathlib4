@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Path
 

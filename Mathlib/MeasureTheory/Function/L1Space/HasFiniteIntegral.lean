@@ -214,8 +214,8 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
   .of_bounded <| ae_of_all μ <| norm_le_pi_norm f
 
 theorem HasFiniteIntegral.mono_measure {f : α → ε} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
-    HasFiniteIntegral f μ :=
-  lt_of_le_of_lt (lintegral_mono' hμ le_rfl) h
+    HasFiniteIntegral f μ := by
+  unfold HasFiniteIntegral at *; gconvert h
 
 @[fun_prop]
 theorem HasFiniteIntegral.add_measure {f : α → ε} (hμ : HasFiniteIntegral f μ)
@@ -503,7 +503,7 @@ lemma hasFiniteIntegral_count_iff_enorm {f : α → ε} :
 lemma hasFiniteIntegral_count_iff {f : α → β} :
     HasFiniteIntegral f Measure.count ↔ Summable (‖f ·‖) := by
   simp only [hasFiniteIntegral_iff_enorm, enorm, lintegral_count, lt_top_iff_ne_top,
-    tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnnorm]
+    tsum_coe_ne_top_iff_summable, ← summable_coe, coe_nnNorm]
 
 end count
 

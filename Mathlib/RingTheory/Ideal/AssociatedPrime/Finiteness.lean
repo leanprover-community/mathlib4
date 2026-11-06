@@ -5,11 +5,8 @@ Authors: Jinzhao Pan
 -/
 module
 
-public import Mathlib.Order.RelSeries
 public import Mathlib.RingTheory.Ideal.AssociatedPrime.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Noetherian.Basic
-public import Mathlib.RingTheory.Spectrum.Prime.Defs
 public import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
@@ -63,7 +60,7 @@ theorem Submodule.isQuotientEquivQuotientPrime_iff {N₁ N₂ : Submodule A M} :
   · obtain ⟨⟨x, hx⟩, hx'⟩ := Submodule.mkQ_surjective _ (e.symm 1)
     have hx'' : N₁.mkQ x = f (e.symm 1) := by simp [f, ← hx']
     refine ⟨x, ?_, ?_⟩
-    · convert! p.2
+    · convert p.2
       ext r
       simp [hx'', ← map_smul, Algebra.smul_def, show f _ = 0 ↔ _ from congr(_ ∈ $hf₁),
         Ideal.Quotient.eq_zero_iff_mem]
@@ -179,7 +176,8 @@ theorem Ideal.IsMaximal.mem_associatedPrimes_of_isFractionRing [IsFractionRing A
 /-- A commutative Noetherian total ring of fractions is semilocal. -/
 instance [IsFractionRing A A] : Finite (MaximalSpectrum A) :=
   (MaximalSpectrum.equivSubtype A).finite_iff.mpr <| Set.finite_coe_iff.mpr <|
-    (associatedPrimes.finite A A).subset fun _ ↦ (·.mem_associatedPrimes_of_isFractionRing)
+    (associatedPrimes.finite A A).subset (t := {I : Ideal A | I.IsMaximal})
+      fun _ hp ↦ hp.mem_associatedPrimes_of_isFractionRing
 
 variable {A}
 

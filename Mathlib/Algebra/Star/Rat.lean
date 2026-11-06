@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Field.Opposite
 public import Mathlib.Algebra.Star.Basic
-public import Mathlib.Data.NNRat.Defs
 public import Mathlib.Data.Rat.Cast.Defs
 
 /-!

@@ -19,8 +19,6 @@ degenerate) right-angled triangles in real inner product spaces and Euclidean af
 public section
 
 
-noncomputable section
-
 open scoped EuclideanGeometry
 
 open scoped Real

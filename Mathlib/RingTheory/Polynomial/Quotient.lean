@@ -5,13 +5,13 @@ Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.Field.Equiv
-public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.Algebra.Polynomial.Eval.SMul
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
 public import Mathlib.RingTheory.Polynomial.Basic
 public import Mathlib.RingTheory.Polynomial.Ideal
-public import Mathlib.RingTheory.PrincipalIdealDomain
+
+import Mathlib.Algebra.Field.Equiv
+import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
 # Quotients of polynomial rings
@@ -89,7 +89,8 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} :
   refine Finset.sum_eq_zero fun n _ => ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
-  refine mul_eq_zero_of_left (Polynomial.ext fun m => ?_) (X ^ n)
+  refine mul_eq_zero_of_left ?_ (X ^ n)
+  ext m
   rw [RingHom.comp_apply, coeff_C]
   by_cases h : m = 0
   · simpa [h] using Quotient.eq_zero_iff_mem.2 ((mem_map_C_iff.1 ha) n)

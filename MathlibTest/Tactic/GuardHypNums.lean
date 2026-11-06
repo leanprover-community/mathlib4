@@ -1,4 +1,6 @@
-import Mathlib.Tactic.GuardHypNums
+module
+
+public meta import Mathlib.Tactic.GuardHypNums
 
 set_option linter.unusedTactic false
 

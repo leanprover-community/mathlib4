@@ -5,9 +5,9 @@ Authors: Štěpán Holub
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Nat
 public import Mathlib.Order.Lattice.Nat
-public import Mathlib.Tactic.TacticAnalysis.Declarations
+
+import Mathlib.Algebra.Order.Group.Nat
 
 /-! # Periods of words (Lists)
 
@@ -204,7 +204,7 @@ theorem HasPeriod.gcd {w : List α} {p q : ℕ} (per_p : HasPeriod w p) (per_q :
         exact per_q.drop_of_hasPeriod_add (this ▸ per_p)
       have per_q' : HasPeriod (drop q w) q := by
         apply @HasPeriod.factor _ (take q w) (drop q w) [] q
-        all_goals simp_all
+        simp_all
       have gcd_stable : (p - q).gcd q = p.gcd q := gcd_sub_self_left (le_of_lt q_lt_p)
       have drop_len : q ≤ (drop q w).length := by
         rw [length_drop]

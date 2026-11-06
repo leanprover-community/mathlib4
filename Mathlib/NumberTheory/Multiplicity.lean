@@ -5,10 +5,11 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 module
 
-public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.NumberTheory.Padics.PadicVal.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.RingTheory.Ideal.Span
+
+import Mathlib.Data.Nat.Choose.Sum
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Multiplicity in Number Theory
@@ -58,7 +59,7 @@ theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
       Nat.cast_succ, tsub_self, pow_zero, mul_one, Nat.choose_self, Nat.cast_zero, zero_add,
       Nat.succ_sub_succ_eq_sub, Nat.sub_zero]
     suffices p ^ 2 ∣ ∑ i ∈ range n, x ^ i * p ^ (n + 1 - i) * ↑((n + 1).choose i) by
-      convert! this; abel
+      convert this; abel
     apply Finset.dvd_sum
     intro y hy
     calc
@@ -303,7 +304,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
   have hy : Odd y := by
     rw [← even_iff_two_dvd, Int.not_even_iff_odd] at hx
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
-    convert! Even.add_odd hxy hx
+    convert Even.add_odd hxy hx
     abel
   obtain ⟨d, rfl⟩ := hn
   simp only [← two_mul, pow_mul]
@@ -332,64 +333,77 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
       Int.natCast_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
-    convert! Int.two_pow_sub_pow hxy hx hn using 2
+    convert Int.two_pow_sub_pow hxy hx hn using 2
     rw [← Int.natCast_emultiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), emultiplicity_zero_right,
       top_add, add_top]
 
-namespace padicValNat
+namespace Nat
 
 variable {x y : ℕ}
 
-theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : n ≠ 0)
-    (hneven : Even n) :
-    padicValNat 2 (x ^ n - y ^ n) + 1 =
-      padicValNat 2 (x + y) + padicValNat 2 (x - y) + padicValNat 2 n := by
+theorem multiplicity_pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ}
+    (hn : n ≠ 0) (hneven : Even n) :
+    multiplicity 2 (x ^ n - y ^ n) + 1 =
+      multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity 2 n := by
   simp only [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
-  iterate 4 rw [padicValNat_eq_emultiplicity]
+  iterate 4 rw [multiplicity_eq_emultiplicity]
   · exact Nat.two_pow_sub_pow hxy hx hneven
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
   · lia
   · simp [← Nat.pos_iff_ne_zero, tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
-theorem pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
-    padicValNat 2 (x ^ n - 1) + 1 = padicValNat 2 (x + 1) +
-    padicValNat 2 (x - 1) + padicValNat 2 n := by
-  simpa using pow_two_sub_pow h1x (by grind) hx hn hneven
+theorem multiplicity_pow_two_sub_one {x n : ℕ} (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0)
+    (hneven : Even n) : multiplicity 2 (x ^ n - 1) + 1 =
+      multiplicity 2 (x + 1) + multiplicity 2 (x - 1) + multiplicity 2 n := by
+  simpa using multiplicity_pow_two_sub_pow h1x (by grind) hx hn hneven
 
-lemma pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
-    padicValNat 2 n + 2 ≤ padicValNat 2 (x ^ n - 1) := by
-  have : padicValNat 2 ((x + 1) * (x - 1)) ≥ 3 := by
-    refine (padicValNat_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
+lemma multiplicity_pow_two_sub_one_ge (h1x : 1 < x) (hx : ¬2 ∣ x) (hn : n ≠ 0) (hneven : Even n) :
+    multiplicity 2 n + 2 ≤ multiplicity 2 (x ^ n - 1) := by
+  have : multiplicity 2 ((x + 1) * (x - 1)) ≥ 3 := by
+    refine (multiplicity_dvd_iff_le (by grind [mul_ne_zero])).mp ?_
     simp [← Nat.pow_two_sub_pow_two x 1]
     grind [Nat.eight_dvd_sq_sub_one_of_odd]
-  have := pow_two_sub_one h1x hx hn hneven
-  grind [← padicValNat.mul]
+  have := multiplicity_pow_two_sub_one h1x hx hn hneven
+  grind [← multiplicity_mul]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1
 
-theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
-    padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by
+theorem multiplicity_pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ}
+    (hn : n ≠ 0) : multiplicity p (x ^ n - y ^ n) = multiplicity p (x - y) + multiplicity p n := by
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
-  iterate 3 rw [padicValNat_eq_emultiplicity]
+  iterate 3 rw [multiplicity_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_sub_pow hp.out hp1 hxy hx n
   · exact hn
   · exact Nat.sub_ne_zero_of_lt hyx
   · exact Nat.sub_ne_zero_of_lt (Nat.pow_lt_pow_left hyx hn)
 
-theorem pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
-    padicValNat p (x ^ n + y ^ n) = padicValNat p (x + y) + padicValNat p n := by
+theorem multiplicity_pow_add_pow (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
+    multiplicity p (x ^ n + y ^ n) = multiplicity p (x + y) + multiplicity p n := by
   rcases y with - | y
   · contradiction
   rw [← Nat.cast_inj (R := ℕ∞), Nat.cast_add]
-  iterate 3 rw [padicValNat_eq_emultiplicity]
+  iterate 3 rw [multiplicity_eq_emultiplicity]
   · exact Nat.emultiplicity_pow_add_pow hp.out hp1 hxy hx hn
   · exact (Odd.pos hn).ne'
   · simp
   · exact (Nat.lt_add_left _ (pow_pos y.succ_pos _)).ne'
 
-end padicValNat
+end Nat
+
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_pow :=
+  Nat.multiplicity_pow_two_sub_pow
+
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_one :=
+  Nat.multiplicity_pow_two_sub_one
+
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_two_sub_one_ge :=
+  Nat.multiplicity_pow_two_sub_one_ge
+
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_sub_pow := Nat.multiplicity_pow_sub_pow
+
+@[deprecated (since := "2026-10-28")] alias padicValNat.pow_add_pow := Nat.multiplicity_pow_add_pow

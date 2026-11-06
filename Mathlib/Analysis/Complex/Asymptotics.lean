@@ -5,8 +5,8 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Asymptotics.Theta
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 # Lemmas about asymptotics and the natural embedding `ℝ → ℂ`

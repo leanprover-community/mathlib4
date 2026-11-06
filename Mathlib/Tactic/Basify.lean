@@ -5,10 +5,10 @@ Authors: Vasilii Nesterov
 -/
 module
 
+public meta import Lean.Meta.Tactic.Generalize
 public import Mathlib.Tactic.Basify.Attr
 public import Mathlib.Tactic.Cases
 public import Mathlib.Util.AtomM
-public meta import Lean.Meta.Tactic.Generalize
 
 /-!
 # The `basify` tactic

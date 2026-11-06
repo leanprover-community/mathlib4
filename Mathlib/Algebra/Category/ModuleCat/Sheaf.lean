@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Algebra.Category.AlgCat.TensorAlgebra
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf
-public import Mathlib.Algebra.Category.ModuleCat.Limits
 public import Mathlib.CategoryTheory.Sites.LocallyBijective
-public import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-!
 # Sheaves of modules over a sheaf of rings
@@ -104,7 +102,6 @@ noncomputable def forgetToSheafModuleCat
       (forget₂ (ModuleCat.{w} (R.1.obj X)) AddCommGrpCat.{w}) M.isSheaf⟩
   map f := { hom := (PresheafOfModules.forgetToPresheafModuleCat X hX).map f.1 }
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Isomorphism on `forgetToSheafModuleCat` when given isomorphic initial objects. -/
 noncomputable def forgetToSheafModuleCatOfIso (X Y : Cᵒᵖ) (hX : Limits.IsInitial X)
     (hY : Limits.IsInitial Y) (φ : X ≅ Y) :

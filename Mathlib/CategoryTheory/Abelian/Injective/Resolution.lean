@@ -7,9 +7,10 @@ module
 
 public import Mathlib.Algebra.Homology.HomotopyCategory
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.CategoryTheory.Abelian.Exact
 public import Mathlib.CategoryTheory.Preadditive.Injective.Resolution
-public import Mathlib.Tactic.AdaptationNote
+
+import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Abelian categories with enough injectives have injective resolutions
@@ -325,7 +326,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
-irreducible_def of : InjectiveResolution Z where
+@[no_expose] def of : InjectiveResolution Z where
   cocomplex := ofCocomplex Z
   ι := (CochainComplex.fromSingle₀Equiv _ _).symm ⟨Injective.ι Z,
     by rw [ofCocomplex_d_0_1, cokernel.condition_assoc, zero_comp]⟩

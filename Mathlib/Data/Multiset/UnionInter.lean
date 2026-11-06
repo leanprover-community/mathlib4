@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.List.Perm.Lattice
 public import Mathlib.Data.Multiset.Filter
 public import Mathlib.Order.MinMax
-public import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
@@ -76,10 +75,10 @@ lemma map_union [DecidableEq β] {f : α → β} (finj : Function.Injective f) {
 
 @[simp]
 lemma count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count a s) (count a t) := by
-  simp [(· ∪ ·), union, Nat.sub_add_eq_max]
+  simp [union_def, Nat.sub_add_eq_max]
 
 @[simp] lemma filter_union (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
-    filter p (s ∪ t) = filter p s ∪ filter p t := by simp [(· ∪ ·), union]
+    filter p (s ∪ t) = filter p s ∪ filter p t := by simp [union_def]
 
 /-! ### Intersection -/
 
@@ -103,7 +102,7 @@ lemma cons_inter_of_pos (s : Multiset α) : a ∈ t → (a ::ₘ s) ∩ t = a ::
 
 @[simp]
 lemma cons_inter_of_neg (s : Multiset α) : a ∉ t → (a ::ₘ s) ∩ t = s ∩ t :=
-  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_not_mem _ h))
+  Quotient.inductionOn₂ s t fun _l₁ _l₂ h => congr(ofList $(cons_bagInter_of_notMem _ h))
 
 lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => bagInter_sublist_left.subperm
@@ -156,7 +155,7 @@ lemma eq_union_right (h : s ≤ t) : s ∪ t = t := by rw [union_comm, eq_union_
 lemma union_le_add (s t : Multiset α) : s ∪ t ≤ s + t := union_le (le_add_right ..) (le_add_left ..)
 
 lemma union_add_distrib (s t u : Multiset α) : s ∪ t + u = s + u ∪ (t + u) := by
-  simpa [(· ∪ ·), union, eq_comm, Multiset.add_assoc, Multiset.add_left_inj] using
+  simpa [union_def, eq_comm, Multiset.add_assoc, Multiset.add_left_inj] using
     show s + u - (t + u) = s - t by
       rw [t.add_comm, Multiset.sub_add_eq_sub_sub, Multiset.add_sub_cancel_right]
 

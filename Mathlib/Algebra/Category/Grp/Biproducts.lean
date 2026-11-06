@@ -5,11 +5,8 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Category.Grp.Preadditive
-public import Mathlib.CategoryTheory.Preadditive.Biproducts
 public import Mathlib.Algebra.Category.Grp.Limits
-public import Mathlib.Tactic.CategoryTheory.Elementwise
+public import Mathlib.CategoryTheory.Preadditive.Biproducts
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -78,7 +75,6 @@ namespace HasLimit
 
 variable {J : Type w} (f : J → AddCommGrpCat.{max w u})
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The map from an arbitrary cone over an indexed family of abelian groups
 to the Cartesian product of those groups.
 -/
