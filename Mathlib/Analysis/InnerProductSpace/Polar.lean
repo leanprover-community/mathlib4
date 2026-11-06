@@ -40,8 +40,8 @@ orthogonal of the kernel `T.kerᗮ` of the continuous linear map `T : E →L[ℂ
 `T = U ∘ |T|`. -/
 def polarₗᵢ (T : E →L[ℂ] F) : |T|.range.topologicalClosure →ₗᵢ[ℂ] F :=
   LinearMap.extendOfIsometry
-    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun ⦃x⦄ a ↦ a))
-      ∘ₗ (|T|.quotKerEquivRange).symm.toLinearMap)
+    ((Submodule.liftQ _ T (le_of_eq_of_le T.ker_abs_eq fun _ a ↦ a))
+      ∘ₗ |T|.quotKerEquivRange.symm.toLinearMap)
     (e := Submodule.inclusion |T|.range.le_topologicalClosure)
     (by
       erw [denseRange_inclusion_iff (by
@@ -62,7 +62,7 @@ theorem polarₗᵢ_apply (T : E →L[ℂ] F) (x : E) :
   simp
 
 theorem range_polarₗᵢ (T : E →L[ℂ] F) :
-    T.polarₗᵢ.toContinuousLinearMap.range = T.range.topologicalClosure := by
+    T.polarₗᵢ.range = T.range.topologicalClosure := by
   apply le_antisymm
   · rintro _ ⟨m, rfl⟩
     rw [← SetLike.mem_coe, Submodule.topologicalClosure_coe]
@@ -90,25 +90,23 @@ theorem polarₗᵢ_adjoint_comp (T : E →L[ℂ] F) :
 theorem polarₗᵢ_comp_adjoint (T : E →L[ℂ] F) :
     T.polarₗᵢ.toContinuousLinearMap ∘L T.polarₗᵢ.toContinuousLinearMap.adjoint
      = T.range.topologicalClosure.starProjection := by
-  have : (T.polarₗᵢ.toContinuousLinearMap.range).HasOrthogonalProjection := by
+  have : (T.polarₗᵢ.range).HasOrthogonalProjection := by
     rw [range_polarₗᵢ]; infer_instance
   refine ContinuousLinearMap.ext fun x => ?_
   conv_lhs => erw [← Submodule.starProjection_add_starProjection_orthogonal
     (K := T.range.topologicalClosure) x]
   have h0 : T.polarₗᵢ.toContinuousLinearMap.adjoint
-      ((T.polarₗᵢ.toContinuousLinearMap.range : Submodule ℂ F)ᗮ.starProjection x) = 0 :=
+      ((T.polarₗᵢ.range : Submodule ℂ F)ᗮ.starProjection x) = 0 :=
     ext_inner_right ℂ fun m => by
       rw [ContinuousLinearMap.adjoint_inner_left, inner_zero_left]
-      simp only [LinearIsometry.toLinearMap_toContinuousLinearMap,
-        LinearIsometry.coe_toContinuousLinearMap]
+      simp only [LinearIsometry.coe_toContinuousLinearMap]
       exact Submodule.inner_left_of_mem_orthogonal (K := T.polarₗᵢ.range) ⟨m, rfl⟩
         (Submodule.starProjection_apply_mem (T.polarₗᵢ.range)ᗮ x)
-  simp only [← T.range_polarₗᵢ, LinearIsometry.toLinearMap_toContinuousLinearMap, map_add,
+  simp only [← T.range_polarₗᵢ, map_add,
     comp_apply, LinearIsometry.coe_toContinuousLinearMap]
   erw [h0, map_zero, add_zero]
-  obtain ⟨m, hm⟩ := Submodule.starProjection_apply_mem
-    (T.polarₗᵢ.toContinuousLinearMap.range : Submodule ℂ F) x
-  erw [← hm, LinearIsometry.toLinearMap_toContinuousLinearMap, LinearIsometry.coe_toLinearMap,
+  obtain ⟨m, hm⟩ := Submodule.starProjection_apply_mem (T.polarₗᵢ.range : Submodule ℂ F) x
+  erw [← hm, LinearIsometry.coe_toLinearMap,
     LinearIsometry.map_eq_iff, ← comp_apply, T.polarₗᵢ_adjoint_comp]
   simp
 
