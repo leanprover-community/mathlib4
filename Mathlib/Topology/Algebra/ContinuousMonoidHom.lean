@@ -5,6 +5,7 @@ Authors: Thomas Browning, Nailin Guan
 -/
 module
 
+public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.Group.Equiv.Basic
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Topology.Algebra.Group.Defs
@@ -176,7 +177,10 @@ variable (A B C D E)
 instance : One (A →ₜ* B) where
   one := ⟨1, continuous_const⟩
 
-@[to_additive (attr := simp)]
+@[to_additive]
+instance : IsOneApply (A →ₜ* B) where
+
+@[to_additive (attr := deprecated FunLike.coe_one +typeChanged (since := "2026-10-26"))]
 lemma coe_one : ⇑(1 : A →ₜ* B) = 1 :=
   rfl
 
@@ -240,15 +244,25 @@ instance : CommMonoid (A →ₜ* E) where
   one_mul f := ext fun x => one_mul (f x)
   mul_one f := ext fun x => mul_one (f x)
 
-@[to_additive (attr := simp)]
-theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
+@[to_additive]
+instance : IsMulApply (A →ₜ* E) where
+
+@[to_additive (attr := deprecated mul_apply +typeChanged (since := "2026-10-26"))]
+protected theorem mul_apply (f g : A →ₜ* E) (a : A) : (f * g) a = f a * g a := by
   rfl
 
-@[to_additive (attr := simp)]
-theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
+@[to_additive]
+instance : IsPowApply ℕ (A →ₜ* E) where
+  pow_apply f n x := by
+    induction n
+    case zero => rw [pow_zero, pow_zero, one_toFun]
+    case succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
+
+@[to_additive (attr := deprecated pow_apply +typeChanged (since := "2026-10-26"))]
+protected theorem pow_apply (f : A →ₜ* E) (n : ℕ) (a : A) : (f ^ n) a = (f a) ^ n := by
   induction n
   case zero => rw [pow_zero, pow_zero, one_toFun]
-  case succ n ih => rw [pow_succ, pow_succ, ContinuousMonoidHom.mul_apply, ih]
+  case succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
 
 /-- Coproduct of two continuous homomorphisms to the same space. -/
 @[to_additive (attr := simps!) /-- Coproduct of two continuous homomorphisms to the same space. -/]
@@ -273,6 +287,12 @@ instance : CommGroup (ContinuousMonoidHom A E) where
   inv_mul_cancel f := ext fun x => inv_mul_cancel (f x)
   div f g := .comp ⟨divMonoidHom, continuous_div'⟩ (f.prod g)
   div_eq_mul_inv f g := ext fun x => div_eq_mul_inv (f x) (g x)
+
+@[to_additive]
+instance : IsInvApply (A →ₜ* E) where
+
+@[to_additive]
+instance : IsDivApply (A →ₜ* E) where
 
 end CommGroup
 
