@@ -225,10 +225,12 @@ theorem lift_iSup {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range 
 
 /-- To prove that the lift of a supremum is bounded by some cardinal `t`,
 it suffices to show that the lift of each cardinal is bounded by `t`. -/
-theorem lift_iSup_le {ι : Type v} {f : ι → Cardinal.{w}} {t : Cardinal} (hf : BddAbove (range f))
+theorem lift_iSup_le {ι : Type v} {f : ι → Cardinal.{w}} {t : Cardinal}
     (w : ∀ i, lift.{u} (f i) ≤ t) : lift.{u} (iSup f) ≤ t := by
-  rw [lift_iSup hf]
-  exact ciSup_le' w
+  by_cases hf : BddAbove (range f)
+  · rw [lift_iSup hf]
+    exact ciSup_le' w
+  · simp [ciSup_of_not_bddAbove hf]
 
 @[simp]
 theorem lift_iSup_le_iff {ι : Type v} {f : ι → Cardinal.{w}} (hf : BddAbove (range f))
@@ -241,17 +243,19 @@ it suffices to show that the lift of each cardinal from the smaller supremum
 if bounded by the lift of some cardinal from the larger supremum.
 -/
 theorem lift_iSup_le_lift_iSup {ι : Type v} {ι' : Type v'} {f : ι → Cardinal.{w}}
-    {f' : ι' → Cardinal.{w'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) {g : ι → ι'}
+    {f' : ι' → Cardinal.{w'}} (hf' : BddAbove (range f')) {g : ι → ι'}
     (h : ∀ i, lift.{w'} (f i) ≤ lift.{w} (f' (g i))) : lift.{w'} (iSup f) ≤ lift.{w} (iSup f') := by
+  by_cases! hf : ¬ BddAbove (range f)
+  · simp [ciSup_of_not_bddAbove hf]
   rw [lift_iSup hf, lift_iSup hf']
   exact ciSup_mono_of_forall_exists' (bddAbove_range_comp.{_, _, w} hf' _) fun i => ⟨_, h i⟩
 
 /-- A variant of `lift_iSup_le_lift_iSup` with universes specialized via `w = v` and `w' = v'`.
 This is sometimes necessary to avoid universe unification issues. -/
 theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardinal.{v}}
-    {f' : ι' → Cardinal.{v'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) (g : ι → ι')
+    {f' : ι' → Cardinal.{v'}} (hf' : BddAbove (range f')) (g : ι → ι')
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
-  lift_iSup_le_lift_iSup hf hf' h
+  lift_iSup_le_lift_iSup hf' h
 
 theorem lift_iSup_le_sum {ι : Type u} [Small.{v} ι] (f : ι → Cardinal.{v}) :
     lift (⨆ i, f i) ≤ sum f := by

@@ -693,8 +693,11 @@ theorem dvd_add_iff : ∀ {a b c : Ordinal}, a ∣ b → (a ∣ b + c ↔ a ∣ 
       rw [e, ← mul_add]
       apply dvd_mul_right⟩
 
-theorem div_mul_cancel : ∀ {a b : Ordinal}, a ≠ 0 → a ∣ b → a * (b / a) = b
-  | a, _, a0, ⟨b, rfl⟩ => by rw [mul_div_cancel _ a0]
+theorem div_mul_cancel : ∀ {a b : Ordinal}, a ∣ b → a * (b / a) = b
+  | a, _, ⟨b, rfl⟩ => by
+    rcases eq_or_ne a 0 with rfl | a0
+    · simp
+    · rw [mul_div_cancel _ a0]
 
 theorem le_of_dvd {a b : Ordinal} (b0 : b ≠ 0) (h : a ∣ b) : a ≤ b := by
   rcases h with ⟨b, rfl⟩
