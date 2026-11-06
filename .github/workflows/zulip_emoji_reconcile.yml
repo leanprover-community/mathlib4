@@ -6,11 +6,8 @@
 #                          outages, state changes while a run was broken).
 #   - pull_request_target: label/close/merge/reopen changes, reflected in seconds.
 #   - workflow_run:        CI start/finish, so the CI emoji updates promptly.
-# This same workflow serves both leanprover-community/mathlib4 and its
-# leanprover-community/mathlib4-nightly-testing mirror (whose adaptation PRs are
-# announced in the `nightly-testing-mathlib` Zulip channel); the "Select config"
-# step picks the matching config per repo. Everything repo-specific lives in
-# those JSON configs; the engine and its docs are in mathlib-ci:
+# Everything repo-specific lives in `.github/zulip-emoji-config.json`; the
+# engine and its docs are in mathlib-ci:
 # https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md
 name: Zulip emoji reconcile
 
@@ -51,8 +48,7 @@ permissions:
 
 jobs:
   reconcile:
-    if: github.repository == 'leanprover-community/mathlib4' ||
-        github.repository == 'leanprover-community/mathlib4-nightly-testing'
+    if: github.repository == 'leanprover-community/mathlib4'
     runs-on: ubuntu-latest
     steps:
       # On pull_request_target / workflow_run this checks out the *default*
@@ -63,31 +59,7 @@ jobs:
         with:
           sparse-checkout: |
             .github/zulip-emoji-config.json
-            .github/zulip-emoji-config-nightly.json
           sparse-checkout-cone-mode: false
-
-      - name: Select config for this repository
-        id: cfg
-        env:
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          case "$REPO" in
-            leanprover-community/mathlib4-nightly-testing)
-              config=.github/zulip-emoji-config-nightly.json ;;
-            *)
-              config=.github/zulip-emoji-config.json ;;
-          esac
-          if [ -f "$config" ]; then
-            echo "config=${config}" >> "$GITHUB_OUTPUT"
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            # The nightly config reaches mathlib4-nightly-testing only after the
-            # next master -> nightly-testing sync; until then, no-op rather than
-            # fail a scheduled run.
-            echo "::notice::reconcile config ${config} not present yet; skipping."
-            echo "present=false" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: Determine PR number(s)
         id: target
@@ -126,14 +98,12 @@ jobs:
         # loud: the sweep is the health signal for the reconciler itself, and a
         # manual run is someone actively debugging who wants to see the error.
         continue-on-error: ${{ github.event_name == 'pull_request_target' || github.event_name == 'workflow_run' }}
-        # Skip when no config is present (nightly, pre-sync), and skip only a
-        # workflow_run whose head commit no longer maps to a PR; schedule and
-        # PR-less dispatches sweep instead.
-        if: steps.cfg.outputs.present == 'true' &&
-            (steps.target.outputs.pr != '' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        # Skip a workflow_run whose head commit no longer maps to a PR; schedule
+        # and PR-less dispatches sweep instead.
+        if: steps.target.outputs.pr != '' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         uses: leanprover-community/mathlib-ci/.github/actions/zulip-emoji-reconcile@d6393a535c054122e507b6c5e1b2f4c31c604121
         with:
-          config: ${{ steps.cfg.outputs.config }}
+          config: .github/zulip-emoji-config.json
           pr: ${{ steps.target.outputs.pr }}
           sweep: ${{ !steps.target.outputs.pr }}
           dry-run: ${{ inputs.dry-run == true }}

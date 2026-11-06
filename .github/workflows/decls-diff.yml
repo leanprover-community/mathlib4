@@ -31,7 +31,7 @@ jobs:
     # The build never runs on a `pull_request` event: non-fork PRs build via
     # `build.yml` on `push` (head_branch = the PR branch), fork PRs via
     # `build_fork.yml` on `pull_request_target`. Accept both, and for `push`
-    # exclude master and the non-PR maintenance branches.
+    # exclude master.
     if: >-
       github.repository == 'leanprover-community/mathlib4'
       && github.event.workflow_run.conclusion == 'success'
@@ -40,7 +40,6 @@ jobs:
         || (
           github.event.workflow_run.event == 'push'
           && github.event.workflow_run.head_branch != 'master'
-          && github.event.workflow_run.head_branch != 'nightly-testing'
         )
       )
     runs-on: ubuntu-latest
