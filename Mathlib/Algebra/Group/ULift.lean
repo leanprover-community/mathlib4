@@ -32,7 +32,7 @@ variable {α : Type u} {β : Type v} {x y : ULift.{w} α}
 namespace ULift
 
 @[to_additive]
-instance [One α] : One (ULift α) :=
+instance instOne [One α] : One (ULift α) :=
   ⟨⟨1⟩⟩
 
 @[to_additive (attr := simp)]
@@ -40,7 +40,7 @@ theorem one_down [One α] : (1 : ULift α).down = 1 :=
   rfl
 
 @[to_additive]
-instance [Mul α] : Mul (ULift α) :=
+instance instMul [Mul α] : Mul (ULift α) :=
   ⟨fun f g => ⟨f.down * g.down⟩⟩
 
 @[to_additive (attr := simp)]
@@ -48,7 +48,7 @@ theorem mul_down [Mul α] : (x * y).down = x.down * y.down :=
   rfl
 
 @[to_additive]
-instance [Div α] : Div (ULift α) :=
+instance instDiv [Div α] : Div (ULift α) :=
   ⟨fun f g => ⟨f.down / g.down⟩⟩
 
 @[to_additive (attr := simp)]
@@ -56,7 +56,7 @@ theorem div_down [Div α] : (x / y).down = x.down / y.down :=
   rfl
 
 @[to_additive]
-instance [Inv α] : Inv (ULift α) :=
+instance instInv [Inv α] : Inv (ULift α) :=
   ⟨fun f => ⟨f.down⁻¹⟩⟩
 
 @[to_additive (attr := simp)]
@@ -64,7 +64,7 @@ theorem inv_down [Inv α] : x⁻¹.down = x.down⁻¹ :=
   rfl
 
 @[to_additive (attr := to_additive) smul]
-instance [Pow α β] : Pow (ULift α) β :=
+instance instPow [Pow α β] : Pow (ULift α) β :=
   ⟨fun x n => up (x.down ^ n)⟩
 
 @[to_additive (attr := to_additive, simp) smul_down]

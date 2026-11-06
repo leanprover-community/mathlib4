@@ -196,11 +196,10 @@ protected theorem coe_natCast (n : ℕ) : ((↑n : Nonneg α) : α) = n :=
 theorem mk_natCast (n : ℕ) : (⟨n, n.cast_nonneg'⟩ : Nonneg α) = n :=
   rfl
 
-instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) :=
-  { Nonneg.one (α := α) with
-    toNatCast := Nonneg.natCast
-    natCast_zero := by ext; simp
-    natCast_succ := fun _ => by ext; simp }
+instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) where
+  toNatCast := Nonneg.natCast
+  natCast_zero := by ext; simp
+  natCast_succ := fun _ => by ext; simp
 
 end AddMonoidWithOne
 

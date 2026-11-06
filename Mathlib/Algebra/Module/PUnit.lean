@@ -45,22 +45,18 @@ instance instIsScalarTowerOfSMul [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit where
-  __ := PUnit.smul
   smul_zero := by subsingleton
   zero_smul := by subsingleton
 
 instance mulAction [Monoid R] : MulAction R PUnit where
-  __ := PUnit.smul
   one_smul := by subsingleton
   mul_smul := by subsingleton
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit where
-  __ := PUnit.mulAction
   smul_zero := by subsingleton
   smul_add := by subsingleton
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit where
-  __ := PUnit.mulAction
   smul_mul := by subsingleton
   smul_one := by subsingleton
 

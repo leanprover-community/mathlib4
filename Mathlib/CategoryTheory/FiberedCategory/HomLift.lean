@@ -264,7 +264,7 @@ instance inv_lift (f : R ⟶ S) (φ : a ≅ b) [p.IsHomLift f φ.hom] :
   apply CommSq.horiz_inv (f := p.mapIso φ) (by apply commSq p f φ.hom)
 
 /-- If `φ : a ⟶ b` lifts `f : R ⟶ S` and both are isomorphisms, then `φ⁻¹` lifts `f⁻¹`. -/
-instance (f : R ⟶ S) (φ : a ⟶ b) [IsIso f] [IsIso φ] [p.IsHomLift f φ] :
+protected instance inv (f : R ⟶ S) (φ : a ⟶ b) [IsIso f] [IsIso φ] [p.IsHomLift f φ] :
     p.IsHomLift (inv f) (inv φ) :=
   have : p.IsHomLift (asIso f).hom (asIso φ).hom := by simp_all
   IsHomLift.inv_lift_inv p (asIso f) (asIso φ)

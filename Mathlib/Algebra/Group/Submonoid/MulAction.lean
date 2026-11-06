@@ -22,11 +22,9 @@ public section
 
 assert_not_exists RelIso
 
-namespace Submonoid
-
 variable {M' : Type*} {α β : Type*}
 
-section SetLike
+namespace SetLike
 
 variable {S' : Type*} [SetLike S' M'] (s : S')
 
@@ -69,6 +67,8 @@ instance (priority := low) [MulAction M' α] : MulAction s α where
   mul_smul m₁ m₂ := mul_smul (m₁ : M') m₂
 
 end SetLike
+
+namespace Submonoid
 
 section MulOneClass
 
