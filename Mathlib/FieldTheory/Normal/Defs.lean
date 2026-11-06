@@ -55,7 +55,7 @@ theorem Normal.out :
 variable (F K)
 
 instance normal_self : Normal F F where
-  isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
+  isAlgebraic _ := isIntegral_algebraMap.isAlgebraic
   splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ by simp
 
 section NormalTower

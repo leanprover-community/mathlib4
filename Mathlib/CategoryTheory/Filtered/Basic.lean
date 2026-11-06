@@ -194,7 +194,7 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredO
   { cocone_objs := fun X Y =>
       ⟨R.obj (max (L.obj X) (L.obj Y)),
         h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
-    cocone_maps := fun X Y f g =>
+    cocone_maps X Y f g :=
       ⟨R.obj (coeq (L.map f) (L.map g)), h.homEquiv _ _ (coeqHom _ _), by
         rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
 
@@ -723,7 +723,7 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
   { cone_objs := fun X Y =>
       ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
         (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
-    cone_maps := fun X Y f g =>
+    cone_maps X Y f g :=
       ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
         rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩ }
 

@@ -158,7 +158,7 @@ def colimitCocone (F : J ⥤ PresheafedSpace.{_, _, v} C) : Cocone F where
     { app := fun j =>
         { base := colimit.ι (F ⋙ PresheafedSpace.forget C) j
           c := limit.π _ (op j) }
-      naturality := fun {j j'} f => by
+      naturality {j j'} f := by
         ext1
         · ext x
           exact colimit.w_apply (F ⋙ PresheafedSpace.forget C) f x
@@ -183,7 +183,7 @@ def descCApp (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (U : (Opens 
         { pt := s.pt.presheaf.obj U
           π :=
             { app := fun j => ?_
-              naturality := fun j j' f => ?_ } } ≫
+              naturality j j' f := ?_ } } ≫
       (limitObjIsoLimitCompEvaluation _ _).inv
   -- We still need to construct the `app` and `naturality'` fields omitted above.
   · refine (s.ι.app (unop j)).c.app U ≫ (F.obj (unop j)).presheaf.map (eqToHom ?_)
@@ -223,7 +223,7 @@ def desc (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) : colimit F ⟶ 
   base := colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s)
   c :=
     { app := fun U => descCApp F s U
-      naturality := fun _ _ i => desc_c_naturality F s i }
+      naturality _ _ i := desc_c_naturality F s i }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) :

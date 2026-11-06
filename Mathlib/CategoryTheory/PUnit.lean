@@ -51,7 +51,7 @@ abbrev fromPUnit (X : C) : Discrete PUnit.{w + 1} ⥤ C :=
 def equiv : Discrete PUnit.{w + 1} ⥤ C ≌ C where
   functor :=
     { obj := fun F => F.obj ⟨⟨⟩⟩
-      map := fun θ => θ.app ⟨⟨⟩⟩ }
+      map θ := θ.app ⟨⟨⟩⟩ }
   inverse := Functor.const _
   unitIso := NatIso.ofComponents fun _ => Discrete.natIso fun _ => Iso.refl _
   counitIso := NatIso.ofComponents Iso.refl

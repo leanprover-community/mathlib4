@@ -113,7 +113,7 @@ theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
 variable [LinearOrder α]
 
 instance isStrictOrder : IsStrictOrder (DegLex (α →₀ ℕ)) (· < ·) where
-  irrefl := fun a ↦ by simp [lt_def]
+  irrefl a := by simp [lt_def]
   trans := by
     intro a b c hab hbc
     simp only [lt_iff] at hab hbc ⊢

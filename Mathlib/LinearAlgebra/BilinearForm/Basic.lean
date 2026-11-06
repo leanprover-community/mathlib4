@@ -121,7 +121,7 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
 /-- `coeFn` as an `AddMonoidHom` -/
 @[simps]
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
-  toFun := fun B x y => B x y
+  toFun B x y := B x y
   map_zero' := rfl
   map_add' _ _ := rfl
 

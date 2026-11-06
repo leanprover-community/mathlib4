@@ -73,7 +73,7 @@ instance (x : X) : Subsingleton (FundamentalGroup X x) where
 instance (priority := 100) : PathConnectedSpace X :=
   let unique_homotopic := (simply_connected_iff_unique_homotopic X).mp inferInstance
   { nonempty := unique_homotopic.1
-    joined := fun x y => ⟨(unique_homotopic.2 x y).some.default.out⟩ }
+    joined x y := ⟨(unique_homotopic.2 x y).some.default.out⟩ }
 
 /-- In a simply connected space, any two paths are homotopic -/
 theorem paths_homotopic {x y : X} (p₁ p₂ : Path x y) : Path.Homotopic p₁ p₂ :=
@@ -172,7 +172,7 @@ theorem isSimplyConnected_iff_exists_homotopy_refl_forall_mem {s : Set X} :
   refine .and .rfl ⟨fun h x p hp ↦ ?_, fun h x p ↦ ?_⟩
   · lift x to s using by simpa using hp 0
     rcases h x {
-      toFun := fun t ↦ ⟨p t, hp t⟩
+      toFun t := ⟨p t, hp t⟩
       source' := by simp
       target' := by simp
     } with ⟨F⟩

@@ -222,19 +222,19 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
               map_sup' := fun a b => congr(f $(by rfl)).trans (f.hom.map_sup' _ _)
               map_inf' := fun a b => congr(f $(by rfl)).trans (f.hom.map_inf' _ _) }
           invFun f := BddLat.ofHom <| LatticeHom.withTopWithBot' f.hom
-          left_inv := fun f =>
+          left_inv f :=
             BddLat.ext fun a =>
               match a with
               | none => f.hom.map_top'.symm
               | some none => f.hom.map_bot'.symm
               | some (some _) => rfl }
-      homEquiv_naturality_left_symm := fun _ _ =>
+      homEquiv_naturality_left_symm _ _ :=
         BddLat.ext fun a =>
           match a with
           | none => rfl
           | some none => rfl
           | some (some _) => rfl
-      homEquiv_naturality_right := fun _ _ => Lat.ext fun _ => rfl }
+      homEquiv_naturality_right _ _ := Lat.ext fun _ => rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
 def latToBddLatCompDualIsoDualCompLatToBddLat :

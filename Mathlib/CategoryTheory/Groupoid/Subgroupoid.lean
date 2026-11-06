@@ -203,14 +203,14 @@ instance : Inhabited (Subgroupoid C) :=
 instance : Min (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
-      inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩
-      mul := fun hp _ hq ↦ ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
+      inv hp := ⟨S.inv hp.1, T.inv hp.2⟩
+      mul hp _ hq := ⟨S.mul hp.1 hq.1, T.mul hp.2 hq.2⟩ }⟩
 
 instance : InfSet (Subgroupoid C) :=
   ⟨fun s =>
     { arrows := fun c d => ⋂ S ∈ s, Subgroupoid.arrows S c d
-      inv := fun hp ↦ by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
-      mul := fun hp _ hq ↦ by
+      inv hp := by rw [mem_iInter₂] at hp ⊢; exact fun S hS => S.inv (hp S hS)
+      mul hp _ hq := by
         rw [mem_iInter₂] at hp hq ⊢
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
@@ -227,13 +227,13 @@ instance : CompleteLattice (Subgroupoid C) :=
       refine fun s => ⟨fun S Ss F => ?_, fun T Tl F fT => ?_⟩ <;> simp only [mem_sInf]
       exacts [fun hp => hp S Ss, fun S Ss => Tl Ss fT]) with
     bot := ⊥
-    bot_le := fun _ => empty_subset _
+    bot_le _ := empty_subset _
     top := ⊤
-    le_top := fun _ => subset_univ _
+    le_top _ := subset_univ _
     inf := (· ⊓ ·)
-    le_inf := fun _ _ _ RS RT _ pR => ⟨RS pR, RT pR⟩
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right }
+    le_inf _ _ _ RS RT _ pR := ⟨RS pR, RT pR⟩
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right }
 
 theorem le_objs {S T : Subgroupoid C} (h : S ≤ T) : S.objs ⊆ T.objs := fun s ⟨γ, hγ⟩ =>
   ⟨γ, @h ⟨s, s, γ⟩ hγ⟩
@@ -318,7 +318,7 @@ theorem IsNormal.conjugation_bij (Sn : IsNormal S) {c d} (p : c ⟶ d) :
 
 theorem top_isNormal : IsNormal (⊤ : Subgroupoid C) :=
   { wide := fun _ => trivial
-    conj := fun _ _ _ => trivial }
+    conj _ _ _ := trivial }
 
 theorem sInf_isNormal (s : Set <| Subgroupoid C) (sn : ∀ S ∈ s, IsNormal S) : IsNormal (sInf s) :=
   { wide := by simp_rw [sInf, mem_iInter₂]; exact fun c S Ss => (sn S Ss).wide c
@@ -326,7 +326,7 @@ theorem sInf_isNormal (s : Set <| Subgroupoid C) (sn : ∀ S ∈ s, IsNormal S) 
 
 theorem discrete_isNormal : (@discrete C _).IsNormal :=
   { wide := fun c => by constructor
-    conj := fun f γ hγ => by
+    conj f γ hγ := by
       cases hγ
       simp only [inv_eq_inv, Category.id_comp, IsIso.inv_hom_id]; constructor }
 
@@ -510,7 +510,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       obtain ⟨c, rfl⟩ := obj_surjective_of_im_eq_top φ hφ hφ' d
       change Map.Arrows φ hφ S _ _ (𝟙 _); rw [← Functor.map_id]
       constructor; exact Sn.wide c
-    conj := fun {d d'} g δ hδ => by
+    conj {d d'} g δ hδ := by
       rw [mem_map_iff] at hδ
       obtain ⟨c, c', γ, cd, cd', γS, hγ⟩ := hδ; subst_vars; cases hφ cd'
       have : d' ∈ (im φ hφ).objs := by rw [hφ']; apply mem_top_objs

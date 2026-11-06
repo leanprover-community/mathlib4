@@ -229,7 +229,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
     { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
-      naturality := fun _ _ hij => by
+      naturality _ _ hij := by
         ext
         exact DirectLimit.of_f }
 

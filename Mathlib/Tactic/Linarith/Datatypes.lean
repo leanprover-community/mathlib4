@@ -237,7 +237,7 @@ A `GlobalPreprocessor` lifts to a `GlobalBranchingPreprocessor` by producing onl
 -/
 def GlobalPreprocessor.branching (pp : GlobalPreprocessor) : GlobalBranchingPreprocessor where
   __ := pp
-  transform := fun g l => do return [⟨g, ← pp.transform l⟩]
+  transform g l := do return [⟨g, ← pp.transform l⟩]
 
 /--
 `process pp l` runs `pp.transform` on `l` and returns the result,

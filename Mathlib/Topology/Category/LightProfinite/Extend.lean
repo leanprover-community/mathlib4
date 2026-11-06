@@ -139,8 +139,8 @@ def cocone (S : LightProfinite) :
     Cocone (CostructuredArrow.proj toLightProfinite.op ⟨S⟩ ⋙ toLightProfinite.op ⋙ G) where
   pt := G.obj ⟨S⟩
   ι := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
+    app i := G.map i.hom
+    naturality _ _ f := (by
       have := f.w
       simp only [op_obj, op_map] at this
       simp only [comp_obj, CostructuredArrow.proj_obj, op_obj, const_obj_obj, Functor.comp_map,

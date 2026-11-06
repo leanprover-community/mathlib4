@@ -117,7 +117,7 @@ theorem hom_ext {X Y : UniformSpaceCat} {f g : X ⟶ Y} (h : (f : X → Y) = g) 
 instance hasForgetToTop : HasForget₂ UniformSpaceCat.{u} TopCat.{u} where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun f => TopCat.ofHom
+      map f := TopCat.ofHom
         { toFun := f
           continuous_toFun := f.hom.property.continuous } }
 
@@ -249,14 +249,14 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
         { toFun := fun f => completionHom X ≫ f.hom
-          invFun := fun f => extensionHom f
-          left_inv := fun f => InducedCategory.hom_ext (by simp)
-          right_inv := fun f => by
+          invFun f := extensionHom f
+          left_inv f := InducedCategory.hom_ext (by simp)
+          right_inv f := by
             ext x
             rcases f with ⟨⟨_, _⟩⟩
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }
-      homEquiv_naturality_left_symm := fun {X' X Y} f g => by
+      homEquiv_naturality_left_symm {X' X Y} f g := by
         ext x
         dsimp [-Function.comp_apply]
         erw [Completion.extension_map (γ := Y) g.hom.2 f.hom.2]

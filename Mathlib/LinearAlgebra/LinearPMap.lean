@@ -489,11 +489,11 @@ instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) :=
     · simp only [add_apply, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₛₗ.[σ] F) where
-  zero_add := fun f => by
+  zero_add f := by
     ext x y hxy
     · simp [add_domain]
     · simp [add_apply]
-  add_zero := fun f => by
+  add_zero f := by
     ext x y hxy
     · simp [add_domain]
     · simp [add_apply]
@@ -974,7 +974,7 @@ Helper definition for `LinearPMap`. -/
 noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.map (LinearMap.fst R E F) →ₗ[R] F where
-  toFun := fun x => valFromGraph hg x.2
+  toFun x := valFromGraph hg x.2
   map_add' := fun v w => by
     have hadd := (g.map (LinearMap.fst R E F)).add_mem v.2 w.2
     have hvw := valFromGraph_mem hg hadd

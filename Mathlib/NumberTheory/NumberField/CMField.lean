@@ -305,7 +305,7 @@ theorem unitsComplexConj_torsion (ζ : torsion K) :
 The map `(𝓞 K)ˣ →* torsion K` defined by `u ↦ u * (conj u)⁻¹`.
 -/
 noncomputable def unitsMulComplexConjInv : (𝓞 K)ˣ →* torsion K where
-  toFun := fun u ↦ ⟨u * (unitsComplexConj K u)⁻¹, (mem_torsion K).mpr fun _ ↦ by simp⟩
+  toFun u := ⟨u * (unitsComplexConj K u)⁻¹, (mem_torsion K).mpr fun _ ↦ by simp⟩
   map_one' := by simp
   map_mul' := by
     intro _ _

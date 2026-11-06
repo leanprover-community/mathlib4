@@ -415,7 +415,7 @@ A meet-semilattice where every inf-closed set has a greatest lower bound is auto
 complete. -/]
 def SemilatticeSup.toCompleteSemilatticeSup [SemilatticeSup α] (sSup : Set α → α)
     (h : ∀ s, SupClosed s → IsLUB s (sSup s)) : CompleteSemilatticeSup α where
-  sSup := fun s => sSup (supClosure s)
+  sSup s := sSup (supClosure s)
   isLUB_sSup _ := isLUB_supClosure.mp <| h _ supClosed_supClosure
 
 section ConditionallyCompleteLattice

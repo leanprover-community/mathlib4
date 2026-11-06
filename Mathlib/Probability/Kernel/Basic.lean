@@ -430,7 +430,7 @@ variable {μ ν : Measure α}
 
 /-- The kernel from `Bool` that sends `false` to `μ` and `true` to `ν`. -/
 def boolKernel (μ ν : Measure α) : Kernel Bool α where
-  toFun := fun b ↦ if b then ν else μ
+  toFun b := if b then ν else μ
   measurable' := .of_discrete
 
 lemma boolKernel_false : boolKernel μ ν false = μ := rfl

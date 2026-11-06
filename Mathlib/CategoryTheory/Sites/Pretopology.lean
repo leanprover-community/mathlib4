@@ -87,16 +87,16 @@ variable (C)
 
 instance : PartialOrder (Pretopology C) :=
   { Pretopology.LE with
-    le_refl := fun _ => le_def.mpr le_rfl
-    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun _ _ h₁₂ h₂₁ => Pretopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl _ := le_def.mpr le_rfl
+    le_trans _ _ _ h₁₂ h₂₃ := le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm _ _ h₁₂ h₂₁ := Pretopology.ext (le_antisymm h₁₂ h₂₁) }
 
 instance orderTop : OrderTop (Pretopology C) where
   top :=
     { coverings := fun _ => Set.univ
-      has_isos := fun _ _ _ _ => Set.mem_univ _
-      pullbacks := fun _ _ _ _ _ => Set.mem_univ _
-      transitive := fun _ _ _ _ _ => Set.mem_univ _ }
+      has_isos _ _ _ _ := Set.mem_univ _
+      pullbacks _ _ _ _ _ := Set.mem_univ _
+      transitive _ _ _ _ _ := Set.mem_univ _ }
   le_top _ _ _ _ := Set.mem_univ _
 
 instance : Inhabited (Pretopology C) :=
@@ -223,18 +223,18 @@ lemma toGrothendieck_mono {J K : Pretopology C} (h : J ≤ K) : J.toGrothendieck
 instance : InfSet (Pretopology C) where
   sInf T := {
     coverings := sInf ((fun J ↦ J.coverings) '' T)
-    has_isos := fun X Y f _ ↦ by
+    has_isos X Y f _ := by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
         Set.iInter_exists,
         Set.biInter_and', Set.iInter_iInter_eq_right, Set.mem_iInter]
       intro t _
       exact t.has_isos f
-    pullbacks := fun X Y f S hS ↦ by
+    pullbacks X Y f S hS := by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
         Set.iInter_exists, Set.biInter_and', Set.iInter_iInter_eq_right, Set.mem_iInter] at hS ⊢
       intro t ht
       exact t.pullbacks f S (hS t ht)
-    transitive := fun X S Ti hS hTi ↦ by
+    transitive X S Ti hS hTi := by
       simp only [sInf_apply, Set.iInf_eq_iInter, Set.iInter_coe_set, Set.mem_image,
         Set.iInter_exists, Set.biInter_and', Set.iInter_iInter_eq_right, Set.mem_iInter] at hS hTi ⊢
       intro t ht
@@ -260,12 +260,12 @@ instance : CompleteLattice (Pretopology C) where
   __ := orderBot C
   __ := orderTop C
   inf t₁ t₂ := {
-    coverings := fun X ↦ t₁.coverings X ∩ t₂.coverings X
-    has_isos := fun _ _ f _ ↦
+    coverings X := t₁.coverings X ∩ t₂.coverings X
+    has_isos _ _ f _ :=
       ⟨t₁.has_isos f, t₂.has_isos f⟩
-    pullbacks := fun _ _ f S hS ↦
+    pullbacks _ _ f S hS :=
       ⟨t₁.pullbacks f S hS.left, t₂.pullbacks f S hS.right⟩
-    transitive := fun _ S Ti hS hTi ↦
+    transitive _ S Ti hS hTi :=
       ⟨t₁.transitive S Ti hS.left (fun _ f H ↦ (hTi f H).left),
         t₂.transitive S Ti hS.right (fun _ f H ↦ (hTi f H).right)⟩
   }

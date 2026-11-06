@@ -206,8 +206,8 @@ namespace PUnit
 instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
   __ := instBooleanAlgebra
   __ := instLinearOrder
-  sSup := fun _ => unit
-  sInf := fun _ => unit
+  sSup _ := unit
+  sInf _ := unit
   isLUB_sSup _ := ⟨top_mem_upperBounds _, bot_mem_lowerBounds _⟩
   isGLB_sInf _ := ⟨bot_mem_lowerBounds _, top_mem_upperBounds _⟩
   le_himp_iff := by intros; trivial

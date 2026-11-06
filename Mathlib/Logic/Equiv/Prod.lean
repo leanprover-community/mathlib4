@@ -141,8 +141,8 @@ section
 /-- `PUnit` is a right identity for type product up to an equivalence. -/
 @[simps (attr := grind =)]
 def prodPUnit (α) : α × PUnit ≃ α where
-  toFun := fun p => p.1
-  invFun := fun a => (a, PUnit.unit)
+  toFun p := p.1
+  invFun a := (a, PUnit.unit)
 
 /-- `PUnit` is a left identity for type product up to an equivalence. -/
 @[simps! (attr := grind =)]
@@ -154,8 +154,8 @@ def punitProd (α) : PUnit × α ≃ α :=
 /-- `PUnit` is a right identity for dependent type product up to an equivalence. -/
 @[simps (attr := grind =)]
 def sigmaPUnit (α) : (_ : α) × PUnit ≃ α where
-  toFun := fun p => p.1
-  invFun := fun a => ⟨a, PUnit.unit⟩
+  toFun p := p.1
+  invFun a := ⟨a, PUnit.unit⟩
 
 section Unique
 variable {α β : Type*} [Unique β]
@@ -218,9 +218,9 @@ theorem sigmaUnique_symm_apply {α} {β : α → Type*} [∀ a, Unique (β a)] (
 /-- Any `Unique` type is a left identity for type sigma up to equivalence. Compare with `uniqueProd`
 which is non-dependent. -/
 def uniqueSigma {α} (β : α → Type*) [Unique α] : (i : α) × β i ≃ β default where
-  toFun := fun p ↦ (Unique.eq_default _).rec p.2
-  invFun := fun b ↦ ⟨default, b⟩
-  left_inv := fun _ ↦ Sigma.ext (Unique.default_eq _) (eqRec_heq _ _)
+  toFun p := (Unique.eq_default _).rec p.2
+  invFun b := ⟨default, b⟩
+  left_inv _ := Sigma.ext (Unique.default_eq _) (eqRec_heq _ _)
 
 theorem uniqueSigma_apply {α} {β : α → Type*} [Unique α] (x : (a : α) × β a) :
     uniqueSigma β x = (Unique.eq_default _).rec x.2 :=
@@ -364,8 +364,8 @@ section
 @[simps]
 def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
     ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
-  toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
-  invFun := fun p c => (p.1 c, p.2 c)
+  toFun f := (fun c => (f c).1, fun c => (f c).2)
+  invFun p c := (p.1 c, p.2 c)
 
 open Sum
 
@@ -469,15 +469,15 @@ open Subtype
 is equivalent to a `Sigma`-type of subtypes. -/
 def subtypeSigmaEquivSigma {α} {β : α → Type*} {p : α → Prop} {q : (i : α) → β i → Prop} :
     { c : Σ i : α, β i // p c.1 ∧ q c.1 c.2 } ≃ Σ i : { a // p a }, { b // q i b } where
-  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  toFun x := ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun x := ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
 
 /-- A subtype of a product defined by componentwise conditions
 is equivalent to a product of subtypes. -/
 def subtypeProdEquivProd {α β} {p : α → Prop} {q : β → Prop} :
     { c : α × β // p c.1 ∧ q c.2 } ≃ { a // p a } × { b // q b } where
-  toFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
-  invFun := fun x => ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  toFun x := ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
+  invFun x := ⟨⟨x.1.1, x.2.1⟩, ⟨x.1.2, x.2.2⟩⟩
 
 /-- A subtype of a `Prod` that depends only on the first component is equivalent to the
 corresponding subtype of the first type times the second type. -/

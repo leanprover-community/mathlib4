@@ -211,11 +211,11 @@ equivalence. -/
 def toLinearEquiv (A : unitaryGroup n α) : (n → α) ≃ₗ[α] n → α :=
   { Matrix.toLin' A.1 with
     invFun := toLin' A⁻¹
-    left_inv := fun x =>
+    left_inv x :=
       calc
         (toLin' A⁻¹).comp (toLin' A) x = (toLin' (A⁻¹ * A)) x := by rw [← toLin'_mul]
         _ = x := by rw [inv_mul_cancel, toLin'_one, id_apply]
-    right_inv := fun x =>
+    right_inv x :=
       calc
         (toLin' A).comp (toLin' A⁻¹) x = toLin' (A * A⁻¹) x := by rw [← toLin'_mul]
         _ = x := by rw [mul_inv_cancel, toLin'_one, id_apply] }

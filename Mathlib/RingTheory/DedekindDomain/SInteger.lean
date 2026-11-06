@@ -177,7 +177,7 @@ instance isLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
           HeightOneSpectrum.intValuation_eq_one_iff.2]⟩,
       by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
   surj := exists_mul_algebraMap_eq_algebraMap R S K
-  exists_of_eq := fun h ↦
+  exists_of_eq h :=
     ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
 /-- The ring of `S`-integers is a Dedekind domain when every element in class group has finite

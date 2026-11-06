@@ -327,7 +327,7 @@ lemma mul_mem_nonZeroDivisors : a * b ∈ M₀⁰ ↔ a ∈ M₀⁰ ∧ b ∈ M�
     constructor <;> intro x h' <;> apply h.2
     · rw [← mul_assoc, h', zero_mul]
     · rw [mul_comm a b, ← mul_assoc, h', zero_mul]
-  mpr := fun h ↦ mul_mem h.1 h.2
+  mpr h := mul_mem h.1 h.2
 
 theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
     a ∣ b ↔ (a : M₀) ∣ (b : M₀) :=

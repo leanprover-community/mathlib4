@@ -469,9 +469,9 @@ instance instField [IsDomain K] : Field K⟮X⟯ where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 section IsFractionRing
 

@@ -36,7 +36,7 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F ⋙ coyoneda.obj (op X)).sections ≃ ((const J).obj X ⟶ F) where
   toFun s :=
     { app := fun j => s.val j
-      naturality := fun j j' f => by
+      naturality j j' f := by
         dsimp
         rw [Category.id_comp]
         exact (s.property f).symm }
@@ -49,7 +49,7 @@ def opCompYonedaSectionsEquiv (F : J ⥤ C) (X : C) :
     (F.op ⋙ yoneda.obj X).sections ≃ (F ⟶ (const J).obj X) where
   toFun s :=
     { app := fun j => s.val (op j)
-      naturality := fun j j' f => by
+      naturality j j' f := by
         dsimp
         rw [Category.comp_id]
         exact (s.property f.op) }
@@ -62,7 +62,7 @@ def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
     (F ⋙ yoneda.obj X).sections ≃ ((const J).obj (op X) ⟶ F) where
   toFun s :=
     { app := fun j => (s.val j).op
-      naturality := fun j j' f => by
+      naturality j j' f := by
         dsimp
         rw [Category.id_comp]
         exact Quiver.Hom.unop_inj (s.property f).symm }

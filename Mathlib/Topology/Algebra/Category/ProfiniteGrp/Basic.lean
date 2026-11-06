@@ -273,7 +273,7 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
-  map_injective := fun {_ _} _ _ h =>
+  map_injective {_ _} _ _ h :=
     ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
 
 @[to_additive]
@@ -331,12 +331,12 @@ abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
   { app := fun j => ⟨{
-      toFun := fun x => x.1 j
+      toFun x := x.1 j
       map_one' := rfl
       map_mul' := fun x y => rfl
       continuous_toFun := by
         exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
-    naturality := fun i j f => by
+    naturality i j f := by
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]
       congr
@@ -367,7 +367,7 @@ instance : Limits.HasLimit F where
 @[to_additive]
 instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
-    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
+    preservesLimit {F} := CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
 @[to_additive]

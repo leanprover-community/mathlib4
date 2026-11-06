@@ -163,9 +163,9 @@ variable [Preorder α] [Preorder β]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
-    le_refl := fun _ => LiftRel.refl _ _ _,
-    le_trans := fun _ _ _ => LiftRel.trans _ _,
-    lt_iff_le_not_ge := fun a b => by
+    le_refl _ := LiftRel.refl _ _ _,
+    le_trans _ _ _ := LiftRel.trans _ _,
+    lt_iff_le_not_ge a b := by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
         · exact hba.not_gt (inl_lt_inl_iff.1 hab)
@@ -186,7 +186,7 @@ end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ β) :=
   { instPreorderSum with
-    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
+    le_antisymm _ _ := show LiftRel _ _ _ _ → _ from antisymm }
 
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (α ⊕ β) :=
   ⟨fun a =>
@@ -380,8 +380,8 @@ variable [Preorder α] [Preorder β]
 instance preorder : Preorder (α ⊕ₗ β) :=
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
-    le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_ge := fun a b => by
+    le_trans _ _ _ := trans_of (Lex (· ≤ ·) (· ≤ ·)),
+    lt_iff_le_not_ge a b := by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
         · exact hba.not_gt (inl_lt_inl_iff.1 hab)

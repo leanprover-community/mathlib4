@@ -1370,7 +1370,7 @@ variable {K Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
 def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
   .trans (congr
     { toFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
-      invFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
+      invFun x := x.toAdd.ofDual.ofDual.toMul
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }) (AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ))
 
@@ -1379,7 +1379,7 @@ def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ
 def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
   AddValuation.toValuation.trans <| congr
     { toFun := fun x ↦ x.toAdd.ofDual.ofDual.toMul
-      invFun := fun x ↦ .ofAdd <| .toDual <| .toDual <| .ofMul x
+      invFun x := .ofAdd <| .toDual <| .toDual <| .ofMul x
       map_mul' := fun _x _y ↦ rfl
       map_le_map_iff' := .rfl }
 

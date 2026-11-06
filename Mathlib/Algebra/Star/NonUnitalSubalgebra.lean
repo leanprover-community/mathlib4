@@ -160,7 +160,7 @@ instance instStarMemClass : StarMemClass (NonUnitalStarSubalgebra R A) A where
 instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
     [Module R A] [Star A] : NonUnitalSubringClass (NonUnitalStarSubalgebra R A) A :=
   { NonUnitalStarSubalgebra.instNonUnitalSubsemiringClass with
-    neg_mem := fun _S {x} hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
+    neg_mem _S {x} hx := neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
 theorem mem_carrier {s : NonUnitalStarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -525,7 +525,7 @@ def ofLeftInverse' {g : B → A} {f : A →⋆ₙₐ[R] B} (h : Function.LeftInv
     toFun := NonUnitalStarAlgHom.rangeRestrict f
     invFun := g ∘ (NonUnitalStarSubalgebraClass.subtype <| NonUnitalStarAlgHom.range f)
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := (NonUnitalStarAlgHom.mem_range f).mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

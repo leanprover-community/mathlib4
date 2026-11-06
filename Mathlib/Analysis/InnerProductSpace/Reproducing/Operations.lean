@@ -60,7 +60,7 @@ variable [CompleteSpace H] [CompleteSpace H']
 
 instance : RKHS 𝕜 (H + H') X V where
   coeCLM := (generator H H').ker.liftQL (generator H H') (le_refl _)
-  coeCLM_injective := fun f g hfg => by
+  coeCLM_injective f g hfg := by
     refine (Function.Injective.eq_iff ?_).mp hfg
     simp [← LinearMap.ker_eq_bot, ker_liftQ_eq_bot]
 

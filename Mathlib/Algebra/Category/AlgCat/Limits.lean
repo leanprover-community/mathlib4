@@ -100,7 +100,7 @@ def limitCone : Cone F where
   pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
     { app := fun j ↦ ofHom <| limitπAlgHom F j
-      naturality := fun _ _ f => by
+      naturality _ _ f := by
         ext
         simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 

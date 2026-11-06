@@ -31,19 +31,19 @@ initialize forwardExt : PersistentEnvExtension Name (Name × ForwardExt)
     (List Name × List (Name × ForwardExt)) ←
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
+    addImportedFn s := do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
         return (n, ← mkForwardExt n) :: dt
       pure ([], dt)
     addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    exportEntriesFn s := s.1.reverse.toArray
   }
 
 initialize registerBuiltinAttribute {
   name := `gcongr_forward
   descr := "adds a gcongr_forward extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| gcongr_forward) => do
       unless kind == AttributeKind.global do
         throwAttrMustBeGlobal `gcongr_forward kind

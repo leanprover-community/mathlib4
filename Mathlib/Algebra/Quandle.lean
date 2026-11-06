@@ -337,7 +337,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type*) [Shelf S] : S →◃ S where
-  toFun := fun x => x
+  toFun x := x
   map_act' := by simp
 
 instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=

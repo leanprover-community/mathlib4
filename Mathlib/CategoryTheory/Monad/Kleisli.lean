@@ -120,7 +120,7 @@ cf Lemma 5.2.11 of [Riehl][riehl2017]. -/
 def adj : toKleisli T ⊣ fromKleisli T :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y := { toFun f := f.of, invFun f := .mk f }
-      homEquiv_naturality_left_symm := fun {X} {Y} {Z} f g => by
+      homEquiv_naturality_left_symm {X} {Y} {Z} f g := by
         ext
         simp [← T.η.naturality_assoc g] }
 
@@ -137,6 +137,6 @@ end Kleisli
 def Cokleisli.Adjunction.adj (T : Comonad C) : fromCokleisli T ⊣ toCokleisli T :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y := { toFun f := .mk f, invFun f := f.of }
-      homEquiv_naturality_right := fun {X} {Y} {_} f g => by cat_disch }
+      homEquiv_naturality_right {X} {Y} {_} f g := by cat_disch }
 
 end CategoryTheory

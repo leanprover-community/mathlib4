@@ -92,7 +92,7 @@ noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field 
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slow
   __ := h.toSemifield
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
 Since `IsField` doesn't remember the data of an `inv` function and as such,

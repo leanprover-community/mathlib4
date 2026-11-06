@@ -136,12 +136,12 @@ namespace Homotopy
 def equivSubZero : Homotopy f g ≃ Homotopy (f - g) 0 where
   toFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun _ _ w => h.zero _ _ w
-      comm := fun i => by simp [h.comm] }
+      zero _ _ w := h.zero _ _ w
+      comm i := by simp [h.comm] }
   invFun h :=
     { hom := fun i j => h.hom i j
-      zero := fun _ _ w => h.zero _ _ w
-      comm := fun i => by simpa [sub_eq_iff_eq_add] using h.comm i }
+      zero _ _ w := h.zero _ _ w
+      comm i := by simpa [sub_eq_iff_eq_add] using h.comm i }
   left_inv := by cat_disch
   right_inv := by cat_disch
 

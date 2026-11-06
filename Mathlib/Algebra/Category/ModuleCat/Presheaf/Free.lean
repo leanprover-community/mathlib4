@@ -104,9 +104,9 @@ noncomputable def freeAdjunction :
     free.{u} R ⊣ (toPresheaf R ⋙ (Functor.whiskeringRight _ _ _).obj (forget Ab)) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ ↦ freeHomEquiv
-      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f g ↦
+      homEquiv_naturality_left_symm {F₁ F₂ G} f g :=
         free_hom_ext (by ext; simp [freeHomEquiv, toPresheaf])
-      homEquiv_naturality_right := fun {F G₁ G₂} f g ↦ rfl }
+      homEquiv_naturality_right {F G₁ G₂} f g := rfl }
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (F G) in

@@ -255,7 +255,7 @@ theorem comap_map_mk_uniformity : comap (Prod.map mk mk) (map (Prod.map mk mk) (
 instance instUniformSpace : UniformSpace (SeparationQuotient α) where
   uniformity := map (Prod.map mk mk) (𝓤 α)
   symm := tendsto_map' <| tendsto_map.comp tendsto_swap_uniformity
-  comp := fun t ht ↦ by
+  comp t ht := by
     rcases comp_open_symm_mem_uniformity_sets ht with ⟨U, hU, hUo, -, hUt⟩
     refine mem_of_superset (mem_lift' <| image_mem_map hU) ?_
     simp only [subset_def, Prod.forall, SetRel.mem_comp, Set.mem_image, Prod.ext_iff]

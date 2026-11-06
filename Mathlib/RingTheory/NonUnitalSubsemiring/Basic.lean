@@ -203,13 +203,13 @@ instance : CompleteLattice (NonUnitalSubsemiring R) :=
   { completeLatticeOfInf (NonUnitalSubsemiring R)
       fun _ => IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _ hx => (mem_bot.mp hx).symm ▸ zero_mem s
+    bot_le s _ hx := (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ _ _ := trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right
+    le_inf _ _ _ h₁ h₂ _ hx := ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -766,9 +766,9 @@ def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
 def sofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* srange f :=
   { srangeRestrict f with
     toFun := srangeRestrict f
-    invFun := fun x => g (subtype (srange f) x)
+    invFun x := g (subtype (srange f) x)
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := NonUnitalRingHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

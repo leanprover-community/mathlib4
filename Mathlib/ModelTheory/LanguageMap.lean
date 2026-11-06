@@ -347,7 +347,7 @@ theorem card_constantsOn : (constantsOn α).card = #α := by
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
 @[instance_reducible]
 def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
-  funMap := fun {n} c _ =>
+  funMap {n} c _ :=
     match n, c with
     | 0, c => f c
 
@@ -355,7 +355,7 @@ variable {β : Type v'}
 
 /-- A map between index types induces a map between constant languages. -/
 def LHom.constantsOnMap (f : α → β) : constantsOn α →ᴸ constantsOn β where
-  onFunction := fun {n} c =>
+  onFunction {n} c :=
     match n, c with
     | 0, c => f c
 

@@ -134,7 +134,7 @@ initialize registerBuiltinAttribute {
   name := `to_app
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+  add src ref kind := match ref with
   | `(attr| to_app $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`to_app` can only be used as a global attribute"

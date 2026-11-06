@@ -225,14 +225,14 @@ set_option backward.isDefEq.respectTransparency false in
 def toBiconeFunctor {X Y : C} : BinaryBicone X Y ⥤ Bicone (pairFunction X Y) where
   obj b :=
     { pt := b.pt
-      π := fun j => WalkingPair.casesOn j b.fst b.snd
-      ι := fun j => WalkingPair.casesOn j b.inl b.inr
-      ι_π := fun j j' => by
+      π j := WalkingPair.casesOn j b.fst b.snd
+      ι j := WalkingPair.casesOn j b.inl b.inr
+      ι_π j j' := by
         rcases j with ⟨⟩ <;> rcases j' with ⟨⟩ <;> simp }
   map f := {
     hom := f.hom
-    wπ := fun i => WalkingPair.casesOn i f.wfst f.wsnd
-    wι := fun i => WalkingPair.casesOn i f.winl f.winr }
+    wπ i := WalkingPair.casesOn i f.wfst f.wsnd
+    wι i := WalkingPair.casesOn i f.winl f.winr }
 
 /-- A shorthand for `toBiconeFunctor.obj` -/
 abbrev toBicone {X Y : C} (b : BinaryBicone X Y) : Bicone (pairFunction X Y) :=

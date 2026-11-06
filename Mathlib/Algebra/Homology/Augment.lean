@@ -31,8 +31,8 @@ deleting the object at `0` and shifting everything else down.
 def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
-      d := fun i j => C.d (i + 1) (j + 1)
-      shape := fun i j w => C.shape _ _ <| by simpa }
+      d i j := C.d (i + 1) (j + 1)
+      shape i j w := C.shape _ _ <| by simpa }
   map f := { f := fun i => f.f (i + 1) }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -188,8 +188,8 @@ deleting the object at `0` and shifting everything else down.
 def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V ℕ where
   obj C :=
     { X := fun i => C.X (i + 1)
-      d := fun i j => C.d (i + 1) (j + 1)
-      shape := fun i j w => by
+      d i j := C.d (i + 1) (j + 1)
+      shape i j w := by
         apply C.shape
         simpa }
   map f := { f := fun i => f.f (i + 1) }

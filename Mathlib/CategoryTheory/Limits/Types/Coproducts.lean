@@ -197,8 +197,8 @@ def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
       ι := (Functor.uniqueFromEmpty _).inv }
   isColimit :=
     { desc := fun _ => ↾fun x => x.elim
-      fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by ext x; cases x }
+      fac _ := by rintro ⟨⟨⟩⟩
+      uniq _ _ _ := by ext x; cases x }
 
 /-- The initial object in `Type u` is `PEmpty`. -/
 noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
@@ -337,7 +337,7 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
       ι := Discrete.natTrans (fun ⟨j⟩ => ↾fun x => ⟨j, x⟩) }
   isColimit :=
     { desc := fun s => ↾fun x => s.ι.app ⟨x.1⟩ x.2
-      uniq := fun s m w => by
+      uniq s m w := by
         ext ⟨j, x⟩
         congrm $(w ⟨j⟩) x }
 

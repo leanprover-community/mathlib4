@@ -46,9 +46,9 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
     Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) where
   unit := (Functor.constCompEvaluationObj D (op T)).hom
   counit := {
-    app := fun F => {
+    app F := {
       app := fun ⟨X⟩ => F.map (IsTerminal.from hT X).op
-      naturality := fun _ _ _ => by
+      naturality _ _ _ := by
         simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map,
           Category.id_comp, ← Functor.map_comp]
         congr

@@ -90,7 +90,7 @@ def ofRingMorphism : Linear R C := by
   letI := homModuleOfRingMorphism φ
   exact
     { smul_comp := fun X Y Z r f g => by simp only [smulOfRingMorphism_smul_eq, assoc]
-      comp_smul := fun X Y Z f r g => by simp only [smulOfRingMorphism_smul_eq', assoc] }
+      comp_smul X Y Z f r g := by simp only [smulOfRingMorphism_smul_eq', assoc] }
 
 end
 

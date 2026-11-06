@@ -150,7 +150,7 @@ def mkCone {F : WidePullbackShape J ⥤ C} {X : C} (f : X ⟶ F.obj none) (π : 
           match j with
           | none => f
           | some j => π j
-        naturality := fun j j' f => by
+        naturality j j' f := by
           cases j <;> cases j' <;> cases f <;> simp [w] } }
 
 /-- Wide pullback diagrams of equivalent index types are equivalent. -/

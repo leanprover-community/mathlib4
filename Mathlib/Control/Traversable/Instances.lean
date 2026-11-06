@@ -60,7 +60,7 @@ instance : LawfulTraversable Option :=
     id_traverse := Option.id_traverse
     comp_traverse := Option.comp_traverse
     traverse_eq_map_id := Option.traverse_eq_map_id
-    naturality := fun η _ _ f x => Option.naturality η f x }
+    naturality η _ _ f x := Option.naturality η f x }
 
 namespace List
 

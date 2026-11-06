@@ -187,7 +187,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 lemma isSl2Triple [DecidableEq ι] :
     IsSl2Triple (h i) (e i) (f i) where
-  h_ne_zero := fun contra ↦ by simpa [h] using congr($contra (.inr i) (.inr i))
+  h_ne_zero contra := by simpa [h] using congr($contra (.inr i) (.inr i))
   lie_e_f := by rw [lie_e_f_same]
   lie_h_e_nsmul := by rw [lie_h_e]; simp
   lie_h_f_nsmul := by rw [lie_h_f]; simp

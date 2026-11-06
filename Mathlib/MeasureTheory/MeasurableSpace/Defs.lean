@@ -314,7 +314,7 @@ theorem le_def {α} {a b : MeasurableSpace α} : a ≤ b ↔ a.MeasurableSet' �
 instance : PartialOrder (MeasurableSpace α) :=
   { PartialOrder.lift (@MeasurableSet α) measurableSet_injective with
     le := LE.le
-    lt := fun m₁ m₂ => m₁ ≤ m₂ ∧ ¬m₂ ≤ m₁ }
+    lt m₁ m₂ := m₁ ≤ m₂ ∧ ¬m₂ ≤ m₁ }
 
 /-- The smallest σ-algebra containing a collection `s` of basic sets -/
 inductive GenerateMeasurable (s : Set (Set α)) : Set α → Prop
@@ -431,7 +431,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
       measurableSet_compl := by simp +contextual [or_imp]
-      measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
+      measurableSet_iUnion _ hf := sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
       hs.elim (fun s => s.symm ▸ @measurableSet_empty _ ⊥) fun s =>

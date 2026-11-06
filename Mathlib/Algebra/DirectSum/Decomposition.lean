@@ -109,8 +109,8 @@ protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   have t : DirectSum.Decomposition ℳ' :=
     { decompose' := DirectSum.decompose ℳ
-      left_inv := fun _ ↦ (decompose ℳ).left_inv _
-      right_inv := fun _ ↦ (decompose ℳ).right_inv _ }
+      left_inv _ := (decompose ℳ).left_inv _
+      right_inv _ := (decompose ℳ).right_inv _ }
   have mem : ∀ m, m ∈ iSup ℳ' := fun _m ↦
     (DirectSum.IsInternal.addSubmonoid_iSup_eq_top ℳ' (Decomposition.isInternal ℳ')).symm ▸ trivial
   -- Porting note: needs to use @ even though no implicit argument is provided

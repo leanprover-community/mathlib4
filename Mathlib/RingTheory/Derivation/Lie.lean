@@ -55,7 +55,7 @@ instance : LieRing (Derivation R A A) where
 
 instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
   { Derivation.instModule with
-    lie_smul := fun r d e => by
+    lie_smul r d e := by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }
 
 instance : LieRingModule (Derivation R A A) A where

@@ -236,10 +236,10 @@ section Order
 
 instance : SemilatticeSup (ValuationSubring K) :=
   { (inferInstance : PartialOrder (ValuationSubring K)) with
-    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
-    le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
-    le_sup_right := fun R S _ hx => (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
-    sup_le := fun R S T hR hT _ hx => (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
+    sup R S := ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
+    le_sup_left R S _ hx := (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
+    le_sup_right R S _ hx := (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
+    sup_le R S T hR hT _ hx := (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
 
 /-- The ring homomorphism induced by the partial order. -/
 def inclusion (R S : ValuationSubring K) (h : R ≤ S) : R →+* S :=

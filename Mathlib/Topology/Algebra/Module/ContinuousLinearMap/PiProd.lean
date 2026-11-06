@@ -284,7 +284,7 @@ variable (R φ)
 /-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
 product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
 def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L[R] ((i : α) → φ (f i)) where
-  toFun := fun v i ↦ v (f i)
+  toFun v i := v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
 

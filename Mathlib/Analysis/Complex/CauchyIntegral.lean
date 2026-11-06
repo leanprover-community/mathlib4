@@ -690,7 +690,7 @@ theorem hasFPowerSeriesOnBall_of_differentiable_off_countable {R : ℝ≥0} {c :
     HasFPowerSeriesOnBall f (cauchyPowerSeries f c R) c R where
   r_le := le_radius_cauchyPowerSeries _ _ _
   r_pos := ENNReal.coe_pos.2 hR
-  hasSum := fun {w} hw => by
+  hasSum {w} hw := by
     have hw' : c + w ∈ ball c R := by
       simpa only [add_mem_ball_iff_norm, ← coe_nnNorm, mem_eball_zero_iff,
         NNReal.coe_lt_coe, enorm_lt_coe] using hw

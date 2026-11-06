@@ -205,7 +205,7 @@ open scoped ZeroObject
 instance hasZeroObject : HasZeroObject (DifferentialObject S C) where
   zero := ⟨{ obj := 0, d := 0 },
     { unique_to := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩,
-      unique_from := fun X => ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩ }⟩
+      unique_from X := ⟨⟨⟨{ f := 0 }⟩, fun f => by ext⟩⟩ }⟩
 
 end DifferentialObject
 
@@ -313,16 +313,16 @@ instance : HasShift (DifferentialObject S C) S :=
     { F := shiftFunctor C
       zero := shiftZero C
       add := shiftFunctorAdd C
-      assoc_hom_app := fun m₁ m₂ m₃ X => by
+      assoc_hom_app m₁ m₂ m₃ X := by
         ext1
         convert! shiftFunctorAdd_assoc_hom_app m₁ m₂ m₃ X.obj
         dsimp [shiftFunctorAdd']
         simp
-      zero_add_hom_app := fun n X => by
+      zero_add_hom_app n X := by
         ext1
         convert! shiftFunctorAdd_zero_add_hom_app n X.obj
         simp
-      add_zero_hom_app := fun n X => by
+      add_zero_hom_app n X := by
         ext1
         convert! shiftFunctorAdd_add_zero_hom_app n X.obj
         simp }

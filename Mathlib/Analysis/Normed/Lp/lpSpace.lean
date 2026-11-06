@@ -887,7 +887,7 @@ variable [∀ i, StarRing (B i)] [∀ i, NormedStarGroup (B i)]
 
 instance inftyStarRing : StarRing (lp B ∞) :=
   { lp.instStarAddMonoid with
-    star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
+    star_mul _f _g := ext <| star_mul (R := ∀ i, B i) _ _ }
 
 instance inftyCStarRing [∀ i, CStarRing (B i)] : CStarRing (lp B ∞) where
   norm_mul_self_le f := by

@@ -84,7 +84,7 @@ theorem sdiff_mem (h𝒜 : IsSetAlgebra 𝒜) (s_mem : s ∈ 𝒜) (t_mem : t �
 theorem isSetRing (h𝒜 : IsSetAlgebra 𝒜) : IsSetRing 𝒜 where
   empty_mem := h𝒜.empty_mem
   union_mem := h𝒜.union_mem
-  sdiff_mem := fun _ _ ↦ h𝒜.sdiff_mem
+  sdiff_mem _ _ := h𝒜.sdiff_mem
 
 /-- An algebra of sets is closed by finite unions. -/
 theorem biUnion_mem {ι : Type*} (h𝒜 : IsSetAlgebra 𝒜) {s : ι → Set α} (S : Finset ι)

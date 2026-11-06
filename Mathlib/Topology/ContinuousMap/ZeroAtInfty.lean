@@ -374,7 +374,7 @@ theorem isBounded_image (f : C₀(α, β)) (s : Set α) : IsBounded (f '' s) :=
 
 instance (priority := 100) instBoundedContinuousMapClass : BoundedContinuousMapClass F α β :=
   { ‹ZeroAtInftyContinuousMapClass F α β› with
-    map_bounded := fun f => ZeroAtInftyContinuousMap.bounded f }
+    map_bounded f := ZeroAtInftyContinuousMap.bounded f }
 
 /-- Construct a bounded continuous function from a continuous function vanishing at infinity. -/
 @[simps!]
@@ -558,7 +558,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance instStarRing : StarRing C₀(α, β) :=
   { ZeroAtInftyContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul f g := ext fun x => star_mul (f x) (g x) }
 
 end StarRing
 

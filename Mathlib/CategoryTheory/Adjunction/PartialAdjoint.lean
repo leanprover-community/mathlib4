@@ -157,20 +157,20 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
   homEquiv {Y} :=
     { toFun := fun f ↦ hc.desc (Cocone.mk _
         { app := fun j ↦ F.partialLeftAdjointHomEquiv (c'.ι.app j ≫ f)
-          naturality := fun j j' φ ↦ by
+          naturality j j' φ := by
             dsimp
             rw [comp_id, ← c'.w φ, ← partialLeftAdjointHomEquiv_map_comp, assoc]
             dsimp })
-      invFun := fun g ↦ hc'.desc (Cocone.mk _
+      invFun g := hc'.desc (Cocone.mk _
         { app := fun j ↦ F.partialLeftAdjointHomEquiv.symm (c.ι.app j ≫ g)
-          naturality := fun j j' φ ↦ by
+          naturality j j' φ := by
             apply F.partialLeftAdjointHomEquiv.injective
             have := c.w φ
             dsimp at this ⊢
             rw [comp_id, Equiv.apply_symm_apply, partialLeftAdjointHomEquiv_map_comp,
               Equiv.apply_symm_apply, reassoc_of% this] })
-      left_inv := fun f ↦ hc'.hom_ext (fun j ↦ by simp)
-      right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
+      left_inv f := hc'.hom_ext (fun j ↦ by simp)
+      right_inv g := hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
     simp only [IsColimit.fac, IsColimit.fac_assoc, partialLeftAdjointHomEquiv_comp,
@@ -307,21 +307,21 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
   homEquiv {Y} :=
     { toFun := fun f ↦ hc.lift (Cone.mk _
         { app := fun j ↦ F.partialRightAdjointHomEquiv (f ≫ c'.π.app j)
-          naturality := fun j j' φ ↦ by
+          naturality j j' φ := by
             dsimp
             rw [id_comp, ← c'.w φ, ← partialRightAdjointHomEquiv_map_comp,
               ← assoc]
             dsimp })
-      invFun := fun g ↦ hc'.lift (Cone.mk _
+      invFun g := hc'.lift (Cone.mk _
         { app := fun j ↦ F.partialRightAdjointHomEquiv.symm (g ≫ c.π.app j)
-          naturality := fun j j' φ ↦ by
+          naturality j j' φ := by
             apply F.partialRightAdjointHomEquiv.injective
             have := c.w φ
             dsimp at this ⊢
             rw [id_comp, Equiv.apply_symm_apply, partialRightAdjointHomEquiv_map_comp,
               Equiv.apply_symm_apply, assoc, this] })
-      left_inv := fun f ↦ hc'.hom_ext (fun j ↦ by simp)
-      right_inv := fun g ↦ hc.hom_ext (fun j ↦ by simp) }
+      left_inv f := hc'.hom_ext (fun j ↦ by simp)
+      right_inv g := hc.hom_ext (fun j ↦ by simp) }
   homEquiv_comp {Y Y'} g f := hc.hom_ext (fun j ↦ by
     dsimp
     simp only [IsLimit.fac, partialRightAdjointHomEquiv_comp, assoc])

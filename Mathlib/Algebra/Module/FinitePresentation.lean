@@ -501,8 +501,8 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
   let eₛ : LocalizedModule.Away t M ≃ₗ[Rₛ] LocalizedModule.Away t N :=
     { __ := lₛ,
       invFun := ((hu₀.unit⁻¹).1 • lₛ'),
-      left_inv := fun x ↦ congr($H_left x),
-      right_inv := fun x ↦ congr($H_right x) }
+      left_inv x := congr($H_left x),
+      right_inv x := congr($H_right x) }
   exact eₛ.bijective
 
 /-- Let `M` be a finite `R`-module and `N` be a finitely presented `R`-module. If `f : M →ₗ[R] N`

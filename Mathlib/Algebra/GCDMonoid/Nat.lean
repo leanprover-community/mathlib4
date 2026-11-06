@@ -49,8 +49,8 @@ theorem lcm_eq_nat_lcm (m n : ℕ) : lcm m n = Nat.lcm m n :=
 instance : StrongNormalizedGCDMonoid ℕ :=
   { (inferInstance : GCDMonoid ℕ),
     (inferInstance : StrongNormalizationMonoid ℕ) with
-    normalize_gcd := fun _ _ => normalize_eq _
-    normalize_lcm := fun _ _ => normalize_eq _ }
+    normalize_gcd _ _ := normalize_eq _
+    normalize_lcm _ _ := normalize_eq _ }
 
 namespace Int
 
@@ -121,8 +121,8 @@ instance : GCDMonoid ℤ where
 instance : StrongNormalizedGCDMonoid ℤ :=
   { Int.strongNormalizationMonoid,
     (inferInstance : GCDMonoid ℤ) with
-    normalize_gcd := fun _ _ => normalize_natCast _
-    normalize_lcm := fun _ _ => normalize_natCast _ }
+    normalize_gcd _ _ := normalize_natCast _
+    normalize_lcm _ _ := normalize_natCast _ }
 
 theorem coe_gcd (i j : ℤ) : ↑(Int.gcd i j) = GCDMonoid.gcd i j :=
   rfl

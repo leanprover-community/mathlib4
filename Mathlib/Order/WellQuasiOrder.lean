@@ -151,7 +151,7 @@ theorem WellQuasiOrdered.wellFounded {α : Type*} {r : α → α → Prop} [IsPr
   let _ : Preorder α :=
     { le := r
       le_refl := refl_of r
-      le_trans := fun _ _ _ => trans_of r }
+      le_trans _ _ _ := trans_of r }
   have : WellQuasiOrderedLE α := ⟨h⟩
   exact wellFounded_lt
 

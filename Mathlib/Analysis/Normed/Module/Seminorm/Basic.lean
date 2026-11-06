@@ -148,7 +148,7 @@ variable (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
   smul r p :=
     { r • p.toAddGroupSeminorm with
-      toFun := fun x => r • p x
+      toFun x := r • p x
       smul' := fun _ _ => by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
@@ -166,7 +166,7 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
 instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
-      toFun := fun x => p x + q x
+      toFun x := p x + q x
       smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) where
@@ -270,7 +270,7 @@ variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
-    toFun := fun x => p (f x)
+    toFun x := p (f x)
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' _ _ := by simp only [map_smulₛₗ _, map_smul_eq_mul, RingHomIsometric.norm_map] }
 
@@ -314,7 +314,7 @@ theorem comp_mono {p q : Seminorm 𝕜₂ E₂} (f : E →ₛₗ[σ₁₂] E₂)
 /-- The composition as an `AddMonoidHom`. -/
 @[simps]
 def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Seminorm 𝕜 E where
-  toFun := fun p => p.comp f
+  toFun p := p.comp f
   map_zero' := zero_comp f
   map_add' := fun p q => add_comp p q f
 
@@ -424,7 +424,7 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
 noncomputable instance instInf : Min (Seminorm 𝕜 E) where
   min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
-      toFun := fun x => ⨅ u : E, p u + q (x - u)
+      toFun x := ⨅ u : E, p u + q (x - u)
       smul' := by
         intro a x
         obtain rfl | ha := eq_or_ne a 0
@@ -447,13 +447,13 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
 noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
   { Seminorm.instSemilatticeSup with
     inf := (· ⊓ ·)
-    inf_le_left := fun p q x =>
+    inf_le_left p q x :=
       ciInf_le_of_le bddBelow_range_add x <| by
         simp only [sub_self, map_zero, add_zero]; rfl
-    inf_le_right := fun p q x =>
+    inf_le_right p q x :=
       ciInf_le_of_le bddBelow_range_add 0 <| by
         simp only [map_zero, zero_add, sub_zero]; rfl
-    le_inf := fun a _ _ hab hac _ =>
+    le_inf a _ _ hab hac _ :=
       le_ciInf fun _ => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :

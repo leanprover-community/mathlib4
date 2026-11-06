@@ -276,7 +276,7 @@ def includeLeft : A →ₐ[R] 𝒜 ᵍ⊗[R] ℬ where
 def includeRight : B →ₐ[R] (𝒜 ᵍ⊗[R] ℬ) :=
   AlgHom.ofLinearMap (R := R) (A := B) (B := 𝒜 ᵍ⊗[R] ℬ)
     (f := {
-       toFun := fun b => 1 ᵍ⊗ₜ b
+       toFun b := 1 ᵍ⊗ₜ b
        map_add' := by simp [tmul, TensorProduct.tmul_add]
        map_smul' := by simp [tmul, TensorProduct.tmul_smul] })
     (map_one := rfl)

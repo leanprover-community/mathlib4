@@ -109,7 +109,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
   obtain ⟨α, hα⟩ := Field.exists_primitive_element F E
   let iso : F⟮α⟯ ≃ₐ[F] E :=
     { toFun := fun e => e.val
-      invFun := fun e => ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
+      invFun e := ⟨e, by rw [hα]; exact IntermediateField.mem_top⟩
       map_mul' := fun _ _ => rfl
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }

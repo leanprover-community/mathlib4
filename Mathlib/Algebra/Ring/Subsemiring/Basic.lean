@@ -238,15 +238,15 @@ instance : CompleteLattice (Subsemiring R) :=
         (fun {s t : Subsemiring R} => show (s : Set R) ⊆ t ↔ s ≤ t from SetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _ hx =>
+    bot_le s _ hx :=
       let ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ natCast_mem s n
     top := ⊤
-    le_top := fun _ _ _ => mem_top _
+    le_top _ _ _ := mem_top _
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right
+    le_inf _ _ _ h₁ h₂ _ hx := ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -878,10 +878,10 @@ def subsemiringCongr (h : s = t) : s ≃+* t :=
 `RingHom.rangeS`. -/
 def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.rangeS :=
   { f.rangeSRestrict with
-    toFun := fun x => f.rangeSRestrict x
-    invFun := fun x => (g ∘ f.rangeS.subtype) x
+    toFun x := f.rangeSRestrict x
+    invFun x := (g ∘ f.rangeS.subtype) x
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <| by
         let ⟨x', hx'⟩ := RingHom.mem_rangeS.mp x.prop
         simp [← hx', h x'] }

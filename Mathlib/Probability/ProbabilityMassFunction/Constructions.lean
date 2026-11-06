@@ -154,8 +154,8 @@ where `x` is in universe `0`, but the return value is in universe `u`.
 instance : ULiftable PMF.{u} PMF.{v} where
   congr e :=
     { toFun := map e, invFun := map e.symm
-      left_inv := fun a => by simp [map_comp, map_id]
-      right_inv := fun a => by simp [map_comp, map_id] }
+      left_inv a := by simp [map_comp, map_id]
+      right_inv a := by simp [map_comp, map_id] }
 
 section OfFinset
 

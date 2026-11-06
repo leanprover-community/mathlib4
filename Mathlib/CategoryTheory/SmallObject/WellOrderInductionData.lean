@@ -95,7 +95,7 @@ structure Extension (val₀ : F.obj (op ⊥)) (j : J) where
   map_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     F.map (homOfLE hij).op val = d.lift i hi
       { val := fun ⟨⟨k, hk⟩⟩ ↦ F.map (homOfLE (hk.le.trans hij)).op val
-        property := fun f ↦ by
+        property f := by
           dsimp
           rw [← comp_apply, ← map_comp]
           rfl }
@@ -215,7 +215,7 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
     d.Extension val₀ j where
   val := d.lift j hj
     { val := fun ⟨i, hi⟩ ↦ (e i hi).val
-      property := fun f ↦ by dsimp; apply compatibility }
+      property f := by dsimp; apply compatibility }
   map_zero := by
     rw [d.map_lift _ _ _ _ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)]
     simpa using (e ⊥ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)).map_zero
@@ -268,7 +268,7 @@ variable [WellFoundedLT J]
 this is the section of `F` that is determined by `val₀ : F.obj (op ⊥)` -/
 noncomputable def sectionsMk (val₀ : F.obj (op ⊥)) : F.sections where
   val j := (default : d.Extension val₀ j.unop).val
-  property := fun f ↦ by apply Extension.compatibility
+  property f := by apply Extension.compatibility
 
 lemma sectionsMk_val_op_bot (val₀ : F.obj (op ⊥)) :
     (d.sectionsMk val₀).val (op ⊥) = val₀ := by

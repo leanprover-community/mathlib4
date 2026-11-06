@@ -50,7 +50,7 @@ def Tor (n : ℕ) : C ⥤ C ⥤ C where
 def Tor' (n : ℕ) : C ⥤ C ⥤ C :=
   Functor.flip
     { obj := fun X => Functor.leftDerived ((tensoringRight C).obj X) n
-      map := fun f => NatTrans.leftDerived ((tensoringRight C).map f) n }
+      map f := NatTrans.leftDerived ((tensoringRight C).map f) n }
 
 /-- The higher `Tor` groups for `X` and `Y` are zero if `Y` is projective. -/
 lemma isZero_Tor_succ_of_projective (X Y : C) [Projective Y] (n : ℕ) :

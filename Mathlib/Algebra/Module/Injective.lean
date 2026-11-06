@@ -136,13 +136,13 @@ end Ext
 instance : Min (ExtensionOf i f) where
   min X1 X2 :=
     { X1.toLinearPMap ⊓ X2.toLinearPMap with
-      le := fun x hx =>
+      le x hx :=
         (by
           rcases hx with ⟨x, rfl⟩
           refine ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), ?_⟩
           rw [← X1.is_extension x, ← X2.is_extension x] :
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
-      is_extension := fun _ => X1.is_extension _ }
+      is_extension _ := X1.is_extension _ }
 
 instance : PartialOrder (ExtensionOf i f) :=
   PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
@@ -168,7 +168,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine le_trans hnonempty.some.le
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-    is_extension := fun m => by
+    is_extension m := by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ _ h1
@@ -200,7 +200,7 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
       le := le_refl _
-      is_extension := fun m => by
+      is_extension m := by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
         dsimp
         apply congrArg

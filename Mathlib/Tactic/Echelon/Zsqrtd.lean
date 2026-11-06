@@ -45,7 +45,7 @@ def zsqrtdOps (d : ℤ) : RingOps (ℤ√d) where
   one := 1
   mul := (· * ·)
   sub := (· - ·)
-  divExact := fun x y =>
+  divExact x y :=
     let z := x * star y
     let n := y.norm
     ⟨z.re / n, z.im / n⟩

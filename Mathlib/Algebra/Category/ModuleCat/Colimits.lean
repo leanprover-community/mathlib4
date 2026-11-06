@@ -64,7 +64,7 @@ noncomputable def colimitCocone : Cocone F where
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
         simp)
-      naturality := fun i j f => by
+      naturality i j f := by
         apply (forget₂ _ AddCommGrpCat).map_injective
         simp only [Functor.map_comp, forget₂_map_homMk]
         dsimp

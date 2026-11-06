@@ -93,8 +93,8 @@ instance [MulOneClass M] [MulOneClass N] [IsDedekindFiniteMonoid M] [IsDedekindF
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
   { npow := fun z a => ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
-    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+    npow_zero _ := Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ _ _ := Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
 
@@ -122,7 +122,7 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
   { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
-    inv_eq_of_mul := fun _ _ h =>
+    inv_eq_of_mul _ _ h :=
       Prod.ext (inv_eq_of_mul_eq_one_right congr(fst $h))
         (inv_eq_of_mul_eq_one_right congr(snd $h)),
     inv_inv := by simp }
@@ -556,8 +556,8 @@ variable (M N M' N')
 The name matches `mul_mul_mul_comm` -/]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
-    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
-    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    toFun mnmn := ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun mmnn := ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
     map_mul' := fun _mnmn _mnmn' => rfl }
 
 @[to_additive (attr := simp) prodProdProdComm_toEquiv]

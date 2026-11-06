@@ -403,7 +403,7 @@ end
 def codRestrict (f : M [⋀^ι]→ₗ[R] N) (p : Submodule R N) (h : ∀ v, f v ∈ p) :
     M [⋀^ι]→ₗ[R] p :=
   { f.toMultilinearMap.codRestrict p h with
-    toFun := fun v => ⟨f v, h v⟩
+    toFun v := ⟨f v, h v⟩
     map_eq_zero_of_eq' := fun _ _ _ hv hij => Subtype.ext <| map_eq_zero_of_eq _ _ hv hij }
 
 end AlternatingMap
@@ -688,7 +688,7 @@ This is the alternating version of `MultilinearMap.domDomCongr`. -/
 @[simps]
 def domDomCongr (σ : ι ≃ ι') (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι']→ₗ[R] N :=
   { f.toMultilinearMap.domDomCongr σ with
-    toFun := fun v => f (v ∘ σ)
+    toFun v := f (v ∘ σ)
     map_eq_zero_of_eq' := fun v i j hv hij =>
       f.map_eq_zero_of_eq (v ∘ σ) (i := σ.symm i) (j := σ.symm j)
         (by simpa using hv) (σ.symm.injective.ne hij) }

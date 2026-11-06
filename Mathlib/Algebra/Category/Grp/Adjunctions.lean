@@ -209,7 +209,7 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
 /-- The forgetful-units adjunction between `CommGrpCat` and `CommMonCat`. -/
 def CommGrpCat.forget₂CommMonAdj : forget₂ CommGrpCat CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
-    homEquiv := fun _ Y ↦
+    homEquiv _ Y :=
       { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
         invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
     unit.app X := ofHom toUnits.toMonoidHom

@@ -95,8 +95,8 @@ def colimitTypeRelEquivOrbitRelQuotient :
     (colimitTypeRel_iff_orbitRel J a.2 b.2).mp h
   invFun := Quot.lift (fun x => Quot.mk _ ⟨SingleObj.star G, x⟩) <| fun a b h =>
     Quot.sound <| (colimitTypeRel_iff_orbitRel J a b).mpr h
-  left_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
-  right_inv := fun x => Quot.inductionOn x (fun _ ↦ rfl)
+  left_inv x := Quot.inductionOn x (fun _ ↦ rfl)
+  right_inv x := Quot.inductionOn x (fun _ ↦ rfl)
 
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/

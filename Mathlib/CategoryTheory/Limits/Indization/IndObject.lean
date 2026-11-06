@@ -122,7 +122,7 @@ def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
   ι := { app := fun _ => 𝟙 _ }
   isColimit :=
     { desc := fun s => s.ι.app ⟨PUnit.unit⟩
-      uniq := fun _ _ h => h ⟨PUnit.unit⟩ }
+      uniq _ _ h := h ⟨PUnit.unit⟩ }
 
 end IndObjectPresentation
 

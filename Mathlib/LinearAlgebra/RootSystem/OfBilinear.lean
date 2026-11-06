@@ -152,7 +152,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   reflectionPerm x :=
     { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+      invFun y := ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
       left_inv := by
         intro y

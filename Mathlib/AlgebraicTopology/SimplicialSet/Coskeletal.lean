@@ -71,15 +71,15 @@ noncomputable def lift {X : SSet.{u}} (sx : StrictSegal X) {n}
     (s : Cone (proj (op ⦋n⦌) (Truncated.inclusion 2).op ⋙
       (Truncated.inclusion 2).op ⋙ X)) (x : s.pt) : X _⦋n⦌ :=
   sx.spineToSimplex {
-    vertex := fun i ↦ s.π.app (.mk (Y := op ⦋0⦌₂) (.op (SimplexCategory.const _ _ i))) x
-    arrow := fun i ↦ s.π.app (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
-    arrow_src := fun i ↦ by
+    vertex i := s.π.app (.mk (Y := op ⦋0⦌₂) (.op (SimplexCategory.const _ _ i))) x
+    arrow i := s.π.app (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i)))) x
+    arrow_src i := by
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
         strArrowMk₂ (⦋0⦌.const _ i.castSucc) :=
           StructuredArrow.homMk (Hom.tr (δ 1)).op
           (Quiver.Hom.unop_inj (by ext x; fin_cases x; rfl))
       congrm $(s.w φ) x
-    arrow_tgt := fun i ↦ by
+    arrow_tgt i := by
       dsimp
       let φ : strArrowMk₂ (mkOfLe _ _ (Fin.castSucc_le_succ i)) ⟶
           strArrowMk₂ (⦋0⦌.const _ i.succ) :=

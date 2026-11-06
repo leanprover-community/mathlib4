@@ -239,7 +239,7 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
-  map_continuous := fun f => f.continuous
+  map_continuous f := f.continuous
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)

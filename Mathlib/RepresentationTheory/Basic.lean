@@ -423,7 +423,7 @@ variable (k G A : Type*) [Semiring k] [Monoid G] [AddCommMonoid A] [Module k A]
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
 `k`-linear `G`-representation on `A`. -/
 def ofDistribMulAction : Representation k G A where
-  toFun := fun m =>
+  toFun m :=
     { DistribMulAction.toAddMonoidEnd G A m with
       map_smul' := smul_comm _ }
   map_one' := by ext; exact one_smul _ _

@@ -143,8 +143,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵒᵖᴸ B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => 𝟙 (𝟙 a)
-  mapComp := fun f g => 𝟙 (f ≫ g)
+  mapId a := 𝟙 (𝟙 a)
+  mapComp f g := 𝟙 (f ≫ g)
 
 instance : Inhabited (B ⥤ᵒᵖᴸ B) :=
   ⟨id B⟩
@@ -176,28 +176,28 @@ set_option backward.isDefEq.respectTransparency false in
 --@[simps]
 def comp (F : B ⥤ᵒᵖᴸ C) (G : C ⥤ᵒᵖᴸ D) : B ⥤ᵒᵖᴸ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
-  mapId := fun a => (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
-  mapComp := fun f g => (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
-  mapComp_naturality_left := fun η g => by
+  mapId a := (G.mapFunctor _ _).map (F.mapId a) ≫ G.mapId (F.obj a)
+  mapComp f g := (G.mapFunctor _ _).map (F.mapComp f g) ≫ G.mapComp (F.map f) (F.map g)
+  mapComp_naturality_left η g := by
     dsimp
     rw [← G.map₂_comp_assoc, mapComp_naturality_left, G.map₂_comp_assoc, mapComp_naturality_left,
       assoc]
-  mapComp_naturality_right := fun η => by
+  mapComp_naturality_right η := by
     dsimp
     intros
     rw [← G.map₂_comp_assoc, mapComp_naturality_right, G.map₂_comp_assoc,
       mapComp_naturality_right, assoc]
-  map₂_associator := fun f g h => by
+  map₂_associator f g h := by
     dsimp
     simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
       whiskerLeft_comp, assoc]
     simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
-  map₂_leftUnitor := fun f => by
+  map₂_leftUnitor f := by
     dsimp
     simp only [map₂_leftUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
-  map₂_rightUnitor := fun f => by
+  map₂_rightUnitor f := by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
       whiskerLeft_comp, assoc]

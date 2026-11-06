@@ -63,15 +63,15 @@ the limit `F ⋙ eval C c n`. -/
 noncomputable def coneOfHasLimitEval : Cone F where
   pt :=
     { X := fun n => limit (F ⋙ eval C c n)
-      d := fun n m => limMap { app := fun j => (F.obj j).d n m }
-      shape := fun {n m} h => by
+      d n m := limMap { app := fun j => (F.obj j).d n m }
+      shape {n m} h := by
         ext j
         rw [limMap_π]
         dsimp
         rw [(F.obj j).shape _ _ h, comp_zero, zero_comp] }
   π :=
     { app := fun j => { f := fun _ => limit.π _ j }
-      naturality := fun i j φ => by
+      naturality i j φ := by
         ext n
         dsimp
         simp only [Category.id_comp]
@@ -140,15 +140,15 @@ the colimit of `F ⋙ eval C c n`. -/
 noncomputable def coconeOfHasColimitEval : Cocone F where
   pt :=
     { X := fun n => colimit (F ⋙ eval C c n)
-      d := fun n m => colimMap { app := fun j => (F.obj j).d n m }
-      shape := fun {n m} h => by
+      d n m := colimMap { app := fun j => (F.obj j).d n m }
+      shape {n m} h := by
         ext j
         rw [ι_colimMap]
         dsimp
         rw [(F.obj j).shape _ _ h, zero_comp, comp_zero] }
   ι :=
     { app := fun j => { f := fun n => colimit.ι (F ⋙ eval C c n) j }
-      naturality := fun i j φ => by
+      naturality i j φ := by
         ext n
         dsimp
         simp only [Category.comp_id]

@@ -227,7 +227,7 @@ end
 instance bicategory : Bicategory.{max v u, max v u} Cat.{v, u} where
   id C := (𝟭 C).toCatHom
   comp F G := (F.toFunctor ⋙ G.toFunctor).toCatHom
-  homCategory := fun _ _ => Hom.instCategory
+  homCategory _ _ := Hom.instCategory
   whiskerLeft F _ _ η := (Functor.whiskerLeft F.toFunctor η.toNatTrans).toCatHom₂
   whiskerRight η H := (Functor.whiskerRight η.toNatTrans H.toFunctor).toCatHom₂
   associator F G H := Hom.isoMk

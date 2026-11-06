@@ -76,7 +76,7 @@ theorem zero_left (X : C) : IsPullback (0 : 0 ⟶ X) (0 : (0 : C) ⟶ 0) (𝟙 X
   { w := by simp
     isLimit' :=
       ⟨{  lift := fun _ => 0
-          fac := fun s => by
+          fac s := by
             simpa [eq_iff_true_of_subsingleton] using
               @PullbackCone.equalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simpa using (PullbackCone.condition s).symm) }⟩ }
@@ -185,7 +185,7 @@ theorem zero_right (X : C) : IsPushout (0 : X ⟶ 0) (𝟙 X) (0 : (0 : C) ⟶ 0
   { w := by simp
     isColimit' :=
       ⟨{  desc := fun _ => 0
-          fac := fun s => by
+          fac s := by
             have c :=
               @PushoutCocone.coequalizer_ext _ _ _ _ _ _ _ s _ 0 (𝟙 _)
                 (by simp [eq_iff_true_of_subsingleton]) (by simpa using PushoutCocone.condition s)

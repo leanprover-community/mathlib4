@@ -261,7 +261,7 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 def _root_.Equiv.embeddingUnique {α β : Type*} [Unique α] : (α ↪ β) ≃ β where
   toFun f := f default
   invFun b := {
-    toFun := fun _ ↦ b
+    toFun _ := b
     inj' x y h := by simp [Unique.uniq inferInstance] }
   left_inv f := by ext; simp [Unique.uniq]
 

@@ -724,7 +724,7 @@ def ofLeftInverse (f : M →ₙ* N) {g : N → M} (h : Function.LeftInverse g f)
     toFun := f.srangeRestrict
     invFun := g ∘ MulMemClass.subtype f.srange
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := MulHom.mem_srange.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }
@@ -740,8 +740,8 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
     (e : M →ₙ* N).subsemigroupMap S,
     (e : M ≃ N).image S with
-    toFun := fun x => ⟨e x, _⟩
-    invFun := fun x => ⟨e.symm x, _⟩ }
+    toFun x := ⟨e x, _⟩
+    invFun x := ⟨e.symm x, _⟩ }
 
 end MulEquiv
 

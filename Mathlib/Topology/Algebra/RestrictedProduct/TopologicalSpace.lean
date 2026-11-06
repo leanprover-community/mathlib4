@@ -254,7 +254,7 @@ Note: we spell "`S` has finite complement" as `cofinite ≤ 𝓟 S`. -/
 theorem weaklyLocallyCompactSpace_of_principal [∀ i, WeaklyLocallyCompactSpace (R i)]
     (hS : cofinite ≤ 𝓟 S) (hAcompact : ∀ i ∈ S, IsCompact (A i)) :
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]_[𝓟 S]) where
-  exists_compact_mem_nhds := fun x ↦ by
+  exists_compact_mem_nhds x := by
     rw [le_principal_iff, mem_cofinite] at hS
     classical
     have : ∀ i, ∃ K, IsCompact K ∧ K ∈ 𝓝 (x i) := fun i ↦ exists_compact_mem_nhds (x i)
@@ -406,7 +406,7 @@ are also compact, then the restricted product `Πʳ i, [R i, A i]` is weakly loc
 theorem weaklyLocallyCompactSpace_of_cofinite [∀ i, WeaklyLocallyCompactSpace (R i)]
     (hAcompact : ∀ᶠ i in cofinite, IsCompact (A i)) :
     WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) where
-  exists_compact_mem_nhds := fun x ↦ by
+  exists_compact_mem_nhds x := by
     set S := {i | IsCompact (A i) ∧ x i ∈ A i}
     have hS : cofinite ≤ 𝓟 S := le_principal_iff.mpr (hAcompact.and x.2)
     have hSx : ∀ i ∈ S, x i ∈ A i := fun i hi ↦ hi.2

@@ -85,9 +85,9 @@ instance : CoeOut (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
   { f with
-    invFun := fun r => (f r.unop).unop
-    left_inv := fun r => involution r
-    right_inv := fun _ => MulOpposite.unop_injective <| involution _
+    invFun r := (f r.unop).unop
+    left_inv r := involution r
+    right_inv _ := MulOpposite.unop_injective <| involution _
     involution' := involution }
 
 @[simp]

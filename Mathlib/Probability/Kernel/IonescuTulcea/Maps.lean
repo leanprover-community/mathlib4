@@ -96,11 +96,11 @@ def IicProdIoc {a b : ι} (hab : a ≤ b) :
   toFun x i := if h : i ≤ a then x.1 ⟨i, mem_Iic.2 h⟩
     else x.2 ⟨i, mem_Ioc.2 ⟨not_le.1 h, mem_Iic.1 i.2⟩⟩
   invFun x := ⟨fun i ↦ x ⟨i.1, Iic_subset_Iic.2 hab i.2⟩, fun i ↦ x ⟨i.1, Ioc_subset_Iic_self i.2⟩⟩
-  left_inv := fun x ↦ by
+  left_inv x := by
     ext i
     · simp [mem_Iic.1 i.2]
     · simp [not_le.2 (mem_Ioc.1 i.2).1]
-  right_inv := fun x ↦ funext fun i ↦ by
+  right_inv x := funext fun i ↦ by
     by_cases hi : i.1 ≤ a <;> simp [hi]
   measurable_toFun := by
     refine .of_eval (fun x ↦ ?_)
@@ -119,15 +119,15 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
 on dependent functions. -/
 def IicProdIoi (a : ι) :
     ((Π i : Iic a, X i) × (Π i : Set.Ioi a, X i)) ≃ᵐ (Π n, X n) where
-  toFun := fun x i ↦ if hi : i ≤ a
+  toFun x i := if hi : i ≤ a
     then x.1 ⟨i, mem_Iic.2 hi⟩
     else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
-  invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
-  left_inv := fun x ↦ by
+  invFun x := (fun i ↦ x i, fun i ↦ x i)
+  left_inv x := by
     ext i
     · simp [mem_Iic.1 i.2]
     · simp [not_le.2 <| Set.mem_Ioi.1 i.2]
-  right_inv := fun x ↦ by simp
+  right_inv x := by simp
   measurable_toFun := by
     refine .of_eval (fun i ↦ ?_)
     by_cases hi : i ≤ a <;> simp only [Equiv.coe_fn_mk, hi, ↓reduceDIte]
@@ -146,8 +146,8 @@ variable {X : ℕ → Type*} [∀ n, MeasurableSpace (X n)]
 def MeasurableEquiv.piSingleton (a : ℕ) : X (a + 1) ≃ᵐ Π i : Ioc a (a + 1), X i where
   toFun x i := (Nat.mem_Ioc_succ.1 i.2).symm ▸ x
   invFun x := x ⟨a + 1, right_mem_Ioc.2 a.lt_succ_self⟩
-  left_inv := fun x ↦ by simp
-  right_inv := fun x ↦ funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
+  left_inv x := by simp
+  right_inv x := funext fun i ↦ by cases Nat.mem_Ioc_succ' i; rfl
   measurable_toFun := by
     simp_rw [eqRec_eq_cast]
     refine .of_eval (fun i ↦ (MeasurableEquiv.cast _ ?_).measurable)

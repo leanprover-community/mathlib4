@@ -262,7 +262,7 @@ theorem trans_symm_eq_iff_forall_isSome {f : α ≃. β} :
 
 instance instBotPEquiv : Bot (α ≃. β) :=
   ⟨{  toFun := fun _ => none
-      invFun := fun _ => none
+      invFun _ := none
       inv := by simp }⟩
 
 instance : Inhabited (α ≃. β) :=
@@ -385,17 +385,17 @@ instance : OrderBot (α ≃. β) :=
 
 instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
   { instPartialOrderPEquiv with
-    inf := fun f g =>
+    inf f g :=
       { toFun := fun a => if f a = g a then f a else none
-        invFun := fun b => if f.symm b = g.symm b then f.symm b else none
-        inv := fun a b => by
+        invFun b := if f.symm b = g.symm b then f.symm b else none
+        inv a b := by
           have hf := @mem_iff_mem _ _ f a b
           have hg := @mem_iff_mem _ _ g a b
           simp only [Option.mem_def] at *
           grind }
-    inf_le_left := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
-    inf_le_right := fun _ _ _ _ => by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
-    le_inf := fun f g h fg gh a b => by
+    inf_le_left _ _ _ _ := by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
+    inf_le_right _ _ _ _ := by simp only [coe_mk, mem_def]; split_ifs <;> simp [*]
+    le_inf f g h fg gh a b := by
       intro H
       have hf := fg a b H
       have hg := gh a b H

@@ -965,10 +965,10 @@ abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜 E with
     norm_sq_eq_re_inner := norm_sq_eq_re_inner
-    conj_inner_symm := fun _ _ => inner_re_symm _ _
-    add_left := fun x y z => by
+    conj_inner_symm _ _ := inner_re_symm _ _
+    add_left x y z := by
       simp +instances only [Inner.rclikeToReal, inner_add_left, map_add]
-    smul_left := fun x y r => by
+    smul_left x y r := by
       let := NormedSpace.restrictScalars ℝ 𝕜 E
       have : r • x = (r : 𝕜) • x := rfl
       simp +instances only [Inner.rclikeToReal, this, conj_trivial, inner_smul_left, conj_ofReal,

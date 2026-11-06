@@ -54,11 +54,11 @@ variable [IsOrderedMonoid α]
 
 @[to_additive]
 instance (priority := 900) IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
-  elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_right _ _ bc a
+  elim a _ _ bc := IsOrderedMonoid.mul_le_mul_right _ _ bc a
 
 @[to_additive]
 instance (priority := 900) IsOrderedMonoid.toMulRightMono : MulRightMono α where
-  elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_left _ _ bc a
+  elim a _ _ bc := IsOrderedMonoid.mul_le_mul_left _ _ bc a
 
 end IsOrderedMonoid
 

@@ -112,9 +112,9 @@ variable {k K}
 /-- The action of the Galois group on infinite places. -/
 @[simps! smul_coe_apply]
 instance : MulAction Gal(K/k) (InfinitePlace K) where
-  smul := fun σ w ↦ w.comap σ.symm
-  one_smul := fun _ ↦ rfl
-  mul_smul := fun _ _ _ ↦ rfl
+  smul σ w := w.comap σ.symm
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
 
 lemma smul_eq_comap : σ • w = w.comap σ.symm := rfl
 

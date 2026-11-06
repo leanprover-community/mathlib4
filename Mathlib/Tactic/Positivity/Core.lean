@@ -111,19 +111,19 @@ initialize positivityExt : PersistentEnvExtension Entry (Entry × PositivityExt)
   let insert kss v dt := kss.foldl (fun dt ks => dt.insertKeyValue ks v) dt
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
+    addImportedFn s := do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt (kss, n) => do
         pure (insert kss (← mkPositivityExt n) dt)
       pure ([], dt)
     addEntryFn := fun (entries, s) ((kss, n), ext) => ((kss, n) :: entries, insert kss ext s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    exportEntriesFn s := s.1.reverse.toArray
   }
 
 initialize registerBuiltinAttribute {
   name := `positivity
   descr := "adds a positivity extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| positivity $es,*) => do
       ensureAttrDeclIsMeta `positivity declName kind
       unless kind == AttributeKind.global do

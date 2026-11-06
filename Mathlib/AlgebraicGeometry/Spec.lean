@@ -98,7 +98,7 @@ def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
   hom.c :=
     { app := fun U => CommRingCat.ofHom <|
         comap f.hom (unop U) ((TopologicalSpace.Opens.map (Spec.topMap f)).obj (unop U)) fun _ => id
-      naturality := fun {_ _} _ => by ext; rfl }
+      naturality {_ _} _ := by ext; rfl }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

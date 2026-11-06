@@ -161,8 +161,8 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
     { F := Triangle.shiftFunctor C
       zero := Triangle.shiftFunctorZero C
-      add := fun a b => Triangle.shiftFunctorAdd' C a b _ rfl
-      assoc_hom_app := fun a b c T => by
+      add a b := Triangle.shiftFunctorAdd' C a b _ rfl
+      assoc_hom_app a b c T := by
         ext
         all_goals
           dsimp

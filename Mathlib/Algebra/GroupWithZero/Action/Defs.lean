@@ -284,7 +284,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Injective.distribSMul [AddZeroClass B] [SMul M B] (f : B →+ A)
     (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { hf.smulZeroClass f.toZeroHom smul with
-    smul_add := fun c x y => hf <| by simp only [smul, map_add, smul_add] }
+    smul_add c x y := hf <| by simp only [smul, map_add, smul_add] }
 
 /-- Pushforward a distributive scalar multiplication along a surjective additive monoid
 homomorphism.
@@ -292,7 +292,7 @@ See note [reducible non-instances]. -/
 protected abbrev Function.Surjective.distribSMul [AddZeroClass B] [SMul M B] (f : A →+ B)
     (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : DistribSMul M B :=
   { f.toZeroHom.smulZeroClass smul with
-    smul_add := fun c x y => by
+    smul_add c x y := by
       rcases hf x with ⟨x, rfl⟩
       rcases hf y with ⟨y, rfl⟩
       simp only [smul_add, ← smul, ← map_add] }
@@ -313,7 +313,7 @@ variable (A)
 See note [reducible non-instances]. -/
 abbrev DistribSMul.compFun (f : N → M) : DistribSMul N A :=
   { SMulZeroClass.compFun A f with
-    smul_add := fun x => smul_add (f x) }
+    smul_add x := smul_add (f x) }
 
 /-- Each element of the scalars defines an additive monoid homomorphism. -/
 @[simps]

@@ -40,15 +40,15 @@ variable {B : Type u₁} [Category.{v₁} B] {C : Type u₂} [Category.{v₂} C]
 def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
   obj F :=
     { obj := fun X => (F.obj X.1).obj X.2
-      map := fun {X} {Y} f => (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
-      map_comp := fun f g => by
+      map {X} {Y} f := (F.map f.1).app X.2 ≫ (F.obj Y.1).map f.2
+      map_comp f g := by
         simp only [prod_comp_fst, prod_comp_snd, Functor.map_comp, NatTrans.comp_app,
           Category.assoc]
         slice_lhs 2 3 => rw [← NatTrans.naturality]
         rw [Category.assoc] }
   map T :=
     { app := fun X => (T.app X.1).app X.2
-      naturality := fun X Y f => by
+      naturality X Y f := by
         simp only [Category.assoc]
         slice_lhs 2 3 => rw [NatTrans.naturality]
         slice_lhs 1 2 => rw [← NatTrans.comp_app, NatTrans.naturality, NatTrans.comp_app]
@@ -60,14 +60,14 @@ def uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E where
 def curryObj (F : C × D ⥤ E) : C ⥤ D ⥤ E where
   obj X :=
     { obj := fun Y => F.obj (X, Y)
-      map := fun g => F.map (𝟙 X ×ₘ g)
-      map_id := fun Y => by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
-      map_comp := fun f g => by simp [← F.map_comp] }
+      map g := F.map (𝟙 X ×ₘ g)
+      map_id Y := by rw [← prod_id]; exact F.map_id ⟨X,Y⟩
+      map_comp f g := by simp [← F.map_comp] }
   map f :=
     { app := fun Y => F.map (f ×ₘ 𝟙 Y)
-      naturality := fun {Y} {Y'} g => by simp [← F.map_comp] }
-  map_id := fun X => by ext Y; exact F.map_id _
-  map_comp := fun f g => by ext Y; simp [← F.map_comp]
+      naturality {Y} {Y'} g := by simp [← F.map_comp] }
+  map_id X := by ext Y; exact F.map_id _
+  map_comp f g := by ext Y; simp [← F.map_comp]
 
 /-- The currying functor, taking a functor `(C × D) ⥤ E` and producing a functor `C ⥤ (D ⥤ E)`.
 -/
@@ -77,10 +77,10 @@ def curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E where
   map T :=
     { app := fun X =>
         { app := fun Y => T.app (X, Y)
-          naturality := fun Y Y' g => by
+          naturality Y Y' g := by
             dsimp [curryObj]
             rw [NatTrans.naturality] }
-      naturality := fun X X' f => by
+      naturality X X' f := by
         ext; dsimp [curryObj]
         rw [NatTrans.naturality] }
 

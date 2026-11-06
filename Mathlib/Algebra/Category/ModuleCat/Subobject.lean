@@ -31,8 +31,8 @@ submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow.hom
-      toFun := fun N => Subobject.mk (ofHom N.subtype)
-      right_inv := fun S => Eq.symm (by
+      toFun N := Subobject.mk (ofHom N.subtype)
+      right_inv S := Eq.symm (by
         fapply eq_mk_of_comm
         · apply LinearEquiv.toModuleIso
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
@@ -44,7 +44,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
             exact LinearMap.mem_range_self _
         · ext x
           rfl)
-      left_inv := fun N => by
+      left_inv N := by
         convert
           congr_arg LinearMap.range
             (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using 1

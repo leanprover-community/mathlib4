@@ -292,13 +292,13 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
   { IsLprojection.Subtype.instCompl,
     IsLprojection.Subtype.sdiff,
     IsLprojection.Subtype.boundedOrder with
-    inf_compl_le_bot := fun P =>
+    inf_compl_le_bot P :=
       (Subtype.ext (by rw [coe_inf, coe_compl, coe_bot, ← coe_compl, mul_compl_self])).le
-    top_le_sup_compl := fun P =>
+    top_le_sup_compl P :=
       (Subtype.ext
         (by
           rw [coe_top, coe_sup, coe_compl, add_sub_cancel, ← coe_compl, mul_compl_self,
             sub_zero])).le
-    sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
+    sdiff_eq P Q := Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection

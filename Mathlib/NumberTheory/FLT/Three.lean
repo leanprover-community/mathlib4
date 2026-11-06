@@ -706,8 +706,8 @@ noncomputable def Solution'_descent : Solution' hζ where
   c := λ ^ (S.multiplicity - 1) * S.X
   u := S.u₅
   ha := S.lambda_not_dvd_Y
-  hb := fun h ↦ S.lambda_not_dvd_Z <| Units.dvd_mul_left.1 h
-  hc := fun h ↦ S.X_ne_zero <| by simpa [hζ.zeta_sub_one_prime'.ne_zero] using h
+  hb h := S.lambda_not_dvd_Z <| Units.dvd_mul_left.1 h
+  hc h := S.X_ne_zero <| by simpa [hζ.zeta_sub_one_prime'.ne_zero] using h
   coprime := (isCoprime_mul_unit_left_right S.u₄.isUnit _ _).2 S.isCoprime_Y_Z
   hcdvd := by
     refine dvd_mul_of_dvd_left (dvd_pow_self _ (fun h ↦ ?_)) _

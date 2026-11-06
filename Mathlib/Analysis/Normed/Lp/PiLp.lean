@@ -682,7 +682,7 @@ lemma isometry_ofLp_infty [∀ i, PseudoEMetricSpace (β i)] :
 norm. -/
 instance seminormedAddCommGroup [∀ i, SeminormedAddCommGroup (β i)] :
     SeminormedAddCommGroup (PiLp p β) where
-  dist_eq := fun x y => by
+  dist_eq x y := by
     rcases p.dichotomy with (rfl | h)
     · simp only [dist_eq_iSup, norm_eq_ciSup, dist_eq_norm, add_apply, neg_apply, norm_neg_add]
     · have : p ≠ ∞ := by

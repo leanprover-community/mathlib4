@@ -43,7 +43,7 @@ You can override this definition to set a better def-eq.
 class Preorder (α : Type*) extends LE α, LT α where
   protected le_refl : ∀ a : α, a ≤ a
   protected le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
-  lt := fun a b => a ≤ b ∧ ¬b ≤ a
+  lt a b := a ≤ b ∧ ¬b ≤ a
   protected lt_iff_le_not_ge : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
 attribute [to_dual self (reorder := le_trans (a c, 4 5), lt_iff_le_not_ge (a b))] Preorder.mk

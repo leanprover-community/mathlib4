@@ -214,7 +214,7 @@ variable {R : Type*} [AddCommMonoid R]
 
 /-- The degree of a finsupp function. -/
 def degree : (σ →₀ R) →+ R where
-  toFun := fun d => ∑ i ∈ d.support, d i
+  toFun d := ∑ i ∈ d.support, d i
   map_zero' := by simp
   map_add' := fun _ _ => sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 

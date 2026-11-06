@@ -819,7 +819,7 @@ noncomputable def cyclesFunctor : ShortComplex C ⥤ C where
 @[simps]
 noncomputable def leftHomologyπNatTrans : cyclesFunctor C ⟶ leftHomologyFunctor C where
   app S := leftHomologyπ S
-  naturality := fun _ _ φ => (leftHomologyπ_naturality φ).symm
+  naturality _ _ φ := (leftHomologyπ_naturality φ).symm
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.cycles ⟶ S.X₂` for all short complexes `S`. -/
@@ -832,7 +832,7 @@ noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
 noncomputable def toCyclesNatTrans :
     π₁ ⟶ cyclesFunctor C where
   app S := S.toCycles
-  naturality := fun _ _ φ => (toCycles_naturality φ).symm
+  naturality _ _ φ := (toCycles_naturality φ).symm
 
 end
 

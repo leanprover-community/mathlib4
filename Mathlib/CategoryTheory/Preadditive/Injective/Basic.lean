@@ -97,7 +97,7 @@ end
 
 theorem of_iso {P Q : C} (i : P ≅ Q) (hP : Injective P) : Injective Q :=
   {
-    factors := fun g f mono => by
+    factors g f mono := by
       obtain ⟨h, h_eq⟩ := @Injective.factors C _ P _ _ _ (g ≫ i.inv) f mono
       refine ⟨h ≫ i.hom, ?_⟩
       rw [← Category.assoc, h_eq, Category.assoc, Iso.inv_hom_id, Category.comp_id] }

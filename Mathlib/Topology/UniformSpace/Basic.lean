@@ -432,7 +432,7 @@ instance : Bot (UniformSpace α) :=
       uniformity := 𝓟 SetRel.id
       symm := by simp [Tendsto, SetRel.id]
       comp := lift'_le (mem_principal_self _) <| principal_mono.2 (SetRel.id_comp _).subset
-      nhds_eq_comap_uniformity := fun s => by
+      nhds_eq_comap_uniformity s := by
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [SetRel.id] }⟩
 
@@ -442,7 +442,7 @@ instance : Min (UniformSpace α) :=
       symm := u₁.symm.inf u₂.symm
       comp := (lift'_inf_le _ _ _).trans <| inf_le_inf u₁.comp u₂.comp
       toTopologicalSpace := u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace
-      nhds_eq_comap_uniformity := fun _ ↦ by
+      nhds_eq_comap_uniformity _ := by
         rw [@nhds_inf _ u₁.toTopologicalSpace _, @nhds_eq_comap_uniformity _ u₁,
           @nhds_eq_comap_uniformity _ u₂, comap_inf] }⟩
 
@@ -1103,8 +1103,8 @@ the diagonal in the second part. -/
 instance Sum.instUniformSpace : UniformSpace (α ⊕ β) where
   uniformity := map (fun p : α × α => (inl p.1, inl p.2)) (𝓤 α) ⊔
     map (fun p : β × β => (inr p.1, inr p.2)) (𝓤 β)
-  symm := fun _ hs ↦ ⟨symm_le_uniformity hs.1, symm_le_uniformity hs.2⟩
-  comp := fun s hs ↦ by
+  symm _ hs := ⟨symm_le_uniformity hs.1, symm_le_uniformity hs.2⟩
+  comp s hs := by
     rcases comp_mem_uniformity_sets hs.1 with ⟨tα, htα, Htα⟩
     rcases comp_mem_uniformity_sets hs.2 with ⟨tβ, htβ, Htβ⟩
     filter_upwards [mem_lift' (union_mem_sup (image_mem_map htα) (image_mem_map htβ))]

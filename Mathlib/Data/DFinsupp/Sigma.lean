@@ -44,7 +44,7 @@ variable [DecidableEq ι]
 /-- The natural map between `Π₀ (i : Σ i, α i), δ i.1 i.2` and `Π₀ i (j : α i), δ i j`. -/
 def sigmaCurry [∀ i j, Zero (δ i j)] (f : Π₀ (i : Σ _, _), δ i.1 i.2) :
     Π₀ (i) (j), δ i j where
-  toFun := fun i ↦
+  toFun i :=
   { toFun := fun j ↦ f ⟨i, j⟩,
     support' := f.support'.map (fun ⟨m, hm⟩ ↦
       ⟨m.filterMap (fun ⟨i', j'⟩ ↦ if h : i' = i then some <| h.rec j' else none),

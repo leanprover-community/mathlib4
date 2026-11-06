@@ -71,17 +71,17 @@ protected abbrev nonUnitalSemiring [NonUnitalSemiring β] : NonUnitalSemiring α
 /-- Transfer `AddMonoidWithOne` across an `Equiv` -/
 protected abbrev addMonoidWithOne [AddMonoidWithOne β] : AddMonoidWithOne α :=
   { e.addMonoid, e.one with
-    natCast := fun n => e.invFun n
+    natCast n := e.invFun n
     natCast_zero := e.injective (by simp [zero_def])
-    natCast_succ := fun n => e.injective (by simp [add_def, one_def]) }
+    natCast_succ n := e.injective (by simp [add_def, one_def]) }
 
 /-- Transfer `AddGroupWithOne` across an `Equiv` -/
 protected abbrev addGroupWithOne [AddGroupWithOne β] : AddGroupWithOne α :=
   { e.addMonoidWithOne,
     e.addGroup with
-    intCast := fun n => e.invFun n
-    intCast_ofNat := fun n => by simp only [Int.cast_natCast]; rfl
-    intCast_negSucc := fun _ =>
+    intCast n := e.invFun n
+    intCast_ofNat n := by simp only [Int.cast_natCast]; rfl
+    intCast_negSucc _ :=
       congr(e.symm $((Int.cast_negSucc _).trans <| congr_arg _ (e.apply_symm_apply _).symm)) }
 
 /-- Transfer `NonAssocSemiring` across an `Equiv` -/

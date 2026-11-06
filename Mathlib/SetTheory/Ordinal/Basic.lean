@@ -282,7 +282,7 @@ instance partialOrder : PartialOrder Ordinal where
 
 instance : LinearOrder Ordinal :=
   { (inferInstance : PartialOrder Ordinal) with
-    le_total := fun a b => Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
+    le_total a b := Quotient.inductionOn₂ a b fun ⟨_, r, _⟩ ⟨_, s, _⟩ =>
       (InitialSeg.total r s).recOn (fun f => Or.inl ⟨f⟩) fun f => Or.inr ⟨f⟩
     toDecidableLE := Classical.decRel _ }
 

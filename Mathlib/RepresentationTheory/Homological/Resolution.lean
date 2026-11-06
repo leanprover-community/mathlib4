@@ -88,7 +88,7 @@ def classifyingSpaceUniversalCover [Monoid G] :
   obj n := Action.ofMulAction G (Fin (n.unop.len + 1) → G)
   map f :=
     { hom := ↾fun x => x ∘ f.unop.toOrderHom
-      comm := fun _ => rfl }
+      comm _ := rfl }
   map_id _ := rfl
   map_comp _ _ := rfl
 

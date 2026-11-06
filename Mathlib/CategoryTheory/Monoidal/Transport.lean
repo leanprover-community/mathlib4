@@ -119,9 +119,9 @@ def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful
       μIso := fData.μIso
       μIso_hom_natural_left := fun _ ↦ by simp [fData.whiskerRight_eq]
       μIso_hom_natural_right := fun _ ↦ by simp [fData.whiskerLeft_eq]
-      associativity := fun _ _ _ ↦ by simp [fData.associator_eq]
-      left_unitality := fun _ ↦ by simp [fData.leftUnitor_eq]
-      right_unitality := fun _ ↦ by simp [fData.rightUnitor_eq] }
+      associativity _ _ _ := by simp [fData.associator_eq]
+      left_unitality _ := by simp [fData.leftUnitor_eq]
+      right_unitality _ := by simp [fData.rightUnitor_eq] }
 
 instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :

@@ -111,13 +111,13 @@ lemma preservesEqualizers_of_preservesPullbacks_and_binaryProducts
             exact
               (c.π.naturality WalkingParallelPairHom.left).symm.trans
                 (c.π.naturality WalkingParallelPairHom.right)
-        fac := fun c j => by
+        fac c j := by
           rcases j with (_ | _) <;>
             simp only [Category.comp_id, PreservesPullback.iso_inv_fst, Cone.ofFork_π, G.map_comp,
               PreservesPullback.iso_inv_fst_assoc, Functor.mapCone_π_app, eqToHom_refl,
               Category.assoc, Fork.ofι_π_app, pullback.lift_fst, pullback.lift_fst_assoc]
           exact (c.π.naturality WalkingParallelPairHom.left).symm.trans (Category.id_comp _)
-        uniq := fun s m h => by
+        uniq s m h := by
           rw [Iso.eq_comp_inv]
           have := h WalkingParallelPair.zero
           dsimp [equalizerCone] at this
@@ -181,7 +181,7 @@ open HasCoequalizersOfHasPushoutsAndBinaryCoproducts
 theorem hasCoequalizers_of_hasPushouts_and_binary_coproducts [HasBinaryCoproducts C]
     [HasPushouts C] : HasCoequalizers C :=
   {
-    has_colimit := fun F =>
+    has_colimit F :=
       HasColimit.mk
         { cocone := coequalizerCocone F
           isColimit := coequalizerCoconeIsColimit F } }
@@ -208,13 +208,13 @@ lemma preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts [HasBinary
             exact
               (c.ι.naturality WalkingParallelPairHom.left).trans
                 (c.ι.naturality WalkingParallelPairHom.right).symm
-        fac := fun c j => by
+        fac c j := by
           rcases j with (_ | _) <;>
             simp only [Functor.mapCocone_ι_app, Cocone.ofCofork_ι, Category.id_comp,
               eqToHom_refl, Category.assoc, Functor.map_comp, Cofork.ofπ_ι_app, pushout.inl_desc,
               PreservesPushout.inl_iso_inv_assoc]
           exact (c.ι.naturality WalkingParallelPairHom.left).trans (Category.comp_id _)
-        uniq := fun s m h => by
+        uniq s m h := by
           rw [Iso.eq_inv_comp]
           have := h WalkingParallelPair.one
           dsimp [coequalizerCocone] at this

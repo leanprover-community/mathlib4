@@ -204,10 +204,10 @@ def quotientQuotientEquivQuotient : ((M ⧸ S) ⧸ T.map S.mkQ) ≃ₗ[R] M ⧸ 
   { quotientQuotientEquivQuotientAux S T h with
     toFun := quotientQuotientEquivQuotientAux S T h
     invFun := mapQ _ _ (mkQ S) (le_comap_map _ _)
-    left_inv := fun x => Submodule.Quotient.induction_on _
+    left_inv x := Submodule.Quotient.induction_on _
      x fun x => Submodule.Quotient.induction_on _ x fun x =>
       by simp
-    right_inv := fun x => Submodule.Quotient.induction_on _ x
+    right_inv x := Submodule.Quotient.induction_on _ x
       fun x => by simp }
 
 /-- Essentially the same equivalence as in the third isomorphism theorem,

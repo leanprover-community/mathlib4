@@ -429,7 +429,7 @@ abbrev PseudoEMetricSpace.induced {α β} (f : α → β) (m : PseudoEMetricSpac
 abbrev WeakPseudoEMetricSpace.IsInducing {α β : Type*} [e : TopologicalSpace α]
   [n : TopologicalSpace β] {f : α → β} (hf : IsInducing f) (m : WeakPseudoEMetricSpace β) :
     WeakPseudoEMetricSpace α where
-  edist := fun x y ↦ edist (f x) (f y)
+  edist x y := edist (f x) (f y)
   edist_self x := edist_self (f x)
   edist_comm x y := edist_comm (f x) (f y)
   edist_triangle x y z := edist_triangle (f x) (f y) (f z)
@@ -892,7 +892,7 @@ See Note [reducible non-instances]. -/
 abbrev EMetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (m : EMetricSpace β) :
     EMetricSpace γ :=
   { PseudoEMetricSpace.induced f m.toPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (edist_eq_zero.1 h) }
+    eq_of_edist_eq_zero h := hf (edist_eq_zero.1 h) }
 
 /-- EMetric space instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [EMetricSpace α] : EMetricSpace (Subtype p) :=
@@ -984,7 +984,7 @@ abbrev WeakEMetricSpace.induced
     @WeakEMetricSpace α (TopologicalSpace.induced f n) :=
   letI := TopologicalSpace.induced f n
   { WeakPseudoEMetricSpace.IsInducing (f := f) {eq_induced := rfl} m.toWeakPseudoEMetricSpace with
-    eq_of_edist_eq_zero := fun h => hf (m.eq_of_edist_eq_zero h) }
+    eq_of_edist_eq_zero h := hf (m.eq_of_edist_eq_zero h) }
 
 /-- `WeakEMetricSpace` instance on subsets of emetric spaces -/
 instance {α : Type*} {p : α → Prop} [TopologicalSpace α] [WeakEMetricSpace α] :

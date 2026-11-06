@@ -632,7 +632,7 @@ theorem oreDiv_mul_oreDiv_comm {r₁ r₂ : R} {s₁ s₂ : S} :
 
 @[to_additive]
 instance : CommMonoid R[S⁻¹] where
-  mul_comm := fun x y => by
+  mul_comm x y := by
     cases x with | _ r₁ s₁
     cases y with | _ r₂ s₂
     rw [oreDiv_mul_oreDiv_comm, oreDiv_mul_oreDiv_comm, mul_comm r₁, mul_comm s₁]

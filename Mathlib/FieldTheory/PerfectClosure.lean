@@ -153,7 +153,7 @@ theorem mk_mul_mk (x y : ℕ × K) :
 
 instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
   { (inferInstance : Mul (PerfectClosure K p)) with
-    mul_assoc := fun e f g =>
+    mul_assoc e f g :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
@@ -161,15 +161,15 @@ instance instCommMonoid : CommMonoid (PerfectClosure K p) :=
             simp only [mul_assoc, iterate_map_mul, ← iterate_add_apply,
               add_comm, add_left_comm]
     one := mk K p (0, 1)
-    one_mul := fun e =>
+    one_mul e :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr(Quot.mk _ $(by
           simp only [iterate_map_one, iterate_zero_apply, one_mul, zero_add]))
-    mul_one := fun e =>
+    mul_one e :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr(Quot.mk _ $(by
           simp only [iterate_map_one, iterate_zero_apply, mul_one, add_zero]))
-    mul_comm := fun e f =>
+    mul_comm e f :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           congr(Quot.mk _ $(by simp only [add_comm, mul_comm])) }
@@ -263,25 +263,25 @@ theorem R.sound (m n : ℕ) (x y : K) (H : (frobenius K p)^[m] x = y) :
 instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
   { (inferInstance : Add (PerfectClosure K p)),
     (inferInstance : Neg (PerfectClosure K p)) with
-    add_assoc := fun e f g =>
+    add_assoc e f g :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
             apply congr_arg (Quot.mk _)
             simp only [iterate_map_add, ← iterate_add_apply, add_assoc, add_comm s _]
-    zero_add := fun e =>
+    zero_add e :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr(Quot.mk _ $(by
           simp only [iterate_map_zero, iterate_zero_apply, zero_add]))
-    add_zero := fun e =>
+    add_zero e :=
       Quot.inductionOn e fun ⟨n, x⟩ =>
         congr(Quot.mk _ $(by
           simp only [iterate_map_zero, iterate_zero_apply, add_zero]))
-    sub_eq_add_neg := fun _ _ => rfl
-    neg_add_cancel := fun e =>
+    sub_eq_add_neg _ _ := rfl
+    neg_add_cancel e :=
       Quot.inductionOn e fun ⟨n, x⟩ => by
         simp only [quot_mk_eq_mk, neg_mk, mk_add_mk, iterate_map_neg, neg_add_cancel, mk_zero_right]
-    add_comm := fun e f =>
+    add_comm e f :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ => congr(Quot.mk _ $(by simp only [add_comm]))
     nsmul := nsmulRec
@@ -290,15 +290,15 @@ instance instAddCommGroup : AddCommGroup (PerfectClosure K p) :=
 instance instCommRing : CommRing (PerfectClosure K p) :=
   { instAddCommGroup K p, AddMonoidWithOne.unary,
     (inferInstance : CommMonoid (PerfectClosure K p)) with
-    zero_mul := fun a => by
+    zero_mul a := by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [zero_add, iterate_zero, id_eq, iterate_map_zero, zero_mul, mk_zero_right]
-    mul_zero := fun a => by
+    mul_zero a := by
       refine Quot.inductionOn a fun ⟨m, x⟩ => ?_
       rw [zero_def, quot_mk_eq_mk, mk_mul_mk]
       simp only [iterate_zero, id_eq, iterate_map_zero, mul_zero, mk_zero_right]
-    left_distrib := fun e f g =>
+    left_distrib e f g :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
@@ -306,7 +306,7 @@ instance instCommRing : CommRing (PerfectClosure K p) :=
             apply R.sound
             simp only [iterate_map_mul, iterate_map_add, ← iterate_add_apply,
               mul_add, add_comm, add_left_comm]
-    right_distrib := fun e f g =>
+    right_distrib e f g :=
       Quot.inductionOn e fun ⟨m, x⟩ =>
         Quot.inductionOn f fun ⟨n, y⟩ =>
           Quot.inductionOn g fun ⟨s, z⟩ => by
@@ -491,9 +491,9 @@ instance instDivisionRing : DivisionRing (PerfectClosure K p) where
     rw [mul_inv_cancel₀ this, iterate_map_one]
   inv_zero := congr(Quot.mk (R K p) $(by rw [inv_zero]))
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),

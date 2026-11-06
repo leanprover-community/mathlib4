@@ -405,7 +405,7 @@ variable {C} [HasBinaryProducts C]
 def prod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨯ Y
-      map := fun {_ _} => prod.map (𝟙 X) }
+      map {_ _} := prod.map (𝟙 X) }
   map f :=
     { app := fun T => prod.map f (𝟙 T) }
 
@@ -440,7 +440,7 @@ def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
     Over A → Over A ⥤ Over A :=
   fun f =>
   { obj := fun g => Over.mk (coprod.desc f.hom g.hom)
-    map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
+    map k := Over.homMk (coprod.map (𝟙 _) k.left) }
 
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps, implicit_reducible]
@@ -449,7 +449,7 @@ def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A w
   map k :=
     { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
-      naturality := fun f g k => by
+      naturality f g k := by
         ext
         simp }
   map_id X := by

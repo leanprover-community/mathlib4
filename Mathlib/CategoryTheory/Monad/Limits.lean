@@ -85,7 +85,7 @@ def liftedCone : Cone D where
   pt := conePoint D c t
   π :=
     { app := fun j => { f := c.π.app j }
-      naturality := fun X Y f => by
+      naturality X Y f := by
         ext1
         simpa using (c.w f).symm }
 
@@ -201,7 +201,7 @@ noncomputable def liftedCocone : Cocone D where
     { app := fun j =>
         { f := c.ι.app j
           h := commuting _ _ _ }
-      naturality := fun A B f => by
+      naturality A B f := by
         ext1
         dsimp
         rw [comp_id]
@@ -243,7 +243,7 @@ noncomputable instance forgetCreatesColimit (D : J ⥤ Algebra T)
             { app := fun j =>
                 { f := c.ι.app j
                   h := commuting _ _ _ }
-              naturality := fun A B f => by
+              naturality A B f := by
                 ext1
                 simpa using (c.w f) } }
       validLift := Cocone.ext (Iso.refl _)
@@ -350,7 +350,7 @@ theorem hasLimits_of_reflective (R : D ⥤ C) [HasLimitsOfSize.{v, u} C] [Reflec
 /-- If `C` has colimits of shape `J` then any reflective subcategory has colimits of shape `J`. -/
 theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfShape J C] :
     HasColimitsOfShape J D where
-  has_colimit := fun F => by
+  has_colimit F := by
       let c := (monadicLeftAdjoint R).mapCocone (colimit.cocone (F ⋙ R))
       let : PreservesColimitsOfShape J _ :=
         (monadicAdjunction R).leftAdjoint_preservesColimits.1
@@ -429,7 +429,7 @@ def liftedCocone : Cocone D where
   pt := coconePoint D c t
   ι :=
     { app := fun j => { f := c.ι.app j }
-      naturality := fun X Y f => by
+      naturality X Y f := by
         ext1
         simpa using (c.w f) }
 
@@ -534,7 +534,7 @@ noncomputable def liftedCone : Cone D where
     { app := fun j =>
         { f := c.π.app j
           h := commuting _ _ _ }
-      naturality := fun A B f => by
+      naturality A B f := by
         ext1
         dsimp
         rw [id_comp, ← c.w]
@@ -577,7 +577,7 @@ noncomputable instance forgetCreatesLimit (D : J ⥤ Coalgebra T)
             { app := fun j =>
                 { f := c.π.app j
                   h := commuting _ _ _ }
-              naturality := fun A B f => by
+              naturality A B f := by
                 ext1
                 simpa using (c.w f).symm } }
       validLift := Cone.ext (Iso.refl _)
@@ -679,7 +679,7 @@ theorem hasColimits_of_coreflective (R : D ⥤ C) [HasColimitsOfSize.{v, u} C] [
 /-- If `C` has limits of shape `J` then any coreflective subcategory has limits of shape `J`. -/
 theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfShape J C] :
     HasLimitsOfShape J D where
-  has_limit := fun F => by
+  has_limit F := by
       let c := (comonadicRightAdjoint R).mapCone (limit.cone (F ⋙ R))
       let : PreservesLimitsOfShape J _ :=
         (comonadicAdjunction R).rightAdjoint_preservesLimits.1

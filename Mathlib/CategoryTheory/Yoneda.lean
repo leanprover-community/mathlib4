@@ -382,7 +382,7 @@ def representableByEquiv {F : Cᵒᵖ ⥤ Type v₁} {Y : C} :
     apply r.homEquiv_comp)
   invFun e :=
     { homEquiv := (e.app _).toEquiv
-      homEquiv_comp := fun {X X'} f g ↦ by apply e.hom.naturality_apply }
+      homEquiv_comp {X X'} f g := by apply e.hom.naturality_apply }
 
 /-- `yoneda.obj X` is represented by `X`. -/
 protected def RepresentableBy.yoneda (X : C) : (yoneda.obj X).RepresentableBy X :=
@@ -408,7 +408,7 @@ def corepresentableByEquiv {F : C ⥤ Type v₁} {X : C} :
     apply r.homEquiv_comp)
   invFun e :=
     { homEquiv := (e.app _).toEquiv
-      homEquiv_comp := fun {X X'} f g ↦ by apply e.hom.naturality_apply }
+      homEquiv_comp {X X'} f g := by apply e.hom.naturality_apply }
 
 /-- `coyoneda.obj X` is represented by `X`. -/
 protected def CorepresentableBy.coyoneda (X : Cᵒᵖ) :
@@ -990,7 +990,7 @@ and elements of `F.obj X.unop`, without any universe switching.
 def coyonedaEquiv {X : C} {F : C ⥤ Type v₁} : (coyoneda.obj (op X) ⟶ F) ≃ F.obj X where
   toFun η := η.app X (𝟙 X)
   invFun ξ := { app _ := ↾fun x ↦ F.map x ξ }
-  left_inv := fun η ↦ by
+  left_inv η := by
     ext Y (x : X ⟶ Y)
     simp [← NatTrans.naturality_apply]
   right_inv := by intro ξ; simp

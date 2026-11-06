@@ -775,8 +775,8 @@ structure on the domain. -/
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   fast_instance% { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    norm := fun x => ‖f x‖
-    dist_eq := fun x y => by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
+    norm x := ‖f x‖
+    dist_eq x y := by simp only [map_mul, map_inv, ← dist_eq_norm_inv_mul]; rfl }
 
 -- See note [reducible non-instances]
 /-- A group homomorphism from a `CommGroup` to a `SeminormedGroup` induces a

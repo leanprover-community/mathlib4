@@ -746,8 +746,8 @@ variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 @[simps apply]
 def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M₂ × M₄ :=
   { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with
-    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
-    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    toFun mnmn := ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun mmnn := ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
     map_smul' := fun _c _mnmn => rfl }
 
 @[simp]
@@ -805,8 +805,8 @@ protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M�
       ((e₂ : M₃ →ₗ[R] M₄).comp (LinearMap.snd R M M₃) +
         f.comp (LinearMap.fst R M M₃)) with
     invFun := fun p : M₂ × M₄ => (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
-    left_inv := fun p => by simp
-    right_inv := fun p => by simp }
+    left_inv p := by simp
+    right_inv p := by simp }
 
 @[simp]
 theorem skewProd_apply (f : M →ₗ[R] M₄) (x) : e₁.skewProd e₂ f x = (e₁ x.1, e₂ x.2 + f x.1) :=
@@ -977,8 +977,8 @@ lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ 
     map_smul' := e₁.map_smul'
     map_add' := e₁.map_add'
     invFun := e₂
-    left_inv := fun h ↦ by rw [← he₁₂]
-    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+    left_inv h := by rw [← he₁₂]
+    right_inv i := by rw [he₁₂] }, he₁⟩
 
 /-- **Goursat's lemma** for module isomorphisms.
 

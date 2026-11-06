@@ -32,7 +32,7 @@ def GaloisConnection.adjunction {l : X → Y} {u : Y → X} (gc : GaloisConnecti
   CategoryTheory.Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
         { toFun := fun f => CategoryTheory.homOfLE (gc.le_u f.le)
-          invFun := fun f => CategoryTheory.homOfLE (gc.l_le f.le)
+          invFun f := CategoryTheory.homOfLE (gc.l_le f.le)
           left_inv := by cat_disch
           right_inv := by cat_disch } }
 

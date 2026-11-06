@@ -199,7 +199,7 @@ instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObje
   hasShiftMk _ _
     { F := fun n => comap C fun b : β => b + n • s
       zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
-      add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
+      add m n := comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
 
 @[simp]

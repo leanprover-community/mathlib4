@@ -65,7 +65,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
   have hf : ∀ (x : t.pt), x = t.ι.app _ (f x) := fun x => (hsurj x).choose_spec.choose_spec
   exact
     { desc s := ↾fun x => s.ι.app _ (f x)
-      fac := fun s j => by
+      fac s j := by
         ext y
         obtain ⟨k, l, g, eq⟩ := hinj _ _ _ _ (hf (t.ι.app j y))
         have h := congr_hom (s.ι.naturality g) (f (t.ι.app j y))
@@ -73,7 +73,7 @@ noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x 
         simp only [Functor.const_obj_obj, comp_apply, Functor.const_obj_map, Category.comp_id,
           TypeCat.Fun.toFun_apply, hom_ofHom, TypeCat.Fun.coe_mk] at h h' ⊢
         rw [← h, ← eq, h']
-      uniq := fun s m hm => by
+      uniq s m hm := by
         ext x
         dsimp
         nth_rw 1 [hf x]

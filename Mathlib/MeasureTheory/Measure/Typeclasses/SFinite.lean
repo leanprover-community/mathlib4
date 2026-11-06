@@ -641,7 +641,7 @@ instance SMul.sigmaFinite {μ : Measure α} [SigmaFinite μ] (c : ℝ≥0) :
     MeasureTheory.SigmaFinite (c • μ) where
   out' :=
   ⟨{  set := spanningSets μ
-      set_mem := fun _ ↦ trivial
+      set_mem _ := trivial
       finite := by
         intro i
         simp only [smul_apply, nnreal_smul_coe_apply]
@@ -701,8 +701,8 @@ theorem ae_of_forall_measure_lt_top_ae_restrict {μ : Measure α} [SigmaFinite �
 instance (priority := 100) SigmaFinite.of_isFiniteMeasureOnCompacts [TopologicalSpace α]
     [SigmaCompactSpace α] (μ : Measure α) [IsFiniteMeasureOnCompacts μ] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering α
-        set_mem := fun _ => trivial
-        finite := fun n => (isCompact_compactCovering α n).measure_lt_top
+        set_mem _ := trivial
+        finite n := (isCompact_compactCovering α n).measure_lt_top
         spanning := iUnion_compactCovering α }⟩⟩
 
 -- see Note [lower instance priority]

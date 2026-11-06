@@ -47,7 +47,7 @@ def Head.ofExpr? : Expr → Option Head
 initialize pushExt : SimpleScopedEnvExtension SimpTheorem (DiscrTree SimpTheorem) ←
   registerSimpleScopedEnvExtension {
     initial  := {}
-    addEntry := fun d e => d.insertKeyValue e.keys e
+    addEntry d e := d.insertKeyValue e.keys e
   }
 
 /--
@@ -80,7 +80,7 @@ abbrev PullTheorem := SimpTheorem × Head
 initialize pullExt : SimpleScopedEnvExtension PullTheorem (DiscrTree PullTheorem) ←
   registerSimpleScopedEnvExtension {
     initial  := {}
-    addEntry := fun d e => d.insertKeyValue e.1.keys e
+    addEntry d e := d.insertKeyValue e.1.keys e
   }
 
 /--
@@ -110,7 +110,7 @@ syntax (name := pushAttr) "push" (" ←" <|> " <-")? (&" only")? (ppSpace prio)?
 initialize registerBuiltinAttribute {
   name := `pushAttr
   descr := "attribute for push"
-  add := fun declName stx kind => MetaM.run' do
+  add declName stx kind := MetaM.run' do
     -- Make sure `mkSimpTheoremFromConst` aux decls are sufficiently visible, like in
     -- `addSimpTheorem`.
     withExporting (isExporting := !isPrivateName declName) do
