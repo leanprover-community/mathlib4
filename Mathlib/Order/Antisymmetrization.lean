@@ -448,11 +448,6 @@ section Minimal
 variable [Preorder α] {P : α → Prop}
 
 theorem Minimal.antisymmRel_of_ge (ha : Minimal P a) (hb : P b) (hge : b ≤ a) :
-section Minimal
-
-variable [Preorder α] {P : α → Prop}
-
-theorem Minimal.antisymmRel_of_ge (ha : Minimal P a) (hb : P b) (hge : b ≤ a) :
     AntisymmRel (· ≤ ·) a b :=
   ⟨ha.le_of_le hb hge, hge⟩
 
@@ -472,10 +467,6 @@ end Minimal
 
 theorem Minimal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Minimal P a)
     (hb : Minimal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
-  (ha.antisymmRel_of_symmGen hb hab).eq
-
-theorem Maximal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Maximal P a)
-    (hb : Maximal P b) (hab : SymmGen (· ≤ ·) a b) : a = b :=
   (ha.antisymmRel_of_symmGen hb hab).eq
 
 theorem Maximal.eq_of_symmGen [PartialOrder α] {P : α → Prop} (ha : Maximal P a)
