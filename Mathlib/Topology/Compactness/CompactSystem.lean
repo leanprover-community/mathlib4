@@ -78,8 +78,27 @@ lemma of_IsEmpty [IsEmpty α] (S : Set (Set α)) : IsCompactSystem S :=
   fun s _ _ ↦ ⟨0, Set.eq_empty_of_isEmpty (dissipate s 0)⟩
 
 /-- Any subset of a compact system is a compact system. -/
-theorem mono {T : Set (Set α)} (hT : IsCompactSystem T) (hST : S ⊆ T) :
+protected theorem mono {T : Set (Set α)} (hT : IsCompactSystem T) (hST : S ⊆ T) :
     IsCompactSystem S := fun C hC1 hC2 ↦ hT C (fun i ↦ hST (hC1 i)) hC2
+
+/-- The image of a compact system by a map `f` is a compact system if each of its sets is the
+preimage by `f` of its image. -/
+protected theorem image {β : Type*} {f : α → β} (hS : IsCompactSystem S)
+    (hf : ∀ K ∈ S, f ⁻¹' (f '' K) = K) :
+    IsCompactSystem ((f '' ·) '' S) := by
+  intro C hC h_empty
+  choose K hK hKC using hC
+  obtain rfl : C = fun i ↦ f '' K i := funext fun i ↦ (hKC i).symm
+  have h_eq : ⋂ i, K i = f ⁻¹' ⋂ i, f '' K i := by
+    rw [preimage_iInter]
+    exact iInter_congr fun i ↦ (hf _ (hK i)).symm
+  obtain ⟨n, hn⟩ := hS K hK (by rw [h_eq, h_empty, preimage_empty])
+  refine ⟨n, eq_empty_of_forall_notMem fun y hy ↦ ?_⟩
+  obtain ⟨k, -, rfl⟩ := mem_dissipate.mp hy 0 (Nat.zero_le n)
+  have hk : k ∈ dissipate K n := mem_dissipate.mpr fun i hi ↦ by
+    rw [← hf _ (hK i)]
+    exact mem_dissipate.mp hy i hi
+  simp [hn] at hk
 
 /-- Inserting `∅` into a compact system gives a compact system. -/
 lemma insert_empty (h : IsCompactSystem S) : IsCompactSystem (insert ∅ S) := by
@@ -114,6 +133,9 @@ lemma insert_univ (h : IsCompactSystem S) : IsCompactSystem (insert univ S) := b
   simp [h₃, h₇] at hd
 
 end IsCompactSystem
+
+lemma isCompactSystem_singleton_empty : IsCompactSystem {(∅ : Set α)} :=
+  fun C hC _ ↦ ⟨0, by simpa using hC 0⟩
 
 /-- In this equivalent formulation for a compact system,
 note that we use `⋂ k < n, C k` rather than `⋂ k ≤ n, C k`. -/
