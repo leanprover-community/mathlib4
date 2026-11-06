@@ -690,6 +690,73 @@ theorem meromorphicOrderAt_add_of_ne
   · simpa [h.le] using meromorphicOrderAt_add_eq_left_of_lt hf₂ h
   · simpa [h.le] using meromorphicOrderAt_add_eq_right_of_lt hf₁ h
 
+/--
+The order of a finite sum is at least the minimum of the orders of the summands: if every summand
+has order at least `n`, so does the sum. Finite-sum version of `meromorphicOrderAt_add`.
+-/
+theorem le_meromorphicOrderAt_sum {ι : Type*} {s : Finset ι} {f : ι → 𝕜 → E} {n : WithTop ℤ}
+    (hf : ∀ i ∈ s, MeromorphicAt (f i) x) (hn : ∀ i ∈ s, n ≤ meromorphicOrderAt (f i) x) :
+    n ≤ meromorphicOrderAt (∑ i ∈ s, f i) x := by
+  classical
+  induction s using Finset.induction with
+  | empty =>
+    rw [Finset.sum_empty, meromorphicOrderAt_eq_top_iff.2 (by simp)]
+    exact le_top
+  | insert a s ha ih =>
+    rw [Finset.sum_insert ha]
+    have hf' : ∀ i ∈ s, MeromorphicAt (f i) x := fun i hi ↦ hf i (Finset.mem_insert_of_mem hi)
+    have hn' : ∀ i ∈ s, n ≤ meromorphicOrderAt (f i) x :=
+      fun i hi ↦ hn i (Finset.mem_insert_of_mem hi)
+    exact (le_min (hn a (Finset.mem_insert_self a s)) (ih hf' hn')).trans
+      (meromorphicOrderAt_add (hf a (Finset.mem_insert_self a s)) (MeromorphicAt.sum hf'))
+
+/-- In `WithTop ℤ`, a strict lower bound by an integer improves to `+ 1`. -/
+private lemma coe_add_one_le_of_coe_lt {m : ℤ} {y : WithTop ℤ} (h : (m : WithTop ℤ) < y) :
+    ((m + 1 : ℤ) : WithTop ℤ) ≤ y :=
+  WithTop.coe_le_iff.2 fun c hc ↦ Int.add_one_le_iff.2 (WithTop.coe_lt_iff.1 h c hc)
+
+/--
+If `f` has order `n` at `x` and the monic expression `f ^ d + Σ_{j<d} a j * f ^ j` has order greater
+than `d * n`, then the leading term `f ^ d` is cancelled by one of the other terms: some coefficient
+`a j` has order at most `(d - j) * n`.
+-/
+theorem exists_meromorphicOrderAt_le_of_monic_lt {f : 𝕜 → 𝕜'} {a : ℕ → 𝕜 → 𝕜'} {d : ℕ} {n : ℤ}
+    (hf : MeromorphicAt f x) (ha : ∀ j, MeromorphicAt (a j) x) (hn : meromorphicOrderAt f x = n)
+    (hh : ((d * n : ℤ) : WithTop ℤ) <
+      meromorphicOrderAt (f ^ d + ∑ j ∈ Finset.range d, a j * f ^ j) x) :
+    ∃ j ∈ Finset.range d, meromorphicOrderAt (a j) x ≤ (((d : ℤ) - j) * n : ℤ) := by
+  by_contra! hcon
+  have hterms : ∀ j ∈ Finset.range d, MeromorphicAt (a j * f ^ j) x :=
+    fun j _ ↦ (ha j).mul (hf.pow j)
+  -- Every term `a j * f ^ j` has order at least `d * n + 1`.
+  have hterm : ∀ j ∈ Finset.range d,
+      ((d * n + 1 : ℤ) : WithTop ℤ) ≤ meromorphicOrderAt (a j * f ^ j) x := by
+    intro j hj
+    rw [meromorphicOrderAt_mul (ha j) (hf.pow j), meromorphicOrderAt_pow hf, hn]
+    calc ((d * n + 1 : ℤ) : WithTop ℤ)
+        = (((d : ℤ) - j) * n + 1 : ℤ) + ((j * n : ℤ) : WithTop ℤ) := by
+          rw [← WithTop.coe_add]; congr 1; ring
+      _ ≤ meromorphicOrderAt (a j) x + ((j * n : ℤ) : WithTop ℤ) := by
+          gcongr
+          exact coe_add_one_le_of_coe_lt (hcon j hj)
+      _ = meromorphicOrderAt (a j) x + (j : WithTop ℤ) * (n : WithTop ℤ) := by
+          rw [WithTop.coe_mul, WithTop.coe_natCast]
+  -- Hence so does the sum, and therefore `f ^ d = (f ^ d + Σ) - Σ`.
+  have hsum : ((d * n + 1 : ℤ) : WithTop ℤ) ≤
+      meromorphicOrderAt (∑ j ∈ Finset.range d, a j * f ^ j) x :=
+    le_meromorphicOrderAt_sum hterms hterm
+  have key : ((d * n + 1 : ℤ) : WithTop ℤ) ≤ meromorphicOrderAt (f ^ d) x := by
+    rw [show f ^ d = (f ^ d + ∑ j ∈ Finset.range d, a j * f ^ j)
+        + -(∑ j ∈ Finset.range d, a j * f ^ j) from (add_neg_cancel_right _ _).symm]
+    refine (le_min (coe_add_one_le_of_coe_lt hh) ?_).trans
+      (meromorphicOrderAt_add ((hf.pow d).add (MeromorphicAt.sum hterms))
+        (MeromorphicAt.sum hterms).neg)
+    rwa [← meromorphicOrderAt_neg]
+  -- But `f ^ d` has order exactly `d * n`.
+  rw [meromorphicOrderAt_pow hf, hn, ← WithTop.coe_natCast (α := ℤ), ← WithTop.coe_mul,
+    WithTop.coe_le_coe] at key
+  omega
+
 section IsTheta
 
 variable {z₀ : 𝕜}
