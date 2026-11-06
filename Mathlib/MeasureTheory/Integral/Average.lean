@@ -192,7 +192,7 @@ theorem laverage_union_mem_segment (hd : AEDisjoint μ s t) (ht : NullMeasurable
     ⨍⁻ x in s ∪ t, f x ∂μ ∈ [⨍⁻ x in s, f x ∂μ -[ℝ≥0∞] ⨍⁻ x in t, f x ∂μ] := by
   by_cases hs₀ : μ s = 0
   · rw [← ae_eq_empty] at hs₀
-    rw [restrict_congr_set (hs₀.union EventuallyEq.rfl), empty_union]
+    rw [restrict_congr_set (hs₀.union .rfl), empty_union]
     exact right_mem_segment _ _ _
   · refine
       ⟨μ s / (μ s + μ t), μ t / (μ s + μ t), zero_le, zero_le, ?_, (laverage_union hd ht).symm⟩
@@ -458,7 +458,7 @@ theorem average_union_mem_segment {f : α → E} {s t : Set α} (hd : AEDisjoint
     ⨍ x in s ∪ t, f x ∂μ ∈ [⨍ x in s, f x ∂μ -[ℝ] ⨍ x in t, f x ∂μ] := by
   by_cases hse : μ s = 0
   · rw [← ae_eq_empty] at hse
-    rw [restrict_congr_set (hse.union EventuallyEq.rfl), empty_union]
+    rw [restrict_congr_set (hse.union .rfl), empty_union]
     exact right_mem_segment _ _ _
   · refine
       mem_segment_iff_div.mpr

@@ -83,7 +83,8 @@ everywhere equal to a stopping time is a stopping time. -/
 theorem IsStoppingTime.congr_ae [Preorder ι] {f : Filtration ι m} {μ : Measure Ω} [f.IsComplete μ]
     {τ σ : Ω → WithTop ι} (hσ : IsStoppingTime f σ) (h : τ =ᵐ[μ] σ) :
     IsStoppingTime f τ :=
-  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i) (h.fun_comp (· ≤ i))
+  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i)
+    (eventuallyEqSet_iff'.2 <| h.fun_comp (· ≤ i))
 
 section MeasurableSet
 

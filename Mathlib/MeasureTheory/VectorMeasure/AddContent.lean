@@ -313,7 +313,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       simp only [Measure.restrict_apply' MD, μ']
       apply measure_mono_ae
       nth_rewrite 1 [← Set.inter_self s]
-      exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
+      exact ae_subset_inter .rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
 /-- Consider an additive content `m` on a semi-ring of measurable sets `C`, which is dominated

@@ -514,8 +514,10 @@ lemma _root_.MeasureTheory.NullMeasurableSet.prod {s : Set α} {t : Set β}
 lemma _root_.MeasureTheory.NullMeasurableSet.right_of_prod {s : Set α} {t : Set β}
     (h : NullMeasurableSet (s ×ˢ t) (μ.prod ν)) (hs : μ s ≠ 0) : NullMeasurableSet t ν := by
   rcases h with ⟨u, hum, hu⟩
-  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) :=
-    ((frequently_ae_iff.2 hs).and_eventually (ae_ae_eq_curry_of_prod hu)).exists
+  obtain ⟨x, hxs, hx⟩ : ∃ x ∈ s, (Prod.mk x ⁻¹' (s ×ˢ t)) =ᵐ[ν] (Prod.mk x ⁻¹' u) := by
+    simp_rw [eventuallyEqSet_iff']
+    exact ((frequently_ae_iff.2 hs).and_eventually
+      (ae_ae_eq_curry_of_prod (eventuallyEqSet_iff'.1 hu))).exists
   refine ⟨Prod.mk x ⁻¹' u, measurable_prodMk_left hum, ?_⟩
   rwa [mk_preimage_prod_right hxs] at hx
 
