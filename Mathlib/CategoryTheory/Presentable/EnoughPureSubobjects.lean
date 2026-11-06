@@ -351,7 +351,7 @@ lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegu
   obtain ⟨κ₃, _, h₃, H⟩ :
       ∃ (κ₃ : Cardinal.{w}) (_ : Fact κ₃.IsRegular) (h₃ : κ₂.SharplyLT κ₃),
         h₃.HasEnoughPureSubobjects (C ⥤ Type w) := by
-    -- use `κ₂ ^ (< κ₂)`
+    -- use `κ₂ ^ (< κ₂) + 1`
     sorry
   exact ⟨κ₃, inferInstance, h₀.trans h₃, H.trans h₀⟩
 
