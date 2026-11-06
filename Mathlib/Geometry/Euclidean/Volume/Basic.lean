@@ -5,6 +5,9 @@ Authors: Weiyi Wang
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.NormDet
+public import Mathlib.Analysis.InnerProductSpace.Orientation
+public import Mathlib.Geometry.Euclidean.CornerSimplex
 public import Mathlib.Geometry.Euclidean.Volume.Def
 
 import Mathlib.Geometry.Euclidean.Volume.MeasureSimplex
@@ -17,11 +20,13 @@ This file provides lemmas related to the volume of a simplex.
 ## Main statements
 * `Affine.Simplex.volume_eq`: The volume of a $n$-simplex is equal to $h * b / n$, where $h$ is the
 height and $b$ is the volume of the face.
+* `Affine.Simplex.volume_eq_volumeForm`: The volume of a $n$-simplex is the absolute value of
+`Orientation.volumeForm` divided by $n!$.
 -/
 
 public section
 
-open MeasureTheory Measure
+open MeasureTheory Measure Module Nat
 
 namespace Affine.Simplex
 
@@ -85,5 +90,27 @@ meta def evalVolume : PositivityExt where eval {u α} _ pα? e :=
     assertInstancesCommute
     return .positive q(volume_pos $s)
   | _, _, _ => throwError "not Simplex.volume"
+
+theorem volume_map_of_finrank_eq [FiniteDimensional ℝ V] {n : ℕ} (hn : finrank ℝ V = n)
+    (s : Simplex ℝ P n) {f : P →ᵃ[ℝ] P₂} (hf : Function.Injective f) :
+    (s.map f hf).volume = f.linear.normDet * s.volume := by
+  borelize P P₂
+  simp_rw [volume_eq_euclideanHausdorffMeasure_real_closedInterior, closedInterior_map, ← hn,
+    Measure.real_def, f.euclideanHausdorffMeasure_image]
+  simp [f.linear.normDet_nonneg]
+
+@[simp]
+theorem volume_cornerSimplex (n : ℕ) : (cornerSimplex n).volume = (↑(n !))⁻¹ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [volume_eq _ (0 : Fin (n + 1)).succ, faceOpposite_cornerSimplex, volume_map, ih]
+    simp [Nat.factorial_succ, mul_comm]
+
+theorem volume_eq_volumeForm {n : ℕ} [FiniteDimensional ℝ V] [Fact (finrank ℝ V = n)]
+    (o : Orientation ℝ V (Fin n)) (s : Simplex ℝ P n) :
+    s.volume = (↑(n !))⁻¹ * |o.volumeForm fun i ↦ s.points i.succ -ᵥ s.points 0| := by
+  conv_lhs => rw [← s.map_cornerSimplex_cornerMap, volume_map_of_finrank_eq (by simp),
+    volume_cornerSimplex, mul_comm s.cornerMap.linear.normDet, s.normDet_cornerMap_linear o]
 
 end Affine.Simplex
