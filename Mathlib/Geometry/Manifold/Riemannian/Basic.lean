@@ -117,7 +117,7 @@ noncomputable def riemannianMetricVectorSpace :
     exact NormedSpace.isVonNBounded_ball ℝ F 1
   contMDiff := by
     intro x
-    rw [contMDiffAt_section]
+    rw [contMDiffAt_section_iff]
     convert! contMDiffAt_const (c := innerSL ℝ)
     ext v w
     simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates, TangentSpace]
@@ -130,13 +130,16 @@ lemma norm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
   rw [norm_eq_sqrt_real_inner, norm_eq_sqrt_real_inner]
   rfl
 
-lemma nnnorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
+lemma nnNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖₊ = ‖NormedSpace.fromTangentSpace _  v‖₊ := by
-  simp [nnnorm, norm_tangentSpace_vectorSpace]
+  simp [nnNorm, norm_tangentSpace_vectorSpace]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_tangentSpace_vectorSpace := nnNorm_tangentSpace_vectorSpace
 
 lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
-  simp [enorm, nnnorm_tangentSpace_vectorSpace]
+  simp [enorm, nnNorm_tangentSpace_vectorSpace]
 
 open MeasureTheory
 
@@ -156,7 +159,7 @@ lemma lintegral_fderiv_lineMap_eq_edist {x y : E} :
 is the infimum of the lengths of paths between these points. -/
 instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
   refine ⟨fun x y ↦ le_antisymm ?_ ?_⟩
-  · simp only [riemannianEDist, le_iInf_iff]
+  · simp only [riemannianEDist_def, le_iInf_iff]
     intro γ hγ
     let e : ℝ → F := γ ∘ (projIcc 0 1 zero_le_one)
     have D : ContDiffOn ℝ 1 e (Icc 0 1) :=
@@ -256,8 +259,8 @@ lemma eventually_enorm_mfderiv_extChartAt_lt (x : M) :
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
-  simp only [enorm, nnnorm]
-  exact_mod_cast hy
+  simp only [enorm, nnNorm]
+  exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in
 lemma eventually_norm_mfderivWithin_symm_extChartAt_comp_lt (x : M) :
@@ -296,8 +299,8 @@ lemma eventually_enorm_mfderivWithin_symm_extChartAt_lt (x : M) :
   simp only [gt_iff_lt, NNReal.coe_pos] at C_pos
   refine ⟨C, C_pos, ?_⟩
   filter_upwards [hC] with y hy
-  simp only [enorm, nnnorm]
-  exact_mod_cast hy
+  simp only [enorm, nnNorm]
+  exact mod_cast hy
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Around any point `x`, the Riemannian distance between two points is controlled by the distance

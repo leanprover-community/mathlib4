@@ -274,7 +274,7 @@ private lemma instIsIrreducible_aux₂ [P.IsReduced] [P.IsIrreducible]
     U = ⊤ := by
   let _i := P.indexNeg
   have hωu (i : b.support) : ω b *ᵥ (u i) = u i := by
-    ext (j | j) <;> simp [ω, u, Pi.single_apply, one_apply]
+    ext (j | j) <;> simp [ω, u, Pi.single_apply, Matrix.one_apply]
   have hωv (i : ι) : ω b *ᵥ (v b i) = v b (-i) := by ext (j | j) <;> simp [ω, v, Pi.single_apply]
   obtain ⟨j, hj⟩ : ∃ j : b.support, u j ∈ U := by
     revert U

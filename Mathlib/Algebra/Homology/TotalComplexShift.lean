@@ -113,12 +113,10 @@ instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
       right_inv _ := by simp }
     (fun _ => Iso.refl _)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : ((shiftFunctor₂ C y ⋙ shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 instance : ((shiftFunctor₁ C x ⋙ shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := by
   dsimp
   infer_instance
@@ -191,7 +189,6 @@ noncomputable def totalShift₁Iso :
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : a' = a + x)
@@ -204,7 +201,6 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
   simp only [ι_totalDesc, comp_id, id_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
     (ha' : a' + b = n') (hn' : n' = n + x) :
@@ -218,7 +214,6 @@ lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
   dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
   simp only [id_comp, ι_totalDesc]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc]
 lemma totalShift₁Iso_hom_naturality [L.HasTotal (up ℤ)] :
@@ -310,7 +305,6 @@ noncomputable def totalShift₂Iso :
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : b' = b + y)
@@ -324,7 +318,6 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
   simp only [ι_totalDesc, comp_id, id_comp]
 
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
     (hb' : a + b' = n') (hn' : n' = n + y) :
@@ -338,7 +331,6 @@ lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
   dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
   simp only [id_comp, ι_totalDesc]
 
-set_option backward.defeqAttrib.useBackward true in
 variable {K L} in
 @[reassoc]
 lemma totalShift₂Iso_hom_naturality [L.HasTotal (up ℤ)] :
