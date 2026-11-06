@@ -367,6 +367,11 @@ end HomologyMapData
 
 variable (S)
 
+-- Currently, definitions `leftHomology`, `rightHomology`, `cycles`
+-- `opcycles` and `homology` are made `local implicit_reducible` only in
+-- order to prove lemmas which require unfolding the definition.
+-- Ideally, these definitions should be unexposed (TODO). Doing so
+-- may be an interestingly difficult task though.
 /-- The homology of a short complex is the `left.H` field of a chosen homology data. -/
 @[local implicit_reducible]
 noncomputable def homology [HasHomology S] : C := S.homologyData.left.H
