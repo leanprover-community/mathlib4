@@ -309,7 +309,7 @@ theorem ballot_neg (p q : ℕ) (qp : q < p) :
 
 theorem ballot_problem' :
     ∀ q p, q < p → (uniformOn (countedSequence p q) staysPositive).toReal = (p - q) / (p + q) := by
-  apply Nat.diag_induction
+  apply Nat.diagonal_induction
   · intro p
     rw [ballot_same]
     simp

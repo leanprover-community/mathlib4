@@ -133,12 +133,16 @@ theorem trans [IsHeckeTriple Δ H₁ H₂] [IsHeckeTriple Δ H₂ H₃] :
     le_commensurator_right H₂⟩
 
 /-- The left diagonal datum `(H₁, Δ, H₁)`. Not an instance, since `H₂` cannot be inferred. -/
-theorem diag_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
+theorem diagonal_left [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₁ H₁ :=
   ⟨left_le H₂, left_le H₂, .refl H₁, le_commensurator_left H₂⟩
 
+@[deprecated (since := "2026-09-06")] alias diag_left := diagonal_left
+
 /-- The right diagonal datum `(H₂, Δ, H₂)`. Not an instance, since `H₁` cannot be inferred. -/
-theorem diag_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
+theorem diagonal_right [IsHeckeTriple Δ H₁ H₂] : IsHeckeTriple Δ H₂ H₂ :=
   ⟨right_le H₁, right_le H₁, .refl H₂, le_commensurator_right H₁⟩
+
+@[deprecated (since := "2026-09-06")] alias diag_right := diagonal_right
 
 end IsHeckeTriple
 

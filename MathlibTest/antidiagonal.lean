@@ -35,4 +35,4 @@ info: {fun₀ | "C" => 3,
  fun₀ | "A" => 3}
 -/
 #guard_msgs in
-#eval finsuppAntidiag {"A", "B", "C"} 3
+#eval finsuppAntidiagonal {"A", "B", "C"} 3

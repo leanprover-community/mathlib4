@@ -214,7 +214,7 @@ theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
   apply (algebraMap K E).injective
   rw [map_mul, map_pow, map_neg, map_one, discr_powerBasis_eq_prod'' _ _ _ e]
   congr
-  rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diag]
+  rw [norm_eq_prod_embeddings, prod_prod_Ioi_mul_eq_prod_prod_off_diagonal]
   conv_rhs =>
     congr
     rfl
