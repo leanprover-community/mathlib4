@@ -48,7 +48,7 @@ variable {V : Type*} [AddCommGroup V] [Module R V] [Module A V] [IsScalarTower R
 /-- Any basis of a full `R`-lattice in `V` defines a `A`-basis of `V`. -/
 noncomputable def _root_.Module.Basis.extendOfIsFullLattice {M : Submodule R V}
     [IsFullLattice A M] {ι : Type*} (b : Basis ι R M) : Basis ι A V :=
-  have hsp : ⊤ ≤ span A (Set.range fun i ↦ (b i : V)) := by
+  haveI hsp : ⊤ ≤ span A (Set.range fun i ↦ (b i : V)) := by
     rw [← Submodule.span_span_of_tower R, Set.range_comp', ← M.coe_subtype, ← Submodule.map_span]
     simp [span_eq_top]
   Basis.mk (IsLattice.basis_linearIndependent A M b) hsp
@@ -61,19 +61,13 @@ lemma _root_.Module.Basis.extendOfIsFullLattice_apply {M : Submodule R V} [IsFul
 /-- A lattice containing a full lattice is itself full. -/
 theorem of_le {M N : Submodule R V} (hle : M ≤ N) [IsFullLattice A M] [IsLattice A N] :
     IsFullLattice A N where
-  span_eq_top := eq_top_iff.mpr <| le_trans (by rw [IsFullLattice.span_eq_top]) <|
-    span_mono (SetLike.coe_subset_coe.mpr hle)
+  span_eq_top := by grw [eq_top_iff, ← span_mono hle, span_eq_top]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsFullLattice`. -/
 instance smul (M : Submodule R V) [IsFullLattice A M] (a : Aˣ) :
     IsFullLattice A (a • M : Submodule R V) where
-  span_eq_top := by
-    rw [Submodule.coe_pointwise_smul, ← Submodule.smul_span, IsFullLattice.span_eq_top]
-    ext x
-    refine ⟨fun _ ↦ trivial, fun _ ↦ ?_⟩
-    rw [show x = a • a⁻¹ • x by simp]
-    exact Submodule.smul_mem_pointwise_smul _ _ _ (by trivial)
+  span_eq_top := by rw [Submodule.coe_pointwise_smul, span_smul, span_eq_top, smul_top]
 
 end CommRing
 
@@ -84,12 +78,12 @@ variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R
 variable (M : Submodule R V)
 
 /-- The `R`-rank of a full lattice equals the `K`-rank of the ambient module. -/
-theorem rank [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
+theorem rank_eq [IsFullLattice K M] : Module.rank R M = Module.rank K V := by
   rw [← IsLattice.rank_span_eq_rank K M, span_eq_top, rank_top]
 
 /-- The `R`-finrank of a full lattice equals the `K`-finrank of the ambient module. -/
-theorem finrank [IsFullLattice K M] : finrank R M = finrank K V :=
-  congrArg Cardinal.toNat (rank K M)
+theorem finrank_eq [IsFullLattice K M] : finrank R M = finrank K V :=
+  congr(Cardinal.toNat $(rank K M))
 
 /-- A lattice whose `R`-rank is at least the `K`-rank of a finite-dimensional ambient module
 is full. -/
