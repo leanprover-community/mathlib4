@@ -7,7 +7,10 @@ module
 
 public meta import Mathlib.Tactic.Inclusion.Core.Extensions
 public import Mathlib.Data.Dyadic
-public import Mathlib.Tactic.Inclusion.Extension.Interval
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Initialization for the dyadic real interval extension family

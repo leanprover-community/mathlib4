@@ -8,6 +8,9 @@ module
 public import Mathlib.CategoryTheory.Category.Quiv
 public import Mathlib.Combinatorics.Quiver.ReflQuiver
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of refl quivers
 
