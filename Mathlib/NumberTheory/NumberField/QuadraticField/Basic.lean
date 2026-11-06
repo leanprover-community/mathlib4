@@ -5,10 +5,11 @@ Authors: Xavier Roblot
 -/
 module
 
+public import Mathlib.Algebra.Algebra.Hom.Rat
+public import Mathlib.Algebra.CharP.Invertible
 public import Mathlib.Algebra.QuadraticAlgebra.Int
 public import Mathlib.Algebra.QuadraticAlgebra.IsQuadraticExtension
 public import Mathlib.NumberTheory.NumberField.Discriminant.Defs
-public import Mathlib.NumberTheory.NumberField.InfinitePlace.TotallyRealComplex
 public import Mathlib.RingTheory.QuadraticAlgebra
 
 /-!
@@ -29,7 +30,7 @@ zero which is a quadratic extension of `ℚ` in the sense of `Algebra.IsQuadrati
 
 public section
 
-open NumberField Int
+open NumberField
 
 open scoped QuadraticAlgebra
 
@@ -38,19 +39,12 @@ instance NumberField.of_isQuadraticExtension (K : Type*) [Field K] [CharZero K]
 
 namespace NumberField.QuadraticField
 
-variable (K : Type*) [Field K] [CharZero K] [h : Algebra.IsQuadraticExtension ℚ K]
+variable (K : Type*) [Field K] [CharZero K] [Algebra.IsQuadraticExtension ℚ K]
 
 instance : Algebra.IsQuadraticExtension ℤ (𝓞 K) where
-  finrank_eq_two' := by rw [RingOfIntegers.rank, h.finrank_eq_two]
+  finrank_eq_two' := by rw [RingOfIntegers.rank, Algebra.IsQuadraticExtension.finrank_eq_two]
 
 variable {K}
-
-/-- A ring isomorphism between the ring of integers of `K` and `QuadraticAlgebra ℤ a b` extends
-to their fraction fields. -/
-noncomputable def algEquivOfRingEquiv {a b : ℤ}
-    (f : 𝓞 K ≃+* QuadraticAlgebra ℤ a b) :
-    K ≃ₐ[ℚ] QuadraticAlgebra ℚ a b :=
-  (IsFractionRing.ringEquivOfRingEquiv f).equivRatAlgEquiv _ _
 
 section discr
 
@@ -73,36 +67,32 @@ theorem isFundamentalDiscr_discr : Int.IsFundamentalDiscr (discr K) := by
   exact QuadraticAlgebra.Int.isIntegrallyClosed_iff.mp <| IsIntegrallyClosed.of_equiv f.toRingEquiv
 
 /-- The ring of integers of a quadratic field `K` is the quadratic algebra of discriminant
-`discr K`, see `QuadraticAlgebra.discr_ediv_emod`. -/
+`discr K`, see `QuadraticAlgebra.algEquivEdivEmod`. -/
 theorem nonempty_algEquiv_ringOfIntegers :
     Nonempty (𝓞 K ≃ₐ[ℤ] QuadraticAlgebra ℤ (discr K / 4) (discr K % 4)) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  refine ⟨f.trans (Nonempty.some ?_)⟩
-  rw [QuadraticAlgebra.nonempty_algEquiv_int_iff,
-    QuadraticAlgebra.discr_ediv_emod (isFundamentalDiscr_discr K).emod_four_eq_zero_or_one,
-    discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv]
+  exact ⟨f.trans (QuadraticAlgebra.algEquivEdivEmod a b)⟩
 
 /-- Every quadratic field is `ℚ(√(discr K))`. -/
 theorem nonempty_algEquiv_quadraticAlgebra_discr :
     Nonempty (K ≃ₐ[ℚ] QuadraticAlgebra ℚ (discr K : ℚ) 0) := by
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
-  exact ⟨(algEquivOfRingEquiv f.toRingEquiv).trans <|
-    (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) (b : ℚ)).trans <|
-      QuadraticAlgebra.equivOfEq (by rw [QuadraticAlgebra.discr_intCast,
-        discr_eq_quadraticAlgebra_discr f.toRingEquiv]) rfl⟩
+  rw [discr_eq_quadraticAlgebra_discr f.toRingEquiv, ← QuadraticAlgebra.discr_intCast]
+  exact ⟨(algEquivOfRingEquiv _ f.toRingEquiv).trans (QuadraticAlgebra.algEquivDiscrZero (a : ℚ) b)⟩
 
 /-- The discriminant of a quadratic field is not `1`. A more general version is the
 Hermite-Minkowski theorem, see `NumberField.abs_discr_gt_two`. -/
 theorem discr_ne_one : discr K ≠ 1 := by
-  by_contra h
+  intro h
   obtain ⟨a, b, ⟨f⟩⟩ :=
     Algebra.IsQuadraticExtension.exists_algEquiv_quadraticAlgebra (R := ℤ) (A := 𝓞 K)
   exact QuadraticAlgebra.Int.isDomain_iff.mp (f.symm.toMulEquiv.isDomain _)
     (discr_eq_quadraticAlgebra_discr f.toRingEquiv ▸ h ▸ IsSquare.one)
 
-/-- `√(discr K)` lies in `K`. -/
+/-- The square root of `discr K` lies in `K`. -/
 theorem exists_sq_eq_discr : ∃ x : K, x ^ 2 = discr K := by
   let e := (nonempty_algEquiv_quadraticAlgebra_discr K).some
   exact ⟨e.symm ω, by simp [← map_pow, QuadraticAlgebra.omega_pow_two_eq_add]⟩
@@ -124,8 +114,7 @@ theorem nonempty_algEquiv_iff_discr_eq :
   refine ⟨fun ⟨e⟩ ↦ discr_eq_discr_of_algEquiv K e, fun h ↦ ?_⟩
   obtain ⟨e₁⟩ := nonempty_algEquiv_ringOfIntegers K
   obtain ⟨e₂⟩ := nonempty_algEquiv_ringOfIntegers F
-  exact ⟨(IsFractionRing.ringEquivOfRingEquiv
-    ((h ▸ e₁).trans e₂.symm).toRingEquiv).equivRatAlgEquiv _ _⟩
+  exact ⟨algEquivOfRingEquiv F ((h ▸ e₁).trans e₂.symm).toRingEquiv⟩
 
 end discr
 

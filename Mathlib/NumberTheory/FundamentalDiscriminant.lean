@@ -5,7 +5,6 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.Data.Nat.Prime.Int
 public import Mathlib.Data.Nat.Squarefree
 
 /-!
@@ -110,14 +109,9 @@ theorem isFundamentalDiscr_four_mul {m : ℤ} :
 /-- The only fundamental discriminant that is a square is `1`. -/
 theorem IsFundamentalDiscr.eq_one_of_isSquare (h : IsFundamentalDiscr D) (h' : IsSquare D) :
     D = 1 := by
-  have h_main {r : ℤ} (hr : Squarefree (r * r)) : r * r = 1 := by
-    grind [isUnit_iff.mp <| Squarefree.isUnit_of_pow le_rfl (pow_two r ▸ hr)]
   obtain ⟨r, rfl⟩ := h'
-  obtain h | h := isFundamentalDiscr_iff_squarefree.mp h
-  · exact h_main h.2
-  · obtain ⟨s, rfl⟩ : Even r := by
-      grind [prime_two.dvd_mul.mp <| dvd_trans (by norm_num : _) <| dvd_iff_emod_eq_zero.mpr h.1]
-    rw [show (s + s) * (s + s) / 4 = s * s by grind] at h
-    grind
+  have := h.eq_one_of_eq_sq_mul (m := r.natAbs) (e := 1)
+    (by rw [mul_one, sq, Int.natAbs_mul_self']) (by simp)
+  simp [← Int.natAbs_mul_self', this]
 
 end Int
