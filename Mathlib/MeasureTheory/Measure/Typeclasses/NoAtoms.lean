@@ -77,7 +77,7 @@ measurable set `s` with `0 < μ s` contains a measurable `t` with `0 < μ t < μ
 class NoAtoms (μ : Measure α) : Prop where
   not_isAtom : ∀ s, ¬μ.IsAtom s
 
-theorem noAtoms_iff' :
+theorem noAtoms_iff_forall_exists :
     NoAtoms μ ↔
       ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
   simp [noAtoms_iff, isAtom_iff_not_exists]
