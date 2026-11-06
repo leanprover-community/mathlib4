@@ -11,6 +11,7 @@ public import Mathlib.Condensed.Equivalence
 public import Mathlib.Condensed.Limits
 
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveColimits
+
 /-!
 
 # AB axioms in condensed modules

@@ -5,7 +5,7 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Lean.Meta.Tactic.Simp
+public meta import Lean.Meta.Tactic.Simp
 public import Mathlib.Init
 
 /-!
