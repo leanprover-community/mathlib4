@@ -50,7 +50,7 @@ open Ideal NumberField RingOfIntegers
 variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
   (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (span {(p : ℤ)})]
 
-local notation3 "𝒑" => (span {(p : ℤ)})
+local notation +delab "𝒑" => (span {(p : ℤ)})
 
 section PrimePow
 

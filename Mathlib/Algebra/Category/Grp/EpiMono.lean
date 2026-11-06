@@ -88,7 +88,7 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
 
 namespace SurjectiveOfEpiAuxs
 
-local notation3 "X" => Set.range (· • (f.hom.range : Set B) : B → Set B)
+local notation +delab "X" => Set.range (· • (f.hom.range : Set B) : B → Set B)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
 -/

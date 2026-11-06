@@ -28,7 +28,7 @@ public section
 variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 
-local notation3 "e(" P "|" R ")" =>
+local notation +delab "e(" P "|" R ")" =>
   Ideal.ramificationIdx P R
 
 open IsLocalRing Algebra

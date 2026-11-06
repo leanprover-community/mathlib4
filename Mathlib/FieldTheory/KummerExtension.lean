@@ -196,7 +196,8 @@ variable {n : ℕ} (hζ : (primitiveRoots n K).Nonempty)
 variable (a : K) (H : Irreducible (X ^ n - C a))
 
 set_option quotPrecheck false in
-scoped[KummerExtension] notation3 "K[" n "√" a "]" => AdjoinRoot (Polynomial.X ^ n - Polynomial.C a)
+scoped[KummerExtension] notation +delab "K[" n "√" a "]" =>
+  AdjoinRoot (Polynomial.X ^ n - Polynomial.C a)
 
 attribute [nolint docBlame] KummerExtension.«termK[_√_]»
 

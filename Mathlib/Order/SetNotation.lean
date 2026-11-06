@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Data.Set.Operations
 public import Mathlib.Order.Bounds.Defs
-public import Mathlib.Util.Notation3
+public import Mathlib.Util.NotationDelab
 
 /-!
 # Notation classes for set supremum and infimum
@@ -48,10 +48,10 @@ instance (priority := 50) infSet_to_nonempty (α) [InfSet α] : Nonempty α :=
   ⟨sInf ∅⟩
 
 /-- Indexed supremum. -/
-notation3 "⨆ " (...)", " r:60:(scoped f => iSup f) => r
+notation +delab "⨆ " (...)", " r:60:(scoped f => iSup f) => r
 
 /-- Indexed infimum. -/
-notation3 "⨅ " (...)", " r:60:(scoped f => iInf f) => r
+notation +delab "⨅ " (...)", " r:60:(scoped f => iInf f) => r
 
 section delaborators
 
@@ -153,10 +153,10 @@ def iInter (s : ι → Set α) : Set α :=
   iInf s
 
 /-- Notation for `Set.iUnion`. Indexed union of a family of sets -/
-notation3 "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
+notation +delab "⋃ " (...)", " r:60:(scoped f => iUnion f) => r
 
 /-- Notation for `Set.iInter`. Indexed intersection of a family of sets -/
-notation3 "⋂ " (...)", " r:60:(scoped f => iInter f) => r
+notation +delab "⋂ " (...)", " r:60:(scoped f => iInter f) => r
 
 section delaborators
 

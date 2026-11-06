@@ -93,12 +93,12 @@ instance : Category Scheme where
 
 /-- `f ⁻¹ᵁ U` is notation for `(Opens.map f.base).obj U`, the preimage of an open set `U` under `f`.
 The preferred name in lemmas is `preimage` and it should be treated as an infix. -/
-scoped[AlgebraicGeometry] notation3:90 f:91 " ⁻¹ᵁ " U:90 =>
+scoped[AlgebraicGeometry] notation:90 +delab f:91 " ⁻¹ᵁ " U:90 =>
   @Functor.obj (Scheme.Opens _) _ (Scheme.Opens _) _
     (Opens.map (f : Scheme.Hom _ _).base) U
 
 /-- `Γ(X, U)` is notation for `X.presheaf.obj (op U)`. -/
-scoped[AlgebraicGeometry] notation3 "Γ(" X ", " U ")" =>
+scoped[AlgebraicGeometry] notation +delab "Γ(" X ", " U ")" =>
   (PresheafedSpace.presheaf (SheafedSpace.toPresheafedSpace
     (LocallyRingedSpace.toSheafedSpace (Scheme.toLocallyRingedSpace X)))).obj
     (op (α := Scheme.Opens _) U)

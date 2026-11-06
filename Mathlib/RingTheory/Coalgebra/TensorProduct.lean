@@ -308,11 +308,11 @@ namespace Coalgebra
 variable {R C : Type*} [CommSemiring R] [AddCommMonoid C] [Module R C] [Coalgebra R C]
   [IsCocomm R C]
 
-local notation3 "ε" => counit (R := R) (A := C)
-local notation3 "μ" => LinearMap.mul' R R
-local notation3 "δ" => comul (R := R)
+local notation +delab "ε" => counit (R := R) (A := C)
+local notation +delab "μ" => LinearMap.mul' R R
+local notation +delab "δ" => comul (R := R)
 local infix:90 " ◁ " => LinearMap.lTensor
-local notation3:90 f:90 " ▷ " X:90 => LinearMap.rTensor X f
+local notation:90 +delab f:90 " ▷ " X:90 => LinearMap.rTensor X f
 local infix:70 " ⊗ₘ " => _root_.TensorProduct.map
 
 variable (R C) in

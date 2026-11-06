@@ -62,7 +62,7 @@ variable {A σ : Type*}
 variable [CommRing A] [SetLike σ A] [AddSubgroupClass σ A]
 variable (𝒜 : ℕ → σ) [GradedRing 𝒜]
 
-local notation3 "at " x =>
+local notation +delab "at " x =>
   HomogeneousLocalization.AtPrime 𝒜
     (HomogeneousIdeal.toIdeal (ProjectiveSpectrum.asHomogeneousIdeal x))
 

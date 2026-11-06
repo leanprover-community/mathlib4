@@ -108,7 +108,7 @@ protected abbrev Sym2.mk {α : Type*} (a b : α) : Sym2 α := Quot.mk (Sym2.Rel 
 which is to say a pair modulo the action of the symmetric group.
 
 It is equal to `Sym2.mk (x, y)`. -/
-notation3 "s(" x ", " y ")" => Sym2.mk x y
+notation +delab "s(" x ", " y ")" => Sym2.mk x y
 
 namespace Sym2
 

@@ -70,11 +70,11 @@ elliptic curve, Jacobian, Weierstrass equation, nonsingular
 
 @[expose] public section
 
-local notation3 "x" => (0 : Fin 3)
+local notation +delab "x" => (0 : Fin 3)
 
-local notation3 "y" => (1 : Fin 3)
+local notation +delab "y" => (1 : Fin 3)
 
-local notation3 "z" => (2 : Fin 3)
+local notation +delab "z" => (2 : Fin 3)
 
 open MvPolynomial
 

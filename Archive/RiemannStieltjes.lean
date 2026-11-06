@@ -208,17 +208,17 @@ noncomputable def stieltjesIntegral : G :=
 /-- Notation `∫ˢ x in a..b, f x ∂[B; g]` for the Riemann–Stieltjes integral of `f` against the
 integrator `g`, paired by the bilinear map `B`.  Mirrors the vector-measure integral notation
 `∫ᵛ x, f x ∂[B; μ]`, and parallels `∫ x in a..b, f x ∂μ` for `intervalIntegral`. -/
-scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂["B:70"; "g:70"]" =>
+scoped notation +delab "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂["B:70"; "g:70"]" =>
   stieltjesIntegral a b B r g
 
 /-- The special case of `∫ˢ x in a..b, f x ∂[B; g]` with `f` real-valued, `g` vector-valued, and
 `B = ContinuousLinearMap.lsmul ℝ ℝ`. -/
-scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂•"g:70 =>
+scoped notation +delab "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂•"g:70 =>
   stieltjesIntegral a b (lsmul ℝ ℝ) r g
 
 /-- The special case of `∫ˢ x in a..b, f x ∂[B; g]` with `f` vector-valued, `g` real-valued, and
 `B = (ContinuousLinearMap.lsmul ℝ ℝ).flip`. -/
-scoped notation3 "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂<•"g:70 =>
+scoped notation +delab "∫ˢ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂<•"g:70 =>
   stieltjesIntegral a b (lsmul ℝ ℝ).flip r g
 
 -- The case where `f` and `g` are both real- or both complex-valued (`B = .mul ℝ E`) has no
@@ -247,7 +247,7 @@ https://github.com/leanprover-community/mathlib-at-ICERM26/blob/stieltjes/Mathli
 noncomputable def riemannIntegral : E := ∫ˢ x in a..b, f x ∂<•id
 
 @[inherit_doc riemannIntegral]
-scoped notation3 "∫ʳ "(...)" in "a".."b", "r:60:(scoped f => f) => riemannIntegral a b r
+scoped notation +delab "∫ʳ "(...)" in "a".."b", "r:60:(scoped f => f) => riemannIntegral a b r
 
 end Defs
 
