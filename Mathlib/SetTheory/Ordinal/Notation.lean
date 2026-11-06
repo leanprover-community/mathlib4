@@ -12,6 +12,8 @@ import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Data.Ordering.Lemmas
 import Mathlib.Tactic.NormNum
 
+deprecated_module (since := "2026-10-18")
+
 /-!
 # Ordinal notation
 
