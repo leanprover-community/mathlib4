@@ -6,13 +6,11 @@ Authors: David Loeffler
 
 module
 
-public meta import Lean.Elab.Command
-public import Lean.Linter.Init
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 public import Mathlib.Tactic.Linter.Header  -- shake: keep
 
-meta import Lean.Linter.Basic
+meta import Lean.Elab.Command
 
 /-!
 # A linter for long commands
