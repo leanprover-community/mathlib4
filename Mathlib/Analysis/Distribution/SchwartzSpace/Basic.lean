@@ -1293,7 +1293,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
 theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
     [hμ : μ.HasTemperateGrowth] [SecondCountableTopologyEither E F] : eLpNorm f p μ < ⊤ := by
   rcases eLpNorm_le_seminorm ℝ F p μ with ⟨k, C, hC⟩
-  exact lt_of_le_of_lt (hC f) (ENNReal.mul_lt_top ENNReal.coe_lt_top ENNReal.ofReal_lt_top)
+  exact lt_of_le_of_lt (hC f) (by finiteness)
 
 variable [SecondCountableTopologyEither E F]
 
