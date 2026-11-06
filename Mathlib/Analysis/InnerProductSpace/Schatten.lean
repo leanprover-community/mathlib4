@@ -47,19 +47,25 @@ open ComplexOrder
 open scoped ComplexConjugate ENNReal InnerProductSpace
 
 /-- The trace of an operator on `E` for a given basis `b`. -/
+@[expose]
 def traceOfBasis (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι ℂ E) : ℂ :=
   ∑' i, ⟪b i, A (b i)⟫_ℂ
+
+omit [CompleteSpace E] in
+theorem traceOfBasis_def (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι ℂ E) :
+    traceOfBasis A b = ∑' i, ⟪b i, A (b i)⟫_ℂ :=
+  rfl
 
 theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     (b : HilbertBasis ι ℂ E) (b' : HilbertBasis ι' ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
-  unfold traceOfBasis
   set S := CFC.sqrt A with hS
   have hS' : S.adjoint * S = A := by
     simp [hS, CFC.sqrt_mul_sqrt_self A, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
-  simp_rw +singlePass [← hS', mul_apply_eq_comp, ContinuousLinearMap.adjoint_inner_right,
-    ← b'.tsum_inner_mul_inner (S (b _)), ← b.tsum_inner_mul_inner (S (b' _)),
-    ← inner_conj_symm (S _), RCLike.conj_mul, ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
+  simp_rw +singlePass [traceOfBasis_def, ← hS', mul_apply_eq_comp,
+    ContinuousLinearMap.adjoint_inner_right, ← b'.tsum_inner_mul_inner (S (b _)),
+    ← b.tsum_inner_mul_inner (S (b' _)), ← inner_conj_symm (S _), RCLike.conj_mul,
+    ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
   congr
   simp_rw [← toReal_enorm, ← ENNReal.toReal_pow,
     ← ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.pow_ne_top enorm_ne_top]
@@ -84,19 +90,18 @@ theorem trace_eq_traceOfBasis (hA : 0 ≤ A) {ι : Type*}
 
 @[simp]
 theorem trace_zero : trace (0 : E →L[ℂ] E) = 0 := by
-  simp [trace, traceOfBasis]
+  simp [trace, traceOfBasis_def]
 
 variable (A) in
 @[simp]
 theorem trace_smul (c : ℂ) : (c • A).trace = c * A.trace := by
-  simp [trace, traceOfBasis, ← tsum_mul_left]
+  simp [trace, traceOfBasis_def, ← tsum_mul_left]
 
 variable (A) in
 theorem trace_adjoint : A.adjoint.trace = conj A.trace := by
-  simp [trace, traceOfBasis, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
+  simp [trace, traceOfBasis_def, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
 
 theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
-  unfold trace traceOfBasis
   set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
   exact tsum_nonneg fun i ↦ by
     simpa only [sub_zero] using hA.inner_nonneg_right (b i)
@@ -104,12 +109,12 @@ theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
 variable (A) in
 theorem toLinearMap_trace [FiniteDimensional ℂ E] :
     A.toLinearMap.trace ℂ E = A.trace := by
-  unfold trace traceOfBasis
+  unfold trace
   set ι := Classical.choose (exists_hilbertBasis ℂ E)
   set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
   let : Finite ι := b.orthonormal.linearIndependent.finite
   let : Fintype ι := Fintype.ofFinite ι
-  simp [LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
+  simp [traceOfBasis_def, LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
 
 theorem _root_.Summable.of_add_nonneg {ι : Type*} {f g : ι → ℂ} (hf : ∀ i, 0 ≤ f i)
     (hg : ∀ i, 0 ≤ g i) (h : Summable fun i => f i + g i) : Summable f := by
@@ -123,7 +128,8 @@ theorem _root_.Summable.of_add_nonneg {ι : Type*} {f g : ι → ℂ} (hf : ∀ 
     (by rw [Complex.ofReal_im]; exact (Complex.nonneg_iff.1 (hf i)).2)
 
 theorem trace_add_le (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) ≤ trace A + trace B := by
-  unfold trace traceOfBasis
+  unfold trace
+  simp_rw [traceOfBasis_def]
   set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
   have hA' : ∀ i, 0 ≤ ⟪b i, A (b i)⟫_ℂ := fun i => by
     simpa only [sub_zero] using hA.inner_nonneg_right (b i)
