@@ -371,8 +371,9 @@ theorem map_cons {n : ℕ} (f : α → β) (a : α) (s : Sym α n) : (a ::ₛ s)
   ext <| Multiset.map_cons _ _ _
 
 @[congr]
-theorem map_congr {f g : α → β} {s : Sym α n} (h : ∀ x ∈ s, f x = g x) : map f s = map g s :=
-  Subtype.ext <| Multiset.map_congr rfl h
+theorem map_congr {f g : α → β} {s s' : Sym α n} (hs : s = s') (h : ∀ x ∈ s, f x = g x) :
+    map f s = map g s' := by
+  subst hs; exact Subtype.ext <| Multiset.map_congr rfl h
 
 @[simp]
 theorem map_mk {f : α → β} {m : Multiset α} {hc : Multiset.card m = n} :

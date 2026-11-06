@@ -313,9 +313,10 @@ theorem mapDomain_single {f : α → β} {a : α} {b : M} : mapDomain f (single 
 theorem mapDomain_zero {f : α → β} : mapDomain f (0 : α →₀ M) = (0 : β →₀ M) :=
   sum_zero_index
 
-@[congr] theorem mapDomain_congr {f g : α → β} (h : ∀ x ∈ v.support, f x = g x) :
-    v.mapDomain f = v.mapDomain g :=
-  Finset.sum_congr rfl fun _ H => by simp only [h _ H]
+@[congr] theorem mapDomain_congr {f g : α → β} (hv : v₁ = v₂) (h : ∀ x ∈ v₁.support, f x = g x) :
+    v₁.mapDomain f = v₂.mapDomain g := by
+  subst hv
+  exact Finset.sum_congr rfl fun _ H ↦ by simp only [h _ H]
 
 theorem mapDomain_add {f : α → β} : mapDomain f (v₁ + v₂) = mapDomain f v₁ + mapDomain f v₂ :=
   sum_add_index' (fun _ => single_zero _) fun _ => single_add _
