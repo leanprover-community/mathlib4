@@ -593,8 +593,7 @@ theorem nonTorsionWeight_of [HasUniqueDiv M] (hw : ∀ i : σ, w i ≠ 0) :
 theorem weightedDegree_eq_zero_iff [CanonicallyOrderedAdd M]
     (hw : NonTorsionWeight w) {m : σ →₀ ℕ} :
     weight w m = 0 ↔ ∀ x : σ, m x = 0 := by
-  simp only [weight, Finsupp.linearCombination, LinearMap.toAddMonoidHom_coe, coe_lsum,
-    LinearMap.coe_smulRight, LinearMap.id_coe, id_eq]
+  simp_rw [weight, LinearMap.toAddMonoidHom_coe, linearCombination_apply]
   rw [Finsupp.sum, Finset.sum_eq_zero_iff]
   apply forall_congr'
   intro x

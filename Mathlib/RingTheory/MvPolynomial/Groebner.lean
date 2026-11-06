@@ -241,14 +241,9 @@ theorem div_single {b : MvPolynomial σ R}
         (m.degree (b * g) ≼[m] m.degree f) ∧
         (∀ c ∈ r.support, ¬ (m.degree b ≤ c)) := by
   obtain ⟨g, r, hgr, h1, h2⟩ := div_set (B := {b}) (m := m) (by simp [hb]) f
-  specialize h1 ⟨b, by simp⟩
-  set q := g ⟨b, by simp⟩
-  simp only [Set.mem_singleton_iff, forall_eq] at h2
-  simp only at h1
-  refine ⟨q, r, ?_, h1, h2⟩
-  rw [hgr]
-  simp only [Finsupp.linearCombination, Finsupp.coe_lsum, LinearMap.coe_smulRight, LinearMap.id_coe,
-    id_eq, smul_eq_mul, add_left_inj]
+  simp_rw [Set.mem_singleton_iff, forall_eq] at h2
+  refine ⟨g ⟨b, by simp⟩, r, ?_, h1 ⟨b, by simp⟩, h2⟩
+  simp_rw [hgr, Finsupp.linearCombination_apply, smul_eq_mul, add_left_inj]
   rw [Finsupp.sum_eq_single ⟨b, by simp⟩ _ (by simp)]
   simp +contextual
 
