@@ -54,7 +54,7 @@ theorem eLpNorm'_le_eLpNormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < 
     eLpNorm' f q μ ≤ eLpNormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, ‖f a‖ₑ ^ q ∂μ) ≤ ∫⁻ _ : α, eLpNormEssSup f μ ^ q ∂μ := by
     refine lintegral_mono_ae ?_
-    have h_nnNorm_le_eLpNorm_ess_sup := enorm_ae_le_eLpNormEssSup f μ
+    have h_nnNorm_le_eLpNorm_ess_sup := eNorm_ae_le_eLpNormEssSup f μ
     exact h_nnNorm_le_eLpNorm_ess_sup.mono fun x hx => by gcongr
   rw [eLpNorm', ← ENNReal.rpow_one (eLpNormEssSup f μ)]
   nth_rw 2 [← mul_inv_cancel₀ (ne_of_lt hq_pos).symm]
@@ -300,7 +300,7 @@ theorem eLpNorm_le_eLpNorm_top_mul_eLpNorm_of_enorm_of_pos (p : ℝ≥0∞) (b :
     ← lintegral_const_mul'' _ (by fun_prop)]
   simp only [← ENNReal.mul_rpow_of_nonneg (hz := hp.le)]
   apply lintegral_mono_ae
-  filter_upwards [h, enorm_ae_le_eLpNormEssSup f μ] with x hb hf
+  filter_upwards [h, eNorm_ae_le_eLpNormEssSup f μ] with x hb hf
   gcongr
   exact hf
 
@@ -408,7 +408,7 @@ theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm'_of_enorm {p q r : ℝ}
       simp only [mul_assoc]
       rw [eLpNorm'_const_mul_ennreal hro_lt (by exact (hf.eNorm.mul hg.eNorm).aestronglyMeasurable)]
       gcongr
-      simpa only [eLpNorm', enorm_mul, enorm_norm] using!
+      simpa only [eLpNorm', eNorm_mul, eNorm_norm] using!
         ENNReal.lintegral_Lp_mul_le_Lq_mul_Lr hpqr μ hf.eNorm hg.eNorm
 
 theorem eLpNorm'_le_eLpNorm'_mul_eLpNorm' {p q r : ℝ} (b : E → F → G) (c : ℝ≥0)

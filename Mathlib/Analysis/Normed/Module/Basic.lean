@@ -290,7 +290,7 @@ theorem nnNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x�
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap := nnNorm_algebraMap
 
-theorem enorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
+theorem eNorm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ₑ = ‖x‖ₑ * ‖(1 : 𝕜')‖ₑ := by
   simp only [eNorm_eq_nnNorm, nnNorm_algebraMap, ENNReal.coe_mul]
 
 theorem dist_algebraMap (x y : 𝕜) :
@@ -313,10 +313,10 @@ theorem nnNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_algebraMap' := nnNorm_algebraMap'
 
-/-- This is a simpler version of `enorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
+/-- This is a simpler version of `eNorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
-theorem enorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 𝕜') x‖ₑ = ‖x‖ₑ := by
-  rw [enorm_eq_iff_norm_eq, norm_algebraMap']
+theorem eNorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖(algebraMap 𝕜 𝕜') x‖ₑ = ‖x‖ₑ := by
+  rw [eNorm_eq_iff_norm_eq, norm_algebraMap']
 
 /-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]

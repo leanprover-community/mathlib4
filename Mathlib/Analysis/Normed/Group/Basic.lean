@@ -397,13 +397,13 @@ lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := ENNReal.ofReal_eq_c
 
 @[deprecated (since := "2026-05-25")] alias ofReal_norm_eq_enorm' := ofReal_norm'
 
-@[to_additive enorm_eq_iff_norm_eq]
+@[to_additive eNorm_eq_iff_norm_eq]
 theorem eNorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
   simp only [← ofReal_norm']
   refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
   exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
 
-@[to_additive enorm_le_iff_norm_le]
+@[to_additive eNorm_le_iff_norm_le]
 theorem eNorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
   simp only [← ofReal_norm']
   refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
@@ -512,7 +512,7 @@ theorem nnNorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
 @[to_additive (attr := deprecated (since := "2026-10-31"))] alias nnnorm_div_le := nnNorm_div_le
 
 @[to_additive]
-lemma enorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
+lemma eNorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
   simpa [eNorm, ← ENNReal.coe_add] using nnNorm_div_le a b
 
 @[to_additive]
@@ -681,9 +681,9 @@ end NNNorm
 
 section ENorm
 
-@[to_additive (attr := simp) enorm_zero]
-lemma enorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
-  rw [ESeminormedMonoid.enorm_zero]
+@[to_additive (attr := simp) eNorm_zero]
+lemma eNorm_one' {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [ESeminormedMonoid.eNorm_zero]
 
 @[to_additive exists_enorm_lt]
 lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
@@ -692,16 +692,16 @@ lemma exists_enorm_lt' (E : Type*) [TopologicalSpace E] [ESeminormedMonoid E]
     (ContinuousENorm.continuous_enorm.tendsto' 1 0 (by simp) |>.eventually_lt_const hc.bot_lt)
     |>.exists
 
-@[to_additive (attr := simp) enorm_neg]
-lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
+@[to_additive (attr := simp) eNorm_neg]
+lemma eNorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [eNorm]
 
 @[to_additive]
 theorem edist_eq_enorm_inv_mul (a b : E) : edist a b = ‖a⁻¹ * b‖ₑ := by
   rw [edist_dist, dist_eq_norm_inv_mul, ofReal_norm']
 
 @[to_additive]
-lemma enorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
-  rw [← enorm_inv', inv_div]
+lemma eNorm_div_rev {E : Type*} [SeminormedGroup E] (a b : E) : ‖a / b‖ₑ = ‖b / a‖ₑ := by
+  rw [← eNorm_inv', inv_div]
 
 @[to_additive]
 theorem mem_eball_one_iff {r : ℝ≥0∞} : a ∈ eball 1 r ↔ ‖a‖ₑ < r := by
@@ -713,21 +713,21 @@ section ESeminormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ESeminormedMonoid E]
 
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.enorm_mul_le a b
+@[to_additive eNorm_add_le]
+lemma eNorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ESeminormedMonoid.eNorm_mul_le a b
 
-@[to_additive enorm_add_le_of_le]
-theorem enorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
+@[to_additive eNorm_add_le_of_le]
+theorem eNorm_mul_le_of_le' {r₁ r₂ : ℝ≥0∞} {a₁ a₂ : E}
     (h₁ : ‖a₁‖ₑ ≤ r₁) (h₂ : ‖a₂‖ₑ ≤ r₂) : ‖a₁ * a₂‖ₑ ≤ r₁ + r₂ :=
-  (enorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
+  (eNorm_mul_le' a₁ a₂).trans <| add_le_add h₁ h₂
 
-@[to_additive enorm_add₃_le]
-lemma enorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
-  enorm_mul_le_of_le' (enorm_mul_le' _ _) le_rfl
+@[to_additive eNorm_add₃_le]
+lemma eNorm_mul₃_le' {a b c : E} : ‖a * b * c‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ :=
+  eNorm_mul_le_of_le' (eNorm_mul_le' _ _) le_rfl
 
-@[to_additive enorm_add₄_le]
-lemma enorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
-  enorm_mul_le_of_le' enorm_mul₃_le' le_rfl
+@[to_additive eNorm_add₄_le]
+lemma eNorm_mul₄_le' {a b c d : E} : ‖a * b * c * d‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ + ‖c‖ₑ + ‖d‖ₑ :=
+  eNorm_mul_le_of_le' eNorm_mul₃_le' le_rfl
 
 end ESeminormedMonoid
 
@@ -735,17 +735,17 @@ section ENormedMonoid
 
 variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
-  simp [ENormedMonoid.enorm_eq_zero]
+@[to_additive (attr := simp) eNorm_eq_zero]
+lemma eNorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [ENormedMonoid.eNorm_eq_zero]
 
-@[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
-  enorm_eq_zero'.ne
+@[to_additive eNorm_ne_zero]
+lemma eNorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
+  eNorm_eq_zero'.ne
 
-@[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
-  pos_iff_ne_zero.trans enorm_ne_zero'
+@[to_additive (attr := simp) eNorm_pos]
+lemma eNorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
+  pos_iff_ne_zero.trans eNorm_ne_zero'
 
 end ENormedMonoid
 
@@ -875,9 +875,9 @@ theorem norm_multiset_sum_le {E} [SeminormedAddCommGroup E] (m : Multiset E) :
   m.le_sum_of_subadditive norm norm_zero.le norm_add_le
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
-theorem enorm_multisetSum_le (m : Multiset ε) :
+theorem eNorm_multisetSum_le (m : Multiset ε) :
     ‖m.sum‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
-  m.le_sum_of_subadditive eNorm enorm_zero.le enorm_add_le
+  m.le_sum_of_subadditive eNorm eNorm_zero.le eNorm_add_le
 
 @[to_additive existing]
 theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x => ‖x‖).sum :=
@@ -885,15 +885,15 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedCommMonoid ε] in
 @[to_additive existing]
-theorem enorm_multisetProd_le (m : Multiset ε) :
+theorem eNorm_multisetProd_le (m : Multiset ε) :
     ‖m.prod‖ₑ ≤ (m.map fun x => ‖x‖ₑ).sum :=
-  m.apply_prod_le_sum_map _ enorm_one'.le enorm_mul_le'
+  m.apply_prod_le_sum_map _ eNorm_one'.le eNorm_mul_le'
 
 variable {ε : Type*} [TopologicalSpace ε] [ESeminormedAddCommMonoid ε] in
 @[bound]
-theorem enorm_sum_le (s : Finset ι) (f : ι → ε) :
+theorem eNorm_sum_le (s : Finset ι) (f : ι → ε) :
     ‖∑ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.le_sum_of_subadditive eNorm enorm_zero.le enorm_add_le f
+  s.le_sum_of_subadditive eNorm eNorm_zero.le eNorm_add_le f
 
 @[bound]
 theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
@@ -901,17 +901,17 @@ theorem norm_sum_le {E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E
   s.le_sum_of_subadditive norm norm_zero.le norm_add_le f
 
 @[to_additive existing]
-theorem enorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
-  s.apply_prod_le_sum_apply _ enorm_one'.le enorm_mul_le'
+theorem eNorm_prod_le (s : Finset ι) (f : ι → ε) : ‖∏ i ∈ s, f i‖ₑ ≤ ∑ i ∈ s, ‖f i‖ₑ :=
+  s.apply_prod_le_sum_apply _ eNorm_one'.le eNorm_mul_le'
 
 @[to_additive existing]
 theorem norm_prod_le (s : Finset ι) (f : ι → E) : ‖∏ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
   s.apply_prod_le_sum_apply _ norm_one'.le norm_mul_le'
 
 @[to_additive]
-theorem enorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
+theorem eNorm_prod_le_of_le (s : Finset ι) {f : ι → ε} {n : ι → ℝ≥0∞} (h : ∀ b ∈ s, ‖f b‖ₑ ≤ n b) :
     ‖∏ b ∈ s, f b‖ₑ ≤ ∑ b ∈ s, n b :=
-  (enorm_prod_le s f).trans <| Finset.sum_le_sum h
+  (eNorm_prod_le s f).trans <| Finset.sum_le_sum h
 
 @[to_additive]
 theorem norm_prod_le_of_le (s : Finset ι) {f : ι → E} {n : ι → ℝ} (h : ∀ b ∈ s, ‖f b‖ ≤ n b) :

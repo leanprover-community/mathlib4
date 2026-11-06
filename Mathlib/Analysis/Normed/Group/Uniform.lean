@@ -48,8 +48,8 @@ theorem nnNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass �
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_map]
 alias nnnorm_map' := nnNorm_map'
 
-@[to_additive (attr := simp) enorm_map]
-lemma enorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
+@[to_additive (attr := simp) eNorm_map]
+lemma eNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
 @[to_additive (attr := simp)]

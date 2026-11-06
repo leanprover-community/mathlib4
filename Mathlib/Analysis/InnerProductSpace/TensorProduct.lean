@@ -154,7 +154,7 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (E ⊗[𝕜] F) := .ofCo
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_tmul := nnNorm_tmul
 
-@[simp] theorem enorm_tmul (x : E) (y : F) :
+@[simp] theorem eNorm_tmul (x : E) (y : F) :
     ‖x ⊗ₜ[𝕜] y‖ₑ = ‖x‖ₑ * ‖y‖ₑ := ENNReal.coe_inj.mpr <| by simp
 
 theorem dist_tmul_le (x x' : E) (y y' : F) :
@@ -167,7 +167,7 @@ theorem nndist_tmul_le (x x' : E) (y y' : F) :
 
 theorem edist_tmul_le (x x' : E) (y y' : F) :
     edist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ₑ * ‖y‖ₑ + ‖x'‖ₑ * ‖y'‖ₑ := by
-  grw [edist_eq_enorm_sub, enorm_sub_le]; simp
+  grw [edist_eq_enorm_sub, eNorm_sub_le]; simp
 
 /-- In `ℝ` or `ℂ` fields, the inner product on tensor products is essentially just the inner product
 with multiplication instead of tensors, i.e., `⟪a ⊗ₜ b, c ⊗ₜ d⟫ = ⟪a * b, c * d⟫`. -/
@@ -232,8 +232,8 @@ noncomputable def mapIsometry (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H
     ‖map f.toLinearMap g.toLinearMap x‖ = ‖x‖ := mapIsometry f g |>.norm_map x
 @[simp] lemma nnNorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
     ‖map f.toLinearMap g.toLinearMap x‖₊ = ‖x‖₊ := mapIsometry f g |>.nnNorm_map x
-@[simp] lemma enorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
-    ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.enorm_map x
+@[simp] lemma eNorm_map (f : E →ₗᵢ[𝕜] G) (g : F →ₗᵢ[𝕜] H) (x : E ⊗[𝕜] F) :
+    ‖map f.toLinearMap g.toLinearMap x‖ₑ = ‖x‖ₑ := mapIsometry f g |>.eNorm_map x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 
@@ -364,8 +364,8 @@ noncomputable def commIsometry : E ⊗[𝕜] F ≃ₗᵢ[𝕜] F ⊗[𝕜] E :=
     ‖TensorProduct.comm 𝕜 E F x‖ = ‖x‖ := commIsometry 𝕜 E F |>.norm_map x
 @[simp] lemma nnNorm_comm (x : E ⊗[𝕜] F) :
     ‖TensorProduct.comm 𝕜 E F x‖₊ = ‖x‖₊ := commIsometry 𝕜 E F |>.nnNorm_map x
-@[simp] lemma enorm_comm (x : E ⊗[𝕜] F) :
-    ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.enorm_map x
+@[simp] lemma eNorm_comm (x : E ⊗[𝕜] F) :
+    ‖TensorProduct.comm 𝕜 E F x‖ₑ = ‖x‖ₑ := commIsometry 𝕜 E F |>.toLinearIsometry.eNorm_map x
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_comm := nnNorm_comm
 
@@ -395,8 +395,8 @@ lemma toContinuousLinearMap_symm_lidIsometry :
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_lid := nnNorm_lid
 
-@[simp] lemma enorm_lid (x : 𝕜 ⊗[𝕜] E) :
-    ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
+@[simp] lemma eNorm_lid (x : 𝕜 ⊗[𝕜] E) :
+    ‖TensorProduct.lid 𝕜 E x‖ₑ = ‖x‖ₑ := lidIsometry 𝕜 E |>.toLinearIsometry.eNorm_map x
 
 @[simp] theorem inner_rid_rid (x y : E ⊗[𝕜] 𝕜) :
     inner 𝕜 (TensorProduct.rid 𝕜 E x) (TensorProduct.rid 𝕜 E y) = inner 𝕜 x y := by
@@ -423,8 +423,8 @@ lemma lidIsometry_eq_ridIsometry : lidIsometry 𝕜 𝕜 = ridIsometry 𝕜 𝕜
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_rid := nnNorm_rid
 
-@[simp] lemma enorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ₑ = ‖x‖ₑ :=
-  ridIsometry 𝕜 E |>.toLinearIsometry.enorm_map x
+@[simp] lemma eNorm_rid (x) : ‖TensorProduct.rid 𝕜 E x‖ₑ = ‖x‖ₑ :=
+  ridIsometry 𝕜 E |>.toLinearIsometry.eNorm_map x
 
 @[simp] lemma commIsometry_trans_lidIsometry :
     (commIsometry 𝕜 E 𝕜).trans (lidIsometry 𝕜 E) = ridIsometry 𝕜 E := by ext; simp
@@ -465,8 +465,8 @@ noncomputable def assocIsometry : E ⊗[𝕜] F ⊗[𝕜] G ≃ₗᵢ[𝕜] E �
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_assoc := nnNorm_assoc
 
-@[simp] lemma enorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
-    ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.enorm_map x
+@[simp] lemma eNorm_assoc (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    ‖TensorProduct.assoc 𝕜 E F G x‖ₑ = ‖x‖ₑ := assocIsometry 𝕜 E F G |>.toLinearIsometry.eNorm_map x
 
 end isometry
 

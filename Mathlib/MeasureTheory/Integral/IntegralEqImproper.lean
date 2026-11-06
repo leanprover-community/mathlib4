@@ -1020,7 +1020,7 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
   exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 
 open UniformSpace in
-lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
+lemma _root_.HasCompactSupport.eNorm_le_lintegral_Ici_deriv
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} (hf : ContDiff ℝ 1 f) (h'f : HasCompactSupport f) (x : ℝ) :
     ‖f x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f y‖ₑ := by
@@ -1030,9 +1030,9 @@ lemma _root_.HasCompactSupport.enorm_le_lintegral_Ici_deriv
   have h'f' : HasCompactSupport f' := h'f.comp_left rfl
   have : ‖f' x‖ₑ ≤ ∫⁻ y in Iic x, ‖deriv f' y‖ₑ := by
     rw [← HasCompactSupport.integral_Iic_deriv_eq hf' h'f' x]
-    exact enorm_integral_le_lintegral_enorm _
+    exact eNorm_integral_le_lintegral_enorm _
   convert! this with y
-  · simp [f', I, Completion.enorm_coe]
+  · simp [f', I, Completion.eNorm_coe]
   · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable one_ne_zero _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]

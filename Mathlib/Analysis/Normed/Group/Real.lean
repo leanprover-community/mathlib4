@@ -34,20 +34,20 @@ instance : NNNorm ℝ≥0 where
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq_self := nnNorm_eq_self
 
-@[simp] lemma enorm_eq_coe (x : ℝ≥0) : ‖x‖ₑ = x := rfl
+@[simp] lemma eNorm_eq_coe (x : ℝ≥0) : ‖x‖ₑ = x := rfl
 
 end NNReal
 
 instance : ENorm ℝ≥0∞ where
   eNorm x := x
 
-@[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
+@[simp] lemma eNorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
 
 noncomputable instance : ENormedAddCommMonoid ℝ≥0∞ where
   continuous_enorm := continuous_id
-  enorm_zero := by simp
-  enorm_eq_zero := by simp
-  enorm_add_le := by simp
+  eNorm_zero := by simp
+  eNorm_eq_zero := by simp
+  eNorm_add_le := by simp
 
 namespace Real
 
@@ -74,7 +74,7 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 
 lemma norm_natCast (n : ℕ) : ‖(n : ℝ)‖ = n := abs_of_nonneg n.cast_nonneg
 @[simp 1100] lemma nnNorm_natCast (n : ℕ) : ‖(n : ℝ)‖₊ = n := NNReal.eq <| norm_natCast _
-@[simp 1100] lemma enorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [eNorm]
+@[simp 1100] lemma eNorm_natCast (n : ℕ) : ‖(n : ℝ)‖ₑ = n := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
 
@@ -106,25 +106,25 @@ theorem nnNorm_of_nonneg (hr : 0 ≤ r) : ‖r‖₊ = .mk r hr :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_of_nonneg := nnNorm_of_nonneg
 
-lemma enorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
+lemma eNorm_of_nonneg (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   simp [eNorm, nnNorm_of_nonneg hr, ENNReal.ofReal, toNNReal, hr]
 
-lemma enorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ := by
-  simp [Real.enorm_of_nonneg, ha]
+lemma eNorm_ofReal_of_nonneg {a : ℝ} (ha : 0 ≤ a) : ‖ENNReal.ofReal a‖ₑ = ‖a‖ₑ := by
+  simp [Real.eNorm_of_nonneg, ha]
 
 @[simp] lemma nnNorm_abs (r : ℝ) : ‖|r|‖₊ = ‖r‖₊ := by simp [nnNorm]
-@[simp] lemma enorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [eNorm]
+@[simp] lemma eNorm_abs (r : ℝ) : ‖|r|‖ₑ = ‖r‖ₑ := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_abs := nnNorm_abs
 
-theorem enorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
+theorem eNorm_eq_ofReal (hr : 0 ≤ r) : ‖r‖ₑ = .ofReal r := by
   rw [← ofReal_norm, norm_of_nonneg hr]
 
-@[simp] lemma enorm_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : ‖a.toReal‖ₑ = a := by
-  simp [enorm_eq_ofReal, ha]
+@[simp] lemma eNorm_toReal {a : ℝ≥0∞} (ha : a ≠ ∞) : ‖a.toReal‖ₑ = a := by
+  simp [eNorm_eq_ofReal, ha]
 
-theorem enorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
-  rw [← enorm_eq_ofReal (abs_nonneg _), enorm_abs]
+theorem eNorm_eq_ofReal_abs (r : ℝ) : ‖r‖ₑ = ENNReal.ofReal |r| := by
+  rw [← eNorm_eq_ofReal (abs_nonneg _), eNorm_abs]
 
 theorem toNNReal_eq_nnNorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ := by
   rw [Real.toNNReal_of_nonneg hr]
@@ -135,7 +135,7 @@ theorem toNNReal_eq_nnNorm_of_nonneg (hr : 0 ≤ r) : r.toNNReal = ‖r‖₊ :=
 alias toNNReal_eq_nnnorm_of_nonneg := toNNReal_eq_nnNorm_of_nonneg
 
 theorem ofReal_le_enorm (r : ℝ) : ENNReal.ofReal r ≤ ‖r‖ₑ := by
-  rw [enorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
+  rw [eNorm_eq_ofReal_abs]; gcongr; exact le_abs_self _
 
 end Real
 
@@ -153,10 +153,10 @@ lemma nnNorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnNorm]
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_norm]
 alias nnnorm_norm' := nnNorm_norm'
 
-@[to_additive (attr := simp) enorm_norm]
-lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [eNorm]
+@[to_additive (attr := simp) eNorm_norm]
+lemma eNorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
-lemma enorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [eNorm]
+lemma eNorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
 end SeminormedCommGroup
 

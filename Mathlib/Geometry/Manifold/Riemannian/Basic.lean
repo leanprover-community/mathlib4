@@ -137,7 +137,7 @@ lemma nnNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_tangentSpace_vectorSpace := nnNorm_tangentSpace_vectorSpace
 
-lemma enorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
+lemma eNorm_tangentSpace_vectorSpace {x : F} {v : TangentSpace% x} :
     ‖v‖ₑ = ‖NormedSpace.fromTangentSpace _ v‖ₑ := by
   simp [eNorm, nnNorm_tangentSpace_vectorSpace]
 
@@ -166,10 +166,10 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       contMDiffOn_iff_contDiffOn.mp (hγ.comp_contMDiffOn contMDiffOn_projIcc)
     rw [lintegral_norm_mfderiv_Icc_eq_pathELength_projIcc,
       pathELength_eq_lintegral_mfderivWithin_Icc]
-    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
     conv_lhs =>
       rw [edist_comm, edist_eq_enorm_sub, show x = e 0 by simp [e], show y = e 1 by simp [e]]
-    exact (enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
+    exact (eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc D zero_le_one).trans_eq rfl
   · let γ := ContinuousAffineMap.lineMap (R := ℝ) x y
     have : riemannianEDist 𝓘(ℝ, F) x y ≤ pathELength 𝓘(ℝ, F) γ 0 1 := by
       apply riemannianEDist_le_pathELength ?_ (by simp [γ, ContinuousAffineMap.coe_lineMap_eq])
@@ -178,7 +178,7 @@ instance : IsRiemannianManifold 𝓘(ℝ, F) F := by
       exact γ.contDiff.contDiffOn
     apply this.trans_eq
     rw [pathELength_eq_lintegral_mfderivWithin_Icc]
-    simp only [mfderivWithin_eq_fderivWithin, enorm_tangentSpace_vectorSpace]
+    simp only [mfderivWithin_eq_fderivWithin, eNorm_tangentSpace_vectorSpace]
     exact lintegral_fderiv_lineMap_eq_edist
 
 end
@@ -458,7 +458,7 @@ lemma setOfPred_riemannianEDist_lt_subset_nhds [RegularSpace M] {x : M} {s : Set
     calc
       ‖γ' t₁ - γ' 0‖ₑ
     _ ≤ ∫⁻ t' in Icc 0 t₁, ‖derivWithin γ' (Icc 0 t₁) t'‖ₑ := by
-      apply enorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc _ ht₁0
+      apply eNorm_sub_le_lintegral_derivWithin_Icc_of_contDiffOn_Icc _ ht₁0
       rwa [← contMDiffOn_iff_contDiffOn]
     _ = ∫⁻ t' in Icc 0 t₁, ‖mfderiv[Icc 0 t₁] γ' t' 1‖ₑ := by
       simp_rw [← fderivWithin_derivWithin, mfderivWithin_eq_fderivWithin]

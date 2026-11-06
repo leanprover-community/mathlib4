@@ -69,7 +69,7 @@ theorem norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrabl
   rw [setToFun_eq hT hf]
   exact L1.norm_setToL1_le_mul_norm' hT _
 
-theorem enorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
+theorem eNorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ₑ ≤ NNReal.mk C hC * ∫⁻ x, ‖f x‖ₑ ∂μ := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]

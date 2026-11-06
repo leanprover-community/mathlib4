@@ -87,7 +87,7 @@ theorem nnNorm_inv (a : α) : ‖a⁻¹‖₊ = ‖a‖₊⁻¹ :=
 @[deprecated (since := "2026-10-31")] alias nnnorm_inv := nnNorm_inv
 
 @[simp]
-lemma enorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [eNorm, ENNReal.coe_inv, ha]
+lemma eNorm_inv {a : α} (ha : a ≠ 0) : ‖a⁻¹‖ₑ = ‖a‖ₑ⁻¹ := by simp [eNorm, ENNReal.coe_inv, ha]
 
 @[simp]
 theorem norm_zpow : ∀ (a : α) (n : ℤ), ‖a ^ n‖ = ‖a‖ ^ n :=

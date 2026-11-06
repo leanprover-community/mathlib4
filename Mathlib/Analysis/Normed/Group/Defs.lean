@@ -94,18 +94,18 @@ instance NNNorm.toENorm : ENorm E where eNorm := (‖·‖₊ : E → ℝ≥0∞
 @[basify_op]
 lemma eNorm_eq_nnNorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 
-@[deprecated (since := "2026-10-31")] alias enorm_eq_nnnorm := eNorm_eq_nnNorm
+@[deprecated (since := "2026-10-31")] alias eNorm_eq_nnnorm := eNorm_eq_nnNorm
 
 @[simp] lemma toNNReal_enorm (x : E) : ‖x‖ₑ.toNNReal = ‖x‖₊ := rfl
 
 @[simp, norm_cast] lemma coe_le_enorm : r ≤ ‖x‖ₑ ↔ r ≤ ‖x‖₊ := by simp [eNorm]
-@[simp, norm_cast] lemma enorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [eNorm]
+@[simp, norm_cast] lemma eNorm_le_coe : ‖x‖ₑ ≤ r ↔ ‖x‖₊ ≤ r := by simp [eNorm]
 @[simp, norm_cast] lemma coe_lt_enorm : r < ‖x‖ₑ ↔ r < ‖x‖₊ := by simp [eNorm]
-@[simp, norm_cast] lemma enorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [eNorm]
+@[simp, norm_cast] lemma eNorm_lt_coe : ‖x‖ₑ < r ↔ ‖x‖₊ < r := by simp [eNorm]
 
 @[aesop (rule_sets := [finiteness]) safe apply, simp]
-lemma enorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [eNorm]
-@[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [eNorm]
+lemma eNorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [eNorm]
+@[simp] lemma eNorm_lt_top : ‖x‖ₑ < ∞ := by simp [eNorm]
 
 end ENorm
 
@@ -121,8 +121,8 @@ Note that we do not ask for the eNorm to be positive definite:
 non-trivial elements may have eNorm zero. -/
 class ESeminormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ContinuousENorm E, AddMonoid E where
-  enorm_zero : ‖(0 : E)‖ₑ = 0
-  protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  eNorm_zero : ‖(0 : E)‖ₑ = 0
+  protected eNorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 -- see Note [lower instance priority]
 attribute [instance 10] ESeminormedAddMonoid.toAddMonoid
@@ -132,14 +132,14 @@ which is positive definite: in other words, this is an `ESeminormedAddMonoid` wi
 definiteness condition added. -/
 class ENormedAddMonoid (E : Type*) [TopologicalSpace E]
     extends ESeminormedAddMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  eNorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
 
 /-- An e-seminormed monoid is a monoid endowed with a continuous eNorm.
 Note that we only ask for the eNorm to be a semi-norm: non-trivial elements may have eNorm zero. -/
 @[to_additive]
 class ESeminormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
-  enorm_zero : ‖(1 : E)‖ₑ = 0
-  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+  eNorm_zero : ‖(1 : E)‖ₑ = 0
+  eNorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
 
 -- see Note [lower instance priority]
 attribute [instance 10] ESeminormedMonoid.toMonoid
@@ -149,7 +149,7 @@ which is positive definite: in other words, this is an `ESeminormedMonoid` with 
 definiteness condition added. -/
 @[to_additive]
 class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ESeminormedMonoid E where
-  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  eNorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
 
 /-- An e-seminormed commutative monoid is an additive commutative monoid endowed with a continuous
 eNorm.

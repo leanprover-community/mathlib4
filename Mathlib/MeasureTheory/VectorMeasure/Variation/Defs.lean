@@ -45,7 +45,7 @@ lemma isSigmaSubadditiveSetFun_enorm (μ : VectorMeasure X V) :
     IsSigmaSubadditiveSetFun (‖μ ·‖ₑ) := by
   intro s hs
   have hmeas : ∀ i, MeasurableSet (s i).val := fun i => (s i).prop
-  simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using enorm_tsum_le_tsum_enorm
+  simpa [VectorMeasure.of_disjoint_iUnion hmeas hs] using eNorm_tsum_le_tsum_enorm
 
 /-- The variation of a `VectorMeasure` as a `Measure`. -/
 noncomputable def variation (μ : VectorMeasure X V) : Measure X :=

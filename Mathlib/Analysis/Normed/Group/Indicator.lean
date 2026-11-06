@@ -27,20 +27,20 @@ section ESeminormedAddMonoid
 variable {α ε : Type*} [TopologicalSpace ε] [ESeminormedAddMonoid ε]
   {s t : Set α} (f : α → ε) (a : α)
 
-lemma enorm_indicator_eq_indicator_enorm :
+lemma eNorm_indicator_eq_indicator_enorm :
     ‖indicator s f a‖ₑ = indicator s (fun a => ‖f a‖ₑ) a :=
-  congr($((indicator_comp_of_zero (enorm_zero (E := ε))).symm) a)
+  congr($((indicator_comp_of_zero (eNorm_zero (E := ε))).symm) a)
 
-theorem enorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
+theorem eNorm_indicator_le_of_subset (h : s ⊆ t) (f : α → ε) (a : α) :
     ‖indicator s f a‖ₑ ≤ ‖indicator t f a‖ₑ := by
-  simp only [enorm_indicator_eq_indicator_enorm]
+  simp only [eNorm_indicator_eq_indicator_enorm]
   grw [h]
 
 theorem indicator_enorm_le_enorm_self : indicator s (fun a => ‖f a‖ₑ) a ≤ ‖f a‖ₑ :=
   indicator_le_self' (fun _ _ ↦ zero_le) a
 
-theorem enorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
-  rw [enorm_indicator_eq_indicator_enorm]
+theorem eNorm_indicator_le_enorm_self : ‖indicator s f a‖ₑ ≤ ‖f a‖ₑ := by
+  rw [eNorm_indicator_eq_indicator_enorm]
   apply indicator_enorm_le_enorm_self
 
 end ESeminormedAddMonoid

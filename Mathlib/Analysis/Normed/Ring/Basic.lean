@@ -174,7 +174,7 @@ section SeminormedAddCommGroup
 variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
 @[simp] lemma nnNorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
-@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [eNorm]
+@[simp] lemma eNorm_one : ‖(1 : G)‖ₑ = 1 := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_one := nnNorm_one
 
@@ -459,7 +459,7 @@ theorem nnNorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖₊ = ‖a ^ n‖₊ :
 @[deprecated (since := "2026-10-31")] alias nnnorm_neg_pow := nnNorm_neg_pow
 
 @[simp]
-theorem enorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
+theorem eNorm_neg_pow (a : α) (n : ℕ) : ‖(-a) ^ n‖ₑ = ‖a ^ n‖ₑ := by
   simp [eNorm]
 
 instance ULift.seminormedRing : SeminormedRing (ULift α) :=
@@ -704,7 +704,7 @@ open NNReal
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
 @[simp] lemma nnNorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x := by ext; simp [nnNorm]
-@[simp] lemma enorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [eNorm]
+@[simp] lemma eNorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ₑ = x := by simp [eNorm]
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_eq := nnNorm_eq
 
@@ -745,7 +745,7 @@ theorem RingHomIsometric.nnNorm_map [SeminormedRing R₁] [SeminormedRing R₂] 
 alias RingHomIsometric.nnnorm_map := RingHomIsometric.nnNorm_map
 
 @[simp]
-theorem RingHomIsometric.enorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
+theorem RingHomIsometric.eNorm_map [SeminormedRing R₁] [SeminormedRing R₂] (σ : R₁ →+* R₂)
     [RingHomIsometric σ] (x : R₁) : ‖σ x‖ₑ = ‖x‖ₑ :=
   congrArg ENNReal.ofNNReal <| nnNorm_map σ x
 
@@ -777,7 +777,7 @@ variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_mul := nnNorm_mul
 
-@[simp] lemma enorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [eNorm]
+@[simp] lemma eNorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [eNorm]
 
 end SeminormedAddCommGroup
 
@@ -814,7 +814,7 @@ theorem nnNorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_pow := nnNorm_pow
 
-@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [eNorm]
+@[simp] lemma eNorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [eNorm]
 
 protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
   map_list_prod (normHom.toMonoidHom : α →* ℝ) _

@@ -177,7 +177,7 @@ lemma le_egauge_smul_left (c : 𝕜) (s : Set E) (x : E) :
   simp_rw [le_egauge_iff, smul_smul]
   rintro a ⟨x, hx, rfl⟩
   apply ENNReal.div_le_of_le_mul
-  rw [← enorm_mul]
+  rw [← eNorm_mul]
   exact egauge_le_of_mem_smul <| smul_mem_smul_set hx
 
 lemma egauge_smul_left (hc : c ≠ 0) (s : Set E) (x : E) :
@@ -186,7 +186,7 @@ lemma egauge_smul_left (hc : c ≠ 0) (s : Set E) (x : E) :
   rw [ENNReal.le_div_iff_mul_le (by simp [*]) (by simp)]
   calc
     egauge 𝕜 (c • s) x * ‖c‖ₑ = egauge 𝕜 (c • s) x / ‖c⁻¹‖ₑ := by
-      rw [enorm_inv (by simpa), div_eq_mul_inv, inv_inv]
+      rw [eNorm_inv (by simpa), div_eq_mul_inv, inv_inv]
     _ ≤ egauge 𝕜 (c⁻¹ • c • s) x := le_egauge_smul_left _ _ _
     _ = egauge 𝕜 s x := by rw [inv_smul_smul₀ hc]
 
@@ -206,8 +206,8 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
   refine le_antisymm ?_ (le_egauge_smul_right c s x)
   rcases eq_or_ne c 0 with rfl | hc
   · simp [egauge_zero_right _ (h rfl)]
-  · rw [mul_comm, ← ENNReal.div_le_iff_le_mul (.inl <| by simpa) (.inl enorm_ne_top),
-      ENNReal.div_eq_inv_mul, ← enorm_inv (by simpa)]
+  · rw [mul_comm, ← ENNReal.div_le_iff_le_mul (.inl <| by simpa) (.inl eNorm_ne_top),
+      ENNReal.div_eq_inv_mul, ← eNorm_inv (by simpa)]
     refine (le_egauge_smul_right _ _ _).trans_eq ?_
     rw [inv_smul_smul₀ hc]
 

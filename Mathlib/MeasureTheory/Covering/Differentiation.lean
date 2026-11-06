@@ -761,7 +761,7 @@ theorem ae_tendsto_lintegral_enorm_sub_div'_of_integrable {f : α → E} (hf : I
       calc
         ∫⁻ y, ‖f y - (A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ
           ≤ ∫⁻ y, ‖f y‖ₑ + ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
-          lintegral_mono fun x ↦ enorm_sub_le
+          lintegral_mono fun x ↦ eNorm_sub_le
         _ = ∫⁻ y, ‖f y‖ₑ ∂μ + ∫⁻ y, ‖(A.set n).indicator (fun _ : α => c) y‖ₑ ∂μ :=
           lintegral_add_left h'f.eNorm _
         _ < ∞ + ∞ :=

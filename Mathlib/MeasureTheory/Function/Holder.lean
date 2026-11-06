@@ -79,7 +79,7 @@ lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
 
 lemma nnNorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
-  simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← eNorm_eq_nnNorm, Lp.enorm_def]
+  simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← eNorm_eq_nnNorm, Lp.eNorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
   exact eLpNorm_le_eLpNorm_mul_eLpNorm (B · ·) ‖B‖₊ B.continuous₂
     (Lp.aestronglyMeasurable f) (Lp.aestronglyMeasurable g)

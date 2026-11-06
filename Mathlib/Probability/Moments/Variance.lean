@@ -152,11 +152,11 @@ protected alias _root_.MeasureTheory.MemLp.ofReal_variance_eq := ofReal_variance
 variable (X μ) in
 theorem evariance_eq_lintegral_ofReal :
     evariance X μ = ∫⁻ ω, ENNReal.ofReal ((X ω - μ[X]) ^ 2) ∂μ := by
-  simp [evariance, ← enorm_pow, Real.enorm_of_nonneg (sq_nonneg _)]
+  simp [evariance, ← eNorm_pow, Real.eNorm_of_nonneg (sq_nonneg _)]
 
 lemma variance_eq_integral (hX : AEMeasurable X μ) : Var[X; μ] = ∫ ω, (X ω - μ[X]) ^ 2 ∂μ := by
   simp [variance, evariance, toReal_enorm, ← integral_toReal ((hX.sub_const _).eNorm.pow_const _) <|
-    .of_forall fun _ ↦ ENNReal.pow_lt_top enorm_lt_top]
+    .of_forall fun _ ↦ ENNReal.pow_lt_top eNorm_lt_top]
 
 /-- A random variable with variance `0` is almost surely constant. -/
 lemma ae_eq_integral_of_variance_eq_zero [IsFiniteMeasure μ] (hX : MemLp X 2 μ)
@@ -187,8 +187,8 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
     evariance (fun ω => c * X ω) μ = ENNReal.ofReal (c ^ 2) * evariance X μ := by
   rw [evariance, evariance, ← lintegral_const_mul' _ _ ENNReal.ofReal_lt_top.ne]
   congr with ω
-  rw [integral_const_mul, ← mul_sub, enorm_mul, mul_pow, ← enorm_pow,
-    Real.enorm_of_nonneg (sq_nonneg _)]
+  rw [integral_const_mul, ← mul_sub, eNorm_mul, mul_pow, ← eNorm_pow,
+    Real.eNorm_of_nonneg (sq_nonneg _)]
 
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
@@ -364,7 +364,7 @@ theorem evariance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : AEStrong
   by_cases hℒ : MemLp X 2 μ
   · rw [← ofReal_variance hℒ, variance_eq_sub hℒ, ENNReal.ofReal_sub _ (sq_nonneg _)]
     congr
-    simp_rw [← enorm_pow, eNorm]
+    simp_rw [← eNorm_pow, eNorm]
     rw [lintegral_coe_eq_integral]
     · simp
     · simpa using hℒ.abs.integrable_sq

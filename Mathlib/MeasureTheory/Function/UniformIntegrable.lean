@@ -280,7 +280,7 @@ theorem MemLp.eLpNormEssSup_indicator_norm_ge_eq_zero (hf : MemLp f ∞ μ) :
         · finiteness
       rw [← nonpos_iff_eq_zero]
       refine (measure_mono this).trans ?_
-      have hle := enorm_ae_le_eLpNormEssSup f μ
+      have hle := eNorm_ae_le_eLpNormEssSup f μ
       simp_rw [ae_iff, not_le] at hle
       exact nonpos_iff_eq_zero.2 hle
     rw [this, eLpNormEssSup_measure_zero]
@@ -313,14 +313,14 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
   rw [rpow_mul]
   gcongr
   convert! hM using 3 with x
-  rw [enorm_indicator_eq_indicator_enorm, enorm_indicator_eq_indicator_enorm]
+  rw [eNorm_indicator_eq_indicator_enorm, eNorm_indicator_eq_indicator_enorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnNorm, coe_nnNorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
       ← Real.rpow_le_rpow_iff hM' (by positivity)
         (one_div_pos.2 <| toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (toReal_pos hp_ne_zero hp_ne_top).ne', Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
-  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.enorm_of_nonneg (by positivity),
+  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.eNorm_of_nonneg (by positivity),
       ← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm]
     rwa [Set.mem_ofPred_eq, ← hiff]
   · rw [Set.indicator_of_notMem hx, Set.indicator_of_notMem]
@@ -840,7 +840,7 @@ theorem uniformIntegrable_average
         ‖(n : ℝ)⁻¹‖ₑ * eLpNorm (f i) p (μ.restrict s) :=
       eLpNorm_const_smul _ _ _ _
     simp_rw [hnorm, ← Finset.mul_sum]
-    rw [enorm_inv (by positivity), Real.enorm_natCast, ← ENNReal.div_eq_inv_mul]
+    rw [eNorm_inv (by positivity), Real.eNorm_natCast, ← ENNReal.div_eq_inv_mul]
     refine div_le_of_le_mul' ?_
     have key := Finset.sum_le_card_nsmul (.range n) (fun i ↦ eLpNorm (f i) p (μ.restrict s)) ε
     simp only [Finset.mem_range, Finset.card_range, nsmul_eq_mul] at key
@@ -853,7 +853,7 @@ theorem uniformIntegrable_average
     have hnorm (i : ℕ) : eLpNorm ((n : ℝ)⁻¹ • f i) p μ = ‖(n : ℝ)⁻¹‖ₑ * eLpNorm (f i) p μ :=
       eLpNorm_const_smul _ _ _ _
     simp_rw [hnorm, ← Finset.mul_sum]
-    rw [enorm_inv (by positivity), Real.enorm_natCast, ← ENNReal.div_eq_inv_mul]
+    rw [eNorm_inv (by positivity), Real.eNorm_natCast, ← ENNReal.div_eq_inv_mul]
     refine div_le_of_le_mul' ?_
     simpa using Finset.sum_le_card_nsmul (.range n) _ _ fun i _ => hC i
 

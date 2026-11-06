@@ -109,7 +109,7 @@ private lemma exists_vectorMeasure_le_measureAux (hf : BoundedVariationOn f univ
   · rw [hm']
     · exact AddContent.onIoc_apply huv
     · exact ⟨u, v, huv, rfl⟩
-  · apply enorm_eq_zero.1
+  · apply eNorm_eq_zero.1
     apply le_bot_iff.1
     exact (h'm' _).trans (by simp [measureAux, h'α])
 
@@ -295,7 +295,7 @@ private lemma variation_vectorMeasure_le_variationAux (hf : BoundedVariationOn f
     hf.vectorMeasure.variation ≤ hf.variationAux := by
   apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
   simp only [vectorMeasure, add_apply, variationAux]
-  grw [enorm_add_le]
+  grw [eNorm_add_le]
   gcongr
   · apply hf.exists_vectorMeasure_le_measureAux.choose_spec.2.2
   · split_ifs with h
@@ -327,7 +327,7 @@ private lemma eVariationOn_Ioc_le_variation (hf : BoundedVariationOn f univ) {a 
   calc ∑ i ∈ Finset.range n, ‖Function.rightLim f (u (i + 1)) - Function.rightLim f (u i)‖ₑ
   _ ≤ ∑ i ∈ Finset.range n, hf.vectorMeasure.variation (Ioc (u i) (u (i + 1))) := by
     gcongr with i
-    grw [← enorm_measure_le_variation, vectorMeasure_Ioc _ (u_mono (by grind))]
+    grw [← eNorm_measure_le_variation, vectorMeasure_Ioc _ (u_mono (by grind))]
   _ = hf.vectorMeasure.variation (⋃ i ∈ Finset.range n, Ioc (u i) (u (i + 1))) := by
     rw [measure_biUnion_finset ?_ (fun i hi ↦ measurableSet_Ioc)]
     rintro i - j - hij

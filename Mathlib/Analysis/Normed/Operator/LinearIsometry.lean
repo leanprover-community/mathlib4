@@ -203,7 +203,7 @@ protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x 
 
 protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
 protected lemma nnNorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
-protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
+protected lemma eNorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometry.nnNorm_map
 
@@ -545,7 +545,7 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
 
 protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
 protected lemma nnNorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
-protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
+protected lemma eNorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
 
 @[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometryEquiv.nnNorm_map
 

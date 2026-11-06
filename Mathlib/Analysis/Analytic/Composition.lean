@@ -807,7 +807,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
+          rwa [eNorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     tendsto_nhds_of_cauchySeq_of_subseq cau compPartialSumTarget_tendsto_atTop C
   -- Fifth step: the sum over `n` of `q.comp p n` can be expressed as a particular resummation of
   -- the sum over all compositions, by grouping together the compositions of the same

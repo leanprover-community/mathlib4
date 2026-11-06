@@ -255,7 +255,7 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
     suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ by
       norm_cast
       simp_rw [ofReal_norm] at h
-      simp_rw [← enorm_pow]
+      simp_rw [← eNorm_pow]
       convert h
       rw [← Real.rpow_mul_natCast (by positivity)]
       simp

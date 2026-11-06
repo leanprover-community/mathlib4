@@ -352,7 +352,7 @@ theorem IndepFun.integrable_smul
     [SMul E F] [ContinuousSMul E F] [ENormSMulClass E F]
     {X : Ω → E} {Y : Ω → F} (hXY : X ⟂ᵢ[μ] Y) (hX : Integrable X μ) (hY : Integrable Y μ) :
     Integrable (fun ω ↦ (X ω) • (Y ω)) μ :=
-  hXY.integrable_op hX hY (· • ·) (by fun_prop) 1 (by simp [enorm_smul])
+  hXY.integrable_op hX hY (· • ·) (by fun_prop) 1 (by simp [eNorm_smul])
 
 /-- The product of two independent and integrable random variables is integrable. -/
 theorem IndepFun.integrable_mul

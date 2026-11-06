@@ -596,7 +596,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
+          rwa [eNorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
   have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,

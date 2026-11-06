@@ -161,9 +161,9 @@ theorem nnNorm_indicatorConstLp_le :
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_indicatorConstLp_le := nnNorm_indicatorConstLp_le
 
-theorem enorm_indicatorConstLp_le :
+theorem eNorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
-  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← eNorm_eq_nnNorm]
+  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.eNorm_def, ← eNorm_eq_nnNorm]
     using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
 
 theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
@@ -171,7 +171,7 @@ theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμ
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
-    ht.nullMeasurableSet, Lp.enorm_toLp]
+    ht.nullMeasurableSet, Lp.eNorm_toLp]
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =

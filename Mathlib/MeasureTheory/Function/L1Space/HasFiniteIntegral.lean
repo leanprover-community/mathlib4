@@ -115,7 +115,7 @@ theorem HasFiniteIntegral.mono_enorm {f : α → ε} {g : α → ε'} (hg : HasF
 
 theorem HasFiniteIntegral.mono {f : α → β} {g : α → γ} (hg : HasFiniteIntegral g μ)
     (h : ∀ᵐ a ∂μ, ‖f a‖ ≤ ‖g a‖) : HasFiniteIntegral f μ :=
-  hg.mono_enorm <| h.mono fun _x hx ↦ enorm_le_iff_norm_le.mpr hx
+  hg.mono_enorm <| h.mono fun _x hx ↦ eNorm_le_iff_norm_le.mpr hx
 
 theorem HasFiniteIntegral.mono_nonneg [Lattice β] [HasSolidNorm β] [AddLeftMono β] {f g : α → β}
     (hg : HasFiniteIntegral g μ) (hnonneg : ∀ᵐ a ∂μ, 0 ≤ f a) (h : ∀ᵐ a ∂μ, f a ≤ g a) :
@@ -164,7 +164,7 @@ theorem hasFiniteIntegral_const_iff_enorm {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
 
 theorem hasFiniteIntegral_const_iff {c : β} :
     HasFiniteIntegral (fun _ : α => c) μ ↔ c = 0 ∨ IsFiniteMeasure μ := by
-  simp [hasFiniteIntegral_const_iff_enorm enorm_ne_top]
+  simp [hasFiniteIntegral_const_iff_enorm eNorm_ne_top]
 
 lemma hasFiniteIntegral_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖ₑ ≠ 0) (hc' : ‖c‖ₑ ≠ ∞) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ := by
@@ -172,7 +172,7 @@ lemma hasFiniteIntegral_const_iff_isFiniteMeasure_enorm {c : ε} (hc : ‖c‖�
 
 lemma hasFiniteIntegral_const_iff_isFiniteMeasure {c : β} (hc : c ≠ 0) :
     HasFiniteIntegral (fun _ ↦ c) μ ↔ IsFiniteMeasure μ :=
-  hasFiniteIntegral_const_iff_isFiniteMeasure_enorm (enorm_ne_zero.mpr hc) enorm_ne_top
+  hasFiniteIntegral_const_iff_isFiniteMeasure_enorm (eNorm_ne_zero.mpr hc) eNorm_ne_top
 
 @[fun_prop]
 theorem hasFiniteIntegral_const_enorm [IsFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
@@ -270,7 +270,7 @@ theorem HasFiniteIntegral.norm {f : α → β} (hfi : HasFiniteIntegral f μ) :
 
 theorem hasFiniteIntegral_enorm_iff (f : α → ε) :
     HasFiniteIntegral (‖f ·‖ₑ) μ ↔ HasFiniteIntegral f μ :=
-  hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => enorm_enorm (f x)
+  hasFiniteIntegral_congr'_enorm <| Eventually.of_forall fun x => eNorm_enorm (f x)
 
 theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
@@ -293,7 +293,7 @@ theorem HasFiniteIntegral.of_subsingleton_codomain
 theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
   have h x : ‖(f x).toReal‖ₑ = .ofReal (f x).toReal := by
-    rw [Real.enorm_of_nonneg ENNReal.toReal_nonneg]
+    rw [Real.eNorm_of_nonneg ENNReal.toReal_nonneg]
   simp_rw [hasFiniteIntegral_iff_enorm, h]
   refine lt_of_le_of_lt (lintegral_mono fun x => ?_) (lt_top_iff_ne_top.2 hf)
   by_cases hfx : f x = ∞
@@ -304,7 +304,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
 lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf : ∀ᵐ x ∂μ, f x ≠ ∞) :
     HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
   have : ∀ᵐ x ∂μ, .ofReal (f x).toReal = f x := by filter_upwards [hf] with x hx; simp [hx]
-  simp [hasFiniteIntegral_iff_enorm, Real.enorm_of_nonneg ENNReal.toReal_nonneg,
+  simp [hasFiniteIntegral_iff_enorm, Real.eNorm_of_nonneg ENNReal.toReal_nonneg,
     lintegral_congr_ae this, lt_top_iff_ne_top]
 
 theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteIntegral f μ) :
@@ -452,7 +452,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
   calc
-    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ ≤ ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_mono fun i ↦ enorm_smul_le
+    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ ≤ ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_mono fun i ↦ eNorm_smul_le
     _ < ∞ := by
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hf, coe_ne_top]
@@ -465,7 +465,7 @@ theorem HasFiniteIntegral.smul_enorm [NormedAddGroup 𝕜] [SMul 𝕜 ε''] [ENo
     (c : 𝕜) {f : α → ε''} (hf : HasFiniteIntegral f μ) : HasFiniteIntegral (c • f) μ := by
   simp only [HasFiniteIntegral]
   calc
-    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ = ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_congr fun i ↦ enorm_smul _ _
+    ∫⁻ a : α, ‖c • f a‖ₑ ∂μ = ∫⁻ a : α, ‖c‖ₑ * ‖f a‖ₑ ∂μ := lintegral_congr fun i ↦ eNorm_smul _ _
     _ < ∞ := by
       rw [lintegral_const_mul']
       exacts [mul_lt_top coe_lt_top hf, coe_ne_top]

@@ -97,7 +97,7 @@ lemma sum_enorm_setIntegral_le_variation_withDensity {ι : Type*} (t : Finset ι
       simp_rw [restrict_withDensity hf, withDensity_apply hf.restrict]
     _ ≤ ∑ i ∈ t, ((μ.withDensity f B).restrict s).variation (A i) := by
       gcongr with i hi
-      exact enorm_measure_le_variation _ _
+      exact eNorm_measure_le_variation _ _
     _ = ((μ.withDensity f B).restrict s).variation (⋃ i ∈ t, A i) :=
       (measure_biUnion_finset hdisj hA).symm
     _ ≤ ((μ.withDensity f B).restrict s).variation univ := measure_mono (subset_univ _)
@@ -108,7 +108,7 @@ lemma variation_WithDensity_le :
   by_cases hf : μ.Integrable f
   · apply variation_le_of_forall_enorm_le (fun s hs ↦ ?_)
     rw [withDensity_apply hf, MeasureTheory.withDensity_apply _ hs]
-    apply enorm_setIntegral_le_lintegral_enorm_transpose
+    apply eNorm_setIntegral_le_lintegral_enorm_transpose
   · simp [withDensity, hf, Measure.zero_le]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -169,7 +169,7 @@ lemma variation_withDensity' [CompleteSpace G]
     _ ≤ ∫⁻ a in s, ‖f a - g a‖ₑ + ‖g a‖ₑ ∂(μ.transpose B).variation := by
       gcongr with a
       nth_rw 1 [show f a = (f a - g a) + g a by abel]
-      exact enorm_add_le (f a - g a) (g a)
+      exact eNorm_add_le (f a - g a) (g a)
     _ = ∫⁻ a in s, ‖g a‖ₑ ∂(μ.transpose B).variation +
           ∫⁻ a in s, ‖f a - g a‖ₑ ∂(μ.transpose B).variation := by
       rw [lintegral_add_right, add_comm]
@@ -267,11 +267,11 @@ lemma variation_withDensity' [CompleteSpace G]
         + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
       rw [← Finset.sum_add_distrib]
       gcongr with i hi
-      apply enorm_add_le
+      apply eNorm_add_le
     _ ≤ ∑ i ∈ g.range.sigma P, ∫⁻ x in i.2, ‖g x - f x‖ₑ ∂(μ.transpose B).variation
         + ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ := by
       gcongr with i hi
-      grw [enorm_setIntegral_le_lintegral_enorm_transpose]
+      grw [eNorm_setIntegral_le_lintegral_enorm_transpose]
       apply lintegral_mono' _ le_rfl
       apply Measure.restrict_mono_measure
       simpa [transpose_restrict, variation_restrict hs] using Measure.restrict_le_self
@@ -293,7 +293,7 @@ lemma variation_withDensity' [CompleteSpace G]
       apply Measure.restrict_le_self
     _ ≤ ∑ i ∈ g.range.sigma P, ‖∫ᵛ x in i.2, f x ∂[B; μ.restrict s]‖ₑ + δ := by
       gcongr
-      simp_rw [enorm_sub_rev]
+      simp_rw [eNorm_sub_rev]
       change ∫⁻ x, ‖(f - ⇑g) x‖ₑ ∂(μ.transpose B).variation ≤ ↑δ
       rw [← eLpNorm_one_eq_lintegral_enorm
         (aestronglyMeasurable_of_eLpNorm_ne_top (ne_of_lt (hg.trans_lt ENNReal.coe_lt_top)))]
@@ -378,7 +378,7 @@ lemma _root_.MeasureTheory.Measure.variation_withDensityᵥ [CompleteSpace E]
   rcases eq_or_ne (f x) 0 with hx | hx
   · simp [hx]
   have h'x : ‖f x‖ ≠ 0 := by simp [hx]
-  simp only [enorm_smul, Pi.mul_apply, ne_eq, h'x, not_false_eq_true, enorm_inv, enorm_norm]
+  simp only [eNorm_smul, Pi.mul_apply, ne_eq, h'x, not_false_eq_true, eNorm_inv, eNorm_norm]
   rw [ENNReal.inv_mul_cancel (by simpa using hx) (by simp), mul_one]
 
 end MeasureTheory.VectorMeasure

@@ -73,7 +73,7 @@ lemma Orthonormal.nnNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι)
 
 @[deprecated (since := "2026-10-31")] alias Orthonormal.nnnorm_eq_one := Orthonormal.nnNorm_eq_one
 
-lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+lemma Orthonormal.eNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :

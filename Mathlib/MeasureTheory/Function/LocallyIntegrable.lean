@@ -363,7 +363,7 @@ theorem locallyIntegrable_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc :
 
 theorem locallyIntegrable_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrable (fun _ => c) μ :=
-  locallyIntegrable_const_enorm enorm_ne_top
+  locallyIntegrable_const_enorm eNorm_ne_top
 
 theorem locallyIntegrableOn_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc : ‖c‖ₑ ≠ ∞) :
     LocallyIntegrableOn (fun _ => c) s μ :=
@@ -371,7 +371,7 @@ theorem locallyIntegrableOn_const_enorm [IsLocallyFiniteMeasure μ] {c : ε} (hc
 
 theorem locallyIntegrableOn_const [IsLocallyFiniteMeasure μ] (c : E) :
     LocallyIntegrableOn (fun _ => c) s μ :=
-  locallyIntegrableOn_const_enorm enorm_ne_top
+  locallyIntegrableOn_const_enorm eNorm_ne_top
 
 theorem locallyIntegrable_zero : LocallyIntegrable (fun _ ↦ (0 : ε'')) μ :=
   (integrable_zero X ε'' μ).locallyIntegrable

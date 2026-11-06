@@ -334,7 +334,7 @@ variable {f : α → ε'}
 theorem integrable_indicator_iff₀ (hs : NullMeasurableSet s μ) :
     Integrable (indicator s f) μ ↔ IntegrableOn f s μ := by
   simp_rw [IntegrableOn, Integrable, hasFiniteIntegral_iff_enorm,
-    enorm_indicator_eq_indicator_enorm, lintegral_indicator₀ hs,
+    eNorm_indicator_eq_indicator_enorm, lintegral_indicator₀ hs,
     aestronglyMeasurable_indicator_iff₀ hs]
 
 theorem integrable_indicator_iff (hs : MeasurableSet s) :

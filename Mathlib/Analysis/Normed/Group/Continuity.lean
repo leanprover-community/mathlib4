@@ -143,8 +143,8 @@ section Instances
 @[to_additive]
 instance SeminormedGroup.toESeminormedMonoid [SeminormedGroup E] : ESeminormedMonoid E where
   continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnNorm'
-  enorm_zero := by simp [eNorm_eq_nnNorm]
-  enorm_mul_le := by simp [eNorm_eq_nnNorm, ← coe_add, nnNorm_mul_le']
+  eNorm_zero := by simp [eNorm_eq_nnNorm]
+  eNorm_mul_le := by simp [eNorm_eq_nnNorm, ← coe_add, nnNorm_mul_le']
 
 @[to_additive]
 instance SeminormedCommGroup.toESeminormedCommMonoid [SeminormedCommGroup E] :
@@ -152,7 +152,7 @@ instance SeminormedCommGroup.toESeminormedCommMonoid [SeminormedCommGroup E] :
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
-  enorm_eq_zero := by simp [eNorm_eq_nnNorm]
+  eNorm_eq_zero := by simp [eNorm_eq_nnNorm]
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
@@ -178,7 +178,7 @@ theorem Inseparable.nnNorm_eq_nnNorm' {u v : E} (h : Inseparable u v) : ‖u‖�
 @[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_eq_nnnorm]
 alias Inseparable.nnnorm_eq_nnnorm' := Inseparable.nnNorm_eq_nnNorm'
 
-theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+theorem Inseparable.eNorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
   h.map continuous_enorm |>.eq
 

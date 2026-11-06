@@ -206,8 +206,8 @@ theorem norm_toL1 (f : α → β) (hf : Integrable f μ) :
   rw [toL1, Lp.norm_toLp, eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
   simp only [edist_zero_right]
 
-theorem enorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
-  rw [Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun hf.aestronglyMeasurable,
+theorem eNorm_toL1 {f : α → β} (hf : Integrable f μ) : ‖hf.toL1 f‖ₑ = ∫⁻ a, ‖f a‖ₑ ∂μ := by
+  rw [Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun hf.aestronglyMeasurable,
     eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable]
 
 theorem norm_toL1_eq_lintegral_norm (f : α → β) (hf : Integrable f μ) :
@@ -229,7 +229,7 @@ theorem edist_toL1_toL1 (f g : α → β) (hf : Integrable f μ) (hg : Integrabl
 
 theorem edist_toL1_zero (f : α → β) (hf : Integrable f μ) :
     edist (hf.toL1 f) 0 = ∫⁻ a, edist (f a) 0 ∂μ := by
-  simp only [edist_zero_right, Lp.enorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
+  simp only [edist_zero_right, Lp.eNorm_def, toL1_eq_mk, eLpNorm_aeeqFun]
   apply eLpNorm_one_eq_lintegral_enorm hf.aestronglyMeasurable
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]

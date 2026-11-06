@@ -591,7 +591,7 @@ theorem HasTemperateGrowth.exists_eLpNorm_lt_top [OpensMeasurableSpace E] (p : �
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
-        exact Real.enorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
+        exact Real.eNorm_rpow_of_nonneg (by positivity) NNReal.zero_le_coe
       refine hl.hasFiniteIntegral.mono' (ae_of_all μ fun x ↦ ?_)
       rw [Real.norm_of_nonneg (Real.rpow_nonneg (h_one_add x).le _)]
       gcongr

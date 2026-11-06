@@ -242,7 +242,7 @@ protected theorem coe_nnNorm (f : Lp E p μ) : (‖f‖₊ : ℝ) = ‖f‖ :=
 
 @[deprecated (since := "2026-10-31")] protected alias coe_nnnorm := Lp.coe_nnNorm
 
-theorem enorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
+theorem eNorm_def (f : Lp E p μ) : ‖f‖ₑ = eLpNorm f p μ :=
   ENNReal.coe_toNNReal <| Lp.eLpNorm_ne_top f
 
 @[simp]
@@ -257,7 +257,7 @@ theorem nnNorm_toLp (f : α → E) (hf : MemLp f p μ) :
 @[deprecated (since := "2026-10-31")] alias nnnorm_toLp := nnNorm_toLp
 
 @[simp]
-lemma enorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
+lemma eNorm_toLp {f : α → E} (hf : MemLp f p μ) : ‖hf.toLp f‖ₑ = eLpNorm f p μ := by
   simp_rw [eNorm, nnNorm_toLp f hf, ENNReal.coe_toNNReal hf.eLpNorm_ne_top]
 
 theorem dist_eq_eLpNorm_neg_add (f g : Lp E p μ) : dist f g = (eLpNorm (-⇑f + ⇑g) p μ).toReal := by
@@ -321,7 +321,7 @@ theorem norm_measure_zero (f : Lp E p (0 : MeasureTheory.Measure α)) : ‖f‖ 
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_exponent_zero := nnNorm_exponent_zero
 
-@[simp] theorem enorm_exponent_zero (f : Lp E 0 μ) : ‖f‖ₑ = 0 := by
+@[simp] theorem eNorm_exponent_zero (f : Lp E 0 μ) : ‖f‖ₑ = 0 := by
   simp [eNorm]
 
 theorem eq_zero_iff_ae_eq_zero {f : Lp E p μ} : f = 0 ↔ f =ᵐ[μ] 0 := by
@@ -434,7 +434,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
             simpa only [ge_iff_le, eNorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using! this
-          simp only [Lp.enorm_def]
+          simp only [Lp.eNorm_def]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le (eLpNorm_add_le hp.out)
         eq_zero_of_map_eq_zero' _ := (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
@@ -490,7 +490,7 @@ instance instIsScalarTower [SMul 𝕜 𝕜'] [IsScalarTower 𝕜 𝕜' E] : IsSc
 
 instance instIsBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp E p μ) :=
   IsBoundedSMul.of_enorm_smul_le fun r f => by
-    simpa only [eLpNorm_congr_ae (coeFn_smul _ _), enorm_def]
+    simpa only [eLpNorm_congr_ae (coeFn_smul _ _), eNorm_def]
       using eLpNorm_const_smul_le (c := r) (f := f) (p := p)
 
 end IsBoundedSMul
@@ -518,7 +518,7 @@ end MemLp
 
 variable {ε : Type*} [TopologicalSpace ε] [ContinuousENorm ε]
 
-theorem MemLp.enorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
+theorem MemLp.eNorm_rpow_div {f : α → ε} (hf : MemLp f p μ) (q : ℝ≥0∞) :
     MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ := by
   have hfrpow : AEStronglyMeasurable (‖f ·‖ₑ ^ q.toReal) μ :=
     (hf.aestronglyMeasurable.eNorm.pow_const q.toReal).aestronglyMeasurable
@@ -571,9 +571,9 @@ theorem MemLp.norm_rpow_div {f : α → E} (hf : MemLp f p μ) (q : ℝ≥0∞) 
 
 theorem memLp_enorm_rpow_iff {q : ℝ≥0∞} {f : α → ε} (hf : AEStronglyMeasurable f μ) (q_zero : q ≠ 0)
     (q_top : q ≠ ∞) : MemLp (‖f ·‖ₑ ^ q.toReal) (p / q) μ ↔ MemLp f p μ := by
-  refine ⟨fun h => ?_, fun h => h.enorm_rpow_div q⟩
+  refine ⟨fun h => ?_, fun h => h.eNorm_rpow_div q⟩
   apply (memLp_enorm_iff hf).1
-  convert h.enorm_rpow_div q⁻¹ using 1
+  convert h.eNorm_rpow_div q⁻¹ using 1
   · ext x
     have : q.toReal * q.toReal⁻¹ = 1 :=
       CommGroupWithZero.mul_inv_cancel q.toReal <| ENNReal.toReal_ne_zero.mpr ⟨q_zero, q_top⟩
@@ -593,9 +593,9 @@ theorem memLp_norm_rpow_iff {q : ℝ≥0∞} {f : α → E} (hf : AEStronglyMeas
   · rw [div_eq_mul_inv, inv_inv, div_eq_mul_inv, mul_assoc, ENNReal.inv_mul_cancel q_zero q_top,
       mul_one]
 
-theorem MemLp.enorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+theorem MemLp.eNorm_rpow {f : α → ε} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     MemLp (fun x : α => ‖f x‖ₑ ^ p.toReal) 1 μ := by
-  convert hf.enorm_rpow_div p
+  convert hf.eNorm_rpow_div p
   rw [div_eq_mul_inv, ENNReal.mul_inv_cancel hp_ne_zero hp_ne_top]
 
 theorem MemLp.norm_rpow {f : α → E} (hf : MemLp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
@@ -963,10 +963,10 @@ private lemma coeFn_LpToLpOfMeasureLeSMulₗ (hc : c ≠ ∞) (h : μ ≤ c • 
     LpToLpOfMeasureLeSMulₗ hc h f =ᵐ[μ] f := by
   simp [LpToLpOfMeasureLeSMulₗ, MemLp.coeFn_toLp]
 
-private lemma enorm_LpToLpOfMeasureLeSMulₗ_apply_le
+private lemma eNorm_LpToLpOfMeasureLeSMulₗ_apply_le
     (hc : c ≠ ∞) (h : μ ≤ c • ν) {f : Lp E p ν} :
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ₑ ≤ c ^ (1 / p).toReal * ‖f‖ₑ := by
-  simp only [Lp.enorm_def]
+  simp only [Lp.eNorm_def]
   rw [eLpNorm_congr_ae (coeFn_LpToLpOfMeasureLeSMulₗ hc h f)]
   exact eLpNorm_le_of_measure_le_smul h
 
@@ -975,7 +975,7 @@ private lemma norm_LpToLpOfMeasureLeSMulₗ_apply_le
     ‖LpToLpOfMeasureLeSMulₗ hc h f‖ ≤ c.toReal ^ (1 / p).toReal * ‖f‖ := by
   simp only [← toReal_enorm]
   rw [ENNReal.toReal_rpow, ← ENNReal.toReal_mul]
-  grw [enorm_LpToLpOfMeasureLeSMulₗ_apply_le]
+  grw [eNorm_LpToLpOfMeasureLeSMulₗ_apply_le]
   simp [ENNReal.mul_eq_top, hc]
 
 /-- The canonical map from `Lᵖ ν` to `Lᵖ μ` when `μ` is bounded by a finite multiple of `ν`. -/

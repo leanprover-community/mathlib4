@@ -340,7 +340,7 @@ theorem HasFPowerSeriesWithinOnBall.changeOrigin (hf : HasFPowerSeriesWithinOnBa
         rw [insert_eq_of_mem hy] at this
         apply this
         simpa [add_assoc] using h'z
-      exact mem_eball_zero_iff.2 (lt_of_le_of_lt (enorm_add_le _ _) hz)
+      exact mem_eball_zero_iff.2 (lt_of_le_of_lt (eNorm_add_le _ _) hz)
     rw [this]
     apply (p.changeOrigin y).hasSum
     refine Metric.eball_subset_eball (le_trans ?_ p.changeOrigin_radius) hz

@@ -113,9 +113,9 @@ theorem Summable.of_norm_bounded [CompleteSpace E] {f : ι → E} {g : ι → �
   rw [summable_iff_cauchySeq_finset]
   exact cauchySeq_finset_of_norm_bounded hg h
 
-theorem HasSum.enorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
+theorem HasSum.eNorm_le_of_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ε} {b : ℝ≥0∞} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖a‖ₑ ≤ b := by
-  exact le_of_tendsto_of_tendsto' hf.eNorm hg fun _s ↦ enorm_sum_le_of_le _ fun i _hi ↦ h i
+  exact le_of_tendsto_of_tendsto' hf.eNorm hg fun _s ↦ eNorm_sum_le_of_le _ fun i _hi ↦ h i
 
 theorem HasSum.norm_le_of_bounded {f : ι → E} {g : ι → ℝ} {a : E} {b : ℝ} (hf : HasSum f a)
     (hg : HasSum g b) (h : ∀ i, ‖f i‖ ≤ g i) : ‖a‖ ≤ b := by
@@ -127,10 +127,10 @@ summable, and it might not be the case if `α` is not a complete space. -/
 theorem tsum_of_enorm_bounded {f : ι → ε} {g : ι → ℝ≥0∞} {a : ℝ≥0∞} (hg : HasSum g a)
     (h : ∀ i, ‖f i‖ₑ ≤ g i) : ‖∑' i : ι, f i‖ₑ ≤ a := by
   by_cases hf : Summable f
-  · exact hf.hasSum.enorm_le_of_bounded hg h
+  · exact hf.hasSum.eNorm_le_of_bounded hg h
   · simp [tsum_eq_zero_of_not_summable hf]
 
-theorem enorm_tsum_le_tsum_enorm {f : ι → ε} :
+theorem eNorm_tsum_le_tsum_enorm {f : ι → ε} :
     ‖∑' i, f i‖ₑ ≤ ∑' i, ‖f i‖ₑ :=
   tsum_of_enorm_bounded CompleteLattice.summable.hasSum fun _i => le_rfl
 

@@ -115,7 +115,7 @@ private theorem hasSum_coeFn_tsum_nat {p : ℝ≥0∞} [hp : Fact (1 ≤ p)]
     ∀ᵐ a ∂μ, HasSum (fun n ↦ f n a) (⇑(∑' n, f n) a) := by
   have A : ∀ᵐ a ∂μ, Summable (fun n ↦ ‖f n a‖) := by
     apply summable_norm_of_tsum_eLpNorm_ne_top hp.out
-    simpa [enorm_def] using hf
+    simpa [eNorm_def] using hf
   have B : ∀ᵐ x ∂μ, ∀ n, ⇑(∑ i ∈ range n, f i) x = ∑ i ∈ range n, f i x := by
     rw [ae_all_iff]
     exact fun i ↦ coeFn_fun_finsetSum _ _

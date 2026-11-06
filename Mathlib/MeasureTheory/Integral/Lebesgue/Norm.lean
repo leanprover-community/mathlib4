@@ -32,7 +32,7 @@ theorem lintegral_enorm_of_ae_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ᵐ[μ] f
     ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ := by
   apply lintegral_congr_ae
   filter_upwards [h_nonneg] with x hx
-  rw [Real.enorm_eq_ofReal hx]
+  rw [Real.eNorm_eq_ofReal hx]
 
 theorem lintegral_enorm_of_nonneg {f : α → ℝ} (h_nonneg : 0 ≤ f) :
     ∫⁻ x, ‖f x‖ₑ ∂μ = ∫⁻ x, .ofReal (f x) ∂μ :=

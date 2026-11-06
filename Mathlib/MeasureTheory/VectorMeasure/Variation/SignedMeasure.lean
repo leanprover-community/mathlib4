@@ -40,7 +40,7 @@ theorem norm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
   · simp [hi]
 
 /-- The pointwise bound `‖s i‖ₑ ≤ s.totalVariation i` for any signed measure. -/
-theorem enorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
+theorem eNorm_le_totalVariation (s : SignedMeasure X) (i : Set X) :
     ‖s i‖ₑ ≤ s.totalVariation i := calc
   _ = ENNReal.ofReal ‖s i‖ := (ofReal_norm _).symm
   _ ≤ ENNReal.ofReal (s.totalVariation.real i) :=
@@ -51,14 +51,14 @@ private lemma toMeasureOfZeroLE_apply_eq_enorm {i j : Set X} (him : MeasurableSe
     (hjm : MeasurableSet j) : μ.toMeasureOfZeroLE i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : 0 ≤ μ (i ∩ j) :=
     μ.nonneg_of_zero_le_restrict (μ.zero_le_restrict_subset ‹_› Set.inter_subset_left ‹_›)
-  rw [Real.enorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnreal]
+  rw [Real.eNorm_of_nonneg this, μ.toMeasureOfZeroLE_apply hi him hjm, ENNReal.ofReal_eq_coe_nnreal]
 
 private lemma toMeasureOfLEZero_apply_eq_enorm {i j : Set X} (him : MeasurableSet i)
     (hi : μ ≤[i] 0) (hjm : MeasurableSet j) :
     μ.toMeasureOfLEZero i him hi j = ‖μ (i ∩ j)‖ₑ := by
   have : μ (i ∩ j) ≤ 0 :=
     μ.nonpos_of_restrict_le_zero (μ.restrict_le_zero_subset ‹_› Set.inter_subset_left ‹_›)
-  rw [← enorm_neg, Real.enorm_of_nonneg (neg_nonneg.mpr this), μ.toMeasureOfLEZero_apply hi him hjm,
+  rw [← eNorm_neg, Real.eNorm_of_nonneg (neg_nonneg.mpr this), μ.toMeasureOfLEZero_apply hi him hjm,
     ENNReal.ofReal_eq_coe_nnreal]
 
 /-- The Hahn–Jordan-based `totalVariation` agrees with the supremum-based `variation`. -/
@@ -72,11 +72,11 @@ theorem totalVariation_eq_variation (μ : SignedMeasure X) : μ.totalVariation =
             μ.toMeasureOfZeroLE_apply_eq_enorm hs hpos hr,
             μ.toMeasureOfLEZero_apply_eq_enorm hs.compl hneg hr]
       _ ≤ μ.variation (s ∩ r) + μ.variation (sᶜ ∩ r) :=
-          add_le_add (μ.enorm_measure_le_variation _) (μ.enorm_measure_le_variation _)
+          add_le_add (μ.eNorm_measure_le_variation _) (μ.eNorm_measure_le_variation _)
       _ = μ.variation ((s ∩ r) ∪ (sᶜ ∩ r)) :=
         (measure_union (by grind) (hs.compl.inter hr)).symm
       _ = μ.variation r := by congr; grind
   · apply VectorMeasure.variation_le_of_forall_enorm_le
-    exact fun s _ ↦ enorm_le_totalVariation μ s
+    exact fun s _ ↦ eNorm_le_totalVariation μ s
 
 end MeasureTheory.SignedMeasure

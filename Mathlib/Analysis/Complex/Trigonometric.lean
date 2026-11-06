@@ -969,11 +969,11 @@ theorem nnNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖₊ = 1 := by
 @[deprecated (since := "2026-10-31")] alias nnnorm_exp_I_mul_ofReal := nnNorm_exp_I_mul_ofReal
 
 @[simp]
-theorem enorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
+theorem eNorm_exp_ofReal_mul_I (x : ℝ) : ‖exp (x * I)‖ₑ = 1 := by
   simp [← ENNReal.toReal_eq_one_iff]
 
 @[simp]
-theorem enorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
+theorem eNorm_exp_I_mul_ofReal (x : ℝ) : ‖exp (I * x)‖ₑ = 1 := by
   simp [← ENNReal.toReal_eq_one_iff]
 
 theorem norm_exp_I_mul_ofReal_sub_one (x : ℝ) : ‖exp (I * x) - 1‖ = ‖2 * Real.sin (x / 2)‖ := by

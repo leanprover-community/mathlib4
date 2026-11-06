@@ -33,7 +33,7 @@ lemma eLpNorm_dirac (f : α → ε) (i : α) (hp : p ≠ 0) :
   · simp [eLpNormEssSup, essSup, limsup, limsSup, Set.Ici_def]
   · simp [eLpNorm', ENNReal.toReal_eq_zero_iff, *]
 
-lemma enorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
+lemma eNorm_le_eLpNorm_count (f : α → ε) (i : α) (hp : p ≠ 0) :
     ‖f i‖ₑ ≤ eLpNorm f p count := by
   rw [← eLpNorm_dirac _ _ hp]
   apply eLpNorm_mono_measure
@@ -49,7 +49,7 @@ lemma eLpNorm_count_lt_top_of_lt [Finite α]
 
 lemma eLpNorm_count_lt_top [Finite α] (hp : p ≠ 0) :
     eLpNorm f p .count < ∞ ↔ ∀ i, ‖f i‖ₑ < ∞ :=
-  ⟨fun h i ↦ (enorm_le_eLpNorm_count f i hp).trans_lt h,
+  ⟨fun h i ↦ (eNorm_le_eLpNorm_count f i hp).trans_lt h,
     eLpNorm_count_lt_top_of_lt⟩
 
 end MeasureTheory

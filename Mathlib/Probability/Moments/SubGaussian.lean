@@ -180,7 +180,7 @@ lemma ae_forall_memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (p : ℝ≥0) :
     ENNReal.coe_toReal]
   have hf := (hi (p * t)).lintegral_lt_top
   convert! hf using 3 with ω
-  rw [enorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
+  rw [eNorm_eq_ofReal (by positivity), ENNReal.ofReal_rpow_of_nonneg (by positivity),
     ← exp_mul, mul_comm, ← mul_assoc]
   positivity
 
@@ -194,7 +194,7 @@ lemma memLp_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) (p : ℝ≥0) :
   have h' := (h.integrable_exp_mul (p * t)).2
   rw [hasFiniteIntegral_def] at h'
   convert! h' using 3 with ω
-  rw [enorm_eq_ofReal (by positivity), enorm_eq_ofReal (by positivity),
+  rw [eNorm_eq_ofReal (by positivity), eNorm_eq_ofReal (by positivity),
     ENNReal.ofReal_rpow_of_nonneg (by positivity), ← exp_mul, mul_comm, ← mul_assoc]
   positivity
 

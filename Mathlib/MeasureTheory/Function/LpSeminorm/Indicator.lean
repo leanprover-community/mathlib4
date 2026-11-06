@@ -48,19 +48,19 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict {f : α → ε} {s : Set α} (hs : N
   · simp only [hp_zero, eLpNorm_exponent_zero hfi, eLpNorm_exponent_zero hfr]
   by_cases hp_top : p = ∞
   · simp_rw [hp_top, eLpNorm_exponent_top hfi, eLpNorm_exponent_top hfr,
-      eLpNormEssSup_eq_essSup_enorm, enorm_indicator_eq_indicator_enorm,
+      eLpNormEssSup_eq_essSup_enorm, eNorm_indicator_eq_indicator_enorm,
         ENNReal.essSup_indicator_eq_essSup_restrict hs]
   rw [eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top hfi,
     eLpNorm_eq_lintegral_rpow_enorm_toReal hp_zero hp_top hfr, ← lintegral_indicator₀ hs]
   congr
-  simp_rw [enorm_indicator_eq_indicator_enorm]
+  simp_rw [eNorm_indicator_eq_indicator_enorm]
   rw [eq_comm, ← Function.comp_def (fun x : ℝ≥0∞ => x ^ p.toReal), Set.indicator_comp_of_zero,
     Function.comp_def]
   simp [ENNReal.toReal_pos hp_zero hp_top]
 
 lemma eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict (hs : NullMeasurableSet s μ) :
     eLpNormEssSup (s.indicator f) μ = eLpNormEssSup f (μ.restrict s) := by
-  simpa [eLpNormEssSup_eq_essSup_enorm, enorm_indicator_eq_indicator_enorm] using
+  simpa [eLpNormEssSup_eq_essSup_enorm, eNorm_indicator_eq_indicator_enorm] using
     ENNReal.essSup_indicator_eq_essSup_restrict (f := fun x ↦ ‖f x‖ₑ) hs
 
 lemma eLpNorm_restrict_le (f : α → ε') (p : ℝ≥0∞) (μ : Measure α) (s : Set α) :
@@ -71,7 +71,7 @@ lemma eLpNorm_indicator_le (f : α → ε) (hs : NullMeasurableSet s μ) :
     eLpNorm (s.indicator f) p μ ≤ eLpNorm f p μ := by
   by_cases hf : AEStronglyMeasurable f μ
   · apply eLpNorm_mono_enorm (hf.indicator₀ hs)
-    simp_rw [enorm_indicator_eq_indicator_enorm]
+    simp_rw [eNorm_indicator_eq_indicator_enorm]
     exact s.indicator_le_self _
   · rw [eLpNorm_of_not_aestronglyMeasurable hf]
     exact le_top
@@ -79,7 +79,7 @@ lemma eLpNorm_indicator_le (f : α → ε) (hs : NullMeasurableSet s μ) :
 lemma eLpNormEssSup_indicator_le (s : Set α) (f : α → ε) :
     eLpNormEssSup (s.indicator f) μ ≤ eLpNormEssSup f μ := by
   refine essSup_mono_ae (.of_forall fun x => ?_)
-  simp_rw [enorm_indicator_eq_indicator_enorm]
+  simp_rw [eNorm_indicator_eq_indicator_enorm]
   exact Set.indicator_le_self s _ x
 
 lemma eLpNormEssSup_indicator_const_le (s : Set α) (c : ε) :
@@ -142,7 +142,7 @@ lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) (hs : NullMeasurableSet s μ) 
   let t := toMeasurable μ s
   calc
     eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ ↦ c) p μ :=
-      eLpNorm_mono_enorm hsc (enorm_indicator_le_of_subset (subset_toMeasurable _ _) _)
+      eLpNorm_mono_enorm hsc (eNorm_indicator_le_of_subset (subset_toMeasurable _ _) _)
     _ = ‖c‖ₑ * μ t ^ (1 / p.toReal) :=
       eLpNorm_indicator_const (measurableSet_toMeasurable ..).nullMeasurableSet hp h'p
     _ = ‖c‖ₑ * μ s ^ (1 / p.toReal) := by rw [measure_toMeasurable]

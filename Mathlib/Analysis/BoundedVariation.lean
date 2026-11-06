@@ -107,10 +107,10 @@ lemma BoundedVariationOn.bilinear_comp
   · simp
   suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
-    grw [show f y = f x + (f y - f x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show f y = f x + (f y - f x) by abel, eNorm_add_le, ← edist_eq_enorm_sub,
       eVariationOn.edist_le _ hy hx]
   have A' (y) (hy : y ∈ s) : ‖g y‖ₑ ≤ ‖g x‖ₑ + eVariationOn g s := by
-    grw [show g y = g x + (g y - g x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show g y = g x + (g y - g x) by abel, eNorm_add_le, ← edist_eq_enorm_sub,
       eVariationOn.edist_le _ hy hx]
   grw [eVariationOn_bilinear_comp_le A A']
   simp [mul_add, ENNReal.mul_lt_top_iff, hf.lt_top, hg.lt_top]

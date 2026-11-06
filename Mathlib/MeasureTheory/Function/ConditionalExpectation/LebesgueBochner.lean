@@ -67,7 +67,7 @@ lemma condLExp_ofReal (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} 
   have I : ∫⁻ x, g x ∂μ ≠ ∞ := by
     have : ∫⁻ x, g x ∂μ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
       apply lintegral_congr_ae
-      filter_upwards [h'f] with x hx using by simp [g, Real.enorm_eq_ofReal hx]
+      filter_upwards [h'f] with x hx using by simp [g, Real.eNorm_eq_ofReal hx]
     rw [this]
     exact hf.2.ne
   have J : ∀ᵐ x ∂μ, μ⁻[g | m] x < ∞ := by
@@ -86,9 +86,9 @@ lemma condLExp_enorm (m : MeasurableSpace 𝓧) {m𝓧 : MeasurableSpace 𝓧} {
     μ⁻[fun x ↦ ‖f x‖ₑ | m] =ᵐ[μ] fun x ↦ ‖μ[f | m] x‖ₑ := by
   have A : μ⁻[fun x ↦ ENNReal.ofReal (f x) | m] =ᵐ[μ] μ⁻[fun x ↦ ‖f x‖ₑ | m] := by
     apply condLExp_congr_ae
-    filter_upwards [h'f] with x hx using by simp [Real.enorm_eq_ofReal hx]
+    filter_upwards [h'f] with x hx using by simp [Real.eNorm_eq_ofReal hx]
   grw [← A, condLExp_ofReal m hf h'f]
-  filter_upwards [condExp_nonneg h'f (m := m)] with x hx using by simp [Real.enorm_eq_ofReal hx]
+  filter_upwards [condExp_nonneg h'f (m := m)] with x hx using by simp [Real.eNorm_eq_ofReal hx]
 
 lemma lintegral_enorm_condExp_indicator
     {m : MeasurableSpace 𝓧} {m𝓧 : MeasurableSpace 𝓧} (hm : m ≤ m𝓧) {μ : Measure 𝓧}
@@ -103,6 +103,6 @@ lemma lintegral_enorm_condExp_indicator
       simp only [Pi.zero_apply, Set.indicator, Pi.one_apply]
       grind
   _ = μ s := by
-    simp [lintegral_condLExp hm, enorm_indicator_eq_indicator_enorm, lintegral_indicator hs]
+    simp [lintegral_condLExp hm, eNorm_indicator_eq_indicator_enorm, lintegral_indicator hs]
 
 end MeasureTheory

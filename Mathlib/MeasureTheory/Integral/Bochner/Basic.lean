@@ -328,9 +328,9 @@ theorem norm_integral_le_lintegral_norm (f : α → G) :
   simp only [integral_eq_setToFun]
   exact (norm_setToFun_le_toReal _ (by simp)).trans (by simp)
 
-theorem enorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂μ := by
+theorem eNorm_integral_le_lintegral_enorm (f : α → G) : ‖∫ a, f a ∂μ‖ₑ ≤ ∫⁻ a, ‖f a‖ₑ ∂μ := by
   simp only [integral_eq_setToFun]
-  exact (enorm_setToFun_le _ (by simp)).trans (by simp)
+  exact (eNorm_setToFun_le _ (by simp)).trans (by simp)
 
 theorem dist_integral_le_lintegral_edist
     {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
@@ -365,7 +365,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le)
-    fun i => enorm_integral_le_lintegral_enorm _
+    fun i => eNorm_integral_le_lintegral_enorm _
 
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
@@ -543,10 +543,10 @@ theorem ofReal_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup 
   rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, ENNReal.ofReal_toReal]
   exact lt_top_iff_ne_top.mp (hasFiniteIntegral_iff_enorm.mpr hf.2)
 
-theorem enorm_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
+theorem eNorm_integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ‖∫ x, ‖f x‖ ∂μ‖ₑ = ∫⁻ x, ‖f x‖ₑ ∂μ := by
   convert ofReal_integral_norm_eq_lintegral_enorm hf
-  rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, Real.enorm_eq_ofReal toReal_nonneg]
+  rw [integral_norm_eq_lintegral_enorm hf.aestronglyMeasurable, Real.eNorm_eq_ofReal toReal_nonneg]
 
 theorem SimpleFunc.integral_eq_integral [CompleteSpace E] (f : α →ₛ E) (hfi : Integrable f μ) :
     f.integral μ = ∫ x, f x ∂μ := by
@@ -731,7 +731,7 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
   simp_rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall fun x => (f x).coe_nonneg)
       hfi.aestronglyMeasurable, ← ENNReal.coe_nnreal_eq]
   rw [ENNReal.ofReal_toReal]
-  simpa [← lt_top_iff_ne_top, hasFiniteIntegral_iff_enorm, NNReal.enorm_eq] using
+  simpa [← lt_top_iff_ne_top, hasFiniteIntegral_iff_enorm, NNReal.eNorm_eq] using
     hfi.hasFiniteIntegral
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
@@ -1041,7 +1041,7 @@ theorem nndist_integral_add_measure_le_lintegral
     {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖ₑ ∂ν := by
   rw [integral_add_measure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
-  exact enorm_integral_le_lintegral_enorm _
+  exact eNorm_integral_le_lintegral_enorm _
 
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
