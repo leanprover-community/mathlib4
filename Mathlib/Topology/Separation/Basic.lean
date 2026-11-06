@@ -735,13 +735,13 @@ theorem Filter.Tendsto.eventually_ne {X} [TopologicalSpace Y] [T1Space Y] {g : X
 
 theorem Filter.Tendsto.ne_const {X} [TopologicalSpace Y] [T1Space Y] {f : X → Y}
     {l : Filter X} [l.NeBot] {b₁ b₂ : Y} (hf : Tendsto f l (𝓝 b₁)) (hb : b₁ ≠ b₂) :
-    f ≠ (fun _ ↦ b₂) :=
-  fun h ↦ (hf.eventually_ne hb).exists.elim fun _ hx ↦ hx (congrFun h _)
+    f ≠ fun _ ↦ b₂ :=
+  Function.ne_iff.mpr (hf.eventually_ne hb).exists
 
 @[to_additive]
 theorem Filter.Tendsto.ne_one {X} [TopologicalSpace Y] [T1Space Y] [One Y] {f : X → Y}
     {l : Filter X} [l.NeBot] {b : Y} (hf : Tendsto f l (𝓝 b)) (hb : b ≠ 1) : f ≠ 1 :=
-  Filter.Tendsto.ne_const hf hb
+  hf.ne_const hb
 
 theorem ContinuousAt.eventually_ne [TopologicalSpace Y] [T1Space Y] {g : X → Y} {x : X} {y : Y}
     (hg1 : ContinuousAt g x) (hg2 : g x ≠ y) : ∀ᶠ z in 𝓝 x, g z ≠ y :=

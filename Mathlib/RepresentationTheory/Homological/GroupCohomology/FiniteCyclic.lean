@@ -93,7 +93,6 @@ noncomputable abbrev groupCohomologyπEven (i : ℕ) [NeZero i] (hi : Even i) :
   (moduleCatCyclesIso <| normHomCompSub A g).inv ≫
       ShortComplex.homologyπ _ ≫ (groupCohomologyIsoEven A g hg i hi).inv
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomologyπEven_eq_zero_iff (i : ℕ) [NeZero i] (hi : Even i)
     (x : LinearMap.ker (applyAsHom A g - 𝟙 A).hom.toLinearMap) :
@@ -126,7 +125,6 @@ noncomputable abbrev groupCohomologyπOdd (i : ℕ) (hi : Odd i) :
   (moduleCatCyclesIso <| subCompNormHom A g).inv ≫
       ShortComplex.homologyπ _ ≫ (groupCohomologyIsoOdd A g hg i hi).inv
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma groupCohomologyπOdd_eq_zero_iff (i : ℕ) (hi : Odd i)
     (x : LinearMap.ker A.norm.asHom.hom.toLinearMap) :
