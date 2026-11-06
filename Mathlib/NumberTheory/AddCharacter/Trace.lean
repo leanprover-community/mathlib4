@@ -10,9 +10,9 @@ public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
 /-!
 # The additive character attached to the trace
 
-Let `A` be a commutative algebra over `ZMod n` and let `ζ` be a primitive `n`-th root of unity in
-a ring `R`. Composing the trace of `A` over `ZMod n` with the character of `ZMod n` attached to
-`ζ` gives an additive character of `A` with values in `R`.
+Let `A` be a finite projective commutative algebra over `ZMod n` and let `ζ` be a primitive
+`n`-th root of unity in a ring `R`. Composing the trace of `A` over `ZMod n` with the character
+of `ZMod n` attached to `ζ` gives an additive character of `A` with values in `R`.
 
 This file defines that character and establishes its basic properties.
 
@@ -50,6 +50,7 @@ namespace AddChar
 
 variable {n : ℕ} [NeZero n] (A : Type*) [CommRing A] [Algebra (ZMod n) A] {R : Type*} [CommRing R]
   {ζ : R} (hζ : IsPrimitiveRoot ζ n)
+variable [Module.Finite (ZMod n) A] [Module.Projective (ZMod n) A]
 
 /-- The additive character of `A` sending `x` to `ζ ^ Algebra.trace (ZMod n) A x`, where `ζ` is a
 primitive `n`-th root of unity. -/
@@ -116,6 +117,7 @@ theorem map_traceChar_apply_eq_mulShift {G : Type*} [FunLike G R R] [MonoidHomCl
 
 /-- The character `traceChar` is invariant under isomorphisms of `ZMod n`-algebras. -/
 theorem traceChar_apply_algEquiv {B : Type*} [CommRing B] [Algebra (ZMod n) B]
+    [Module.Finite (ZMod n) B] [Module.Projective (ZMod n) B]
     (e : A ≃ₐ[ZMod n] B) (x : A) : traceChar B hζ (e x) = traceChar A hζ x := by
   rw [traceChar_apply, Algebra.trace_eq_of_algEquiv, traceChar_apply]
 

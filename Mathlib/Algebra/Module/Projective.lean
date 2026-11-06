@@ -189,6 +189,10 @@ theorem Projective.of_equiv' [Module.Projective R M]
     (e : M ≃ₗ[R] P) : Module.Projective R P :=
   .of_equiv e
 
+instance Projective.finsupp {ι : Type*} [Projective R M] : Projective R (ι →₀ M) := by
+  classical
+  exact Projective.of_equiv' (finsuppLequivDFinsupp R).symm
+
 instance [Projective R M] : Projective R (ULift.{w} M) :=
   Projective.of_equiv' ULift.moduleEquiv.symm
 
@@ -303,5 +307,16 @@ instance Projective.directSum [∀ (i : ι), Projective R (M i)] : Projective R 
   directSum_iff.mpr ‹_›
 
 end DirectSum
+
+/-- Projectivity is transitive along a scalar tower. -/
+theorem Projective.trans {R : Type*} (S M : Type*) [Semiring R] [Semiring S]
+    [Module R S] [IsScalarTower R S S]
+    [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
+    [Module.Projective R S] [Module.Projective S M] : Module.Projective R M := by
+  classical
+  obtain ⟨i, hi⟩ := (Module.projective_def' (R := S) (P := M)).mp inferInstance
+  exact Module.Projective.of_split (i.restrictScalars R)
+    ((Finsupp.linearCombination S id).restrictScalars R)
+    (congrArg (LinearMap.restrictScalars R) hi)
 
 end Module

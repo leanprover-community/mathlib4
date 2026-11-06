@@ -47,14 +47,16 @@ theorem finrank [NeZero k] [IsCyclotomicExtension {k} ℚ K] : Module.finrank �
   IsCyclotomicExtension.finrank K <| Polynomial.cyclotomic.irreducible_rat (NeZero.pos _)
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
-theorem discr_prime_pow_ne_two' [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
+theorem discr_prime_pow_ne_two' [FiniteDimensional ℚ K]
+    [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ (k + 1))) (hk : p ^ (k + 1) ≠ 2) :
     discr ℚ (hζ.subOnePowerBasis ℚ).basis =
       (-1) ^ ((p ^ (k + 1)).totient / 2) * p ^ (p ^ k * ((p - 1) * (k + 1) - 1)) := by
   rw [← discr_prime_pow_ne_two hζ (cyclotomic.irreducible_rat (NeZero.pos _)) hk]
   exact hζ.discr_zeta_eq_discr_zeta_sub_one.symm
 
-theorem discr_odd_prime' [IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) (hodd : p ≠ 2) :
+theorem discr_odd_prime' [FiniteDimensional ℚ K] [IsCyclotomicExtension {p} ℚ K]
+    (hζ : IsPrimitiveRoot ζ p) (hodd : p ≠ 2) :
     discr ℚ (hζ.subOnePowerBasis ℚ).basis = (-1) ^ ((p - 1) / 2) * p ^ (p - 2) := by
   rw [← discr_odd_prime hζ (cyclotomic.irreducible_rat hp.out.pos) hodd]
   exact hζ.discr_zeta_eq_discr_zeta_sub_one.symm
@@ -62,7 +64,8 @@ theorem discr_odd_prime' [IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoo
 /-- The discriminant of the power basis given by `ζ - 1`. Beware that in the cases `p ^ k = 1` and
 `p ^ k = 2` the formula uses `1 / 2 = 0` and `0 - 1 = 0`. It is useful only to have a uniform
 result. See also `IsCyclotomicExtension.Rat.discr_prime_pow_eq_unit_mul_pow'`. -/
-theorem discr_prime_pow' [IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiveRoot ζ (p ^ k)) :
+theorem discr_prime_pow' [FiniteDimensional ℚ K] [IsCyclotomicExtension {p ^ k} ℚ K]
+    (hζ : IsPrimitiveRoot ζ (p ^ k)) :
     discr ℚ (hζ.subOnePowerBasis ℚ).basis =
       (-1) ^ ((p ^ k).totient / 2) * p ^ (p ^ (k - 1) * ((p - 1) * k - 1)) := by
   rw [← discr_prime_pow hζ (cyclotomic.irreducible_rat (NeZero.pos _))]
@@ -71,7 +74,7 @@ theorem discr_prime_pow' [IsCyclotomicExtension {p ^ k} ℚ K] (hζ : IsPrimitiv
 /-- If `p` is a prime and `IsCyclotomicExtension {p ^ k} K L`, then there are `u : ℤˣ` and
 `n : ℕ` such that the discriminant of the power basis given by `ζ - 1` is `u * p ^ n`. Often this is
 enough and less cumbersome to use than `IsCyclotomicExtension.Rat.discr_prime_pow'`. -/
-theorem discr_prime_pow_eq_unit_mul_pow' [IsCyclotomicExtension {p ^ k} ℚ K]
+theorem discr_prime_pow_eq_unit_mul_pow' [FiniteDimensional ℚ K] [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ (p ^ k)) :
     ∃ (u : ℤˣ) (n : ℕ), discr ℚ (hζ.subOnePowerBasis ℚ).basis = u * p ^ n := by
   rw [hζ.discr_zeta_eq_discr_zeta_sub_one.symm]
