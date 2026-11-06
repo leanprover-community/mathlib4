@@ -121,9 +121,11 @@ theorem abs_of_isPositive_neg {S : E →L[ℂ] E} (hS : (-S).IsPositive) : |S| =
   rw [ContinuousLinearMap.abs_eq_cfcAbs]
   exact CFC.abs_of_nonpos _ (neg_nonneg.mp hS.nonneg)
 
+@[simp]
 theorem abs_adjoint_comp_self (T : E →L[ℂ] F) : |T† ∘L T| = T† ∘L T :=
   abs_of_isPositive (isPositive_adjoint_comp_self T)
 
+@[simp]
 theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† :=
   abs_of_isPositive (isPositive_self_comp_adjoint T)
 
