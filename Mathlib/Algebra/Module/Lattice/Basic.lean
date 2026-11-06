@@ -5,12 +5,9 @@ Authors: Anouk Brose, Judith Ludwig, Christian Merten, Justus Springer
 -/
 module
 
-public import Mathlib.Algebra.Module.Torsion.Free
-public import Mathlib.LinearAlgebra.Dimension.DivisionRing
 public import Mathlib.LinearAlgebra.Dimension.Localization
-public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.FreeModule.PID
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
+
+import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
 # Lattices
@@ -86,7 +83,6 @@ variable (M : Submodule R V)
 /-- Any `R`-independent family of vectors in a lattice is `A`-linearly independent. -/
 theorem linearIndependent [IsLattice A M] {ι : Type*} {v : ι → V}
     (hv : ∀ i, v i ∈ M) (h : LinearIndependent R v) : LinearIndependent A v := by
-  nontriviality A
   nontriviality R using Algebra.subsingleton R A
   rw [← linearIndepOn_id_range_iff h.injective]
   exact linearIndepOn _ (Set.range_subset_iff.mpr hv) h.linearIndepOn_id
@@ -110,8 +106,7 @@ theorem mono_of_fg {M N : Submodule R V} (hle : M ≤ N) (hfg : M.FG) [IsLattice
 /-- Over a Noetherian ring, any submodule of a lattice is a lattice. -/
 theorem mono [IsNoetherianRing R] {M N : Submodule R V} (hle : M ≤ N) [IsLattice A N] :
     IsLattice A M :=
-  have := finite A N
-  mono_of_fg A hle (isNoetherian_submodule.mp inferInstance M hle)
+  mono_of_fg A hle ((fg A N).of_le hle)
 
 /-- Over a Noetherian ring, the intersection of two submodules,
 the first a lattice, is a lattice. -/
@@ -135,8 +130,8 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
     exact Submodule.fg_span (Set.toFinite (a • (s : Set V)))
   linearIndepOn s hsM hs := by
     rw [coe_pointwise_smul, Set.subset_smul_set_iff] at hsM
-    rw [← smul_inv_smul a s, linearIndepOn_id_smul_set_iff]
-    exact linearIndepOn _ hsM ((linearIndepOn_id_smul_set_iff _ _).mpr hs)
+    rw [← linearIndepOn_id_smul_set_iff a⁻¹] at hs ⊢
+    exact linearIndepOn _ hsM hs
 
 end CommRing
 
@@ -155,7 +150,7 @@ theorem rank_span_eq_rank [IsLattice K M] :
 /-- The `R`-rank of a lattice equals the `K`-dimension of its `K`-span.
 This is the finrank version of `rank_span_eq_rank`. -/
 theorem finrank_span_eq_finrank [IsLattice K M] : finrank K (span K (M : Set V)) = finrank R M :=
-  congrArg Cardinal.toNat (rank_span_eq_rank K M)
+  congr(Cardinal.toNat $(rank_span_eq_rank K M))
 
 /-- An `R`-module `M` is a lattice in an ambient `K`-module `V` if and only if `M`
 is finitely generated, and its `R`-rank equals the `K`-dimension of its `K`-span. -/
@@ -169,14 +164,14 @@ section IsPrincipalIdealRing
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 /-- Any lattice over a PID is a free `R`-module. Not an instance, since `K` cannot be inferred. -/
-theorem free (M : Submodule R V) [IsLattice K M] : Module.Free R M := by
+theorem free [IsLattice K M] : Module.Free R M := by
   have := Module.IsTorsionFree.trans_faithfulSMul R K V
   have := finite K M
   -- any torsion free finite module over a PID is free
   infer_instance
 
 /-- A lattice over a PID has a basis that's `K`-linearly independent. -/
-theorem exists_basis_linearIndependent (M : Submodule R V) [IsLattice K M] :
+theorem exists_basis_linearIndependent [IsLattice K M] :
     ∃ b : Basis (Fin (finrank R M)) R M, LinearIndependent K (fun i ↦ (b i).val) :=
   have := free K M
   have := finite K M
