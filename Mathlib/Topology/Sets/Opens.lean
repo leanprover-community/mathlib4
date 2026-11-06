@@ -207,7 +207,7 @@ theorem coe_eq_univ {U : Opens α} : (U : Set α) = univ ↔ U = ⊤ :=
   SetLike.coe_injective.eq_iff' rfl
 
 @[simp, norm_cast]
-theorem coe_sSup {S : Set (Opens α)} : (↑(sSup S) : Set α) = ⋃ i ∈ S, ↑i :=
+theorem coe_sSup {S : Set (Opens α)} : (↑(⨆₀ S) : Set α) = ⋃ i ∈ S, ↑i :=
   rfl
 
 @[simp, norm_cast]
