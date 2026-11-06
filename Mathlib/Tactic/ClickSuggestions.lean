@@ -116,6 +116,7 @@ public def generateSuggestions (loc : SubExpr.GoalsLocation) (parentDecl? : Opti
 @[server_rpc_method]
 public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.Html) :=
   RequestM.asTask do
+  if props.goals.isEmpty then return .text ""
   let some loc := props.selectedLocations.back? |
     return .text "Shift-click an expression in the tactic state to get suggestions."
   let doc ← RequestM.readDoc
@@ -132,6 +133,8 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
       let goals := if useAfter then tacticInfo.goalsAfter else tacticInfo.goalsBefore
       goals.contains loc.mvarId
     | return .text "#click_suggestions: Please reload the tactic state"
+  -- Focus with a `·` if there are multiple goals, or the previous tactic was also a `·`.
+  let focus := onGoal.isNone && (2 ≤ props.goals.size || stx.isOfKind ``cdot)
   goal.ctx.val.runMetaM {} do withConfig Elab.Term.setElabConfig do loc.mvarId.withContext do
     let (statusHtml, statusToken) ← mkRefreshComponent
     let (solvedHtml, solvedToken) ← mkRefreshComponent
@@ -143,7 +146,7 @@ public def rpc (props : PanelWidgetProps) : RequestM (RequestTask ProofWidgets.H
     let html ← mkRefreshComponentM
       (.text "#click_suggestions has started searching.") fun masterToken ↦ do
       (generateSuggestions loc parentDecl? masterToken).run {
-        onGoal, masterToken, statusToken, solvedToken
+        onGoal, focus, masterToken, statusToken, solvedToken
         stx := if useAfter then some ⟨stx⟩ else none
         «meta» := doc.meta
         cursorPos := props.pos

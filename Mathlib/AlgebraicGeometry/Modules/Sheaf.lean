@@ -238,7 +238,6 @@ def pullbackComp :
     pullback g ⋙ pullback f ≅ pullback (f ≫ g) :=
   SheafOfModules.pullbackComp _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Pushforwards along equal morphisms are isomorphic. -/
 def pushforwardCongr {f g : X ⟶ Y} (hf : f = g) : pushforward f ≅ pushforward g :=
     pushforwardNatIso _ (Opens.mapIso _ _ (hf ▸ rfl)) ≪≫
@@ -344,7 +343,7 @@ def restrictFunctor : Y.Modules ⥤ X.Modules :=
 abbrev restrict (M : Y.Modules) (f : X ⟶ Y) [IsOpenImmersion f] : X.Modules :=
   (restrictFunctor f).obj M
 
-/-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U). -/
+/-- The sections of the restriction of `M` over `U` are isomorphic to `Γ(M, f ''ᵁ U)`. -/
 def restrictAppIso (M : Y.Modules) (U : X.Opens) : Γ(M.restrict f, U) ≅ Γ(M, f ''ᵁ U) :=
   Iso.refl _
 
