@@ -53,8 +53,7 @@ The case of prime numbers is also an instance:
   (`ZMod.isCyclic_units_two_pow_quotient_neg_one`).
 
 The proofs mostly follow [Ireland and Rosen,
-  *A classical introduction to modern number theory*, chapter 4]
-  [IrelandRosen1990].
+  *A classical introduction to modern number theory*, chapter 4][IrelandRosen1990].
 
 -/
 
