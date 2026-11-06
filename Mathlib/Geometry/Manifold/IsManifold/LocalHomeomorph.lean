@@ -115,9 +115,8 @@ lemma IsLocalHomeomorph.contMDiffAt_localInverseAt_rightInverse (y : M') :
   rw [contMDiffAt_iff]
   constructor
   · sorry
-  · have : hf.localInverseAt (g y) y = g y := by
-      sorry
-    rw [this]
+  · rw [show hf.localInverseAt (g y) y = g y by
+      simpa [hg y] using (hf.localInverseAt_apply_self (x:=g y))]
     have hc : chartAt H y = (hf.localInverseAt (g y)).trans (chartAt H (g y)) := rfl
     rw [extChartAt_coe, extChartAt_coe_symm, hc]
     simp only [OpenPartialHomeomorph.coe_trans_symm]
