@@ -806,3 +806,29 @@ protected lemma ModularFormClass.qExpansion_coeff_unique {c : ℕ → ℂ} (hh :
     (hf : ∀ τ : ℍ, HasSum (fun m ↦ c m • 𝕢 h τ ^ m) (f τ)) (m : ℕ) :
     c m = (qExpansion h f).coeff m :=
   qExpansion_coeff_unique f hh (ModularFormClass.analyticAt_cuspFunction_zero f hh hΓ) hf m
+
+namespace ModularForm
+
+/-- At an irregular cusp, the `q`-expansion is supported in degrees of the same parity as the
+weight. -/
+lemma qExpansion_coeff_eq_zero_of_not_isRegularAtInfty [Γ.IsArithmetic] [Γ.HasDetOne]
+    (f : ModularForm Γ k) (hirr : ¬Γ.IsRegularAtInfty) (n : ℕ) (hn : Odd (k + n)) :
+    (qExpansion Γ.strictWidthInfty f).coeff n = 0 := by
+  have hfshift (τ : ℍ) : f τ = (-1 : ℂ) ^ k * f (Γ.widthInfty +ᵥ τ) := by
+    rw [← τ.upperRightHom_smul, ← τ.neg_smul, SlashInvariantForm.slash_action_eqn']
+    · simp [← mul_assoc, ← mul_zpow]
+    · exact Γ.widthInfty_mem_periods.resolve_left (hirr ∘ Γ.isRegularAtInfty_iff.mpr)
+  let c (m : ℕ) := (-1 : ℂ) ^ (k + m) * (qExpansion Γ.strictWidthInfty f).coeff m
+  have hsum (τ : ℍ) : HasSum (fun m ↦ c m • 𝕢 Γ.strictWidthInfty τ ^ m) (f τ) := by
+    rw [hfshift]
+    refine ((hasSum_qExpansion f Γ.strictWidthInfty_pos Γ.strictWidthInfty_mem_strictPeriods
+      (Γ.widthInfty +ᵥ τ)).mul_left _).congr_fun fun m ↦ ?_
+    simp only [c, smul_eq_mul, coe_vadd, Γ.strictWidthInfty_of_not_isRegularAtInfty hirr,
+      Periodic.qParam_add_half_period Γ.widthInfty_pos.ne']
+    rw [zpow_add₀ (by norm_num), zpow_natCast]
+    ring
+  simpa [c, hn.neg_one_zpow, CharZero.neg_eq_self_iff] using
+    ModularFormClass.qExpansion_coeff_unique Γ.strictWidthInfty_pos
+      Γ.strictWidthInfty_mem_strictPeriods hsum n
+
+end ModularForm
