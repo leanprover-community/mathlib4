@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Order.Kleene
 public import Mathlib.Data.Fintype.Sum
 public import Mathlib.Data.Set.Lattice.Image
-public import Mathlib.Tactic.DeriveFintype
 
 /-!
 # Languages
@@ -45,26 +44,18 @@ with respect to other language operations.
 ## Main theorems
 
 * `Language.self_eq_mul_add_iff`: Arden's lemma – if a language `l` satisfies the equation
-  `l = m * l + n`, and `m` doesn't contain the empty string,
-  then `l` is the language `m∗ * n`
-
+  `l = m * l + n`, and `m` doesn't contain the empty string, then `l` is the language `m∗ * n`
 -/
 
 @[expose] public section
 
-
 open List Set
-
 open scoped Computability
-
-universe v
 
 variable {α β γ : Type*}
 
 /-- A language is a set of strings over an alphabet. -/
-def Language (α) :=
-  Set (List α)
-deriving CompleteAtomicBooleanAlgebra
+abbrev Language (α) := Set (List α)
 
 namespace Language
 
@@ -157,7 +148,6 @@ theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
 instance : OrderedSub (Language α) where
   tsub_le_iff_right _ _ _ := sdiff_le_iff'
 
-set_option backward.isDefEq.respectTransparency false in
 instance instSemiring : Semiring (Language α) where
   add_assoc := union_assoc
   zero_add := empty_union
@@ -187,11 +177,9 @@ def map (f : α → β) : Language α →+* Language β where
   map_add' := image_union _
   map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
@@ -208,7 +196,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩
 
 theorem kstar_def_nonempty (l : Language α) :
-    l∗ = { x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
+    l∗ = {x | ∃ S : List (List α), x = S.flatten ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ []} := by
   ext x; apply mem_kstar_iff_exists_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
@@ -220,30 +208,30 @@ instance : MulLeftMono (Language α) where
 instance : MulRightMono (Language α) where
   elim _ _ _ := image2_subset_right
 
-theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
+theorem mem_iSup {ι : Sort*} {l : ι → Language α} {x : List α} : x ∈ ⨆ i, l i ↔ ∃ i, x ∈ l i :=
   mem_iUnion
 
-theorem iSup_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
+theorem iSup_mul {ι : Sort*} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) * m = ⨆ i, l i * m :=
   image2_iUnion_left _ _ _
 
-theorem mul_iSup {ι : Sort v} (l : ι → Language α) (m : Language α) :
+theorem mul_iSup {ι : Sort*} (l : ι → Language α) (m : Language α) :
     (m * ⨆ i, l i) = ⨆ i, m * l i :=
   image2_iUnion_right _ _ _
 
-theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+theorem iSup_add {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) + m = ⨆ i, l i + m :=
   iSup_sup
 
-theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+theorem add_iSup {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
 
-theorem iSup_sub {ι : Sort v} (l : ι → Language α) (m : Language α) :
+theorem iSup_sub {ι : Sort*} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) - m = ⨆ i, l i - m :=
   iUnion_sdiff _ _
 
-theorem sub_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
+theorem sub_iSup {ι : Sort*} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m - ⨆ i, l i) = ⨅ i, m - l i :=
   sdiff_iUnion _ _
 
@@ -284,7 +272,6 @@ theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ 
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
 
 instance : KleeneAlgebra (Language α) where
-  __ : OrderBot (Language α) := inferInstance
   one_le_kstar a _ hl := ⟨[], hl, by simp⟩
   mul_kstar_le_kstar a := (one_add_self_mul_kstar_eq_kstar a).le.trans' le_sup_right
   kstar_mul_le_kstar a := (one_add_kstar_mul_self_eq_kstar a).le.trans' le_sup_right
@@ -330,7 +317,7 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 
 /-- Language `l.reverse` is defined as the set of words from `l` backwards. -/
-def reverse (l : Language α) : Language α := { w : List α | w.reverse ∈ l }
+def reverse (l : Language α) : Language α := {w | w.reverse ∈ l}
 
 @[simp]
 lemma mem_reverse : a ∈ l.reverse ↔ a.reverse ∈ l := Iff.rfl
@@ -366,7 +353,6 @@ lemma reverse_reverse (l : Language α) : l.reverse.reverse = l := reverse_invol
 @[simp]
 lemma reverse_add (l m : Language α) : (l + m).reverse = l.reverse + m.reverse := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse := by
   simp only [mul_def, reverse_eq_image, image2_image_left, image2_image_right, image_image2,
@@ -374,10 +360,16 @@ lemma reverse_mul (l m : Language α) : (l * m).reverse = m.reverse * l.reverse 
   apply image2_swap
 
 @[simp]
+lemma reverse_iUnion {ι : Sort*} (l : ι → Language α) : reverse (⋃ i, l i) = ⋃ i, (l i).reverse :=
+  preimage_iUnion
+
 lemma reverse_iSup {ι : Sort*} (l : ι → Language α) : (⨆ i, l i).reverse = ⨆ i, (l i).reverse :=
   preimage_iUnion
 
 @[simp]
+lemma reverse_iInter {ι : Sort*} (l : ι → Language α) : reverse (⋂ i, l i) = ⋂ i, (l i).reverse :=
+  preimage_iInter
+
 lemma reverse_iInf {ι : Sort*} (l : ι → Language α) : (⨅ i, l i).reverse = ⨅ i, (l i).reverse :=
   preimage_iInter
 
@@ -400,7 +392,6 @@ lemma reverse_pow (l : Language α) (n : ℕ) : (l ^ n).reverse = l.reverse ^ n 
 lemma reverse_kstar (l : Language α) : l∗.reverse = l.reverse∗ := by
   simp only [kstar_eq_iSup_pow, reverse_iSup, reverse_pow]
 
-@[simp]
 lemma mem_inf {x : List α} {l m : Language α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
   apply Set.mem_inter_iff
 
@@ -408,14 +399,3 @@ lemma compl_compl (l : Language α) : lᶜᶜ = l :=
   _root_.compl_compl l
 
 end Language
-
-/-- Symbols for use by all kinds of grammars. -/
-inductive Symbol (T N : Type*)
-  /-- Terminal symbols (of the same type as the language) -/
-  | terminal (t : T) : Symbol T N
-  /-- Nonterminal symbols (must not be present when the word being generated is finalized) -/
-  | nonterminal (n : N) : Symbol T N
-deriving
-  DecidableEq, Repr, Fintype
-
-attribute [nolint docBlame] Symbol.proxyType Symbol.proxyTypeEquiv

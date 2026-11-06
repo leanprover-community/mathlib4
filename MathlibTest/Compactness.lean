@@ -1,6 +1,7 @@
 module
 
-public import Mathlib
+import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 open Set MeasureTheory
 
