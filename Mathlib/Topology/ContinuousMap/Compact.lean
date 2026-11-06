@@ -238,8 +238,10 @@ theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
 
-theorem enorm_eq_iSup_enorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
-  (mkOfCompact f).enorm_eq_iSup_enorm
+theorem eNorm_eq_iSup_eNorm : ‖f‖ₑ = ⨆ x, ‖f x‖ₑ :=
+  (mkOfCompact f).eNorm_eq_iSup_eNorm
+
+@[deprecated (since := "2026-11-06")] alias enorm_eq_iSup_enorm := eNorm_eq_iSup_eNorm
 
 -- A version with better keys
 instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
