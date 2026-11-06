@@ -27,7 +27,9 @@ open Metric Real Set
 ## A Jensen-Type Inequality for Circle Averages
 -/
 
-private lemma CircleIntegrable.log_one_add {u : ℂ → ℝ} {r : ℝ}
+/-- If `u` is circle integrable and nonnegative on the circle, then `log (1 + u)` is circle
+integrable. -/
+lemma CircleIntegrable.log_one_add {u : ℂ → ℝ} {r : ℝ}
     (h₀ : ∀ z ∈ sphere (0 : ℂ) |r|, 0 ≤ u z) (hu : CircleIntegrable u 0 r) :
     CircleIntegrable (fun z ↦ Real.log (1 + u z)) 0 r := by
   apply IntervalIntegrable.mono_fun (IntervalIntegrable.abs hu)
@@ -37,7 +39,8 @@ private lemma CircleIntegrable.log_one_add {u : ℂ → ℝ} {r : ℝ}
   · filter_upwards with θ
     have h₁ : 0 ≤ u (circleMap 0 r θ) := h₀ _ (circleMap_mem_sphere' 0 r θ)
     simp only [norm_eq_abs, abs_abs]
-    grw [abs_of_nonneg (log_nonneg (by linarith)), ..., le_abs_self]
+    grw [abs_of_nonneg (log_nonneg (by linarith)), abs_of_nonneg h₁,
+      log_one_add_le_self (by linarith)]
 
 /--
 For a nonnegative circle-integrable function `u`, the circle average of `log⁺ u` is at most `log⁺`
@@ -48,10 +51,7 @@ of the concave function.
 theorem Real.circleAverage_posLog_le_posLog_circleAverage {u : ℂ → ℝ} {r : ℝ}
     (h₀ : ∀ z ∈ sphere (0 : ℂ) |r|, 0 ≤ u z) (hu : CircleIntegrable u 0 r) :
     circleAverage (log⁺ ∘ u) 0 r ≤ log⁺ (circleAverage u 0 r) + Real.log 2 := by
-  have hInt : CircleIntegrable (fun z ↦ log (1 + u z)) 0 r :=
-    circleIntegrable_log_one_add h₀ hu
-  have step₁ : circleAverage (log⁺ ∘ u) 0 r ≤ circleAverage (fun z ↦ log (1 + u z)) 0 r :=
-    circleAverage_mono hu.posLog_comp hInt (fun z hz ↦ posLog_le_log_one_add (h₀ z hz))
+  have hInt : CircleIntegrable (fun z ↦ log (1 + u z)) 0 r := hu.log_one_add h₀
   grw [circleAverage_mono hu.posLog_comp hInt (fun z hz ↦ posLog_le_log_one_add (h₀ z hz)),
     ← log_one_add_le_posLog, circleAverage_eq_intervalAverage, circleAverage_eq_intervalAverage]
   have hConcave : ConcaveOn ℝ (Ici 0) (fun x ↦ log (1 + x)) :=

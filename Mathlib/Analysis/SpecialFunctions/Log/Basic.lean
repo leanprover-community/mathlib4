@@ -337,6 +337,10 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   rw [← abs_of_nonneg aux, neg_mul, abs_neg] at this
   exact this
 
+/-- See `Real.log_le_sub_one_of_pos` for the same statement written for `log x`. -/
+lemma log_one_add_le_self {x : ℝ} (hx : -1 < x) : log (1 + x) ≤ x := by
+  linarith [log_le_sub_one_of_pos (by linarith : 0 < 1 + x)]
+
 lemma le_log_one_add_of_nonneg {x : ℝ} (hx : 0 ≤ x) : 2 * x / (x + 2) ≤ log (1 + x) := by
   rw [le_log_iff_exp_le (by grind)]
   convert exp_le_two_add_div_two_sub (x := 2 * x / (x + 2)) (by positivity) _ using 1
