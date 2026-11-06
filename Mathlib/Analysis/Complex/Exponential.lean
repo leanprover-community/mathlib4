@@ -656,24 +656,13 @@ lemma one_add_inv_pow_le_exp {n : ℕ} : (1 + (n : ℝ)⁻¹) ^ n ≤ exp 1 := b
   · field
   · simp
 
-private lemma sum_choose_mul_pow_le_add_one_pow {d m : ℕ} {t : ℝ} (ht : 0 ≤ t) (hdm : d ≤ m) :
-    ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * t ^ i ≤ (1 + t) ^ m :=
-  calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * t ^ i
-      ≤ ∑ i ∈ .range (m + 1), (m.choose i : ℝ) * t ^ i := by gcongr with i hi
-    _ = (1 + t) ^ m := by
-        rw [add_comm 1 t, add_pow]
-        congr! 1 with i
-        ring
-
 private lemma sum_choose_le_mul_sum_choose_mul_pow {d m : ℕ} (hd : (0 : ℝ) < d)
     (hm : (0 : ℝ) < m) (hdm : (d : ℝ) ≤ m) :
     ∑ i ∈ .range (d + 1), (m.choose i : ℝ) ≤
       (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
   calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ)
-    _ = ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ i :=
-        Finset.sum_congr rfl fun i _ ↦ by
-          rw [mul_assoc, ← mul_pow, show (d : ℝ) / m * (m / d) = 1 by field_simp, one_pow,
-            mul_one]
+    _ = ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ i := by
+        congr! with i; simp [mul_assoc, ← mul_pow, hd.ne', hm.ne']
     _ ≤ ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i * (m / d : ℝ) ^ d := by
         gcongr with i hi
         · exact (one_le_div₀ hd).2 hdm
@@ -681,16 +670,18 @@ private lemma sum_choose_le_mul_sum_choose_mul_pow {d m : ℕ} (hd : (0 : ℝ) <
     _ = (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i := by
         rw [← Finset.sum_mul, mul_comm]
 
-/-- For `0 < d ≤ m`, the number of subsets of size at most `d` of an `m`-element set,
+/-- For `d ≤ m`, the number of subsets of size at most `d` of an `m`-element set,
 `∑ i ≤ d, m.choose i`, is at most `(exp 1 / d * m) ^ d`. -/
-lemma sum_choose_le_exp_pow (d m : ℕ) (hd : 0 < d) (hdm : d ≤ m) :
+lemma sum_choose_le_exp_pow {d m : ℕ} (hdm : d ≤ m) :
     ∑ i ∈ .range (d + 1), (m.choose i : ℝ) ≤ (exp 1 / d * m) ^ d := by
+  obtain rfl | hd := d.eq_zero_or_pos
+  · simp
   have hm : (0 : ℝ) < m := mod_cast hd.trans_le hdm
   calc ∑ i ∈ .range (d + 1), (m.choose i : ℝ)
       ≤ (m / d : ℝ) ^ d * ∑ i ∈ .range (d + 1), (m.choose i : ℝ) * (d / m : ℝ) ^ i :=
         sum_choose_le_mul_sum_choose_mul_pow (mod_cast hd) hm (mod_cast hdm)
     _ ≤ (m / d : ℝ) ^ d * (1 + d / m : ℝ) ^ m := by
-        gcongr; exact sum_choose_mul_pow_le_add_one_pow (by positivity) hdm
+        gcongr; grw [hdm, add_comm 1, add_pow]; congr! 1 with i; ring
     _ ≤ (m / d : ℝ) ^ d * exp 1 ^ d := by
         gcongr
         simpa [← Real.exp_nat_mul]
