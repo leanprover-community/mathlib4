@@ -31,9 +31,9 @@ namespace IntervalDyadicReal
 meta initialize intervalDyadicRealFamily : InclusionFamily ←
   registerInclusionFamily `interval_dyadic_real
 
-/-- Coercion from dyadic rationals to real numbers as an additive monoid homomorphism. -/
-noncomputable def castAddMonoidHom : Dyadic →+ ℝ :=
-  (Rat.castHom ℝ).toAddMonoidHom.comp Dyadic.toRatAddMonoidHom
+/-- Coercion from dyadic rationals to real numbers as a ring homomorphism. -/
+noncomputable def castRingHom : Dyadic →+* ℝ :=
+  (Rat.castHom ℝ).comp Dyadic.toRatRingHom
 
 /-- Coercion from dyadic rationals to real numbers as an order embedding. -/
 @[simps! apply]

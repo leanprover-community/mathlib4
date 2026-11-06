@@ -5,10 +5,7 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Algebra.Group.Hom.Defs
-public import Mathlib.Data.Nat.Cast.Defs
-public import Mathlib.Data.Rat.Defs
-public import Mathlib.Order.Hom.Basic
+public import Mathlib.Data.Dyadic.Basic
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
@@ -28,64 +25,8 @@ core.
 
 namespace Inclusion.IntervalDyadicReal
 
-instance : LinearOrder Dyadic where
-  le_refl := Std.IsPreorder.le_refl
-  le_trans := Std.IsPreorder.le_trans
-  le_antisymm := Std.IsPartialOrder.le_antisymm
-  lt_iff_le_not_ge := Std.LawfulOrderLT.lt_iff
-  le_total := Std.IsLinearOrder.le_total
-  toDecidableLE := Dyadic.instDecidableLE
-
-instance : AddCommGroup Dyadic where
-  nsmul := (· * ·)
-  zsmul := (· * ·)
-  add_zero := Dyadic.add_zero
-  zero_add := Dyadic.zero_add
-  add_assoc := Dyadic.add_assoc
-  sub_eq_add_neg _ _ := rfl
-  neg_add_cancel := Dyadic.neg_add_cancel
-  add_comm := Dyadic.add_comm
-  nsmul_zero := by grind
-  nsmul_succ := by grind
-  zsmul_zero' := by grind
-  zsmul_succ' := by grind
-  zsmul_neg' := by grind
-
 open Dyadic
 namespace Dyadic
-
--- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
-attribute [coe] toRat
-
--- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
-instance : Coe Dyadic Rat := ⟨toRat⟩
-
--- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
-attribute [norm_cast] toRat_zero toRat_add toRat_neg toRat_sub toRat_mul toRat_pow
-  toRat_intCast toRat_natCast toRat_eq_zero_iff toRat_lt_toRat_iff toRat_le_toRat_iff
-
--- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
-attribute [simp, norm_cast] toRat_inj
-
-@[simp, norm_cast]
-theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) := by
-  rw [← Nat.cast_ofNat (R := Dyadic)]
-  exact toRat_natCast n
-
-/-- Coercion from dyadic rationals to rational numbers as an additive monoid homomorphism. -/
-@[simps]
-def toRatAddMonoidHom : Dyadic →+ ℚ where
-  toFun := toRat
-  map_zero' := toRat_zero
-  map_add' := toRat_add
-
-/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
-@[simps]
-def toRatOrderEmbedding : Dyadic ↪o ℚ where
-  toFun := toRat
-  inj' := fun _ _ ↦ toRat_inj.mp
-  map_rel_iff' := toRat_le_toRat_iff
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)

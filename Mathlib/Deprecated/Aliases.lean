@@ -45,7 +45,8 @@ lemma toReal_mul (a b : Dyadic) : toReal (a * b) = toReal a * toReal b := by sim
 lemma toReal_pow (a : Dyadic) (n : ℕ) : toReal (a ^ n) = toReal a ^ n := by simp [toReal]
 
 /-- `Dyadic.toReal` as an additive monoid homomorphism. -/
-@[deprecated Inclusion.IntervalDyadicReal.castAddMonoidHom (since := "2026-11-05")]
+@[deprecated "Use `Inclusion.IntervalDyadicReal.castRingHom.toAddMonoidHom` instead."
+  (since := "2026-11-05")]
 def toRealAddMonoidHom : Dyadic →+ ℝ where
   toFun := toReal
   map_zero' := by simp [toReal]
@@ -83,7 +84,8 @@ attribute [deprecated "Use the coercion to ℝ and `simp` instead." (since := "2
   toReal_le_toReal toReal_lt_toReal
 
 alias toRealAddMonoidHom := _root_.Dyadic.toRealAddMonoidHom
-attribute [deprecated castAddMonoidHom (since := "2026-11-06")] toRealAddMonoidHom
+attribute [deprecated "Use `Inclusion.IntervalDyadicReal.castRingHom.toAddMonoidHom` instead."
+  (since := "2026-11-06")] toRealAddMonoidHom
 
 alias toRealOrderEmbedding := _root_.Dyadic.toRealOrderEmbedding
 attribute [deprecated castOrderEmbedding (since := "2026-11-06")] toRealOrderEmbedding
