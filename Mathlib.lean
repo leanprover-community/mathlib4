@@ -4022,6 +4022,7 @@ public import Mathlib.Data.Complex.BigOperators
 public import Mathlib.Data.Countable.Basic
 public import Mathlib.Data.Countable.Defs
 public import Mathlib.Data.Countable.Small
+public import Mathlib.Data.DFinsupp.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Data.DFinsupp.Encodable
