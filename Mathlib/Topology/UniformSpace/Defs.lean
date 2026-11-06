@@ -289,7 +289,7 @@ theorem refl_le_uniformity : 𝓟 SetRel.id ≤ 𝓤 α :=
   (@UniformSpace.toCore α _).refl
 
 instance uniformity.neBot [Nonempty α] : NeBot (𝓤 α) :=
-  diagonal_nonempty.principal_neBot.mono refl_le_uniformity
+  diagonalUniv_nonempty.principal_neBot.mono refl_le_uniformity
 
 theorem refl_mem_uniformity {x : α} {s : SetRel α α} (h : s ∈ 𝓤 α) : (x, x) ∈ s :=
   refl_le_uniformity h rfl

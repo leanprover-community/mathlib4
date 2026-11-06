@@ -137,20 +137,21 @@ theorem einfsep_pair_le_right (hxy : x ≠ y) : ({x, y} : Set α).einfsep ≤ ed
 theorem einfsep_pair_eq_inf (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y ⊓ edist y x :=
   le_antisymm (le_inf (einfsep_pair_le_left hxy) (einfsep_pair_le_right hxy)) le_einfsep_pair
 
-theorem einfsep_eq_iInf : s.einfsep = ⨅ d : s.offDiag, (uncurry edist) (d : α × α) := by
+theorem einfsep_eq_iInf : s.einfsep = ⨅ d : s.offDiagonal, (uncurry edist) (d : α × α) := by
   refine eq_of_forall_le_iff fun _ => ?_
-  simp_rw [le_einfsep_iff, le_iInf_iff, imp_forall_iff, SetCoe.forall, mem_offDiag,
+  simp_rw [le_einfsep_iff, le_iInf_iff, imp_forall_iff, SetCoe.forall, mem_offDiagonal,
     Prod.forall, uncurry_apply_pair, and_imp]
 
-theorem einfsep_of_fintype [Fintype s] : s.einfsep = s.offDiag.toFinset.inf (uncurry edist) := by
+theorem einfsep_of_fintype [Fintype s] :
+    s.einfsep = s.offDiagonal.toFinset.inf (uncurry edist) := by
   refine eq_of_forall_le_iff fun _ => ?_
-  simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, mem_toFinset, mem_offDiag,
+  simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, mem_toFinset, mem_offDiagonal,
     Prod.forall, uncurry_apply_pair, and_imp]
 
 theorem Finite.einfsep (hs : s.Finite) : s.einfsep = hs.offDiag.toFinset.inf (uncurry edist) := by
   refine eq_of_forall_le_iff fun _ => ?_
-  simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, Finite.mem_toFinset, mem_offDiag,
-    Prod.forall, uncurry_apply_pair, and_imp]
+  simp_rw [le_einfsep_iff, imp_forall_iff, Finset.le_inf_iff, Finite.mem_toFinset,
+    mem_offDiagonal, Prod.forall, uncurry_apply_pair, and_imp]
 
 theorem Finset.coe_einfsep {s : Finset α} :
     (s : Set α).einfsep = s.offDiag.inf (uncurry edist) := by
@@ -160,7 +161,8 @@ theorem Nontrivial.einfsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.einfsep = edist x y := by
   cases nonempty_fintype s
   simp_rw [einfsep_of_fintype]
-  rcases Finset.exists_mem_eq_inf s.offDiag.toFinset (by simpa) (uncurry edist) with ⟨w, hxy, hed⟩
+  rcases Finset.exists_mem_eq_inf s.offDiagonal.toFinset (by simpa) (uncurry edist) with
+    ⟨w, hxy, hed⟩
   simp_rw [mem_toFinset] at hxy
   exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
 
@@ -369,33 +371,33 @@ theorem Nontrivial.infsep_anti (hs : s.Nontrivial) (hst : s ⊆ t) : t.infsep �
   ENNReal.toReal_mono hs.einfsep_ne_top (einfsep_anti hst)
 
 theorem infsep_eq_iInf [Decidable s.Nontrivial] :
-    s.infsep = if s.Nontrivial then ⨅ d : s.offDiag, (uncurry dist) (d : α × α) else 0 := by
+    s.infsep = if s.Nontrivial then ⨅ d : s.offDiagonal, (uncurry dist) (d : α × α) else 0 := by
   split_ifs with hs
-  · have hb : BddBelow (uncurry dist '' s.offDiag) := by
+  · have hb : BddBelow (uncurry dist '' s.offDiagonal) := by
       refine ⟨0, fun d h => ?_⟩
       simp_rw [mem_image, Prod.exists, uncurry_apply_pair] at h
       rcases h with ⟨_, _, _, rfl⟩
       exact dist_nonneg
     refine eq_of_forall_le_iff fun _ => ?_
-    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (offDiag_nonempty.mpr hs) hb, imp_forall_iff,
-      mem_offDiag, Prod.forall, uncurry_apply_pair, and_imp]
+    simp_rw [hs.le_infsep_iff, le_ciInf_set_iff (hs.offDiagonal_nonempty) hb, imp_forall_iff,
+      mem_offDiagonal, Prod.forall, uncurry_apply_pair, and_imp]
   · exact (not_nontrivial_iff.mp hs).infsep_zero
 
 theorem Nontrivial.infsep_eq_iInf (hs : s.Nontrivial) :
-    s.infsep = ⨅ d : s.offDiag, (uncurry dist) (d : α × α) := by
+    s.infsep = ⨅ d : s.offDiagonal, (uncurry dist) (d : α × α) := by
   classical rw [Set.infsep_eq_iInf, ite_eq_left hs]
 
 theorem infsep_of_fintype [Decidable s.Nontrivial] [Fintype s] : s.infsep =
-    if hs : s.Nontrivial then s.offDiag.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
+    if hs : s.Nontrivial then s.offDiagonal.toFinset.inf' (by simpa) (uncurry dist) else 0 := by
   split_ifs with hs
   · refine eq_of_forall_le_iff fun _ => ?_
-    simp_rw [hs.le_infsep_iff, imp_forall_iff, Finset.le_inf'_iff, mem_toFinset, mem_offDiag,
+    simp_rw [hs.le_infsep_iff, imp_forall_iff, Finset.le_inf'_iff, mem_toFinset, mem_offDiagonal,
       Prod.forall, uncurry_apply_pair, and_imp]
   · rw [not_nontrivial_iff] at hs
     exact hs.infsep_zero
 
 theorem Nontrivial.infsep_of_fintype [Fintype s] (hs : s.Nontrivial) :
-    s.infsep = s.offDiag.toFinset.inf' (by simpa) (uncurry dist) := by
+    s.infsep = s.offDiagonal.toFinset.inf' (by simpa) (uncurry dist) := by
   classical rw [Set.infsep_of_fintype, dite_eq_left hs]
 
 theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
@@ -404,7 +406,7 @@ theorem Finite.infsep [Decidable s.Nontrivial] (hsf : s.Finite) :
   split_ifs with hs
   · refine eq_of_forall_le_iff fun _ => ?_
     simp_rw [hs.le_infsep_iff, imp_forall_iff, Finset.le_inf'_iff, Finite.mem_toFinset,
-      mem_offDiag, Prod.forall, uncurry_apply_pair, and_imp]
+      mem_offDiagonal, Prod.forall, uncurry_apply_pair, and_imp]
   · rw [not_nontrivial_iff] at hs
     exact hs.infsep_zero
 
@@ -415,7 +417,7 @@ theorem Finite.infsep_of_nontrivial (hsf : s.Finite) (hs : s.Nontrivial) :
 theorem _root_.Finset.coe_infsep (s : Finset α) : (s : Set α).infsep =
     if hs : s.offDiag.Nonempty then s.offDiag.inf' hs (uncurry dist) else 0 := by
   have H : (s : Set α).Nontrivial ↔ s.offDiag.Nonempty := by
-    rw [← Set.offDiag_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
+    rw [← Set.offDiagonal_nonempty, ← Finset.coe_offDiag, Finset.coe_nonempty]
   split_ifs with hs
   · classical simp_rw [(H.mpr hs).infsep_of_fintype, ← Finset.coe_offDiag, Finset.toFinset_coe]
   · exact (not_nontrivial_iff.mp (H.mp.mt hs)).infsep_zero
@@ -433,7 +435,7 @@ theorem Nontrivial.infsep_exists_of_finite [Finite s] (hs : s.Nontrivial) :
     ∃ x ∈ s, ∃ y ∈ s, x ≠ y ∧ s.infsep = dist x y := by
   cases nonempty_fintype s
   simp_rw [hs.infsep_of_fintype]
-  rcases Finset.exists_mem_eq_inf' (s := s.offDiag.toFinset) (by simpa) (uncurry dist) with
+  rcases Finset.exists_mem_eq_inf' (s := s.offDiagonal.toFinset) (by simpa) (uncurry dist) with
     ⟨w, hxy, hed⟩
   simp_rw [mem_toFinset] at hxy
   exact ⟨w.fst, hxy.1, w.snd, hxy.2.1, hxy.2.2, hed⟩
