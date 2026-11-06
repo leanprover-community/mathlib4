@@ -822,16 +822,16 @@ theorem Multiset.aemeasurable_fun_prod (s : Multiset (α → M)) (hs : ∀ f ∈
   simpa only [← Pi.multiset_prod_apply] using s.aemeasurable_prod hs
 
 @[to_additive (attr := fun_prop)]
-theorem Finset.measurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
-    Measurable fun a ↦ ∏ i ∈ s, f i a := by
-  simp_rw [← Finset.prod_apply]
-  exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
+theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
+    Measurable (∏ i ∈ s, f i) :=
+  Multiset.measurable_prod _ fun _g hg =>
+    let ⟨_i, hi, hg⟩ := Multiset.mem_map.1 hg
+    hg ▸ hf _ hi
 
 @[to_additive (attr := fun_prop)]
-theorem Finset.measurable_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
+theorem Finset.measurable_fun_prod (s : Finset ι) (hf : ∀ i ∈ s, Measurable (f i)) :
     Measurable fun a ↦ ∏ i ∈ s, f i a := by
-  simp_rw [← Finset.prod_apply]
-  exact Finset.prod_induction _ _ (fun _ _ => Measurable.mul) (@measurable_one M _ _ _ _) hf
+  simpa only [← Finset.prod_apply] using s.measurable_prod hf
 
 /-- Compositional version of `Finset.measurable_prod` for use by `fun_prop`. -/
 @[to_additive (attr := fun_prop)
