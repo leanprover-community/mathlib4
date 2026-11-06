@@ -449,8 +449,12 @@ theorem iSup_inf_of_monotone {ι : Type*} [Preorder ι] [IsDirectedOrder ι] {f 
 
 @[to_dual]
 theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsCodirectedOrder ι] {f g : ι → α}
-    (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
-  @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
+    (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i := by
+  refine (le_iSup_inf_iSup f g).antisymm ?_
+  rw [iSup_inf_iSup]
+  refine iSup_mono' fun i => ?_
+  rcases directed_of (· ≥ ·) i.1 i.2 with ⟨j, h₁, h₂⟩
+  exact ⟨j, inf_le_inf (hf h₁) (hg h₂)⟩
 
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
   (isGreatest_himp a b).isLUB.sSup_eq.symm
@@ -578,7 +582,10 @@ instance OrderDual.instCompletelyDistribLattice [CompletelyDistribLattice α] :
     CompletelyDistribLattice αᵒᵈ where
   __ := instFrame
   __ := instCoframe
-  iInf_iSup_eq _ := iSup_iInf_eq (α := α)
+  iInf_iSup_eq f := by
+    rw [toDual_inj]
+    simp only [ofDual_iInf, ofDual_iSup]
+    exact iSup_iInf_eq
 
 instance Prod.instCompletelyDistribLattice [CompletelyDistribLattice α]
     [CompletelyDistribLattice β] : CompletelyDistribLattice (α × β) where

@@ -405,42 +405,42 @@ the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 
 @[simp]
-theorem inf_himp_bihimp : a ⇔ b ⇨ a ⊓ b = a ⊔ b :=
-  @sup_sdiff_symmDiff αᵒᵈ _ _ _
+theorem inf_himp_bihimp : a ⇔ b ⇨ a ⊓ b = a ⊔ b := by
+  rw [← toDual_inj]; exact sup_sdiff_symmDiff ..
 
-theorem codisjoint_bihimp_sup : Codisjoint (a ⇔ b) (a ⊔ b) :=
-  @disjoint_symmDiff_inf αᵒᵈ _ _ _
-
-@[simp]
-theorem himp_bihimp_left : a ⇨ a ⇔ b = a ⇨ b :=
-  @symmDiff_sdiff_left αᵒᵈ _ _ _
+theorem codisjoint_bihimp_sup : Codisjoint (a ⇔ b) (a ⊔ b) := by
+  rw [codisjoint_ofDual_iff]; exact disjoint_symmDiff_inf ..
 
 @[simp]
-theorem himp_bihimp_right : b ⇨ a ⇔ b = b ⇨ a :=
-  @symmDiff_sdiff_right αᵒᵈ _ _ _
+theorem himp_bihimp_left : a ⇨ a ⇔ b = a ⇨ b := by
+  rw [← toDual_inj]; exact symmDiff_sdiff_left ..
 
 @[simp]
-theorem bihimp_himp_left : a ⇔ b ⇨ a = a ⊔ b :=
-  @sdiff_symmDiff_left αᵒᵈ _ _ _
+theorem himp_bihimp_right : b ⇨ a ⇔ b = b ⇨ a := by
+  rw [← toDual_inj]; exact symmDiff_sdiff_right ..
 
 @[simp]
-theorem bihimp_himp_right : a ⇔ b ⇨ b = a ⊔ b :=
-  @sdiff_symmDiff_right αᵒᵈ _ _ _
+theorem bihimp_himp_left : a ⇔ b ⇨ a = a ⊔ b := by
+  rw [← toDual_inj]; exact sdiff_symmDiff_left ..
 
 @[simp]
-theorem bihimp_eq_inf : a ⇔ b = a ⊓ b ↔ Codisjoint a b :=
-  @symmDiff_eq_sup αᵒᵈ _ _ _
+theorem bihimp_himp_right : a ⇔ b ⇨ b = a ⊔ b := by
+  rw [← toDual_inj]; exact sdiff_symmDiff_right ..
 
 @[simp]
-theorem bihimp_le_iff_left : a ⇔ b ≤ a ↔ Codisjoint a b :=
-  @le_symmDiff_iff_left αᵒᵈ _ _ _
+theorem bihimp_eq_inf : a ⇔ b = a ⊓ b ↔ Codisjoint a b := by
+  rw [← toDual_inj, codisjoint_ofDual_iff]; exact symmDiff_eq_sup ..
 
 @[simp]
-theorem bihimp_le_iff_right : a ⇔ b ≤ b ↔ Codisjoint a b :=
-  @le_symmDiff_iff_right αᵒᵈ _ _ _
+theorem bihimp_le_iff_left : a ⇔ b ≤ a ↔ Codisjoint a b := by
+  rw [ofDual_le_ofDual, codisjoint_ofDual_iff]; exact le_symmDiff_iff_left ..
 
-theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) :=
-  @symmDiff_assoc αᵒᵈ _ _ _ _
+@[simp]
+theorem bihimp_le_iff_right : a ⇔ b ≤ b ↔ Codisjoint a b := by
+  rw [ofDual_le_ofDual, codisjoint_ofDual_iff]; exact le_symmDiff_iff_right ..
+
+theorem bihimp_assoc : a ⇔ b ⇔ c = a ⇔ (b ⇔ c) := by
+  rw [← toDual_inj]; exact symmDiff_assoc ..
 
 instance bihimp_isAssociative : Std.Associative (α := α) (· ⇔ ·) :=
   ⟨bihimp_assoc⟩
@@ -468,16 +468,16 @@ theorem bihimp_right_involutive (a : α) : Involutive (a ⇔ ·) :=
   bihimp_bihimp_cancel_left _
 
 theorem bihimp_left_injective (a : α) : Injective (· ⇔ a) :=
-  @symmDiff_left_injective αᵒᵈ _ _
+  (bihimp_left_involutive a).injective
 
 theorem bihimp_right_injective (a : α) : Injective (a ⇔ ·) :=
-  @symmDiff_right_injective αᵒᵈ _ _
+  (bihimp_right_involutive a).injective
 
 theorem bihimp_left_surjective (a : α) : Surjective (· ⇔ a) :=
-  @symmDiff_left_surjective αᵒᵈ _ _
+  (bihimp_left_involutive a).surjective
 
 theorem bihimp_right_surjective (a : α) : Surjective (a ⇔ ·) :=
-  @symmDiff_right_surjective αᵒᵈ _ _
+  (bihimp_right_involutive a).surjective
 
 variable {a b c}
 
@@ -490,12 +490,12 @@ theorem bihimp_right_inj : a ⇔ b = a ⇔ c ↔ b = c :=
   (bihimp_right_injective _).eq_iff
 
 @[simp]
-theorem bihimp_eq_left : a ⇔ b = a ↔ b = ⊤ :=
-  @symmDiff_eq_left αᵒᵈ _ _ _
+theorem bihimp_eq_left : a ⇔ b = a ↔ b = ⊤ := by
+  rw [← toDual_inj, ← toDual_inj (a := b)]; exact symmDiff_eq_left
 
 @[simp]
-theorem bihimp_eq_right : a ⇔ b = b ↔ a = ⊤ :=
-  @symmDiff_eq_right αᵒᵈ _ _ _
+theorem bihimp_eq_right : a ⇔ b = b ↔ a = ⊤ := by
+  rw [← toDual_inj, ← toDual_inj (a := a)]; exact symmDiff_eq_right
 
 protected theorem Codisjoint.bihimp_left (ha : Codisjoint a c) (hb : Codisjoint b c) :
     Codisjoint (a ⇔ b) c :=
@@ -514,24 +514,24 @@ theorem bihimp_eq : a ⇔ b = (a ⊔ bᶜ) ⊓ (b ⊔ aᶜ) := by simp only [(·
 theorem symmDiff_eq' : a ∆ b = (a ⊔ b) ⊓ (aᶜ ⊔ bᶜ) := by
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq, compl_inf]
 
-theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ :=
-  @symmDiff_eq' αᵒᵈ _ _ _
+theorem bihimp_eq' : a ⇔ b = a ⊓ b ⊔ aᶜ ⊓ bᶜ := by
+  rw [bihimp_eq_sup_himp_inf, himp_eq, compl_sup]
 
 @[simp]
 theorem compl_symmDiff : (a ∆ b)ᶜ = a ⇔ b := by
   simp_rw [symmDiff, compl_sup_distrib, compl_sdiff, bihimp, inf_comm]
 
 @[simp]
-theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b :=
-  @compl_symmDiff αᵒᵈ _ _ _
+theorem compl_bihimp : (a ⇔ b)ᶜ = a ∆ b := by
+  simp [← compl_inj_iff]
 
 @[simp]
 theorem compl_symmDiff_compl : aᶜ ∆ bᶜ = a ∆ b :=
   (sup_comm _ _).trans <| by simp_rw [compl_sdiff_compl, sdiff_eq, symmDiff_eq]
 
 @[simp]
-theorem compl_bihimp_compl : aᶜ ⇔ bᶜ = a ⇔ b :=
-  @compl_symmDiff_compl αᵒᵈ _ _ _
+theorem compl_bihimp_compl : aᶜ ⇔ bᶜ = a ⇔ b := by
+  simp [← compl_inj_iff]
 
 @[simp]
 theorem symmDiff_eq_top : a ∆ b = ⊤ ↔ IsCompl a b := by

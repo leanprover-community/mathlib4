@@ -113,12 +113,12 @@ lemma le_llp_rlp : T ≤ T.rlp.llp := by
   rw [le_llp_iff_le_rlp]
 
 @[simp]
-lemma rlp_llp_rlp : T.rlp.llp.rlp = T.rlp :=
-  gc_llp_rlp.u_l_u_eq_u T
+lemma rlp_llp_rlp : T.rlp.llp.rlp = T.rlp := by
+  simpa using gc_llp_rlp.u_l_u_eq_u ⟨T⟩
 
 @[simp]
-lemma llp_rlp_llp : T.llp.rlp.llp = T.llp :=
-  gc_llp_rlp.l_u_l_eq_l T
+lemma llp_rlp_llp : T.llp.rlp.llp = T.llp := by
+  simpa using gc_llp_rlp.l_u_l_eq_l T
 
 lemma antitone_rlp : Antitone (rlp : MorphismProperty C → _) :=
   fun _ _ h ↦ gc_llp_rlp.monotone_u h

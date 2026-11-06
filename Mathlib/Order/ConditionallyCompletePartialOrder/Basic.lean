@@ -29,16 +29,39 @@ variable {α : Type*}
 
 namespace OrderDual
 
-instance [ConditionallyCompletePartialOrderSup α] :
-    ConditionallyCompletePartialOrderInf αᵒᵈ where
-  isGLB_csInf_of_directed _ h_dir h_non h_bdd := h_dir.isLUB_csSup (α := α) h_non h_bdd
+instance [ConditionallyCompletePartialOrderSup α] : ConditionallyCompletePartialOrderInf αᵒᵈ where
+  isGLB_csInf_of_directed s h_dir h_non h_bdd := by
+    have hd : DirectedOn (· ≤ ·) (ofDual '' s) := by
+      rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+      obtain ⟨c, hc, hac, hbc⟩ := h_dir a ha b hb
+      exact ⟨ofDual c, ⟨c, hc, rfl⟩, hac, hbc⟩
+    have hb : BddAbove (ofDual '' s) := by
+      obtain ⟨b, hb⟩ := h_bdd
+      refine ⟨ofDual b, ?_⟩
+      rintro _ ⟨a, ha, rfl⟩
+      exact hb ha
+    have h := hd.isLUB_csSup (h_non.image ofDual) hb
+    refine ⟨fun a ha ↦ h.1 ⟨a, ha, rfl⟩, fun b hb ↦ h.2 ?_⟩
+    rintro _ ⟨a, ha, rfl⟩
+    exact hb ha
 
-instance [ConditionallyCompletePartialOrderInf α] :
-    ConditionallyCompletePartialOrderSup αᵒᵈ where
-  isLUB_csSup_of_directed _ h_dir h_non h_bdd := h_dir.isGLB_csInf (α := α) h_non h_bdd
+instance [ConditionallyCompletePartialOrderInf α] : ConditionallyCompletePartialOrderSup αᵒᵈ where
+  isLUB_csSup_of_directed s h_dir h_non h_bdd := by
+    have hd : DirectedOn (· ≥ ·) (ofDual '' s) := by
+      rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩
+      obtain ⟨c, hc, hac, hbc⟩ := h_dir a ha b hb
+      exact ⟨ofDual c, ⟨c, hc, rfl⟩, hac, hbc⟩
+    have hb : BddBelow (ofDual '' s) := by
+      obtain ⟨b, hb⟩ := h_bdd
+      refine ⟨ofDual b, ?_⟩
+      rintro _ ⟨a, ha, rfl⟩
+      exact hb ha
+    have h := hd.isGLB_csInf (h_non.image ofDual) hb
+    refine ⟨fun a ha ↦ h.1 ⟨a, ha, rfl⟩, fun b hb ↦ h.2 ?_⟩
+    rintro _ ⟨a, ha, rfl⟩
+    exact hb ha
 
-instance [ConditionallyCompletePartialOrder α] :
-    ConditionallyCompletePartialOrder αᵒᵈ where
+instance [ConditionallyCompletePartialOrder α] : ConditionallyCompletePartialOrder αᵒᵈ where
 
 end OrderDual
 

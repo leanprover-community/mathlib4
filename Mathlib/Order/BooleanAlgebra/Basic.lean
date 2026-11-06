@@ -544,8 +544,8 @@ theorem sdiff_compl : x \ yᶜ = x ⊓ y := by rw [sdiff_eq, compl_compl]
 instance OrderDual.instBooleanAlgebra : BooleanAlgebra αᵒᵈ where
   __ := instDistribLattice α
   __ := instHeytingAlgebra
-  sdiff_eq _ _ := @himp_eq α _ _ _
-  himp_eq _ _ := @sdiff_eq α _ _ _
+  sdiff_eq _ _ := by rw [toDual_inj]; exact @himp_eq α _ _ _
+  himp_eq _ _ := by rw [toDual_inj]; exact @sdiff_eq α _ _ _
   inf_compl_le_bot a := (@codisjoint_hnot_right _ _ (ofDual a)).top_le
   top_le_sup_compl a := (@disjoint_compl_right _ _ (ofDual a)).le_bot
 
@@ -556,14 +556,14 @@ theorem compl_sdiff : (x \ y)ᶜ = x ⇨ y := by
   rw [sdiff_eq, himp_eq, compl_inf, compl_compl, sup_comm]
 
 @[simp]
-theorem compl_himp : (x ⇨ y)ᶜ = x \ y :=
-  @compl_sdiff αᵒᵈ _ _ _
+theorem compl_himp : (x ⇨ y)ᶜ = x \ y := by
+  rw [← OrderDual.toDual_inj]; exact compl_sdiff
 
 theorem compl_sdiff_compl : xᶜ \ yᶜ = y \ x := by rw [sdiff_compl, sdiff_eq, inf_comm]
 
 @[simp]
-theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x :=
-  @compl_sdiff_compl αᵒᵈ _ _ _
+theorem compl_himp_compl : xᶜ ⇨ yᶜ = y ⇨ x := by
+  rw [← OrderDual.toDual_inj]; exact compl_sdiff_compl
 
 theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
   rw [← le_compl_iff_disjoint_left, compl_compl]
@@ -571,11 +571,11 @@ theorem disjoint_compl_left_iff : Disjoint xᶜ y ↔ y ≤ x := by
 theorem disjoint_compl_right_iff : Disjoint x yᶜ ↔ x ≤ y := by
   rw [← le_compl_iff_disjoint_right, compl_compl]
 
-theorem codisjoint_himp_self_left : Codisjoint (x ⇨ y) x :=
-  @disjoint_sdiff_self_left αᵒᵈ _ _ _
+theorem codisjoint_himp_self_left : Codisjoint (x ⇨ y) x := by
+  rw [codisjoint_ofDual_iff]; exact disjoint_sdiff_self_left ..
 
-theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
-  @disjoint_sdiff_self_right αᵒᵈ _ _ _
+theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) := by
+  rw [codisjoint_ofDual_iff]; exact disjoint_sdiff_self_right ..
 
 theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z := by
   rw [himp_eq, sup_le_iff, and_congr_right_iff]

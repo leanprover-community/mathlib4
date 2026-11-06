@@ -367,15 +367,24 @@ variable (α)
 noncomputable def OrderEmbedding.ofAntisymmetrization : Antisymmetrization α (· ≤ ·) ↪o α :=
   { Quotient.outRelEmbedding _ with toFun := _root_.ofAntisymmetrization _ }
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `Antisymmetrization` and `orderDual` commute. -/
 def OrderIso.dualAntisymmetrization :
     (Antisymmetrization α (· ≤ ·))ᵒᵈ ≃o Antisymmetrization αᵒᵈ (· ≤ ·) where
-  toFun := (Quotient.map' id) fun _ _ => And.symm
-  invFun := (Quotient.map' id) fun _ _ => And.symm
-  left_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  right_inv a := Quotient.inductionOn' a fun a => by simp_rw [Quotient.map'_mk'', id]
-  map_rel_iff' := @fun a b => Quotient.inductionOn₂' a b fun _ _ => Iff.rfl
+  toFun a := (ofDual a).map' (s₁ := AntisymmRel.setoid ..) toDual fun _ _ h ↦ h.symm
+  invFun a := toDual (a.map' (s₁ := AntisymmRel.setoid ..) ofDual fun _ _ h ↦ h.symm)
+  left_inv a := by
+    obtain ⟨a⟩ := a
+    induction a using Antisymmetrization.ind
+    rfl
+  right_inv a := by
+    induction a using Antisymmetrization.ind
+    rfl
+  map_rel_iff' {a b} := by
+    obtain ⟨a⟩ := a
+    obtain ⟨b⟩ := b
+    induction a using Antisymmetrization.ind
+    induction b using Antisymmetrization.ind
+    rfl
 
 @[simp]
 theorem OrderIso.dualAntisymmetrization_apply (a : α) :

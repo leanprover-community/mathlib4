@@ -294,12 +294,31 @@ end Function.Injective
 
 namespace OrderDual
 
-instance [RatCast K] : RatCast Kᵒᵈ := inferInstanceAs <| RatCast K
-instance [NNRatCast K] : NNRatCast Kᵒᵈ := inferInstanceAs <| NNRatCast K
-instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ := inferInstanceAs <| DivisionSemiring K
-instance [DivisionRing K] : DivisionRing Kᵒᵈ := inferInstanceAs <| DivisionRing K
-instance [Semifield K] : Semifield Kᵒᵈ := inferInstanceAs <| Semifield K
-instance [Field K] : Field Kᵒᵈ := inferInstanceAs <| Field K
+instance [RatCast K] : RatCast Kᵒᵈ where ratCast q := ⟨q⟩
+instance [NNRatCast K] : NNRatCast Kᵒᵈ where nnratCast q := ⟨q⟩
+
+instance [DivisionSemiring K] : DivisionSemiring Kᵒᵈ where
+  inv_zero := by rw [toDual_inj]; simp
+  mul_inv_cancel a ha := by
+    replace ha : ofDual a ≠ 0 := fun hc ↦ ha (ofDual_inj.mp hc)
+    rw [toDual_inj]
+    exact mul_inv_cancel₀ ha
+  nnqsmul q k := ⟨q * ofDual k⟩
+  nnratCast_def _ := by rw [← ofDual_inj]; exact DivisionSemiring.nnratCast_def _
+
+instance [DivisionRing K] : DivisionRing Kᵒᵈ where
+  inv_zero := by rw [toDual_inj]; simp
+  mul_inv_cancel a ha := by
+    replace ha : ofDual a ≠ 0 := fun hc ↦ ha (ofDual_inj.mp hc)
+    rw [toDual_inj]
+    exact mul_inv_cancel₀ ha
+  nnqsmul q k := ⟨q * ofDual k⟩
+  qsmul q k := ⟨q * ofDual k⟩
+  nnratCast_def _ := by rw [← ofDual_inj]; exact DivisionRing.nnratCast_def _
+  ratCast_def _ := by rw [← ofDual_inj]; exact DivisionRing.ratCast_def _
+
+instance [Semifield K] : Semifield Kᵒᵈ where
+instance [Field K] : Field Kᵒᵈ where
 
 end OrderDual
 
