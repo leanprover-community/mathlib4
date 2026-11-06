@@ -87,12 +87,10 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
     (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
   simp_rw [coeff_list_sum, List.map_map, Function.comp_def, lcoeff_apply]
 
-@[simp]
-theorem coeff_finsuppSum {ι : Type*} [Semiring S] {c : ι →₀ R} (n : ℕ) (f : ι → R → S[X]) :
+@[deprecated AddMonoidAlgebra.coeff_finsuppSum +typeChanged (since := "2026-11-06")]
+theorem coeff_sum {ι : Type*} [Semiring S] {c : ι →₀ R} (n : ℕ) (f : ι → R → S[X]) :
     coeff (c.sum f) n = c.sum fun a b => coeff (f a b) n := by
   simp [Finsupp.sum]
-
-@[deprecated (since := "2026-11-02")] alias coeff_sum := coeff_finsuppSum
 
 /-- Decomposes the coefficient of the product `p * q` as a sum
 over `antidiagonal`. A version which sums over `range (n + 1)` can be obtained
@@ -167,7 +165,7 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_intCast_mul [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
     coeff ((a : S[X]) * p) k = a * coeff p k := coeff_C_mul _
 
-@[simp, grind =]
+@[simp↓, grind =]
 theorem coeff_X_pow_apply (k n : ℕ) : coeff (X ^ k : R[X]) n = if n = k then 1 else 0 := by
   simp only [one_mul, map_one, ← coeff_C_mul_X_pow]
 
