@@ -159,13 +159,16 @@ example : k + 1 ≤ k + 2 := by
   gcongr
   simp
 
+set_option warn.sorry false in
 example (hk : k ≠ ⊤) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
+  -- TODO: basify should reduce the goal to ℕ∞ (at least)
   sorry -- TODO: basify makes no progress; would want it to reduce to ℕ∞ (at least)
 
-
+set_option warn.sorry false in
 example : k + 1 + 1 ≤ k + 2 := by
   sorry -- TODO: neither basify nor norm_cast helps!
 
+set_option warn.sorry false in
 example : 2 ≤ k + 3 := by
   sorry -- TODO: basify does nothing yet
 
@@ -204,10 +207,9 @@ example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
   basify; · simp -- TODO: make basify solve the first side goal also
   norm_cast; norm_cast; lia
 
--- TODO: why does simp not solve this?
 example (k : ℕ∞) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
   basify
-  · sorry -- TODO: why does simp not work?
+  · simp [← WithTop.coe_add ⊤ ⊤] -- TODO: make `simp` (or even `basify_simps`) solve this directly
   norm_cast
 
 end
