@@ -46,15 +46,17 @@ We use `sInf` to ensure that the definition works if `α` has no elements. -/
 theorem norm_eq (f : α →ᵇ β) : ‖f‖ = sInf { C : ℝ | 0 ≤ C ∧ ∀ x : α, ‖f x‖ ≤ C } := by
   simp [norm_def, BoundedContinuousFunction.dist_eq]
 
-/-- When the domain is non-empty, we do not need the `0 ≤ C` condition in the formula for `‖f‖` as a
-`sInf`. -/
-theorem norm_eq_of_nonempty [h : Nonempty α] : ‖f‖ = sInf { C : ℝ | ∀ x : α, ‖f x‖ ≤ C } := by
-  obtain ⟨a⟩ := h
+/-- We do not need the `0 ≤ C` condition in the formula for `‖f‖` as a `sInf`. -/
+theorem norm_eq_sInf_norm_le : ‖f‖ = sInf { C : ℝ | ∀ x : α, ‖f x‖ ≤ C } := by
+  rcases isEmpty_or_nonempty α with h | ⟨⟨a⟩⟩
+  · simp [norm_def, dist_zero_of_empty]
   rw [norm_eq]
   congr
   ext
   simp only [and_iff_right_iff_imp]
   exact fun h' => le_trans (norm_nonneg (f a)) (h' a)
+
+@[deprecated (since := "2026-11-04")] alias norm_eq_of_nonempty := norm_eq_sInf_norm_le
 
 @[simp]
 theorem norm_eq_zero_of_empty [IsEmpty α] : ‖f‖ = 0 :=
