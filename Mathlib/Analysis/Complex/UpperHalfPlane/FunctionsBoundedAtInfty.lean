@@ -80,6 +80,12 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
 
 alias ⟨_, IsBoundedAtImInfty.neg⟩ := isBoundedAtImInfty_neg_iff
 
+@[simp] theorem isZeroAtImInfty_neg_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+    IsZeroAtImInfty (-f) ↔ IsZeroAtImInfty f := by
+  simp [isZeroAtImInfty_iff]
+
+alias ⟨_, IsZeroAtImInfty.neg⟩ := isZeroAtImInfty_neg_iff
+
 set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
