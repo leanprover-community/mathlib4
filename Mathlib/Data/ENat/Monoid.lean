@@ -59,6 +59,13 @@ lemma withTop_some_top_add_eq (a : ℕ) : WithTop.some (⊤ : ℕ∞) + (ofNat(a
 lemma ofNat_add_withTopSome_top (a : ℕ) : (ofNat(a) : WithTop ℕ∞) + WithTop.some (⊤ : ℕ∞) = ∞ := by
   rw [add_comm]; simp
 
+-- NB: the LHS is not in simp normal form, but still in `basify_simp` normal form.
+@[basify_simp]
+lemma ofNat_withTop_le_some_top (a : ℕ) : ofNat(a) ≤ (∞ : WithTop ℕ∞) := by
+  fail_if_success simp only [basify_simp]
+  rw [ENat.ofNat_withTop_eq_natCast_ofNat]
+  norm_cast; simp
+
 end
 
 @[simp, basify_op ←] lemma natCast_mul (m n : ℕ) : ↑(m * n) = (m * n : ℕ∞) := rfl

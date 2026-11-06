@@ -204,7 +204,7 @@ example (k : ℕ∞) : (k : ℕ∞ω) + 1 + 1 ≤ k + 3 := by
   norm_cast; norm_cast; lia -- TODO: why is norm_cast not idempotent?
 
 example (k : ℕ∞) : 2 ≤ (k : ℕ∞ω) + 3 := by
-  basify; · simp -- TODO: make basify solve the first side goal also
+  basify
   norm_cast; norm_cast; lia
 
 example (k : ℕ∞) : k + (∞ : ℕ∞ω) = (∞ : ℕ∞ω) := by
