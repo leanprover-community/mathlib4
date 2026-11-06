@@ -1,0 +1,31 @@
+name: Validate awaiting-zulip
+description: Require a linked Zulip topic that references this PR before hiding it from review.
+inputs:
+  github-token:
+    description: GitHub token with permission to read PRs and update labels and comments.
+    required: true
+  zulip-api-key:
+    description: API key for the existing mathlib Zulip bot.
+    required: true
+  mode:
+    description: 'directive: handle a comment command; enforce: validate existing labels.'
+    default: enforce
+  pr:
+    description: PR number for a manual run; empty means all open labelled PRs.
+    default: ''
+  dry-run:
+    description: Report decisions without changing labels or comments.
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Validate linked Zulip discussion
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+        ZULIP_API_KEY: ${{ inputs.zulip-api-key }}
+        GUARD_MODE: ${{ inputs.mode }}
+        GUARD_PR: ${{ inputs.pr }}
+        GUARD_DRY_RUN: ${{ inputs.dry-run }}
+        GUARD_ACTION_PATH: ${{ github.action_path }}
+      run: python3 "$GUARD_ACTION_PATH/guard.py"

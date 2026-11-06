@@ -1,0 +1,75 @@
+name: Check awaiting-zulip discussions
+
+on:
+  pull_request:
+    paths:
+      - '.github/actions/awaiting-zulip/**'
+      - '.github/workflows/awaiting_zulip.yml'
+      - '.github/workflows/labels_from_comment.yml'
+  pull_request_target:
+    types: [labeled, edited, reopened]
+  issue_comment:
+    types: [created, edited, deleted]
+  pull_request_review:
+    types: [submitted, edited, dismissed]
+  pull_request_review_comment:
+    types: [created, edited, deleted]
+  # Retry missed events/outages and notice references removed on Zulip itself.
+  schedule:
+    - cron: '23 6 * * *'
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number; leave empty to check all open awaiting-zulip PRs
+        required: false
+        default: ''
+      dry-run:
+        description: Report decisions without changing labels or comments
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Test discussion validation
+        run: python3 -m unittest discover -s .github/actions/awaiting-zulip -v
+
+  enforce:
+    if: >-
+      github.repository == 'leanprover-community/mathlib4' &&
+      github.event_name != 'pull_request' &&
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' ||
+       (contains(github.event.pull_request.labels.*.name, 'awaiting-zulip') &&
+        (github.event.action != 'labeled' || github.event.label.name == 'awaiting-zulip')) ||
+       (github.event.issue.pull_request && contains(github.event.issue.labels.*.name, 'awaiting-zulip')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+    concurrency:
+      # Share this group with the comment-labeling workflow for the same PR.
+      group: awaiting-zulip-${{ github.event.issue.number || github.event.pull_request.number || inputs.pr || 'sweep' }}
+      cancel-in-progress: false
+    steps:
+      - name: Check out trusted action
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Never execute the PR's code with these credentials.
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: .github/actions/awaiting-zulip
+      - uses: ./.github/actions/awaiting-zulip
+        with:
+          github-token: ${{ github.token }}
+          zulip-api-key: ${{ secrets.ZULIP_API_KEY }}
+          pr: ${{ inputs.pr }}
+          dry-run: ${{ inputs.dry-run == true }}
