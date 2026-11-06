@@ -130,7 +130,7 @@ theorem abs_self_comp_adjoint (T : E →L[ℂ] F) : |T ∘L T†| = T ∘L T† 
 protected theorem abs_eq_self {S : E →L[ℂ] E} : |S| = S ↔ S.IsPositive :=
   ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive h⟩
 
-protected theorem abs_eq_self_neg {S : E →L[ℂ] E} : |S| = -S ↔ (-S).IsPositive :=
+protected theorem abs_eq_neg_self {S : E →L[ℂ] E} : |S| = -S ↔ (-S).IsPositive :=
   ⟨fun h ↦ h ▸ S.isPositive_abs, fun h ↦ abs_of_isPositive_neg h⟩
 
 @[simp]
