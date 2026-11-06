@@ -143,7 +143,6 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp
     {φ : M' → N} (hφ : ContMDiff I J n (φ ∘ f)) :
     let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
     ContMDiff I J n φ := by
-  --let : ChartedSpace H M' := hf.chartedSpaceOfRightInverse hg
   intro _ x'
   have : φ =ᶠ[𝓝 x'] ((φ ∘ f) ∘ (hf.localInverseAt (g x'))) := by
     have hT : (hf.localInverseAt (g x')).source ∈ 𝓝 x' := by
