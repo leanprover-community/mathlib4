@@ -43,7 +43,6 @@ In this file we define class `ContinuousConstSMul`. We say `ContinuousConstSMul 
 ## Tags
 
 Hausdorff, discrete group, properly discontinuous, quotient space
-
 -/
 
 @[expose] public section

@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Basic
 /-!
 
 # Basis of a polynomial ring
-
 -/
 
 @[expose] public noncomputable section

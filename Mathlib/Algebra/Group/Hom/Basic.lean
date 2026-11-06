@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 # Additional lemmas about monoid and group homomorphisms
-
 -/
 
 @[expose] public section

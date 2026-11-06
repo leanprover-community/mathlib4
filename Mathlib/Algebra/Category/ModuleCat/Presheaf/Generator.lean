@@ -40,7 +40,6 @@ This is used in the definition
 `PresheafOfModules.isColimitFreeYonedaCoproductsCokernelCofork`
 in order to obtain that any presheaf of modules is a cokernel
 of a morphism between coproducts of objects in `freeYoneda R`.
-
 -/
 
 @[expose] public section

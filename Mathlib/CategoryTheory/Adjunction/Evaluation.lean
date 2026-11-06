@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Products
 # Adjunctions involving evaluation
 
 We show that evaluation of functors has adjoints, given the existence of (co)products.
-
 -/
 
 @[expose] public section

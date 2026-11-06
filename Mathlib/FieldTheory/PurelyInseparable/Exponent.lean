@@ -35,7 +35,6 @@ it gives cleaner API. To use the results in a context with `[ExpChar K p]`, cons
 ## Tags
 
 purely inseparable
-
 -/
 
 @[expose] public section

@@ -188,7 +188,6 @@ A bisimulation relation `R` for values `x y : Cofix F α`:
 * holds for `x y`: `R x y`
 * for any values `x y` that satisfy `R`, their root has the same shape
   and their children can be paired in such a way that they satisfy `R`.
-
 -/
 
 

@@ -37,7 +37,6 @@ and `X tᵢ` and `X tᵢ₊₁ - X tᵢ` are independent (see `IndepFun.hasGauss
 ## Tags
 
 independent increments, Gaussian process
-
 -/
 
 open MeasureTheory Finset

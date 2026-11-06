@@ -16,7 +16,6 @@ import Mathlib.Algebra.CharP.Algebra
 This file contains some convenient instances for determining the characteristic of
 intermediate fields. Some char zero instances are not provided, since they are already
 covered by `SubsemiringClass.instCharZero`.
-
 -/
 
 public section

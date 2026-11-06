@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 /-!
 
 # GCD domains are integrally closed
-
 -/
 
 public section

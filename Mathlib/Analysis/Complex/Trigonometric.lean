@@ -12,7 +12,6 @@ public import Mathlib.Analysis.Complex.Exponential
 
 This file contains the definitions of the sine, cosine, tangent,
 hyperbolic sine, hyperbolic cosine, and hyperbolic tangent functions.
-
 -/
 
 @[expose] public section

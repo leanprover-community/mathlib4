@@ -35,7 +35,6 @@ Of course, although we can inductively generate solutions (cf `mkSol`), the
 interesting part would be to determine closed-forms for the solutions.
 This is currently *not implemented*, as we are waiting for definition and
 properties of eigenvalues and eigenvectors.
-
 -/
 
 @[expose] public section

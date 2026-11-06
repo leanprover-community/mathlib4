@@ -74,7 +74,6 @@ variable {L : Type u} [CommRing L] [IsDomain L]
 /-
 
 ## The mod n theory
-
 -/
 
 variable (n : ℕ) [NeZero n]
@@ -255,7 +254,6 @@ lemma IsPrimitiveRoot.autToPow_eq_modularCyclotomicCharacter (n : ℕ) [NeZero n
 /-
 
 ## The p-adic theory
-
 -/
 
 open modularCyclotomicCharacter in

@@ -37,7 +37,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 ## References
 - https://ncatlab.org/nlab/show/adhesive+category
 - [Stephen Lack and Paweł Sobociński, Adhesive Categories][adhesive2004]
-
 -/
 
 @[expose] public section

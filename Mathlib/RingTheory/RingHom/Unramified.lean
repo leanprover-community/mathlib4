@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Unramified.Locus
 /-!
 
 # The meta properties of unramified ring homomorphisms.
-
 -/
 
 @[expose] public section

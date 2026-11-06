@@ -18,7 +18,6 @@ import Mathlib.RingTheory.Polynomial.Ideal
 
 See `LocalSubring.isMax_iff`.
 Note that the order on local subrings is not merely inclusion but domination.
-
 -/
 
 @[expose] public section

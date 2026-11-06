@@ -18,7 +18,6 @@ over `𝕜`, this file builds a continuous bilinear map from any bilinear functi
 Working with topological vector spaces instead of normed spaces is important for applications in the
 differential geometry part of Mathlib where we don’t want to fix a norm on tangent spaces for
 instance.
-
 -/
 
 @[expose] public section

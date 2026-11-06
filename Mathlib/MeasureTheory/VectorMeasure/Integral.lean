@@ -59,7 +59,6 @@ is not integrable in this sense: Let `μ` be the `L∞(ℕ)`-valued measure on `
 `{n} ↦ (0,0,..., 1/(n+1),0,0,...)` and `B` be the trivial coupling (the scalar multiplication by
 `ℝ`). The total variation is `∑ n, 1/(n+1) = ∞`, but the sum of `(0,...,0,1/n,0,...)` in `L∞(ℕ)` is
 unconditionally convergent.
-
 -/
 
 public section

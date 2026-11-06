@@ -30,7 +30,6 @@ are also differentiable almost everywhere.
 * `LipschitzOnWith.ae_differentiableWithinAt` is the same result for Lipschitz functions.
 
 We also give several variations around these results.
-
 -/
 
 public section

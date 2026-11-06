@@ -67,7 +67,6 @@ theorem prod_apply {ι : Type*} (s : Finset ι) (f : ι → F) (x : α) :
 
 end FunLike
 ```
-
 -/
 
 

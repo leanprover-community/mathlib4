@@ -43,7 +43,6 @@ boundaries.
 
 * [Robin Hartshorne, *Algebraic Geometry*][Har77]
 
-
 -/
 
 

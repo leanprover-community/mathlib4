@@ -23,7 +23,6 @@ In general, kernel pairs in any category are internal equivalence relations.
 ## References
 
 * <https://ncatlab.org/nlab/show/congruence>
-
 -/
 
 @[expose] public section

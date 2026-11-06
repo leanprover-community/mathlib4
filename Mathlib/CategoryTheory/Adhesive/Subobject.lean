@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Subobject.Basic
 
 ## Main Results
 - Subobjects in adhesive categories have binary coproducts
-
 -/
 
 @[expose] public section

@@ -234,5 +234,4 @@ in Lean 4 core.
   the converted expression (and dropping the generated proof).
   This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push`. (Mathlib)
 
-
 -/

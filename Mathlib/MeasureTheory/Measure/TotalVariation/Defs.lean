@@ -34,7 +34,6 @@ so that it takes values in `[0, 1]`.
 
 * `tvDist_self`, `tvDist_eq_zero_iff`, `tvDist_comm`, `tvDist_triangle`: the total variation
   distance between finite measures is a distance.
-
 -/
 
 @[expose] public section

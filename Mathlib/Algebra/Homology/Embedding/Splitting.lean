@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.Embedding.Extend
 
 /-!
 # Extension of degreewise splittings
-
 -/
 
 @[expose] public section

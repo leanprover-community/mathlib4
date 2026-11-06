@@ -40,7 +40,6 @@ most references rely on `Semiring (MinTropical R)` for building up the whole the
 
 * https://arxiv.org/pdf/math/0408099.pdf
 * https://www.mathenjeans.fr/sites/default/files/sujets/tropical_geometry_-_casagrande.pdf
-
 -/
 
 @[expose] public section

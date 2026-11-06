@@ -25,7 +25,6 @@ the uniqueness of the line through two distinct points.
 
 ## Tags
 Projective space, collinearity, projective geometry
-
 -/
 
 @[expose] public section

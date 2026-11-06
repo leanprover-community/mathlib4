@@ -22,7 +22,6 @@ applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ri
 * A Lie-Rinehart subalgebra of a Lie-Rinehart ring is a Lie-Rinehart ring
 
 * A Lie-Rinehart subalgebra of a Lie-Rinehart algebra is a Lie-Rinehart algebra over the same ring.
-
 -/
 
 public section

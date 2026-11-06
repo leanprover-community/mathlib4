@@ -22,7 +22,6 @@ definitionally equal to the induced topological space structure.
 
 We also prove that a metric ball/closed ball/sphere in Poincaré metric is a Euclidean ball/closed
 ball/sphere with another center and radius.
-
 -/
 
 @[expose] public section

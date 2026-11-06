@@ -30,7 +30,6 @@ Bernoulli polynomials are defined using `bernoulli`, the Bernoulli numbers.
   coefficients up to `n` is `(n + 1) * X^n`.
 - `Polynomial.bernoulli_generating_function`: The Bernoulli polynomials act as generating functions
   for the exponential.
-
 -/
 
 @[expose] public section

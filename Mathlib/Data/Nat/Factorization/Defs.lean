@@ -36,7 +36,6 @@ mapping each prime factor of `n` to its multiplicity in `n`.  For example, since
   `Mathlib/RingTheory/UniqueFactorizationDomain/`.
 
 * Extend the inductions to any `NormalizationMonoid` with unique factorization.
-
 -/
 
 @[expose] public section

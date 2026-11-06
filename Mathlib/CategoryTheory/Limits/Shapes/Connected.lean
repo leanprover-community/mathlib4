@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 # Connected shapes
 
 In this file we prove that various shapes are connected.
-
 -/
 
 public section

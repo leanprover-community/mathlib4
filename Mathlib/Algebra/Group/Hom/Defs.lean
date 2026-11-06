@@ -57,7 +57,6 @@ deprecated and moved to `Deprecated/Group`.
 ## Tags
 
 MonoidHom, AddMonoidHom
-
 -/
 
 @[expose] public section

@@ -9,7 +9,6 @@ public import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Lattice structures on the type of nonnegative elements
-
 -/
 
 @[expose] public section
