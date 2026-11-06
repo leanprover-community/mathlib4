@@ -28,8 +28,7 @@ namespace Asymptotics
 variable {α E F E' F' E'' F'' : Type*}
 
 variable [Norm E] [Norm F]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F'']
+variable [SeminormedAddGroup E'] [SeminormedAddGroup F'] [NormedAddGroup E''] [NormedAddGroup F'']
 
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F}
 variable {f' : α → E'} {g' : α → F'}
@@ -205,7 +204,7 @@ theorem IsBigOWith.add_isLittleO (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : f₂ 
 
 theorem IsLittleO.add_isBigOWith (h₁ : f₁ =o[l] g) (h₂ : IsBigOWith c₁ l f₂ g) (hc : c₁ < c₂) :
     IsBigOWith c₂ l (fun x => f₁ x + f₂ x) g :=
-  (h₂.add_isLittleO h₁ hc).congr_left fun _ => add_comm _ _
+  ((h₁.forall_isBigOWith (sub_pos.2 hc)).add h₂).congr_const (sub_add_cancel _ _)
 
 theorem IsBigOWith.sub (h₁ : IsBigOWith c₁ l f₁ g) (h₂ : IsBigOWith c₂ l f₂ g) :
     IsBigOWith (c₁ + c₂) l (fun x => f₁ x - f₂ x) g := by
@@ -225,25 +224,27 @@ theorem IsBigO.add_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x + f₂ x) =
   ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
 
 theorem IsBigO.add_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x + f₂ x) =O[l] g ↔ (f₂ =O[l] g) :=
-  ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
+  ⟨fun h ↦ h₁.neg_left.add h |>.congr_left (fun _ ↦ neg_add_cancel_left _ _), fun h ↦ h₁.add h⟩
 
 theorem IsLittleO.add_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₁ =o[l] g) :=
   ⟨fun h ↦ h.sub h₂ |>.congr (fun _ ↦ add_sub_cancel_right _ _) (fun _ ↦ rfl), fun h ↦ h.add h₂⟩
 
 theorem IsLittleO.add_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x + f₂ x) =o[l] g ↔ (f₂ =o[l] g) :=
-  ⟨fun h ↦ h.sub h₁ |>.congr (fun _ ↦ (eq_sub_of_add_eq' rfl).symm) (fun _ ↦ rfl), fun h ↦ h₁.add h⟩
+  ⟨fun h ↦ h₁.neg_left.add h |>.congr_left (fun _ ↦ neg_add_cancel_left _ _), fun h ↦ h₁.add h⟩
 
 theorem IsBigO.sub_iff_left (h₂ : f₂ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₁ =O[l] g) :=
   ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
 
 theorem IsBigO.sub_iff_right (h₁ : f₁ =O[l] g) : (fun x => f₁ x - f₂ x) =O[l] g ↔ (f₂ =O[l] g) :=
-  ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
+  ⟨fun h ↦ h.neg_left.add h₁ |>.congr_left (fun _ ↦ by rw [neg_sub, sub_add_cancel]),
+    fun h ↦ h₁.sub h⟩
 
 theorem IsLittleO.sub_iff_left (h₂ : f₂ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₁ =o[l] g) :=
   ⟨fun h ↦ h.add h₂ |>.congr (fun _ ↦ sub_add_cancel ..) (fun _ ↦ rfl), fun h ↦ h.sub h₂⟩
 
 theorem IsLittleO.sub_iff_right (h₁ : f₁ =o[l] g) : (fun x => f₁ x - f₂ x) =o[l] g ↔ (f₂ =o[l] g) :=
-  ⟨fun h ↦ h₁.sub h |>.congr (fun _ ↦ sub_sub_self ..) (fun _ ↦ rfl), fun h ↦ h₁.sub h⟩
+  ⟨fun h ↦ h.neg_left.add h₁ |>.congr_left (fun _ ↦ by rw [neg_sub, sub_add_cancel]),
+    fun h ↦ h₁.sub h⟩
 
 end add_sub
 
@@ -289,11 +290,11 @@ theorem IsLittleO.triangle (h₁ : (fun x => f₁ x - f₂ x) =o[l] g)
   (h₁.add h₂).congr_left fun _x => sub_add_sub_cancel _ _ _
 
 theorem IsBigO.congr_of_sub (h : (fun x => f₁ x - f₂ x) =O[l] g) : f₁ =O[l] g ↔ f₂ =O[l] g :=
-  ⟨fun h' => (h'.sub h).congr_left fun _x => sub_sub_cancel _ _, fun h' =>
+  ⟨fun h' => (h.neg_left.add h').congr_left fun _x => by rw [neg_sub, sub_add_cancel], fun h' =>
     (h.add h').congr_left fun _x => sub_add_cancel _ _⟩
 
 theorem IsLittleO.congr_of_sub (h : (fun x => f₁ x - f₂ x) =o[l] g) : f₁ =o[l] g ↔ f₂ =o[l] g :=
-  ⟨fun h' => (h'.sub h).congr_left fun _x => sub_sub_cancel _ _, fun h' =>
+  ⟨fun h' => (h.neg_left.add h').congr_left fun _x => by rw [neg_sub, sub_add_cancel], fun h' =>
     (h.add h').congr_left fun _x => sub_add_cancel _ _⟩
 
 end IsBigOOAsRel
@@ -371,6 +372,7 @@ end ZeroConst
 
 section Sum
 
+variable {E' : Type*} [SeminormedAddCommGroup E']
 variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
 @[to_fun] theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :

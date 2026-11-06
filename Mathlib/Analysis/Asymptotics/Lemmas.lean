@@ -32,8 +32,8 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
-  [NormedAddCommGroup E''] [NormedAddCommGroup F''] [SeminormedRing R]
+variable [SeminormedAddGroup E'] [SeminormedAddGroup F'] [SeminormedAddGroup G']
+  [NormedAddGroup E''] [NormedAddGroup F''] [SeminormedRing R]
   [SeminormedAddGroup E''']
 
 variable [NormedDivisionRing 𝕜] [NormedDivisionRing 𝕜']
@@ -240,7 +240,7 @@ theorem IsBigO.pow_of_le_right {f : α → ℝ}
 
 section SMulConst
 
-variable [Module R E'] [IsBoundedSMul R E']
+variable [SMulZeroClass R E'] [IsBoundedSMul R E']
 
 theorem IsBigOWith.const_smul_self (c' : R) :
     IsBigOWith (‖c'‖) l (fun x => c' • f' x) f' :=
@@ -260,7 +260,7 @@ theorem IsBigO.const_smul_left (h : f' =O[l] g) (c : R) : (c • f') =O[l] g :=
 theorem IsLittleO.const_smul_left (h : f' =o[l] g) (c : R) : (c • f') =o[l] g :=
   (IsBigO.const_smul_self _).trans_isLittleO h
 
-variable [Module 𝕜 E'] [NormSMulClass 𝕜 E']
+variable [SMul 𝕜 E'] [NormSMulClass 𝕜 E']
 
 theorem isBigO_const_smul_left {c : 𝕜} (hc : c ≠ 0) : (fun x => c • f' x) =O[l] g ↔ f' =O[l] g := by
   have cne0 : ‖c‖ ≠ 0 := norm_ne_zero_iff.mpr hc
@@ -293,7 +293,7 @@ end SMulConst
 
 section SMul
 
-variable [Module R E'] [IsBoundedSMul R E'] [Module 𝕜' F'] [NormSMulClass 𝕜' F']
+variable [SMulZeroClass R E'] [IsBoundedSMul R E'] [SMul 𝕜' F'] [NormSMulClass 𝕜' F']
 variable {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
@@ -389,7 +389,7 @@ theorem IsLittleO.tendsto_div_nhds_zero {f g : α → 𝕜} (h : f =o[l] g) :
         simpa only [div_eq_mul_inv] using h.mul_isBigO (isBigO_refl _ _)
       _ =O[l] fun _x => (1 : 𝕜) := isBigO_of_le _ fun x => by simp [div_self_le_one]
 
-theorem IsLittleO.tendsto_inv_smul_nhds_zero [Module 𝕜 E'] [NormSMulClass 𝕜 E']
+theorem IsLittleO.tendsto_inv_smul_nhds_zero [SMul 𝕜 E'] [NormSMulClass 𝕜 E']
     {f : α → E'} {g : α → 𝕜}
     {l : Filter α} (h : f =o[l] g) : Tendsto (fun x => (g x)⁻¹ • f x) l (𝓝 0) := by
   simpa only [div_eq_inv_mul, ← norm_inv, ← norm_smul, ← tendsto_zero_iff_norm_tendsto_zero] using
@@ -606,11 +606,12 @@ theorem IsBigO.eq_zero_of_norm_pow {f : E'' → F''} {x₀ : E''} {n : ℕ}
   rw [← nhdsWithin_univ] at h
   exact h.eq_zero_of_norm_pow_within (mem_univ _) hn
 
-theorem isLittleO_pow_sub_pow_sub (x₀ : E') {n m : ℕ} (h : n < m) :
+theorem isLittleO_pow_sub_pow_sub {E : Type*} [SeminormedAddCommGroup E] (x₀ : E) {n m : ℕ}
+    (h : n < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => ‖x - x₀‖ ^ n :=
   (isLittleO_pow_pow h).comp_tendsto (tendsto_norm_sub_self x₀)
 
-theorem isLittleO_pow_sub_sub (x₀ : E') {m : ℕ} (h : 1 < m) :
+theorem isLittleO_pow_sub_sub {E : Type*} [SeminormedAddCommGroup E] (x₀ : E) {m : ℕ} (h : 1 < m) :
     (fun x => ‖x - x₀‖ ^ m) =o[𝓝 x₀] fun x => x - x₀ := by
   simpa only [isLittleO_norm_right, pow_one] using isLittleO_pow_sub_pow_sub x₀ h
 
@@ -638,7 +639,7 @@ theorem IsLittleO.right_isBigO_add {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂)
 
 theorem IsLittleO.right_isBigO_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :
     f₂ =O[l] (f₂ + f₁) :=
-  add_comm f₁ f₂ ▸ h.right_isBigO_add
+  h.neg_left.right_isBigO_sub.congr_right fun _ ↦ sub_neg_eq_add _ _
 
 /-- If `f x = O(g x)` along `cofinite`, then there exists a positive constant `C` such that
 `‖f x‖ ≤ C * ‖g x‖` whenever `g x ≠ 0`. -/

@@ -82,13 +82,11 @@ theorem const_boundedAtFilter [Norm β] (l : Filter α) (c : β) :
     BoundedAtFilter l (Function.const α c : α → β) :=
   Asymptotics.isBigO_const_const c one_ne_zero l
 
--- TODO(https://github.com/leanprover-community/mathlib4/issues/19288): Remove all Comm in the next
--- three lemmas. This would require modifying the corresponding general asymptotics lemma.
-nonrec theorem BoundedAtFilter.add [SeminormedAddCommGroup β] {l : Filter α} {f g : α → β}
+nonrec theorem BoundedAtFilter.add [SeminormedAddGroup β] {l : Filter α} {f g : α → β}
     (hf : BoundedAtFilter l f) (hg : BoundedAtFilter l g) : BoundedAtFilter l (f + g) := by
   simpa using! hf.add hg
 
-theorem BoundedAtFilter.neg [SeminormedAddCommGroup β] {l : Filter α} {f : α → β}
+theorem BoundedAtFilter.neg [SeminormedAddGroup β] {l : Filter α} {f : α → β}
     (hf : BoundedAtFilter l f) : BoundedAtFilter l (-f) :=
   hf.neg_left
 
