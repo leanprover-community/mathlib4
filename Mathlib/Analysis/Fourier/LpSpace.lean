@@ -17,6 +17,8 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
 
 * `MeasureTheory.Lp.fourierTransformₗᵢ`: The Fourier transform on $L^2$ as a linear isometry
   equivalence.
+* `MeasureTheory.Lp.fourierTransformZeroAtInftyCLM`: The Fourier transform from $L^2$ to $C_0$ as a
+  continuous linear map.
 
 ## Main statements
 
@@ -31,9 +33,11 @@ In this file we define the Fourier transform on $L^2$ as a linear isometry equiv
 
 noncomputable section
 
-section FourierTransform
-
 variable {E F : Type*}
+
+section L2Space
+
+variable
   [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
   [NormedAddCommGroup F] [InnerProductSpace ℂ F] [CompleteSpace F]
 
@@ -140,4 +144,57 @@ theorem fourierInv_toTemperedDistribution_eq (f : Lp (α := E) F 2) :
 
 end MeasureTheory.Lp
 
-end FourierTransform
+end L2Space
+
+section L1Space
+
+namespace MeasureTheory.Lp
+
+open SchwartzMap MeasureTheory FourierTransform
+
+open scoped ZeroAtInfty
+
+variable
+  [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
+  [NormedAddCommGroup F] [NormedSpace ℂ F] [CompleteSpace F]
+  [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
+
+variable (E F) in
+/-- The Fourier transform from `L1` to `C₀` as a continuous linear map.
+
+This is the bundled version of the Riemann-Lebesgue lemma. -/
+def fourierTransformZeroAtInftyCLM : (Lp (α := E) F 1) →L[ℂ] C₀(E, F) :=
+  (toZeroAtInftyCLM ℂ E F ∘L (fourierCLM ℂ 𝓢(E, F))).toLinearMap.extendOfNorm
+    (toLpCLM ℂ (E := E) F 1)
+
+@[simp]
+theorem fourierTransformZeroAtInftyCLM_toLp_apply (f : 𝓢(E, F)) (x : E) :
+    fourierTransformZeroAtInftyCLM E F (f.toLp 1) x = 𝓕 f x := by
+  calc
+    _ = ((fourierTransformZeroAtInftyCLM E F) (toLpCLM ℂ (E := E) F 1 volume f)) x := by simp
+    _ = (toZeroAtInftyCLM ℂ E F ∘L (fourierCLM ℂ 𝓢(E, F))) f x := by
+      congr 1
+      apply LinearMap.extendOfNorm_eq
+      · apply SchwartzMap.denseRange_toLpCLM
+        norm_num
+      use 1
+      simpa using norm_fourier_toBoundedContinuousFunction_le_toLp_one
+    _ = 𝓕 f x := by simp
+
+@[simp]
+theorem fourierTransformZeroAtInftyCLM_toBCF (f : Lp (α := E) F 1) :
+    (fourierTransformZeroAtInftyCLM E F f).toBCF = Real.Lp.fourierTransform f := by
+  apply (denseRange_toLpCLM (by norm_num)).induction_on
+    (p := fun f ↦ (Lp.fourierTransformZeroAtInftyCLM E F f).toBCF = Real.Lp.fourierTransform f) f
+    (isClosed_eq (by fun_prop) (Real.Lp.fourierTransformCLM E F).cont)
+  intro f
+  ext x
+  simpa using Real.fourier_congr_ae (coeFn_toLp f 1 volume).symm x
+
+theorem fourierTransformZeroAtInftyCLM_apply_apply (f : Lp (α := E) F 1) (x : E) :
+    Lp.fourierTransformZeroAtInftyCLM E F f x = 𝓕 (f : E → F) x := by
+  simp [← ZeroAtInftyContinuousMap.toBCF_apply]
+
+end MeasureTheory.Lp
+
+end L1Space
