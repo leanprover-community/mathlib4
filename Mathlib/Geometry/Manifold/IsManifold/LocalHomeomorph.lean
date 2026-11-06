@@ -166,8 +166,8 @@ lemma IsLocalHomeomorph.contMDiff_of_contMDiff_comp_rightInverse
   apply (hFg.comp (IsLocalHomeomorph.isContMDiffOfRightInverse hf hg h)).congr
   exact fun y ↦ hF _ _ (hg (f y)).symm
 
-/-- Suppose `f : M → N` is `G`-invariant, then `f` is `C^n` if and only if the induced map
-`M ⧸ G → N` is. -/
+/-- Suppose `f : M → N` is invariant under `f`. Then `f` is `C^n` if and only if
+the map `F ∘ g : M' → N` is. -/
 lemma IsLocalHomeomorph.contMDiff_comp_rightInverse_iff_contMDiff
     (h : ∀ p q, f p = f q → ∃ σ : M → M, σ p = q ∧ ContMDiffAt I I n σ p ∧ f ∘ σ =ᶠ[𝓝 p] f)
     {F : M → N} (hF : ∀ p q, f p = f q → F p = F q) :
