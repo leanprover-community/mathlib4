@@ -284,9 +284,7 @@ theorem posLog_comp {f : ℂ → ℝ} (hu : CircleIntegrable f c R) :
   · exact Real.continuous_posLog.comp_aestronglyMeasurable
       (intervalIntegrable_iff.1 hu).aestronglyMeasurable
   · filter_upwards with θ
-    simp only [Function.comp_apply, Real.norm_eq_abs, abs_abs]
-    rw [abs_of_nonneg Real.posLog_nonneg]
-    exact Real.posLog_le_abs _
+    simp [abs_of_nonneg, Real.posLog_nonneg, Real.posLog_le_abs]
 
 /--
 If `f` is circle integrable and `g` is continuous on the circle `sphere c |R|`, then `f * g` is
