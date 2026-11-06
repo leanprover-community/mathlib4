@@ -360,6 +360,10 @@ variable {a b c d n : ℤ}
 example (h : a ≡ b [ZMOD n]) : a ^ 2 ≡ b ^ 2 [ZMOD n] := by
   grw [h]
 
+example (h : a ≡ b [ZMOD n]) : True ↔ a ^ 2 ≡ b ^ 2 [ZMOD n] := by
+  grw [h]
+  simp
+
 example (h₁ : a ∣ b) (h₂ : b ∣ a * d) : a ∣ b * d := by
   grw [h₁] at h₂ ⊢
   exact h₂
@@ -561,3 +565,20 @@ example (h : liftEq b a) (h' : liftLE b c) : liftLE a c := by
   grw [← h, ← h']
 
 end universePolymorphic
+
+section eq
+
+-- set_option trace.Meta.grewrite true in
+example : True ↔ ∀ n m : Int, n + m = m + n := by
+  grw [Int.add_comm]
+  simp
+
+example : (∃ n m : Int, n + m = m + n) → True := by
+  grw [Int.add_comm]
+  simp
+
+example (h : (· + · = 0) = fun n m : Int ↦ n + m = m + n) : True := by
+  grw [Int.add_comm] at h
+  trivial
+
+end eq
