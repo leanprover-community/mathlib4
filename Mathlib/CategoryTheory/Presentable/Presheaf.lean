@@ -8,9 +8,11 @@ module
 public import Mathlib.CategoryTheory.Comma.IsoCat
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 public import Mathlib.CategoryTheory.Generator.Presheaf
+public import Mathlib.CategoryTheory.Limits.Preorder
 public import Mathlib.CategoryTheory.Presentable.Adjunction
 public import Mathlib.CategoryTheory.Presentable.StrongGenerator
-public import Mathlib.CategoryTheory.Subfunctor.Basic
+public import Mathlib.CategoryTheory.Subfunctor.Colimits
+public import Mathlib.CategoryTheory.Subfunctor.Image
 
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
@@ -32,6 +34,14 @@ universe w v v' u u'
 namespace CategoryTheory
 
 open Opposite Limits
+
+-- to be moved
+lemma NatTrans.surjective_mapElements_obj_of_epi {C : Type*} [Category* C]
+    {F G : C ⥤ Type w} (f : F ⟶ G) [Epi f] :
+    Function.Surjective f.mapElements.obj := by
+  rintro @⟨X, e⟩
+  obtain ⟨e, rfl⟩ := surjective_of_epi (f.app X) e
+  exact ⟨Functor.elementsMk _ _ e, rfl⟩
 
 namespace Presheaf
 
@@ -154,8 +164,7 @@ abbrev hasCardinalLTSubfunctorToFunctorElements : Set (Subfunctor P) :=
 
 namespace hasCardinalLTSubfunctorToFunctorElements
 
-variable (κ P) in
-lemma isCardinalFiltered_fullSubcategory :
+instance :
     IsCardinalFiltered (hasCardinalLTSubfunctorToFunctorElements κ P) κ :=
   isCardinalFiltered_preorder _ _ (fun ι S hι ↦ by
     rw [← hasCardinalLT_iff_cardinal_mk_lt] at hι
@@ -174,20 +183,33 @@ lemma isCardinalFiltered_fullSubcategory :
     · rw [Subtype.mk_le_mk]
       exact hT i)
 
-variable (κ P) in
-abbrev functor : hasCardinalLTSubfunctorToFunctorElements κ P ⥤ A ⥤ Type w :=
-  (Set.mono_coe _).functor ⋙ Subfunctor.toFunctorFunctor
+instance : IsFiltered (hasCardinalLTSubfunctorToFunctorElements κ P) :=
+  isFiltered_of_isCardinalFiltered _ κ
 
 variable (κ P) in
 @[expose, simps, implicit_reducible]
 def cocone :
-    Cocone (functor κ P) where
+    Cocone ((Set.mono_coe (hasCardinalLTSubfunctorToFunctorElements κ P)).functor ⋙
+      Subfunctor.toFunctorFunctor) where
   pt := P
   ι.app _ := Subfunctor.ι _
 
+set_option backward.isDefEq.respectTransparency false in
 variable (P) in
-def isColimitCocone (hκ : HasCardinalLT (Arrow A) κ) : IsColimit (cocone κ P) := by
-  sorry
+noncomputable def isColimitCocone (hκ : HasCardinalLT (Arrow A) κ) :
+    IsColimit (cocone κ P) := by
+  refine IsColimit.ofIsoColimit
+    (isColimitOfPreserves Subfunctor.toFunctorFunctor
+    ((Preorder.colimitCoconeOfIsLUB
+    (hasCardinalLTSubfunctorToFunctorElements κ P).mono_coe.functor ?_).isColimit))
+    (Cocone.ext (Subfunctor.topIso _))
+  refine ⟨by tauto, fun Q hQ X x _ ↦
+    hQ ⟨⟨Subfunctor.range (coyonedaEquiv.symm x), ?_⟩, rfl⟩ _ ⟨𝟙 X, by simp⟩⟩
+  refine .of_surjective (hκ.of_injective (fun e ↦ Arrow.mk e.val) (fun _ _ h ↦ ?_)) _
+    ((Subfunctor.toRange _).surjective_mapElements_obj_of_epi)
+  rw [Arrow.mk_eq_mk_iff] at h
+  obtain ⟨_, _, _⟩ := h
+  exact Functor.Elements.ext _ _ (by assumption) (by aesop)
 
 end hasCardinalLTSubfunctorToFunctorElements
 
@@ -197,7 +219,6 @@ lemma isCardinalPresentable_iff_hasCardinalLT_arrow_elements
     IsCardinalPresentable P κ ↔ HasCardinalLT P.Elements κ := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩
   · have : IsCardinalPresentable (cocone κ P).pt κ := by assumption
-    have := isCardinalFiltered_fullSubcategory κ P
     obtain ⟨⟨S, hS⟩, f, fac⟩ :=
       IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitCocone P hκ) (𝟙 _)
     dsimp at f fac

@@ -168,6 +168,12 @@ theorem homOfLe_ι {G G' : Subfunctor F} (h : G ≤ G') :
   ext
   rfl
 
+variable (F) in
+-- the `SSet` case should use this
+@[simps! inv_app_hom_apply]
+def topIso : (⊤ : Subfunctor F).toFunctor ≅ F :=
+  NatIso.ofComponents (fun n ↦ (Equiv.Set.univ (F.obj n)).toIso)
+
 instance : IsIso (Subfunctor.ι (⊤ : Subfunctor F)) := by
   refine @NatIso.isIso_of_isIso_app _ _ _ _ _ _ _ ?_
   intro X

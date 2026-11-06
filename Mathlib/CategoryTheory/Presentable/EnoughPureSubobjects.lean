@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Representation
 public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Presentable.Uniformization
+public import Mathlib.CategoryTheory.Subfunctor.Colimits
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
@@ -65,11 +66,6 @@ lemma Cardinal.SharplyLT.HasEnoughPureSubobjects.of_equivalence
 namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
-
--- to be moved (refactor `SimplicialSet/SubcomplexEvaluation.lean`)
-instance {J : Type*} [Category* J] {F : C ⥤ Type w} [IsFilteredOrEmpty J] :
-    PreservesColimitsOfShape J (Subfunctor.toFunctorFunctor (F := F)) where
-  preservesColimit {F} := sorry
 
 instance {P : ObjectProperty C} (X : P.FullSubcategory) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalPresentable X κ] [P.ι.PreservesCardinalPresentable κ] :
