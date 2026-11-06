@@ -3,12 +3,16 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.Decl
-import Mathlib.Tactic.FunProp.Theorems
+module
+
+public meta import Mathlib.Tactic.FunProp.Decl
+public import Mathlib.Tactic.FunProp.Theorems
 
 /-!
 ## `funProp` attribute
 -/
+
+public meta section
 
 namespace Mathlib
 open Lean Meta
@@ -19,7 +23,7 @@ private def funPropHelpString : String :=
 "`fun_prop` tactic to prove function properties like `Continuous`, `Differentiable`, `IsLinearMap`"
 
 /-- Initialization of `funProp` attribute -/
-initialize funPropAttr : Unit ←
+initialize
   registerBuiltinAttribute {
     name  := `fun_prop
     descr := funPropHelpString

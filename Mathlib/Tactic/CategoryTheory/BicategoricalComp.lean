@@ -3,7 +3,12 @@ Copyright (c) 2022 Yuma Mizuno. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
-import Mathlib.CategoryTheory.Bicategory.Basic
+module
+
+public import Mathlib.CategoryTheory.Bicategory.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bicategorical composition `⊗≫` (composition up to associators)
@@ -12,6 +17,8 @@ We provide `f ⊗≫ g`, the `bicategoricalComp` operation,
 which automatically inserts associators and unitors as needed
 to make the target of `f` match the source of `g`.
 -/
+
+@[expose] public section
 
 universe w v u
 

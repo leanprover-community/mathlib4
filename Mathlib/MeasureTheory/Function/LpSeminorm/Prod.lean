@@ -3,14 +3,16 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+module
 
-import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
-import Mathlib.MeasureTheory.Measure.Prod
+public import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 
 /-!
 # ℒp spaces and products
 
 -/
+
+public section
 
 open scoped ENNReal
 
@@ -26,7 +28,7 @@ lemma MemLp.comp_fst {f : α → ε} (hf : MemLp f p μ) (ν : Measure β) [IsFi
   change MemLp (f ∘ Prod.fst) p (μ.prod ν)
   rw [← memLp_map_measure_iff ?_ (by fun_prop)]
   · simpa using hf'
-  · simpa using hf'.1
+  · simpa using hf'.aestronglyMeasurable
 
 lemma MemLp.comp_snd {f : β → ε} (hf : MemLp f p ν) (μ : Measure α) [IsFiniteMeasure μ]
     [SFinite ν] :
@@ -35,6 +37,6 @@ lemma MemLp.comp_snd {f : β → ε} (hf : MemLp f p ν) (μ : Measure α) [IsFi
   change MemLp (f ∘ Prod.snd) p (μ.prod ν)
   rw [← memLp_map_measure_iff ?_ (by fun_prop)]
   · simpa using hf'
-  · simpa using hf'.1
+  · simpa using hf'.aestronglyMeasurable
 
 end MeasureTheory

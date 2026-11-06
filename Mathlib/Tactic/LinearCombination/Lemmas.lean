@@ -3,14 +3,21 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Data.Ineq
+module
+
+public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Algebra.Field.Defs
+public import Mathlib.Algebra.Order.Module.Defs
+public import Mathlib.Data.Ineq
+public import Mathlib.Tactic.Ineq
 
 /-!
-# Lemmas for the linear_combination tactic
+# Lemmas for the `linear_combination` tactic
 
 These should not be used directly in user code.
 -/
+
+public meta section
 
 open Lean
 
@@ -25,19 +32,19 @@ theorem add_eq_eq [Add α] (p₁ : (a₁ : α) = b₁) (p₂ : a₂ = b₂) : a�
 
 theorem add_le_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) ≤ b₁) (p₂ : a₂ = b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₂ ▸ add_le_add_right p₁ b₂
+  p₂ ▸ add_le_add_left p₁ b₂
 
 theorem add_eq_le [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (p₁ : (a₁ : α) = b₁) (p₂ : a₂ ≤ b₂) : a₁ + a₂ ≤ b₁ + b₂ :=
-  p₁ ▸ add_le_add_left p₂ b₁
+  p₁ ▸ add_le_add_right p₂ b₁
 
 theorem add_lt_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p₁ : (a₁ : α) < b₁) (p₂ : a₂ = b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₂ ▸ add_lt_add_right p₁ b₂
+  p₂ ▸ add_lt_add_left p₁ b₂
 
 theorem add_eq_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] {a₁ b₁ a₂ b₂ : α}
     (p₁ : a₁ = b₁) (p₂ : a₂ < b₂) : a₁ + a₂ < b₁ + b₂ :=
-  p₁ ▸ add_lt_add_left p₂ b₁
+  p₁ ▸ add_lt_add_right p₂ b₁
 
 /-! ### Multiplication -/
 
@@ -79,21 +86,21 @@ theorem mul_const_lt_weak [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
 theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p ▸ rfl
 
-theorem smul_le_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
+theorem smul_le_const [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
+    [IsOrderedModule K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p ha
 
-theorem smul_lt_const [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 < a) :
+theorem smul_lt_const [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
+    [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 < a) :
     t • a < s • a :=
   smul_lt_smul_of_pos_right p ha
 
-theorem smul_lt_const_weak [Ring K] [PartialOrder K] [IsOrderedRing K]
-    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] [Module K α]
-    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
+theorem smul_lt_const_weak [Ring K] [PartialOrder K]
+    [AddCommGroup α] [PartialOrder α] [Module K α]
+    [IsStrictOrderedModule K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
     t • a ≤ s • a :=
   smul_le_smul_of_nonneg_right p.le ha
 
@@ -101,19 +108,19 @@ theorem smul_const_eq [SMul K α] (p : b = c) (s : K) : s • b = s • c := p �
 
 theorem smul_const_le [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
+    [PosSMulMono K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p hs
 
 theorem smul_const_lt [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 < s) :
+    [PosSMulStrictMono K α] (p : b < c) {s : K} (hs : 0 < s) :
     s • b < s • c :=
   smul_lt_smul_of_pos_left p hs
 
 theorem smul_const_lt_weak [Semiring K] [PartialOrder K]
     [AddCommMonoid α] [PartialOrder α] [Module K α]
-    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
+    [PosSMulMono K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
     s • b ≤ s • c :=
   smul_le_smul_of_nonneg_left p.le hs
 
@@ -144,9 +151,7 @@ theorem eq_of_eq [Add α] [IsRightCancelAdd α] (p : (a : α) = b) (H : a' + b =
 theorem le_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b ≤ b' + a) :
     a' ≤ b' := by
-  rw [← add_le_add_iff_right b]
-  apply H.trans
-  apply add_le_add_left p
+  grw [← add_le_add_iff_right b, H, p]
 
 theorem le_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b ≤ b' + a) :
@@ -161,9 +166,7 @@ theorem le_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
 theorem lt_of_le [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) ≤ b) (H : a' + b < b' + a) :
     a' < b' := by
-  rw [← add_lt_add_iff_right b]
-  apply H.trans_le
-  apply add_le_add_left p
+  grw [p] at H; simpa using H
 
 theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) = b) (H : a' + b < b' + a) :
@@ -173,9 +176,8 @@ theorem lt_of_eq [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid 
 theorem lt_of_lt [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]
     (p : (a : α) < b) (H : a' + b ≤ b' + a) :
     a' < b' := by
-  rw [← add_lt_add_iff_right b]
-  apply H.trans_lt
-  apply add_lt_add_left p
+  grw [← add_lt_add_iff_right b, H]
+  gcongr
 
 alias ⟨eq_rearrange, _⟩ := sub_eq_zero
 
@@ -189,7 +191,7 @@ theorem lt_rearrange {α : Type*} [AddCommGroup α] [PartialOrder α] [IsOrdered
 
 theorem eq_of_add_pow [Ring α] [NoZeroDivisors α] (n : ℕ) (p : (a : α) = b)
     (H : (a' - b') ^ n - (a - b) = 0) : a' = b' := by
-  rw [← sub_eq_zero] at p ⊢; apply pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
+  rw [← sub_eq_zero] at p ⊢; apply eq_zero_of_pow_eq_zero (n := n); rwa [sub_eq_zero, p] at H
 
 end Tactic.LinearCombination
 
@@ -212,7 +214,7 @@ def addRelRelData : Ineq → Ineq → Name
   | lt, lt => ``add_lt_add
 
 /-- Finite inductive type extending `Mathlib.Ineq`: a type of inequality (`eq`, `le` or `lt`),
-together with, in the case of `lt`, a boolean, typically representing the strictness (< or ≤) of
+together with, in the case of `lt`, a Boolean, typically representing the strictness (< or ≤) of
 some other inequality. -/
 protected inductive WithStrictness : Type
   | eq : Ineq.WithStrictness

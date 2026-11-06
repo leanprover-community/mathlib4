@@ -3,8 +3,9 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
-import Mathlib.Algebra.Module.Opposite
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Grading
 
 /-!
 # Conjugations
@@ -29,6 +30,8 @@ https://en.wikipedia.org/wiki/Clifford_algebra#Antiautomorphisms
 * `CliffordAlgebra.reverse_mem_evenOdd_iff`
 
 -/
+
+@[expose] public section
 
 
 variable {R : Type*} [CommRing R]
@@ -61,8 +64,8 @@ theorem involute_involute : ∀ a : CliffordAlgebra Q, involute (involute a) = a
 /-- `CliffordAlgebra.involute` as an `AlgEquiv`. -/
 @[simps!]
 def involuteEquiv : CliffordAlgebra Q ≃ₐ[R] CliffordAlgebra Q :=
-  AlgEquiv.ofAlgHom involute involute (AlgHom.ext <| involute_involute)
-    (AlgHom.ext <| involute_involute)
+  AlgEquiv.ofAlgHom involute involute (AlgHom.ext involute_involute)
+    (AlgHom.ext involute_involute)
 
 end Involute
 

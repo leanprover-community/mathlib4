@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
 -/
-import Mathlib.RingTheory.WittVector.InitTail
+module
+
+public import Mathlib.RingTheory.WittVector.InitTail
 
 /-!
 
@@ -33,6 +35,8 @@ The ring of Witt vectors is the projective limit of all the rings of truncated W
 
 * [Commelin and Lewis, *Formalizing the Ring of Witt Vectors*][CL21]
 -/
+
+@[expose] public section
 
 
 open Function (Injective Surjective)
@@ -92,11 +96,11 @@ variable [CommRing R]
 by setting all coefficients after `x` to be 0.
 -/
 def out (x : TruncatedWittVector p n R) : 𝕎 R :=
-  @WittVector.mk' p _ fun i => if h : i < n then x.coeff ⟨i, h⟩ else 0
+  WittVector.mk p fun i => if h : i < n then x.coeff ⟨i, h⟩ else 0
 
 @[simp]
 theorem coeff_out (x : TruncatedWittVector p n R) (i : Fin n) : x.out.coeff i = x.coeff i := by
-  rw [out]; dsimp only; rw [dif_pos i.is_lt, Fin.eta]
+  rw [out]; dsimp only; rw [dite_eq_left i.is_lt, Fin.eta]
 
 theorem out_injective : Injective (@out p n R _) := by
   intro x y h
@@ -191,9 +195,9 @@ theorem coeff_zero (i : Fin n) : (0 : TruncatedWittVector p n R).coeff i = 0 := 
 end TruncatedWittVector
 
 /-- A macro tactic used to prove that `truncateFun` respects ring operations. -/
-macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
+local macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
   `(tactic|
-    { show _ = WittVector.truncateFun n _
+    { change _ = WittVector.truncateFun n _
       apply TruncatedWittVector.out_injective
       iterate rw [WittVector.out_truncateFun]
       first
@@ -311,7 +315,7 @@ variable (p)
 
 @[simp]
 theorem truncate_mk' (f : ℕ → R) :
-    truncate n (@mk' p _ f) = TruncatedWittVector.mk _ fun k => f k := by
+    truncate n (mk p f) = TruncatedWittVector.mk _ fun k => f k := by
   ext i
   simp only [coeff_truncate, TruncatedWittVector.coeff_mk]
 
@@ -366,7 +370,7 @@ theorem truncate_surjective {m : ℕ} (hm : n ≤ m) : Surjective (truncate (p :
 theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVector p m R) :
     (truncate hm x).coeff i = x.coeff (Fin.castLE hm i) := by
   obtain ⟨y, rfl⟩ := @WittVector.truncate_surjective p _ _ _ _ x
-  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.coe_castLE]
+  simp only [truncate_wittVector_truncate, WittVector.coeff_truncate, Fin.val_castLE]
 
 end
 
@@ -413,7 +417,7 @@ variable (n)
 defining the `k`th entry to be the final entry of `fₖ s`.
 -/
 def liftFun (s : S) : 𝕎 R :=
-  @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
+  WittVector.mk p fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
 variable {f} in
 include f_compat in
@@ -431,11 +435,11 @@ to a ring hom `S → 𝕎 R`.
 `lift` defines the universal property of `𝕎 R` as the inverse limit of `TruncatedWittVector n`.
 -/
 def lift : S →+* 𝕎 R := by
-  refine {  toFun := liftFun f
-            map_zero' := ?_
-            map_one' := ?_
-            map_add' := ?_
-            map_mul' := ?_ } <;>
+  refine { toFun := liftFun f
+           map_zero' := ?_
+           map_one' := ?_
+           map_add' := ?_
+           map_mul' := ?_ } <;>
   ( intros
     rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
     simp [RingHom.mem_ker, f_compat])
@@ -456,8 +460,7 @@ theorem lift_unique (g : S →+* 𝕎 R) (g_compat : ∀ k, (WittVector.truncate
   ext1 x
   rw [← sub_eq_zero, ← Ideal.mem_bot, ← iInf_ker_truncate, Ideal.mem_iInf]
   intro i
-  simp only [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, RingHom.map_sub,
-    sub_self]
+  simp only [RingHom.mem_ker, g_compat, ← RingHom.comp_apply, truncate_comp_lift, map_sub, sub_self]
 
 /-- The universal property of `𝕎 R` as projective limit of truncated Witt vector rings. -/
 @[simps]

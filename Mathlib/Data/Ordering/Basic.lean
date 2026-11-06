@@ -3,13 +3,18 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Batteries.Tactic.Alias
-import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.TypeStar
+module
+
+import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Helper definitions and instances for `Ordering`
 -/
+
+@[expose] public section
 
 universe u
 

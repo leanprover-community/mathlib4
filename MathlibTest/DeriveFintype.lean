@@ -1,6 +1,9 @@
+module
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Fintype.Sigma
+import Mathlib.Data.Fintype.Sum
 
 set_option autoImplicit true
 namespace tests
@@ -9,6 +12,7 @@ namespace tests
 Tests that the enumerable types succeed, even with universe levels.
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A | x | y | z
   deriving Fintype
 
@@ -18,6 +22,7 @@ info: tests.A.enumList : List A
 #guard_msgs in
 #check A.enumList
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A' : Type u | x | y | z
   deriving Fintype
 
@@ -27,6 +32,7 @@ info: tests.A'.enumList.{u} : List A'
 #guard_msgs in
 #check A'.enumList
 
+set_option backward.isDefEq.respectTransparency false in
 inductive A'' : Type 1 | x | y | z
   deriving Fintype
 
@@ -132,14 +138,17 @@ inductive I' {α : Type _}
 `derive_fintype%`
 -/
 
+set_option warn.classDefReducibility false in
 def myBoolInst := derive_fintype% Bool
 
 example : Fintype Bool := myBoolInst
 
+set_option warn.classDefReducibility false in
 def myBoolInst' : Fintype Bool := derive_fintype% _
 
 example : Fintype Bool := myBoolInst'
 
+set_option warn.classDefReducibility false in
 def myProdInst [Fintype α] [Fintype β] : Fintype (α × β) := derive_fintype% _
 
 structure MySubtype (s : Set α) where
@@ -154,6 +163,7 @@ instance (s : Set α) [Fintype α] [DecidablePred (· ∈ s)] : Fintype (MySubty
 Tests from mathlib 3
 -/
 
+set_option backward.isDefEq.respectTransparency false in
 inductive Alphabet
   | a | b | c | d | e | f | g | h | i | j | k | l | m
   | n | o | p | q | r | s | t | u | v | w | x | y | z

@@ -3,8 +3,13 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Equiv.Defs
-import Mathlib.Algebra.Module.Opposite
+module
+
+public import Mathlib.Algebra.Module.Equiv.Defs
+public import Mathlib.Algebra.Module.Opposite
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Module operations on `Mᵐᵒᵖ`
@@ -12,6 +17,8 @@ import Mathlib.Algebra.Module.Opposite
 This file contains definitions that build on top of the group action definitions in
 `Mathlib/Algebra/GroupWithZero/Action/Opposite.lean`.
 -/
+
+@[expose] public section
 
 section
 

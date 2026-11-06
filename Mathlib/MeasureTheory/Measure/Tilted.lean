@@ -3,7 +3,9 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
+module
+
+public import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 
 /-!
 # Exponentially tilted measures
@@ -22,6 +24,8 @@ can be used for example to establish variational expressions for the Kullback-Le
   `μ.withDensity (fun x ↦ ENNReal.ofReal (exp (f x) / ∫ x, exp (f x) ∂μ))`.
 
 -/
+
+@[expose] public section
 
 open Real
 
@@ -89,7 +93,7 @@ lemma tilted_congr {g : α → ℝ} (hfg : f =ᵐ[μ] g) :
 
 lemma tilted_eq_withDensity_nnreal (μ : Measure α) (f : α → ℝ) :
     μ.tilted f = μ.withDensity (fun x ↦ ((↑) : ℝ≥0 → ℝ≥0∞)
-      (⟨exp (f x) / ∫ x, exp (f x) ∂μ, by positivity⟩ : ℝ≥0)) := by
+      (.mk (exp (f x) / ∫ x, exp (f x) ∂μ) (by positivity))) := by
   rw [Measure.tilted]
   congr with x
   rw [ENNReal.ofReal_eq_coe_nnreal]
@@ -108,8 +112,7 @@ lemma tilted_apply_eq_ofReal_integral' {s : Set α} (f : α → ℝ) (hs : Measu
   · rw [tilted_apply' _ _ hs, ← ofReal_integral_eq_lintegral_ofReal]
     · exact hf.integrableOn.div_const _
     · exact ae_of_all _ (fun _ ↦ by positivity)
-  · simp only [hf, not_false_eq_true, tilted_of_not_integrable, Measure.coe_zero,
-      Pi.zero_apply, integral_undef hf, div_zero, integral_zero, ENNReal.ofReal_zero]
+  · simp [hf, integral_undef hf]
 
 lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α) :
     μ.tilted f s = ENNReal.ofReal (∫ a in s, exp (f a) / ∫ x, exp (f x) ∂μ ∂μ) := by
@@ -310,7 +313,7 @@ lemma integrable_tilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     μ.rnDeriv (ν.tilted f)
-      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (- f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
+      =ᵐ[ν] fun x ↦ ENNReal.ofReal (exp (-f x) * ∫ x, exp (f x) ∂ν) * μ.rnDeriv ν x := by
   cases eq_zero_or_neZero ν with
   | inl h => simp_rw [h, ae_zero, Filter.EventuallyEq]; exact Filter.eventually_bot
   | inr h0 =>
@@ -328,7 +331,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
 lemma toReal_rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
     (fun x ↦ (μ.rnDeriv (ν.tilted f) x).toReal)
-      =ᵐ[ν] fun x ↦ exp (- f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
+      =ᵐ[ν] fun x ↦ exp (-f x) * (∫ x, exp (f x) ∂ν) * (μ.rnDeriv ν x).toReal := by
   filter_upwards [rnDeriv_tilted_right μ ν hf] with x hx
   rw [hx]
   simp only [ENNReal.toReal_mul, mul_eq_mul_right_iff, ENNReal.toReal_ofReal_eq_iff]

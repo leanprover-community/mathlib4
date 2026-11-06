@@ -3,18 +3,21 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+module
+
+public import Mathlib.Algebra.Polynomial.Monic
+public import Mathlib.GroupTheory.Coset.Card
+public import Mathlib.GroupTheory.GroupAction.Quotient
+
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.GroupAction.Quotient
 
 /-!
 # Group action on rings applied to polynomials
 
 This file contains instances and definitions relating `MulSemiringAction` to `Polynomial`.
 -/
+
+@[expose] public section
 
 
 variable (M : Type*) [Monoid M]
@@ -33,12 +36,9 @@ theorem smul_eq_map [MulSemiringAction M R] (m : M) :
   ext
   simp
 
-noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] :=
-  { Polynomial.distribMulAction with
-    smul_one := fun m ↦
-      smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
-    smul_mul := fun m _ _ ↦
-      smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m) }
+noncomputable instance [MulSemiringAction M R] : MulSemiringAction M R[X] where
+  smul_one m := smul_eq_map R m ▸ Polynomial.map_one (MulSemiringAction.toRingHom M R m)
+  smul_mul m _ _ := smul_eq_map R m ▸ Polynomial.map_mul (MulSemiringAction.toRingHom M R m)
 
 variable {M R}
 variable [MulSemiringAction M R]
@@ -52,8 +52,8 @@ variable (S : Type*) [CommSemiring S] [MulSemiringAction M S]
 theorem smul_eval_smul (m : M) (f : S[X]) (x : S) : (m • f).eval (m • x) = m • f.eval x :=
   Polynomial.induction_on f (fun r ↦ by rw [smul_C, eval_C, eval_C])
     (fun f g ihf ihg ↦ by rw [smul_add, eval_add, ihf, ihg, eval_add, smul_add]) fun n r _ ↦ by
-    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_pow, eval_X, eval_mul, eval_C,
-      eval_pow, eval_X, smul_mul', smul_pow']
+    rw [smul_mul', smul_pow', smul_C, smul_X, eval_mul, eval_C, eval_X_pow, eval_mul, eval_C,
+      eval_X_pow, smul_mul', smul_pow']
 
 variable (G : Type*) [Group G]
 
@@ -96,7 +96,7 @@ theorem prodXSubSMul.smul (x : R) (g : G) : g • prodXSubSMul G R x = prodXSubS
 
 theorem prodXSubSMul.coeff (x : R) (g : G) (n : ℕ) :
     g • (prodXSubSMul G R x).coeff n = (prodXSubSMul G R x).coeff n := by
-  rw [← Polynomial.coeff_smul, prodXSubSMul.smul]
+  rw [← AddMonoidAlgebra.coeff_smul_apply, prodXSubSMul.smul]
 
 end CommRing
 

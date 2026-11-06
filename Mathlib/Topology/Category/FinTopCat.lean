@@ -3,8 +3,10 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.Topology.Category.TopCat.Basic
+module
+
+public import Mathlib.CategoryTheory.FintypeCat
+public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
 # Category of finite topological spaces
@@ -13,6 +15,8 @@ Definition of the category of finite topological spaces with the canonical
 forgetful functors.
 
 -/
+
+@[expose] public section
 
 
 universe u
@@ -28,7 +32,7 @@ structure FinTopCat where
 namespace FinTopCat
 
 instance : Inhabited FinTopCat :=
-  ⟨{ toTop := TopCat.of PEmpty }⟩
+  ⟨{ toTop := ↧PEmpty }⟩
 
 instance : CoeSort FinTopCat (Type u) :=
   ⟨fun X => X.toTop⟩
@@ -36,15 +40,20 @@ instance : CoeSort FinTopCat (Type u) :=
 attribute [instance] fintype
 
 instance : Category FinTopCat :=
-  InducedCategory.category toTop
+  inferInstanceAs <| Category (InducedCategory _ toTop)
 
 instance : ConcreteCategory FinTopCat (C(·, ·)) :=
-  InducedCategory.concreteCategory toTop
+  inferInstanceAs <| ConcreteCategory (InducedCategory _ toTop) _
 
 /-- Construct a bundled `FinTopCat` from the underlying type and the appropriate typeclasses. -/
 def of (X : Type u) [Fintype X] [TopologicalSpace X] : FinTopCat where
-  toTop := TopCat.of X
+  toTop := ↧X
   fintype := ‹_›
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `FinTopCat.of X` as `↧X`. -/
+@[app_delab FinTopCat.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 @[simp]
 theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
@@ -53,14 +62,15 @@ theorem coe_of (X : Type u) [Fintype X] [TopologicalSpace X] :
 
 /-- The forgetful functor to `FintypeCat`. -/
 instance : HasForget₂ FinTopCat FintypeCat :=
-  HasForget₂.mk' (fun X ↦ FintypeCat.of X) (fun _ ↦ rfl) (fun f ↦ f.hom.toFun) HEq.rfl
+  HasForget₂.mk' (fun X ↦ ↧X) (fun _ ↦ rfl)
+    (fun f ↦ FintypeCat.homMk f) HEq.rfl
 
 instance (X : FinTopCat) : TopologicalSpace ((forget₂ FinTopCat FintypeCat).obj X) :=
   inferInstanceAs <| TopologicalSpace X
 
 /-- The forgetful functor to `TopCat`. -/
 instance : HasForget₂ FinTopCat TopCat :=
-  InducedCategory.hasForget₂ _
+  inferInstanceAs <| HasForget₂ (InducedCategory _ toTop) _
 
 instance (X : FinTopCat) : Fintype ((forget₂ FinTopCat TopCat).obj X) :=
   X.fintype
@@ -77,7 +87,7 @@ scoped instance (X : FintypeCat) : DiscreteTopology X := ⟨rfl⟩
 /-- The forgetful functor from finite types to topological spaces, forgetting discreteness.
 This is a scoped instance. -/
 scoped instance : HasForget₂ FintypeCat TopCat where
-  forget₂.obj X := TopCat.of X
+  forget₂.obj X := ↧X
   forget₂.map f := TopCat.ofHom ⟨f, continuous_of_discreteTopology⟩
 
 end FintypeCatDiscrete

@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Operations
-import Mathlib.Analysis.Calculus.Deriv.Pow
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Pow
 
 /-!
 # Smoothness of `Real.sqrt`
@@ -17,6 +19,8 @@ dot-notation lemmas.
 sqrt, differentiable
 -/
 
+@[expose] public section
+
 
 open Set
 
@@ -26,7 +30,7 @@ namespace Real
 
 /-- Local homeomorph between `(0, +∞)` and `(0, +∞)` with `toFun = (· ^ 2)` and
 `invFun = Real.sqrt`. -/
-noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+noncomputable def sqPartialHomeomorph : OpenPartialHomeomorph ℝ ℝ where
   toFun x := x ^ 2
   invFun := (√·)
   source := Ioi 0
@@ -50,7 +54,7 @@ theorem deriv_sqrt_aux {x : ℝ} (hx : x ≠ 0) :
         contDiffAt_const.congr_of_eventuallyEq this⟩
   · have : ↑2 * √x ^ (2 - 1) ≠ 0 := by simp [(sqrt_pos.2 hx).ne', @two_ne_zero ℝ]
     constructor
-    · simpa using sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
+    · simpa using! sqPartialHomeomorph.hasStrictDerivAt_symm hx this (hasStrictDerivAt_pow 2 _)
     · exact fun n => sqPartialHomeomorph.contDiffAt_symm_deriv this hx (hasDerivAt_pow 2 (√x))
         (contDiffAt_id.pow 2)
 
@@ -74,16 +78,16 @@ variable {f : ℝ → ℝ} {s : Set ℝ} {f' x : ℝ}
 
 theorem HasDerivWithinAt.sqrt (hf : HasDerivWithinAt f f' s x) (hx : f x ≠ 0) :
     HasDerivWithinAt (fun y => √(f y)) (f' / (2 * √(f x))) s x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using
+  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using!
     (hasDerivAt_sqrt hx).comp_hasDerivWithinAt x hf
 
 theorem HasDerivAt.sqrt (hf : HasDerivAt f f' x) (hx : f x ≠ 0) :
     HasDerivAt (fun y => √(f y)) (f' / (2 * √(f x))) x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasDerivAt_sqrt hx).comp x hf
+  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using! (hasDerivAt_sqrt hx).comp x hf
 
 theorem HasStrictDerivAt.sqrt (hf : HasStrictDerivAt f f' x) (hx : f x ≠ 0) :
     HasStrictDerivAt (fun t => √(f t)) (f' / (2 * √(f x))) x := by
-  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using (hasStrictDerivAt_sqrt hx).comp x hf
+  simpa only [(· ∘ ·), div_eq_inv_mul, mul_one] using! (hasStrictDerivAt_sqrt hx).comp x hf
 
 theorem derivWithin_sqrt (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0)
     (hxs : UniqueDiffWithinAt ℝ s x) :

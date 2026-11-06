@@ -3,9 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
-import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
-import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+module
+
+public import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
 
 /-!
 # Growth estimates on `x ^ y` for complex `x`, `y`
@@ -25,6 +25,8 @@ finiteness theorem for limit cycles of polynomial ODEs with hyperbolic singulari
 stronger assumptions (e.g., `im z` is bounded from below and from above) are not available.
 
 -/
+
+public section
 
 
 open Asymptotics Filter Function
@@ -91,6 +93,7 @@ theorem tendsto_norm (hl : IsExpCmpFilter l) : Tendsto norm l atTop :=
 theorem isLittleO_log_re_re (hl : IsExpCmpFilter l) : (fun z => Real.log z.re) =o[l] re :=
   Real.isLittleO_log_id_atTop.comp_tendsto hl.tendsto_re
 
+set_option linter.style.whitespace false in -- manual alignment is not recognised
 theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => z.im ^ n) =o[l] fun z => Real.exp z.re :=
   flip IsLittleO.of_pow two_ne_zero <|
@@ -104,7 +107,7 @@ theorem isLittleO_im_pow_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
 
 theorem abs_im_pow_eventuallyLE_exp_re (hl : IsExpCmpFilter l) (n : ℕ) :
     (fun z : ℂ => |z.im| ^ n) ≤ᶠ[l] fun z => Real.exp z.re := by
-  simpa using (hl.isLittleO_im_pow_exp_re n).bound zero_lt_one
+  simpa using! (hl.isLittleO_im_pow_exp_re n).bound zero_lt_one
 
 /-- If `l : Filter ℂ` is an "exponential comparison filter", then $\log |z| =o(ℜ z)$ along `l`.
 This is the main lemma in the proof of `Complex.IsExpCmpFilter.isLittleO_cpow_exp` below.
@@ -121,7 +124,7 @@ theorem isLittleO_log_norm_re (hl : IsExpCmpFilter l) : (fun z => Real.log ‖z�
           rw [← Real.log_mul, Real.log_le_log_iff, ← abs_of_nonneg (le_trans zero_le_one hz)]
           exacts [norm_le_sqrt_two_mul_max z, one_pos.trans_le hz', mul_pos h2 hm₀, h2.ne', hm₀.ne']
     _ =o[l] re :=
-      IsLittleO.add (isLittleO_const_left.2 <| Or.inr <| hl.tendsto_abs_re) <|
+      IsLittleO.add (isLittleO_const_left.2 <| Or.inr hl.tendsto_abs_re) <|
         isLittleO_iff_nat_mul_le.2 fun n => by
           filter_upwards [isLittleO_iff_nat_mul_le'.1 hl.isLittleO_log_re_re n,
             hl.abs_im_pow_eventuallyLE_exp_re n,

@@ -3,14 +3,18 @@ Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Data.Real.Sqrt
+module
+
+public import Mathlib.Analysis.Real.Sqrt
 
 /-! # `norm_num` extension for `Real.sqrt`
 
 This module defines a `norm_num` extension for `Real.sqrt` and `NNReal.sqrt`.
 -/
 
-namespace Tactic.NormNum
+public meta section
+
+namespace Mathlib.Meta.NormNum
 
 open Qq Lean Lean.Meta Elab.Tactic Mathlib.Meta.NormNum NNReal
 
@@ -120,4 +124,4 @@ def evalNNRealSqrt : NormNumExt where eval {u α} e := do
     | .isNegNNRat sℝ eq en ed pf => failure
   | _ => failure
 
-end Tactic.NormNum
+end Mathlib.Meta.NormNum

@@ -3,8 +3,14 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
-import Mathlib.Order.Bounds.Basic
+module
+
+public import Mathlib.Order.Bounds.Basic
+
 import Mathlib.Order.Interval.Set.LinearOrder
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Monotonicity on intervals
@@ -14,6 +20,8 @@ provided that it is (strictly) monotone on `(-∞, a]` and on `[a, +∞)`. This 
 of a more general statement where one deduces monotonicity on a union from monotonicity on each
 set.
 -/
+
+public section
 
 
 open Set

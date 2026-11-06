@@ -3,8 +3,10 @@ Copyright (c) 2020 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.MeasureTheory.Function.LpSpace.Basic
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+public import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # `Lp` is a complete space
@@ -13,10 +15,12 @@ In this file we show that `Lp` is a complete space for `1 ≤ p`,
 in `MeasureTheory.Lp.instCompleteSpace`.
 -/
 
+public section
+
 open MeasureTheory Filter
 open scoped ENNReal Topology
 
-variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [NormedAddCommGroup E]
+variable {α E : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α} [SeminormedAddGroup E]
 
 namespace MeasureTheory.Lp
 
@@ -50,9 +54,10 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     inv_mul_cancel₀ hp_pos.ne.symm, ENNReal.rpow_one]
 
 theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrder ι] {f : ι → α → E}
-    {f_lim : α → E} (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
+    {f_lim : α → E} (hf_lim : AEStronglyMeasurable f_lim μ)
+    (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim ∞ μ = essSup (fun x => atTop.liminf fun m => ‖f m x‖ₑ) μ := by
-  rw [eLpNorm_exponent_top, eLpNormEssSup_eq_essSup_enorm]
+  rw [eLpNorm_exponent_top hf_lim, eLpNormEssSup_eq_essSup_enorm]
   refine essSup_congr_ae (h_lim.mono fun x hx => ?_)
   dsimp only
   apply (Tendsto.liminf_eq ..).symm
@@ -60,27 +65,50 @@ theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrde
 
 theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty ι] [Countable ι]
     [LinearOrder ι] {f : ι → α → E} {f_lim : α → E}
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hf_lim : AEStronglyMeasurable f_lim μ)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim ∞ μ ≤ atTop.liminf fun n => eLpNorm (f n) ∞ μ := by
-  rw [eLpNorm_exponent_top_lim_eq_essSup_liminf h_lim]
-  simp_rw [eLpNorm_exponent_top, eLpNormEssSup]
+  rw [eLpNorm_exponent_top_lim_eq_essSup_liminf hf_lim h_lim]
+  simp_rw [eLpNorm_exponent_top (hf _), eLpNormEssSup]
   exact ENNReal.essSup_liminf_le _
 
 theorem eLpNorm_lim_le_liminf_eLpNorm {f : ℕ → α → E}
-    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (f_lim : α → E) (hf_lim : AEStronglyMeasurable f_lim μ)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim p μ ≤ atTop.liminf fun n => eLpNorm (f n) p μ := by
   obtain rfl | hp0 := eq_or_ne p 0
-  · simp
+  · simp [eLpNorm_exponent_zero hf_lim, eLpNorm_exponent_zero (hf _)]
   by_cases hp_top : p = ∞
   · simp_rw [hp_top]
-    exact eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top h_lim
-  simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
+    exact eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top hf hf_lim h_lim
+  simp_rw [eLpNorm_eq_eLpNorm' hp0 hp_top hf_lim,
+    eLpNorm_eq_eLpNorm' hp0 hp_top (hf _)]
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0 hp_top
   exact eLpNorm'_lim_le_liminf_eLpNorm' hp_pos hf h_lim
 
+/-- If the `eLpNorm` of a collection of `AEStronglyMeasurable` functions that converges almost
+everywhere is bounded by some constant `C`, then the `eLpNorm` of its limit is also bounded by
+`C`. -/
+theorem eLpNorm_le_of_ae_tendsto {ι : Type*} {u : Filter ι} [NeBot u] [IsCountablyGenerated u]
+    {f : ι → α → E} {g : α → E} {C : ℝ≥0∞} (bound : ∀ᶠ n in u, eLpNorm (f n) p μ ≤ C)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ)
+    (h_tendsto : ∀ᵐ (x : α) ∂μ, Tendsto (f · x) u (𝓝 (g x))) :
+    eLpNorm g p μ ≤ C := by
+  obtain ⟨v, hv⟩ := exists_seq_tendsto u
+  have : ∀ᵐ (x : α) ∂μ, Tendsto (fun n => f (v n) x) atTop (𝓝 (g x)) := by
+    filter_upwards [h_tendsto] with x hx
+    exact hx.comp hv
+  calc
+  _ ≤ atTop.liminf (fun (n : ℕ) => eLpNorm (f (v n)) p μ) :=
+    Lp.eLpNorm_lim_le_liminf_eLpNorm (fun n => hf (v n)) g hg this
+  _ ≤ C := by
+    refine liminf_le_of_le (by isBoundedDefault) (fun b hb => ?_)
+    obtain ⟨n, hn⟩ := (hb.and (hv.eventually bound)).exists
+    exact hn.1.trans hn.2
+
 /-! ### `Lp` is complete iff Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
+variable {E : Type*} [NormedAddCommGroup E]
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
     (f_lim : Lp E p μ) :
@@ -90,9 +118,6 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (
   rw [← ENNReal.toReal_zero, ENNReal.tendsto_toReal_iff (fun n => ?_) ENNReal.zero_ne_top]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
-
-@[deprecated (since := "2025-02-21")]
-alias tendsto_Lp_iff_tendsto_ℒp' := tendsto_Lp_iff_tendsto_eLpNorm'
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → Lp E p μ)
     (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ) :
@@ -104,9 +129,6 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f
         (fun n => eLpNorm (⇑(f n) - f_lim) p μ) by
     rw [h_eq]
   exact funext fun n => eLpNorm_congr_ae (EventuallyEq.rfl.sub (MemLp.coeFn_toLp f_lim_ℒp))
-
-@[deprecated (since := "2025-02-21")]
-alias tendsto_Lp_iff_tendsto_ℒp := tendsto_Lp_iff_tendsto_eLpNorm
 
 theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] (f : ι → α → E)
     (f_ℒp : ∀ n, MemLp (f n) p μ) (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ) :
@@ -120,18 +142,11 @@ theorem tendsto_Lp_iff_tendsto_eLpNorm'' {ι} {fi : Filter ι} [Fact (1 ≤ p)] 
   rw [← hx₂]
   exact hx₁
 
-@[deprecated (since := "2025-02-21")]
-alias tendsto_Lp_iff_tendsto_ℒp'' := tendsto_Lp_iff_tendsto_eLpNorm''
-
-
 theorem tendsto_Lp_of_tendsto_eLpNorm {ι} {fi : Filter ι} [Fact (1 ≤ p)] {f : ι → Lp E p μ}
     (f_lim : α → E) (f_lim_ℒp : MemLp f_lim p μ)
     (h_tendsto : fi.Tendsto (fun n => eLpNorm (⇑(f n) - f_lim) p μ) (𝓝 0)) :
     fi.Tendsto f (𝓝 (f_lim_ℒp.toLp f_lim)) :=
   (tendsto_Lp_iff_tendsto_eLpNorm f f_lim f_lim_ℒp).mpr h_tendsto
-
-@[deprecated (since := "2025-02-21")]
-alias tendsto_Lp_of_tendsto_ℒp := tendsto_Lp_of_tendsto_eLpNorm
 
 theorem cauchySeq_Lp_iff_cauchySeq_eLpNorm {ι} [Nonempty ι] [SemilatticeSup ι] [hp : Fact (1 ≤ p)]
     (f : ι → Lp E p μ) :
@@ -140,9 +155,6 @@ theorem cauchySeq_Lp_iff_cauchySeq_eLpNorm {ι} [Nonempty ι] [SemilatticeSup ι
   rw [← ENNReal.toReal_zero, ENNReal.tendsto_toReal_iff (fun n => ?_) ENNReal.zero_ne_top]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact eLpNorm_ne_top _
-
-@[deprecated (since := "2025-02-21")]
-alias cauchySeq_Lp_iff_cauchySeq_ℒp := cauchySeq_Lp_iff_cauchySeq_eLpNorm
 
 theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
     (H :
@@ -165,7 +177,7 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
       change (∑' n : ℕ, ENNReal.ofReal (B n)) = ENNReal.ofReal M
       rw [← hB.tsum_eq]
       exact (ENNReal.ofReal_tsum_of_nonneg (fun n => le_of_lt (hB_pos n)) hB.summable).symm
-    have h_sum := (@ENNReal.summable _ B1).hasSum
+    have h_sum := (CompleteLattice.summable (f := B1)).hasSum
     rwa [h_tsum_B1] at h_sum
   have hB1 : ∑' i, B1 i < ∞ := by
     rw [hB1_has.tsum_eq]
@@ -178,9 +190,6 @@ theorem completeSpace_lp_of_cauchy_complete_eLpNorm [hp : Fact (1 ≤ p)]
   rwa [ENNReal.lt_ofReal_iff_toReal_lt]
   rw [eLpNorm_congr_ae (Lp.coeFn_sub _ _).symm]
   exact Lp.eLpNorm_ne_top _
-
-@[deprecated (since := "2025-02-21")]
-alias completeSpace_lp_of_cauchy_complete_ℒp := completeSpace_lp_of_cauchy_complete_eLpNorm
 
 /-! ### Prove that controlled Cauchy sequences of `ℒp` have limits in `ℒp` -/
 
@@ -197,7 +206,7 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
   rw [hgf_norm_diff]
   refine (eLpNorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans ?_
   simp_rw [eLpNorm'_norm]
-  refine (Finset.sum_le_sum ?_).trans <| ENNReal.sum_le_tsum _
+  refine (Finset.sum_le_sum ?_).trans <| sum_le_tsum _
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 
 private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
@@ -207,17 +216,17 @@ private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   rw [← inv_inv p, @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [hp_pos]), inv_inv p]
   simp_rw [eLpNorm'_eq_lintegral_enorm, one_div] at hn
-  have h_nnnorm_nonneg :
+  have h_nnNorm_nonneg :
     (fun a => ‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖ₑ ^ p) = fun a =>
       (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p := by
     ext1 a
     congr
-    simp_rw [← ofReal_norm_eq_enorm]
+    simp_rw [← ofReal_norm]
     rw [← ENNReal.ofReal_sum_of_nonneg]
     · rw [Real.norm_of_nonneg _]
       exact Finset.sum_nonneg fun x _ => norm_nonneg _
     · exact fun x _ => norm_nonneg _
-  rwa [h_nnnorm_nonneg] at hn
+  rwa [h_nnNorm_nonneg] at hn
 
 private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
@@ -255,7 +264,7 @@ private theorem tsum_enorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AES
     rwa [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv] at h
   have rpow_ae_lt_top : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖ₑ) ^ p < ∞ := by
     refine ae_lt_top' (AEMeasurable.pow_const ?_ _) h_integral.ne
-    exact AEMeasurable.ennreal_tsum fun n => ((hf (n + 1)).sub (hf n)).enorm
+    exact AEMeasurable.tsum fun n => ((hf (n + 1)).sub (hf n)).enorm
   refine rpow_ae_lt_top.mono fun x hx => ?_
   rwa [← ENNReal.lt_rpow_inv_iff hp_pos,
     ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < p⁻¹)] at hx
@@ -275,27 +284,11 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
       lintegral_rpow_tsum_coe_enorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, ∑' i, ‖f (i + 1) x - f i x‖ₑ < ∞ :=
       tsum_enorm_sub_ae_lt_top hf hp1 hB h3
-    exact h4.mono fun x hx => .of_nnnorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
-  have h :
-    ∀ᵐ x ∂μ, ∃ l : E,
-      atTop.Tendsto (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) (𝓝 l) := by
-    refine h_summable.mono fun x hx => ?_
-    let hx_sum := hx.hasSum.tendsto_sum_nat
-    exact ⟨∑' i, (f (i + 1) x - f i x), hx_sum⟩
-  refine h.mono fun x hx => ?_
-  obtain ⟨l, hx⟩ := hx
-  have h_rw_sum :
-      (fun n => ∑ i ∈ Finset.range n, (f (i + 1) x - f i x)) = fun n => f n x - f 0 x := by
-    ext1 n
-    change
-      (∑ i ∈ Finset.range n, ((fun m => f m x) (i + 1) - (fun m => f m x) i)) = f n x - f 0 x
-    rw [Finset.sum_range_sub (fun m => f m x)]
-  rw [h_rw_sum] at hx
-  have hf_rw : (fun n => f n x) = fun n => f n x - f 0 x + f 0 x := by
-    ext1 n
-    abel
-  rw [hf_rw]
-  exact ⟨l + f 0 x, Tendsto.add_const _ hx⟩
+    exact h4.mono fun x hx => .of_nnNorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
+  refine h_summable.mono fun x hx ↦ ?_
+  have hx_sum := hx.hasSum.tendsto_sum_nat
+  rw [funext fun n ↦ Finset.sum_range_sub (fun m ↦ f m x) n] at hx_sum
+  exact ⟨∑' i, (f (i + 1) x - f i x) + f 0 x, by simpa using hx_sum.add_const (f 0 x)⟩
 
 theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hp : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
@@ -305,15 +298,17 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
   · simp_rw [hp_top] at *
     have h_cau_ae : ∀ᵐ x ∂μ, ∀ N n m, N ≤ n → N ≤ m → ‖(f n - f m) x‖ₑ < B N := by
       simp_rw [ae_all_iff]
-      exact fun N n m hnN hmN => ae_lt_of_essSup_lt (h_cau N n m hnN hmN)
-    simp_rw [eLpNorm_exponent_top, eLpNormEssSup] at h_cau
+      exact fun N n m hnN hmN => ae_lt_of_essSup_lt <| by
+        simpa only [eLpNorm_exponent_top ((hf n).sub (hf m)), eLpNormEssSup] using
+          h_cau N n m hnN hmN
+    simp_rw [eLpNorm_exponent_top ((hf _).sub (hf _)), eLpNormEssSup] at h_cau
     refine h_cau_ae.mono fun x hx => cauchySeq_tendsto_of_complete ?_
     refine cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) ?_ ?_
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
       rw [_root_.dist_eq_norm,
-        ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.ne_top_of_tsum_ne_top hB N),
-        ofReal_norm_eq_enorm]
+        ← ENNReal.ofReal_le_iff_le_toReal (ne_top_of_tsum_ne_top hB N),
+        ofReal_norm]
       exact hx.le
     · rw [← ENNReal.toReal_zero]
       exact
@@ -325,7 +320,8 @@ theorem ae_tendsto_of_cauchy_eLpNorm [CompleteSpace E] {f : ℕ → α → E}
   have h_cau' : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm' (f n - f m) p.toReal μ < B N := by
     intro N n m hn hm
     specialize h_cau N n m hn hm
-    rwa [eLpNorm_eq_eLpNorm' (zero_lt_one.trans_le hp).ne.symm hp_top] at h_cau
+    rwa [eLpNorm_eq_eLpNorm' (zero_lt_one.trans_le hp).ne.symm hp_top
+      ((hf n).sub (hf m))] at h_cau
   exact ae_tendsto_of_cauchy_eLpNorm' hf hp1 hB h_cau'
 
 theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
@@ -333,6 +329,8 @@ theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStrongly
     (h_cau : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0) := by
+  have hf_lim : AEStronglyMeasurable f_lim μ :=
+    aestronglyMeasurable_of_tendsto_ae atTop hf h_lim
   rw [ENNReal.tendsto_atTop_zero]
   intro ε hε
   have h_B : ∃ N : ℕ, B N ≤ ε := by
@@ -342,7 +340,8 @@ theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStrongly
   obtain ⟨N, h_B⟩ := h_B
   refine ⟨N, fun n hn => ?_⟩
   have h_sub : eLpNorm (f n - f_lim) p μ ≤ atTop.liminf fun m => eLpNorm (f n - f m) p μ := by
-    refine eLpNorm_lim_le_liminf_eLpNorm (fun m => (hf n).sub (hf m)) (f n - f_lim) ?_
+    refine eLpNorm_lim_le_liminf_eLpNorm (fun m => (hf n).sub (hf m)) (f n - f_lim)
+      ((hf n).sub hf_lim) ?_
     refine h_lim.mono fun x hx => ?_
     simp_rw [sub_eq_add_neg]
     exact Tendsto.add tendsto_const_nhds (Tendsto.neg hx)
@@ -352,24 +351,21 @@ theorem cauchy_tendsto_of_tendsto {f : ℕ → α → E} (hf : ∀ n, AEStrongly
   exact (h_cau N n (max N N1) hn (le_max_left _ _)).le.trans h_B
 
 theorem memLp_of_cauchy_tendsto (hp : 1 ≤ p) {f : ℕ → α → E} (hf : ∀ n, MemLp (f n) p μ)
-    (f_lim : α → E) (h_lim_meas : AEStronglyMeasurable f_lim μ)
-    (h_tendsto : atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0)) : MemLp f_lim p μ := by
-  refine ⟨h_lim_meas, ?_⟩
+    (f_lim : α → E) (h_tendsto : atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0)) :
+    MemLp f_lim p μ := by
+  rw [memLp_iff]
   rw [ENNReal.tendsto_atTop_zero] at h_tendsto
   obtain ⟨N, h_tendsto_1⟩ := h_tendsto 1 zero_lt_one
   specialize h_tendsto_1 N (le_refl N)
   have h_add : f_lim = f_lim - f N + f N := by abel
   rw [h_add]
-  refine lt_of_le_of_lt (eLpNorm_add_le (h_lim_meas.sub (hf N).1) (hf N).1 hp) ?_
+  refine lt_of_le_of_lt (eLpNorm_add_le hp) ?_
   rw [ENNReal.add_lt_top]
   constructor
   · refine lt_of_le_of_lt ?_ ENNReal.one_lt_top
     have h_neg : f_lim - f N = -(f N - f_lim) := by simp
     rwa [h_neg, eLpNorm_neg]
-  · exact (hf N).2
-
-@[deprecated (since := "2025-02-21")]
-alias memℒp_of_cauchy_tendsto := memLp_of_cauchy_tendsto
+  · exact hf N
 
 theorem cauchy_complete_eLpNorm [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α → E}
     (hf : ∀ n, MemLp (f n) p μ) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
@@ -379,15 +375,13 @@ theorem cauchy_complete_eLpNorm [CompleteSpace E] (hp : 1 ≤ p) {f : ℕ → α
   obtain ⟨f_lim, h_f_lim_meas, h_lim⟩ :
       ∃ f_lim : α → E, StronglyMeasurable f_lim ∧
         ∀ᵐ x ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x)) :=
-    exists_stronglyMeasurable_limit_of_tendsto_ae (fun n => (hf n).1)
-      (ae_tendsto_of_cauchy_eLpNorm (fun n => (hf n).1) hp hB h_cau)
+    exists_stronglyMeasurable_limit_of_tendsto_ae (fun n => (hf n).aestronglyMeasurable)
+      (ae_tendsto_of_cauchy_eLpNorm (fun n => (hf n).aestronglyMeasurable) hp hB h_cau)
   have h_tendsto' : atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0) :=
-    cauchy_tendsto_of_tendsto (fun m => (hf m).1) f_lim hB h_cau h_lim
+    cauchy_tendsto_of_tendsto (fun m => (hf m).aestronglyMeasurable) f_lim hB h_cau h_lim
   have h_ℒp_lim : MemLp f_lim p μ :=
-    memLp_of_cauchy_tendsto hp hf f_lim h_f_lim_meas.aestronglyMeasurable h_tendsto'
+    memLp_of_cauchy_tendsto hp hf f_lim h_tendsto'
   exact ⟨f_lim, h_ℒp_lim, h_tendsto'⟩
-
-@[deprecated (since := "2025-02-21")] alias cauchy_complete_ℒp := cauchy_complete_eLpNorm
 
 /-- `Lp` is complete for `1 ≤ p`. -/
 instance instCompleteSpace [CompleteSpace E] [hp : Fact (1 ≤ p)] : CompleteSpace (Lp E p μ) :=

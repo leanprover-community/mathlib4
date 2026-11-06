@@ -3,10 +3,10 @@ Copyright (c) 2023 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.MvPolynomial.Eval
-import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-!
 # Polynomials are analytic
@@ -14,6 +14,8 @@ import Mathlib.Topology.Algebra.Module.FiniteDimension
 This file combines the analysis and algebra libraries and shows that evaluation of a polynomial
 is an analytic function.
 -/
+
+public section
 
 variable {𝕜 E A B : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [CommSemiring A] {z : E} {s : Set E}
@@ -28,7 +30,7 @@ theorem AnalyticWithinAt.aeval_polynomial (hf : AnalyticWithinAt 𝕜 f s z) (p 
   refine p.induction_on (fun k ↦ ?_) (fun p q hp hq ↦ ?_) fun p i hp ↦ ?_
   · simp_rw [aeval_C]; apply analyticWithinAt_const
   · simp_rw [aeval_add]; exact hp.add hq
-  · convert hp.mul hf
+  · convert! hp.mul hf
     simp_rw [pow_succ, aeval_mul, ← mul_assoc, aeval_X]
 
 theorem AnalyticAt.aeval_polynomial (hf : AnalyticAt 𝕜 f z) (p : A[X]) :
@@ -74,7 +76,7 @@ theorem AnalyticOnNhd.eval_continuousLinearMap' (f : σ → E →L[𝕜] B) (p :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ (f i).analyticAt x) p
 
-variable [CompleteSpace 𝕜] [T2Space E] [FiniteDimensional 𝕜 E]
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
 
 theorem AnalyticOnNhd.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=

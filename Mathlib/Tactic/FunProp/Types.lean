@@ -3,14 +3,19 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+module
+
+public meta import Lean.Meta.Tactic.Simp
+public meta import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
+public meta import Mathlib.Tactic.FunProp.FunctionData
 
 /-!
 ## `funProp`
 
 this file defines environment extension for `funProp`
 -/
+
+public meta section
 
 
 namespace Mathlib
@@ -64,7 +69,7 @@ def FunctionData.getFnOrigin (fData : FunctionData) : Origin :=
 
 /-- Default names to be considered reducible by `fun_prop` -/
 def defaultNamesToUnfold : Array Name :=
-  #[`id, `Function.comp, `Function.HasUncurry.uncurry, `Function.uncurry]
+  #[`id, `Function.comp, `Function.const, `Function.HasUncurry.uncurry, `Function.uncurry]
 
 /-- `fun_prop` configuration -/
 structure Config where
@@ -85,7 +90,7 @@ deriving Inhabited, BEq
 
 /-- `fun_prop` context -/
 structure Context where
-  /-- fun_prop config -/
+  /-- `fun_prop` config -/
   config : Config := {}
   /-- Name to unfold -/
   constToUnfold : TreeSet Name Name.quickCmp :=
@@ -142,14 +147,15 @@ structure Result where
   /-- -/
   proof : Expr
 
-/-- Default names to unfold -/
-def defaultUnfoldPred : Name → Bool :=
-  defaultNamesToUnfold.contains
+/-- Predicate for unfolding the constants that are considered reducible by `fun_prop`. -/
+def unfoldPred (toUnfold : NameSet := .ofArray defaultNamesToUnfold) (cfg : Meta.Config)
+    (info : ConstantInfo) : CoreM Bool :=
+  pure (toUnfold.contains info.name) <||> canUnfoldDefault cfg info
 
-/-- Get predicate on names indicating whether they should be unfolded. -/
-def unfoldNamePred : FunPropM (Name → Bool) := do
-  let toUnfold := (← read).constToUnfold
-  return fun n => toUnfold.contains n
+/-- Returns an unfolding predicate that also unfolds constants given with the `fun_prop [c]` syntax.
+-/
+def getUnfoldPred : FunPropM (Meta.Config → ConstantInfo → CoreM Bool) := do
+  return unfoldPred (← read).constToUnfold
 
 /-- Increase heartbeat, throws error when `maxSteps` was reached -/
 def increaseSteps : FunPropM Unit := do

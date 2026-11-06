@@ -3,11 +3,11 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded.Star
-import Mathlib.Topology.ContinuousMap.Star
-import Mathlib.Topology.UniformSpace.Compact
-import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Sets.Compacts
+module
+
+public import Mathlib.Topology.ContinuousMap.Bounded.Star
+public import Mathlib.Topology.Sets.Compacts
+
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 
 /-!
@@ -23,6 +23,8 @@ If you need a lemma which is proved about `α →ᵇ β` but not for `C(α, β)`
 you should restate it here. You can also use
 `ContinuousMap.equivBoundedOfCompact` to move functions back and forth.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -64,12 +66,16 @@ theorem isUniformEmbedding_equivBoundedOfCompact : IsUniformEmbedding (equivBoun
   { isUniformInducing_equivBoundedOfCompact α β with
     injective := (equivBoundedOfCompact α β).injective }
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
 @[simps! -fullyApplied apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
-  ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
+  ({ toContinuousMapAddMonoidHom α β, (equivBoundedOfCompact α β).symm with } :
+    (α →ᵇ β) ≃+ C(α, β)).symm
 
 instance instPseudoMetricSpace : PseudoMetricSpace C(α, β) :=
   (isUniformEmbedding_equivBoundedOfCompact α β).comapPseudoMetricSpace _
@@ -142,9 +148,9 @@ theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
 instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
     IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
-    simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
+    simpa only [← dist_mkOfCompact] using! dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
   dist_pair_smul' r₁ r₂ f := by
-    simpa only [← dist_mkOfCompact] using dist_pair_smul r₁ r₂ (mkOfCompact f)
+    simpa only [← dist_mkOfCompact] using! dist_pair_smul r₁ r₂ (mkOfCompact f)
 
 end
 
@@ -166,14 +172,18 @@ open BoundedContinuousFunction
 instance : SeminormedAddCommGroup C(α, E) where
   __ := ContinuousMap.instPseudoMetricSpace _ _
   __ := ContinuousMap.instAddCommGroupContinuousMap
-  dist_eq x y := by
-    rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm, mkOfCompact_sub]
+  dist_eq x y := by rw [← norm_mkOfCompact, ← dist_mkOfCompact, dist_eq_norm_neg_add,
+    mkOfCompact_add, mkOfCompact_neg]
   dist := dist
   norm := norm
 
 instance {E : Type*} [NormedAddCommGroup E] : NormedAddCommGroup C(α, E) where
   __ : SeminormedAddCommGroup C(α, E) := inferInstance
   __ : MetricSpace C(α, E) := inferInstance
+
+instance [Nonempty α] {E : Type*} [NormedAddCommGroup E] [Nontrivial E] :
+    NontrivialTopology C(α, E) := by
+  simpa [nontrivialTopology_iff_exists_norm_ne_zero] using exists_ne (0 : C(α, E))
 
 instance [Nonempty α] [One E] [NormOneClass E] : NormOneClass C(α, E) where
   norm_one := by simp only [← norm_mkOfCompact, mkOfCompact_one, norm_one]
@@ -201,14 +211,18 @@ theorem norm_le_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ ≤ M ↔ ∀ x, �
 theorem norm_lt_iff {M : ℝ} (M0 : 0 < M) : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
   @BoundedContinuousFunction.norm_lt_iff_of_compact _ _ _ _ _ (mkOfCompact f) _ M0
 
-theorem nnnorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
+theorem nnNorm_lt_iff {M : ℝ≥0} (M0 : 0 < M) : ‖f‖₊ < M ↔ ∀ x : α, ‖f x‖₊ < M :=
   f.norm_lt_iff M0
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_lt_iff := nnNorm_lt_iff
 
 theorem norm_lt_iff_of_nonempty [Nonempty α] {M : ℝ} : ‖f‖ < M ↔ ∀ x, ‖f x‖ < M :=
   @BoundedContinuousFunction.norm_lt_iff_of_nonempty_compact _ _ _ _ _ _ (mkOfCompact f) _
 
-theorem nnnorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
+theorem nnNorm_lt_iff_of_nonempty [Nonempty α] {M : ℝ≥0} : ‖f‖₊ < M ↔ ∀ x, ‖f x‖₊ < M :=
   f.norm_lt_iff_of_nonempty
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_lt_iff_of_nonempty := nnNorm_lt_iff_of_nonempty
 
 theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
   le_trans (le_abs.mpr (Or.inl (le_refl (f x)))) (f.norm_coe_le_norm x)
@@ -216,8 +230,10 @@ theorem apply_le_norm (f : C(α, ℝ)) (x : α) : f x ≤ ‖f‖ :=
 theorem neg_norm_le_apply (f : C(α, ℝ)) (x : α) : -‖f‖ ≤ f x :=
   le_trans (neg_le_neg (f.norm_coe_le_norm x)) (neg_le.mp (neg_le_abs (f x)))
 
-theorem nnnorm_eq_iSup_nnnorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
-  (mkOfCompact f).nnnorm_eq_iSup_nnnorm
+theorem nnNorm_eq_iSup_nnNorm : ‖f‖₊ = ⨆ x : α, ‖f x‖₊ :=
+  (mkOfCompact f).nnNorm_eq_iSup_nnNorm
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_iSup_nnnorm := nnNorm_eq_iSup_nnNorm
 
 theorem norm_eq_iSup_norm : ‖f‖ = ⨆ x : α, ‖f x‖ :=
   (mkOfCompact f).norm_eq_iSup_norm
@@ -233,6 +249,13 @@ instance {X : Type*} [TopologicalSpace X] (K : TopologicalSpace.Compacts X) :
 theorem norm_restrict_mono_set {X : Type*} [TopologicalSpace X] (f : C(X, E))
     {K L : TopologicalSpace.Compacts X} (hKL : K ≤ L) : ‖f.restrict K‖ ≤ ‖f.restrict L‖ :=
   (norm_le _ (norm_nonneg _)).mpr fun x => norm_coe_le_norm (f.restrict L) <| Set.inclusion hKL x
+
+lemma norm_eq_norm_coeFn [Fintype α] : ‖f‖ = ‖(f : α → E)‖ := by
+  apply le_antisymm
+  · rw [ContinuousMap.norm_le _ (by positivity)]
+    exact norm_le_pi_norm _
+  · rw [pi_norm_le_iff_of_nonneg (by positivity)]
+    exact f.norm_coe_le_norm
 
 end
 
@@ -329,15 +352,65 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 
 end
 
-@[simp] lemma nnnorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
+@[simp] lemma nnNorm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
-  simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
+  simp only [nnNorm_eq_iSup_nnNorm, smul_apply', const_apply, nnNorm_smul, iSup_mul]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul_const := nnNorm_smul_const
 
 @[simp] lemma norm_smul_const {R β : Type*} [SeminormedAddCommGroup β] [SeminormedRing R]
     [Module R β] [NormSMulClass R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
-  simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
+  simp only [← coe_nnNorm, NNReal.coe_mul, nnNorm_smul_const]
+
+section NormSum
+
+variable {R : Type*} [NonUnitalSeminormedRing R] [IsCancelMulZero R]
+
+open BoundedContinuousFunction
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma norm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖ = max ‖f‖ ‖g‖ := by
+  replace h : mkOfCompact f * mkOfCompact g = 0 := by ext x; simpa using! congr($h x)
+  simpa using! BoundedContinuousFunction.norm_add_eq_max h
+
+/-- If the product of continuous functions on a compact space is zero, then the norm of their sum
+is the maximum of their norms. -/
+lemma nnNorm_add_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f + g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_add_eq_max h
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
+
+lemma norm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖ = max ‖f‖ ‖g‖ := by
+  simpa [sub_eq_add_neg] using norm_add_eq_max (f := f) (g := -g) (by simpa)
+
+lemma nnNorm_sub_eq_max {f g : C(α, R)} (h : f * g = 0) :
+    ‖f - g‖₊ = max ‖f‖₊ ‖g‖₊ :=
+  NNReal.eq <| norm_sub_eq_max h
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+
+open scoped Function in
+/-- If the pairwise products of continuous functions on a compact space are all zero, then the norm
+of their sum is the maximum of their norms. -/
+lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → C(α, R)} (s : Finset ι)
+    (h : Pairwise ((· * · = 0) on f)) :
+    ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert j s hj ih =>
+    suffices f j * ∑ i ∈ s, f i = 0 by simpa [hj, ← ih] using nnNorm_add_eq_max this
+    simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
+
+end NormSum
 
 section
 
@@ -384,18 +457,6 @@ end UniformContinuity
 
 end ContinuousMap
 
-section CompLeft
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact :=
-  ContinuousLinearMap.compLeftContinuous
-
-@[deprecated (since := "2025-05-18")]
-alias ContinuousLinearMap.compLeftContinuousCompact_apply :=
-  ContinuousLinearMap.compLeftContinuous_apply
-
-end CompLeft
-
 namespace ContinuousMap
 
 section LocalNormalConvergence
@@ -413,7 +474,6 @@ variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     (hF : ∀ K : Compacts X, Summable fun i => ‖(F i).restrict K‖) : Summable F := by
-  classical
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
   have A : ∀ s : Finset ι, restrict K (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
@@ -422,7 +482,7 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
     -- TODO: there is a non-confluence problem in the lemmas here,
     -- and `SetLike.coe_sort_coe` prevents `restrict_apply` from being used.
     simp [-SetLike.coe_sort_coe]
-  simpa only [HasSum, A] using (hF K).of_norm
+  simpa only [HasSum, A] using! (hF K).of_norm
 
 end LocalNormalConvergence
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Jan Förster, Leon Müller, Luis Sand, and Junyan Xu. All rig
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan Förster, Leon Müller, Luis Sand, Junyan Xu
 -/
-import Mathlib.Data.Set.Card
-import Mathlib.Topology.Closure
+module
+
+public import Mathlib.Data.Set.Card
+public import Mathlib.Topology.Closure
 
 /-!
 # The Kuratowski closure-complement theorem
@@ -33,7 +35,7 @@ In another file it will be shown that the maximum can be realized in the real nu
   for an arbitrary set `s`, there are at most 14 distinct sets that can be obtained from `s` using
   the closure and complement operations (the **Kuratowski closure-complement theorem**).
 
-## Notations
+## Notation
 
 * `k`: the closure of a set.
 * `i`: the interior of a set.
@@ -44,6 +46,8 @@ In another file it will be shown that the maximum can be realized in the real nu
 * https://en.wikipedia.org/wiki/Kuratowski%27s_closure-complement_problem
 * https://web.archive.org/web/20220212062843/http://nzjm.math.auckland.ac.nz/images/6/63/The_Kuratowski_Closure-Complement_Theorem.pdf
 -/
+
+@[expose] public section
 
 namespace Topology.ClosureCompl
 
@@ -79,8 +83,7 @@ theorem card_theFourteen (s : Set X) : (theFourteen s).card = 14 := rfl
 /-- If `t` is obtainable from `s` by the closure and complement operations,
 then it is in the multiset `theFourteen s`. -/
 theorem IsObtainable.mem_theFourteen {s t : Set X} (h : IsObtainable s t) : t ∈ theFourteen s := by
-  induction' h with _ _ mem _ _ mem
-  case base => exact .head _
+  induction h with | base => exact .head _ | closure _ mem => ?_ | complement _ mem => ?_
   all_goals repeat obtain _ | ⟨_, mem⟩ := mem; rotate_left
   all_goals simp [theFourteen]
 
@@ -102,8 +105,7 @@ theorem mem_theFourteen_iff_isObtainable {s t : Set X} :
 /-- **Kuratowski's closure-complement theorem**: the number of obtainable sets via closure and
 complement operations from a single set `s` is at most 14. -/
 theorem ncard_isObtainable_le_fourteen (s : Set X) : {t | IsObtainable s t}.ncard ≤ 14 := by
-  classical
-  convert Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
+  convert! Set.ncard_coe_finset _ ▸ (theFourteen s).toFinset_card_le
   simp [Set.ext_iff, mem_theFourteen_iff_isObtainable]
 
 end Topology.ClosureCompl

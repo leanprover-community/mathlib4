@@ -3,10 +3,10 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
-import Mathlib.Algebra.MonoidAlgebra.Division
-import Mathlib.Algebra.Polynomial.Degree.Operations
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Algebra.MonoidAlgebra.Division
+public import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Induction on polynomials
@@ -14,18 +14,18 @@ import Mathlib.Order.Interval.Finset.Nat
 This file contains lemmas dealing with different flavours of induction on polynomials.
 -/
 
+@[expose] public section
+
 
 noncomputable section
 
-open Polynomial
-
-open Finset
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
 universe u v w z
 
-variable {R : Type u} {S : Type v} {T : Type w} {A : Type z} {a b : R} {n : ℕ}
+variable {R : Type u} {A : Type z} {a b : R} {n : ℕ}
 
 section Semiring
 
@@ -34,28 +34,26 @@ variable [Semiring R] {p q : R[X]}
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
   It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
-  ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
+  AddMonoidAlgebra.divOf p 1
 
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
 
-theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, coeff_mul_X]
+theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p := by
+  ext (_ | _) <;> simp [coeff_C, coeff_mul_X]
 
 @[simp]
-theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C]
+theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p := by
+  ext (_ | _) <;> simp [coeff_C]
 
 @[simp]
-theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX]
+theorem divX_C (a : R) : divX (C a) = 0 := by ext; simp [coeff_divX]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
 
-theorem divX_add : divX (p + q) = divX p + divX q :=
-  ext <| by simp
+theorem divX_add : divX (p + q) = divX p + divX q := by ext; simp
 
 @[simp]
 theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl
@@ -63,7 +61,7 @@ theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl
 @[simp]
 theorem divX_one : divX (1 : R[X]) = 0 := by
   ext
-  simpa only [coeff_divX, coeff_zero] using coeff_one
+  simpa only [coeff_divX, coeff_zero] using! coeff_one
 
 @[simp]
 theorem divX_C_mul : divX (C a * p) = C a * divX p := by
@@ -102,7 +100,7 @@ theorem divX_C_mul_X_pow : divX (C a * X ^ n) = if n = 0 then 0 else C a * X ^ (
   simp only [divX_C_mul, divX_X_pow, mul_ite, mul_zero]
 
 theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
-  haveI := Nontrivial.of_polynomial_ne hp0
+  have := Nontrivial.of_polynomial_ne hp0
   calc
     degree (divX p) < (divX p * X + C (p.coeff 0)).degree :=
       if h : degree p ≤ 0 then by
@@ -153,6 +151,7 @@ if it holds for
 * `a * X`, with `a ∈ R`,
 * `p * X`, with `p ∈ R[X]`,
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
+
 with appropriate restrictions on each term.
 
 See `natDegree_ne_zero_induction_on` for a similar statement involving no explicit multiplication.
@@ -166,7 +165,7 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
       (have : 0 < degree p :=
         (lt_of_not_ge fun h =>
           not_lt_of_ge (degree_C_le (a := a)) <|
-            by rwa [eq_C_of_degree_le_zero h, ← C_add,heq0,zero_add] at h0)
+            by rwa [eq_C_of_degree_le_zero h, ← C_add, heq0, zero_add] at h0)
       hadd this (ih this)))
     (fun p _ ih h0' =>
       if h0 : 0 < degree p then hX h0 (ih h0)
@@ -180,7 +179,9 @@ semiring `R` if it holds for
 * `p + a`, with `a ∈ R`, `p ∈ R[X]`,
 * `p + q`, with `p, q ∈ R[X]`,
 * monomials with nonzero coefficient and non-zero exponent,
+
 with appropriate restrictions on each term.
+
 Note that multiplication is "hidden" in the assumption on monomials, so there is no explicit
 multiplication in the statement.
 See `degree_pos_induction_on` for a similar statement involving more explicit multiplications.

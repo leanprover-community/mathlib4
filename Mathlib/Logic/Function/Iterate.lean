@@ -3,7 +3,10 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Function.Conjugate
+module
+
+public import Mathlib.Data.Nat.Notation
+public import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Iterations of a function
@@ -27,6 +30,8 @@ In this file we prove simple properties of `Nat.iterate f n` a.k.a. `f^[n]`:
 
 -/
 
+@[expose] public section
+
 
 universe u v
 
@@ -38,7 +43,7 @@ def Nat.iterate {α : Sort u} (op : α → α) : ℕ → α → α
   | succ k, a => iterate op k (op a)
 
 @[inherit_doc Nat.iterate]
-notation:max f "^["n"]" => Nat.iterate f n
+notation:max f "^[" n "]" => Nat.iterate f n
 
 namespace Function
 
@@ -236,3 +241,14 @@ theorem foldr_const (f : β → β) (b : β) : ∀ l : List α, l.foldr (fun _ �
   | a :: l => by rw [length_cons, foldr, foldr_const f b l, iterate_succ_apply']
 
 end List
+
+namespace Pi
+
+variable {ι : Type*}
+
+@[simp]
+theorem map_iterate {α : ι → Type*} (f : ∀ i, α i → α i) (n : ℕ) :
+    (Pi.map f)^[n] = Pi.map fun i => (f i)^[n] := by
+  induction n <;> simp [*, map_comp_map]
+
+end Pi

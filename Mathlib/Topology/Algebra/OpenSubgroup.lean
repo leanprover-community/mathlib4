@@ -3,17 +3,18 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan, Yi Song, Xuchun Li
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.RingTheory.Ideal.Defs
-import Mathlib.Topology.Algebra.Group.Quotient
-import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Sets.Opens
+module
+
+public import Mathlib.RingTheory.Ideal.Defs
+public import Mathlib.Topology.Algebra.Group.Quotient
+public import Mathlib.Topology.Algebra.Ring.Basic
+public import Mathlib.Topology.Sets.Opens
 
 /-!
 # Open subgroups of a topological group
 
-This files builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
-and its additive version `OpenAddSubgroup`.  This lattice has a top element, the subgroup of all
+This file builds the lattice `OpenSubgroup G` of open subgroups in a topological group `G`,
+and its additive version `OpenAddSubgroup`. This lattice has a top element, the subgroup of all
 elements, but no bottom element in general. The trivial subgroup which is the natural candidate
 bottom has no reason to be open (this happens only in discrete groups).
 
@@ -32,8 +33,12 @@ Note that this notion is especially relevant in a non-archimedean context, for i
   Up to now this file is really geared towards non-archimedean algebra, not Lie groups.
 -/
 
+@[expose] public section
 
-open TopologicalSpace Topology Function
+
+open TopologicalSpace Function
+
+open scoped Topology
 
 /-- The type of open subgroups of a topological additive group. -/
 structure OpenAddSubgroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends AddSubgroup G where
@@ -68,7 +73,9 @@ theorem toSubgroup_injective : Injective ((↑) : OpenSubgroup G → Subgroup G)
 @[to_additive]
 instance : SetLike (OpenSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenSubgroup G) := .ofSetLike (OpenSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (OpenSubgroup G) G where
@@ -135,18 +142,12 @@ instance : Inhabited (OpenSubgroup G) :=
   ⟨⊤⟩
 
 @[to_additive]
-theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
-  apply isOpen_compl_iff.1
-  refine isOpen_iff_forall_mem_open.2 fun x hx ↦ ⟨(fun y ↦ y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
-  · refine fun u hux hu ↦ hx ?_
-    simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
-    convert U.mul_mem (U.inv_mem hux) hu
-    simp
-  · exact U.isOpen.preimage (continuous_mul_right _)
-  · simp [one_mem]
+theorem isClosed [SeparatelyContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
+  have := QuotientGroup.discreteTopology U.isOpen
+  exact QuotientGroup.t1Space_iff.mp inferInstance
 
 @[to_additive]
-theorem isClopen [ContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
+theorem isClopen [SeparatelyContinuousMul G] (U : OpenSubgroup G) : IsClopen (U : Set G) :=
   ⟨U.isClosed, U.isOpen⟩
 
 section
@@ -159,24 +160,15 @@ variable {H : Type*} [Group H] [TopologicalSpace H]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.sum := OpenAddSubgroup.prod
-
 @[to_additive (attr := simp, norm_cast) coe_prod]
 theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.coe_sum := OpenAddSubgroup.coe_prod
-
 @[to_additive (attr := simp, norm_cast) toAddSubgroup_prod]
 theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
-
-@[deprecated (since := "2025-03-11")]
-alias _root_.OpenAddSubgroup.toAddSubgroup_sum := OpenAddSubgroup.toAddSubgroup_prod
 
 end
 
@@ -206,12 +198,10 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 -- We override `toPartialorder` to get better `le`
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
-  { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
 instance : OrderTop (OpenSubgroup G) where
-  top := ⊤
   le_top _ := Set.subset_univ _
 
 @[to_additive (attr := simp, norm_cast)]
@@ -248,41 +238,64 @@ theorem comap_comap {P : Type*} [Group P] [TopologicalSpace P] (K : OpenSubgroup
     (K.comap f₂ hf₂).comap f₁ hf₁ = K.comap (f₂.comp f₁) (hf₂.comp hf₁) :=
   rfl
 
+section
+
+variable {ι : Type*} [Finite ι] (U : ι → OpenSubgroup G)
+
+/-- The intersection of a finite family of open subgroups. -/
+@[to_additive]
+abbrev iInfOfFinite : OpenSubgroup G :=
+  ⟨⨅ i, U i, by
+    convert isOpen_iInter_of_finite (fun i ↦ (U i).isOpen)
+    aesop⟩
+
+attribute [inherit_doc iInfOfFinite] OpenAddSubgroup.iInfOfFinite
+
+@[to_additive]
+lemma iInfOfFinite_le (i : ι) :
+    iInfOfFinite U ≤ U i := by
+  intro x hx
+  rw [← mem_toSubgroup] at hx
+  simp at hx
+  tauto
+
+end
+
 end OpenSubgroup
 namespace Subgroup
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
 
 @[to_additive]
-theorem isOpen_of_mem_nhds [ContinuousMul G] (H : Subgroup G) {g : G} (hg : (H : Set G) ∈ 𝓝 g) :
-    IsOpen (H : Set G) := by
+theorem isOpen_of_mem_nhds [SeparatelyContinuousMul G] (H : Subgroup G) {g : G}
+    (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
   refine isOpen_iff_mem_nhds.2 fun x hx ↦ ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y ↦ y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
-    (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)
+    (continuous_id.mul_const _).tendsto' _ _ (mul_inv_cancel_left _ _)
   simpa only [SetLike.mem_coe, Filter.mem_map',
-    H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using this hg
+    H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using! this hg
 
 @[to_additive]
-theorem isOpen_mono [ContinuousMul G] {H₁ H₂ : Subgroup G} (h : H₁ ≤ H₂)
+theorem isOpen_mono [SeparatelyContinuousMul G] {H₁ H₂ : Subgroup G} (h : H₁ ≤ H₂)
     (h₁ : IsOpen (H₁ : Set G)) : IsOpen (H₂ : Set G) :=
   isOpen_of_mem_nhds _ <| Filter.mem_of_superset (h₁.mem_nhds <| one_mem H₁) h
 
 @[to_additive]
 theorem isOpen_of_openSubgroup
-    [ContinuousMul G] (H : Subgroup G) {U : OpenSubgroup G} (h : ↑U ≤ H) :
+    [SeparatelyContinuousMul G] (H : Subgroup G) {U : OpenSubgroup G} (h : ↑U ≤ H) :
     IsOpen (H : Set G) :=
   isOpen_mono h U.isOpen
 
 /-- If a subgroup of a topological group has `1` in its interior, then it is open. -/
 @[to_additive /-- If a subgroup of an additive topological group has `0` in its interior, then it is
 open. -/]
-theorem isOpen_of_one_mem_interior [ContinuousMul G] (H : Subgroup G)
+theorem isOpen_of_one_mem_interior [SeparatelyContinuousMul G] (H : Subgroup G)
     (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 
 @[to_additive]
-lemma isClosed_of_isOpen [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
+lemma isClosed_of_isOpen [SeparatelyContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
     IsClosed (U : Set G) :=
   OpenSubgroup.isClosed ⟨U, h⟩
 
@@ -292,30 +305,18 @@ lemma subgroupOf_isOpen (U K : Subgroup G) (h : IsOpen (K : Set G)) :
   Continuous.isOpen_preimage (continuous_iff_le_induced.mpr fun _ ↦ id) _ h
 
 @[to_additive]
-lemma discreteTopology [ContinuousMul G] (U : Subgroup G) (h : IsOpen (U : Set G)) :
-    DiscreteTopology (G ⧸ U) := by
-  refine singletons_open_iff_discrete.mp (fun g ↦ ?_)
-  induction g using Quotient.inductionOn with | h g =>
-  change IsOpen (QuotientGroup.mk ⁻¹' {QuotientGroup.mk g})
-  convert_to IsOpen ((g * ·) '' U)
-  · ext g'
-    simp only [Set.mem_preimage, Set.mem_singleton_iff, QuotientGroup.eq, Set.image_mul_left]
-    rw [← U.inv_mem_iff]
-    simp
-  · exact Homeomorph.mulLeft g |>.isOpen_image |>.mpr h
+instance [SeparatelyContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
+  QuotientGroup.discreteTopology U.isOpen
 
 @[to_additive]
-instance [ContinuousMul G] (U : OpenSubgroup G) : DiscreteTopology (G ⧸ U.toSubgroup) :=
-  discreteTopology U.toSubgroup U.isOpen
-
-@[to_additive]
-lemma quotient_finite_of_isOpen [ContinuousMul G] [CompactSpace G] (U : Subgroup G)
+lemma quotient_finite_of_isOpen [SeparatelyContinuousMul G] [CompactSpace G] (U : Subgroup G)
     (h : IsOpen (U : Set G)) : Finite (G ⧸ U) :=
-  have : DiscreteTopology (G ⧸ U) := U.discreteTopology h
+  have : DiscreteTopology (G ⧸ U) := QuotientGroup.discreteTopology h
   finite_of_compact_of_discrete
 
 @[to_additive]
-instance [ContinuousMul G] [CompactSpace G] (U : OpenSubgroup G) : Finite (G ⧸ U.toSubgroup) :=
+instance [SeparatelyContinuousMul G] [CompactSpace G] (U : OpenSubgroup G) :
+    Finite (G ⧸ U.toSubgroup) :=
   quotient_finite_of_isOpen U.toSubgroup U.isOpen
 
 @[to_additive]
@@ -331,11 +332,85 @@ instance [IsTopologicalGroup G] [CompactSpace G] (U : OpenSubgroup G) (K : OpenS
     Finite (U ⧸ K.toSubgroup) :=
   quotient_finite_of_isOpen' U.toSubgroup K.toSubgroup U.isOpen K.isOpen
 
+section LocallyClosed
+
+variable [IsTopologicalGroup G]
+
+open Topology in
+@[to_additive]
+lemma isClosed_of_isLocallyClosed (U : Subgroup G)
+    (h : IsLocallyClosed (U : Set G)) :
+    IsClosed (U : Set G) := by
+  -- Since `U` is locally closed, it is open, hence closed in the closed subgroup
+  -- `U.topologicalClosure`. Hence it is closed in `G`.
+  set V : Subgroup U.topologicalClosure := U.subgroupOf U.topologicalClosure with V_def
+  have V_closed : IsClosed (V : Set U.topologicalClosure) :=
+    V.isClosed_of_isOpen h.isOpen_preimage_val_closure
+  have clemb : IsClosedEmbedding U.topologicalClosure.subtype :=
+    U.isClosed_topologicalClosure.isClosedEmbedding_subtypeVal
+  rwa [clemb.isClosed_iff_image_isClosed, ← coe_map, V_def,
+    map_subgroupOf_eq_of_le U.le_topologicalClosure] at V_closed
+
+open Topology in
+@[to_additive]
+lemma isClosed_of_isLocallyClosedAt (U : Subgroup G) {x : G} (hx : x ∈ U)
+    (h : IsLocallyClosedAt U x) :
+    IsClosed (U : Set G) := by
+  -- By `isClosed_of_isLocallyClosed`, it suffices to show that `U` is locally closed at each
+  -- of its points.
+  refine U.isClosed_of_isLocallyClosed <| isLocallyClosed_iff_isLocallyClosedAt.mpr
+    fun y (hy : y ∈ U) ↦ ?_
+  -- It is then just a matter of translating things around.
+  set f : G → G := fun z ↦ x * y⁻¹ * z
+  have : x = f y := by simp [f]
+  rw [this] at h
+  have : U = f ⁻¹' U := by ext z; simp [f, U.mul_mem_cancel_left (mul_mem hx (inv_mem hy))]
+  rw [this]
+  exact h.preimage (by fun_prop)
+
+@[to_additive]
+lemma isClosed_of_isDiscrete [T1Space G] (U : Subgroup G)
+    (h : IsDiscrete (U : Set G)) : IsClosed (U : Set G) :=
+  U.isClosed_of_isLocallyClosed h.isLocallyClosed
+
+@[to_additive]
+instance isClosed_of_discreteTopology [T1Space G] {U : Subgroup G}
+    [DiscreteTopology U] :
+    IsClosed (U : Set G) :=
+  U.isClosed_of_isDiscrete <| isDiscrete_iff_discreteTopology.mpr ‹_›
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias isClosed_of_discrete := isClosed_of_discreteTopology
+
+open Filter in
+@[to_additive]
+lemma tendsto_coe_cofinite_of_isDiscrete [T1Space G] (H : Subgroup G)
+    (hH : IsDiscrete (H : Set G)) : Tendsto ((↑) : H → G) cofinite (cocompact _) :=
+  (H.isClosed_of_isDiscrete hH).tendsto_coe_cofinite_of_isDiscrete hH
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias tendsto_coe_cofinite_of_discrete := tendsto_coe_cofinite_of_isDiscrete
+
+open Filter in
+@[to_additive]
+lemma _root_.MonoidHom.tendsto_coe_cofinite_of_isDiscrete [T1Space G]
+    {H : Type*} [Group H] {f : H →* G} (hf : Function.Injective f)
+    (hf' : IsDiscrete (f.range : Set G)) :
+    Tendsto f cofinite (cocompact _) := by
+  replace hf : Function.Injective f.rangeRestrict := by simpa
+  exact (f.range.tendsto_coe_cofinite_of_isDiscrete hf').comp hf.tendsto_cofinite
+
+@[to_additive (attr := deprecated (since := "2026-09-01"))]
+alias _root_.MonoidHom.tendsto_coe_cofinite_of_discrete :=
+  MonoidHom.tendsto_coe_cofinite_of_isDiscrete
+
+end LocallyClosed
+
 end Subgroup
 
 namespace OpenSubgroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [SeparatelyContinuousMul G]
 
 @[to_additive]
 instance : Max (OpenSubgroup G) :=
@@ -344,18 +419,14 @@ instance : Max (OpenSubgroup G) :=
 @[to_additive (attr := simp, norm_cast)]
 theorem toSubgroup_sup (U V : OpenSubgroup G) : (↑(U ⊔ V) : Subgroup G) = ↑U ⊔ ↑V := rfl
 
--- We override `toPartialorder` to get better `le`
 @[to_additive]
-instance : Lattice (OpenSubgroup G) :=
-  { instSemilatticeInfOpenSubgroup,
-    toSubgroup_injective.semilatticeSup ((↑) : OpenSubgroup G → Subgroup G) fun _ _ ↦ rfl with
-    toPartialOrder := instPartialOrderOpenSubgroup }
+instance : Lattice (OpenSubgroup G) where
+  __ := toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
+  __ := instSemilatticeInfOpenSubgroup
 
 end OpenSubgroup
 
 namespace Submodule
-
-open OpenAddSubgroup
 
 variable {R : Type*} {M : Type*} [CommRing R]
 variable [AddCommGroup M] [TopologicalSpace M] [IsTopologicalAddGroup M] [Module R M]
@@ -378,7 +449,7 @@ theorem isOpen_of_isOpen_subideal {U I : Ideal R} (h : U ≤ I) (hU : IsOpen (U 
 end Ideal
 
 /-!
-# Open normal subgroups of a topological group
+### Open normal subgroups of a topological group
 
 This section builds the lattice `OpenNormalSubgroup G` of open subgroups in a topological group `G`,
 and its additive version `OpenNormalAddSubgroup`.
@@ -421,7 +492,9 @@ theorem toSubgroup_injective : Function.Injective
 @[to_additive]
 instance : SetLike (OpenNormalSubgroup G) G where
   coe U := U.1
-  coe_injective' _ _ h := toSubgroup_injective <| SetLike.ext' h
+  coe_injective _ _ h := toSubgroup_injective <| SetLike.ext' h
+
+@[to_additive] instance : PartialOrder (OpenNormalSubgroup G) := .ofSetLike (OpenNormalSubgroup G)
 
 @[to_additive]
 instance : SubgroupClass (OpenNormalSubgroup G) G where
@@ -443,30 +516,27 @@ instance instInfOpenNormalSubgroup : Min (OpenNormalSubgroup G) :=
 
 @[to_additive]
 instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgroup G) :=
-  SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
+  SetLike.coe_injective.semilatticeInf _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
+instance [SeparatelyContinuousMul G] : Max (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
     Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
 
 @[to_additive]
-instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
+instance instSemilatticeSupOpenNormalSubgroup [SeparatelyContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ .rfl .rfl fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
-  { instSemilatticeInfOpenNormalSubgroup,
-    instSemilatticeSupOpenNormalSubgroup with
-    toPartialOrder := instPartialOrderOpenNormalSubgroup}
+instance [SeparatelyContinuousMul G] : Lattice (OpenNormalSubgroup G) where
 
 end OpenNormalSubgroup
 
 end
 
 /-!
-# Existence of an open subgroup in any clopen neighborhood of the neutral element
+### Existence of an open subgroup in any clopen neighborhood of the neutral element
 
 This section proves the lemma `IsTopologicalGroup.exist_openSubgroup_sub_clopen_nhds_of_one`, which
 states that in a compact topological group, for any clopen neighborhood of 1,
@@ -477,6 +547,8 @@ open scoped Pointwise
 
 variable {G : Type*} [TopologicalSpace G]
 
+/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. -/
 structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
   nhds : T ∈ 𝓝 0
   neg : -T = T
@@ -485,9 +557,7 @@ structure IsTopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Pr
 
 /-- For a set `W`, `T` is a neighborhood of `1` which is open, stable under inverse and satisfies
 `T * W ⊆ W`. -/
-@[to_additive
-/-- For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
-`T + W ⊆ W`. -/]
+@[to_additive]
 structure IsTopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
   nhds : T ∈ 𝓝 1
   inv : T⁻¹ = T
@@ -511,15 +581,11 @@ lemma exist_mul_closure_nhds {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝
         (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
   intro x memW
   have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
-  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
+  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W WClopen.2) x 1 this with
     ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
   have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
   exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
     V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
-
-@[deprecated (since := "2025-05-22")] alias exist_mul_closure_nhd := exist_mul_closure_nhds
-@[deprecated (since := "2025-05-22")] alias _root_.IsTopologicalAddGroup.exist_add_closure_nhd :=
-  IsTopologicalAddGroup.exist_add_closure_nhds
 
 @[to_additive]
 lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
@@ -574,12 +640,5 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
     use 1, einW, x, xin
     rw [one_mul]
   apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
-
-@[deprecated (since := "2025-05-22")]
-alias exist_openSubgroup_sub_clopen_nhd_of_one := exist_openSubgroup_sub_clopen_nhds_of_one
-
-@[deprecated (since := "2025-05-22")]
-alias _root_.IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhd_of_zero :=
-  IsTopologicalAddGroup.exist_openAddSubgroup_sub_clopen_nhds_of_zero
 
 end IsTopologicalGroup

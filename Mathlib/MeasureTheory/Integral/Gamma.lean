@@ -3,8 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
+
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
-import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
 
 /-!
 # Integrals involving the Gamma function
@@ -13,6 +16,8 @@ In this file, we collect several integrals over `ℝ` or `ℂ` that evaluate in 
 `Real.Gamma` function.
 
 -/
+
+public section
 
 open Real Set MeasureTheory MeasureTheory.Measure
 
@@ -33,7 +38,7 @@ theorem integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 0 < p) (hq : -1 < q) :
       ring_nf
     _ = (1 / p) * Gamma ((q + 1) / p) := by
       rw [Gamma_eq_integral (div_pos (neg_lt_iff_pos_add.mp hq) hp)]
-      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by field_simp; ring, ← integral_const_mul,
+      simp_rw [show 1 / p - 1 + q / p = (q + 1) / p - 1 by ring, ← integral_const_mul,
         ← mul_assoc]
 
 theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 < q) (hb : 0 < b) :
@@ -49,7 +54,7 @@ theorem integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 0 < p) (hq : -1 <
     _ = (b ^ p⁻¹)⁻¹ * ∫ x in Ioi (0 : ℝ), b ^ (-p⁻¹ * q) * (x ^ q * rexp (-x ^ p)) := by
       rw [integral_comp_mul_left_Ioi (fun x => b ^ (-p⁻¹ * q) * (x ^ q * exp (-x ^ p))) 0,
         mul_zero, smul_eq_mul]
-      all_goals positivity
+      positivity
     _ = b ^ (-(q + 1) / p) * (1 / p) * Gamma ((q + 1) / p) := by
       rw [integral_const_mul, integral_rpow_mul_exp_neg_rpow _ hq, mul_assoc, ← mul_assoc,
         ← rpow_neg_one, ← rpow_mul, ← rpow_add]

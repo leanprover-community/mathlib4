@@ -3,12 +3,19 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Mathlib.Init
-import Lean.Elab.Binders
+module
+
+public meta import Lean.Elab.Binders
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Macro for spread syntax (`__ := instSomething`) in structures.
 -/
+
+public meta section
 
 open Lean Parser.Term Macro
 

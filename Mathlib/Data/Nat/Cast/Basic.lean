@@ -3,11 +3,14 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Nat.Hom
-import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Nat
+module
+
+public import Mathlib.Algebra.Divisibility.Hom
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Nat.Hom
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.Nat
+public import Mathlib.Data.Nat.Cast.Pi
 
 /-!
 # Cast of natural numbers (additional theorems)
@@ -21,12 +24,12 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommGroup Commute.zero_right Commute.add_right abs_eq_max_neg
+@[expose] public section
+
+assert_not_exists IsOrderedMonoid Commute.zero_right Commute.add_right abs_eq_max_neg
   NeZero.natCast_ne
 -- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
-
-open Additive Multiplicative
 
 variable {α β : Type*}
 
@@ -54,6 +57,7 @@ variable [NonAssocSemiring α]
 
 variable (α) in
 /-- `Nat.cast : ℕ → α` as a `RingHom` -/
+@[instance_reducible]
 def castRingHom : ℕ →+* α :=
   { castAddMonoidHom α with toFun := Nat.cast, map_one' := cast_one, map_mul' := cast_mul }
 
@@ -180,20 +184,6 @@ namespace Pi
 
 variable {π : α → Type*}
 
-section NatCast
-variable [∀ a, NatCast (π a)]
-
-instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
-
-@[simp]
-theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
-  rfl
-
-theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
-  rfl
-
-end NatCast
-
 section OfNat
 
 -- This instance is low priority, as `to_additive` only works with the one that comes from `One`
@@ -204,12 +194,9 @@ instance (priority := low) instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat (
 @[simp]
 theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀ a, π a) a = ofNat(n) := rfl
 
-lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
+@[push ←]
+lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
 
 end OfNat
 
 end Pi
-
-theorem Sum.elim_natCast_natCast {α β γ : Type*} [NatCast γ] (n : ℕ) :
-    Sum.elim (n : α → γ) (n : β → γ) = n :=
-  Sum.elim_lam_const_lam_const (γ := γ) n

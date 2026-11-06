@@ -3,8 +3,10 @@ Copyright (c) 2023 Koundinya Vajjha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Koundinya Vajjha, Thomas Browning
 -/
-import Mathlib.Data.Rat.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Rat.Defs
 
 /-!
 
@@ -15,7 +17,11 @@ This file defines the harmonic numbers.
 
 -/
 
+@[expose] public section
+
 /-- The nth-harmonic number defined as a finset sum of consecutive reciprocals. -/
+@[oeis A001008 "numerators; the sequence skips `n = 0`",
+  oeis A002805 "denominators; the sequence skips `n = 0`"]
 def harmonic : ℕ → ℚ := fun n => ∑ i ∈ Finset.range n, (↑(i + 1))⁻¹
 
 @[simp]

@@ -3,7 +3,12 @@ Copyright (c) 2025 Monica Omar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Monica Omar
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basis of an opposite space
@@ -11,6 +16,8 @@ import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 This file defines the basis of an opposite space and shows
 that the opposite space is finite-dimensional and free when the original space is.
 -/
+
+@[expose] public section
 
 open Module MulOpposite
 
@@ -54,7 +61,7 @@ instance [Semiring R] [AddCommMonoid H] [Module R H]
 
 theorem rank [Semiring R] [StrongRankCondition R] [AddCommMonoid H] [Module R H]
     [Module.Free R H] : Module.rank R Hᵐᵒᵖ = Module.rank R H :=
-  LinearEquiv.nonempty_equiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
+  Module.nonempty_linearEquiv_iff_rank_eq.mp ⟨(opLinearEquiv R).symm⟩
 
 theorem finrank [DivisionRing R] [AddCommGroup H] [Module R H] :
     Module.finrank R Hᵐᵒᵖ = Module.finrank R H := by

@@ -3,12 +3,21 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Init
-import Lean.Meta.DiscrTree
+module
+
+public import Lean.Meta.Basic
+public import Lean.Meta.DiscrTree.Main
+public import Lean.Meta.DiscrTree.Types
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additions to `Lean.Meta.DiscrTree`
 -/
+
+public section
 
 namespace Lean.Meta.DiscrTree
 

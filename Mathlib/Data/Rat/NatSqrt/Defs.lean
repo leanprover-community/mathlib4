@@ -3,14 +3,20 @@ Copyright (c) 2025 Lean FRO, LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Tactic.Positivity
-import Mathlib.Algebra.Order.Field.Basic
+module
+
+public import Mathlib.Tactic.Positivity
 
 /-!
-Rational approximation of the square root of a natural number.
+# Rational approximations to square roots of naturals
 
-See also `Mathlib.Data.Rat.NatSqrt.Real` for comparisons with the real square root.
+This file defines `Nat.ratSqrt x prec`, a rational approximation of the square root of a
+natural number `x` to within `1 / prec`, and proves the basic bounds it satisfies.
+
+See also `Mathlib.Analysis.Rat.NatSqrt.Real` for comparisons with the real square root.
 -/
+
+@[expose] public section
 
 namespace Nat
 

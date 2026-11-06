@@ -3,8 +3,12 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Logic.Encodable.Pi
+module
+
+public import Mathlib.Logic.Encodable.Pi
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # W types
@@ -25,6 +29,8 @@ mathlib.
 While the name `WType` is somewhat verbose, it is preferable to putting a single character
 identifier `W` in the root namespace.
 -/
+
+@[expose] public section
 
 -- For "W_type"
 
@@ -79,7 +85,7 @@ theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
     congr with x
-    exact elim_injective γ fγ fγ_injective (congr_fun (eq_of_heq h) x :)
+    exact elim_injective γ fγ fγ_injective congr($(eq_of_heq h) x)
 
 instance [hα : IsEmpty α] : IsEmpty (WType β) :=
   ⟨fun w => WType.recOn w (IsEmpty.elim hα)⟩
@@ -95,11 +101,12 @@ theorem infinite_of_nonempty_of_isEmpty (a b : α) [ha : Nonempty (β a)] [he : 
           show WType β from Nat.recOn n ⟨b, IsEmpty.elim' he⟩ fun _ ih => ⟨a, fun _ => ih⟩)
         ?_
     intro n m h
-    induction' n with n ih generalizing m
-    · rcases m with - | m <;> simp_all
-    · rcases m with - | m
+    induction n generalizing m with
+    | zero => rcases m with - | m <;> simp_all
+    | succ n ih =>
+      rcases m with - | m
       · simp_all
-      · refine congr_arg Nat.succ (ih ?_)
+      · congrm $(ih ?_).succ
         simp_all [funext_iff]⟩
 
 variable [∀ a : α, Fintype (β a)]
@@ -115,6 +122,7 @@ theorem depth_pos (t : WType β) : 0 < t.depth := by
 theorem depth_lt_depth_mk (a : α) (f : β a → WType β) (i : β a) : depth (f i) < depth ⟨a, f⟩ :=
   Nat.lt_succ_of_le (Finset.le_sup (f := (depth <| f ·)) (Finset.mem_univ i))
 
+set_option backward.privateInPublic true in
 /-
 Show that W types are encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable.
@@ -123,12 +131,13 @@ We define an auxiliary type `WType' β n` of trees of depth at most `n`, and the
 induction on `n` that these are all encodable. These auxiliary constructions are not interesting in
 and of themselves, so we mark them as `private`.
 -/
-private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)]
-    [∀ a : α, Encodable (β a)] (n : ℕ) :=
+private abbrev WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)] (n : ℕ) :=
   { t : WType β // t.depth ≤ n }
 
 variable [∀ a : α, Encodable (β a)]
 
+set_option backward.privateInPublic true in
+@[instance_reducible]
 private def encodable_zero : Encodable (WType' β 0) :=
   let f : WType' β 0 → Empty := fun ⟨_, h⟩ => False.elim <| not_lt_of_ge h (WType.depth_pos _)
   let finv : Empty → WType' β 0 := by
@@ -152,12 +161,16 @@ private def finv (n : ℕ) : (Σ a : α, β a → WType' β n) → WType' β (n 
 
 variable [Encodable α]
 
+set_option backward.privateInPublic true in
+@[instance_reducible]
 private def encodable_succ (n : Nat) (_ : Encodable (WType' β n)) : Encodable (WType' β (n + 1)) :=
   Encodable.ofLeftInverse (f n) (finv n)
     (by
       rintro ⟨⟨_, _⟩, _⟩
       rfl)
 
+set_option backward.privateInPublic true in
+set_option backward.privateInPublic.warn false in
 /-- `WType` is encodable when `α` is an encodable fintype and for every `a : α`, `β a` is
 encodable. -/
 instance : Encodable (WType β) := by

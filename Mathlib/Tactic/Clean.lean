@@ -3,14 +3,19 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Michail Karatarakis, Kyle Miller
 -/
+module
+
+public meta import Lean.Elab.SyntheticMVars
+
 import Mathlib.Init
-import Lean.Elab.SyntheticMVars
 
 /-!
 # `clean%` term elaborator
 
 Remove identity functions from a term.
 -/
+
+public meta section
 
 open Lean Meta Elab
 
@@ -53,6 +58,7 @@ def x' : Id Nat := clean% by dsimp [Id]; exact 1
 -- def x' : Id Nat := 1
 ```
 -/
+@[deprecated "`clean%` is not used/needed anymore" (since := "2026-09-03")]
 syntax (name := cleanStx) "clean% " term : term
 
 @[term_elab cleanStx, inherit_doc cleanStx]
@@ -64,6 +70,7 @@ def elabClean : Term.TermElab := fun stx expectedType? =>
   | _ => throwUnsupportedSyntax
 
 /-- (Deprecated) `clean t` is a macro for `exact clean% t`. -/
+@[deprecated "`clean' is not used/needed anymore" (since := "2026-09-03")]
 macro "clean " t:term : tactic => `(tactic| exact clean% $t)
 
 end Mathlib.Tactic

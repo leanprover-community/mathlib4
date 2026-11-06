@@ -3,16 +3,20 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Data.Nat.Factorization.Defs
+module
+
+public import Mathlib.Data.Nat.Factorization.Defs
 
 /-!
 # Induction principles involving factorizations
 -/
 
-open Nat Finset List Finsupp
+@[expose] public section
+
+open Nat Finsupp
 
 namespace Nat
-variable {a b m n p : ℕ}
+variable {a b n p : ℕ}
 
 /-! ## Definitions -/
 
@@ -21,9 +25,9 @@ variable {a b m n p : ℕ}
 we can define `P` for all natural numbers. -/
 @[elab_as_elim]
 def recOnPrimePow {motive : ℕ → Sort*} (zero : motive 0) (one : motive 1)
-    (prime_pow_mul : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → motive a → motive (p ^ n * a))
-    (a : ℕ) : motive a :=
-  Nat.strongRecOn' a fun n =>
+    (prime_pow_mul : ∀ a p n : ℕ, p.Prime → ¬p ∣ a → 0 < n → motive a → motive (p ^ n * a)) :
+    ∀ a, motive a :=
+  Nat.strongRec fun n ↦
     match n with
     | 0 => fun _ => zero
     | 1 => fun _ => one
@@ -81,9 +85,10 @@ lemma _root_.induction_on_primes {motive : ℕ → Prop} (zero : motive 0) (one 
     (prime_mul : ∀ p a : ℕ, p.Prime → motive a → motive (p * a)) : ∀ n, motive n := by
   refine recOnPrimePow zero one ?_
   rintro a p n hp - - ha
-  induction' n with n ih
-  · simpa using ha
-  · rw [pow_succ', mul_assoc]
+  induction n with
+  | zero => simpa using ha
+  | succ n ih =>
+    rw [pow_succ', mul_assoc]
     exact prime_mul _ _ hp ih
 
 lemma prime_composite_induction {motive : ℕ → Prop} (zero : motive 0) (one : motive 1)

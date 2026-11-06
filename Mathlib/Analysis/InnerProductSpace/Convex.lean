@@ -3,9 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
+module
 
-import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.Convex.Uniform
+public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 # Convexity properties of inner product spaces
@@ -20,13 +21,15 @@ inner product space, Hilbert space, norm
 
 -/
 
+public section
+
 
 noncomputable section
 
-open RCLike Real Filter Topology ComplexConjugate Finsupp
+open Real
 open LinearMap (BilinForm)
 
-variable {𝕜 E F : Type*} [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+variable {F : Type*}
   [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
 -- See note [lower instance priority]
@@ -38,7 +41,6 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
       exact pow_pos hε _
     rw [sub_sub_cancel]
     refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
+    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm_mul ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     gcongr⟩
-

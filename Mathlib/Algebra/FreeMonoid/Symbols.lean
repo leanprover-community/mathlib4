@@ -3,9 +3,10 @@ Copyright (c) 2024 Hannah Fechtner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hannah Fechtner
 -/
+module
 
-import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Data.Finset.Lattice.Lemmas
+public import Mathlib.Algebra.FreeMonoid.Basic
+public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The finite set of symbols in a FreeMonoid element
@@ -13,13 +14,15 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 This is separated from the main FreeMonoid file, as it imports the finiteness hierarchy
 -/
 
+@[expose] public section
+
 variable {α : Type*} [DecidableEq α]
 
 namespace FreeMonoid
 
-/-- the set of unique symbols in a free monoid element -/
-@[to_additive /-- The set of unique symbols in an additive free monoid element -/]
-def symbols (a : FreeMonoid α) : Finset α := List.toFinset a
+/-- The set of unique symbols in a free monoid element. -/
+@[to_additive /-- The set of unique symbols in an additive free monoid element. -/]
+def symbols (a : FreeMonoid α) : Finset α := List.toFinset a.toList
 
 @[to_additive (attr := simp)]
 theorem symbols_one : symbols (1 : FreeMonoid α) = ∅ := rfl

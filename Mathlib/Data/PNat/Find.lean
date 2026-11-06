@@ -3,8 +3,10 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
 -/
-import Mathlib.Data.Nat.Find
-import Mathlib.Data.PNat.Basic
+module
+
+public import Mathlib.Data.Nat.Find
+public import Mathlib.Data.PNat.Basic
 
 /-!
 # Explicit least witnesses to existentials on positive natural numbers
@@ -13,11 +15,14 @@ Implemented via calling out to `Nat.find`.
 
 -/
 
+@[expose] public section
+
 
 namespace PNat
 
 variable {p q : ℕ+ → Prop} [DecidablePred p] [DecidablePred q] (h : ∃ n, p n)
 
+set_option backward.isDefEq.respectTransparency false in
 instance decidablePredExistsNat : DecidablePred fun n' : ℕ => ∃ (n : ℕ+) (_ : n' = n), p n :=
   fun n' =>
   decidable_of_iff' (∃ h : 0 < n', p ⟨n', h⟩) <|
@@ -33,7 +38,7 @@ protected def findX : { n // p n ∧ ∀ m : ℕ+, m < n → ¬p m } := by
     rw [hn']
     exact n'.prop
   · obtain ⟨n', hn', pn'⟩ := n.prop.1
-    simpa [hn', Subtype.coe_eta] using pn'
+    simpa [hn', Subtype.coe_eta] using! pn'
   · exact n.prop.2 m hm ⟨m, rfl, pm⟩
 
 /-- If `p` is a (decidable) predicate on `ℕ+` and `hp : ∃ (n : ℕ+), p n` is a proof that

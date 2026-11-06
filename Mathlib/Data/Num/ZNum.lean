@@ -3,15 +3,20 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Ring.Cast
+module
+
+public import Mathlib.Algebra.Order.Ring.Cast
+public import Mathlib.Data.Num.Lemmas
+
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.Data.Num.Lemmas
 
 /-!
 # Properties of the `ZNum` representation of integers
 
 This file was split from `Mathlib/Data/Num/Lemmas.lean` to keep the former under 1500 lines.
 -/
+
+public section
 
 open Int
 
@@ -73,7 +78,7 @@ theorem zneg_pred (n : ZNum) : -n.pred = (-n).succ := by
 @[simp]
 theorem abs_to_nat : ∀ n, (abs n : ℕ) = Int.natAbs n
   | 0 => rfl
-  | pos p => congr_arg Int.natAbs p.to_nat_to_int
+  | pos p => congr($(p.to_nat_to_int).natAbs)
   | neg p => show Int.natAbs ((p : ℕ) : ℤ) = Int.natAbs (-p) by rw [p.to_nat_to_int, Int.natAbs_neg]
 
 @[simp]
@@ -89,12 +94,12 @@ theorem cast_to_int [AddGroupWithOne α] : ∀ n : ZNum, ((n : ℤ) : α) = n
 
 theorem bit0_of_bit0 : ∀ n : ZNum, n + n = n.bit0
   | 0 => rfl
-  | pos a => congr_arg pos a.bit0_of_bit0
-  | neg a => congr_arg neg a.bit0_of_bit0
+  | pos a => congr(pos $a.bit0_of_bit0)
+  | neg a => congr(neg $a.bit0_of_bit0)
 
 theorem bit1_of_bit1 : ∀ n : ZNum, n + n + 1 = n.bit1
   | 0 => rfl
-  | pos a => congr_arg pos a.bit1_of_bit1
+  | pos a => congr(pos $a.bit1_of_bit1)
   | neg a => show PosNum.sub' 1 (a + a) = _ by rw [PosNum.one_sub', a.bit0_of_bit0]; rfl
 
 @[simp, norm_cast]
@@ -111,13 +116,13 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
   | neg p => by
     rw [ZNum.bit1, cast_neg, cast_neg]
     rcases e : pred' p with - | a <;>
-      have ep : p = _ := (succ'_pred' p).symm.trans (congr_arg Num.succ' e)
+      have ep : p = _ := (succ'_pred' p).symm.trans congr(Num.succ' $e)
     · conv at ep => change p = 1
       subst p
       simp
     · dsimp only [Num.succ'] at ep
       subst p
-      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
+      have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (-↑a : ℤ) 1]
       simpa using this
 
 @[simp]
@@ -135,7 +140,7 @@ theorem zero_add (n : ZNum) : 0 + n = n := by cases n <;> rfl
 
 theorem add_one : ∀ n : ZNum, n + 1 = succ n
   | 0 => rfl
-  | pos p => congr_arg pos p.add_one
+  | pos p => congr(pos $p.add_one)
   | neg p => by cases p <;> rfl
 
 end ZNum
@@ -147,10 +152,10 @@ variable {α : Type*}
 theorem cast_to_znum : ∀ n : PosNum, (n : ZNum) = ZNum.pos n
   | 1 => rfl
   | bit0 p => by
-      have := congr_arg ZNum.bit0 (cast_to_znum p)
+      have := congr(ZNum.bit0 $(cast_to_znum p))
       rwa [← ZNum.bit0_of_bit0] at this
   | bit1 p => by
-      have := congr_arg ZNum.bit1 (cast_to_znum p)
+      have := congr(ZNum.bit1 $(cast_to_znum p))
       rwa [← ZNum.bit1_of_bit1] at this
 
 theorem cast_sub' [AddGroupWithOne α] : ∀ m n : PosNum, (sub' m n : α) = m - n
@@ -238,7 +243,7 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
   | 0, 0 => ⟨fun _ => rfl, fun _ => rfl⟩
   | pos _, 0 => ⟨nofun, nofun⟩
   | m, ZNum.pos p =>
-    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
+    Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> cases h <;> rfl
   | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 
 theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n
@@ -275,7 +280,7 @@ theorem cast_add [AddGroupWithOne α] : ∀ m n, ((m + n : ZNum) : α) = m + n
   | 0, a => by cases a <;> exact (_root_.zero_add _).symm
   | b, 0 => by cases b <;> exact (_root_.add_zero _).symm
   | pos _, pos _ => PosNum.cast_add _ _
-  | pos a, neg b => by simpa only [sub_eq_add_neg] using PosNum.cast_sub' (α := α) _ _
+  | pos a, neg b => by simpa only [sub_eq_add_neg] using! PosNum.cast_sub' (α := α) _ _
   | neg a, pos b =>
     have : (↑b + -↑a : α) = -↑a + ↑b := by
       rw [← PosNum.cast_to_int a, ← PosNum.cast_to_int b, ← Int.cast_neg, ← Int.cast_add (-a)]
@@ -320,9 +325,7 @@ theorem to_int_inj {m n : ZNum} : (m : ℤ) = n ↔ m = n :=
 
 theorem cmp_to_int : ∀ m n, (Ordering.casesOn (cmp m n) ((m : ℤ) < n) (m = n) ((n : ℤ) < m) : Prop)
   | 0, 0 => rfl
-  | pos a, pos b => by
-    have := PosNum.cmp_to_nat a b; revert this; dsimp [cmp]
-    cases PosNum.cmp a b <;> [simp; exact congr_arg pos; simp]
+  | pos a, pos b => by simpa using! PosNum.cmp_to_nat a b
   | neg a, neg b => by
     have := PosNum.cmp_to_nat b a; revert this; dsimp [cmp]
     cases PosNum.cmp b a <;> [simp; simp +contextual; simp]
@@ -383,12 +386,10 @@ scoped macro (name := transfer) "transfer" : tactic => `(tactic|
     (intros; transfer_rw; try simp [add_comm, add_left_comm, mul_comm, mul_left_comm]))
 
 instance linearOrder : LinearOrder ZNum where
-  lt := (· < ·)
   lt_iff_le_not_ge := by
     intro a b
     transfer_rw
     apply lt_iff_le_not_ge
-  le := (· ≤ ·)
   le_refl := by transfer
   le_trans := by
     intro a b c
@@ -409,9 +410,7 @@ instance linearOrder : LinearOrder ZNum where
   toDecidableLT := ZNum.decidableLT
 
 instance addMonoid : AddMonoid ZNum where
-  add := (· + ·)
   add_assoc := by transfer
-  zero := 0
   zero_add := zero_add
   add_zero := add_zero
   nsmul := nsmulRec
@@ -419,13 +418,11 @@ instance addMonoid : AddMonoid ZNum where
 instance addCommGroup : AddCommGroup ZNum :=
   { ZNum.addMonoid with
     add_comm := by transfer
-    neg := Neg.neg
     zsmul := zsmulRec
     neg_add_cancel := by transfer }
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
-    one := 1
     natCast := fun n => ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
     natCast_succ := fun n =>
@@ -436,15 +433,8 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
 
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
-private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), c + a ≤ c + b := by
-  intro a b h c
-  revert h
-  transfer_rw
-  exact fun h => _root_.add_le_add_left h c
-
 instance commRing : CommRing ZNum :=
   { ZNum.addCommGroup, ZNum.addMonoidWithOne with
-    mul := (· * ·)
     mul_assoc a b c := by transfer
     zero_mul := by transfer
     mul_zero := by transfer
@@ -456,7 +446,7 @@ instance commRing : CommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm }
+    mul_comm := private mul_comm }
 
 instance nontrivial : Nontrivial ZNum :=
   { exists_pair_ne := ⟨0, 1, by decide⟩ }
@@ -464,8 +454,8 @@ instance nontrivial : Nontrivial ZNum :=
 instance zeroLEOneClass : ZeroLEOneClass ZNum :=
   { zero_le_one := by decide }
 
-instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum :=
-  { add_le_add_left := add_le_add_left }
+instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum where
+  add_le_add_left a b h c := by revert h; transfer_rw; intro h; gcongr
 
 instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
   .of_mul_pos fun a b ↦ by
@@ -545,17 +535,19 @@ theorem divMod_to_nat_aux {n d : PosNum} {q r : Num} (h₁ : (r : ℕ) + d * ((q
 theorem divMod_to_nat (d n : PosNum) :
     (n / d : ℕ) = (divMod d n).1 ∧ (n % d : ℕ) = (divMod d n).2 := by
   rw [Nat.div_mod_unique (PosNum.cast_pos _)]
-  induction' n with n IH n IH
-  · exact
-      divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
-  · unfold divMod
+  induction n with
+  | one =>
+    exact divMod_to_nat_aux (by simp) (Nat.mul_le_mul_left 2 (PosNum.cast_pos d : (0 : ℕ) < d))
+  | bit1 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only at IH ⊢
     apply divMod_to_nat_aux <;> simp only [Num.cast_bit1, cast_bit1]
     · rw [← two_mul, ← two_mul, add_right_comm, mul_left_comm, ← mul_add, IH.1]
-    · omega
-  · unfold divMod
+    · lia
+  | bit0 n IH =>
+    unfold divMod
     -- Porting note: `cases'` didn't rewrite at `this`, so `revert` & `intro` are required.
     revert IH; obtain ⟨q, r⟩ := divMod d n; intro IH
     simp only at IH ⊢
@@ -621,12 +613,10 @@ theorem gcd_to_nat_aux :
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
     refine lt_of_mul_lt_mul_right (lt_of_le_of_lt ?_ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
-    refine
-      add_le_add_left
-        (Nat.mul_le_mul_left _ (le_trans (le_of_lt (Nat.mod_lt _ (PosNum.cast_pos _))) ?_)) _
-    suffices 1 ≤ _ by simpa using Nat.mul_le_mul_left (pos a) this
-    rw [Nat.le_div_iff_mul_le a.cast_pos, one_mul]
-    exact le_to_nat.2 ab
+    gcongr _ + _ * ?_
+    grw [Nat.mod_lt, ← le_to_nat.2 ab]
+    · simp
+    · exact PosNum.cast_pos _
 
 @[simp]
 theorem gcd_to_nat : ∀ a b, (gcd a b : ℕ) = Nat.gcd a b := by

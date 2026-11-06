@@ -3,9 +3,12 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Linear
+
 import Mathlib.Analysis.Calculus.Deriv.Add
-import Mathlib.Analysis.Calculus.Deriv.Linear
-import Mathlib.LinearAlgebra.AffineSpace.AffineMap
+
 /-!
 # Derivatives of affine maps
 
@@ -23,20 +26,19 @@ Mathlib 4.
 affine map, derivative, differentiability
 -/
 
+public section
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  (f : 𝕜 →ᵃ[𝕜] E) {a b : E} {L : Filter 𝕜} {s : Set 𝕜} {x : 𝕜}
+  (f : 𝕜 →ᵃ[𝕜] E) {a b : E} {L : Filter (𝕜 × 𝕜)} {s : Set 𝕜} {x : 𝕜}
 
 namespace AffineMap
 
-theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := by
-  rw [f.decomp]
-  exact f.linear.hasStrictDerivAt.add_const (f 0)
-
-theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) x L := by
+theorem hasDerivAtFilter : HasDerivAtFilter f (f.linear 1) L := by
   rw [f.decomp]
   exact f.linear.hasDerivAtFilter.add_const (f 0)
 
+theorem hasStrictDerivAt : HasStrictDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 theorem hasDerivWithinAt : HasDerivWithinAt f (f.linear 1) s x := f.hasDerivAtFilter
 theorem hasDerivAt : HasDerivAt f (f.linear 1) x := f.hasDerivAtFilter
 
@@ -58,13 +60,13 @@ protected theorem differentiableOn : DifferentiableOn 𝕜 f s := fun _ _ ↦ f.
 ### Line map
 
 In this section we specialize some lemmas to `AffineMap.lineMap` because this map is very useful to
-deduce higher dimensional lemmas from one-dimensional versions.
+deduce higher-dimensional lemmas from one-dimensional versions.
 -/
 
 theorem hasStrictDerivAt_lineMap : HasStrictDerivAt (lineMap a b) (b - a) x := by
   simpa using (lineMap a b : 𝕜 →ᵃ[𝕜] E).hasStrictDerivAt
 
-theorem hasDerivAt_lineMap :  HasDerivAt (lineMap a b) (b - a) x :=
+theorem hasDerivAt_lineMap : HasDerivAt (lineMap a b) (b - a) x :=
   hasStrictDerivAt_lineMap.hasDerivAt
 
 theorem hasDerivWithinAt_lineMap : HasDerivWithinAt (lineMap a b) (b - a) s x :=

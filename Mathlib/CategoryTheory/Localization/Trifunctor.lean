@@ -3,9 +3,10 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Localization.Bifunctor
-import Mathlib.CategoryTheory.Functor.CurryingThree
-import Mathlib.CategoryTheory.Products.Associator
+module
+
+public import Mathlib.CategoryTheory.Functor.CurryingThree
+public import Mathlib.CategoryTheory.Localization.Bifunctor
 
 /-!
 # Lifting of trifunctors
@@ -18,14 +19,16 @@ The main result in this file is that we can localize "associator" isomorphisms
 
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
-open Functor
+open CategoryTheory.Functor
 
 variable {C₁ C₂ C₃ C₁₂ C₂₃ D₁ D₂ D₃ D₁₂ D₂₃ C D E : Type*}
-  [Category C₁] [Category C₂] [Category C₃] [Category D₁] [Category D₂] [Category D₃]
-  [Category C₁₂] [Category C₂₃] [Category D₁₂] [Category D₂₃]
-  [Category C] [Category D] [Category E]
+  [Category* C₁] [Category* C₂] [Category* C₃] [Category* D₁] [Category* D₂] [Category* D₃]
+  [Category* C₁₂] [Category* C₂₃] [Category* D₁₂] [Category* D₂₃]
+  [Category* C] [Category* D] [Category* E]
 
 namespace MorphismProperty
 
@@ -49,28 +52,22 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
 morphisms properties `W₁` on `C₁`, `W₂` on `C₂`, `W₃` on `C₃`, and
 functors `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E` and `F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E`, we say
 `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'` holds if `F` is induced by `F'`, up to an isomorphism. -/
-class Lifting₃ (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂)
-    (W₃ : MorphismProperty C₃)
+class Lifting₃ (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
+    (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
     (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E) where
   /-- the isomorphism `((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F` expressing
   that `F` is induced by `F'` up to an isomorphism -/
-  iso' : ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F
+  iso (L₁ L₂ L₃ W₁ W₂ W₃ F F') : ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F
 
 variable (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
   (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E) [Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F']
-
-/-- The isomorphism `((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F`
-when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'` holds. -/
-noncomputable def Lifting₃.iso :
-    ((((whiskeringLeft₃ E).obj L₁).obj L₂).obj L₃).obj F' ≅ F :=
-  Lifting₃.iso' W₁ W₂ W₃
 
 variable (F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E) (F' : D₁ ⥤ D₂ ⥤ D₃ ⥤ E)
 
 noncomputable instance Lifting₃.uncurry [Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F F'] :
     Lifting (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃))
       (uncurry₃.obj F) (uncurry₃.obj F') where
-  iso' := uncurry₃.mapIso (Lifting₃.iso L₁ L₂ L₃ W₁ W₂ W₃ F F')
+  iso := uncurry₃.mapIso (Lifting₃.iso L₁ L₂ L₃ W₁ W₂ W₃ F F')
 
 end
 
@@ -88,11 +85,12 @@ with respect to `W₁ : MorphismProperty C₁`, `W₂ : MorphismProperty C₂` a
 `W₃ : MorphismProperty C₃` respectively, and a trifunctor `F : C₁ ⥤ C₂ ⥤ C₃ ⥤ E`
 which inverts `W₁`, `W₂` and `W₃`, this is the induced localized
 trifunctor `D₁ ⥤ D₂ ⥤ D₃ ⥤ E`. -/
+@[implicit_reducible]
 noncomputable def lift₃ : D₁ ⥤ D₂ ⥤ D₃ ⥤ E :=
   curry₃.obj (lift (uncurry₃.obj F) hF (L₁.prod (L₂.prod L₃)))
 
 noncomputable instance : Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F (lift₃ F hF L₁ L₂ L₃) where
-  iso' :=
+  iso :=
     (curry₃ObjProdComp L₁ L₂ L₃ _).symm ≪≫
       curry₃.mapIso (fac (uncurry₃.obj F) hF (L₁.prod (L₂.prod L₃))) ≪≫
         currying₃.unitIso.symm.app F
@@ -112,6 +110,7 @@ variable (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃)
 /-- The natural transformation `F₁' ⟶ F₂'` of trifunctors induced by a
 natural transformation `τ : F₁ ⟶ F₂` when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₁'`
 and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
+@[implicit_reducible]
 noncomputable def lift₃NatTrans : F₁' ⟶ F₂' :=
   fullyFaithfulUncurry₃.preimage
     (liftNatTrans (L₁.prod (L₂.prod L₃)) (W₁.prod (W₂.prod W₃)) (uncurry₃.obj F₁)
@@ -141,7 +140,7 @@ theorem natTrans₃_ext {τ τ' : F₁' ⟶ F₂'}
 /-- The natural isomorphism `F₁' ≅ F₂'` of trifunctors induced by a
 natural isomorphism `e : F₁ ≅ F₂` when `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₁'`
 and `Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₂'` hold. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def lift₃NatIso : F₁' ≅ F₂' where
   hom := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₁ F₂ F₁' F₂' e.hom
   inv := lift₃NatTrans L₁ L₂ L₃ W₁ W₂ W₃ F₂ F₁ F₂' F₁' e.inv
@@ -155,9 +154,9 @@ section
 variable
   (L₁ : C₁ ⥤ D₁) (L₂ : C₂ ⥤ D₂) (L₃ : C₃ ⥤ D₃) (L₁₂ : C₁₂ ⥤ D₁₂) (L₂₃ : C₂₃ ⥤ D₂₃) (L : C ⥤ D)
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
-  (W₁₂ : MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃) (W : MorphismProperty C)
+  (W₁₂ : MorphismProperty C₁₂) (W₂₃ : MorphismProperty C₂₃)
   [W₁.ContainsIdentities] [W₂.ContainsIdentities] [W₃.ContainsIdentities]
-  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃] [L.IsLocalization W]
+  [L₁.IsLocalization W₁] [L₂.IsLocalization W₂] [L₃.IsLocalization W₃]
   (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C)
   (F : C₁ ⥤ C₂₃ ⥤ C) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
   (iso : bifunctorComp₁₂ F₁₂ G ≅ bifunctorComp₂₃ F G₂₃)
@@ -170,11 +169,12 @@ variable
 
 /-- The construction `bifunctorComp₁₂` of a trifunctor by composition of bifunctors
 is compatible with localization. -/
+@[instance_reducible]
 noncomputable def Lifting₃.bifunctorComp₁₂ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₁₂ F₁₂ G))
       (bifunctorComp₁₂ F₁₂' G') where
-  iso' :=
+  iso :=
     ((whiskeringRight C₁ _ _).obj
       ((whiskeringRight C₂ _ _).obj ((whiskeringLeft _ _ D).obj L₃))).mapIso
         ((bifunctorComp₁₂Functor.mapIso
@@ -184,11 +184,12 @@ noncomputable def Lifting₃.bifunctorComp₁₂ :
 
 /-- The construction `bifunctorComp₂₃` of a trifunctor by composition of bifunctors
 is compatible with localization. -/
+@[instance_reducible]
 noncomputable def Lifting₃.bifunctorComp₂₃ :
     Lifting₃ L₁ L₂ L₃ W₁ W₂ W₃
       ((Functor.postcompose₃.obj L).obj (bifunctorComp₂₃ F G₂₃))
       (bifunctorComp₂₃ F' G₂₃') where
-  iso' :=
+  iso :=
     ((whiskeringLeft _ _ _).obj L₁).mapIso ((bifunctorComp₂₃Functor.obj F').mapIso
       (Lifting₂.iso L₂ L₃ W₂ W₃ (G₂₃ ⋙ (whiskeringRight _ _ _).obj L₂₃) G₂₃')) ≪≫
         (bifunctorComp₂₃Functor.mapIso
@@ -197,6 +198,7 @@ noncomputable def Lifting₃.bifunctorComp₂₃ :
 variable {F₁₂ G F G₂₃}
 
 /-- The associator isomorphism obtained by localization. -/
+@[implicit_reducible]
 noncomputable def associator : bifunctorComp₁₂ F₁₂' G' ≅ bifunctorComp₂₃ F' G₂₃' :=
   letI := Lifting₃.bifunctorComp₁₂ L₁ L₂ L₃ L₁₂ L W₁ W₂ W₃ W₁₂ F₁₂ G F₁₂' G'
   letI := Lifting₃.bifunctorComp₂₃ L₁ L₂ L₃ L₂₃ L W₁ W₂ W₃ W₂₃ F G₂₃ F' G₂₃'

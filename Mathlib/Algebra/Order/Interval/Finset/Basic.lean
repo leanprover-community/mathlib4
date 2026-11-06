@@ -3,9 +3,14 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Order.Interval.Set.Monoid
-import Mathlib.Order.Interval.Finset.Defs
+module
+
+public import Mathlib.Algebra.Group.Embedding
+public import Mathlib.Algebra.Order.Interval.Set.Monoid
+public import Mathlib.Order.Interval.Finset.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Algebraic properties of finset intervals
@@ -13,9 +18,11 @@ import Mathlib.Order.Interval.Finset.Defs
 This file provides results about the interaction of algebra with `Finset.Ixx`.
 -/
 
-open Function OrderDual
+public section
 
-variable {ι α : Type*}
+open Function
+
+variable {α : Type*}
 
 namespace Finset
 variable [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α]

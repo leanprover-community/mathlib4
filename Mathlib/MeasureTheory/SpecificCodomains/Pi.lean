@@ -3,7 +3,9 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
+module
+
+public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 # Integrability in a product space
@@ -11,6 +13,8 @@ import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 We prove that `f : X → Π i, E i` is in `Lᵖ` if and only if for all `i`, `f · i` is in `Lᵖ`.
 We do the same for `f : X → (E × F)`.
 -/
+
+public section
 
 namespace MeasureTheory
 
@@ -29,8 +33,8 @@ lemma memLp_pi_iff : MemLp f p μ ↔ ∀ i, MemLp (f · i) p μ where
     classical
     have : f = ∑ i, (Pi.single i) ∘ (f · i) := by ext; simp
     rw [this]
-    refine memLp_finset_sum' _ fun i _ ↦ ?_
-    exact (Isometry.single i).lipschitz.comp_memLp (by simp) (hf i)
+    refine memLp_finsetSum' _ fun i _ ↦ ?_
+    exact (Isometry.single i).lipschitzWith.comp_memLp (by simp) (hf i)
 
 alias ⟨MemLp.eval, MemLp.of_eval⟩ := memLp_pi_iff
 
@@ -61,8 +65,8 @@ lemma memLp_prod_iff :
         (AddMonoidHom.inr E F) ∘ (fun x ↦ (f x).snd) := by
       ext; all_goals simp
     rw [this]
-    exact MemLp.add (Isometry.inl.lipschitz.comp_memLp (by simp) h.1)
-      (Isometry.inr.lipschitz.comp_memLp (by simp) h.2)
+    exact MemLp.add (Isometry.inl.lipschitzWith.comp_memLp (by simp) h.1)
+      (Isometry.inr.lipschitzWith.comp_memLp (by simp) h.2)
 
 lemma MemLp.fst (h : MemLp f p μ) : MemLp (fun x ↦ (f x).fst) p μ :=
   memLp_prod_iff.1 h |>.1

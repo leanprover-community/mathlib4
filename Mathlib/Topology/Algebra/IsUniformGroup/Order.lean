@@ -3,9 +3,11 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Topology.Algebra.IsUniformGroup.Defs
-import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.UniformSpace.UniformConvergence
+module
+
+public import Mathlib.Topology.Algebra.IsUniformGroup.Defs
+public import Mathlib.Topology.Order.Basic
+public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # TendstoUniformlyOn on ordered spaces
@@ -15,7 +17,9 @@ in particular bounding the values of `f` in terms of bounds on the limit `g`.
 
 -/
 
-open Filter Function Finset Topology
+public section
+
+open Filter
 
 variable {α ι : Type*}
 

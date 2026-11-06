@@ -3,11 +3,18 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Kim Morrison
 -/
-import Mathlib.Combinatorics.Quiver.Basic
+module
+
+public import Mathlib.Combinatorics.Quiver.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Morphisms of quivers
 -/
+
+@[expose] public section
 
 universe v₁ v₂ u u₁ u₂
 
@@ -19,6 +26,7 @@ structure Prefunctor (V : Type u₁) [Quiver.{v₁} V] (W : Type u₂) [Quiver.{
   /-- The action of a (pre)functor on edges/arrows/morphisms. -/
   map : ∀ {X Y : V}, (X ⟶ Y) → (obj X ⟶ obj Y)
 
+attribute [to_dual self] Prefunctor.map
 
 namespace Prefunctor
 
@@ -95,6 +103,7 @@ infixl:60 " ⋙q " => Prefunctor.comp
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
 
+@[to_dual self]
 theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
     (h : f = g) : F.map f = F.map g := by
   rw [h]
@@ -104,13 +113,14 @@ theorem congr_obj {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = 
     F.obj X = G.obj X := by cases e; rfl
 
 /-- An equality of prefunctors gives an equality on homs. -/
+@[to_dual self]
 theorem congr_hom {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = G) {X Y : U}
     (f : X ⟶ Y) : Quiver.homOfEq (F.map f) (congr_obj e X) (congr_obj e Y) = G.map f := by
   subst e
   simp
 
 /-- Prefunctors commute with `homOfEq`. -/
-@[simp]
+@[simp, to_dual self]
 theorem homOfEq_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} (f : X ⟶ Y)
     {X' Y' : U} (hX : X = X') (hY : Y = Y') :
     F.map (Quiver.homOfEq f hX hY) =

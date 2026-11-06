@@ -3,8 +3,9 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.LocalProperties.Basic
-import Mathlib.RingTheory.Nilpotent.Defs
+module
+
+public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 # `IsReduced` is a local property
@@ -20,16 +21,18 @@ Let `R` be a commutative ring, `M` be a submonoid of `R`.
 
 -/
 
+public section
+
 /-- `M⁻¹R` is reduced if `R` is reduced. -/
 theorem isReduced_localizationPreserves : LocalizationPreserves fun R _ => IsReduced R := by
   introv R _ _
   constructor
   rintro x ⟨_ | n, e⟩
-  · simpa using congr_arg (· * x) e
+  · simpa using congr($e * x)
   obtain ⟨⟨y, m⟩, hx⟩ := IsLocalization.surj M x
   dsimp only at hx
-  let hx' := congr_arg (· ^ n.succ) hx
-  simp only [mul_pow, e, zero_mul, ← RingHom.map_pow] at hx'
+  let hx' := congr($hx ^ n.succ)
+  simp only [mul_pow, e, zero_mul, ← map_pow] at hx'
   rw [← (algebraMap R S).map_zero] at hx'
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'

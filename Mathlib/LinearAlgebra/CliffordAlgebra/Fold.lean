@@ -3,7 +3,9 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
+module
+
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
 
 /-!
 # Recursive computation rules for the Clifford algebra
@@ -27,6 +29,8 @@ For convenience, this file also provides `CliffordAlgebra.foldl`, implemented vi
 * `CliffordAlgebra.right_induction`: an induction rule that adds generators from the right.
 * `CliffordAlgebra.left_induction`: an induction rule that adds generators from the left.
 -/
+
+@[expose] public section
 
 
 universe u1 u2 u3
@@ -88,7 +92,7 @@ def foldl (f : M →ₗ[R] N →ₗ[R] N) (hf : ∀ m x, f m (f m x) = Q m • x
 @[simp]
 theorem foldl_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
     foldl Q f hf n (reverse x) = foldr Q f hf n x :=
-  DFunLike.congr_arg (foldr Q f hf n) <| reverse_reverse _
+  congr(foldr Q f hf n $(reverse_reverse _))
 
 @[simp]
 theorem foldr_reverse (f : M →ₗ[R] N →ₗ[R] N) (hf) (n : N) (x : CliffordAlgebra Q) :
@@ -162,11 +166,9 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
     { toFun := fun m => (l m).prod (f m)
       map_add' := fun v₂ v₂ =>
         LinearMap.ext fun x =>
-          Prod.ext (LinearMap.congr_fun (l.map_add _ _) x) (LinearMap.congr_fun (f.map_add _ _) x)
-      map_smul' := fun c v =>
-        LinearMap.ext fun x =>
-          Prod.ext (LinearMap.congr_fun (l.map_smul _ _) x)
-            (LinearMap.congr_fun (f.map_smul _ _) x) }
+          Prod.ext congr($(l.map_add _ _) x) congr($(f.map_add _ _) x)
+      map_smul' c v := LinearMap.ext fun x =>
+        Prod.ext congr($(l.map_smul _ _) x) congr($(f.map_smul _ _) x) }
 
 theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) (m : M) (x_fx) :
     foldr'Aux Q f m x_fx = (ι Q m * x_fx.1, f m x_fx) :=
@@ -175,7 +177,6 @@ theorem foldr'Aux_apply_apply (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] 
 theorem foldr'Aux_foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N)
     (hf : ∀ m x fx, f m (ι Q m * x, f m (x, fx)) = Q m • fx) (v : M) (x_fx) :
     foldr'Aux Q f v (foldr'Aux Q f v x_fx) = Q v • x_fx := by
-  obtain ⟨x, fx⟩ := x_fx
   simp only [foldr'Aux_apply_apply]
   rw [← mul_assoc, ι_sq_scalar, ← Algebra.smul_def, hf, Prod.smul_mk]
 

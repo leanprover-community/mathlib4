@@ -3,7 +3,14 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez, Joel Riou, Yury Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
+module
+
+public import Mathlib.Data.Fin.SuccPred
+public import Mathlib.Logic.Equiv.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Reverse on `Fin n`
 
@@ -14,6 +21,8 @@ This file contains lemmas about `Fin.rev : Fin n → Fin n` which maps `i` to `n
 * `Fin.revPerm : Equiv.Perm (Fin n)` : `Fin.rev` as an `Equiv.Perm`, the antitone involution given
   by `i ↦ n-(i+1)`
 -/
+
+@[expose] public section
 
 assert_not_exists Monoid Fintype
 
@@ -27,7 +36,7 @@ theorem rev_involutive : Involutive (rev : Fin n → Fin n) := rev_rev
 
 /-- `Fin.rev` as an `Equiv.Perm`, the antitone involution `Fin n → Fin n` given by
 `i ↦ n-(i+1)`. -/
-@[simps! apply symm_apply]
+@[simps! apply]
 def revPerm : Equiv.Perm (Fin n) :=
   Involutive.toPerm rev rev_involutive
 

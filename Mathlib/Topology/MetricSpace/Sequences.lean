@@ -3,8 +3,11 @@ Copyright (c) 2018 Jan-David Salchow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Patrick Massot, Yury Kudryashov
 -/
+module
+
+public import Mathlib.Topology.MetricSpace.Bounded
+
 import Mathlib.Topology.Sequences
-import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
 # Sequential compacts in metric spaces
@@ -12,7 +15,9 @@ import Mathlib.Topology.MetricSpace.Bounded
 In this file we prove 2 versions of Bolzano-Weierstrass theorem for proper metric spaces.
 -/
 
-open Filter Bornology Metric
+public section
+
+open Filter Bornology
 open scoped Topology
 
 variable {X : Type*} [PseudoMetricSpace X]

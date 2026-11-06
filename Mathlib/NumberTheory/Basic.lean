@@ -3,9 +3,15 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
+module
+
+public import Mathlib.RingTheory.Ideal.Span
+
 import Mathlib.Algebra.Ring.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient.Defs
-import Mathlib.RingTheory.Ideal.Span
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Basic results in number theory
@@ -19,6 +25,8 @@ lemma in the construction of the ring of Witt vectors.
 all natural numbers `p` and `k` if `p` divides `a-b` in `R`, then `p ^ (k + 1)` divides
 `a ^ (p ^ k) - b ^ (p ^ k)`.
 -/
+
+public section
 
 
 section

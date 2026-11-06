@@ -3,9 +3,11 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.LinearAlgebra.Complex.Determinant
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Analysis.Normed.Operator.NormedSpace
+public import Mathlib.LinearAlgebra.Complex.Determinant
 
 /-! # The basic continuous linear maps associated to `ℂ`
 
@@ -14,6 +16,8 @@ The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imagina
 `Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
+
+public section
 
 open ContinuousLinearMap
 
@@ -37,8 +41,13 @@ theorem reCLM_norm : ‖reCLM‖ = 1 :=
       _ ≤ ‖reCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem reCLM_nnnorm : ‖reCLM‖₊ = 1 :=
+theorem reCLM_enorm : ‖reCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[simp]
+theorem reCLM_nnNorm : ‖reCLM‖₊ = 1 :=
   Subtype.ext reCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias reCLM_nnnorm := reCLM_nnNorm
 
 @[simp]
 theorem imCLM_norm : ‖imCLM‖ = 1 :=
@@ -48,23 +57,40 @@ theorem imCLM_norm : ‖imCLM‖ = 1 :=
       _ ≤ ‖imCLM‖ := unit_le_opNorm _ _ (by simp)
 
 @[simp]
-theorem imCLM_nnnorm : ‖imCLM‖₊ = 1 :=
+theorem imCLM_enorm : ‖imCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[simp]
+theorem imCLM_nnNorm : ‖imCLM‖₊ = 1 :=
   Subtype.ext imCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias imCLM_nnnorm := imCLM_nnNorm
 
 @[simp]
 theorem conjCLE_norm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ = 1 :=
   conjLIE.toLinearIsometry.norm_toContinuousLinearMap
 
 @[simp]
-theorem conjCLE_nnorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
+theorem conjCLE_enorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[simp]
+theorem conjCLE_nnNorm : ‖(conjCLE : ℂ →L[ℝ] ℂ)‖₊ = 1 :=
   Subtype.ext conjCLE_norm
+
+@[deprecated (since := "2026-10-31")] alias conjCLE_nnnorm := conjCLE_nnNorm
+
+@[deprecated (since := "2026-09-28")] alias conjCLE_nnorm := conjCLE_nnNorm
 
 @[simp]
 theorem ofRealCLM_norm : ‖ofRealCLM‖ = 1 :=
   ofRealLI.norm_toContinuousLinearMap
 
 @[simp]
-theorem ofRealCLM_nnnorm : ‖ofRealCLM‖₊ = 1 :=
-  Subtype.ext <| ofRealCLM_norm
+theorem ofRealCLM_enorm : ‖ofRealCLM‖ₑ = 1 := by simp [← ofReal_norm]
+
+@[simp]
+theorem ofRealCLM_nnNorm : ‖ofRealCLM‖₊ = 1 :=
+  Subtype.ext ofRealCLM_norm
+
+@[deprecated (since := "2026-10-31")] alias ofRealCLM_nnnorm := ofRealCLM_nnNorm
 
 end Complex

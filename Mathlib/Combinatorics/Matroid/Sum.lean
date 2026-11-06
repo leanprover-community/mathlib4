@@ -3,8 +3,9 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Combinatorics.Matroid.Map
-import Mathlib.Logic.Embedding.Set
+module
+
+public import Mathlib.Combinatorics.Matroid.Map
 
 /-!
 # Sums of matroids
@@ -40,6 +41,8 @@ We only directly define a matroid for `Matroid.sigma`. All other versions of sum
 defined indirectly, using `Matroid.sigma` and the API in `Matroid.map`.
 -/
 
+@[expose] public section
+
 assert_not_exists Field
 
 universe u v
@@ -69,17 +72,17 @@ protected def sigma (M : (i : ι) → Matroid (α i)) : Matroid ((i : ι) × α 
     exact ⟨univ.sigma B, by simpa⟩
 
   isBase_exchange B₁ B₂ h₁ h₂ := by
-    simp only [mem_diff, Sigma.exists, and_imp, Sigma.forall]
+    simp only [mem_sdiff, Sigma.exists, and_imp, Sigma.forall]
     intro i e he₁ he₂
     have hf_ex := (h₁ i).exchange (h₂ i) ⟨he₁, by simpa⟩
     obtain ⟨f, ⟨hf₁, hf₂⟩, hfB⟩ := hf_ex
     refine ⟨i, f, ⟨hf₁, hf₂⟩, fun j ↦ ?_⟩
-    rw [← union_singleton, preimage_union, preimage_diff]
+    rw [← union_singleton, preimage_union, preimage_sdiff]
     obtain (rfl | hne) := eq_or_ne i j
-    · simpa only [ show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
+    · simpa only [show ∀ x, {⟨i,x⟩} = Sigma.mk i '' {x} by simp,
         preimage_image_eq _ sigma_mk_injective, union_singleton]
     rw [preimage_singleton_eq_empty.2 (by simpa), preimage_singleton_eq_empty.2 (by simpa),
-      diff_empty, union_empty]
+      sdiff_empty, union_empty]
     exact h₁ j
 
   maximality X _ I hI hIX := by
@@ -156,7 +159,7 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_indep_iff {I} :
     (Matroid.sum' M).Indep I ↔ ∀ i, (M i).Indep (Prod.mk i ⁻¹' I) := by
   simp only [Matroid.sum', mapEquiv_indep_iff, Equiv.sigmaEquivProd_symm_apply, sigma_indep_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
@@ -168,14 +171,14 @@ protected def sum' (M : ι → Matroid α) : Matroid (ι × α) :=
 @[simp] lemma sum'_isBase_iff {B} :
     (Matroid.sum' M).IsBase B ↔ ∀ i, (M i).IsBase (Prod.mk i ⁻¹' B) := by
   simp only [Matroid.sum', mapEquiv_isBase_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBase_iff]
-  convert Iff.rfl
+  convert! Iff.rfl
   ext
   simp
 
 @[simp] lemma sum'_isBasis_iff {I X} :
     (Matroid.sum' M).IsBasis I X ↔ ∀ i, (M i).IsBasis (Prod.mk i ⁻¹' I) (Prod.mk i ⁻¹' X) := by
   simp only [Matroid.sum', mapEquiv_isBasis_iff, Equiv.sigmaEquivProd_symm_apply, sigma_isBasis_iff]
-  convert Iff.rfl <;>
+  convert! Iff.rfl <;>
   exact ext <| by simp
 
 lemma Finitary.sum' (h : ∀ i, (M i).Finitary) : (Matroid.sum' M).Finitary := by

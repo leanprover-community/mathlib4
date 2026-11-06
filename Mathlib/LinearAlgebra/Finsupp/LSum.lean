@@ -3,11 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.Module.Equiv.Basic
-import Mathlib.Algebra.Module.Submodule.LinearMap
-import Mathlib.LinearAlgebra.Finsupp.Defs
-import Mathlib.Tactic.ApplyFun
+module
+
+public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Module.Equiv.Basic
+public import Mathlib.Algebra.Module.Submodule.LinearMap
+public import Mathlib.LinearAlgebra.Finsupp.Defs
 
 /-!
 # Sums as a linear map
@@ -24,9 +25,11 @@ Given an `R`-module `M`, the `R`-module structure on `α →₀ M` is defined in
 function with finite support, module, linear algebra
 -/
 
+@[expose] public section
+
 noncomputable section
 
-open Set LinearMap Submodule
+open LinearMap Submodule
 
 namespace Finsupp
 
@@ -54,11 +57,10 @@ theorem sum_smul_index_linearMap' [Semiring R] [AddCommMonoid M] [Module R M] [A
 
 end SMul
 
-variable {α : Type*} {M N P : Type*} {R R₂ R₃ : Type*} {S : Type*}
-variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring S]
+variable {α : Type*} {M N : Type*} {R R₂ : Type*} {S : Type*}
+variable [Semiring R] [Semiring R₂] [Semiring S]
 variable [AddCommMonoid M] [Module R M]
 variable [AddCommMonoid N] [Module R₂ N]
-variable [AddCommMonoid P] [Module R₃ P]
 
 variable {σ : R →+* R₂} {σ_inv : R₂ →+* R}
 
@@ -85,6 +87,7 @@ section LSum
 variable (S)
 variable [Module S N] [SMulCommClass R₂ S N]
 
+set_option backward.isDefEq.respectTransparency false in
 /-- Lift a family of linear maps `M →ₗ[R] N` indexed by `x : α` to a linear map from `α →₀ M` to
 `N` using `Finsupp.sum`. This is an upgraded version of `Finsupp.liftAddHom`.
 
@@ -177,7 +180,7 @@ This is `Finsupp.domCongr` as a `LinearEquiv`.
 See also `LinearMap.funCongrLeft` for the case of arbitrary functions. -/
 protected def domLCongr {α₁ α₂ : Type*} (e : α₁ ≃ α₂) : (α₁ →₀ M) ≃ₗ[R] α₂ →₀ M :=
   (Finsupp.domCongr e : (α₁ →₀ M) ≃+ (α₂ →₀ M)).toLinearEquiv <| by
-    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using (lmapDomain M R e).map_smul
+    simpa only [equivMapDomain_eq_mapDomain, domCongr_apply] using! (lmapDomain M R e).map_smul
 
 @[simp]
 theorem domLCongr_apply {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (v : α₁ →₀ M) :
@@ -248,8 +251,6 @@ protected theorem Submodule.finsuppSum_mem {ι β : Type*} [Zero β] (S : Submod
     (g : ι → β → M) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) : f.sum g ∈ S :=
   AddSubmonoidClass.finsuppSum_mem S f g h
 
-@[deprecated (since := "2025-04-06")] alias Submodule.finsupp_sum_mem := Submodule.finsuppSum_mem
-
 end
 
 namespace LinearMap
@@ -274,7 +275,7 @@ theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : S
 
 theorem leftInverse_splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     LeftInverse f (splittingOfFinsuppSurjective f s) := fun g =>
-  LinearMap.congr_fun (splittingOfFinsuppSurjective_splits f s) g
+  congr($(splittingOfFinsuppSurjective_splits f s) g)
 
 theorem splittingOfFinsuppSurjective_injective (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     Injective (splittingOfFinsuppSurjective f s) :=
@@ -299,7 +300,7 @@ theorem coe_finsupp_sum (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁�
 @[simp]
 theorem finsupp_sum_apply (t : ι →₀ γ) (g : ι → γ → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (t.sum g) b = t.sum fun i d => g i d b :=
-  sum_apply _ _ _
+  LinearMap.sum_apply _ _ _
 
 end Finsupp
 
@@ -352,7 +353,7 @@ theorem mulLeftMap_eq_mulRightMap_of_commute [SMulCommClass R S S]
   ext i n; simp [(hc i n).eq]
 
 theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
-    [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
+    [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
     {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
   mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
 

@@ -3,14 +3,15 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
+public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
 /-!
 # Deligne's archimedean Gamma-factors
 
 In the theory of L-series one frequently encounters the following functions (of a complex variable
-`s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et periodes d'integrales*:
+`s`) introduced in Deligne's landmark paper *Valeurs de fonctions L et périodes d'intégrales*:
 
 $$ \Gamma_{\mathbb{R}}(s) = \pi ^ {-s / 2} \Gamma (s / 2) $$
 
@@ -28,14 +29,19 @@ This file defines these functions, and proves some elementary properties, includ
 formula which is an important input in functional equations of (un-completed) Dirichlet L-functions.
 -/
 
-open Filter Topology Asymptotics Real Set MeasureTheory
+@[expose] public section
+
+open Filter Asymptotics Real Set MeasureTheory
 open Complex
+open scoped ComplexConjugate
+
+open scoped Topology
 
 namespace Complex
 
 /-- Deligne's archimedean Gamma factor for a real infinite place.
 
-See "Valeurs de fonctions L et periodes d'integrales" § 5.3. Note that this is not the same as
+See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. Note that this is not the same as
 `Real.Gamma`; in particular it is a function `ℂ → ℂ`. -/
 noncomputable def Gammaℝ (s : ℂ) := π ^ (-s / 2) * Gamma (s / 2)
 
@@ -43,7 +49,7 @@ lemma Gammaℝ_def (s : ℂ) : Gammaℝ s = π ^ (-s / 2) * Gamma (s / 2) := rfl
 
 /-- Deligne's archimedean Gamma factor for a complex infinite place.
 
-See "Valeurs de fonctions L et periodes d'integrales" § 5.3. (Some authors omit the factor of 2).
+See "Valeurs de fonctions L et périodes d'intégrales" § 5.3. (Some authors omit the factor of 2).
 Note that this is not the same as `Complex.Gamma`. -/
 noncomputable def Gammaℂ (s : ℂ) := 2 * (2 * π) ^ (-s) * Gamma s
 
@@ -58,7 +64,7 @@ lemma Gammaℝ_add_two {s : ℂ} (hs : s ≠ 0) : Gammaℝ (s + 2) = Gammaℝ s 
 lemma Gammaℂ_add_one {s : ℂ} (hs : s ≠ 0) : Gammaℂ (s + 1) = Gammaℂ s * s / 2 / π := by
   rw [Gammaℂ_def, Gammaℂ_def, Gamma_add_one _ hs, neg_add,
     cpow_add _ _ (mul_ne_zero two_ne_zero (ofReal_ne_zero.mpr pi_ne_zero)), cpow_neg_one]
-  field_simp
+  ring
 
 lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 := by
   apply mul_ne_zero
@@ -70,6 +76,26 @@ lemma Gammaℝ_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gammaℝ s ≠ 0 :=
 lemma Gammaℝ_eq_zero_iff {s : ℂ} : Gammaℝ s = 0 ↔ ∃ n : ℕ, s = -(2 * n) := by
   simp [Gammaℝ_def, Complex.Gamma_eq_zero_iff, pi_ne_zero, div_eq_iff (two_ne_zero' ℂ), mul_comm]
 
+/-- The Gamma factor `Γ_ℝ` commutes with complex conjugation. -/
+lemma Gammaℝ_conj (s : ℂ) : Gammaℝ (conj s) = conj (Gammaℝ s) := by
+  have hpi : (π : ℂ).arg ≠ π := by
+    rw [arg_ofReal_of_nonneg pi_pos.le]
+    exact pi_pos.ne
+  have h := cpow_conj (π : ℂ) (-s / 2) hpi
+  rw [conj_ofReal] at h
+  rw [Gammaℝ_def, Gammaℝ_def, map_mul, ← Gamma_conj, ← h]
+  congr 2 <;> simp [map_div₀, map_neg, map_ofNat]
+
+/-- The Gamma factor `Γ_ℂ` commutes with complex conjugation. -/
+lemma Gammaℂ_conj (s : ℂ) : Gammaℂ (conj s) = conj (Gammaℂ s) := by
+  have h2pi : ((2 : ℂ) * π).arg ≠ π := by
+    rw [show (2 : ℂ) * π = ((2 * π : ℝ) : ℂ) by push_cast; ring,
+      arg_ofReal_of_nonneg (by positivity)]
+    exact pi_pos.ne
+  have h := cpow_conj ((2 : ℂ) * π) (-s) h2pi
+  rw [map_mul, conj_ofReal, map_ofNat] at h
+  rw [Gammaℂ_def, Gammaℂ_def, map_mul, map_mul, ← Gamma_conj, ← h, map_neg, map_ofNat]
+
 @[simp]
 lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
   rw [Gammaℝ_def, Complex.Gamma_one_half_eq]
@@ -78,16 +104,23 @@ lemma Gammaℝ_one : Gammaℝ 1 = 1 := by
 @[simp]
 lemma Gammaℂ_one : Gammaℂ 1 = 1 / π := by
   rw [Gammaℂ_def, cpow_neg_one, Complex.Gamma_one]
-  field_simp
+  ring
 
 section analyticity
 
+@[fun_prop]
 lemma differentiable_Gammaℝ_inv : Differentiable ℂ (fun s ↦ (Gammaℝ s)⁻¹) := by
   conv => enter [2, s]; rw [Gammaℝ, mul_inv]
-  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp [pi_ne_zero])) ?_
+  refine Differentiable.mul (fun s ↦ .inv ?_ (by simp)) ?_
   · refine ((differentiableAt_id.neg.div_const (2 : ℂ)).const_cpow ?_)
     exact Or.inl (ofReal_ne_zero.mpr pi_ne_zero)
   · exact differentiable_one_div_Gamma.comp (differentiable_id.div_const _)
+
+@[fun_prop]
+lemma differentiable_Gammaℂ_inv : Differentiable ℂ (fun s ↦ (Gammaℂ s)⁻¹) := by
+  conv => enter [2, s]; rw [Gammaℂ, mul_inv]
+  refine (Differentiable.inv ?_ (by simp)).mul differentiable_one_div_Gamma
+  exact (differentiable_neg.const_cpow (by simp)).const_mul _
 
 lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (𝓝 2) := by
   have h : Tendsto (fun z : ℂ ↦ z / 2 * Gamma (z / 2)) (𝓝[≠] 0) (𝓝 1) := by
@@ -99,10 +132,20 @@ lemma Gammaℝ_residue_zero : Tendsto (fun s ↦ s * Gammaℝ s) (𝓝[≠] 0) (
     rw [(by simp : 𝓝 2 = 𝓝 (2 * (π : ℂ) ^ (-(0 : ℂ) / 2)))]
     refine Tendsto.mono_left (ContinuousAt.tendsto ?_) nhdsWithin_le_nhds
     exact continuousAt_const.mul ((continuousAt_const_cpow (ofReal_ne_zero.mpr pi_ne_zero)).comp
-      (continuousAt_id.neg.div_const _))
-  convert mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
+      (by fun_prop))
+  convert! mul_one (2 : ℂ) ▸ (h'.mul h) using 2 with z
   rw [Gammaℝ]
   ring_nf
+
+/-- `Gammaℂ` has a simple pole at `s = 0` with residue `2`.
+
+This is the complex-place analogue of `Gammaℝ_residue_zero` (whose residue at `0` is also `2`), and
+is twice the residue of `Complex.Gamma` itself (`Complex.tendsto_self_mul_Gamma_nhds_zero`). -/
+lemma Gammaℂ_residue_zero : Tendsto (fun s ↦ s * Gammaℂ s) (𝓝[≠] 0) (𝓝 2) := by
+  -- `s * Gammaℂ s = 2 * (2 * π) ^ (-s) * (s * Gamma s)`, and `s * Gamma s → 1`
+  refine .congr (fun s ↦ mul_left_comm ..) ?_
+  simpa using ((continuous_neg.const_cpow (b := 2 * π) (by simp)).const_mul 2).continuousWithinAt
+    |>.tendsto.mul tendsto_self_mul_Gamma_nhds_zero
 
 end analyticity
 
@@ -193,7 +236,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
       Complex.cos_sub_pi_div_two]
   simp_rw [mul_div_assoc, mul_inv]
   generalize (Gammaℝ (s - 1))⁻¹ = A
-  field_simp
+  field
 
 end reflection
 

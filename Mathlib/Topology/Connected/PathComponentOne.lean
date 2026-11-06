@@ -3,8 +3,10 @@ Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Topology.Connected.LocPathConnected
+module
+
+public import Mathlib.Topology.Algebra.OpenSubgroup
+public import Mathlib.Topology.Connected.LocallyPathConnected
 
 /-! # The path component of the identity in a locally path connected topological group
 
@@ -12,6 +14,8 @@ This file defines the path component of the identity is an `OpenNormalSubgroup` 
 topological group is locally path connected. We place this in a separate file to avoid importing
 additional algebra into the topology hierarchy.
 -/
+
+@[expose] public section
 
 section PathComponentOne
 
@@ -23,7 +27,7 @@ as an open normal subgroup. It is, in fact, clopen. -/
 /-- The path component of the identity in a locally path connected additive topological group,
 as an open normal additive subgroup. It is, in fact, clopen. -/]
 def OpenNormalSubgroup.pathComponentOne [Group G]
-    [IsTopologicalGroup G] [LocPathConnectedSpace G] :
+    [IsTopologicalGroup G] [LocallyPathConnectedSpace G] :
     OpenNormalSubgroup G where
   toSubgroup := .pathComponentOne G
   isOpen' := .pathComponent 1
@@ -32,7 +36,7 @@ def OpenNormalSubgroup.pathComponentOne [Group G]
 namespace OpenNormalSubgroup
 
 @[to_additive]
-instance [Group G] [IsTopologicalGroup G] [LocPathConnectedSpace G] :
+instance [Group G] [IsTopologicalGroup G] [LocallyPathConnectedSpace G] :
     IsClosed (OpenNormalSubgroup.pathComponentOne G : Set G) :=
   .pathComponent 1
 

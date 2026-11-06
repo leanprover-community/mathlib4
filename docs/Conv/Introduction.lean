@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kyle Miller
 -/
+module
 
 /-! # Introduction to the conversion mode tactic
 
@@ -156,7 +157,7 @@ example (a b : ℕ) :
 ## Other tactics inside conversion mode
 
 Besides rewriting using `rw`, one can use `simp`, `dsimp`, `change`, `equals`, `ring`, `norm_num`,
-`push_neg`, `unfold`, among others.
+`push`, `unfold`, among others.
 
 See the [`conv` guide](https://leanprover-community.github.io/mathlib4_docs/docs/Conv/Guide.html)
 for a more in-depth overview.

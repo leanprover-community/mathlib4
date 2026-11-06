@@ -3,14 +3,21 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Uniform
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Negation on spheres and balls
 
 In this file we define `InvolutiveNeg` and `ContinuousNeg` instances for spheres, open balls, and
-closed balls in a semi normed group.
+closed balls in a seminormed group.
 -/
+
+public section
 
 open Metric Set Topology
 
@@ -46,4 +53,4 @@ instance {r : ℝ} : InvolutiveNeg (closedBall (0 : E) r) where
 
 @[simp] theorem coe_neg_closedBall {r : ℝ} (v : closedBall (0 : E) r) : ↑(-v) = (-v : E) := rfl
 
-instance : ContinuousNeg (closedBall (0 : E) r) := IsInducing.subtypeVal.continuousNeg  fun _ => rfl
+instance : ContinuousNeg (closedBall (0 : E) r) := IsInducing.subtypeVal.continuousNeg fun _ => rfl

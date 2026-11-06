@@ -3,11 +3,13 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Count
-import Mathlib.Data.Rat.Floor
-import Mathlib.Order.Interval.Finset.Nat
+module
+
+public import Mathlib.Data.Int.Interval
+public import Mathlib.Data.Int.ModEq
+public import Mathlib.Data.Nat.Count
+public import Mathlib.Data.Rat.Floor
+public import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # Counting elements in an interval with given residue
@@ -16,6 +18,8 @@ The theorems in this file generalise `Nat.card_multiples` in
 `Mathlib/Data/Nat/Factorization/Basic.lean` to all integer intervals and any fixed residue (not just
 zero, which reduces to the multiples). Theorems are given for `Ico` and `Ioc` intervals.
 -/
+
+public section
 
 
 open Finset Int
@@ -90,8 +94,8 @@ lemma Ico_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 lemma Ioc_filter_modEq_cast {v : ℕ} :
     {x ∈ Ioc a b | x ≡ v [MOD r]}.map castEmbedding =
@@ -99,8 +103,8 @@ lemma Ioc_filter_modEq_cast {v : ℕ} :
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
-  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact mod_cast h
+  · intro h; lift x to ℕ using (by lia); use x; simp_all
 
 variable (hr : 0 < r)
 include hr

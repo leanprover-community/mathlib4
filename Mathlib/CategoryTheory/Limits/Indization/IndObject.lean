@@ -3,11 +3,12 @@ Copyright (c) 2024 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Limits.FinallySmall
-import Mathlib.CategoryTheory.Limits.Presheaf
+module
+
+public import Mathlib.CategoryTheory.Limits.ConeCategory
+public import Mathlib.CategoryTheory.Limits.FinallySmall
+
 import Mathlib.CategoryTheory.Filtered.Small
-import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 
 /-!
@@ -39,6 +40,8 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 ## References
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
+
+@[expose] public section
 
 universe v v' u u'
 
@@ -91,13 +94,17 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+set_option backward.isDefEq.respectTransparency false in
 /-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
 ind-object presentation of `B`. -/
-@[simps!]
-noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
-    IndObjectPresentation B :=
-  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
+@[simps! +dsimpLhs]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B)
+    [IsIso η] : IndObjectPresentation B :=
+  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso η)
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical comparison functor between the indexing category of the presentation and the
 comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
@@ -138,7 +145,8 @@ variable {A : Cᵒᵖ ⥤ Type v}
 theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
   | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
 
-theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] :
+    IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
 instance : ObjectProperty.IsClosedUnderIsomorphisms (IsIndObject (C := C)) where
@@ -161,18 +169,15 @@ open IsFiltered.SmallFilteredIntermediate
 theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     [IsFiltered (CostructuredArrow yoneda A)] [FinallySmall.{v} (CostructuredArrow yoneda A)] :
     IsIndObject A := by
-  have h₁ : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
+  have : (factoring (fromFinalModel (CostructuredArrow yoneda A)) ⋙
       inclusion (fromFinalModel (CostructuredArrow yoneda A))).Final := Functor.final_of_natIso
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
-  have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
+  have : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (Presheaf.tautologicalCocone A).whisker
-    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
-  let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (Presheaf.isColimitTautologicalCocone A)
-  have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
+  have : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
-  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
+  exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, _,
+    (Functor.Final.isColimitWhiskerEquiv _ _).symm (denseAtYoneda A)⟩
 
 /-- The recognition theorem for ind-objects: `A : Cᵒᵖ ⥤ Type v` is an ind-object if and only if
 `CostructuredArrow yoneda A` is filtered and finally `v`-small.

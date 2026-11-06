@@ -3,8 +3,11 @@ Copyright (c) 2022 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Heather Macbeth
 -/
+module
+
+public import Mathlib.RingTheory.WittVector.Truncated
+
 import Mathlib.Algebra.MvPolynomial.Supported
-import Mathlib.RingTheory.WittVector.Truncated
 
 /-!
 # Leading terms of Witt vector multiplication
@@ -24,6 +27,8 @@ that needs to happen in characteristic 0.
   in terms of the previous coefficients of the multiplicands.
 
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -75,8 +80,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   · apply Subset.trans (vars_pow _ _)
     apply Subset.trans (wittMul_vars _ _)
     apply product_subset_product (Subset.refl _)
-    simp only [mem_range, range_subset] at hx ⊢
-    exact hx
+    simpa using hx
 
 /-- `remainder p n` represents the remainder term from `mul_polyOfInterest_aux3`.
 `wittPolyProd p (n+1)` will have variables up to `n+1`,
@@ -137,9 +141,6 @@ theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     remainder p n := by
   -- a useful auxiliary fact
   have mvpz : (p : 𝕄) ^ (n + 1) = MvPolynomial.C ((p : ℤ) ^ (n + 1)) := by norm_cast
-  -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
-  -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
-  -- nearly totally rewritten here and now finishes quite fast.
   rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
@@ -234,22 +235,17 @@ theorem nth_mul_coeff' (n : ℕ) :
       (x * y).coeff (n + 1) - y.coeff (n + 1) * x.coeff 0 ^ p ^ (n + 1) -
         x.coeff (n + 1) * y.coeff 0 ^ p ^ (n + 1) := by
   simp only [← peval_polyOfInterest']
-  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars k (polyOfInterest_vars p n)
-  have : ∀ (a : Multiset (Fin 2)) (b : Multiset ℕ), a ×ˢ b = a.product b := fun a b => rfl
+  obtain ⟨f₀, hf₀⟩ := exists_restrict_to_vars (s := SetLike.coe (univ ×ˢ range (n + 1))) k
+    (polyOfInterest_vars p n)
   let f : TruncatedWittVector p (n + 1) k → TruncatedWittVector p (n + 1) k → k := by
     intro x y
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
-    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
-    have ha' : a ∈ S := by
-      convert ha
-      dsimp [S]
-      congr!
-      simp
+    let S : Set (Fin 2 × ℕ) := { a | a.2 = n ∨ a.2 < n }
+    have ha' : a ∈ S := by grind
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    obtain ⟨ha, ha⟩ := ha' <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> lia
   use f
   intro x y
   dsimp [f, peval]

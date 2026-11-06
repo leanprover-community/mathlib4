@@ -25,6 +25,13 @@ def load_repos() -> List[Dict[str, str]]:
     with open('scripts/downstream_repos.yml', 'r') as f:
         return yaml.safe_load(f)
 
+def get_file_path(repo: Dict[str, str], relative_path: str) -> str:
+    """Construct the full path to a file in the repository, accounting for the optional 'path' field"""
+    repo_path = repo.get('path', '')
+    if repo_path:
+        return f"{repo_path}/{relative_path}"
+    return relative_path
+
 def check_tag(repo: Dict[str, str], tag: str) -> bool:
     """Check if a tag exists in a repository using GitHub CLI"""
     github_url = repo['github']
@@ -90,10 +97,11 @@ def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]
     """Check git history of lean-toolchain file for first occurrence of version"""
     github_url = repo['github']
     repo_name = github_url.replace('https://github.com/', '')
+    toolchain_path = get_file_path(repo, 'lean-toolchain')
 
     try:
         result = subprocess.run(
-            ['gh', 'api', f'repos/{repo_name}/commits?path=lean-toolchain'],
+            ['gh', 'api', f'repos/{repo_name}/commits?path={toolchain_path}'],
             capture_output=True,
             text=True
         )
@@ -105,7 +113,7 @@ def check_toolchain_history(repo: Dict[str, str], version: str) -> Optional[str]
         for commit in commits:
             sha = commit['sha']
             result = subprocess.run(
-                ['gh', 'api', f'repos/{repo_name}/contents/lean-toolchain?ref={sha}'],
+                ['gh', 'api', f'repos/{repo_name}/contents/{toolchain_path}?ref={sha}'],
                 capture_output=True,
                 text=True
             )
@@ -124,10 +132,11 @@ def get_current_toolchain(repo: Dict[str, str]) -> Optional[str]:
     """Get the current toolchain version from the default branch"""
     github_url = repo['github']
     repo_name = github_url.replace('https://github.com/', '')
+    toolchain_path = get_file_path(repo, 'lean-toolchain')
 
     try:
         result = subprocess.run(
-            ['gh', 'api', f'repos/{repo_name}/contents/lean-toolchain'],
+            ['gh', 'api', f'repos/{repo_name}/contents/{toolchain_path}'],
             capture_output=True,
             text=True
         )
@@ -147,31 +156,59 @@ def main():
     repos = load_repos()
 
     if len(sys.argv) == 1:
-        print("Finding latest version tags in downstream repositories:")
-        print("-" * 50)
-
-        latest_versions = []
-        for repo in repos:
+        # Collect data with progress spinner
+        repo_data = []
+        total = len(repos)
+        for i, repo in enumerate(repos, 1):
+            print(f"\rCollecting data: {i}/{total}", end='', flush=True)
             latest = get_latest_version(repo)
-            status = TICK if latest else CROSS
             current = get_current_toolchain(repo)
-            version_str = latest if latest else f"no toolchain tags found ({repo['default_branch']} branch is on {current})"
-            print(f"{status} {repo['name']}: {version_str}")
-            if latest:
-                latest_versions.append(latest)
+            repo_data.append({
+                'repo': repo,
+                'latest': latest,
+                'current': current
+            })
+        print()  # New line after spinner
 
-        if latest_versions:
-            def version_key(tag):
-                # Split into parts: v4.17.0-rc1 -> [4, 17, 0, 1]
-                parts = tag[1:].split('.')  # Remove 'v' prefix
-                major, minor = parts[0:2]
-                patch_rc = parts[2].split('-')
-                patch = int(patch_rc[0])
-                # RC versions should sort before final versions
-                rc = int(patch_rc[1][2:]) if len(patch_rc) > 1 else float('inf')
-                return (int(major), int(minor), patch, rc)
+        # Group repos by toolchain version
+        from collections import defaultdict
+        by_version = defaultdict(list)
+        no_tags = []
 
-        sys.exit(0 if latest_versions else 1)
+        for data in repo_data:
+            if data['latest']:
+                by_version[data['latest']].append(data)
+            else:
+                no_tags.append(data)
+
+        # Sort versions from newest to oldest
+        def version_key(tag):
+            parts = tag[1:].split('.')  # Remove 'v' prefix
+            major, minor = parts[0:2]
+            patch_rc = parts[2].split('-')
+            patch = int(patch_rc[0])
+            # RC versions should sort before final versions
+            rc = int(patch_rc[1][2:]) if len(patch_rc) > 1 else float('inf')
+            return (int(major), int(minor), patch, rc)
+
+        sorted_versions = sorted(by_version.keys(), key=version_key, reverse=True)
+
+        # Display results
+        print("\nDownstream repositories by toolchain version:")
+        print("=" * 50)
+
+        for version in sorted_versions:
+            print(f"\n{version}:")
+            for data in by_version[version]:
+                print(f"  {TICK} {data['repo']['name']}")
+
+        if no_tags:
+            print(f"\nNo toolchain tags:")
+            for data in no_tags:
+                current_str = f" (on {data['current']})" if data['current'] else ""
+                print(f"  {CROSS} {data['repo']['name']}{current_str}")
+
+        sys.exit(0 if sorted_versions else 1)
 
     elif len(sys.argv) == 2:
         tag = sys.argv[1]

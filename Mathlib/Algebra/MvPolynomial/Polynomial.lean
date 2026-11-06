@@ -3,11 +3,18 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.MvPolynomial.Equiv
+module
+
+public import Mathlib.Algebra.MvPolynomial.Equiv
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Some lemmas relating polynomials and multivariable polynomials.
 -/
+
+public section
 
 namespace MvPolynomial
 

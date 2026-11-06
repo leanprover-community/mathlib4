@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Data.SetLike.Basic
-import Mathlib.Tactic.FastInstance
+module
+
+public import Mathlib.Algebra.Group.Hom.Defs
+public import Mathlib.Algebra.Group.InjSurj
+public import Mathlib.Basic.SetLike.Basic
+public import Mathlib.Tactic.GrindAttrs
 
 /-!
 # Subsemigroups: definition
@@ -46,6 +48,8 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
+@[expose] public section
+
 assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
@@ -70,7 +74,7 @@ export AddMemClass (add_mem)
 
 attribute [to_additive] MulMemClass
 
-attribute [aesop 90% (rule_sets := [SetLike])] mul_mem add_mem
+attribute [aesop 90% (rule_sets := [SetLike]), membership .] mul_mem add_mem
 
 /-- A subsemigroup of a magma `M` is a subset closed under multiplication. -/
 structure Subsemigroup (M : Type*) [Mul M] where
@@ -93,6 +97,8 @@ namespace Subsemigroup
 @[to_additive]
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
+
+@[to_additive] instance : PartialOrder (Subsemigroup M) := .ofSetLike (Subsemigroup M)
 
 initialize_simps_projections Subsemigroup (carrier → coe, as_prefix coe)
 initialize_simps_projections AddSubsemigroup (carrier → coe, as_prefix coe)
@@ -142,7 +148,7 @@ protected def copy (S : Subsemigroup M) (s : Set M) (hs : s = S) :
 
 variable {S : Subsemigroup M}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_copy {s : Set M} (hs : s = S) : (S.copy s hs : Set M) = s :=
   rfl
 
@@ -177,22 +183,25 @@ instance : Inhabited (Subsemigroup M) :=
 theorem notMem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
   Set.notMem_empty x
 
-@[deprecated (since := "2025-05-23")]
-alias _root_.AddSubsemigroup.not_mem_bot := AddSubsemigroup.notMem_bot
-
-@[to_additive existing, deprecated (since := "2025-05-23")] alias not_mem_bot := notMem_bot
-
 @[to_additive (attr := simp)]
 theorem mem_top (x : M) : x ∈ (⊤ : Subsemigroup M) :=
   Set.mem_univ x
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_top : ((⊤ : Subsemigroup M) : Set M) = Set.univ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
   rfl
+
+@[to_additive (attr := simp)]
+lemma mk_eq_top (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊤ ↔ carrier = .univ := by
+  simp [← SetLike.coe_set_eq]
+
+@[to_additive (attr := simp)]
+lemma mk_eq_bot (carrier : Set M) (mul_mem') : mk carrier mul_mem' = ⊥ ↔ carrier = ∅ := by
+  simp [← SetLike.coe_set_eq]
 
 /-- The inf of two subsemigroups is their intersection. -/
 @[to_additive /-- The inf of two `AddSubsemigroup`s is their intersection. -/]
@@ -201,7 +210,7 @@ instance : Min (Subsemigroup M) :=
     { carrier := S₁ ∩ S₂
       mul_mem' := fun ⟨hx, hx'⟩ ⟨hy, hy'⟩ => ⟨S₁.mul_mem hx hy, S₂.mul_mem hx' hy'⟩ }⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_inf (p p' : Subsemigroup M) : ((p ⊓ p' : Subsemigroup M) : Set M) = (p : Set M) ∩ p' :=
   rfl
 
@@ -235,6 +244,9 @@ open Subsemigroup
 def eqLocus (f g : M →ₙ* N) : Subsemigroup M where
   carrier := { x | f x = g x }
   mul_mem' (hx : _ = _) (hy : _ = _) := by simp [*]
+
+@[to_additive (attr := simp)]
+theorem mem_eqLocus {f g : M →ₙ* N} {x : M} : x ∈ f.eqLocus g ↔ f x = g x := Iff.rfl
 
 @[to_additive]
 theorem eq_of_eqOn_top {f g : M →ₙ* N} (h : Set.EqOn f g (⊤ : Subsemigroup M)) : f = g :=
@@ -282,6 +294,22 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
     (S : A) : CommSemigroup S := fast_instance%
   Subtype.coe_injective.commSemigroup Subtype.val fun _ _ => rfl
 
+/-- A submagma of a left cancellative magma inherits left cancellation. -/
+@[to_additive
+/-- An additive submagma of a left cancellative additive magma inherits left cancellation. -/]
+instance isLeftCancelMul [IsLeftCancelMul M] (S : A) : IsLeftCancelMul S :=
+  Subtype.coe_injective.isLeftCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a right cancellative magma inherits right cancellation. -/
+@[to_additive
+/-- An additive submagma of a right cancellative additive magma inherits right cancellation. -/]
+instance isRightCancelMul [IsRightCancelMul M] (S : A) : IsRightCancelMul S :=
+  Subtype.coe_injective.isRightCancelMul Subtype.val fun _ _ => rfl
+
+/-- A submagma of a cancellative magma inherits cancellation. -/
+@[to_additive /-- An additive submagma of a cancellative additive magma inherits cancellation. -/]
+instance isCancelMul [IsCancelMul M] (S : A) : IsCancelMul S where
+
 /-- The natural semigroup hom from a subsemigroup of semigroup `M` to `M`. -/
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`. -/]
@@ -303,3 +331,36 @@ theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
 end MulMemClass
+
+section IsMulCommutative
+
+variable {S : Type*} [SetLike S M] [Mul M] [MulMemClass S M]
+
+@[to_additive]
+lemma isMulCommutative_iff_of_setLike
+    {s : S} : IsMulCommutative s ↔ ∀ a ∈ s, ∀ b ∈ s, a * b = b * a := by
+  simp [isMulCommutative_iff]
+
+@[to_additive]
+alias ⟨_, IsMulCommutative.of_setLike_mul_comm⟩ := isMulCommutative_iff_of_setLike
+
+/-- Commutativity of multiplication in commutative subobjects. -/
+@[to_additive /-- Commutativity of addition in commutative subobjects. -/ ]
+lemma setLike_mul_comm {s : S} [IsMulCommutative s] ⦃a b : M⦄ (ha : a ∈ s) (hb : b ∈ s) :
+    a * b = b * a :=
+  isMulCommutative_iff_of_setLike.mp ‹_› a ha b hb
+
+/-- Commutativity of multiplication passes to smaller subobjects. -/
+@[to_additive /-- Commutativity of addition passes to smaller subobjects. -/ ]
+lemma isMulCommutative_anti [LE S] [IsConcreteLE S M] {s t : S} (h : s ≤ t) [IsMulCommutative t] :
+    IsMulCommutative s :=
+  .of_setLike_mul_comm fun _ ha _ hb ↦
+    setLike_mul_comm (mem_of_le_of_mem h ha) (mem_of_le_of_mem h hb)
+
+instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative t] :
+    IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_right
+
+instance [SemilatticeInf S] [IsConcreteLE S M] {s t : S} [IsMulCommutative s] :
+    IsMulCommutative ↥(s ⊓ t) := isMulCommutative_anti inf_le_left
+
+end IsMulCommutative

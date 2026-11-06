@@ -3,8 +3,10 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
-import Mathlib.NumberTheory.Cyclotomic.Basic
+module
+
+public import Mathlib.NumberTheory.Cyclotomic.Basic
+public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
 
 /-!
 # Instances for HasEnoughRootsOfUnity
@@ -13,6 +15,8 @@ We provide an instance for `HasEnoughRootsOfUnity F n` when `F` is a separably c
 and `n` is not divisible by the characteristic. In particular, when `F` has characteristic zero,
 this hold for all `n ≠ 0`.
 -/
+
+public section
 
 variable (F : Type*) [Field F] (n k : ℕ) [NeZero (n : F)]
 
@@ -32,13 +36,10 @@ instance hasEnoughRootsOfUnity : HasEnoughRootsOfUnity F n where
     rootsOfUnity.isCyclic F n
 
 instance hasEnoughRootsOfUnity_pow : HasEnoughRootsOfUnity F (n ^ k) :=
-  have : NeZero ((n ^ k : ℕ) : F) := by exact_mod_cast ‹NeZero (n : F)›.pow
+  have : NeZero ((n ^ k : ℕ) : F) := mod_cast ‹NeZero (n : F)›.pow
   inferInstance
 
 end IsSepClosed
-
-@[deprecated (since := "2025-06-22")]
-alias IsAlgClosed.hasEnoughRootsOfUnity := IsSepClosed.hasEnoughRootsOfUnity
 
 namespace AlgebraicClosure
 

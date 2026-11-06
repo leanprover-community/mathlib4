@@ -3,12 +3,20 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+module
+
+public meta import Lean.Meta.Tactic.Symm
+
 import Mathlib.Init
-import Lean.Meta.Tactic.Symm
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `relSidesIfSymm?`
 -/
+
+public meta section
 
 open Lean Meta Symm
 

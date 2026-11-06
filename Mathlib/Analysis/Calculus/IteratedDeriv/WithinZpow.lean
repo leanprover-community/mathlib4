@@ -3,8 +3,14 @@ Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+module
+
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+
 import Mathlib.Analysis.Calculus.Deriv.ZPow
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Derivatives of `x ^ m`, `m : ℤ` within an open set
@@ -15,6 +21,8 @@ In this file we prove theorems about iterated derivatives of `x ^ m`, `m : ℤ` 
 
 iterated, derivative, power, open set
 -/
+
+public section
 
 open scoped Nat
 

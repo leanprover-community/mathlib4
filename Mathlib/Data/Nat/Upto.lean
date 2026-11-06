@@ -3,8 +3,14 @@ Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+module
+
+public import Mathlib.Algebra.Order.Sub.Basic
+
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Algebra.Order.Sub.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `Nat.Upto`
@@ -20,6 +26,8 @@ the difference that, in `Nat.Upto p`, `p` does not need to be decidable. In fact
 `Nat.find` could be slightly altered to factor decidability out of its
 well-founded relation and would then fulfill the same purpose as this file.
 -/
+
+@[expose] public section
 
 
 namespace Nat

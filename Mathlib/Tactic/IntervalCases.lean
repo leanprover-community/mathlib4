@@ -3,9 +3,11 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Mario Carneiro
 -/
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.FinCases
-import Mathlib.Control.Basic
+module
+
+public meta import Mathlib.Tactic.Simps
+public import Mathlib.Data.Finset.Attr
+public import Mathlib.Tactic.NormNum
 
 /-!
 # Case bash on variables in finite intervals
@@ -22,6 +24,8 @@ You can also explicitly specify a lower and upper bound to use, as `interval_cas
 where the hypotheses should be of the form `hl : a ≤ n` and `hu : n < b`. In that case,
 `interval_cases` calls `fin_cases` on the resulting hypothesis `h : n ∈ Set.Ico a b`.
 -/
+
+public meta section
 
 namespace Mathlib.Tactic
 
@@ -285,14 +289,14 @@ def intervalCases (g : MVarId) (e e' : Expr) (lbs ubs : Array Expr) (mustUseBoun
       if lb.all (·.1.asLower < lb1.1.asLower) then
         lb := some lb1
     else if mustUseBounds then
-      throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
+      throwError "interval_cases failed: provided bound `{← inferType pf}` cannot be evaluated"
   let mut ub ← try? (m.initUB e)
   for pf in ubs do
     if let some ub1 ← try? (m.getBound e pf false) then
       if ub.all (·.1.asUpper > ub1.1.asUpper) then
         ub := some ub1
     else if mustUseBounds then
-      throwError "interval_cases failed: provided bound '{← inferType pf}' cannot be evaluated"
+      throwError "interval_cases failed: provided bound `{← inferType pf}` cannot be evaluated"
   match lb, ub with
   | some (z1, e1, p1), some (z2, e2, p2) =>
     if z1.asLower > z2.asUpper then

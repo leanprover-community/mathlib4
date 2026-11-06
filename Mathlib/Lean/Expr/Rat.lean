@@ -3,9 +3,11 @@ Copyright (c) 2019 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kim Morrison
 -/
+module
+
+public import Lean.ToExpr
+
 import Mathlib.Init
-import Batteries.Data.Rat.Basic
-import Batteries.Tactic.Alias
 
 /-!
 # Additional operations on Expr and rational numbers
@@ -18,10 +20,7 @@ This file defines some operations involving `Expr` and rational numbers.
   This includes natural numbers, integers and rationals.
 -/
 
-open Lean in
-instance : ToExpr Rat where
-  toExpr q := mkApp2 (.const ``mkRat []) (toExpr q.num) (toExpr q.den)
-  toTypeExpr := .const ``Rat [0]
+public section
 
 namespace Lean.Expr
 

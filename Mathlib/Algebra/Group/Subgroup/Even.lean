@@ -3,14 +3,21 @@ Copyright (c) 2024 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Even
-import Mathlib.Algebra.Group.Subgroup.Defs
+module
+
+public import Mathlib.Algebra.Group.Even
+public import Mathlib.Algebra.Group.Subgroup.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Squares and even elements
 
 This file defines the subgroup of squares / even elements in an abelian group.
 -/
+
+@[expose] public section
 
 assert_not_exists RelIso MonoidWithZero
 
@@ -28,7 +35,7 @@ def square : Subsemigroup S where
   carrier := {s : S | IsSquare s}
   mul_mem' := IsSquare.mul
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : S} : a ∈ square S ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -53,7 +60,7 @@ def square : Submonoid M where
 @[to_additive (attr := simp)]
 theorem square_toSubsemigroup : (square M).toSubsemigroup = .square M := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : M} : a ∈ square M ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -78,7 +85,7 @@ def square : Subgroup G where
 @[to_additive (attr := simp)]
 theorem square_toSubmonoid : (square G).toSubmonoid = .square G := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, membership =)]
 theorem mem_square {a : G} : a ∈ square G ↔ IsSquare a := Iff.rfl
 
 @[to_additive (attr := simp, norm_cast)]

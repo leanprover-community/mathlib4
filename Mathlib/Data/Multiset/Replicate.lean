@@ -3,7 +3,9 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Multiset.AddSub
+module
+
+public import Mathlib.Data.Multiset.AddSub
 
 /-!
 # Repeating elements in multisets
@@ -14,12 +16,14 @@ import Mathlib.Data.Multiset.AddSub
 
 -/
 
+@[expose] public section
+
 -- No algebra should be required
 assert_not_exists Monoid
 
 universe v
 
-open List Subtype Nat Function
+open List Nat Function
 
 variable {α : Type*} {β : Type v} {γ : Type*}
 
@@ -162,7 +166,7 @@ theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a 
       h a t (by rwa [cons_add, cons_add, Multiset.zero_add] at s_eq)⟩
 
 theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
-  Quotient.inductionOn s fun _ => (pairwise_coe_iff_pairwise fun _ _ => Ne.symm).symm
+  Quotient.inductionOn s fun _ ↦ pairwise_coe_iff_pairwise.symm
 
 protected theorem Nodup.pairwise : (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) → Nodup s → Pairwise r s :=
   Quotient.inductionOn s fun l h hl => ⟨l, rfl, hl.imp_of_mem fun {a b} ha hb => h a ha b hb⟩

@@ -3,9 +3,11 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
-import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
+module
+
+public import Mathlib.CategoryTheory.Limits.Preserves.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
+public import Mathlib.CategoryTheory.Limits.Shapes.SplitEqualizer
 
 /-!
 # Preserving (co)equalizers
@@ -16,6 +18,8 @@ to concrete (co)forks.
 In particular, we show that `equalizerComparison f g G` is an isomorphism iff `G` preserves
 the limit of the parallel pair `f,g`, as well as the dual result.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -109,6 +113,7 @@ section Coequalizers
 
 variable {X Y Z : C} {f g : X ⟶ Y} {h : Y ⟶ Z} (w : f ≫ h = g ≫ h)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The map of a cofork is a colimit iff the cofork consisting of the mapped morphisms is a colimit.
 This essentially lets us commute `Cofork.ofπ` with `Functor.mapCocone`.
 -/
@@ -183,7 +188,7 @@ instance : IsIso (coequalizerComparison f g G) := by
 instance map_π_epi : Epi (G.map (coequalizer.π f g)) :=
   ⟨fun {W} h k => by
     rw [← ι_comp_coequalizerComparison]
-    haveI : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
+    have : Epi (coequalizer.π (G.map f) (G.map g) ≫ coequalizerComparison f g G) := by
       apply epi_comp
     apply (cancel_epi _).1⟩
 

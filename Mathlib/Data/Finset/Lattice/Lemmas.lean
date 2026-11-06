@@ -3,8 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Finset.Insert
-import Mathlib.Data.Finset.Lattice.Basic
+module
+
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Finset.Lattice.Basic
 
 /-!
 # Lemmas about the lattice structure of finite sets
@@ -18,15 +20,15 @@ finite sets, finset
 
 -/
 
+public section
+
 -- Assert that we define `Finset` without the material on `List.sublists`.
 -- Note that we cannot use `List.sublists` itself as that is defined very early.
 assert_not_exists List.sublistsLen Multiset.powerset CompleteLattice Monoid
 
-open Multiset Subtype Function
-
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 
@@ -38,20 +40,16 @@ attribute [local trans] Subset.trans Superset.trans
 
 section Lattice
 
-variable [DecidableEq α] {s s₁ s₂ t t₁ t₂ u v : Finset α} {a b : α}
+variable [DecidableEq α] {s s₁ s₂ t : Finset α} {a b : α}
 
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 
 /-! #### union -/
 
-@[simp]
-theorem union_empty (s : Finset α) : s ∪ ∅ = s :=
-  ext fun x => mem_union.trans <| by simp
+theorem union_empty (s : Finset α) : s ∪ ∅ = s := by simp
 
-@[simp]
-theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
-  ext fun x => mem_union.trans <| by simp
+theorem empty_union (s : Finset α) : ∅ ∪ s = s := by simp
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
@@ -64,19 +62,22 @@ theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
 
-@[simp]
+@[simp, grind =]
 lemma singleton_union (x : α) (s : Finset α) : {x} ∪ s = insert x s :=
   rfl
 
-@[simp]
+/- We lower the simp-priority of `union_singleton` to ensure that `{x} ∪ {y}`
+simplifies to `{x, y}` and not `{y, x}`. -/
+
+@[simp 900, grind =]
 lemma union_singleton (x : α) (s : Finset α) : s ∪ {x} = insert x s := by
   rw [Finset.union_comm, singleton_union]
 
-@[simp]
+@[simp, grind =]
 theorem insert_union (a : α) (s t : Finset α) : insert a s ∪ t = insert a (s ∪ t) := by
   simp only [insert_eq, union_assoc]
 
-@[simp]
+@[simp, grind =]
 theorem union_insert (a : α) (s t : Finset α) : s ∪ insert a t = insert a (s ∪ t) := by
   simp only [insert_eq, union_left_comm]
 
@@ -103,13 +104,9 @@ theorem induction_on_union (P : Finset α → Finset α → Prop) (symm : ∀ {a
 
 /-! #### inter -/
 
-@[simp]
-theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem inter_empty (s : Finset α) : s ∩ ∅ = ∅ := by simp
 
-@[simp]
-theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ :=
-  ext fun _ => mem_inter.trans <| by simp
+theorem empty_inter (s : Finset α) : ∅ ∩ s = ∅ := by simp
 
 @[simp]
 theorem insert_inter_of_mem {s₁ s₂ : Finset α} {a : α} (h : a ∈ s₂) :
@@ -129,38 +126,39 @@ theorem insert_inter_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₂)
     have : ¬(x = a ∧ x ∈ s₂) := by rintro ⟨rfl, H⟩; exact h H
     simp only [mem_inter, mem_insert, or_and_right, this, false_or]
 
-@[deprecated (since := "2025-05-23")] alias insert_inter_of_not_mem := insert_inter_of_notMem
-
 @[simp]
 theorem inter_insert_of_notMem {s₁ s₂ : Finset α} {a : α} (h : a ∉ s₁) :
     s₁ ∩ insert a s₂ = s₁ ∩ s₂ := by rw [inter_comm, insert_inter_of_notMem h, inter_comm]
 
-@[deprecated (since := "2025-05-23")] alias inter_insert_of_not_mem := inter_insert_of_notMem
+@[grind =]
+theorem inter_insert {s₁ s₂ : Finset α} {a : α} :
+    insert a s₁ ∩ s₂ = if a ∈ s₂ then insert a (s₁ ∩ s₂) else s₁ ∩ s₂ := by
+  split_ifs <;> simp [*]
 
-@[simp]
-theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ s = {a} :=
-  show insert a ∅ ∩ s = insert a ∅ by rw [insert_inter_of_mem H, empty_inter]
+@[grind =]
+theorem insert_inter {s₁ s₂ : Finset α} {a : α} :
+    s₁ ∩ insert a s₂ = if a ∈ s₁ then insert a (s₁ ∩ s₂) else s₁ ∩ s₂ := by
+  split_ifs <;> simp [*]
+
+theorem singleton_inter_of_mem {a : α} {s : Finset α} (H : a ∈ s) : {a} ∩ s = {a} := by
+  simp [H]
 
 @[simp]
 theorem singleton_inter_of_notMem {a : α} {s : Finset α} (H : a ∉ s) : {a} ∩ s = ∅ :=
   eq_empty_of_forall_notMem <| by
     simp only [mem_inter, mem_singleton]; rintro x ⟨rfl, h⟩; exact H h
 
-@[deprecated (since := "2025-05-23")] alias singleton_inter_of_not_mem := singleton_inter_of_notMem
-
+@[grind =]
 lemma singleton_inter {a : α} {s : Finset α} :
     {a} ∩ s = if a ∈ s then {a} else ∅ := by
   split_ifs with h <;> simp [h]
 
-@[simp]
 theorem inter_singleton_of_mem {a : α} {s : Finset α} (h : a ∈ s) : s ∩ {a} = {a} := by
-  rw [inter_comm, singleton_inter_of_mem h]
+  simp [h]
 
 @[simp]
 theorem inter_singleton_of_notMem {a : α} {s : Finset α} (h : a ∉ s) : s ∩ {a} = ∅ := by
   rw [inter_comm, singleton_inter_of_notMem h]
-
-@[deprecated (since := "2025-05-23")] alias inter_singleton_of_not_mem := inter_singleton_of_notMem
 
 lemma inter_singleton {a : α} {s : Finset α} :
     s ∩ {a} = if a ∈ s then {a} else ∅ := by
@@ -183,8 +181,8 @@ variable [DecidableEq α] {l l' : List α}
 
 @[simp]
 theorem toFinset_append : toFinset (l ++ l') = l.toFinset ∪ l'.toFinset := by
-  induction' l with hd tl hl
-  · simp
-  · simp [hl]
+  induction l with
+  | nil => simp
+  | cons hd tl hl => simp [hl]
 
 end List

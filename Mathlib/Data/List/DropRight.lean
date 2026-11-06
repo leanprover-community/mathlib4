@@ -3,8 +3,11 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+module
+
+public import Mathlib.Data.List.TakeWhile
+
 import Mathlib.Data.List.Induction
-import Mathlib.Data.List.TakeWhile
 
 /-!
 
@@ -31,6 +34,8 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 
 -/
 
+@[expose] public section
+
 -- Make sure we don't import algebra
 assert_not_exists Monoid
 
@@ -50,9 +55,10 @@ theorem rdrop_zero : rdrop l 0 = l := by simp [rdrop]
 
 theorem rdrop_eq_reverse_drop_reverse : l.rdrop n = reverse (l.reverse.drop n) := by
   rw [rdrop]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · simp [take_length_add_append]
     · simp [take_append, IH]
 
@@ -72,9 +78,10 @@ theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
 
 theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) := by
   rw [rtake]
-  induction' l using List.reverseRecOn with xs x IH generalizing n
-  · simp
-  · cases n
+  induction l using List.reverseRecOn generalizing n with
+  | nil => simp
+  | append_singleton xs x IH =>
+    cases n
     · exact drop_length
     · simp [drop_append, IH]
 
@@ -97,11 +104,11 @@ theorem rdropWhile_concat (x : α) :
 
 @[simp]
 theorem rdropWhile_concat_pos (x : α) (h : p x) : rdropWhile p (l ++ [x]) = rdropWhile p l := by
-  rw [rdropWhile_concat, if_pos h]
+  rw [rdropWhile_concat, ite_eq_left h]
 
 @[simp]
 theorem rdropWhile_concat_neg (x : α) (h : ¬p x) : rdropWhile p (l ++ [x]) = l ++ [x] := by
-  rw [rdropWhile_concat, if_neg h]
+  rw [rdropWhile_concat, ite_eq_right h]
 
 theorem rdropWhile_singleton (x : α) : rdropWhile p [x] = if p x then [] else [x] := by
   rw [← nil_append [x], rdropWhile_concat, rdropWhile_nil]
@@ -151,11 +158,11 @@ theorem rtakeWhile_concat (x : α) :
 
 @[simp]
 theorem rtakeWhile_concat_pos (x : α) (h : p x) :
-    rtakeWhile p (l ++ [x]) = rtakeWhile p l ++ [x] := by rw [rtakeWhile_concat, if_pos h]
+    rtakeWhile p (l ++ [x]) = rtakeWhile p l ++ [x] := by rw [rtakeWhile_concat, ite_eq_left h]
 
 @[simp]
 theorem rtakeWhile_concat_neg (x : α) (h : ¬p x) : rtakeWhile p (l ++ [x]) = [] := by
-  rw [rtakeWhile_concat, if_neg h]
+  rw [rtakeWhile_concat, ite_eq_right h]
 
 theorem rtakeWhile_suffix : l.rtakeWhile p <:+ l := by
   rw [← reverse_prefix, rtakeWhile, reverse_reverse]
@@ -169,7 +176,7 @@ theorem rtakeWhile_eq_self_iff : rtakeWhile p l = l ↔ ∀ x ∈ l, p x := by
 
 @[simp]
 theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (l.getLast hl) := by
-  induction' l using List.reverseRecOn with l a <;> simp [rtakeWhile]
+  induction l using List.reverseRecOn <;> simp [rtakeWhile]
 
 theorem mem_rtakeWhile_imp {x : α} (hx : x ∈ rtakeWhile p l) : p x := by
   rw [rtakeWhile, mem_reverse] at hx

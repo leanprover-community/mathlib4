@@ -3,16 +3,20 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
+module
+
+public import Mathlib.Analysis.SumIntegralComparisons
+public import Mathlib.NumberTheory.Harmonic.Defs
 
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.Analysis.SumIntegralComparisons
-import Mathlib.NumberTheory.Harmonic.Defs
 
 /-!
 
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
 
 -/
+
+public section
 
 lemma harmonic_eq_sum_Icc {n : ℕ} : harmonic n = ∑ i ∈ Finset.Icc 1 n, (↑i)⁻¹ := by
   rw [harmonic, Finset.range_eq_Ico, Finset.sum_Ico_add' (fun (i : ℕ) ↦ (i : ℚ)⁻¹) 0 n (c := 1)]
@@ -35,7 +39,7 @@ theorem harmonic_le_one_add_log (n : ℕ) :
   simp_rw [harmonic_eq_sum_Icc, Rat.cast_sum, Rat.cast_inv, Rat.cast_natCast]
   rw [← Finset.sum_erase_add (Finset.Icc 1 n) _ (Finset.left_mem_Icc.mpr hn), add_comm,
     Nat.cast_one, inv_one]
-  refine add_le_add_left ?_ 1
+  gcongr
   simp only [Finset.Icc_erase_left]
   calc ∑ d ∈ .Ico 2 (n + 1), (d : ℝ)⁻¹
     _ = ∑ d ∈ .Ico 2 (n + 1), (↑(d + 1) - 1)⁻¹ := ?_
@@ -69,5 +73,5 @@ theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
     harmonic ⌊y⌋₊ ≤ 1 + Real.log y := by
   refine (harmonic_le_one_add_log _).trans ?_
   gcongr
-  · exact_mod_cast Nat.floor_pos.mpr hy
+  · exact mod_cast Nat.floor_pos.mpr hy
   · exact Nat.floor_le <| zero_le_one.trans hy

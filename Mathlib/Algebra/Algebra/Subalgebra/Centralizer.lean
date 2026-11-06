@@ -3,8 +3,10 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.TensorProduct.Basis
-import Mathlib.RingTheory.TensorProduct.Basic
+module
+
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
+public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
 # Properties of centers and centralizers
@@ -21,6 +23,8 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 - `Subalgebra.centralizer_range_includeRight_eq_center_tensorProduct`: if `A` is free as a module,
   then the centralizer of `1 ⊗ B` in `A ⊗ B` is `A ⊗ C(B)` where `C(B)` is the center of `B`.
 -/
+
+public section
 
 namespace Subalgebra
 
@@ -65,7 +69,6 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
       (Algebra.TensorProduct.includeLeft (S := R) '' S) =
     (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
       (AlgHom.id R B)).range := by
-  classical
   ext w
   constructor
   · intro hw
@@ -88,8 +91,7 @@ lemma centralizer_coe_image_includeLeft_eq_center_tensorProduct
   · rintro ⟨w, rfl⟩
     rw [Subalgebra.mem_centralizer_iff]
     rintro _ ⟨x, hx, rfl⟩
-    induction w using TensorProduct.induction_on with
-    | zero => simp
+    induction w using TensorProduct.inductionOn with
     | tmul b c =>
       simp [Subalgebra.mem_centralizer_iff _ |>.1 b.2 x hx]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
@@ -113,14 +115,14 @@ lemma centralizer_coe_image_includeRight_eq_center_tensorProduct
       ⟨fun h b hb ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b hb ↦
         (Algebra.TensorProduct.comm R A B).injective <| by aesop⟩
   · ext x
-    simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+    simp only [AlgHom.mem_range, mem_comap, AlgEquiv.coe_toAlgHom]
     constructor
     · rintro ⟨x, rfl⟩
       exact ⟨(Algebra.TensorProduct.comm R _ _) x,
         by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
     · rintro ⟨y, hy⟩
       refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-      rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+      rw [← hy, comm_comp_map_apply, ← Algebra.TensorProduct.comm_symm, AlgEquiv.symm_apply_apply]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.

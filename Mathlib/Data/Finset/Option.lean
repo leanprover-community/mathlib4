@@ -3,8 +3,10 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+module
+
+public import Mathlib.Data.Finset.Card
+public import Mathlib.Data.Finset.Union
 
 /-!
 # Finite sets in `Option α`
@@ -23,6 +25,10 @@ Then we prove some basic lemmas about these definitions.
 
 finset, option
 -/
+
+open scoped Finset
+
+@[expose] public section
 
 
 variable {α β : Type*}
@@ -47,7 +53,7 @@ theorem toFinset_some {a : α} : (some a).toFinset = {a} :=
 theorem mem_toFinset {a : α} {o : Option α} : a ∈ o.toFinset ↔ a ∈ o := by
   cases o <;> simp [eq_comm]
 
-theorem card_toFinset (o : Option α) : o.toFinset.card = o.elim 0 1 := by cases o <;> rfl
+theorem card_toFinset (o : Option α) : #o.toFinset = o.elim 0 1 := by cases o <;> rfl
 
 end Option
 
@@ -57,7 +63,7 @@ namespace Finset
 using `Option.some` and then insert `Option.none`. -/
 def insertNone : Finset α ↪o Finset (Option α) :=
   (OrderEmbedding.ofMapLEIff fun s => cons none (s.map Embedding.some) <| by simp) fun s t => by
-    rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset]
+    rw [cons_subset_cons, map_subset_map]
 
 @[simp]
 theorem mem_insertNone {s : Finset α} : ∀ {o : Option α}, o ∈ insertNone s ↔ ∀ a ∈ o, a ∈ s
@@ -75,7 +81,7 @@ lemma none_mem_insertNone {s : Finset α} : none ∈ insertNone s := by simp
 lemma insertNone_nonempty {s : Finset α} : insertNone s |>.Nonempty := ⟨none, none_mem_insertNone⟩
 
 @[simp]
-theorem card_insertNone (s : Finset α) : s.insertNone.card = s.card + 1 := by simp [insertNone]
+theorem card_insertNone (s : Finset α) : #s.insertNone = #s + 1 := by simp [insertNone]
 
 /-- Given `s : Finset (Option α)`, `eraseNone s : Finset α` is the set of `x : α` such that
 `some x ∈ s`. -/
@@ -102,7 +108,7 @@ theorem eraseNone_map_some (s : Finset α) : eraseNone (s.map Embedding.some) = 
 
 @[simp]
 theorem eraseNone_image_some [DecidableEq (Option α)] (s : Finset α) :
-    eraseNone (s.image some) = s := by simpa only [map_eq_image] using eraseNone_map_some s
+    eraseNone (s.image some) = s := by simpa only [map_eq_image] using! eraseNone_map_some s
 
 @[simp]
 theorem coe_eraseNone (s : Finset (Option α)) : (eraseNone s : Set α) = some ⁻¹' s :=
@@ -160,7 +166,9 @@ theorem card_eraseNone_le (s : Finset (Option α)) : #s.eraseNone ≤ #s := by
 theorem card_eraseNone_of_mem {s : Finset (Option α)} (h : none ∈ s) : #s.eraseNone = #s - 1 := by
   classical rw [card_eraseNone_eq_card_erase, card_erase_of_mem h]
 
-theorem card_eraseNone_of_not_mem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
+theorem card_eraseNone_of_notMem {s : Finset (Option α)} (h : none ∉ s) : #s.eraseNone = #s := by
   classical rw [card_eraseNone_eq_card_erase, erase_eq_of_notMem h]
+
+@[deprecated (since := "2026-09-28")] alias card_eraseNone_of_not_mem := card_eraseNone_of_notMem
 
 end Finset

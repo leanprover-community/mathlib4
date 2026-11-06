@@ -3,10 +3,15 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
+
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
+
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
+
+public section
 
 variable {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -37,8 +42,7 @@ lemma span_nonneg_inter_closedBall {r : ℝ} (hr : 0 < r) :
 lemma span_nonneg_inter_ball {r : ℝ} (hr : 0 < r) :
     span ℂ ({x : A | 0 ≤ x} ∩ Metric.ball 0 r) = ⊤ := by
   rw [eq_top_iff, ← span_nonneg_inter_closedBall (half_pos hr)]
-  gcongr
-  exact Metric.closedBall_subset_ball <| half_lt_self hr
+  grw [half_lt_self hr]
 
 /-- A C⋆-algebra is spanned by nonnegative contractions. -/
 lemma span_nonneg_inter_unitClosedBall :

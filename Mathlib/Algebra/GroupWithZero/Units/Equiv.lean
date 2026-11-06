@@ -3,12 +3,19 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.Units.Basic
+module
+
+public import Mathlib.Algebra.Group.Units.Equiv
+public import Mathlib.Algebra.GroupWithZero.Units.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Multiplication by a nonzero element in a `GroupWithZero` is a permutation.
 -/
+
+@[expose] public section
 
 assert_not_exists DenselyOrdered Ring
 

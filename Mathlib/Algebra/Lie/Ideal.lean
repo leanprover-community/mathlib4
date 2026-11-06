@@ -3,7 +3,9 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Lie.Submodule
+module
+
+public import Mathlib.Algebra.Lie.Submodule
 
 /-!
 # Lie Ideals
@@ -25,6 +27,8 @@ on Lie submodules.
 
 Lie algebra, ideal, submodule, Lie submodule
 -/
+
+@[expose] public section
 
 
 universe u v w w₁ w₂
@@ -49,8 +53,13 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
   rw [← lie_skew, ← neg_lie]; apply lie_mem_right; assumption
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
+@[coe]
 def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
+
+@[simp] lemma LieIdeal.mem_toLieSubalgebra (I : LieIdeal R L) (x : L) :
+    x ∈ I.toLieSubalgebra ↔ x ∈ I :=
+  Iff.rfl
 
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
@@ -59,23 +68,29 @@ instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
 theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
+instance LieIdeal.bracket {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
+    (I : LieIdeal R L) [Bracket L M] : Bracket I M where
+  bracket x m := ⁅(x : L), m⁆
+
+instance (I : LieIdeal R L) : Bracket I I := inferInstance
+
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
-  LieSubalgebra.lieRing R L ↑I
+  inferInstanceAs <| LieRing I.toLieSubalgebra
 
 /-- Transfer the `LieAlgebra` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieAlgebra (I : LieIdeal R L) : LieAlgebra R I :=
-  LieSubalgebra.lieAlgebra R L ↑I
+  inferInstanceAs <| LieAlgebra R I.toLieSubalgebra
 
 /-- Transfer the `LieRingModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieRingModule {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
     (I : LieIdeal R L) [LieRingModule L M] : LieRingModule I M :=
-  LieSubalgebra.lieRingModule (I : LieSubalgebra R L)
+  inferInstanceAs <| LieRingModule I.toLieSubalgebra M
 
 @[simp]
 theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
@@ -119,14 +134,13 @@ end LieSubmodule
 
 section LieSubmoduleMapAndComap
 
-variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w} {M' : Type w₁}
+variable {R : Type u} {L : Type v} {L' : Type w₂} {M : Type w}
 variable [CommRing R] [LieRing L] [LieRing L'] [LieAlgebra R L']
 variable [AddCommGroup M] [Module R M] [LieRingModule L M]
-variable [AddCommGroup M'] [Module R M'] [LieRingModule L M']
 
 namespace LieIdeal
 
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable (f : L →ₗ⁅R⁆ L') (I I₂ : LieIdeal R L) (J : LieIdeal R L')
 
 @[simp]
@@ -195,12 +209,12 @@ theorem map_comap_le : map f (comap f J) ≤ J := by rw [map_le_iff_le_comap]
 /-- See also `LieIdeal.map_comap_eq`. -/
 theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
   unfold map
   gcongr; exact h
 
-@[mono]
+@[gcongr, mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
   rw [← SetLike.coe_subset_coe] at h ⊢
   dsimp only [SetLike.coe]
@@ -233,7 +247,7 @@ instance subsingleton_of_bot : Subsingleton (LieIdeal R (⊥ : LieIdeal R L)) :=
 end LieIdeal
 
 namespace LieHom
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 
 /-- The kernel of a morphism of Lie algebras, as an ideal in the domain. -/
@@ -335,7 +349,7 @@ theorem isIdealMorphism_of_surjective (h : Function.Surjective f) : f.IsIdealMor
 end LieHom
 
 namespace LieIdeal
-variable [LieAlgebra R L] [LieModule R L M] [LieModule R L M']
+variable [LieAlgebra R L] [LieModule R L M]
 variable {f : L →ₗ⁅R⁆ L'} {I I₂ : LieIdeal R L} {J : LieIdeal R L'}
 
 @[simp]
@@ -397,7 +411,7 @@ theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := 
   erw [LieSubmodule.mem_sup] at hy₁
   obtain ⟨z₁, hz₁, z₂, hz₂, hy⟩ := hy₁
   rw [← hy]
-  rw [f.coe_toLinearMap, f.map_add, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
+  rw [map_add, f.coe_toLinearMap, LieHom.mem_ker.mp hz₂, add_zero]; exact ⟨z₁, hz₁, rfl⟩
 
 @[simp]
 theorem map_sup_ker_eq_map' :
@@ -465,7 +479,7 @@ variable {I}
   rw [Submodule.comap_subtype_eq_top, LieSubmodule.toSubmodule_le_toSubmodule]
 
 @[simp] theorem comap_incl_eq_bot : I₂.comap I.incl = ⊥ ↔ Disjoint I I₂ := by
-  rw [disjoint_iff, ←LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
+  rw [disjoint_iff, ← LieSubmodule.toSubmodule_inj, LieIdeal.comap_toSubmodule,
     LieSubmodule.bot_toSubmodule, ← LieSubmodule.toSubmodule_inj, LieSubmodule.inf_toSubmodule,
     LieSubmodule.bot_toSubmodule, incl_coe]
   simp_rw [toLieSubalgebra_toSubmodule]
@@ -479,9 +493,8 @@ section TopEquiv
 
 variable (R : Type u) (L : Type v)
 variable [CommRing R] [LieRing L]
-variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M]
 variable {R L}
-variable [LieAlgebra R L] [LieModule R L M]
+variable [LieAlgebra R L]
 
 /-- The natural equivalence between the 'top' Lie ideal and the enclosing Lie algebra.
 This is the Lie ideal version of `Submodule.topEquiv`. -/

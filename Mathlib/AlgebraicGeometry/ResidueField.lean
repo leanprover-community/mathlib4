@@ -3,8 +3,10 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.Stalk
-import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
+module
+
+public import Mathlib.AlgebraicGeometry.Stalk
+public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace.ResidueField
 
 /-!
 
@@ -26,6 +28,8 @@ The following are in the `AlgebraicGeometry.Scheme` namespace:
 
 -/
 
+@[expose] public section
+
 universe u
 
 open CategoryTheory TopologicalSpace Opposite IsLocalRing
@@ -39,28 +43,28 @@ variable (X : Scheme.{u}) {U : X.Opens}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
+  ↧(IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
 
-instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique Spec(_))
+instance (x : X) : Unique (Spec (X.residueField x)) := inferInstanceAs (Unique (Spec <| .of _))
 
 /-- The residue map from the stalk to the residue field. -/
 def residue (X : Scheme.{u}) (x) : X.presheaf.stalk x ⟶ X.residueField x :=
   CommRingCat.ofHom (IsLocalRing.residue (X.presheaf.stalk x))
 
-/-- See `AlgebraicGeometry.IsClosedImmersion.Spec_map_residue` for the stronger result that
+/-- See `AlgebraicGeometry.IsClosedImmersion.SpecMap_residue` for the stronger result that
 `Spec.map (X.residue x)` is a closed immersion. -/
 instance {X : Scheme.{u}} (x) : IsPreimmersion (Spec.map (X.residue x)) :=
-  IsPreimmersion.mk_Spec_map
+  IsPreimmersion.mk_SpecMap
     (PrimeSpectrum.isClosedEmbedding_comap_of_surjective _ _
       Ideal.Quotient.mk_surjective).isEmbedding
     (RingHom.surjectiveOnStalks_of_surjective (Ideal.Quotient.mk_surjective))
 
 @[simp]
-lemma Spec_map_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
-    (Spec.map (X.residue x)).base s = closedPoint (X.presheaf.stalk x) :=
+lemma SpecMap_residue_apply {X : Scheme.{u}} (x : X) (s : Spec (X.residueField x)) :
+    Spec.map (X.residue x) s = closedPoint (X.presheaf.stalk x) :=
   IsLocalRing.PrimeSpectrum.comap_residue _ s
 
 lemma residue_surjective (X : Scheme.{u}) (x) : Function.Surjective (X.residue x) :=
@@ -72,13 +76,13 @@ instance (X : Scheme.{u}) (x) : Epi (X.residue x) :=
 /-- If `K` is a field and `f : 𝒪_{X, x} ⟶ K` is a ring map, then this is the induced
 map `κ(x) ⟶ K`. -/
 def descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x : X}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
-    X.residueField x ⟶ .of K :=
+    (f : X.presheaf.stalk x ⟶ ↧K) [IsLocalHom f.hom] :
+    X.residueField x ⟶ ↧K :=
   CommRingCat.ofHom (IsLocalRing.ResidueField.lift (S := K) f.hom)
 
 @[reassoc (attr := simp)]
 lemma residue_descResidueField {K : Type u} [Field K] {X : Scheme.{u}} {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
+    (f : X.presheaf.stalk x ⟶ ↧K) [IsLocalHom f.hom] :
     X.residue x ≫ X.descResidueField f = f :=
   CommRingCat.hom_ext <| RingHom.ext fun _ ↦ rfl
 
@@ -104,9 +108,6 @@ lemma evaluation_eq_zero_iff_notMem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, 
     X.evaluation U x hx f = 0 ↔ x ∉ X.basicOpen f :=
   X.toLocallyRingedSpace.evaluation_eq_zero_iff_notMem_basicOpen ⟨x, hx⟩ f
 
-@[deprecated (since := "2025-05-23")]
-alias evaluation_eq_zero_iff_not_mem_basicOpen := evaluation_eq_zero_iff_notMem_basicOpen
-
 lemma evaluation_ne_zero_iff_mem_basicOpen (x : X) (hx : x ∈ U) (f : Γ(X, U)) :
     X.evaluation U x hx f ≠ 0 ↔ x ∈ X.basicOpen f := by
   simp
@@ -119,13 +120,13 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
-def Hom.residueFieldMap (f : X.Hom Y) (x : X) :
-    Y.residueField (f.base x) ⟶ X.residueField x :=
+def Hom.residueFieldMap (f : X ⟶ Y) (x : X) :
+    Y.residueField (f x) ⟶ X.residueField x :=
   CommRingCat.ofHom <| IsLocalRing.ResidueField.map (f.stalkMap x).hom
 
 @[reassoc]
 lemma residue_residueFieldMap (x : X) :
-    Y.residue (f.base x) ≫ f.residueFieldMap x = f.stalkMap x ≫ X.residue x := by
+    Y.residue (f x) ≫ f.residueFieldMap x = f.stalkMap x ≫ X.residue x := by
   simp [Hom.residueFieldMap]
   rfl
 
@@ -136,29 +137,41 @@ lemma residueFieldMap_id (x : X) :
 
 @[simp]
 lemma residueFieldMap_comp {Z : Scheme.{u}} (g : Y ⟶ Z) (x : X) :
-    (f ≫ g).residueFieldMap x = g.residueFieldMap (f.base x) ≫ f.residueFieldMap x :=
+    (f ≫ g).residueFieldMap x = g.residueFieldMap (f x) ≫ f.residueFieldMap x :=
   LocallyRingedSpace.residueFieldMap_comp _ _ _
 
+/--
+Degree of `f` at a point `x` is defined to be the degree of the associated field extension
+from `κ(f x)` to `κ(x)`. We return a default value of zero when this degree is infinite.
+-/
+def Hom.residueDegree (f : X ⟶ Y) (x : X) : ℕ :=
+  letI := (f.residueFieldMap x).hom.toAlgebra
+  Module.finrank (Y.residueField (f x)) (X.residueField x)
+
+@[simp]
+lemma Hom.residueDegree_id (x : X) : (𝟙 _ : X ⟶ X).residueDegree x = 1 := by
+  dsimp [residueDegree]
+  rw [residueFieldMap_id]
+  exact CommSemiring.finrank_self _
+
 @[reassoc]
-lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f.base x ∈ V) :
-    Y.evaluation V (f.base x) hx ≫ f.residueFieldMap x =
+lemma evaluation_naturality {V : Opens Y} (x : X) (hx : f x ∈ V) :
+    Y.evaluation V (f x) hx ≫ f.residueFieldMap x =
       f.app V ≫ X.evaluation (f ⁻¹ᵁ V) x hx :=
   LocallyRingedSpace.evaluation_naturality f.1 ⟨x, hx⟩
 
-lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f.base x ∈ V) (s) :
-    f.residueFieldMap x (Y.evaluation V (f.base x) hx s) =
+lemma evaluation_naturality_apply {V : Opens Y} (x : X) (hx : f x ∈ V) (s) :
+    f.residueFieldMap x (Y.evaluation V (f x) hx s) =
       X.evaluation (f ⁻¹ᵁ V) x hx (f.app V s) :=
   LocallyRingedSpace.evaluation_naturality_apply f.1 ⟨x, hx⟩ s
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :
-    Y.Γevaluation (f.base x) ≫ f.residueFieldMap x =
-      f.c.app (op ⊤) ≫ X.Γevaluation x :=
+    Y.Γevaluation (f x) ≫ f.residueFieldMap x = f.appTop ≫ X.Γevaluation x :=
   LocallyRingedSpace.Γevaluation_naturality f.toLRSHom x
 
 lemma Γevaluation_naturality_apply (x : X) (a : Y.presheaf.obj (op ⊤)) :
-    f.residueFieldMap x (Y.Γevaluation (f.base x) a) =
-      X.Γevaluation x (f.c.app (op ⊤) a) :=
+    f.residueFieldMap x (Y.Γevaluation (f x) a) = X.Γevaluation x (f.appTop a) :=
   LocallyRingedSpace.Γevaluation_naturality_apply f.toLRSHom x a
 
 instance [IsOpenImmersion f] (x) : IsIso (f.residueFieldMap x) :=
@@ -209,6 +222,13 @@ lemma Hom.residueFieldMap_congr {f g : X ⟶ Y} (e : f = g) (x : X) :
     f.residueFieldMap x = (Y.residueFieldCongr (by subst e; rfl)).hom ≫ g.residueFieldMap x := by
   subst e; simp
 
+@[reassoc]
+lemma Hom.residueFieldMap_congr' {f : X ⟶ Y} {x₁ x₂ : X} (e : x₁ = x₂) :
+    f.residueFieldMap x₁ ≫ (X.residueFieldCongr e).hom =
+      (Y.residueFieldCongr (congrArg f e)).hom ≫ f.residueFieldMap x₂ := by
+  subst e
+  simp
+
 end congr
 
 section fromResidueField
@@ -238,11 +258,11 @@ lemma residueFieldCongr_fromSpecResidueField {x y : X} (h : x = y) :
 instance {x y : X} (h : x = y) : (Spec.map (X.residueFieldCongr h).hom).IsOver X where
 
 @[reassoc (attr := simp)]
-lemma Hom.Spec_map_residueFieldMap_fromSpecResidueField (x : X) :
+lemma Hom.SpecMap_residueFieldMap_fromSpecResidueField (x : X) :
     Spec.map (f.residueFieldMap x) ≫ Y.fromSpecResidueField _ =
       X.fromSpecResidueField x ≫ f := by
   dsimp only [fromSpecResidueField]
-  rw [Category.assoc, ← Spec_map_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
+  rw [Category.assoc, ← SpecMap_stalkMap_fromSpecStalk, ← Spec.map_comp_assoc,
     ← Spec.map_comp_assoc]
   rfl
 
@@ -250,32 +270,129 @@ instance [X.Over Y] (x : X) : Spec.map ((X ↘ Y).residueFieldMap x) |>.IsOver Y
 
 @[simp]
 lemma fromSpecResidueField_apply (x : X.carrier) (s : Spec (X.residueField x)) :
-    (X.fromSpecResidueField x).base s = x := by
+    X.fromSpecResidueField x s = x := by
   simp [fromSpecResidueField]
 
 lemma range_fromSpecResidueField (x : X.carrier) :
-    Set.range (X.fromSpecResidueField x).base = {x} := by
+    Set.range (X.fromSpecResidueField x) = {x} := by
   simp
 
 lemma descResidueField_fromSpecResidueField {K : Type*} [Field K] (X : Scheme) {x}
-    (f : X.presheaf.stalk x ⟶ .of K) [IsLocalHom f.hom] :
+    (f : X.presheaf.stalk x ⟶ ↧K) [IsLocalHom f.hom] :
     Spec.map (X.descResidueField f) ≫
       X.fromSpecResidueField x = Spec.map f ≫ X.fromSpecStalk x := by
   simp [fromSpecResidueField, ← Spec.map_comp_assoc]
 
 lemma descResidueField_stalkClosedPointTo_fromSpecResidueField
-    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec(K) ⟶ X) :
-    Spec.map (@descResidueField (CommRingCat.of K) _ X _ (Scheme.stalkClosedPointTo f)
-        _) ≫
-      X.fromSpecResidueField (f.base (closedPoint K)) = f := by
-  rw [X.descResidueField_fromSpecResidueField]
-  rw [Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
+    (K : Type u) [Field K] (X : Scheme.{u}) (f : Spec ↧K ⟶ X) :
+    Spec.map (descResidueField (Scheme.stalkClosedPointTo f)) ≫
+      X.fromSpecResidueField (f (closedPoint K)) = f := by
+  rw [X.descResidueField_fromSpecResidueField, Scheme.Spec_stalkClosedPointTo_fromSpecStalk]
 
 end fromResidueField
 
+section Spec
+
+variable (R : CommRingCat) (x : Spec R)
+
+set_option backward.isDefEq.respectTransparency.types false in
+/-- The residue fields of `Spec R` are isomorphic to `Ideal.ResidueField`. -/
+noncomputable
+def Spec.residueFieldIso :
+    (Spec R).residueField x ≅ ↧x.asIdeal.ResidueField :=
+  (IsLocalRing.ResidueField.mapEquiv
+    (Spec.stalkIso R x).commRingCatIsoToRingEquiv).toCommRingCatIso
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[reassoc (attr := simp)]
+lemma Spec.algebraMap_residueFieldIso_inv :
+    CommRingCat.ofHom (algebraMap R _) ≫ (residueFieldIso R x).inv =
+      (Scheme.ΓSpecIso R).inv ≫ (Spec R).presheaf.germ ⊤ x trivial ≫ (Spec R).residue x := by
+  rw [← Spec.algebraMap_stalkIso_inv_assoc]; rfl
+
+@[reassoc (attr := simp)]
+lemma Spec.residue_residueFieldIso_hom :
+    (Spec R).residue x ≫ (residueFieldIso R x).hom =
+      (Spec.stalkIso R x).hom ≫ CommRingCat.ofHom (algebraMap _ _) := rfl
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[reassoc (attr := simp)]
+lemma Spec.map_residueFieldIso_inv_eq_fromSpecResidueField :
+    Spec.map (residueFieldIso _ _).inv ≫
+      Spec.map (CommRingCat.ofHom (algebraMap R x.asIdeal.ResidueField)) =
+    (Spec R).fromSpecResidueField x := by
+  simp only [Scheme.fromSpecResidueField, Spec.fromSpecStalk_eq, ← Spec.map_comp]
+  rw [Spec.map_inj]
+  simp [← Scheme.Spec.algebraMap_residueFieldIso_inv]
+
+lemma Spec.Γevaluation_eq_of_field {k : Type u} [Field k] (x : Spec (.of k)) :
+    haveI := x.isPrime
+    (Spec (.of k)).Γevaluation x = (Scheme.ΓSpecIso (.of k)).hom ≫
+      (Ideal.algEquivResidueFieldOfField x.asIdeal).toRingEquiv.toCommRingCatIso.hom ≫
+        (Spec.residueFieldIso (.of k) x).inv := by
+  have := x.isPrime
+  have : (Ideal.algEquivResidueFieldOfField x.asIdeal).toRingEquiv.toCommRingCatIso.hom =
+      CommRingCat.ofHom (algebraMap (CommRingCat.of k) x.asIdeal.ResidueField) := by
+    ext a; simp [Ideal.algEquivResidueFieldOfField_apply]
+  rw [this, Spec.algebraMap_residueFieldIso_inv, Iso.hom_inv_id_assoc]
+  exact ((Spec (.of k)).germ_residue (U := ⊤) x trivial).symm
+
+instance Spec.isIso_Γevaluation {k : Type u} [Field k] (x : Spec (.of k)) :
+    IsIso ((Spec (.of k)).Γevaluation x) := by
+  rw [Spec.Γevaluation_eq_of_field]
+  infer_instance
+
+/-- For a field `k`, the residue field of `Spec k` at any point `x` is canonically isomorphic
+to `k`. -/
+@[simps! -isSimp inv]
+noncomputable def Spec.residueFieldIsoOfField {k : Type u} [Field k] (x : Spec (.of k)) :
+    (Spec (.of k)).residueField x ≅ .of k :=
+  (asIso ((Spec (.of k)).Γevaluation x)).symm ≪≫ Scheme.ΓSpecIso (.of k)
+
+attribute [reassoc] Spec.residueFieldIsoOfField_inv
+
+lemma Spec.residueFieldIsoOfField_eq {k : Type u} [Field k] (x : Spec (.of k)) :
+    haveI := x.isPrime
+    Spec.residueFieldIsoOfField x = Spec.residueFieldIso (.of k) x ≪≫
+      (Ideal.algEquivResidueFieldOfField x.asIdeal).symm.toRingEquiv.toCommRingCatIso := by
+  refine Iso.ext ((Iso.inv_eq_inv _ _).mp ?_)
+  simp only [Spec.residueFieldIsoOfField_inv, Spec.Γevaluation_eq_of_field, Iso.inv_hom_id_assoc,
+    Iso.trans_inv, RingEquiv.toCommRingCatIso_hom, RingEquiv.toCommRingCatIso_inv,
+    AlgEquiv.symm_toRingEquiv, RingEquiv.symm_symm]
+
+end Spec
+
+/-- The `k`-algebra structure on `κ(x)` induced by a morphism `f : X ⟶ Spec k` factors through
+`f.residueFieldMap x`, after identifying `κ(f x)` with `k` via `Spec.residueFieldIsoOfField`. -/
+@[reassoc]
+lemma Hom.residueFieldIsoOfField_inv_residueFieldMap {X : Scheme.{u}} {k : Type u} [Field k]
+    (f : X ⟶ Spec (.of k)) (x : X) :
+    (Spec.residueFieldIsoOfField (f x)).inv ≫ f.residueFieldMap x =
+      (Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop ≫ X.Γevaluation x := by
+  simp [Spec.residueFieldIsoOfField_inv, Scheme.Γevaluation_naturality]
+
+/-- The residue degree of a morphism `f : X ⟶ Spec k` to the spectrum of a field at a point `x`
+equals the degree of `κ(x)` as a `k`-algebra, via the canonical `k`-algebra structure on `κ(x)`
+induced by `f`. -/
+lemma Hom.residueDegree_eq_finrank {X : Scheme.{u}} {k : Type u} [Field k]
+    (f : X ⟶ Spec (.of k)) (x : X) :
+    letI := Algebra.compHom (X.residueField x)
+      ((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom)
+    f.residueDegree x = Module.finrank k (X.residueField x) := by
+  algebraize [((X.Γevaluation x).hom.comp ((Scheme.ΓSpecIso (.of k)).inv ≫ f.appTop).hom),
+    (f.residueFieldMap x).hom]
+  let i := (Spec.residueFieldIsoOfField (f x)).commRingCatIsoToRingEquiv
+  refine Algebra.finrank_eq_of_equiv_equiv i (RingEquiv.refl _) ?_
+  have : algebraMap k ↑(X.residueField x) =
+      (f.residueFieldMap x).hom.comp i.symm.toRingHom :=
+    congrArg CommRingCat.Hom.hom (f.residueFieldIsoOfField_inv_residueFieldMap x).symm
+  rw [this]
+  ext c
+  simp [RingHom.algebraMap_toAlgebra]
+
 /-- A helper lemma to work with `AlgebraicGeometry.Scheme.SpecToEquivOfField`. -/
 lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
-    {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ .of K} :
+    {f₁ f₂ : Σ x : X.carrier, X.residueField x ⟶ ↧K} :
     f₁ = f₂ ↔ ∃ e : f₁.1 = f₂.1, f₁.2 = (X.residueFieldCongr e).hom ≫ f₂.2 := by
   constructor
   · rintro rfl
@@ -285,21 +402,31 @@ lemma SpecToEquivOfField_eq_iff {K : Type*} [Field K] {X : Scheme}
     rintro ⟨(rfl : f = g), h⟩
     simpa
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- For a field `K` and a scheme `X`, the morphisms `Spec K ⟶ X` bijectively correspond
 to pairs of points `x` of `X` and embeddings `κ(x) ⟶ K`. -/
+@[simps]
 def SpecToEquivOfField (K : Type u) [Field K] (X : Scheme.{u}) :
-    (Spec(K) ⟶ X) ≃ Σ x, X.residueField x ⟶ .of K where
+    (Spec ↧K ⟶ X) ≃ Σ x, X.residueField x ⟶ ↧K where
   toFun f :=
     ⟨_, X.descResidueField (Scheme.stalkClosedPointTo f)⟩
   invFun xf := Spec.map xf.2 ≫ X.fromSpecResidueField xf.1
   left_inv := Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField K X
   right_inv f := by
     rw [SpecToEquivOfField_eq_iff]
-    simp only [CommRingCat.coe_of, Scheme.comp_coeBase, TopCat.coe_comp, Function.comp_apply,
+    simp only [CommRingCat.coe_of, Scheme.Hom.comp_base, TopCat.coe_comp, Function.comp_apply,
       Scheme.fromSpecResidueField_apply, exists_true_left]
     rw [← Spec.map_inj, Spec.map_comp, ← cancel_mono (X.fromSpecResidueField _)]
-    erw [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField]
-    simp
+    grind [Scheme.descResidueField_stalkClosedPointTo_fromSpecResidueField,
+      Scheme.fromSpecResidueField_apply,
+      Scheme.residueFieldCongr_fromSpecResidueField]
+
+set_option backward.isDefEq.respectTransparency.types false in
+@[simp]
+lemma descResidueField_stalkClosedPointTo_comp {K : Type u} [Field K] (g : Spec ↧K ⟶ X) :
+    dsimp% descResidueField (stalkClosedPointTo (g ≫ f)) =
+      Hom.residueFieldMap f (g (closedPoint K)) ≫ descResidueField (stalkClosedPointTo g) := by
+  simp [← cancel_epi (Y.residue _), stalkClosedPointTo_comp, residue_residueFieldMap_assoc]
 
 end Scheme
 

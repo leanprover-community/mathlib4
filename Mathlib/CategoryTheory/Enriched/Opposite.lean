@@ -3,8 +3,9 @@ Copyright (c) 2024 Daniel Carranza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Carranza
 -/
-import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+module
+
+public import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
 
@@ -17,11 +18,14 @@ This file constructs the opposite `V`-category as an instance on the type `Cᵒ�
 equivalence between
 * `ForgetEnrichment V (Cᵒᵖ)`, the underlying category of the `V`-category `Cᵒᵖ`; and
 * `(ForgetEnrichment V C)ᵒᵖ`, the opposite category of the underlying category of `C`.
+
 We also show that if `C` is an enriched ordinary category (i.e. a category enriched in `V`
 equipped with an identification `(X ⟶ Y) ≃ (𝟙_ V ⟶ (X ⟶[V] Y))`) then `Cᵒᵖ` is again
 an enriched ordinary category.
 
 -/
+
+@[expose] public section
 
 universe v₁ u₁ v u
 
@@ -92,6 +96,7 @@ def forgetEnrichmentOppositeEquivalence.functor :
       leftUnitor_inv_braiding_assoc, ← unitors_inv_equal, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The functor going from the opposite of the underlying category of the enriched category `C`
 to the underlying category of the enriched category `Cᵒᵖ`. -/
 def forgetEnrichmentOppositeEquivalence.inverse :
@@ -109,6 +114,7 @@ def forgetEnrichmentOppositeEquivalence.inverse :
     rw [this, ← Category.assoc]
     congr 1
 
+set_option backward.isDefEq.respectTransparency false in
 /-- The equivalence between the underlying category of the enriched category `Cᵒᵖ` and
 the opposite of the underlying category of the enriched category `C`. -/
 @[simps]

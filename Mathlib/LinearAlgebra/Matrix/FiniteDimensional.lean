@@ -3,8 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Basic
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+module
+
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -16,7 +18,7 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 
 ## Main definitions
 
-* `Matrix.finiteDimensional`: matrices form a finite dimensional vector space over a field `K`
+* `Matrix.finiteDimensional`: matrices form a finite-dimensional vector space over a field `K`
 * `LinearMap.finiteDimensional`
 
 ## Tags
@@ -24,6 +26,8 @@ exists only to provide an entry in the instance list for `FiniteDimensional`.
 matrix, finite dimensional, findim, finrank
 
 -/
+
+public section
 
 
 universe u v

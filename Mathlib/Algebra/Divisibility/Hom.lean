@@ -4,8 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Amelia Livingston, Yury Kudryashov,
 Neil Strickland, Aaron Anderson
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Hom.Defs
+module
+
+public import Mathlib.Algebra.Divisibility.Basic
+public import Mathlib.Algebra.Group.Hom.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Mapping divisibility across multiplication-preserving homomorphisms
@@ -18,6 +23,8 @@ import Mathlib.Algebra.Group.Hom.Defs
 
 divisibility, divides
 -/
+
+public section
 
 attribute [local simp] mul_assoc mul_comm mul_left_comm
 

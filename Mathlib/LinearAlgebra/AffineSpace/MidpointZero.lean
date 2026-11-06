@@ -3,8 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.CharP.Invertible
-import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+module
+
+public import Mathlib.Algebra.CharP.Invertible
+public import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Midpoint of a segment for characteristic zero
@@ -15,6 +20,8 @@ We collect lemmas that require that the underlying ring has characteristic zero.
 
 midpoint
 -/
+
+public section
 
 
 open AffineMap AffineEquiv

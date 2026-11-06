@@ -3,10 +3,11 @@ Copyright (c) 2021 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson
 -/
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Module.Opposite
-import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Ring.Periodic
+module
+
+public import Mathlib.Algebra.Field.Opposite
+public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.Algebra.Ring.Periodic
 
 /-!
 # Periodic functions
@@ -28,9 +29,11 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 period, periodic, periodicity, antiperiodic
 -/
 
+public section
+
 assert_not_exists TwoSidedIdeal
 
-variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
+variable {α β γ : Type*} {f : α → β} {c x : α}
 
 open Set
 

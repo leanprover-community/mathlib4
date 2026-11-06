@@ -3,9 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.Filter.AtTopBot.Basic
+module
+
+public import Mathlib.Order.Filter.SmallSets
+public import Mathlib.Order.Interval.Set.OrdConnected
+
 import Mathlib.Order.Filter.Bases.Finite
 
 /-!
@@ -73,10 +75,12 @@ that need topology are defined in `Mathlib/Topology/Algebra/Ordered`.
 
 -/
 
+public section
+
 
 variable {α β : Type*}
 
-open Filter Set Function
+open Filter Set
 
 namespace Filter
 
@@ -100,7 +104,7 @@ class TendstoIxxClass (Ixx : α → α → Set α) (l₁ : Filter α) (l₂ : ou
   tendsto_Ixx : Tendsto (fun p : α × α => Ixx p.1 p.2) (l₁ ×ˢ l₁) l₂.smallSets
 
 theorem tendstoIxxClass_principal {s t : Set α} {Ixx : α → α → Set α} :
-    TendstoIxxClass Ixx (𝓟 s) (𝓟 t) ↔ ∀ᵉ (x ∈ s) (y ∈ s), Ixx x y ⊆ t :=
+    TendstoIxxClass Ixx (𝓟 s) (𝓟 t) ↔ ∀ x ∈ s, ∀ y ∈ s, Ixx x y ⊆ t :=
   Iff.trans ⟨fun h => h.1, fun h => ⟨h⟩⟩ <| by
     simp only [smallSets_principal, prod_principal_principal, tendsto_principal_principal,
       forall_prod_set, mem_powerset_iff]
@@ -236,7 +240,7 @@ end PartialOrder
 
 section LinearOrder
 
-open Interval
+open scoped Interval
 
 variable [LinearOrder α]
 

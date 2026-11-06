@@ -3,7 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Hull
+module
+
+public import Mathlib.Analysis.Convex.Hull
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convex join
@@ -12,6 +17,8 @@ This file defines the convex join of two sets. The convex join of `s` and `t` is
 segments with one end in `s` and the other in `t`. This is notably a useful gadget to deal with
 convex hulls of finite sets.
 -/
+
+@[expose] public section
 
 
 open Set
@@ -122,10 +129,10 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
     linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
+      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field, rfl⟩,
       a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
   · linear_combination a₂ * hab₁ + hab₂
-  · match_scalars <;> field_simp
+  · match_scalars <;> field
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by

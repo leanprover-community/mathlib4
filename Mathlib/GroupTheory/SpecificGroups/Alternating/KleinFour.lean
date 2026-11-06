@@ -3,10 +3,11 @@ Copyright (c) 2025 Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
+module
 
-import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
-import Mathlib.GroupTheory.SpecificGroups.KleinFour
-import Mathlib.GroupTheory.Sylow
+public import Mathlib.GroupTheory.SpecificGroups.Alternating.Centralizer
+public import Mathlib.GroupTheory.SpecificGroups.KleinFour
+public import Mathlib.GroupTheory.Sylow
 
 /-! # The Klein Four subgroup of an alternating group on 4 letters
 
@@ -43,12 +44,14 @@ Since all 2-sylow subgroups are conjugate, we conclude
 that there is only one 2-sylow subgroup and that it is normal,
 and then characteristic.
 
-## TODO :
+## TODO
 
 Prove `alternatingGroup.kleinFour α = commutator (alternatingGroup α)`
 without any assumption on `Nat.card α`.
 
 -/
+
+@[expose] public section
 
 namespace alternatingGroup
 
@@ -93,18 +96,18 @@ theorem card_of_card_eq_four (hα4 : Nat.card α = 4) :
     Nat.card (alternatingGroup α) = 12 := by
   have : Nontrivial α := by
     rw [← Finite.one_lt_card_iff_nontrivial, hα4]
-    norm_num
+    simp
   rw [nat_card_alternatingGroup, hα4]
   decide
 
 theorem card_two_sylow_of_card_eq_four (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
     Nat.card S = 4 := by
   rw [Sylow.card_eq_multiplicity, card_of_card_eq_four hα4]
-  have : 12 = 2 ^ 2 * 3 := by norm_num
+  have : 12 = 2 ^ 2 * 3 := by simp
   rw [this, Nat.factorization_mul_apply_of_coprime (by decide), Nat.factorization_pow,
     Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, Nat.prime_two.factorization_self,
     Nat.factorization_eq_zero_of_not_dvd (by decide)]
-  norm_num
+  simp
 
 theorem coe_two_sylow_of_card_eq_four
     (hα4 : Nat.card α = 4) (S : Sylow 2 (alternatingGroup α)) :
@@ -112,15 +115,15 @@ theorem coe_two_sylow_of_card_eq_four
       {1} ∪ {g : alternatingGroup α | (g : Perm α).cycleType = {2, 2}} := by
   classical
   refine Set.eq_of_subset_of_card_le (fun k hk ↦ ?_) ?_
-  · -- inclusion S ⊆ {1} ∪ {g |  cycleType g = { 2, 2 }}
-    obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup') ⟨k, hk⟩
+  · -- `inclusion S ⊆ {1} ∪ {g | cycleType g = { 2, 2 }}`
+    obtain ⟨n, hn⟩ := (IsPGroup.iff_orderOf.mp S.isPGroup) ⟨k, hk⟩
     replace hn : (orderOf (k : Perm α)) = 2 ^ n := by simpa using hn
     convert mem_kleinFour_of_order_two_pow hα4 k.2 hn.dvd
     simp
-  · -- card (kleinFour α) ≤ card S
+  · -- `card (kleinFour α) ≤ card S`
     simp_rw [← Nat.card_eq_fintype_card]
-    refine (card_two_sylow_of_card_eq_four hα4 S).symm.trans_ge ?_
-    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_setOf]
+    refine (card_two_sylow_of_card_eq_four hα4 S).trans_ge ?_
+    rw [Nat.card_eq_card_toFinset, Set.toFinset_union, Set.toFinset_singleton, Set.toFinset_ofPred]
     apply (Finset.card_union_le _ _).trans
     rw [Finset.card_singleton, AlternatingGroup.card_of_cycleType, ← Nat.card_eq_fintype_card, hα4]
     decide
@@ -174,7 +177,7 @@ theorem exponent_kleinFour_of_card_eq_four (hα4 : Nat.card α = 4) :
       simpa only [Set.mem_singleton_iff, Subgroup.mk_eq_one] using hg'
     · convert pow_orderOf_eq_one g
       rw [← Equiv.Perm.lcm_cycleType, hg']
-      norm_num
+      simp
   rw [Nat.dvd_prime Nat.prime_two] at this
   apply Or.resolve_left this
   rw [Monoid.exp_eq_one_iff, ← Finite.card_le_one_iff_subsingleton,
@@ -193,23 +196,23 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
     rw [← Nat.mul_left_inj (a := Nat.card (kleinFour α))]
     · rw [← Subgroup.card_eq_card_quotient_mul_card_subgroup]
       rw [card_of_card_eq_four hα4, kleinFour_card_of_card_eq_four hα4]
-    rw [kleinFour_card_of_card_eq_four hα4]; norm_num
+    rw [kleinFour_card_of_card_eq_four hα4]; simp
   have comm_le : commutator (alternatingGroup α) ≤ kleinFour α := by
     rw [← Subgroup.Normal.quotient_commutative_iff_commutator_le]
-    exact (isCyclic_of_prime_card this).commutative
+    exact (isCyclic_of_prime_card this).isMulCommutative
   have comm_ne_bot : commutator (alternatingGroup α) ≠ ⊥ := by
     rw [ne_eq, commutator_eq_bot_iff_center_eq_top,
       center_eq_bot (le_of_eq hα4.symm)]
     apply @bot_ne_top _ _ _ ?_
     rw [Subgroup.nontrivial_iff, ← Finite.one_lt_card_iff_nontrivial,
       card_of_card_eq_four hα4]
-    norm_num
+    simp
   obtain ⟨k, hk, hk'⟩ := Or.resolve_left (Subgroup.bot_or_exists_ne_one _) comm_ne_bot
   suffices hk22 : (k : Equiv.Perm α).cycleType = {2, 2} by
     refine le_antisymm ?_ comm_le
     intro g hg
     rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-      Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hg
+      Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hg
     rcases hg with ⟨rfl⟩ | hg
     · exact Subgroup.one_mem _
     · rw [← hg, ← Equiv.Perm.isConj_iff_cycleType_eq, isConj_iff] at hk22
@@ -221,13 +224,10 @@ theorem kleinFour_eq_commutator (hα4 : Nat.card α = 4) :
         Subgroup.map fc.toMonoidHom (⊤ : Subgroup (alternatingGroup α)) by
         rw [this, ← Subgroup.map_commutator]
         refine Subgroup.mem_map_of_mem _ hk
-      apply symm
-      rw [← MonoidHom.range_eq_map]
-      rw [MonoidHom.range_eq_top]
-      exact MulEquiv.surjective _
+      simp
   have hk2 := comm_le hk
   rw [← SetLike.mem_coe, coe_kleinFour_of_card_eq_four hα4,
-    Set.mem_union, Set.mem_singleton_iff, Set.mem_setOf_eq] at hk2
+    Set.mem_union, Set.mem_singleton_iff, Set.mem_ofPred_eq] at hk2
   exact hk2.resolve_left hk'
 
 end alternatingGroup

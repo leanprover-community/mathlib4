@@ -3,8 +3,13 @@ Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Alex J. Best, Yaël Dillies
 -/
+module
+
+public import Lean.Meta.Tactic.Assumption
+public import Qq
+
 import Mathlib.Init
-import Qq
+import Qq.Typ
 
 /-!
 # Extra `Qq` helpers
@@ -12,9 +17,21 @@ import Qq
 This file contains some additional functions for using the quote4 library more conveniently.
 -/
 
+public section
+
 open Lean Elab Tactic Meta
 
 namespace Qq
+
+/-- If `e` has type `Sort u` for some level `u`, return `u` and `e : Q(Sort u)`. -/
+def getLevelQ (e : Expr) : MetaM (Σ u : Lean.Level, Q(Sort u)) := do
+  return ⟨← getLevel e, e⟩
+
+/-- If `e` has type `Type u` for some level `u`, return `u` and `e : Q(Type u)`. -/
+def getLevelQ' (e : Expr) : MetaM (Σ u : Lean.Level, Q(Type u)) := do
+  let u ← getLevel e
+  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  return ⟨v, e⟩
 
 /-- Variant of `inferTypeQ` that yields a type in `Type u` rather than `Sort u`.
 Throws an error if the type is a `Prop` or if it's otherwise not possible to represent
@@ -22,8 +39,7 @@ the universe as `Type u` (for example due to universe level metavariables). -/
 -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Using.20.60QQ.60.20when.20you.20only.20have.20an.20.60Expr.60/near/303349037
 def inferTypeQ' (e : Expr) : MetaM ((u : Level) × (α : Q(Type $u)) × Q($α)) := do
   let α ← inferType e
-  let .sort u ← whnf (← inferType α) | throwError "not a type{indentExpr α}"
-  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr e}"
+  let ⟨v, α⟩ ← getLevelQ' α
   pure ⟨v, α, e⟩
 
 theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq u α a a := ⟨⟩
@@ -60,5 +76,85 @@ def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (β : Q(Type v))
   | [] => q(∅)
   | [x] => q({$x})
   | x :: xs => q(Insert.insert $x $(mkSetLiteralQ β xs))
+
+/-- Returns the natural number literal `n` as used in the frontend. It is a `OfNat.ofNat`
+application. Recall that all theorems and definitions containing numeric literals are encoded using
+`OfNat.ofNat` applications in the frontend.
+
+This is a Qq version of `Lean.mkNatLit`. -/
+def mkNatLitQ (n : Nat) : Q(Nat) := mkNatLit n
+
+/-- Returns the integer literal `n`.
+
+This is a Qq version of `Lean.mkIntLit`. -/
+def mkIntLitQ (n : Int) : Q(Int) := mkIntLit n
+
+/-- Build the numeral of the integer `i` in `α`: `mkNumeral` on the absolute value, negated if
+`i` is negative. -/
+def mkIntNumeralQ {u : Level} (α : Q(Type u)) (i : Int) : MetaM Q($α) := do
+  let n ← mkNumeral α i.natAbs
+  have n : Q($α) := n
+  if i < 0 then
+    let _ ← synthInstanceQ q(Neg $α)
+    return q(-$n)
+  else
+    return n
+
+/-- Build the numeral of the rational `r` in `α`: the integer numeral of `r.num` if `r` is an
+integer, and otherwise `p / q` on the numerals of `|r.num|` and `r.den`, negated if `r` is
+negative, which is the form in which `norm_num` displays rationals. -/
+def mkRatNumeralQ {u : Level} (α : Q(Type u)) (r : Rat) : MetaM Q($α) := do
+  if r.den == 1 then mkIntNumeralQ α r.num
+  else
+    have p : Q($α) := ← mkNumeral α r.num.natAbs
+    have q : Q($α) := ← mkNumeral α r.den
+    let _ ← synthInstanceQ q(Div $α)
+    if r.num < 0 then
+      let _ ← synthInstanceQ q(Neg $α)
+      return q(-($p / $q))
+    else
+      return q($p / $q)
+
+/-- Build the numeral `i : Fin n`. -/
+def mkFinLitQ (n : Nat) (i : Nat) : MetaM Q(Fin $n) := do
+  if h : i < n then return toExpr (⟨i, h⟩ : Fin n)
+  throwError "mkFinLitQ: {i} is out of range for `Fin {n}`"
+
+/-- The list literal `[a₀, …]` of the entries `as`. -/
+def mkListLitQ {u : Level} {α : Q(Type u)} : List Q($α) → Q(List $α)
+  | [] => q([])
+  | a :: as => q($a :: $(mkListLitQ as))
+
+/-- `List.drop n` on the list literal `l`. -/
+def dropListLitQ {u : Level} {α : Q(Type u)} (n : Nat) (l : Q(List $α)) : Q(List $α) :=
+  match n with
+  | 0 => l
+  | n + 1 => match_expr l with
+    | List.cons _ _ tl => dropListLitQ (α := α) n tl
+    | _ => l
+
+/-- A specialised version of `~q($hd :: $tl)`. -/
+def unconsListLitQ {u : Level} {α : Q(Type u)} (l : Q(List $α)) :
+    MetaM ((hd : Q($α)) × (tl : Q(List $α)) ×' $l =Q $hd :: $tl) := do
+  let_expr List.cons _ hd tl := l | throwError "unconsListLitQ: expected a cons cell{indentExpr l}"
+  have hd : Q($α) := hd
+  have tl : Q(List $α) := tl
+  have : $l =Q $hd :: $tl := ⟨⟩
+  return ⟨hd, tl, ⟨⟩⟩
+
+/-- Instantiate the level metavariables in `u`, remembering that the result is defeq to `u`.
+
+This is a `Qq` version of `Lean.instantiateLevelMVars`. -/
+-- The `u'` binder is used in the return type, but the linter cannot see through `=QL`
+def instantiateLevelMVarsQ (u : Level) : MetaM ((_u' : Level) ×' (_u' =QL u)) :=
+  return ⟨← instantiateLevelMVars u, ⟨⟩⟩
+
+/-- Instantiate the metavariables in `e`, remembering that the result is defeq to `e`.
+
+This is a variant of `Qq.instantiateMVarsQ` which returns the Qq-fact that the new expression is
+equal to the previous one. -/
+def instantiateMVarsQ' {u : Level} {α : Q(Sort u)} (e : Q($α)) :
+    MetaM ((e' : Q($α)) ×' $e' =Q $e) :=
+  return ⟨← instantiateMVarsQ e, ⟨⟩⟩
 
 end Qq

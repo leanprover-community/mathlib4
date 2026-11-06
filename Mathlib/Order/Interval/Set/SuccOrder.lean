@@ -3,8 +3,11 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+module
+
+public import Mathlib.Order.SuccPred.Basic
+
 import Mathlib.Order.LatticeIntervals
-import Mathlib.Order.SuccPred.Basic
 
 /-!
 # Successors in intervals
@@ -14,6 +17,8 @@ with a successor function, then for any element `i : Set.Iic j`
 which is not the maximum, we have `↑(Order.succ i) = Order.succ ↑i`.
 
 -/
+
+public section
 
 namespace Set
 

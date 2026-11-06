@@ -3,12 +3,19 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Order.Filter.AtTopBot.Group
+module
+
+public import Mathlib.Algebra.Order.Ring.Defs
+public import Mathlib.Order.Filter.AtTopBot.Group
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Convergence to ±infinity in ordered rings
 -/
+
+public section
 
 variable {α β : Type*}
 
@@ -27,10 +34,14 @@ theorem Tendsto.atTop_mul_atTop₀ (hf : Tendsto f l atTop) (hg : Tendsto g l at
 theorem tendsto_mul_self_atTop : Tendsto (fun x : α => x * x) atTop atTop :=
   tendsto_id.atTop_mul_atTop₀ tendsto_id
 
+theorem Tendsto.atTop_pow₀ (hf : Tendsto f l atTop) {n : ℕ} (hn : n ≠ 0) :
+    Tendsto (fun x => f x ^ n) l atTop :=
+  tendsto_atTop_mono' _ ((hf.eventually_ge_atTop 1).mono fun _ hx ↦ le_self_pow₀ hx hn) hf
+
 /-- The monomial function `x^n` tends to `+∞` at `+∞` for any positive natural `n`.
 A version for positive real powers exists as `tendsto_rpow_atTop`. -/
 theorem tendsto_pow_atTop {n : ℕ} (hn : n ≠ 0) : Tendsto (fun x : α => x ^ n) atTop atTop :=
-  tendsto_atTop_mono' _ ((eventually_ge_atTop 1).mono fun _x hx => le_self_pow₀ hx hn) tendsto_id
+  tendsto_id.atTop_pow₀ hn
 
 end OrderedSemiring
 
@@ -48,18 +59,12 @@ theorem Tendsto.atTop_mul_atBot₀ (hf : Tendsto f l atTop) (hg : Tendsto g l at
   simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
-@[deprecated (since := "2025-02-13")]
-alias Tendsto.atTop_mul_atBot := Tendsto.atTop_mul_atBot₀
-
 theorem Tendsto.atBot_mul_atTop₀ (hf : Tendsto f l atBot) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x * g x) l atBot := by
   have : Tendsto (fun x => -f x * g x) l atTop :=
     (tendsto_neg_atBot_atTop.comp hf).atTop_mul_atTop₀ hg
   simpa only [Function.comp_def, neg_mul_eq_neg_mul, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
-
-@[deprecated (since := "2025-02-13")]
-alias Tendsto.atBot_mul_atTop := Tendsto.atBot_mul_atTop₀
 
 theorem Tendsto.atBot_mul_atBot₀ (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x * g x) l atTop := by

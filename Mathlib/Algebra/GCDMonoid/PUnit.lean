@@ -3,8 +3,10 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.Algebra.Ring.PUnit
+module
+
+public import Mathlib.Algebra.GCDMonoid.Basic
+public import Mathlib.Algebra.Ring.PUnit
 
 /-!
 # `PUnit` is a GCD monoid
@@ -13,10 +15,12 @@ This file collects facts about algebraic structures on the one-element type, e.g
 GCD.
 -/
 
+public section
+
 namespace PUnit
 
 -- This is too high-powered and should be split off also
-instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
+instance : StrongNormalizedGCDMonoid PUnit where
   gcd _ _ := unit
   lcm _ _ := unit
   normUnit _ := 1
@@ -31,6 +35,8 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   lcm_zero_right := by subsingleton
   normalize_gcd := by subsingleton
   normalize_lcm := by subsingleton
+
+instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit := inferInstance
 
 @[simp]
 theorem gcd_eq {x y : PUnit} : gcd x y = unit :=

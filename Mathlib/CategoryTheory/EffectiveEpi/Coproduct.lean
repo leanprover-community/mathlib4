@@ -3,9 +3,13 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.EffectiveEpi.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+module
+
+public import Mathlib.CategoryTheory.EffectiveEpi.Basic
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
+
 import Mathlib.Tactic.ApplyFun
+
 /-!
 
 # Effective epimorphic families and coproducts
@@ -15,11 +19,13 @@ the coproduct exists, and the converse under some more conditions on the coprodu
 interacts well with pullbacks).
 -/
 
+@[expose] public section
+
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type*} [Category C]
+variable {C : Type*} [Category* C]
 
 /--
 Given an `EffectiveEpiFamily X π` and a corresponding coproduct cocone, the family descends to an
@@ -40,7 +46,7 @@ instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [Ha
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) := by
   let e := effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π
   simp only [Cofan.mk_pt, coproductIsCoproduct, colimit.cocone_x, IsColimit.ofIsoColimit_desc,
-    Cocones.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp] at e
+    Cocone.ext_inv_hom, Iso.refl_inv, colimit.isColimit_desc, Category.id_comp] at e
   exact ⟨⟨e⟩⟩
 
 example {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [EffectiveEpiFamily X π]
@@ -62,24 +68,24 @@ theorem effectiveEpiFamilyStructOfEffectiveEpiDesc_aux {B : C} {α : Type*} {X :
   apply_fun ((Sigma.desc fun a ↦ pullback.fst g₁ (Sigma.ι X a)) ≫ ·) using
     (fun a b ↦ (cancel_epi _).mp)
   ext a
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   rw [← Category.assoc, pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   apply_fun ((Sigma.desc fun a ↦ pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·)
     using (fun a b ↦ (cancel_epi _).mp)
   ext b
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app]
   simp only [← Category.assoc]
   rw [(Category.assoc _ _ g₂), pullback.condition]
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app]
   rw [← Category.assoc]
   apply h
   apply_fun (pullback.fst g₁ (Sigma.ι X a) ≫ ·) at hg
   rw [← Category.assoc, pullback.condition] at hg
-  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [Category.assoc, colimit.ι_desc, Cofan.mk_ι_app] at hg
   apply_fun ((Sigma.ι (fun a ↦ pullback _ _) b) ≫ (Sigma.desc fun a ↦
     pullback.fst (pullback.fst _ _ ≫ g₂) (Sigma.ι X a)) ≫ ·) at hg
-  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_pt, Cofan.mk_ι_app] at hg
+  simp only [colimit.ι_desc_assoc, Discrete.functor_obj, Cofan.mk_ι_app] at hg
   simp only [← Category.assoc] at hg
   rw [(Category.assoc _ _ g₂), pullback.condition] at hg
   simpa using hg

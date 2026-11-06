@@ -3,9 +3,11 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Analysis.Normed.Group.Int
-import Mathlib.Analysis.Normed.Group.Subgroup
-import Mathlib.Analysis.Normed.Group.Uniform
+module
+
+public import Mathlib.Analysis.Normed.Group.Int
+public import Mathlib.Analysis.Normed.Group.Subgroup
+public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 # Normed groups homomorphisms
@@ -24,6 +26,8 @@ Some easy other constructions are related to subgroups of normed groups.
 Since a lot of elementary properties don't require `‖x‖ = 0 → x = 0` we start setting up the
 theory of `SeminormedAddGroupHom` and we specialize to `NormedAddGroupHom` when needed.
 -/
+
+@[expose] public section
 
 
 noncomputable section
@@ -44,7 +48,7 @@ structure NormedAddGroupHom (V W : Type*) [SeminormedAddCommGroup V]
 namespace AddMonoidHom
 
 variable {V W : Type*} [SeminormedAddCommGroup V] [SeminormedAddCommGroup W]
-  {f g : NormedAddGroupHom V W}
+  {f : NormedAddGroupHom V W}
 
 /-- Associate to a group homomorphism a bounded group homomorphism under a norm control condition.
 
@@ -81,9 +85,10 @@ variable {f g : NormedAddGroupHom V₁ V₂}
 def ofLipschitz (f : V₁ →+ V₂) {K : ℝ≥0} (h : LipschitzWith K f) : NormedAddGroupHom V₁ V₂ :=
   f.mkNormedAddGroupHom K fun x ↦ by simpa only [map_zero, dist_zero_right] using h.dist_le_mul x 0
 
+@[macro_inline]
 instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
-  coe_injective' f g h := by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
@@ -204,7 +209,8 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   obtain ⟨C, _Cpos, hC⟩ := f.bound
   replace hC := hC x
   by_cases h : ‖x‖ = 0
-  · rwa [h, mul_zero] at hC ⊢
+  · rw [h, mul_zero] at hC ⊢
+    assumption
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
     (div_le_iff₀ hlt).mp
@@ -217,13 +223,16 @@ theorem le_of_opNorm_le {c : ℝ} (h : ‖f‖ ≤ c) (x : V₁) : ‖f x‖ ≤
   (f.le_opNorm x).trans (by gcongr)
 
 /-- continuous linear maps are Lipschitz continuous. -/
-theorem lipschitz : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
+theorem lipschitzWith : LipschitzWith ⟨‖f‖, opNorm_nonneg f⟩ f :=
   LipschitzWith.of_dist_le_mul fun x y => by
     rw [dist_eq_norm, dist_eq_norm, ← map_sub]
     apply le_opNorm
 
+@[deprecated (since := "2026-09-27")]
+alias lipschitz := lipschitzWith
+
 protected theorem uniformContinuous (f : NormedAddGroupHom V₁ V₂) : UniformContinuous f :=
-  f.lipschitz.uniformContinuous
+  f.lipschitzWith.uniformContinuous
 
 @[continuity]
 protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
@@ -329,8 +338,7 @@ theorem opNorm_zero_iff {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [NormedAdd
         norm_le_zero_iff.1
           (calc
             _ ≤ ‖f‖ * ‖x‖ := le_opNorm _ _
-            _ = _ := by rw [hn, zero_mul]
-            ))
+            _ = _ := by rw [hn, zero_mul]))
     fun hf => by rw [hf, opNorm_zero]
 
 @[simp]
@@ -351,7 +359,7 @@ variable (V)
 /-- The identity as a continuous normed group hom. -/
 @[simps!]
 def id : NormedAddGroupHom V V :=
-  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp [le_refl])
+  (AddMonoidHom.id V).mkNormedAddGroupHom 1 (by simp)
 
 /-- The norm of the identity is at most `1`. It is in fact `1`, except when the norm of every
 element vanishes, where it is `0`. (Since we are working with seminorms this can happen even if the
@@ -359,19 +367,13 @@ space is non-trivial.) It means that one cannot do better than an inequality in 
 theorem norm_id_le : ‖(id V : NormedAddGroupHom V V)‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => by simp
 
-/-- If there is an element with norm different from `0`, then the norm of the identity equals `1`.
-(Since we are working with seminorms supposing that the space is non-trivial is not enough.) -/
-theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V‖ = 1 :=
+/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
+@[simp]
+theorem norm_id [NontrivialTopology V] : ‖id V‖ = 1 :=
   le_antisymm (norm_id_le V) <| by
-    let ⟨x, hx⟩ := h
+    let ⟨x, hx⟩ := exists_norm_ne_zero V
     have := (id V).ratio_le_opNorm x
     rwa [id_apply, div_self hx] at this
-
-/-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
-theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine norm_id_of_nontrivial_seminorm V ?_
-  obtain ⟨x, hx⟩ := exists_ne (0 : V)
-  exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 
 theorem coe_id : (NormedAddGroupHom.id V : V → V) = _root_.id :=
   rfl
@@ -699,7 +701,7 @@ theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by
 
 @[simp]
 theorem range_comp_incl_top : (f.comp (incl (⊤ : AddSubgroup V₁))).range = f.range := by
-  simp [comp_range, incl_range, ← AddMonoidHom.range_eq_map]; rfl
+  simp [comp_range, incl_range, AddSubgroup.map_top]; rfl
 
 end Range
 

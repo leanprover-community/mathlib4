@@ -3,10 +3,14 @@ Copyright (c) 2023 Matias Heikkilä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matias Heikkilä
 -/
-import Mathlib.Topology.UrysohnsLemma
-import Mathlib.Topology.UnitInterval
-import Mathlib.Topology.Compactification.StoneCech
+module
+
+public import Mathlib.Analysis.Real.Cardinality
+public import Mathlib.Topology.Compactification.StoneCech
+
+import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Order.Lattice
+import Mathlib.Topology.UrysohnsLemma
 
 /-!
 # Completely regular topological spaces.
@@ -37,23 +41,25 @@ This file defines `CompletelyRegularSpace` and `T35Space`.
 ## Implementation notes
 
 The present definition `CompletelyRegularSpace` is a slight modification of the one given in
-[russell1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
-continuous *real* valued function `f` (as opposed to `f` being unit-interval-valued). This can be
+[walker1974]. There it's assumed that any point `x ∈ Kᶜ` is separated from the closed set `K` by a
+continuous *real*-valued function `f` (as opposed to `f` being unit-interval-valued). This can be
 converted to the present definition by replacing a real-valued `f` by `h ∘ g ∘ f`, with
-`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [russell1974]) also assume that a
+`g : x ↦ max(x, 0)` and `h : x ↦ min(x, 1)`. Some sources (e.g. [walker1974]) also assume that a
 completely regular space is T₁. Here a completely regular space that is also T₁ is called a T₃.₅
 space.
 
 ## References
 
-* [Russell C. Walker, *The Stone-Čech Compactification*][russell1974]
+* [Russell C. Walker, *The Stone-Čech Compactification*][walker1974]
 -/
+
+public section
 
 universe u v
 
 noncomputable section
 
-open Set Topology Filter unitInterval
+open Cardinal Set Topology TopologicalSpace Filter unitInterval
 
 variable {X : Type u} [TopologicalSpace X]
 
@@ -123,7 +129,7 @@ lemma completelyRegularSpace_induced
 
 lemma completelyRegularSpace_iInf {ι X : Type*} {t : ι → TopologicalSpace X}
     (ht : ∀ i, @CompletelyRegularSpace X (t i)) : @CompletelyRegularSpace X (⨅ i, t i) := by
-  letI := (⨅ i, t i) -- register this as default topological space to reduce `@`s
+  let := (⨅ i, t i) -- register this as default topological space to reduce `@`s
   rw [completelyRegularSpace_iff_isOpen]
   intro x K hK hxK
   simp_rw [← hK.mem_nhds_iff, nhds_iInf, mem_iInf, exists_finite_iff_finset,
@@ -175,7 +181,7 @@ lemma isInducing_stoneCechUnit [CompletelyRegularSpace X] :
     refine ⟨stoneCechExtend hf ⁻¹' {1}ᶜ, ?_,
       isOpen_compl_singleton.preimage (continuous_stoneCechExtend hf), hfU⟩
     rw [mem_preimage, stoneCechExtend_stoneCechUnit, efx, mem_compl_iff, mem_singleton_iff]
-    norm_num
+    simp
 
 lemma isDenseInducing_stoneCechUnit [CompletelyRegularSpace X] :
     IsDenseInducing (stoneCechUnit : X → StoneCech X) where
@@ -186,6 +192,57 @@ lemma completelyRegularSpace_iff_isInducing_stoneCechUnit :
     CompletelyRegularSpace X ↔ IsInducing (stoneCechUnit : X → StoneCech X) where
   mp _ := isInducing_stoneCechUnit
   mpr hs := hs.completelyRegularSpace
+
+instance [ZeroDimensionalSpace X] : CompletelyRegularSpace X where
+  completely_regular x K hK hxK := by
+    obtain ⟨U, hU, hxU, hUK⟩ := exists_isClopen_mem_of_isOpen hK.isOpen_compl hxK
+    refine ⟨_, hU.compl.continuous_indicator continuous_one, ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · rw [indicator_of_mem (subset_compl_comm.mp hUK hy)]
+
+@[deprecated instCompletelyRegularSpaceOfZeroDimensionalSpace +typeChanged (since := "2026-10-08")]
+theorem CompletelyRegularSpace.of_isTopologicalBasis_clopens
+    (h : TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s}) :
+    CompletelyRegularSpace X := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen] at h
+  infer_instance
+
+theorem CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : .mk X < 𝔠) : ZeroDimensionalSpace X := by
+  rw [zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
+  refine isTopologicalBasis_of_isOpen_of_nhds (fun x s ↦ IsClopen.isOpen s) (fun x s hxs hs ↦ ?_)
+  choose f hf using completely_regular_isOpen x s hs hxs
+  obtain ⟨hfc, hf₀, hf₁⟩ := hf
+  let R := Set.range f
+  have hR : lift.{u, 0} (Cardinal.mk R) < lift.{0, u} 𝔠 := by
+    simpa [R] using mk_range_le_lift.trans_lt (lift_strictMono hX)
+  obtain ⟨r, hr⟩ : ∃ r : I, r ∈ Rᶜ := compl_nonempty_of_mk_lt_mk (by simpa using hR)
+  have hr' : ∀ (x : X), f x ≠ r := by simpa [R] using hr
+  have hrclopen : f ⁻¹' Iio r = f ⁻¹' Iic r := by
+    ext; simp [le_iff_lt_or_eq, hr']
+  refine ⟨f ⁻¹' Iio r, ⟨hrclopen ▸ isClosed_Iic.preimage hfc, isOpen_Iio.preimage hfc⟩, ?_, ?_⟩
+  · simp [hf₀, hrclopen]
+  · refine preimage_subset_iff.mpr (fun x ↦ ?_)
+    contrapose; intro hxs
+    simpa [hf₁ hxs] using le_one'
+
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
+(since := "2026-10-08")]
+theorem CompletelyRegularSpace.isTopologicalBasis_clopens_of_cardinalMk_lt_continuum
+    [CompletelyRegularSpace X] (hX : .mk X < 𝔠) :
+    IsTopologicalBasis {s : Set X | IsClopen s} := by
+  rw [← zeroDimensionalSpace_iff_isTopologicalBasis_isClopen]
+  exact CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum hX
+
+instance [CompletelyRegularSpace X] [Countable X] : ZeroDimensionalSpace X :=
+  have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum (X := X) <|
+    Cardinal.mk_le_aleph0.trans_lt Cardinal.aleph0_lt_continuum
+  inferInstance
+
+protected lemma _root_.Set.Countable.zeroDimensionalSpace [CompletelyRegularSpace X]
+    {s : Set X} (h : s.Countable) : ZeroDimensionalSpace s :=
+  have := h.to_subtype
+  inferInstance
 
 /-- A T₃.₅ space is a completely regular space that is also T₀. -/
 @[mk_iff]
@@ -208,15 +265,14 @@ instance {ι : Type*} {X : ι → Type*} [t : Π (i : ι), TopologicalSpace (X i
 instance {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     [htX : T35Space X] [htY : T35Space Y] : T35Space (X × Y) where
 
+instance [T0Space X] [ZeroDimensionalSpace X] : T35Space X where
+
 lemma separatesPoints_continuous_of_t35Space [T35Space X] :
     SeparatesPoints {f : X → ℝ | Continuous f} := by
   intro x y x_ne_y
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by simp_all⟩
-
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace := separatesPoints_continuous_of_t35Space
 
 lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     SeparatesPoints {f : X → I | Continuous f} := by
@@ -225,19 +281,12 @@ lemma separatesPoints_continuous_of_t35Space_Icc [T35Space X] :
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨f, f_cont, by simp_all⟩
 
-@[deprecated (since := "2025-04-13")]
-alias separatesPoints_continuous_of_completelyRegularSpace_Icc :=
-  separatesPoints_continuous_of_t35Space_Icc
-
 lemma injective_stoneCechUnit_of_t35Space [T35Space X] :
     Function.Injective (stoneCechUnit : X → StoneCech X) := by
   intro a b hab
   contrapose hab
   obtain ⟨f, fc, fab⟩ := separatesPoints_continuous_of_t35Space_Icc hab
   exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
-
-@[deprecated (since := "2025-04-13")]
-alias injective_stoneCechUnit_of_completelyRegularSpace := injective_stoneCechUnit_of_t35Space
 
 lemma isEmbedding_stoneCechUnit [T35Space X] :
     IsEmbedding (stoneCechUnit : X → StoneCech X) where
@@ -253,3 +302,22 @@ lemma t35Space_iff_isEmbedding_stoneCechUnit :
     T35Space X ↔ IsEmbedding (stoneCechUnit : X → StoneCech X) where
   mp _ := isEmbedding_stoneCechUnit
   mpr hs := hs.t35Space
+
+@[deprecated CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum +typeChanged
+(since := "2026-10-08")]
+theorem totallySeparatedSpace_of_cardinalMk_lt_continuum [T35Space X] (h : .mk X < 𝔠) :
+    TotallySeparatedSpace X :=
+  have := CompletelyRegularSpace.zeroDimensionalSpace_of_cardinalMk_lt_continuum h
+  inferInstance
+
+@[deprecated Set.Countable.zeroDimensionalSpace +typeChanged (since := "2026-10-08")]
+protected lemma _root_.Set.Countable.totallySeparatedSpace [T35Space X]
+    {s : Set X} (h : s.Countable) : TotallySeparatedSpace s :=
+  have := h.zeroDimensionalSpace
+  inferInstance
+
+theorem Set.Countable.isTotallyDisconnected [T35Space X]
+    {s : Set X} (h : s.Countable) : IsTotallyDisconnected s := by
+  rw [← totallyDisconnectedSpace_subtype_iff]
+  have := h.zeroDimensionalSpace
+  infer_instance

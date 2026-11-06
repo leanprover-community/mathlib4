@@ -3,8 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Free
-import Mathlib.Algebra.MonoidAlgebra.Basic
+module
+
+public import Mathlib.Algebra.Free
+public import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Free algebras
@@ -35,12 +37,11 @@ free algebra, non-unital, non-associative, free magma, magma algebra, universal 
 forgetful functor, adjoint functor
 -/
 
+@[expose] public noncomputable section
 
-universe u v w
+open scoped MonoidAlgebra
 
-noncomputable section
-
-variable (R : Type u) (X : Type v) [Semiring R]
+variable (R X A : Type*) [Semiring R]
 
 /--
 If `α` is a type, and `R` is a semiring, then `FreeNonUnitalNonAssocAlgebra R α` is the free
@@ -58,19 +59,17 @@ For example if `x` and `y` are terms of type `α` and
 `a`, `b` are terms of type `R` then `(3 * a * a) • (x * (y * x)) + (2 * b + 1) • (y * x)` is a
 "typical" element of `FreeNonUnitalNonAssocAlgebra R α`.
 -/
-abbrev FreeNonUnitalNonAssocAlgebra :=
-  MonoidAlgebra R (FreeMagma X)
+abbrev FreeNonUnitalNonAssocAlgebra := R[FreeMagma X]
 
 namespace FreeNonUnitalNonAssocAlgebra
 
-variable {X}
+variable {X A}
 
 /-- The embedding of `X` into the free algebra with coefficients in `R`. -/
 def of : X → FreeNonUnitalNonAssocAlgebra R X :=
   MonoidAlgebra.ofMagma R _ ∘ FreeMagma.of
 
-variable {A : Type w} [NonUnitalNonAssocSemiring A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalNonAssocSemiring A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
 
 /-- The functor `X ↦ FreeNonUnitalNonAssocAlgebra R X` from the category of types to the
 category of non-unital, non-associative algebras over `R` is adjoint to the forgetful functor in the
@@ -93,7 +92,7 @@ theorem lift_unique (f : X → A) (F : FreeNonUnitalNonAssocAlgebra R X →ₙ�
 
 @[simp]
 theorem lift_of_apply (f : X → A) (x) : lift R f (of R x) = f x :=
-  congr_fun (of_comp_lift _ f) x
+  congr($(of_comp_lift _ f) x)
 
 @[simp]
 theorem lift_comp_of (F : FreeNonUnitalNonAssocAlgebra R X →ₙₐ[R] A) : lift R (F ∘ of R) = F :=

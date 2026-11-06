@@ -3,15 +3,22 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Multiset.Bind
+module
+
+public import Mathlib.Data.Multiset.Bind
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
-# The cartesian product of multisets
+# The Cartesian product of multisets
 
 ## Main definitions
 
 * `Multiset.pi`: Cartesian product of multisets indexed by a multiset.
 -/
+
+@[expose] public section
 
 
 namespace Multiset
@@ -40,11 +47,11 @@ variable {m a}
 
 theorem cons_same {b : δ a} {f : ∀ a ∈ m, δ a} (h : a ∈ a ::ₘ m) :
     cons m a b f a h = b :=
-  dif_pos rfl
+  dite_eq_left rfl
 
 theorem cons_ne {a a' : α} {b : δ a} {f : ∀ a ∈ m, δ a} (h' : a' ∈ a ::ₘ m)
     (h : a' ≠ a) : Pi.cons m a b f a' h' = f a' ((mem_cons.1 h').resolve_left h) :=
-  dif_neg h
+  dite_eq_right h
 
 theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀ a ∈ m, δ a}
     (h : a ≠ a') : Pi.cons (a' ::ₘ m) a b (Pi.cons m a' b' f) ≍
@@ -147,17 +154,18 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
       refine (ht a <| mem_cons_self _ _).pairwise ?_
       exact fun b₁ _ b₂ _ neb =>
         disjoint_map_map.2 fun f _ g _ eq =>
-          have : Pi.cons s a b₁ f a (mem_cons_self _ _) = Pi.cons s a b₂ g a (mem_cons_self _ _) :=
-            by rw [eq]
+          have : Pi.cons s a b₁ f a (mem_cons_self _ _) =
+            Pi.cons s a b₂ g a (mem_cons_self _ _) := by rw [eq]
           neb <| show b₁ = b₂ by rwa [Pi.cons_same, Pi.cons_same] at this)
 
-theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
-    ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
-  intro f
-  induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (notMem_zero _ h).elim)
+theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) (f : ∀ a ∈ m, β a) :
+    f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
+  induction m using Multiset.induction_on with
+  | empty =>
+    have : f = Pi.empty β := funext (fun _ => funext fun h => (notMem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
     intro _ h; exact (notMem_zero _ h).elim
+  | cons a m ih => ?_
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'

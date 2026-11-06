@@ -3,9 +3,10 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.GCDMonoid.Basic
-import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
-import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+module
+
+public import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 /-!
 
@@ -13,14 +14,16 @@ import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 
 -/
 
+public section
+
 
 open scoped Polynomial
 
-variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [Algebra R A]
+variable {R A : Type*} [CommRing R] [CommRing A] [Algebra R A]
 
 theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLocalization M A]
     (z : A) : ∃ a b : R, IsUnit (gcd a b) ∧ z * algebraMap R A b = algebraMap R A a := by
-  obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.mk'_surjective M z
+  obtain ⟨x, ⟨y, hy⟩, rfl⟩ := IsLocalization.exists_mk'_eq M z
   obtain ⟨x', y', hx', hy', hu⟩ := extract_gcd x y
   use x', y', hu
   rw [mul_comm, IsLocalization.mul_mk'_eq_mk'_of_mul]
@@ -28,7 +31,7 @@ theorem IsLocalization.surj_of_gcd_domain [GCDMonoid R] (M : Submonoid R) [IsLoc
   grind
 
 instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
-    [h : Nonempty (GCDMonoid R)] : IsIntegrallyClosed R :=
+    [h : IsGCDMonoid R] : IsIntegrallyClosed R :=
   (isIntegrallyClosed_iff (FractionRing R)).mpr fun {X} ⟨p, hp₁, hp₂⟩ => by
     cases h
     obtain ⟨x, y, hg, he⟩ := IsLocalization.surj_of_gcd_domain (nonZeroDivisors R) X
@@ -44,6 +47,6 @@ instance (priority := 100) GCDMonoid.toIsIntegrallyClosed
     rw [map_mul]
     have coe_map_inv :=
       Units.coe_map_inv ((algebraMap R (FractionRing R) : R →* FractionRing R)) this.unit
-    simp only [MonoidHom.coe_coe] at coe_map_inv
+    simp only [MonoidHom.coe_ofClass] at coe_map_inv
     rw [← coe_map_inv, eq_comm, Units.eq_mul_inv_iff_mul_eq]
     exact he

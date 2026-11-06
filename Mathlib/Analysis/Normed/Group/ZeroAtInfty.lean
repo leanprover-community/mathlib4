@@ -3,8 +3,12 @@ Copyright (c) 2024 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
+module
 
-import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # ZeroAtInftyContinuousMapClass in normed additive groups
@@ -15,7 +19,11 @@ for every `ε > 0` there exists a `r : ℝ` such that for all `x : E` with `r < 
 `‖f x‖ < ε`.
 -/
 
-open Topology Filter
+public section
+
+open Filter
+
+open scoped Topology
 
 variable {E F 𝓕 : Type*}
 variable [SeminormedAddGroup E] [SeminormedAddCommGroup F]

@@ -3,9 +3,13 @@ Copyright (c) 2024 Geoffrey Irving. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
+module
 
-import Mathlib.Init
-import Aesop.Frontend.Command
+public meta import Aesop.Frontend.Command
+public import Mathlib.Init
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Bound Rule Set

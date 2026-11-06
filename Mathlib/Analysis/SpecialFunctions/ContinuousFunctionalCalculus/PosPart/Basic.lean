@@ -3,10 +3,10 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+module
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.ContinuousSqrt
-import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+public import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
 
@@ -14,6 +14,8 @@ This file defines the positive and negative parts of a selfadjoint element in a 
 the continuous functional calculus and develops the basic API, including the uniqueness of the
 positive and negative parts.
 -/
+
+public section
 
 open scoped NNReal
 
@@ -56,7 +58,7 @@ lemma posPart_mul_negPart (a : A) : a⁺ * a⁻ = 0 := by
   rw [posPart_def, negPart_def]
   by_cases ha : IsSelfAdjoint a
   · rw [← cfcₙ_mul _ _, ← cfcₙ_zero ℝ a]
-    refine cfcₙ_congr (fun x _ ↦ ?_)
+    congr! 1 with x _
     simp only [_root_.posPart_def, _root_.negPart_def]
     simpa using le_total x 0
   · simp [cfcₙ_apply_of_not_predicate a ha]
@@ -66,7 +68,7 @@ lemma negPart_mul_posPart (a : A) : a⁻ * a⁺ = 0 := by
   rw [posPart_def, negPart_def]
   by_cases ha : IsSelfAdjoint a
   · rw [← cfcₙ_mul _ _, ← cfcₙ_zero ℝ a]
-    refine cfcₙ_congr (fun x _ ↦ ?_)
+    congr! 1 with x _
     simp only [_root_.posPart_def, _root_.negPart_def]
     simpa using le_total 0 x
   · simp [cfcₙ_apply_of_not_predicate a ha]
@@ -75,8 +77,8 @@ lemma posPart_sub_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : a⁺ - 
   rw [posPart_def, negPart_def]
   rw [← cfcₙ_sub _ _]
   conv_rhs => rw [← cfcₙ_id ℝ a]
-  congr! 2 with
-  exact _root_.posPart_sub_negPart _
+  congr! 1 with x hx
+  exact _root_.posPart_sub_negPart x
 
 section Unique
 
@@ -86,10 +88,8 @@ variable [T2Space A]
 lemma posPart_neg (a : A) : (-a)⁺ = a⁻ := by
   by_cases ha : IsSelfAdjoint a
   · rw [posPart_def, negPart_def, ← cfcₙ_comp_neg _ _]
-    congr! 2
-  · have ha' : ¬ IsSelfAdjoint (-a) := fun h ↦ ha (by simpa using h.neg)
-    rw [posPart_def, negPart_def, cfcₙ_apply_of_not_predicate a ha,
-      cfcₙ_apply_of_not_predicate _ ha']
+    congr! 1
+  · grind [posPart_def, negPart_def, IsSelfAdjoint.neg, neg_neg]
 
 @[simp]
 lemma negPart_neg (a : A) : (-a)⁻ = a⁺ := by
@@ -104,13 +104,12 @@ lemma posPart_smul {r : ℝ≥0} {a : A} : (r • a)⁺ = r • a⁺ := by
   by_cases ha : IsSelfAdjoint a
   · simp only [CFC.posPart_def, NNReal.smul_def]
     rw [← cfcₙ_comp_smul .., ← cfcₙ_smul ..]
-    refine cfcₙ_congr fun x hx ↦ ?_
+    congr! 1 with x hx
     simp [_root_.posPart_def, mul_max_of_nonneg]
   · obtain (rfl | hr) := eq_or_ne r 0
     · simp
     · have := (not_iff_not.mpr <| (IsSelfAdjoint.all r).smul_iff hr.isUnit (x := a)) |>.mpr ha
-      simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha,
-        cfcₙ_apply_of_not_predicate _ this]
+      grind [CFC.posPart_def, smul_zero]
 
 @[simp]
 lemma negPart_smul {r : ℝ≥0} {a : A} : (r • a)⁻ = r • a⁻ := by
@@ -145,6 +144,9 @@ lemma negPart_nonneg (a : A) :
     0 ≤ a⁻ :=
   cfcₙ_nonneg (fun x _ ↦ by positivity)
 
+instance : SelfAdjointDecompose A where
+  exists_nonneg_sub_nonneg {a} ha := ⟨a⁺, a⁻, by cfc_tac, by cfc_tac, (posPart_sub_negPart a).symm⟩
+
 lemma posPart_eq_of_eq_sub_negPart {a b : A} (hab : a = b - a⁻) (hb : 0 ≤ b := by cfc_tac) :
     a⁺ = b := by
   have ha := hab.symm ▸ hb.isSelfAdjoint.sub (negPart_nonneg a).isSelfAdjoint
@@ -170,7 +172,7 @@ lemma posPart_eq_self (a : A) : a⁺ = a ↔ 0 ≤ a := by
   refine ⟨fun ha ↦ ha ▸ posPart_nonneg a, fun ha ↦ ?_⟩
   conv_rhs => rw [← cfcₙ_id ℝ a]
   rw [posPart_def]
-  refine cfcₙ_congr (fun x hx ↦ ?_)
+  congr! 1 with x hx
   simpa [_root_.posPart_def] using quasispectrum_nonneg_of_nonneg a ha x hx
 
 lemma negPart_eq_zero_iff (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
@@ -186,7 +188,7 @@ lemma negPart_eq_neg (a : A) : a⁻ = -a ↔ a ≤ 0 := by
   rw [negPart_def, ← cfcₙ_neg]
   have _ : IsSelfAdjoint a := neg_neg a ▸ (IsSelfAdjoint.neg <| .of_nonneg ha)
   conv_lhs => rw [← cfcₙ_id ℝ a]
-  refine cfcₙ_congr fun x hx ↦ ?_
+  congr! 1 with x hx
   rw [Unitization.quasispectrum_eq_spectrum_inr ℝ, ← neg_neg x, ← Set.mem_neg,
     spectrum.neg_eq, ← Unitization.inr_neg, ← Unitization.quasispectrum_eq_spectrum_inr ℝ] at hx
   rw [← neg_eq_iff_eq_neg, eq_comm]
@@ -202,8 +204,9 @@ local notation "σₙ" => quasispectrum
 
 open ContinuousMapZero
 
-variable [IsTopologicalRing A] [T2Space A]
+variable [IsSemitopologicalRing A] [T2Space A]
 
+set_option backward.isDefEq.respectTransparency false in
 open NonUnitalContinuousFunctionalCalculus in
 /-- The positive and negative parts of a selfadjoint element `a` are unique. That is, if
 `a = b - c` is the difference of nonnegative elements whose product is zero, then these are
@@ -231,20 +234,19 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     refine isCompact_iff_compactSpace.mp <| (IsCompact.union ?_ ?_).union ?_
     all_goals exact isCompact_quasispectrum _
   obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by grind
-  let zero : Zero s := ⟨0, by aesop⟩
-  have s0 : (0 : s) = (0 : ℝ) := rfl
+  have : Fact (0 ∈ s) := ⟨by aesop⟩
   /- The continuous functional calculi for functions `f g : C(s, ℝ)₀` applied to `b` and `(-c)`
   are orthogonal (i.e., the product is always zero). -/
   have mul₁ (f g : C(s, ℝ)₀) :
       (cfcₙHomSuperset hb' hbs f) * (cfcₙHomSuperset hc' hcs g) = 0 := by
-    refine f.nonUnitalStarAlgHom_apply_mul_eq_zero s0 _ _ ?id ?star_id
+    refine f.nonUnitalStarAlgHom_apply_mul_eq_zero _ _ ?id ?star_id
       (cfcₙHomSuperset_continuous hb' hbs)
     case' star_id => rw [star_trivial]
     all_goals
-      refine g.mul_nonUnitalStarAlgHom_apply_eq_zero s0 _ _ ?_ ?_
+      refine g.mul_nonUnitalStarAlgHom_apply_eq_zero _ _ ?_ ?_
         (cfcₙHomSuperset_continuous hc' hcs)
-      all_goals simp only [zero, star_trivial, cfcₙHomSuperset_id' hb' hbs,
-        cfcₙHomSuperset_id' hc' hcs, mul_neg, hbc, neg_zero]
+      all_goals simp only [star_trivial, cfcₙHomSuperset_id hb' hbs,
+        cfcₙHomSuperset_id hc' hcs, mul_neg, hbc, neg_zero]
   have mul₂ (f g : C(s, ℝ)₀) : (cfcₙHomSuperset hc' hcs f) * (cfcₙHomSuperset hb' hbs g) = 0 := by
     simpa only [star_mul, star_zero, ← map_star, star_trivial] using congr(star $(mul₁ g f))
   /- `fun f ↦ cfcₙ f b + cfcₙ f (-c)` defines a star homomorphism `ψ : C(s, ℝ)₀ →⋆ₙₐ[ℝ] A` which
@@ -256,32 +258,33 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
       map_mul' := fun f g ↦ by
-        simp only [zero, Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
+        simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
           zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
     have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
-    ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id s rfl
+    ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id s
     (cfcₙHomSuperset ha has) ψ (cfcₙHomSuperset_continuous ha has)
     ((cfcₙHomSuperset_continuous hb' hbs).add (cfcₙHomSuperset_continuous hc' hcs))
-    (by simpa [zero, ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)
+    (by simpa [ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)
   /- Applying the equality of star homomorphisms to the function `(·⁺ : ℝ → ℝ)` we find that
   `b = cfcₙ id b + cfcₙ 0 (-c) = cfcₙ (·⁺) b - cfcₙ (·⁺) (-c) = cfcₙ (·⁺) a = a⁺`, where the
   second equality follows because these functions are equal on the spectra of `b` and `-c`,
   respectively, since `0 ≤ b` and `-c ≤ 0`. -/
-  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp [s0]⟩
+  let f : C(s, ℝ)₀ := ⟨⟨(·⁺), by fun_prop⟩, by simp; norm_cast⟩
   replace key := congr($key f)
   simp only [cfcₙHomSuperset_apply, NonUnitalStarAlgHom.coe_mk', NonUnitalAlgHom.coe_mk, ψ,
     Pi.add_apply, cfcₙHom_eq_cfcₙ_extend (·⁺)] at key
   symm
   calc
-    b = cfcₙ (id : ℝ → ℝ) b + cfcₙ (0 : ℝ → ℝ) (-c) := by simp [cfcₙ_id ℝ b]
+    b = cfcₙ (id : ℝ → ℝ) b + cfcₙ (0 : ℝ → ℝ) (-c) := by simp [cfcₙ_id' ℝ b]
     _ = _ := by
       congr! 1
       all_goals
-        refine cfcₙ_congr fun x hx ↦ Eq.symm ?_
+        congr! 1 with x hx
+        symm
         lift x to σₙ ℝ _ using hx
-        simp only [zero, Subtype.val_injective.extend_apply, comp_apply, coe_mk,
+        simp only [Subtype.val_injective.extend_apply, comp_apply, coe_mk,
           ContinuousMap.coe_mk, Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply,
           posPart_eq_zero]
       · exact quasispectrum_nonneg_of_nonneg b hb x.val x.property
@@ -295,7 +298,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     _ = a⁺ := by
       refine cfcₙ_congr fun x hx ↦ ?_
       lift x to σₙ ℝ a using hx
-      simp [zero, f]
+      simp [f]
 
 end CFC
 

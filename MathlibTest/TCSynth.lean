@@ -3,6 +3,7 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison
 -/
+module
 import Mathlib
 
 /-!
@@ -32,7 +33,7 @@ set_option synthInstance.maxHeartbeats 3000 in
 set_option synthInstance.maxHeartbeats 3000 in
 -- This then results in a near failure (or failure on nightly-testing) of the simpNF linter on
 -- `Complex.comap_exp_cobounded` and `Complex.map_exp_comap_re_atTop`:
-example : comap exp (cobounded ℂ) = comap re atTop := by simp
+example : comap exp (cobounded ℂ) = comap re atTop := by simp [Complex.comap_exp_cobounded]
 
 end
 

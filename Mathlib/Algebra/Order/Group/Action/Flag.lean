@@ -3,15 +3,22 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Group.Action.End
-import Mathlib.Order.Preorder.Chain
+module
+
+public import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+public import Mathlib.Algebra.Order.Group.Action.End
+public import Mathlib.Order.Preorder.Chain
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Action on flags
 
 Order isomorphisms act on flags.
 -/
+
+public section
 
 open scoped Pointwise
 
