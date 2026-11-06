@@ -68,7 +68,7 @@ lemma Ideal.exists_ideal_lt_liesOver_of_lt [Algebra.HasGoingDown R S]
   subst this
   simp [P.over_def p, P.over_def q] at hpq
 
-lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
+lemma Ideal.exists_ltseries_of_hasGoingDown [Algebra.HasGoingDown R S]
     (l : LTSeries (PrimeSpectrum R)) (P : Ideal S) [P.IsPrime] [lo : P.LiesOver l.last.asIdeal] :
     ∃ (L : LTSeries (PrimeSpectrum S)),
       L.length = l.length ∧
@@ -95,6 +95,9 @@ lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
     use L.cons ⟨Q, hQ⟩ Qlt
     simp only [RelSeries.cons_length, add_left_inj, RelSeries.last_cons]
     exact ⟨len, last, by simpa [spec] using PrimeSpectrum.ext_iff.mpr Qlo.over.symm⟩
+
+@[deprecated (since := "2026-10-04")]
+alias Ideal.exists_ltSeries_of_hasGoingDown := Ideal.exists_ltseries_of_hasGoingDown
 
 namespace Algebra.HasGoingDown
 
