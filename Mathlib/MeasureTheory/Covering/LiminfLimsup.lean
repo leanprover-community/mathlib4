@@ -19,7 +19,7 @@ carrying a uniformly locally doubling measure.
   of a metric space is unchanged almost everywhere for a uniformly locally doubling measure if the
   sequence of distances is multiplied by a positive scale factor. This is a generalisation of a
   result of Cassels, appearing as Lemma 9 on page 217 of
-  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+  [J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 * `blimsup_thickening_mul_ae_eq`: a variant of `blimsup_cthickening_mul_ae_eq` for thickenings
   rather than closed thickenings.
 
@@ -73,7 +73,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   set Y₂ : ℕ → Set α := fun i => cthickening (r₂ i) (s i)
   let Z : ℕ → Set α := fun i => ⋃ (j) (_ : p j ∧ i ≤ j), Y₂ j
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
-    rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
+    rwa [ae_subset, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
       measure_iUnion_null_iff]
   intro i
   set W := atTop.blimsup Y₁ p \ Z i
@@ -123,8 +123,8 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
     apply hMr.mp
     rw [eventually_atTop]
     refine
-      ⟨i, fun j hj hj' => Disjoint.inf_right (B j) <| Disjoint.inf_right' (blimsup Y₁ atTop p) ?_⟩
-    change Disjoint (b j) (Z i)ᶜ
+      ⟨i, fun j hj hj' => .inf_right (B j) <| .inf_right' (c := blimsup Y₁ atTop p)
+        (?_ : Disjoint (b j) (Z i)ᶜ)⟩
     rw [disjoint_compl_right_iff_subset]
     refine (closedBall_subset_cthickening (hw j) (M * r₁ (f j))).trans
       ((cthickening_mono hj' _).trans fun a ha => ?_)
@@ -181,7 +181,7 @@ such that `rᵢ → 0`, the set of points which belong to infinitely many of the
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 
 See also `blimsup_thickening_mul_ae_eq`.
 
@@ -196,7 +196,7 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
         (blimsup (fun i => cthickening (r i) (s i)) atTop p : Set α) := by
     clear p hr r; intro p r hr
     have hr' : Tendsto (fun i => M * r i) atTop (𝓝[>] 0) := by
-      convert! TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
+      convert TendstoNhdsWithinIoi.const_mul hM hr <;> simp only [mul_zero]
     refine eventuallySubset_antisymm_iff.mpr ⟨?_, ?_⟩
     · exact blimsup_cthickening_ae_le_of_eventually_mul_le μ p (inv_pos.mpr hM) hr'
         (Eventually.of_forall fun i => by rw [inv_mul_cancel_left₀ hM.ne' (r i)])
@@ -219,11 +219,10 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     rw [cthickening_of_nonpos hi, cthickening_of_nonpos hi']
   have hp : p = fun i => p i ∧ 0 < r i ∨ p i ∧ r i ≤ 0 := by
     ext i; simp [← and_or_left, lt_or_ge 0 (r i)]
-  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
-  simp only [sup_eq_union]
-  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup,
+    blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
     blimsup_congr (Eventually.of_forall h₂)]
-  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
+  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') .rfl
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
@@ -243,7 +242,7 @@ theorem blimsup_thickening_mul_ae_eq_aux (p : ℕ → Prop) (s : ℕ → Set α)
       (blimsup (fun i => thickening (r i) (s i)) atTop p : Set α) := by
   have h₁ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   have h₂ := blimsup_cthickening_mul_ae_eq μ p s hM r hr
-  replace hr : Tendsto (fun i => M * r i) atTop (𝓝 0) := by convert! hr.const_mul M; simp
+  replace hr : Tendsto (fun i => M * r i) atTop (𝓝 0) := by convert hr.const_mul M; simp
   replace hr' : ∀ᶠ i in atTop, p i → 0 < M * r i := hr'.mono fun i hi hip ↦ mul_pos hM (hi hip)
   have h₃ := blimsup_cthickening_ae_eq_blimsup_thickening (s := s) μ hr hr'
   exact h₃.symm.trans (h₂.trans h₁)
@@ -254,7 +253,7 @@ such that `rᵢ → 0`, the set of points which belong to infinitely many of the
 the `rᵢ` are all scaled by a positive constant.
 
 This lemma is a generalisation of Lemma 9 appearing on page 217 of
-[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*](cassels1950).
+[J.W.S. Cassels, *Some metrical theorems in Diophantine approximation. I*][cassels1950].
 
 See also `blimsup_cthickening_mul_ae_eq`.
 
@@ -269,6 +268,6 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
       blimsup u atTop p = blimsup u atTop q :=
     blimsup_congr' <| Eventually.of_forall fun i hi ↦ by simp [q, hu i hi]
   rw [hq fun i hi ↦ (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1,
-    hq fun i hi ↦ (mul_pos_iff_of_pos_left hM).1 <|
+    hq fun i hi ↦ (mul_pos_iff_of_pos_left hM).1
       (thickening_nonempty_iff.1 <| nonempty_iff_ne_empty.2 hi).1]
   exact blimsup_thickening_mul_ae_eq_aux μ q s hM r hr (Eventually.of_forall fun i hi => hi.2)

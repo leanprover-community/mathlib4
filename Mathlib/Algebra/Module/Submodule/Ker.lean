@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Ker
 public import Mathlib.Algebra.Module.Submodule.Map
 public import Mathlib.Algebra.Module.Submodule.RestrictScalars
 
@@ -77,7 +76,7 @@ theorem ker_toAddSubmonoid (f : M →ₛₗ[τ₁₂] M₂) : (ker f).toAddSubmo
 
 theorem le_ker_iff_comp_subtype_eq_zero {N : Submodule R M} {f : M →ₛₗ[τ₁₂] M₂} :
     N ≤ ker f ↔ f ∘ₛₗ N.subtype = 0 := by
-  rw [SetLike.le_def, LinearMap.ext_iff, Subtype.forall]; rfl
+  rw [IsConcreteLE.le_iff, LinearMap.ext_iff, Subtype.forall]; rfl
 
 theorem comp_ker_subtype (f : M →ₛₗ[τ₁₂] M₂) : f.comp (ker f).subtype = 0 :=
   LinearMap.ext fun x => mem_ker.1 x.2
@@ -162,7 +161,7 @@ def iterateKer (f : M →ₗ[R] M) : ℕ →o Submodule R M where
   monotone' n m w x h := by
     obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le w
     rw [LinearMap.mem_ker] at h
-    rw [LinearMap.mem_ker, add_comm, pow_add, Module.End.mul_apply, h, map_zero]
+    rw [LinearMap.mem_ker, add_comm, pow_add, mul_apply_eq_comp, h, map_zero]
 
 lemma ker_submoduleMap {τ₂₁ : R₂ →+* R} [RingHomInvPair τ₁₂ τ₂₁]
     (f : M →ₛₗ[τ₁₂] M₂) (p : Submodule R M) :

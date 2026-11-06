@@ -119,7 +119,7 @@ theorem exists_Ico_disjoint_closed {a : ℝₗ} {s : Set ℝₗ} (hs : IsClosed 
 @[simp]
 theorem map_toReal_nhds (a : ℝₗ) : map toReal (𝓝 a) = 𝓝[≥] toReal a := by
   refine ((nhds_basis_Ico a).map _).eq_of_same_basis ?_
-  simpa only [toReal.image_eq_preimage_symm] using! nhdsGE_basis_Ico (toReal a)
+  simpa only [toReal.image_eq_preimage_symm] using! nhdsGE_basis (toReal a)
 
 theorem nhds_eq_map (a : ℝₗ) : 𝓝 a = map toReal.symm (𝓝[≥] (toReal a)) := by
   simp_rw [← map_toReal_nhds, map_map, Function.comp_def, toReal.symm_apply_apply, map_id']
@@ -134,13 +134,14 @@ theorem continuous_toReal : Continuous toReal :=
     exact inf_le_left
 
 instance : OrderClosedTopology ℝₗ :=
-  ⟨isClosed_le_prod.preimage (continuous_toReal.prodMap continuous_toReal)⟩
+  ⟨(isClosed_le_prod (α := ℝ)).preimage (continuous_toReal.prodMap continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
   refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
+  simp only [Function.comp_def, map_add, tendsto_map'_iff, RingEquiv.apply_symm_apply]
   exact (continuous_add.tendsto _).inf (MapsTo.tendsto fun x hx => add_le_add hx.1 hx.2)
 
 theorem isClopen_Ici (a : ℝₗ) : IsClopen (Ici a) :=
@@ -219,7 +220,7 @@ theorem isClosed_of_subset_antidiagonal {s : Set (ℝₗ × ℝₗ)} {c : ℝₗ
   rintro ⟨x, y⟩ H
   obtain rfl : x + y = c := by
     change (x, y) ∈ {p : ℝₗ × ℝₗ | p.1 + p.2 = c}
-    exact closure_minimal (hs : s ⊆ {x | x.1 + x.2 = c}) (isClosed_antidiagonal c) H
+    exact closure_minimal (fun x hx ↦ hs x hx) (isClosed_antidiagonal c) H
   rcases mem_closure_iff.1 H (Ici (x, y)) (isClopen_Ici_prod _).2 self_mem_Ici with
     ⟨⟨x', y'⟩, ⟨hx : x ≤ x', hy : y ≤ y'⟩, H⟩
   convert! H

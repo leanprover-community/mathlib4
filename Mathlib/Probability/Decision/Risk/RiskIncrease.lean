@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 module
 
 public import Mathlib.Probability.Decision.Risk.Defs
-public import Mathlib.Probability.Kernel.Composition.MeasureComp
+public import Mathlib.Probability.Kernel.Composition.MapComap
 
 import Mathlib.Probability.Decision.Risk.Basic
 

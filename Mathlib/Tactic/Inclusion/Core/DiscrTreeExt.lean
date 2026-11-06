@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Init
 public meta import Lean.Meta.DiscrTree
+public import Mathlib.Init
 
 /-!
 # Discrimination-tree-indexed environment extensions
@@ -14,12 +14,12 @@ public meta import Lean.Meta.DiscrTree
 This file provides an API for scoped environment extensions whose declarations are indexed by
 elaborated expression patterns in a `DiscrTree`.
 
-## Implimentation Notes
+## Implementation notes
 
-The inclusion tactic uses two seperate types of `DiscrTree` indexed environment extensions. These
+The inclusion tactic uses two separate types of `DiscrTree` indexed environment extensions. These
 have nearly identical APIs except the stored values are different types (one is `InclusionExt`s
 and the other is `HypothesisExt`s). This file essentially generalizes the `DiscrTree` valued
-environment extension API from the implimentation for the `norm_num` tactic so that it can take
+environment extension API from the implementation for the `norm_num` tactic so that it can take
 arbitrary values.
 
 ## TODO
@@ -59,6 +59,19 @@ variable {α : Type}
 /-- Return the declaration values whose `DiscrTree` keys match `e`. -/
 def State.getMatch (state : State α) (e : Expr) : MetaM (Array α) := state.tree.getMatch e
 
+/-- When the current module registers an attribute, record for `shake` that modules importing
+the current one should continue to do so.
+
+`kind` indicates the scope at which the attribute is registered.
+
+TODO: This is an overly conservative approximation: better would be to record at the use site
+which tagged declarations are actually used.
+-/
+def recordRegisteringModule (kind : AttributeKind) : CoreM Unit := do
+  -- A `local` registration does not outlive the current file, so nothing downstream can need it.
+  unless kind == .local do
+    recordExtraRevUseOfCurrentModule
+
 /-- Create a scoped environment extension whose declarations have type `typeName`. By default, the
 environment extension is named after the declaration in which this function is called. -/
 def initializeEnvExt (typeName : Name)
@@ -74,6 +87,15 @@ def initializeEnvExt (typeName : Name)
     addEntry := fun state ((kss, _), ext) ↦
       { tree := insert kss ext state.tree }
   }
+
+/-- Register `entry` in `ext`, recording the current module as one `shake` should preserve.
+
+Prefer this over `ScopedEnvExtension.add` when adding an entry from an attribute handler, so that
+the registration and the `shake` bookkeeping cannot drift apart. -/
+def EnvExt.register (ext : EnvExt α) (entry : Entry × α) (kind : AttributeKind) :
+    CoreM Unit := do
+  ext.add entry kind
+  recordRegisteringModule kind
 
 /-- Elaborate expression patterns into `DiscrTree` paths. -/
 def elabExtKeys (patterns : Array Syntax) : CoreM (Array (Array DiscrTree.Key)) :=

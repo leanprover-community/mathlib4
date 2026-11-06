@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Basic
+public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 
 /-!
 # The exterior powers as functors on the category of modules
@@ -35,6 +35,7 @@ def exteriorPower (M : ModuleCat.{v} R) (n : ℕ) : ModuleCat.{max u v} R :=
 def AlternatingMap (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :=
   _root_.AlternatingMap R M N (Fin n)
 
+@[macro_inline]
 instance (M : ModuleCat.{v} R) (N : ModuleCat.{max u v} R) (n : ℕ) :
     FunLike (M.AlternatingMap N n) (Fin n → M) N :=
   inferInstanceAs (FunLike (M [⋀^(Fin n)]→ₗ[R] N) (Fin n → M) N)

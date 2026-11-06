@@ -110,12 +110,16 @@ theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ 
 theorem prod_sup (f : Filter α) (g₁ g₂ : Filter β) : f ×ˢ (g₁ ⊔ g₂) = (f ×ˢ g₁) ⊔ (f ×ˢ g₂) := by
   simp only [prod_eq_inf, comap_sup, inf_sup_left]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
       ∃ pa : α → Prop, (∀ᶠ x in f, pa x) ∧ ∃ pb : β → Prop, (∀ᶠ y in g, pb y) ∧
         ∀ {x}, pa x → ∀ {y}, pb y → p (x, y) := by
-  simpa only [Set.prod_subset_iff] using! @mem_prod_iff α β p f g
+  constructor
+  · intro h
+    obtain ⟨t₁, ht₁, t₂, ht₂, hsub⟩ := mem_prod_iff.1 h
+    exact ⟨(· ∈ t₁), ht₁, (· ∈ t₂), ht₂, fun {x} hx {y} hy ↦ hsub (Set.mk_mem_prod hx hy)⟩
+  · rintro ⟨pa, hpa, pb, hpb, h⟩
+    exact mem_prod_iff.2 ⟨{x | pa x}, hpa, {y | pb y}, hpb, fun x hx ↦ h hx.1 hx.2⟩
 
 theorem tendsto_fst : Tendsto Prod.fst (f ×ˢ g) f :=
   tendsto_inf_left tendsto_comap
@@ -269,7 +273,7 @@ theorem prod_inj {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} [NeBot f₁] [N
   refine ⟨fun h => ?_, fun h => h.1 ▸ h.2 ▸ rfl⟩
   have hle : f₁ ≤ f₂ ∧ g₁ ≤ g₂ := prod_le_prod.1 h.le
   have := neBot_of_le hle.1; have := neBot_of_le hle.2
-  exact ⟨hle.1.antisymm <| (prod_le_prod.1 h.ge).1, hle.2.antisymm <| (prod_le_prod.1 h.ge).2⟩
+  exact ⟨hle.1.antisymm (prod_le_prod.1 h.ge).1, hle.2.antisymm (prod_le_prod.1 h.ge).2⟩
 
 theorem eventually_swap_iff {p : α × β → Prop} :
     (∀ᶠ x : α × β in f ×ˢ g, p x) ↔ ∀ᶠ y : β × α in g ×ˢ f, p y.swap := by

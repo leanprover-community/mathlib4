@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FintypeCat
 public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.LocallyConstant.Basic
-public import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types
@@ -48,7 +47,6 @@ open CategoryTheory CompHausLike
 open scoped Topology
 
 /-- The type of profinite topological spaces. -/
-@[to_additive_do_translate] -- This is required
 abbrev Profinite := CompHausLike (fun X ↦ TotallyDisconnectedSpace X)
 
 namespace Profinite
@@ -115,8 +113,8 @@ def Profinite.toCompHausEquivalence (X : CompHaus.{u}) (Y : Profinite.{u}) :
     (CompHaus.toProfiniteObj X ⟶ Y) ≃ (X ⟶ profiniteToCompHaus.obj Y) where
   toFun f := ofHom _ (f.hom.hom.comp ⟨Quotient.mk'', continuous_quotient_mk'⟩)
   invFun g := ConcreteCategory.ofHom
-    { toFun := Continuous.connectedComponentsLift g.hom.hom.2
-      continuous_toFun := Continuous.connectedComponentsLift_continuous g.hom.hom.2 }
+    { toFun := Continuous.connectedComponentsLift (map_continuous g.hom.hom)
+      continuous_toFun := Continuous.connectedComponentsLift_continuous (map_continuous g.hom.hom) }
   left_inv f :=
     InducedCategory.hom_ext (TopCat.ext (fun y ↦ by
       obtain ⟨y, rfl⟩ := ConnectedComponents.surjective_coe y
