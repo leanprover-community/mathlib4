@@ -103,6 +103,10 @@ def equivCompletion : v.Completion ≃ v.1.Completion where
   left_inv _ := rfl
   right_inv _ := rfl
 
+-- This instance exists to avoid a zsmul diamond.
+instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v.1)] : SMul R v.Completion where
+  smul r x := ofCompletion (r • toCompletion x)
+
 instance : NormedField v.Completion := fast_instance% (equivCompletion v).normedField
 
 /-- `Completion.toCompletion` as a ring isomorphism onto the underlying completion. -/

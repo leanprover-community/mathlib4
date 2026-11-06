@@ -112,29 +112,29 @@ wrapping the uniform-space completion of `WithAbs v`. -/
 structure Completion where
   /-- Wrap an element of the underlying completion `UniformSpace.Completion (WithAbs v)` into
   `v.Completion`. -/
-  private ofCompletion' ::
+  ofCompletion' ::
   /-- The underlying element of the completion `UniformSpace.Completion (WithAbs v)`. -/
-  private toCompletion' : UniformSpace.Completion (WithAbs v)
+  toCompletion' : UniformSpace.Completion (WithAbs v)
 
 namespace Completion
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
-private def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
+@[expose]
+def equivAux : v.Completion ≃ UniformSpace.Completion (WithAbs v) where
   toFun := toCompletion'
   invFun := ofCompletion'
   left_inv _ := rfl
   right_inv _ := rfl
 
 -- This instance exists to avoid a zsmul diamond.
-@[no_expose]
 noncomputable instance (R : Type*) [CommSemiring R] [Algebra R (WithAbs v)] :
     SMul R v.Completion where
   smul r x := ofCompletion' (r • x.toCompletion')
 
-@[no_expose]
 noncomputable instance : NormedField v.Completion := fast_instance% (equivAux v).normedField
 
 /-- `Completion.toCompletion` and `Completion.ofCompletion` as an equivalence. -/
+@[expose]
 def equiv : v.Completion ≃+* UniformSpace.Completion (WithAbs v) where
   toEquiv := equivAux v
   map_mul' _ _ := rfl
@@ -211,7 +211,6 @@ theorem isometry_ofCompletion : Isometry (ofCompletion (v := v)) :=
   Isometry.of_dist_eq fun _ _ ↦ rfl
 
 /-- `Completion.toCompletion` as an isometry equivalence onto the underlying completion. -/
-@[simps!]
 noncomputable def isometryEquiv : v.Completion ≃ᵢ UniformSpace.Completion (WithAbs v) where
   toEquiv := equiv v
   isometry_toFun := isometry_toCompletion v
@@ -311,7 +310,6 @@ section Algebra
 variable {R : Type*} [CommSemiring R] [Algebra R (WithAbs v)]
   [UniformContinuousConstSMul R (WithAbs v)]
 
-@[no_expose]
 noncomputable instance : Algebra R v.Completion := fast_instance% (equiv v).algebra R
 
 theorem toCompletion_algebraMap (r : R) :
