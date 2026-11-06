@@ -5954,6 +5954,7 @@ public import Mathlib.MeasureTheory.VectorMeasure.Variation.Semivariation
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
+public import Mathlib.ModelTheory.Algebra.Classes
 public import Mathlib.ModelTheory.Algebra.Field.Basic
 public import Mathlib.ModelTheory.Algebra.Field.CharP
 public import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
