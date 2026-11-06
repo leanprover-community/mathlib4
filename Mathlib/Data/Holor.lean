@@ -151,7 +151,7 @@ instance [SupSet α] : SupSet (Holor α ds) where
   sSup s t := SupSet.sSup (s.image fun x ↦ x t)
 
 @[to_dual]
-lemma isLUB_app_of_isLUB [LE α] [SupSet α] {s : Set (Holor α ds)} {x : Holor α ds}
+lemma isLUB_app_of_isLUB [LE α] {s : Set (Holor α ds)} {x : Holor α ds}
     (hsx : IsLUB s x) (t : HolorIndex ds) : IsLUB (s.image fun y ↦ y t) (x t) := by
   classical
   constructor
