@@ -354,6 +354,18 @@ theorem center_toNonUnitalSubsemiring :
     (center R).toNonUnitalSubsemiring = NonUnitalSubsemiring.center R :=
   rfl
 
+instance : NonUnitalNonAssocCommRing (Center R) :=
+  {toNonUnitalNonAssocRing := inferInstanceAs <| NonUnitalNonAssocRing (center R), mul_comm}
+
+instance (R) [NonUnitalRing R] : NonUnitalCommRing (Center R) :=
+  {toNonUnitalRing := inferInstanceAs <| NonUnitalRing (center R), mul_comm}
+
+@[simp] lemma _root_.Center.coe_neg (z : Center R) : (-z).val = -z.val := rfl
+
+@[simp] lemma _root_.Center.coe_zsmul (n : ℤ) (z : Center R) : (n • z).val = n • z.val := rfl
+
+@[simp] lemma _root_.Center.coe_sub (a b : Center R) : (a - b).val = a.val - b.val := rfl
+
 /-- The center is commutative and associative. -/
 instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
   __ : NonUnitalCommSemiring (center R) :=
@@ -363,13 +375,13 @@ instance center.instNonUnitalCommRing : NonUnitalCommRing (center R) where
 variable {R}
 
 /-- The center of isomorphic (not necessarily unital or associative) rings are isomorphic. -/
-@[simps!] def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S :=
-  NonUnitalSubsemiring.centerCongr e
+@[simps!, deprecated "use `RingEquiv.toCenter` instead" (since := "2026-10-27")]
+def centerCongr {S} [NonUnitalNonAssocRing S] (e : R ≃+* S) : center R ≃+* center S := e.toCenter
 
 /-- The center of a (not necessarily unital or associative) ring
 is isomorphic to the center of its opposite. -/
-@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
-  NonUnitalSubsemiring.centerToMulOpposite
+@[simps!, deprecated "use `Center.toMulOppositeRingEquiv` instead" (since := "2026-10-27")]
+def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ := Center.toMulOppositeRingEquiv
 
 end NonUnitalNonAssocRing
 

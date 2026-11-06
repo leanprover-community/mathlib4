@@ -179,15 +179,23 @@ abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSem
   { __ := Algebra.semiringToRing R
     mul_comm := CommMonoid.mul_comm }
 
-instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
+instance {R : Type*} [Semiring R] : Algebra (Center R) R where
   algebraMap :=
   { toFun := Subtype.val
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl
     map_add' _ _ := rfl }
-  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  commutes' r x := Center.comm x r
   smul_def' _ _ := rfl
+
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R :=
+  inferInstanceAs <| Algebra (Center R) R
+
+@[simp]
+lemma _root_.Center.coe_algebraMap_self {R : Type*} [Semiring R] (z : Center R) :
+    algebraMap (Center R) R z = z.val :=
+  rfl
 
 end Ring
 
