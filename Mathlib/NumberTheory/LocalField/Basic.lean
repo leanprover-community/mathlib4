@@ -100,17 +100,80 @@ lemma isCompact_closedBall (γ : ValueGroupWithZero K) : IsCompact { x | valuati
   simp only [IsValuativeTopology.v_eq_valuation, ← map_mul, Valuation.restrict_le_iff]
   simp [hr]
 
-instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_closedBall K 1)
+lemma isCompact_vle (y : K) : IsCompact { x | x ≤ᵥ y } := by
+  by_cases hy : y = 0
+  · simp [hy]
+  have hy' : 0 <ᵥ y := by simpa using hy
+  obtain ⟨s, hs, -, hcompact⟩ :=
+    LocallyCompactSpace.local_compact_nhds (0 : K) .univ Filter.univ_mem
+  rw [IsValuativeTopology.mem_nhds_iff_exists_image_vlt_subset'] at hs
+  obtain ⟨z, hz0, hz⟩ := hs
+  simp only [zero_add, Set.image_id'] at hz
+  obtain ⟨w, hw0, hw1, hw⟩ : ∃ w ≠ 0, w <ᵥ 1 ∧ {x | x ≤ᵥ w} ⊆ s := by
+    obtain ⟨v, hv0, hv1⟩ := ValuativeRel.IsNontrivial.exists_lt_one (R := K)
+    obtain ⟨w, rfl⟩ := ValuativeRel.valuation_surjective v
+    have hw0 : w ≠ 0 := by simpa using hv0
+    have hw1 : w <ᵥ 1 := by simpa [(valuation K).vlt_iff_lt] using hv1
+    by_cases hw : z ≤ᵥ w
+    · refine ⟨z * w, by simp [hz0, hw0], ?_, ?_⟩
+      · simpa using ValuativeRel.mul_vlt_mul (hw.trans_vlt hw1) hw1
+      · apply hz.trans'
+        intro x hx
+        apply ValuativeRel.vle.trans_vlt hx
+        simpa using ValuativeRel.mul_vlt_mul_of_vle_of_vlt (vle_refl z) hw1 (by simpa using hz0)
+    · use w, hw0, hw1, Set.Subset.trans (fun x hx ↦ ValuativeRel.vle.trans_vlt hx hw) hz
+  rw [← (Homeomorph.mulLeft₀ (y / w) (by simp [hy, hw0])).isCompact_preimage]
+  suffices IsCompact {x | y / w * x ≤ᵥ y} by simpa
+  convert_to IsCompact {x | x ≤ᵥ w}
+  · ext x
+    simp only [Set.mem_ofPred_eq]
+    conv_rhs => rw [← ValuativeRel.mul_vle_mul_iff_right hy', ← ValuativeRel.div_vle_iff hw0,
+      mul_div_right_comm]
+  exact .of_isClosed_subset hcompact (IsValuativeTopology.isClosed_vle w) hw
+
+instance : CompactSpace 𝒪[K] := isCompact_iff_compactSpace.mp (isCompact_vle K 1)
 
 instance (K : Type*) [Field K] [ValuativeRel K] [UniformSpace K] [IsUniformAddGroup K]
     [IsValuativeTopology K] : (Valued.v (R := K) (Γ₀ := ValueGroupWithZero K)).Compatible :=
   inferInstanceAs (valuation K).Compatible
 
+section Stuff
+
+variable {K : Type*} [Field K] [ValuativeRel K] [TopologicalSpace K] [IsValuativeTopology K]
+
+lemma ValuativeRel.integer.isPrincipalIdealRing_of_compactSpace [hc : CompactSpace 𝒪[K]] :
+    IsPrincipalIdealRing 𝒪[K] := by
+  have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
+  --obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  /- -- The strategy to show that we have a PIR is by contradiction,
+  -- assuming that the range of the valuation is densely ordered.
+  have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
+  have hc : IsCompact (X := K) 𝒪[K] := isCompact_iff_compactSpace.mpr hc
+  -- We can also construct that it has a locally finite order, by compactness
+  -- which leads to a contradiction.
+  obtain ⟨_⟩ := locallyFiniteOrder_units_mrange_of_isCompact_integer hc
+  have hm := mulArchimedean_mrange_of_isCompact_integer hc
+  -- The key result is that a valuation ring that maps into a `MulArchimedean` value group
+  -- is a PIR iff the value group is not densely ordered.
+  refine hi.isPrincipalIdealRing_iff_not_denselyOrdered_mrange.mpr fun _ ↦ ?_
+  -- since we are densely ordered, we necessarily are nontrivial
+  exact not_subsingleton (MonoidHom.mrange (v : Valuation K Γ₀))ˣ
+    (LocallyFiniteOrder.denselyOrdered_iff_subsingleton.mp inferInstance)-/
+  sorry
+
+
+theorem ValuativeRel.integer.isDiscreteValuationRing_of_compactSpace [CompactSpace 𝒪[K]]
+    [ValuativeRel.IsNontrivial K] :
+    IsDiscreteValuationRing 𝒪[K] where
+  -- To prove we have a DVR, we need to show it is
+  -- a local ring (instance is directly inferred) and a PIR and not a field.
+  __ := ValuativeRel.integer.isPrincipalIdealRing_of_compactSpace
+  not_a_field' := sorry
+
+end Stuff
+
 instance : IsDiscreteValuationRing 𝒪[K] :=
-  letI := IsTopologicalAddGroup.rightUniformSpace K
-  haveI := isUniformAddGroup_of_addCommGroup (G := K)
-  haveI : CompactSpace (Valued.integer K) := inferInstanceAs (CompactSpace 𝒪[K])
-  Valued.integer.isDiscreteValuationRing_of_compactSpace
+  ValuativeRel.integer.isDiscreteValuationRing_of_compactSpace
 
 /-- The value group of a local field is (uniquely) isomorphic to `ℤᵐ⁰`. -/
 noncomputable
@@ -118,8 +181,10 @@ def valueGroupWithZeroIsoInt : ValueGroupWithZero K ≃*o ℤᵐ⁰ := by
   apply Nonempty.some
   let := IsTopologicalAddGroup.rightUniformSpace K
   have := isUniformAddGroup_of_addCommGroup (G := K)
+  have : CompactSpace 𝒪[K] := inferInstance
+  rw [← valuationInteger_valuation_eq_integer] at this
   obtain ⟨_⟩ := Valued.integer.locallyFiniteOrder_units_mrange_of_isCompact_integer
-    (isCompact_iff_compactSpace.mpr (inferInstance : CompactSpace 𝒪[K]))
+    (isCompact_iff_compactSpace.mpr this)
   let e : (MonoidHom.mrange (valuation K)) ≃*o ValueGroupWithZero K :=
     ⟨.ofBijective (MonoidHom.mrange (valuation K)).subtype ⟨Subtype.val_injective, fun x ↦
       ⟨⟨x, ValuativeRel.valuation_surjective x⟩, rfl⟩⟩, .rfl⟩
@@ -139,15 +204,17 @@ instance : ValuativeRel.IsRankLeOne K :=
   ValuativeRel.isRankLeOne_iff_mulArchimedean.mpr
     (.comap (valueGroupWithZeroIsoInt K).toMonoidHom (valueGroupWithZeroIsoInt K).strictMono)
 
-instance : Finite 𝓀[K] :=
+instance : Finite 𝓀[K] := by
   letI := IsTopologicalAddGroup.rightUniformSpace K
   haveI := isUniformAddGroup_of_addCommGroup (G := K)
   letI : (Valued.v (R := K)).RankOne :=
   { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
-  (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
-    (inferInstanceAs (CompactSpace 𝒪[K]))).2.2
+  sorry
+  /-rw [← integer_valuation_eq_integer]
+  exact (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
+    (inferInstanceAs (CompactSpace (Valued.integer K)))).2.2-/
 
 end TopologicalSpace
 
@@ -171,8 +238,9 @@ instance : CompleteSpace 𝒪[K] :=
   { hom' := IsRankLeOne.nonempty.some.emb (R := K).comp MonoidWithZeroHom.ValueGroup₀.embedding
     strictMono' := IsRankLeOne.nonempty.some.strictMono.comp
         MonoidWithZeroHom.ValueGroup₀.embedding_strictMono }
-  (compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
-    (inferInstanceAs (CompactSpace 𝒪[K]))).1
+  sorry
+  /-(compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField.mp
+    (inferInstanceAs (Valued.integer K))).1-/
 
 open scoped Pointwise in
 instance : IsAdicComplete 𝓂[K] 𝒪[K] where

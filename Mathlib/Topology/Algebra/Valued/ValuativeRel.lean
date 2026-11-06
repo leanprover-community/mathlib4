@@ -5,6 +5,7 @@ Authors: Yakov Pechersky
 -/
 module
 
+public import Mathlib.RingTheory.Valuation.ValuativeRel.Integer
 public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
@@ -85,7 +86,7 @@ end IsValuativeTopology
 namespace ValuativeRel
 
 @[inherit_doc]
-scoped notation "𝒪[" R "]" => Valuation.integer (valuation R)
+scoped notation "𝒪[" R "]" => ValuativeRel.integer R
 
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => IsLocalRing.maximalIdeal ↥𝒪[K]
