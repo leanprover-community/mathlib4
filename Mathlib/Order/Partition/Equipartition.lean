@@ -128,33 +128,22 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : �
     ∀ a b : s, P.part a = P.part b ↔ f a % #P.parts = f b % #P.parts := by
   obtain ⟨f, hf⟩ := P.exists_enumeration
   obtain ⟨g, hg⟩ := hP.exists_partsEquiv
-  let z := fun a ↦ #P.parts * (f a).2 + g (f a).1
-  have gl := fun a ↦ (g (f a).1).2
-  have less : ∀ a, z a < #s := fun a ↦ by
-    rcases hP.card_parts_eq_average (f a).1.2 with (c | c)
-    · calc
-        _ < #P.parts * ((f a).2 + 1) := by simp only [z, mul_add_one]; gcongr; exact gl a
-        _ ≤ #P.parts * (#s / #P.parts) := by gcongr; exact c ▸ (f a).2.2
-        _ ≤ #P.parts * (#s / #P.parts) + #s % #P.parts := Nat.le_add_right ..
-        _ = _ := Nat.div_add_mod ..
-    · rw [← Nat.div_add_mod #s #P.parts]
-      exact add_lt_add_of_le_of_lt (mul_le_mul_right (by lia) _) ((hg (f a).1).mp c)
-  let z' : s → Fin #s := fun a ↦ ⟨z a, less a⟩
-  have bij : z'.Bijective := by
-    refine (bijective_iff_injective_and_card z').mpr ⟨fun a b e ↦ ?_, by simp⟩
-    simp_rw [z', z, Fin.mk.injEq, mul_comm #P.parts] at e
-    have : NeZero #P.parts := ⟨((Nat.zero_le _).trans_lt (gl a)).ne'⟩
-    change (#P.parts).divModEquiv.symm (_, _) = (#P.parts).divModEquiv.symm (_, _) at e
-    simp only [Equiv.apply_eq_iff_eq, Prod.mk.injEq] at e
-    apply_fun f
-    exact Sigma.ext e.2 <| (Fin.heq_ext_iff (by rw [e.2])).mpr e.1
-  use Equiv.ofBijective _ bij
-  intro a b
-  simp_rw [z', z, Equiv.ofBijective_apply, hf a b, Nat.mul_add_mod,
-    Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
+  simp_rw [hf]
+  let z a : Fin #s := ⟨(#P.parts).mkDivFin (f a).2 (g (f a).1), by
+    have : NeZero #P.parts := ⟨(g (f a).1).pos.ne'⟩
+    refine (Nat.mkDivFin_lt_mkDivFin_iff.mpr ?_).trans_eq (Nat.mkDivFin_div_ofNat #s)
+    rw [Fin.lt_def, Fin.val_ofNat, ← hg]
+    have := (f a).2.isLt
+    have := hP.card_part_le_average_add_one (f a).1.2
+    lia⟩
+  have hz : z.Injective := fun a b h => by
+    obtain ⟨h₁, h₂⟩ := Nat.mkDivFin_inj.mp (congrArg Fin.val h)
+    rw [g.apply_eq_iff_eq] at h₂
+    exact f.injective <| Sigma.ext h₂ <| (Fin.heq_ext_iff (h₂ ▸ rfl)).mpr h₁
+  refine ⟨.ofBijective z ((bijective_iff_injective_and_card z).mpr ⟨hz, by simp⟩), fun a b => ?_⟩
+  simp_rw [Equiv.ofBijective_apply, z, Nat.mod_mkDivFin, Fin.val_inj, g.apply_eq_iff_eq]
 
 /-! ### Discrete and indiscrete finpartitions -/
-
 
 variable (s)
 
