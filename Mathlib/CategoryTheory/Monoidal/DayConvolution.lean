@@ -115,14 +115,12 @@ variable {x x' y y' : C}
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma unit_naturality (f : x ⟶ x') (g : y ⟶ y') :
     (F.map f ⊗ₘ G.map g) ≫ (unit F G).app (x', y') =
     (unit F G).app (x, y) ≫ (F ⊛ G).map (f ⊗ₘ g) := by
   simpa [tensorHom_def] using (unit F G).naturality (f ×ₘ g)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (y) in
 @[reassoc (attr := simp)]
 lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
@@ -133,7 +131,6 @@ lemma whiskerRight_comp_unit_app (f : x ⟶ x') :
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 variable (x) in
 @[reassoc (attr := simp)]
 lemma whiskerLeft_comp_unit_app (g : y ⟶ y') :
@@ -156,7 +153,6 @@ def map (f : F ⟶ F') (g : G ⟶ G') : F ⊛ G ⟶ F' ⊛ G' :=
 
 variable (f : F ⟶ F') (g : G ⟶ G') (x y : C)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in -- Needed in DayConvolution.lean
 @[reassoc (attr := simp)]
 lemma unit_app_map_app :
@@ -170,7 +166,6 @@ end map
 
 variable (F G)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The universal property of left Kan extensions characterizes the functor
 corepresented by `F ⊛ G`. -/
 @[simps!]
@@ -180,7 +175,6 @@ def corepresentableBy :
   homEquiv := Functor.homEquivOfIsLeftKanExtension _ (unit F G) _
   homEquiv_comp := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Use the fact that `(F ⊛ G).obj c` is a colimit to characterize morphisms out of it at a
 point. -/
 theorem convolution_hom_ext_at (c : C) {v : V} {f g : (F ⊛ G).obj c ⟶ v}
@@ -211,7 +205,6 @@ instance : ((F ⊛ G) ⊠ H).IsLeftKanExtension <|
   (isPointwiseLeftKanExtensionExtensionUnitLeft _ _ _ <|
     isPointwiseLeftKanExtensionUnit F G).isLeftKanExtension
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ (F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ Y)` is corepresented by
 `F ⊛ G ⊛ H`. -/
@@ -225,7 +218,6 @@ def corepresentableBy₂ :
       Functor.homEquivOfIsLeftKanExtension _ (extensionUnitRight (G ⊛ H) (unit G H) F) _
   homEquiv_comp := by aesop
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The `CorepresentableBy` structure asserting that the Type-valued functor
 `Y ↦ ((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ Y)` is corepresented by
 `(F ⊛ G) ⊛ H`. -/
@@ -242,7 +234,6 @@ def corepresentableBy₂' :
 #adaptation_note
 /-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
 set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism of functors between
 `((F ⊠ G) ⊠ H ⟶ (tensor C).prod (𝟭 C) ⋙ tensor C ⋙ -)` and
 `(F ⊠ G ⊠ H ⟶ (𝟭 C).prod (tensor C) ⋙ tensor C ⋙ -)` that corresponds to the associator
@@ -280,7 +271,6 @@ def associator : (F ⊛ G) ⊛ H ≅ F ⊛ G ⊛ H :=
   corepresentableBy₂' F G H |>.ofIso (associatorCorepresentingIso F G H) |>.uniqueUpToIso <|
     corepresentableBy₂ F G H
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Characterizing the forward direction of the associator isomorphism
 with respect to the unit transformations. -/
@@ -361,7 +351,6 @@ section pentagon
 variable [∀ (v : V) (d : C × C),
     Limits.PreservesColimitsOfShape (CostructuredArrow ((tensor C).prod (𝟭 C)) d) (tensorRight v)]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma pentagon (H K : C ⥤ V)
     [DayConvolution G H] [DayConvolution (F ⊛ G) H] [DayConvolution F (G ⊛ H)]
     [DayConvolution H K] [DayConvolution G (H ⊛ K)] [DayConvolution (G ⊛ H) K]

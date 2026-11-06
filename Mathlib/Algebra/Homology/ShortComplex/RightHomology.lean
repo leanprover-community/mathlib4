@@ -505,6 +505,11 @@ section
 variable (S)
 variable [S.HasRightHomology]
 
+-- Currently, definitions like `rightHomology`, `opcycles` are made
+-- `local implicit_reducible` only in order to prove lemmas which
+-- require unfolding the definition. Ideally, `rightHomology`, `opcycles`
+-- should be unexposed (TODO). Doing so may be an interestingly
+-- difficult task though.
 /-- The right homology of a short complex,
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H

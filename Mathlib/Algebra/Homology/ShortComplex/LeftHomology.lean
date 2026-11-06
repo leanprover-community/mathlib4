@@ -407,6 +407,11 @@ section
 variable (S)
 variable [S.HasLeftHomology]
 
+-- Currently, definitions like `leftHomology`, `cycles` are made
+-- `local implicit_reducible` only in order to prove lemmas which
+-- require unfolding the definition. Ideally, `leftHomology`, `cycles`
+-- should be unexposed (TODO). Doing so may be an interestingly
+-- difficult task though.
 /-- The left homology of a short complex, given by the `H` field of a chosen left homology data. -/
 noncomputable def leftHomology : C := S.leftHomologyData.H
 
