@@ -71,7 +71,7 @@ instance inverseImage {P : MorphismProperty D} [P.ContainsIdentities] (F : C ⥤
     (P.inverseImage F).ContainsIdentities where
   id_mem X := by simpa only [← F.map_id] using! P.id_mem (F.obj X)
 
-instance {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdentities] :
+instance inf {P Q : MorphismProperty C} [P.ContainsIdentities] [Q.ContainsIdentities] :
     (P ⊓ Q).ContainsIdentities where
   id_mem X := ⟨P.id_mem X, Q.id_mem X⟩
 
@@ -248,7 +248,7 @@ instance : (identities C).IsMultiplicative where
 instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
     (P.inverseImage F).IsMultiplicative where
 
-instance {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
+instance inf {P Q : MorphismProperty C} [P.IsMultiplicative] [Q.IsMultiplicative] :
     (P ⊓ Q).IsMultiplicative where
 
 lemma sInf {W : Set (MorphismProperty C)} (h : ∀ W' ∈ W, W'.IsMultiplicative) :

@@ -108,7 +108,7 @@ lemma of_le [IsLocalAtTarget P L] (hle : K ≤ L) : IsLocalAtTarget P K where
   pullbackSnd h i hf := pullbackSnd (hle _ h) i hf
   of_forall_pullbackSnd hR h := of_forall_pullbackSnd (hle _ hR) h
 
-instance : IsLocalAtTarget (⊤ : MorphismProperty C) K where
+instance top : IsLocalAtTarget (⊤ : MorphismProperty C) K where
   pullbackSnd := by simp
   of_forall_pullbackSnd := by simp
 
@@ -128,7 +128,7 @@ lemma of_zeroHypercover [K.HasPullbacks] (h : ∀ (i : 𝒰.I₀), P (pullback.s
 lemma iff_of_zeroHypercover [K.HasPullbacks] : P f ↔ ∀ i, P (pullback.snd f (𝒰.f i)) :=
   ⟨fun hf _ ↦ pullbackSnd 𝒰.mem₀ ⟨_⟩ hf, fun h ↦ of_zeroHypercover _ h⟩
 
-instance (P Q : MorphismProperty C) [IsLocalAtTarget P K] [IsLocalAtTarget Q K] :
+instance inf (P Q : MorphismProperty C) [IsLocalAtTarget P K] [IsLocalAtTarget Q K] :
     IsLocalAtTarget (P ⊓ Q) K where
   pullbackSnd hR i h := ⟨pullbackSnd hR i h.1, pullbackSnd hR i h.2⟩
   of_forall_pullbackSnd hR h :=
@@ -197,7 +197,7 @@ lemma of_le [IsLocalAtSource P L] (hle : K ≤ L) : IsLocalAtSource P K where
   comp hR _ _ := comp (hle _ hR) _
   of_forall_comp hR h := of_forall_comp (hle _ hR) h
 
-instance : IsLocalAtSource (⊤ : MorphismProperty C) K where
+instance top : IsLocalAtSource (⊤ : MorphismProperty C) K where
   comp := by simp
   of_forall_comp := by simp
 
@@ -210,7 +210,7 @@ lemma iff_of_zeroHypercover : P f ↔ ∀ i, P (𝒰.f i ≫ f) :=
   ⟨fun hf i ↦ comp 𝒰.mem₀ _ ⟨i⟩ hf,
     fun h ↦ of_forall_comp 𝒰.mem₀ fun U g ↦ by rintro ⟨i⟩; exact h _⟩
 
-instance (P Q : MorphismProperty C) [IsLocalAtSource P K] [IsLocalAtSource Q K] :
+instance inf (P Q : MorphismProperty C) [IsLocalAtSource P K] [IsLocalAtSource Q K] :
     IsLocalAtSource (P ⊓ Q) K where
   comp hR _ _ hg hf := ⟨comp hR _ hg hf.left, comp hR _ hg hf.right⟩
   of_forall_comp hR h :=
