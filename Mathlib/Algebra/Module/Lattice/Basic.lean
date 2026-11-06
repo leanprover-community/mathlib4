@@ -6,6 +6,7 @@ Authors: Anouk Brose, Judith Ludwig, Christian Merten, Justus Springer
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Localization
+
 import Mathlib.LinearAlgebra.FreeModule.PID
 
 /-!
