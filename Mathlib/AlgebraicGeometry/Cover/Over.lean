@@ -199,6 +199,7 @@ variable [P.IsStableUnderComposition]
 variable {X : Scheme.{u}} (𝒰 : X.Cover (precoverage P)) (𝒱 : ∀ x, (𝒰.X x).Cover (precoverage P))
   [X.Over S] [𝒰.Over S] [∀ x, (𝒱 x).Over S]
 
+@[nolint instanceDiamonds] -- TODO: understand or fix the linter error
 instance (j : (𝒰.bind 𝒱).I₀) : ((𝒰.bind 𝒱).X j).Over S :=
   inferInstanceAs <| ((𝒱 j.1).X j.2).Over S
 
