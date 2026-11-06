@@ -6,7 +6,7 @@ Authors: Kyle Miller
 module
 
 public import Mathlib.Combinatorics.SimpleGraph.Trails
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Tactic.DeriveFintype -- shake: keep (deriving handler)
 public import Mathlib.Tactic.NormNum
 
 /-!

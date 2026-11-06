@@ -35,15 +35,15 @@ jobs:
           use-github-cache: false
           use-mathlib-cache: true
 
-      # - name: lake build
-      #   run: |
-      #     lake build Archive Counterexamples
+      - name: get Archive and Counterexamples
+        run: |
+          lake exe cache get Archive.lean Counterexamples.lean
+          lake build Archive Counterexamples
 
       - name: lake shake
         id: shake
         run: |
-          # Add back Archive and Counterexamples when they've been modulized
-          lake shake --add-public --keep-implied --keep-prefix --add-public-downstream Mathlib.Init --fix --explain Mathlib > explain.txt 2>&1
+          lake shake --add-public --keep-implied --keep-prefix --add-public-downstream Mathlib.Init --fix --explain Mathlib Archive Counterexamples > explain.txt 2>&1
           if git diff --quiet; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
