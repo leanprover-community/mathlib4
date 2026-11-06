@@ -361,11 +361,11 @@ def ulift.{u, v} {α : Type u} [MeasurableSpace α] : ULift.{v, u} α ≃ᵐ α 
   ⟨Equiv.ulift, measurable_down, measurable_up⟩
 
 /-- Measurable equivalence between `α` and `Additive α`. -/
-def additive {α : Type*} [MeasurableSpace α] : α ≃ᵐ Additive α :=
+def additive : α ≃ᵐ Additive α :=
   ⟨Additive.ofMul, measurable_ofMul, measurable_toMul⟩
 
 /-- Measurable equivalence between `α` and `Multiplicative α`. -/
-def multiplicative {α : Type*} [MeasurableSpace α] : α ≃ᵐ Multiplicative α :=
+def multiplicative : α ≃ᵐ Multiplicative α :=
   ⟨Multiplicative.ofAdd, measurable_ofAdd, measurable_toAdd⟩
 
 protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
