@@ -2077,6 +2077,7 @@ public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.CompactSupport
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Separable
 public import Mathlib.Analysis.Distribution.Sobolev
 public import Mathlib.Analysis.Distribution.Support
 public import Mathlib.Analysis.Distribution.TemperateGrowth

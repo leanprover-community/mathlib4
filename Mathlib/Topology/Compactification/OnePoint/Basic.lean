@@ -31,6 +31,7 @@ properties inherited from `X`.
 * `OnePoint X` is `T₀` for a T₀ space `X`
 * `OnePoint X` is `T₁` for a T₁ space `X`
 * `OnePoint X` is normal if `X` is a locally compact Hausdorff space
+* `OnePoint X` is second countable if `X` is a second countable locally compact Hausdorff space
 
 ## Tags
 
@@ -539,6 +540,32 @@ instance [WeaklyLocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) :=
 /-- The one point compactification of a weakly locally compact Hausdorff space is a T₄
 (hence, Hausdorff and regular) topological space. -/
 example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := inferInstance
+
+open TopologicalSpace in
+/-- The one point compactification of a second countable, weakly locally compact R₁ space is
+second countable. -/
+instance instSecondCountableTopology [WeaklyLocallyCompactSpace X] [R1Space X]
+    [SecondCountableTopology X] :
+    SecondCountableTopology (OnePoint X) := by
+  let K := CompactExhaustion.choice X
+  refine (isTopologicalBasis_of_isOpen_of_nhds (s := (image (↑) '' countableBasis X) ∪
+    range fun n ↦ ((↑) '' closure (K n))ᶜ) ?_ ?_).secondCountableTopology
+    (((countable_countableBasis X).image _).union (countable_range _))
+  · rintro _ (⟨u, hu, rfl⟩ | ⟨n, rfl⟩)
+    · exact isOpen_image_coe.2 (isOpen_of_mem_countableBasis hu)
+    · exact isOpen_compl_image_coe.2 ⟨isClosed_closure, (K.isCompact n).closure⟩
+  · intro x u hx hu
+    induction x using OnePoint.rec with
+    | infty =>
+      obtain ⟨n, hn⟩ := K.exists_superset_of_isCompact ((isOpen_iff_of_mem hx).1 hu).2
+      refine ⟨_, .inr ⟨n, rfl⟩, infty_notMem_image_coe, fun y hy ↦ ?_⟩
+      induction y using OnePoint.rec with
+      | infty => exact hx
+      | coe y => exact not_not.1 fun h ↦ hy (mem_image_of_mem _ (subset_closure (hn h)))
+    | coe x =>
+      obtain ⟨v, hv, hxv, hvu⟩ := (isBasis_countableBasis X).exists_subset_of_mem_open
+        (mem_preimage.2 hx) (hu.preimage continuous_coe)
+      exact ⟨_, .inl ⟨v, hv, rfl⟩, mem_image_of_mem _ hxv, image_subset_iff.2 hvu⟩
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
