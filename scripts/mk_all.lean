@@ -3,12 +3,14 @@ Copyright (c) 2024 Yaël Dillies, Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Damiano Testa
 -/
+module
+
 import Cli.Basic
 import Lake.CLI.Main
+import Lake.Load.Workspace
+import Lean.Elab.ParseImportsFast
 import Mathlib.Util.GetAllModules
 
--- The `style.header` linter flags `import Lake.CLI.Main` as a potential performance issue.
-set_option linter.style.header false
 /-!
 # Script to create a file importing all files from a folder
 
@@ -128,4 +130,4 @@ def mkAll : Cmd := `[Cli|
 ]
 
 /-- The entrypoint to the `lake exe mk_all` command. -/
-def main (args : List String) : IO UInt32 := mkAll.validate args
+public def main (args : List String) : IO UInt32 := mkAll.validate args
