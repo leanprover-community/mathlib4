@@ -25,11 +25,9 @@ see `ModuleCat.localizedModuleFunctor`.
 
 universe v u
 
-variable (R : Type u) [CommRing R]
+variable {R : Type u} [CommRing R]
 
 open CategoryTheory
-
-variable {R}
 
 namespace ModuleCat
 
