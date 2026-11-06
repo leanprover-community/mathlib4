@@ -57,7 +57,7 @@ def toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y
   __ := toContinuousMapAddMonoidHom
   commutes' r := by
     ext x
-    simp [Algebra.smul_def]
+    simp
 
 @[simp] lemma toLinearMap_toContinuousMapAlgHom (R : Type*) [CommSemiring R] [Semiring Y]
     [Algebra R Y] [IsTopologicalSemiring Y] :

@@ -678,7 +678,7 @@ protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f�
     intro x hx
     contrapose hx
     simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, Set.mem_union, Function.mem_support,
-      ne_eq, not_or, Decidable.not_not, ContinuousMap.coe_sub, Pi.sub_apply] at hx ⊢
+      ne_eq, not_or, Decidable.not_not, FunLike.coe_sub, Pi.sub_apply] at hx ⊢
     simp [hx.1, hx.2]
   · ext x
     simpa [← NNReal.coe_add] using add_tsub_cancel_of_le (h x)

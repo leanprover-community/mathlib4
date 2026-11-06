@@ -352,7 +352,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
     simp [hx]
   nonneg' := le_update_iff.2 ⟨fun _ => zero_le_one, fun _ _ => le_rfl⟩
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
-  eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
+  eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, FunLike.coe_one]⟩
 
 open scoped Classical in
 @[simp]
@@ -539,7 +539,7 @@ theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
   use hf.toFinset
   filter_upwards [hU] with y hyU
-  simp only [ContinuousMap.coe_prod, Pi.mul_apply, Finset.prod_apply]
+  simp only [Pi.mul_apply, _root_.prod_apply, sub_apply, one_apply]
   apply toPOUFun_eq_mul_prod
   intro j _ hj
   exact hf.mem_toFinset.2 ⟨y, ⟨hj, hyU⟩⟩

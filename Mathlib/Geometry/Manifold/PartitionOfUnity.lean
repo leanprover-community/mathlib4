@@ -462,7 +462,8 @@ theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
         fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
-  simpa using! fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
+  simpa [FunLike.coe_prod] using!
+    fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 
 theorem toSmoothPartitionOfUnity_zero_of_zero {i : ι} {x : M} (h : fs i x = 0) :
     fs.toSmoothPartitionOfUnity i x = 0 :=
@@ -542,9 +543,8 @@ def single (i : ι) (s : Set M) : SmoothPartitionOfUnity ι I M s :=
   (BumpCovering.single i s).toSmoothPartitionOfUnity fun j => by
     classical
     rcases eq_or_ne j i with (rfl | h)
-    · simp only [contMDiff_one, ContinuousMap.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
-    · simp only [contMDiff_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h,
-        ContinuousMap.coe_zero]
+    · simp only [contMDiff_one, FunLike.coe_one, BumpCovering.coe_single, Pi.single_eq_same]
+    · simp only [contMDiff_zero, BumpCovering.coe_single, Pi.single_eq_of_ne h, FunLike.coe_zero]
 
 instance [Inhabited ι] (s : Set M) : Inhabited (SmoothPartitionOfUnity ι I M s) :=
   ⟨single I default s⟩
