@@ -5,7 +5,10 @@ Authors: David Ledvinka
 -/
 module
 
+public import Mathlib.Algebra.Ring.Hom.Defs
+public import Mathlib.Algebra.Ring.Rat
 public import Mathlib.Data.Dyadic.Basic
+public import Mathlib.Order.Hom.Basic
 
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
@@ -27,6 +30,40 @@ namespace Inclusion.IntervalDyadicReal
 
 open Dyadic
 namespace Dyadic
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [coe] toRat
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+instance : Coe Dyadic Rat := ⟨toRat⟩
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [norm_cast] toRat_zero toRat_add toRat_neg toRat_sub toRat_mul toRat_pow
+  toRat_intCast toRat_natCast toRat_eq_zero_iff toRat_lt_toRat_iff toRat_le_toRat_iff
+
+-- From @vihdzp's leanprover/lean4#15532. TODO: Remove once merged.
+attribute [simp, norm_cast] toRat_inj
+
+/-- Coercion from dyadic rationals to rational numbers as a ring homomorphism. -/
+@[simps]
+def toRatRingHom : Dyadic →+* ℚ where
+  toFun := toRat
+  map_zero' := toRat_zero
+  map_one' := toRat_one
+  map_add' := toRat_add
+  map_mul' := toRat_mul
+
+@[simp, norm_cast]
+theorem toRat_ofNat (n : ℕ) [n.AtLeastTwo] :
+    toRat (ofNat(n) : Dyadic) = (ofNat(n) : Rat) :=
+  map_ofNat toRatRingHom n
+
+/-- Coercion from dyadic rationals to rational numbers as an order embedding. -/
+@[simps]
+def toRatOrderEmbedding : Dyadic ↪o ℚ where
+  toFun := toRat
+  inj' := fun _ _ ↦ toRat_inj.mp
+  map_rel_iff' := toRat_le_toRat_iff
 
 /-- One unit on the dyadic grid with precision `prec`. -/
 def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
