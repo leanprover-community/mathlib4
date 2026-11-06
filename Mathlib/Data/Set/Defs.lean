@@ -6,6 +6,7 @@ Authors: Leonardo de Moura
 module
 
 public import Batteries.Util.ExtendedBinder
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.SetNotationForOrder
 public import Mathlib.Tactic.ToDual
 
@@ -44,7 +45,7 @@ variable {α : Type u}
 To build a set (an element of `Set α`) out of a predicate `p : α → Prop`, use the set builder
 notation `{a | p a}`. To get a predicate `α → Prop` from a set `s : Set α`, use the `∈` notation,
 as in `a ∈ s` or `(· ∈ s)`. -/
-@[use_set_notation_for_order]
+@[use_set_notation_for_order, wikidata Q36161]
 structure Set (α : Type u) where
   /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
   ofPred ::

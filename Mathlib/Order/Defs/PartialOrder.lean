@@ -5,6 +5,7 @@ Authors: Leonardo de Moura
 -/
 module
 
+public import Mathlib.Tactic.CrossRefAttribute
 public import Mathlib.Tactic.ToDual
 
 /-!
@@ -172,6 +173,7 @@ section PartialOrder
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
+@[wikidata Q474715]
 class PartialOrder (α : Type*) extends Preorder α where
   protected le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
