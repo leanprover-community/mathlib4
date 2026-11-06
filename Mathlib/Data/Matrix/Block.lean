@@ -190,6 +190,10 @@ theorem toSquareBlock_def (M : Matrix m m α) (b : m → β) (k : β) :
     toSquareBlock M b k = of (fun i j : { a // b a = k } => M ↑i ↑j) :=
   rfl
 
+@[simp]
+theorem toSquareBlock_zero [Zero α] (b : m → β) (k : β) :
+    (0 : Matrix m m α).toSquareBlock b k = 0 := rfl
+
 theorem fromBlocks_smul [SMul R α] (x : R) (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
     (D : Matrix o m α) : x • fromBlocks A B C D = fromBlocks (x • A) (x • B) (x • C) (x • D) := by
   ext i j; rcases i with ⟨⟩ <;> rcases j with ⟨⟩ <;> simp [fromBlocks]
