@@ -22,8 +22,8 @@ with `0 < μ t < μ s`.
 
 ## Main statements
 
-* `MeasureTheory.noAtoms_iff'`: `μ` has no atoms if and only if every measurable set of positive
-  measure contains a measurable subset of strictly smaller positive measure.
+* `MeasureTheory.noAtoms_iff_forall_exists`: `μ` has no atoms if and only if every measurable set
+  of positive measure contains a measurable subset of strictly smaller positive measure.
 
 ## Implementation notes
 
@@ -50,12 +50,28 @@ structure IsAtom (μ : Measure α) (s : Set α) : Prop where
   pos : 0 < μ s
   measure_eq_zero_or_eq : ∀ t ⊆ s, MeasurableSet t → μ t = 0 ∨ μ t = μ s
 
+/-- A version of `IsAtom.measure_eq_zero_or_eq` for subsets `t` which need not be measurable. -/
+theorem IsAtom.measure_eq_zero_or_eq' (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
+    μ t = 0 ∨ μ t = μ s := by
+  obtain ⟨u, -, hus, hu, hut⟩ := exists_measurable_superset_of_subset μ hts h.measurableSet
+  exact hut ▸ h.measure_eq_zero_or_eq u hus hu
+
 theorem isAtom_iff_not_exists :
     μ.IsAtom s ↔
       MeasurableSet s ∧ 0 < μ s ∧ ¬∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
   simp only [isAtom_iff, not_exists, not_and, not_lt]
   congr! with t hts
   grind [zero_lt_iff, measure_mono (μ := μ) hts]
+
+theorem IsAtom.not_exists (h : μ.IsAtom s) :
+    ¬∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := (isAtom_iff_not_exists.mp h).2.2
+
+/-- A version of `IsAtom.not_exists` for subsets `t` which need not be measurable. -/
+theorem IsAtom.not_exists' (h : μ.IsAtom s) : ¬∃ t ⊆ s, 0 < μ t ∧ μ t < μ s := by
+  rintro ⟨t, hts, ht, hts'⟩
+  rcases h.measure_eq_zero_or_eq' hts with h' | h'
+  · exact ht.ne' h'
+  · exact hts'.ne h'
 
 theorem isAtom_singleton_iff [MeasurableSingletonClass α] {x : α} :
     μ.IsAtom {x} ↔ 0 < μ {x} := by
@@ -71,8 +87,9 @@ theorem IsAtom.nonempty (h : μ.IsAtom s) : s.Nonempty :=
 end Measure
 
 /-- A measure `μ` *has no atoms* if there is no measurable set `s` of positive measure such that
-every measurable subset of `s` has measure `0` or `μ s`. Equivalently (see `noAtoms_iff'`), every
-measurable set `s` with `0 < μ s` contains a measurable `t` with `0 < μ t < μ s`. -/
+every measurable subset of `s` has measure `0` or `μ s`. Equivalently (see
+`noAtoms_iff_forall_exists`), every measurable set `s` with `0 < μ s` contains a measurable `t`
+with `0 < μ t < μ s`. -/
 @[mk_iff]
 class NoAtoms (μ : Measure α) : Prop where
   not_isAtom : ∀ s, ¬μ.IsAtom s
@@ -86,14 +103,8 @@ namespace NoAtoms
 
 /-- A constructor for `NoAtoms` in which the subset `t` need not be measurable. -/
 theorem mk' (h : ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) :
-    NoAtoms μ := by
-  refine noAtoms_iff_forall_exists.2 fun s hs hμs ↦ ?_
-  obtain ⟨t, hts, ht, hts'⟩ := h s hs hμs
-  obtain ⟨u, htu, hu, hut⟩ := exists_measurable_superset μ t
-  have : μ (u ∩ s) = μ t :=
-    le_antisymm (hut ▸ measure_mono inter_subset_left)
-      (measure_mono (subset_inter htu hts))
-  exact ⟨u ∩ s, inter_subset_right, hu.inter hs, this ▸ ht, this ▸ hts'⟩
+    NoAtoms μ :=
+  (noAtoms_iff μ).2 fun s hs ↦ hs.not_exists' (h s hs.measurableSet hs.pos)
 
 variable [NoAtoms μ]
 
