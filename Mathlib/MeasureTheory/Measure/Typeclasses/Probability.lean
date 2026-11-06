@@ -217,6 +217,9 @@ lemma eq_zero_or_isProbabilityMeasure : μ = 0 ∨ IsProbabilityMeasure μ := by
   · apply Or.inl (measure_univ_eq_zero.mp h)
   · exact Or.inr ⟨h⟩
 
+instance [NeZero μ] : IsProbabilityMeasure μ :=
+  (eq_zero_or_isProbabilityMeasure μ).resolve_left (NeZero.ne μ)
+
 instance {f : α → β} : IsZeroOrProbabilityMeasure (map f μ) := by
   obtain rfl | _ := eq_zero_or_isProbabilityMeasure (μ := μ)
   · rw [Measure.map_zero]
