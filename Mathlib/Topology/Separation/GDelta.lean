@@ -58,6 +58,18 @@ theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs 
     IsGδ s :=
   Finite.induction_on _ hs .empty fun _ _ ↦ .union (.singleton _)
 
+protected theorem IsFσ.singleton [T1Space X] (x : X) : IsFσ {x} := isClosed_singleton.isFσ
+
+/-- In T1 spaces, every countable set is Fσ. -/
+theorem Set.Countable.isFσ [T1Space X] {s : Set X} (hs : s.Countable) : IsFσ s := by
+  rw [← biUnion_of_singleton s]
+  exact .biUnion hs fun _ _ ↦ .singleton _
+
+theorem Set.Finite.isFσ [T1Space X] {s : Set X} (hs : s.Finite) : IsFσ s := hs.countable.isFσ
+
+theorem Set.Subsingleton.isFσ [T1Space X] {s : Set X} (hs : s.Subsingleton) : IsFσ s := hs.finite.isFσ
+
+theorem Finset.isFσ [T1Space X] (s : Finset X) : IsFσ (s : Set X) := s.finite_toSet.isFσ
 
 section PerfectlyNormal
 
@@ -107,6 +119,10 @@ instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
 /-- In a perfectly normal space, all closed sets are Gδ. -/
 theorem IsClosed.isGδ [PerfectlyNormalSpace X] {s : Set X} (hs : IsClosed s) : IsGδ s :=
   PerfectlyNormalSpace.closed_gdelta hs
+
+/-- In perfectly normal spaces, every open set is Fσ. -/
+theorem IsOpen.isFσ [PerfectlyNormalSpace X] {s : Set X} (hs : IsOpen s) : IsFσ s := by
+  simpa using hs.isClosed_compl.isGδ
 
 instance (priority := 100) [PerfectlyNormalSpace X] : R0Space X where
   specializes_symm.symm x y hxy := by

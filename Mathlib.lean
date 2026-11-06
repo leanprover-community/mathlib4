@@ -8416,6 +8416,7 @@ public import Mathlib.Topology.Instances.ZMod
 public import Mathlib.Topology.Instances.ZMultiples
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Topology.IsClosedRestrict
+public import Mathlib.Topology.IsCozeroSet
 public import Mathlib.Topology.IsLocalHomeomorph
 public import Mathlib.Topology.JacobsonSpace
 public import Mathlib.Topology.KrullDimension
@@ -8629,6 +8630,7 @@ public import Mathlib.Topology.Sheaves.Sheafify
 public import Mathlib.Topology.Sheaves.Skyscraper
 public import Mathlib.Topology.Sheaves.Stalks
 public import Mathlib.Topology.ShrinkingLemma
+public import Mathlib.Topology.SigmaLocallyFinite
 public import Mathlib.Topology.Sion
 public import Mathlib.Topology.SmallInductiveDimension
 public import Mathlib.Topology.Sober
