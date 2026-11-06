@@ -9,6 +9,8 @@ public import Mathlib.Data.Set.Monotone
 public import Mathlib.Order.Cover
 public import Mathlib.Order.LatticeIntervals
 
+meta import Mathlib.Tactic.Order
+
 /-!
 # Modular Lattices
 
@@ -302,6 +304,14 @@ instance (priority := 100) IsModularLattice.to_isUpperModularLattice : IsUpperMo
 
 end IsModularLattice
 
+/-- Notice that the right-hand side is equivalent to
+`∀ x y z : α, x ≤ y → x ⊓ z = y ⊓ z → x ⊔ z = y ⊔ z → x = y`, which is the assumption
+of the constructor `DistribLattice.ofEqOfInfSupEq` with an extra `x ≤ y` condition. -/
+theorem isModularLattice_iff_eq_of_le_of_inf_le_of_le_sup [Lattice α] :
+    IsModularLattice α ↔ ∀ x y z : α, x ≤ y → y ⊓ z ≤ x → y ≤ x ⊔ z → x = y :=
+  ⟨@eq_of_le_of_inf_le_of_le_sup α _, fun h ↦
+    ⟨fun {x} y {z} _ ↦ (h _ _ y (by order) (by order) (by order)).ge⟩⟩
+
 namespace IsCompl
 
 variable [Lattice α] [BoundedOrder α] [IsModularLattice α]
@@ -331,6 +341,48 @@ namespace DistribLattice
 
 instance (priority := 100) [DistribLattice α] : IsModularLattice α :=
   ⟨fun y z xz => by rw [inf_sup_right, inf_eq_left.2 xz]⟩
+
+variable (α) [Lattice α]
+
+/-- A lattice `α` satisfying `(a ⊔ b) ⊓ (a ⊔ c) ⊓ (b ⊔ c) ≤ (a ⊓ b) ⊔ (a ⊓ c) ⊔ (b ⊓ c)` for all
+`a b c : α` is distributive. -/
+abbrev ofInfSupLeSupInf (h : ∀ a b c : α, (a ⊔ b) ⊓ (a ⊔ c) ⊓ (b ⊔ c) ≤ a ⊓ b ⊔ a ⊓ c ⊔ b ⊓ c) :
+    DistribLattice α where
+  le_sup_inf := by
+    suffices h : ∀ x y z : α, x ⊔ (x ⊔ y) ⊓ (x ⊔ z) ⊓ (y ⊔ z) = (x ⊔ y) ⊓ (x ⊔ z) → _
+      from fun x y z ↦ Eq.ge (h x y z ?_)
+    on_goal 1 => rw [← inf_comm, h x (y ⊔ z) _ (by order)]
+    on_goal 2 => intro x y z; specialize h x y z
+    all_goals order
+
+/-- A lattice `α` satisfying the cancellation law `b ⊓ a = c ⊓ a → b ⊔ a = c ⊔ a → b = c` for all
+`a b c : α` is distributive. -/
+abbrev ofEqOfInfSupEq (h : ∀ a b c : α, a ⊓ b = a ⊓ c → a ⊔ b = a ⊔ c → b = c) :
+    DistribLattice α :=
+  .ofInfSupLeSupInf α fun a b c ↦
+    have : IsModularLattice α :=
+      isModularLattice_iff_eq_of_le_of_inf_le_of_le_sup.2
+        fun x y z _ _ _ ↦ h z x y (by order) (by order)
+    let u (i j k : α) := i ⊓ (j ⊔ k) ⊔ (j ⊓ k)
+    let is (i j k : α) := (i ⊔ j) ⊓ (i ⊔ k) ⊓ (j ⊔ k)
+    let si (i j k : α) := (i ⊓ j) ⊔ (i ⊓ k) ⊔ (j ⊓ k)
+    have u_eq i j k : u i j k = (i ⊔ (j ⊓ k)) ⊓ (j ⊔ k) := by
+      unfold u; rw [inf_comm, inf_sup_assoc_of_le _ (by order), inf_comm]
+    have u_inf_u i j k : u i j k ⊓ u j i k = si i j k := by
+      unfold u si
+      rw [← inf_sup_assoc_of_le _ (by order),
+        ← sup_comm (j ⊓ k), sup_inf_assoc_of_le _ (by order)]
+      order
+    have u_sup_u i j k : u i j k ⊔ u j i k = is i j k := by
+      unfold is
+      rw [u_eq, u_eq, ← sup_inf_assoc_of_le _ (by order),
+        ← inf_comm (j ⊔ k), inf_sup_assoc_of_le _ (by order)]
+      order
+    have u₂₃ i j k : u i j k = u i k j := by unfold u; order
+    have u₁₂ i j k : u i j k = u j i k := h (u k i j) _ _
+      (by rw [u₂₃ i, u_inf_u, u₂₃, u₂₃ j, u_inf_u]; unfold si; order)
+      (by rw [u₂₃ i, u_sup_u, u₂₃, u₂₃ j, u_sup_u]; unfold is; order)
+    show is a b c ≤ si a b c by simp [← u_inf_u, ← u_sup_u, u₁₂]
 
 end DistribLattice
 
