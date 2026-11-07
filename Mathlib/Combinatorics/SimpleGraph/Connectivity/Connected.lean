@@ -440,17 +440,13 @@ theorem connectedComponentMk_eq_of_adj {v w : V} (a : G.Adj v w) :
     G.connectedComponentMk v = G.connectedComponentMk w :=
   ConnectedComponent.sound a.reachable
 
-/-- The `ConnectedComponent` specialization of `Quot.lift`. Provides the stronger
-assumption that the vertices are connected by a path. -/
-protected def lift {β : Sort*} (f : V → β)
-    (h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w) : G.ConnectedComponent → β :=
-  Quot.lift f fun v w (h' : G.Reachable v w) => h'.elim_path fun hp => h v w hp hp.2
+/-- The `ConnectedComponent` specialization of `Quot.lift`. -/
+protected def lift {β : Sort*} (f : V → β) (h : ∀ v w, G.Reachable v w → f v = f w) :
+    G.ConnectedComponent → β := Quot.lift f h
 
 @[simp]
-protected theorem lift_mk {β : Sort*} {f : V → β}
-    {h : ∀ (v w : V) (p : G.Walk v w), p.IsPath → f v = f w} {v : V} :
-    ConnectedComponent.lift f h (G.connectedComponentMk v) = f v :=
-  rfl
+protected theorem lift_mk {β : Sort*} {f : V → β} {h : ∀ v w, G.Reachable v w → f v = f w} {v : V} :
+    ConnectedComponent.lift f h (G.connectedComponentMk v) = f v := rfl
 
 protected theorem «exists» {p : G.ConnectedComponent → Prop} :
     (∃ c : G.ConnectedComponent, p c) ↔ ∃ v, p (G.connectedComponentMk v) :=
@@ -498,8 +494,7 @@ def recOn
 
 /-- The map on connected components induced by a graph homomorphism. -/
 def map (φ : G →g G') (C : G.ConnectedComponent) : G'.ConnectedComponent :=
-  C.lift (fun v => G'.connectedComponentMk (φ v)) fun _ _ p _ =>
-    ConnectedComponent.eq.mpr (p.map φ).reachable
+  C.lift (fun v ↦ G'.connectedComponentMk (φ v)) fun _ _ p ↦ ConnectedComponent.eq.mpr (p.map φ)
 
 @[simp]
 theorem map_mk (φ : G →g G') (v : V) :

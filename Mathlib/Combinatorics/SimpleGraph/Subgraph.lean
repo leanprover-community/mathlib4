@@ -131,7 +131,7 @@ theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)
   · rw [hr.1, hr.2, Subgraph.adj_comm]
 
 /-- Coercion from `G' : Subgraph G` to a `SimpleGraph G'.verts`. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
   Adj v w := G'.Adj v w
   symm := G'.symm.comap Subtype.val
@@ -629,7 +629,7 @@ section map
 variable {G' : SimpleGraph W} {f : G →g G'}
 
 /-- Graph homomorphisms induce a covariant function on subgraphs. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def map (f : G →g G') (H : G.Subgraph) : G'.Subgraph where
   verts := f '' H.verts
   Adj := Relation.Map H.Adj f f
@@ -680,7 +680,7 @@ protected lemma IsInduced.map {H : G.Subgraph} (hH : H.IsInduced) (e : G ↪g G'
 end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
-@[simps]
+@[implicit_reducible, simps]
 protected def comap {G' : SimpleGraph W} (f : G →g G') (H : G'.Subgraph) : G.Subgraph where
   verts := f ⁻¹' H.verts
   Adj u v := G.Adj u v ∧ H.Adj (f u) (f v)
