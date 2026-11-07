@@ -172,6 +172,16 @@ lemma integral_rnDeriv_mul_log [SigmaFinite μ] [μ.HaveLebesgueDecomposition ν
     ∫ a, (μ.rnDeriv ν a).toReal * log (μ.rnDeriv ν a).toReal ∂ν = ∫ a, llr μ ν a ∂μ := by
   simp_rw [← smul_eq_mul, integral_rnDeriv_smul hμν, llr]
 
+lemma integral_llr_fintype [Fintype α] [MeasurableSingletonClass α]
+    [IsFiniteMeasure μ] [SigmaFinite ν] (hμν : μ ≪ ν) :
+    ∫ x, llr μ ν x ∂μ = ∑ x, μ.real {x} * log (μ.real {x} / ν.real {x}) := by
+  rw [integral_fintype Integrable.of_finite]
+  refine Finset.sum_congr rfl fun x _ ↦ ?_
+  by_cases hx : ν {x} = 0
+  · simp [measureReal_def, hμν hx]
+  · rw [smul_eq_mul, llr, Measure.rnDeriv_eq_div_measure_singleton hμν hx, ENNReal.toReal_div]
+    simp only [measureReal_def]
+
 section llr_tilted
 
 lemma llr_tilted_left [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν)
