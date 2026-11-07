@@ -32,11 +32,10 @@ variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
 
 /-- The orientation associated to a volume form. -/
 def volOrientation {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) : Orientation R M (Fin n) :=
-  rayOfNeZero R ((alternatingMapLinearEquiv (R := R) (n := n) (N := R)).symm vol.toLinearMap) <| by
-    apply (alternatingMapLinearEquiv (R := R) (n := n) (N := R)).symm.map_ne_zero_iff.mpr
+  rayOfNeZero R (alternatingMapLinearEquiv.symm vol.toLinearMap) <| by
+    rw [alternatingMapLinearEquiv.symm.map_ne_zero_iff]
     intro h
-    have := congrArg (fun f : ⋀[R]^n M →ₗ[R] R => f (vol.symm 1)) h
-    simp at this
+    simpa using congrArg (fun f ↦ f (vol.symm 1)) h
 
 @[simp]
 public lemma volOrientation_trans_neg {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) :
