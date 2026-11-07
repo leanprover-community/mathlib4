@@ -10,7 +10,6 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.Algebra.CharP.Algebra
 
 /-!
-
 # Characteristic of intermediate fields
 
 This file contains some convenient instances for determining the characteristic of

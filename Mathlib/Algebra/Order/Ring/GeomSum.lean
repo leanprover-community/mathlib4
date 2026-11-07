@@ -136,13 +136,9 @@ lemma geom_sum_ne_zero (hx : x ≠ -1) (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i
   · exact (geom_sum_pos' h n.succ.succ_ne_zero).ne'
 
 lemma geom_sum_eq_zero_iff_neg_one (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i = 0 ↔ x = -1 ∧ Even n := by
-  refine ⟨fun h => ?_, @fun ⟨h, hn⟩ => by simp only [h, hn, neg_one_geom_sum, ite_true]⟩
-  contrapose! h
-  have hx := eq_or_ne x (-1)
-  rcases hx with hx | hx
-  · rw [hx, neg_one_geom_sum]
-    simp only [h hx, ite_false, ne_eq, one_ne_zero, not_false_eq_true]
-  · exact geom_sum_ne_zero hx hn
+  rcases eq_or_ne x (-1) with rfl | hx
+  · simp
+  · simp [geom_sum_ne_zero, hx, hn]
 
 lemma geom_sum_neg_iff (hn : n ≠ 0) : ∑ i ∈ range n, x ^ i < 0 ↔ Even n ∧ x + 1 < 0 := by
   rw [← not_iff_not, not_lt, le_iff_lt_or_eq, eq_comm,

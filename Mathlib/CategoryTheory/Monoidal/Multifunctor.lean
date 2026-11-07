@@ -7,8 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Functor.CurryingFour
 public import Mathlib.CategoryTheory.Monoidal.Functor
-/-!
 
+/-!
 # Constructing monoidal categories and monoidal functors from multifunctors
 
 This file first constructs monoidal category structures from a tensor bifunctor, associator and
@@ -205,14 +205,12 @@ abbrev curriedTensorPostPost (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
 abbrev curriedTensorPostPost' (F : C ⥤ D) : C ⥤ C ⥤ C ⥤ D :=
   bifunctorComp₂₃ (curriedTensorPost F) (curriedTensor C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism of bifunctors `F - ⊗ F - ≅ F (- ⊗ -)`, given a monoidal functor `F`. -/
 @[simps!]
 def Functor.curriedTensorPreIsoPost (F : C ⥤ D) [F.Monoidal] :
     curriedTensorPre F ≅ curriedTensorPost F :=
   NatIso.ofComponents (fun _ ↦ NatIso.ofComponents (fun _ ↦ Monoidal.μIso F _ _))
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor which associates to a functor `F` the bifunctor `F - ⊗ F -`. -/
 @[simps]
 def curriedTensorPreFunctor : (C ⥤ D) ⥤ C ⥤ C ⥤ D where
@@ -236,7 +234,6 @@ open MonoidalCategory
 namespace Functor.LaxMonoidal
 
 /-!
-
 ## Lax monoidal functors
 
 Given a unit morphism `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and a tensorator `μ : F - ⊗ F - ⟶ F (- ⊗ -)`
@@ -429,7 +426,6 @@ end LaxMonoidal
 namespace OplaxMonoidal
 
 /-!
-
 ## Oplax monoidal functors
 
 Given a counit morphism `η : F.obj (𝟙_ C) ⟶ 𝟙_ D` and a tensorator `δ : F (- ⊗ -) ⟶ F - ⊗ F -`

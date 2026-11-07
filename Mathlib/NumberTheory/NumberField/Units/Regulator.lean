@@ -99,7 +99,7 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.finiteIndex_iff, ← Subgroup.relIndex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
   rw [Subgroup.relIndex_sup_left]
-  exact Subgroup.FiniteIndex.index_ne_zero
+  exact Subgroup.index_ne_zero
 
 set_option backward.isDefEq.respectTransparency false in
 open Subgroup in
@@ -204,13 +204,13 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
   have h := congr(abs $(submatrix_succAbove_det_eq_negOnePow_submatrix_succAbove_det'
     (of fun i w ↦ (mult (f w) : ℝ) * (f w (u i)).log) ?_ 0 (f.symm w₂)))
   · rw [← det_reindex_self e₁, ← det_reindex_self g]
-    · rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
-      convert h
-      · ext; simp only [ne_eq, reindex_apply, submatrix_apply, of_apply, Equiv.apply_symm_apply,
-          Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
-          Equiv.optionSubtype_symm_apply_apply_coe, f]
-      · ext; simp only [ne_eq, Equiv.coe_trans, reindex_apply, submatrix_apply, Function.comp_apply,
-          Equiv.apply_symm_apply, id_eq, of_apply]; rfl
+    rw [Units.smul_def, abs_zsmul, Int.abs_negOnePow, one_smul] at h
+    convert h
+    · ext; simp only [ne_eq, reindex_apply, submatrix_apply, of_apply, Equiv.apply_symm_apply,
+        Equiv.trans_apply, Fin.succAbove_zero, id_eq, finSuccEquiv_succ,
+        Equiv.optionSubtype_symm_apply_apply_coe, f]
+    · ext; simp only [ne_eq, Equiv.coe_trans, reindex_apply, submatrix_apply, Function.comp_apply,
+        Equiv.apply_symm_apply, id_eq, of_apply]; rfl
   · intro _
     simp_rw [of_apply, ← Real.log_pow]
     rw [← Real.log_prod, Equiv.prod_comp f (fun w ↦ (w (u _) ^ (mult w))), prod_eq_abs_norm,

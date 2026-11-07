@@ -237,13 +237,6 @@ instance IsSelfAdjoint.instContinuousFunctionalCalculus :
     Complex.isometry_ofReal.isClosedEmbedding (.zero _)
     (fun _ ↦ isSelfAdjoint_iff_isStarNormal_and_quasispectrumRestricts)
 
-@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead."
-    (since := "2026-03-08")]
-lemma IsSelfAdjoint.spectrum_nonempty {A : Type*} [Ring A] [StarRing A]
-    [TopologicalSpace A] [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-    [Nontrivial A] {a : A} (ha : IsSelfAdjoint a) : (σ ℝ a).Nonempty :=
-  ContinuousFunctionalCalculus.spectrum_nonempty a ha
-
 end SelfAdjointUnital
 
 /-!
@@ -304,14 +297,6 @@ lemma commute_iff_mul_nonneg {a b : A} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     Commute a b ↔ 0 ≤ a * b :=
   ⟨Commute.mul_nonneg ha hb,
   fun h => ha.isSelfAdjoint.commute_iff hb.isSelfAdjoint |>.mpr h.isSelfAdjoint⟩
-
-open NNReal in
-@[deprecated "Use `ContinuousFunctionalCalculus.spectrum_nonempty a ha` instead"
-  (since := "2026-03-08")]
-lemma NNReal.spectrum_nonempty {A : Type*} [Ring A] [StarRing A] [LE A]
-    [TopologicalSpace A] [Algebra ℝ≥0 A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
-    [Nontrivial A] {a : A} (ha : 0 ≤ a) : (spectrum ℝ≥0 a).Nonempty :=
-  ContinuousFunctionalCalculus.spectrum_nonempty a ha
 
 end Nonneg
 

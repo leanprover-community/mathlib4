@@ -11,7 +11,6 @@ public import Mathlib.Tactic.Positivity
 import Mathlib.Analysis.Analytic.Linear
 
 /-!
-
 # Inverse of analytic functions
 
 We construct the left and right inverse of a formal multilinear series with invertible linear term,
@@ -576,7 +575,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
   rcases q.comp_summable_nnreal p hq hp with ⟨r1, r1_pos : 0 < r1, hr1⟩
   let r : ℝ≥0∞ := min r0 r1
   have : Metric.eball (0 : E) r ∈ 𝓝 0 :=
-    Metric.eball_mem_nhds 0 (lt_min h0.r_pos (by exact_mod_cast r1_pos))
+    Metric.eball_mem_nhds 0 (lt_min h0.r_pos (mod_cast r1_pos))
   filter_upwards [this] with y hy
   have hy0 : y ∈ Metric.eball 0 r0 := Metric.eball_subset_eball (min_le_left _ _) hy
   have A : HasSum (fun i : Σ n, Composition n => q.compAlongComposition p i.2 fun _j => y)
@@ -584,7 +583,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
     have cau : CauchySeq fun s : Finset (Σ n, Composition n) =>
         ∑ i ∈ s, q.compAlongComposition p i.2 fun _j => y := by
       apply cauchySeq_finset_of_norm_bounded (NNReal.summable_coe.2 hr1) _
-      simp only [coe_nnnorm, NNReal.coe_mul, NNReal.coe_pow]
+      simp only [coe_nnNorm, NNReal.coe_mul, NNReal.coe_pow]
       rintro ⟨n, c⟩
       calc
         ‖(compAlongComposition q p c) fun _j : Fin n => y‖ ≤
@@ -596,7 +595,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnnorm] at this
+          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
   have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
