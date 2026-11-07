@@ -77,6 +77,8 @@ and so the equality can just be substituted.
 
 @[expose] public section
 
+/-! TODO: Improve variables and section organization in this file. -/
+
 open Fin Function Finset Set
 
 universe uR uS uι u v
