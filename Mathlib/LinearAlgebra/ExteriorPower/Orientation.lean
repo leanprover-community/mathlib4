@@ -55,9 +55,9 @@ public lemma exists_volOrientation_eq (o : Orientation R M (Fin (finrank R M))) 
       uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp }
   let vol := (b.exteriorPower (finrank R M)).equiv (Basis.singleton _ R) (Equiv.refl _)
   have h : o = volOrientation vol ∨ o = -volOrientation vol := o.eq_or_eq_neg _ <| by simp
-  rcases h with h | h
-  · exact ⟨vol, h.symm⟩
-  · exact ⟨vol.trans (.neg R), by simpa only [volOrientation_trans_neg] using h.symm⟩
+  rcases h with rfl | rfl
+  · exact ⟨vol, rfl⟩
+  · exact ⟨vol.trans (.neg R), by simp⟩
 
 variable [Module.Oriented R M (Fin (finrank R M))]
 
