@@ -32,10 +32,10 @@ variable [DecidableEq V]
 
 /-- Given a vertex in the support of a path, give the path up until (and including) that vertex. -/
 def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk v u
-  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | nil, u, h => Walk.nil.copy (mem_support_nil_iff.mp h) rfl
   | cons r p, u, h =>
     if hx : v = u then
-      hx ▸ Walk.nil
+      Walk.nil.copy hx.symm rfl
     else
       cons r (takeUntil p u <| by
         cases h
@@ -57,14 +57,13 @@ lemma takeUntil_first (p : G.Walk u v) :
 lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
     (p.takeUntil w hwp).Nil ↔ u = w := ⟨Nil.eq, (by cases ·; simp)⟩
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma takeUntil_eq_take (p : G.Walk u v) (h : w ∈ p.support) :
     p.takeUntil w h = (p.take <| p.support.idxOf w).copy rfl (p.getVert_support_idxOf h) := by
   apply ext_support
   induction p with
   | nil =>
-    simp only [takeUntil, eq_mpr_eq_cast, support_nil, getVert_nil, take, support_copy]
-    grind [mem_support_nil_iff, support_nil]
+    simp_rw [takeUntil, support_copy]
+    simp_all
   | cons hadj p ih =>
     grind [takeUntil, support, copy_rfl_rfl, support_take]
 
@@ -76,11 +75,10 @@ lemma length_takeUntil (p : G.Walk u v) (h : w ∈ p.support) :
 the end. In other words, drop vertices from the front of a path until (and not including)
 that vertex. -/
 def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Walk u w
-  | nil, u, h => by rw [mem_support_nil_iff.mp h]
+  | nil, u, h => Walk.nil.copy rfl (mem_support_nil_iff.mp h)
   | cons r p, u, h =>
-    if hx : v = u then by
-      subst u
-      exact cons r p
+    if hx : v = u then
+      (cons r p).copy hx rfl
     else dropUntil p u <| by
       cases h
       · exact (hx rfl).elim
@@ -105,20 +103,15 @@ lemma dropUntil_first (p : G.Walk u v) (h : u ∈ p.support) : p.dropUntil u h =
   unfold dropUntil
   split <;> simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma dropUntil_eq_drop (p : G.Walk u v) (h : w ∈ p.support) :
     p.dropUntil w h = (p.drop <| p.support.idxOf w).copy (p.getVert_support_idxOf h) rfl := by
   apply ext_support
   induction p with
   | nil =>
-    simp only [dropUntil, eq_mpr_eq_cast, support_nil, getVert_nil, drop, support_copy]
-    grind [mem_support_nil_iff, support_nil]
-  | @cons a _ _ _ p ih =>
-    by_cases! h' : w = a
-    · subst h'
-      simp [dropUntil_first]
-    · rw [drop_cons_eq _ _ _ (by grind), support_copy, dropUntil]
-      grind
+    simp_rw [dropUntil, support_copy]
+    simp_all
+  | cons hadj p ih =>
+    grind [dropUntil, copy_rfl_rfl, drop_support_eq_support_drop_min]
 
 lemma length_dropUntil (p : G.Walk u v) (h : w ∈ p.support) :
     (p.dropUntil w h).length = p.length - p.support.idxOf w := by

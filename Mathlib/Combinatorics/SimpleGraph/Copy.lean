@@ -161,14 +161,14 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : W ↪ V) : Copy (⊥ : SimpleGraph W) G := ⟨⟨f, False.elim⟩, f.injective⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The isomorphism from a subgraph of `H` to its map under a copy `f : Copy H G`. -/
 noncomputable def isoSubgraphMap (f : Copy H G) (A' : H.Subgraph) :
-    A'.coe ≃g (A'.map f.toHom).coe := by
-  use Equiv.Set.image f.toHom _ f.injective
-  simp_rw [Subgraph.map_verts, Equiv.Set.image_apply, Subgraph.coe_adj, Subgraph.map_adj,
-    Relation.map_apply, f.injective.eq_iff, exists_eq_right_right, exists_eq_right, forall_true_iff]
+    A'.coe ≃g (A'.map f.toHom).coe where
+  toEquiv := Equiv.Set.image f.toHom _ f.injective
+  map_rel_iff' {a b} := by
+    change (A'.map f.toHom).Adj (f.toHom a) (f.toHom b) ↔ A'.Adj a b
+    simp only [Subgraph.map_adj, Relation.map_apply, f.injective.eq_iff, exists_eq_right_right,
+      exists_eq_right]
 
 /-- The subgraph of `G` corresponding to a copy of `H` inside `G`. -/
 abbrev toSubgraph (f : Copy H G) : G.Subgraph := .map f.toHom ⊤
@@ -633,31 +633,19 @@ protected lemma Free.killCopies_eq_left (hHG : H.Free G) : G.killCopies H = G :=
   · exact killCopies_bot _
   · exact (killCopies_eq_left hH).2 hHG
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Removing an edge from `G` for each subgraph isomorphic to `H` results in a graph that doesn't
 contain `H`. -/
 lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
   rw [killCopies_of_ne_bot hH, deleteEdges, Free, isContained_iff_exists_iso_subgraph]
   rintro ⟨G', hHG'⟩
-  have hG' : (G'.map <| .ofLE (sdiff_le : G \ _ ≤ G)).edgeSet.Nonempty := by
-    rw [Subgraph.edgeSet_map]
-    exact (aux hH hHG').image _
-  set e := hG'.some with he
-  have : e ∈ _ := hG'.some_mem
-  clear_value e
-  rw [← Subgraph.image_coe_edgeSet_coe] at this
-  subst he
-  obtain ⟨e, he₀, he₁⟩ := this
-  let e' : Sym2 G'.verts := Sym2.map (Copy.isoSubgraphMap (.ofLE _ _ _) _).symm e
-  have he' : e' ∈ G'.coe.edgeSet := (Iso.map_mem_edgeSet_iff _).2 he₀
-  rw [Subgraph.edgeSet_coe] at he'
-  have := Subgraph.edgeSet_subset _ he'
+  let A := G'.map (Hom.ofLE (sdiff_le : G \ _ ≤ G))
+  have hA : Nonempty (H ≃g A.coe) := ⟨((Copy.ofLE _ _ sdiff_le).isoSubgraphMap G').comp hHG'.some⟩
+  have he := (aux hH hA).some_mem
+  have he' : (aux hH hA).some ∈ G'.edgeSet := by simpa [A, Subgraph.edgeSet_map, Hom.ofLE] using he
+  have := Subgraph.edgeSet_subset G' he'
   simp only [edgeSet_sdiff, edgeSet_fromEdgeSet, edgeSet_sdiff_sdiff_isDiag, Set.mem_sdiff,
     Set.mem_iUnion, not_exists] at this
-  refine this.2 (G'.map <| .ofLE sdiff_le) ⟨((Copy.ofLE _ _ _).isoSubgraphMap _).comp hHG'.some⟩ ?_
-  rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]
-  congr 1 with x
-  exact congr_arg _ (Equiv.Set.image_symm_apply _ _ injective_id _ _)
+  exact this.2 A hA rfl
 
 variable [Fintype G.edgeSet]
 

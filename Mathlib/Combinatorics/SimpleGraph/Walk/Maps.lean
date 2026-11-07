@@ -172,49 +172,43 @@ theorem transfer_eq_mapLe (hp) (GH : G ≤ H) : p.transfer H hp = p.mapLe GH := 
 
 @[deprecated (since := "2026-09-14")] alias transfer_eq_map_ofLE := transfer_eq_mapLe
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem nil_transfer {G H : SimpleGraph V} {u v : V} {p : G.Walk u v} {h} :
     (p.transfer H h).Nil ↔ p.Nil := by
-  cases p <;> simp
+  cases p <;> (rw [Walk.transfer]; generalize_proofs; simp)
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
-  induction p <;> simp [*]
+  induction p <;> (rw [Walk.transfer]; generalize_proofs; simp [*])
 
 @[simp]
 theorem edgeSet_transfer (hp) : (p.transfer H hp).edgeSet = p.edgeSet := by ext; simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem support_transfer (hp) : (p.transfer H hp).support = p.support := by
-  induction p <;> simp [*]
+  induction p <;> (rw [Walk.transfer]; generalize_proofs; simp [*])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem length_transfer (hp) : (p.transfer H hp).length = p.length := by
-  induction p <;> simp [*]
+  induction p <;> (rw [Walk.transfer]; generalize_proofs; simp [*])
 
 @[simp]
 theorem transfer_transfer (hp) {K : SimpleGraph V} (hp') :
     (p.transfer H hp).transfer K hp' = p.transfer K (p.edges_transfer hp ▸ hp') := by
   induction p <;> simp [*]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem transfer_append {w : V} (q : G.Walk v w) (hpq) :
     (p.append q).transfer H hpq =
       (p.transfer H fun e he => hpq _ (by simp [he])).append
         (q.transfer H fun e he => hpq _ (by simp [he])) := by
-  induction p <;> simp [*]
+  induction p <;> (rw [Walk.transfer]; generalize_proofs; simp [*])
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 theorem reverse_transfer (hp) :
     (p.transfer H hp).reverse =
       p.reverse.transfer H (by simp only [edges_reverse, List.mem_reverse]; exact hp) := by
-  induction p <;> simp [*]
+  induction p <;> (rw [Walk.transfer]; generalize_proofs; simp [*])
 
 /-! ### Inducing a walk -/
 

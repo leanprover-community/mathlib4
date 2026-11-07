@@ -223,14 +223,14 @@ abbrev completeEquipartiteGraph (r t : ℕ) : SimpleGraph (Fin r × Fin t) :=
 lemma completeEquipartiteGraph_adj {v w} :
   (completeEquipartiteGraph r t).Adj v w ↔ v.1 ≠ w.1 := by rfl
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `completeMultipartiteGraph`.
 
 The difference is that the former vertices are a product type whereas the latter vertices are a
 *dependent* product type. -/
 def completeEquipartiteGraph.completeMultipartiteGraph :
-    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (const (Fin r) (Fin t)) :=
-  { (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm with map_rel_iff' := by simp }
+    completeEquipartiteGraph r t ≃g completeMultipartiteGraph (const (Fin r) (Fin t)) where
+  toEquiv := (Equiv.sigmaEquivProd (Fin r) (Fin t)).symm
+  map_rel_iff' := by rfl
 
 /-- A `completeEquipartiteGraph` is isomorphic to a corresponding `turanGraph`.
 
@@ -429,37 +429,30 @@ noncomputable def toCopy : Copy (completeEquipartiteGraph r t) G := by
     refine K.isCompleteBetween (fᵣ _).prop (fᵣ _).prop ?_ (fₜ _ _).prop (fₜ _ _).prop
     exact Subtype.ext_iff.ne.mp <| fᵣ.injective.ne hne
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- A copy of a complete equipartite graph identifies a complete equipartite subgraph. -/
 def ofCopy (f : Copy (completeEquipartiteGraph r t) G) : G.CompleteEquipartiteSubgraph r t := by
   by_cases ht : t = 0
   · exact ⟨∅, .inr ht, by simp, by simp⟩
-  · refine ⟨univ.map ⟨fun i ↦ univ.map ⟨fun j ↦ f (i, j), fun _ _ h ↦ ?_⟩, fun i₁ i₂ h ↦ ?_⟩,
-      ?_, fun h ↦ ?_, fun _ h₁ _ h₂ hne _ h₁' _ h₂' ↦ ?_⟩
-    · simpa using f.injective h
-    · simp_rw [Finset.ext_iff] at h
-      have : NeZero t := ⟨ht⟩
-      obtain ⟨_, heq⟩ : ∃ j, f (i₁, j) = f (i₂, 0) := by simpa using h <| f (i₂, 0)
-      apply f.injective at heq
-      rw [Prod.mk.injEq] at heq
-      exact heq.left
-    · simp
-    · simp_rw [mem_map, mem_univ, Embedding.coeFn_mk, true_and] at h
-      replace ⟨_, h⟩ := h
-      simp [← h]
-    · simp_rw [coe_map, Embedding.coeFn_mk, coe_univ, Set.image_univ, Set.mem_range] at h₁ h₂
-      replace ⟨_, h₁⟩ := h₁
-      replace ⟨_, h₂⟩ := h₂
-      rw [← h₁] at h₁'
-      rw [← h₂] at h₂'
-      simp_rw [coe_map, Embedding.coeFn_mk, coe_univ, Set.image_univ, Set.mem_range] at h₁' h₂'
-      replace ⟨_, h₁'⟩ := h₁'
-      replace ⟨_, h₂'⟩ := h₂'
-      rw [← h₁', ← h₂']
-      apply f.toHom.map_adj
-      simp_rw [completeEquipartiteGraph_adj]
-      contrapose hne with heq
-      simp_rw [← h₁, ← h₂, heq]
+  · have : NeZero t := ⟨ht⟩
+    let part (i) : Finset V :=
+      univ.map ⟨fun j ↦ f (i, j), fun _ _ h ↦ (Prod.mk.inj (f.injective h)).2⟩
+    have mem_part (i x) : x ∈ part i ↔ ∃ j, f (i, j) = x := by
+      refine ⟨fun hx ↦ ?_, fun ⟨j, hj⟩ ↦ mem_map.2 ⟨j, mem_univ _, hj⟩⟩
+      · obtain ⟨j, _, hj⟩ := mem_map.1 hx
+        exact ⟨j, hj⟩
+    have hinj : Injective part := fun i₁ i₂ h ↦ by
+      have hm : f (i₂, 0) ∈ part i₁ := h ▸ (mem_part i₂ _).2 ⟨0, rfl⟩
+      obtain ⟨j, hj⟩ := (mem_part i₁ _).1 hm
+      exact (Prod.mk.inj (f.injective hj)).1
+    refine ⟨univ.map ⟨part, hinj⟩, .inl (by simp), fun {p} hp ↦ ?_, ?_⟩
+    · obtain ⟨i, _, rfl⟩ := mem_map.1 hp
+      simp [part]
+    · intro p hp q hq hpq x hx y hy
+      obtain ⟨i, _, rfl⟩ := mem_map.1 hp
+      obtain ⟨j, _, rfl⟩ := mem_map.1 hq
+      obtain ⟨a, rfl⟩ := (mem_part i x).1 hx
+      obtain ⟨b, rfl⟩ := (mem_part j y).1 hy
+      exact f.toHom.map_adj fun hij ↦ hpq congr(part $hij)
 
 end CompleteEquipartiteSubgraph
 
