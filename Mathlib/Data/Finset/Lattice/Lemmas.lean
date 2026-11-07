@@ -51,11 +51,9 @@ theorem union_empty (s : Finset α) : s ∪ ∅ = s := by simp
 
 theorem empty_union (s : Finset α) : ∅ ∪ s = s := by simp
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
   h.mono subset_union_left
 
-@[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
   h.mono subset_union_right
 

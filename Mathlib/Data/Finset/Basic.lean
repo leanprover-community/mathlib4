@@ -292,7 +292,6 @@ theorem attach_empty : (∅ : Finset α).attach = ∅ :=
 theorem attach_nonempty_iff {s : Finset α} : s.attach.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.attach⟩ := attach_nonempty_iff
 
 @[simp]
@@ -484,9 +483,6 @@ theorem toFinset_eq_empty {m : Multiset α} : m.toFinset = ∅ ↔ m = 0 :=
 theorem toFinset_nonempty : s.toFinset.Nonempty ↔ s ≠ 0 := by
   simp only [toFinset_eq_empty, Ne, Finset.nonempty_iff_ne_empty]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-protected alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty
-
 @[simp]
 theorem toFinset_filter (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.filter p).toFinset = s.toFinset.filter p := by
@@ -507,9 +503,6 @@ theorem toFinset_union (l l' : List α) : (l ∪ l').toFinset = l.toFinset ∪ l
 theorem toFinset_inter (l l' : List α) : (l ∩ l').toFinset = l.toFinset ∩ l'.toFinset := by
   ext
   simp
-
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-alias ⟨_, Aesop.toFinset_nonempty_of_ne⟩ := toFinset_nonempty_iff
 
 @[simp]
 theorem toFinset_filter (s : List α) (p : α → Bool) :

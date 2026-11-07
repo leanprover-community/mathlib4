@@ -105,14 +105,10 @@ theorem mem_range_sub_ne_zero {n x : ℕ} (hx : x ∈ range n) : n - x ≠ 0 := 
 theorem nonempty_range_iff : (range n).Nonempty ↔ n ≠ 0 :=
   ⟨fun ⟨k, hk⟩ => by grind, fun h => ⟨0, by grind⟩⟩
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
-protected alias ⟨_, Aesop.range_nonempty⟩ := nonempty_range_iff
-
 @[simp]
 theorem range_eq_empty_iff : range n = ∅ ↔ n = 0 := by
   grind [nonempty_range_iff]
 
-@[aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_range_add_one : (range <| n + 1).Nonempty :=
   nonempty_range_iff.2 n.succ_ne_zero
 
