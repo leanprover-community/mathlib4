@@ -32,7 +32,7 @@ compactly supported) and all basic properties are proved in an abstract setting 
 
 @[expose] public noncomputable section
 
-variable {ι α β E F V : Type*}
+variable {ι α β R E F V 𝓓 : Type*}
 
 open scoped Topology
 
@@ -42,11 +42,11 @@ section IsVanishingOn
 
 variable [FunLike F α β] [TopologicalSpace α] [Zero β]
 
-variable {f : F → V} {s s₁ s₂ : Set α}
-
 /-! ### Vanishing of distributions -/
 
 section Zero
+
+variable {f : F → V} {s s₁ s₂ : Set α}
 
 variable [Zero V]
 
@@ -58,6 +58,17 @@ a `FunLike` type to a type with zero. -/
 @[fun_prop]
 def IsVanishingOn (f : F → V) (s : Set α) : Prop :=
     ∀ (u : F), tsupport u ⊆ s → f u = 0
+
+variable (F V s) in
+@[simp, grind .]
+theorem isVanishingOn_zero : IsVanishingOn (0 : F → V) s := by
+  simp [IsVanishingOn]
+
+@[simp]
+theorem isVanishingOn_univ_iff : IsVanishingOn f Set.univ ↔ f = 0 := by
+  refine ⟨fun hf ↦ ?_, fun hf ↦ by simp [hf]⟩
+  ext u
+  simpa [IsVanishingOn] using hf u
 
 @[gcongr]
 theorem IsVanishingOn.mono ⦃s₁ s₂ : Set α⦄ (hs : s₂ ⊆ s₁) (hf : IsVanishingOn f s₁) :
@@ -73,6 +84,50 @@ theorem not_isVanishingOn_iff :
   simp [IsVanishingOn]
 
 end Zero
+
+section Monoid
+
+variable [FunLike 𝓓 F V]
+variable {f g : 𝓓} {s s₁ s₂ : Set α}
+
+@[grind .]
+theorem IsVanishingOn.add [AddMonoid V] [Add 𝓓] [IsAddApply 𝓓]
+    (hf : IsVanishingOn f s₁) (hg : IsVanishingOn g s₂) :
+    IsVanishingOn (f + g) (s₁ ∩ s₂) := by
+  intro u hu
+  simp [hf u (hu.trans Set.inter_subset_left), hg u (hu.trans Set.inter_subset_right)]
+
+variable [SubtractionMonoid V]
+
+@[grind .]
+theorem IsVanishingOn.neg [Neg 𝓓] [IsNegApply 𝓓] (hf : IsVanishingOn f s) :
+    IsVanishingOn (-f) s := by
+  intro u hu
+  simpa using hf u hu
+
+@[grind .]
+theorem IsVanishingOn.sub [Sub 𝓓] [IsSubApply 𝓓] (hf : IsVanishingOn f s₁)
+    (hg : IsVanishingOn g s₂) :
+    IsVanishingOn (f - g) (s₁ ∩ s₂) := by
+  intro u hu
+  simp [hf u (hu.trans Set.inter_subset_left), hg u (hu.trans Set.inter_subset_right)]
+
+end Monoid
+
+section Module
+
+variable [Semiring R] [AddCommMonoid V] [Module R V]
+
+variable [FunLike 𝓓 F V] [SMul R 𝓓] [IsSMulApply R 𝓓]
+variable {f : 𝓓} {s : Set α}
+
+@[grind .]
+theorem IsVanishingOn.smul (hf : IsVanishingOn f s) (r : R) :
+    IsVanishingOn (r • f) s := by
+  intro u hu
+  simp [hf u hu]
+
+end Module
 
 end IsVanishingOn
 
@@ -101,14 +156,14 @@ theorem mem_dsupport_iff (x : α) :
 theorem dsupport_compl_eq : (dsupport f)ᶜ = ⋃₀ { a | IsVanishingOn f a ∧ IsOpen a } := by
   simp [dsupport, Set.compl_sInter, Set.compl_image_ofPred]
 
-@[simp high]
+@[simp high, grind .]
 theorem notMem_dsupport_iff (x : α) :
     x ∉ (dsupport f) ↔ ∃ (s : Set α), IsVanishingOn f s ∧ IsOpen s ∧ x ∈ s := by
   simp [← Set.mem_compl_iff, dsupport_compl_eq, Set.mem_sUnion, and_assoc]
 
 theorem mem_dsupport_iff_not_isVanishingOn (x : α) :
     x ∈ dsupport f ↔ ∀ s, x ∈ s → IsOpen s → ¬ IsVanishingOn f s := by
-  grind only [notMem_dsupport_iff]
+  grind
 
 theorem mem_dsupport_iff_forall_exists_ne (x : α) :
     x ∈ dsupport f ↔ ∀ s, x ∈ s → IsOpen s → ∃ u : F, tsupport u ⊆ s ∧ f u ≠ 0 := by
@@ -149,7 +204,61 @@ theorem IsVanishingOn.disjoint_dsupport (h : IsVanishingOn f s) (s_open : IsOpen
   rw [← Set.subset_compl_iff_disjoint_right, dsupport_compl_eq]
   exact Set.subset_sUnion_of_mem ⟨h, s_open⟩
 
+@[simp]
+theorem dsupport_zero : dsupport (0 : F → V) = ∅ := by
+  rw [Set.eq_empty_iff_forall_notMem]
+  intro x
+  simpa using ⟨Set.univ, by simp⟩
+
 end Zero
+
+section Monoid
+
+variable [FunLike F α β] [TopologicalSpace α] [Zero β]
+variable [FunLike 𝓓 F V]
+variable {f g : 𝓓} {s s₁ s₂ : Set α}
+
+theorem dsupport_add_subset [AddMonoid V] [Add 𝓓] [IsAddApply 𝓓] :
+    dsupport (f + g) ⊆ dsupport f ∪ dsupport g := by
+  rw [← Set.compl_subset_compl, Set.compl_union]
+  intro x hx
+  rw [Set.mem_compl_iff, notMem_dsupport_iff]
+  simp only [Set.mem_inter_iff, Set.mem_compl_iff, notMem_dsupport_iff] at hx
+  obtain ⟨⟨s₁, hs₁, hs₁', hs₁''⟩, s₂, hs₂, hs₂', hs₂''⟩ := hx
+  use s₁ ∩ s₂
+  exact ⟨hs₁.add hs₂, hs₁'.inter hs₂', Set.mem_inter hs₁'' hs₂''⟩
+
+variable [SubtractionMonoid V]
+
+@[simp]
+theorem dsupport_neg_eq [InvolutiveNeg 𝓓] [IsNegApply 𝓓] : dsupport (-f) = dsupport f := by
+  apply subset_antisymm
+  · grind
+  · grind [neg_neg]
+
+theorem dsupport_sub_dsubset [Sub 𝓓] [IsSubApply 𝓓] :
+    dsupport (f - g) ⊆ dsupport f ∪ dsupport g := by
+  rw [← Set.compl_subset_compl, Set.compl_union]
+  intro x hx
+  rw [Set.mem_compl_iff, notMem_dsupport_iff]
+  simp only [Set.mem_inter_iff, Set.mem_compl_iff, notMem_dsupport_iff] at hx
+  obtain ⟨⟨s₁, hs₁, hs₁', hs₁''⟩, s₂, hs₂, hs₂', hs₂''⟩ := hx
+  use s₁ ∩ s₂
+  exact ⟨hs₁.sub hs₂, hs₁'.inter hs₂', Set.mem_inter hs₁'' hs₂''⟩
+
+end Monoid
+
+section Module
+
+variable [Semiring R] [AddCommMonoid V] [Module R V]
+variable [FunLike F α β] [TopologicalSpace α] [Zero β]
+variable [FunLike 𝓓 F V]
+variable {f g : 𝓓} {s s₁ s₂ : Set α} [SMul R 𝓓] [IsSMulApply R 𝓓]
+
+theorem dsupport_smul_subset (r : R) : dsupport (r • f) ⊆ dsupport f := by
+  grind
+
+end Module
 
 end dsupport
 
