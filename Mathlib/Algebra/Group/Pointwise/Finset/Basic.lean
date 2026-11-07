@@ -98,7 +98,7 @@ theorem singleton_one : ({1} : Finset α) = 1 :=
 theorem one_mem_one : (1 : α) ∈ (1 : Finset α) :=
   mem_singleton_self _
 
-@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]))]
+@[to_additive (attr := simp, aesop safe apply (rule_sets := [finsetNonempty]), grind ·)]
 theorem one_nonempty : (1 : Finset α).Nonempty :=
   ⟨1, one_mem_one⟩
 
@@ -213,7 +213,7 @@ theorem card_inv_le : #s⁻¹ ≤ #s :=
 theorem inv_empty : (∅ : Finset α)⁻¹ = ∅ :=
   rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem inv_nonempty_iff : s⁻¹.Nonempty ↔ s.Nonempty := image_nonempty
 
 alias ⟨Nonempty.of_inv, Nonempty.inv⟩ := inv_nonempty_iff
@@ -365,7 +365,7 @@ theorem mul_empty (s : Finset α) : s * ∅ = ∅ :=
 theorem mul_eq_empty : s * t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem mul_nonempty : (s * t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
@@ -580,7 +580,7 @@ theorem div_empty (s : Finset α) : s / ∅ = ∅ :=
 theorem div_eq_empty : s / t = ∅ ↔ s = ∅ ∨ t = ∅ :=
   image₂_eq_empty_iff
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, grind =)]
 theorem div_nonempty : (s / t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   image₂_nonempty_iff
 
