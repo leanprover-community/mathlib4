@@ -484,13 +484,13 @@ theorem range_restrict (h : ∀ x ∈ p, f x ∈ q) :
   rw [← Submodule.map_top, map_restrict, Submodule.map_top, p.range_subtype]
 
 variable (q) in
-@[simp] theorem range_submoduleComap :
-    range (submoduleComap f q) = (range f).submoduleOf q := by
+@[simp]
+theorem range_submoduleComap : range (submoduleComap f q) = (range f).submoduleOf q := by
   simp [submoduleComap, Submodule.map_comap_eq, Submodule.submoduleOf]
 
 variable (p) in
-@[simp] theorem range_submoduleMap :
-    range (submoduleMap f p) = ⊤ := by
+@[simp]
+theorem range_submoduleMap : range (submoduleMap f p) = ⊤ := by
   simp [submoduleMap]
 
 end restrict
