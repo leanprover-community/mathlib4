@@ -94,6 +94,8 @@ lemma nnDist_def [PseudoMetricSpace X] (f g : WithLp p <| ι →₀ X) :
   ext i
   simp [← coe_nnDist]
 
+@[deprecated (since := "2026-11-07")] alias nndist_def := nnDist_def
+
 /-- The L^1 metric on `ι`-many copies of a metric space `X` -/
 noncomputable instance [MetricSpace X] : MetricSpace (WithLp p <| ι →₀ X) :=
   EMetricSpace.toMetricSpaceOfDist

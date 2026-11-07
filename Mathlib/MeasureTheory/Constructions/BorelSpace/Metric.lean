@@ -87,10 +87,14 @@ lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
 theorem measurable_nnDist : Measurable fun p : α × α => nnDist p.1 p.2 :=
   continuous_nnDist.measurable
 
+@[deprecated (since := "2026-11-07")] alias measurable_nndist := measurable_nnDist
+
 @[fun_prop]
 theorem Measurable.nnDist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
     Measurable fun b => nnDist (f b) (g b) :=
   continuous_nnDist.measurable2 hf hg
+
+@[deprecated (since := "2026-11-07")] alias Measurable.nndist := Measurable.nnDist
 
 end
 

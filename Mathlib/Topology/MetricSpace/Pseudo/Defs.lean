@@ -287,20 +287,30 @@ instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
 /-- Express `dist` in terms of `nnDist` -/
 theorem dist_nnDist (x y : α) : dist x y = nnDist x y := rfl
 
+@[deprecated (since := "2026-11-07")] alias dist_nndist := dist_nnDist
+
 @[simp, norm_cast, basify_op]
 theorem coe_nnDist (x y : α) : ↑(nnDist x y) = dist x y := rfl
+
+@[deprecated (since := "2026-11-07")] alias coe_nndist := coe_nnDist
 
 /-- Express `edist` in terms of `nnDist` -/
 theorem edist_nnDist (x y : α) : edist x y = nnDist x y := by
   rw [edist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
 
+@[deprecated (since := "2026-11-07")] alias edist_nndist := edist_nnDist
+
 /-- Express `nnDist` in terms of `edist` -/
 theorem nnDist_edist (x y : α) : nnDist x y = (edist x y).toNNReal := by
   simp [edist_nnDist]
 
+@[deprecated (since := "2026-11-07")] alias nndist_edist := nnDist_edist
+
 @[simp, norm_cast]
 theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = edist x y :=
   (edist_nnDist x y).symm
+
+@[deprecated (since := "2026-11-07")] alias coe_nnreal_ennreal_nndist := coe_nnreal_ennreal_nnDist
 
 @[simp, norm_cast]
 theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nnDist x y < c := by
@@ -321,6 +331,8 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 
 /-- `nnDist x x` vanishes -/
 @[simp] theorem nnDist_self (a : α) : nnDist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
+
+@[deprecated (since := "2026-11-07")] alias nndist_self := nnDist_self
 
 @[simp, norm_cast]
 theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nnDist x y < c :=
@@ -343,17 +355,27 @@ theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
 theorem nnDist_dist (x y : α) : nnDist x y = Real.toNNReal (dist x y) := by
   rw [dist_nnDist, Real.toNNReal_coe]
 
+@[deprecated (since := "2026-11-07")] alias nndist_dist := nnDist_dist
+
 theorem nnDist_comm (x y : α) : nnDist x y = nnDist y x := NNReal.eq <| dist_comm x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_comm := nnDist_comm
 
 /-- Triangle inequality for the nonnegative distance -/
 theorem nnDist_triangle (x y z : α) : nnDist x z ≤ nnDist x y + nnDist y z :=
   dist_triangle _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_triangle := nnDist_triangle
+
 theorem nnDist_triangle_left (x y z : α) : nnDist x y ≤ nnDist z x + nnDist z y :=
   dist_triangle_left _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_triangle_left := nnDist_triangle_left
+
 theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist y z :=
   dist_triangle_right _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_triangle_right := nnDist_triangle_right
 
 /-- Express `dist` in terms of `edist` -/
 theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
@@ -647,9 +669,13 @@ theorem isBounded_iff_nnDist {s : Set α} :
   simp only [isBounded_iff_exists_ge 0, NNReal.exists, ← NNReal.coe_le_coe, ← dist_nnDist,
     NNReal.coe_mk, exists_prop]
 
+@[deprecated (since := "2026-11-07")] alias isBounded_iff_nndist := isBounded_iff_nnDist
+
 lemma boundedSpace_iff_nnDist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nnDist a b ≤ C := by
   rw [← isBounded_univ, Metric.isBounded_iff_nnDist]
   simp
+
+@[deprecated (since := "2026-11-07")] alias boundedSpace_iff_nndist := boundedSpace_iff_nnDist
 
 lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, edist a b ≤ C := by
   simp [Metric.boundedSpace_iff_nnDist]
@@ -1127,8 +1153,12 @@ theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 
 theorem Real.nnDist_eq (x y : ℝ) : nnDist x y = Real.nnabs (x - y) := rfl
 
+@[deprecated (since := "2026-11-07")] alias Real.nndist_eq := Real.nnDist_eq
+
 theorem Real.nnDist_eq' (x y : ℝ) : nnDist x y = Real.nnabs (y - x) :=
   nnDist_comm _ _
+
+@[deprecated (since := "2026-11-07")] alias Real.nndist_eq' := Real.nnDist_eq'
 
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 
@@ -1268,12 +1298,20 @@ variable [PseudoMetricSpace X]
 
 @[simp] theorem nnDist_ofMul (a b : X) : nnDist (ofMul a) (ofMul b) = nnDist a b := rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_ofMul := nnDist_ofMul
+
 @[simp] theorem nnDist_ofAdd (a b : X) : nnDist (ofAdd a) (ofAdd b) = nnDist a b := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_ofAdd := nnDist_ofAdd
 
 @[simp] theorem nnDist_toMul (a b : Additive X) : nnDist a.toMul b.toMul = nnDist a b := rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_toMul := nnDist_toMul
+
 @[simp]
 theorem nnDist_toAdd (a b : Multiplicative X) : nnDist a.toAdd b.toAdd = nnDist a b := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_toAdd := nnDist_toAdd
 
 end
 
@@ -1287,6 +1325,10 @@ variable [PseudoMetricSpace X]
 
 @[simp] theorem nnDist_toDual (a b : X) : nnDist (toDual a) (toDual b) = nnDist a b := rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_toDual := nnDist_toDual
+
 @[simp] theorem nnDist_ofDual (a b : Xᵒᵈ) : nnDist (ofDual a) (ofDual b) = nnDist a b := rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_ofDual := nnDist_ofDual
 
 end

@@ -48,6 +48,8 @@ theorem nnDist_homothety (p₁ p₂ p : P) (c : 𝕜) :
     nnDist (homothety p c p₁) (homothety p c p₂) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety p₁ p₂ p c
 
+@[deprecated (since := "2026-11-07")] alias nndist_homothety := nnDist_homothety
+
 theorem lipschitzWith_homothety (p : P) (c : 𝕜) : LipschitzWith ‖c‖₊ (homothety p c) :=
   LipschitzWith.of_dist_le_mul fun p₁ p₂ ↦ (dist_homothety p₁ p₂ p c).le
 
@@ -61,6 +63,8 @@ theorem nnDist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
     nnDist p₁ (homothety p₁ c p₂) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_center_homothety _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_center_homothety := nnDist_center_homothety
+
 @[simp]
 theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₁ = ‖c‖ * dist p₁ p₂ := by rw [dist_comm, dist_center_homothety]
@@ -69,6 +73,8 @@ theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
 theorem nnDist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     nnDist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety_center _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_homothety_center := nnDist_homothety_center
 
 @[simp]
 theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
@@ -81,6 +87,8 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
 theorem nnDist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     nnDist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nnDist c₁ c₂ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_lineMap _ _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_lineMap_lineMap := nnDist_lineMap_lineMap
 
 theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nnDist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
@@ -95,6 +103,8 @@ theorem nnDist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
     nnDist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_left _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_lineMap_left := nnDist_lineMap_left
+
 @[simp]
 theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p₂ c) = ‖c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
@@ -103,6 +113,8 @@ theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p
 theorem nnDist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nnDist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_left_lineMap _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_left_lineMap := nnDist_left_lineMap
 
 @[simp]
 theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
@@ -114,6 +126,8 @@ theorem nnDist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
     nnDist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_right _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_lineMap_right := nnDist_lineMap_right
+
 @[simp]
 theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖ * dist p₁ p₂ :=
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
@@ -122,6 +136,8 @@ theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ 
 theorem nnDist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
     nnDist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_right_lineMap _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_right_lineMap := nnDist_right_lineMap
 
 @[simp]
 theorem dist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
@@ -133,6 +149,8 @@ theorem nnDist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
     nnDist (homothety p₁ c p₂) p₂ = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety_self _ _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_homothety_self := nnDist_homothety_self
+
 @[simp]
 theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₂ (homothety p₁ c p₂) = ‖1 - c‖ * dist p₁ p₂ := by rw [dist_comm, dist_homothety_self]
@@ -141,6 +159,8 @@ theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
 theorem nnDist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     nnDist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_self_homothety := nnDist_self_homothety
 
 open scoped Pointwise in
 private theorem image_homothety (c : P) (x : 𝕜) (s : Set P) :
@@ -190,6 +210,8 @@ theorem nnDist_left_midpoint (p₁ p₂ : P) :
     nnDist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_left_midpoint _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_left_midpoint := nnDist_left_midpoint
+
 @[simp]
 theorem dist_midpoint_left (p₁ p₂ : P) : dist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
   rw [dist_comm, dist_left_midpoint]
@@ -198,6 +220,8 @@ theorem dist_midpoint_left (p₁ p₂ : P) : dist (midpoint 𝕜 p₁ p₂) p₁
 theorem nnDist_midpoint_left (p₁ p₂ : P) :
     nnDist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_midpoint_left _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_midpoint_left := nnDist_midpoint_left
 
 @[simp]
 theorem dist_midpoint_right (p₁ p₂ : P) :
@@ -209,6 +233,8 @@ theorem nnDist_midpoint_right (p₁ p₂ : P) :
     nnDist (midpoint 𝕜 p₁ p₂) p₂ = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_midpoint_right _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_midpoint_right := nnDist_midpoint_right
+
 @[simp]
 theorem dist_right_midpoint (p₁ p₂ : P) :
     dist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖⁻¹ * dist p₁ p₂ := by
@@ -218,6 +244,8 @@ theorem dist_right_midpoint (p₁ p₂ : P) :
 theorem nnDist_right_midpoint (p₁ p₂ : P) :
     nnDist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_right_midpoint _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_right_midpoint := nnDist_right_midpoint
 
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/
 theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
@@ -233,6 +261,9 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
 theorem nnDist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     nnDist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (nnDist p₁ p₃ + nnDist p₂ p₄) / ‖(2 : 𝕜)‖₊ :=
   dist_midpoint_midpoint_le' _ _ _ _
+
+@[deprecated (since := "2026-11-07")]
+alias nndist_midpoint_midpoint_le' := nnDist_midpoint_midpoint_le'
 
 end invertibleTwo
 
@@ -272,6 +303,9 @@ theorem dist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
 theorem nnDist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
     nnDist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (nnDist p₁ p₃ + nnDist p₂ p₄) / 2 :=
   dist_midpoint_midpoint_le _ _ _ _
+
+@[deprecated (since := "2026-11-07")]
+alias nndist_midpoint_midpoint_le := nnDist_midpoint_midpoint_le
 
 /-- A continuous map between two normed affine spaces is an affine map provided that
 it sends midpoints to midpoints. -/

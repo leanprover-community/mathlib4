@@ -52,6 +52,8 @@ theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ 
 theorem nnDist_smul_le (s : α) (x y : β) : nnDist (s • x) (s • y) ≤ ‖s‖₊ * nnDist x y :=
   dist_smul_le s x y
 
+@[deprecated (since := "2026-11-07")] alias nndist_smul_le := nnDist_smul_le
+
 theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β → β) :=
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 
@@ -175,6 +177,8 @@ theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * 
 
 theorem nnDist_smul₀ (s : α) (x y : β) : nnDist (s • x) (s • y) = ‖s‖₊ * nnDist x y :=
   NNReal.eq <| dist_smul₀ s x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_smul₀ := nnDist_smul₀
 
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
   simp only [edist_nnDist, nnDist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]

@@ -243,6 +243,9 @@ theorem nnDist_starProjection_eq_infNndist
     nnDist y (U.starProjection y) = Metric.infNndist y U := by
   ext; simp [dist_starProjection_eq_infDist, ← Metric.coe_infNndist]
 
+@[deprecated (since := "2026-11-07")]
+alias nndist_starProjection_eq_infNndist := nnDist_starProjection_eq_infNndist
+
 /-- The extended distance from `y` to its orthogonal projection onto `U` equals the extended
 distance to that subspace as given by `Metric.infEDist`. -/
 theorem edist_starProjection_eq_infEDist

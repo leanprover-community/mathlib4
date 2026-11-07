@@ -209,11 +209,17 @@ theorem nnDist_eq : nnDist f g = sInf { C | ∀ x : α, nnDist (f x) (g x) ≤ C
     rw [val_eq_coe, coe_sInf, coe_image]
     simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nnDist]
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
+
 theorem nnDist_set_exists : ∃ C, ∀ x : α, nnDist (f x) (g x) ≤ C :=
   Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
 
+@[deprecated (since := "2026-11-07")] alias nndist_set_exists := nnDist_set_exists
+
 theorem nnDist_coe_le_nnDist (x : α) : nnDist (f x) (g x) ≤ nnDist f g :=
   dist_coe_le_dist x
+
+@[deprecated (since := "2026-11-07")] alias nndist_coe_le_nndist := nnDist_coe_le_nnDist
 
 /-- On an empty space, bounded continuous functions are at distance 0. -/
 theorem dist_zero_of_empty [IsEmpty α] : dist f g = 0 := by
@@ -227,6 +233,8 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
 
 theorem nnDist_eq_iSup : nnDist f g = ⨆ x : α, nnDist (f x) (g x) :=
   Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nnDist]
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
 theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
   simp_rw [edist_nnDist, nnDist_eq_iSup]

@@ -616,11 +616,15 @@ theorem prod_nnDist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     push_cast
     exact prod_dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
+@[deprecated (since := "2026-11-07")] alias prod_nndist_eq_add := prod_nnDist_eq_add
+
 theorem prod_nnDist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
     nnDist x y = nnDist x.fst y.fst ⊔ nnDist x.snd y.snd :=
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_sup _ _
+
+@[deprecated (since := "2026-11-07")] alias prod_nndist_eq_sup := prod_nnDist_eq_sup
 
 theorem edist_fst_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : WithLp p (α × β)) :
     edist x.fst y.fst ≤ edist x y :=
@@ -634,9 +638,13 @@ theorem nnDist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithL
     nnDist x.fst y.fst ≤ nnDist x y := by
   simpa [← coe_nnreal_ennreal_nnDist] using edist_fst_le x y
 
+@[deprecated (since := "2026-11-07")] alias nndist_fst_le := nnDist_fst_le
+
 theorem nnDist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     nnDist x.snd y.snd ≤ nnDist x y := by
   simpa [← coe_nnreal_ennreal_nnDist] using edist_snd_le x y
+
+@[deprecated (since := "2026-11-07")] alias nndist_snd_le := nnDist_snd_le
 
 theorem dist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     dist x.fst y.fst ≤ dist x y :=
@@ -812,6 +820,8 @@ theorem prod_nnDist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     push_cast
     exact prod_dist_eq_of_L1 _ _
 
+@[deprecated (since := "2026-11-07")] alias prod_nndist_eq_of_L1 := prod_nnDist_eq_of_L1
+
 set_option backward.isDefEq.respectTransparency false in
 theorem prod_edist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     edist x y = edist x.fst y.fst + edist x.snd y.snd := by
@@ -848,6 +858,8 @@ theorem prod_nnDist_eq_of_L2 (x y : WithLp 2 (α × β)) :
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_of_L2 _ _
+
+@[deprecated (since := "2026-11-07")] alias prod_nndist_eq_of_L2 := prod_nnDist_eq_of_L2
 
 theorem prod_edist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     edist x y = (edist x.fst y.fst ^ 2 + edist x.snd y.snd ^ 2) ^ (1 / 2 : ℝ) := by
@@ -895,11 +907,15 @@ lemma nnDist_toLp_fst (x₁ x₂ : α) :
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inl]
 
+@[deprecated (since := "2026-11-07")] alias nndist_toLp_fst := nnDist_toLp_fst
+
 @[simp]
 lemma nnDist_toLp_snd (y₁ y₂ : β) :
     nnDist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nnDist y₁ y₂ := by
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inr]
+
+@[deprecated (since := "2026-11-07")] alias nndist_toLp_snd := nnDist_toLp_snd
 
 @[simp]
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=

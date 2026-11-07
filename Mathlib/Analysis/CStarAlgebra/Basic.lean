@@ -96,6 +96,8 @@ variable (x : E) (r : ℝ)
 @[simp] lemma nnDist_star_star (x y : E) : nnDist (star x) (star y) = nnDist x y :=
   star_isometry.nnDist_eq x y
 
+@[deprecated (since := "2026-11-07")] alias nndist_star_star := nnDist_star_star
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :

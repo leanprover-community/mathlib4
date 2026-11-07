@@ -215,13 +215,19 @@ theorem nnDist_congr_right {x y z : α} (h : nnDist x y = 0) :
   apply NNReal.eq
   exact dist_congr_right (congrArg ((↑·) : ℝ≥0 → ℝ) h)
 
+@[deprecated (since := "2026-11-07")] alias nndist_congr_right := nnDist_congr_right
+
 theorem nnDist_congr_left {x y z : α} (h : nnDist x y = 0) :
     nnDist z x = nnDist z y := by
   simp [nnDist_comm, nnDist_congr_right h]
 
+@[deprecated (since := "2026-11-07")] alias nndist_congr_left := nnDist_congr_left
+
 theorem nnDist_congr {w x y z : α} (hl : nnDist w x = 0) (hr : nnDist y z = 0) :
     nnDist w y = nnDist x z :=
   (nnDist_congr_right hl).trans (nnDist_congr_left hr)
+
+@[deprecated (since := "2026-11-07")] alias nndist_congr := nnDist_congr
 
 end EqRel
 

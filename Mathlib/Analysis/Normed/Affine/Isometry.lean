@@ -134,6 +134,8 @@ theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
 @[simp]
 theorem nnDist_map (x y : P) : nnDist (f x) (f y) = nnDist x y := by simp [nnDist_dist]
 
+@[deprecated (since := "2026-11-07")] alias nndist_map := nnDist_map
+
 @[simp]
 theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]
 

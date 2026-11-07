@@ -387,6 +387,8 @@ theorem nnDist_eq_hammingDist (x y : Hamming β) :
     nnDist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq_hammingDist := nnDist_eq_hammingDist
+
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩
 
 instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _

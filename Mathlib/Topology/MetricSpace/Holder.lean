@@ -350,9 +350,13 @@ theorem nnDist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s
   apply hf.edist_le_of_le hx hy
   rwa [edist_nnDist, ENNReal.coe_le_coe]
 
+@[deprecated (since := "2026-11-07")] alias nndist_le_of_le := nnDist_le_of_le
+
 theorem nnDist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
     nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
   hf.nnDist_le_of_le hx hy le_rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
 
 theorem dist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ} (hd : dist x y ≤ d) : dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
@@ -373,9 +377,13 @@ theorem nnDist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nn
     nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
   (hf.holderOnWith univ).nnDist_le_of_le (mem_univ x) (mem_univ y) hd
 
+@[deprecated (since := "2026-11-07")] alias nndist_le_of_le := nnDist_le_of_le
+
 theorem nnDist_le (hf : HolderWith C r f) (x y : X) :
     nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
   hf.nnDist_le_of_le le_rfl
+
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
 
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) :=

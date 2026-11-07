@@ -468,6 +468,8 @@ theorem nnDist_le_distortion_mul (I : Box ι) (i : ι) :
     _ ≤ I.distortion * nnDist (I.lower i) (I.upper i) := by
       grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
+@[deprecated (since := "2026-11-07")] alias nndist_le_distortion_mul := nnDist_le_distortion_mul
+
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by
   have A : I.lower i - I.upper i < 0 := sub_neg.2 (I.lower_lt_upper i)

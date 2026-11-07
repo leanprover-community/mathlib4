@@ -632,11 +632,15 @@ theorem nnDist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀
     push_cast
     exact dist_eq_sum (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq_sum := nnDist_eq_sum
+
 theorem nnDist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
     nnDist x y = ⨆ i, nnDist (x i) (y i) :=
   NNReal.eq <| by
     push_cast
     exact dist_eq_iSup _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
 section
 variable {β p}
@@ -648,6 +652,8 @@ theorem edist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i :
 theorem nnDist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     nnDist (x i) (y i) ≤ nnDist x y := by
   simpa [← coe_nnreal_ennreal_nnDist] using edist_apply_le x y i
+
+@[deprecated (since := "2026-11-07")] alias nndist_apply_le := nnDist_apply_le
 
 theorem dist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     dist (x i) (y i) ≤ dist x y :=
@@ -782,6 +788,8 @@ theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := 
 theorem nnDist_eq_of_L1 (x y : PiLp 1 β) : nnDist x y = ∑ i, nnDist (x i) (y i) :=
   NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq_of_L1 := nnDist_eq_of_L1
+
 set_option backward.isDefEq.respectTransparency false in
 theorem edist_eq_of_L1 (x y : PiLp 1 β) : edist x y = ∑ i, edist (x i) (y i) := by
   simp [PiLp.edist_eq_sum]
@@ -824,6 +832,8 @@ theorem nnDist_eq_of_L2 (x y : PiLp 2 β) :
   NNReal.eq <| by
     push_cast
     exact dist_eq_of_L2 _ _
+
+@[deprecated (since := "2026-11-07")] alias nndist_eq_of_L2 := nnDist_eq_of_L2
 
 theorem edist_eq_of_L2 (x y : PiLp 2 β) :
     edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) := by simp [PiLp.edist_eq_sum]
@@ -1096,6 +1106,8 @@ lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
 lemma nnDist_single_same (i : ι) (b₁ b₂ : β i) :
     nnDist (single p i b₁) (single p i b₂) = nnDist b₁ b₂ := by
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← single_sub, nnNorm_single]
+
+@[deprecated (since := "2026-11-07")] alias nndist_single_same := nnDist_single_same
 
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :

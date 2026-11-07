@@ -76,4 +76,8 @@ lemma isProperMap_nnDist (x : α) : IsProperMap (nnDist x) :=
   isProperMap_of_comp_of_inj (Z := ℝ) (g := (↑)) (by fun_prop) (by fun_prop)
     (isProperMap_dist x) NNReal.coe_injective
 
+@[deprecated (since := "2026-11-07")] alias isProperMap_nndist := isProperMap_nnDist
+
 lemma isClosedMap_nnDist (x : α) : IsClosedMap (nnDist x) := (isProperMap_nnDist _).isClosedMap
+
+@[deprecated (since := "2026-11-07")] alias isClosedMap_nndist := isClosedMap_nnDist

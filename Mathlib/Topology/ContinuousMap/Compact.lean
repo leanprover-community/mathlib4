@@ -141,6 +141,8 @@ theorem nnDist_eq_iSup : nnDist f g = ⨆ x, nnDist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.nnDist_eq f g,
     BoundedContinuousFunction.nnDist_eq_iSup]
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
+
 theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,
     BoundedContinuousFunction.edist_eq_iSup]

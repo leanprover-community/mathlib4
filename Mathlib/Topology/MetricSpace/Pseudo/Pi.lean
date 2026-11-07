@@ -50,14 +50,20 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, X b) := by
 
 lemma nnDist_pi_def (f g : ∀ b, X b) : nnDist f g = sup univ fun b => nnDist (f b) (g b) := rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_pi_def := nnDist_pi_def
+
 lemma dist_pi_def (f g : ∀ b, X b) : dist f g = (sup univ fun b => nnDist (f b) (g b) : ℝ≥0) := rfl
 
 lemma nnDist_pi_le_iff {f g : ∀ b, X b} {r : ℝ≥0} :
     nnDist f g ≤ r ↔ ∀ b, nnDist (f b) (g b) ≤ r := by simp [nnDist_pi_def]
 
+@[deprecated (since := "2026-11-07")] alias nndist_pi_le_iff := nnDist_pi_le_iff
+
 lemma nnDist_pi_lt_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
     nnDist f g < r ↔ ∀ b, nnDist (f b) (g b) < r := by
   simp [nnDist_pi_def, Finset.sup_lt_iff hr]
+
+@[deprecated (since := "2026-11-07")] alias nndist_pi_lt_iff := nnDist_pi_lt_iff
 
 lemma nnDist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
     nnDist f g = r ↔ (∃ i, nnDist (f i) (g i) = r) ∧ ∀ b, nnDist (f b) (g b) ≤ r := by
@@ -66,6 +72,8 @@ lemma nnDist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
   intro h
   refine exists_congr fun b => ?_
   apply (and_iff_right <| h _).symm
+
+@[deprecated (since := "2026-11-07")] alias nndist_pi_eq_iff := nnDist_pi_eq_iff
 
 lemma dist_pi_lt_iff {f g : ∀ b, X b} {r : ℝ} (hr : 0 < r) :
     dist f g < r ↔ ∀ b, dist (f b) (g b) < r := by
@@ -95,6 +103,8 @@ lemma dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist
 lemma nnDist_pi_const_le (a b : α) : (nnDist (fun _ : β => a) fun _ => b) ≤ nnDist a b :=
   nnDist_pi_le_iff.2 fun _ => le_rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_pi_const_le := nnDist_pi_const_le
+
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
   simpa only [dist_edist] using congr($(edist_pi_const a b).toReal)
@@ -103,9 +113,13 @@ lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => 
 lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _ => b) = nnDist a b :=
   NNReal.eq <| dist_pi_const a b
 
+@[deprecated (since := "2026-11-07")] alias nndist_pi_const := nnDist_pi_const
+
 lemma nnDist_le_pi_nnDist (f g : ∀ b, X b) (b : β) : nnDist (f b) (g b) ≤ nnDist f g := by
   rw [← ENNReal.coe_le_coe, ← edist_nnDist, ← edist_nnDist]
   exact edist_le_pi_edist f g b
+
+@[deprecated (since := "2026-11-07")] alias nndist_le_pi_nndist := nnDist_le_pi_nnDist
 
 lemma dist_le_pi_dist (f g : ∀ b, X b) (b : β) : dist (f b) (g b) ≤ dist f g := by
   simp only [dist_nnDist, NNReal.coe_le_coe, nnDist_le_pi_nnDist f g b]
@@ -159,6 +173,9 @@ lemma Fin.nnDist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     nnDist (i.insertNth x f) (i.insertNth y g) = max (nnDist x y) (nnDist f g) :=
   eq_of_forall_ge_iff fun c => by simp [nnDist_pi_le_iff, i.forall_iff_succAbove]
 
+@[deprecated (since := "2026-11-07")]
+alias Fin.nndist_insertNth_insertNth := Fin.nnDist_insertNth_insertNth
+
 @[simp]
 lemma Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
@@ -175,6 +192,8 @@ lemma nnDist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [Decidable
     by_cases hki : k = i <;> by_cases hkj : k = j <;> simp_all [nnDist_comm]
   · simpa [h] using nnDist_le_pi_nnDist (Pi.single i a : β → Y) (Pi.single j b) i
   · simpa [h, nnDist_comm] using nnDist_le_pi_nnDist (Pi.single i a : β → Y) (Pi.single j b) j
+
+@[deprecated (since := "2026-11-07")] alias nndist_single_single := nnDist_single_single
 
 /-- The (sup metric) distance between `Pi.single i a` and `Pi.single j b` for
 `i ≠ j` is `max (dist a 0) (dist b 0)`. -/

@@ -260,6 +260,8 @@ theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im 
 theorem nnDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nnDist z w = nnDist z.im w.im :=
   NNReal.eq <| dist_of_re_eq h
 
+@[deprecated (since := "2026-11-07")] alias nndist_of_re_eq := nnDist_of_re_eq
+
 theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.im := by
   rw [edist_nnDist, edist_nnDist, nnDist_of_re_eq h]
 
@@ -268,6 +270,8 @@ theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re 
 
 theorem nnDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nnDist z w = nnDist z.re w.re :=
   NNReal.eq <| dist_of_im_eq h
+
+@[deprecated (since := "2026-11-07")] alias nndist_of_im_eq := nnDist_of_im_eq
 
 theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.re := by
   rw [edist_nnDist, edist_nnDist, nnDist_of_im_eq h]
@@ -279,10 +283,14 @@ theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
 theorem nnDist_conj_self (z : ℂ) : nnDist (conj z) z = 2 * Real.nnabs z.im :=
   NNReal.eq <| by rw [← dist_nnDist, NNReal.coe_mul, NNReal.coe_two, Real.coe_nnabs, dist_conj_self]
 
+@[deprecated (since := "2026-11-07")] alias nndist_conj_self := nnDist_conj_self
+
 theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_comm, dist_conj_self]
 
 theorem nnDist_self_conj (z : ℂ) : nnDist z (conj z) = 2 * Real.nnabs z.im := by
   rw [nnDist_comm, nnDist_conj_self]
+
+@[deprecated (since := "2026-11-07")] alias nndist_self_conj := nnDist_self_conj
 
 /-! ### Cauchy sequences -/
 

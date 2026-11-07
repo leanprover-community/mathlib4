@@ -110,6 +110,8 @@ theorem nnDist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nnDist z⁻¹ w⁻¹ = nnDist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
 
+@[deprecated (since := "2026-11-07")] alias nndist_inv_inv₀ := nnDist_inv_inv₀
+
 lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
     ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
   simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)

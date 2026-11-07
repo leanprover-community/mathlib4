@@ -177,6 +177,9 @@ open Metric
 theorem Metric.inseparable_iff_nnDist {x y : α} : Inseparable x y ↔ nnDist x y = 0 := by
   rw [EMetric.inseparable_iff, edist_nnDist, ENNReal.coe_eq_zero]
 
+@[deprecated (since := "2026-11-07")]
+alias Metric.inseparable_iff_nndist := Metric.inseparable_iff_nnDist
+
 alias ⟨Inseparable.nnDist_eq_zero, _⟩ := Metric.inseparable_iff_nnDist
 
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by

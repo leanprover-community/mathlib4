@@ -168,6 +168,8 @@ theorem nnDist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β
     nnDist (f x) (f y) = ratio f * nnDist x y := by
   simp only [← ENNReal.coe_inj, ← edist_nnDist, ENNReal.coe_mul, edist_eq]
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
+
 @[simp]
 theorem dist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
@@ -187,6 +189,9 @@ theorem ratio_unique_of_nnDist_ne_zero {α β F : Type*} [PseudoMetricSpace α] 
     (hr : nnDist (f x) (f y) = r * nnDist x y) : r = ratio f :=
   ratio_unique (by rwa [edist_nnDist, ENNReal.coe_ne_zero]) (edist_ne_top x y)
     (by rw [edist_nnDist, edist_nnDist, hr, ENNReal.coe_mul])
+
+@[deprecated (since := "2026-11-07")]
+alias ratio_unique_of_nndist_ne_zero := ratio_unique_of_nnDist_ne_zero
 
 /-- The `ratio` is equal to the distance ratio for any two points
 with nonzero finite distance; `dist` version -/
@@ -214,6 +219,8 @@ theorem coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (
 theorem mk_coe_of_nnDist_eq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α →ᵈ β)
     (h) : Dilation.mkOfNNDistEq f h = f :=
   ext fun _ => rfl
+
+@[deprecated (since := "2026-11-07")] alias mk_coe_of_nndist_eq := mk_coe_of_nnDist_eq
 
 /-- Alternative `Dilation` constructor when the distance hypothesis is over `dist` -/
 def mkOfDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β)

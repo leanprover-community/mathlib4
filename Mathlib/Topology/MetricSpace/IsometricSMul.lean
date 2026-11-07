@@ -253,6 +253,9 @@ theorem nnDist_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : 
     nnDist (c • x) (c • y) = nnDist x y :=
   (isometry_smul X c).nnDist_eq x y
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_smul := nnDist_smul
+
 @[to_additive (attr := simp)]
 theorem diam_smul [PseudoMetricSpace X] [SMul M X] [IsIsometricSMul M X] (c : M) (s : Set X) :
     Metric.diam (c • s) = Metric.diam s :=
@@ -268,6 +271,9 @@ theorem nnDist_mul_left [PseudoMetricSpace M] [Mul M] [IsIsometricSMul M M] (a b
     nnDist (a * b) (a * c) = nnDist b c :=
   nnDist_smul a b c
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_mul_left := nnDist_mul_left
+
 @[to_additive (attr := simp)]
 theorem dist_mul_right [Mul M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M] (a b c : M) :
     dist (a * c) (b * c) = dist a b :=
@@ -278,6 +284,9 @@ theorem nnDist_mul_right [PseudoMetricSpace M] [Mul M] [IsIsometricSMul Mᵐᵒ�
     nnDist (a * c) (b * c) = nnDist a b :=
   nnDist_smul (MulOpposite.op c) a b
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_mul_right := nnDist_mul_right
+
 @[to_additive (attr := simp)]
 theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : dist (a / c) (b / c) = dist a b := by simp only [div_eq_mul_inv, dist_mul_right]
@@ -286,6 +295,9 @@ theorem dist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul M
 theorem nnDist_div_right [DivInvMonoid M] [PseudoMetricSpace M] [IsIsometricSMul Mᵐᵒᵖ M]
     (a b c : M) : nnDist (a / c) (b / c) = nnDist a b := by
   simp only [div_eq_mul_inv, nnDist_mul_right]
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_div_right := nnDist_div_right
 
 @[to_additive (attr := simp)]
 theorem dist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
@@ -297,6 +309,9 @@ theorem nnDist_inv_inv [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
     [IsIsometricSMul Gᵐᵒᵖ G] (a b : G) : nnDist a⁻¹ b⁻¹ = nnDist a b :=
   (IsometryEquiv.inv G).nnDist_eq a b
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_inv_inv := nnDist_inv_inv
+
 @[to_additive (attr := simp)]
 theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
     [IsIsometricSMul Gᵐᵒᵖ G] (a b c : G) : dist (a / b) (a / c) = dist b c := by
@@ -306,6 +321,9 @@ theorem dist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
 theorem nnDist_div_left [Group G] [PseudoMetricSpace G] [IsIsometricSMul G G]
     [IsIsometricSMul Gᵐᵒᵖ G] (a b c : G) : nnDist (a / b) (a / c) = nnDist b c := by
   simp [div_eq_mul_inv]
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_div_left := nnDist_div_left
 
 /-- If `G` acts isometrically on `X`, then the image of a bounded set in `X` under scalar
 multiplication by `c : G` is bounded. See also `Bornology.IsBounded.smul₀` for a similar lemma about

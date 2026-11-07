@@ -1055,6 +1055,9 @@ theorem nnDist_integral_add_measure_le_lintegral
   rw [integral_add_measure h₁ h₂, nnDist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact eNorm_integral_le_lintegral_eNorm _
 
+@[deprecated (since := "2026-11-07")]
+alias nndist_integral_add_measure_le_lintegral := nnDist_integral_add_measure_le_lintegral
+
 @[simp]
 theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
     ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by

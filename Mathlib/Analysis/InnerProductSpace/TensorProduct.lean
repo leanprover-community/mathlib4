@@ -166,6 +166,8 @@ theorem nnDist_tmul_le (x x' : E) (y y' : F) :
     nnDist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖₊ * ‖y‖₊ + ‖x'‖₊ * ‖y'‖₊ := by
   grw [nnDist_eq_nnNorm, nnNorm_sub_le]; simp
 
+@[deprecated (since := "2026-11-07")] alias nndist_tmul_le := nnDist_tmul_le
+
 theorem edist_tmul_le (x x' : E) (y y' : F) :
     edist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ₑ * ‖y‖ₑ + ‖x'‖ₑ * ‖y'‖ₑ := by
   grw [eDist_eq_eNorm_sub, eNorm_sub_le]; simp

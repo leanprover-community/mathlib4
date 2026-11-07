@@ -98,6 +98,8 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
 theorem nnDist_le (hf : LipschitzWith K f) (x y : α) : nnDist (f x) (f y) ≤ K * nnDist x y :=
   hf.dist_le_mul x y
 
+@[deprecated (since := "2026-11-07")] alias nndist_le := nnDist_le
+
 theorem dist_le_mul_of_le (hf : LipschitzWith K f) (hr : dist x y ≤ r) : dist (f x) (f y) ≤ K * r :=
   (hf.dist_le_mul x y).trans <| by gcongr
 

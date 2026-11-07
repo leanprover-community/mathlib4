@@ -34,6 +34,8 @@ lemma apply_le_nnDist_zero (f : X →ᵇ ℝ≥0) (x : X) :
   convert nnDist_coe_le_nnDist x
   simp only [FunLike.coe_zero, Pi.zero_apply, NNReal.nnDist_zero_eq_val]
 
+@[deprecated (since := "2026-11-07")] alias apply_le_nndist_zero := apply_le_nnDist_zero
+
 lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ edist 0 f := by
   simpa [← ENNReal.coe_le_coe] using f.apply_le_nnDist_zero x

@@ -437,6 +437,9 @@ alias nnnorm_inv' := nnNorm_inv'
 theorem nnDist_one_right (a : E) : nnDist a 1 = ‖a‖₊ := by
   simp [nnDist_eq_nnNorm_inv_mul]
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_one_right := nnDist_one_right
+
 @[to_additive (attr := simp)]
 lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nnDist, nnDist_one_right, eNorm]
 
@@ -504,6 +507,9 @@ theorem nnNorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E
 @[to_additive (attr := simp)]
 theorem nnDist_one_left (a : E) : nnDist 1 a = ‖a‖₊ := by simp [nnDist_eq_nnNorm_inv_mul]
 
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_one_left := nnDist_one_left
+
 @[to_additive (attr := simp)]
 theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
   rw [edist_nnDist, nnDist_one_left]
@@ -513,6 +519,9 @@ open scoped symmDiff in
 theorem nnDist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     nnDist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
   NNReal.eq <| dist_mulIndicator s t f x
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias nndist_mulIndicator := nnDist_mulIndicator
 
 @[to_additive]
 theorem nnNorm_div_le (a b : E) : ‖a / b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=

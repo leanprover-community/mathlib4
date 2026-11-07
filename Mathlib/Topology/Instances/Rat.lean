@@ -123,6 +123,8 @@ set_option linter.style.whitespace false in -- linter false positive
 @[simp ←, push_cast]
 lemma nnDist_eq (p q : ℚ≥0) : nnDist p q = nnDist (p : ℚ) (q : ℚ) := rfl
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
+
 instance : IsTopologicalSemiring ℚ≥0 where
   toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
   toContinuousMul := continuousMul_induced Nonneg.coeRingHom

@@ -189,6 +189,8 @@ theorem EuclideanSpace.nnDist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Finty
     (x y : EuclideanSpace 𝕜 n) : nnDist x y = NNReal.sqrt (∑ i, nnDist (x i) (y i) ^ 2) :=
   PiLp.nnDist_eq_of_L2 x y
 
+@[deprecated (since := "2026-11-07")] alias EuclideanSpace.nndist_eq := EuclideanSpace.nnDist_eq
+
 theorem EuclideanSpace.edist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=
   PiLp.edist_eq_of_L2 x y

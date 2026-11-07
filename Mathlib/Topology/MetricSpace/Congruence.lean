@@ -136,12 +136,17 @@ lemma congruent_iff_nnDist_eq :
     Congruent v₁ v₂ ↔ ∀ i₁ i₂, nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) :=
   forall₂_congr (fun _ _ ↦ by rw [edist_nnDist, edist_nnDist]; norm_cast)
 
+@[deprecated (since := "2026-11-07")] alias congruent_iff_nndist_eq := congruent_iff_nnDist_eq
+
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_nnDist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) := by
   simp_rw [congruent_iff_pairwise_edist_eq, edist_nnDist]
   exact mod_cast Iff.rfl
+
+@[deprecated (since := "2026-11-07")]
+alias congruent_iff_pairwise_nndist_eq := congruent_iff_pairwise_nnDist_eq
 
 /-- Congruence holds if and only if all distances are the same. -/
 lemma congruent_iff_dist_eq :

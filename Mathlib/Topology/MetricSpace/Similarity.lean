@@ -214,6 +214,9 @@ lemma similar_iff_exists_nnDist_eq :
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nnDist, edist_nnDist]; norm_cast }
 
+@[deprecated (since := "2026-11-07")]
+alias similar_iff_exists_nndist_eq := similar_iff_exists_nnDist_eq
+
 /-- Similarity holds if and only if all non-negative distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_nnDist_eq :
@@ -221,6 +224,9 @@ lemma similar_iff_exists_pairwise_nnDist_eq :
       r * nnDist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nnDist]
   exact mod_cast Iff.rfl
+
+@[deprecated (since := "2026-11-07")]
+alias similar_iff_exists_pairwise_nndist_eq := similar_iff_exists_pairwise_nnDist_eq
 
 /-- Similarity holds if and only if all distances are proportional. -/
 lemma similar_iff_exists_dist_eq :

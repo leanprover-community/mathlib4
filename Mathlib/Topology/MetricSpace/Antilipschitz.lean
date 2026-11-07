@@ -53,6 +53,9 @@ theorem antilipschitzWith_iff_le_mul_nnDist :
   simp only [AntilipschitzWith, edist_nnDist]
   norm_cast
 
+@[deprecated (since := "2026-11-07")]
+alias antilipschitzWith_iff_le_mul_nndist := antilipschitzWith_iff_le_mul_nnDist
+
 alias ⟨AntilipschitzWith.le_mul_nnDist, AntilipschitzWith.of_le_mul_nnDist⟩ :=
   antilipschitzWith_iff_le_mul_nnDist
 
@@ -69,6 +72,8 @@ namespace AntilipschitzWith
 theorem mul_le_nnDist (hf : AntilipschitzWith K f) (x y : α) :
     K⁻¹ * nnDist x y ≤ nnDist (f x) (f y) := by
   simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nnDist x y)
+
+@[deprecated (since := "2026-11-07")] alias mul_le_nndist := mul_le_nnDist
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
     (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nnDist x y
