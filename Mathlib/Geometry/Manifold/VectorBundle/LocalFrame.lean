@@ -562,7 +562,7 @@ lemma mdifferentiableAt_localFrameCoeff
   simp only [aux]
   -- step 2: `s` read in trivialization `e` is differentiable
   have h₁ : MDiffAt (fun x ↦ (e ((T% s) x)).2) x := by
-    simpa using (e.mdifferentiableAt_section_iff I s hxe).1 hs
+    simpa using (e.mdifferentiableAt_section_iff s hxe).1 hs
   -- step 3: `b.repr` is a linear map, so the composition is smooth
   let breprl : F →ₗ[𝕜] 𝕜 :=
     { toFun v := b.repr v i
