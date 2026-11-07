@@ -279,6 +279,9 @@ class NNDist (α : Type*) where
 
 export NNDist (nnDist)
 
+@[deprecated (since := "2026-11-07")] alias NNDist.nndist := NNDist.nnDist
+export NNDist (nndist)
+
 -- see Note [lower instance priority]
 /-- Distance as a nonnegative real number. -/
 instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
