@@ -52,7 +52,8 @@ lemma IsMulFG.finite_irreducible_mem_submonoidClosure {S : Submonoid M} (hS : Is
   obtain ⟨T, rfl, hT⟩ := S.fg_iff.mp hS
   exact hT.subset irreducible_mem_submonoidClosure_subset
 
-@[deprecated (since := "2026-11-07")] alias Submonoid.FG.finite_irreducible_mem_submonoidClosure :=
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias Submonoid.FG.finite_irreducible_mem_submonoidClosure :=
   IsMulFG.finite_irreducible_mem_submonoidClosure
 
 variable [IsMulFG M]
