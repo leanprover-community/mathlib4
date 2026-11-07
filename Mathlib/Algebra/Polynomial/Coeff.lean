@@ -38,8 +38,8 @@ variable [Semiring R] {p q r : R[X]}
 
 section Coeff
 
-@[simp]
-theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := rfl
+theorem coeff_add (p q : R[X]) (n : ℕ) : coeff (p + q) n = coeff p n + coeff q n := by
+  simp
 
 @[deprecated AddMonoidAlgebra.coeff_smul_apply +typeChanged (since := "2026-09-03")]
 protected theorem coeff_smul [SMulZeroClass S R] (r : S) (p : R[X]) (n : ℕ) :

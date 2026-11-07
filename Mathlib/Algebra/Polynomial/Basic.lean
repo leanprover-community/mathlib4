@@ -737,6 +737,10 @@ theorem sum_def {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
     p.sum f = ∑ n ∈ p.support, f n (p.coeff n) :=
   rfl
 
+theorem sum_eq_finsuppSum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) :
+    p.sum f = p.coeff.sum f :=
+  rfl
+
 theorem sum_eq_of_subset {S : Type*} [AddCommMonoid S] {p : R[X]} (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) {s : Finset ℕ} (hs : p.support ⊆ s) :
     p.sum f = ∑ n ∈ s, f n (p.coeff n) :=
@@ -769,8 +773,9 @@ theorem sum_X_index {S : Type*} [AddCommMonoid S] {f : ℕ → R → S} (hf : f 
 
 theorem sum_add_index {S : Type*} [AddCommMonoid S] (p q : R[X]) (f : ℕ → R → S)
     (hf : ∀ i, f i 0 = 0) (h_add : ∀ a b₁ b₂, f a (b₁ + b₂) = f a b₁ + f a b₂) :
-    (p + q).sum f = p.sum f + q.sum f :=
-  Finsupp.sum_add_index (fun i _ ↦ hf i) (fun a _ b₁ b₂ ↦ h_add a b₁ b₂)
+    (p + q).sum f = p.sum f + q.sum f := by
+  simp_rw [sum_eq_finsuppSum]
+  rw [coeff_add, sum_add_index' hf h_add]
 
 /-- See also `Polynomial.sum_add`. -/
 @[simp]
@@ -962,10 +967,8 @@ theorem ofFinsupp_intCast (z : ℤ) : (ofFinsupp z : R[X]) = z := rfl
 @[deprecated "Now a tautology" (since := "2026-07-18")]
 theorem toFinsupp_intCast (z : ℤ) : (z : R[X]).toFinsupp = z := rfl
 
-@[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by simp
 
-@[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by simp
 
 @[simp]
