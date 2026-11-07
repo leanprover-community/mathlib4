@@ -101,6 +101,26 @@ theorem supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes {x : R}
   have hr : r < q.head := lt_of_le_of_ne hr (fun h ↦ hn q.head.1.1 (by rwa [← h]) hp.2)
   exact le_of_eq_of_le (by simp [q]) (le_iSup _ (q.cons r hr))
 
+omit [IsNoetherianRing R] in
+lemma supportDim_quotSMulTop_succ_le_of_isSMulRegular {x : R} (reg : IsSMulRegular M x) :
+    supportDim R (QuotSMulTop x M) + 1 ≤ supportDim R M := by
+  apply supportDim_quotSMulTop_succ_le_of_notMem_minimalPrimes
+  intro p hp
+  exact reg.notMem_of_mem_minimalPrimes hp
+
+omit [IsNoetherianRing R] in
+lemma supportDim_quotient_add_length_le_of_isRegular (rs : List R) (reg : IsRegular M rs) :
+    supportDim R (M ⧸ ofList rs • (⊤ : Submodule R M)) + rs.length ≤ supportDim R M := by
+  induction rs generalizing M with
+  | nil =>
+    rw [ofList_nil, Submodule.bot_smul]
+    simpa using le_of_eq (supportDim_eq_of_equiv (Submodule.quotEquivOfEqBot ⊥ rfl))
+  | cons x rs' ih =>
+    simp only [isRegular_cons_iff] at reg
+    apply le_trans _ (supportDim_quotSMulTop_succ_le_of_isSMulRegular reg.1)
+    simpa [supportDim_eq_of_equiv (Submodule.quotOfListConsSMulTopEquivQuotSMulTopInner M x _),
+      ← add_assoc, ENat.WithBot.add_le_add_one_right_iff] using ih reg.2
+
 theorem supportDim_quotSMulTop_succ_eq_of_notMem_minimalPrimes_of_mem_jacobson {x : R}
     (hn : ∀ p ∈ (annihilator R M).minimalPrimes, x ∉ p) (hx : x ∈ (annihilator R M).jacobson) :
     supportDim R (QuotSMulTop x M) + 1 = supportDim R M :=

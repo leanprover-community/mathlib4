@@ -40,6 +40,10 @@ lemma supportDim_ne_bot_of_nontrivial [Nontrivial M] : supportDim R M ≠ ⊥ :=
   have : Nonempty (Module.support R M) := nonempty_support_of_nontrivial.to_subtype
   simp [supportDim]
 
+lemma supportDim_nonneg_of_nontrivial [Nontrivial M] : 0 ≤ supportDim R M := by
+  simpa [supportDim, Order.krullDim_nonneg_iff, ← Set.nonempty_def] using
+    nonempty_support_of_nontrivial
+
 lemma supportDim_eq_bot_iff_subsingleton : supportDim R M = ⊥ ↔ Subsingleton M := by
   simp [supportDim, krullDim_eq_bot_iff, support_eq_empty_iff]
 
