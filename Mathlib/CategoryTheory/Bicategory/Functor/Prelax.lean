@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!
-
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
