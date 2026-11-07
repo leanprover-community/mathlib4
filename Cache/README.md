@@ -34,7 +34,7 @@ lake exe cache get Mathlib.Algebra.Group.Basic
 | `pack!`         | Compress build files into the local cache (no skipping)             |
 | `unpack`        | Decompress linked already downloaded files                          |
 | `unpack!`       | Decompress linked already downloaded files (no skipping)            |
-| `clean`         | Delete non-linked files                                             |
+| `clean [ARGS]`  | Delete non-linked files; also keep the files linked from `ARGS`     |
 | `clean!`        | Delete everything on the local cache                                |
 | `lookup [ARGS]` | Show information about cache files for the given Lean files         |
 | `query`         | Find the most recent commit with cached entries on the current branch |
@@ -72,14 +72,14 @@ MATHLIB_CACHE_GET_URL=https://cache.example.org/my-prefix lake exe cache get
 
 ### Arguments
 
-The `get`, `get!`, `get-`, and `lookup` commands accept:
+The `get`, `get!`, `get-`, `lookup`, and `clean` commands accept:
 
 - Module names: `Mathlib.Algebra.Group.Basic`
 - File paths: `Mathlib/Algebra/Group/Basic.lean`
 - Folder names: `Mathlib/Data/` (finds all Lean files inside)
 - Glob patterns: `Mathlib/**/Order/*.lean` (via shell expansion)
 
-When arguments are provided, only the specified files and their transitive imports are downloaded.
+When arguments are provided, the command acts only on the specified files and their transitive imports. `clean` keeps their cache files together with those of Mathlib.
 
 ### Options
 
