@@ -348,6 +348,27 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[gcongr, mono] lemma coe_mono : Monotone ((↑) : ℝ≥0 → ℝ) := fun _ _ => NNReal.coe_le_coe.2
 
+section
+variable {a b : ℝ} {ha : 0 ≤ a} {hb : 0 ≤ b}
+
+@[gcongr, simp] theorem mk_le_mk : NNReal.mk a ha ≤ NNReal.mk b hb ↔ a ≤ b := Iff.rfl
+
+@[gcongr, simp] theorem mk_lt_mk : NNReal.mk a ha < NNReal.mk b hb ↔ a < b := Iff.rfl
+
+@[simp] theorem mk_pos : 0 < NNReal.mk a ha ↔ 0 < a := Iff.rfl
+
+@[simp] theorem mk_le_one : NNReal.mk a ha ≤ 1 ↔ a ≤ 1 := Iff.rfl
+
+@[simp] theorem mk_lt_one : NNReal.mk a ha < 1 ↔ a < 1 := Iff.rfl
+
+@[simp] theorem mk_le_ofNat {n : ℕ} [n.AtLeastTwo] : NNReal.mk a ha ≤ ofNat(n) ↔ a ≤ ofNat(n) :=
+  Iff.rfl
+
+@[simp] theorem mk_lt_ofNat {n : ℕ} [n.AtLeastTwo] : NNReal.mk a ha < ofNat(n) ↔ a < ofNat(n) :=
+  Iff.rfl
+
+end
+
 protected theorem _root_.Real.toNNReal_monotone : Monotone Real.toNNReal := fun _ _ h =>
   max_le_max_right _ h
 
