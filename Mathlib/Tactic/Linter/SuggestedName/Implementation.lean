@@ -90,6 +90,9 @@ def Lean.Name.suggestTheoremName (env : Lean.Environment) (name : Lean.Name) :
 @[builtin_env_linter linter.envLinter.suggestedName]
 public def suggestedNameLinter : EnvLinter where
   test name := do
+    let opts ← Linter.getLinterOptions
+    unless Linter.getLinterValue linter.envLinter.suggestedName opts do return none
+
     let env ← getEnv
     if name.isInternalDetail then return none
     if (← Batteries.Tactic.Lint.isAutoDecl name) then return none
