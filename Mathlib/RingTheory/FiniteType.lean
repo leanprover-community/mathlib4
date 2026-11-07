@@ -429,7 +429,7 @@ variable (R M)
 
 /-- If an additive monoid `M` is finitely generated then `R[M]` is of finite
 type. -/
-instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
+instance finiteType_of_fg [CommRing R] [h : IsAddFG M] :
     FiniteType R R[M] := by
   obtain ⟨S, hS⟩ := AddMonoid.isAddFG_iff.mp h
   exact .of_surjective
@@ -441,7 +441,7 @@ variable {R M}
 /-- An additive monoid `M` is finitely generated if and only if `R[M]` is of
 finite type. -/
 theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
-    FiniteType R R[M] ↔ AddMonoid.FG M := by
+    FiniteType R R[M] ↔ IsAddFG M := by
   refine ⟨fun h => ?_, fun h => @AddMonoidAlgebra.finiteType_of_fg _ _ _ _ h⟩
   obtain ⟨S, hS⟩ := @exists_finset_adjoin_eq_top R M _ _ h
   refine AddMonoid.isAddFG_iff.2 ⟨S, (eq_top_iff' _).2 fun m => ?_⟩
@@ -452,14 +452,10 @@ theorem finiteType_iff_fg [CommRing R] [Nontrivial R] :
 
 /-- If `R[M]` is of finite type then `M` is finitely generated. -/
 theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R R[M]] :
-    AddMonoid.FG M :=
+    IsAddFG M :=
   finiteType_iff_fg.1 h
 
-/-- An additive group `G` is finitely generated if and only if `R[G]` is of
-finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [AddGroup G] [CommRing R] [Nontrivial R] :
-    FiniteType R R[G] ↔ AddGroup.FG G := by
-  simpa [AddGroup.fg_iff_addMonoid_fg] using finiteType_iff_fg
+@[deprecated (since := "2026-11-07")] alias finiteType_iff_group_fg := finiteType_iff_fg
 
 end AddMonoidAlgebra
 
@@ -573,24 +569,21 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
     exact ⟨r • P, map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `R[M]` is of finite type. -/
-instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R R[M] :=
+instance finiteType_of_fg [CommRing R] [IsMulFG M] : FiniteType R R[M] :=
   (AddMonoidAlgebra.finiteType_of_fg R (Additive M)).equiv (toAdditiveAlgEquiv R R M).symm
 
 /-- A monoid `M` is finitely generated if and only if `R[M]` is of finite type. -/
-theorem finiteType_iff_fg [CommRing R] [Nontrivial R] : FiniteType R R[M] ↔ Monoid.FG M where
+theorem finiteType_iff_fg [CommRing R] [Nontrivial R] : FiniteType R R[M] ↔ IsMulFG M where
   mp h := Monoid.fg_iff_add_fg.2 <|
     AddMonoidAlgebra.finiteType_iff_fg.1 <| h.equiv <| toAdditiveAlgEquiv R R M
   mpr _ := inferInstance
 
 /-- If `R[M]` is of finite type then `M` is finitely generated. -/
 theorem fg_of_finiteType [CommRing R] [Nontrivial R] [h : FiniteType R R[M]] :
-    Monoid.FG M :=
+    IsMulFG M :=
   finiteType_iff_fg.1 h
 
-/-- A group `G` is finitely generated if and only if `R[G]` is of finite type. -/
-theorem finiteType_iff_group_fg {G : Type*} [Group G] [CommRing R] [Nontrivial R] :
-    FiniteType R R[G] ↔ Group.FG G := by
-  simpa [Group.fg_iff_monoid_fg] using finiteType_iff_fg
+@[deprecated (since := "2026-11-07")] alias finiteType_iff_group_fg := finiteType_iff_fg
 
 end MonoidAlgebra
 

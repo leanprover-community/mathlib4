@@ -197,7 +197,7 @@ variable {σ : Type*} [Finite σ]
 instance : Module.Finite ℤ (FreeAbelianGroup σ) :=
   .of_surjective _ (FreeAbelianGroup.equivFinsupp σ).toIntLinearEquiv.symm.surjective
 
-instance : AddMonoid.FG (FreeAbelianGroup σ) := by
-  rw [← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]; infer_instance
+instance : IsAddFG (FreeAbelianGroup σ) := by
+  rw [← Module.Finite.iff_addGroup_fg]; infer_instance
 
 end FreeAbelianGroup

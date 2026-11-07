@@ -104,9 +104,9 @@ theorem span_invSubmonoid : Submodule.span R (invSubmonoid M S : Set S) = ⊤ :=
   rcases IsLocalization.surj' M x with ⟨r, m, rfl⟩
   exact Submodule.smul_mem _ _ (Submodule.subset_span (toInvSubmonoid M S m).prop)
 
-theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
-  have := Monoid.fg_of_surjective _ (toInvSubmonoid_surjective M S)
-  rw [Monoid.FG, Submonoid.isMulFG_iff] at this
+theorem finiteType_of_monoid_fg [IsMulFG M] : Algebra.FiniteType R S := by
+  have := IsMulFG.of_surjective _ (toInvSubmonoid_surjective M S)
+  rw [Submonoid.isMulFG_iff] at this
   rcases this with ⟨s, hs⟩
   refine ⟨⟨s, ?_⟩⟩
   rw [eq_top_iff]
@@ -116,7 +116,7 @@ theorem finiteType_of_monoid_fg [Monoid.FG M] : Algebra.FiniteType R S := by
   trivial
 
 instance {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] [Algebra.FiniteType R S]
-    (M : Submonoid S) [Monoid.FG M] : Algebra.FiniteType R (Localization M) :=
+    (M : Submonoid S) [IsMulFG M] : Algebra.FiniteType R (Localization M) :=
   .trans ‹_› (IsLocalization.finiteType_of_monoid_fg M _)
 
 end InvSubmonoid

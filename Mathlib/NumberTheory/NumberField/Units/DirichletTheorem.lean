@@ -446,12 +446,12 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
     infer_instance
   · rw [inf_of_le_right le_top, AddMonoidHom.coe_toIntLinearMap_ker, MonoidHom.coe_toAdditive_ker,
       QuotientGroup.ker_mk', Submodule.fg_iff_addSubgroup_fg,
-      AddSubgroup.toIntSubmodule_toAddSubgroup, ← AddGroup.fg_iff_addSubgroup_fg]
+      AddSubgroup.toIntSubmodule_toAddSubgroup]
     have : Finite (Subgroup.toAddSubgroup (torsion K)) := (inferInstance : Finite (torsion K))
     infer_instance
 
-instance : Monoid.FG (𝓞 K)ˣ := by
-  rw [Monoid.fg_iff_add_fg, ← AddGroup.fg_iff_addMonoid_fg, ← Module.Finite.iff_addGroup_fg]
+instance : IsMulFG (𝓞 K)ˣ := by
+  rw [Monoid.fg_iff_add_fg, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
 theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by

@@ -52,12 +52,12 @@ theorem fg_def {N : Submodule R M} : N.FG ↔ ∃ S : Set M, S.Finite ∧ span R
   have := h.exists_finset_coe
   tauto
 
-theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ P.toAddSubmonoid.FG := by
+theorem fg_iff_addSubmonoid_fg (P : Submodule ℕ M) : P.FG ↔ IsAddFG P.toAddSubmonoid := by
   simp_rw [fg_def, ← toAddSubmonoid_inj, span_nat_eq_addSubmonoidClosure,
     AddSubmonoid.isAddFG_iff_finite]
 
 theorem fg_iff_addSubgroup_fg {G : Type*} [AddCommGroup G] (P : Submodule ℤ G) :
-    P.FG ↔ P.toAddSubgroup.FG := by
+    P.FG ↔ IsAddFG P.toAddSubgroup := by
   simp_rw [fg_def, ← toAddSubgroup_inj, span_int_eq_addSubgroupClosure,
     AddSubgroup.isAddFG_iff_finite]
 
@@ -137,13 +137,13 @@ namespace Finite
 
 open Submodule Set
 
-theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ AddMonoid.FG M :=
-  ⟨fun h => AddMonoid.fg_def.mpr <| (fg_iff_addSubmonoid_fg ⊤).mp h.fg_top,
-    fun h => of_fg_top <| (fg_iff_addSubmonoid_fg ⊤).mpr (AddMonoid.fg_def.mp h)⟩
+theorem iff_addMonoid_fg {M : Type*} [AddCommMonoid M] : Module.Finite ℕ M ↔ IsAddFG M :=
+  .trans ⟨fun h ↦ h.fg_top, fun h ↦ of_fg_top h⟩
+    ((fg_iff_addSubmonoid_fg ⊤).trans AddSubmonoid.isAddFG_top_iff)
 
-theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ AddGroup.FG G :=
-  ⟨fun h => AddGroup.fg_def.mpr <| (fg_iff_addSubgroup_fg ⊤).mp h.fg_top,
-    fun h => of_fg_top <| (fg_iff_addSubgroup_fg ⊤).mpr (AddGroup.fg_def.mp h)⟩
+theorem iff_addGroup_fg {G : Type*} [AddCommGroup G] : Module.Finite ℤ G ↔ IsAddFG G :=
+  .trans ⟨fun h ↦ h.fg_top, fun h ↦ of_fg_top h⟩
+    ((fg_iff_addSubgroup_fg ⊤).trans AddSubgroup.isAddFG_top_iff)
 
 variable {R M N}
 
@@ -155,13 +155,13 @@ end Finite
 
 end Module
 
-instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [IsAddFG M] :
     Module.Finite ℕ M :=
   Module.Finite.iff_addMonoid_fg.mpr ‹_›
 
-instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [IsAddFG G] :
     Module.Finite ℤ G :=
-  Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
+  Module.Finite.iff_addGroup_fg.mpr <| ‹_›
 
 end ModuleAndAlgebra
 
