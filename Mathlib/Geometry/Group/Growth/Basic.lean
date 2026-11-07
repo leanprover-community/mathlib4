@@ -23,11 +23,6 @@ the number of elements of word length at most `n`.
 * `Group.Generators.growth`: the growth function `n ↦ #(wordBall n)`.
 * `Function.GrowthDominates`: `f` dominates `g` if `g n ≤ C * f (α * n)` for some `C, α`.
 * `Function.GrowthEquivalent`: mutual domination of two functions.
-* `Function.HasPolynomialGrowth`: `f` is dominated by `n ↦ (n + 1)^d` for some `d`.
-* `Function.HasExponentialGrowth`: `f` dominates `n ↦ 2^n`.
-* `Function.HasSuperpolynomialGrowth`: `f` eventually exceeds every polynomial.
-* `Function.HasSubexponentialGrowth`: `log f n / n → 0`, stated with natural numbers.
-* `Function.HasIntermediateGrowth`: superpolynomial and subexponential growth.
 * `Group.Generators.growth_growthEquivalent`: the growth function is independent of the
   finite generating family, up to `GrowthEquivalent`.
 
@@ -86,44 +81,6 @@ lemma GrowthEquivalent.trans {f g h : ℕ → ℕ} (hfg : f.GrowthEquivalent g)
 
 lemma GrowthEquivalent.equivalence : Equivalence GrowthEquivalent :=
   ⟨GrowthEquivalent.refl, GrowthEquivalent.symm, GrowthEquivalent.trans⟩
-
-/-- `f` has polynomial growth if it is dominated by `n ↦ (n + 1) ^ d` for some `d`.
-We use `n + 1` so that the bound is positive at `n = 0`. -/
-def HasPolynomialGrowth (f : ℕ → ℕ) : Prop :=
-  ∃ d : ℕ, (fun n ↦ (n + 1) ^ d).GrowthDominates f
-
-/-- `f` has exponential growth if it dominates `n ↦ 2 ^ n`. -/
-def HasExponentialGrowth (f : ℕ → ℕ) : Prop :=
-  f.GrowthDominates (2 ^ ·)
-
-/-- `f` has superpolynomial growth if it eventually exceeds every polynomial bound. -/
-def HasSuperpolynomialGrowth (f : ℕ → ℕ) : Prop :=
-  ∀ d : ℕ, ∃ n₀, ∀ n ≥ n₀, (n + 1) ^ d < f n
-
-/-- `f` has subexponential growth if `log (f n) / n → 0`. Equivalently, for every `k`
-we have `f n ^ k ≤ 2 ^ n` for all sufficiently large `n`. -/
-def HasSubexponentialGrowth (f : ℕ → ℕ) : Prop :=
-  ∀ k : ℕ, ∃ n₀, ∀ n ≥ n₀, f n ^ k ≤ 2 ^ n
-
-/-- `f` has intermediate growth if it is both superpolynomial and subexponential. -/
-def HasIntermediateGrowth (f : ℕ → ℕ) : Prop :=
-  f.HasSuperpolynomialGrowth ∧ f.HasSubexponentialGrowth
-
-lemma HasPolynomialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasPolynomialGrowth)
-    (hfg : f.GrowthDominates g) : g.HasPolynomialGrowth :=
-  hf.imp fun _ hd ↦ hd.trans hfg
-
-lemma HasPolynomialGrowth.of_growthEquivalent {f g : ℕ → ℕ} (h : f.GrowthEquivalent g)
-    (hf : f.HasPolynomialGrowth) : g.HasPolynomialGrowth :=
-  hf.of_growthDominates h.1
-
-lemma HasExponentialGrowth.of_growthDominates {f g : ℕ → ℕ} (hf : f.HasExponentialGrowth)
-    (hgf : g.GrowthDominates f) : g.HasExponentialGrowth :=
-  hgf.trans hf
-
-lemma HasExponentialGrowth.of_growthEquivalent {f g : ℕ → ℕ} (h : f.GrowthEquivalent g)
-    (hf : f.HasExponentialGrowth) : g.HasExponentialGrowth :=
-  hf.of_growthDominates h.2
 
 end Function
 
@@ -222,25 +179,5 @@ family. -/]
 theorem growth_growthEquivalent [Finite ι] [Finite ι'] (Q : Group.Generators G ι') :
     P.growth.GrowthEquivalent Q.growth :=
   ⟨P.growthDominates_growth Q, Q.growthDominates_growth P⟩
-
-/-- A generating family has polynomial growth if its growth function does. -/
-@[to_additive /-- A generating family has polynomial growth if its growth function does. -/]
-def HasPolynomialGrowth : Prop := Function.HasPolynomialGrowth P.growth
-
-/-- A generating family has exponential growth if its growth function does. -/
-@[to_additive /-- A generating family has exponential growth if its growth function does. -/]
-def HasExponentialGrowth : Prop := Function.HasExponentialGrowth P.growth
-
-/-- A generating family has superpolynomial growth if its growth function does. -/
-@[to_additive /-- A generating family has superpolynomial growth if its growth function does. -/]
-def HasSuperpolynomialGrowth : Prop := Function.HasSuperpolynomialGrowth P.growth
-
-/-- A generating family has subexponential growth if its growth function does. -/
-@[to_additive /-- A generating family has subexponential growth if its growth function does. -/]
-def HasSubexponentialGrowth : Prop := Function.HasSubexponentialGrowth P.growth
-
-/-- A generating family has intermediate growth if its growth function does. -/
-@[to_additive /-- A generating family has intermediate growth if its growth function does. -/]
-def HasIntermediateGrowth : Prop := Function.HasIntermediateGrowth P.growth
 
 end Group.Generators
