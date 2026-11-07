@@ -1001,23 +1001,16 @@ lemma Topology.IsClosedEmbedding.isEmbedding_map_finiteMeasure {Ω : Type*}
     left_inv μ := by
       ext s hs
       simp only [Set.domRestrict_apply, toMeasure_comap, toMeasure_map]
-      rw [Measure.comap_apply, Measure.map_apply, preimage_image_eq]
-      · exact hf.injective
-      · exact hf.continuous.measurable
-      · exact hf.measurableEmbedding.measurableSet_image' hs
-      · exact hf.injective
-      · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
-      · exact hs
+      rw [hf.measurableEmbedding.comap_apply, Measure.map_apply hf.continuous.measurable
+        (hf.measurableEmbedding.measurableSet_image' hs), preimage_image_eq _ hf.injective]
     right_inv μ := by
       ext s hs
       simp only [Set.domRestrict_apply, toMeasure_map]
       rw [Measure.map_apply hf.continuous.measurable hs]
       simp only [toMeasure_comap]
-      rw [Measure.comap_apply _ hf.injective, image_preimage_eq_inter_range]
-      · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
-        exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2)
-      · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
-      · exact hf.continuous.measurable hs }
+      rw [hf.measurableEmbedding.comap_apply, image_preimage_eq_inter_range,
+        ← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
+      exact (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp (by exact μ.2) }
   exact A.comp B.isEmbedding
 
 end map -- section

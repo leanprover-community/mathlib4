@@ -197,12 +197,10 @@ lemma isCompact_setOfPred_finiteMeasure_le_of_isCompact
       simp only [toMeasure_map, F]
       rw [Measure.map_apply measurable_subtype_coe hs]
       simp only [toMeasure_comap]
-      rw [Measure.comap_apply _ (Subtype.val_injective), image_preimage_eq_inter_range]
-      · rw [← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
-        apply (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp
-        grind
-      · exact fun t ht ↦ hf.measurableEmbedding.measurableSet_image' ht
-      · exact hf.continuous.measurable hs
+      rw [hf.measurableEmbedding.comap_apply, image_preimage_eq_inter_range,
+        ← Measure.restrict_apply hs, Measure.restrict_eq_self_of_ae_mem]
+      apply (null_iff_toMeasure_null (↑μ) (range f)ᶜ).mp
+      grind
     · simp only [null_iff_toMeasure_null, image_subset_iff, preimage_ofPred_eq, toMeasure_map,
         ofPred_subset_ofPred, F, T]
       intro μ hμ

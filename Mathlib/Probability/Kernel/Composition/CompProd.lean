@@ -538,12 +538,11 @@ lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     {f : δ → γ} (hf : MeasurableEmbedding f) :
     comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prodMap hf) = κ ⊗ₖ (comapRight η hf) := by
   ext a t ht
-  rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply ht]
+  rw [comapRight_apply', compProd_apply, compProd_apply ht]
   · refine lintegral_congr fun b ↦ ?_
     rw [comapRight_apply']
-    · congr with x
-      grind
-    · exact measurable_prodMk_left ht
+    congr with x
+    grind
   · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 
 end CompositionProduct

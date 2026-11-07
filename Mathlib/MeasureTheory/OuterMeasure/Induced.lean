@@ -474,4 +474,11 @@ theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s)
 
 end OuterMeasure
 
+/-- The preimage of a Carathéodory-measurable set is Carathéodory-measurable for the pullback
+outer measure. -/
+theorem OuterMeasure.le_comap_caratheodory {α β : Type*} (f : α → β) (m : OuterMeasure β) :
+    m.caratheodory.comap f ≤ (comap f m).caratheodory := by
+  rintro _ ⟨u, hu, rfl⟩ t
+  simpa [image_inter_preimage, image_sdiff_preimage] using hu _
+
 end MeasureTheory

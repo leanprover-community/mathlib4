@@ -308,8 +308,7 @@ noncomputable def comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f) : 
     refine Measure.measurable_measure.mpr fun t ht => ?_
     have : (fun a => Measure.comap f (κ a) t) = fun a => κ a (f '' t) := by
       ext1 a
-      rw [Measure.comap_apply _ hf.injective _ _ ht]
-      exact fun s' hs' ↦ hf.measurableSet_image.mpr hs'
+      rw [hf.comap_apply]
     rw [this]
     exact Kernel.measurable_coe _ (hf.measurableSet_image.mpr ht)
 
@@ -317,19 +316,18 @@ theorem comapRight_apply (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : �
     comapRight κ hf a = Measure.comap f (κ a) :=
   rfl
 
-theorem comapRight_apply' (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : α) {t : Set γ}
-    (ht : MeasurableSet t) : comapRight κ hf a t = κ a (f '' t) := by
-  rw [comapRight_apply,
-    Measure.comap_apply _ hf.injective (fun s => hf.measurableSet_image.mpr) _ ht]
+theorem comapRight_apply' (κ : Kernel α β) (hf : MeasurableEmbedding f) (a : α) (t : Set γ) :
+    comapRight κ hf a t = κ a (f '' t) := by
+  rw [comapRight_apply, hf.comap_apply]
 
 @[simp]
 lemma comapRight_id (κ : Kernel α β) : comapRight κ MeasurableEmbedding.id = κ := by
-  ext _ _ hs; rw [comapRight_apply' _ _ _ hs]; simp
+  ext _ _ hs; rw [comapRight_apply']; simp
 
 theorem IsMarkovKernel.comapRight (κ : Kernel α β) (hf : MeasurableEmbedding f)
     (hκ : ∀ a, κ a (Set.range f) = 1) : IsMarkovKernel (comapRight κ hf) := by
   refine ⟨fun a => ⟨?_⟩⟩
-  rw [comapRight_apply' κ hf a MeasurableSet.univ]
+  rw [comapRight_apply' κ hf a .univ]
   simp only [Set.image_univ]
   exact hκ a
 
@@ -349,10 +347,9 @@ protected instance IsSFiniteKernel.comapRight (κ : Kernel α β) [IsSFiniteKern
     (Measure.sum fun n => Measure.comap f (seq κ n a)) =
       Measure.comap f (Measure.sum fun n => seq κ n a) := by
     ext1 t ht
-    rw [Measure.comap_apply _ hf.injective (fun s' => hf.measurableSet_image.mpr) _ ht,
-      Measure.sum_apply _ ht, Measure.sum_apply _ (hf.measurableSet_image.mpr ht)]
+    rw [hf.comap_apply, Measure.sum_apply _ ht, Measure.sum_apply _ (hf.measurableSet_image.mpr ht)]
     congr with n : 1
-    rw [Measure.comap_apply _ hf.injective (fun s' => hf.measurableSet_image.mpr) _ ht]
+    rw [hf.comap_apply]
   rw [this, measure_sum_seq]
 
 end ComapRight
