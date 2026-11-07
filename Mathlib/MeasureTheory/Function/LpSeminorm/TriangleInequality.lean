@@ -65,8 +65,7 @@ theorem eLpNorm_add_le (hp1 : 1 ≤ p) :
   · simp [hp0, hf, hg, hfg]
   by_cases hp_top : p = ∞
   · simp [hp_top, hf, hg, hfg, eLpNormEssSup_add_le]
-  have hp1_real : 1 ≤ p.toReal := by
-    rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hp_top]
+  have hp1_real : 1 ≤ p.toReal := ENNReal.one_le_toReal.2 ⟨hp1, hp_top⟩
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top hfg, eLpNorm_eq_eLpNorm' hp0 hp_top hf,
     eLpNorm_eq_eLpNorm' hp0 hp_top hg]
   exact eLpNorm'_add_le hf hg hp1_real
@@ -87,7 +86,7 @@ theorem eLpNorm_add_le' (p : ℝ≥0∞) :
     convert eLpNorm'_add_le_of_le_one hf ENNReal.toReal_nonneg _
     · have : p ∈ Set.Ioo (0 : ℝ≥0∞) 1 := ⟨hp.bot_lt, h'p⟩
       simp only [LpAddConst, ite_eq_left this]
-    · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
+    · exact ENNReal.toReal_le_one_of_le_one h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le h'p
 
 theorem inhmgELpNorm_add_le :
@@ -116,7 +115,7 @@ theorem inhmgELpNorm_add_le :
     · gcongr
       exact enorm_add_le (f x) (g x)
     · apply rpow_add_le_add_rpow ‖f x‖ₑ ‖g x‖ₑ toReal_nonneg
-      exact toReal_le_of_le_ofReal zero_le_one (by simp [hp'])
+      exact toReal_le_one_of_le_one hp'
   · rw [inhmgELpNorm_eq_eLpNorm hp'.le, inhmgELpNorm_eq_eLpNorm hp'.le,
       inhmgELpNorm_eq_eLpNorm hp'.le]
     exact eLpNorm_add_le hp'.le

@@ -433,7 +433,7 @@ lemma tendsto_integral_meas_thickening_le (f : Ω →ᵇ ℝ)
   · apply Eventually.of_forall (fun i ↦ ?_)
     apply Eventually.of_forall (fun t ↦ ?_)
     simp only [Real.norm_eq_abs, NNReal.abs_eq, Pi.one_apply]
-    exact ENNReal.toReal_mono one_ne_top prob_le_one
+    exact ENNReal.toReal_le_one_of_le_one prob_le_one
   · have aux : IsFiniteMeasure (volume.restrict A) := ⟨by simp [lt_top_iff_ne_top, A_finmeas]⟩
     apply integrable_const
   · apply Eventually.of_forall (fun t ↦ ?_)

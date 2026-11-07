@@ -105,9 +105,7 @@ lemma rnDerivAux_le_one [IsFiniteKernel η] (hκη : κ ≤ η) {a : α} :
   filter_upwards [Measure.rnDeriv_le_one_of_le (hκη a)] with x hx_le_one
   simp_rw [rnDerivAux]
   split_ifs with hα
-  · refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
-    simp only [Pi.one_apply, ENNReal.ofReal_one]
-    exact hx_le_one
+  · exact ENNReal.toReal_le_one_of_le_one hx_le_one
   · have := hαγ.countableOrCountablyGenerated.resolve_left hα
     exact density_le_one ((fst_map_id_prod _ measurable_const).trans_le hκη) _ _ _
 

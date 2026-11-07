@@ -257,8 +257,7 @@ theorem MemLp.lpNorm_condExp_le_lpNorm {f : α → E} {p : ℝ≥0∞} (hp : 1 �
       · rw [lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt hf.aestronglyMeasurable,
           lpNorm_eq_integral_norm_rpow_toReal hp'.ne.symm hpt integrable_condExp.1]
         gcongr ?_ ^ ?_
-        have : 1 ≤ p.toReal := by
-          rwa [← toReal_one, toReal_le_toReal one_ne_top hpt]
+        have : 1 ≤ p.toReal := one_le_toReal.2 ⟨hp, hpt⟩
         exact integral_norm_condExp_rpow_le this <|
           (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
       · by_cases! h : MemLp μ[f | m] ⊤ μ
@@ -272,8 +271,7 @@ theorem MemLp.condExp {f : α → E} {p : ℝ≥0∞} (hp : 1 ≤ p) (hf : MemLp
   have hp' : 0 < p := zero_lt_one.trans_le hp
   by_cases! hpt : p ≠ ⊤
   · rw [← integrable_norm_rpow_iff integrable_condExp.1 hp'.ne.symm hpt]
-    have hp : 1 ≤ p.toReal := by
-      rwa [← toReal_one, toReal_le_toReal one_ne_top hpt]
+    have hp : 1 ≤ p.toReal := one_le_toReal.2 ⟨hp, hpt⟩
     have := Integrable.norm_condExp_rpow_le (m := m) hp <|
       (integrable_norm_rpow_iff hf.aestronglyMeasurable hp'.ne.symm hpt).2 hf
     refine Integrable.mono_nonneg integrable_condExp ?_ ?_ this
