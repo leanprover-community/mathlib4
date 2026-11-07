@@ -568,6 +568,7 @@ def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
 If `f, g : X ⟶ Y` and `f', g : X' ⟶ Y'` pairwise form a commutative square with isomorphisms
 `X ≅ X'` and `Y ≅ Y'`, the categories of forks are equivalent.
 -/
+@[implicit_reducible]
 def Fork.equivOfIsos {X Y : C} {f g : X ⟶ Y} {X' Y' : C}
     {f' g' : X' ⟶ Y'} (e₀ : X ≅ X') (e₁ : Y ≅ Y')
     (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by cat_disch)
