@@ -8,6 +8,10 @@ set_option linter.unusedVariables false
 class A where
   a : Nat → Nat → Nat
 
+set_option linter.style.structInstFieldArgs false in
+example : A where
+  a := fun x y : Nat => x
+
 /--
 @ +2:11...14
 info: Fix:
