@@ -1,4 +1,8 @@
-import Mathlib.Tactic.Simps
+module
+
+public import Mathlib.Tactic.Simps
+
+@[expose] public section
 
 set_option linter.tacticCheckInstances true
 

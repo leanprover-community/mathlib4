@@ -142,24 +142,24 @@ section Abelianization
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
 -/
 def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
-  obj G := ↧(Abelianization G)
-  map f := CommGrpCat.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
+  obj G := ↧(Group.Abelianization G)
+  map f := CommGrpCat.ofHom (Group.Abelianization.lift (Group.Abelianization.of.comp f.hom))
   map_id := by
     intros
     ext : 1
-    apply (Equiv.eq_symm_apply Abelianization.lift).mp
+    apply (Equiv.eq_symm_apply Group.Abelianization.lift).mp
     rfl
   map_comp := by
     intros
     ext : 1
-    apply (Equiv.eq_symm_apply Abelianization.lift).mp
+    apply (Equiv.eq_symm_apply Group.Abelianization.lift).mp
     rfl
 
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrpCat)).trans
-        Abelianization.lift.symm).trans
+        Group.Abelianization.lift.symm).trans
         (ConcreteCategory.homEquiv (C := GrpCat)).symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext1; rfl`.
       homEquiv_naturality_left_symm := by
@@ -167,9 +167,9 @@ def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
         ext
         simp +instances only
         apply Eq.symm
-        apply Abelianization.lift_unique
+        apply Group.Abelianization.lift_unique
         intros
-        apply Abelianization.lift_apply_of }
+        apply Group.Abelianization.lift_apply_of }
 
 end Abelianization
 

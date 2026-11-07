@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Group.Subgroup.Lattice
 public import Mathlib.Algebra.Group.Submonoid.Pointwise
 
 /-!
-
 # Submonoid of units
 
 Given a submonoid `S` of a monoid `M`, we define the subgroup `S.units` as the units of `S` as a
