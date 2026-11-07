@@ -294,7 +294,6 @@ lemma isOpenImmersion_sigmaDesc [Small.{u} σ]
     intro i j hij
     exact hα (fun h ↦ hij (e.symm.injective h))
 
-set_option backward.defeqAttrib.useBackward true in
 open scoped Function in
 /-- `S` is the disjoint union of `Xᵢ` if the `Xᵢ` are covering, pairwise disjoint open subschemes
 of `S`. -/
@@ -367,7 +366,7 @@ lemma coprodMk_inl (x : X) :
       Scheme.forgetToTop.map coprod.inl x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inl Scheme.forgetToTop
+  exact inl_coprodComparison Scheme.forgetToTop _ _
 
 @[simp]
 lemma coprodMk_inr (x : Y) :
@@ -377,7 +376,7 @@ lemma coprodMk_inr (x : Y) :
       Scheme.forgetToTop.map coprod.inr x
   congr 2
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.binaryCofanIsColimit _ _⟩ _ _).trans ?_
-  exact coprodComparison_inr Scheme.forgetToTop
+  exact inr_coprodComparison Scheme.forgetToTop _ _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The open cover of the coproduct of two schemes. -/
@@ -434,7 +433,6 @@ lemma isPullback_inr_inr_coprodMap {X Y X' Y' : Scheme.{u}}
   (isPullback_inl_inl_coprodMap g f).of_iso (.refl _) (.refl _) (coprod.braiding _ _)
     (coprod.braiding _ _) (by simp) (by simp) (by simp) (by simp)
 
-set_option backward.defeqAttrib.useBackward true in
 instance : FinitaryExtensive Scheme where
   hasFiniteCoproducts.out := inferInstance
   van_kampen' {X Y} c hc := by
@@ -473,14 +471,12 @@ noncomputable def Scheme.coprodPresheafObjIso (U : (X ⨿ Y).Opens) :
     ((X ⨿ Y).sheaf.isProductOfDisjoint _ _ h₂).conePointUniqueUpToIso (limit.isLimit _) ≪≫
     prod.mapIso (ι₁.appIso _) (ι₂.appIso _)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_fst (U : (X ⨿ Y).Opens) :
     (coprodPresheafObjIso U).hom ≫ prod.fst = (coprod.inl (C := Scheme)).app U := by
   simp [coprodPresheafObjIso, Hom.appIso_hom, ← Functor.map_comp, Subsingleton.elim _ (𝟙 _)]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma Scheme.coprodPresheafObjIso_hom_snd (U : (X ⨿ Y).Opens) :
@@ -557,11 +553,11 @@ instance (R S : CommRingCat.{u}ᵒᵖ) : IsIso (coprodComparison Scheme.Spec R S
     ((limit.isoLimitCone ⟨_, CommRingCat.prodFanIsLimit R S⟩).inv ≫
       (opProdIsoCoprod R S).unop.inv)) = coprodSpec R S := by
     ext1
-    · rw [coprodComparison_inl_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
+    · rw [inl_coprodComparison_assoc, coprodSpec, coprod.inl_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inl,
         limit.isoLimitCone_inv_π]
       rfl
-    · rw [coprodComparison_inr_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
+    · rw [inr_coprodComparison_assoc, coprodSpec, coprod.inr_desc, Scheme.Spec_map,
         ← Spec.map_comp, Category.assoc, Iso.unop_inv, opProdIsoCoprod_inv_inr,
         limit.isoLimitCone_inv_π]
       rfl

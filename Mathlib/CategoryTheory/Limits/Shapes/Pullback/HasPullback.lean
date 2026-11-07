@@ -5,8 +5,8 @@ Authors: Kim Morrison, Markus Himmel, Bhavik Mehta, Andrew Yang, Emily Riehl, Ca
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts.BinaryProducts
+public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.PullbackCone
 
 /-!
 # HasPullback
@@ -422,7 +422,6 @@ theorem map_lift_pullbackComparison (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g
       pullback.lift (G.map h) (G.map k) (by simp only [← G.map_comp, w]) := by
   ext <;> simp [← G.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma pullbackComparison_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) {X Y S : C}
     (f : X ⟶ S) (g : Y ⟶ S) [HasPullback f g] [HasPullback (F.map f) (F.map g)]

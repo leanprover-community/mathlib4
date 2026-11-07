@@ -6,6 +6,7 @@ Authors: David Kurniadi Angdinata
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.Affine.Basic
+
 import Mathlib.Tactic.Ring.NamePolyVars
 
 /-!

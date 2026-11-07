@@ -5,11 +5,11 @@ Authors: Kevin Buzzard, Antoine Labelle
 -/
 module
 
-import Mathlib.Basic.UnivLE
 public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
-/-!
+import Mathlib.Basic.UnivLE
 
+/-!
 # Projective modules
 
 This file contains a definition of a projective module, the proof that

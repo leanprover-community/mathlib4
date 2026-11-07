@@ -5,15 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
-import Mathlib.RingTheory.Ideal.IdempotentFG
+public import Mathlib.Algebra.Algebra.Shrink
 public import Mathlib.RingTheory.Idempotents
 public import Mathlib.RingTheory.Kaehler.Basic
 public import Mathlib.RingTheory.Localization.Away.AdjoinRoot
-public import Mathlib.Algebra.Algebra.Shrink
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Unramified morphisms
 
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.

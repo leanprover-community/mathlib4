@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Order.Hom.Basic
 
 /-!
-
 # Tropical algebraic structures
 
 This file defines algebraic structures of the min/max-tropical numbers, up to the tropical semiring.
@@ -182,7 +181,7 @@ theorem untrop_le_iff [LE R] {x y : MinTropical R} : untrop x ≤ untrop y ↔ x
 
 @[to_dual]
 instance [LE R] [DecidableLE R] : DecidableLE (MinTropical R) :=
-  inferInstanceAs <| DecidableLE R
+  inferInstance
 
 @[to_dual]
 instance [LT R] : LT (MinTropical R) where lt x y := untrop x < untrop y
@@ -193,7 +192,7 @@ theorem untrop_lt_iff [LT R] {x y : MinTropical R} : untrop x < untrop y ↔ x <
 
 @[to_dual]
 instance [LT R] [DecidableLT R] : DecidableLT (MinTropical R) :=
-  inferInstanceAs <| DecidableLT R
+  inferInstance
 
 @[to_dual]
 instance [Preorder R] : Preorder (MinTropical R) where

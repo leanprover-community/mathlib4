@@ -5,8 +5,9 @@ Authors: Yury Kudryashov
 -/
 module
 
-import Mathlib.Order.Interval.Set.Monotone
 public import Mathlib.Topology.Separation.Basic
+
+import Mathlib.Order.Interval.Set.Monotone
 
 /-!
 # Topology on the set of filters on a type

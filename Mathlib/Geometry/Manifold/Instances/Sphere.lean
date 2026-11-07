@@ -5,14 +5,15 @@ Authors: Heather Macbeth
 -/
 module
 
-import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.Complex.Circle
 public import Mathlib.Analysis.Normed.Module.Ball.Action
-import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Geometry.Manifold.Algebra.LieGroup
 public import Mathlib.Geometry.Manifold.Instances.Real
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
+
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.InnerProductSpace.Calculus
+import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 
 /-!

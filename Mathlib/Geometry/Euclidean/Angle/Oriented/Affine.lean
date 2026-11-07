@@ -270,6 +270,53 @@ theorem oangle_eq_of_parallel {p₁ p₂ p₃ p₄ p₅ p₆ : P} (h₂ : p₂ �
   · simp [-neg_vsub_eq_vsub_rev, hlt]
   · simp [hlt]
 
+/-- If twice of alternate angles or consecutive interior angles are equal,
+corresponding pairs of points in two angles have the same vector span. -/
+theorem vectorSpan_eq_of_two_zsmul_oangle {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄)
+    (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂) :
+    vectorSpan ℝ ({p₁, p₂} : Set P) = vectorSpan ℝ ({p₃, p₄} : Set P) := by
+  simp_rw [vectorSpan_pair]
+  rw [← vsub_eq_zero_iff_eq.ne] at h₁₂ h₂₃ h₃₄
+  rw [oangle, oangle, o.oangle_rev (p₃ -ᵥ p₂) (p₁ -ᵥ p₂), o.oangle_rev (p₂ -ᵥ p₃) (p₄ -ᵥ p₃),
+    ← neg_vsub_eq_vsub_rev p₂ p₃, ← neg_vsub_eq_vsub_rev p₃ p₄,
+    o.oangle_neg_left h₂₃ h₁₂, o.oangle_neg_right h₂₃ h₃₄, neg_add, neg_add, smul_add, smul_add,
+    add_left_inj, smul_neg, smul_neg, neg_inj] at h
+  apply o.span_eq_of_two_zsmul_oangle_right h₂₃ h₁₂ h₃₄
+  exact h
+
+/-- Twice of alternate angles or consecutive interior angles are equal if and only if
+corresponding pairs of points in two angles have the same vector span. -/
+theorem two_zsmul_oangle_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄) :
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂ ↔
+      vectorSpan ℝ ({p₁, p₂} : Set P) = vectorSpan ℝ ({p₃, p₄} : Set P) := by
+  constructor <;> intro h
+  · exact vectorSpan_eq_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+  · rw [Set.pair_comm p₃ p₄] at h
+    apply two_zsmul_oangle_of_vectorSpan_eq h
+    rw [Set.pair_comm]
+
+/-- If twice of alternate angles or consecutive interior angles are equal,
+the lines determined by corresponding pairs of points in two angles are parallel. -/
+theorem parallel_of_two_zsmul_oangle {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄)
+    (h : (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂) :
+    line[ℝ, p₁, p₂] ∥ line[ℝ, p₃, p₄] := by
+  rw [AffineSubspace.affineSpan_pair_parallel_iff_vectorSpan_eq]
+  exact vectorSpan_eq_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+
+/-- Twice of alternate angles or consecutive interior angles are equal if and only if
+the lines determined by corresponding pairs of points in two angles are parallel. -/
+theorem two_zsmul_oangle_iff_parallel {p₁ p₂ p₃ p₄ : P}
+    (h₁₂ : p₁ ≠ p₂) (h₂₃ : p₂ ≠ p₃) (h₃₄ : p₃ ≠ p₄) :
+    (2 : ℤ) • ∡ p₁ p₂ p₃ = (2 : ℤ) • ∡ p₄ p₃ p₂ ↔ line[ℝ, p₁, p₂] ∥ line[ℝ, p₃, p₄] := by
+  constructor <;> intro h
+  · exact parallel_of_two_zsmul_oangle h₁₂ h₂₃ h₃₄ h
+  · rw [Set.pair_comm p₃ p₄] at h
+    apply two_zsmul_oangle_of_parallel h
+    rw [Set.pair_comm]
+
 /-- Given three points not equal to `p`, the angle between the first and the second at `p` plus
 the angle between the second and the third equals the angle between the first and the third. -/
 @[simp]

@@ -139,7 +139,7 @@ theorem IntegrableOn.mono_set_ae (h : IntegrableOn f t μ) (hst : s ≤ᵐ[μ] t
   h.integrable.mono_measure <| Measure.restrict_mono_ae hst
 
 theorem IntegrableOn.congr_set_ae (h : IntegrableOn f t μ) (hst : s =ᵐ[μ] t) : IntegrableOn f s μ :=
-  h.mono_set_ae hst.le
+  h.mono_set_ae hst.subset
 
 theorem integrableOn_congr_set_ae (hst : s =ᵐ[μ] t) : IntegrableOn f s μ ↔ IntegrableOn f t μ :=
   ⟨fun h ↦ h.congr_set_ae hst.symm, fun h ↦ h.congr_set_ae hst⟩

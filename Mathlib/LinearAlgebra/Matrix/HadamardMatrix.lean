@@ -5,9 +5,10 @@ Authors: Dennj Osele
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
-import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.Algebra.Star.Unitary
+public import Mathlib.LinearAlgebra.Matrix.Kronecker
+
+import Mathlib.LinearAlgebra.Matrix.Adjugate
 
 /-!
 # Hadamard matrices
@@ -87,23 +88,23 @@ theorem IsHadamard.kronecker {A : Matrix m m R} {B : Matrix n n R}
   refine ⟨fun _ _ ↦ mul_mem (hA.apply_mem _ _) (hB.apply_mem _ _), ?_, ?_⟩ <;> ext ⟨i, i'⟩ ⟨j, j'⟩
   · calc
       _ = ∑ x₁, ∑ x₂, A i x₁ * (B i' x₂ * Bᴴ x₂ j') * Aᴴ x₁ j := by
-        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+        simp [conjTranspose_kronecker', Matrix.mul_apply, mul_assoc, ← Finset.sum_product']
       _ = if i' = j' then ∑ x, A i x * (Fintype.card n • Aᴴ) x j else 0 := by
-        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hB.mul_conjTranspose,
-          one_apply, mul_assoc _ (Fintype.card n : R), -conjTranspose_apply]
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hB.mul_conjTranspose,
+          Matrix.one_apply, mul_assoc _ (Fintype.card n : R), -conjTranspose_apply]
       _ = _ := by
-        simp only [← mul_apply, mul_smul_comm, hA.mul_conjTranspose]
-        simp [one_apply, ← Nat.cast_mul, mul_comm, ← ite_and, and_comm]
+        simp only [← Matrix.mul_apply, mul_smul_comm, hA.mul_conjTranspose]
+        simp [Matrix.one_apply, ← Nat.cast_mul, mul_comm, ← ite_and, and_comm]
   · calc
       _ = ∑ x₁, ∑ x₂, Bᴴ i' x₂ * (Aᴴ i x₁ * A x₁ j) * B x₂ j' := by
-        simp [conjTranspose_kronecker', mul_apply, mul_assoc, ← Finset.sum_product']
+        simp [conjTranspose_kronecker', Matrix.mul_apply, mul_assoc, ← Finset.sum_product']
       _ = if i = j then ∑ x, Bᴴ i' x * (Fintype.card m • B) x j' else 0 := by
         rw [Finset.sum_comm]
-        simp [← Finset.sum_mul, ← Finset.mul_sum, ← mul_apply, hA.conjTranspose_mul,
-          one_apply, mul_assoc _ (Fintype.card m : R), -conjTranspose_apply]
+        simp [← Finset.sum_mul, ← Finset.mul_sum, ← Matrix.mul_apply, hA.conjTranspose_mul,
+          Matrix.one_apply, mul_assoc _ (Fintype.card m : R), -conjTranspose_apply]
       _ = _ := by
-        simp only [← mul_apply, mul_smul_comm, hB.conjTranspose_mul]
-        simp [one_apply, ← Nat.cast_mul, ← ite_and]
+        simp only [← Matrix.mul_apply, mul_smul_comm, hB.conjTranspose_mul]
+        simp [Matrix.one_apply, ← Nat.cast_mul, ← ite_and]
 
 /-- A Hadamard matrix with constant column sum `s` has order `s * star s`, provided the order
 is regular in `R`.

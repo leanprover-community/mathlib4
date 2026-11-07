@@ -5,10 +5,11 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Degree.Domain
 public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.GroupTheory.GroupAction.Ring
+
+import Mathlib.Algebra.Polynomial.Degree.Domain
 
 /-!
 # The derivative map on polynomials
@@ -24,7 +25,7 @@ public import Mathlib.GroupTheory.GroupAction.Ring
 
 noncomputable section
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Polynomial
 
@@ -134,7 +135,7 @@ theorem derivative_sum {s : Finset ι} {f : ι → R[X]} :
 
 theorem iterate_derivative_sum (k : ℕ) (s : Finset ι) (f : ι → R[X]) :
     derivative^[k] (∑ b ∈ s, f b) = ∑ b ∈ s, derivative^[k] (f b) := by
-  simp_rw [← Module.End.pow_apply, map_sum]
+  simp_rw [← pow_apply_eq_iterate, map_sum]
 
 theorem derivative_smul {S : Type*} [SMulZeroClass S R] [IsScalarTower S R R] (s : S)
     (p : R[X]) : derivative (s • p) = s • derivative p :=
@@ -433,7 +434,7 @@ lemma natDegree_derivative (p : R[X]) : p.derivative.natDegree = p.natDegree - 1
     let m := p.natDegree - 1
     have hm : m + 1 = p.natDegree := tsub_add_cancel_of_le (by lia)
     have h2 := coeff_derivative p m
-    rw [Polynomial.ext_iff] at hp
+    rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff] at hp
     rw [hp m, coeff_zero, ← Nat.cast_add_one, ← nsmul_eq_mul', eq_comm, smul_eq_zero] at h2
     replace h2 := h2.resolve_left m.succ_ne_zero
     rw [hm, ← leadingCoeff, leadingCoeff_eq_zero] at h2
@@ -716,7 +717,7 @@ theorem iterate_derivative_eq_zero_of_degree_lt {k : ℕ} {P : R[X]} (h : P.degr
 
 theorem iterate_derivative_prod_X_sub_C {k : ℕ} {S : Finset R} (hk : k ≤ #S) :
     derivative^[k] (∏ a ∈ S, (X - C a)) =
-    k.factorial * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
+    ↑(k.factorial) * ∑ T ∈ S.powersetCard (#S - k), ∏ a ∈ T, (X - C a) := by
   classical
   induction k
   case zero => simp

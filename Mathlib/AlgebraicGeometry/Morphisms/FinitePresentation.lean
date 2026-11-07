@@ -7,12 +7,12 @@ module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.FiniteType
 public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
-import Mathlib.AlgebraicGeometry.Properties
-import Mathlib.RingTheory.RingHom.FinitePresentation
 public import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
-/-!
+import Mathlib.AlgebraicGeometry.Properties
+import Mathlib.RingTheory.RingHom.FinitePresentation
 
+/-!
 # Morphisms of finite presentation
 
 A morphism of schemes `f : X ⟶ Y` is locally of finite presentation if for each affine `U ⊆ Y` and

@@ -6,11 +6,11 @@ Authors: Yunzhou Xie, Kenny Lau, Jiayang Hong
 module
 
 public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
+
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 
 /-!
-
 # Quadratic Algebra
 
 In this file we define the quadratic algebra `QuadraticAlgebra R a b` over a commutative ring `R`,

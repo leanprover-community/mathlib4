@@ -6,10 +6,10 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
+
 import Mathlib.LinearAlgebra.Dimension.OrzechProperty
 
 /-!
-
 # Basic results about relative perfect closure
 
 This file contains basic results about relative perfect closures.

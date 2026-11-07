@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Normed.Field.Basic
 public import Mathlib.Analysis.Normed.Group.Rat
 public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Topology.MetricSpace.DilationEquiv
+
 import Mathlib.Analysis.Normed.MulAction
 
 /-!
@@ -243,10 +244,12 @@ section Densely
 
 variable (α) [DenselyNormedField α]
 
-theorem denseRange_nnnorm : DenseRange (nnnorm : α → ℝ≥0) :=
+theorem denseRange_nnNorm : DenseRange (nnNorm : α → ℝ≥0) :=
   dense_of_exists_between fun _ _ hr =>
-    let ⟨x, h⟩ := exists_lt_nnnorm_lt α hr
+    let ⟨x, h⟩ := exists_lt_nnNorm_lt α hr
     ⟨‖x‖₊, ⟨x, rfl⟩, h⟩
+
+@[deprecated (since := "2026-10-31")] alias denseRange_nnnorm := denseRange_nnNorm
 
 end Densely
 

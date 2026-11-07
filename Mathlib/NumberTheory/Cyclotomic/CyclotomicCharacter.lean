@@ -8,11 +8,11 @@ module
 public import Mathlib.FieldTheory.KrullTopology
 public import Mathlib.NumberTheory.Padics.RingHoms
 public import Mathlib.RingTheory.RootsOfUnity.EnoughRootsOfUnity
+
 import Mathlib.RingTheory.RootsOfUnity.Minpoly
 import Mathlib.Topology.Algebra.Group.Units
 
 /-!
-
 # The cyclotomic character
 
 Let `L` be an integral domain and let `n : ℕ+` be a positive integer. If `μₙ` is the

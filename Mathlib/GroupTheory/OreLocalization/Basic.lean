@@ -5,15 +5,14 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 module
 
-public import Mathlib.GroupTheory.OreLocalization.OreSet
-public import Mathlib.Tactic.Common
+public import Mathlib.Algebra.Group.Basic
 public import Mathlib.Algebra.Group.Submonoid.MulAction
 public import Mathlib.Algebra.Group.Units.Defs
-public import Mathlib.Algebra.Group.Basic
+public import Mathlib.GroupTheory.OreLocalization.OreSet
 public import Mathlib.Tactic.Attr.Core
+public import Mathlib.Tactic.Common
 
 /-!
-
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal

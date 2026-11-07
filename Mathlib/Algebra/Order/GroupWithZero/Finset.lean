@@ -6,8 +6,9 @@ Authors: Eric Wieser, Yaël Dillies, Andrew Yang
 module
 
 public import Mathlib.Algebra.Order.GroupWithZero.Canonical
-import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 public import Mathlib.Data.Finset.Lattice.Fold
+
+import Mathlib.Algebra.Order.GroupWithZero.OrderIso
 
 /-!
 # `Finset.sup` in a group with zero

@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.LinearDisjoint
 public import Mathlib.FieldTheory.PurelyInseparable.PerfectClosure
 
 /-!
-
 # Tower law for purely inseparable extensions
 
 This file contains results related to `Field.sepDegree`, `Field.insepDegree` and the tower law.
@@ -46,8 +45,6 @@ separable degree, degree, separable closure, purely inseparable
 public section
 
 open Polynomial IntermediateField Field
-
-noncomputable section
 
 universe u v w
 

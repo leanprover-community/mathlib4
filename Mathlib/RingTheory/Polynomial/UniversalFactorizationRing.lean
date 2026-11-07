@@ -5,15 +5,15 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.Polynomial.IsIntegral
+public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
 public import Mathlib.RingTheory.Polynomial.Resultant.Basic
 public import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
-public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+import Mathlib.RingTheory.Polynomial.IsIntegral
 
 
 /-!
-
 # Universal factorization ring
 
 Let `R` be a commutative ring and `p : R[X]` be monic of degree `n` and let `n = m + k`.

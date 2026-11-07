@@ -5,11 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.LiftingProperties.Basic
 public import Mathlib.CategoryTheory.Adjunction.Basic
+public import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
-
 # Lifting properties and adjunction
 
 In this file, we obtain `Adjunction.HasLiftingProperty_iff`, which states

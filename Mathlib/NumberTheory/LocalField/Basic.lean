@@ -5,13 +5,13 @@ Authors: Andrew Yang
 -/
 module
 
-import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
-import Mathlib.Topology.Algebra.Module.Compact
 public import Mathlib.Topology.Algebra.Valued.LocallyCompact
 public import Mathlib.Topology.Algebra.Valued.ValuativeRel
 
-/-!
+import Mathlib.RingTheory.Valuation.DiscreteValuativeRel
+import Mathlib.Topology.Algebra.Module.Compact
 
+/-!
 # Definition of (Non-archimedean) local fields
 
 Given a topological field `K` equipped with an equivalence class of valuations (a `ValuativeRel`),

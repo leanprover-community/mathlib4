@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-import Mathlib.Data.EReal.Operations
 public import Mathlib.Topology.MetricSpace.Bounded
 public import Mathlib.Topology.OpenPartialHomeomorph.Composition
+
+import Mathlib.Data.EReal.Operations
 
 /-!
 # Structure groupoids

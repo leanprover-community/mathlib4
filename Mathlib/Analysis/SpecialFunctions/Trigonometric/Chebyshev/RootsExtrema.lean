@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.NumberTheory.Real.Irrational
 public import Mathlib.RingTheory.Polynomial.Chebyshev
+
 import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Analysis.SpecialFunctions.Arcosh
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
@@ -131,7 +132,7 @@ theorem eval_T_real_eq_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
     exact (neg_one_pow_eq_one_iff_even (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_coe_nat k).mpr hk₂)]
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_even k ((Int.even_natCast k).mpr hk₂)]
     norm_cast
 
 theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
@@ -145,7 +146,7 @@ theorem eval_T_real_eq_neg_one_iff {n : ℕ} (hn : n ≠ 0) (x : ℝ) :
     rw [hk₂, eval_T_real_cos_int_mul_pi_div hn, Int.cast_negOnePow_natCast] at hx
     exact (neg_one_pow_eq_neg_one_iff_odd (by grind)).mp hx
   · rintro ⟨k, hk₁, hk₂, hx⟩
-    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_coe_nat k).mpr hk₂)]
+    rw [hx, eval_T_real_cos_int_mul_pi_div hn, Int.negOnePow_odd k ((Int.odd_natCast k).mpr hk₂)]
     norm_cast
 
 theorem roots_T_real_nodup (n : ℕ) :

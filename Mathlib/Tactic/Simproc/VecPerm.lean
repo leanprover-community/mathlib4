@@ -5,8 +5,8 @@ Authors: Paul Lezeau
 -/
 module
 
-public import Mathlib.Data.Fin.Tuple.Reflection
 public meta import Mathlib.Util.Qq
+public import Mathlib.Data.Fin.Tuple.Reflection
 
 
 /-! # The vecPerm simproc

@@ -6,8 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Topology.Convenient.GeneratedBy
-import Mathlib.Topology.Homeomorph.Lemmas
 public import Mathlib.Topology.Sets.Closeds
+
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Open or closed subsets that are also `X`-generated spaces

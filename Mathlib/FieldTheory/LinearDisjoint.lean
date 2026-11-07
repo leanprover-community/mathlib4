@@ -6,11 +6,11 @@ Authors: Jz Pan
 module
 
 public import Mathlib.FieldTheory.Galois.Basic
-import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 public import Mathlib.RingTheory.LinearDisjoint
 
-/-!
+import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
+/-!
 # Linearly disjoint fields
 
 This file contains basics about the linearly disjoint fields.

@@ -6,12 +6,12 @@ Authors: Paul Reichert
 module
 
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
-import Mathlib.CategoryTheory.Abelian.Subobject
 public import Mathlib.CategoryTheory.Abelian.Transfer
 public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 
-/-!
+import Mathlib.CategoryTheory.Abelian.Subobject
 
+/-!
 # Grothendieck categories
 
 This file defines Grothendieck categories and proves basic facts about them.

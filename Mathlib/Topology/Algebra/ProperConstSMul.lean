@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Topology.Algebra.ConstMulAction
 public import Mathlib.Topology.Maps.Proper.Basic
+
 /-!
 # Actions by proper maps
 

@@ -9,11 +9,11 @@ public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Sites.Etale
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
+
 import Mathlib.CategoryTheory.Sites.Subcanonical
 import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
 /-!
-
 # The pro-étale site
 
 In this file we define the big and small pro-étale site. The big pro-étale site is
