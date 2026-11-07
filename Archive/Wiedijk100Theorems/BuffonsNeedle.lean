@@ -66,7 +66,6 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://en.wikipedia.org/wiki/Buffon%27s_needle_problem
 * https://www.math.leidenuniv.nl/~hfinkeln/seminarium/stelling_van_Buffon.pdf
 * https://www.isa-afp.org/entries/Buffons_Needle.html
-
 -/
 
 @[expose] public section
