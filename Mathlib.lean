@@ -4858,6 +4858,7 @@ public import Mathlib.Geometry.Group.Grigorchuk.Basic
 public import Mathlib.Geometry.Group.Grigorchuk.Intermediate
 public import Mathlib.Geometry.Group.Grigorchuk.Superpolynomial
 public import Mathlib.Geometry.Group.Growth.Basic
+public import Mathlib.Geometry.Group.Growth.Classes
 public import Mathlib.Geometry.Group.Growth.LinearLowerBound
 public import Mathlib.Geometry.Group.Growth.QuotientInter
 public import Mathlib.Geometry.Group.InfiniteBinaryTree
