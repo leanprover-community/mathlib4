@@ -339,12 +339,12 @@ lemma extendScalars_id : extendScalars S (LinearMap.id : M →ₗ[R] M) = Linear
   comp_sec R S M
 
 @[simp]
-lemma extendScalars_comp_restrictScalars (f : M →ₗ[R] N) (g : L →ₗ[S] M) :
+lemma extendScalars_apply_comp_restrictScalars (f : M →ₗ[R] N) (g : L →ₗ[S] M) :
     extendScalars S (f.comp (g.restrictScalars R)) = (extendScalars S f).comp g := by
   simp [extendScalars_apply, LinearMap.liftBaseChange_comp, LinearMap.comp_assoc, sec_comp]
 
 @[simp]
-lemma extendScalars_restrictScalars_comp (f : M →ₗ[S] N) (g : L →ₗ[R] M) :
+lemma extendScalars_apply_restrictScalars_comp (f : M →ₗ[S] N) (g : L →ₗ[R] M) :
     extendScalars S ((f.restrictScalars R).comp g) = f.comp (extendScalars S g) := by
   simp [extendScalars_apply, LinearMap.comp_liftBaseChange, ← LinearMap.comp_assoc]
 
@@ -352,19 +352,19 @@ variable (R) in
 @[simp]
 lemma extendScalars_restrictScalars (f : M →ₗ[S] N) :
     extendScalars S (f.restrictScalars R) = f := by
-  simpa using extendScalars_restrictScalars_comp f (LinearMap.id (R := R))
+  simpa using extendScalars_apply_restrictScalars_comp f (LinearMap.id (R := R))
 
 @[simp]
 lemma extendScalars_comp_mulLeft (f : S →ₗ[R] M) (x : S) :
     extendScalars S (f.comp (LinearMap.mulLeft R x)) =
       (extendScalars S f).comp (LinearMap.mulLeft S x) :=
-  extendScalars_comp_restrictScalars f (LinearMap.mulLeft S x)
+  extendScalars_apply_comp_restrictScalars f (LinearMap.mulLeft S x)
 
 @[simp]
 lemma extendScalars_mulLeft_comp (f : M →ₗ[R] S) (x : S) :
     extendScalars S ((LinearMap.mulLeft R x).comp f) =
       (LinearMap.mulLeft S x).comp (extendScalars S f) :=
-  extendScalars_restrictScalars_comp (LinearMap.mulLeft S x) f
+  extendScalars_apply_restrictScalars_comp (LinearMap.mulLeft S x) f
 
 end extendScalars
 
