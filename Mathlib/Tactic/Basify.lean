@@ -104,13 +104,13 @@ attribute [basify_simp] ne_eq not_true_eq_false not_false_eq_true eq_self_iff_tr
 
 /-- The eliminator registered for the type `ty`, if any. -/
 def elimEntryFor? (ty : Expr) : MetaM (Option ElimEntry) := do
-  let some tyName := ty.getAppFn.constName? | return none
+  let some tyName := ty.consumeMData.getAppFn.constName? | return none
   return (elimExt.getState (← getEnv)).find? tyName
 
 /-- The operations registered for the type `ty`, i.e. the applications of type `ty` that
 `basify` looks inside of instead of treating as atoms. -/
 def opsFor (ty : Expr) : MetaM NameSet := do
-  let some tyName := ty.getAppFn.constName? | return ∅
+  let some tyName := ty.consumeMData.getAppFn.constName? | return ∅
   return (opExt.getState (← getEnv)).find? tyName |>.getD ∅
 
 /-- Does `basify` know anything about the type `ty`? -/
@@ -122,6 +122,7 @@ A term of a registered type is *not* an atom when its head is an operation regis
 `@[basify_op]`, in which case its arguments are visited instead, and when it is a `let`, whose value
 is visited instead. Everything else is opaque and gets generalized and case split as a whole. -/
 def isAtom (e : Expr) : MetaM Bool := do
+  let e := e.consumeMData
   if e.isLet then return false
   let ty ← instantiateMVars (← inferType e)
   unless ← isRegisteredType ty do return false
