@@ -353,10 +353,13 @@ lemma isCardinalPure_subfunctor_ι (S : Subfunctor F) :
 variable {κ P S} {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (hκ' : κ.SharplyLT κ')
   (hP' : HasCardinalLT P.FullSubcategory κ')
 
-include hP hκ' in
+include hC hP hκ' in
 lemma hasCardinalLT_hom {F G : C ⥤ Type w}
     (hF : P F) (hG : HasCardinalLT G.Elements (Order.succ (κ'.sigmaPowLT κ'))) :
     HasCardinalLT (F ⟶ G) (Order.succ (κ'.sigmaPowLT κ')) := by
+  replace hF := P.le_isoClosure _ hF
+  simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC] at hF
+  refine .of_injective ?_ _ NatTrans.injective_mapElements_obj
   sorry
 
 include hC hP hκ' hP' in
@@ -376,10 +379,10 @@ lemma hasCardinalLT_span
   refine (hasCardinalLT_sigma _ _ (hP'.of_le (Cardinal.SharplyLT.sigmaPowLT κ').le)
     (fun src ↦ hasCardinalLT_sigma _ _ (hP'.of_le (Cardinal.SharplyLT.sigmaPowLT κ').le)
       fun tgt ↦ hasCardinalLT_prod (Cardinal.IsRegular.aleph0_le Fact.out)
-        (hasCardinalLT_hom hP hκ' src.property ?_)
-        (hasCardinalLT_hom hP hκ' src.property hS))).of_injective _ hφ
+        (hasCardinalLT_hom hC hP hκ' src.property ?_)
+        (hasCardinalLT_hom hC hP hκ' src.property hS))).of_injective _ hφ
   have := P.le_isoClosure _ tgt.property
-  simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC] at this
+  simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC] at this
   exact this.of_le (hκ'.le.trans (Cardinal.SharplyLT.sigmaPowLT κ').le)
 
 include hC hP hκ' hP' in
@@ -396,7 +399,7 @@ lemma hasCardinalLT_step
       (hasCardinalLT_span hC hP hκ' hP' hS))
     (Cardinal.IsRegular.aleph0_le Fact.out)
   have := P.le_isoClosure _ s.prop_tgt
-  simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC] at this
+  simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC] at this
   exact this.of_le (hκ'.le.trans (Cardinal.SharplyLT.sigmaPowLT κ').le)
 
 include hC hP hκ' hP' in
@@ -445,8 +448,8 @@ lemma hasEnoughPureSubobjects :
         hasEnoughPureSubobjects_aux hC hP hκ' hP' (by
           refine HasCardinalLT.of_surjective ?_ _
             (NatTrans.surjective_mapElements_obj_of_epi (Subfunctor.toRange f))
-          rwa [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC'])
-      rw [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC'] at h₂
+          rwa [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC'])
+      rw [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC'] at h₂
       exact ⟨S'.toFunctor, inferInstance, Subfunctor.toRange f ≫ Subfunctor.homOfLe h₁,
         S'.ι, inferInstance, by simp⟩ }
 

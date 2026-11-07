@@ -246,7 +246,7 @@ noncomputable def isColimitCocone (hκ : HasCardinalLT (Arrow A) κ) :
 end hasCardinalLTSubfunctorToFunctorElements
 
 open hasCardinalLTSubfunctorToFunctorElements in
-lemma isCardinalPresentable_iff_hasCardinalLT_arrow_elements
+lemma isCardinalPresentable_iff_hasCardinalLT_elements
     (hκ : HasCardinalLT (Arrow A) κ) :
     IsCardinalPresentable P κ ↔ HasCardinalLT P.Elements κ := by
   refine ⟨fun _ ↦ ?_, fun h ↦ ?_⟩

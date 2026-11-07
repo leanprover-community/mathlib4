@@ -108,6 +108,12 @@ def NatTrans.mapElements {G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.El
     { hom := f.hom
       map_val := by simpa using (φ.naturality_apply f.hom e₁.val).symm }
 
+lemma NatTrans.injective_mapElements_obj {G : C ⥤ Type w} :
+    Function.Injective (fun (φ : F ⟶ G) ↦ φ.mapElements.obj) := by
+  intro a b h
+  ext X e
+  exact congr(($(h) (Functor.elementsMk _ _ e)).val)
+
 /-- If `φ : F ⟶ G` is a natural transformation between functors to types, this is the
 canonical isomorphism `φ.mapElements ⋙ Functor.Elements.π G ≅ Functor.Elements.π F`. -/
 @[simps!]
