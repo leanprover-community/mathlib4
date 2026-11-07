@@ -46,9 +46,11 @@ def Condition (n j : ℕ) (C : ℕ → Fin 2) : Prop :=
   (∀ i ∈ Set.Ico 1 n, C i = C (n - i)) ∧ (∀ i ∈ Set.Ico 1 n, i ≠ j → C i = C (j - i : ℤ).natAbs)
 
 /-- For `1 ≤ k < n`, `k * j % n` has the same color as `j`. -/
-lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.Coprime n j)
+lemma C_mul_mod {n j : ℕ} (hj : j ∈ Set.Ico 1 n) (cpj : Nat.Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {k : ℕ} (hk : k ∈ Set.Ico 1 n) :
     C (k * j % n) = C j := by
+  rcases lt_or_ge n 3 with hn | hn
+  · grind
   induction k, hk.1 using Nat.le_induction with
   | base => rw [one_mul, Nat.mod_eq_of_lt hj.2]
   | succ k hk₁ ih =>
@@ -76,9 +78,11 @@ lemma C_mul_mod {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Nat.C
     · rw [Int.natAbs_natCast_sub_natCast_of_le h.le, Nat.mod_sub_of_le h.le]
       rw [add_mul, one_mul, add_tsub_cancel_right]
 
-theorem result {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
+theorem result {n j : ℕ} (hj : j ∈ Set.Ico 1 n) (cpj : Coprime n j)
     {C : ℕ → Fin 2} (hC : Condition n j C) {i : ℕ} (hi : i ∈ Set.Ico 1 n) :
     C i = C j := by
+  rcases lt_or_ge n 3 with hn | hn
+  · grind
   obtain ⟨v, -, hv⟩ := exists_mul_mod_eq_one_of_coprime cpj.symm (by lia)
   have hvi : i = (v * i % n) * j % n := by
     rw [mod_mul_mod, ← mul_rotate, ← mod_mul_mod, hv, one_mul, mod_eq_of_lt hi.2]
@@ -89,6 +93,6 @@ theorem result {n j : ℕ} (hn : 3 ≤ n) (hj : j ∈ Set.Ico 1 n) (cpj : Coprim
     have i0 := eq_zero_of_dvd_of_lt
       ((coprime_of_mul_modEq_one _ hv).symm.dvd_of_dvd_mul_left h) hi.2
     subst i; simp at hi
-  rw [hvi, C_mul_mod hn hj cpj hC vib]
+  rw [hvi, C_mul_mod hj cpj hC vib]
 
 end Imo1985Q2
