@@ -199,21 +199,38 @@ theorem contMDiffAt_totalSpace_iff {f : M → TotalSpace F E} {x₀ : M} :
 
 @[deprecated (since := "2026-11-02")] alias contMDiffAt_totalSpace := contMDiffAt_totalSpace_iff
 
+/-- Characterization of `C^n` sections of a pullback vector bundle within a set at a point -/
+-- TODO: what's a good name for this lemma?
+theorem contMDiffWithinAt_section_iff' {b : M → B} {a : Set M} {x₀ : M}
+    (hb : ContMDiffWithinAt IM IB n b a x₀) {s : ∀ x, E (b x)} :
+    ContMDiffWithinAt IM (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F (b x) (s x)) a x₀ ↔
+      ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (b x₀) ⟨b x, s x⟩).2) a x₀ := by
+  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]
+  intro; exact hb
+
 /-- Characterization of `C^n` sections within a set at a point of a vector bundle. -/
 theorem contMDiffWithinAt_section_iff {s : ∀ x, E x} {a : Set B} {x₀ : B} :
     ContMDiffWithinAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) a x₀ ↔
-      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ := by
-  simp_rw [contMDiffWithinAt_totalSpace_iff, and_iff_right_iff_imp]
-  intro; exact contMDiffWithinAt_id
+      ContMDiffWithinAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) a x₀ :=
+  contMDiffWithinAt_section_iff' contMDiffWithinAt_id
 
 @[deprecated (since := "2026-11-02")]
 alias contMDiffWithinAt_section := contMDiffWithinAt_section_iff
 
+/-- Characterization of `C^n` sections of a pullback vector bundle at a point -/
+-- TODO: what's a good name for this lemma?
+theorem contMDiffAt_section_iff' {b : M → B} {x₀ : M} {s : ∀ x, E (b x)}
+    (hb : ContMDiffAt IM IB n b x₀) :
+    ContMDiffAt IM (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F (b x) (s x)) x₀ ↔
+      ContMDiffAt IM 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E (b x₀) ⟨b x, s x⟩).2) x₀ := by
+  simp_rw [contMDiffAt_totalSpace_iff, and_iff_right_iff_imp]
+  intro; exact hb
+
 /-- Characterization of `C^n` sections of a vector bundle. -/
 theorem contMDiffAt_section_iff {s : ∀ x, E x} (x₀ : B) :
     ContMDiffAt IB (IB.prod 𝓘(𝕜, F)) n (fun x ↦ TotalSpace.mk' F x (s x)) x₀ ↔
-      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ := by
-  simp_rw [contMDiffAt_totalSpace_iff, and_iff_right_iff_imp]; intro; exact contMDiffAt_id
+      ContMDiffAt IB 𝓘(𝕜, F) n (fun x ↦ (trivializationAt F E x₀ ⟨x, s x⟩).2) x₀ :=
+  contMDiffAt_section_iff' contMDiffAt_id
 
 @[deprecated (since := "2026-11-02")] alias contMDiffAt_section := contMDiffAt_section_iff
 
