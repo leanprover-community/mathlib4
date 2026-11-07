@@ -70,6 +70,39 @@ meta def movableBinder (b : Syntax) : Bool :=
       ``Parser.Term.hole,
       ``Parser.Term.typeAscription]
 
+/-- Number of leading binders of `e`, without unfolding definitions. -/
+meta def forallArity : Expr → Nat
+  | .forallE _ _ b _ => forallArity b + 1
+  | .mdata _ e => forallArity e
+  | .bvar .. | .fvar .. | .mvar ..
+  | .sort .. | .const .. | .app ..
+  | .lam .. | .letE .. | .lit ..
+  | .proj .. => 0
+
+/-- Number of arguments the field takes in its declared type. -/
+meta def fieldArity? (proj : Name) : CommandElabM (Option Nat) := do
+  let env ← getEnv
+  let some info := env.getProjectionFnInfo? proj | return none
+  let some constInfo := env.find? proj | return none
+  return some (forallArity constInfo.type - info.numParams - 1)
+
+/-- The projection function Lean recorded for a field name in a structure instance. -/
+meta def fieldProjFn? (stx : Syntax) : CommandElabM (Option Name) := do
+  let some startPos := stx.getPos? | return none
+  let some endPos := stx.getTailPos? | return none
+  for tree in (← getInfoTrees) do
+    let found? := tree.foldInfo (init := none) fun _ info acc =>
+      acc <|> match info with
+        | .ofFieldInfo fi =>
+          if fi.stx.getPos? == some startPos && fi.stx.getTailPos? == some endPos
+          then some fi.projName else none
+        | .ofTermInfo ti  =>
+          if ti.stx.getPos? == some startPos && ti.stx.getTailPos? == some endPos
+          then ti.expr.getAppFn.constName? else none
+        | _ => none
+    if found?.isSome then return found?
+  return none
+
 /--
 The `structInstFieldArgs` linter flags values of structure instance fields which start with
 `fun` and suggests to move the arguments before the `:=`.
@@ -83,14 +116,19 @@ public meta register_option linter.style.structInstFieldArgs : Bool := {
   descr := "enable the `structInstFieldArgs` linter"
 }
 
+public meta register_option linter.style.structInstFieldArgs.useExpectedType : Bool := {
+  defValue := true
+  descr := "if enabled, the `structInstFieldArgs` linter looks at the expected type \
+    and moves at most as many arguments, as the expected type takes. \
+    This makes the linter more conservative, but it comes with a significant slowdown."
+}
+
 @[inherit_doc linter.style.structInstFieldArgs]
 meta def structInstFieldArgsLinter : Linter where run := withSetOptionIn fun stx => do
-    unless getLinterValue linter.style.structInstFieldArgs (← getLinterOptions) do return
+    let opts ← getLinterOptions
+    unless getLinterValue linter.style.structInstFieldArgs opts do return
     if (← MonadState.get).messages.hasErrors then return
     for field in stx.topDown do
-      -- check that the syntax is an instance field
-      -- with at least one `fun` binder which should be moved
-      -- to the front.
       if field.getKind != ``Lean.Parser.Term.structInstField then continue
       -- `defPart` contains `:=` and everything after
       let some defPart := field.find? (·.getKind == ``Parser.Term.structInstFieldDef) | continue
@@ -101,7 +139,15 @@ meta def structInstFieldArgsLinter : Linter where run := withSetOptionIn fun stx
       let funBody := value[1]
       unless funBody.getKind == ``Parser.Term.basicFun do continue
       let binders := funBody[0].getArgs
-      let movableBinders := binders.takeWhile movableBinder
+      let mut movableBinders := binders.takeWhile movableBinder
+
+      -- Look at the declared type of the field to cap how many arguments should be moved
+      if linter.style.structInstFieldArgs.useExpectedType.get opts.toOptions then
+        let some proj  ← fieldProjFn? field[0] | continue
+        let some arity ← fieldArity? proj | continue
+        let alreadyMoved := field[1][0].getNumArgs
+        movableBinders := movableBinders.extract 0 (arity - alreadyMoved)
+
       if movableBinders.isEmpty then continue
 
       let assignStx := defPart.getArgs.pop -- the `:=`

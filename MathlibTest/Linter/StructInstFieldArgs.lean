@@ -168,3 +168,29 @@ example : D where
 
 example : D where
   d (x : Nat) := rfl
+
+/--
+@ +3:15...16
+info: Fix:
+  g̲ ̲:= fun g̵ ̵a  ̲↦
+-/
+#guard_msgs (info, drop warning, positions := true) in
+set_option linter.style.structInstFieldArgs.useExpectedType true in
+example : Add (Nat → Nat) where
+  add f := fun g a ↦ f a + g a
+
+example : Add (Nat → Nat) where
+  add f g := fun a ↦ f a + g a
+
+/--
+@ +3:17...18
+info: Fix:
+  a̲ ̲:= ̵f̵u̵n̵ ̵a̵ ̵↦̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+set_option linter.style.structInstFieldArgs.useExpectedType false in
+example : Add (Nat → Nat) where
+  add f g := fun a ↦ f a + g a
+
+example : Add (Nat → Nat) where
+  add f g a := f a + g a
