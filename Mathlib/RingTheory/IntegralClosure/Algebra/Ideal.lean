@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 
 /-!
-
 # Integrality over ideals
 
 ## Main results

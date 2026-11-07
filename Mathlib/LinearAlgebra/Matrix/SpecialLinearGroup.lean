@@ -230,64 +230,81 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
-@[simp] lemma map_comp (f : R →+* S) (g : S →+* T) :
+@[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
-/-- A ring isomorphism `R ≃+* S` induces `SL(n, R) ≃* SL(n, S)`. -/
-@[simps! apply_coe]
-def mapEquiv (e : R ≃+* S) : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
+@[simp] lemma map_id : map (.id R) = .id (SpecialLinearGroup n R) := rfl
+
+section Equiv
+
+variable (n) (e : R ≃+* S) (g : S ≃+* T)
+
+/-- The equivalence between `SL n R` and `SL n S` given by `f : R ≃+* S`. -/
+def mapEquiv : SpecialLinearGroup n R ≃* SpecialLinearGroup n S where
   toFun := map e
   invFun := map e.symm
   left_inv A := by ext; simp
   right_inv A := by ext; simp
   map_mul' := map_mul _
 
-@[simp] lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (SpecialLinearGroup n R) := rfl
+@[simp] lemma coe_mapEquiv_apply (a : SpecialLinearGroup n R) :
+    (mapEquiv n e a : Matrix n n S) = e.mapMatrix (a : Matrix n n R) := rfl
 
-@[simp] lemma symm_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f).symm = mapEquiv f.symm := rfl
+@[simp] lemma mapEquiv_refl : mapEquiv n (.refl R) = .refl (SpecialLinearGroup n R) := rfl
 
-@[simp] lemma mapEquiv_trans (f : R ≃+* S) (g : S ≃+* T) :
-    mapEquiv (n := n) (f.trans g) = (mapEquiv f).trans (mapEquiv g) := rfl
+@[simp] lemma symm_mapEquiv :
+    (mapEquiv n e).symm = mapEquiv n e.symm := rfl
 
-@[simp] lemma toMonoidHom_mapEquiv (f : R ≃+* S) :
-    (mapEquiv (n := n) f : SpecialLinearGroup n R →* SpecialLinearGroup n S)
-      = map (f : R →+* S) := rfl
+@[simp] lemma mapEquiv_trans_mapEquiv :
+    .trans (mapEquiv n e) (mapEquiv n g) = mapEquiv n (e.trans g) := rfl
 
-@[simp]
-lemma coe_mapEquiv (e : R ≃+* S) (A : SpecialLinearGroup n R) :
-    (mapEquiv e A : Matrix n n S) = (e : R →+* S).mapMatrix A :=
-  rfl
+@[simp] lemma toMonoidHom_mapEquiv :
+    (mapEquiv n e : SpecialLinearGroup n R →* SpecialLinearGroup n S) = map e := rfl
+
+end Equiv
 
 section Reindex
 
 variable (R) {m o : Type*} [DecidableEq m] [Fintype m] [DecidableEq o] [Fintype o]
 
-/-- The `MulEquiv` induced by the equivalence over the index -/
-@[simps! apply]
-def reindexMulEquiv (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
-  toFun A := ⟨reindexRingEquiv R e A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
-  invFun A :=
-    ⟨reindexRingEquiv R e.symm A, by rw [coe_reindexRingEquiv, det_reindex_self, A.det_coe]⟩
-  left_inv A := by ext; simp
-  right_inv A := by ext; simp
-  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv R e) (A : Matrix m m R) B)
+/-- The equivalence between `SL m R` and `SL n R` given by an equivalence `e : m ≃ n`. -/
+@[simps! apply_coe]
+def reindex (e : m ≃ n) : SpecialLinearGroup m R ≃* SpecialLinearGroup n R where
+  toEquiv := (Matrix.reindex e e).subtypeEquiv fun _ ↦ by rw [det_reindex_self]
+  map_mul' A B := Subtype.ext (map_mul (reindexRingEquiv ..) A.val B.val)
 
 @[simp]
-theorem symm_reindexMulEquiv (e : m ≃ n) :
-    (reindexMulEquiv R e).symm = reindexMulEquiv R e.symm :=
+theorem symm_reindex (e : m ≃ n) :
+    (reindex R e).symm = reindex R e.symm :=
   rfl
 
 @[simp]
-theorem reindexMulEquiv_trans_reindexMulEquiv (e : m ≃ n) (e' : n ≃ o) :
-    .trans (reindexMulEquiv R e) (reindexMulEquiv R e') = reindexMulEquiv R (.trans e e') :=
+theorem reindex_trans_reindex (e : m ≃ n) (e' : n ≃ o) :
+    .trans (reindex R e) (reindex R e') = reindex R (.trans e e') :=
+  rfl
+
+@[simp]
+theorem reindex_refl : reindex R (.refl n) = .refl (SpecialLinearGroup n R) :=
+  rfl
+
+theorem reindex_map (e : m ≃ n) (f : R →+* S) (A : SpecialLinearGroup m R) :
+    reindex S e (map f A) = map f (reindex R e A) :=
+  rfl
+
+theorem reindex_comp_map (e : m ≃ n) (f : R →+* S) :
+    (reindex S e : SpecialLinearGroup m S →* SpecialLinearGroup n S).comp (map f) =
+      (map f).comp (reindex R e) :=
+  rfl
+
+theorem reindex_trans_mapEquiv (e : m ≃ n) (f : R ≃+* S) :
+    (reindex R e).trans (mapEquiv n f) = (mapEquiv m f).trans (reindex S e) :=
   rfl
 
 end Reindex
 
 section Pi
 
-variable {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
+variable (n) {ι : Type*} (R : ι → Type*) [Π i, CommRing (R i)]
 
 /-- The monoid equivalence between `SL n` of a product of rings,
 and the product of the `SL n` of each ring. -/
@@ -296,41 +313,9 @@ def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (
   toFun A i := map (Pi.evalRingHom R i) A
   invFun A := ⟨of fun a b i ↦ A i a b, funext fun i ↦
     (RingHom.map_det (Pi.evalRingHom R i) (of fun a b i ↦ A i a b)).trans (A i).det_coe⟩
-  left_inv A := by ext; rfl
-  right_inv A := funext fun _ ↦ by ext; rfl
   map_mul' A B := by ext; simp
 
 end Pi
-section SumInl
-
-variable (p : Type*) [DecidableEq p] [Fintype p]
-
-/-- The embedding `SL(n, R) →* SL(n ⊕ p, R)` sending `A` to the block matrix `!![A, 0; 0, 1]`. -/
-def sumInl : SpecialLinearGroup n R →* SpecialLinearGroup (n ⊕ p) R where
-  toFun A := ⟨fromBlocks A 0 0 1, by simp [det_fromBlocks_zero₂₁]⟩
-  map_one' := Subtype.ext fromBlocks_one
-  map_mul' A B := Subtype.ext ((fromBlocks_multiply ..).trans (by simp)).symm
-
-variable {p}
-
-@[simp]
-lemma coe_sumInl (A : SpecialLinearGroup n R) :
-    (sumInl p A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks A 0 0 1 :=
-  rfl
-
-lemma mem_range_sumInl_iff {A : SpecialLinearGroup (n ⊕ p) R} :
-    A ∈ (sumInl p).range ↔ (A : Matrix (n ⊕ p) (n ⊕ p) R).IsTwoBlockDiagonal ∧
-      toBlocks₂₂ (A : Matrix (n ⊕ p) (n ⊕ p) R) = 1 := by
-  refine ⟨?_, fun ⟨⟨h₁₂, h₂₁⟩, h₂₂⟩ ↦ ?_⟩
-  · rintro ⟨A, rfl⟩
-    simp [IsTwoBlockDiagonal]
-  · have hA : (A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks (toBlocks₁₁ ↑A) 0 0 1 :=
-      (fromBlocks_toBlocks _).symm.trans (by rw [h₁₂, h₂₁, h₂₂])
-    have hdet := A.det_coe
-    rw [hA, det_fromBlocks_zero₂₁, det_one, mul_one] at hdet
-    exact ⟨⟨_, hdet⟩, Subtype.ext hA.symm⟩
-
-end SumInl
 
 section center
 
@@ -730,7 +715,7 @@ open scoped MatrixGroups
 namespace SpecialLinearGroup
 
 /-- An element in SLₙ(F) induced by a diagonal matrix `1` on any other entries and `a`, `a⁻¹` on
-  positition `i` and `j` respectively where `i ≠ j`. -/
+  positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
   ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
@@ -742,7 +727,7 @@ lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i 
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
-  positition `0` and `1` respectively. -/
+  positions `0` and `1` respectively. -/
 noncomputable abbrev diag2 (a : F) (ha : a ≠ 0) : SL(2, F) :=
   diag2n zero_ne_one a ha
 

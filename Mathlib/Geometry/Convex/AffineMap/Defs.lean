@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Geometry.Convex.ConvexSpace.AffineMap
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The convex space of affine maps
 

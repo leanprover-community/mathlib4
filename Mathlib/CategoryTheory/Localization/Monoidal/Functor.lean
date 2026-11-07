@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 public import Mathlib.Tactic.CategoryTheory.Coherence
 
 /-!
-
 # Universal property of localized monoidal categories
 
 This file proves that, given a monoidal localization functor `L : C ⥤ D`, and a functor

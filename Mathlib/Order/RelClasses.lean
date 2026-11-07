@@ -27,46 +27,6 @@ variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β →
 
 open Function
 
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Refl.swap (r : α → α → Prop) [Std.Refl r] : Std.Refl (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Irrefl.swap (r : α → α → Prop) [Std.Irrefl r] : Std.Irrefl (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem IsTrans.swap (r) [IsTrans α r] : IsTrans α (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Antisymm.swap (r : α → α → Prop) [Std.Antisymm r] : Std.Antisymm (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Asymm.swap (r : α → α → Prop) [Std.Asymm r] : Std.Asymm (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Total.swap (r : α → α → Prop) [Std.Total r] : Std.Total (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem Std.Trichotomous.swap (r : α → α → Prop) [Std.Trichotomous r] : Std.Trichotomous (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem IsPreorder.swap (r) [IsPreorder α r] : IsPreorder α (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) :=
-  inferInstance
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
-  inferInstance
-
 theorem eq_empty_relation (r : α → α → Prop) [Std.Irrefl r] [Subsingleton α] : r = emptyRelation :=
   funext₂ <| by simpa using not_rel_of_subsingleton r
 
@@ -107,10 +67,6 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMin := minOfLe,
     toMax := maxOfLe,
     toDecidableLE := hD }
-
-@[deprecated inferInstance +typeChanged (since := "2026-04-28")]
-theorem IsStrictTotalOrder.swap (r) [IsStrictTotalOrder α r] : IsStrictTotalOrder α (swap r) :=
-  inferInstance
 
 /-! ### Order connection -/
 
@@ -631,68 +587,47 @@ theorem Std.ge_refl {α : Type*} [LE α] [inst : @Std.Refl α (· ≥ ·)] (a : 
 
 attribute [to_dual existing Std.ge_refl] Std.le_refl
 
-@[to_dual instIsTransGe]
-instance [Preorder α] : IsTrans α (· ≤ ·) :=
-  ⟨@le_trans _ _⟩
-
-@[to_dual instIsPreorderGe]
+@[to_dual none]
 instance [Preorder α] : IsPreorder α (· ≤ ·) where
 
-@[to_dual instIrreflGt]
-instance instIrreflLt [Preorder α] : @Std.Irrefl α (· < ·) :=
-  ⟨lt_irrefl⟩
+-- This instance can already be synthesized but this helps `to_dual`
+@[to_dual none]
+instance [Preorder α] : Std.Asymm (α := α) (· < ·) where
+  asymm _ _ := lt_asymm
 
-@[to_dual instIsTransGt]
-instance [Preorder α] : IsTrans α (· < ·) :=
-  ⟨@lt_trans _ _⟩
-
-@[to_dual instAsymmGt]
-instance instAsymmLt [Preorder α] : Std.Asymm (α := α) (· < ·) :=
-  ⟨@lt_asymm _ _⟩
-
-@[to_dual instAntisymmGt]
-instance instAntisymmLt [Preorder α] : @Std.Antisymm α (· < ·) :=
-  Std.Asymm.antisymm _
-
-@[to_dual instIsStrictOrderGt]
+@[to_dual none]
 instance [Preorder α] : IsStrictOrder α (· < ·) where
 
-@[to_dual instIsNonstrictStrictOrderGeGt]
-instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) :=
-  ⟨@lt_iff_le_not_ge _ _⟩
+@[to_dual none]
+instance [Preorder α] : IsNonstrictStrictOrder α (· ≤ ·) (· < ·) where
+  right_iff_left_not_left _ _ := lt_iff_le_not_ge
 
-@[to_dual instAntisymmGe]
-instance instAntisymmLe [PartialOrder α] : @Std.Antisymm α (· ≤ ·) :=
-  ⟨@le_antisymm _ _⟩
+-- This instance can be inlined into the `IsPartialOrder` instance below,
+-- but separating it helps `to_dual`.
+@[to_dual none]
+instance [PartialOrder α] : Std.Antisymm (α := α) (· ≤ ·) where
+  antisymm _ _ := le_antisymm
 
-@[to_dual instIsPartialOrderGe]
+@[to_dual none]
 instance [PartialOrder α] : IsPartialOrder α (· ≤ ·) where
 
-@[to_dual total']
-instance LE.total [LinearOrder α] : @Std.Total α (· ≤ ·) :=
-  ⟨le_total⟩
+-- This instance can already be synthesized, and it can also be inlined into the `IsLinearOrder`
+-- instance below, but separating it helps `to_dual`.
+@[to_dual none]
+instance [LinearOrder α] : Std.Total (α := α) (· ≤ ·) where
+  total := le_total
 
-@[to_dual instIsLinearOrderGe]
+@[to_dual none]
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
-@[to_dual instTrichotomousGt]
-instance instTrichotomousLt [LinearOrder α] : @Std.Trichotomous α (· < ·) :=
-  ⟨by grind⟩
+-- This instance can already be synthesized, and it can also be inlined into the
+-- `IsStrictTotalOrder` instance below, but separating it helps `to_dual`.
+@[to_dual none]
+instance [LinearOrder α] : Std.Trichotomous (α := α) (· < ·) where
+  trichotomous := by grind
 
-@[to_dual instTrichotomousGe]
-instance instTrichotomousLe [LinearOrder α] : @Std.Trichotomous α (· ≤ ·) :=
-  inferInstance
-
-@[to_dual instIsStrictTotalOrderGt]
+@[to_dual none]
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
-
-@[to_dual isTrans_ge]
-theorem isTrans_le [Preorder α] : IsTrans α LE.le :=
-  inferInstance
-
-@[to_dual isTrans_gt]
-theorem isTrans_lt [Preorder α] : IsTrans α LT.lt :=
-  inferInstance
 
 @[to_dual total_ge]
 instance OrderDual.total_le [LE α] [h : @Std.Total α (· ≤ ·)] : @Std.Total αᵒᵈ (· ≤ ·) :=

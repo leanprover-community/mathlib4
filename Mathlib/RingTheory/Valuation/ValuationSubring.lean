@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
-
 # Valuation subrings of a field
 
 ## Projects
@@ -389,7 +388,7 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
 
 instance le_total_ideal : @Std.Total {S // A ≤ S} (· ≤ ·) := by
   classical
-  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.total.total x y⟩
+  let _ : @Std.Total (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => le_total x y⟩
   exact (primeSpectrumOrderEquiv A).symm.toRelEmbedding.total
 
 open scoped Classical in
