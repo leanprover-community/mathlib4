@@ -17,9 +17,6 @@ on `X.V`. This file builds this construction directly in terms of `Representatio
 `IntertwiningMap`, as a preliminary to the `linearize` functor
 `Action (Type w) G ⥤ Rep k G`. Working with `Representation` here avoids the defeq abuse
 currently present in `Mathlib/RepresentationTheory/Rep.lean`.
-
-TODO (Edison) : Refactor `Rep` to be a concrete category of `Representation` and
-reconstruct the current `linearize` functor using this file.
 -/
 
 universe w w' u u' v v'
