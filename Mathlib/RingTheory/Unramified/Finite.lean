@@ -335,8 +335,18 @@ lemma extendScalars_apply (f : M →ₗ[R] N) :
 
 variable (R S M) in
 @[simp]
-lemma extendScalars_id : extendScalars S (LinearMap.id : M →ₗ[R] M) = LinearMap.id :=
+lemma extendScalars_zero : extendScalars S (0 : M →ₗ[R] M) = 0 :=
+  map_zero (extendScalars S)
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_one : extendScalars S (1 : M →ₗ[R] M) = 1 :=
   comp_sec R S M
+
+variable (R S M) in
+@[simp]
+lemma extendScalars_id : extendScalars S (LinearMap.id : M →ₗ[R] M) = LinearMap.id :=
+  extendScalars_one R S M
 
 @[simp]
 lemma extendScalars_apply_comp_restrictScalars (f : M →ₗ[R] N) (g : L →ₗ[S] M) :
