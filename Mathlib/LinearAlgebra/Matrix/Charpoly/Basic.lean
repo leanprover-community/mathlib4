@@ -45,7 +45,7 @@ variable (i j : n)
 /-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/
-def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
+def charmatrix [IsMulCommutative R] (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
 
 theorem charmatrix_apply :
