@@ -5784,6 +5784,7 @@ public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Map
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Norm
+public import Mathlib.MeasureTheory.Integral.Lebesgue.PrekopaLeindler
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
 public import Mathlib.MeasureTheory.Integral.LebesgueNormedSpace
 public import Mathlib.MeasureTheory.Integral.Marginal
@@ -5850,6 +5851,7 @@ public import Mathlib.MeasureTheory.Measure.FiniteMeasurePi
 public import Mathlib.MeasureTheory.Measure.FiniteMeasureProd
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.MeasureTheory.Measure.Haar.Basic
+public import Mathlib.MeasureTheory.Measure.Haar.BrunnMinkowski
 public import Mathlib.MeasureTheory.Measure.Haar.Disintegration
 public import Mathlib.MeasureTheory.Measure.Haar.DistribChar
 public import Mathlib.MeasureTheory.Measure.Haar.Extension
