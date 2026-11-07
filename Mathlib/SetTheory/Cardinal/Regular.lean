@@ -98,6 +98,11 @@ theorem _root_.Ordinal.iSup_lt_omega_one {α : Type*} [Countable α] {f : α →
     (∀ i, f i < ω₁) → ⨆ i, f i < ω₁ :=
   Ordinal.lift_iSup_lt_of_lt_cof (by simp)
 
+@[stacks 05N3]
+theorem _root_.Ordinal.exists_cof_gt (c : Cardinal) : ∃ o : Ordinal, c < o.cof := by
+  use (succ (max c ℵ₀)).ord
+  rw [(isRegular_succ _).cof_ord] <;> simp
+
 theorem isRegular_preAleph_add_one {o : Ordinal} (h : ω ≤ o) : IsRegular (preAleph (o + 1)) := by
   rw [← succ_preAleph]
   exact isRegular_succ (aleph0_le_preAleph.2 h)
