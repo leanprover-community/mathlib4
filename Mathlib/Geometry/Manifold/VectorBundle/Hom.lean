@@ -791,9 +791,7 @@ lemma ContMDiff.clm_bundle_apply₂
     CMDiff n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
--- Version without using pullback bundles: the general version needs the clm_bundle_of_apply
--- lemmas to use pullbacks first.
-lemma ContMDiffWithinAt.clm_bundle_of_apply₂_simpler
+lemma ContMDiffWithinAt.clm_bundle_of_apply₂
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
     [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
@@ -817,7 +815,7 @@ lemma ContMDiffWithinAt.clm_bundle_of_apply₂_simpler
   -- then to conclude that `ψ` is C^n at `x`.
   exact ContMDiffWithinAt.clm_bundle_of_apply (E₁ := E₁) (F₁ := F₁) (x := x) aux
 
-lemma ContMDiffAt.clm_bundle_of_apply₂_simpler
+lemma ContMDiffAt.clm_bundle_of_apply₂
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
     [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
@@ -831,9 +829,11 @@ lemma ContMDiffAt.clm_bundle_of_apply₂_simpler
       CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x :=
-  ContMDiffWithinAt.clm_bundle_of_apply₂_simpler h
+  ContMDiffWithinAt.clm_bundle_of_apply₂ h
 
-lemma ContMDiffWithinAt.clm_bundle_of_apply₂
+-- TODO: do we care about this version? If so, find a better naming scheme and/or generalise the
+-- version above.
+lemma ContMDiffWithinAt.clm_bundle_of_apply₂_pullback
     (h : ∀ (σ : Π x : M, E₁ (b x)),
       (∀ᶠ x' in 𝓝 x, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (σ m)) x') →
       ∀ (τ : Π x : M, E₂ (b x)),
@@ -841,10 +841,10 @@ lemma ContMDiffWithinAt.clm_bundle_of_apply₂
       CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (σ m) (τ m))) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x :=
-  sorry -- copy `ContMDiffWithinAt.clm_bundle_of_apply₂_simpler` mutatis mutandis;
-  -- needs a more general version of ContMDiffWithinAt.clm_bundle_of_apply first
+  sorry -- copy `ContMDiffWithinAt.clm_bundle_of_apply₂` mutatis mutandis;
+  -- needs a more general version of `ContMDiffWithinAt.clm_bundle_of_apply` first
 
-lemma ContMDiffAt.clm_bundle_of_apply₂
+lemma ContMDiffAt.clm_bundle_of_apply₂_pullback
     (h : ∀ (σ : Π x : M, E₁ (b x)),
       (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₁ (b m) (σ m)) x') →
       ∀ (τ : Π x : M, E₂ (b x)),
@@ -852,12 +852,13 @@ lemma ContMDiffAt.clm_bundle_of_apply₂
       CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (σ m) (τ m))) x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x :=
-  ContMDiffWithinAt.clm_bundle_of_apply₂ h
+  ContMDiffWithinAt.clm_bundle_of_apply₂_pullback h
 
 theorem TensorialAt.contMDiff_mkHom₂
     [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
     [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)] [∀ (x : B), IsTopologicalAddGroup (E₂ x)]
     [ContMDiffVectorBundle k F₁ E₁ IB] [ContMDiffVectorBundle k F₂ E₂ IB]
     [∀ (x : B), IsTopologicalAddGroup (E₃ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₃ x)]
     [ContMDiffVectorBundle k F₃ E₃ IB]
