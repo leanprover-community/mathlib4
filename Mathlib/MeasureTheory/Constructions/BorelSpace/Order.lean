@@ -9,6 +9,7 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Mathlib.MeasureTheory.Function.AEMeasurableSequence
 public import Mathlib.MeasureTheory.Measure.Interval
 public import Mathlib.MeasureTheory.Order.Lattice
+public import Mathlib.Topology.Order.Cadlag
 public import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -298,6 +299,7 @@ section OrderTopology
 
 variable [OrderTopology α]
 
+@[to_dual]
 theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
@@ -322,6 +324,7 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+@[to_dual /-- If a set is a left-neighborhood of all of its points, then it is measurable. -/]
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
   · rcases H with ⟨x₀, x₀s, h₀⟩
@@ -883,6 +886,12 @@ theorem aemeasurable_restrict_of_antitoneOn {μ : Measure β}
   aemeasurable_restrict_of_monotoneOn (α := αᵒᵈ) hs hf
 
 end Monotone
+
+/-- A right-continuous function on a second-countable linear order is measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
+theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
+    {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
+  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by
