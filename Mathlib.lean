@@ -367,6 +367,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
 public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Option
@@ -461,6 +462,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Small
+public import Mathlib.Algebra.Group.PowIterate
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Semiconj.Basic
@@ -527,6 +529,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
