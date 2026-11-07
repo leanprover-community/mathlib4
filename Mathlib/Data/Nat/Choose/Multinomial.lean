@@ -479,7 +479,7 @@ theorem multinomial_singleton (n : ℕ) :
 theorem multinomial_add (m m' : Multiset ℕ) :
     (m + m').multinomial = Nat.choose (m + m').sum m.sum * m.multinomial * m'.multinomial := by
   induction m using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons x m hind =>
     simp only [cons_add, sum_cons, sum_add, multinomial_cons, hind, ← mul_assoc]
     congr 2
@@ -503,7 +503,7 @@ theorem multinomial_nsmul_singleton (k n : ℕ) :
 
 theorem multinomial_pos (m : Multiset ℕ) : 0 < m.multinomial := by
   induction m using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons x m h =>
     simp only [multinomial_cons, h, mul_pos_iff_of_pos_right]
     exact Nat.choose_pos (Nat.le_add_right x m.sum)

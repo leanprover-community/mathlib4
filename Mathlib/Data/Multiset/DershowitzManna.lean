@@ -112,9 +112,9 @@ private lemma acc_oneStep_cons_of_acc_lt (ha : Acc LT.lt a) :
   · exact ihM _ hNM'
   clear hNM
   induction N using Multiset.induction with
-  | empty =>
+  | zero =>
     simpa using .intro _ hM
-  | @cons b N ihN =>
+  | cons b N ihN =>
     simp only [mem_cons, forall_eq_or_imp, add_cons] at hN ⊢
     obtain ⟨hba, hN⟩ := hN
     exact ha _ hba <| ihN hN
@@ -123,7 +123,7 @@ private lemma acc_oneStep_cons_of_acc_lt (ha : Acc LT.lt a) :
 accessible given the `OneStep` relation. -/
 private lemma acc_oneStep_of_acc_lt (hM : ∀ x ∈ M, Acc LT.lt x) : Acc OneStep M := by
   induction M using Multiset.induction_on with
-  | empty =>
+  | zero =>
     constructor
     simp [OneStep, eq_comm (b := _ + _)]
   | cons a M ih =>
@@ -140,16 +140,16 @@ private lemma transGen_oneStep_of_isDershowitzMannaLT :
   classical
   rintro ⟨X, Y, Z, hZ, hM, hN, hYZ⟩
   induction Z using Multiset.induction_on generalizing X Y M N with
-  | empty => simp at hZ
-  | cons z Z ih => ?_
-  obtain rfl | hZ := eq_or_ne Z 0
-  · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
-  let Y' : Multiset α := Y.filter (· < z)
-  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_)
-    ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
-  · rw [add_add_tsub_cancel (filter_le ..), hM]
-  · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy
-    simpa [hy.2] using hYZ y (by simp_all)
+  | zero => simp at hZ
+  | cons z Z ih =>
+    obtain rfl | hZ := eq_or_ne Z 0
+    · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
+    let Y' : Multiset α := Y.filter (· < z)
+    refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_)
+      ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
+    · rw [add_add_tsub_cancel (filter_le ..), hM]
+    · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy
+      simpa [hy.2] using hYZ y (by simp_all)
 
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=

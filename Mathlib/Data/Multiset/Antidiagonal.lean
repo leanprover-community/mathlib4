@@ -78,7 +78,7 @@ theorem antidiagonal_add (s t : Multiset α) :
     (s + t).antidiagonal =
       s.antidiagonal.bind fun p ↦ t.antidiagonal.map fun q ↦ (p.1 + q.1, p.2 + q.2) := by
   induction s using Multiset.induction_on with
-  | empty => simp
+  | zero => simp
   | cons a s ih =>
     simp_rw [cons_add, antidiagonal_cons, ih, add_bind, bind_map, map_bind, map_map]
     congr! <;> simp
@@ -87,7 +87,7 @@ theorem antidiagonal_add (s t : Multiset α) :
 theorem map_swap_antidiagonal (s : Multiset α) :
     s.antidiagonal.map Prod.swap = s.antidiagonal := by
   induction s using Multiset.induction_on with
-  | empty => rfl
+  | zero => rfl
   | cons a s ih =>
     simp only [antidiagonal_cons, map_add, map_map, ← Prod.map_comp_swap,
       ← Multiset.map_map _ Prod.swap, ih, add_comm]
@@ -95,7 +95,7 @@ theorem map_swap_antidiagonal (s : Multiset α) :
 theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
     s.antidiagonal = s.powerset.map fun t ↦ (s - t, t) := by
   induction s using Multiset.induction_on with
-  | empty => simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
+  | zero => simp only [antidiagonal_zero, powerset_zero, Multiset.zero_sub, map_singleton]
   | cons a s hs =>
     simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_apply,
       id, sub_cons, erase_cons_head]

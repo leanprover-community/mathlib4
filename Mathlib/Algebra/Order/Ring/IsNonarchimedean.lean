@@ -158,7 +158,7 @@ include hna
   `f (t.sum g) ≤ f (g b)`. -/
 theorem multiset_image_add_of_nonempty (hs : s ≠ 0) : ∃ b ∈ s, f (s.map g).sum ≤ f (g b) := by
   induction s using Multiset.induction_on with
-  | empty => contradiction
+  | zero => contradiction
   | cons a s h =>
     simp only [mem_cons, map_cons, sum_cons, exists_eq_or_imp]
     by_cases h1 : s = 0
@@ -174,7 +174,7 @@ theorem multiset_image_add_of_nonempty (hs : s ≠ 0) : ∃ b ∈ s, f (s.map g)
 theorem multiset_image_add [Nonempty β] (s : Multiset β) (f_zero_le : ∀ x, f 0 ≤ f x) :
     ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (s.map g).sum ≤ f (g b) := by
   induction s using Multiset.induction_on with
-  | empty =>
+  | zero =>
     exact ⟨Classical.arbitrary β, by simp, by simpa using f_zero_le _⟩
   | cons a s h =>
     obtain ⟨b, hb1, hb2⟩ := hna.multiset_image_add_of_nonempty (s := a ::ₘ s) g

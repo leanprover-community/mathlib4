@@ -179,7 +179,7 @@ theorem _root_.Irreducible.normalizedFactors_pow {p : α} (hp : Irreducible p) (
 theorem normalizedFactors_prod_eq (s : Multiset α) (hs : ∀ a ∈ s, Irreducible a) :
     normalizedFactors s.prod = s.map normalize := by
   induction s using Multiset.induction with
-  | empty => rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
+  | zero => rw [Multiset.prod_zero, normalizedFactors_one, Multiset.map_zero]
   | cons a s ih =>
     have ia := hs a (Multiset.mem_cons_self a _)
     have ib := fun b h => hs b (Multiset.mem_cons_of_mem h)
@@ -330,7 +330,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
       convert hs
     simp
   induction s using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons _ _ IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
     · exact fun h ↦ hs (Multiset.mem_cons_of_mem h)

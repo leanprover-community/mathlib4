@@ -602,7 +602,7 @@ theorem derivative_eval₂_C (p q : R[X]) :
 theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
       (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
-  refine Multiset.induction_on s (by simp) fun i s h => ?_
+  induction s using Multiset.induction_on with | zero => simp | cons i s h
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr

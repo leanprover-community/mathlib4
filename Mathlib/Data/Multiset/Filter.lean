@@ -261,7 +261,7 @@ theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s
 theorem map_filter_eq_filterMap (f : α → β) (p : α → Prop) [DecidablePred p] (s : Multiset α) :
     map f (filter p s) = filterMap (fun a => if p a then .some (f a) else .none) s := by
   induction s using Multiset.induction with
-  | empty => simp
+  | zero => simp
   | cons a s ih =>
     simp only [filter_cons, map_add, ih, filterMap_cons, Option.map_ite]; clear ih; congr
     split_ifs <;> simp
@@ -281,9 +281,11 @@ theorem countP_eq_countP_filter_add (s) (p q : α → Prop) [DecidablePred p] [D
 
 theorem countP_map (f : α → β) (s : Multiset α) (p : β → Prop) [DecidablePred p] :
     countP p (map f s) = card (s.filter fun a => p (f a)) := by
-  refine Multiset.induction_on s ?_ fun a t IH => ?_
-  · rw [map_zero, countP_zero, filter_zero, card_zero]
-  · rw [map_cons, countP_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
+  induction s using Multiset.induction_on with
+  | zero =>
+    rw [map_zero, countP_zero, filter_zero, card_zero]
+  | cons a t IH =>
+    rw [map_cons, countP_cons, IH, filter_cons, card_add, apply_ite card, card_zero, card_singleton,
       Nat.add_comm]
 
 lemma filter_attach (s : Multiset α) (p : α → Prop) [DecidablePred p] :
@@ -361,7 +363,7 @@ variable [DecidableEq α] {s t : Multiset α} {a : α}
 @[simp]
 lemma filter_sub (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
     filter p (s - t) = filter p s - filter p t := by
-  revert s; refine Multiset.induction_on t (by simp) fun a t IH s => ?_
+  induction t using Multiset.induction_on generalizing s with | zero => simp | cons a t IH
   rw [sub_cons, IH]
   by_cases h : p a
   · rw [filter_cons_of_pos _ h, sub_cons]
