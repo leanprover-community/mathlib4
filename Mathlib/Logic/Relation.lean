@@ -817,13 +817,17 @@ see for example `Quot.eqvGen_exact` and `Quot.eqvGen_sound`. -/
 def setoid : Setoid α :=
   Setoid.mk _ (EqvGen.is_equivalence r)
 
-theorem mono {r p : α → α → Prop} (hrp : r ≤ p) : EqvGen r ≤ EqvGen p := by
-  intro _ _ h
-  induction h with
-  | rel a b h => exact EqvGen.rel _ _ (hrp _ _ h)
-  | refl => exact EqvGen.refl _
-  | symm a b _ ih => exact EqvGen.symm _ _ ih
-  | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
+theorem lift {r : α → α → Prop} {p : β → β → Prop} (f : α → β) (h : r ≤ (p on f)) :
+    EqvGen r ≤ (EqvGen p on f) := by
+  intro _ _ hab
+  induction hab with
+  | rel _ _ hab => exact .rel _ _ (h _ _ hab)
+  | refl => exact .refl _
+  | symm _ _ _ ih => exact .symm _ _ ih
+  | trans _ _ _ _ _ hab hbc => exact .trans _ _ _ hab hbc
+
+theorem mono {r p : α → α → Prop} : r ≤ p → EqvGen r ≤ EqvGen p :=
+  EqvGen.lift id
 
 lemma eqvGen_le {r r' : α → α → Prop} [IsEquiv α r'] (h : r ≤ r') : EqvGen r ≤ r'
   | _, _, .refl _ => _root_.refl _
@@ -831,11 +835,7 @@ lemma eqvGen_le {r r' : α → α → Prop} [IsEquiv α r'] (h : r ≤ r') : Eqv
   | _, _, .trans _ _ _ hxy hyz => _root_.trans (eqvGen_le h _ _ hxy) (eqvGen_le h _ _ hyz)
   | _, _, .rel _ _ hab => h _ _ hab
 
-lemma eqvGen_mono {r r' : α → α → Prop} (h : r ≤ r') : EqvGen r ≤ EqvGen r'
-  | _, _, .refl _ => .refl _
-  | _, _, .symm _ _ hxy => .symm _ _ (eqvGen_mono h _ _ hxy)
-  | _, _, .trans _ _ _ hxy hyz => .trans _ _ _ (eqvGen_mono h _ _ hxy) (eqvGen_mono h _ _ hyz)
-  | _, _, .rel _ _ hab => .rel _ _ (h _ _ hab)
+@[deprecated (since := "2026-11-04")] alias eqvGen_mono := mono
 
 lemma reflGen_le_eqvGen : ReflGen r ≤ EqvGen r
   |  _, _, .refl => .refl _
@@ -861,22 +861,22 @@ lemma reflTransGen_le_eqvGen : ReflTransGen r ≤ EqvGen r := by
 @[simp, grind =]
 lemma eqvGen_reflGen : EqvGen (ReflGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (reflGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (reflGen_le_eqvGen _)) (mono fun _ _ => .single)
 
 @[simp, grind =]
 lemma eqvGen_transGen : EqvGen (TransGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (transGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (transGen_le_eqvGen _)) (mono fun _ _ => .single)
 
 @[simp, grind =]
 lemma eqvGen_symmGen : EqvGen (SymmGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (symmGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .inl)
+    (eqvGen_le (symmGen_le_eqvGen _)) (mono fun _ _ => .inl)
 
 @[simp, grind =]
 lemma eqvGen_reflTransGen : EqvGen (ReflTransGen r) = EqvGen r :=
   Subrelation.antisymm
-    (eqvGen_le (reflTransGen_le_eqvGen _)) (eqvGen_mono fun _ _ => .single)
+    (eqvGen_le (reflTransGen_le_eqvGen _)) (mono fun _ _ => .single)
 
 @[grind =]
 lemma eqvGen_eq_reflTransGen [Std.Symm r] : EqvGen r = ReflTransGen r :=
@@ -989,8 +989,13 @@ theorem Quot.eqvGen_exact (H : Quot.mk r a = Quot.mk r b) : EqvGen r a b :=
 theorem Quot.eqvGen_sound (H : EqvGen r a b) : Quot.mk r a = Quot.mk r b :=
   H.rec (fun _ _ ↦ Quot.sound) (fun _ ↦ rfl) (fun _ _ _ ↦ .symm) (fun _ _ _ _ _ ↦ .trans)
 
+theorem Equivalence.eqvGen_le {s : α → α → Prop} (hs : Equivalence s) (h : r ≤ s) :
+    EqvGen r ≤ s :=
+  have := hs.isEquiv
+  EqvGen.eqvGen_le h
+
 theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
-  ⟨fun h ↦ by induction h <;> grind [Equivalence], .rel a b⟩
+  ⟨h.eqvGen_le (fun _ _ ↦ id) a b, .rel a b⟩
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext h.eqvGen_iff

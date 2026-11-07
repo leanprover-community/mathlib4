@@ -179,8 +179,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     rw [← show _ = Sigma.mk i x from congr($((sigmaIsoSigma.{_, u} D.U).inv_hom_id) _)]
     rw [← show _ = Sigma.mk j y from congr($((sigmaIsoSigma.{_, u} D.U).inv_hom_id) _)]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
-    rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ _ _ (D.eqvGen_of_π_eq h :)
+    refine (InvImage.equivalence _ _ D.rel_equiv).eqvGen_le ?_ _ _ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x

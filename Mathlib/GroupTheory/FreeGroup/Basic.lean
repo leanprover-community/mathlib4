@@ -359,9 +359,7 @@ theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ := by
 @[to_additive]
 theorem eqvGen_step_iff_join_red : EqvGen Red.Step L₁ L₂ ↔ Join Red L₁ L₂ :=
   Iff.intro
-    (fun h =>
-      have : EqvGen (Join Red) L₁ L₂ := h.mono fun _ _ => join_red_of_step
-      equivalence_join_red.eqvGen_iff.1 this)
+    (equivalence_join_red.eqvGen_le (fun _ _ => join_red_of_step) L₁ L₂)
     (join_le_of_equivalence_of_le (Relation.EqvGen.is_equivalence _)
       (reflTransGen_le_of_equivalence_of_le (Relation.EqvGen.is_equivalence _) EqvGen.rel) L₁ L₂)
 
