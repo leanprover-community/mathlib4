@@ -16,7 +16,6 @@ import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Tactic.Abel
 
 /-!
-
 # Locally Finite Linearly Ordered Abelian Groups
 
 ## Main results

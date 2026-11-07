@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Charpoly.Basic
 public import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
-
 # Characteristic polynomial
 
 ## Main result

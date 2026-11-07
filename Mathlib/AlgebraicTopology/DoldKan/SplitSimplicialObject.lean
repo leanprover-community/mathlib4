@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
-
 # Split simplicial objects in preadditive categories
 
 In this file we define a functor `nondegComplex : SimplicialObject.Split C ⥤ ChainComplex C ℕ`
@@ -247,7 +246,7 @@ noncomputable def toNondegComplex : K[X] ⟶ s.nondegComplex :=
     ({ f := by exact PInfty } ≫ s.toKaroubiNondegComplexIsoN₁.inv)
 
 /-- Given a splitting `s` of a simplicial object `X` in a preadditive category,
-this is the split monomormphism from the chain complex `s.nondegComplex` to
+this is the split monomorphism from the chain complex `s.nondegComplex` to
 the alternating face map complex of `X`. -/
 @[no_expose]
 noncomputable def fromNondegComplex : s.nondegComplex ⟶ K[X] :=

@@ -99,11 +99,14 @@ end Splits
 
 section Irreducible
 
-theorem X_pow_mul_sub_C_irreducible
+theorem irreducible_X_pow_mul_sub_C
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
     (hn : Irreducible (X ^ n - C (AdjoinRoot.root (X ^ m - C a)))) :
     Irreducible (X ^ (n * m) - C a) := by
   simpa [pow_mul] using irreducible_comp hm (by simpa using hn)
+
+@[deprecated (since := "2026-10-29")]
+alias X_pow_mul_sub_C_irreducible := irreducible_X_pow_mul_sub_C
 
 theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
     Algebra.norm K (root (X ^ n - C a)) = (-1) ^ n * -a := by
@@ -114,7 +117,7 @@ theorem norm_root_X_pow_sub_C {n : ℕ} {a : K} (hn : n ≠ 0) :
   simp
 
 -- TODO: generalize to even `n`
-theorem X_pow_sub_C_irreducible_of_odd
+theorem irreducible_X_pow_sub_C_of_odd
     {n : ℕ} (hn : Odd n) {a : K} (ha : ∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ n - C a) := by
   induction n using induction_on_primes generalizing K a with
@@ -122,8 +125,8 @@ theorem X_pow_sub_C_irreducible_of_odd
   | one => simpa using irreducible_X_sub_C a
   | prime_mul p n hp IH =>
     rw [mul_comm]
-    have irred := X_pow_sub_C_irreducible_of_prime hp (ha p hp (dvd_mul_right _ _))
-    apply X_pow_mul_sub_C_irreducible irred
+    have irred := irreducible_X_pow_sub_C_of_prime hp (ha p hp (dvd_mul_right _ _))
+    apply irreducible_X_pow_mul_sub_C irred
     have := Fact.mk irred
     apply IH (Nat.odd_mul.mp hn).2
     intro q hq hqn b hb
@@ -131,37 +134,55 @@ theorem X_pow_sub_C_irreducible_of_odd
     rw [← map_pow, hb, norm_root_X_pow_sub_C hp.ne_zero, (Nat.odd_mul.mp hn).1.neg_pow,
       one_pow, neg_one_mul, neg_neg]
 
-theorem X_pow_sub_C_irreducible_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_of_odd := irreducible_X_pow_sub_C_of_odd
+
+theorem irreducible_X_pow_sub_C_iff_forall_prime_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ p : ℕ, p.Prime → p ∣ n → ∀ b : K, b ^ p ≠ a) :=
   ⟨fun e _ hp hpn ↦ pow_ne_of_irreducible_X_pow_sub_C e hpn hp.ne_one,
-    X_pow_sub_C_irreducible_of_odd hn⟩
+    irreducible_X_pow_sub_C_of_odd hn⟩
 
-theorem X_pow_sub_C_irreducible_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_iff_forall_prime_of_odd :=
+  irreducible_X_pow_sub_C_iff_forall_prime_of_odd
+
+theorem irreducible_X_pow_sub_C_iff_of_odd {n : ℕ} (hn : Odd n) {a : K} :
     Irreducible (X ^ n - C a) ↔ (∀ d, d ∣ n → d ≠ 1 → ∀ b : K, b ^ d ≠ a) :=
   ⟨fun e _ ↦ pow_ne_of_irreducible_X_pow_sub_C e,
-    fun H ↦ X_pow_sub_C_irreducible_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
+    fun H ↦ irreducible_X_pow_sub_C_of_odd hn fun p hp hpn ↦ (H p hpn hp.ne_one)⟩
+
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_iff_of_odd := irreducible_X_pow_sub_C_iff_of_odd
 
 -- TODO: generalize to `p = 2`
-theorem X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
+theorem irreducible_X_pow_sub_C_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) (n : ℕ) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ (p ^ n) - C a) := by
-  apply X_pow_sub_C_irreducible_of_odd (hp.odd_of_ne_two hp').pow
+  apply irreducible_X_pow_sub_C_of_odd (hp.odd_of_ne_two hp').pow
   intro q hq hq'
   simpa [(Nat.prime_dvd_prime_iff_eq hq hp).mp (hq.dvd_of_dvd_pow hq')] using ha
 
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_of_prime_pow_of_ne_two :=
+  irreducible_X_pow_sub_C_of_prime_pow_of_ne_two
+
 @[deprecated (since := "2026-08-17")]
 alias X_pow_sub_C_irreducible_of_prime_pow :=
-  X_pow_sub_C_irreducible_of_prime_pow_of_ne_two
+  irreducible_X_pow_sub_C_of_prime_pow_of_ne_two
 
-theorem X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
+theorem irreducible_X_pow_sub_C_iff_of_prime_pow_of_ne_two
     {p : ℕ} (hp : p.Prime) (hp' : p ≠ 2) {n} (hn : n ≠ 0) {a : K} :
     Irreducible (X ^ p ^ n - C a) ↔ ∀ b, b ^ p ≠ a :=
   ⟨(pow_ne_of_irreducible_X_pow_sub_C · (dvd_pow dvd_rfl hn) hp.ne_one),
-    X_pow_sub_C_irreducible_of_prime_pow_of_ne_two hp hp' n⟩
+    irreducible_X_pow_sub_C_of_prime_pow_of_ne_two hp hp' n⟩
+
+@[deprecated (since := "2026-10-29")]
+alias X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two :=
+  irreducible_X_pow_sub_C_iff_of_prime_pow_of_ne_two
 
 @[deprecated (since := "2026-08-17")]
 alias X_pow_sub_C_irreducible_iff_of_prime_pow :=
-  X_pow_sub_C_irreducible_iff_of_prime_pow_of_ne_two
+  irreducible_X_pow_sub_C_iff_of_prime_pow_of_ne_two
 
 end Irreducible
 

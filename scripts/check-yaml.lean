@@ -49,7 +49,7 @@ def processDb (env : Environment) (file : String) : IO Bool := do
 
 public unsafe def main : IO Unit := do
   initSearchPath (← findSysroot)
-  withImportModules #[`Mathlib, `Archive] ∅ (trustLevel := 1024) fun env => do
+  withImportModules #[`Mathlib, `Archive, `Counterexamples] ∅ (trustLevel := 1024) fun env => do
     let results ← databases.mapM (fun p ↦ processDb env p)
     unless results.all id do
       IO.Process.exit 1
