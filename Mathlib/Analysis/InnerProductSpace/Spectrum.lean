@@ -6,6 +6,7 @@ Authors: Heather Macbeth
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Rayleigh
+public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.Normed.Operator.Compact.FiniteDimension
 public import Mathlib.Data.Fin.Tuple.Sort
 public import Mathlib.LinearAlgebra.Eigenspace.Charpoly
@@ -421,6 +422,8 @@ end Nonneg
 
 namespace ContinuousLinearMap
 
+section Version1
+
 variable [CompleteSpace E] {T : E →L[𝕜] E}
 
 theorem eq_zero_of_forall_hasEigenvalue_eq_zero (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
@@ -459,5 +462,272 @@ theorem finite_dimensional_eigenspace (hT : IsCompactOperator T) (μ : 𝕜) (h�
     ((mem_invtSubmodule_iff_forall_mem_of_mem _).mp (eigenspace_mem_invtSubmodule T.toLinearMap μ))
   rw [restrict_eigenspace, LinearMap.coe_smul, IsCompactOperator.smul_iff₀ hμ] at hT
   rwa [← isCompactOperator_id_iff_finiteDimensional]
+
+end Version1
+
+section Version2
+
+universe u v
+
+variable {𝕜 : Type u} [RCLike 𝕜] {E : Type v} [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
+  [CompleteSpace E] {T : E →L[𝕜] E}
+
+/-- Index for the chosen Hilbert basis of each eigenspace. -/
+private noncomputable def eigenspaceBasisIndex (T : E →L[𝕜] E) (ν : 𝕜) :
+    Set (eigenspace (T : End 𝕜 E) ν) :=
+  (exists_hilbertBasis 𝕜 (eigenspace (T : End 𝕜 E) ν)).choose
+
+/-- Chosen Hilbert basis of each eigenspace. -/
+private noncomputable def eigenspaceBasis (T : E →L[𝕜] E) (ν : 𝕜) :
+    HilbertBasis (eigenspaceBasisIndex T ν) 𝕜 (eigenspace (T : End 𝕜 E) ν) :=
+  (exists_hilbertBasis 𝕜 (eigenspace (T : End 𝕜 E) ν)).choose_spec.choose
+
+/-- Index type for unsorted family of eigenspaceBasis. -/
+private def UnsortedIndex (T : E →L[𝕜] E) := Σ ν : 𝕜, eigenspaceBasisIndex T ν
+
+/-- The unsorted eigenvalues, indexed by `UnsortedIndex`. -/
+private noncomputable def unsortedEigenvalues (T : E →L[𝕜] E) (i : UnsortedIndex T) : ℝ :=
+  RCLike.re i.1
+
+private theorem hasEigenvalue_fst (T : E →L[𝕜] E) (i : UnsortedIndex T) :
+    HasEigenvalue (T : End 𝕜 E) i.1 := by
+  rw [hasEigenvalue_iff]
+  intro h
+  have : Subsingleton (eigenspace (T : End 𝕜 E) i.1) := Submodule.subsingleton_iff_eq_bot.mpr h
+  exact (T.eigenspaceBasis i.1).orthonormal.ne_zero i.2 (Subsingleton.elim _ _)
+
+private theorem ofReal_unsortedEigenvalues (T : E →L[𝕜] E) (hT' : T.IsSymmetric)
+    (i : UnsortedIndex T) : ((T.unsortedEigenvalues i : ℝ) : 𝕜) = i.1 := by
+  have h := hT'.conj_eigenvalue_eq_self (hasEigenvalue_fst T i)
+  unfold unsortedEigenvalues
+  exact RCLike.conj_eq_iff_re.mp h
+
+private theorem hasEigenvalue_unsortedEigenvalues (T : E →L[𝕜] E) (hT' : T.IsSymmetric)
+    (i : UnsortedIndex T) :
+    HasEigenvalue (T : End 𝕜 E) (T.unsortedEigenvalues i) := by
+  rw [ofReal_unsortedEigenvalues T hT' i]
+  exact hasEigenvalue_fst T i
+
+/-- A HilbertBasis of `E` based on the unsorted eigenvalues. -/
+private noncomputable def unsortedEigenvectorBasis (hT : IsCompactOperator T)
+    (hT' : T.IsSymmetric) : HilbertBasis (UnsortedIndex T) 𝕜 E := HilbertBasis.mkOfOrthogonalEqBot
+  (hT'.orthogonalFamily_eigenspaces.orthonormal_sigma_orthonormal
+    (fun v ↦ (T.eigenspaceBasis v).orthonormal))
+  (by
+    rw [← Submodule.orthogonal_closure, eq_bot_iff,
+      ← orthogonalComplement_iSup_eigenspaces_eq_bot hT hT']
+    refine Submodule.orthogonal_le (iSup_le fun ν x hx ↦ ?_)
+    refine (Submodule.isClosed_topologicalClosure _).mem_of_tendsto
+      (((T.eigenspaceBasis ν).hasSum_repr ⟨x, hx⟩).mapL (eigenspace (T : End 𝕜 E) ν).subtypeL)
+      (Filter.Eventually.of_forall fun s ↦ Submodule.sum_mem _ fun i _ ↦ ?_)
+    exact Submodule.le_topologicalClosure _
+      (Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨ν, i⟩, rfl⟩)))
+
+private theorem hasEigenvector_unsortedEigenvectorBasis (hT : IsCompactOperator T)
+    (hT' : T.IsSymmetric) (i : UnsortedIndex T) :
+    HasEigenvector (T : End 𝕜 E) (unsortedEigenvalues T i)
+      (unsortedEigenvectorBasis hT hT' i) := by
+  unfold unsortedEigenvectorBasis
+  erw [HilbertBasis.coe_mkOfOrthogonalEqBot, ofReal_unsortedEigenvalues T hT' i]
+  refine ⟨(T.eigenspaceBasis i.1 i.2).2, ?_⟩
+  intro h
+  exact (T.eigenspaceBasis i.1).orthonormal.ne_zero i.2 (Subtype.ext h)
+
+private theorem tendsto_unsortedEigenvalues (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    Filter.Tendsto (unsortedEigenvalues T) Filter.cofinite (nhds 0) := by
+  rw [Metric.tendsto_nhds]
+  intro ε hε
+  by_contra hfin
+  set b := unsortedEigenvectorBasis hT hT'
+  simp at hfin
+  -- compactness: cover the relatively compact image of the unit ball by `ε/2`-balls
+  obtain ⟨t, htfin, hcover⟩ := Metric.totallyBounded_iff.mp
+    (hT.isCompact_closure_image_closedBall 1).totallyBounded (ε / 2) (half_pos hε)
+  have hmem : ∀ i, ∃ c ∈ t, dist (T (b i)) c < ε / 2 := by
+    intro i
+    have h1 : T (b i) ∈ closure (T '' Metric.closedBall (0 : E) 1) :=
+      subset_closure ⟨b i, by simp [b.orthonormal.1 i], rfl⟩
+    have h2 := hcover h1
+    simp only [Set.mem_iUnion, Metric.mem_ball] at h2
+    obtain ⟨c, hc, hd⟩ := h2
+    exact ⟨c, hc, hd⟩
+  choose c hct hcd using hmem
+  -- pigeonhole: two distinct large eigenvalue indices share a center
+  obtain ⟨x, hx, y, hy, hxy, hc⟩ :=
+    hfin.exists_ne_map_eq_of_mapsTo (f := c) (fun i _ => hct i) htfin
+  -- Hence, their images are less than `ε` apart
+  have hlt : dist (T (b x)) (T (b y)) < ε := by
+    calc dist (T (b x)) (T (b y))
+        ≤ dist (T (b x)) (c x) + dist (c x) (T (b y)) := dist_triangle _ _ _
+      _ = dist (T (b x)) (c x) + dist (T (b y)) (c y) := by rw [hc, dist_comm (c y)]
+      _ < ε / 2 + ε / 2 := add_lt_add (hcd x) (hcd y)
+      _ = ε := by ring
+  -- but their images are also at least `ε` apart
+  have hdist : ε ≤ dist (T (b x)) (T (b y)) := by
+    have hb : ∀ i, T (b i) = ((unsortedEigenvalues T i : ℝ) : 𝕜) • b i := fun i =>
+      (hasEigenvector_unsortedEigenvectorBasis hT hT' i).apply_eq_smul
+    rw [dist_eq_norm, hb, hb, sub_eq_add_neg, ← neg_smul]
+    refine (sq_le_sq₀ hε.le (norm_nonneg _)).1 ?_
+    simp_rw [sq]
+    rw [norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (𝕜 := 𝕜) _ _
+      (by simp [inner_smul_left, inner_smul_right, b.orthonormal.2 hxy])]
+    simp only [norm_smul, b.orthonormal.1, RCLike.norm_ofReal, mul_one]
+    nlinarith [pow_le_pow_left₀ hε.le hx 2, sq_nonneg |unsortedEigenvalues T y|]
+  exact absurd hdist (not_le.mpr hlt)
+
+/-- Index type for the nonzero (unsorted) eigenvalues. -/
+private abbrev NonzeroIndex (T : E →L[𝕜] E) :=
+  {i : UnsortedIndex T // unsortedEigenvalues T i ≠ 0}
+
+/-- Index type for the zero eigenvalues. -/
+private abbrev ZeroIndex (T : E →L[𝕜] E) :=
+  {i : UnsortedIndex T // ¬ unsortedEigenvalues T i ≠ 0}
+
+/-- Sort lexicographically such that `i < j` ↔ `|μ i| < |μ j|` when
+  `|μ i| ≠ |μ j|`, `μ i < μ j` when `μ i ≠ μ j` and arbitrary otherwise. -/
+private noncomputable def NonzeroIndex.key (i : NonzeroIndex T) :
+    ℝᵒᵈ ×ₗ ℝᵒᵈ ×ₗ Cardinal.{max u v} :=
+  toLex (OrderDual.toDual |unsortedEigenvalues T i.1|,
+    toLex (OrderDual.toDual (unsortedEigenvalues T i.1), embeddingToCardinal i.1))
+
+private theorem NonzeroIndex.key_injective :
+    Function.Injective (NonzeroIndex.key (T := T)) := by
+  intro i j h
+  simp only [NonzeroIndex.key, toLex_inj, Prod.mk.injEq, OrderDual.toDual_inj] at h
+  exact Subtype.ext (embeddingToCardinal.injective h.2.2)
+
+private noncomputable instance : LinearOrder (NonzeroIndex T) :=
+  LinearOrder.lift' NonzeroIndex.key NonzeroIndex.key_injective
+
+private theorem finite_Iio (hT : IsCompactOperator T) (hT' : T.IsSymmetric)
+    (i : NonzeroIndex T) : (Set.Iio i).Finite := by
+  have hε : 0 < |unsortedEigenvalues T i.1| := abs_pos.mpr i.2
+  have hF := Filter.eventually_cofinite.mp
+    (Metric.tendsto_nhds.mp (tendsto_unsortedEigenvalues hT hT') _ hε)
+  refine (hF.preimage Subtype.val_injective.injOn).subset fun j hj => ?_
+  have h' : NonzeroIndex.key j < NonzeroIndex.key i := hj
+  unfold NonzeroIndex.key at h'
+  rw [Prod.Lex.lt_iff] at h'
+  simp only [Set.mem_preimage, Set.mem_ofPred_eq, dist_zero_right, Real.norm_eq_abs, not_lt]
+  rcases h' with h' | ⟨h', -⟩
+  · exact h'.le
+  · exact (OrderDual.toDual_inj.mp h').ge
+
+/-- Since there are only finitely many eigenvalues larger than any given eigenvalue, we can assign
+  it a rank based on that. -/
+private noncomputable def rank (hT : IsCompactOperator T) (hT' : T.IsSymmetric)
+    (i : NonzeroIndex T) : ℕ :=
+  (finite_Iio hT hT' i).toFinset.card
+
+private theorem rank_strictMono (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    StrictMono (rank hT hT') := by
+  intro i j hij
+  unfold rank
+  apply Finset.card_lt_card
+  rw [Set.Finite.toFinset_ssubset_toFinset]
+  exact ⟨Set.Iio_subset_Iio hij.le, fun hsub => lt_irrefl i (hsub hij)⟩
+
+/-- For a HilbertBasis `b` indexed by `ι`, `b.reindex (e : ι ≃ ι')` is a HilbertBasis indexed
+  by `ι'` -/
+noncomputable def _root_.HilbertBasis.reindex {ι ι' : Type*} (b : HilbertBasis ι 𝕜 E) (e : ι ≃ ι') :
+    HilbertBasis ι' 𝕜 E :=
+  HilbertBasis.mk (v := fun i' => b (e.symm i'))
+    (b.orthonormal.comp _ e.symm.injective)
+    (by
+      have h : Set.range (fun i' => b (e.symm i')) = Set.range b := e.symm.surjective.range_comp b
+      rw [h]
+      exact b.dense_span.ge)
+
+/-- Index type for the nonzero (sorted) eigenvalues. -/
+@[no_expose]
+def SortedIndex (hT : IsCompactOperator T) (hT' : T.IsSymmetric) : Type := Set.range (rank hT hT')
+
+/-- Equivalence between the index types of the sorted and unsorted eigenvalues. -/
+private noncomputable def sortEquiv (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    NonzeroIndex T ≃ SortedIndex hT hT' :=
+  Equiv.ofInjective (rank hT hT') (rank_strictMono hT hT').injective
+
+/-- Index type for the eigenvalues. -/
+@[no_expose]
+def eigenIndex (hT : IsCompactOperator T) (hT' : T.IsSymmetric) := SortedIndex hT hT' ⊕ ZeroIndex T
+
+private noncomputable def eigenEquiv (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (eigenIndex hT hT') ≃ UnsortedIndex T :=
+  (Equiv.sumCongr (sortEquiv hT hT') (Equiv.refl (ZeroIndex T))).symm.trans
+    (Equiv.sumCompl fun i : UnsortedIndex T => unsortedEigenvalues T i ≠ 0)
+
+/-- The eigenvalues for a compact self-adjoint operator `T`. -/
+@[no_expose]
+noncomputable def eigenvalues (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    (eigenIndex hT hT') → ℝ :=
+  T.unsortedEigenvalues ∘ (eigenEquiv hT hT')
+
+/-- A HilbertBasis based on the eigendecomposition for a compact self-adjoint operator `T`. -/
+@[no_expose]
+noncomputable def eigenvectorBasis (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    HilbertBasis (eigenIndex hT hT') 𝕜 E :=
+  (unsortedEigenvectorBasis hT hT').reindex (eigenEquiv hT hT').symm
+
+private theorem coe_eigenvectorBasis (hT : IsCompactOperator T) (hT' : T.IsSymmetric)
+    (i : eigenIndex hT hT') :
+    eigenvectorBasis hT hT' i = unsortedEigenvectorBasis hT hT' (eigenEquiv hT hT' i) := by
+  unfold eigenvectorBasis HilbertBasis.reindex
+  rw [HilbertBasis.coe_mk]
+  simp
+
+theorem hasEigenvector_eigenvectorBasis (hT : IsCompactOperator T) (hT' : T.IsSymmetric)
+    (i : eigenIndex hT hT') :
+    HasEigenvector (T : End 𝕜 E) (eigenvalues hT hT' i) (eigenvectorBasis hT hT' i) := by
+  rw [coe_eigenvectorBasis]
+  unfold eigenvalues
+  exact hasEigenvector_unsortedEigenvectorBasis hT hT' (eigenEquiv hT hT' i)
+
+theorem apply_eigenvectorBasis (hT : IsCompactOperator T) (hT' : T.IsSymmetric)
+    (i : eigenIndex hT hT') :
+    T (eigenvectorBasis hT hT' i) = (eigenvalues hT hT' i : 𝕜) • eigenvectorBasis hT hT' i :=
+  (hasEigenvector_eigenvectorBasis hT hT' i).apply_eq_smul
+
+theorem tendsto_eigenvalues (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    Filter.Tendsto (eigenvalues hT hT') Filter.cofinite (nhds 0) := by
+  unfold eigenvalues
+  exact (tendsto_unsortedEigenvalues hT hT').comp
+    (eigenEquiv hT hT').toEmbedding.injective.tendsto_cofinite
+
+open InnerProductSpace in
+theorem hasSum_eigenvectorBasis (hT : IsCompactOperator T) (hT' : T.IsSymmetric) (x : E) :
+    HasSum (fun i => (eigenvalues hT hT' i : 𝕜) •
+      rankOne 𝕜 (eigenvectorBasis hT hT' i) (eigenvectorBasis hT hT' i) x) (T x) := by
+  have h := ((eigenvectorBasis hT hT').hasSum_repr x).mapL T
+  convert h using 1
+  ext i
+  simp [apply_eigenvectorBasis, smul_smul, HilbertBasis.repr_apply_apply, mul_comm]
+
+/-- A compact self-adjoint operator `T : E →L[𝕜] E` has a Hilbert basis `b` consisting of
+eigenvectors `b i` with eigenvalues `μ i`. -/
+theorem exists_eigenvectorBasis
+    (hT : IsCompactOperator T) (hT' : T.IsSymmetric) :
+    ∃ (ι : Type (max u v)) (b : HilbertBasis ι 𝕜 E) (μ : ι → 𝕜),
+      ∀ i, T (b i) = (μ i : 𝕜) • b i := by
+  set V : 𝕜 → Submodule 𝕜 E := fun ν ↦ eigenspace (T : End 𝕜 E) ν
+  choose w bν _ using fun ν ↦ exists_hilbertBasis 𝕜 (V ν)
+  let v : (Σ ν : 𝕜, w ν) → E := fun a ↦ (V a.1).subtypeₗᵢ (bν a.1 a.2)
+  have hv : Orthonormal 𝕜 v :=
+    hT'.orthogonalFamily_eigenspaces.orthonormal_sigma_orthonormal
+      (v_family := fun ν ↦ bν ν) (fun ν ↦ (bν ν).orthonormal)
+  have hsp : (Submodule.span 𝕜 (Set.range v))ᗮ = ⊥ := by
+    rw [← Submodule.orthogonal_closure, eq_bot_iff,
+      ← orthogonalComplement_iSup_eigenspaces_eq_bot hT hT']
+    refine Submodule.orthogonal_le (iSup_le fun ν x hx ↦ ?_)
+    refine (Submodule.isClosed_topologicalClosure _).mem_of_tendsto
+      (((bν ν).hasSum_repr ⟨x, hx⟩).mapL (V ν).subtypeL)
+      (Filter.Eventually.of_forall fun s ↦ Submodule.sum_mem _ fun i _ ↦ ?_)
+    exact Submodule.le_topologicalClosure _
+      (Submodule.smul_mem _ _ (Submodule.subset_span ⟨⟨ν, i⟩, rfl⟩))
+  let b : HilbertBasis (Σ ν : 𝕜, w ν) 𝕜 E := HilbertBasis.mkOfOrthogonalEqBot hv hsp
+  have hb : ⇑b = v := HilbertBasis.coe_mkOfOrthogonalEqBot hv hsp
+  refine ⟨_, b, fun a ↦ a.1, fun a ↦ ?_⟩
+  simpa [hb, v] using mem_eigenspace_iff.mp (bν a.1 a.2).2
+
+end Version2
 
 end ContinuousLinearMap
