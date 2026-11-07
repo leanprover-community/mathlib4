@@ -515,6 +515,13 @@ theorem parallelogram_law_with_nnNorm (x y : E) :
 @[deprecated (since := "2026-10-31")]
 alias parallelogram_law_with_nnnorm := parallelogram_law_with_nnNorm
 
+include 𝕜 in
+theorem norm_sq_add_norm_sq_add_norm_sq_add_norm_add_add_sq (x y z : E) :
+    ‖x‖ ^ 2 + ‖y‖ ^ 2 + ‖z‖ ^ 2 + ‖x + y + z‖ ^ 2 =
+      ‖x + y‖ ^ 2 + ‖y + z‖ ^ 2 + ‖x + z‖ ^ 2 := by
+  simp only [norm_add_sq (𝕜 := 𝕜), inner_add_left, map_add]
+  ring
+
 variable {𝕜}
 
 /-- Polarization identity: The real part of the inner product, in terms of the norm. -/
