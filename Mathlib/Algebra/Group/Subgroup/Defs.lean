@@ -397,9 +397,6 @@ theorem toSubmonoid_mono : Monotone (toSubmonoid : Subgroup G → Submonoid G) :
 theorem toSubmonoid_le {p q : Subgroup G} : p.toSubmonoid ≤ q.toSubmonoid ↔ p ≤ q :=
   Iff.rfl
 
-@[to_additive]
-lemma coe_nonempty (s : Subgroup G) : (s : Set G).Nonempty := ⟨1, one_mem _⟩
-
 attribute [deprecated OneMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
   Subgroup.coe_nonempty
 attribute [deprecated ZeroMemClass.coe_nonempty +typeChanged (since := "2026-04-20")]
