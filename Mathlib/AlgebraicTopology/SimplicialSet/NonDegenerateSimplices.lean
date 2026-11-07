@@ -46,7 +46,7 @@ lemma mk'_surjective (s : X.N) :
   ⟨s.toS, s.nonDegenerate, rfl⟩
 
 /-- Constructor for the type of non degenerate simplices of a simplicial set. -/
-@[simps]
+@[simps, implicit_reducible]
 def mk {n : ℕ} (x : X _⦋n⦌) (hx : x ∈ X.nonDegenerate n) : X.N where
   simplex := x
   nonDegenerate := hx
@@ -80,6 +80,8 @@ lemma le_iff {x y : X.N} : x ≤ y ↔ x.subcomplex ≤ y.subcomplex :=
 lemma lt_iff {x y : X.N} : x < y ↔ x.subcomplex < y.subcomplex :=
   Iff.rfl
 
+lemma le_iff_toS_le_toS {x y : X.N} : x ≤ y ↔ x.toS ≤ y.toS := Iff.rfl
+
 lemma le_iff_exists_mono {x y : X.N} :
     x ≤ y ↔ ∃ (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) (_ : Mono f), X.map f.op y.simplex = x.simplex := by
   simp only [le_iff, CategoryTheory.Subfunctor.ofSection_le_iff,
@@ -91,8 +93,6 @@ lemma dim_le_of_le {x y : X.N} (h : x ≤ y) : x.dim ≤ y.dim := by
   obtain ⟨f, hf, _⟩ := h
   exact SimplexCategory.len_le_of_mono f
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
   obtain h' | h' := (dim_le_of_le h.le).lt_or_eq
   · exact h'
@@ -104,8 +104,6 @@ lemma dim_lt_of_lt {x y : X.N} (h : x < y) : x.dim < y.dim := by
     obtain rfl : y = x := by simpa using hf
     simp at h
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance : PartialOrder X.N where
   le_antisymm x₁ x₂ h h' := by
     obtain ⟨n₁, ⟨x₁, hx₁⟩, rfl⟩ := x₁.mk_surjective
@@ -129,6 +127,25 @@ lemma subcomplex_injective_iff {x y : X.N} :
 lemma eq_iff {x y : X.N} :
     x = y ↔ x.subcomplex = y.subcomplex :=
   ⟨by rintro rfl; rfl, fun h ↦ by simp [le_antisymm_iff, le_iff, h]⟩
+
+section
+
+variable {A : X.Subcomplex} (x y : X.N) {A : X.Subcomplex}
+  (hx : x.simplex ∈ A.obj _) (hy : y.simplex ∈ A.obj _)
+
+/-- If `A : X.Subcomplex`, this constructs an element in `A.toSSet.N`
+from `x : X.N` such that `x.simplex ∈ A.obj _`. -/
+@[simps! toS]
+def toSubcomplex : A.toSSet.N :=
+  N.mk' (x.toS.toSubcomplex hx) (by
+    rw [Subcomplex.mem_nonDegenerate_iff]
+    exact x.nonDegenerate)
+
+lemma toSubcomplex_le_toSubcomplex_iff :
+    x.toSubcomplex hx ≤ y.toSubcomplex hy ↔ x ≤ y :=
+  S.toSubcomplex_le_toSubcomplex_iff ..
+
+end
 
 section
 
@@ -167,8 +184,6 @@ lemma subcomplex_le_iff {A B : X.Subcomplex} :
       exact h _ _ hx
   · simpa using! h (N.mk _ x.prop) (by simpa)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.op.N ≃ X.N`. -/
 @[simps -isSimp apply symm_apply]
 def opEquiv : X.op.N ≃o X.N where
@@ -185,8 +200,6 @@ def opEquiv : X.op.N ≃o X.N where
     · rintro ⟨f, hf⟩
       exact ⟨SimplexCategory.rev.map f, by simp [op_map, ← hf]⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The bijection `X.N ≃ Y.N` on nondegenerate simplices of simplicial sets
 that is induced by an isomorphism `X ≅ Y`. -/
 @[simps -isSimp apply symm_apply]
@@ -209,7 +222,7 @@ end N
 
 /-- The map which sends a non degenerate simplex of a simplicial set to
 the subcomplex it generates is an order embedding. -/
-@[simps]
+@[simps, implicit_reducible]
 def orderEmbeddingN : X.N ↪o X.Subcomplex where
   toFun x := x.subcomplex
   inj' _ _ h := by
@@ -243,8 +256,6 @@ lemma subcomplex_eq_of_epi (x y : X.S) (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌) [Epi f]
   have := isSplitEpi_of_epi f
   exact ⟨(section_ f).op, by simp [← hf, ← Functor.map_comp_apply, ← op_comp]⟩
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma existsUnique_n (x : X.S) : ∃! (y : X.N), y.subcomplex = x.subcomplex :=
   (Function.Injective.existsUnique_iff_exists (fun _ _ ↦ N.subcomplex_injective)).2 (by
     obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -274,7 +285,11 @@ lemma toN_eq_iff {x : X.S} {y : X.N} :
     x.toN = y ↔ y.subcomplex = x.subcomplex :=
   ⟨by rintro rfl; simp, fun h ↦ x.existsUnique_n.unique (by simp) h⟩
 
-set_option backward.isDefEq.respectTransparency false in
+lemma toN_of_nonDegenerate (x : X.S) (hx : x.simplex ∈ X.nonDegenerate _) :
+    x.toN = N.mk _ hx := by
+  rw [toN_eq_iff]
+  rfl
+
 lemma existsUnique_toNπ {x : X.S} {y : X.N} (hy : x.toN = y) :
     ∃! (f : ⦋x.dim⦌ ⟶ ⦋y.dim⦌), Epi f ∧ X.map f.op y.simplex = x.simplex := by
   obtain ⟨n, x, hx, rfl⟩ := x.mk_surjective
@@ -303,6 +318,104 @@ lemma dim_toN_le (x : X.S) :
     x.toN.dim ≤ x.dim :=
   SimplexCategory.le_of_epi x.toNπ
 
+lemma self_le_toS_toN (s : X.S) : s ≤ s.toN.toS := by
+  rw [S.le_def, subcomplex_toN]
+
+lemma toS_toN_le_self (s : X.S) : s.toN.toS ≤ s := by
+  rw [S.le_def, subcomplex_toN]
+
 end S
+
+variable {X} in
+@[simp]
+lemma N.toN_toS (x : X.N) : x.toS.toN = x := by
+  simp [S.toN_eq_iff]
+
+variable {X} in
+lemma S.toN_surjective : Function.Surjective (S.toN (X := X)) := by
+  intro x
+  exact ⟨x.toS, by simp⟩
+
+variable {X} {Y : SSet.{u}} (f : X ⟶ Y)
+
+/-- The order preserving map `X.N →o Y.N` induced by a morphism `f : X ⟶ Y`
+of simplicial sets: if `x` is a nondegenerate simplex of `X`, then the subcomplex
+of `Y` generated by `mapN f x` is the image of the subcomplex of `X` generated by `x`
+(see the lemma `subcomplex_mapN`.). -/
+@[simps -isSimp coe, implicit_reducible]
+noncomputable def mapN : X.N →o Y.N where
+  toFun x := (S.map f x.toS).toN
+  monotone' x x' h := by
+    simp only [N.le_iff, S.subcomplex_toN, Subfunctor.ofSection_le_iff, S.map_simplex] at h ⊢
+    simp only [S.mem_subcomplex_obj_iff] at h ⊢
+    obtain ⟨g, hg⟩ := h
+    exact ⟨g, by simp [← hg]⟩
+
+@[simp]
+lemma subcomplex_mapN (x : X.N) :
+    (mapN f x).subcomplex = Subcomplex.image x.subcomplex f := by
+  simp [mapN_coe]
+
+@[simp]
+lemma mapN_toN (x : X.S) :
+    mapN f x.toN = (S.map f x).toN := by
+  simp [mapN_coe, N.eq_iff]
+
+lemma toS_mapN_of_nonDegenerate (x : X.N) (hx : f.app _ x.simplex ∈ Y.nonDegenerate _) :
+    (mapN f x).toS = S.map f x.toS := by
+  conv_lhs => rw [← x.toN_toS, mapN_toN]
+  rw [S.toN_of_nonDegenerate _ hx]
+  rfl
+
+lemma toS_mapN_of_mono (x : X.N) [Mono f] :
+    (mapN f x).toS = S.map f x.toS :=
+  toS_mapN_of_nonDegenerate _ _
+    (by simpa only [nonDegenerate_iff_of_mono] using x.nonDegenerate)
+
+@[simp]
+lemma mapN_id : mapN (𝟙 X) = OrderHom.id := by
+  ext x
+  obtain ⟨x, rfl⟩ := S.toN_surjective x
+  simp
+
+lemma mapN_mapN {Z : SSet.{u}} (g : Y ⟶ Z) (x : X.N) :
+    mapN g (mapN f x) = mapN (f ≫ g) x := by
+  obtain ⟨x, rfl⟩ := S.toN_surjective x
+  simp [S.map_map]
+
+lemma mapN_injective_of_mono [Mono f] :
+    Function.Injective (mapN f) := by
+  intro s t h
+  rw [N.ext_iff] at h ⊢
+  exact S.map_injective_of_mono f (by simpa only [toS_mapN_of_mono] using h)
+
+@[simp]
+lemma mapN_ι_toSubcomplex (x : X.N) {A : X.Subcomplex} (hx : x.simplex ∈ A.obj _) :
+    mapN A.ι (x.toSubcomplex hx) = x := by
+  rw [N.ext_iff, toS_mapN_of_mono, N.toSubcomplex_toS, S.map_ι_toSubcomplex]
+
+lemma mapN_ι {A : X.Subcomplex} (x : A.toSSet.N) :
+    mapN A.ι x = N.mk x.simplex.val
+      (by simpa only [← Subcomplex.mem_nonDegenerate_iff] using x.nonDegenerate) := by
+  rw [mapN_coe, S.toN_eq_iff, S.subcomplex_map, Subcomplex.image_ofSimplex]
+  rfl
+
+@[simp]
+lemma mapN_ι_simplex_mem {A : X.Subcomplex} (x : A.toSSet.N) :
+    (mapN A.ι x).simplex ∈ A.obj _ := by
+  rw [mapN_ι]
+  exact x.simplex.prop
+
+lemma mem_range_mapN_ι_iff {A : X.Subcomplex} (x : X.N) :
+    x ∈ Set.range (mapN A.ι) ↔ x.simplex ∈ A.obj _ :=
+  ⟨by rintro ⟨x, rfl⟩; simp, fun hx ↦ ⟨x.toSubcomplex hx, by simp⟩⟩
+
+attribute [local simp] mapN_mapN in
+/-- The functor `SSet ⥤ PartOrd` which sends a simplicial set `X` to
+the partially ordered type `X.N` of nondegenerate simplices in `X`. -/
+@[simps, implicit_reducible]
+noncomputable def N.functor : SSet.{u} ⥤ PartOrd.{u} where
+  obj X := .of X.N
+  map f := PartOrd.ofHom (mapN f)
 
 end SSet
