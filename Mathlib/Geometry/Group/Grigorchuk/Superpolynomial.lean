@@ -6,7 +6,7 @@ Authors: Ezequiel Souza dos Santos
 module
 
 public import Mathlib.Geometry.Group.Grigorchuk.Basic
-public import Mathlib.Geometry.Group.Growth.Basic
+public import Mathlib.Geometry.Group.Growth.Classes
 public import Mathlib.GroupTheory.Complement
 
 /-!
