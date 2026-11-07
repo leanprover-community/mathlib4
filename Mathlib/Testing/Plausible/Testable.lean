@@ -15,6 +15,8 @@ set_option doc.verso true
 set_option doc.verso.suggestions false
 
 /-!
+# `Plausible`: `Testable` and `PrintableProb` instances
+
 This module contains `Plausible.Testable` and `Plausible.PrintableProb` instances for mathlib types.
 -/
 
