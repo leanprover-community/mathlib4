@@ -162,8 +162,8 @@ theorem dist_tmul_le (x x' : E) (y y' : F) :
     dist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖ * ‖y‖ + ‖x'‖ * ‖y'‖ := by
   grw [dist_eq_norm, norm_sub_le]; simp
 
-theorem nndist_tmul_le (x x' : E) (y y' : F) :
-    nndist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖₊ * ‖y‖₊ + ‖x'‖₊ * ‖y'‖₊ := by
+theorem nnDist_tmul_le (x x' : E) (y y' : F) :
+    nnDist (x ⊗ₜ[𝕜] y) (x' ⊗ₜ y') ≤ ‖x‖₊ * ‖y‖₊ + ‖x'‖₊ * ‖y'‖₊ := by
   grw [nnDist_eq_nnNorm, nnNorm_sub_le]; simp
 
 theorem edist_tmul_le (x x' : E) (y y' : F) :

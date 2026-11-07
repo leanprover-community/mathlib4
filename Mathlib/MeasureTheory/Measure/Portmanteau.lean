@@ -522,8 +522,8 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
   · simp only [fun i ↦ @integral_eq_lintegral_of_nonneg_ae Ω _ (μs i) f (Eventually.of_forall f_nn)
                         f.continuous.measurable.aestronglyMeasurable]
     let g := BoundedContinuousFunction.comp _ Real.lipschitzWith_toNNReal f
-    have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nndist 0 g := fun i ↦ by
-      simpa only [coe_nnreal_ennreal_nndist, measure_univ, mul_one, ge_iff_le] using!
+    have bound : ∀ i, ∫⁻ x, ENNReal.ofReal (f x) ∂(μs i) ≤ nnDist 0 g := fun i ↦ by
+      simpa only [coe_nnreal_ennreal_nnDist, measure_univ, mul_one, ge_iff_le] using!
             BoundedContinuousFunction.lintegral_le_edist_mul (μ := μs i) g
     apply ENNReal.liminf_toReal_eq ENNReal.coe_ne_top (Eventually.of_forall bound)
   · apply ne_of_lt

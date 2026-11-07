@@ -278,16 +278,16 @@ theorem abs_dist_sub_le_dist_mul_mul (a₁ a₂ b₁ b₂ : E) :
 open Finset
 
 @[to_additive]
-theorem nndist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
-    nndist (a₁ * a₂) (b₁ * b₂) ≤ nndist a₁ b₁ + nndist a₂ b₂ :=
+theorem nnDist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
+    nnDist (a₁ * a₂) (b₁ * b₂) ≤ nnDist a₁ b₁ + nnDist a₂ b₂ :=
   NNReal.coe_le_coe.1 <| dist_mul_mul_le a₁ a₂ b₁ b₂
 
 @[to_additive]
 theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
     edist (a₁ * a₂) (b₁ * b₂) ≤ edist a₁ b₁ + edist a₂ b₂ := by
-  simp only [edist_nndist]
+  simp only [edist_nnDist]
   norm_cast
-  apply nndist_mul_mul_le
+  apply nnDist_mul_mul_le
 
 section PseudoEMetricSpace
 variable {α E : Type*} [SeminormedCommGroup E] [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0}

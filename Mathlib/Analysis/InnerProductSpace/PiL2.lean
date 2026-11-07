@@ -185,9 +185,9 @@ theorem EuclideanSpace.dist_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fint
     (x y : EuclideanSpace 𝕜 n) : dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 :=
   PiLp.dist_sq_eq_of_L2 x y
 
-theorem EuclideanSpace.nndist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-    (x y : EuclideanSpace 𝕜 n) : nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
-  PiLp.nndist_eq_of_L2 x y
+theorem EuclideanSpace.nnDist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    (x y : EuclideanSpace 𝕜 n) : nnDist x y = NNReal.sqrt (∑ i, nnDist (x i) (y i) ^ 2) :=
+  PiLp.nnDist_eq_of_L2 x y
 
 theorem EuclideanSpace.edist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x y : EuclideanSpace 𝕜 n) : edist x y = (∑ i, edist (x i) (y i) ^ 2) ^ (1 / 2 : ℝ) :=

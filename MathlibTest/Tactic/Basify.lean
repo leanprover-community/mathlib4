@@ -90,7 +90,7 @@ example (a b : E) : ‖a‖₊ ≤ ‖a - b‖₊ + ‖b‖₊ := by
   basify
   exact norm_le_norm_sub_add a b
 
-example (a b c : E) : nndist a c ≤ nndist a b + nndist b c := by
+example (a b c : E) : nnDist a c ≤ nnDist a b + nnDist b c := by
   basify
   exact dist_triangle a b c
 

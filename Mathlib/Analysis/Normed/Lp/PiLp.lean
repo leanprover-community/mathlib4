@@ -625,15 +625,15 @@ and having as uniformity the product uniformity. -/
 instance [∀ i, MetricSpace (α i)] : MetricSpace (PiLp p α) :=
   MetricSpace.ofT0PseudoMetricSpace _
 
-theorem nndist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
+theorem nnDist_eq_sum {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)]
     (hp : p ≠ ∞) (x y : PiLp p β) :
-    nndist x y = (∑ i : ι, nndist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
+    nnDist x y = (∑ i : ι, nnDist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
     push_cast
     exact dist_eq_sum (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
-theorem nndist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
-    nndist x y = ⨆ i, nndist (x i) (y i) :=
+theorem nnDist_eq_iSup {β : ι → Type*} [∀ i, PseudoMetricSpace (β i)] (x y : PiLp ∞ β) :
+    nnDist x y = ⨆ i, nnDist (x i) (y i) :=
   NNReal.eq <| by
     push_cast
     exact dist_eq_iSup _ _
@@ -645,13 +645,13 @@ theorem edist_apply_le [∀ i, PseudoEMetricSpace (β i)] (x y : PiLp p β) (i :
     edist (x i) (y i) ≤ edist x y :=
   edist_apply_le_edist_aux x y i
 
-theorem nndist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
-    nndist (x i) (y i) ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_apply_le x y i
+theorem nnDist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
+    nnDist (x i) (y i) ≤ nnDist x y := by
+  simpa [← coe_nnreal_ennreal_nnDist] using edist_apply_le x y i
 
 theorem dist_apply_le [∀ i, PseudoMetricSpace (β i)] (x y : PiLp p β) (i : ι) :
     dist (x i) (y i) ≤ dist x y :=
-  nndist_apply_le x y i
+  nnDist_apply_le x y i
 
 end
 
@@ -710,7 +710,7 @@ theorem eNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i
 
 theorem nnNorm_apply_le [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp p β) (i : ι) :
     ‖x i‖₊ ≤ ‖x‖₊ := by
-  simpa using nndist_apply_le x 0 i
+  simpa using nnDist_apply_le x 0 i
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_apply_le := nnNorm_apply_le
 
@@ -779,7 +779,7 @@ theorem nnNorm_eq_of_L1 (x : PiLp 1 β) : ‖x‖₊ = ∑ i : ι, ‖x i‖₊ 
 theorem dist_eq_of_L1 (x y : PiLp 1 β) : dist x y = ∑ i, dist (x i) (y i) := by
   simp_rw [dist_eq_norm, norm_eq_of_L1, sub_apply]
 
-theorem nndist_eq_of_L1 (x y : PiLp 1 β) : nndist x y = ∑ i, nndist (x i) (y i) :=
+theorem nnDist_eq_of_L1 (x y : PiLp 1 β) : nnDist x y = ∑ i, nnDist (x i) (y i) :=
   NNReal.eq <| by push_cast; exact dist_eq_of_L1 _ _
 
 set_option backward.isDefEq.respectTransparency false in
@@ -819,8 +819,8 @@ theorem dist_sq_eq_of_L2 (x y : PiLp 2 β) :
     dist x y ^ 2 = ∑ i, dist (x i) (y i) ^ 2 := by
   simp_rw [dist_eq_norm, norm_sq_eq_of_L2, sub_apply]
 
-theorem nndist_eq_of_L2 (x y : PiLp 2 β) :
-    nndist x y = NNReal.sqrt (∑ i, nndist (x i) (y i) ^ 2) :=
+theorem nnDist_eq_of_L2 (x y : PiLp 2 β) :
+    nnDist x y = NNReal.sqrt (∑ i, nnDist (x i) (y i) ^ 2) :=
   NNReal.eq <| by
     push_cast
     exact dist_eq_of_L2 _ _
@@ -1093,19 +1093,19 @@ lemma norm_single (i : ι) (b : β i) : ‖single p i b‖ = ‖b‖ :=
   congr($(nnNorm_single p β i b))
 
 @[simp]
-lemma nndist_single_same (i : ι) (b₁ b₂ : β i) :
-    nndist (single p i b₁) (single p i b₂) = nndist b₁ b₂ := by
+lemma nnDist_single_same (i : ι) (b₁ b₂ : β i) :
+    nnDist (single p i b₁) (single p i b₂) = nnDist b₁ b₂ := by
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← single_sub, nnNorm_single]
 
 @[simp]
 lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
     dist (single p i b₁) (single p i b₂) = dist b₁ b₂ :=
-  congr($(nndist_single_same p β i b₁ b₂))
+  congr($(nnDist_single_same p β i b₁ b₂))
 
 @[simp]
 lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
     edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
-  simp only [edist_nndist, nndist_single_same p β i b₁ b₂]
+  simp only [edist_nnDist, nnDist_single_same p β i b₁ b₂]
 
 end Single
 

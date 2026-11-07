@@ -72,8 +72,8 @@ lemma properSpace_iff_isProperMap_dist : ProperSpace α ↔ ∀ x : α, IsProper
 
 lemma isClosedMap_dist (x : α) : IsClosedMap (dist x) := (isProperMap_dist x).isClosedMap
 
-lemma isProperMap_nndist (x : α) : IsProperMap (nndist x) :=
+lemma isProperMap_nnDist (x : α) : IsProperMap (nnDist x) :=
   isProperMap_of_comp_of_inj (Z := ℝ) (g := (↑)) (by fun_prop) (by fun_prop)
     (isProperMap_dist x) NNReal.coe_injective
 
-lemma isClosedMap_nndist (x : α) : IsClosedMap (nndist x) := (isProperMap_nndist _).isClosedMap
+lemma isClosedMap_nnDist (x : α) : IsClosedMap (nnDist x) := (isProperMap_nnDist _).isClosedMap

@@ -76,7 +76,7 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub (x y : P) : dist x y = ‖x -ᵥ y‖ :=
   NormedAddTorsor.dist_eq_norm' x y
 
-theorem nnDist_eq_nnNorm_vsub (x y : P) : nndist x y = ‖x -ᵥ y‖₊ :=
+theorem nnDist_eq_nnNorm_vsub (x y : P) : nnDist x y = ‖x -ᵥ y‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub V x y
 
 @[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_vsub := nnDist_eq_nnNorm_vsub
@@ -88,7 +88,7 @@ lemma, it is necessary to have `V` as an explicit argument; otherwise
 theorem dist_eq_norm_vsub' (x y : P) : dist x y = ‖y -ᵥ x‖ :=
   (dist_comm _ _).trans (dist_eq_norm_vsub _ _ _)
 
-theorem nnDist_eq_nnNorm_vsub' (x y : P) : nndist x y = ‖y -ᵥ x‖₊ :=
+theorem nnDist_eq_nnNorm_vsub' (x y : P) : nnDist x y = ‖y -ᵥ x‖₊ :=
   NNReal.eq <| dist_eq_norm_vsub' V x y
 
 @[deprecated (since := "2026-10-31")] alias nndist_eq_nnnorm_vsub' := nnDist_eq_nnNorm_vsub'
@@ -98,7 +98,7 @@ end
 theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = dist x y :=
   dist_vadd _ _ _
 
-theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
+theorem nnDist_vadd_cancel_left (v : V) (x y : P) : nnDist (v +ᵥ x) (v +ᵥ y) = nnDist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
 @[simp]
@@ -106,7 +106,7 @@ theorem dist_vadd_cancel_right (v₁ v₂ : V) (x : P) : dist (v₁ +ᵥ x) (v�
   rw [dist_eq_norm_vsub V, dist_eq_norm, vadd_vsub_vadd_cancel_right]
 
 @[simp]
-theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) (v₂ +ᵥ x) = nndist v₁ v₂ :=
+theorem nnDist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nnDist (v₁ +ᵥ x) (v₂ +ᵥ x) = nnDist v₁ v₂ :=
   NNReal.eq <| dist_vadd_cancel_right _ _ _
 
 @[simp]
@@ -114,14 +114,14 @@ theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
   simp [dist_eq_norm_vsub V _ x]
 
 @[simp]
-theorem nndist_vadd_left (v : V) (x : P) : nndist (v +ᵥ x) x = ‖v‖₊ :=
+theorem nnDist_vadd_left (v : V) (x : P) : nnDist (v +ᵥ x) x = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_left _ _
 
 @[simp]
 theorem dist_vadd_right (v : V) (x : P) : dist x (v +ᵥ x) = ‖v‖ := by rw [dist_comm, dist_vadd_left]
 
 @[simp]
-theorem nndist_vadd_right (v : V) (x : P) : nndist x (v +ᵥ x) = ‖v‖₊ :=
+theorem nnDist_vadd_right (v : V) (x : P) : nnDist x (v +ᵥ x) = ‖v‖₊ :=
   NNReal.eq <| dist_vadd_right _ _
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
@@ -136,7 +136,7 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 
 @[simp]
-theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
+theorem nnDist_vsub_cancel_left (x y z : P) : nnDist (x -ᵥ y) (x -ᵥ z) = nnDist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
 
 /-- Isometry between the tangent space `V` of a (semi)normed add torsor `P` and `P` given by
@@ -151,15 +151,15 @@ theorem dist_vsub_cancel_right (x y z : P) : dist (x -ᵥ z) (y -ᵥ z) = dist x
   (IsometryEquiv.vaddConst z).symm.dist_eq x y
 
 @[simp]
-theorem nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nndist x y :=
+theorem nnDist_vsub_cancel_right (x y z : P) : nnDist (x -ᵥ z) (y -ᵥ z) = nnDist x y :=
   NNReal.eq <| dist_vsub_cancel_right _ _ _
 
 theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
   simpa using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 
-theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
-    nndist (v +ᵥ p) (v' +ᵥ p') ≤ nndist v v' + nndist p p' :=
+theorem nnDist_vadd_vadd_le (v v' : V) (p p' : P) :
+    nnDist (v +ᵥ p) (v' +ᵥ p') ≤ nnDist v v' + nnDist p p' :=
   dist_vadd_vadd_le _ _ _ _
 
 theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
@@ -167,19 +167,19 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
   rw [dist_eq_norm, vsub_sub_vsub_comm, dist_eq_norm_vsub V, dist_eq_norm_vsub V]
   exact norm_sub_le _ _
 
-theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
-    nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
+theorem nnDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
+    nnDist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nnDist p₁ p₃ + nnDist p₂ p₄ := by
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nnDist, dist_vsub_vsub_le]
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
-  simp only [edist_nndist]
+  simp only [edist_nnDist]
   norm_cast
   apply dist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
-  simp only [edist_nndist]
+  simp only [edist_nnDist]
   norm_cast
   apply dist_vsub_vsub_le
 

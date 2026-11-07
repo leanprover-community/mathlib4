@@ -74,25 +74,25 @@ noncomputable instance [PseudoMetricSpace X] : PseudoMetricSpace (WithLp p <| ι
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun f g ↦ ((f.ofLp.zipWith dist (dist_self _) g.ofLp).sum fun i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ))
     (fun f g ↦ by dsimp [sum]; positivity) fun f g ↦ by
-      simp only [edist_def, sum, zipWith_apply, ← coe_nnreal_ennreal_nndist, NNReal.zero_le_coe,
-        ← ENNReal.coe_rpow_of_nonneg, ← ENNReal.ofNNReal_finsetSum, inv_nonneg, ← coe_nndist,
+      simp only [edist_def, sum, zipWith_apply, ← coe_nnreal_ennreal_nnDist, NNReal.zero_le_coe,
+        ← ENNReal.coe_rpow_of_nonneg, ← ENNReal.ofNNReal_finsetSum, inv_nonneg, ← coe_nnDist,
         ← NNReal.coe_rpow, ← NNReal.coe_sum, ENNReal.ofReal_coe_nnreal, ENNReal.coe_inj]
       congr! 2
       ext i
-      simp [← coe_nndist, ← coe_nnreal_ennreal_nndist]
+      simp [← coe_nnDist, ← coe_nnreal_ennreal_nnDist]
 
 lemma dist_def [PseudoMetricSpace X] (f g : WithLp p <| ι →₀ X) :
     dist f g =
       ((f.ofLp.zipWith dist (dist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := rfl
 
-lemma nndist_def [PseudoMetricSpace X] (f g : WithLp p <| ι →₀ X) :
-    nndist f g =
-      ((f.ofLp.zipWith nndist (nndist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := by
+lemma nnDist_def [PseudoMetricSpace X] (f g : WithLp p <| ι →₀ X) :
+    nnDist f g =
+      ((f.ofLp.zipWith nnDist (nnDist_self _) g.ofLp).sum fun _i r ↦ r ^ (p : ℝ)) ^ (p⁻¹ : ℝ) := by
   ext
-  simp only [coe_nndist, dist_def, sum, zipWith_apply, NNReal.coe_sum, NNReal.coe_rpow]
+  simp only [coe_nnDist, dist_def, sum, zipWith_apply, NNReal.coe_sum, NNReal.coe_rpow]
   congr 2
   ext i
-  simp [← coe_nndist]
+  simp [← coe_nnDist]
 
 /-- The L^1 metric on `ι`-many copies of a metric space `X` -/
 noncomputable instance [MetricSpace X] : MetricSpace (WithLp p <| ι →₀ X) :=

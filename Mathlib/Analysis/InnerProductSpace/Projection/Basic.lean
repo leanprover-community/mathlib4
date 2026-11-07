@@ -238,9 +238,9 @@ theorem dist_starProjection_eq_infDist
 
 /-- The nonnegative distance from `y` to its orthogonal projection onto `U` equals the
 nonnegative distance to that subspace as given by `Metric.infNndist`. -/
-theorem nndist_starProjection_eq_infNndist
+theorem nnDist_starProjection_eq_infNndist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
-    nndist y (U.starProjection y) = Metric.infNndist y U := by
+    nnDist y (U.starProjection y) = Metric.infNndist y U := by
   ext; simp [dist_starProjection_eq_infDist, ← Metric.coe_infNndist]
 
 /-- The extended distance from `y` to its orthogonal projection onto `U` equals the extended
@@ -263,7 +263,7 @@ distance to the orthogonal complement of `U` as given by `Metric.infNndist`. -/
 theorem nnNorm_starProjection_eq_infNNDist
     (U : Submodule 𝕜 E) [U.HasOrthogonalProjection] (y : E) :
     ‖U.starProjection y‖₊ = Metric.infNndist y Uᗮ := by
-  simp [← nndist_starProjection_eq_infNndist, nnDist_eq_nnNorm]
+  simp [← nnDist_starProjection_eq_infNndist, nnDist_eq_nnNorm]
 
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_starProjection_eq_infNndist := nnNorm_starProjection_eq_infNNDist

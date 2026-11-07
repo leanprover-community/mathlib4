@@ -78,9 +78,9 @@ lemma LocallyLipschitzOn.exists_lipschitzOnWith_of_compact {f : α → β} {s : 
       (f := fun y ↦ dist (f x) (f y) / dist x y) <| .div (.mono (by fun_prop) s.sdiff_subset)
         (by fun_prop) fun y hy ↦ ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2).ne'
     refine ⟨.mk (K' ⊔ 0) le_sup_right, fun y hy ↦ ?_⟩
-    simp_rw [edist_nndist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
+    simp_rw [edist_nnDist, ← ENNReal.coe_mul, ENNReal.coe_le_coe]
     refine (div_le_iff₀ ?_).1 ?_
-    · exact NNReal.coe_pos.1 <| coe_nndist x y ▸
+    · exact NNReal.coe_pos.1 <| coe_nnDist x y ▸
         ((hε x hx).trans_le <| not_lt.1 <| dist_comm x y ▸ hy.2)
     · simp [← NNReal.coe_le_coe, (mem_upperBounds.1 hK') _ <| mem_image_of_mem _ hy]
   choose K' hK' using this

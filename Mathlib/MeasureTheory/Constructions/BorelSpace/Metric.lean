@@ -84,13 +84,13 @@ lemma AEMeasurable.dist {f g : β → α} {μ : Measure β}
     AEMeasurable (fun b ↦ dist (f b) (g b)) μ :=
   continuous_dist.aemeasurable2 hf hg
 
-theorem measurable_nndist : Measurable fun p : α × α => nndist p.1 p.2 :=
-  continuous_nndist.measurable
+theorem measurable_nnDist : Measurable fun p : α × α => nnDist p.1 p.2 :=
+  continuous_nnDist.measurable
 
 @[fun_prop]
-theorem Measurable.nndist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
-    Measurable fun b => nndist (f b) (g b) :=
-  continuous_nndist.measurable2 hf hg
+theorem Measurable.nnDist {f g : β → α} (hf : Measurable f) (hg : Measurable g) :
+    Measurable fun b => nnDist (f b) (g b) :=
+  continuous_nnDist.measurable2 hf hg
 
 end
 

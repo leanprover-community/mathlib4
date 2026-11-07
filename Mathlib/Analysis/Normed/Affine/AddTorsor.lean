@@ -44,8 +44,8 @@ theorem dist_homothety (p₁ p₂ p : P) (c : 𝕜) :
   simp [dist_eq_norm_vsub, ← (homothety p c).linear_apply_vsub, homothety_linear, norm_smul]
 
 @[simp]
-theorem nndist_homothety (p₁ p₂ p : P) (c : 𝕜) :
-    nndist (homothety p c p₁) (homothety p c p₂) = ‖c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_homothety (p₁ p₂ p : P) (c : 𝕜) :
+    nnDist (homothety p c p₁) (homothety p c p₂) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety p₁ p₂ p c
 
 theorem lipschitzWith_homothety (p : P) (c : 𝕜) : LipschitzWith ‖c‖₊ (homothety p c) :=
@@ -57,8 +57,8 @@ theorem dist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
   simp [homothety_def, norm_smul, ← dist_eq_norm_vsub, dist_comm]
 
 @[simp]
-theorem nndist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
-    nndist p₁ (homothety p₁ c p₂) = ‖c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_center_homothety (p₁ p₂ : P) (c : 𝕜) :
+    nnDist p₁ (homothety p₁ c p₂) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_center_homothety _ _ _
 
 @[simp]
@@ -66,8 +66,8 @@ theorem dist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
     dist (homothety p₁ c p₂) p₁ = ‖c‖ * dist p₁ p₂ := by rw [dist_comm, dist_center_homothety]
 
 @[simp]
-theorem nndist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
-    nndist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_homothety_center (p₁ p₂ : P) (c : 𝕜) :
+    nnDist (homothety p₁ c p₂) p₁ = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety_center _ _ _
 
 @[simp]
@@ -78,11 +78,11 @@ theorem dist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
     ← sub_smul, norm_smul, vsub_eq_sub]
 
 @[simp]
-theorem nndist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
-    nndist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nndist c₁ c₂ * nndist p₁ p₂ :=
+theorem nnDist_lineMap_lineMap (p₁ p₂ : P) (c₁ c₂ : 𝕜) :
+    nnDist (lineMap p₁ p₂ c₁) (lineMap p₁ p₂ c₂) = nnDist c₁ c₂ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_lineMap _ _ _ _
 
-theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nndist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
+theorem lipschitzWith_lineMap (p₁ p₂ : P) : LipschitzWith (nnDist p₁ p₂) (lineMap p₁ p₂ : 𝕜 → P) :=
   LipschitzWith.of_dist_le_mul fun c₁ c₂ =>
     ((dist_lineMap_lineMap p₁ p₂ c₁ c₂).trans (mul_comm _ _)).le
 
@@ -91,8 +91,8 @@ theorem dist_lineMap_left (p₁ p₂ : P) (c : 𝕜) : dist (lineMap p₁ p₂ c
   simpa only [lineMap_apply_zero, dist_zero_right] using dist_lineMap_lineMap p₁ p₂ c 0
 
 @[simp]
-theorem nndist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
-    nndist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_lineMap_left (p₁ p₂ : P) (c : 𝕜) :
+    nnDist (lineMap p₁ p₂ c) p₁ = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_left _ _ _
 
 @[simp]
@@ -100,8 +100,8 @@ theorem dist_left_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₁ (lineMap p₁ p
   (dist_comm _ _).trans (dist_lineMap_left _ _ _)
 
 @[simp]
-theorem nndist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
-    nndist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_left_lineMap (p₁ p₂ : P) (c : 𝕜) :
+    nnDist p₁ (lineMap p₁ p₂ c) = ‖c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_left_lineMap _ _ _
 
 @[simp]
@@ -110,8 +110,8 @@ theorem dist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
   simpa only [lineMap_apply_one, dist_eq_norm'] using dist_lineMap_lineMap p₁ p₂ c 1
 
 @[simp]
-theorem nndist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
-    nndist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_lineMap_right (p₁ p₂ : P) (c : 𝕜) :
+    nnDist (lineMap p₁ p₂ c) p₂ = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_lineMap_right _ _ _
 
 @[simp]
@@ -119,8 +119,8 @@ theorem dist_right_lineMap (p₁ p₂ : P) (c : 𝕜) : dist p₂ (lineMap p₁ 
   (dist_comm _ _).trans (dist_lineMap_right _ _ _)
 
 @[simp]
-theorem nndist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
-    nndist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_right_lineMap (p₁ p₂ : P) (c : 𝕜) :
+    nnDist p₂ (lineMap p₁ p₂ c) = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_right_lineMap _ _ _
 
 @[simp]
@@ -129,8 +129,8 @@ theorem dist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
   rw [homothety_eq_lineMap, dist_lineMap_right]
 
 @[simp]
-theorem nndist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
-    nndist (homothety p₁ c p₂) p₂ = ‖1 - c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_homothety_self (p₁ p₂ : P) (c : 𝕜) :
+    nnDist (homothety p₁ c p₂) p₂ = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_homothety_self _ _ _
 
 @[simp]
@@ -138,8 +138,8 @@ theorem dist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
     dist p₂ (homothety p₁ c p₂) = ‖1 - c‖ * dist p₁ p₂ := by rw [dist_comm, dist_homothety_self]
 
 @[simp]
-theorem nndist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
-    nndist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nndist p₁ p₂ :=
+theorem nnDist_self_homothety (p₁ p₂ : P) (c : 𝕜) :
+    nnDist p₂ (homothety p₁ c p₂) = ‖1 - c‖₊ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_self_homothety _ _ _
 
 open scoped Pointwise in
@@ -186,8 +186,8 @@ theorem dist_left_midpoint (p₁ p₂ : P) : dist p₁ (midpoint 𝕜 p₁ p₂)
   rw [midpoint, dist_comm, dist_lineMap_left, invOf_eq_inv, ← norm_inv]
 
 @[simp]
-theorem nndist_left_midpoint (p₁ p₂ : P) :
-    nndist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+theorem nnDist_left_midpoint (p₁ p₂ : P) :
+    nnDist p₁ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_left_midpoint _ _
 
 @[simp]
@@ -195,8 +195,8 @@ theorem dist_midpoint_left (p₁ p₂ : P) : dist (midpoint 𝕜 p₁ p₂) p₁
   rw [dist_comm, dist_left_midpoint]
 
 @[simp]
-theorem nndist_midpoint_left (p₁ p₂ : P) :
-    nndist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+theorem nnDist_midpoint_left (p₁ p₂ : P) :
+    nnDist (midpoint 𝕜 p₁ p₂) p₁ = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_midpoint_left _ _
 
 @[simp]
@@ -205,8 +205,8 @@ theorem dist_midpoint_right (p₁ p₂ : P) :
   rw [midpoint_comm, dist_midpoint_left, dist_comm]
 
 @[simp]
-theorem nndist_midpoint_right (p₁ p₂ : P) :
-    nndist (midpoint 𝕜 p₁ p₂) p₂ = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+theorem nnDist_midpoint_right (p₁ p₂ : P) :
+    nnDist (midpoint 𝕜 p₁ p₂) p₂ = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_midpoint_right _ _
 
 @[simp]
@@ -215,8 +215,8 @@ theorem dist_right_midpoint (p₁ p₂ : P) :
   rw [dist_comm, dist_midpoint_right]
 
 @[simp]
-theorem nndist_right_midpoint (p₁ p₂ : P) :
-    nndist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
+theorem nnDist_right_midpoint (p₁ p₂ : P) :
+    nnDist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nnDist p₁ p₂ :=
   NNReal.eq <| dist_right_midpoint _ _
 
 /-- The midpoint of the segment AB is the same distance from A as it is from B. -/
@@ -230,8 +230,8 @@ theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
   rw [midpoint_eq_smul_add, norm_smul, invOf_eq_inv, norm_inv, ← div_eq_inv_mul]
   grw [norm_add_le]
 
-theorem nndist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
-    nndist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (nndist p₁ p₃ + nndist p₂ p₄) / ‖(2 : 𝕜)‖₊ :=
+theorem nnDist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
+    nnDist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (nnDist p₁ p₃ + nnDist p₂ p₄) / ‖(2 : 𝕜)‖₊ :=
   dist_midpoint_midpoint_le' _ _ _ _
 
 end invertibleTwo
@@ -256,9 +256,9 @@ theorem dist_right_pointReflection (p q : P) :
   (dist_comm _ _).trans (dist_pointReflection_right 𝕜 _ _)
 
 theorem antilipschitzWith_lineMap {p₁ p₂ : Q} (h : p₁ ≠ p₂) :
-    AntilipschitzWith (nndist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
+    AntilipschitzWith (nnDist p₁ p₂)⁻¹ (lineMap p₁ p₂ : 𝕜 → Q) :=
   AntilipschitzWith.of_le_mul_dist fun c₁ c₂ => by
-    rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nndist, mul_left_comm,
+    rw [dist_lineMap_lineMap, NNReal.coe_inv, ← dist_nnDist, mul_left_comm,
       inv_mul_cancel₀ (dist_ne_zero.2 h), mul_one]
 
 end NormedSpace
@@ -269,8 +269,8 @@ theorem dist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
     dist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / 2 := by
   simpa using dist_midpoint_midpoint_le' (𝕜 := ℝ) p₁ p₂ p₃ p₄
 
-theorem nndist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
-    nndist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (nndist p₁ p₃ + nndist p₂ p₄) / 2 :=
+theorem nnDist_midpoint_midpoint_le (p₁ p₂ p₃ p₄ : V) :
+    nnDist (midpoint ℝ p₁ p₂) (midpoint ℝ p₃ p₄) ≤ (nnDist p₁ p₃ + nnDist p₂ p₄) / 2 :=
   dist_midpoint_midpoint_le _ _ _ _
 
 /-- A continuous map between two normed affine spaces is an affine map provided that

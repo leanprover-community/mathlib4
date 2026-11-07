@@ -48,17 +48,17 @@ section Metric
 
 variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α → β}
 
-theorem antilipschitzWith_iff_le_mul_nndist :
-    AntilipschitzWith K f ↔ ∀ x y, nndist x y ≤ K * nndist (f x) (f y) := by
-  simp only [AntilipschitzWith, edist_nndist]
+theorem antilipschitzWith_iff_le_mul_nnDist :
+    AntilipschitzWith K f ↔ ∀ x y, nnDist x y ≤ K * nnDist (f x) (f y) := by
+  simp only [AntilipschitzWith, edist_nnDist]
   norm_cast
 
-alias ⟨AntilipschitzWith.le_mul_nndist, AntilipschitzWith.of_le_mul_nndist⟩ :=
-  antilipschitzWith_iff_le_mul_nndist
+alias ⟨AntilipschitzWith.le_mul_nnDist, AntilipschitzWith.of_le_mul_nnDist⟩ :=
+  antilipschitzWith_iff_le_mul_nnDist
 
 theorem antilipschitzWith_iff_le_mul_dist :
     AntilipschitzWith K f ↔ ∀ x y, dist x y ≤ K * dist (f x) (f y) := by
-  simp only [antilipschitzWith_iff_le_mul_nndist, dist_nndist]
+  simp only [antilipschitzWith_iff_le_mul_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
@@ -66,12 +66,12 @@ alias ⟨AntilipschitzWith.le_mul_dist, AntilipschitzWith.of_le_mul_dist⟩ :=
 
 namespace AntilipschitzWith
 
-theorem mul_le_nndist (hf : AntilipschitzWith K f) (x y : α) :
-    K⁻¹ * nndist x y ≤ nndist (f x) (f y) := by
-  simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nndist x y)
+theorem mul_le_nnDist (hf : AntilipschitzWith K f) (x y : α) :
+    K⁻¹ * nnDist x y ≤ nnDist (f x) (f y) := by
+  simpa only [div_eq_inv_mul] using NNReal.div_le_of_le_mul' (hf.le_mul_nnDist x y)
 
 theorem mul_le_dist (hf : AntilipschitzWith K f) (x y : α) :
-    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nndist x y
+    (K⁻¹ * dist x y : ℝ) ≤ dist (f x) (f y) := mod_cast hf.mul_le_nnDist x y
 
 end AntilipschitzWith
 

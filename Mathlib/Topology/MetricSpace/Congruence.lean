@@ -132,38 +132,38 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
 
 /-- Congruence holds if and only if all non-negative distances are the same. -/
-lemma congruent_iff_nndist_eq :
-    Congruent v₁ v₂ ↔ ∀ i₁ i₂, nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) :=
-  forall₂_congr (fun _ _ ↦ by rw [edist_nndist, edist_nndist]; norm_cast)
+lemma congruent_iff_nnDist_eq :
+    Congruent v₁ v₂ ↔ ∀ i₁ i₂, nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) :=
+  forall₂_congr (fun _ _ ↦ by rw [edist_nnDist, edist_nnDist]; norm_cast)
 
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
-lemma congruent_iff_pairwise_nndist_eq :
-    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nndist (v₁ i₁) (v₁ i₂) = nndist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_edist_eq, edist_nndist]
+lemma congruent_iff_pairwise_nnDist_eq :
+    Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ nnDist (v₁ i₁) (v₁ i₂) = nnDist (v₂ i₁) (v₂ i₂) := by
+  simp_rw [congruent_iff_pairwise_edist_eq, edist_nnDist]
   exact mod_cast Iff.rfl
 
 /-- Congruence holds if and only if all distances are the same. -/
 lemma congruent_iff_dist_eq :
     Congruent v₁ v₂ ↔ ∀ i₁ i₂, dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) :=
-  congruent_iff_nndist_eq.trans
-    (forall₂_congr (fun _ _ ↦ by rw [dist_nndist, dist_nndist]; norm_cast))
+  congruent_iff_nnDist_eq.trans
+    (forall₂_congr (fun _ _ ↦ by rw [dist_nnDist, dist_nnDist]; norm_cast))
 
 /-- Congruence holds if and only if all non-negative distances between points with different
 indices are the same. -/
 lemma congruent_iff_pairwise_dist_eq :
     Congruent v₁ v₂ ↔ Pairwise fun i₁ i₂ ↦ dist (v₁ i₁) (v₁ i₂) = dist (v₂ i₁) (v₂ i₂) := by
-  simp_rw [congruent_iff_pairwise_nndist_eq, dist_nndist]
+  simp_rw [congruent_iff_pairwise_nnDist_eq, dist_nnDist]
   exact mod_cast Iff.rfl
 
 namespace Congruent
 
-/-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nndist_eq`. -/
-alias ⟨nndist_eq, _⟩ := congruent_iff_nndist_eq
+/-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nnDist_eq`. -/
+alias ⟨nnDist_eq, _⟩ := congruent_iff_nnDist_eq
 
 /-- Congruence follows from preserved non-negative distance. Backward direction of
-`congruent_iff_nndist_eq`. -/
-alias ⟨_, of_nndist_eq⟩ := congruent_iff_nndist_eq
+`congruent_iff_nnDist_eq`. -/
+alias ⟨_, of_nnDist_eq⟩ := congruent_iff_nnDist_eq
 
 /-- A congruence preserves distance. Forward direction of `congruent_iff_dist_eq`. -/
 alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
@@ -172,12 +172,12 @@ alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
 alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 
 /-- A congruence pairwise preserves non-negative distance. Forward direction of
-`congruent_iff_pairwise_nndist_eq`. -/
-alias ⟨pairwise_nndist_eq, _⟩ := congruent_iff_pairwise_nndist_eq
+`congruent_iff_pairwise_nnDist_eq`. -/
+alias ⟨pairwise_nnDist_eq, _⟩ := congruent_iff_pairwise_nnDist_eq
 
 /-- Congruence follows from pairwise preserved non-negative distance. Backward direction of
-`congruent_iff_pairwise_nndist_eq`. -/
-alias ⟨_, of_pairwise_nndist_eq⟩ := congruent_iff_pairwise_nndist_eq
+`congruent_iff_pairwise_nnDist_eq`. -/
+alias ⟨_, of_pairwise_nnDist_eq⟩ := congruent_iff_pairwise_nnDist_eq
 
 /-- A congruence pairwise preserves distance. Forward direction of
 `congruent_iff_pairwise_dist_eq`. -/

@@ -41,14 +41,14 @@ def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : P
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves nonnegative
 distances. -/
-theorem isometry_iff_nndist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
-    Isometry f ↔ ∀ x y, nndist (f x) (f y) = nndist x y := by
-  simp only [Isometry, edist_nndist, ENNReal.coe_inj]
+theorem isometry_iff_nnDist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
+    Isometry f ↔ ∀ x y, nnDist (f x) (f y) = nnDist x y := by
+  simp only [Isometry, edist_nnDist, ENNReal.coe_inj]
 
 /-- On pseudometric spaces, a map is an isometry if and only if it preserves distances. -/
 theorem isometry_iff_dist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, dist (f x) (f y) = dist x y := by
-  simp only [isometry_iff_nndist_eq, ← coe_nndist, NNReal.coe_inj]
+  simp only [isometry_iff_nnDist_eq, ← coe_nnDist, NNReal.coe_inj]
 
 /-- An isometry preserves distances. -/
 alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
@@ -57,10 +57,10 @@ alias ⟨Isometry.dist_eq, _⟩ := isometry_iff_dist_eq
 alias ⟨_, Isometry.of_dist_eq⟩ := isometry_iff_dist_eq
 
 /-- An isometry preserves non-negative distances. -/
-alias ⟨Isometry.nndist_eq, _⟩ := isometry_iff_nndist_eq
+alias ⟨Isometry.nnDist_eq, _⟩ := isometry_iff_nnDist_eq
 
 /-- A map that preserves non-negative distances is an isometry. -/
-alias ⟨_, Isometry.of_nndist_eq⟩ := isometry_iff_nndist_eq
+alias ⟨_, Isometry.of_nnDist_eq⟩ := isometry_iff_nnDist_eq
 
 namespace Isometry
 
@@ -341,8 +341,8 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [Isomet
 protected theorem dist_eq (x y : α) : dist (f x) (f y) = dist x y :=
   (IsometryClass.isometry f).dist_eq x y
 
-protected theorem nndist_eq (x y : α) : nndist (f x) (f y) = nndist x y :=
-  (IsometryClass.isometry f).nndist_eq x y
+protected theorem nnDist_eq (x y : α) : nnDist (f x) (f y) = nnDist x y :=
+  (IsometryClass.isometry f).nnDist_eq x y
 
 theorem diam_image (s : Set α) : Metric.diam (f '' s) = Metric.diam s :=
   (IsometryClass.isometry f).diam_image s
@@ -411,9 +411,9 @@ protected theorem dist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSp
     (x y : α) : dist (h x) (h y) = dist x y :=
   h.isometry.dist_eq x y
 
-protected theorem nndist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
-    (x y : α) : nndist (h x) (h y) = nndist x y :=
-  h.isometry.nndist_eq x y
+protected theorem nnDist_eq {α β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] (h : α ≃ᵢ β)
+    (x y : α) : nnDist (h x) (h y) = nnDist x y :=
+  h.isometry.nnDist_eq x y
 
 protected theorem continuous (h : α ≃ᵢ β) : Continuous h :=
   h.isometry.continuous

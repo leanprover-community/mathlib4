@@ -225,13 +225,13 @@ theorem dist_conj_conj (z w : ℂ) : dist (conj z) (conj w) = dist z w :=
   isometry_conj.dist_eq z w
 
 @[simp]
-theorem nndist_conj_conj (z w : ℂ) : nndist (conj z) (conj w) = nndist z w :=
-  isometry_conj.nndist_eq z w
+theorem nnDist_conj_conj (z w : ℂ) : nnDist (conj z) (conj w) = nnDist z w :=
+  isometry_conj.nnDist_eq z w
 
 theorem dist_conj_comm (z w : ℂ) : dist (conj z) w = dist z (conj w) := by
   rw [← dist_conj_conj, conj_conj]
 
-theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
+theorem nnDist_conj_comm (z w : ℂ) : nnDist (conj z) w = nnDist z (conj w) :=
   Subtype.ext <| dist_conj_comm _ _
 
 instance : ContinuousStar ℂ :=

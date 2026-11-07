@@ -29,7 +29,7 @@ continuity and uniform continuity.
 * `Metric.ball x ε`: The set of all points `y` with `dist y x < ε`.
 * `Metric.closedBall x ε`: The set of all points `y` with `dist y x ≤ ε`.
 * `Metric.sphere x ε`: The set of all points `y` with `dist y x = ε`.
-* `nndist a b`: `dist` as a function to the non-negative reals.
+* `nnDist a b`: `dist` as a function to the non-negative reals.
 * `Metric.Bounded s`: Whether a subset of a `PseudoMetricSpace` is bounded.
 * `PseudoMetricSpace.replaceUniformity`, `PseudoMetricSpace.replaceTopology`,
   `PseudoMetricSpace.replaceBornology`: Tools to construct a pseudometric space on a type with a
@@ -42,7 +42,7 @@ continuity and uniform continuity.
 ## Main results
 
 * `PseudoMetricSpace.ext`: extensionality for pseudometric space structures.
-* `dist_triangle`, `dist_nonneg`, `nndist_triangle`: core distance inequalities.
+* `dist_triangle`, `dist_nonneg`, `nnDist_triangle`: core distance inequalities.
 * `Metric.mk_uniformity_basis`, `Metric.mk_uniformity_basis_le`: tools for constructing bases for
   the uniformity, with `Metric.nhds_basis_ball` and `Metric.nhds_basis_closedBall` as basic
   neighborhood-basis corollaries.
@@ -275,40 +275,40 @@ example {x y : α} : 0 ≤ dist x y := by positivity
 /-- A version of `Dist` that takes value in `ℝ≥0`. -/
 class NNDist (α : Type*) where
   /-- Nonnegative distance between two points -/
-  nndist : α → α → ℝ≥0
+  nnDist : α → α → ℝ≥0
 
-export NNDist (nndist)
+export NNDist (nnDist)
 
 -- see Note [lower instance priority]
 /-- Distance as a nonnegative real number. -/
 instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
   ⟨fun a b => ⟨dist a b, dist_nonneg⟩⟩
 
-/-- Express `dist` in terms of `nndist` -/
-theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
+/-- Express `dist` in terms of `nnDist` -/
+theorem dist_nnDist (x y : α) : dist x y = nnDist x y := rfl
 
 @[simp, norm_cast, basify_op]
-theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
+theorem coe_nnDist (x y : α) : ↑(nnDist x y) = dist x y := rfl
 
-/-- Express `edist` in terms of `nndist` -/
-theorem edist_nndist (x y : α) : edist x y = nndist x y := by
-  rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnreal]
+/-- Express `edist` in terms of `nnDist` -/
+theorem edist_nnDist (x y : α) : edist x y = nnDist x y := by
+  rw [edist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
 
-/-- Express `nndist` in terms of `edist` -/
-theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
-  simp [edist_nndist]
-
-@[simp, norm_cast]
-theorem coe_nnreal_ennreal_nndist (x y : α) : ↑(nndist x y) = edist x y :=
-  (edist_nndist x y).symm
+/-- Express `nnDist` in terms of `edist` -/
+theorem nnDist_edist (x y : α) : nnDist x y = (edist x y).toNNReal := by
+  simp [edist_nnDist]
 
 @[simp, norm_cast]
-theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nndist x y < c := by
-  rw [edist_nndist, ENNReal.coe_lt_coe]
+theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = edist x y :=
+  (edist_nnDist x y).symm
 
 @[simp, norm_cast]
-theorem edist_le_coe {x y : α} {c : ℝ≥0} : edist x y ≤ c ↔ nndist x y ≤ c := by
-  rw [edist_nndist, ENNReal.coe_le_coe]
+theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nnDist x y < c := by
+  rw [edist_nnDist, ENNReal.coe_lt_coe]
+
+@[simp, norm_cast]
+theorem edist_le_coe {x y : α} {c : ℝ≥0} : edist x y ≤ c ↔ nnDist x y ≤ c := by
+  rw [edist_nnDist, ENNReal.coe_le_coe]
 
 /-- In a pseudometric space, the extended distance is always finite -/
 theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y < ⊤ :=
@@ -319,15 +319,15 @@ theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y 
 theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
   (edist_lt_top x y).ne
 
-/-- `nndist x x` vanishes -/
-@[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
+/-- `nnDist x x` vanishes -/
+@[simp] theorem nnDist_self (a : α) : nnDist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 
 @[simp, norm_cast]
-theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nndist x y < c :=
+theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nnDist x y < c :=
   Iff.rfl
 
 @[simp, norm_cast]
-theorem dist_le_coe {x y : α} {c : ℝ≥0} : dist x y ≤ c ↔ nndist x y ≤ c :=
+theorem dist_le_coe {x y : α} {c : ℝ≥0} : dist x y ≤ c ↔ nnDist x y ≤ c :=
   Iff.rfl
 
 @[simp]
@@ -339,20 +339,20 @@ theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
     edist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
   rw [edist_dist, ENNReal.ofReal_le_ofReal_iff hr]
 
-/-- Express `nndist` in terms of `dist` -/
-theorem nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
-  rw [dist_nndist, Real.toNNReal_coe]
+/-- Express `nnDist` in terms of `dist` -/
+theorem nnDist_dist (x y : α) : nnDist x y = Real.toNNReal (dist x y) := by
+  rw [dist_nnDist, Real.toNNReal_coe]
 
-theorem nndist_comm (x y : α) : nndist x y = nndist y x := NNReal.eq <| dist_comm x y
+theorem nnDist_comm (x y : α) : nnDist x y = nnDist y x := NNReal.eq <| dist_comm x y
 
 /-- Triangle inequality for the nonnegative distance -/
-theorem nndist_triangle (x y z : α) : nndist x z ≤ nndist x y + nndist y z :=
+theorem nnDist_triangle (x y z : α) : nnDist x z ≤ nnDist x y + nnDist y z :=
   dist_triangle _ _ _
 
-theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z y :=
+theorem nnDist_triangle_left (x y z : α) : nnDist x y ≤ nnDist z x + nnDist z y :=
   dist_triangle_left _ _ _
 
-theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
+theorem nnDist_triangle_right (x y z : α) : nnDist x y ≤ nnDist x z + nnDist y z :=
   dist_triangle_right _ _ _
 
 /-- Express `dist` in terms of `edist` -/
@@ -642,17 +642,17 @@ theorem isBounded_iff_exists_ge {s : Set α} (c : ℝ) :
   ⟨fun h => ((eventually_ge_atTop c).and (isBounded_iff_eventually.1 h)).exists, fun h =>
     isBounded_iff.2 <| h.imp fun _ => And.right⟩
 
-theorem isBounded_iff_nndist {s : Set α} :
-    IsBounded s ↔ ∃ C : ℝ≥0, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → nndist x y ≤ C := by
-  simp only [isBounded_iff_exists_ge 0, NNReal.exists, ← NNReal.coe_le_coe, ← dist_nndist,
+theorem isBounded_iff_nnDist {s : Set α} :
+    IsBounded s ↔ ∃ C : ℝ≥0, ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → nnDist x y ≤ C := by
+  simp only [isBounded_iff_exists_ge 0, NNReal.exists, ← NNReal.coe_le_coe, ← dist_nnDist,
     NNReal.coe_mk, exists_prop]
 
-lemma boundedSpace_iff_nndist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nndist a b ≤ C := by
-  rw [← isBounded_univ, Metric.isBounded_iff_nndist]
+lemma boundedSpace_iff_nnDist : BoundedSpace α ↔ ∃ C, ∀ a b : α, nnDist a b ≤ C := by
+  rw [← isBounded_univ, Metric.isBounded_iff_nnDist]
   simp
 
 lemma boundedSpace_iff_edist : BoundedSpace α ↔ ∃ C : ℝ≥0, ∀ a b : α, edist a b ≤ C := by
-  simp [Metric.boundedSpace_iff_nndist]
+  simp [Metric.boundedSpace_iff_nnDist]
 
 theorem toUniformSpace_eq :
     ‹PseudoMetricSpace α›.toUniformSpace = .ofDist dist dist_self dist_comm dist_triangle :=
@@ -968,7 +968,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     exact fun _ => ENNReal.coe_lt_coe.1
 
 theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by
-  simp only [PseudoMetricSpace.uniformity_dist, dist_nndist, edist_nndist,
+  simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, edist_nnDist,
     Metric.uniformity_edist_aux]
 
 -- see Note [lower instance priority]
@@ -1125,10 +1125,10 @@ instance Real.pseudoMetricSpace : PseudoMetricSpace ℝ where
 
 theorem Real.dist_eq (x y : ℝ) : dist x y = |x - y| := rfl
 
-theorem Real.nndist_eq (x y : ℝ) : nndist x y = Real.nnabs (x - y) := rfl
+theorem Real.nnDist_eq (x y : ℝ) : nnDist x y = Real.nnabs (x - y) := rfl
 
-theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
-  nndist_comm _ _
+theorem Real.nnDist_eq' (x y : ℝ) : nnDist x y = Real.nnabs (y - x) :=
+  nnDist_comm _ _
 
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 
@@ -1266,14 +1266,14 @@ section
 
 variable [PseudoMetricSpace X]
 
-@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+@[simp] theorem nnDist_ofMul (a b : X) : nnDist (ofMul a) (ofMul b) = nnDist a b := rfl
 
-@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+@[simp] theorem nnDist_ofAdd (a b : X) : nnDist (ofAdd a) (ofAdd b) = nnDist a b := rfl
 
-@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
+@[simp] theorem nnDist_toMul (a b : Additive X) : nnDist a.toMul b.toMul = nnDist a b := rfl
 
 @[simp]
-theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
+theorem nnDist_toAdd (a b : Multiplicative X) : nnDist a.toAdd b.toAdd = nnDist a b := rfl
 
 end
 
@@ -1285,8 +1285,8 @@ section
 
 variable [PseudoMetricSpace X]
 
-@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+@[simp] theorem nnDist_toDual (a b : X) : nnDist (toDual a) (toDual b) = nnDist a b := rfl
 
-@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+@[simp] theorem nnDist_ofDual (a b : Xᵒᵈ) : nnDist (ofDual a) (ofDual b) = nnDist a b := rfl
 
 end

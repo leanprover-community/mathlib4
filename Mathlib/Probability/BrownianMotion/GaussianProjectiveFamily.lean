@@ -167,7 +167,7 @@ lemma measurePreserving_eval_projectiveFamily (s : I) :
 is the centered Gaussian with variance `t - s`. -/
 lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t : I) :
     MeasurePreserving (fun x ↦ x s - x t) (projectiveFamily I)
-      (gaussianReal 0 (nndist s.1 t.1)) where
+      (gaussianReal 0 (nnDist s.1 t.1)) where
   measurable := by fun_prop
   map_eq := by
     rw [HasGaussianLaw.map_eq_gaussianReal, variance_fun_sub,
@@ -180,8 +180,8 @@ lemma measurePreserving_eval_sub_eval_projectiveFamily (I : Finset ℝ≥0) (s t
       · wlog hst : (s : ℝ≥0) ≤ t generalizing s t
         · convert this t s (le_of_not_ge hst) using 1
           · rw [add_comm, min_comm]
-          · rw [nndist_comm]
-        grw [min_eq_left hst, NNReal.nndist_eq, max_eq_right (by grw [hst]), two_mul,
+          · rw [nnDist_comm]
+        grw [min_eq_left hst, NNReal.nnDist_eq, max_eq_right (by grw [hst]), two_mul,
           add_tsub_add_eq_tsub_left]
       nth_grw 1 [two_mul, min_le_left, min_le_right]
     · exact (IsGaussian.hasGaussianLaw_id.eval s).integrable

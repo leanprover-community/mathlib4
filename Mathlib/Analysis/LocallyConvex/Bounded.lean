@@ -432,7 +432,7 @@ protected theorem Bornology.IsVonNBounded.restrict_scalars_of_nontrivial
     (h : IsVonNBounded 𝕜' s) : IsVonNBounded 𝕜 s := by
   intro V hV
   refine (h hV).restrict_scalars <| AntilipschitzWith.tendsto_cobounded (K := ‖(1 : 𝕜')‖₊⁻¹) ?_
-  refine AntilipschitzWith.of_le_mul_nndist fun x y ↦ ?_
+  refine AntilipschitzWith.of_le_mul_nnDist fun x y ↦ ?_
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← sub_smul, nnNorm_smul, ← div_eq_inv_mul,
     mul_div_cancel_right₀ _ (nnNorm_ne_zero_iff.2 one_ne_zero)]
 

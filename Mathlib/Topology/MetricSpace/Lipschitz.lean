@@ -43,7 +43,7 @@ variable {α : Type u} {β : Type v} {γ : Type w} {ι : Type x}
 
 theorem lipschitzWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {f : α → β} : LipschitzWith K f ↔ ∀ x y, dist (f x) (f y) ≤ K * dist x y := by
-  simp only [LipschitzWith, edist_nndist, dist_nndist]
+  simp only [LipschitzWith, edist_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitzWith_iff_dist_le_mul
@@ -51,7 +51,7 @@ alias ⟨LipschitzWith.dist_le_mul, LipschitzWith.of_dist_le_mul⟩ := lipschitz
 theorem lipschitzOnWith_iff_dist_le_mul [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0}
     {s : Set α} {f : α → β} :
     LipschitzOnWith K f s ↔ ∀ x ∈ s, ∀ y ∈ s, dist (f x) (f y) ≤ K * dist x y := by
-  simp only [LipschitzOnWith, edist_nndist, dist_nndist]
+  simp only [LipschitzOnWith, edist_nnDist, dist_nnDist]
   norm_cast
 
 alias ⟨LipschitzOnWith.dist_le_mul, LipschitzOnWith.of_dist_le_mul⟩ :=
@@ -95,7 +95,7 @@ protected theorem iff_le_add_mul {f : α → ℝ} {K : ℝ≥0} :
     LipschitzWith K f ↔ ∀ x y, f x ≤ f y + K * dist x y :=
   ⟨LipschitzWith.le_add_mul, LipschitzWith.of_le_add_mul K⟩
 
-theorem nndist_le (hf : LipschitzWith K f) (x y : α) : nndist (f x) (f y) ≤ K * nndist x y :=
+theorem nnDist_le (hf : LipschitzWith K f) (x y : α) : nnDist (f x) (f y) ≤ K * nnDist x y :=
   hf.dist_le_mul x y
 
 theorem dist_le_mul_of_le (hf : LipschitzWith K f) (hr : dist x y ≤ r) : dist (f x) (f y) ≤ K * r :=

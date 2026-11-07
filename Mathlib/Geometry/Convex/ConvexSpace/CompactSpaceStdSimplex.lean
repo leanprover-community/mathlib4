@@ -26,7 +26,7 @@ variable (M : Type*)
 lemma range_toFun_comp_weights_subset_closedBall [Fintype M] :
     Set.range (fun t ↦ t.weights : StdSimplex ℝ M → M → ℝ) ⊆ Metric.closedBall 0 1 := by
   rintro _ ⟨x, rfl⟩
-  simp [dist_pi_def, Real.nndist_eq]
+  simp [dist_pi_def, Real.nnDist_eq]
 
 lemma isBounded_range_toFun_comp_weights [Finite M] :
     Bornology.IsBounded (Set.range (fun t ↦ t.weights : StdSimplex ℝ M → M → ℝ)) := by
@@ -40,7 +40,7 @@ lemma diam_range_toFun_comp_weights_subset_closedBall [Fintype M] :
     have (u : StdSimplex ℝ M) := u.weights_nonneg
     have (u : StdSimplex ℝ M) := u.weights_apply_le_one
     rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩
-    simp [dist_pi_def, Real.nndist_eq, ← NNReal.coe_le_coe]
+    simp [dist_pi_def, Real.nnDist_eq, ← NNReal.coe_le_coe]
     grind)
 
 lemma diam_range_toFun_comp_weights_subset_closedBall_eq_zero

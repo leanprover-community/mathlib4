@@ -383,8 +383,8 @@ instance : PseudoMetricSpace (Hamming β) where
     exact mod_cast hammingDist_le_card_fintype
 
 @[simp, push_cast]
-theorem nndist_eq_hammingDist (x y : Hamming β) :
-    nndist x y = hammingDist (ofHamming x) (ofHamming y) :=
+theorem nnDist_eq_hammingDist (x y : Hamming β) :
+    nnDist x y = hammingDist (ofHamming x) (ofHamming y) :=
   rfl
 
 instance : DiscreteTopology (Hamming β) := ⟨rfl⟩

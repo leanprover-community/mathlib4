@@ -106,8 +106,8 @@ theorem dist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
   rw [dist_eq_norm, inv_sub_inv' hz hw, norm_mul, norm_mul, norm_inv, norm_inv, mul_comm ‖z‖⁻¹,
     mul_assoc, dist_eq_norm', div_eq_mul_inv, mul_inv]
 
-theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
-    nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
+theorem nnDist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
+    nnDist z⁻¹ w⁻¹ = nnDist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
 
 lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :

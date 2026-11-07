@@ -204,15 +204,15 @@ instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) wher
     ext x
     exact eq_of_dist_eq_zero (le_antisymm (hfg ▸ dist_coe_le_dist _) dist_nonneg)
 
-theorem nndist_eq : nndist f g = sInf { C | ∀ x : α, nndist (f x) (g x) ≤ C } :=
+theorem nnDist_eq : nnDist f g = sInf { C | ∀ x : α, nnDist (f x) (g x) ≤ C } :=
   Subtype.ext <| dist_eq.trans <| by
     rw [val_eq_coe, coe_sInf, coe_image]
-    simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nndist]
+    simp_rw [mem_ofPred_eq, ← NNReal.coe_le_coe, NNReal.coe_mk, exists_prop, coe_nnDist]
 
-theorem nndist_set_exists : ∃ C, ∀ x : α, nndist (f x) (g x) ≤ C :=
+theorem nnDist_set_exists : ∃ C, ∀ x : α, nnDist (f x) (g x) ≤ C :=
   Subtype.exists.mpr <| dist_set_exists.imp fun _ ⟨ha, h⟩ => ⟨ha, h⟩
 
-theorem nndist_coe_le_nndist (x : α) : nndist (f x) (g x) ≤ nndist f g :=
+theorem nnDist_coe_le_nnDist (x : α) : nnDist (f x) (g x) ≤ nnDist f g :=
   dist_coe_le_dist x
 
 /-- On an empty space, bounded continuous functions are at distance 0. -/
@@ -225,14 +225,14 @@ theorem dist_eq_iSup : dist f g = ⨆ x : α, dist (f x) (g x) := by
   refine (dist_le_iff_of_nonempty.mpr <| le_ciSup ?_).antisymm (ciSup_le dist_coe_le_dist)
   exact dist_set_exists.imp fun C hC => forall_mem_range.2 hC.2
 
-theorem nndist_eq_iSup : nndist f g = ⨆ x : α, nndist (f x) (g x) :=
-  Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nndist]
+theorem nnDist_eq_iSup : nnDist f g = ⨆ x : α, nnDist (f x) (g x) :=
+  Subtype.ext <| dist_eq_iSup.trans <| by simp_rw [val_eq_coe, coe_iSup, coe_nnDist]
 
 theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
-  simp_rw [edist_nndist, nndist_eq_iSup]
-  refine ENNReal.coe_iSup ⟨nndist f g, ?_⟩
+  simp_rw [edist_nnDist, nnDist_eq_iSup]
+  refine ENNReal.coe_iSup ⟨nnDist f g, ?_⟩
   rintro - ⟨x, hx, rfl⟩
-  exact nndist_coe_le_nndist x
+  exact nnDist_coe_le_nnDist x
 
 theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → α →ᵇ β} {f : α →ᵇ β} {l : Filter ι} :
     Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l :=
@@ -779,8 +779,8 @@ end Module
 end IsBoundedSMul
 
 theorem NNReal.upper_bound {α : Type*} [TopologicalSpace α] (f : α →ᵇ ℝ≥0) (x : α) :
-    f x ≤ nndist f 0 := by
-  have key : nndist (f x) ((0 : α →ᵇ ℝ≥0) x) ≤ nndist f 0 := @dist_coe_le_dist α ℝ≥0 _ _ f 0 x
-  rwa [zero_apply, NNReal.nndist_zero_eq_val' (f x)] at key
+    f x ≤ nnDist f 0 := by
+  have key : nnDist (f x) ((0 : α →ᵇ ℝ≥0) x) ≤ nnDist f 0 := @dist_coe_le_dist α ℝ≥0 _ _ f 0 x
+  rwa [zero_apply, NNReal.nnDist_zero_eq_val' (f x)] at key
 
 end BoundedContinuousFunction

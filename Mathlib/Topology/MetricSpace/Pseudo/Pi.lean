@@ -36,32 +36,32 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, X b) := by
     the uniformity is the same as the product uniformity, but we register nevertheless a nice
     formula for the distance -/
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
-    (fun f g : ∀ b, X b => ((sup univ fun b => nndist (f b) (g b) : ℝ≥0) : ℝ))
+    (fun f g : ∀ b, X b => ((sup univ fun b => nnDist (f b) (g b) : ℝ≥0) : ℝ))
     (fun f g => NNReal.zero_le_coe)
     (fun f g => by simp [edist_pi_def])
   refine i.replaceBornology fun s => ?_
   simp only [isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
-    forall_mem_image, ← Filter.eventually_all, @dist_nndist (X _)]
+    forall_mem_image, ← Filter.eventually_all, @dist_nnDist (X _)]
   refine eventually_congr ((eventually_ge_atTop 0).mono fun C hC ↦ ?_)
   lift C to ℝ≥0 using hC
   refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
     fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   exact Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 
-lemma nndist_pi_def (f g : ∀ b, X b) : nndist f g = sup univ fun b => nndist (f b) (g b) := rfl
+lemma nnDist_pi_def (f g : ∀ b, X b) : nnDist f g = sup univ fun b => nnDist (f b) (g b) := rfl
 
-lemma dist_pi_def (f g : ∀ b, X b) : dist f g = (sup univ fun b => nndist (f b) (g b) : ℝ≥0) := rfl
+lemma dist_pi_def (f g : ∀ b, X b) : dist f g = (sup univ fun b => nnDist (f b) (g b) : ℝ≥0) := rfl
 
-lemma nndist_pi_le_iff {f g : ∀ b, X b} {r : ℝ≥0} :
-    nndist f g ≤ r ↔ ∀ b, nndist (f b) (g b) ≤ r := by simp [nndist_pi_def]
+lemma nnDist_pi_le_iff {f g : ∀ b, X b} {r : ℝ≥0} :
+    nnDist f g ≤ r ↔ ∀ b, nnDist (f b) (g b) ≤ r := by simp [nnDist_pi_def]
 
-lemma nndist_pi_lt_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
-    nndist f g < r ↔ ∀ b, nndist (f b) (g b) < r := by
-  simp [nndist_pi_def, Finset.sup_lt_iff hr]
+lemma nnDist_pi_lt_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
+    nnDist f g < r ↔ ∀ b, nnDist (f b) (g b) < r := by
+  simp [nnDist_pi_def, Finset.sup_lt_iff hr]
 
-lemma nndist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
-    nndist f g = r ↔ (∃ i, nndist (f i) (g i) = r) ∧ ∀ b, nndist (f b) (g b) ≤ r := by
-  rw [eq_iff_le_not_lt, nndist_pi_lt_iff hr, nndist_pi_le_iff, not_forall, and_comm]
+lemma nnDist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
+    nnDist f g = r ↔ (∃ i, nnDist (f i) (g i) = r) ∧ ∀ b, nnDist (f b) (g b) ≤ r := by
+  rw [eq_iff_le_not_lt, nnDist_pi_lt_iff hr, nnDist_pi_le_iff, not_forall, and_comm]
   simp_rw [not_lt, and_congr_left_iff, le_antisymm_iff]
   intro h
   refine exists_congr fun b => ?_
@@ -70,17 +70,17 @@ lemma nndist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ≥0} (hr : 0 < r) :
 lemma dist_pi_lt_iff {f g : ∀ b, X b} {r : ℝ} (hr : 0 < r) :
     dist f g < r ↔ ∀ b, dist (f b) (g b) < r := by
   lift r to ℝ≥0 using hr.le
-  exact nndist_pi_lt_iff hr
+  exact nnDist_pi_lt_iff hr
 
 lemma dist_pi_le_iff {f g : ∀ b, X b} {r : ℝ} (hr : 0 ≤ r) :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr
-  exact nndist_pi_le_iff
+  exact nnDist_pi_le_iff
 
 lemma dist_pi_eq_iff {f g : ∀ b, X b} {r : ℝ} (hr : 0 < r) :
     dist f g = r ↔ (∃ i, dist (f i) (g i) = r) ∧ ∀ b, dist (f b) (g b) ≤ r := by
   lift r to ℝ≥0 using hr.le
-  simp_rw [← coe_nndist, NNReal.coe_inj, nndist_pi_eq_iff hr, NNReal.coe_le_coe]
+  simp_rw [← coe_nnDist, NNReal.coe_inj, nnDist_pi_eq_iff hr, NNReal.coe_le_coe]
 
 lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, X b} {r : ℝ} :
     dist f g ≤ r ↔ ∀ b, dist (f b) (g b) ≤ r := by
@@ -92,23 +92,23 @@ lemma dist_pi_le_iff' [Nonempty β] {f g : ∀ b, X b} {r : ℝ} :
 lemma dist_pi_const_le (a b : α) : (dist (fun _ : β => a) fun _ => b) ≤ dist a b :=
   (dist_pi_le_iff dist_nonneg).2 fun _ => le_rfl
 
-lemma nndist_pi_const_le (a b : α) : (nndist (fun _ : β => a) fun _ => b) ≤ nndist a b :=
-  nndist_pi_le_iff.2 fun _ => le_rfl
+lemma nnDist_pi_const_le (a b : α) : (nnDist (fun _ : β => a) fun _ => b) ≤ nnDist a b :=
+  nnDist_pi_le_iff.2 fun _ => le_rfl
 
 @[simp]
 lemma dist_pi_const [Nonempty β] (a b : α) : (dist (fun _ : β => a) fun _ => b) = dist a b := by
   simpa only [dist_edist] using congr($(edist_pi_const a b).toReal)
 
 @[simp]
-lemma nndist_pi_const [Nonempty β] (a b : α) : (nndist (fun _ : β => a) fun _ => b) = nndist a b :=
+lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _ => b) = nnDist a b :=
   NNReal.eq <| dist_pi_const a b
 
-lemma nndist_le_pi_nndist (f g : ∀ b, X b) (b : β) : nndist (f b) (g b) ≤ nndist f g := by
-  rw [← ENNReal.coe_le_coe, ← edist_nndist, ← edist_nndist]
+lemma nnDist_le_pi_nnDist (f g : ∀ b, X b) (b : β) : nnDist (f b) (g b) ≤ nnDist f g := by
+  rw [← ENNReal.coe_le_coe, ← edist_nnDist, ← edist_nnDist]
   exact edist_le_pi_edist f g b
 
 lemma dist_le_pi_dist (f g : ∀ b, X b) (b : β) : dist (f b) (g b) ≤ dist f g := by
-  simp only [dist_nndist, NNReal.coe_le_coe, nndist_le_pi_nndist f g b]
+  simp only [dist_nnDist, NNReal.coe_le_coe, nnDist_le_pi_nnDist f g b]
 
 /-- An open ball in a product space is a product of open balls. See also `ball_pi'`
 for a version assuming `Nonempty β` instead of `0 < r`. -/
@@ -154,31 +154,31 @@ lemma sphere_pi (x : ∀ b, X b) {r : ℝ} (h : 0 < r ∨ Nonempty β) :
     simp [dist_pi_eq_iff hr, dist_pi_le_iff hr.le]
 
 @[simp]
-lemma Fin.nndist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
+lemma Fin.nnDist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
-    nndist (i.insertNth x f) (i.insertNth y g) = max (nndist x y) (nndist f g) :=
-  eq_of_forall_ge_iff fun c => by simp [nndist_pi_le_iff, i.forall_iff_succAbove]
+    nnDist (i.insertNth x f) (i.insertNth y g) = max (nnDist x y) (nnDist f g) :=
+  eq_of_forall_ge_iff fun c => by simp [nnDist_pi_le_iff, i.forall_iff_succAbove]
 
 @[simp]
 lemma Fin.dist_insertNth_insertNth {n : ℕ} {α : Fin (n + 1) → Type*}
     [∀ i, PseudoMetricSpace (α i)] (i : Fin (n + 1)) (x y : α i) (f g : ∀ j, α (i.succAbove j)) :
     dist (i.insertNth x f) (i.insertNth y g) = max (dist x y) (dist f g) := by
-  simp only [dist_nndist, Fin.nndist_insertNth_insertNth, NNReal.coe_max]
+  simp only [dist_nnDist, Fin.nnDist_insertNth_insertNth, NNReal.coe_max]
 
 /-- The (sup metric) nonnegative distance between `Pi.single i a` and `Pi.single j b` for
-`i ≠ j` is `max (nndist a 0) (nndist b 0)`. -/
-lemma nndist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [DecidableEq β]
+`i ≠ j` is `max (nnDist a 0) (nnDist b 0)`. -/
+lemma nnDist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [DecidableEq β]
     (i j : β) (a b : Y) (h : i ≠ j) :
-    nndist (Pi.single i a : β → Y) (Pi.single j b) = max (nndist a 0) (nndist b 0) := by
-  refine le_antisymm (nndist_pi_le_iff.2 fun k ↦ ?_) (max_le ?_ ?_)
+    nnDist (Pi.single i a : β → Y) (Pi.single j b) = max (nnDist a 0) (nnDist b 0) := by
+  refine le_antisymm (nnDist_pi_le_iff.2 fun k ↦ ?_) (max_le ?_ ?_)
   · simp only [Pi.single_apply]
-    by_cases hki : k = i <;> by_cases hkj : k = j <;> simp_all [nndist_comm]
-  · simpa [h] using nndist_le_pi_nndist (Pi.single i a : β → Y) (Pi.single j b) i
-  · simpa [h, nndist_comm] using nndist_le_pi_nndist (Pi.single i a : β → Y) (Pi.single j b) j
+    by_cases hki : k = i <;> by_cases hkj : k = j <;> simp_all [nnDist_comm]
+  · simpa [h] using nnDist_le_pi_nnDist (Pi.single i a : β → Y) (Pi.single j b) i
+  · simpa [h, nnDist_comm] using nnDist_le_pi_nnDist (Pi.single i a : β → Y) (Pi.single j b) j
 
 /-- The (sup metric) distance between `Pi.single i a` and `Pi.single j b` for
 `i ≠ j` is `max (dist a 0) (dist b 0)`. -/
 lemma dist_single_single {Y : Type*} [PseudoMetricSpace Y] [Zero Y] [DecidableEq β]
     (i j : β) (a b : Y) (h : i ≠ j) :
     dist (Pi.single i a : β → Y) (Pi.single j b) = max (dist a 0) (dist b 0) := by
-  simp only [dist_nndist, nndist_single_single i j a b h, NNReal.coe_max]
+  simp only [dist_nnDist, nnDist_single_single i j a b h, NNReal.coe_max]

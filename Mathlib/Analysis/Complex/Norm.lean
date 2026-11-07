@@ -257,32 +257,32 @@ theorem dist_mk (x₁ y₁ x₂ y₂ : ℝ) :
 theorem dist_of_re_eq {z w : ℂ} (h : z.re = w.re) : dist z w = dist z.im w.im := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, zero_add, Real.sqrt_sq_eq_abs, Real.dist_eq]
 
-theorem nndist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nndist z w = nndist z.im w.im :=
+theorem nnDist_of_re_eq {z w : ℂ} (h : z.re = w.re) : nnDist z w = nnDist z.im w.im :=
   NNReal.eq <| dist_of_re_eq h
 
 theorem edist_of_re_eq {z w : ℂ} (h : z.re = w.re) : edist z w = edist z.im w.im := by
-  rw [edist_nndist, edist_nndist, nndist_of_re_eq h]
+  rw [edist_nnDist, edist_nnDist, nnDist_of_re_eq h]
 
 theorem dist_of_im_eq {z w : ℂ} (h : z.im = w.im) : dist z w = dist z.re w.re := by
   rw [dist_eq_re_im, h, sub_self, zero_pow two_ne_zero, add_zero, Real.sqrt_sq_eq_abs, Real.dist_eq]
 
-theorem nndist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nndist z w = nndist z.re w.re :=
+theorem nnDist_of_im_eq {z w : ℂ} (h : z.im = w.im) : nnDist z w = nnDist z.re w.re :=
   NNReal.eq <| dist_of_im_eq h
 
 theorem edist_of_im_eq {z w : ℂ} (h : z.im = w.im) : edist z w = edist z.re w.re := by
-  rw [edist_nndist, edist_nndist, nndist_of_im_eq h]
+  rw [edist_nnDist, edist_nnDist, nnDist_of_im_eq h]
 
 theorem dist_conj_self (z : ℂ) : dist (conj z) z = 2 * |z.im| := by
   rw [dist_of_re_eq (conj_re z), conj_im, dist_comm, Real.dist_eq, sub_neg_eq_add, ← two_mul,
     _root_.abs_mul, abs_of_pos (zero_lt_two' ℝ)]
 
-theorem nndist_conj_self (z : ℂ) : nndist (conj z) z = 2 * Real.nnabs z.im :=
-  NNReal.eq <| by rw [← dist_nndist, NNReal.coe_mul, NNReal.coe_two, Real.coe_nnabs, dist_conj_self]
+theorem nnDist_conj_self (z : ℂ) : nnDist (conj z) z = 2 * Real.nnabs z.im :=
+  NNReal.eq <| by rw [← dist_nnDist, NNReal.coe_mul, NNReal.coe_two, Real.coe_nnabs, dist_conj_self]
 
 theorem dist_self_conj (z : ℂ) : dist z (conj z) = 2 * |z.im| := by rw [dist_comm, dist_conj_self]
 
-theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := by
-  rw [nndist_comm, nndist_conj_self]
+theorem nnDist_self_conj (z : ℂ) : nnDist z (conj z) = 2 * Real.nnabs z.im := by
+  rw [nnDist_comm, nnDist_conj_self]
 
 /-! ### Cauchy sequences -/
 

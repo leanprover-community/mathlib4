@@ -132,7 +132,7 @@ theorem dist_map (x y : P) : dist (f x) (f y) = dist x y := by
   rw [dist_eq_norm_vsub V₂, dist_eq_norm_vsub V, ← map_vsub, f.linearIsometry.norm_map]
 
 @[simp]
-theorem nndist_map (x y : P) : nndist (f x) (f y) = nndist x y := by simp [nndist_dist]
+theorem nnDist_map (x y : P) : nnDist (f x) (f y) = nnDist x y := by simp [nnDist_dist]
 
 @[simp]
 theorem edist_map (x y : P) : edist (f x) (f y) = edist x y := by simp [edist_dist]

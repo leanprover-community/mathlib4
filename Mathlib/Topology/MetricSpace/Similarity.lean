@@ -208,34 +208,34 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
 
 /-- Similarity holds if and only if all non-negative distances are proportional. -/
-lemma similar_iff_exists_nndist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
-      r * nndist (v₂ i₁) (v₂ i₂))) :=
+lemma similar_iff_exists_nnDist_eq :
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nnDist (v₁ i₁) (v₁ i₂) =
+      r * nnDist (v₂ i₁) (v₂ i₂))) :=
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
-  fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
+  fun _ _ => by { rw [edist_nnDist, edist_nnDist]; norm_cast }
 
 /-- Similarity holds if and only if all non-negative distances between points with different
 indices are proportional. -/
-lemma similar_iff_exists_pairwise_nndist_eq :
-    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
-      r * nndist (v₂ i₁) (v₂ i₂))) := by
-  simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nndist]
+lemma similar_iff_exists_pairwise_nnDist_eq :
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nnDist (v₁ i₁) (v₁ i₂) =
+      r * nnDist (v₂ i₁) (v₂ i₂))) := by
+  simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nnDist]
   exact mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional. -/
 lemma similar_iff_exists_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) :=
-  similar_iff_exists_nndist_eq.trans
+  similar_iff_exists_nnDist_eq.trans
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
-    fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
+    fun _ _ => by { rw [dist_nnDist, dist_nnDist]; norm_cast })
 
 /-- Similarity holds if and only if all distances between points with different indices are
 proportional. -/
 lemma similar_iff_exists_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
-  simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
+  simp_rw [similar_iff_exists_pairwise_nnDist_eq, dist_nnDist]
   exact mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional with a positive real ratio. -/
@@ -256,12 +256,12 @@ lemma similar_iff_exists_pos_pairwise_dist_eq :
 namespace Similar
 
 /-- A similarity scales non-negative distance. Forward direction of
-`similar_iff_exists_nndist_eq`. -/
-alias ⟨exists_nndist_eq, _⟩ := similar_iff_exists_nndist_eq
+`similar_iff_exists_nnDist_eq`. -/
+alias ⟨exists_nnDist_eq, _⟩ := similar_iff_exists_nnDist_eq
 
 /-- Similarity follows from scaled non-negative distance. Backward direction of
-`similar_iff_exists_nndist_eq`. -/
-alias ⟨_, of_exists_nndist_eq⟩ := similar_iff_exists_nndist_eq
+`similar_iff_exists_nnDist_eq`. -/
+alias ⟨_, of_exists_nnDist_eq⟩ := similar_iff_exists_nnDist_eq
 
 /-- A similarity scales distance. Forward direction of `similar_iff_exists_dist_eq`. -/
 alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
@@ -271,12 +271,12 @@ alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
 alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
 
 /-- A similarity pairwise scales non-negative distance. Forward direction of
-`similar_iff_exists_pairwise_nndist_eq`. -/
-alias ⟨exists_pairwise_nndist_eq, _⟩ := similar_iff_exists_pairwise_nndist_eq
+`similar_iff_exists_pairwise_nnDist_eq`. -/
+alias ⟨exists_pairwise_nnDist_eq, _⟩ := similar_iff_exists_pairwise_nnDist_eq
 
 /-- Similarity follows from pairwise scaled non-negative distance. Backward direction of
-`similar_iff_exists_pairwise_nndist_eq`. -/
-alias ⟨_, of_exists_pairwise_nndist_eq⟩ := similar_iff_exists_pairwise_nndist_eq
+`similar_iff_exists_pairwise_nnDist_eq`. -/
+alias ⟨_, of_exists_pairwise_nnDist_eq⟩ := similar_iff_exists_pairwise_nnDist_eq
 
 /-- A similarity pairwise scales distance. Forward direction of
 `similar_iff_exists_pairwise_dist_eq`. -/

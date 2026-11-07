@@ -350,7 +350,7 @@ the version with the orthogonal projection gives access to more lemmas about ort
 projections that may be useful). -/
 lemma dist_orthogonalProjection_eq_infNndist (s : AffineSubspace 𝕜 P) [Nonempty s]
     [s.direction.HasOrthogonalProjection] (p : P) :
-    nndist p (orthogonalProjection s p) = Metric.infNndist p s := by
+    nnDist p (orthogonalProjection s p) = Metric.infNndist p s := by
   rw [← NNReal.coe_inj]
   simp [dist_orthogonalProjection_eq_infDist]
 

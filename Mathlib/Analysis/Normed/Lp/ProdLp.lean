@@ -609,15 +609,15 @@ instance instProdMetricSpace [MetricSpace α] [MetricSpace β] : MetricSpace (Wi
 
 variable {p α β}
 
-theorem prod_nndist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
+theorem prod_nnDist_eq_add [PseudoMetricSpace α] [PseudoMetricSpace β]
     (hp : p ≠ ∞) (x y : WithLp p (α × β)) :
-    nndist x y = (nndist x.fst y.fst ^ p.toReal + nndist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
+    nnDist x y = (nnDist x.fst y.fst ^ p.toReal + nnDist x.snd y.snd ^ p.toReal) ^ (1 / p.toReal) :=
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_add (p.toReal_pos_iff_ne_top.mpr hp) _ _
 
-theorem prod_nndist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
-    nndist x y = nndist x.fst y.fst ⊔ nndist x.snd y.snd :=
+theorem prod_nnDist_eq_sup [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp ∞ (α × β)) :
+    nnDist x y = nnDist x.fst y.fst ⊔ nnDist x.snd y.snd :=
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_sup _ _
@@ -630,21 +630,21 @@ theorem edist_snd_le [PseudoEMetricSpace α] [PseudoEMetricSpace β] (x y : With
     edist x.snd y.snd ≤ edist x y :=
   (edist_proj_le_edist_aux p x y).2
 
-theorem nndist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
-    nndist x.fst y.fst ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_fst_le x y
+theorem nnDist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    nnDist x.fst y.fst ≤ nnDist x y := by
+  simpa [← coe_nnreal_ennreal_nnDist] using edist_fst_le x y
 
-theorem nndist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
-    nndist x.snd y.snd ≤ nndist x y := by
-  simpa [← coe_nnreal_ennreal_nndist] using edist_snd_le x y
+theorem nnDist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
+    nnDist x.snd y.snd ≤ nnDist x y := by
+  simpa [← coe_nnreal_ennreal_nnDist] using edist_snd_le x y
 
 theorem dist_fst_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     dist x.fst y.fst ≤ dist x y :=
-  nndist_fst_le x y
+  nnDist_fst_le x y
 
 theorem dist_snd_le [PseudoMetricSpace α] [PseudoMetricSpace β] (x y : WithLp p (α × β)) :
     dist x.snd y.snd ≤ dist x y :=
-  nndist_snd_le x y
+  nnDist_snd_le x y
 
 variable (p α β)
 
@@ -707,13 +707,13 @@ theorem eNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x 
 
 theorem nnNorm_fst_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.fst‖₊ ≤ ‖x‖₊ := by
-  simpa using nndist_fst_le x 0
+  simpa using nnDist_fst_le x 0
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_fst_le := nnNorm_fst_le
 
 theorem nnNorm_snd_le [SeminormedAddCommGroup α] [SeminormedAddCommGroup β] (x : WithLp p (α × β)) :
     ‖x.snd‖₊ ≤ ‖x‖₊ := by
-  simpa using nndist_snd_le x 0
+  simpa using nnDist_snd_le x 0
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_snd_le := nnNorm_snd_le
 
@@ -806,8 +806,8 @@ theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     dist x y = dist x.fst y.fst + dist x.snd y.snd := by
   simp_rw [dist_eq_norm, prod_norm_eq_of_L1, sub_fst, sub_snd]
 
-theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
-    nndist x y = nndist x.fst y.fst + nndist x.snd y.snd :=
+theorem prod_nnDist_eq_of_L1 (x y : WithLp 1 (α × β)) :
+    nnDist x y = nnDist x.fst y.fst + nnDist x.snd y.snd :=
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_of_L1 _ _
@@ -843,8 +843,8 @@ theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = √(dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2) := by
   simp_rw [dist_eq_norm, prod_norm_eq_of_L2, sub_fst, sub_snd]
 
-theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
-    nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
+theorem prod_nnDist_eq_of_L2 (x y : WithLp 2 (α × β)) :
+    nnDist x y = NNReal.sqrt (nnDist x.fst y.fst ^ 2 + nnDist x.snd y.snd ^ 2) :=
   NNReal.eq <| by
     push_cast
     exact prod_dist_eq_of_L2 _ _
@@ -890,34 +890,34 @@ lemma norm_toLp_snd (y : β) : ‖toLp p ((0 : α), y)‖ = ‖y‖ :=
   congr($(nnNorm_toLp_inr p α β y))
 
 @[simp]
-lemma nndist_toLp_fst (x₁ x₂ : α) :
-    nndist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nndist x₁ x₂ := by
+lemma nnDist_toLp_fst (x₁ x₂ : α) :
+    nnDist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = nnDist x₁ x₂ := by
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inl]
 
 @[simp]
-lemma nndist_toLp_snd (y₁ y₂ : β) :
-    nndist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nndist y₁ y₂ := by
+lemma nnDist_toLp_snd (y₁ y₂ : β) :
+    nnDist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = nnDist y₁ y₂ := by
   rw [nnDist_eq_nnNorm, nnDist_eq_nnNorm, ← toLp_sub, Prod.mk_sub_mk, sub_zero,
     nnNorm_toLp_inr]
 
 @[simp]
 lemma dist_toLp_fst (x₁ x₂ : α) : dist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = dist x₁ x₂ :=
-  congr($(nndist_toLp_fst p α β x₁ x₂))
+  congr($(nnDist_toLp_fst p α β x₁ x₂))
 
 @[simp]
 lemma dist_toLp_snd (y₁ y₂ : β) :
     dist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = dist y₁ y₂ :=
-  congr($(nndist_toLp_snd p α β y₁ y₂))
+  congr($(nnDist_toLp_snd p α β y₁ y₂))
 
 @[simp]
 lemma edist_toLp_fst (x₁ x₂ : α) : edist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = edist x₁ x₂ := by
-  simp only [edist_nndist, nndist_toLp_fst p α β x₁ x₂]
+  simp only [edist_nnDist, nnDist_toLp_fst p α β x₁ x₂]
 
 @[simp]
 lemma edist_toLp_snd (y₁ y₂ : β) :
     edist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = edist y₁ y₂ := by
-  simp only [edist_nndist, nndist_toLp_snd p α β y₁ y₂]
+  simp only [edist_nnDist, nnDist_toLp_snd p α β y₁ y₂]
 
 end Single
 

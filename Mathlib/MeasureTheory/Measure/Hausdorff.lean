@@ -1091,8 +1091,8 @@ variable [MetricSpace P] [NormedAddTorsor E P] [BorelSpace P]
 
 This is an auxiliary result used to prove `hausdorffMeasure_affineSegment`. -/
 theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
-    μH[1] (AffineMap.lineMap x y '' s) = nndist x y • μH[1] s := by
-  suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nndist x y • μH[1] s by
+    μH[1] (AffineMap.lineMap x y '' s) = nnDist x y • μH[1] s := by
+  suffices μH[1] (IsometryEquiv.vaddConst x '' (· • (y -ᵥ x)) '' s) = nnDist x y • μH[1] s by
     simpa only [Set.image_image]
   borelize E
   rw [IsometryEquiv.hausdorffMeasure_image, hausdorffMeasure_smul_right_image,
@@ -1103,7 +1103,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
 theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by
   rw [affineSegment, hausdorffMeasure_lineMap_image, hausdorffMeasure_real, Real.volume_Icc,
     sub_zero, ENNReal.ofReal_one, ← Algebra.algebraMap_eq_smul_one]
-  exact (edist_nndist _ _).symm
+  exact (edist_nnDist _ _).symm
 
 end RealAffine
 

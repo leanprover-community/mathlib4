@@ -811,11 +811,11 @@ theorem eNorm_integral_le_of_eNorm_le_const
 @[deprecated (since := "2026-11-06")]
 alias enorm_integral_le_of_enorm_le_const := eNorm_integral_le_of_eNorm_le_const
 
-theorem nndist_integral_add_vectorMeasure_le_lintegral
+theorem nnDist_integral_add_vectorMeasure_le_lintegral
     (h₁ : μ.Integrable f) (h₂ : ν.Integrable f) :
-    (nndist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
+    (nnDist (∫ᵛ x, f x ∂[B; μ]) (∫ᵛ x, f x ∂[B; (μ + ν)]) : ℝ≥0∞) ≤
       ‖B‖ₑ * ∫⁻ x, ‖f x‖ₑ ∂ν.variation := by
-  rw [integral_add_vectorMeasure h₁ h₂, nndist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
+  rw [integral_add_vectorMeasure h₁ h₂, nnDist_comm, nnDist_eq_nnNorm, add_sub_cancel_left]
   exact eNorm_integral_le_lintegral_eNorm
 
 variable {β : Type*} [MeasurableSpace β] {φ : X → β} {a : X}

@@ -451,20 +451,20 @@ theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace 
   exact lintegral_const_mul (c • (1 : ℝ≥0∞)) f.measurable_coe_ennreal_comp
 
 theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →ᵇ ℝ≥0) :
-    μ.testAgainstNN f ≤ μ.testAgainstNN g + nndist f g * μ.mass := by
-  simp only [← μ.testAgainstNN_const (nndist f g), ← testAgainstNN_add, ← ENNReal.coe_le_coe,
+    μ.testAgainstNN f ≤ μ.testAgainstNN g + nnDist f g * μ.mass := by
+  simp only [← μ.testAgainstNN_const (nnDist f g), ← testAgainstNN_add, ← ENNReal.coe_le_coe,
     FunLike.coe_add, const_apply, ENNReal.coe_add, Pi.add_apply,
-    coe_nnreal_ennreal_nndist, testAgainstNN_coe_eq]
+    coe_nnreal_ennreal_nnDist, testAgainstNN_coe_eq]
   apply lintegral_mono
-  have le_dist : ∀ ω, dist (f ω) (g ω) ≤ nndist f g := BoundedContinuousFunction.dist_coe_le_dist
+  have le_dist : ∀ ω, dist (f ω) (g ω) ≤ nnDist f g := BoundedContinuousFunction.dist_coe_le_dist
   intro ω
-  have le' : f ω ≤ g ω + nndist f g := by
+  have le' : f ω ≤ g ω + nnDist f g := by
     calc f ω
-     _ ≤ g ω + nndist (f ω) (g ω) := NNReal.le_add_nndist (f ω) (g ω)
-     _ ≤ g ω + nndist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
-  have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
+     _ ≤ g ω + nnDist (f ω) (g ω) := NNReal.le_add_nnDist (f ω) (g ω)
+     _ ≤ g ω + nnDist f g := (add_le_add_iff_left (g ω)).mpr (le_dist ω)
+  have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nnDist f g := by
     simpa only [← ENNReal.coe_add] using (mod_cast le')
-  rwa [coe_nnreal_ennreal_nndist] at le
+  rwa [coe_nnreal_ennreal_nnDist] at le
 
 theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
     LipschitzWith μ.mass fun f : Ω →ᵇ ℝ≥0 ↦ μ.testAgainstNN f := by
@@ -477,7 +477,7 @@ theorem testAgainstNN_lipschitz (μ : FiniteMeasure Ω) :
   · have key := μ.testAgainstNN_lipschitz_estimate f₂ f₁
     rw [mul_comm] at key
     suffices ↑(μ.testAgainstNN f₂) ≤ ↑(μ.testAgainstNN f₁) + ↑μ.mass * dist f₁ f₂ by linarith
-    simpa [nndist_comm] using NNReal.coe_mono key
+    simpa [nnDist_comm] using NNReal.coe_mono key
   · have key := μ.testAgainstNN_lipschitz_estimate f₁ f₂
     rw [mul_comm] at key
     suffices ↑(μ.testAgainstNN f₁) ≤ ↑(μ.testAgainstNN f₂) + ↑μ.mass * dist f₁ f₂ by linarith
@@ -553,9 +553,9 @@ theorem tendsto_zero_testAgainstNN_of_tendsto_zero_mass {γ : Type*} {F : Filter
   have obs := fun i ↦ (μs i).testAgainstNN_lipschitz_estimate f 0
   simp_rw [testAgainstNN_zero, zero_add] at obs
   simp_rw [show ∀ i, dist ((μs i).testAgainstNN f) 0 = (μs i).testAgainstNN f by
-      simp only [dist_nndist, NNReal.nndist_zero_eq_val', imp_true_iff]]
+      simp only [dist_nnDist, NNReal.nnDist_zero_eq_val', imp_true_iff]]
   apply squeeze_zero (fun i ↦ NNReal.coe_nonneg _) obs
-  have lim_pair : Tendsto (fun i ↦ (⟨nndist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nndist f 0, 0⟩) :=
+  have lim_pair : Tendsto (fun i ↦ (⟨nnDist f 0, (μs i).mass⟩ : ℝ × ℝ)) F (𝓝 ⟨nnDist f 0, 0⟩) :=
     (Prod.tendsto_iff _ _).mpr ⟨tendsto_const_nhds, (NNReal.continuous_coe.tendsto 0).comp mass_lim⟩
   simpa using! tendsto_mul.comp lim_pair
 

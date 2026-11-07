@@ -216,8 +216,8 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   have hfi' := fun n => ((f n).hasBoxIntegral μ I l hl).integrable
   have hfg_mono : ∀ (x) {m n}, m ≤ n → ‖f n x - g x‖ ≤ ‖f m x - g x‖ := by
     intro x m n hmn
-    rw [← dist_eq_norm, ← dist_eq_norm, dist_nndist, dist_nndist, NNReal.coe_le_coe, ←
-      ENNReal.coe_le_coe, ← edist_nndist, ← edist_nndist]
+    rw [← dist_eq_norm, ← dist_eq_norm, dist_nnDist, dist_nnDist, NNReal.coe_le_coe, ←
+      ENNReal.coe_le_coe, ← edist_nnDist, ← edist_nnDist]
     exact SimpleFunc.edist_approxOn_mono hg.measurable _ x hmn
   /- Now consider `ε > 0`. We need to find `r` such that for any tagged partition subordinate
     to `r`, the integral sum is `(μ I + 1 + 1) * ε`-close to the Bochner integral. -/

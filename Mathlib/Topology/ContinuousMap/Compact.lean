@@ -137,9 +137,9 @@ theorem dist_eq_iSup : dist f g = ⨆ x, dist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.dist_eq f g,
     BoundedContinuousFunction.dist_eq_iSup]
 
-theorem nndist_eq_iSup : nndist f g = ⨆ x, nndist (f x) (g x) := by
-  simp [← isometryEquivBoundedOfCompact α β |>.nndist_eq f g,
-    BoundedContinuousFunction.nndist_eq_iSup]
+theorem nnDist_eq_iSup : nnDist f g = ⨆ x, nnDist (f x) (g x) := by
+  simp [← isometryEquivBoundedOfCompact α β |>.nnDist_eq f g,
+    BoundedContinuousFunction.nnDist_eq_iSup]
 
 theorem edist_eq_iSup : edist f g = ⨆ (x : α), edist (f x) (g x) := by
   simp [← isometryEquivBoundedOfCompact α β |>.edist_eq f g,

@@ -156,7 +156,7 @@ instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β w
 
 instance (priority := 100) IsBoundedSMul.toUniformContinuousConstSMul :
     UniformContinuousConstSMul α β :=
-  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nnDist c 0)).2 fun _ _ =>
     dist_smul_pair c _ _).uniformContinuous⟩
 
 @[to_fun]

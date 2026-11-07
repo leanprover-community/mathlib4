@@ -45,7 +45,7 @@ We define the following operations on boxes:
   map from `Box ι` to `Set (ι → ℝ)`;
 * `BoxIntegral.Box.face I i : Box (Fin n)`: a hyperface of `I : BoxIntegral.Box (Fin (n + 1))`;
 * `BoxIntegral.Box.distortion`: the maximal ratio of two lengths of edges of a box; defined as the
-  supremum of `nndist I.lower I.upper / nndist (I.lower i) (I.upper i)`.
+  supremum of `nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)`.
 
 We also provide a convenience constructor `BoxIntegral.Box.mk' (l u : ι → ℝ) : WithBot (Box ι)`
 that returns the box `⟨l, u, _⟩` if it is nonempty and `⊥` otherwise.
@@ -442,14 +442,14 @@ variable [Fintype ι]
 
 /-- The distortion of a box `I` is the maximum of the ratios of the lengths of its edges.
 It is defined as the maximum of the ratios
-`nndist I.lower I.upper / nndist (I.lower i) (I.upper i)`. -/
+`nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)`. -/
 def distortion (I : Box ι) : ℝ≥0 :=
-  Finset.univ.sup fun i : ι ↦ nndist I.lower I.upper / nndist (I.lower i) (I.upper i)
+  Finset.univ.sup fun i : ι ↦ nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i)
 
 theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
     (h : ∀ i, I.upper i - I.lower i = (J.upper i - J.lower i) / r) :
     distortion I = distortion J := by
-  simp only [distortion, nndist_pi_def, Real.nndist_eq', h, map_div₀]
+  simp only [distortion, nnDist_pi_def, Real.nnDist_eq', h, map_div₀]
   congr 1 with i
   have : 0 < r := by
     by_contra hr
@@ -459,20 +459,20 @@ theorem distortion_eq_of_sub_eq_div {I J : Box ι} {r : ℝ}
   have hn0 := (map_ne_zero Real.nnabs).2 this.ne'
   simp_rw [NNReal.finset_sup_div, div_div_div_cancel_right₀ hn0]
 
-theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
-    nndist I.lower I.upper ≤ I.distortion * nndist (I.lower i) (I.upper i) :=
+theorem nnDist_le_distortion_mul (I : Box ι) (i : ι) :
+    nnDist I.lower I.upper ≤ I.distortion * nnDist (I.lower i) (I.upper i) :=
   calc
-    nndist I.lower I.upper =
-        nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
-      (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
-    _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
+    nnDist I.lower I.upper =
+        nnDist I.lower I.upper / nnDist (I.lower i) (I.upper i) * nnDist (I.lower i) (I.upper i) :=
+      (div_mul_cancel₀ _ <| mt nnDist_eq_zero.1 (I.lower_lt_upper i).ne).symm
+    _ ≤ I.distortion * nnDist (I.lower i) (I.upper i) := by
       grw [distortion, ← Finset.le_sup (Finset.mem_univ i)]
 
 theorem dist_le_distortion_mul (I : Box ι) (i : ι) :
     dist I.lower I.upper ≤ I.distortion * (I.upper i - I.lower i) := by
   have A : I.lower i - I.upper i < 0 := sub_neg.2 (I.lower_lt_upper i)
-  simpa only [← NNReal.coe_le_coe, ← dist_nndist, NNReal.coe_mul, Real.dist_eq, abs_of_neg A,
-    neg_sub] using I.nndist_le_distortion_mul i
+  simpa only [← NNReal.coe_le_coe, ← dist_nnDist, NNReal.coe_mul, Real.dist_eq, abs_of_neg A,
+    neg_sub] using I.nnDist_le_distortion_mul i
 
 theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.distortion ≤ c) :
     diam (Box.Icc I) ≤ c * (I.upper i - I.lower i) :=

@@ -343,23 +343,23 @@ variable [PseudoMetricSpace X] [PseudoMetricSpace Y] {C r : ℝ≥0} {f : X → 
 
 namespace HolderOnWith
 
-theorem nndist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
-    {d : ℝ≥0} (hd : nndist x y ≤ d) : nndist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  rw [← ENNReal.coe_le_coe, ← edist_nndist, ENNReal.coe_mul,
+theorem nnDist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
+    {d : ℝ≥0} (hd : nnDist x y ≤ d) : nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
+  rw [← ENNReal.coe_le_coe, ← edist_nnDist, ENNReal.coe_mul,
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le hx hy
-  rwa [edist_nndist, ENNReal.coe_le_coe]
+  rwa [edist_nnDist, ENNReal.coe_le_coe]
 
-theorem nndist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
-    nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
-  hf.nndist_le_of_le hx hy le_rfl
+theorem nnDist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
+    nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
+  hf.nnDist_le_of_le hx hy le_rfl
 
 theorem dist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ} (hd : dist x y ≤ d) : dist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
   lift d to ℝ≥0 using dist_nonneg.trans hd
-  rw [dist_nndist] at hd ⊢
+  rw [dist_nnDist] at hd ⊢
   norm_cast at hd ⊢
-  exact hf.nndist_le_of_le hx hy hd
+  exact hf.nnDist_le_of_le hx hy hd
 
 theorem dist_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s) :
     dist (f x) (f y) ≤ C * dist x y ^ (r : ℝ) :=
@@ -369,13 +369,13 @@ end HolderOnWith
 
 namespace HolderWith
 
-theorem nndist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nndist x y ≤ d) :
-    nndist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
-  (hf.holderOnWith univ).nndist_le_of_le (mem_univ x) (mem_univ y) hd
+theorem nnDist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ≥0} (hd : nnDist x y ≤ d) :
+    nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) :=
+  (hf.holderOnWith univ).nnDist_le_of_le (mem_univ x) (mem_univ y) hd
 
-theorem nndist_le (hf : HolderWith C r f) (x y : X) :
-    nndist (f x) (f y) ≤ C * nndist x y ^ (r : ℝ) :=
-  hf.nndist_le_of_le le_rfl
+theorem nnDist_le (hf : HolderWith C r f) (x y : X) :
+    nnDist (f x) (f y) ≤ C * nnDist x y ^ (r : ℝ) :=
+  hf.nnDist_le_of_le le_rfl
 
 theorem dist_le_of_le (hf : HolderWith C r f) {x y : X} {d : ℝ} (hd : dist x y ≤ d) :
     dist (f x) (f y) ≤ C * d ^ (r : ℝ) :=

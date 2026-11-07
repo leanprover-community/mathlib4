@@ -210,18 +210,18 @@ instance SeparationQuotient.instMetricSpace : MetricSpace (SeparationQuotient α
   EMetricSpace.toMetricSpaceOfDist dist (surjective_mk.forall₂.2 fun _ _ ↦ dist_nonneg) <|
     surjective_mk.forall₂.2 edist_dist
 
-theorem nndist_congr_right {x y z : α} (h : nndist x y = 0) :
-    nndist x z = nndist y z := by
+theorem nnDist_congr_right {x y z : α} (h : nnDist x y = 0) :
+    nnDist x z = nnDist y z := by
   apply NNReal.eq
   exact dist_congr_right (congrArg ((↑·) : ℝ≥0 → ℝ) h)
 
-theorem nndist_congr_left {x y z : α} (h : nndist x y = 0) :
-    nndist z x = nndist z y := by
-  simp [nndist_comm, nndist_congr_right h]
+theorem nnDist_congr_left {x y z : α} (h : nnDist x y = 0) :
+    nnDist z x = nnDist z y := by
+  simp [nnDist_comm, nnDist_congr_right h]
 
-theorem nndist_congr {w x y z : α} (hl : nndist w x = 0) (hr : nndist y z = 0) :
-    nndist w y = nndist x z :=
-  (nndist_congr_right hl).trans (nndist_congr_left hr)
+theorem nnDist_congr {w x y z : α} (hl : nnDist w x = 0) (hr : nnDist y z = 0) :
+    nnDist w y = nnDist x z :=
+  (nnDist_congr_right hl).trans (nnDist_congr_left hr)
 
 end EqRel
 

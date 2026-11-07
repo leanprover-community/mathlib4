@@ -103,7 +103,7 @@ lemma IsPreBrownianReal.eval_zero_ae_eq_zero (hB : IsPreBrownianReal B P) :
   exact this.ae_eq_of_dirac
 
 lemma IsPreBrownianReal.hasLaw_sub (hB : IsPreBrownianReal B P) (s t : ℝ≥0) :
-    HasLaw (B s - B t) (gaussianReal 0 (nndist s.1 t.1)) P :=
+    HasLaw (B s - B t) (gaussianReal 0 (nnDist s.1 t.1)) P :=
   (measurePreserving_eval_sub_eval_projectiveFamily
     {s, t} ⟨s, by simp⟩ ⟨t, by simp⟩).hasLaw.comp (hB.hasLaw _)
 

@@ -420,7 +420,7 @@ theorem eNorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ �
 alias enorm'_le_iff_norm_le := eNorm'_le_iff_norm_le
 
 @[to_additive]
-theorem nnDist_eq_nnNorm_inv_mul (a b : E) : nndist a b = ‖a⁻¹ * b‖₊ :=
+theorem nnDist_eq_nnNorm_inv_mul (a b : E) : nnDist a b = ‖a⁻¹ * b‖₊ :=
   NNReal.eq <| dist_eq_norm_inv_mul _ _
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))]
@@ -434,11 +434,11 @@ theorem nnNorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
 alias nnnorm_inv' := nnNorm_inv'
 
 @[to_additive (attr := simp)]
-theorem nndist_one_right (a : E) : nndist a 1 = ‖a‖₊ := by
+theorem nnDist_one_right (a : E) : nnDist a 1 = ‖a‖₊ := by
   simp [nnDist_eq_nnNorm_inv_mul]
 
 @[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nndist, nndist_one_right, eNorm]
+lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nnDist, nnDist_one_right, eNorm]
 
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -502,16 +502,16 @@ theorem nnNorm_units_zsmul {E : Type*} [SeminormedAddGroup E] (n : ℤˣ) (a : E
 @[deprecated (since := "2026-10-31")] alias nnnorm_units_zsmul := nnNorm_units_zsmul
 
 @[to_additive (attr := simp)]
-theorem nndist_one_left (a : E) : nndist 1 a = ‖a‖₊ := by simp [nnDist_eq_nnNorm_inv_mul]
+theorem nnDist_one_left (a : E) : nnDist 1 a = ‖a‖₊ := by simp [nnDist_eq_nnNorm_inv_mul]
 
 @[to_additive (attr := simp)]
 theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
-  rw [edist_nndist, nndist_one_left]
+  rw [edist_nnDist, nnDist_one_left]
 
 open scoped symmDiff in
 @[to_additive]
-theorem nndist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
-    nndist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
+theorem nnDist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
+    nnDist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ :=
   NNReal.eq <| dist_mulIndicator s t f x
 
 @[to_additive]
@@ -527,7 +527,7 @@ lemma eNorm_div_le : ‖a / b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
 @[to_additive (attr := deprecated (since := "2026-11-06"))] alias enorm_div_le := eNorm_div_le
 
 @[to_additive]
-theorem nnDist_nnNorm_nnNorm_le_nnNorm_inv_mul (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
+theorem nnDist_nnNorm_nnNorm_le_nnNorm_inv_mul (a b : E) : nnDist ‖a‖₊ ‖b‖₊ ≤ ‖a⁻¹ * b‖₊ :=
   NNReal.coe_le_coe.1 <| dist_norm_norm_le_norm_inv_mul a b
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))]
@@ -610,12 +610,12 @@ open scoped symmDiff in
 @[to_additive]
 theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
-  rw [edist_nndist, nndist_mulIndicator]
+  rw [edist_nnDist, nnDist_mulIndicator]
 
 @[to_additive nontrivialTopology_iff_exists_nnNorm_ne_zero]
 theorem nontrivialTopology_iff_exists_nnNorm_ne_zero' :
     NontrivialTopology E ↔ ∃ x : E, ‖x‖₊ ≠ 0 := by
-  simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nndist,
+  simp_rw [TopologicalSpace.nontrivial_iff_exists_not_inseparable, Metric.inseparable_iff_nnDist,
     nnDist_eq_nnNorm_inv_mul]
   exact ⟨fun ⟨x, y, hxy⟩ => ⟨_, hxy⟩, fun ⟨x, hx⟩ => ⟨x, 1, by simpa using hx⟩⟩
 
@@ -890,14 +890,14 @@ theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
   abs_norm_sub_norm_le' a b
 
 @[to_additive nnDist_nnNorm_nnNorm_le]
-theorem nnDist_nnNorm_nnNorm_le' (a b : E) : nndist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
+theorem nnDist_nnNorm_nnNorm_le' (a b : E) : nnDist ‖a‖₊ ‖b‖₊ ≤ ‖a / b‖₊ :=
   NNReal.coe_le_coe.1 <| dist_norm_norm_le' a b
 
 @[to_additive (attr := deprecated (since := "2026-10-31")) nndist_nnnorm_nnnorm_le]
 alias nndist_nnnorm_nnnorm_le' := nnDist_nnNorm_nnNorm_le'
 
 @[to_additive]
-theorem nnDist_eq_nnNorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
+theorem nnDist_eq_nnNorm_div (a b : E) : nnDist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
 
 @[to_additive (attr := deprecated (since := "2026-10-31"))]
