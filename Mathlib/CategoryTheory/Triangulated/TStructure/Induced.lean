@@ -39,7 +39,7 @@ equipped with a t-structure can be endowed with an induced t-structure. -/
 class HasInducedTStructure [P.IsTriangulated] : Prop where
   exists_triangle_zero_one (A : C) (hA : P A) :
     ∃ (X Y : C) (_ : t.IsLE X 0) (_ : t.IsGE Y 1)
-      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧) (_ : Triangle.mk f g h ∈ distTriang C),
+      (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦1⟧) (_ : Triangle.mk f g h ∈ distTriang C),
     P.isoClosure X ∧ P.isoClosure Y
 
 variable [P.IsTriangulated] [h : P.HasInducedTStructure t]
@@ -66,8 +66,8 @@ noncomputable def tStructure : TStructure P.FullSubcategory where
       (t.ge 1).prop_of_iso e' hY.ge,
       P.fullyFaithfulι.preimage (e.inv ≫ f),
       P.fullyFaithfulι.preimage (g ≫ e'.hom),
-      P.fullyFaithfulι.preimage (e'.inv ≫ h ≫ e.hom⟦(1 : ℤ)⟧' ≫
-          (P.ι.commShiftIso (1 : ℤ)).inv.app ⟨X', hX'⟩),
+      P.fullyFaithfulι.preimage (e'.inv ≫ h ≫ e.hom⟦1⟧' ≫
+          (P.ι.commShiftIso 1).inv.app ⟨X', hX'⟩),
       isomorphic_distinguished _ hT _ (Triangle.isoMk _ _ e.symm (Iso.refl _) e'.symm)⟩
 
 lemma tStructure_isLE_iff (X : P.FullSubcategory) (n : ℤ) :

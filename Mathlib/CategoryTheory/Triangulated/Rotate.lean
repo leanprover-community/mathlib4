@@ -69,8 +69,8 @@ not necessarily equal to `Z`, but it is isomorphic, by the `counitIso` of `shift
 -/
 @[simps!]
 def Triangle.invRotate (T : Triangle C) : Triangle C :=
-  Triangle.mk (-T.mor₃⟦(-1 : ℤ)⟧' ≫ (shiftEquiv C (1 : ℤ)).unitIso.inv.app _) (T.mor₁)
-    (T.mor₂ ≫ (shiftEquiv C (1 : ℤ)).counitIso.inv.app _)
+  Triangle.mk (-T.mor₃⟦-1⟧' ≫ (shiftEquiv C 1).unitIso.inv.app _) (T.mor₁)
+    (T.mor₂ ≫ (shiftEquiv C 1).counitIso.inv.app _)
 
 end
 
@@ -120,7 +120,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def rotCompInvRot : 𝟭 (Triangle C) ≅ rotate C ⋙ invRotate C :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _
-    ((shiftEquiv C (1 : ℤ)).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
+    ((shiftEquiv C 1).unitIso.app T.obj₁) (Iso.refl _) (Iso.refl _)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -129,7 +129,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps!]
 def invRotCompRot : invRotate C ⋙ rotate C ≅ 𝟭 (Triangle C) :=
   NatIso.ofComponents fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
-    ((shiftEquiv C (1 : ℤ)).counitIso.app T.obj₃)
+    ((shiftEquiv C 1).counitIso.app T.obj₃)
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

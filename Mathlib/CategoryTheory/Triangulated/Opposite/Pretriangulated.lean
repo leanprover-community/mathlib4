@@ -97,7 +97,7 @@ noncomputable def contractibleTriangleIso (X : Cᵒᵖ) :
     (IsZero.iso (isZero_zero _) (by
       dsimp
       rw [IsZero.iff_id_eq_zero]
-      change (𝟙 ((0 : C)⟦(-1 : ℤ)⟧)).op = 0
+      change (𝟙 ((0 : C)⟦-1⟧)).op = 0
       rw [← Functor.map_id, id_zero, Functor.map_zero, op_zero]))
     (by simp) (by simp) (by simp)
 
@@ -125,11 +125,11 @@ lemma rotate_distinguished_triangle (T : Triangle Cᵒᵖ) :
 
 set_option backward.defeqAttrib.useBackward true in
 lemma distinguished_cocone_triangle {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
+    ∃ (Z : Cᵒᵖ) (g : Y ⟶ Z) (h : Z ⟶ X⟦1⟧),
       Triangle.mk f g h ∈ distinguishedTriangles C := by
   obtain ⟨Z, g, h, H⟩ := Pretriangulated.distinguished_cocone_triangle₁ f.unop
   refine ⟨_, g.op, (opShiftFunctorEquivalence C 1).counitIso.inv.app (Opposite.op Z) ≫
-    (shiftFunctor Cᵒᵖ (1 : ℤ)).map h.op, ?_⟩
+    (shiftFunctor Cᵒᵖ 1).map h.op, ?_⟩
   simp only [mem_distinguishedTriangles_iff]
   refine Pretriangulated.isomorphic_distinguished _ H _ ?_
   exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
@@ -150,7 +150,7 @@ lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle Cᵒᵖ)
   dsimp at hc₂
   simp only [assoc, Iso.unop_hom_inv_id_app_assoc] at hc₂
   refine ⟨c.op, Quiver.Hom.unop_inj hc₁.symm, Quiver.Hom.unop_inj ?_⟩
-  apply (shiftFunctor C (1 : ℤ)).map_injective
+  apply (shiftFunctor C 1).map_injective
   rw [unop_comp, unop_comp, Functor.map_comp, Functor.map_comp,
     Quiver.Hom.unop_op, hc₂, ← unop_comp_assoc, ← unop_comp_assoc,
     ← opShiftFunctorEquivalence_unitIso_inv_naturality]

@@ -18,7 +18,7 @@ a map `a ⟶ b` in `EInt` (i.e. `a ≤ b`) to the functor
 `t`-homology only in degree `n` such that `a ≤ n < b`.)
 When we have two composable morphisms `f : a ⟶ b` and `g : b ⟶ c` in `EInt`,
 we define a connecting homomorphism
-`ω₁δ : t.ω₁.obj (mk₁ g) ⟶ t.ω₁.obj (mk₁ f) ⋙ shiftFunctor C (1 : ℤ)`, and
+`ω₁δ : t.ω₁.obj (mk₁ g) ⟶ t.ω₁.obj (mk₁ f) ⋙ shiftFunctor C 1`, and
 this gives distinguished triangles that are functorial both in `X : C`
 and `a ⟶ b ⟶ c` in `ComposableArrows EInt 2`.
 
@@ -63,7 +63,7 @@ open CategoryTheory.Functor in
 objects attached to the objects of a triangulated equipped with a t-structure. -/
 @[simps!]
 noncomputable def ω₁δ :
-    t.ω₁.obj (mk₁ (homOfLE hbc)) ⟶ t.ω₁.obj (mk₁ (homOfLE hab)) ⋙ shiftFunctor C (1 : ℤ) :=
+    t.ω₁.obj (mk₁ (homOfLE hbc)) ⟶ t.ω₁.obj (mk₁ (homOfLE hab)) ⋙ shiftFunctor C 1 :=
   whiskerLeft _ (t.eTruncGEToGEGE a b) ≫ (associator _ _ _).inv ≫
     (t.ω₁.obj (mk₁ (homOfLE (hab.trans hbc)))).whiskerLeft (t.eTruncGEδLT.app b) ≫
       (associator _ _ _).inv ≫

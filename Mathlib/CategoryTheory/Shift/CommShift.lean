@@ -38,7 +38,6 @@ namespace Functor
 variable {C D E : Type*} [Category* C] [Category* D] [Category* E]
   (F : C ⥤ D) (G : D ⥤ E) (A B : Type*) [AddMonoid A] [AddCommMonoid B]
   [HasShift C A] [HasShift D A] [HasShift E A]
-  [HasShift C B] [HasShift D B]
 
 namespace CommShift
 
@@ -46,7 +45,7 @@ namespace CommShift
 `shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor D (0 : A)` deduced from the
 isomorphisms `shiftFunctorZero` on both categories `C` and `D`. -/
 @[simps!]
-noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor D (0 : A) :=
+noncomputable def isoZero : shiftFunctor C 0 ⋙ F ≅ F ⋙ shiftFunctor D 0 :=
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
@@ -141,7 +140,7 @@ end CommShift
 /-- A functor `F` commutes with the shift by a monoid `A` if it is equipped with
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
-class CommShift (F : C ⥤ D) (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A] where
+class CommShift (F : C ⥤ D) (A : outParam Type*) [AddMonoid A] [HasShift C A] [HasShift D A] where
   /-- The commutation isomorphisms for all `a`-shifts this functor is equipped with -/
   commShiftIso (F) (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   commShiftIso_zero (F) (A) : commShiftIso 0 = CommShift.isoZero F A := by cat_disch
@@ -220,27 +219,6 @@ alias commShiftIso_comp_inv_app := CommShift.comp_commShiftIso_inv_app
 
 attribute [simp] commShiftIso_id_hom_app commShiftIso_id_inv_app
 
-variable {B}
-
-lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
-    F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
-      ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
-      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
-  have eq := congr($(F.commShiftIso_add a b).hom.app X)
-  simp only [comp_obj, CommShift.isoAdd_hom_app,
-    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
-    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
-  simp only [shiftFunctorComm_eq D a b _ rfl]
-  dsimp
-  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
-    ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
-  dsimp
-  rw [Functor.map_comp]
-  simp only [congr($(F.commShiftIso_add' (add_comm b a)).hom.app X),
-    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
-    Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
-
 @[simp, reassoc]
 lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
     F.map ((shiftFunctorCompIsoId C a b h).hom.app X) =
@@ -263,6 +241,27 @@ lemma map_shiftFunctorCompIsoId_inv_app [F.CommShift A] (X : C) (a b : A) (h : a
     Iso.hom_inv_id_app, F.map_id, map_shiftFunctorCompIsoId_hom_app]
   simp only [comp_obj, id_obj, Category.assoc, Iso.hom_inv_id_app_assoc,
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp]
+
+variable {B} [HasShift C B] [HasShift D B]
+
+lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
+    F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
+      ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
+      ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
+  have eq := congr($(F.commShiftIso_add a b).hom.app X)
+  simp only [comp_obj, CommShift.isoAdd_hom_app,
+    ← cancel_epi (F.map ((shiftFunctorAdd C a b).inv.app X)),
+    ← F.map_comp_assoc, Iso.inv_hom_id_app, F.map_id, Category.id_comp] at eq
+  simp only [shiftFunctorComm_eq D a b _ rfl]
+  dsimp
+  simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, Category.assoc,
+    ← reassoc_of% eq, shiftFunctorComm_eq C a b _ rfl]
+  dsimp
+  rw [Functor.map_comp]
+  simp only [congr($(F.commShiftIso_add' (add_comm b a)).hom.app X),
+    CommShift.isoAdd'_hom_app, Category.assoc, Iso.inv_hom_id_app_assoc,
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
+    Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
 
 end Functor
 

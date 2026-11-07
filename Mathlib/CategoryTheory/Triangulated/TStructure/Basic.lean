@@ -64,7 +64,7 @@ structure TStructure where
   le_zero_le : le 0 ≤ le 1
   ge_one_le : ge 1 ≤ ge 0
   exists_triangle_zero_one (A : C) : ∃ (X Y : C) (_ : le 0 X) (_ : ge 1 Y)
-    (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C
+    (f : X ⟶ A) (g : A ⟶ Y) (h : Y ⟶ X⟦1⟧), Triangle.mk f g h ∈ distTriang C
 
 namespace TStructure
 
@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma exists_triangle (A : C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
     ∃ (X Y : C) (_ : t.le n₀ X) (_ : t.ge n₁ Y) (f : X ⟶ A) (g : A ⟶ Y)
-      (h : Y ⟶ X⟦(1 : ℤ)⟧), Triangle.mk f g h ∈ distTriang C := by
+      (h : Y ⟶ X⟦1⟧), Triangle.mk f g h ∈ distTriang C := by
   obtain ⟨X, Y, hX, hY, f, g, h, mem⟩ := t.exists_triangle_zero_one (A⟦n₀⟧)
   let T := (Triangle.shiftFunctor C (-n₀)).obj (Triangle.mk f g h)
   let e := (shiftEquiv C n₀).unitIso.symm.app A

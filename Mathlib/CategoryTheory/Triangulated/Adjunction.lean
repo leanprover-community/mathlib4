@@ -62,7 +62,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
     dsimp at h h₁ h₂ ⊢
     have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
       simpa [homEquiv_apply] using congr(adj.homEquiv _ _ $h₁)
-    have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
+    have h₂' : g ≫ (G.commShiftIso 1).inv.app T.obj₁ =
         adj.homEquiv _ _ h ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
       simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
@@ -75,7 +75,7 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
       obtain ⟨ψ, rfl⟩ := Triangle.coyoneda_exact₃ _ mem φ (by
         dsimp
         simp only [homEquiv_unit, Functor.comp_obj] at hφ
-        rw [← cancel_mono ((G.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
+        rw [← cancel_mono ((G.commShiftIso 1).inv.app T.obj₁), assoc, h₂', zero_comp,
           homEquiv_unit, assoc, reassoc_of% hφ, zero_comp])
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
@@ -93,16 +93,16 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         exact hφ
       · intro φ
         obtain ⟨ψ, hψ⟩ := Triangle.coyoneda_exact₁ _ mem (φ ≫ G.map T.mor₃ ≫
-          (G.commShiftIso (1 : ℤ)).hom.app T.obj₁) (by
+          (G.commShiftIso 1).hom.app T.obj₁) (by
             dsimp
             rw [assoc, assoc, ← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
               comp_distTriang_mor_zero₃₁ _ hT, G.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
         obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ adj.homEquiv _ _ h := ⟨_, rfl⟩
         have hα₀ : α ≫ G.map T.mor₃ = 0 := by
-          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).hom.app T.obj₁),
+          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G 1).hom.app T.obj₁),
             assoc, sub_comp, assoc, assoc, hψ, zero_comp, sub_eq_zero,
-            ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).inv.app T.obj₁), assoc,
+            ← cancel_mono ((Functor.commShiftIso G 1).inv.app T.obj₁), assoc,
             assoc, assoc, assoc, h₂', Iso.hom_inv_id_app, comp_id]
         suffices ∃ (β : Y ⟶ Z), β ≫ adj.homEquiv _ _ h = α by
           obtain ⟨β, hβ⟩ := this

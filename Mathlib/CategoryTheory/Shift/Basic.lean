@@ -30,7 +30,7 @@ would be the degree `i+n`-th term of `C`.
 `[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of
 shift functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
-`shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
+`shiftFunctorZero C A : shiftFunctor C 0 ≅ 𝟭 C` and
 `shiftFunctorAdd C i j : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j`
 (and its variant `shiftFunctorAdd'`). These isomorphisms satisfy some coherence properties
 which are stated in lemmas like `shiftFunctorAdd'_assoc`, `shiftFunctorAdd'_zero_add` and
@@ -61,7 +61,7 @@ variable (A C) [AddMonoid A]
 
 /-- A category has a shift indexed by an additive monoid `A`
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
-class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
+class HasShift (C : Type u) (A : outParam (Type*)) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
   shift : Discrete A ⥤ C ⥤ C
   /-- `shift` is monoidal -/
@@ -190,7 +190,7 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
 
 variable (A) in
 /-- Shifting by zero is the identity functor. -/
-def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
+def shiftFunctorZero : shiftFunctor C 0 ≅ 𝟭 C :=
   (εIso (shiftMonoidalFunctor C A)).symm
 
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
@@ -368,10 +368,10 @@ theorem shift_shift' (i j : A) :
 variable (A)
 
 /-- Shifting by zero is the identity functor. -/
-abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
+abbrev shiftZero : X⟦0⟧ ≅ X :=
   (shiftFunctorZero C A).app _
 
-theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
+theorem shiftZero' : f⟦0⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
   rw [Iso.app_inv, Iso.app_hom]
   apply NatIso.naturality_2
