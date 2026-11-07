@@ -146,21 +146,17 @@ lemma exists_mul_algebraMap_eq_algebraMap [Fact (IsMulTorsion (ClassGroup R))]
       exists_primeCompl_mul_eq_of_integer v (z : K) (Set.integer_valuation_le_one S K z hv)
     exact d.2 (hle (hD.2 ⟨n, ((mul_comm _ _).trans hnd).symm⟩))
   -- Since the class group is torsion, `D ^ n = (α)` for some `n ≠ 0` and `α ∈ R`.
-  have hD_mem : D ∈ (Ideal R)⁰ := mem_nonZeroDivisors_iff_ne_zero.2 hD_ne_zero
-  obtain ⟨n, hn, hpow⟩ := isOfFinOrder_iff_pow_eq_one.1 <|
-    (Fact.out : IsMulTorsion (ClassGroup R)) (ClassGroup.mk0 ⟨D, hD_mem⟩)
-  obtain ⟨α, hα⟩ : (D ^ n).IsPrincipal := by
-    rw [← ClassGroup.mk0_eq_one_iff (pow_mem hD_mem n), ← hpow, ← map_pow]; rfl
-  have hα_mem : α ∈ D := pow_le_self hn.ne' (hα ▸ Submodule.mem_span_singleton_self α)
+  obtain ⟨n, hn, α, hα⟩ := ClassGroup.exists_pow_eq_span_singleton Fact.out D
+  have hα_mem : α ∈ D := pow_le_self hn (hα ▸ Submodule.mem_span_singleton_self α)
   obtain ⟨β, hβ⟩ := hD.1 hα_mem
   have hα_mem' : α ∈ Localization.submonoid S := by
     rw [Localization.mem_submonoid_iff, mem_nonZeroDivisors_iff_ne_zero]
     refine ⟨?_, ?_⟩
-    · rintro v hv hαv
+    · intro v hv hαv
       exact hD_not_le hv <| IsPrime.le_of_pow_le <|
         hα.trans_le ((span_singleton_le_iff_mem v.asIdeal).2 hαv)
-    · rintro rfl
-      exact hD_ne_zero (pow_eq_zero_iff hn.ne' |>.1 (by simpa using hα))
+    · intro rfl
+      exact hD_ne_zero (pow_eq_zero_iff hn |>.1 (by simp [hα]))
   exact ⟨(β, ⟨α, hα_mem'⟩), SetLike.coe_eq_coe.mp ((hβ.trans (mul_comm _ _)).symm)⟩
 
 /-- When every class in the class group has finite order, the ring of `S`-integers is the
