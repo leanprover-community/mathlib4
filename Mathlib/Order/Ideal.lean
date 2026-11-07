@@ -63,6 +63,7 @@ variable {P : Type*}
   - nonempty
   - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
   - downward closed (any element less than an element of the ideal is in the ideal). -/
+@[wikidata Q1656686]
 structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is nonempty. -/
   nonempty' : carrier.Nonempty
@@ -77,7 +78,7 @@ initialize_simps_projections Ideal (+toLowerSet, -carrier)
   - nonempty
   - upward directed (any pair of elements in the ideal has an upper bound in the ideal)
   - downward closed (any element less than an element of the ideal is in the ideal). -/
-@[mk_iff]
+@[mk_iff, wikidata Q1656686]
 structure IsIdeal {P} [LE P] (I : Set P) : Prop where
   /-- The ideal is downward closed. -/
   IsLowerSet : IsLowerSet I
