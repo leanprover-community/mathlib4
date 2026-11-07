@@ -159,7 +159,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       have : f = g.op := rfl
       rw [this]
       cases i <;> cases j <;> cases g <;> rfl)
-  functor_unitIso_comp := fun j => by cases j <;> rfl
+  functor_unitIso_comp j := by cases j <;> rfl
 
 @[to_dual (attr := simp)]
 theorem walkingParallelPairOpEquiv_unitIso_zero :
@@ -355,7 +355,7 @@ def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
         cases X
         · exact ι
         · exact ι ≫ f
-      naturality := fun {X} {Y} f =>
+      naturality {X} {Y} f :=
         by cases X <;> cases Y <;> cases f <;> simp [w] }
 
 @[to_dual (attr := simp)]
@@ -432,10 +432,10 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ t.ι = s.ι)
     (uniq : ∀ (s : Fork f g) (m : s.pt ⟶ t.pt) (_ : m ≫ t.ι = s.ι), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelPair.casesOn j (fac s) <| by
         simp [← Category.assoc, fac]
-    uniq := fun s m j => by aesop }
+    uniq s m j := by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the

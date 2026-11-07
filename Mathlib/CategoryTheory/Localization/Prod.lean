@@ -105,8 +105,8 @@ property of the localized category of the product. -/
 noncomputable def prod :
     StrictUniversalPropertyFixedTarget (W₁.Q.prod W₂.Q) (W₁.prod W₂) E where
   inverts := (Localization.inverts W₁.Q W₁).prod (Localization.inverts W₂.Q W₂)
-  lift := fun F hF => prodLift F hF
-  fac := fun F hF => prod_fac F hF
+  lift F hF := prodLift F hF
+  fac F hF := prod_fac F hF
   uniq := prod_uniq
 
 end StrictUniversalPropertyFixedTarget

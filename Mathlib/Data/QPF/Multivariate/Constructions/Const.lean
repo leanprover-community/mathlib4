@@ -68,8 +68,8 @@ instance mvqpf : @MvQPF _ (Const n A) where
   P := MvPFunctor.const n A
   abs x := MvPFunctor.const.get x
   repr x := MvPFunctor.const.mk n x
-  abs_repr := fun _ => const.get_mk _
-  abs_map := fun _ => const.get_map _
+  abs_repr _ := const.get_mk _
+  abs_map _ := const.get_map _
 
 end Const
 

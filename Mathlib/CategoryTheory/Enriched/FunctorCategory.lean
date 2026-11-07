@@ -95,7 +95,7 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
         assoc, Iso.inv_hom_id_assoc, eHomWhiskerRight])
   invFun g :=
     { app := fun j ↦ (eHomEquiv V).symm (g ≫ end_.π _ j)
-      naturality := fun i j f ↦ (eHomEquiv V).injective (by
+      naturality i j f := (eHomEquiv V).injective (by
         simp only [eHomEquiv_comp, Equiv.apply_symm_apply, Iso.cancel_iso_inv_left]
         conv_rhs =>
           rw [tensorHom_def_assoc, MonoidalCategory.whiskerRight_id_assoc, assoc,

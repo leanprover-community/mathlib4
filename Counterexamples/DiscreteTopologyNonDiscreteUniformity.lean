@@ -88,10 +88,10 @@ attribute [-instance] instTopologicalSpaceNat instUniformSpaceNat Nat.instDist
 section Metric
 
 noncomputable local instance : PseudoMetricSpace ℕ where
-  dist := fun n m ↦ |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
+  dist n m := |2 ^ (- n : ℤ) - 2 ^ (- m : ℤ)|
   dist_self := by simp only [zpow_neg, zpow_natCast, sub_self, abs_zero, implies_true]
-  dist_comm := fun _ _ ↦ abs_sub_comm ..
-  dist_triangle := fun _ _ _ ↦ abs_sub_le ..
+  dist_comm _ _ := abs_sub_comm ..
+  dist_triangle _ _ _ := abs_sub_le ..
 
 @[simp]
 lemma dist_def {n m : ℕ} : dist n m = |2 ^ (-n : ℤ) - 2 ^ (-m : ℤ)| := rfl

@@ -103,7 +103,7 @@ def conesEquivSieveCompatibleFamily :
       simpa using! π.naturality φ.op⟩
   invFun x :=
     { app := fun f => x.1 f.unop.1.hom f.unop.2
-      naturality := fun f f' g => by
+      naturality f f' g := by
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
@@ -439,7 +439,7 @@ def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤
   functor := sheafToPresheaf _ _
   inverse :=
     { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
-      map := fun f => ⟨f⟩ }
+      map f := ⟨f⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

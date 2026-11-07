@@ -517,9 +517,9 @@ open scoped Classical in
 noncomputable def groupWithZeroOfIsUnitOrEqZero [hM : MonoidWithZero M]
     (h : ∀ a : M, IsUnit a ∨ a = 0) : GroupWithZero M :=
   { hM with
-    inv := fun a => if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
+    inv a := if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹,
     inv_zero := dite_eq_left rfl,
-    mul_inv_cancel := fun a h0 => by
+    mul_inv_cancel a h0 := by
       change (a * if h0 : a = 0 then 0 else ↑((h a).resolve_right h0).unit⁻¹) = 1
       rw [dite_eq_right h0, Units.mul_inv_eq_iff_eq_mul, one_mul, IsUnit.unit_spec] }
 

@@ -122,7 +122,7 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
-    addEntry := fun d e =>
+    addEntry d e :=
       {d with theorems :=
         let es := d.theorems.getD (e.funPropName, e.thmArgs.type) #[]
         d.theorems.insert (e.funPropName, e.thmArgs.type) (es.push e)}
@@ -207,7 +207,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e =>
+    addEntry d e :=
       {d with
         theorems :=
           d.theorems.alter e.funOrigin.name fun funProperties =>
@@ -239,7 +239,7 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e =>
+    addEntry d e :=
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
@@ -260,7 +260,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
     initial  := {}
-    addEntry := fun d e =>
+    addEntry d e :=
       {d with theorems := e.keys.foldl (fun thms (key, entry) =>
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }

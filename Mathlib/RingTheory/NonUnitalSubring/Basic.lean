@@ -320,13 +320,13 @@ instance : CompleteLattice (NonUnitalSubring R) :=
       IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s
+    bot_le s _x hx := (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ _ _ := trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right
+    le_inf _s _t₁ _t₂ h₁ h₂ _x hx := ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -836,10 +836,10 @@ def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
 `RingHom.range`. -/
 def ofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ NonUnitalSubringClass.subtype f.range) x
+    toFun x := f.rangeRestrict x
+    invFun x := (g ∘ NonUnitalSubringClass.subtype f.range) x
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := NonUnitalRingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

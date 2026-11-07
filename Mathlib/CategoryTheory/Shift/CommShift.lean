@@ -191,7 +191,7 @@ namespace CommShift
 variable (C) in
 @[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
 instance id : CommShift (𝟭 C) A where
-  commShiftIso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
+  commShiftIso _ := rightUnitor _ ≪≫ (leftUnitor _).symm
 
 @[simps! -isSimp commShiftIso_hom_app commShiftIso_inv_app]
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
@@ -203,7 +203,7 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
     dsimp
     simp only [id_comp, comp_id, commShiftIso_zero, isoZero_hom_app, ← Functor.map_comp_assoc,
       assoc, Iso.inv_hom_id_app, id_obj, comp_map, comp_obj]
-  commShiftIso_add := fun a b => by
+  commShiftIso_add a b := by
     ext X
     dsimp
     simp only [commShiftIso_add, isoAdd_hom_app]
@@ -504,7 +504,7 @@ def ofHasShiftOfFullyFaithful :
     commShiftIso_zero := by
       ext X
       simp [ShiftMkCore.shiftFunctorZero_eq]
-    commShiftIso_add := fun a b => by
+    commShiftIso_add a b := by
       ext X
       simp [ShiftMkCore.shiftFunctorAdd_eq, ShiftMkCore.shiftFunctor_eq,
         ← Functor.map_comp_assoc] }

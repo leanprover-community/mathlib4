@@ -514,14 +514,14 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
     EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
     { obj := fun X => F.obj X
-      map := fun f => F.map _ _ f
-      map_id := fun X => congr($(F.map_id X) PUnit.unit)
-      map_comp := fun f g => congr($(F.map_comp _ _ _) ⟨f, g⟩) }
+      map f := F.map _ _ f
+      map_id X := congr($(F.map_id X) PUnit.unit)
+      map_comp f g := congr($(F.map_comp _ _ _) ⟨f, g⟩) }
   invFun F :=
     { obj := fun X => F.obj X
-      map := fun _ _ => ↾fun f => F.map f
-      map_id := fun X => by ext ⟨⟩; exact F.map_id X
-      map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
+      map _ _ := ↾fun f => F.map f
+      map_id X := by ext ⟨⟩; exact F.map_id X
+      map_comp X Y Z := by ext ⟨f, g⟩; exact F.map_comp f g }
 
 /-- We verify that the presheaf representing natural transformations
 between `Type v`-enriched functors is actually represented by

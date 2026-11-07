@@ -131,8 +131,8 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
   have : SigmaFinite ((μ.trim hm).trim hm₂) := by simpa [trim_trim]
   exact ⟨⟨
     { set := spanningSets ((μ.trim hm).trim hm₂)
-      set_mem := fun _ => Set.mem_univ _
-      finite := fun i => measure_spanningSets_trim_lt_top hm₂ (μ.trim hm) i
+      set_mem _ := Set.mem_univ _
+      finite i := measure_spanningSets_trim_lt_top hm₂ (μ.trim hm) i
       spanning := iUnion_spanningSets _ }⟩⟩
 
 lemma SigmaFinite.of_trim {m m0 : MeasurableSpace α} {μ : Measure α} (hm : m ≤ m0)

@@ -239,22 +239,22 @@ theorem invOf_sym [Mul α] [AddMonoidWithOne α] [Invertible (2 : α)] (a : α) 
 set_option backward.isDefEq.respectTransparency false in
 instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring αˢʸᵐ :=
   { SymAlg.addCommMonoid with
-    zero_mul := fun _ => by
+    zero_mul _ := by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
-    mul_zero := fun _ => by
+    mul_zero _ := by
       rw [mul_def, unsym_zero, zero_mul, mul_zero, add_zero,
         mul_zero, sym_zero]
-    mul_one := fun _ => by
+    mul_one _ := by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
-    one_mul := fun _ => by
+    one_mul _ := by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
-    left_distrib := fun a b c => by
+    left_distrib a b c := by
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
-    right_distrib := fun a b c => by
+    right_distrib a b c := by
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]

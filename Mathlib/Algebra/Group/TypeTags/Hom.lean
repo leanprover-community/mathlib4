@@ -28,12 +28,12 @@ variable {M N α β : Type*}
 def AddMonoidHom.toMultiplicative [AddZeroClass α] [AddZeroClass β] :
     (α →+ β) ≃ (Multiplicative α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => ofAdd (f a.toAdd)
+    toFun a := ofAdd (f a.toAdd)
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => f (ofAdd a) |>.toAdd
+    toFun a := f (ofAdd a) |>.toAdd
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -50,12 +50,12 @@ lemma AddMonoidHom.toMultiplicative_id [AddZeroClass α] : (id α).toMultiplicat
 def MonoidHom.toAdditive [MulOneClass α] [MulOneClass β] :
     (α →* β) ≃ (Additive α →+ Additive β) where
   toFun f := {
-    toFun := fun a => ofMul (f a.toMul)
+    toFun a := ofMul (f a.toMul)
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
   invFun f := {
-    toFun := fun a => (f (ofMul a)).toMul
+    toFun a := (f (ofMul a)).toMul
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
@@ -71,12 +71,12 @@ lemma MonoidHom.coe_toAdditive [MulOneClass α] [MulOneClass β] (f : α →* β
 def AddMonoidHom.toMultiplicativeRight [MulOneClass α] [AddZeroClass β] :
     (Additive α →+ β) ≃ (α →* Multiplicative β) where
   toFun f := {
-    toFun := fun a => ofAdd (f (ofMul a))
+    toFun a := ofAdd (f (ofMul a))
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => (f a.toMul).toAdd
+    toFun a := (f a.toMul).toAdd
     map_add' := f.map_mul
     map_zero' := f.map_one
   }
@@ -100,12 +100,12 @@ lemma MonoidHom.coe_toAdditiveLeft [MulOneClass α] [AddZeroClass β] (f : α �
 def AddMonoidHom.toMultiplicativeLeft [AddZeroClass α] [MulOneClass β] :
     (α →+ Additive β) ≃ (Multiplicative α →* β) where
   toFun f := {
-    toFun := fun a => (f a.toAdd).toMul
+    toFun a := (f a.toAdd).toMul
     map_mul' := f.map_add
     map_one' := f.map_zero
   }
   invFun f := {
-    toFun := fun a => ofMul (f (ofAdd a))
+    toFun a := ofMul (f (ofAdd a))
     map_add' := f.map_mul
     map_zero' := f.map_one
   }

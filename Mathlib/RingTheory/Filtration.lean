@@ -89,11 +89,11 @@ instance : Max (I.Filtration M) :=
 instance : SupSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sSup (Ideal.Filtration.N '' S)
-      mono := fun i => by
+      mono i := by
         apply sSup_le_sSup_of_isCofinalFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
-      smul_le := fun i => by
+      smul_le i := by
         rw [sSup_eq_iSup', iSup_apply, Submodule.smul_iSup, iSup_apply]
         apply iSup_mono _
         rintro ⟨_, F, hF, rfl⟩
@@ -109,11 +109,11 @@ instance : Min (I.Filtration M) :=
 instance : InfSet (I.Filtration M) :=
   ⟨fun S =>
     { N := sInf (Ideal.Filtration.N '' S)
-      mono := fun i => by
+      mono i := by
         apply sInf_le_sInf_of_isCoinitialFor _
         rintro _ ⟨⟨_, F, hF, rfl⟩, rfl⟩
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
-      smul_le := fun i => by
+      smul_le i := by
         rw [sInf_eq_iInf', iInf_apply, iInf_apply]
         refine smul_iInf_le.trans ?_
         apply iInf_mono _

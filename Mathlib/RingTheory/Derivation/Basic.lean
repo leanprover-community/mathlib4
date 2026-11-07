@@ -316,8 +316,8 @@ def llcomp : (M →ₗ[A] N) →ₗ[A] Derivation R A M →ₗ[A] Derivation R A
 def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[A] Derivation R A N :=
   { e.toLinearMap.compDer with
     invFun := e.symm.toLinearMap.compDer
-    left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
-    right_inv := fun D => by ext a; exact e.apply_symm_apply (D a) }
+    left_inv D := by ext a; exact e.symm_apply_apply (D a)
+    right_inv D := by ext a; exact e.apply_symm_apply (D a) }
 
 @[simp]
 theorem linearEquiv_coe_to_linearMap_comp :

@@ -419,7 +419,7 @@ def supported [AddGroup Y] (U s : Set X) : AddSubgroup (locallyFinsuppWithin U Y
     D ∈ supported Y U s ↔ D.support ⊆ s := Iff.rfl
 
 instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
-  le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
+  le D₁ D₂ := (D₁ : X → Y) ≤ D₂
 
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
@@ -430,7 +430,7 @@ lemma single_nonneg [DecidableEq X] [Zero Y] [Preorder Y] {x : X} {y : Y} :
   apply Pi.single_nonneg
 
 instance [Preorder Y] [Zero Y] : LT (locallyFinsuppWithin U Y) where
-  lt := fun D₁ D₂ ↦ (D₁ : X → Y) < D₂
+  lt D₁ D₂ := (D₁ : X → Y) < D₂
 
 lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
     D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
@@ -526,7 +526,7 @@ variable [AddCommGroup Y] [LinearOrder Y] [IsOrderedAddMonoid Y]
 Functions with locally finite support within `U` form an ordered commutative group.
 -/
 instance : IsOrderedAddMonoid (locallyFinsuppWithin U Y) where
-  add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
+  add_le_add_left _ _ _ _ := by simpa [le_def]
 
 /--
 The positive part of a sum is less than or equal to the sum of the positive parts.

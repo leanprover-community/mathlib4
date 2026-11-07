@@ -282,19 +282,19 @@ instance LinearMap.instLieModule : LieModule R L (M →ₗ[R] N) where
 bracket and relying on `LinearMap.instLieRingModule`. We do not do this because in the case that
 `L = R` we would have a non-defeq diamond via `Ring.instBracket`. -/
 instance Module.Dual.instLieRingModule : LieRingModule L (M →ₗ[R] R) where
-  bracket := fun x f ↦
+  bracket x f :=
     { toFun := fun m ↦ - f ⁅x, m⁆
       map_add' := by simp [-neg_add_rev, neg_add]
       map_smul' := by simp }
-  add_lie := fun x y m ↦ by ext n; simp [-neg_add_rev, neg_add]
-  lie_add := fun x m n ↦ by ext p; simp [-neg_add_rev, neg_add]
-  leibniz_lie := fun x m n ↦ by ext p; simp
+  add_lie x y m := by ext n; simp [-neg_add_rev, neg_add]
+  lie_add x m n := by ext p; simp [-neg_add_rev, neg_add]
+  leibniz_lie x m n := by ext p; simp
 
 @[simp] lemma Module.Dual.lie_apply (f : M →ₗ[R] R) : ⁅x, f⁆ m = - f ⁅x, m⁆ := rfl
 
 instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
-  smul_lie := fun t x m ↦ by ext n; simp
-  lie_smul := fun t x m ↦ by ext n; simp
+  smul_lie t x m := by ext n; simp
+  lie_smul t x m := by ext n; simp
 
 variable (L) in
 /-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
@@ -487,9 +487,9 @@ theorem LieRingModule.compLieHom_apply (x : L₁) (m : M) :
 theorem LieModule.compLieHom [Module R M] [LieModule R L₂ M] :
     @LieModule R L₁ M _ _ _ _ _ (LieRingModule.compLieHom M f) :=
   { __ := LieRingModule.compLieHom M f
-    smul_lie := fun t x m => by
+    smul_lie t x m := by
       simp only [LieRingModule.compLieHom_apply, smul_lie, map_smul]
-    lie_smul := fun t x m => by
+    lie_smul t x m := by
       simp only [LieRingModule.compLieHom_apply, lie_smul] }
 
 end ModulePullBack

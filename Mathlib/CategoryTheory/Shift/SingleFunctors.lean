@@ -161,7 +161,7 @@ def isoMk (iso : ∀ a, (F.functor a ≅ G.functor a))
       comm := comm }
   inv :=
     { hom := fun a => (iso a).inv
-      comm := fun n a a' ha' => by
+      comm n a a' ha' := by
         rw [← cancel_mono (iso a).hom, assoc, assoc, Iso.inv_hom_id, comp_id, comm,
           ← whiskerRight_comp_assoc, Iso.inv_hom_id, whiskerRight_id', id_comp] }
 
@@ -231,7 +231,7 @@ def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
   obj F := F.postcomp G
   map {F₁ F₂} φ :=
     { hom := fun a => whiskerRight (φ.hom a) G
-      comm := fun n a a' ha' => by
+      comm n a a' ha' := by
         ext X
         simpa using G.congr_map (congr_app (φ.comm n a a' ha') X) }
 

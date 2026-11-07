@@ -86,7 +86,7 @@ instance canonicallyOrderedAdd [Ring α] [PartialOrder α] [IsOrderedRing α] :
     CanonicallyOrderedAdd (Nonneg α) where
   le_add_self _ b := le_add_of_nonneg_left b.2
   le_self_add _ b := le_add_of_nonneg_right b.2
-  exists_add_of_le := fun {a b} h =>
+  exists_add_of_le {a b} h :=
     ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩
 
 instance noZeroDivisors [Semiring α] [PartialOrder α] [IsOrderedRing α] [NoZeroDivisors α] :

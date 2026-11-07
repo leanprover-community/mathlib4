@@ -201,7 +201,7 @@ def adj : T.free ⊣ T.forget :=
   Adjunction.mkOfHomEquiv
     { homEquiv X Y :=
         { toFun f := T.η.app X ≫ f.f
-          invFun := fun f =>
+          invFun f :=
             { f := T.map f ≫ Y.a
               h := by simp [← Y.assoc, ← T.μ.naturality_assoc] }
           left_inv f := by cat_disch

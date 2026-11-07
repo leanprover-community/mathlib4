@@ -321,7 +321,7 @@ theorem _root_.MeromorphicOn.exists_canonicalDecomp
   · use fun _ ↦ f 0
     exact {
       meromorphicOn := h₁f
-      meromorphicNFOn := fun z hz ↦ AnalyticAt.meromorphicNFAt analyticAt_const
+      meromorphicNFOn z hz := AnalyticAt.meromorphicNFAt analyticAt_const
       ne_zero := by simp [ball_eq_empty.2 hR]
       eventuallyEq := by
         filter_upwards [self_mem_codiscreteWithin (closedBall 0 R)] with a ha

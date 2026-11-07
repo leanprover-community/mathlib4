@@ -1038,7 +1038,7 @@ multilinear maps.
 This is a linear map version of the function `MultilinearMap.domDomRestrict`. -/
 def domDomRestrictₗ (f : (Π i, M₁ i) →ₘₗ[R] M₂) (P : ι → Prop) [DecidablePred P] :
     (Π i : {a : ι // ¬ P a}, M₁ i) →ₘₗ[R] (Π i : {a : ι // P a}, M₁ i) →ₘₗ[R] M₂ where
-  toFun := fun z ↦ domDomRestrict f P z
+  toFun z := domDomRestrict f P z
   map_update_add' := by
     intro h m i x y
     classical
@@ -1069,7 +1069,7 @@ This is multilinear in the components of `x` outside of `s`, and in the `v_j`. -
 noncomputable def iteratedFDerivComponent {α : Type*}
     (f : (Π i, M₁ i) →ₘₗ[R] M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     (Π i : {a : ι // a ∉ s}, M₁ i) →ₘₗ[R] (α → (Π i, M₁ i)) →ₘₗ[R] M₂ where
-  toFun := fun z ↦
+  toFun z :=
     { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
       map_update_add' := by classical simp [iteratedFDeriv_aux]
       map_update_smul' := by classical simp [iteratedFDeriv_aux] }
@@ -1093,7 +1093,7 @@ protected noncomputable def iteratedFDeriv [Fintype ι]
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
 @[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
     ((Π i, M₁' i) →ₘₗ[R] M₂) →ₗ[R] (Π i, M₁ i) →ₘₗ[R] M₂ where
-  toFun := fun g ↦ g.compLinearMap f
+  toFun g := g.compLinearMap f
   map_add' := fun _ _ ↦ rfl
   map_smul' := fun _ _ ↦ rfl
 

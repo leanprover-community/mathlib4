@@ -483,8 +483,8 @@ def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
             source' := (H.apply_zero _).trans congr(a₁ $(Subsingleton.elim ..))
             target' := (H.apply_one _).trans congr(a₂ $(Subsingleton.elim ..)) }⟩,
         ⟨{  toFun := fun t0 ↦ H t0.fst
-            map_zero_left := fun _ ↦ H.source.trans congr(a₁ $(Subsingleton.elim ..))
-            map_one_left := fun _ ↦ H.target.trans congr(a₂ $(Subsingleton.elim ..))
+            map_zero_left _ := H.source.trans congr(a₁ $(Subsingleton.elim ..))
+            map_one_left _ := H.target.trans congr(a₂ $(Subsingleton.elim ..))
             prop' := fun _ _ ⟨i, _⟩ ↦ isEmptyElim i }⟩])
 
 /-- The 0th homotopy "group" is in bijection with `ZerothHomotopy`. -/
@@ -517,8 +517,8 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     constructor <;> rintro ⟨H⟩
     · exact
         ⟨{  toFun := fun tx ↦ H (tx.fst, fun _ ↦ tx.snd)
-            map_zero_left := fun _ ↦ H.apply_zero _
-            map_one_left := fun _ ↦ H.apply_one _
+            map_zero_left _ := H.apply_zero _
+            map_one_left _ := H.apply_one _
             prop' := fun t y iH ↦ H.prop' _ _ ⟨default, iH⟩ }⟩
     refine
       ⟨⟨⟨⟨fun tx ↦ H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y ↦ ?_, fun y ↦ ?_⟩, ?_⟩⟩

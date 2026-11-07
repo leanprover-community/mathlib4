@@ -228,8 +228,8 @@ instance [IsDominant f] [IsDominant g] : IsDominant (f ≫ g) :=
   ⟨g.denseRange.comp f.denseRange g.continuous⟩
 
 instance : MorphismProperty.IsMultiplicative @IsDominant where
-  id_mem := fun _ ↦ inferInstance
-  comp_mem := fun _ _ _ _ ↦ inferInstance
+  id_mem _ := inferInstance
+  comp_mem _ _ _ _ := inferInstance
 
 lemma IsDominant.of_comp [H : IsDominant (f ≫ g)] : IsDominant g := by
   rw [isDominant_iff, denseRange_iff_closure_range, ← Set.univ_subset_iff] at H ⊢

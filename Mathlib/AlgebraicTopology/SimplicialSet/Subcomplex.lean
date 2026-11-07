@@ -54,7 +54,7 @@ namespace Subcomplex
 abbrev toSSet (A : X.Subcomplex) : SSet.{u} := A.toFunctor
 
 instance : CoeOut X.Subcomplex SSet.{u} where
-  coe := fun S ↦ S.toSSet
+  coe S := S.toSSet
 
 instance {X : SSet.{u}} (n : SimplexCategoryᵒᵖ) (A : X.Subcomplex)
     [DecidableEq (X.obj n)] :

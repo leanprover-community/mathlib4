@@ -53,7 +53,7 @@ initialize registerBuiltinAttribute {
   name := `inclusionParamAttr
   descr := "registers an inclusion-tactic parameter"
   applicationTime := .afterCompilation
-  add := fun declName _ kind => addInclusionParam declName kind
+  add declName _ kind := addInclusionParam declName kind
 }
 
 /-- Syntax for declaring an inclusion extension using the `inclusion_ext` attribute. -/
@@ -70,7 +70,7 @@ initialize registerBuiltinAttribute {
   name := `inclusionExtAttr
   descr := "adds an inclusion extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| inclusion_ext $es,*) => do
       let env ← getEnv
       ensureAttrDeclIsMeta `inclusion_ext declName kind
@@ -80,7 +80,7 @@ initialize registerBuiltinAttribute {
       let keys ← elabExtKeys (es.getElems.map (·.raw))
       addInclusionExt declName keys kind
     | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Inclusion extensions cannot be erased by declaration"
+  erase _ := throwError "Inclusion extensions cannot be erased by declaration"
 }
 
 /-- Syntax for declaring a hypothesis extension using the `hypothesis_ext` attribute. -/
@@ -98,7 +98,7 @@ initialize registerBuiltinAttribute {
   name := `hypothesisExtAttr
   descr := "adds a hypothesis extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| hypothesis_ext $es,*) => do
       let env ← getEnv
       ensureAttrDeclIsMeta `hypothesis_ext declName kind
@@ -108,7 +108,7 @@ initialize registerBuiltinAttribute {
       let keys ← elabExtKeys (es.getElems.map (·.raw))
       addHypothesisExt declName keys kind
     | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Hypothesis extensions cannot be erased by declaration"
+  erase _ := throwError "Hypothesis extensions cannot be erased by declaration"
 }
 
 /-- The argument indices of an element `x`, a set `s`, and an inclusion hypothesis `x ∈ s`
@@ -257,12 +257,12 @@ initialize registerBuiltinAttribute {
   name := `inclusionOpAttr
   descr := "adds an inclusion operation"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| inclusion_op $familyName:ident $[$_prio:prio]?) => do
       if (IR.getSorryDep (← getEnv) declName).isSome then return
       addInclusionOp declName familyName.getId (← getAttrParamOptPrio stx[2]) kind
     | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Inclusion operations cannot be erased by declaration"
+  erase _ := throwError "Inclusion operations cannot be erased by declaration"
 }
 
 /-- Validate a hypothesis theorem and return its discrimination-tree path and argument metadata. -/
@@ -319,12 +319,12 @@ initialize registerBuiltinAttribute {
   name := `hypothesisOpAttr
   descr := "adds an inclusion-hypothesis operation"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| hypothesis_op $familyName:ident $[$_prio:prio]?) => do
       if (IR.getSorryDep (← getEnv) declName).isSome then return
       addHypothesisOp declName familyName.getId (← getAttrParamOptPrio stx[2]) kind
     | _ => throwUnsupportedSyntax
-  erase := fun _ => throwError "Hypothesis operations cannot be erased by declaration"
+  erase _ := throwError "Hypothesis operations cannot be erased by declaration"
 }
 
 end Inclusion

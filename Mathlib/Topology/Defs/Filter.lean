@@ -233,8 +233,8 @@ instance : IsPreorder X Specializes :=
 @[instance_reducible]
 def specializationPreorder : Preorder X :=
   { Preorder.lift (OrderDual.toDual ∘ 𝓝) with
-    le := fun x y => y ⤳ x
-    lt := fun x y => y ⤳ x ∧ ¬x ⤳ y }
+    le x y := y ⤳ x
+    lt x y := y ⤳ x ∧ ¬x ⤳ y }
 
 instance : IsEquiv X Inseparable :=
   inferInstanceAs <| IsEquiv X (Eq.onFun 𝓝)

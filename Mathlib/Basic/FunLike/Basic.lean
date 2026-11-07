@@ -32,7 +32,7 @@ variable (A B : Type*) [MyClass A] [MyClass B]
 @[macro_inline]
 instance : FunLike (MyHom A B) A B where
   coe := MyHom.toFun
-  coe_injective := fun f g h => by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 @[ext] theorem ext {f g : MyHom A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
@@ -100,7 +100,7 @@ variable {A B : Type*} [CoolClass A] [CoolClass B]
 @[macro_inline]
 instance : FunLike (CoolerHom A B) A B where
   coe f := f.toFun
-  coe_injective := fun f g h ↦ by cases f; cases g; congr; apply DFunLike.coe_injective; congr
+  coe_injective f g h := by cases f; cases g; congr; apply DFunLike.coe_injective; congr
 
 instance : CoolerHomClass (CoolerHom A B) A B where
   map_op f := f.map_op'

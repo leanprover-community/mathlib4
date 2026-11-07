@@ -32,7 +32,7 @@ variable {α ι R R' : Type*} {mα : MeasurableSpace α}
 
 instance : Zero (Measure α) :=
   ⟨{  toOuterMeasure := 0
-      m_iUnion := fun _f _hf _hd => tsum_zero.symm
+      m_iUnion _f _hf _hd := tsum_zero.symm
       trim_le := OuterMeasure.trim_zero.le }⟩
 
 instance : IsZeroApply (Measure α) where
@@ -77,7 +77,7 @@ instance : Inhabited (Measure α) :=
 instance : Add (Measure α) :=
   ⟨fun μ₁ μ₂ =>
     { toOuterMeasure := μ₁.toOuterMeasure + μ₂.toOuterMeasure
-      m_iUnion := fun s hs hd =>
+      m_iUnion s hs hd :=
         show μ₁ (⋃ i, s i) + μ₂ (⋃ i, s i) = ∑' i, (μ₁ (s i) + μ₂ (s i)) by
           rw [tsum_add, measure_iUnion hd hs, measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_add, μ₁.trimmed, μ₂.trimmed] }⟩
@@ -100,7 +100,7 @@ variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] [SMul R' �
 instance : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
-      m_iUnion := fun s hs hd => by
+      m_iUnion s hs hd := by
         simp only [smul_apply, coe_toOuterMeasure, ENNReal.tsum_const_smul,
           measure_iUnion hd hs]
       trim_le := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩

@@ -357,11 +357,11 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat ↧α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      t i j := ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
       V_id := fun i => by simp
-      t_id := fun i => by ext; rfl
-      t_inter := fun _ _ _ _ hx => hx
-      cocycle := fun _ _ _ _ _ => rfl }
+      t_id i := by ext; rfl
+      t_inter _ _ _ _ hx := hx
+      cocycle _ _ _ _ _ := rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),

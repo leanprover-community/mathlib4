@@ -40,8 +40,8 @@ variable (κ) in
 of pre-quasiregular elements. -/
 def PreQuasiregular.toPi [∀ i, NonUnitalSemiring (κ i)] :
     PreQuasiregular (∀ i, κ i) ≃* ∀ i, PreQuasiregular (κ i) where
-  toFun := fun x i => .mk <| x.val i
-  invFun := fun x => .mk <| fun i => (x i).val
+  toFun x i := .mk <| x.val i
+  invFun x := .mk <| fun i => (x i).val
   map_mul' _ _ := rfl
 
 variable (A B) in
@@ -49,7 +49,7 @@ variable (A B) in
 pre-quasiregular elements. -/
 def PreQuasiregular.toProd [NonUnitalSemiring A] [NonUnitalSemiring B] :
     PreQuasiregular (A × B) ≃* PreQuasiregular A × PreQuasiregular B where
-  toFun := fun p => ⟨.mk p.val.1, .mk p.val.2⟩
+  toFun p := ⟨.mk p.val.1, .mk p.val.2⟩
   invFun := fun ⟨a, b⟩ => .mk ⟨a.val, b.val⟩
   map_mul' _ _ := rfl
 

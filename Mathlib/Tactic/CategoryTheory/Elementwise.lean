@@ -201,7 +201,7 @@ initialize registerBuiltinAttribute {
   name := `elementwise
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+  add src ref kind := match ref with
   | `(attr| elementwise $[nosimp%$nosimp?]? $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`elementwise` can only be used as a global attribute"

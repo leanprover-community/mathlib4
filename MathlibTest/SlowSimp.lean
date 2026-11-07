@@ -54,10 +54,10 @@ end PointedSpace
 
 set_option maxHeartbeats 20000 in
 def PointedSpaceEquiv_inverse : Under (TopCat.of Unit) ⥤ PointedSpace where
-  obj := fun X =>
+  obj X :=
   { carrier := X.right
     base := X.hom () }
-  map := fun f =>
+  map f :=
   { map := f.right.hom
     base := CategoryTheory.congr_fun f.w () }
   map_comp := by intros; simp_all; rfl -- This is the slow step.

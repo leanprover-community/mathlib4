@@ -51,26 +51,26 @@ to a ring, since the `npow` field is lost in the middle. Therefore, it is scoped
 def MonObj.toRing (A : ModuleCat.{u} R) [MonObj A] : Ring A :=
   { (inferInstance : AddCommGroup A) with
     one := η[A] (1 : R)
-    mul := fun x y => μ[A] (x ⊗ₜ y)
-    one_mul := fun x => by
+    mul x y := μ[A] (x ⊗ₜ y)
+    one_mul x := by
       convert! congr($(ModuleCat.hom_ext_iff.mp (one_mul A)) ((1 : R) ⊗ₜ x))
       rw [MonoidalCategory.leftUnitor_hom_apply, one_smul]
-    mul_one := fun x => by
+    mul_one x := by
       convert! congr($(ModuleCat.hom_ext_iff.mp (mul_one A)) (x ⊗ₜ (1 : R)))
       rw [MonoidalCategory.rightUnitor_hom_apply, one_smul]
-    mul_assoc := fun x y z => by
+    mul_assoc x y z := by
       convert! congr($(ModuleCat.hom_ext_iff.mp (mul_assoc A)) (x ⊗ₜ y ⊗ₜ z))
-    left_distrib := fun x y z => by
+    left_distrib x y z := by
       convert μ[A].hom.map_add (x ⊗ₜ y) (x ⊗ₜ z)
       rw [← TensorProduct.tmul_add]
       rfl
-    right_distrib := fun x y z => by
+    right_distrib x y z := by
       convert μ[A].hom.map_add (x ⊗ₜ z) (y ⊗ₜ z)
       rw [← TensorProduct.add_tmul]
       rfl
-    zero_mul := fun x => show μ[A] _ = 0 by
+    zero_mul x := show μ[A] _ = 0 by
       rw [TensorProduct.zero_tmul, map_zero]
-    mul_zero := fun x => show μ[A] _ = 0 by
+    mul_zero x := show μ[A] _ = 0 by
       rw [TensorProduct.tmul_zero, map_zero] }
 
 scoped[ModuleCat.MonModuleEquivalenceAlgebra] attribute [instance] MonObj.toRing

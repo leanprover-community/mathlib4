@@ -67,7 +67,7 @@ def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
     (inferInstance : IsUniformAddGroup K) with
     v := valuation
-    is_topological_valuation := fun U => by
+    is_topological_valuation U := by
       rw [Metric.mem_nhds_iff]
       refine ⟨?_, ?_⟩
       · rintro ⟨ε, hε, h⟩
@@ -158,19 +158,19 @@ open Valuation
 def toNormedField : NormedField L :=
   { (inferInstance : Field L) with
     norm := val.v.norm
-    dist := fun x y => val.v.norm (x - y)
-    dist_self := fun x => by
+    dist x y := val.v.norm (x - y)
+    dist_self x := by
       simp only [sub_self, Valuation.norm, Valuation.map_zero, hv.hom.map_zero, NNReal.coe_zero]
-    dist_comm := fun x y => by simp only [Valuation.norm]; rw [← neg_sub, Valuation.map_neg]
-    dist_triangle := fun x y z => by
+    dist_comm x y := by simp only [Valuation.norm]; rw [← neg_sub, Valuation.map_neg]
+    dist_triangle x y z := by
       simp only [← sub_add_sub_cancel x y z]
       exact le_trans (val.v.norm_add_le _ _)
         (max_le_add_of_nonneg (val.v.norm_nonneg _) (val.v.norm_nonneg _))
-    eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (val.v.norm_eq_zero hxy)
-    dist_eq := fun x y => by
+    eq_of_dist_eq_zero hxy := eq_of_sub_eq_zero (val.v.norm_eq_zero hxy)
+    dist_eq x y := by
       simp only [Valuation.norm]
       rw [← v.restrict.map_neg, neg_sub, sub_eq_add_neg, add_comm]
-    norm_mul := fun x y => by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
+    norm_mul x y := by simp only [Valuation.norm, ← NNReal.coe_mul, map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       have : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype

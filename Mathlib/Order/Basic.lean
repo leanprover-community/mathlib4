@@ -541,8 +541,8 @@ instance Ne.instIsEquiv_compl : IsEquiv α (· ≠ ·)ᶜ := by
 
 instance Pi.preorder [∀ i, Preorder (π i)] : Preorder (∀ i, π i) where
   __ := (inferInstance : LE (∀ i, π i))
-  le_refl := fun a i ↦ le_refl (a i)
-  le_trans := fun _ _ _ h₁ h₂ i ↦ le_trans (h₁ i) (h₂ i)
+  le_refl a i := le_refl (a i)
+  le_trans _ _ _ h₁ h₂ i := le_trans (h₁ i) (h₂ i)
 
 @[to_dual self]
 theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
@@ -551,7 +551,7 @@ theorem Pi.lt_def [∀ i, Preorder (π i)] {x y : ∀ i, π i} :
 
 instance Pi.partialOrder [∀ i, PartialOrder (π i)] : PartialOrder (∀ i, π i) where
   __ := Pi.preorder
-  le_antisymm := fun _ _ h1 h2 ↦ funext fun b ↦ (h1 b).antisymm (h2 b)
+  le_antisymm _ _ h1 h2 := funext fun b ↦ (h1 b).antisymm (h2 b)
 
 namespace Sum
 

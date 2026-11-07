@@ -77,7 +77,7 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
-  npow := fun n x i => x i ^ n
+  npow n x i := x i ^ n
   npow_zero := by intros; ext; exact Monoid.npow_zero _
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
@@ -86,7 +86,7 @@ instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
-  zpow := fun z x i => x i ^ z
+  zpow z x i := x i ^ z
   div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
   zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _

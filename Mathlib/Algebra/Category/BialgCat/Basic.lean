@@ -115,7 +115,7 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
+      map {X Y} f := AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
@@ -130,7 +130,7 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
+      map {_ _} f := CoalgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :
@@ -185,8 +185,8 @@ variable {X Y Z : BialgCat.{v} R}
 def toBialgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => congr($(i.3).toBialgHom x)
-    right_inv := fun x => congr($(i.4).toBialgHom x) }
+    left_inv x := congr($(i.3).toBialgHom x)
+    right_inv x := congr($(i.4).toBialgHom x) }
 
 @[simp] theorem toBialgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toBialgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

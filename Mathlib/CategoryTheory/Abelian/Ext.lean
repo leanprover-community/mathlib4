@@ -41,7 +41,7 @@ the first argument of `(X, Y) ↦ ModuleCat.of R (unop X ⟶ Y)`
 def Ext (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat R :=
   Functor.flip
     { obj := fun Y => (((linearYoneda R C).obj Y).rightOp.leftDerived n).leftOp
-      map := fun f => ((((linearYoneda R C).map f).rightOp).leftDerived n).leftOp }
+      map f := ((((linearYoneda R C).map f).rightOp).leftDerived n).leftOp }
 
 open ZeroObject
 

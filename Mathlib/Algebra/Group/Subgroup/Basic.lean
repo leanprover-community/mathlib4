@@ -366,7 +366,7 @@ automorphism of `H`. -/
 def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
   toFun φ :=
     { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
-      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+      invFun h := ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
       left_inv h := Subtype.ext (φ.symm_apply_apply h)
       right_inv h := Subtype.ext (φ.apply_symm_apply h)
       map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }

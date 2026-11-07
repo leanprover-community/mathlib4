@@ -360,11 +360,11 @@ instance : Category (Split C) where
   Hom := Split.Hom
   id S :=
     { F := 𝟙 _
-      f := fun _ => 𝟙 _ }
+      f _ := 𝟙 _ }
   comp Φ₁₂ Φ₂₃ :=
     { F := Φ₁₂.F ≫ Φ₂₃.F
-      f := fun n => Φ₁₂.f n ≫ Φ₂₃.f n
-      comm := fun n => by
+      f n := Φ₁₂.f n ≫ Φ₂₃.f n
+      comm n := by
         dsimp
         simp only [assoc, Split.Hom.comm_assoc, Split.Hom.comm] }
 

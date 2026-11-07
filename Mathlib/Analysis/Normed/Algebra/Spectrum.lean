@@ -377,7 +377,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
         · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
           simpa only [← mul_pow, mul_comm] using! pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
-    hasSum := fun {y} hy => by
+    hasSum {y} hy := by
       have norm_lt : ‖y • a‖ < 1 := by
         by_cases h : ‖a‖₊ = 0
         · simp only [nnNorm_eq_zero.mp h, norm_zero, zero_lt_one, smul_zero]
@@ -534,7 +534,7 @@ local notation "↑ₐ" => algebraMap 𝕜 A
 instance (priority := 100) [FunLike F A 𝕜] [AlgHomClass F 𝕜 A 𝕜] :
     ContinuousLinearMapClass F 𝕜 A 𝕜 :=
   { AlgHomClass.linearMapClass with
-    map_continuous := fun φ =>
+    map_continuous φ :=
       AddMonoidHomClass.continuous_of_bound φ ‖(1 : A)‖ fun a =>
         mul_comm ‖a‖ ‖(1 : A)‖ ▸ spectrum.norm_le_norm_mul_of_mem (apply_mem_spectrum φ _) }
 

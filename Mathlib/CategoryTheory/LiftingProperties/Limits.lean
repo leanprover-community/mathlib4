@@ -29,7 +29,7 @@ variable {C : Type*} [Category* C] {X Y Z W : C}
 
 lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)
     {Z' W' : C} (g' : Z' ⟶ W') [HasLiftingProperty f g'] : HasLiftingProperty g g' where
-  sq_hasLift := fun {u v} sq ↦ by
+  sq_hasLift {u v} sq := by
     have w : (s ≫ u) ≫ g' = f ≫ (t ≫ v) := by
       rw [← Category.assoc, ← h.w, Category.assoc, Category.assoc, sq.w]
     exact ⟨h.desc u (CommSq.mk w).lift (by rw [CommSq.fac_left]), h.inl_desc ..,
@@ -37,7 +37,7 @@ lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)
 
 lemma IsPullback.hasLiftingProperty (h : IsPullback s f g t)
     {X' Y' : C} (f' : X' ⟶ Y') [HasLiftingProperty f' g] : HasLiftingProperty f' f where
-  sq_hasLift := fun {u v} sq ↦ by
+  sq_hasLift {u v} sq := by
     have w : (u ≫ s) ≫ g = f' ≫ v ≫ t := by
       rw [Category.assoc, h.toCommSq.w, ← Category.assoc, ← Category.assoc, sq.w]
     exact ⟨h.lift (CommSq.mk w).lift v (by rw [CommSq.fac_right]),

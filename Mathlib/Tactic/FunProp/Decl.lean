@@ -50,7 +50,7 @@ initialize funPropDeclsExt : FunPropDeclsExt ←
   registerSimpleScopedEnvExtension {
     name := by exact decl_name%
     initial := {}
-    addEntry := fun d e =>
+    addEntry d e :=
       {d with decls := d.decls.insertKeyValue e.path e}
   }
 

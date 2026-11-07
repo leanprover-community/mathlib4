@@ -104,12 +104,12 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [IsDomain R] [Module.I
     exact Module.End.map_add_of_iInf_genEigenspace_ne_bot_of_commute
       (toEnd R L M).toLinearMap χ _ hχ h x y
   { map_add := aux
-    map_smul := fun χ hχ t x ↦ by
+    map_smul χ hχ t x := by
       simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
         LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ
       exact Module.End.map_smul_of_iInf_genEigenspace_ne_bot
         (toEnd R L M).toLinearMap χ _ hχ t x
-    map_lie := fun χ hχ t x ↦ by
+    map_lie χ hχ t x := by
       rw [trivial_lie_zero, ← add_left_inj (χ 0), ← aux χ hχ, zero_add, zero_add] }
 
 section FiniteDimensional

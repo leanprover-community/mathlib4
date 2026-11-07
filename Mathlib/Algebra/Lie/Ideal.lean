@@ -161,7 +161,7 @@ Note that `f` makes `L'` into a Lie module over `L` (turning `f` into a morphism
 and so this is a special case of `LieSubmodule.comap` but we do not exploit this fact. -/
 def comap : LieIdeal R L :=
   { (J : Submodule R L').comap (f : L →ₗ[R] L') with
-    lie_mem := fun {x y} h ↦ by
+    lie_mem {x y} h := by
       suffices ⁅f x, f y⁆ ∈ J by
         simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
           Submodule.mem_toAddSubmonoid, Submodule.mem_comap, LieHom.coe_toLinearMap, LieHom.map_lie,
@@ -361,7 +361,7 @@ theorem coe_map_of_surjective (h : Function.Surjective f) :
     LieSubmodule.toSubmodule (I.map f) = (LieSubmodule.toSubmodule I).map (f : L →ₗ[R] L') := by
   let J : LieIdeal R L' :=
     { (I : Submodule R L).map (f : L →ₗ[R] L') with
-      lie_mem := fun {x y} hy ↦ by
+      lie_mem {x y} hy := by
         have hy' : ∃ x : L, x ∈ I ∧ f x = y := by simpa [hy]
         obtain ⟨z₂, hz₂, rfl⟩ := hy'
         obtain ⟨z₁, rfl⟩ := h x

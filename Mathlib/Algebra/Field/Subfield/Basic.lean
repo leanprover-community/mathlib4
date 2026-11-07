@@ -282,11 +282,11 @@ theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
 instance : CompleteLattice (Subfield K) :=
   { completeLatticeOfInf (Subfield K) isGLB_sInf with
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ _ _ := trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right
+    le_inf _ _ _ h₁ h₂ _ hx := ⟨h₁ hx, h₂ hx⟩ }
 
 /-! ### subfield closure of a subset -/
 

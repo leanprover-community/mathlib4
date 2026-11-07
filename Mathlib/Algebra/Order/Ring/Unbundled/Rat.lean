@@ -115,7 +115,7 @@ instance instPreorder : Preorder ℚ := inferInstance
 /-! ### Miscellaneous lemmas -/
 
 instance : AddLeftMono ℚ where
-  elim := fun _ _ _ h => Rat.add_le_add_left.2 h
+  elim _ _ _ h := Rat.add_le_add_left.2 h
 
 @[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by
   simp +instances [Int.le_iff_lt_or_eq, instLE, Rat.blt]

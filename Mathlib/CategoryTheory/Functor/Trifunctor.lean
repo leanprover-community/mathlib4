@@ -35,7 +35,7 @@ def bifunctorComp₁₂Obj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
     C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
-      map := fun {_ _} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
+      map {_ _} φ := (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 
@@ -48,7 +48,7 @@ def bifunctorComp₁₂ (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C
   map {X₁ Y₁} φ :=
     { app := fun X₂ =>
         { app := fun X₃ => (G.map ((F₁₂.map φ).app X₂)).app X₃ }
-      naturality := fun {X₂ Y₂} ψ => by
+      naturality {X₂ Y₂} ψ := by
         ext X₃
         dsimp
         simp only [← NatTrans.comp_app, ← G.map_comp, NatTrans.naturality] }
@@ -62,7 +62,7 @@ def bifunctorComp₁₂FunctorObj (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) :
     { app X₁ :=
         { app X₂ :=
             { app X₃ := (φ.app ((F₁₂.obj X₁).obj X₂)).app X₃ }
-          naturality := fun X₂ Y₂ f ↦ by
+          naturality X₂ Y₂ f := by
             ext X₃
             dsimp
             simp only [← NatTrans.comp_app, NatTrans.naturality] }
@@ -78,7 +78,7 @@ def bifunctorComp₁₂FunctorMap {F₁₂ F₁₂' : C₁ ⥤ C₂ ⥤ C₁₂}
   app G :=
     { app X₁ :=
         { app X₂ := { app X₃ := (G.map ((φ.app X₁).app X₂)).app X₃ }
-          naturality := fun X₂ Y₂ f ↦ by
+          naturality X₂ Y₂ f := by
             ext X₃
             dsimp
             simp only [← NatTrans.comp_app, NatTrans.naturality, ← G.map_comp] }

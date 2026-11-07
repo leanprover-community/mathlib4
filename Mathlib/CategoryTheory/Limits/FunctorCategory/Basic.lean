@@ -57,7 +57,7 @@ def evaluationJointlyReflectsLimits {F : J ⥤ K ⥤ C} (c : Cone F)
     (t : ∀ k : K, IsLimit (((evaluation K C).obj k).mapCone c)) : IsLimit c where
   lift s :=
     { app := fun k => (t k).lift ⟨s.pt.obj k, whiskerRight s.π ((evaluation K C).obj k)⟩
-      naturality := fun X Y f =>
+      naturality X Y f :=
         (t Y).hom_ext fun j => by
           rw [assoc, (t Y).fac _ j]
           simpa using
@@ -78,13 +78,13 @@ them together to give a cone for the diagram `F`.
 def combineCones (F : J ⥤ K ⥤ C) (c : ∀ k : K, LimitCone (F.flip.obj k)) : Cone F where
   pt :=
     { obj := fun k => (c k).cone.pt
-      map := fun {k₁} {k₂} f => (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
-      map_id := fun k =>
+      map {k₁} {k₂} f := (c k₂).isLimit.lift ⟨_, (c k₁).cone.π ≫ F.flip.map f⟩
+      map_id k :=
         (c k).isLimit.hom_ext fun j => by simp
-      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₃).isLimit.hom_ext fun j => by simp }
+      map_comp {k₁} {k₂} {k₃} f₁ f₂ := (c k₃).isLimit.hom_ext fun j => by simp }
   π :=
     { app := fun j => { app := fun k => (c k).cone.π.app j }
-      naturality := fun j₁ j₂ g => by ext k; exact (c k).cone.π.naturality g }
+      naturality j₁ j₂ g := by ext k; exact (c k).cone.π.naturality g }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cones each project down to the original given cones (up to iso). -/
@@ -108,13 +108,13 @@ them together to give a cocone for the diagram `F`.
 def combineCocones (F : J ⥤ K ⥤ C) (c : ∀ k : K, ColimitCocone (F.flip.obj k)) : Cocone F where
   pt :=
     { obj := fun k => (c k).cocone.pt
-      map := fun {k₁} {k₂} f => (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
-      map_id := fun k =>
+      map {k₁} {k₂} f := (c k₁).isColimit.desc ⟨_, F.flip.map f ≫ (c k₂).cocone.ι⟩
+      map_id k :=
         (c k).isColimit.hom_ext fun j => by simp
-      map_comp := fun {k₁} {k₂} {k₃} f₁ f₂ => (c k₁).isColimit.hom_ext fun j => by simp }
+      map_comp {k₁} {k₂} {k₃} f₁ f₂ := (c k₁).isColimit.hom_ext fun j => by simp }
   ι :=
     { app := fun j => { app := fun k => (c k).cocone.ι.app j }
-      naturality := fun j₁ j₂ g => by ext k; exact (c k).cocone.ι.naturality g }
+      naturality j₁ j₂ g := by ext k; exact (c k).cocone.ι.naturality g }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The stitched together cocones each project down to the original given cocones (up to iso). -/

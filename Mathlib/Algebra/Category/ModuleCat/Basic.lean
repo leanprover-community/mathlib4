@@ -220,7 +220,7 @@ lemma forget_obj {M : ModuleCat.{v} R} : (forget (ModuleCat.{v} R)).obj M = M :=
 instance hasForgetToAddCommGroup : HasForget₂ (ModuleCat R) AddCommGrpCat where
   forget₂ :=
     { obj := fun M => ↧M
-      map := fun f => AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
+      map f := AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : ModuleCat R) :
@@ -496,7 +496,7 @@ to the endomorphisms of the forgetful functor to `AddCommGrpCat`. -/
 def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrpCat) where
   toFun r := .of
     { app M := (M.smul r).asHom
-      naturality := fun _ _ _ => smul_naturality _ r }
+      naturality _ _ _ := smul_naturality _ r }
   map_one' := by cat_disch
   map_zero' := by cat_disch
   map_mul' _ _ := by cat_disch

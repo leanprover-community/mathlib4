@@ -156,7 +156,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
     { obj := fun Y => X × Y
-      map := fun {_ Y₂} f => (binaryProductLimit X Y₂).lift
+      map {_ Y₂} f := (binaryProductLimit X Y₂).lift
         (BinaryFan.mk (↾_root_.Prod.fst) (↾_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
     { app := fun Y =>
@@ -185,7 +185,7 @@ def productLimitCone {J : Type v} (F : J → Type (max v u)) :
       π := Discrete.natTrans (fun ⟨j⟩ => ↾fun f => f j) }
   isLimit :=
     { lift := fun s => ↾fun x j => s.π.app ⟨j⟩ x
-      uniq := fun _ _ w => by
+      uniq _ _ w := by
         ext x j
         congrm $(w ⟨j⟩) x }
 
@@ -225,7 +225,7 @@ noncomputable def productLimitCone :
         ↾fun f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
     { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
-      uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
+      uniq s m w := ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
         simpa using! congr($(w ⟨j⟩) x)) }
 
 /-- The categorical product in `Type u` indexed in `Type v`

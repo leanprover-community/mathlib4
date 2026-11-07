@@ -1105,15 +1105,15 @@ noncomputable def gcdMonoidOfGCD [DecidableEq α] (gcd : α → α → α)
   { gcd
     gcd_dvd_left
     gcd_dvd_right
-    dvd_gcd := fun {_ _ _} => dvd_gcd
-    lcm := fun a b =>
+    dvd_gcd {_ _ _} := dvd_gcd
+    lcm a b :=
       if a = 0 then 0 else Classical.choose ((gcd_dvd_left a b).trans (Dvd.intro b rfl))
-    gcd_mul_lcm := fun a b => by
+    gcd_mul_lcm a b := by
       split_ifs with a0
       · rw [mul_zero, a0, zero_mul]
       · rw [← Classical.choose_spec ((gcd_dvd_left a b).trans (Dvd.intro b rfl))]
-    lcm_zero_left := fun _ => ite_eq_left rfl
-    lcm_zero_right := fun a => by
+    lcm_zero_left _ := ite_eq_left rfl
+    lcm_zero_right a := by
       split_ifs with a0
       · rfl
       have h := (Classical.choose_spec ((gcd_dvd_left a 0).trans (Dvd.intro 0 rfl))).symm
@@ -1160,15 +1160,15 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
     (lcm_dvd : ∀ {a b c}, c ∣ a → b ∣ a → lcm c b ∣ a) : GCDMonoid α :=
   let exists_gcd a b := lcm_dvd (Dvd.intro b rfl) (Dvd.intro_left a rfl)
   { lcm
-    gcd := fun a b => if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
-    gcd_mul_lcm := fun a b => by
+    gcd a b := if a = 0 then b else if b = 0 then a else Classical.choose (exists_gcd a b)
+    gcd_mul_lcm a b := by
       split_ifs with h h_1
       · rw [h, eq_zero_of_zero_dvd (dvd_lcm_left _ _), mul_zero, zero_mul]
       · rw [h_1, eq_zero_of_zero_dvd (dvd_lcm_right _ _)]
       rw [mul_comm, ← Classical.choose_spec (exists_gcd a b)]
-    lcm_zero_left := fun _ => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
-    lcm_zero_right := fun _ => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
-    gcd_dvd_left := fun a b => by
+    lcm_zero_left _ := eq_zero_of_zero_dvd (dvd_lcm_left _ _)
+    lcm_zero_right _ := eq_zero_of_zero_dvd (dvd_lcm_right _ _)
+    gcd_dvd_left a b := by
       split_ifs with h h_1
       · rw [h]
         apply dvd_zero
@@ -1183,7 +1183,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b), mul_comm,
         mul_dvd_mul_iff_right h]
       apply dvd_lcm_right
-    gcd_dvd_right := fun a b => by
+    gcd_dvd_right a b := by
       split_ifs with h h_1
       · exact dvd_rfl
       · rw [h_1]
@@ -1198,7 +1198,7 @@ noncomputable def gcdMonoidOfLCM [DecidableEq α] (lcm : α → α → α)
       rw [← mul_dvd_mul_iff_left h0, ← Classical.choose_spec (exists_gcd a b),
         mul_dvd_mul_iff_right h_1]
       apply dvd_lcm_left
-    dvd_gcd := fun {a b c} ac ab => by
+    dvd_gcd {a b c} ac ab := by
       split_ifs with h h_1
       · exact ab
       · exact ac

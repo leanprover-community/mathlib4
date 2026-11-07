@@ -127,7 +127,7 @@ def KaroubiUniversal₁.counitIso :
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show (toKaroubi C).map P.p ≫ P.decompId_p ≫ 𝟙 _ = P.decompId_p by simp) }
-            naturality := fun P Q f => by
+            naturality P Q f := by
               simpa only [hom_ext_iff, G.map_comp]
                 using! (G.congr_map (decompId_p_naturality f)).symm }
         inv :=
@@ -137,7 +137,7 @@ def KaroubiUniversal₁.counitIso :
                   simpa only [hom_ext_iff, G.map_comp, G.map_id] using!
                     G.congr_map
                       (show 𝟙 _ ≫ P.decompId_i ≫ (toKaroubi C).map P.p = P.decompId_i by simp) }
-            naturality := fun P Q f => by
+            naturality P Q f := by
               simpa only [hom_ext_iff, G.map_comp] using! G.congr_map (decompId_i_naturality f) }
         hom_inv_id := by
           ext P

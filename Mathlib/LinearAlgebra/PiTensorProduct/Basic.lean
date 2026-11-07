@@ -118,7 +118,7 @@ section Module
 
 instance : AddCommMonoid (⨂[R] i, s i) :=
   { (addConGen (PiTensorProduct.Eqv R s)).addMonoid with
-    add_comm := fun x y ↦
+    add_comm x y :=
       AddCon.induction_on₂ x y fun _ _ ↦
         Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _ }
 
@@ -253,11 +253,11 @@ end DistribMulAction
 -- to find.
 instance module' [Semiring R₁] [Module R₁ R] [SMulCommClass R₁ R R] : Module R₁ (⨂[R] i, s i) :=
   { PiTensorProduct.distribMulAction' with
-    add_smul := fun r r' x ↦
+    add_smul r r' x :=
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', add_smul, add_tprodCoeff'])
         fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy, add_add_add_comm]
-    zero_smul := fun x ↦
+    zero_smul x :=
       PiTensorProduct.induction_on' x
         (fun {r f} ↦ by simp_rw [smul_tprodCoeff', zero_smul, zero_tprodCoeff])
         fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy, add_zero] }

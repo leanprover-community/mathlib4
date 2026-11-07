@@ -248,7 +248,7 @@ instance moduleEndRight {X Y : C} : Module (End Y) (X ⟶ Y) where
 
 theorem mono_of_cancel_zero {Q R : C} (f : Q ⟶ R) (h : ∀ {P : C} (g : P ⟶ Q), g ≫ f = 0 → g = 0) :
     Mono f where
-  right_cancellation := fun {Z} g₁ g₂ hg =>
+  right_cancellation {Z} g₁ g₂ hg :=
     sub_eq_zero.1 <| h _ <| (map_sub (rightComp Z f) g₁ g₂).trans <| sub_eq_zero.2 hg
 
 theorem mono_iff_cancel_zero {Q R : C} (f : Q ⟶ R) :

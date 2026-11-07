@@ -152,7 +152,7 @@ end NonarchAddGroupSeminormClass
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
-    map_add_le_add := fun f _ _ =>
+    map_add_le_add f _ _ :=
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
         rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
@@ -413,12 +413,12 @@ theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
 noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
-    inf_le_left := fun p q x =>
+    inf_le_left p q x :=
       ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
-    inf_le_right := fun p q x =>
+    inf_le_right p q x :=
       ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
-    le_inf := fun a _ _ hb hc _ =>
+    le_inf a _ _ hb hc _ :=
       le_ciInf fun _ => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup

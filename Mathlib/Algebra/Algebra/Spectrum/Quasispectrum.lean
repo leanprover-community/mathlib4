@@ -550,7 +550,7 @@ protected theorem map_zero (h : QuasispectrumRestricts a f) : f 0 = 0 := by
 
 theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : quasispectrum S a ⊆ Set.range (algebraMap R S)) : QuasispectrumRestricts a f where
-  rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
+  rightInvOn s hs := by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
   left_inv := hf
 
 lemma of_quasispectrum_eq {a b : A} {f : S → R} (ha : QuasispectrumRestricts a f)
@@ -637,7 +637,7 @@ lemma _root_.spectrumRestricts_iff :
 
 theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : spectrum S a ⊆ Set.range (algebraMap R S)) : SpectrumRestricts a f where
-  rightInvOn := fun s hs => by
+  rightInvOn s hs := by
     rw [mem_quasispectrum_iff] at hs
     obtain (rfl | hs) := hs
     · simpa using hf 0

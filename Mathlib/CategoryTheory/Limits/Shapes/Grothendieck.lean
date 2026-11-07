@@ -92,7 +92,7 @@ def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤
   obj G := fiberwiseColimit G
   map α :=
     { app := fun c => colim.map (whiskerLeft _ α)
-      naturality := fun c₁ c₂ f => by apply colimit.hom_ext; simp }
+      naturality c₁ c₂ f := by apply colimit.hom_ext; simp }
   map_id G := by ext; apply Functor.map_id colim
   map_comp α β := by ext; simp only [whiskerLeft_comp]; apply Functor.map_comp colim
 
@@ -123,7 +123,7 @@ on `G`. -/
 def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
   pt := c.pt
   ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
-         naturality := fun _ _ f => by dsimp; ext; simp }
+         naturality _ _ f := by dsimp; ext; simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

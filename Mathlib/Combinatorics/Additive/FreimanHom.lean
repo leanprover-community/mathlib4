@@ -148,7 +148,7 @@ lemma IsMulFreimanIso.symm {g : β → α} (hg₁ : MapsTo g B A) (hg₂ : Right
     (hf : IsMulFreimanIso n A B f) :
     IsMulFreimanIso n B A g where
   bijOn := hf.bijOn.symm ⟨hg₂, InjOn.rightInvOn_of_leftInvOn hf.bijOn.injOn hg₂ hf.bijOn.mapsTo hg₁⟩
-  map_prod_eq_map_prod := fun s t hsB htB hs ht => by
+  map_prod_eq_map_prod s t hsB htB hs ht := by
     rw [← hf.map_prod_eq_map_prod _ _ (by simp [hs]) (by simp [ht]), map_map, map_congr rfl, map_id,
       map_map, map_congr rfl, map_id]
     all_goals aesop
@@ -338,7 +338,7 @@ variable [CommMonoid α] [CancelCommMonoid β] {A : Set α} {B : Set β} {f : α
 lemma isMulFreimanHom_antitone : Antitone (IsMulFreimanHom · A B f) :=
   antitone_nat_of_succ_le fun n hf =>
   { mapsTo := hf.mapsTo,
-    map_prod_eq_map_prod := fun s t hsA htA hs _ h => match n with
+    map_prod_eq_map_prod s t hsA htA hs _ h := match n with
       | 0 => by aesop
       | n + 1 => by
         have ⟨a, ha⟩ : ∃ a, a ∈ s := card_pos_iff_exists_mem.1 (by simp [hs])
@@ -401,7 +401,7 @@ variable {α β₁ β₂ : Type*} [CommMonoid α] [CommMonoid β₁] [CommMonoid
 @[to_additive prodMk]
 lemma IsMulFreimanHom.prodMk (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
     IsMulFreimanHom n A (B₁ ×ˢ B₂) (fun x => (f₁ x, f₂ x)) where
-  mapsTo := fun x hx => mk_mem_prod (h₁.mapsTo hx) (h₂.mapsTo hx)
+  mapsTo x hx := mk_mem_prod (h₁.mapsTo hx) (h₂.mapsTo hx)
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     simp [Prod.ext_iff, fst_prod, snd_prod,
       h₁.map_prod_eq_map_prod hsA htA hs ht h, h₂.map_prod_eq_map_prod hsA htA hs ht h]

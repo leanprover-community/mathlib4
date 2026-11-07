@@ -156,7 +156,7 @@ theorem im_sub (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
-    natCast := fun n => ofInt n
+    natCast n := ofInt n
     intCast := ofInt }
 
 instance commRing : CommRing (ℤ√d) := by
@@ -772,8 +772,8 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
 
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
-    le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
-    le_total := fun a b => by
+    le_antisymm _ _ ab ba := eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
+    le_total a b := by
       have t := (b - a).nonneg_total
       rwa [neg_sub] at t
     toDecidableLE := Zsqrtd.decidableLE

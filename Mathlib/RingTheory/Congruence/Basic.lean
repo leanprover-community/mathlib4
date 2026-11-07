@@ -86,13 +86,13 @@ instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient where
-  smul_zero := fun _ => congr(toQuotient $(smul_zero _))
-  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
+  smul_zero _ := congr(toQuotient $(smul_zero _))
+  smul_add _ := Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient where
-  smul_one := fun _ => congr(toQuotient $(smul_one _))
-  smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+  smul_one _ := congr(toQuotient $(smul_one _))
+  smul_mul _ := Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
 
 section

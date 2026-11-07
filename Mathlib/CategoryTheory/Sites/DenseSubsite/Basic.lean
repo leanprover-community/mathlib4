@@ -338,7 +338,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) :
   app U :=
     let α := (sheafCoyonedaHom α)
     { app := fun X => (α.app X).app U
-      naturality := fun X Y f => by simpa using! congr_app (α.naturality f) U }
+      naturality X Y f := by simpa using! congr_app (α.naturality f) U }
   naturality U V i := by
     ext X x
     congrm $(((sheafCoyonedaHom α).app X).naturality i) x
@@ -351,7 +351,7 @@ transformation between presheaves.
 noncomputable def sheafHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.obj) : ℱ ⟶ ℱ'.obj :=
   let α' := sheafYonedaHom α
   { app := fun X => yoneda.preimage (α'.app X)
-    naturality := fun X Y f => yoneda.map_injective (by simpa using! α'.naturality f) }
+    naturality X Y f := yoneda.map_injective (by simpa using! α'.naturality f) }
 
 /--
 Given a natural isomorphism `G ⋙ ℱ ≅ G ⋙ ℱ'` between presheaves of arbitrary category,
@@ -751,7 +751,7 @@ noncomputable def sheafifyAdjunctionOfIsEquivalence :
     sheafifyOfIsEquivalence J K G A ⊣ sheafToPresheaf K A :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun P Q ↦ sheafifyHomEquivOfIsEquivalence J K G
-      homEquiv_naturality_left_symm := fun {P₁ P₂ Q} f g ↦
+      homEquiv_naturality_left_symm {P₁ P₂ Q} f g :=
         (sheafifyHomEquivOfIsEquivalence J K G).injective (by
           simp [sheafifyHomEquivOfIsEquivalence_naturality_left _ _ _ f])
       homEquiv_naturality_right :=

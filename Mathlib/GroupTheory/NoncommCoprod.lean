@@ -81,7 +81,7 @@ variable {M N P : Type*} [MulOneClass M] [MulOneClass N] [Monoid P]
     `f.noncommCoprod g (p : M × N) = f p.1 + g p.2`.
     (Noncommutative case; in the commutative case, use `AddHom.coprod`.) -/]
 def noncommCoprod : M × N →* P where
-  toFun := fun mn ↦ (f mn.fst) * (g mn.snd)
+  toFun mn := (f mn.fst) * (g mn.snd)
   map_one' := by simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
 

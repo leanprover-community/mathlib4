@@ -35,7 +35,7 @@ attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   obj S :=
     { obj := fun j => S.map ((evaluation J C).obj j)
-      map := fun f => S.mapNatTrans ((evaluation J C).map f) }
+      map f := S.mapNatTrans ((evaluation J C).map f) }
   map φ :=
     { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
 

@@ -478,16 +478,16 @@ than we would otherwise obtain from `completeLatticeOfInf`. -/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
-    bot_le := fun N _ h ↦ by
+    bot_le N _ h := by
       rw [mem_bot] at h
       rw [h]
       exact N.zero_mem'
     top := ⊤
-    le_top := fun _ _ _ ↦ trivial
+    le_top _ _ _ := trivial
     inf := (· ⊓ ·)
-    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
-    inf_le_left := fun _ _ _ ↦ And.left
-    inf_le_right := fun _ _ _ ↦ And.right }
+    le_inf _ _ _ h₁₂ h₁₃ _ hm := ⟨h₁₂ hm, h₁₃ hm⟩
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right }
 
 instance : Add (LieSubalgebra R L) where add := max
 

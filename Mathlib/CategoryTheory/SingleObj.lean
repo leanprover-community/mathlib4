@@ -116,8 +116,8 @@ def mapHom : (M →* N) ≃ SingleObj M ⥤ SingleObj N where
   toFun f :=
     { obj := id
       map := ⇑f
-      map_id := fun _ => f.map_one
-      map_comp := fun x y => f.map_mul y x }
+      map_id _ := f.map_one
+      map_comp x y := f.map_mul y x }
   invFun f :=
     { toFun x := (f.mapEnd _ (toEnd M x)).asHom
       map_one' := by cat_disch

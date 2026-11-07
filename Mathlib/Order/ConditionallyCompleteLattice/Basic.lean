@@ -68,8 +68,8 @@ instance (priority := 100) CompleteLattice.toConditionallyCompleteLattice [Compl
 instance (priority := 100) CompleteLinearOrder.toConditionallyCompleteLinearOrderBot {α : Type*}
     [h : CompleteLinearOrder α] : ConditionallyCompleteLinearOrderBot α where
   csSup_empty := sSup_empty
-  csSup_of_not_bddAbove := fun s H ↦ (H (OrderTop.bddAbove s)).elim
-  csInf_of_not_bddBelow := fun s H ↦ (H (OrderBot.bddBelow s)).elim
+  csSup_of_not_bddAbove s H := (H (OrderTop.bddAbove s)).elim
+  csInf_of_not_bddBelow s H := (H (OrderBot.bddBelow s)).elim
   __ := CompleteLattice.toConditionallyCompleteLattice
   __ := h
 

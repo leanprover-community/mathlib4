@@ -118,10 +118,10 @@ theorem toBialgHom_injective : Function.Injective (toBialgHom : (A ≃ₐc[R] B)
 @[macro_inline]
 instance : EquivLike (A ≃ₐc[R] B) A B where
   coe f := f.toFun
-  inv := fun f => f.invFun
+  inv f := f.invFun
   coe_injective' _ _ h _ := toBialgHom_injective (DFunLike.coe_injective h)
-  left_inv := fun f => f.left_inv
-  right_inv := fun f => f.right_inv
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
 
 @[macro_inline]
 instance : FunLike (A ≃ₐc[R] B) A B where

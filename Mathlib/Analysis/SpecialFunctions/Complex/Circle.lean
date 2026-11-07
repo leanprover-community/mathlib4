@@ -420,7 +420,7 @@ theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := 
 /-- The homeomorphism between `AddCircle (2 * π)` and `Circle`. -/
 @[simps] noncomputable def homeomorphCircle' : AddCircle (2 * π) ≃ₜ Circle where
   toFun := Angle.toCircle
-  invFun := fun x ↦ arg x
+  invFun x := arg x
   left_inv := Angle.arg_toCircle
   right_inv := Circle.exp_arg
   continuous_toFun := continuous_coinduced_dom.mpr Circle.exp.continuous

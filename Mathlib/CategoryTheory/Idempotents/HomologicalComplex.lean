@@ -99,8 +99,8 @@ on objects -/
 def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c) where
   X :=
     { X := fun n => (K.X n).X
-      d := fun i j => (K.d i j).f
-      shape := fun i j hij => hom_eq_zero_iff.mp (K.shape i j hij)
+      d i j := (K.d i j).f
+      shape i j hij := hom_eq_zero_iff.mp (K.shape i j hij)
       d_comp_d' := fun i j k _ _ => by
         simpa only [comp_f] using hom_eq_zero_iff.mp (K.d_comp_d i j k) }
   p := { f := fun n => (K.X n).p }
@@ -148,7 +148,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
             ext n
             dsimp
             simp only [HomologicalComplex.p_idem] }
-      naturality := fun P Q φ => by
+      naturality P Q φ := by
         ext
         dsimp
         simp only [HomologicalComplex.comp_p_d,
@@ -164,7 +164,7 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
             ext n
             dsimp
             simp only [HomologicalComplex.p_idem] }
-      naturality := fun P Q φ => by
+      naturality P Q φ := by
         ext
         dsimp
         simp only [HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }

@@ -137,19 +137,19 @@ instance (priority := 90) asymm_of_isTrans_of_irrefl [IsTrans α r] [Std.Irrefl 
 
 instance Std.Irrefl.decide [DecidableRel r] [Std.Irrefl r] :
     Std.Irrefl (fun a b => decide (r a b) = true) where
-  irrefl := fun a => by simpa using irrefl a
+  irrefl a := by simpa using irrefl a
 
 instance Std.Refl.decide [DecidableRel r] [Std.Refl r] :
     Std.Refl (fun a b => decide (r a b) = true) where
-  refl := fun a => by simpa using refl a
+  refl a := by simpa using refl a
 
 instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
     IsTrans α (fun a b => decide (r a b) = true) where
-  trans := fun a b c => by simpa using trans a b c
+  trans a b c := by simpa using trans a b c
 
 instance Std.Symm.decide [DecidableRel r] [Std.Symm r] :
     Std.Symm (fun a b => decide (r a b) = true) where
-  symm := fun a b => by simpa using symm a b
+  symm a b := by simpa using symm a b
 
 instance Std.Antisymm.decide [DecidableRel r] [Std.Antisymm r] :
     Std.Antisymm (fun a b => decide (r a b) = true) where
@@ -157,11 +157,11 @@ instance Std.Antisymm.decide [DecidableRel r] [Std.Antisymm r] :
 
 instance Std.Asymm.decide [DecidableRel r] [Std.Asymm r] :
     Std.Asymm (fun a b => decide (r a b) = true) where
-  asymm := fun a b => by simpa using asymm a b
+  asymm a b := by simpa using asymm a b
 
 instance Std.Total.decide [DecidableRel r] [Std.Total r] :
     Std.Total (fun a b => decide (r a b) = true) where
-  total := fun a b => by simpa using total a b
+  total a b := by simpa using total a b
 
 instance Std.Trichotomous.decide [DecidableRel r] [Std.Trichotomous r] :
     Std.Trichotomous (fun a b => decide (r a b) = true) where

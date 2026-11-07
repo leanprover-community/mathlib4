@@ -68,7 +68,7 @@ protected meta instance toExpr [ToLevel.{u}] [ToLevel.{uₘ}] [ToLevel.{uₙ}]
   have en' : Q(Type $(toLevel.{uₙ})) := toTypeExpr n'
   { toTypeExpr :=
     q(Matrix $eα $em' $en')
-    toExpr := fun M =>
+    toExpr M :=
       have eM : Q($em' → $en' → $eα) := toExpr (show m' → n' → α from M)
       q(Matrix.of $eM) }
 

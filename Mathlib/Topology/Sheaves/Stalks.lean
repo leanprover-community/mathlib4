@@ -250,7 +250,7 @@ def germToPullbackStalk (f : X ⟶ Y) (F : Y.Presheaf C) (U : Opens X) (x : X) (
     { pt := F.stalk ((f : X → Y) (x : X))
       ι :=
         { app := fun V => F.germ _ (f x) (V.hom.unop.le hx)
-          naturality := fun _ _ i => by simp } }
+          naturality _ _ i := by simp } }
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable {C} in
@@ -305,7 +305,7 @@ def stalkPullbackInv (f : X ⟶ Y) (F : Y.Presheaf C) (x : X) :
     { pt := F.stalk (f x)
       ι :=
         { app := fun U => F.germToPullbackStalk _ f (unop U).1 x (unop U).2
-          naturality := fun U V i => by
+          naturality U V i := by
             dsimp
             ext W hW
             dsimp [OpenNhds.inclusion]

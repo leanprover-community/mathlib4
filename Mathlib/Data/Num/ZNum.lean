@@ -423,9 +423,9 @@ instance addCommGroup : AddCommGroup ZNum :=
 
 instance addMonoidWithOne : AddMonoidWithOne ZNum :=
   { ZNum.addMonoid with
-    natCast := fun n => ZNum.ofInt' n
+    natCast n := ZNum.ofInt' n
     natCast_zero := show (Num.ofNat' 0).toZNum = 0 by rw [Num.ofNat'_zero]; rfl
-    natCast_succ := fun n =>
+    natCast_succ n :=
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by
         rw [Num.ofNat'_succ, Num.add_one, Num.toZNum_succ, ZNum.add_one] }
 

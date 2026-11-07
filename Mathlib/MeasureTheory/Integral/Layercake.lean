@@ -303,7 +303,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable (μ : Measure α)
       exists_seq_strictAnti_tendsto M
     let s : ν.FiniteSpanningSetsIn univ :=
     { set := fun n ↦ {a | f a ≤ M} ∪ {a | u n < f a}
-      set_mem := fun _ ↦ trivial
+      set_mem _ := trivial
       finite := by
         intro n
         have I : ν {a | f a ≤ M} = 0 := by

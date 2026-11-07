@@ -36,7 +36,7 @@ variable {C : Type u₂} [Category.{v₂} C]
 def const : C ⥤ J ⥤ C where
   obj X :=
     { obj := fun _ => X
-      map := fun _ => 𝟙 X }
+      map _ := 𝟙 X }
   map {X Y} f := { app := fun _ => f }
 
 attribute [to_dual self] const_obj_map

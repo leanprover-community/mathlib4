@@ -46,7 +46,7 @@ namespace WithZeroMulInt
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤᵐ⁰ → ℝ≥0` sending `0 ↦ 0` and
   `x ↦ e^(WithZero.log x)` when `x ≠ 0` as a `MonoidWithZeroHom`. -/
 def toNNReal {e : ℝ≥0} (he : e ≠ 0) : ℤᵐ⁰ →*₀ ℝ≥0 where
-  toFun := fun x ↦ if hx : x = 0 then 0 else e ^ log x
+  toFun x := if hx : x = 0 then 0 else e ^ log x
   map_zero' := rfl
   map_one' := by rw [dite_eq_right one_ne_zero, log_one, zpow_zero]
   map_mul' x y := by

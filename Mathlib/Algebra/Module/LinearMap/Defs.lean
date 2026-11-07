@@ -139,7 +139,7 @@ variable {σ : R →+* S}
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    map_zero := fun f ↦
+    map_zero f :=
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
@@ -148,7 +148,7 @@ instance (priority := 100) distribMulActionSemiHomClass
     [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
+    map_smulₛₗ f c x := by rw [map_smulₛₗ] }
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 
@@ -802,7 +802,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { (inferInstance : Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
+    uniq f := ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.unique

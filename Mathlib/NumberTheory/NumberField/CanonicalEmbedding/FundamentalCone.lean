@@ -56,11 +56,11 @@ instance unitSMul : SMul (𝓞 K)ˣ (mixedSpace K) where
   smul u x := mixedEmbedding K u * x
 
 instance : MulAction (𝓞 K)ˣ (mixedSpace K) where
-  one_smul := fun _ ↦ by simp_rw [unitSMul_smul, Units.coe_one, map_one, one_mul]
-  mul_smul := fun _ _ _ ↦ by simp_rw [unitSMul_smul, Units.coe_mul, map_mul, mul_assoc]
+  one_smul _ := by simp_rw [unitSMul_smul, Units.coe_one, map_one, one_mul]
+  mul_smul _ _ _ := by simp_rw [unitSMul_smul, Units.coe_mul, map_mul, mul_assoc]
 
 instance : SMulZeroClass (𝓞 K)ˣ (mixedSpace K) where
-  smul_zero := fun _ ↦ by simp_rw [unitSMul_smul, mul_zero]
+  smul_zero _ := by simp_rw [unitSMul_smul, mul_zero]
 
 variable {K}
 
@@ -326,9 +326,9 @@ instance integerSetTorsionSMul : SMul (torsion K) (integerSet K) where
   smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integerSet hζ hx⟩
 
 instance : MulAction (torsion K) (integerSet K) where
-  one_smul := fun _ ↦ by
+  one_smul _ := by
     rw [Subtype.mk_eq_mk, integerSetTorsionSMul_smul_coe, OneMemClass.coe_one, one_smul]
-  mul_smul := fun _ _ _ ↦ by
+  mul_smul _ _ _ := by
     rw [Subtype.mk_eq_mk]
     simp_rw [integerSetTorsionSMul_smul_coe, Subgroup.coe_mul, mul_smul]
 

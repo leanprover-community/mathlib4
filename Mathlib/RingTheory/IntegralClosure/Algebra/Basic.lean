@@ -269,7 +269,7 @@ variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
   [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
 
 instance : MulSemiringAction G (integralClosure R K) where
-  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  smul g x := ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
   one_smul x := by ext; exact one_smul G (x : K)
   mul_smul g h x := by ext; exact mul_smul g h (x : K)
   smul_zero g := by ext; exact smul_zero g

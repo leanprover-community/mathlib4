@@ -1120,7 +1120,7 @@ def ofLeftInverse' (f : M →* N) {g : N → M} (h : Function.LeftInverse g f) :
     toFun := f.mrangeRestrict
     invFun := g ∘ (MonoidHom.mrange f).subtype
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := MonoidHom.mem_mrange.mp x.2
         show f (g x) = x by rw [← hx', h x'] }

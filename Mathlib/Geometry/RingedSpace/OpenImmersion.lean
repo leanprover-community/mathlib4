@@ -284,7 +284,7 @@ theorem to_iso [h' : Epi f.base] : IsIso f := by
   apply +allowSynthFailures isIso_of_components
   let t : X ≃ₜ Y := H.base_open.isEmbedding.toHomeomorph.trans
     { toFun := Subtype.val
-      invFun := fun x =>
+      invFun x :=
         ⟨x, by rw [Set.range_eq_univ.mpr ((TopCat.epi_iff_surjective _).mp h')]; trivial⟩ }
   exact (TopCat.isoOfHomeo t).isIso_hom
 
@@ -384,7 +384,7 @@ def pullbackConeOfLeftLift : s.pt ⟶ (pullbackConeOfLeft f g).pt where
                 rw [Set.preimage_image_eq _
                     (TopCat.snd_isOpenEmbedding_of_left hf.base_open g.base).injective]
                 rfl))
-      naturality := fun U V i => by
+      naturality U V i := by
         erw [s.snd.c.naturality_assoc]
         rw [Category.assoc]
         erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
@@ -755,7 +755,7 @@ is an open immersion iff every stalk map is an iso.
 theorem of_stalk_iso {X Y : SheafedSpace C} (f : X ⟶ Y) (hf : IsOpenEmbedding f.hom.base)
     [H : ∀ x : X.1, IsIso (f.hom.stalkMap x)] : SheafedSpace.IsOpenImmersion f :=
   { base_open := hf
-    c_iso := fun U => by
+    c_iso U := by
       apply +allowSynthFailures TopCat.Presheaf.app_isIso_of_stalkFunctor_map_iso
           (show Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.hom.base).obj X.sheaf from ⟨f.hom.c⟩)
       rintro ⟨_, y, hy, rfl⟩

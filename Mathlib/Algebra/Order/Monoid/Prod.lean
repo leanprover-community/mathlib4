@@ -44,8 +44,8 @@ instance [LE α] [LE β] [Mul α] [Mul β] [ExistsMulOfLE α] [ExistsMulOfLE β]
 @[to_additive]
 instance [Mul α] [LE α] [CanonicallyOrderedMul α]
     [Mul β] [LE β] [CanonicallyOrderedMul β] : CanonicallyOrderedMul (α × β) where
-  le_mul_self := fun _ _ ↦ le_def.mpr ⟨le_mul_self, le_mul_self⟩
-  le_self_mul := fun _ _ ↦ le_def.mpr ⟨le_self_mul, le_self_mul⟩
+  le_mul_self _ _ := le_def.mpr ⟨le_mul_self, le_mul_self⟩
+  le_self_mul _ _ := le_def.mpr ⟨le_self_mul, le_self_mul⟩
 
 namespace Lex
 

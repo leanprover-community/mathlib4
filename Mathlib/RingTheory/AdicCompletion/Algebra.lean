@@ -306,8 +306,8 @@ instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Sub
 
 instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
-    val := fun n ↦ eval I R n r • eval I M n x
-    property := fun {m n} hmn ↦ by
+    val n := eval I R n r • eval I M n x
+    property {m n} hmn := by
       apply induction_on I R r (fun r ↦ ?_)
       apply induction_on I M x (fun x ↦ ?_)
       simp only [coe_eval, mapQ_eq_factor, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
@@ -358,7 +358,7 @@ ring maps `R →+* S ⧸ I ^ n`.
 def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m) :
     R →+* AdicCompletion I S where
-  toFun := fun x ↦ ⟨fun n ↦ (factor (le_of_eq (Ideal.mul_top _).symm)) (f n x),
+  toFun x := ⟨fun n ↦ (factor (le_of_eq (Ideal.mul_top _).symm)) (f n x),
     fun hkl ↦ by simp [transitionMap, Submodule.factorPow, ← hf hkl]⟩
   map_add' x y := by
     simp only [map_add]

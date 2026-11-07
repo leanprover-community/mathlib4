@@ -85,10 +85,10 @@ def ratModel {u : Level} (α : Q(Type u)) (rα : Q(CommRing $α)) :
     isZero := if p == 0 then (· == 0) else fun v => v % p == 0 }
   return .mk Int {
     ops
-    evalEntry := fun e => do
+    evalEntry e := do
       let v ← evalRatEntry (p == 0) e
       return (v.num, if v.den == 1 then none else some (v.den : Int))
-    commonMultiple := fun a b => (Int.lcm a b : Int)
+    commonMultiple a b := (Int.lcm a b : Int)
     mkEntry := mkIntNumeralQ α
     entryCertifier? }
 

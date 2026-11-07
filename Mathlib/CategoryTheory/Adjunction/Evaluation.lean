@@ -36,7 +36,7 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∐ fun _ : c ⟶ t => d
-      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
+      map f := Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
   map {_ d₂} f :=
     { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by
@@ -53,7 +53,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
   Adjunction.mkOfHomEquiv
     { homEquiv := fun d F =>
         { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
-          invFun := fun f => { app := fun _ => Sigma.desc fun h => f ≫ F.map h }
+          invFun f := { app := fun _ => Sigma.desc fun h => f ≫ F.map h }
           left_inv := by
             intro f
             ext x
@@ -62,7 +62,7 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             simp only [colimit.ι_desc, Cofan.mk_ι_app, Category.assoc, ← f.naturality,
               evaluationLeftAdjoint_obj_map, colimit.ι_desc_assoc,
               Discrete.functor_obj, Cofan.mk_pt, Category.id_comp]
-          right_inv := fun f => by simp } }
+          right_inv f := by simp } }
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
@@ -87,7 +87,7 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
     { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
-      map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
+      map f := Pi.lift fun g => Pi.π _ <| f ≫ g }
   map f := { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -98,8 +98,8 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F d =>
         { toFun := fun f => { app := fun _ => Pi.lift fun g => F.map g ≫ f }
-          invFun := fun f => f.app _ ≫ Pi.π _ (𝟙 _)
-          left_inv := fun f => by simp
+          invFun f := f.app _ ≫ Pi.π _ (𝟙 _)
+          left_inv f := by simp
           right_inv := by
             intro f
             ext x

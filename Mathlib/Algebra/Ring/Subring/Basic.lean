@@ -335,15 +335,15 @@ instance : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _x hx =>
+    bot_le s _x hx :=
       let ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ intCast_mem s n
     top := ⊤
-    le_top := fun _s _x _hx => trivial
+    le_top _s _x _hx := trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _s _t _x => And.left
-    inf_le_right := fun _s _t _x => And.right
-    le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _s _t _x := And.left
+    inf_le_right _s _t _x := And.right
+    le_inf _s _t₁ _t₂ h₁ h₂ _x hx := ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : Subring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -421,9 +421,9 @@ instance instField : Field (center K) where
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -955,10 +955,10 @@ theorem coe_subringCongr_apply (h : s = t) (x : s) :
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ f.range.subtype) x
+    toFun x := f.rangeRestrict x
+    invFun x := (g ∘ f.range.subtype) x
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := RingHom.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

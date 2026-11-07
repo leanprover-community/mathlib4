@@ -86,7 +86,7 @@ def IsInitial.ofStrict {X Y : C} (f : X ⟶ Y)
   hY.ofIso (asIso f).symm
 
 instance (priority := 100) initial_mono_of_strict_initial_objects : InitialMonoClass C where
-  isInitial_mono_from := fun _ hI => { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
+  isInitial_mono_from _ hI := { right_cancellation := fun _ _ _ => hI.strict_hom_ext _ _ }
 
 /-- If `I` is initial, then `X ⨯ I` is isomorphic to it. -/
 @[simps! hom]

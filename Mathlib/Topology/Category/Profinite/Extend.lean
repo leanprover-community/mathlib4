@@ -128,8 +128,8 @@ def cone (S : Profinite) :
     Cone (StructuredArrow.proj S toProfinite ⋙ toProfinite ⋙ G) where
   pt := G.obj S
   π := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by simp [← map_comp]) }
+    app i := G.map i.hom
+    naturality _ _ f := (by simp [← map_comp]) }
 
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
@@ -159,8 +159,8 @@ def cocone (S : Profinite) :
     Cocone (CostructuredArrow.proj toProfinite.op ⟨S⟩ ⋙ toProfinite.op ⋙ G) where
   pt := G.obj ⟨S⟩
   ι := {
-    app := fun i ↦ G.map i.hom
-    naturality := fun _ _ f ↦ (by
+    app i := G.map i.hom
+    naturality _ _ f := (by
       have := f.w
       simp only [op_obj, op_map] at this
       simp [← map_comp, this]) }

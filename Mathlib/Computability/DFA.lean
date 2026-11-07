@@ -221,12 +221,12 @@ theorem accepts_comap (f : α' → α) : (M.comap f).accepts = List.map f ⁻¹'
 @[simps apply_step apply_start apply_accept]
 def reindex (g : σ ≃ σ') : DFA α σ ≃ DFA α σ' where
   toFun M := {
-    step := fun s a => g (M.step (g.symm s) a)
+    step s a := g (M.step (g.symm s) a)
     start := g M.start
     accept := g.symm ⁻¹' M.accept
   }
   invFun M := {
-    step := fun s a => g.symm (M.step (g s) a)
+    step s a := g.symm (M.step (g s) a)
     start := g.symm M.start
     accept := g ⁻¹' M.accept
   }

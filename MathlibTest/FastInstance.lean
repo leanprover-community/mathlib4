@@ -42,7 +42,7 @@ instance [Mul α] : Mul (Wrapped α) where mul m n := ⟨Mul.mul m.1 n.1⟩
     (hmul : ∀ x y, f (Mul.mul x y) = Mul.mul (f x) (f y)) :
     Semigroup α :=
   { ‹Mul α› with
-    mul_assoc := fun x y z => by apply hf; rw [hmul, hmul, hmul, hmul, Semigroup.mul_assoc] }
+    mul_assoc x y z := by apply hf; rw [hmul, hmul, hmul, hmul, Semigroup.mul_assoc] }
 
 @[reducible] def Function.Injective.commMagma {α β : Type*} [Mul α] [CommMagma β]
     (f : α → β) (hf : Function.Injective f)

@@ -35,17 +35,17 @@ namespace MinTropical
 
 @[to_dual]
 instance [SemilatticeInf R] : SemilatticeInf (MinTropical R) where
-  inf := fun x y ↦ trop (untrop x ⊓ untrop y)
-  le_inf := fun _ _ _ ↦ @SemilatticeInf.le_inf R _ _ _ _
-  inf_le_left := fun _ _ ↦ inf_le_left
-  inf_le_right := fun _ _ ↦ inf_le_right
+  inf x y := trop (untrop x ⊓ untrop y)
+  le_inf _ _ _ := @SemilatticeInf.le_inf R _ _ _ _
+  inf_le_left _ _ := inf_le_left
+  inf_le_right _ _ := inf_le_right
 
 @[to_dual]
 instance [SemilatticeSup R] : SemilatticeSup (MinTropical R) where
-  sup := fun x y ↦ trop (untrop x ⊔ untrop y)
-  sup_le := fun _ _ _ ↦ @SemilatticeSup.sup_le R _ _ _ _
-  le_sup_left := fun _ _ ↦ le_sup_left
-  le_sup_right := fun _ _ ↦ le_sup_right
+  sup x y := trop (untrop x ⊔ untrop y)
+  sup_le _ _ _ := @SemilatticeSup.sup_le R _ _ _ _
+  le_sup_left _ _ := le_sup_left
+  le_sup_right _ _ := le_sup_right
 
 @[to_dual]
 instance [Lattice R] : Lattice (MinTropical R) where

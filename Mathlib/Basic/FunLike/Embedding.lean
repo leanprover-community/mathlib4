@@ -28,7 +28,7 @@ variable (A B : Type*) [MyClass A] [MyClass B]
 @[macro_inline]
 instance : FunLike (MyEmbedding A B) A B where
   coe := MyEmbedding.toFun
-  coe_injective := fun f g h ↦ by cases f; cases g; congr
+  coe_injective f g h := by cases f; cases g; congr
 
 -- This instance is optional if you follow the "Embedding class" design below:
 instance : EmbeddingLike (MyEmbedding A B) A B where

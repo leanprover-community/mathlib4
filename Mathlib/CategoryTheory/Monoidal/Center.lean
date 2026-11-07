@@ -127,7 +127,7 @@ def tensorObj (X Y : Center C) : Center C :=
         α_ _ _ _ ≪≫
           (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
             (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _
-      monoidal := fun U U' => by
+      monoidal U U' := by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         simp only [HalfBraiding.monoidal]
         -- We'd like to commute `X.1 ◁ U ◁ (HalfBraiding.β Y.2 U').hom`
@@ -140,7 +140,7 @@ def tensorObj (X Y : Center C) : Center C :=
                 (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
                   U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by monoidal
           _ = _ := by rw [whisker_exchange]; monoidal
-      naturality := fun {U U'} f => by
+      naturality {U U'} f := by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         calc
           _ = 𝟙 _ ⊗≫
@@ -383,7 +383,7 @@ def ofBraided : C ⥤ Center C where
   obj := ofBraidedObj
   map f :=
     { f
-      comm := fun U => braiding_naturality_left f U }
+      comm U := braiding_naturality_left f U }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in

@@ -69,9 +69,9 @@ variable {α β : Type u} [∀ P, Decidable P]
 
 protected instance applicative : Applicative Finset :=
   { Finset.functor, Finset.pure with
-    seq := fun t s => t.sup fun f => (s ()).image f
-    seqLeft := fun s t => if t () = ∅ then ∅ else s
-    seqRight := fun s t => if s = ∅ then ∅ else t () }
+    seq t s := t.sup fun f => (s ()).image f
+    seqLeft s t := if t () = ∅ then ∅ else s
+    seqRight s t := if s = ∅ then ∅ else t () }
 
 @[simp]
 theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
@@ -94,7 +94,7 @@ theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) 
 
 instance lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
-    seqLeft_eq := fun s t => by
+    seqLeft_eq s t := by
       rw [seq_def, fmap_def, seqLeft_def]
       obtain rfl | ht := t.eq_empty_or_nonempty
       · simp_rw [image_empty, ite_true]
@@ -107,7 +107,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         obtain ⟨b, hb, rfl⟩ := hf
         obtain ⟨_, _, rfl⟩ := ha
         exact hb
-    seqRight_eq := fun s t => by
+    seqRight_eq s t := by
       rw [seq_def, fmap_def, seqRight_def]
       obtain rfl | hs := s.eq_empty_or_nonempty
       · rw [ite_eq_left rfl, image_empty, sup_empty, bot_eq_empty]
@@ -119,10 +119,10 @@ instance lawfulApplicative : LawfulApplicative Finset :=
         obtain ⟨b, hb, rfl⟩ := ha
         obtain ⟨_, _, rfl⟩ := hf
         exact hb
-    pure_seq := fun f s => by simp only [pure_def, seq_def, sup_singleton, fmap_def]
-    map_pure := fun _ _ => image_singleton _ _
-    seq_pure := fun _ _ => sup_singleton_apply _ _
-    seq_assoc := fun s t u => by
+    pure_seq f s := by simp only [pure_def, seq_def, sup_singleton, fmap_def]
+    map_pure _ _ := image_singleton _ _
+    seq_pure _ _ := sup_singleton_apply _ _
+    seq_assoc s t u := by
       ext a
       simp_rw [seq_def, fmap_def]
       simp only [mem_sup, mem_image]
@@ -134,7 +134,7 @@ instance lawfulApplicative : LawfulApplicative Finset :=
 
 instance commApplicative : CommApplicative Finset :=
   { Finset.lawfulApplicative with
-    commutative_prod := fun s t => by
+    commutative_prod s t := by
       simp_rw [seq_def, fmap_def, sup_image, sup_eq_biUnion]
       change (s.biUnion fun a => t.image fun b => (a, b))
         = t.biUnion fun b => s.image fun a => (a, b)
@@ -158,10 +158,10 @@ theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
-    bind_pure_comp := fun _ _ => sup_singleton_apply _ _
-    bind_map := fun _ _ => rfl
-    pure_bind := fun _ _ => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
+    bind_pure_comp _ _ := sup_singleton_apply _ _
+    bind_map _ _ := rfl
+    pure_bind _ _ := sup_singleton
+    bind_assoc s f g := by simp only [bind, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 

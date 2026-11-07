@@ -82,9 +82,9 @@ instance subsemiringClass : SubsemiringClass (StarSubsemiring R) R where
 -- this uses the `Star` instance `s` inherits from `StarMemClass (StarSubsemiring R A) A`
 instance starRing (s : StarSubsemiring R) : StarRing s :=
   { StarMemClass.instStar s with
-    star_involutive := fun r => Subtype.ext (star_star (r : R))
-    star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : R) (r₂ : R))
-    star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : R) (r₂ : R)) }
+    star_involutive r := Subtype.ext (star_star (r : R))
+    star_mul r₁ r₂ := Subtype.ext (star_mul (r₁ : R) (r₂ : R))
+    star_add r₁ r₂ := Subtype.ext (star_add (r₁ : R) (r₂ : R)) }
 
 instance semiring (s : StarSubsemiring R) : NonAssocSemiring s :=
   s.toSubsemiring.toNonAssocSemiring

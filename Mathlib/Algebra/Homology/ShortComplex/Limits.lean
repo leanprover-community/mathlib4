@@ -74,7 +74,7 @@ noncomputable def limitCone : Cone F :=
       (by cat_disch))
     { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by simp) (by simp)
-      naturality := fun _ _ f => by
+      naturality _ _ f := by
         ext <;> simp [← limit.w _ f] }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -210,7 +210,7 @@ noncomputable def colimitCocone : Cocone F :=
       (by cat_disch))
     { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
         (colimit.ι (F ⋙ π₃) _) (by simp) (by simp)
-      naturality := fun _ _ f => by
+      naturality _ _ f := by
         ext
         · simp [← colimit.w (F ⋙ π₁) f]
         · simp [← colimit.w (F ⋙ π₂) f]

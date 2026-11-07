@@ -143,13 +143,13 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩) }
+      map f := MonoOver.homMk f.hom (by ext1 ⟨⟨⟩⟩) }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           subsingleton⟩
-      map := fun f => ObjectProperty.homMk f.hom.1 }
+      map f := ObjectProperty.homMk f.hom.1 }
   unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
   counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
   functor_unitIso_comp := by subsingleton

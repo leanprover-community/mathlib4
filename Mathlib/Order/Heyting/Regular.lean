@@ -85,10 +85,10 @@ abbrev _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) 
       codisjoint_iff.2 <| by rw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
   { ‹HeytingAlgebra α›,
     GeneralizedHeytingAlgebra.toDistribLattice with
-    himp_eq := fun _ _ =>
+    himp_eq _ _ :=
       eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
-    inf_compl_le_bot := fun _ => (this _).1.le_bot
-    top_le_sup_compl := fun _ => (this _).2.top_le }
+    inf_compl_le_bot _ := (this _).1.le_bot
+    top_le_sup_compl _ := (this _).2.top_le }
 
 variable (α)
 
@@ -199,16 +199,16 @@ theorem coe_sup (a b : Regular α) : (↑(a ⊔ b) : α) = ((a : α) ⊔ b)ᶜ�
 instance : BooleanAlgebra (Regular α) :=
   { Regular.lattice, Regular.boundedOrder, Regular.himp,
     Regular.instCompl with
-    le_sup_inf := fun a b c =>
+    le_sup_inf a b c :=
       coe_le_coe.1 <| by
         dsimp
         rw [sup_inf_left, compl_compl_inf_distrib]
-    inf_compl_le_bot := fun _ => coe_le_coe.1 <| disjoint_iff_inf_le.1 disjoint_compl_right
-    top_le_sup_compl := fun a =>
+    inf_compl_le_bot _ := coe_le_coe.1 <| disjoint_iff_inf_le.1 disjoint_compl_right
+    top_le_sup_compl a :=
       coe_le_coe.1 <| by
         dsimp
         rw [compl_sup, inf_compl_eq_bot, compl_bot]
-    himp_eq := fun a b =>
+    himp_eq a b :=
       coe_injective
         (by
           dsimp

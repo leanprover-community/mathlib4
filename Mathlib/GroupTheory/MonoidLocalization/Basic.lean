@@ -740,7 +740,7 @@ variable (S) in
 `(x, 0)` in the Localization of `M` at a Submonoid. -/]
 def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
   { (r S).mk'.comp <| MonoidHom.inl M S with
-    toFun := fun x ↦ mk x 1
+    toFun x := mk x 1
     map_mul' := fun x y ↦ by rw [mk_mul, mul_one]
     isLocalizationMap :=
     { map_units y :=

@@ -68,7 +68,7 @@ variable {F : Sheaf Scheme.zariskiTopology (Type v)}
 noncomputable def sheafValGluedMk : F.obj.obj (op D.glued) :=
   Multifork.IsLimit.sectionsEquiv (D.oneHypercover.isLimitMultifork F)
     { val := s
-      property := fun _ ↦ h _ _ }
+      property _ := h _ _ }
 
 @[simp]
 lemma sheafValGluedMk_val (j : D.J) : F.obj.map (D.ι j).op (D.sheafValGluedMk s h) = s j :=

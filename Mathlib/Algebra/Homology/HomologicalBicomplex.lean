@@ -88,7 +88,7 @@ def ofGradedObject :
     HomologicalComplex₂ C c₁ c₂ where
   X i₁ :=
     { X := fun i₂ => X ⟨i₁, i₂⟩
-      d := fun i₂ i₂' => d₂ i₁ i₂ i₂'
+      d i₂ i₂' := d₂ i₁ i₂ i₂'
       shape := shape₂ i₁
       d_comp_d' := by intros; apply d₂_comp_d₂ }
   d i₁ i₁' :=
@@ -150,8 +150,8 @@ exchanging the horizontal and vertical directions.
 def flip (K : HomologicalComplex₂ C c₁ c₂) : HomologicalComplex₂ C c₂ c₁ where
   X i :=
     { X := fun j => (K.X j).X i
-      d := fun j j' => (K.d j j').f i
-      shape := fun _ _ w => K.shape_f _ _ w i }
+      d j j' := (K.d j j').f i
+      shape _ _ w := K.shape_f _ _ w i }
   d i i' := { f := fun j => (K.X j).d i i' }
   shape i i' w := by
     ext j

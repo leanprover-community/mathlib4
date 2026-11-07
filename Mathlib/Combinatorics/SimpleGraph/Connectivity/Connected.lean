@@ -767,7 +767,7 @@ homomorphism from `G` to `H`. -/
 @[simps]
 def homOfConnectedComponents (G : SimpleGraph V) {H : SimpleGraph V'}
     (C : (c : G.ConnectedComponent) → c.toSimpleGraph →g H) : G →g H where
-  toFun := fun x ↦ (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
+  toFun x := (C (G.connectedComponentMk x)) ⟨x, ConnectedComponent.connectedComponentMk_mem⟩
   map_rel' := fun hab ↦ by
     have h : (G.connectedComponentMk _).toSimpleGraph.Adj ⟨_, rfl⟩
         ⟨_, ((G.connectedComponentMk _).mem_supp_congr_adj hab).1 rfl⟩ := by simpa using! hab

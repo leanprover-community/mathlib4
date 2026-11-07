@@ -114,9 +114,9 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
     ∃ f : (i : ℕ) → α i, ∀ ⦃i j⦄ (hij : i ≤ j), π hij (f j) = f i := by
   set αs := (i : ℕ) × α i
   let _ : PartialOrder αs := {
-    le := fun a b ↦ ∃ h, π h b.2 = a.2
-    le_refl := fun a ↦ ⟨rfl.le, π_refl _⟩
-    le_trans := fun _ _ c h h' ↦ ⟨h.1.trans h'.1, by rw [← π_trans h.1 h'.1 c.2, h'.2, h.2]⟩
+    le a b := ∃ h, π h b.2 = a.2
+    le_refl a := ⟨rfl.le, π_refl _⟩
+    le_trans _ _ c h h' := ⟨h.1.trans h'.1, by rw [← π_trans h.1 h'.1 c.2, h'.2, h.2]⟩
     le_antisymm := by grind }
   have hcovby : ∀ {a b : αs}, a ⋖ b ↔ a ≤ b ∧ a.1 + 1 = b.1 := by
     simp only [αs, covBy_iff_lt_and_eq_or_eq, lt_iff_le_and_ne, ne_eq, Sigma.forall, and_assoc,

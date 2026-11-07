@@ -155,7 +155,7 @@ lemma next_add' (p q : I) (hq : c.Rel q (c.next q)) :
 @[simps]
 instance : TotalComplexShape c c c where
   π := fun ⟨p, q⟩ => p + q
-  ε₁ := fun _ => 1
+  ε₁ _ := 1
   ε₂ := fun ⟨p, _⟩ => c.ε p
   rel₁ h q := c.rel_add h q
   rel₂ p _ _ h := c.add_rel p h

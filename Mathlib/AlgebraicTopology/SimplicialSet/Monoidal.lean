@@ -81,7 +81,7 @@ def unitHomEquiv (K : SSet.{u}) : (𝟙_ _ ⟶ K) ≃ K _⦋0⦌ where
   toFun φ := φ.app _ PUnit.unit
   invFun x :=
     { app := fun Δ => ↾fun _ => K.map (SimplexCategory.const Δ.unop ⦋0⦌ 0).op x
-      naturality := fun Δ Δ' f => by
+      naturality Δ Δ' f := by
         ext ⟨⟩
         dsimp
         rw [← Functor.map_comp_apply]

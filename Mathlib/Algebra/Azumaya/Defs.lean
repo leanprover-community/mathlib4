@@ -43,7 +43,7 @@ abbrev instModuleTensorProductMop : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProd
 def AlgHom.mulLeftRight : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
   letI : Module (A ⊗[R] Aᵐᵒᵖ) A := TensorProduct.Algebra.module
   letI : IsScalarTower R (A ⊗[R] Aᵐᵒᵖ) A := {
-    smul_assoc := fun r ab a ↦ by
+    smul_assoc r ab a := by
       change TensorProduct.Algebra.moduleAux _ _ = _ • TensorProduct.Algebra.moduleAux _ _
       simp }
   Algebra.lsmul R (A := A ⊗[R] Aᵐᵒᵖ) R A

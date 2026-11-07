@@ -81,7 +81,7 @@ noncomputable def limitCone : Cone F :=
   { pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
     { app j := ofHom (limitπMonoidHom F j)
-      naturality := fun _ _ f => MonCat.ext fun x =>
+      naturality _ _ f := MonCat.ext fun x =>
         congr($((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) x) } }
 
 set_option backward.defeqAttrib.useBackward true in

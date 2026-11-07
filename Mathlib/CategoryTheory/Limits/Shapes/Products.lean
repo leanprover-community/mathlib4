@@ -547,10 +547,10 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
         subsingleton)) }
   isLimit :=
     { lift := fun s => s.π.app default
-      fac := fun s j => by
+      fac s j := by
         obtain rfl := Subsingleton.elim j default
         simp
-      uniq := fun s m w => by
+      uniq s m w := by
         specialize w default
         simpa using w }
 

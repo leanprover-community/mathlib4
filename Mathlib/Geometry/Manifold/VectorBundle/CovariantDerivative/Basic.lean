@@ -439,7 +439,7 @@ one-forms taking values in the endomorphisms of the bundle, but we don’t packa
 @[simps]
 def affineCombination (cov cov' : CovariantDerivative I F V) (g : M → 𝕜) :
     CovariantDerivative I F V where
-  toFun := fun σ ↦ (g • (cov σ)) + (1 - g) • (cov' σ)
+  toFun σ := (g • (cov σ)) + (1 - g) • (cov' σ)
   isCovariantDerivativeOnUniv :=
     cov.isCovariantDerivativeOn.affine_combination cov'.isCovariantDerivativeOn _
 
@@ -489,7 +489,7 @@ alias ContMDiffCovariantDerivative.finite_affine_combination :=
   derivative gives a covariant derivative. -/
 def addOneForm (cov : CovariantDerivative I F V)
     (A : Π (x : M), V x →L[𝕜] TangentSpace I x →L[𝕜] V x) : CovariantDerivative I F V where
-  toFun := fun σ x ↦ cov σ x + A x (σ x)
+  toFun σ x := cov σ x + A x (σ x)
   isCovariantDerivativeOnUniv := cov.isCovariantDerivativeOnUniv.add_one_form A
 
 section difference

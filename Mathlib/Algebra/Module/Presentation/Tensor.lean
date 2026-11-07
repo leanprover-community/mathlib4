@@ -74,11 +74,11 @@ noncomputable def isPresentationCoreTensor :
   desc s := uncurry _ _ _ _ (h₁.desc
     { var := fun g₁ ↦ h₂.desc
         { var := fun g₂ ↦ s.var ⟨g₁, g₂⟩
-          linearCombination_var_relation := fun r₂ ↦ by
+          linearCombination_var_relation r₂ := by
             erw [← Finsupp.linearCombination_embDomain A
               (Function.Embedding.sectR g₁ relations₂.G)]
             exact s.linearCombination_var_relation (.inr ⟨g₁, r₂⟩) }
-      linearCombination_var_relation := fun r₁ ↦ h₂.postcomp_injective (by
+      linearCombination_var_relation r₁ := h₂.postcomp_injective (by
         ext g₂
         dsimp
         erw [Finsupp.apply_linearCombination A (LinearMap.applyₗ (solution₂.var g₂))]

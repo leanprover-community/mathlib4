@@ -340,7 +340,7 @@ class InnerRegularCompactLTTop (μ : Measure α) : Prop where
 /-- A regular measure is weakly regular in an R₁ space. -/
 instance (priority := 100) Regular.weaklyRegular [R1Space α] [Regular μ] :
     WeaklyRegular μ where
-  innerRegular := fun _U hU r hr ↦
+  innerRegular _U hU r hr :=
     let ⟨K, KU, K_comp, hK⟩ := Regular.innerRegular hU r hr
     ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
       hK.trans_le (measure_mono subset_closure)⟩

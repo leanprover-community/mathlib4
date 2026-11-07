@@ -209,7 +209,7 @@ theorem _root_.Polynomial.Monic.isEisensteinAt_of_mem_of_notMem (hf : f.Monic) (
     (hmem : ∀ {n}, n < f.natDegree → f.coeff n ∈ 𝓟) (hnotMem : f.coeff 0 ∉ 𝓟 ^ 2) :
     f.IsEisensteinAt 𝓟 :=
   { leading := Polynomial.Monic.leadingCoeff_notMem hf h
-    mem := fun hn => hmem hn
+    mem hn := hmem hn
     notMem := hnotMem }
 
 theorem isWeaklyEisensteinAt (hf : f.IsEisensteinAt 𝓟) : IsWeaklyEisensteinAt f 𝓟 :=

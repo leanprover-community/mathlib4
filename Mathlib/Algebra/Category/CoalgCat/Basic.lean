@@ -111,7 +111,7 @@ lemma hom_ext {M N : CoalgCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoa
 instance hasForgetToModule : HasForget₂ (CoalgCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ↧M
-      map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
+      map f := ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgCat R) :
@@ -167,8 +167,8 @@ variable {X Y Z : CoalgCat.{v} R}
 def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   { i.hom.toCoalgHom with
     invFun := i.inv.toCoalgHom
-    left_inv := fun x => congr($(i.3).toCoalgHom x)
-    right_inv := fun x => congr($(i.4).toCoalgHom x) }
+    left_inv x := congr($(i.3).toCoalgHom x)
+    right_inv x := congr($(i.4).toCoalgHom x) }
 
 @[simp] theorem toCoalgEquiv_toCoalgHom (i : X ≅ Y) :
     i.toCoalgEquiv = i.hom.toCoalgHom := rfl

@@ -60,8 +60,8 @@ protected def ofFunction (m : Set α → ℝ≥0∞) (m_empty : m ∅ = 0) : Out
     empty := by
       rw [← nonpos_iff_eq_zero]
       exact (iInf_le_of_le fun _ => ∅) <| iInf_le_of_le (empty_subset _) <| by simpa
-    mono := fun {_ _} hs => iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
-    iUnion_nat := fun s _ =>
+    mono {_ _} hs := iInf_mono fun _ => iInf_mono' fun hb => ⟨hs.trans hb, le_rfl⟩
+    iUnion_nat s _ :=
       ENNReal.le_of_forall_pos_le_add <| by
         intro ε hε (hb : (∑' i, μ (s i)) < ∞)
         rcases ENNReal.exists_pos_sum_of_countable (ENNReal.coe_pos.2 hε).ne' ℕ with ⟨ε', hε', hl⟩

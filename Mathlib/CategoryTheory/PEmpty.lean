@@ -26,9 +26,9 @@ instance (α : Type*) [IsEmpty α] : IsEmpty (Discrete α) := Function.isEmpty D
 /-- The (unique) functor from an empty category. -/
 def functorOfIsEmpty [IsEmpty C] : C ⥤ D where
   obj := isEmptyElim
-  map := fun {X} ↦ isEmptyElim X
-  map_id := fun {X} ↦ isEmptyElim X
-  map_comp := fun {X} ↦ isEmptyElim X
+  map {X} := isEmptyElim X
+  map_id {X} := isEmptyElim X
+  map_comp {X} := isEmptyElim X
 
 variable {C D}
 

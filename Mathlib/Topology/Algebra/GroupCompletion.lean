@@ -71,7 +71,7 @@ section Zero
 
 instance [UniformSpace α] [MonoidWithZero M] [Zero α] [MulActionWithZero M α]
     [UniformContinuousConstSMul M α] : MulActionWithZero M (Completion α) where
-  smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
+  smul_zero r := by rw [← coe_zero, ← coe_smul, MulActionWithZero.smul_zero r]
   zero_smul :=
     ext' (continuous_const_smul _) continuous_const fun a ↦ by
       rw [← coe_smul, zero_smul, coe_zero]
@@ -103,7 +103,7 @@ instance : AddMonoid (Completion α) where
     Completion.induction_on a
       (isClosed_eq (continuous_map₂ continuous_id continuous_const) continuous_id) fun a ↦
       show (a : Completion α) + 0 = a by rw [← coe_zero, ← coe_add, add_zero]
-  add_assoc := fun a b c ↦
+  add_assoc a b c :=
     Completion.induction_on₃ a b c
       (isClosed_eq
         (continuous_map₂ (continuous_map₂ continuous_fst (by fun_prop)) (by fun_prop))
@@ -160,7 +160,7 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
       (isClosed_eq ((continuous_fst.fun_add continuous_snd).fun_const_smul _)
         ((continuous_fst.fun_const_smul _).fun_add (continuous_snd.fun_const_smul _)))
       fun a b ↦ by simp only [← coe_add, ← coe_smul, smul_add]
-  smul_zero := fun r ↦ by rw [← coe_zero, ← coe_smul, smul_zero r]
+  smul_zero r := by rw [← coe_zero, ← coe_smul, smul_zero r]
 
 /-- The map from a group to its completion as a group hom. -/
 @[simps]
@@ -195,7 +195,7 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
     Module R (Completion α) :=
   { (inferInstance : DistribMulAction R <| Completion α),
     (inferInstance : MulActionWithZero R <| Completion α) with
-    add_smul := fun a b ↦
+    add_smul a b :=
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }

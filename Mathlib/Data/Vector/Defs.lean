@@ -251,7 +251,7 @@ theorem toList_take {n m : ℕ} (v : Vector α m) : toList (take n v) = List.tak
   rfl
 
 instance : GetElem (Vector α n) Nat α fun _ i => i < n where
-  getElem := fun x i h => get x ⟨i, h⟩
+  getElem x i h := get x ⟨i, h⟩
 
 lemma getElem_def (v : Vector α n) (i : ℕ) {hi : i < n} :
     v[i] = v.toList[i]'(by simpa) := rfl

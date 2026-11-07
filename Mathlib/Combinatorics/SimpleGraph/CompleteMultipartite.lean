@@ -91,7 +91,7 @@ lemma completeMultipartiteGraph.isCompleteMultipartite {ι : Type*} (V : ι → 
 `completeMultipartiteGraph` (see also `isCompleteMultipartite_iff`) -/
 def IsCompleteMultipartite.iso (h : G.IsCompleteMultipartite) :
     G ≃g completeMultipartiteGraph (fun (c : Quotient h.setoid) ↦ {x // h.setoid.r c.out x}) where
-  toFun := fun x ↦ ⟨_, ⟨_, Quotient.mk_out x⟩⟩
+  toFun x := ⟨_, ⟨_, Quotient.mk_out x⟩⟩
   invFun := fun ⟨_, x⟩ ↦ x.1
   right_inv := fun ⟨_, x⟩ ↦ Sigma.subtype_ext (Quotient.mk_eq_iff_out.2 <| h.setoid.symm x.2) rfl
   map_rel_iff' := by
@@ -165,7 +165,7 @@ Any `IsPathGraph3Compl` in `G` gives rise to a graph embedding of the complement
 -/
 def IsPathGraph3Compl.pathGraph3ComplEmbedding {v w₁ w₂ : α} (h : G.IsPathGraph3Compl v w₁ w₂) :
     (pathGraph 3)ᶜ ↪g G where
-  toFun := fun x ↦
+  toFun x :=
     match x with
     | 0 => w₁
     | 1 => v

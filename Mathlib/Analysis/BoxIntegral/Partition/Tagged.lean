@@ -347,7 +347,7 @@ def embedBox (I J : Box ι) (h : I ≤ J) : TaggedPrepartition I ↪ TaggedPrepa
   toFun π :=
     { π with
       le_of_mem' := fun J' hJ' => (π.le_of_mem' J' hJ').trans h
-      tag_mem_Icc := fun J => Box.le_iff_Icc.1 h (π.tag_mem_Icc J) }
+      tag_mem_Icc J := Box.le_iff_Icc.1 h (π.tag_mem_Icc J) }
   inj' := by
     rintro ⟨⟨b₁, h₁le, h₁d⟩, t₁, ht₁⟩ ⟨⟨b₂, h₂le, h₂d⟩, t₂, ht₂⟩ H
     simpa using H

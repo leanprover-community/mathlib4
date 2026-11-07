@@ -137,10 +137,10 @@ instance commMonoid {G : Type*} [CommMonoid G] [TopologicalSpace G] [ChartedSpac
 instance group {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G] :
     Group C^n⟮I, N; I', G⟯ :=
   { ContMDiffMap.monoid with
-    inv := fun f => ⟨fun x => (f x)⁻¹, f.contMDiff.inv⟩
-    inv_mul_cancel := fun a => by ext; exact inv_mul_cancel _
-    div := fun f g => ⟨f / g, f.contMDiff.div g.contMDiff⟩
-    div_eq_mul_inv := fun f g => by ext; exact div_eq_mul_inv _ _ }
+    inv f := ⟨fun x => (f x)⁻¹, f.contMDiff.inv⟩
+    inv_mul_cancel a := by ext; exact inv_mul_cancel _
+    div f g := ⟨f / g, f.contMDiff.div g.contMDiff⟩
+    div_eq_mul_inv f g := by ext; exact div_eq_mul_inv _ _ }
 
 @[to_additive (attr := simp)]
 theorem coe_inv {G : Type*} [Group G] [TopologicalSpace G] [ChartedSpace H' G] [LieGroup I' n G]
@@ -173,10 +173,10 @@ instance semiring {R : Type*} [Semiring R] [TopologicalSpace R] [ChartedSpace H'
     [ContMDiffRing I' n R] : Semiring C^n⟮I, N; I', R⟯ :=
   { ContMDiffMap.addCommMonoid,
     ContMDiffMap.monoid with
-    left_distrib := fun a b c => by ext; exact left_distrib _ _ _
-    right_distrib := fun a b c => by ext; exact right_distrib _ _ _
-    zero_mul := fun a => by ext; exact zero_mul _
-    mul_zero := fun a => by ext; exact mul_zero _ }
+    left_distrib a b c := by ext; exact left_distrib _ _ _
+    right_distrib a b c := by ext; exact right_distrib _ _ _
+    zero_mul a := by ext; exact zero_mul _
+    mul_zero a := by ext; exact mul_zero _ }
 
 instance ring {R : Type*} [Ring R] [TopologicalSpace R] [ChartedSpace H' R] [ContMDiffRing I' n R] :
     Ring C^n⟮I, N; I', R⟯ :=
@@ -196,7 +196,7 @@ def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H
     C^n⟮I, N; I', R'⟯ →+* C^n⟮I, N; I'', R''⟯ :=
   { ContMDiffMap.compLeftMonoidHom I N φ.toMonoidHom hφ,
     ContMDiffMap.compLeftAddMonoidHom I N φ.toAddMonoidHom hφ with
-    toFun := fun f => ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
+    toFun f := ⟨φ ∘ f, hφ.comp f.contMDiff⟩ }
 
 variable (I') {N}
 
@@ -206,7 +206,7 @@ def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R
     [ContMDiffRing I' n R] {U V : Opens N} (h : U ≤ V) :
     C^n⟮I, V; I', R⟯ →+* C^n⟮I, U; I', R⟯ :=
   { ContMDiffMap.restrictMonoidHom I I' R h, ContMDiffMap.restrictAddMonoidHom I I' R h with
-    toFun := fun f => ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
+    toFun f := ⟨f ∘ Set.inclusion h, f.contMDiff.comp (contMDiff_inclusion h)⟩ }
 
 variable {I I'}
 
@@ -283,7 +283,7 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
-  smul := fun r f ↦ ⟨r • f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩
+  smul r f := ⟨r • f, contMDiff_const.smul (I := 𝓘(𝕜)) f.contMDiff⟩
   algebraMap := ContMDiffMap.C
   commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
   smul_def' := fun c f => by ext x; exact Algebra.smul_def' _ _

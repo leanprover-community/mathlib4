@@ -153,7 +153,7 @@ theorem support_map_subset [Zero S] (x : R⟦Γ⟧) (f : ZeroHom R S) :
 
 /-- Change a `HahnSeries` with coefficients in a `HahnSeries` to a `HahnSeries` on a Lex product. -/
 def ofIterate [PartialOrder Γ'] (x : R⟦Γ'⟧⟦Γ⟧) : R⟦Γ ×ₗ Γ'⟧ where
-  coeff := fun g => coeff (coeff x g.1) g.2
+  coeff g := coeff (coeff x g.1) g.2
   isPWO_support' := by
     refine Set.PartiallyWellOrderedOn.subsetProdLex ?_ ?_
     · refine Set.IsPWO.mono x.isPWO_support' ?_
@@ -168,8 +168,8 @@ lemma mk_eq_zero (f : Γ → R) (h) : HahnSeries.mk f h = 0 ↔ f = 0 := by
 set_option backward.isDefEq.respectTransparency false in
 /-- Change a `HahnSeries` on a Lex product to a `HahnSeries` with coefficients in a `HahnSeries`. -/
 def toIterate [PartialOrder Γ'] (x : R⟦Γ ×ₗ Γ'⟧) : R⟦Γ'⟧⟦Γ⟧ where
-  coeff := fun g => {
-    coeff := fun g' => coeff x (g, g')
+  coeff g := {
+    coeff g' := coeff x (g, g')
     isPWO_support' := Set.PartiallyWellOrderedOn.fiberProdLex x.isPWO_support' g
   }
   isPWO_support' := by

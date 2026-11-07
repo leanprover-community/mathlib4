@@ -467,14 +467,14 @@ theorem smul_apply' (s : S) (g : (restrictScalars f).obj (of _ S) →ₗ[R] M) (
 
 instance mulAction : MulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.hasSMul f _ with
-    one_smul := fun g => LinearMap.ext fun s : S => by simp
+    one_smul g := LinearMap.ext fun s : S => by simp
     mul_smul := fun (s t : S) g => LinearMap.ext fun x : S => by simp [mul_assoc] }
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance distribMulAction : DistribMulAction S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.mulAction f _ with
-    smul_add := fun s g h => LinearMap.ext fun _ : S => by simp
-    smul_zero := fun _ => LinearMap.ext fun _ : S => by simp }
+    smul_add s g h := LinearMap.ext fun _ : S => by simp
+    smul_zero _ := LinearMap.ext fun _ : S => by simp }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- `S` acts on Hom(S, M) by `s • g = x ↦ g (x • s)`, this action defines an `S`-module structure on
@@ -482,8 +482,8 @@ Hom(S, M).
 -/
 instance isModule : Module S <| (restrictScalars f).obj (of _ S) →ₗ[R] M :=
   { CoextendScalars.distribMulAction f _ with
-    add_smul := fun s1 s2 g => LinearMap.ext fun x : S => by simp [mul_add, map_add]
-    zero_smul := fun g => LinearMap.ext fun x : S => by simp [map_zero] }
+    add_smul s1 s2 g := LinearMap.ext fun x : S => by simp [mul_add, map_add]
+    zero_smul g := LinearMap.ext fun x : S => by simp [map_zero] }
 
 end Unbundled
 
@@ -658,7 +658,7 @@ set_option backward.isDefEq.respectTransparency false in
 def restrictCoextendScalarsAdj {R : Type u₁} {S : Type u₂} [Ring R] [Ring S] (f : R →+* S) :
     restrictScalars.{max v u₂, u₁, u₂} f ⊣ coextendScalars f :=
   Adjunction.mk' {
-    homEquiv := fun X Y ↦
+    homEquiv X Y :=
       { toFun := RestrictionCoextensionAdj.HomEquiv.fromRestriction.{u₁, u₂, v} f
         invFun := RestrictionCoextensionAdj.HomEquiv.toRestriction.{u₁, u₂, v} f
         left_inv g := by ext; simp
@@ -878,13 +878,13 @@ scalars by `f` are adjoint to each other.
 def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     extendScalars.{u₁, u₂, max v u₂} f ⊣ restrictScalars.{max v u₂, u₁, u₂} f :=
   Adjunction.mk' {
-    homEquiv := fun _ _ ↦ ExtendRestrictScalarsAdj.homEquiv.{v, u₁, u₂} f
+    homEquiv _ _ := ExtendRestrictScalarsAdj.homEquiv.{v, u₁, u₂} f
     unit := ExtendRestrictScalarsAdj.unit.{v, u₁, u₂} f
     counit := ExtendRestrictScalarsAdj.counit.{v, u₁, u₂} f
-    homEquiv_unit := fun {X Y g} ↦ hom_ext <| LinearMap.ext fun x => by
+    homEquiv_unit {X Y g} := hom_ext <| LinearMap.ext fun x => by
       dsimp
       rfl
-    homEquiv_counit := fun {X Y g} ↦ hom_ext <| LinearMap.ext fun x => by
+    homEquiv_counit {X Y g} := hom_ext <| LinearMap.ext fun x => by
         induction x using TensorProduct.inductionOn with
         | tmul =>
           rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]

@@ -179,7 +179,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance laxMonoidalPi' {D : Type*} [Category* D] [MonoidalCategory D] (F : ∀ i : I, D ⥤ C i)
     [∀ i, (F i).LaxMonoidal] :
     (Functor.pi' F).LaxMonoidal where
-  ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
+  ε i := Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) X Y
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -218,7 +218,7 @@ instance laxMonoidalPi {D : I → Type u₂} [∀ i, Category.{v₂} (D i)]
     [∀ i, MonoidalCategory (D i)] (F : ∀ i : I, D i ⥤ C i)
     [∀ i, (F i).LaxMonoidal] :
     (Functor.pi F).LaxMonoidal where
-  ε := fun i ↦ Functor.LaxMonoidal.ε (F i)
+  ε i := Functor.LaxMonoidal.ε (F i)
   μ X Y := fun i ↦ Functor.LaxMonoidal.μ (F i) (X i) (Y i)
 
 set_option backward.isDefEq.respectTransparency.types false in

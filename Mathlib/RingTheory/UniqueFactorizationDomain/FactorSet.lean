@@ -325,15 +325,15 @@ noncomputable instance : Lattice (Associates α) :=
   { Associates.instPartialOrder with
     sup := (· ⊔ ·)
     inf := (· ⊓ ·)
-    sup_le := fun _ _ c hac hbc =>
+    sup_le _ _ c hac hbc :=
       factors_prod c ▸ prod_mono (sup_le (factors_mono hac) (factors_mono hbc))
-    le_sup_left := fun a _ => le_trans (le_of_eq (factors_prod a).symm) <| prod_mono le_sup_left
-    le_sup_right := fun _ b =>
+    le_sup_left a _ := le_trans (le_of_eq (factors_prod a).symm) <| prod_mono le_sup_left
+    le_sup_right _ b :=
       le_trans (le_of_eq (factors_prod b).symm) <| prod_mono le_sup_right
-    le_inf := fun a _ _ hac hbc =>
+    le_inf a _ _ hac hbc :=
       factors_prod a ▸ prod_mono (le_inf (factors_mono hac) (factors_mono hbc))
-    inf_le_left := fun a _ => le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
-    inf_le_right := fun _ b => le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
+    inf_le_left a _ := le_trans (prod_mono inf_le_left) (le_of_eq (factors_prod a))
+    inf_le_right _ b := le_trans (prod_mono inf_le_right) (le_of_eq (factors_prod b)) }
 
 open scoped Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=

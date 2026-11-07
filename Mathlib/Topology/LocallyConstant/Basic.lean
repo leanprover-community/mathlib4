@@ -290,7 +290,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
 def eval {ι : Type*} {X : ι → Type*}
     [∀ i, TopologicalSpace (X i)] (i : ι) [DiscreteTopology (X i)] :
     LocallyConstant (Π i, X i) (X i) where
-  toFun := fun f ↦ f i
+  toFun f := f i
   isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
@@ -455,7 +455,7 @@ variable {R : Type*} [One R] {U : Set X} (f : LocallyConstant X R)
   otherwise. -/]
 noncomputable def mulIndicator (hU : IsClopen U) : LocallyConstant X R where
   toFun := Set.mulIndicator U f
-  isLocallyConstant := fun s => by
+  isLocallyConstant s := by
     rw [mulIndicator_preimage, Set.ite, Set.sdiff_eq]
     exact ((f.2 s).inter hU.isOpen).union ((IsLocallyConstant.const 1 s).inter hU.compl.isOpen)
 

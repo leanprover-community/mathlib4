@@ -61,7 +61,7 @@ def buildLimit
   pt := i.pt
   π :=
     { app := fun _ => i.ι ≫ c₁.π.app ⟨_⟩
-      naturality := fun j₁ j₂ f => by
+      naturality j₁ j₂ f := by
         dsimp
         rw [Category.id_comp, Category.assoc, ← hs ⟨⟨_, _⟩, f⟩, i.condition_assoc, ht] }
 
@@ -323,7 +323,7 @@ def buildColimit
   pt := i.pt
   ι :=
     { app := fun _ => c₂.ι.app ⟨_⟩ ≫ i.π
-      naturality := fun j₁ j₂ f => by
+      naturality j₁ j₂ f := by
         dsimp
         have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :
           c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
@@ -401,7 +401,7 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
 @[stacks 002P]
 theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
-  has_colimits_of_shape := fun _ _ =>
+  has_colimits_of_shape _ _ :=
       { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
 /-- Any category with finite coproducts and coequalizers has all finite colimits. -/

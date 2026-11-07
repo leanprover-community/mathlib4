@@ -80,7 +80,7 @@ noncomputable def liftedCone : Cone F where
   pt := .mk (liftedConeElement F)
   π :=
     { app := fun i => ⟨limit.π (F ⋙ π A) i, by simp⟩
-      naturality := fun i i' f => by ext; simpa using! (limit.w _ _).symm }
+      naturality i i' f := by ext; simpa using! (limit.w _ _).symm }
 
 /-- (implementation) The constructed limit cone is a lift of the limit cone in `C`. -/
 noncomputable def isValidLift : (π A).mapCone (liftedCone F) ≅ limit.cone (F ⋙ π A) :=

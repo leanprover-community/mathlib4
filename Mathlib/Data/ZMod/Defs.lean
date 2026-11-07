@@ -85,7 +85,7 @@ private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a 
 /-- Distributive structure on `Fin n`. -/
 instance instDistrib (n : ℕ) : Distrib (Fin n) where
   left_distrib := private left_distrib_aux n
-  right_distrib := fun a b c => by
+  right_distrib a b c := by
     rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm]
 
 instance instNonUnitalCommRing (n : ℕ) [NeZero n] : NonUnitalCommRing (Fin n) where

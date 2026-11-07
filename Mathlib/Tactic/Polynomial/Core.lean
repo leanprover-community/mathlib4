@@ -61,19 +61,19 @@ initialize polynomialExt : PersistentEnvExtension Name (Name × PolynomialExt)
     (List Name × List (Name × PolynomialExt)) ←
   registerPersistentEnvExtension {
     mkInitial := pure ([], {})
-    addImportedFn := fun s => do
+    addImportedFn s := do
       let dt ← s.foldlM (init := {}) fun dt s => s.foldlM (init := dt) fun dt n => do
         return (n, ← mkPolynomialExt n) :: dt
       pure ([], dt)
     addEntryFn := fun (entries, s) (n, ext) => (n :: entries, (n, ext) :: s)
-    exportEntriesFn := fun s => s.1.reverse.toArray
+    exportEntriesFn s := s.1.reverse.toArray
   }
 
 initialize registerBuiltinAttribute {
   name := `PolyInferBaseAttr
   descr := "adds a polynomial extension that infers the base ring of a polynomial-like type"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => match stx with
+  add declName stx kind := match stx with
     | `(attr| polynomial_infer_base) => do
       unless kind == AttributeKind.global do
         throwError "invalid attribute 'polynomial_infer_base', must be global"

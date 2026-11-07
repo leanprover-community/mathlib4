@@ -121,7 +121,7 @@ initialize Lean.registerBuiltinAttribute {
   name := `bound
   descr := "Register a theorem as an apply rule for the `bound` tactic."
   applicationTime := .afterCompilation
-  add := fun decl stx attrKind => Lean.withRef stx do
+  add decl stx attrKind := Lean.withRef stx do
     let score ← Aesop.runTermElabMAsCoreM <| declPriority decl
     trace[bound.attribute] "'{decl}' has score '{score}'"
     let context ← Aesop.runMetaMAsCoreM Aesop.ElabM.Context.forAdditionalGlobalRules
@@ -129,7 +129,7 @@ initialize Lean.registerBuiltinAttribute {
       (scoreToConfig decl score).buildGlobalRule.run context
     for ruleSet in ruleSets do
       Aesop.Frontend.addGlobalRule ruleSet rule attrKind (checkNotExists := true)
-  erase := fun decl =>
+  erase decl :=
     let ruleFilter := { name := decl, scope := .global, builders := #[], phases := #[] }
     Aesop.Frontend.eraseGlobalRules Aesop.RuleSetNameFilter.all ruleFilter (checkExists := true)
 }

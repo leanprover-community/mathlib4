@@ -83,13 +83,13 @@ theorem HasFPowerSeriesWithinOnBall.add (hf : HasFPowerSeriesWithinOnBall f pf s
     HasFPowerSeriesWithinOnBall (f + g) (pf + pg) s x r :=
   { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
     r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).add (hg.hasSum hy h'y) }
+    hasSum hy h'y := (hf.hasSum hy h'y).add (hg.hasSum hy h'y) }
 
 theorem HasFPowerSeriesOnBall.add (hf : HasFPowerSeriesOnBall f pf x r)
     (hg : HasFPowerSeriesOnBall g pg x r) : HasFPowerSeriesOnBall (f + g) (pf + pg) x r :=
   { r_le := le_trans (le_min_iff.2 ⟨hf.r_le, hg.r_le⟩) (pf.min_radius_le_radius_add pg)
     r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).add (hg.hasSum hy) }
+    hasSum hy := (hf.hasSum hy).add (hg.hasSum hy) }
 
 theorem HasFPowerSeriesWithinAt.add
     (hf : HasFPowerSeriesWithinAt f pf s x) (hg : HasFPowerSeriesWithinAt g pg s x) :
@@ -130,7 +130,7 @@ theorem HasFPowerSeriesWithinOnBall.neg (hf : HasFPowerSeriesWithinOnBall f pf s
       rw [pf.radius_neg]
       exact hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).neg }
+    hasSum hy h'y := (hf.hasSum hy h'y).neg }
 
 theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (-f) (-pf) x r :=
@@ -138,7 +138,7 @@ theorem HasFPowerSeriesOnBall.neg (hf : HasFPowerSeriesOnBall f pf x r) :
       rw [pf.radius_neg]
       exact hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).neg }
+    hasSum hy := (hf.hasSum hy).neg }
 
 theorem HasFPowerSeriesWithinAt.neg (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (-f) (-pf) s x :=
@@ -209,13 +209,13 @@ theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
   r_le := le_trans hf.r_le pf.radius_le_smul
   r_pos := hf.r_pos
-  hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _
+  hasSum hy h'y := (hf.hasSum hy h'y).const_smul _
 
 theorem HasFPowerSeriesOnBall.const_smul (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (c • f) (c • pf) x r where
   r_le := le_trans hf.r_le pf.radius_le_smul
   r_pos := hf.r_pos
-  hasSum := fun hy => (hf.hasSum hy).const_smul _
+  hasSum hy := (hf.hasSum hy).const_smul _
 
 theorem HasFPowerSeriesWithinAt.const_smul (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=

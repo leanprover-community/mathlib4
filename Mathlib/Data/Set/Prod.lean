@@ -1018,8 +1018,8 @@ lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjecti
   exact ⟨
   { toFun := e₁
     invFun := e₂
-    left_inv := fun h ↦ by rw [← he₁₂]
-    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+    left_inv h := by rw [← he₁₂]
+    right_inv i := by rw [he₁₂] }, he₁⟩
 
 /-- **Vertical line test** for functions.
 

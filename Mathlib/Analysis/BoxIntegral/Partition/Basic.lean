@@ -509,9 +509,9 @@ theorem le_biUnion_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :
 
 instance : SemilatticeInf (Prepartition I) :=
   { inf := fun π₁ π₂ => π₁.biUnion fun J => π₂.restrict J
-    inf_le_left := fun π₁ _ => π₁.biUnion_le _
-    inf_le_right := fun _ _ => (biUnion_le_iff _).2 fun _ _ => le_rfl
-    le_inf := fun _ π₁ _ h₁ h₂ => π₁.le_biUnion_iff.2 ⟨h₁, fun _ _ => restrict_mono h₂⟩ }
+    inf_le_left π₁ _ := π₁.biUnion_le _
+    inf_le_right _ _ := (biUnion_le_iff _).2 fun _ _ => le_rfl
+    le_inf _ π₁ _ h₁ h₂ := π₁.le_biUnion_iff.2 ⟨h₁, fun _ _ => restrict_mono h₂⟩ }
 
 theorem inf_def (π₁ π₂ : Prepartition I) : π₁ ⊓ π₂ = π₁.biUnion fun J => π₂.restrict J := rfl
 

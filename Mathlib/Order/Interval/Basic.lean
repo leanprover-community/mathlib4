@@ -477,7 +477,7 @@ variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
-    inf := fun s t =>
+    inf s t :=
       match s, t with
       | ⊥, _ => ⊥
       | _, ⊥ => ⊥
@@ -486,7 +486,7 @@ instance lattice : Lattice (Interval α) :=
           coe ⟨⟨s.fst ⊔ t.fst, s.snd ⊓ t.snd⟩,
               sup_le (le_inf s.fst_le_snd h.1) <| le_inf h.2 t.fst_le_snd⟩
         else ⊥
-    inf_le_left := fun s t =>
+    inf_le_left s t :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
@@ -496,7 +496,7 @@ instance lattice : Lattice (Interval α) :=
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_left, inf_le_left⟩
         · exact bot_le
-    inf_le_right := fun s t =>
+    inf_le_right s t :=
       match s, t with
       | ⊥, ⊥ => bot_le
       | ⊥, some _ => bot_le
@@ -506,7 +506,7 @@ instance lattice : Lattice (Interval α) :=
         split_ifs
         · exact WithBot.coe_le_coe.2 ⟨le_sup_right, inf_le_right⟩
         · exact bot_le
-    le_inf := fun s t c =>
+    le_inf s t c :=
       match s, t, c with
       | ⊥, _, _ => fun _ _ => bot_le
       | (s : NonemptyInterval α), t, c => fun hb hc => by
@@ -602,7 +602,7 @@ variable [CompleteLattice α]
 
 open scoped Classical in
 noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) where
-  sSup := fun S =>
+  sSup S :=
     if h : S ⊆ {⊥} then ⊥
     else
       coe
@@ -635,7 +635,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
         Interval.coe_le_coe.2
           ⟨le_iInf₂ fun c hc => (WithBot.coe_le_coe.1 <| ha hc).1,
             iSup₂_le fun c hc => (WithBot.coe_le_coe.1 <| ha hc).2⟩
-  sInf := fun S =>
+  sInf S :=
     if h :
         ⊥ ∉ S ∧
           ∀ ⦃s : NonemptyInterval α⦄,

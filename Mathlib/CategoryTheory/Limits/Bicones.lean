@@ -127,31 +127,31 @@ instance finBiconeHom [FinCategory J] (j k : Bicone J) : Fintype (j ⟶ k) := by
   cases j <;> cases k
   · exact
       { elems := {BiconeHom.left_id}
-        complete := fun f => by cases f; simp }
+        complete f := by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete f := by cases f }
   · exact
     { elems := {BiconeHom.left _}
-      complete := fun f => by cases f; simp }
+      complete f := by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete f := by cases f }
   · exact
       { elems := {BiconeHom.right_id}
-        complete := fun f => by cases f; simp }
+        complete f := by cases f; simp }
   · exact
     { elems := {BiconeHom.right _}
-      complete := fun f => by cases f; simp }
+      complete f := by cases f; simp }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete f := by cases f }
   · exact
     { elems := ∅
-      complete := fun f => by cases f }
+      complete f := by cases f }
   · exact
     { elems := Finset.image BiconeHom.diagram Fintype.elems
-      complete := fun f => by
+      complete f := by
         rcases f with (_ | _ | _ | _ | f)
         simp only [Finset.mem_image]
         use f

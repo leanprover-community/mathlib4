@@ -216,8 +216,8 @@ instance : Inhabited (A →⋆ₙ+* B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙ+* A) where
-  zero_mul := fun _ => ext fun _ => rfl
-  mul_zero := fun f => ext fun _ => map_zero f
+  zero_mul _ := ext fun _ => rfl
+  mul_zero f := ext fun _ => map_zero f
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙ+* B) : A → B) = 0 :=

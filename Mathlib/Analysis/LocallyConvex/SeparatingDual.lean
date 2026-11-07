@@ -210,17 +210,17 @@ theorem exists_continuousLinearEquiv_apply_eq
     exists_eq_one_ne_zero_of_ne_zero_pair hx hy
   let A : V ≃L[R] V :=
   { toFun := fun z ↦ z + G z • (y - x)
-    invFun := fun z ↦ z + ((G y)⁻¹ * G z) • (x - y)
+    invFun z := z + ((G y)⁻¹ * G z) • (x - y)
     map_add' := fun a b ↦ by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
-    left_inv := fun z ↦ by
+    left_inv z := by
       simp only [RingHom.id_apply, smul_eq_mul,
         -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
         map_add, map_smulₛₗ _, map_sub, Gx, mul_sub, mul_one, add_sub_cancel]
       rw [mul_comm (G z), ← mul_assoc, inv_mul_cancel₀ Gy]
       simp only [smul_sub, one_mul]
       abel
-    right_inv := fun z ↦ by
+    right_inv z := by
         -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_add, map_smulₛₗ _, map_mul, map_inv₀, RingHom.id_apply, map_sub, Gx,
         smul_eq_mul, mul_sub, mul_one]

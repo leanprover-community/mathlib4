@@ -83,7 +83,7 @@ section restrict
   E := R
   Indep I := M.Indep I ∧ I ⊆ R
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
-  indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
+  indep_subset _ _ h hIJ := ⟨h.1.subset hIJ, hIJ.trans h.2⟩
   indep_aug := by
     rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.IsBasis' I R) (hI' : M.IsBasis' I' R)
     rw [isBasis'_iff_isBasis_inter_ground] at hIn hI'

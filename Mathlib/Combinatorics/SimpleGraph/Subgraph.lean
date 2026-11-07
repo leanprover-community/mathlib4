@@ -309,7 +309,7 @@ instance : Max G.Subgraph where
   max G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
-      adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
+      adj_sub hab := Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
       edge_vert := Or.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
       symm.symm _ _ := Or.imp G₁.adj_symm G₂.adj_symm }
 
@@ -318,7 +318,7 @@ instance : Min G.Subgraph where
   min G₁ G₂ :=
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
-      adj_sub := fun hab => G₁.adj_sub hab.1
+      adj_sub hab := G₁.adj_sub hab.1
       edge_vert := And.imp (fun h => G₁.edge_vert h) fun h => G₂.edge_vert h
       symm.symm _ _ := And.imp G₁.adj_symm G₂.adj_symm }
 
@@ -354,7 +354,7 @@ instance : InfSet G.Subgraph where
     { verts := ⋂ G' ∈ s, verts G'
       Adj := fun a b => (∀ ⦃G'⦄, G' ∈ s → Adj G' a b) ∧ G.Adj a b
       adj_sub := And.right
-      edge_vert := fun hab => Set.mem_iInter₂_of_mem fun G' hG' => G'.edge_vert <| hab.1 hG'
+      edge_vert hab := Set.mem_iInter₂_of_mem fun G' hG' => G'.edge_vert <| hab.1 hG'
       symm.symm _ _ := And.imp (forall₂_imp fun _ _ ↦ Adj.symm) G.adj_symm }
 
 @[simp]

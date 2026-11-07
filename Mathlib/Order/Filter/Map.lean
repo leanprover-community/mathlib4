@@ -208,7 +208,7 @@ protected theorem lawfulMonad : LawfulMonad Filter where
 end
 
 instance : Alternative Filter where
-  seq := fun x y => x.seq (y ())
+  seq x y := x.seq (y ())
   failure := ⊥
   orElse x y := x ⊔ y ()
 

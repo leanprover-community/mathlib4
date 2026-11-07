@@ -67,7 +67,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
   { (R.{v, u} F).str,
     AddCommMonCat.FilteredColimits.colimitAddCommMonoid.{v, u}
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
-    mul_zero := fun x => by
+    mul_zero x := by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
@@ -75,7 +75,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       dsimp
       rw [mul_zero x]
       rfl
-    zero_mul := fun x => by
+    zero_mul x := by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
@@ -83,7 +83,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       dsimp
       rw [zero_mul x]
       rfl
-    left_distrib := fun x y z => by
+    left_distrib x y z := by
       refine Quot.induction_on₃ x y z ?_; clear x y z; intro x y z
       obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, z⟩ := z
       let k := IsFiltered.max₃ j₁ j₂ j₃
@@ -96,7 +96,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       simp only [CategoryTheory.Functor.map_id]
       erw [left_distrib (F.map f x) (F.map g y) (F.map h z)]
       rfl
-    right_distrib := fun x y z => by
+    right_distrib x y z := by
       refine Quot.induction_on₃ x y z ?_; clear x y z; intro x y z
       obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, z⟩ := z
       let k := IsFiltered.max₃ j₁ j₂ j₃

@@ -256,16 +256,16 @@ Uses a simple array to store the name-extension pairs for now. -/
 initialize bareissExt : ScopedEnvExtension Name (Name × BareissExt) (Array (Name × BareissExt)) ←
   registerScopedEnvExtension {
     mkInitial := pure #[]
-    ofOLeanEntry := fun _ n => return (n, ← mkBareissExt n)
+    ofOLeanEntry _ n := return (n, ← mkBareissExt n)
     toOLeanEntry := (·.1)
-    addEntry := fun s e => s.push e
+    addEntry s e := s.push e
   }
 
 initialize registerBuiltinAttribute {
   name := `bareiss_ext
   descr := "adds a computation model to the Bareiss elimination"
   applicationTime := .afterCompilation
-  add := fun declName _ kind => do
+  add declName _ kind := do
     ensureAttrDeclIsMeta `bareiss_ext declName kind
     let env ← getEnv
     unless (env.getModuleIdxFor? declName).isNone do

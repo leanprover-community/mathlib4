@@ -129,7 +129,7 @@ lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))
 /-- In a T0 topological space `X`, the assignment `x ↦ diracProba x` is a bijection to its
 range in `ProbabilityMeasure X`. -/
 noncomputable def diracProbaEquiv [T0Space X] : X ≃ range (diracProba (X := X)) where
-  toFun := fun x ↦ ⟨diracProba x, by exact mem_range_self x⟩
+  toFun x := ⟨diracProba x, by exact mem_range_self x⟩
   invFun := diracProbaInverse
   left_inv x := by apply diracProbaInverse_eq; rfl
   right_inv μ := Subtype.ext (by simp only [diracProba_diracProbaInverse])

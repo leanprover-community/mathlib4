@@ -442,7 +442,7 @@ theorem of_mul (x y : α) : of (x * y) = of x * of y :=
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]
 local instance distrib : Distrib (FreeAbelianGroup α) where
-  left_distrib := fun _ _ _ ↦ (lift _).map_add _ _
+  left_distrib _ _ _ := (lift _).map_add _ _
   right_distrib x y z := by simp [mul_def, ← Pi.add_def]
 
 @[deprecated "use `MonoidAlgebra ℤ` instead" (since := "2026-07-29"), nolint docBlame]

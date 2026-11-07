@@ -102,7 +102,7 @@ instance : InfSet (PreAbstractSimplicialComplex ι) where
 instance : Top (PreAbstractSimplicialComplex ι) where
   top :=
     { faces := { s | s.Nonempty }
-      isRelLowerSet_faces := fun {_} hs => ⟨hs, fun _ _ ht => ht⟩ }
+      isRelLowerSet_faces {_} hs := ⟨hs, fun _ _ ht => ht⟩ }
 
 instance : Bot (PreAbstractSimplicialComplex ι) where
   bot :=
@@ -136,7 +136,7 @@ producing a new PreAbstractSimplicialComplex.
 def map {α β : Type*} [DecidableEq β] (K : PreAbstractSimplicialComplex α) (f : α → β) :
     PreAbstractSimplicialComplex β where
   faces := K.faces.image (fun s => s.image f)
-  isRelLowerSet_faces := fun {x} h => by
+  isRelLowerSet_faces {x} h := by
     simp only [Set.mem_image] at h ⊢
     obtain ⟨s', hs', rfl⟩ := h
     constructor

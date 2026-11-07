@@ -184,7 +184,7 @@ initialize registerBuiltinAttribute {
   name := `norm_num
   descr := "adds a norm_num extension"
   applicationTime := .afterCompilation
-  add := fun declName stx kind ↦ match stx with
+  add declName stx kind := match stx with
     | `(attr| norm_num $es,*) => do
       let env ← getEnv
       ensureAttrDeclIsMeta `norm_num declName kind
@@ -203,7 +203,7 @@ initialize registerBuiltinAttribute {
       -- TODO: track what `[norm_num]` decls are actually used at use sites
       recordExtraRevUseOfCurrentModule
     | _ => throwUnsupportedSyntax
-  erase := fun declName => do
+  erase declName := do
     let s := normNumExt.getState (← getEnv)
     let s ← s.erase declName
     modifyEnv fun env => normNumExt.modifyState env fun _ => s

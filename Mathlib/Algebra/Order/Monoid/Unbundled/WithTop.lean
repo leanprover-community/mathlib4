@@ -242,11 +242,11 @@ end Add
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (WithTop α) :=
   { WithTop.add with
-    add_assoc := fun _ _ _ => Option.map₂_assoc add_assoc }
+    add_assoc _ _ _ := Option.map₂_assoc add_assoc }
 
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (WithTop α) :=
   { WithTop.addSemigroup with
-    add_comm := fun _ _ => Option.map₂_comm add_comm }
+    add_comm _ _ := Option.map₂_comm add_comm }
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (WithTop α) :=
   { WithTop.zero, WithTop.add with
@@ -291,7 +291,7 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithTop α) where
   natCast_zero := by simp [NatCast.natCast]
-  natCast_succ := fun n => by simp [NatCast.natCast]
+  natCast_succ n := by simp [NatCast.natCast]
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 

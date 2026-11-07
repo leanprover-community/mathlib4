@@ -37,7 +37,7 @@ variable {R : Type*} [CommRing R]
 
 /-- A finite ring has finite quotients. -/
 instance [Finite R] : Ring.HasFiniteQuotients R where
-  finiteQuotient := fun _ ↦ Quotient.finite _
+  finiteQuotient _ := Quotient.finite _
 
 section properties
 
@@ -56,7 +56,7 @@ theorem maximalOfPrime {P : Ideal R} [P.IsPrime] (hp : P ≠ ⊥) :
 
 /-- A ring with finite quotients has dimension `≤ 1`. -/
 instance : DimensionLEOne R where
-  maximalOfPrime := fun h _ ↦ maximalOfPrime h
+  maximalOfPrime h _ := maximalOfPrime h
 
 /-- A ring with finite quotients is noetherian. -/
 instance : IsNoetherianRing R := by

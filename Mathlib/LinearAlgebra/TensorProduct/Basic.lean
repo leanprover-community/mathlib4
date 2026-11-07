@@ -186,7 +186,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { uncurry σ₁₂ M N P₂ with
-    invFun := fun f => (mk R M N).compr₂ₛₗ f }
+    invFun f := (mk R M N).compr₂ₛₗ f }
 
 @[simp]
 theorem lift.equiv_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
@@ -387,7 +387,7 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
     rw [hx, hy, add_zero]
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) where
-  neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+  neg_add_cancel x := TensorProduct.neg_add_cancel x
   zsmul_zero' := by simp
   zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
   zsmul_neg' := fun n x => by

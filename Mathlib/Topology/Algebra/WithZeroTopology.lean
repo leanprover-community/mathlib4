@@ -149,7 +149,7 @@ scoped instance (priority := 100) orderClosedTopology : OrderClosedTopology Γ�
 
 /-- The topology on a linearly ordered group with zero element adjoined is T₅. -/
 scoped instance (priority := 100) t5Space : T5Space Γ₀ where
-  completely_normal := fun s t h₁ h₂ => by
+  completely_normal s t h₁ h₂ := by
     by_cases hs : 0 ∈ s
     · have ht : 0 ∉ t := fun ht => disjoint_left.1 h₁ (subset_closure hs) ht
       rwa [(isOpen_iff.2 (.inl ht)).nhdsSet_eq, disjoint_nhdsSet_principal]

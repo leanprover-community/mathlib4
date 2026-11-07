@@ -615,8 +615,8 @@ sequence of open sets. -/
   cases isEmpty_or_nonempty α
   · exact
       ⟨{  set := fun _ => ∅
-          set_mem := fun _ => by simp
-          finite := fun _ => by simp
+          set_mem _ := by simp
+          finite _ := by simp
           spanning := by simp [eq_iff_true_of_subsingleton] }⟩
   inhabit α
   let S : Set (Set α) := { s | IsOpen s ∧ μ s < ∞ }
@@ -635,8 +635,8 @@ sequence of open sets. -/
     exact mem_range_self n
   refine
     ⟨{  set := f
-        set_mem := fun n => (fS n).1
-        finite := fun n => (fS n).2
+        set_mem n := (fS n).1
+        finite n := (fS n).2
         spanning := ?_ }⟩
   refine eq_univ_of_forall fun x => ?_
   obtain ⟨t, tT, xt⟩ : ∃ t : Set α, t ∈ range f ∧ x ∈ t := by

@@ -216,7 +216,7 @@ variable (M I) in
 /-- A smooth manifold induces a singular manifold on the one-point space. -/
 @[expose] def toPUnit : SingularManifold PUnit k I where
   M := M
-  f := fun _ ↦ PUnit.unit
+  f _ := PUnit.unit
   hf := continuous_const
 
 variable {I' : ModelWithCorners ℝ E' H'} [FiniteDimensional ℝ E']
@@ -239,7 +239,7 @@ perturbations yield bordant manifolds.)
 @[expose] def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
     SingularManifold PUnit k (I.prod I') where
   M := s.M × t.M
-  f := fun _ ↦ PUnit.unit
+  f _ := PUnit.unit
   hf := continuous_const
 
 variable (s t : SingularManifold X k I)

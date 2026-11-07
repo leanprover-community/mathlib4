@@ -133,7 +133,7 @@ instance : Category (Monad C) where
   comp f g :=
     { toNatTrans :=
         { app := fun X => f.app X ≫ g.app X
-          naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
+          naturality X Y h := by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
 
 @[to_dual]
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
@@ -165,8 +165,8 @@ def MonadIso.mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N)
       app_μ := f_μ }
   inv :=
     { toNatTrans := f.inv
-      app_η := fun X => by simp [← f_η]
-      app_μ := fun X => by
+      app_η X := by simp [← f_η]
+      app_μ X := by
         rw [← NatIso.cancel_natIso_hom_right f]
         simp only [NatTrans.naturality, Iso.inv_hom_id_app, assoc, comp_id, f_μ,
           NatTrans.naturality_assoc, Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc]
@@ -185,8 +185,8 @@ def ComonadIso.mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N)
       app_δ := f_δ }
   inv :=
     { toNatTrans := f.inv
-      app_ε := fun X => by simp [← f_ε]
-      app_δ := fun X => by
+      app_ε X := by simp [← f_ε]
+      app_δ X := by
         rw [← NatIso.cancel_natIso_hom_left f]
         simp only [reassoc_of% (f_δ X), Iso.hom_inv_id_app_assoc, NatTrans.naturality_assoc]
         simp }

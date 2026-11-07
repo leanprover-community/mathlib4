@@ -143,9 +143,9 @@ open Module
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   .ofEquivFun
     { toFun := fun z => ![z.re, z.im]
-      invFun := fun c => c 0 + c 1 • I
-      left_inv := fun z => by simp
-      right_inv := fun c => by
+      invFun c := c 0 + c 1 • I
+      left_inv z := by simp
+      right_inv c := by
         ext i
         fin_cases i <;> simp
       map_add' := fun z z' => by simp
@@ -530,9 +530,9 @@ open scoped ComplexStarModule
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
-  toFun := fun z ↦ (z : ℂ).re
-  invFun := fun x ↦ ⟨x, conj_ofReal x⟩
-  left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
+  toFun z := (z : ℂ).re
+  invFun x := ⟨x, conj_ofReal x⟩
+  left_inv z := Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
   map_add' := by simp
   map_smul' := by simp
 

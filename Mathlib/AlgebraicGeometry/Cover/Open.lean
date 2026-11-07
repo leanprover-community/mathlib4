@@ -93,7 +93,7 @@ def OpenCover.finiteSubcover {X : Scheme.{u}} (𝒰 : OpenCover.{v} X) [H : Comp
   exact
     { I₀ := t
       X := fun x => 𝒰.X (𝒰.idx x.1)
-      f := fun x => 𝒰.f (𝒰.idx x.1)
+      f x := 𝒰.f (𝒰.idx x.1)
       mem₀ := by
         rw [presieve₀_mem_precoverage_iff]
         exact ⟨h, inferInstance⟩ }

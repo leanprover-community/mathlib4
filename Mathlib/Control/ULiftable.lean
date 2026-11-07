@@ -178,12 +178,12 @@ instance Except.instULiftable {ε : Type u₀} :
   congr e :=
     { toFun := Except.map e
       invFun := Except.map e.symm
-      left_inv := fun f => by cases f <;> simp [Except.map]
-      right_inv := fun f => by cases f <;> simp [Except.map] }
+      left_inv f := by cases f <;> simp [Except.map]
+      right_inv f := by cases f <;> simp [Except.map] }
 
 instance Option.instULiftable : ULiftable Option.{u₀} Option.{u₁} where
   congr e :=
     { toFun := Option.map e
       invFun := Option.map e.symm
-      left_inv := fun f => by cases f <;> simp
-      right_inv := fun f => by cases f <;> simp }
+      left_inv f := by cases f <;> simp
+      right_inv f := by cases f <;> simp }

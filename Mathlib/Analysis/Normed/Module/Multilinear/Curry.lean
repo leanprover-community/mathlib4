@@ -561,7 +561,7 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
       map_smul' := fun c f => by
         ext
         rfl
-      left_inv := fun f => by
+      left_inv f := by
         ext m
         congrm f $(Sum.elim_comp_inl_inr m) }
     (fun f => MultilinearMap.mkContinuousMultilinear_norm_le _ (norm_nonneg f) _) fun f => by

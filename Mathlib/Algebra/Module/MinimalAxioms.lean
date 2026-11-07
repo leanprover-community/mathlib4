@@ -38,6 +38,6 @@ abbrev Module.ofMinimalAxioms {R : Type u} {M : Type v} [Semiring R] [AddCommGro
     add_smul := add_smul,
     mul_smul := mul_smul,
     one_smul := one_smul,
-    zero_smul := fun x =>
+    zero_smul x :=
       (AddMonoidHom.mk' (· • x) fun r s => add_smul r s x).map_zero
-    smul_zero := fun r => (AddMonoidHom.mk' (r • ·) (smul_add r)).map_zero }
+    smul_zero r := (AddMonoidHom.mk' (r • ·) (smul_add r)).map_zero }

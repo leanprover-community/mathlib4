@@ -631,7 +631,7 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
     ChainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => by simp [of.d, (Ne.symm w)]
+    shape i j w := by simp [of.d, (Ne.symm w)]
     d_comp_d' := fun i j k hij hjk => by
       dsimp [of.d] at hij hjk ⊢
       subst hij hjk
@@ -891,7 +891,7 @@ abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (
     CochainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => dite_eq_right (c := i + 1 = j) w
+    shape i j w := dite_eq_right (c := i + 1 = j) w
     d_comp_d' := fun i j k => by
       dsimp [of.d]
       split_ifs with h h' h'

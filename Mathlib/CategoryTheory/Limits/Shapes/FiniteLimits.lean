@@ -51,7 +51,7 @@ instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits [HasFiniteLimits 
 
 lemma hasFiniteLimits_of_hasLimitsOfSize [HasLimitsOfSize.{v', u'} C] :
     HasFiniteLimits C where
-  out := fun J hJ hJ' =>
+  out J hJ hJ' :=
     haveI := hasLimitsOfSizeShrink.{0, 0} C
     let F := @FinCategory.equivAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ'
     @hasLimitsOfShape_of_equivalence (@FinCategory.AsType J (@FinCategory.fintypeObj J hJ hJ'))
@@ -73,7 +73,7 @@ arbitrary universe. -/
 theorem hasFiniteLimits_of_hasFiniteLimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasLimitsOfShape J C) :
     HasFiniteLimits C where
-  out := fun J hJ hhJ => by
+  out J hJ hhJ := by
     have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                           (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=
@@ -99,7 +99,7 @@ instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits [HasFiniteCol
 
 lemma hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOfSize.{v', u'} C] :
     HasFiniteColimits C where
-  out := fun J hJ hJ' =>
+  out J hJ hJ' :=
     haveI := hasColimitsOfSizeShrink.{0, 0} C
     let F := @FinCategory.equivAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ'
     @hasColimitsOfShape_of_equivalence (@FinCategory.AsType J (@FinCategory.fintypeObj J hJ hJ'))
@@ -117,7 +117,7 @@ arbitrary universe. -/
 theorem hasFiniteColimits_of_hasFiniteColimits_of_size
     (h : ∀ (J : Type w) {𝒥 : SmallCategory J} (_ : @FinCategory J 𝒥), HasColimitsOfShape J C) :
     HasFiniteColimits C where
-  out := fun J hJ hhJ => by
+  out J hJ hhJ := by
     have := h (ULiftHom.{w} (ULift.{w} J)) <| @CategoryTheory.finCategoryUlift J hJ hhJ
     have l : @Equivalence J (ULiftHom (ULift J)) hJ
                            (@ULiftHom.category (ULift J) (@uliftCategory J hJ)) :=

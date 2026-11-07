@@ -60,7 +60,7 @@ variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
+    map_smulₛₗ f r x := by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
@@ -557,7 +557,7 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
+    toFun a := m • a
     commutes' := smul_algebraMap _ }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :

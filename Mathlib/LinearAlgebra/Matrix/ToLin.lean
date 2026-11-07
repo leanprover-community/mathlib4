@@ -260,9 +260,9 @@ def Matrix.toLinearEquivRight'OfInv [Fintype n] [DecidableEq n] {M : Matrix m n 
   { LinearMap.toMatrixRight'.symm M' with
     toFun := Matrix.toLinearMapRight' M'
     invFun := Matrix.toLinearMapRight' M
-    left_inv := fun x ↦ by
+    left_inv x := by
       rw [← Matrix.toLinearMapRight'_mul_apply, hM'M, Matrix.toLinearMapRight'_one, id_apply]
-    right_inv := fun x ↦ by
+    right_inv x := by
       rw [← Matrix.toLinearMapRight'_mul_apply, hMM', Matrix.toLinearMapRight'_one, id_apply] }
 
 end
@@ -499,8 +499,8 @@ def Matrix.toLin'OfInv [Fintype m] [DecidableEq m] {M : Matrix m n R} {M' : Matr
   { Matrix.toLin' M' with
     toFun := Matrix.toLin' M'
     invFun := Matrix.toLin' M
-    left_inv := fun x ↦ by rw [← Matrix.toLin'_mul_apply, hMM', Matrix.toLin'_one, id_apply]
-    right_inv := fun x ↦ by
+    left_inv x := by rw [← Matrix.toLin'_mul_apply, hMM', Matrix.toLin'_one, id_apply]
+    right_inv x := by
       rw [← Matrix.toLin'_mul_apply, hM'M, Matrix.toLin'_one, id_apply] }
 
 /-- Linear maps `(n → R) →ₗ[R] (n → R)` are algebra equivalent to `Matrix n n R`. -/
@@ -798,8 +798,8 @@ def Matrix.toLinOfInv [DecidableEq m] {M : Matrix m n R} {M' : Matrix n m R} (hM
   { Matrix.toLin v₁ v₂ M with
     toFun := Matrix.toLin v₁ v₂ M
     invFun := Matrix.toLin v₂ v₁ M'
-    left_inv := fun x ↦ by rw [← Matrix.toLin_mul_apply, hM'M, Matrix.toLin_one, id_apply]
-    right_inv := fun x ↦ by
+    left_inv x := by rw [← Matrix.toLin_mul_apply, hM'M, Matrix.toLin_one, id_apply]
+    right_inv x := by
       rw [← Matrix.toLin_mul_apply, hMM', Matrix.toLin_one, id_apply] }
 
 /-- Given a basis of a module `M₁` over a commutative ring `R`, we get an algebra

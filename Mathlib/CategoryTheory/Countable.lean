@@ -99,7 +99,7 @@ attribute [local instance] uliftCategory in
 instance countableCategoryUlift {J : Type v} [Category.{v} J] [CountableCategory J] :
     CountableCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   countableObj := instCountableULift
-  countableHom := fun i j =>
+  countableHom i j :=
     have : Countable ((ULiftHom.objDown i).down ⟶ (ULiftHom.objDown j).down) := inferInstance
     instCountableULift
 

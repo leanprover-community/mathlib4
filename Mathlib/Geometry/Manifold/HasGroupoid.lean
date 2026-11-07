@@ -373,7 +373,7 @@ variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} 
 def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G] :
     Structomorph G M M :=
   { Homeomorph.refl M with
-    mem_groupoid := fun c c' hc hc' ↦ by
+    mem_groupoid c c' hc hc' := by
       change OpenPartialHomeomorph.symm c ≫ₕ OpenPartialHomeomorph.refl M ≫ₕ c' ∈ G
       rw [OpenPartialHomeomorph.refl_trans]
       exact G.compatible hc hc' }

@@ -803,13 +803,13 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
-    mul_inv_rev := fun s t => by
+    mul_inv_rev s t := by
       simp_rw [← image_inv_eq_inv]
       exact image_image2_antidistrib mul_inv_rev
-    inv_eq_of_mul := fun s t h => by
+    inv_eq_of_mul s t h := by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
-    div_eq_mul_inv := fun s t => by
+    div_eq_mul_inv s t := by
       rw [← image_id (s / t), ← image_inv_eq_inv]
       exact image_image2_distrib_right div_eq_mul_inv }
 

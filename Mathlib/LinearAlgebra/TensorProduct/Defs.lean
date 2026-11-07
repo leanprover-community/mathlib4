@@ -83,7 +83,7 @@ namespace TensorProduct
 section Module
 
 instance addCommSemigroup : AddCommSemigroup (M ⊗[R] N) where
-  add_comm := fun x y =>
+  add_comm x y :=
     AddCon.induction_on₂ x y fun _ _ =>
       Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.add_comm _ _
 
@@ -289,7 +289,7 @@ variable {R}
 instance leftDistribMulAction : DistribMulAction R' (M ⊗[R] N) :=
   have : ∀ (r : R') (m : M) (n : N), r • m ⊗ₜ[R] n = (r • m) ⊗ₜ n := fun _ _ _ => rfl
   { smul_add := fun r x y => TensorProduct.smul_add r x y
-    mul_smul := fun r s x =>
+    mul_smul r s x :=
       x.inductionOn
         (fun m n => by simp_rw [this, mul_smul]) fun x y ihx ihy => by
         simp_rw [TensorProduct.smul_add]

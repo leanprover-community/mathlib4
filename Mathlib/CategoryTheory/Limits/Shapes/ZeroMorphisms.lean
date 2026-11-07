@@ -147,9 +147,9 @@ variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
   zero F G := ⟨{ app := fun _ => 0 }⟩
-  comp_zero := fun η H => by
+  comp_zero η H := by
     ext X; dsimp; apply comp_zero
-  zero_comp := fun F {G H} η => by
+  zero_comp F {G H} η := by
     ext X; dsimp; apply zero_comp
 
 @[simp, to_dual self]

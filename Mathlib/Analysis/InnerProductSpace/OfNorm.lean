@@ -211,7 +211,7 @@ noncomputable def InnerProductSpace.ofNorm
     norm_sq_eq_re_inner := inner_.norm_sq
     conj_inner_symm := inner_.conj_symm
     add_left := InnerProductSpaceable.add_left
-    smul_left := fun _ _ _ => innerProp _ _ _ }
+    smul_left _ _ _ := innerProp _ _ _ }
 
 variable (E)
 variable [InnerProductSpaceable E]
@@ -225,7 +225,7 @@ theorem nonempty_innerProductSpace : Nonempty (InnerProductSpace 𝕜 E) :=
       norm_sq_eq_re_inner := inner_.norm_sq
       conj_inner_symm := inner_.conj_symm
       add_left := add_left
-      smul_left := fun _ _ _ => innerProp _ _ _ }⟩
+      smul_left _ _ _ := innerProp _ _ _ }⟩
 
 variable {𝕜 E}
 variable [NormedSpace ℝ E]

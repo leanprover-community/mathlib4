@@ -598,11 +598,11 @@ def ofUnit (f : (M →L[R] M)ˣ) : M ≃L[R] M where
       map_add' := by simp
       map_smul' := by simp
       invFun := f.inv
-      left_inv := fun x =>
+      left_inv x :=
         show (f.inv * f.val) x = x by
           rw [f.inv_val]
           simp
-      right_inv := fun x =>
+      right_inv x :=
         show (f.val * f.inv) x = x by
           rw [f.val_inv]
           simp }

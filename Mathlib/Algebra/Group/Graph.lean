@@ -106,8 +106,8 @@ lemma exists_mulEquiv_mrange_eq_mgraph {f : G →* H × I} (hf₁ : Surjective (
   { toFun := e₁
     map_mul' := e₁.map_mul'
     invFun := e₂
-    left_inv := fun h ↦ by rw [← he₁₂]
-    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+    left_inv h := by rw [← he₁₂]
+    right_inv i := by rw [he₁₂] }, he₁⟩
 
 end MonoidHom
 

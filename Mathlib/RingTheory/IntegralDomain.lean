@@ -57,8 +57,8 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [MonoidWithZero M] [IsLeftCancelMu
     [DecidableEq M] [Fintype M] [Nontrivial M] : GroupWithZero M :=
   { ‹Nontrivial M›,
     ‹MonoidWithZero M› with
-    inv := fun a => if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
-    mul_inv_cancel := fun a ha => by
+    inv a := if h : a = 0 then 0 else Fintype.bijInv (mul_right_bijective_of_finite₀ h) 1
+    mul_inv_cancel a ha := by
       simp only [dite_eq_right ha]
       exact Fintype.rightInverse_bijInv _ _
     inv_zero := by simp }
@@ -100,9 +100,9 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
   __ := (‹Ring R› :) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib/RingTheory/LittleWedderburn.lean`. -/

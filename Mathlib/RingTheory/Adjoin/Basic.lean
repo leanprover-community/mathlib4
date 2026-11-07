@@ -102,9 +102,9 @@ theorem adjoin_top {A} [Semiring A] [Algebra S A] (t : Set A) :
     adjoin (⊤ : Subalgebra R S) t = (adjoin S t).restrictScalars (⊤ : Subalgebra R S) :=
   let equivTop : Subalgebra (⊤ : Subalgebra R S) A ≃o Subalgebra S A :=
     { toFun := fun s => { s with algebraMap_mem' := fun r => s.algebraMap_mem ⟨r, trivial⟩ }
-      invFun := fun s => s.restrictScalars _
-      left_inv := fun _ => SetLike.coe_injective rfl
-      right_inv := fun _ => SetLike.coe_injective rfl
+      invFun s := s.restrictScalars _
+      left_inv _ := SetLike.coe_injective rfl
+      right_inv _ := SetLike.coe_injective rfl
       map_rel_iff' := @fun _ _ => Iff.rfl }
   le_antisymm
     (adjoin_le <| show t ⊆ adjoin S t from subset_adjoin)

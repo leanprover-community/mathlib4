@@ -356,8 +356,8 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   toFun τ := {
     toFun := ofPermHomFun a τ
     invFun := ofPermHomFun a τ⁻¹
-    left_inv := fun x ↦ by rw [← ofPermHomFun_mul, inv_mul_cancel, ofPermHomFun_one]
-    right_inv := fun x ↦ by rw [← ofPermHomFun_mul, mul_inv_cancel, ofPermHomFun_one] }
+    left_inv x := by rw [← ofPermHomFun_mul, inv_mul_cancel, ofPermHomFun_one]
+    right_inv x := by rw [← ofPermHomFun_mul, mul_inv_cancel, ofPermHomFun_one] }
   map_one' := ext fun x ↦ ofPermHomFun_one a x
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, ofPermHomFun_mul a σ τ x]
 

@@ -154,7 +154,7 @@ def r₁₂₃ : I × I × I → I := fun ⟨i, j, k⟩ => i + j + k
   I₁₂ := I
   p := fun ⟨i₁, i₂⟩ => i₁ + i₂
   q := fun ⟨i₁₂, i₃⟩ => i₁₂ + i₃
-  hpq := fun _ => rfl
+  hpq _ := rfl
 
 /-- Auxiliary definition for `associator`. -/
 @[reducible] def ρ₂₃ : BifunctorComp₂₃IndexData (r₁₂₃ : _ → I) where
@@ -169,8 +169,8 @@ variable (I) in
 def triangleIndexData : TriangleIndexData (r₁₂₃ : _ → I) (fun ⟨i₁, i₃⟩ => i₁ + i₃) where
   p₁₂ := fun ⟨i₁, i₂⟩ => i₁ + i₂
   p₂₃ := fun ⟨i₂, i₃⟩ => i₂ + i₃
-  hp₁₂ := fun _ => rfl
-  hp₂₃ := fun _ => (add_assoc _ _ _).symm
+  hp₁₂ _ := rfl
+  hp₂₃ _ := (add_assoc _ _ _).symm
   h₁ := add_zero
   h₃ := zero_add
 

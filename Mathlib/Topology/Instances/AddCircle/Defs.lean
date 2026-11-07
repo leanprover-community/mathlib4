@@ -433,7 +433,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
 @[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
     OpenPartialHomeomorph 𝕜 (AddCircle p) where
   toFun := (↑)
-  invFun := fun x ↦ equivIco p a x
+  invFun x := equivIco p a x
   source := Ioo a (a + p)
   target := {↑a}ᶜ
   map_source' := by

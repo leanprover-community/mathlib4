@@ -147,7 +147,7 @@ noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →�
         · rw [hi.dist_eq, hi.dist_eq]
           simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
       hi.continuous with
-    norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
+    norm_map x := by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
 
 @[simp] lemma coe_affineIsometryOfStrictConvexSpace (hi : Isometry f) :
     ⇑hi.affineIsometryOfStrictConvexSpace = f := rfl

@@ -716,7 +716,7 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
 def submodule_torsionBy_orderIso (a : R) :
     Submodule (R ⧸ R ∙ a) (torsionBy R M a) ≃o Submodule R (torsionBy R M a) :=
   { restrictScalarsEmbedding R (R ⧸ R ∙ a) (torsionBy R M a) with
-    invFun := fun p ↦
+    invFun p :=
       { carrier := p
         add_mem' := add_mem
         zero_mem' := p.zero_mem

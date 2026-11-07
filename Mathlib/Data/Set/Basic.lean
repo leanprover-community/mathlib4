@@ -81,7 +81,7 @@ protected lemma mem_bijective : Bijective fun s : Set α ↦ (· ∈ s) := memEq
 
 instance instDistribLattice : DistribLattice (Set α) where
   le := (· ≤ ·)
-  lt := fun s t => s ⊆ t ∧ ¬t ⊆ s
+  lt s t := s ⊆ t ∧ ¬t ⊆ s
   sup := (· ∪ ·)
   inf := (· ∩ ·)
   le_refl _ _ := id

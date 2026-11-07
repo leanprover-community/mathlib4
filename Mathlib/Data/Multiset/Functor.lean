@@ -68,7 +68,7 @@ def traverse : Multiset α' → F (Multiset β') := by
 
 instance : Monad Multiset :=
   { Multiset.functor with
-    pure := fun x ↦ {x}
+    pure x := {x}
     bind := @bind }
 
 @[simp]

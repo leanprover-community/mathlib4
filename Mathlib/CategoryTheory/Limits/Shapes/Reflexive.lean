@@ -276,10 +276,10 @@ namespace WalkingParallelPair
 /-- The inclusion functor forgetting the common section -/
 @[simps!]
 def inclusionWalkingReflexivePair : WalkingParallelPair ⥤ WalkingReflexivePair where
-  obj := fun x => match x with
+  obj x := match x with
     | one => WalkingReflexivePair.zero
     | zero => WalkingReflexivePair.one
-  map := fun f => match f with
+  map f := match f with
     | .left => WalkingReflexivePair.Hom.left
     | .right => WalkingReflexivePair.Hom.right
     | .id _ => WalkingReflexivePair.Hom.id _
@@ -409,7 +409,7 @@ variable {F G : WalkingReflexivePair ⥤ C}
 set_option backward.privateInPublic true in
 /-- A constructor for natural transformations between functors from `WalkingReflexivePair`. -/
 def mkNatTrans : F ⟶ G where
-  app := fun x ↦ match x with
+  app x := match x with
     | zero => e₀
     | one => e₁
   naturality _ _ f := by

@@ -51,7 +51,7 @@ variable {α β : Type u} [LinearOrder α] [LinearOrder β] {δ : Sort v}
 isomorphism. -/
 @[instance_reducible]
 def OrderType.instSetoid : Setoid LinOrd where
-  r := fun lin_ord₁ lin_ord₂ ↦ Nonempty (lin_ord₁ ≃o lin_ord₂)
+  r lin_ord₁ lin_ord₂ := Nonempty (lin_ord₁ ≃o lin_ord₂)
   iseqv := ⟨fun _ ↦ ⟨.refl _⟩, fun ⟨e⟩ ↦ ⟨e.symm⟩, fun ⟨e₁⟩ ⟨e₂⟩ ↦ ⟨e₁.trans e₂⟩⟩
 
 /-- `OrderType.{u}` is the type of linear orders in `Type u`, up to order isomorphism. -/

@@ -218,9 +218,9 @@ protected theorem zero_mul : ∀ x : EReal, 0 * x = 0
 
 instance : MulZeroOneClass EReal where
   one_mul := EReal.one_mul
-  mul_one := fun x => by rw [EReal.mul_comm, EReal.one_mul]
+  mul_one x := by rw [EReal.mul_comm, EReal.one_mul]
   zero_mul := EReal.zero_mul
-  mul_zero := fun x => by rw [EReal.mul_comm, EReal.zero_mul]
+  mul_zero x := by rw [EReal.mul_comm, EReal.zero_mul]
 
 /-! ### Real coercion -/
 

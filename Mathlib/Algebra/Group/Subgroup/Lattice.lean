@@ -262,13 +262,13 @@ instance : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
+    bot_le S _x hx := (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
-    le_top := fun _S x _hx => mem_top x
+    le_top _S x _hx := mem_top x
     inf := (· ⊓ ·)
-    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _a _b _x => And.left
-    inf_le_right := fun _a _b _x => And.right }
+    le_inf _a _b _c ha hb _x hx := ⟨ha hx, hb hx⟩
+    inf_le_left _a _b _x := And.left
+    inf_le_right _a _b _x := And.right }
 
 @[to_additive]
 theorem mem_sup_left {S T : Subgroup G} : ∀ {x : G}, x ∈ S → x ∈ S ⊔ T :=

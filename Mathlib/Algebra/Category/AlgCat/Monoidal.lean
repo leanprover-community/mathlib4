@@ -100,10 +100,10 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgCat.{u} R) :=
     (forget₂ (AlgCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _
       εIso := Iso.refl _
-      associator_eq := fun _ _ _ =>
+      associator_eq _ _ _ :=
         ModuleCat.hom_ext <| TensorProduct.ext_threefold (fun _ _ _ => rfl)
-      leftUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
-      rightUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl) }
+      leftUnitor_eq _ := ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
+      rightUnitor_eq _ := ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl) }
 
 /-- `forget₂ (AlgCat R) (ModuleCat R)` as a monoidal functor. -/
 example : (forget₂ (AlgCat R) (ModuleCat R)).Monoidal := inferInstance

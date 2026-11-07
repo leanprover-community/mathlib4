@@ -83,7 +83,7 @@ def Limits.coneOfSectionCompYoneda (F : J ⥤ Cᵒᵖ) (X : C)
     (s : (F ⋙ yoneda.obj X).sections) : Cone F where
   pt := Opposite.op X
   π := {
-    app := fun j => (s.val j).op
+    app j := (s.val j).op
     naturality _ _ f := by simp [(s.property f).symm] }
 
 instance yoneda_preservesLimit (F : J ⥤ Cᵒᵖ) (X : C) :
@@ -129,7 +129,7 @@ def Limits.coneOfSectionCompCoyoneda (F : J ⥤ C) (X : Cᵒᵖ)
     (s : (F ⋙ coyoneda.obj X).sections) : Cone F where
   pt := X.unop
   π := {
-    app := fun j => s.val j
+    app j := s.val j
     naturality _ _ f := by simp [(s.property f).symm] }
 
 instance coyoneda_preservesLimit (F : J ⥤ C) (X : Cᵒᵖ) :

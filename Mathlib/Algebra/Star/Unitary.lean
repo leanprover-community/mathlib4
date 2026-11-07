@@ -384,8 +384,8 @@ def mapEquiv (f : R ≃⋆* S) : unitary R ≃⋆* unitary S :=
   { map f.toStarMonoidHom with
     toFun := map f.toStarMonoidHom
     invFun := map f.symm.toStarMonoidHom
-    left_inv := fun _ ↦ Subtype.ext <| f.left_inv _
-    right_inv := fun _ ↦ Subtype.ext <| f.right_inv _ }
+    left_inv _ := Subtype.ext <| f.left_inv _
+    right_inv _ := Subtype.ext <| f.right_inv _ }
 
 @[simp]
 lemma mapEquiv_refl : mapEquiv (.refl R) = .refl (unitary R) := rfl

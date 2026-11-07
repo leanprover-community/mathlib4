@@ -134,7 +134,7 @@ def isoMk (app : ∀ (X : Cᵒᵖ), M₁.obj X ≅ M₂.obj X)
   hom := { app := fun X ↦ (app X).hom }
   inv :=
     { app := fun X ↦ (app X).inv
-      naturality := fun {X Y} f ↦ by
+      naturality {X Y} f := by
         rw [← cancel_epi (app X).hom, ← reassoc_of% (naturality f), Iso.hom_inv_id_map,
           Category.comp_id, Iso.hom_inv_id_assoc] }
 
@@ -169,7 +169,7 @@ noncomputable def toPresheaf : PresheafOfModules.{v} R ⥤ Cᵒᵖ ⥤ Ab where
   obj M := M.presheaf
   map f :=
     { app := fun X ↦ AddCommGrpCat.ofHom <| AddMonoidHom.mk' (Hom.app f X) (by simp)
-      naturality := fun X Y g ↦ by ext x; exact naturality_apply f g x }
+      naturality X Y g := by ext x; exact naturality_apply f g x }
 
 @[simp]
 lemma toPresheaf_obj_coe (X : Cᵒᵖ) :
@@ -224,7 +224,7 @@ noncomputable def homMk (φ : M₁.presheaf ⟶ M₂.presheaf)
     { toFun := φ.app X
       map_add' := by simp +instances
       map_smul' := hφ X }
-  naturality := fun f ↦ by
+  naturality f := by
     ext x
     congrm $(φ.naturality f) x
 
@@ -237,21 +237,21 @@ variable (M₁ M₂) in
 instance : Neg (M₁ ⟶ M₂) where
   neg f :=
     { app := fun X ↦ -f.app X
-      naturality := fun {X Y} h ↦ by
+      naturality {X Y} h := by
         ext x
         simp [← naturality_apply] }
 
 instance : Add (M₁ ⟶ M₂) where
   add f g :=
     { app := fun X ↦ f.app X + g.app X
-      naturality := fun {X Y} h ↦ by
+      naturality {X Y} h := by
         ext x
         simp [← naturality_apply] }
 
 instance : Sub (M₁ ⟶ M₂) where
   sub f g :=
     { app := fun X ↦ f.app X - g.app X
-      naturality := fun {X Y} h ↦ by
+      naturality {X Y} h := by
         ext x
         simp [← naturality_apply] }
 
@@ -364,7 +364,7 @@ noncomputable def unitHomEquiv (M : PresheafOfModules R) :
   invFun s :=
     { app := fun X ↦ ModuleCat.ofHom
         ((LinearMap.ringLmapEquivSelf (R.obj X) ℤ (M.obj X)).symm (s.val X))
-      naturality := fun {X Y} f ↦ by
+      naturality {X Y} f := by
         ext
         dsimp
         change R.map f 1 • s.eval Y = M.map f (1 • s.eval X)

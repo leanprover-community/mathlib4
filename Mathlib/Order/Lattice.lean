@@ -223,13 +223,13 @@ def Lattice.mk' {α : Type*} [Max α] [Min α] (sup_comm : ∀ a b : α, a ⊔ b
     semilatticeSup_mk'_partialOrder_eq_semilatticeInf_mk'_partialOrder _ _ _ _ _ _
       sup_inf_self inf_sup_self
   { semilatt_sup_inst, semilatt_inf_inst with
-    inf_le_left := fun a b => by
+    inf_le_left a b := by
       rw [partial_order_eq]
       apply inf_le_left,
-    inf_le_right := fun a b => by
+    inf_le_right a b := by
       rw [partial_order_eq]
       apply inf_le_right,
-    le_inf := fun a b c => by
+    le_inf a b c := by
       rw [partial_order_eq]
       apply le_inf }
 

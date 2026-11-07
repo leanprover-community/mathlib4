@@ -127,13 +127,13 @@ variable {C : Type u} [Category.{v} C]
 @[instance_reducible]
 noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
     Groupoid.{v} C where
-  inv := fun f => CategoryTheory.inv f
+  inv f := CategoryTheory.inv f
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
 @[instance_reducible]
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
     Groupoid.{v} C where
-  inv := fun f => CategoryTheory.inv f
+  inv f := CategoryTheory.inv f
 
 /-- A category with a unique morphism between any two objects is a groupoid -/
 @[instance_reducible]
@@ -174,8 +174,8 @@ section
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
     Groupoid.{max u v} (∀ i : I, J i) where
   inv f := fun i : I => Groupoid.inv (f i)
-  comp_inv := fun f => by funext i; apply Groupoid.comp_inv
-  inv_comp := fun f => by funext i; apply Groupoid.inv_comp
+  comp_inv f := by funext i; apply Groupoid.comp_inv
+  inv_comp f := by funext i; apply Groupoid.inv_comp
 
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β) where

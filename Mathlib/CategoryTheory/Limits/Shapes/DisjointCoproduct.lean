@@ -250,7 +250,7 @@ theorem initialMonoClass_of_coproductsDisjoint [BinaryCoproductsDisjoint C] :
   isInitial_mono_from X hI :=
     .of_binaryCoproductDisjoint_left (CategoryTheory.CategoryStruct.id X)
       { desc := fun s : BinaryCofan _ _ => s.inr
-        fac := fun _s j =>
+        fac _s j :=
           Discrete.casesOn j fun j => WalkingPair.casesOn j (hI.hom_ext _ _) (id_comp _)
         uniq := fun (_s : BinaryCofan _ _) _m w =>
           (id_comp _).symm.trans (w ⟨WalkingPair.right⟩) }

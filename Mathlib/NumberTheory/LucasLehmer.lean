@@ -287,12 +287,12 @@ theorem one_snd : (1 : X q).2 = 0 :=
 
 instance : Monoid (X q) :=
   { (inferInstance : Mul (X q)), (inferInstance : One (X q)) with
-    mul_assoc := fun x y z => by ext <;> dsimp <;> ring
-    one_mul := fun x => by ext <;> simp
-    mul_one := fun x => by ext <;> simp }
+    mul_assoc x y z := by ext <;> dsimp <;> ring
+    one_mul x := by ext <;> simp
+    mul_one x := by ext <;> simp }
 
 instance : NatCast (X q) where
-    natCast := fun n => ⟨n, 0⟩
+    natCast n := ⟨n, 0⟩
 
 @[simp] theorem fst_natCast (n : ℕ) : (n : X q).fst = (n : ZMod q) := rfl
 
@@ -310,10 +310,10 @@ instance : AddGroupWithOne (X q) :=
   { (inferInstance : Monoid (X q)), (inferInstance : AddCommGroup (X q)),
       (inferInstance : NatCast (X q)) with
     natCast_zero := by ext <;> simp
-    natCast_succ := fun _ ↦ by ext <;> simp
-    intCast := fun n => ⟨n, 0⟩
-    intCast_ofNat := fun n => by ext <;> simp
-    intCast_negSucc := fun n => by ext <;> simp }
+    natCast_succ _ := by ext <;> simp
+    intCast n := ⟨n, 0⟩
+    intCast_ofNat n := by ext <;> simp
+    intCast_negSucc n := by ext <;> simp }
 
 theorem left_distrib (x y z : X q) : x * (y + z) = x * y + x * z := by
   ext <;> dsimp <;> ring
@@ -326,12 +326,12 @@ instance : Ring (X q) :=
       (inferInstance : Monoid (X q)) with
     left_distrib := left_distrib
     right_distrib := right_distrib
-    mul_zero := fun _ ↦ by ext <;> simp
-    zero_mul := fun _ ↦ by ext <;> simp }
+    mul_zero _ := by ext <;> simp
+    zero_mul _ := by ext <;> simp }
 
 instance : CommRing (X q) :=
   { (inferInstance : Ring (X q)) with
-    mul_comm := fun _ _ ↦ by ext <;> dsimp <;> ring }
+    mul_comm _ _ := by ext <;> dsimp <;> ring }
 
 instance [Fact (1 < (q : ℕ))] : Nontrivial (X q) :=
   ⟨⟨0, 1, ne_of_apply_ne Prod.fst zero_ne_one⟩⟩

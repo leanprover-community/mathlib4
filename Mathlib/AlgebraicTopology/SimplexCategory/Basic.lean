@@ -174,7 +174,7 @@ def mkOfLeComp {n} (i j k : Fin (n + 1)) (h₁ : i ≤ j) (h₂ : j ≤ k) :
 def subinterval {n} (j l : ℕ) (hjl : j + l ≤ n) :
     ⦋l⦌ ⟶ ⦋n⦌ :=
   SimplexCategory.mkHom {
-    toFun := fun i => ⟨i.1 + j, (by lia)⟩
+    toFun i := ⟨i.1 + j, (by lia)⟩
     monotone' := fun i i' hii' => by simpa only [Fin.mk_le_mk, add_le_add_iff_right] using! hii'
   }
 
@@ -714,9 +714,9 @@ def orderIsoOfIso {x y : SimplexCategory} (e : x ≅ y) : Fin (x.len + 1) ≃o F
   Equiv.toOrderIso
     { toFun := e.hom.toOrderHom
       invFun := e.inv.toOrderHom
-      left_inv := fun i => by
+      left_inv i := by
         simpa only using! congr($(e.hom_inv_id).toOrderHom i)
-      right_inv := fun i => by
+      right_inv i := by
         simpa only using! congr($(e.inv_hom_id).toOrderHom i) }
     e.hom.toOrderHom.monotone e.inv.toOrderHom.monotone
 

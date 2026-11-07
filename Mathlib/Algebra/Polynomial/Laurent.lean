@@ -496,7 +496,7 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
       refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
         mul_one]
-    exists_of_eq := fun {f g} => by
+    exists_of_eq {f g} := by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl
       exact ⟨1, rfl⟩ }

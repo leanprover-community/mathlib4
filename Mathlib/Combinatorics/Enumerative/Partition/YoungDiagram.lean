@@ -66,7 +66,7 @@ def equivPartition {n : ℕ} : { μ : YoungDiagram // μ.card = n } ≃ Nat.Part
   toFun μ := toPartition μ μ.2
   invFun p := ⟨ofPartition p, card_ofPartition p⟩
   left_inv := fun ⟨_, h⟩ => Subtype.mk_eq_mk.mpr (ofPartition_toPartition h)
-  right_inv := fun _ => toPartition_ofPartition
+  right_inv _ := toPartition_ofPartition
 
 end YoungDiagram
 

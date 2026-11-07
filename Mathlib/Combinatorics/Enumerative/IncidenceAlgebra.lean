@@ -217,18 +217,18 @@ end Mul
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instAddCommMonoid
-  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
-  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
-  left_distrib := fun f g h ↦ by
+  zero_mul f := by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
+  mul_zero f := by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
+  left_distrib f g h := by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ left_distrib _ _ _) sum_add_distrib
-  right_distrib := fun f g h ↦ by
+  right_distrib f g h := by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ right_distrib _ _ _) sum_add_distrib
 
 instance instNonAssocSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
     [NonAssocSemiring 𝕜] : NonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonUnitalNonAssocSemiring
-  one_mul := fun f ↦ by ext; simp [*]
-  mul_one := fun f ↦ by ext; simp [*]
+  one_mul f := by ext; simp [*]
+  mul_one f := by ext; simp [*]
 
 instance instSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] :
     Semiring (IncidenceAlgebra 𝕜 α) where

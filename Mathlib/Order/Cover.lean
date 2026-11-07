@@ -469,8 +469,8 @@ theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
 
 @[to_dual covBy_iff_lt_iff_le_right]
 theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
-  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
-  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_gt hx⟩
+  mp hx _z := ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr H := ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_gt hx⟩
 
 @[to_dual covBy_iff_le_iff_lt_right]
 theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by

@@ -116,7 +116,7 @@ structure State where mk ::
 
 instance : Inhabited State :=
   ⟨{  ac := 0
-      rs := fun _ => 0 }⟩
+      rs _ := 0 }⟩
 
 /-- This is similar to the `c` function (3.8), but for registers only. -/
 @[simp]

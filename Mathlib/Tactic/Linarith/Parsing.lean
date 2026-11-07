@@ -58,7 +58,7 @@ We don't need to prove anything about this addition, as it is only used in meta 
 -/
 local instance {α β : Type*} {c : α → α → Ordering} [Add β] [Zero β] [DecidableEq β] :
     Add (TreeMap α β c) where
-  add := fun f g => (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
+  add f g := (f.mergeWith (fun _ b b' => b + b') g).filter (fun _ b => b ≠ 0)
 
 namespace Mathlib.Tactic.Linarith
 

@@ -59,13 +59,13 @@ noncomputable def mvPolynomialSupportLEEquiv
         support := {m ∈ monoms i | ∃ hm : m ∈ monoms i, p ⟨i, ⟨m, hm⟩⟩ ≠ 0},
         mem_support_toFun := by simp },
       fun i => Finset.filter_subset _ _⟩,
-    left_inv := fun p => by
+    left_inv p := by
       ext i m
       simp only [ne_eq, exists_prop, dite_eq_ite, Finsupp.coe_mk, ite_eq_left_iff]
       intro hm
       have : m ∉ (p.1 i).support := fun h => hm (p.2 i h)
       simpa [eq_comm, MvPolynomial.mem_support_iff] using this
-    right_inv := fun p => by ext; simp }
+    right_inv p := by ext; simp }
 
 @[simp]
 theorem MvPolynomialSupportLEEquiv_symm_apply_coeff [DecidableEq κ] [CommRing R] [DecidableEq R]

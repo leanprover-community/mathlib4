@@ -352,8 +352,8 @@ theorem ContinuousLinearMap.isBoundedBilinearMap (f : E →L[𝕜] F →L[𝕜] 
     IsBoundedBilinearMap 𝕜 fun x : E × F => f x.1 x.2 :=
   { add_left := f.map_add₂
     smul_left := f.map_smul₂
-    add_right := fun x => (f x).map_add
-    smul_right := fun c x => (f x).map_smul c
+    add_right x := (f x).map_add
+    smul_right c x := (f x).map_smul c
     bound :=
       ⟨max ‖f‖ 1, zero_lt_one.trans_le (le_max_right _ _), fun x y =>
         (f.le_opNorm₂ x y).trans <| by

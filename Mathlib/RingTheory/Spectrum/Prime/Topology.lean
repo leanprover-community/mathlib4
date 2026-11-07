@@ -1299,7 +1299,7 @@ def closedPoint : PrimeSpectrum R :=
 
 instance : OrderTop (PrimeSpectrum R) where
   top := closedPoint R
-  le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
+  le_top _ := le_maximalIdeal Ideal.IsPrime.ne_top'
 
 instance [IsDomain R] : BoundedOrder (PrimeSpectrum R) where
 

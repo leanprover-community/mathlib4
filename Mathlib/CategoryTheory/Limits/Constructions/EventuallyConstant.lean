@@ -106,7 +106,7 @@ noncomputable def cone : Cone F where
   pt := F.obj i₀
   π :=
     { app := h.coneπApp
-      naturality := fun j j' φ ↦ by
+      naturality j j' φ := by
         dsimp
         rw [id_comp]
         let i := IsCofiltered.min i₀ j
@@ -216,7 +216,7 @@ noncomputable def cocone : Cocone F where
   pt := F.obj i₀
   ι :=
     { app := h.coconeιApp
-      naturality := fun j j' φ ↦ by
+      naturality j j' φ := by
         dsimp
         rw [comp_id]
         let i := IsFiltered.max i₀ j'

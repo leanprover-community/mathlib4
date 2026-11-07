@@ -611,9 +611,9 @@ def limYoneda :
 
 /-- The constant functor and limit functor are adjoint to each other -/
 def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
-  homEquiv := fun c g ↦
+  homEquiv c g :=
     { toFun := fun f => limit.lift _ ⟨c, f⟩
-      invFun := fun f =>
+      invFun f :=
         { app := fun _ => f ≫ limit.π _ _ }
       left_inv := by cat_disch
       right_inv := by cat_disch }
@@ -781,10 +781,10 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
 /-- The colimit functor and constant functor are adjoint to each other
 -/
 def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
-  homEquiv := fun f c ↦
+  homEquiv f c :=
     { toFun := fun g =>
         { app := fun _ => colimit.ι _ _ ≫ g }
-      invFun := fun g => colimit.desc _ ⟨_, g⟩
+      invFun g := colimit.desc _ ⟨_, g⟩
       left_inv := by cat_disch
       right_inv := by cat_disch }
   unit := { app := fun g => { app := colimit.ι _ } }

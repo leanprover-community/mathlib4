@@ -304,7 +304,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     exact cons g a.1
       { head := a.2
         toList := l
-        mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
+        mem_set _ _ h := mem_set _ _ (List.mem_cons_of_mem _ h),
         chain := (List.isChain_cons.1 chain).2 }
       (mem_set a.1 a.2 List.mem_cons_self)
       (by simpa using (List.isChain_cons.1 chain).1)
@@ -449,8 +449,8 @@ theorem unitsSMul_neg (u : ℤˣ) (w : NormalWord d) :
 noncomputable def unitsSMulEquiv : NormalWord d ≃ NormalWord d :=
   { toFun := unitsSMul φ 1
     invFun := unitsSMul φ (-1),
-    left_inv := fun _ => by rw [unitsSMul_neg]
-    right_inv := fun w => by convert! unitsSMul_neg _ _ w; simp }
+    left_inv _ := by rw [unitsSMul_neg]
+    right_inv w := by convert! unitsSMul_neg _ _ w; simp }
 
 set_option backward.isDefEq.respectTransparency false in
 theorem unitsSMul_one_group_smul (g : A) (w : NormalWord d) :
@@ -582,9 +582,9 @@ variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
 noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
   { toFun := fun g => g • empty,
-    invFun := fun w => w.prod φ,
-    left_inv := fun g => by simp [prod_smul]
-    right_inv := fun w => by simp }
+    invFun w := w.prod φ,
+    left_inv g := by simp [prod_smul]
+    right_inv w := by simp }
 
 theorem prod_injective : Injective
     (fun w => w.prod φ : NormalWord d → HNNExtension G A B φ) :=

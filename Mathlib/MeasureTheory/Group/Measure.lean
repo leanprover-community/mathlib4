@@ -920,8 +920,8 @@ See Note [lower instance priority] -/
 See Note [lower instance priority] -/]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
-        set_mem := fun _ => mem_univ _
-        finite := fun n => IsCompact.measure_lt_top <| isCompact_compactCovering G n
+        set_mem _ := mem_univ _
+        finite n := IsCompact.measure_lt_top <| isCompact_compactCovering G n
         spanning := iUnion_compactCovering G }⟩⟩
 
 @[to_additive]

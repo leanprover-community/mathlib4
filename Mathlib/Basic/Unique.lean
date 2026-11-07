@@ -166,7 +166,7 @@ theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α)
   rfl
 
 instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
-  uniq := fun _ ↦ funext fun _ ↦ Unique.eq_default _
+  uniq _ := funext fun _ ↦ Unique.eq_default _
 
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where

@@ -95,7 +95,7 @@ between `M₂` and `M₃`. -/
 @[simps]
 protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →ₗ[R] I → M₃ :=
   { f.toAddMonoidHom.compLeft I with
-    toFun := fun h => f ∘ h
+    toFun h := f ∘ h
     map_smul' := fun c h => by
       ext x
       exact f.map_smul' c (h x) }
@@ -408,8 +408,8 @@ variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
 def piCongrRight (e : (i : ι) → φ i ≃ₗ[R] ψ i) : ((i : ι) → φ i) ≃ₗ[R] (i : ι) → ψ i :=
   { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
-    toFun := fun f i => e i (f i)
-    invFun := fun f i => (e i).symm (f i)
+    toFun f i := e i (f i)
+    invFun f i := (e i).symm (f i)
     map_smul' := fun c f => by ext; simp }
 
 @[simp]

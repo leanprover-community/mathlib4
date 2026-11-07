@@ -38,7 +38,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l l₁ l₂ : L
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
-    uniq := fun l =>
+    uniq l :=
       match l with
       | [] => rfl
       | a :: _ => isEmptyElim a }

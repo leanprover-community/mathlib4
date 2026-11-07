@@ -36,10 +36,10 @@ Almost no monoid is actually present in this file: most assumptions have been ge
 open Function
 
 instance Nat.instMulLeftMono : MulLeftMono ℕ where
-  elim := fun _ _ _ h => mul_le_mul_left _ h
+  elim _ _ _ h := mul_le_mul_left _ h
 
 instance Int.instAddLeftMono : AddLeftMono ℤ where
-  elim := fun _ _ _ h => Int.add_le_add_left h _
+  elim _ _ _ h := Int.add_le_add_left h _
 
 variable {α β : Type*} {a b c d e f : α}
 

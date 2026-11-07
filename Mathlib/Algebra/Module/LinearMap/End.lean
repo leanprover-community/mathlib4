@@ -84,11 +84,11 @@ instance instSemiring : Semiring (Module.End R M) where
   __ := addCommMonoid
   mul_zero := comp_zero
   zero_mul := zero_comp
-  left_distrib := fun _ _ _ ↦ comp_add _ _ _
-  right_distrib := fun _ _ _ ↦ add_comp _ _ _
-  natCast := fun n ↦ n • (1 : M →ₗ[R] M)
+  left_distrib _ _ _ := comp_add _ _ _
+  right_distrib _ _ _ := add_comp _ _ _
+  natCast n := n • (1 : M →ₗ[R] M)
   natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
-  natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
+  natCast_succ n := AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
 
 instance : IsNatCastApplyEqSMul (End R M) where
 
@@ -289,9 +289,9 @@ multiplication. -/
 def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribSMul.toLinearMap R R
-    invFun := fun f ↦ MulOpposite.op (f 1)
+    invFun f := MulOpposite.op (f 1)
     left_inv := mul_one
-    right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
+    right_inv _ := LinearMap.ext_ring <| one_mul _ }
 
 /-- The canonical (semi)ring isomorphism from `R` to `Module.End Rᵐᵒᵖ R` induced by the left
 multiplication. -/
@@ -299,9 +299,9 @@ multiplication. -/
 def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribSMul.toLinearMap _ _
-    invFun := fun f ↦ f 1
+    invFun f := f 1
     left_inv := mul_one
-    right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
+    right_inv _ := LinearMap.ext_ring_op <| mul_one _ }
 
 theorem Module.End.natCast_def (n : ℕ) [AddCommMonoid N₁] [Module R N₁] :
     (↑n : Module.End R N₁) = Module.toModuleEnd R N₁ n :=
@@ -397,7 +397,7 @@ This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
 @[simps]
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
-    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
+    toFun v := { applyₗ' R v with toFun := fun f => f v }
     map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
 
 /--

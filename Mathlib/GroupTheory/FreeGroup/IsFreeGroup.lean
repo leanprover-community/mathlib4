@@ -169,11 +169,11 @@ maps from `ι` to an additive group `H` and morphisms from `G` to `H`. -/]
 def lift (b : FreeGroupBasis ι G) : (ι → H) ≃ (G →* H) :=
   FreeGroup.lift.trans
     { toFun := fun f => f.comp b.repr.toMonoidHom
-      invFun := fun f => f.comp b.repr.symm.toMonoidHom
-      left_inv := fun f => by
+      invFun f := f.comp b.repr.symm.toMonoidHom
+      left_inv f := by
         ext
         simp
-      right_inv := fun f => by
+      right_inv f := by
         ext
         simp }
 
@@ -218,9 +218,9 @@ def ofUniqueLift {G : Type u} [Group G] (X : Type u) (of : X → G)
     FreeGroupBasis X G :=
   let lift {H : Type u} [Group H] : (X → H) ≃ (G →* H) :=
     { toFun := fun f => Classical.choose (h f)
-      invFun := fun F => F ∘ of
-      left_inv := fun f => funext (Classical.choose_spec (h f)).left
-      right_inv := fun F => ((Classical.choose_spec (h (F ∘ of))).right F fun _ => rfl).symm }
+      invFun F := F ∘ of
+      left_inv f := funext (Classical.choose_spec (h f)).left
+      right_inv F := ((Classical.choose_spec (h (F ∘ of))).right F fun _ => rfl).symm }
   let lift_of {H : Type u} [Group H] (f : X → H) (a : X) : lift f (of a) = f a :=
     congr($(lift.symm_apply_apply f) a)
   ofLift X of @lift @lift_of

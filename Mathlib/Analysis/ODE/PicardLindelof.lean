@@ -666,9 +666,9 @@ lemma of_time_independent
     (hl : LipschitzOnWith K f (closedBall x₀ a))
     (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) :
     (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a r L K) where
-  lipschitzOnWith := fun _ _ ↦ hl
-  continuousOn := fun _ _ ↦ continuousOn_const
-  norm_le := fun _ _ ↦ hb
+  lipschitzOnWith _ _ := hl
+  continuousOn _ _ := continuousOn_const
+  norm_le _ _ := hb
   mul_max_le := hm
 
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the

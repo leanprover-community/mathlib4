@@ -290,7 +290,7 @@ of `e`.
 `f.val i = true`, and 0 otherwise.
 -/
 def e (i : I) : LocallyConstant C ℤ where
-  toFun := fun f ↦ (if f.val i then 1 else 0)
+  toFun f := (if f.val i then 1 else 0)
   isLocallyConstant := by
     rw [IsLocallyConstant.iff_continuous]
     exact (continuous_of_discreteTopology (f := fun (a : Bool) ↦ (if a then (1 : ℤ) else 0))).comp

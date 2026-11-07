@@ -139,7 +139,7 @@ instance preservesLimitsOfSize_subsingleton (F : C ⥤ D) :
 instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
   preservesLimitsOfShape {J} 𝒥 :=
     {
-      preservesLimit := fun {K} =>
+      preservesLimit {K} :=
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by

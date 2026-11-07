@@ -104,16 +104,16 @@ variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
     bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
-    add_lie := fun x y z => by
+    add_lie x y z := by
       ext
       simp only [zipWith_apply, add_apply, add_lie]
-    lie_add := fun x y z => by
+    lie_add x y z := by
       ext
       simp only [zipWith_apply, add_apply, lie_add]
-    lie_self := fun x => by
+    lie_self x := by
       ext
       simp only [zipWith_apply, lie_self, zero_apply]
-    leibniz_lie := fun x y z => by
+    leibniz_lie x y z := by
       ext
       simp only [zipWith_apply, add_apply]
       apply leibniz_lie }
@@ -143,7 +143,7 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
-    lie_smul := fun c x y => by
+    lie_smul c x y := by
       ext
       simp only [smul_apply, bracket_apply, lie_smul] }
 

@@ -120,8 +120,8 @@ theorem fun_id (q : Q) : rightHom (inl q : D ≀ᵣ Q) = q := by simp
 def equivProd D Q : D ≀ᵣ Q ≃ (Q → D) × Q where
   toFun := fun ⟨d, q⟩ => ⟨d, q⟩
   invFun := fun ⟨d, q⟩ => ⟨d, q⟩
-  left_inv := fun _ => rfl
-  right_inv := fun _ => rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 instance [Finite D] [Finite Q] : Finite (D ≀ᵣ Q) :=
   Finite.of_equiv _ (equivProd D Q).symm

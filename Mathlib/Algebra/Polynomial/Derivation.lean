@@ -60,7 +60,7 @@ variable (R)
 
 /-- The derivation on `R[X]` that takes the value `a` on `X`. -/
 def mkDerivation : A →ₗ[R] Derivation R R[X] A where
-  toFun := fun a ↦ (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
+  toFun a := (LinearMap.toSpanSingleton R[X] A a).compDer derivative'
   map_add' := fun a b ↦ by ext; simp
   map_smul' := fun t a ↦ by ext; simp
 
@@ -83,11 +83,11 @@ lemma mkDerivation_one_eq_derivative (f : R[X]) : mkDerivation R (1 : R[X]) f = 
 def mkDerivationEquiv : A ≃ₗ[R] Derivation R R[X] A :=
   LinearEquiv.symm
     { invFun := mkDerivation R
-      toFun := fun D => D X
+      toFun D := D X
       map_add' := fun _ _ => rfl
       map_smul' := fun _ _ => rfl
-      left_inv := fun _ => derivation_ext <| mkDerivation_X _ _
-      right_inv := fun _ => mkDerivation_X _ _ }
+      left_inv _ := derivation_ext <| mkDerivation_X _ _
+      right_inv _ := mkDerivation_X _ _ }
 
 @[simp] lemma mkDerivationEquiv_apply (a : A) :
     mkDerivationEquiv R a = mkDerivation R a := by

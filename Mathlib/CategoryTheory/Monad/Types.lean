@@ -49,16 +49,16 @@ def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
   functor :=
     { obj X := Kleisli.mk _ X
       map f := ⟨↾f⟩
-      map_id := fun _ => rfl
-      map_comp := fun f g => by
+      map_id _ := rfl
+      map_comp f g := by
         ext
         simp [joinM]
         rfl }
   inverse :=
     { obj X := X.of
       map f x := f.of x
-      map_id := fun _ => rfl
-      map_comp := fun f g => by
+      map_id _ := rfl
+      map_comp f g := by
         dsimp
         ext t
         simp [joinM]

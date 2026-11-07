@@ -207,8 +207,8 @@ def quotientKerEquivOfRightInverse (f : M →* P) (g : P → M) (hf : Function.R
   { kerLift f with
     toFun := kerLift f
     invFun := (↑) ∘ g
-    left_inv := fun x => kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
-    right_inv := fun x => by (conv_rhs => rw [← hf x]); rfl }
+    left_inv x := kerLift_injective _ (by rw [Function.comp_apply, kerLift_mk, hf])
+    right_inv x := by (conv_rhs => rw [← hf x]); rfl }
 
 /-- The first isomorphism theorem for Monoids in the case of a surjective homomorphism.
 
@@ -310,7 +310,7 @@ instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { smul_one := fun _ => congr(Quotient.mk'' $(smul_one _))
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul' ..)) }
+    smul_mul _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul' ..)) }
 
 end Actions
 

@@ -66,14 +66,14 @@ instance distribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ 
 instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α (f i)] :
     SMulWithZero α (∀ i, f i) :=
   { Pi.instSMul with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+    smul_zero _ := funext fun _ => smul_zero _
+    zero_smul _ := funext fun _ => zero_smul _ _ }
 
 instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.smul' with
-    smul_zero := fun _ => funext fun _ => smul_zero _
-    zero_smul := fun _ => funext fun _ => zero_smul _ _ }
+    smul_zero _ := funext fun _ => smul_zero _
+    zero_smul _ := funext fun _ => zero_smul _ _ }
 
 instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero α (f i)] : MulActionWithZero α (∀ i, f i) :=
@@ -102,8 +102,8 @@ instance mulDistribMulAction (α) {m : Monoid α} {n : ∀ i, Monoid <| f i}
     [∀ i, MulDistribMulAction α <| f i] :
     @MulDistribMulAction α (∀ i : I, f i) m (@Pi.monoid I f n) :=
   { Pi.mulAction _ with
-    smul_one := fun _ => funext fun _ => smul_one _
-    smul_mul := fun _ _ _ => funext fun _ => smul_mul' _ _ _ }
+    smul_one _ := funext fun _ => smul_one _
+    smul_mul _ _ _ := funext fun _ => smul_mul' _ _ _ }
 
 instance mulDistribMulAction' {g : I → Type*} {m : ∀ i, Monoid (f i)} {n : ∀ i, Monoid <| g i}
     [∀ i, MulDistribMulAction (f i) (g i)] :

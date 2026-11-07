@@ -123,7 +123,7 @@ The converse of `any_functor_const_on_obj`.
 theorem IsPreconnected.of_any_functor_const_on_obj
     (h : ∀ {α : Type u₁} (F : J ⥤ Discrete α), ∀ j j' : J, F.obj j = F.obj j') :
     IsPreconnected J where
-  iso_constant := fun F j' => ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
+  iso_constant F j' := ⟨NatIso.ofComponents fun j => eqToIso (h F j j')⟩
 
 instance IsPreconnected.prod [IsPreconnected J] [IsPreconnected K] : IsPreconnected (J × K) := by
   refine .of_any_functor_const_on_obj (fun {a} F ⟨j, k⟩ ⟨j', k'⟩ => ?_)
@@ -150,7 +150,7 @@ theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F :
   simpa using
     any_functor_const_on_obj
       { obj := Discrete.mk ∘ F
-        map := fun f => eqToHom (by ext; exact h _ _ f) }
+        map f := eqToHom (by ext; exact h _ _ f) }
       j j'
 
 /-- If `J` is connected, then given any function `F` such that the presence of a
@@ -270,7 +270,7 @@ lemma isConnected_iff_of_equivalence {K : Type u₂} [Category.{v₂} K] (e : J 
 
 /-- If `J` is preconnected, then `Jᵒᵖ` is preconnected as well. -/
 instance isPreconnected_op [IsPreconnected J] : IsPreconnected Jᵒᵖ where
-  iso_constant := fun {α} F X =>
+  iso_constant {α} F X :=
     ⟨NatIso.ofComponents fun Y =>
       eqToIso (Discrete.ext (Discrete.eq_of_hom ((Nonempty.some
         (IsPreconnected.iso_constant (F.rightOp ⋙ (Discrete.opposite α).functor) (unop X))).app

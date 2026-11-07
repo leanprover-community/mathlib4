@@ -157,7 +157,7 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
   inferInstanceAs <| AddCommGroup (M →+ M)
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) where
-  intCast := fun z => z • 1
+  intCast z := z • 1
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]

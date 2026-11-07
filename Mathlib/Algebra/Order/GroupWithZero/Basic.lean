@@ -234,7 +234,7 @@ theorem mulPosMono_iff_mulPosStrictMono [IsRightCancelMulZero α] :
 
 theorem PosMulReflectLT.toPosMulReflectLE [IsLeftCancelMulZero α] [PosMulReflectLT α] :
     PosMulReflectLE α where
-  elim := fun x _ _ h =>
+  elim x _ _ h :=
     h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
       (lt_of_mul_lt_mul_left h' x.2.le).le
 
@@ -244,7 +244,7 @@ theorem posMulReflectLE_iff_posMulReflectLT [IsLeftCancelMulZero α] :
 
 theorem MulPosReflectLT.toMulPosReflectLE [IsRightCancelMulZero α] [MulPosReflectLT α] :
     MulPosReflectLE α where
-  elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
+  elim x _ _ h := h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
     (lt_of_mul_lt_mul_right h' x.2.le).le
 
 theorem mulPosReflectLE_iff_mulPosReflectLT [IsRightCancelMulZero α] :

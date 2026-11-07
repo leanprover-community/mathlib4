@@ -812,20 +812,20 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
   invFun z :=
     { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
       zero := fun i j (hij : j + 1 ≠ i) => dite_eq_right (fun _ => hij (by lia))
-      comm := fun p => by
+      comm p := by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp
         simp only [δ_neg_one_cochain, Cochain.ofHom_v, ComplexShape.up_Rel, Cochain.add_v,
           Homotopy.nullHomotopicMap'_f h₁ h₂] at eq
         rw [dNext_eq _ h₂, prevD_eq _ h₁, eq, dite_eq_left, dite_eq_left] }
-  left_inv := fun ho => by
+  left_inv ho := by
     ext i j
     dsimp
     split_ifs with h
     · rfl
     · rw [ho.zero i j (fun h' => h (by dsimp at h'; lia))]
-  right_inv := fun z => by
+  right_inv z := by
     ext p q hpq
     dsimp [Cochain.ofHomotopy]
     rw [dite_eq_left hpq]

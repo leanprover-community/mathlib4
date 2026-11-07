@@ -284,10 +284,10 @@ def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius
     invFun := map (_root_.frobeniusEquiv R p).symm
-    left_inv := fun f => ext fun n => by
+    left_inv f := ext fun n => by
       rw [frobenius_eq_map_frobenius]
       exact frobeniusEquiv_symm_apply_frobenius R p _
-    right_inv := fun f => ext fun n => by
+    right_inv f := ext fun n => by
       rw [frobenius_eq_map_frobenius]
       exact frobenius_apply_frobeniusEquiv_symm R p _ }
 

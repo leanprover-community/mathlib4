@@ -57,7 +57,7 @@ lemma finitePresentation_iff_exists_presentation :
         R := R
         relation := relation
         var := var
-        linearCombination_var_relation := fun r ↦ by
+        linearCombination_var_relation r := by
           rw [Submodule.ext_iff] at hR
           exact (hR _).1 (Submodule.subset_span ⟨_, rfl⟩)
         toIsPresentation := by

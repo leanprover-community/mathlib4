@@ -178,7 +178,7 @@ instance : AddCommGroup (Poly α) where
   neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
 instance : AddGroupWithOne (Poly α) where
-  natCast := fun n => Poly.const n
+  natCast n := Poly.const n
   intCast := Poly.const
 
 instance : CommRing (Poly α) where

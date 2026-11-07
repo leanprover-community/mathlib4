@@ -136,7 +136,7 @@ noncomputable def measureCaratheodory (m : AddContent ℝ≥0∞ C) (hC : IsSetS
   letI : MeasurableSpace α :=
     (inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty).caratheodory
   { inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem addContent_empty with
-    m_iUnion := fun f hf hd ↦ OuterMeasure.iUnion_eq_of_caratheodory _ hf hd
+    m_iUnion f hf hd := OuterMeasure.iUnion_eq_of_caratheodory _ hf hd
     trim_le := by
       apply le_inducedOuterMeasure.mpr fun s hs ↦ ?_
       have hs_meas : MeasurableSet[(inducedOuterMeasure (fun x _ ↦ m x) hC.empty_mem

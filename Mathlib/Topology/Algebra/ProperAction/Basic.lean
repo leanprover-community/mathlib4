@@ -172,9 +172,9 @@ instance [IsTopologicalGroup G] : ProperSMul G G where
   isProperMap_smul_pair := by
     let Φ : G × G ≃ₜ G × G :=
     { toFun := fun gh ↦ (gh.1 * gh.2, gh.2)
-      invFun := fun gh ↦ (gh.1 * gh.2⁻¹, gh.2)
-      left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by simp }
+      invFun gh := (gh.1 * gh.2⁻¹, gh.2)
+      left_inv _ := by simp
+      right_inv _ := by simp }
     exact Φ.isProperMap
 
 open MulOpposite in
@@ -185,9 +185,9 @@ instance [IsTopologicalGroup G] : ProperSMul Gᵐᵒᵖ G where
   isProperMap_smul_pair := by
     let Φ : Gᵐᵒᵖ × G ≃ₜ G × G :=
     { toFun := fun gh ↦ (gh.2 * (unop gh.1), gh.2)
-      invFun := fun gh ↦ (op (gh.2⁻¹ * gh.1), gh.2)
-      left_inv := fun _ ↦ by simp
-      right_inv := fun _ ↦ by simp }
+      invFun gh := (op (gh.2⁻¹ * gh.1), gh.2)
+      left_inv _ := by simp
+      right_inv _ := by simp }
     exact Φ.isProperMap
 
 /-- Given a closed subgroup `H` of a topological group `G`, the right action of `H` on `G`

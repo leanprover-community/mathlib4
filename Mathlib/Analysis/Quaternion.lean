@@ -51,11 +51,11 @@ theorem inner_def (a b : ℍ) : ⟪a, b⟫ = (a * star b).re :=
 instance : NormedAddCommGroup ℍ :=
   @InnerProductSpace.Core.toNormedAddCommGroup ℝ ℍ _ _ _
     { toInner := inferInstance
-      conj_inner_symm := fun x y => by simp [inner_def, mul_comm]
-      re_inner_nonneg := fun _ => normSq_nonneg
-      definite := fun _ => normSq_eq_zero.1
-      add_left := fun x y z => by simp only [inner_def, add_mul, re_add]
-      smul_left := fun x y r => by simp [inner_def] }
+      conj_inner_symm x y := by simp [inner_def, mul_comm]
+      re_inner_nonneg _ := normSq_nonneg
+      definite _ := normSq_eq_zero.1
+      add_left x y z := by simp only [inner_def, add_mul, re_add]
+      smul_left x y r := by simp [inner_def] }
 
 instance : InnerProductSpace ℝ ℍ :=
   InnerProductSpace.ofCore _
@@ -162,8 +162,8 @@ lemma norm_toLp_equivTuple (x : ℍ) : ‖WithLp.toLp 2 (equivTuple ℝ x)‖ = 
 def linearIsometryEquivTuple : ℍ ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 4) :=
   { (QuaternionAlgebra.linearEquivTuple (-1 : ℝ) (0 : ℝ) (-1 : ℝ)).trans
       (WithLp.linearEquiv 2 ℝ (Fin 4 → ℝ)).symm with
-    toFun := fun a => !₂[a.1, a.2, a.3, a.4]
-    invFun := fun a => ⟨a 0, a 1, a 2, a 3⟩
+    toFun a := !₂[a.1, a.2, a.3, a.4]
+    invFun a := ⟨a 0, a 1, a 2, a 3⟩
     norm_map' := norm_toLp_equivTuple }
 
 @[continuity]

@@ -69,7 +69,7 @@ variable {S : Set α}
 
 lemma mono (hS : BooleanGenerators S) {T : Set α} (hTS : T ⊆ S) : BooleanGenerators T where
   isAtom I hI := hS.isAtom I (hTS hI)
-  finitelyAtomistic := fun s a hs ↦ hS.finitelyAtomistic s a (le_trans hs hTS)
+  finitelyAtomistic s a hs := hS.finitelyAtomistic s a (le_trans hs hTS)
 
 variable [IsCompactlyGenerated α]
 

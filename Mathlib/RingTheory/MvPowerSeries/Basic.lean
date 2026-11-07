@@ -208,7 +208,7 @@ theorem monomial_zero_one : monomial (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 
 instance : AddMonoidWithOne (MvPowerSeries σ R) where
-  natCast := fun n => monomial 0 n
+  natCast n := monomial 0 n
   natCast_zero := by simp [Nat.cast]
   natCast_succ := by simp [Nat.cast, monomial_zero_one]
 
@@ -302,7 +302,7 @@ instance : Semiring (MvPowerSeries σ R) where
 end Semiring
 
 instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
-  mul_comm := fun φ ψ =>
+  mul_comm φ ψ :=
     ext fun n => by
       classical
       simpa only [coeff_mul, mul_comm] using

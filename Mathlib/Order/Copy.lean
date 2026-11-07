@@ -60,7 +60,7 @@ def Lattice.copy (c : Lattice α)
   le := le
   sup := sup
   inf := inf
-  lt := fun a b ↦ le a b ∧ ¬ le b a
+  lt a b := le a b ∧ ¬ le b a
   le_refl := by intros; simp [eq_le]
   le_trans := by intro _ _ _ hab hbc; rw [eq_le] at hab hbc ⊢; exact le_trans hab hbc
   le_antisymm := by intro _ _ hab hba; simp_rw [eq_le] at hab hba; exact le_antisymm hab hba

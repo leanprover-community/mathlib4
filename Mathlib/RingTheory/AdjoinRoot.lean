@@ -697,7 +697,7 @@ where `g` is a monic polynomial of degree `d`. -/
 def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
   .ofEquivFun
     { toFun := fun f i => (modByMonicHom hg f).coeff i
-      invFun := fun c => mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
+      invFun c := mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
       map_add' := fun f₁ f₂ =>
         funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
       map_smul' := fun f₁ f₂ =>
@@ -708,7 +708,7 @@ def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
         simp only [modByMonicHom_mk, sum_modByMonic_coeff hg degree_le_natDegree]
         rw [modByMonic_eq_sub_mul_div, sub_sub_cancel]
         exact dvd_mul_right _ _
-      right_inv := fun x =>
+      right_inv x :=
         funext fun i => by
           nontriviality R
           simp only [modByMonicHom_mk]

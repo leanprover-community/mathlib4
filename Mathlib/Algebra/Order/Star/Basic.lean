@@ -128,7 +128,7 @@ variable [StarOrderedRing R] {x y : R}
 
 -- see note [lower instance priority]
 instance (priority := 100) toIsOrderedAddMonoid : IsOrderedAddMonoid R where
-  add_le_add_left := fun x y hle z ↦ by
+  add_le_add_left x y hle z := by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
     rw [hs.2, add_right_comm]

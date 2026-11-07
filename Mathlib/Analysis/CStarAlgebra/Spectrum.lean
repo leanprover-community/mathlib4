@@ -295,7 +295,7 @@ lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
 See note [lower instance priority] -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
-    map_continuous := fun φ =>
+    map_continuous φ :=
       AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnNorm_apply_le φ) }
 
 scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex

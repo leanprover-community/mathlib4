@@ -147,7 +147,7 @@ variable {α : Type u}
 (`t` is finer than `s`). -/
 instance : PartialOrder (TopologicalSpace α) :=
   { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
-    le := fun s t => ∀ U, IsOpen[t] U → IsOpen[s] U }
+    le s t := ∀ U, IsOpen[t] U → IsOpen[s] U }
 
 protected theorem le_def {α} {t s : TopologicalSpace α} : t ≤ s ↔ IsOpen[s] ≤ IsOpen[t] :=
   Iff.rfl

@@ -222,7 +222,7 @@ variable {α}
 def lift : s.pt ⟶ R.obj (op X) :=
   (hR (op X)).lift (Cone.mk _
     { app := fun j ↦ liftAux hF α s j.hom.unop
-      naturality := fun j j' φ ↦ by
+      naturality j j' φ := by
         simpa using liftAux_map' hF α s j'.hom.unop j.hom.unop (𝟙 _) φ.right.unop
           (Quiver.Hom.op_inj (by simpa using (StructuredArrow.w φ).symm)) })
 

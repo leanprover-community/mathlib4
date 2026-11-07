@@ -32,7 +32,7 @@ def Vector3 (α : Type u) (n : ℕ) : Type u :=
   Fin2 n → α
 
 instance [Inhabited α] : Inhabited (Vector3 α n) where
-  default := fun _ => default
+  default _ := default
 
 namespace Vector3
 

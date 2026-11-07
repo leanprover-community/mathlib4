@@ -363,7 +363,7 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
     Type u ⥤ Type v where
   obj x := m x
   map f := ofHom (_root_.Functor.map f.hom)
-  map_id := fun α => by ext X; apply id_map
+  map_id α := by ext X; apply id_map
   map_comp f g := by
     ext x
     exact comp_map (f := m) f.hom g.hom x

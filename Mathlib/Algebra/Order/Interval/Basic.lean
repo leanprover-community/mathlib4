@@ -240,8 +240,8 @@ instance Interval.mulOneClass [CommMonoid α] [Preorder α] [IsOrderedMonoid α]
 @[to_additive]
 instance Interval.commMonoid [CommMonoid α] [Preorder α] [IsOrderedMonoid α] :
     CommMonoid (Interval α) where
-  mul_comm := fun _ _ => Option.map₂_comm mul_comm
-  mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc
+  mul_comm _ _ := Option.map₂_comm mul_comm
+  mul_assoc _ _ _ := Option.map₂_assoc mul_assoc
 
 namespace NonemptyInterval
 
@@ -486,14 +486,14 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
 instance subtractionCommMonoid {α : Type u}
     [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) where
-  sub_eq_add_neg := fun s t => by
+  sub_eq_add_neg s t := by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact sub_eq_add_neg _ _
-  neg_neg := fun s => by apply NonemptyInterval.ext; exact neg_neg _
-  neg_add_rev := fun s t => by
+  neg_neg s := by apply NonemptyInterval.ext; exact neg_neg _
+  neg_add_rev s t := by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact neg_add_rev _ _
-  neg_eq_of_add := fun s t h => by
+  neg_eq_of_add s t h := by
     obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
     rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
   -- TODO: use a better defeq
@@ -501,14 +501,14 @@ instance subtractionCommMonoid {α : Type u}
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) where
-  div_eq_mul_inv := fun s t => by
+  div_eq_mul_inv s t := by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact div_eq_mul_inv _ _
-  inv_inv := fun s => by apply NonemptyInterval.ext; exact inv_inv _
-  mul_inv_rev := fun s t => by
+  inv_inv s := by apply NonemptyInterval.ext; exact inv_inv _
+  mul_inv_rev s t := by
     refine NonemptyInterval.ext (Prod.ext ?_ ?_) <;>
     exact mul_inv_rev _ _
-  inv_eq_of_mul := fun s t h => by
+  inv_eq_of_mul s t h := by
     obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.mul_eq_one_iff.1 h
     rw [inv_pure, inv_eq_of_mul_eq_one_right hab]
 

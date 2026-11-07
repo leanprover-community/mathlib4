@@ -293,7 +293,7 @@ def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
-      w := fun j => φ.inv_comp_eq.mpr (w j) }
+      w j := φ.inv_comp_eq.mpr (w j) }
 
 /-- To give an isomorphism between cocones, it suffices to give an
 isomorphism between their vertices which commutes with the cocone maps. -/
@@ -303,7 +303,7 @@ def _root_.CategoryTheory.Limits.Cocone.ext {c c' : Cocone F} (φ : c.pt ≅ c'.
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
-      w := fun j => φ.comp_inv_eq.mpr (w j).symm }
+      w j := φ.comp_inv_eq.mpr (w j).symm }
 
 to_dual_for ext := Cocone.ext φ
 to_dual_for ext_hom_hom := Cocone.ext_inv_hom φ
@@ -328,7 +328,7 @@ isomorphism of cocones.
 -/]
 theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIso f.hom] : IsIso f :=
   ⟨⟨{   hom := inv f.hom
-        w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by cat_disch⟩⟩
+        w j := (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by cat_disch⟩⟩
 
 /-- There is a morphism from an extended cone to the original cone. -/
 @[to_dual (attr := simps) /-- There is a morphism from a cocone to its extension. -/]
@@ -469,7 +469,7 @@ def functorialityCompFunctoriality (H : D ⥤ E) :
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
-       w := fun j => G.map_injective (by simpa using t.w j) }, by cat_disch⟩
+       w j := G.map_injective (by simpa using t.w j) }, by cat_disch⟩
 
 @[to_dual]
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
@@ -639,18 +639,18 @@ the category of cocones on the opposite of `F`.
 def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   functor :=
     { obj := fun c => op (Cocone.op c)
-      map := fun {X} {Y} f =>
+      map {X} {Y} f :=
         Quiver.Hom.op
           { hom := f.hom.op
-            w := fun j => by
+            w j := by
               apply Quiver.Hom.unop_inj
               dsimp
               apply CoconeMorphism.w } }
   inverse :=
     { obj := fun c => Cone.unop (unop c)
-      map := fun {X} {Y} f =>
+      map {X} {Y} f :=
         { hom := f.unop.hom.unop
-          w := fun j => by
+          w j := by
             apply Quiver.Hom.op_inj
             dsimp
             apply ConeMorphism.w } }

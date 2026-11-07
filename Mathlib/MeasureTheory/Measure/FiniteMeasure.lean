@@ -936,7 +936,7 @@ lemma map_apply (ν : FiniteMeasure Ω) {f : Ω → Ω'} (f_mble : Measurable f)
 /-- The push-forward of a finite measure by a function between measurable spaces as a linear map. -/
 noncomputable def mapHom {f : Ω → Ω'} (f_mble : Measurable f) :
     FiniteMeasure Ω →ₗ[ℝ≥0] FiniteMeasure Ω' where
-  toFun := fun ν ↦ ν.map f
+  toFun ν := ν.map f
   map_add' := map_add f_mble
   map_smul' m _ := map_smul m f_mble.aemeasurable
 
@@ -977,7 +977,7 @@ lemma continuous_map {f : Ω → Ω'} (f_cont : Continuous f) :
 a continuous linear map. -/
 noncomputable def mapCLM {f : Ω → Ω'} (f_cont : Continuous f) :
     FiniteMeasure Ω →L[ℝ≥0] FiniteMeasure Ω' where
-  toFun := fun ν ↦ ν.map f
+  toFun ν := ν.map f
   map_add' := map_add f_cont.measurable
   map_smul' m _ := map_smul m f_cont.aemeasurable
 

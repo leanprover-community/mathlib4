@@ -65,9 +65,9 @@ def asLimitAux : IsLimit S.asLimitConeAux :=
 def asLimitCone : Cone S.diagram where
   pt := S
   π := {
-    app := fun n ↦ (lightToProfiniteFullyFaithful.preimageIso <|
+    app n := (lightToProfiniteFullyFaithful.preimageIso <|
       (Cone.forget _).mapIso S.isoMapCone).inv ≫ S.asLimitConeAux.π.app n
-    naturality := fun _ _ _ ↦ by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
+    naturality _ _ _ := by simp only [Category.assoc, S.asLimitConeAux.w]; rfl }
 
 /-- `S.asLimitCone` is indeed a limit cone. -/
 def asLimit : IsLimit S.asLimitCone := S.asLimitAux.ofIsoLimit <|

@@ -77,7 +77,7 @@ theorem sym2_image [DecidableEq β] (f : α → β) (s : Finset α) :
 
 instance _root_.Sym2.instFintype [Fintype α] : Fintype (Sym2 α) where
   elems := Finset.univ.sym2
-  complete := fun x ↦ by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
+  complete x := by rw [mem_sym2_iff]; exact (fun a _ ↦ mem_univ a)
 
 -- Note(kmill): Using a default argument to make this simp lemma more general.
 @[simp]

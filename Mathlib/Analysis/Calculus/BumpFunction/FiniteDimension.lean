@@ -471,12 +471,12 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
   have IR : ∀ R : ℝ, 1 < R → 0 < (R - 1) / (R + 1) := by intro R hR; apply div_pos <;> linarith
   exact
     { toFun := fun R x => if 1 < R then y ((R - 1) / (R + 1)) (((R + 1) / 2)⁻¹ • x) else 0
-      mem_Icc := fun R x => by
+      mem_Icc R x := by
         push _ ∈ _
         split_ifs with h
         · refine ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]
-      symmetric := fun R x => by
+      symmetric R x := by
         split_ifs
         · simp only [y_neg, smul_neg]
         · rfl
@@ -506,7 +506,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           have A : 0 < (R - 1) / (R + 1) := by apply div_pos <;> linarith
           have B : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
           simp only [prodMk_mem_set_prod_eq, mem_Ioo, mem_univ, and_true, A, B]
-      eq_one := fun R hR x hx => by
+      eq_one R hR x hx := by
         have A : 0 < R + 1 := by linarith
         simp only [hR, ite_true]
         apply y_eq_one_of_mem_closedBall (IR R hR)
@@ -515,7 +515,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         calc
           2 / (R + 1) * ‖x‖ ≤ 2 / (R + 1) := mul_le_of_le_one_right (by positivity) hx
           _ = 1 - (R - 1) / (R + 1) := by field
-      support := fun R hR => by
+      support R hR := by
         have A : 0 < (R + 1) / 2 := by linarith
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, ite_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,

@@ -165,8 +165,8 @@ def mk' (carrier : Set R)
     { r := fun x y ↦ x - y ∈ carrier
       iseqv :=
       { refl := fun x ↦ by simpa using zero_mem
-        symm := fun h ↦ by simpa using neg_mem h
-        trans := fun {x y z} h1 h2 ↦ by
+        symm h := by simpa using neg_mem h
+        trans {x y z} h1 h2 := by
           simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
       mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
         rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; abel]

@@ -229,11 +229,11 @@ def compatibleRingOfRing (R : Type*) [Add R] [Mul R] [Neg R] [One R] [Zero R] :
       | _, .neg => fun x => -x 0
       | _, .zero => fun _ => 0
       | _, .one => fun _ => 1
-    funMap_add := fun _ => rfl,
-    funMap_mul := fun _ => rfl,
-    funMap_neg := fun _ => rfl,
-    funMap_zero := fun _ => rfl,
-    funMap_one := fun _ => rfl }
+    funMap_add _ := rfl,
+    funMap_mul _ := rfl,
+    funMap_neg _ := rfl,
+    funMap_zero _ := rfl,
+    funMap_one _ := rfl }
 
 /-- An isomorphism in the language of rings is a ring isomorphism -/
 def languageEquivEquivRingEquiv {R S : Type*}

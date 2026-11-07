@@ -235,7 +235,7 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
   π :=
     { app := fun X => Option.casesOn X c.pt.hom fun j : J => (c.π.app ⟨j⟩).left
       -- `tidy` can do this using `case_bash`, but let's try to be a good `-T50000` citizen:
-      naturality := fun X Y f => by
+      naturality X Y f := by
         dsimp; cases X <;> cases Y <;> cases f
         · rw [Category.id_comp, Category.comp_id]
         · rw [Over.w, Category.id_comp]
@@ -249,7 +249,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj := conesEquivInverseObj B F
   map f :=
     { hom := f.hom.left
-      w := fun j => by
+      w j := by
         obtain - | j := j
         · simp
         · dsimp

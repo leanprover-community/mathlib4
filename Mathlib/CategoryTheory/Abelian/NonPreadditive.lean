@@ -309,7 +309,7 @@ attribute [local instance] hasSub
 /-- Negation of morphisms in a `NonPreadditiveAbelian` category. -/
 @[instance_reducible]
 def hasNeg {X Y : C} : Neg (X ⟶ Y) where
-  neg := fun f => 0 - f
+  neg f := 0 - f
 
 attribute [local instance] hasNeg
 
