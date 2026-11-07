@@ -31,7 +31,7 @@ variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M]
 
 /-- The orientation associated to a volume form. -/
-public def volOrientation {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) : Orientation R M (Fin n) :=
+def volOrientation {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) : Orientation R M (Fin n) :=
   rayOfNeZero R ((alternatingMapLinearEquiv (R := R) (n := n) (N := R)).symm vol.toLinearMap) <| by
     apply (alternatingMapLinearEquiv (R := R) (n := n) (N := R)).symm.map_ne_zero_iff.mpr
     intro h
