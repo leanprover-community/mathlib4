@@ -168,6 +168,14 @@ theorem of_subsingleton [Subsingleton A] (a : A) : spectrum R a = ∅ := by
 theorem resolvent_eq {a : A} {r : R} (h : r ∈ resolventSet R a) : resolvent a r = ↑h.unit⁻¹ :=
   Ring.inverse_unit h.unit
 
+theorem resolvent_eq_iff_mul_left_eq_one {a b : A} {r : R} (h : r ∈ resolventSet R a) :
+    resolvent a r = b ↔ (↑ₐ r - a) * b = 1 := by
+  rw [resolvent_eq h, ← Units.mul_eq_one_iff_inv_eq, h.unit_spec]
+
+theorem resolvent_eq_iff_mul_right_eq_one {a b : A} {r : R} (h : r ∈ resolventSet R a) :
+    resolvent a r = b ↔ b * (↑ₐ r - a) = 1 := by
+  rw [resolvent_eq h, eq_comm, ← Units.mul_eq_one_iff_eq_inv, h.unit_spec]
+
 /-- The second resolvent identity: for `r` in the resolvent set of both
 `a` and `b`,
 `resolvent a r - resolvent b r = resolvent a r * (a - b) * resolvent b r`. -/
