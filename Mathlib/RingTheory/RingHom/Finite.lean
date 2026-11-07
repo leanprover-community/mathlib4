@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.Finiteness
 import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
-
 # The meta properties of finite ring homomorphisms.
 
 ## Main results

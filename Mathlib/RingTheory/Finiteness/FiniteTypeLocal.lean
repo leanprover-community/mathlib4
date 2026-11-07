@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.FiniteType
 public import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
-
 # Locality of `Algebra.FiniteType`
 
 In this file we show that finite-type is local on the source and the target.

@@ -14,7 +14,6 @@ public import Mathlib.Tactic.Continuity
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
 
 /-!
-
 # Dimension Shifting
 
 -/

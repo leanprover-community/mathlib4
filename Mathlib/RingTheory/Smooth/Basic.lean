@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Smooth morphisms
 
 An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.

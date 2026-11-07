@@ -44,7 +44,7 @@ General algebra:
     first isomorphism theorem: 'QuotientGroup.quotientKerEquivRange'
     second isomorphism theorem: 'QuotientGroup.quotientInfEquivProdNormalQuotient'
     third isomorphism theorem: 'QuotientGroup.quotientQuotientEquivQuotient'
-    abelianization: 'Abelianization'
+    abelianization: 'Group.Abelianization'
     free group: 'FreeGroup'
     presented group: 'PresentedGroup'
     Schreier's lemma: 'Subgroup.closure_mul_image_eq'
