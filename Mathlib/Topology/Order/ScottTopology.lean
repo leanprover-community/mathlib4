@@ -105,11 +105,12 @@ instance (α) (D : Set (Set α)) [Preorder α] : @IsScottHausdorff α D _ (scott
   @IsScottHausdorff.mk _ _ _ (scottHausdorff α D) rfl
 
 namespace IsScottHausdorff
+variable {s : Set α} {D : Set (Set α)} [t : TopologicalSpace α]
 
-variable {s : Set α} {D : Set (Set α)} [Preorder α] [t : TopologicalSpace α]
+section Preorder
+variable [Preorder α]
 
 section General
-
 variable [IsScottHausdorff α D]
 
 variable (α D) in
@@ -126,6 +127,16 @@ lemma dirSupInaccOn_of_isOpen (h : IsOpen s) : DirSupInaccOn D s :=
 lemma dirSupClosedOn_of_isClosed (h : IsClosed s) : DirSupClosedOn D s :=
   .of_compl (dirSupInaccOn_of_isOpen h.isOpen_compl)
 
+theorem dirSupInaccOn_interior : DirSupInaccOn D (interior s) :=
+  dirSupInaccOn_of_isOpen isOpen_interior
+
+theorem dirSupClosedOn_closure : DirSupClosedOn D (closure s) :=
+  dirSupClosedOn_of_isClosed isClosed_closure
+
+theorem mem_closure_of_isLUB {d : Set α} (hD : d ∈ D) (hd : d ⊆ s)
+    (hd₀ : d.Nonempty) (hd₁ : DirectedOn (· ≤ ·) d) {x : α} (hx : IsLUB d x) : x ∈ closure s :=
+  dirSupClosedOn_closure hD (hd.trans subset_closure) hd₀ hd₁ hx
+
 theorem isOpen_iff_dirSupInaccOn (hDL : IsLowerSet D) : IsOpen s ↔ DirSupInaccOn D s := by
   rw [isOpen_iff (D := D), dirSupInaccOn_iff_inter_subset hDL]
 
@@ -141,7 +152,6 @@ theorem isClosed_of_isUpperSet (hDL : IsLowerSet D) (h : IsUpperSet s) : IsClose
 end General
 
 section univ
-
 variable [IsScottHausdorff α univ]
 
 theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
@@ -150,7 +160,79 @@ theorem isOpen_iff_dirSupInacc : IsOpen s ↔ DirSupInacc s := by
 theorem isClosed_iff_dirSupClosed : IsClosed s ↔ DirSupClosed s := by
   rw [isClosed_iff_dirSupClosedOn isLowerSet_univ, dirSupClosedOn_univ]
 
+theorem dirSupInacc_interior : DirSupInacc (interior s) := by
+  rw [← isOpen_iff_dirSupInacc]
+  exact isOpen_interior
+
+theorem dirSupClosed_closure : DirSupClosed (closure s) := by
+  rw [← isClosed_iff_dirSupClosed]
+  exact isClosed_closure
+
+/-- This theorem can fail in partial orders if the assumption that `d` is directed is added. -/
+theorem closure_subset_setOfPred_isLUB (s : Set α) :
+    closure s ⊆ {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
+  rw [IsClosed.closure_subset_iff]
+  · exact fun x hx ↦ ⟨{x}, singleton_subset_iff.2 hx, singleton_nonempty x, isLUB_singleton⟩
+  · rw [isClosed_iff_dirSupClosed]
+    intro d hd hd₀ _ x hx
+    choose f hfs hf₀ hf using hd
+    refine ⟨⋃ y : d, f y.2, ?_, ?_, fun y hy ↦ ?_, fun y hy ↦ ?_⟩
+    · simpa
+    · aesop
+    · obtain ⟨⟨i, hi⟩, hy⟩ := mem_iUnion.1 hy
+      exact ((hf hi).1 hy).trans (hx.1 hi)
+    · exact hx.2 fun z hz ↦ (hf hz).2 (upperBounds_mono_set (subset_iUnion _ ⟨z, hz⟩) hy)
+
+/-- This theorem can fail in partial orders if the assumption that `d` is directed is added. -/
+theorem exists_isLUB_of_mem_closure {s : Set α} {x : α} (hx : x ∈ closure s) :
+    ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
+  closure_subset_setOfPred_isLUB s hx
+
 end univ
+end Preorder
+
+section LinearOrder
+variable [LinearOrder α] [IsScottHausdorff α univ]
+
+theorem closure_eq_setOfPred_isLUB (s : Set α) :
+    closure s = {x | ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x} := by
+  apply (closure_subset_setOfPred_isLUB s).antisymm
+  rintro x ⟨d, hd, hd₀, hx⟩
+  exact mem_closure_of_isLUB (mem_univ _) hd hd₀ (.of_linearOrder _) hx
+
+theorem mem_closure_iff_isLUB {s : Set α} {x : α} :
+    x ∈ closure s ↔ ∃ d ⊆ s, d.Nonempty ∧ IsLUB d x :=
+  Set.ext_iff.1 (closure_eq_setOfPred_isLUB s) x
+
+/-- See `continuous_of_leftOrdContinuous'` for a version that instead requires the codomain to be
+linearly ordered. -/
+theorem continuous_of_leftOrdContinuous [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
+    {f : α → β} (hf : LeftOrdContinuous f) : Continuous f := by
+  rw [continuous_iff_image_closure_subset_closure_image]
+  rintro s _ ⟨y, hy, rfl⟩
+  obtain ⟨d, hd, hd₀, hx⟩ := exists_isLUB_of_mem_closure hy
+  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
+    (hf.mono.directedOn_le_image d) (hf hd₀ hx)
+
+/-- See `LeftOrdContinuous.continuous'` for a version that instead requires the codomain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous := continuous_of_leftOrdContinuous
+
+/-- See `continuous_of_leftOrdContinuous` for a version that instead requires the domain to be
+linearly ordered. -/
+theorem continuous_of_leftOrdContinuous' [Preorder β] [TopologicalSpace β] [IsScottHausdorff β univ]
+    {f : β → α} (hf : LeftOrdContinuous f) : Continuous f := by
+  rw [continuous_iff_image_closure_subset_closure_image]
+  rintro s _ ⟨y, hy, rfl⟩
+  obtain ⟨d, hd, hd₀, hx⟩ := exists_isLUB_of_mem_closure hy
+  exact mem_closure_of_isLUB (mem_univ _) (image_mono hd) (hd₀.image _)
+    (.of_linearOrder _) (hf hd₀ hx)
+
+/-- See `LeftOrdContinuous.continuous` for a version that instead requires the domain to be
+linearly ordered. -/
+alias _root_.LeftOrdContinuous.continuous' := continuous_of_leftOrdContinuous'
+
+end LinearOrder
 end IsScottHausdorff
 
 /-! ### Scott topology -/
