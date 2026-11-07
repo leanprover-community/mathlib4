@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Sites.Adjunction
 public import Mathlib.Condensed.Basic
 
 /-!
-
 # Condensed `R`-modules
 
 This file defines condensed modules over a ring `R`.

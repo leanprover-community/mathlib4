@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.Submodule.Ker
 
 /-!
-
 # Iterate maps and comaps of submodules
 
 Some preliminary work for establishing the strong rank condition for Noetherian rings.

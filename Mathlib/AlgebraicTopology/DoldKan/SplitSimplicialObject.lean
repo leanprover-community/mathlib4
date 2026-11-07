@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.HomotopyEquivalence
 public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
-
 # Split simplicial objects in preadditive categories
 
 In this file we define a functor `nondegComplex : SimplicialObject.Split C ⥤ ChainComplex C ℕ`

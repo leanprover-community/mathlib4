@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-
 # Precoverages
 
 A precoverage `K` on a category `C` is a set of presieves associated to every object `X : C`,

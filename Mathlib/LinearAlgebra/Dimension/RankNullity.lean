@@ -8,7 +8,6 @@ module
 public import Mathlib.LinearAlgebra.Dimension.Finite
 
 /-!
-
 # The rank nullity theorem
 
 In this file we provide the rank nullity theorem as a typeclass, and prove various corollaries

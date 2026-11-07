@@ -16,7 +16,6 @@ import Mathlib.Topology.Algebra.Module.Compact
 import Mathlib.Topology.Algebra.Ring.Ideal
 
 /-!
-
 # Compact Hausdorff Rings
 
 ## Main results
