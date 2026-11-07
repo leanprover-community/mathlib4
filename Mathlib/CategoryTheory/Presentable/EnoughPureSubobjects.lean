@@ -217,9 +217,9 @@ lemma isClosedUnderCardinalPureSubobjects
 
 end ObjectProperty
 
-namespace IsCardinalAccessibleCategory
+namespace Presheaf
 
-namespace step₁
+namespace hasEnoughPureSubobjects
 
 variable {C : Type w} [SmallCategory C] {κ : Cardinal.{w}} [Fact κ.IsRegular]
    {F : C ⥤ Type w}
@@ -438,7 +438,7 @@ lemma hasCardinalLT_iter
         (Cardinal.le_sigmaPowLT κ' (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out))))
 
 include hC hP hκ' hP' in
-lemma hasEnoughPureSubobjects_aux
+lemma aux₁
     (hS : HasCardinalLT S.toFunctor.Elements (Order.succ (κ'.sigmaPowLT κ'))) :
     ∃ (S' : Subfunctor F) (_ : S ≤ S')
       (_ : HasCardinalLT S'.toFunctor.Elements (Order.succ (κ'.sigmaPowLT κ'))),
@@ -451,7 +451,7 @@ lemma hasEnoughPureSubobjects_aux
       isCardinalPure_subfunctor_ι hP S⟩
 
 include hC hP hκ' hP' in
-lemma hasEnoughPureSubobjects :
+lemma aux₂ :
     haveI := κ'.fact_isRegular_succ_sigmaPowLT
     (hκ'.trans (Cardinal.SharplyLT.sigmaPowLT κ')).HasEnoughPureSubobjects (C ⥤ Type w) :=
   have := κ'.fact_isRegular_succ_sigmaPowLT
@@ -459,7 +459,7 @@ lemma hasEnoughPureSubobjects :
       have hC' : HasCardinalLT (Arrow C) (Order.succ (κ'.sigmaPowLT κ')) :=
         hC.of_le (hκ'.trans (Cardinal.SharplyLT.sigmaPowLT κ')).le
       obtain ⟨S', h₁, h₂, h₃⟩ :=
-        hasEnoughPureSubobjects_aux hC hP hκ' hP' (by
+        aux₁ hC hP hκ' hP' (by
           refine HasCardinalLT.of_surjective ?_ _
             (NatTrans.surjective_mapElements_obj_of_epi (Subfunctor.toRange f))
           rwa [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC'])
@@ -467,9 +467,9 @@ lemma hasEnoughPureSubobjects :
       exact ⟨S'.toFunctor, inferInstance, Subfunctor.toRange f ≫ Subfunctor.homOfLe h₁,
         S'.ι, inferInstance, by simp⟩ }
 
-end step₁
+end hasEnoughPureSubobjects
 
-lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
+lemma hasEnoughPureSubobjects (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegular] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
       h.HasEnoughPureSubobjects (C ⥤ Type w) := by
   obtain ⟨κ₁, _, hκ₁⟩ := HasCardinalLT.exists_regular_cardinal (Arrow C)
@@ -486,7 +486,9 @@ lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegu
   have := κ₄.fact_isRegular_succ_sigmaPowLT
   exact ⟨Order.succ (κ₄.sigmaPowLT κ₄), inferInstance,
     h₀.trans (h₅.trans (Cardinal.SharplyLT.sigmaPowLT κ₄)),
-    (step₁.hasEnoughPureSubobjects hκ₂ hP h₅ (h₄.of_le h₆.le)).trans h₀⟩
+    (hasEnoughPureSubobjects.aux₂ hκ₂ hP h₅ (h₄.of_le h₆.le)).trans h₀⟩
+
+end Presheaf
 
 lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory
     {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] {h : κ.SharplyLT κ'}
@@ -517,11 +519,9 @@ lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
     IsCardinalAccessibleCategory.exists_equivalence_fullSubcategory C κ
   have : IsAccessibleCategory.{w} P.FullSubcategory := ⟨κ, inferInstance, inferInstance⟩
   obtain ⟨κ₁, _, h₁, _, _, _, _⟩ := P.isClosedUnderCardinalPureSubobjects κ
-  obtain ⟨κ₂, inferInstance, h₂, H⟩ := step₁ A κ₁
+  obtain ⟨κ₂, inferInstance, h₂, H⟩ := Presheaf.hasEnoughPureSubobjects A κ₁
   have : P.IsClosedUnderCardinalFilteredColimits κ₁ := .of_le h₁.le
   exact ⟨κ₂, inferInstance, h₁.trans h₂,
     ((H.fullSubcategory P).trans h₁).of_equivalence e.symm⟩
-
-end IsCardinalAccessibleCategory
 
 end CategoryTheory
