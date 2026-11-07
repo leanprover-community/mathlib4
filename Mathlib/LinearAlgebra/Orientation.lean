@@ -329,6 +329,17 @@ theorem abs_det_adjustToOrientation [Nonempty ι] (e : Basis ι R M)
 
 end Module.Basis
 
+/-- If the index type has cardinality equal to the finite rank, any two orientations are
+equal or negations. -/
+theorem Orientation.eq_or_eq_neg [Fintype ι] [Module.Free R M] [Module.Finite R M]
+    (x₁ x₂ : Orientation R M ι)
+    (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
+  classical
+  let b := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
+  rcases b.orientation_eq_or_eq_neg x₂ with rfl | rfl
+  · exact b.orientation_eq_or_eq_neg x₁
+  · simpa [or_comm] using b.orientation_eq_or_eq_neg x₁
+
 end LinearOrderedCommRing
 
 section LinearOrderedField
@@ -342,15 +353,6 @@ namespace Orientation
 variable [Fintype ι]
 
 open FiniteDimensional Module
-
-/-- If the index type has cardinality equal to the finite dimension, any two orientations are
-equal or negations. -/
-theorem eq_or_eq_neg [FiniteDimensional R M] (x₁ x₂ : Orientation R M ι)
-    (h : Fintype.card ι = finrank R M) : x₁ = x₂ ∨ x₁ = -x₂ := by
-  have e := (finBasis R M).reindex (Fintype.equivFinOfCardEq h).symm
-  let := Classical.decEq ι
-  rcases e.orientation_eq_or_eq_neg x₁ with (h₁ | h₁) <;>
-    rcases e.orientation_eq_or_eq_neg x₂ with (h₂ | h₂) <;> simp [h₁, h₂]
 
 /-- If the index type has cardinality equal to the finite dimension, an orientation equals the
 negation of another orientation if and only if they are not equal. -/

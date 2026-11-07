@@ -31,6 +31,7 @@ variable {R M : Type*} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup M] [Module R M]
 
 /-- The orientation associated to a volume form. -/
+@[expose]
 def volOrientation {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) : Orientation R M (Fin n) :=
   rayOfNeZero R (alternatingMapLinearEquiv.symm vol.toLinearMap) <| by
     rw [alternatingMapLinearEquiv.symm.map_ne_zero_iff]
@@ -38,15 +39,14 @@ def volOrientation {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) : Orientation R M (F
     simpa using congrArg (fun f ↦ f (vol.symm 1)) h
 
 @[simp]
-public lemma volOrientation_trans_neg {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) :
-    volOrientation (vol.trans (.neg R)) = -volOrientation vol := by
-  simp only [volOrientation, neg_rayOfNeZero]
-  congr 1
+lemma volOrientation_trans_neg {n : ℕ} (vol : ⋀[R]^n M ≃ₗ[R] R) :
+    volOrientation (vol.trans (.neg R)) = -volOrientation vol :=
+  rfl
 
 variable [Module.Finite R M] [Module.Free R M]
 
 /-- Every orientation of a finite free module is given by a volume form. -/
-public lemma exists_volOrientation_eq (o : Orientation R M (Fin (finrank R M))) :
+lemma exists_volOrientation_eq (o : Orientation R M (Fin (finrank R M))) :
     ∃ vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R, volOrientation vol = o := by
   classical
   let b := Module.finBasis R M
@@ -62,11 +62,11 @@ public lemma exists_volOrientation_eq (o : Orientation R M (Fin (finrank R M))) 
 variable [Module.Oriented R M (Fin (finrank R M))]
 
 /-- A volume form compatible with the positive orientation on a finite free module. -/
-public def volOfOrientation : ⋀[R]^(finrank R M) M ≃ₗ[R] R :=
+def volOfOrientation : ⋀[R]^(finrank R M) M ≃ₗ[R] R :=
   (exists_volOrientation_eq positiveOrientation).choose
 
 @[simp]
-public lemma volOrientation_volOfOrientation :
+lemma volOrientation_volOfOrientation :
     volOrientation (volOfOrientation (R := R) (M := M)) = positiveOrientation :=
   (exists_volOrientation_eq positiveOrientation).choose_spec
 
