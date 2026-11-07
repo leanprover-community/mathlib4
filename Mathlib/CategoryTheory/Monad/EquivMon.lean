@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
-
 # The equivalence between `Monad C` and `Mon (C ⥤ C)`.
 
 A monad "is just" a monoid in the category of endofunctors.
