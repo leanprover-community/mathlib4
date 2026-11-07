@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
-
 # Tensor product and products
 
 In this file we examine the behaviour of the tensor product with arbitrary and finite products.

@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 
 /-!
-
 # `WithInitial` and `WithTerminal`
 
 Given a category `C`, this file constructs two objects:

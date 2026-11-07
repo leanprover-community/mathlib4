@@ -277,7 +277,7 @@ theorem tendsto_setIntegral_of_monotone₀
   filter_upwards [this] with i hi
   rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnNorm,
     NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
-  refine (enorm_integral_le_lintegral_enorm _).trans ?_
+  refine (eNorm_integral_le_lintegral_eNorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
   rw [← withDensity_apply₀ _ (hSm.diff (hsm _)), ← hν, measure_sdiff hsub hsm']
   exacts [tsub_le_iff_tsub_le.mp hi.1,
@@ -417,7 +417,7 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
-      simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
+      simp only [Set.mem_sdiff, and_congr_left_iff]
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]
@@ -637,7 +637,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     μ.real {x | ↑R < f x} * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
-    refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
+    refine setLIntegral_mono_ae hfint.1.eNorm <| ae_of_all _ fun x hx => ?_
     simp only [ENNReal.coe_le_coe, Real.nnNorm_of_nonneg hR, eNorm_eq_nnNorm,
       Real.nnNorm_of_nonneg (hR.trans <| le_of_lt hx)]
     exact le_of_lt hx

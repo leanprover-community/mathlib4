@@ -184,6 +184,7 @@ public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
 public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.BinarySplit
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Dyadic
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Exp
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Hypotheses
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
@@ -244,6 +245,7 @@ public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.SyntaxBased
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter

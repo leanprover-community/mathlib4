@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Idempotents.HomologicalComplex
 public import Mathlib.CategoryTheory.Idempotents.KaroubiKaroubi
 
 /-!
-
 # N₁ and N₂ reflect isomorphisms
 
 In this file, it is shown that the functors

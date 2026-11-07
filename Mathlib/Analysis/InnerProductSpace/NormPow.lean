@@ -103,11 +103,13 @@ theorem nnNorm_fderiv_norm_rPow_le {f : F → E} (hf : Differentiable ℝ f)
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_fderiv_norm_rpow_le := nnNorm_fderiv_norm_rPow_le
 
-lemma enorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
+lemma eNorm_fderiv_norm_rpow_le {f : F → E} (hf : Differentiable ℝ f)
     {x : F} {p : ℝ≥0} (hp : 1 < p) :
     ‖fderiv ℝ (fun x ↦ ‖f x‖ ^ (p : ℝ)) x‖ₑ ≤ p * ‖f x‖ₑ ^ ((p : ℝ) - 1) * ‖fderiv ℝ f x‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
+  simpa [eNorm, ← ENNReal.coe_rpow_of_nonneg _ (sub_nonneg.2 <| NNReal.one_le_coe.2 hp.le),
     ← ENNReal.coe_mul] using nnNorm_fderiv_norm_rPow_le hf hp
+
+@[deprecated (since := "2026-11-06")] alias enorm_fderiv_norm_rpow_le := eNorm_fderiv_norm_rpow_le
 
 theorem contDiff_norm_rpow {p : ℝ} (hp : 1 < p) : ContDiff ℝ 1 (fun x : E ↦ ‖x‖ ^ p) := by
   rw [contDiff_one_iff_fderiv]
