@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Finiteness.Small

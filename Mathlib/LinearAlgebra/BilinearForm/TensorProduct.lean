@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!

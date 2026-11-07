@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 module
 
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Flat.Stability
 public import Mathlib.RingTheory.Unramified.Basic
 
