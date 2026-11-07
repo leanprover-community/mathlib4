@@ -32,7 +32,7 @@ variable (K L M : Type*) [NormedField K] [Field L] [Field M] [Algebra K L] [Alge
 
 open scoped Matrix.Norms.Operator
 
-/-- The algebra norm on a finite extension `L` of a normed field `K`.
+/-- The Gelfand radius algebra norm on a finite extension `L` of a normed field `K`.
 The norm of `x : L` is defined as the Gelfand radius of multiplication by `x` on `L`. -/
 noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   toFun x := gelfandRadius (Algebra.leftMulMatrix (Module.finBasis K L) x)
@@ -41,7 +41,6 @@ noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   neg' x := by rw [map_neg, gelfandRadius_neg]
   mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).gelfandRadius_mul_le]
   eq_zero_of_map_eq_zero' x h := by
-    have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
     have hx := ((Commute.inv_right_self₀ x).map
       (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
     contrapose! hx
@@ -55,7 +54,6 @@ theorem gelfandRadiusNorm_def (x : L) :
 
 @[simp]
 theorem gelfandRadiusNorm_one : gelfandRadiusNorm K L 1 = 1 := by
-  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   rw [gelfandRadiusNorm_def, map_one, gelfandRadius_one]
 
 variable {K} in
@@ -65,36 +63,31 @@ theorem gelfandRadiusNorm_eq_norm (x : K) : gelfandRadiusNorm K K x = ‖x‖ :=
 
 /-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
-  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
   simp_rw [gelfandRadiusNorm_def, map_pow, gelfandRadius_pow]
 
 variable {K L} in
 theorem Module.Basis.gelfandRadiusNorm_apply
     {ι : Type*} [DecidableEq ι] [Fintype ι] (b : Module.Basis ι K L) (x : L) :
-    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) := by
-  simp_rw [gelfandRadiusNorm_def, Algebra.leftMulMatrix_apply]
-  rw [← basis_toMatrix_mul_linearMap_toMatrix b b (Module.finBasis K L),
-    Matrix.gelfandRadius_mul_comm, linearMap_toMatrix_mul_basis_toMatrix]
+    gelfandRadiusNorm K L x = gelfandRadius (Algebra.leftMulMatrix b x) :=
+  ((Algebra.lmul K L) x).gelfandRadius_toMatrix_eq (finBasis K L) b
 
 variable {L} in
 /-- The Gelfand radius norm is invariant under algebra maps. -/
 @[simp]
-theorem gelfandRadiusNorm_algebraMap (M : Type*) [Field M] [Algebra K M] [Algebra L M]
-    [IsScalarTower K L M] [FiniteDimensional K M] (x : L) :
+theorem gelfandRadiusNorm_algebraMap (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
   have : FiniteDimensional L M := .of_restrictScalars_finite K L M
-  have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
   rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
     Matrix.gelfandRadius_blockDiagonal, ciSup_const, bKL.gelfandRadiusNorm_apply]
 
-variable {K L} in
+variable {M K L} in
+omit [Algebra L M] [IsScalarTower K L M] in
 /-- The Gelfand radius norm is invariant under algebra homomorphisms. -/
 @[simp]
-theorem gelfandRadiusNorm_map {M : Type*} [Field M] [Algebra K M] [FiniteDimensional K M]
-    {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
+theorem gelfandRadiusNorm_map {F : Type*} [FunLike F L M] [AlgHomClass F K L M] (f : F) (x : L) :
     gelfandRadiusNorm K M (f x) = gelfandRadiusNorm K L x :=
   let := (AlgHom.ofClass f).toAlgebra
   gelfandRadiusNorm_algebraMap K M x
