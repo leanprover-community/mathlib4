@@ -12,7 +12,6 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Finiteness.FiniteTypeLocal
 
 /-!
-
 # The meta properties of finite-type ring homomorphisms.
 
 ## Main results
