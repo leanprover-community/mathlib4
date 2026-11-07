@@ -413,12 +413,29 @@ public lemma isLeviCivitaConnection_leviCivitaConnection :
     (leviCivitaConnection I M).IsLeviCivitaConnection :=
   ⟨isMetricCompatible_leviCivitaConnection I, torsion_leviCivitaConnection_eq_zero I⟩
 
+section prerequisites
+
+-- TODO: generalise and move to a better place!
+-- TODO: should we have ContDiffMul, and then deduce this from a ContDiffMul instance?
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : ℕ∞ω} : ContMDiffMul 𝓘(𝕜) n 𝕜 where
+  contMDiff_mul := by
+    -- This is almost [contMDiff_iff_contDiff], except that we want the other model on the domain.
+    intro x
+    rw [contMDiffAt_iff]
+    refine ⟨by fun_prop, ?_⟩
+    suffices ContDiffAt 𝕜 n (fun p ↦ p.1 * p.2) x by
+      simp
+      simpa [ModelProd, contDiffWithinAt_univ] using this
+    fun_prop
+
+end prerequisites
+
 -- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
 variable {k : ℕ∞}
   [IsContMDiffRiemannianBundle I (k + 3) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 3) M]
 
 /-- A macro for counting derivatives, i.e. proving lemmas such as `k + 1 ≤ k + 2` in `ℕ∞ω`. -/
-syntax "count_derivatives" : tactic
+local syntax "count_derivatives" : tactic
 
 macro_rules
   -- In all cases, there should be only one goal left. Cast to natural numbers and use `lia`
@@ -431,12 +448,9 @@ theorem contMDiffAt_leviCivitaAuxInner
     (hτ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ) x)
     {τ' : (x : M) → TangentSpace I x}
     (hτ' : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ') x) :
-    ContMDiffAt I (I.prod 𝓘(ℝ, ℝ)) (↑k + 1)
-      (fun x ↦ TotalSpace.mk' ℝ x (leviCivitaAuxInner I τ σ τ' x)) x := by
+    CMDiffAt (k + 1) (leviCivitaAuxInner I τ σ τ') x := by
     unfold leviCivitaAuxInner
-    dsimp
-    apply ContMDiffAt.smul_section; swap
-    · simpa [contMDiffAt_section_iff] using contMDiffAt_const
+    apply ContMDiffAt.div_const
     have : IsContMDiffRiemannianBundle I (k + 2) E fun (x : M) ↦ TangentSpace I x :=
       IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
     have : IsContMDiffRiemannianBundle I (k + 1) E fun (x : M) ↦ TangentSpace I x :=
@@ -514,7 +528,8 @@ instance contMDiffCovariantDerivative_leviCivitaConnection :
     have : IsManifold I (k + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
     -- NB. We apply the version involving a loss of derivatives, because this is what happens here.
     apply TensorialAt.contMDiff_mkHom₂' (by simp)
-    exact fun x τ hτ τ' hτ' ↦ contMDiffAt_leviCivitaAuxInner I (hσ x) hτ hτ'
+    intro x τ hτ τ' hτ'
+    exact contMDiffAt_leviCivitaAuxInner I (hσ x) hτ hτ'
 
 end existence
 
