@@ -143,7 +143,7 @@ lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
 
 
-lemma fact_isRegular_succ_sigmaPowLT
+lemma _root_.Cardinal.fact_isRegular_succ_sigmaPowLT
     (κ κ' : Cardinal.{u}) [Fact κ.IsRegular] [Fact κ'.IsRegular] :
     Fact (Order.succ (κ.sigmaPowLT κ')).IsRegular :=
   ⟨Cardinal.isRegular_succ (Cardinal.aleph0_le_sigmaPowLT

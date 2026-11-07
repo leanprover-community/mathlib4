@@ -141,6 +141,38 @@ lemma Functor.Elements.hasCardinalLT_arrow_elements_iff
           obtain rfl : f₁ = f₂ := by ext; exact congr($(h).2.2.hom)
           rfl)⟩
 
+namespace Subfunctor
+
+variable {A : Type*} [Category* A] {κ : Cardinal.{w}}
+  {P : A ⥤ Type w}
+
+lemma hasCardinalLT_elements_sup
+    {S₁ S₂ : Subfunctor P} (h₁ : HasCardinalLT S₁.toFunctor.Elements κ)
+    (h₂ : HasCardinalLT S₂.toFunctor.Elements κ) (hκ : .aleph0 ≤ κ) :
+    HasCardinalLT (S₁ ⊔ S₂).toFunctor.Elements κ :=
+  .of_surjective ((hasCardinalLT_sum_iff _ _ κ hκ).mpr ⟨h₁, h₂⟩)
+    (fun e ↦ match e with
+      | .inl e => (Subfunctor.homOfLe le_sup_left).mapElements.obj e
+      | .inr e => (Subfunctor.homOfLe le_sup_right).mapElements.obj e)  (by
+      intro ⟨e, he⟩
+      simp only [max_obj, Set.mem_union] at he
+      obtain he | he := he
+      · exact ⟨Sum.inl (Functor.elementsMk _ _ ⟨e, he⟩), rfl⟩
+      · exact ⟨Sum.inr (Functor.elementsMk _ _ ⟨e, he⟩), rfl⟩)
+
+lemma hasCardinalLT_elements_iSup [Fact κ.IsRegular]
+    {ι : Type*} {S : ι → Subfunctor P} (h : ∀ i, HasCardinalLT (S i).toFunctor.Elements κ)
+    (hι : HasCardinalLT ι κ) :
+    HasCardinalLT (⨆ i, S i).toFunctor.Elements κ :=
+  (hasCardinalLT_sigma _ _ hι h).of_surjective
+    (fun e ↦ (Subfunctor.homOfLe (le_iSup S e.1)).mapElements.obj e.2) (by
+      intro ⟨e, he⟩
+      simp only [iSup_obj, Set.mem_iUnion] at he
+      obtain ⟨i, he⟩ := he
+      exact ⟨⟨i, Functor.elementsMk _ _ ⟨e, he⟩⟩, rfl⟩)
+
+end Subfunctor
+
 namespace Presheaf
 
 section
