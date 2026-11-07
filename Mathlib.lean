@@ -3888,6 +3888,7 @@ public import Mathlib.Combinatorics.SimpleGraph.Regularity.Equitabilise
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Increment
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Lemma
 public import Mathlib.Combinatorics.SimpleGraph.Regularity.Uniform
+public import Mathlib.Combinatorics.SimpleGraph.SignedLapMatrix
 public import Mathlib.Combinatorics.SimpleGraph.Star
 public import Mathlib.Combinatorics.SimpleGraph.StronglyRegular
 public import Mathlib.Combinatorics.SimpleGraph.Subgraph
