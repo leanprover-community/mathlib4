@@ -134,7 +134,9 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
   · rw [Subgraph.isSpanning_iff, Subgraph.verts_sup, hM'.1]
     exact M.verts.union_compl_self
 
+omit [Finite V] in
 theorem IsTutteViolator.empty (hodd : Odd (Nat.card V)) : G.IsTutteViolator ∅ := by
+  have : Finite V := Nat.finite_of_card_ne_zero hodd.pos.ne'
   rw [IsTutteViolator, Set.ncard_empty]
   exact ((odd_ncard_oddComponents _).mpr <| by simpa using hodd).pos
 
