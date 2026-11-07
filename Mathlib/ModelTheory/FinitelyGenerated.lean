@@ -76,6 +76,15 @@ theorem fg_closure {s : Set M} (hs : s.Finite) : FG (closure L s) :=
 theorem fg_closure_singleton (x : M) : FG (closure L ({x} : Set M)) :=
   fg_closure (finite_singleton x)
 
+theorem FG.cardinalLTGenerated {N : L.Substructure M} (hN : N.FG) {κ : Cardinal}
+    (hκ : Cardinal.aleph0 ≤ κ) : N.CardinalLTGenerated κ := by
+  obtain ⟨S, hS⟩ := hN
+  exact ⟨S, hasCardinalLT_of_finite S κ hκ, hS⟩
+
+theorem cardinalLTGenerated_aleph0_iff {N : L.Substructure M} :
+    N.CardinalLTGenerated Cardinal.aleph0 ↔ N.FG := by
+  simp_rw [CardinalLTGenerated, hasCardinalLT_aleph0_iff, fg_def, finite_coe_iff]
+
 theorem FG.sup {N₁ N₂ : L.Substructure M} (hN₁ : N₁.FG) (hN₂ : N₂.FG) : (N₁ ⊔ N₂).FG :=
   let ⟨t₁, ht₁⟩ := fg_def.1 hN₁
   let ⟨t₂, ht₂⟩ := fg_def.1 hN₂
