@@ -249,7 +249,7 @@ theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n
     · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
       repeat rw [← sum_subset fs.subset_univ _]
       · simp_rw [fs, sum_insert (notMem_singleton.2 h), sum_singleton]
-        simp [h, Ne.symm h, dist_comm (s.points i₁)]
+        simp [h, Ne.symm h, dist_comm (s.points i₁), -neg_div']
       all_goals intro i _ hi; simp [hfs i hi]
     · intro i _ hi
       simp [hfs i hi]
