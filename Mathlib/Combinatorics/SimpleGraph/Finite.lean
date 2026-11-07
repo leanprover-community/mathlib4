@@ -630,6 +630,10 @@ theorem encard_commonNeighbors_top {u v : V} (h : u ≠ v) :
     G.neighborFinset v = univ.erase v ↔ G.IsUniversal v := by
   grind [insert_neighborFinset_eq_univ, notMem_neighborFinset_self]
 
+@[simp] lemma toFinset_commonNeighbors [DecidableEq V] [DecidableRel G.Adj] (v w : V) :
+    (G.commonNeighbors v w).toFinset = G.neighborFinset v ∩ G.neighborFinset w := by
+  ext; simp [mem_commonNeighbors]
+
 @[simp]
 lemma degree_eq_card_sub_one [DecidableRel G.Adj] (v : V) :
     G.degree v = Fintype.card V - 1 ↔ G.IsUniversal v := by

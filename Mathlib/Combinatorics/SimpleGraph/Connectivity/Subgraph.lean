@@ -552,12 +552,10 @@ end Subgraph
 
 section induced_subgraphs
 
-set_option backward.isDefEq.respectTransparency false in
 lemma preconnected_induce_iff {s : Set V} :
     (G.induce s).Preconnected ↔ ((⊤ : G.Subgraph).induce s).Preconnected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.preconnected_iff]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma connected_induce_iff {s : Set V} :
     (G.induce s).Connected ↔ ((⊤ : G.Subgraph).induce s).Connected := by
   rw [induce_eq_coe_induce_top, ← Subgraph.connected_iff']
