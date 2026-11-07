@@ -9,6 +9,7 @@ module
 public import Mathlib.Algebra.Order.IsBotOne
 public import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 public import Mathlib.Order.MinMax
+public import Mathlib.Tactic.ByContra
 public import Mathlib.Tactic.GRewrite
 
 /-!
@@ -226,6 +227,18 @@ instance [MulLeftReflectLE α] : IsLeftCancelMul α where
 @[to_additive]
 instance [MulRightReflectLE α] : IsRightCancelMul α where
   mul_right_cancel _ _ _ h := (le_of_mul_le_mul_right' h.le).antisymm (le_of_mul_le_mul_right' h.ge)
+
+@[to_additive] lemma le_iff_ge_of_mul_eq_mul [MulLeftMono α] [MulLeftReflectLE α]
+    [MulRightMono α] [MulRightReflectLE α] {a₁ a₂ b₁ b₂ : α} (hab : a₁ * b₁ = a₂ * b₂) :
+    a₁ ≤ a₂ ↔ b₂ ≤ b₁ where
+  mp ha := by grw [← mul_le_mul_iff_left, hab, ha]
+  mpr hb := by grw [← mul_le_mul_iff_right, hab, hb]
+
+@[to_additive] lemma lt_iff_gt_of_mul_eq_mul [MulLeftStrictMono α] [MulLeftReflectLT α]
+    [MulRightStrictMono α] [MulRightReflectLT α] {a₁ a₂ b₁ b₂ : α} (hab : a₁ * b₁ = a₂ * b₂) :
+    a₁ < a₂ ↔ b₂ < b₁ where
+  mp ha := by grw [← mul_lt_mul_iff_left, hab, ha]
+  mpr hb := by grw [← mul_lt_mul_iff_right, hab, hb]
 
 @[to_additive] lemma mul_le_mul_iff_of_ge [MulLeftStrictMono α]
     [MulRightStrictMono α] {a₁ a₂ b₁ b₂ : α} (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
