@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury Kudryashov, Joseph Myers
+Authors: Yury Kudryashov, Joseph Myers, David Iach
 -/
 module
 
@@ -119,6 +119,27 @@ theorem perpBisector_comm (p₁ p₂ : P) : perpBisector p₁ p₂ = perpBisecto
 
 @[simp] theorem perpBisector_ne_bot : perpBisector p₁ p₂ ≠ ⊥ := by
   rw [← nonempty_iff_ne_bot]; exact perpBisector_nonempty
+
+/-- The perpendicular bisector of a nondegenerate base in a Euclidean plane is collinear. -/
+theorem collinear_perpBisector [FiniteDimensional ℝ V] (hdim : Module.finrank ℝ V ≤ 2)
+    {a b : P} (hab : a ≠ b) : Collinear ℝ (perpBisector a b : Set P) := by
+  rw [collinear_iff_finrank_le_one, ← direction_eq_vectorSpan, direction_perpBisector]
+  have hproper : (ℝ ∙ (b -ᵥ a))ᗮ ≠ ⊤ := by
+    intro htop
+    have hzero := Submodule.span_singleton_eq_bot.mp
+      ((Submodule.orthogonal_eq_top_iff _).mp htop)
+    exact hab.symm (vsub_eq_zero_iff_eq.mp hzero)
+  have hlt := Submodule.finrank_lt hproper
+  omega
+
+/-- The line through two distinct equidistant apices is the base's perpendicular bisector. -/
+theorem line_eq_perpBisector_of_equidistant [FiniteDimensional ℝ V] (hdim : Module.finrank ℝ V ≤ 2)
+    {a b p q : P} (hab : a ≠ b) (hpq : p ≠ q)
+    (hp : dist p a = dist p b) (hq : dist q a = dist q b) :
+    line[ℝ, p, q] = perpBisector a b := by
+  have hh := (collinear_perpBisector hdim hab).affineSpan_eq_of_ne
+    (mem_perpBisector_iff_dist_eq.mpr hp) (mem_perpBisector_iff_dist_eq.mpr hq) hpq
+  simpa using hh
 
 end AffineSubspace
 
