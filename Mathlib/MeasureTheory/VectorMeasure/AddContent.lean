@@ -11,6 +11,9 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 import Mathlib.MeasureTheory.Measure.MeasuredSets
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Constructing a vector measure from an additive content
 
@@ -310,7 +313,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure_of_generateFrom
       simp only [Measure.restrict_apply' MD, μ']
       apply measure_mono_ae
       nth_rewrite 1 [← Set.inter_self s]
-      exact ae_le_set_inter Filter.EventuallyLE.rfl (hD s hs)
+      exact ae_subset_inter .rfl (hD s hs)
   exact ⟨m', h, fun s ↦ (h' s).trans (Measure.restrict_apply_le (⋃₀ D) s)⟩
 
 /-- Consider an additive content `m` on a semi-ring of measurable sets `C`, which is dominated
@@ -335,7 +338,7 @@ theorem exists_extension_of_isSetSemiring_of_le_measure [NormedSpace ℝ E]
     exact (MeasureTheory.trim_measurableSet_eq Mle (measurableSet_generateFrom hs)).symm
   have m'_le : m'.variation ≤ μ' := by
     exact variation_le_of_forall_enorm_le (fun s hs ↦ hm' _)
-  -- next line is to make sure that the default instance is picked below when defininig `m''`.
+  -- next line is to make sure that the default instance is picked below when defining `m''`.
   let : MeasurableSpace α := hα
   let m'' : VectorMeasure α E :=
   { measureOf' s := if MeasurableSet s then ∫ᵛ x, μ[s.indicator 1 | M] x ∂• m' else 0

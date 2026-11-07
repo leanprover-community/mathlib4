@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Tropical.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-
 # Order on tropical algebraic structure
 
 This file defines the orders induced on tropical algebraic structures by the underlying type.

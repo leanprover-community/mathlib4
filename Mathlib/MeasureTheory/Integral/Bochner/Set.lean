@@ -275,7 +275,7 @@ theorem tendsto_setIntegral_of_monotone₀
   have : ∀ᶠ i in atTop, ν (s i) ∈ Icc (ν S - ε) (ν S + ε) :=
     tendsto_measure_iUnion_atTop h_mono (ENNReal.Icc_mem_nhds hfi'.ne (ENNReal.coe_pos.2 ε0).ne')
   filter_upwards [this] with i hi
-  rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnnorm,
+  rw [mem_closedBall_iff_norm', ← setIntegral_sdiff₀ (hsm i) hfi hsub, ← coe_nnNorm,
     NNReal.coe_le_coe, ← ENNReal.coe_le_coe]
   refine (enorm_integral_le_lintegral_enorm _).trans ?_
   have hsm' : NullMeasurableSet (s i) ν := (hsm i).mono_ac (withDensity_absolutelyContinuous ..)
@@ -417,7 +417,7 @@ theorem setIntegral_eq_of_subset_of_ae_sdiff_eq_zero_aux (hts : s ⊆ t)
     _ = ∫ x in s \ k, f x ∂μ := by
       apply setIntegral_congr_set
       filter_upwards [h't] with x hx
-      simp only [eq_iff_iff, and_congr_left_iff, Set.mem_sdiff]
+      simp only [Set.mem_sdiff, and_congr_left_iff]
       intro h'x
       by_cases xs : x ∈ s
       · simp only [xs, hts xs]
@@ -638,8 +638,8 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
     refine setLIntegral_mono_ae hfint.1.enorm <| ae_of_all _ fun x hx => ?_
-    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR, enorm_eq_nnnorm,
-      Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx)]
+    simp only [ENNReal.coe_le_coe, Real.nnNorm_of_nonneg hR, eNorm_eq_nnNorm,
+      Real.nnNorm_of_nonneg (hR.trans <| le_of_lt hx)]
     exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
     setIntegral_pos_iff_support_of_nonneg_ae]
@@ -749,7 +749,7 @@ theorem setIntegral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict s] g) :
     ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ := by
   by_cases hE : CompleteSpace E
   · exact integral_mono_ae hf hg h
-  · simp [integral, hE]
+  · simp [integral_of_not_completeSpace hE]
 
 theorem setIntegral_mono_ae (h : f ≤ᵐ[μ] g) : ∫ x in s, f x ∂μ ≤ ∫ x in s, g x ∂μ :=
   setIntegral_mono_ae_restrict hf hg (ae_restrict_of_ae h)
@@ -906,12 +906,12 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
-  simp_rw [enorm_eq_nnnorm, tsum_congr B]
+  simp_rw [eNorm_eq_nnNorm, tsum_congr B]
   have S' : Summable fun i : ι =>
       (NNReal.mk (∫ x : X in s i, ‖f x‖₊ ∂μ) (integral_nonneg fun x => NNReal.coe_nonneg _)) := by
     rw [← NNReal.summable_coe]; exact h
   have S'' := ENNReal.tsum_coe_eq S'.hasSum
-  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnnorm] at S''
+  simp_rw [ENNReal.coe_nnreal_eq, NNReal.coe_mk, coe_nnNorm] at S''
   convert! ENNReal.ofReal_lt_top
 
 variable [TopologicalSpace X] [BorelSpace X] [T2Space X] [IsLocallyFiniteMeasure μ]
@@ -1024,11 +1024,15 @@ open Measure
 variable [MeasurableSpace X] [TopologicalSpace X] [OpensMeasurableSpace X]
   {μ : Measure X} [IsOpenPosMeasure μ]
 
-theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMeasureOnCompacts μ]
+theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero [IsFiniteMeasureOnCompacts μ]
     {f : X → ℝ} {x : X} (f_cont : Continuous f) (f_comp : HasCompactSupport f) (f_nonneg : 0 ≤ f)
     (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
-  integral_pos_of_integrable_nonneg_nonzero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
+  integral_pos_of_integrable_nonneg_ne_zero f_cont (f_cont.integrable_of_hasCompactSupport f_comp)
     f_nonneg f_x
+
+@[deprecated (since := "2026-10-13")]
+alias Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero :=
+  Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
 
 end OpenPos
 

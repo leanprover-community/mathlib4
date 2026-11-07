@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Locally surjective maps of presheaves.
 
 Let `X` be a topological space, `ℱ` and `𝒢` presheaves on `X`, `T : ℱ ⟶ 𝒢` a map.
@@ -55,7 +54,7 @@ such that `$T_*(s_V) = t|_V$`.
 
 See `TopCat.Presheaf.isLocallySurjective_iff` below.
 -/
-def IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
+abbrev IsLocallySurjective (T : ℱ ⟶ 𝒢) :=
   CategoryTheory.Presheaf.IsLocallySurjective (Opens.grothendieckTopology X) T
 
 theorem isLocallySurjective_iff (T : ℱ ⟶ 𝒢) :

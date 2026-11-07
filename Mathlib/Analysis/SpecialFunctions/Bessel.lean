@@ -11,7 +11,6 @@ public import Mathlib.Analysis.SpecialFunctions.RegularizedHypergeometric
 import Mathlib.Analysis.SpecialFunctions.Complex.Analytic
 
 /-!
-
 # Bessel function
 
 We introduce Bessel functions in this file. Bessel functions commonly take two complex parameters
