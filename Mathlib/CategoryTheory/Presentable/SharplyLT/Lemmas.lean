@@ -24,9 +24,30 @@ that is sharply greater than all the cardinals in the family.
 
 @[expose] public section
 
-universe u
+universe u v
 
 open CategoryTheory Limits
+
+namespace Cardinal
+
+abbrev SigmaPowLT (X : Type v) (κ : Cardinal.{u}) : Type max (u + 1) v :=
+  Σ (b : Set.Iio κ), b.val.ord.ToType → X
+
+lemma small_sigmaPowLT (X : Type v) (κ : Cardinal.{u}) [Small.{u} X] :
+    Small.{u} (SigmaPowLT X κ) := by
+  sorry
+
+def sigmaPowLT (α β : Cardinal.{u}) : Cardinal.{u} :=
+  .mk (Shrink.{u} (SigmaPowLT α.ord.ToType β))
+
+lemma le_sigmaPowLT (α : Cardinal.{u}) {β : Cardinal.{u}} (hβ : β ≠ 0) :
+    α ≤ sigmaPowLT α β := by
+  sorry
+
+lemma aleph0_le_sigmaPowLT {α β : Cardinal.{u}} (hα : α ≠ 0) (hβ : .aleph0 ≤ β) :
+    .aleph0 ≤ sigmaPowLT α β := sorry
+
+end Cardinal
 
 namespace CategoryTheory.CardinalDirectedPoset.SetCardinalLT
 
@@ -35,7 +56,7 @@ variable (κ : Cardinal.{u}) (X : Type u)
 /-- The surjectivity of this map (see lemma `fromSigma_surjective`) says that
 if `X` is a type, then any subset of `X` that is of cardinality `< κ` can be obtained
 as the range of a map `κ'.ord.ToType → X` for some `κ' < κ`. -/
-def fromSigma (x : Σ (κ' : Set.Iio κ), κ'.val.ord.ToType → X) : SetCardinalLT κ X :=
+def fromSigma (x : Cardinal.SigmaPowLT X κ) : SetCardinalLT κ X :=
   ⟨Set.range x.2,
     HasCardinalLT.of_surjective
       (by simpa only [hasCardinalLT_iff_cardinal_mk_lt,
@@ -120,5 +141,17 @@ lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
   obtain ⟨κ₁₂, _, h₁, h₂⟩ := exists_of_pair κ₁ κ₂
   obtain ⟨κ, _, h₁₂, h₃⟩ := exists_of_pair κ₁₂ κ₃
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
+
+
+lemma fact_isRegular_succ_sigmaPowLT
+    (κ κ' : Cardinal.{u}) [Fact κ.IsRegular] [Fact κ'.IsRegular] :
+    Fact (Order.succ (κ.sigmaPowLT κ')).IsRegular :=
+  ⟨Cardinal.isRegular_succ (Cardinal.aleph0_le_sigmaPowLT
+        (Cardinal.IsRegular.ne_zero Fact.out) (Cardinal.IsRegular.aleph0_le Fact.out))⟩
+
+attribute [local instance] fact_isRegular_succ_sigmaPowLT in
+lemma sigmaPowLT (κ : Cardinal.{u}) [Fact κ.IsRegular] :
+    κ.SharplyLT (Order.succ (κ.sigmaPowLT κ)) := by
+  sorry
 
 end Cardinal.SharplyLT

@@ -272,7 +272,7 @@ lemma le_step :
     S ≤ step P S :=
   le_sup_left
 
-variable (κ) (hC : HasCardinalLT (Arrow C) κ) (hP : P.isoClosure = isCardinalPresentable _ κ)
+variable (κ) (hC : HasCardinalLT (Arrow C) κ) (hP : isCardinalPresentable _ κ = P.isoClosure)
 
 noncomputable def iter (a : κ.ord.ToType) : Subfunctor F :=
   transfiniteIterate (step P) a S
@@ -299,6 +299,13 @@ lemma iter_le_subfunctor (S : Subfunctor F) (j : κ.ord.ToType) :
     iter κ P S j ≤ subfunctor κ P S :=
   le_iSup ..
 
+lemma le_subfunctor : S ≤ subfunctor κ P S := by
+  have : Nonempty κ.ord.ToType :=
+    Cardinal.nonempty_ord_toType (Cardinal.IsRegular.ne_zero Fact.out)
+  let : OrderBot (κ.ord.ToType) := WellFoundedLT.toOrderBot _
+  have := iter_le_subfunctor (κ := κ) P S ⊥
+  exact le_trans (by simp [iter]) (iter_le_subfunctor (κ := κ) P S ⊥)
+
 @[implicit_reducible, simps!]
 noncomputable def subfunctorCocone :
     Cocone (iter_monotone κ P S).functor where
@@ -309,13 +316,14 @@ noncomputable def isColimitSubfunctorCocone :
     IsColimit (subfunctorCocone κ P S) :=
   (Preorder.colimitCoconeOfIsLUB _ isLUB_iSup).isColimit
 
+variable {κ P} in
 include hP in
 lemma isCardinalPure_subfunctor_ι (S : Subfunctor F) :
     IsCardinalPure κ (subfunctor κ P S).ι where
   exists_of_commSq {X' Y' t l r hX' hY'} sq := by
     wlog h : P X' ∧ P Y' generalizing X' Y'
-    · obtain ⟨X, hX, ⟨e₁⟩⟩ : P.isoClosure X' := by rwa [hP]
-      obtain ⟨Y, hY, ⟨e₂⟩⟩ : P.isoClosure Y' := by rwa [hP]
+    · obtain ⟨X, hX, ⟨e₁⟩⟩ : P.isoClosure X' := by rwa [← hP]
+      obtain ⟨Y, hY, ⟨e₂⟩⟩ : P.isoClosure Y' := by rwa [← hP]
       have hX' := isCardinalPresentable_of_iso e₁ κ
       have hY' := isCardinalPresentable_of_iso e₂ κ
       have sq' : CommSq (e₁.inv ≫ t ≫ e₂.hom) (e₁.inv ≫ l)
@@ -338,6 +346,35 @@ lemma isCardinalPure_subfunctor_ι (S : Subfunctor F) :
     simp [← cancel_mono (Subfunctor.ι _), s.fac, ← hl', s,
       Subfunctor.homOfLe_ι (iter_le_subfunctor P S j)]
 
+variable {κ P} in
+include hC hP in
+lemma hasEnoughPureSubobjects_aux {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+    (h : κ.SharplyLT κ') (hκ' : κ' = Order.succ (κ.sigmaPowLT κ))
+    (hS : HasCardinalLT S.toFunctor.Elements κ') :
+    ∃ (S' : Subfunctor F) (hS' : S ≤ S') (hS : HasCardinalLT S'.toFunctor.Elements κ'),
+      IsCardinalPure κ S'.ι := by
+  refine ⟨_, le_subfunctor κ P S, ?_, isCardinalPure_subfunctor_ι hP S⟩
+  sorry
+
+variable {κ P} in
+include hC hP in
+lemma hasEnoughPureSubobjects {κ' : Cardinal.{w}} [Fact κ'.IsRegular]
+    (h : κ.SharplyLT κ') (hκ' : κ' = Order.succ (κ.sigmaPowLT κ)) :
+    h.HasEnoughPureSubobjects (C ⥤ Type w) where
+  exists_isCardinalPure {P' P} f _ := by
+    have hC' : HasCardinalLT (Arrow C) κ' :=
+      hC.of_le (by
+        rw [hκ']
+        exact le_trans (Cardinal.le_sigmaPowLT _ (Cardinal.IsRegular.ne_zero Fact.out))
+          (Order.le_succ _))
+    obtain ⟨S', h₁, h₂, h₃⟩ :=
+      hasEnoughPureSubobjects_aux (Subfunctor.range f) hC hP h hκ' (by
+        refine HasCardinalLT.of_surjective ?_ _
+          (NatTrans.surjective_mapElements_obj_of_epi (Subfunctor.toRange f))
+        rwa [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC'])
+    rw [← Presheaf.isCardinalPresentable_iff_hasCardinalLT_arrow_elements hC'] at h₂
+    exact ⟨S'.toFunctor, inferInstance, Subfunctor.toRange f ≫ Subfunctor.homOfLe h₁,
+      S'.ι, inferInstance, by simp⟩
 
 end step₁
 
@@ -348,11 +385,14 @@ lemma step₁ (C : Type w) [SmallCategory C] (κ : Cardinal.{w}) [Fact κ.IsRegu
   have : Fact κ₁.IsRegular := ⟨by assumption⟩
   obtain ⟨κ₂, _, h₀, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
   have hκ₂ := hκ₁.of_le h₁.le
+  have := Cardinal.SharplyLT.fact_isRegular_succ_sigmaPowLT κ₂ κ₂
+  obtain ⟨P, _, hP⟩ := ObjectProperty.EssentiallySmall.exists_eq_isoClosure.{w}
+    (isCardinalPresentable (C ⥤ Type w) κ₂)
   obtain ⟨κ₃, _, h₃, H⟩ :
       ∃ (κ₃ : Cardinal.{w}) (_ : Fact κ₃.IsRegular) (h₃ : κ₂.SharplyLT κ₃),
-        h₃.HasEnoughPureSubobjects (C ⥤ Type w) := by
-    -- use `κ₂ ^ (< κ₂) + 1`
-    sorry
+        h₃.HasEnoughPureSubobjects (C ⥤ Type w) :=
+    ⟨Order.succ (κ₂.sigmaPowLT κ₂), _, Cardinal.SharplyLT.sigmaPowLT κ₂,
+      step₁.hasEnoughPureSubobjects hκ₂ hP _ rfl⟩
   exact ⟨κ₃, inferInstance, h₀.trans h₃, H.trans h₀⟩
 
 lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory

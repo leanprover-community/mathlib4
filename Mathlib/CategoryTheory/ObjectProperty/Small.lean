@@ -160,6 +160,14 @@ lemma EssentiallySmall.exists_eq_isoClosure_ofObj
   obtain ⟨ι, X, rfl⟩ := Small.exists_eq_ofObj.{w} P₀
   exact ⟨ι, X, h⟩
 
+lemma EssentiallySmall.exists_eq_isoClosure
+    (P : ObjectProperty C) [P.IsClosedUnderIsomorphisms]
+    [ObjectProperty.EssentiallySmall.{w} P] :
+    ∃ (P₀ : ObjectProperty C) (_ : ObjectProperty.Small.{w} P₀),
+      P = P₀.isoClosure := by
+  obtain ⟨ι, X, hX⟩ := EssentiallySmall.exists_eq_isoClosure_ofObj.{w} P
+  exact ⟨_, inferInstance, hX⟩
+
 lemma EssentiallySmall.of_le {P Q : ObjectProperty C}
     [ObjectProperty.EssentiallySmall.{w} Q] (h : P ≤ Q) :
     ObjectProperty.EssentiallySmall.{w} P where
