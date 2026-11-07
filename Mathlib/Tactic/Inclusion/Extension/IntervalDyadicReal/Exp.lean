@@ -38,6 +38,7 @@ open scoped Nat
 namespace Inclusion
 
 namespace IntervalDyadicReal
+open Inclusion.IntervalDyadicReal
 
 /-- The numerator of the partial Taylor sum `∑ m ∈ range n, (a / b) ^ m / m!` as an unreduced
 fraction over the common denominator `b ^ n * n!`. -/

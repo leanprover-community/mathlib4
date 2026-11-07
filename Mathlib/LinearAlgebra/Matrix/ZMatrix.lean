@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.Eigenspace.Matrix
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
-
 # Z-matrices
 
 A matrix whose off-diagonal entries are all non-positive is known as a Z-matrix. Cartan matrices

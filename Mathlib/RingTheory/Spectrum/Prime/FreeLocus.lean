@@ -16,7 +16,6 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
-
 # The free locus of a module
 
 ## Main definitions and results
