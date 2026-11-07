@@ -324,7 +324,7 @@ The norm, relative to `ℤ`, of `ζ - 1` in an `n`-th cyclotomic extension of `�
 power of a prime number is `1`.
 -/
 theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K]
-    (hζ : IsPrimitiveRoot ζ n) (h₁ : 2 < n) (h₂ : ∀ {p : ℕ}, Nat.Prime p → ∀ (k : ℕ), p ^ k ≠ n) :
+    (hζ : IsPrimitiveRoot ζ n) (h₁ : 2 < n) (h₂ : ¬ IsPrimePow n) :
     have : NeZero n := NeZero.of_gt h₁
     norm ℤ (hζ.toInteger - 1) = 1 := by
   have : NumberField K := IsCyclotomicExtension.numberField {n} ℚ K
@@ -332,7 +332,7 @@ theorem norm_toInteger_sub_one_eq_one {n : ℕ} [IsCyclotomicExtension {n} ℚ K
   dsimp only
   rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl, map_sub, map_one, map_one, RingOfIntegers.map_mk,
     sub_one_norm_eq_eval_cyclotomic hζ h₁ (cyclotomic.irreducible_rat (NeZero.pos _)),
-    eval_one_cyclotomic_not_prime_pow h₂, Int.cast_one]
+    eval_one_cyclotomic_of_not_isPrimePow (by lia) h₂, Int.cast_one]
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
@@ -571,27 +571,24 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
     obtain hn | hn := lt_or_eq_of_le hn
-    · by_cases! h : ∃ q, q.Prime ∧ ∃ t, q ^ t = n
-      · obtain ⟨q, hq, t, hn'⟩ := h
+    · by_cases h : IsPrimePow n
+      · obtain ⟨q, t, hq, ht, hn'⟩ := (isPrimePow_nat_iff _).mp h
+        obtain ⟨r, rfl⟩ := Nat.exists_eq_add_one_of_ne_zero ht.ne'
         have : Fact (Nat.Prime q) := ⟨hq⟩
-        cases t with
-        | zero => simp [← hn'] at hn
-        | succ r =>
-          rw [← hn'] at hC hμ
-          refine ⟨q, hq, r + 1, Module.finrank (ℚ⟮ζ⟯) K, r.add_one_ne_zero, hn'.symm, ?_⟩
-          by_cases hq' : q = 2
-          · cases r with
-            | zero =>
-                rw [← hn', hq', zero_add, pow_one] at hn
-                exact hn.false.elim
-            | succ k =>
-                rw [hq'] at hC hμ ⊢
-                rwa [hμ.norm_toInteger_sub_one_of_eq_two_pow] at hp
-          · rwa [hμ.norm_toInteger_sub_one_of_prime_ne_two hq'] at hp
-      · rw [IsPrimitiveRoot.norm_toInteger_sub_one_eq_one hμ hn, one_pow,
+        rw [← hn'] at hC hμ
+        refine ⟨q, hq, r + 1, Module.finrank (ℚ⟮ζ⟯) K, r.add_one_ne_zero, hn'.symm, ?_⟩
+        by_cases hq' : q = 2
+        · cases r with
+          | zero =>
+              rw [← hn', hq', zero_add, pow_one] at hn
+              exact hn.false.elim
+          | succ k =>
+              rw [hq'] at hC hμ ⊢
+              rwa [hμ.norm_toInteger_sub_one_of_eq_two_pow] at hp
+        · rwa [hμ.norm_toInteger_sub_one_of_prime_ne_two hq'] at hp
+      · rw [IsPrimitiveRoot.norm_toInteger_sub_one_eq_one hμ hn h, one_pow,
           Int.natCast_dvd_ofNat, Nat.dvd_one] at hp
-        · exact (Nat.Prime.ne_one hF.out hp).elim
-        · exact fun {p} a k ↦ h p a k
+        exact (Nat.Prime.ne_one hF.out hp).elim
     · rw [← hn] at hμ hC ⊢
       refine ⟨2, Nat.prime_two, 1, Module.finrank ℚ⟮ζ⟯ K, one_ne_zero, by rw [pow_one], ?_⟩
       rwa [hμ.norm_toInteger_sub_one_of_eq_two, neg_eq_neg_one_mul, mul_pow, IsUnit.dvd_mul_left
