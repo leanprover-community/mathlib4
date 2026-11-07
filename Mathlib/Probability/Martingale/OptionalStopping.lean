@@ -21,6 +21,8 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 ### Main results
 
 * `MeasureTheory.submartingale_iff_expected_stoppedValue_mono`: the optional stopping theorem.
+* `MeasureTheory.Supermartingale.expected_stoppedValue_anti`: the optional stopping theorem for
+  supermartingales.
 * `MeasureTheory.Submartingale.stoppedProcess`: the stopped process of a submartingale with
   respect to a stopping time is a submartingale.
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
@@ -61,6 +63,16 @@ theorem Submartingale.expected_stoppedValue_mono {E : Type*} [NormedAddCommGroup
       (𝒢.le _ _ (this _))
   · exact hf.integrable_stoppedValue hπ hbdd
   · exact hf.integrable_stoppedValue hτ fun ω => le_trans (hle ω) (hbdd ω)
+
+/-- Given a supermartingale `f` and bounded stopping times `τ` and `π` such that `τ ≤ π`, the
+expectation of `stoppedValue f π` is less than or equal to the expectation of `stoppedValue f τ`. -/
+theorem Supermartingale.expected_stoppedValue_anti {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace ℝ E] [CompleteSpace E] [PartialOrder E] [IsOrderedAddMonoid E]
+    [IsOrderedModule ℝ E] [ClosedIciTopology E] [SigmaFiniteFiltration μ 𝒢] {f : ℕ → Ω → E}
+    (hf : Supermartingale f 𝒢 μ) (hτ : IsStoppingTime 𝒢 τ) (hπ : IsStoppingTime 𝒢 π) (hle : τ ≤ π)
+    {N : ℕ} (hbdd : ∀ ω, π ω ≤ N) : μ[stoppedValue f π] ≤ μ[stoppedValue f τ] := by
+  simpa [stoppedValue, Pi.neg_apply, integral_neg] using
+    hf.neg.expected_stoppedValue_mono hτ hπ hle hbdd
 
 /-- The converse direction of the optional stopping theorem, i.e. a strongly adapted integrable
 process `f` is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
