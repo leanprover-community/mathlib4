@@ -497,6 +497,14 @@ theorem psi_le_const_mul_self {x : ℝ} (hx : 0 ≤ x) :
   norm_num
   linarith
 
+/-- Chebyshev's bound `∑ i < N, Λ i ≤ c N` with an explicit constant. -/
+theorem sum_range_vonMangoldt_le (N : ℕ) : ∑ i ∈ range N, Λ i ≤ (log 4 + 4) * N := by
+  rcases eq_or_ne N 0 with rfl | h
+  · simp
+  grw [range_eq_Icc_zero_sub_one _ h, (by simp : N - 1 = ⌊(N : ℝ) - 1⌋₊), ← psi_eq_sum_Icc,
+    psi_le_const_mul_self <| sub_nonneg_of_le <| one_le_cast_iff_ne_zero.mpr h,
+    (by linarith : (N : ℝ) - 1 ≤ N)]
+
 /-- `ψ - θ` is the sum of `Λ` over non-primes. -/
 theorem psi_sub_theta_eq_sum_not_prime (x : ℝ) :
     ψ x - θ x = ∑ n ∈ Ioc 0 ⌊x⌋₊ with ¬n.Prime, vonMangoldt n := by
