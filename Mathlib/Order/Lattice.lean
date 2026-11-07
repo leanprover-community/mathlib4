@@ -59,7 +59,6 @@ The partial order is defined so that `a ≤ b` unfolds to `a ⊔ b = b`; cf. `su
 def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b = b ⊔ a)
     (sup_assoc : ∀ a b c : α, a ⊔ b ⊔ c = a ⊔ (b ⊔ c)) (sup_idem : ∀ a : α, a ⊔ a = a) :
     SemilatticeSup α where
-  sup := (· ⊔ ·)
   le a b := a ⊔ b = b
   le_refl := sup_idem
   le_trans a b c hab hbc := by rw [← hbc, ← sup_assoc, hab]
@@ -78,7 +77,6 @@ The partial order is defined so that `a ≤ b` unfolds to `b ⊓ a = a`; cf. `in
 def SemilatticeInf.mk' {α : Type*} [Min α] (inf_comm : ∀ a b : α, a ⊓ b = b ⊓ a)
     (inf_assoc : ∀ a b c : α, a ⊓ b ⊓ c = a ⊓ (b ⊓ c)) (inf_idem : ∀ a : α, a ⊓ a = a) :
     SemilatticeInf α where
-  inf := (· ⊓ ·)
   le b a := a ⊓ b = b
   le_refl := inf_idem
   le_trans c b a hbc hab := by rw [← hbc, ← inf_assoc, hab]
@@ -165,7 +163,6 @@ theorem SemilatticeSup.ext {α} {A B : SemilatticeSup α}
 
 @[to_dual]
 instance OrderDual.instSemilatticeSup (α) [h : SemilatticeInf α] : SemilatticeSup αᵒᵈ where
-  sup a b := h.inf a b
   le_sup_left := h.inf_le_left
   le_sup_right := h.inf_le_right
   sup_le _ _ _ := h.le_inf _ _ _
@@ -276,8 +273,6 @@ end DistribLattice
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrder.toLattice {α : Type u} [LinearOrder α] : Lattice α where
-  sup := max
-  inf := min
   le_sup_left := le_max_left; le_sup_right := le_max_right; sup_le _ _ _ := max_le
   inf_le_left := min_le_left; inf_le_right := min_le_right; le_inf _ _ _ := le_min
 
@@ -393,7 +388,6 @@ theorem sup_def [∀ i, Max (α' i)] (f g : ∀ i, α' i) : f ⊔ g = fun i => f
 
 @[to_dual]
 instance instSemilatticeSup [∀ i, SemilatticeSup (α' i)] : SemilatticeSup (∀ i, α' i) where
-  sup x y i := x i ⊔ y i
   le_sup_left _ _ _ := le_sup_left
   le_sup_right _ _ _ := le_sup_right
   sup_le _ _ _ ac bc i := sup_le (ac i) (bc i)
@@ -617,7 +611,6 @@ theorem sup_def [Max α] [Max β] (p q : α × β) : p ⊔ q = (p.fst ⊔ q.fst,
 
 @[to_dual]
 instance instSemilatticeSup [SemilatticeSup α] [SemilatticeSup β] : SemilatticeSup (α × β) where
-  sup a b := ⟨a.1 ⊔ b.1, a.2 ⊔ b.2⟩
   sup_le _ _ _ h₁ h₂ := ⟨sup_le h₁.1 h₂.1, sup_le h₁.2 h₂.2⟩
   le_sup_left _ _ := ⟨le_sup_left, le_sup_left⟩
   le_sup_right _ _ := ⟨le_sup_right, le_sup_right⟩
@@ -644,7 +637,7 @@ See note [reducible non-instances]. -/]
 protected abbrev semilatticeSup [SemilatticeSup α] {P : α → Prop}
     (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) :
     SemilatticeSup { x : α // P x } where
-  sup x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
+  max x y := ⟨x.1 ⊔ y.1, Psup x.2 y.2⟩
   le_sup_left _ _ := le_sup_left
   le_sup_right _ _ := le_sup_right
   sup_le _ _ _ h1 h2 := sup_le h1 h2
@@ -685,7 +678,6 @@ protected abbrev Function.Injective.semilatticeSup [Max α] [LE α] [LT α] [Sem
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) :
     SemilatticeSup α where
   __ := hf_inj.partialOrder f le lt
-  sup a b := max a b
   le_sup_left a b := by
     rw [← le, map_sup]
     exact le_sup_left
