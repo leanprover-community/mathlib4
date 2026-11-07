@@ -91,51 +91,9 @@ variable {L M N : Type*} [AddCommGroup M] [AddCommGroup N] [AddCommGroup L]
   [Module A N] [Module B N] [IsScalarTower A B N]
   [Module A L] [Module B L] [IsScalarTower A B L]
 
-variable (B) in
-/-- Separability turns a base-linear map into an algebra-linear map. -/
-noncomputable def extendScalars : (M →ₗ[A] N) →ₗ[B] (M →ₗ[B] N) :=
-  ((sec A B M).lcomp B N).comp (LinearMap.liftBaseChangeEquiv B).toLinearMap
-
-lemma extendScalars_apply (f : M →ₗ[A] N) :
-    extendScalars B f = (f.liftBaseChange B).comp (sec A B M) :=
-  rfl
-
 lemma le_comap_extendScalars (f : M →ₗ[A] N) (P : Submodule B M) (Q : Submodule B N)
     (hf : P.restrictScalars A ≤ (Q.restrictScalars A).comap f) : P ≤ Q.comap (extendScalars B f) :=
   fun _ hx ↦ Submodule.baseChange_le_comap_liftBaseChange_iff.mpr hf (sec_mem_baseChange A B P hx)
-
-@[simp]
-lemma extendScalars_comp_restrictScalars (f : M →ₗ[A] N) (g : L →ₗ[B] M) :
-    extendScalars B (f.comp (g.restrictScalars A)) = (extendScalars B f).comp g := by
-  rw [extendScalars_apply, extendScalars_apply, LinearMap.comp_assoc, sec_comp,
-    ← LinearMap.comp_assoc, LinearMap.liftBaseChange_comp]
-
-@[simp]
-lemma extendScalars_restrictScalars_comp (f : M →ₗ[B] N) (g : L →ₗ[A] M) :
-    extendScalars B ((f.restrictScalars A).comp g) = f.comp (extendScalars B g) := by
-  rw [extendScalars_apply, extendScalars_apply, ← LinearMap.comp_assoc,
-    LinearMap.comp_liftBaseChange]
-
-@[simp]
-lemma extendScalars_comp_mulLeft (f : B →ₗ[A] M) (b : B) :
-    extendScalars B (f.comp (LinearMap.mulLeft A b)) =
-      (extendScalars B f).comp (LinearMap.mulLeft B b) :=
-  extendScalars_comp_restrictScalars f (LinearMap.mulLeft B b)
-
-@[simp]
-lemma extendScalars_mulLeft_comp (f : M →ₗ[A] B) (b : B) :
-    extendScalars B ((LinearMap.mulLeft A b).comp f) =
-      (LinearMap.mulLeft B b).comp (extendScalars B f) :=
-  extendScalars_restrictScalars_comp (LinearMap.mulLeft B b) f
-
-@[simp]
-lemma extendScalars_id : extendScalars B (LinearMap.id : M →ₗ[A] M) = LinearMap.id :=
-  comp_sec A B M
-
-@[simp]
-lemma extendScalars_restrictScalars (f : M →ₗ[B] N) :
-    extendScalars B (f.restrictScalars A) = f := by
-  simpa using extendScalars_restrictScalars_comp f (LinearMap.id (R := A))
 
 @[simp]
 lemma extendScalars_toAlgHom (g : G) :
