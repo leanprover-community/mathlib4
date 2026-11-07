@@ -473,6 +473,55 @@ lemma mk_inertiaIdempotent (Q : Ideal S) [Q.IsPrime] (g : G) :
   rw [← mk_inertiaIdempotent_eq_one_iff R]
   grind [((isIdempotentElem_inertiaIdempotent R S g).map (Ideal.Quotient.mk Q)).eq_zero_or_one]
 
+variable (G) [Finite G]
+
+/-- If `S/R` is formally unramified and essentially finite type, then the group idempotent
+of a group `G` of algebra automorphisms is an idempotent element `e` of `S` with the property that
+`e ≡ 1 [MOD Q] ↔ Q.inertia G = ⊤`, see `mk_groupIdempotent_eq_one_iff`. -/
+noncomputable def groupIdempotent : S :=
+  letI := Fintype.ofFinite G
+  ∏ g : G, inertiaIdempotent R S (g : G)
+
+lemma isIdempotentElem_groupIdempotent : IsIdempotentElem (groupIdempotent R S G) := by
+  simp_rw [groupIdempotent, IsIdempotentElem, ← Finset.prod_mul_distrib,
+    (isIdempotentElem_inertiaIdempotent R S _).eq]
+
+@[simp]
+lemma groupIdempotent_of_subsingleton [Subsingleton G] : groupIdempotent R S G = 1 := by
+  let := Fintype.ofFinite G
+  simp [groupIdempotent, Fintype.prod_subsingleton (inertiaIdempotent R S) (1 : G)]
+
+variable {S G} in
+lemma smul_mul_groupIdempotent (g : G) (b : S) :
+    (g • b) * groupIdempotent R S G = b * groupIdempotent R S G := by
+  let := Fintype.ofFinite G
+  obtain ⟨x, hx⟩ : inertiaIdempotent R S (g : G) ∣ groupIdempotent R S G :=
+    Finset.dvd_prod_of_mem _ (Finset.mem_univ g)
+  rw [hx, ← mul_assoc, smul_mul_inertiaIdempotent, mul_assoc]
+
+variable {G} in
+@[simp]
+lemma smul_groupIdempotent (g : G) :
+    g • groupIdempotent R S G = groupIdempotent R S G := by
+  conv_lhs => rw [← (isIdempotentElem_groupIdempotent R S G).eq,
+    ← smul_mul_groupIdempotent R g⁻¹, smul_mul', smul_inv_smul, mul_comm,
+    smul_mul_groupIdempotent, (isIdempotentElem_groupIdempotent R S G).eq]
+
+variable {R S G} in
+@[simp]
+lemma mk_groupIdempotent_eq_one_iff {Q : Ideal S} :
+    Ideal.Quotient.mk Q (groupIdempotent R S G) = 1 ↔ Q.inertia G = ⊤ := by
+  refine .trans ⟨fun h g hg b ↦ ?_, fun hH ↦ ?_⟩ _root_.eq_top_iff.symm
+  · simpa [h, Ideal.Quotient.mk_eq_mk_iff_sub_mem] using
+      congr(Ideal.Quotient.mk Q $(smul_mul_groupIdempotent R g b))
+  · rw [groupIdempotent, map_prod]
+    exact Finset.prod_eq_one fun g _ ↦ by simpa using hH (Subgroup.mem_top g)
+
+omit [Finite G] in
+lemma mk_groupIdempotent_inertia_eq_one (Q : Ideal S) [Finite (Q.inertia G)] :
+    Ideal.Quotient.mk Q (groupIdempotent R S (Q.inertia G)) = 1 := by
+  simp [← Subgroup.map_subtype_inj, ← MonoidHom.range_eq_map]
+
 end inertia
 
 end Algebra.FormallyUnramified
