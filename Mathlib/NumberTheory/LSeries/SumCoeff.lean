@@ -94,6 +94,19 @@ theorem LSeriesSummable_of_sum_norm_bigO_and_nonneg
     LSeriesSummable (fun n ↦ f n) s :=
   LSeriesSummable_of_sum_norm_bigO (by simpa [abs_of_nonneg (hf _)]) hr hs
 
+/-- If `f` takes nonnegative real values and satisfies the Chebyshev-type bound
+`∑ k ∈ range n, f k ≤ C * n` for all `n`, then the L-series `LSeries f` converges at `s : ℂ`
+for all `s` such that `1 < s.re`. -/
+theorem LSeriesSummable_of_sum_range_le_and_nonneg {f : ℕ → ℝ} {C : ℝ}
+    (hO : ∀ n, ∑ k ∈ range n, f k ≤ C * n) (hf : ∀ n, 0 ≤ f n) (hs : 1 < s.re) :
+    LSeriesSummable (fun n ↦ f n) s := by
+  refine LSeriesSummable_of_sum_norm_bigO_and_nonneg (r := 1) ?_ hf zero_le_one hs
+  refine isBigO_of_le' (c := 2 * C) _ fun n ↦ ?_
+  rw [Real.norm_of_nonneg (sum_nonneg fun k _ ↦ hf k), Real.rpow_one, Real.norm_natCast]
+  calc
+    _ ≤ ∑ k ∈ range (2 * n), f k := sum_le_sum_of_subset_of_nonneg (by grind) fun k _ _ ↦ hf k
+    _ ≤ _ := (hO (2 * n)).trans_eq (by grind)
+
 end summable
 
 section integralrepresentation
