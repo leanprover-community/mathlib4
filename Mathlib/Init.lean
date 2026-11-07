@@ -9,6 +9,7 @@ public meta import Lean.Linter.Sets -- for the definition of linter sets
 public meta import Mathlib.Lean.Linter -- linter utilities; will be transitively imported in #31134
 public meta import Mathlib.Tactic.AdaptationNote -- make #adaptation_note available everywhere
 public meta import Mathlib.Tactic.Lemma
+public meta import Mathlib.Tactic.Linter.AttributeOnDeprecated
 public meta import Mathlib.Tactic.Linter.AuxLemma
 public meta import Mathlib.Tactic.Linter.DeclType
 public meta import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
@@ -87,6 +88,7 @@ all these linters, or add the `weak.linter.mathlibStandardSet` option to their l
 register_linter_set linter.mathlibStandardSet :=
   -- linter.allScriptsDocumented -- disabled, let's not impose this requirement downstream.
   -- linter.checkInitImports -- disabled, not relevant downstream.
+  linter.attributeOnDeprecated
   linter.auxLemma
   linter.flexible
   linter.hashCommand
