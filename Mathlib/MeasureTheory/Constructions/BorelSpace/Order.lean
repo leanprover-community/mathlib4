@@ -299,6 +299,7 @@ section OrderTopology
 
 variable [OrderTopology α]
 
+@[to_dual]
 theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
@@ -323,6 +324,7 @@ theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ �
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
+@[to_dual /-- If a set is a left-neighborhood of all of its points, then it is measurable. -/]
 theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
   · rcases H with ⟨x₀, x₀s, h₀⟩
@@ -339,11 +341,6 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push Not at H
     exact H
-
-/-- If a set is a left-neighborhood of all of its points, then it is measurable. -/
-@[to_dual existing]
-theorem MeasurableSet.of_mem_nhdsLT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[<] x) : MeasurableSet s :=
-  of_mem_nhdsGT (α := αᵒᵈ) h
 
 end OrderTopology
 
@@ -892,7 +889,7 @@ end Monotone
 
 /-- A right-continuous function on a second-countable linear order is measurable. -/
 @[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
-theorem IsRightContinuous.measurable [TopologicalSpace β] {mβ : MeasurableSpace β} [BorelSpace β]
+theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
     {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
   measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
@@ -1149,7 +1146,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} {mα 
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico (t ^ n) (t ^ (n + 1))) := by
   have A : μ s = μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' Ioi 0) := by
     rw [← measure_union]
-    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
+    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, insert_Ioi,
         ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
     · exact disjoint_singleton_left.mpr self_notMem_Ioi
         |>.preimage f |>.inter_right' s |>.inter_left' s

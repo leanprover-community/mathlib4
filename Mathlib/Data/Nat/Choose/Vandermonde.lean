@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Coeff
 
 /-!
-
 # Vandermonde's identity
 
 In this file we prove Vandermonde's identity (`Nat.add_choose_eq`):

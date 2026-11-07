@@ -12,7 +12,6 @@ public import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 import Mathlib.CategoryTheory.Abelian.Subobject
 
 /-!
-
 # Grothendieck categories
 
 This file defines Grothendieck categories and proves basic facts about them.
