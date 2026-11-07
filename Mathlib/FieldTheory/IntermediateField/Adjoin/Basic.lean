@@ -66,7 +66,7 @@ theorem mem_adjoin_simple_iff {α : E} (x : E) :
 theorem forall_mem_adjoin_smul_eq_self_iff {M : Type*} [Monoid M] [MulSemiringAction M E]
     [SMulCommClass M F E] (m : M) :
     (∀ x ∈ adjoin F S, m • x = x) ↔ ∀ x ∈ S, m • x = x := by
-  simpa [-adjoin_le_iff, Set.subset_def, IsConcreteLE.le_iff,
+  simpa [-adjoin_le_iff, Set.subset_def, le_iff_mem_imp_mem,
     FixedBy.intermediateField_mem_iff] using
     adjoin_le_iff (T := FixedBy.intermediateField F E m)
 
