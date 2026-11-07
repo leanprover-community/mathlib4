@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Heather Macbeth
 -/
 module
 
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
 public import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 import Mathlib.Geometry.Manifold.Notation
@@ -230,6 +231,28 @@ theorem trivializationAt_apply (x : M) (z : TM) :
       (z.1, fderivWithin 𝕜 ((chartAt H x).extend I ∘ ((chartAt H z.1).extend I).symm) (range I)
         ((chartAt H z.1).extend I z.1) z.2) :=
   rfl
+
+-- currently unused; may be useful since this statement is more type-correct
+theorem trivializationAt_apply' (x : M) (z : TM) :
+    trivializationAt E (TangentSpace I) x z =
+      (z.1, mfderiv[range I] ((extChartAt I x) ∘ (extChartAt I z.1).symm)
+        (extChartAt I z.1 z.1) z.2) := by
+  rw [trivializationAt_apply]
+  congr
+  set f := (extChartAt I x) ∘ (extChartAt I z.proj).symm
+  set x := extChartAt I z.proj z.proj
+  -- This is `mvfderivWithin_eq_fderivWithin` inlined for import reasons.
+  by_cases h : MDiffAt[range I] f x
+  · simp [mfderivWithin, h, chartAt_self_eq]
+    rfl
+  · simp only [mfderivWithin, h]
+    -- XXX: needs some re-shuffling of declarations to fix the sorry.
+    simp only [mdifferentiableWithinAt_iff', mfld_simps] at h
+    --have := DifferentiableWithinAt.continuousWithinAt (𝕜 := 𝕜) (f := f) (s := range I) (x := x)
+    --simp [*] at h
+    --rw [mdifferentiableWithinAt_iff_differentiableWithinAt] at h
+    --exact (fderivWithin_zero_of_not_differentiableWithinAt h).symm
+    sorry
 
 @[simp, mfld_simps]
 theorem trivializationAt_fst (x : M) (z : TM) : (trivializationAt E (TangentSpace I) x z).1 = z.1 :=
