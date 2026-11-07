@@ -33,19 +33,25 @@ namespace Cardinal
 abbrev SigmaPowLT (X : Type v) (κ : Cardinal.{u}) : Type max (u + 1) v :=
   Σ (b : Set.Iio κ), b.val.ord.ToType → X
 
-lemma small_sigmaPowLT (X : Type v) (κ : Cardinal.{u}) [Small.{u} X] :
-    Small.{u} (SigmaPowLT X κ) := by
-  sorry
-
 def sigmaPowLT (α β : Cardinal.{u}) : Cardinal.{u} :=
   .mk (Shrink.{u} (SigmaPowLT α.ord.ToType β))
 
-lemma le_sigmaPowLT (α : Cardinal.{u}) {β : Cardinal.{u}} (hβ : β ≠ 0) :
+lemma le_sigmaPowLT (α : Cardinal.{u}) {β : Cardinal.{u}} (hβ : 2 ≤ β) :
     α ≤ sigmaPowLT α β := by
-  sorry
+  let f (x : α.ord.ToType) : SigmaPowLT α.ord.ToType β :=
+    ⟨⟨1, lt_of_lt_of_le (by simp) hβ⟩, fun _ ↦ x⟩
+  have hf : Function.Injective f := fun x y h ↦ by
+    let z : (ord.{u} 1).ToType := Nonempty.some (by simp)
+    exact congr($(h).2 z)
+  simpa using! Cardinal.lift_mk_le_lift_mk_of_injective ((equivShrink.{u} _).injective.comp hf)
 
-lemma aleph0_le_sigmaPowLT {α β : Cardinal.{u}} (hα : α ≠ 0) (hβ : .aleph0 ≤ β) :
-    .aleph0 ≤ sigmaPowLT α β := sorry
+lemma aleph0_le_sigmaPowLT {α β : Cardinal.{u}} (hα : .aleph0 ≤ α) (hβ : 2 ≤ β) :
+    .aleph0 ≤ sigmaPowLT α β :=
+  hα.trans (le_sigmaPowLT _ hβ)
+
+lemma sigmaPowLT_pow_le
+    (α : Cardinal.{u}) {β γ : Cardinal.{u}} [Fact γ.IsRegular] (h : β < γ) :
+    (α.sigmaPowLT γ) ^ β ≤ (α.sigmaPowLT γ) := sorry
 
 end Cardinal
 
@@ -142,16 +148,19 @@ lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
   obtain ⟨κ, _, h₁₂, h₃⟩ := exists_of_pair κ₁₂ κ₃
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
 
-
 lemma _root_.Cardinal.fact_isRegular_succ_sigmaPowLT
     (κ κ' : Cardinal.{u}) [Fact κ.IsRegular] [Fact κ'.IsRegular] :
     Fact (Order.succ (κ.sigmaPowLT κ')).IsRegular :=
   ⟨Cardinal.isRegular_succ (Cardinal.aleph0_le_sigmaPowLT
-        (Cardinal.IsRegular.ne_zero Fact.out) (Cardinal.IsRegular.aleph0_le Fact.out))⟩
+    (Cardinal.IsRegular.aleph0_le Fact.out)
+      (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out)))⟩
 
 attribute [local instance] fact_isRegular_succ_sigmaPowLT in
 lemma sigmaPowLT (κ : Cardinal.{u}) [Fact κ.IsRegular] :
     κ.SharplyLT (Order.succ (κ.sigmaPowLT κ)) := by
-  sorry
+  refine of_pow_lt ?_ (fun α β h₁ h₂ ↦ ?_)
+  · simpa using κ.le_sigmaPowLT (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out))
+  · simp only [Order.lt_succ_iff] at h₂ ⊢
+    exact (power_le_power_right h₂).trans (sigmaPowLT_pow_le κ h₁)
 
 end Cardinal.SharplyLT

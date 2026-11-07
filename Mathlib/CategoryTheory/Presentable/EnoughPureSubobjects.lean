@@ -360,7 +360,21 @@ lemma hasCardinalLT_hom {F G : C ⥤ Type w}
   replace hF := P.le_isoClosure _ hF
   simp only [← hP, Presheaf.isCardinalPresentable_iff_hasCardinalLT_elements hC] at hF
   refine .of_injective ?_ _ NatTrans.injective_mapElements_obj
-  sorry
+  simp only [hasCardinalLT_iff_cardinal_mk_lt, Order.lt_succ_iff, Cardinal.mk_pi,
+    Cardinal.prod_const, Cardinal.lift_eq_id, id_eq] at hF hG ⊢
+  refine le_trans ?_ (Cardinal.sigmaPowLT_pow_le κ' hκ'.lt)
+  by_cases hG₀ : Cardinal.mk G.Elements = 0
+  · simp only [hG₀]
+    exact le_trans
+      ((Cardinal.zero_power_le _).trans (Cardinal.one_le_aleph0.trans
+        (le_trans (by simpa using Cardinal.IsRegular.aleph0_le Fact.out)
+          (Cardinal.power_le_power_left
+            (Cardinal.IsRegular.ne_zero Fact.out)
+            (Cardinal.one_le_aleph0.trans (Cardinal.IsRegular.aleph0_le Fact.out))))))
+      (Cardinal.power_le_power_right
+        (Cardinal.le_sigmaPowLT κ'
+          (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out))))
+  · exact (Cardinal.power_le_power_left hG₀ hF.le).trans (Cardinal.power_le_power_right hG)
 
 include hC hP hκ' hP' in
 lemma hasCardinalLT_span
@@ -421,7 +435,7 @@ lemma hasCardinalLT_iter
     exact Subfunctor.hasCardinalLT_elements_iSup (fun i ↦ hj _ i.property) (by
       refine HasCardinalLT.of_injective ?_ _ Subtype.val_injective
       simpa [hasCardinalLT_iff_cardinal_mk_lt] using hκ'.le.trans
-        (Cardinal.le_sigmaPowLT κ' (Cardinal.IsRegular.ne_zero Fact.out)))
+        (Cardinal.le_sigmaPowLT κ' (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out))))
 
 include hC hP hκ' hP' in
 lemma hasEnoughPureSubobjects_aux
@@ -433,7 +447,7 @@ lemma hasEnoughPureSubobjects_aux
   ⟨_, le_subfunctor κ P S,
     Subfunctor.hasCardinalLT_elements_iSup (hasCardinalLT_iter hC hP hκ' hP' hS) (by
       simpa [hasCardinalLT_iff_cardinal_mk_lt] using hκ'.le.trans
-        (κ'.le_sigmaPowLT (Cardinal.IsRegular.ne_zero Fact.out))),
+        (κ'.le_sigmaPowLT (le_trans (by simp) (Cardinal.IsRegular.aleph0_le Fact.out)))),
       isCardinalPure_subfunctor_ι hP S⟩
 
 include hC hP hκ' hP' in
