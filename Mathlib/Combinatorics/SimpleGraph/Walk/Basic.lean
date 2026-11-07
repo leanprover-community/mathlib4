@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Combinatorics.SimpleGraph.Dart
 
+import Mathlib.Data.List.Zip
+
 /-!
 # Walks
 
@@ -343,8 +345,18 @@ theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v 
     obtain ⟨rfl, h₃⟩ : v = v' ∧ w₁.edges = w₂.edges := by simpa [h₁, h₂.ne] using h
     rw [edges_injective h₃]
 
-theorem darts_injective {u v : V} : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
+theorem darts_injective : Function.Injective (Walk.darts : G.Walk u v → List G.Dart) :=
   edges_injective.of_comp
+
+theorem support_injective : Function.Injective (Walk.support : G.Walk u v → List V) := by
+  intro p q h
+  refine darts_injective (Dart.toProd_injective.list_map (List.rightInverse_unzip_zip.injective ?_))
+  have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+  have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+  grind [map_fst_darts, map_snd_darts]
+
+lemma ext_support {p q : G.Walk u v} (h : p.support = q.support) : p = q :=
+  support_injective h
 
 /-- The `Set` of edges of a walk. -/
 def edgeSet {u v : V} (p : G.Walk u v) : Set (Sym2 V) := {e | e ∈ p.edges}
@@ -560,6 +572,63 @@ theorem edges_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.D
 theorem length_ofDarts {l : List G.Dart} (hne : l ≠ []) (hchain : l.IsChain G.DartAdj) :
     (ofDarts l hne hchain).length = l.length := by
   grind [darts_ofDarts]
+
+theorem darts_infix_iff_support_infix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hnil : ¬p.Nil) : p.darts <:+: q.darts ↔ p.support <:+: q.support := by
+  rw [List.infix_iff_getElem?, List.infix_iff_getElem?]
+  refine ⟨.imp fun k ⟨hk, h⟩ ↦ ⟨by grind, fun i hi ↦ ?_⟩, .imp ?_⟩
+  · rcases eq_or_ne i p.length with rfl | _
+    · have := h <| p.length - 1
+      grind [snd_darts_getElem]
+    have := h i
+    grind [fst_darts_getElem]
+  · grind [Dart.ext, fst_darts_getElem, snd_darts_getElem]
+
+theorem darts_eq_iff_support_eq {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'} (hnil : ¬p.Nil) :
+    p.darts = q.darts ↔ p.support = q.support := by
+  refine ⟨fun h ↦ List.infix_antisymm ?_ ?_, fun h ↦ ?_⟩
+  · rw [← darts_infix_iff_support_infix hnil, h]
+  · have hnil' : ¬q.Nil := by grind [darts_eq_nil]
+    rw [← darts_infix_iff_support_infix hnil', h]
+  · refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+    have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+    have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+    grind [map_fst_darts, map_snd_darts]
+
+theorem darts_prefix_iff_support_prefix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hnil : ¬p.Nil) : p.darts <+: q.darts ↔ p.support <+: q.support := by
+  rw [List.prefix_iff_eq_take, List.prefix_iff_eq_take]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · apply List.eq_of_tail_eq_of_dropLast_eq <| by grind
+    · rw [List.tail_take_eq_take_tail, ← map_snd_darts, ← map_snd_darts, h]
+      simp
+    · rw [List.dropLast_take_eq_take_dropLast, ← map_fst_darts, ← map_fst_darts, h]
+      simp
+  · refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+    have hd := congr(($h).dropLast)
+    have ht := congr(($h).tail)
+    simp_rw [List.dropLast_take_eq_take_dropLast, List.tail_take_eq_take_tail, ← map_fst_darts,
+      ← map_snd_darts, ← List.map_take] at hd ht
+    have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+    have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+    grind
+
+theorem darts_suffix_iff_support_suffix {u' v' : V} {p : G.Walk u v} {q : G.Walk u' v'}
+    (hnil : ¬p.Nil) : p.darts <:+ q.darts ↔ p.support <:+ q.support := by
+  rw [List.suffix_iff_eq_drop, List.suffix_iff_eq_drop]
+  refine ⟨fun h ↦ List.eq_of_tail_eq_of_dropLast_eq (by grind) ?_ ?_, fun h ↦ ?_⟩
+  · rw [List.tail_drop_eq_drop_tail, ← map_snd_darts, ← map_snd_darts, h]
+    simp
+  · rw [List.dropLast_drop_eq_drop_dropLast, ← map_fst_darts, ← map_fst_darts, h]
+    simp
+  · have hd := congr(($h).dropLast)
+    have ht := congr(($h).tail)
+    simp_rw [List.dropLast_drop_eq_drop_dropLast, List.tail_drop_eq_drop_tail, ← map_fst_darts,
+      ← map_snd_darts, ← List.map_drop] at hd ht
+    refine Dart.toProd_injective.list_map <| List.rightInverse_unzip_zip.injective ?_
+    have : Prod.fst ∘ Dart.toProd = fun d : G.Dart ↦ d.fst := rfl
+    have : Prod.snd ∘ Dart.toProd = fun d : G.Dart ↦ d.snd := rfl
+    grind
 
 end Walk
 
