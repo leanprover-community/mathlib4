@@ -55,6 +55,15 @@ lemma descShortComplex_singleδ :
       (Q.commShiftIso (1 : ℤ)).hom.app _ :=
   descShortComplex_triangleOfSESδ _
 
+@[reassoc (attr := simp)]
+lemma singleδ_liftShortComplex :
+    hS.singleδ ≫ (Q.map (CochainComplex.mappingCocone.liftShortComplex
+        (S.map (HomologicalComplex.single C (.up ℤ) 0))))⟦(1 : ℤ)⟧' =
+    Q.map (CochainComplex.mappingCocone.triangle
+      ((HomologicalComplex.single C (.up ℤ) 0).map S.g)).mor₃ ≫
+      (Q.commShiftIso (1 : ℤ)).hom.app _ :=
+  triangleOfSESδ_liftShortComplex _
+
 /-- The (distinguished) triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/
 @[implicit_reducible, simps!]
