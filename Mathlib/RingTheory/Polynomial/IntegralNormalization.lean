@@ -39,7 +39,7 @@ a monic polynomial with root `leadingCoeff f * z`.
 Moreover, `integralNormalization 0 = 0`.
 -/
 noncomputable def integralNormalization (p : R[X]) : R[X] :=
-  p.sum fun i a ↦
+  p.coeff.sum fun i a ↦
     monomial i (if p.degree = i then 1 else a * p.leadingCoeff ^ (p.natDegree - 1 - i))
 
 @[simp]
@@ -48,7 +48,7 @@ theorem integralNormalization_zero : integralNormalization (0 : R[X]) = 0 := by
 
 @[simp]
 theorem integralNormalization_C {x : R} (hx : x ≠ 0) : integralNormalization (C x) = 1 := by
-  simp [integralNormalization, sum_def, support_C hx, degree_C hx]
+  simp [integralNormalization, Finsupp.sum, degree_C hx, hx]
 
 variable {p : R[X]}
 
@@ -56,13 +56,12 @@ theorem integralNormalization_coeff {i : ℕ} :
     (integralNormalization p).coeff i =
       if p.degree = i then 1 else coeff p i * p.leadingCoeff ^ (p.natDegree - 1 - i) := by
   have : p.coeff i = 0 → p.degree ≠ i := fun hc hd => coeff_ne_zero_of_eq_degree hd hc
-  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, this,
-    mem_support_iff]
+  simp +contextual [integralNormalization, Finsupp.single_apply, this]
 
 theorem support_integralNormalization_subset :
     (integralNormalization p).support ⊆ p.support := by
   intro
-  simp +contextual [sum_def, integralNormalization, Finsupp.single_apply, mem_support_iff]
+  simp +contextual [integralNormalization, Finsupp.single_apply]
 
 theorem integralNormalization_coeff_degree {i : ℕ} (hi : p.degree = i) :
     (integralNormalization p).coeff i = 1 := by rw [integralNormalization_coeff, ite_eq_left hi]

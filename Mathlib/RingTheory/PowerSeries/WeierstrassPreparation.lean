@@ -766,7 +766,7 @@ theorem IsWeierstrassDivision.isWeierstrassFactorization
     rw [Polynomial.degree_sub_eq_left_of_degree_lt H1, Polynomial.degree_X_pow]
   refine ⟨⟨⟨fun {i} hi ↦ ?_⟩, .sub_of_left (Polynomial.monic_X_pow _) H1⟩, Units.isUnit _, ?_⟩
   · rw [hfdeg] at hi
-    simp_rw [f, Polynomial.coeff_sub, Polynomial.coeff_X_pow, ite_eq_right hi.ne, zero_sub,
+    simp_rw [f, Polynomial.coeff_sub, Polynomial.coeff_X_pow_apply, ite_eq_right hi.ne, zero_sub,
       neg_mem_iff]
     have := H.coeff_f_sub_r_mem hi
     rwa [map_sub, coeff_X_pow, ite_eq_right hi.ne, zero_sub, neg_mem_iff,

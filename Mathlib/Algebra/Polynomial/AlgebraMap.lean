@@ -124,16 +124,13 @@ instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
 theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
-  simp only [eval₂_eq_sum, sum_def]
-  simp only [map_sum, map_mul, map_pow, AlgHom.commutes]
+  simp [eval₂_eq_sum_coeff, Finsupp.sum]
 
 @[simp]
 theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (p : R[X])
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
-  conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
-  simp only [eval₂_eq_sum, sum_def]
-  simp only [map_sum, map_mul, map_pow]
-  simp [Polynomial.C_eq_algebraMap]
+  conv_rhs => rw [← p.sum_coeff_C_mul_X_pow]
+  simp [eval₂_eq_sum_coeff, Finsupp.sum, Polynomial.C_eq_algebraMap]
 
 -- these used to be about `algebraMap ℤ R`, but now the simp-normal form is `Int.castRingHom R`.
 @[simp]
@@ -523,7 +520,7 @@ theorem aeval_eq_sum_range [Algebra R S] {p : R[X]} (x : S) :
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range (algebraMap R S) x
 
-theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.natDegree < n) (x : S) :
+theorem aeval_eq_sum_range' [Algebra R S] {p : R[X]} {n : ℕ} (hn : p.degree < n) (x : S) :
     aeval x p = ∑ i ∈ Finset.range n, p.coeff i • x ^ i := by
   simp_rw [Algebra.smul_def]
   exact eval₂_eq_sum_range' (algebraMap R S) hn x
@@ -611,8 +608,8 @@ variable [CommRing S] {f : R →+* S}
 theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_eval : p ∣ f.eval z)
     (dvd_terms : ∀ j ≠ i, p ∣ f.coeff j * z ^ j) : p ∣ f.coeff i * z ^ i := by
   by_cases hi : i ∈ f.support
-  · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
-    rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
+  · rw [eval, eval₂_eq_sum_coeff, Finsupp.sum, ← Finset.insert_erase (s := f.coeff.support) hi,
+      Finset.sum_insert (Finset.notMem_erase _ _)] at dvd_eval
     refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
@@ -658,8 +655,8 @@ theorem aeval_sub {p q : R[X]} [Ring A] [Algebra R A] (x : A) :
     aeval x (p - q) = aeval x p - aeval x q := map_sub ..
 
 theorem aeval_endomorphism {M : Type*} [AddCommGroup M] [Module R M] (f : M →ₗ[R] M)
-    (v : M) (p : R[X]) : aeval f p v = p.sum fun n b => b • (f ^ n) v := by
-  rw [aeval_def, eval₂_eq_sum]
+    (v : M) (p : R[X]) : aeval f p v = p.coeff.sum fun n b => b • (f ^ n) v := by
+  rw [aeval_def, eval₂_eq_sum_coeff]
   exact map_sum (LinearMap.applyₗ v) _ _
 
 lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (X + C t) := by

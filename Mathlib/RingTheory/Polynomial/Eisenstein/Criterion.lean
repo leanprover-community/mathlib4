@@ -106,7 +106,7 @@ private lemma generalizedEisenstein_aux {q f g : R[X]} {p : ℕ}
     exact hg_div
   by_contra hg'
   apply hgP
-  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C, ite_eq_right hg', zero_add,
+  rw [hg, leadingCoeff, coeff_add, ← hg, coeff_C_apply, ite_eq_right hg', zero_add,
     mem_ker, ← coeff_map, hr, coeff_zero]
 
 /-- A generalized Eisenstein criterion
@@ -190,7 +190,7 @@ theorem irreducible_of_eisenstein_criterion {f : R[X]} {P : Ideal R} (hP : P.IsP
     congr 1
     ext n
     simp only [coeff_map, Ideal.Quotient.mk_eq_mk_iff_sub_mem]
-    simp only [coeff_C_mul, coeff_X_pow, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
+    simp only [coeff_C_mul, coeff_X_pow_apply, mul_ite, mul_one, mul_zero, sub_ite, sub_zero]
     split_ifs with hn
     · rw [hn, leadingCoeff, sub_self]
       exact zero_mem _

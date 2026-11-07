@@ -262,7 +262,7 @@ abbrev m : ℕ := max (f E).natDegree (g E).natDegree
 
 lemma m_le_swap_Φ_natDegree (h : E ≠ ⊥) :
     m E ≤ (Bivariate.swap (Φ E)).natDegree := by
-  rw [← sum_monomial_eq (Φ E), sum_def, map_sum]
+  rw [← (Φ E).sum_coeff_monomial, Finsupp.sum, map_sum]
   conv in (fun _ ↦ _) =>
     ext
     rw [Bivariate.swap_monomial, mul_comm, ← Polynomial.smul_eq_C_mul,

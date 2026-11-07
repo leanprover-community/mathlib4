@@ -96,9 +96,9 @@ theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   by_cases h : i = j
   · subst h
     rw [charmatrix_apply_eq, coeff_sub]
-    simp only [coeff_X, coeff_C]
+    simp only [coeff_X_apply, coeff_C_apply]
     split_ifs <;> simp
-  · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
+  · rw [charmatrix_apply_ne _ _ _ h, coeff_X_apply, coeff_neg, coeff_C_apply, coeff_C_apply]
     split_ifs <;> simp [h]
 
 theorem charmatrix_reindex (e : n ≃ m) :

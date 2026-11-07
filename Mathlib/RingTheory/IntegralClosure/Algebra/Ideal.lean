@@ -35,8 +35,8 @@ lemma coeff_mem_pow_of_mem_adjoin_C_mul_X {R : Type*} [CommRing R]
   induction hP using Algebra.adjoin_induction generalizing i with
   | mem x hx =>
     obtain ⟨r, hrI, rfl⟩ := hx
-    simp +contextual [coeff_X, apply_ite, hrI, @eq_comm _ 1]
-  | algebraMap r => simp +contextual [coeff_C, apply_ite]
+    simp +contextual [Finsupp.single_apply, apply_ite, hrI, @eq_comm _ 1]
+  | algebraMap r => simp +contextual [Finsupp.single_apply, apply_ite, @eq_comm _ 0]
   | add x y hx hy _ _ => aesop
   | mul x y _ _ hx hy =>
     rw [coeff_mul]
@@ -57,9 +57,9 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
   have hq : q.natDegree = p.natDegree := by
     refine natDegree_eq_of_le_of_coeff_ne_zero (natDegree_sum_le_of_forall_le _ _ ?_) ?_
     · exact fun i hi ↦ (natDegree_C_mul_X_pow_le _ _).trans (by simpa [Nat.lt_succ_iff] using! hi)
-    · simp [q, hp]
+    · simp [Finsupp.single_apply, q, hp]
   refine ⟨q, ?_, ?_, ?_⟩
-  · simpa [← hq] using! show q.coeff p.natDegree = 1 by simp [q, hp]
+  · simpa [← hq] using! show q.coeff p.natDegree = 1 by simp [Finsupp.single_apply, q, hp]
   · replace e := congr(($e).coeff p.natDegree)
     simp only [eval₂_eq_sum_range, finsetSum_coeff, coeff_zero] at e
     simp only [q, map_sum, map_mul, aeval_C, map_pow, aeval_X]
@@ -68,7 +68,7 @@ lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_isIntegral
     rw [mul_pow, mul_left_comm, ← map_pow, coeff_C_mul, coeff_mul_X_pow', ite_eq_left hi, mul_comm]
     simp [Subalgebra.algebraMap_def]
   · rw [hq]
-    simp [q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
+    simp [Finsupp.single_apply, q, apply_ite, coeff_mem_pow_of_mem_adjoin_C_mul_X (p.coeff _).2]
 
 lemma exists_monic_aeval_eq_zero_forall_mem_pow_of_mem_map [Algebra.IsIntegral R S]
     {I : Ideal R} {x : S} (hx : x ∈ I.map (algebraMap R S)) :

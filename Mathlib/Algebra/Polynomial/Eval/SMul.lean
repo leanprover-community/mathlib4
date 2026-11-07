@@ -46,7 +46,9 @@ theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :
     eval₂ g x (s • p) = g s * eval₂ g x p := by
   have A : p.natDegree < p.natDegree.succ := Nat.lt_succ_self _
   have B : (s • p).natDegree < p.natDegree.succ := (natDegree_smul_le _ _).trans_lt A
-  rw [eval₂_eq_sum, eval₂_eq_sum, sum_over_range' _ _ _ A, sum_over_range' _ _ _ B] <;>
+  rw [eval₂_eq_sum_coeff, eval₂_eq_sum_coeff,
+    sum_coeff_eq_sum_range p _ _ (degree_le_natDegree.trans_lt (mod_cast A)),
+    sum_coeff_eq_sum_range (s • p) _ _ (degree_le_natDegree.trans_lt (mod_cast B))] <;>
     simp [mul_sum, mul_assoc]
 
 end

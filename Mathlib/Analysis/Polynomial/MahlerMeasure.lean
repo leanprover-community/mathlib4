@@ -260,13 +260,15 @@ lemma one_le_mahlerMeasure_of_one_le_norm_leadingCoeff {p : ℂ[X]}
 open Filter MeasureTheory Set in
 /-- The Mahler measure of a polynomial is bounded above by the sum of the norms of its coefficients.
 -/
-theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum fun _ a ↦ ‖a‖ := by
+theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) :
+    p.mahlerMeasure ≤ p.coeff.sum fun _ a ↦ ‖a‖ := by
   by_cases hp : p = 0
   · simp [hp]
-  have : 0 < p.sum fun _ a ↦ ‖a‖ :=
+  have : 0 < p.coeff.sum fun _ a ↦ ‖a‖ :=
     Finset.sum_pos' (fun i _ ↦ norm_nonneg (p.coeff i)) ⟨p.natDegree, by simp [hp]⟩
-  rw [show (p.sum fun _ a ↦ ‖a‖) = rexp (circleAverage (fun _ ↦ log (p.sum fun _ a ↦ ‖a‖)) 0 1)
-    by simp [circleAverage_def, mul_assoc, exp_log this], mahlerMeasure_def_of_ne_zero hp,
+  rw [show (p.coeff.sum fun _ a ↦ ‖a‖) =
+        rexp (circleAverage (fun _ ↦ log (p.coeff.sum fun _ a ↦ ‖a‖)) 0 1) by
+      simp [circleAverage_def, mul_assoc, exp_log this], mahlerMeasure_def_of_ne_zero hp,
     circleAverage_def, smul_eq_mul]
   gcongr
   apply intervalIntegral.integral_mono_ae_restrict (by positivity)
@@ -286,7 +288,7 @@ theorem mahlerMeasure_le_sum_norm_coeff (p : ℂ[X]) : p.mahlerMeasure ≤ p.sum
         injOn_circleMap_of_abs_sub_le' one_ne_zero (by linarith) h.1 k.1 l
   · intro _ _
     gcongr
-    rw [eval_eq_sum]
+    rw [eval_eq_sum_coeff]
     apply norm_sum_le_of_le p.support
     simp
 
@@ -504,11 +506,10 @@ theorem mapMahlerMeasure_pos_of_ne_zero (hv : Isometry v) (hp : p ≠ 0) :
   mahlerMeasure_pos_of_ne_zero <| (Polynomial.map_eq_zero_iff hv.injective).not.mpr hp
 
 theorem mapMahlerMeasure_le_sum_norm_coeff (hv : Isometry v) :
-    p.mapMahlerMeasure v ≤ p.sum fun _ a ↦ ‖a‖ := by
+    p.mapMahlerMeasure v ≤ p.coeff.sum fun _ a ↦ ‖a‖ := by
   apply mahlerMeasure_le_sum_norm_coeff _ |>.trans_eq
-  rw [sum_def, sum_def, support_map_of_injective _ hv.injective]
-  exact Finset.sum_congr rfl fun x _ ↦ by
-    simp [hv.norm_map_of_map_zero (map_zero _)]
+  simp [Finsupp.sum, ← support.eq_def, support_map_of_injective, hv.injective,
+    hv.norm_map_of_map_zero]
 
 theorem norm_coeff_le_choose_mul_mapMahlerMeasure (hv : Isometry v) (n : ℕ) (p : A[X]) :
     ‖p.coeff n‖ ≤ (p.natDegree).choose n * p.mapMahlerMeasure v := by

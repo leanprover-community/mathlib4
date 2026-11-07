@@ -61,13 +61,13 @@ def hasseDeriv (k : ℕ) : R[X] →ₗ[R] R[X] :=
   lsum fun i => monomial (i - k) ∘ₗ DistribSMul.toLinearMap R R (i.choose k)
 
 theorem hasseDeriv_apply :
-    hasseDeriv k f = f.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
+    hasseDeriv k f = f.coeff.sum fun i r => monomial (i - k) (↑(i.choose k) * r) := by
   dsimp [hasseDeriv]
   simp
 
 theorem hasseDeriv_coeff (n : ℕ) :
     (hasseDeriv k f).coeff n = (n + k).choose k * f.coeff (n + k) := by
-  rw [hasseDeriv_apply, coeff_sum, sum_def, Finset.sum_eq_single (n + k), coeff_monomial,
+  rw [hasseDeriv_apply, coeff_finsuppSum, Finsupp.sum, Finset.sum_eq_single (n + k), coeff_monomial,
     Finsupp.single_apply]
   · simp
   · #adaptation_note
@@ -82,7 +82,7 @@ theorem hasseDeriv_coeff (n : ℕ) :
     simp only [notMem_support_iff.mp h, monomial_zero_right, mul_zero, coeff_zero]
 
 theorem hasseDeriv_zero' : hasseDeriv 0 f = f := by
-  simp only [hasseDeriv_apply, Nat.sub_zero, choose_zero_right, cast_one, one_mul, sum_monomial_eq]
+  simp [hasseDeriv_apply]
 
 @[simp]
 theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
@@ -90,7 +90,7 @@ theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
 
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
-  rw [hasseDeriv_apply, sum_def]
+  rw [hasseDeriv_apply, Finsupp.sum]
   refine Finset.sum_eq_zero fun x hx => ?_
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 
@@ -157,7 +157,7 @@ theorem hasseDeriv_comp (k l : ℕ) :
     (@hasseDeriv R _ k).comp (hasseDeriv l) = (k + l).choose k • hasseDeriv (k + l) := by
   ext i : 2
   simp only [LinearMap.smul_apply, comp_apply, LinearMap.coe_comp, smul_monomial, hasseDeriv_apply,
-    mul_one, monomial_eq_zero_iff, sum_monomial_index, mul_zero, ←
+    mul_one, monomial_eq_zero_iff, coeff_monomial, Finsupp.sum_single_index, mul_zero, ←
     tsub_add_eq_tsub_tsub, add_comm l k]
   rw_mod_cast [nsmul_eq_mul]
   rw [← Nat.cast_mul]
@@ -181,14 +181,14 @@ theorem hasseDeriv_comp (k l : ℕ) :
 theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical
-    rw [hasseDeriv_apply, sum_def]
+    rw [hasseDeriv_apply, Finsupp.sum]
     refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
     · simp only [ite_self, max_eq_right, zero_le, Finset.fold_max_le, true_and, and_imp,
-        tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
+        tsub_le_iff_right, Finset.mem_filter]
       intro x hx hx'
-      have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx
+      have hxp : x ≤ p.natDegree := le_natDegree_of_mem_supp x hx
       grind
     · simp
 

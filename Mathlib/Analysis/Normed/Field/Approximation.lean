@@ -85,9 +85,10 @@ theorem exists_roots_norm_sub_lt_of_norm_coeff_sub_lt (hε : 0 < ε) {a : K} (ha
     rw [← eval_sub]
     simp only [ha, norm_zero, add_zero]
     rw [(g - f).as_sum_range' (g.natDegree + 1)]
-    · congr
-      simp [← C_mul_X_pow_eq_monomial]
-    · simpa [hdeg, Nat.lt_succ_iff] using g.natDegree_sub_le f
+    · simp [← C_mul_X_pow_eq_monomial]
+    · grw [degree_le_natDegree, natDegree_sub_le]
+      norm_cast
+      simp [hdeg]
   _ ≤ ∑ i ∈ Finset.range (g.natDegree + 1), ‖(g.coeff i - f.coeff i) * a ^ i‖ := by
     have := norm_sum_le (Finset.range (g.natDegree + 1))
         (fun i ↦ (C (g.coeff i - f.coeff i) * X ^ i).eval a)
@@ -156,11 +157,11 @@ theorem exists_monic_and_natDegree_eq_and_norm_map_algebraMap_coeff_sub_lt
   use C 1 * X ^ f.natDegree + ∑ i < f.natDegree, C (c i) * X ^ i
   refine ⟨?_, hdeg.symm, fun n ↦ ?_⟩
   · rw [Monic, leadingCoeff, hdeg]
-    simp
+    simp [Finsupp.single_apply]
   · rcases lt_trichotomy n f.natDegree with h | h | h
-    · simpa [h, ne_of_lt h, ← dist_eq_norm_sub'] using hc n
-    · simp [h, hf, hε]
-    · simp [not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
+    · simpa [Finsupp.single_apply, h, ne_of_lt h, ← dist_eq_norm_sub'] using hc n
+    · simp [Finsupp.single_apply, h, hf, hε]
+    · simp [Finsupp.single_apply, not_lt_of_gt h, ne_of_gt h, coeff_eq_zero_of_natDegree_lt h, hε]
 
 end Approximation
 

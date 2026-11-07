@@ -334,7 +334,8 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
   · intro q hq hs
     rw [degree_eq_natDegree hq.ne_zero, degree_X_pow_sub_C hσ.orderOf_pos, Nat.cast_le, ← not_lt]
     intro H
-    rw [aeval_eq_sum_range' H, ← Fin.sum_univ_eq_sum_range] at hs
+    rw [aeval_eq_sum_range' (degree_le_natDegree.trans_lt <| mod_cast H),
+      ← Fin.sum_univ_eq_sum_range] at hs
     simp_rw [← AlgEquiv.pow_toLinearMap] at hs
     apply hq.ne_zero
     simpa using Fintype.linearIndependent_iff.mp

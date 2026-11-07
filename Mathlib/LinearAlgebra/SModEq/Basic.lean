@@ -157,7 +157,7 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
 @[gcongr]
 theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
-  simp_rw [Polynomial.eval_eq_sum, Polynomial.sum]
+  simp_rw [Polynomial.eval_eq_sum_coeff, Finsupp.sum]
   gcongr
 
 variable (S) in

@@ -69,7 +69,7 @@ theorem degreeLE_eq_span_X_pow [DecidableEq R] {n : ℕ} :
   apply le_antisymm
   · intro p hp
     replace hp := mem_degreeLE.1 hp
-    rw [← Polynomial.sum_monomial_eq p, Polynomial.sum]
+    rw [← p.sum_coeff_monomial, Finsupp.sum]
     refine Submodule.sum_mem _ fun k hk => ?_
     have := WithBot.coe_le_coe.1 (Finset.sup_le_iff.1 hp k hk)
     rw [← C_mul_X_pow_eq_monomial, C_mul']
@@ -99,7 +99,7 @@ theorem degreeLT_eq_span_X_pow [DecidableEq R] {n : ℕ} :
   apply le_antisymm
   · intro p hp
     replace hp := mem_degreeLT.1 hp
-    rw [← Polynomial.sum_monomial_eq p, Polynomial.sum]
+    rw [← p.sum_coeff_monomial, Finsupp.sum]
     refine Submodule.sum_mem _ fun k hk => ?_
     have := WithBot.coe_lt_coe.1 ((Finset.sup_lt_iff <| WithBot.bot_lt_coe n).1 hp k hk)
     rw [← C_mul_X_pow_eq_monomial, C_mul']
@@ -118,7 +118,9 @@ def degreeLTEquiv (n : ℕ) : degreeLT R n ≃ₗ[R] Fin n → R where
       degreeLT R n |>.sum_mem fun i _ ↦ monomial_coe_mem_degreeLT i (f i)⟩
   map_add' p q := by ext; simp
   map_smul' x p := by ext; simp
-  left_inv := fun ⟨p, hp⟩ ↦ by simpa using p.sum_fin (monomial ·) (by simp) (mem_degreeLT.mp hp)
+  left_inv := fun ⟨p, hp⟩ ↦ by
+    simpa [Fin.sum_univ_eq_sum_range fun i ↦ monomial i (p.coeff i)] using
+      (as_sum_range' p n (mem_degreeLT.mp hp)).symm
   right_inv f := by ext i; grind [finsetSum_coeff, Finset.sum_eq_single i, coeff_monomial]
 
 theorem degreeLTEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) :
@@ -126,8 +128,8 @@ theorem degreeLTEquiv_eq_zero_iff_eq_zero {n : ℕ} {p : R[X]} (hp : p ∈ degre
 
 theorem eval_eq_sum_degreeLTEquiv {n : ℕ} {p : R[X]} (hp : p ∈ degreeLT R n) (x : R) :
     p.eval x = ∑ i, degreeLTEquiv _ _ ⟨p, hp⟩ i * x ^ (i : ℕ) := by
-  simp_rw [eval_eq_sum]
-  exact (sum_fin _ (by simp_rw [zero_mul, forall_const]) (mem_degreeLT.mp hp)).symm
+  simp [eval_eq_sum_range' (mem_degreeLT.mp hp) x,
+    ← Fin.sum_univ_eq_sum_range (fun i => p.coeff i * x ^ i) n, degreeLTEquiv]
 
 theorem degreeLT_succ_eq_degreeLE {n : ℕ} : degreeLT R (n + 1) = degreeLE R n := by
   ext x
@@ -329,8 +331,9 @@ variable [Semiring S] {f : R →+* S} {x : S}
 theorem eval₂_restriction {p : R[X]} :
     eval₂ f x p =
       eval₂ (f.comp (Subring.subtype (Subring.closure (p.coeffs : Set R)))) x p.restriction := by
-  simp only [eval₂_eq_sum, sum, support_restriction, ← @coeff_restriction _ _ p, RingHom.comp_apply,
+  simp only [eval₂_eq_sum_coeff, Finsupp.sum, ← @coeff_restriction _ _ p, RingHom.comp_apply,
     Subring.coe_subtype]
+  exact Finset.sum_congr (support_restriction p).symm fun _ _ ↦ rfl
 
 end Ring
 
@@ -384,7 +387,7 @@ variable [CommSemiring R] [Semiring S]
 /-- If every coefficient of a polynomial is in an ideal `I`, then so is the polynomial itself -/
 theorem polynomial_mem_ideal_of_coeff_mem_ideal (I : Ideal R[X]) (p : R[X])
     (hp : ∀ n : ℕ, p.coeff n ∈ I.comap (C : R →+* R[X])) : p ∈ I :=
-  sum_C_mul_X_pow_eq p ▸ Submodule.sum_mem I fun n _ => I.mul_mem_right _ (hp n)
+  sum_coeff_C_mul_X_pow p ▸ Submodule.sum_mem I fun n _ => I.mul_mem_right _ (hp n)
 
 /-- The push-forward of an ideal `I` of `R` to `R[X]` via inclusion
 is exactly the set of polynomials whose coefficients are in `I` -/
@@ -405,7 +408,7 @@ theorem mem_map_C_iff {I : Ideal R} {f : R[X]} :
       rw [smul_eq_mul, coeff_mul]
       exact I.sum_mem fun c _ => I.mul_mem_left (f.coeff c.fst) (hg c.snd)
   · intro hf
-    rw [← sum_monomial_eq f]
+    rw [← f.sum_coeff_monomial]
     refine (I.map C : Ideal R[X]).sum_mem fun n _ => ?_
     simp only [← C_mul_X_pow_eq_monomial]
     rw [mul_comm]
@@ -654,7 +657,7 @@ theorem span_le_of_C_coeff_mem (cf : ∀ i : ℕ, C (f.coeff i) ∈ I) :
 
 theorem mem_span_C_coeff : f ∈ Ideal.span { g : R[X] | ∃ i : ℕ, g = C (f.coeff i) } := by
   let p := Ideal.span { g : R[X] | ∃ i : ℕ, g = C (f.coeff i) }
-  nth_rw 2 [(sum_C_mul_X_pow_eq f).symm]
+  nth_rw 2 [(sum_coeff_C_mul_X_pow f).symm]
   refine Submodule.sum_mem _ fun n _hn => ?_
   dsimp
   have : C (f.coeff n) ∈ p := by
@@ -830,7 +833,7 @@ namespace Polynomial
 theorem linearIndependent_powers_iff_aeval (f : M →ₗ[R] M) (v : M) :
     (LinearIndependent R fun n : ℕ => (f ^ n) v) ↔ ∀ p : R[X], aeval f p v = 0 → p = 0 := by
   simp [linearIndependent_iff, Finsupp.linearCombination_apply, aeval_endomorphism, Finsupp.sum,
-    AddMonoidAlgebra.coeffEquiv.forall_congr_left, Polynomial.sum, Polynomial.support_ofCoeff]
+    AddMonoidAlgebra.coeffEquiv.forall_congr_left]
 
 theorem disjoint_ker_aeval_of_isCoprime (f : M →ₗ[R] M) {p q : R[X]} (hpq : IsCoprime p q) :
     Disjoint (LinearMap.ker (aeval f p)) (LinearMap.ker (aeval f q)) := by

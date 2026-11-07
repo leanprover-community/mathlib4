@@ -100,8 +100,8 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
   simp [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, eq_comm,
-    aeval_def, eval₂_eq_sum, Polynomial.sum, mem_supported', Polynomial.support_ofCoeff,
-    Finsupp.sum, linearCombination, Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
+    aeval_def, eval₂_eq_sum_coeff, Finsupp.sum, mem_supported', linearCombination,
+    Algebra.smul_def, AddMonoidAlgebra.coeffEquiv.exists_congr_left]
 
 theorem mem_span_pow {x y : S} {d : ℕ} (hd : d ≠ 0) :
     y ∈ Submodule.span R (Set.range fun i : Fin d => x ^ (i : ℕ)) ↔
@@ -182,11 +182,11 @@ theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
 theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
   refine le_of_not_gt fun hlt => ne_zero ?_
-  rw [p.as_sum_range' _ hlt, Finset.sum_range]
+  rw [p.as_sum_range' _ (degree_le_natDegree.trans_lt (mod_cast hlt)), Finset.sum_range]
   refine Fintype.sum_eq_zero _ fun i => ?_
-  simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
-  have := Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root
-  rw [this, monomial_zero_right]
+  simp_rw [aeval_eq_sum_range' (degree_le_natDegree.trans_lt <| mod_cast hlt), Finset.sum_range,
+    ← pb.basis_eq_pow] at root
+  rw [Fintype.linearIndependent_iff.1 pb.basis.linearIndependent _ root, monomial_zero_right]
 
 theorem dim_le_degree_of_root (h : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval h.gen p = 0) : ↑h.dim ≤ p.degree := by
@@ -254,10 +254,8 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
   rw [← aeval_modByMonic_eq_self_of_root (minpoly.aeval _ _), ← aeval_modByMonic_eq_self_of_root hy]
   by_cases hf : f %ₘ minpoly A pb.gen = 0
   · simp only [hf, map_zero]
-  have : (f %ₘ minpoly A pb.gen).natDegree < pb.dim := by
-    rw [← pb.natDegree_minpoly]
-    apply natDegree_lt_natDegree hf
-    exact degree_modByMonic_lt _ (minpoly.monic pb.isIntegral_gen)
+  have : (f %ₘ minpoly A pb.gen).degree < pb.dim := by
+    grw [degree_modByMonic_lt _ <| minpoly.monic pb.isIntegral_gen, degree_minpoly]
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
   refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi

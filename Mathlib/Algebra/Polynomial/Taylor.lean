@@ -71,7 +71,7 @@ theorem taylor_coeff (n : ℕ) : (taylor r f).coeff n = (hasseDeriv n f).eval r 
     simp only [leval_apply, mul_one, one_mul, eval_monomial, LinearMap.comp_apply, map_sum,
       hasseDeriv_monomial, taylor_apply, monomial_comp, C_1, (commute_X (C r)).add_pow i]
     simp only [lcoeff_apply, ← C_eq_natCast, mul_assoc, ← C_pow, ← C_mul, coeff_mul_C,
-      (Nat.cast_commute _ _).eq, coeff_X_pow, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
+      (Nat.cast_commute _ _).eq, coeff_X_pow_apply, boole_mul, Finset.sum_ite_eq, Finset.mem_range]
     split_ifs with h; · rfl
     push Not at h; rw [Nat.choose_eq_zero_of_lt h, Nat.cast_zero, mul_zero]
 
@@ -165,7 +165,8 @@ theorem exists_mul_sq_add_linear_part_eq_eval_add (p : R[X]) (x y : R) :
   have this t :
       (taylor x p).eval t =
       ∑ i ∈ Finset.range ((taylor x p).natDegree + 2), (taylor x p).coeff i * t ^ i :=
-    (taylor x p).eval_eq_sum_range' (n := (taylor x p).natDegree + 2) (by lia) t
+    (taylor x p).eval_eq_sum_range' (n := (taylor x p).natDegree + 2)
+      (degree_le_natDegree.trans_lt <| mod_cast by lia) t
   rw [add_comm, ← p.taylor_eval x y, this, Finset.sum_range_succ', Finset.sum_range_succ']
   use ∑ i ∈ Finset.range p.natDegree, (taylor x p).coeff (i + 2) * y ^ i
   simp [pow_succ, mul_assoc, Finset.sum_mul]
@@ -205,10 +206,12 @@ theorem taylor_eval_sub (s : R) :
     (taylor r f).eval (s - r) = f.eval s := by rw [taylor_eval, sub_add_cancel]
 
 /-- Taylor's formula. -/
-theorem sum_taylor_eq (f : R[X]) (r : R) :
-    ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
-  rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
-    taylor_zero]
+theorem sum_coeff_taylor_eq (f : R[X]) (r : R) :
+    (taylor r f).coeff.sum (fun i a ↦ C a * (X - C r) ^ i) = f := by
+  rw [← comp_eq_sum_coeff_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor,
+    neg_add_cancel, taylor_zero]
+
+@[deprecated (since := "2026-11-02")] alias sum_taylor_eq := sum_coeff_taylor_eq
 
 end CommRing
 

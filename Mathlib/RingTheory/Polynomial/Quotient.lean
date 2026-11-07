@@ -83,9 +83,9 @@ theorem quotient_map_C_eq_zero {I : Ideal R} :
 theorem eval₂_C_mk_eq_zero {I : Ideal R} :
     ∀ f ∈ (map (C : R →+* R[X]) I : Ideal R[X]), eval₂RingHom (C.comp (Quotient.mk I)) X f = 0 := by
   intro a ha
-  rw [← sum_monomial_eq a]
+  rw [← a.sum_coeff_monomial]
   dsimp
-  rw [eval₂_sum]
+  rw [eval₂_finsuppSum]
   refine Finset.sum_eq_zero fun n _ => ?_
   dsimp
   rw [eval₂_monomial (C.comp (Quotient.mk I)) X]
