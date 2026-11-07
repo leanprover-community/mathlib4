@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialSet.CompStruct
 public import Mathlib.CategoryTheory.ComposableArrows.Basic
 
 /-!
-
 # The nerve of a category
 
 This file provides the definition of the nerve of a category `C`,

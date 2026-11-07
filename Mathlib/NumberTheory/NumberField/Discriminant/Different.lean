@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.DedekindDomain.LinearDisjoint
 public import Mathlib.RingTheory.Ideal.Norm.RelNorm
 
 /-!
-
 # (Absolute) Discriminant and Different Ideal
 
 ## Main results

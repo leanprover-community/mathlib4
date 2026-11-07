@@ -16,7 +16,6 @@ public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Periodic
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
-
 # Fourier analysis on the additive circle
 
 This file contains basic results on Fourier series for functions on the additive circle

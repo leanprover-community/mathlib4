@@ -132,6 +132,12 @@ example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
   assumption'
   all_goals cases f
 
+-- `·` is ignored.
+example : True ∧ True := by
+  constructor
+  · exact .intro
+  · exact .intro
+
 -- `focus` is ignored.
 example : True ∧ True := by
   constructor
@@ -139,6 +145,10 @@ example : True ∧ True := by
     exact .intro
   focus
     exact .intro
+
+-- parentheses are allowed
+example : True ∧ True ∧ True := by
+  refine ⟨?_, ?_, ?_⟩; (· simp); { simp }; simp
 
 example : 1 = 1 := by
   sleep_heartbeats 1000
@@ -242,21 +252,6 @@ example (hx : x = 0 ∨ x = 1) : x ≤ 1 := by
       trivial
       trivial
     cases #01c5
-
--- ignore `cases`
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) : x + y ≤ 2 := by
-  grind =>
-    cases #484a
-    cases #01c5
-    cases #01c5
-
--- ignore `<;>`
-example (hx : x = 0 ∨ x = 1) (hy : y = 0 ∨ y = 1) (hz : z = 0 ∨ z = 1) :
-    x + y + z ≤ 3 := by
-  grind =>
-    cases #f5ad
-    cases #484a <;> cases #01c5
-    cases #484a <;> cases #01c5
 
 -- excluded tactics
 

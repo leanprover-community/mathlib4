@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.EpiMono
 public import Mathlib.Topology.Sheaves.Stalks
 
 /-!
-
 # Locally surjective maps of presheaves.
 
 Let `X` be a topological space, `ℱ` and `𝒢` presheaves on `X`, `T : ℱ ⟶ 𝒢` a map.

@@ -307,7 +307,7 @@ theorem hasSum_one_div_pow_mul_fourier_mul_bernoulliFun {k : ℕ} (hk : 2 ≤ k)
   suffices ∀ {y : ℝ}, y ∈ Ico (0 : ℝ) 1 →
       HasSum (fun (n : ℤ) ↦ 1 / (n : ℂ) ^ k * fourier n y)
         (-(2 * (π : ℂ) * I) ^ k / k ! * bernoulliFun k y) by
-    rw [← Ico_insert_right (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
+    rw [← insert_right_Ico (zero_le_one' ℝ), mem_insert_iff, or_comm] at hx
     rcases hx with (hx | rfl)
     · exact this hx
     · convert this (left_mem_Ico.mpr zero_lt_one) using 1

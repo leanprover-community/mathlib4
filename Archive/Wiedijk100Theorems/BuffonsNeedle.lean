@@ -12,7 +12,6 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.Notation
 
 /-!
-
 # Freek № 99: Buffon's Needle
 
 This file proves Theorem 99 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/), also
