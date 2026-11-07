@@ -16,7 +16,6 @@ import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Data.Fintype.Order
 
 /-!
-
 # Construction of M^~
 
 Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` of `𝒪_SpecR`-modules
@@ -482,7 +481,6 @@ from `M(⊤)` to `M(D(f))` is localization with respect to `f`. -/
 abbrev IsLocalizing (M : TopCat.Sheaf (ModuleCat R) (Spec R)) : Prop :=
   ∀ f : R, IsLocalizedModule (.powers f) (M.obj.map (basicOpen f).leTop.op).hom
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocalizing_of_iso {M N : TopCat.Sheaf (ModuleCat R) (Spec R)} (φ : M ≅ N)
     (hM : IsLocalizing M) :
     IsLocalizing N := by

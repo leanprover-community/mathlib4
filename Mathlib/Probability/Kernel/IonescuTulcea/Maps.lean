@@ -21,7 +21,7 @@ section Definitions
 
 section LinearOrder
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 /-- Gluing `Ioc a b` and `Ioc b c` into `Ioc a c`. -/
 def IocProdIoc (a b c : ι) (x : (Π i : Ioc a b, X i) × (Π i : Ioc b c, X i)) (i : Ioc a c) : X i :=
@@ -159,7 +159,7 @@ end Definitions
 
 section Lemmas
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [DecidableLE ι] {X : ι → Type*}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] {X : ι → Type*}
 
 lemma _root_.IocProdIoc_preimage {a b c : ι} (hab : a ≤ b) (hbc : b ≤ c)
     (s : (i : Ioc a c) → Set (X i)) :

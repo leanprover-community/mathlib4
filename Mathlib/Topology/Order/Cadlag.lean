@@ -150,12 +150,7 @@ lemma IsOpen.isRightContinuousOn_iff (hs : IsOpen s) :
 lemma isRightContinuousOn_iff_isRightContinuous_domRestrict :
     IsRightContinuousOn f s ↔ IsRightContinuous (s.domRestrict f) := by
   rw [IsRightContinuousOn, IsRightContinuous, Subtype.forall]
-  refine forall₂_congr fun a ha ↦ ?_
-  have : Ioi (⟨a, ha⟩ : s) = (↑) ⁻¹' Ioi a := rfl
-  rw [ContinuousWithinAt, ContinuousWithinAt, this, nhdsWithin_subtype, Subtype.image_preimage_coe,
-    domRestrict_eq, ← tendsto_map'_iff, map_comap, Subtype.range_coe, ← nhdsWithin_inter',
-    inter_right_comm, inter_self]
-  rfl
+  exact forall₂_congr fun _ ha ↦ continuousWithinAt_inter_iff_continuousWithinAt_domRestrict f ha
 
 @[to_dual]
 alias ⟨IsRightContinuousOn.domRestrict, _⟩ := isRightContinuousOn_iff_isRightContinuous_domRestrict
@@ -170,7 +165,7 @@ lemma isRightContinuousOn_congr (h : EqOn g f s) :
     IsRightContinuousOn g s ↔ IsRightContinuousOn f s :=
   ⟨fun hg ↦ hg.congr h.symm, fun hf ↦ hf.congr h⟩
 
-@[to_dual (attr := to_fun)]
+@[to_dual (attr := to_fun continuous_fun_comp)]
 lemma IsRightContinuousOn.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
     (hf : IsRightContinuousOn f s) (hg : Continuous g) :
     IsRightContinuousOn (g ∘ f) s :=
@@ -184,11 +179,11 @@ lemma IsRightContinuousOn.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] 
   fun a ha ↦ (hφ.tendsto (f a, g a)).comp ((hf a ha).prodMk_nhds (hg a ha))
 
 @[to_dual (attr := simp)]
-lemma isRightContinuousOn_const {c : Y} : IsRightContinuousOn (fun _ ↦ c : X → Y) s :=
+lemma IsRightContinuousOn.const {c : Y} : IsRightContinuousOn (fun _ ↦ c : X → Y) s :=
   continuous_const.continuousOn.isRightContinuousOn
 
 @[to_dual]
-lemma isRightContinuousOn_id : IsRightContinuousOn (id : X → X) s :=
+lemma IsRightContinuousOn.id : IsRightContinuousOn (id : X → X) s :=
   continuous_id.continuousOn.isRightContinuousOn
 
 @[to_additive (attr := to_fun (attr := to_dual))]
@@ -307,11 +302,7 @@ section LinearOrder
 
 variable [LinearOrder X] [TopologicalSpace Y]
 
-lemma IsCaglad.tendsto_nhdsGT_rightLim [OrderTopology X] (hf : IsCaglad f) (x : X) :
-    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
-  tendsto_rightLim_of_tendsto (hf.tendsto_nhdsGT x)
-
--- TODO: tag `leftLim` with `to_dual` to use `to_dual` here.
+@[to_dual]
 lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)

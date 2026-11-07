@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.LocalProperties.Basic
 public import Mathlib.RingTheory.Localization.Integral
 
 /-!
-
 # The meta properties of integral ring homomorphisms.
 
 -/

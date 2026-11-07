@@ -293,9 +293,7 @@ theorem withDensity_apply_eq_zero' {f : α → ℝ≥0∞} {s : Set α} (hf : AE
     have t : {x | f x = 0} =ᵐ[μ.withDensity f] {x | g x = 0} := by
       apply withDensity_absolutelyContinuous
       filter_upwards [hfg] with a ha
-      rw [eq_iff_iff]
-      exact ⟨fun h ↦ by rw [h] at ha; exact ha.symm,
-             fun h ↦ by rw [h] at ha; exact ha⟩
+      rw [ha]
     rw [measure_congr t, withDensity_congr_ae hfg]
     have M : MeasurableSet { x : α | g x = 0 } := hg (measurableSet_singleton _)
     rw [withDensity_apply _ M, lintegral_eq_zero_iff hg]
@@ -325,9 +323,7 @@ theorem ae_withDensity_iff_ae_restrict' {p : α → Prop} {f : α → ℝ≥0∞
   · rcases hf with ⟨g, hg, hfg⟩
     have nonneg_eq_ae : {x | g x ≠ 0} =ᵐ[μ] {x | f x ≠ 0} := by
       filter_upwards [hfg] with a ha
-      simp only [eq_iff_iff]
-      exact ⟨fun (h : g a ≠ 0) ↦ by rwa [← ha] at h,
-             fun (h : f a ≠ 0) ↦ by rwa [ha] at h⟩
+      rw [ha]
     exact NullMeasurableSet.congr
       (MeasurableSet.nullMeasurableSet
         <| hg (measurableSet_singleton _)).compl

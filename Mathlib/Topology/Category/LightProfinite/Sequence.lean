@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.LightProfinite.Basic
 public import Mathlib.Topology.Compactification.OnePoint.Basic
 
 /-!
-
 # The light profinite set classifying convergent sequences
 
 This file defines the light profinite set `ℕ∪{∞}`, defined as the one point compactification of

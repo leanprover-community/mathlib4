@@ -13,7 +13,6 @@ import Mathlib.Data.Multiset.Fintype
 import Mathlib.RingTheory.AdjoinRoot
 
 /-!
-
 # Results about coefficients of polynomials being integral
 
 ## Main results
