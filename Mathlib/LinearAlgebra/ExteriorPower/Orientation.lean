@@ -19,7 +19,7 @@ This file relates module orientations to volume forms on top exterior powers.
 * `exteriorPower.volOfOrientation`: a volume form compatible with a positive orientation.
 -/
 
-@[expose] public section
+public section
 
 noncomputable section
 
