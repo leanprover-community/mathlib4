@@ -638,6 +638,11 @@ def adicAbv : AbsoluteValue K ℝ where
 theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
   isNonarchimedean_adicAbvDef v hb
 
+theorem adicAbv_apply : v.adicAbv hb x = toNNReal (ne_zero_of_lt hb) (v.valuation K x) := rfl
+
+theorem adicAbv_lt_one_iff : v.adicAbv hb x < 1 ↔ v.valuation K x < 1 := by
+  simpa [adicAbv_apply] using toNNReal_lt_one_iff hb
+
 /-- The `v`-adic absolute value of `r / s : K` is the absolute value of `r` divided by the absolute
 value of `s`. -/
 theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
