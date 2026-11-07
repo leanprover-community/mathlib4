@@ -421,25 +421,24 @@ end Completion
 
 section degree
 
-variable [Algebra v.Completion w.Completion] [IsScalarTower K v.Completion w.Completion]
-  [ContinuousSMul v.Completion w.Completion]
-
 variable (K) in
 /-- The degree of an extension of absolute values is the degree of their completions. -/
 noncomputable def degree : ℕ :=
-  letI v := w.under K
-  letI := Completion.algebraOfLiesOver v w
-  Module.finrank v.Completion w.Completion
+  letI w₀ := w.under K
+  letI := Completion.algebraOfLiesOver w₀ w
+  Module.finrank w₀.Completion w.Completion
 
-theorem degree_eq : w.degree K = Module.finrank v.Completion w.Completion := by
-  have := LiesOver.under_eq w v
-  subst this
+theorem degree_eq [Algebra v.Completion w.Completion]
+    [IsScalarTower K v.Completion w.Completion] [ContinuousSMul v.Completion w.Completion] :
+    w.degree K = Module.finrank v.Completion w.Completion := by
+  obtain rfl := LiesOver.under_eq w v
   rw [degree, Completion.algebra_eq_of_liesOver (w.under K) w]
 
 theorem degree_mul_degree : v.degree J * w.degree K = w.degree J := by
   let u := v.under J
   let : Algebra u.Completion v.Completion := Completion.algebraOfLiesOver u v
   let : Algebra u.Completion w.Completion := Completion.algebraOfLiesOver u w
+  let := Completion.algebraOfLiesOver v w
   rw [degree_eq u v, degree_eq v w, degree_eq u w, Module.finrank_mul_finrank]
 
 end degree
