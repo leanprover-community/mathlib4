@@ -6,10 +6,12 @@ Authors: Patrick Massot, Michael Rothgang, Heather Macbeth
 module
 
 public import Mathlib.Geometry.Manifold.MusicalIso
+public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Metric
 public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Torsion
 
 import Mathlib.Analysis.InnerProductSpace.Dual
+import Mathlib.Tactic.Basify
 
 /-!
 # The Levi-Civita connection on a Riemannian manifold
@@ -413,20 +415,89 @@ public lemma isLeviCivitaConnection_leviCivitaConnection :
 
 -- TODO: have a stale `IsManifold I 2 M` hypothesis lying around...
 variable {k : ℕ∞}
-  [IsContMDiffRiemannianBundle I (k + 2) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 3) M]
+  [IsContMDiffRiemannianBundle I (k + 3) E (fun (x : M) ↦ TangentSpace% x)] [IsManifold I (k + 3) M]
 
-variable (x) in -- silence a warning; TODO this argument should never appear
-/-- If `M` is `C^{k+2}` and endowed with a `C^{k+1}` metric,
-its Levi-Civita connection is a `C^k` connection. -/
-instance leviCivitaConnection_baz :
+/-- A macro for counting derivatives, i.e. proving lemmas such as `k + 1 ≤ k + 2` in `ℕ∞ω`. -/
+syntax "count_derivatives" : tactic
+
+macro_rules
+  -- In all cases, there should be only one goal left. Cast to natural numbers and use `lia`
+  | `(tactic| count_derivatives) => do `(tactic| basify; on_goal 1 => try repeat norm_cast; try lia)
+
+omit [IsContMDiffRiemannianBundle I 1 E fun (x : M) ↦ TangentSpace I x] in
+theorem contMDiffAt_leviCivitaAuxInner
+    {σ : (x : M) → TangentSpace I x} (hσ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% σ) x)
+    {τ : (x : M) → TangentSpace I x}
+    (hτ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ) x)
+    {τ' : (x : M) → TangentSpace I x}
+    (hτ' : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ') x) :
+    ContMDiffAt I (I.prod 𝓘(ℝ, ℝ)) (↑k + 1)
+      (fun x ↦ TotalSpace.mk' ℝ x (leviCivitaAuxInner I τ σ τ' x)) x := by
+    unfold leviCivitaAuxInner
+    dsimp
+    apply ContMDiffAt.smul_section; swap
+    · simpa [contMDiffAt_section_iff] using contMDiffAt_const
+    have : IsContMDiffRiemannianBundle I (k + 2) E fun (x : M) ↦ TangentSpace I x :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
+    have : IsContMDiffRiemannianBundle I (k + 1) E fun (x : M) ↦ TangentSpace I x :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
+    have : IsManifold I (↑(k + 2) + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
+    have : IsManifold I (minSmoothness ℝ 2) M := IsManifold.of_le (n := k + 3)
+      (by simp only [minSmoothness_of_isRCLikeNormedField]; count_derivatives)
+    repeat apply ContMDiffAt.add
+    all_goals try apply ContMDiffAt.neg
+    -- TODO: all of these should be proven by fun_prop, eventually!
+    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
+        (hτ.of_le (by count_derivatives)) (by count_derivatives)
+      apply ContMDiffAt.inner_bundle'
+      · apply hσ.of_le (by count_derivatives)
+      · -- Papercut: have hypotheses (k + 1 + 1)-differentiability; want k + 2-differentiability
+        -- convert won't do it, but creates k = k + 1 and 2 = 1 goals
+        apply hτ'.of_le (by count_derivatives)
+    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
+        (hσ.of_le (by count_derivatives)) (by count_derivatives)
+      exact (hτ'.of_le (by count_derivatives)).inner_bundle' (hτ.of_le (by count_derivatives))
+    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
+        (hτ'.of_le (by count_derivatives)) (by count_derivatives)
+      exact (hτ.of_le (by count_derivatives)).inner_bundle' (hσ.of_le (by count_derivatives))
+    · apply ContMDiffAt.inner_bundle'
+      · apply hσ.of_le (by simp)
+      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
+        · apply hτ.of_le (by count_derivatives)
+        · apply hτ'.of_le (by count_derivatives)
+        simp only [minSmoothness_of_isRCLikeNormedField]
+        count_derivatives
+    · apply ContMDiffAt.inner_bundle'
+      · apply hτ'.of_le (by simp)
+      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
+        · apply hσ.of_le (by count_derivatives)
+        · apply hτ.of_le (by count_derivatives)
+        simp only [minSmoothness_of_isRCLikeNormedField]
+        count_derivatives
+    · apply ContMDiffAt.inner_bundle'
+      · apply hτ.of_le (by simp)
+      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
+        · apply hτ'.of_le (by count_derivatives)
+        · apply hσ.of_le (by count_derivatives)
+        simp only [minSmoothness_of_isRCLikeNormedField]
+        count_derivatives
+
+attribute [local instance] TangentBundle.contMDiffVectorBundle
+
+/-- If `M` is a `C^{k+2}` manifold (for `k ≥ 1`) endowed with a `C^{k+1}` metric,
+its Levi-Civita connection is a `C^k` connection.
+RFC: we don't want to have a condition `k ≠ 0` or `1 ≤ k`, as typeclass inference cannot prove that.
+Instead, we state the regularity as `k + 1` for some k, which is always non-zero.
+-/
+instance contMDiffCovariantDerivative_leviCivitaConnection :
     ContMDiffCovariantDerivative (leviCivitaConnection I M) (k + 1) where
   contMDiff := by
     dsimp [leviCivitaConnection]
     unfold leviCivitaAux
     refine ⟨fun {σ} hσ ↦ ?_⟩
-    rw [contMDiffOn_univ]
+    rw [contMDiffOn_univ] at hσ ⊢
     -- The next few lines all allow replacing the goal by smoothness of `leviCivitaAuxOfMDiffAt`.
-    have := (contMDiffOn_univ.mp hσ).mdifferentiable (by simp)
+    have := hσ.mdifferentiable (by simp)
     let arg : M → TotalSpace (E →L[ℝ] E) fun (x : M) ↦ TangentSpace I x →L[ℝ] TangentSpace I x :=
       fun x ↦ TotalSpace.mk' _ x (leviCivitaAuxOfMDiffAt I (this x))
     suffices hyp : ContMDiff I (I.prod 𝓘(ℝ, E →L[ℝ] E)) (↑k + 1) arg by
@@ -434,26 +505,16 @@ instance leviCivitaConnection_baz :
       intro y
       simp [arg, this y]
     unfold arg leviCivitaAuxOfMDiffAt
-
     -- Next, we handle the application of the musical isomorphism.
-    #check contMDiff_musicalIso_apply
-    have : IsManifold I (↑k + 1 + 1) M := sorry
-    have : ContMDiffVectorBundle (↑k + 1) E (TangentSpace (M := M) I) I := sorry
-    have : IsContMDiffRiemannianBundle I (↑k + 1) E fun (x : M) ↦ TangentSpace I x := sorry
-    apply contMDiff_musicalIso_apply (k := k + 1) (IB := I)
-
+    have : IsManifold I (↑k + 1 + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
+    have : IsContMDiffRiemannianBundle I (k + 1) E fun (x : M) ↦ TangentSpace I x :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
+    apply contMDiff_musicalIso_apply
     -- The final step is applying our smoothness criterion for the tensoriality construction.
-    -- TODO: do we need a 2-tensor version of that?
-    #check' TensorialAt.contMDiff_mkHom
-    -- have : IsManifold I (↑k + 1) M := sorry
-    -- -- TODO: this should need to specify the base point `x`
-    -- let φ : ((x : M) → TangentSpace I x) → ((x : M) → TangentSpace I x) → ℝ :=
-    --   fun X Y ↦ leviCivitaAuxInner I σ X Y x
-    -- apply TensorialAt.contMDiff_mkHom (by simp : (1 : ℕ∞ω) ≤ k + 1)
-    --   (φ := φ)
-    --   (IB := I) (F₁ := E) (F₂ := E →L[ℝ] ℝ)
-    --   (B := M) (E₁ := fun x : M ↦ TangentSpace% x)
-    sorry
+    have : IsManifold I (k + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
+    -- NB. We apply the version involving a loss of derivatives, because this is what happens here.
+    apply TensorialAt.contMDiff_mkHom₂' (by simp)
+    exact fun x τ hτ τ' hτ' ↦ contMDiffAt_leviCivitaAuxInner I (hσ x) hτ hτ'
 
 end existence
 
