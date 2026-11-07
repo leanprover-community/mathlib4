@@ -110,15 +110,29 @@ meta def structInstFieldArgsLinter : Linter where run := withSetOptionIn fun stx
       -- Extract some parts of the original source to make the suggestion
       let some assignTxt := srcText assignStx | continue
       let some movableBinderTxt := srcText movableBinders | continue
+      let some movableBinderTxt := srcText movableBinders | continue
       let some optFunTypeTxt := if optTypeStx.isNone then
           some ""
         else
           (srcText #[optTypeStx]).map (" " ++ ·)
         | continue
 
+      -- `foo:= fun x ↦ _` and `foo x:= fun x ↦ _` are valid syntax, so we need to insert a space
+      let some assignTk := assignStx[0]? | continue
+      let some assignPos := assignTk.getPos? | continue
+      let mut prevTk := field[0]
+      for tk in field.topDown do match tk with
+        | .atom .. | .ident .. =>
+          if let some e := tk.getTailPos? then
+            if e ≤ assignPos then prevTk := tk
+        | _ => pure ()
+      let ws := match prevTk.getTailInfo with
+        | .original _ _ trailing _ => if trailing.isEmpty then " " else ""
+        | _ => ""
+
       let suggestion ← if movableBinders.size == binders.size then
           -- if all binders are moveable, we suggest `foo x y := _`
-          pure s!"{movableBinderTxt}{optFunTypeTxt} {assignTxt}"
+          pure s!"{ws}{movableBinderTxt}{optFunTypeTxt} {assignTxt}"
         else
           -- if there ore non-moveable binders,
           -- we need to keep the `fun` syntax for the unmovable binders,
@@ -128,7 +142,7 @@ meta def structInstFieldArgsLinter : Linter where run := withSetOptionIn fun stx
           let some funTxt := srcText #[funStx] | continue
           let some remainingTxt := srcText remaining | continue
           let some arrowTxt := srcText #[arrowStx] | continue
-          pure s!"{movableBinderTxt} {assignTxt} {funTxt} {remainingTxt}{optFunTypeTxt} {arrowTxt}"
+          pure s!"{ws}{movableBinderTxt} {assignTxt} {funTxt} {remainingTxt}{optFunTypeTxt} {arrowTxt}"
 
       let replacementSpan := mkNullNode <| assignStx ++ #[arrowStx]
       let msgSpan := mkNullNode <| movableBinders

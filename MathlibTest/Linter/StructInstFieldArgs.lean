@@ -27,6 +27,33 @@ example : A where
   a := fun x y : Nat => x
 
 /--
+@ +2:10...13
+info: Fix:
+   ̲x̲ ̲y̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵y̵ ̵=̵>̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+example : A where
+  a:= fun x y => x
+
+/--
+@ +2:12...13
+info: Fix:
+   ̲y̲ ̲:= ̵f̵u̵n̵ ̵y̵ ̵=̵>̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+example : A where
+  a x:= fun y => y
+
+/--
+@ +2:19...20
+info: Fix:
+   ̲y̲ ̲:= ̵f̵u̵n̵ ̵y̵ ̵=̵>̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+example : A where
+  a (x: Nat):= fun y => y
+
+/--
 @ +2:11...14
 info: Fix:
   x̲ ̲_̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵_̵ ̵=̵>̵
