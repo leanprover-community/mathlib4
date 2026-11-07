@@ -5761,6 +5761,7 @@ public import Mathlib.MeasureTheory.Integral.ExpDecay
 public import Mathlib.MeasureTheory.Integral.FinMeasAdditive
 public import Mathlib.MeasureTheory.Integral.Gamma
 public import Mathlib.MeasureTheory.Integral.Indicator
+public import Mathlib.MeasureTheory.Integral.InfinitePiProduct
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Integral.IntervalAverage
