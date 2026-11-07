@@ -28,6 +28,8 @@ That lemma is our version of Gibbs' inequality ("the Kullback-Leibler divergence
 
 * `klDiv_eq_zero_iff` : the Kullback-Leibler divergence between two finite measures is zero if and
   only if the two measures are equal.
+* `klDiv_restrict_eq_lintegral_klFun_of_ac`: integral formula for the divergence of restrictions.
+* `klDiv_restrict_le`: restricting both finite measures to the same set decreases their divergence.
 
 ## Implementation details
 
@@ -135,6 +137,36 @@ lemma klDiv_eq_lintegral_klFun_of_ac (h_ac : μ ≪ ν) :
   simp [klDiv_eq_lintegral_klFun, h_ac]
 
 end AlternativeFormulas
+
+section Restrict
+
+variable [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+
+/-- The Kullback-Leibler divergence of restrictions of finite measures is the integral of `klFun`
+over the restricting set, provided `μ ≪ ν`. The set need not be measurable.
+These are restrictions of measures, without normalization to probability measures. -/
+lemma klDiv_restrict_eq_lintegral_klFun_of_ac (hμν : μ ≪ ν) (s : Set α) :
+    klDiv (μ.restrict s) (ν.restrict s) =
+      ∫⁻ x in s, ENNReal.ofReal (klFun (μ.rnDeriv ν x).toReal) ∂ν := by
+  rw [klDiv_eq_lintegral_klFun_of_ac (hμν.restrict s)]
+  have h_rn := Measure.rnDeriv_withDensity (ν.restrict s) (Measure.measurable_rnDeriv μ ν)
+  rw [← restrict_withDensity' s, Measure.withDensity_rnDeriv_eq μ ν hμν] at h_rn
+  apply lintegral_congr_ae
+  filter_upwards [h_rn] with x hx
+  rw [hx]
+
+variable (μ ν) in
+/-- Restricting two finite measures to the same set decreases their Kullback-Leibler divergence.
+No measurability or absolute continuity assumption is needed. The restricted measures are not
+normalized to probability measures. -/
+lemma klDiv_restrict_le (s : Set α) :
+    klDiv (μ.restrict s) (ν.restrict s) ≤ klDiv μ ν := by
+  by_cases hμν : μ ≪ ν
+  · rw [klDiv_restrict_eq_lintegral_klFun_of_ac hμν s, klDiv_eq_lintegral_klFun_of_ac hμν]
+    exact lintegral_mono' Measure.restrict_le_self le_rfl
+  · simp [klDiv_of_not_ac hμν]
+
+end Restrict
 
 section Real
 
