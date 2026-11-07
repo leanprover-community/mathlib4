@@ -50,10 +50,9 @@ public lemma exists_volOrientation_eq (o : Orientation R M (Fin (finrank R M))) 
     ∃ vol : ⋀[R]^(finrank R M) M ≃ₗ[R] R, volOrientation vol = o := by
   classical
   let b := Module.finBasis R M
-  let : Unique (powersetCard (Fin (finrank R M)) (finrank R M)) := {
-    default := ⟨Finset.univ, by simp⟩
-    uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp
-  }
+  let : Unique (powersetCard (Fin (finrank R M)) (finrank R M)) :=
+    { default := ⟨Finset.univ, by simp⟩
+      uniq s := Subtype.ext <| Finset.eq_univ_of_card _ <| by simp }
   let vol := (b.exteriorPower (finrank R M)).equiv (Basis.singleton _ R) (Equiv.refl _)
   have h : o = volOrientation vol ∨ o = -volOrientation vol := by
     rcases b.orientation_eq_or_eq_neg o with ho | ho <;>
