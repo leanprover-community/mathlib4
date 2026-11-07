@@ -367,7 +367,7 @@ theorem fst_det (M : Matrix n n (R × S)) :
 
 @[simp]
 theorem snd_det (M : Matrix n n (R × S)) :
-    M.det.snd = (prodRingEquiv n R S M).snd.det :=
+    M.det.snd = (M.map Prod.snd).det :=
   RingHom.map_det (RingHom.snd R S) _
 
 theorem det_prodRingEquiv_symm (M : Matrix n n R × Matrix n n S) :
