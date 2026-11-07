@@ -205,7 +205,7 @@ lemma closure_eq {s : ClosedSubmodule R M} : s.closure = s := by
   · exact s.isClosed'
 
 lemma closure_eq' {s : Submodule R M} (hs : IsClosed s.carrier) : s.closure = ⟨s, hs⟩ := by
-  ext; simp
+  ext; simp [IsClosed.closure_eq (s := (s : Set M)) hs]
 
 end Submodule
 

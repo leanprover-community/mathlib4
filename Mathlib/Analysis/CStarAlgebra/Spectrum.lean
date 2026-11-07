@@ -230,16 +230,16 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
 
 namespace StarSubalgebra
 
-variable (S : StarSubalgebra ℂ A) [hS : IsClosed (S : Set A)]
+variable (S : StarSubalgebra ℂ A)
 
 /-- For a unital C⋆-subalgebra `S` of `A` and `x : S`, if `↑x : A` is invertible in `A`, then
 `x` is invertible in `S`. -/
-lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
+lemma coe_isUnit {a : S} (hS : IsClosed (S : Set A)) : IsUnit (a : A) ↔ IsUnit a := by
   refine ⟨fun ha ↦ ?_, IsUnit.map S.subtype⟩
   have ha₁ := ha.star.mul ha
   have ha₂ := ha.mul ha.star
   have spec_eq {x : S} (hx : IsSelfAdjoint x) : spectrum ℂ x = spectrum ℂ (x : A) :=
-    Subalgebra.spectrum_eq_of_isPreconnected_compl S _
+    Subalgebra.spectrum_eq_of_isPreconnected_compl S _ hS
       (hx.map S.subtype).isConnected_spectrum_compl.isPreconnected
   rw [← StarMemClass.coe_star, ← MulMemClass.coe_mul, ← spectrum.zero_notMem_iff ℂ, ← spec_eq,
     spectrum.zero_notMem_iff] at ha₁ ha₂
@@ -249,13 +249,14 @@ lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
   · exact IsSelfAdjoint.mul_star_self a
   · exact IsSelfAdjoint.star_mul_self a
 
-lemma mem_spectrum_iff {a : S} {z : ℂ} : z ∈ spectrum ℂ a ↔ z ∈ spectrum ℂ (a : A) :=
-  not_iff_not.mpr S.coe_isUnit.symm
+lemma mem_spectrum_iff {a : S} {z : ℂ} (hS : IsClosed (S : Set A)) :
+    z ∈ spectrum ℂ a ↔ z ∈ spectrum ℂ (a : A) :=
+  not_iff_not.mpr (S.coe_isUnit hS).symm
 
 /-- **Spectral permanence.** The spectrum of an element is invariant of the (closed)
 `StarSubalgebra` in which it is contained. -/
-lemma spectrum_eq {a : S} : spectrum ℂ a = spectrum ℂ (a : A) :=
-  Set.ext fun _ ↦ S.mem_spectrum_iff
+lemma spectrum_eq {a : S} (hS : IsClosed (S : Set A)) : spectrum ℂ a = spectrum ℂ (a : A) :=
+  Set.ext fun _ ↦ S.mem_spectrum_iff hS
 
 end StarSubalgebra
 

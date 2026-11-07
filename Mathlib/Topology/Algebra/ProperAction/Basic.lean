@@ -162,8 +162,10 @@ theorem properSMul_of_isClosedEmbedding {H : Type*} [Group H] [MulAction H X] [T
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/
 @[to_additive
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on `X`, then so does `H`. -/]
-instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
-  properSMul_of_isClosedEmbedding H.subtype H_closed.isClosedEmbedding_subtypeVal fun _ _ ↦ rfl
+instance {H : Subgroup G} [ProperSMul G X] [H_closed : Fact (IsClosed (H : Set G))] :
+    ProperSMul H X :=
+  properSMul_of_isClosedEmbedding H.subtype H_closed.out.isClosedEmbedding_subtypeVal
+    fun _ _ ↦ rfl
 
 /-- The action `G ↷ G` by left translations is proper. -/
 @[to_additive
@@ -196,14 +198,14 @@ is proper. Note that the corresponding statement for the left action can be prov
 @[to_additive /-- Given a closed subgroup `H` of an additive topological group `G`, the right
 action of `H` on `G` is proper. Note that the corresponding statement for the left action can be
 proven by `inferInstance`. -/]
-instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : IsClosed (H : Set G)] :
+instance [IsTopologicalGroup G] {H : Subgroup G} [H_closed : Fact (IsClosed (H : Set G))] :
     ProperSMul H.op G :=
-  have : IsClosed (H.op : Set Gᵐᵒᵖ) := H_closed.preimage MulOpposite.continuous_unop
+  have : Fact (IsClosed (H.op : Set Gᵐᵒᵖ)) := ⟨H_closed.out.preimage MulOpposite.continuous_unop⟩
   inferInstance
 
 @[to_additive]
-instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G} [IsClosed (H : Set G)] :
-    T2Space (G ⧸ H) :=
+instance QuotientGroup.instT2Space [IsTopologicalGroup G] {H : Subgroup G}
+    [Fact (IsClosed (H : Set G))] : T2Space (G ⧸ H) :=
   t2Space_quotient_mulAction_of_properSMul
 
 /-- If `G` acts on `X` properly, then the map `G × T → X × T, (g, t) ↦ (g • t, t)` is still

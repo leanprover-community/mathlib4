@@ -49,27 +49,29 @@ noncomputable instance (priority := 100) CommCStarAlgebra.toNonUnitalCommCStarAl
 
 noncomputable instance StarSubalgebra.cstarAlgebra {S A : Type*} [CStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
-    (s : S) [h_closed : IsClosed (s : Set A)] : CStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
+    (s : S) [h_closed : Fact (IsClosed (s : Set A))] : CStarAlgebra s where
+  toCompleteSpace := h_closed.out.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
 noncomputable instance StarSubalgebra.commCStarAlgebra {S A : Type*} [CommCStarAlgebra A]
     [SetLike S A] [SubringClass S A] [SMulMemClass S ℂ A] [StarMemClass S A]
-    (s : S) [h_closed : IsClosed (s : Set A)] : CommCStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
+    (s : S) [h_closed : Fact (IsClosed (s : Set A))] : CommCStarAlgebra s where
+  toCompleteSpace := h_closed.out.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
 noncomputable instance NonUnitalStarSubalgebra.nonUnitalCStarAlgebra {S A : Type*}
     [NonUnitalCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
-    [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
+    [StarMemClass S A] (s : S) [h_closed : Fact (IsClosed (s : Set A))] :
+    NonUnitalCStarAlgebra s where
+  toCompleteSpace := h_closed.out.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
 
 noncomputable instance NonUnitalStarSubalgebra.nonUnitalCommCStarAlgebra {S A : Type*}
     [NonUnitalCommCStarAlgebra A] [SetLike S A] [NonUnitalSubringClass S A] [SMulMemClass S ℂ A]
-    [StarMemClass S A] (s : S) [h_closed : IsClosed (s : Set A)] : NonUnitalCommCStarAlgebra s where
-  toCompleteSpace := h_closed.completeSpace_coe
+    [StarMemClass S A] (s : S) [h_closed : Fact (IsClosed (s : Set A))] :
+    NonUnitalCommCStarAlgebra s where
+  toCompleteSpace := h_closed.out.completeSpace_coe
   norm_mul_self_le x := CStarRing.norm_star_mul_self (x := (x : A)) |>.symm.le
   mul_comm _ _ := Subtype.ext <| mul_comm _ _
 
@@ -107,12 +109,12 @@ variable {A : Type*}
 
 noncomputable instance [CStarAlgebra A] (x : A) :
     CStarAlgebra (StarAlgebra.elemental ℂ x) :=
-  StarSubalgebra.cstarAlgebra _ (h_closed := StarAlgebra.elemental.isClosed ℂ x)
+  StarSubalgebra.cstarAlgebra _ (h_closed := ⟨StarAlgebra.elemental.isClosed ℂ x⟩)
 
 noncomputable instance [NonUnitalCStarAlgebra A] (x : A) :
     NonUnitalCStarAlgebra (NonUnitalStarAlgebra.elemental ℂ x) :=
   NonUnitalStarSubalgebra.nonUnitalCStarAlgebra _
-    (h_closed := NonUnitalStarAlgebra.elemental.isClosed ℂ x)
+    (h_closed := ⟨NonUnitalStarAlgebra.elemental.isClosed ℂ x⟩)
 
 open scoped IsMulCommutative in
 noncomputable instance [CStarAlgebra A] (x : A) [IsStarNormal x] :

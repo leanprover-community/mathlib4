@@ -171,7 +171,7 @@ noncomputable def irreducibleSetEquivPoints [QuasiSober α] [T0Space α] :
   map_rel_iff' := by
     rintro ⟨s, hs, hs'⟩ ⟨t, ht, ht'⟩
     refine specializes_iff_closure_subset.trans ?_
-    simp
+    simp [hs'.closure_eq, ht'.closure_eq]
     rfl
 
 @[simp]

@@ -297,11 +297,11 @@ lemma nhdsWithin_neBot : (𝓝[s] x).NeBot ↔ ∀ ⦃t⦄, t ∈ 𝓝 x → (t 
 theorem nhdsWithin_mono (x : X) {s t : Set X} (h : s ⊆ t) : 𝓝[s] x ≤ 𝓝[t] x :=
   inf_le_inf_left _ (principal_mono.mpr h)
 
-theorem IsClosed.interior_union_left (_ : IsClosed s) :
+theorem IsClosed.interior_union_left (hs : IsClosed s) :
     interior (s ∪ t) ⊆ s ∪ interior t := fun a ⟨u, ⟨⟨hu₁, hu₂⟩, ha⟩⟩ =>
   (Classical.em (a ∈ s)).imp_right fun h =>
     mem_interior.mpr
-      ⟨u ∩ sᶜ, fun _x hx => (hu₂ hx.1).resolve_left hx.2, IsOpen.inter hu₁ IsClosed.isOpen_compl,
+      ⟨u ∩ sᶜ, fun _x hx => (hu₂ hx.1).resolve_left hx.2, IsOpen.inter hu₁ hs.isOpen_compl,
         ⟨ha, h⟩⟩
 
 theorem IsClosed.interior_union_right (h : IsClosed t) :

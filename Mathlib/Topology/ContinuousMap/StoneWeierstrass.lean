@@ -156,7 +156,7 @@ theorem sup_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
     (f g : A) : (f : C(X, ℝ)) ⊔ (g : C(X, ℝ)) ∈ A := by
   convert sup_mem_subalgebra_closure A f g
   apply SetLike.ext'
-  simp
+  simp [h.closure_eq]
 
 open scoped Topology
 

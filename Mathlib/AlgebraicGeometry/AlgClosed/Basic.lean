@@ -54,7 +54,8 @@ def pointOfClosedPoint : Spec ↧K ⟶ X :=
 
 @[reassoc (attr := simp)]
 lemma pointOfClosedPoint_comp : pointOfClosedPoint f x hx ≫ f = 𝟙 _ := by
-  simp [pointOfClosedPoint, ← SpecMap_residueFieldIsoBase_inv, ← Spec.map_comp]
+  rw [pointOfClosedPoint, Category.assoc, ← SpecMap_residueFieldIsoBase_inv f x hx, ← Spec.map_comp,
+    Iso.inv_hom_id, Spec.map_id]
 
 @[simp]
 lemma pointOfClosedPoint_apply (a : _) : pointOfClosedPoint f x hx a = x := by

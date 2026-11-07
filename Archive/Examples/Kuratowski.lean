@@ -120,8 +120,8 @@ theorem nodup_theFourteen_of_nodup_theClosedSix_of_disjoint
   · -- The first follows from nontriviality of the topological space.
     have : Nontrivial (Set X) := ⟨_, _, (List.pairwise_cons.mp nodup).1 _ (.head _)⟩
     simp
-  have hs : ¬ IsClosed s := fun h ↦ by simp [theClosedSix] at nodup
-  have hsc : ¬ IsClosed sᶜ := fun h ↦ by simp [theClosedSix] at nodup
+  have hs : ¬ IsClosed s := fun h ↦ by simp [theClosedSix, h.closure_eq] at nodup
+  have hsc : ¬ IsClosed sᶜ := fun h ↦ by simp [theClosedSix, h.closure_eq] at nodup
   -- Show `s ∉ theClosedSix s ∧ sᶜ ∉ theClosedSix s` and `s ∉ theOpenSix s ∧ sᶜ ∉ theOpenSix s`.
   simp only [insert_eq_cons, disjoint_add_right, disjoint_cons_left, singleton_disjoint,
     mem_theOpenSix_iff, compl_compl, and_comm, and_self]
