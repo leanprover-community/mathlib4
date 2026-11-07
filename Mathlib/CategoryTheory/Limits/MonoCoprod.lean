@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 
 /-!
-
 # Categories where inclusions into coproducts are monomorphisms
 
 If `C` is a category, the class `MonoCoprod C` expresses that left

@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.SpanRankOperations
 public import Mathlib.RingTheory.Regular.RegularSequence
 
 /-!
-
 # Equivalence between two set of minimal generators over local ring
 
 -/

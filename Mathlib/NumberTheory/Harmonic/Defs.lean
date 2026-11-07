@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Rat.Defs
 
 /-!
-
 This file defines the harmonic numbers.
 
 * `Mathlib/NumberTheory/Harmonic/Int.lean` proves that the `n`th harmonic number is not an integer.
