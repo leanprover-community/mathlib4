@@ -319,8 +319,6 @@ lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective 
 
 section extendScalars
 
-open Algebra.TensorProduct
-
 variable {R S L M N}
 
 variable (S) in
@@ -335,7 +333,7 @@ lemma extendScalars_apply (f : M →ₗ[R] N) :
 
 variable (R S M) in
 @[simp]
-lemma extendScalars_zero : extendScalars S (0 : M →ₗ[R] M) = 0 :=
+lemma extendScalars_zero : extendScalars S (0 : M →ₗ[R] N) = 0 :=
   map_zero (extendScalars S)
 
 variable (R S M) in
