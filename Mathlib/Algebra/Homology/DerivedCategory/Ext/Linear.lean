@@ -29,6 +29,36 @@ namespace Abelian
 
 namespace Ext
 
+section End
+
+variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C] {A G : C} {n : ℕ}
+
+noncomputable instance smulEndRight : SMul (End G) (Ext A G n) where
+  smul r x := x.comp (mk₀ r) (add_zero n)
+
+lemma smul_end_def (r : End G) (x : Ext A G n) : r • x = x.comp (mk₀ r) (add_zero n) := rfl
+
+noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
+  one_smul x := by simp [smul_end_def, End.one_def]
+  mul_smul r s x := by
+    simp only [smul_end_def]
+    rw [End.mul_def, ← mk₀_comp_mk₀, comp_assoc_of_third_deg_zero]
+  smul_zero r := by simp [smul_end_def]
+  zero_smul x := by
+    simp only [smul_end_def]
+    rw [show (0 : End G) = (0 : G ⟶ G) from rfl, mk₀_zero, comp_zero]
+  smul_add r x y := by simp [smul_end_def]
+  add_smul r s x := by
+    simp only [smul_end_def]
+    rw [show mk₀ (r + s) = mk₀ r + mk₀ s from mk₀_add r s, comp_add]
+
+lemma smul_comp_mk₀_of_comm {G' : C} (φ : G ⟶ G') (α : End G) (β : End G')
+    (h : α ≫ φ = φ ≫ β) (x : Ext A G n) :
+    (α • x).comp (mk₀ φ) (add_zero n) = β • x.comp (mk₀ φ) (add_zero n) := by
+  simp only [smul_end_def, comp_assoc_of_third_deg_zero, mk₀_comp_mk₀, h]
+
+end End
+
 section Ring
 
 variable {R : Type t} [Ring R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
@@ -100,6 +130,10 @@ end Ring
 section CommRing
 
 variable {C : Type u} [Category.{v} C] [Abelian C] [HasExt.{w} C]
+
+noncomputable instance {R : Type t} [CommRing R] [Linear R C] {X Y : C} {n : ℕ} :
+    IsScalarTower R (End Y) (Ext X Y n) where
+  smul_assoc r s x := by rw [smul_end_def, smul_end_def, mk₀_smul, comp_smul]
 
 /-- The composition of `Ext`, as a bilinear map. -/
 @[simps!]
