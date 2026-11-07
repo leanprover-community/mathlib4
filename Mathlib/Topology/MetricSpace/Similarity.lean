@@ -212,7 +212,7 @@ lemma similar_iff_exists_nnDist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nnDist (v₁ i₁) (v₁ i₂) =
       r * nnDist (v₂ i₁) (v₂ i₂))) :=
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
-  fun _ _ => by { rw [edist_nnDist, edist_nnDist]; norm_cast }
+  fun _ _ => by { rw [eDist_nnDist, eDist_nnDist]; norm_cast }
 
 @[deprecated (since := "2026-11-07")]
 alias similar_iff_exists_nndist_eq := similar_iff_exists_nnDist_eq
@@ -222,7 +222,7 @@ indices are proportional. -/
 lemma similar_iff_exists_pairwise_nnDist_eq :
     Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nnDist (v₁ i₁) (v₁ i₂) =
       r * nnDist (v₂ i₁) (v₂ i₂))) := by
-  simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nnDist]
+  simp_rw [similar_iff_exists_pairwise_edist_eq, eDist_nnDist]
   exact mod_cast Iff.rfl
 
 @[deprecated (since := "2026-11-07")]

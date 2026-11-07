@@ -345,10 +345,10 @@ namespace HolderOnWith
 
 theorem nnDist_le_of_le (hf : HolderOnWith C r f s) (hx : x ∈ s) (hy : y ∈ s)
     {d : ℝ≥0} (hd : nnDist x y ≤ d) : nnDist (f x) (f y) ≤ C * d ^ (r : ℝ) := by
-  rw [← ENNReal.coe_le_coe, ← edist_nnDist, ENNReal.coe_mul,
+  rw [← ENNReal.coe_le_coe, ← eDist_nnDist, ENNReal.coe_mul,
     ENNReal.coe_rpow_of_nonneg _ r.coe_nonneg]
   apply hf.edist_le_of_le hx hy
-  rwa [edist_nnDist, ENNReal.coe_le_coe]
+  rwa [eDist_nnDist, ENNReal.coe_le_coe]
 
 @[deprecated (since := "2026-11-07")] alias nndist_le_of_le := nnDist_le_of_le
 

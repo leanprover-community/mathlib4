@@ -928,12 +928,12 @@ lemma dist_toLp_snd (y₁ y₂ : β) :
 
 @[simp]
 lemma edist_toLp_fst (x₁ x₂ : α) : edist (toLp p (x₁, (0 : β))) (toLp p (x₂, 0)) = edist x₁ x₂ := by
-  simp only [edist_nnDist, nnDist_toLp_fst p α β x₁ x₂]
+  simp only [eDist_nnDist, nnDist_toLp_fst p α β x₁ x₂]
 
 @[simp]
 lemma edist_toLp_snd (y₁ y₂ : β) :
     edist (toLp p ((0 : α), y₁)) (toLp p (0, y₂)) = edist y₁ y₂ := by
-  simp only [edist_nnDist, nnDist_toLp_snd p α β y₁ y₂]
+  simp only [eDist_nnDist, nnDist_toLp_snd p α β y₁ y₂]
 
 end Single
 

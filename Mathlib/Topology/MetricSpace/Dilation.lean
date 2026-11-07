@@ -166,7 +166,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
 theorem nnDist_eq {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β]
     [DilationClass F α β] (f : F) (x y : α) :
     nnDist (f x) (f y) = ratio f * nnDist x y := by
-  simp only [← ENNReal.coe_inj, ← edist_nnDist, ENNReal.coe_mul, edist_eq]
+  simp only [← ENNReal.coe_inj, ← eDist_nnDist, ENNReal.coe_mul, edist_eq]
 
 @[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
 
@@ -187,8 +187,8 @@ with nonzero finite distance; `nnDist` version -/
 theorem ratio_unique_of_nnDist_ne_zero {α β F : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
     [FunLike F α β] [DilationClass F α β] {f : F} {x y : α} {r : ℝ≥0} (hxy : nnDist x y ≠ 0)
     (hr : nnDist (f x) (f y) = r * nnDist x y) : r = ratio f :=
-  ratio_unique (by rwa [edist_nnDist, ENNReal.coe_ne_zero]) (edist_ne_top x y)
-    (by rw [edist_nnDist, edist_nnDist, hr, ENNReal.coe_mul])
+  ratio_unique (by rwa [eDist_nnDist, ENNReal.coe_ne_zero]) (edist_ne_top x y)
+    (by rw [eDist_nnDist, eDist_nnDist, hr, ENNReal.coe_mul])
 
 @[deprecated (since := "2026-11-07")]
 alias ratio_unique_of_nndist_ne_zero := ratio_unique_of_nnDist_ne_zero
@@ -208,7 +208,7 @@ def mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α �
   edist_eq' := by
     rcases h with ⟨r, hne, h⟩
     refine ⟨r, hne, fun x y => ?_⟩
-    rw [edist_nnDist, edist_nnDist, ← ENNReal.coe_mul, h x y]
+    rw [eDist_nnDist, eDist_nnDist, ← ENNReal.coe_mul, h x y]
 
 @[simp]
 theorem coe_mkOfNNDistEq {α β} [PseudoMetricSpace α] [PseudoMetricSpace β] (f : α → β) (h) :

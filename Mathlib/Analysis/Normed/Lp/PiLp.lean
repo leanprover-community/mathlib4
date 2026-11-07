@@ -1117,7 +1117,7 @@ lemma dist_single_same (i : ι) (b₁ b₂ : β i) :
 @[simp]
 lemma edist_single_same (i : ι) (b₁ b₂ : β i) :
     edist (single p i b₁) (single p i b₂) = edist b₁ b₂ := by
-  simp only [edist_nnDist, nnDist_single_same p β i b₁ b₂]
+  simp only [eDist_nnDist, nnDist_single_same p β i b₁ b₂]
 
 end Single
 

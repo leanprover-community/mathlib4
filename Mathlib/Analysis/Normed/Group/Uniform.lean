@@ -288,7 +288,7 @@ alias nndist_mul_mul_le := nnDist_mul_mul_le
 @[to_additive]
 theorem edist_mul_mul_le (a₁ a₂ b₁ b₂ : E) :
     edist (a₁ * a₂) (b₁ * b₂) ≤ edist a₁ b₁ + edist a₂ b₂ := by
-  simp only [edist_nnDist]
+  simp only [eDist_nnDist]
   norm_cast
   apply nnDist_mul_mul_le
 

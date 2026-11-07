@@ -1103,7 +1103,7 @@ theorem hausdorffMeasure_lineMap_image (x y : P) (s : Set ℝ) :
 theorem hausdorffMeasure_affineSegment (x y : P) : μH[1] (affineSegment ℝ x y) = edist x y := by
   rw [affineSegment, hausdorffMeasure_lineMap_image, hausdorffMeasure_real, Real.volume_Icc,
     sub_zero, ENNReal.ofReal_one, ← Algebra.algebraMap_eq_smul_one]
-  exact (edist_nnDist _ _).symm
+  exact (eDist_nnDist _ _).symm
 
 end RealAffine
 

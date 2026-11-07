@@ -50,7 +50,7 @@ variable [PseudoMetricSpace α] [PseudoMetricSpace β] {K : ℝ≥0} {f : α →
 
 theorem antilipschitzWith_iff_le_mul_nnDist :
     AntilipschitzWith K f ↔ ∀ x y, nnDist x y ≤ K * nnDist (f x) (f y) := by
-  simp only [AntilipschitzWith, edist_nnDist]
+  simp only [AntilipschitzWith, eDist_nnDist]
   norm_cast
 
 @[deprecated (since := "2026-11-07")]

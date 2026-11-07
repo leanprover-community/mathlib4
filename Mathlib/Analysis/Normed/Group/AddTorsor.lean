@@ -189,13 +189,13 @@ theorem nnDist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
-  simp only [edist_nnDist]
+  simp only [eDist_nnDist]
   norm_cast
   apply dist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
-  simp only [edist_nnDist]
+  simp only [eDist_nnDist]
   norm_cast
   apply dist_vsub_vsub_le
 

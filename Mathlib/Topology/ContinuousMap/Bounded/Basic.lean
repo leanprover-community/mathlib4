@@ -237,7 +237,7 @@ theorem nnDist_eq_iSup : nnDist f g = ⨆ x : α, nnDist (f x) (g x) :=
 @[deprecated (since := "2026-11-07")] alias nndist_eq_iSup := nnDist_eq_iSup
 
 theorem edist_eq_iSup : edist f g = ⨆ x, edist (f x) (g x) := by
-  simp_rw [edist_nnDist, nnDist_eq_iSup]
+  simp_rw [eDist_nnDist, nnDist_eq_iSup]
   refine ENNReal.coe_iSup ⟨nnDist f g, ?_⟩
   rintro - ⟨x, hx, rfl⟩
   exact nnDist_coe_le_nnDist x

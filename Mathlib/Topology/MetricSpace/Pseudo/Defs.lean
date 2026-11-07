@@ -295,30 +295,30 @@ theorem coe_nnDist (x y : α) : ↑(nnDist x y) = dist x y := rfl
 @[deprecated (since := "2026-11-07")] alias coe_nndist := coe_nnDist
 
 /-- Express `edist` in terms of `nnDist` -/
-theorem edist_nnDist (x y : α) : edist x y = nnDist x y := by
+theorem eDist_nnDist (x y : α) : edist x y = nnDist x y := by
   rw [edist_dist, dist_nnDist, ENNReal.ofReal_coe_nnreal]
 
-@[deprecated (since := "2026-11-07")] alias edist_nndist := edist_nnDist
+@[deprecated (since := "2026-11-07")] alias edist_nndist := eDist_nnDist
 
 /-- Express `nnDist` in terms of `edist` -/
 theorem nnDist_edist (x y : α) : nnDist x y = (edist x y).toNNReal := by
-  simp [edist_nnDist]
+  simp [eDist_nnDist]
 
 @[deprecated (since := "2026-11-07")] alias nndist_edist := nnDist_edist
 
 @[simp, norm_cast]
 theorem coe_nnreal_ennreal_nnDist (x y : α) : ↑(nnDist x y) = edist x y :=
-  (edist_nnDist x y).symm
+  (eDist_nnDist x y).symm
 
 @[deprecated (since := "2026-11-07")] alias coe_nnreal_ennreal_nndist := coe_nnreal_ennreal_nnDist
 
 @[simp, norm_cast]
 theorem edist_lt_coe {x y : α} {c : ℝ≥0} : edist x y < c ↔ nnDist x y < c := by
-  rw [edist_nnDist, ENNReal.coe_lt_coe]
+  rw [eDist_nnDist, ENNReal.coe_lt_coe]
 
 @[simp, norm_cast]
 theorem edist_le_coe {x y : α} {c : ℝ≥0} : edist x y ≤ c ↔ nnDist x y ≤ c := by
-  rw [edist_nnDist, ENNReal.coe_le_coe]
+  rw [eDist_nnDist, ENNReal.coe_le_coe]
 
 /-- In a pseudometric space, the extended distance is always finite -/
 theorem edist_lt_top {α : Type*} [PseudoMetricSpace α] (x y : α) : edist x y < ⊤ :=
@@ -994,7 +994,7 @@ theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     exact fun _ => ENNReal.coe_lt_coe.1
 
 theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | edist p.1 p.2 < ε } := by
-  simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, edist_nnDist,
+  simp only [PseudoMetricSpace.uniformity_dist, dist_nnDist, eDist_nnDist,
     Metric.uniformity_edist_aux]
 
 -- see Note [lower instance priority]

@@ -441,7 +441,7 @@ theorem nnDist_one_right (a : E) : nnDist a 1 = ‖a‖₊ := by
 alias nndist_one_right := nnDist_one_right
 
 @[to_additive (attr := simp)]
-lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [edist_nnDist, nnDist_one_right, eNorm]
+lemma edist_one_right (a : E) : edist a 1 = ‖a‖ₑ := by simp [eDist_nnDist, nnDist_one_right, eNorm]
 
 @[to_additive (attr := simp) nnNorm_zero]
 theorem nnNorm_one' : ‖(1 : E)‖₊ = 0 := NNReal.eq norm_one'
@@ -512,7 +512,7 @@ alias nndist_one_left := nnDist_one_left
 
 @[to_additive (attr := simp)]
 theorem edist_one_left (a : E) : edist 1 a = ‖a‖₊ := by
-  rw [edist_nnDist, nnDist_one_left]
+  rw [eDist_nnDist, nnDist_one_left]
 
 open scoped symmDiff in
 @[to_additive]
@@ -619,7 +619,7 @@ open scoped symmDiff in
 @[to_additive]
 theorem edist_mulIndicator (s t : Set α) (f : α → E) (x : α) :
     edist (s.mulIndicator f x) (t.mulIndicator f x) = ‖(s ∆ t).mulIndicator f x‖₊ := by
-  rw [edist_nnDist, nnDist_mulIndicator]
+  rw [eDist_nnDist, nnDist_mulIndicator]
 
 @[to_additive nontrivialTopology_iff_exists_nnNorm_ne_zero]
 theorem nontrivialTopology_iff_exists_nnNorm_ne_zero' :

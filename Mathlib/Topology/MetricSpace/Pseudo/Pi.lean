@@ -116,7 +116,7 @@ lemma nnDist_pi_const [Nonempty β] (a b : α) : (nnDist (fun _ : β => a) fun _
 @[deprecated (since := "2026-11-07")] alias nndist_pi_const := nnDist_pi_const
 
 lemma nnDist_le_pi_nnDist (f g : ∀ b, X b) (b : β) : nnDist (f b) (g b) ≤ nnDist f g := by
-  rw [← ENNReal.coe_le_coe, ← edist_nnDist, ← edist_nnDist]
+  rw [← ENNReal.coe_le_coe, ← eDist_nnDist, ← eDist_nnDist]
   exact edist_le_pi_edist f g b
 
 @[deprecated (since := "2026-11-07")] alias nndist_le_pi_nndist := nnDist_le_pi_nnDist

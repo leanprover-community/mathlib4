@@ -43,7 +43,7 @@ def Isometry [PseudoEMetricSpace α] [PseudoEMetricSpace β] (f : α → β) : P
 distances. -/
 theorem isometry_iff_nnDist_eq [PseudoMetricSpace α] [PseudoMetricSpace β] {f : α → β} :
     Isometry f ↔ ∀ x y, nnDist (f x) (f y) = nnDist x y := by
-  simp only [Isometry, edist_nnDist, ENNReal.coe_inj]
+  simp only [Isometry, eDist_nnDist, ENNReal.coe_inj]
 
 @[deprecated (since := "2026-11-07")] alias isometry_iff_nndist_eq := isometry_iff_nnDist_eq
 

@@ -181,7 +181,7 @@ theorem nnDist_smul₀ (s : α) (x y : β) : nnDist (s • x) (s • y) = ‖s�
 @[deprecated (since := "2026-11-07")] alias nndist_smul₀ := nnDist_smul₀
 
 theorem edist_smul₀ (s : α) (x y : β) : edist (s • x) (s • y) = ‖s‖₊ • edist x y := by
-  simp only [edist_nnDist, nnDist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
+  simp only [eDist_nnDist, nnDist_smul₀, ENNReal.coe_mul, ENNReal.smul_def, smul_eq_mul]
 
 instance NormSMulClass.toIsBoundedSMul : IsBoundedSMul α β :=
   .of_norm_smul_le fun r x ↦ (norm_smul r x).le
