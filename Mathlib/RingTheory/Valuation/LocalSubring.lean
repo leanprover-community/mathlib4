@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.Polynomial.Ideal
 
 /-!
-
 # Valuation subrings are exactly the maximal local subrings
 
 See `LocalSubring.isMax_iff`.
