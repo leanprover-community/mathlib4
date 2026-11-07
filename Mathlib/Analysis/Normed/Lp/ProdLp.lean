@@ -173,7 +173,7 @@ Registering this separately allows for a future emetric-like structure on `WithL
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instProdEDist : EDist (WithLp p (α × β)) where
   edist f g :=
-    if _hp : p = 0 then
+    if p = 0 then
       (if edist f.fst g.fst = 0 then 0 else 1) + (if edist f.snd g.snd = 0 then 0 else 1)
     else if p = ∞ then
       edist f.fst g.fst ⊔ edist f.snd g.snd
@@ -240,7 +240,7 @@ Registering this separately allows for a future metric-like structure on `WithLp
 literature, but it is sometimes called a *quasi-metric* or *semi-metric*. -/
 instance instProdDist : Dist (WithLp p (α × β)) where
   dist f g :=
-    if _hp : p = 0 then
+    if p = 0 then
       (if dist f.fst g.fst = 0 then 0 else 1) + (if dist f.snd g.snd = 0 then 0 else 1)
     else if p = ∞ then
       dist f.fst g.fst ⊔ dist f.snd g.snd
@@ -275,7 +275,7 @@ Registering this separately allows for a future norm-like structure on `WithLp p
 `p < 1` satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance instProdNorm : Norm (WithLp p (α × β)) where
   norm f :=
-    if _hp : p = 0 then
+    if p = 0 then
       (if ‖f.fst‖ = 0 then 0 else 1) + (if ‖f.snd‖ = 0 then 0 else 1)
     else if p = ∞ then
       ‖f.fst‖ ⊔ ‖f.snd‖
@@ -383,7 +383,7 @@ abbrev prodPseudoMetricAux [PseudoMetricSpace α] [PseudoMetricSpace β] :
     (fun f g => by
       rcases p.dichotomy with (rfl | h)
       · simp [prod_dist_eq_sup]
-      · simp only [dist, one_div, dite_eq_ite]
+      · simp only [dist, one_div]
         split_ifs with hp' <;> positivity)
     fun f g => by
     rcases p.dichotomy with (rfl | h)

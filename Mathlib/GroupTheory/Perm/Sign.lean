@@ -184,7 +184,7 @@ theorem signAux_one (n : ℕ) : signAux (1 : Perm (Fin n)) = 1 := by
 
 /-- `signBijAux f ⟨a, b⟩` returns the pair consisting of `f a` and `f b` in decreasing order. -/
 def signBijAux {n : ℕ} (f : Perm (Fin n)) (a : Σ _ : Fin n, Fin n) : Σ _ : Fin n, Fin n :=
-  if _ : f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
+  if f a.2 < f a.1 then ⟨f a.1, f a.2⟩ else ⟨f a.2, f a.1⟩
 
 theorem signBijAux_injOn {n : ℕ} {f : Perm (Fin n)} :
     (finPairsLT n : Set (Σ _, Fin n)).InjOn (signBijAux f) := by
@@ -224,7 +224,7 @@ theorem signAux_inv {n : ℕ} (f : Perm (Fin n)) : signAux f⁻¹ = signAux f :=
   prod_nbij (signBijAux f⁻¹) signBijAux_mem signBijAux_injOn signBijAux_surj fun ⟨a, b⟩ hab ↦ by
     by_cases h : f.symm b < f.symm a
     · simp_all [signBijAux, (mem_finPairsLT.1 hab).not_ge]
-    · simp_all [signBijAux, dite_eq_right h, (mem_finPairsLT.1 hab).le]
+    · simp_all [signBijAux, ite_eq_right h, (mem_finPairsLT.1 hab).le]
 
 theorem signAux_mul {n : ℕ} (f g : Perm (Fin n)) : signAux (f * g) = signAux f * signAux g := by
   rw [← signAux_inv g]
