@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
-
 # Universal colimits and van Kampen colimits
 
 ## Main definitions

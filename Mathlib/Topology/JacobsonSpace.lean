@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.LocalAtTarget
 
 /-!
-
 # Jacobson spaces
 
 ## Main results

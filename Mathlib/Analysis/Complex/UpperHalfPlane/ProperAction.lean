@@ -10,6 +10,9 @@ public import Mathlib.Analysis.Matrix.Normed
 public import Mathlib.Topology.Algebra.Group.Matrix
 public import Mathlib.Topology.Algebra.ProperAction.CompactlyGenerated
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transitivity and properness of actions
 

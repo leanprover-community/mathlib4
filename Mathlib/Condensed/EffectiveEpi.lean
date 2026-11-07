@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Sites.RegularEpi
 import Mathlib.Condensed.Epi
 
 /-!
-
 # The functor from compact Hausdorff spaces to condensed sets preserves effective epimorphisms
 -/
 
