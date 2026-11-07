@@ -52,7 +52,7 @@ alias nnnorm_map' := nnNorm_map'
 lemma eNorm_map' [FunLike 𝓕 E F] [IsometryClass 𝓕 E F] [OneHomClass 𝓕 E F] (f : 𝓕) (x : E) :
     ‖f x‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
-@[deprecated (since := "2026-11-06")] alias enorm_map' := eNorm_map'
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_map] alias enorm_map' := eNorm_map'
 
 @[to_additive (attr := simp)]
 theorem dist_self_mul_right (a b : E) : dist b (b * a) = ‖a‖ := by

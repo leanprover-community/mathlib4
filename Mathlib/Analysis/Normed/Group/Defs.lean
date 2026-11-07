@@ -118,7 +118,7 @@ lemma eNorm_ne_top : ‖x‖ₑ ≠ ∞ := by simp [eNorm]
 @[simp] lemma eNorm_lt_top : ‖x‖ₑ < ∞ := by simp [eNorm]
 
 @[deprecated (since := "2026-11-06")] alias enorm_ne_top := eNorm_ne_top
-@[deprecated (since := "2026-11-06")] alias enorm_lt_top := eNorm_ne_top
+@[deprecated (since := "2026-11-06")] alias enorm_lt_top := eNorm_lt_top
 
 end ENorm
 
@@ -128,6 +128,9 @@ NB. We do not demand that the topology is somehow defined by the eNorm:
 for `ℝ≥0∞` (the motivating example behind this definition), this is not true. -/
 class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
   continuous_eNorm : Continuous eNorm
+
+@[deprecated (since := "2026-11-07")]
+alias ContinuousENorm.continuous_enorm := ContinuousENorm.continuous_eNorm
 
 /-- An e-seminormed monoid is an additive monoid endowed with a continuous eNorm.
 Note that we do not ask for the eNorm to be positive definite:
@@ -206,6 +209,9 @@ which is positive definite. -/
 @[to_additive]
 class ENormedCommMonoid (E : Type*) [TopologicalSpace E]
   extends ESeminormedCommMonoid E, ENormedMonoid E where
+
+@[to_additive (attr := deprecated (since := "2026-11-07"))]
+alias ENormedCommMonoid.enorm_eq_zero := ENormedCommMonoid.eNorm_eq_zero
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖-x + y‖`
 defines a pseudometric space structure. -/

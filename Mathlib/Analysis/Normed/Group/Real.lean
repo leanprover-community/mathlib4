@@ -174,7 +174,8 @@ alias nnnorm_norm' := nnNorm_norm'
 @[to_additive (attr := simp) eNorm_norm]
 lemma eNorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [eNorm]
 
-@[deprecated (since := "2026-11-06")] alias enorm_norm' := eNorm_norm'
+@[to_additive (attr := deprecated (since := "2026-11-06")) enorm_norm]
+alias enorm_norm' := eNorm_norm'
 
 lemma eNorm_eNorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [eNorm]
 

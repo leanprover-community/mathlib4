@@ -641,7 +641,8 @@ protected theorem IntegrableAtFilter.eNorm (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖ₑ) l μ :=
   Exists.casesOn hf fun s hs ↦ ⟨s, hs.1, hs.2.eNorm⟩
 
-@[deprecated (since := "2026-11-06")] alias IntegrableAtFilter.enorm := IntegrableAtFilter.eNorm
+@[deprecated (since := "2026-11-06")]
+protected alias IntegrableAtFilter.enorm := IntegrableAtFilter.eNorm
 
 protected theorem IntegrableAtFilter.norm {f : α → E} (hf : IntegrableAtFilter f l μ) :
     IntegrableAtFilter (fun x => ‖f x‖) l μ :=
