@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Localization.Module
 import Mathlib.Tactic.NormNum
 
 /-!
-
 # Base change for linear independence
 
 This file is a place to collect base change results for linear independence.

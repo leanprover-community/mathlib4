@@ -13,7 +13,6 @@ public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 import Mathlib.CategoryTheory.Abelian.Injective.Resolution
 
 /-!
-
 # Baer's criterion for injective dimension
 
 Baer's criterion says that an `R`-module `M` is injective iff every `R`-linear map

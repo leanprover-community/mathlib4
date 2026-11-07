@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicTopology.DoldKan.EquivalenceAdditive
 public import Mathlib.CategoryTheory.Idempotents.SimplicialObject
 
 /-!
-
 # The Dold-Kan correspondence for pseudoabelian categories
 
 In this file, for any idempotent complete additive category `C`,

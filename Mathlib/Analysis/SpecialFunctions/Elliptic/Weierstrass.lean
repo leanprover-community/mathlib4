@@ -16,7 +16,6 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
 
 /-!
-
 # Weierstrass `℘` functions
 
 ## Main definitions and results

@@ -9,7 +9,6 @@ public import Mathlib.Probability.Process.Filtration
 public import Mathlib.Probability.Process.Indistinguishable
 
 /-!
-
 # Limit of a stochastic process
 
 Under certain assumptions, classical familes of processes such as martingales converge as time
