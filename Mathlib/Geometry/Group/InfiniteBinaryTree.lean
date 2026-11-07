@@ -11,6 +11,7 @@ public import Mathlib.Data.List.Infix
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.GroupTheory.SemidirectProduct
 public import Mathlib.Logic.Equiv.Basic
+public import Mathlib.Order.RelIso.Basic
 
 /-!
 # The infinite rooted binary tree
@@ -26,9 +27,11 @@ This is the tree on which the Grigorchuk group acts.
 * `InfiniteBinaryTree`: vertices are lists `List (Fin 2)`.
 * `InfiniteBinaryTree.root`: the empty word.
 * `InfiniteBinaryTree.succ`: the child of a vertex obtained by appending a letter.
-* `InfiniteBinaryTree.TreeAut`: prefix-preserving permutations of the vertices (rooted
-  automorphisms). This is a group under composition. The name `TreeAut` avoids a clash with
-  `MulAut`, which mathlib abbreviates as `Aut`.
+* `InfiniteBinaryTree.TreeAut`: order isomorphisms of the prefix partial order on vertices
+  (rooted automorphisms), packaged as `RelIso (· <+: ·) (· <+: ·)`. This is a group under
+  composition. The name `TreeAut` avoids a clash with `MulAut`, which mathlib abbreviates as
+  `Aut`. We use `RelIso` rather than `OrderIso` because `List` already carries the lexicographic
+  `≤`, which is not the tree order.
 * `InfiniteBinaryTree.TreeAut.phi`: act independently on the two subtrees of the root.
 * `InfiniteBinaryTree.TreeAut.activity`: whether the two children of a vertex are swapped.
 * `InfiniteBinaryTree.TreeAut.equivSemidirect`: `TreeAut ≃* (TreeAut × TreeAut) ⋊ ℤ/2`.
@@ -63,52 +66,41 @@ lemma length_succ (v : InfiniteBinaryTree) (i : Fin 2) : (v.succ i).length = v.l
 lemma isPrefix_root (v : InfiniteBinaryTree) : root <+: v :=
   List.nil_prefix
 
-/-- A rooted automorphism of the infinite binary tree is a permutation of the vertices that
-preserves the prefix order (equivalently: a graph automorphism fixing the root). -/
-structure TreeAut where
-  /-- The underlying permutation of vertices. -/
-  toEquiv : InfiniteBinaryTree ≃ InfiniteBinaryTree
-  /-- The permutation preserves the prefix relation. -/
-  map_isPrefix : ∀ v w, v <+: w ↔ toEquiv v <+: toEquiv w
+/-- The prefix relation is a partial order on the vertices of the infinite binary tree. -/
+instance : IsPartialOrder InfiniteBinaryTree (· <+: ·) := inferInstance
+
+/-- The prefix relation on vertices. -/
+@[reducible] def prefixRel : InfiniteBinaryTree → InfiniteBinaryTree → Prop := (· <+: ·)
+
+/-- A rooted automorphism of the infinite binary tree is an order isomorphism of the prefix
+partial order (equivalently: a graph automorphism fixing the root).
+
+We use `RelIso` of `IsPrefix` rather than `OrderIso` of `≤`, because `List` already carries the
+lexicographic order, which is not the rooted-tree order. -/
+abbrev TreeAut := RelIso prefixRel prefixRel
 
 namespace TreeAut
 
-instance : CoeFun TreeAut fun _ ↦ InfiniteBinaryTree → InfiniteBinaryTree where
-  coe f := f.toEquiv
-
 lemma map_isPrefix_iff (f : TreeAut) {v w : InfiniteBinaryTree} : v <+: w ↔ f v <+: f w :=
-  f.map_isPrefix v w
-
-/-- The inverse of a tree automorphism is a tree automorphism. -/
-def symm (f : TreeAut) : TreeAut where
-  toEquiv := f.toEquiv.symm
-  map_isPrefix := fun v w ↦ by
-    simpa using (f.map_isPrefix (f.toEquiv.symm v) (f.toEquiv.symm w)).symm
-
-@[simp] lemma symm_apply (f : TreeAut) (v : InfiniteBinaryTree) : f.symm v = f.toEquiv.symm v := rfl
+  (f.map_rel_iff).symm
 
 /-- A tree automorphism fixes the root. -/
 @[simp] lemma map_root (f : TreeAut) : f [] = [] := by
-  have h : f [] <+: f (f.toEquiv.symm []) :=
-    (f.map_isPrefix_iff).mp List.nil_prefix
-  rw [Equiv.apply_symm_apply] at h
+  have h : f [] <+: f (f.symm []) := f.map_isPrefix_iff.mp List.nil_prefix
+  rw [RelIso.apply_symm_apply] at h
   exact List.prefix_nil.mp h
 
-@[ext] lemma ext {f g : TreeAut} (h : ∀ v, f.toEquiv v = g.toEquiv v) : f = g := by
-  cases f
-  cases g
-  congr
-  exact Equiv.ext h
+@[ext] lemma ext {f g : TreeAut} (h : ∀ v, f v = g v) : f = g :=
+  DFunLike.ext f g h
 
 instance : One TreeAut where
-  one := ⟨.refl _, fun _ _ ↦ Iff.rfl⟩
+  one := RelIso.refl prefixRel
 
 instance : Mul TreeAut where
-  mul f g := ⟨g.toEquiv.trans f.toEquiv, fun v w ↦
-    (g.map_isPrefix v w).trans (f.map_isPrefix (g.toEquiv v) (g.toEquiv w))⟩
+  mul f g := RelIso.trans g f
 
 instance : Inv TreeAut where
-  inv := TreeAut.symm
+  inv := RelIso.symm
 
 @[simp] lemma one_apply (v : InfiniteBinaryTree) : (1 : TreeAut) v = v := rfl
 
@@ -117,10 +109,10 @@ instance : Inv TreeAut where
 @[simp] lemma inv_eq_symm (f : TreeAut) : f⁻¹ = f.symm := rfl
 
 instance : Group TreeAut where
-  mul_assoc f g h := TreeAut.ext fun _ ↦ rfl
-  one_mul f := TreeAut.ext fun _ ↦ rfl
-  mul_one f := TreeAut.ext fun _ ↦ rfl
-  inv_mul_cancel f := TreeAut.ext fun v ↦ f.toEquiv.symm_apply_apply v
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+  inv_mul_cancel f := ext fun v ↦ RelIso.symm_apply_apply f v
 
 lemma length_lt_of_prefix_ne {v w : InfiniteBinaryTree} (h : v <+: w) (hne : v ≠ w) :
     v.length < w.length :=
@@ -136,16 +128,16 @@ lemma length_map_take_ge (f : TreeAut) (v : InfiniteBinaryTree) :
       have := congrArg List.length h
       have hk' : k + 1 ≤ v.length := hk
       simp [Nat.min_eq_left (Nat.le_of_succ_le hk'), Nat.min_eq_left hk'] at this
-    have hlt := length_lt_of_prefix_ne (f.map_isPrefix_iff.mp hpref) (f.toEquiv.injective.ne hne)
-    have ih := f.length_map_take_ge v k (Nat.le_of_succ_le hk)
+    have hlt := length_lt_of_prefix_ne (f.map_isPrefix_iff.mp hpref) (f.injective.ne hne)
+    have ih := length_map_take_ge f v k (Nat.le_of_succ_le hk)
     omega
 
 /-- A tree automorphism preserves word length (the distance to the root). -/
 @[simp] lemma map_length (f : TreeAut) (v : InfiniteBinaryTree) : (f v).length = v.length := by
   refine Nat.le_antisymm ?_ ?_
-  · have := f.symm.length_map_take_ge (f v) (f v).length le_rfl
+  · have := length_map_take_ge f.symm (f v) (f v).length le_rfl
     simpa [List.take_length] using this
-  · have := f.length_map_take_ge v v.length le_rfl
+  · have := length_map_take_ge f v v.length le_rfl
     simpa [List.take_length] using this
 
 /-- The map underlying `phi`: apply `f₀` on the left subtree and `f₁` on the right subtree. -/
@@ -168,10 +160,7 @@ lemma phiFun_left_inv (f₀ f₁ : TreeAut) : (phiFun f₀.symm f₁.symm).LeftI
   induction v with
   | nil => rfl
   | cons i w ih =>
-    rcases fin2_eq_zero_or_one i with hi | hi <;> simp [phiFun_cons, hi, Equiv.symm_apply_apply]
-
-@[simp] lemma symm_symm (f : TreeAut) : f.symm.symm = f :=
-  TreeAut.ext fun v ↦ Equiv.symm_symm_apply f.toEquiv v
+    rcases fin2_eq_zero_or_one i with hi | hi <;> simp [phiFun_cons, hi, RelIso.symm_apply_apply]
 
 lemma exists_apply_succ (f : TreeAut) (v : InfiniteBinaryTree) (i : Fin 2) :
     ∃ j, f (v.succ i) = (f v).succ j := by
@@ -199,23 +188,25 @@ def phi (f₀ f₁ : TreeAut) : TreeAut where
       invFun := phiFun f₀.symm f₁.symm
       left_inv := phiFun_left_inv f₀ f₁
       right_inv := fun v ↦ by
-        simpa [symm_symm] using phiFun_left_inv f₀.symm f₁.symm v }
-  map_isPrefix := by
+        simpa [RelIso.symm_symm] using phiFun_left_inv f₀.symm f₁.symm v }
+  map_rel_iff' := by
     intro v w
+    refine Iff.symm ?_
     induction v generalizing w with
-    | nil => simp [phiFun, List.nil_prefix]
+    | nil => simp [phiFun, prefixRel, List.nil_prefix]
     | cons i a ih =>
       cases w with
-      | nil => simp [phiFun]
+      | nil => simp [phiFun, prefixRel]
       | cons j b =>
+        simp only [prefixRel]
         change i :: a <+: j :: b ↔ phiFun f₀ f₁ (i :: a) <+: phiFun f₀ f₁ (j :: b)
         rcases fin2_eq_zero_or_one i with hi | hi <;> rcases fin2_eq_zero_or_one j with hj | hj
         · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
-          exact f₀.map_isPrefix a b
+          exact f₀.map_isPrefix_iff
         · simp [hi, hj, phiFun, List.cons_prefix_cons]
         · simp [hi, hj, phiFun, List.cons_prefix_cons]
         · simp only [hi, hj, phiFun, List.cons_prefix_cons, true_and]
-          exact f₁.map_isPrefix a b
+          exact f₁.map_isPrefix_iff
 
 @[simp] lemma phi_cons (f₀ f₁ : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
     phi f₀ f₁ (i :: w) = i :: bif i == 0 then f₀ w else f₁ w := by
@@ -244,15 +235,16 @@ def swapRoot : TreeAut where
         | cons i w =>
           have : (1 + 1 : Fin 2) = 0 := rfl
           simp [add_assoc, this] }
-  map_isPrefix := by
+  map_rel_iff' := by
     intro v w
+    refine Iff.symm ?_
     cases v with
-    | nil => simp [List.nil_prefix]
+    | nil => simp [prefixRel, List.nil_prefix]
     | cons i a =>
       cases w with
-      | nil => simp
+      | nil => simp [prefixRel]
       | cons j b =>
-        simp [List.cons_prefix_cons, add_left_inj]
+        simp [prefixRel, List.cons_prefix_cons, add_left_inj]
 
 @[simp] lemma swapRoot_root : swapRoot [] = [] := rfl
 
@@ -305,7 +297,7 @@ lemma firstLetter_symm (f : TreeAut) (i : Fin 2) :
     firstLetter f.symm (firstLetter f i) = i := by
   have h : f.symm [firstLetter f i] = [i] := by
     rw [← apply_singleton f i]
-    exact Equiv.symm_apply_apply f.toEquiv [i]
+    exact f.symm_apply_apply [i]
   rw [apply_singleton] at h
   exact (List.cons_eq_cons.mp h).1
 
@@ -320,7 +312,7 @@ def restrict (f : TreeAut) (i : Fin 2) : TreeAut where
           restrictFun f.symm (firstLetter f i) (restrictFun f i w)
             = (f.symm (firstLetter f i :: restrictFun f i w)).tail := rfl
           _ = (f.symm (f (i :: w))).tail := by rw [← apply_cons f i w]
-          _ = w := by simp [Equiv.symm_apply_apply]
+          _ = w := by simp [RelIso.symm_apply_apply]
       right_inv := by
         intro w
         have h := apply_cons f.symm (firstLetter f i) w
@@ -329,13 +321,14 @@ def restrict (f : TreeAut) (i : Fin 2) : TreeAut where
           restrictFun f i (restrictFun f.symm (firstLetter f i) w)
             = (f (i :: restrictFun f.symm (firstLetter f i) w)).tail := rfl
           _ = (f (f.symm (firstLetter f i :: w))).tail := by rw [h]
-          _ = w := by simp [Equiv.apply_symm_apply] }
-  map_isPrefix := by
+          _ = w := by simp [RelIso.apply_symm_apply] }
+  map_rel_iff' := by
     intro w w'
-    have h := f.map_isPrefix (i :: w) (i :: w')
+    refine Iff.symm ?_
+    have h := f.map_isPrefix_iff (v := i :: w) (w := i :: w')
     simp only [List.cons_prefix_cons, true_and] at h
     rw [apply_cons f i w, apply_cons f i w'] at h
-    simpa [List.cons_prefix_cons] using h
+    simpa [prefixRel, List.cons_prefix_cons] using h
 
 @[simp] lemma restrict_apply (f : TreeAut) (i : Fin 2) (w : InfiniteBinaryTree) :
     restrict f i w = (f (i :: w)).tail :=
@@ -352,7 +345,7 @@ lemma firstLetter_one (f : TreeAut) : firstLetter f 1 = activity f root + 1 := b
   have hne : firstLetter f 0 ≠ firstLetter f 1 := by
     intro hf
     have : ([0] : InfiniteBinaryTree) = [1] :=
-      f.toEquiv.injective (by rw [apply_singleton, apply_singleton, hf])
+      f.injective (by rw [apply_singleton, apply_singleton, hf])
     cases this
   rw [firstLetter_zero] at hne
   rcases fin2_eq_zero_or_one (activity f root) with ha | ha <;>
