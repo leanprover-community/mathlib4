@@ -160,6 +160,14 @@ lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ :
   simp only [Measure.sum_apply _ hs, tsum_eq_zero_iff] at hs0
   exact hνμ (hs0 i)
 
+lemma absolutelyContinuous_finsetSum_left {μs : ι → Measure α} {s : Finset ι}
+    (hμs : ∀ i ∈ s, μs i ≪ ν) : ∑ i ∈ s, μs i ≪ ν :=
+  AbsolutelyContinuous.mk fun t _ ht ↦ by simp [Finset.sum_eq_zero fun i hi ↦ hμs i hi ht]
+
+lemma absolutelyContinuous_finsetSum_right {μs : ι → Measure α} {s : Finset ι} {i : ι}
+    (hi : i ∈ s) (hνμ : ν ≪ μs i) : ν ≪ ∑ j ∈ s, μs j :=
+  hνμ.trans <| absolutelyContinuous_of_le <| Finset.single_le_sum (fun _ _ ↦ Measure.zero_le _) hi
+
 lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul_left .rfl _
 
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
