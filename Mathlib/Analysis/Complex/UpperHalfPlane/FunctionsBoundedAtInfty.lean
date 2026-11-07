@@ -74,6 +74,18 @@ theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] 
     (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
   hf.boundedAtFilter
 
+@[simp] theorem isBoundedAtImInfty_neg_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+    IsBoundedAtImInfty (-f) ↔ IsBoundedAtImInfty f := by
+  simp [isBoundedAtImInfty_iff]
+
+alias ⟨_, IsBoundedAtImInfty.neg⟩ := isBoundedAtImInfty_neg_iff
+
+@[simp] theorem isZeroAtImInfty_neg_iff {α : Type*} [TopologicalSpace α] [SubtractionMonoid α]
+    [ContinuousNeg α] {f : ℍ → α} : IsZeroAtImInfty (-f) ↔ IsZeroAtImInfty f :=
+  zeroAtFilter_neg_iff
+
+alias ⟨_, IsZeroAtImInfty.neg⟩ := isZeroAtImInfty_neg_iff
+
 set_option backward.isDefEq.respectTransparency false in
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by
