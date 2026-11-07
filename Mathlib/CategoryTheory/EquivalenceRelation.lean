@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 public import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
-
 # Equivalence relations
 
 We define internal equivalence relations (sometimes called congruences) in any category `C`, as a

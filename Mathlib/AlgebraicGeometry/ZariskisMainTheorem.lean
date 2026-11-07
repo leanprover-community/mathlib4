@@ -13,7 +13,6 @@ public import Mathlib.AlgebraicGeometry.Normalization
 import Mathlib.RingTheory.Etale.QuasiFinite
 
 /-!
-
 # Zariski's Main Theorem
 
 In this file we prove Grothendieck's reformulation of Zariski's main theorem, namely if
@@ -107,7 +106,8 @@ theorem exists_etale_isCompl_of_quasiFiniteAt [IsSeparated f]
     · exact PrimeSpectrum.ext (Ideal.over_def _ _).symm
     · simp [h]
   · exact ⟨⟨P', ‹_›⟩, heP', rfl⟩
-  · simp [isCompl_iff, disjoint_iff, codisjoint_iff, W₂, SetLike.ext'_iff]
+  · rw [isCompl_iff, disjoint_iff, codisjoint_iff]
+    constructor <;> ext <;> simp [W₂]
   · trans hV.fromSpec ⟨P'.comap Algebra.TensorProduct.includeRight.toRingHom, inferInstance⟩
     · simp [← Scheme.Hom.comp_apply, -Scheme.Hom.comp_base, g, reassoc_of% he₁]; rfl
     convert hV.fromSpec_primeIdealOf ⟨x, hxV⟩

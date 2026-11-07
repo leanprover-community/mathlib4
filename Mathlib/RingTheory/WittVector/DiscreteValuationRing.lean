@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.WittVector.Domain
 public import Mathlib.RingTheory.WittVector.MulCoeff
 
 /-!
-
 # Witt vectors over a perfect ring
 
 This file establishes that Witt vectors over a perfect field are a discrete valuation ring.
