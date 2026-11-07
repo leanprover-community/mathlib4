@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Polynomial.Nilpotent
 import Mathlib.Algebra.Polynomial.Eval.Irreducible
 
 /-!
-
 # Polynomials over an irreducible ring
 
 This file contains results about the polynomials over an irreducible ring (i.e. a ring with only
@@ -30,7 +29,7 @@ polynomial, irreducible ring, nilradical, prime ideal
 
 public section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 /-- A polynomial over an irreducible ring `R` is irreducible if it is monic and irreducible after
 mapping into an integral domain `S` (https://math.stackexchange.com/a/4843432/235999).

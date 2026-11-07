@@ -123,11 +123,10 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [discriminant] using eta_ne_zero z.2
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
-  rw [SL_slash_apply, denom, modular_T_smul, ModularGroup.T]
+  rw [SL_slash_apply, denom, modular_T_smul]
   simp [discriminant_eq_q_prod, eta_q, Periodic.qParam, ← exp_periodic (2 * π * I * z)]
   ring_nf
 
@@ -139,14 +138,13 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
   suffices η (-(↑z)⁻¹) ^ 24 * ((z : ℂ) ^ 12)⁻¹ = η z ^ 24 by
     rw [SL_slash_apply, UpperHalfPlane.modular_S_smul]
-    simpa [denom, ModularGroup.S]
+    simpa [denom]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
@@ -170,9 +168,6 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
-
-@[deprecated (since := "2026-04-30")]
-alias discriminant_bounded_factor := tendsto_atImInfty_tprod_one_sub_eta_q_pow
 
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
@@ -204,7 +199,7 @@ lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0
-    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_ne_zero 1 _ hq0,
       ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
       Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
 
@@ -263,8 +258,5 @@ lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
     (by simpa using exp_isBigO_discriminant)
 
 end CuspForm
-
-@[deprecated CuspForm.discriminant (since := "2026-04-30")]
-alias ModularForm.discriminantCuspForm := CuspForm.discriminant
 
 end
