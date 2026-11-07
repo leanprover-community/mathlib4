@@ -36,11 +36,10 @@ variable (X : SSet.{u}) [X.Nonsingular]
 
 namespace N
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `X` is a nonsingular simplicial set, this is the functor
 `X.N ⥤ SemiSimplexCategory` which sends a nondegenerate
 simplex `s : X.N` to `⦋s.dim⦌ₛ`. -/
-@[simps obj map]
+@[simps obj map, implicit_reducible]
 noncomputable def toSemiSimplexCategory : X.N ⥤ SemiSimplexCategory where
   obj s := ⦋s.dim⦌ₛ
   map f := SemiSimplexCategory.homOfMono (N.monoOfLE (leOfHom f))
@@ -53,16 +52,18 @@ end N
 noncomputable abbrev functorN' : X.N ⥤ SSet.{u} :=
     N.toSemiSimplexCategory X ⋙ SemiSimplexCategory.toSimplexCategory ⋙ SSet.stdSimplex
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The isomorphism `X.functorN' ≅ X.functorN` for a nonsingular simplicial set `X`. -/
 noncomputable def functorN'Iso : X.functorN' ≅ X.functorN :=
   NatIso.ofComponents (fun x ↦ Nonsingular.iso _ x.nonDegenerate) (fun _ ↦ by
     simp [← cancel_mono (Subcomplex.ι _)])
 
+@[reassoc (attr := simp)]
+lemma funtorN'Iso_hom_app_coconeN_ι_app (x : X.N) :
+    dsimp% X.functorN'Iso.hom.app x ≫ X.coconeN.ι.app x = yonedaEquiv.symm x.simplex := rfl
+
 /-- If `X` is a nonsingular simplicial set, this is the cocone consisting
 of the (mono)morphisms `Δ[x.dim] ⟶ X` for all nondegenerate simplices `x : X.N`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def coconeN' : Cocone X.functorN' where
   pt := X
   ι.app s := yonedaEquiv.symm s.simplex
