@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 public import Mathlib.CategoryTheory.Subobject.Presheaf
 
 /-!
-
 # Subobject Classifier
 
 We define a structure containing the data of a subobject classifier in a category `C` as

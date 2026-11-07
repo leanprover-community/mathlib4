@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness.Nakayama
 
 /-!
-
 # `I`-filtrations of modules
 
 This file contains the definitions and basic results around (stable) `I`-filtrations of modules.
