@@ -638,17 +638,6 @@ lemma ContMDiff.clm_bundle_of_apply' {k l}
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
   fun x ↦ ContMDiffAt.clm_bundle_of_apply' hkl fun σ ↦ h σ x
 
-variable [ContMDiffVectorBundle 1 F₁ E₁ IB]
-
-set_option linter.unusedSectionVars false in
-lemma TensorialAt.apply_clm
-    {φ : (Π x : B, E₁ x) → (Π x, E₂ x)} {x : B}
-    (hφ : TensorialAt IB F₁ (φ · x) x)
-    {σ : Π x : B, E₁ x} (hσ : MDiffAt (T% σ) x) :
-    TensorialAt.mkHom (φ · x) x hφ (σ x) = φ σ x := by
-  rw [mkHom_apply_eq_extend]
-  exact hφ.pointwise (FiberBundle.mdifferentiableAt_extend ..) hσ
-    <| FiberBundle.extend_apply_self F₁ (σ x)
 end
 
 /-- Criterion for a section of a Hom-bundle constructed using the tensoriality criterion to be
@@ -673,7 +662,7 @@ theorem TensorialAt.contMDiff_mkHom
   apply ContMDiffAt.clm_bundle_of_apply fun σ hσ ↦ ?_
   have : ∀ᶠ x in 𝓝 b, TensorialAt.mkHom (φ · x) x (hφ x) (σ x) = φ σ x := by
     filter_upwards [hσ] with x hx
-    apply TensorialAt.apply_clm (hφ x)
+    apply mkHom_apply (hφ x)
     exact hx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
   have : ∀ᶠ x in 𝓝 b,
       (⟨x, TensorialAt.mkHom (φ · x) x (hφ x) (σ x)⟩ : TotalSpace F₂ E₂) = ⟨x, φ σ x⟩ := by
