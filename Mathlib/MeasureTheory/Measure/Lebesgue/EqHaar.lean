@@ -180,7 +180,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
       (tendsto_pow_atTop_nhds_zero_of_lt_one cpos.le cone).smul_const x
     isBounded_range_of_tendsto _ this
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
-    (Submodule.closed_of_finiteDimensional s).measurableSet
+    (Submodule.isClosed_of_finiteDimensional s).measurableSet
   intro m n hmn
   simp only [Function.onFun, image_add_left, singleton_add, disjoint_left, mem_preimage,
     SetLike.mem_coe]
