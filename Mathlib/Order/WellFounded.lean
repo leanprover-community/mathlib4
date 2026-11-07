@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.Set.Function
 public import Mathlib.Order.Bounds.Defs
+public import Mathlib.Order.WithLT
 
 /-!
 # Well-founded relations
@@ -421,6 +422,10 @@ noncomputable def WellFoundedLT.toOrderBot (α) [LinearOrder α] [Nonempty α] [
     OrderBot α where
   bot := h.min _ Set.univ_nonempty
   bot_le a := h.min_le (Set.mem_univ a)
+
+@[no_expose]
+noncomputable instance {r : α → α → Prop} [IsWellOrder α r] [Nonempty α] : OrderBot (WithLT α r) :=
+  WellFoundedLT.toOrderBot _
 
 @[to_dual]
 instance [LT α] [h : WellFoundedLT α] : WellFoundedLT (ULift α) :=
