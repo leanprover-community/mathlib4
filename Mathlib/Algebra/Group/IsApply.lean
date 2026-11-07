@@ -5,7 +5,6 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.Monoid
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Data.Int.Cast.Pi
@@ -168,20 +167,6 @@ class IsPowApply (M F : Type*) {α β : outParam Type*} [FunLike F α β] [Pow �
 @[to_additive (attr := simp, grind =, to_additive) smul_apply]
 alias pow_apply := IsPowApply.pow_apply
 
-/-- `IsNPowApplyEqIterate F` states for all `x : α`, `(f ^ n) x = f^[n] x`. -/
-class IsNPowApplyEqIterate (F : Type*) {α : outParam Type*} [FunLike F α α] [NPow F] where
-  pow_apply_eq_iterate (f : F) (n : ℕ) (x : α) : (f ^ n) x = f^[n] x := by intros; rfl
-
-@[grind =]
-alias pow_apply_eq_iterate := IsNPowApplyEqIterate.pow_apply_eq_iterate
-
-instance {F α : Type*} [FunLike F α α] [Monoid F] [IsOneApplyEqSelf F] [IsMulApplyEqComp F] :
-    IsNPowApplyEqIterate F where
-  pow_apply_eq_iterate f n x := by
-    induction n with
-    | zero => simp
-    | succ n ih => simp [pow_succ', ih, ← Function.iterate_succ_apply']
-
 end SMul
 
 section Cast
@@ -231,8 +216,8 @@ section Coercion
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_one [One F] [One β] [IsOneApply F] : ↑(1 : F) = (1 : α → β) := by ext; simp
 
-@[to_additive (attr := simp)]
-theorem coe_one_iff [One F] [One β] [IsOneApply F] (f : F) : (f : α → β) = 1 ↔ f = 1 := by
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_one_iff [One F] [One β] [IsOneApply F] {f : F} : (f : α → β) = 1 ↔ f = 1 := by
   constructor
   · intro h
     simp [DFunLike.ext_iff, h]
@@ -273,10 +258,6 @@ theorem coe_one_eq_id_iff [One F'] [IsOneApplyEqSelf F'] (f : F') : (f : α → 
 @[simp, norm_cast]
 theorem coe_mul_eq_comp [Mul F'] [IsMulApplyEqComp F'] (f g : F') : ↑(f * g) = f ∘ g := by
   ext; simp
-
-lemma coe_pow_eq_iterate [NPow F'] [IsNPowApplyEqIterate F']
-    (f : F') (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  funext <| pow_apply_eq_iterate f n
 
 -- this lemma cannot be `simp` since this creates loops
 @[norm_cast]

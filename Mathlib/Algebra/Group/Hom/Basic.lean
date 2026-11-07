@@ -86,11 +86,22 @@ instance [One M] [MulOneClass N] : Mul (OneHom M N) where
     { toFun m := f m * g m
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [MulOneClass N] : IsMulApply (OneHom M N) where
+
+@[deprecated FunLike.coe_add +typeChanged (since := "2026-10-29")]
+theorem _root_.ZeroHom.coe_add [Zero M] [AddZeroClass N] (f g : ZeroHom M N) :
+    ⇑(f + g) = ⇑f + ⇑g := rfl
+
+@[to_additive existing, deprecated FunLike.coe_mul +typeChanged (since := "2026-10-29")]
 theorem coe_mul {M N} [One M] [MulOneClass N] (f g : OneHom M N) : ⇑(f * g) = ⇑f * ⇑g := rfl
 
-@[to_additive (attr := simp)]
-theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
+@[deprecated add_apply +typeChanged (since := "2026-10-29")]
+protected theorem _root_.ZeroHom.add_apply [Zero M] [AddZeroClass N] (f g : ZeroHom M N) (x : M) :
+    (f + g) x = f x + g x := rfl
+
+@[to_additive existing, deprecated mul_apply +typeChanged (since := "2026-10-29")]
+protected theorem mul_apply {M N} [One M] [MulOneClass N] (f g : OneHom M N) (x : M) :
     (f * g) x = f x * g x := rfl
 
 @[to_additive]
@@ -106,11 +117,21 @@ instance [One M] [InvOneClass N] : Inv (OneHom M N) where
     { toFun m := (f m)⁻¹
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [InvOneClass N] : IsInvApply (OneHom M N) where
+
+@[deprecated FunLike.coe_neg +typeChanged (since := "2026-10-29")]
+theorem _root_.ZeroHom.coe_neg [Zero M] [NegZeroClass N] (f : ZeroHom M N) : ⇑(-f) = -⇑f := rfl
+
+@[to_additive existing, deprecated FunLike.coe_inv +typeChanged (since := "2026-10-29")]
 theorem coe_inv {M N} [One M] [InvOneClass N] (f : OneHom M N) : ⇑(f⁻¹) = (⇑f)⁻¹ := rfl
 
-@[to_additive (attr := simp)]
-theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
+@[deprecated neg_apply +typeChanged (since := "2026-10-29")]
+protected theorem _root_.ZeroHom.neg_apply [Zero M] [NegZeroClass N] (f : ZeroHom M N) (x : M) :
+    (-f) x = -f x := rfl
+
+@[to_additive existing, deprecated inv_apply +typeChanged (since := "2026-10-29")]
+protected theorem inv_apply {M N} [One M] [InvOneClass N] (f : OneHom M N) (x : M) :
     f⁻¹ x = (f x)⁻¹ := rfl
 
 @[to_additive]
@@ -126,11 +147,22 @@ instance [One M] [DivisionMonoid N] : Div (OneHom M N) where
     { toFun m := f m / g m
       map_one' := by simp }
 
-@[to_additive (attr := norm_cast)]
+@[to_additive]
+instance [One M] [DivisionMonoid N] : IsDivApply (OneHom M N) where
+
+@[deprecated FunLike.coe_sub +typeChanged (since := "2026-10-29")]
+theorem _root_.ZeroHom.coe_sub [Zero M] [SubtractionMonoid N] (f g : ZeroHom M N) :
+    ⇑(f - g) = ⇑f - ⇑g := rfl
+
+@[to_additive existing, deprecated FunLike.coe_div +typeChanged (since := "2026-10-29")]
 theorem coe_div {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) : ⇑(f / g) = ⇑f / ⇑g := rfl
 
-@[to_additive (attr := simp)]
-theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
+@[deprecated sub_apply +typeChanged (since := "2026-10-29")]
+protected theorem _root_.ZeroHom.sub_apply [Zero M] [SubtractionMonoid N]
+  (f g : ZeroHom M N) (x : M) : (f - g) x = f x - g x := rfl
+
+@[to_additive existing, deprecated div_apply +typeChanged (since := "2026-10-29")]
+protected theorem div_apply {M N} [One M] [DivisionMonoid N] (f g : OneHom M N) (x : M) :
     (f / g) x = f x / g x := rfl
 
 @[to_additive]
