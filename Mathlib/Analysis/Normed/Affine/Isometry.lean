@@ -247,18 +247,33 @@ theorem comp_assoc {V₄ P₄ : Type*} [SeminormedAddCommGroup V₄] [NormedSpac
     (f.comp g).comp h = f.comp (g.comp h) :=
   rfl
 
-instance : Monoid (P →ᵃⁱ[𝕜] P) where
+instance : One (P →ᵃⁱ[𝕜] P) where
   one := id
-  mul := comp
-  mul_assoc := comp_assoc
-  one_mul := id_comp
-  mul_one := comp_id
 
-@[simp]
+instance : IsOneApplyEqSelf (P →ᵃⁱ[𝕜] P) where
+
+instance : Mul (P →ᵃⁱ[𝕜] P) where
+  mul := comp
+
+instance : IsMulApplyEqComp (P →ᵃⁱ[𝕜] P) where
+
+instance : Pow (P →ᵃⁱ[𝕜] P) ℕ where
+  pow f n :=
+    { toAffineMap := f.toAffineMap ^ n
+      norm_map x := by
+        induction n with
+        | zero => rfl
+        | succ n hn => simp [pow_succ', hn] }
+
+instance : IsNPowApplyEqIterate (P →ᵃⁱ[𝕜] P) where
+
+instance : Monoid (P →ᵃⁱ[𝕜] P) := fast_instance% FunLike.compMonoid
+
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-11-02")]
 theorem coe_one : ⇑(1 : P →ᵃⁱ[𝕜] P) = _root_.id :=
   rfl
 
-@[simp]
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-11-02")]
 theorem coe_mul (f g : P →ᵃⁱ[𝕜] P) : ⇑(f * g) = f ∘ g :=
   rfl
 
