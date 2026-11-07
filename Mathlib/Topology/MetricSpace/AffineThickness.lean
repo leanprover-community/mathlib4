@@ -7,7 +7,6 @@ module
 
 public import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
@@ -22,21 +21,17 @@ The set is not assumed to be convex.
 
 ## Main definitions
 
-* `Metric.ethickness 𝕜 s n`: the `ℝ≥0∞`-valued thickness of `s` at rank `n`.
-* `Metric.thickness 𝕜 s n`: the `ℝ`-valued thickness of `s` at rank `n`.
+* `Metric.ethickness 𝕜 s n`: the `ℝ≥0∞`-valued thickness of `s` at rank at most `n`.
+* `Metric.thickness 𝕜 s n`: the `ℝ`-valued thickness of `s` at rank at most `n`.
 
 ## Main results
 
 * `Metric.ethickness_antitone`, `Metric.ethickness_monotone`:
   `ethickness` decreases in the rank and increases in the set.
-* `Metric.ethickness_thickness`: over a bounded set the two variants agree.
+* `Metric.ethickness_eq_ofReal_thickness`, `Bornology.IsBounded.ethickness_eq_ofReal_thickness`:
+  where `ethickness` is finite, in particular over a bounded set, the two variants agree.
 * `Metric.ethickness_cthickening_le`:
   thickening a set by `r` increases its `ethickness` by at most `r`.
-
-## Implementation notes
-
-`ethickness` is indexed by the rank of the approximating subspace,
-so it is decreasing in the rank.
 -/
 
 @[expose] public section
@@ -55,28 +50,37 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace P]
 
+-- TODO: consider defining this as `⨅ A (_ : rank ≤ n), ⨆ x ∈ s, infEDist x A`,
+-- which avoids the `r.toReal` coercion (under which `r = ⊤` acts as radius `0`).
 /--
 The `ethickness` of a set `s` at rank `n`
 is the infimal radius `r` such that `s` is contained in the `r`-thickening
-of a rank `n` affine subspace.
+of an affine subspace of rank at most `n`.
 -/
 noncomputable def ethickness (s : Set P) (n : ℕ) : ℝ≥0∞ :=
   sInf { r | ∃ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n ∧ s ⊆ cthickening r.toReal A }
 
 /-- The real-valued `n`-thickness of a set `s`:
 the infimum of radii `r ≥ 0` for which `s` is contained
-in the `r`-thickening of some affine subspace of dimension at most `n`.
-This is the `ℝ`-valued counterpart of `ethickness`. -/
+in the `r`-thickening of some affine subspace of rank at most `n`.
+This is the `ℝ`-valued counterpart of `ethickness`, and is `0` when `ethickness` is infinite. -/
 noncomputable def thickness (s : Set P) (n : ℕ) : ℝ :=
-  sInf { r | 0 ≤ r ∧ ∃ A : AffineSubspace 𝕜 P,
-    Module.rank 𝕜 A.direction ≤ n ∧ s ⊆ cthickening r A }
+  (ethickness 𝕜 s n).toReal
 
 variable {𝕜}
+
+@[simp]
+theorem toReal_ethickness (s : Set P) (n : ℕ) :
+    (ethickness 𝕜 s n).toReal = thickness 𝕜 s n := rfl
 
 @[simp]
 theorem ethickness_empty [Nontrivial 𝕜] (n : ℕ) : ethickness 𝕜 (∅ : Set P) n = 0 :=
   nonpos_iff_eq_zero.1 <| sInf_le
     ⟨⊥, by grind [AffineSubspace.direction_bot, rank_bot, zero_le], by simp⟩
+
+@[simp]
+theorem thickness_empty [Nontrivial 𝕜] (n : ℕ) : thickness 𝕜 (∅ : Set P) n = 0 := by
+  rw [← toReal_ethickness, ethickness_empty, ENNReal.toReal_zero]
 
 theorem le_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) : r ≤ ethickness 𝕜 s n ↔
     ∀ r' : ℝ≥0, ∀ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n → s ⊆ cthickening r' A
@@ -87,23 +91,18 @@ theorem le_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) : r ≤ ethickn
   | top => exact le_top
   | coe t => exact h t A hA hs
 
-theorem le_mul_ethickness_iff (s : Set P) (n : ℕ) (r : ℝ≥0∞) {C} (hC1 : C ≠ 0) (hC2 : C ≠ ⊤) :
-    r ≤ C * ethickness 𝕜 s n ↔
-    ∀ r' : ℝ≥0, ∀ A : AffineSubspace 𝕜 P, Module.rank 𝕜 A.direction ≤ n → s ⊆ cthickening r' A
-      → r ≤ C * r' := by
-  simp [← ENNReal.inv_mul_le_iff hC1 hC2, le_ethickness_iff]
-
-/-- `ethickness 𝕜 s n` is decreasing in `n` -/
+/-- `ethickness 𝕜 s n` is decreasing in `n`. -/
 theorem ethickness_antitone {s : Set P} : Antitone (ethickness 𝕜 s) := by
   intro m n hmn
   exact sInf_le_sInf fun _ ⟨A, hA, hs⟩ ↦ ⟨A, hA.trans (Nat.cast_le.mpr hmn), hs⟩
 
-/-- `ethickness 𝕜 s n` is monotone in `s` -/
+/-- `ethickness 𝕜 s n` is monotone in `s`. -/
 theorem ethickness_monotone : Monotone (ethickness 𝕜 (P := P)) := by
   intro s t hst n
   exact sInf_le_sInf fun _ ⟨A, hA, ht⟩ ↦ ⟨A, hA, hst.trans ht⟩
 
 /-- Taking the closure does not change `ethickness`, since each `cthickening` is closed. -/
+@[simp]
 theorem ethickness_closure (s : Set P) (n : ℕ) :
     ethickness 𝕜 (closure s) n = ethickness 𝕜 s n := by
   apply congrArg sInf
@@ -111,8 +110,14 @@ theorem ethickness_closure (s : Set P) (n : ℕ) :
   exact ⟨fun ⟨A, hA, h⟩ ↦ ⟨A, hA, subset_closure.trans h⟩,
     fun ⟨A, hA, h⟩ ↦ ⟨A, hA, closure_minimal h isClosed_cthickening⟩⟩
 
+/-- Taking the closure does not change `thickness`. -/
+@[simp]
+theorem thickness_closure (s : Set P) (n : ℕ) :
+    thickness 𝕜 (closure s) n = thickness 𝕜 s n := by
+  rw [← toReal_ethickness, ethickness_closure, toReal_ethickness]
+
 lemma thickness_nonneg (s : Set P) (n : ℕ) : 0 ≤ thickness 𝕜 s n :=
-  Real.sInf_nonneg fun _ ↦ And.left
+  ENNReal.toReal_nonneg
 
 theorem ethickness_le_of_cthickening {s : Set P} {n : ℕ} (r : ℝ≥0)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
@@ -122,25 +127,18 @@ theorem ethickness_le_of_cthickening {s : Set P} {n : ℕ} (r : ℝ≥0)
 theorem thickness_le_of_cthickening {s : Set P} {n : ℕ} {r : ℝ} (hr : 0 ≤ r)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n)
     (hs : s ⊆ cthickening r A) : thickness 𝕜 s n ≤ r :=
-  csInf_le ⟨0, fun _ ↦ And.left⟩ ⟨hr, A, hA, hs⟩
+  ENNReal.toReal_le_of_le_ofReal hr <| ethickness_le_of_cthickening r.toNNReal hA (by simpa [hr])
 
-/-- `thickness` is a lower bound for `ethickness`,
-with equality on bounded sets (see `Metric.ethickness_thickness'`). -/
-theorem ofReal_thickness_le_ethickness (s : Set P) (n : ℕ) :
-    ENNReal.ofReal (thickness 𝕜 s n) ≤ ethickness 𝕜 s n :=
-  (le_ethickness_iff ..).2 fun r _ hA hs ↦ by
-    simpa using ENNReal.ofReal_le_ofReal (thickness_le_of_cthickening r.coe_nonneg hA hs)
-
-theorem thickness_eq_zero_of_rank_le {s : Set P} {n : ℕ} (h : Module.rank 𝕜 V ≤ n) :
-    thickness 𝕜 s n = 0 :=
-  (thickness_nonneg ..).antisymm' <| thickness_le_of_cthickening le_rfl (A := ⊤)
+theorem ethickness_eq_zero_of_rank_le {s : Set P} {n : ℕ} (h : Module.rank 𝕜 V ≤ n) :
+    ethickness 𝕜 s n = 0 :=
+  nonpos_iff_eq_zero.1 <| ethickness_le_of_cthickening 0 (A := ⊤)
     (by grind [AffineSubspace.direction_top, rank_top]) (by simp)
 
-theorem thickness_empty [Nontrivial 𝕜] (n : ℕ) : thickness 𝕜 (∅ : Set P) n = 0 :=
-  (thickness_nonneg ..).antisymm' <| thickness_le_of_cthickening le_rfl (A := ⊥)
-    (by grind [AffineSubspace.direction_bot, rank_bot, zero_le]) (by simp)
+theorem thickness_eq_zero_of_rank_le {s : Set P} {n : ℕ} (h : Module.rank 𝕜 V ≤ n) :
+    thickness 𝕜 s n = 0 := by
+  rw [← toReal_ethickness, ethickness_eq_zero_of_rank_le h, ENNReal.toReal_zero]
 
-theorem exists_not_mem_cthickening_of_lt_ethickness {s : Set P} {n : ℕ} {r : ℝ≥0∞}
+theorem exists_notMem_cthickening_of_lt_ethickness {s : Set P} {n : ℕ} {r : ℝ≥0∞}
     (hr : r < ethickness 𝕜 s n)
     {A : AffineSubspace 𝕜 P} (hA : Module.rank 𝕜 A.direction ≤ n) :
     ∃ x ∈ s, x ∉ cthickening r.toReal (A : Set P) := by
@@ -160,13 +158,8 @@ theorem exists_cthickening_of_ethickness_lt {s : Set P} {n : ℕ} {r : ℝ≥0}
 
 /-- `ethickness` and `thickness` coincide wherever `ethickness` is finite. -/
 theorem ethickness_eq_ofReal_thickness {s : Set P} {n : ℕ} (h : ethickness 𝕜 s n ≠ ⊤) :
-    ethickness 𝕜 s n = ENNReal.ofReal (thickness 𝕜 s n) := by
-  refine le_antisymm ?_ (ofReal_thickness_le_ethickness s n)
-  obtain ⟨t, ht, -⟩ := ENNReal.lt_iff_exists_nnreal_btwn.1 h.lt_top
-  obtain ⟨A, hA, hs⟩ := exists_cthickening_of_ethickness_lt ht
-  rw [← ENNReal.ofReal_toReal h]
-  exact ENNReal.ofReal_le_ofReal <| le_csInf ⟨t, t.coe_nonneg, A, hA, hs⟩ fun r ⟨hr, A, hA, hs⟩ ↦
-    ENNReal.toReal_le_of_le_ofReal hr <| ethickness_le_of_cthickening r.toNNReal hA (by simpa [hr])
+    ethickness 𝕜 s n = ENNReal.ofReal (thickness 𝕜 s n) :=
+  (ENNReal.ofReal_toReal h).symm
 
 theorem _root_.Set.Subsingleton.ethickness_eq_zero [Nontrivial 𝕜] {s : Set P}
     (hs : s.Subsingleton) (n : ℕ) : ethickness 𝕜 s n = 0 := by
@@ -183,10 +176,10 @@ section PseudoMetricSpace
 variable {𝕜} [PseudoMetricSpace P]
 
 /-- The `ethickness` at rank `n` of the `r`-thickening of a set
-is bounded by `r` plus the `ethickness` at rank `n` of the original set. -/
+is bounded by the `ethickness` at rank `n` of the original set plus `r`. -/
 theorem ethickness_cthickening_le {s : Set P} (r : ℝ≥0) (n : ℕ) :
-    ethickness 𝕜 (cthickening r s) n ≤ r + ethickness 𝕜 s n := by
-  rw [← tsub_le_iff_left, le_ethickness_iff]
+    ethickness 𝕜 (cthickening r s) n ≤ ethickness 𝕜 s n + r := by
+  rw [add_comm, ← tsub_le_iff_left, le_ethickness_iff]
   intro t A hA hsA
   rw [tsub_le_iff_left]
   exact ethickness_le_of_cthickening (r + t) hA <| (cthickening_subset_of_subset r hsA).trans
@@ -199,89 +192,62 @@ theorem ethickness_closedBall_le {x : P} (r : ℝ≥0) (n : ℕ) :
   simpa [cthickening_singleton, Set.subsingleton_singleton.ethickness_eq_zero]
     using ethickness_cthickening_le (𝕜 := 𝕜) (s := {x}) r n
 
+theorem thickness_closedBall_le {x : P} {r : ℝ} (hr : 0 ≤ r) (n : ℕ) :
+    thickness 𝕜 (closedBall x r) n ≤ r :=
+  thickness_le_of_cthickening hr (A := affineSpan 𝕜 {x})
+    (by grind [direction_affineSpan, vectorSpan_singleton, rank_bot, zero_le])
+    (closedBall_subset_cthickening (by simp) _)
+
 /-- If a set is contained in a ball of radius `r`,
-then its thickness is bounded by `r` at all ranks. -/
+then its `ethickness` is bounded by `r` at all ranks. -/
 theorem ethickness_le_of_subset_closedBall {s : Set P} {x : P} (r : ℝ≥0)
     (h : s ⊆ closedBall x r) (n : ℕ) : ethickness 𝕜 s n ≤ r := by
   grw [ethickness_monotone h n, ethickness_closedBall_le]
 
+/-- If a set is contained in a ball of radius `r ≥ 0`,
+then its `thickness` is bounded by `r` at all ranks. -/
+theorem thickness_le_of_subset_closedBall {s : Set P} {x : P} {r : ℝ} (hr : 0 ≤ r)
+    (h : s ⊆ closedBall x r) (n : ℕ) : thickness 𝕜 s n ≤ r :=
+  ENNReal.toReal_le_of_le_ofReal hr <|
+    ethickness_le_of_subset_closedBall r.toNNReal (by simpa [hr]) n
+
+/-- A variant of `Metric.thickness_le_of_subset_closedBall`
+where nonnegativity of the radius follows from nonemptiness of the set. -/
+theorem thickness_le_of_subset_closedBall_of_nonempty {s : Set P} {x : P} {r : ℝ}
+    (hs : s.Nonempty) (h : s ⊆ closedBall x r) (n : ℕ) : thickness 𝕜 s n ≤ r :=
+  thickness_le_of_subset_closedBall (nonempty_closedBall.1 (hs.mono h)) h n
+
 /-- A bounded set has `ethickness` strictly less than `⊤` at every rank. -/
-theorem ethickness_lt_top {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
-    ethickness 𝕜 s n < ⊤ := by
+theorem _root_.Bornology.IsBounded.ethickness_lt_top {s : Set P} (h : Bornology.IsBounded s)
+    (n : ℕ) : ethickness 𝕜 s n < ⊤ := by
   obtain ⟨x⟩ : Nonempty P := inferInstance
   obtain ⟨r, -, hs⟩ := h.subset_closedBall_lt 0 x
   exact (ethickness_le_of_subset_closedBall r.toNNReal
     (hs.trans (closedBall_subset_closedBall r.le_coe_toNNReal)) n).trans_lt ENNReal.coe_lt_top
 
 /-- A bounded set has finite `ethickness` at every rank. -/
-theorem ethickness_ne_top {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
-    ethickness 𝕜 s n ≠ ⊤ := (ethickness_lt_top h n).ne
+theorem _root_.Bornology.IsBounded.ethickness_ne_top {s : Set P} (h : Bornology.IsBounded s)
+    (n : ℕ) : ethickness 𝕜 s n ≠ ⊤ :=
+  (h.ethickness_lt_top n).ne
 
 /-- `ethickness` and `thickness` coincide at every rank when the set is bounded. -/
-theorem ethickness_thickness' {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
+theorem _root_.Bornology.IsBounded.ethickness_eq_ofReal_thickness {s : Set P}
+    (h : Bornology.IsBounded s) (n : ℕ) :
     ethickness 𝕜 s n = ENNReal.ofReal (thickness 𝕜 s n) :=
-  ethickness_eq_ofReal_thickness (ethickness_ne_top h n)
+  Metric.ethickness_eq_ofReal_thickness (h.ethickness_ne_top n)
 
-/-- `ethickness` and `thickness` coincide when the set is bounded. -/
-theorem ethickness_thickness {s : Set P} (h : Bornology.IsBounded s) :
-    ethickness 𝕜 s = ENNReal.ofReal ∘ thickness 𝕜 s :=
-  funext (ethickness_thickness' h)
+/-- `thickness 𝕜 s` is monotone in `s` over bounded sets. -/
+theorem thickness_mono {s t : Set P} (ht : Bornology.IsBounded t) (h : s ⊆ t) :
+    thickness 𝕜 s ≤ thickness 𝕜 t := fun n ↦
+  ENNReal.toReal_mono (ht.ethickness_ne_top n) (ethickness_monotone h n)
 
-theorem toReal_ethickness {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
-    ENNReal.toReal (ethickness 𝕜 s n) = thickness 𝕜 s n := by
-  rw [ethickness_thickness' h, ENNReal.toReal_ofReal (thickness_nonneg _ _)]
-
-/-- Taking the closure does not change `thickness` of a bounded set. -/
-theorem thickness_closure {s : Set P} (h : Bornology.IsBounded s) (n : ℕ) :
-    thickness 𝕜 (closure s) n = thickness 𝕜 s n := by
-  rw [← toReal_ethickness h.closure, ← toReal_ethickness h, ethickness_closure]
-
-
-/-- `thickness 𝕜 s` is monotone in `s` over bounded sets -/
-theorem thickness_monotone {s t : Set P} (ht : Bornology.IsBounded t) (h : s ⊆ t) :
-    thickness 𝕜 s ≤ thickness 𝕜 t := by
-  intro n
-  rw [← toReal_ethickness ht, ← toReal_ethickness (ht.subset h)]
-  exact ENNReal.toReal_mono (ethickness_ne_top ht n) (ethickness_monotone h n)
-
-/-- Provided that `s` is bounded, `thickness 𝕜 s n` is decreasing in `n` -/
-theorem thickness_antitone {s : Set P} (hs : Bornology.IsBounded s) {m n : ℕ} (h : m ≤ n) :
-    thickness 𝕜 s n ≤ thickness 𝕜 s m := by
-  rw [← toReal_ethickness hs, ← toReal_ethickness hs]
-  exact ENNReal.toReal_mono (ethickness_ne_top hs m) (ethickness_antitone h)
-
-theorem thickness_closedBall_le {x : P} {r : ℝ} (hr : 0 ≤ r) (n : ℕ) :
-    thickness 𝕜 (closedBall x r) n ≤ r := by
-  exact thickness_le_of_cthickening hr (A := affineSpan 𝕜 {x})
-    (by grind [direction_affineSpan, vectorSpan_singleton, rank_bot, zero_le])
-    (closedBall_subset_cthickening (by simp) _)
-
-/-- If a set is contained in a ball of radius `r`,
-then its thickness is bounded by `r` at all ranks. -/
-theorem thickness_le_of_subset_closedBall {s : Set P} {x : P} {r : ℝ}
-    (h : s ⊆ closedBall x r) (hr : 0 ≤ r) (n : ℕ) : thickness 𝕜 s n ≤ r := by
-  grw [thickness_monotone isBounded_closedBall h n, thickness_closedBall_le hr]
-
-/-- A variant of `thickness_le_of_subset_closedBall` -/
-theorem thickness_le_of_subset_closedBall_of_nonempty {s : Set P} {x : P} {r : ℝ}
-    (h : s ⊆ closedBall x r) (hs : s.Nonempty) : ∀ n : ℕ, thickness 𝕜 s n ≤ r :=
-  thickness_le_of_subset_closedBall h (nonempty_closedBall.1 (hs.mono h))
+/-- Provided that `s` is bounded, `thickness 𝕜 s n` is decreasing in `n`. -/
+theorem thickness_antitone {s : Set P} (hs : Bornology.IsBounded s) :
+    Antitone (thickness 𝕜 s) := fun m _ h ↦
+  ENNReal.toReal_mono (hs.ethickness_ne_top m) (ethickness_antitone h)
 
 end PseudoMetricSpace
 
 end Ring
-
-section DivisionRing
-
-variable {𝕜} [DivisionRing 𝕜] [AddCommGroup V] [Module 𝕜 V] [AddTorsor V P] [PseudoEMetricSpace P]
-
-theorem ethickness_eq_zero_of_finrank_le [FiniteDimensional 𝕜 V] {s : Set P} {n : ℕ}
-    (h : Module.finrank 𝕜 V ≤ n) :
-    ethickness 𝕜 s n = 0 :=
-  nonpos_iff_eq_zero.1 <| ethickness_le_of_cthickening 0 (A := ⊤)
-    (by grind [AffineSubspace.direction_top, rank_top, Module.finrank_eq_rank', Nat.cast_le])
-    (by simp)
-
-end DivisionRing
 
 end Metric
