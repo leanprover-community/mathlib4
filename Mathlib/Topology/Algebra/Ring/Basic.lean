@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Group.Subgroup
 import Mathlib.Topology.Algebra.Group.Neighborhood
 
 /-!
-
 # Topological (semi)rings
 
 A topological (semi)ring is a (semi)ring equipped with a topology such that all operations are
@@ -89,9 +88,6 @@ well since it is just multiplication with `-1`. -/
 theorem IsSemitopologicalSemiring.continuousNeg_of_mul [TopologicalSpace R] [NonAssocRing R]
     [SeparatelyContinuousMul R] : ContinuousNeg R where
   continuous_neg := by simpa using continuous_id.const_mul (-1 : R)
-
-@[deprecated (since := "2026-03-13")] alias IsTopologicalSemiring.continuousNeg_of_mul :=
-  IsSemitopologicalSemiring.continuousNeg_of_mul
 
 /-- If `R` is a ring which is a semitopological semiring, then it is automatically a
 semitopological ring. This exists so that one can place a topological ring structure on `R` without

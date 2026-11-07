@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.MorphismProperty
 public import Mathlib.CategoryTheory.Sites.Over
 
 /-!
-
 # Sites on `P.Over ⊤ X`
 
 We provide some API for proving properties of `P.Over ⊤ X` in relation to precoverages. Consider
@@ -56,7 +55,10 @@ lemma exists_map_eq_of_presieve (K : Precoverage C) (H : K ≤ P.precoverage)
     exact P.comp_mem _ _ (H _ 𝒰.mem₀ ⟨⟨i⟩⟩) X.prop
 
 variable (K : Precoverage C) [K.HasIsos] [K.IsStableUnderBaseChange] [K.IsStableUnderComposition]
-  [K.HasPullbacks]
+
+section
+
+variable [K.HasPullbacks]
 
 lemma locallyCoverDense_forget_of_le (H : K ≤ P.precoverage) :
     (MorphismProperty.Over.forget P ⊤ S).LocallyCoverDense (K.toGrothendieck.over S) := by
@@ -89,6 +91,8 @@ lemma coverPreserving_comap_forget (H : K ≤ P.precoverage) :
   have := MorphismProperty.locallyCoverDense_forget_of_le (S := S) K H
   rw [toGrothendieck_comap_forget_eq_restrictedTopology _ H]
   exact Functor.coverPreserving_restrictedTopology (Over.forget P ⊤ S) (K.toGrothendieck.over S)
+
+end
 
 variable [HasFiniteWidePullbacks C] [P.HasOfPostcompProperty P] [P.IsStableUnderBaseChange]
   [P.ContainsIdentities]

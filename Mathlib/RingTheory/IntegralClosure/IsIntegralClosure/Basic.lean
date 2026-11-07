@@ -193,7 +193,7 @@ theorem integralClosure.isIntegral (x : integralClosure R A) : IsIntegral R x :=
     Subtype.ext <| by
       rwa [← aeval_def, ← Subalgebra.val_apply, aeval_algHom_apply] at hpx⟩
 
-instance integralClosure.AlgebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
+instance integralClosure.algebraIsIntegral : Algebra.IsIntegral R (integralClosure R A) :=
   ⟨integralClosure.isIntegral⟩
 
 theorem IsIntegral.of_mul_unit {x y : B} {r : R} (hr : algebraMap R B r * y = 1)
@@ -293,6 +293,14 @@ attribute [local instance] MvPolynomial.algebraMvPolynomial in
 instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ S) :=
   Algebra.IsPushout.isIntegral R _ S _
 
+@[to_additive (dont_translate := R S)]
+instance {M : Type*} [CommMonoid M]
+    [Algebra (MonoidAlgebra R M) (MonoidAlgebra S M)]
+    [IsScalarTower R (MonoidAlgebra R M) (MonoidAlgebra S M)]
+    [Algebra.IsPushout R S (MonoidAlgebra R M) (MonoidAlgebra S M)] :
+    Algebra.IsIntegral (MonoidAlgebra R M) (MonoidAlgebra S M) :=
+  Algebra.IsPushout.isIntegral R _ S _
+
 end Pushout
 
 section
@@ -311,7 +319,7 @@ theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     use monic_integralNormalization this
     rw [integralNormalization_eval₂_leadingCoeff_mul h' f x, h, mul_zero]
   · by_cases hp : p.map f = 0
-    · apply_fun fun q => coeff q p.natDegree at hp
+    · apply_fun fun q => q.coeff p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
       rw [hp, zero_mul]
       exact f.isIntegralElem_zero
@@ -365,6 +373,14 @@ instance integralClosure.isIntegralClosure (R A : Type*) [CommRing R] [CommRing 
   algebraMap_injective := Subtype.coe_injective
   isIntegral_iff {x} := ⟨fun h => ⟨⟨x, h⟩, rfl⟩, by rintro ⟨⟨_, h⟩, rfl⟩; exact h⟩
 
+/-- If `A` acts faithfully on `B`, then `A` is the integral closure of `R` in `B` iff an element
+of `B` is integral over `R` exactly when it lies in the image of `A`. -/
+theorem isIntegralClosure_iff {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
+    [Algebra R B] [Algebra A B] [FaithfulSMul A B] :
+    IsIntegralClosure A R B ↔ ∀ x : B, IsIntegral R x ↔ ∃ a : A, algebraMap A B a = x :=
+  ⟨fun _ _ ↦ IsIntegralClosure.isIntegral_iff,
+   fun h ↦ ⟨FaithfulSMul.algebraMap_injective A B, fun {x} ↦ h x⟩⟩
+
 namespace IsIntegralClosure
 
 variable {R A B : Type*} [CommRing R] [CommRing A] [CommRing B]
@@ -386,6 +402,19 @@ lemma isTorsionFree [Module R A] [IsScalarTower R A B] [IsTorsionFree R B] : IsT
   simp only [Algebra.algebraMap_eq_smul_one, IsScalarTower.smul_assoc]
 
 variable {R} (A) {B}
+
+theorem mem_range_algebraMap {C : Type*} [Ring C] [Algebra R C] [Algebra A C] [Algebra B C]
+    [FaithfulSMul B C] [IsScalarTower R B C] [IsScalarTower A B C] {x : C} (h : IsIntegral R x) :
+    x ∈ Set.range (algebraMap B C) ↔ x ∈ Set.range (algebraMap A C) := by
+  constructor
+  · rintro ⟨x, rfl⟩
+    rw [isIntegral_algebraMap_iff, @IsIntegralClosure.isIntegral_iff A R B] at h
+    obtain ⟨x, rfl⟩ := h
+    rw [← IsScalarTower.algebraMap_apply]
+    exact Set.mem_range_self _
+  · rintro ⟨x, rfl⟩
+    rw [IsScalarTower.algebraMap_apply A B C]
+    exact Set.mem_range_self _
 
 /-- If `x : B` is integral over `R`, then it is an element of the integral closure of `R` in `B`. -/
 noncomputable def mk' (x : B) (hx : IsIntegral R x) : A :=

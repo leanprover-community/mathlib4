@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
-
 # Exactness of functors for change of rings.
 
 In this file we provide exactness of restrictScalars for general universe level using it preserves

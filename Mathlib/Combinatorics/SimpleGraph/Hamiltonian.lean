@@ -70,8 +70,7 @@ theorem isHamiltonian_iff_isPath_and_forall_mem_support :
   ⟨fun hp ↦ ⟨hp.isPath, hp.mem_support⟩, fun hp ↦ hp.left.isHamiltonian_of_mem hp.right⟩
 
 theorem IsHamiltonian.connected (hp : p.IsHamiltonian) : G.Connected where
-  preconnected u v :=
-    ⟨p.takeUntil u (hp.mem_support u) |>.reverse.append <| p.takeUntil v (hp.mem_support v)⟩
+  preconnected u v := reachable_of_mem_support (hp.mem_support u) (hp.mem_support v)
   nonempty := ⟨a⟩
 
 theorem IsHamiltonian.of_subsingleton [Subsingleton α] : p.IsHamiltonian := by
@@ -97,9 +96,6 @@ variable [Fintype α]
 /-- The support of a Hamiltonian walk is the entire vertex set. -/
 lemma IsHamiltonian.toFinset_support (hp : p.IsHamiltonian) : p.support.toFinset = Finset.univ := by
   simp [eq_univ_iff_forall, hp]
-
-@[deprecated (since := "2026-03-11")]
-alias IsHamiltonian.support_toFinset := IsHamiltonian.toFinset_support
 
 omit [Fintype α] in
 theorem IsHamiltonian.setOfPred_support (hp : p.IsHamiltonian) : {v | v ∈ p.support} = Set.univ :=

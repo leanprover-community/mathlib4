@@ -10,6 +10,7 @@ public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.Order.Interval.Set.SuccOrder
 
 import Mathlib.Order.Shrink
+
 /-!
 # Classes of morphisms that are stable under transfinite composition
 
