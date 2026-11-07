@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.Faces
 
 /-!
-
 # Construction of projections for the Dold-Kan correspondence
 
 In this file, we construct endomorphisms `P q : K[X] ⟶ K[X]` for all

@@ -680,7 +680,7 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
     | succ k =>
       simpa only [Int.reduceNeg, add_tsub_cancel_right, Int.natAbs_mul, Int.natAbs_pow,
         IsUnit.neg_iff, isUnit_one, Int.natAbs_of_isUnit, one_pow, Int.natAbs_natCast, one_mul]
-        using! (Nat.prime_pow_pow_totient_ediv_prod hp k.zero_lt_succ).symm
+        using! (Nat.prime_pow_pow_totient_ediv_prod (k + 1) hp).symm
   | coprime n₁ n₂ hn₁ hn₂ h hK₁ hK₂ =>
     have : NeZero n₁ := NeZero.of_gt hn₁
     have : NeZero n₂ := NeZero.of_gt hn₂
@@ -706,13 +706,13 @@ theorem discr [hK : IsCyclotomicExtension {n} ℚ K] :
       exact isCyclotomicExtension_eq {n₁ * n₂} ℚ K _ _
     have h_cpr : IsCoprime (discr ℚ⟮ζ ^ n₂⟯) (discr ℚ⟮ζ ^ n₁⟯) := by
       rw [Int.isCoprime_iff_nat_coprime, hK₁, hK₂]
-      refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
-      refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+      refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd _)
+      refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd _)
       exact Coprime.pow_left _ (Coprime.pow_right _ h)
     have h_dsj : ℚ⟮ζ ^ n₂⟯.LinearDisjoint ℚ⟮ζ ^ n₁⟯ :=
       linearDisjoint_of_isGalois_isCoprime_discr _ _ _ h_cpr
-    have h_div₁ := prod_primeFactors_pow_totient_ediv_dvd n₁.pos_of_neZero
-    have h_div₂ := prod_primeFactors_pow_totient_ediv_dvd n₂.pos_of_neZero
+    have h_div₁ := prod_primeFactors_pow_totient_ediv_dvd n₁
+    have h_div₂ := prod_primeFactors_pow_totient_ediv_dvd n₂
     rw [natAbs_discr_eq_natAbs_discr_pow_mul_natAbs_discr_pow K ℚ⟮ζ ^ n₂⟯ ℚ⟮ζ ^ n₁⟯ h_dsj h_top
       (isCoprime_differentIdeal_of_isCoprime_discr _ h_cpr), hK₁, hK₂,
       finrank n₁ ℚ⟮ζ ^ n₂⟯, finrank n₂ ℚ⟮ζ ^ n₁⟯, Nat.div_pow h_div₁, Nat.div_pow h_div₂,
@@ -732,7 +732,7 @@ theorem natAbs_discr [hK : IsCyclotomicExtension {n} ℚ K] :
   rw [discr n K, Int.natAbs_mul, Int.natAbs_pow, Int.natAbs_neg, Int.natAbs_one, one_pow, one_mul,
     Int.natAbs_ediv_of_dvd, Int.natAbs_pow, Int.natAbs_natCast, Int.natAbs_natCast]
   rw [← Nat.cast_pow, Int.natCast_dvd_natCast]
-  exact Nat.prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _)
+  exact Nat.prod_primeFactors_pow_totient_ediv_dvd _
 
 open IntermediateField Algebra Nat in
 private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : IntermediateField ℚ K)
@@ -744,8 +744,8 @@ private theorem adjoin_singleton_eq_top_aux [NumberField K] (F₁ F₂ : Interme
     ℤ[hζ.toInteger] = ⊤ := by
   have h_cpr : IsCoprime (NumberField.discr F₁) (NumberField.discr F₂) := by
     rw [Int.isCoprime_iff_nat_coprime, natAbs_discr n₁ F₁, natAbs_discr n₂ F₂]
-    refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
-    refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd (NeZero.pos _))
+    refine Coprime.coprime_div_left ?_ (prod_primeFactors_pow_totient_ediv_dvd _)
+    refine Coprime.coprime_div_right ?_ (prod_primeFactors_pow_totient_ediv_dvd _)
     exact Coprime.pow_left _ (Coprime.pow_right _ h)
   have h_disj : F₁.LinearDisjoint F₂ := by
     have : IsGalois ℚ F₁ := IsCyclotomicExtension.isGalois {n₁} ℚ F₁

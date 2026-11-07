@@ -176,7 +176,6 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
   filter_upwards [h_left] with i h_ae_eq
   refine measure_congr ?_
   filter_upwards [h_ae_eq, h_right] with x hxf hxg
-  rw [eq_iff_iff]
   rw [hxg, hxf]
 
 protected theorem congr (h_left : ∀ i, f i =ᵐ[μ] f' i) (h_right : g =ᵐ[μ] g')
@@ -285,7 +284,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
-    refine measure_limsup_atTop_eq_zero (ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hμS_le))
+    refine measure_limsup_atTop_eq_zero (ne_top_of_le_ne_top ?_ (tsum_le_tsum hμS_le))
     simpa only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, inv_inv] using ENNReal.ofNat_ne_top
   have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
     refine fun x hx => EMetric.tendsto_atTop.mpr fun ε hε => ?_
@@ -302,7 +301,7 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
         mul_comm (_ ^ n), mul_assoc, ← ENNReal.inv_le_iff_le_mul, inv_inv, ← pow_add]
       · gcongr
         · simp
-        · omega
+        · lia
       all_goals simp
     exact le_trans hNx.le h_inv_n_le_k
   rw [ae_iff]

@@ -15,6 +15,9 @@ import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.Tactic.ApplyFun
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # `Action V G`, the category of actions of a monoid `G` inside some category `V`.
 
