@@ -5,19 +5,21 @@ Authors: Jon Eugster, Snir Broshi, Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Tactic.Linter.SuggestedName.Options
 public meta import Lean.Linter.EnvLinter.Basic
 public meta import Lean.Parser.Term.Doc
-public meta import Std.Data.HashMap.AdditionalOperations
 public meta import Mathlib.Lean.Name
-meta import Lean.Meta.Instances
+public meta import Std.Data.HashMap.AdditionalOperations
 public import Lean.Environment
+public import Mathlib.Tactic.Linter.SuggestedName.Options
+
+meta import Lean.Meta.Instances
 
 /-!
 # "Suggested name" linter
 
 TODO
 -/
+
 
 open Lean Linter EnvLinter
 
