@@ -17,7 +17,7 @@ We define addition and multiplication of `OrderType`s, the isomorphism classes o
 via the lexicographic sum and the lexicographic product. These make `OrderType` into a monoid.
 We also define the cardinality of an order type.
 
-Note that, as for ordinals, multiplication is "reversed": `type (Lex (α × β)) = type β * type α`
+Note that, as for ordinals, multiplication is "reversed": `type α * type β := type (Lex (β × α))`
 (see `OrderType.type_lex_prod`).
 
 ## Main definitions
