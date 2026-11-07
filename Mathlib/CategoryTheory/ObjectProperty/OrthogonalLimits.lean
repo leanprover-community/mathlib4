@@ -29,7 +29,7 @@ see `CategoryTheory.Abelian.isTorsionClass_iff`.
 * [S. E. Dickson, *A torsion theory for Abelian categories*][dickson1966]
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

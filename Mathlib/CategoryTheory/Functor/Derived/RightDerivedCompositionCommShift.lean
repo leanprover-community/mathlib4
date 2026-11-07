@@ -35,7 +35,7 @@ transformations commute with these, then this natural transformation
 
 -/
 
-@[expose] public section
+public section
 
 namespace CategoryTheory
 

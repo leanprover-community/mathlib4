@@ -36,7 +36,7 @@ Minkowski's inequality for the Lebesgue integral of measurable functions with `�
 we prove `(∫ (f + g)^p ∂μ) ^ (1/p) ≤ (∫ f^p ∂μ) ^ (1/p) + (∫ g^p ∂μ) ^ (1/p)` for `1 ≤ p`.
 -/
 
-@[expose] public section
+public section
 
 
 section LIntegral

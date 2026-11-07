@@ -12,7 +12,7 @@ public import Mathlib.Order.CompleteLatticeIntervals
 
 -/
 
-@[expose] public section
+public section
 assert_not_exists Ring
 assert_not_exists IsOrderedMonoid
 
