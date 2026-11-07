@@ -12,7 +12,6 @@ public import Mathlib.Algebra.Ring.Equiv
 public import Mathlib.Order.Hom.Basic
 
 /-!
-
 # Tropical algebraic structures
 
 This file defines algebraic structures of the min/max-tropical numbers, up to the tropical semiring.

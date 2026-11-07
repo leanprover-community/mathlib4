@@ -323,7 +323,7 @@ variable (V)
     (0 : Matrix V V α).compl = (completeGraph V).adjMatrix α := by simp [← IsAdjMatrix.compl_inj]
 
 theorem adjMatrix_completeGraph_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V] :
-    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [one_apply, sub_ite]
+    (completeGraph V).adjMatrix α = of 1 - 1 := by ext; simp [Matrix.one_apply, sub_ite]
 
 theorem _root_.Matrix.compl_zero_eq_of_one_sub_one [AddGroup α] [One α] [DecidableEq V]
     [DecidableEq α] : (0 : Matrix V V α).compl = of 1 - 1 := by
@@ -368,12 +368,12 @@ theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 @[simp]
 theorem adjMatrix_mul_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (G.adjMatrix α * M) v w = ∑ u ∈ G.neighborFinset v, M u w := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter]
 
 @[simp]
 theorem mul_adjMatrix_apply [NonAssocSemiring α] (M : Matrix V V α) (v w : V) :
     (M * G.adjMatrix α) v w = ∑ u ∈ G.neighborFinset w, M v u := by
-  simp [mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
+  simp [Matrix.mul_apply, neighborFinset_eq_filter, sum_filter, adj_comm]
 
 variable (α) in
 @[simp]
@@ -414,7 +414,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
       rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
-      simp only [inf_eq_inter, mem_inter, mem_map] at hp
+      simp only [mem_inter, mem_map] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp
       cases hp
       simp at hxy

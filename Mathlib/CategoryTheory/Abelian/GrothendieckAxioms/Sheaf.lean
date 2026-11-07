@@ -13,7 +13,6 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.FunctorCategory
 import Mathlib.CategoryTheory.Generator.Sheaf
 
 /-!
-
 # AB axioms in sheaf categories
 
 If `J` is a Grothendieck topology on a small category `C : Type v`,

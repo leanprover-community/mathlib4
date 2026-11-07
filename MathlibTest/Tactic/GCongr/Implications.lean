@@ -1,4 +1,6 @@
-import Mathlib.Tactic.GCongr
+module
+
+public import Mathlib.Tactic.GCongr
 
 variable {a b c d : Prop}
 

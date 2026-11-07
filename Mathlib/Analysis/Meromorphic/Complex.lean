@@ -8,6 +8,9 @@ module
 public import Mathlib.Analysis.Meromorphic.NormalForm
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Beta
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The Gamma function is meromorphic
 -/
