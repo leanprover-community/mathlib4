@@ -14,7 +14,6 @@ import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 /-!
-
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
@@ -96,13 +95,13 @@ lemma Scheme.nonempty_of_isLimit [IsCofilteredOrEmpty I]
     exact this.map (((Functor.Initial.isLimitWhiskerEquiv (Over.forget i) c).symm hc).lift
         ((Cone.postcompose α).obj c'.1))
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 open Scheme.IdealSheafData in
 /--
 Suppose we have a cofiltered diagram of schemes whose transition maps are affine. The limit of
 a family of compatible nonempty quasicompact closed sets in the diagram is also nonempty.
 -/
+@[stacks 01Z3]
 lemma exists_mem_of_isClosed_of_nonempty
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -146,13 +145,12 @@ lemma exists_mem_of_isClosed_of_nonempty
     Scheme.nonempty_of_isLimit D' c' hc'
   simpa using this
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 /--
 A variant of `exists_mem_of_isClosed_of_nonempty` where the closed sets are only defined
 for the objects over a given `j : I`.
 -/
-@[stacks 01Z3]
+@[stacks 01Z3 "Variant where the closed sets are indexed by the objects over a fixed index."]
 lemma exists_mem_of_isClosed_of_nonempty'
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -263,7 +261,6 @@ instance [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)] {i : I}
     rw [← Scheme.Hom.comp_apply] at h₁
     rwa [← D.map_comp, Over.w f] at h₁
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_map_preimage_le_map_preimage
@@ -302,7 +299,6 @@ lemma exists_map_preimage_eq_map_preimage
   · rw [e]
     simpa only [Scheme.Hom.comp_preimage, Functor.map_comp] using Scheme.Hom.preimage_mono _ e₂
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open Scheme.Opens in
 include hc in
@@ -332,7 +328,6 @@ lemma isBasis_preimage_isAffineOpen [IsCofiltered I] [∀ {i j} (f : i ⟶ j), I
     Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map, ← this]
   exact ⟨hxr, hrU⟩
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 @[stacks 01Z4 "(1)"]
 lemma exists_preimage_eq
@@ -370,7 +365,6 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
 
 /-!
-
 ## Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
@@ -401,7 +395,6 @@ section LocallyOfFiniteType
 
 variable [∀ i, CompactSpace (D.obj i)] [LocallyOfFiniteType f] [IsCofiltered I]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Subsumed by `Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType`. -/
@@ -668,7 +661,6 @@ lemma Scheme.exists_hom_comp_eq_comp_of_locallyOfFiniteType
   simp_rw [← D.map_comp_assoc, reassoc_of% this o u, D.map_comp_assoc]
   rw [← reassoc_of% hF, ← reassoc_of% hF, heq]
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 /--
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
@@ -679,7 +671,7 @@ In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)`
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
 -/
-@[stacks 01ZC "Injective part of (1) => (3)"]
+@[stacks 01ZC "Injective part of (1) => (3), only assuming the morphism is locally of finite type."]
 lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
@@ -717,7 +709,6 @@ section sections
 
 variable [IsCofiltered I]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_map_eq_zero_of_isAffine_of_isLimit
@@ -820,7 +811,6 @@ lemma exists_app_map_eq_map_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.
   simpa [sub_eq_zero] using exists_app_map_eq_zero_of_isLimit _ _ hc hU (s - t)
     (by simpa +instances [map_sub, sub_eq_zero])
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
 lemma exists_appTop_π_eq_of_isAffine_of_isLimit
     [∀ i, IsAffine (D.obj i)] (s : Γ(c.pt, ⊤)) :
@@ -829,7 +819,6 @@ lemma exists_appTop_π_eq_of_isAffine_of_isLimit
   exact ⟨_, (Types.jointly_surjective_of_isColimit
     (isColimitOfPreserves (Scheme.Γ ⋙ forget _) hc.op) s).choose_spec⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 lemma exists_appTop_π_eq_of_isLimit [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -972,7 +961,7 @@ section IsAffine
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
-@[stacks 01Z5]
+@[stacks 01Z5 "Use IsQuasiAffine.of_isAffineHom to get `D.obj j` quasi-affine for `j ≥ i` "]
 lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ (i : I), CompactSpace (D.obj i)]
@@ -1021,7 +1010,6 @@ lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
   rw [← Scheme.preimage_basicOpen_top, ← Scheme.preimage_basicOpen_top]
   exact ⟨((hf _).preimage _).preimage _, hy⟩
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
@@ -1046,9 +1034,8 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
   exact ⟨j, ⟨isIso_of_isOpenImmersion_of_opensRange_eq_top _
     ((preimage_opensRange_toSpecΓ (D.map fij)).symm.trans hj)⟩⟩
 
-set_option backward.defeqAttrib.useBackward true in
 include hc in
-@[stacks 01Z4 "(1)"]
+@[stacks 01Z4 "Affine open version of (1)."]
 lemma exists_isAffineOpen_preimage_eq
     [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, QuasiSeparatedSpace (D.obj i)]
@@ -1145,7 +1132,6 @@ end IsAffine
 
 section LocallyOfFinitePresentation
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 include hc in
 /-- See `Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation` for the general case. -/
@@ -1325,8 +1311,6 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_
     simp [F, Cover.ι_glueMorphisms_assoc, hak]; rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Hom_S(-, X)` sends a cofiltered limit of qcqs `S`-schemes with affine transition maps
 to a filtered colimit if `X` is locally of finite presentation over `X`. -/
 instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S) [IsCofiltered I]

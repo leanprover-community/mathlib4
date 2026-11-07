@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.Tactic.ApplyFun
 
 /-!
-
 # Effective epimorphic families and coproducts
 
 This file proves that an effective epimorphic family induces an effective epi from the coproduct if
@@ -42,7 +41,6 @@ def effectiveEpiStructIsColimitDescOfEffectiveEpiFamily {B : C} {α : Type*} (X 
   uniq e _ m hm := EffectiveEpiFamily.uniq X π (fun a ↦ c.ι.app ⟨a⟩ ≫ e)
       (fun _ _ _ _ hg ↦ (by simp [← hm, reassoc_of% hg])) m (fun _ ↦ (by simp [← hm]))
 
-set_option backward.defeqAttrib.useBackward true in
 instance {B : C} {α : Type*} (X : α → C) (π : (a : α) → (X a ⟶ B)) [HasCoproduct X]
     [EffectiveEpiFamily X π] : EffectiveEpi (Sigma.desc π) := by
   let e := effectiveEpiStructIsColimitDescOfEffectiveEpiFamily X _ (coproductIsCoproduct _) π

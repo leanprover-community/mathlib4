@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Unramified morphisms
 
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.

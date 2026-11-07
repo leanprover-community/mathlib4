@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 public import Mathlib.CategoryTheory.ConcreteCategory.Notation
 public import Mathlib.CategoryTheory.Types.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Category of categories
 
@@ -37,6 +40,8 @@ set_option linter.checkUnivs false in
 @[implicit_reducible]
 def Cat :=
   Bundled Category.{v, u}
+
+attribute [to_dual_dont_translate] Bundled.α
 
 namespace Cat
 
