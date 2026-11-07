@@ -92,7 +92,7 @@ variable {x u v} (d : MulticoequalizerDiagram x u v)
 /-- The multispan index in the category associated to the complete lattice `T`
 given by the objects `u i` and the minima `v i j = u i ⊓ u j`,
 when `d : MulticoequalizerDiagram x u v`. -/
-@[simps]
+@[simps, implicit_reducible]
 def multispanIndex : MultispanIndex (.prod ι) T where
   left := fun ⟨i, j⟩ ↦ v i j
   right := u
@@ -103,7 +103,7 @@ def multispanIndex : MultispanIndex (.prod ι) T where
 associated to `d : MulticoequalizerDiagram x u v` with `x : T`.
 (In the case `T := Set X`, this multicofork becomes colimit after the application
 of the obvious functor `Set X ⥤ Type _`.) -/
-@[simps! pt]
+@[simps! pt, implicit_reducible]
 def multicofork : Multicofork d.multispanIndex :=
   Multicofork.ofπ _ x (fun i ↦ homOfLE (by grind [multispanIndex_right, le_iSup_iff]))
     (fun _ ↦ rfl)
