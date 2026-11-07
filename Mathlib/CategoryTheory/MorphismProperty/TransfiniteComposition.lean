@@ -386,6 +386,15 @@ lemma transfiniteCompositions_le_iff {P Q : MorphismProperty C}
   · intro h
     exact (transfiniteCompositions_monotone.{w} h).trans Q.transfiniteCompositions_le
 
+instance (W : MorphismProperty D)
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+    [W.IsStableUnderTransfiniteCompositionOfShape J] (F : C ⥤ D)
+    [PreservesWellOrderContinuousOfShape J F] [PreservesColimitsOfShape J F] :
+    (W.inverseImage F).IsStableUnderTransfiniteCompositionOfShape J where
+  le := by
+    intro X Y f ⟨hf⟩
+    exact W.transfiniteCompositionsOfShape_le _ _ hf.map.mem
+
 namespace TransfiniteCompositionOfShape
 
 variable {W} {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
