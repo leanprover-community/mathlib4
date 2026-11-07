@@ -233,7 +233,7 @@ theorem IndepFun.integrable_right_of_integrable_op
     (h'XY : Integrable (fun ω ↦ B (X ω) (Y ω)) μ)
     (hX : AEStronglyMeasurable X μ) (hY : AEStronglyMeasurable Y μ) (h'X : ¬X =ᵐ[μ] 0) :
     Integrable Y μ := by
-  refine hXY.symm.integrable_left_of_integrable_op (Function.swap B) c hc (fun y x ↦ ?_)
+  refine hXY.symm.integrable_left_of_integrable_op (Function.dflip B) c hc (fun y x ↦ ?_)
     h'XY hY hX h'X
   grw [mul_right_comm, hB]
 

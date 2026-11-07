@@ -31,8 +31,8 @@ instance mulLeftMono [LE α] [Mul α] [c : MulLeftMono α] : MulLeftMono αᵒ�
 
 @[to_additive]
 instance mulRightReflectLE [LE α] [Mul α] [MulRightReflectLE α] : MulRightReflectLE αᵒᵈ where
-  le_of_mul_le_mul_right' :=
-    Contravariant.flip (μ := swap (· * ·)) (fun _ ↦ ‹MulRightReflectLE α›.le_of_mul_le_mul_right') _
+  le_of_mul_le_mul_right' := Contravariant.flip (μ := dflip (· * ·))
+    (fun _ ↦ ‹MulRightReflectLE α›.le_of_mul_le_mul_right') _
 
 @[to_additive]
 instance mulRightMono [LE α] [Mul α] [c : MulRightMono α] : MulRightMono αᵒᵈ :=

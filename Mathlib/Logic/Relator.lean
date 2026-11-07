@@ -149,7 +149,7 @@ protected lemma symm (hr : ∀ (a : α) (b : β), r₁₂ a b → r₂₁ b a) :
 
 protected lemma trans (hr : ∀ (a : α) (b : β) (c : γ), r₁₂ a b → r₂₃ b c → r₁₃ a c) :
     RightTotal r₁₂ → RightTotal r₂₃ → RightTotal r₁₃ :=
-  swap <| LeftTotal.trans (fun _ _ _ ↦ swap <| hr _ _ _)
+  dflip <| LeftTotal.trans (fun _ _ _ ↦ dflip <| hr _ _ _)
 
 end RightTotal
 

@@ -57,14 +57,14 @@ For simplicity, we break usual convention and regard `0` as principal. -/
 def IsPrincipal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
   ∀ ⦃a b⦄, a < o → b < o → op a b < o
 
-theorem isPrincipal_swap_iff : IsPrincipal (Function.swap op) o ↔ IsPrincipal op o := by
+theorem isPrincipal_swap_iff : IsPrincipal (Function.dflip op) o ↔ IsPrincipal op o := by
   constructor <;> exact fun h a b ha hb => h hb ha
 
 theorem not_isPrincipal_iff : ¬ IsPrincipal op o ↔ ∃ a < o, ∃ b < o, o ≤ op a b := by
   simp [IsPrincipal]
 
 theorem isPrincipal_iff_of_monotone
-    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)) :
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.dflip op a)) :
     IsPrincipal op o ↔ ∀ a < o, op a a < o := by
   use fun h a ha => h ha ha
   intro H a b ha hb
@@ -73,7 +73,7 @@ theorem isPrincipal_iff_of_monotone
   · exact (h₁ a hba.le).trans_lt <| H a ha
 
 theorem not_isPrincipal_iff_of_monotone
-    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.swap op a)) :
+    (h₁ : ∀ a, Monotone (op a)) (h₂ : ∀ a, Monotone (Function.dflip op a)) :
     ¬ IsPrincipal op o ↔ ∃ a < o, o ≤ op a a := by
   simp [isPrincipal_iff_of_monotone h₁ h₂]
 

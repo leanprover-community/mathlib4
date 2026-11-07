@@ -60,7 +60,7 @@ instance [h : Fintype P] : Fintype (Dual P) :=
 
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
-  ⟨Function.swap (Membership.mem : L → P → Prop)⟩
+  ⟨Function.dflip (Membership.mem : L → P → Prop)⟩
 
 /-- A configuration is nondegenerate if:
   1) there does not exist a line that passes through all of the points,
@@ -476,7 +476,7 @@ open scoped LinearAlgebra.Projectivization
 open Matrix Projectivization
 
 instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
-  ⟨Function.swap orthogonal⟩
+  ⟨Function.dflip orthogonal⟩
 
 lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
   Iff.rfl
