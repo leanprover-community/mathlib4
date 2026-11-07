@@ -175,6 +175,22 @@ protected theorem linear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E
     IsLinearMap R fun y : E b => (e ⟨b, y⟩).2 :=
   Trivialization.IsLinear.linear b hb
 
+protected lemma map_add [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+    [∀ x, Module R (E x)] [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) (v v' : E b) :
+    (e ⟨b, v + v'⟩).2 = (e ⟨b, v⟩).2 + (e ⟨b, v'⟩).2 :=
+  e.linear R hb |>.map_add v v'
+
+variable {R} in
+protected lemma map_smul [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+    [∀ x, Module R (E x)] [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) (a : R) (v : E b) :
+    (e ⟨b, a • v⟩).2 = a • (e ⟨b, v⟩).2 :=
+  e.linear R hb |>.map_smul a v
+
+protected lemma map_zero [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
+    [∀ x, Module R (E x)] [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet) :
+    (e ⟨b, 0⟩).2 = 0 :=
+  e.linear R hb |>.map_zero
+
 instance toPretrivialization.isLinear [AddCommMonoid F] [Module R F] [∀ x, AddCommMonoid (E x)]
     [∀ x, Module R (E x)] [e.IsLinear R] : e.toPretrivialization.IsLinear R :=
   { (‹_› : e.IsLinear R) with }
@@ -428,6 +444,22 @@ variable {R}
 theorem symmL_apply (e : Trivialization F (π F E)) [e.IsLinear R] {b : B} (hb : b ∈ e.baseSet)
     (y : F) : e.symmL R b y = e.symm b y :=
   e.toPretrivialization.symmₗ_apply R hb y
+
+variable (R) in
+lemma symm_map_add (e : Trivialization F (π F E)) [e.IsLinear R] {x : B} (hx : x ∈ e.baseSet)
+    (f f' : F) :
+    e.symm x (f + f') = e.symm x f + e.symm x f' := by
+  simpa [hx] using (e.symmL R x).map_add f f'
+
+variable (R) in
+@[simp]
+lemma symm_map_zero (e : Trivialization F (π F E)) [e.IsLinear R] {x : B} (hx : x ∈ e.baseSet) :
+    e.symm x 0 = 0 := by
+  simpa [hx] using (e.symmL R x).map_zero
+
+lemma symm_map_smul (e : Trivialization F (π F E)) [e.IsLinear R] {x : B} (hx : x ∈ e.baseSet)
+    (a : R) (f : F) : e.symm x (a • f) = a • e.symm x f := by
+  simpa [symmL_apply _ hx] using (e.symmL R x).map_smul a f
 
 @[simp]
 lemma symmL_apply_of_notMem (e : Trivialization F (π F E)) [e.IsLinear R] {b : B}
