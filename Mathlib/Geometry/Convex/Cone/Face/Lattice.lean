@@ -36,7 +36,7 @@ variable {R M N : Type*}
 
 section Semiring
 
-variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup M] [Module R M]
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] [AddCommMonoid M] [Module R M]
 
 /-- The face lattice of a pointed cone `C`. -/
 structure Face (C : PointedCone R M) extends PointedCone R M where
