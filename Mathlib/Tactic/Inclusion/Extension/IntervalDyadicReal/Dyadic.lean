@@ -87,7 +87,11 @@ def step (prec : Int) : Dyadic := .ofOdd 1 prec (by decide)
 theorem ofIntWithPrec_one (prec : Int) : ofIntWithPrec 1 prec = step prec := by
   simp [step, ofIntWithPrec, Int.trailingZeros_eq_zero_of_mod_eq (show 1 % 2 = 1 by decide)]
 
+@[simp]
 lemma step_pos (prec : ℤ) : 0 < step prec := ofOdd_pos.mpr zero_lt_one
+
+@[simp]
+lemma step_nonneg (prec : ℤ) : 0 ≤ step prec := ofOdd_nonneg.mpr zero_le_one
 
 lemma step_eq_add (prec : ℤ) : step prec = step (prec + 1) + step (prec + 1) := by
   norm_num [← toRat_inj, toRat_ofOdd_eq_mul_two_pow, zpow_add₀, ← Rat.add_mul, ← one_div, step]
@@ -97,6 +101,19 @@ lemma toRat_step (prec : ℤ) : (step prec).toRat = (1 / 2) ^ prec := by
 
 lemma toRat_step_real (prec : ℤ) : (step prec).toRat = (1 / 2 : ℝ) ^ prec := by
   simp [toRat_step]
+
+lemma abs_toRat_toDyadic_le {x : ℚ} {prec : ℤ} :
+    |x - (x.toDyadic prec).toRat| ≤ (step prec).toRat := by
+  refine abs_le.mpr ⟨?_, ?_⟩
+  · grw [neg_le_sub_iff_le_add, Rat.toRat_toDyadic_le, le_add_iff_nonneg_right]
+    simp
+  · rw [tsub_le_iff_right, Rat.add_comm, ← toRat_add, ← ofIntWithPrec_one]
+    exact Rat.lt_toRat_toDyadic_add.le
+
+lemma abs_toRat_toDyadic_le_pow_real {x : ℚ} {prec : ℤ} :
+    |(x - (x.toDyadic prec).toRat : ℝ)| ≤ (1 / 2) ^ prec := by
+  rw [← toRat_step_real prec]
+  exact_mod_cast abs_toRat_toDyadic_le
 
 section Shift
 

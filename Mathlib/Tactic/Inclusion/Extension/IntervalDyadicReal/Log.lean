@@ -46,58 +46,6 @@ namespace IntervalDyadicReal
 
 open Dyadic
 
-section Fdiv
-
-variable (num den prec : ℤ)
-
-/-- The floor division of two integers with precision `prec`. -/
-@[expose]
-def ofIntFdivWithPrec : Dyadic :=
-  match prec with
-  | .ofNat p => .ofIntWithPrec ((num <<< p).fdiv den) prec
-  | .negSucc p => .ofIntWithPrec (num.fdiv (den <<< (p + 1))) prec
-
-private theorem ofIntFdivWithPrec_spec :
-    (ofIntFdivWithPrec num den prec).toRat ≤ num / den ∧
-      num / den < (ofIntFdivWithPrec num den prec).toRat + (step prec).toRat := by
-  rw [toRat_step, one_div, inv_zpow, ← zpow_neg]
-  fun_cases ofIntFdivWithPrec with
-  | case1 p =>
-    simp only [toRat_ofIntWithPrec_eq_mul_two_pow, Rat.mul_comm, zpow_neg, field]
-    rw [Int.fdiv_eq_floor, Int.shiftLeft_eq]
-    push_cast
-    exact Int.floor_eq_iff.mp rfl
-  | case2 p =>
-    simp only [toRat_ofIntWithPrec_eq_mul_two_pow, ← add_one_mul]
-    rw [← le_div_iff₀ (by simp [zpow_pos]), ← div_lt_iff₀ (by simp [zpow_pos]),
-      Int.fdiv_eq_floor, Int.shiftLeft_eq, div_div]
-    push_cast
-    exact Int.floor_eq_iff.mp rfl
-
-theorem ofIntFdivWithPrec_le :
-    (ofIntFdivWithPrec num den prec).toRat ≤ num / den :=
-  ofIntFdivWithPrec_spec _ _ _ |>.left
-
-theorem lt_ofIntFdivWithPrec :
-    num / den < (ofIntFdivWithPrec num den prec).toRat + (step prec).toRat :=
-  ofIntFdivWithPrec_spec _ _ _ |>.right
-
-theorem abs_ofIntFdivWithPrec_le :
-    |num / den - (ofIntFdivWithPrec num den prec).toRat| ≤ (step prec).toRat := by
-  rw [abs_le]
-  constructor
-  · grw [neg_le_sub_iff_le_add, ofIntFdivWithPrec_le num den prec, le_add_iff_nonneg_right]
-    simp [step]
-  · rw [tsub_le_iff_right, Rat.add_comm]
-    exact lt_ofIntFdivWithPrec num den prec |>.le
-
-private theorem abs_le_pow_real (num den prec : ℤ) :
-    |(num / den - (ofIntFdivWithPrec num den prec).toRat : ℝ)| ≤ (1 / 2) ^ prec := by
-  rw [← toRat_step_real prec]
-  exact_mod_cast abs_ofIntFdivWithPrec_le num den prec
-
-end Fdiv
-
 section SmallArtanh
 
 /-- The `n`-th partial sum of the `artanh` series at `num / den`,
@@ -231,7 +179,7 @@ def logTwo (prec : ℕ) : Dyadic :=
   let (P3, Q3) : ℕ × ℕ := smallArtanh 1 31 (prec / 9 + 1)
   let P : ℕ := 6 * P1 * Q2 * Q3 + 4 * Q1 * P2 * Q3 + 4 * Q1 * Q2 * P3
   let Q : ℕ := Q1 * Q2 * Q3
-  ofIntFdivWithPrec P Q (prec + 3)
+  (P / Q : ℚ).toDyadic (prec + 3)
 
 private theorem logTwo_aux :
     log 2 = 6 * artanh (1 / 17) + 4 * artanh (1 / 19) + 4 * artanh (1 / 31) := by
@@ -255,7 +203,7 @@ theorem abs_log_two_sub_lt (prec : ℕ) :
   simp only at *
   rw [show (1 / 2 : ℝ) ^ prec = (6 + 4 + 4) * (1 / 2) ^ (prec + 4) + (1 / 2) ^ (prec + 3 : ℤ) by
     norm_cast; ring]
-  refine abs_sub_le _ _ _ |>.trans_lt <| add_lt_add_of_lt_of_le ?_ <| abs_le_pow_real _ _ _
+  refine abs_sub_le _ _ _ |>.trans_lt <| add_lt_add_of_lt_of_le ?_ abs_toRat_toDyadic_le_pow_real
   push_cast
   simp only [add_div]
   conv in _ + _ => congr; congr; all_goals field_simp; rw [mul_div_assoc]
@@ -289,7 +237,7 @@ theorem logTwo_lt (prec : ℕ) :
   set artanh19 : ℕ × ℕ := smallArtanh 1 19 (prec / 8 + 1)
   set artanh31 : ℕ × ℕ := smallArtanh 1 31 (prec / 9 + 1)
   simp only at *
-  grw [ofIntFdivWithPrec_le]
+  grw [Rat.toRat_toDyadic_le]
   push_cast
   simp only [add_div]
   conv in _ + _ => congr; congr; all_goals field_simp; rw [mul_div_assoc]
@@ -320,7 +268,7 @@ def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
     let (P, Q) : ℕ × ℕ := smallArtanh (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     -- ofIntFdivWithPrec → δ₂ ≤ (1 / 2) ^ (prec + 2)
     -- δ ≤ 2 * (δ₁ + δ₂) < (1 / 2) ^ prec
-    2 * ofIntFdivWithPrec P Q (prec + 2)
+    2 * (P / Q : ℚ).toDyadic (prec + 2)
 
 private theorem eq_log2_of_and (n k : ℤ) (hn : n % 2 = 1) :
     1 ≤ |ofOdd n k hn| ∧ |ofOdd n k hn| < 2 -> k = n.natAbs.log2 := by
@@ -349,8 +297,8 @@ theorem logSum_lt {x : Dyadic} (hx : 1 < |x| ∧ |x| < 2) (prec : ℕ) :
       norm_cast
       grind [n.natAbs.lt_log2_self]
     simp only [toRat_mul, toRat_ofNat, Rat.cast_mul, Rat.cast_ofNat]
-    grw [ofIntFdivWithPrec_le P Q (prec + 2)]
-    simp only [Int.cast_natCast, Rat.cast_div, Rat.cast_natCast]
+    grw [Rat.toRat_toDyadic_le]
+    simp only [Rat.cast_div, Rat.cast_natCast]
     have hartanh := smallArtanh.spec (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     simp only [hPQ] at hartanh
     grw [hartanh, sum_lt_of_pos hem', artanh_eq_half_log (by grind),
@@ -407,9 +355,7 @@ theorem abs_sub_logSum_lt {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ)
         ring_nf
         gcongr <;> norm_num
   · rw [toRat_mul, Rat.cast_mul, toRat_ofNat, Rat.cast_ofNat, ← mul_sub, abs_mul, Nat.abs_ofNat]
-    have := abs_le_pow_real P Q (prec + 2)
-    simp only [Int.cast_natCast] at this
-    grw [this]
+    grw [← Rat.cast_natCast P, ← Rat.cast_natCast Q, ← Rat.cast_div, abs_toRat_toDyadic_le_pow_real]
     simp [zpow_add₀, pow_succ, -neg_add_rev, field]
 
 end LogSum
