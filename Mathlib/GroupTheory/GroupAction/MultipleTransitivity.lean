@@ -301,8 +301,10 @@ is `m`-pretransitive for any `m ≤ n`.
 
 For an infinite `α`, use `MulAction.isMultiplyPretransitive_of_le'`. -/]
 theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
-    (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
+    (hmn : m ≤ n) (hα : n ≤ Nat.card α) :
     IsMultiplyPretransitive G α m := by
+  rcases (finite_or_infinite α).symm with _ | _
+  · simp_all
   obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hmn
   exact IsPretransitive.of_surjective_map (f := embMap G α (castAddEmb p))
     (Fin.Embedding.restrictSurjective_of_add_le_natCard hα) inferInstance
