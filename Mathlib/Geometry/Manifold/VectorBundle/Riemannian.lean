@@ -180,7 +180,7 @@ lemma MDifferentiableWithinAt.inner_bundle
     MDiffAt[s] (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   have hb : MDiffAt[s] b x := by
-    simp only [mdifferentiableWithinAt_totalSpace] at hv
+    simp only [mdifferentiableWithinAt_totalSpace_iff] at hv
     exact hv.1
   simp only [hg]
   have : MDifferentiableWithinAt IM (IB.prod 𝓘(ℝ))
@@ -190,7 +190,7 @@ lemma MDifferentiableWithinAt.inner_bundle
         (g_smooth.mdifferentiableAt one_ne_zero) hb
     · exact hv
     · exact hw
-  simp only [mdifferentiableWithinAt_totalSpace] at this
+  simp only [mdifferentiableWithinAt_totalSpace_iff] at this
   exact this.2
 
 /-- Given two differentiable maps into the same fibers of a Riemannian bundle,

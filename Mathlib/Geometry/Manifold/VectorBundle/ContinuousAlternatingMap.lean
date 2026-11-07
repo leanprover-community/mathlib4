@@ -72,18 +72,25 @@ variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E�
     Trivialization.coe_coe, OpenPartialHomeomorph.refl_apply, Function.id_def,
     trivializationAt_continuousAlternatingMap_apply]
 
-theorem contMDiffWithinAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
+theorem contMDiffWithinAt_continuousAlternatingMap_bundle_iff (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
     CMDiffAt[s] n f x₀ ↔
       CMDiffAt[s] n (fun x ↦ (f x).1) x₀ ∧
         CMDiffAt[s] n
           (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffWithinAt_totalSpace_iff
 
-theorem contMDiffAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
+@[deprecated (since := "2026-11-03")]
+alias contMDiffWithinAt_continuousAlternatingMap_bundle :=
+  contMDiffWithinAt_continuousAlternatingMap_bundle_iff
+
+theorem contMDiffAt_continuousAlternatingMap_bundle_iff (f : M → AE₁E₂) {x₀ : M} :
     CMDiffAt n f x₀ ↔
-      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧ CMDiffAt n
-        (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
+      CMDiffAt n (fun x ↦ (f x).1) x₀ ∧
+        CMDiffAt n (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
   contMDiffAt_totalSpace_iff
+
+@[deprecated (since := "2026-11-03")]
+alias contMDiffAt_continuousAlternatingMap_bundle := contMDiffAt_continuousAlternatingMap_bundle_iff
 
 end
 
@@ -100,19 +107,27 @@ theorem mdifferentiableOn_continuousAlternatingMapCoordChange [CharZero 𝕜]
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
-theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle
+theorem mdifferentiableWithinAt_continuousAlternatingMap_bundle_iff
     (f : M → AE₁E₂) {s : Set M} {x₀ : M} :
     MDiffAt[s] f x₀ ↔
       MDiffAt[s] (fun x ↦ (f x).1) x₀ ∧
         MDiffAt[s]
           (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  mdifferentiableWithinAt_totalSpace IB ..
+  mdifferentiableWithinAt_totalSpace_iff IB ..
 
-theorem mdifferentiableAt_continuousAlternatingMap_bundle (f : M → AE₁E₂) {x₀ : M} :
+theorem mdifferentiableAt_continuousAlternatingMap_bundle_iff (f : M → AE₁E₂) {x₀ : M} :
     MDiffAt f x₀ ↔
       MDiffAt (fun x ↦ (f x).1) x₀ ∧
         MDiffAt (fun x ↦ inCoordinates F₁ F₂ (f x₀).1 (f x).1 (f x₀).1 (f x).1 (f x).2) x₀ :=
-  mdifferentiableAt_totalSpace ..
+  mdifferentiableAt_totalSpace_iff ..
+
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableWithinAt_continuousAlternatingMap_bundle :=
+  mdifferentiableWithinAt_continuousAlternatingMap_bundle_iff
+
+@[deprecated (since := "2026-11-03")]
+alias mdifferentiableAt_continuousAlternatingMap_bundle :=
+  mdifferentiableAt_continuousAlternatingMap_bundle_iff
 
 end
 
@@ -271,7 +286,7 @@ lemma MDifferentiableWithinAt.continuousAlternatingMap_apply_of_inCoordinates
   /- The version in vector spaces is `DifferentiableWithinAt.continuousAlternatingMap_apply`.
   To apply this version, we need to write down the expressions in coordinates of the various
   objects that show up in the formula. -/
-  simp_rw [mdifferentiableWithinAt_totalSpace] at hv ⊢
+  simp_rw [mdifferentiableWithinAt_totalSpace_iff] at hv ⊢
   refine ⟨hb₂, ?_⟩
   apply (MDifferentiableWithinAt.continuousAlternatingMap_apply hϕ
     (fun i ↦ (hv i).2)).congr_of_eventuallyEq_insert ?_
@@ -369,7 +384,7 @@ lemma ContMDiffWithinAt.continuousAlternatingMap_bundle_apply
         (b m) (ϕ m)) x)
     (hv : ∀ i, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x := by
-  simp only [contMDiffWithinAt_continuousAlternatingMap_bundle] at hϕ
+  simp only [contMDiffWithinAt_continuousAlternatingMap_bundle_iff] at hϕ
   exact hϕ.2.continuousAlternatingMap_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider `C^n` maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
@@ -420,7 +435,7 @@ lemma MDifferentiableWithinAt.continuousAlternatingMap_bundle_apply
         (b m) (ϕ m)) x)
     (hv : ∀ i, MDiffAt[s] (fun m ↦ TotalSpace.mk' F₁ (b m) (v i m)) x) :
     MDiffAt[s] (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (fun i ↦ v i m))) x := by
-  simp only [mdifferentiableWithinAt_continuousAlternatingMap_bundle] at hϕ
+  simp only [mdifferentiableWithinAt_continuousAlternatingMap_bundle_iff] at hϕ
   exact hϕ.2.continuousAlternatingMap_apply_of_inCoordinates hv hϕ.1
 
 /-- Consider differentiable maps `vᵢ : M → E₁` to a vector bundle, over a base map `b : M → B`, and
