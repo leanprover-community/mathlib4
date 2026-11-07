@@ -34,7 +34,6 @@ be phrased in terms of counting walks.
 ## References
 - [P. Erdős, A. Rényi, V. Sós, *On A Problem of Graph Theory*][erdosrenyisos]
 - [C. Huneke, *The Friendship Theorem*][huneke2002]
-
 -/
 
 @[expose] public section

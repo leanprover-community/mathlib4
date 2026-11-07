@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monoidal.End
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
 /-!
-
 # The equivalence between `Monad C` and `Mon (C ⥤ C)`.
 
 A monad "is just" a monoid in the category of endofunctors.
@@ -88,7 +87,6 @@ def monToMonad : Mon (C ⥤ C) ⥤ Monad C where
       app_μ Z := by
         simpa [-IsMonHom.mul_hom] using congrArg (fun t ↦ t.app Z) (IsMonHom.mul_hom f.hom) }
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Oh, monads are just monoids in the category of endofunctors (equivalence of categories). -/
 @[simps]

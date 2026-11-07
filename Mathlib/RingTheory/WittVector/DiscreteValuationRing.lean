@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.WittVector.Domain
 public import Mathlib.RingTheory.WittVector.MulCoeff
 
 /-!
-
 # Witt vectors over a perfect ring
 
 This file establishes that Witt vectors over a perfect field are a discrete valuation ring.
@@ -97,7 +96,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
   refine ⟨hp, fun a b hab => ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
-    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
+    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_ne_zero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
   obtain ⟨n, b, hb, rfl⟩ := verschiebung_nonzero hb0
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)

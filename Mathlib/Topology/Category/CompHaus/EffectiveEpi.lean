@@ -9,7 +9,6 @@ public import Mathlib.Topology.Category.CompHaus.Limits
 public import Mathlib.Topology.Category.CompHausLike.EffectiveEpi
 
 /-!
-
 # Effective epimorphisms in `CompHaus`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `CompHaus`.
