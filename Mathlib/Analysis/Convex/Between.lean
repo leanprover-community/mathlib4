@@ -828,6 +828,23 @@ variable [Field R] [LinearOrder R] [IsStrictOrderedRing R]
   [AddCommGroup V] [Module R V] [AddTorsor V P] {x y z : P}
 variable {R}
 
+/-- A point on the line is weakly between two distinct endpoints exactly when
+the ratio `r / (1 - r)` is nonnegative. -/
+lemma wbtw_lineMap_iff_div_one_sub_nonneg {a b : P} {r : R} (hab : a ≠ b) :
+    Wbtw R a (lineMap a b r) b ↔ 0 ≤ r / (1 - r) := by
+  rw [wbtw_lineMap_iff, or_iff_right hab, Set.mem_Icc]
+  constructor
+  · rintro ⟨hr0, hr1⟩
+    exact div_nonneg hr0 (sub_nonneg.mpr hr1)
+  · intro h
+    grind [div_nonneg_iff]
+
+/-- A point on the line is not weakly between two distinct endpoints exactly when
+the ratio `r / (1 - r)` is negative. -/
+lemma not_wbtw_lineMap_iff_div_one_sub_neg {a b : P} {r : R} (hab : a ≠ b) :
+    ¬ Wbtw R a (lineMap a b r) b ↔ r / (1 - r) < 0 := by
+  rw [wbtw_lineMap_iff_div_one_sub_nonneg hab, not_le]
+
 lemma wbtw_iff_of_le {x y z : R} (hxz : x ≤ z) : Wbtw R x y z ↔ x ≤ y ∧ y ≤ z := by
   cases hxz.eq_or_lt with
   | inl hxz =>

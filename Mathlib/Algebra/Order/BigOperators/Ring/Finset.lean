@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.AbsoluteValue.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.Finset
 public import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
+public import Mathlib.Algebra.Ring.Parity
 public import Mathlib.Tactic.Ring
 
 /-!
@@ -106,6 +107,33 @@ lemma abs_prod [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] (s : Finset 
 theorem PNat.coe_prod {ι : Type*} (f : ι → ℕ+) (s : Finset ι) :
     ↑(∏ i ∈ s, f i) = (∏ i ∈ s, f i : ℕ) :=
   map_prod PNat.coeMonoidHom _ _
+
+section LinearOrderedCommRing
+
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  {s : Finset ι} {f : ι → R}
+
+/-- A product of nonzero factors is negative if and only if
+the number of negative factors is odd. -/
+lemma prod_neg_iff_odd_card_neg (hf : ∀ i ∈ s, f i ≠ 0) :
+    (∏ i ∈ s, f i) < 0 ↔ Odd (s.filter (fun i ↦ f i < 0)).card := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert a s ha ih =>
+    have hfa := hf a (mem_insert_self a s)
+    have hfs : ∀ i ∈ s, f i ≠ 0 := fun i hi ↦ hf i (mem_insert_of_mem hi)
+    have hprod : (∏ i ∈ s, f i) ≠ 0 := prod_ne_zero_iff.mpr hfs
+    grind [prod_insert ha, mul_neg_iff, filter_insert]
+
+/-- A product of nonzero factors is positive if and only if
+the number of negative factors is even. -/
+lemma prod_pos_iff_even_card_neg (hf : ∀ i ∈ s, f i ≠ 0) :
+    0 < (∏ i ∈ s, f i) ↔ Even (s.filter (fun i ↦ f i < 0)).card := by
+  rw [← Nat.not_odd_iff_even, ← prod_neg_iff_odd_card_neg hf, not_lt]
+  exact ⟨le_of_lt, fun h ↦ lt_of_le_of_ne h (prod_ne_zero_iff.mpr hf).symm⟩
+
+end LinearOrderedCommRing
 
 section CanonicallyOrderedAdd
 variable [CommSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
