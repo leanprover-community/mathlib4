@@ -460,7 +460,7 @@ theorem sign_subtypePerm (f : Perm α) {p : α → Prop} [DecidablePred p] (h₁
   have hl'₂ : (l.1.map ofSubtype).prod = f := by
     rw [l.1.prod_hom ofSubtype, l.2.1, ofSubtype_subtypePerm _ h₂]
   conv =>
-    congr
+    enter [1]
     rw [← l.2.1]
   simp_rw [← hl'₂]
   rw [sign_prod_list_swap l.2.2, sign_prod_list_swap hl', List.length_map]

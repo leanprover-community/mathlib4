@@ -111,10 +111,8 @@ theorem weightedVSubOfPoint_eq_of_sum_eq_zero (w : ι → k) (p : ι → P) (h :
   apply eq_of_sub_eq_zero
   rw [weightedVSubOfPoint_apply, weightedVSubOfPoint_apply, ← sum_sub_distrib]
   conv_lhs =>
-    congr
-    · skip
-    · ext
-      rw [← smul_sub, vsub_sub_vsub_cancel_left]
+    enter [2, _]
+    rw [← smul_sub, vsub_sub_vsub_cancel_left]
   rw [← sum_smul, h, zero_smul]
 
 /-- The weighted sum, added to the base point, is independent of the
@@ -125,12 +123,8 @@ theorem weightedVSubOfPoint_vadd_eq_of_sum_eq_one (w : ι → k) (p : ι → P) 
     vadd_vsub_assoc, vsub_vadd_eq_vsub_sub, ← add_sub_assoc, add_comm, add_sub_assoc, ←
     sum_sub_distrib]
   conv_lhs =>
-    congr
-    · skip
-    · congr
-      · skip
-      · ext
-        rw [← smul_sub, vsub_sub_vsub_cancel_left]
+    enter [2, 2, _]
+    rw [← smul_sub, vsub_sub_vsub_cancel_left]
   rw [← sum_smul, h, one_smul, vsub_add_vsub_cancel, vsub_self]
 
 /-- The weighted sum is unaffected by removing the base point, if
