@@ -65,6 +65,7 @@ meta def movableBinder (b : Syntax) : Bool :=
   b.isIdent || b.getKind ∈
     #[``Parser.Term.funStrictImplicitBinder,
       ``Parser.Term.funImplicitBinder,
+      ``Parser.Term.implicitBinder,
       ``Parser.Term.instBinder,
       ``Parser.Term.hole,
       ``Parser.Term.typeAscription]

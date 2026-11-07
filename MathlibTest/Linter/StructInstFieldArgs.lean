@@ -30,6 +30,18 @@ example : A where
   a (x y : Nat) := x
 
 /--
+@ +2:11...16
+info: Fix:
+  x̲ ̲{̲y̲}̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵{̵y̵}̵ ̵=̵>̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+example : A where
+  a := fun x {y} => x
+
+example : A where
+  a x {y} := x
+
+/--
 @ +2:10...13
 info: Fix:
    ̲x̲ ̲y̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵y̵ ̵=̵>̵
