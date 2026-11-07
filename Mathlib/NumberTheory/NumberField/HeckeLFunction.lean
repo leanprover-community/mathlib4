@@ -35,7 +35,7 @@ variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
   [Algebra R K] [IsFractionRing R K]
 
 /-- A Hecke character is a character on the idele class group. -/
-abbrev HeckeCharacter := MulChar (IdeleClassGroup R K) ℂ
+abbrev HeckeCharacter := (IdeleClassGroup R K) →ₜ* ℂ
 
 variable {R K} (χ : HeckeCharacter R K)
 
@@ -44,7 +44,7 @@ namespace HeckeCharacter
 /-- The restriction `χᵥ` of a Hecke character `χ` to the completion `Kᵥˣ` at a finite place `v`. -/
 @[simps!]
 def restrict (v : HeightOneSpectrum R) : MulChar (v.adicCompletion K) ℂ :=
-  .ofUnitHom <| χ.toUnitHom.comp <| .toHomUnits <| IdeleClassGroup.ofAdicCompletion R K v
+  .ofUnitHom <| χ.toMonoidHom.toHomUnits.comp <| IdeleClassGroup.ofAdicCompletion R K v
 
 /-- A Hecke character `χ` is said to be unramified at a finite place `v` when the restriction `χᵥ`
 is trivial on the local unit group `𝓞ᵥˣ` -/
