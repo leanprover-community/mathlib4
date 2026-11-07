@@ -35,7 +35,6 @@ set_option backward.isDefEq.respectTransparency false in
 instance [Small.{v} R] (S : Submonoid R) :
     (ModuleCat.localizedModuleFunctor.{v} S).PreservesProjectiveObjects where
   projective_obj X {proj} := by
-    have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
     rw [← IsProjective.iff_projective] at proj ⊢
     simpa [ModuleCat.localizedModuleFunctor] using
       Module.projective_of_isLocalizedModule S (X.localizedModuleMkLinearMap S)
@@ -44,7 +43,6 @@ open Limits in
 lemma localizedModule_hasProjectiveDimensionLE [Small.{v, u} R] (n : ℕ) (S : Submonoid R)
     (M : ModuleCat.{v} R) [HasProjectiveDimensionLE M n] :
     HasProjectiveDimensionLE (M.localizedModule S) n := by
-  have : Small.{v} (Localization S) := small_of_surjective Localization.mkHom_surjective
   induction n generalizing M with
   | zero =>
     have projle : HasProjectiveDimensionLE M 0 := ‹_›
@@ -87,17 +85,13 @@ lemma hasProjectiveDimensionLE_iff_forall_maximalSpectrum (n : ℕ) [Small.{v} R
   | zero =>
     simp only [HasProjectiveDimensionLE, zero_add, ← projective_iff_hasProjectiveDimensionLT_one]
     refine ⟨fun h p ↦ ?_, fun h ↦ ?_⟩
-    · let : Small.{v} (Localization p.asIdeal.primeCompl) :=
-        small_of_surjective Localization.mkHom_surjective
-      rw [← IsProjective.iff_projective]
+    · rw [← IsProjective.iff_projective]
       exact Module.projective_of_isLocalizedModule p.1.primeCompl
         (M.localizedModuleMkLinearMap p.1.primeCompl)
     · rw [← IsProjective.iff_projective]
       have : Module.FinitePresentation R M := Module.finitePresentation_of_finite R M
       apply Module.projective_of_localization_maximal (fun p hp ↦ ?_)
       have : Module.Projective (Localization.AtPrime p) (M.localizedModule p.primeCompl) := by
-        let : Small.{v} (Localization.AtPrime p) :=
-          small_of_surjective Localization.mkHom_surjective
         simpa [IsProjective.iff_projective] using h ⟨p, hp⟩
       exact Module.Projective.of_equiv (LinearEquiv.extendScalarsOfIsLocalization p.primeCompl
         (Localization.AtPrime p) (IsLocalizedModule.linearEquiv p.primeCompl
