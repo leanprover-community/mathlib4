@@ -1693,7 +1693,7 @@ Q1434805:
 
 Q1443036:
   title: Parseval's theorem
-  decl: tsum_sq_fourierCoeff
+  decl: AddCircle.tsum_sq_fourierCoeff
 
 Q1452678:
   title: Penrose–Hawking singularity theorems

@@ -24,39 +24,40 @@ This file contains basic results on Fourier series for functions on the additive
 
 ## Main definitions
 
-* `haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`.
+* `AddCircle.haarAddCircle`, Haar measure on `AddCircle T`, normalized to have total measure `1`.
   Note that this is not the same normalisation
   as the standard measure defined in `IntervalIntegral.Periodic`,
   so we do not declare it as a `MeasureSpace` instance, to avoid confusion.
-* for `n : ℤ`, `fourier n` is the monomial `fun x => exp (2 π i n x / T)`,
+* for `n : ℤ`, `AddCircle.fourier n` is the monomial `fun x => exp (2 π i n x / T)`,
   bundled as a continuous map from `AddCircle T` to `ℂ`.
-* `fourierBasis` is the Hilbert basis of `Lp ℂ 2 haarAddCircle` given by the images of the
-  monomials `fourier n`.
-* `fourierCoeff f n`, for `f : AddCircle T → E` (with `E` a complete normed `ℂ`-vector space), is
-  the `n`-th Fourier coefficient of `f`, defined as an integral over `AddCircle T`. The lemma
-  `fourierCoeff_eq_intervalIntegral` expresses this as an integral over `[a, a + T]` for any real
-  `a`.
-* `fourierCoeffOn`, for `f : ℝ → E` and `a < b` reals, is the `n`-th Fourier
+* `AddCircle.fourierBasis` is the Hilbert basis of `Lp ℂ 2 haarAddCircle` given by the images of
+  the monomials `fourier n`.
+* `AddCircle.fourierCoeff f n`, for `f : AddCircle T → E` (with `E` a complete normed `ℂ`-vector
+  space), is the `n`-th Fourier coefficient of `f`, defined as an integral over `AddCircle T`. The
+  lemma `AddCircle.fourierCoeff_eq_intervalIntegral` expresses this as an integral over
+  `[a, a + T]` for any real `a`.
+* `AddCircle.fourierCoeffOn`, for `f : ℝ → E` and `a < b` reals, is the `n`-th Fourier
   coefficient of the unique periodic function of period `b - a` which agrees with `f` on `(a, b]`.
-  The lemma `fourierCoeffOn_eq_integral` expresses this as an integral over `[a, b]`.
+  The lemma `AddCircle.fourierCoeffOn_eq_integral` expresses this as an integral over `[a, b]`.
 
 ## Main statements
 
-The theorem `span_fourier_closure_eq_top` states that the span of the monomials `fourier n` is
-dense in `C(AddCircle T, ℂ)`, i.e. that its `Submodule.topologicalClosure` is `⊤`.  This follows
-from the Stone-Weierstrass theorem after checking that the span is a subalgebra, is closed under
-conjugation, and separates points.
+The theorem `AddCircle.span_fourier_closure_eq_top` states that the span of the monomials
+`fourier n` is dense in `C(AddCircle T, ℂ)`, i.e. that its `Submodule.topologicalClosure` is `⊤`.
+This follows from the Stone-Weierstrass theorem after checking that the span is a subalgebra, is
+closed under conjugation, and separates points.
 
 Using this and general theory on approximation of Lᵖ functions by continuous functions, we deduce
-(`span_fourierLp_closure_eq_top`) that for any `1 ≤ p < ∞`, the span of the Fourier monomials is
-dense in the Lᵖ space of `AddCircle T`. For `p = 2` we show (`orthonormal_fourier`) that the
-monomials are also orthonormal, so they form a Hilbert basis for L², which is named as
-`fourierBasis`; in particular, for `L²` functions `f`, the Fourier series of `f` converges to `f`
-in the `L²` topology (`hasSum_fourier_series_L2`). Parseval's identity, `hasSum_sq_fourierCoeff`, is
+(`AddCircle.span_fourierLp_closure_eq_top`) that for any `1 ≤ p < ∞`, the span of the Fourier
+monomials is dense in the Lᵖ space of `AddCircle T`. For `p = 2` we show
+(`AddCircle.orthonormal_fourier`) that the monomials are also orthonormal, so they form a Hilbert
+basis for L², which is named as `AddCircle.fourierBasis`; in particular, for `L²` functions `f`,
+the Fourier series of `f` converges to `f` in the `L²` topology
+(`AddCircle.hasSum_fourier_series_L2`). Parseval's identity, `AddCircle.hasSum_sq_fourierCoeff`, is
 a direct consequence.
 
 For continuous maps `f : AddCircle T → ℂ`, the theorem
-`hasSum_fourier_series_of_summable` states that if the sequence of Fourier
+`AddCircle.hasSum_fourier_series_of_summable` states that if the sequence of Fourier
 coefficients of `f` is summable, then the Fourier series `∑ (i : ℤ), fourierCoeff f i * fourier i`
 converges to `f` in the uniform-convergence topology of `C(AddCircle T, ℂ)`.
 -/
@@ -114,7 +115,7 @@ alias ⟨MemLp.of_haarAddCircle, MemLp.haarAddCircle⟩ := memLp_haarAddCircle_i
 
 end MeasureTheory
 
-open AddCircle
+namespace AddCircle
 
 section Monomials
 
@@ -177,6 +178,10 @@ theorem fourier_add {m n : ℤ} {x : AddCircle T} :
 theorem fourier_add' {m n : ℤ} {x : AddCircle T} :
     toCircle ((m + n) • x :) = fourier m x * fourier n x := by
   rw [← fourier_apply]; exact fourier_add
+
+theorem fourier_sub {m n : ℤ} {x : AddCircle T} :
+    fourier (m - n) x = fourier m x * conj (fourier n x) := by
+  rw [sub_eq_add_neg, fourier_add, fourier_neg]
 
 theorem fourier_norm [Fact (0 < T)] (n : ℤ) : ‖@fourier T n‖ = 1 := by
   rw [ContinuousMap.norm_eq_iSup_norm]
@@ -308,7 +313,7 @@ theorem fourierCoeff_eq_intervalIntegral (f : AddCircle T → E) (n : ℤ) (a : 
     volume_eq_smul_haarAddCircle, integral_smul_measure, ENNReal.toReal_ofReal hT.out.le,
     ← smul_assoc, smul_eq_mul, one_div_mul_cancel hT.out.ne', one_smul]
 
-theorem MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
+theorem _root_.MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
     (hf : Integrable f haarAddCircle) (n : ℤ) :
     Integrable (fun t ↦ fourier n t • f t) haarAddCircle := by
   apply hf.bdd_smul 1
@@ -316,13 +321,13 @@ theorem MeasureTheory.Integrable.fourier_smul {f : AddCircle T → E}
   · apply ae_of_all; intro t
     rw [fourier_apply, Circle.norm_coe]
 
-theorem fourierCoeff.add {f g : AddCircle T → E} (hf : Integrable f haarAddCircle)
+theorem fourierCoeff_add {f g : AddCircle T → E} (hf : Integrable f haarAddCircle)
     (hg : Integrable g haarAddCircle) :
     fourierCoeff (f + g) = fourierCoeff f + fourierCoeff g := by
   ext x
   simpa [fourierCoeff, -fourier_apply] using integral_add (hf.fourier_smul _) (hg.fourier_smul _)
 
-theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T → E)
+theorem fourierCoeff_sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T → E)
     (hf : ∀ i ∈ s, Integrable (f i) haarAddCircle) :
     fourierCoeff (∑ i ∈ s, f i) = ∑ i ∈ s, fourierCoeff (f i) := by
   classical
@@ -331,17 +336,17 @@ theorem fourierCoeff.sum {ι : Type*} (s : Finset ι) (f : ι → AddCircle T �
   | insert a s ha iha =>
       obtain ⟨hf₁, hf₂⟩ := by simpa using hf
       rw [s.sum_insert ha, s.sum_insert ha,
-        fourierCoeff.add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
+        fourierCoeff_add hf₁ (integrable_finsetSum' s hf₂), iha hf₂]
 
 
-theorem fourierCoeff.const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
+theorem fourierCoeff_const_smul (f : AddCircle T → E) (c : ℂ) (n : ℤ) :
     fourierCoeff (c • f :) n = c • fourierCoeff f n := by
   simp_rw [fourierCoeff, Pi.smul_apply, ← smul_assoc, smul_eq_mul, mul_comm, ← smul_eq_mul,
     smul_assoc, integral_smul]
 
-theorem fourierCoeff.const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
+theorem fourierCoeff_const_mul (f : AddCircle T → ℂ) (c : ℂ) (n : ℤ) :
     fourierCoeff (fun x => c * f x) n = c * fourierCoeff f n :=
-  fourierCoeff.const_smul f c n
+  fourierCoeff_const_smul f c n
 
 lemma fourierCoeff_congr_ae {f g : AddCircle T → E}
     (h : f =ᵐ[haarAddCircle] g) : fourierCoeff f = fourierCoeff g :=
@@ -364,14 +369,14 @@ theorem fourierCoeffOn_eq_integral {a b : ℝ} (f : ℝ → E) (n : ℤ) (hab : 
   rw [liftIoc_coe_apply]
   rwa [add_sub, add_sub_cancel_left]
 
-theorem fourierCoeffOn.const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
+theorem fourierCoeffOn_const_smul {a b : ℝ} (f : ℝ → E) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (c • f) n = c • fourierCoeffOn hab f n := by
   have := Fact.mk (by linarith : 0 < b - a)
-  apply fourierCoeff.const_smul
+  apply fourierCoeff_const_smul
 
-theorem fourierCoeffOn.const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
+theorem fourierCoeffOn_const_mul {a b : ℝ} (f : ℝ → ℂ) (c : ℂ) (n : ℤ) (hab : a < b) :
     fourierCoeffOn hab (fun x => c * f x) n = c * fourierCoeffOn hab f n :=
-  fourierCoeffOn.const_smul _ _ _ _
+  fourierCoeffOn_const_smul _ _ _ _
 
 lemma fourierCoeffOn_congr_ae {a b : ℝ} (hab : a < b) {f g : ℝ → E}
     (h : f =ᵐ[volume.restrict (Ioc a b)] g) :
@@ -500,7 +505,7 @@ theorem hasSum_fourier_series_of_summable (h : Summable (fourierCoeff f)) :
 
 /-- If the sequence of Fourier coefficients of `f` is summable, then the Fourier series of `f`
 converges everywhere pointwise to `f`. -/
-theorem has_pointwise_sum_fourier_series_of_summable (h : Summable (fourierCoeff f))
+theorem hasSum_fourier_series_apply_of_summable (h : Summable (fourierCoeff f))
     (x : AddCircle T) : HasSum (fun i => fourierCoeff f i • fourier i x) (f x) := by
   convert! (ContinuousMap.evalCLM ℂ x).hasSum (hasSum_fourier_series_of_summable h)
 
@@ -556,7 +561,7 @@ theorem hasDerivAt_fourier_neg (n : ℤ) (x : ℝ) :
 
 variable {T}
 
-theorem has_antideriv_at_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
+theorem hasDerivAt_div_mul_fourier_neg (hT : Fact (0 < T)) {n : ℤ} (hn : n ≠ 0) (x : ℝ) :
     HasDerivAt (fun y : ℝ => (T : ℂ) / (-2 * π * I * n) * fourier (-n) (y : AddCircle T))
       (fourier (-n) (x : AddCircle T)) x := by
   convert (hasDerivAt_fourier_neg T n x).div_const (-2 * π * I * n / T) using 1
@@ -576,8 +581,8 @@ theorem fourierCoeffOn_of_hasDeriv_right {a b : ℝ} (hab : a < b) {f f' : ℝ �
   simp_rw [fourierCoeffOn_eq_integral, smul_eq_mul, real_smul, ofReal_div, ofReal_one]
   conv => pattern (occs := 1 2 3) fourier _ _ * _ <;> (rw [mul_comm])
   rw [integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right hf
-    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.continuousAt |>.continuousWithinAt) hff'
-    (fun x _ ↦ has_antideriv_at_fourier_neg hT hn x |>.hasDerivWithinAt) hf'
+    (fun x _ ↦ hasDerivAt_div_mul_fourier_neg hT hn x |>.continuousAt |>.continuousWithinAt) hff'
+    (fun x _ ↦ hasDerivAt_div_mul_fourier_neg hT hn x |>.hasDerivWithinAt) hf'
     (((map_continuous (fourier (-n))).comp (AddCircle.continuous_mk' _)).intervalIntegrable _ _)]
   have : ∀ u v w : ℂ, u * ((b - a : ℝ) / v * w) = (b - a : ℝ) / v * (u * w) := by intros; ring
   conv in intervalIntegral _ _ _ _ => congr; ext; rw [this]
@@ -656,3 +661,99 @@ theorem fourierCoeff_tsum_fourier_smul [CompleteSpace E] {c : ℤ → E} (h : Su
   exact fun _ ↦ (Summable.of_norm (by simpa [norm_smul] using h)).hasSum
 
 end extract
+
+end AddCircle
+
+@[deprecated (since := "2026-11-03")] alias fourier := AddCircle.fourier
+@[deprecated (since := "2026-11-03")] alias fourier_apply := AddCircle.fourier_apply
+@[deprecated (since := "2026-11-03")] alias fourier_coe_apply := AddCircle.fourier_coe_apply
+@[deprecated (since := "2026-11-03")] alias fourier_coe_apply' := AddCircle.fourier_coe_apply'
+@[deprecated (since := "2026-11-03")] alias fourier_zero := AddCircle.fourier_zero
+@[deprecated (since := "2026-11-03")] alias fourier_zero' := AddCircle.fourier_zero'
+@[deprecated (since := "2026-11-03")] alias fourier_eval_zero := AddCircle.fourier_eval_zero
+@[deprecated (since := "2026-11-03")] alias fourier_one := AddCircle.fourier_one
+@[deprecated (since := "2026-11-03")] alias fourier_neg := AddCircle.fourier_neg
+@[deprecated (since := "2026-11-03")] alias fourier_neg' := AddCircle.fourier_neg'
+@[deprecated (since := "2026-11-03")] alias fourier_add := AddCircle.fourier_add
+@[deprecated (since := "2026-11-03")] alias fourier_add' := AddCircle.fourier_add'
+@[deprecated (since := "2026-11-03")] alias fourier_norm := AddCircle.fourier_norm
+@[deprecated (since := "2026-11-03")]
+alias fourier_add_half_inv_index := AddCircle.fourier_add_half_inv_index
+@[deprecated (since := "2026-11-03")] alias fourierSubalgebra := AddCircle.fourierSubalgebra
+@[deprecated (since := "2026-11-03")] alias fourierSubalgebra_coe := AddCircle.fourierSubalgebra_coe
+@[deprecated (since := "2026-11-03")]
+alias fourierSubalgebra_separatesPoints := AddCircle.fourierSubalgebra_separatesPoints
+@[deprecated (since := "2026-11-03")]
+alias fourierSubalgebra_closure_eq_top := AddCircle.fourierSubalgebra_closure_eq_top
+@[deprecated (since := "2026-11-03")]
+alias span_fourier_closure_eq_top := AddCircle.span_fourier_closure_eq_top
+@[deprecated (since := "2026-11-03")] alias fourierLp := AddCircle.fourierLp
+@[deprecated (since := "2026-11-03")] alias coeFn_fourierLp := AddCircle.coeFn_fourierLp
+@[deprecated (since := "2026-11-03")]
+alias span_fourierLp_closure_eq_top := AddCircle.span_fourierLp_closure_eq_top
+@[deprecated (since := "2026-11-03")] alias orthonormal_fourier := AddCircle.orthonormal_fourier
+@[deprecated (since := "2026-11-03")] alias fourierCoeff := AddCircle.fourierCoeff
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_eq_intervalIntegral := AddCircle.fourierCoeff_eq_intervalIntegral
+@[deprecated (since := "2026-11-03")] alias fourierCoeff.add := AddCircle.fourierCoeff_add
+@[deprecated (since := "2026-11-03")] alias fourierCoeff.sum := AddCircle.fourierCoeff_sum
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff.const_smul := AddCircle.fourierCoeff_const_smul
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff.const_mul := AddCircle.fourierCoeff_const_mul
+@[deprecated (since := "2026-11-03")] alias fourierCoeff_congr_ae := AddCircle.fourierCoeff_congr_ae
+@[deprecated (since := "2026-11-03")] alias fourierCoeffOn := AddCircle.fourierCoeffOn
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn_eq_integral := AddCircle.fourierCoeffOn_eq_integral
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn.const_smul := AddCircle.fourierCoeffOn_const_smul
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn.const_mul := AddCircle.fourierCoeffOn_const_mul
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn_congr_ae := AddCircle.fourierCoeffOn_congr_ae
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_liftIoc_eq := AddCircle.fourierCoeff_liftIoc_eq
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_liftIco_eq := AddCircle.fourierCoeff_liftIco_eq
+@[deprecated (since := "2026-11-03")] alias fourierBasis := AddCircle.fourierBasis
+@[deprecated (since := "2026-11-03")] alias coe_fourierBasis := AddCircle.coe_fourierBasis
+@[deprecated (since := "2026-11-03")] alias fourierBasis_repr := AddCircle.fourierBasis_repr
+@[deprecated (since := "2026-11-03")]
+alias hasSum_fourier_series_L2 := AddCircle.hasSum_fourier_series_L2
+@[deprecated (since := "2026-11-03")]
+alias hasSum_sq_fourierCoeff := AddCircle.hasSum_sq_fourierCoeff
+@[deprecated (since := "2026-11-03")] alias tsum_sq_fourierCoeff := AddCircle.tsum_sq_fourierCoeff
+@[deprecated (since := "2026-11-03")]
+alias hasSum_sq_fourierCoeffOn := AddCircle.hasSum_sq_fourierCoeffOn
+@[deprecated (since := "2026-11-03")]
+alias tsum_sq_fourierCoeffOn := AddCircle.tsum_sq_fourierCoeffOn
+@[deprecated (since := "2026-11-03")] alias fourierCoeff_toLp := AddCircle.fourierCoeff_toLp
+@[deprecated (since := "2026-11-03")]
+alias hasSum_fourier_series_of_summable := AddCircle.hasSum_fourier_series_of_summable
+@[deprecated (since := "2026-11-03")]
+alias has_pointwise_sum_fourier_series_of_summable :=
+  AddCircle.hasSum_fourier_series_apply_of_summable
+@[deprecated (since := "2026-11-03")] alias fourierCoeff_fourier := AddCircle.fourierCoeff_fourier
+@[deprecated (since := "2026-11-03")] alias hasDerivAt_fourier := AddCircle.hasDerivAt_fourier
+@[deprecated (since := "2026-11-03")]
+alias differentiableAt_fourier := AddCircle.differentiableAt_fourier
+@[deprecated (since := "2026-11-03")]
+alias differentiable_fourier := AddCircle.differentiable_fourier
+@[deprecated (since := "2026-11-03")]
+alias hasDerivAt_fourier_neg := AddCircle.hasDerivAt_fourier_neg
+@[deprecated (since := "2026-11-03")]
+alias has_antideriv_at_fourier_neg := AddCircle.hasDerivAt_div_mul_fourier_neg
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn_of_hasDeriv_right := AddCircle.fourierCoeffOn_of_hasDeriv_right
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn_of_hasDerivAt_Ioo := AddCircle.fourierCoeffOn_of_hasDerivAt_Ioo
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeffOn_of_hasDerivAt := AddCircle.fourierCoeffOn_of_hasDerivAt
+@[deprecated (since := "2026-11-03")] alias fourierCoeff_const := AddCircle.fourierCoeff_const
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_eq_of_hasSum_of_summable_norm :=
+  AddCircle.fourierCoeff_eq_of_hasSum_of_summable_norm
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_eq_of_hasSum := AddCircle.fourierCoeff_eq_of_hasSum
+@[deprecated (since := "2026-11-03")]
+alias fourierCoeff_tsum_fourier_smul := AddCircle.fourierCoeff_tsum_fourier_smul
