@@ -5,18 +5,26 @@ Authors: Jon Eugster, Snir Broshi, Jovan Gerbscheid
 -/
 module
 
--- Import this linter explicitly to ensure that
--- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header  -- shake: keep
-meta import Lean.Parser.Term.Doc
-meta import Std.Data.HashMap.AdditionalOperations
-meta import Mathlib.Lean.Name
+public import Mathlib.Tactic.Linter.SuggestedName.Options
+public meta import Lean.Linter.EnvLinter.Basic
+public meta import Lean.Parser.Term.Doc
+public meta import Std.Data.HashMap.AdditionalOperations
+public meta import Mathlib.Lean.Name
 meta import Lean.Meta.Instances
+public import Lean.Environment
 
-/-! TODO -/
+/-!
+# "Suggested name" linter
+
+TODO
+-/
+
+open Lean Linter EnvLinter
+
+public meta section
 
 /-- Decapitalize the given string according to the naming conventions. -/
-public meta def _root_.String.lowerStart (s : String) : String :=
+def _root_.String.lowerStart (s : String) : String :=
   (manualException s).getD <|
     let positions := s.positions.take (largestNonLowerIndex s)
     positions.fold (init := s) fun s ⟨⟨pos, _⟩, _⟩ ↦ (pos.set s (pos.get s).toLower)
@@ -52,18 +60,18 @@ where
       else
         n -- e.g. `LE` ↦ `le` or  `LE'` ↦ `le'`
 
-meta def Lean.Name.recommendedSpellings (env : Lean.Environment) (name : Lean.Name) : List String :=
+def Lean.Name.recommendedSpellings (env : Lean.Environment) (name : Lean.Name) : List String :=
   let recommended := Lean.Parser.Term.Doc.getRecommendedSpellingsForName env name
   if recommended.isEmpty then
     name.componentsRev.map toString |>.scanl (fun t c ↦ c ++ t.capitalize) "" |>.tail
   else
     recommended.map (·.recommendedSpelling) |>.toList.eraseDups
 
-meta def List.getSingleton? {α : Type _} : List α → Option α
+def List.getSingleton? {α : Type _} : List α → Option α
   | [a] => a
   | _ => none
 
-meta def Lean.Name.suggestTheoremName (env : Lean.Environment) (name : Lean.Name) :
+def Lean.Name.suggestTheoremName (env : Lean.Environment) (name : Lean.Name) :
     CoreM (Option String) := do
   unless Lean.wasOriginallyTheorem env name do return none
   let .some decl := env.find? name | return none
@@ -78,3 +86,15 @@ meta def Lean.Name.suggestTheoremName (env : Lean.Environment) (name : Lean.Name
   let newParts := parts.map fun s ↦ lowercaseToCorrectCasing.getD s.toString.toLower s.toString
   let newName := newParts.intercalateString "_"
   return if name.lastComponentAsString == newName then none else newName
+
+@[builtin_env_linter linter.envLinter.suggestedName]
+public def suggestedNameLinter : EnvLinter where
+  test name := do
+    let env ← getEnv
+    if name.isInternalDetail then return none
+    if (← Batteries.Tactic.Lint.isAutoDecl name) then return none
+    if Linter.isDeprecated env name then return none
+    let some suggestion ← name.suggestTheoremName env | return none
+    return s!"rename: {name} → {suggestion}"
+  noErrorsFound := "All statement names are conform with the naming convention"
+  errorsFound := "THE FOLLOWING STATEMENT NAMES ARE NOT FOLLOWING THE CONVENTION:"

@@ -1,6 +1,6 @@
 module
 
-import Mathlib.Tactic.Linter.DecapitaliseName
+import Mathlib.Tactic.Linter.SuggestedName.Implementation
 
 #guard "AB5OfSize".lowerStart == "ab5OfSize"
 #guard "Measurable".lowerStart  == "measurable"
