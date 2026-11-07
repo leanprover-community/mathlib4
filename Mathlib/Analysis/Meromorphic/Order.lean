@@ -817,22 +817,28 @@ theorem meromorphicOrderAt_eq_top_of_isPreconnected (hf : MeromorphicOn f U) {y 
   contrapose h₂x with h
   exact hf.meromorphicOrderAt_ne_top_of_isPreconnected hU hy h₁x h
 
-/-- On a preconnected set, a meromorphic function that is not constantly zero has a
-multiplicative inverse.
+/-- A meromorphic function with finite order at every point of `U` has a multiplicative inverse
+along `codiscreteWithin U`.
 
 A version of `meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq` where we relax the
 equality to `=ᶠ[codiscreteWithin U]`. -/
+theorem mul_inv_eventuallyEq_of_forall_meromorphicOrderAt_ne_top {f : 𝕜 → 𝕜'}
+    (hf : MeromorphicOn f U) (h : ∀ x ∈ U, meromorphicOrderAt f x ≠ ⊤) :
+    f * f⁻¹ =ᶠ[codiscreteWithin U] 1 :=
+  (hf.eventually_codiscreteWithin_apply_ne_zero h).mono fun _ hx ↦ mul_inv_cancel₀ hx
+
+/-- On a preconnected set, a meromorphic function that is not constantly zero has a
+multiplicative inverse along `codiscreteWithin U`.
+
+See `MeromorphicOn.mul_inv_eventuallyEq_of_forall_meromorphicOrderAt_ne_top` for a version without
+connectedness assumption. -/
 theorem mul_inv_eventuallyEq {f : 𝕜 → 𝕜'} (hf : MeromorphicOn f U) (hU : IsPreconnected U)
     (h0 : ¬f =ᶠ[codiscreteWithin U] 0) :
     f * f⁻¹ =ᶠ[codiscreteWithin U] 1 := by
-  simp_rw [EventuallyEq, Filter.Eventually, mem_codiscreteWithin_iff_forall_mem_nhdsNE,
-    union_comm _ Uᶜ, ← mem_inf_principal'] at ⊢ h0
-  intro x hx
-  refine mem_inf_of_left <| (meromorphicOrderAt_ne_top_iff_mul_inv_eventuallyEq (hf x hx)).mp ?_
-  contrapose h0
-  intro y hy
-  refine mem_inf_of_left <| meromorphicOrderAt_eq_top_iff.mp ?_
-  exact hf.meromorphicOrderAt_eq_top_of_isPreconnected hU hx hy h0
+  refine hf.mul_inv_eventuallyEq_of_forall_meromorphicOrderAt_ne_top fun x hx h ↦ h0 ?_
+  refine eventuallyEq_codiscreteWithin_iff_forall_eventually_nhdsNE.2 fun y hy ↦ ?_
+  exact (meromorphicOrderAt_eq_top_iff.1
+    (hf.meromorphicOrderAt_eq_top_of_isPreconnected hU hx hy h)).mono fun _ hz _ ↦ hz
 
 /-- If a function is meromorphic on a set `U`, then for each point in `U`, it is analytic at nearby
 points in `U`. When the target space is complete, this can be strengthened to analyticity at all
