@@ -7,9 +7,10 @@ module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
 public import Mathlib.CategoryTheory.Limits.Shapes.Opposites.Products
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.CategoryTheory.Limits.Types.Products
 public import Mathlib.Topology.Category.TopCat.Limits.Products
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 
 /-!
 

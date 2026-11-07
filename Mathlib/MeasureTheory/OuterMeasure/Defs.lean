@@ -71,6 +71,7 @@ attribute [gcongr] OuterMeasureClass.measure_mono
 
 namespace OuterMeasure
 
+@[macro_inline]
 instance : FunLike (OuterMeasure α) (Set α) ℝ≥0∞ where
   coe m := m.measureOf
   coe_injective | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl

@@ -86,7 +86,7 @@ the pseudofunctor defined by:
 This is only used for defining `yoneda`, after which `Bicategory.yoneda.obj` should be preferred. -/
 @[simps!]
 def yoneda₀ (x : B) : Pseudofunctor Bᵒᵖ Cat.{w, v} where
-  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => Cat.of (unop y ⟶ x))
+  toPrelaxFunctor := PrelaxFunctor.mkOfHomFunctors (fun y => ↧(unop y ⟶ x))
     (fun a b => unopFunctor a b ⋙ precomposingCat (unop b) (unop a) x)
   mapId a := leftUnitorNatIsoCat (unop a) x
   mapComp f g := associatorNatIsoRightCat g.unop f.unop x

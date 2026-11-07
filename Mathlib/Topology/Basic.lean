@@ -5,9 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 module
 
-public import Mathlib.Data.Set.Finite.Basic
 public import Mathlib.Data.Set.Finite.Range
-public import Mathlib.Data.Set.Lattice
+public import Mathlib.Data.Set.Lattice.Bounded
 public import Mathlib.Topology.Defs.Filter
 
 /-!
@@ -33,7 +32,9 @@ topological space
 
 @[expose] public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v
 
@@ -105,6 +106,10 @@ theorem Set.Finite.isOpen_biInter {s : Set α} {f : α → Set X} (hs : s.Finite
 theorem isOpen_iInter_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsOpen (s i)) :
     IsOpen (⋂ i, s i) :=
   (finite_range _).isOpen_sInter (forall_mem_range.2 h)
+
+lemma IsOpen.iInter_of_finite_ne_univ {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsOpen (s i))
+    (hs_ne_univ : {i | s i ≠ univ}.Finite) : IsOpen (⋂ i, s i) := by
+  simpa using hs_ne_univ.isOpen_biInter (f := s) fun _ _ ↦ hs _
 
 theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsOpen (f i)) :
     IsOpen (⋂ i ∈ s, f i) :=
@@ -183,6 +188,10 @@ theorem Set.Finite.isClosed_biUnion {s : Set α} {f : α → Set X} (hs : s.Fini
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact hs.isOpen_biInter h
 
+lemma Set.Finite.isClosed_sUnion {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsClosed t) :
+    IsClosed (⋃₀ s) := by
+  rw [sUnion_eq_biUnion]; exact hs.isClosed_biUnion h
+
 lemma isClosed_biUnion_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ s, IsClosed (f i)) :
     IsClosed (⋃ i ∈ s, f i) :=
   s.finite_toSet.isClosed_biUnion h
@@ -192,6 +201,10 @@ theorem isClosed_iUnion_of_finite [Finite ι] {s : ι → Set X} (h : ∀ i, IsC
     IsClosed (⋃ i, s i) := by
   simp only [← isOpen_compl_iff, compl_iUnion] at *
   exact isOpen_iInter_of_finite h
+
+lemma IsClosed.iUnion_of_finite_nonempty {ι : Type*} {s : ι → Set X} (hs : ∀ i, IsClosed (s i))
+    (hs_nonempty : {i | (s i).Nonempty}.Finite) : IsClosed (⋃ i, s i) := by
+  simpa using hs_nonempty.isClosed_biUnion (f := s) fun _ _ ↦ hs _
 
 @[closedness .]
 theorem isClosed_imp {p q : X → Prop} (hp : IsOpen { x | p x }) (hq : IsClosed { x | q x }) :

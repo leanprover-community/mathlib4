@@ -6,7 +6,6 @@ Authors: Winston Yin
 module
 
 public import Mathlib.Geometry.Manifold.MFDeriv.Tangent
-public import Mathlib.Geometry.Manifold.Notation
 
 /-!
 # Integral curves of vector fields on a manifold
@@ -40,7 +39,7 @@ junk.
 
 * Implement `IsMIntegralCurveWithinAt`.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
@@ -77,7 +76,7 @@ integral curve of `v`. That is, `γ t` is tangent to `v (γ t)` for all `t : ℝ
 def IsMIntegralCurve (γ : ℝ → M) (v : (x : M) → TangentSpace% x) : Prop :=
   ∀ t : ℝ, HasMFDerivAt% γ t ((1 : ℝ →L[ℝ] ℝ).smulRight (v (γ t)))
 
-variable {γ γ' : ℝ → M} {v : (x : M) → TangentSpace% x} {s s' : Set ℝ} {t₀ : ℝ}
+variable {γ : ℝ → M} {v : (x : M) → TangentSpace% x} {s s' : Set ℝ} {t₀ : ℝ}
 
 lemma IsMIntegralCurve.isMIntegralCurveOn (h : IsMIntegralCurve γ v) (s : Set ℝ) :
     IsMIntegralCurveOn γ v s := fun t _ ↦ (h t).hasMFDerivWithinAt

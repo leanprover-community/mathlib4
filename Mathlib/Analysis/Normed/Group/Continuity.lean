@@ -6,10 +6,11 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 module
 
 public import Mathlib.Analysis.Normed.Group.Basic
-public import Mathlib.Topology.Algebra.Ring.Real
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
-public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Topology.Sequences
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of the norm on (semi)normed groups
@@ -24,7 +25,9 @@ public section
 variable {α ι κ E F G : Type*}
 
 open Filter Function Metric
-open ENNReal Filter NNReal Uniformity Topology
+open ENNReal Filter NNReal Topology
+
+open scoped Uniformity
 
 section SeminormedGroup
 
@@ -126,23 +129,30 @@ theorem tendsto_norm_one : Tendsto (fun a : E => ‖a‖) (𝓝 1) (𝓝 0) := b
 theorem continuous_norm' : Continuous fun a : E => ‖a‖ := by
   simpa using continuous_id.dist (continuous_const : Continuous fun _a => (1 : E))
 
-@[to_additive (attr := continuity, fun_prop) continuous_nnnorm]
-theorem continuous_nnnorm' : Continuous fun a : E => ‖a‖₊ :=
+@[to_additive (attr := continuity, fun_prop) continuous_nnNorm]
+theorem continuous_nnNorm' : Continuous fun a : E => ‖a‖₊ :=
   continuous_norm'.subtype_mk _
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) continuous_nnnorm]
+alias continuous_nnnorm' := continuous_nnNorm'
 
 end SeminormedGroup
 
 section Instances
 
 @[to_additive]
-instance SeminormedGroup.toContinuousENorm [SeminormedGroup E] : ContinuousENorm E where
-  continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnnorm'
+instance SeminormedGroup.toESeminormedMonoid [SeminormedGroup E] : ESeminormedMonoid E where
+  continuous_enorm := ENNReal.isOpenEmbedding_coe.continuous.comp continuous_nnNorm'
+  enorm_zero := by simp [eNorm_eq_nnNorm]
+  enorm_mul_le := by simp [eNorm_eq_nnNorm, ← coe_add, nnNorm_mul_le']
+
+@[to_additive]
+instance SeminormedCommGroup.toESeminormedCommMonoid [SeminormedCommGroup E] :
+    ESeminormedCommMonoid E where
 
 @[to_additive]
 instance NormedGroup.toENormedMonoid {F : Type*} [NormedGroup F] : ENormedMonoid F where
-  enorm_zero := by simp [enorm_eq_nnnorm]
-  enorm_eq_zero := by simp [enorm_eq_nnnorm]
-  enorm_mul_le := by simp [enorm_eq_nnnorm, ← coe_add, nnnorm_mul_le']
+  enorm_eq_zero := by simp [eNorm_eq_nnNorm]
 
 @[to_additive]
 instance NormedCommGroup.toENormedCommMonoid [NormedCommGroup E] : ENormedCommMonoid E where
@@ -153,7 +163,7 @@ end Instances
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {s : Set E} {a : E}
+variable [SeminormedGroup E] [SeminormedGroup F] [SeminormedGroup G] {a : E}
 
 set_option linter.docPrime false in
 @[to_additive Inseparable.norm_eq_norm]
@@ -161,9 +171,12 @@ theorem Inseparable.norm_eq_norm' {u v : E} (h : Inseparable u v) : ‖u‖ = �
   h.map continuous_norm' |>.eq
 
 set_option linter.docPrime false in
-@[to_additive Inseparable.nnnorm_eq_nnnorm]
-theorem Inseparable.nnnorm_eq_nnnorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
-  h.map continuous_nnnorm' |>.eq
+@[to_additive Inseparable.nnNorm_eq_nnNorm]
+theorem Inseparable.nnNorm_eq_nnNorm' {u v : E} (h : Inseparable u v) : ‖u‖₊ = ‖v‖₊ :=
+  h.map continuous_nnNorm' |>.eq
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm_eq_nnnorm]
+alias Inseparable.nnnorm_eq_nnnorm' := Inseparable.nnNorm_eq_nnNorm'
 
 theorem Inseparable.enorm_eq_enorm {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
     {u v : E} (h : Inseparable u v) : ‖u‖ₑ = ‖v‖ₑ :=
@@ -185,24 +198,30 @@ variable {l : Filter α} {f : α → E}
 theorem Filter.Tendsto.norm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖) l (𝓝 ‖a‖) :=
   tendsto_norm'.comp h
 
-@[to_additive Filter.Tendsto.nnnorm]
-theorem Filter.Tendsto.nnnorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
-  Tendsto.comp continuous_nnnorm'.continuousAt h
+@[to_additive Filter.Tendsto.nnNorm]
+theorem Filter.Tendsto.nnNorm' (h : Tendsto f l (𝓝 a)) : Tendsto (fun x => ‖f x‖₊) l (𝓝 ‖a‖₊) :=
+  Tendsto.comp continuous_nnNorm'.continuousAt h
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
+alias Filter.Tendsto.nnnorm' := Filter.Tendsto.nnNorm'
 
 
 end
 
 section
 
-variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
+variable [TopologicalSpace α] {f : α → E} {a : α}
 
 @[to_additive (attr := fun_prop) Continuous.norm]
 theorem Continuous.norm' : Continuous f → Continuous fun x => ‖f x‖ :=
   continuous_norm'.comp
 
-@[to_additive (attr := fun_prop) Continuous.nnnorm]
-theorem Continuous.nnnorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
-  continuous_nnnorm'.comp
+@[to_additive (attr := fun_prop) Continuous.nnNorm]
+theorem Continuous.nnNorm' : Continuous f → Continuous fun x => ‖f x‖₊ :=
+  continuous_nnNorm'.comp
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
+alias Continuous.nnnorm' := Continuous.nnNorm'
 
 end
 end SeminormedGroup
@@ -228,27 +247,36 @@ variable [TopologicalSpace α] {f : α → E} {s : Set α} {a : α}
 theorem ContinuousAt.norm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖) a :=
   Tendsto.norm' h
 
-@[to_additive (attr := fun_prop) ContinuousAt.nnnorm]
-theorem ContinuousAt.nnnorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
-  Tendsto.nnnorm' h
+@[to_additive (attr := fun_prop) ContinuousAt.nnNorm]
+theorem ContinuousAt.nnNorm' {a : α} (h : ContinuousAt f a) : ContinuousAt (fun x => ‖f x‖₊) a :=
+  Tendsto.nnNorm' h
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
+alias ContinuousAt.nnnorm' := ContinuousAt.nnNorm'
 
 @[to_additive ContinuousWithinAt.norm]
 theorem ContinuousWithinAt.norm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => ‖f x‖) s a :=
   Tendsto.norm' h
 
-@[to_additive ContinuousWithinAt.nnnorm]
-theorem ContinuousWithinAt.nnnorm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+@[to_additive ContinuousWithinAt.nnNorm]
+theorem ContinuousWithinAt.nnNorm' {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
     ContinuousWithinAt (fun x => ‖f x‖₊) s a :=
-  Tendsto.nnnorm' h
+  Tendsto.nnNorm' h
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
+alias ContinuousWithinAt.nnnorm' := ContinuousWithinAt.nnNorm'
 
 @[to_additive (attr := fun_prop) ContinuousOn.norm]
 theorem ContinuousOn.norm' {s : Set α} (h : ContinuousOn f s) : ContinuousOn (fun x => ‖f x‖) s :=
   fun x hx => (h x hx).norm'
 
-@[to_additive (attr := fun_prop) ContinuousOn.nnnorm]
-theorem ContinuousOn.nnnorm' {s : Set α} (h : ContinuousOn f s) :
-    ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnnorm'
+@[to_additive (attr := fun_prop) ContinuousOn.nnNorm]
+theorem ContinuousOn.nnNorm' {s : Set α} (h : ContinuousOn f s) :
+    ContinuousOn (fun x => ‖f x‖₊) s := fun x hx => (h x hx).nnNorm'
+
+@[to_additive (attr := deprecated (since := "2026-10-31")) nnnorm]
+alias ContinuousOn.nnnorm' := ContinuousOn.nnNorm'
 
 end
 
@@ -299,7 +327,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E} {r : ℝ}
+variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a b : E}
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -393,10 +421,8 @@ lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>
 
 @[to_additive]
 theorem tendsto_norm_inv_mul_self_nhdsNE (a : E) :
-    Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) := by
-  apply (tendsto_norm_inv_mul_self a).inf
-  apply tendsto_principal_principal.2 (fun _x hx => norm_pos_iff'.2 ?_)
-  simpa [inv_mul_eq_one] using hx
+    Tendsto (fun x => ‖x⁻¹ * a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+  (tendsto_norm_inv_mul_self a).inf <| by simp [inv_mul_eq_one]
 
 variable (E)
 

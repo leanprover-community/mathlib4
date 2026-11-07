@@ -3,12 +3,13 @@ Copyright (c) 2024 Enrico Z. Borba. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Enrico Z. Borba
 -/
+module
 
-import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.Probability.Density
-import Mathlib.Probability.Distributions.Uniform
-import Mathlib.Probability.Notation
+public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
+public import Mathlib.MeasureTheory.Integral.Prod
+public import Mathlib.Probability.Density
+public import Mathlib.Probability.Distributions.Uniform
+public import Mathlib.Probability.Notation
 
 /-!
 
@@ -68,6 +69,8 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://www.isa-afp.org/entries/Buffons_Needle.html
 
 -/
+
+@[expose] public section
 
 open MeasureTheory (MeasureSpace IsProbabilityMeasure Measure pdf.IsUniform)
 open ProbabilityTheory Real
@@ -195,13 +198,11 @@ lemma buffon_integral :
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
-  rw [
-    ← MeasureTheory.integral_map hBₘ.aemeasurable
+  rw [← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
-    hB, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
+    hB.map_eq, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
-    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
-  ]
+    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul]
   refine mul_eq_mul_left_iff.mpr (Or.inl ?_)
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by

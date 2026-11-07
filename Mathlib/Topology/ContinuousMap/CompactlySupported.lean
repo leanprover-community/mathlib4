@@ -50,7 +50,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open scoped CompactlySupported
 
 section
 
@@ -58,7 +58,7 @@ section
 compact support.
 
 You should also extend this typeclass when you extend `CompactlySupportedContinuousMap`. -/
-class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type*)
+class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop
     extends ContinuousMapClass F α β where
   /-- Each member of the class has compact support. -/
@@ -72,6 +72,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β]
 
+@[macro_inline]
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -173,7 +174,7 @@ variable [TopologicalSpace β] (x : α)
 
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
-            continuous_toFun := (0 : C(α, β)).2
+            continuous_toFun := by fun_prop
             hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
@@ -563,7 +564,7 @@ def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
-    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
+    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage (by fun_prop) ho) hgxo
     exact ⟨g y, hy⟩
 
 @[simp]

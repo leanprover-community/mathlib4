@@ -6,7 +6,6 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Topology.UniformSpace.Completion
-public import Mathlib.Topology.UniformSpace.Ultra.Basic
 public import Mathlib.Topology.UniformSpace.Ultra.Constructions
 
 /-!

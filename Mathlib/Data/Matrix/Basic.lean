@@ -5,13 +5,11 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Opposite
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.Algebra.BigOperators.RingEquiv
-public import Mathlib.Data.Finite.Prod
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.LinearAlgebra.Pi
 public import Mathlib.GroupTheory.DedekindFinite
+public import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Matrices
@@ -37,7 +35,7 @@ assert_not_exists TrivialStar
 
 universe u u' v w
 
-variable {l m n o : Type*} {m' : o → Type*} {n' : o → Type*}
+variable {l m n : Type*}
 variable {R S T A α β γ : Type*}
 
 namespace Matrix
@@ -68,9 +66,22 @@ def ofLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : (m → n → �
 
 end
 
-theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β) (g : β → Matrix m n α) :
+@[simp]
+protected theorem sum_apply [AddCommMonoid α] (i : m) (j : n) (s : Finset β)
+    (g : β → Matrix m n α) :
     (∑ c ∈ s, g c) i j = ∑ c ∈ s, g c i j :=
-  (congr_fun (s.sum_apply i g) j).trans (s.sum_apply j _)
+  congr($(s.sum_apply i g) j).trans (s.sum_apply j _)
+
+@[simp]
+theorem row_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).row = ∑ i ∈ s, (M i).row :=
+  rfl
+
+@[simp]
+theorem col_sum [AddCommMonoid α] (s : Finset β) (M : β → Matrix m n α) :
+    (∑ i ∈ s, M i).col = ∑ i ∈ s, (M i).col := by
+  ext
+  simp
 
 end Matrix
 
@@ -183,6 +194,10 @@ theorem diagonal_pow [Fintype n] [DecidableEq n] (v : n → α) (k : ℕ) :
 
 /-- The ring homomorphism `α →+* Matrix n n α`
 sending `a` to the diagonal matrix with `a` on the diagonal.
+
+This is available in bundled forms as:
+* `Matrix.scalarAlgHom`
+* `Matrix.GeneralLinearGroup.scalar`
 -/
 def scalar (n : Type u) [DecidableEq n] [Fintype n] : α →+* Matrix n n α :=
   (diagonalRingHom n α).comp <| Pi.constRingHom n α
@@ -270,7 +285,9 @@ section AddHom
 variable [Add α]
 
 variable (R α) in
-/-- Extracting entries from a matrix as an additive homomorphism. -/
+/-- Extracting entries from a matrix as an additive homomorphism.
+
+See also `Matrix.entryAddMonoidHom` and `Matrix.entryLinearMap`. -/
 @[simps]
 def entryAddHom (i : m) (j : n) : AddHom (Matrix m n α) α where
   toFun M := M i j
@@ -294,6 +311,8 @@ variable (R α) in
 /--
 Extracting entries from a matrix as an additive monoid homomorphism. Note this cannot be upgraded to
 a ring homomorphism, as it does not respect multiplication.
+
+See also `Matrix.entryAddHom` and `Matrix.entryLinearMap`.
 -/
 @[simps]
 def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
@@ -306,7 +325,7 @@ def entryAddMonoidHom (i : m) (j : n) : Matrix m n α →+ α where
 lemma entryAddMonoidHom_eq_comp {i : m} {j : n} :
     entryAddMonoidHom α i j =
       ((Pi.evalAddMonoidHom (fun _ => α) j).comp (Pi.evalAddMonoidHom _ i)).comp
-        (AddMonoidHomClass.toAddMonoidHom ofAddEquiv.symm) := by
+        (AddMonoidHom.ofClass ofAddEquiv.symm) := by
   rfl
 
 @[simp] lemma evalAddMonoidHom_comp_diagAddMonoidHom (i : m) :
@@ -326,10 +345,11 @@ variable (R α) in
 /--
 Extracting entries from a matrix as a linear map. Note this cannot be upgraded to an algebra
 homomorphism, as it does not respect multiplication.
+
+See also `Matrix.entryAddHom` and `Matrix.entryAddMonoidHom`.
 -/
 @[simps]
-def entryLinearMap (i : m) (j : n) :
-    Matrix m n α →ₗ[R] α where
+def entryLinearMap (i : m) (j : n) : Matrix m n α →ₗ[R] α where
   toFun M := M i j
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -647,7 +667,7 @@ given that its multiplication is commutative. -/
 def mopMatrix {α} [Mul α] [AddCommMonoid α] : Matrix m m αᵐᵒᵖ ≃+* (Matrix m m α)ᵐᵒᵖ where
   toFun M := op (M.transpose.map unop)
   invFun M := M.unop.transpose.map op
-  map_mul' _ _ := unop_injective <| by ext; simp [mul_apply]
+  map_mul' _ _ := unop_injective <| by ext; simp [Matrix.mul_apply]
   map_add' _ _ := rfl
 
 end RingEquiv
@@ -661,7 +681,7 @@ theorem MulOpposite.isStablyFiniteRing_iff (α) [MulOne α] [AddCommMonoid α] :
     IsStablyFiniteRing αᵐᵒᵖ ↔ IsStablyFiniteRing α where
   mp _ :=
   ⟨fun n ↦ let f := MonoidHom.mk ⟨fun M : Matrix (Fin n) (Fin n) α ↦ M.map (op ∘ op), by aesop⟩
-               fun _ _ ↦ by ext; simp [mul_apply]
+               fun _ _ ↦ by ext; simp [Matrix.mul_apply]
   .of_injective f (map_injective (op_injective.comp op_injective))⟩
   mpr _ := inferInstance
 
@@ -813,7 +833,14 @@ section Pi
 
 variable {ι : Type*} {β : ι → Type*}
 
-/-- Matrices over a Pi type are in canonical bijection with tuples of matrices. -/
+/-- Matrices over a Pi type are in canonical bijection with tuples of matrices.
+
+This is available in bundled forms as:
+* `Matrix.piAddEquiv`
+* `Matrix.piLinearEquiv`
+* `Matrix.piRingEquiv`
+* `Matrix.piAlgEquiv`
+-/
 @[simps] def piEquiv : Matrix m n (Π i, β i) ≃ Π i, Matrix m n (β i) where
   toFun f i := f.map (· i)
   invFun f := .of fun j k i ↦ f i j k
@@ -930,13 +957,85 @@ def transposeAlgEquiv [CommSemiring R] [CommSemiring α] [Fintype m] [DecidableE
 
 end Transpose
 
+section RowCol
+
+variable (m n R α)
+
+/-- `Matrix.row` as an `AddEquiv` -/
+def rowAddEquiv [Add α] : Matrix m n α ≃+ (m → n → α) where
+  __ := rowEquiv m n α
+  map_add' := row_add
+
+/-- `Matrix.col` as an `AddEquiv` -/
+def colAddEquiv [Add α] : Matrix m n α ≃+ (n → m → α) where
+  __ := colEquiv m n α
+  map_add' := col_add
+
+@[simp]
+theorem coe_rowAddEquiv [Add α] : ⇑(rowAddEquiv m n α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colAddEquiv [Add α] : ⇑(colAddEquiv m n α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowAddEquiv [Add α] : rowAddEquiv m n α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colAddEquiv [Add α] : colAddEquiv m n α = colEquiv m n α :=
+  rfl
+
+/-- `Matrix.row` as a `LinearMap` -/
+def rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] m → n → α where
+  __ := rowAddEquiv m n α
+  map_smul' := row_smul
+
+/-- `Matrix.col` as a `LinearMap` -/
+def colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] : Matrix m n α ≃ₗ[R] n → m → α where
+  __ := colAddEquiv m n α
+  map_smul' := col_smul
+
+@[simp]
+theorem coe_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(rowLinearEquiv m n R α) = row :=
+  rfl
+
+@[simp]
+theorem coe_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    ⇑(colLinearEquiv m n R α) = col :=
+  rfl
+
+@[simp]
+theorem toEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_rowLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    rowLinearEquiv m n R α = rowAddEquiv m n α :=
+  rfl
+
+@[simp]
+theorem toAddEquiv_colLinearEquiv [Semiring R] [AddCommMonoid α] [Module R α] :
+    colLinearEquiv m n R α = colAddEquiv m n α :=
+  rfl
+
+end RowCol
+
 section NonUnitalNonAssocSemiring
 variable {ι : Type*} [NonUnitalNonAssocSemiring α] [Fintype n]
 
 theorem sum_mulVec (s : Finset ι) (x : ι → Matrix m n α) (y : n → α) :
     (∑ i ∈ s, x i) *ᵥ y = ∑ i ∈ s, x i *ᵥ y := by
   ext
-  simp only [mulVec, dotProduct, sum_apply, Finset.sum_mul, Finset.sum_apply]
+  simp only [mulVec, dotProduct, Matrix.sum_apply, Finset.sum_mul, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 theorem mulVec_sum (x : Matrix m n α) (s : Finset ι) (y : ι → (n → α)) :
@@ -952,7 +1051,7 @@ theorem sum_vecMul (s : Finset ι) (x : ι → (n → α)) (y : Matrix n m α) :
 theorem vecMul_sum (x : n → α) (s : Finset ι) (y : ι → Matrix n m α) :
     x ᵥ* (∑ i ∈ s, y i) = ∑ i ∈ s, x ᵥ* y i := by
   ext
-  simp only [vecMul, dotProduct, sum_apply, Finset.mul_sum, Finset.sum_apply]
+  simp only [vecMul, dotProduct, Matrix.sum_apply, Finset.mul_sum, Finset.sum_apply]
   rw [Finset.sum_comm]
 
 end NonUnitalNonAssocSemiring

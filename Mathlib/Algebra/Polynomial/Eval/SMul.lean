@@ -5,8 +5,9 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-public import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Defs
+
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # Evaluating polynomials and scalar multiplication
@@ -29,7 +30,7 @@ namespace Polynomial
 
 universe u v w y
 
-variable {R : Type u} {S : Type v} {T : Type w} {ι : Type y} {a b : R} {m n : ℕ}
+variable {R : Type u} {S : Type v}
 
 section Semiring
 
@@ -38,7 +39,7 @@ variable [Semiring R] {p q r : R[X]}
 section
 
 variable [Semiring S]
-variable (f : R →+* S) (x : S)
+variable (x : S)
 
 @[simp]
 theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :

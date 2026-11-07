@@ -5,16 +5,14 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.CStarAlgebra.ContinuousMap
 public import Mathlib.Analysis.CStarAlgebra.Fuglede
-public import Mathlib.Analysis.Normed.Group.Quotient
+public import Mathlib.Analysis.CStarAlgebra.Spectrum
 public import Mathlib.Analysis.Normed.Algebra.Basic
-public import Mathlib.Topology.ContinuousMap.Units
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Topology.Algebra.Algebra
 public import Mathlib.Topology.ContinuousMap.Ideals
-public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
+public import Mathlib.Topology.ContinuousMap.Units
+
+import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-!
 # Gelfand Duality
@@ -148,12 +146,11 @@ theorem gelfandTransform_isometry : Isometry (gelfandTransform ℂ A) := by
     self-adjoint, so also do their norms. Applying the C⋆-property of the norm and taking square
     roots shows that the norm is preserved. -/
   have : spectralRadius ℂ (gelfandTransform ℂ A (star a * a)) = spectralRadius ℂ (star a * a) := by
-    unfold spectralRadius; rw [spectrum.gelfandTransform_eq]
-  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, gelfandTransform_map_star,
-    (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnnorm] at this
-  simp only [ENNReal.coe_inj, CStarRing.nnnorm_star_mul_self, ← sq] at this
-  simpa only [Function.comp_apply, NNReal.sqrt_sq] using!
-    congr_arg (((↑) : ℝ≥0 → ℝ) ∘ ⇑NNReal.sqrt) this
+    simp only [spectralRadius_eq_of_unital, spectrum.gelfandTransform_eq]
+  rw [map_mul, (IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, gelfandTransform_map_star,
+    (IsSelfAdjoint.star_mul_self (gelfandTransform ℂ A a)).spectralRadius_eq_nnNorm] at this
+  simp only [ENNReal.coe_inj, CStarRing.nnNorm_star_mul_self, ← sq] at this
+  simpa only [NNReal.sqrt_sq] using! congr((NNReal.sqrt $this : ℝ))
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The Gelfand transform is bijective when the algebra is a C⋆-algebra over `ℂ`. -/
@@ -210,24 +207,30 @@ lemma norm_add_eq_max (h : a * b = 0) : ‖a + b‖ = max ‖a‖ ‖b‖ := by
   simp_rw [← hf.norm_map_of_map_zero (by simp [f]), show f (a + b) = f a + f b by simp [f]]
   exact ContinuousMap.norm_add_eq_max <| by simpa [f] using congr(f $h)
 
-lemma nnnorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+lemma nnNorm_add_eq_max (h : a * b = 0) : ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| norm_add_eq_max h
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 lemma norm_sub_eq_max (h : a * b = 0) : ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using norm_add_eq_max (a := a) (b := -b) (by simpa)
 
-lemma nnnorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
+lemma nnNorm_sub_eq_max (h : a * b = 0) : ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| norm_sub_eq_max h
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+
 open scoped Function in
-lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
+lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
   induction s using Finset.induction with
   | empty => simp
   | insert j s hj ih =>
-    suffices f j * ∑ i ∈ s, f i = 0 by simp_all [nnnorm_add_eq_max this]
+    suffices f j * ∑ i ∈ s, f i = 0 by simp_all [nnNorm_add_eq_max this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end CommCStarAlgebra
 
@@ -246,18 +249,17 @@ lemma norm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   commutative, and the conclusion follows from the corresponding result for
   commutative C⋆-algebras. -/
   let S : NonUnitalStarSubalgebra ℂ A := (adjoin ℂ {a, b}).topologicalClosure
-  have hS : IsClosed (S : Set A) := (adjoin ℂ {a, b}).isClosed_topologicalClosure
-  have hcomm₁ := ha.commute_star_left hcomm
-  have hcomm₂ := hb.commute_star_right hcomm
-  have : IsMulCommutative (adjoin ℂ {a, b}) :=
-    isMulCommutative_adjoin ℂ (by grind) (by grind [commute_star_comm])
+  have := (adjoin ℂ {a, b}).isClosed_topologicalClosure
+  have := CStarAlgebra.isMulCommutative_nonUnital_adjoin_pair hcomm ha hb
   refine CommCStarAlgebra.norm_add_eq_max (A := S) (a := ⟨a, ?_⟩) (b := ⟨b, ?_⟩) (by ext; simpa)
   all_goals apply le_topologicalClosure; aesop
 
-lemma nnnorm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
+lemma nnNorm_add_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_add_eq_max hb hcomm hab
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 lemma norm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
@@ -265,10 +267,12 @@ lemma norm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
   simpa [sub_eq_add_neg] using
     ha.norm_add_eq_max hb.neg hcomm.neg_right (by simpa)
 
-lemma nnnorm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
+lemma nnNorm_sub_eq_max (ha : IsStarNormal a) (hb : IsStarNormal b)
     (hcomm : Commute a b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_sub_eq_max hb hcomm hab
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
 
 end IsStarNormal
 
@@ -279,20 +283,24 @@ lemma norm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b
     ‖a + b‖ = max ‖a‖ ‖b‖ :=
   ha.isStarNormal.norm_add_eq_max hb.isStarNormal (by grind [commute_of_mul_eq_zero]) hab
 
-lemma nnnorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+lemma nnNorm_add_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a + b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_add_eq_max hb hab
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_add_eq_max := nnNorm_add_eq_max
 
 lemma norm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖ = max ‖a‖ ‖b‖ := by
   simpa [sub_eq_add_neg] using ha.norm_add_eq_max hb.neg (by simpa)
 
-lemma nnnorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
+lemma nnNorm_sub_eq_max (ha : IsSelfAdjoint a) (hb : IsSelfAdjoint b) (hab : a * b = 0) :
     ‖a - b‖₊ = max ‖a‖₊ ‖b‖₊ :=
   NNReal.eq <| ha.norm_sub_eq_max hb hab
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_sub_eq_max := nnNorm_sub_eq_max
+
 open scoped Function in
-lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
+lemma nnNorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
     (h : ∀ i ∈ s, IsSelfAdjoint (f i)) (h0 : Pairwise ((· * · = 0) on f)) :
     ‖∑ i ∈ s, f i‖₊ = s.sup (‖f ·‖₊) := by
   classical
@@ -300,8 +308,10 @@ lemma nnnorm_sum_eq_sup {ι : Type*} {f : ι → A} (s : Finset ι)
   | empty => simp
   | insert j s hj ih =>
     suffices f j * ∑ i ∈ s, f i = 0 by
-      simp_all [(h j (by simp)).nnnorm_add_eq_max (by cfc_tac) this]
+      simp_all [(h j (by simp)).nnNorm_add_eq_max (by cfc_tac) this]
     simpa [Finset.mul_sum] using Finset.sum_eq_zero fun i hi ↦ h0 (by grind)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_sum_eq_sup := nnNorm_sum_eq_sup
 
 end IsSelfAdjoint
 
@@ -375,8 +385,8 @@ B  --- η B ---> C(characterSpace ℂ B, ℂ)
 -/
 theorem gelfandStarTransform_naturality {A B : Type*} [CommCStarAlgebra A] [CommCStarAlgebra B]
     (φ : A →⋆ₐ[ℂ] B) :
-    (gelfandStarTransform B : _ →⋆ₐ[ℂ] _).comp φ =
-      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A : _ →⋆ₐ[ℂ] _) := by
+    (gelfandStarTransform B).toStarAlgHom.comp φ =
+      (compContinuousMap φ |>.compStarAlgHom' ℂ ℂ).comp (gelfandStarTransform A).toStarAlgHom := by
   rfl
 
 /--

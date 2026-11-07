@@ -44,7 +44,6 @@ namespace TStructure
 
 variable (t : TStructure C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a t-structure `t` on a triangulated category `C`, this is the functor
 `ComposableArrows EInt 1 ⥤ C ⥤ C` which sends an arrows `a ⟶ b` in `EInt`
 to the functor `t.eTruncLT.obj b ⋙ t.eTruncGE.obj a`. -/
@@ -137,8 +136,8 @@ noncomputable def spectralObject (X : C) : SpectralObject C EInt where
   δ'.naturality {D D'} φ := by
     obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
     obtain ⟨a', b', c', f', g', rfl⟩ := mk₂_surjective D'
-    exact NatTrans.congr_app (t.ω₁δ_naturality a b c (leOfHom f) (leOfHom g)
-      a' b' c' (leOfHom f') (leOfHom g') φ) X
+    congrm $(t.ω₁δ_naturality a b c (leOfHom f) (leOfHom g)
+     a' b' c' (leOfHom f') (leOfHom g') φ).app X
   distinguished' D := by
     obtain ⟨a, b, c, f, g, rfl⟩ := mk₂_surjective D
     exact t.triangleω₁δ_distinguished a b c (leOfHom f) (leOfHom g) X

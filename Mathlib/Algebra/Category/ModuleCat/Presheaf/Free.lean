@@ -5,8 +5,8 @@ Authors: Johan Commelin, Joel Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 public import Mathlib.Algebra.Category.ModuleCat.Adjunctions
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf
 
 /-!
 # The free presheaf of modules on a presheaf of sets

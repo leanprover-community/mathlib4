@@ -16,7 +16,7 @@ public import Mathlib.Geometry.Manifold.IntegralCurve.ExistUnique
   integral curve at each point `x : M` is defined at least on an open interval `Ioo (-ε) ε`, then
   every point on `M` has a global integral curve passing through it.
 
-## Reference
+## References
 
 * [Lee, J. M. (2012). _Introduction to Smooth Manifolds_. Springer New York.][lee2012]
 
@@ -29,21 +29,25 @@ public section
 
 open scoped Topology
 
-open Function Manifold Set
+open Function Set
+
+open scoped Manifold
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M]
-  [T2Space M] {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s s' : Set ℝ} {t₀ : ℝ}
+  [T2Space M] {γ γ' : ℝ → M} {v : (x : M) → TangentSpace I x} {s : Set ℝ} {t₀ : ℝ}
 
 /-- This is the uniqueness theorem of integral curves applied to a real-indexed family of integral
 curves with the same starting point. -/
 lemma eqOn_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
     (hv : CMDiff 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) {x : M}
     (γ : ℝ → ℝ → M) (hγx : ∀ a, γ a 0 = x) (hγ : ∀ a > 0, IsMIntegralCurveOn (γ a) v (Ioo (-a) a))
-    {a a' : ℝ} (hpos : 0 < a') (hle : a' ≤ a) :
+    {a a' : ℝ} (hle : a' ≤ a) :
     EqOn (γ a') (γ a) (Ioo (-a') a') := by
+  rcases le_or_gt a' 0 with ha' | hpos
+  · simp [Ioo_eq_empty_of_le (by linarith : a' ≤ -a')]
   apply isMIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless _ hv
     (hγ a' (by positivity)) ((hγ a (lt_of_lt_of_le hpos hle)).mono _)
     (by rw [hγx a, hγx a'])
@@ -61,9 +65,8 @@ lemma eqOn_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifold I M]
   intro t ht
   by_cases! hlt : |t| + 1 < a
   · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (by positivity) hlt.le (abs_lt.mp <| lt_add_one _)
-  · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ
-      (neg_lt_self_iff.mp <| lt_trans ht.1 ht.2) hlt ht |>.symm
+      hlt.le (abs_lt.mp <| lt_add_one _)
+  · exact eqOn_of_isMIntegralCurveOn_Ioo hv γ hγx hγ hlt ht |>.symm
 
 /-- For a family of integral curves `γ : ℝ → ℝ → M` with the same starting point `γ 0 = x` such that
 each `γ a` is defined on `Ioo (-a) a`, the function `γ_ext := fun t ↦ γ (|t| + 1) t` is a global
@@ -76,7 +79,10 @@ lemma isMIntegralCurve_abs_add_one_of_isMIntegralCurveOn_Ioo [BoundarylessManifo
   have ht : t ∈ Ioo (-(|t| + 1)) (|t| + 1) := by
     rw [mem_Ioo, ← abs_lt]
     exact lt_add_one _
-  apply HasMFDerivAt.congr_of_eventuallyEq (f := γ (|t| + 1))
+  /- TODO: to fix the defeq abuse, the correct fix is probably to introduce `vmfderiv` as
+  the derivative from a vector space to a manifold, and use it in the definition of
+  `IsMIntegralCurveOn` and friends. -/
+  apply HasMFDerivAt.congr_of_eventuallyEq_abuse (f := γ (|t| + 1))
   · exact hγ (|t| + 1) (by positivity) _ ht |>.hasMFDerivAt (Ioo_mem_nhds ht.1 ht.2)
   · rw [Filter.eventuallyEq_iff_exists_mem]
     refine ⟨Ioo (-(|t| + 1)) (|t| + 1), ?_,

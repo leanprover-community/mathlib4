@@ -124,7 +124,7 @@ the induced pseudofunctor which sends `X : B` to the full subcategory of `F.obj 
 consisting of objects satisfying `P`. -/
 @[simps]
 def fullsubcategory : Pseudofunctor B Cat where
-  obj X := Cat.of (P.Obj X)
+  obj X := ↧(P.Obj X)
   map f := Cat.Hom.ofFunctor (P.map f)
   map₂ α := Cat.Hom₂.ofNatTrans (P.map₂ α)
   mapId X := Cat.Hom.isoMk (P.mapId X)
