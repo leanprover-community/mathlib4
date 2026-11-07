@@ -178,8 +178,10 @@ lemma map_prod_map {ε} {mε : MeasurableSpace ε} (κ : Kernel α β) [IsSFinit
   rw [map_apply _ (hf.prodMap hg), prod_apply κ, ← Measure.map_prod_map _ _ hf hg, prod_apply,
     map_apply _ hf, map_apply _ hg]
 
-lemma map_prod_eq (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
+lemma map_prod_eq (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ)
     {f : β → δ} (hf : Measurable f) : (κ.map f) ×ₖ η = (κ ×ₖ η).map (Prod.map f id) := by
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
   rw [← map_prod_map _ _ hf measurable_id, map_id]
 
 lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
@@ -195,8 +197,12 @@ lemma comap_prod_swap (κ : Kernel α β) (η : Kernel γ δ) [IsSFiniteKernel �
   refine (lintegral_lintegral_swap ?_).symm
   fun_prop
 
-lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) :
     map (κ ×ₖ η) Prod.swap = η ×ₖ κ := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
   rw [ext_fun_iff]
   intro x f hf
   rw [lintegral_map _ measurable_swap _ hf, lintegral_prod, lintegral_prod _ _ _ hf]
@@ -204,12 +210,12 @@ lemma map_prod_swap (κ : Kernel α β) (η : Kernel α γ) [IsSFiniteKernel κ]
   refine (lintegral_lintegral_swap ?_).symm
   fun_prop
 
-lemma prodComm_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [IsSFiniteKernel η] :
+lemma prodComm_prod {κ : Kernel α β} {η : Kernel α γ} :
     (κ ×ₖ η).map MeasurableEquiv.prodComm = η ×ₖ κ :=
   map_prod_swap κ η
 
 @[simp]
-lemma swap_prod {κ : Kernel α β} [IsSFiniteKernel κ] {η : Kernel α γ} [IsSFiniteKernel η] :
+lemma swap_prod {κ : Kernel α β} {η : Kernel α γ} :
     (swap β γ) ∘ₖ (κ ×ₖ η) = (η ×ₖ κ) := by
   rw [swap_comp_eq_map, map_prod_swap]
 
@@ -224,15 +230,19 @@ lemma id_prod_eq : @Kernel.id (α × β) inferInstance =
   rw [deterministic_prod_deterministic]
   rfl
 
-lemma prodAssoc_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
-    (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
+lemma prodAssoc_prod (κ : Kernel α β) (η : Kernel α γ) (ξ : Kernel α δ) :
     ((κ ×ₖ ξ) ×ₖ η).map MeasurableEquiv.prodAssoc = κ ×ₖ (ξ ×ₖ η) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  by_cases hη : IsSFiniteKernel η
+  swap; · simp [hη]
+  by_cases hξ : IsSFiniteKernel ξ
+  swap; · simp [hξ]
   ext1 a
   rw [map_apply _ (by fun_prop), prod_apply, prod_apply, Measure.prodAssoc_prod, prod_apply,
     prod_apply]
 
-lemma prodAssoc_symm_prod (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]
-    (ξ : Kernel α δ) [IsSFiniteKernel ξ] :
+lemma prodAssoc_symm_prod (κ : Kernel α β) (η : Kernel α γ) (ξ : Kernel α δ) :
     (κ ×ₖ (ξ ×ₖ η)).map MeasurableEquiv.prodAssoc.symm = (κ ×ₖ ξ) ×ₖ η := by
   rw [← prodAssoc_prod, ← Kernel.map_comp_right _ (by fun_prop) (by fun_prop)]
   simp
