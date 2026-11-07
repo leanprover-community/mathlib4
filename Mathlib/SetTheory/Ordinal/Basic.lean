@@ -143,12 +143,15 @@ theorem _root_.OrderIso.ordinalType_congr {α β} [LinearOrder α] [LinearOrder 
     [WellFoundedLT α] [WellFoundedLT β] (h : α ≃o β) : typeLT α = typeLT β :=
   h.toRelIsoLT.ordinalType_congr
 
-theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
+theorem type_of_isEmpty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinalType_congr
+
+@[deprecated (since := "2026-11-26")]
+alias type_eq_zero_of_empty := type_of_isEmpty
 
 @[simp]
 theorem type_eq_zero_iff_isEmpty [IsWellOrder α r] : type r = 0 ↔ IsEmpty α := by
-  refine ⟨fun h ↦ ?_, fun _ ↦ type_eq_zero_of_empty r⟩
+  refine ⟨fun h ↦ ?_, fun _ ↦ type_of_isEmpty r⟩
   let ⟨s⟩ := type_eq.1 h
   exact s.toEquiv.isEmpty
 
@@ -161,7 +164,7 @@ theorem type_pEmpty : type (@emptyRelation PEmpty) = 0 :=
   rfl
 
 theorem type_empty : type (@emptyRelation Empty) = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
@@ -726,7 +729,7 @@ theorem lift_lift (a : Ordinal.{u}) : lift.{w} (lift.{v} a) = lift.{max v w} a :
 
 @[simp]
 theorem lift_zero : lift 0 = 0 :=
-  type_eq_zero_of_empty _
+  type_of_isEmpty _
 
 @[simp]
 theorem lift_one : lift 1 = 1 :=
