@@ -224,7 +224,7 @@ lemma comap_equiv_eq_map_symm (I : LieIdeal R L') : comap e.toLieHom I = map e.s
   symm; simpa using map_equiv_eq_comap_symm e.symm I
 
 variable {e I} in
-@[simp high]
+@[simp]
 lemma mem_map_equiv {x} : x ∈ map e I ↔ e.symm x ∈ I := by
   simp [map_equiv_eq_comap_symm]
 
