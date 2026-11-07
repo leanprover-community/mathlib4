@@ -249,4 +249,57 @@ theorem tendsto_inversion_nhdsNE_center_cobounded {c : P} {R : ℝ} (hR : R ≠ 
     exact hdist.inv_tendsto_nhdsGT_zero.const_mul_atTop <| by rwa [sq_pos_iff]
   simpa using hratio
 
+/-- Inversion with nonzero radius is discontinuous at a nonisolated center. -/
+theorem not_continuousAt_inversion_center_of_neBot {c : P} {R : ℝ}
+    [Filter.NeBot (𝓝[≠] c)]
+    (hR : R ≠ 0) : ¬ ContinuousAt (inversion c R) c :=
+  not_continuousAt_of_tendsto (tendsto_inversion_nhdsNE_center_cobounded hR)
+    nhdsWithin_le_nhds (Metric.disjoint_nhds_cobounded _)
+
+/-- Inversion is continuous exactly away from its nonisolated center or at zero radius. -/
+theorem continuousAt_inversion_iff {c x : P} {R : ℝ} [Filter.NeBot (𝓝[≠] c)] :
+    ContinuousAt (inversion c R) x ↔ x ≠ c ∨ R = 0 := by
+  constructor
+  · intro h
+    by_cases hx : x = c
+    · subst x
+      exact Or.inr <| by
+        by_contra hR
+        exact not_continuousAt_inversion_center_of_neBot hR h
+    · exact Or.inl hx
+  · rintro (hx | rfl)
+    · exact continuousAt_const.inversion continuousAt_const continuousAt_id hx
+    · have hzero : inversion c (0 : ℝ) = fun _ ↦ c := funext (inversion_zero_radius c)
+      simpa only [hzero] using (continuousAt_const : ContinuousAt (fun _ : P ↦ c) x)
+
+/-- Inversion tends to its center as the original point tends to infinity. -/
+theorem tendsto_inversion_cobounded_nhds_center (c : P) (R : ℝ) :
+    Filter.Tendsto (inversion c R) (Bornology.cobounded P) (𝓝 c) := by
+  rw [tendsto_iff_dist_tendsto_zero]
+  simp_rw [dist_inversion_center, div_eq_mul_inv]
+  simpa using (tendsto_dist_right_cobounded_atTop c).inv_tendsto_atTop.const_mul (R ^ 2)
+
+/-- At nonzero radius, inversion tends to the punctured neighborhood of its center at infinity. -/
+theorem tendsto_inversion_cobounded_nhdsNE_center {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Filter.Tendsto (inversion c R) (Bornology.cobounded P) (𝓝[≠] c) := by
+  refine tendsto_nhdsWithin_iff.2 ⟨tendsto_inversion_cobounded_nhds_center c R, ?_⟩
+  filter_upwards [Bornology.eventually_ne_cobounded c] with x hx
+  simpa only [mem_compl_iff, mem_singleton_iff, inversion_eq_center hR] using hx
+
+/-- Inversion with nonzero radius sends the cobounded filter exactly to the punctured neighborhood
+filter of its center. -/
+theorem map_inversion_cobounded {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Filter.map (inversion c R) (Bornology.cobounded P) = 𝓝[≠] c := by
+  refine le_antisymm (tendsto_inversion_cobounded_nhdsNE_center hR) ?_
+  have h := Filter.map_mono (m := inversion c R)
+    (tendsto_inversion_nhdsNE_center_cobounded (c := c) hR)
+  simpa only [Filter.map_map, (inversion_involutive c hR).comp_self, Filter.map_id] using h
+
+/-- Inversion with nonzero radius sends the punctured neighborhood filter of its center exactly
+to the cobounded filter. -/
+theorem map_inversion_nhdsNE_center {c : P} {R : ℝ} (hR : R ≠ 0) :
+    Filter.map (inversion c R) (𝓝[≠] c) = Bornology.cobounded P := by
+  rw [← map_inversion_cobounded hR, Filter.map_map,
+    (inversion_involutive c hR).comp_self, Filter.map_id]
+
 end EuclideanGeometry
