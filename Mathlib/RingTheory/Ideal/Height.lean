@@ -319,6 +319,16 @@ lemma RingEquiv.height_map {S : Type*} [CommRing S] (e : R ≃+* S) (I : Ideal R
     (I.map e).height = I.height := by
   rw [← Ideal.comap_symm e, height_comap]
 
+theorem RingHom.height_le_height_comap_of_surjective {S : Type*} [CommRing S] {f : R →+* S}
+    (hf : Function.Surjective f) (J : Ideal S) :
+    J.height ≤ (Ideal.comap f J).height := by
+  rw [height_eq_inf_minimalPrimes, height_eq_inf_minimalPrimes]
+  refine le_iInf₂ fun I hI ↦ ?_
+  obtain ⟨K, hK, rfl⟩ := exists_minimalPrimes_comap_eq f I hI
+  grw [iInf₂_le K hK]
+  simpa [← PrimeSpectrum.height_eq_orderHeight] using
+    Order.height_le_height_apply_of_strictMono _ (f.strictMono_comap_of_surjective hf) ⟨K, hK.1.1⟩
+
 /-- `dim R ≤ n` if and only if the height of all prime ideals is less than `n`. -/
 lemma ringKrullDim_le_iff_height_le {R : Type*} [CommRing R] (n : WithBot ℕ∞) :
     ringKrullDim R ≤ n ↔ ∀ ⦃p : Ideal R⦄, p.IsPrime → p.height ≤ n := by
