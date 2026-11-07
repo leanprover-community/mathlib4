@@ -279,7 +279,7 @@ theorem map_subtype_submoduleOf (p q : Submodule R M) :
 
 /-- `p` as a submodule of `q` is isomorphic to `q ⊓ p`. -/
 def submoduleOfEquivInf (p q : Submodule R M) : p.submoduleOf q ≃ₗ[R] (q ⊓ p :) where
-  toFun m := ⟨m.1, coe_mem m.1, m.2⟩
+  toFun m := ⟨m.1, m.1.2, m.2⟩
   invFun m := ⟨⟨m.1, m.2.1⟩, m.2.2⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
