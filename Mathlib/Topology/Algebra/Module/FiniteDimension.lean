@@ -512,7 +512,7 @@ variable (R E) in
 theorem Module.Finite.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
     [Module.Finite R E] [Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
   obtain ⟨_, f, g, -, -, hfg⟩ := Finite.exists_comp_eq_id_of_projective R E
-  apply CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
+  exact CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
     (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
 
 theorem Submodule.isComplete_of_finite_of_isModuleTopology
@@ -540,7 +540,7 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
 
 include 𝕜 in
 theorem FiniteDimensional.completeSpace [FiniteDimensional 𝕜 E] : CompleteSpace E :=
-  let : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
+  have : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
   Finite.completeSpace_of_isModuleTopology 𝕜 E
 
 @[deprecated (since := "2026-10-29")]
@@ -551,7 +551,7 @@ variable {𝕜 E}
 /-- A finite-dimensional subspace is complete. -/
 theorem Submodule.isComplete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  let : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
+  have : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
   s.isComplete_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
@@ -569,7 +569,7 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
 theorem Submodule.isClosed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  let : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
+  have : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
   s.isClosed_of_finite_of_isModuleTopology
 
 @[deprecated (since := "2026-10-29")]
