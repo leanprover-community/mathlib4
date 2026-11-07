@@ -330,6 +330,14 @@ variable {𝕜 B F₁ F₂ F₃ M : Type*} [NontriviallyNormedField 𝕜] {n : W
   [FiberBundle F₃ E₃] [VectorBundle 𝕜 F₃ E₃]
   {b : M → B} {v : ∀ x, E₁ (b x)} {s : Set M} {x : M}
 
+/-
+Results about continunous differentiability of sections of the Hom bundle `E₁ → E₂`:
+if `φ` is a `C^n` family of linear maps in each fiber, applying `φ` to a `C^n` section yields
+a `C^n` section. Conversely, `φ` is `C^n` if applying `φ` to *every* `C^n` section yields a `C^n`
+section. We also include a version allowing for the loss of derivatives.
+We apply this to prove a criterion for sections constructed using the tensoriality criterion
+to be `C^n`.
+-/
 section OneVariable
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
@@ -558,7 +566,6 @@ lemma ContMDiff.clm_bundle_of_apply {k}
     ContMDiff IB (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) k (fun x ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂) x (φ x)) :=
   fun x ↦ ContMDiffAt.clm_bundle_of_apply fun σ ↦ h σ x
 
-
 -- Note: In the next lemma, the assumption `∀ᶠ b in 𝓝 x, CMDiffWithinAt k (T% σ) b` is almost
 -- equivalent to `CMDiffWithinAt k (T% σ) x` but not quite: it is stronger if `k = ∞`.
 omit [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
@@ -676,6 +683,15 @@ theorem TensorialAt.contMDiff_mkHom
 
 end OneVariable
 
+/-
+Results about differentiability of sections of the Hom bundle `E₁ → E₂`:
+if `φ` is a differentiable family of linear maps in each fiber, applying `φ` to a differentiable
+section yields a differentiable section. Conversely, `φ` is differentiable if applying `φ` to
+*every* differentiable section yields a differentiable section.
+We also include a version allowing for the loss of derivatives.
+We apply this to prove a criterion for sections constructed using the tensoriality criterion
+to be differentiable.
+-/
 section OneVariable'
 
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
