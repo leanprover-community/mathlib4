@@ -372,7 +372,8 @@ lemma ContMDiffWithinAt.clm_bundle_apply_trivial_target {ψ : ∀ x, (E₁ (b x)
     (hv : CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ (b m) (v m)) x) :
     CMDiffAt[s] n (fun m ↦ ψ m (v m)) x := by
   have aux := hψ.clm_bundle_apply (E₂ := Bundle.Trivial B F₂) (F₂ := F₂) hv
-  -- TODO: generalise `contMDiffWithinAt_section` to pullback bundles, then golf this proof!
+  -- NB. We don't use `contMDiffWithinAt_section_iff'` as that would require b being C^n:
+  -- in the case of the trivial target bundle, that's a superfluous hypothesis.
   simp_rw [contMDiffWithinAt_totalSpace_iff,
     Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply] at aux
   exact aux.2
