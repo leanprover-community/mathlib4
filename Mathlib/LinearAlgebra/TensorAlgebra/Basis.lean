@@ -5,8 +5,8 @@ Authors: Eric Wieser
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 public import Mathlib.LinearAlgebra.FreeAlgebra
+public import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 
 /-!
 # A basis for `TensorAlgebra R M`
@@ -61,7 +61,7 @@ lemma equivFreeAlgebra_symm_ι (b : Basis κ R M) (i : κ) :
 @[simps! repr_apply]
 noncomputable def _root_.Module.Basis.tensorAlgebra (b : Basis κ R M) :
     Basis (FreeMonoid κ) R (TensorAlgebra R M) :=
-  (FreeAlgebra.basisFreeMonoid R κ).map <| (equivFreeAlgebra b).symm.toLinearEquiv
+  (FreeAlgebra.basisFreeMonoid R κ).map (equivFreeAlgebra b).symm.toLinearEquiv
 
 /-- `TensorAlgebra R M` is free when `M` is. -/
 instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=

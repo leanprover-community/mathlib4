@@ -26,7 +26,7 @@ open scoped nonZeroDivisors TensorProduct
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 variable (I : Ideal R) [I.IsPrime] (J : Ideal R[X]) [J.IsPrime] [J.LiesOver I]
   [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
-  [Localization.AtPrime.IsLiesOverAlgebra I J]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
 
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -41,7 +41,8 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
         RingHom.ker_comp_of_injective, C_injective,
         FaithfulSMul.algebraMap_injective I.ResidueField[X] (RatFunc I.ResidueField)]
     · rintro x (hx : x ∉ J)
-      suffices ∃ i, x.coeff i ∉ I by simpa [IsUnit.mem_submonoid_iff, Polynomial.ext_iff]
+      suffices ∃ i, x.coeff i ∉ I by
+        simpa [IsUnit.mem_submonoid_iff, AddMonoidAlgebra.ext_iff, Finsupp.ext_iff]
       contrapose! hx
       rwa [hJ, Ideal.mem_map_C_iff]
   haveI hf : f.comp (algebraMap I.ResidueField _) = algebraMap _ _ := by
@@ -67,15 +68,15 @@ def residueFieldMapCAlgEquiv (hJ : J = I.map C) :
     simp only [← algebraMap_eq, ← Algebra.smul_def]
     rw [algebraMap_smul]
     simp only [← hr]
-    simpa [Polynomial.ext_iff, Ideal.mem_map_C_iff] using! hJ.le hx
-  · apply AlgHom.coe_ringHom_injective
+    simpa [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff, Ideal.mem_map_C_iff] using! hJ.le hx
+  · apply AlgHom.toRingHom_injective
     apply IsFractionRing.injective_comp_algebraMap (A := I.ResidueField[X])
     dsimp [RatFunc.liftAlgHom]
-    simp only [AlgHom.comp_toRingHom, AlgHom.coe_ringHom_mk, RingHom.comp_assoc,
+    simp only [AlgHom.comp_toRingHom, AlgHom.toRingHom_mk, RingHom.comp_assoc,
       RatFunc.liftRingHom_comp_algebraMap, RingHomCompTriple.comp_eq, f]
     ext <;> simp [← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R R[X] J.ResidueField]
-  · apply AlgHom.coe_ringHom_injective
+  · apply AlgHom.toRingHom_injective
     ext
     · simp [f, RatFunc.liftAlgHom, ← IsScalarTower.algebraMap_apply]; rfl
     · simp [f, RatFunc.liftAlgHom]

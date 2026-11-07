@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson, Riccardo Brasca, Filippo A. E. Nuccio
 -/
 module
 
-public import Mathlib.Condensed.Module
 public import Mathlib.Condensed.Equivalence
-/-!
+public import Mathlib.Condensed.Module
 
+/-!
 # The explicit sheaf condition for condensed sets
 
 We give the following three explicit descriptions of condensed objects:

@@ -5,12 +5,10 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Localization.Module
-public import Mathlib.RingTheory.Norm.Basic
 public import Mathlib.RingTheory.Discriminant
+public import Mathlib.RingTheory.Norm.Basic
 
 /-!
-
 # Field/algebra norm / trace and localization
 
 This file contains results on the combination of `IsLocalization` and `Algebra.norm`,

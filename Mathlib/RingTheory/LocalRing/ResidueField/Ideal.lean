@@ -168,11 +168,13 @@ section
 open Localization AtPrime
 
 variable (J : Ideal A) (K : Ideal B) [J.IsPrime] [K.IsPrime]
-  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)] [IsLiesOverAlgebra I J]
-  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)] [IsLiesOverAlgebra I K]
+  [J.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime J)]
+  [K.LiesOver I] [Algebra (Localization.AtPrime I) (Localization.AtPrime K)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime J)]
+  [IsScalarTower R (Localization.AtPrime I) (Localization.AtPrime K)]
 
 instance : IsLocalHom (algebraMap (Localization.AtPrime I) (Localization.AtPrime J)) := by
-  rw [IsLiesOverAlgebra.algebraMap_eq]
+  rw [algebraMap_eq]
   exact isLocalHom_localRingHom _ _ _ (J.over_def I)
 
 /-- An isomorphism of rings induces an isomorphism of residue fields. -/
@@ -198,7 +200,7 @@ instance (p : Ideal R) [p.IsPrime] : Algebra.EssFiniteType R p.ResidueField :=
 instance [Algebra.EssFiniteType R A]
     (p : Ideal R) [p.IsPrime] (q : Ideal A) [q.IsPrime] [q.LiesOver p]
     [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
-    [Localization.AtPrime.IsLiesOverAlgebra p q] :
+    [IsScalarTower R (Localization.AtPrime p) (Localization.AtPrime q)] :
     Algebra.EssFiniteType p.ResidueField q.ResidueField := by
   have : Algebra.EssFiniteType R q.ResidueField := .comp _ A _
   refine .of_comp R _ _
@@ -244,7 +246,7 @@ lemma Ideal.ResidueField.ringHom_ext {I : Ideal R} [I.IsPrime]
 @[ext high] -- higher than `AlgHom.ext`.
 lemma Ideal.ResidueField.algHom_ext {I : Ideal A} [I.IsPrime] {f g : I.ResidueField →ₐ[R] B}
     (H : f.comp (IsScalarTower.toAlgHom R A _) = g.comp (IsScalarTower.toAlgHom R A _)) : f = g :=
-  AlgHom.coe_ringHom_injective (ringHom_ext congr($H))
+  AlgHom.toRingHom_injective (ringHom_ext congr($H))
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp] lemma Ideal.ResidueField.mapₐ_id (I : Ideal A) [I.IsPrime] :

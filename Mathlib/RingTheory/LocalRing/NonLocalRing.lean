@@ -5,13 +5,11 @@ Authors: Michal Staromiejski
 -/
 module
 
-public import Mathlib.Algebra.Ring.Pi
-public import Mathlib.Algebra.Ring.Prod
 public import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-public import Mathlib.RingTheory.Spectrum.Maximal.Basic
+
+import Mathlib.RingTheory.Spectrum.Maximal.Basic
 
 /-!
-
 # Non-local rings
 
 This file gathers some results about non-local rings.

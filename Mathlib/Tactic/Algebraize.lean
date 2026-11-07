@@ -5,12 +5,11 @@ Authors: Johan Commelin, Nick Kuhn, Arend Mellendijk, Christian Merten, Calle SÃ
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Tower
 public meta import Mathlib.Tactic.Attr.Core
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Algebra.Algebra.Tower
 
 /-!
-
 ## Algebraize tactic
 
 This file defines the `algebraize` tactic. The basic functionality of this tactic is to

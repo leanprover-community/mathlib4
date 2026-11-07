@@ -5,13 +5,12 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 module
 
-public import Mathlib.RingTheory.LocalRing.Defs
 public import Mathlib.RingTheory.Ideal.Nonunits
+public import Mathlib.RingTheory.LocalRing.Defs
 
 import Mathlib.Algebra.Group.Units.Opposite
 
 /-!
-
 # Local rings
 
 We prove basic properties of local rings.

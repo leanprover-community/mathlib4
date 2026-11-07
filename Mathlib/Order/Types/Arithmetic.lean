@@ -5,12 +5,12 @@ Authors: Yan Yablonovskiy
 -/
 module
 
-public import Mathlib.Data.Real.Basic
 public import Mathlib.Order.Types.Defs
 public import Mathlib.SetTheory.Cardinal.Order
 
-/-!
+import Mathlib.Basic.Real.Basic
 
+/-!
 ## Main definitions
 
 * `OrderType.card o`: the cardinality of an OrderType `o`.

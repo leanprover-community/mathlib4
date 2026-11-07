@@ -172,8 +172,6 @@ lemma exists_countable_generateFrom_Ioi_Iio
   refine ⟨a '' t, t_count.image _, ?_⟩
   apply le_antisymm
   · apply le_generateFrom_iff_subset_isOpen.2
-    simp only [mem_image, exists_exists_and_eq_and, ofPred_subset_ofPred, forall_exists_index,
-      and_imp]
     grind [isOpen_Iio', isOpen_Ioi']
   · rw [ht]
     apply generateFrom_anti
@@ -361,7 +359,7 @@ theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopol
 @[to_dual nhdsLE_basis_of_exists_lt]
 theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal
+  nhdsGE_eq_iInf_principal ha ▸ hasBasis_biInf_principal (S := {u | a < u})
     (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
       Ico_subset_Ico_right (min_le_right _ _)⟩) ha
 

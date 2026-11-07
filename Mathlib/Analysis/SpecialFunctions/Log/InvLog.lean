@@ -7,7 +7,8 @@ Authors: Alastair Irving, Michael Stoll, Terence Tao
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Log.Deriv
-public import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
+
+import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 
 /-!
 # Multiplicative inverse and iteration of real logarithm
@@ -79,7 +80,7 @@ theorem differentiableOn_inv_log : DifferentiableOn ℝ (fun x ↦ (log x)⁻¹)
 
 theorem inv_log_isLittleO_one : (fun x ↦ (log x)⁻¹) =o[atTop] fun _ ↦ (1 : ℝ) := by
   rw [isLittleO_one_iff]
-  convert tendsto_log_atTop.inv_tendsto_atTop; simp
+  convert tendsto_log_atTop.inv_tendsto_atTop
 
 /- ## Derivative of the iterated logarithm -/
 

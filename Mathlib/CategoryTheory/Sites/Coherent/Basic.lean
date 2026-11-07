@@ -7,9 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Extensive
 public import Mathlib.CategoryTheory.Sites.Coverage
-public import Mathlib.CategoryTheory.EffectiveEpi.Basic
-/-!
 
+/-!
 # The Coherent, Regular and Extensive Grothendieck Topologies
 
 This file defines three related Grothendieck topologies on a category `C`.

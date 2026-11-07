@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Complex.Asymptotics
 public import Mathlib.Analysis.Complex.Trigonometric
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Topology.Algebra.MetricSpace.Lipschitz
+
 import Mathlib.Topology.Order.AtTopBotIxx
 
 /-!
@@ -81,7 +82,7 @@ lemma exp_sub_sum_range_isBigO_pow (n : ℕ) :
   · refine .of_bound (n.succ / (n ! * n)) ?_
     rw [NormedAddGroup.nhds_zero_basis_norm_lt.eventually_iff]
     refine ⟨1, one_pos, fun x hx ↦ ?_⟩
-    convert! exp_bound hx.out.le hn using 1
+    convert exp_bound hx.out.le hn using 1
     simp [field]
 
 lemma exp_sub_sum_range_succ_isLittleO_pow (n : ℕ) :
@@ -224,12 +225,12 @@ theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (�
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
-  convert! continuous_exp.tendsto 0
+  convert continuous_exp.tendsto 0
   simp
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
-    congr_arg exp <| neg_neg x
+    congr(exp $(neg_neg x))
 
 theorem tendsto_exp_atBot_nhdsGT : Tendsto exp atBot (𝓝[>] 0) :=
   tendsto_inf.2 ⟨tendsto_exp_atBot, tendsto_principal.2 <| Eventually.of_forall exp_pos⟩
@@ -288,12 +289,12 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     Tendsto (fun x => x ^ n / (b * exp x + c)) atTop (𝓝 0) := by
   have H : ∀ d e, 0 < d → Tendsto (fun x : ℝ => x ^ n / (d * exp x + e)) atTop (𝓝 0) := by
     intro b' c' h
-    convert! (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
+    convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
   rcases lt_or_gt_of_ne hb with h | h
   · exact H b c h
-  · convert! (H (-b) (-c) (neg_pos.mpr h)).neg using 1
+  · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x
       field_simp
       rw [← neg_add (b * exp x) c, div_neg, neg_neg]

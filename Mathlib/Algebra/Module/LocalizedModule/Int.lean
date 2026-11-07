@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
-
 # Integer elements of a localized module
 
 This is a mirror of the corresponding notion for localizations of rings.
@@ -132,10 +131,10 @@ theorem smul_mem_finsetIntegerMultiple_span [DecidableEq M] (x : M) (s : Finset 
   obtain ⟨x', hx', hx''⟩ := hx
   obtain ⟨a, ha⟩ := (IsLocalizedModule.eq_iff_exists S f).mp hx''
   use a * y
-  convert!
+  convert
     (Submodule.span R (IsLocalizedModule.finsetIntegerMultiple S f s : Set M)).smul_mem a hx'
       using 1
-  convert! ha.symm using 1
+  convert ha.symm using 1
   simp only [Submonoid.smul_def, ← smul_smul]
 
 end IsLocalizedModule

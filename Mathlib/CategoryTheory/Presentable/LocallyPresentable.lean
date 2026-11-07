@@ -90,6 +90,10 @@ class IsAccessibleCategory (C : Type u) [hC : Category.{v} C] : Prop where
 
 variable (C : Type u) [hC : Category.{v} C]
 
+instance [IsAccessibleCategory.{w} C] : LocallySmall.{w} C := by
+  obtain ⟨κ, hκ, h'⟩ := IsAccessibleCategory.exists_cardinal C
+  infer_instance
+
 instance [IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
   exists_cardinal := by
     obtain ⟨κ, hκ, h'⟩ := IsLocallyPresentable.exists_cardinal C

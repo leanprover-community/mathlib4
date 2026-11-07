@@ -8,8 +8,9 @@ module
 public import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
 public import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
 public import Mathlib.AlgebraicTopology.SimplicialSet.SubcomplexEvaluation
-public import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 public import Mathlib.CategoryTheory.Types.Monomorphisms
+
+import Mathlib.CategoryTheory.MorphismProperty.FunctorCategory
 
 /-!
 # The skeleton of a simplicial set
@@ -254,7 +255,6 @@ lemma mem_skeletonOfMono_obj_iff {d' : ℕ} :
 lemma range_map_le : Subcomplex.range c.map ≤ skeletonOfMono i (d + 1) := by
   simp [map, Subcomplex.range_eq_ofSimplex, mem_skeletonOfMono_obj_iff]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma preimage_map : (skeletonOfMono i d).preimage c.map = ∂Δ[d] := by
   rw [stdSimplex.eq_boundary_iff]
@@ -327,7 +327,6 @@ The `simp` annotation on this lemma was removed because it would be redundant no
 lemma ι_b_ι (c : Cell i d) : c.ιSigmaStdSimplex ≫ b i d ≫ Subcomplex.ι _ = c.map := by
   simp
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n ⟶ ⦋d⦌) :
     dsimp% ((b i d).app _ (c.ιSigmaStdSimplex.app _ (stdSimplex.objEquiv.symm f))).val =
@@ -337,7 +336,6 @@ lemma b_app_ι_app_objEquiv_symm_val (c : Cell i d) {n : SimplexCategory} (f : n
 
 end Cell
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
   w := w i d
@@ -346,8 +344,7 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
       (IsPullback.isLimit ?_)
     dsimp
     rw [Types.isPullback_iff]
-    refine ⟨NatTrans.congr_app (w i d) _,
-      fun x₁ x₂ ⟨_, h⟩ ↦ injective_of_mono ((l i d).app (op ⦋n⦌)) h,
+    refine ⟨congr($(w i d).app _), fun x₁ x₂ ⟨_, h⟩ ↦ injective_of_mono ((l i d).app (op ⦋n⦌)) h,
       fun ⟨x, hx⟩ y h ↦ ?_⟩
     rw [Subtype.ext_iff] at h
     dsimp at h
@@ -357,10 +354,9 @@ lemma isPullback : IsPullback (t i d) (l i d) (r i d) (b i d) where
     · rw [dsimp% congr($(c.ι_b_ι).app (op ⦋n⦌) y)] at hx
       rwa [← c.preimage_map, Subcomplex.preimage_obj, Set.mem_preimage]
     · rw [Subtype.ext_iff]
-      exact congr($(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩)
-    · exact congr($(c.ι_l).app _ ⟨y, _⟩))⟩
+      congrm $(c.ι_t_ι_eq_ι_l_b_ι).app _ ⟨y, _⟩
+    · congrm $(c.ι_l).app _ ⟨y, _⟩)⟩
 
-set_option backward.defeqAttrib.useBackward true in
 lemma sup_range_r_range_b :
     Subcomplex.range (r i d) ⊔ Subcomplex.range (b i d) = ⊤ := by
   rw [← top_le_iff]
@@ -393,7 +389,6 @@ lemma isPushout_aux {n : ℕ} (y : (sigmaStdSimplex i d) _⦋n⦌)
   refine ⟨c, stdSimplex.objEquiv s, ?_, by simp⟩
   simpa [SimplexCategory.epi_iff_surjective, boundary] using! hs
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
   w := w i d
   isColimit' := ⟨evaluationJointlyReflectsColimits _ (fun ⟨⟨n⟩⟩ ↦ by
@@ -421,7 +416,6 @@ lemma isPushout : IsPushout (t i d) (l i d) (r i d) (b i d) where
 
 end relativeCellComplexOfMono
 
-set_option backward.defeqAttrib.useBackward true in
 open relativeCellComplexOfMono in
 /-- If `i : X ⟶ Y` is a monomorphism of simplicial sets, then it is a relative cell
 complex with basic cells given by boundary inclusions `∂Δ[d] ⟶ Δ[d]`, one for each

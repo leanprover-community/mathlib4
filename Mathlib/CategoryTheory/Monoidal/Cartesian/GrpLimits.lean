@@ -6,9 +6,13 @@ Authors: Thomas Browning, Christian Merten
 module
 
 public import Mathlib.Algebra.Group.Invertible.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 public import Mathlib.CategoryTheory.Monoidal.Cartesian.ShrinkYoneda
 public import Mathlib.CategoryTheory.Monoidal.Internal.Limits
+
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Limits in `Grp C`
