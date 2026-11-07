@@ -11,6 +11,7 @@ public import Mathlib.Analysis.AbsoluteValue.Equivalence
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
 public import Mathlib.NumberTheory.Padics.PadicNorm
 
+import Mathlib.Analysis.Normed.Field.Ultra
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
@@ -425,6 +426,13 @@ theorem equiv_real_of_unbounded : f.IsEquiv real := by
       rw [rpow_logb (by positivity) (by norm_cast; omega)
         (map_pos_of_ne_zero f (mod_cast ne_zero_of_lt h))]
     rw [hfn, ← eq_of_eq_pow oneltm h notbdd hfm hfn]
+
+/-- The restriction to `ℚ` of an archimedean absolute value on a field of characteristic zero is
+equivalent to the standard absolute value. -/
+theorem under_isEquiv_real_of_not_isNonarchimedean {K : Type*} [Field K] [CharZero K]
+    {v : AbsoluteValue K ℝ} (hv : ¬ IsNonarchimedean v) : (v.under ℚ).IsEquiv real :=
+  equiv_real_of_unbounded fun h ↦ hv <|
+    AbsoluteValue.isNonarchimedean_iff_forall_natCast_le_one.mpr fun n ↦ by simpa using h n
 
 end Archimedean
 
