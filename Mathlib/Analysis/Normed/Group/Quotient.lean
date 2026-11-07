@@ -188,7 +188,7 @@ lemma norm_mk_eq_zero_iff_mem_closure : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ closur
 `m ∈ S`. -/
 @[to_additive /-- The norm of the image of `m : M` in the quotient by a closed subgroup `S` is zero
 if and only if `m ∈ S`. -/]
-lemma norm_mk_eq_zero [hS : IsClosed (S : Set M)] : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ S := by
+lemma norm_mk_eq_zero (hS : IsClosed (S : Set M)) : ‖(m : M ⧸ S)‖ = 0 ↔ m ∈ S := by
   rw [norm_mk_eq_zero_iff_mem_closure, hS.closure_eq, SetLike.mem_coe]
 
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `mk' S m = x`
@@ -219,7 +219,7 @@ noncomputable instance instSeminormedCommGroup : SeminormedCommGroup (M ⧸ S) w
 variable (S) in
 /-- The quotient in the category of normed groups. -/
 @[to_additive /-- The quotient in the category of normed groups. -/]
-noncomputable instance instNormedCommGroup [hS : IsClosed (S : Set M)] :
+noncomputable instance instNormedCommGroup [hS : Fact (IsClosed (S : Set M))] :
     NormedCommGroup (M ⧸ S) where
   __ := MetricSpace.ofT0PseudoMetricSpace _
 
@@ -229,7 +229,7 @@ example :
     (instTopologicalSpaceQuotient : TopologicalSpace <| M ⧸ S) =
       (instSeminormedCommGroup S).toUniformSpace.toTopologicalSpace := rfl
 
-example [IsClosed (S : Set M)] :
+example [Fact (IsClosed (S : Set M))] :
     (instSeminormedCommGroup S) = NormedCommGroup.toSeminormedCommGroup := rfl
 
 /-- An isometric version of `Subgroup.quotientEquivOfEq`. -/
@@ -430,7 +430,7 @@ variable {R : Type*} [Ring R] [Module R M] (S T : Submodule R M)
 instance Submodule.Quotient.seminormedAddCommGroup : SeminormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| SeminormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
-instance Submodule.Quotient.normedAddCommGroup [hS : IsClosed (S : Set M)] :
+instance Submodule.Quotient.normedAddCommGroup [Fact (IsClosed (S : Set M))] :
     NormedAddCommGroup (M ⧸ S) :=
   inferInstanceAs <| NormedAddCommGroup (M ⧸ S.toAddSubgroup)
 
@@ -513,7 +513,7 @@ instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
       _ ≤ ‖a‖ * ‖b‖ := (Ideal.Quotient.norm_mk_le I (a * b)).trans (norm_mul_le a b)
       _ ≤ _ := (sub_lt_iff_lt_add'.mp h.1).le
 
-instance Ideal.Quotient.normedCommRing [IsClosed (I : Set R)] : NormedCommRing (R ⧸ I) :=
+instance Ideal.Quotient.normedCommRing [Fact (IsClosed (I : Set R))] : NormedCommRing (R ⧸ I) :=
   { Ideal.Quotient.semiNormedCommRing I, Submodule.Quotient.normedAddCommGroup I with }
 
 variable (𝕜 : Type*) [NormedField 𝕜]

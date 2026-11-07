@@ -36,7 +36,7 @@ def OpenNormalSubgroup.pathComponentOne [Group G]
 namespace OpenNormalSubgroup
 
 @[to_additive]
-instance [Group G] [IsTopologicalGroup G] [LocallyPathConnectedSpace G] :
+theorem isClosed_pathComponentOne [Group G] [IsTopologicalGroup G] [LocallyPathConnectedSpace G] :
     IsClosed (OpenNormalSubgroup.pathComponentOne G : Set G) :=
   .pathComponent 1
 

@@ -89,7 +89,7 @@ instance HasOrthogonalProjection.comap {E' : Type*} [NormedAddCommGroup E'] [Inn
 instance : (⊤ : Submodule 𝕜 E).HasOrthogonalProjection := ⟨fun v ↦ ⟨v, trivial, by simp⟩⟩
 
 instance (K : ClosedSubmodule 𝕜 E) [CompleteSpace E] : K.HasOrthogonalProjection := by
-  let := K.isClosed'
+  have : Fact (IsClosed ((K : Submodule 𝕜 E) : Set E)) := ⟨K.isClosed'⟩
   infer_instance
 
 /-- If `K` admits an orthogonal projection, `K` and `Kᗮ` are complements of each other. -/

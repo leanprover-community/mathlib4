@@ -104,9 +104,9 @@ quotient is T3 (see `QuotientAddGroup.instT3Space`).
 
 Back to the general case, we will show later that the quotient is in fact T2
 since `N` acts on `G` properly. -/]
-instance instT1Space [hN : IsClosed (N : Set G)] :
+instance instT1Space [hN : Fact (IsClosed (N : Set G))] :
     T1Space (G ⧸ N) :=
-  t1Space_iff.mpr hN
+  t1Space_iff.mpr hN.out
 
 -- TODO: `IsOpen` should be a class and this should be an instance
 @[to_additive]
@@ -160,7 +160,7 @@ theorem isClosedMap_coe {H : Subgroup G} (hH : IsCompact (H : Set G)) :
   exact ht.mul_right_of_isCompact hH
 
 @[to_additive]
-instance instT3Space [N.Normal] [hN : IsClosed (N : Set G)] : T3Space (G ⧸ N) := by
+instance instT3Space [N.Normal] [Fact (IsClosed (N : Set G))] : T3Space (G ⧸ N) := by
   infer_instance
 
 end QuotientGroup

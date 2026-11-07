@@ -463,7 +463,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def haarContent (K₀ : PositiveCompacts G) : Content G where
   toFun K := ⟨chaar K₀ K, chaar_nonneg _ _⟩
   mono' K₁ K₂ h := by simp only [← NNReal.coe_le_coe, NNReal.toReal, chaar_mono, h]
-  sup_disjoint' K₁ K₂ h _h₁ h₂ := by simp only [chaar_sup_eq h]; rfl
+  sup_disjoint' K₁ K₂ h _h₁ h₂ := by simp only [chaar_sup_eq h h₂]; rfl
   sup_le' K₁ K₂ := by
     simp only [← NNReal.coe_le_coe, NNReal.coe_add]
     simp only [NNReal.toReal, chaar_sup_le]

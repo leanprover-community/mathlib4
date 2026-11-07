@@ -92,7 +92,7 @@ protected lemma Commute.posPart_mono {a b : A} (hab : Commute a b) (hle : a ≤ 
     a⁺ ≤ b⁺ := by
   let S := (adjoin ℂ {a, b}).topologicalClosure
   have : IsMulCommutative S := have := isMulCommutative_nonUnital_adjoin_pair hab; inferInstance
-  have : IsClosed (S : Set A) := NonUnitalStarSubalgebra.isClosed_topologicalClosure _
+  have : Fact (IsClosed (S : Set A)) := ⟨NonUnitalStarSubalgebra.isClosed_topologicalClosure _⟩
   have h : a ∈ S ∧ b ∈ S := by constructor <;> exact subset_closure <| subset_adjoin _ _ <| by simp
   clear_value S
   lift a to S using h.1

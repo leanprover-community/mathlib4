@@ -142,7 +142,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
   -- It is again Lipschitz continuous and bounded by `μ`
   have m₁_lip : LipschitzWith 1 m₁ := C'_dense.lipschitzWith_extend lip
   have hBound : ∀ s, ‖m₁ s‖ₑ ≤ μ s := by
-    have : IsClosed {s | ‖m₁ s‖ₑ ≤ μ s} :=
+    have hcl : IsClosed {s | ‖m₁ s‖ₑ ≤ μ s} :=
       isClosed_le m₁_lip.continuous.enorm MeasuredSets.continuous_measure
     have : Dense {s | ‖m₁ s‖ₑ ≤ μ s} := by
       apply C'_dense.mono
@@ -150,7 +150,7 @@ lemma exists_extension_of_isSetRing_of_le_measure_of_dense [IsFiniteMeasure μ]
       simp only [Set.mem_ofPred_eq]
       convert hm s (C'C s hs)
       exact C'_dense.extend_eq lip.continuous ⟨s, hs⟩
-    simpa only [Dense, IsClosed.closure_eq, Set.mem_ofPred_eq] using! this
+    simpa only [Dense, hcl.closure_eq, Set.mem_ofPred_eq] using! this
   /- Most involved technical step: show that the extension `m₁` of `m₀` is still finitely
   additive. -/
   have hAddit (s t : MeasuredSets μ) (h : Disjoint (s : Set α) t) :

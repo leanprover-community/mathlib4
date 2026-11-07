@@ -161,6 +161,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     exact continuous_zero
   · -- In the case where `l` is surjective, we factor it as `φ : (E ⧸ l.ker) ≃ₗ[𝕜] 𝕜`. Note that
     -- `E ⧸ l.ker` is T2 since `l.ker` is closed.
+    have : Fact (IsClosed (LinearMap.ker l : Set E)) := ⟨hl⟩
     have : finrank 𝕜 (LinearMap.range l) = 1 :=
       le_antisymm (finrank_self 𝕜 ▸ (LinearMap.range l).finrank_le) (zero_lt_iff.mpr H)
     have hi : Function.Injective ((LinearMap.ker l).liftQ l (le_refl _)) := by
@@ -543,6 +544,7 @@ theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
     {s t : Submodule 𝕜 E} [FiniteDimensional 𝕜 (E ⧸ s)] (s_closed : IsClosed (s : Set E))
     (s_le_t : s ≤ t) :
     IsClosed (t : Set E) := by
+  have : Fact (IsClosed (s : Set E)) := ⟨s_closed⟩
   rw [show t = comap s.mkQ (map s.mkQ t) by simpa]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
@@ -550,6 +552,7 @@ theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
 theorem Submodule.isClosed_sup_finiteDimensional
     (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
     IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
+  have : Fact (IsClosed (s : Set E)) := ⟨hs⟩
   rw [← comap_map_mkQ]
   exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
 
@@ -743,6 +746,7 @@ is a topological complement. -/
 theorem Submodule.IsCompl.isTopCompl_of_finiteDimensional_quotient {p q : Submodule 𝕜 E}
     (h : IsCompl p q) (hp : IsClosed (p : Set E)) [FiniteDimensional 𝕜 (E ⧸ p)] :
     IsTopCompl p q := by
+  have : Fact (IsClosed (p : Set E)) := ⟨hp⟩
   let φ : E ⧸ p →L[𝕜] q := (p.quotientEquivOfIsCompl q h).toLinearMap.toContinuousLinearMap
   have := (φ ∘L p.mkQL).isTopCompl_of_proj fun x ↦ by simp [φ]
   simpa [φ] using this.symm

@@ -374,10 +374,15 @@ lemma isClosed_of_isDiscrete [T1Space G] (U : Subgroup G)
   U.isClosed_of_isLocallyClosed h.isLocallyClosed
 
 @[to_additive]
-instance isClosed_of_discreteTopology [T1Space G] {U : Subgroup G}
+lemma isClosed_of_discreteTopology [T1Space G] {U : Subgroup G}
     [DiscreteTopology U] :
     IsClosed (U : Set G) :=
   U.isClosed_of_isDiscrete <| isDiscrete_iff_discreteTopology.mpr ‹_›
+
+@[to_additive]
+instance [T1Space G] {U : Subgroup G} [DiscreteTopology U] :
+    Fact (IsClosed (U : Set G)) :=
+  ⟨isClosed_of_discreteTopology⟩
 
 @[to_additive (attr := deprecated (since := "2026-09-01"))]
 alias isClosed_of_discrete := isClosed_of_discreteTopology

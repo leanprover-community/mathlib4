@@ -47,8 +47,8 @@ lemma generator_apply (f : H) (g : H') (x : X) :
     generator H H' (WithLp.toLp 2 (f,g)) x = f x + g x := by
   rfl
 
-instance : IsClosed ((generator H H').ker : Set (WithLp 2 (H × H'))) :=
-  (generator H H').isClosed_ker
+instance : Fact (IsClosed ((generator H H').ker : Set (WithLp 2 (H × H')))) :=
+  ⟨(generator H H').isClosed_ker⟩
 
 /-- The sum of two RKHS embedding in the same space of functions `X → V`. -/
 abbrev sumSpace := WithLp 2 (H × H') ⧸ (generator H H').ker

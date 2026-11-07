@@ -469,7 +469,8 @@ theorem ZLattice.FG [hs : IsZLattice K L] : L.FG := by
       change ((fundamentalDomain b) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed
-        DiscreteTopology.isDiscrete (fundamentalDomain_isBounded b) inferInstance
+        DiscreteTopology.isDiscrete (fundamentalDomain_isBounded b)
+        AddSubgroup.isClosed_of_discreteTopology
     refine Set.Finite.subset this ?_
     rintro _ ⟨_, ⟨⟨x, ⟨h_mem, rfl⟩⟩, rfl⟩⟩
     rw [Function.comp_apply, mkQ_apply, quotientEquiv_apply_mk, fractRestrict_apply]
@@ -589,7 +590,7 @@ theorem ZLattice.rank [hs : IsZLattice K L] : finrank ℤ L = finrank K E := by
       change ((_ : Set E) ∩ L.toAddSubgroup).Finite
       have : DiscreteTopology L.toAddSubgroup := (inferInstance : DiscreteTopology L)
       exact Metric.finite_isBounded_inter_isClosed DiscreteTopology.isDiscrete
-        Metric.isBounded_closedBall inferInstance
+        Metric.isBounded_closedBall AddSubgroup.isClosed_of_discreteTopology
     obtain ⟨n, -, m, -, h_ne, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by

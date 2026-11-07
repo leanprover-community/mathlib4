@@ -339,7 +339,7 @@ theorem idealOfSet_isMaximal_iff (s : Opens X) :
   rw [Ideal.isMaximal_def]
   refine (idealOpensGI X 𝕜).isCoatom_iff (fun I hI => ?_) s
   rw [← Ideal.isMaximal_def] at hI
-  exact idealOfSet_ofIdeal_isClosed inferInstance
+  exact idealOfSet_ofIdeal_isClosed Ideal.IsMaximal.isClosed
 
 theorem idealOf_compl_singleton_isMaximal (x : X) : (idealOfSet 𝕜 ({x}ᶜ : Set X)).IsMaximal :=
   (idealOfSet_isMaximal_iff 𝕜 _).mpr <| Opens.isCoatom_iff.mpr ⟨x, rfl⟩
@@ -349,11 +349,11 @@ variable {𝕜}
 theorem setOfIdeal_eq_compl_singleton (I : Ideal C(X, 𝕜)) [hI : I.IsMaximal] :
     ∃ x : X, setOfIdeal I = {x}ᶜ := by
   have h : (idealOfSet 𝕜 (setOfIdeal I)).IsMaximal :=
-    (idealOfSet_ofIdeal_isClosed (inferInstance : IsClosed (I : Set C(X, 𝕜)))).symm ▸ hI
+    (idealOfSet_ofIdeal_isClosed (Ideal.IsMaximal.isClosed (I := I))).symm ▸ hI
   obtain ⟨x, hx⟩ := Opens.isCoatom_iff.1 ((idealOfSet_isMaximal_iff 𝕜 (opensOfIdeal I)).1 h)
   exact ⟨x, congr($hx)⟩
 
-theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) [hI : IsClosed (I : Set C(X, 𝕜))] :
+theorem ideal_isMaximal_iff (I : Ideal C(X, 𝕜)) (hI : IsClosed (I : Set C(X, 𝕜))) :
     I.IsMaximal ↔ ∃ x : X, idealOfSet 𝕜 {x}ᶜ = I := by
   refine
     ⟨?_, fun h =>
@@ -413,7 +413,8 @@ theorem continuousMapEval_bijective : Bijective (continuousMapEval X 𝕜) := by
     simpa only [continuousMapEval_apply_apply, ContinuousMap.comp_apply, coe_mk, Ne,
       RCLike.ofReal_inj] using
       ((fx (Set.mem_singleton x)).symm ▸ (fy (Set.mem_singleton y)).symm ▸ zero_ne_one : f x ≠ f y)
-  · obtain ⟨x, hx⟩ := (ideal_isMaximal_iff (RingHom.ker φ)).mp inferInstance
+  · obtain ⟨x, hx⟩ :=
+      (ideal_isMaximal_iff (RingHom.ker φ) Ideal.IsMaximal.isClosed).mp inferInstance
     refine ⟨x, CharacterSpace.ext_ker <| Ideal.ext fun f => ?_⟩
     simpa only [RingHom.mem_ker, continuousMapEval_apply_apply, mem_idealOfSet_compl_singleton,
       RingHom.mem_ker] using SetLike.ext_iff.mp hx f
