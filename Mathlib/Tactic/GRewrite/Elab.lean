@@ -78,11 +78,14 @@ def elabGRewrite (mvarId : MVarId) (e : Expr) (stx : Syntax) (forwardImp symm : 
     let mvarIds := mvarIds.filter fun mvarId ↦ mvarCounterSaved ≤ (mctx.getDecl mvarId).index
     let lctx ← getLCtx
     let mvarIds ← mvarIds.mapM fun mvarId ↦ do
-      let mut fvarIds := #[]
+      let mut decls := #[]
+      let mut insts := #[]
       for decl in (← mvarId.getDecl).lctx do
         unless lctx.contains decl.fvarId do
-          fvarIds := fvarIds.push decl
-      return (mvarId, fvarIds)
+          decls := decls.push decl
+          if let some className ← isClass? decl.type then
+            insts := insts.push { className, fvar := decl.toExpr }
+      return (mvarId, decls, insts)
     let r ← mvarId.grewrite e thm mvarIds
       (forwardImp := forwardImp) (symm := symm) (config := config)
     let mctx ← getMCtx
