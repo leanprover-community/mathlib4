@@ -4055,6 +4055,7 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.ENat.Monoid
 public import Mathlib.Data.ENat.Pow
 public import Mathlib.Data.ENat.SuccOrder
+public import Mathlib.Data.ENat.WithBot
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Data.EReal.BigOperators
 public import Mathlib.Data.EReal.DedekindCut
