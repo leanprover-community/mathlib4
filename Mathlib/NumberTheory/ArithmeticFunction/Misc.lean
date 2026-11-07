@@ -260,7 +260,7 @@ theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
 /-- `Ω n` is the number of prime factors of `n`. -/
 @[oeis A001222 "the sequence skips `n = 0`"]
 def cardFactors : ArithmeticFunction ℕ :=
-  ⟨fun n => n.primeFactorsList.length, by simp⟩
+  .mk (fun n => n.primeFactorsList.length) (by simp)
 
 @[inherit_doc]
 scoped[ArithmeticFunction.Omega] notation "Ω" => ArithmeticFunction.cardFactors
@@ -327,7 +327,7 @@ theorem cardFactors_eq_sum_factorization {n : ℕ} :
 /-- `ω n` is the number of distinct prime factors of `n`. -/
 @[oeis A001221 "the sequence skips `n = 0`"]
 def cardDistinctFactors : ArithmeticFunction ℕ :=
-  ⟨fun n => n.primeFactorsList.dedup.length, by simp⟩
+  .mk (fun n => n.primeFactorsList.dedup.length) (by simp)
 
 @[inherit_doc]
 scoped[ArithmeticFunction.omega] notation "ω" => ArithmeticFunction.cardDistinctFactors

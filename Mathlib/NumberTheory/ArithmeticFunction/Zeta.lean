@@ -37,7 +37,7 @@ namespace ArithmeticFunction
 /-- `ζ 0 = 0`, otherwise `ζ x = 1`. The Dirichlet Series is the Riemann `ζ`. -/
 @[oeis A057427]
 def zeta : ArithmeticFunction ℕ :=
-  ⟨fun x => ite (x = 0) 0 1, rfl⟩
+  .mk (fun x => ite (x = 0) 0 1) rfl
 
 @[inherit_doc]
 scoped[ArithmeticFunction.zeta] notation "ζ" => ArithmeticFunction.zeta
@@ -141,9 +141,8 @@ open scoped zeta
 
 /-- This is the pointwise power of `ArithmeticFunction`s. -/
 def ppow (f : ArithmeticFunction R) (k : ℕ) : ArithmeticFunction R :=
-  if h0 : k = 0 then ζ else ⟨fun x ↦ f x ^ k, by simp_rw [map_zero, zero_pow h0]⟩
+  if h0 : k = 0 then ζ else .mk (fun x ↦ f x ^ k) (by simp_rw [map_zero, zero_pow h0])
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dite_eq_left rfl]
 
@@ -151,7 +150,6 @@ theorem ppow_zero {f : ArithmeticFunction R} : f.ppow 0 = ζ := by rw [ppow, dit
 theorem ppow_one {f : ArithmeticFunction R} : f.ppow 1 = f := by
   ext; simp [ppow]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem ppow_apply {f : ArithmeticFunction R} {k x : ℕ} (kpos : 0 < k) : f.ppow k x = f x ^ k := by
   rw [ppow, dite_eq_right (Nat.ne_of_gt kpos), coe_mk]

@@ -47,7 +47,7 @@ open scoped ArithmeticFunction
 namespace to indicate that it is bundled as an `ArithmeticFunction` rather than being the usual
 real logarithm. -/
 noncomputable def log : ArithmeticFunction ℝ :=
-  ⟨fun n => Real.log n, by simp⟩
+  .mk (fun n => Real.log n) (by simp)
 
 @[simp]
 theorem log_apply {n : ℕ} : log n = Real.log n :=
@@ -64,7 +64,7 @@ This is also available in the `ArithmeticFunction.vonMangoldt` locale, allowing 
 access to the notation.
 -/
 noncomputable def vonMangoldt : ArithmeticFunction ℝ :=
-  ⟨fun n => if IsPrimePow n then Real.log (minFac n) else 0, ite_eq_right not_isPrimePow_zero⟩
+  .mk (fun n => if IsPrimePow n then Real.log (minFac n) else 0) (ite_eq_right not_isPrimePow_zero)
 
 @[inherit_doc] scoped[ArithmeticFunction] notation "Λ" => ArithmeticFunction.vonMangoldt
 
