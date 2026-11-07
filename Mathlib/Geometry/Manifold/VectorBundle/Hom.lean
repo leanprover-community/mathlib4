@@ -917,10 +917,40 @@ lemma ContMDiffAt.clm_bundle_of_apply₂_pullback
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) (b m) (ψ m)) x :=
   ContMDiffWithinAt.clm_bundle_of_apply₂_pullback h
 
--- TODO: extract a point-wise version? only when I have the final statement I want...
+-- XXX: should we have a point-wise version also?
+theorem TensorialAt.contMDiff_mkHom₂' {l}
+    {A : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A]
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k)
+    [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)] [∀ (x : B), IsTopologicalAddGroup (E₂ x)]
+    [ContMDiffVectorBundle l F₁ E₁ IB] [ContMDiffVectorBundle l F₂ E₂ IB]
+    (hkl : k ≤ l) (φ : (Π x : B, E₁ x) → (Π x, E₂ x) → (B → A))
+    (hφ₁ : ∀ x, ∀ τ, MDiffAt (T% τ) x → TensorialAt IB F₁ (φ · τ x) x)
+    (hφ₂ : ∀ x, ∀ σ, MDiffAt (T% σ) x → TensorialAt IB F₂ (φ σ · x) x)
+    (φ_contMDiff : ∀ x, ∀ (σ : Π x : B, E₁ x), CMDiffAt l (T% σ) x →
+      ∀ (τ : Π x : B, E₂ x), CMDiffAt l (T% τ) x →
+      CMDiffAt k (φ σ τ) x) :
+    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+    haveI : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+    -- elaborators not working here
+    letI T (x' : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
+      ⟨x', TensorialAt.mkHom₂ (φ · · x') (F := F₁) (I := IB) (F' := F₂) x' (hφ₁ x') (hφ₂ x')⟩
+    CMDiff k T := by
+  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+  intro b
+  apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target' hkl
+  intro σ hσ τ hτ
+  apply (φ_contMDiff b σ (hσ.self_of_nhds) τ hτ.self_of_nhds).congr_of_eventuallyEq
+  filter_upwards [hσ, hτ] with x hσx hτx
+  apply mkHom₂_apply
+  · apply hσx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp (hk.trans hkl))
+  · apply hτx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp (hk.trans hkl))
+
 theorem TensorialAt.contMDiff_mkHom₂
     {A : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A]
-    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k)
     [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
     [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)] [∀ (x : B), IsTopologicalAddGroup (E₂ x)]
@@ -936,53 +966,43 @@ theorem TensorialAt.contMDiff_mkHom₂
     -- elaborators not working here
     letI T (x' : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
       ⟨x', TensorialAt.mkHom₂ (φ · · x') (F := F₁) (I := IB) (F' := F₂) x' (hφ₁ x') (hφ₂ x')⟩
-    CMDiff k T := by
-  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
-  intro b
-  apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target
-  intro σ hσ τ hτ
-  apply (φ_contMDiff b σ (hσ.self_of_nhds) τ hτ.self_of_nhds).congr_of_eventuallyEq
-  filter_upwards [hσ, hτ] with x hσx hτx
-  apply mkHom₂_apply
-  · apply hσx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
-  · apply hτx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
+    CMDiff k T :=
+  TensorialAt.contMDiff_mkHom₂' hk (le_refl k) _ hφ₁ hφ₂ φ_contMDiff
 
-theorem TensorialAt.contMDiff_mkHom₂'
+-- XXX: is this version useful to have? Levi-Civita needs the "main" version above
+omit [∀ (x : B), IsTopologicalAddGroup (E₃ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₃ x)] in
+theorem TensorialAt.contMDiff_mkHom₂_other' {l}
     {A : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A]
-    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) (hkl : k ≤ l)
     [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
-    [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)] [∀ (x : B), IsTopologicalAddGroup (E₂ x)]
-    [ContMDiffVectorBundle k F₁ E₁ IB] [ContMDiffVectorBundle k F₂ E₂ IB]
-    (φ : (Π x : B, E₁ x) → (Π x, E₂ x) → (B → A))
-    (hφ₁ : ∀ x, ∀ τ, MDiffAt (T% τ) x → TensorialAt IB F₁ (φ · τ x) x)
-    (hφ₂ : ∀ x, ∀ σ, MDiffAt (T% σ) x → TensorialAt IB F₂ (φ σ · x) x)
-    (φ_contMDiff : ∀ x, ∀ (σ : Π x : B, E₁ x), CMDiffAt (k + 1) (T% σ) x →
-      ∀ (τ : Π x : B, E₂ x), CMDiffAt (k + 1) (T% τ) x →
-      CMDiffAt k (φ σ τ) x) :
-    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-    haveI : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
+    [ContMDiffVectorBundle l F₁ E₁ IB] [ContMDiffVectorBundle l F₂ E₂ IB]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+
+    (φ : (Π x : B, E₁ x) → (Π x, E₂ x) → A)
+    (hφ₁ : ∀ x, ∀ τ, MDiffAt (T% τ) x → TensorialAt IB F₁ (φ · τ) x)
+    (hφ₂ : ∀ x, ∀ σ, MDiffAt (T% σ) x → TensorialAt IB F₂ (φ σ ·) x)
+    (φ_contMDiff : ∀ x, ∀ (σ : Π x : B, E₁ x), CMDiffAt l (T% σ) x →
+      ∀ (τ : Π x : B, E₂ x), CMDiffAt l (T% τ) x →
+      CMDiffAt k (fun x ↦ φ (FiberBundle.extend F₁ (σ x)) (FiberBundle.extend F₂ (τ x))) x) :
+    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+    haveI : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
     -- elaborators not working here
-    letI T (x' : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
-      ⟨x', TensorialAt.mkHom₂ (φ · · x') (F := F₁) (I := IB) (F' := F₂) x' (hφ₁ x') (hφ₂ x')⟩
+    letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
+      ⟨x, TensorialAt.mkHom₂ (φ · ·) (F := F₁) (I := IB) (F' := F₂) x (hφ₁ x) (hφ₂ x)⟩
     CMDiff k T := by
-  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
+  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
+  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le (hk.trans hkl)
   intro b
-  -- TODO: need a loss of derivatives version here
-  sorry /- apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target
+  apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target' hkl
   intro σ hσ τ hτ
   apply (φ_contMDiff b σ (hσ.self_of_nhds) τ hτ.self_of_nhds).congr_of_eventuallyEq
   filter_upwards [hσ, hτ] with x hσx hτx
-  apply mkHom₂_apply
-  · apply hσx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk)
-  · apply hτx.mdifferentiableAt (ENat.one_le_iff_ne_zero_withTop.mp hk) -/
+  apply mkHom₂_apply_eq_extend
 
--- XXX: is this version useful to have? Levi-Civita needs the "main" version below
 theorem TensorialAt.contMDiff_mkHom₂_other
     {A : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A]
-    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
+    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k)
     [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
     [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)] [∀ (x : B), IsTopologicalAddGroup (E₂ x)]
@@ -998,45 +1018,8 @@ theorem TensorialAt.contMDiff_mkHom₂_other
     -- elaborators not working here
     letI T (x' : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
       ⟨x', TensorialAt.mkHom₂ (φ · ·) (F := F₁) (I := IB) (F' := F₂) x' (hφ₁ x') (hφ₂ x')⟩
-    CMDiff k T := by
-  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
-  intro b
-  apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target
-  intro σ hσ τ hτ
-  apply (φ_contMDiff b σ (hσ.self_of_nhds) τ hτ.self_of_nhds).congr_of_eventuallyEq
-  filter_upwards [hσ, hτ] with x hσx hτx
-  apply mkHom₂_apply_eq_extend
-
-theorem TensorialAt.contMDiff_mkHom₂_other'
-    {A : Type*} [NormedAddCommGroup A] [NormedSpace 𝕜 A]
-    [CompleteSpace 𝕜] {k} (hk : 1 ≤ k) [IsManifold IB k B]
-    [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
-    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
-    [ContMDiffVectorBundle k F₁ E₁ IB] [ContMDiffVectorBundle k F₂ E₂ IB]
-    [∀ (x : B), IsTopologicalAddGroup (E₃ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₃ x)]
-    [ContMDiffVectorBundle k F₃ E₃ IB]
-    (φ : (Π x : B, E₁ x) → (Π x, E₂ x) → A)
-    (hφ₁ : ∀ x, ∀ τ, MDiffAt (T% τ) x → TensorialAt IB F₁ (φ · τ) x)
-    (hφ₂ : ∀ x, ∀ σ, MDiffAt (T% σ) x → TensorialAt IB F₂ (φ σ ·) x)
-    (φ_contMDiff : ∀ x, ∀ (σ : Π x : B, E₁ x), CMDiffAt (k + 1) (T% σ) x →
-      ∀ (τ : Π x : B, E₂ x), CMDiffAt (k + 1) (T% τ) x →
-      CMDiffAt k (fun x ↦ φ (FiberBundle.extend F₁ (σ x)) (FiberBundle.extend F₂ (τ x))) x) :
-    haveI : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-    haveI : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
-    -- elaborators not working here
-    letI T (x : B) : TotalSpace (F₁ →L[𝕜] F₂ →L[𝕜] A) (fun x ↦ E₁ x →L[𝕜] E₂ x →L[𝕜] A) :=
-      ⟨x, TensorialAt.mkHom₂ (φ · ·) (F := F₁) (I := IB) (F' := F₂) x (hφ₁ x) (hφ₂ x)⟩
-    CMDiff k T := by
-  have : ContMDiffVectorBundle 1 F₁ E₁ IB := ContMDiffVectorBundle.of_le hk
-  have : ContMDiffVectorBundle 1 F₂ E₂ IB := ContMDiffVectorBundle.of_le hk
-  intro b
-  -- apply ContMDiffAt.clm_bundle_of_apply₂_trivial_target'
-  -- intro σ hσ τ hτ
-  -- apply (φ_contMDiff b σ (hσ.self_of_nhds) τ hτ.self_of_nhds).congr_of_eventuallyEq
-  -- filter_upwards [hσ, hτ] with x hσx hτx
-  -- apply mkHom₂_apply_eq_extend
-  sorry -- TODO: copy the necessary API above
+    CMDiff k T :=
+  TensorialAt.contMDiff_mkHom₂_other' hk (le_refl k) _ hφ₁ hφ₂ φ_contMDiff
 
 end TwoVariables
 

@@ -525,11 +525,12 @@ instance contMDiffCovariantDerivative_leviCivitaConnection :
       IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
     apply contMDiff_musicalIso_apply
     -- The final step is applying our smoothness criterion for the tensoriality construction.
-    have : IsManifold I (k + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
+    have : IsManifold I (k + 2 + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
     -- NB. We apply the version involving a loss of derivatives, because this is what happens here.
-    apply TensorialAt.contMDiff_mkHom₂' (by simp)
+    apply TensorialAt.contMDiff_mkHom₂' (by simp) (l := k + 2) (by count_derivatives)
     intro x τ hτ τ' hτ'
-    exact contMDiffAt_leviCivitaAuxInner I (hσ x) hτ hτ'
+    exact contMDiffAt_leviCivitaAuxInner I (hσ x)
+      (hτ.of_le (by count_derivatives)) (hτ'.of_le (by count_derivatives))
 
 end existence
 
