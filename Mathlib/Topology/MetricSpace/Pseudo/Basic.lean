@@ -182,6 +182,8 @@ alias Metric.inseparable_iff_nndist := Metric.inseparable_iff_nnDist
 
 alias ⟨Inseparable.nnDist_eq_zero, _⟩ := Metric.inseparable_iff_nnDist
 
+@[deprecated (since := "2026-11-07")] alias Inseparable.nndist_eq_zero := Inseparable.nnDist_eq_zero
+
 theorem Metric.inseparable_iff {x y : α} : Inseparable x y ↔ dist x y = 0 := by
   rw [Metric.inseparable_iff_nnDist, dist_nnDist, NNReal.coe_eq_zero]
 

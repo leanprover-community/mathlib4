@@ -265,9 +265,13 @@ namespace Similar
 `similar_iff_exists_nnDist_eq`. -/
 alias ⟨exists_nnDist_eq, _⟩ := similar_iff_exists_nnDist_eq
 
+@[deprecated (since := "2026-11-07")] alias exists_nndist_eq := exists_nnDist_eq
+
 /-- Similarity follows from scaled non-negative distance. Backward direction of
 `similar_iff_exists_nnDist_eq`. -/
 alias ⟨_, of_exists_nnDist_eq⟩ := similar_iff_exists_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias of_exists_nndist_eq := of_exists_nnDist_eq
 
 /-- A similarity scales distance. Forward direction of `similar_iff_exists_dist_eq`. -/
 alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
@@ -280,9 +284,14 @@ alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
 `similar_iff_exists_pairwise_nnDist_eq`. -/
 alias ⟨exists_pairwise_nnDist_eq, _⟩ := similar_iff_exists_pairwise_nnDist_eq
 
+@[deprecated (since := "2026-11-07")] alias exists_pairwise_nndist_eq := exists_pairwise_nnDist_eq
+
 /-- Similarity follows from pairwise scaled non-negative distance. Backward direction of
 `similar_iff_exists_pairwise_nnDist_eq`. -/
 alias ⟨_, of_exists_pairwise_nnDist_eq⟩ := similar_iff_exists_pairwise_nnDist_eq
+
+@[deprecated (since := "2026-11-07")]
+alias of_exists_pairwise_nndist_eq := of_exists_pairwise_nnDist_eq
 
 /-- A similarity pairwise scales distance. Forward direction of
 `similar_iff_exists_pairwise_dist_eq`. -/

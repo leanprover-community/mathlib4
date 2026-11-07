@@ -59,6 +59,11 @@ alias antilipschitzWith_iff_le_mul_nndist := antilipschitzWith_iff_le_mul_nnDist
 alias ⟨AntilipschitzWith.le_mul_nnDist, AntilipschitzWith.of_le_mul_nnDist⟩ :=
   antilipschitzWith_iff_le_mul_nnDist
 
+@[deprecated (since := "2026-11-07")]
+alias AntilipschitzWith.le_mul_nndist := AntilipschitzWith.le_mul_nnDist
+@[deprecated (since := "2026-11-07")]
+alias AntilipschitzWith.of_le_mul_nndist := AntilipschitzWith.of_le_mul_nnDist
+
 theorem antilipschitzWith_iff_le_mul_dist :
     AntilipschitzWith K f ↔ ∀ x y, dist x y ≤ K * dist (f x) (f y) := by
   simp only [antilipschitzWith_iff_le_mul_nnDist, dist_nnDist]

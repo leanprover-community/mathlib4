@@ -61,8 +61,12 @@ alias ⟨_, Isometry.of_dist_eq⟩ := isometry_iff_dist_eq
 /-- An isometry preserves non-negative distances. -/
 alias ⟨Isometry.nnDist_eq, _⟩ := isometry_iff_nnDist_eq
 
+@[deprecated (since := "2026-11-07")] alias Isometry.nndist_eq := Isometry.nnDist_eq
+
 /-- A map that preserves non-negative distances is an isometry. -/
 alias ⟨_, Isometry.of_nnDist_eq⟩ := isometry_iff_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias Isometry.of_nndist_eq := Isometry.of_nnDist_eq
 
 namespace Isometry
 

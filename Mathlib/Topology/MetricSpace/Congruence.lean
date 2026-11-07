@@ -166,9 +166,13 @@ namespace Congruent
 /-- A congruence preserves non-negative distance. Forward direction of `congruent_iff_nnDist_eq`. -/
 alias ⟨nnDist_eq, _⟩ := congruent_iff_nnDist_eq
 
+@[deprecated (since := "2026-11-07")] alias nndist_eq := nnDist_eq
+
 /-- Congruence follows from preserved non-negative distance. Backward direction of
 `congruent_iff_nnDist_eq`. -/
 alias ⟨_, of_nnDist_eq⟩ := congruent_iff_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias of_nndist_eq := of_nnDist_eq
 
 /-- A congruence preserves distance. Forward direction of `congruent_iff_dist_eq`. -/
 alias ⟨dist_eq, _⟩ := congruent_iff_dist_eq
@@ -180,9 +184,13 @@ alias ⟨_, of_dist_eq⟩ := congruent_iff_dist_eq
 `congruent_iff_pairwise_nnDist_eq`. -/
 alias ⟨pairwise_nnDist_eq, _⟩ := congruent_iff_pairwise_nnDist_eq
 
+@[deprecated (since := "2026-11-07")] alias pairwise_nndist_eq := pairwise_nnDist_eq
+
 /-- Congruence follows from pairwise preserved non-negative distance. Backward direction of
 `congruent_iff_pairwise_nnDist_eq`. -/
 alias ⟨_, of_pairwise_nnDist_eq⟩ := congruent_iff_pairwise_nnDist_eq
+
+@[deprecated (since := "2026-11-07")] alias of_pairwise_nndist_eq := of_pairwise_nnDist_eq
 
 /-- A congruence pairwise preserves distance. Forward direction of
 `congruent_iff_pairwise_dist_eq`. -/
