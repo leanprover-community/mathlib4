@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Polynomial.Derivative
 public import Mathlib.Tactic.LinearCombination
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Theory of univariate polynomials
 

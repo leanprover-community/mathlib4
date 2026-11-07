@@ -152,13 +152,15 @@ meta def EuclideanSpace.delabVecNotation : Delab :=
 
 end Notation
 
-theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+theorem EuclideanSpace.nnNorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖₊ = NNReal.sqrt (∑ i, ‖x i‖₊ ^ 2) :=
-  PiLp.nnnorm_eq_of_L2 x
+  PiLp.nnNorm_eq_of_L2 x
+
+@[deprecated (since := "2026-10-31")] alias EuclideanSpace.nnnorm_eq := EuclideanSpace.nnNorm_eq
 
 theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
-  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr(($x.nnnorm_eq : ℝ))
+  simpa only [Real.coe_sqrt, NNReal.coe_sum] using! congr(($x.nnNorm_eq : ℝ))
 
 theorem EuclideanSpace.norm_sq_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     (x : EuclideanSpace 𝕜 n) : ‖x‖ ^ 2 = ∑ i, ‖x i‖ ^ 2 :=
@@ -436,8 +438,10 @@ lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
     ‖b i‖ = 1 := b.orthonormal.norm_eq_one i
 
 @[simp]
-lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one i
+lemma nnNorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖₊ = 1 := b.orthonormal.nnNorm_eq_one i
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_eq_one := nnNorm_eq_one
 
 @[simp]
 lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
@@ -734,7 +738,7 @@ protected def mkOfOrthogonalEqBot (hon : Orthonormal 𝕜 v) (hsp : (span 𝕜 (
       refine Eq.ge ?_
       have : FiniteDimensional 𝕜 (span 𝕜 (range v)) :=
         FiniteDimensional.span_of_finite 𝕜 (finite_range v)
-      have : CompleteSpace (span 𝕜 (range v)) := FiniteDimensional.complete 𝕜 _
+      have : CompleteSpace (span 𝕜 (range v)) := FiniteDimensional.completeSpace 𝕜 _
       rwa [orthogonal_eq_bot_iff] at hsp)
 
 @[simp]
@@ -1168,8 +1172,8 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
         ((stdOrthonormalBasis 𝕜 LSᗮ).reindex <| finCongr dim_LS_perp).repr.symm
   let L3 := LSᗮ.subtypeₗᵢ.comp E.toLinearIsometry
   -- Project onto S and Sᗮ
-  haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
-  haveI : CompleteSpace V := FiniteDimensional.complete 𝕜 V
+  haveI : CompleteSpace S := FiniteDimensional.completeSpace 𝕜 S
+  haveI : CompleteSpace V := FiniteDimensional.completeSpace 𝕜 V
   let p1 := S.orthogonalProjectionOnto.toLinearMap
   let p2 := Sᗮ.orthogonalProjectionOnto.toLinearMap
   -- Build a linear map from the isometries on S and Sᗮ

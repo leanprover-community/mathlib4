@@ -78,7 +78,7 @@ noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 @[reassoc (attr := simp)]
-lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
+lemma ι_leftKanExtensionObjIsoColimit_inv (X : D)
     (f : CostructuredArrow L X) :
     colimit.ι _ f ≫ (L.leftKanExtensionObjIsoColimit F X).inv =
     (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
@@ -153,6 +153,8 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
       homEquiv_naturality_right := fun {F G₁ G₂} β f => by
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
+
+instance : (L.lan (H := H)).IsLeftAdjoint := (L.lanAdjunction H).isLeftAdjoint
 
 variable (H) in
 @[simp]
@@ -346,6 +348,8 @@ noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
       homEquiv_naturality_left_symm := fun {F₁ F₂ G} β f ↦ by
         dsimp [homEquivOfIsRightKanExtension]
         rw [assoc] }
+
+instance : (L.ran (H := H)).IsRightAdjoint := (L.ranAdjunction H).isRightAdjoint
 
 variable (H) in
 @[simp]

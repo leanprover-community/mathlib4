@@ -11,7 +11,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.FlatDescent
 import Mathlib.RingTheory.Etale.Descent
 
 /-!
-
 # Local properties satisfying fpqc descent
 
 In this file we provide instances that show that the following local properties satisfy fpqc

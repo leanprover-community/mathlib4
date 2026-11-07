@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Category.CompHaus.EffectiveEpi
 
 /-!
-
 # Condensed Objects
 
 This file defines the category of condensed objects in a category `C`, following the work

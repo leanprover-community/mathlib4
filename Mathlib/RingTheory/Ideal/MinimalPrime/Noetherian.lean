@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 public import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
-
 # Finiteness of minimal primes
 
 We prove finiteness of minimal primes above an ideal.

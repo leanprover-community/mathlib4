@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.AlgebraicIndependent.RankAndCardinality
 
 /-!
-
 # Linearly disjoint fields
 
 This file contains basics about the linearly disjoint fields.
