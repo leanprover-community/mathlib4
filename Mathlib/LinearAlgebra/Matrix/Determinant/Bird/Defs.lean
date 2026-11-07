@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Matrix.Defs
 public import Mathlib.Order.Interval.Finset.Fin
 
 /-!
-
 # A division-free determinant algorithm
 
 This file defines `birdDet`and `Spec.birdDet`, implementations of an

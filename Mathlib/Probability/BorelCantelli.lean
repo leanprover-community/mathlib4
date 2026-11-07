@@ -11,7 +11,6 @@ public import Mathlib.Probability.Martingale.BorelCantelli
 import Mathlib.Probability.ConditionalExpectation
 
 /-!
-
 # The second Borel-Cantelli lemma
 
 This file contains the *second Borel-Cantelli lemma* which states that, given a sequence of
