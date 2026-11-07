@@ -565,7 +565,7 @@ lemma ContMDiffOn.clm_bundle_of_apply' {k} (l)
   fun x hx ↦ ContMDiffWithinAt.clm_bundle_of_apply' l fun σ hσ ↦ h σ x hx hσ
 
 omit [FiniteDimensional 𝕜 F₂] [ContMDiffVectorBundle 1 F₂ E₂ IB] in
-/-- Version allowing for the loss of a derivatives: we assume that applying `φ` to a
+/-- Version allowing for the loss of derivatives: we assume that applying `φ` to a
 `C^l` section produces a `C^k` section.
 The condition `k ≤ l` is not required for this lemma, but needs to be satisfied in practice. -/
 lemma ContMDiff.clm_bundle_of_apply' {k} (l)
@@ -719,6 +719,8 @@ lemma MDifferentiable.clm_bundle_apply
     MDiff (fun m ↦ TotalSpace.mk' F₂ (b m) (ϕ m (v m))) :=
   fun x ↦ (hϕ x).clm_bundle_apply (hv x)
 
+-- TODO: add versions for the of_apply lemmas; perhaps auto-generated when the time comes
+
 end OneVariable'
 
 section TwoVariables
@@ -776,6 +778,35 @@ lemma ContMDiff.clm_bundle_apply₂
     CMDiff n (fun m ↦ TotalSpace.mk' F₃ (b m) (ψ m (v m) (w m))) :=
   fun x ↦ (hψ x).clm_bundle_apply₂ (hv x) (hw x)
 
+/-- Version allowing for the loss of derivatives: we assume that applying `φ` to `C^l` sections
+produces a `C^n` section (for `n ≤ l`) -/
+lemma ContMDiffWithinAt.clm_bundle_of_apply₂' {l}
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+    [ContMDiffVectorBundle l F₁ E₁ IB] [ContMDiffVectorBundle l F₂ E₂ IB]
+    [ContMDiffVectorBundle l F₃ E₃ IB] (hnl : n ≤ l)
+    {ψ : ∀ x, (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)} {s : Set B} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt[s] l (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x') →
+      ∀ (τ : Π x : B, E₂ x),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt[s] l (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
+      CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
+    CMDiffAt[s] n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x := by
+  -- We use `ContMDiffWithinAt.clm_bundle_of_apply` twice: first to prove `ψ σ` is C^n at `x`,
+  have : ContMDiffVectorBundle n F₃ E₃ IB := ContMDiffVectorBundle.of_le hnl
+  have aux (σ : Π x : B, E₁ x)
+      (hσ : (∀ᶠ x' in 𝓝 x, CMDiffAt[s] l (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x')) :
+      CMDiffAt[s] n
+        (fun m ↦ TotalSpace.mk' (E := fun (x : B) ↦ (E₂ x →L[𝕜] E₃ x))
+        (F₂ →L[𝕜] F₃) m (ψ m (σ m))) x :=
+    ContMDiffWithinAt.clm_bundle_of_apply' l (φ := fun m ↦ ψ m (σ m)) (fun τ hτ ↦ h σ hσ τ hτ)
+  -- then to conclude that `ψ` is C^n at `x`.
+  have : ContMDiffVectorBundle n (F₂ →L[𝕜] F₃) (fun x ↦ E₂ x →L[𝕜] E₃ x) IB :=
+    ContMDiffVectorBundle.of_le hnl
+  exact ContMDiffWithinAt.clm_bundle_of_apply' l (E₁ := E₁) (F₁ := F₁) (x := x) aux
+
 lemma ContMDiffWithinAt.clm_bundle_of_apply₂
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
     [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
@@ -789,16 +820,26 @@ lemma ContMDiffWithinAt.clm_bundle_of_apply₂
         (∀ᶠ x' in 𝓝 x, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
       CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
     CMDiffAt[s] n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x := by
-  -- We use `ContMDiffWithinAt.clm_bundle_of_apply` twice: first to prove `ψ σ` is C^n at `x`,
-  have aux (σ : Π x : B, E₁ x)
-      (hσ : (∀ᶠ x' in 𝓝 x, CMDiffAt[s] n (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x')) :
-      CMDiffAt[s] n
-        (fun m ↦ TotalSpace.mk' (E := fun (x : B) ↦ (E₂ x →L[𝕜] E₃ x))
-        (F₂ →L[𝕜] F₃) m (ψ m (σ m))) x :=
-    ContMDiffWithinAt.clm_bundle_of_apply (φ := fun m ↦ ψ m (σ m)) (fun τ hτ ↦ h σ hσ τ hτ)
-  -- then to conclude that `ψ` is C^n at `x`.
-  exact ContMDiffWithinAt.clm_bundle_of_apply (E₁ := E₁) (F₁ := F₁) (x := x) aux
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x :=
+  ContMDiffWithinAt.clm_bundle_of_apply₂' (le_refl n) h
+
+/-- Version allowing for the loss of derivatives: we assume that applying `φ` to `C^l` sections
+produces a `C^n` section (for `n ≤ l`) -/
+lemma ContMDiffAt.clm_bundle_of_apply₂' {l}
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+    [ContMDiffVectorBundle l F₁ E₁ IB] [ContMDiffVectorBundle l F₂ E₂ IB]
+    [ContMDiffVectorBundle l F₃ E₃ IB] (hnl : n ≤ l)
+    {ψ : ∀ x, (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt l (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x') →
+      ∀ (τ : Π x : B, E₂ x),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt l (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
+      CMDiffAt n (fun m ↦ TotalSpace.mk' F₃ m (ψ m (σ m) (τ m))) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F₃)
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x :=
+  ContMDiffWithinAt.clm_bundle_of_apply₂' hnl h
 
 lemma ContMDiffAt.clm_bundle_of_apply₂
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
@@ -816,6 +857,27 @@ lemma ContMDiffAt.clm_bundle_of_apply₂
       (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] E₃ x)) m (ψ m)) x :=
   ContMDiffWithinAt.clm_bundle_of_apply₂ h
 
+-- TODO: also add a ContMDiffWithinAt version!
+lemma ContMDiffAt.clm_bundle_of_apply₂_trivial_target' {l}
+    {F'' : Type*} [NormedAddCommGroup F''] [NormedSpace 𝕜 F'']
+    [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
+    [∀ (x : B), IsTopologicalAddGroup (E₁ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₁ x)]
+    [∀ (x : B), IsTopologicalAddGroup (E₂ x)] [∀ (x : B), ContinuousSMul 𝕜 (E₂ x)]
+    [ContMDiffVectorBundle l F₁ E₁ IB] [ContMDiffVectorBundle l F₂ E₂ IB]
+    (hnl : n ≤ l) {ψ : ∀ x, (E₁ x →L[𝕜] E₂ x →L[𝕜] F'')} {x : B}
+    (h : ∀ (σ : Π x : B, E₁ x),
+      (∀ᶠ x' in 𝓝 x, CMDiffAt l (fun m ↦ TotalSpace.mk' F₁ m (σ m)) x') →
+      ∀ (τ : Π x : B, E₂ x),
+        (∀ᶠ x' in 𝓝 x, CMDiffAt l (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
+      CMDiffAt n (fun m ↦ (ψ m (σ m) (τ m))) x) :
+    CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F'')
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] Bundle.Trivial B F'' x)) m (ψ m)) x := by
+  apply ContMDiffAt.clm_bundle_of_apply₂' hnl
+  intro σ hσ τ hτ
+  simp_rw [contMDiffAt_totalSpace_iff,
+    Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply]
+  exact ⟨contMDiffAt_id, h σ hσ τ hτ⟩
+
 lemma ContMDiffAt.clm_bundle_of_apply₂_trivial_target
     {F'' : Type*} [NormedAddCommGroup F''] [NormedSpace 𝕜 F'']
     [CompleteSpace 𝕜] [FiniteDimensional 𝕜 F₁] [FiniteDimensional 𝕜 F₂]
@@ -829,12 +891,8 @@ lemma ContMDiffAt.clm_bundle_of_apply₂_trivial_target
         (∀ᶠ x' in 𝓝 x, CMDiffAt n (fun m ↦ TotalSpace.mk' F₂ m (τ m)) x') →
       CMDiffAt n (fun m ↦ (ψ m (σ m) (τ m))) x) :
     CMDiffAt n (fun m ↦ TotalSpace.mk' (F₁ →L[𝕜] F₂ →L[𝕜] F'')
-      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] Bundle.Trivial B F'' x)) m (ψ m)) x := by
-  apply ContMDiffAt.clm_bundle_of_apply₂
-  intro σ hσ τ hτ
-  simp_rw [contMDiffAt_totalSpace_iff,
-    Trivial.fiberBundle_trivializationAt', Trivial.trivialization_apply]
-  exact ⟨contMDiffAt_id, h σ hσ τ hτ⟩
+      (E := fun (x : B) ↦ (E₁ x →L[𝕜] E₂ x →L[𝕜] Bundle.Trivial B F'' x)) m (ψ m)) x :=
+  ContMDiffAt.clm_bundle_of_apply₂_trivial_target' (le_refl n) h
 
 -- TODO: do we care about this version? If so, find a better naming scheme and/or generalise the
 -- version above.
