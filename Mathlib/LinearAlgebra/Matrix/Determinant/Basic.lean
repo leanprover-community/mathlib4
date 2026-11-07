@@ -362,7 +362,7 @@ variable {S : Type*} [CommRing S]
 
 @[simp]
 theorem fst_det (M : Matrix n n (R × S)) :
-    M.det.fst = (prodRingEquiv n R S M).fst.det :=
+    M.det.fst = (M.map Prod.fst).det :=
   RingHom.map_det (RingHom.fst R S) _
 
 @[simp]
