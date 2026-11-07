@@ -317,6 +317,37 @@ def piEquiv : SpecialLinearGroup n (Π i, R i) ≃* Π i, SpecialLinearGroup n (
 
 end Pi
 
+section SumInl
+
+variable (p : Type*) [DecidableEq p] [Fintype p]
+
+/-- The embedding `SL(n, R) →* SL(n ⊕ p, R)` sending `A` to the block matrix `!![A, 0; 0, 1]`. -/
+def sumInl : SpecialLinearGroup n R →* SpecialLinearGroup (n ⊕ p) R where
+  toFun A := ⟨fromBlocks A 0 0 1, by simp [det_fromBlocks_zero₂₁]⟩
+  map_one' := Subtype.ext fromBlocks_one
+  map_mul' A B := Subtype.ext ((fromBlocks_multiply ..).trans (by simp)).symm
+
+variable {p}
+
+@[simp]
+lemma coe_sumInl (A : SpecialLinearGroup n R) :
+    (sumInl p A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks A 0 0 1 :=
+  rfl
+
+lemma mem_range_sumInl_iff {A : SpecialLinearGroup (n ⊕ p) R} :
+    A ∈ (sumInl p).range ↔ (A : Matrix (n ⊕ p) (n ⊕ p) R).IsTwoBlockDiagonal ∧
+      toBlocks₂₂ (A : Matrix (n ⊕ p) (n ⊕ p) R) = 1 := by
+  refine ⟨?_, fun ⟨⟨h₁₂, h₂₁⟩, h₂₂⟩ ↦ ?_⟩
+  · rintro ⟨A, rfl⟩
+    simp [IsTwoBlockDiagonal]
+  · have hA : (A : Matrix (n ⊕ p) (n ⊕ p) R) = fromBlocks (toBlocks₁₁ ↑A) 0 0 1 :=
+      (fromBlocks_toBlocks _).symm.trans (by rw [h₁₂, h₂₁, h₂₂])
+    have hdet := A.det_coe
+    rw [hA, det_fromBlocks_zero₂₁, det_one, mul_one] at hdet
+    exact ⟨⟨_, hdet⟩, Subtype.ext hA.symm⟩
+
+end SumInl
+
 section center
 
 open Subgroup

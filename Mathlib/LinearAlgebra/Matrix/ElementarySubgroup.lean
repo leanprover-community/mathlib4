@@ -71,10 +71,10 @@ theorem map_surjective_of_elementary_eq_top {f : R →+* S} (hf : Function.Surje
   exact Subgroup.map_le_range ..
 
 /-- Reindexing along `e : n ≃ m` maps `E(n, R)` onto `E(m, R)`. -/
-lemma map_reindexMulEquiv_elementary (e : n ≃ m) :
-    (elementary n R).map (reindexMulEquiv R e : SpecialLinearGroup n R →* SpecialLinearGroup m R) =
+lemma map_reindex_elementary (e : n ≃ m) :
+    (elementary n R).map (reindex R e : SpecialLinearGroup n R →* SpecialLinearGroup m R) =
       elementary m R := by
-  have h : reindexMulEquiv R e ∘ toSpecialLinearGroup = toSpecialLinearGroup ∘ reindexEquiv e := by
+  have h : reindex R e ∘ toSpecialLinearGroup = toSpecialLinearGroup ∘ reindexEquiv e := by
     funext _
     exact Subtype.ext (toMatrix_reindexEquiv e _).symm
   simp [elementary, MonoidHom.map_closure, ← Set.range_comp, h,
@@ -146,15 +146,15 @@ theorem elementary_eq_top_of_forall_exists_isUnit
     | zero => exact Subsingleton.elim _ _
     | succ r ih =>
       have e : Fin r ⊕ Unit ≃ Fin (r + 1) := Fintype.equivOfCardEq (by simp)
-      simp [← map_reindexMulEquiv_elementary e,
+      simp [← map_reindex_elementary e,
         elementary_sum_unit_eq_top (ih (Nat.le_of_succ_le hr)) (hR _ hr)]
-  simp [← map_reindexMulEquiv_elementary (Fintype.equivFin n).symm, ind _ le_rfl]
+  simp [← map_reindex_elementary (Fintype.equivFin n).symm, ind _ le_rfl]
 
 /-- For a local ring `R` we have `SL(n, R) = E(n, R)`. -/
 theorem elementary_eq_top_of_isLocalRing [IsLocalRing R] : elementary n R = ⊤ :=
   elementary_eq_top_of_forall_exists_isUnit fun r _ A ↦ by
     have h : IsUnit ((A⁻¹ * A) (.inr ()) (.inr ())) := by simp
-    obtain ⟨i, -, hi⟩ := IsLocalRing.exists_of_isUnit_sum (by rwa [coe_mul, mul_apply] at h)
+    obtain ⟨i, -, hi⟩ := IsLocalRing.exists_of_isUnit_sum (by rwa [coe_mul, Matrix.mul_apply] at h)
     exact ⟨1, one_mem _, i, by simpa using isUnit_of_mul_isUnit_right hi⟩
 
 end Matrix.SpecialLinearGroup

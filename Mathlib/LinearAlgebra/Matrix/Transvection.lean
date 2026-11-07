@@ -98,14 +98,14 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   cases nonempty_fintype n
   ext a b
   by_cases ha : i = a
-  · by_cases hb : j = b <;> simp [ha, one_apply, hb, transvection]
+  · by_cases hb : j = b <;> simp [ha, Matrix.one_apply, hb, transvection]
   · simp [transvection, ha, Ne.symm ha]
 
 @[simp]
 lemma map_transvection {S : Type*} [CommRing S] (f : R →+* S) (c : R) :
     map (transvection i j c) f = transvection i j (f c) := by
-  ext a b
-  simp [transvection, one_apply, single_apply, apply_ite f]
+  ext
+  simp [transvection, Matrix.one_apply, single_apply, apply_ite f]
 
 variable [Fintype n]
 
