@@ -327,12 +327,12 @@ lemma mul_geom_sum₂_Ico (x y : R) {m n : ℕ} (hmn : m ≤ n) :
 theorem dvd_sub_pow_of_dvd_sub {p : ℕ} {a b : R} (h : (p : R) ∣ a - b) (k : ℕ) :
     (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction k with
-  | zero => simpa using h
+  | zero => simp [h]
   | succ k ih =>
     grw [pow_succ p, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ', mul_dvd_mul ?_ ih]
     rw [← dvd_sub_left (geom_sum₂_self (b ^ p ^ k) p ▸ dvd_mul_right ..), ← sum_sub_distrib]
     refine dvd_sum fun i mi ↦ ?_
-    grw [← sub_mul, ← dvd_mul_right, ← pow_mul, ← pow_mul, ← sub_dvd_pow_sub_pow, h]
+    grw [← sub_mul, ← dvd_mul_right, ← sub_dvd_pow_sub_pow, ← sub_dvd_pow_sub_pow, h]
 
 end CommRing
 
