@@ -87,7 +87,7 @@ end PartialOrder
 open PartialOrder in
 /-- The functor `PartOrd ⥤ PartOrd` which sends a partially ordered type `X`
 to `NonemptyFiniteChains X`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def PartOrd.nonemptyFiniteChainsFunctor : PartOrd.{u} ⥤ PartOrd.{u} where
   obj X := ↧(NonemptyFiniteChains X)
   map f := PartOrd.ofHom (NonemptyFiniteChains.orderHomMap f.hom)
