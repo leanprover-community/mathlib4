@@ -965,6 +965,16 @@ theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf).ne
 
+/-- For `f ∈ L^p` with `0 < p < ∞`, the `p`-th power of the `L^p` seminorm is `ENNReal.ofReal`
+of the Bochner integral of `‖f‖ ^ p`; compare `MemLp.eLpNorm_eq_integral_rpow_norm` for
+`eLpNorm` itself. -/
+theorem MemLp.rpow_eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0)
+    (hp2 : p ≠ ∞) (hf : MemLp f p μ) :
+    eLpNorm f p μ ^ p.toReal = ENNReal.ofReal (∫ a, ‖f a‖ ^ p.toReal ∂μ) := by
+  have h : 0 ≤ ∫ a, ‖f a‖ ^ p.toReal ∂μ := integral_nonneg fun a ↦ by positivity
+  rw [hf.eLpNorm_eq_integral_rpow_norm hp1 hp2, ofReal_rpow_of_nonneg (Real.rpow_nonneg h _)
+    toReal_nonneg, Real.rpow_inv_rpow h (toReal_pos hp1 hp2).ne']
+
 end NormedAddCommGroup
 
 theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ := by
