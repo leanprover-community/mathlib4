@@ -86,7 +86,7 @@ instance finite [IsLattice A M] : Module.Finite R M := by
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The action of `Aˣ` on `R`-submodules of `V` preserves `IsLattice`. -/
-instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
+instance [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) where
   fg := by
     obtain ⟨s, rfl⟩ := IsLattice.fg (M := M)
     rw [Submodule.smul_span]
@@ -105,7 +105,7 @@ lemma of_le_of_isLattice_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsLattice 
     le_trans (by rw [IsLattice.span_eq_top]) (Submodule.span_mono hle)⟩
 
 /-- The supremum of two lattices is a lattice. -/
-instance sup (M N : Submodule R V) [IsLattice A M] [IsLattice A N] :
+instance (M N : Submodule R V) [IsLattice A M] [IsLattice A N] :
     IsLattice A (M ⊔ N) :=
   of_le_of_isLattice_of_fg A le_sup_left (Submodule.FG.sup IsLattice.fg IsLattice.fg)
 
@@ -194,7 +194,7 @@ lemma finrank_of_pi {ι : Type*} [Fintype ι] [IsFractionRing R K] (M : Submodul
   Module.finrank_eq_of_rank_eq (IsLattice.rank_of_pi K M)
 
 /-- The intersection of two lattices is a lattice. -/
-instance inf [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
+instance [Module.Finite K V] [IsFractionRing R K] (M N : Submodule R V)
     [IsLattice K M] [IsLattice K N] : IsLattice K (M ⊓ N) where
   fg := by
     have : IsNoetherian R ↥(M ⊓ N) := isNoetherian_of_le inf_le_left

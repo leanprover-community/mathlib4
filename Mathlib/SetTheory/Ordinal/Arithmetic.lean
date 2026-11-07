@@ -264,7 +264,7 @@ theorem lift_pred (o : Ordinal.{v}) : lift.{u} (pred o) = pred (lift.{u} o) := b
 /-! ### Subtraction on ordinals -/
 
 /-- `a - b` is the unique ordinal satisfying `b + (a - b) = a` when `b ≤ a`. -/
-instance sub : Sub Ordinal where
+instance : Sub Ordinal where
   sub a b := if h : b ≤ a then Classical.choose (exists_add_of_le h) else 0
 
 private theorem sub_eq_zero_of_lt {a b : Ordinal} (h : a < b) : a - b = 0 :=
@@ -553,7 +553,7 @@ protected theorem mul_two (o : Ordinal) : o * 2 = o + o := by
 
 /-- `a / b` is the unique ordinal `q` satisfying `a = b * q + r` with `r < b`. -/
 @[no_expose]
-instance div : Div Ordinal where
+instance : Div Ordinal where
   div a b := sSup ((b * ·) ⁻¹' Iic a)
 
 @[simp]

@@ -654,39 +654,39 @@ namespace IsStarNormal
 
 alias ⟨of_subtypeVal, subtypeVal⟩ := Subtype.isStarNormal_iff
 
-protected instance zero [NonUnitalNonAssocSemiring R]
+instance [NonUnitalNonAssocSemiring R]
     [StarAddMonoid R] : IsStarNormal (0 : R) :=
   ⟨by simp only [Commute.refl, star_zero]⟩
 
-protected instance one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+instance [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_one]⟩
 
-protected instance star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
+instance [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
     IsStarNormal (star x) :=
   ⟨show star (star x) * star x = star x * star (star x) by rw [star_star, star_comm_self']⟩
 
-protected instance neg [NonUnitalNonAssocRing R]
+instance [NonUnitalNonAssocRing R]
     [StarAddMonoid R] {x : R} [IsStarNormal x] : IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
-protected instance val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
+instance val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
     IsStarNormal (↑x⁻¹ : R) where
   star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
 
-protected instance pow [Monoid R] [StarMul R] {x : R} [IsStarNormal x] (n : ℕ) :
+instance [Monoid R] [StarMul R] {x : R} [IsStarNormal x] (n : ℕ) :
     IsStarNormal (x ^ n) where
   star_comm_self := star_pow x n ▸ (star_comm_self.pow_pow n n)
 
-protected instance zpow [Group R] [StarMul R] {x : R} [IsStarNormal x] (n : ℤ) :
+instance [Group R] [StarMul R] {x : R} [IsStarNormal x] (n : ℤ) :
     IsStarNormal (x ^ n) where
   star_comm_self := star_zpow x n ▸ (star_comm_self.zpow_zpow n n)
 
-protected instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
+instance map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using! congr(f $hr.star_comm_self)
 
-protected instance smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
+instance {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
     [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
     (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
   star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r

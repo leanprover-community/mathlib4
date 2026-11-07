@@ -78,7 +78,7 @@ variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 -- See issue https://github.com/leanprover-community/mathlib4/issues/18110.
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of `A`.
 -/
-instance one : One (Submodule R A) :=
+instance : One (Submodule R A) :=
   ⟨LinearMap.range (LinearMap.toSpanSingleton R A 1)⟩
 
 theorem one_eq_span : (1 : Submodule R A) = R ∙ 1 :=
@@ -211,7 +211,7 @@ variable [IsScalarTower R A A]
 
 /-- Multiplication of sub-R-modules of an R-module A that is also a semiring. The submodule `M * N`
 consists of finite sums of elements `m * n` for `m ∈ M` and `n ∈ N`. -/
-instance mul : Mul (Submodule R A) where
+instance : Mul (Submodule R A) where
   mul := (· • ·)
 
 variable {M N P : Submodule R A} {m n : A}

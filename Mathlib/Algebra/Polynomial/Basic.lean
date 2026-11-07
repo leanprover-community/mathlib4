@@ -1039,7 +1039,7 @@ section repr
 
 variable [Semiring R]
 
-protected instance repr [Repr R] [DecidableEq R] : Repr R[X] :=
+instance [Repr R] [DecidableEq R] : Repr R[X] :=
   ⟨fun p prec ↦
     let termPrecAndReprs : List (WithTop ℕ × Lean.Format) :=
       List.map (fun

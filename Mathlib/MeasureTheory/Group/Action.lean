@@ -34,20 +34,20 @@ variable {G : Type u} {M : Type v} {α : Type w}
 namespace SMulInvariantMeasure
 
 @[to_additive]
-instance zero [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
+instance [MeasurableSpace α] [SMul M α] : SMulInvariantMeasure M α (0 : Measure α) :=
   ⟨fun _ _ _ => rfl⟩
 
 variable [SMul M α] {m : MeasurableSpace α} {μ ν : Measure α}
 
 @[to_additive]
-instance add [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
+instance [SMulInvariantMeasure M α μ] [SMulInvariantMeasure M α ν] :
     SMulInvariantMeasure M α (μ + ν) :=
   ⟨fun c _s hs =>
     show _ + _ = _ + _ from
       congr($(measure_preimage_smul c hs) + $(measure_preimage_smul c hs))⟩
 
 @[to_additive]
-instance smul [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
+instance [SMulInvariantMeasure M α μ] (c : ℝ≥0∞) : SMulInvariantMeasure M α (c • μ) :=
   ⟨fun a _s hs => show c • _ = c • _ from congr(c • $(measure_preimage_smul a hs))⟩
 
 @[to_additive]

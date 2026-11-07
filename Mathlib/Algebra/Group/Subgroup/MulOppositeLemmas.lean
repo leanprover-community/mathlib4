@@ -30,9 +30,9 @@ namespace Subgroup
 /-- We redeclare this instance to get keys
 `SMul (@Subtype (MulOpposite _) (@Membership.mem (MulOpposite _)
   (Subgroup (MulOpposite _) _) _ (@Subgroup.op _ _ _))) _`
-compared to the keys for `Submonoid.smul`
+compared to the keys for `Submonoid.instSMulSubtypeMem`
 `SMul (@Subtype _ (@Membership.mem _ (Submonoid _ _) _ _)) _` -/
-@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := Submonoid.smul ..
+@[to_additive] instance instSMul (H : Subgroup G) : SMul H.op G := inferInstance
 
 /-! ### Lattice results -/
 

@@ -216,7 +216,7 @@ section One
 
 variable [Zero α] [One α]
 
-instance one : One (Matrix n n α) :=
+instance : One (Matrix n n α) :=
   ⟨diagonal fun _ => 1⟩
 
 @[simp]

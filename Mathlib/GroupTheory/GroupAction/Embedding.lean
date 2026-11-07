@@ -32,7 +32,7 @@ variable {G G' α β : Type*}
 namespace Function.Embedding
 
 @[to_additive]
-instance smul [Group G] [MulAction G β] : SMul G (α ↪ β) :=
+instance [Group G] [MulAction G β] : SMul G (α ↪ β) :=
   ⟨fun g f => f.trans (MulAction.toPerm g).toEmbedding⟩
 
 @[to_additive]

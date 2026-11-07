@@ -119,13 +119,13 @@ scoped notation3 "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
 #guard_msgs in
 #check typeLT ℕ
 
-instance zero : Zero Ordinal :=
+instance : Zero Ordinal :=
   ⟨type <| @emptyRelation PEmpty⟩
 
 instance inhabited : Inhabited Ordinal :=
   ⟨0⟩
 
-instance one : One Ordinal :=
+instance : One Ordinal :=
   ⟨type <| @emptyRelation PUnit⟩
 
 theorem type_eq {α β} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r] [IsWellOrder β s] :
@@ -790,7 +790,7 @@ the addition, together with properties of the other operations, are proved in
 
 /-- `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
 every element of `o₁` is smaller than every element of `o₂`. -/
-instance add : Add Ordinal.{u} :=
+instance : Add Ordinal.{u} :=
   ⟨fun o₁ o₂ => Quotient.liftOn₂ o₁ o₂ (fun ⟨_, r, _⟩ ⟨_, s, _⟩ => type (Sum.Lex r s))
     fun _ _ _ _ ⟨f⟩ ⟨g⟩ => (RelIso.sumLexCongr f g).ordinalType_congr⟩
 

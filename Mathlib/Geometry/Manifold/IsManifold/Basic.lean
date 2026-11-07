@@ -890,7 +890,7 @@ lemma maximalAtlas_subset_of_le {m n : ℕ∞ω} (h : m ≤ n) :
 
 variable (n) in
 /-- The empty set is a `C^n` manifold w.r.t. any charted space and model. -/
-instance empty [IsEmpty M] : IsManifold I n M := by
+instance [IsEmpty M] : IsManifold I n M := by
   apply isManifold_of_contDiffOn
   intro e e' _ _ x hx
   set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I

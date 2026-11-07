@@ -351,7 +351,7 @@ namespace OuterRegular
 
 variable [TopologicalSpace α]
 
-instance zero : OuterRegular (0 : Measure α) :=
+instance : OuterRegular (0 : Measure α) :=
   ⟨fun A _ _r hr => ⟨univ, subset_univ A, isOpen_univ, hr⟩⟩
 
 /-- Given `r` larger than the measure of a set `A`, there exists an open superset of `A` with
@@ -706,10 +706,10 @@ theorem _root_.MeasurableSet.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : Me
     μ U = ⨆ (K : Set α) (_ : K ⊆ U) (_ : IsCompact K), μ K :=
   InnerRegular.innerRegular.measure_eq_iSup hU
 
-instance zero : InnerRegular (0 : Measure α) :=
+instance : InnerRegular (0 : Measure α) :=
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
 
-instance smul [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) :=
+instance [h : InnerRegular μ] (c : ℝ≥0∞) : InnerRegular (c • μ) :=
   ⟨InnerRegularWRT.smul h.innerRegular c⟩
 
 instance smul_nnreal [InnerRegular μ] (c : ℝ≥0) : InnerRegular (c • μ) := smul (c : ℝ≥0∞)
@@ -969,7 +969,7 @@ protected theorem _root_.MeasureTheory.NullMeasurableSet.exists_isOpen_symmDiff_
   refine ⟨U, hUo, hμU, ?_⟩
   rwa [measure_congr <| .symmDiff .rfl hst]
 
-instance smul [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
+instance [h : InnerRegularCompactLTTop μ] (c : ℝ≥0∞) : InnerRegularCompactLTTop (c • μ) := by
   by_cases hc : c = 0
   · simp only [hc, zero_smul]
     infer_instance
@@ -1009,7 +1009,7 @@ namespace WeaklyRegular
 
 variable [TopologicalSpace α]
 
-instance zero : WeaklyRegular (0 : Measure α) :=
+instance : WeaklyRegular (0 : Measure α) :=
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isClosed_empty, hr⟩⟩
 
 /-- If `μ` is a weakly regular measure, then any open set can be approximated by a closed subset. -/
@@ -1100,7 +1100,7 @@ namespace Regular
 
 variable [TopologicalSpace α]
 
-instance zero : Regular (0 : Measure α) :=
+instance : Regular (0 : Measure α) :=
   ⟨fun _ _ _r hr => ⟨∅, empty_subset _, isCompact_empty, hr⟩⟩
 
 /-- If `μ` is a regular measure, then any open set can be approximated by a compact subset. -/

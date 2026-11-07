@@ -164,10 +164,10 @@ scoped postfix:1024 "ᵀ" => Matrix.transpose
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
   inferInstanceAs <| Inhabited (m → n → α)
 
-instance add [Add α] : Add (Matrix m n α) :=
+instance [Add α] : Add (Matrix m n α) :=
   inferInstanceAs <| Add (m → n → α)
 
-instance smul [SMul R α] : SMul R (Matrix m n α) where
+instance [SMul R α] : SMul R (Matrix m n α) where
   smul a b := fun i ↦ a • b i
 
 instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
@@ -176,7 +176,7 @@ instance addSemigroup [AddSemigroup α] : AddSemigroup (Matrix m n α) :=
 instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup (Matrix m n α) :=
   inferInstanceAs <| AddCommSemigroup (m → n → α)
 
-instance zero [Zero α] : Zero (Matrix m n α) :=
+instance [Zero α] : Zero (Matrix m n α) :=
   inferInstanceAs <| Zero (m → n → α)
 
 instance addZeroClass [AddZeroClass α] : AddZeroClass (Matrix m n α) :=
@@ -188,13 +188,13 @@ instance addMonoid [AddMonoid α] : AddMonoid (Matrix m n α) :=
 instance addCommMonoid [AddCommMonoid α] : AddCommMonoid (Matrix m n α) :=
   inferInstanceAs <| AddCommMonoid (m → n → α)
 
-instance neg [Neg α] : Neg (Matrix m n α) :=
+instance [Neg α] : Neg (Matrix m n α) :=
   inferInstanceAs <| Neg (m → n → α)
 
 instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg (Matrix m n α) :=
   inferInstanceAs <| InvolutiveNeg (m → n → α)
 
-instance sub [Sub α] : Sub (Matrix m n α) :=
+instance [Sub α] : Sub (Matrix m n α) :=
   inferInstanceAs <| Sub (m → n → α)
 
 instance addGroup [AddGroup α] : AddGroup (Matrix m n α) :=

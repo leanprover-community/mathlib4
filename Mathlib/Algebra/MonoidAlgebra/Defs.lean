@@ -463,7 +463,7 @@ i.e. the function that is `1` at `1` and `0` elsewhere. -/
 @[to_additive (dont_translate := R)
 /-- The unit of the multiplication is `single 1 1`,
 i.e. the function that is `1` at `1` and `0` elsewhere. -/]
-instance one : One R[M] where one := single 1 1
+instance : One R[M] where one := single 1 1
 
 @[to_additive (dont_translate := R) one_def]
 lemma one_def : (1 : R[M]) = single 1 1 := rfl
