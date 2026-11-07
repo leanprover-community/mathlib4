@@ -35,7 +35,7 @@ section CommGroup
 
 open Subgroup
 
-variable (G : Type*) [CommGroup G] [Group.FG G]
+variable (G : Type*) [CommGroup G] [IsMulFG G]
 
 @[to_additive]
 theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
@@ -163,12 +163,12 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   group is finitely generated. -/
 @[to_additive /-- **Schreier's Lemma**: A finite index additive subgroup of a finitely generated
   additive group is finitely generated. -/]
-instance fg_of_index_ne_zero [hG : Group.FG G] [FiniteIndex H] : Group.FG H := by
+instance fg_of_index_ne_zero [hG : IsMulFG G] [FiniteIndex H] : IsMulFG H := by
   obtain ⟨S, hS⟩ := Group.exists_of_isMulFG G
   obtain ⟨T, -, hT⟩ := exists_finset_card_le_mul H hS
   exact Group.isMulFG_iff.mpr ⟨T, hT⟩
 
-theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
+theorem rank_le_index_mul_rank [hG : IsMulFG G] [FiniteIndex H] :
     Group.rank H ≤ H.index * Group.rank G := by
   have := H.fg_of_index_ne_zero
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
