@@ -451,7 +451,7 @@ instance : Module.Finite ℤ (Additive (𝓞 K)ˣ) := by
     infer_instance
 
 instance : IsMulFG (𝓞 K)ˣ := by
-  rw [Monoid.fg_iff_add_fg, ← Module.Finite.iff_addGroup_fg]
+  rw [← isAddFG_additive_iff, ← Module.Finite.iff_addGroup_fg]
   infer_instance
 
 theorem finrank_modTorsion : finrank ℤ (Additive ((𝓞 K)ˣ ⧸ (torsion K))) = rank K := by
