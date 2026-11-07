@@ -137,7 +137,8 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[to_dual (attr := simps, implicit_reducible) /-- The third projection functor `ShortComplex C ⥤ C`. -/]
+@[to_dual (attr := simps, implicit_reducible)
+/-- The third projection functor `ShortComplex C ⥤ C`. -/]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
