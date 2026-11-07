@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.KummerPolynomial
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Perfect fields and rings
 
 In this file we define perfect fields, together with a generalisation to (commutative) rings in
@@ -319,7 +318,7 @@ instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   rcases hp with _ | hp
   · simp [frobenius]
   rw [← not_forall_not]
-  apply mt (X_pow_sub_C_irreducible_of_prime hp)
+  apply mt (irreducible_X_pow_sub_C_of_prime hp)
   apply mt separable_of_irreducible
   simp [separable_def, isCoprime_zero_right, isUnit_iff_degree_eq_zero,
     derivative_X_pow, degree_X_pow_sub_C hp.pos, hp.ne_zero]

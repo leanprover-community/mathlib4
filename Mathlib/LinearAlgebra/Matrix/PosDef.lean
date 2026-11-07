@@ -141,6 +141,18 @@ protected theorem _root_.Matrix.posSemidef_intCast_iff
 lemma diag_nonneg {A : Matrix n n R} (hA : A.PosSemidef) {i : n} : 0 ≤ A i i := by
   simpa using hA.2 <| .single i 1
 
+variable (n R) in
+/-- The set of matrices that are positive semidefinite form an additive submonoid. -/
+@[simps]
+def addSubmonoid [AddLeftMono R] : AddSubmonoid (Matrix n n R) where
+  carrier := .ofPred PosSemidef
+  add_mem' := .add
+  zero_mem' := .zero
+
+@[simp]
+theorem mem_addSubmonoid [AddLeftMono R] {A : Matrix n n R} : A ∈ addSubmonoid n R ↔ A.PosSemidef :=
+  Iff.rfl
+
 end PosSemidef
 
 @[simp]

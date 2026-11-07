@@ -55,7 +55,7 @@ theorem mirror_C (a : R) : (C a).mirror = C a :=
 theorem mirror_X : X.mirror = (X : R[X]) :=
   mirror_monomial 1 (1 : R)
 
-theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
+@[simp] theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
   nontriviality R
@@ -63,6 +63,7 @@ theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
     tsub_add_cancel_of_le p.natTrailingDegree_le_natDegree]
   rwa [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
 
+@[simp]
 theorem mirror_natTrailingDegree : p.mirror.natTrailingDegree = p.natTrailingDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
@@ -108,9 +109,7 @@ theorem mirror_eval_one : p.mirror.eval 1 = p.eval 1 := by
       rwa [coeff_mirror, revAt_invol]
   · exact fun n _ _ => p.coeff_mirror n
 
-theorem mirror_mirror : p.mirror.mirror = p :=
-  Polynomial.ext fun n => by
-    rw [coeff_mirror, coeff_mirror, mirror_natDegree, mirror_natTrailingDegree, revAt_invol]
+theorem mirror_mirror : p.mirror.mirror = p := by ext; simp [coeff_mirror]
 
 variable {p q}
 
