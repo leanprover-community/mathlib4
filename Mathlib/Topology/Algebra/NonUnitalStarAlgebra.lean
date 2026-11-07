@@ -51,6 +51,10 @@ def topologicalClosure (s : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgeb
     star_mem' := fun h ↦ map_mem_closure continuous_star h fun _ ↦ star_mem
     carrier := _root_.closure (s : Set A) }
 
+theorem toNonUnitalSubalgebra_topologicalClosure (s : NonUnitalStarSubalgebra R A) :
+    s.topologicalClosure.toNonUnitalSubalgebra = s.toNonUnitalSubalgebra.topologicalClosure :=
+  rfl
+
 theorem le_topologicalClosure (s : NonUnitalStarSubalgebra R A) : s ≤ s.topologicalClosure :=
   subset_closure
 
