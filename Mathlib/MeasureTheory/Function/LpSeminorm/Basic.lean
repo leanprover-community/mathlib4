@@ -479,7 +479,7 @@ theorem eLpNorm_le_of_ae_eNorm_bound
   rw [eLpNorm_const _ hp (NeZero.ne μ), one_div, eNorm_eq_self, smul_eq_mul]
 
 @[deprecated (since := "2026-11-06")]
-alias eLpNorm_le_of_ae_eNorm_bound := eLpNorm_le_of_ae_eNorm_bound
+alias eLpNorm_le_of_ae_enorm_bound := eLpNorm_le_of_ae_eNorm_bound
 
 theorem eLpNorm_le_of_ae_nnNorm_bound {f : α → F} {C : ℝ≥0}
     (hf : AEStronglyMeasurable f μ) (hfC : ∀ᵐ x ∂μ, ‖f x‖₊ ≤ C) :
@@ -1195,7 +1195,7 @@ theorem ae_bdd_liminf_atTop_rpow_of_eLpNorm_bdd {f : ℕ → α → E}
   simp_rw [liminf_eq, eventually_atTop]
   refine sSup_le fun b ⟨a, ha⟩ ↦ (ha a le_rfl).trans ?_
   apply (ENNReal.rpow_inv_le_iff (ENNReal.toReal_pos hp hp')).1
-  simp only [← eNorm_eq_nnNorm, ← one_div, ← eLpNorm_eq_lintegral_rpow_enorm_toReal hp hp' (hfae _)]
+  simp only [← eNorm_eq_nnNorm, ← one_div, ← eLpNorm_eq_lintegral_rpow_eNorm_toReal hp hp' (hfae _)]
   exact le_iSup (fun b ↦ eLpNorm (f b) p μ) a
 
 theorem ae_bdd_liminf_atTop_of_eLpNorm_bdd (hp : p ≠ 0) {f : ℕ → α → E}
