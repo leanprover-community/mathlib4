@@ -424,10 +424,13 @@ attribute [local instance] FractionRing.liftAlgebra
 
 @[simp]
 theorem Algebra.intNorm_map_algEquiv [IsDomain B₂] [IsIntegrallyClosed B₂] [Algebra.IsIntegral A B₂]
-    [IsTorsionFree A B₂] [Algebra.IsAlgebraic (FractionRing A) (FractionRing B)]
-    [Algebra.IsAlgebraic (FractionRing A) (FractionRing B₂)]
+    [IsTorsionFree A B₂]
     (x : B) (σ : B ≃ₐ[A] B₂) :
     Algebra.intNorm A B₂ (σ x) = Algebra.intNorm A B x := by
+  have : Algebra.IsAlgebraic (FractionRing A) (FractionRing B) :=
+    isAlgebraic_of_isFractionRing A B _ _
+  have : Algebra.IsAlgebraic (FractionRing A) (FractionRing B₂) :=
+    isAlgebraic_of_isFractionRing A B₂ _ _
   apply FaithfulSMul.algebraMap_injective A (FractionRing A)
   rw [algebraMap_intNorm_fractionRing, algebraMap_intNorm_fractionRing,
     ← galLiftEquiv_algebraMap_apply (FractionRing A) (FractionRing B), norm_eq_of_algEquiv]
