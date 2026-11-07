@@ -135,7 +135,7 @@ namespace Abelian
 variable {X₁ X₂ X₃ X₄ : C} {t : X₁ ⟶ X₂} {l : X₁ ⟶ X₃} {r : X₂ ⟶ X₄} {b : X₃ ⟶ X₄}
 
 lemma mono_cokernel_map_of_isPullback (sq : IsPullback t l r b) :
-    Mono (cokernel.map _ _ _ _ sq.w) := by
+    Mono (cokernel.map _ _ _ _ sq.w.symm) := by
   rw [Preadditive.mono_iff_cancel_zero]
   intro A₀ z hz
   obtain ⟨A₁, π₁, _, x₂, hx₂⟩ :=
@@ -143,7 +143,7 @@ lemma mono_cokernel_map_of_isPullback (sq : IsPullback t l r b) :
   have : (ShortComplex.mk _ _ (cokernel.condition b)).Exact :=
     ShortComplex.exact_of_g_is_cokernel _ (cokernelIsCokernel b)
   obtain ⟨A₂, π₂, _, x₃, hx₃⟩ := this.exact_up_to_refinements (x₂ ≫ r) (by
-    simpa [hz] using hx₂.symm =≫ cokernel.map _ _ _ _ sq.w)
+    simpa [hz] using hx₂.symm =≫ cokernel.map _ _ _ _ sq.w.symm)
   obtain ⟨x₁, hx₁, rfl⟩ := sq.exists_lift (π₂ ≫ x₂) x₃ (by simpa)
   simp [← cancel_epi π₁, ← cancel_epi π₂, hx₂, ← reassoc_of% hx₁]
 

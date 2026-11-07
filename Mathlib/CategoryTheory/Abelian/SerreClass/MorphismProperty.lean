@@ -195,7 +195,7 @@ instance : P.monoModSerre.IsStableUnderBaseChange where
 instance : P.epiModSerre.IsStableUnderBaseChange where
   of_isPullback sq h :=
     have := Abelian.mono_cokernel_map_of_isPullback sq.flip
-    P.prop_of_mono (cokernel.map _ _ _ _ sq.w.symm) h
+    P.prop_of_mono (cokernel.map _ _ _ _ sq.w) h
 
 instance : P.isoModSerre.IsStableUnderBaseChange := by
   dsimp [isoModSerre]
@@ -209,7 +209,7 @@ instance : P.monoModSerre.IsStableUnderCobaseChange where
 instance : P.epiModSerre.IsStableUnderCobaseChange where
   of_isPushout sq h :=
     have := isIso_cokernel_map_of_isPushout sq.flip
-    P.prop_of_iso (asIso (cokernel.map _ _ _ _ sq.w.symm)) h
+    P.prop_of_iso (asIso (cokernel.map _ _ _ _ sq.w)) h
 
 instance : P.isoModSerre.IsStableUnderCobaseChange := by
   dsimp [isoModSerre]
