@@ -8,6 +8,8 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 public import Mathlib.Data.Finset.Powerset
 
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+
 /-!
 # Big operators
 
@@ -62,5 +64,30 @@ lemma prod_powerset (s : Finset α) (f : Finset α → β) :
 lemma prod_powersetCard (n : ℕ) (s : Finset α) (f : ℕ → β) :
     ∏ t ∈ powersetCard n s, f #t = f n ^ (#s).choose n := by
   rw [prod_eq_pow_card, card_powersetCard]; rintro a ha; rw [(mem_powersetCard.1 ha).2]
+
+/-- A product of `f` over the `r`-element subsets of each `k`-element subset of `s` is the product
+of `f` over the `r`-element subsets of `s`, raised to `(#s - r).choose (k - r)`. -/
+@[to_additive /-- A sum of `f` over the `r`-element subsets of each `k`-element subset of `s` is
+`(#s - r).choose (k - r)` times the sum of `f` over the `r`-element subsets of `s`. -/]
+lemma prod_powersetCard_prod_powersetCard (r k : ℕ) (s : Finset α) (f : Finset α → β)
+    (hrk : r ≤ k) :
+    ∏ t ∈ powersetCard k s, ∏ u ∈ powersetCard r t, f u =
+      (∏ u ∈ powersetCard r s, f u) ^ ((#s - r).choose (k - r)) := by
+  classical
+  have h : ∀ t u : Finset α, t ∈ powersetCard k s ∧ u ∈ powersetCard r t ↔
+      t ∈ {v ∈ powersetCard k s | u ⊆ v} ∧ u ∈ powersetCard r s := by grind
+  rw [prod_comm' h, ← prod_pow]
+  refine prod_congr rfl fun u hu ↦ ?_
+  obtain ⟨hus, rfl⟩ := mem_powersetCard.mp hu
+  rw [prod_const, card_filter_powersetCard_subset u s k hus hrk]
+
+/-- A product of `f` over the elements of each `k`-element subset of `s` is the product of `f` over
+`s`, raised to `(#s - 1).choose (k - 1)`. -/
+@[to_additive /-- A sum of `f` over the elements of each `k`-element subset of `s` is
+`(#s - 1).choose (k - 1)` times the sum of `f` over `s`. -/]
+lemma prod_powersetCard_prod (k : ℕ) (s : Finset α) (f : α → β) (hk : 0 < k) :
+    ∏ t ∈ powersetCard k s, ∏ x ∈ t, f x = (∏ x ∈ s, f x) ^ ((#s - 1).choose (k - 1)) := by
+  simpa [powersetCard_one] using
+    prod_powersetCard_prod_powersetCard 1 k s (fun u ↦ ∏ x ∈ u, f x) hk
 
 end Finset
