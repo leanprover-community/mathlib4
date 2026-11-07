@@ -215,11 +215,10 @@ lemma map_id : map LieHom.id I = I := by
 
 lemma map_equiv_eq_comap_symm : map e.toLieHom I = comap e.symm.toLieHom I := by
   apply le_antisymm
-  on_goal 2 =>
-    simp_rw [IsConcreteLE.le_iff, mem_comap, LieEquiv.coe_coe]
-    intro x hx
-    simpa using mem_map (f := e.toLieHom) hx
-  simp [map_le, Set.subset_def]
+  · simp [map_le, Set.subset_def]
+  simp_rw [IsConcreteLE.le_iff, mem_comap, LieEquiv.coe_coe]
+  intro x hx
+  simpa using mem_map (f := e.toLieHom) hx
 
 lemma comap_equiv_eq_map_symm (I : LieIdeal R L') : comap e.toLieHom I = map e.symm.toLieHom I := by
   symm; simpa using map_equiv_eq_comap_symm e.symm I
