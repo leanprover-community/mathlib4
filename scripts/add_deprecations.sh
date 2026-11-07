@@ -83,7 +83,7 @@ mkDeclAndDepr () {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
             # print the line that passes on to `addDeprecations`
-            printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
+            printf("%s %s,%s@@@", $i, $(i+1), depr(old, $(i+1)))
             # accumulate the summary of deprecations
             report[reps]=sprintf("%s\n", depr(old, $(i+1)))
             reps++
