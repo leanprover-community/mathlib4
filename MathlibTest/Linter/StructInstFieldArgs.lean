@@ -20,11 +20,14 @@ example : A where
 /--
 @ +2:11...14
 info: Fix:
-  :̵=̵ ̵f̵u̵n̵ ̵x y : Nat =̵>̵:̲=̲
+  (̲x̲ ̲y̲ ̲:̲ ̲N̲a̲t̲)̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵y̵ ̵:̵ ̵N̵a̵t̵ ̵=̵>̵
 -/
 #guard_msgs (info, drop warning, positions := true) in
 example : A where
   a := fun x y : Nat => x
+
+example : A where
+  a (x y : Nat) := x
 
 /--
 @ +2:10...13
@@ -109,7 +112,7 @@ example : B where
 /--
 @ +2:11...12
 info: Fix:
-  x̲ ̲:= fun x̵ ̵⟨y, z⟩ w =>
+  x̲ ̲:= fun x̵ ̵⟨y, z⟩ w  ̲=>
 -/
 #guard_msgs (info, drop warning, positions := true) in
 example : B where
@@ -118,7 +121,7 @@ example : B where
 /--
 @ +2:11...26
 info: Fix:
-  :̵=̵ ̵f̵u̵n̵ ̵(x : Nat × Nat) :̲=̲ ̲f̲u̲n̲ ̲⟨y, z⟩ w =>
+  :̵=̵ ̵f̵u̵n̵ ̵(x : Nat × Nat) :̲=̲ ̲f̲u̲n̲ ̲⟨y, z⟩ w  ̲=>
 -/
 #guard_msgs (info, drop warning, positions := true) in
 example : B where
@@ -134,3 +137,18 @@ example : C where
   c₁ := True
   c₂ := 0
   c₄ := nofun
+
+class D where
+  d : ∀ a : Nat, a = a
+
+/--
+@ +2:11...12
+info: Fix:
+  (̲x̲ ̲:̲ ̲N̲a̲t̲)̲ ̲:= ̵f̵u̵n̵ ̵x̵ ̵:̵ ̵N̵a̵t̵ ̵=̵>̵
+-/
+#guard_msgs (info, drop warning, positions := true) in
+example : D where
+  d := fun x : Nat => rfl
+
+example : D where
+  d (x : Nat) := rfl
