@@ -124,7 +124,7 @@ addDeprecations () {
     }
     currDep=""
     ## scanning the file, if we find an entries of `lines`, the we assign `currDep`
-  } ($0 ~ regex) { for(l in lines) { if ($0 ~ lines[l]) { found=1; currDep=deprs[l] } } } {
+  } ($0 ~ regex) { for(l in lines) { if ($0 ~ (lines[l] "( |$)")) { found=1; currDep=deprs[l] } } } {
     ## when we find the next empty line, we print the deprecation statement in `currDep`
     if ((found == 1) && (NF == 0)) {
       found=0
