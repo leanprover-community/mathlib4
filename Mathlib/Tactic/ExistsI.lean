@@ -6,6 +6,7 @@ Authors: Arthur Paulino, Gabriel Ebner, Moritz Doll
 module
 
 public import Mathlib.Init
+
 /-!
 # The `existsi` tactic
 

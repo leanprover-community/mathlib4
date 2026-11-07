@@ -143,7 +143,6 @@ section Specialized
 
 variable (F : C ⥤ FintypeCat.{u₂})
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
 This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
@@ -262,7 +261,6 @@ theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
 section EndAutGaloisIsomorphism
 
 /-!
-
 ### Isomorphism between `Aut F` and `AutGalois F`
 
 In this section we establish the isomorphism between the automorphism group of `F` and
