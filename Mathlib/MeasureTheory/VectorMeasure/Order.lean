@@ -79,7 +79,7 @@ variable (v w : VectorMeasure α M)
 
 theorem restrict_le_restrict_iff {i : Set α} (hi : MeasurableSet i) :
     v ≤[i] w ↔ ∀ ⦃j⦄, MeasurableSet j → j ⊆ i → v j ≤ w j :=
-  ⟨fun h j hj₁ hj₂ => restrict_eq_self v hi hj₁ hj₂ ▸ restrict_eq_self w hi hj₁ hj₂ ▸ h j hj₁,
+  ⟨fun h j hj₁ hj₂ => restrict_eq_self v hi hj₂ ▸ restrict_eq_self w hi hj₂ ▸ h j hj₁,
     fun h => le_iff.1 fun _ hj =>
       (restrict_apply v hi hj).symm ▸ (restrict_apply w hi hj).symm ▸
       h (hj.inter hi) Set.inter_subset_right⟩
@@ -115,15 +115,18 @@ variable {M : Type*} [TopologicalSpace M]
   [AddCommGroup M] [PartialOrder M] [IsOrderedAddMonoid M] [IsTopologicalAddGroup M]
 variable (v w : VectorMeasure α M)
 
-nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
+nonrec theorem neg_le_neg {i : Set α} (h : v ≤[i] w) : -w ≤[i] -v := by
+  by_cases hi : MeasurableSet i
+  swap
+  · rw [restrict_not_measurable (-w) hi, restrict_not_measurable (-v) hi]
   intro j hj₁
   rw [restrict_apply _ hi hj₁, restrict_apply _ hi hj₁, neg_apply, neg_apply]
   refine neg_le_neg ?_
   rw [← restrict_apply _ hi hj₁, ← restrict_apply _ hi hj₁]
   exact h j hj₁
 
-theorem neg_le_neg_iff {i : Set α} (hi : MeasurableSet i) : -w ≤[i] -v ↔ v ≤[i] w :=
-  ⟨fun h => neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ hi h, fun h => neg_le_neg _ _ hi h⟩
+theorem neg_le_neg_iff {i : Set α} : -w ≤[i] -v ↔ v ≤[i] w :=
+  ⟨fun h => neg_neg v ▸ neg_neg w ▸ neg_le_neg _ _ h, fun h => neg_le_neg _ _ h⟩
 
 end
 
@@ -290,13 +293,13 @@ theorem toMeasureOfZeroLE_real_apply (hi : 0 ≤[i] s) (hi₁ : MeasurableSet i)
 provides the measure, mapping measurable sets `j` to `-s (i ∩ j)`. -/
 def toMeasureOfLEZero (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : s ≤[i] 0) :
     Measure α :=
-  toMeasureOfZeroLE (-s) i hi₁ <| @neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi₂
+  toMeasureOfZeroLE (-s) i hi₁ <| @neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₂
 
 theorem toMeasureOfLEZero_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i) (hj₁ : MeasurableSet j) :
     s.toMeasureOfLEZero i hi₁ hi j =
     ((↑) : ℝ≥0 → ℝ≥0∞) (NNReal.mk (-s (i ∩ j)) (neg_apply s (i ∩ j) ▸
       nonneg_of_zero_le_restrict _ (zero_le_restrict_subset _ hi₁ Set.inter_subset_left
-      (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi₁ hi)))) := by
+      (@neg_zero (VectorMeasure α ℝ) _ ▸ neg_le_neg _ _ hi)))) := by
   simp [toMeasureOfLEZero, toMeasureOfZeroLE_apply _ _ _ hj₁]
 
 theorem toMeasureOfLEZero_real_apply (hi : s ≤[i] 0) (hi₁ : MeasurableSet i)

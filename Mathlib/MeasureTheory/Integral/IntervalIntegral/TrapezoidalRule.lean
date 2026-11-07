@@ -83,9 +83,11 @@ theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
 /-- A basic trapezoidal equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems are certainly possible, but many of them can be derived from repeated applications
 of this one. -/
-theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
-    (N_nonzero : 0 < N) : ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
+theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} :
+    ∑ i ∈ range N, trapezoidal_integral f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_integral f N a (a + N * h) := by
+  rcases N.eq_zero_or_pos with rfl | N_nonzero
+  · simp
   simp_rw [trapezoidal_integral_one, add_sub_add_left_eq_sub, ← sub_mul, trapezoidal_integral,
     add_sub_cancel_left, one_mul, ← mul_sum, ← mul_div, show N * (h / N) = h by field]
   rw [sum_add_distrib, ← Nat.sub_one_add_one_eq_of_pos N_nonzero, sum_range_succ', sum_range_succ,
@@ -94,22 +96,21 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
   ring_nf
 
 /-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
-theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
+theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} :
     trapezoidal_integral f N a (a + N * h) + trapezoidal_integral f 1 (a + N * h) (a + (N + 1) * h)
       = trapezoidal_integral f (N + 1) a (a + (N + 1) * h) := by
-  rw [← Nat.cast_add_one, ← sum_trapezoidal_integral_adjacent_intervals N_nonzero,
-      ← sum_trapezoidal_integral_adjacent_intervals (Nat.add_pos_left N_nonzero 1),
-      sum_range_succ, Nat.cast_add_one]
+  rw [← Nat.cast_add_one, ← sum_trapezoidal_integral_adjacent_intervals,
+      ← sum_trapezoidal_integral_adjacent_intervals, sum_range_succ, Nat.cast_add_one]
 
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and trapezoidal integration,
 it's natural to combine them into a similar formula for the error.  This theorem is in particular
 used in the proof of the general error bound. -/
-theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N)
+theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a h : ℝ}
     (h_f_int : IntervalIntegrable f volume a (a + N * h)) :
     ∑ i ∈ range N, trapezoidal_error f 1 (a + i * h) (a + (i + 1) * h)
       = trapezoidal_error f N a (a + N * h) := by
   unfold trapezoidal_error
-  rw [sum_sub_distrib, sum_trapezoidal_integral_adjacent_intervals N_nonzero]
+  rw [sum_sub_distrib, sum_trapezoidal_integral_adjacent_intervals]
   norm_cast
   rw [sum_integral_adjacent_intervals]
   · simp
@@ -192,7 +193,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
   have hab : 0 < b - a := sub_pos.mpr a_lt_b
   have hpos : 0 < h := by positivity
   have hb : b = a + N * h := by field
-  rw [hb, ← sum_trapezoidal_error_adjacent_intervals N_nonzero
+  rw [hb, ← sum_trapezoidal_error_adjacent_intervals
     (hb ▸ h_df.continuousOn.intervalIntegrable_of_Icc a_lt_b.le)]
   grw [abs_sum_le_sum_abs]
   suffices ∀ k ∈ range N, |trapezoidal_error f 1 (ak k) (ak (k + 1))| ≤ (ζ / 12) * h ^ 3 by

@@ -74,16 +74,16 @@ noncomputable def projectiveFamilyFun (P : ∀ J : Finset ι, Measure (Π j : J,
     then P (measurableCylinders.finset hs) (measurableCylinders.set hs) else 0
 
 lemma projectiveFamilyFun_congr (hP : IsProjectiveMeasureFamily P)
-    (hs : s ∈ measurableCylinders α) (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
+    (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
     projectiveFamilyFun P s = P I S := by
+  have hs : s ∈ measurableCylinders α := (mem_measurableCylinders _).2 ⟨I, S, hS, hs_eq⟩
   rw [projectiveFamilyFun, dite_eq_left hs]
   exact hP.congr_cylinder (measurableCylinders.measurableSet hs) hS
     ((measurableCylinders.eq_cylinder hs).symm.trans hs_eq)
 
 lemma projectiveFamilyFun_empty (hP : IsProjectiveMeasureFamily P) :
     projectiveFamilyFun P ∅ = 0 := by
-  rw [projectiveFamilyFun_congr hP (empty_mem_measurableCylinders α) (cylinder_empty ∅).symm
-    MeasurableSet.empty, measure_empty]
+  rw [projectiveFamilyFun_congr hP (cylinder_empty ∅).symm MeasurableSet.empty, measure_empty]
 
 lemma projectiveFamilyFun_union (hP : IsProjectiveMeasureFamily P)
     (hs : s ∈ measurableCylinders α) (ht : t ∈ measurableCylinders α) (hst : Disjoint s t) :
@@ -99,8 +99,8 @@ lemma projectiveFamilyFun_union (hP : IsProjectiveMeasureFamily P)
   have h_eq2 : t = cylinder (I ∪ J) T' := by rw [ht_eq]; exact cylinder_eq_cylinder_union J T I
   have h_eq3 : s ∪ t = cylinder (I ∪ J) (S' ∪ T') := by
     rw [hs_eq, ht_eq]; exact union_cylinder _ _ _ _
-  rw [projectiveFamilyFun_congr hP hs h_eq1 hS', projectiveFamilyFun_congr hP ht h_eq2 hT',
-    projectiveFamilyFun_congr hP (union_mem_measurableCylinders hs ht) h_eq3 (hS'.union hT')]
+  rw [projectiveFamilyFun_congr hP h_eq1 hS', projectiveFamilyFun_congr hP h_eq2 hT',
+    projectiveFamilyFun_congr hP h_eq3 (hS'.union hT')]
   cases isEmpty_or_nonempty (Π i, α i) with
   | inl h => simp [hP.eq_zero_of_isEmpty]
   | inr h =>
@@ -125,8 +125,7 @@ lemma projectiveFamilyContent_eq (hP : IsProjectiveMeasureFamily P) :
 lemma projectiveFamilyContent_congr (hP : IsProjectiveMeasureFamily P) (s : Set (Π i, α i))
     (hs_eq : s = cylinder I S) (hS : MeasurableSet S) :
     projectiveFamilyContent hP s = P I S := by
-  rw [projectiveFamilyContent_eq,
-    projectiveFamilyFun_congr hP ((mem_measurableCylinders s).mpr ⟨I, S, hS, hs_eq⟩) hs_eq hS]
+  rw [projectiveFamilyContent_eq, projectiveFamilyFun_congr hP hs_eq hS]
 
 lemma projectiveFamilyContent_cylinder (hP : IsProjectiveMeasureFamily P) (hS : MeasurableSet S) :
     projectiveFamilyContent hP (cylinder I S) = P I S := projectiveFamilyContent_congr _ _ rfl hS

@@ -233,7 +233,7 @@ lemma variation_restrict (hs : MeasurableSet s) :
     _ ≤ (μ.restrict s).variation (t ∩ s) := by
       apply variation_apply_le_of_forall_enorm_le (ht.inter hs) (fun u u_meas hu ↦ ?_)
       have : μ u = μ.restrict s u :=
-        (VectorMeasure.restrict_eq_self _ hs u_meas (hu.trans inter_subset_right)).symm
+        (VectorMeasure.restrict_eq_self _ hs (hu.trans inter_subset_right)).symm
       rw [this]
       apply enorm_measure_le_variation
     _ ≤ (μ.restrict s).variation t := by

@@ -159,12 +159,21 @@ lemma lpNorm_mul_natCast (f : α → 𝕜) (n : ℕ) (p : ℝ≥0∞) (μ : Meas
 lemma lpNorm_fun_mul_natCast (f : α → 𝕜) (n : ℕ) (p : ℝ≥0∞) (μ : Measure α) :
     lpNorm (f · * n) p μ = lpNorm f p μ * n := lpNorm_mul_natCast ..
 
-lemma lpNorm_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) (p : ℝ≥0∞)
+lemma lpNorm_div_natCast [CharZero 𝕜] (n : ℕ) (f : α → 𝕜) (p : ℝ≥0∞)
     (μ : Measure α) : lpNorm (f / (n : α → 𝕜)) p μ = lpNorm f p μ / n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp only [Nat.cast_zero, CharP.cast_eq_zero, div_zero]
+    rw [← lpNorm_zero (E := 𝕜) p μ]
+    congr
+    ext
+    simp
   rw [eq_div_iff (by positivity), ← lpNorm_mul_natCast]; simp [Pi.mul_def, hn]
 
-lemma lpNorm_fun_div_natCast [CharZero 𝕜] {n : ℕ} (hn : n ≠ 0) (f : α → 𝕜) (p : ℝ≥0∞)
-    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := lpNorm_div_natCast hn ..
+lemma lpNorm_fun_div_natCast [CharZero 𝕜] (n : ℕ) (f : α → 𝕜) (p : ℝ≥0∞)
+    (μ : Measure α) : lpNorm (f · / n) p μ = lpNorm f p μ / n := by
+  rcases eq_or_ne n 0 with rfl | hn
+  · simp
+  · exact lpNorm_div_natCast ..
 
 end NormedField
 
