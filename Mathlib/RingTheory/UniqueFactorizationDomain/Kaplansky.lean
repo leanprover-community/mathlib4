@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.UniqueFactorizationDomain.Ideal
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 
 /-!
-
 # Kaplansky criterion for factoriality
 
 We prove Kaplansky criterion for factoriality: an integral domain is a UFD if and only if every

@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
-
 # Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor

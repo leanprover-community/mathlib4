@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.LeftExact
 public import Mathlib.Condensed.Basic
 
 /-!
-
 # Condensed sets form a Cartesian closed category
 -/
 
