@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
-
 # Maximal ideal of local rings
 
 We define the maximal ideal of a local ring as the ideal of all nonunits.

@@ -13,7 +13,6 @@ public import Mathlib.Tactic.Attr.Core
 public import Mathlib.Tactic.Common
 
 /-!
-
 # Localization over left Ore sets.
 
 This file defines the localization of a monoid over a left Ore set and proves its universal

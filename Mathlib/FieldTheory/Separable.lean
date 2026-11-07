@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic

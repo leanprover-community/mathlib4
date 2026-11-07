@@ -163,7 +163,6 @@ lemma map_congr {f g : G →* H} {φ : A ⟶ res f B} {ψ : A ⟶ res g B} (hfg 
     map f φ n = map g ψ n := by
   subst hfg; congr; ext; simp [hφψ]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 theorem π_map (n : ℕ) :
     π A n ≫ map f φ n = cyclesMap f φ n ≫ π B n := by
@@ -173,7 +172,6 @@ theorem π_map (n : ℕ) :
 lemma map_id : map (MonoidHom.id G) (𝟙 A) n = 𝟙 _ := by
   simp [map, groupHomology]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -181,7 +179,6 @@ lemma map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     map (g.comp f) (φ ≫ (resFunctor f).map ψ) n = map f φ n ≫ map g ψ n := by
   simp [map, ← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
@@ -262,13 +259,11 @@ theorem cyclesIso₀_inv_comp_cyclesMap :
     (cyclesIso₀ A).inv ≫ cyclesMap f φ 0 = φ.toModuleCatHom ≫ (cyclesIso₀ B).inv :=
   (CommSq.vert_inv ⟨cyclesMap_comp_cyclesIso₀_hom f φ⟩).w.symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem H0π_comp_map :
     H0π A ≫ map f φ 0 = φ.toModuleCatHom ≫ H0π B := by
   simp [H0π]
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 theorem map_id_comp_H0Iso_hom {A B : Rep k G} (f : A ⟶ B) :
     map (MonoidHom.id G) f 0 ≫ (H0Iso B).hom =
@@ -305,7 +300,6 @@ noncomputable def mapShortComplexH1 :
     ext : 3
     simpa [← map_inv, d₁₀] using (hom_comm_apply φ _ _).symm
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapShortComplexH1_zero :
     mapShortComplexH1 (A := A) (B := B) f 0 = 0 := by
@@ -319,7 +313,6 @@ theorem mapShortComplexH1_zero :
 theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   ext <;> simp [shortComplexH1]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
@@ -343,13 +336,11 @@ noncomputable abbrev mapCycles₁ :
   ShortComplex.cyclesMap' (mapShortComplexH1 f φ) (shortComplexH1 A).moduleCatLeftHomologyData
     (shortComplexH1 B).moduleCatLeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapCycles₁_hom :
     (mapCycles₁ f φ).hom = (chainsMap₁ f φ).hom.restrict (fun x _ => by
       have := congr($((mapShortComplexH1 f φ).comm₂₃) x); simp_all [cycles₁, shortComplexH1]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₁_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -364,7 +355,6 @@ theorem mapCycles₁_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
       mapCycles₁ (MonoidHom.id G) φ ≫ mapCycles₁ (MonoidHom.id G) ψ :=
   mapCycles₁_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₁_comp_i :
     mapCycles₁ f φ ≫ (shortComplexH1 B).moduleCatLeftHomologyData.i =
@@ -375,14 +365,12 @@ lemma mapCycles₁_comp_i :
 lemma coe_mapCycles₁ (x) :
     (mapCycles₁ f φ x).1 = chainsMap₁ f φ x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₁_hom :
     cyclesMap f φ 1 ≫ (isoCycles₁ B).hom = (isoCycles₁ A).hom ≫ mapCycles₁ f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH1 B)).i, mapShortComplexH1,
     chainsMap_f_1_comp_chainsIso₁ f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H1π_comp_map :
     H1π A ≫ map f φ 1 = mapCycles₁ f φ ≫ H1π B := by
@@ -723,7 +711,6 @@ noncomputable def mapShortComplexH2 :
     simpa [d₂₁, map_add, map_sub, ← map_inv]
       using congr(Finsupp.single _ $((hom_comm_apply φ _ _).symm))
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mapShortComplexH2_zero :
     mapShortComplexH2 (A := A) (B := B) f 0 = 0 := by
@@ -741,7 +728,6 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     ext
     simp }
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ res f B) (ψ : B ⟶ res g C) :
@@ -765,13 +751,11 @@ noncomputable abbrev mapCycles₂ :
   ShortComplex.cyclesMap' (mapShortComplexH2 f φ) (shortComplexH2 A).moduleCatLeftHomologyData
     (shortComplexH2 B).moduleCatLeftHomologyData
 
-set_option backward.isDefEq.respectTransparency false in
 lemma mapCycles₂_hom :
     (mapCycles₂ f φ).hom = (chainsMap₂ f φ).hom.restrict (fun x _ => by
       have := congr($((mapShortComplexH2 f φ).comm₂₃) x); simp_all [cycles₂, shortComplexH2]) :=
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₂_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -786,7 +770,6 @@ theorem mapCycles₂_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
       mapCycles₂ (MonoidHom.id G) φ ≫ mapCycles₂ (MonoidHom.id G) ψ :=
   mapCycles₂_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc, elementwise]
 lemma mapCycles₂_comp_i :
     mapCycles₂ f φ ≫ (shortComplexH2 B).moduleCatLeftHomologyData.i =
@@ -797,14 +780,12 @@ lemma mapCycles₂_comp_i :
 lemma coe_mapCycles₂ (x) :
     (mapCycles₂ f φ x).1 = chainsMap₂ f φ x := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma cyclesMap_comp_isoCycles₂_hom :
     cyclesMap f φ 2 ≫ (isoCycles₂ B).hom = (isoCycles₂ A).hom ≫ mapCycles₂ f φ := by
   simp [← cancel_mono (moduleCatLeftHomologyData (shortComplexH2 B)).i, mapShortComplexH2,
     chainsMap_f_2_comp_chainsIso₂ f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma H2π_comp_map :
     H2π A ≫ map f φ 2 = mapCycles₂ f φ ≫ H2π B := by
@@ -826,24 +807,19 @@ noncomputable def chainsFunctor :
 instance : (chainsFunctor k G).PreservesZeroMorphisms where
   map_zero _ _ := chainsMap_zero (MonoidHom.id G)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor sending a `G`-representation `A` to `Hₙ(G, A)`. -/
-@[simps]
+@[implicit_reducible, simps]
 noncomputable def functor (n : ℕ) : Rep k G ⥤ ModuleCat k where
   obj A := groupHomology A n
   map {A B} φ := map (MonoidHom.id _) φ n
   map_id A := by simp [map, groupHomology]
-  map_comp f g := by
-    simp only [← HomologicalComplex.homologyMap_comp, ← chainsMap_comp]
-    rfl
+  map_comp f g := map_id_comp ..
 
-set_option backward.isDefEq.respectTransparency false in
 instance (n : ℕ) : (functor k G n).PreservesZeroMorphisms where
   map_zero _ _ := by simp [map]
 
 variable {G}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given a group homomorphism `f : G →* H` this sends `A : Rep k H` to the `n`th
 "corestriction" map `Hₙ(G, Res(f)(A)) ⟶ Hₙ(H, A)` induced by `f` and the identity
 map on `Res(f)(A)`. -/
@@ -851,12 +827,7 @@ map on `Res(f)(A)`. -/
 noncomputable def coresNatTrans (n : ℕ) :
     resFunctor f ⋙ functor k G n ⟶ functor k H n where
   app X := map f (𝟙 _) n
-  naturality {X Y} φ := by
-    simp only [← cancel_epi (groupHomology.π _ n), Functor.comp_map,
-      functor_map, HomologicalComplex.homologyπ_naturality_assoc,
-      HomologicalComplex.homologyπ_naturality, ← HomologicalComplex.cyclesMap_comp_assoc,
-      ← chainsMap_comp, Category.id_comp]
-    rfl
+  naturality {X Y} φ := by simpa [← map_comp] using map_congr (by simp) (by ext; simp) _
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a normal subgroup `S ≤ G`, this sends `A : Rep k G` to the `n`th "coinflation" map
