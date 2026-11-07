@@ -28,7 +28,7 @@ the vanishing of `f` at any `x : σ → R` such that `x s ∈ S s` for all `s`.
   for some `h : σ →₀ MvPolynomial σ R` such that
   `((∏ r ∈ S s, (X i - C r)) * h i).totalDegree ≤ f.totalDegree` for all `s`.
 
-- `combinatorial_nullstellensatz_exists_eval_nonzero`
+- `combinatorial_nullstellensatz_exists_eval_ne_zero`
   a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
   `f.totalDegree = t.degree` and `f.coeff t ≠ 0`,
   there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
@@ -133,7 +133,7 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       rw [← hn.2, some_apply]
     · intro x hx
       specialize Heval' x hx
-      rw [Polynomial.ext_iff] at Heval'
+      rw [AddMonoidAlgebra.ext_iff, Finsupp.ext_iff] at Heval'
       simpa only [Polynomial.coeff_map, Polynomial.coeff_zero] using Heval' m
 
 open MonomialOrder
@@ -233,7 +233,7 @@ Given a multi-index `t : σ →₀ ℕ` such that `t s < #(S s)` for all `s`,
 there exists a point `x : σ → R` such that `x s ∈ S s` for all `s` and `f.eval s ≠ 0`.
 
 [Alon_1999], theorem 2 -/
-theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
+theorem combinatorial_nullstellensatz_exists_eval_ne_zero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
@@ -271,5 +271,9 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   rw [← hpq, map_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)
   simp [← hpq, hq]
+
+@[deprecated (since := "2026-10-13")]
+alias combinatorial_nullstellensatz_exists_eval_nonzero :=
+  combinatorial_nullstellensatz_exists_eval_ne_zero
 
 end MvPolynomial

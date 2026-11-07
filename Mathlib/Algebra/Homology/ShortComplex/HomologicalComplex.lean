@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Additive
+public import Mathlib.Algebra.Homology.HomologicalComplexLimits
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
 public import Mathlib.Tactic.NormNum
 
@@ -27,6 +28,8 @@ abbreviated as `K.sc i`.
 
 open CategoryTheory Category Limits
 
+universe w₁ w₂
+
 namespace HomologicalComplex
 
 variable (C : Type*) [Category* C] [HasZeroMorphisms C] {ι : Type*} (c : ComplexShape ι)
@@ -41,14 +44,44 @@ def shortComplexFunctor' (i j k : ι) : HomologicalComplex C c ⥤ ShortComplex 
       τ₂ := f.f j
       τ₃ := f.f k }
 
+instance (J : Type*) [Category* J] [HasColimitsOfShape J C] (i j k : ι) :
+    PreservesColimitsOfShape J (shortComplexFunctor' C c i j k) where
+  preservesColimit {F} := ⟨fun h ↦ ⟨by
+    apply ShortComplex.isColimitOfIsColimitπ
+    all_goals exact isColimitOfPreserves (HomologicalComplex.eval C _ _) h⟩⟩
+
+instance (J : Type*) [Category* J] [HasLimitsOfShape J C] (i j k : ι) :
+    PreservesLimitsOfShape J (shortComplexFunctor' C c i j k) where
+  preservesLimit {F} := ⟨fun h ↦ ⟨by
+    apply ShortComplex.isLimitOfIsLimitπ
+    all_goals exact isLimitOfPreserves (HomologicalComplex.eval C _ _) h⟩⟩
+
+instance [HasColimitsOfSize.{w₁, w₂} C] (i j k : ι) :
+    PreservesColimitsOfSize.{w₁, w₂} (shortComplexFunctor' C c i j k) where
+
+instance [HasLimitsOfSize.{w₁, w₂} C] (i j k : ι) :
+    PreservesLimitsOfSize.{w₁, w₂} (shortComplexFunctor' C c i j k) where
+
 /-- The functor `HomologicalComplex C c ⥤ ShortComplex C` which sends a homological
 complex `K` to the short complex `K.X (c.prev i) ⟶ K.X i ⟶ K.X (c.next i)`. -/
-@[simps!]
+@[implicit_reducible, simps!]
 noncomputable def shortComplexFunctor (i : ι) :=
   shortComplexFunctor' C c (c.prev i) i (c.next i)
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
+instance (J : Type*) [Category* J] [HasColimitsOfShape J C] (i : ι) :
+    PreservesColimitsOfShape J (shortComplexFunctor C c i) :=
+  inferInstanceAs (PreservesColimitsOfShape J (shortComplexFunctor' C c _ i _))
+
+instance (J : Type*) [Category* J] [HasLimitsOfShape J C] (i : ι) :
+    PreservesLimitsOfShape J (shortComplexFunctor C c i) :=
+  inferInstanceAs (PreservesLimitsOfShape J (shortComplexFunctor' C c _ i _))
+
+instance [HasColimitsOfSize.{w₁, w₂} C] (i : ι) :
+    PreservesColimitsOfSize.{w₁, w₂} (shortComplexFunctor C c i) where
+
+instance [HasLimitsOfSize.{w₁, w₂} C] (i : ι) :
+    PreservesLimitsOfSize.{w₁, w₂} (shortComplexFunctor C c i) where
+
 /-- The natural isomorphism `shortComplexFunctor C c j ≅ shortComplexFunctor' C c i j k`
 when `c.prev j = i` and `c.next j = k`. -/
 @[simps!]
@@ -86,9 +119,11 @@ section
 variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def homology := (K.sc i).homology
 
 /-- The cycles in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def cycles := (K.sc i).cycles
 
 /-- The inclusion of the cycles of a homological complex. -/
@@ -111,7 +146,6 @@ noncomputable abbrev liftCycles' {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.Rel 
     (hk : k ≫ K.d i j = 0) : A ⟶ K.cycles i :=
   K.liftCycles k j (c.next_eq' hj) hk
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_i {A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
     (hk : k ≫ K.d i j = 0) : K.liftCycles k j hj hk ≫ K.iCycles i = k := by
@@ -148,12 +182,10 @@ lemma toCycles_i [K.HasHomology j] :
 section
 variable [K.HasHomology i]
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (K.iCycles i) := by
   dsimp only [iCycles]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi (K.homologyπ i) := by
   dsimp only [homologyπ]
   infer_instance
@@ -163,7 +195,7 @@ end
 @[reassoc (attr := simp)]
 lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
-  simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
+  simp [← cancel_mono (K.iCycles k)]
 
 variable {i j} in
 lemma toCycles_eq_zero [K.HasHomology j] (hij : ¬ c.Rel i j) :
@@ -213,6 +245,7 @@ section
 variable [K.HasHomology i]
 
 /-- The opcycles in degree `i` of a homological complex. -/
+@[implicit_reducible]
 noncomputable def opcycles := (K.sc i).opcycles
 
 /-- The projection to the opcycles of a homological complex. -/
@@ -235,12 +268,10 @@ noncomputable abbrev descOpcycles' {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.Re
     (hk : K.d j i ≫ k = 0) : K.opcycles i ⟶ A :=
   K.descOpcycles k j (c.prev_eq' hj) hk
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma p_descOpcycles {A : C} (k : K.X i ⟶ A) (j : ι) (hj : c.prev i = j)
     (hk : K.d j i ≫ k = 0) : K.pOpcycles i ≫ K.descOpcycles k j hj hk = k := by
-  dsimp [descOpcycles, pOpcycles]
-  simp
+  simp [descOpcycles, pOpcycles]
 
 variable (i)
 
@@ -267,12 +298,10 @@ lemma p_fromOpcycles :
     K.pOpcycles i ≫ K.fromOpcycles i j = K.d i j :=
   p_descOpcycles _ _ _ _ _
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Epi (K.pOpcycles i) := by
   dsimp only [pOpcycles]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 instance : Mono (K.homologyι i) := by
   dsimp only [homologyι]
   infer_instance
@@ -365,19 +394,16 @@ lemma opcyclesMap_id : opcyclesMap (𝟙 K) i = 𝟙 _ :=
 
 variable {K}
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma homologyMap_comp : homologyMap (φ ≫ ψ) i = homologyMap φ i ≫ homologyMap ψ i := by
   dsimp [homologyMap]
   rw [Functor.map_comp, ShortComplex.homologyMap_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma cyclesMap_comp : cyclesMap (φ ≫ ψ) i = cyclesMap φ i ≫ cyclesMap ψ i := by
   dsimp [cyclesMap]
   rw [Functor.map_comp, ShortComplex.cyclesMap_comp]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma opcyclesMap_comp : opcyclesMap (φ ≫ ψ) i = opcyclesMap φ i ≫ opcyclesMap ψ i := by
   dsimp [opcyclesMap]
@@ -818,7 +844,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_liftCycles_iff (K : CochainComplex C ℕ) {X : C} (φ : X ⟶ K.X 0)
-    [K.HasHomology 0] (hφ : φ ≫ K.d 0 1 = 0) :
+    (hφ : φ ≫ K.d 0 1 = 0) :
     IsIso (K.liftCycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Mono φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.up ℕ).next 0 = i)
@@ -840,7 +866,7 @@ variable {C : Type*} [Category* C] [Abelian C]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma isIso_descOpcycles_iff (K : ChainComplex C ℕ) {X : C} (φ : K.X 0 ⟶ X)
-    [K.HasHomology 0] (hφ : K.d 1 0 ≫ φ = 0) :
+    (hφ : K.d 1 0 ≫ φ = 0) :
     IsIso (K.descOpcycles φ 1 (by simp) hφ) ↔
       (ShortComplex.mk _ _ hφ).Exact ∧ Epi φ := by
   suffices ∀ (i : ℕ) (hx : (ComplexShape.down ℕ).prev 0 = i)
@@ -878,7 +904,6 @@ lemma cyclesIsoSc'_hom_iCycles :
     natIsoSc'_hom_app_τ₂, comp_id]
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma cyclesIsoSc'_inv_iCycles :

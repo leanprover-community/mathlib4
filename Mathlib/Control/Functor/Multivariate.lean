@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.TypeVec
 
 /-!
-
 # Functors between the category of tuples of types, and the category Type
 
 Features:

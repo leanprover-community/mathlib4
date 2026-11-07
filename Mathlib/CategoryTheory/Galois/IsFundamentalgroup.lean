@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Galois.Topology
 import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Universal property of fundamental group
 
 Let `C` be a Galois category with fiber functor `F`. While in informal mathematics, we tend to
@@ -81,7 +80,6 @@ private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
 
 variable [IsNaturalSMul F G]
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 /-- If `G` acts naturally on `F.obj X` for each `X : C`, this is the canonical

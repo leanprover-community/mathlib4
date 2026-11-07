@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Set.Card
 
 /-!
-
 # Cardinality of finite types
 
 The cardinality of a finite type `α` is given by `Nat.card α`. This function has

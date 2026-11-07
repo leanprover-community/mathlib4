@@ -10,6 +10,9 @@ public import Mathlib.Data.Int.Log
 
 import Mathlib.Algebra.BigOperators.Field
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Real logarithm base `b`
 

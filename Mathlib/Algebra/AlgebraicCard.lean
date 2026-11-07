@@ -9,6 +9,9 @@ public import Mathlib.RingTheory.Algebraic.Basic
 
 import Mathlib.Algebra.Polynomial.Cardinal
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Cardinality of algebraic numbers
 

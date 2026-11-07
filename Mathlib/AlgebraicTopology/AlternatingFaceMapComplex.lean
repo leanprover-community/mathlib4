@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Preadditive.Opposite
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
-
 # The alternating face map complex of a simplicial object in a preadditive category
 
 We construct the alternating face map complex, as a
@@ -190,7 +189,6 @@ def alternatingFaceMapComplexCompMapHomologicalComplexIso
   NatIso.ofComponents
     (fun X ↦ HomologicalComplex.Hom.isoOfComponents (fun _ ↦ Iso.refl _))
 
-set_option backward.defeqAttrib.useBackward true in
 theorem map_alternatingFaceMapComplex {D : Type*} [Category* D] [Preadditive D] (F : C ⥤ D)
     [F.Additive] :
     alternatingFaceMapComplex C ⋙ F.mapHomologicalComplex _ =
@@ -214,7 +212,6 @@ theorem karoubi_alternatingFaceMapComplex_d (P : Karoubi (SimplicialObject C)) (
 
 namespace AlternatingFaceMapComplex
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation which gives the augmentation of the alternating face map
 complex attached to an augmented simplicial object. -/
 def ε [Limits.HasZeroObject C] :

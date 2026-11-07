@@ -86,21 +86,19 @@ instance (priority := 100) groupoidHasInvolutiveReverse : Quiver.HasInvolutiveRe
 theorem Groupoid.reverse_eq_inv (f : X ⟶ Y) : Quiver.reverse f = Groupoid.inv f :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunctor.MapReverse where
   map_reverse' f := by simp
 
 variable (X Y)
 
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
-@[simps!]
+@[implicit_reducible, simps]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := { hom := f, inv := Groupoid.inv f }
 
 variable (C)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence from a groupoid `C` to its opposite sending every morphism to its inverse. -/
 @[simps]
 def Groupoid.invEquivalence : C ≌ Cᵒᵖ where

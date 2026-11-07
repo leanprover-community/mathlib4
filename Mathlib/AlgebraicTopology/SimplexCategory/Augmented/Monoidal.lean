@@ -244,7 +244,7 @@ lemma inl_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
       rw [Fin.addCases_left]
     rfl
   | _, _, .star, _, f₁, f₂ => by cat_disch
-  | .star, _, _, _, _, _ => rfl
+  | .star, _, _, _, _, _ => by subsingleton
 
 set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
@@ -271,7 +271,7 @@ lemma inr_comp_tensorHom {x₁ y₁ x₂ y₂ : AugmentedSimplexCategory}
       rw [Fin.addCases_right]
     rfl
   | .star, _, _, _, f₁, f₂ => by cat_disch
-  | _, _, .star, _, _, _ => rfl
+  | _, _, .star, _, _, _ => by subsingleton
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
