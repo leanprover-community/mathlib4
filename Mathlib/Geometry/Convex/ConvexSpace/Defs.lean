@@ -72,7 +72,7 @@ attribute [simp] StdSimplex.total StdSimplex.nonneg
 grind_pattern StdSimplex.nonneg => self.weights
 grind_pattern StdSimplex.total => self.weights
 
-initialize_simps_projections StdSimplex (as_prefix weights)
+initialize_simps_projections StdSimplex (as_prefix weights, +weights, -support, -toFun)
 
 namespace StdSimplex
 section Semiring
