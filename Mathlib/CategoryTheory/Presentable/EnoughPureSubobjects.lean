@@ -600,9 +600,30 @@ instance : ObjectProperty.EssentiallySmall.{w} hC.generator := by
 lemma generator_le_isCardinalPresentable :
     hC.generator ≤ isCardinalPresentable _ κ' := sorry
 
+open IsCardinalAccessibleCategory in
 lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ' :=
-  .mk'.{w, w} hC.generator_le_isCardinalPresentable (fun X ↦ by
-    sorry)
+  .mk' hC.generator_le_isCardinalPresentable (fun X ↦ by
+    have := hC.toIsCardinalAccessibleCategory
+    have := h.isCardinalAccessibleCategory C
+    let J := CostructuredArrow (isCardinalPresentable C κ').ι X.obj
+    let F : J ⥤ C := CostructuredArrow.proj _ X.obj ⋙ ObjectProperty.ι _
+    let c : Cocone F :=
+      (Functor.LeftExtension.mk (𝟭 C) (Functor.rightUnitor _).inv).coconeAt X.obj
+    have hc : IsColimit c := (isCardinalPresentable C κ').ι.denseAt X.obj
+    have := isFiltered_of_isCardinalFiltered J κ'
+    let P : ObjectProperty J := fun j ↦ IsCardinalPure κ j.hom
+    have (j : P.FullSubcategory) : IsCardinalPure κ j.obj.hom := sorry
+    have hP {j k : P.FullSubcategory} (g : j ⟶ k) : IsCardinalPure κ g.hom.left.hom :=
+      IsCardinalPure.of_fac κ _ _ _ g.hom.w
+    have : P.ι.Final := by
+      rw [P.final_ι_iff_of_isFiltered]
+      sorry
+    exact ⟨P.FullSubcategory, inferInstance, inferInstance, P.isCardinalFiltered κ',
+      ⟨{diag := WideSubcategory.lift (P.ι ⋙ F) (fun _ _ f ↦ hP _)
+        ι.app j := .mk j.obj.hom j.property
+        ι.naturality j k g := by ext; simpa [c] using c.w g.hom
+        isColimit := sorry
+        prop_diag_obj j := j.obj.left.property }⟩⟩)
 
 open IsCardinalAccessibleCategory in
 lemma isCardinalAccessibleCategory_isCardinalPure

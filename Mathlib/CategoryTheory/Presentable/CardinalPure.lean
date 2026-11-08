@@ -100,6 +100,13 @@ lemma IsCardinalPure.of_postcomp
   exists_of_commSq {X' Y' t l r _ _} sq :=
     exists_of_commSq κ (show CommSq t l (r ≫ g) (f ≫ g) from ⟨by simp [sq.w_assoc]⟩)
 
+lemma IsCardinalPure.of_fac
+    {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (fg : X ⟶ Z) [IsCardinalPure κ fg]
+    (hfg : f ≫ g = fg := by cat_disch) :
+    IsCardinalPure κ f := by
+  subst hfg
+  exact .of_postcomp κ f g
+
 instance : (isCardinalPure C κ).HasOfPostcompProperty (⊤ : MorphismProperty C) where
   of_postcomp f g _ _ := IsCardinalPure.of_postcomp κ f g
 

@@ -146,6 +146,14 @@ def WideSubcategory.isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
 
 @[deprecated (since := "2026-08-07")] alias isoMk := WideSubcategory.isoMk
 
+variable {P} {D : Type*} [Category* D] (F : D ⥤ C)
+  (hF : ∀ ⦃X Y : D⦄ (f : X ⟶ Y), P (F.map f))
+
+@[simps, implicit_reducible]
+def WideSubcategory.lift : D ⥤ WideSubcategory P where
+  obj X := .mk (F.obj X)
+  map f := .mk (F.map f) (hF f)
+
 end WideSubcategory
 
 end CategoryTheory

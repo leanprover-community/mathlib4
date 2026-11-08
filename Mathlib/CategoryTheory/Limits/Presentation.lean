@@ -53,6 +53,13 @@ namespace ColimitPresentation
 
 initialize_simps_projections ColimitPresentation (-isColimit)
 
+@[simps, implicit_reducible]
+def ofIsColimit {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c) :
+    ColimitPresentation J c.pt where
+  diag := F
+  ι := c.ι
+  isColimit := hc
+
 @[reassoc]
 lemma w (pres : ColimitPresentation J X) {i j : J} (f : i ⟶ j) :
     pres.diag.map f ≫ pres.ι.app j = pres.ι.app i := by
