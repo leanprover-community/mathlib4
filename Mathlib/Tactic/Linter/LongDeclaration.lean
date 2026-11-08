@@ -15,12 +15,17 @@ meta import Lean.Elab.Command
 /-!
 # A linter for long commands
 
-The `linter.longDeclaration` linter warns when a command contains more than 200
-lines of code. The bound is configurable with `linter.longDeclaration.maxLines`.
+The `linter.longDeclaration` linter warns when a command contains more than 200 lines of code
+(excluding comments). The bound is configurable with `linter.longDeclaration.maxLines`.
 
-Blank lines and lines consisting entirely of comments are excluded. Multiline tokens, such as
-string literals, contribute all their lines, including blank lines within them. Only original
-source ranges are checked, and commands with errors are skipped.
+There is a general consensus that long proofs are bad style, and are better refactored into multiple
+smaller lemmas (making proofs easier to understand for human readers, faster to compile, and more
+likely to be re-usable elsewhere).
+
+Blank lines and lines consisting entirely of comments are excluded (in order to avoid incentivizing
+authors not to comment their code). Multiline tokens, such as string literals, contribute all their
+lines, including blank lines within them. Only original source ranges are checked, and commands with
+errors are skipped.
 
 The linter inspects the source syntax of every command. For declarations, the entire written
 statement and body count, including explicit hypotheses, attached `where` definitions and
