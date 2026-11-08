@@ -95,8 +95,7 @@ instance isProbabilityMeasure_geometricMeasure :
       (geometricMeasure_nonneg p)
   · infer_instance
 
-/-- Head mass of the geometric distribution: a value below `m` has probability
-`1 - (1 - p) ^ m`. -/
+/-- Head mass of the geometric distribution: `Iio m` has probability `1 - (1 - p) ^ m`. -/
 lemma geometricMeasure_Iio (hp : p ≠ 0) (m : ℕ) :
     geometricMeasure p (Iio m) = ENNReal.ofReal (1 - (1 - p) ^ m) := by
   have hset : (Iio m : Set ℕ) = ⋃ k ∈ Finset.range m, {k} := by
@@ -109,8 +108,7 @@ lemma geometricMeasure_Iio (hp : p ≠ 0) (m : ℕ) :
   congr 1
   linear_combination (-1 : ℝ) * geom_sum_mul (1 - (p : ℝ)) m
 
-/-- Tail mass of the geometric distribution: a value at least `m` has probability
-`(1 - p) ^ m`. -/
+/-- Tail mass of the geometric distribution: `Ici m` has probability `(1 - p) ^ m`. -/
 lemma geometricMeasure_Ici (hp : p ≠ 0) (m : ℕ) :
     geometricMeasure p (Ici m) = ENNReal.ofReal ((1 - p) ^ m) := by
   have hle : (1 - p : ℝ) ^ m ≤ 1 :=
