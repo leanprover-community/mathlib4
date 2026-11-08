@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecificLimits.Basic
 
-/-! # Asymptotics of counting functions
+/-!
+# Asymptotics of counting functions
 
 If a sequence `f : ℕ → ℝ` grows linearly, `f n / n → τ` with `τ ≠ 0`, and `c : ℝ → ℕ` counts
 it, in the sense of the two one-sided bounds `t ≤ f (c t)` and `∀ k < c t, f k ≤ t`, then `c`
@@ -55,10 +56,8 @@ theorem tendsto_count_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} (hub : ∀ t, t 
   exact absurd (hub t) (not_le.mpr ((hT _ (not_le.mp hcM)).trans_le ht))
 
 /-- **Rate inversion for counting functions.** If `f n / n → τ` with `τ ≠ 0` and `c` satisfies
-the two one-sided bounds — `t` never exceeds `f` at the count, and `f` below the count never
-exceeds `t` — then `c t / t → τ⁻¹`. `f` need not be monotone. The proof squeezes `t / c t`
-between `f (c t - 1) / c t` and `f (c t) / c t`, both converging to `τ` by composition, and
-inverts. -/
+the two one-sided bounds, `t ≤ f (c t)` and `f k ≤ t` for `k < c t`, then `c t / t → τ⁻¹`.
+`f` need not be monotone. -/
 theorem tendsto_count_div_atTop {f : ℕ → ℝ} {c : ℝ → ℕ} {τ : ℝ} (hτ : τ ≠ 0)
     (hf : Tendsto (fun n ↦ f n / n) atTop (𝓝 τ)) (hub : ∀ t, t ≤ f (c t))
     (hlb : ∀ t, ∀ k < c t, f k ≤ t) :
