@@ -775,14 +775,16 @@ instance [IsProbabilityMeasure μ₀] : IsProbabilityMeasure (trajMeasure μ₀ 
   rw [trajMeasure]
   infer_instance
 
-variable (μ₀ κ) in
-lemma map_frestrictLe_trajMeasure (n : ℕ) :
+lemma map_frestrictLe_trajMeasure (μ₀ : Measure (X 0))
+    (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1)))
+    [∀ n, IsMarkovKernel (κ n)] (n : ℕ) :
     (trajMeasure μ₀ κ).map (frestrictLe n) =
       partialTraj κ 0 n ∘ₘ μ₀.map (MeasurableEquiv.piUnique _).symm := by
   rw [trajMeasure, Measure.map_comp _ _ (by fun_prop), traj_map_frestrictLe]
 
-variable (μ₀ κ) in
-lemma map_eval_zero_trajMeasure : (trajMeasure μ₀ κ).map (fun ω ↦ ω 0) = μ₀ := by
+lemma map_eval_zero_trajMeasure (μ₀ : Measure (X 0))
+    (κ : (n : ℕ) → Kernel (Π i : Iic n, X i) (X (n + 1))) [∀ n, IsMarkovKernel (κ n)] :
+    (trajMeasure μ₀ κ).map (fun ω ↦ ω 0) = μ₀ := by
   change (trajMeasure μ₀ κ).map (MeasurableEquiv.piUnique _ ∘ frestrictLe 0) = μ₀
   rw [← Measure.map_map (by fun_prop) (by fun_prop), map_frestrictLe_trajMeasure,
     partialTraj_self, Measure.id_comp, MeasurableEquiv.map_map_symm]
