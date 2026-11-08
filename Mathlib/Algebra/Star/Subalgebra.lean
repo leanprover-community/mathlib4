@@ -94,8 +94,8 @@ instance subringClass {R A} [CommRing R] [StarRing R] [Ring A] [StarRing A] [Alg
 instance starRing (s : StarSubalgebra R A) : StarRing s :=
   { StarMemClass.instStar s with
     star_involutive := fun r => Subtype.ext (star_star (r : A))
-    star_mul := fun r₁ r₂ => Subtype.ext (star_mul (r₁ : A) (r₂ : A))
-    star_add := fun r₁ r₂ => Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
+    star_mul r₁ r₂ := Subtype.ext (star_mul (r₁ : A) (r₂ : A))
+    star_add r₁ r₂ := Subtype.ext (star_add (r₁ : A) (r₂ : A)) }
 
 instance algebra (s : StarSubalgebra R A) : Algebra R s :=
   s.toSubalgebra.algebra'
@@ -349,15 +349,15 @@ variable [Semiring A] [Algebra R A] [StarRing A] [StarModule R A]
 instance involutiveStar : InvolutiveStar (Subalgebra R A) where
   star S :=
     { carrier := star S.carrier
-      mul_mem' := fun {x y} hx hy => by
+      mul_mem' {x y} hx hy := by
         simp only [Set.mem_star, Subalgebra.mem_carrier] at *
         exact (star_mul x y).symm ▸ mul_mem hy hx
       one_mem' := Set.mem_star.mp ((star_one A).symm ▸ one_mem S : star (1 : A) ∈ S)
-      add_mem' := fun {x y} hx hy => by
+      add_mem' {x y} hx hy := by
         simp only [Set.mem_star, Subalgebra.mem_carrier] at *
         exact (star_add x y).symm ▸ add_mem hx hy
       zero_mem' := Set.mem_star.mp ((star_zero A).symm ▸ zero_mem S : star (0 : A) ∈ S)
-      algebraMap_mem' := fun r => by
+      algebraMap_mem' r := by
         simpa only [Set.mem_star, Subalgebra.mem_carrier, ← algebraMap_star_comm] using
           S.algebraMap_mem (star r) }
   star_involutive S :=
@@ -388,7 +388,7 @@ theorem star_adjoin_comm (s : Set A) : star (Algebra.adjoin R s) = Algebra.adjoi
 containing both `S` and `star S`. -/
 def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
   toSubalgebra := S ⊔ star S
-  star_mem' := fun {a} ha => by
+  star_mem' {a} ha := by
     simp only [Subalgebra.mem_carrier, ← (@Algebra.gi R A _ _ _).l_sup_u _ _] at *
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
@@ -430,7 +430,7 @@ variable (R)
 /-- The minimal star subalgebra that contains `s`. -/
 def adjoin (s : Set A) : StarSubalgebra R A :=
   { Algebra.adjoin R (s ∪ star s) with
-    star_mem' := fun hx => by
+    star_mem' hx := by
       rwa [Subalgebra.mem_carrier, ← Subalgebra.mem_star_iff, Subalgebra.star_adjoin_comm,
         Set.union_star, star_star, Set.union_comm] }
 
@@ -794,7 +794,7 @@ variable [StarModule R B]
 protected def codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₐ[R] S where
   toAlgHom := AlgHom.codRestrict f.toAlgHom S.toSubalgebra hf
-  map_star' := fun x => Subtype.ext (map_star f x)
+  map_star' x := Subtype.ext (map_star f x)
 
 @[simp]
 theorem coe_codRestrict (f : A →⋆ₐ[R] B) (S : StarSubalgebra R B) (hf : ∀ x, f x ∈ S) (x : A) :
@@ -820,8 +820,8 @@ noncomputable def _root_.StarAlgEquiv.ofInjective (f : A →⋆ₐ[R] B)
     (hf : Function.Injective f) : A ≃⋆ₐ[R] f.range :=
   { AlgEquiv.ofInjective f.toAlgHom hf with
     toFun := f.rangeRestrict
-    map_star' := fun a => Subtype.ext (map_star f a)
-    map_smul' := fun r a => Subtype.ext (map_smul f r a) }
+    map_star' a := Subtype.ext (map_star f a)
+    map_smul' r a := Subtype.ext (map_smul f r a) }
 end StarAlgHom
 
 

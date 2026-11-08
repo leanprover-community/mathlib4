@@ -140,7 +140,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
       rw [dite_eq_right]
       · exact le_antisymm (zero_le _) (find_le trivial)
       · exact hs
-    csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
+    csInf_of_not_bddBelow s hs := by simp at hs }
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂

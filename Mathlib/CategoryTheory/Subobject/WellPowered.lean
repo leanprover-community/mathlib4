@@ -66,7 +66,7 @@ theorem essentiallySmall_monoOver_iff_small_subobject (X : C) :
 theorem wellPowered_of_essentiallySmall_monoOver [LocallySmall.{w} C]
     (h : ∀ X : C, EssentiallySmall.{w} (MonoOver X)) :
     WellPowered.{w} C :=
-  { subobject_small := fun X => (essentiallySmall_monoOver_iff_small_subobject X).mp (h X) }
+  { subobject_small X := (essentiallySmall_monoOver_iff_small_subobject X).mp (h X) }
 
 section
 

@@ -175,7 +175,7 @@ open AddMonoidHom (flip_apply coe_comp compHom)
 @[simps]
 def gMulHom {i j} : A i →+ A j →+ A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
+    { toFun b := GradedMonoid.GMul.mul a b
       map_zero' := GNonUnitalNonAssocSemiring.mul_zero _
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
   map_zero' := AddMonoidHom.ext fun a => GNonUnitalNonAssocSemiring.zero_mul a
@@ -191,13 +191,13 @@ def mulHom : (⨁ i, A i) →+ (⨁ i, A i) →+ ⨁ i, A i :=
         AddMonoidHom.flip <| (DirectSum.of A _).compHom.comp <| gMulHom A
 
 instance instMul : Mul (⨁ i, A i) where
-  mul := fun a b => mulHom A a b
+  mul a b := mulHom A a b
 
 instance : NonUnitalNonAssocSemiring (⨁ i, A i) where
-  zero_mul := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
-  mul_zero := fun _ => by simp only [Mul.mul, HMul.hMul, map_zero]
-  left_distrib := fun _ _ _ => by simp only [Mul.mul, HMul.hMul, map_add]
-  right_distrib := fun _ _ _ => by
+  zero_mul _ := by simp only [Mul.mul, HMul.hMul, map_zero, AddMonoidHom.zero_apply]
+  mul_zero _ := by simp only [Mul.mul, HMul.hMul, map_zero]
+  left_distrib _ _ _ := by simp only [Mul.mul, HMul.hMul, map_add]
+  right_distrib _ _ _ := by
     simp only [Mul.mul, HMul.hMul, map_add, AddMonoidHom.add_apply]
 
 variable {A}
@@ -245,7 +245,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
   exact of_eq_of_gradedMonoid_eq (_root_.mul_assoc (GradedMonoid.mk ai ax) ⟨bi, bx⟩ ⟨ci, cx⟩)
 
 instance instNatCast : NatCast (⨁ i, A i) where
-  natCast := fun n => of _ _ (GSemiring.natCast n)
+  natCast n := of _ _ (GSemiring.natCast n)
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
 instance semiring : Semiring (⨁ i, A i) where
@@ -254,7 +254,7 @@ instance semiring : Semiring (⨁ i, A i) where
   mul_assoc := private mul_assoc A
   toNatCast := instNatCast _
   natCast_zero := by simp only [NatCast.natCast, GSemiring.natCast_zero, map_zero]
-  natCast_succ := fun n => by
+  natCast_succ n := by
     simp_rw [NatCast.natCast, GSemiring.natCast_succ]
     rw [map_add]
     rfl

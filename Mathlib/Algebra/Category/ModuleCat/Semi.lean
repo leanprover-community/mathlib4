@@ -200,8 +200,8 @@ lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj
 
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
-    { obj := fun M => ↧M
-      map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
+    { obj M := ↧M
+      map f := AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : SemimoduleCat R) :
@@ -315,7 +315,7 @@ instance : HasZeroMorphisms (SemimoduleCat.{v} R) where
 @[simps!]
 def homAddEquiv : (M ⟶ N) ≃+ (M →ₗ[R] N) :=
   { homEquiv with
-    map_add' := fun _ _ => rfl }
+    map_add' _ _ := rfl }
 
 theorem subsingleton_of_isZero (h : IsZero M) : Subsingleton M := by
   refine subsingleton_of_forall_eq 0 (fun x ↦ ?_)
@@ -358,7 +358,7 @@ instance Hom.instModule : Module S (M ⟶ N) :=
 @[simps]
 def homLinearEquiv : (M ⟶ N) ≃ₗ[S] (M →ₗ[R] N) :=
   { homAddEquiv with
-    map_smul' := fun _ _ => rfl }
+    map_smul' _ _ := rfl }
 
 end Module
 

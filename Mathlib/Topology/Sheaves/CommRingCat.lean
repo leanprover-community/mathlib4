@@ -236,15 +236,15 @@ from `X : TopCat` to `R : TopCommRingCat` form a commutative ring, functorial in
 `R`. -/
 def commRingYoneda : TopCommRingCat.{u} ⥤ TopCat.{u}ᵒᵖ ⥤ CommRingCat.{u} where
   obj R :=
-    { obj := fun X => continuousFunctions X R
-      map := fun {_ _} f => continuousFunctions.pullback f R
-      map_id := fun X => by
+    { obj X := continuousFunctions X R
+      map {_ _} f := continuousFunctions.pullback f R
+      map_id X := by
         ext
         rfl
-      map_comp := fun {_ _ _} _ _ => rfl }
+      map_comp {_ _ _} _ _ := rfl }
   map {_ _} φ :=
-    { app := fun X => continuousFunctions.map X φ
-      naturality := fun _ _ _ => rfl }
+    { app X := continuousFunctions.map X φ
+      naturality _ _ _ := rfl }
   map_id X := by
     ext
     rfl

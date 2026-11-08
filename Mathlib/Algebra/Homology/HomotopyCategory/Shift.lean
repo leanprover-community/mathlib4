@@ -43,11 +43,11 @@ multiplies the differentials by `(-1)^n`. -/
 @[implicit_reducible, simps]
 def shiftFunctor (n : ℤ) : CochainComplex C ℤ ⥤ CochainComplex C ℤ where
   obj K :=
-    { X := fun i => K.X (i + n)
-      d := fun _ _ => n.negOnePow • K.d _ _
+    { X i := K.X (i + n)
+      d _ _ := n.negOnePow • K.d _ _
       d_comp_d' := by simp
       shape i j hij := by rw [K.shape _ _ (by simp at hij ⊢; lia), smul_zero]}
-  map φ := { f := fun i => φ.f (i + n) }
+  map φ := { f i := φ.f (i + n) }
 
 instance (n : ℤ) : (shiftFunctor C n).Additive where
 
@@ -91,7 +91,7 @@ attribute [local simp] XIsoOfEq
 instance : HasShift (CochainComplex C ℤ) ℤ := hasShiftMk _ _
   { F := shiftFunctor C
     zero := shiftFunctorZero' C _ rfl
-    add := fun n₁ n₂ => shiftFunctorAdd' C n₁ n₂ _ rfl }
+    add n₁ n₂ := shiftFunctorAdd' C n₁ n₂ _ rfl }
 
 instance (n : ℤ) :
     (CategoryTheory.shiftFunctor (HomologicalComplex C (ComplexShape.up ℤ)) n).Additive :=
@@ -214,7 +214,7 @@ instance commShiftMapCochainComplex :
     simp [CochainComplex.shiftFunctorZero_inv_app_f, CochainComplex.shiftFunctorZero_hom_app_f,
        HomologicalComplex.XIsoOfEq, eqToIso, eqToHom_map, eqToHom_trans, eqToHom_refl,
        mapHomologicalComplex]
-  commShiftIso_add := fun a b => by
+  commShiftIso_add a b := by
     ext
     rw [CommShift.isoAdd_hom_app]
     simp [CochainComplex.shiftFunctorAdd_hom_app_f,

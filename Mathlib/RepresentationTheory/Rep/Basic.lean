@@ -775,8 +775,8 @@ protected noncomputable def ihom : Rep k G ⥤ Rep k G where
   obj B := Rep.of (Representation.linHom A.ρ B.ρ)
   map {X} {Y} f := Rep.ofHom ⟨LinearMap.llcomp k _ _ _ f.hom.toLinearMap, fun g ↦ by
     ext; simp [Representation.IntertwiningMap.toLinearMap_apply, ← hom_comm_apply]⟩
-  map_id := fun _ => by ext; rfl
-  map_comp := fun _ _ => by ext; rfl
+  map_id _ := by ext; rfl
+  map_comp _ _ := by ext; rfl
 
 @[simp] theorem ihom_obj_ρ_apply {A B : Rep k G} (g : G) (x : A →ₗ[k] B) :
     -- Hint to put this lemma into `simp`-normal form.
@@ -811,7 +811,7 @@ noncomputable instance : MonoidalClosed (Rep k G) where
     { rightAdj := Rep.ihom A
       adj := Adjunction.mkOfHomEquiv ({
         homEquiv := Rep.tensorHomEquiv A
-        homEquiv_naturality_left_symm := fun _ _ => Rep.hom_ext <|
+        homEquiv_naturality_left_symm _ _ := Rep.hom_ext <|
           Representation.IntertwiningMap.ext <| TensorProduct.ext' fun _ _ => rfl
         homEquiv_naturality_right _ _ := Rep.hom_ext <|
           Representation.IntertwiningMap.ext <|
@@ -840,8 +840,8 @@ theorem ihom_ev_app_hom (A B : Rep k G) :
 and `Hom(B, Homₖ(A, C))`. -/
 def MonoidalClosed.linearHomEquiv (A B C : Rep.{u} k G) : (A ⊗ B ⟶ C) ≃ₗ[k] B ⟶ A ⟶[Rep k G] C :=
   { (ihom.adjunction A).homEquiv _ _ with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 /-- There is a `k`-linear isomorphism between the sets of representation morphisms `Hom(A ⊗ B, C)`
 and `Hom(A, Homₖ(B, C))`. -/

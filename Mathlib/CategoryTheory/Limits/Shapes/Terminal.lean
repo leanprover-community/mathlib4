@@ -90,7 +90,7 @@ theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsin
 
 @[to_dual]
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
-  { has_limit := fun F => HasLimit.mk ⟨⟨X, by cat_disch, by simp⟩,
+  { has_limit F := HasLimit.mk ⟨⟨X, by cat_disch, by simp⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- The map from an object to the terminal object. -/
@@ -141,8 +141,8 @@ instance {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C] :
   HasLimit.mk
     { cone :=
         { pt := ⊤_ C
-          π := { app := fun _ => terminal.from _ } }
-      isLimit := { lift := fun _ => terminal.from _ } }
+          π := { app _ := terminal.from _ } }
+      isLimit := { lift _ := terminal.from _ } }
 
 /-- The limit of the constant `⊤_ C` functor is `⊤_ C`. -/
 @[simps hom]
@@ -152,7 +152,7 @@ def limitConstTerminal {J : Type*} [Category* J] {C : Type*} [Category* C] [HasT
   inv :=
     limit.lift ((CategoryTheory.Functor.const J).obj (⊤_ C))
       { pt := ⊤_ C
-        π := { app := fun _ => terminal.from _ } }
+        π := { app _ := terminal.from _ } }
 
 @[reassoc (attr := simp)]
 theorem limitConstTerminal_inv_π {J : Type*} [Category* J] {C : Type*} [Category* C] [HasTerminal C]
@@ -167,7 +167,7 @@ def colimitConstInitial {J : Type*} [Category* J] {C : Type*} [Category* C] [Has
   hom :=
     colimit.desc ((CategoryTheory.Functor.const J).obj (⊥_ C))
       { pt := ⊥_ C
-        ι := { app := fun _ => initial.to _ } }
+        ι := { app _ := initial.to _ } }
   inv := initial.to _
 
 @[reassoc (attr := simp)]

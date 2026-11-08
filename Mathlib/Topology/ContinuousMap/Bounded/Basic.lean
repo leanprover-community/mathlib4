@@ -500,7 +500,7 @@ variable {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
 instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
     Mul (α →ᵇ R) where
   mul f g :=
-    { toFun := fun x ↦ f x * g x
+    { toFun x := f x * g x
       continuous_toFun := f.continuous.mul g.continuous
       map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
@@ -516,7 +516,7 @@ instance [Mul R] [BoundedMul R] [ContinuousMul R] : IsMulApply (α →ᵇ R) whe
 @[to_additive]
 instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
   pow f n :=
-    { toFun := fun x ↦ (f x) ^ n
+    { toFun x := (f x) ^ n
       continuous_toFun := f.continuous.pow n
       map_bounded' := by
         obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
@@ -636,7 +636,7 @@ variable (f g : α →ᵇ R)
 /-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
 instance instSub : Sub (α →ᵇ R) where
   sub f g :=
-    { toFun := fun x ↦ (f x - g x),
+    { toFun x := (f x - g x),
       map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
 
 instance : IsSubApply (α →ᵇ R) where

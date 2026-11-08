@@ -148,7 +148,7 @@ theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j 
 
 theorem one : IsPrimitiveRoot (1 : M) 1 :=
   { pow_eq_one := pow_one _
-    dvd_of_pow_eq_one := fun _ _ ↦ one_dvd _ }
+    dvd_of_pow_eq_one _ _ := one_dvd _ }
 
 @[simp]
 theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by
@@ -462,7 +462,7 @@ and the powers of a primitive root of unity `ζ`. -/
 def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup.zpowers ζ) :=
   AddEquiv.ofBijective
     (AddMonoidHom.liftOfRightInverse (Int.castAddHom <| ZMod k) _ ZMod.intCast_rightInverse
-      ⟨{  toFun := fun i ↦ Additive.ofMul (⟨_, i, rfl⟩ : Subgroup.zpowers ζ)
+      ⟨{  toFun i := Additive.ofMul (⟨_, i, rfl⟩ : Subgroup.zpowers ζ)
           map_zero' := by simp only [zpow_zero]; rfl
           map_add' := by intro i j; simp only [zpow_add]; rfl }, fun i hi ↦ by
         simp only [AddMonoidHom.mem_ker, CharP.intCast_eq_zero_iff (ZMod k) k, AddMonoidHom.coe_mk,
@@ -794,7 +794,7 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
     refine Eq.trans ?_ hμ.eq_orderOf.symm -- `rw [hμ.eq_orderOf]` gives "motive not type correct"
     rw [← hμ.val_toRootsOfUnity_coe, orderOf_units, Subgroup.orderOf_coe]
   MonoidHom.toHomUnits
-    { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
+    { toFun σ := (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
         generalize_proofs h1
         have h := h1.choose_spec

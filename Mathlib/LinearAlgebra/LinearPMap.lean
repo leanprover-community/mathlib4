@@ -276,7 +276,7 @@ instance inhabited : Inhabited (E →ₛₗ.[σ] F) :=
 
 instance semilatticeInf : SemilatticeInf (E →ₛₗ.[σ] F) where
   le_refl f := ⟨le_refl f.domain, fun _ _ h => Subtype.ext h ▸ rfl⟩
-  le_trans := fun _ _ _ ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩ =>
+  le_trans _ _ _ := fun ⟨fg_le, fg_eq⟩ ⟨gh_le, gh_eq⟩  =>
     ⟨le_trans fg_le gh_le, fun x _ hxz =>
       have hxy : (x : E) = inclusion fg_le x := rfl
       (fg_eq hxy).trans (gh_eq <| hxy.symm.trans hxz)⟩
@@ -489,11 +489,11 @@ instance instAddSemigroup : AddSemigroup (E →ₛₗ.[σ] F) :=
     · simp only [add_apply, add_assoc]⟩
 
 instance instAddZeroClass : AddZeroClass (E →ₛₗ.[σ] F) where
-  zero_add := fun f => by
+  zero_add f := by
     ext x y hxy
     · simp [add_domain]
     · simp [add_apply]
-  add_zero := fun f => by
+  add_zero f := by
     ext x y hxy
     · simp [add_domain]
     · simp [add_apply]
@@ -535,7 +535,7 @@ theorem coe_vadd (f : E →ₛₗ[σ] F) (g : E →ₛₗ.[σ] F) : ⇑(f +ᵥ g
 instance instAddAction : AddAction (E →ₛₗ[σ] F) (E →ₛₗ.[σ] F) where
   vadd := (· +ᵥ ·)
   zero_vadd := fun ⟨_s, _f⟩ => ext' <| zero_add _
-  add_vadd := fun _f₁ _f₂ ⟨_s, _g⟩ => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
+  add_vadd _f₁ _f₂ := fun ⟨_s, _g⟩  => ext' <| LinearMap.ext fun _x => add_assoc _ _ _
 
 end VAdd
 
@@ -974,14 +974,14 @@ Helper definition for `LinearPMap`. -/
 noncomputable def toLinearPMapAux (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.map (LinearMap.fst R E F) →ₗ[R] F where
-  toFun := fun x => valFromGraph hg x.2
-  map_add' := fun v w => by
+  toFun x := valFromGraph hg x.2
+  map_add' v w := by
     have hadd := (g.map (LinearMap.fst R E F)).add_mem v.2 w.2
     have hvw := valFromGraph_mem hg hadd
     have hvw' := g.add_mem (valFromGraph_mem hg v.2) (valFromGraph_mem hg w.2)
     rw [Prod.mk_add_mk] at hvw'
     exact (existsUnique_from_graph @hg hadd).unique hvw hvw'
-  map_smul' := fun a v => by
+  map_smul' a v := by
     have hsmul := (g.map (LinearMap.fst R E F)).smul_mem a v.2
     have hav := valFromGraph_mem hg hsmul
     have hav' := g.smul_mem a (valFromGraph_mem hg v.2)

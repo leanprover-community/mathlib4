@@ -143,8 +143,8 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := A
   ι :=
-    { app := fun U => eqToHom <| ite_eq_left <| h.mem_open U.unop.1.2 U.unop.2
-      naturality := fun U V inc => by
+    { app U := eqToHom <| ite_eq_left <| h.mem_open U.unop.1.2 U.unop.2
+      naturality U V inc := by
         change dite _ _ _ ≫ _ = _; rw [dite_eq_left]
         swap
         · exact h.mem_open V.unop.1.2 V.unop.2
@@ -193,8 +193,8 @@ def skyscraperPresheafCocone (y : X) :
     Cocone ((OpenNhds.inclusion y).op ⋙ skyscraperPresheaf p₀ A) where
   pt := terminal C
   ι :=
-    { app := fun _ => terminal.from _
-      naturality := fun _ _ _ => terminalIsTerminal.hom_ext _ _ }
+    { app _ := terminal.from _
+      naturality _ _ _ := terminalIsTerminal.hom_ext _ _ }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -207,15 +207,15 @@ noncomputable def skyscraperPresheafCoconeIsColimitOfNotSpecializes {y : X} (h :
   let h1 : ∃ U : OpenNhds y, p₀ ∉ U.1 :=
     let ⟨U, ho, h₀, hy⟩ := not_specializes_iff_exists_open.mp h
     ⟨⟨⟨U, ho⟩, h₀⟩, hy⟩
-  { desc := fun c => eqToHom (ite_eq_right h1.choose_spec).symm ≫ c.ι.app (op h1.choose)
-    fac := fun c U => by
+  { desc c := eqToHom (ite_eq_right h1.choose_spec).symm ≫ c.ι.app (op h1.choose)
+    fac c U := by
       change _ = c.ι.app (op U.unop)
       simp only [← c.w (homOfLE <| @inf_le_left _ _ h1.choose U.unop).op, ←
         c.w (homOfLE <| @inf_le_right _ _ h1.choose U.unop).op, ← Category.assoc]
       congr 1
       refine ((ite_eq_right ?_).symm.ndrec terminalIsTerminal).hom_ext _ _
       exact fun h => h1.choose_spec h.1
-    uniq := fun c f H => by
+    uniq c f H := by
       dsimp
       rw [← Category.id_comp f, ← H, ← Category.assoc]
       congr 1; apply terminalIsTerminal.hom_ext }
@@ -295,8 +295,8 @@ set_option backward.isDefEq.respectTransparency false in
 def fromStalk {𝓕 : Presheaf C X} {c : C} (f : 𝓕 ⟶ skyscraperPresheaf p₀ c) : 𝓕.stalk p₀ ⟶ c :=
   let χ : Cocone ((OpenNhds.inclusion p₀).op ⋙ 𝓕) :=
     Cocone.mk c
-      { app := fun U => f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.2)
-        naturality := fun U V inc => by
+      { app U := f.app ((OpenNhds.inclusion p₀).op.obj U) ≫ eqToHom (ite_eq_left U.unop.2)
+        naturality U V inc := by
           dsimp only [Functor.const_obj_map, Functor.const_obj_obj, Functor.comp_map,
             Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj]
           rw [Category.comp_id, ← Category.assoc, comp_eqToHom_iff, Category.assoc,
@@ -406,8 +406,8 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
     Sheaf.forget C X ⋙ Presheaf.stalkFunctor _ p₀ ⊣ skyscraperSheafFunctor p₀ where
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is changed to `Sheaf.Hom.ext`,
   unit :=
-    { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
-      naturality := fun 𝓐 𝓑 f => Sheaf.hom_ext <| by
+    { app 𝓕 := ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
+      naturality 𝓐 𝓑 f := Sheaf.hom_ext <| by
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
   left_triangle_components X :=

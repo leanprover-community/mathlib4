@@ -82,8 +82,8 @@ lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
 
 instance hasForgetToCommRing : HasForget₂ BoolRing CommRingCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ CommRingCat.ofHom f.hom }
+    { obj R := ↧R
+      map f := CommRingCat.ofHom f.hom }
 
 /-- Constructs an isomorphism of Boolean rings from a ring isomorphism between them. -/
 @[simps]

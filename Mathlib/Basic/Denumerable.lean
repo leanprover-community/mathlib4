@@ -88,7 +88,7 @@ way. -/
 @[instance_reducible]
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
-    decode_inv := fun n => by
+    decode_inv n := by
       simp [decode_ofEquiv, encode_ofEquiv] }
 
 @[simp]

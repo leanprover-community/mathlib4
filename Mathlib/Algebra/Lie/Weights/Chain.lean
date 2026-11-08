@@ -183,13 +183,13 @@ lemma trace_toEnd_genWeightSpaceChain_eq_zero
     let f : Module.End R (genWeightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
           lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right M α χ p q hq hy hm⟩
-        map_add' := fun _ _ ↦ by simp
-        map_smul' := fun t m ↦ by simp }
+        map_add' _ _ := by simp
+        map_smul' t m := by simp }
     let g : Module.End R (genWeightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(z : L), m⁆,
           lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left M α χ p q hp hz hm⟩
-        map_add' := fun _ _ ↦ by simp
-        map_smul' := fun t m ↦ by simp }
+        map_add' _ _ := by simp
+        map_smul' t m := by simp }
     have hfg : toEnd R H _ u = ⁅f, g⁆ := by
       ext
       rw [toEnd_apply_apply, LieSubmodule.coe_bracket, LieSubalgebra.coe_bracket_of_module, ← hyz]

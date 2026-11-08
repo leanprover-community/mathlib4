@@ -59,7 +59,7 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
       h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
-    le_total := fun x y =>
+    le_total x y :=
       match y, trichotomous_of r x y with
       | _, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
@@ -85,8 +85,8 @@ theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α
 theorem isStrictWeakOrder_of_isOrderConnected [Std.Asymm r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
   { @Std.Asymm.irrefl α r _ with
-    trans := fun _ _ c h₁ h₂ => (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
-    incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
+    trans _ _ c h₁ h₂ := (IsOrderConnected.conn _ c _ h₁).resolve_right (asymm h₂),
+    incomp_trans _ _ _ := fun ⟨h₁, h₂⟩ ⟨h₃, h₄⟩  =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
 
 -- see Note [lower instance priority]

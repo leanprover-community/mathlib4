@@ -55,7 +55,7 @@ and let `M`, `M'` be charted spaces modelled on the model spaces of those groupo
 an induced `LocalPredicate` on the functions from `M` to `M'`, given by `LiftProp P`. -/
 def StructureGroupoid.LocalInvariantProp.localPredicate (hG : LocalInvariantProp G G' P) :
     TopCat.LocalPredicate fun _ : TopCat.of M => M' where
-  pred {U : Opens (TopCat.of M)} := fun f : U → M' => ChartedSpace.LiftProp P f
+  pred {U : Opens (TopCat.of M)} (f : U → M') := ChartedSpace.LiftProp P f
   res := by
     intro U V i f h x
     have hUV : U ≤ V := CategoryTheory.leOfHom i

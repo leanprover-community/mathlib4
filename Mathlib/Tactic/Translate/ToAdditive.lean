@@ -395,7 +395,7 @@ def data : TranslateData where
 initialize registerBuiltinAttribute {
     name := `to_additive
     descr := "Transport multiplicative to additive"
-    add := fun src stx kind ↦ discard do
+    add src stx kind := discard do
       profileitM Exception "to_additive" (← getOptions) do
         addTranslationAttr data src (← elabTranslationAttr src stx) kind
     -- we (presumably) need to run after compilation to properly add the `simp` attribute

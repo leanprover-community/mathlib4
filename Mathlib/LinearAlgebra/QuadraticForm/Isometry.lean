@@ -116,13 +116,13 @@ theorem comp_assoc (h : Q₃ →qᵢ Q₄) (g : Q₂ →qᵢ Q₃) (f : Q₁ →
 
 /-- There is a zero map from any module with the zero form. -/
 instance : Zero ((0 : QuadraticMap R M₁ N) →qᵢ Q₂) where
-  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ => map_zero _ }
+  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' _ := map_zero _ }
 
 /-- There is a zero map from the trivial module. -/
 instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (Q₁ →qᵢ Q₂) where
   zero :=
   { (0 : M₁ →ₗ[R] M₂) with
-    map_app' := fun m => Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
+    map_app' m := Subsingleton.elim 0 m ▸ (map_zero _).trans (map_zero _).symm }
 
 /-- Maps into the zero module are trivial -/
 instance [Subsingleton M₂] : Subsingleton (Q₁ →qᵢ Q₂) :=

@@ -26,7 +26,7 @@ namespace Prod
 variable [AddMonoidWithOne α] [AddMonoidWithOne β]
 
 instance instAddMonoidWithOne : AddMonoidWithOne (α × β) where
-  natCast := fun n => (n, n)
+  natCast n := (n, n)
   natCast_zero := by ext <;> simp
   natCast_succ n := by ext <;> simp
 

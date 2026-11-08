@@ -45,7 +45,7 @@ section
 def eqLocus (f g : M →ₛₗ[τ₁₂] M₂) : Submodule R M :=
   { (f : M →+ M₂).eqLocusM g with
     carrier := { x | f x = g x }
-    smul_mem' := fun {r} {x} (hx : _ = _) => show _ = _ by
+    smul_mem' {r} {x} (hx : _ = _) := show _ = _ by
       -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
       simpa only [map_smulₛₗ _] using congr(τ₁₂ r • $hx) }
 

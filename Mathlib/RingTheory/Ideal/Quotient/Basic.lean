@@ -118,8 +118,8 @@ since users will have computable inverses in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev groupWithZero [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) := fast_instance%
-  { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
-    mul_inv_cancel := fun a (ha : a ≠ 0) =>
+  { inv a := if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
+    mul_inv_cancel a (ha : a ≠ 0) :=
       show a * dite _ _ _ = _ by rw [dite_eq_right ha]; exact Classical.choose_spec (exists_inv ha)
     inv_zero := dite_eq_left rfl
     __ := Quotient.nontrivial_iff.mpr hI.out.1 }

@@ -123,7 +123,7 @@ The universe lift functor on `GrpCat.{u}` creates `u`-small limits.
 @[to_additive
   /-- The universe lift functor on `AddGrpCat.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
-  CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
+  CreatesLimitsOfShape := { CreatesLimit {_} := createsLimitOfFullyFaithfulOfPreserves }
 
 end GrpCat
 
@@ -173,7 +173,7 @@ The universe lift functor on `CommGrpCat.{u}` creates `u`-small limits.
 @[to_additive
   /-- The universe lift functor on `AddCommGrpCat.{u}` creates `u`-small limits. -/]
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
-  CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
+  CreatesLimitsOfShape := { CreatesLimit {_} := createsLimitOfFullyFaithfulOfPreserves }
 
 end CommGrpCat
 
@@ -191,8 +191,8 @@ of arbitrary size.
 -/
 noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesColimitsOfShape {J _} :=
-  { preservesColimit := fun {F} ↦
-    { preserves := fun {c} hc ↦ by
+  { preservesColimit {F} :=
+    { preserves {c} hc := by
         classical
         rw [isColimit_iff_bijective_desc, ← Function.Bijective.of_comp_iff _
           (quotQuotUliftAddEquiv F).bijective, ← AddEquiv.coe_toAddMonoidHom,
@@ -204,6 +204,6 @@ The functor `uliftFunctor : AddCommGrpCat.{u} ⥤ AddCommGrpCat.{max u v}` creat
 -/
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape :=
-    { CreatesColimit := fun {_} ↦ createsColimitOfReflectsIsomorphismsOfPreserves }
+    { CreatesColimit {_} := createsColimitOfReflectsIsomorphismsOfPreserves }
 
 end AddCommGrpCat

@@ -173,7 +173,7 @@ lemma paths_le_inverseImage (W : MorphismProperty C) [W.IsMultiplicative] :
 set_option backward.isDefEq.respectTransparency.types false in
 instance (W : MorphismProperty C) : IsMultiplicative (W.paths.strictMap (pathComposition C)) where
   id_mem X := W.paths.map_mem_strictMap (pathComposition C) _ (W.paths.id_mem X)
-  comp_mem := fun _ _ ⟨hp⟩ ⟨hq⟩ ↦ by
+  comp_mem _ _ := fun ⟨hp⟩ ⟨hq⟩  ↦ by
     simpa using! W.paths.map_mem_strictMap (pathComposition C) _ <| W.paths.comp_mem _ _ hp hq
 
 set_option backward.isDefEq.respectTransparency.types false in

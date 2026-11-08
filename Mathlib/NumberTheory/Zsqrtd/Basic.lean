@@ -134,7 +134,7 @@ theorem im_mul (z w : ℤ√d) : (z * w).im = z.re * w.im + z.im * w.re :=
 
 instance addCommGroup : AddCommGroup (ℤ√d) := by
   refine
-  { sub := fun a b => a + -b
+  { sub a b := a + -b
     nsmul := @nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩
     zsmul := @zsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩ ⟨Neg.neg⟩ (@nsmulRec (ℤ√d) ⟨0⟩ ⟨(· + ·)⟩)
     add_assoc := ?_
@@ -156,7 +156,7 @@ theorem im_sub (z w : ℤ√d) : (z - w).im = z.im - w.im :=
 
 instance addGroupWithOne : AddGroupWithOne (ℤ√d) :=
   { Zsqrtd.addCommGroup with
-    natCast := fun n => ofInt n
+    natCast n := ofInt n
     intCast := ofInt }
 
 instance commRing : CommRing (ℤ√d) := by
@@ -772,8 +772,8 @@ theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
 
 instance linearOrder : LinearOrder (ℤ√d) :=
   { Zsqrtd.preorder with
-    le_antisymm := fun _ _ ab ba => eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
-    le_total := fun a b => by
+    le_antisymm _ _ ab ba := eq_of_sub_eq_zero <| nonneg_antisymm ba (by rwa [neg_sub])
+    le_total a b := by
       have t := (b - a).nonneg_total
       rwa [neg_sub] at t
     toDecidableLE := Zsqrtd.decidableLE
@@ -824,7 +824,7 @@ instance : ZeroLEOneClass (ℤ√d) :=
   { zero_le_one := by trivial }
 
 instance : IsOrderedAddMonoid (ℤ√d) :=
-  { add_le_add_left := fun a b ab c => show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
+  { add_le_add_left a b ab c := show Nonneg _ by rwa [add_sub_add_right_eq_sub] }
 
 instance : IsStrictOrderedRing (ℤ√d) :=
   .of_mul_pos Zsqrtd.mul_pos
@@ -861,13 +861,13 @@ root. Conversely, this associates to every mapping `ℤ√d →+* R` a value of 
 @[simps]
 def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
   toFun r :=
-    { toFun := fun a => a.1 + a.2 * (r : R)
+    { toFun a := a.1 + a.2 * (r : R)
       map_zero' := by simp
-      map_add' := fun a b => by
+      map_add' a b := by
         simp only [re_add, Int.cast_add, im_add]
         ring
       map_one' := by simp
-      map_mul' := fun a b => by
+      map_mul' a b := by
         have :
           (a.re + a.im * r : R) * (b.re + b.im * r) =
             a.re * b.re + (a.re * b.im + a.im * b.re) * r + a.im * b.im * (r * r) := by

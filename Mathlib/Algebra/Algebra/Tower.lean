@@ -181,7 +181,7 @@ namespace AlgHom
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A →ₐ[S] B) : A →ₐ[R] B :=
   { (f : A →+* B) with
-    commutes' := fun r => by
+    commutes' r := by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
       exact f.commutes (algebraMap R S r) }
 
@@ -234,7 +234,7 @@ namespace AlgEquiv
 /-- R ⟶ S induces S-Alg ⥤ R-Alg -/
 def restrictScalars (f : A ≃ₐ[S] B) : A ≃ₐ[R] B :=
   { (f : A ≃+* B) with
-    commutes' := fun r => by
+    commutes' r := by
       rw [algebraMap_apply R S A, algebraMap_apply R S B]
       exact f.commutes (algebraMap R S r) }
 

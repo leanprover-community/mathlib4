@@ -42,8 +42,8 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbit
 -/
 noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
-    preservesLimit := fun {K} => {
-      preserves := fun {c} hc => by
+    preservesLimit {K} := {
+      preserves {c} hc := by
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2
@@ -54,7 +54,7 @@ noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small limits.
 -/
 noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
-  CreatesLimitsOfShape := { CreatesLimit := fun {_} ↦ createsLimitOfFullyFaithfulOfPreserves }
+  CreatesLimitsOfShape := { CreatesLimit {_} := createsLimitOfFullyFaithfulOfPreserves }
 
 variable {J : Type*} [Category* J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
 variable {lc : Cocone (K ⋙ uliftFunctor.{v, u})}
@@ -64,8 +64,8 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves colimits of arb
 -/
 noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesColimitsOfShape {J _} :=
-  { preservesColimit := fun {F} ↦
-    { preserves := fun {c} hc ↦ by
+  { preservesColimit {F} :=
+    { preserves {c} hc := by
         rw [isColimit_iff_coconeTypesIsColimit]
         exact (((isColimit_iff_coconeTypesIsColimit _).1 ⟨hc⟩).precompose
           (G := F ⋙ uliftFunctor.{v}) (fun _ ↦ Equiv.ulift)
@@ -76,6 +76,6 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` creates `u`-small colimit
 -/
 noncomputable instance : CreatesColimitsOfSize.{w, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape :=
-    { CreatesColimit := fun {_} ↦ createsColimitOfReflectsIsomorphismsOfPreserves }
+    { CreatesColimit {_} := createsColimitOfReflectsIsomorphismsOfPreserves }
 
 end CategoryTheory.Limits.Types

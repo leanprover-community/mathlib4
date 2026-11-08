@@ -110,7 +110,7 @@ instance : Add (SummableFamily Γ R α) :=
           (by
             rw [← Set.iUnion_union_distrib]
             exact Set.iUnion_mono fun a => support_add_subset ..)
-      finite_co_support' := fun g =>
+      finite_co_support' g :=
         ((x.finite_co_support g).union (y.finite_co_support g)).subset
           (by
             intro a ha
@@ -327,11 +327,11 @@ variable [PartialOrder Γ] [AddCommGroup R] {s t : SummableFamily Γ R α} {a : 
 
 instance : Neg (SummableFamily Γ R α) where
   neg s :=
-    { toFun := fun a => -s a
+    { toFun a := -s a
       isPWO_iUnion_support' := by
         simp_rw [support_neg]
         exact s.isPWO_iUnion_support
-      finite_co_support' := fun g => by
+      finite_co_support' g := by
         simp only [coeff_neg', Pi.neg_apply, Ne, neg_eq_zero]
         exact s.finite_co_support g }
 

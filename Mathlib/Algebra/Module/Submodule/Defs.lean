@@ -295,10 +295,10 @@ instance addCommMonoid : AddCommMonoid p := AddSubmonoidClass.toAddCommMonoid p
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul_zero := fun a => by ext; simp
-    zero_smul := fun a => by ext; simp
-    add_smul := fun a b x => by ext; simp [add_smul]
-    smul_add := fun a x y => by ext; simp [smul_add] }
+    smul_zero a := by ext; simp
+    zero_smul a := by ext; simp
+    add_smul a b x := by ext; simp [add_smul]
+    smul_add a x y := by ext; simp [smul_add] }
 
 instance module : Module R p :=
   p.module'
@@ -313,7 +313,7 @@ variable (p p' : Submodule R M)
 variable {x y : M}
 
 instance addSubgroupClass [Module R M] : AddSubgroupClass (Submodule R M) M :=
-  { Submodule.addSubmonoidClass with neg_mem := fun p {_} => p.toSubMulAction.neg_mem }
+  { Submodule.addSubmonoidClass with neg_mem p {_} := p.toSubMulAction.neg_mem }
 
 protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
   neg_mem hx
@@ -321,7 +321,7 @@ protected theorem neg_mem (hx : x ∈ p) : -x ∈ p :=
 /-- Reinterpret a submodule as an additive subgroup. -/
 @[reducible]
 def toAddSubgroup : AddSubgroup M :=
-  { p.toAddSubmonoid with neg_mem' := fun {_} => p.neg_mem }
+  { p.toAddSubmonoid with neg_mem' {_} := p.neg_mem }
 
 @[simp]
 theorem coe_toAddSubgroup : (p.toAddSubgroup : Set M) = p :=

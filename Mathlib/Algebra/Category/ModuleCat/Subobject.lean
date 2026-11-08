@@ -30,8 +30,8 @@ variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
-    { invFun := fun S => LinearMap.range S.arrow.hom
-      toFun := fun N => Subobject.mk (ofHom N.subtype)
+    { invFun S := LinearMap.range S.arrow.hom
+      toFun N := Subobject.mk (ofHom N.subtype)
       right_inv := fun S => Eq.symm (by
         fapply eq_mk_of_comm
         · apply LinearEquiv.toModuleIso
@@ -54,7 +54,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
               rfl
           rw [this, hom_comp, hom_ofHom, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
-      map_rel_iff' := fun {S T} => by
+      map_rel_iff' {S T} := by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]

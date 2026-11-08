@@ -475,8 +475,8 @@ variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →+* S) (x : Sˣ)
 
 instance algebraPolynomial (R : Type*) [CommSemiring R] : Algebra R[X] R[T;T⁻¹] where
   algebraMap := Polynomial.toLaurent
-  commutes' := fun f l => by simp [mul_comm]
-  smul_def' := fun _ _ => rfl
+  commutes' f l := by simp [mul_comm]
+  smul_def' _ _ := rfl
 
 theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :=
   Polynomial.toLaurent_X_pow n
@@ -496,7 +496,7 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
       refine ⟨(f, ⟨_, this⟩), ?_⟩
       simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
         mul_one]
-    exists_of_eq := fun {f g} => by
+    exists_of_eq {f g} := by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl
       exact ⟨1, rfl⟩ }

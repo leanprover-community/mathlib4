@@ -289,11 +289,11 @@ Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `Linear
 protected def _root_.ContinuousLinearMap.compLeftContinuousBounded (g : β →L[𝕜] γ) :
     (α →ᵇ β) →L[𝕜] α →ᵇ γ :=
   LinearMap.mkContinuous
-    { toFun := fun f =>
+    { toFun f :=
         ofNormedAddCommGroup (g ∘ f) (g.continuous.comp f.continuous) (‖g‖ * ‖f‖) fun x =>
           g.le_opNorm_of_le (f.norm_coe_le_norm x)
-      map_add' := fun f g => by ext; simp
-      map_smul' := fun c f => by ext; simp } ‖g‖ fun f =>
+      map_add' f g := by ext; simp
+      map_smul' c f := by ext; simp } ‖g‖ fun f =>
         norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg g) (norm_nonneg f))
           (fun x => by exact g.le_opNorm_of_le (f.norm_coe_le_norm x))
 
@@ -518,7 +518,7 @@ variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 /-- `BoundedContinuousFunction.const` as a `RingHom`. -/
 def C : 𝕜 →+* α →ᵇ γ where
-  toFun := fun c : 𝕜 => const α ((algebraMap 𝕜 γ) c)
+  toFun (c : 𝕜) := const α ((algebraMap 𝕜 γ) c)
   map_one' := ext fun _ => (algebraMap 𝕜 γ).map_one
   map_mul' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_mul _ _
   map_zero' := ext fun _ => (algebraMap 𝕜 γ).map_zero
@@ -545,7 +545,7 @@ as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 protected def AlgHom.compLeftContinuousBounded [NormedRing β] [NormedAlgebra 𝕜 β]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
-    commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
+    commutes' _ := DFunLike.ext _ _ fun _ => g.commutes' _ }
 
 /-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
 @[simps]

@@ -139,12 +139,12 @@ open NormedField
 instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
   { __ := ULift.seminormedAddCommGroup (E := E),
     __ := ULift.module'
-    norm_smul_le := fun s x => (norm_smul_le s x.down :) }
+    norm_smul_le s x := (norm_smul_le s x.down :) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
-    norm_smul_le := fun s x => by
+    norm_smul_le s x := by
       simp only [norm_smul, Prod.norm_def, le_rfl] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
@@ -494,7 +494,7 @@ See Note [reducible non-instances].
 @[instance_reducible]
 def NormedSpace.restrictScalars : NormedSpace 𝕜 E :=
   { Module.restrictScalars 𝕜 𝕜' E with
-    norm_smul_le := fun c x =>
+    norm_smul_le c x :=
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
 theorem NormedSpace.restrictScalars_eq {E : Type*} [SeminormedAddCommGroup E]

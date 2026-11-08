@@ -44,7 +44,7 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
       val_inv := ext fun _ => Units.mul_inv _
       inv_val := ext fun _ => Units.inv_mul _ }
   invFun f :=
-    { toFun := fun x =>
+    { toFun x :=
         ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x, congr($f.mul_inv x), congr($f.inv_mul x)⟩
       continuous_toFun := continuous_induced_rng.2 <|
         (f : C(X, M)).continuous.prodMk <|

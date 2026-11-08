@@ -121,7 +121,7 @@ noncomputable def matrixDecompositionAddEquiv (o : HomOrthogonal s) {α β : Typ
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃+
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecomposition with
-    map_add' := fun w z => by
+    map_add' w z := by
       ext
       dsimp [biproduct.components]
       simp }
@@ -169,7 +169,7 @@ noncomputable def matrixDecompositionLinearEquiv (o : HomOrthogonal s) {α β : 
     ((⨁ fun a => s (f a)) ⟶ ⨁ fun b => s (g b)) ≃ₗ[R]
       ∀ i : ι, Matrix (g ⁻¹' {i}) (f ⁻¹' {i}) (End (s i)) :=
   { o.matrixDecompositionAddEquiv with
-    map_smul' := fun w z => by
+    map_smul' w z := by
       ext
       dsimp [biproduct.components]
       simp }

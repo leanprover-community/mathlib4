@@ -1132,7 +1132,7 @@ variable {α : Option ι → Type v}
 
 This is the dfinsupp version of `Option.rec`. -/
 def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i where
-  toFun := fun i ↦ match i with | none => a | some _ => f _
+  toFun i := match i with | none => a | some _ => f _
   support' :=
     f.support'.map fun s =>
       ⟨none ::ₘ Multiset.map some s.1, fun i =>

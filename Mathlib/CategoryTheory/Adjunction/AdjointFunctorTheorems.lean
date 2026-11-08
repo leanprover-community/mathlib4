@@ -137,7 +137,7 @@ theorem hasColimits_of_hasLimits_of_isCoseparating
     [HasLimitsOfSize.{w, w} C] [LocallySmall.{w} C] [WellPowered.{w} C]
     {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hP : P.IsCoseparating) :
     HasColimitsOfSize.{w, w} C :=
-  { has_colimits_of_shape := fun _ _ =>
+  { has_colimits_of_shape _ _ :=
       hasColimitsOfShape_iff_isRightAdjoint_const.2
         (isRightAdjoint_of_preservesLimits_of_isCoseparating hP _) }
 
@@ -147,7 +147,7 @@ theorem hasLimits_of_hasColimits_of_isSeparating
     [HasColimitsOfSize.{w, w} C] [LocallySmall.{w} C] [WellPowered.{w} Cᵒᵖ]
     {P : ObjectProperty C} [ObjectProperty.Small.{w} P] (hP : P.IsSeparating) :
     HasLimitsOfSize.{w, w} C :=
-  { has_limits_of_shape := fun _ _ =>
+  { has_limits_of_shape _ _ :=
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
         (isLeftAdjoint_of_preservesColimits_of_isSeparating hP _) }
 

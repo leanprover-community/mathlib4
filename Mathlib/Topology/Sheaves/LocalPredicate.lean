@@ -104,7 +104,7 @@ set_option backward.defeqAttrib.useBackward true in
 -/
 def continuousLocal (T) [TopologicalSpace T] : LocalPredicate fun _ : X ↦ T :=
   { continuousPrelocal X T with
-    locality := fun {U} f w ↦ by
+    locality {U} f w := by
       apply continuous_iff_continuousAt.2
       intro x
       specialize w x

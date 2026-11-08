@@ -91,8 +91,8 @@ variable (H) (F) in
 def fiberwiseColim [∀ c, HasColimitsOfShape (F.obj c) H] : (Grothendieck F ⥤ H) ⥤ (C ⥤ H) where
   obj G := fiberwiseColimit G
   map α :=
-    { app := fun c => colim.map (whiskerLeft _ α)
-      naturality := fun c₁ c₂ f => by apply colimit.hom_ext; simp }
+    { app c := colim.map (whiskerLeft _ α)
+      naturality c₁ c₂ f := by apply colimit.hom_ext; simp }
   map_id G := by ext; apply Functor.map_id colim
   map_comp α β := by ext; simp only [whiskerLeft_comp]; apply Functor.map_comp colim
 
@@ -122,8 +122,8 @@ on `G`. -/
 @[simps]
 def coconeFiberwiseColimitOfCocone (c : Cocone G) : Cocone (fiberwiseColimit G) where
   pt := c.pt
-  ι := { app := fun X => colimit.desc _ (c.whisker (Grothendieck.ι F X)),
-         naturality := fun _ _ f => by dsimp; ext; simp }
+  ι := { app X := colimit.desc _ (c.whisker (Grothendieck.ι F X)),
+         naturality _ _ f := by dsimp; ext; simp }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -155,8 +155,8 @@ cocone over `G` itself. -/
 @[simps]
 def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
   pt := c.pt
-  ι := { app := fun X => colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
-         naturality := fun {X Y} ⟨f, g⟩ => by
+  ι := { app X := colimit.ι (Grothendieck.ι F X.base ⋙ G) X.fiber ≫ c.ι.app X.base
+         naturality {X Y} := fun ⟨f, g⟩  => by
           simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id]
           rw [← Category.assoc, ← c.w f, ← Category.assoc]
           simp only [fiberwiseColimit_obj, fiberwiseColimit_map, ι_colimMap_assoc,
@@ -172,7 +172,7 @@ set_option backward.isDefEq.respectTransparency false in
 def isColimitCoconeOfFiberwiseCocone {c : Cocone (fiberwiseColimit G)} (hc : IsColimit c) :
     IsColimit (coconeOfCoconeFiberwiseColimit c) where
   desc s := hc.desc <| Cocone.mk s.pt
-    { app := fun X => colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
+    { app X := colimit.desc (Grothendieck.ι F X ⋙ G) (s.whisker _) }
   uniq s m hm := hc.hom_ext <| fun X => by
     simp only [fiberwiseColimit_obj, IsColimit.fac]
     simp only [coconeOfCoconeFiberwiseColimit_pt, Functor.const_obj_obj,

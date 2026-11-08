@@ -203,7 +203,7 @@ instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
 @[simps!]
 def topEmbedding (f : Copy (⊤ : SimpleGraph W) G) : (⊤ : SimpleGraph W) ↪g G :=
   { f.toEmbedding with
-    map_rel_iff' := fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
+    map_rel_iff' {v w} := ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩}
 
 end Copy
 
@@ -448,7 +448,7 @@ instance :
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim
      inj' := isEmptyElim
-     map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
+     map_rel_iff' {a} := isEmptyElim a }⟩
 
 lemma isIndContained_iff_exists_iso_subgraph :
     G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
@@ -509,7 +509,7 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
 @[simp] lemma labelledCopyCount_of_isEmpty [IsEmpty W] (G : SimpleGraph V) (H : SimpleGraph W) :
     G.labelledCopyCount H = 1 := by
   convert! Fintype.card_unique
-  exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
+  exact { default := ⟨default, isEmptyElim⟩, uniq _ := Subsingleton.elim _ _ }
 
 @[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ H.Free G := by
   simp [labelledCopyCount, Fintype.card_eq_zero_iff]

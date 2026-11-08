@@ -57,8 +57,8 @@ attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
 @[simps]
 def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C)) where
-  hom := { app := fun P => { f := { f := P.p.1 } } }
-  inv := { app := fun P => { f := { f := P.p.1 } } }
+  hom := { app P := { f := { f := P.p.1 } } }
+  inv := { app P := { f := { f := P.p.1 } } }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/

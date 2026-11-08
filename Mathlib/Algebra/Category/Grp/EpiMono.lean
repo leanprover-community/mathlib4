@@ -178,8 +178,8 @@ point at infinity to point at infinity and sending coset `y` to `β • y`.
 -/
 def g : B →* SX' where
   toFun β :=
-    { toFun := fun x => β • x
-      invFun := fun x => β⁻¹ • x
+    { toFun x := β • x
+      invFun x := β⁻¹ • x
       left_inv := fun x => by
         dsimp only
         rw [← mul_smul, inv_mul_cancel, one_smul]

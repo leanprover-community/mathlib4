@@ -672,7 +672,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : IsAlgebraic K (x : L)) :
 @[stacks 0BID]
 theorem Subalgebra.isField_of_algebraic [Algebra.IsAlgebraic K L] : IsField A :=
   { show Nontrivial A by infer_instance, Subalgebra.toCommRing A with
-    mul_inv_cancel := fun {a} ha =>
+    mul_inv_cancel {a} ha :=
       ⟨⟨a⁻¹, A.inv_mem_of_algebraic (Algebra.IsAlgebraic.isAlgebraic (a : L))⟩,
         Subtype.ext (mul_inv_cancel₀ (mt (Subalgebra.coe_eq_zero _).mp ha))⟩ }
 

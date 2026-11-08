@@ -99,10 +99,10 @@ instance : Top (Filtration ι m) :=
 
 instance : Max (Filtration ι m) :=
   ⟨fun f g =>
-    { seq := fun i => f i ⊔ g i
+    { seq i := f i ⊔ g i
       mono' := fun _ _ hij =>
         sup_le ((f.mono hij).trans le_sup_left) ((g.mono hij).trans le_sup_right)
-      le' := fun i => sup_le (f.le i) (g.le i) }⟩
+      le' i := sup_le (f.le i) (g.le i) }⟩
 
 @[norm_cast]
 theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
@@ -110,10 +110,10 @@ theorem coeFn_sup {f g : Filtration ι m} : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g :=
 
 instance : Min (Filtration ι m) :=
   ⟨fun f g =>
-    { seq := fun i => f i ⊓ g i
+    { seq i := f i ⊓ g i
       mono' := fun _ _ hij =>
         le_inf (inf_le_left.trans (f.mono hij)) (inf_le_right.trans (g.mono hij))
-      le' := fun i => inf_le_left.trans (f.le i) }⟩
+      le' i := inf_le_left.trans (f.le i) }⟩
 
 @[norm_cast]
 theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
@@ -121,7 +121,7 @@ theorem coeFn_inf {f g : Filtration ι m} : ⇑(f ⊓ g) = ⇑f ⊓ ⇑g :=
 
 instance : SupSet (Filtration ι m) :=
   ⟨fun s =>
-    { seq := fun i => sSup ((fun f : Filtration ι m => f i) '' s)
+    { seq i := sSup ((fun f : Filtration ι m => f i) '' s)
       mono' := fun i j hij => by
         refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
@@ -130,7 +130,7 @@ instance : SupSet (Filtration ι m) :=
         refine (f.mono hij).trans ?_
         have hfj_mem : f j ∈ (fun g : Filtration ι m => g j) '' s := ⟨f, hf_mem, rfl⟩
         exact le_sSup hfj_mem
-      le' := fun i => by
+      le' i := by
         refine sSup_le fun m' hm' => ?_
         rw [Set.mem_image] at hm'
         obtain ⟨f, _, hfm'⟩ := hm'
@@ -144,7 +144,7 @@ theorem sSup_def (s : Set (Filtration ι m)) (i : ι) :
 open scoped Classical in
 noncomputable instance : InfSet (Filtration ι m) :=
   ⟨fun s =>
-    { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
+    { seq i := if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
         swap; · simp only [h_nonempty, ite_false, le_refl]
@@ -153,7 +153,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
         refine fun f hf_mem => le_trans ?_ (f.mono hij)
         have hfi_mem : f i ∈ (fun g : Filtration ι m => g i) '' s := ⟨f, hf_mem, rfl⟩
         exact sInf_le hfi_mem
-      le' := fun i => by
+      le' i := by
         by_cases h_nonempty : Set.Nonempty s
         swap; · simp only [h_nonempty, ite_false, le_refl]
         simp only [h_nonempty, ite_true]

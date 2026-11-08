@@ -221,7 +221,7 @@ instance (priority := 75) toCommGroup {G : Type*} [CommGroup G] [SetLike S G] [S
 @[to_additive (attr := coe)
   /-- The natural group hom from an additive subgroup of `AddGroup` `G` to `G`. -/]
 protected def subtype : H →* G where
-  toFun := ((↑) : H → G); map_one' := rfl; map_mul' := fun _ _ => rfl
+  toFun := ((↑) : H → G); map_one' := rfl; map_mul' _ _ := rfl
 
 variable {H} in
 @[to_additive (attr := simp)]
@@ -482,7 +482,7 @@ def ofDiv (s : Set G) (hsn : s.Nonempty) (hs : ∀ x ∈ s, ∀ y ∈ s, x * y�
   { carrier := s
     one_mem' := one_mem
     inv_mem' := inv_mem _
-    mul_mem' := fun hx hy => by simpa using hs _ hx _ (inv_mem _ hy) }
+    mul_mem' hx hy := by simpa using hs _ hx _ (inv_mem _ hy) }
 
 /-- A subgroup of a group inherits a multiplication. -/
 @[to_additive /-- An `AddSubgroup` of an `AddGroup` inherits an addition. -/]

@@ -547,7 +547,7 @@ def ofι {J : MulticospanShape.{w, w'}} (I : MulticospanIndex J C)
     (w : ∀ b, ι (J.fst b) ≫ I.fst b = ι (J.snd b) ≫ I.snd b) : Multifork I where
   pt := P
   π :=
-    { app := fun x =>
+    { app x :=
         match x with
         | WalkingMulticospan.left _ => ι _
         | WalkingMulticospan.right b => ι (J.fst b) ≫ I.fst b
@@ -838,7 +838,7 @@ def ofπ {J : MultispanShape.{w, w'}} (I : MultispanIndex J C)
     (w : ∀ a, I.fst a ≫ π (J.fst a) = I.snd a ≫ π (J.snd a)) : Multicofork I where
   pt := P
   ι :=
-    { app := fun x =>
+    { app x :=
         match x with
         | WalkingMultispan.left a => I.fst a ≫ π _
         | WalkingMultispan.right _ => π _
@@ -921,7 +921,7 @@ noncomputable def ofSigmaCofork
     Multicofork I where
   pt := a.pt
   ι :=
-    { app := fun x =>
+    { app x :=
         match x with
         | WalkingMultispan.left _ => c.inj _ ≫ I.fstSigmaMapOfIsColimit d hc ≫ a.π
         | WalkingMultispan.right _ => d.inj _ ≫ a.π

@@ -69,7 +69,7 @@ instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
     map_zero' := Complex.norm_map_zero'
     add_le' := Complex.norm_add_le'
     neg' := Complex.norm_neg'
-    eq_zero_of_map_eq_zero' := fun _ ↦ Complex.norm_eq_zero_iff.mp }
+    eq_zero_of_map_eq_zero' _ := Complex.norm_eq_zero_iff.mp }
 
 @[simp 1100]
 protected theorem norm_mul (z w : ℂ) : ‖z * w‖ = ‖z‖ * ‖w‖ := by

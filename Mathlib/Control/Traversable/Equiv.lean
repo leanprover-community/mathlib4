@@ -67,7 +67,7 @@ protected theorem lawfulFunctor : @LawfulFunctor _ (Equiv.functor eqv) :=
   -- Although it can be found by unification, Lean prefers to synthesize instances and
   -- then check that they are defeq to the instance found by unification.
   let _inst := Equiv.functor eqv
-  { map_const := fun {_ _} => rfl
+  { map_const {_ _} := rfl
     id_map := Equiv.id_map eqv
     comp_map := Equiv.comp_map eqv }
 

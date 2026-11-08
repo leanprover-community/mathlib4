@@ -258,7 +258,7 @@ instance {α ι κ : Type*} [Nonempty ι] [Inhabited κ] :
     Inhabited (AlmostMono fun _ : ι → Option α => (default : κ)) :=
   ⟨{  line := default
       color := default
-      has_color := fun _ ↦ rfl}⟩
+      has_color _ := rfl}⟩
 
 /-- The type of collections of lines such that
 - each line is only one color except possibly at its endpoint

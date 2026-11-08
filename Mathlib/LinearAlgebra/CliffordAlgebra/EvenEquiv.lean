@@ -223,9 +223,9 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q
     { bilin := -(even.ι Q' :).bilin
-      contract := fun m => by
+      contract m := by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, neg_apply, map_neg, neg_neg]
-      contract_mid := fun m₁ m₂ m₃ => by
+      contract_mid m₁ m₂ m₃ := by
         simp_rw [LinearMap.neg_apply, neg_mul_neg, EvenHom.contract_mid, h, neg_apply, smul_neg,
           neg_smul] }
 

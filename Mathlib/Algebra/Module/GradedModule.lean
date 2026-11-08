@@ -50,10 +50,10 @@ class Gmodule [AddMonoid ιA] [VAdd ιA ιB] [∀ i, AddMonoid (A i)] [∀ i, Ad
 instance GSemiring.toGmodule [AddMonoid ιA] [∀ i : ιA, AddCommMonoid (A i)]
     [h : GSemiring A] : Gmodule A A :=
   { GMonoid.toGMulAction A with
-    smul_add := fun _ _ _ => h.mul_add _ _ _
-    smul_zero := fun _ => h.mul_zero _
-    add_smul := fun _ _ => h.add_mul _ _
-    zero_smul := fun _ => h.zero_mul _ }
+    smul_add _ _ _ := h.mul_add _ _ _
+    smul_zero _ := h.mul_zero _
+    add_smul _ _ := h.add_mul _ _
+    zero_smul _ := h.zero_mul _ }
 
 variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddCommMonoid (A i)] [∀ i, AddCommMonoid (M i)]
 
@@ -61,7 +61,7 @@ variable [AddMonoid ιA] [VAdd ιA ιB] [∀ i : ιA, AddCommMonoid (A i)] [∀ 
 @[simps]
 def gsmulHom [GMonoid A] [Gmodule A M] {i j} : A i →+ M j →+ M (i +ᵥ j) where
   toFun a :=
-    { toFun := fun b => GSMul.smul a b
+    { toFun b := GSMul.smul a b
       map_zero' := GdistribMulAction.smul_zero _
       map_add' := GdistribMulAction.smul_add _ }
   map_zero' := AddMonoidHom.ext fun a => Gmodule.zero_smul a
@@ -172,8 +172,8 @@ instance gdistribMulAction [AddMonoid M] [DistribMulAction A M] [SetLike σ M]
     [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜] :
     DirectSum.GdistribMulAction (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gmulAction 𝓐 𝓜 with
-    smul_add := fun _a _b _c => Subtype.ext <| smul_add _ _ _
-    smul_zero := fun _a => Subtype.ext <| smul_zero _ }
+    smul_add _a _b _c := Subtype.ext <| smul_add _ _ _
+    smul_zero _a := Subtype.ext <| smul_zero _ }
 
 variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   [AddSubmonoidClass σ M] [SetLike.GradedMonoid 𝓐] [SetLike.GradedSMul 𝓐 𝓜]
@@ -182,9 +182,9 @@ variable [AddCommMonoid M] [Module A M] [SetLike σ M] [AddSubmonoidClass σ' A]
   module, the internal version can be translated into the external version `gmodule`. -/
 instance gmodule : DirectSum.Gmodule (fun i => 𝓐 i) fun i => 𝓜 i :=
   { SetLike.gdistribMulAction 𝓐 𝓜 with
-    smul := fun x y => ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
-    add_smul := fun _a _a' _b => Subtype.ext <| add_smul _ _ _
-    zero_smul := fun _b => Subtype.ext <| zero_smul _ _ }
+    smul x y := ⟨(x : A) • (y : M), SetLike.GradedSMul.smul_mem x.2 y.2⟩
+    add_smul _a _a' _b := Subtype.ext <| add_smul _ _ _
+    zero_smul _b := Subtype.ext <| zero_smul _ _ }
 
 end SetLike
 
@@ -200,7 +200,7 @@ turns `⨁ i, 𝓜 i` into an `A`-module
 @[instance_reducible]
 def isModule : Module A (⨁ i, 𝓜 i) :=
   { Module.compHom _ (DirectSum.decomposeRingEquiv 𝓐 : A ≃+* ⨁ i, 𝓐 i).toRingHom with
-    smul := fun a b => DirectSum.decompose 𝓐 a • b }
+    smul a b := DirectSum.decompose 𝓐 a • b }
 
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
 "The internal version" and "the external version" are isomorphism as `A`-modules.

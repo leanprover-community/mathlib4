@@ -155,11 +155,11 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
 @[simps]
 def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
   obj X :=
-    { obj := fun Y => X × Y
-      map := fun {_ Y₂} f => (binaryProductLimit X Y₂).lift
+    { obj Y := X × Y
+      map {_ Y₂} f := (binaryProductLimit X Y₂).lift
         (BinaryFan.mk (↾_root_.Prod.fst) (↾_root_.Prod.snd ≫ f)) }
   map {X₁ X₂} f :=
-    { app := fun Y =>
+    { app Y :=
       BinaryFan.IsLimit.lift (binaryProductLimit X₂ Y) (↾_root_.Prod.fst ≫ f) (↾_root_.Prod.snd) }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -184,8 +184,8 @@ def productLimitCone {J : Type v} (F : J → Type (max v u)) :
     { pt := (∀ j, F j)
       π := Discrete.natTrans (fun ⟨j⟩ => ↾fun f => f j) }
   isLimit :=
-    { lift := fun s => ↾fun x j => s.π.app ⟨j⟩ x
-      uniq := fun _ _ w => by
+    { lift s := ↾fun x j => s.π.app ⟨j⟩ x
+      uniq _ _ w := by
         ext x j
         congrm $(w ⟨j⟩) x }
 
@@ -224,8 +224,8 @@ noncomputable def productLimitCone :
       π := Discrete.natTrans (fun ⟨j⟩ =>
         ↾fun f => (equivShrink (∀ j, F j)).symm f j) }
   isLimit :=
-    { lift := fun s => ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
-      uniq := fun s m w => ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
+    { lift s := ↾fun x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
+      uniq s m w := ConcreteCategory.hom_ext _ _ fun x => Shrink.ext (funext fun j => by
         simpa using! congr($(w ⟨j⟩) x)) }
 
 /-- The categorical product in `Type u` indexed in `Type v`

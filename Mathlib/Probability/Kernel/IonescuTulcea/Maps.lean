@@ -119,10 +119,10 @@ lemma coe_IicProdIoc_symm {a b : ι} (hab : a ≤ b) :
 on dependent functions. -/
 def IicProdIoi (a : ι) :
     ((Π i : Iic a, X i) × (Π i : Set.Ioi a, X i)) ≃ᵐ (Π n, X n) where
-  toFun := fun x i ↦ if hi : i ≤ a
+  toFun x := fun i  ↦ if hi : i ≤ a
     then x.1 ⟨i, mem_Iic.2 hi⟩
     else x.2 ⟨i, Set.mem_Ioi.2 (not_le.1 hi)⟩
-  invFun := fun x ↦ (fun i ↦ x i, fun i ↦ x i)
+  invFun x := (fun i ↦ x i, fun i ↦ x i)
   left_inv := fun x ↦ by
     ext i
     · simp [mem_Iic.1 i.2]

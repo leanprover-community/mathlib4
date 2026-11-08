@@ -158,7 +158,7 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
   toFun F :=
     { toFun := sumAddHom fun i => (F i).toAddMonoidHom
       map_add' := (DFinsupp.liftAddHom fun (i : ι) => (F i).toAddMonoidHom).map_add
-      map_smul' := fun c f => by
+      map_smul' c f := by
         dsimp
         apply DFinsupp.induction f
         · rw [smul_zero, map_zero, smul_zero]
@@ -246,7 +246,7 @@ theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (
 def mapRange.linearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) : (Π₀ i, β₁ i) →ₗ[R] Π₀ i, β₂ i :=
   { mapRange.addMonoidHom fun i => (f i).toAddMonoidHom with
     toFun := mapRange (fun i x => f i x) fun i => (f i).map_zero
-    map_smul' := fun r => mapRange_smul _ (fun i => (f i).map_zero) _ fun i => (f i).map_smul r }
+    map_smul' r := mapRange_smul _ (fun i => (f i).map_zero) _ fun i => (f i).map_smul r }
 
 @[simp]
 theorem mapRange.linearMap_id :

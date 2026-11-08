@@ -514,7 +514,7 @@ A subgroup. -/
 itself. An additive subgroup. -/]
 def stabilizer (a : α) : Subgroup G :=
   { stabilizerSubmonoid G a with
-    inv_mem' := fun {m} (ha : m • a = a) => show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
+    inv_mem' {m} (ha : m • a = a) := show m⁻¹ • a = a by rw [inv_smul_eq_iff, ha] }
 
 @[to_additive]
 instance [DecidableEq α] (a : α) : DecidablePred (· ∈ stabilizer G a) :=

@@ -99,7 +99,7 @@ instance fullMonoidalSubcategory : MonoidalCategory (FullSubcategory P) :=
 instance monoidalι : P.ι.Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 
@@ -131,7 +131,7 @@ a monoidal functor between full monoidal subcategories. -/
 instance : (ιOfLE h).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 @[simp] lemma ιOfLE_ε : ε (ιOfLE h) = 𝟙 _ := rfl
 @[simp] lemma ιOfLE_η : η (ιOfLE h) = 𝟙 _ := rfl

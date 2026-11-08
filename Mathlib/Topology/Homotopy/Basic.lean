@@ -449,7 +449,7 @@ variable {P : C(X, Y) → Prop}
 @[simps!]
 def refl (f : C(X, Y)) (hf : P f) : HomotopyWith f f P where
   toHomotopy := Homotopy.refl f
-  prop' := fun _ => hf
+  prop' _ := hf
 
 instance : Inhabited (HomotopyWith (ContinuousMap.id X) (ContinuousMap.id X) fun _ => True) :=
   ⟨HomotopyWith.refl _ trivial⟩
@@ -460,7 +460,7 @@ Given a `HomotopyWith f₀ f₁ P`, we can define a `HomotopyWith f₁ f₀ P` b
 @[simps!]
 def symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : HomotopyWith f₁ f₀ P where
   toHomotopy := F.toHomotopy.symm
-  prop' := fun t => F.prop (σ t)
+  prop' t := F.prop (σ t)
 
 @[simp]
 theorem symm_symm {f₀ f₁ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) : F.symm.symm = F :=
@@ -477,7 +477,7 @@ by putting the first homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : HomotopyWith f₀ f₁ P) (G : HomotopyWith f₁ f₂ P) :
     HomotopyWith f₀ f₂ P :=
   { F.toHomotopy.trans G.toHomotopy with
-    prop' := fun t => by
+    prop' t := by
       simp only [Homotopy.trans]
       change P ⟨fun _ => ite ((t : ℝ) ≤ _) _ _, _⟩
       split_ifs
@@ -574,7 +574,7 @@ Given a `HomotopyRel f₀ f₁ S`, we can define a `HomotopyRel f₁ f₀ S` by 
 @[simps!]
 def symm (F : HomotopyRel f₀ f₁ S) : HomotopyRel f₁ f₀ S where
   toHomotopy := F.toHomotopy.symm
-  prop' := fun _ _ hx ↦ F.eq_snd _ hx
+  prop' _ := fun _ hx  ↦ F.eq_snd _ hx
 
 @[simp]
 theorem symm_symm (F : HomotopyRel f₀ f₁ S) : F.symm.symm = F :=

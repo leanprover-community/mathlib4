@@ -320,10 +320,10 @@ theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y :=
 an addition. -/]
 instance : InfSet (Con M) where
   sInf S :=
-    { r := fun x y => ∀ c : Con M, c ∈ S → c x y
+    { r x y := ∀ c : Con M, c ∈ S → c x y
       iseqv := ⟨fun x c _ => c.refl x, fun h c hc => c.symm <| h c hc,
         fun h1 h2 c hc => c.trans (h1 c hc) <| h2 c hc⟩
-      mul' := fun h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc }
+      mul' h1 h2 c hc := c.mul (h1 c hc) <| h2 c hc }
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying equivalence relation. -/
@@ -368,7 +368,7 @@ instance : CompleteLattice (Con M) where
   le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
-  bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
+  bot := { Setoid.completeLattice.bot with mul' h1 h2 := h1 ▸ h2 ▸ rfl }
   bot_le c := fun x _ h => h ▸ c.refl x
 
 /-- The infimum of two congruence relations equals the infimum of the underlying binary

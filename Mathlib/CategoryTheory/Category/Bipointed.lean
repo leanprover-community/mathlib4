@@ -195,16 +195,16 @@ def pointedToBipointedCompBipointedToPointedSnd :
 def pointedToBipointedFstBipointedToPointedFstAdjunction :
     pointedToBipointedFst ⊣ bipointedToPointedFst :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_fst⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toProd.2 f.toFun, f.map_point, rfl⟩
+    { homEquiv X Y :=
+        { toFun f := ⟨f.toFun ∘ Option.some, f.map_fst⟩
+          invFun f := ⟨fun o => o.elim Y.toProd.2 f.toFun, f.map_point, rfl⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
             funext x
             cases x
             · exact f.map_snd.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
+      homEquiv_naturality_left_symm f g := by
         apply Bipointed.Hom.ext
         funext x
         cases x <;> rfl }
@@ -214,16 +214,16 @@ def pointedToBipointedFstBipointedToPointedFstAdjunction :
 def pointedToBipointedSndBipointedToPointedSndAdjunction :
     pointedToBipointedSnd ⊣ bipointedToPointedSnd :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.toFun ∘ Option.some, f.map_snd⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toProd.1 f.toFun, rfl, f.map_point⟩
+    { homEquiv X Y :=
+        { toFun f := ⟨f.toFun ∘ Option.some, f.map_snd⟩
+          invFun f := ⟨fun o => o.elim Y.toProd.1 f.toFun, rfl, f.map_point⟩
           left_inv := fun f => by
             apply Bipointed.Hom.ext
             funext x
             cases x
             · exact f.map_fst.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
+      homEquiv_naturality_left_symm f g := by
         apply Bipointed.Hom.ext
         funext x
         cases x <;> rfl }

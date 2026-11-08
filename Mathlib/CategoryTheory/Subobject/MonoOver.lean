@@ -443,8 +443,8 @@ set_option backward.isDefEq.respectTransparency false in
 -/
 def imageForgetAdj : image ⊣ forget X :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun f g =>
-        { toFun := fun k => by
+    { homEquiv f g :=
+        { toFun k := by
             apply Over.homMk (factorThruImage f.hom ≫ k.hom.left) _
             rw [assoc, Over.w k.hom]
             apply image.fac

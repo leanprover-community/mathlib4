@@ -436,7 +436,7 @@ instance {X Y Z : C} (f : X ⟶ Y) [IsIso f] (g : Y ⟶ Z) [HasImage g] : HasIma
             m := image.ι g
             e := f ≫ factorThruImage g }
         isImage :=
-          { lift := fun F' => image.lift
+          { lift F' := image.lift
                 { I := F'.I
                   m := F'.m
                   e := inv f ≫ F'.e } } }⟩
@@ -611,8 +611,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
-      isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
-                   lift_fac := fun F' => by
+      isImage := { lift F' := image.lift (F'.ofIsoComp f)
+                   lift_fac F' := by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
                     rw [← this, image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
@@ -638,8 +638,8 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation f).compMono g
       isImage :=
-      { lift := fun F' => image.lift F'.ofCompIso
-        lift_fac := fun F' => by
+      { lift F' := image.lift F'.ofCompIso
+        lift_fac F' := by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
             ← IsIso.inv_hom_id g, ← Category.assoc]
           refine congrArg (· ≫ g) ?_
@@ -1006,8 +1006,8 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def functorialEpiMonoFactorizationData :
     FunctorialFactorizationData (epimorphisms C) (monomorphisms C) where
   Z := im
-  i := { app := fun f => factorThruImage f.hom }
-  p := { app := fun f => image.ι f.hom }
+  i := { app f := factorThruImage f.hom }
+  p := { app f := image.ι f.hom }
   hi _ := epimorphisms.infer_property _
   hp _ := monomorphisms.infer_property _
 

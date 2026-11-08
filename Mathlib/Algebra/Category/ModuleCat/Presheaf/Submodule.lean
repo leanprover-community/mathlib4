@@ -103,7 +103,7 @@ lemma homOfLE_ι {N₁ N₂ : M.Submodule} (hle : N₁ ≤ N₂) : homOfLE hle �
 /-- The subfunctor of the underlying type-valued presheaf of `M` induced by a submodule `N`. -/
 def toSubfunctor : Subfunctor (M.presheaf ⋙ CategoryTheory.forget AddCommGrpCat.{v}) where
   obj X := {r : M.obj X | r ∈ N.obj X}
-  map := fun {_ _} f _ hr ↦ N.map_mem f hr
+  map {_ _} f _ := fun hr  ↦ N.map_mem f hr
 
 @[simp]
 lemma mem_toSubfunctor_obj {X : Cᵒᵖ} (r : M.obj X) :

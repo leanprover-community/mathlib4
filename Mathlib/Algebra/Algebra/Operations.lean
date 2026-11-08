@@ -107,7 +107,7 @@ variable {M : Type*} [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower 
 instance : SMul (Submodule R A) (Submodule R M) where
   smul A' M' :=
   { __ := A'.toAddSubmonoid • M'.toAddSubmonoid
-    smul_mem' := fun r m hm ↦ AddSubmonoid.smul_induction_on hm
+    smul_mem' r m hm := AddSubmonoid.smul_induction_on hm
       (fun a ha m hm ↦ by rw [← smul_assoc]; exact AddSubmonoid.smul_mem_smul (A'.smul_mem r ha) hm)
       fun m₁ m₂ h₁ h₂ ↦ by rw [smul_add]; exact (A'.1 • M'.1).add_mem h₁ h₂ }
 
@@ -863,10 +863,10 @@ instance : Div (Submodule R A) :=
       zero_mem' := fun y _ => by
         rw [zero_mul]
         apply Submodule.zero_mem
-      add_mem' := fun ha hb y hy => by
+      add_mem' ha hb y hy := by
         rw [add_mul]
         exact Submodule.add_mem _ (ha _ hy) (hb _ hy)
-      smul_mem' := fun r x hx y hy => by
+      smul_mem' r x hx := fun y hy  => by
         rw [Algebra.smul_mul_assoc]
         exact Submodule.smul_mem _ _ (hx _ hy) }⟩
 

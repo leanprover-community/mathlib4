@@ -84,7 +84,7 @@ def mapBifunctorHomologicalComplex :
     HomologicalComplex C₁ c₁ ⥤ HomologicalComplex C₂ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ where
   obj := mapBifunctorHomologicalComplexObj F c₂
   map {K₁ K₁'} f :=
-    { app := fun K₂ => HomologicalComplex₂.homMk
+    { app K₂ := HomologicalComplex₂.homMk
         (((GradedObject.mapBifunctor F I₁ I₂).map f.f).app K₂.X) (by
           intros
           dsimp

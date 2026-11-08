@@ -89,7 +89,7 @@ def toModuleMonoidAlgebraMap {V W : Rep.{w} k G} (f : V ⟶ W) :
     ModuleCat.of k[G] V.ρ.asModule ⟶ ModuleCat.of k[G] W.ρ.asModule :=
   ModuleCat.ofHom
     { f.hom.toLinearMap with
-      map_smul' := fun r x => to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ
+      map_smul' r x := to_Module_monoidAlgebra_map_aux V.V W.V V.ρ W.ρ
         f.hom.toLinearMap f.hom.2 r x }
 
 /-- Functorially convert a representation of `G` into a module over `k[G]`. -/
@@ -134,7 +134,7 @@ def counitIso (M : ModuleCat.{w} k[G]) :
     (ofModuleMonoidAlgebra ⋙ toModuleMonoidAlgebra).obj M ≅ M :=
   LinearEquiv.toModuleIso
     { counitIsoAddEquiv with
-      map_smul' := fun r x => by
+      map_smul' r x := by
         simp [counitIsoAddEquiv] }
 
 set_option backward.isDefEq.respectTransparency false in

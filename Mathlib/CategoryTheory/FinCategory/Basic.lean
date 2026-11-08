@@ -64,6 +64,6 @@ attribute [local instance] uliftCategory in
 instance finCategoryUlift {J : Type v} [SmallCategory J] [FinCategory J] :
     FinCategory.{max w v} (ULiftHom.{w, max w v} (ULift.{w, v} J)) where
   fintypeObj := ULift.fintype J
-  fintypeHom := fun _ _ => ULift.fintype _
+  fintypeHom _ _ := ULift.fintype _
 
 end CategoryTheory

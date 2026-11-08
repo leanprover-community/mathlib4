@@ -360,8 +360,8 @@ def map₂ObjMap (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D → Thi
 /-- For each `x : ThinSkeleton C`, we promote `map₂ObjMap F x` to a functor -/
 def map₂Functor (F : C ⥤ D ⥤ E) : ThinSkeleton C → ThinSkeleton D ⥤ ThinSkeleton E :=
   fun x =>
-    { obj := fun y => map₂ObjMap F x y
-      map := fun {y₁} {y₂} => @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
+    { obj y := map₂ObjMap F x y
+      map {y₁} {y₂} := @Quotient.recOnSubsingleton C (isIsomorphicSetoid C)
         (fun x => (y₁ ⟶ y₂) → (map₂ObjMap F x y₁ ⟶ map₂ObjMap F x y₂)) _ x fun X
           => Quotient.recOnSubsingleton₂ y₁ y₂ fun _ _ hY =>
             homOfLE (hY.le.elim fun g => ⟨(F.obj X).map g⟩) }
@@ -372,7 +372,7 @@ def map₂NatTrans (F : C ⥤ D ⥤ E) : {x₁ x₂ : ThinSkeleton C} → (x₁ 
     (map₂Functor F x₁ ⟶ map₂Functor F x₂) := fun {x₁} {x₂} =>
   @Quotient.recOnSubsingleton₂ C C (isIsomorphicSetoid C) (isIsomorphicSetoid C)
     (fun x x' : ThinSkeleton C => (x ⟶ x') → (map₂Functor F x ⟶ map₂Functor F x')) _ x₁ x₂
-    (fun X₁ X₂ f => { app := fun y =>
+    (fun X₁ X₂ f => { app y :=
       Quotient.recOnSubsingleton y fun Y => homOfLE (f.le.elim fun f' => ⟨(F.map f').app Y⟩) })
 
 -- TODO: state the lemmas about what happens when you compose with `toThinSkeleton`
@@ -474,12 +474,12 @@ variable {C}
 def lowerAdjunction (R : D ⥤ C) (L : C ⥤ D) (h : L ⊣ R) :
     ThinSkeleton.map L ⊣ ThinSkeleton.map R where
   unit :=
-    { app := fun X => by
+    { app X := by
         letI := isIsomorphicSetoid C
         exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.unit.app x⟩ }
       -- TODO: make quotient.rec_on_subsingleton' so the letI isn't needed
   counit :=
-    { app := fun X => by
+    { app X := by
         letI := isIsomorphicSetoid D
         exact Quotient.recOnSubsingleton X fun x => homOfLE ⟨h.counit.app x⟩ }
 

@@ -79,7 +79,7 @@ noncomputable
 def divX_hom : R[X] →+ R[X] :=
   { toFun := divX
     map_zero' := divX_zero
-    map_add' := fun _ _ => divX_add }
+    map_add' _ _ := divX_add }
 
 @[simp] theorem divX_hom_toFun : divX_hom p = divX p := rfl
 

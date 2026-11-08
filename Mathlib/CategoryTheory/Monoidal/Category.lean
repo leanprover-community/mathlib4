@@ -822,10 +822,10 @@ theorem rightAssocTensor_map {X Y} (f : X ⟶ Y) :
 @[simps, implicit_reducible]
 def curriedTensor : C ⥤ C ⥤ C where
   obj X :=
-    { obj := fun Y => X ⊗ Y
-      map := fun g => X ◁ g }
+    { obj Y := X ⊗ Y
+      map g := X ◁ g }
   map f :=
-    { app := fun Y => f ▷ Y }
+    { app Y := f ▷ Y }
 
 variable {C}
 

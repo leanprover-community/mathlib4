@@ -139,8 +139,8 @@ theorem gc_map_comap (f : R →+* S) : GaloisConnection (map f) (comap f) := fun
 /-- A subsemiring is isomorphic to its image under an injective function -/
 noncomputable def equivMapOfInjective (f : R →+* S) (hf : Function.Injective f) : s ≃+* s.map f :=
   { Equiv.Set.image f s hf with
-    map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _)
-    map_add' := fun _ _ => Subtype.ext (f.map_add _ _) }
+    map_mul' _ _ := Subtype.ext (f.map_mul _ _)
+    map_add' _ _ := Subtype.ext (f.map_add _ _) }
 
 @[simp]
 theorem coe_equivMapOfInjective_apply (f : R →+* S) (hf : Function.Injective f) (x : s) :
@@ -238,15 +238,15 @@ instance : CompleteLattice (Subsemiring R) :=
         (fun {s t : Subsemiring R} => show (s : Set R) ⊆ t ↔ s ≤ t from SetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _ hx =>
+    bot_le s := fun _ hx  =>
       let ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ natCast_mem s n
     top := ⊤
-    le_top := fun _ _ _ => mem_top _
+    le_top _ := fun _ _  => mem_top _
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ := fun _  => And.left
+    inf_le_right _ _ := fun _  => And.right
+    le_inf _ _ _ h₁ h₂ := fun _ hx  => ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : Subsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -688,8 +688,8 @@ protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
 /-- Product of subsemirings is isomorphic to their product as monoids. -/
 def prodEquiv (s : Subsemiring R) (t : Subsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subsemiring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
@@ -738,7 +738,7 @@ open Subsemiring
 /-- Restriction of a ring homomorphism to a subsemiring of the codomain. -/
 @[implicit_reducible]
 def codRestrict (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) : R →+* s :=
-  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun := fun n => ⟨f n, h n⟩ }
+  { (f : R →* S).codRestrict s h, (f : R →+ S).codRestrict s h with toFun n := ⟨f n, h n⟩ }
 
 @[simp]
 theorem codRestrict_apply (f : R →+* S) (s : σS) (h : ∀ x, f x ∈ s) (x : R) :
@@ -871,15 +871,15 @@ variable {s t : Subsemiring R}
 monoid are equal. -/
 def subsemiringCongr (h : s = t) : s ≃+* t :=
   { Set.equivOfEq <| congr_arg _ h with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.rangeS`. -/
 def ofLeftInverseS {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.rangeS :=
   { f.rangeSRestrict with
-    toFun := fun x => f.rangeSRestrict x
-    invFun := fun x => (g ∘ f.rangeS.subtype) x
+    toFun x := f.rangeSRestrict x
+    invFun x := (g ∘ f.rangeS.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <| by

@@ -343,9 +343,9 @@ lemma prodAux_eq : ∀ l : List M, FreeMonoid.prodAux l = l.prod
 `FreeAddMonoid α →+ A`. -/]
 def lift : (α → M) ≃ (FreeMonoid α →* M) where
   toFun f :=
-  { toFun := fun l ↦ prodAux ((toList l).map f)
+  { toFun l := prodAux ((toList l).map f)
     map_one' := rfl
-    map_mul' := fun _ _ ↦ by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
+    map_mul' _ _ := by simp only [prodAux_eq, toList_mul, List.map_append, List.prod_append] }
   invFun f x := f (of x)
 
 @[to_additive (attr := simp)]

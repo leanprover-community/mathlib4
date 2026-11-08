@@ -160,8 +160,8 @@ def imageFactorisation {X Y : C} (f : X ⟶ Y) [IsIso (Abelian.coimageImageCompa
     ImageFactorisation f where
   F := imageMonoFactorisation f
   isImage :=
-    { lift := fun F => inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
-      lift_fac := fun F => by
+    { lift F := inv (Abelian.coimageImageComparison f) ≫ cokernel.desc _ F.e F.kernel_ι_comp
+      lift_fac F := by
         rw [imageMonoFactorisation_m]
         simp only [Category.assoc]
         rw [IsIso.inv_comp_eq]
@@ -183,7 +183,7 @@ variable [∀ {X Y : C} (f : X ⟶ Y), IsIso (Abelian.coimageImageComparison f)]
 
 /-- A category in which coimage-image comparisons are all isomorphisms has images. -/
 theorem hasImages : HasImages C :=
-  { has_image := fun {_} {_} f => { exists_image := ⟨imageFactorisation f⟩ } }
+  { has_image {_} {_} f := { exists_image := ⟨imageFactorisation f⟩ } }
 
 variable [Limits.HasFiniteProducts C]
 
@@ -807,8 +807,8 @@ variable (C : Type u) [Category.{v} C] [NonPreadditiveAbelian C]
 @[instance_reducible]
 def abelian : Abelian C where
   toPreadditive := NonPreadditiveAbelian.preadditive
-  normalMonoOfMono := fun f _ ↦ ⟨normalMonoOfMono f⟩
-  normalEpiOfEpi := fun f _ ↦ ⟨normalEpiOfEpi f⟩
+  normalMonoOfMono f _ := ⟨normalMonoOfMono f⟩
+  normalEpiOfEpi f _ := ⟨normalEpiOfEpi f⟩
 
 end CategoryTheory.NonPreadditiveAbelian
 

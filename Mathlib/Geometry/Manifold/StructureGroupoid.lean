@@ -373,9 +373,9 @@ instance : CompleteLattice (StructureGroupoid H) :=
     top := instStructureGroupoidOrderTop.top
     le_top := instStructureGroupoidOrderTop.le_top
     inf := (· ⊓ ·)
-    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
-    inf_le_left := fun _ _ _ ↦ And.left
-    inf_le_right := fun _ _ _ ↦ And.right }
+    le_inf _ _ _ h₁₂ h₁₃ := fun _ hm  ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    inf_le_left _ _ := fun _  ↦ And.left
+    inf_le_right _ _ := fun _  ↦ And.right }
 
 /-- A groupoid is closed under restriction if it contains all restrictions of its element local
 homeomorphisms to open subsets of the source. -/

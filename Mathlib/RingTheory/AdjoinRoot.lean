@@ -696,11 +696,11 @@ theorem mk_surjective : Function.Surjective (mk g) :=
 where `g` is a monic polynomial of degree `d`. -/
 def powerBasisAux' (hg : g.Monic) : Basis (Fin g.natDegree) R (AdjoinRoot g) :=
   .ofEquivFun
-    { toFun := fun f i => (modByMonicHom hg f).coeff i
-      invFun := fun c => mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
-      map_add' := fun f₁ f₂ =>
+    { toFun f := fun i  => (modByMonicHom hg f).coeff i
+      invFun c := mk g <| ∑ i : Fin g.natDegree, monomial i (c i)
+      map_add' f₁ f₂ :=
         funext fun i => by simp only [(modByMonicHom hg).map_add, coeff_add, Pi.add_apply]
-      map_smul' := fun f₁ f₂ =>
+      map_smul' f₁ f₂ :=
         funext fun i => by
           simp only [(modByMonicHom hg).map_smul, AddMonoidAlgebra.coeff_smul_apply,
             Pi.smul_apply, RingHom.id_apply]

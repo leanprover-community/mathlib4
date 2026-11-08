@@ -208,21 +208,21 @@ def leftHomotopic : HomRel (Arrow V) := fun _ _ f g => Nonempty (LeftHomotopy f 
 
 instance leftHomotopy_congruence : Congruence (leftHomotopic V) where
   equivalence :=
-    { refl := fun C => ⟨LeftHomotopy.refl C⟩
+    { refl C := ⟨LeftHomotopy.refl C⟩
       symm := fun ⟨w⟩ => ⟨w.symm⟩
       trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
-  comp_left := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
-  comp_right := fun _ ⟨i⟩ => ⟨i.compRight _⟩
+  comp_left _ _ _ := fun ⟨i⟩  => ⟨i.compLeft _⟩
+  comp_right _ := fun ⟨i⟩  => ⟨i.compRight _⟩
 
 /-- The left homotopy relation on morphisms of `Arrow V`. -/
 def rightHomotopic : HomRel (Arrow V) := fun _ _ f g => Nonempty (RightHomotopy f g)
 
 instance rightHomotopy_congruence : Congruence (rightHomotopic V) where
   equivalence :=
-    { refl := fun C => ⟨RightHomotopy.refl C⟩
+    { refl C := ⟨RightHomotopy.refl C⟩
       symm := fun ⟨w⟩ => ⟨w.symm⟩
       trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
-  comp_left := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
-  comp_right := fun _ ⟨i⟩ => ⟨i.compRight _⟩
+  comp_left _ _ _ := fun ⟨i⟩  => ⟨i.compLeft _⟩
+  comp_right _ := fun ⟨i⟩  => ⟨i.compRight _⟩
 
 end CategoryTheory.Arrow

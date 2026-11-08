@@ -71,8 +71,8 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
     { hom := 𝟙 _
       inv := 𝟙 _ }
   counitIso :=
-    { hom := { app := fun _ => 𝟙 _ }
-      inv := { app := fun _ => 𝟙 _ } }
+    { hom := { app _ := 𝟙 _ }
+      inv := { app _ := 𝟙 _ } }
 
 section ULiftHom
 

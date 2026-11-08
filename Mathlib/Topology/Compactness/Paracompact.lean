@@ -314,7 +314,7 @@ instance (priority := 100) NormalSpace.of_paracompactSpace_r1Space
       absurd (htv i hxt) (closure_minimal ?_ (isClosed_compl_iff.2 <| hv _) hxu)
     exact fun y hyu hyv ↦ (huv i).le_bot ⟨hsub _ hyu, hyv⟩
   -- Now we apply the lemma twice: first to `s` and `t`, then to `t` and each point of `s`.
-  refine { normal := fun s t hs ht hst ↦ this s t hs fun x hx ↦ ?_ }
+  refine { normal s t hs ht hst := this s t hs fun x hx ↦ ?_ }
   rcases this t {x} ht fun y hy ↦ (by
     simp_rw [singleton_subset_iff]
     exact r1_separation <| ht.not_inseparable hy <| hst.notMem_of_mem_left hx)

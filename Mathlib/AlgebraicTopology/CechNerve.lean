@@ -70,7 +70,7 @@ def mapCechNerve {f g : Arrow C}
 def augmentedCechNerve : SimplicialObject.Augmented C where
   left := f.cechNerve
   right := f.right
-  hom := { app := fun _ => WidePullback.base _ }
+  hom := { app _ := WidePullback.base _ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech nerve associated to a morphism of arrows. -/
@@ -124,7 +124,7 @@ set_option backward.isDefEq.respectTransparency false in
 def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
     (G : Augmented.toArrow.obj X ⟶ F) : X ⟶ F.augmentedCechNerve where
   left :=
-    { app := fun x =>
+    { app x :=
         Limits.WidePullback.lift (X.hom.app _ ≫ G.right)
           (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by simp
       naturality := by
@@ -206,7 +206,7 @@ def augmentedCechConerve : CosimplicialObject.Augmented C where
   left := f.left
   right := f.cechConerve
   hom :=
-    { app := fun _ => (WidePushout.head _ : f.left ⟶ _) }
+    { app _ := (WidePushout.head _ : f.left ⟶ _) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism between augmented Čech conerves associated to a morphism of arrows. -/
@@ -260,7 +260,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F ⟶ Augmented.toArrow.obj X) : F.augmentedCechConerve ⟶ X where
   left := G.left
   right :=
-    { app := fun x =>
+    { app x :=
         Limits.WidePushout.desc (G.left ≫ X.hom.app _)
           (fun i => G.right ≫ X.right.map (SimplexCategory.const _ x i))
           (by
@@ -346,17 +346,17 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
   cone :=
     { pt := ∏ᶜ fun _ : ι => X
       π :=
-        { app := fun X => Option.casesOn X (terminal.from _) fun i => limit.π _ ⟨i⟩
-          naturality := fun i j f => by
+        { app X := Option.casesOn X (terminal.from _) fun i => limit.π _ ⟨i⟩
+          naturality i j f := by
             cases f
             · cases i
               all_goals simp
             · simp only [Functor.const_obj_obj, Functor.const_obj_map, terminal.comp_from]
               subsingleton } }
   isLimit :=
-    { lift := fun s => Limits.Pi.lift fun j => s.π.app (some j)
-      fac := fun s j => Option.casesOn j (by subsingleton) fun _ => limit.lift_π _ _
-      uniq := fun s f h => by
+    { lift s := Limits.Pi.lift fun j => s.π.app (some j)
+      fac s j := Option.casesOn j (by subsingleton) fun _ => limit.lift_π _ _
+      uniq s f h := by
         dsimp
         ext j
         dsimp only [Limits.Pi.lift]

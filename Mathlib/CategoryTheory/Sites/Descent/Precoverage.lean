@@ -304,7 +304,7 @@ include w hf' in
 lemma full_pullFunctor :
     (pullFunctor F (f := f) (p := 𝟙 _) (f' := f') (p' := p') (by cat_disch)).Full where
   map_surjective {D₁ D₂} φ :=
-    ⟨{ hom := fun i ↦ full_pullFunctor.hom w hf' φ i, comm := comm _ _ _ }, by
+    ⟨{ hom i := full_pullFunctor.hom w hf' φ i, comm := comm _ _ _ }, by
       ext i
       dsimp
       rw [map_hom _ _ _ _ (𝟙 _) (by cat_disch),

@@ -95,7 +95,7 @@ def indexFunctor (hC : IsCompact C) : (Finset ι)ᵒᵖ ⥤ Profinite.{u} where
 noncomputable
 def indexCone (hC : IsCompact C) : Cone (indexFunctor hC) where
   pt := @Profinite.of C _ (by rwa [← isCompact_iff_compactSpace]) _ _
-  π := { app := fun J ↦ ConcreteCategory.ofHom (π_app C (· ∈ unop J)) }
+  π := { app J := ConcreteCategory.ofHom (π_app C (· ∈ unop J)) }
 
 variable (hC : IsCompact C)
 

@@ -98,10 +98,10 @@ theorem normalizer_bot_eq_maxTrivSubmodule :
 See also `LieSubmodule.normalizer`. -/
 def idealizer : LieIdeal R L where
   carrier := {x : L | ∀ m : M, ⁅x, m⁆ ∈ N}
-  add_mem' := fun {x} {y} hx hy m ↦ by rw [add_lie]; exact N.add_mem (hx m) (hy m)
+  add_mem' {x} {y} hx hy := fun m  ↦ by rw [add_lie]; exact N.add_mem (hx m) (hy m)
   zero_mem' := by simp
-  smul_mem' := fun t {x} hx m ↦ by rw [smul_lie]; exact N.smul_mem t (hx m)
-  lie_mem := fun {x} {y} hy m ↦ by rw [lie_lie]; exact sub_mem (N.lie_mem (hy m)) (hy ⁅x, m⁆)
+  smul_mem' t {x} hx := fun m  ↦ by rw [smul_lie]; exact N.smul_mem t (hx m)
+  lie_mem {x} {y} hy := fun m  ↦ by rw [lie_lie]; exact sub_mem (N.lie_mem (hy m)) (hy ⁅x, m⁆)
 
 @[simp]
 lemma mem_idealizer {x : L} : x ∈ N.idealizer ↔ ∀ m : M, ⁅x, m⁆ ∈ N := Iff.rfl
@@ -121,7 +121,7 @@ variable (H : LieSubalgebra R L)
 subalgebra. -/
 def normalizer : LieSubalgebra R L :=
   { H.toLieSubmodule.normalizer with
-    lie_mem' := fun {y z} hy hz x => by
+    lie_mem' {y z} hy hz x := by
       rw [coe_bracket_of_module, mem_toLieSubmodule, leibniz_lie, ← lie_skew y, ← sub_eq_add_neg]
       exact H.sub_mem (hz ⟨_, hy x⟩) (hy ⟨_, hz x⟩) }
 

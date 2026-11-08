@@ -233,9 +233,9 @@ def conesEquivInverseObj (B : C) {J : Type w} (F : Discrete J ⥤ Over B) (c : C
     Cone (widePullbackDiagramOfDiagramOver B F) where
   pt := c.pt.left
   π :=
-    { app := fun X => Option.casesOn X c.pt.hom fun j : J => (c.π.app ⟨j⟩).left
+    { app X := Option.casesOn X c.pt.hom fun j : J => (c.π.app ⟨j⟩).left
       -- `tidy` can do this using `case_bash`, but let's try to be a good `-T50000` citizen:
-      naturality := fun X Y f => by
+      naturality X Y f := by
         dsimp; cases X <;> cases Y <;> cases f
         · rw [Category.id_comp, Category.comp_id]
         · rw [Over.w, Category.id_comp]
@@ -249,7 +249,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   obj := conesEquivInverseObj B F
   map f :=
     { hom := f.hom.left
-      w := fun j => by
+      w j := by
         obtain - | j := j
         · simp
         · dsimp
@@ -324,7 +324,7 @@ theorem has_over_limit_discrete_of_widePullback_limit {B : C} (F : Discrete J �
 /-- Given a wide pullback in `C`, construct a product in `C/B`. -/
 theorem over_product_of_widePullback [HasLimitsOfShape (WidePullbackShape J) C] {B : C} :
     HasLimitsOfShape (Discrete J) (Over B) :=
-  { has_limit := fun F => has_over_limit_discrete_of_widePullback_limit F }
+  { has_limit F := has_over_limit_discrete_of_widePullback_limit F }
 
 /-- Given a pullback in `C`, construct a binary product in `C/B`. -/
 theorem over_binaryProduct_of_pullback [HasPullbacks C] {B : C} : HasBinaryProducts (Over B) :=
@@ -352,7 +352,7 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
     { cone :=
         { pt := Over.mk (𝟙 _)
           π :=
-            { app := fun p => p.as.elim } }
+            { app p := p.as.elim } }
       isLimit :=
         { lift s := Over.homMk s.pt.hom
           fac _ j := j.as.elim

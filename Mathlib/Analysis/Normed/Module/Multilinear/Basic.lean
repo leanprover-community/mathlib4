@@ -576,8 +576,8 @@ and continuous `1`-multilinear maps from `G` to `G'`. -/
 def ofSubsingletonₗᵢ [Subsingleton ι] (i : ι) :
     (G →L[𝕜] G') ≃ₗᵢ[𝕜] ContinuousMultilinearMap 𝕜 (fun _ : ι ↦ G) G' :=
   { ofSubsingleton 𝕜 G G' i with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl
     norm_map' := norm_ofSubsingleton i }
 
 theorem norm_ofSubsingleton_id_le [Subsingleton ι] (i : ι) :
@@ -812,12 +812,12 @@ variable (𝕜 E G) in
 /-- Continuous bilinear map realizing `(f, z) ↦ f.smulRight z`. -/
 def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G :=
   LinearMap.mkContinuous₂
-    { toFun := fun f ↦
-        { toFun := fun z ↦ f.smulRight z
-          map_add' := fun x y ↦ by ext; simp
-          map_smul' := fun c x ↦ by ext; simp [smul_smul, mul_comm] }
-      map_add' := fun f g ↦ by ext; simp [add_smul]
-      map_smul' := fun c f ↦ by ext; simp [smul_smul] }
+    { toFun f :=
+        { toFun z := f.smulRight z
+          map_add' x y := by ext; simp
+          map_smul' c x := by ext; simp [smul_smul, mul_comm] }
+      map_add' f g := by ext; simp [add_smul]
+      map_smul' c f := by ext; simp [smul_smul] }
     1 (fun f z ↦ by simp [norm_smulRight])
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
@@ -862,11 +862,11 @@ which is a linear map from `ContinuousMultilinearMap 𝕜 E G` to `(Π i, E' i) 
 def mkContinuousLinear (f : G →ₗ[𝕜] (Π i, E i) →ₘₗ[𝕜] G') (C : ℝ)
     (H : ∀ x m, ‖f x m‖ ≤ C * ‖x‖ * ∏ i, ‖m i‖) : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G' :=
   LinearMap.mkContinuous
-    { toFun := fun x => (f x).mkContinuous (C * ‖x‖) <| H x
-      map_add' := fun x y => by
+    { toFun x := (f x).mkContinuous (C * ‖x‖) <| H x
+      map_add' x y := by
         ext1
         simp
-      map_smul' := fun c x => by
+      map_smul' c x := by
         ext1
         simp }
     (max C 0) fun x => by
@@ -891,11 +891,11 @@ def mkContinuousMultilinear (f : (Π i, E i) →ₘₗ[𝕜] (Π i, E' i) →ₘ
     (H : ∀ m₁ m₂, ‖f m₁ m₂‖ ≤ (C * ∏ i, ‖m₁ i‖) * ∏ i, ‖m₂ i‖) :
     ContinuousMultilinearMap 𝕜 E (ContinuousMultilinearMap 𝕜 E' G) :=
   mkContinuous
-    { toFun := fun m => mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
-      map_update_add' := fun m i x y => by
+    { toFun m := mkContinuous (f m) (C * ∏ i, ‖m i‖) <| H m
+      map_update_add' m i x y := by
         ext1
         simp
-      map_update_smul' := fun m i c x => by
+      map_update_smul' m i c x := by
         ext1
         simp }
     (max C 0) fun m => by
@@ -938,7 +938,7 @@ theorem norm_compContinuousMultilinearMap_le (g : G →L[𝕜] G') (f : Continuo
 def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
     ContinuousMultilinearMap 𝕜 E (G →L[𝕜] G') :=
   MultilinearMap.mkContinuous
-    { toFun := fun m =>
+    { toFun m :=
         LinearMap.mkContinuous
           { toFun := (f · m)
             map_add' := by simp
@@ -946,11 +946,11 @@ def flipMultilinear (f : G →L[𝕜] ContinuousMultilinearMap 𝕜 E G') :
           (‖f‖ * ∏ i, ‖m i‖) fun x => by
           rw [mul_right_comm]
           exact (f x).le_of_opNorm_le (f.le_opNorm x) _
-      map_update_add' := fun m i x y => by
+      map_update_add' m i x y := by
         ext1
         simp only [add_apply, ContinuousMultilinearMap.map_update_add, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, AddHom.coe_mk]
-      map_update_smul' := fun m i c x => by
+      map_update_smul' m i c x := by
         ext1
         simp only [FunLike.coe_smul, ContinuousMultilinearMap.map_update_smul, LinearMap.coe_mk,
           LinearMap.mkContinuous_apply, Pi.smul_apply, AddHom.coe_mk] }
@@ -1074,7 +1074,7 @@ For a version fixing `f` and varying `g`, see `compContinuousLinearMapL`. -/
 def compContinuousLinearMapLRight (g : ContinuousMultilinearMap 𝕜 E₁ G) :
     ContinuousMultilinearMap 𝕜 (fun i ↦ E i →L[𝕜] E₁ i) (ContinuousMultilinearMap 𝕜 E G) :=
   MultilinearMap.mkContinuous
-    { toFun := fun f => g.compContinuousLinearMap f
+    { toFun f := g.compContinuousLinearMap f
       map_update_add' := by
         intro h f i f₁ f₂
         ext x

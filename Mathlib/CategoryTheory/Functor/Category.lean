@@ -123,7 +123,7 @@ This is inconvenient for `to_dual`, so we `no_expose` the definition,
 and instead rely on `hcomp_app` or `hcomp_app'` to unfold it. -/
 @[no_expose, to_dual self]
 def hcomp {H I : D ⥤ E} (α : F ⟶ G) (β : H ⟶ I) : F ⋙ H ⟶ G ⋙ I where
-  app := fun X : C => β.app (F.obj X) ≫ I.map (α.app X)
+  app (X : C) := β.app (F.obj X) ≫ I.map (α.app X)
 
 /-- Notation for horizontal composition of natural transformations. -/
 infixl:80 " ◫ " => hcomp
@@ -159,9 +159,9 @@ namespace Functor
 @[implicit_reducible, simps (attr := grind =) obj_obj obj_map]
 protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
   obj k :=
-    { obj := fun j => (F.obj j).obj k,
-      map := fun f => (F.map f).app k, }
-  map f := { app := fun j => (F.obj j).map f }
+    { obj j := (F.obj j).obj k,
+      map f := (F.map f).app k, }
+  map f := { app j := (F.obj j).map f }
 
 -- `@[simps]` doesn't produce a nicely stated lemma here:
 -- the implicit arguments for `app` use the definition of `flip`, rather than `flip` itself.
@@ -173,16 +173,16 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 @[implicit_reducible, simps]
 def leftUnitor (F : C ⥤ D) :
     𝟭 C ⋙ F ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
+  hom := { app X := 𝟙 (F.obj X) }
+  inv := { app X := 𝟙 (F.obj X) }
 
 /-- The right unitor, a natural isomorphism `(F ⋙ (𝟭 B)) ≅ F`.
 -/
 @[implicit_reducible, simps]
 def rightUnitor (F : C ⥤ D) :
     F ⋙ 𝟭 D ≅ F where
-  hom := { app := fun X => 𝟙 (F.obj X) }
-  inv := { app := fun X => 𝟙 (F.obj X) }
+  hom := { app X := 𝟙 (F.obj X) }
+  inv := { app X := 𝟙 (F.obj X) }
 
 /-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
 
@@ -192,8 +192,8 @@ and it's usually best to insert explicit associators.)
 @[implicit_reducible, simps]
 def associator (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (F ⋙ G) ⋙ H ≅ F ⋙ G ⋙ H where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 protected theorem assoc (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') : (F ⋙ G) ⋙ H = F ⋙ G ⋙ H :=
   rfl
@@ -206,8 +206,8 @@ variable (C D E) in
 def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
   obj F := F.flip
   map {F₁ F₂} φ :=
-    { app := fun Y =>
-      { app := fun X => (φ.app X).app Y } }
+    { app Y :=
+      { app X := (φ.app X).app Y } }
 
 namespace Iso
 

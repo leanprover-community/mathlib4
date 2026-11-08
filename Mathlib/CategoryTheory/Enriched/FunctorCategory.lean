@@ -94,8 +94,8 @@ noncomputable def homEquiv : (F₁ ⟶ F₂) ≃ (𝟙_ V ⟶ enrichedHom V F₁
       simp only [← NatTrans.naturality, eHomEquiv_comp, tensorHom_def', id_whiskerLeft,
         assoc, Iso.inv_hom_id_assoc, eHomWhiskerRight])
   invFun g :=
-    { app := fun j ↦ (eHomEquiv V).symm (g ≫ end_.π _ j)
-      naturality := fun i j f ↦ (eHomEquiv V).injective (by
+    { app j := (eHomEquiv V).symm (g ≫ end_.π _ j)
+      naturality i j f := (eHomEquiv V).injective (by
         simp only [eHomEquiv_comp, Equiv.apply_symm_apply, Iso.cancel_iso_inv_left]
         conv_rhs =>
           rw [tensorHom_def_assoc, MonoidalCategory.whiskerRight_id_assoc, assoc,
@@ -333,7 +333,7 @@ is `enrichedHom V F₁ F₂`. -/
 @[simps]
 noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂) where
   pt := enrichedHom V F₁ F₂
-  π := { app := fun j ↦ precompEnrichedHom V F₁ F₂ (Under.forget j) }
+  π := { app j := precompEnrichedHom V F₁ F₂ (Under.forget j) }
 
 namespace isLimitConeFunctorEnrichedHom
 

@@ -83,16 +83,16 @@ def dgoToHomologicalComplex :
     DifferentialObject ℤ (GradedObjectWithShift b V) ⥤
       HomologicalComplex V (ComplexShape.up' b) where
   obj X :=
-    { X := fun i => X.obj i
-      d := fun i j =>
+    { X i := X.obj i
+      d i j :=
         if h : i + b = j then X.d i ≫ X.objEqToHom (show i + (1 : ℤ) • b = j by simp [h]) else 0
-      shape := fun i j w => by dsimp at w; convert dite_eq_right w
-      d_comp_d' := fun i j k hij hjk => by
+      shape i j w := by dsimp at w; convert dite_eq_right w
+      d_comp_d' i j k hij hjk := by
         dsimp at hij hjk; subst hij hjk
         simp [objEqToHom_d_assoc] }
   map {X Y} f :=
     { f := f.f
-      comm' := fun i j h => by
+      comm' i j h := by
         dsimp at h ⊢
         subst h
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := congr($f.comm i).symm
@@ -130,8 +130,8 @@ def dgoEquivHomologicalComplexCounitIso :
     homologicalComplexToDGO b V ⋙ dgoToHomologicalComplex b V ≅
       𝟭 (HomologicalComplex V (ComplexShape.up' b)) :=
   NatIso.ofComponents (fun X =>
-    { hom := { f := fun i => 𝟙 (X.X i) }
-      inv := { f := fun i => 𝟙 (X.X i) } })
+    { hom := { f i := 𝟙 (X.X i) }
+      inv := { f i := 𝟙 (X.X i) } })
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The category of differential graded objects in `V` is equivalent

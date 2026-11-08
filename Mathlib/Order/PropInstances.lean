@@ -21,12 +21,12 @@ instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
-  sup_le := fun _ _ _ => Or.rec
+  sup_le _ _ _ := Or.rec
   inf := And
   inf_le_left := @And.left
   inf_le_right := @And.right
-  le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
-  le_sup_inf := fun _ _ _ => or_and_left.2
+  le_inf _ _ _ Hab Hac := fun Ha  => And.intro (Hab Ha) (Hac Ha)
+  le_sup_inf _ _ _ := or_and_left.2
 
 /-- Propositions form a bounded order. -/
 instance Prop.instBoundedOrder : BoundedOrder Prop where

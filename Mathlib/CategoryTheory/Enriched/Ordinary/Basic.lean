@@ -163,10 +163,10 @@ variable (C) in
 @[simps]
 def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
-    { obj := fun Y => X.unop ⟶[V] Y
-      map := fun φ => eHomWhiskerLeft V X.unop φ }
+    { obj Y := X.unop ⟶[V] Y
+      map φ := eHomWhiskerLeft V X.unop φ }
   map φ :=
-    { app := fun Y => eHomWhiskerRight V φ.unop Y }
+    { app Y := eHomWhiskerRight V φ.unop Y }
 
 instance ForgetEnrichment.enrichedOrdinaryCategory {D : Type*} [EnrichedCategory V D] :
     EnrichedOrdinaryCategory V (ForgetEnrichment V D) where

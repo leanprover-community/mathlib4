@@ -152,7 +152,7 @@ variable (A)
 
 /-- The identity as a non-unital ⋆-ring homomorphism. -/
 protected def id : A →⋆ₙ+* A :=
-  { (1 : A →ₙ+* A) with map_star' := fun _ => rfl }
+  { (1 : A →ₙ+* A) with map_star' _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarRingHom.id A) = id :=
@@ -163,7 +163,7 @@ end
 /-- The composition of non-unital ⋆-ring homomorphisms, as a non-unital ⋆-ring homomorphism. -/
 def comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : A →⋆ₙ+* C :=
   { f.toNonUnitalRingHom.comp g.toNonUnitalRingHom with
-    map_star' := fun a => by simp [map_star, map_star] }
+    map_star' a := by simp [map_star, map_star] }
 
 @[simp]
 theorem coe_comp (f : B →⋆ₙ+* C) (g : A →⋆ₙ+* B) : ⇑(comp f g) = f ∘ g :=
@@ -216,8 +216,8 @@ instance : Inhabited (A →⋆ₙ+* B) :=
   ⟨0⟩
 
 instance : MonoidWithZero (A →⋆ₙ+* A) where
-  zero_mul := fun _ => ext fun _ => rfl
-  mul_zero := fun f => ext fun _ => map_zero f
+  zero_mul _ := ext fun _ => rfl
+  mul_zero f := ext fun _ => map_zero f
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙ+* B) : A → B) = 0 :=
@@ -336,7 +336,7 @@ theorem ext {f g : A ≃⋆+* B} (h : ∀ a, f a = g a) : f = g :=
 @[refl]
 def refl : A ≃⋆+* A :=
   { RingEquiv.refl A with
-    map_star' := fun _ => rfl }
+    map_star' _ := rfl }
 
 instance : Inhabited (A ≃⋆+* A) :=
   ⟨refl⟩
@@ -349,7 +349,7 @@ theorem coe_refl : ⇑(refl : A ≃⋆+* A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆+* B) : B ≃⋆+* A :=
   { e.symm with
-    map_star' := fun b => by
+    map_star' b := by
       simpa only [apply_inv_apply, inv_apply_apply] using!
         congr(inv e $((map_star e (inv e b)).symm)) }
 
@@ -397,7 +397,7 @@ theorem refl_symm : (StarRingEquiv.refl : A ≃⋆+* A).symm = StarRingEquiv.ref
 @[trans]
 def trans (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) : A ≃⋆+* C :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    map_star' := fun a =>
+    map_star' a :=
       show e₂.toFun (e₁.toFun (star a)) = star (e₂.toFun (e₁.toFun a)) by
         rw [e₁.map_star', e₂.map_star'] }
 

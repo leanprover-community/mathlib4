@@ -69,7 +69,7 @@ namespace Conservative
 /-- The identity map is conservative w.r.t. any measure. -/
 protected theorem id (μ : Measure α) : Conservative id μ :=
   { toQuasiMeasurePreserving := QuasiMeasurePreserving.id μ
-    exists_mem_iterate_mem' := fun _ _ h0 => by
+    exists_mem_iterate_mem' _ _ h0 := by
       simpa [exists_ne] using! nonempty_of_measure_ne_zero h0 }
 
 theorem of_absolutelyContinuous {ν : Measure α} (h : Conservative f μ) (hν : ν ≪ μ)

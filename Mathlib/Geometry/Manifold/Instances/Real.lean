@@ -348,7 +348,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     OpenPartialHomeomorph (Icc x y) (EuclideanHalfSpace 1) where
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
-  toFun := fun z : Icc x y => ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
+  toFun (z : Icc x y) := ⟨toLp 2 fun _ ↦ z.val - x, sub_nonneg.mpr z.property.1⟩
   invFun z := ⟨min (z.val 0 + x) y, by simp [z.prop, h.out.le]⟩
   map_source' := by simp
   map_target' := by

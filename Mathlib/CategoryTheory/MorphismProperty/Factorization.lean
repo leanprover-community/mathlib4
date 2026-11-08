@@ -242,8 +242,8 @@ set_option backward.defeqAttrib.useBackward true in
 def functorCategory :
     FunctorialFactorizationData (W₁.functorCategory J) (W₂.functorCategory J) where
   Z := functorCategory.Z data J
-  i := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).i } }
-  p := { app := fun f => { app := fun j => (data.factorizationData (f.hom.app j)).p } }
+  i := { app f := { app j := (data.factorizationData (f.hom.app j)).i } }
+  p := { app f := { app j := (data.factorizationData (f.hom.app j)).p } }
   hi _ _ := data.hi _
   hp _ _ := data.hp _
 

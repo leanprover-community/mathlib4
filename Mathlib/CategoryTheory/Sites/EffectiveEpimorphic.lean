@@ -90,7 +90,7 @@ def isColimitOfEffectiveEpiStruct {X Y : C} (f : Y ⟶ X) (Hf : EffectiveEpiStru
     IsColimit (Sieve.generateSingleton f : Presieve X).cocone :=
   letI D := ObjectProperty.FullSubcategory fun T : Over X => Sieve.generateSingleton f T.hom
   letI F : D ⥤ _ := (Sieve.generateSingleton f).arrows.diagram
-  { desc := fun S => Hf.desc (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) <| by
+  { desc S := Hf.desc (S.ι.app ⟨Over.mk f, ⟨𝟙 _, by simp⟩⟩) <| by
       intro Z g₁ g₂ h
       let Y' : D := ⟨Over.mk f, 𝟙 _, by simp⟩
       let Z' : D := ⟨Over.mk (g₁ ≫ f), g₁, rfl⟩
@@ -138,7 +138,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
           dsimp; simp only [← Category.assoc, Category.comp_id]
           apply h
           rw [Category.assoc, hB.choose_spec, hA.choose_spec, Over.w] } }
-  { desc := fun {_} e h => Hf.desc (aux e h)
+  { desc {_} e h := Hf.desc (aux e h)
     fac {W} e h := by
       have := Hf.fac (aux e h) ⟨Over.mk f, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this
@@ -206,7 +206,7 @@ def isColimitOfEffectiveEpiFamilyStruct {B : C} {α : Type*}
     IsColimit (Sieve.generateFamily X π : Presieve B).cocone :=
   letI D := ObjectProperty.FullSubcategory fun T : Over B => Sieve.generateFamily X π T.hom
   letI F : D ⥤ _ := (Sieve.generateFamily X π).arrows.diagram
-  { desc := fun S => H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
+  { desc S := H.desc (fun a => S.ι.app ⟨Over.mk (π a), ⟨a,𝟙 _, by simp⟩⟩) <| by
       intro Z a₁ a₂ g₁ g₂ h
       let A₁ : D := ⟨Over.mk (π a₁), a₁, 𝟙 _, by simp⟩
       let A₂ : D := ⟨Over.mk (π a₂), a₂, 𝟙 _, by simp⟩
@@ -258,7 +258,7 @@ def effectiveEpiFamilyStructOfIsColimit {B : C} {α : Type*}
           apply h; rw [Category.assoc]
           generalize_proofs h1 h2 h3 h4
           rw [h2.choose_spec, h4.choose_spec, Over.w] } }
-  { desc := fun {_} e h => H.desc (aux e h)
+  { desc {_} e h := H.desc (aux e h)
     fac {W} e h a := by
       have := H.fac (aux e h) ⟨Over.mk (π a), a, 𝟙 _, by simp⟩
       dsimp [aux] at this; rw [this]; clear this

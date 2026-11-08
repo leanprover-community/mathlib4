@@ -110,11 +110,11 @@ variable {M}
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`. -/
 @[no_expose] def ι : M →ₗ[R] TensorAlgebra R M :=
-  { toFun := fun m => RingCon.toQuotient (FreeAlgebra.ι R m)
-    map_add' := fun x y => by
+  { toFun m := RingCon.toQuotient (FreeAlgebra.ι R m)
+    map_add' x y := by
       rw [← RingCon.coe_add]
       exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.add
-    map_smul' := fun r x => by
+    map_smul' r x := by
       rw [← RingCon.coe_smul]
       exact Quotient.sound <| RingConGen.Rel.of _ _ Rel.smul}
 
@@ -136,7 +136,7 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
         induction h <;>
           simp [Algebra.smul_def, FreeAlgebra.lift_ι_apply,
             map_mul, AlgHom.commutes, map_add, RingCon.ker]
-    invFun := fun F => F.toLinearMap.comp (ι R)
+    invFun F := F.toLinearMap.comp (ι R)
     left_inv := fun f => by
       rw [ι]
       ext1 x

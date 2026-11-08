@@ -84,7 +84,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
   let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
-  let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let : NormedSpace ℝ F := { norm_smul_le _ _ := h5 _ _ }
   -- We put the new topology on F
   let : TopologicalSpace F := UniformSpace.toTopologicalSpace
   let : MeasurableSpace F := borel F
@@ -117,7 +117,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   let F : Type _ := E
   let p : AddGroupNorm F := ⟨⟨g, h1, h3, h2⟩, fun x hx ↦ h4 hx⟩
   let : NormedAddCommGroup F := AddGroupNorm.toNormedAddCommGroup p
-  let : NormedSpace ℝ F := { norm_smul_le := fun _ _ ↦ h5 _ _ }
+  let : NormedSpace ℝ F := { norm_smul_le _ _ := h5 _ _ }
   -- We put the new topology on F
   let : TopologicalSpace F := UniformSpace.toTopologicalSpace
   let : MeasurableSpace F := borel F

@@ -80,8 +80,8 @@ variable [SeminormedRing α] [SeminormedAddCommGroup β] [Module α β]
 
 theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ ≤ ‖r‖ * ‖x‖) :
     IsBoundedSMul α β :=
-  { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
-    dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
+  { dist_smul_pair' a b₁ b₂ := by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
+    dist_pair_smul' a₁ a₂ b := by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 
 theorem IsBoundedSMul.of_eNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
     IsBoundedSMul α β :=
@@ -158,7 +158,7 @@ instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
 
 instance Prod.instNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
     NormSMulClass α (β × γ) where
-  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnNorm, nnNorm_def,
+  norm_smul r := fun ⟨v₁, v₂⟩  ↦ by simp only [smul_def, ← coe_nnNorm, nnNorm_def,
     nnNorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
 
 instance ULift.instNormSMulClass : NormSMulClass α (ULift β) where

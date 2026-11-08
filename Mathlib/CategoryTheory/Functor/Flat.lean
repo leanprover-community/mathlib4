@@ -94,8 +94,8 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
   refine ⟨fun X => IsCofiltered.of_cone_nonempty.{0} _ (fun {J} _ _ H => ?_)⟩
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
-    { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
-      map := fun {j j'} f =>
+    { obj j := StructuredArrow.mk (c₁.π.app j).right
+      map {j j'} f :=
         StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   simp only [H₂] at c₂
@@ -188,7 +188,7 @@ noncomputable def lift : s.pt ⟶ F.obj c.pt :=
     (F.map <|
       hc.lift <|
         (Cone.postcompose
-              ({ app := fun _ => 𝟙 _ } :
+              ({ app _ := 𝟙 _ } :
                 (s.toStructuredArrow ⋙ pre s.pt K F) ⋙ proj s.pt F ⟶ K)).obj <|
           (StructuredArrow.proj s.pt F).mapCone s')
 
@@ -201,9 +201,9 @@ theorem uniq {K : J ⥤ C} {c : Cone K} (hc : IsLimit c) (s : Cone (K ⋙ F))
     (h₂ : ∀ j : J, f₂ ≫ (F.mapCone c).π.app j = s.π.app j) : f₁ = f₂ := by
   -- We can make two cones over the diagram of `s` via `f₁` and `f₂`.
   let α₁ : (F.mapCone c).toStructuredArrow ⋙ map f₁ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₁]) }
+    { app X := eqToHom (by simp [← h₁]) }
   let α₂ : (F.mapCone c).toStructuredArrow ⋙ map f₂ ⟶ s.toStructuredArrow :=
-    { app := fun X => eqToHom (by simp [← h₂]) }
+    { app X := eqToHom (by simp [← h₂]) }
   let c₁ : Cone (s.toStructuredArrow ⋙ pre s.pt K F) :=
     (Cone.postcompose (Functor.whiskerRight α₁ (pre s.pt K F) :)).obj
       (c.toStructuredArrowCone F f₁)
@@ -256,7 +256,7 @@ lemma preservesFiniteLimits_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
   exact
     { lift := PreservesFiniteLimitsOfFlat.lift F hc
       fac := PreservesFiniteLimitsOfFlat.fac F hc
-      uniq := fun s m h => by
+      uniq s m h := by
         apply PreservesFiniteLimitsOfFlat.uniq F hc
         · exact h
         · exact PreservesFiniteLimitsOfFlat.fac F hc s }

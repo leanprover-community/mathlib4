@@ -262,7 +262,7 @@ include I n in
 This is not an instance for technical reasons, see
 note [Design choices about smooth algebraic structures]. -/
 theorem continuousInv₀_of_contMDiffInv₀ : ContinuousInv₀ G :=
-  { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
+  { continuousAt_inv₀ _ hx := (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
 theorem contMDiffOn_inv₀ : CMDiff[{0}ᶜ] n (Inv.inv : G → G) :=
   fun _x hx ↦ (contMDiffAt_inv₀ hx).contMDiffWithinAt

@@ -147,8 +147,8 @@ sending `x` to `f x * g x`. -/
 `f + g` is the additive morphism sending `x` to `f x + g x`. -/]
 instance [Mul M] [CommSemigroup N] : Mul (M →ₙ* N) :=
   ⟨fun f g =>
-    { toFun := fun m => f m * g m,
-      map_mul' := fun x y => by
+    { toFun m := f m * g m,
+      map_mul' x y := by
         show f (x * y) * g (x * y) = f x * g x * (f y * g y)
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
@@ -238,9 +238,9 @@ sending `x` to `f x * g x`. -/
 @[to_additive]
 instance mul : Mul (M →* N) :=
   ⟨fun f g =>
-    { toFun := fun m => f m * g m,
+    { toFun m := f m * g m,
       map_one' := by simp,
-      map_mul' := fun x y => by
+      map_mul' x y := by
         rw [f.map_mul, g.map_mul, ← mul_assoc, ← mul_assoc, mul_right_comm (f x)] }⟩
 
 /-- Given two additive monoid morphisms `f`, `g` to an additive commutative monoid,

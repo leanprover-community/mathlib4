@@ -186,7 +186,7 @@ with the property that its composition with the canonical bilinear map `M → N 
 the given bilinear map `M → N → P`. -/
 def lift.equiv : (M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) ≃ₗ[R₂] M ⊗[R] N →ₛₗ[σ₁₂] P₂ :=
   { uncurry σ₁₂ M N P₂ with
-    invFun := fun f => (mk R M N).compr₂ₛₗ f }
+    invFun f := (mk R M N).compr₂ₛₗ f }
 
 @[simp]
 theorem lift.equiv_apply (f : M →ₛₗ[σ₁₂] N →ₛₗ[σ₁₂] P₂) (m : M) (n : N) :
@@ -315,11 +315,11 @@ where `S` is any other ring acting on `M` and whose action commutes with the `A`
 def mapOfCompatibleSMul : M ⊗[A] N →ₗ[S] M ⊗[R] N where
   __ :=
     lift (σ₁₂ := RingHom.id A)
-    { toFun := fun m ↦
+    { toFun m :=
       { __ := mk R M N m
-        map_smul' := fun _ _ ↦ (smul_tmul _ _ _).symm }
-      map_add' := fun _ _ ↦ LinearMap.ext <| by simp
-      map_smul' := fun _ _ ↦ rfl }
+        map_smul' _ _ := (smul_tmul _ _ _).symm }
+      map_add' _ _ := LinearMap.ext <| by simp
+      map_smul' _ _ := rfl }
   map_smul' s x := by
     induction x with
     | add x y _ _ => simp_all
@@ -387,10 +387,10 @@ protected theorem neg_add_cancel (x : M ⊗[R] N) : -x + x = 0 :=
     rw [hx, hy, add_zero]
 
 instance addCommGroup : AddCommGroup (M ⊗[R] N) where
-  neg_add_cancel := fun x => TensorProduct.neg_add_cancel x
+  neg_add_cancel x := TensorProduct.neg_add_cancel x
   zsmul_zero' := by simp
   zsmul_succ' := by simp [add_comm, TensorProduct.add_smul]
-  zsmul_neg' := fun n x => by
+  zsmul_neg' n x := by
     change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
     rw [← zero_add (_ • x), ← TensorProduct.neg_add_cancel ((n.succ : ℤ) • x), add_assoc,
       ← add_smul, ← sub_eq_add_neg, sub_self, zero_smul, add_zero]

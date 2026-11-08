@@ -65,7 +65,7 @@ given by division by the discriminant. -/
 def discriminantEquiv : CuspForm 𝒮ℒ k ≃ₗ[ℂ] ModularForm 𝒮ℒ (k - 12) where
   toFun f :=
     { toFun z := f z / Δ z
-      slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ divByDiscriminant_slash_eq f γ
+      slash_action_eq' _ := fun ⟨γ, hγ⟩  ↦ hγ ▸ divByDiscriminant_slash_eq f γ
       holo' := f.holo'.div CuspForm.discriminant.holo' discriminant_ne_zero
       bdd_at_cusps' {c} hc := by
         rw [Subgroup.IsArithmetic.isCusp_iff_isCusp_SL2Z] at hc

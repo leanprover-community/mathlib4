@@ -611,14 +611,14 @@ def limYoneda :
 
 /-- The constant functor and limit functor are adjoint to each other -/
 def constLimAdj : (const J : C ⥤ J ⥤ C) ⊣ lim := Adjunction.mk' {
-  homEquiv := fun c g ↦
-    { toFun := fun f => limit.lift _ ⟨c, f⟩
-      invFun := fun f =>
-        { app := fun _ => f ≫ limit.π _ _ }
+  homEquiv c g :=
+    { toFun f := limit.lift _ ⟨c, f⟩
+      invFun f :=
+        { app _ := f ≫ limit.π _ _ }
       left_inv := by cat_disch
       right_inv := by cat_disch }
-  unit := { app := fun _ => limit.lift _ ⟨_, 𝟙 _⟩ }
-  counit := { app := fun g => { app := limit.π _ } } }
+  unit := { app _ := limit.lift _ ⟨_, 𝟙 _⟩ }
+  counit := { app g := { app := limit.π _ } } }
 
 instance : IsRightAdjoint (lim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨constLimAdj⟩⟩
@@ -781,14 +781,14 @@ def colimCoyoneda : colim.op ⋙ coyoneda ⋙ (whiskeringRight _ _ _).obj uliftF
 /-- The colimit functor and constant functor are adjoint to each other
 -/
 def colimConstAdj : (colim : (J ⥤ C) ⥤ C) ⊣ const J := Adjunction.mk' {
-  homEquiv := fun f c ↦
-    { toFun := fun g =>
-        { app := fun _ => colimit.ι _ _ ≫ g }
-      invFun := fun g => colimit.desc _ ⟨_, g⟩
+  homEquiv f c :=
+    { toFun g :=
+        { app _ := colimit.ι _ _ ≫ g }
+      invFun g := colimit.desc _ ⟨_, g⟩
       left_inv := by cat_disch
       right_inv := by cat_disch }
-  unit := { app := fun g => { app := colimit.ι _ } }
-  counit := { app := fun _ => colimit.desc _ ⟨_, 𝟙 _⟩ } }
+  unit := { app g := { app := colimit.ι _ } }
+  counit := { app _ := colimit.desc _ ⟨_, 𝟙 _⟩ } }
 
 instance : IsLeftAdjoint (colim : (J ⥤ C) ⥤ C) :=
   ⟨_, ⟨colimConstAdj⟩⟩

@@ -90,7 +90,7 @@ instance strongEpi_comp [StrongEpi f] [StrongEpi g] : StrongEpi (f ≫ g) :=
 /-- If `f ≫ g` is a strong monomorphism, then so is `f`. -/]
 theorem strongEpi_of_strongEpi [StrongEpi (f ≫ g)] : StrongEpi g :=
   { epi := epi_of_epi f g
-    llp := fun {X Y} z _ => by
+    llp {X Y} z _ := by
       constructor
       intro u v sq
       have h₀ : (f ≫ u) ≫ z = (f ≫ g) ≫ v := by simp only [Category.assoc, sq.w]
@@ -111,7 +111,7 @@ theorem StrongEpi.of_arrow_iso {A B A' B' : C} {f : A ⟶ B} {g : A' ⟶ B'}
   epi := by
     rw [Arrow.iso_w' e]
     infer_instance
-  llp := fun {X Y} z => by
+  llp {X Y} z := by
     intro
     apply HasLiftingProperty.of_arrow_iso_left e z
 

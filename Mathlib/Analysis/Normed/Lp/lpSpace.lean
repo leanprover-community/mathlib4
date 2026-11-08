@@ -547,7 +547,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
     { toFun := norm
       map_zero' := norm_zero
       neg' := norm_neg
-      add_le' := fun f g => by
+      add_le' f g := by
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
           · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
@@ -570,7 +570,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           intro i
           gcongr
           apply norm_add_le
-      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
+      eq_zero_of_map_eq_zero' _ := norm_eq_zero_iff.1 }
 
 -- TODO: define an `ENNReal` version of `HolderConjugate`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
@@ -680,7 +680,7 @@ variable (𝕜 E p)
 /-- The `𝕜`-submodule of elements of `∀ i : α, E i` whose `lp` norm is finite. This is `lp E p`,
 with extra structure. -/
 def _root_.lpSubmodule : Submodule 𝕜 (PreLp E) :=
-  { lp E p with smul_mem' := fun c f hf => by simpa using mem_lp_const_smul c ⟨f, hf⟩ }
+  { lp E p with smul_mem' c f hf := by simpa using mem_lp_const_smul c ⟨f, hf⟩ }
 
 variable {𝕜 E p}
 
@@ -887,7 +887,7 @@ variable [∀ i, StarRing (B i)] [∀ i, NormedStarGroup (B i)]
 
 instance inftyStarRing : StarRing (lp B ∞) :=
   { lp.instStarAddMonoid with
-    star_mul := fun _f _g => ext <| star_mul (R := ∀ i, B i) _ _ }
+    star_mul _f _g := ext <| star_mul (R := ∀ i, B i) _ _ }
 
 instance inftyCStarRing [∀ i, CStarRing (B i)] : CStarRing (lp B ∞) where
   norm_mul_self_le f := by

@@ -261,11 +261,11 @@ instance : Inhabited (FreeAlgebra R X) :=
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
   algebraMap := ({
-      toFun := fun r => Quot.mk _ r
+      toFun r := Quot.mk _ r
       map_one' := rfl
-      map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
+      map_mul' _ _ := Quot.sound Rel.mul_scalar
       map_zero' := rfl
-      map_add' := fun _ _ => Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
+      map_add' _ _ := Quot.sound Rel.add_scalar } : A →+* FreeAlgebra A X).comp
       (algebraMap R A)
   commutes' _ := by
     rintro ⟨⟩
@@ -367,7 +367,7 @@ of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[no_expose]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
-    invFun := fun F ↦ F ∘ ι R
+    invFun F := F ∘ ι R
     left_inv := fun f ↦ by rfl
     right_inv := fun F ↦ by
       ext t

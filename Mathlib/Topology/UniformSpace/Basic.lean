@@ -432,7 +432,7 @@ instance : Bot (UniformSpace α) :=
       uniformity := 𝓟 SetRel.id
       symm := by simp [Tendsto, SetRel.id]
       comp := lift'_le (mem_principal_self _) <| principal_mono.2 (SetRel.id_comp _).subset
-      nhds_eq_comap_uniformity := fun s => by
+      nhds_eq_comap_uniformity s := by
         let _ : TopologicalSpace α := ⊥; have := discreteTopology_bot α
         simp [SetRel.id] }⟩
 
@@ -442,7 +442,7 @@ instance : Min (UniformSpace α) :=
       symm := u₁.symm.inf u₂.symm
       comp := (lift'_inf_le _ _ _).trans <| inf_le_inf u₁.comp u₂.comp
       toTopologicalSpace := u₁.toTopologicalSpace ⊓ u₂.toTopologicalSpace
-      nhds_eq_comap_uniformity := fun _ ↦ by
+      nhds_eq_comap_uniformity _ := by
         rw [@nhds_inf _ u₁.toTopologicalSpace _, @nhds_eq_comap_uniformity _ u₁,
           @nhds_eq_comap_uniformity _ u₂, comap_inf] }⟩
 

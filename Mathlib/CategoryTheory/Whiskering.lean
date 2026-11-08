@@ -78,13 +78,13 @@ variable (C D E)
 @[simps, implicit_reducible]
 def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
   obj F :=
-    { obj := fun G => F ⋙ G
-      map := fun α => whiskerLeft F α }
+    { obj G := F ⋙ G
+      map α := whiskerLeft F α }
   map τ :=
-    { app := fun H =>
-        { app := fun c => H.map (τ.app c)
-          naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
+    { app H :=
+        { app c := H.map (τ.app c)
+          naturality X Y f := by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
+      naturality X Y f := by ext; dsimp; rw [f.naturality] }
 
 /-- Right-composition gives a functor `(D ⥤ E) ⥤ ((C ⥤ D) ⥤ (C ⥤ E))`.
 
@@ -94,13 +94,13 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
 @[simps, implicit_reducible]
 def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
   obj H :=
-    { obj := fun F => F ⋙ H
-      map := fun α => whiskerRight α H }
+    { obj F := F ⋙ H
+      map α := whiskerRight α H }
   map τ :=
-    { app := fun F =>
-        { app := fun c => τ.app (F.obj c)
-          naturality := fun X Y f => by dsimp; rw [τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
+    { app F :=
+        { app c := τ.app (F.obj c)
+          naturality X Y f := by dsimp; rw [τ.naturality] }
+      naturality X Y f := by ext; dsimp; rw [← NatTrans.naturality] }
 
 variable {C} {D} {E}
 
@@ -117,8 +117,8 @@ def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
     (C : Type*) [Category* C] :
     ((whiskeringRight C D E).obj F).FullyFaithful where
   preimage f :=
-    { app := fun X => hF.preimage (f.app X)
-      naturality := fun _ _ g => by
+    { app X := hF.preimage (f.app X)
+      naturality _ _ g := by
         apply hF.map_injective
         simp only [map_comp, map_preimage]
         apply f.naturality }
@@ -387,13 +387,13 @@ variable {C₁ C₂ C₃ C₄ D₁ D₂ D₃ D₄ : Type*} [Category* C₁] [Cat
 def whiskeringLeft₂ :
     (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E) where
   obj F₁ :=
-    { obj := fun F₂ ↦
+    { obj F₂ :=
         (whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).obj ((whiskeringLeft C₂ D₂ E).obj F₂) ⋙
           (whiskeringLeft C₁ D₁ (C₂ ⥤ E)).obj F₁
-      map := fun φ ↦ whiskerRight
+      map φ := whiskerRight
         ((whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).map ((whiskeringLeft C₂ D₂ E).map φ)) _ }
   map ψ :=
-    { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
+    { app F₂ := whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
 
 /-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[implicit_reducible, simps!]

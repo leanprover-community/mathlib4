@@ -461,14 +461,14 @@ set_option backward.defeqAttrib.useBackward true in
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
   obj := whiskeringObj _ _
   map η :=
-    { app := fun A =>
+    { app A :=
         { left := whiskerLeft _ η
           right := η.app _
           w := by
             ext n
             dsimp
             rw [Category.comp_id, Category.comp_id, η.naturality] } }
-  map_comp := fun _ _ => by ext <;> rfl
+  map_comp _ _ := by ext <;> rfl
 
 variable {C}
 
@@ -494,7 +494,7 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
   left := X
   right := X₀
   hom :=
-    { app := fun _ => X.map (SimplexCategory.const _ _ 0).op ≫ f
+    { app _ := X.map (SimplexCategory.const _ _ 0).op ≫ f
       naturality := by
         intro i j g
         dsimp
@@ -825,14 +825,14 @@ set_option backward.defeqAttrib.useBackward true in
 def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ Augmented D where
   obj := whiskeringObj _ _
   map η :=
-    { app := fun A =>
+    { app A :=
         { left := η.app _
           right := whiskerLeft _ η
           w := by
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> simp }
+      naturality _ _ f := by ext <;> simp }
 
 variable {C}
 
@@ -859,7 +859,7 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
   left := X₀
   right := X
   hom :=
-    { app := fun _ => f ≫ X.map (SimplexCategory.const _ _ 0)
+    { app _ := f ≫ X.map (SimplexCategory.const _ _ 0)
       naturality := by
         intro i j g
         dsimp

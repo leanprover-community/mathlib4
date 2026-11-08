@@ -235,8 +235,8 @@ variable (C D)
 def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
   obj F := (unop F).op
   map α :=
-    { app := fun X => (α.unop.app (unop X)).op
-      naturality := fun _ _ f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
+    { app X := (α.unop.app (unop X)).op
+      naturality _ _ f := Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
 
 /-- Take the "unopposite" of a functor is functorial.
 -/
@@ -245,8 +245,8 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   obj F := op F.unop
   map α :=
     Quiver.Hom.op
-      { app := fun X => (α.app (op X)).unop
-        naturality := fun _ _ f => Quiver.Hom.op_inj (α.naturality f.op).symm }
+      { app X := (α.app (op X)).unop
+        naturality _ _ f := Quiver.Hom.op_inj (α.naturality f.op).symm }
 
 variable {C D}
 
@@ -872,11 +872,11 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
   functor :=
-    { obj := fun F => F.unop.rightOp
-      map := fun η => NatTrans.rightOp η.unop }
+    { obj F := F.unop.rightOp
+      map η := NatTrans.rightOp η.unop }
   inverse :=
-    { obj := fun F => op F.leftOp
-      map := fun η => η.leftOp.op }
+    { obj F := op F.leftOp
+      map η := η.leftOp.op }
   unitIso :=
     NatIso.ofComponents (fun F => F.unop.rightOpLeftOpIso.op)
       (by

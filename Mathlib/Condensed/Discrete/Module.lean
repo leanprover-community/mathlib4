@@ -41,8 +41,8 @@ constant maps.
 def functorToPresheaves : ModuleCat.{max u w} R ⥤ ((CompHausLike.{u} P)ᵒᵖ ⥤ ModuleCat R) where
   obj X := {
     obj := fun ⟨S⟩ ↦ ↧(LocallyConstant S X)
-    map := fun f ↦ ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
-  map f := { app := fun S ↦ ModuleCat.ofHom (mapₗ R f.hom) }
+    map f := ModuleCat.ofHom (comapₗ R f.unop.hom.hom) }
+  map f := { app S := ModuleCat.ofHom (mapₗ R f.hom) }
 
 variable [HasExplicitFiniteCoproducts.{0} P] [HasExplicitPullbacks.{u} P]
   (hs : ∀ ⦃X Y : CompHausLike P⦄ (f : X ⟶ Y), EffectiveEpi f → Function.Surjective f)

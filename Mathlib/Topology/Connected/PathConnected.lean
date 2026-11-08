@@ -199,7 +199,7 @@ theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F 
 /-- If `x` and `y` are joined in the set `F`, then they are joined in the subtype `F`. -/
 theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
     Joined (⟨x, h.source_mem⟩ : F) (⟨y, h.target_mem⟩ : F) :=
-  ⟨{  toFun := fun t => ⟨h.somePath t, h.somePath_mem t⟩
+  ⟨{  toFun t := ⟨h.somePath t, h.somePath_mem t⟩
       continuous_toFun := by fun_prop
       source' := by simp
       target' := by simp }⟩

@@ -158,7 +158,7 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
     HasFPowerSeriesOnBall (fun z => f (z - y)) p (x + y) r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun {z} hz => by
+    hasSum {z} hz := by
       convert hf.hasSum hz
       abel }
 
@@ -280,7 +280,7 @@ theorem HasFPowerSeriesOnBall.congr (hf : HasFPowerSeriesOnBall f p x r)
     (hg : EqOn f g (Metric.eball x r)) : HasFPowerSeriesOnBall g p x r :=
   { r_le := hf.r_le
     r_pos := hf.r_pos
-    hasSum := fun {y} hy => by
+    hasSum {y} hy := by
       convert hf.hasSum hy
       apply hg.symm
       simpa [eDist_eq_eNorm_sub] using hy }
@@ -1076,7 +1076,7 @@ protected theorem FormalMultilinearSeries.hasFPowerSeriesOnBall [CompleteSpace F
     HasFPowerSeriesOnBall p.sum p 0 p.radius :=
   { r_le := le_rfl
     r_pos := h
-    hasSum := fun hy => by
+    hasSum hy := by
       rw [zero_add]
       exact p.hasSum hy }
 

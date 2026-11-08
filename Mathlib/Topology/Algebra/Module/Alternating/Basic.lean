@@ -582,8 +582,8 @@ def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i
     [∀ i, Module A (M' i)] [∀ i, SMulCommClass A R (M' i)] [∀ i, ContinuousConstSMul R (M' i)] :
     (∀ i, M [⋀^ι]→L[A] M' i) ≃ₗ[R] M [⋀^ι]→L[A] ∀ i, M' i :=
   { piEquiv with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 end Module
 
@@ -640,7 +640,7 @@ variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [Topolog
 def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [⋀^ι]→L[R] N where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ
-      map_eq_zero_of_eq' := fun v i j hv hne => by
+      map_eq_zero_of_eq' v i j hv hne := by
         simpa [MultilinearMap.alternatization_apply]
           using f.1.alternatization.map_eq_zero_of_eq' v i j hv hne }
   map_zero' := by ext; simp

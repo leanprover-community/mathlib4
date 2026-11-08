@@ -190,7 +190,7 @@ and the continuous functions on its `characterSpace`. -/
 noncomputable def gelfandStarTransform : A ≃⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) :=
   StarAlgEquiv.ofBijective
     (show A →⋆ₐ[ℂ] C(characterSpace ℂ A, ℂ) from
-      { gelfandTransform ℂ A with map_star' := fun x => gelfandTransform_map_star x })
+      { gelfandTransform ℂ A with map_star' x := gelfandTransform_map_star x })
     (gelfandTransform_bijective A)
 
 end Commutative

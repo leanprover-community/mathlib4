@@ -83,7 +83,7 @@ theorem coe_id : ⇑(ContinuousMap.id α) = id :=
 
 /-- The constant map as a continuous map. -/
 def const (b : β) : C(α, β) where
-  toFun := fun _ : α => b
+  toFun (_ : α) := b
 
 @[simp]
 theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=

@@ -438,7 +438,7 @@ instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisi
     IsSemisimpleRing (Π i, R i) := by
   let _ (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
   let e (i) : R i →ₛₗ[Pi.evalRingHom R i] R i :=
-    { AddMonoidHom.id (R i) with map_smul' := fun _ _ ↦ rfl }
+    { AddMonoidHom.id (R i) with map_smul' _ _ := rfl }
   have (i : _) : IsSemisimpleModule (Π i, R i) (R i) :=
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   infer_instance
@@ -449,8 +449,8 @@ instance [hR : IsSemisimpleRing R] [hS : IsSemisimpleRing S] : IsSemisimpleRing 
   let : Module (R × S) R := Module.compHom _ (.fst R S)
   let : Module (R × S) S := Module.compHom _ (.snd R S)
   -- e₁, e₂ got falsely flagged by the unused argument linter
-  let _e₁ : R →ₛₗ[.fst R S] R := { AddMonoidHom.id R with map_smul' := fun _ _ ↦ rfl }
-  let _e₂ : S →ₛₗ[.snd R S] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
+  let _e₁ : R →ₛₗ[.fst R S] R := { AddMonoidHom.id R with map_smul' _ _ := rfl }
+  let _e₂ : S →ₛₗ[.snd R S] S := { AddMonoidHom.id S with map_smul' _ _ := rfl }
   rw [IsSemisimpleRing, ← _e₁.isSemisimpleModule_iff_of_bijective Function.bijective_id] at hR
   rw [IsSemisimpleRing, ← _e₂.isSemisimpleModule_iff_of_bijective Function.bijective_id] at hS
   rw [IsSemisimpleRing, ← Submodule.topEquiv.isSemisimpleModule_iff_of_bijective
@@ -461,7 +461,7 @@ theorem RingHom.isSemisimpleRing_of_surjective (f : R →+* S) (hf : Function.Su
     [IsSemisimpleRing R] : IsSemisimpleRing S := by
   let : Module R S := Module.compHom _ f
   have : RingHomSurjective f := ⟨hf⟩
-  let e : S →ₛₗ[f] S := { AddMonoidHom.id S with map_smul' := fun _ _ ↦ rfl }
+  let e : S →ₛₗ[f] S := { AddMonoidHom.id S with map_smul' _ _ := rfl }
   rw [IsSemisimpleRing, ← e.isSemisimpleModule_iff_of_bijective Function.bijective_id]
   infer_instance
 
@@ -527,9 +527,9 @@ noncomputable instance _root_.Module.End.instDivisionRing [IsSimpleModule R M] :
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dite_eq_left rfl
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 instance (R) [DivisionRing R] [Module R M] [Nontrivial M] : IsSimpleModule (Module.End R M) M :=
   isSimpleModule_iff_toSpanSingleton_surjective.mpr <| .intro ‹_› fun v hv w ↦

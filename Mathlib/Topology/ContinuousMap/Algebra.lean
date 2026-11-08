@@ -234,7 +234,7 @@ def continuousSubmonoid (α : Type*) (β : Type*) [TopologicalSpace α] [Topolog
 @[to_additive /-- The `AddSubgroup` of continuous maps `α → β`. -/]
 def continuousSubgroup (α : Type*) (β : Type*) [TopologicalSpace α] [TopologicalSpace β] [Group β]
     [IsTopologicalGroup β] : Subgroup (α → β) :=
-  { continuousSubmonoid α β with inv_mem' := fun fc => Continuous.inv fc }
+  { continuousSubmonoid α β with inv_mem' fc := Continuous.inv fc }
 
 end Subtype
 
@@ -511,7 +511,7 @@ variable [Module R M] [ContinuousConstSMul R M] [IsTopologicalAddGroup M]
 def continuousSubmodule : Submodule R (α → M) :=
   { continuousAddSubgroup α M with
     carrier := { f : α → M | Continuous f }
-    smul_mem' := fun c _ hf => hf.const_smul c }
+    smul_mem' c _ hf := hf.const_smul c }
 
 end Subtype
 
@@ -594,7 +594,7 @@ Similar to `LinearMap.compLeft`. -/
 protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [TopologicalSpace α]
     (g : M →L[R] M₂) : C(α, M) →L[R] C(α, M₂) where
   __ := g.toLinearMap.toAddMonoidHom.compLeftContinuous α g.continuous
-  map_smul' := fun c _ => ext fun _ => g.map_smul' c _
+  map_smul' c _ := ext fun _ => g.map_smul' c _
 
 /-- The constant map `x ↦ y ↦ x` as a `ContinuousLinearMap`. -/
 @[simps!]
@@ -656,7 +656,7 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 def continuousSubalgebra : Subalgebra R (α → A) :=
   { continuousSubsemiring α A with
     carrier := { f : α → A | Continuous f }
-    algebraMap_mem' := fun r => (continuous_const : Continuous fun _ : α => algebraMap R A r) }
+    algebraMap_mem' r := (continuous_const : Continuous fun _ : α => algebraMap R A r) }
 
 end Subtype
 
@@ -668,7 +668,7 @@ variable {α : Type*} [TopologicalSpace α] {R : Type*} [CommSemiring R] {A : Ty
 
 /-- Continuous constant functions as a `RingHom`. -/
 def ContinuousMap.C : R →+* C(α, A) where
-  toFun := fun c : R => ⟨fun _ : α => (algebraMap R A) c, continuous_const⟩
+  toFun (c : R) := ⟨fun _ : α => (algebraMap R A) c, continuous_const⟩
   map_one' := by ext _; exact (algebraMap R A).map_one
   map_mul' c₁ c₂ := by ext _; exact (algebraMap R A).map_mul _ _
   map_zero' := by ext _; exact (algebraMap R A).map_zero
@@ -691,7 +691,7 @@ variable (R)
 protected def AlgHom.compLeftContinuous {α : Type*} [TopologicalSpace α] (g : A →ₐ[R] A₂)
     (hg : Continuous g) : C(α, A) →ₐ[R] C(α, A₂) :=
   { g.toRingHom.compLeftContinuous α hg with
-    commutes' := fun _ => ContinuousMap.ext fun _ => g.commutes' _ }
+    commutes' _ := ContinuousMap.ext fun _ => g.commutes' _ }
 
 variable (A)
 
@@ -717,7 +717,7 @@ variable {A}
 @[simps!]
 def ContinuousMap.coeFnAlgHom : C(α, A) →ₐ[R] α → A :=
   { (ContinuousMap.coeFnRingHom : C(α, A) →+* _) with
-    commutes' := fun _ => rfl }
+    commutes' _ := rfl }
 
 variable {R}
 

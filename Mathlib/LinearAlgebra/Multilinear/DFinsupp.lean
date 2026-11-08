@@ -90,7 +90,7 @@ This is the `DFinsupp` version of `MultilinearMap.piFamily`.
 def dfinsuppFamily (f : Π (p : Π i, κ i), (Π i, M i (p i)) →ₘₗ[R] N p) :
     (Π i, Π₀ j : κ i, M i j) →ₘₗ[R] Π₀ t : Π i, κ i, N t where
   toFun x :=
-  { toFun := fun p => f p (fun i => x i (p i))
+  { toFun p := f p (fun i => x i (p i))
     support' := (Trunc.finChoice fun i => (x i).support').map fun s => ⟨
       Finset.univ.val.pi (fun i ↦ (s i).val) |>.map fun f i => f i (Finset.mem_univ _),
       fun p => by

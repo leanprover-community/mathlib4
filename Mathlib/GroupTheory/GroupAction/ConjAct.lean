@@ -70,7 +70,7 @@ instance : Inhabited (ConjAct G) :=
 def ofConjAct : ConjAct G ≃* G where
   toFun := id
   invFun := id
-  map_mul' := fun _ _ => rfl
+  map_mul' _ _ := rfl
 
 /-- Reinterpret `g : G` as an element of `ConjAct G`. -/
 def toConjAct : G ≃* ConjAct G :=
@@ -287,13 +287,13 @@ def unitsCentralizerEquiv (x : Mˣ) :
     (Submonoid.centralizer ({↑x} : Set M))ˣ ≃* MulAction.stabilizer (ConjAct Mˣ) x :=
   MulEquiv.symm
   { toFun := MonoidHom.toHomUnits
-      { toFun := fun u ↦ ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
+      { toFun u := ⟨↑(ConjAct.ofConjAct u.1 : Mˣ), by
           rintro x ⟨rfl⟩
           have : (u : ConjAct Mˣ) • x = x := u.2
           rwa [ConjAct.smul_def, mul_inv_eq_iff_eq_mul, Units.ext_iff, eq_comm] at this⟩,
         map_one' := rfl,
-        map_mul' := fun _ _ ↦ rfl }
-    invFun := fun u ↦
+        map_mul' _ _ := rfl }
+    invFun u :=
       ⟨ConjAct.toConjAct (Units.map (Submonoid.centralizer ({↑x} : Set M)).subtype u), by
       change _ • _ = _
       simp only [ConjAct.smul_def, ConjAct.ofConjAct_toConjAct, mul_inv_eq_iff_eq_mul]

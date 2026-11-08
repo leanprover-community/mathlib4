@@ -146,25 +146,25 @@ theorem pointedToTwoPSnd_comp_forget_to_bipointed :
 noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
     pointedToTwoPFst ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedFst :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.hom.toFun ∘ Option.some, f.hom.map_fst⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
+    { homEquiv X Y :=
+        { toFun f := ⟨f.hom.toFun ∘ Option.some, f.hom.map_fst⟩
+          invFun f := ⟨fun o => o.elim Y.toTwoPointing.toProd.2 f.toFun, f.map_point, rfl⟩
           left_inv := fun f => by
             ext (_ | _) : 4
             · exact f.hom.map_snd.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by ext (_ | _) : 4 <;> rfl }
+      homEquiv_naturality_left_symm f g := by ext (_ | _) : 4 <;> rfl }
 
 /-- Adding a first point is left adjoint to forgetting the first point. -/
 noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
     pointedToTwoPSnd ⊣ forget₂ TwoP Bipointed ⋙ bipointedToPointedSnd :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        { toFun := fun f => ⟨f.hom.toFun ∘ Option.some, f.hom.map_snd⟩
-          invFun := fun f => ⟨fun o => o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
+    { homEquiv X Y :=
+        { toFun f := ⟨f.hom.toFun ∘ Option.some, f.hom.map_snd⟩
+          invFun f := ⟨fun o => o.elim Y.toTwoPointing.toProd.1 f.toFun, rfl, f.map_point⟩
           left_inv := fun f => by
             ext (_ | _) : 4
             · exact f.hom.map_fst.symm
             · rfl }
-      homEquiv_naturality_left_symm := fun f g => by
+      homEquiv_naturality_left_symm f g := by
         ext (_ | _) : 4 <;> rfl }

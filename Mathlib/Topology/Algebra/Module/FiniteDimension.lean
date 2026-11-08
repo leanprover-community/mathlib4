@@ -291,7 +291,7 @@ theorem LinearMap.continuous_of_finiteDimensional [T2Space E] [FiniteDimensional
 
 instance LinearMap.continuousLinearMapClassOfFiniteDimensional [T2Space E] [FiniteDimensional 𝕜 E] :
     ContinuousLinearMapClass (E →ₗ[𝕜] F') 𝕜 E F' :=
-  { LinearMap.semilinearMapClass with map_continuous := fun f => f.continuous_of_finiteDimensional }
+  { LinearMap.semilinearMapClass with map_continuous f := f.continuous_of_finiteDimensional }
 
 /-- In finite dimensions over a non-discrete complete normed field, the canonical identification
 (in terms of a basis) with `𝕜^n` (endowed with the product topology) is continuous.
@@ -320,8 +320,8 @@ space. -/
 def _root_.Module.End.toContinuousLinearMap (E : Type v) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [FiniteDimensional 𝕜 E] : (E →ₗ[𝕜] E) ≃ₐ[𝕜] (E →L[𝕜] E) :=
   { LinearMap.toContinuousLinearMap with
-    map_mul' := fun _ _ ↦ rfl
-    commutes' := fun _ ↦ rfl }
+    map_mul' _ _ := rfl
+    commutes' _ := rfl }
 
 @[simp]
 theorem coe_toContinuousLinearMap' (f : E →ₗ[𝕜] F') : ⇑(LinearMap.toContinuousLinearMap f) = f :=

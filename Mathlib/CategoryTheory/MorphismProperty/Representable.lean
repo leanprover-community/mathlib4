@@ -287,7 +287,7 @@ lemma isomorphisms_le : MorphismProperty.isomorphisms D ≤ F.relativelyRepresen
 
 instance isMultiplicative : IsMultiplicative F.relativelyRepresentable where
   id_mem _ := of_isIso F _
-  comp_mem {F G H} f g hf hg := fun X h ↦
+  comp_mem {F G H} f g hf hg X h :=
     ⟨hf.pullback (hg.fst h), hf.snd (hg.fst h) ≫ hg.snd h, hf.fst (hg.fst h),
       by simpa using IsPullback.paste_vert (hf.isPullback (hg.fst h)) (hg.isPullback h)⟩
 

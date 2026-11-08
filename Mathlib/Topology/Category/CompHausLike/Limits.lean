@@ -66,7 +66,7 @@ The inclusion of one of the factors into the explicit finite coproduct.
 -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X :=
   ofHom _
-  { toFun := fun x ↦ ⟨a, x⟩
+  { toFun x := ⟨a, x⟩
     continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a) }
 
 /--
@@ -233,7 +233,7 @@ This is essentially the universal property of the pullback.
 def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
     Z ⟶ pullback f g :=
   ConcreteCategory.ofHom
-  { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
+  { toFun z := ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
     continuous_toFun := by fun_prop }
 
 @[reassoc (attr := simp)]

@@ -259,7 +259,7 @@ end InheritedLemmas
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simp
 
 instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
-  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
+  smul_mem _ _ hx := IntermediateField.smul_mem _ hx
 
 end IntermediateField
 

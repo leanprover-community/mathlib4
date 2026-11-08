@@ -34,26 +34,26 @@ variable (f : C ⟶ D) (i : ι)
 namespace HomologicalComplex
 
 instance : Zero (C ⟶ D) :=
-  ⟨{ f := fun _ => 0 }⟩
+  ⟨{ f _ := 0 }⟩
 
 instance : Add (C ⟶ D) :=
-  ⟨fun f g => { f := fun i => f.f i + g.f i }⟩
+  ⟨fun f g => { f i := f.f i + g.f i }⟩
 
 instance : Neg (C ⟶ D) :=
-  ⟨fun f => { f := fun i => -f.f i }⟩
+  ⟨fun f => { f i := -f.f i }⟩
 
 instance : Sub (C ⟶ D) :=
-  ⟨fun f g => { f := fun i => f.f i - g.f i }⟩
+  ⟨fun f g => { f i := f.f i - g.f i }⟩
 
 instance hasNatScalar : SMul ℕ (C ⟶ D) :=
   ⟨fun n f =>
-    { f := fun i => n • f.f i
-      comm' := fun i j _ => by simp [Preadditive.nsmul_comp, Preadditive.comp_nsmul] }⟩
+    { f i := n • f.f i
+      comm' i j _ := by simp [Preadditive.nsmul_comp, Preadditive.comp_nsmul] }⟩
 
 instance hasIntScalar : SMul ℤ (C ⟶ D) :=
   ⟨fun n f =>
-    { f := fun i => n • f.f i
-      comm' := fun i j _ => by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
+    { f i := n • f.f i
+      comm' i j _ := by simp [Preadditive.zsmul_comp, Preadditive.comp_zsmul] }⟩
 
 @[simp]
 theorem zero_f_apply (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -107,10 +107,10 @@ def Functor.mapHomologicalComplex (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
       d i j := F.map (C.d i j)
       shape i j w := by
         rw [C.shape _ _ w, F.map_zero]
-      d_comp_d' := fun i j k _ _ => by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
+      d_comp_d' i j k _ _ := by rw [← F.map_comp, C.d_comp_d, F.map_zero] }
   map f :=
     { f i := F.map (f.f i)
-      comm' := fun i j _ => by
+      comm' i j _ := by
         dsimp
         rw [← F.map_comp, ← F.map_comp, f.comm] }
 
@@ -167,7 +167,7 @@ between those functors applied to homological complexes.
 def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
-  app C := { f := fun _ => α.app _ }
+  app C := { f _ := α.app _ }
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id
@@ -263,8 +263,8 @@ noncomputable def singleMapHomologicalComplex (j : ι) :
     single W₁ c j ⋙ F.mapHomologicalComplex _ ≅ F ⋙ single W₂ c j :=
   NatIso.ofComponents
     (fun X =>
-      { hom := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
-        inv := { f := fun i => if h : i = j then eqToHom (by simp [h]) else 0 }
+      { hom := { f i := if h : i = j then eqToHom (by simp [h]) else 0 }
+        inv := { f i := if h : i = j then eqToHom (by simp [h]) else 0 }
         hom_inv_id := by
           ext i
           dsimp

@@ -810,9 +810,9 @@ def equivHomotopy (φ₁ φ₂ : F ⟶ G) :
       { z : Cochain F G (-1) // Cochain.ofHom φ₁ = δ (-1) 0 z + Cochain.ofHom φ₂ } where
   toFun ho := ⟨Cochain.ofHomotopy ho, by simp only [δ_ofHomotopy, sub_add_cancel]⟩
   invFun z :=
-    { hom := fun i j => if hij : i + (-1) = j then z.1.v i j hij else 0
-      zero := fun i j (hij : j + 1 ≠ i) => dite_eq_right (fun _ => hij (by lia))
-      comm := fun p => by
+    { hom i j := if hij : i + (-1) = j then z.1.v i j hij else 0
+      zero i j (hij : j + 1 ≠ i) := dite_eq_right (fun _ => hij (by lia))
+      comm p := by
         have eq := Cochain.congr_v z.2 p p (add_zero p)
         have h₁ : (ComplexShape.up ℤ).Rel (p - 1) p := by simp
         have h₂ : (ComplexShape.up ℤ).Rel p (p + 1) := by simp

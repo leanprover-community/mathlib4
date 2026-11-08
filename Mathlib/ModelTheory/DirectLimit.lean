@@ -266,7 +266,7 @@ variable (L ι)
 set_option backward.isDefEq.respectTransparency false in
 /-- The canonical map from a component to the direct limit. -/
 noncomputable def of (i : ι) : G i ↪[L] DirectLimit G f where
-  toFun := fun a => ⟦.mk f i a⟧
+  toFun a := ⟦.mk f i a⟧
   inj' x y h := by
     rw [Quotient.eq] at h
     obtain ⟨j, h1, _, h3⟩ := h

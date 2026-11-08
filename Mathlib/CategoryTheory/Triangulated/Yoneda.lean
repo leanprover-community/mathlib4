@@ -79,7 +79,7 @@ noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ whe
   isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
   shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
     { toEquiv := Quiver.Hom.opEquiv.trans (ShiftedHom.opEquiv' n a a' h).symm
-      map_add' := fun _ _ ↦ ShiftedHom.opEquiv'_symm_add _ _ _ h })
+      map_add' _ _ := ShiftedHom.opEquiv'_symm_add _ _ _ h })
         (by intros; ext; apply ShiftedHom.opEquiv'_symm_comp _ _ _ h)
   shiftIso_zero a := by ext; apply ShiftedHom.opEquiv'_zero_add_symm
   shiftIso_add n m a a' a'' ha' ha'' := by

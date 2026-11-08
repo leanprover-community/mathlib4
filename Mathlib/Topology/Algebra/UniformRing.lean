@@ -197,11 +197,11 @@ theorem map_smul_eq_mul_coe (r : R) :
 
 instance algebra : Algebra R (Completion A) where
   algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
-  commutes' := fun r x =>
+  commutes' r x :=
     Completion.induction_on x (isClosed_eq (continuous_const_mul _) (continuous_mul_const _))
       fun a => by
       simpa only [coe_mul] using! congr(($(Algebra.commutes r a) : Completion A))
-  smul_def' := fun r x => congr($(map_smul_eq_mul_coe A R r) x)
+  smul_def' r x := congr($(map_smul_eq_mul_coe A R r) x)
 
 theorem algebraMap_def (r : R) :
     algebraMap R (Completion A) r = (algebraMap R A r : Completion A) :=

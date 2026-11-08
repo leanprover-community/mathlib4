@@ -466,7 +466,7 @@ variable (A)
 
 theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ} [NeZero n]
     (h : IsPrimitiveRoot ζ n) : IsCyclotomicExtension {n} A (adjoin A ({ζ} : Set B)) :=
-  { exists_isPrimitiveRoot := fun hi hi' => by
+  { exists_isPrimitiveRoot hi hi' := by
       rw [Set.mem_singleton_iff] at hi
       refine ⟨⟨ζ, subset_adjoin <| Set.mem_singleton ζ⟩, ?_⟩
       rwa [← IsPrimitiveRoot.coe_submonoidClass_iff, Subtype.coe_mk, hi]

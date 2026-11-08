@@ -69,7 +69,7 @@ theorem Functor.simple_of_simple_obj {D : Type*} [Category* D] [HasZeroMorphisms
       ne_eq, ne_eq, not_iff_not, F.map_eq_zero_iff]
 
 theorem Simple.of_iso {X Y : C} [Simple Y] (i : X ≅ Y) : Simple X :=
-  { mono_isIso_iff_nonzero := fun f m => by
+  { mono_isIso_iff_nonzero f m := by
       constructor
       · intro h w
         have j : IsIso (f ≫ i.hom) := by infer_instance

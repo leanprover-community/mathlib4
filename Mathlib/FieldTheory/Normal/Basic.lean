@@ -96,7 +96,7 @@ namespace IntermediateField
 /-- A compositum of normal extensions is normal. -/
 instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨆ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
+  refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' x := ?_ }
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
   let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
@@ -141,7 +141,7 @@ instance normal_sup
 instance normal_iInf {ι : Type*} [hι : Nonempty ι]
     (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
     Normal F (⨅ i, t i : IntermediateField F K) := by
-  refine { toIsAlgebraic := ?_, splits' := fun x => ?_ }
+  refine { toIsAlgebraic := ?_, splits' x := ?_ }
   · let f := inclusion (iInf_le t hι.some)
     exact Algebra.IsAlgebraic.of_injective f f.injective
   · have hx : ∀ i, Splits ((minpoly F x).map (algebraMap F (t i))) := by
@@ -246,14 +246,14 @@ variable (F K₁)
 theorem isSolvable_of_isScalarTower [Normal F K₁] [h1 : Group.IsSolvable (K₁ ≃ₐ[F] K₁)]
     [h2 : Group.IsSolvable (E ≃ₐ[K₁] E)] : Group.IsSolvable Gal(E/F) := by
   let f : (E ≃ₐ[K₁] E) →* Gal(E/F) :=
-    { toFun := fun ϕ =>
+    { toFun ϕ :=
         AlgEquiv.ofAlgHom (ϕ.toAlgHom.restrictScalars F) (ϕ.symm.toAlgHom.restrictScalars F)
           (AlgHom.ext fun x => ϕ.apply_symm_apply x) (AlgHom.ext fun x => ϕ.symm_apply_apply x)
       map_one' := AlgEquiv.ext fun _ => rfl
-      map_mul' := fun _ _ => AlgEquiv.ext fun _ => rfl }
+      map_mul' _ _ := AlgEquiv.ext fun _ => rfl }
   refine
     Group.isSolvable_of_ker_le_range f (AlgEquiv.restrictNormalHom K₁) fun ϕ hϕ =>
-      ⟨{ ϕ with commutes' := fun x => ?_ }, AlgEquiv.ext fun _ => rfl⟩
+      ⟨{ ϕ with commutes' x := ?_ }, AlgEquiv.ext fun _ => rfl⟩
   exact Eq.trans (ϕ.restrictNormal_commutes K₁ x).symm (congr_arg _ (AlgEquiv.ext_iff.mp hϕ x))
 
 end lift

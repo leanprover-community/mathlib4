@@ -386,7 +386,7 @@ variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar
 
 instance : Star C_c(α, β) where
   star f :=
-    { toFun := fun x => star (f x)
+    { toFun x := star (f x)
       continuous_toFun := (map_continuous f).star
       hasCompactSupport' := by
         rw [HasCompactSupport, tsupport]
@@ -429,7 +429,7 @@ variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousS
 
 instance : StarRing C_c(α, β) :=
   { CompactlySupportedContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+    star_mul f g := ext fun x => star_mul (f x) (g x) }
 
 end StarRing
 
@@ -798,7 +798,7 @@ section toRealPositiveLinear
 /-- For a positive linear functional `Λ : C_c(α, ℝ≥0) → ℝ≥0`, define a positive `ℝ`-linear map. -/
 noncomputable def toRealPositiveLinear (Λ : C_c(α, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : C_c(α, ℝ) →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀
-    { toFun := fun f => Λ (nnrealPart f) - Λ (nnrealPart (- f))
+    { toFun f := Λ (nnrealPart f) - Λ (nnrealPart (- f))
       map_add' f g := by
         simp only [neg_add_rev]
         obtain ⟨h, hh⟩ := exists_add_nnrealPart_add_eq f g

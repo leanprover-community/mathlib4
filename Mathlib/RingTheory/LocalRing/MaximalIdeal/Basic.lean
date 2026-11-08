@@ -58,7 +58,7 @@ theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
 /-- The maximal spectrum of a local ring is a singleton. -/
 instance : Unique (MaximalSpectrum R) where
   default := ⟨maximalIdeal R, maximalIdeal.isMaximal R⟩
-  uniq := fun I ↦ MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
+  uniq I := MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
 
 omit [IsLocalRing R] in
 /-- If the maximal spectrum of a ring is a singleton, then the ring is local. -/

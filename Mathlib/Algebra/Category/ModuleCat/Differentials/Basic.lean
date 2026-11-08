@@ -52,7 +52,7 @@ def mk (d : B → M) (d_add : ∀ (b b' : B), d (b + b') = d b + d b' := by simp
   letI := Module.compHom M f.hom
   { toFun := d
     map_add' := d_add
-    map_smul' := fun a b ↦ by
+    map_smul' a b := by
       dsimp
       rw [RingHom.smul_toAlgebra, d_mul, d_map, smul_zero, add_zero]
       rfl
@@ -145,7 +145,7 @@ noncomputable def map :
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
   ModuleCat.ofHom (Y := (ModuleCat.restrictScalars g'.hom).obj (KaehlerDifferential f'))
-  { toFun := fun x ↦ _root_.KaehlerDifferential.map A A' B B' x
+  { toFun x := _root_.KaehlerDifferential.map A A' B B' x
     map_add' := by simp
     map_smul' := by simp }
 

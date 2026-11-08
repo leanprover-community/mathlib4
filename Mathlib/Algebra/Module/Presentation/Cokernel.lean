@@ -105,8 +105,7 @@ noncomputable def isPresentationCore :
       (pres₂.cokernelSolution data) where
   desc s := (LinearMap.range f).liftQ (pres₂.desc
     { var := s.var
-      linearCombination_var_relation :=
-        fun r ↦ s.linearCombination_var_relation (.inl r) }) (by
+      linearCombination_var_relation r := s.linearCombination_var_relation (.inl r) }) (by
           rw [LinearMap.range_eq_map, ← hg₁, Submodule.map_span, Submodule.span_le,
             Set.image_subset_iff]
           rintro _ ⟨i, rfl⟩

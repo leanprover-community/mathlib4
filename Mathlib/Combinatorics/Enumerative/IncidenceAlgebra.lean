@@ -217,18 +217,18 @@ end Mul
 instance instNonUnitalNonAssocSemiring [Preorder α] [LocallyFiniteOrder α]
     [NonUnitalNonAssocSemiring 𝕜] : NonUnitalNonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instAddCommMonoid
-  zero_mul := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
-  mul_zero := fun f ↦ by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
-  left_distrib := fun f g h ↦ by
+  zero_mul f := by ext; exact sum_eq_zero fun x _ ↦ zero_mul _
+  mul_zero f := by ext; exact sum_eq_zero fun x _ ↦ mul_zero _
+  left_distrib f g h := by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ left_distrib _ _ _) sum_add_distrib
-  right_distrib := fun f g h ↦ by
+  right_distrib f g h := by
     ext; exact Eq.trans (sum_congr rfl fun x _ ↦ right_distrib _ _ _) sum_add_distrib
 
 instance instNonAssocSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α]
     [NonAssocSemiring 𝕜] : NonAssocSemiring (IncidenceAlgebra 𝕜 α) where
   __ := instNonUnitalNonAssocSemiring
-  one_mul := fun f ↦ by ext; simp [*]
-  mul_one := fun f ↦ by ext; simp [*]
+  one_mul f := by ext; simp [*]
+  mul_one f := by ext; simp [*]
 
 instance instSemiring [Preorder α] [LocallyFiniteOrder α] [DecidableEq α] [Semiring 𝕜] :
     Semiring (IncidenceAlgebra 𝕜 α) where
@@ -506,8 +506,8 @@ variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [Decidable
 lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
   let : DecidableLE α := Classical.decRel _
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
-    { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
-      eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
+    { toFun a b := mu 𝕜 (ofDual b) (ofDual a)
+      eq_zero_of_not_le' a b hab := apply_eq_zero_of_not_le (by exact hab) _ }
   suffices mu 𝕜 = mud by simp_rw [this, mud, coe_mk, ofDual_toDual]
   suffices mud * zeta 𝕜 = 1 by
     rw [← mu_mul_zeta] at this

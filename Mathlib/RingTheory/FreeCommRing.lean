@@ -135,8 +135,8 @@ set_option backward.privateInPublic true in
 currently exist. -/
 private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R) where
   toFun f :=
-    { toFun := fun s => (s.toAdd.map f).prod
-      map_mul' := fun x y =>
+    { toFun s := (s.toAdd.map f).prod
+      map_mul' x y :=
         calc
           _ = Multiset.prod (Multiset.map f x + Multiset.map f y) := by
             rw [← Multiset.map_add]

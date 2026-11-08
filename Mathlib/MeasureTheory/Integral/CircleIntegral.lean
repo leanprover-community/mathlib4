@@ -738,7 +738,7 @@ theorem hasFPowerSeriesOn_cauchy_integral {f : ℂ → E} {c : ℂ} {R : ℝ≥0
       (cauchyPowerSeries f c R) c R :=
   { r_le := le_radius_cauchyPowerSeries _ _ _
     r_pos := ENNReal.coe_pos.2 hR
-    hasSum := fun hy ↦ hasSum_cauchyPowerSeries_integral hf <| by simpa using hy }
+    hasSum hy := hasSum_cauchyPowerSeries_integral hf <| by simpa using hy }
 
 namespace circleIntegral
 

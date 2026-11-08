@@ -353,7 +353,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- The canonical isomorphism of an internal direct sum with the ambient algebra -/
 noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
     (DirectSum ι fun i => ↥(M i)) ≃ₐ[R] A :=
-  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' := fun r => by simp }
+  { RingEquiv.ofBijective (DirectSum.coeAlgHom M) hM with commutes' r := by simp }
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`

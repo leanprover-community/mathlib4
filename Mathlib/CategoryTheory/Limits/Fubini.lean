@@ -101,14 +101,14 @@ def coneOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
     (c : Cone (uncurry.obj F)) : Cone D.conePoints where
   pt := c.pt
   π :=
-    { app := fun j =>
+    { app j :=
         (Q j).lift
           { pt := c.pt
             π :=
-              { app := fun k => c.π.app (j, k)
-                naturality := fun k k' f => by
+              { app k := c.π.app (j, k)
+                naturality k k' f := by
                   simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j, k') (𝟙 j, f) } }
-      naturality := fun j j' f =>
+      naturality j j' f :=
         (Q j').hom_ext
           (fun k => by simpa using @NatTrans.naturality _ _ _ _ _ _ c.π (j, k) (j', k) (f, 𝟙 k)) }
 
@@ -136,19 +136,19 @@ def coconeOfCoconeUncurry {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj 
     (c : Cocone (uncurry.obj F)) : Cocone D.coconePoints where
   pt := c.pt
   ι :=
-    { app := fun j =>
+    { app j :=
         (Q j).desc
           { pt := c.pt
             ι :=
-              { app := fun k => c.ι.app (j, k)
-                naturality := fun k k' f => by
+              { app k := c.ι.app (j, k)
+                naturality k k' f := by
                   dsimp; simp only [Category.comp_id]
                   conv_lhs =>
                     arg 1; equals (F.map (𝟙 _)).app _ ≫ (F.obj j).map f =>
                       simp
                   conv_lhs => arg 1; rw [← uncurry_obj_map F (𝟙 j ×ₘ f)]
                   rw [c.w] } }
-      naturality := fun j j' f =>
+      naturality j j' f :=
         (Q j).hom_ext
           (by
             dsimp
@@ -185,8 +185,8 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     P.lift
       { pt := s.pt
         π :=
-          { app := fun p => s.π.app p.1 ≫ (D.obj p.1).π.app p.2
-            naturality := fun p p' f => by
+          { app p := s.π.app p.1 ≫ (D.obj p.1).π.app p.2
+            naturality p p' f := by
               dsimp; simp only [Category.id_comp, Category.assoc]
               rcases p with ⟨j, k⟩
               rcases p' with ⟨j', k'⟩
@@ -260,8 +260,8 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     P.desc
       { pt := s.pt
         ι :=
-          { app := fun p => (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
-            naturality := fun p p' f => by
+          { app p := (D.obj p.1).ι.app p.2 ≫ s.ι.app p.1
+            naturality p p' f := by
               dsimp; simp only [Category.assoc]
               rcases p with ⟨j, k⟩
               rcases p' with ⟨j', k'⟩

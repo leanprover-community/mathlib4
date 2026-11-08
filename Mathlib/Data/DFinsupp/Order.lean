@@ -67,8 +67,8 @@ variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 instance : Preorder (Π₀ i, α i) :=
   { (inferInstance : LE (DFinsupp α)) with
-    le_refl := fun _ _ ↦ le_rfl
-    le_trans := fun _ _ _ hfg hgh i ↦ (hfg i).trans (hgh i) }
+    le_refl _ := fun _  ↦ le_rfl
+    le_trans _ _ _ hfg hgh := fun i  ↦ (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
@@ -91,14 +91,14 @@ end Preorder
 
 instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
   { (inferInstance : Preorder (DFinsupp α)) with
-    le_antisymm := fun _ _ hfg hgf ↦ ext fun i ↦ (hfg i).antisymm (hgf i) }
+    le_antisymm _ _ hfg hgf := ext fun i ↦ (hfg i).antisymm (hgf i) }
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
     inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
-    inf_le_left := fun _ _ _ ↦ inf_le_left
-    inf_le_right := fun _ _ _ ↦ inf_le_right
-    le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
+    inf_le_left _ _ := fun _  ↦ inf_le_left
+    inf_le_right _ _ := fun _  ↦ inf_le_right
+    le_inf _ _ _ hf hg := fun i  ↦ le_inf (hf i) (hg i) }
 
 @[simp, norm_cast]
 lemma coe_inf [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) : f ⊓ g = ⇑f ⊓ g := rfl
@@ -109,9 +109,9 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
 instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
     sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
-    le_sup_left := fun _ _ _ ↦ le_sup_left
-    le_sup_right := fun _ _ _ ↦ le_sup_right
-    sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }
+    le_sup_left _ _ := fun _  ↦ le_sup_left
+    le_sup_right _ _ := fun _  ↦ le_sup_right
+    sup_le _ _ _ hf hg := fun i  ↦ sup_le (hf i) (hg i) }
 
 @[simp, norm_cast]
 lemma coe_sup [∀ i, SemilatticeSup (α i)] (f g : Π₀ i, α i) : f ⊔ g = ⇑f ⊔ g := rfl
@@ -141,12 +141,12 @@ end Zero
 
 instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedAddMonoid (α i)] : IsOrderedAddMonoid (Π₀ i, α i) :=
-  { add_le_add_left := fun _ _ h c i ↦ add_le_add_left (h i) (c i) }
+  { add_le_add_left _ _ h c := fun i  ↦ add_le_add_left (h i) (c i) }
 
 instance (α : ι → Type*) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
     [∀ i, IsOrderedCancelAddMonoid (α i)] :
     IsOrderedCancelAddMonoid (Π₀ i, α i) :=
-  { le_of_add_le_add_left := fun _ _ _ H i ↦ le_of_add_le_add_left (H i) }
+  { le_of_add_le_add_left _ _ _ H := fun i  ↦ le_of_add_le_add_left (H i) }
 
 instance [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, AddLeftReflectLE (α i)] :
     AddLeftReflectLE (Π₀ i, α i) where
@@ -272,8 +272,8 @@ instance [∀ i, AddLeftMono (α i)] : CanonicallyOrderedAdd (Π₀ i, α i) whe
     exists g - f
     ext i
     exact (add_tsub_cancel_of_le <| h i).symm
-  le_add_self := fun _ _ _ ↦ le_add_self
-  le_self_add := fun _ _ _ ↦ le_self_add
+  le_add_self _ _ := fun _  ↦ le_add_self
+  le_self_add _ _ := fun _  ↦ le_self_add
 
 variable {α} [DecidableEq ι]
 

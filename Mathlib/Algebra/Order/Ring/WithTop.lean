@@ -147,7 +147,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
     (hf : Function.Injective f) : WithTop R →*₀ WithTop S :=
   { f.toZeroHom.withTopMap, f.toMonoidHom.toOneHom.withTopMap with
     toFun := WithTop.map f
-    map_mul' := fun x y => by
+    map_mul' x y := by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
         (Option.map_injective hf).eq_iff' f.toZeroHom.withTopMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)

@@ -49,9 +49,9 @@ variable (M) in
 /-- Additive homomorphisms from `ℕ` are defined by the image of `1`. -/
 def multiplesHom : M ≃ (ℕ →+ M) where
   toFun x :=
-  { toFun := fun n ↦ n • x
+  { toFun n := n • x
     map_zero' := zero_nsmul x
-    map_add' := fun _ _ ↦ add_nsmul _ _ _ }
+    map_add' _ _ := add_nsmul _ _ _ }
   invFun f := f 1
   left_inv := one_nsmul
   right_inv f := AddMonoidHom.ext_nat <| one_nsmul (f 1)

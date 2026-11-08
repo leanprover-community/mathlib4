@@ -299,7 +299,7 @@ instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
   CanonicallyOrderedAdd.toIsOrderedRing
 
 instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
-  eq_zero_or_eq_zero_of_mul_eq_zero := fun {a b} =>
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} :=
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 

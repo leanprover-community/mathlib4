@@ -215,15 +215,15 @@ to `X ⨯ (A ⨯ B)` and `X ⨯ 1` is not isomorphic to `1`.
 lemma prod_preservesConnectedLimits [IsConnected J] (X : C) :
     PreservesLimitsOfShape J (prod.functor.obj X) where
   preservesLimit {K} :=
-    { preserves := fun {c} l => ⟨{
-          lift := fun s =>
+    { preserves {c} l := ⟨{
+          lift s :=
             prod.lift (s.π.app (Classical.arbitrary _) ≫ Limits.prod.fst) (l.lift (forgetCone s))
-          fac := fun s j => by
+          fac s j := by
             apply Limits.prod.hom_ext
             · erw [assoc, limMap_π, comp_id, limit.lift_π]
               exact (nat_trans_from_is_connected (s.π ≫ γ₁ X) j (Classical.arbitrary _)).symm
             · simp
-          uniq := fun s m L => by
+          uniq s m L := by
             apply Limits.prod.hom_ext
             · simp [← L]
             · rw [limit.lift_π]

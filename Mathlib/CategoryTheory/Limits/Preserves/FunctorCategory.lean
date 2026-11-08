@@ -60,8 +60,8 @@ lemma FunctorCategory.prod_preservesColimits [HasBinaryProducts D] [HasColimits 
     PreservesColimits (prod.functor.obj F) where
   preservesColimitsOfShape {J : Type u} [Category.{u, u} J] :=
     {
-      preservesColimit := fun {K : J ⥤ C ⥤ D} => ({
-          preserves := fun {c : Cocone K} (t : IsColimit c) => ⟨by
+      preservesColimit {K : J ⥤ C ⥤ D} := ({
+          preserves {c : Cocone K} (t : IsColimit c) := ⟨by
             apply evaluationJointlyReflectsColimits _ fun {k} => ?_
             change IsColimit ((prod.functor.obj F ⋙ (evaluation _ _).obj k).mapCocone c)
             let :=

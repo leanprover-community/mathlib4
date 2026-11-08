@@ -170,7 +170,7 @@ theorem ext_of_adjoin_eq_top (s : Set A) (hs : adjoin R s = ⊤) (h : Set.EqOn D
 instance : Zero (Derivation R A M) :=
   ⟨{  toLinearMap := 0
       map_one_eq_zero' := rfl
-      leibniz' := fun a b => by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
+      leibniz' a b := by simp only [add_zero, LinearMap.zero_apply, smul_zero] }⟩
 
 instance : IsZeroApply (Derivation R A M) where
 
@@ -190,7 +190,7 @@ instance : Add (Derivation R A M) :=
   ⟨fun D1 D2 =>
     { toLinearMap := D1 + D2
       map_one_eq_zero' := by simp
-      leibniz' := fun a b => by
+      leibniz' a b := by
         simp only [leibniz, LinearMap.add_apply, coeFn_coe, smul_add, add_add_add_comm] }⟩
 
 instance : IsAddApply (Derivation R A M) where
@@ -220,7 +220,7 @@ instance : SMul S (Derivation R A M) :=
   ⟨fun r D =>
     { toLinearMap := r • D.1
       map_one_eq_zero' := by rw [LinearMap.smul_apply, coeFn_coe, D.map_one_eq_zero, smul_zero]
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
+      leibniz' a b := by simp only [LinearMap.smul_apply, coeFn_coe, leibniz, smul_add,
         smul_comm r (_ : A) (_ : M)] }⟩
 
 instance : IsSMulApply S (Derivation R A M) where
@@ -291,7 +291,7 @@ def _root_.LinearMap.compDer : Derivation R A M →ₗ[A] Derivation R A N where
   toFun D :=
     { toLinearMap := (f : M →ₗ[R] N).comp (D : A →ₗ[R] M)
       map_one_eq_zero' := by simp only [LinearMap.comp_apply, coeFn_coe, map_one_eq_zero, map_zero]
-      leibniz' := fun a b => by
+      leibniz' a b := by
         simp only [coeFn_coe, LinearMap.comp_apply, map_add, leibniz,
           LinearMap.coe_restrictScalars, LinearMap.map_smul] }
   map_add' D₁ D₂ := by ext; exact LinearMap.map_add _ _ _

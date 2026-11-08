@@ -79,7 +79,7 @@ structure Content (G : Type w) [TopologicalSpace G] where
   sup_le' : ∀ K₁ K₂ : Compacts G, toFun (K₁ ⊔ K₂) ≤ toFun K₁ + toFun K₂
 
 instance : Inhabited (Content G) :=
-  ⟨{  toFun := fun _ => 0
+  ⟨{  toFun _ := 0
       mono' := by simp
       sup_disjoint' := by simp
       sup_le' := by simp }⟩

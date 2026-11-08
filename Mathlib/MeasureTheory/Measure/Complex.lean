@@ -99,7 +99,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def equivSignedMeasureₗ : ComplexMeasure α ≃ₗ[R] SignedMeasure α × SignedMeasure α :=
   { equivSignedMeasure with
-    map_add' := fun c d => by rfl
+    map_add' c d := by rfl
     map_smul' := by
       intro r c
       dsimp

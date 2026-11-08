@@ -74,21 +74,21 @@ instance seminormedGroup [SeminormedGroup E] : SeminormedGroup (ULift E) :=
   SeminormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' _ _ := rfl : ULift E →* E }
 
 @[to_additive]
 instance seminormedCommGroup [SeminormedCommGroup E] : SeminormedCommGroup (ULift E) :=
   SeminormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' _ _ := rfl : ULift E →* E }
 
 @[to_additive]
 instance normedGroup [NormedGroup E] : NormedGroup (ULift E) :=
   NormedGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' _ _ := rfl : ULift E →* E }
   down_injective
 
 @[to_additive]
@@ -96,7 +96,7 @@ instance normedCommGroup [NormedCommGroup E] : NormedCommGroup (ULift E) :=
   NormedCommGroup.induced _ _
   { toFun := ULift.down,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl : ULift E →* E }
+    map_mul' _ _ := rfl : ULift E →* E }
   down_injective
 
 end ULift

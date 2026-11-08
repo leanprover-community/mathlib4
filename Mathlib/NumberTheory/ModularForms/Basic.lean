@@ -579,7 +579,7 @@ instance instGCommRing (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetPlusMinusOne] 
 
 instance instGAlgebra (Γ : Subgroup (GL (Fin 2) ℝ)) [Γ.HasDetOne] :
     DirectSum.GAlgebra ℂ (ModularForm Γ) where
-  toFun := { toFun z := const z, map_zero' := rfl, map_add' := fun _ _ => rfl }
+  toFun := { toFun z := const z, map_zero' := rfl, map_add' _ _ := rfl }
   map_one := rfl
   map_mul _x _y := rfl
   commutes _c _x := gradedMonoid_eq_of_cast (add_comm _ _) (ext fun _ => mul_comm _ _)

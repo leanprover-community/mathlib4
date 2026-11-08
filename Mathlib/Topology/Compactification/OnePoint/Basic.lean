@@ -406,7 +406,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
     C(OnePoint X, Y) ≃ { f : X → Y // ∃ L, Tendsto (fun x : X ↦ f x) cofinite (𝓝 L) } where
   toFun f := ⟨(f ·), ⟨f ∞, continuous_iff_from_discrete _ |>.mp (map_continuous f)⟩⟩
   invFun f :=
-    { toFun := fun x => match x with
+    { toFun x := match x with
         | ∞ => Classical.choose f.2
         | some x => f.1 x
       continuous_toFun := continuous_iff_from_discrete _ |>.mpr <| Classical.choose_spec f.2 }
@@ -589,8 +589,8 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     rw [hf.isCompact_iff, image_preimage_eq_iff.mpr (by simpa [hy])]
     exact (isClosed_compl_iff.mpr hU₂).isCompact
   let e : OnePoint X ≃ Y :=
-    { toFun := fun p ↦ p.elim y f
-      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f by simpa [hy]).choose
+    { toFun p := p.elim y f
+      invFun q := if hq : q = y then ∞ else ↑(show q ∈ range f by simpa [hy]).choose
       left_inv := fun p ↦ by
         induction p using OnePoint.rec with
         | infty => simp

@@ -111,7 +111,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 @[to_additive]
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
-    inv_mul_cancel := fun x => by
+    inv_mul_cancel x := by
       refine Quot.inductionOn x ?_; clear x; intro x
       change (G.mk _ _)⁻¹ * G.mk _ _ = _
       obtain ⟨j, x⟩ := x
@@ -204,7 +204,7 @@ noncomputable instance forget₂Group_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGrpCat GrpCat.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
-    { preservesColimit := fun {F} =>
+    { preservesColimit {F} :=
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (GrpCat.FilteredColimits.colimitCoconeIsColimit.{u, u}
             (F ⋙ forget₂ CommGrpCat GrpCat.{u})) }

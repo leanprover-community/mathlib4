@@ -38,13 +38,13 @@ instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsO
 
 theorem has_cofiltered_limits_of_has_filtered_colimits_op [HasFilteredColimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasCofilteredLimitsOfSize.{v₂, u₂} C :=
-  { HasLimitsOfShape := fun _ _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
+  { HasLimitsOfShape _ _ _ := hasLimitsOfShape_of_hasColimitsOfShape_op }
 
 instance has_filtered_colimits_op_of_has_cofiltered_limits [HasCofilteredLimitsOfSize.{v₂, u₂} C] :
     HasFilteredColimitsOfSize.{v₂, u₂} Cᵒᵖ where HasColimitsOfShape _ _ _ := inferInstance
 
 theorem has_filtered_colimits_of_has_cofiltered_limits_op [HasCofilteredLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasFilteredColimitsOfSize.{v₂, u₂} C :=
-  { HasColimitsOfShape := fun _ _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
+  { HasColimitsOfShape _ _ _ := hasColimitsOfShape_of_hasLimitsOfShape_op }
 
 end CategoryTheory.Limits

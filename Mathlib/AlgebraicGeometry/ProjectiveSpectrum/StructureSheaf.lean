@@ -185,9 +185,9 @@ def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top �
   map i := CommRingCat.ofHom
     { toFun := (structureSheafInType 𝒜).1.map i
       map_zero' := rfl
-      map_add' := fun _ _ => rfl
+      map_add' _ _ := rfl
       map_one' := rfl
-      map_mul' := fun _ _ => rfl }
+      map_mul' _ _ := rfl }
 
 /-- Some glue, verifying that the structure presheaf valued in `CommRing` agrees with the
 `Type`-valued structure presheaf. -/
@@ -260,7 +260,7 @@ def stalkToFiberRingHom (x : ProjectiveSpectrum.top 𝒜) :
   Limits.colimit.desc ((OpenNhds.inclusion x).op ⋙ (Proj.structureSheaf 𝒜).1)
     { pt := _
       ι :=
-        { app := fun U =>
+        { app U :=
             openToLocalization 𝒜 ((OpenNhds.inclusion _).obj U.unop) x U.unop.2 } }
 
 @[simp]
@@ -371,7 +371,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- `Proj` of a graded ring as a `LocallyRingedSpace` -/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    isLocalRing := fun x =>
+    isLocalRing x :=
       @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 

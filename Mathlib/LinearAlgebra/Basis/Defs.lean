@@ -384,7 +384,7 @@ See also `Basis.algebraMapCoeffs` for the case where `f` is equal to `algebraMap
 def mapCoeffs (h : ∀ (c) (x : M), f c • x = c • x) : Basis ι R' M := by
   letI : Module R' R := Module.compHom R (↑f.symm : R' →+* R)
   haveI : IsScalarTower R' R M :=
-    { smul_assoc := fun x y z => by
+    { smul_assoc x y z := by
         change (f.symm x * y) • z = x • (y • z)
         rw [mul_smul, ← h, f.apply_symm_apply] }
   exact ofRepr <| (b.repr.restrictScalars R').trans <|

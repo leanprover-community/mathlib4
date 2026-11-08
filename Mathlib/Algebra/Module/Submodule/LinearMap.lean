@@ -276,7 +276,7 @@ theorem coe_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M
     (show AddMonoidHom (M →ₛₗ[σ₁₂] M₂) (M → M₂)
       from { toFun := DFunLike.coe,
              map_zero' := rfl
-             map_add' := fun _ _ => rfl }) _ _
+             map_add' _ _ := rfl }) _ _
 
 theorem _root_.Module.End.submodule_pow_eq_zero_of_pow_eq_zero {N : Submodule R M}
     {g : Module.End R N} {G : Module.End R M} (h : G.comp N.subtype = N.subtype.comp g) {k : ℕ}

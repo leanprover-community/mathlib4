@@ -44,7 +44,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 is compatible with the Lie algebra structures. -/
 def lieEquivMatrix' : Module.End R (n → R) ≃ₗ⁅R⁆ Matrix n n R :=
   { LinearMap.toMatrix' with
-    map_lie' := fun {T S} => by
+    map_lie' {T S} := by
       let f := @LinearMap.toMatrix' R _ n n _ _
       change f (T.comp S - S.comp T) = f T * f S - f S * f T
       have h : ∀ T S : Module.End R _, f (T.comp S) = f T * f S := LinearMap.toMatrix'_comp
@@ -85,7 +85,7 @@ types, `Matrix.reindex`, is an equivalence of Lie algebras. -/
 def reindexLieEquiv : Matrix n n R ≃ₗ⁅R⁆ Matrix m m R :=
   { Matrix.reindexLinearEquiv R R e e with
     toFun := Matrix.reindex e e
-    map_lie' := fun {_ _} => by
+    map_lie' {_ _} := by
       simp only [LieRing.of_associative_ring_bracket, Matrix.reindex_apply,
         Matrix.submatrix_mul_equiv, Matrix.submatrix_sub, Pi.sub_apply] }
 

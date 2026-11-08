@@ -225,7 +225,7 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=
-    { has_colimit := fun F =>
+    { has_colimit F :=
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }

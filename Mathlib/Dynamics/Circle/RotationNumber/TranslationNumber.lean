@@ -166,7 +166,7 @@ theorem ext ⦃f g : CircleDeg1Lift⦄ (h : ∀ x, f x = g x) : f = g :=
 instance : Monoid CircleDeg1Lift where
   mul f g :=
     { toOrderHom := f.1.comp g.1
-      map_add_one' := fun x => by simp [map_add_one] }
+      map_add_one' x := by simp [map_add_one] }
   one := ⟨.id, fun _ => rfl⟩
   mul_one _ := rfl
   one_mul _ := rfl
@@ -229,7 +229,7 @@ theorem isUnit_iff_bijective {f : CircleDeg1Lift} : IsUnit f ↔ Bijective f :=
             monotone' := fun x y hxy =>
               (f.strictMono_iff_injective.2 h.1).le_iff_le.1
                 (by simp only [Equiv.ofBijective_apply_symm_apply f h, hxy])
-            map_add_one' := fun x =>
+            map_add_one' x :=
               h.1 <| by simp only [Equiv.ofBijective_apply_symm_apply f, f.map_add_one] }
         val_inv := ext <| Equiv.ofBijective_apply_symm_apply f h
         inv_val := ext <| Equiv.ofBijective_symm_apply_apply f h }⟩
@@ -350,10 +350,10 @@ theorem map_fract_sub_fract_eq (x : ℝ) : f (fract x) - fract x = f x - x := by
 /-- Monotone circle maps form a lattice with respect to the pointwise order -/
 noncomputable instance : Lattice CircleDeg1Lift where
   sup f g :=
-    { toFun := fun x => max (f x) (g x)
+    { toFun x := max (f x) (g x)
       monotone' := fun _ _ h => max_le_max (f.mono h) (g.mono h)
       -- TODO: generalize to `Monotone.max`
-      map_add_one' := fun x => by simp [max_add_add_right] }
+      map_add_one' x := by simp [max_add_add_right] }
   le f g := ∀ x, f x ≤ g x
   le_refl f x := le_refl (f x)
   le_trans _ _ _ h₁₂ h₂₃ x := le_trans (h₁₂ x) (h₂₃ x)
@@ -362,9 +362,9 @@ noncomputable instance : Lattice CircleDeg1Lift where
   le_sup_right f g x := le_max_right (f x) (g x)
   sup_le _ _ _ h₁ h₂ x := max_le (h₁ x) (h₂ x)
   inf f g :=
-    { toFun := fun x => min (f x) (g x)
+    { toFun x := min (f x) (g x)
       monotone' := fun _ _ h => min_le_min (f.mono h) (g.mono h)
-      map_add_one' := fun x => by simp [min_add_add_right] }
+      map_add_one' x := by simp [min_add_add_right] }
   inf_le_left f g x := min_le_left (f x) (g x)
   inf_le_right f g x := min_le_right (f x) (g x)
   le_inf _ _ _ h₂ h₃ x := le_min (h₂ x) (h₃ x)

@@ -66,8 +66,8 @@ structure Hom (X Y : FormalCoproduct.{w} C) where
 -- presheaves of sets on `C` which are coproducts of representable presheaves
 @[simps!] instance category : Category (FormalCoproduct.{w} C) where
   Hom := Hom
-  id X := { f := id, φ := fun _ ↦ 𝟙 _ }
-  comp α β := { f := β.f ∘ α.f, φ := fun _ ↦ α.φ _ ≫ β.φ _ }
+  id X := { f := id, φ _ := 𝟙 _ }
+  comp α β := { f := β.f ∘ α.f, φ _ := α.φ _ ≫ β.φ _ }
 
 @[ext (iff := false)]
 lemma hom_ext {X Y : FormalCoproduct.{w} C} {f g : X ⟶ Y} (h₁ : f.f = g.f)
@@ -90,8 +90,8 @@ lemma hom_ext_iff' {X Y : FormalCoproduct.{w} C} (f g : X ⟶ Y) :
 between the indexing sets, and then correspondingly isomorphisms of each component. -/
 @[simps!] def isoOfComponents {X Y : FormalCoproduct.{w} C} (e : X.I ≃ Y.I)
     (h : ∀ i, X.obj i ≅ Y.obj (e i)) : X ≅ Y where
-  hom := { f := e, φ := fun i ↦ (h i).hom }
-  inv := { f := e.symm, φ := fun i ↦ eqToHom (by simp) ≫ (h (e.symm i)).inv }
+  hom := { f := e, φ i := (h i).hom }
+  inv := { f := e.symm, φ i := eqToHom (by simp) ≫ (h (e.symm i)).inv }
   hom_inv_id := by ext <;> aesop
   inv_hom_id := by ext <;> aesop
 

@@ -49,7 +49,7 @@ instance algebraObj (j) :
 def sectionsSubalgebra : Subalgebra R (∀ j, F.obj j) :=
   { SemiRingCat.sectionsSubsemiring
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) with
-    algebraMap_mem' := fun r _ _ f => (F.map f).hom.commutes r }
+    algebraMap_mem' r := fun _ _ f  => (F.map f).hom.commutes r }
 
 instance (F : J ⥤ AlgCat.{w} R) : Ring (F ⋙ forget _).sections :=
   inferInstanceAs <| Ring (sectionsSubalgebra F)
@@ -81,7 +81,7 @@ def limitπAlgHom (j) :
   { SemiRingCat.limitπRingHom
       (F ⋙ forget₂ (AlgCat R) RingCat.{w} ⋙ forget₂ RingCat SemiRingCat.{w}) j with
     toFun := (Types.Small.limitCone (F ⋙ forget (AlgCat.{w} R))).π.app j
-    commutes' := fun x => by
+    commutes' x := by
       simp only [Functor.comp_obj, Types.Small.limitCone_pt, Functor.const_obj_obj,
         Types.Small.limitCone_π_app, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,
         ← Shrink.algEquiv_apply R, AlgEquiv.commutes]
@@ -99,8 +99,8 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := ↧(Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
-    { app := fun j ↦ ofHom <| limitπAlgHom F j
-      naturality := fun _ _ f => by
+    { app j := ofHom <| limitπAlgHom F j
+      naturality _ _ f := by
         ext
         simpa using! (Types.Small.limitCone (F ⋙ forget _)).π.naturality_apply f _ }
 
@@ -142,8 +142,8 @@ open HasLimits
 
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgCat.{w} R) :=
-  { has_limits_of_shape := fun _ _ =>
-    { has_limit := fun F => HasLimit.mk
+  { has_limits_of_shape _ _ :=
+    { has_limit F := HasLimit.mk
         { cone := limitCone F
           isLimit := limitConeIsLimit F } } }
 
@@ -155,7 +155,7 @@ instance hasLimits : HasLimits (AlgCat.{w} R) :=
 instance forget₂Ring_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget₂ (AlgCat.{w} R) RingCat.{w}) where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦
+    { preservesLimit {K} :=
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (RingCat.limitConeIsLimit.{v, w}
             (_ ⋙ forget₂ (AlgCat.{w} R) RingCat.{w})) }
@@ -168,7 +168,7 @@ instance forget₂Ring_preservesLimits : PreservesLimits (forget₂ (AlgCat R) R
 instance forget₂Module_preservesLimitsOfSize [UnivLE.{v, w}] : PreservesLimitsOfSize.{t, v}
     (forget₂ (AlgCat.{w} R) (ModuleCat.{w} R)) where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦
+    { preservesLimit {K} :=
         preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (ModuleCat.HasLimits.limitConeIsLimit
             (K ⋙ forget₂ (AlgCat.{w} R) (ModuleCat.{w} R))) }
@@ -182,7 +182,7 @@ instance forget₂Module_preservesLimits :
 instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget (AlgCat.{w} R)) where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦
+    { preservesLimit {K} :=
        preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
           (Types.Small.limitConeIsLimit.{v} (K ⋙ forget _)) }
 

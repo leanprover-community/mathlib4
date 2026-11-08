@@ -130,9 +130,9 @@ instance : CompleteLattice (Measure α) :=
           else
             simp_all [Set.not_nonempty_iff_eq_empty]
         trim_le := le_top },
-    le_top := fun _ => toOuterMeasure_le.mp le_top
+    le_top _ := toOuterMeasure_le.mp le_top
     bot := 0
-    bot_le := fun _a _s => bot_le }
+    bot_le _a := fun _s  => bot_le }
 
 end sInf
 

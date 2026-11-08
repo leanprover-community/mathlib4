@@ -108,7 +108,7 @@ theorem mul_one_add_self : a * (1 + a) = 0 := by rw [mul_add, mul_one, mul_self,
 -- Note [lower instance priority]
 instance (priority := 100) toCommRing : CommRing α :=
   { (inferInstance : BooleanRing α) with
-    mul_comm := fun a b => by rw [← add_eq_zero', mul_add_mul] }
+    mul_comm a b := by rw [← add_eq_zero', mul_add_mul] }
 
 end BooleanRing
 
@@ -532,7 +532,7 @@ def OrderIso.asBoolAlgAsBoolRing (α : Type*) [BooleanAlgebra α] : AsBoolAlg (A
 @[simps!]
 def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (AsBoolAlg α) ≃+* α :=
   { ofBoolRing.trans ofBoolAlg with
-    map_mul' := fun _a _b => rfl
+    map_mul' _a _b := rfl
     map_add' := ofBoolAlg_symmDiff }
 
 open Bool

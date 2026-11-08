@@ -47,7 +47,7 @@ def sectionsSubmodule : Submodule R (∀ j, F.obj j) :=
       (F ⋙ forget₂ (ModuleCat R) AddCommGrpCat.{w} ⋙
           forget₂ AddCommGrpCat AddGrpCat.{w}) with
     carrier := (F ⋙ forget (ModuleCat R)).sections
-    smul_mem' := fun r s sh j j' f => by
+    smul_mem' r s sh := fun j j' f  => by
       simpa [Functor.sections] using congr(r • $(sh f)) }
 
 instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
@@ -174,7 +174,7 @@ instance forget₂AddCommGroup_preservesLimits :
 instance forget_preservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v} (forget (ModuleCat.{w} R)) where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦ preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
+    { preservesLimit {K} := preservesLimit_of_preserves_limit_cone (limitConeIsLimit K)
         (Types.Small.limitConeIsLimit.{v} (_ ⋙ forget _)) }
 
 instance forget_preservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
@@ -228,8 +228,8 @@ In `directLimitIsColimit` we show that it is a colimit cocone. -/
 def directLimitCocone : Cocone (directLimitDiagram G f) where
   pt := ModuleCat.of R <| DirectLimit G f
   ι :=
-    { app := fun x => ofHom (Module.DirectLimit.of R ι G f x)
-      naturality := fun _ _ hij => by
+    { app x := ofHom (Module.DirectLimit.of R ι G f x)
+      naturality _ _ hij := by
         ext
         exact DirectLimit.of_f }
 

@@ -150,7 +150,7 @@ end
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
     { toLinearMap := 0
-      leibniz' := fun a b => by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
+      leibniz' a b := by simp only [LinearMap.zero_apply, lie_zero, sub_self] }
 
 @[simp]
 theorem coe_zero : ⇑(0 : LieDerivation R L M) = 0 :=
@@ -169,7 +169,7 @@ instance : Inhabited (LieDerivation R L M) :=
 instance instAdd : Add (LieDerivation R L M) where
   add D1 D2 :=
     { toLinearMap := D1 + D2
-      leibniz' := fun a b ↦ by
+      leibniz' a b := by
         simp only [LinearMap.add_apply, coeFn_coe, apply_lie_eq_sub, lie_add, add_sub_add_comm] }
 
 @[simp]
@@ -237,7 +237,7 @@ variable [Monoid T] [DistribMulAction T M] [SMulCommClass R T M] [SMulBracketCom
 instance instSMul : SMul S (LieDerivation R L M) where
   smul r D :=
     { toLinearMap := r • D
-      leibniz' := fun a b => by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
+      leibniz' a b := by simp only [LinearMap.smul_apply, coeFn_coe, apply_lie_eq_sub,
         smul_sub, SMulBracketCommClass.smul_bracket_comm] }
 
 @[simp]
@@ -318,7 +318,7 @@ instance : LieRing (LieDerivation R L L) where
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
-  lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+  lie_smul r d e := by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
 
 @[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
     ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=

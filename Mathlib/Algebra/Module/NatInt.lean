@@ -89,8 +89,8 @@ structure.
 See note [reducible non-instances]. -/
 abbrev Module.addCommMonoidToAddCommGroup
     [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M where
-  neg := fun a => (-1 : R) • a
-  neg_add_cancel := fun a =>
+  neg a := (-1 : R) • a
+  neg_add_cancel a :=
     show (-1 : R) • a + a = 0 by
       nth_rw 2 [← one_smul R a]
       rw [← add_smul, neg_add_cancel, zero_smul]

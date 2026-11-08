@@ -86,7 +86,7 @@ variable {N : Type*} [Group N]
       as an `AddSubgroup` of `A × B`. -/]
 def prod (H : Subgroup G) (K : Subgroup N) : Subgroup (G × N) :=
   { Submonoid.prod H.toSubmonoid K.toSubmonoid with
-    inv_mem' := fun hx => ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩ }
+    inv_mem' hx := ⟨H.inv_mem' hx.1, K.inv_mem' hx.2⟩ }
 
 @[to_additive (attr := norm_cast) coe_prod]
 theorem coe_prod (H : Subgroup G) (K : Subgroup N) :
@@ -154,7 +154,7 @@ theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
       /-- Product of additive subgroups is isomorphic to their product
       as additive groups -/]
 def prodEquiv (H : Subgroup G) (K : Subgroup N) : H.prod K ≃* H × K :=
-  { Equiv.Set.prod (H : Set G) (K : Set N) with map_mul' := fun _ _ => rfl }
+  { Equiv.Set.prod (H : Set G) (K : Set N) with map_mul' _ _ := rfl }
 
 section Pi
 
@@ -171,7 +171,7 @@ variable [∀ i, Group (f i)]
       `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/]
 def pi (I : Set η) (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
   { Submonoid.pi I fun i => (H i).toSubmonoid with
-    inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
+    inv_mem' hp i := fun hI  => (H i).inv_mem (hp i hI) }
 
 @[to_additive]
 theorem coe_pi (I : Set η) (H : ∀ i, Subgroup (f i)) :
@@ -365,8 +365,8 @@ automorphism of `H`. -/
   automorphism of `H`. -/]
 def _root_.MulAut.characteristic (H : Subgroup G) [H.Characteristic] : MulAut G →* MulAut H where
   toFun φ :=
-    { toFun := fun h => ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
-      invFun := fun h => ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
+    { toFun h := ⟨φ h, characteristic_iff_le_comap.mp inferInstance φ h.2⟩
+      invFun h := ⟨φ.symm h, characteristic_iff_le_comap.mp inferInstance φ.symm h.2⟩
       left_inv h := Subtype.ext (φ.symm_apply_apply h)
       right_inv h := Subtype.ext (φ.apply_symm_apply h)
       map_mul' h k := Subtype.ext (map_mul φ (h : G) (k : G)) }
@@ -1043,7 +1043,7 @@ section SubgroupNormal
 theorem normal_subgroupOf_iff {H K : Subgroup G} (hHK : H ≤ K) :
     (H.subgroupOf K).Normal ↔ ∀ h k, h ∈ H → k ∈ K → k * h * k⁻¹ ∈ H :=
   ⟨fun hN h k hH hK => hN.conj_mem ⟨h, hHK hH⟩ hH ⟨k, hK⟩, fun hN =>
-    { conj_mem := fun h hm k => hN h.1 k.1 hm k.2 }⟩
+    { conj_mem h hm k := hN h.1 k.1 hm k.2 }⟩
 
 @[to_additive prod_addSubgroupOf_prod_normal]
 instance prod_subgroupOf_prod_normal {H₁ K₁ : Subgroup G} {H₂ K₂ : Subgroup N}

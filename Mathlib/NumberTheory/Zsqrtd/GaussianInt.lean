@@ -232,11 +232,11 @@ instance : EuclideanDomain ℤ[i] :=
     quotient := (· / ·)
     remainder := (· % ·)
     quotient_zero := by simp [div_def]; rfl
-    quotient_mul_add_remainder_eq := fun _ _ => by simp [mod_def]
+    quotient_mul_add_remainder_eq _ _ := by simp [mod_def]
     r := _
     r_wellFounded := (measure (Int.natAbs ∘ norm)).wf
     remainder_lt := natAbs_norm_mod_lt
-    mul_left_not_lt := fun a _ hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
+    mul_left_not_lt a _ hb0 := not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
 
 open PrincipalIdealRing
 

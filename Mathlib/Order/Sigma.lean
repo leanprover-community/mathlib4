@@ -97,7 +97,7 @@ protected instance preorder [∀ i, Preorder (α i)] : Preorder (Σ i, α i) :=
     le_trans := by
       rintro _ _ _ ⟨i, a, b, hab⟩ ⟨_, _, c, hbc⟩
       exact LE.fiber i a c (hab.trans hbc),
-    lt_iff_le_not_ge := fun _ _ => by
+    lt_iff_le_not_ge _ _ := by
       constructor
       · rintro ⟨i, a, b, hab⟩
         rwa [mk_le_mk_iff, mk_le_mk_iff, ← lt_iff_le_not_ge]
@@ -144,7 +144,7 @@ theorem lt_def [LT ι] [∀ i, LT (α i)] {a b : Σₗ i, α i} :
 instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α i) :=
   { Sigma.Lex.LE, Sigma.Lex.LT with
     le_refl := fun ⟨_, a⟩ => Lex.right a a le_rfl,
-    le_trans := fun _ _ _ => trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
+    le_trans _ _ _ := trans_of ((Lex (· < ·)) fun _ => (· ≤ ·)),
     lt_iff_le_not_ge := by
       refine fun a b => ⟨fun hab => ⟨hab.mono_right fun i a b => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨b, a, hji⟩ | ⟨b, a, hba⟩) <;> obtain ⟨_, _, hij⟩ | ⟨_, _, hab⟩ := hab
@@ -160,7 +160,7 @@ instance preorder [Preorder ι] [∀ i, Preorder (α i)] : Preorder (Σₗ i, α
 instance partialOrder [Preorder ι] [∀ i, PartialOrder (α i)] :
     PartialOrder (Σₗ i, α i) :=
   { Lex.preorder with
-    le_antisymm := fun _ _ => antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
+    le_antisymm _ _ := antisymm_of ((Lex (· < ·)) fun _ => (· ≤ ·)) }
 
 
 

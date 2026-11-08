@@ -25,13 +25,13 @@ open CategoryTheory.Limits Preadditive
 variable {C D : Type*} [Category* C] [Category* D] [Preadditive D]
 
 instance {F G : C ⥤ D} : Zero (F ⟶ G) where
-  zero := { app := fun _ => 0 }
+  zero := { app _ := 0 }
 
 instance {F G : C ⥤ D} : Add (F ⟶ G) where
-  add α β := { app := fun X => α.app X + β.app X }
+  add α β := { app X := α.app X + β.app X }
 
 instance {F G : C ⥤ D} : Neg (F ⟶ G) where
-  neg α := { app := fun X => -α.app X }
+  neg α := { app X := -α.app X }
 
 instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
   homGroup F G :=
@@ -43,7 +43,7 @@ instance functorCategoryPreadditive : Preadditive (C ⥤ D) where
         { app := n • α.app
           naturality X Y f := by
             simp only [Pi.smul_apply, comp_zsmul, NatTrans.naturality, zsmul_comp] }
-      sub α β := { app := fun X => α.app X - β.app X }
+      sub α β := { app X := α.app X - β.app X }
       add_assoc _ _ _ := NatTrans.ext <| add_assoc _ _ _
       zero_add _ := NatTrans.ext <| zero_add _
       add_zero _ := NatTrans.ext <| add_zero _

@@ -117,7 +117,7 @@ instance [SlashInvariantFormClass F Γ k] : CoeTC F (SlashInvariantForm Γ k) :=
 instance instAdd : Add (SlashInvariantForm Γ k) :=
   ⟨fun f g ↦
     { toFun := f + g
-      slash_action_eq' := fun γ hγ ↦ by
+      slash_action_eq' γ hγ := by
         rw [SlashAction.add_slash, slash_action_eqn f γ hγ, slash_action_eqn g γ hγ] }⟩
 
 instance : IsAddApply (SlashInvariantForm Γ k) where
@@ -128,7 +128,7 @@ instance : IsAddApply (SlashInvariantForm Γ k) where
 
 instance instZero : Zero (SlashInvariantForm Γ k) :=
   ⟨{toFun := 0
-    slash_action_eq' := fun _ _ ↦ SlashAction.zero_slash _ _}⟩
+    slash_action_eq' _ _ := SlashAction.zero_slash _ _}⟩
 
 instance : IsZeroApply (SlashInvariantForm Γ k) where
 
@@ -177,7 +177,7 @@ end smulℝ
 instance instNeg : Neg (SlashInvariantForm Γ k) :=
   ⟨fun f =>
     { toFun := -f
-      slash_action_eq' := fun γ hγ => by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
+      slash_action_eq' γ hγ := by rw [SlashAction.neg_slash, slash_action_eqn f γ hγ] }⟩
 
 instance : IsNegApply (SlashInvariantForm Γ k) where
 

@@ -75,7 +75,7 @@ def integer : Subalgebra R K :=
     (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
         {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
       Set.ext fun _ => by simp [SetLike.mem_coe] with
-    algebraMap_mem' := fun x v _ => v.valuation_le_one x }
+    algebraMap_mem' x := fun v _  => v.valuation_le_one x }
 
 theorem integer_eq :
     (S.integer K).toSubring =
@@ -177,7 +177,7 @@ instance isLocalizationSInteger [Fact (IsMulTorsion (ClassGroup R))] :
           HeightOneSpectrum.intValuation_eq_one_iff.2]⟩,
       by simp [Subtype.ext_iff, h₀], by simp [Subtype.ext_iff, h₀]⟩, rfl⟩
   surj := exists_mul_algebraMap_eq_algebraMap R S K
-  exists_of_eq := fun h ↦
+  exists_of_eq h :=
     ⟨1, by simpa using (IsFractionRing.injective R K (congrArg Subtype.val h))⟩
 
 /-- The ring of `S`-integers is a Dedekind domain when every element in class group has finite

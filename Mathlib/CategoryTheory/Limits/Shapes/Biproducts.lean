@@ -120,8 +120,8 @@ def ext {c c' : Bicone F} (φ : c.pt ≅ c'.pt)
   hom := { hom := φ.hom }
   inv :=
     { hom := φ.inv
-      wι := fun j => φ.comp_inv_eq.mpr (wι j).symm
-      wπ := fun j => φ.inv_comp_eq.mpr (wπ j).symm }
+      wι j := φ.comp_inv_eq.mpr (wι j).symm
+      wπ j := φ.inv_comp_eq.mpr (wπ j).symm }
 
 variable (F) in
 /-- A functor `G : C ⥤ D` sends bicones over `F` to bicones over `G.obj ∘ F` functorially. -/
@@ -130,15 +130,15 @@ def functoriality (G : C ⥤ D) [Functor.PreservesZeroMorphisms G] :
     Bicone F ⥤ Bicone (G.obj ∘ F) where
   obj A :=
     { pt := G.obj A.pt
-      π := fun j => G.map (A.π j)
-      ι := fun j => G.map (A.ι j)
-      ι_π := fun i j => (Functor.map_comp _ _ _).symm.trans <| by
+      π j := G.map (A.π j)
+      ι j := G.map (A.ι j)
+      ι_π i j := (Functor.map_comp _ _ _).symm.trans <| by
         rw [A.ι_π]
         cat_disch }
   map f :=
     { hom := G.map f.hom
-      wπ := fun j => by simp [-BiconeMorphism.wπ, ← f.wπ j]
-      wι := fun j => by simp [-BiconeMorphism.wι, ← f.wι j] }
+      wπ j := by simp [-BiconeMorphism.wπ, ← f.wπ j]
+      wι j := by simp [-BiconeMorphism.wι, ← f.wι j] }
 
 variable (G : C ⥤ D)
 
@@ -147,8 +147,8 @@ instance functoriality_full [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
   map_surjective t :=
    ⟨{ hom := G.preimage t.hom
-      wι := fun j => G.map_injective (by simpa using! t.wι j)
-      wπ := fun j => G.map_injective (by simpa using! t.wπ j) }, by cat_disch⟩
+      wι j := G.map_injective (by simpa using! t.wι j)
+      wπ j := G.map_injective (by simpa using! t.wπ j) }, by cat_disch⟩
 
 instance functoriality_faithful [G.PreservesZeroMorphisms] [G.Faithful] :
     (functoriality F G).Faithful where
@@ -167,8 +167,8 @@ attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Eq
 /-- Extract the cone from a bicone. -/
 @[implicit_reducible]
 def toConeFunctor : Bicone F ⥤ Cone (Discrete.functor F) where
-  obj B := { pt := B.pt, π := { app := fun j => B.π j.as } }
-  map {_ _} F := { hom := F.hom, w := fun _ => F.wπ _ }
+  obj B := { pt := B.pt, π := { app j := B.π j.as } }
+  map {_ _} F := { hom := F.hom, w _ := F.wπ _ }
 
 /-- A shorthand for `toConeFunctor.obj` -/
 abbrev toCone (B : Bicone F) : Cone (Discrete.functor F) := toConeFunctor.obj B
@@ -186,8 +186,8 @@ theorem toCone_π_app_mk (B : Bicone F) (j : J) : B.toCone.π.app ⟨j⟩ = B.π
 /-- Extract the cocone from a bicone. -/
 @[implicit_reducible]
 def toCoconeFunctor : Bicone F ⥤ Cocone (Discrete.functor F) where
-  obj B := { pt := B.pt, ι := { app := fun j => B.ι j.as } }
-  map {_ _} F := { hom := F.hom, w := fun _ => F.wι _ }
+  obj B := { pt := B.pt, ι := { app j := B.ι j.as } }
+  map {_ _} F := { hom := F.hom, w _ := F.wι _ }
 
 /-- A shorthand for `toCoconeFunctor.obj` -/
 abbrev toCocone (B : Bicone F) : Cocone (Discrete.functor F) := toCoconeFunctor.obj B
@@ -681,8 +681,8 @@ instance {ι} (f : ι → Type*) (g : (i : ι) → (f i) → C)
   exists_biproduct := Nonempty.intro
     { bicone :=
       { pt := ⨁ fun i => ⨁ g i
-        ι := fun X => biproduct.ι (g X.1) X.2 ≫ biproduct.ι (fun i => ⨁ g i) X.1
-        π := fun X => biproduct.π (fun i => ⨁ g i) X.1 ≫ biproduct.π (g X.1) X.2
+        ι X := biproduct.ι (g X.1) X.2 ≫ biproduct.ι (fun i => ⨁ g i) X.1
+        π X := biproduct.π (fun i => ⨁ g i) X.1 ≫ biproduct.π (g X.1) X.2
         ι_π := fun ⟨j, x⟩ ⟨j', y⟩ => by
           split_ifs with h
           · obtain ⟨rfl, rfl⟩ := h
@@ -1051,8 +1051,8 @@ attribute [local simp] eq_iff_true_of_subsingleton in
 def limitBiconeOfUnique [Unique J] (f : J → C) : LimitBicone f where
   bicone :=
     { pt := f default
-      π := fun j => eqToHom (by congr; rw [← Unique.uniq])
-      ι := fun j => eqToHom (by congr; rw [← Unique.uniq]) }
+      π j := eqToHom (by congr; rw [← Unique.uniq])
+      ι j := eqToHom (by congr; rw [← Unique.uniq]) }
   isBilimit :=
     { isLimit := (limitConeOfUnique f).isLimit
       isColimit := (colimitCoconeOfUnique f).isColimit }

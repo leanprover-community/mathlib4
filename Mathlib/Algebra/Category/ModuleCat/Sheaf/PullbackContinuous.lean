@@ -79,7 +79,7 @@ noncomputable def adjunction :
     (forget S ⋙ PresheafOfModules.pullback.{v} φ.hom ⋙
       PresheafOfModules.sheafification (R₀ := R.obj) (𝟙 R.obj)) ⊣ pushforward.{v} φ :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun F G ↦
+    { homEquiv F G :=
         ((PresheafOfModules.sheafificationAdjunction (𝟙 R.obj)).homEquiv _ _).trans
             (((PresheafOfModules.pullbackPushforwardAdjunction φ.hom).homEquiv F.val G.val).trans
               ((fullyFaithfulForget S).homEquiv (Y := (pushforward φ).obj G)).symm)

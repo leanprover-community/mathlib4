@@ -43,10 +43,10 @@ open scoped Classical in
 the vector measure which maps the set `s` to `∫ₛ f ∂μ`. -/
 def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α → E) : VectorMeasure α E :=
   if hf : Integrable f μ then
-    { measureOf' := fun s => if MeasurableSet s then ∫ x in s, f x ∂μ else 0
+    { measureOf' s := if MeasurableSet s then ∫ x in s, f x ∂μ else 0
       empty' := by simp
-      not_measurable' := fun _ hs => ite_eq_right hs
-      m_iUnion' := fun s hs₁ hs₂ => by
+      not_measurable' _ hs := ite_eq_right hs
+      m_iUnion' s hs₁ hs₂ := by
         convert! hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
         · rw [ite_eq_left (hs₁ n)]
         · rw [ite_eq_left (MeasurableSet.iUnion hs₁)] }

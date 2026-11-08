@@ -165,7 +165,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
           inferInstance
       prop := trivial }
     π := {
-      app := fun j => InducedCategory.homMk ((TopCat.limitCone FF).π.app j)
+      app j := InducedCategory.homMk ((TopCat.limitCone FF).π.app j)
       naturality := by
         intro _ _ f
         ext ⟨x, hx⟩
@@ -176,9 +176,9 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) : Li
 def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ CompHaus.{max v u}) :
     Limits.IsLimit.{v} (limitCone.{v, u} F) :=
   letI FF : J ⥤ TopCat := F ⋙ compHausToTop
-  { lift := fun S => InducedCategory.homMk
+  { lift S := InducedCategory.homMk
       ((TopCat.limitConeIsLimit FF).lift (compHausToTop.mapCone S))
-    uniq := fun S m hm => InducedCategory.hom_ext
+    uniq S m hm := InducedCategory.hom_ext
       ((TopCat.limitConeIsLimit FF).uniq (compHausToTop.mapCone S) _ (fun j ↦ by
         simp [← hm]
         rfl)) }

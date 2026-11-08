@@ -32,21 +32,21 @@ variable {C D : Type*} [Groupoid C] [Category* D] [MonoidalCategory D]
 
 instance functorHasRightDual [RightRigidCategory D] (F : C ⥤ D) : HasRightDual F where
   rightDual :=
-    { obj := fun X => (F.obj X)ᘁ
-      map := fun f => (F.map (inv f))ᘁ
-      map_comp := fun f g => by simp [comp_rightAdjointMate] }
+    { obj X := (F.obj X)ᘁ
+      map f := (F.map (inv f))ᘁ
+      map_comp f g := by simp [comp_rightAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun _ => ε_ _ _
-          naturality := fun X Y f => by
+        { app _ := ε_ _ _
+          naturality X Y f := by
             dsimp
             rw [Category.comp_id, Functor.map_inv, ← id_tensor_comp_tensor_id, Category.assoc,
               id_tensorHom, tensorHom_id,
               rightAdjointMate_comp_evaluation, ← MonoidalCategory.whiskerLeft_comp_assoc,
               IsIso.hom_inv_id, MonoidalCategory.whiskerLeft_id, Category.id_comp] }
       coevaluation' :=
-        { app := fun _ => η_ _ _
-          naturality := fun X Y f => by
+        { app _ := η_ _ _
+          naturality X Y f := by
             dsimp
             rw [Functor.map_inv, Category.id_comp, ← id_tensor_comp_tensor_id,
               id_tensorHom, tensorHom_id, ← Category.assoc,
@@ -57,17 +57,17 @@ instance rightRigidFunctorCategory [RightRigidCategory D] : RightRigidCategory (
 
 instance functorHasLeftDual [LeftRigidCategory D] (F : C ⥤ D) : HasLeftDual F where
   leftDual :=
-    { obj := fun X => ᘁ(F.obj X)
-      map := fun f => ᘁ(F.map (inv f))
-      map_comp := fun f g => by simp [comp_leftAdjointMate] }
+    { obj X := ᘁ(F.obj X)
+      map f := ᘁ(F.map (inv f))
+      map_comp f g := by simp [comp_leftAdjointMate] }
   exact :=
     { evaluation' :=
-        { app := fun _ => ε_ _ _
-          naturality := fun X Y f => by
+        { app _ := ε_ _ _
+          naturality X Y f := by
             simp [tensorHom_def, leftAdjointMate_comp_evaluation] }
       coevaluation' :=
-        { app := fun _ => η_ _ _
-          naturality := fun X Y f => by
+        { app _ := η_ _ _
+          naturality X Y f := by
             simp [tensorHom_def, coevaluation_comp_leftAdjointMate_assoc] } }
 
 instance leftRigidFunctorCategory [LeftRigidCategory D] : LeftRigidCategory (C ⥤ D) where

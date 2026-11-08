@@ -34,10 +34,10 @@ attribute [local simp] ShortComplex.Hom.comm₁₂ ShortComplex.Hom.comm₂₃
 @[simps]
 def functor : ShortComplex (J ⥤ C) ⥤ J ⥤ ShortComplex C where
   obj S :=
-    { obj := fun j => S.map ((evaluation J C).obj j)
-      map := fun f => S.mapNatTrans ((evaluation J C).map f) }
+    { obj j := S.map ((evaluation J C).obj j)
+      map f := S.mapNatTrans ((evaluation J C).map f) }
   map φ :=
-    { app := fun j => ((evaluation J C).obj j).mapShortComplex.map φ }
+    { app j := ((evaluation J C).obj j).mapShortComplex.map φ }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The obvious functor `(J ⥤ ShortComplex C) ⥤ ShortComplex (J ⥤ C)`. -/

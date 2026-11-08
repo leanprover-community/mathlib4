@@ -146,9 +146,9 @@ initialize inclusionParamExt :
     ScopedEnvExtension Name (Name × InclusionParamDecl) InclusionParams ←
   registerScopedEnvExtension {
     mkInitial := pure {}
-    ofOLeanEntry := fun _ name => return (name, ← mkInclusionParamDecl name)
+    ofOLeanEntry _ name := return (name, ← mkInclusionParamDecl name)
     toOLeanEntry := (·.1)
-    addEntry := fun state (_, decl) => state.insert decl.name decl
+    addEntry state := fun (_, decl)  => state.insert decl.name decl
   }
 
 end InclusionParam

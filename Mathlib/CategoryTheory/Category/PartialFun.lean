@@ -116,12 +116,12 @@ be computable because `= Option.none` is decidable while the domain of a general
 noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   classical
   exact
-    { obj := fun X => ⟨(Option X), none⟩
-      map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
-      map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
+    { obj X := ⟨(Option X), none⟩
+      map f := ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
+      map_id X := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
         convert Part.some_toOption a)
-      map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
+      map_comp f g := Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
 
@@ -133,8 +133,8 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
   functor := partialFunToPointed
   inverse := pointedToPartialFun
   unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
-      { toFun := fun a => ⟨some a, some_ne_none a⟩
-        invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
+      { toFun a := ⟨some a, some_ne_none a⟩
+        invFun a := Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun _ => Option.get_some _ _
         right_inv := fun a => by simp only [some_get, Subtype.coe_eta] })
       fun f =>

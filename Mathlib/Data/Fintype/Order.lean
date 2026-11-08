@@ -89,8 +89,8 @@ open scoped Classical in
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
   __ := ‹Lattice α›
   __ := ‹BoundedOrder α›
-  sSup := fun s => s.toFinset.sup id
-  sInf := fun s => s.toFinset.inf id
+  sSup s := s.toFinset.sup id
+  sInf s := s.toFinset.inf id
   isLUB_sSup s := Set.coe_toFinset s ▸ Finset.isLUB_sup_id
   isGLB_sInf s := Set.coe_toFinset s ▸ Finset.isGLB_inf_id
 
@@ -99,12 +99,12 @@ attribute [local instance] toCompleteLattice in
 /-- A finite bounded distributive lattice is completely distributive. -/
 noncomputable abbrev toCompleteDistribLatticeMinimalAxioms [DistribLattice α] [BoundedOrder α] :
     CompleteDistribLattice.MinimalAxioms α where
-  iInf_sup_le_sup_sInf := fun a s => by
+  iInf_sup_le_sup_sInf a s := by
     convert (Finset.inf_sup_distrib_left s.toFinset id a).ge using 1
     rw [Finset.inf_eq_iInf]
     simp_rw [Set.mem_toFinset]
     rfl
-  inf_sSup_le_iSup_inf := fun a s => by
+  inf_sSup_le_iSup_inf a s := by
     convert (Finset.sup_inf_distrib_left s.toFinset id a).le using 1
     rw [Finset.sup_eq_iSup]
     simp_rw [Set.mem_toFinset]

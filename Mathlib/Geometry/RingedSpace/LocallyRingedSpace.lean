@@ -300,7 +300,7 @@ instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty
 /-- The canonical map from the empty locally ringed space. -/
 def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
   ⟨⟨ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩,
-    { app := fun U => CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
+    { app U := CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
     fun x => PEmpty.elim x⟩
 
 noncomputable

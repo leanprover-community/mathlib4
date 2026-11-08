@@ -45,9 +45,9 @@ instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
   { AddSubmonoidClass.toAddMonoid s with
     one := ⟨_, one_mem s⟩
-    natCast := fun n => ⟨n, natCast_mem s n⟩
+    natCast n := ⟨n, natCast_mem s n⟩
     natCast_zero := Subtype.ext Nat.cast_zero
-    natCast_succ := fun _ => Subtype.ext (Nat.cast_succ _) }
+    natCast_succ _ := Subtype.ext (Nat.cast_succ _) }
 
 end AddSubmonoidWithOneClass
 
@@ -328,7 +328,7 @@ theorem coe_pow {R} [Semiring R] (s : Subsemiring R) (x : s) (n : ℕ) :
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring s :=
-  { s.toSemiring with mul_comm := fun _ _ => Subtype.ext <| mul_comm _ _ }
+  { s.toSemiring with mul_comm _ _ := Subtype.ext <| mul_comm _ _ }
 
 /-- The natural ring hom from a subsemiring of semiring `R` to `R`. -/
 def subtype : s →+* R :=

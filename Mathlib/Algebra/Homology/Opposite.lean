@@ -112,16 +112,16 @@ variable (V c)
 def opFunctor : (HomologicalComplex V c)ᵒᵖ ⥤ HomologicalComplex Vᵒᵖ c.symm where
   obj X := (unop X).op
   map {K L} f :=
-    { f := fun i => (f.unop.f i).op
-      comm' := fun i j _ => by ext; simp }
+    { f i := (f.unop.f i).op
+      comm' i j _ := by ext; simp }
 
 /-- Auxiliary definition for `opEquivalence`. -/
 @[implicit_reducible, simps]
 def opInverse : HomologicalComplex Vᵒᵖ c.symm ⥤ (HomologicalComplex V c)ᵒᵖ where
   obj X := op X.unopSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).unop
-      comm' := fun i j _ => by simp [← unop_comp]}
+    { f i := (f.f i).unop
+      comm' i j _ := by simp [← unop_comp]}
 
 /-- Auxiliary definition for `opEquivalence`. -/
 def opUnitIso : 𝟭 (HomologicalComplex V c)ᵒᵖ ≅ opFunctor V c ⋙ opInverse V c :=
@@ -156,16 +156,16 @@ instance : (opInverse V c).IsEquivalence := (opEquivalence V c).isEquivalence_in
 def unopFunctor : (HomologicalComplex Vᵒᵖ c)ᵒᵖ ⥤ HomologicalComplex V c.symm where
   obj X := (unop X).unop
   map f :=
-    { f := fun i => (f.unop.f i).unop
-      comm' := fun i j _ => by simp [← unop_comp]}
+    { f i := (f.unop.f i).unop
+      comm' i j _ := by simp [← unop_comp]}
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 @[implicit_reducible, simps]
 def unopInverse : HomologicalComplex V c.symm ⥤ (HomologicalComplex Vᵒᵖ c)ᵒᵖ where
   obj X := op X.opSymm
   map f := Quiver.Hom.op
-    { f := fun i => (f.f i).op
-      comm' := fun i j _ => by simp [← op_comp] }
+    { f i := (f.f i).op
+      comm' i j _ := by simp [← op_comp] }
 
 /-- Auxiliary definition for `unopEquivalence`. -/
 def unopUnitIso : 𝟭 (HomologicalComplex Vᵒᵖ c)ᵒᵖ ≅ unopFunctor V c ⋙ unopInverse V c :=

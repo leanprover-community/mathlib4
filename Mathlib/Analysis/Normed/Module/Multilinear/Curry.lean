@@ -151,8 +151,8 @@ def continuousMultilinearCurryLeftEquiv :
       Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryLeft
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl
       invFun := ContinuousLinearMap.uncurryLeft
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
@@ -212,13 +212,13 @@ a continuous multilinear map in `n` variables into continuous linear maps, given
 def ContinuousMultilinearMap.curryRight (f : ContinuousMultilinearMap 𝕜 Ei G) :
     ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
   let f' : (Π i : Fin n, Ei <| castSucc i) →ₘₗ[𝕜] Ei (last n) →L[𝕜] G :=
-    { toFun := fun m =>
+    { toFun m :=
         (f.toMultilinearMap.curryRight m).mkContinuous (‖f‖ * ∏ i, ‖m i‖) fun x =>
           f.norm_map_snoc_le m x
-      map_update_add' := fun m i x y => by
+      map_update_add' m i x y := by
         ext
         simp
-      map_update_smul' := fun m i c x => by
+      map_update_smul' m i c x := by
         ext
         simp }
   f'.mkContinuous ‖f‖ fun m => by
@@ -262,8 +262,8 @@ def continuousMultilinearCurryRightEquiv :
       ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei <| castSucc i) (Ei (last n) →L[𝕜] G) :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryRight
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl
       invFun := ContinuousMultilinearMap.uncurryRight
       left_inv := ContinuousMultilinearMap.uncurry_curryRight
       right_inv := ContinuousMultilinearMap.curry_uncurryRight }
@@ -373,8 +373,8 @@ def ContinuousMultilinearMap.curryMidEquiv (p : Fin (n + 1)) :
       Ei p →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i ↦ Ei (p.succAbove i)) G :=
   LinearIsometryEquiv.ofBounds
     { toFun := ContinuousMultilinearMap.curryMid p
-      map_add' := fun _ _ => rfl
-      map_smul' := fun _ _ => rfl
+      map_add' _ _ := rfl
+      map_smul' _ _ := rfl
       invFun := ContinuousLinearMap.uncurryMid p
       left_inv := ContinuousMultilinearMap.uncurryMid_curryMid p
       right_inv := ContinuousLinearMap.curryMid_uncurryMid p }
@@ -506,8 +506,8 @@ def domDomCongrₗᵢ (σ : ι ≃ ι') :
     ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 (fun _ : ι' => G) G' :=
   { domDomCongrEquiv σ with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl
     norm_map' := norm_domDomCongr 𝕜 G G' σ }
 
 variable {𝕜 G G'}
@@ -558,10 +558,10 @@ def currySumEquiv : ContinuousMultilinearMap 𝕜 (fun _ : ι ⊕ ι' => G) G' �
   LinearIsometryEquiv.ofBounds
     { toFun := currySum
       invFun := uncurrySum
-      map_add' := fun f g => by
+      map_add' f g := by
         ext
         rfl
-      map_smul' := fun c f => by
+      map_smul' c f := by
         ext
         rfl
       left_inv := fun f => by
@@ -636,7 +636,7 @@ on `(G × (Π i, E i)) ^ (1 + n)`, which maps `(v_0, ..., v_n)` to `B (g_0) (u_1
 noncomputable def continuousMultilinearMapOption (B : G →L[𝕜] ContinuousMultilinearMap 𝕜 E F) :
     ContinuousMultilinearMap 𝕜 (fun (_ : Option ι) ↦ (G × (Π i, E i))) F :=
   MultilinearMap.mkContinuous
-  { toFun := fun p ↦ B (p none).1 (fun i ↦ (p i).2 i)
+  { toFun p := B (p none).1 (fun i ↦ (p i).2 i)
     map_update_add' := by
       intro inst v j x y
       match j with

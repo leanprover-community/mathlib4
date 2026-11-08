@@ -81,7 +81,7 @@ end OpensLeCover
 -/
 def opensLeCoverCocone : Cocone (ObjectProperty.ι _ : OpensLeCover U ⥤ Opens X) where
   pt := iSup U
-  ι := { app := fun V : OpensLeCover U => V.homToIndex ≫ Opens.leSupr U _ }
+  ι := { app (V : OpensLeCover U) := V.homToIndex ≫ Opens.leSupr U _ }
 
 end SheafCondition
 
@@ -128,7 +128,7 @@ def generateEquivalenceOpensLe_inverse' (hY : Y = iSup U) :
     OpensLeCover U ⥤
     (ObjectProperty.FullSubcategory fun f : Over Y =>
       (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) where
-  obj := fun V => ⟨⟨V.obj, ⟨⟨⟩⟩, homOfLE <| hY ▸ (V.2.choose_spec.trans (le_iSup U (V.2.choose)))⟩,
+  obj V := ⟨⟨V.obj, ⟨⟨⟩⟩, homOfLE <| hY ▸ (V.2.choose_spec.trans (le_iSup U (V.2.choose)))⟩,
     ⟨U V.2.choose, V.2.choose_spec.hom, homOfLE <| hY ▸ le_iSup U V.2.choose,
       ⟨V.2.choose, rfl⟩, rfl⟩⟩
   map g := ObjectProperty.homMk (Over.homMk g.hom)
@@ -158,13 +158,13 @@ def whiskerIsoMapGenerateCocone (hY : Y = iSup U) :
       F.mapCone (Sieve.generate (presieveOfCoveringAux U Y)).arrows.cocone.op where
   hom :=
     { hom := F.map (eqToHom congr(op $hY.symm))
-      w := fun j => by
+      w j := by
         dsimp
         rw [← F.map_comp]
         congr 1 }
   inv :=
     { hom := F.map (eqToHom congr(op $hY))
-      w := fun j => by
+      w j := by
         dsimp
         rw [← F.map_comp]
         congr 1 }

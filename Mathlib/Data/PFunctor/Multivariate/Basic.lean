@@ -81,7 +81,7 @@ instance : LawfulMvFunctor.{u} P.Obj where
 /-- Constant functor where the input object does not affect the output -/
 def const (n : ℕ) (A : Type u) : MvPFunctor n :=
   { A
-    B := fun _ _ => PEmpty }
+    B _ := fun _  => PEmpty }
 
 section Const
 

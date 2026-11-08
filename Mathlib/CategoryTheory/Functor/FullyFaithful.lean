@@ -286,7 +286,7 @@ instance Faithful.comp [F.Faithful] [G.Faithful] : (F ⋙ G).Faithful where
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type
-  { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
+  { map_injective {_ _} := Function.Injective.of_comp (F ⋙ G).map_injective }
 
 instance (priority := 100) [Quiver.IsThin C] : F.Faithful where
 
@@ -300,7 +300,7 @@ lemma Full.of_iso [Full F] (α : F ≅ F') : Full F' where
     ⟨F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv), by simp [← NatIso.naturality_1 α]⟩
 
 theorem Faithful.of_iso [F.Faithful] (α : F ≅ F') : F'.Faithful :=
-  { map_injective := fun h =>
+  { map_injective h :=
       F.map_injective (by rw [← NatIso.naturality_1 α.symm, h, NatIso.naturality_1 α.symm]) }
 
 end

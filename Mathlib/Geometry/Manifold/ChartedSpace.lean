@@ -698,9 +698,9 @@ respect to the topology constructed from the atlas. -/
 def toChartedSpace : @ChartedSpace H _ M c.toTopologicalSpace :=
   { __ := c.toTopologicalSpace
     atlas := ⋃ (e : PartialEquiv M H) (he : e ∈ c.atlas), {c.openPartialHomeomorph e he}
-    chartAt := fun x ↦ c.openPartialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
-    mem_chart_source := fun x ↦ c.mem_chart_source x
-    chart_mem_atlas := fun x ↦ by
+    chartAt x := c.openPartialHomeomorph (c.chartAt x) (c.chart_mem_atlas x)
+    mem_chart_source x := c.mem_chart_source x
+    chart_mem_atlas x := by
       simp only [mem_iUnion, mem_singleton_iff]
       exact ⟨c.chartAt x, c.chart_mem_atlas x, rfl⟩}
 

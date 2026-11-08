@@ -654,7 +654,7 @@ def Subalgebra.perfectClosure : Subalgebra R A where
     use n + m
     rw [mul_pow, pow_add, pow_mul, mul_comm (_ ^ n), pow_mul]
     exact mul_mem (pow_mem hx _) (pow_mem hy _)
-  algebraMap_mem' := fun x ↦ ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
+  algebraMap_mem' x := ⟨0, by rw [pow_zero, pow_one]; exact ⟨x, rfl⟩⟩
 
 variable {R A p}
 

@@ -35,10 +35,10 @@ variable [∀ a b : C, HasCoproductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∐ fun _ : c ⟶ t => d
-      map := fun f => Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
+    { obj t := ∐ fun _ : c ⟶ t => d
+      map f := Sigma.desc fun g => (Sigma.ι fun _ => d) <| g ≫ f }
   map {_ d₂} f :=
-    { app := fun _ => Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
+    { app _ := Sigma.desc fun h => f ≫ Sigma.ι (fun _ => d₂) h
       naturality := by
         intros
         dsimp
@@ -51,9 +51,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! unit_app counit_app_app]
 def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluation _ _).obj c :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun d F =>
-        { toFun := fun f => Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
-          invFun := fun f => { app := fun _ => Sigma.desc fun h => f ≫ F.map h }
+    { homEquiv d F :=
+        { toFun f := Sigma.ι (fun _ => d) (𝟙 _) ≫ f.app c
+          invFun f := { app _ := Sigma.desc fun h => f ≫ F.map h }
           left_inv := by
             intro f
             ext x
@@ -86,9 +86,9 @@ variable [∀ a b : C, HasProductsOfShape (a ⟶ b) D]
 @[simps]
 def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
   obj d :=
-    { obj := fun t => ∏ᶜ fun _ : t ⟶ c => d
-      map := fun f => Pi.lift fun g => Pi.π _ <| f ≫ g }
-  map f := { app := fun _ => Pi.lift fun g => Pi.π _ g ≫ f }
+    { obj t := ∏ᶜ fun _ : t ⟶ c => d
+      map f := Pi.lift fun g => Pi.π _ <| f ≫ g }
+  map f := { app _ := Pi.lift fun g => Pi.π _ g ≫ f }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -96,9 +96,9 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps! unit_app_app counit_app]
 def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRightAdjoint D c :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun F d =>
-        { toFun := fun f => { app := fun _ => Pi.lift fun g => F.map g ≫ f }
-          invFun := fun f => f.app _ ≫ Pi.π _ (𝟙 _)
+    { homEquiv F d :=
+        { toFun f := { app _ := Pi.lift fun g => F.map g ≫ f }
+          invFun f := f.app _ ≫ Pi.π _ (𝟙 _)
           left_inv := fun f => by simp
           right_inv := by
             intro f

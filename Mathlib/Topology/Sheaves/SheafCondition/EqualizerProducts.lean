@@ -191,10 +191,10 @@ def coneEquivFunctorObj (c : Cone ((diagram U).op ⋙ F)) :
     Cone (SheafConditionEqualizerProducts.diagram F U) where
   pt := c.pt
   π :=
-    { app := fun Z =>
+    { app Z :=
         WalkingParallelPair.casesOn Z (Pi.lift fun i : ι => c.π.app (op (single i)))
           (Pi.lift fun b : ι × ι => c.π.app (op (pair b.1 b.2)))
-      naturality := fun Y Z f => by
+      naturality Y Z f := by
         cases Y <;> cases Z <;> cases f
         · dsimp
           ext
@@ -225,7 +225,7 @@ def coneEquivFunctor :
   obj c := coneEquivFunctorObj F U c
   map {c c'} f :=
     { hom := f.hom
-      w := fun j => by
+      w j := by
         cases j <;>
           · dsimp
             ext
@@ -310,14 +310,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
       (coneEquivFunctor F U ⋙ coneEquivInverse F U).obj c where
   hom :=
     { hom := 𝟙 _
-      w := fun j => by
+      w j := by
         induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
-      w := fun j => by
+      w j := by
         induction j with | op j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]

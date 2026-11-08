@@ -149,9 +149,9 @@ condition. -/
 @[simps]
 def homEquiv :
     (PushoutI φ →* K) ≃ { f : (Π i, G i →* K) × (H →* K) // ∀ i, (f.1 i).comp (φ i) = f.2 } :=
-  { toFun := fun f => ⟨(fun i => f.comp (of i), f.comp (base φ)),
+  { toFun f := ⟨(fun i => f.comp (of i), f.comp (base φ)),
       fun i => by rw [MonoidHom.comp_assoc, of_comp_eq_base]⟩
-    invFun := fun f => lift f.1.1 f.1.2 f.2,
+    invFun f := lift f.1.1 f.1.2 f.2,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
     right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
@@ -235,8 +235,8 @@ theorem transversal_nonempty (hφ : ∀ i, Injective (φ i)) : Nonempty (Transve
   exact
     { injective := hφ
       set := t
-      one_mem := fun i => (ht i).2
-      compl := fun i => (ht i).1 }
+      one_mem i := (ht i).2
+      compl i := (ht i).1 }
 
 variable {φ}
 
@@ -282,7 +282,7 @@ theorem ext {w₁ w₂ : NormalWord d} (hhead : w₁.head = w₂.head)
 open Subgroup.IsComplement
 
 instance baseAction : MulAction H (NormalWord d) :=
-  { smul := fun h w => { w with head := h * w.head },
+  { smul h w := { w with head := h * w.head },
     one_smul := by simp +instances [instHSMul]
     mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
@@ -313,7 +313,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
       (mt (mul_mem_cancel_right (by simp)).1 hgr))
   { toWord := w'
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
-    normalized := fun i g hg => by
+    normalized i g hg := by
       simp only [w', Word.cons, mem_cons, Sigma.mk.inj_iff] at hg
       rcases hg with ⟨rfl, hg | hg⟩
       · simp
@@ -393,7 +393,7 @@ noncomputable def rcons (i : ι) (p : Pair d i) : NormalWord d :=
   let w := (Word.equivPair i).symm { p.toPair with head := n.2 }
   { toWord := w
     head := (MonoidHom.ofInjective (d.injective i)).symm n.1
-    normalized := fun i g hg => by
+    normalized i g hg := by
         dsimp [w] at hg
         rw [Word.equivPair_symm, Word.mem_rcons_iff] at hg
         rcases hg with hg | ⟨_, rfl, rfl⟩
@@ -418,7 +418,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     fun w =>
       letI p := Word.equivPair i (CoprodI.of (φ i w.head) • w.toWord)
       { toPair := p
-        normalized := fun j g hg => by
+        normalized j g hg := by
           dsimp only [p] at hg
           rw [Word.of_smul_def, ← Word.equivPair_symm, Equiv.apply_symm_apply] at hg
           dsimp at hg
@@ -435,14 +435,14 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
     right_inv := fun _ => rcons_injective (leftInv _) }
 
 noncomputable instance summandAction (i : ι) : MulAction (G i) (NormalWord d) :=
-  { smul := fun g w => (equivPair i).symm
+  { smul g w := (equivPair i).symm
       { equivPair i w with
         head := g * (equivPair i w).head }
-    one_smul := fun _ => by
+    one_smul _ := by
       dsimp +instances [instHSMul]
       rw [one_mul]
       exact (equivPair i).symm_apply_apply _
-    mul_smul := fun _ _ _ => by
+    mul_smul _ _ _ := by
       dsimp +instances [instHSMul]
       simp [mul_assoc, Equiv.apply_symm_apply] }
 
@@ -552,8 +552,8 @@ theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
 
 /-- The equivalence between normal forms and elements of the pushout -/
 noncomputable def equiv : PushoutI φ ≃ NormalWord d :=
-  { toFun := fun g => g • .empty
-    invFun := fun w => w.prod
+  { toFun g := g • .empty
+    invFun w := w.prod
     left_inv := fun g => by
       simp only [prod_smul, prod_empty, mul_one]
     right_inv := fun w => prod_smul_empty w }

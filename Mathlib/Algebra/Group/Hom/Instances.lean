@@ -157,7 +157,7 @@ instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMono
   inferInstanceAs <| AddCommGroup (M →+ M)
 
 instance AddMonoid.End.instIntCast [AddCommGroup M] : IntCast (AddMonoid.End M) where
-  intCast := fun z => z • 1
+  intCast z := z • 1
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
@@ -187,9 +187,9 @@ theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f
 def flip {mM : MulOneClass M} {mN : MulOneClass N} {mP : CommMonoid P} (f : M →* N →* P) :
     N →* M →* P where
   toFun y :=
-    { toFun := fun x => f x y,
+    { toFun x := f x y,
       map_one' := by simp [f.map_one, one_apply],
-      map_mul' := fun x₁ x₂ => by simp [f.map_mul, mul_apply] }
+      map_mul' x₁ x₂ := by simp [f.map_mul, mul_apply] }
   map_one' := ext fun x => (f x).map_one
   map_mul' y₁ y₂ := ext fun x => (f x).map_mul y₁ y₂
 

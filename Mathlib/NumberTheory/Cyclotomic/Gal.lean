@@ -77,7 +77,7 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : Gal(L/K) ≃*
   let hζ := zeta_spec n K L
   let hμ t := hζ.pow_of_coprime _ (ZMod.val_coe_unit_coprime t)
   { (zeta_spec n K L).autToPow K with
-    invFun := fun t =>
+    invFun t :=
       (hζ.powerBasis K).equivOfMinpoly ((hμ t).powerBasis K)
         (by
           have := IsCyclotomicExtension.neZero' n K L

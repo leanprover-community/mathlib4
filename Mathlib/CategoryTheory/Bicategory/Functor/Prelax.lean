@@ -79,7 +79,7 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁} B] [∀ a b : B, Quiver.{w₁} (a ⟶ b)] :
     PrelaxFunctorStruct B B :=
-  { Prefunctor.id B with map₂ := fun η => η }
+  { Prefunctor.id B with map₂ η := η }
 
 instance : Inhabited (PrelaxFunctorStruct B B) :=
   ⟨PrelaxFunctorStruct.id B⟩
@@ -88,7 +88,7 @@ instance : Inhabited (PrelaxFunctorStruct B B) :=
 @[simps]
 def comp (F : PrelaxFunctorStruct B C) (G : PrelaxFunctorStruct C D) : PrelaxFunctorStruct B D where
   toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
-  map₂ := fun η => G.map₂ (F.map₂ η)
+  map₂ η := G.map₂ (F.map₂ η)
 
 end PrelaxFunctorStruct
 

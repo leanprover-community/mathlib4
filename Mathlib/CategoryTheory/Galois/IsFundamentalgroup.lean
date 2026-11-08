@@ -72,8 +72,8 @@ variable {G} in
 @[simps! -isSimp]
 private def isoOnObj (g : G) (X : C) : F.obj X ≅ F.obj X :=
   FintypeCat.equivEquivIso {
-    toFun := fun x ↦ g • x
-    invFun := fun x ↦ g⁻¹ • x
+    toFun x := g • x
+    invFun x := g⁻¹ • x
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp
   }

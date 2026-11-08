@@ -149,7 +149,7 @@ def lift :
     {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)} ≃ (A[ε] →ₐ[R] B) := by
   refine Equiv.trans ?_ TrivSqZeroExt.liftEquiv
   exact {
-    toFun := fun fe => ⟨
+    toFun fe := ⟨
       (fe.val.1, MulOpposite.op fe.val.2 • fe.val.1.toLinearMap),
       fun x y => show (fe.val.1 x * fe.val.2) * (fe.val.1 y * fe.val.2) = 0 by
         rw [(fe.prop.2 _).mul_mul_mul_comm, fe.prop.1, mul_zero],
@@ -157,7 +157,7 @@ def lift :
         rw [map_mul, mul_assoc],
       fun r x => show fe.val.1 (x * r) * fe.val.2 = (fe.val.1 x * fe.val.2) * fe.val.1 r by
         rw [map_mul, (fe.prop.2 _).right_comm]⟩
-    invFun := fun fg => ⟨
+    invFun fg := ⟨
       (fg.val.1, fg.val.2 1),
       fg.prop.1 _ _,
       fun a => show fg.val.2 1 * fg.val.1 a = fg.val.1 a * fg.val.2 1 by

@@ -239,7 +239,7 @@ protected theorem continuous (f : NormedAddGroupHom V₁ V₂) : Continuous f :=
   f.uniformContinuous.continuous
 
 instance : ContinuousMapClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
-  map_continuous := fun f => f.continuous
+  map_continuous f := f.continuous
 
 theorem ratio_le_opNorm (x : V₁) : ‖f x‖ / ‖x‖ ≤ ‖f‖ :=
   div_le_of_le_mul₀ (norm_nonneg _) f.opNorm_nonneg (le_opNorm _ _)
@@ -524,7 +524,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       map_zero' := opNorm_zero
       neg' := opNorm_neg
       add_le' := opNorm_add_le
-      eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
+      eq_zero_of_map_eq_zero' _f := opNorm_zero_iff.1 }
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]

@@ -93,7 +93,7 @@ variable (R) [F.Additive]
 /-- `F.mapLinearMap` is an `R`-linear map whose underlying function is `F.map`. -/
 @[simps]
 def mapLinearMap {X Y : C} : (X ⟶ Y) →ₗ[R] F.obj X ⟶ F.obj Y :=
-  { F.mapAddHom with map_smul' := fun r f => F.map_smul r f }
+  { F.mapAddHom with map_smul' r f := F.map_smul r f }
 
 theorem coe_mapLinearMap {X Y : C} : ⇑(F.mapLinearMap R : (X ⟶ Y) →ₗ[R] _) = F.map := rfl
 
@@ -102,7 +102,7 @@ end
 variable {F} in
 lemma linear_of_iso {G : C ⥤ D} (e : F ≅ G) [F.Linear R] : G.Linear R := by
   exact
-    { map_smul := fun f r => by
+    { map_smul f r := by
         simp only [← NatIso.naturality_1 e (r • f), F.map_smul, Linear.smul_comp,
           NatTrans.naturality, Linear.comp_smul, Iso.inv_hom_id_app_assoc] }
 

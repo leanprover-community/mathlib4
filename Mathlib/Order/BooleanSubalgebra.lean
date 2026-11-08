@@ -178,7 +178,7 @@ instance instBot : Bot (BooleanSubalgebra α) where
 instance instInf : Min (BooleanSubalgebra α) where
   min L M := { carrier := L ∩ M
                bot_mem' := ⟨bot_mem, bot_mem⟩
-               compl_mem' := fun ha ↦ ⟨compl_mem ha.1, compl_mem ha.2⟩
+               compl_mem' ha := ⟨compl_mem ha.1, compl_mem ha.2⟩
                supClosed' := L.supClosed.inter M.supClosed
                infClosed' := L.infClosed.inter M.infClosed }
 
@@ -186,7 +186,7 @@ instance instInf : Min (BooleanSubalgebra α) where
 instance instInfSet : InfSet (BooleanSubalgebra α) where
   sInf S := { carrier := ⋂ L ∈ S, L
               bot_mem' := mem_iInter₂.2 fun _ _ ↦ bot_mem
-              compl_mem' := fun ha ↦ mem_iInter₂.2 fun L hL ↦ compl_mem <| mem_iInter₂.1 ha L hL
+              compl_mem' ha := mem_iInter₂.2 fun L hL ↦ compl_mem <| mem_iInter₂.1 ha L hL
               supClosed' := supClosed_sInter <| forall_mem_range.2 fun L ↦ supClosed_sInter <|
                 forall_mem_range.2 fun _ ↦ L.supClosed
               infClosed' := infClosed_sInter <| forall_mem_range.2 fun L ↦ infClosed_sInter <|

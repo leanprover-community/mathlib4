@@ -142,9 +142,9 @@ instance : CompleteLattice (Subspace K V) :=
         refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
         rintro ⟨E, hE, rfl⟩
         exact ha hE hx)
-    inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
-    inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
-    le_inf := fun _ _ _ h1 h2 _ hx => (le_inf h1 h2) hx }
+    inf_le_left A B := fun _ hx  => (@inf_le_left _ _ A B) hx
+    inf_le_right A B := fun _ hx  => (@inf_le_right _ _ A B) hx
+    le_inf _ _ _ h1 h2 := fun _ hx  => (le_inf h1 h2) hx }
 
 instance subspaceInhabited : Inhabited (Subspace K V) where default := ⊤
 

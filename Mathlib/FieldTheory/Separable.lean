@@ -724,14 +724,14 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
         algebraMap := (algebraMap A₁ B₁).comp e₁.symm.toRingHom
-        smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
-        commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
-        smul_def' := fun _ _ ↦ rfl }
+        smul a b := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+        commutes' r x := (Algebra.commutes) (e₁.symm.toRingHom r) x
+        smul_def' _ _ := rfl }
   haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
       (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := fun x ↦ by
+      commutes' x := by
         simpa [RingHom.algebraMap_toAlgebra] using! congr($he.symm (e₁.symm x)) }
   (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 

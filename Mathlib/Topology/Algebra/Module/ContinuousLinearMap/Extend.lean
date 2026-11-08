@@ -40,7 +40,7 @@ embedding `e : E →L[𝕜] Eₗ`. -/
       · intro x y
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
-    map_smul' := fun k => by
+    map_smul' k := by
       refine fun b => h.1.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)

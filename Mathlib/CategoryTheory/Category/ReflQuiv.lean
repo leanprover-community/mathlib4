@@ -84,7 +84,7 @@ theorem forget_faithful {C D : Cat.{v, u}} (F G : C ⥤ D)
   cases F; cases G; cases hyp; rfl
 
 instance forget.Faithful : Functor.Faithful (forget) where
-  map_injective := fun hyp ↦ Cat.Hom.ext <| forget_faithful _ _ hyp
+  map_injective hyp := Cat.Hom.ext <| forget_faithful _ _ hyp
 
 /-- The forgetful functor from categories to quivers. -/
 @[simps]
@@ -97,7 +97,7 @@ theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
   cases F; cases G; cases hyp; rfl
 
 instance forgetToQuiv.Faithful : Functor.Faithful forgetToQuiv where
-  map_injective := fun hyp ↦ forgetToQuiv_faithful _ _ hyp
+  map_injective hyp := forgetToQuiv_faithful _ _ hyp
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 

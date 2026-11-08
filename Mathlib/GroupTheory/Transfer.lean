@@ -145,9 +145,9 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 the transfer homomorphism is `transfer ϕ : G →+ A`. -/]
 def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
-  { toFun := fun g => diff ϕ T (g • T)
+  { toFun g := diff ϕ T (g • T)
     map_one' := by rw [one_smul, diff_self]
-    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_mul' g h := by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 

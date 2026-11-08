@@ -59,12 +59,12 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def colimitCocone : Cocone F where
   pt := mkOfSMul (coconePointSMul F)
   ι :=
-    { app := fun j => homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat) j) (fun r => by
+    { app j := homMk (colimit.ι (F ⋙ forget₂ _ AddCommGrpCat) j) (fun r => by
         dsimp
         -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
         erw [mkOfSMul_smul]
         simp)
-      naturality := fun i j f => by
+      naturality i j f := by
         apply (forget₂ _ AddCommGrpCat).map_injective
         simp only [Functor.map_comp, forget₂_map_homMk]
         dsimp

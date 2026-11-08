@@ -364,8 +364,8 @@ variable {p : α → Prop} {f : Perm α}
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).2 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
+  toFun x := ⟨f x, (h _).2 x.2⟩
+  invFun x := ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
   left_inv _ := by simp
   right_inv _ := by simp
 
@@ -792,9 +792,9 @@ variable (G)
 /-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
 def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* Multiplicative (AddAut G) :=
-  { AddEquiv.toMultiplicative.symm with map_mul' := fun _ _ ↦ rfl }
+  { AddEquiv.toMultiplicative.symm with map_mul' _ _ := rfl }
 
 /-- `Additive G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
 def AddAutAdditive [Group G] : AddAut (Additive G) ≃+ Additive (MulAut G) :=
-  { MulEquiv.toAdditive.symm with map_add' := fun _ _ ↦ rfl }
+  { MulEquiv.toAdditive.symm with map_add' _ _ := rfl }

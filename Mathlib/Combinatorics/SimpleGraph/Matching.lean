@@ -177,7 +177,7 @@ lemma IsMatching.exists_of_disjoint_sets_of_equiv {s t : Set V} (h : Disjoint s 
     ∃ M : Subgraph G, M.verts = s ∪ t ∧ M.IsMatching := by
   use {
     verts := s ∪ t
-    Adj := fun v w ↦ (∃ h : v ∈ s, f ⟨v, h⟩ = w) ∨ (∃ h : w ∈ s, f ⟨w, h⟩ = v)
+    Adj v w := (∃ h : v ∈ s, f ⟨v, h⟩ = w) ∨ (∃ h : w ∈ s, f ⟨w, h⟩ = v)
     adj_sub := by
       intro v w h
       obtain (⟨hv, rfl⟩ | ⟨hw, rfl⟩) := h

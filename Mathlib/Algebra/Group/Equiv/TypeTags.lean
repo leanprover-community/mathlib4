@@ -106,14 +106,14 @@ and additive endomorphisms of `Additive M`. -/
 @[simps!] def MulEquiv.monoidEnd (M : Type*) [MulOneClass M] :
     Monoid.End M ≃* AddMonoid.End (Additive M) :=
   { MonoidHom.toAdditive with
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 /-- Multiplicative equivalence between additive endomorphisms of an `AddZeroClass` `A`
 and multiplicative endomorphisms of `Multiplicative A`. -/
 @[simps!] def MulEquiv.addMonoidEnd (A : Type*) [AddZeroClass A] :
     AddMonoid.End A ≃* Monoid.End (Multiplicative A) :=
   { AddMonoidHom.toMultiplicative with
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 @[deprecated (since := "2026-09-10")] alias monoidEndToAdditive := MulEquiv.monoidEnd
 @[deprecated (since := "2026-09-10")] alias monoidEndToAdditive_apply_apply :=

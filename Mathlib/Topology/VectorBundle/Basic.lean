@@ -449,7 +449,7 @@ is in fact a continuous linear equiv between the fibers and the model fiber. -/
 def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) : E b ≃L[R] F :=
   { e.toPretrivialization.linearEquivAt R b hb with
-    toFun := fun y => (e ⟨b, y⟩).2 -- given explicitly to help `simps`
+    toFun y := (e ⟨b, y⟩).2 -- given explicitly to help `simps`
     invFun := e.symm b -- given explicitly to help `simps`
     continuous_toFun := (e.continuousOn.comp_continuous
       (FiberBundle.totalSpaceMk_isInducing F E b).continuous fun _ => e.mem_source.mpr hb).snd
@@ -590,8 +590,8 @@ variable (Z : VectorBundleCore R B F ι)
 @[simps (attr := mfld_simps) -fullyApplied]
 def toFiberBundleCore : FiberBundleCore ι B F :=
   { Z with
-    coordChange := fun i j b => Z.coordChange i j b
-    continuousOn_coordChange := fun i j =>
+    coordChange i j b := Z.coordChange i j b
+    continuousOn_coordChange i j :=
       isBoundedBilinearMap_apply.continuous.comp_continuousOn
         ((Z.continuousOn_coordChange i j).prodMap continuousOn_id) }
 
@@ -676,8 +676,8 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The standard local trivializations of a vector bundle constructed from core are linear. -/
 instance localTriv.isLinear (i : ι) : (Z.localTriv i).IsLinear R where
   linear x _ :=
-    { map_add := fun _ _ => by simp only [map_add, localTriv_apply, mfld_simps]
-      map_smul := fun _ _ => by simp only [map_smul, localTriv_apply, mfld_simps] }
+    { map_add _ _ := by simp only [map_add, localTriv_apply, mfld_simps]
+      map_smul _ _ := by simp only [map_smul, localTriv_apply, mfld_simps] }
 
 variable (i j : ι)
 
@@ -868,7 +868,7 @@ theorem mk_coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (
 /-- Natural identification of `VectorPrebundle` as a `FiberPrebundle`. -/
 def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
   { a with
-    continuous_trivChange := fun e he e' he' ↦ by
+    continuous_trivChange e he e' he' := by
       have : ContinuousOn (fun x : B × F ↦ a.coordChange he' he x.1 x.2)
           ((e'.baseSet ∩ e.baseSet) ×ˢ univ) :=
         isBoundedBilinearMap_apply.continuous.comp_continuousOn

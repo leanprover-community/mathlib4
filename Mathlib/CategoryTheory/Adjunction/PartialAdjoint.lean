@@ -155,15 +155,15 @@ noncomputable def corepresentableByCompCoyonedaObjOfIsColimit {J : Type*} [Categ
     {c' : Cocone (R ⋙ F.partialLeftAdjoint)} (hc' : IsColimit c') :
     (F ⋙ coyoneda.obj (op c.pt)).CorepresentableBy c'.pt where
   homEquiv {Y} :=
-    { toFun := fun f ↦ hc.desc (Cocone.mk _
-        { app := fun j ↦ F.partialLeftAdjointHomEquiv (c'.ι.app j ≫ f)
-          naturality := fun j j' φ ↦ by
+    { toFun f := hc.desc (Cocone.mk _
+        { app j := F.partialLeftAdjointHomEquiv (c'.ι.app j ≫ f)
+          naturality j j' φ := by
             dsimp
             rw [comp_id, ← c'.w φ, ← partialLeftAdjointHomEquiv_map_comp, assoc]
             dsimp })
-      invFun := fun g ↦ hc'.desc (Cocone.mk _
-        { app := fun j ↦ F.partialLeftAdjointHomEquiv.symm (c.ι.app j ≫ g)
-          naturality := fun j j' φ ↦ by
+      invFun g := hc'.desc (Cocone.mk _
+        { app j := F.partialLeftAdjointHomEquiv.symm (c.ι.app j ≫ g)
+          naturality j j' φ := by
             apply F.partialLeftAdjointHomEquiv.injective
             have := c.w φ
             dsimp at this ⊢
@@ -305,16 +305,16 @@ noncomputable def representableByCompYonedaObjOfIsLimit {J : Type*} [Category* J
     {c' : Cone (R ⋙ F.partialRightAdjoint)} (hc' : IsLimit c') :
     (F.op ⋙ yoneda.obj c.pt).RepresentableBy c'.pt where
   homEquiv {Y} :=
-    { toFun := fun f ↦ hc.lift (Cone.mk _
-        { app := fun j ↦ F.partialRightAdjointHomEquiv (f ≫ c'.π.app j)
-          naturality := fun j j' φ ↦ by
+    { toFun f := hc.lift (Cone.mk _
+        { app j := F.partialRightAdjointHomEquiv (f ≫ c'.π.app j)
+          naturality j j' φ := by
             dsimp
             rw [id_comp, ← c'.w φ, ← partialRightAdjointHomEquiv_map_comp,
               ← assoc]
             dsimp })
-      invFun := fun g ↦ hc'.lift (Cone.mk _
-        { app := fun j ↦ F.partialRightAdjointHomEquiv.symm (g ≫ c.π.app j)
-          naturality := fun j j' φ ↦ by
+      invFun g := hc'.lift (Cone.mk _
+        { app j := F.partialRightAdjointHomEquiv.symm (g ≫ c.π.app j)
+          naturality j j' φ := by
             apply F.partialRightAdjointHomEquiv.injective
             have := c.w φ
             dsimp at this ⊢

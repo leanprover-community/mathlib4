@@ -155,13 +155,13 @@ instance {R : SemiRingCat} : Semiring ((forget SemiRingCat).obj R) :=
 
 instance hasForgetToMonCat : HasForget₂ SemiRingCat MonCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ MonCat.ofHom f.hom.toMonoidHom }
+    { obj R := ↧R
+      map f := MonCat.ofHom f.hom.toMonoidHom }
 
 instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ AddCommMonCat.ofHom f.hom.toAddMonoidHom }
+    { obj R := ↧R
+      map f := AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp] lemma forget₂_monCat_map {R S : SemiRingCat} (f : R ⟶ S) (x) :
     (forget₂ SemiRingCat MonCat).map f x = f x := rfl
@@ -317,8 +317,8 @@ instance {R : RingCat} : Ring ((forget RingCat).obj R) :=
 
 instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ SemiRingCat.ofHom f.hom }
+    { obj R := ↧R
+      map f := SemiRingCat.ofHom f.hom }
 
 @[simp] lemma forget₂_map {R S : RingCat} (f : R ⟶ S) (x) :
     (forget₂ RingCat SemiRingCat).map f x = f x := rfl
@@ -333,8 +333,8 @@ instance : (forget₂ RingCat SemiRingCat).Full :=
 
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrpCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
+    { obj R := ↧R
+      map f := AddCommGrpCat.ofHom f.hom.toAddMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of rings -/
 @[simps]
@@ -481,8 +481,8 @@ instance {R : CommSemiRingCat} : CommSemiring ((forget CommSemiRingCat).obj R) :
 
 instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ ⟨R⟩
-      map := fun f ↦ ⟨f.hom⟩ }
+    { obj R := ⟨R⟩
+      map f := ⟨f.hom⟩ }
 
 /-- The forgetful functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToSemiRingCat :
@@ -495,8 +495,8 @@ instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ CommMonCat.ofHom f.hom.toMonoidHom }
+    { obj R := ↧R
+      map f := CommMonCat.ofHom f.hom.toMonoidHom }
 
 /-- Ring equivalences are isomorphisms in category of commutative semirings -/
 @[simps]
@@ -646,8 +646,8 @@ instance {R : CommRingCat} : CommRing ((forget CommRingCat).obj R) :=
 
 instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ RingCat.ofHom f.hom }
+    { obj R := ↧R
+      map f := RingCat.ofHom f.hom }
 
 /-- The forgetful functor from `CommRingCat` to `RingCat` is fully faithful. -/
 def fullyFaithfulForget₂ToRingCat :
@@ -667,8 +667,8 @@ instance : (forget₂ CommRingCat RingCat).Full :=
 
 instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat where
   forget₂ :=
-    { obj := fun R ↦ ↧R
-      map := fun f ↦ CommSemiRingCat.ofHom f.hom }
+    { obj R := ↧R
+      map f := CommSemiRingCat.ofHom f.hom }
 
 @[simps (nameStem := "commMon")]
 instance : HasForget₂ CommRingCat CommMonCat where

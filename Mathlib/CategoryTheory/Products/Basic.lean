@@ -192,8 +192,8 @@ to the identity functor.
 -/
 @[implicit_reducible, simps]
 def symmetry : swap C D ⋙ swap D C ≅ 𝟭 (C × D) where
-  hom := { app := fun X => 𝟙 X }
-  inv := { app := fun X => 𝟙 X }
+  hom := { app X := 𝟙 X }
+  inv := { app X := 𝟙 X }
 
 /-- The equivalence, given by swapping factors, between `C × D` and `D × C`.
 -/
@@ -232,10 +232,10 @@ which is functorial in both `X` and `F`.
 @[simps, implicit_reducible]
 def evaluation : C ⥤ (C ⥤ D) ⥤ D where
   obj X :=
-    { obj := fun F => F.obj X
-      map := fun α => α.app X }
+    { obj F := F.obj X
+      map α := α.app X }
   map {_} {_} f :=
-    { app := fun F => F.map f }
+    { app F := F.map f }
 
 /-- The "evaluation of `F` at `X`" functor,
 as a functor `C × (C ⥤ D) ⥤ D`.
@@ -243,7 +243,7 @@ as a functor `C × (C ⥤ D) ⥤ D`.
 @[implicit_reducible, simps]
 def evaluationUncurried : C × (C ⥤ D) ⥤ D where
   obj p := p.2.obj p.1
-  map := fun {x} {y} f => x.2.map f.1 ≫ f.2.app y.1
+  map {x} {y} f := x.2.map f.1 ≫ f.2.app y.1
 
 variable {C}
 
@@ -430,8 +430,8 @@ variable (D) in
 @[implicit_reducible, simps!]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
-    { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
-      map := fun f ↦ f.unop.1.op ×ₘ f.unop.2.op }
+    { obj X := ⟨op X.unop.1, op X.unop.2⟩,
+      map f := f.unop.1.op ×ₘ f.unop.2.op }
   inverse :=
     { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
       map := fun ⟨f,g⟩ ↦ op (f.unop ×ₘ g.unop) }

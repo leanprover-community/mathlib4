@@ -32,8 +32,8 @@ the forward direction of `LinearEquiv.linearMapPi`. -/
   have := SMulCommClass.symm
   LinearMap.flip
   { toFun := (Finsupp.mapRange.linearMap <| flip id ·)
-    map_add' := fun _ _ ↦ by ext; simp
-    map_smul' := fun _ _ ↦ by ext; simp }
+    map_add' _ _ := by ext; simp
+    map_smul' _ _ := by ext; simp }
 
 variable (R M N ι)
 

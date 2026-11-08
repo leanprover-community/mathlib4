@@ -124,7 +124,7 @@ noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) where
   lift s := ↾fun v ↦ equivShrink F.sections
     { val := fun j => s.π.app j v
       property := fun f => congr_hom (Cone.w s f) _ }
-  uniq := fun _ _ w => by
+  uniq _ _ w := by
     ext x j
     simpa using! congr_hom (w j) x
 
@@ -155,7 +155,7 @@ noncomputable def limitConeIsLimit (F : J ⥤ Type (max v u)) : IsLimit (limitCo
   lift s := ↾fun v ↦
     { val := fun j => s.π.app j v
       property := fun f => congr_hom (Cone.w s f) _ }
-  uniq := fun _ _ w => by
+  uniq _ _ w := by
     ext x
     apply Subtype.ext
     funext j

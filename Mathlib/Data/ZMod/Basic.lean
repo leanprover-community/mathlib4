@@ -439,11 +439,11 @@ def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
     exact m.succ_ne_zero h
   · exact
       { finCongr h with
-        map_mul' := fun a b => by
+        map_mul' a b := by
           dsimp [ZMod]
           ext
           rw [Fin.val_cast, Fin.val_mul, Fin.val_mul, Fin.val_cast, Fin.val_cast, ← h]
-        map_add' := fun a b => by
+        map_add' a b := by
           dsimp [ZMod]
           ext
           rw [Fin.val_cast, Fin.val_add, Fin.val_add, Fin.val_cast, Fin.val_cast, ← h] }

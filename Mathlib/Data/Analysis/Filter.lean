@@ -41,8 +41,8 @@ instance [Inhabited α] [SemilatticeInf α] : Inhabited (CFilter α α) :=
   ⟨{  f := id
       pt := default
       inf := (· ⊓ ·)
-      inf_le_left := fun _ _ ↦ inf_le_left
-      inf_le_right := fun _ _ ↦ inf_le_right }⟩
+      inf_le_left _ _ := inf_le_left
+      inf_le_right _ _ := inf_le_right }⟩
 
 namespace CFilter
 
@@ -63,11 +63,11 @@ theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂)
 /-- Map a `CFilter` to an equivalent representation type. -/
 def ofEquiv (E : σ ≃ τ) : CFilter α σ → CFilter α τ
   | ⟨f, p, g, h₁, h₂⟩ =>
-    { f := fun a ↦ f (E.symm a)
+    { f a := f (E.symm a)
       pt := E p
-      inf := fun a b ↦ E (g (E.symm a) (E.symm b))
-      inf_le_left := fun a b ↦ by simpa using h₁ (E.symm a) (E.symm b)
-      inf_le_right := fun a b ↦ by simpa using h₂ (E.symm a) (E.symm b) }
+      inf a b := E (g (E.symm a) (E.symm b))
+      inf_le_left a b := by simpa using h₁ (E.symm a) (E.symm b)
+      inf_le_right a b := by simpa using h₂ (E.symm a) (E.symm b) }
 
 @[simp]
 theorem ofEquiv_val (E : σ ≃ τ) (F : CFilter α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
@@ -139,11 +139,11 @@ theorem ofEquiv_F {f : Filter α} (F : f.Realizer) (E : F.σ ≃ τ) (s : τ) :
 /-- `Unit` is a realizer for the principal filter -/
 protected def principal (s : Set α) : (principal s).Realizer :=
   ⟨Unit,
-    { f := fun _ ↦ s
+    { f _ := s
       pt := ()
-      inf := fun _ _ ↦ ()
-      inf_le_left := fun _ _ ↦ le_rfl
-      inf_le_right := fun _ _ ↦ le_rfl },
+      inf _ _ := ()
+      inf_le_left _ _ := le_rfl
+      inf_le_right _ _ := le_rfl },
     filter_eq <| Set.ext fun _ ↦ ⟨fun ⟨_, s⟩ ↦ s, fun h ↦ ⟨(), h⟩⟩⟩
 
 @[simp]
@@ -184,11 +184,11 @@ theorem bot_F (u : Unit) : (@Realizer.bot α).F u = ∅ :=
 /-- Construct a realizer for `map m f` given a realizer for `f` -/
 protected def map (m : α → β) {f : Filter α} (F : f.Realizer) : (map m f).Realizer :=
   ⟨F.σ,
-    { f := fun s ↦ image m (F.F s)
+    { f s := image m (F.F s)
       pt := F.F.pt
       inf := F.F.inf
-      inf_le_left := fun _ _ ↦ image_mono (F.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ image_mono (F.F.inf_le_right _ _) },
+      inf_le_left _ _ := image_mono (F.F.inf_le_left _ _)
+      inf_le_right _ _ := image_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
       simp only [CFilter.toFilter, image_subset_iff, mem_ofPred_eq, Filter.mem_sets, mem_map]
       rw [F.mem_sets]⟩
@@ -204,11 +204,11 @@ theorem map_F (m : α → β) {f : Filter α} (F : f.Realizer) (s) : (F.map m).F
 /-- Construct a realizer for `comap m f` given a realizer for `f` -/
 protected def comap (m : α → β) {f : Filter β} (F : f.Realizer) : (comap m f).Realizer :=
   ⟨F.σ,
-    { f := fun s ↦ preimage m (F.F s)
+    { f s := preimage m (F.F s)
       pt := F.F.pt
       inf := F.F.inf
-      inf_le_left := fun _ _ ↦ preimage_mono (F.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ preimage_mono (F.F.inf_le_right _ _) },
+      inf_le_left _ _ := preimage_mono (F.F.inf_le_left _ _)
+      inf_le_right _ _ := preimage_mono (F.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by
       cases F; subst f
       exact ⟨fun ⟨s, h⟩ ↦ ⟨_, ⟨s, Subset.refl _⟩, h⟩,
@@ -220,8 +220,8 @@ protected def sup {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊔ g
     { f := fun ⟨s, t⟩ ↦ F.F s ∪ G.F t
       pt := (F.F.pt, G.F.pt)
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
-      inf_le_left := fun _ _ ↦ union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
+      inf_le_left _ _ := union_subset_union (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
+      inf_le_right _ _ := union_subset_union (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     filter_eq <| Set.ext fun _ ↦ by cases F; cases G; subst f g; simp [CFilter.toFilter]⟩
 
 /-- Construct a realizer for the inf of two filters -/
@@ -230,8 +230,8 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
     { f := fun ⟨s, t⟩ ↦ F.F s ∩ G.F t
       pt := (F.F.pt, G.F.pt)
       inf := fun ⟨a, a'⟩ ⟨b, b'⟩ ↦ (F.F.inf a b, G.F.inf a' b')
-      inf_le_left := fun _ _ ↦ inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
-      inf_le_right := fun _ _ ↦ inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
+      inf_le_left _ _ := inter_subset_inter (F.F.inf_le_left _ _) (G.F.inf_le_left _ _)
+      inf_le_right _ _ := inter_subset_inter (F.F.inf_le_right _ _) (G.F.inf_le_right _ _) },
     by
       cases F; cases G; subst f g; simp only [CFilter.toFilter, Prod.exists]; ext
       constructor
@@ -246,11 +246,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Construct a realizer for the cofinite filter -/
 protected def cofinite [DecidableEq α] : (@cofinite α).Realizer :=
   ⟨Finset α,
-    { f := fun s ↦ { a | a ∉ s }
+    { f s := { a | a ∉ s }
       pt := ∅
       inf := (· ∪ ·)
-      inf_le_left := fun _ _ _ ↦ mt (Finset.mem_union_left _)
-      inf_le_right := fun _ _ _ ↦ mt (Finset.mem_union_right _) },
+      inf_le_left _ _ := fun _  ↦ mt (Finset.mem_union_left _)
+      inf_le_right _ _ := fun _  ↦ mt (Finset.mem_union_right _) },
     filter_eq <|
       Set.ext fun _ ↦
         ⟨fun ⟨s, h⟩ ↦ s.finite_toSet.subset (compl_subset_comm.1 h), fun h ↦
@@ -265,10 +265,10 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
       inf := fun ⟨a, f⟩ ⟨b, f'⟩ ↦
         ⟨F.F.inf a b, fun i h ↦
           (G i).F.inf (f i (F.F.inf_le_left _ _ h)) (f' i (F.F.inf_le_right _ _ h))⟩
-      inf_le_left := fun _ _ _ ↦ by
+      inf_le_left _ _ := fun _  ↦ by
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_left _ _ h₁, (G i).F.inf_le_left _ _ h₂⟩
-      inf_le_right := fun _ _ _ ↦ by
+      inf_le_right _ _ := fun _  ↦ by
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
     filter_eq <| Set.ext fun _ ↦ by

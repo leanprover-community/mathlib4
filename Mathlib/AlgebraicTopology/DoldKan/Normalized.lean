@@ -127,9 +127,9 @@ using `PInfty` identifies to the composition of the normalized Moore complex fun
 and the inclusion in the Karoubi envelope. -/
 def N₁_iso_normalizedMooreComplex_comp_toKaroubi : N₁ ≅ normalizedMooreComplex A ⋙ toKaroubi _ where
   hom :=
-    { app := fun X => { f := PInftyToNormalizedMooreComplex X } }
+    { app X := { f := PInftyToNormalizedMooreComplex X } }
   inv :=
-    { app := fun X => { f := inclusionOfMooreComplexMap X } }
+    { app X := { f := inclusionOfMooreComplexMap X } }
   hom_inv_id := by
     ext X : 3
     simp only [PInftyToNormalizedMooreComplex_comp_inclusionOfMooreComplexMap,

@@ -208,7 +208,7 @@ theorem monomial_zero_one : monomial (R := R) (0 : σ →₀ ℕ) 1 = 1 :=
   rfl
 
 instance : AddMonoidWithOne (MvPowerSeries σ R) where
-  natCast := fun n => monomial 0 n
+  natCast n := monomial 0 n
   natCast_zero := by simp [Nat.cast]
   natCast_succ := by simp [Nat.cast, monomial_zero_one]
 
@@ -302,7 +302,7 @@ instance : Semiring (MvPowerSeries σ R) where
 end Semiring
 
 instance [CommSemiring R] : CommSemiring (MvPowerSeries σ R) where
-  mul_comm := fun φ ψ =>
+  mul_comm φ ψ :=
     ext fun n => by
       classical
       simpa only [coeff_mul, mul_comm] using
@@ -334,7 +334,7 @@ theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
 def C : R →+* MvPowerSeries σ R :=
   { monomial (0 : σ →₀ ℕ) with
     map_one' := rfl
-    map_mul' := fun a b => Eq.trans (by simp) (monomial_mul_monomial _ _ a b).symm
+    map_mul' a b := Eq.trans (by simp) (monomial_mul_monomial _ _ a b).symm
     map_zero' := (monomial 0).map_zero }
 
 @[simp]
@@ -436,7 +436,7 @@ def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff (0 : σ →₀ ℕ) with
     toFun := coeff (0 : σ →₀ ℕ)
     map_one' := coeff_zero_one
-    map_mul' := fun φ ψ => by classical simp [coeff_mul]
+    map_mul' φ ψ := by classical simp [coeff_mul]
     map_zero' := map_zero _ }
 
 @[simp]
@@ -776,10 +776,10 @@ variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
 instance : Algebra R (MvPowerSeries σ A) where
   algebraMap := (MvPowerSeries.map (algebraMap R A)).comp C
-  commutes' := fun a φ => by
+  commutes' a φ := by
     ext n
     simp [Algebra.commutes]
-  smul_def' := fun a σ => by
+  smul_def' a σ := by
     ext n
     simp [(coeff A n).map_smul_of_tower a, Algebra.smul_def]
 
@@ -954,7 +954,7 @@ as an algebra homomorphism.
 -/
 def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :=
   { (MvPowerSeries.map (algebraMap R A)).comp coeToMvPowerSeries.ringHom with
-    commutes' := fun r => by simp [MvPowerSeries.algebraMap_apply] }
+    commutes' r := by simp [MvPowerSeries.algebraMap_apply] }
 
 @[simp]
 theorem coeToMvPowerSeries.algHom_apply :

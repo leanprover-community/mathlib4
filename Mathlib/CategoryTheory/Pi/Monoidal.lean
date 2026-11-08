@@ -136,7 +136,7 @@ variable {I : Type w₁} {C : I → Type u₁} [∀ i, Category.{v₁} (C i)]
 @[simps!]
 def ihom (X : ∀ i, C i) : (∀ i, C i) ⥤ (∀ i, C i) where
   obj Y := fun i ↦ (X i ⟶[C i] Y i)
-  map {Y Z} f := fun i ↦ (CategoryTheory.ihom (X i)).map (f i)
+  map {Y Z} f i := (CategoryTheory.ihom (X i)).map (f i)
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The unit for the adjunction `tensorLeft X ⊣ ihom X`. -/

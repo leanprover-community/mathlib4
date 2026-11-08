@@ -60,7 +60,7 @@ variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
 -- see Note [lower instance priority]
 instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass F R A B :=
   { ‹AlgHomClass F R A B› with
-    map_smulₛₗ := fun f r x => by
+    map_smulₛₗ f r x := by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
@@ -227,7 +227,7 @@ theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R 
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
     toFun := f
-    commutes' := fun c => by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
+    commutes' c := by simp only [Algebra.algebraMap_eq_smul_one, h, f.map_one] }
 
 @[simp]
 theorem coe_mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : ⇑(mk' f h) = f :=
@@ -239,7 +239,7 @@ variable (R A)
 
 /-- Identity map as an `AlgHom`. -/
 protected def id : A →ₐ[R] A :=
-  { RingHom.id A with commutes' := fun _ => rfl }
+  { RingHom.id A with commutes' _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
@@ -260,7 +260,7 @@ domain of `φ₁` equal to the codomain of `φ₂`, then
 -/
 def comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : A →ₐ[R] C :=
   { φ₁.toRingHom.comp ↑φ₂ with
-    commutes' := fun r : R => by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
+    commutes' (r : R) := by rw [← φ₁.commutes, ← φ₂.commutes]; rfl }
 
 @[simp]
 theorem coe_comp (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) : ⇑(φ₁.comp φ₂) = φ₁ ∘ φ₂ :=
@@ -436,7 +436,7 @@ variable {R S : Type*}
 def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
   { f with
     toFun := f
-    commutes' := fun n => by simp }
+    commutes' n := by simp }
 
 @[simp]
 lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
@@ -454,7 +454,7 @@ def equivNatAlgHom [Semiring R] [Semiring S] : (R →+* S) ≃ (R →ₐ[ℕ] S)
 
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
 def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
-  { f with commutes' := fun n => by simp }
+  { f with commutes' n := by simp }
 
 @[simp]
 lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
@@ -483,7 +483,7 @@ variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
-  { algebraMap R A with commutes' := fun _ => rfl }
+  { algebraMap R A with commutes' _ := rfl }
 
 variable {R}
 
@@ -557,7 +557,7 @@ This is a stronger version of `MulSemiringAction.toRingHom` and
 @[simps]
 def toAlgHom (m : M) : A →ₐ[R] A :=
   { MulSemiringAction.toRingHom _ _ m with
-    toFun := fun a => m • a
+    toFun a := m • a
     commutes' := smul_algebraMap _ }
 
 theorem toAlgHom_injective [FaithfulSMul M A] :

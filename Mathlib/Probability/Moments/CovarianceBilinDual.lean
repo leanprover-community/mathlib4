@@ -58,7 +58,7 @@ noncomputable
 def toLpₗ (μ : Measure E) (p : ℝ≥0∞) :
     StrongDual 𝕜 E →ₗ[𝕜] Lp 𝕜 p μ :=
   if h_Lp : MemLp id p μ then
-  { toFun := fun L ↦ MemLp.toLp L (h_Lp.continuousLinearMap_comp L)
+  { toFun L := MemLp.toLp L (h_Lp.continuousLinearMap_comp L)
     map_add' u v := by push_cast; rw [MemLp.toLp_add]
     map_smul' c L := by push_cast; rw [MemLp.toLp_const_smul]; rfl }
   else 0

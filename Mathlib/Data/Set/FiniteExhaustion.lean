@@ -96,7 +96,7 @@ protected def prod :
     FiniteExhaustion (s ×ˢ t) :=
   { toFun n := K n ×ˢ K' n
     finite' n := (K.finite n).prod (K'.finite n)
-    subset_succ' := fun n ↦ Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
+    subset_succ' n := Set.prod_mono (K.subset_succ n) (K'.subset_succ n)
     iUnion_eq' := by
       rw [Set.iUnion_prod_of_monotone (OrderHomClass.mono K) (OrderHomClass.mono K'),
           K.iUnion_eq, K'.iUnion_eq] }

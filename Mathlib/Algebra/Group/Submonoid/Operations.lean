@@ -88,11 +88,11 @@ def Submonoid.toAddSubmonoid : Submonoid M ≃o AddSubmonoid (Additive M) where
   toFun S :=
     { carrier := Additive.toMul ⁻¹' S
       zero_mem' := S.one_mem'
-      add_mem' := fun ha hb => S.mul_mem' ha hb }
+      add_mem' ha hb := S.mul_mem' ha hb }
   invFun S :=
     { carrier := Additive.ofMul ⁻¹' S
       one_mem' := S.zero_mem'
-      mul_mem' := fun ha hb => S.add_mem' ha hb }
+      mul_mem' ha hb := S.add_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -130,11 +130,11 @@ def AddSubmonoid.toSubmonoid : AddSubmonoid A ≃o Submonoid (Multiplicative A) 
   toFun S :=
     { carrier := Multiplicative.toAdd ⁻¹' S
       one_mem' := S.zero_mem'
-      mul_mem' := fun ha hb => S.add_mem' ha hb }
+      mul_mem' ha hb := S.add_mem' ha hb }
   invFun S :=
     { carrier := Multiplicative.ofAdd ⁻¹' S
       zero_mem' := S.one_mem'
-      add_mem' := fun ha hb => S.mul_mem' ha hb }
+      add_mem' ha hb := S.mul_mem' ha hb }
   left_inv x := by cases x; rfl
   right_inv x := by cases x; rfl
   map_rel_iff' := Iff.rfl
@@ -447,7 +447,7 @@ use `MulEquiv.submonoidMap` for better definitional equalities. -/
 @[to_additive /-- An `AddSubgroup` is isomorphic to its image under an injective function. If
 you have an isomorphism, use `AddEquiv.addSubmonoidMap` for better definitional equalities. -/]
 noncomputable def equivMapOfInjective (f : M →* N) (hf : Function.Injective f) : S ≃* S.map f :=
-  { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _) }
+  { Equiv.Set.image f S hf with map_mul' _ _ := Subtype.ext (f.map_mul _ _) }
 
 @[to_additive (attr := simp)]
 theorem coe_equivMapOfInjective_apply (f : M →* N) (hf : Function.Injective f) (x : S) :
@@ -505,7 +505,7 @@ theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
   /-- The product of `AddSubmonoid`s is isomorphic to their product as `AddMonoid`s. -/]
 def prodEquiv (s : Submonoid M) (t : Submonoid N) : s.prod t ≃* s × t :=
   { (Equiv.Set.prod (s : Set M) (t : Set N)) with
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 open MonoidHom
 
@@ -1104,7 +1104,7 @@ monoid are equal. -/
   /-- Makes the identity additive isomorphism from a proof two submonoids of an additive monoid are
   equal. -/]
 def submonoidCongr (h : S = T) : S ≃* T :=
-  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' _ _ := rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.mrange` can be unprimed.
 /-- A monoid homomorphism `f : M →* N` with a left-inverse `g : N → M` defines a multiplicative
@@ -1133,7 +1133,7 @@ See `MonoidHom.submonoidMap` for a variant for `MonoidHom`s. -/
   between a submonoid `S ≤ M` and the submonoid `φ(S) ≤ N`. See
   `AddMonoidHom.addSubmonoidMap` for a variant for `AddMonoidHom`s. -/]
 def submonoidMap (e : M ≃* N) (S : Submonoid M) : S ≃* S.map e :=
-  { (e : M ≃ N).image S with map_mul' := fun _ _ => Subtype.ext (map_mul e _ _) }
+  { (e : M ≃ N).image S with map_mul' _ _ := Subtype.ext (map_mul e _ _) }
 
 @[to_additive (attr := simp)]
 theorem coe_submonoidMap_apply (e : M ≃* N) (S : Submonoid M) (g : S) :

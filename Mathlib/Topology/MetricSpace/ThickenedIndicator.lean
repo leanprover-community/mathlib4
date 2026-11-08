@@ -159,7 +159,7 @@ these values using `infEDist _ E`.
 See `thickenedIndicatorAux` for the unbundled `ℝ≥0∞`-valued function. -/
 @[simps]
 def thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) : α →ᵇ ℝ≥0 where
-  toFun := fun x : α => (thickenedIndicatorAux δ E x).toNNReal
+  toFun (x : α) := (thickenedIndicatorAux δ E x).toNNReal
   continuous_toFun := by
     apply ContinuousOn.comp_continuous continuousOn_toNNReal
       (continuous_thickenedIndicatorAux δ_pos E)

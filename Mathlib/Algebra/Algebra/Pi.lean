@@ -36,8 +36,8 @@ variable [CommSemiring R] [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
 
 instance algebra : Algebra R (Π i, A i) where
   algebraMap := RingHom.pi fun i ↦ algebraMap R (A i)
-  commutes' := fun a f ↦ by ext; simp [Algebra.commutes]
-  smul_def' := fun a f ↦ by ext; simp [Algebra.smul_def]
+  commutes' a f := by ext; simp [Algebra.commutes]
+  smul_def' a f := by ext; simp [Algebra.smul_def]
 
 @[push ←]
 theorem algebraMap_def (a : R) : algebraMap R (Π i, A i) a = fun i ↦ algebraMap R (A i) a :=
@@ -87,8 +87,8 @@ etc. -/
 @[simps]
 def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
-    toFun := fun f ↦ f i
-    commutes' := fun _ ↦ rfl }
+    toFun f := f i
+    commutes' _ := rfl }
 
 lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
 
@@ -116,7 +116,7 @@ etc. -/
 def constAlgHom : B →ₐ[R] A → B :=
   { Pi.constRingHom A B with
     toFun := Function.const _
-    commutes' := fun _ ↦ rfl }
+    commutes' _ := rfl }
 
 /-- When `R` is commutative and permits an `algebraMap`, `Pi.constRingHom` is equal to that
 map. -/
@@ -147,8 +147,8 @@ variable [Algebra R A] [Algebra R B]
 @[simps]
 protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] ι → B :=
   { f.toRingHom.compLeft ι with
-    toFun := fun h ↦ f ∘ h
-    commutes' := fun c ↦ by
+    toFun h := f ∘ h
+    commutes' c := by
       ext
       exact f.commutes' c }
 
@@ -169,9 +169,9 @@ This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 @[simps apply]
 def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
-    toFun := fun x j ↦ e j (x j)
-    invFun := fun x j ↦ (e j).symm (x j)
-    commutes' := fun r ↦ by
+    toFun x := fun j  ↦ e j (x j)
+    invFun x := fun j  ↦ (e j).symm (x j)
+    commutes' r := by
       ext i
       simp }
 

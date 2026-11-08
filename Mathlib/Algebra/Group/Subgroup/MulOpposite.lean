@@ -53,7 +53,7 @@ theorem mem_op {x : Gᵐᵒᵖ} {S : Subgroup G} : x ∈ S.op ↔ x.unop ∈ S :
 protected def unop (H : Subgroup Gᵐᵒᵖ) : Subgroup G where
   carrier := MulOpposite.op ⁻¹' (H : Set Gᵐᵒᵖ)
   one_mem' := H.one_mem
-  mul_mem' := fun ha hb => H.mul_mem hb ha
+  mul_mem' ha hb := H.mul_mem hb ha
   inv_mem' := H.inv_mem
 
 @[to_additive (attr := simp)]

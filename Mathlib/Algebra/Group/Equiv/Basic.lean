@@ -51,7 +51,7 @@ variable [Mul M] [Mul N] [Mul P]
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive /-- The `AddEquiv` between two `AddMonoid`s with a unique element. -/]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+  { Equiv.ofUnique M N with map_mul' _ _ := Subsingleton.elim _ _ }
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive /-- There is a unique additive monoid homomorphism between two additive monoids with
@@ -202,9 +202,9 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
-    toFun := fun x j => es j (x j),
-    invFun := fun x j => (es j).symm (x j),
-    map_mul' := fun x y => funext fun j => map_mul (es j) (x j) (y j) }
+    toFun x := fun j  => es j (x j),
+    invFun x := fun j  => (es j).symm (x j),
+    map_mul' x y := funext fun j => map_mul (es j) (x j) (y j) }
 
 @[to_additive (attr := simp)]
 theorem piCongrRight_refl {η : Type*} {Ms : η → Type*} [∀ j, Mul (Ms j)] :
@@ -226,7 +226,7 @@ is `MulEquiv` to the element at the single index. -/
   is `AddEquiv` to the element at the single index. -/]
 def piUnique {ι : Type*} (M : ι → Type*) [∀ j, Mul (M j)] [Unique ι] :
     (∀ j, M j) ≃* M default :=
-  { Equiv.piUnique M with map_mul' := fun _ _ => Pi.mul_apply _ _ _ }
+  { Equiv.piUnique M with map_mul' _ _ := Pi.mul_apply _ _ _ }
 
 end MulEquiv
 

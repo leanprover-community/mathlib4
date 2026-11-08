@@ -53,7 +53,7 @@ theorem IsOrderedMonoid.ofSubmonoid :
     letI := PartialOrder.ofSubmonoid hM
     IsOrderedMonoid G :=
   letI := PartialOrder.ofSubmonoid hM
-  { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+  { mul_le_mul_left a b nab c := by simpa [· ≤ ·] using nab }
 
 /-- Construct a linear order by designating
 a maximal submonoid with zero support in an abelian group. -/
@@ -189,4 +189,4 @@ lemma IsOrderedMonoid.mkOfCone [GroupConeClass S G] :
     let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
     IsOrderedMonoid G :=
   let _ : PartialOrder G := PartialOrder.mkOfGroupCone C
-  { mul_le_mul_left := fun a b nab c ↦ by simpa [· ≤ ·] using nab }
+  { mul_le_mul_left a b nab c := by simpa [· ≤ ·] using nab }

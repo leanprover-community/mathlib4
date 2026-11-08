@@ -86,13 +86,13 @@ instance [Monoid α] [NonAssocSemiring R] [MulAction α R] [IsScalarTower α R R
 
 instance [Monoid α] [NonAssocSemiring R] [DistribMulAction α R] [IsScalarTower α R R]
     (c : RingCon R) : DistribMulAction α c.Quotient where
-  smul_zero := fun _ => congr(toQuotient $(smul_zero _))
-  smul_add := fun _ => Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
+  smul_zero _ := congr(toQuotient $(smul_zero _))
+  smul_add _ := Quotient.ind₂' fun _ _ => congr(toQuotient $(smul_add ..))
 
 instance [Monoid α] [Semiring R] [MulSemiringAction α R] [IsScalarTower α R R] (c : RingCon R) :
     MulSemiringAction α c.Quotient where
-  smul_one := fun _ => congr(toQuotient $(smul_one _))
-  smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
+  smul_one _ := congr(toQuotient $(smul_one _))
+  smul_mul _ := Quotient.ind₂' fun _ _ => congr_arg toQuotient <|
     MulSemiringAction.smul_mul _ _ _
 
 section
@@ -151,12 +151,12 @@ theorem comap_mono
 addition. -/
 instance : InfSet (RingCon R) where
   sInf S :=
-    { r := fun x y => ∀ c : RingCon R, c ∈ S → c x y
+    { r x y := ∀ c : RingCon R, c ∈ S → c x y
       iseqv :=
         ⟨fun x c _hc => c.refl x, fun h c hc => c.symm <| h c hc, fun h1 h2 c hc =>
           c.trans (h1 c hc) <| h2 c hc⟩
-      add' := fun h1 h2 c hc => c.add (h1 c hc) <| h2 c hc
-      mul' := fun h1 h2 c hc => c.mul (h1 c hc) <| h2 c hc }
+      add' h1 h2 c hc := c.add (h1 c hc) <| h2 c hc
+      mul' h1 h2 c hc := c.mul (h1 c hc) <| h2 c hc }
 
 /-- The infimum of a set of congruence relations is the same as the infimum of the set's image
 under the map to the underlying equivalence relation. -/
@@ -187,15 +187,15 @@ instance : CompleteLattice (RingCon R) where
       fun _r hr _x _y h _r' hr' => hr hr' h⟩
   inf c d :=
     { toSetoid := c.toSetoid ⊓ d.toSetoid
-      mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩
-      add' := fun h1 h2 => ⟨c.add h1.1 h2.1, d.add h1.2 h2.2⟩ }
+      mul' h1 h2 := ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩
+      add' h1 h2 := ⟨c.add h1.1 h2.1, d.add h1.2 h2.2⟩ }
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
   le_inf _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top :=
     { (⊤ : Setoid R) with
-      mul' := fun _ _ => trivial
-      add' := fun _ _ => trivial }
+      mul' _ _ := trivial
+      add' _ _ := trivial }
   le_top _ := fun _ _ _h => trivial
   bot :=
     { (⊥ : Setoid R) with

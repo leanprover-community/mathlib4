@@ -260,7 +260,7 @@ lemma exists_lift_of_germInjective_aux {U : X.Opens} {x : X} (hxU)
   let φ' : A →ₐ[R] X.presheaf.stalk x :=
     { φ.hom with commutes' := DFunLike.congr_fun congr($(e).hom) }
   let ψ : Γ(X, s.inf W ⊓ U) →ₐ[R] X.presheaf.stalk x :=
-    { (X.presheaf.germ _ x H).hom with commutes' := fun x ↦ X.presheaf.germ_res_apply _ _ _ _ }
+    { (X.presheaf.germ _ x H).hom with commutes' x := X.presheaf.germ_res_apply _ _ _ _ }
   change AlgHom.range φ' ≤ AlgHom.range ψ
   rw [← Algebra.map_top, ← hs, AlgHom.map_adjoin, Algebra.adjoin_le_iff]
   rintro _ ⟨i, hi, rfl : φ i = _⟩

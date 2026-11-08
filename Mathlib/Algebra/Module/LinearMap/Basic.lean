@@ -61,8 +61,8 @@ variable [Monoid T'] [DistribMulAction T' M] [SMulCommClass R T' M]
 instance : SMul S'ᵈᵐᵃ (M →ₛₗ[σ₁₂] M') where
   smul a f :=
     { toFun := a • (f : M → M')
-      map_add' := fun x y ↦ by simp only [DomMulAct.smul_apply, f.map_add, smul_add]
-      map_smul' := fun c x ↦ by simp_rw [DomMulAct.smul_apply, ← smul_comm, f.map_smulₛₗ] }
+      map_add' x y := by simp only [DomMulAct.smul_apply, f.map_add, smul_add]
+      map_smul' c x := by simp_rw [DomMulAct.smul_apply, ← smul_comm, f.map_smulₛₗ] }
 
 theorem _root_.DomMulAct.smul_linearMap_apply (a : S'ᵈᵐᵃ) (f : M →ₛₗ[σ₁₂] M') (x : M) :
     (a • f) x = f (DomMulAct.mk.symm a • x) :=
@@ -186,7 +186,7 @@ variable {ι κ R : Type*} [Semiring R]
 
 /-- The map `Sum.elim` specialised with zero in the second argument, as a linear map. -/
 @[simps] def elimZeroRight : (ι → R) →ₗ[R] (ι ⊕ κ → R) where
-  toFun := fun f ↦ Sum.elim f 0
+  toFun f := Sum.elim f 0
   map_add' f g := by ext (i | i) <;> simp
   map_smul' t f := by ext (i | i) <;> simp
 

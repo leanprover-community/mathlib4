@@ -117,8 +117,8 @@ theorem gc_map_comap (f : R →ₙ+* S) :
 noncomputable def equivMapOfInjective (f : R →ₙ+* S) (hf : Function.Injective (f : R → S)) :
     s ≃+* s.map f :=
   { Equiv.Set.image f s hf with
-    map_mul' := fun _ _ => Subtype.ext (map_mul f _ _)
-    map_add' := fun _ _ => Subtype.ext (map_add f _ _) }
+    map_mul' _ _ := Subtype.ext (map_mul f _ _)
+    map_add' _ _ := Subtype.ext (map_add f _ _) }
 
 @[simp]
 theorem coe_equivMapOfInjective_apply (f : R →ₙ+* S) (hf : Function.Injective f) (x : s) :
@@ -203,13 +203,13 @@ instance : CompleteLattice (NonUnitalSubsemiring R) :=
   { completeLatticeOfInf (NonUnitalSubsemiring R)
       fun _ => IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _ hx => (mem_bot.mp hx).symm ▸ zero_mem s
+    bot_le s := fun _ hx  => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ := fun _ _  => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ := fun _  => And.left
+    inf_le_right _ _ := fun _  => And.right
+    le_inf _ _ _ h₁ h₂ := fun _ hx  => ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : NonUnitalSubsemiring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -616,8 +616,8 @@ protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
 /-- Product of non-unital subsemirings is isomorphic to their product as semigroups. -/
 def prodEquiv (s : NonUnitalSubsemiring R) (t : NonUnitalSubsemiring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → NonUnitalSubsemiring R}
     (hS : Directed (· ≤ ·) S) {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
@@ -758,15 +758,15 @@ variable [NonUnitalNonAssocSemiring S]
 monoid are equal. -/
 def nonUnitalSubsemiringCongr (h : s = t) : s ≃+* t :=
   { Set.equivOfEq <| congr_arg _ h with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 /-- Restrict a non-unital ring homomorphism with a left inverse to a ring isomorphism to its
 `NonUnitalRingHom.srange`. -/
 def sofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* srange f :=
   { srangeRestrict f with
     toFun := srangeRestrict f
-    invFun := fun x => g (subtype (srange f) x)
+    invFun x := g (subtype (srange f) x)
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

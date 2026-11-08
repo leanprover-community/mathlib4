@@ -411,7 +411,7 @@ elab_rules : command
 initialize Lean.registerBuiltinAttribute {
   name := `mkIff
   descr := "Generate an `iff` lemma for an inductive `Prop`."
-  add := fun decl stx _ => Lean.Meta.MetaM.run' do
+  add decl stx _ := Lean.Meta.MetaM.run' do
     let (tgt, idStx) ← match stx with
       | `(attr| mk_iff $tgt:ident) =>
         pure ((← mkDeclName (← getCurrNamespace) {} tgt.getId).1, tgt.raw)

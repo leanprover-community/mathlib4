@@ -52,7 +52,7 @@ theorem hasGroupoid_of_le {G₁ G₂ : StructureGroupoid H} (h : HasGroupoid M G
 theorem hasGroupoid_inf_iff {G₁ G₂ : StructureGroupoid H} : HasGroupoid M (G₁ ⊓ G₂) ↔
     HasGroupoid M G₁ ∧ HasGroupoid M G₂ :=
   ⟨(fun h ↦ ⟨hasGroupoid_of_le h inf_le_left, hasGroupoid_of_le h inf_le_right⟩),
-  fun ⟨h1, h2⟩ ↦ { compatible := fun he he' ↦ ⟨h1.compatible he he', h2.compatible he he'⟩ }⟩
+  fun ⟨h1, h2⟩ ↦ { compatible he he' := ⟨h1.compatible he he', h2.compatible he he'⟩ }⟩
 
 theorem hasGroupoid_of_pregroupoid (PG : Pregroupoid H) (h : ∀ {e e' : OpenPartialHomeomorph M H},
     e ∈ atlas H M → e' ∈ atlas H M → PG.property (e.symm ≫ₕ e') (e.symm ≫ₕ e').source) :
@@ -373,7 +373,7 @@ variable [TopologicalSpace M'] [TopologicalSpace M''] {G : StructureGroupoid H} 
 def Structomorph.refl (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [HasGroupoid M G] :
     Structomorph G M M :=
   { Homeomorph.refl M with
-    mem_groupoid := fun c c' hc hc' ↦ by
+    mem_groupoid c c' hc hc' := by
       change OpenPartialHomeomorph.symm c ≫ₕ OpenPartialHomeomorph.refl M ≫ₕ c' ∈ G
       rw [OpenPartialHomeomorph.refl_trans]
       exact G.compatible hc hc' }
@@ -474,17 +474,16 @@ def OpenPartialHomeomorph.toStructomorph {e : OpenPartialHomeomorph M H} (he : e
   intro s t
   by_cases! h : Nonempty e.source
   · exact { e.toHomeomorphSourceTarget with
-      mem_groupoid :=
-        -- The atlas of H on itself has only one chart, hence c' is the inclusion.
-        -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
-        -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
-        -- with `c'` yields a chart in the maximal atlas of `s`.
-        fun c c' hc hc' ↦ G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
+      -- The atlas of H on itself has only one chart, hence c' is the inclusion.
+      -- Then, compatibility of `G` *almost* yields our claim --- except that `e` is a chart
+      -- on `M` and `c` is one on `s`: we need to show that restricting `e` to `s` and composing
+      -- with `c'` yields a chart in the maximal atlas of `s`.
+      mem_groupoid c c' hc hc' := G.compatible_of_mem_maximalAtlas (G.subset_maximalAtlas hc)
           (G.restriction_mem_maximalAtlas_subtype he h c' hc') }
   · have : IsEmpty t := isEmpty_coe_sort.mpr
       (by convert e.image_source_eq_target ▸ image_eq_empty.mpr (isEmpty_coe_sort.mp h))
     exact { Homeomorph.empty with
       -- `c'` cannot exist: it would be the restriction of `chartAt H x` at some `x ∈ t`.
-      mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
+      mem_groupoid _ c' _ := fun ⟨_, ⟨x, _⟩, _⟩  ↦ (this.false x).elim }
 
 end HasGroupoid

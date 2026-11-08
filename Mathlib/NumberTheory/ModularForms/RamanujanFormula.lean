@@ -105,7 +105,7 @@ private lemma serreDerivativeOne_E2_slash (γ : SL(2, ℤ)) :
 /-- The weight-1 Serre derivative of `E₂`, packaged as a modular form of weight `4`. -/
 private def serreDerivativeOneE2 : ModularForm 𝒮ℒ 4 where
   toFun := serreDerivative 1 E2
-  slash_action_eq' := fun _ ⟨γ, hγ⟩ ↦ hγ ▸ serreDerivativeOne_E2_slash γ
+  slash_action_eq' _ := fun ⟨γ, hγ⟩  ↦ hγ ▸ serreDerivativeOne_E2_slash γ
   holo' := serreDerivative_mdifferentiable 1 E2_mdifferentiable
   bdd_at_cusps' hc := (OnePoint.isBoundedAt_iff_forall_SL2Z hc).mpr fun γ _ ↦
     (serreDerivativeOne_E2_slash γ).symm ▸

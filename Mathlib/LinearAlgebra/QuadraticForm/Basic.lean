@@ -398,7 +398,7 @@ This provides an `R`-action via `Algebra.id`. -/
 instance : SMul S (QuadraticMap R M N) :=
   ⟨fun a Q =>
     { toFun := a • ⇑Q
-      toFun_smul := fun b x => by
+      toFun_smul b x := by
         rw [Pi.smul_apply, Q.map_smul, Pi.smul_apply, smul_comm]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
@@ -420,8 +420,8 @@ instance [SMul S T] [IsScalarTower S T N] : IsScalarTower S T (QuadraticMap R M 
 end SMul
 
 instance : Zero (QuadraticMap R M N) :=
-  ⟨{  toFun := fun _ => 0
-      toFun_smul := fun a _ => by simp only [smul_zero]
+  ⟨{  toFun _ := 0
+      toFun_smul a _ := by simp only [smul_zero]
       exists_companion' := ⟨0, fun _ _ => by simp only [add_zero, LinearMap.zero_apply]⟩ }⟩
 
 instance : IsZeroApply (QuadraticMap R M N) where
@@ -436,7 +436,7 @@ instance : Inhabited (QuadraticMap R M N) :=
 instance : Add (QuadraticMap R M N) :=
   ⟨fun Q Q' =>
     { toFun := Q + Q'
-      toFun_smul := fun a x => by simp only [Pi.add_apply, smul_add, QuadraticMap.map_smul]
+      toFun_smul a x := by simp only [Pi.add_apply, smul_add, QuadraticMap.map_smul]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         let ⟨B', h'⟩ := Q'.exists_companion
@@ -479,7 +479,7 @@ variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N
 instance : Neg (QuadraticMap R M N) :=
   ⟨fun Q =>
     { toFun := -Q
-      toFun_smul := fun a x => by simp only [Pi.neg_apply, Q.map_smul, smul_neg]
+      toFun_smul a x := by simp only [Pi.neg_apply, Q.map_smul, smul_neg]
       exists_companion' :=
         let ⟨B, h⟩ := Q.exists_companion
         ⟨-B, fun x y => by simp_rw [Pi.neg_apply, h, LinearMap.neg_apply, neg_add]⟩ }⟩

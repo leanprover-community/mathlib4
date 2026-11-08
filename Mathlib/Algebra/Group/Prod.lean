@@ -62,7 +62,7 @@ theorem isSelfInv_iff [Inv M] [Inv N] {p : M × N} :
 
 @[to_additive]
 instance [InvolutiveInv M] [InvolutiveInv N] : InvolutiveInv (M × N) :=
-  { inv_inv := fun _ => Prod.ext (inv_inv _) (inv_inv _) }
+  { inv_inv _ := Prod.ext (inv_inv _) (inv_inv _) }
 
 @[to_additive]
 instance isMulCommutative [Mul M] [Mul N] [IsMulCommutative M] [IsMulCommutative N] :
@@ -92,9 +92,9 @@ instance [MulOneClass M] [MulOneClass N] [IsDedekindFiniteMonoid M] [IsDedekindF
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
-    npow_zero := fun _ => Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun _ _ => Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
+  { npow z a := ⟨NPow.npow z a.1, NPow.npow z a.2⟩,
+    npow_zero _ := Prod.ext (Monoid.npow_zero _) (Monoid.npow_zero _),
+    npow_succ _ _ := Prod.ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
     one_mul := by simp,
     mul_one := by simp }
 
@@ -121,8 +121,8 @@ instance [DivInvMonoid G] [DivInvMonoid H] : DivInvMonoid (G × H) where
 
 @[to_additive]
 instance [DivisionMonoid G] [DivisionMonoid H] : DivisionMonoid (G × H) :=
-  { mul_inv_rev := fun _ _ => Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
-    inv_eq_of_mul := fun _ _ h =>
+  { mul_inv_rev _ _ := Prod.ext (mul_inv_rev _ _) (mul_inv_rev _ _),
+    inv_eq_of_mul _ _ h :=
       Prod.ext (inv_eq_of_mul_eq_one_right congr(fst $h))
         (inv_eq_of_mul_eq_one_right congr(snd $h)),
     inv_inv := by simp }
@@ -150,11 +150,11 @@ instance [Mul G] [Mul H] [IsCancelMul G] [IsCancelMul H] : IsCancelMul (G × H) 
 
 @[to_additive]
 instance [LeftCancelSemigroup G] [LeftCancelSemigroup H] : LeftCancelSemigroup (G × H) :=
-  { mul_left_cancel := fun _ _ _ => mul_left_cancel }
+  { mul_left_cancel _ := fun _ _  => mul_left_cancel }
 
 @[to_additive]
 instance [RightCancelSemigroup G] [RightCancelSemigroup H] : RightCancelSemigroup (G × H) :=
-  { mul_right_cancel := fun _ _ _ => mul_right_cancel }
+  { mul_right_cancel _ := fun _ _  => mul_right_cancel }
 
 @[to_additive]
 instance [LeftCancelMonoid M] [LeftCancelMonoid N] : LeftCancelMonoid (M × N) :=
@@ -329,7 +329,7 @@ variable (M N) [MulOneClass M] [MulOneClass N]
 def fst : M × N →* M :=
   { toFun := Prod.fst,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 /-- Given monoids `M`, `N`, the natural projection homomorphism from `M × N` to `N`. -/
 @[to_additive
@@ -338,25 +338,25 @@ def fst : M × N →* M :=
 def snd : M × N →* N :=
   { toFun := Prod.snd,
     map_one' := rfl,
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `M` to `M × N`. -/
 @[to_additive
       /-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
       from `A` to `A × B`. -/]
 def inl : M →* M × N :=
-  { toFun := fun x => (x, 1),
+  { toFun x := (x, 1),
     map_one' := rfl,
-    map_mul' := fun _ _ => Prod.ext rfl (one_mul 1).symm }
+    map_mul' _ _ := Prod.ext rfl (one_mul 1).symm }
 
 /-- Given monoids `M`, `N`, the natural inclusion homomorphism from `N` to `M × N`. -/
 @[to_additive
       /-- Given additive monoids `A`, `B`, the natural inclusion homomorphism
       from `B` to `A × B`. -/]
 def inr : N →* M × N :=
-  { toFun := fun y => (1, y),
+  { toFun y := (1, y),
     map_one' := rfl,
-    map_mul' := fun _ _ => Prod.ext (one_mul 1).symm rfl }
+    map_mul' _ _ := Prod.ext (one_mul 1).symm rfl }
 
 variable {M N}
 
@@ -556,9 +556,9 @@ variable (M N M' N')
 The name matches `mul_mul_mul_comm` -/]
 def prodProdProdComm : (M × N) × M' × N' ≃* (M × M') × N × N' :=
   { Equiv.prodProdProdComm M N M' N' with
-    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
-    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
-    map_mul' := fun _mnmn _mnmn' => rfl }
+    toFun mnmn := ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun mmnn := ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    map_mul' _mnmn _mnmn' := rfl }
 
 @[to_additive (attr := simp) prodProdProdComm_toEquiv]
 theorem prodProdProdComm_toEquiv :
@@ -576,7 +576,7 @@ end
 /-- Product of additive isomorphisms; the maps come from `Equiv.prodCongr`. -/]
 def prodCongr (f : M ≃* M') (g : N ≃* N') : M × N ≃* M' × N' :=
   { f.toEquiv.prodCongr g.toEquiv with
-    map_mul' := fun _ _ => Prod.ext (map_mul f _ _) (map_mul g _ _) }
+    map_mul' _ _ := Prod.ext (map_mul f _ _) (map_mul g _ _) }
 
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
@@ -586,7 +586,7 @@ structure.
 
 This is the `AddEquiv` version of `Equiv.uniqueProd`. -/]
 def uniqueProd [Unique N] : N × M ≃* M :=
-  { Equiv.uniqueProd M N with map_mul' := fun _ _ => rfl }
+  { Equiv.uniqueProd M N with map_mul' _ _ := rfl }
 
 /-- Multiplying by the trivial monoid doesn't change the structure.
 
@@ -596,7 +596,7 @@ structure.
 
 This is the `AddEquiv` version of `Equiv.prodUnique`. -/]
 def prodUnique [Unique N] : M × N ≃* M :=
-  { Equiv.prodUnique M N with map_mul' := fun _ _ => rfl }
+  { Equiv.prodUnique M N with map_mul' _ _ := rfl }
 
 end
 

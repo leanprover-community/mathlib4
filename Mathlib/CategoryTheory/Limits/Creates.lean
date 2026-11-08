@@ -258,7 +258,7 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphism
     (h : ∀ c t, LiftsToLimit K F c t) : CreatesLimit K F where
   lifts c t := (h c t).toLiftableCone
   toReflectsLimit :=
-    { reflects := fun {d} hd => ⟨by
+    { reflects {d} hd := ⟨by
         let d' : Cone K := (h (F.mapCone d) hd).toLiftableCone.liftedCone
         let i : F.mapCone d' ≅ F.mapCone d :=
           (h (F.mapCone d) hd).toLiftableCone.validLift
@@ -329,8 +329,8 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
   createsLimitOfFullyFaithfulOfLift' hl
     { pt := X
       π :=
-        { app := fun j => F.preimage (i.hom ≫ l.π.app j)
-          naturality := fun Y Z f =>
+        { app j := F.preimage (i.hom ≫ l.π.app j)
+          naturality Y Z f :=
             F.map_injective <| by
               simpa using (l.w f).symm } }
     (Cone.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
@@ -380,7 +380,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphi
     (h : ∀ c t, LiftsToColimit K F c t) : CreatesColimit K F where
   lifts c t := (h c t).toLiftableCocone
   toReflectsColimit :=
-    { reflects := fun {d} hd => ⟨by
+    { reflects {d} hd := ⟨by
         let d' : Cocone K := (h (F.mapCocone d) hd).toLiftableCocone.liftedCocone
         let i : F.mapCocone d' ≅ F.mapCocone d :=
           (h (F.mapCocone d) hd).toLiftableCocone.validLift
@@ -452,8 +452,8 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
   createsColimitOfFullyFaithfulOfLift' hl
     { pt := X
       ι :=
-        { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
-          naturality := fun Y Z f =>
+        { app j := F.preimage (l.ι.app j ≫ i.inv)
+          naturality Y Z f :=
             F.map_injective <| by
               simpa [← cancel_mono i.hom] using l.w f } }
     (Cocone.ext i fun j => by simp)
@@ -497,7 +497,7 @@ instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits 
 def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesLimit K₁ F] :
     CreatesLimit K₂ F :=
   { reflectsLimit_of_iso_diagram F h with
-    lifts := fun c t =>
+    lifts c t :=
       let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCone := (Cone.postcompose h.hom).obj (liftLimit t')
         validLift :=
@@ -550,7 +550,7 @@ def createsLimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J �
 def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesColimit K₁ F] :
     CreatesColimit K₂ F :=
   { reflectsColimit_of_iso_diagram F h with
-    lifts := fun c t =>
+    lifts c t :=
       let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCocone := (Cocone.precompose h.inv).obj (liftColimit t')
         validLift :=
@@ -625,7 +625,7 @@ def idLiftsCone (c : Cone (K ⋙ 𝟭 C)) : LiftableCone K (𝟭 C) c where
 /-- The identity functor creates all limits. -/
 instance idCreatesLimits : CreatesLimitsOfSize.{w, w'} (𝟭 C) where
   CreatesLimitsOfShape :=
-    { CreatesLimit := { lifts := fun c _ => idLiftsCone c } }
+    { CreatesLimit := { lifts c _ := idLiftsCone c } }
 
 /-- Any cocone lifts through the identity functor. -/
 def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c where
@@ -637,7 +637,7 @@ def idLiftsCocone (c : Cocone (K ⋙ 𝟭 C)) : LiftableCocone K (𝟭 C) c wher
 /-- The identity functor creates all colimits. -/
 instance idCreatesColimits : CreatesColimitsOfSize.{w, w'} (𝟭 C) where
   CreatesColimitsOfShape :=
-    { CreatesColimit := { lifts := fun c _ => idLiftsCocone c } }
+    { CreatesColimit := { lifts c _ := idLiftsCocone c } }
 
 /-- Satisfy the inhabited linter -/
 instance inhabitedLiftableCone (c : Cone (K ⋙ 𝟭 C)) : Inhabited (LiftableCone K (𝟭 C) c) :=

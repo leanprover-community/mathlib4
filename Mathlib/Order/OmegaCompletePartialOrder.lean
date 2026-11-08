@@ -436,7 +436,7 @@ variable [OmegaCompletePartialOrder α] [OmegaCompletePartialOrder β] [OmegaCom
 
 instance : OmegaCompletePartialOrder (α × β) where
   ωSup c := (ωSup (c.map OrderHom.fst), ωSup (c.map OrderHom.snd))
-  ωSup_le := fun _ _ h => ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
+  ωSup_le _ _ h := ⟨ωSup_le _ _ fun i => (h i).1, ωSup_le _ _ fun i => (h i).2⟩
   le_ωSup c i := ⟨le_ωSup (c.map OrderHom.fst) i, le_ωSup (c.map OrderHom.snd) i⟩
 
 @[simp] theorem fst_ωSup (c : Chain (α × β)) : (ωSup c).fst = ωSup (c.map OrderHom.fst) := rfl

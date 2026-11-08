@@ -54,7 +54,7 @@ theorem schroeder_bernstein_of_rel {f : α → β} {g : β → α} (hf : Functio
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective, by simp⟩
   set F : Set α →o Set α :=
-    { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
+    { toFun s := (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst => by dsimp at hst ⊢; gcongr }
   set s : Set α := F.lfp
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp

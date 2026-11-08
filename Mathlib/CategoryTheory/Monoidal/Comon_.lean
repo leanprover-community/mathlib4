@@ -270,7 +270,7 @@ The contravariant functor turning comonoid objects into monoid objects in the op
 -/
 @[simps] def ComonToMonOpOp : Comon C ⥤ (Mon Cᵒᵖ)ᵒᵖ where
   obj A := op (ComonToMonOpOpObj A)
-  map := fun f => op
+  map f := op
     { hom := f.hom.op
       isMonHom_hom.one_hom := by apply Quiver.Hom.unop_inj; simp
       isMonHom_hom.mul_hom := by apply Quiver.Hom.unop_inj; simp }
@@ -302,7 +302,7 @@ The contravariant functor turning monoid objects in the opposite category into c
 @[simps]
 def MonOpOpToComon : (Mon Cᵒᵖ)ᵒᵖ ⥤ Comon C where
   obj A := MonOpOpToComonObj (unop A)
-  map := fun f =>
+  map f :=
     { hom := f.unop.hom.unop
       isComonHom_hom.hom_counit := by apply Quiver.Hom.op_inj; simp
       isComonHom_hom.hom_comul := by apply Quiver.Hom.op_inj; simp [op_tensorHom] }
@@ -379,7 +379,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 

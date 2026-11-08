@@ -423,7 +423,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 by mapping both the numerator and denominator and quotienting them. -/
 def liftRingHom (φ : R[X] →+* L) (hφ : R[X]⁰ ≤ L⁰.comap φ) : R⟮X⟯ →+* L :=
   { liftMonoidWithZeroHom φ.toMonoidWithZeroHom hφ with
-    map_add' := fun x y => by
+    map_add' x y := by
       simp only [ZeroHom.toFun_eq_coe, MonoidWithZeroHom.toZeroHom_coe]
       cases subsingleton_or_nontrivial R
       · rw [Subsingleton.elim (x + y) y, Subsingleton.elim x 0, map_zero, zero_add]
@@ -469,9 +469,9 @@ instance instField [IsDomain K] : Field K⟮X⟯ where
   mul_inv_cancel _ := mul_inv_cancel
   zpow := zpowRec
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 section IsFractionRing
 
@@ -618,7 +618,7 @@ on the condition that `φ` maps non-zero-divisors to non-zero-divisors,
 by mapping both the numerator and denominator and quotienting them. -/
 def mapAlgHom (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R[X]⁰.comap φ) : K⟮X⟯ →ₐ[S] R⟮X⟯ :=
   { mapRingHom φ hφ with
-    commutes' := fun r => by
+    commutes' r := by
       simp_rw [RingHom.toFun_eq_coe, coe_mapRingHom_eq_coe_map, algebraMap_apply r, map_apply_div,
         map_one, AlgHom.commutes] }
 
@@ -630,7 +630,7 @@ theorem coe_mapAlgHom_eq_coe_map (φ : K[X] →ₐ[S] R[X]) (hφ : K[X]⁰ ≤ R
 by mapping both the numerator and denominator and quotienting them. -/
 def liftAlgHom : K⟮X⟯ →ₐ[S] L :=
   { liftRingHom φ.toRingHom hφ with
-    commutes' := fun r => by
+    commutes' r := by
       simp_rw [RingHom.toFun_eq_coe, AlgHom.toRingHom_eq_coe, algebraMap_apply r,
         liftRingHom_apply_div, AlgHom.coe_toRingHom, map_one, div_one, AlgHom.commutes] }
 

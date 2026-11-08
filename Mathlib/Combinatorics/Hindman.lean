@@ -70,7 +70,7 @@ theorem Ultrafilter.eventually_mul {M} [Mul M] (U V : Ultrafilter M) (p : M → 
 structure on `M`. -/]
 def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
-    mul_assoc := fun U V W =>
+    mul_assoc U V W :=
       Ultrafilter.coe_inj.mp <|
         Filter.ext' fun p => by simp [Ultrafilter.eventually_mul, mul_assoc] }
 

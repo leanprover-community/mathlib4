@@ -200,7 +200,7 @@ instance addMonoidWithOne : AddMonoidWithOne (Nonneg α) :=
   { Nonneg.one (α := α) with
     toNatCast := Nonneg.natCast
     natCast_zero := by ext; simp
-    natCast_succ := fun _ => by ext; simp }
+    natCast_succ _ := by ext; simp }
 
 end AddMonoidWithOne
 

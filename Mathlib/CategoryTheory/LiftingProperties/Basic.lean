@@ -121,7 +121,7 @@ end HasLiftingProperty
 lemma RetractArrow.rightLiftingProperty
     {X Y Z W X' Y' : C} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (h : RetractArrow f' f) (g : Z ⟶ W) [HasLiftingProperty g f] : HasLiftingProperty g f' where
-  sq_hasLift := fun {u v} sq ↦
+  sq_hasLift {u v} sq :=
     have sq' : CommSq (u ≫ h.i.left) g f (v ≫ h.i.right) :=
       ⟨by rw [← sq.w_assoc, Category.assoc, RetractArrow.i_w]⟩
     ⟨⟨{ l := sq'.lift ≫ h.r.left}⟩⟩

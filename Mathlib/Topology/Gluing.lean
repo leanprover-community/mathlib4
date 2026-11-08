@@ -323,7 +323,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion'
   f_id i := (h.V_id i).symm ▸ (Opens.inclusionTopIso (h.U i)).isIso_hom
-  f_open := fun i j : h.J => (h.V i j).isOpenEmbedding
+  f_open (i j : h.J) := (h.V i j).isOpenEmbedding
   t := h.t
   t_id i := by ext; rw [h.t_id]; rfl
   t' := h.t'
@@ -355,13 +355,13 @@ variable {α : Type u} [TopologicalSpace α] {J : Type u} (U : J → Opens α)
 def ofOpenSubsets : TopCat.GlueData.{u} :=
   mk'.{u}
     { J
-      U := fun i => (Opens.toTopCat ↧α).obj (U i)
-      V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
-      V_id := fun i => by simp
-      t_id := fun i => by ext; rfl
-      t_inter := fun _ _ _ _ hx => hx
-      cocycle := fun _ _ _ _ _ => rfl }
+      U i := (Opens.toTopCat ↧α).obj (U i)
+      V _ j := (Opens.map <| Opens.inclusion' _).obj (U j)
+      t i j := ofHom ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      V_id i := by simp
+      t_id i := by ext; rfl
+      t_inter _ _ _ _ hx := hx
+      cocycle _ _ _ _ _ := rfl }
 
 /-- The canonical map from the glue of a family of open subsets `α` into `α`.
 This map is an open embedding (`fromOpenSubsetsGlue_isOpenEmbedding`),

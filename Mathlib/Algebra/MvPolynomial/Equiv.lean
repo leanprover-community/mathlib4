@@ -489,7 +489,7 @@ theorem optionEquivLeft_elim_eval (s : S₁ → R) (y : R) (f : MvPolynomial (Op
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial S₁ R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
+      commutes' r := by
         convert! Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change
@@ -672,7 +672,7 @@ theorem eval_eq_eval_mv_eval' (s : Fin n → R) (y : R) (f : MvPolynomial (Fin (
   -- turn this into a def `Polynomial.mapAlgHom`
   let φ : (MvPolynomial (Fin n) R)[X] →ₐ[R] R[X] :=
     { Polynomial.mapRingHom (eval s) with
-      commutes' := fun r => by
+      commutes' r := by
         convert! Polynomial.map_C (eval s)
         exact (eval_C _).symm }
   change

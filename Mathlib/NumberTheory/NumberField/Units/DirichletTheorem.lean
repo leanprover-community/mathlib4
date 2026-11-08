@@ -83,9 +83,9 @@ variable (K) in
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
 def _root_.NumberField.Units.logEmbedding :
     Additive ((𝓞 K)ˣ) →+ logSpace K :=
-{ toFun := fun x w ↦ mult w.val * Real.log (w.val ↑x.toMul)
+{ toFun x := fun w  ↦ mult w.val * Real.log (w.val ↑x.toMul)
   map_zero' := by simp; rfl
-  map_add' := fun _ _ ↦ by simp [Real.log_mul, mul_add]; rfl }
+  map_add' _ _ := by simp [Real.log_mul, mul_add]; rfl }
 
 @[simp]
 theorem logEmbedding_component (x : (𝓞 K)ˣ) (w : {w : InfinitePlace K // w ≠ w₀}) :

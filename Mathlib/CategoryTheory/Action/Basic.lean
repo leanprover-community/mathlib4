@@ -161,7 +161,7 @@ def mkIso {M N : Action V G} (f : M.V ≅ N.V)
       comm := comm }
   inv :=
     { hom := f.inv
-      comm := fun g => by have w := comm g =≫ f.inv; simp at w; simp [w] }
+      comm g := by have w := comm g =≫ f.inv; simp at w; simp [w] }
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
     IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
@@ -187,8 +187,8 @@ def functor : Action V G ⥤ SingleObj G ⥤ V where
       map_id _ := by simp [SingleObj.id_as_one]
       map_comp _ _ := by simp [SingleObj.comp_as_mul] }
   map f :=
-    { app := fun _ => f.hom
-      naturality := fun _ _ g => f.comm g }
+    { app _ := f.hom
+      naturality _ _ g := f.comm g }
 
 /-- Auxiliary definition for `functorCategoryEquivalence`. -/
 @[simps]
@@ -207,7 +207,7 @@ def inverse : (SingleObj G ⥤ V) ⥤ Action V G where
             rw [← SingleObj.comp_as_mul, F.map_comp] } }
   map f :=
     { hom := f.app PUnit.unit
-      comm := fun g => f.naturality g }
+      comm g := f.naturality g }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -319,8 +319,8 @@ theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
 def actionPUnitEquivalence : Action V PUnit ≌ V where
   functor := forget V _
   inverse :=
-    { obj := fun X => ⟨X, 1⟩
-      map := fun f => ⟨f, fun ⟨⟩ => by simp⟩ }
+    { obj X := ⟨X, 1⟩
+      map f := ⟨f, fun ⟨⟩ => by simp⟩ }
   unitIso :=
     NatIso.ofComponents fun X => mkIso (Iso.refl _) fun ⟨⟩ => by
       simp only [Functor.id_obj, MonoidHom.one_apply, End.one_asHom, Functor.comp_obj,
@@ -342,7 +342,7 @@ def res {G H : Type*} [Monoid G] [Monoid H] (f : G →* H) : Action V H ⥤ Acti
       ρ := M.ρ.comp f }
   map p :=
     { hom := p.hom
-      comm := fun g => p.comm (f g) }
+      comm g := p.comm (f g) }
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -426,7 +426,7 @@ def mapAction (F : V ⥤ W) (G : Type*) [Monoid G] : Action V G ⥤ Action W G w
           map_mul' := by cat_disch } }
   map f :=
     { hom := F.map f.hom
-      comm := fun g => by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
+      comm g := by dsimp; rw [← F.map_comp, f.comm, F.map_comp] }
   map_id M := by ext; simp only [Action.id_hom, F.map_id]
   map_comp f g := by ext; simp only [Action.comp_hom, F.map_comp]
 

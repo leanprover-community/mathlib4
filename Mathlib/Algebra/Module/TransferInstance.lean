@@ -62,7 +62,7 @@ def linearEquiv :
     α ≃ₗ[R] β :=
   letI := e.module R
   { e with
-    map_smul' := fun r x => by
+    map_smul' r x := by
       apply e.symm.injective
       simp only [RingHom.id_apply, EmbeddingLike.apply_eq_iff_eq]
       exact Iff.mp (eq_symm_apply _) rfl }

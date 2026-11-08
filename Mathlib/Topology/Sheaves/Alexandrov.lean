@@ -106,7 +106,7 @@ def lowerCone
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
   π := {
-    app := fun f =>
+    app f :=
       S.π.app ((projSup Us).obj f) ≫ limit.π (generator (principalOpen f.right) ⋙ F)
         ⟨.mk .unit, f.right, 𝟙 _⟩
     naturality := by

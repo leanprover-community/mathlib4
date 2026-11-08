@@ -37,8 +37,8 @@ by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are limit. -
 def isLimitOfEval (s : Cone F)
     (hs : ∀ (i : ι), IsLimit ((eval C c i).mapCone s)) : IsLimit s where
   lift t :=
-    { f := fun i => (hs i).lift ((eval C c i).mapCone t)
-      comm' := fun i i' _ => by
+    { f i := (hs i).lift ((eval C c i).mapCone t)
+      comm' i i' _ := by
         apply IsLimit.hom_ext (hs i')
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCone t)
@@ -62,16 +62,16 @@ the limit `F ⋙ eval C c n`. -/
 @[simps]
 noncomputable def coneOfHasLimitEval : Cone F where
   pt :=
-    { X := fun n => limit (F ⋙ eval C c n)
-      d := fun n m => limMap { app := fun j => (F.obj j).d n m }
-      shape := fun {n m} h => by
+    { X n := limit (F ⋙ eval C c n)
+      d n m := limMap { app j := (F.obj j).d n m }
+      shape {n m} h := by
         ext j
         rw [limMap_π]
         dsimp
         rw [(F.obj j).shape _ _ h, comp_zero, zero_comp] }
   π :=
-    { app := fun j => { f := fun _ => limit.π _ j }
-      naturality := fun i j φ => by
+    { app j := { f _ := limit.π _ j }
+      naturality i j φ := by
         ext n
         dsimp
         simp only [Category.id_comp]
@@ -113,8 +113,8 @@ by applying `eval C c i : HomologicalComplex C c ⥤ C` for all `i` are colimit.
 def isColimitOfEval (s : Cocone F)
     (hs : ∀ (i : ι), IsColimit ((eval C c i).mapCocone s)) : IsColimit s where
   desc t :=
-    { f := fun i => (hs i).desc ((eval C c i).mapCocone t)
-      comm' := fun i i' _ => by
+    { f i := (hs i).desc ((eval C c i).mapCocone t)
+      comm' i i' _ := by
         apply IsColimit.hom_ext (hs i)
         intro j
         have eq := fun k => (hs k).fac ((eval C c k).mapCocone t)
@@ -139,16 +139,16 @@ the colimit of `F ⋙ eval C c n`. -/
 @[simps]
 noncomputable def coconeOfHasColimitEval : Cocone F where
   pt :=
-    { X := fun n => colimit (F ⋙ eval C c n)
-      d := fun n m => colimMap { app := fun j => (F.obj j).d n m }
-      shape := fun {n m} h => by
+    { X n := colimit (F ⋙ eval C c n)
+      d n m := colimMap { app j := (F.obj j).d n m }
+      shape {n m} h := by
         ext j
         rw [ι_colimMap]
         dsimp
         rw [(F.obj j).shape _ _ h, zero_comp, comp_zero] }
   ι :=
-    { app := fun j => { f := fun n => colimit.ι (F ⋙ eval C c n) j }
-      naturality := fun i j φ => by
+    { app j := { f n := colimit.ι (F ⋙ eval C c n) j }
+      naturality i j φ := by
         ext n
         dsimp
         simp only [Category.comp_id]

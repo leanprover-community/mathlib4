@@ -223,8 +223,8 @@ The point of this cocone is `E.right.obj Y` -/
 def coconeAt (Y : D) : Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := E.right.obj Y
   ι :=
-    { app := fun g => E.hom.app g.left ≫ E.right.map g.hom
-      naturality := fun g₁ g₂ φ => by
+    { app g := E.hom.app g.left ≫ E.right.map g.hom
+      naturality g₁ g₂ φ := by
         dsimp
         rw [← CostructuredArrow.w φ]
         simp only [NatTrans.naturality_assoc, Functor.comp_map,
@@ -352,8 +352,8 @@ lemma IsPointwiseLeftKanExtension.hasPointwiseLeftKanExtension :
 /-- The (unique) morphism from a pointwise left Kan extension. -/
 def IsPointwiseLeftKanExtension.homFrom (G : LeftExtension L F) : E ⟶ G :=
   StructuredArrow.homMk
-    { app := fun Y => (h Y).desc (LeftExtension.coconeAt G Y)
-      naturality := fun Y₁ Y₂ φ => (h Y₁).hom_ext (fun X => by
+    { app Y := (h Y).desc (LeftExtension.coconeAt G Y)
+      naturality Y₁ Y₂ φ := (h Y₁).hom_ext (fun X => by
         rw [(h Y₁).fac_assoc (coconeAt G Y₁) X]
         simpa using (h Y₂).fac (coconeAt G Y₂) ((CostructuredArrow.map φ).obj X)) }
     (by
@@ -402,8 +402,8 @@ The point of this cone is `E.left.obj Y` -/
 def coneAt (Y : D) : Cone (StructuredArrow.proj Y L ⋙ F) where
   pt := E.left.obj Y
   π :=
-    { app := fun g ↦ E.left.map g.hom ≫ E.hom.app g.right
-      naturality := fun g₁ g₂ φ ↦ by
+    { app g := E.left.map g.hom ≫ E.hom.app g.right
+      naturality g₁ g₂ φ := by
         dsimp
         rw [assoc, id_comp, ← StructuredArrow.w φ, Functor.map_comp, assoc]
         congr 1
@@ -524,8 +524,8 @@ lemma IsPointwiseRightKanExtension.hasPointwiseRightKanExtension :
 /-- The (unique) morphism to a pointwise right Kan extension. -/
 def IsPointwiseRightKanExtension.homTo (G : RightExtension L F) : G ⟶ E :=
   CostructuredArrow.homMk
-    { app := fun Y ↦ (h Y).lift (RightExtension.coneAt G Y)
-      naturality := fun Y₁ Y₂ φ ↦ (h Y₂).hom_ext (fun X ↦ by
+    { app Y := (h Y).lift (RightExtension.coneAt G Y)
+      naturality Y₁ Y₂ φ := (h Y₂).hom_ext (fun X ↦ by
         rw [assoc, (h Y₂).fac (coneAt G Y₂) X]
         simpa using ((h Y₁).fac (coneAt G Y₁) ((StructuredArrow.map φ).obj X)).symm) }
     (by
@@ -573,9 +573,9 @@ noncomputable def pointwiseLeftKanExtension : D ⥤ H where
   map {Y₁ Y₂} f :=
     colimit.desc (CostructuredArrow.proj L Y₁ ⋙ F)
       (Cocone.mk (colimit (CostructuredArrow.proj L Y₂ ⋙ F))
-        { app := fun g => colimit.ι (CostructuredArrow.proj L Y₂ ⋙ F)
+        { app g := colimit.ι (CostructuredArrow.proj L Y₂ ⋙ F)
             ((CostructuredArrow.map f).obj g)
-          naturality := fun g₁ g₂ φ => by
+          naturality g₁ g₂ φ := by
             simpa using colimit.w (CostructuredArrow.proj L Y₂ ⋙ F)
               ((CostructuredArrow.map f).map φ) })
   map_id Y := colimit.hom_ext (fun j => by
@@ -633,7 +633,7 @@ def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
     Cocone (CostructuredArrow.proj L Y ⋙ F) where
   pt := G.obj Y
   ι := {
-    app := fun f ↦ α.app f.left ≫ G.map f.hom
+    app f := α.app f.left ≫ G.map f.hom
     naturality := by simp [← G.map_comp] }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -643,7 +643,7 @@ lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y :
     ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
       G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
   let β : L.pointwiseLeftKanExtension F ⟶ G :=
-    { app := fun Y ↦ colimit.desc _ (costructuredArrowMapCocone L F G α Y) }
+    { app Y := colimit.desc _ (costructuredArrowMapCocone L F G α Y) }
   have h : (pointwiseLeftKanExtension L F).descOfIsLeftKanExtension
       (pointwiseLeftKanExtensionUnit L F) G α = β := by
     apply hom_ext_of_isLeftKanExtension (α := pointwiseLeftKanExtensionUnit L F)
@@ -675,9 +675,9 @@ noncomputable def pointwiseRightKanExtension : D ⥤ H where
   obj Y := limit (StructuredArrow.proj Y L ⋙ F)
   map {Y₁ Y₂} f := limit.lift (StructuredArrow.proj Y₂ L ⋙ F)
       (Cone.mk (limit (StructuredArrow.proj Y₁ L ⋙ F))
-        { app := fun g ↦ limit.π (StructuredArrow.proj Y₁ L ⋙ F)
+        { app g := limit.π (StructuredArrow.proj Y₁ L ⋙ F)
             ((StructuredArrow.map f).obj g)
-          naturality := fun g₁ g₂ φ ↦ by
+          naturality g₁ g₂ φ := by
             simpa using (limit.w (StructuredArrow.proj Y₁ L ⋙ F)
               ((StructuredArrow.map f).map φ)).symm })
   map_id Y := limit.hom_ext (fun j => by
@@ -736,7 +736,7 @@ def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
     Cone (StructuredArrow.proj Y L ⋙ F) where
   pt := G.obj Y
   π := {
-    app := fun f ↦ G.map f.hom ≫ α.app f.right
+    app f := G.map f.hom ≫ α.app f.right
     naturality := by simp [← α.naturality, ← G.map_comp_assoc] }
 
 set_option backward.defeqAttrib.useBackward true in
@@ -747,7 +747,7 @@ lemma pointwiseRightKanExtension_lift_app (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y 
       (pointwiseRightKanExtensionCounit L F) G α |>.app Y) =
         limit.lift _ (structuredArrowMapCone L F G α Y) := by
   let β : G ⟶ L.pointwiseRightKanExtension F :=
-    { app := fun Y ↦ limit.lift _ (structuredArrowMapCone L F G α Y) }
+    { app Y := limit.lift _ (structuredArrowMapCone L F G α Y) }
   have h : (pointwiseRightKanExtension L F).liftOfIsRightKanExtension
       (pointwiseRightKanExtensionCounit L F) G α = β := by
     apply hom_ext_of_isRightKanExtension (α := pointwiseRightKanExtensionCounit L F)

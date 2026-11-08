@@ -367,13 +367,13 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (project f).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _
+      μIso _ _ := Iso.refl _
   -- Porting note: `μIso_hom_natural_left` was proved in mathlib3 by tidy, using induction.
   -- We probably don't expect `cat_disch` to handle this yet, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Aesop.20and.20cases
-      μIso_hom_natural_left := fun f _ => by
+      μIso_hom_natural_left f _ := by
         induction f using Quotient.recOn
         all_goals aesop
-      μIso_hom_natural_right := fun _ f => by
+      μIso_hom_natural_right _ f := by
         induction f using Quotient.recOn
         all_goals aesop }
 

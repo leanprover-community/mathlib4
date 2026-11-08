@@ -87,7 +87,7 @@ include adj in
 lemma leftAdjoint_preservesColimits : PreservesColimitsOfSize.{v, u} F where
   preservesColimitsOfShape :=
     { preservesColimit :=
-        { preserves := fun hc =>
+        { preserves hc :=
             ⟨IsColimit.isoUniqueCoconeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsColimit.isoUniqueCoconeMorphism.hom hc _)
                 ((adj.functorialityAdjunction _).homEquiv _ _)⟩ } }
@@ -110,7 +110,7 @@ noncomputable instance (priority := 100)
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
     { reflectsColimit :=
-        { reflects := fun t =>
+        { reflects t :=
           ⟨(isColimitOfPreserves E.inv t).mapCoconeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
 -- see Note [lower instance priority]
@@ -120,7 +120,7 @@ noncomputable instance (priority := 100)
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
     { CreatesColimit :=
-        { lifts := fun c _ =>
+        { lifts c _ :=
             { liftedCocone := mapCoconeInv H c
               validLift := mapCoconeMapCoconeInv H c } } }
 
@@ -197,7 +197,7 @@ include adj in
 lemma rightAdjoint_preservesLimits : PreservesLimitsOfSize.{v, u} G where
   preservesLimitsOfShape :=
     { preservesLimit :=
-        { preserves := fun hc =>
+        { preserves hc :=
             ⟨IsLimit.isoUniqueConeMorphism.inv fun _ =>
               @Equiv.unique _ _ (IsLimit.isoUniqueConeMorphism.hom hc _)
                 ((adj.functorialityAdjunction' _).homEquiv _ _).symm⟩ } }
@@ -219,7 +219,7 @@ noncomputable instance (priority := 100)
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
     { reflectsLimit :=
-        { reflects := fun t =>
+        { reflects t :=
             ⟨(isLimitOfPreserves E.inv t).mapConeEquiv E.asEquivalence.unitIso.symm⟩ } }
 
 -- see Note [lower instance priority]
@@ -228,7 +228,7 @@ noncomputable instance (priority := 100)
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=
-        { lifts := fun c _ =>
+        { lifts c _ :=
             { liftedCone := mapConeInv H c
               validLift := mapConeMapConeInv H c } } }
 

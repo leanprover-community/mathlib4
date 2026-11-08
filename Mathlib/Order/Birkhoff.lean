@@ -149,8 +149,8 @@ open scoped Classical in
 lattice is isomorphic to the lattice of lower sets of its sup-irreducible elements. -/
 noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
-    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun _ _ hcb hba ↦ hba.trans' hcb⟩
-      invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
+    { toFun a := ⟨{b | ↑b ≤ a}, fun _ _ hcb hba ↦ hba.trans' hcb⟩
+      invFun s := (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
       left_inv := fun a ↦ by
         refine le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) ?_
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a

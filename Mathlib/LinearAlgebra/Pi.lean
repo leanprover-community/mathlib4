@@ -95,8 +95,8 @@ between `M₂` and `M₃`. -/
 @[simps]
 protected def compLeft (f : M₂ →ₗ[R] M₃) (I : Type*) : (I → M₂) →ₗ[R] I → M₃ :=
   { f.toAddMonoidHom.compLeft I with
-    toFun := fun h => f ∘ h
-    map_smul' := fun c h => by
+    toFun h := f ∘ h
+    map_smul' c h := by
       ext x
       exact f.map_smul' c (h x) }
 
@@ -408,9 +408,9 @@ variable [(i : ι) → AddCommMonoid (χ i)] [(i : ι) → Module R (χ i)]
 This is `Equiv.piCongrRight` as a `LinearEquiv` -/
 def piCongrRight (e : (i : ι) → φ i ≃ₗ[R] ψ i) : ((i : ι) → φ i) ≃ₗ[R] (i : ι) → ψ i :=
   { AddEquiv.piCongrRight fun j => (e j).toAddEquiv with
-    toFun := fun f i => e i (f i)
-    invFun := fun f i => (e i).symm (f i)
-    map_smul' := fun c f => by ext; simp }
+    toFun f := fun i  => e i (f i)
+    invFun f := fun i  => (e i).symm (f i)
+    map_smul' c f := by ext; simp }
 
 @[simp]
 theorem piCongrRight_apply (e : (i : ι) → φ i ≃ₗ[R] ψ i) (f i) :
@@ -438,8 +438,8 @@ This is `Equiv.piCongrLeft'` as a `LinearEquiv`. -/
 @[simps +simpRhs]
 def piCongrLeft' (e : ι ≃ ι') : ((i' : ι) → φ i') ≃ₗ[R] (i : ι') → φ <| e.symm i :=
   { Equiv.piCongrLeft' φ e with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 /-- Transporting dependent functions through an equivalence of the base,
 expressed as a "simplification".
@@ -553,8 +553,8 @@ def piFinTwo (M : Fin 2 → Type v)
     [(i : Fin 2) → AddCommMonoid (M i)] [(i : Fin 2) → Module R (M i)] :
     ((i : Fin 2) → M i) ≃ₗ[R] M 0 × M 1 :=
   { piFinTwoEquiv M with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 @[simp]
 theorem piFinTwo_apply (M : Fin 2 → Type v)

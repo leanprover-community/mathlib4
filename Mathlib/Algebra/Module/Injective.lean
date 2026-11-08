@@ -142,7 +142,7 @@ instance : Min (ExtensionOf i f) where
           refine ⟨X1.le (Set.mem_range_self _), X2.le (Set.mem_range_self _), ?_⟩
           rw [← X1.is_extension x, ← X2.is_extension x] :
           x ∈ X1.toLinearPMap.eqLocus X2.toLinearPMap)
-      is_extension := fun _ => X1.is_extension _ }
+      is_extension _ := X1.is_extension _ }
 
 instance : PartialOrder (ExtensionOf i f) :=
   PartialOrder.lift _ ExtensionOf.toLinearPMap_injective
@@ -168,7 +168,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
       refine le_trans hnonempty.some.le
         (LinearPMap.le_sSup _ <|
             (Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩).1
-    is_extension := fun m => by
+    is_extension m := by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
       generalize_proofs _ _ h1
@@ -188,19 +188,19 @@ instance ExtensionOf.inhabited : Inhabited (ExtensionOf i f) where
   default :=
     { domain := LinearMap.range i
       toFun :=
-        { toFun := fun x => f x.2.choose
-          map_add' := fun x y => by
+        { toFun x := f x.2.choose
+          map_add' x y := by
             have eq1 : _ + _ = (x + y).1 := congr($(x.2.choose_spec) + $(y.2.choose_spec))
             rw [← map_add, ← (x + y).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_add]
-          map_smul' := fun r x => by
+          map_smul' r x := by
             have eq1 : r • _ = (r • x).1 := congr(r • $(x.2.choose_spec))
             rw [← map_smul, ← (r • x).2.choose_spec] at eq1
             dsimp
             rw [← Fact.out (p := Function.Injective i) eq1, map_smul] }
       le := le_refl _
-      is_extension := fun m => by
+      is_extension m := by
         simp only [LinearPMap.mk_apply, LinearMap.coe_mk]
         dsimp
         apply congrArg
@@ -340,7 +340,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
   le := le_trans (extensionOfMax i f).le le_sup_left
   toFun :=
     { toFun := ExtensionOfMaxAdjoin.extensionToFun i f h
-      map_add' := fun a b => by
+      map_add' a b := by
         have eq1 :
           ↑a + ↑b =
             ↑(ExtensionOfMaxAdjoin.fst i a + ExtensionOfMaxAdjoin.fst i b) +
@@ -351,7 +351,7 @@ def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
           LinearPMap.map_add, map_add]
         unfold ExtensionOfMaxAdjoin.extensionToFun
         abel
-      map_smul' := fun r a => by
+      map_smul' r a := by
         dsimp
         have eq1 :
           r • (a : N) =
@@ -388,8 +388,8 @@ protected theorem extension_property (h : Module.Baer R Q)
   Exists.intro
     { toFun := ((extensionOfMax f g).toLinearPMap
         ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
-      map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
-      map_smul' := fun r x ↦ by rw [← LinearPMap.map_smul]; dsimp } <|
+      map_add' x y := by rw [← LinearPMap.map_add]; congr
+      map_smul' r x := by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)

@@ -197,10 +197,10 @@ open CategoryTheory.Preadditive
 set_option backward.isDefEq.respectTransparency false in
 instance (priority := 100) preservesFiniteBiproductsOfAdditive [Additive F] :
     PreservesFiniteBiproducts F where
-  preserves := fun {J} _ =>
+  preserves {J} _ :=
     let ⟨_⟩ := nonempty_fintype J
     { preserves :=
-      { preserves := fun hb =>
+      { preserves hb :=
           ⟨isBilimitOfTotal _ (by
             simp_rw [F.mapBicone_π, F.mapBicone_ι, ← F.map_comp]
             erw [← F.map_sum, ← F.map_id, IsBilimit.total hb])⟩ } }

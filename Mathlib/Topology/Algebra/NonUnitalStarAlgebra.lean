@@ -48,7 +48,7 @@ variable [IsSemitopologicalSemiring A]
 algebra is itself a non-unital star subalgebra. -/
 def topologicalClosure (s : NonUnitalStarSubalgebra R A) : NonUnitalStarSubalgebra R A :=
   { s.toNonUnitalSubalgebra.topologicalClosure with
-    star_mem' := fun h ↦ map_mem_closure continuous_star h fun _ ↦ star_mem
+    star_mem' h := map_mem_closure continuous_star h fun _ ↦ star_mem
     carrier := _root_.closure (s : Set A) }
 
 theorem le_topologicalClosure (s : NonUnitalStarSubalgebra R A) : s ≤ s.topologicalClosure :=

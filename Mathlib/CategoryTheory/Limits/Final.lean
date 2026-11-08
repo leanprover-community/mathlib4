@@ -109,13 +109,13 @@ instance initial_op_of_final (F : C ⥤ D) [Final F] : Initial F.op where
 
 theorem final_of_initial_op (F : C ⥤ D) [Initial F.op] : Final F :=
   {
-    out := fun d =>
+    out d :=
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (structuredArrowOpEquivalence F d).symm) }
 
 theorem initial_of_final_op (F : C ⥤ D) [Final F.op] : Initial F :=
   {
-    out := fun d =>
+    out d :=
       @isConnected_of_isConnected_op _ _
         (isConnected_of_equivalent (costructuredArrowOpEquivalence F d).symm) }
 
@@ -123,7 +123,7 @@ attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 /-- If a functor `R : D ⥤ C` is a right adjoint, it is final. -/
 theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final R :=
-  { out := fun c =>
+  { out c :=
       let u : StructuredArrow c R := StructuredArrow.mk (adj.unit.app c)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
@@ -136,7 +136,7 @@ theorem final_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Final 
 
 /-- If a functor `L : C ⥤ D` is a left adjoint, it is initial. -/
 theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Initial L :=
-  { out := fun d =>
+  { out d :=
       let u : CostructuredArrow L d := CostructuredArrow.mk (adj.counit.app d)
       @zigzag_isConnected _ _ ⟨u⟩ fun f g =>
         Relation.ReflTransGen.trans
@@ -218,8 +218,8 @@ def extendCocone : Cocone (F ⋙ G) ⥤ Cocone G where
   obj c :=
     { pt := c.pt
       ι :=
-        { app := fun X => G.map (homToLift F X) ≫ c.ι.app (lift F X)
-          naturality := fun X Y f => by
+        { app X := G.map (homToLift F X) ≫ c.ι.app (lift F X)
+          naturality X Y f := by
             dsimp; simp only [Category.comp_id]
             -- This would be true if we'd chosen `lift F X` to be `lift F Y`
             -- and `homToLift F X` to be `f ≫ homToLift F Y`.
@@ -412,7 +412,7 @@ def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
-  has_colimit := fun _ => hasColimit_of_comp F
+  has_colimit _ := hasColimit_of_comp F
 
 include F in
 theorem preservesColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
@@ -566,8 +566,8 @@ def extendCone : Cone (F ⋙ G) ⥤ Cone G where
   obj c :=
     { pt := c.pt
       π :=
-        { app := fun d => c.π.app (lift F d) ≫ G.map (homToLift F d)
-          naturality := fun X Y f => by
+        { app d := c.π.app (lift F d) ≫ G.map (homToLift F d)
+          naturality X Y f := by
             dsimp; simp only [Category.id_comp, Category.assoc]
             -- This would be true if we'd chosen `lift F Y` to be `lift F X`
             -- and `homToLift F Y` to be `homToLift F X ≫ f`.
@@ -752,7 +752,7 @@ def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
 
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
-  has_limit := fun _ => hasLimit_of_comp F
+  has_limit _ := hasLimit_of_comp F
 
 include F in
 theorem preservesLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
@@ -1062,9 +1062,9 @@ set_option backward.isDefEq.respectTransparency false in
 action on fibers being the identity. -/
 def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
     StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
-  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).toFunctor.obj f⟩)
+  obj X := StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).toFunctor.obj f⟩)
     (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
-  map := fun g => StructuredArrow.homMk
+  map g := StructuredArrow.homMk
     (Grothendieck.Hom.mk (by exact g.right)
       (eqToHom (by
         dsimp +instances

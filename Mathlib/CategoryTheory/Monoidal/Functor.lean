@@ -202,15 +202,15 @@ A constructor for lax monoidal functors whose axioms are described by `tensorHom
 def ofTensorHom : F.LaxMonoidal where
   ε := ε
   μ := μ
-  μ_natural_left := fun f X' => by
+  μ_natural_left f X' := by
     simp_rw [← tensorHom_id, ← F.map_id, μ_natural]
-  μ_natural_right := fun X' f => by
+  μ_natural_right X' f := by
     simp_rw [← id_tensorHom, ← F.map_id, μ_natural]
-  associativity := fun X Y Z => by
+  associativity X Y Z := by
     simp_rw [← tensorHom_id, ← id_tensorHom, associativity]
-  left_unitality := fun X => by
+  left_unitality X := by
     simp_rw [← tensorHom_id, left_unitality]
-  right_unitality := fun X => by
+  right_unitality X := by
     simp_rw [← id_tensorHom, right_unitality]
 
 end
@@ -809,7 +809,7 @@ end Prod
 instance : (diag C).Monoidal :=
   CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 @[simp] lemma diag_ε : ε (diag C) = 𝟙 _ := rfl
 @[simp] lemma diag_η : η (diag C) = 𝟙 _ := rfl

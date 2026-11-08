@@ -99,7 +99,7 @@ end DerivedFromSubfieldClass
 
 /-- The subfield of `K` containing all elements of `K`. -/
 instance : Top (Subfield K) :=
-  ⟨{ (⊤ : Subring K) with inv_mem' := fun x _ => Subring.mem_top x }⟩
+  ⟨{ (⊤ : Subring K) with inv_mem' x _ := Subring.mem_top x }⟩
 
 instance : Inhabited (Subfield K) :=
   ⟨⊤⟩
@@ -124,7 +124,7 @@ variable (f : K →+* L)
 /-- The preimage of a subfield along a ring homomorphism is a subfield. -/
 def comap (s : Subfield L) : Subfield K :=
   { s.toSubring.comap f with
-    inv_mem' := fun x hx =>
+    inv_mem' x hx :=
       show f x⁻¹ ∈ s by
         rw [map_inv₀ f]
         exact s.inv_mem hx }
@@ -229,7 +229,7 @@ namespace Subfield
 instance : Min (Subfield K) :=
   ⟨fun s t =>
     { s.toSubring ⊓ t.toSubring with
-      inv_mem' := fun _ hx =>
+      inv_mem' _ hx :=
         Subring.mem_inf.mpr
           ⟨s.inv_mem (Subring.mem_inf.mp hx).1, t.inv_mem (Subring.mem_inf.mp hx).2⟩ }⟩
 
@@ -282,11 +282,11 @@ theorem isGLB_sInf (S : Set (Subfield K)) : IsGLB S (sInf S) := by
 instance : CompleteLattice (Subfield K) :=
   { completeLatticeOfInf (Subfield K) isGLB_sInf with
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ := fun _ _  => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ := fun _  => And.left
+    inf_le_right _ _ := fun _  => And.right
+    le_inf _ _ _ h₁ h₂ := fun _ hx  => ⟨h₁ hx, h₂ hx⟩ }
 
 /-! ### subfield closure of a subset -/
 
@@ -413,7 +413,7 @@ theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subfield K} (h
     {x : K} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
   let s : Subfield K :=
     { __ := Subring.copy _ _ (Subring.coe_iSup_of_directed hS).symm
-      inv_mem' := fun _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+      inv_mem' _ hx := have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).inv_mem hi⟩ }
   have : iSup S = s := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set K)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)
@@ -549,8 +549,8 @@ variable {s t : Subfield K}
     monoid are equal. -/
 def subfieldCongr (h : s = t) : s ≃+* t :=
   { Set.equivOfEq <| SetLike.ext'_iff.1 h with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 end RingEquiv
 

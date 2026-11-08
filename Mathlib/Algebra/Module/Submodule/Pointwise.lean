@@ -68,7 +68,7 @@ This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseNeg : Neg (Submodule R M) where
   neg p :=
     { -p.toAddSubmonoid with
-      smul_mem' := fun r m hm => Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
+      smul_mem' r m hm := Set.mem_neg.2 <| smul_neg r m ▸ p.smul_mem r <| Set.mem_neg.1 hm }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseNeg
 
@@ -173,7 +173,7 @@ instance : IsOrderedAddMonoid (Submodule R M) where
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
   le_add_self _ _ := le_sup_right
-  le_self_add := fun _a _b => le_sup_left
+  le_self_add _a _b := le_sup_left
 
 section
 
@@ -271,7 +271,7 @@ not hold so this cannot be stated as a `Module`. -/
 @[instance_reducible]
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
-    zero_smul := fun S =>
+    zero_smul S :=
       congr(S.map $(LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero
@@ -399,7 +399,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
     { carrier := { m | ∃ (mem : m ∈ s • N), motive m mem },
       zero_mem' := ⟨Submodule.zero_mem _, zero⟩
       add_mem' := fun ⟨mem, h⟩ ⟨mem', h'⟩ ↦ ⟨_, add mem mem' h h'⟩
-      smul_mem' := fun r _ ⟨mem, h⟩ ↦ ⟨_, smul₁ r mem h⟩ }
+      smul_mem' r _ := fun ⟨mem, h⟩  ↦ ⟨_, smul₁ r mem h⟩ }
     (fun _ _ mem mem' ↦ ⟨mem_set_smul_of_mem_mem mem mem', smul₀ mem mem'⟩) hx
   h
 

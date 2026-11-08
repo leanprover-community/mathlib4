@@ -57,10 +57,10 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
     IsLimit (⟨Y, by cat_disch, by simp⟩ : Cone F) ≃ ∀ X : C, Unique (X ⟶ Y) where
   toFun t X :=
     { default := t.lift ⟨X, ⟨by cat_disch, by simp⟩⟩
-      uniq := fun f => t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
+      uniq f := t.uniq ⟨X, ⟨by cat_disch, by simp⟩⟩ f (by simp) }
   invFun u :=
-    { lift := fun s => (u s.pt).default
-      uniq := fun s _ _ => (u s.pt).2 _ }
+    { lift s := (u s.pt).default
+      uniq s _ _ := (u s.pt).2 _ }
   left_inv := by dsimp [Function.LeftInverse]; intro x; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
     dsimp [Function.RightInverse, Function.LeftInverse]
@@ -73,7 +73,7 @@ def isTerminalEquivUnique (F : Discrete.{0} PEmpty.{1} ⥤ C) (Y : C) :
 (as an instance). -/]
 def IsTerminal.ofUnique (X : C) [h : ∀ Y : C, Unique (Y ⟶ X)] : IsTerminal X where
   lift s := (h s.pt).default
-  fac := fun _ ⟨j⟩ => j.elim
+  fac _ := fun ⟨j⟩  => j.elim
 
 /-- An object `X` is terminal if for every `Y` there is a unique morphism `Y ⟶ X`
 (as explicit arguments). -/
@@ -246,8 +246,8 @@ In `colimitOfDiagramTerminal` we show it is a colimit cocone. -/]
 def coneOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) : Cone F where
   pt := F.obj X
   π :=
-    { app := fun j => F.map (tX.to j)
-      naturality := fun j j' k => by
+    { app j := F.map (tX.to j)
+      naturality j j' k := by
         dsimp
         rw [← F.map_comp, Category.id_comp, tX.hom_ext (tX.to j ≫ k) (tX.to j')] }
 
@@ -281,7 +281,7 @@ def coneOfDiagramTerminal {X : J} (hX : IsTerminal X) (F : J ⥤ C)
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : Cone F where
   pt := F.obj X
   π :=
-    { app := fun _ => inv (F.map (hX.from _))
+    { app _ := inv (F.map (hX.from _))
       naturality := by
         intro i j f
         dsimp

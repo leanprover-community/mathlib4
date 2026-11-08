@@ -412,7 +412,7 @@ theorem _root_.LinearMap.existsUnique_eq_smul_id_of_finrank_eq_one
 @[simps apply]
 noncomputable def _root_.LinearEquiv.smul_id_of_finrank_eq_one (d1 : Module.finrank R M = 1) :
     R ≃ₗ[R] (M →ₗ[R] M) where
-  toFun := fun c ↦ c • LinearMap.id
+  toFun c := c • LinearMap.id
   map_add' c d := by ext; simp [add_smul]
   map_smul' c d := by ext; simp [mul_smul]
   invFun u := (u.existsUnique_eq_smul_id_of_finrank_eq_one d1).choose

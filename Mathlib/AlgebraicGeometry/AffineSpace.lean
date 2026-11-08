@@ -355,7 +355,7 @@ lemma map_reindex {n₁ n₂ : Type u} (i : n₁ → n₂) {S T : Scheme.{u}} (f
 @[simps]
 def functor : (Type u)ᵒᵖ ⥤ Scheme.{u} ⥤ Scheme.{u} where
   obj n := { obj := AffineSpace n.unop, map := map n.unop, map_id := map_id, map_comp := map_comp }
-  map {n m} i := { app := reindex i.unop, naturality := fun _ _ ↦ map_reindex i.unop }
+  map {n m} i := { app := reindex i.unop, naturality _ _ := map_reindex i.unop }
   map_id n := by ext : 2; exact reindex_id _
   map_comp f g := by ext : 2; dsimp; exact reindex_comp _ _ _
 

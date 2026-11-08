@@ -202,7 +202,7 @@ variable (R) [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 @[simps!]
 def toPowerSeriesAlg : A⟦ℕ⟧ ≃ₐ[R] PowerSeries A :=
   { toPowerSeries with
-    commutes' := fun r => by
+    commutes' r := by
       ext n
       cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 

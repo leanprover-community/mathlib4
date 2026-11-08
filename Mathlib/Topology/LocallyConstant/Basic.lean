@@ -290,7 +290,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
 def eval {ι : Type*} {X : ι → Type*}
     [∀ i, TopologicalSpace (X i)] (i : ι) [DiscreteTopology (X i)] :
     LocallyConstant (Π i, X i) (X i) where
-  toFun := fun f ↦ f i
+  toFun f := f i
   isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/

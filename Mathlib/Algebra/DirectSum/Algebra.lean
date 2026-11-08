@@ -118,7 +118,7 @@ def toAlgebra (f : ∀ i, A i →ₗ[R] B) (hone : f _ GradedMonoid.GOne.one = 1
     (⨁ i, A i) →ₐ[R] B :=
   { toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul with
     toFun := toSemiring (fun i => (f i).toAddMonoidHom) hone @hmul
-    commutes' := fun r => by
+    commutes' r := by
       change toModule R _ _ f (algebraMap R _ r) = _
       rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, map_smul, one_def,
         ← lof_eq_of R, toModule_lof, hone] }
@@ -140,8 +140,8 @@ This is the graded version of `LinearMap.mul`, and the linear version of `Direct
 @[simps]
 def gMulLHom {i j} : A i →ₗ[R] A j →ₗ[R] A (i + j) where
   toFun a :=
-    { toFun := fun b => GradedMonoid.GMul.mul a b
-      map_smul' := fun r x => by
+    { toFun b := GradedMonoid.GMul.mul a b
+      map_smul' r x := by
         injection (smul_comm r (GradedMonoid.mk _ a) (GradedMonoid.mk _ x)).symm
       map_add' := GNonUnitalNonAssocSemiring.mul_add _ }
   map_smul' r x := LinearMap.ext fun y => by
@@ -160,6 +160,6 @@ instance Algebra.directSumGAlgebra {R A : Type*} [AddMonoid ι] [CommSemiring R]
   toFun := (algebraMap R A).toAddMonoidHom
   map_one := (algebraMap R A).map_one
   map_mul a b := Sigma.ext (zero_add _).symm (heq_of_eq <| (algebraMap R A).map_mul a b)
-  commutes := fun _ ⟨_, _⟩ =>
+  commutes _ := fun ⟨_, _⟩  =>
     Sigma.ext ((zero_add _).trans (add_zero _).symm) (heq_of_eq <| Algebra.commutes _ _)
-  smul_def := fun _ ⟨_, _⟩ => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)
+  smul_def _ := fun ⟨_, _⟩  => Sigma.ext (zero_add _).symm (heq_of_eq <| Algebra.smul_def _ _)

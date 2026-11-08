@@ -128,8 +128,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
     let ⟨_⟩ := nonempty_fintype J
-    { preserves := fun {f} =>
-        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
+    { preserves {f} :=
+        { preserves {b} i := ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
             simp only [tensorHom_comp_tensorHom, Category.comp_id, ← tensor_sum, ← id_tensorHom_id,
@@ -140,8 +140,8 @@ set_option backward.isDefEq.respectTransparency false in
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     let ⟨_⟩ := nonempty_fintype J
-    { preserves := fun {f} =>
-        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
+    { preserves {f} :=
+        { preserves {b} i := ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
             simp only [tensorHom_comp_tensorHom, Category.comp_id, ← sum_tensor, ← id_tensorHom_id,

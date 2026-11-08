@@ -91,7 +91,7 @@ variable [Semiring k] [Monoid G] [Semiring R]
 def liftNCRingHom (f : k →+* R) (g : G →* R) (h_comm : ∀ x y, Commute (f x) (g y)) : k[G] →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+    map_mul' _a _b := liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 
 @[simp]
 lemma liftNCRingHom_single (f : k →+* R) (g : G →* R) (h_comm) (a : G) (b : k) :
@@ -166,7 +166,7 @@ def liftNCRingHom (f : k →+* R) (g : Multiplicative G →* R) (h_comm : ∀ x 
     k[G] →+* R :=
   { liftNC (f : k →+ R) g with
     map_one' := liftNC_one _ _
-    map_mul' := fun _a _b => liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
+    map_mul' _a _b := liftNC_mul _ _ _ _ fun {_ _} _ => h_comm _ _ }
 
 @[simp]
 lemma liftNCRingHom_single (f : k →+* R) (g : Multiplicative G →* R) (h_comm) (a : G) (b : k) :

@@ -168,7 +168,7 @@ def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
     right_inv := fun g => by
       simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
         symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
+    map_smul' k a := map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
 
 end Homeomorph
 
@@ -182,4 +182,4 @@ variable [Algebra S R] [TopologicalSpace R] [IsTopologicalSemiring R]
 def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
     C(X, R) →⋆ₐ[S] R :=
   { ContinuousMap.evalAlgHom S R x with
-    map_star' := fun _ => rfl }
+    map_star' _ := rfl }

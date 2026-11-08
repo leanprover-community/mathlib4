@@ -158,8 +158,8 @@ variable [Module R M] [Module R M₂] [Subsingleton M] [Subsingleton M₂]
 @[simps]
 def ofSubsingleton : M ≃ₗ[R] M₂ :=
   { (0 : M →ₗ[R] M₂) with
-    toFun := fun _ ↦ 0
-    invFun := fun _ ↦ 0
+    toFun _ := 0
+    invFun _ := 0
     left_inv := fun _ ↦ Subsingleton.elim _ _
     right_inv := fun _ ↦ Subsingleton.elim _ _ }
 
@@ -363,7 +363,7 @@ See note [bundled maps over different rings].
 @[simps]
 def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃ₗ[S] M :=
   { applyₗ' S (1 : R) with
-    toFun := fun f ↦ f 1
+    toFun f := f 1
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
@@ -399,7 +399,7 @@ def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A
 @[simps] def addMonoidEndRingEquivInt (A : Type*) [AddCommGroup A] :
     AddMonoid.End A ≃+* Module.End ℤ A :=
   { addMonoidHomLequivInt (B := A) ℤ with
-    map_mul' := fun _ _ ↦ rfl }
+    map_mul' _ _ := rfl }
 
 namespace LinearEquiv
 

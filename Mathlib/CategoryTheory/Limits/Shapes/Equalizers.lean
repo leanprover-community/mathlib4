@@ -159,7 +159,7 @@ def walkingParallelPairOpEquiv : WalkingParallelPair ≌ WalkingParallelPairᵒ�
       have : f = g.op := rfl
       rw [this]
       cases i <;> cases j <;> cases g <;> rfl)
-  functor_unitIso_comp := fun j => by cases j <;> rfl
+  functor_unitIso_comp j := by cases j <;> rfl
 
 @[to_dual (attr := simp)]
 theorem walkingParallelPairOpEquiv_unitIso_zero :
@@ -351,11 +351,11 @@ theorem Fork.app_one_eq_ι_comp_right (s : Fork f g) : s.π.app one = s.ι ≫ g
 def Fork.ofι {P : C} (ι : P ⟶ X) (w : ι ≫ f = ι ≫ g) : Fork f g where
   pt := P
   π :=
-    { app := fun X => by
+    { app X := by
         cases X
         · exact ι
         · exact ι ≫ f
-      naturality := fun {X} {Y} f =>
+      naturality {X} {Y} f :=
         by cases X <;> cases Y <;> cases f <;> simp [w] }
 
 @[to_dual (attr := simp)]
@@ -432,10 +432,10 @@ def Fork.IsLimit.mk (t : Fork f g) (lift : ∀ s : Fork f g, s.pt ⟶ t.pt)
     (fac : ∀ s : Fork f g, lift s ≫ t.ι = s.ι)
     (uniq : ∀ (s : Fork f g) (m : s.pt ⟶ t.pt) (_ : m ≫ t.ι = s.ι), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelPair.casesOn j (fac s) <| by
         simp [← Category.assoc, fac]
-    uniq := fun s m j => by aesop }
+    uniq s m j := by aesop }
 
 /-- This is another convenient method to verify that a fork is a limit cone. It
 only asks for a proof of facts that carry any mathematical content, and allows access to the
@@ -499,7 +499,7 @@ which you may find to be an easier way of achieving your goal. -/]
 def Cone.ofFork {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F.map right)) : Cone F where
   pt := t.pt
   π :=
-    { app := fun X => t.π.app X ≫ eqToHom (by simp)
+    { app X := t.π.app X ≫ eqToHom (by simp)
       naturality := by rintro _ _ (_ | _ | _) <;> simp [t.condition] }
 
 @[to_dual (attr := simp)]
@@ -515,7 +515,7 @@ theorem Cone.ofFork_π {F : WalkingParallelPair ⥤ C} (t : Fork (F.map left) (F
 `F.map left` and `F.map right`. -/]
 def Fork.ofCone {F : WalkingParallelPair ⥤ C} (t : Cone F) : Fork (F.map left) (F.map right) where
   pt := t.pt
-  π := { app := fun X => t.π.app X ≫ eqToHom (by simp)
+  π := { app X := t.π.app X ≫ eqToHom (by simp)
          naturality := by rintro _ _ (_ | _ | _) <;> simp }
 
 @[to_dual (attr := simp)]
@@ -767,7 +767,7 @@ variable {f g}
 /-- The equalizer morphism in any limit cone is a monomorphism. -/
 @[to_dual /-- The coequalizer morphism in any colimit cocone is an epimorphism. -/]
 theorem mono_of_isLimit_fork {c : Fork f g} (i : IsLimit c) : Mono c.ι :=
-  { right_cancellation := fun _ _ w => Fork.IsLimit.hom_ext i w }
+  { right_cancellation _ _ w := Fork.IsLimit.hom_ext i w }
 
 end
 
@@ -966,7 +966,7 @@ abbrev HasEqualizers :=
 /-- If `C` has all colimits of diagrams `parallelPair f g`, then it has all coequalizers -/]
 theorem hasEqualizers_of_hasLimit_parallelPair
     [∀ {X Y : C} {f g : X ⟶ Y}, HasLimit (parallelPair f g)] : HasEqualizers C :=
-  { has_limit := fun F => hasLimit_of_iso (diagramIsoParallelPair F).symm }
+  { has_limit F := hasLimit_of_iso (diagramIsoParallelPair F).symm }
 
 section
 

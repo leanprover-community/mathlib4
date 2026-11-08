@@ -152,7 +152,7 @@ end NonarchAddGroupSeminormClass
 instance (priority := 100) NonarchAddGroupSeminormClass.toAddGroupSeminormClass
     [FunLike F E ℝ] [AddGroup E] [NonarchAddGroupSeminormClass F E] : AddGroupSeminormClass F E ℝ :=
   { ‹NonarchAddGroupSeminormClass F E› with
-    map_add_le_add := fun f _ _ =>
+    map_add_le_add f _ _ :=
       haveI h_nonneg : ∀ a, 0 ≤ f a := by
         intro a
         rw [← NonarchAddGroupSeminormClass.map_zero f, ← sub_self a]
@@ -222,8 +222,8 @@ variable (p q) (f : F →* E)
 instance instZeroGroupSeminorm : Zero (GroupSeminorm E) :=
   ⟨{  toFun := 0
       map_one' := Pi.zero_apply _
-      mul_le' := fun _ _ => (zero_add _).ge
-      inv' := fun _ => rfl }⟩
+      mul_le' _ _ := (zero_add _).ge
+      inv' _ := rfl }⟩
 
 @[to_additive]
 instance : IsZeroApply (GroupSeminorm E) where
@@ -243,12 +243,12 @@ instance : Inhabited (GroupSeminorm E) :=
 @[to_additive]
 instance : Add (GroupSeminorm E) :=
   ⟨fun p q =>
-    { toFun := fun x => p x + q x
+    { toFun x := p x + q x
       map_one' := by simp_rw [map_one_eq_zero p, map_one_eq_zero q, zero_add]
-      mul_le' := fun _ _ =>
+      mul_le' _ _ :=
         (add_le_add (map_mul_le_add p _ _) <| map_mul_le_add q _ _).trans_eq <|
           add_add_add_comm _ _ _ _
-      inv' := fun x => by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
+      inv' x := by simp_rw [map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive]
 instance : IsAddApply (GroupSeminorm E) where
@@ -311,10 +311,10 @@ instance : Max (GroupSeminorm E) :=
     { toFun := p ⊔ q
       map_one' := by
         rw [Pi.sup_apply, ← map_one_eq_zero p, sup_eq_left, map_one_eq_zero p, map_one_eq_zero q]
-      mul_le' := fun x y =>
+      mul_le' x y :=
         sup_le ((map_mul_le_add p x y).trans <| add_le_add le_sup_left le_sup_left)
           ((map_mul_le_add q x y).trans <| add_le_add le_sup_right le_sup_right)
-      inv' := fun x => by rw [Pi.sup_apply, Pi.sup_apply, map_inv_eq_map p, map_inv_eq_map q] }⟩
+      inv' x := by rw [Pi.sup_apply, Pi.sup_apply, map_inv_eq_map p, map_inv_eq_map q] }⟩
 
 @[to_additive (attr := simp, norm_cast)]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -391,17 +391,17 @@ theorem mul_bddBelow_range_add {p q : GroupSeminorm E} {x : E} :
 @[to_additive]
 noncomputable instance : Min (GroupSeminorm E) :=
   ⟨fun p q =>
-    { toFun := fun x => ⨅ y, p y + q (x / y)
+    { toFun x := ⨅ y, p y + q (x / y)
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
           (fun _ => by positivity) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
-      mul_le' := fun x y =>
+      mul_le' x y :=
         le_ciInf_add_ciInf fun u v => by
           refine ciInf_le_of_le mul_bddBelow_range_add (u * v) ?_
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
-      inv' := fun x =>
+      inv' x :=
         (inv_surjective.iInf_comp _).symm.trans <| by
           simp_rw [map_inv_eq_map p, ← inv_div', map_inv_eq_map q] }⟩
 
@@ -413,12 +413,12 @@ theorem inf_apply : (p ⊓ q) x = ⨅ y, p y + q (x / y) :=
 noncomputable instance : Lattice (GroupSeminorm E) :=
   { GroupSeminorm.semilatticeSup with
     inf := (· ⊓ ·)
-    inf_le_left := fun p q x =>
+    inf_le_left p q := fun x  =>
       ciInf_le_of_le mul_bddBelow_range_add x <| by rw [div_self', map_one_eq_zero q, add_zero]
-    inf_le_right := fun p q x =>
+    inf_le_right p q := fun x  =>
       ciInf_le_of_le mul_bddBelow_range_add (1 : E) <| by
         simpa only [div_one x, map_one_eq_zero p, zero_add (q x)] using le_rfl
-    le_inf := fun a _ _ hb hc _ =>
+    le_inf a _ _ hb hc := fun _  =>
       le_ciInf fun _ => (le_map_add_map_div a _ _).trans <| add_le_add (hb _) (hc _) }
 
 end CommGroup
@@ -477,8 +477,8 @@ variable (p q)
 instance : Zero (NonarchAddGroupSeminorm E) :=
   ⟨{  toFun := 0
       map_zero' := Pi.zero_apply _
-      add_le_max' := fun r s => by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
-      neg' := fun _ => rfl }⟩
+      add_le_max' r s := by simp only [Pi.zero_apply]; rw [max_eq_right]; rfl
+      neg' _ := rfl }⟩
 
 instance : IsZeroApply (NonarchAddGroupSeminorm E) where
 
@@ -532,10 +532,10 @@ instance : Max (NonarchAddGroupSeminorm E) :=
   ⟨fun p q =>
     { toFun := p ⊔ q
       map_zero' := by rw [Pi.sup_apply, ← map_zero p, sup_eq_left, map_zero p, map_zero q]
-      add_le_max' := fun x y =>
+      add_le_max' x y :=
         sup_le ((map_add_le_max p x y).trans <| max_le_max le_sup_left le_sup_left)
           ((map_add_le_max q x y).trans <| max_le_max le_sup_right le_sup_right)
-      neg' := fun x => by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
+      neg' x := by simp_rw [Pi.sup_apply, map_neg_eq_map p, map_neg_eq_map q]}⟩
 
 @[simp, norm_cast]
 theorem coe_sup : ⇑(p ⊔ q) = ⇑p ⊔ ⇑q :=
@@ -571,14 +571,14 @@ variable [Group E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 @[to_additive instOne]
 instance instOne [DecidableEq E] : One (GroupSeminorm E) :=
-  ⟨{  toFun := fun x => if x = 1 then 0 else 1
+  ⟨{  toFun x := if x = 1 then 0 else 1
       map_one' := ite_eq_left rfl
-      mul_le' := fun x y => by
+      mul_le' x y := by
         by_cases hx : x = 1
         · rw [ite_eq_left hx, hx, one_mul, zero_add]
         · rw [ite_eq_right hx]
           refine le_add_of_le_of_nonneg ?_ ?_ <;> split_ifs <;> simp
-      inv' := fun x => by simp_rw [inv_eq_one] }⟩
+      inv' x := by simp_rw [inv_eq_one] }⟩
 
 @[to_additive (attr := simp) apply_one]
 theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 then 0 else 1 :=
@@ -588,15 +588,15 @@ theorem apply_one [DecidableEq E] (x : E) : (1 : GroupSeminorm E) x = if x = 1 t
 @[to_additive (dont_translate := R) instSMul]
 instance : SMul R (GroupSeminorm E) :=
   ⟨fun r p =>
-    { toFun := fun x => r • p x
+    { toFun x := r • p x
       map_one' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_one_eq_zero p,
           mul_zero]
-      mul_le' := fun _ _ => by
+      mul_le' _ _ := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ← mul_add]
         gcongr
         apply map_mul_le_add
-      inv' := fun x => by simp_rw [map_inv_eq_map p] }⟩
+      inv' x := by simp_rw [map_inv_eq_map p] }⟩
 
 @[to_additive (dont_translate := R) instIsSMulApplyReal]
 instance : IsSMulApply R (GroupSeminorm E) where
@@ -627,15 +627,15 @@ namespace NonarchAddGroupSeminorm
 variable [AddGroup E] [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 
 instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
-  ⟨{  toFun := fun x => if x = 0 then 0 else 1
+  ⟨{  toFun x := if x = 0 then 0 else 1
       map_zero' := ite_eq_left rfl
-      add_le_max' := fun x y => by
+      add_le_max' x y := by
         by_cases hx : x = 0
         · simp_rw [ite_eq_left hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
         · simp_rw [ite_eq_right hx]
           split_ifs <;> simp
-      neg' := fun x => by simp_rw [neg_eq_zero] }⟩
+      neg' x := by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
 theorem apply_one [DecidableEq E] (x : E) :
@@ -645,16 +645,16 @@ theorem apply_one [DecidableEq E] (x : E) :
 /-- Any action on `ℝ` which factors through `ℝ≥0` applies to a `NonarchAddGroupSeminorm`. -/
 instance : SMul R (NonarchAddGroupSeminorm E) :=
   ⟨fun r p =>
-    { toFun := fun x => r • p x
+    { toFun x := r • p x
       map_zero' := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, map_zero p,
           mul_zero]
-      add_le_max' := fun x y => by
+      add_le_max' x y := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul, ←
           mul_max_of_nonneg _ _ NNReal.zero_le_coe]
         gcongr
         apply map_add_le_max
-      neg' := fun x => by simp_rw [map_neg_eq_map p] }⟩
+      neg' x := by simp_rw [map_neg_eq_map p] }⟩
 
 instance : IsSMulApply R (NonarchAddGroupSeminorm E) where
 
@@ -728,7 +728,7 @@ variable (p q)
 instance : Add (GroupNorm E) :=
   ⟨fun p q =>
     { p.toGroupSeminorm + q.toGroupSeminorm with
-      eq_one_of_map_eq_zero' := fun _x hx =>
+      eq_one_of_map_eq_zero' _x hx :=
         of_not_not fun h => hx.not_gt <| add_pos (map_pos_of_ne_one p h) (map_pos_of_ne_one q h) }⟩
 
 @[to_additive]
@@ -747,7 +747,7 @@ instance : IsAddApply (GroupNorm E) where
 instance : Max (GroupNorm E) :=
   ⟨fun p q =>
     { p.toGroupSeminorm ⊔ q.toGroupSeminorm with
-      eq_one_of_map_eq_zero' := fun _x hx =>
+      eq_one_of_map_eq_zero' _x hx :=
         of_not_not fun h => hx.not_gt <| lt_sup_iff.2 <| Or.inl <| map_pos_of_ne_one p h }⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -772,7 +772,7 @@ variable [Group E] [DecidableEq E]
 
 @[to_additive instOne]
 instance : One (GroupNorm E) :=
-  ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
+  ⟨{ (1 : GroupSeminorm E) with eq_one_of_map_eq_zero' _ := zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[to_additive (attr := simp) apply_one]
 theorem apply_one (x : E) : (1 : GroupNorm E) x = if x = 1 then 0 else 1 :=
@@ -831,7 +831,7 @@ variable (p q)
 instance : Max (NonarchAddGroupNorm E) :=
   ⟨fun p q =>
     { p.toNonarchAddGroupSeminorm ⊔ q.toNonarchAddGroupSeminorm with
-      eq_zero_of_map_eq_zero' := fun _x hx =>
+      eq_zero_of_map_eq_zero' _x hx :=
         of_not_not fun h => hx.not_gt <| lt_sup_iff.2 <| Or.inl <| map_pos_of_ne_zero p h }⟩
 
 @[simp, norm_cast]
@@ -847,7 +847,7 @@ noncomputable instance : SemilatticeSup (NonarchAddGroupNorm E) :=
 
 instance [DecidableEq E] : One (NonarchAddGroupNorm E) :=
   ⟨{ (1 : NonarchAddGroupSeminorm E) with
-      eq_zero_of_map_eq_zero' := fun _ => zero_ne_one.ite_eq_left_iff.1 }⟩
+      eq_zero_of_map_eq_zero' _ := zero_ne_one.ite_eq_left_iff.1 }⟩
 
 @[simp]
 theorem apply_one [DecidableEq E] (x : E) :

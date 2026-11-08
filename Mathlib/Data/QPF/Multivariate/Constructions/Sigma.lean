@@ -45,7 +45,7 @@ instance Pi.inhabited {α} [∀ a, Inhabited (F a α)] : Inhabited (Pi F α) :=
 namespace Sigma
 
 instance [∀ α, MvFunctor <| F α] : MvFunctor (Sigma F) where
-  map := fun f ⟨a, x⟩ => ⟨a, f <$$> x⟩
+  map f := fun ⟨a, x⟩  => ⟨a, f <$$> x⟩
 
 
 variable [∀ α, MvQPF <| F α]

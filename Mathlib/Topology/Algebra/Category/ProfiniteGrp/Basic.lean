@@ -272,7 +272,7 @@ instance : HasForget₂ ProfiniteGrp Profinite where
 
 @[to_additive]
 instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
-  map_injective := fun {_ _} _ _ h =>
+  map_injective {_ _} _ := fun _ h  =>
     ConcreteCategory.hom_ext _ _ fun x ↦ CategoryTheory.congr_fun h x }
 
 @[to_additive]
@@ -329,13 +329,13 @@ instance : IsTopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGr
 abbrev limitCone : Limits.Cone F where
   pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
-  { app := fun j => ⟨{
-      toFun := fun x => x.1 j
+  { app j := ⟨{
+      toFun x := x.1 j
       map_one' := rfl
-      map_mul' := fun x y => rfl
+      map_mul' x y := rfl
       continuous_toFun := by
         exact (continuous_apply j).comp (continuous_iff_le_induced.mpr fun U a => a) }⟩
-    naturality := fun i j f => by
+    naturality i j f := by
       simp only [Functor.const_obj_obj, Functor.comp_obj,
         Functor.const_obj_map, Category.id_comp, Functor.comp_map]
       congr
@@ -350,7 +350,7 @@ def limitConeIsLimit : Limits.IsLimit (limitCone F) where
       map_one' := Subtype.ext (funext fun j ↦ map_one (cone.π.app j).hom)
       -- TODO: investigate whether it's possible to set up `ext` lemmas for the `TopCat`-related
       -- categories so that `by ext j; exact map_one (cone.π.app j)` works here, similarly below.
-      map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j).hom _ _) }
+      map_mul' _ _ := Subtype.ext (funext fun j ↦ map_mul (cone.π.app j).hom _ _) }
   uniq cone m h := by
     apply (forget₂ ProfiniteGrp Profinite).map_injective
     simpa using! (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
@@ -366,7 +366,7 @@ instance : Limits.HasLimit F where
 @[to_additive]
 instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
-    preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
+    preservesLimit {F} := CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
       (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
 @[to_additive]

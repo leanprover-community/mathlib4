@@ -67,7 +67,7 @@ def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n
   lift s := by
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
-  fac := fun s ⟨j⟩ => by
+  fac s := fun ⟨j⟩  => by
     refine Fin.inductionOn j ?_ ?_
     · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
     · rintro i -

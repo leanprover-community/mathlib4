@@ -131,8 +131,8 @@ set_option backward.isDefEq.respectTransparency false in
 def natTrans : (N₁ : SimplicialObject C ⥤ _) ⋙ Γ₂ ⟶ toKaroubi _ where
   app X :=
     { f :=
-        { app := fun Δ => (Γ₀.splitting K[X]).desc Δ fun A => PInfty.f A.1.unop.len ≫ X.map A.e.op
-          naturality := fun Δ Δ' θ => by
+        { app Δ := (Γ₀.splitting K[X]).desc Δ fun A => PInfty.f A.1.unop.len ≫ X.map A.e.op
+          naturality Δ Δ' θ := by
             apply (Γ₀.splitting K[X]).hom_ext'
             intro A
             change _ ≫ (Γ₀.obj K[X]).map θ ≫ _ = _

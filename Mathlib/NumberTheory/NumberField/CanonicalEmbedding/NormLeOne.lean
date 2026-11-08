@@ -213,8 +213,8 @@ The component of `expMap` at the place `w`.
 -/
 @[simps]
 def expMap_single (w : InfinitePlace K) : OpenPartialHomeomorph ℝ ℝ where
-  toFun := fun x ↦ Real.exp ((w.mult : ℝ)⁻¹ * x)
-  invFun := fun x ↦ w.mult * Real.log x
+  toFun x := Real.exp ((w.mult : ℝ)⁻¹ * x)
+  invFun x := w.mult * Real.log x
   source := Set.univ
   target := Set.Ioi 0
   open_source := isOpen_univ
@@ -350,9 +350,9 @@ An auxiliary map from `realSpace K` to `logSpace K` used to prove that `complete
 linearly independent, see `linearIndependent_completeFamily`.
 -/
 def realSpaceToLogSpace : realSpace K →ₗ[ℝ] {w : InfinitePlace K // w ≠ w₀} → ℝ where
-  toFun := fun x w ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
-  map_add' := fun _ _ ↦ funext fun _ ↦ by simp [sum_add_distrib]; ring
-  map_smul' := fun _ _ ↦ funext fun _ ↦ by simp [← mul_sum]; ring
+  toFun x := fun w  ↦ x w.1 - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹
+  map_add' _ _ := funext fun _ ↦ by simp [sum_add_distrib]; ring
+  map_smul' _ _ := funext fun _ ↦ by simp [← mul_sum]; ring
 
 theorem realSpaceToLogSpace_apply (x : realSpace K) (w : {w : InfinitePlace K // w ≠ w₀}) :
     realSpaceToLogSpace x w = x w - w.1.mult * (∑ w', x w') * (Module.finrank ℚ K : ℝ)⁻¹ := rfl

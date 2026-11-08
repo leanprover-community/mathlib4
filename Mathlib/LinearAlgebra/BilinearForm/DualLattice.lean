@@ -72,14 +72,14 @@ lemma dualSubmodulePairing_spec {N : Submodule R M} (x : B.dualSubmodule N) (y :
 noncomputable
 def dualSubmoduleToDual [IsDomain R] [IsTorsionFree R S] (N : Submodule R M) :
     B.dualSubmodule N →ₗ[R] Module.Dual R N :=
-  { toFun := fun x ↦
+  { toFun x :=
     { toFun := B.dualSubmodulePairing x
-      map_add' := fun x y ↦ FaithfulSMul.algebraMap_injective R S (by simp)
-      map_smul' := fun r m ↦ FaithfulSMul.algebraMap_injective R S
+      map_add' x y := FaithfulSMul.algebraMap_injective R S (by simp)
+      map_smul' r m := FaithfulSMul.algebraMap_injective R S
         (by simp [← Algebra.smul_def]) }
-    map_add' := fun x y ↦ LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
+    map_add' x y := LinearMap.ext fun z ↦ FaithfulSMul.algebraMap_injective R S
       (by simp)
-    map_smul' := fun r x ↦ LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
+    map_smul' r x := LinearMap.ext fun y ↦ FaithfulSMul.algebraMap_injective R S
       (by simp [← Algebra.smul_def]) }
 
 lemma dualSubmoduleToDual_injective [IsDomain R] (hB : B.Nondegenerate) [IsTorsionFree R S]

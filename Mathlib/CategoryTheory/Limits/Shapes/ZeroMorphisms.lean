@@ -146,10 +146,10 @@ section
 variable [HasZeroMorphisms D]
 
 instance : HasZeroMorphisms (C ⥤ D) where
-  zero F G := ⟨{ app := fun _ => 0 }⟩
-  comp_zero := fun η H => by
+  zero F G := ⟨{ app _ := 0 }⟩
+  comp_zero η H := by
     ext X; dsimp; apply comp_zero
-  zero_comp := fun F {G H} η => by
+  zero_comp F {G H} η := by
     ext X; dsimp; apply zero_comp
 
 @[simp, to_dual self]
@@ -467,7 +467,7 @@ def monoFactorisationZero (X Y : C) : MonoFactorisation (0 : X ⟶ Y) where
 -/
 def imageFactorisationZero (X Y : C) : ImageFactorisation (0 : X ⟶ Y) where
   F := monoFactorisationZero X Y
-  isImage := { lift := fun _ => 0 }
+  isImage := { lift _ := 0 }
 
 instance hasImage_zero {X Y : C} : HasImage (0 : X ⟶ Y) :=
   HasImage.mk <| imageFactorisationZero _ _

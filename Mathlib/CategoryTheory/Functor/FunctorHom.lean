@@ -92,8 +92,8 @@ end HomObj
 def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type (max w v' u) where
   obj A := HomObj F G A.unop
   map {A A'} f := ↾fun x ↦
-    { app := fun X a ↦ x.app X (f.unop.app _ a)
-      naturality := fun {X Y} φ a ↦ by
+    { app X a := x.app X (f.unop.app _ a)
+      naturality {X Y} φ a := by
         rw [← HomObj.naturality]
         congr 2
         congrm $(f.unop.naturality φ) a }
@@ -115,13 +115,13 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def functorHomEquiv (A : C ⥤ Type (max u v v')) : (A ⟶ F.functorHom G) ≃ HomObj F G A where
   toFun φ :=
-    { app := fun X a ↦ (φ.app X a).app X (𝟙 _)
-      naturality := fun {X Y} f a => by
+    { app X a := (φ.app X a).app X (𝟙 _)
+      naturality {X Y} f a := by
         rw [← (φ.app X a).naturality f (𝟙 _)]
         have := HomObj.congr_app congr($(φ.naturality f) a) Y (𝟙 _)
         simp_all [-NatTrans.naturality, functorHom, homObjFunctor] }
   invFun x :=
-    { app X := ↾fun a ↦ { app := fun Y f => x.app Y (A.map f a) }
+    { app X := ↾fun a ↦ { app Y f := x.app Y (A.map f a) }
       naturality X Y f := by
         ext
         simp [functorHom, homObjFunctor] }

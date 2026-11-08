@@ -59,7 +59,7 @@ instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddT
 instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
-    dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
+    dist_eq_norm' x y := NormedAddTorsor.dist_eq_norm' x.val y.val }
 
 instance : NormedAddTorsor (V × W) (P × Q) where
   dist_eq_norm' x y := by

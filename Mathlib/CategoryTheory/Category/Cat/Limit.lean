@@ -91,10 +91,10 @@ attribute [-simp] homDiagram_obj in
 def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
   pt := limitConeX F
   π :=
-    { app := fun j => Functor.toCatHom
+    { app j := Functor.toCatHom
         { obj := limit.π (F ⋙ Cat.objects) j
-          map := fun f => limit.π (homDiagram _ _) j f }
-      naturality := fun _ _ f => Cat.Hom.ext <|
+          map f := limit.π (homDiagram _ _) j f }
+      naturality _ _ f := Cat.Hom.ext <|
         CategoryTheory.Functor.ext (fun X => (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm)
           fun X Y h => (congr_hom (limit.w (homDiagram X Y) f) h).symm }
 
@@ -109,8 +109,8 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
       limit.lift (F ⋙ Cat.objects)
         { pt := s.pt
           π :=
-            { app := fun j => ↾(s.π.app j).toFunctor.obj
-              naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
+            { app j := ↾(s.π.app j).toFunctor.obj
+              naturality _ _ f := objects.congr_map (s.π.naturality f) } }
     map f := by
       fapply Types.Limit.mk.{v, v}
       · intro j
@@ -159,11 +159,11 @@ end HasLimits
 /-- The category of small categories has all small limits. -/
 instance : HasLimits Cat.{v, v} where
   has_limits_of_shape _ :=
-    { has_limit := fun F => ⟨⟨⟨HasLimits.limitCone F, HasLimits.limitConeIsLimit F⟩⟩⟩ }
+    { has_limit F := ⟨⟨⟨HasLimits.limitCone F, HasLimits.limitConeIsLimit F⟩⟩⟩ }
 
 instance : PreservesLimits Cat.objects.{v, v} where
   preservesLimitsOfShape :=
-    { preservesLimit := fun {F} =>
+    { preservesLimit {F} :=
         preservesLimit_of_preserves_limit_cone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
             (Cone.ext (by rfl) (by cat_disch))) }

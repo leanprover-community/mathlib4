@@ -115,7 +115,7 @@ def ofScalarsSubmodule : Submodule 𝕜 (FormalMultilinearSeries 𝕜 E E) where
   carrier := {ofScalars E f | f}
   add_mem' := fun ⟨c, hc⟩ ⟨c', hc'⟩ ↦ ⟨c + c', hc' ▸ hc ▸ ofScalars_add E c c'⟩
   zero_mem' := ⟨0, ofScalars_series_eq_zero_of_scalar_zero 𝕜 E⟩
-  smul_mem' := fun x _ ⟨c, hc⟩ ↦ ⟨x • c, hc ▸ ofScalars_smul E c x⟩
+  smul_mem' x _ := fun ⟨c, hc⟩  ↦ ⟨x • c, hc ▸ ofScalars_smul E c x⟩
 
 variable {E}
 

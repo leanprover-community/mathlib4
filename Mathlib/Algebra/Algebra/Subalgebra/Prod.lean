@@ -37,7 +37,7 @@ variable (S : Subalgebra R A) (S₁ : Subalgebra R B)
 def prod : Subalgebra R (A × B) :=
   { S.toSubsemiring.prod S₁.toSubsemiring with
     carrier := S ×ˢ S₁
-    algebraMap_mem' := fun _ => ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
+    algebraMap_mem' _ := ⟨algebraMap_mem _ _, algebraMap_mem _ _⟩ }
 
 @[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ (S₁ : Set B) :=

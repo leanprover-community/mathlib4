@@ -72,7 +72,7 @@ variable {N : Type*} [Group N] {P : Type*} [Group P]
 def comap {N : Type*} [Group N] (f : G →* N) (H : Subgroup N) : Subgroup G :=
   { H.toSubmonoid.comap f with
     carrier := f ⁻¹' H
-    inv_mem' := fun {a} ha => show f a⁻¹ ∈ H by rw [f.map_inv]; exact H.inv_mem ha }
+    inv_mem' {a} ha := show f a⁻¹ ∈ H by rw [f.map_inv]; exact H.inv_mem ha }
 
 @[to_additive (attr := simp)]
 theorem coe_comap (K : Subgroup N) (f : G →* N) : (K.comap f : Set G) = f ⁻¹' K :=
@@ -477,7 +477,7 @@ use `MulEquiv.subgroupMap` for better definitional equalities. -/
       have an isomorphism, use `AddEquiv.addSubgroupMap` for better definitional equalities. -/]
 noncomputable def equivMapOfInjective (H : Subgroup G) (f : G →* N) (hf : Function.Injective f) :
     H ≃* H.map f :=
-  { Equiv.Set.image f H hf with map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _) }
+  { Equiv.Set.image f H hf with map_mul' _ _ := Subtype.ext (f.map_mul _ _) }
 
 @[to_additive (attr := simp)]
 theorem coe_equivMapOfInjective_apply (H : Subgroup G) (f : G →* N) (hf : Function.Injective f)
@@ -536,7 +536,7 @@ group are equal. -/
       /-- Makes the identity additive isomorphism from a proof
       two subgroups of an additive group are equal. -/]
 def subgroupCongr (h : H = K) : H ≃* K :=
-  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' _ _ := rfl }
 
 @[to_additive (attr := simp)]
 lemma subgroupCongr_apply (h : H = K) (x) :

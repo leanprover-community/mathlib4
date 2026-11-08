@@ -70,7 +70,7 @@ def valueMulHom {X E : Type*} [Monoid E] [TopologicalSpace X] {x : X} : Germ (�
 def valueₗ {X 𝕜 E : Type*} [Semiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace X]
     {x : X} : Germ (𝓝 x) E →ₗ[𝕜] E where
   __ := Filter.Germ.valueAddHom
-  map_smul' := fun _ φ ↦ Germ.inductionOn φ fun _ ↦ rfl
+  map_smul' _ φ := Germ.inductionOn φ fun _ ↦ rfl
 
 /-- The map `Germ (𝓝 x) E → E` as a ring homomorphism -/
 def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ (𝓝 x) E →+* E :=

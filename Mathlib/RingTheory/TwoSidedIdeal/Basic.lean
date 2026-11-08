@@ -162,16 +162,16 @@ def mk' (carrier : Set R)
     (mul_mem_left : ∀ {x y}, y ∈ carrier → x * y ∈ carrier)
     (mul_mem_right : ∀ {x y}, x ∈ carrier → x * y ∈ carrier) : TwoSidedIdeal R where
   ringCon :=
-    { r := fun x y ↦ x - y ∈ carrier
+    { r x y := x - y ∈ carrier
       iseqv :=
-      { refl := fun x ↦ by simpa using zero_mem
-        symm := fun h ↦ by simpa using neg_mem h
-        trans := fun {x y z} h1 h2 ↦ by
+      { refl x := by simpa using zero_mem
+        symm h := by simpa using neg_mem h
+        trans {x y z} h1 h2 := by
           simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
-      mul' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
+      mul' {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) := show _ ∈ carrier by
         rw [show a * c - b * d = a * (c - d) + (a - b) * d by rw [mul_sub, sub_mul]; abel]
         exact add_mem (mul_mem_left h2) (mul_mem_right h1)
-      add' := fun {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) ↦ show _ ∈ carrier by
+      add' {a b c d} (h1 : a - b ∈ carrier) (h2 : c - d ∈ carrier) := show _ ∈ carrier by
         rw [show a + c - (b + d) = (a - b) + (c - d) by abel]
         exact add_mem h1 h2 }
 

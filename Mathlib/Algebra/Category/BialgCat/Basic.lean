@@ -114,8 +114,8 @@ lemma hom_ext {X Y : BialgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBia
 
 instance hasForgetToAlgebra : HasForget₂ (BialgCat R) (AlgCat R) where
   forget₂ :=
-    { obj := fun X => ↧X
-      map := fun {X Y} f => AlgCat.ofHom f.toBialgHom }
+    { obj X := ↧X
+      map {X Y} f := AlgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgCat R) :
@@ -129,8 +129,8 @@ theorem forget₂_algebra_map (X Y : BialgCat R) (f : X ⟶ Y) :
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgCat R) (CoalgCat R) where
   forget₂ :=
-    { obj := fun X => ↧X
-      map := fun {_ _} f => CoalgCat.ofHom f.toBialgHom }
+    { obj X := ↧X
+      map {_ _} f := CoalgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_coalgebra_obj (X : BialgCat R) :

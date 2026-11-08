@@ -98,12 +98,12 @@ on objects -/
 @[simps]
 def obj (K : HomologicalComplex (Karoubi C) c) : Karoubi (HomologicalComplex C c) where
   X :=
-    { X := fun n => (K.X n).X
-      d := fun i j => (K.d i j).f
-      shape := fun i j hij => hom_eq_zero_iff.mp (K.shape i j hij)
-      d_comp_d' := fun i j k _ _ => by
+    { X n := (K.X n).X
+      d i j := (K.d i j).f
+      shape i j hij := hom_eq_zero_iff.mp (K.shape i j hij)
+      d_comp_d' i j k _ _ := by
         simpa only [comp_f] using hom_eq_zero_iff.mp (K.d_comp_d i j k) }
-  p := { f := fun n => (K.X n).p }
+  p := { f n := (K.X n).p }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The functor `HomologicalComplex (Karoubi C) c ⥤ Karoubi (HomologicalComplex C c)`,
@@ -111,8 +111,8 @@ on morphisms -/
 @[simps]
 def map {K L : HomologicalComplex (Karoubi C) c} (f : K ⟶ L) : obj K ⟶ obj L where
   f :=
-    { f := fun n => (f.f n).f
-      comm' := fun i j hij => by simpa only [comp_f] using! hom_ext_iff.mp (f.comm' i j hij) }
+    { f n := (f.f n).f
+      comm' i j hij := by simpa only [comp_f] using! hom_ext_iff.mp (f.comm' i j hij) }
 
 end Inverse
 
@@ -137,10 +137,10 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse where
   hom :=
-    { app := fun P =>
+    { app P :=
         { f :=
-            { f := fun n => P.p.f n
-              comm' := fun i j _ => by
+            { f n := P.p.f n
+              comm' i j _ := by
                 dsimp
                 simp only [HomologicalComplex.Hom.comm, HomologicalComplex.Hom.comm_assoc,
                   HomologicalComplex.p_idem] }
@@ -148,23 +148,23 @@ def unitIso : 𝟭 (Karoubi (HomologicalComplex C c)) ≅ functor ⋙ inverse wh
             ext n
             dsimp
             simp only [HomologicalComplex.p_idem] }
-      naturality := fun P Q φ => by
+      naturality P Q φ := by
         ext
         dsimp
         simp only [HomologicalComplex.comp_p_d,
           HomologicalComplex.p_comp_d] }
   inv :=
-    { app := fun P =>
+    { app P :=
         { f :=
-            { f := fun n => P.p.f n
-              comm' := fun i j _ => by
+            { f n := P.p.f n
+              comm' i j _ := by
                 dsimp
                 simp only [HomologicalComplex.Hom.comm, assoc, HomologicalComplex.p_idem] }
           comm := by
             ext n
             dsimp
             simp only [HomologicalComplex.p_idem] }
-      naturality := fun P Q φ => by
+      naturality P Q φ := by
         ext
         dsimp
         simp only [HomologicalComplex.comp_p_d, HomologicalComplex.p_comp_d] }

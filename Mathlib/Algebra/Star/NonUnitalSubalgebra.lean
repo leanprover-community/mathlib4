@@ -80,7 +80,7 @@ variable [hSR : SMulMemClass S R A] [StarMemClass S A] (s : S)
 def subtype (s : S) : s →⋆ₙₐ[R] A :=
   { NonUnitalSubalgebraClass.subtype s with
     toFun := Subtype.val
-    map_star' := fun _ => rfl }
+    map_star' _ := rfl }
 
 variable {s} in
 @[simp]
@@ -160,7 +160,7 @@ instance instStarMemClass : StarMemClass (NonUnitalStarSubalgebra R A) A where
 instance instNonUnitalSubringClass {R : Type u} {A : Type v} [CommRing R] [NonUnitalNonAssocRing A]
     [Module R A] [Star A] : NonUnitalSubringClass (NonUnitalStarSubalgebra R A) A :=
   { NonUnitalStarSubalgebra.instNonUnitalSubsemiringClass with
-    neg_mem := fun _S {x} hx => neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
+    neg_mem _S {x} hx := neg_one_smul R x ▸ SMulMemClass.smul_mem _ hx }
 
 theorem mem_carrier {s : NonUnitalStarSubalgebra R A} {x : A} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
@@ -268,7 +268,7 @@ end
 `OrderEmbedding` -/
 def toNonUnitalSubalgebra' : NonUnitalStarSubalgebra R A ↪o NonUnitalSubalgebra R A where
   toEmbedding :=
-    { toFun := fun S => S.toNonUnitalSubalgebra
+    { toFun S := S.toNonUnitalSubalgebra
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
@@ -470,7 +470,7 @@ theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) 
 def codRestrict (f : A →⋆ₙₐ[R] B) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) :
     A →⋆ₙₐ[R] S where
   toNonUnitalAlgHom := NonUnitalAlgHom.codRestrict f.toNonUnitalAlgHom S.toNonUnitalSubalgebra hf
-  map_star' := fun a => Subtype.ext <| map_star f a
+  map_star' a := Subtype.ext <| map_star f a
 
 @[simp]
 theorem subtype_comp_codRestrict
@@ -571,7 +571,7 @@ instance instInvolutiveStar : InvolutiveStar (NonUnitalSubalgebra R A) where
       add_mem' := @fun x y hx hy => by simpa only [Set.mem_star, NonUnitalSubalgebra.mem_carrier]
         using (star_add x y).symm ▸ add_mem hx hy
       zero_mem' := Set.mem_star.mp ((star_zero A).symm ▸ zero_mem S : star (0 : A) ∈ S)
-      smul_mem' := fun r x hx => by simpa only [Set.mem_star, NonUnitalSubalgebra.mem_carrier]
+      smul_mem' r x hx := by simpa only [Set.mem_star, NonUnitalSubalgebra.mem_carrier]
         using (star_smul r x).symm ▸ SMulMemClass.smul_mem (star r) hx }
   star_involutive S := NonUnitalSubalgebra.ext fun x =>
       ⟨fun hx => star_star x ▸ hx, fun hx => ((star_star x).symm ▸ hx : star (star x) ∈ S)⟩
@@ -979,7 +979,7 @@ variable (S₁ : NonUnitalStarSubalgebra R B)
 def prod : NonUnitalStarSubalgebra R (A × B) :=
   { S.toNonUnitalSubalgebra.prod S₁.toNonUnitalSubalgebra with
     carrier := S ×ˢ S₁
-    star_mem' := fun hx => ⟨star_mem hx.1, star_mem hx.2⟩ }
+    star_mem' hx := ⟨star_mem hx.1, star_mem hx.2⟩ }
 
 @[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
@@ -1025,7 +1025,7 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalStarSubalgebra R
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalStarSubalgebra R A :=
     { __ := NonUnitalSubalgebra.copy _ _ (NonUnitalSubalgebra.coe_iSup_of_directed dir).symm
-      star_mem' := fun hx ↦
+      star_mem' hx :=
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, star_mem (s := S i) hi⟩ }
   have : iSup S = K := le_antisymm (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set A)) i)
@@ -1079,7 +1079,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
         all_goals simp
-      map_smul' := fun r => by
+      map_smul' r := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)

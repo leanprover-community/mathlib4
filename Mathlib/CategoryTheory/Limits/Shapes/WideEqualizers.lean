@@ -240,8 +240,8 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
     Trident f where
   pt := P
   π :=
-    { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
-      naturality := fun i j f => by
+    { app X := WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
+      naturality i j f := by
         obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
@@ -254,8 +254,8 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
     Cotrident f where
   pt := P
   ι :=
-    { app := fun X => WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
-      naturality := fun i j f => by
+    { app X := WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
+      naturality i j f := by
         obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
@@ -329,7 +329,7 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
         (_ : ∀ j : WalkingParallelFamily J, m ≫ t.π.app j = s.π.app j), m = lift s) :
     IsLimit t :=
   { lift
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelFamily.casesOn j (fac s)
         (by rw [← t.w (line (Classical.arbitrary J)), reassoc_of% fac, s.w])
     uniq := uniq }
@@ -352,7 +352,7 @@ def Cotrident.IsColimit.mk [Nonempty J] (t : Cotrident f) (desc : ∀ s : Cotrid
         (_ : ∀ j : WalkingParallelFamily J, t.ι.app j ≫ m = s.ι.app j), m = desc s) :
     IsColimit t :=
   { desc
-    fac := fun s j =>
+    fac s j :=
       WalkingParallelFamily.casesOn j (by rw [← t.w_assoc (line (Classical.arbitrary J)), fac, s.w])
         (fac s)
     uniq := uniq }
@@ -421,8 +421,8 @@ def Cone.ofTrident {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.m
     Cone F where
   pt := t.pt
   π :=
-    { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
-      naturality := fun j j' g => by cases g <;> cat_disch }
+    { app X := t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
+      naturality j j' g := by cases g <;> cat_disch }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- This is a helper construction that can be useful when verifying that a category has all
@@ -437,8 +437,8 @@ def Cocone.ofCotrident {F : WalkingParallelFamily J ⥤ C} (t : Cotrident fun j 
     Cocone F where
   pt := t.pt
   ι :=
-    { app := fun X => eqToHom (by cases X <;> cat_disch) ≫ t.ι.app X
-      naturality := fun j j' g => by cases g <;> simp [Cotrident.app_one t] }
+    { app X := eqToHom (by cases X <;> cat_disch) ≫ t.ι.app X
+      naturality j j' g := by cases g <;> simp [Cotrident.app_one t] }
 
 @[simp]
 theorem Cone.ofTrident_π {F : WalkingParallelFamily J ⥤ C} (t : Trident fun j => F.map (line j))
@@ -458,7 +458,7 @@ def Trident.ofCone {F : WalkingParallelFamily J ⥤ C} (t : Cone F) :
     Trident fun j => F.map (line j) where
   pt := t.pt
   π :=
-    { app := fun X => t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
+    { app X := t.π.app X ≫ eqToHom (by cases X <;> cat_disch)
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -469,7 +469,7 @@ def Cotrident.ofCocone {F : WalkingParallelFamily J ⥤ C} (t : Cocone F) :
     Cotrident fun j => F.map (line j) where
   pt := t.pt
   ι :=
-    { app := fun X => eqToHom (by cases X <;> cat_disch) ≫ t.ι.app X
+    { app X := eqToHom (by cases X <;> cat_disch) ≫ t.ι.app X
       naturality := by rintro _ _ (_ | _) <;> cat_disch }
 
 @[simp]
@@ -716,13 +716,13 @@ abbrev HasWideCoequalizers :=
 theorem hasWideEqualizers_of_hasLimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasLimit (parallelFamily f)] :
     HasWideEqualizers.{w} C := fun _ =>
-  { has_limit := fun F => hasLimit_of_iso (diagramIsoParallelFamily F).symm }
+  { has_limit F := hasLimit_of_iso (diagramIsoParallelFamily F).symm }
 
 /-- If `C` has all colimits of diagrams `parallelFamily f`, then it has all wide coequalizers -/
 theorem hasWideCoequalizers_of_hasColimit_parallelFamily
     [∀ {J : Type w} {X Y : C} {f : J → (X ⟶ Y)}, HasColimit (parallelFamily f)] :
     HasWideCoequalizers.{w} C := fun _ =>
-  { has_colimit := fun F => hasColimit_of_iso (diagramIsoParallelFamily F) }
+  { has_colimit F := hasColimit_of_iso (diagramIsoParallelFamily F) }
 
 instance (priority := 10) hasEqualizers_of_hasWideEqualizers [HasWideEqualizers.{w} C] :
     HasEqualizers C :=

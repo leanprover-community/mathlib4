@@ -63,7 +63,7 @@ noncomputable def grpTypeEquivalenceGrp : Grp (Type u) ≌ GrpCat.{u} where
   inverse := GrpTypeEquivalenceGrp.inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A => MulEquiv.toGrpIso { Equiv.refl _ with map_mul' _ _ := rfl })
     (by cat_disch)
 
 /-- The equivalences `Mon (Type u) ≌ MonCat.{u}` and `Grp (Type u) ≌ GrpCat.{u}`

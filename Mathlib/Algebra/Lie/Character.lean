@@ -66,7 +66,7 @@ def lieCharacterEquivLinearDual [IsLieAbelian L] : LieCharacter R L ≃ Module.D
   toFun χ := (χ : L →ₗ[R] R)
   invFun ψ :=
     { ψ with
-      map_lie' := fun {x y} => by
+      map_lie' {x y} := by
         rw [LieModule.IsTrivial.trivial, LieRing.of_associative_ring_bracket, mul_comm, sub_self,
           LinearMap.toFun_eq_coe, map_zero] }
 

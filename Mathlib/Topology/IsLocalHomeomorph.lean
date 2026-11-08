@@ -103,9 +103,9 @@ theorem mk (h : ∀ x ∈ s, ∃ e : OpenPartialHomeomorph X Y, x ∈ e.source �
   exact
     ⟨{ e with
         toFun := f
-        map_source' := fun _x hx ↦ by rw [he hx]; exact e.map_source' hx
-        left_inv' := fun _x hx ↦ by rw [he hx]; exact e.left_inv' hx
-        right_inv' := fun _y hy ↦ by rw [he (e.map_target' hy)]; exact e.right_inv' hy
+        map_source' _x hx := by rw [he hx]; exact e.map_source' hx
+        left_inv' _x hx := by rw [he hx]; exact e.left_inv' hx
+        right_inv' _y hy := by rw [he (e.map_target' hy)]; exact e.right_inv' hy
         continuousOn_toFun := (continuousOn_congr he).mpr e.continuousOn_toFun },
       hx, rfl⟩
 

@@ -47,11 +47,11 @@ noncomputable def tautologicalRelationsSolutionEquiv {N : Type w} [AddCommGroup 
     (tautologicalRelations A M).Solution N ≃ (M →ₗ[A] N) where
   toFun s :=
     { toFun := s.var
-      map_add' := fun m₁ m₂ ↦ by
+      map_add' m₁ m₂ := by
         symm
         rw [← sub_eq_zero]
         simpa using s.linearCombination_var_relation (.add m₁ m₂)
-      map_smul' := fun a m ↦ by
+      map_smul' a m := by
         symm
         rw [← sub_eq_zero]
         simpa using s.linearCombination_var_relation (.smul a m) }

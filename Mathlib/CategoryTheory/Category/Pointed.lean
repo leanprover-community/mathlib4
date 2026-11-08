@@ -116,16 +116,16 @@ def typeToPointed : Type u ⥤ Pointed.{u} where
 /-- `typeToPointed` is the free functor. -/
 def typeToPointedForgetAdjunction : typeToPointed ⊣ forget Pointed :=
   Adjunction.mkOfHomEquiv {
-    homEquiv := fun X Y =>
-        { toFun := fun f => ↾(f.toFun ∘ Option.some)
-          invFun := fun f => ⟨fun o => o.elim Y.point f, rfl⟩
+    homEquiv X Y :=
+        { toFun f := ↾(f.toFun ∘ Option.some)
+          invFun f := ⟨fun o => o.elim Y.point f, rfl⟩
           left_inv := fun f => by
             apply Pointed.Hom.ext
             funext x
             cases x
             · exact f.map_point.symm
             · rfl }
-    homEquiv_naturality_left_symm := fun f g => by
+    homEquiv_naturality_left_symm f g := by
       apply Pointed.Hom.ext
       funext x
       cases x <;> rfl }

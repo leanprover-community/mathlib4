@@ -437,9 +437,9 @@ to `Ext X Y n`. -/
 noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrpCat.{w} where
   obj X := extFunctorObj X.unop n
   map {X₁ X₂} f :=
-    { app := fun Y ↦ AddCommGrpCat.ofHom (AddMonoidHom.mk'
+    { app Y := AddCommGrpCat.ofHom (AddMonoidHom.mk'
         (fun α ↦ (Ext.mk₀ f.unop).comp α (zero_add _)) (by simp))
-      naturality := fun {Y₁ Y₂} g ↦ by
+      naturality {Y₁ Y₂} g := by
         ext α
         dsimp
         symm

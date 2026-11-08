@@ -144,7 +144,7 @@ one base point. Namely, this function takes a map `e : P₁ → P₂`, a linear 
 def mk' (e : P₁ → P₂) (e' : V₁ ≃ₗ[k] V₂) (p : P₁) (h : ∀ p' : P₁, e p' = e' (p' -ᵥ p) +ᵥ e p) :
     P₁ ≃ᵃ[k] P₂ where
   toFun := e
-  invFun := fun q' : P₂ => e'.symm (q' -ᵥ e p) +ᵥ p
+  invFun (q' : P₂) := e'.symm (q' -ᵥ e p) +ᵥ p
   left_inv p' := by simp [h p', vadd_vsub, vsub_vadd]
   right_inv q' := by simp [h (e'.symm (q' -ᵥ e p) +ᵥ p), vadd_vsub, vsub_vadd]
   linear := e'
@@ -371,7 +371,7 @@ def equivUnitsAffineMap : (P₁ ≃ᵃ[k] P₁) ≃* (P₁ →ᵃ[k] P₁)ˣ whe
       right_inv := AffineMap.congr_fun u.mul_inv
       linear :=
         LinearMap.GeneralLinearGroup.generalLinearEquiv _ _ <| Units.map AffineMap.linearHom u
-      map_vadd' := fun _ _ => (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
+      map_vadd' _ _ := (u : P₁ →ᵃ[k] P₁).map_vadd _ _ }
   map_mul' _ _ := rfl
 
 section

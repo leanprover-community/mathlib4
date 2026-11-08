@@ -169,11 +169,11 @@ theorem cfcₙHom_comp [UniqueHom R A] (f : C(σₙ R a, R)₀)
     cfcₙHom ha (g.comp f') = cfcₙHom (cfcₙHom_predicate ha f) g := by
   let ψ : C(σₙ R (cfcₙHom ha f), R)₀ →⋆ₙₐ[R] C(σₙ R a, R)₀ :=
     { toFun := (ContinuousMapZero.comp · f')
-      map_smul' := fun _ _ ↦ rfl
-      map_add' := fun _ _ ↦ rfl
-      map_mul' := fun _ _ ↦ rfl
+      map_smul' _ _ := rfl
+      map_add' _ _ := rfl
+      map_mul' _ _ := rfl
       map_zero' := rfl
-      map_star' := fun _ ↦ rfl }
+      map_star' _ := rfl }
   let φ : C(σₙ R (cfcₙHom ha f), R)₀ →⋆ₙₐ[R] A := (cfcₙHom ha).comp ψ
   suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from congr($this.symm g)
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_

@@ -142,7 +142,7 @@ variable [AddCommMonoid α] [Preorder α] [IsOrderedAddMonoid α]
   {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
 instance isOrderedAddMonoid : IsOrderedAddMonoid (ι →₀ α) :=
-  { add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
+  { add_le_add_left _a _b h c := fun s  => add_le_add_left (h s) (c s) }
 
 @[gcongr]
 lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
@@ -172,7 +172,7 @@ end OrderedAddCommMonoid
 
 instance isOrderedCancelAddMonoid [AddCommMonoid α] [Preorder α] [IsOrderedCancelAddMonoid α] :
     IsOrderedCancelAddMonoid (ι →₀ α) :=
-  { le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
+  { le_of_add_le_add_left _f _g _i h := fun s  => le_of_add_le_add_left (h s) }
 
 instance addLeftReflectLE [AddCommMonoid α] [Preorder α] [AddLeftReflectLE α] :
     AddLeftReflectLE (ι →₀ α) where
@@ -268,9 +268,9 @@ instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
 instance [AddLeftMono α] : CanonicallyOrderedAdd (ι →₀ α) where
-  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  exists_add_of_le {f g} h := ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
   le_add_self _ _ _ := le_add_self
-  le_self_add := fun _f _g _x => le_self_add
+  le_self_add _f _g := fun _x  => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 

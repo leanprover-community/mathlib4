@@ -127,9 +127,9 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
     PointDerivation I x →ₗ[𝕜] PointDerivation I' y where
   toFun v :=
     Derivation.mk'
-      { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
-        map_smul' := fun k g => by
+      { toFun g := v (g.comp f)
+        map_add' g g' := by rw [ContMDiffMap.add_comp, Derivation.map_add]
+        map_smul' k g := by
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by
         dsimp

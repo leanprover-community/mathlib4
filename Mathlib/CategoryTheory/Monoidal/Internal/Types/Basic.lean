@@ -80,7 +80,7 @@ noncomputable def monTypeEquivalenceMon : Mon (Type u) ≌ MonCat.{u} where
   inverse := inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A => MulEquiv.toMonCatIso { Equiv.refl _ with map_mul' _ _ := rfl })
     (by cat_disch)
 
 /-- The equivalence `Mon (Type u) ≌ MonCat.{u}`
@@ -94,7 +94,7 @@ namespace CommMonTypeEquivalenceCommMon
 
 instance commMonCommMonoid (A : Type u) [MonObj A] [IsCommMonObj A] : CommMonoid A :=
   { MonTypeEquivalenceMon.monMonoid A with
-    mul_comm := fun x y => by
+    mul_comm x y := by
       convert! congr_hom (CC := fun X ↦ X) (IsCommMonObj.mul_comm A) (y, x) }
 
 /-- Converting a commutative monoid object in `Type` to a bundled commutative monoid.
@@ -126,7 +126,7 @@ noncomputable def commMonTypeEquivalenceCommMon : CommMon (Type u) ≌ CommMonCa
   inverse := inverse
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun A => MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' := fun _ _ => rfl })
+    (fun A => MulEquiv.toCommMonCatIso { Equiv.refl _ with map_mul' _ _ := rfl })
     (by cat_disch)
 
 /-- The equivalences `Mon (Type u) ≌ MonCat.{u}` and `CommMon (Type u) ≌ CommMonCat.{u}`

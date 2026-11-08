@@ -129,7 +129,7 @@ then for any `F : J ⥤ C`, `tensorLeft F` has a right adjoint. -/
 noncomputable def adj (F : J ⥤ C) :
     MonoidalCategory.tensorLeft F ⊣ (eHomFunctor _ _).obj ⟨F⟩ :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ ↦ homEquiv
+    { homEquiv _ _ := homEquiv
       homEquiv_naturality_left_symm := homEquiv_naturality_two_symm
       homEquiv_naturality_right := homEquiv_naturality_three }
 

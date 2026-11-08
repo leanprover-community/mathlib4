@@ -73,11 +73,11 @@ noncomputable def colimitLimitToLimitColimit :
   limit.lift (curry.obj F ⋙ colim)
     { pt := _
       π :=
-        { app := fun j =>
+        { app j :=
             colimit.desc (curry.obj (Prod.swap K J ⋙ F) ⋙ lim)
               { pt := _
                 ι :=
-                  { app := fun k =>
+                  { app k :=
                       limit.π ((curry.obj (Prod.swap K J ⋙ F)).obj k) j ≫
                         colimit.ι ((curry.obj F).obj j) k
                     naturality := by

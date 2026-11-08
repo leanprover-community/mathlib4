@@ -104,7 +104,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun _ => ↾fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app _ := ↾fun a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 /-- A variant of `Sieve.functor` with universe lifting. -/
 abbrev uliftFunctor (S : Sieve X) : Cᵒᵖ ⥤ Type (max w v₁) :=
@@ -159,7 +159,7 @@ theorem sieveOfUliftSubfunctor_uliftFunctorInclusion {S : Sieve X} :
   cat_disch
 
 instance uliftFunctorInclusion_top_isIso : IsIso (Sieve.uliftFunctorInclusion.{w} (⊤ : Sieve X)) :=
-  ⟨⟨{ app := fun _ ↦ ↾fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app _ := ↾fun a ↦ ⟨a.down, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 
 end Sieve

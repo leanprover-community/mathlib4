@@ -399,7 +399,7 @@ theorem primitive_element_iff_algHom_eq_of_eval (α : E)
     fun h ↦ eq_of_le_of_finrank_eq' le_top ?_⟩
   let : Algebra F⟮α⟯ A := (φ.comp F⟮α⟯.val).toAlgebra
   rw [IntermediateField.finrank_top, ← AlgHom.card_of_splits _ _ A, Fintype.card_eq_one_iff]
-  · exact ⟨{ __ := φ, commutes' := fun _ ↦ rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
+  · exact ⟨{ __ := φ, commutes' _ := rfl }, fun ψ ↦ AlgHom.restrictScalars_injective F <|
       Eq.symm <| h _ (ψ.commutes <| AdjoinSimple.gen F α).symm⟩
   · exact fun x ↦ (IsIntegral.of_finite F x).minpoly_splits_tower_top (hA x)
 

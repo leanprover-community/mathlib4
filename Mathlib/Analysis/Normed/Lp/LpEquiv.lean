@@ -67,7 +67,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
 /-- The canonical `AddEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u` with
 `[Finite α]`. -/
 def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
-  { Equiv.lpPiLp with map_add' := fun _f _g ↦ rfl }
+  { Equiv.lpPiLp with map_add' _f _g := rfl }
 
 theorem coe_addEquiv_lpPiLp (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
@@ -93,7 +93,7 @@ variable (E)
 with `[Fintype α]` and `[Fact (1 ≤ p)]`. -/
 noncomputable def lpPiLpₗᵢ [Fact (1 ≤ p)] : lp E p ≃ₗᵢ[𝕜] PiLp p E :=
   { AddEquiv.lpPiLp with
-    map_smul' := fun _k _f ↦ rfl
+    map_smul' _k _f := rfl
     norm_map' := equiv_lpPiLp_norm }
 
 variable {𝕜 E}
@@ -139,8 +139,8 @@ variable (E)
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBCF with
-    map_smul' := fun _ _ ↦ rfl
-    norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
+    map_smul' _ _ := rfl
+    norm_map' f := by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
 
 variable {𝕜 E}
@@ -158,7 +158,7 @@ section RingAlgebra
 /-- The canonical map between `lp (fun _ : α ↦ R) ∞` and `α →ᵇ R` as a `RingEquiv`. -/
 noncomputable def RingEquiv.lpBCF : lp (fun _ : α ↦ R) ∞ ≃+* (α →ᵇ R) :=
   { @AddEquiv.lpBCF _ R _ _ _ with
-    map_mul' := fun _f _g => rfl }
+    map_mul' _f _g := rfl }
 
 theorem coe_ringEquiv_lpBCF (f : lp (fun _ : α ↦ R) ∞) : (RingEquiv.lpBCF f : α → R) = f :=
   rfl
@@ -173,7 +173,7 @@ variable (α)
 -- `one_memℓp_infty` to get the `Ring` instance on `lp`.
 /-- The canonical map between `lp (fun _ : α ↦ A) ∞` and `α →ᵇ A` as an `AlgEquiv`. -/
 noncomputable def AlgEquiv.lpBCF : lp (fun _ : α ↦ A) ∞ ≃ₐ[𝕜] α →ᵇ A :=
-  { RingEquiv.lpBCF with commutes' := fun _k ↦ rfl }
+  { RingEquiv.lpBCF with commutes' _k := rfl }
 
 
 variable {α 𝕜}

@@ -91,7 +91,7 @@ namespace SpecialLinear
 /-- The special linear Lie algebra: square matrices of trace zero. -/
 def sl [Fintype n] : LieSubalgebra R (Matrix n n R) :=
   { LinearMap.ker (Matrix.traceLinearMap n R R) with
-    lie_mem' := fun _ _ => LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
+    lie_mem' _ _ := LinearMap.mem_ker.2 <| matrix_trace_commutator_zero _ _ _ _ }
 
 theorem sl_bracket [Fintype n] (A B : sl n R) : ⁅A, B⁆.val = A.val * B.val - B.val * A.val :=
   rfl

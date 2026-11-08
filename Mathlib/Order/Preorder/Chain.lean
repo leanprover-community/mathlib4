@@ -421,7 +421,7 @@ theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt
 
 instance [DecidableLE α] [DecidableLT α] [DecidableEq α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
-    le_total := fun a b => s.le_or_le a.2 b.2
+    le_total a b := s.le_or_le a.2 b.2
     toDecidableLE := Subtype.decidableLE
     toDecidableLT := Subtype.decidableLT
     toDecidableEq := Subtype.instDecidableEq }

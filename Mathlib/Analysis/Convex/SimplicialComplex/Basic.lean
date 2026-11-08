@@ -128,9 +128,9 @@ def ofErase (faces : Set (Finset E)) (indep : ∀ s ∈ faces, AffineIndependent
 def ofSubcomplex (K : SimplicialComplex 𝕜 E) (faces : Set (Finset E)) (subset : faces ⊆ K.faces)
     (down_closed : IsLowerSet faces) : SimplicialComplex 𝕜 E :=
   { faces := faces
-    indep := fun hs => K.indep (subset hs)
+    indep hs := K.indep (subset hs)
     isRelLowerSet_faces := K.isRelLowerSet_faces.mono_isLowerSet down_closed subset
-    inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull (subset hs) (subset ht) }
+    inter_subset_convexHull hs ht := K.inter_subset_convexHull (subset hs) (subset ht) }
 
 /-! ### Vertices -/
 
@@ -204,25 +204,25 @@ variable (𝕜 E)
 instance : Min (SimplicialComplex 𝕜 E) :=
   ⟨fun K L =>
     { faces := K.faces ∩ L.faces
-      indep := fun hs => K.indep hs.1
+      indep hs := K.indep hs.1
       isRelLowerSet_faces := K.isRelLowerSet_faces.inter L.isRelLowerSet_faces
-      inter_subset_convexHull := fun hs ht => K.inter_subset_convexHull hs.1 ht.1 }⟩
+      inter_subset_convexHull hs ht := K.inter_subset_convexHull hs.1 ht.1 }⟩
 
 instance : SemilatticeInf (SimplicialComplex 𝕜 E) :=
   { PartialOrder.lift (fun K => K.faces) (fun _ _ => SimplicialComplex.ext) with
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ hs => hs.1
-    inf_le_right := fun _ _ _ hs => hs.2
-    le_inf := fun _ _ _ hKL hKM _ hs => ⟨hKL hs, hKM hs⟩ }
+    inf_le_left _ _ := fun _ hs  => hs.1
+    inf_le_right _ _ := fun _ hs  => hs.2
+    le_inf _ _ _ hKL hKM := fun _ hs  => ⟨hKL hs, hKM hs⟩ }
 
 instance hasBot : Bot (SimplicialComplex 𝕜 E) :=
   ⟨{  faces := ∅
-      indep := fun hs => (Set.notMem_empty _ hs).elim
+      indep hs := (Set.notMem_empty _ hs).elim
       isRelLowerSet_faces := isRelLowerSet_empty
-      inter_subset_convexHull := fun hs => (Set.notMem_empty _ hs).elim }⟩
+      inter_subset_convexHull hs := (Set.notMem_empty _ hs).elim }⟩
 
 instance : OrderBot (SimplicialComplex 𝕜 E) :=
-  { SimplicialComplex.hasBot 𝕜 E with bot_le := fun _ => Set.empty_subset _ }
+  { SimplicialComplex.hasBot 𝕜 E with bot_le _ := Set.empty_subset _ }
 
 instance : Inhabited (SimplicialComplex 𝕜 E) :=
   ⟨⊥⟩

@@ -232,7 +232,7 @@ theorem IsMaximal.isCoatom' [IsMaximal I] : IsCoatom I :=
   IsMaximal.isCoatom ‹_›
 
 theorem _root_.IsCoatom.isMaximal (hI : IsCoatom I) : IsMaximal I :=
-  { IsCoatom.isProper hI with maximal_proper := fun _ hJ ↦ by simp [hI.2 _ hJ] }
+  { IsCoatom.isProper hI with maximal_proper _ hJ := by simp [hI.2 _ hJ] }
 
 theorem isMaximal_iff_isCoatom : IsMaximal I ↔ IsCoatom I :=
   ⟨fun h ↦ h.isCoatom, fun h ↦ IsCoatom.isMaximal h⟩
@@ -387,18 +387,18 @@ instance : Max (Ideal P) :=
 
 instance : Lattice (Ideal P) where
   sup := (· ⊔ ·)
-  le_sup_left := fun _ J i hi ↦
+  le_sup_left _ J := fun i hi  ↦
     let ⟨w, hw⟩ := J.nonempty
     ⟨i, hi, w, hw, le_sup_left⟩
-  le_sup_right := fun I _ j hj ↦
+  le_sup_right I _ := fun j hj  ↦
     let ⟨w, hw⟩ := I.nonempty
     ⟨w, hw, j, hj, le_sup_right⟩
-  sup_le := fun _ _ K hIK hJK _ ⟨_, hi, _, hj, ha⟩ ↦
+  sup_le _ _ K hIK hJK := fun _ ⟨_, hi, _, hj, ha⟩  ↦
     K.lower ha <| sup_mem (mem_of_mem_of_le hi hIK) (mem_of_mem_of_le hj hJK)
   inf := (· ⊓ ·)
-  inf_le_left := fun _ _ ↦ inter_subset_left
-  inf_le_right := fun _ _ ↦ inter_subset_right
-  le_inf := fun _ _ _ ↦ subset_inter
+  inf_le_left _ _ := inter_subset_left
+  inf_le_right _ _ := inter_subset_right
+  le_inf _ _ _ := subset_inter
 
 @[simp]
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=

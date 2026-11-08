@@ -81,7 +81,7 @@ structure AddContent (C : Set (Set α)) where
     toFun (⋃₀ I) = ∑ u ∈ I, toFun u
 
 instance : Inhabited (AddContent G C) :=
-  ⟨{toFun := fun _ => 0
+  ⟨{toFun _ := 0
     empty' := by simp
     sUnion' := by simp }⟩
 

@@ -626,10 +626,10 @@ theorem isSimpleOrder_iff_isSimpleOrder_orderDual [LE α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsSimpleOrder αᵒᵈ := by
   constructor <;> intro i
   · exact
-      { eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
+      { eq_bot_or_eq_top a := Or.symm (eq_bot_or_eq_top (OrderDual.ofDual a) : _ ∨ _) }
   · exact
       { exists_pair_ne := @exists_pair_ne αᵒᵈ _
-        eq_bot_or_eq_top := fun a => Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
+        eq_bot_or_eq_top a := Or.symm (eq_bot_or_eq_top (OrderDual.toDual a)) }
 
 @[to_dual]
 theorem IsSimpleOrder.bot_ne_top [LE α] [BoundedOrder α] [IsSimpleOrder α] : (⊥ : α) ≠ (⊤ : α) := by
@@ -661,7 +661,7 @@ This is not an instance to prevent loops. -/
 @[instance_reducible]
 protected def IsSimpleOrder.linearOrder [DecidableEq α] : LinearOrder α :=
   { (inferInstance : PartialOrder α) with
-    le_total := fun a b => by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
+    le_total a b := by rcases eq_bot_or_eq_top a with (rfl | rfl) <;> simp
     -- Note from https://github.com/leanprover-community/mathlib4/issues/23976: do we want this inlined or should this be a separate definition?
     toDecidableLE := fun a b =>
       if ha : a = ⊥ then isTrue (ha.le.trans bot_le)
@@ -717,7 +717,7 @@ This is not an instance to prevent loops -/
 @[instance_reducible]
 protected def distribLattice : DistribLattice α :=
   { (inferInstance : Lattice α) with
-    le_sup_inf := fun x y z => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
+    le_sup_inf x y z := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
 
 -- see Note [lower instance priority]
 instance (priority := 100) : IsAtomic α :=
@@ -757,15 +757,15 @@ def orderIsoBool : α ≃o Bool :=
 protected def booleanAlgebra {α} [DecidableEq α] [Lattice α] [BoundedOrder α] [IsSimpleOrder α] :
     BooleanAlgebra α :=
   { (inferInstance : BoundedOrder α), IsSimpleOrder.distribLattice with
-    compl := fun x => if x = ⊥ then ⊤ else ⊥
-    sdiff := fun x y => if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
-    sdiff_eq := fun x y => by
+    compl x := if x = ⊥ then ⊤ else ⊥
+    sdiff x y := if x = ⊤ ∧ y = ⊥ then ⊤ else ⊥
+    sdiff_eq x y := by
       rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp
-    inf_compl_le_bot := fun x => by
+    inf_compl_le_bot x := by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · simp
       · simp
-    top_le_sup_compl := fun x => by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
+    top_le_sup_compl x := by rcases eq_bot_or_eq_top x with (rfl | rfl) <;> simp }
 
 end DecidableEq
 
@@ -777,8 +777,8 @@ open scoped Classical in
 protected noncomputable def completeLattice : CompleteLattice α :=
   { (inferInstance : Lattice α),
     (inferInstance : BoundedOrder α) with
-    sSup := fun s => if ⊤ ∈ s then ⊤ else ⊥
-    sInf := fun s => if ⊥ ∈ s then ⊥ else ⊤
+    sSup s := if ⊤ ∈ s then ⊤ else ⊥
+    sInf s := if ⊥ ∈ s then ⊥ else ⊤
     isLUB_sSup s := by
       refine ⟨fun x h ↦ ?_, fun x h ↦ ?_⟩
       · rcases eq_bot_or_eq_top x with (rfl | rfl)
@@ -831,7 +831,7 @@ theorem isSimpleOrder_iff_isAtom_top [PartialOrder α] [BoundedOrder α] :
     IsSimpleOrder α ↔ IsAtom (⊤ : α) :=
   ⟨fun h => @isAtom_top _ _ _ h, fun h =>
     { exists_pair_ne := ⟨⊤, ⊥, h.1⟩
-      eq_bot_or_eq_top := fun a => ((eq_or_lt_of_le le_top).imp_right (h.2 a)).symm }⟩
+      eq_bot_or_eq_top a := ((eq_or_lt_of_le le_top).imp_right (h.2 a)).symm }⟩
 
 namespace Set
 

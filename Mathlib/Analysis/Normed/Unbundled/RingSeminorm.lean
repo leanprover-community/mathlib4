@@ -104,8 +104,7 @@ theorem ext {p q : RingSeminorm R} : (∀ x, p x = q x) → p = q :=
   DFunLike.ext p q
 
 instance : Zero (RingSeminorm R) :=
-  ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' :=
-    fun _ _ => (zero_mul _).ge }⟩
+  ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with mul_le' _ _ := (zero_mul _).ge }⟩
 
 theorem eq_zero_iff {p : RingSeminorm R} : p = 0 ↔ ∀ x, p x = 0 :=
   DFunLike.ext_iff
@@ -119,7 +118,7 @@ instance : Inhabited (RingSeminorm R) :=
 every other element. -/
 instance [DecidableEq R] : One (RingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
-      mul_le' := fun x y => by
+      mul_le' x y := by
         by_cases h : x * y = 0
         · refine (ite_eq_left h).trans_le (mul_nonneg ?_ ?_) <;>
             · change _ ≤ ite _ _ _
@@ -312,7 +311,7 @@ every other element. -/
 instance : One (MulRingSeminorm R) :=
   ⟨{ (1 : AddGroupSeminorm R) with
       map_one' := ite_eq_right one_ne_zero
-      map_mul' := fun x y => by
+      map_mul' x y := by
         obtain rfl | hx := eq_or_ne x 0
         · simp
         obtain rfl | hy := eq_or_ne y 0
@@ -415,7 +414,7 @@ end MulRingNorm
 def RingSeminorm.toRingNorm {K : Type*} [Field K] (f : RingSeminorm K) (hnt : f ≠ 0) :
     RingNorm K :=
   { f with
-    eq_zero_of_map_eq_zero' := fun x hx => by
+    eq_zero_of_map_eq_zero' x hx := by
       obtain ⟨c, hc⟩ := RingSeminorm.ne_zero_iff.mp hnt
       by_contra hn0
       have hc0 : f c = 0 := by

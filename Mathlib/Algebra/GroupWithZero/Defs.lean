@@ -166,13 +166,13 @@ variable [CommMagma M₀] [Zero M₀]
 
 lemma IsLeftCancelMulZero.to_isRightCancelMulZero [IsLeftCancelMulZero M₀] :
     IsRightCancelMulZero M₀ where
-  mul_right_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
+  mul_right_cancel_of_ne_zero hb _ := fun _ h  =>
+    mul_left_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsRightCancelMulZero.to_isLeftCancelMulZero [IsRightCancelMulZero M₀] :
     IsLeftCancelMulZero M₀ where
-  mul_left_cancel_of_ne_zero :=
-    fun hb _ _ h => mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
+  mul_left_cancel_of_ne_zero hb _ := fun _ h  =>
+    mul_right_cancel₀ hb <| (mul_comm _ _).trans (h.trans (mul_comm _ _))
 
 lemma IsLeftCancelMulZero.to_isCancelMulZero [IsLeftCancelMulZero M₀] :
     IsCancelMulZero M₀ :=

@@ -566,7 +566,7 @@ variable (R) in
 @[simps]
 def lcoeff (m : σ →₀ ℕ) : MvPolynomial σ R →ₗ[R] R where
   toFun := (coeff · m)
-  map_add' := fun _ _ ↦ by simp
+  map_add' _ _ := by simp
   map_smul' := coeff_smul m
 
 theorem coeff_sum {X : Type*} (s : Finset X) (f : X → MvPolynomial σ R) (m : σ →₀ ℕ) :

@@ -128,7 +128,7 @@ theorem nontrivial_iff_ne_bot : Nontrivial p ↔ p ≠ ⊥ := by
 instance : Top (Submodule R M) :=
   ⟨{ (⊤ : AddSubmonoid M) with
       carrier := Set.univ
-      smul_mem' := fun _ _ _ ↦ trivial }⟩
+      smul_mem' _ _ _ := trivial }⟩
 
 @[simp]
 theorem top_coe : ((⊤ : Submodule R M) : Set M) = Set.univ :=
@@ -291,7 +291,7 @@ theorem toAddSubmonoid_sSup (s : Set (Submodule R M)) :
     (sSup s).toAddSubmonoid = sSup (toAddSubmonoid '' s) := by
   let p : Submodule R M :=
     { toAddSubmonoid := sSup (toAddSubmonoid '' s)
-      smul_mem' := fun t {m} h ↦ by
+      smul_mem' t {m} h := by
         simp_rw [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup, sSup_eq_iSup'] at h ⊢
         induction h using AddSubmonoid.iSup_induction' with
         | mem p x hx =>
@@ -373,7 +373,7 @@ section NatSubmodule
 
 /-- An additive submonoid is equivalent to a ℕ-submodule. -/
 def AddSubmonoid.toNatSubmodule : AddSubmonoid M ≃o Submodule ℕ M where
-  toFun S := { S with smul_mem' := fun r s hs ↦ show r • s ∈ S from nsmul_mem hs _ }
+  toFun S := { S with smul_mem' r s hs := show r • s ∈ S from nsmul_mem hs _ }
   invFun := Submodule.toAddSubmonoid
   map_rel_iff' := Iff.rfl
 
@@ -411,7 +411,7 @@ variable [AddCommGroup M]
 
 /-- An additive subgroup is equivalent to a ℤ-submodule. -/
 def AddSubgroup.toIntSubmodule : AddSubgroup M ≃o Submodule ℤ M where
-  toFun S := { S with smul_mem' := fun _ _ hs ↦ S.zsmul_mem hs _ }
+  toFun S := { S with smul_mem' _ _ hs := S.zsmul_mem hs _ }
   invFun := Submodule.toAddSubgroup
   map_rel_iff' := Iff.rfl
 

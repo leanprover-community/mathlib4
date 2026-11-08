@@ -37,12 +37,12 @@ noncomputable def multilinearMapToDual :
     · subst h
       simp only [Function.update_self]
     · simp only [Function.update_of_ne h]
-  { toFun := fun f ↦ PiTensorProduct.lift
+  { toFun f := PiTensorProduct.lift
       (MultilinearMap.compLinearMap (MultilinearMap.mkPiRing R (Fin n) 1) f)
-    map_update_add' := fun f i φ₁ φ₂ ↦ by
+    map_update_add' f i φ₁ φ₂ := by
       ext v
       simp [this]
-    map_update_smul' := fun f i a φ ↦ by
+    map_update_smul' f i a φ := by
       ext v
       simp [this, Finset.prod_update_of_mem, Semigroup.mul_assoc] }
 

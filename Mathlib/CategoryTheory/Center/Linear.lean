@@ -33,7 +33,7 @@ open scoped IsMulCommutative in
 /-- The canonical morphism `R →+* CatCenter C` when `C` is an `R`-linear category. -/
 @[simps]
 def toCatCenter [Linear R C] : R →+* CatCenter C where
-  toFun a := .of { app := fun X => a • 𝟙 X }
+  toFun a := .of { app X := a • 𝟙 X }
   map_one' := by cat_disch
   map_mul' a b := by
     rw [mul_comm]
@@ -89,8 +89,8 @@ a ring morphism `R →+* CatCenter C`. -/
 def ofRingMorphism : Linear R C := by
   letI := homModuleOfRingMorphism φ
   exact
-    { smul_comp := fun X Y Z r f g => by simp only [smulOfRingMorphism_smul_eq, assoc]
-      comp_smul := fun X Y Z f r g => by simp only [smulOfRingMorphism_smul_eq', assoc] }
+    { smul_comp X Y Z r f g := by simp only [smulOfRingMorphism_smul_eq, assoc]
+      comp_smul X Y Z f r g := by simp only [smulOfRingMorphism_smul_eq', assoc] }
 
 end
 

@@ -38,7 +38,7 @@ variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l l₁ l₂ : L
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
-    uniq := fun l =>
+    uniq l :=
       match l with
       | [] => rfl
       | a :: _ => isEmptyElim a }
@@ -134,7 +134,7 @@ instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
-  { insert_empty_eq := fun x =>
+  { insert_empty_eq x :=
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from ite_eq_right not_mem_nil }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=

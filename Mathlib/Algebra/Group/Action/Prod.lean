@@ -135,7 +135,7 @@ def MulAction.prodEquiv :
     letI instM := MulAction.compHom α (.inl M N)
     letI instN := MulAction.compHom α (.inr M N)
     ⟨instM, instN,
-    { smul_comm := fun m n a ↦ by
+    { smul_comm m n a := by
         change (m, (1 : N)) • ((1 : M), n) • a = ((1 : M), n) • (m, (1 : N)) • a
         simp_rw [smul_smul, Prod.mk_mul_mk, mul_one, one_mul] }⟩
   invFun _insts :=

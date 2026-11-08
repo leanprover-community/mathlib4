@@ -38,8 +38,8 @@ variable {R : Cᵒᵖ ⥤ RingCat.{u}}
 lemma isSheaf_of_isLimit (hc : IsLimit c) (hF : ∀ j, Presheaf.IsSheaf J (F.obj j).presheaf) :
     Presheaf.IsSheaf J (c.pt.presheaf) := by
   let G : D ⥤ Sheaf J AddCommGrpCat.{v} :=
-    { obj := fun j => ⟨(F.obj j).presheaf, hF j⟩
-      map := fun φ => ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
+    { obj j := ⟨(F.obj j).presheaf, hF j⟩
+      map φ := ⟨(PresheafOfModules.toPresheaf R).map (F.map φ)⟩ }
   exact Sheaf.isSheaf_of_isLimit G _ (isLimitOfPreserves (toPresheaf R) hc)
 
 end PresheafOfModules

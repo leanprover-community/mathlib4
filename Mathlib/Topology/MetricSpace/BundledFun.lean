@@ -96,7 +96,7 @@ protected lemma bot_apply [AddZeroClass R] [Preorder R] (x y : X) :
 instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
     Max (PseudoMetric X R) where
   max d d' := {
-    toFun := fun x y ↦ (d x y) ⊔ (d' x y)
+    toFun x y := (d x y) ⊔ (d' x y)
     refl' _ := by simp
     symm' x y := by simp [d.symm, d'.symm]
     triangle' := by
@@ -122,7 +122,7 @@ instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
   sup := max
   le_sup_left := by simp [← PseudoMetric.coe_le_coe]
   le_sup_right := by simp [← PseudoMetric.coe_le_coe]
-  sup_le _ _ _ := fun h h' _ _ ↦ sup_le (h _ _) (h' _ _)
+  sup_le _ _ _ h h' := fun _ _  ↦ sup_le (h _ _) (h' _ _)
 
 section OrderBot
 

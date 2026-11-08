@@ -282,9 +282,9 @@ theorem surjective_coord [Nontrivial ι] (i : ι) : Function.Surjective <| b.coo
 noncomputable def coords : P →ᵃ[k] ι → k where
   toFun q i := b.coord i q
   linear :=
-    { toFun := fun v i => -(b.basisOf i).sumCoords v
-      map_add' := fun v w => by ext; simp only [map_add, Pi.add_apply, neg_add]
-      map_smul' := fun t v => by ext; simp }
+    { toFun v := fun i  => -(b.basisOf i).sumCoords v
+      map_add' v w := by ext; simp only [map_add, Pi.add_apply, neg_add]
+      map_smul' t v := by ext; simp }
   map_vadd' p v := by ext; simp
 
 @[simp]

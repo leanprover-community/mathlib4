@@ -976,8 +976,8 @@ theorem Metric.uniformity_edist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | ed
 instance (priority := 100) PseudoMetricSpace.toPseudoEMetricSpace : PseudoEMetricSpace α :=
   { ‹PseudoMetricSpace α› with
     edist_self := by simp [edist_dist]
-    edist_comm := fun _ _ => by simp only [edist_dist, dist_comm]
-    edist_triangle := fun x y z => by
+    edist_comm _ _ := by simp only [edist_dist, dist_comm]
+    edist_triangle x y z := by
       simp only [edist_dist, ← ENNReal.ofReal_add, dist_nonneg]
       rw [ENNReal.ofReal_le_ofReal_iff _]
       · exact dist_triangle _ _ _

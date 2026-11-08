@@ -237,7 +237,7 @@ variable {M : Type*} [MulOneClass M]
       such that `f x = 0` -/]
 def ker (f : G →* M) : Subgroup G :=
   { MonoidHom.mker f with
-    inv_mem' := fun {x} (hx : f x = 1) =>
+    inv_mem' {x} (hx : f x = 1) :=
       calc
         f x⁻¹ = f x * f x⁻¹ := by rw [hx, one_mul]
         _ = 1 := by rw [← map_mul, mul_inv_cancel, map_one] }

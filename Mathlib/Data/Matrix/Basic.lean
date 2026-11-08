@@ -180,7 +180,7 @@ def diagonalRingHom [Fintype n] [DecidableEq n] : (n → α) →+* Matrix n n α
   { diagonalAddMonoidHom n α with
     toFun := diagonal
     map_one' := diagonal_one
-    map_mul' := fun _ _ => (diagonal_mul_diagonal' _ _).symm }
+    map_mul' _ _ := (diagonal_mul_diagonal' _ _).symm }
 
 end NonAssocSemiring
 
@@ -267,7 +267,7 @@ variable (R)
 def diagonalAlgHom : (n → α) →ₐ[R] Matrix n n α :=
   { diagonalRingHom n α with
     toFun := diagonal
-    commutes' := fun r => (algebraMap_eq_diagonal r).symm }
+    commutes' r := (algebraMap_eq_diagonal r).symm }
 
 variable (n)
 
@@ -464,8 +464,8 @@ coefficients. This is `Matrix.map` as an `AddEquiv`. -/
 @[simps apply]
 def mapMatrix (f : α ≃+ β) : Matrix m n α ≃+ Matrix m n β :=
   { f.toEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm
+    toFun M := M.map f
+    invFun M := M.map f.symm
     map_add' := Matrix.map_add f (map_add f) }
 
 @[simp]
@@ -574,8 +574,8 @@ coefficients. This is `Matrix.map` as a `LinearEquiv`. -/
 def mapMatrix (f : α ≃ₛₗ[σᵣₛ] β) : Matrix m n α ≃ₛₗ[σᵣₛ] Matrix m n β :=
   { f.toEquiv.mapMatrix,
     f.toLinearMap.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun M := M.map f
+    invFun M := M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : (LinearEquiv.refl R α).mapMatrix = LinearEquiv.refl R (Matrix m n α) :=
@@ -612,9 +612,9 @@ coefficients. This is `Matrix.map` as a `RingHom`. -/
 @[simps]
 def mapMatrix (f : α →+* β) : Matrix m m α →+* Matrix m m β :=
   { f.toAddMonoidHom.mapMatrix with
-    toFun := fun M => M.map f
+    toFun M := M.map f
     map_one' := by simp
-    map_mul' := fun _ _ => Matrix.map_mul }
+    map_mul' _ _ := Matrix.map_mul }
 
 @[simp]
 theorem mapMatrix_id : (RingHom.id α).mapMatrix = RingHom.id (Matrix m m α) :=
@@ -642,8 +642,8 @@ coefficients. This is `Matrix.map` as a `RingEquiv`. -/
 def mapMatrix (f : α ≃+* β) : Matrix m m α ≃+* Matrix m m β :=
   { f.toRingHom.mapMatrix,
     f.toAddEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun M := M.map f
+    invFun M := M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : (RingEquiv.refl α).mapMatrix = RingEquiv.refl (Matrix m m α) :=
@@ -696,8 +696,8 @@ coefficients. This is `Matrix.map` as an `AlgHom`. -/
 @[simps]
 def mapMatrix (f : α →ₐ[R] β) : Matrix m m α →ₐ[R] Matrix m m β :=
   { f.toRingHom.mapMatrix with
-    toFun := fun M => M.map f
-    commutes' := fun r => Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
+    toFun M := M.map f
+    commutes' r := Matrix.map_algebraMap r f (map_zero _) (f.commutes r) }
 
 @[simp]
 theorem mapMatrix_id : (AlgHom.id R α).mapMatrix = AlgHom.id R (Matrix m m α) :=
@@ -722,8 +722,8 @@ coefficients. This is `Matrix.map` as an `AlgEquiv`. -/
 def mapMatrix (f : α ≃ₐ[R] β) : Matrix m m α ≃ₐ[R] Matrix m m β :=
   { f.toAlgHom.mapMatrix,
     f.toRingEquiv.mapMatrix with
-    toFun := fun M => M.map f
-    invFun := fun M => M.map f.symm }
+    toFun M := M.map f
+    invFun M := M.map f.symm }
 
 @[simp]
 theorem mapMatrix_refl : AlgEquiv.refl.mapMatrix = (AlgEquiv.refl : Matrix m m α ≃ₐ[R] _) :=

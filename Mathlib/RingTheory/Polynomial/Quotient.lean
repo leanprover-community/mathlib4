@@ -32,7 +32,7 @@ def quotientSpanXSubCAlgEquiv (x : R) :
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
     exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
   (Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm).trans
-    { e with commutes' := fun r => e.apply_symm_apply r }
+    { e with commutes' r := e.apply_symm_apply r }
 
 @[simp]
 theorem quotientSpanXSubCAlgEquiv_mk (x : R) (p : R[X]) :
@@ -265,7 +265,7 @@ def quotientEquivQuotientMvPolynomial (I : Ideal R) :
       (Ideal.Quotient.lift I ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
         fun _ hi => quotient_map_C_eq_zero hi)
       fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i) with
-      commutes' := fun r => eval₂Hom_C _ _ (Ideal.Quotient.mk I r) }
+      commutes' r := eval₂Hom_C _ _ (Ideal.Quotient.mk I r) }
   { e with
     invFun := Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
       (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha

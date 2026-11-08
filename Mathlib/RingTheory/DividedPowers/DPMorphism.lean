@@ -139,7 +139,7 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
   See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
 def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J) : Ideal A where
   carrier  := {x ∈ I | ∀ n : ℕ, f (hI.dpow n (x : A)) = hJ.dpow n (f (x : A))}
-  add_mem' := fun hx hy ↦ by
+  add_mem' hx hy := by
     simp only [mem_ofPred_eq, map_add] at hx hy ⊢
     refine ⟨I.add_mem hx.1 hy.1, fun n ↦ ?_⟩
     rw [hI.dpow_add hx.1 hy.1, map_sum,
@@ -153,7 +153,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     induction n with
     | zero => rw [hI.dpow_zero I.zero_mem, hJ.dpow_zero J.zero_mem, map_one]
     | succ n => rw [hI.dpow_eval_zero n.succ_ne_zero, hJ.dpow_eval_zero n.succ_ne_zero, map_zero]
-  smul_mem' := fun r x hx ↦ by
+  smul_mem' r x hx := by
     refine ⟨I.smul_mem r hx.1, (fun n ↦ ?_)⟩
     rw [smul_eq_mul, hI.dpow_mul hx.1, map_mul, map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]

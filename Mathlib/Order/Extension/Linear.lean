@@ -61,7 +61,7 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
   rw [hs.eq_of_le (y := s') ?_ fun _ _ ↦ Or.inl] at h
   · apply h.1 (Or.inr ⟨refl _, refl _⟩)
   · refine
-    { refl := fun x ↦ Or.inl (refl _)
+    { refl x := Or.inl (refl _)
       trans := ?_
       antisymm := ?_ }
     · rintro a b c (ab | ⟨ax : s a x, yb : s y b⟩) (bc | ⟨bx : s b x, yc : s y c⟩)

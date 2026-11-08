@@ -278,7 +278,7 @@ theorem IsUniversalColimit.map_reflective
   let c'' : Cocone (F' ⋙ Gr) := by
     refine
     { pt := pullback (Gr.map f) (adj.unit.app _)
-      ι := { app := fun j ↦ pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
+      ι := { app j := pullback.lift (Gr.map <| c'.ι.app j) (Gr.map (α'.app j) ≫ c.ι.app j) ?_
              naturality := ?_ } }
     · rw [← Gr.map_comp, ← hc'']
       simp_all [← adj.unit_naturality]

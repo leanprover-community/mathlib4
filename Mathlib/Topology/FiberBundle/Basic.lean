@@ -848,15 +848,15 @@ establishes that for the topology constructed on the sigma-type using
 @[instance_reducible]
 def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   let _ := a.totalSpaceTopology
-  { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
+  { totalSpaceMk_isInducing' b := a.inducing_totalSpaceMk_of_inducing_comp b
       (a.totalSpaceMk_isInducing b)
     trivializationAtlas' :=
       { e | ∃ (e₀ : _) (he₀ : e₀ ∈ a.pretrivializationAtlas),
         e = a.trivializationOfMemPretrivializationAtlas he₀ },
-    trivializationAt' := fun x ↦
+    trivializationAt' x :=
       a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas x),
     mem_baseSet_trivializationAt' := a.mem_base_pretrivializationAt
-    trivialization_mem_atlas' := fun x ↦ ⟨_, a.pretrivialization_mem_atlas x, rfl⟩ }
+    trivialization_mem_atlas' x := ⟨_, a.pretrivialization_mem_atlas x, rfl⟩ }
 
 theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π F E) := by
   let := a.totalSpaceTopology

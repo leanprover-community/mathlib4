@@ -120,7 +120,7 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
   toLinearMap := Dual.eval R M
   root := Embedding.subtype fun x ↦ IsReflective B x
   coroot :=
-    { toFun := fun x => IsReflective.coroot B x.2
+    { toFun x := IsReflective.coroot B x.2
       inj' := by
         intro x y hxy
         simp only [mem_ofPred_eq] at hxy -- x* = y*
@@ -150,9 +150,9 @@ def ofBilinear [IsReflexive R M] (B : M →ₗ[R] M →ₗ[R] R) (hNB : LinearMa
         rw [h2x z, ← h2y z, hxy, h2xy] }
   root_coroot_two x := coroot_apply_self B x.2
   reflectionPerm x :=
-    { toFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+    { toFun y := ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
-      invFun := fun y => ⟨(Module.reflection (coroot_apply_self B x.2) y),
+      invFun y := ⟨(Module.reflection (coroot_apply_self B x.2) y),
         reflective_reflection B hSB x.2 y.2⟩
       left_inv := by
         intro y

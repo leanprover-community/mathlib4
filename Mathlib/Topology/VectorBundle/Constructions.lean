@@ -105,7 +105,7 @@ variable [∀ x, AddCommMonoid (E₁ x)] [∀ x, Module 𝕜 (E₁ x)]
   (e₂ e₂' : Trivialization F₂ (π F₂ E₂))
 
 instance prod.isLinear [e₁.IsLinear 𝕜] [e₂.IsLinear 𝕜] : (e₁.prod e₂).IsLinear 𝕜 where
-  linear := fun _ ⟨h₁, h₂⟩ =>
+  linear _ := fun ⟨h₁, h₂⟩  =>
     (((e₁.linear 𝕜 h₁).mk' _).prodMap ((e₂.linear 𝕜 h₂).mk' _)).isLinear
 
 @[simp]

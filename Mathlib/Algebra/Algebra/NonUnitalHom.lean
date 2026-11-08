@@ -262,7 +262,7 @@ protected def id (R A : Type*) [Monoid R] [NonUnitalNonAssocSemiring A]
     [DistribMulAction R A] : A →ₙₐ[R] A :=
   { NonUnitalRingHom.id A with
     toFun := id
-    map_smul' := fun _ _ => rfl }
+    map_smul' _ _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalAlgHom.id R A) = id :=
@@ -327,7 +327,7 @@ def inverse' (f : A →ₛₙₐ[φ] B) (g : B → A)
     map_zero' := by
       simp only [MulHom.toFun_eq_coe, MulHom.inverse_apply]
       rw [← f.map_zero, h₁]
-    map_add' := fun x y ↦ by
+    map_add' x y := by
       simp only [MulHom.toFun_eq_coe, MulHom.inverse_apply]
       rw [← h₂ x, ← h₂ y, ← map_add, h₁, h₂, h₂] }
 
@@ -469,7 +469,7 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
 over `S` can be viewed as a non-unital algebra homomorphism over `R`. -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
-    map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
+    map_smul' r x := by have := map_smul f (r • 1) x; simpa }
 
 @[simp]
 lemma restrictScalars_apply (f : A →ₙₐ[S] B) (x : A) : f.restrictScalars R x = f x := rfl

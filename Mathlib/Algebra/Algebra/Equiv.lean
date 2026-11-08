@@ -60,7 +60,7 @@ instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Sem
 instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
     [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
     [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
-  { h with map_smulₛₗ := fun f => map_smulₛₗ f }
+  { h with map_smulₛₗ f := map_smulₛₗ f }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
@@ -232,7 +232,7 @@ section refl
 /-- Algebra equivalences are reflexive. -/
 @[refl]
 def refl : A₁ ≃ₐ[R] A₁ :=
-  { (.refl _ : A₁ ≃+* A₁) with commutes' := fun _ => rfl }
+  { (.refl _ : A₁ ≃+* A₁) with commutes' _ := rfl }
 
 instance : Inhabited (A₁ ≃ₐ[R] A₁) :=
   ⟨refl⟩
@@ -252,7 +252,7 @@ section symm
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
   { e.toRingEquiv.symm with
-    commutes' := fun r => by
+    commutes' r := by
       rw [← e.toRingEquiv.symm_apply_apply (algebraMap R A₁ r)]
       congr
       simp }
@@ -378,7 +378,7 @@ section trans
 @[trans]
 def trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : A₁ ≃ₐ[R] A₃ :=
   { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    commutes' := fun r => show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
+    commutes' r := show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
 
 @[simp]
 theorem coe_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
@@ -720,11 +720,11 @@ instance apply_smulCommClass' {S} [SMul S R] [SMul S A₁] [IsScalarTower S R A�
   SMulCommClass.symm _ _ _
 
 instance : MulDistribMulAction (A₁ ≃ₐ[R] A₁) A₁ˣ where
-  smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
-  mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact map_mul x _ _
-  smul_one := fun x => by ext; exact map_one x
+  smul f := Units.map f
+  one_smul x := by ext; rfl
+  mul_smul x y z := by ext; rfl
+  smul_mul x y z := by ext; exact map_mul x _ _
+  smul_one x := by ext; exact map_one x
 
 @[simp]
 theorem smul_units_def (f : A₁ ≃ₐ[R] A₁) (x : A₁ˣ) :
@@ -766,13 +766,13 @@ See `LinearMap.GeneralLinearGroup.generalLinearEquiv` for the linear map version
 @[simps]
 def algHomUnitsEquiv (R S : Type*) [CommSemiring R] [Semiring S] [Algebra R S] :
     (S →ₐ[R] S)ˣ ≃* (S ≃ₐ[R] S) where
-  toFun := fun f ↦
+  toFun f :=
     { (f : S →ₐ[R] S) with
       invFun := ↑(f⁻¹)
       left_inv := (fun x ↦ show (↑(f⁻¹ * f) : S →ₐ[R] S) x = x by rw [inv_mul_cancel]; rfl)
       right_inv := (fun x ↦ show (↑(f * f⁻¹) : S →ₐ[R] S) x = x by rw [mul_inv_cancel]; rfl) }
-  invFun := fun f ↦ ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
-  map_mul' := fun _ _ ↦ rfl
+  invFun f := ⟨f, f.symm, f.comp_symm, f.symm_comp⟩
+  map_mul' _ _ := rfl
 
 /-- See also `Finite.algHom` -/
 instance _root_.Finite.algEquiv [Finite (A₁ →ₐ[R] A₂)] : Finite (A₁ ≃ₐ[R] A₂) :=

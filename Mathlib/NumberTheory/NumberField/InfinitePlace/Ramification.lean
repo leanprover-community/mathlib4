@@ -112,9 +112,9 @@ variable {k K}
 /-- The action of the Galois group on infinite places. -/
 @[simps! smul_coe_apply]
 instance : MulAction Gal(K/k) (InfinitePlace K) where
-  smul := fun σ w ↦ w.comap σ.symm
-  one_smul := fun _ ↦ rfl
-  mul_smul := fun _ _ _ ↦ rfl
+  smul σ w := w.comap σ.symm
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
 
 lemma smul_eq_comap : σ • w = w.comap σ.symm := rfl
 
@@ -336,7 +336,7 @@ lemma isUnramified_mk_iff_forall_isConj [IsGalois k K] {φ : K →+* ℂ} :
   let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
   let φ' : K →ₐ[k] ℂ := { star φ with
-    commutes' := fun r ↦ by simpa using! congr($(hφ.2) r) }
+    commutes' r := by simpa using! congr($(hφ.2) r) }
   have : ComplexEmbedding.IsConj φ (AlgHom.restrictNormal' φ' K) :=
     (RingHom.ext <| AlgHom.restrictNormal_commutes φ' K).symm
   exact hφ.1 (H _ this ▸ this)

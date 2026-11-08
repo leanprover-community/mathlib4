@@ -78,7 +78,7 @@ to a functor into the category of monoid objects.
 def functor : Mon (C ⥤ D) ⥤ C ⥤ Mon D where
   obj A := functorObj A.X
   map f :=
-  { app := fun X =>
+  { app X :=
     { hom := f.hom.app X
       isMonHom_hom :=
         { one_hom := congr_app (IsMonHom.one_hom f.hom) X
@@ -102,7 +102,7 @@ to a monoid object in the functor category
 def inverse : (C ⥤ Mon D) ⥤ Mon (C ⥤ D) where
   obj := inverseObj
   map α := .mk'
-    { app := fun X => (α.app X).hom
+    { app X := (α.app X).hom
       naturality _ _ f := congr($(α.naturality f).hom) }
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -112,8 +112,8 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps!]
 def unitIso : 𝟭 (Mon (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
-  { hom := .mk' { app := fun _ => 𝟙 _ }
-    inv := .mk' { app := fun _ => 𝟙 _ } })
+  { hom := .mk' { app _ := 𝟙 _ }
+    inv := .mk' { app _ := 𝟙 _ } })
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The counit for the equivalence `Mon (C ⥤ D) ≌ C ⥤ Mon D`.
@@ -180,7 +180,7 @@ to a functor into the category of comonoid objects.
 def functor : Comon (C ⥤ D) ⥤ C ⥤ Comon D where
   obj A := functorObj A.X
   map f :=
-  { app := fun X =>
+  { app X :=
     { hom := f.hom.app X
       isComonHom_hom.hom_counit := congr_app (IsComonHom.hom_counit f.hom) X
       isComonHom_hom.hom_comul := congr_app (IsComonHom.hom_comul f.hom) X } }
@@ -205,7 +205,7 @@ private def inverse : (C ⥤ Comon D) ⥤ Comon (C ⥤ D) where
   obj := inverseObj
   map α :=
     { hom :=
-      { app := fun X => (α.app X).hom
+      { app X := (α.app X).hom
         naturality _ _ f := congr($(α.naturality f).hom) }
       isComonHom_hom.hom_counit := by ext x; dsimp; rw [IsComonHom.hom_counit (α.app x).hom]
       isComonHom_hom.hom_comul := by ext x; dsimp; rw [IsComonHom.hom_comul (α.app x).hom] }
@@ -218,8 +218,8 @@ set_option backward.privateInPublic true in
 @[simps!]
 private def unitIso : 𝟭 (Comon (C ⥤ D)) ≅ functor ⋙ inverse :=
   NatIso.ofComponents (fun A =>
-    { hom := .mk' { app := fun _ => 𝟙 _ }
-      inv := .mk' { app := fun _ => 𝟙 _ } })
+    { hom := .mk' { app _ := 𝟙 _ }
+      inv := .mk' { app _ := 𝟙 _ } })
 
 set_option backward.isDefEq.respectTransparency false in
 -- probably this was originally also intended to be a private def

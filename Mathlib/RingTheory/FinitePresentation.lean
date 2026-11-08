@@ -417,7 +417,7 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentati
     (f :=
       { g with
         toFun := g
-        commutes' := fun _ => rfl })
+        commutes' _ := rfl })
     hg hker
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) (hker : (RingHom.ker f).FG) :

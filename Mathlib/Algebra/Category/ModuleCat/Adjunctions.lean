@@ -94,8 +94,8 @@ variable (R)
 /-- The free-forgetful adjunction for R-modules. -/
 def adj : free R ⊣ forget (ModuleCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => freeHomEquiv
-      homEquiv_naturality_left_symm := fun {X Y M} f g ↦ by ext; simp [freeHomEquiv] }
+    { homEquiv _ _ := freeHomEquiv
+      homEquiv_naturality_left_symm {X Y M} f g := by ext; simp [freeHomEquiv] }
 
 @[simp]
 lemma adj_homEquiv (X : Type u) (M : ModuleCat.{u} R) :
@@ -169,13 +169,13 @@ instance : (free R).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := εIso R
       μIso := μIso R
-      μIso_hom_natural_left := fun {X Y} f X' ↦ by
+      μIso_hom_natural_left {X Y} f X' := by
         rw [← cancel_epi (μIso R X X').inv]
         aesop
-      μIso_hom_natural_right := fun {X Y} X' f ↦ by
+      μIso_hom_natural_right {X Y} X' f := by
         rw [← cancel_epi (μIso R X' X).inv]
         aesop
-      associativity := fun X Y Z ↦ by
+      associativity X Y Z := by
         rw [← cancel_epi ((μIso R X Y).inv ▷ _), ← cancel_epi (μIso R _ _).inv]
         ext ⟨⟨x, y⟩, z⟩
         dsimp
@@ -185,10 +185,10 @@ instance : (free R).Monoidal :=
           CategoryTheory.associator_hom_apply, MonoidalCategory.associator_hom_apply,
           MonoidalCategory.whiskerLeft_apply, μIso_hom_freeMk_tmul_freeMk,
           μIso_hom_freeMk_tmul_freeMk]
-      left_unitality := fun X ↦ by
+      left_unitality X := by
         rw [← cancel_epi (λ_ _).inv, Iso.inv_hom_id]
         aesop
-      right_unitality := fun X ↦ by
+      right_unitality X := by
         rw [← cancel_epi (ρ_ _).inv, Iso.inv_hom_id]
         aesop }
 
@@ -244,8 +244,8 @@ open Finsupp
 -- monoidal. This still seems difficult, so we just do it by hand.
 set_option backward.isDefEq.respectTransparency.types false in
 instance categoryFree : Category (Free R C) where
-  Hom := fun X Y : C => (X ⟶ Y) →₀ R
-  id := fun X : C => Finsupp.single (𝟙 X) 1
+  Hom (X Y : C) := (X ⟶ Y) →₀ R
+  id (X : C) := Finsupp.single (𝟙 X) 1
   comp {X _ Z : C} f g :=
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by

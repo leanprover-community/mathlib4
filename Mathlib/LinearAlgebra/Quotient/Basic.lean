@@ -51,8 +51,8 @@ where `P : Submodule R M`.
 def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
   { Quotient.congrRight fun _ _ => Iff.rfl with
-    map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
-    map_smul' := fun _c x => Submodule.Quotient.induction_on _ x fun _x' => rfl }
+    map_add' x y := Quotient.inductionOn₂' x y fun _x' _y' => rfl
+    map_smul' _c x := Submodule.Quotient.induction_on _ x fun _x' => rfl }
 
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]

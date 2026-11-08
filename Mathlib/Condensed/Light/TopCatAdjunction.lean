@@ -107,13 +107,13 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def topCatAdjunctionUnit (X : LightCondSet.{u}) : X ⟶ X.toTopCat.toLightCondSet where
   hom := {
     app S := ↾fun x ↦ {
-      toFun := fun s ↦ X.obj.map ((of PUnit.{u + 1}).const s).op x
+      toFun s := X.obj.map ((of PUnit.{u + 1}).const s).op x
       continuous_toFun := by
         suffices ∀ (i : (T : LightProfinite.{u}) × X.obj.obj ⟨T⟩),
           Continuous (fun (a : i.fst) ↦ X.coinducingCoprod ⟨i, a⟩) from this ⟨_, _⟩
         rw [← continuous_sigma_iff]
         apply continuous_coinduced_rng }
-    naturality := fun _ _ _ ↦ by
+    naturality _ _ _ := by
       ext
       simp only [Opposite.op_unop, TypeCat.Fun.toFun_apply,
         comp_apply, ConcreteCategory.hom_ofHom, TypeCat.Fun.coe_mk,

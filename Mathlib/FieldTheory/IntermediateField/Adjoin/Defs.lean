@@ -33,7 +33,7 @@ variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 @[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
   { Subfield.closure (Set.range (algebraMap F E) ∪ S) with
-    algebraMap_mem' := fun x => Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
+    algebraMap_mem' x := Subfield.subset_closure (Or.inl (Set.mem_range_self x)) }
 
 @[simp]
 theorem adjoin_toSubfield :
@@ -92,7 +92,7 @@ instance : Inhabited (IntermediateField F E) :=
 
 instance : Unique (IntermediateField F F) :=
   { (inferInstance : Inhabited (IntermediateField F F)) with
-    uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
+    uniq _ := toSubalgebra_injective <| Subsingleton.elim _ _ }
 
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 

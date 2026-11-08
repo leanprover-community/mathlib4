@@ -181,7 +181,7 @@ variable [Algebra K L] [IsScalarTower F K L]
 noncomputable instance algebra : Algebra K (normalClosure F K L) :=
   inferInstanceAs <| Algebra K
     { ⨆ f : K →ₐ[F] L, f.fieldRange with
-      algebraMap_mem' := fun r ↦ (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
+      algebraMap_mem' r := (toAlgHom F K L).fieldRange_le_normalClosure ⟨r, rfl⟩ }
 
 instance : IsScalarTower F K (normalClosure F K L) := by
   apply of_algebraMap_eq'

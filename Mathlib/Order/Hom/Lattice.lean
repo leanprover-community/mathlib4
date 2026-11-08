@@ -109,7 +109,7 @@ variable [FunLike F α β]
 @[to_dual]
 instance (priority := 100) SupHomClass.toOrderHomClass [SemilatticeSup α] [SemilatticeSup β]
     [SupHomClass F α β] : OrderHomClass F α β where
-  map_rel := fun f a b h => by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h]
+  map_rel f a b h := by rw [← sup_eq_right, ← map_sup, sup_eq_right.2 h]
 
 end Hom
 
@@ -121,7 +121,7 @@ variable [EquivLike F α β]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.toSupHomClass [SemilatticeSup α] [SemilatticeSup β]
     [OrderIsoClass F α β] : SupHomClass F α β where
-  map_sup := fun f a b =>
+  map_sup f a b :=
     eq_of_forall_ge_iff fun c => by simp only [← le_map_inv_iff, sup_le_iff]
 
 -- See note [lower instance priority]
@@ -494,11 +494,11 @@ variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
   { ‹OrderHomClass F α β› with
-    map_sup := fun f a b => by
+    map_sup f a b := by
       obtain h | h := le_total a b
       · rw [sup_eq_right.2 h, sup_eq_right.2 (OrderHomClass.mono f h : f a ≤ f b)]
       · rw [sup_eq_left.2 h, sup_eq_left.2 (OrderHomClass.mono f h : f b ≤ f a)]
-    map_inf := fun f a b => by
+    map_inf f a b := by
       obtain h | h := le_total a b
       · rw [inf_eq_left.2 h, inf_eq_left.2 (OrderHomClass.mono f h : f a ≤ f b)]
       · rw [inf_eq_right.2 h, inf_eq_right.2 (OrderHomClass.mono f h : f b ≤ f a)] }

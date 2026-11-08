@@ -55,10 +55,10 @@ instance instInhabited : Inhabited (OuterMeasure α) :=
 
 instance instAdd : Add (OuterMeasure α) :=
   ⟨fun m₁ m₂ =>
-    { measureOf := fun s => m₁ s + m₂ s
+    { measureOf s := m₁ s + m₂ s
       empty := show m₁ ∅ + m₂ ∅ = 0 by simp
-      mono := fun {_ _} h => add_le_add (m₁.mono h) (m₂.mono h)
-      iUnion_nat := fun s _ =>
+      mono {_ _} h := add_le_add (m₁.mono h) (m₂.mono h)
+      iUnion_nat s _ :=
         calc
           m₁ (⋃ i, s i) + m₂ (⋃ i, s i) ≤ (∑' i, m₁ (s i)) + ∑' i, m₂ (s i) :=
             add_le_add (measure_iUnion_le s) (measure_iUnion_le s)
@@ -77,12 +77,12 @@ variable {R' : Type*} [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0�
 
 instance instSMul : SMul R (OuterMeasure α) :=
   ⟨fun c m =>
-    { measureOf := fun s => c • m s
+    { measureOf s := c • m s
       empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
-      mono := fun {s t} h => by
+      mono {s t} h := by
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]
         exact mul_right_mono (m.mono h)
-      iUnion_nat := fun s _ => by
+      iUnion_nat s _ := by
         simp_rw [← smul_one_mul c (m _), ENNReal.tsum_mul_left]
         exact mul_right_mono (measure_iUnion_le _) }⟩
 
@@ -137,7 +137,7 @@ instance instIsOrderedAddMonoid {α : Type*} : IsOrderedAddMonoid (OuterMeasure 
 
 instance orderBot : OrderBot (OuterMeasure α) :=
   { bot := 0,
-    bot_le := fun a s => by simp only [zero_apply, zero_le] }
+    bot_le a := fun s  => by simp only [zero_apply, zero_le] }
 
 theorem univ_eq_zero_iff (m : OuterMeasure α) : m univ = 0 ↔ m = 0 :=
   ⟨fun h => bot_unique fun s => (measure_mono <| subset_univ s).trans_eq h, fun h => h.symm ▸ rfl⟩
@@ -146,10 +146,10 @@ section Supremum
 
 instance instSupSet : SupSet (OuterMeasure α) :=
   ⟨fun ms =>
-    { measureOf := fun s => ⨆ m ∈ ms, (m : OuterMeasure α) s
+    { measureOf s := ⨆ m ∈ ms, (m : OuterMeasure α) s
       empty := nonpos_iff_eq_zero.1 <| iSup₂_le fun m _ => le_of_eq m.empty
-      mono := fun {_ _} hs => iSup₂_mono fun m _ => m.mono hs
-      iUnion_nat := fun f _ =>
+      mono {_ _} hs := iSup₂_mono fun m _ => m.mono hs
+      iUnion_nat f _ :=
         iSup₂_le fun m hm =>
           calc
             m (⋃ i, f i) ≤ ∑' i : ℕ, m (f i) := measure_iUnion_le _
@@ -194,10 +194,10 @@ theorem mono'' {m₁ m₂ : OuterMeasure α} {s₁ s₂ : Set α} (hm : m₁ ≤
 /-- The pushforward of `m` along `f`. The outer measure on `s` is defined to be `m (f ⁻¹' s)`. -/
 def map {β} (f : α → β) : OuterMeasure α →ₗ[ℝ≥0∞] OuterMeasure β where
   toFun m :=
-    { measureOf := fun s => m (f ⁻¹' s)
+    { measureOf s := m (f ⁻¹' s)
       empty := m.empty
-      mono := fun {_ _} h => m.mono (preimage_mono h)
-      iUnion_nat := fun s _ => by simpa using measure_iUnion_le fun i => f ⁻¹' s i }
+      mono {_ _} h := m.mono (preimage_mono h)
+      iUnion_nat s _ := by simpa using measure_iUnion_le fun i => f ⁻¹' s i }
   map_add' _ _ := coe_fn_injective rfl
   map_smul' _ _ := coe_fn_injective rfl
 
@@ -261,10 +261,10 @@ theorem smul_dirac_apply (a : ℝ≥0∞) (b : α) (s : Set α) :
 /-- Pullback of an `OuterMeasure`: `comap f μ s = μ (f '' s)`. -/
 def comap {β} (f : α → β) : OuterMeasure β →ₗ[ℝ≥0∞] OuterMeasure α where
   toFun m :=
-    { measureOf := fun s => m (f '' s)
+    { measureOf s := m (f '' s)
       empty := by simp
-      mono := fun {_ _} h => by gcongr
-      iUnion_nat := fun s _ => by simpa only [image_iUnion] using measure_iUnion_le _ }
+      mono {_ _} h := by gcongr
+      iUnion_nat s _ := by simpa only [image_iUnion] using measure_iUnion_le _ }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 

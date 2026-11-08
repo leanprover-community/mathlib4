@@ -400,8 +400,8 @@ variable (R) [NonUnitalCommSemiring R]
 /-- A non-unital commutative ring is isomorphic to its opposite. -/
 def toOpposite : R ≃+* Rᵐᵒᵖ :=
   { MulOpposite.opEquiv with
-    map_add' := fun _ _ => rfl
-    map_mul' := fun x y => mul_comm (op y) (op x) }
+    map_add' _ _ := rfl
+    map_mul' x y := mul_comm (op y) (op x) }
 
 @[simp]
 theorem toOpposite_apply (r : R) : toOpposite R r = op r :=
@@ -492,8 +492,8 @@ def piCongrRight {ι : Type*} {R S : ι → Type*} [∀ i, NonUnitalNonAssocSemi
     [∀ i, NonUnitalNonAssocSemiring (S i)] (e : ∀ i, R i ≃+* S i) : (∀ i, R i) ≃+* ∀ i, S i :=
   { @MulEquiv.piCongrRight ι R S _ _ fun i => (e i).toMulEquiv,
     @AddEquiv.piCongrRight ι R S _ _ fun i => (e i).toAddEquiv with
-    toFun := fun x j => e j (x j)
-    invFun := fun x j => (e j).symm (x j) }
+    toFun x := fun j  => e j (x j)
+    invFun x := fun j  => (e j).symm (x j) }
 
 @[simp]
 theorem piCongrRight_refl {ι : Type*} {R : ι → Type*} [∀ i, NonUnitalNonAssocSemiring (R i)] :

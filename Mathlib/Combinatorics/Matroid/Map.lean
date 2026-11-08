@@ -119,9 +119,9 @@ the preimage of each nonloop of `M ↾ range f` is a parallel class. -/
 def comap (N : Matroid β) (f : α → β) : Matroid α :=
   IndepMatroid.matroid
   { E := f ⁻¹' N.E
-    Indep := fun I ↦ N.Indep (f '' I) ∧ InjOn f I
+    Indep I := N.Indep (f '' I) ∧ InjOn f I
     indep_empty := by simp
-    indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset (image_mono hIJ), InjOn.mono hIJ h.2⟩
+    indep_subset _ _ h hIJ := ⟨h.1.subset (image_mono hIJ), InjOn.mono hIJ h.2⟩
     indep_aug := by
       rintro I B ⟨hI, hIinj⟩ hImax hBmax
       obtain ⟨I', hII', hI', hI'inj⟩ := (not_maximal_subset_iff ⟨hI, hIinj⟩).1 hImax
@@ -156,7 +156,7 @@ def comap (N : Matroid β) (f : α → β) : Matroid α :=
       refine ⟨J₀, hIJ₀, hJ, hbj.injOn, hJ₀X, fun K hK hKinj hKX hJ₀K ↦ ?_⟩
       rw [← hKinj.image_eq_image_iff hJ₀K Subset.rfl, hJmax hK (image_subset_range _ _)
         (image_mono hKX) (image_mono hJ₀K)]
-    subset_ground := fun _ hI e heI ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
+    subset_ground _ hI := fun e heI  ↦ hI.1.subset_ground ⟨e, heI, rfl⟩ }
 
 @[simp] lemma comap_indep_iff : (N.comap f).Indep I ↔ N.Indep (f '' I) ∧ InjOn f I := Iff.rfl
 

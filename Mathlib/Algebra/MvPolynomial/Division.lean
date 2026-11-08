@@ -235,7 +235,7 @@ instance [IsLeftCancelAdd R] :
     IsCancelAdd (MvPolynomial σ R) := by
   suffices IsLeftCancelAdd (MvPolynomial σ R) from
     AddCommMagma.IsLeftCancelAdd.toIsCancelAdd _
-  refine { add_left_cancel := fun f g h H ↦ ?_ }
+  refine { add_left_cancel f := fun g h H  ↦ ?_ }
   ext d
   simpa using congr($(H).coeff d)
 

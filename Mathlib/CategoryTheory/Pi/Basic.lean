@@ -77,8 +77,8 @@ pulling back a grading along the identity function,
 and the identity functor. -/
 @[simps]
 def comapId : comap C (id : I → I) ≅ 𝟭 (∀ i, C i) where
-  hom := { app := fun X => 𝟙 X }
-  inv := { app := fun X => 𝟙 X }
+  hom := { app X := 𝟙 X }
+  inv := { app X := 𝟙 X }
 
 example (g : J → I) : (j : J) → Category (C (g j)) := by infer_instance
 
@@ -92,11 +92,11 @@ pulling back along their composition
 @[simps!]
 def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ comap C (g ∘ f) where
   hom :=
-  { app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+  { app X := fun b  => 𝟙 (X (g (f b)))
+    naturality X Y f' := by simp only [comap, Function.comp]; funext; simp }
   inv :=
-  { app := fun X b => 𝟙 (X (g (f b)))
-    naturality := fun X Y f' => by simp only [comap, Function.comp]; funext; simp }
+  { app X := fun b  => 𝟙 (X (g (f b)))
+    naturality X Y f' := by simp only [comap, Function.comp]; funext; simp }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
@@ -121,16 +121,16 @@ to obtain an `I ⊕ J`-indexed family of objects.
 @[simps]
 def sum : (∀ i, C i) ⥤ (∀ j, D j) ⥤ ∀ s : I ⊕ J, Sum.elim C D s where
   obj X :=
-    { obj := fun Y s =>
+    { obj Y := fun s  =>
         match s with
         | .inl i => X i
         | .inr j => Y j
-      map := fun {_} {_} f s =>
+      map {_} {_} f := fun s  =>
         match s with
         | .inl i => 𝟙 (X i)
         | .inr j => f j }
   map {X} {X'} f :=
-    { app := fun Y s =>
+    { app Y := fun s  =>
         match s with
         | .inl i => f i
         | .inr j => 𝟙 (Y j) }
@@ -245,7 +245,7 @@ def pi (α : ∀ i, F i ⟶ G i) : Functor.pi F ⟶ Functor.pi G where
 @[simps]
 def pi' {E : Type*} [Category* E] {F G : E ⥤ ∀ i, C i}
     (τ : ∀ i, F ⋙ Pi.eval C i ⟶ G ⋙ Pi.eval C i) : F ⟶ G where
-  app := fun X i => (τ i).app X
+  app X := fun i  => (τ i).app X
   naturality _ _ f := by
     ext i
     exact (τ i).naturality f

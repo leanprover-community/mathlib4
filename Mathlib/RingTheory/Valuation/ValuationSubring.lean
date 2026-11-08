@@ -85,7 +85,7 @@ instance : CommRing A := inferInstanceAs <| CommRing A.toSubring
 instance : IsDomain A := inferInstanceAs <| IsDomain A.toSubring
 
 instance : Top (ValuationSubring K) :=
-  Top.mk { (⊤ : Subring K) with mem_or_inv_mem' := fun _ => Or.inl trivial }
+  Top.mk { (⊤ : Subring K) with mem_or_inv_mem' _ := Or.inl trivial }
 
 @[simp]
 theorem toSubring_top : (⊤ : ValuationSubring K).toSubring = ⊤ := rfl
@@ -229,16 +229,16 @@ theorem mem_ofSubring (R : Subring K) (hR : ∀ x : K, x ∈ R ∨ x⁻¹ ∈ R)
 
 /-- An overring of a valuation ring is a valuation ring. -/
 def ofLE (R : ValuationSubring K) (S : Subring K) (h : R.toSubring ≤ S) : ValuationSubring K :=
-  { S with mem_or_inv_mem' := fun x => (R.mem_or_inv_mem x).imp (@h x) (@h _) }
+  { S with mem_or_inv_mem' x := (R.mem_or_inv_mem x).imp (@h x) (@h _) }
 
 section Order
 
 instance : SemilatticeSup (ValuationSubring K) :=
   { (inferInstance : PartialOrder (ValuationSubring K)) with
-    sup := fun R S => ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
-    le_sup_left := fun R S _ hx => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
-    le_sup_right := fun R S _ hx => (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
-    sup_le := fun R S T hR hT _ hx => (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
+    sup R S := ofLE R (R.toSubring ⊔ S.toSubring) le_sup_left
+    le_sup_left R S := fun _ hx  => (le_sup_left : R.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
+    le_sup_right R S := fun _ hx  => (le_sup_right : S.toSubring ≤ R.toSubring ⊔ S.toSubring) hx
+    sup_le R S T hR hT := fun _ hx  => (sup_le hR hT : R.toSubring ⊔ S.toSubring ≤ T.toSubring) hx }
 
 /-- The ring homomorphism induced by the partial order. -/
 def inclusion (R S : ValuationSubring K) (h : R ≤ S) : R →+* S :=
@@ -781,7 +781,7 @@ This is available as an instance in the `Pointwise` locale. -/
 def pointwiseHasSMul : SMul G (ValuationSubring K) where
   smul g S := -- TODO: if we add `ValuationSubring.map` at a later date, we should use it here
     { g • S.toSubring with
-      mem_or_inv_mem' := fun x =>
+      mem_or_inv_mem' x :=
         (mem_or_inv_mem S (g⁻¹ • x)).imp Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr fun h =>
           Subring.mem_pointwise_smul_iff_inv_smul_mem.mpr <| by rwa [smul_inv''] }
 
@@ -851,7 +851,7 @@ variable {L J : Type*} [Field L] [Field J]
 
 /-- The pullback of a valuation subring `A` along a ring homomorphism `K →+* L`. -/
 def comap (A : ValuationSubring L) (f : K →+* L) : ValuationSubring K :=
-  { A.toSubring.comap f with mem_or_inv_mem' := fun k => by simp [ValuationSubring.mem_or_inv_mem] }
+  { A.toSubring.comap f with mem_or_inv_mem' k := by simp [ValuationSubring.mem_or_inv_mem] }
 
 @[simp]
 theorem coe_comap (A : ValuationSubring L) (f : K →+* L) : (A.comap f : Set K) = f ⁻¹' A := rfl

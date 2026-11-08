@@ -30,10 +30,10 @@ deleting the object at `0` and shifting everything else down.
 @[simps]
 def truncate [HasZeroMorphisms V] : ChainComplex V ℕ ⥤ ChainComplex V ℕ where
   obj C :=
-    { X := fun i => C.X (i + 1)
-      d := fun i j => C.d (i + 1) (j + 1)
-      shape := fun i j w => C.shape _ _ <| by simpa }
-  map f := { f := fun i => f.f (i + 1) }
+    { X i := C.X (i + 1)
+      d i j := C.d (i + 1) (j + 1)
+      shape i j w := C.shape _ _ <| by simpa }
+  map f := { f i := f.f (i + 1) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a chain map `C` to
@@ -94,10 +94,10 @@ to the original complex.
 -/
 def truncateAugment (C : ChainComplex V ℕ) {X : V} (f : C.X 0 ⟶ X) (w : C.d 1 0 ≫ f = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun _ => 𝟙 _ }
+  hom := { f _ := 𝟙 _ }
   inv :=
-    { f := fun _ => 𝟙 _
-      comm' := fun i j => by
+    { f _ := 𝟙 _
+      comm' i j := by
         cases j <;> simp }
   hom_inv_id := by
     ext (_ | i) <;> simp
@@ -128,14 +128,14 @@ def augmentTruncate (C : ChainComplex V ℕ) :
     augment (truncate.obj C) (C.d 1 0) (C.d_comp_d _ _ _) ≅ C where
   hom :=
     { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
-      comm' := fun i j => by
+      comm' i j := by
         match i with
         | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
     }
   inv :=
     { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
-      comm' := fun i j => by
+      comm' i j := by
         match i with
           | 0 | 1 | n + 2 =>
           rcases j with - | j <;> dsimp [augment, truncate] <;> simp
@@ -187,12 +187,12 @@ deleting the object at `0` and shifting everything else down.
 @[simps]
 def truncate [HasZeroMorphisms V] : CochainComplex V ℕ ⥤ CochainComplex V ℕ where
   obj C :=
-    { X := fun i => C.X (i + 1)
-      d := fun i j => C.d (i + 1) (j + 1)
-      shape := fun i j w => by
+    { X i := C.X (i + 1)
+      d i j := C.d (i + 1) (j + 1)
+      shape i j w := by
         apply C.shape
         simpa }
-  map f := { f := fun i => f.f (i + 1) }
+  map f := { f i := f.f (i + 1) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- There is a canonical chain map from the truncation of a cochain complex `C` to
@@ -252,10 +252,10 @@ to the original complex.
 -/
 def truncateAugment (C : CochainComplex V ℕ) {X : V} (f : X ⟶ C.X 0) (w : f ≫ C.d 0 1 = 0) :
     truncate.obj (augment C f w) ≅ C where
-  hom := { f := fun _ => 𝟙 _ }
+  hom := { f _ := 𝟙 _ }
   inv :=
-    { f := fun _ => 𝟙 _
-      comm' := fun i j => by
+    { f _ := 𝟙 _
+      comm' i j := by
         cases j <;> simp }
   hom_inv_id := by
     ext i
@@ -290,11 +290,11 @@ def augmentTruncate (C : CochainComplex V ℕ) :
     augment (truncate.obj C) (C.d 0 1) (C.d_comp_d _ _ _) ≅ C where
   hom :=
     { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
-      comm' := fun i j => by
+      comm' i j := by
         rcases j with (_ | _ | j) <;> cases i <;> aesop }
   inv :=
     { f := fun | 0 => 𝟙 _ | _ + 1 => 𝟙 _
-      comm' := fun i j => by
+      comm' i j := by
         rcases j with (_ | _ | j) <;> rcases i with - | i <;> aesop }
 
 @[simp]

@@ -73,7 +73,7 @@ section Initial
 @[simps]
 def Scheme.emptyTo (X : Scheme.{u}) : ∅ ⟶ X :=
   ⟨{  base := TopCat.ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩
-      c := { app := fun _ => CommRingCat.punitIsTerminal.from _ } }, fun x => PEmpty.elim x⟩
+      c := { app _ := CommRingCat.punitIsTerminal.from _ } }, fun x => PEmpty.elim x⟩
 
 @[ext]
 theorem Scheme.empty_ext {X : Scheme.{u}} (f g : ∅ ⟶ X) : f = g :=

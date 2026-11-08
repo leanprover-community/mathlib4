@@ -264,7 +264,7 @@ abbrev HasBinaryCoproducts :=
 @[to_dual /-- If `C` has all colimits of diagrams `pair X Y`, then it has all binary coproducts -/]
 theorem hasBinaryProducts_of_hasLimit_pair [∀ {X Y : C}, HasLimit (pair X Y)] :
     HasBinaryProducts C :=
-  { has_limit := fun F => hasLimit_of_iso (diagramIsoPair F).symm }
+  { has_limit F := hasLimit_of_iso (diagramIsoPair F).symm }
 
 section
 
@@ -404,10 +404,10 @@ variable {C} [HasBinaryProducts C]
 @[to_dual (attr := simps, implicit_reducible) /-- The binary coproduct functor. -/]
 def prod.functor : C ⥤ C ⥤ C where
   obj X :=
-    { obj := fun Y => X ⨯ Y
-      map := fun {_ _} => prod.map (𝟙 X) }
+    { obj Y := X ⨯ Y
+      map {_ _} := prod.map (𝟙 X) }
   map f :=
-    { app := fun T => prod.map f (𝟙 T) }
+    { app T := prod.map f (𝟙 T) }
 
 /-- The product functor can be decomposed. -/
 @[to_dual /-- The coproduct functor can be decomposed. -/]
@@ -439,17 +439,17 @@ variable {C : Type u} [Category.{v} C]
 def Over.coprodObj [HasBinaryCoproducts C] {A : C} :
     Over A → Over A ⥤ Over A :=
   fun f =>
-  { obj := fun g => Over.mk (coprod.desc f.hom g.hom)
-    map := fun k => Over.homMk (coprod.map (𝟙 _) k.left) }
+  { obj g := Over.mk (coprod.desc f.hom g.hom)
+    map k := Over.homMk (coprod.map (𝟙 _) k.left) }
 
 /-- A category with binary coproducts has a functorial `sup` operation on over categories. -/
 @[simps, implicit_reducible]
 def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over A ⥤ Over A where
   obj f := Over.coprodObj f
   map k :=
-    { app := fun g => Over.homMk (coprod.map k.left (𝟙 _)) (by
+    { app g := Over.homMk (coprod.map k.left (𝟙 _)) (by
         dsimp; rw [coprod.map_desc, Category.id_comp, Over.w k])
-      naturality := fun f g k => by
+      naturality f g k := by
         ext
         simp }
   map_id X := by

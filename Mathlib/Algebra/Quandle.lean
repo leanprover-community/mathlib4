@@ -337,7 +337,7 @@ theorem map_act (f : S₁ →◃ S₂) {x y : S₁} : f (x ◃ y) = f x ◃ f y 
 
 /-- The identity homomorphism -/
 def id (S : Type*) [Shelf S] : S →◃ S where
-  toFun := fun x => x
+  toFun x := x
   map_act' := by simp
 
 instance inhabited (S : Type*) [Shelf S] : Inhabited (S →◃ S) :=
@@ -605,7 +605,7 @@ instance (R : Type*) [Rack R] : DivInvMonoid (EnvelGroup R) where
   mul_one a := Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.mul_one a).rel
 
 instance (R : Type*) [Rack R] : Group (EnvelGroup R) :=
-  { inv_mul_cancel := fun a =>
+  { inv_mul_cancel a :=
       Quotient.inductionOn a fun a => Quotient.sound (PreEnvelGroupRel'.inv_mul_cancel a).rel }
 
 instance EnvelGroup.inhabited (R : Type*) [Rack R] : Inhabited (EnvelGroup R) :=
@@ -658,13 +658,13 @@ More precisely, the `EnvelGroup` functor is left adjoint to `Quandle.Conj`.
 def toEnvelGroup.map {R : Type*} [Rack R] {G : Type*} [Group G] :
     (R →◃ Quandle.Conj G) ≃ (EnvelGroup R →* G) where
   toFun f :=
-    { toFun := fun x =>
+    { toFun x :=
         Quotient.liftOn x (toEnvelGroup.mapAux f) fun _ _ ⟨hab⟩ =>
           toEnvelGroup.mapAux.well_def f hab
       map_one' := by
         change Quotient.liftOn ⟦Rack.PreEnvelGroup.unit⟧ (toEnvelGroup.mapAux f) _ = 1
         simp only [Quotient.lift_mk, mapAux]
-      map_mul' := fun x y =>
+      map_mul' x y :=
         Quotient.inductionOn₂ x y fun x y => by
           change Quotient.liftOn ⟦mul x y⟧ (toEnvelGroup.mapAux f) _ = _
           simp [toEnvelGroup.mapAux] }

@@ -128,7 +128,7 @@ instance (priority := 100) IsSplitEpi.of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
 
 @[to_dual]
 theorem SplitEpi.epi {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : Epi f :=
-  { left_cancellation := fun g h w => by replace w := se.section_ ≫= w; simpa using w }
+  { left_cancellation g h w := by replace w := se.section_ ≫= w; simpa using w }
 
 /-- Every split epi is an epi. -/
 @[to_dual /-- Every split mono is a mono. -/]

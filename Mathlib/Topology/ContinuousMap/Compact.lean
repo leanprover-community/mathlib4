@@ -317,10 +317,10 @@ the `𝕜`-algebra of bounded continuous maps `α →ᵇ β` is
 -/
 def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
   { addEquivBoundedOfCompact α E with
-    map_smul' := fun c f => by
+    map_smul' c f := by
       ext
       norm_cast
-    norm_map' := fun _ => rfl }
+    norm_map' _ := rfl }
 
 end
 

@@ -80,14 +80,14 @@ def ofMulActionLimitCone {ι : Type v} (G : Type max v u) [Monoid G] (F : ι →
     { pt := Action.ofMulAction G (∀ i : ι, F i)
       π := Discrete.natTrans (fun i => ⟨↾fun x => x i.as, fun _ => rfl⟩) }
   isLimit :=
-    { lift := fun s =>
+    { lift s :=
         { hom := ↾fun x i => (s.π.app ⟨i⟩).hom x
-          comm := fun g => by
+          comm g := by
             ext x
             funext j
             congrm $((s.π.app ⟨j⟩).comm g) x }
-      fac := fun _ _ => rfl
-      uniq := fun s f h => by
+      fac _ _ := rfl
+      uniq s f h := by
         ext x
         funext j
         dsimp at *
@@ -144,7 +144,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
         -- We avoid `group` here to minimize imports while low in the hierarchy;
         -- typically it would be better to invoke the tactic.
         simpa [mul_assoc] using Subgroup.Normal.conj_mem _ (QuotientGroup.leftRel_apply.mp h) _)
-      comm := fun (g : G) ↦ by
+      comm (g : G) := by
         ext (x : G ⧸ N)
         induction x using Quotient.inductionOn with | h x
         dsimp

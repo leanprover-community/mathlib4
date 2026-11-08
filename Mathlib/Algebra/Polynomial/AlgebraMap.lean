@@ -100,7 +100,7 @@ implementation detail, but it can be useful to transfer results from `Finsupp` t
 @[deprecated "Now a tautology" (since := "2026-07-18"), simps! -isSimp apply symm_apply]
 def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
-    commutes' := fun _ => rfl }
+    commutes' _ := rfl }
 
 attribute [deprecated "Now a tautology" (since := "2026-07-18")]
   toFinsuppIsoAlg_apply toFinsuppIsoAlg_symm_apply

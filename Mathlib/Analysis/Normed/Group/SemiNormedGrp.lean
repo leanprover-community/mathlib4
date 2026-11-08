@@ -346,8 +346,8 @@ def mkIso {M N : SemiNormedGrp} (f : M ≅ N) (i : f.hom.hom.NormNoninc) (i' : f
 
 instance : HasForget₂ SemiNormedGrp₁ SemiNormedGrp where
   forget₂ :=
-    { obj := fun X => ↧X
-      map := fun f => SemiNormedGrp.ofHom f.1 }
+    { obj X := ↧X
+      map f := SemiNormedGrp.ofHom f.1 }
 
 theorem coe_of (V : Type u) [SeminormedAddCommGroup V] : (SemiNormedGrp₁.of V : Type u) = V :=
   rfl

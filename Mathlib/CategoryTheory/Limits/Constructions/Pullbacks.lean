@@ -58,7 +58,7 @@ As usual, this is not an instance, since there may be a more direct way to const
 pullbacks. -/
 theorem hasPullbacks_of_hasBinaryProducts_of_hasEqualizers (C : Type u) [Category.{v} C]
     [HasBinaryProducts C] [HasEqualizers C] : HasPullbacks C :=
-  { has_limit := fun F => hasLimit_of_iso (diagramIsoCospan F).symm }
+  { has_limit F := hasLimit_of_iso (diagramIsoCospan F).symm }
 
 end
 

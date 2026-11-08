@@ -934,7 +934,7 @@ noncomputable def comap (p : LTSeries β) (f : α → β)
 /-- The strict series `0 < … < n` in `ℕ`. -/
 def range (n : ℕ) : LTSeries ℕ where
   length := n
-  toFun := fun i => i
+  toFun i := i
   step i := Nat.lt_add_one i
 
 @[simp] lemma length_range (n : ℕ) : (range n).length = n := rfl

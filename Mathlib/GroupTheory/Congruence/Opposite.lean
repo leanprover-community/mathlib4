@@ -32,9 +32,9 @@ additive congruence on `Mᵃᵒᵖ` -/]
 def op (c : Con M) : Con Mᵐᵒᵖ where
   r a b := c b.unop a.unop
   iseqv :=
-  { refl := fun a ↦ c.refl a.unop
+  { refl a := c.refl a.unop
     symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
+    trans h1 h2 := c.trans h2 h1 }
   mul' h1 h2 := c.mul h2 h1
 
 /-- If `c` is a multiplicative congruence on `Mᵐᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is a multiplicative
@@ -44,9 +44,9 @@ additive congruence on `M`. -/]
 def unop (c : Con Mᵐᵒᵖ) : Con M where
   r a b := c (.op b) (.op a)
   iseqv :=
-  { refl := fun a ↦ c.refl (.op a)
+  { refl a := c.refl (.op a)
     symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
+    trans h1 h2 := c.trans h2 h1 }
   mul' h1 h2 := c.mul h2 h1
 
 /--
