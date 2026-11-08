@@ -54,11 +54,15 @@ protected def congrRight {r r' : Setoid X}
 
 end Quotient
 
-/-- The quotient by the trivial relation is homeomorphic to the original space. -/
-def quotientBot :
-    Quotient (⊥ : Setoid X) ≃ₜ X where
-  toEquiv := Setoid.quotientBotEquiv
+/-- The quotient by a trivial relation is homeomorphic to the original space. -/
+@[simps! apply symm_apply toEquiv]
+def quotientTrivial (s : Setoid X) (h : ∀ ⦃x y⦄, s x y → x = y) : Quotient s ≃ₜ X where
+  toEquiv := Setoid.quotientTrivialEquiv s h
   continuous_toFun := continuous_quot_lift _ continuous_id
   continuous_invFun := continuous_quot_mk
+
+/-- The quotient by the trivial relation is homeomorphic to the original space. -/
+@[simps! apply symm_apply toEquiv]
+def quotientBot : Quotient (⊥ : Setoid X) ≃ₜ X := quotientTrivial _ (by simp)
 
 end Homeomorph
