@@ -217,12 +217,10 @@ lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
     letI := hasShiftMk C A h
     shiftFunctorAdd C a b = h.add a b := rfl
 
-set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
 notation3 -- Any better notational suggestions?
 X "⟦" n "⟧" => (shiftFunctor _ n).obj X
 
-set_option quotPrecheck false in
 /-- shifting a morphism `f` by `n` is obtained by the notation `f⟦n⟧'` -/
 notation3 f "⟦" n "⟧'" => (shiftFunctor _ n).map f
 

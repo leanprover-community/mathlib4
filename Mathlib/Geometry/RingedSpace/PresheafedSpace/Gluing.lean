@@ -110,13 +110,13 @@ local notation "π₁ " i ", " j ", " k => pullback.fst (D.f i j) (D.f i k)
 
 local notation "π₂ " i ", " j ", " k => pullback.snd (D.f i j) (D.f i k)
 
-set_option quotPrecheck false
+-- Equivalently, with instance synthesis: invApp (pullback.fst (D.f i k) (D.f i j))
 local notation "π₁⁻¹ " i ", " j ", " k =>
-  (PresheafedSpace.IsOpenImmersion.pullbackFstOfRight (D.f i j) (D.f i k)).invApp
+  invApp (H := PresheafedSpace.IsOpenImmersion.pullbackFstOfRight (D.f i j) (D.f i k))
 
-set_option quotPrecheck false
+-- Equivalently, with instance synthesis: invApp (pullback.snd (D.f i j) (D.f i k))
 local notation "π₂⁻¹ " i ", " j ", " k =>
-  (PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft (D.f i j) (D.f i k)).invApp
+  invApp (H := PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft (D.f i j) (D.f i k))
 
 /-- The glue data of topological spaces associated to a family of glue data of PresheafedSpaces. -/
 abbrev toTopGlueData : TopCat.GlueData :=

@@ -118,9 +118,8 @@ theorem coev_naturality {X Y : C} (f : X ⟶ Y) :
     f ≫ (coev A).app Y = (coev A).app X ≫ (ihom A).map (A ◁ f) :=
   (coev A).naturality f
 
-set_option quotPrecheck false in
 /-- `A ⟶[C] B` denotes the internal hom from `A` to `B` -/
-notation A " ⟶[" C "] " B:10 => (@ihom C _ _ A _).obj B
+notation A " ⟶[" C "] " B:10 => Functor.obj (@ihom C _ _ A _) B
 
 @[reassoc (attr := simp)]
 theorem ev_coev : (A ◁ (coev A).app B) ≫ (ev A).app (A ⊗ B) = 𝟙 (A ⊗ B) :=

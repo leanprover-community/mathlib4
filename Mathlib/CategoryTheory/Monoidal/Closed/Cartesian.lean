@@ -36,10 +36,8 @@ instance CartesianMonoidalCategory.isLeftAdjoint_prod_functor
 
 namespace CartesianClosed
 
--- Porting note: notation fails to elaborate with `quotPrecheck` on.
-set_option quotPrecheck false in
 /-- Morphisms obtained using an exponentiable object. -/
-scoped notation:20 A " ⟹ " B:19 => (ihom A).obj B
+scoped notation:20 A " ⟹ " B:19 => Functor.obj (ihom A) B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Functor.obj` -/
@@ -55,10 +53,8 @@ meta def delabFunctorObjExp : Delab :=
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
--- Porting note: notation fails to elaborate with `quotPrecheck` on.
-set_option quotPrecheck false in
 /-- Morphisms from an exponentiable object. -/
-scoped notation:30 B " ^^ " A:30 => (ihom A).obj B
+scoped notation:30 B " ^^ " A:30 => Functor.obj (ihom A) B
 
 end CartesianClosed
 

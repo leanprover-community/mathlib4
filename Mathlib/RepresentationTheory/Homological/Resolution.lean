@@ -76,7 +76,6 @@ variable {k G : Type u} [CommRing k] {n : ℕ}
 
 local notation "Gⁿ" => Fin n → G
 
-set_option quotPrecheck false
 local notation "Gⁿ⁺¹" => Fin (n + 1) → G
 
 variable (G)

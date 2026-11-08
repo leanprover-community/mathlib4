@@ -34,7 +34,6 @@ variable {n : Type*} [LinearOrder n] [LocallyFiniteOrderBot n]
 
 section set_options
 
-set_option quotPrecheck false
 local notation "⟪" x ", " y "⟫ₑ" => inner 𝕜 (WithLp.toLp 2 x) (WithLp.toLp 2 y)
 
 open Matrix InnerProductSpace

@@ -56,11 +56,9 @@ open MvPolynomial Function
 variable {p : ℕ} {R S : Type*} [CommRing R] [CommRing S]
 variable {α : Type*} {β : Type*}
 
+-- type as `\bbW`
 local notation "𝕎" => WittVector p
 local notation "W_" => wittPolynomial p
-
--- type as `\bbW`
-open scoped Witt
 
 namespace WittVector
 

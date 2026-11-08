@@ -78,9 +78,8 @@ lemma mul_auxMat_toSquareBlock_eq :
   rw [eq_iff_iff, iff_true] at hi hj
   simp [toSquareBlock_def, hi, hj, mul_auxMat_corner]
 
-set_option quotPrecheck false in
 /-- The upper-left block of `M * aux M k`. -/
-scoped notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) False
+local notation "mulAuxMatBlock" => Matrix.toSquareBlock (M * auxMat M k) (· = k) False
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by

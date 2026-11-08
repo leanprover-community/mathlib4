@@ -63,8 +63,7 @@ class group, selmer group, unit group
 
 @[expose] public section
 
-set_option quotPrecheck false
-local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
+local notation K "/" n => Kˣ ⧸ MonoidHom.range (powMonoidHom n : Kˣ →* Kˣ)
 
 namespace IsDedekindDomain
 

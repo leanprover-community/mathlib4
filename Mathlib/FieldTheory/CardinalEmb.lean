@@ -78,10 +78,9 @@ namespace Cardinal
 
 noncomputable section
 
-set_option quotPrecheck false
 
 /-- Index a basis of E/F using the initial ordinal of the cardinal `Module.rank F E`. -/
-local notation "ι" => (Module.rank F E).ord.ToType
+local notation "ι" => Ordinal.ToType <| Cardinal.ord (Module.rank F E)
 
 local notation i "⁺" => succ i -- Note: conflicts with `PosPart` notation
 
