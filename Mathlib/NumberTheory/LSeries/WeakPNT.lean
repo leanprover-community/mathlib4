@@ -255,22 +255,8 @@ namespace Mertens
 
 open scoped ArithmeticFunction.Moebius
 
-/-- The **Mertens function** `M x = ∑ n ≤ x, μ n`, the partial sums of the Möbius function.
-Following `Chebyshev.psi`/`Chebyshev.theta`, the sum is taken over `Ioc 0 ⌊x⌋₊`; see `M_eq_sum_Icc`
-for the equal sum over `Icc 0 ⌊x⌋₊`. -/
-noncomputable def M (x : ℝ) : ℤ := ∑ n ∈ Ioc 0 ⌊x⌋₊, μ n
-
-theorem M_eq_sum_Icc (x : ℝ) : M x = ∑ n ∈ Icc 0 ⌊x⌋₊, μ n := by
-  rw [M, ← add_sum_Ioc_eq_sum_Icc] <;> simp
-
-/-- The trivial bound `|M x| ≤ x`. -/
-theorem abs_M_le {x : ℝ} (hx : 0 ≤ x) : |M x| ≤ x := by
-  unfold M
-  grw [abs_sum_le_sum_abs, ArithmeticFunction.abs_moebius_le_one]
-  simp [floor_le hx]
-
 /-- The **Möbius form of the prime number theorem**: `M x / x → 0`. -/
-theorem tendsto_M_div_atTop : Tendsto (fun x ↦ (M x : ℝ) / x) atTop (𝓝 0) := by
+theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ (M x : ℝ) / x) atTop (𝓝 0) := by
   have (s : ℂ) (hs : 1 ≤ s.re) : riemannZeta₁ s ≠ 0 := by
     rcases eq_or_ne s 1 with rfl | hs1
     · simp
@@ -307,7 +293,7 @@ theorem tendsto_M_div_atTop : Tendsto (fun x ↦ (M x : ℝ) / x) atTop (𝓝 0)
   · filter_upwards [eventually_gt_atTop 0]; simp [← sub_div, sum_add_distrib, M_eq_sum_Icc]
 
 /-- The **Möbius form of the prime number theorem**, asymptotic form: `M x = o(x)`. -/
-theorem isLittleO_M_id : (fun x ↦ (M x : ℝ)) =o[atTop] id :=
+theorem isLittleO_M_id : (fun x : ℝ ↦ (M x : ℝ)) =o[atTop] id :=
   (isLittleO_iff_tendsto' (by filter_upwards [eventually_gt_atTop 0]; grind)).mpr
   (tendsto_M_div_atTop.congr (by simp))
 
