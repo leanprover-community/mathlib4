@@ -44,7 +44,7 @@ instance groupObj (j) : Group ((F ⋙ forget GrpCat).obj j) :=
 def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
   { MonCat.sectionsSubmonoid (F ⋙ forget₂ GrpCat MonCat) with
     carrier := (F ⋙ forget GrpCat).sections
-    inv_mem' := fun {a} ah j j' f => by
+    inv_mem' {a} ah j j' f := by
       simp only [Functor.comp_map, Pi.inv_apply]
       dsimp [Functor.sections] at ah ⊢
       rw [(F.map f).hom.map_inv (a j), ah f] }
@@ -440,11 +440,11 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGrpCat.{u}} (f : G ⟶ H) :
     kernel f ≅ ↧f.hom.ker where
   hom := ofHom
-    { toFun := fun g => ⟨kernel.ι f g, congr($(kernel.condition f) g)⟩
+    { toFun g := ⟨kernel.ι f g, congr($(kernel.condition f) g)⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp only [map_zero, ZeroMemClass.coe_zero]
-      map_add' := fun g g' => by
+      map_add' g g' := by
         refine Subtype.ext ?_
         simp }
   inv := kernel.lift f (ofHom (AddSubgroup.subtype f.hom.ker)) <| by ext x; exact x.2
