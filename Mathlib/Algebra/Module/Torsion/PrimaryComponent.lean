@@ -145,7 +145,7 @@ theorem iSup_primaryComponent_eq_top (h : IsTorsion A M) :
   have ha0 : span {a} ≠ ⊥ := by simpa using nonZeroDivisors.ne_zero ha
   rw [← iInf_maxPowDividing_eq ha0] at hmem
   let : Fintype (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})) :=
-    Finite.fintype (hasFiniteMulSupport ha0)
+    Finite.fintype (hasFiniteMulSupport (span {a}))
   let S := (mulSupport fun v : HeightOneSpectrum A => v.maxPowDividing (span {a})).toFinset
   have : (⨅ i : HeightOneSpectrum A, i.maxPowDividing (span {a})) =
       (⨅ i ∈ S, i.maxPowDividing (span {a})) := by

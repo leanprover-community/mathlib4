@@ -415,7 +415,7 @@ lemma finprod_finitePlace_pow_multiplicity {I : Ideal (𝓞 K)} (hI : I ≠ ⊥)
 lemma apply_mul_absNorm_pow_eq_one (v : FinitePlace K) {x : 𝓞 K} (hx : x ≠ 0) :
     v x * v.maximalIdeal.asIdeal.absNorm ^ multiplicity v.maximalIdeal.asIdeal (span {x}) = 1 := by
   have hnz : span {x} ≠ ⊥ := mt Submodule.span_singleton_eq_bot.mp hx
-  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity hnz]
+  rw [← norm_embedding_eq v x, ← Nat.cast_pow, ← map_pow, ← maxPowDividing_eq_pow_multiplicity]
   exact HeightOneSpectrum.embedding_mul_absNorm K v.maximalIdeal hx
 
 end FinitePlace
