@@ -50,6 +50,20 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 * `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id`: the **Möbius form of the prime number
   theorem** `∑ n ≤ x, μ n = o(x)`, obtained by applying Wiener–Ikehara to the nonnegative function
   `n ↦ 1 + μ n` (with `L`-series `ζ s + 1/ζ s`).
+
+## Future directions
+
+* Versions of `Nat.eventually_exists_prime_mem_Ioc` and `Nat.eventually_exists_prime_mem_Ioc_sub`
+for arithmetic progressions
+* Versions of `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id` in arithmetic progressions
+* Versions of `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id` for the Liouville function
+* Showing that the nth prime is asymptotic to `n * log n`
+* Showing that `μ n / n` sums conditionally to zero (this might not be easy to establish just from
+the Wiener-Ikehara theorem)
+
+Note though that all the results here could eventually be superseded by other approaches to the
+prime number theorem with stronger error terms.
+
 -/
 
 public section
