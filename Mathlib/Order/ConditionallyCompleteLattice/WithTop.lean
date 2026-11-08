@@ -35,12 +35,16 @@ Extension of `sSup` and `sInf` from a preorder `α` to `WithTop α` and `WithBot
 variable [LE α]
 
 open scoped Classical in
-@[to_dual, no_expose]
+/-- This instance ensures `OrderSupSet (WithTop α)` whenever `OrderSupSet α`. -/
+@[to_dual /-- This instance ensures `OrderInfSet (WithBot α)` whenever `OrderInfSet α`. -/,
+  no_expose]
 instance instSupSet [SupSet α] : SupSet (WithTop α) :=
   ⟨fun S => if ⊤ ∈ S ∨ ¬BddAbove ((↑) ⁻¹' S : Set α) then ⊤ else ↑(sSup ((↑) ⁻¹' S : Set α))⟩
 
 open scoped Classical in
-@[to_dual, no_expose]
+/-- This instance ensures `OrderInfSet (WithTop α)` whenever `OrderInfSet α`. -/
+@[to_dual /-- This instance ensures `OrderSupSet (WithBot α)` whenever `OrderSupSet α`. -/,
+  no_expose]
 instance instInfSet [InfSet α] : InfSet (WithTop α) :=
   ⟨fun S => if S ⊆ {⊤} ∨ ¬BddBelow S then ⊤ else ↑(sInf ((fun (a : α) ↦ ↑a) ⁻¹' S : Set α))⟩
 
@@ -126,9 +130,8 @@ theorem lowerBounds_preimage_coe {s : Set (WithTop α)} :
 @[to_dual]
 theorem bddBelow_preimage_coe [Nonempty α] {s : Set (WithTop α)} :
     BddBelow (((↑) : α → WithTop α) ⁻¹' s) ↔ BddBelow s := by
-  simp only [BddBelow, lowerBounds_preimage_coe, Set.Nonempty, mem_preimage, WithTop.exists,
-    iff_or_self]
-  exact fun h ↦ ⟨Classical.arbitrary α, lowerBounds_mono_mem le_top h⟩
+  simpa only [BddBelow, lowerBounds_preimage_coe, Set.Nonempty, mem_preimage, WithTop.exists,
+    iff_or_self] using fun h ↦ ⟨Classical.arbitrary α, lowerBounds_mono_mem le_top h⟩
 
 @[to_dual]
 theorem isGLB_coe_iff {s : Set (WithTop α)} {a : α} :
@@ -155,8 +158,7 @@ theorem isLUB_top_iff {s : Set (WithTop α)} :
     ← or_iff_not_imp_left, forall_or_left]
 
 @[to_dual]
-instance instOrderSupSet [OrderSupSet α] :
-    OrderSupSet (WithTop α) where
+instance instOrderSupSet [OrderSupSet α] : OrderSupSet (WithTop α) where
   isLUB_sSup_of_isLUB s a h := by
     cases a with
     | top => rwa [sSup_eq_top_iff.2 (isLUB_top_iff.1 h)]
@@ -166,8 +168,7 @@ instance instOrderSupSet [OrderSupSet α] :
       exact ⟨h.1, h.2.isLUB_sSup⟩
 
 @[to_dual]
-instance instOrderInfSet [OrderInfSet α] :
-    OrderInfSet (WithTop α) where
+instance instOrderInfSet [OrderInfSet α] : OrderInfSet (WithTop α) where
   isGLB_sInf_of_isGLB s a h := by
     cases a with
     | top => rwa [sInf_eq_top_iff.2 (.inl (isGLB_top_iff.1 h))]
