@@ -78,8 +78,7 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     exact (Orthonormal.inner_products_summable _ (HilbertBasis.orthonormal _)).tsum_ofReal_ne_top
 
 /-- The trace of an operator on `E`. -/
-def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A
-  (Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E)))
+def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (exists_hilbertBasis ℂ E).choose_spec.choose
 
 variable {A B : E →L[ℂ] E}
 
@@ -102,7 +101,7 @@ theorem trace_adjoint : A.adjoint.trace = conj A.trace := by
   simp [trace, traceOfBasis_def, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
 
 theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
-  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
   exact tsum_nonneg fun i ↦ by
     simpa only [sub_zero] using hA.inner_nonneg_right (b i)
 
@@ -110,8 +109,8 @@ variable (A) in
 theorem toLinearMap_trace [FiniteDimensional ℂ E] :
     A.toLinearMap.trace ℂ E = A.trace := by
   unfold trace
-  set ι := Classical.choose (exists_hilbertBasis ℂ E)
-  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  set ι := (exists_hilbertBasis ℂ E).choose
+  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
   let : Finite ι := b.orthonormal.linearIndependent.finite
   let : Fintype ι := Fintype.ofFinite ι
   simp [traceOfBasis_def, LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
@@ -130,7 +129,7 @@ theorem _root_.Summable.of_add_nonneg {ι : Type*} {f g : ι → ℂ} (hf : ∀ 
 theorem trace_add_le (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) ≤ trace A + trace B := by
   unfold trace
   simp_rw [traceOfBasis_def]
-  set b := Classical.choose (Classical.choose_spec (exists_hilbertBasis ℂ E))
+  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
   have hA' : ∀ i, 0 ≤ ⟪b i, A (b i)⟫_ℂ := fun i => by
     simpa only [sub_zero] using hA.inner_nonneg_right (b i)
   have hB' : ∀ i, 0 ≤ ⟪b i, B (b i)⟫_ℂ := fun i => by
