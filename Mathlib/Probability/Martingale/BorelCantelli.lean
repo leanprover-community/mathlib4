@@ -37,7 +37,7 @@ the results here), and `ProbabilityTheory.measure_limsup_eq_one` for the second 
 @[expose] public section
 
 
-open Filter
+open Filter Function
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory Topology
 
@@ -51,12 +51,12 @@ variable {ι Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
 noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
-  hittingAfter f (Set.Ici r) ⊥
+  fun ω ↦ hittingAfter (f · ω) (Set.Ici r) ⊥
 
 /-- `leastGT f r` is the stopping time corresponding to the first time `f > r`. -/
 noncomputable def leastGT [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
-  hittingAfter f (Set.Ioi r) ⊥
+  fun ω ↦ hittingAfter (f · ω) (Set.Ioi r) ⊥
 
 theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
@@ -103,8 +103,8 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     positivity
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_one_of_ne_zero h_zero
   rw [hk, add_comm r, ← sub_le_iff_le_add]
-  have := notMem_of_lt_hittingAfter (?_ : k < leastGE f r ω)
-  · simp only [bot_eq_zero, zero_le, Set.mem_Ici, not_le, forall_const] at this
+  have := notMem_of_lt_hittingAfter (Nat.zero_le k) (?_ : k < leastGE f r ω)
+  · simp only [Set.mem_Ici, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
   · suffices WithTop.some k < min (WithTop.some i) (leastGE f r ω) from
       this.trans_le (min_le_right _ _)
