@@ -179,9 +179,8 @@ theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreservi
 /-- For a quasi-measure-preserving measurable self-map `f`, if a null measurable set `s` is a.e.
 invariant, then it is a.e. equal to a measurable invariant set.
 -/
-theorem exists_preimage_eq_of_preimage_ae {f : α → α} (hfm : Measurable f)
-    (h : QuasiMeasurePreserving f μ μ)
-    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
+theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
+    (hfm : Measurable f) (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
     ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
   obtain ⟨t, htm, ht⟩ := hs
   refine ⟨limsup (f^[·] ⁻¹' t) atTop, ?_, ?_, ?_⟩
