@@ -508,6 +508,34 @@ instance contMDiffCovariantDerivative_leviCivitaConnection [hk : NeZero k] :
     apply TensorialAt.contMDiff_mkHom₂' (by simp) (by simp) (l := k + 1)
     exact fun x τ hτ τ' hτ' ↦ contMDiffAt_leviCivitaAuxInner I (hσ x) hτ hτ'
 
+instance contMDiffCovariantDerivative'_leviCivitaConnection [hk : NeZero k] :
+    ContMDiffCovariantDerivativeOn' E k (leviCivitaConnection I M) Set.univ where
+  contMDiffWithinAt := by
+    dsimp [leviCivitaConnection]
+    unfold leviCivitaAux
+    refine fun {σ} x _hx hσ ↦ ?_
+    simp_rw [contMDiffWithinAt_univ, nhdsWithin_univ] at hσ ⊢
+    -- TODO: adapt the above argument to fix the next step!
+    -- The next few lines all allow replacing the goal by smoothness of `leviCivitaAuxOfMDiffAt`.
+    have scifi : MDiff (T% σ) := sorry -- above: hσ.mdifferentiableAt (by simp)
+    let arg : M → TotalSpace (E →L[ℝ] E) fun (x : M) ↦ TangentSpace I x →L[ℝ] TangentSpace I x :=
+      fun x ↦ TotalSpace.mk' _ x (leviCivitaAuxOfMDiffAt I (scifi x))
+    suffices hyp : ContMDiffAt I (I.prod 𝓘(ℝ, E →L[ℝ] E)) k arg x by
+      apply hyp.congr_of_eventuallyEq
+      sorry
+      -- simp [arg, this]
+    unfold arg leviCivitaAuxOfMDiffAt
+    -- Next, we handle the application of the musical isomorphism.
+    have : IsManifold I (k + 1) M := IsManifold.of_le (n := k + 2) (by count_derivatives)
+    have : IsContMDiffRiemannianBundle I k E fun (x : M) ↦ TangentSpace I x :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 2) (by count_derivatives)
+    apply contMDiffAt_musicalIso_apply
+    -- The final step is applying our smoothness criterion for the tensoriality construction.
+    have : IsManifold I (k + 1 + 1) M := IsManifold.of_le (n := k + 2) (by count_derivatives)
+    -- NB. We apply the version involving a loss of derivatives, because this is what happens here.
+    apply TensorialAt.contMDiffAt_mkHom₂' (by simp) (by simp) (l := k + 1)
+    exact fun τ hτ τ' hτ' ↦ contMDiffAt_leviCivitaAuxInner I hσ.self_of_nhds hτ hτ'
+
 end existence
 
 end CovariantDerivative

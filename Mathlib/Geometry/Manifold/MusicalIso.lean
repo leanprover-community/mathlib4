@@ -217,6 +217,16 @@ section useFrames
 
 variable [FiniteDimensional ℝ EB]
 
+lemma fooWithinAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {u : Set B} {x : B}
+    (hs : CMDiffAt[u] k (fun (x : B) ↦
+      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
+    CMDiffAt[u] k (T% (musicalIsoSimple s)) x := by
+  simp only [musicalIsoSimple, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
+    ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
+  sorry /- apply ContMDiffWithinAt.of_inner_bundle_apply
+  intro t ht
+  simp [hs.clm_bundle_apply_trivial_target ht] -/
+
 lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
@@ -327,9 +337,24 @@ def musicalIso (s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
 --     (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L (s x) := by
 --   rfl
 
--- Suppose s is a C^k section, then its musical isomorphism is also C^k.
--- TODO: prove point-wise within at version of all these
 omit [IsContMDiffRiemannianBundle IB k F E] in
+/-- Suppose `s` is a `C^k` section at `x`, then its musical isomorphism is also `C^k` at `x`. -/
+lemma contMDiffAt_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
+    {s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ} {x : B}
+    (hs : CMDiffAt k (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] (EB →L[ℝ] ℝ))
+      (E := fun (x : B) ↦ E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) x (s x)) x) :
+    ContMDiffAt IB (IB.prod 𝓘(ℝ, F →L[ℝ] EB)) k
+      (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] EB) (E := fun x ↦ E x →L[ℝ] TangentSpace IB x) x
+        (musicalIso s x)) x := by
+  have : IsManifold IB k B := IsManifold.of_le (by simp : k ≤ k + 1)
+  apply ContMDiffAt.clm_bundle_of_apply
+  intro σ hσ
+  apply fooAt_simple
+  simp only [ContinuousLinearMap.coe_coe]
+  exact hs.clm_bundle_apply hσ.self_of_nhds
+
+omit [IsContMDiffRiemannianBundle IB k F E] in
+/-- Suppose `s` is a `C^k` section, then its musical isomorphism is also `C^k`. -/
 lemma contMDiff_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
     {s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ}
     (hs : CMDiff k (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] (EB →L[ℝ] ℝ))
