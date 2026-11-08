@@ -15,9 +15,6 @@ import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Homotopy.Lifting
 
-set_option doc.verso true
-set_option doc.verso.suggestions false
-
 /-!
 # Examples of Pontryagin duals
 
