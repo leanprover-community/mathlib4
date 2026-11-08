@@ -94,7 +94,7 @@ lemma one_le_house_of_isIntegral {α : K} (hα : IsIntegral ℤ α) (hα0 : α �
     1 ≤ house α := by
   have ⟨σ, hσ⟩ : ∃ σ : K →+* ℂ, 1 ≤ ‖σ α‖ := by
     apply exists_conjugate_one_le_norm (K := K) (α := ⟨α, hα⟩)
-    simpa [RingOfIntegers.ext_iff]
+    simpa [Subtype.ext_iff]
   apply hσ.trans (norm_embedding_le_house α σ)
 
 lemma norm_norm_le_norm_mul_house_pow (α : K) (σ : K →+* ℂ) :

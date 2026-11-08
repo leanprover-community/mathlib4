@@ -73,8 +73,9 @@ lemma absNorm_differentIdeal : (differentIdeal ℤ 𝒪).absNorm = (discr K).nat
     rw [← eq_intCast (algebraMap ℤ ℚ), RingHom.map_det]
     congr! 2
     ext i j
-    simp [b', Module.Basis.toMatrix_apply, mul_comm (RingOfIntegers.basis K i),
-      b, integralBasis_apply, ← map_mul, Algebra.trace_localization ℤ ℤ⁰]
+    simpa [b', Module.Basis.toMatrix_apply, mul_comm (RingOfIntegers.basis K i), b,
+      integralBasis_apply, ← MulMemClass.coe_mul] using Algebra.trace_localization (R := ℤ)
+      (Rₘ := ℚ) (Sₘ := K) ℤ⁰ (RingOfIntegers.basis K j * RingOfIntegers.basis K i)
 
 lemma discr_mem_differentIdeal : ↑(discr K) ∈ differentIdeal ℤ 𝒪 := by
   have := (differentIdeal ℤ 𝒪).absNorm_mem
@@ -141,6 +142,8 @@ theorem linearDisjoint_of_isGalois_isCoprime_discr (K₁ K₂ : IntermediateFiel
     exact Int.isUnit_iff_abs_eq.not.mpr <| by linarith [abs_discr_gt_two this]
   exact h.isUnit_of_dvd' (NumberField.discr_dvd_discr _ _) (NumberField.discr_dvd_discr _ _)
 
+set_option synthInstance.maxHeartbeats 80000 in
+-- Instance search through `𝓞` of an intermediate field (a subtype of a subtype) is slow.
 /--
 Let `K₁` and `K₂` be two number fields and assume that their different ideals (over ℤ) are coprime.
 Then, the absolute value of the discriminant of their compositum is equal to

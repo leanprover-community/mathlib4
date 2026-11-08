@@ -67,7 +67,7 @@ namespace NumberField.Units
 section coe
 
 instance : CoeHTC (𝓞 K)ˣ K :=
-  ⟨fun x => algebraMap _ K (Units.val x)⟩
+  ⟨fun x => ((x : 𝓞 K) : K)⟩
 
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
   RingOfIntegers.coe_injective.comp Units.val_injective
@@ -84,7 +84,11 @@ theorem _root_.IsPrimitiveRoot.coe_coe_iff {ν : (𝓞 K)ˣ} {n : ℕ} :
 theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
 
 theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : ((x ^ n : (𝓞 K)ˣ) : K) = (x : K) ^ n := by
-  rw [← map_pow, ← val_pow_eq_pow_val]
+  rw [val_pow_eq_pow_val, SubmonoidClass.coe_pow]
+
+@[simp, norm_cast]
+theorem coe_inv (x : (𝓞 K)ˣ) : ((x⁻¹ : (𝓞 K)ˣ) : K) = (x : K)⁻¹ :=
+  map_units_inv (algebraMap (𝓞 K) K) x
 
 theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
   change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
@@ -139,6 +143,11 @@ theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
   simpa [Units.norm, Real.log_prod, Real.log_pow] using
     congr(Real.log $(prod_eq_abs_norm (x : K)))
 
+/-- Shortcut instance: without it, `Units.instCommGroupUnits` can fail to unify with the
+`SubmonoidClass.toMonoid` instance on `𝓞 K` inside larger searches such as
+`Module ℤ (Additive ((𝓞 K)ˣ ⧸ torsion K))`. -/
+instance : CommGroup (𝓞 K)ˣ := inferInstance
+
 section torsion
 
 /-- The torsion subgroup of the group of units. -/
@@ -153,9 +162,9 @@ theorem mem_torsion {x : (𝓞 K)ˣ} :
   rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
   refine ⟨fun hx φ ↦ (((φ.comp <| algebraMap (𝓞 K) K).toMonoidHom.comp <|
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
-  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
-  exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
-    NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
+  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ
+    (RingOfIntegers.isIntegral_coe x.val) h
+  exact ⟨n, hn, coe_injective K <| by simpa using hx⟩
 
 /-- The torsion subgroup is finite. -/
 instance : Finite (torsion K) := by

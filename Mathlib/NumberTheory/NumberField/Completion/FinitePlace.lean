@@ -322,7 +322,7 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
   simp only [mk_apply]
   rw [← norm_lt_one_iff_mem K] at hx1
   rw [← norm_eq_one_iff_notMem K] at hx2
-  linarith
+  exact (hx1.trans_eq hx2.symm).ne
 
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
   rw [← mk_eq_iff, mk_maximalIdeal]
@@ -348,7 +348,7 @@ theorem hasFiniteMulSupport_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
   have (w : FinitePlace K) : w x ≠ 1 ↔ w x < 1 :=
     ne_iff_lt_iff_le.mpr <| norm_embedding_eq w x ▸ norm_le_one K w.maximalIdeal x
   simp_rw [Function.HasFiniteMulSupport, Function.mulSupport, this, ← norm_embedding_eq,
-    norm_lt_one_iff_mem, ← Ideal.dvd_span_singleton]
+    RingOfIntegers.coe_eq_algebraMap, norm_lt_one_iff_mem, ← Ideal.dvd_span_singleton]
   have h : {v : HeightOneSpectrum (𝓞 K) | v.asIdeal ∣ span {x}}.Finite := by
     apply Ideal.finite_factors
     simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]

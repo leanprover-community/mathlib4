@@ -388,8 +388,8 @@ include hK in
 theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
     natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
-    minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,
-    (minpoly.monic a.isIntegral_coe).natDegree_map] at h
+    minpoly.isIntegrallyClosed_eq_field_fractions' ℚ (RingOfIntegers.isIntegral_coe a),
+    (minpoly.monic (RingOfIntegers.isIntegral_coe a)).natDegree_map] at h
   exact h.symm ▸ rank_le_rankOfDiscrBdd hK
 
 variable (N)
@@ -415,7 +415,7 @@ theorem finite_of_discr_bdd_of_isReal :
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
-    have hx := x.isIntegral_coe
+    have hx := RingOfIntegers.isIntegral_coe x
     refine ⟨x, ⟨⟨minpoly ℤ (x : K), ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
     · exact natDegree_le_rankOfDiscrBdd hK₂ x hx₁
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
@@ -463,7 +463,7 @@ theorem finite_of_discr_bdd_of_isComplex :
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
     obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
-    have hx := x.isIntegral_coe
+    have hx := RingOfIntegers.isIntegral_coe x
     refine ⟨x, ⟨⟨minpoly ℤ (x : K), ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
     · exact natDegree_le_rankOfDiscrBdd hK₂ x hx₁
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]

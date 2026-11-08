@@ -77,8 +77,8 @@ variable [NumberField K]
 
 theorem unit_smul_eq_iff_mul_eq {x y : 𝓞 K} {u : (𝓞 K)ˣ} :
     u • mixedEmbedding K x = mixedEmbedding K y ↔ u * x = y := by
-  rw [unitSMul_smul, ← map_mul, Function.Injective.eq_iff, ← RingOfIntegers.coe_eq_algebraMap,
-    ← map_mul, ← RingOfIntegers.ext_iff]
+  rw [unitSMul_smul, ← map_mul, Function.Injective.eq_iff, ← MulMemClass.coe_mul,
+    ← Subtype.ext_iff]
   exact mixedEmbedding_injective K
 
 theorem norm_unit_smul (u : (𝓞 K)ˣ) (x : mixedSpace K) :
@@ -266,7 +266,8 @@ def integerSet : Set (mixedSpace K) :=
 theorem mem_integerSet {a : mixedSpace K} :
     a ∈ integerSet K ↔ a ∈ fundamentalCone K ∧ ∃ x : 𝓞 K, mixedEmbedding K x = a := by
   simp only [integerSet, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
-    AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply]
+    AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, RingHom.coe_comp, Function.comp_apply,
+    Subalgebra.algebraMap_apply]
 
 /-- If `a` is in `integerSet`, then there is a *unique* algebraic integer in `𝓞 K` such
 that `mixedEmbedding K x = a`. -/
@@ -288,7 +289,7 @@ a nonzero divisors since we will use later on the isomorphism
 `Ideal.associatesNonZeroDivisorsEquivIsPrincipal`, see `integerSetEquiv`. -/
 def preimageOfMemIntegerSet (a : integerSet K) : (𝓞 K)⁰ :=
   ⟨(mem_integerSet.mp a.prop).2.choose, mem_nonZeroDivisors_of_ne_zero (by
-  simp_rw [ne_eq, ← RingOfIntegers.coe_injective.eq_iff, ← (mixedEmbedding_injective K).eq_iff,
+  simp_rw [ne_eq, ← RingOfIntegers.coe_eq_zero_iff, ← (mixedEmbedding_injective K).eq_iff,
     map_zero, (mem_integerSet.mp a.prop).2.choose_spec, ne_zero_of_mem_integerSet,
     not_false_eq_true])⟩
 
@@ -300,7 +301,7 @@ theorem mixedEmbedding_preimageOfMemIntegerSet (a : integerSet K) :
 theorem preimageOfMemIntegerSet_mixedEmbedding {x : (𝓞 K)}
     (hx : mixedEmbedding K (x : 𝓞 K) ∈ integerSet K) :
     preimageOfMemIntegerSet (⟨mixedEmbedding K (x : 𝓞 K), hx⟩) = x := by
-  simp_rw [RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
+  simp_rw [Subtype.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
     mixedEmbedding_preimageOfMemIntegerSet]
 
 /-- If `x : mixedSpace K` is nonzero and the image of an algebraic integer, then there exists a
@@ -312,7 +313,7 @@ theorem exists_unitSMul_mem_integerSet {x : mixedSpace K} (hx : x ≠ 0)
       (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx')).not.mpr hx
   obtain ⟨u, hu⟩ := exists_unit_smul_mem hx
   obtain ⟨_, ⟨x, rfl⟩, _, rfl⟩ := hx'
-  exact ⟨u, mem_integerSet.mpr ⟨hu, u * x, by simp_rw [unitSMul_smul, ← map_mul]⟩⟩
+  exact ⟨u, mem_integerSet.mpr ⟨hu, u * x, by simp [unitSMul_smul]⟩⟩
 
 /-- The set `integerSet K` is stable under the action of the torsion. -/
 theorem torsion_unitSMul_mem_integerSet {x : mixedSpace K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
@@ -372,17 +373,17 @@ theorem integerSetToAssociates_surjective :
     exact (map_ne_zero _).mpr <| RingOfIntegers.coe_ne_zero_iff.mpr (nonZeroDivisors.coe_ne_zero _)
   refine ⟨⟨u • mixedEmbedding K (x : 𝓞 K), hu⟩,
     Quotient.sound ⟨unitsNonZeroDivisorsEquiv.symm u⁻¹, ?_⟩⟩
-  simp_rw [Subtype.ext_iff, RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
-    Submonoid.coe_mul, map_mul, mixedEmbedding_preimageOfMemIntegerSet,
-    unitSMul_smul, ← map_mul, mul_comm, map_inv, val_inv_unitsNonZeroDivisorsEquiv_symm_apply_coe,
-    Units.mul_inv_cancel_right]
+  simp_rw [Subtype.ext_iff, ← (mixedEmbedding_injective K).eq_iff,
+    Submonoid.coe_mul, MulMemClass.coe_mul, map_mul, mixedEmbedding_preimageOfMemIntegerSet,
+    unitSMul_smul, ← map_mul, mul_comm]
+  simp
 
 theorem integerSetToAssociates_eq_iff (a b : integerSet K) :
     integerSetToAssociates K a = integerSetToAssociates K b ↔
       ∃ ζ : torsion K, ζ • a = b := by
   simp_rw [integerSetToAssociates_apply, Associates.quotient_mk_eq_mk,
     Associates.mk_eq_mk_iff_associated, Associated, mul_comm, Subtype.ext_iff,
-    RingOfIntegers.ext_iff, ← (mixedEmbedding_injective K).eq_iff, Submonoid.coe_mul, map_mul,
+    ← (mixedEmbedding_injective K).eq_iff, Submonoid.coe_mul, MulMemClass.coe_mul, map_mul,
     mixedEmbedding_preimageOfMemIntegerSet, integerSetTorsionSMul_smul_coe]
   refine ⟨fun ⟨u, h⟩ ↦  ⟨⟨unitsNonZeroDivisorsEquiv u, ?_⟩, by simpa using h⟩,
     fun ⟨⟨u, _⟩, h⟩ ↦ ⟨unitsNonZeroDivisorsEquiv.symm u, by simpa using h⟩⟩
@@ -410,7 +411,7 @@ theorem integerSetTorsionSMul_stabilizer (a : integerSet K) :
   refine (Subgroup.eq_bot_iff_forall _).mpr fun ζ hζ ↦ ?_
   rwa [MulAction.mem_stabilizer_iff, Subtype.ext_iff, integerSetTorsionSMul_smul_coe,
     unitSMul_smul, ← mixedEmbedding_preimageOfMemIntegerSet, ← map_mul,
-    (mixedEmbedding_injective K).eq_iff, ← map_mul, ← RingOfIntegers.ext_iff, mul_eq_right₀,
+    (mixedEmbedding_injective K).eq_iff, ← MulMemClass.coe_mul, ← Subtype.ext_iff, mul_eq_right₀,
     Units.val_eq_one, OneMemClass.coe_eq_one] at hζ
   exact nonZeroDivisors.coe_ne_zero _
 
@@ -489,7 +490,7 @@ theorem mem_idealSet :
     LinearMap.mem_range, LinearMap.coe_comp, LinearMap.coe_restrictScalars, coe_subtype,
     Function.comp_apply, AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, Subtype.exists,
     FractionalIdeal.mem_coe, FractionalIdeal.mem_coeIdeal, exists_prop', nonempty_prop,
-    exists_exists_and_eq_and]
+    exists_exists_and_eq_and, Subalgebra.algebraMap_apply, Subtype.exists]
 
 /-- The map that sends `a : idealSet` to an element of `integerSet`. This map exists because
 `J` is an integral ideal. -/

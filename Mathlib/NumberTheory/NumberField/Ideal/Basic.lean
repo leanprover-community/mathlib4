@@ -176,9 +176,10 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one {P : Ideal (𝓞 K)} (hP₀
     (hP₁ : P.IsPrime) (hP₂ : (absNorm P).Coprime (torsionOrder K)) :
     torsionOrder K ∣ absNorm P - 1 := by
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP₁
-  let _ := Ideal.Quotient.field P
   have hP₃ : absNorm P ≠ 1 := absNorm_eq_one_iff.not.mpr <| IsPrime.ne_top hP₁
-  have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective hP₃ hP₂)
+  have h : Nat.card (torsion K) ∣ Nat.card ((𝓞 K ⧸ P)ˣ) :=
+    Subgroup.card_dvd_of_injective (torsionMapQuot P) (torsionMapQuot_injective hP₃ hP₂)
+  let _ := Ideal.Quotient.field P
   rwa [Nat.card_units, ← absNorm_eq_natCard] at h
 
 /--
@@ -201,8 +202,9 @@ theorem NumberField.torsionOrder_dvd_absNorm_sub_one' {P : Ideal (𝓞 K)} [hP :
       simp [hP₂]
   have hP₀ : P ≠ ⊥ := fun h ↦ by simp [h] at hP₂
   have : P.IsMaximal := Ring.DimensionLEOne.maximalOfPrime hP₀ hP
+  have h : Nat.card (torsion K) ∣ Nat.card ((𝓞 K ⧸ P)ˣ) :=
+    Subgroup.card_dvd_of_injective (torsionMapQuot P) (torsionMapQuot_injective' hP₁ hP₂)
   let _ := Ideal.Quotient.field P
-  have h := Subgroup.card_dvd_of_injective _ (torsionMapQuot_injective' hP₁ hP₂)
   rwa [Nat.card_units, ← absNorm_eq_natCard] at h
 
 end torsionMapQuot

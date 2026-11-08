@@ -65,10 +65,7 @@ theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
     infer_instance
   obtain ⟨n, hnpos, hn⟩ := isOfFinOrder_iff_pow_eq_one.1 <| (CommGroup.mem_torsion _).1 x.2
   replace hn : (↑u : K) ^ ((⟨n, hnpos⟩ : ℕ+) : ℕ) = 1 := by
-    rw [← map_pow]
-    convert map_one (algebraMap (𝓞 K) K)
-    rw_mod_cast [hxu, hn]
-    simp
+    rw [← NumberField.Units.coe_pow, hxu, hn, NumberField.Units.coe_one]
   obtain ⟨r, hr3, hru⟩ := hζ.exists_pow_or_neg_mul_pow_of_isOfFinOrder (by decide)
     (isOfFinOrder_iff_pow_eq_one.2 ⟨n, hnpos, hn⟩)
   replace hr : r ∈ Finset.Ico 0 3 := Finset.mem_Ico.2 ⟨by simp, hr3⟩

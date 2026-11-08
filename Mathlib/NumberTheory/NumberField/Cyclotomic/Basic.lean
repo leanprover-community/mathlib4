@@ -201,7 +201,7 @@ lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ} (hk : 1 < k)
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
-  exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
+  exact hζ.ne_one hk (Subtype.ext_iff.1 h)
 
 /-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
@@ -243,7 +243,7 @@ noncomputable def subOneIntegralPowerBasisOfPrimePow [IsCyclotomicExtension {p ^
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasisOfPrimePow.adjoin_eq_top_of_gen_mem_adjoin ?_
     convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
-    simp [RingOfIntegers.ext_iff, integralPowerBasisOfPrimePow_gen, toInteger])
+    simp [Subtype.ext_iff, integralPowerBasisOfPrimePow_gen, toInteger])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -494,7 +494,7 @@ theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)
   refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero] at h
   exact hζ.ne_one (one_lt_pow₀ hp.1.one_lt (Nat.zero_ne_add_one k).symm)
-    (RingOfIntegers.ext_iff.1 h)
+    (Subtype.ext_iff.1 h)
 
 theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ p) :
@@ -566,7 +566,8 @@ theorem prime_dvd_of_dvd_norm_sub_one {n : ℕ} (hn : 2 ≤ n) {K : Type*}
     rw [norm_eq_iff ℤ (Sₘ := K) (Rₘ := ℚ) le_rfl, map_sub, map_one, RingOfIntegers.map_mk,
       show ζ - 1 = algebraMap ℚ⟮ζ⟯ K (IntermediateField.AdjoinSimple.gen ℚ ζ - 1) by rfl,
       ← norm_norm (S := ℚ⟮ζ⟯), Algebra.norm_algebraMap, map_pow, map_pow, ← norm_localization ℤ
-      (nonZeroDivisors ℤ) (Sₘ := ℚ⟮ζ⟯), map_sub (algebraMap _ _), RingOfIntegers.map_mk, map_one]
+      (nonZeroDivisors ℤ) (Sₘ := ℚ⟮ζ⟯)]
+    rfl
   rw [h] at hp
   rsuffices ⟨q, hq, t, s, ht₁, ht₂, hs⟩ :
       ∃ q, q.Prime ∧ ∃ t s, t ≠ 0 ∧ n = q ^ t ∧ (p : ℤ) ∣ (q : ℤ) ^ s := by
@@ -873,7 +874,7 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {n} ℚ K]
     (RingOfIntegers.isIntegral ⟨ζ- 1, (hζ.isIntegral (NeZero.pos _)).sub isIntegral_one⟩) (by
     refine hζ.integralPowerBasis.adjoin_eq_top_of_gen_mem_adjoin ?_
     convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ _) (Subalgebra.one_mem _)
-    simp [RingOfIntegers.ext_iff, integralPowerBasis_gen, toInteger])
+    simp [Subtype.ext_iff, integralPowerBasis_gen, toInteger])
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

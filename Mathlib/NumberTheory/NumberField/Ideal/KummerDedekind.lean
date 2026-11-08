@@ -89,7 +89,8 @@ def ZModXQuotSpanEquivQuotSpan (hp : ¬ p ∣ exponent θ) :
       𝓞 K ⧸ span {(p : 𝓞 K)} :=
   (quotientEquivAlgOfEq ℤ (by simp [Ideal.map_span, Polynomial.map_map])).toRingEquiv.trans
     ((quotientEquiv _ _ (mapEquiv (Int.quotientSpanNatEquivZMod p)) rfl).symm.trans
-      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm.trans
+      ((quotMapEquivQuotQuotMap (not_dvd_exponent_iff.mp hp).eq_top
+        (RingOfIntegers.isIntegral θ)).symm.trans
         (quotientEquivAlgOfEq ℤ (by simp [map_span])).toRingEquiv))
 
 theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ[X]) :
@@ -101,7 +102,8 @@ theorem ZModXQuotSpanEquivQuotSpan_mk_apply (hp : ¬ p ∣ exponent θ) (Q : ℤ
     quotientEquiv_symm_apply, quotientMap_mk, RingHom.coe_coe, mapEquiv_symm_apply,
     Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom]
   exact congr_arg (quotientEquivAlgOfEq ℤ (by simp [map_span])) <|
-    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral Q
+    quotMapEquivQuotQuotMap_symm_apply (not_dvd_exponent_iff.mp hp).eq_top
+      (RingOfIntegers.isIntegral θ) Q
 
 section monicFactorsMod
 
@@ -121,7 +123,8 @@ theorem mem_monicFactorsMod_iff {Q : (ZMod p)[X]} :
     Q ∈ monicFactorsMod θ p ↔
       Irreducible Q ∧ Q.Monic ∧ Q ∣ (minpoly ℤ θ).map (Int.castRingHom (ZMod p)) := by
   rw [monicFactorsMod, Multiset.mem_toFinset,
-    Polynomial.mem_normalizedFactors_iff (map_monic_ne_zero (minpoly.monic θ.isIntegral))]
+    Polynomial.mem_normalizedFactors_iff
+      (map_monic_ne_zero (minpoly.monic (RingOfIntegers.isIntegral θ)))]
 
 theorem irreducible_monicFactorsMod (Q : monicFactorsMod θ p) :
     Irreducible (Q : (ZMod p)[X]) :=
@@ -196,14 +199,15 @@ def primesOverSpanEquivMonicFactorsMod (hp : ¬ p ∣ exponent θ) :
   ((Set.equivOfEq (by ext; simp [mem_primesOver_iff_mem_normalizedFactors _ h])).trans
     (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
     (Int.ideal_span_isMaximal_of_prime p) h
-      (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral)).trans
+      (not_dvd_exponent_iff.mp hp).eq_top (RingOfIntegers.isIntegral θ))).trans
         (primesOverSpanEquivMonicFactorsModAux _)
 
 theorem primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p ∣ exponent θ)
     {Q : (ZMod p)[X]} (hQ : Q ∈ monicFactorsMod θ p) :
     ((primesOverSpanEquivMonicFactorsMod hp).symm ⟨Q, hQ⟩ : Ideal (𝓞 K)) =
       (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
-        inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral).symm
+        inferInstance (by simp [NeZero.ne p]) (not_dvd_exponent_iff.mp hp).eq_top
+        (RingOfIntegers.isIntegral θ)).symm
         ⟨Q.map (Int.quotientSpanNatEquivZMod p).symm, by
           rw [← primesOverSpanEquivMonicFactorsModAux_symm_apply]
           exact ((primesOverSpanEquivMonicFactorsModAux _).symm ⟨Q, hQ⟩).prop⟩ := rfl
@@ -271,7 +275,7 @@ theorem ramificationIdx_primesOverSpanEquivMonicFactorsMod_symm_apply (hp : ¬ p
   apply multiplicity_eq_of_emultiplicity_eq
   rw [← emultiplicity_map_eq (mapEquiv (Int.quotientSpanNatEquivZMod p).symm),
     emultiplicity_factors_map_eq_emultiplicity inferInstance (by simp [NeZero.ne p])
-    (not_dvd_exponent_iff.mp hp).eq_top θ.isIntegral]
+    (not_dvd_exponent_iff.mp hp).eq_top (RingOfIntegers.isIntegral θ)]
   · simp only [primesOverSpanEquivMonicFactorsMod_symm_apply,
       Equiv.apply_symm_apply (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk _ _ _ _),
       Polynomial.map_map, Int.quotientSpanNatEquivZMod_comp_castRingHom, mapEquiv_apply]

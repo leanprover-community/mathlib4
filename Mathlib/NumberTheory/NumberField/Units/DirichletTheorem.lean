@@ -255,12 +255,12 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
 /-- The terms of the sequence are nonzero. -/
-theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
+theorem seq_ne_zero (n : ℕ) : ((seq K w₁ hB n : 𝓞 K) : K) ≠ 0 :=
   RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-    w (algebraMap (𝓞 K) K (seq K w₁ hB m)) < w (algebraMap (𝓞 K) K (seq K w₁ hB n)) := by
+    w ((seq K w₁ hB m : 𝓞 K) : K) < w ((seq K w₁ hB n : 𝓞 K) : K) := by
   induction m with
   | zero =>
       exfalso
@@ -301,10 +301,10 @@ theorem exists_unit (w₁ : InfinitePlace K) :
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw ↦ Real.log_neg (pos_at_place hu.choose w) ?_⟩
     calc
-      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
-        rw [← congr(algebraMap (𝓞 K) K $hu.choose_spec), mul_comm, map_mul (algebraMap _ _),
-          ← mul_assoc, inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
-      _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
+      _ = w ((seq K w₁ hB m : 𝓞 K) * ((seq K w₁ hB n : 𝓞 K) : K)⁻¹) := by
+        rw [← congr(Subtype.val $hu.choose_spec), mul_comm, MulMemClass.coe_mul, ← mul_assoc,
+          inv_mul_cancel₀ (seq_ne_zero K w₁ hB n), one_mul]
+      _ = w ((seq K w₁ hB m : 𝓞 K) : K) * w ((seq K w₁ hB n : 𝓞 K) : K)⁻¹ :=
         map_mul _ _ _
       _ < 1 := by
         rw [map_inv₀, mul_inv_lt_iff₀' (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]

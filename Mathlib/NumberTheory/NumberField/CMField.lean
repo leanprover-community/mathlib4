@@ -208,7 +208,8 @@ protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
     complexConj K x = x ↔ ∃ y : 𝓞 K⁺, algebraMap (𝓞 K⁺) K y = x := by
   rw [complexConj_eq_self_iff]
   refine ⟨fun h ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩
-  · have : IsIntegral ℤ (⟨x, h⟩ : K⁺) := isIntegral_algebraMap_iff.mp x.isIntegral_coe
+  · have : IsIntegral ℤ (⟨x, h⟩ : K⁺) :=
+      isIntegral_algebraMap_iff.mp (RingOfIntegers.isIntegral_coe x)
     refine ⟨⟨⟨x, h⟩, this⟩, ?_⟩
     rw [IsScalarTower.algebraMap_apply (𝓞 K⁺) K⁺, RingOfIntegers.map_mk]
     rfl
@@ -219,10 +220,8 @@ protected theorem Units.complexConj_eq_self_iff (u : (𝓞 K)ˣ) :
     complexConj K u = u ↔ ∃ v : (𝓞 K⁺)ˣ, algebraMap (𝓞 K⁺) K v = u := by
   rw [RingOfIntegers.complexConj_eq_self_iff, Units.coe_coe]
   refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun ⟨v, hv⟩ ↦ ⟨v, by rw [hv]⟩⟩
-  have : IsUnit y := by
-    apply IsUnit.of_map (algebraMap (𝓞 K⁺) (𝓞 K))
-    rw [show algebraMap (𝓞 K⁺) (𝓞 K) y = u by exact RingOfIntegers.ext hy]
-    exact u.isUnit
+  have : IsUnit y := (Algebra.IsIntegral.isLocalHom (R := 𝓞 K⁺) (S := 𝓞 K)).map_nonunit _
+    (by rw [show algebraMap (𝓞 K⁺) (𝓞 K) y = u from Subtype.ext hy]; exact u.isUnit)
   exact ⟨this.unit, by simp [hy]⟩
 
 noncomputable instance starRing : StarRing K where
@@ -244,10 +243,10 @@ theorem coe_ringOfIntegersComplexConj (x : 𝓞 K) :
 theorem ringOfIntegersComplexConj_eq_self_iff (x : 𝓞 K) :
     ringOfIntegersComplexConj K x = x ↔ x ∈ Set.range (algebraMap (𝓞 K⁺) (𝓞 K)) := by
   refine ⟨fun h ↦ ?_, ?_⟩
-  · rw [RingOfIntegers.ext_iff, coe_ringOfIntegersComplexConj,
+  · rw [Subtype.ext_iff, coe_ringOfIntegersComplexConj,
       RingOfIntegers.complexConj_eq_self_iff] at h
     obtain ⟨y, hy⟩ := h
-    exact ⟨y, RingOfIntegers.ext_iff.mpr hy⟩
+    exact ⟨y, Subtype.ext_iff.mpr hy⟩
   · rintro ⟨y, rfl⟩
     simp
 
@@ -275,10 +274,10 @@ theorem mem_realUnits_iff (u : (𝓞 K)ˣ) :
 
 theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ) :
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
-  simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
+  simp_rw [Units.ext_iff, mem_realUnits_iff, Subtype.ext_iff, Units.coe_mapEquiv,
     RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
     AlgEquiv.coe_toRingEquiv, Units.complexConj_eq_self_iff,
-    IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
+    IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K, Subalgebra.algebraMap_apply]
 
 variable [NumberField K]
 
@@ -311,7 +310,7 @@ noncomputable def unitsMulComplexConjInv : (𝓞 K)ˣ →* torsion K where
     intro _ _
     rw [MulMemClass.mk_mul_mk, Subtype.mk_eq_mk]
     apply coe_injective
-    simp only [map_mul, mul_inv_rev, Units.val_mul, map_units_inv]
+    simp only [map_mul, mul_inv_rev, coe_mul, coe_inv]
     ring
 
 theorem unitsMulComplexConjInv_apply (u : (𝓞 K)ˣ) :
@@ -433,7 +432,9 @@ theorem regOfFamily_realFunSystem :
   congr; ext i w
   rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
     show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
-    show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
+    show ∀ j, (realFundSystem K j : K) = algebraMap K⁺ K
+      (fundSystem K⁺ (finCongr (units_rank_eq_units_rank K).symm j) : K⁺) from fun _ ↦ rfl,
+    equivInfinitePlace_symm_apply]
   simp [f, g]
 
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :

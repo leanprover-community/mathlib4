@@ -638,9 +638,6 @@ namespace NumberField.RingOfIntegers
 
 variable {K : Type*} [Field K] [NumberField K] (v : Valuation K Γ₀)
 
-instance : CoeHead (𝓞 (WithVal v)) (WithVal v) where
-  coe x := RingOfIntegers.val x
-
 instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
     IsIntegralClosure R ℤ (WithVal v) := .of_algEquiv _ (WithVal.algEquiv ℤ v).symm (fun _ ↦ rfl)
 

@@ -66,7 +66,7 @@ theorem algebraMap_norm_algebraMap (x : 𝓞 K) :
   rfl
 
 theorem norm_algebraMap (x : 𝓞 K) : norm K (algebraMap (𝓞 K) (𝓞 L) x) = x ^ finrank K L := by
-  rw [RingOfIntegers.ext_iff, RingOfIntegers.coe_eq_algebraMap,
+  rw [Subtype.ext_iff, RingOfIntegers.coe_eq_algebraMap,
     RingOfIntegers.algebraMap_norm_algebraMap, Algebra.norm_algebraMap,
     RingOfIntegers.coe_eq_algebraMap, map_pow]
 
@@ -93,7 +93,7 @@ variable (F : Type*) [Field F] [Algebra K F] [FiniteDimensional K F]
 
 theorem norm_norm [Algebra F L] [FiniteDimensional F L] [IsScalarTower K F L] (x : 𝓞 L) :
     norm K (norm F x) = norm K x := by
-  rw [RingOfIntegers.ext_iff, coe_norm, coe_norm, coe_norm, Algebra.norm_norm]
+  rw [Subtype.ext_iff, coe_norm, coe_norm, coe_norm, Algebra.norm_norm]
 
 variable {F}
 

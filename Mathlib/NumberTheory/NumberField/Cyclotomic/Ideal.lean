@@ -202,7 +202,7 @@ omit hp hK [NumberField K] in
 lemma associated_sub_one_of_isPrimitiveRoot [NeZero p] {η : K} (hη : IsPrimitiveRoot η p) :
     Associated (hζ.toInteger - 1) (hη.toInteger - 1) := by
   obtain ⟨i, -, hi, hζη⟩ := hζ.isPrimitiveRoot_iff.mp hη
-  rw [show hη.toInteger = hζ.toInteger ^ i from RingOfIntegers.ext hζη.symm]
+  rw [show hη.toInteger = hζ.toInteger ^ i from Subtype.ext hζη.symm]
   exact hζ.toInteger_isPrimitiveRoot.associated_sub_one_pow_sub_one_of_coprime hi
 
 omit [NumberField K] hK in
@@ -304,7 +304,6 @@ theorem inertiaDeg_eq_of_not_dvd (hm : ¬ p ∣ m) :
   · refine dvd_trans (monicFactorsMod_dvd_map_minpoly _) ?_
     rw [← map_cyclotomic_int, cyclotomic_eq_minpoly (zeta_spec m ℚ K) (NeZero.pos _),
       ← (zeta_spec m ℚ K).coe_toInteger, ← RingOfIntegers.minpoly_coe ζ]
-    simp [ζ]
   · exact irreducible_monicFactorsMod _
 
 theorem ramificationIdx_eq_of_not_dvd (hm : ¬ p ∣ m) :
@@ -339,6 +338,8 @@ section general
 
 variable {m p k} [IsCyclotomicExtension {n} ℚ K]
 
+set_option synthInstance.maxHeartbeats 40000 in
+-- Instance search through `𝓞` of an intermediate field (a subtype of a subtype) is slow.
 open IntermediateField in
 private theorem inertiaDegIn_ramificationIdxIn_aux (hn : n = p ^ (k + 1) * m) (hm : ¬ p ∣ m) :
     𝒑.inertiaDegIn (𝓞 K) = orderOf (p : ZMod m) ∧
