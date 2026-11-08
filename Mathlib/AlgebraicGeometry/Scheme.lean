@@ -707,7 +707,7 @@ lemma basicOpen_add_le :
     X.basicOpen (f + g) ≤ X.basicOpen f ⊔ X.basicOpen g := by
   intro x hx
   have hxU : x ∈ U := X.basicOpen_le _ hx
-  simp_rw [← SetLike.mem_coe, Opens.coe_sup, Set.mem_union, SetLike.mem_coe] -- TODO : Opens.mem_sup
+  rw [Opens.mem_sup]
   simp only [Scheme.mem_basicOpen _ _ _ hxU, map_add] at hx ⊢
   exact IsLocalRing.isUnit_or_isUnit_of_isUnit_add hx
 

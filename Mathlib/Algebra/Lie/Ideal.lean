@@ -223,15 +223,7 @@ theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
 theorem map_of_image (h : f '' I = J) : I.map f = J := by
   apply le_antisymm
   · rw [map, LieSubmodule.lieSpan_le, Submodule.map_coe]
-    /- I'm uncertain how to best resolve this `erw`.
-    ```
-    have : (↑(toLieSubalgebra R L I).toSubmodule : Set L) = I := rfl
-    rw [this]
-    simp [h]
-    ```
-    works, but still feels awkward. There are missing `simp` lemmas here.`
-    -/
-    erw [h]
+    exact h.subset
   · rw [← SetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
 
 /-- Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
