@@ -362,7 +362,7 @@ lemma hasCardinalLT_hom {F G : C ⥤ Type w}
   refine .of_injective ?_ _ NatTrans.injective_mapElements_obj
   simp only [hasCardinalLT_iff_cardinal_mk_lt, Order.lt_succ_iff, Cardinal.mk_pi,
     Cardinal.prod_const, Cardinal.lift_eq_id, id_eq] at hF hG ⊢
-  refine le_trans ?_ (Cardinal.sigmaPowLT_pow_le κ' hκ'.lt)
+  refine le_trans ?_ (Cardinal.sigmaPowLT_pow_le κ' hκ'.lt (by simp))
   by_cases hG₀ : Cardinal.mk G.Elements = 0
   · simp only [hG₀]
     exact le_trans
