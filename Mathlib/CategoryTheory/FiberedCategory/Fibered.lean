@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.FiberedCategory.Cartesian
 
 /-!
-
 # Fibered categories
 
 This file defines what it means for a functor `p : 𝒳 ⥤ 𝒮` to be (pre)fibered.

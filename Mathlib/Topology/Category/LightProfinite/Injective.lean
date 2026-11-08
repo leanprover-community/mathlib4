@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Functor.OfSequence
 import Mathlib.Topology.Category.CompHausLike.Limits
 
 /-!
-
 # Injectivity of light profinite spaces
 
 This file establishes that non-empty light profinite sets are injective in the
