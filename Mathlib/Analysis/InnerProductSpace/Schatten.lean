@@ -56,26 +56,29 @@ theorem traceOfBasis_def (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι �
     traceOfBasis A b = ∑' i, ⟪b i, A (b i)⟫_ℂ :=
   rfl
 
+theorem traceOfBasis_eq_tsum_enorm_sq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*}
+    (b : HilbertBasis ι ℂ E) :
+    traceOfBasis A b = (∑' i, ‖CFC.sqrt A (b i)‖ₑ ^ 2).toReal := by
+  rw [traceOfBasis_def, ENNReal.tsum_toReal_eq fun _ ↦ by finiteness, Complex.ofReal_tsum]
+  refine tsum_congr fun i ↦ ?_
+  conv_lhs => rw [← CFC.sqrt_mul_sqrt_self A, mul_apply_eq_comp,
+    ← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm]
+  simp [inner_self_eq_norm_sq_to_K]
+
 theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     (b : HilbertBasis ι ℂ E) (b' : HilbertBasis ι' ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
-  set S := CFC.sqrt A with hS
-  have hS' : S.adjoint * S = A := by
-    simp [hS, CFC.sqrt_mul_sqrt_self A, (CFC.sqrt_nonneg A).isSelfAdjoint.adjoint_eq]
-  simp_rw +singlePass [traceOfBasis_def, ← hS', mul_apply_eq_comp,
-    ContinuousLinearMap.adjoint_inner_right, ← b'.tsum_inner_mul_inner (S (b _)),
-    ← b.tsum_inner_mul_inner (S (b' _)), ← inner_conj_symm (S _), RCLike.conj_mul,
-    ← RCLike.ofReal_pow, ← RCLike.ofReal_tsum]
-  congr
-  simp_rw [← toReal_enorm, ← ENNReal.toReal_pow,
-    ← ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.pow_ne_top enorm_ne_top]
-  rw [← ENNReal.tsum_toReal_eq fun _ ↦ ?_, ← ENNReal.tsum_toReal_eq fun _ ↦ ?_, ENNReal.tsum_comm]
-  · congr! 5
-    rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm, ← inner_conj_symm,
-      RCLike.enorm_conj]
-  all_goals
-    simp_rw [← ofReal_norm, ← ENNReal.ofReal_pow (norm_nonneg _)]
-    exact (Orthonormal.inner_products_summable _ (HilbertBasis.orthonormal _)).tsum_ofReal_ne_top
+  simp_rw [traceOfBasis_eq_tsum_enorm_sq hA]
+  congr 2
+  set S := CFC.sqrt A
+  calc ∑' i, ‖S (b i)‖ₑ ^ 2 = ∑' i, ∑' j, ‖⟪b' j, S (b i)⟫_ℂ‖ₑ ^ 2 := by
+        simp [b'.tsum_enorm_inner_sq]
+    _ = ∑' j, ∑' i, ‖⟪b i, S (b' j)⟫_ℂ‖ₑ ^ 2 := by
+        rw [ENNReal.tsum_comm]
+        refine tsum_congr fun j ↦ tsum_congr fun i ↦ ?_
+        rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm,
+          ← inner_conj_symm, RCLike.enorm_conj]
+    _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by simp [b.tsum_enorm_inner_sq]
 
 /-- The trace of an operator on `E`. -/
 def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (exists_hilbertBasis ℂ E).choose_spec.choose

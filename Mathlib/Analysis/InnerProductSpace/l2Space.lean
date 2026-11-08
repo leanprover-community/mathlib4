@@ -472,6 +472,20 @@ protected theorem tsum_inner_mul_inner (b : HilbertBasis ι 𝕜 E) (x y : E) :
     ∑' i, ⟪x, b i⟫ * ⟪b i, y⟫ = ⟪x, y⟫ :=
   (b.hasSum_inner_mul_inner x y).tsum_eq
 
+/-- **Parseval's identity**: the squared norm of `x` is the sum of the squared norms of its
+coefficients with respect to a Hilbert basis. -/
+protected theorem hasSum_norm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
+    HasSum (fun i => ‖⟪b i, x⟫‖ ^ 2) (‖x‖ ^ 2) := by
+  simpa only [← ofReal_pow, hasSum_ofReal, ← inner_conj_symm x (b _), RCLike.conj_mul,
+    inner_self_eq_norm_sq_to_K] using b.hasSum_inner_mul_inner x x
+
+/-- **Parseval's identity**, `ℝ≥0∞`-valued version. -/
+protected theorem tsum_enorm_inner_sq (b : HilbertBasis ι 𝕜 E) (x : E) :
+    ∑' i, ‖⟪b i, x⟫‖ₑ ^ 2 = ‖x‖ₑ ^ 2 := by
+  simp_rw [← ofReal_norm, ← ENNReal.ofReal_pow (norm_nonneg _)]
+  rw [← ENNReal.ofReal_tsum_of_nonneg (fun _ ↦ by positivity) (b.hasSum_norm_inner_sq x).summable,
+    (b.hasSum_norm_inner_sq x).tsum_eq]
+
 -- Note: this should be `b.repr` composed with an identification of `lp (fun i : ι => 𝕜) p` with
 -- `PiLp p (fun i : ι => 𝕜)` (in this case with `p = 2`), but we don't have this yet (July 2022).
 /-- A finite Hilbert basis is an orthonormal basis. -/
