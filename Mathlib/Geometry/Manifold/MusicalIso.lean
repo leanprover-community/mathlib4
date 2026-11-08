@@ -12,6 +12,8 @@ public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
+import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
+
 /-!
 # The musical isomorphism preserves smoothness
 
@@ -38,8 +40,7 @@ variable
   [VectorBundle ℝ F E] [ContMDiffVectorBundle k F E IB]
   [IsContMDiffRiemannianBundle IB k F E]
 
-variable [RiemannianBundle (fun (x : B) ↦ TangentSpace IB x)] [CompleteSpace EB]
-  [∀ (x : B), CompleteSpace (TangentSpace IB x)]
+variable [RiemannianBundle (fun (x : B) ↦ TangentSpace IB x)]
 
 noncomputable section
 
@@ -47,6 +48,81 @@ local instance : ContMDiffVectorBundle k EB (TangentSpace (M := B) IB) IB :=
   TangentBundle.contMDiffVectorBundle (M := B) (I := IB) (n := k)
 
 variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x)]
+
+section prereqs
+
+-- TODO: this needs analogous lemmas about orthonormal frames first
+-- currently, it's unused (but would generalise the next lemma)
+open Module in
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if if its pairing
+with any `C^n` vector field at `x` is `C^n` at `x`.
+This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+lemma contMDiffWithinAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → TangentSpace% x}
+    [IsManifold IB k B] [IsManifold IB (k + 1) B] [FiniteDimensional ℝ EB]
+    [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace% x)] {s : Set B} {x : B}
+    (hW : ∀ {Z : (x : B) → TangentSpace% x},
+      CMDiffAt[s] k (T% Z) x → CMDiffAt[s] k (fun x ↦ inner ℝ (W x) (Z x)) x) :
+    CMDiffAt[s] k (T% W) x := by
+  nontriviality EB
+  -- Take an orthonormal frame.
+  let b := Basis.ofVectorSpace ℝ EB
+  let t := trivializationAt EB (TangentSpace IB : B → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ EB) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := by
+    choose r wo using exists_wellFoundedLT _
+    exact r
+  have : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ EB) := WellFoundedLT.toOrderBot _
+  have : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := Fintype.toLocallyFiniteOrder
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  let frame := b.orthonormalFrame t
+  have : ContMDiffVectorBundle k EB (fun (x : B) ↦ TangentSpace% x) IB :=
+    TangentBundle.contMDiffVectorBundle
+  have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k) b (IB := IB)
+  sorry /- rw [hs.contMDiffWithinAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  intro i
+  simp_rw [real_inner_comm]
+  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx) -/
+
+open Module in
+/-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if if its pairing
+with any `C^n` vector field at `x` is `C^n` at `x`.
+This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
+lemma contMDiffAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → TangentSpace% x}
+    [IsManifold IB k B] [IsManifold IB (k + 1) B] [FiniteDimensional ℝ EB]
+    [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace% x)] {x : B}
+    (hW : ∀ {Z : (x : B) → TangentSpace% x},
+      CMDiffAt k (T% Z) x → CMDiffAt k (fun x ↦ inner ℝ (W x) (Z x)) x) :
+    CMDiffAt k (T% W) x := by
+  nontriviality EB
+  -- Take an orthonormal frame.
+  let b := Basis.ofVectorSpace ℝ EB
+  let t := trivializationAt EB (TangentSpace IB : B → Type _) x
+  have hx : x ∈ t.baseSet := FiberBundle.mem_baseSet_trivializationAt' x
+  have : Nonempty ↑(Basis.ofVectorSpaceIndex ℝ EB) := b.index_nonempty
+  -- The linear ordering on the indexing set of `b` is only used in this proof,
+  -- so our choice does not matter.
+  have : LinearOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := by
+    choose r wo using exists_wellFoundedLT _
+    exact r
+  have : OrderBot ↑(Basis.ofVectorSpaceIndex ℝ EB) := WellFoundedLT.toOrderBot _
+  have : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := Fintype.toLocallyFiniteOrder
+  -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
+  let frame := b.orthonormalFrame t
+  have : ContMDiffVectorBundle k EB (fun (x : B) ↦ TangentSpace% x) IB :=
+    TangentBundle.contMDiffVectorBundle
+  have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k) b (IB := IB)
+  rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
+  intro i
+  simp_rw [real_inner_comm]
+  exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
+
+end prereqs
+
+variable [CompleteSpace EB]
+  [∀ (x : B), CompleteSpace (TangentSpace IB x)]
 
 section simpler
 
@@ -123,6 +199,11 @@ lemma _root_.ContMDiffAt.inner_bundle' {X Y : Π x : B, TangentSpace IB x} {x : 
     (hX : CMDiffAt k (T% X) x) (hY : CMDiffAt k (T% Y) x) :
     CMDiffAt k (fun x ↦ inner ℝ (X x) (Y x)) x :=
   ContMDiffAt.inner_bundle hX hY
+
+-- Local notation for pointwise inner products of vector fields.
+-- Note this does not cause ambiguity with the notation obtained
+-- with `open scoped RealInnerProductSpace`.
+local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
 
 -- TODO: review if the shape of h is right, and generalise this a lot
 lemma ContMDiffAt.of_inner_bundle_apply

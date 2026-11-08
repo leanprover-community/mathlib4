@@ -171,7 +171,8 @@ lemma contMDiffOn_iff_coeff [FiniteDimensional ℝ F] :
     CMDiff[u] n (T% t) ↔ ∀ i, CMDiff[u] n (LinearMap.piApply (hs.coeff i) t) :=
   ⟨fun h i ↦ hs.contMDiffOn_coeff h i, fun hi ↦ hs.contMDiffOn_of_coeff hi⟩
 
--- unused, just stating for convenience/nice API
+-- XXX: also prove a contMDiffWithinAt version (not used at the moment)
+
 include hs in
 lemma contMDiffAt_iff_inner [FiniteDimensional ℝ F] (hu : u ∈ 𝓝 x) :
     CMDiffAt n (T% t) x ↔ ∀ i, CMDiffAt n (fun x ↦ ⟪s i x, t x⟫) x := by
