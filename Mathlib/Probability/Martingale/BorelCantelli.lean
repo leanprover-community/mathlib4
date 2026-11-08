@@ -51,12 +51,12 @@ variable {ι Ω β : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω}
 /-- `leastGE f r` is the stopping time corresponding to the first time `f ≥ r`. -/
 noncomputable def leastGE [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
-  fun ω ↦ Function.hittingAfter (f · ω) (Set.Ici r) ⊥
+  fun ω ↦ (f · ω).hittingAfter (Set.Ici r) ⊥
 
 /-- `leastGT f r` is the stopping time corresponding to the first time `f > r`. -/
 noncomputable def leastGT [Preorder ι] [OrderBot ι] [InfSet ι] [Preorder β]
     (f : ι → Ω → β) (r : β) : Ω → WithTop ι :=
-  fun ω ↦ Function.hittingAfter (f · ω) (Set.Ioi r) ⊥
+  fun ω ↦ (f · ω).hittingAfter (Set.Ioi r) ⊥
 
 theorem StronglyAdapted.isStoppingTime_leastGE [ConditionallyCompleteLinearOrderBot ι]
     {ℱ : Filtration ι m0} [WellFoundedLT ι] [Countable ι] [TopologicalSpace β]
@@ -77,7 +77,7 @@ theorem StronglyAdapted.isStoppingTime_leastGT [ConditionallyCompleteLinearOrder
 lemma leastGT_lt_iff [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [Preorder β]
     {f : ι → Ω → β} {r : β} {t : ι} {ω : Ω} :
     leastGT f r ω < t ↔ ∃ s < t, r < f s ω := by
-  simp [leastGT, Function.hittingAfter_lt_iff]
+  simp [leastGT, (f · ω).hittingAfter_lt_iff]
 
 /-- The stopped process of `f` above `r` is the process that is equal to `f` until `leastGE f r`
 (the first time `f` passes above `r`), and then is constant afterwards. -/
@@ -103,7 +103,7 @@ theorem stoppedAbove_le (hr : 0 ≤ r) (hf0 : f 0 = 0)
     positivity
   obtain ⟨k, hk⟩ := Nat.exists_eq_add_one_of_ne_zero h_zero
   rw [hk, add_comm r, ← sub_le_iff_le_add]
-  have := Function.notMem_of_lt_hittingAfter (Nat.zero_le k) (?_ : k < leastGE f r ω)
+  have := (f · ω).notMem_of_lt_hittingAfter (Nat.zero_le k) (?_ : k < leastGE f r ω)
   · simp only [Set.mem_Ici, not_le] at this
     exact (sub_lt_sub_left this _).le.trans ((le_abs_self _).trans (hbddω _))
   · suffices WithTop.some k < min (WithTop.some i) (leastGE f r ω) from
@@ -149,7 +149,7 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
     exact lt_of_le_of_lt ((mem_upperBounds.1 hωb.some_mem) _ ⟨n, rfl⟩) hi
   have heq : ∀ n, stoppedAbove f i n ω = f n ω := by
     intro n
-    rw [stoppedAbove, stoppedProcess, leastGE, Function.hittingAfter_eq_top_iff.mpr]
+    rw [stoppedAbove, stoppedProcess, leastGE, (f · ω).hittingAfter_eq_top_iff.mpr]
     · simp only [le_top, inf_of_le_left]
       congr
     · simp [hib]

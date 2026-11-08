@@ -133,7 +133,7 @@ open scoped Classical in
 theorem hittingBtwn_def (u : ι → Ω → β) (s : Set β) (n m : ι) :
     hittingBtwn u s n m =
     fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
-  funext fun ω ↦ Function.hittingBtwn_def (u · ω) s n m
+  funext fun ω ↦ (u · ω).hittingBtwn_def s n m
 
 open scoped Classical in
 @[deprecated Function.hittingAfter_def +typeChanged (since := "2026-11-08")]
@@ -141,25 +141,25 @@ lemma hittingAfter_def (u : ι → Ω → β) (s : Set β) (n : ι) :
     hittingAfter u s n =
     fun x => if ∃ j, n ≤ j ∧ u j x ∈ s
       then ((sInf {i : ι | n ≤ i ∧ u i x ∈ s} : ι) : WithTop ι) else ⊤ :=
-  funext fun ω ↦ Function.hittingAfter_def (u · ω) s n
+  funext fun ω ↦ (u · ω).hittingAfter_def s n
 
 @[simp, deprecated Function.hittingBtwn_empty +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_empty (n m : ι) : hittingBtwn u ∅ n m = fun _ ↦ m :=
-  funext fun ω ↦ Function.hittingBtwn_empty (u · ω) n m
+  funext fun ω ↦ (u · ω).hittingBtwn_empty n m
 
 @[simp, deprecated Function.hittingAfter_empty +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_empty (n : ι) : hittingAfter u ∅ n = fun _ ↦ ⊤ :=
-  funext fun ω ↦ Function.hittingAfter_empty (u · ω) n
+  funext fun ω ↦ (u · ω).hittingAfter_empty n
 
 @[simp, deprecated Function.hittingBtwn_univ +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_univ {ι : Type*} [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} (n m : ι) :
     hittingBtwn u .univ n m = fun _ ↦ min n m :=
-  funext fun ω ↦ Function.hittingBtwn_univ (u · ω) n m
+  funext fun ω ↦ (u · ω).hittingBtwn_univ n m
 
 @[simp, deprecated Function.hittingAfter_univ +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_univ {ι : Type*} [ConditionallyCompleteLattice ι] {u : ι → Ω → β} (n : ι) :
     hittingAfter u .univ n = fun _ ↦ (n : WithTop ι) :=
-  funext fun ω ↦ Function.hittingAfter_univ (u · ω) n
+  funext fun ω ↦ (u · ω).hittingAfter_univ n
 
 end Basic
 
@@ -170,160 +170,160 @@ variable [ConditionallyCompleteLinearOrder ι] {u : ι → Ω → β} {s : Set �
 
 @[deprecated Function.hittingBtwn_of_lt +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_of_lt {m : ι} (h : m < n) : hittingBtwn u s n m ω = m :=
-  Function.hittingBtwn_of_lt h
+  (u · ω).hittingBtwn_of_lt h
 
 @[deprecated Function.hittingBtwn_le +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_le {m : ι} (ω : Ω) : hittingBtwn u s n m ω ≤ m :=
-  Function.hittingBtwn_le (u · ω) s n m
+  (u · ω).hittingBtwn_le s n m
 
 @[deprecated Function.notMem_of_lt_hittingBtwn +typeChanged (since := "2026-11-08")]
 theorem notMem_of_lt_hittingBtwn {m k : ι} (hk₁ : k < hittingBtwn u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s :=
-  Function.notMem_of_lt_hittingBtwn (f := fun i ↦ u i ω) hk₂ hk₁
+  (u · ω).notMem_of_lt_hittingBtwn hk₂ hk₁
 
 @[deprecated Function.notMem_of_lt_hittingAfter +typeChanged (since := "2026-11-08")]
 theorem notMem_of_lt_hittingAfter {k : ι} (hk₁ : k < hittingAfter u s n ω) (hk₂ : n ≤ k) :
     u k ω ∉ s :=
-  Function.notMem_of_lt_hittingAfter (f := fun i ↦ u i ω) hk₂ hk₁
+  (u · ω).notMem_of_lt_hittingAfter hk₂ hk₁
 
 @[deprecated Function.hittingBtwn_eq_end_iff +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_eq_end_iff {m : ι} : hittingBtwn u s n m ω = m ↔
     (∃ j ∈ Set.Icc n m, u j ω ∈ s) → sInf (Set.Icc n m ∩ {i : ι | u i ω ∈ s}) = m :=
-  Function.hittingBtwn_eq_end_iff
+  (u · ω).hittingBtwn_eq_end_iff
 
 @[deprecated Function.hittingAfter_eq_top_iff +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_eq_top_iff : hittingAfter u s n ω = ⊤ ↔ ∀ j, n ≤ j → u j ω ∉ s :=
-  Function.hittingAfter_eq_top_iff
+  (u · ω).hittingAfter_eq_top_iff
 
 @[deprecated Function.hittingBtwn_of_le +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_of_le {m : ι} (hmn : m ≤ n) : hittingBtwn u s n m ω = m :=
-  Function.hittingBtwn_of_le hmn
+  (u · ω).hittingBtwn_of_le hmn
 
 @[deprecated Function.start_le_hittingBtwn +typeChanged (since := "2026-11-08")]
 theorem le_hittingBtwn {m : ι} (hnm : n ≤ m) (ω : Ω) : n ≤ hittingBtwn u s n m ω :=
-  Function.start_le_hittingBtwn hnm
+  start_le_hittingBtwn hnm
 
 @[deprecated Function.start_le_hittingAfter +typeChanged (since := "2026-11-08")]
 lemma le_hittingAfter (ω : Ω) : n ≤ hittingAfter u s n ω :=
-  Function.start_le_hittingAfter (u · ω) s n
+  (u · ω).start_le_hittingAfter s n
 
 @[deprecated Function.start_le_hittingBtwn_of_exists +typeChanged (since := "2026-11-08")]
 theorem le_hittingBtwn_of_exists {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     n ≤ hittingBtwn u s n m ω :=
-  Function.start_le_hittingBtwn_of_exists h_exists
+  start_le_hittingBtwn_of_exists h_exists
 
 @[deprecated Function.hittingBtwn_mem_Icc +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_mem_Icc {m : ι} (hnm : n ≤ m) (ω : Ω) : hittingBtwn u s n m ω ∈ Set.Icc n m :=
-  Function.hittingBtwn_mem_Icc hnm
+  (u · ω).hittingBtwn_mem_Icc hnm
 
 @[deprecated Function.hittingBtwn_mem_set +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_mem_set [WellFoundedLT ι] {m : ι} (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     u (hittingBtwn u s n m ω) ω ∈ s :=
-  Function.hittingBtwn_mem_set h_exists
+  (u · ω).hittingBtwn_mem_set h_exists
 
 @[deprecated Function.hittingAfter_mem_set +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_mem_set [WellFoundedLT ι] (h_exists : ∃ j, n ≤ j ∧ u j ω ∈ s) :
     u (hittingAfter u s n ω).untopA ω ∈ s :=
-  Function.hittingAfter_mem_set h_exists
+  (u · ω).hittingAfter_mem_set h_exists
 
 @[deprecated Function.hittingBtwn_mem_set_of_hittingBtwn_lt +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_mem_set_of_hittingBtwn_lt [WellFoundedLT ι] {m : ι}
     (hl : hittingBtwn u s n m ω < m) :
     u (hittingBtwn u s n m ω) ω ∈ s :=
-  Function.hittingBtwn_mem_set_of_hittingBtwn_lt hl
+  (u · ω).hittingBtwn_mem_set_of_hittingBtwn_lt hl
 
 @[deprecated Function.hittingAfter_mem_set_of_ne_top +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_mem_set_of_ne_top [WellFoundedLT ι] (hl : hittingAfter u s n ω ≠ ⊤) :
     u (hittingAfter u s n ω).untopA ω ∈ s :=
-  Function.hittingAfter_mem_set_of_ne_top hl
+  (u · ω).hittingAfter_mem_set_of_ne_top hl
 
 @[deprecated Function.hittingBtwn_le_of_mem +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_le_of_mem {m : ι} (hin : n ≤ i) (him : i ≤ m) (his : u i ω ∈ s) :
     hittingBtwn u s n m ω ≤ i :=
-  Function.hittingBtwn_le_of_mem hin him his
+  (u · ω).hittingBtwn_le_of_mem hin him his
 
 @[deprecated Function.hittingAfter_le_of_mem +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_le_of_mem (hin : n ≤ i) (his : u i ω ∈ s) :
     hittingAfter u s n ω ≤ i :=
-  Function.hittingAfter_le_of_mem hin his
+  (u · ω).hittingAfter_le_of_mem hin his
 
 @[deprecated Function.hittingBtwn_le_iff_of_exists +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_le_iff_of_exists [WellFoundedLT ι] {m : ι}
     (h_exists : ∃ j ∈ Set.Icc n m, u j ω ∈ s) :
     hittingBtwn u s n m ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s :=
-  Function.hittingBtwn_le_iff_of_exists h_exists
+  (u · ω).hittingBtwn_le_iff_of_exists h_exists
 
 @[deprecated Function.hittingAfter_le_iff +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_le_iff [WellFoundedLT ι] :
     hittingAfter u s n ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s :=
-  Function.hittingAfter_le_iff
+  (u · ω).hittingAfter_le_iff
 
 @[deprecated Function.hittingBtwn_le_iff_of_lt +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_le_iff_of_lt [WellFoundedLT ι] {m : ι} (i : ι) (hi : i < m) :
     hittingBtwn u s n m ω ≤ i ↔ ∃ j ∈ Set.Icc n i, u j ω ∈ s :=
-  Function.hittingBtwn_le_iff_of_lt hi
+  (u · ω).hittingBtwn_le_iff_of_lt hi
 
 @[deprecated Function.hittingBtwn_lt_iff +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_lt_iff {m : ι} (i : ι) (hi : i ≤ m) :
     hittingBtwn u s n m ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s :=
-  Function.hittingBtwn_lt_iff hi
+  (u · ω).hittingBtwn_lt_iff hi
 
 @[deprecated Function.hittingAfter_lt_iff +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_lt_iff :
     hittingAfter u s n ω < i ↔ ∃ j ∈ Set.Ico n i, u j ω ∈ s :=
-  Function.hittingAfter_lt_iff
+  (u · ω).hittingAfter_lt_iff
 
 @[deprecated Function.hittingBtwn_eq_hittingBtwn_of_exists +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_eq_hittingBtwn_of_exists {m₁ m₂ : ι} (h : m₁ ≤ m₂)
     (h' : ∃ j ∈ Set.Icc n m₁, u j ω ∈ s) : hittingBtwn u s n m₁ ω = hittingBtwn u s n m₂ ω :=
-  Function.hittingBtwn_eq_hittingBtwn_of_exists h h'
+  (u · ω).hittingBtwn_eq_hittingBtwn_of_exists h h'
 
 @[deprecated Function.hittingBtwn_set_antitone +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_anti (u : ι → Ω → β) (n m : ι) : Antitone (hittingBtwn u · n m) :=
-  fun _ _ h ω ↦ Function.hittingBtwn_set_antitone (u · ω) n m h
+  fun _ _ h ω ↦ (u · ω).hittingBtwn_set_antitone n m h
 
 @[deprecated Function.hittingAfter_set_antitone +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_anti (u : ι → Ω → β) (n : ι) : Antitone (hittingAfter u · n) :=
-  fun _ _ h ω ↦ Function.hittingAfter_set_antitone (u · ω) n h
+  fun _ _ h ω ↦ (u · ω).hittingAfter_set_antitone n h
 
 @[deprecated Function.hittingBtwn_set_antitone +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_apply_anti (u : ι → Ω → β) (n m : ι) (ω : Ω) :
     Antitone (hittingBtwn u · n m ω) :=
-  Function.hittingBtwn_set_antitone (u · ω) n m
+  (u · ω).hittingBtwn_set_antitone n m
 
 @[deprecated Function.hittingAfter_set_antitone +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_apply_anti (u : ι → Ω → β) (n : ι) (ω : Ω) :
     Antitone (hittingAfter u · n ω) :=
-  Function.hittingAfter_set_antitone (u · ω) n
+  (u · ω).hittingAfter_set_antitone n
 
 @[deprecated Function.hittingBtwn_end_monotone +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) :
     Monotone (hittingBtwn u s n · ω) :=
-  Function.hittingBtwn_end_monotone (u · ω) s n
+  (u · ω).hittingBtwn_end_monotone s n
 
 @[deprecated Function.hittingBtwn_start_monotone +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) :
     Monotone (hittingBtwn u s · m) :=
-  fun _ _ h ω ↦ Function.hittingBtwn_start_monotone (u · ω) s m h
+  fun _ _ h ω ↦ (u · ω).hittingBtwn_start_monotone s m h
 
 @[deprecated Function.hittingAfter_start_monotone +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_mono (u : ι → Ω → β) (s : Set β) : Monotone (hittingAfter u s) :=
-  fun _ _ h ω ↦ Function.hittingAfter_start_monotone (u · ω) s h
+  fun _ _ h ω ↦ (u · ω).hittingAfter_start_monotone s h
 
 @[deprecated Function.hittingBtwn_end_monotone +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_apply_mono_right (u : ι → Ω → β) (s : Set β) (n : ι) (ω : Ω) :
     Monotone (hittingBtwn u s n · ω) :=
-  Function.hittingBtwn_end_monotone (u · ω) s n
+  (u · ω).hittingBtwn_end_monotone s n
 
 @[deprecated Function.hittingBtwn_start_monotone +typeChanged (since := "2026-11-08")]
 lemma hittingBtwn_apply_mono_left (u : ι → Ω → β) (s : Set β) (m : ι) (ω : Ω) :
     Monotone (hittingBtwn u s · m ω) :=
-  Function.hittingBtwn_start_monotone (u · ω) s m
+  (u · ω).hittingBtwn_start_monotone s m
 
 @[deprecated Function.hittingAfter_start_monotone +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_apply_mono (u : ι → Ω → β) (s : Set β) (ω : Ω) :
     Monotone (hittingAfter u s · ω) :=
-  Function.hittingAfter_start_monotone (u · ω) s
+  (u · ω).hittingAfter_start_monotone s
 
 end Inequalities
 
@@ -333,7 +333,7 @@ variable [CompleteLattice ι] {u : ι → Ω → β} {s : Set β}
 
 @[deprecated Function.hittingBtwn_bot_top +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_eq_sInf (ω : Ω) : hittingBtwn u s ⊥ ⊤ ω = sInf {i : ι | u i ω ∈ s} :=
-  Function.hittingBtwn_bot_top
+  (u · ω).hittingBtwn_bot_top
 
 @[deprecated Function.hittingAfter_bot +typeChanged (since := "2026-11-08")]
 lemma hittingAfter_eq_sInf [∀ ω, Decidable (∃ j, u j ω ∈ s)] (ω : Ω) :
@@ -352,12 +352,12 @@ variable [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
 @[deprecated Function.hittingBtwn_bot_le_iff +typeChanged (since := "2026-11-08")]
 theorem hittingBtwn_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :
     hittingBtwn u s ⊥ n ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s :=
-  Function.hittingBtwn_bot_le_iff hx
+  (u · ω).hittingBtwn_bot_le_iff hx
 
 @[deprecated Function.hittingAfter_bot_le_iff +typeChanged (since := "2026-11-08")]
 theorem hittingAfter_bot_le_iff {i : ι} {ω : Ω} :
     hittingAfter u s ⊥ ω ≤ i ↔ ∃ j ≤ i, u j ω ∈ s :=
-  Function.hittingAfter_bot_le_iff
+  (u · ω).hittingAfter_bot_le_iff
 
 end ConditionallyCompleteLinearOrderBot
 
