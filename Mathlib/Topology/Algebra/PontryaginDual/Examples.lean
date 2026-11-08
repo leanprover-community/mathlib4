@@ -11,7 +11,6 @@ public import Mathlib.Topology.Instances.ZMod
 
 import Mathlib.Analysis.Convex.Contractible
 import Mathlib.Topology.Algebra.Group.OpenMapping
-import Mathlib.Topology.Algebra.Module.LocallyConvex
 import Mathlib.Topology.Baire.LocallyCompactRegular
 import Mathlib.Topology.Homotopy.Lifting
 
