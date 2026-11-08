@@ -86,39 +86,26 @@ theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Typ
     traceOfBasis A b = (∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_ℂ)).toReal := by
   rw [traceOfBasis_def, ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.ofReal_ne_top, Complex.ofReal_tsum]
   refine tsum_congr fun i ↦ ?_
-  obtain ⟨hre, him⟩ := RCLike.nonneg_iff.1 (by simpa using hA.inner_nonneg_right (b i))
+  obtain ⟨hre, him⟩ := RCLike.nonneg_iff.mp (by simpa using hA.inner_nonneg_right (b i))
   rw [ENNReal.toReal_ofReal hre]
-  exact (RCLike.conj_eq_iff_re.1 (RCLike.conj_eq_iff_im.2 him)).symm
+  exact (RCLike.conj_eq_iff_re.mp (RCLike.conj_eq_iff_im.mpr him)).symm
 
 /-- The trace of an operator on `E`. -/
 def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (exists_hilbertBasis ℂ E).choose_spec.choose
 
-variable {A B : E →L[ℂ] E}
-
-theorem trace_eq_traceOfBasis (hA : 0 ≤ A) {ι : Type*}
-    (b : HilbertBasis ι ℂ E) : trace A = traceOfBasis A b := by
-  unfold trace
-  exact traceOfBasis_eq hA _ b
+variable (A : E →L[ℂ] E)
 
 @[simp]
 theorem trace_zero : trace (0 : E →L[ℂ] E) = 0 := by
   simp [trace, traceOfBasis_def]
 
-variable (A) in
 @[simp]
 theorem trace_smul (c : ℂ) : (c • A).trace = c * A.trace := by
   simp [trace, traceOfBasis_def, ← tsum_mul_left]
 
-variable (A) in
 theorem trace_adjoint : A.adjoint.trace = conj A.trace := by
   simp [trace, traceOfBasis_def, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
 
-theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
-  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
-  exact tsum_nonneg fun i ↦ by
-    simpa only [sub_zero] using hA.inner_nonneg_right (b i)
-
-variable (A) in
 theorem toLinearMap_trace [FiniteDimensional ℂ E] :
     A.toLinearMap.trace ℂ E = A.trace := by
   unfold trace
@@ -128,12 +115,28 @@ theorem toLinearMap_trace [FiniteDimensional ℂ E] :
   let : Fintype ι := Fintype.ofFinite ι
   simp [traceOfBasis_def, LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
 
+section IsPositive
+
+variable {A B : E →L[ℂ] E}
+
+theorem trace_eq_traceOfBasis (hA : 0 ≤ A) {ι : Type*}
+    (b : HilbertBasis ι ℂ E) : trace A = traceOfBasis A b := by
+  unfold trace
+  exact traceOfBasis_eq hA _ b
+
+theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
+  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
+  exact tsum_nonneg fun i ↦ by
+    simpa only [sub_zero] using hA.inner_nonneg_right (b i)
+
 theorem trace_add_le (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) ≤ trace A + trace B := by
   simp_rw [trace, traceOfBasis_eq_toReal_tsum (add_nonneg hA hB), traceOfBasis_eq_toReal_tsum hA,
     traceOfBasis_eq_toReal_tsum hB, add_apply, inner_add_right, map_add,
     ENNReal.ofReal_add (hA.of_nonneg.re_inner_nonneg_right _)
       (hB.of_nonneg.re_inner_nonneg_right _), ENNReal.tsum_add]
   exact_mod_cast ENNReal.toReal_add_le
+
+end IsPositive
 
 end Trace
 
