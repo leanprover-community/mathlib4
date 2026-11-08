@@ -106,8 +106,7 @@ def relationsSet : Set (FreeGroup B) := range <| uncurry M.relation
 
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
-protected def Group : Type _ := PresentedGroup M.relationsSet
-deriving Group
+protected abbrev Group : Type _ := PresentedGroup M.relationsSet
 
 /-- The simple reflection of the Coxeter group `M.Group` at the index `i`. -/
 def simple (i : B) : M.Group := PresentedGroup.of i
@@ -302,11 +301,9 @@ private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsL
   rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift_apply_of, FreeGroup.lift_apply_of]
   exact hf i i'
 
-set_option backward.privateInPublic true in
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
   (PresentedGroup.toGroup (relations_liftable hf)).comp cs.mulEquiv.toMonoidHom
 
-set_option backward.privateInPublic true in
 private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     Gˣ where
   val := f i
@@ -314,19 +311,16 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-set_option backward.isDefEq.respectTransparency false in
-private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)) :
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
+private theorem toMonoidHom_apply_symm_apply (a : M.Group) :
+    (MulEquiv.toMonoidHom cs.mulEquiv : W →* M.Group)
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _ := by rw [MulEquiv.apply_symm_apply]
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.privateInPublic true in
-set_option backward.privateInPublic.warn false in
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
+@[no_expose]
 def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G) where
   toFun f := MonoidHom.comp (Units.coeHom G) (cs.groupLift
     (show ∀ i i', ((restrictUnit f.property) i * (restrictUnit f.property) i') ^ M i i' = 1 from
@@ -341,8 +335,8 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
   right_inv ι := by
     apply cs.ext_simple
     intro i
-    dsimp only
-    rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
+    dsimp only [groupLift]
+    rw [simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
     simp only [comp_apply, simple]
 
@@ -350,17 +344,17 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
     cs.lift ⟨f, hf⟩ (s i) = f i := congr($(cs.lift.left_inv ⟨f, hf⟩).val i)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/
-theorem simple_determines_coxeterSystem :
-    Injective (simple : CoxeterSystem M W → B → W) := by
+theorem injective_simple : Injective (simple : CoxeterSystem M W → B → W) := by
   intro cs1 cs2 h
   apply CoxeterSystem.ext
   apply MulEquiv.toMonoidHom_injective
   apply cs1.ext_simple
   nth_rw 2 [h]
   simp [simple]
+
+@[deprecated (since := "2026-11-08")] alias simple_determines_coxeterSystem := injective_simple
 
 /-! ### Words -/
 
