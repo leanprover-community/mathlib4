@@ -191,7 +191,7 @@ alias countable_setOf_isolated_left_within := countable_setOfPred_isolated_left_
 
 @[to_dual]
 theorem exists_countable_subset_mem_closure_inter_Ici [SecondCountableTopology α] (s : Set α) :
-    ∃ d, d ⊆ s ∧ d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
+    ∃ d ⊆ s, d.Countable ∧ ∀ x ∈ s, x ∈ closure (d ∩ Ici x) := by
   obtain ⟨d, hdc, hd⟩ := exists_countable_dense s
   refine ⟨(↑) '' d ∪ {x ∈ s | 𝓝[s ∩ Ioi x] x = ⊥}, by grind, ?_, fun x hxs ↦ ?_⟩
   · exact (hdc.image _).union countable_setOfPred_isolated_right_within

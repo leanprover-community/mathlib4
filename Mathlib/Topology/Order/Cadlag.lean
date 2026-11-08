@@ -6,8 +6,10 @@ Authors: Rémy Degenne, Nick Kuhn, Yongxi Lin, Rohit Manokaran, Etienne Marion, 
 module
 
 public import Mathlib.Topology.Algebra.GroupWithZero
-public import Mathlib.Topology.MetricSpace.Bounded
+public import Mathlib.Topology.MetricSpace.Pseudo.Defs
 public import Mathlib.Topology.Order.LeftRightLim
+
+import Mathlib.Topology.MetricSpace.Bounded
 
 /-! # Càdlàg functions
 

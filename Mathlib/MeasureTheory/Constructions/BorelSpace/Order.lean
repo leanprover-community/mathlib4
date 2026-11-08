@@ -300,7 +300,7 @@ section OrderTopology
 variable [OrderTopology α]
 
 @[to_dual]
-theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+private theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
   suffices H : (s \ interior s).Countable by
@@ -341,6 +341,12 @@ theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>]
     simp only [IsTop] at H
     push Not at H
     exact H
+
+/-- A right-continuous function on a second-countable linear order is measurable. -/
+@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
+theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
+    {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
+  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 end OrderTopology
 
@@ -886,12 +892,6 @@ theorem aemeasurable_restrict_of_antitoneOn {μ : Measure β}
   aemeasurable_restrict_of_monotoneOn (α := αᵒᵈ) hs hf
 
 end Monotone
-
-/-- A right-continuous function on a second-countable linear order is measurable. -/
-@[to_dual /-- A left-continuous function on a second-countable linear order is measurable. -/]
-theorem IsRightContinuous.measurable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
-    {f : α → β} (hf : IsRightContinuous f) : Measurable f :=
-  measurable_of_isOpen fun _ hu ↦ .of_mem_nhdsGT fun x hx ↦ hf x (hu.mem_nhds hx)
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by

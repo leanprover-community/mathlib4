@@ -5,10 +5,10 @@ Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Algebra.Star.Pi
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.MeasureTheory.Function.SimpleFuncDense
-public import Mathlib.Topology.Order.Cadlag
+public import Mathlib.MeasureTheory.Function.SimpleFunc
+
+import Mathlib.MeasureTheory.Function.SimpleFuncDense
 
 /-!
 # Strongly measurable and finitely strongly measurable functions
@@ -736,7 +736,7 @@ theorem _root_.Continuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSp
 @[to_dual /-- A left-continuous function on a second-countable linear order is strongly
 measurable. -/]
 theorem _root_.IsRightContinuous.stronglyMeasurable [MeasurableSpace α] [TopologicalSpace α]
-    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [BorelSpace α]
+    [LinearOrder α] [OrderTopology α] [SecondCountableTopology α] [OpensMeasurableSpace α]
     [TopologicalSpace β] [PseudoMetrizableSpace β] {f : α → β} (hf : IsRightContinuous f) :
     StronglyMeasurable f := by
   borelize β
