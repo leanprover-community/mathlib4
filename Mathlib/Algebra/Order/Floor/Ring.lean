@@ -70,8 +70,7 @@ theorem nat_ceil_pos [Semiring α] [LinearOrder α] [FloorSemiring α] {a : α} 
 
 /-- Extension for the `positivity` tactic: `Nat.ceil` is positive if its input is. -/
 @[positivity ⌈_⌉₊]
-meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalNatCeil : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
     let _i ← synthInstanceQ q(LinearOrder $α')
@@ -79,7 +78,7 @@ meta def evalNatCeil : PositivityExt where eval {u α} _zα pα? e :=
     match ← core q(inferInstance) (some q(inferInstance)) a with
     | .positive pa =>
       assertInstancesCommute
-      pure (.positive q(nat_ceil_pos (α := $α') $pa))
+      pure (.nonzero q((nat_ceil_pos (α := $α') $pa).ne'))
     | _ => pure .none
   | _, _, _ => throwError "failed to match on Nat.ceil application"
 

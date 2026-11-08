@@ -86,12 +86,11 @@ open Lean Meta Qq
 
 /-- Extension for `Nat.doubleFactorial`. -/
 @[positivity Nat.doubleFactorial _]
-meta def evalDoubleFactorial : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
+meta def evalDoubleFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.doubleFactorial $n) =>
     assumeInstancesCommute
-    return .positive q(Nat.doubleFactorial_pos $n)
+    return .nonzero q((Nat.doubleFactorial_pos $n).ne')
   | _, _ => throwError "not Nat.doubleFactorial"
 
 example (n : ℕ) : 0 < n‼ := by positivity

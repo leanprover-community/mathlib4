@@ -513,118 +513,103 @@ meta def evalIntCast : PositivityExt where eval {u α} _zα pα? e := do
 
 /-- Extension for `Nat.succ`. -/
 @[positivity Nat.succ _]
-meta def evalNatSucc : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalNatSucc : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.succ $a) =>
     assertInstancesCommute
-    pure (.positive q(Nat.succ_pos $a))
+    pure (.nonzero q(Nat.succ_ne_zero $a))
   | _, _, _ => throwError "not Nat.succ"
 
 /-- Extension for `PNat.val`. -/
 @[positivity PNat.val _]
-meta def evalPNatVal : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalPNatVal : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(PNat.val $a) =>
     assertInstancesCommute
-    pure (.positive q(PNat.pos $a))
+    pure (.nonzero q((PNat.pos $a).ne'))
   | _, _, _ => throwError "not PNat.val"
 
 /-- Extension for `Nat.factorial`. -/
 @[positivity Nat.factorial _]
-meta def evalFactorial : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.factorial $a) =>
     assertInstancesCommute
-    pure (.positive q(Nat.factorial_pos $a))
+    pure (.nonzero q(Nat.factorial_ne_zero $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
 
 /-- Extension for `Nat.ascFactorial`. -/
 @[positivity Nat.ascFactorial _ _]
-meta def evalAscFactorial : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.ascFactorial ($n + 1) $k) =>
     assertInstancesCommute
-    pure (.positive q(Nat.ascFactorial_pos $n $k))
+    pure (.nonzero q((Nat.ascFactorial_pos $n $k).ne'))
   | _, _, _ => throwError "failed to match Nat.ascFactorial"
 
 /-- Extension for `Nat.gcd`.
-Uses positivity of the left term, if available, then tries the right term.
-
-The implementation relies on the fact that `Positivity.core` on `ℕ` never returns `nonzero`. -/
+Uses nonzeroness of the left term, if available, then tries the right term. -/
 @[positivity Nat.gcd _ _]
-meta def evalNatGCD : PositivityExt where eval {u α} z p e :=
-  match p with | none => throwError "not PartialOrder ℕ" | some p => do
+meta def evalNatGCD : PositivityExt where eval {u α} z _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.gcd $a $b) =>
+    let p ← synthInstanceQ q(PartialOrder ℕ)
     assertInstancesCommute
-    match ← core z p a with
-    | .positive pa =>
-      assertInstancesCommute
-      return .positive q(Nat.gcd_pos_of_pos_left $b $pa)
-    | _ =>
-      match ← core z p b with
-      | .positive pb =>
-        assertInstancesCommute
-        return .positive q(Nat.gcd_pos_of_pos_right $a $pb)
-      | _ => failure
+    match (← core z (some p) a).toNonzero z with
+    | some na => return .nonzero q(Nat.gcd_ne_zero_left $na)
+    | none =>
+      match (← core z (some p) b).toNonzero z with
+      | some nb => return .nonzero q(Nat.gcd_ne_zero_right $nb)
+      | none => failure
   | _, _, _ => throwError "not Nat.gcd"
 
 /-- Extension for `Nat.lcm`. -/
 @[positivity Nat.lcm _ _]
-meta def evalNatLCM : PositivityExt where eval {u α} z p e :=
-  match p with | none => throwError "not PartialOrder ℕ" | some p => do
+meta def evalNatLCM : PositivityExt where eval {u α} z _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.lcm $a $b) =>
-    match ← core z p a with
-    | .positive pa =>
-      assertInstancesCommute
-      match ← core z p b with
-      | .positive pb =>
-        assertInstancesCommute
-        return .positive q(Nat.lcm_pos $pa $pb)
+    let p ← synthInstanceQ q(PartialOrder ℕ)
+    assertInstancesCommute
+    match (← core z (some p) a).toNonzero z with
+    | some na =>
+      match (← core z (some p) b).toNonzero z with
+      | some nb => return .nonzero q(Nat.lcm_ne_zero $na $nb)
       | _ => failure
     | _ => failure
   | _, _, _ => throwError "not Nat.lcm"
 
 /-- Extension for `Nat.sqrt`. -/
 @[positivity Nat.sqrt _]
-meta def evalNatSqrt : PositivityExt where eval {u α} z p e :=
-  match p with | none => throwError "not PartialOrder ℕ" | some p => do
+meta def evalNatSqrt : PositivityExt where eval {u α} z _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Nat.sqrt $n) =>
-    match ← core z p n with
-    | .positive pa =>
-      assumeInstancesCommute
-      return .positive q(Nat.sqrt_pos.mpr $pa)
+    let p ← synthInstanceQ q(PartialOrder ℕ)
+    assertInstancesCommute
+    match (← core z (some p) n).toNonzero z with
+    | some nn => return .nonzero q((Nat.sqrt_pos.mpr (Nat.pos_of_ne_zero $nn)).ne')
     | _ => failure
   | _, _, _ => throwError "not Nat.sqrt"
 
 /-- Extension for `Int.gcd`.
 Uses positivity of the left term, if available, then tries the right term. -/
 @[positivity Int.gcd _ _]
-meta def evalIntGCD : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalIntGCD : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.gcd $a $b) =>
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
     let p ← synthInstanceQ (q(PartialOrder ℤ) : Q(Type))
     assertInstancesCommute
     match (← catchNone (core z (some p) a)).toNonzero z with
-    | some na => return .positive q(Int.gcd_pos_of_ne_zero_left $b $na)
+    | some na => return .nonzero q((Int.gcd_pos_of_ne_zero_left $b $na).ne')
     | none =>
       match (← core z (some p) b).toNonzero z with
-      | some nb => return .positive q(Int.gcd_pos_of_ne_zero_right $a $nb)
+      | some nb => return .nonzero q((Int.gcd_pos_of_ne_zero_right $a $nb).ne')
       | none => failure
   | _, _, _ => throwError "not Int.gcd"
 
 /-- Extension for `Int.lcm`. -/
 @[positivity Int.lcm _ _]
-meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalIntLCM : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Int.lcm $a $b) =>
     let z ← synthInstanceQ (q(Zero ℤ) : Q(Type))
@@ -633,7 +618,7 @@ meta def evalIntLCM : PositivityExt where eval {u α} _ pα? e :=
     match (← core z (some p) a).toNonzero z with
     | some na =>
       match (← core z (some p) b).toNonzero z with
-      | some nb => return .positive q(Int.lcm_pos $na $nb)
+      | some nb => return .nonzero q((Int.lcm_pos $na $nb).ne')
       | _ => failure
     | _ => failure
   | _, _, _ => throwError "not Int.lcm"
@@ -647,8 +632,7 @@ alias ⟨_, NNRat.num_ne_zero_of_ne_zero⟩ := num_ne_zero
 /-- The `positivity` extension which identifies expressions of the form `NNRat.num q`,
 such that `positivity` successfully recognises `q`. -/
 @[positivity NNRat.num _]
-meta def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalNNRatNum : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(NNRat.num $a) =>
     let zα : Q(Zero ℚ≥0) := q(inferInstance)
@@ -657,19 +641,18 @@ meta def evalNNRatNum : PositivityExt where eval {u α} _ pα? e :=
     assumeInstancesCommute
     match ← core zα pα a with
     | .positive pa =>
-      return .positive q(NNRat.num_pos_of_pos $pa)
+      return .nonzero q((NNRat.num_pos_of_pos $pa).ne')
     | .nonzero pa => return .nonzero q(NNRat.num_ne_zero_of_ne_zero $pa)
     | _ => return .none
   | _, _, _ => throwError "not NNRat.num"
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
 @[positivity NNRat.den _]
-meta def evalNNRatDen : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalNNRatDen : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(NNRat.den $a) =>
     assumeInstancesCommute
-    return .positive q(den_pos $a)
+    return .nonzero q((den_pos $a).ne')
   | _, _, _ => throwError "not NNRat.den"
 
 variable {q : ℚ≥0}
@@ -707,12 +690,11 @@ meta def evalRatNum : PositivityExt where eval {u α} _ pα? e :=
 
 /-- The `positivity` extension which identifies expressions of the form `Rat.den a`. -/
 @[positivity Rat.den _]
-meta def evalRatDen : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalRatDen : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(Rat.den $a) =>
     assumeInstancesCommute
-    pure <| .positive q(den_pos $a)
+    pure <| .nonzero q((den_pos $a).ne')
   | _, _ => throwError "not Rat.num"
 
 /-- Extension for `posPart`. `a⁺` is always nonnegative, and positive if `a` is. -/
