@@ -123,19 +123,19 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
 
 /-- The second projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
 /-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃

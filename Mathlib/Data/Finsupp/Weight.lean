@@ -275,9 +275,6 @@ theorem degree_mapDomain {τ : Type*} (f : σ → τ) [AddCommMonoid M] (x : σ 
   simp [mapDomain, sum]
   dsimp [degree_apply]
 
-@[deprecated (since := "2026-04-27")]
-alias degree_mapDomain_eq_of_subsingletonAddUnits := degree_mapDomain
-
 set_option backward.isDefEq.respectTransparency false in
 theorem degree_comapDomain_le_of_canonicallyOrderedAdd {τ : Type*} {f : σ → τ} [AddCommMonoid M]
     [PartialOrder M] [CanonicallyOrderedAdd M] {x : τ →₀ M} (hf : Set.InjOn f (f ⁻¹' x.support)) :
@@ -290,6 +287,14 @@ lemma degree_mono {R : Type*} [AddCommMonoid R] [PartialOrder R] [CanonicallyOrd
     Monotone (Finsupp.degree (σ := σ) (R := R)) :=
   fun _ _ e ↦
     (Finset.sum_le_sum_of_subset (support_mono e)).trans (Finset.sum_le_sum fun _ _ ↦ e _)
+
+lemma degree_strictMono {R : Type*}
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R] [IsOrderedCancelAddMonoid R] :
+    StrictMono (Finsupp.degree (σ := σ) (R := R)) := by
+  intro a b h
+  obtain ⟨hle, i, hi⟩ := Finsupp.lt_def.mp h
+  simp_rw [degree_apply, Finset.sum_subset (support_mono hle) fun _ _ ↦ notMem_support_iff.mp]
+  exact Finset.sum_lt_sum (fun _ _ ↦ hle _) ⟨i, by simp [hi, ne_zero_of_lt hi]⟩
 
 lemma exists_le_degree_eq {σ : Type*} (f : σ →₀ ℕ) (n : ℕ) (hn : n ≤ f.degree) :
     ∃ g ≤ f, g.degree = n := by

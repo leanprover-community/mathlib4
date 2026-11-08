@@ -313,35 +313,6 @@ theorem nontrivial_of_three_le_card (h3 : 3 ≤ Nat.card α) : Nontrivial (alter
 instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
   nontrivial_of_three_le_card (by simp)
 
-/-- Shows that any non-identity element of $A_5$ whose cycle decomposition consists only of swaps
-  is conjugate to $(04)(13)$. This is used to show that the normal closure of such a permutation
-  in $A_5$ is $A_5$. -/
-@[deprecated "This was an auxilliary lemma for the proof of simplicity of A_5 which has now been
-superceded by `alternatingGroup.isSimpleGroup`." (since := "2026-04-28")]
-theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alternatingGroup (Fin 5))
-    (h1 : g ≠ 1) (h2 : ∀ n, n ∈ cycleType (g : Perm (Fin 5)) → n = 2) :
-    IsConj (swap 0 4 * swap 1 3) g := by
-  have h := g.support.card_le_univ
-  rw [← Multiset.eq_replicate_card] at h2
-  rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
-  have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by norm_num only [card_fin])) (by simp)
-  rw [mem_alternatingGroup, sign_of_cycleType, h2, Multiset.sum_replicate, Multiset.card_replicate,
-    smul_eq_mul, pow_add, pow_mul, Int.units_pow_two, one_mul, neg_one_pow_eq_one_iff_even] at ha
-  swap; · decide
-  rw [isConj_iff_cycleType_eq, h2]
-  interval_cases h_1 : Multiset.card g.cycleType
-  · exact (h1 (card_cycleType_eq_zero.1 h_1)).elim
-  · simp at ha
-  · have h04 : (0 : Fin 5) ≠ 4 := by decide
-    have h13 : (1 : Fin 5) ≠ 3 := by decide
-    rw [Disjoint.cycleType_mul, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
-      card_support_swap h04, card_support_swap h13]
-    · simp
-    · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
-      decide
-  · contradiction
-
 theorem center_eq_bot (hα4 : 4 ≤ Nat.card α) :
     Subgroup.center (alternatingGroup α) = ⊥ := by
   rw [eq_bot_iff]

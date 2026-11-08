@@ -145,7 +145,7 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
@@ -173,7 +173,7 @@ variable [Field R] [AddCommGroup M]
   [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M]
 
 variable [T2Space R] [T2Space M]
 
@@ -215,15 +215,21 @@ theorem norm_def (x : tsze R M) : ‖x‖ = ‖fst x‖ + ‖snd x‖ := by
   simp only [WithLp.toLp_fst, ENNReal.toReal_one, Real.rpow_one, WithLp.toLp_snd, ne_eq,
     one_ne_zero, not_false_eq_true, div_self, fst, snd]
 
-theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
+theorem nnNorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊ := by
   ext; simp [norm_def]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_def := nnNorm_def
 
 @[simp] theorem norm_inl (r : R) : ‖(inl r : tsze R M)‖ = ‖r‖ := by simp [norm_def]
 @[simp] theorem norm_inr (m : M) : ‖(inr m : tsze R M)‖ = ‖m‖ := by simp [norm_def]
 
-@[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
+@[simp] theorem nnNorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnNorm_def]
 
-@[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
+@[deprecated (since := "2026-10-31")] alias nnnorm_inl := nnNorm_inl
+
+@[simp] theorem nnNorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnNorm_def]
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_inr := nnNorm_inr
 
 variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
