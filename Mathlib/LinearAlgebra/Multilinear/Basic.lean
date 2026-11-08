@@ -28,7 +28,7 @@ by pointwise addition and multiplication.
 
 ## Main definitions
 
-* `MultilinearMap σ M N` (`(Π i, M i) →ₘₛₗ[σ] M₂`) is the space of `σ`-multisemilinear maps
+* `MultilinearMap σ M N` (`(Π i, M i) →ₘₛₗ[σ] N`) is the space of `σ`-multisemilinear maps
   from `(i : ι) → M i` to `N`. Here `σ` is a `RingHom` from `R` to `S` and we recover plain
   multilinear maps by choosing `σ` to be `RingHom.id R`, in which case the space is denoted by
   `(Π i, M i) →ₘₗ[R] N`.
@@ -775,7 +775,7 @@ lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [Decidabl
 
 /-- Given a multilinear map `f` on `(i : ι) → M i`, a (decidable) predicate `P` on `ι` and
 an element `z` of `(i : {a // ¬ P a}) → M i`, construct a multilinear map on
-`(i : {a // P a}) → M i)` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
+`(i : {a // P a}) → M i` whose value at `x` is `f` evaluated at the vector with `i`th coordinate
 `x i` if `P i` and `z i` otherwise.
 
 The naming is similar to `MultilinearMap.domDomCongr`: here we are applying the restriction to the
@@ -821,13 +821,12 @@ end MultilinearMap
 namespace LinearMap
 
 variable {R₁ R₂ R₃ R₄ S : Type*} [Semiring R₁] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-  {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄} {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
-  [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄]
-  {ι : Type*} {M₁ M₂ : ι → Type*} {N₂ N₂' N₃ N₄ : Type*}
-  [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂] [AddCommMonoid N₂']
-  [AddCommMonoid N₃] [AddCommMonoid N₄] [∀ i, Module R₁ (M₁ i)] [∀ i, Module R₂ (M₂ i)]
-  [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
+  {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃} {σ₃₄ : R₃ →+* R₄} {σ₂₄ : R₂ →+* R₄}
+  {σ₁₄ : R₁ →+* R₄} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₁₃ σ₃₄ σ₁₄]
+  [RingHomCompTriple σ₂₃ σ₃₄ σ₂₄] [RingHomCompTriple σ₁₂ σ₂₄ σ₁₄] {ι : Type*} {M₁ M₂ : ι → Type*}
+  {N₂ N₂' N₃ N₄ : Type*} [∀ i, AddCommMonoid (M₁ i)] [∀ i, AddCommMonoid (M₂ i)] [AddCommMonoid N₂]
+  [AddCommMonoid N₂'] [AddCommMonoid N₃] [AddCommMonoid N₄] [∀ i, Module R₁ (M₁ i)]
+  [∀ i, Module R₂ (M₂ i)] [Module R₂ N₂] [Module R₂ N₂'] [Module R₃ N₃] [Module R₄ N₄]
 
 /-- Composing a multilinear map with a linear map gives again a multilinear map. -/
 def compMultilinearMap (g : N₂ →ₛₗ[σ₂₃] N₃) (f : (Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂) :
@@ -936,7 +935,7 @@ section Module
 
 variable [Semiring S] [Module S N₂] [SMulCommClass R₂ S N₂] [Module S N₂'] [SMulCommClass R₂ S N₂']
 
-/-- The space of multilinear maps over an algebra over `R₂` is a module over `R₂`, for the pointwise
+/-- The space of multilinear maps over an algebra over `R₂` is a module over `S`, for the pointwise
 addition and scalar multiplication. -/
 instance : Module S ((Π i, M₁ i) →ₘₛₗ[σ₁₂] N₂) := fast_instance%
   FunLike.module
@@ -1286,7 +1285,7 @@ theorem mkPiAlgebraFin_apply_const (a : A) :
 
 end
 
-variable {R S : Type*} [CommSemiring R] [Semiring S] {σ : R →+* S} {ι : Type*} {M : ι → Type*}
+variable {R S : Type*} [Semiring R] [Semiring S] {σ : R →+* S} {ι : Type*} {M : ι → Type*}
   {N : Type*} [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module S N]
 
 /-- Given a `σ`-multilinear map `f` taking values in `S`, `f.smulRight z` is the map
@@ -1299,7 +1298,8 @@ theorem smulRight_apply (f : (Π i, M i) →ₘₛₗ[σ] S) (z : N) (m : ∀ i,
     f.smulRight z m = f m • z :=
   rfl
 
-variable [Module R N]
+variable {R : Type*} [CommSemiring R] {ι : Type*} {M : ι → Type*} {N : Type*}
+  [∀ i, AddCommMonoid (M i)] [AddCommMonoid N] [∀ i, Module R (M i)] [Module R N]
 
 variable (R ι) in
 /-- The canonical multilinear map on `R^ι` when `ι` is finite, associating to `m` the product of
