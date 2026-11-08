@@ -10,6 +10,9 @@ public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Order.Filter.IsBounded
 public import Mathlib.Order.Hom.CompleteLattice
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # liminfs and limsups of functions and filters
 

@@ -139,7 +139,7 @@ instance (J : CardinalDirectedPoset κ) : IsFiltered J.obj :=
 instance (J : CardinalDirectedPoset κ) : Nonempty J.obj := IsFiltered.nonempty
 
 instance : HasCardinalFilteredColimits (CardinalDirectedPoset κ) κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := isFiltered_of_isCardinalFiltered J κ
     infer_instance
 
