@@ -56,16 +56,16 @@ theorem traceOfBasis_def (A : E →L[ℂ] E) {ι : Type*} (b : HilbertBasis ι �
     traceOfBasis A b = ∑' i, ⟪b i, A (b i)⟫_ℂ :=
   rfl
 
-theorem traceOfBasis_eq_tsum_enorm_sq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*}
+theorem traceOfBasis_eq_tsum_enorm_sq {A : E →L[ℂ] E} (hA : A.IsPositive) {ι : Type*}
     (b : HilbertBasis ι ℂ E) :
     traceOfBasis A b = (∑' i, ‖CFC.sqrt A (b i)‖ₑ ^ 2).toReal := by
   rw [traceOfBasis_def, ENNReal.tsum_toReal_eq fun _ ↦ by finiteness, Complex.ofReal_tsum]
   refine tsum_congr fun i ↦ ?_
-  conv_lhs => rw [← CFC.sqrt_mul_sqrt_self A, mul_apply_eq_comp,
+  conv_lhs => rw [← CFC.sqrt_mul_sqrt_self A hA.nonneg, mul_apply_eq_comp,
     ← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm]
   simp [inner_self_eq_norm_sq_to_K]
 
-theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
+theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : A.IsPositive) {ι ι' : Type*}
     (b : HilbertBasis ι ℂ E) (b' : HilbertBasis ι' ℂ E) :
     traceOfBasis A b = traceOfBasis A b' := by
   simp_rw [traceOfBasis_eq_tsum_enorm_sq hA]
@@ -81,12 +81,12 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
     _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by simp [b.tsum_enorm_inner_sq]
 
 omit [CompleteSpace E] in
-theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*}
+theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : A.IsPositive) {ι : Type*}
     (b : HilbertBasis ι ℂ E) :
     traceOfBasis A b = (∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_ℂ)).toReal := by
   rw [traceOfBasis_def, ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.ofReal_ne_top, Complex.ofReal_tsum]
   refine tsum_congr fun i ↦ ?_
-  obtain ⟨hre, him⟩ := RCLike.nonneg_iff.mp (by simpa using hA.inner_nonneg_right (b i))
+  obtain ⟨hre, him⟩ := RCLike.nonneg_iff.mp (hA.inner_nonneg_right (b i))
   rw [ENNReal.toReal_ofReal hre]
   exact (RCLike.conj_eq_iff_re.mp (RCLike.conj_eq_iff_im.mpr him)).symm
 
@@ -119,21 +119,23 @@ section IsPositive
 
 variable {A B : E →L[ℂ] E}
 
-theorem trace_eq_traceOfBasis (hA : 0 ≤ A) {ι : Type*}
+theorem trace_eq_traceOfBasis (hA : A.IsPositive) {ι : Type*}
     (b : HilbertBasis ι ℂ E) : trace A = traceOfBasis A b := by
   unfold trace
   exact traceOfBasis_eq hA _ b
 
-theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
-  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
-  exact tsum_nonneg fun i ↦ by
-    simpa only [sub_zero] using hA.inner_nonneg_right (b i)
+theorem IsPositive.trace_nonneg (hA : A.IsPositive) : 0 ≤ A.trace :=
+  tsum_nonneg fun _ ↦ hA.inner_nonneg_right _
 
-theorem trace_add_le (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) ≤ trace A + trace B := by
-  simp_rw [trace, traceOfBasis_eq_toReal_tsum (add_nonneg hA hB), traceOfBasis_eq_toReal_tsum hA,
+theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace :=
+  hA.of_nonneg.trace_nonneg
+
+theorem trace_add_le (hA : A.IsPositive) (hB : B.IsPositive) :
+    trace (A + B) ≤ trace A + trace B := by
+  simp_rw [trace, traceOfBasis_eq_toReal_tsum (hA.add hB), traceOfBasis_eq_toReal_tsum hA,
     traceOfBasis_eq_toReal_tsum hB, add_apply, inner_add_right, map_add,
-    ENNReal.ofReal_add (hA.of_nonneg.re_inner_nonneg_right _)
-      (hB.of_nonneg.re_inner_nonneg_right _), ENNReal.tsum_add]
+    ENNReal.ofReal_add (hA.re_inner_nonneg_right _) (hB.re_inner_nonneg_right _),
+    ENNReal.tsum_add]
   exact_mod_cast ENNReal.toReal_add_le
 
 end IsPositive
