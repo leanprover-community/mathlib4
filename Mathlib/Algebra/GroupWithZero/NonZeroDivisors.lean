@@ -160,6 +160,18 @@ lemma mul_mem_nonZeroDivisors_of_mem_nonZeroDivisors (hx : x ∈ M₀⁰) (hy : 
     x * y ∈ M₀⁰ :=
   mem_nonZeroDivisors_iff'.mpr ⟨Submonoid.mul_mem _ hx.1 hy.1, Submonoid.mul_mem _ hx.2 hy.2⟩
 
+theorem nonZeroDivisorsLeft.anti_of_rightDvd (hy : y ∈ nonZeroDivisorsLeft M₀) (h : x ∣ᵣ y) :
+    x ∈ nonZeroDivisorsLeft M₀ := by
+  rcases h with ⟨b, rfl⟩
+  refine fun c hac ↦ hy c ?_
+  rw [mul_assoc, hac, mul_zero]
+
+theorem nonZeroDivisorsRight.anti_of_dvd (hy : y ∈ nonZeroDivisorsRight M₀) (h : x ∣ y) :
+    x ∈ nonZeroDivisorsRight M₀ := by
+  rcases h with ⟨b, rfl⟩
+  refine fun c hac ↦ hy c ?_
+  rw [← mul_assoc, hac, zero_mul]
+
 section Nontrivial
 variable [Nontrivial M₀]
 
@@ -339,6 +351,11 @@ lemma prod_mem_nonZeroDivisors_of_mem_nonZeroDivisors
     {ι : Type*} {s : Finset ι} {f : ι → M₀} (h : ∀ i ∈ s, f i ∈ M₀⁰) :
     ∏ i ∈ s, f i ∈ M₀⁰ :=
   s.prod_induction _ _ (fun _ _ ↦ and_imp.mp mul_mem_nonZeroDivisors.mpr) (one_mem _) h
+
+theorem nonZeroDivisors.anti_of_dvd (hb : b ∈ M₀⁰) (h : a ∣ b) : a ∈ M₀⁰ := by
+  refine ⟨?_, nonZeroDivisorsRight.anti_of_dvd hb.right h⟩
+  apply nonZeroDivisorsLeft.anti_of_rightDvd hb.left
+  simpa
 
 end CommMonoidWithZero
 
