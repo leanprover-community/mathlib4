@@ -96,8 +96,7 @@ section Inequalities
 
 variable {f : ι → E} {A : Set E} {t₀ t₁ t : ι}
 
-/-- This lemma is strictly weaker than `hittingBtwn_of_le`. -/
-lemma hittingBtwn_of_lt [ConditionallyCompleteLattice ι]
+lemma hittingBtwn_of_lt [Preorder ι] [InfSet ι]
     (h : t₁ < t₀) : hittingBtwn f A t₀ t₁ = t₁ := by
   simp [hittingBtwn_def, Icc_eq_empty_of_lt h]
 
@@ -335,9 +334,9 @@ lemma hittingAfter_bot [Preorder ι] [OrderBot ι] [InfSet ι] {f : ι → E} {A
   simp [hittingAfter_def]
   congr
 
-section ConditionallyCompleteLinearOrderBot
+section OrderBot
 
-variable [ConditionallyCompleteLinearOrderBot ι] [WellFoundedLT ι]
+variable [ConditionallyCompleteLinearOrder ι] [OrderBot ι] [WellFoundedLT ι]
     {f : ι → E} {A : Set E} {t₁ t : ι}
 
 lemma hittingBtwn_bot_le_iff (h : ∃ s ≤ t₁, f s ∈ A) :
@@ -347,6 +346,6 @@ lemma hittingBtwn_bot_le_iff (h : ∃ s ≤ t₁, f s ∈ A) :
 lemma hittingAfter_bot_le_iff : hittingAfter f A ⊥ ≤ t ↔ ∃ s ≤ t, f s ∈ A := by
   simp [hittingAfter_le_iff]
 
-end ConditionallyCompleteLinearOrderBot
+end OrderBot
 
 end Function
