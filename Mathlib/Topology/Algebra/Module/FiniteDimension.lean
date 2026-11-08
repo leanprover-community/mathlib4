@@ -527,7 +527,7 @@ theorem Submodule.isClosed_of_finite_of_isModuleTopology
     (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
     IsClosed (s : Set E) :=
   letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := IsUniformAddGroup.rightUniformSpace_of_addCommGroup E
   s.isComplete_of_finite_of_isModuleTopology.isClosed
 
 end IsModuleTopology
