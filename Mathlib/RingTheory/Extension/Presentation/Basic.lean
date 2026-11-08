@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-
 # Presentations of algebras
 
 A presentation of an `R`-algebra `S` is a distinguished family of generators and relations.

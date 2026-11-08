@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Ideal.Int
 import Mathlib.RingTheory.NormalClosure
 
 /-!
-
 # Ideal norms
 
 This file defines the relative ideal norm `Ideal.spanNorm R (I : Ideal S) : Ideal S` as the ideal

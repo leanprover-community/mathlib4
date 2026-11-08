@@ -73,7 +73,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   set Y₂ : ℕ → Set α := fun i => cthickening (r₂ i) (s i)
   let Z : ℕ → Set α := fun i => ⋃ (j) (_ : p j ∧ i ≤ j), Y₂ j
   suffices ∀ i, μ (atTop.blimsup Y₁ p \ Z i) = 0 by
-    rwa [ae_le_set, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
+    rwa [ae_subset, @blimsup_eq_iInf_biSup_of_nat _ _ _ Y₂, iInf_eq_iInter, sdiff_iInter,
       measure_iUnion_null_iff]
   intro i
   set W := atTop.blimsup Y₁ p \ Z i
@@ -219,11 +219,10 @@ theorem blimsup_cthickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M
     rw [cthickening_of_nonpos hi, cthickening_of_nonpos hi']
   have hp : p = fun i => p i ∧ 0 < r i ∨ p i ∧ r i ≤ 0 := by
     ext i; simp [← and_or_left, lt_or_ge 0 (r i)]
-  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup]
-  simp only [sup_eq_union]
-  rw [blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
+  rw [hp, blimsup_or_eq_sup, blimsup_or_eq_sup,
+    blimsup_congr (Eventually.of_forall h₀), blimsup_congr (Eventually.of_forall h₁),
     blimsup_congr (Eventually.of_forall h₂)]
-  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') (ae_eq_refl _)
+  exact ae_eq_set_union (this (fun i => p i ∧ 0 < r i) hr') .rfl
 
 theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ → Set α} {r : ℕ → ℝ}
     (hr : Tendsto r atTop (𝓝 0)) (hr' : ∀ᶠ i in atTop, p i → 0 < r i) :
