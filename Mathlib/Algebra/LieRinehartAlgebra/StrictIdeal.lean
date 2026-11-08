@@ -45,8 +45,8 @@ public section
 which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. -/
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
-  lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
-  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
+  lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier := by membership
+  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0 := by grind
 
 namespace StrictLieRinehartIdeal
 
