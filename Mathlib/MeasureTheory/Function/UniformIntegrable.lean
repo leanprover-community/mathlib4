@@ -379,8 +379,8 @@ theorem tendsto_indicator_ge (f : α → β) (x : α) :
   refine tendsto_atTop_of_eventually_const (i₀ := Nat.ceil (‖f x‖₊ : ℝ) + 1) fun n hn => ?_
   rw [Set.indicator_of_notMem]
   simp only [not_le, Set.mem_ofPred_eq]
-  refine (Nat.le_ceil _).trans_lt ?_
-  refine (lt_add_one _).trans_le ?_
+  refine lt_of_le_of_lt (Nat.le_ceil _) ?_
+  refine lt_of_lt_of_le (lt_add_one _) ?_
   norm_cast
 
 section
@@ -467,7 +467,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_le (hf : MemLp f p μ) {ε : ℝ≥0∞}
       exact hf.aestronglyMeasurable.nnNorm.aemeasurable.coe_nnreal_real
     simp only [eLpNorm_exponent_top hfi, hM, zero_le]
   obtain ⟨M, hM', hM⟩ := MemLp.integral_indicator_norm_ge_nonneg_le
-    (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε p.toReal_nonneg)
+    (μ := μ) (hf.norm_rpow hp_ne_zero hp_ne_top) (rpow_pos_of_nonneg hε toReal_nonneg)
   refine ⟨M ^ (1 / p.toReal), ?_⟩
   rw [eLpNorm_eq_lintegral_rpow_eNorm_toReal hp_ne_zero hp_ne_top _, ← rpow_one ε]; swap
   · refine hf.aestronglyMeasurable.indicator₀ (nullMeasurableSet_le aemeasurable_const ?_)
