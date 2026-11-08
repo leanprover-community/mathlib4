@@ -362,6 +362,19 @@ theorem simple_determines_coxeterSystem :
   nth_rw 2 [h]
   simp [simple]
 
+/-- The group for a product of Coxeter matrices is isomorphic to the product of their respective
+groups. -/
+def groupProdEquiv (N : CoxeterMatrix B') : (prod M N).Group ≃* M.Group × N.Group where
+  invFun := sorry
+  left_inv := sorry
+  right_inv := sorry
+  __ := CoxeterSystem.lift
+where finally
+  intro x hx
+  simp
+
+#exit
+
 /-! ### Words -/
 
 /-- The product of the simple reflections of `W` corresponding to the indices in `ω`. -/
