@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 
 /-!
-
 # Finitely Presented Modules
 
 ## Main definition

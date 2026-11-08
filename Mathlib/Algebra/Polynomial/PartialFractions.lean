@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Polynomial.Div
 public import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
-
 # Partial fractions
 
 For `f, g : R[X]`, if `g` is expressed as a product `g₁ ^ n₁ * g₂ ^ n₂ * ... * gₙ ^ nₙ`,

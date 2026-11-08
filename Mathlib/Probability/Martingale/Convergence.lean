@@ -9,7 +9,6 @@ public import Mathlib.Probability.Martingale.Upcrossing
 public import Mathlib.Probability.Process.LimitProcess
 
 /-!
-
 # Martingale convergence theorems
 
 The martingale convergence theorems are a collection of theorems characterizing the convergence
@@ -57,7 +56,6 @@ variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω}
 section AeConvergence
 
 /-!
-
 ### Almost everywhere martingale convergence theorem
 
 We will now prove the almost everywhere martingale convergence theorem.
@@ -169,7 +167,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
           apply add_le_add_left ((le_iSup _ n).trans_eq' _)
           have hmeas := aestronglyMeasurable_of_eLpNorm_ne_top ((le_iSup _ n).trans_lt hbdd).ne
-          simp only [eLpNorm_one_eq_lintegral_enorm hmeas, enorm_eq_nnnorm]
+          simp only [eLpNorm_one_eq_lintegral_eNorm hmeas, eNorm_eq_nnNorm]
       refine ne_of_lt (iSup_lt_iff.2 ⟨(⨆ n, eLpNorm (f n) 1 μ) + ‖a‖₊ * μ Set.univ, by finiteness,
         fun n ↦ (hR' n).trans' ?_ ⟩)
       refine lintegral_mono fun ω => ?_
@@ -242,7 +240,6 @@ section L1Convergence
 variable [IsFiniteMeasure μ] {g : Ω → ℝ}
 
 /-!
-
 ### L¹ martingale convergence theorem
 
 We will now prove the L¹ martingale convergence theorems.
@@ -313,13 +310,13 @@ theorem Submartingale.tendsto_eLpNorm_one_limitProcess (hf : Submartingale f ℱ
     Tendsto (fun n => eLpNorm (f n - ℱ.limitProcess f μ) 1 μ) atTop (𝓝 0) := by
   have hmeas := hunif.aestronglyMeasurable
   exact tendsto_Lp_finite_of_tendstoInMeasure le_rfl ENNReal.one_ne_top hmeas
-    (memLp_limitProcess_of_eLpNorm_bdd hmeas hunif.bdd) hunif.unifIntegrable
-    (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hunif.bdd)
+    (memLp_limitProcess_of_eLpNorm_bdd hmeas hunif.iSup_eLpNorm_lt) hunif.unifIntegrable
+    (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hunif.iSup_eLpNorm_lt)
 
 theorem Submartingale.ae_tendsto_limitProcess_of_uniformIntegrable (hf : Submartingale f ℱ μ)
     (hunif : UniformIntegrable f 1 μ) :
     ∀ᵐ ω ∂μ, Tendsto (fun n => f n ω) atTop (𝓝 (ℱ.limitProcess f μ ω)) :=
-  hf.ae_tendsto_limitProcess hunif.bdd
+  hf.ae_tendsto_limitProcess hunif.iSup_eLpNorm_lt
 
 /-- If a martingale `f` strongly adapted to `ℱ` converges in L¹ to `g`, then for all `n`, `f n` is
 almost everywhere equal to `𝔼[g | ℱ n]`. -/
@@ -343,7 +340,8 @@ conditional expectation of its limiting process w.r.t. `ℱ n`. -/
 theorem Martingale.ae_eq_condExp_limitProcess (hf : Martingale f ℱ μ)
     (hbdd : UniformIntegrable f 1 μ) (n : ℕ) : f n =ᵐ[μ] μ[ℱ.limitProcess f μ | ℱ n] := by
   apply hf.eq_condExp_of_tendsto_eLpNorm _ (hf.submartingale.tendsto_eLpNorm_one_limitProcess hbdd)
-  exact (memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hbdd.bdd).integrable le_rfl
+  apply MemLp.integrable le_rfl
+  exact memLp_limitProcess_of_eLpNorm_bdd hbdd.aestronglyMeasurable hbdd.iSup_eLpNorm_lt
 
 /-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
@@ -357,11 +355,12 @@ theorem Integrable.tendsto_ae_condExp (hg : Integrable g μ)
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g | ℱ n]) 1 μ :=
     hg.uniformIntegrable_condExp_filtration
-  have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ :=
-    (memLp_limitProcess_of_eLpNorm_bdd hunif.aestronglyMeasurable hunif.bdd).integrable le_rfl
+  have hlimint : Integrable (ℱ.limitProcess (fun n => μ[g | ℱ n]) μ) μ := by
+    apply MemLp.integrable le_rfl
+    exact memLp_limitProcess_of_eLpNorm_bdd hunif.aestronglyMeasurable hunif.iSup_eLpNorm_lt
   suffices g =ᵐ[μ] ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ by
     filter_upwards [this, (martingale_condExp g ℱ μ).submartingale.ae_tendsto_limitProcess
-      hunif.bdd] with x heq ht
+      hunif.iSup_eLpNorm_lt] with x heq ht
     rwa [heq]
   have : ∀ n s, MeasurableSet[ℱ n] s →
       ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g | ℱ n]) x) μ x ∂μ := by
