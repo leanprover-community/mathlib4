@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
-
 # Being projective is a local property
 
 ## Main results

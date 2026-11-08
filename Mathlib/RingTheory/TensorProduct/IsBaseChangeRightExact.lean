@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.Algebra.FiveLemma
 
 /-!
-
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that for an `R`-algebra `S` taking cokernels commutes with base change
@@ -19,7 +18,7 @@ of modules from `R` to `S`.
 If `S` is a flat `R`-algebra, the same holds for kernels,
 see `Mathlib.RingTheory.Flat.IsBaseChange`.
 
-# Main Results
+## Main results
 
 For `S` an `R`-algebra, consider the following commutative diagram with exact rows,
 `M₁` `M₂` `M₃` `R`-modules, `N₁` `N₂` `N₃` `S`-modules,

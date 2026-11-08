@@ -319,7 +319,7 @@ In practice, we wish to be able to use the library of theorems about (bundled) c
 subobjects as well, and so we also provide instances which take as input the unbundled
 `Group G` and `IsMulCommutative G` and produce the bundled `CommGroup G`. However, to avoid
 deleterious effects to type class synthesis for bundled commutativity (by forcing Lean to search
-the entirery of both the bundled and unbundled hierarchies), these instances are only
+the entirety of both the bundled and unbundled hierarchies), these instances are only
 available inside the `IsMulCommutative` scope and are simultaneously given the very low priority
 `50`.
 -/
