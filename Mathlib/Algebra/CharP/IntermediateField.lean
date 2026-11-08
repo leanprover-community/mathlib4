@@ -5,11 +5,11 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.Algebra.CharP.Algebra
 public import Mathlib.FieldTheory.IntermediateField.Basic
 
-/-!
+import Mathlib.Algebra.CharP.Algebra
 
+/-!
 # Characteristic of intermediate fields
 
 This file contains some convenient instances for determining the characteristic of
@@ -18,7 +18,7 @@ covered by `SubsemiringClass.instCharZero`.
 
 -/
 
-@[expose] public section
+public section
 
 variable {F E : Type*} [Field F] [Field E] [Algebra F E]
 

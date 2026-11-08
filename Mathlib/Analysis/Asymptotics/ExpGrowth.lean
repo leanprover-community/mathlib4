@@ -164,7 +164,6 @@ lemma expGrowthInf_top : expGrowthInf ⊤ = ⊤ := by
   rw [← linearGrowthInf_top, expGrowthInf_def]
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthSup_top : expGrowthSup ⊤ = ⊤ := by
   apply top_le_iff.1
   rw [← expGrowthInf_top]
@@ -300,7 +299,6 @@ noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal wher
   map_inf' _ _ := expGrowthInf_inf
   map_top' := expGrowthInf_top
 
-set_option backward.isDefEq.respectTransparency false in
 lemma expGrowthInf_biInf {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
     expGrowthInf (⨅ x ∈ s, u x) = ⨅ x ∈ s, expGrowthInf (u x) := by
   have := map_finset_inf expGrowthInfTopHom hs.toFinset u
@@ -348,7 +346,7 @@ lemma expGrowthSup_add : expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup 
     exact sup_le (self_le_add_right (u n) (v n)) (self_le_add_left (v n) (u n))
 
 -- By lemma `expGrowthSup_add`, `expGrowthSup` is an `AddMonoidHom` from `ℕ → ℝ≥0∞` to
--- `Tropical ERealᵒᵈ`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
+-- `MaxTropical EReal`. Lemma `expGrowthSup_sum` is exactly `Finset.trop_inf`. We prove it from
 -- scratch to reduce imports.
 lemma expGrowthSup_sum {α : Type*} (u : α → ℕ → ℝ≥0∞) (s : Finset α) :
     expGrowthSup (∑ x ∈ s, u x) = ⨆ x ∈ s, expGrowthSup (u x) := by

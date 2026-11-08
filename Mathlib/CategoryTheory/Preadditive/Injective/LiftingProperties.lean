@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 public import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
+public import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Characterization of injective objects in terms of lifting properties
@@ -17,7 +17,7 @@ right lifting property with respect to monomorphisms,
 
 -/
 
-@[expose] public section
+public section
 
 universe v u
 

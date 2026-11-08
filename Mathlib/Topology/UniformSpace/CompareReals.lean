@@ -66,7 +66,7 @@ theorem Rat.uniformSpace_eq :
     _root_.abs_sub_comm]
 
 /-- Cauchy reals packaged as a completion of ℚ using the absolute value route. -/
-def rationalCauSeqPkg : @AbstractCompletion ℚ <| (@AbsoluteValue.abs ℚ _).uniformSpace :=
+def rationalCauSeqPkg : @AbstractCompletion ℚ (@AbsoluteValue.abs ℚ _).uniformSpace :=
   @AbstractCompletion.mk
     (space := ℝ)
     (coe := ((↑) : ℚ → ℝ))
@@ -82,20 +82,20 @@ namespace CompareReals
 
 /-- Type wrapper around ℚ to make sure the absolute value uniform space instance is picked up
 instead of the metric space one. We proved in `Rat.uniformSpace_eq` that they are equal,
-but they are not definitionaly equal, so it would confuse the type class system (and probably
+but they are not definitionally equal, so it would confuse the type class system (and probably
 also human readers). -/
 def Q :=
   ℚ deriving CommRing, Inhabited
 
 instance uniformSpace : UniformSpace Q :=
-  (@AbsoluteValue.abs ℚ _).uniformSpace
+  fast_instance% (@AbsoluteValue.abs ℚ _).uniformSpace
 
 /-- Real numbers constructed as in Bourbaki. -/
 def Bourbakiℝ : Type :=
   Completion Q deriving Inhabited
 
 instance Bourbaki.uniformSpace : UniformSpace Bourbakiℝ :=
-  Completion.uniformSpace Q
+  fast_instance% Completion.uniformSpace Q
 
 /-- Bourbaki reals packaged as a completion of Q using the general theory. -/
 def bourbakiPkg : AbstractCompletion Q :=

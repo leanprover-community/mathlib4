@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.MeasureTheory.Measure.Map
+public import Mathlib.MeasureTheory.Measure.Sum
 
 /-!
 # Absolute Continuity of Measures
@@ -88,6 +89,12 @@ protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ �
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
 
+@[gcongr, mono]
+protected theorem map_of_aemeasurable (h : μ ≪ ν) {f : α → β} (hf : AEMeasurable f ν) :
+    μ.map f ≪ ν.map f := by
+  rw [map_congr (h hf.ae_eq_mk), map_congr hf.ae_eq_mk]
+  exact h.map hf.measurable_mk
+
 protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
     c • μ ≪ ν := fun s hνs => by
   simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
@@ -103,7 +110,7 @@ protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0�
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [add_apply, add_eq_zero] at hs ⊢
   exact ⟨h1 hs.1, h2 hs.2⟩
 
 lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
@@ -119,7 +126,7 @@ lemma add_left {μ₁ μ₂ ν : Measure α} (h₁ : μ₁ ≪ ν) (h₂ : μ₂
 
 lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
 lemma add_right' (h : μ ≪ ν') (ν : Measure α) : μ ≪ ν + ν' := by
@@ -145,12 +152,12 @@ alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
 
 lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs i ≪ ν) :
     Measure.sum μs ≪ ν :=
-  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [sum_apply _ hs, fun i ↦ hμs i hs0]
+  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [Measure.sum_apply _ hs, fun i ↦ hμs i hs0]
 
 lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
     ν ≪ Measure.sum μs := by
   refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
-  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
+  simp only [Measure.sum_apply _ hs, tsum_eq_zero_iff] at hs0
   exact hνμ (hs0 i)
 
 lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul_left .rfl _
@@ -184,20 +191,24 @@ protected theorem AEDisjoint.of_absolutelyContinuous
     (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
     AEDisjoint ν s t := h' h
 
-protected theorem AEDisjoint.of_le
-    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
-    AEDisjoint ν s t :=
-  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
+theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
+    NullMeasurableSet s ν := by
+  obtain ⟨t, ht, hst⟩ := h
+  exact ⟨t, ht, hst.filter_mono (ν.ae_le_iff_absolutelyContinuous.2 hle)⟩
 
-@[gcongr, mono]
-theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
-  h.absolutelyContinuous.ae_le
+theorem ae_eq_comp' {ν : Measure β} {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ)
+    (h : g =ᵐ[ν] g') (h2 : μ.map f ≪ ν) : g ∘ f =ᵐ[μ] g' ∘ f :=
+  (μ.tendsto_ae_map hf).mono_right h2.ae_le h
+
+theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (h : g =ᵐ[μ.map f] g') :
+    g ∘ f =ᵐ[μ] g' ∘ f :=
+  ae_eq_comp' hf h .rfl
 
 end MeasureTheory
 
 namespace MeasurableEmbedding
 
-open MeasureTheory Measure
+open MeasureTheory
 
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} {μ ν : Measure α}
 

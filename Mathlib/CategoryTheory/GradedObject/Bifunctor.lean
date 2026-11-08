@@ -6,6 +6,7 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GradedObject
+
 /-!
 # The action of bifunctors on graded objects
 
@@ -131,7 +132,7 @@ noncomputable def mapBifunctorMapMapIso (e : X₁ ≅ X₂) (e' : Y₁ ≅ Y₂)
 
 instance (f : X₁ ⟶ X₂) (g : Y₁ ⟶ Y₂) [IsIso f] [IsIso g] :
     IsIso (mapBifunctorMapMap F p f g) :=
-  (inferInstance : IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom)
+  inferInstanceAs <| IsIso (mapBifunctorMapMapIso F p (asIso f) (asIso g)).hom
 
 end
 

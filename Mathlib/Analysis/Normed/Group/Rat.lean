@@ -10,7 +10,7 @@ public import Mathlib.Topology.Instances.Rat
 
 /-! # ℚ as a normed group -/
 
-@[expose] public section
+public section
 
 namespace Rat
 

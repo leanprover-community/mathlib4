@@ -17,23 +17,26 @@ We also show that if `X₁` and `X₂` are finite, then `X₁ ⊗ X₂` is also 
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 
-open CategoryTheory Limits MonoidalCategory Simplicial Opposite
+open CategoryTheory Limits MonoidalCategory Opposite
+
+open scoped Simplicial
 
 namespace SSet
 
 variable {X₁ X₂ X₃ X₄ : SSet.{u}}
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (X₁ X₂) in
 lemma iSup_subcomplexOfSimplex_prod_eq_top :
     ⨆ (x₁ : X₁.N) (x₂ : X₂.N),
       (Subcomplex.ofSimplex x₁.simplex).prod (Subcomplex.ofSimplex x₂.simplex) = ⊤ := by
   ext m ⟨x₁, x₂⟩
   simp only [Subfunctor.iSup_obj, Subcomplex.prod_obj, Set.mem_iUnion, Subfunctor.top_obj,
-    Set.top_eq_univ, Set.mem_univ, iff_true]
+    Set.mem_univ, iff_true]
   have hx₁ : x₁ ∈ (⊤ : X₁.Subcomplex).obj _ := by simp
   have hx₂ : x₂ ∈ (⊤ : X₂.Subcomplex).obj _ := by simp
   simp only [← N.iSup_subcomplex_eq_top, Subfunctor.iSup_obj, Set.mem_iUnion] at hx₁ hx₂

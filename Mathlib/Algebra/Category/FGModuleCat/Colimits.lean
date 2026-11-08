@@ -7,10 +7,11 @@ module
 
 public import Mathlib.Algebra.Category.FGModuleCat.Basic
 public import Mathlib.Algebra.Category.ModuleCat.Colimits
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
-public import Mathlib.Algebra.Category.ModuleCat.Products
-public import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 public import Mathlib.LinearAlgebra.DirectSum.Finite
+
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Products
+import Mathlib.CategoryTheory.Limits.Constructions.LimitsOfProductsAndEqualizers
 
 /-!
 # `forget₂ (FGModuleCat K) (ModuleCat K)` creates all finite colimits.
@@ -31,7 +32,6 @@ namespace FGModuleCat
 
 variable {J : Type} [SmallCategory J] [FinCategory J] {k : Type u} [Ring k]
 
-set_option backward.isDefEq.respectTransparency false in
 instance {J : Type} [Finite J] (Z : J → ModuleCat.{v} k) [∀ j, Module.Finite k (Z j)] :
     Module.Finite k (∐ fun j => Z j : ModuleCat.{v} k) := by
   classical
@@ -48,7 +48,7 @@ instance (F : J ⥤ FGModuleCat k) :
     ((ModuleCat.epi_iff_surjective _).1 inferInstance)
 
 /-- The forgetful functor from `FGModuleCat k` to `ModuleCat k` creates all finite colimits. -/
-@[implicit_reducible]
+@[instance_reducible]
 def forget₂CreatesColimit (F : J ⥤ FGModuleCat k) :
     CreatesColimit F (forget₂ (FGModuleCat k) (ModuleCat.{v} k)) :=
   createsColimitOfFullyFaithfulOfIso

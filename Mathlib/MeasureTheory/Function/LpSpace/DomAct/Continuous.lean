@@ -6,8 +6,12 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Function.LpSpace.DomAct.Basic
-public import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
 public import Mathlib.Topology.Algebra.Constructions.DomMulAct
+
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousCompMeasurePreserving
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Continuity of the action of `Mᵈᵐᵃ` on `MeasureSpace.Lp E p μ`
@@ -33,7 +37,7 @@ and `μ` is the Haar measure.
 measure theory, group action, domain action, continuous action, Lp space
 -/
 
-@[expose] public section
+public section
 
 open scoped ENNReal
 open DomMulAct

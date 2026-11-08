@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Final
 public import Mathlib.CategoryTheory.Discrete.StructuredArrow
+public import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # Characterization of connected categories using initial/final functors
@@ -18,7 +18,7 @@ We deduce that the projection `C × D ⥤ C` is final (or initial) if `D` is con
 
 -/
 
-@[expose] public section
+public section
 
 universe w v v' u u'
 

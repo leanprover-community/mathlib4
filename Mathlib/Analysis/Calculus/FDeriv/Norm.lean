@@ -6,7 +6,8 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Abs
-public import Mathlib.Analysis.Calculus.LineDeriv.Basic
+
+import Mathlib.Analysis.Calculus.LineDeriv.Basic
 
 /-!
 # Differentiability of the norm in a real normed vector space
@@ -95,11 +96,10 @@ theorem HasStrictFDerivAt.hasStrictFDerivAt_norm_smul
     hasStrictFDerivAt_id (t • x) |>.const_smul t⁻¹
   have h2 : HasStrictFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert h2.comp (t • x) h1 with y
+  convert! h2.comp (t • x) h1 with y
   · rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   ext y
-  simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-    comp_id]
+  simp only [smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
   rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasStrictFDerivAt.hasStrictDerivAt_norm_smul_neg
@@ -119,12 +119,11 @@ theorem HasFDerivAt.hasFDerivAt_norm_smul
     hasFDerivAt_id (t • x) |>.const_smul t⁻¹
   have h2 : HasFDerivAt (fun y ↦ |t| * ‖y‖) (|t| • f) x := h.const_smul |t|
   conv at h2 => enter [3]; rw [← one_smul ℝ x, ← inv_mul_cancel₀ ht, mul_smul]
-  convert h2.comp (t • x) h1 using 2 with y
+  convert! h2.comp (t • x) h1 using 2 with y
   · simp only [Function.comp_apply]
     rw [norm_smul, ← mul_assoc, norm_eq_abs, ← abs_mul, mul_inv_cancel₀ ht, abs_one, one_mul]
   · ext y
-    simp only [coe_smul', Pi.smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply,
-      comp_id]
+    simp only [smul_apply, smul_eq_mul, comp_smulₛₗ, map_inv₀, RingHom.id_apply, comp_id]
     rw [eq_inv_mul_iff_mul_eq₀ ht, ← mul_assoc, self_mul_sign]
 
 theorem HasFDerivAt.hasFDerivAt_norm_smul_neg
@@ -156,12 +155,12 @@ theorem DifferentiableAt.differentiableAt_norm_of_smul (h : DifferentiableAt ℝ
 theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖·‖) x) :
     fderiv ℝ (‖·‖) x x = ‖x‖ := by
   rw [← h.lineDeriv_eq_fderiv, lineDeriv]
-  have this (t : ℝ) : ‖x + t • x‖ = |1 + t| * ‖x‖ := by
+  have (t : ℝ) : ‖x + t • x‖ = |1 + t| * ‖x‖ := by
     rw [← norm_eq_abs, ← norm_smul, add_smul, one_smul]
   simp_rw [this]
   rw [deriv_mul_const]
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
-    rw [deriv_comp, deriv_abs, deriv_const_add]
+    rw [deriv_comp, deriv_abs, deriv_const_add_id]
     · simp
     · exact differentiableAt_abs (by simp)
     · exact differentiableAt_id.const_add _

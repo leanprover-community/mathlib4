@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Algebra.TransferInstance
 public import Mathlib.Algebra.Ring.Shrink
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Transfer module and algebra structures from `α` to `Shrink α`
 -/
@@ -26,7 +29,7 @@ instance [Semiring α] [Algebra R α] : Algebra R (Shrink.{v} α) := (equivShrin
 variable (R α) in
 /-- Shrinking `α` to a smaller universe preserves algebra structure. -/
 @[simps!]
-def algEquiv [Small.{v} α] [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[R] α :=
+def algEquiv [Semiring α] [Algebra R α] : Shrink.{v} α ≃ₐ[R] α :=
   (equivShrink α).symm.algEquiv _
 
 end Shrink

@@ -6,8 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAt
-public import Mathlib.CategoryTheory.Limits.Presheaf
-public import Mathlib.CategoryTheory.Generator.StrongGenerator
 
 /-!
 # Dense functors
@@ -16,13 +14,14 @@ A functor `F : C ⥤ D` is dense (`F.IsDense`) if `𝟭 D` is a pointwise
 left Kan extension of `F` along itself, i.e. any `Y : D` is the
 colimit of all `F.obj X` for all morphisms `F.obj X ⟶ Y` (which
 is the condition `F.DenseAt Y`).
-When `F` is full, we show that this
-is equivalent to saying that the restricted Yoneda functor
-`D ⥤ Cᵒᵖ ⥤ Type _` is fully faithful (see the lemma
-`Functor.isDense_iff_fullyFaithful_restrictedULiftYoneda`).
 
-We also show that the range of a dense functor is a strong
-generator (see `Functor.isStrongGenerator_of_isDense`).
+In the file `Mathlib/CategoryTheory/Functor/KanExtension/DenseAtYoneda`,
+we obtain the density of the Yoneda embedding.
+In `Mathlib/CategoryTheory/Functor/KanExtension/DenseIff`, we obtain
+a characterization of the density for a full functor `F : C ⥤ D` in terms
+of the full faithfulness of the restricted Yoneda functor `D ⥤ Cᵒᵖ ⥤ Type _`.
+In `Mathlib/CategoryTheory/Functor/KanExtension/StrongGenerator`, we show
+that the range of a dense functor is a strong generator.
 
 ## References
 
@@ -36,7 +35,7 @@ universe w v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
-open Limits Opposite Presheaf
+open Limits Opposite ConcreteCategory
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D]
   {C' : Type u₃} [Category.{v₃} C']
@@ -50,6 +49,7 @@ class IsDense (F : C ⥤ D) : Prop where
 
 /-- This is a choice of structure `F.DenseAt Y` when `F : C ⥤ D`
 is dense, and `Y : D`. -/
+@[no_expose]
 noncomputable def denseAt (F : C ⥤ D) [F.IsDense] (Y : D) : F.DenseAt Y :=
   (IsDense.isDenseAt F Y).some
 
@@ -57,6 +57,12 @@ lemma isDense_iff_nonempty_isPointwiseLeftKanExtension (F : C ⥤ D) :
     F.IsDense ↔
       Nonempty ((LeftExtension.mk _ (rightUnitor F).inv).IsPointwiseLeftKanExtension) :=
   ⟨fun _ ↦ ⟨fun _ ↦ F.denseAt _⟩, fun ⟨h⟩ ↦ ⟨fun _ ↦ ⟨h _⟩⟩⟩
+
+instance (F : C ⥤ D) [F.IsDense] : Functor.IsLeftKanExtension (𝟭 D) (Functor.rightUnitor F).inv :=
+  ((Functor.isDense_iff_nonempty_isPointwiseLeftKanExtension F).mp ‹_›).some.isLeftKanExtension
+
+instance (F : C ⥤ D) [F.IsDense] : F.HasPointwiseLeftKanExtension F :=
+  fun X ↦ (Functor.IsDense.isDenseAt F X).some.hasPointwiseLeftKanExtensionAt
 
 lemma IsDense.of_iso {F G : C ⥤ D} (e : F ≅ G) [F.IsDense] :
     G.IsDense where
@@ -94,71 +100,22 @@ lemma IsDense.comp_right_iff_of_isEquivalence (G : D ⥤ C') [G.IsEquivalence] :
     isoWhiskerLeft _ G.asEquivalence.unitIso.symm ≪≫ F.rightUnitor
   exact of_iso e
 
-instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Faithful where
-  map_injective h :=
-    (F.denseAt _).hom_ext' (fun X p ↦ by
-      simpa using ULift.up_injective (congr_fun (NatTrans.congr_app h (op X)) (ULift.up p)))
+/-- If `F` is dense, the left Kan extension of `F` along `F` is isomorphic to the identity. -/
+noncomputable def IsDense.leftKanExtensionIso (F : C ⥤ D) [F.IsDense] :
+    F.leftKanExtension F ≅ 𝟭 D :=
+  Functor.leftKanExtensionUnique _ (F.leftKanExtensionUnit F) _ F.rightUnitor.inv
 
-set_option backward.isDefEq.respectTransparency false in
-instance [F.IsDense] : (restrictedULiftYoneda.{w} F).Full where
-  map_surjective {Y Z} f := by
-    let c : Cocone (CostructuredArrow.proj F Y ⋙ F) :=
-      { pt := Z
-        ι :=
-          { app g := ((f.app (op g.left)) (ULift.up g.hom)).down
-            naturality g₁ g₂ φ := by
-              simpa [uliftFunctor, uliftYoneda,
-                restrictedULiftYoneda, ← ULift.down_inj] using
-                (congr_fun (f.naturality φ.left.op) (ULift.up g₂.hom)).symm } }
-    refine ⟨(F.denseAt Y).desc c, ?_⟩
-    ext ⟨X⟩ ⟨x⟩
-    have := (F.denseAt Y).fac c (.mk x)
-    dsimp [c] at this
-    simpa using ULift.down_injective this
+@[reassoc (attr := simp)]
+lemma IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom (F : C ⥤ D) [F.IsDense] :
+    F.leftKanExtensionUnit F ≫ F.whiskerLeft (Functor.IsDense.leftKanExtensionIso F).hom =
+      F.rightUnitor.inv := by
+  simp [Functor.IsDense.leftKanExtensionIso]
 
-variable {F} in
-lemma IsDense.of_fullyFaithful_restrictedULiftYoneda [F.Full]
-    (h : (restrictedULiftYoneda.{w} F).FullyFaithful) :
-    F.IsDense where
-  isDenseAt Y := by
-    let φ (s : Cocone (CostructuredArrow.proj F Y ⋙ F)) :
-        (restrictedULiftYoneda.{w} F).obj Y ⟶ (restrictedULiftYoneda F).obj s.pt :=
-      { app := fun ⟨X⟩ ⟨x⟩ ↦ ULift.up (s.ι.app (.mk x))
-        naturality := by
-          rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f⟩
-          ext ⟨x⟩
-          let α : CostructuredArrow.mk (F.map f ≫ x) ⟶ CostructuredArrow.mk x :=
-            CostructuredArrow.homMk f
-          simp [← s.w α, α] }
-    have hφ (s) (j) : (restrictedULiftYoneda F).map j.hom ≫ φ s =
-        (restrictedULiftYoneda F).map (s.ι.app j) := by
-      ext ⟨X⟩ ⟨x⟩
-      let α : .mk (x ≫ j.hom) ⟶ j := CostructuredArrow.homMk (F.preimage x)
-      have := s.w α
-      dsimp [uliftYoneda, φ, α] at this ⊢
-      rw [← this, map_preimage]
-    exact
-      ⟨{desc s := (h.preimage (φ s))
-        fac s j := h.map_injective (by simp [hφ])
-        uniq s m hm := h.map_injective (by
-          ext ⟨X⟩ ⟨x⟩
-          simp [φ, ← hm])}⟩
-
-lemma isDense_iff_fullyFaithful_restrictedULiftYoneda [F.Full] :
-    F.IsDense ↔ Nonempty (restrictedULiftYoneda.{w} F).FullyFaithful :=
-  ⟨fun _ ↦ ⟨FullyFaithful.ofFullyFaithful _⟩,
-    fun ⟨h⟩ ↦ IsDense.of_fullyFaithful_restrictedULiftYoneda h⟩
-
-open ObjectProperty in
-lemma isStrongGenerator_of_isDense [F.IsDense] :
-    IsStrongGenerator (.ofObj F.obj) :=
-  (IsStrongGenerator.mk_of_exists_colimitsOfShape.{max u₁ u₂ v₁ v₂,
-      max u₁ v₁ v₂} (fun Y ↦ ⟨_, _, ⟨{
-    ι := _
-    diag := _
-    isColimit := (IsColimit.whiskerEquivalence (F.denseAt Y)
-      ((ShrinkHoms.equivalence _).symm.trans ((Shrink.equivalence _)).symm))
-    prop_diag_obj := by simp }⟩⟩))
+@[reassoc (attr := simp)]
+lemma IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom_app [F.IsDense] (X : C) :
+    (F.leftKanExtensionUnit F).app X ≫ (Functor.IsDense.leftKanExtensionIso F).hom.app (F.obj X) =
+      F.rightUnitor.inv.app _ :=
+  congr($(Functor.IsDense.leftKanExtensionUnit_leftKanExtensionIso_hom _).app _)
 
 end Functor
 

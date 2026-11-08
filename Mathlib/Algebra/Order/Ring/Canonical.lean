@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 module
 
-public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Algebra.Ring.Parity
@@ -14,7 +13,7 @@ public import Mathlib.Algebra.Ring.Parity
 # Canonically ordered rings and semirings.
 -/
 
-@[expose] public section
+public section
 
 
 open Function
@@ -26,7 +25,7 @@ variable {R : Type u}
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass R] [One R] [LE R] [CanonicallyOrderedAdd R] : ZeroLEOneClass R where
-  zero_le_one := zero_le _
+  zero_le_one := zero_le
 
 -- this holds more generally if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
@@ -40,7 +39,6 @@ namespace CanonicallyOrderedAdd
 instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring R]
     [LE R] [CanonicallyOrderedAdd R] : MulLeftMono R := by
   refine ⟨fun a b c h => ?_⟩
-  dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -69,7 +67,7 @@ protected theorem mul_pos [NoZeroDivisors R] {a b : R} :
     0 < a * b ↔ 0 < a ∧ 0 < b := by
   simp only [pos_iff_ne_zero, ne_eq, mul_eq_zero, not_or]
 
-lemma pow_pos [NoZeroDivisors R] {a : R} (ha : 0 < a) (n : ℕ) : 0 < a ^ n :=
+lemma pow_pos [IsReduced R] {a : R} (ha : 0 < a) (n : ℕ) : 0 < a ^ n :=
   pos_iff_ne_zero.2 <| pow_ne_zero _ ha.ne'
 
 protected lemma mul_lt_mul_of_lt_of_lt
@@ -79,8 +77,8 @@ protected lemma mul_lt_mul_of_lt_of_lt
   have := posMulStrictMono_iff_mulPosStrictMono.1 ‹_›
   obtain rfl | hc := eq_zero_or_pos c
   · rw [mul_zero]
-    exact mul_pos ((zero_le _).trans_lt hab) hcd
-  · exact mul_lt_mul_of_pos' hab hcd hc ((zero_le _).trans_lt hab)
+    exact mul_pos hab.pos hcd
+  · exact mul_lt_mul_of_pos' hab hcd hc hab.pos
 
 end CanonicallyOrderedAdd
 
@@ -100,7 +98,7 @@ protected theorem mul_tsub {a b c : R}
   · apply h.eq_tsub_of_add_eq
     rw [← mul_add, tsub_add_cancel_of_le hcb]
 
-protected theorem tsub_mul [MulRightMono R] {a b c : R}
+protected theorem tsub_mul {a b c : R}
     (h : AddLECancellable (b * c)) : (a - b) * c = a * c - b * c := by
   obtain (hab | hba) := total_of (· ≤ ·) a b
   · rw [tsub_eq_zero_iff_le.2 hab, zero_mul, tsub_eq_zero_iff_le.2 (mul_le_mul_left hab c)]
@@ -114,7 +112,7 @@ variable [AddLeftReflectLE R]
 theorem mul_tsub (a b c : R) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub
 
-theorem tsub_mul [MulRightMono R] (a b c : R) :
+theorem tsub_mul (a b c : R) :
     (a - b) * c = a * c - b * c :=
   Contravariant.AddLECancellable.tsub_mul
 
@@ -127,7 +125,7 @@ variable [NonAssocSemiring R] [PartialOrder R] [CanonicallyOrderedAdd R]
 
 lemma mul_tsub_one [AddLeftReflectLE R] (a b : R) :
     a * (b - 1) = a * b - a := by rw [mul_tsub, mul_one]
-lemma tsub_one_mul [MulRightMono R] [AddLeftReflectLE R] (a b : R) :
+lemma tsub_one_mul [AddLeftReflectLE R] (a b : R) :
     (a - 1) * b = a * b - b := by rw [tsub_mul, one_mul]
 
 end NonAssocSemiring

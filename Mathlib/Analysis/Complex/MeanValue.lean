@@ -19,7 +19,7 @@ averages over suitable weighted functions.
 
 public section
 
-open Complex Filter Function Metric Real Set Topology
+open Complex Metric Real Set
 
 variable
   {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] [CompleteSpace E]
@@ -74,11 +74,8 @@ theorem DiffContOnCl.circleAverage_smul_div (hf : DiffContOnCl ℂ f (ball c |R|
   apply circleAverage_sub_sub_inv_smul_of_differentiable_on_off_countable countable_empty _ _ hw
   · simpa [← closure_ball _ (ne_of_not_ge hR).symm] using hf.2
   · intro z hz
-    rw [diff_empty] at hz
+    rw [sdiff_empty] at hz
     apply (hf.1 z hz).differentiableAt (isOpen_ball.mem_nhds hz)
-
-@[deprecated (since := "2026-02-11")]
-alias circleAverage_sub_sub_inv_smul_of_differentiable_on := DiffContOnCl.circleAverage_smul_div
 
 /-!
 ## Classic Mean Value Properties
@@ -116,6 +113,3 @@ theorem DiffContOnCl.circleAverage (hf : DiffContOnCl ℂ f (ball c |R|)) :
     apply circleAverage_congr_sphere fun z hz ↦ ?_
     have : z - c ≠ 0 := by grind [ne_of_mem_sphere]
     simp_all
-
-@[deprecated (since := "2026-02-11")]
-alias circleAverage_of_differentiable_on := DiffContOnCl.circleAverage

@@ -5,9 +5,6 @@ Authors: Steven Herbert
 -/
 module
 
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 
 /-!
@@ -130,7 +127,7 @@ def colStochastic (R n : Type*) [Fintype n] [DecidableEq n] [Semiring R] [Partia
     [IsOrderedRing R] : Submonoid (Matrix n n R) where
   carrier := {M | (∀ i j, 0 ≤ M i j) ∧ 1 ᵥ* M = 1  }
   mul_mem' {M N} hM hN := by
-    refine Set.mem_sep ?_ ?_
+    refine ⟨?_, ?_⟩
     · intro i j
       apply Finset.sum_nonneg
       grind [mul_nonneg]
@@ -213,7 +210,7 @@ lemma permMatrix_mem_colStochastic {σ : Equiv.Perm n} :
   rw [mem_colStochastic_iff_sum]
   refine ⟨fun i j => ?g1, ?g2⟩
   case g1 => aesop
-  case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply]
+  case g2 => simp [Equiv.toPEquiv_apply, ← Equiv.eq_symm_apply σ]
 
 /-- The transpose of a matrix is row stochastic matrix if it is column stochastic. -/
 @[grind =]
@@ -221,7 +218,7 @@ lemma transpose_mem_rowStochastic_iff_mem_colStochastic :
     Mᵀ ∈ rowStochastic R n ↔ M ∈ colStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- The transpose of a matrix is column stochastic matrix if it is row stochastic. -/
 @[grind =]
@@ -229,7 +226,7 @@ lemma transpose_mem_colStochastic_iff_mem_rowStochastic :
     Mᵀ ∈ colStochastic R n ↔ M ∈ rowStochastic R n := by
   simp only [mem_colStochastic_iff_sum, mem_rowStochastic_iff_sum, transpose_apply,
     and_congr_left_iff]
-  exact fun _ ↦ forall_swap
+  exact fun _ ↦ forall_comm
 
 /-- Reindexing a matrix preserves row-stochasticity. -/
 @[aesop safe apply]

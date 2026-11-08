@@ -3,8 +3,10 @@ Copyright (c) 2022 Jeoff Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeoff Lee, Thomas Zhu
 -/
-import Mathlib.Tactic.LinearCombination
-import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+module
+
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 
 /-!
 # The roots of cubic and quartic polynomials
@@ -68,6 +70,7 @@ The proof of the quartic formula is similar in structure to the cubic, and uses 
 polynomial, cubic, quartic, root
 -/
 
+@[expose] public section
 
 namespace Theorems100
 
@@ -91,7 +94,7 @@ theorem cubic_depressed_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p
   rw [h₁]
   apply Eq.congr_left
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hp_nonzero with hs_nonzero
+    contrapose hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero
   rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
   have H := cube_root_of_unity_sum hω
@@ -172,7 +175,7 @@ theorem quartic_depressed_eq_zero_iff
   have hi2 : (2 : K) ≠ 0 := Invertible.ne_zero _
   have h4 : (4 : K) = 2 ^ 2 := by norm_num
   have hs_nonzero : s ≠ 0 := by
-    contrapose! hq_nonzero with hs0
+    contrapose hq_nonzero with hs0
     linear_combination (exp := 2) -hu + (4 * r - u ^ 2) * hs + (u ^ 2 * s - 4 * r * s) * hs0
   calc
     _ ↔ 4 * (x ^ 4 + p * x ^ 2 + q * x + r) = 0 := by simp [h4, hi2]

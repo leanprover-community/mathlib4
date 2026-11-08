@@ -6,8 +6,6 @@ Authors: Bhavik Mehta
 module
 
 public import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
-public import Mathlib.CategoryTheory.PUnit
-public import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 
 /-!
 # A Cartesian closed category with zero object is trivial
@@ -40,7 +38,7 @@ open scoped CartesianClosed
 /-- If a Cartesian closed category has an initial object which is isomorphic to the terminal object,
 then each homset has exactly one element.
 -/
-@[implicit_reducible]
+@[instance_reducible]
 def uniqueHomsetOfInitialIsoUnit [HasInitial C] (i : ⊥_ C ≅ 𝟙_ C) (X Y : C) : Unique (X ⟶ Y) :=
   Equiv.unique <|
     calc

@@ -5,7 +5,7 @@ Authors: Sebastian Ullrich
 -/
 module
 
-public import Mathlib.Tactic.Lemma
+import Mathlib.Init
 
 /-!
 # Functor Laws, applicative laws, and monad Laws

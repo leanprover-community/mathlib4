@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Sheaf.ChangeOfRings
-public import Mathlib.CategoryTheory.Sites.LocallySurjective
 
 /-!
 # The associated sheaf of a presheaf of modules
@@ -57,6 +56,7 @@ variable {R₀ R : Cᵒᵖ ⥤ RingCat.{u}} (α : R₀ ⟶ R) [Presheaf.IsLocall
   (r₀ : FamilyOfElements (R₀ ⋙ forget _) P) (m₀ : FamilyOfElements (M₀.presheaf ⋙ forget _) P)
 include hA
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     {Y : C} (r₀ r₀' : R₀.obj (Opposite.op Y))
     (m₀ m₀' : M₀.obj (Opposite.op Y))
@@ -149,6 +149,8 @@ structure SMulCandidate where
   h ⦃Y : Cᵒᵖ⦄ (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.app Y r₀ = R.obj.map f r)
     (m₀ : M₀.obj Y) (hm₀ : φ.app Y m₀ = A.obj.map f m) : A.obj.map f x = φ.app Y (r₀ • m₀)
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- Constructor for `SMulCandidate`. -/
 def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     (r₀ : Presieve.FamilyOfElements (R₀ ⋙ forget _) S.arrows)
@@ -175,6 +177,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
       rw [Functor.map_comp]
       rfl
 
+set_option backward.isDefEq.respectTransparency.types false in
 instance : Nonempty (SMulCandidate α φ r m) := ⟨by
   let S := (Presheaf.imageSieve α r ⊓ Presheaf.imageSieve φ m)
   have hS : S ∈ J _ := by
@@ -222,6 +225,7 @@ lemma map_smul_eq {Y : Cᵒᵖ} (f : X ⟶ Y) (r₀ : R₀.obj Y) (hr₀ : α.ap
     A.obj.map f (smul α φ r m) = φ.app Y (r₀ • m₀) :=
   (smulCandidate α φ r m).h f r₀ hr₀ m₀ hm₀
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma one_smul : smul α φ 1 m = m := by
   apply A.isSeparated _ _ (Presheaf.imageSieve_mem J φ m)
   rintro Y f ⟨m₀, hm₀⟩
@@ -288,7 +292,7 @@ variable (X)
 
 /-- The module structure on the sections of the sheafification of the underlying
 presheaf of abelian groups of a presheaf of modules. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def module : Module (R.obj.obj X) (A.obj.obj X) where
   smul r m := smul α φ r m
   one_smul := Sheafify.one_smul α φ
@@ -327,17 +331,14 @@ noncomputable def sheafify : SheafOfModules.{v} R where
 /-- The canonical morphism from a presheaf of modules to its associated sheaf. -/
 noncomputable def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
-    simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
+    simpa using! (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
       r₀ (by simp) m₀ (by simp)).symm)
 
+@[simp]
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl
 
-/-- `@[simp]`-normal form of `toSheafify_app_apply`. -/
-@[simp]
-lemma toSheafify_app_apply' (X : Cᵒᵖ) (x : M₀.obj X) :
-    DFunLike.coe (F := (_ →ₗ[_] ↑((ModuleCat.restrictScalars (α.app X).hom).obj _)))
-    ((toSheafify α φ).app X).hom x = φ.app X x := rfl
+@[deprecated (since := "2026-09-24")] alias toSheafify_app_apply' := toSheafify_app_apply
 
 @[simp]
 lemma toPresheaf_map_toSheafify : (toPresheaf R₀).map (toSheafify α φ) = φ := rfl
@@ -384,6 +385,7 @@ variable {M₀' : PresheafOfModules.{v} R₀} {A' : Sheaf J AddCommGrpCat.{v}}
   [Presheaf.IsLocallyInjective J φ'] [Presheaf.IsLocallySurjective J φ']
   (τ₀ : M₀ ⟶ M₀') (τ : A ⟶ A')
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The morphism of sheaves of modules `sheafify α φ ⟶ sheafify α φ'`
 induced by morphisms `τ₀ : M₀ ⟶ M₀'` and `τ : A ⟶ A'`
@@ -393,7 +395,7 @@ noncomputable def sheafifyMap (fac : (toPresheaf R₀).map τ₀ ≫ φ' = φ �
     sheafify α φ ⟶ sheafify α φ' where
   val := homMk τ.hom (fun X r m ↦ by
     let f := (sheafifyHomEquiv' α φ (by exact A'.property)).symm (τ₀ ≫ toSheafify α φ')
-    suffices τ.hom = (toPresheaf _).map f by simpa only [this] using (f.app X).hom.map_smul r m
+    suffices τ.hom = (toPresheaf _).map f by simpa only [this] using! (f.app X).hom.map_smul r m
     apply ((J.W_of_isLocallyBijective φ).homEquiv _ A'.property).injective
     dsimp [f]
     erw [comp_toPresheaf_map_sheafifyHomEquiv'_symm_hom]

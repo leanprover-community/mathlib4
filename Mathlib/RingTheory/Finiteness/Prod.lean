@@ -5,15 +5,16 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.LinearAlgebra.Prod
 public import Mathlib.RingTheory.Finiteness.Defs
+
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Finitely generated product (sub)modules
 
 -/
 
-@[expose] public section
+public section
 
 open Function (Surjective)
 

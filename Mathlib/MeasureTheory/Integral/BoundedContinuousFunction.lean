@@ -6,8 +6,8 @@ Authors: Kalle Kytölä
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
+public import Mathlib.Topology.ContinuousMap.Bounded.Normed
 
 /-!
 # Integration of bounded continuous functions
@@ -27,12 +27,18 @@ namespace BoundedContinuousFunction
 
 section NNRealValued
 
-lemma apply_le_nndist_zero {X : Type*} [TopologicalSpace X] (f : X →ᵇ ℝ≥0) (x : X) :
+variable {X : Type*} [TopologicalSpace X]
+
+lemma apply_le_nndist_zero (f : X →ᵇ ℝ≥0) (x : X) :
     f x ≤ nndist 0 f := by
   convert nndist_coe_le_nndist x
-  simp only [coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
+  simp only [FunLike.coe_zero, Pi.zero_apply, NNReal.nndist_zero_eq_val]
 
-variable {X : Type*} [MeasurableSpace X] [TopologicalSpace X]
+lemma apply_le_edist_zero (f : X →ᵇ ℝ≥0) (x : X) :
+    f x ≤ edist 0 f := by
+  simpa [← ENNReal.coe_le_coe] using f.apply_le_nndist_zero x
+
+variable [MeasurableSpace X]
 
 lemma lintegral_le_edist_mul (f : X →ᵇ ℝ≥0) (μ : Measure X) :
     (∫⁻ x, f x ∂μ) ≤ edist 0 f * (μ Set.univ) :=
@@ -53,7 +59,7 @@ theorem lintegral_lt_top_of_nnreal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ 
 theorem integrable_of_nnreal [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) :
     Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
   refine ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, ?_⟩
-  simp only [hasFiniteIntegral_iff_enorm, Function.comp_apply, NNReal.enorm_eq]
+  simp only [hasFiniteIntegral_iff_eNorm, Function.comp_apply, NNReal.eNorm_eq]
   exact lintegral_lt_top_of_nnreal _ f
 
 theorem integral_eq_integral_nnrealPart_sub [OpensMeasurableSpace X] (f : X →ᵇ ℝ) :
@@ -67,10 +73,10 @@ theorem lintegral_of_real_lt_top (f : X →ᵇ ℝ) :
 
 theorem toReal_lintegral_coe_eq_integral [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) (μ : Measure X) :
     (∫⁻ x, (f x : ℝ≥0∞) ∂μ).toReal = ∫ x, (f x : ℝ) ∂μ := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using
+  rw [integral_eq_lintegral_of_nonneg_ae _ (by simpa [Function.comp_apply] using!
         (NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable)]
   · simp only [ENNReal.ofReal_coe_nnreal]
-  · exact Eventually.of_forall (by simp only [Pi.zero_apply, NNReal.zero_le_coe, imp_true_iff])
+  · exact Eventually.of_forall (by simp)
 
 end NNRealValued
 
@@ -81,11 +87,13 @@ variable (μ : Measure X)
 variable {E : Type*} [NormedAddCommGroup E]
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
-lemma lintegral_nnnorm_le (f : X →ᵇ E) :
+lemma lintegral_nnNorm_le (f : X →ᵇ E) :
     ∫⁻ x, ‖f x‖₊ ∂μ ≤ ‖f‖₊ * (μ Set.univ) := by
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnnorm_coe_le_nnnorm
+    _ ≤ ∫⁻ _, ‖f‖₊ ∂μ       := by gcongr; apply nnNorm_coe_le_nnNorm
     _ = ‖f‖₊ * (μ Set.univ) := by rw [lintegral_const]
+
+@[deprecated (since := "2026-10-31")] alias lintegral_nnnorm_le := lintegral_nnNorm_le
 
 variable [OpensMeasurableSpace X] [SecondCountableTopology E] [MeasurableSpace E] [BorelSpace E]
 
@@ -94,7 +102,7 @@ lemma integrable [IsFiniteMeasure μ] (f : X →ᵇ E) :
     Integrable f μ := by
   refine ⟨f.continuous.measurable.aestronglyMeasurable, (hasFiniteIntegral_def _ _).mp ?_⟩
   calc  ∫⁻ x, ‖f x‖₊ ∂μ
-    _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnnorm_le μ
+    _ ≤ ‖f‖₊ * (μ Set.univ) := f.lintegral_nnNorm_le μ
     _ < ∞                   := ENNReal.mul_lt_top ENNReal.coe_lt_top (measure_lt_top μ Set.univ)
 
 variable [NormedSpace ℝ E]

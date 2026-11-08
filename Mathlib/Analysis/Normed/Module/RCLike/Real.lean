@@ -22,7 +22,7 @@ In this file we prove some theorems about (semi)normed spaces over real numbers.
   similar lemmas assuming that the ambient space is separated and nontrivial instead of `r ≠ 0`.
 -/
 
-@[expose] public section
+public section
 
 open Metric Set Function Filter
 open scoped NNReal Topology
@@ -71,7 +71,7 @@ theorem closure_ball (x : E) {r : ℝ} (hr : r ≠ 0) : closure (ball x r) = clo
 
 theorem frontier_ball (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (ball x r) = sphere x r := by
-  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_diff_ball]
+  rw [frontier, closure_ball x hr, isOpen_ball.interior_eq, closedBall_sdiff_ball]
 
 theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     interior (closedBall x r) = ball x r := by
@@ -92,13 +92,13 @@ theorem interior_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
 
 theorem frontier_closedBall (x : E) {r : ℝ} (hr : r ≠ 0) :
     frontier (closedBall x r) = sphere x r := by
-  rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_diff_ball]
+  rw [frontier, closure_closedBall, interior_closedBall x hr, closedBall_sdiff_ball]
 
 theorem interior_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : interior (sphere x r) = ∅ := by
   rw [← frontier_closedBall x hr, interior_frontier isClosed_closedBall]
 
 theorem frontier_sphere (x : E) {r : ℝ} (hr : r ≠ 0) : frontier (sphere x r) = sphere x r := by
-  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere x hr, sdiff_empty]
 
 variable [NontrivialTopology E]
 
@@ -114,12 +114,16 @@ theorem exists_norm_eq {c : ℝ} (hc : 0 ≤ c) : ∃ x : E, ‖x‖ = c := by
 theorem range_norm : range (norm : E → ℝ) = Ici 0 :=
   Subset.antisymm (range_subset_iff.2 norm_nonneg) fun _ => exists_norm_eq E
 
-theorem nnnorm_surjective : Surjective (nnnorm : E → ℝ≥0) := fun c =>
+theorem nnNorm_surjective : Surjective (nnNorm : E → ℝ≥0) := fun c =>
   (exists_norm_eq E c.coe_nonneg).imp fun _ h => NNReal.eq h
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_surjective := nnNorm_surjective
+
 @[simp]
-theorem range_nnnorm : range (nnnorm : E → ℝ≥0) = univ :=
-  (nnnorm_surjective E).range_eq
+theorem range_nnNorm : range (nnNorm : E → ℝ≥0) = univ :=
+  (nnNorm_surjective E).range_eq
+
+@[deprecated (since := "2026-10-31")] alias range_nnnorm := range_nnNorm
 
 variable {E} in
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
@@ -144,7 +148,7 @@ theorem interior_closedBall' (x : E) (r : ℝ) : interior (closedBall x r) = bal
   · exact interior_closedBall x hr
 
 theorem frontier_closedBall' (x : E) (r : ℝ) : frontier (closedBall x r) = sphere x r := by
-  rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_diff_ball]
+  rw [frontier, closure_closedBall, interior_closedBall' x r, closedBall_sdiff_ball]
 
 @[simp]
 theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
@@ -152,6 +156,6 @@ theorem interior_sphere' (x : E) (r : ℝ) : interior (sphere x r) = ∅ := by
 
 @[simp]
 theorem frontier_sphere' (x : E) (r : ℝ) : frontier (sphere x r) = sphere x r := by
-  rw [isClosed_sphere.frontier_eq, interior_sphere' x, diff_empty]
+  rw [isClosed_sphere.frontier_eq, interior_sphere' x, sdiff_empty]
 
 end Normed

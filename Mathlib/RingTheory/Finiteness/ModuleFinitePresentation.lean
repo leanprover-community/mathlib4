@@ -26,13 +26,12 @@ finitely presented as a module.
 - [Grothendieck, EGA IV₁ 1.4.7][ega-iv-1]
 -/
 
-@[expose] public section
+public section
 
 universe u
 
 variable (R : Type u) (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- EGA IV₁, 1.4.7.1 -/
 lemma Module.Finite.exists_free_surjective [Module.Finite R S] :
     ∃ (S' : Type u) (_ : CommRing S') (_ : Algebra R S') (_ : Module.Finite R S')
@@ -81,9 +80,8 @@ it is finitely presented as a module over `R`. -/
 lemma Module.FinitePresentation.of_finite_of_finitePresentation
     [Module.Finite R S] [Algebra.FinitePresentation R S] :
     Module.FinitePresentation R S := by
-  classical
   obtain ⟨R', _, _, _, _, _, f, hf⟩ := Module.Finite.exists_free_surjective R S
-  letI := f.toRingHom.toAlgebra
+  let := f.toRingHom.toAlgebra
   have : IsScalarTower R R' S := .of_algebraMap_eq' f.comp_algebraMap.symm
   have : Module.FinitePresentation R R' :=
     Module.finitePresentation_of_projective R R'

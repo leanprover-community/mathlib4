@@ -5,8 +5,11 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Topology.PartitionOfUnity
 public import Mathlib.Analysis.Convex.Combination
+public import Mathlib.Topology.PartitionOfUnity
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Partition of unity and convex sets
@@ -31,7 +34,7 @@ public section
 
 open Set Function
 
-open Topology
+open scoped Topology
 
 variable {ι X E : Type*} [TopologicalSpace X] [AddCommGroup E] [Module ℝ E]
 

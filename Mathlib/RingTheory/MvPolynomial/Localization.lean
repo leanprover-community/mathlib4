@@ -5,15 +5,11 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
-public import Mathlib.Algebra.MvPolynomial.CommRing
 public import Mathlib.RingTheory.Ideal.Quotient.Operations
-public import Mathlib.RingTheory.Localization.Away.Basic
 public import Mathlib.RingTheory.Localization.BaseChange
 public import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
-
 # Localization and multivariate polynomial rings
 
 In this file we show some results connecting multivariate polynomial rings and localization.
@@ -37,7 +33,6 @@ variable [IsLocalization M S]
 
 attribute [local instance] algebraMvPolynomial
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 If `S` is the localization of `R` at a submonoid `M`, then `MvPolynomial σ S`
 is the localization of `MvPolynomial σ R` at `M.map MvPolynomial.C`.
@@ -120,9 +115,9 @@ noncomputable def mvPolynomialQuotientEquiv :
   toFun := auxHom S r
   invFun := auxInv S r
   left_inv x := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxInv_auxHom S r) x
+    simpa using congr($(auxInv_auxHom S r) x)
   right_inv s := by
-    simpa using congrFun (congrArg DFunLike.coe <| auxHom_auxInv S r) s
+    simpa using congr($(auxHom_auxInv S r) s)
   map_mul' := by simp
   map_add' := by simp
   commutes' := by simp

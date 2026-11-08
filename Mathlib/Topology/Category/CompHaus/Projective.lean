@@ -5,10 +5,9 @@ Authors: Johan Commelin
 -/
 module
 
-public import Mathlib.Topology.Category.CompHaus.Basic
-public import Mathlib.Topology.Compactification.StoneCech
-public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 public import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+public import Mathlib.CategoryTheory.Preadditive.Projective.Basic
+public import Mathlib.Topology.Category.CompHaus.Basic
 
 /-!
 # CompHaus has enough projectives
@@ -48,7 +47,11 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     use CompHausLike.ofHom _ ⟨h, hh⟩
     apply ConcreteCategory.coe_ext
     have : g.hom ∘ g' = id := hg'.comp_eq_id
-    convert denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous _
+    convert!
+      denseRange_pure.equalizer (g.hom.hom.continuous.comp hh) f.hom.hom.continuous
+        _
+          -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
+
     -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
     rw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
     rfl

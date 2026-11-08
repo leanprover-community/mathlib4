@@ -7,12 +7,14 @@ Authors: Riccardo Brasca, Sanyam Gupta, Omar Haddad, David Lowry-Duda,
 module
 
 public import Mathlib.NumberTheory.FLT.Basic
-public import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
-public import Mathlib.Algebra.Ring.Divisibility.Lemmas
+
+import Mathlib.Algebra.Ring.Divisibility.Lemmas
+import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 
 /-!
 # Fermat Last Theorem in the case `n = 3`
+
 The goal of this file is to prove Fermat's Last Theorem in the case `n = 3`.
 
 ## Main results
@@ -88,7 +90,7 @@ lemma three_dvd_b_of_dvd_a_of_gcd_eq_one_of_case2 {a b c : ℤ} (ha : a ≠ 0)
     refine isCoprime_of_gcd_eq_one_of_FLT ?_ HF
     convert Hgcd using 2
     rw [Finset.pair_comm, Finset.insert_comm]
-  by_contra! h3b
+  by_contra h3b
   by_cases h3c : 3 ∣ c
   · apply h3b
     rw [add_assoc, add_comm (b ^ 3), ← add_assoc] at HF
@@ -173,10 +175,8 @@ lemma FermatLastTheoremForThree_of_FermatLastTheoremThreeGen
   · rwa [← Ideal.norm_dvd_iff (hζ.prime_norm_toInteger_sub_one_of_prime_ne_two' (by decide)),
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)] at hdvd
   · exact dvd_trans hζ.toInteger_sub_one_dvd_prime' ⟨x, by simp [hx]⟩
-  · rw [show a = algebraMap _ (𝓞 K) a by simp, show b = algebraMap _ (𝓞 K) b by simp]
-    exact hcoprime.map _
-  · simp only [Units.val_one, one_mul]
-    exact_mod_cast h
+  · exact IsCoprime.intCast hcoprime
+  · simpa using mod_cast h
 
 namespace FermatLastTheoremForThreeGen
 
@@ -213,7 +213,7 @@ variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 /-- For any `S' : Solution'`, the multiplicity of `λ` in `S'.c` is finite. -/
 lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
-  .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
+  .of_not_isUnit hζ.zeta_sub_one_prime'.not_isUnit S'.hc
 
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/
@@ -276,21 +276,14 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
     _ = S'.u⁻¹ * (S'.u * S'.c ^ 3) := by rw [S'.H]
     _ = S'.c ^ 3 := by simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
-  suffices 2 ≤ multiplicity (hζ.toInteger - 1) S'.c by
-    obtain ⟨x, hx⟩ := pow_multiplicity_dvd (hζ.toInteger - 1) S'.c
-    refine ⟨λ ^ (multiplicity (hζ.toInteger - 1) S'.c - 2) * x, ?_⟩
-    rw [← mul_assoc, ← pow_add]
-    convert hx using 3
-    simp [this]
   have := lambda_pow_four_dvd_c_cube S'
   rw [pow_dvd_iff_le_emultiplicity, emultiplicity_pow hζ.zeta_sub_one_prime',
     hm.emultiplicity_eq_multiplicity] at this
   norm_cast at this
-  lia
+  exact (FiniteMultiplicity.pow_dvd_iff_le_multiplicity hm).mpr (by lia)
 
 /-- Given `S' : Solution'`, we have that `2 ≤ S'.multiplicity`. -/
 lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
@@ -317,7 +310,6 @@ lemma a_cube_add_b_cube_eq_mul :
 section IsCyclotomicExtension
 variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
 lemma lambda_sq_dvd_or_dvd_or_dvd :
@@ -575,7 +567,7 @@ lemma x_mul_y_mul_z_eq_u_mul_w_cube : S.x * S.y * S.z = S.u * S.w ^ 3 := by
 
 lemma exists_cube_associated :
     (∃ X, Associated (X ^ 3) S.x) ∧ (∃ Y, Associated (Y ^ 3) S.y) ∧
-      ∃ Z, Associated (Z ^ 3) S.z := by classical
+      ∃ Z, Associated (Z ^ 3) S.z := by
   have h₁ := S.isCoprime_x_z.mul_left S.isCoprime_y_z
   have h₂ : Associated (S.w ^ 3) (S.x * S.y * S.z) :=
     ⟨S.u, by rw [x_mul_y_mul_z_eq_u_mul_w_cube S, mul_comm]⟩
@@ -742,7 +734,7 @@ lemma Solution'_descent_multiplicity_lt :
 /-- Given any `S : Solution`, there is another `S₁ : Solution` such that
   `S₁.multiplicity < S.multiplicity` -/
 theorem exists_Solution_multiplicity_lt :
-    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by classical
+    ∃ S₁ : Solution hζ, S₁.multiplicity < S.multiplicity := by
   obtain ⟨S', hS'⟩ := exists_Solution_of_Solution' (Solution'_descent S)
   exact ⟨S', hS' ▸ Solution'_descent_multiplicity_lt S⟩
 
@@ -758,7 +750,6 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
-  classical
   let K := CyclotomicField 3 ℚ
   let hζ := IsCyclotomicExtension.zeta_spec 3 ℚ K
   have : NumberField K := IsCyclotomicExtension.numberField {3} ℚ _

@@ -8,9 +8,13 @@ module
 public meta import Mathlib.Util.AtLocation
 public import Mathlib.Data.ZMod.Basic  -- shake: keep (Qq dependency)
 public import Mathlib.RingTheory.Polynomial.Basic  -- shake: keep (Qq dependency)
-import all Mathlib.Tactic.NormNum.DivMod  -- for accessing `evalIntMod.go`
 public import Mathlib.Tactic.NormNum.PowMod
 public import Mathlib.Tactic.ReduceModChar.Ext
+
+import Mathlib.Tactic.NormNum.DivMod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # `reduce_mod_char` tactic
@@ -184,7 +188,7 @@ match Expr.getAppFnArgs t with
 | (``Polynomial, #[(R : Q(Type u)), _]) => do match ← typeToCharP (expensive := expensive) R with
   | (.intLike n _ _) =>
     return .intLike n
-      (q(Polynomial.ring) : Q(Ring (Polynomial $R)))
+      (q(inferInstance) : Q(Ring (Polynomial $R)))
       (q(Polynomial.instCharP _) : Q(CharP (Polynomial $R) $n))
   | .failure => return .failure
 | _ => if ! expensive then return .failure else do
@@ -256,11 +260,12 @@ partial def derive (expensive := false) (e : Expr) : MetaM Simp.Result := do
   | none => throwError "internal error: reduce_mod_char not registered as simp extension"
   let ctx ← Simp.mkContext config (congrTheorems := congrTheorems)
     (simpTheorems := #[← ext.getTheorems])
-  let discharge := Mathlib.Meta.NormNum.discharge ctx
+  let discharge := Mathlib.Meta.NormNum.discharge
   let r : Simp.Result := {expr := e}
-  let pre := Simp.preDefault #[] >> fun e =>
+  let matchAndNorm : Simproc := fun e =>
       try return (Simp.Step.done (← matchAndNorm (expensive := expensive) e))
       catch _ => pure .continue
+  let pre := Simp.preDefault #[] >> matchAndNorm
   let post := Simp.postDefault #[]
   let r ← r.mkEqTrans (← Simp.main r.expr ctx (methods := { pre, post, discharge? := discharge })).1
 
@@ -296,11 +301,11 @@ elab_rules : tactic
 | `(tactic| reduce_mod_char $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := false) ·) "reduce_mod_char" loc
-    (failIfUnchanged := false)
+    (ifUnchanged := .silent)
 | `(tactic| reduce_mod_char! $[$loc]?) => unsafe do
   let loc := expandOptLocation (Lean.mkOptionalNode loc)
   transformAtNondepPropLocation (derive (expensive := true) ·) "reduce_mod_char"
-    loc (failIfUnchanged := false)
+    loc (ifUnchanged := .silent)
 
 end ReduceModChar
 

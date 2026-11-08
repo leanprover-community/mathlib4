@@ -70,8 +70,14 @@ lemma Scalene.dist_ne {s : Simplex R P n} (hs : s.Scalene) {i₁ i₂ i₃ i₄ 
      by grind,
      by grind⟩
   simp_rw [Scalene]
-  convert (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
-  grind [reindex_points, dist_comm]
+  convert! (Injective.of_comp_iff' _ (Equiv.bijective f)).symm
+  #adaptation_note /-- Before https://github.com/leanprover/lean4/pull/13166
+  (replacing grind's canonicalizer with a type-directed normalizer), `grind` closed this goal.
+  It is not yet clear whether this is due to defeq abuse in Mathlib or a problem in the new
+  canonicalizer; a minimization would help. The original proof was:
+  `grind [reindex_points, dist_comm]` -/
+  simp only [reindex_points, comp_apply, Equiv.coe_fn_mk, f]
+  split <;> simp [dist_comm]
 
 /-- A simplex is equilateral if all the edge lengths are equal. -/
 def Equilateral (s : Simplex R P n) : Prop :=
@@ -87,7 +93,7 @@ lemma Equilateral.dist_eq {s : Simplex R P n} (he : s.Equilateral) {i₁ i₂ i�
     (s.reindex e).Equilateral ↔ s.Equilateral := by
   refine ⟨fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩, fun ⟨r, hr⟩ ↦ ⟨r, fun i j hij ↦ ?_⟩⟩
   · convert hr (e i) (e j) (e.injective.ne hij) using 2 <;> simp
-  · convert hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
+  · convert! hr (e.symm i) (e.symm j) (e.symm.injective.ne hij) using 2
 
 /-- A simplex is regular if it is equivalent under an isometry to any reindexing. -/
 def Regular (s : Simplex R P n) : Prop :=
@@ -99,11 +105,11 @@ def Regular (s : Simplex R P n) : Prop :=
   · rcases h ((e.symm.trans σ).trans e) with ⟨x, hx⟩
     refine ⟨x, ?_⟩
     ext i
-    simpa using congrFun hx (e i)
+    simpa using congr($hx (e i))
   · rcases h ((e.trans σ).trans e.symm) with ⟨x, hx⟩
     refine ⟨x, ?_⟩
     ext i
-    simpa using congrFun hx (e.symm i)
+    simpa using congr($hx (e.symm i))
 
 lemma Regular.equilateral {s : Simplex R P n} (hr : s.Regular) : s.Equilateral := by
   refine ⟨dist (s.points 0) (s.points 1), fun i j hij ↦ ?_⟩

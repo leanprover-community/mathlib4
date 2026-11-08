@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 
 /-!
-
 # Idempotent completeness of categories of simplicial objects
 
 In this file, we provide an instance expressing that `SimplicialObject C`
@@ -18,7 +17,7 @@ category `C` is.
 
 -/
 
-@[expose] public section
+public section
 
 
 namespace CategoryTheory

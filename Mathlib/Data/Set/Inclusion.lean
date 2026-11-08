@@ -9,7 +9,7 @@ public import Mathlib.Data.Set.Basic
 
 /-! # Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 
-@[expose] public section
+public section
 
 open Function
 
@@ -50,6 +50,7 @@ theorem inclusion_comp_inclusion {α} {s t u : Set α} (hst : s ⊆ t) (htu : t 
 theorem coe_inclusion (h : s ⊆ t) (x : s) : (inclusion h x : α) = (x : α) :=
   rfl
 
+@[simp]
 theorem val_comp_inclusion (h : s ⊆ t) : Subtype.val ∘ inclusion h = Subtype.val :=
   rfl
 

@@ -5,9 +5,9 @@ Authors: Jon Bannon, Jireh Loreaux
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
@@ -111,7 +111,6 @@ lemma abs_nnrpow_two (a : A) : abs a ^ (2 : ℝ≥0) = star a * a := by
 lemma abs_nnrpow_two_mul (a : A) (x : ℝ≥0) :
     abs a ^ (2 * x) = (star a * a) ^ x := by rw [← nnrpow_nnrpow, abs_nnrpow_two]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma abs_nnrpow (a : A) (x : ℝ≥0) :
     abs a ^ x = (star a * a) ^ (x / 2) := by
   simp only [← abs_nnrpow_two_mul, mul_div_left_comm, ne_eq, OfNat.ofNat_ne_zero,
@@ -148,7 +147,6 @@ lemma cfcAbs_cfcAbs (a : A) : abs (abs a) = abs a := abs_of_nonneg ..
 
 variable [StarModule ℝ A]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp, grind =]
 lemma abs_smul_nonneg {R : Type*} [Semiring R] [SMulWithZero R ℝ≥0] [SMul R A]
     [IsScalarTower R ℝ≥0 A] (r : R) (a : A) :
@@ -202,8 +200,7 @@ lemma _root_.cfcₙ_comp_norm (f : 𝕜 → 𝕜) (a : A) (ha : p a := by cfc_ta
     cfcₙ (f ‖·‖) a = cfcₙ f (abs a) := by
   obtain (hf0 | hf0) := em (f 0 = 0)
   · rw [cfcₙ_comp' f (‖·‖) a, ← abs_eq_cfcₙ_coe_norm _ a]
-  · rw [cfcₙ_apply_of_not_map_zero _ hf0,
-      cfcₙ_apply_of_not_map_zero _ (fun h ↦ (hf0 <| by simpa using h).elim)]
+  · grind [norm_zero]
 
 lemma quasispectrum_abs (a : A) (ha : p a := by cfc_tac) :
     quasispectrum 𝕜 (abs a) = (fun z ↦ (‖z‖ : 𝕜)) '' quasispectrum 𝕜 a := by
@@ -245,7 +242,7 @@ lemma abs_natCast (n : ℕ) : abs (n : A) = n := by
 
 @[simp]
 lemma abs_ofNat (n : ℕ) [n.AtLeastTwo] : abs (ofNat(n) : A) = ofNat(n) := by
-  simpa using abs_natCast n
+  simpa using! abs_natCast n
 
 @[simp]
 lemma abs_intCast (n : ℤ) : abs (n : A) = |n| := by
@@ -312,7 +309,7 @@ open CFC
 
 @[simp, grind =]
 lemma abs_eq_zero_iff {a : A} : abs a = 0 ↔ a = 0 := by
-  rw [CFC.abs, sqrt_eq_zero_iff _, CStarRing.star_mul_self_eq_zero_iff]
+  rw [CFC.abs, sqrt_eq_zero_iff _, star_mul_self_eq_zero]
 
 @[simp, grind =]
 lemma norm_abs {a : A} : ‖abs a‖ = ‖a‖ := by

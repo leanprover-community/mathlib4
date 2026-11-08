@@ -23,7 +23,7 @@ These are deduced from the same results on finite-dimensional real manifolds, gi
 as `ae_eq_zero_of_integral_contMDiff_smul_eq_zero` and `ae_eq_of_integral_contMDiff_smul_eq`.
 -/
 
-@[expose] public section
+public section
 
 open MeasureTheory Filter Metric Function Set TopologicalSpace
 
@@ -88,7 +88,7 @@ theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
           rw [Real.norm_of_nonneg this.1]
           exact this.2
         exact mul_le_of_le_one_left (norm_nonneg _) this
-      · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose! hxK; exact vK n hxK
+      · have : g n x = 0 := by rw [← notMem_support, g_supp]; contrapose hxK; exact vK n hxK
         simp [this]
     have D : ∀ᵐ x ∂μ, Tendsto (fun n => g n x • f x) atTop (𝓝 (s.indicator f x)) := by
       filter_upwards with x
@@ -104,7 +104,7 @@ theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
           simpa using hxs
         filter_upwards [(tendsto_order.1 u_lim).2 _ εpos] with n hn
         rw [← notMem_support, g_supp]
-        contrapose! hε
+        contrapose hε
         exact thickening_mono hn.le s hε
     exact tendsto_integral_of_dominated_convergence bound A B C D
   -- deduce that `∫ x in s, f = 0` as each integral `∫ gₙ f` vanishes by assumption
@@ -113,9 +113,6 @@ theorem ae_eq_zero_of_integral_contMDiff_smul_eq_zero [SigmaCompactSpace M]
     apply HasCompactSupport.of_support_subset_isCompact K_compact
     simpa [g_supp] using vK n
   simpa [this] using L
-
-@[deprecated (since := "2025-12-17")]
-alias ae_eq_zero_of_integral_smooth_smul_eq_zero := ae_eq_zero_of_integral_contMDiff_smul_eq_zero
 
 -- An instance with keys containing `Opens`
 instance (U : Opens M) : BorelSpace U := inferInstanceAs (BorelSpace (U : Set M))
@@ -132,7 +129,7 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : 
   rw [← ae_restrict_iff' meas_U, ae_restrict_iff_subtype meas_U]
   let U : Opens M := ⟨U, hU⟩
   change ∀ᵐ (x : U) ∂_, _
-  haveI : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
+  have : SigmaCompactSpace U := isSigmaCompact_iff_sigmaCompactSpace.mp hSig
   refine ae_eq_zero_of_integral_contMDiff_smul_eq_zero I ?_ fun g g_smth g_supp ↦ ?_
   · exact (locallyIntegrable_comap meas_U).mpr hf
   specialize h (Subtype.val.extend g 0) (g_smth.extend_zero g_supp)
@@ -145,10 +142,6 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' {U : Set M} (hU : 
   rw [Function.extend_apply' _ _ _ (mt _ hx)]
   · apply zero_smul
   · rintro ⟨x, rfl⟩; exact x.2
-
-@[deprecated (since := "2025-12-17")]
-alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero' :=
-  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero'
 
 variable [SigmaCompactSpace M]
 
@@ -164,10 +157,6 @@ theorem IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero {U : Set M} (hU : I
   haveI := ChartedSpace.secondCountable_of_sigmaCompact H M
   hU.ae_eq_zero_of_integral_contMDiff_smul_eq_zero' _
     (isSigmaCompact_iff_sigmaCompactSpace.mpr inferInstance) hf h
-
-@[deprecated (since := "2025-12-17")]
-alias IsOpen.ae_eq_zero_of_integral_smooth_smul_eq_zero :=
-  IsOpen.ae_eq_zero_of_integral_contMDiff_smul_eq_zero
 
 /-- If two locally integrable functions on a finite-dimensional real manifold have the same integral
 when multiplied by any smooth compactly supported function, then they coincide almost everywhere. -/
@@ -185,9 +174,6 @@ theorem ae_eq_of_integral_contMDiff_smul_eq
     · exact hf'.integrable_smul_left_of_hasCompactSupport g_diff.continuous g_supp
   filter_upwards [this] with x hx
   simpa [sub_eq_zero] using hx
-
-@[deprecated (since := "2025-12-17")]
-alias ae_eq_of_integral_smooth_smul_eq := ae_eq_of_integral_contMDiff_smul_eq
 
 end Manifold
 

@@ -19,7 +19,7 @@ They are separate, and if someone would like to split this file in two that may 
 * Results about `AddMonoid.End R` when `R` is a ring.
 -/
 
-@[expose] public section
+public section
 
 
 universe uM

@@ -6,11 +6,12 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
-public import Mathlib.CategoryTheory.Limits.Filtered
 public import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
-public import Mathlib.CategoryTheory.Limits.FunctorToTypes
 public import Mathlib.CategoryTheory.Limits.Indization.IndObject
-public import Mathlib.Logic.Small.Set
+
+import Mathlib.CategoryTheory.Limits.Filtered
+import Mathlib.CategoryTheory.Limits.FunctorToTypes
+import Mathlib.Logic.Small.Set
 
 /-!
 # Ind-objects are closed under filtered colimits
@@ -68,8 +69,8 @@ noncomputable def compYonedaColimitIsoColimitCompYoneda :
   _ ≅ colimit (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢) := (colimitIsoFlipCompColim _).symm
 
 theorem exists_nonempty_limit_obj_of_colimit [IsFiltered K]
-    (h : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (colimit H)) :
-    ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (H.obj k) := by
+    (h : Nonempty (limit <| 𝒢 ⋙ yoneda.obj (colimit H))) :
+    ∃ k, Nonempty (limit <| 𝒢 ⋙ yoneda.obj (H.obj k)) := by
   obtain ⟨t⟩ := h
   let t₂ := limMap (compYonedaColimitIsoColimitCompYoneda F G H).hom t
   let t₃ := (colimitLimitIso (H ⋙ yoneda ⋙ (whiskeringLeft _ _ _).obj 𝒢).flip).inv t₂
@@ -81,14 +82,15 @@ theorem exists_nonempty_limit_obj_of_colimit [IsFiltered K]
 
 theorem exists_nonempty_limit_obj_of_isColimit [IsFiltered K] {c : Cocone H} (hc : IsColimit c)
     (T : Over (colimit F)) (hT : c.pt ≅ T)
-    (h : Nonempty <| limit <| 𝒢 ⋙ yoneda.obj T) :
-    ∃ k, Nonempty <| limit <| 𝒢 ⋙ yoneda.obj (H.obj k) := by
+    (h : Nonempty (limit <| 𝒢 ⋙ yoneda.obj T)) :
+    ∃ k, Nonempty (limit <| 𝒢 ⋙ yoneda.obj (H.obj k)) := by
   refine exists_nonempty_limit_obj_of_colimit F G H ?_
   suffices T ≅ colimit H from Nonempty.map (lim.map (whiskerLeft 𝒢 (yoneda.map this.hom))) h
   refine hT.symm ≪≫ IsColimit.coconePointUniqueUpToIso hc (colimit.isColimit _)
 
 end Interchange
 
+set_option backward.isDefEq.respectTransparency.types false in
 theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
     IsFiltered (CostructuredArrow yoneda (colimit F)) := by
   -- It suffices to show that for any functor `G : J ⥤ CostructuredArrow yoneda (colimit F)` with
@@ -123,7 +125,7 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
   obtain ⟨k, hk⟩ : ∃ k, Nonempty (limit (G.op ⋙ (CostructuredArrow.toOver yoneda (colimit F)).op ⋙
       yoneda.obj ((CostructuredArrow.toOver yoneda (colimit F)).obj <|
         (CostructuredArrow.pre P.F yoneda (colimit F)).obj <|
-          (map (colimit.ι F i)).obj <| mk _))) :=
+          (CostructuredArrow.map (colimit.ι F i)).obj <| mk _))) :=
     exists_nonempty_limit_obj_of_isColimit F G _ hc _ (Iso.refl _) hi
   have htO : (CostructuredArrow.toOver yoneda (colimit F)).FullyFaithful := .ofFullyFaithful _
   -- Since the inclusion `y : CostructuredArrow yoneda (colimit F) ⥤ Over (colimit F)` is fully
@@ -136,7 +138,6 @@ theorem isFiltered [IsFiltered I] (hF : ∀ i, IsIndObject (F.obj i)) :
 
 end IndizationClosedUnderFilteredColimitsAux
 
-set_option backward.isDefEq.respectTransparency false in
 theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     (F : I ⥤ Cᵒᵖ ⥤ Type v) (hF : ∀ i, IsIndObject (F.obj i)) : IsIndObject (colimit F) := by
   have : IsFiltered (CostructuredArrow yoneda (colimit F)) :=
@@ -150,14 +151,14 @@ theorem isIndObject_colimit (I : Type v) [SmallCategory I] [IsFiltered I]
     fun i => (hF i).finallySmall.exists_small_weakly_terminal_set
   choose s hs j hjs hj using this
   refine finallySmall_of_small_weakly_terminal_set
-    (⋃ i, (map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
+    (⋃ i, (CostructuredArrow.map (colimit.ι F i)).obj '' (s i)) (fun A => ?_)
   obtain ⟨i, y, hy⟩ := FunctorToTypes.jointly_surjective'.{v, v} F _ (yonedaEquiv A.hom)
   let y' : CostructuredArrow yoneda (F.obj i) := mk (yonedaEquiv.symm y)
   obtain ⟨x⟩ := hj _ y'
-  refine ⟨(map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
+  refine ⟨(CostructuredArrow.map (colimit.ι F i)).obj (j i y'), ?_, ⟨?_⟩⟩
   · simp only [Set.mem_iUnion, Set.mem_image]
     exact ⟨i, j i y', hjs _ _, rfl⟩
-  · refine ?_ ≫ (map (colimit.ι F i)).map x
+  · refine ?_ ≫ (CostructuredArrow.map (colimit.ι F i)).map x
     refine homMk (𝟙 A.left) (yonedaEquiv.injective ?_)
     simp [-EmbeddingLike.apply_eq_iff_eq, hy, yonedaEquiv_comp, y']
 

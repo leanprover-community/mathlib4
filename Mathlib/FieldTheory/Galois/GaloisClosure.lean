@@ -5,11 +5,9 @@ Authors: Nailin Guan, Yuyang Zhao
 -/
 module
 
-public import Mathlib.FieldTheory.Normal.Closure
-public import Mathlib.FieldTheory.SeparableClosure
+public import Mathlib.FieldTheory.Galois.Basic
 
 /-!
-
 # Main definitions and results
 
 In a field extension `K/k`

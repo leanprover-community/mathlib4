@@ -83,7 +83,7 @@ mkDeclAndDepr () {
           sub(/^\+/, "", $i)
           if (!(old == $(i+1))) {
             # print the line that passes on to `addDeprecations`
-            printf("%s %s ,%s@@@", $i, $(i+1), depr(old, $(i+1)))
+            printf("%s %s,%s@@@", $i, $(i+1), depr(old, $(i+1)))
             # accumulate the summary of deprecations
             report[reps]=sprintf("%s\n", depr(old, $(i+1)))
             reps++
@@ -124,7 +124,7 @@ addDeprecations () {
     }
     currDep=""
     ## scanning the file, if we find an entries of `lines`, the we assign `currDep`
-  } ($0 ~ regex) { for(l in lines) { if ($0 ~ lines[l]) { found=1; currDep=deprs[l] } } } {
+  } ($0 ~ regex) { for(l in lines) { if ($0 ~ (lines[l] "( |$)")) { found=1; currDep=deprs[l] } } } {
     ## when we find the next empty line, we print the deprecation statement in `currDep`
     if ((found == 1) && (NF == 0)) {
       found=0

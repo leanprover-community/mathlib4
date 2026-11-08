@@ -6,14 +6,15 @@ Authors: Kim Morrison
 module
 
 public import Mathlib.Algebra.Order.Sub.Defs
-public import Mathlib.Algebra.Notation.Pi.Defs
-public import Mathlib.Algebra.Notation.Prod
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Products of `OrderedSub` types.
 -/
 
-@[expose] public section
+public section
 
 assert_not_exists MonoidWithZero
 

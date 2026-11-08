@@ -73,6 +73,7 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
@@ -101,10 +102,7 @@ lemma isConnected :
   · apply Zigzag.of_inv
     refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
     ext
-    dsimp
-    rw [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, isoOfHom_hom,
-      isoOfHom_hom_inv_id_assoc, ← L.map_comp_assoc, Arrow.w_mk_right, Arrow.mk_hom,
-      L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
+    simp [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, ← L.map_comp_assoc, fac]
 
 end Constructor
 
