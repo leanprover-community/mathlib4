@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public meta import Mathlib.Tactic.Translate.Core
 public import Mathlib.Tactic.Translate.Core
 
 /-!

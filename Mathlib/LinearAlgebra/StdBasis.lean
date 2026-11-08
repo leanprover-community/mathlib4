@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Algebra.Pi
 public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
+public import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
 # The standard basis

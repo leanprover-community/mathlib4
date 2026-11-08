@@ -5,10 +5,11 @@ Authors: Moritz Doll
 -/
 module
 
-public import Mathlib.Algebra.Group.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
 public import Mathlib.Algebra.GroupWithZero.InjSurj
 public import Mathlib.Algebra.GroupWithZero.Pi
+public import Mathlib.Algebra.Group.IsApply
+public import Mathlib.Tactic.Attr.Core
 
 /-! # Group with zero instances for `FunLike` types
 In this file we define various instances related to `GroupWithZero` for `FunLike` types.

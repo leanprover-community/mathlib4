@@ -9,6 +9,7 @@ public meta import Lean.Elab.Eval
 public meta import Lean.Elab.Tactic.BuiltinTactic
 public meta import Lean.Meta.Tactic.TryThis
 public import Mathlib.Init
+public import Lean.Meta.TryThis
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

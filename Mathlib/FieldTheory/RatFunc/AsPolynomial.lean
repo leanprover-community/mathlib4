@@ -7,9 +7,13 @@ module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
 public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 
 import Mathlib.RingTheory.Valuation.IsTrivialOn
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Combinatorics.Matroid.Init
+public import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Valuation
+public import Mathlib.Topology.Algebra.Valued.ValuationTopology
 
 /-!
 # Generalities on the polynomial structure of rational functions

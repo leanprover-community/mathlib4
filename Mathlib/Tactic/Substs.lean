@@ -6,6 +6,7 @@ Authors: Evan Lohn, Mario Carneiro
 module
 
 public import Mathlib.Init
+public import Lean.Meta.TryThis
 
 /-!
 # The `substs` macro

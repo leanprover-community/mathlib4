@@ -13,6 +13,7 @@ public meta import Mathlib.Tactic.ToAdditive
 public meta import Mathlib.Tactic.ToDual
 public import Mathlib.Basic.Countable.Defs
 public import Mathlib.Data.Nat.Pairing
+public meta import Aesop
 
 /-!
 # `Countable` deriving handler

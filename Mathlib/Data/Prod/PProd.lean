@@ -7,6 +7,8 @@ module
 
 import Batteries.Logic
 import Mathlib.Init
+public import Mathlib.Init
+import Mathlib.Tactic.TypeStar
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

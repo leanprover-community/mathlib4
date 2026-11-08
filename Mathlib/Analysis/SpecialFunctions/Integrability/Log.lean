@@ -6,7 +6,6 @@ Authors: Stefan Kebekus
 module
 
 public import Mathlib.Analysis.Meromorphic.FactorizedRational
-public import Mathlib.Analysis.SpecialFunctions.Log.PosLog
 public import Mathlib.MeasureTheory.Integral.CircleIntegral
 
 import Mathlib.Analysis.Normed.Module.Connected

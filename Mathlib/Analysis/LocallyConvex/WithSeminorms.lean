@@ -12,7 +12,6 @@ public import Mathlib.Topology.Algebra.FilterBasis
 public import Mathlib.Topology.Algebra.Module.LocallyConvex
 public import Mathlib.Topology.MetricSpace.Equicontinuity
 
-import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # Topology induced by a family of seminorms

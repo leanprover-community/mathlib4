@@ -11,6 +11,8 @@ public import Mathlib.Basic.Finite.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+import Mathlib.LinearAlgebra.FreeModule.PID
+import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 /-!
 # Wedderburn's Little Theorem

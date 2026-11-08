@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Basic.ENNReal.Operations
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Results about division in extended non-negative reals

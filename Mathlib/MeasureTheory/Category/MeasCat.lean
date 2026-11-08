@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Monad.Algebra
 public import Mathlib.MeasureTheory.Measure.GiryMonad
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # The category of measurable spaces

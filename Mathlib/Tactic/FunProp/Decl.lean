@@ -6,6 +6,7 @@ Authors: Tomáš Skřivan
 module
 
 public import Mathlib.Init
+public import Lean.Elab.Term
 
 /-!
 ## `funProp` environment extension that stores all registered function properties

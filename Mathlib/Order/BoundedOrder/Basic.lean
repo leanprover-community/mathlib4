@@ -11,6 +11,7 @@ public import Mathlib.Tactic.ByCases
 public import Mathlib.Tactic.Finiteness.Attr
 
 import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Linter.HaveILetI
 
 /-!
 # ⊤ and ⊥, bounded lattices and variants

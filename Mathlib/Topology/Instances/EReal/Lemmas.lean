@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Data.EReal.Inv
 public import Mathlib.Topology.Semicontinuity.Basic
+public import Mathlib.Tactic.Bound
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Topological structure on `EReal`

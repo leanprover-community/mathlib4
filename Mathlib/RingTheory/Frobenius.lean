@@ -10,6 +10,7 @@ public import Mathlib.RingTheory.Unramified.Locus
 
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.RingTheory.RootsOfUnity.PrimitiveRoots
+public import Mathlib.RingTheory.Localization.Submodule
 
 /-!
 # Frobenius elements

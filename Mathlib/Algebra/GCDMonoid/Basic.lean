@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Monoid.Associated
 public import Mathlib.Algebra.Ring.Associated
+public import Batteries.Tactic.SeqFocus
 
 /-!
 # Monoids with normalization functions, `gcd`, and `lcm`

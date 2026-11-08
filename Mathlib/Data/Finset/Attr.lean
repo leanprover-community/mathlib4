@@ -5,10 +5,12 @@ Authors: Yaël Dillies
 -/
 module
 
-public meta import Aesop.Frontend
 
 meta import Aesop.Frontend.Basic
 import Mathlib.Init
+public import Aesop.Frontend
+public import Aesop.Frontend.Basic
+public import Mathlib.Init
 
 /-!
 # Aesop rule set for finsets

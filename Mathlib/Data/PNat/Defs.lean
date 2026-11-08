@@ -13,6 +13,7 @@ public import Mathlib.Tactic.Coe
 public import Mathlib.Tactic.Lift
 
 import Mathlib.Tactic.Basify.Attr
+public import Mathlib.Tactic.Basify.Attr
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

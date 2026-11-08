@@ -8,6 +8,7 @@ module
 public meta import Lean.Elab.SyntheticMVars
 
 import Mathlib.Init
+public import Mathlib.Init
 
 /-!
 # `clean%` term elaborator

@@ -9,7 +9,6 @@ public import Mathlib.GroupTheory.Perm.Sign
 public import Mathlib.LinearAlgebra.Matrix.Echelon.Decomposition
 public import Mathlib.Tactic.Matrix.OfLists
 
-import Mathlib.Algebra.BigOperators.Fin
 
 /-!
 # Reflection certificates for determinants of echelon decompositions

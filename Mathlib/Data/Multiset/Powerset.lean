@@ -9,6 +9,7 @@ public import Mathlib.Data.List.Sublists
 public import Mathlib.Data.List.Zip
 public import Mathlib.Data.Multiset.Bind
 public import Mathlib.Data.Multiset.Range
+public import Mathlib.Algebra.Group.Torsion
 
 /-!
 # The powerset of a multiset

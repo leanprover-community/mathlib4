@@ -12,6 +12,7 @@ public import Mathlib.Tactic.Convert
 public import Mathlib.Tactic.OfNat
 
 import Mathlib.Data.Nat.Basic
+import Mathlib.Tactic.GCongr
 
 /-!
 # Basic operations on the integers

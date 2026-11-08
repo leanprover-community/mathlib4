@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.Adjunction.Basic
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Adjunctions regarding the category of topological spaces

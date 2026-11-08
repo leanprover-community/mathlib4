@@ -8,6 +8,7 @@ module
 public meta import Lean.Meta.AppBuilder
 public meta import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
 public import Mathlib.Tactic.CategoryTheory.Coherence.Datatypes
+public import Lean.Meta.AppBuilder
 
 /-!
 # Normalization of 2-morphisms in bicategories
