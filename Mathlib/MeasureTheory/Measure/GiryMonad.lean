@@ -52,6 +52,16 @@ instance instMeasurableSpace : MeasurableSpace (Measure α) :=
 theorem measurable_coe {s : Set α} (hs : MeasurableSet s) : Measurable fun μ : Measure α => μ s :=
   Measurable.of_comap_le <| le_iSup_of_le s <| le_iSup_of_le hs le_rfl
 
+@[fun_prop]
+lemma _root_.Measurable.measure_apply {f : β → Measure α} {s : Set α}
+    (hf : Measurable f) (hs : MeasurableSet s) : Measurable (fun b ↦ f b s) :=
+  (measurable_coe hs).comp hf
+
+@[fun_prop]
+lemma _root_.AEMeasurable.measure_apply {f : β → Measure α} {ν : Measure β} {s : Set α}
+    (hf : AEMeasurable f ν) (hs : MeasurableSet s) : AEMeasurable (fun b ↦ f b s) ν :=
+  (measurable_coe hs).comp_aemeasurable hf
+
 theorem measurable_of_measurable_coe (f : β → Measure α)
     (h : ∀ (s : Set α), MeasurableSet s → Measurable fun b => f b s) : Measurable f :=
   Measurable.of_le_map <|
@@ -65,14 +75,15 @@ instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : Measurable
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
 
--- There is no typeclass for measurability of `SMul` only on that side, otherwise we could
--- turn that into an instance.
+instance : MeasurableSMul₂ ℝ≥0∞ (Measure α) where
+  measurable_smul := by
+    refine measurable_of_measurable_coe _ fun s hs ↦ ?_
+    simp only [Function.uncurry_def, smul_apply, smul_eq_mul]
+    fun_prop
+
 @[fun_prop]
 lemma _root_.Measurable.smul_measure {f : α → ℝ≥0∞} (hf : Measurable f) (μ : Measure β) :
-    Measurable (fun x ↦ f x • μ) := by
-  refine Measure.measurable_of_measurable_coe _ fun s hs ↦ ?_
-  simp only [smul_apply, smul_eq_mul]
-  fun_prop
+    Measurable (fun x ↦ f x • μ) := by fun_prop
 
 theorem measurable_measure {μ : α → Measure β} :
     Measurable μ ↔ ∀ (s : Set β), MeasurableSet s → Measurable fun b => μ b s :=

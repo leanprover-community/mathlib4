@@ -92,11 +92,18 @@ noncomputable instance instAdd : Add (Kernel α β) where add κ η := ⟨κ + �
 noncomputable instance instSMulNat : SMul ℕ (Kernel α β) where
   smul n κ := ⟨n • κ, (measurable_const (a := n)).smul κ.2⟩
 
+noncomputable instance : SMul ℝ≥0∞ (Kernel α β) where
+  smul c κ :=
+    { toFun a := c • κ a
+      measurable' := by fun_prop }
+
 instance : IsZeroApply (Kernel α β) where
 
 instance : IsAddApply (Kernel α β) where
 
 instance : IsSMulApply ℕ (Kernel α β) where
+
+instance : IsSMulApply ℝ≥0∞ (Kernel α β) where
 
 @[deprecated (since := "2026-06-30")] alias coe_zero := FunLike.coe_zero
 @[deprecated (since := "2026-06-30")] alias coe_add := FunLike.coe_add
@@ -329,6 +336,11 @@ theorem sum_add [Countable ι] (κ η : ι → Kernel α β) :
     (Kernel.sum fun n => κ n + η n) = Kernel.sum κ + Kernel.sum η := by
   ext a s hs
   simp [Kernel.sum_apply, Measure.sum_apply _ hs, summable.tsum_add summable]
+
+lemma sum_smul [Countable ι] (c : ι → ℝ≥0∞) (κ : Kernel α β) :
+    Kernel.sum (fun i ↦ c i • κ) = (∑' i, c i) • κ := by
+  ext a s hs
+  simp [Kernel.sum_apply' _ _ hs, ENNReal.tsum_mul_right]
 
 end Sum
 
