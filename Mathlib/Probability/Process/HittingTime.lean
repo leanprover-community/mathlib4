@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kexing Ying, Rémy Degenne, David Ledvinka
+Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
@@ -11,9 +11,9 @@ public import Mathlib.Probability.Process.Stopping
 /-!
 # Hitting times of stochastic processes
 
-The hitting times of an adapted discrete process are stopping times. The pathwise definitions
-and their deterministic properties are in `Mathlib/Dynamics/HittingTime.lean`.
-For a process `u : ι → Ω → β`, its hitting time is `fun ω ↦ Function.hittingAfter (u · ω) s n`.
+This file contains results about the hitting times of stochastic processes. The definitions of
+hitting times and their deterministic properties are in `Mathlib/Dynamics/HittingTime.lean`.
+For a process `u : ι → Ω → β`, its hitting after time is `fun ω ↦ Function.hittingAfter (u · ω) s n`.
 
 ## Main results
 

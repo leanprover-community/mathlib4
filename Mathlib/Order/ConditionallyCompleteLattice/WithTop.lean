@@ -120,9 +120,7 @@ theorem WithTop.coe_sInf' [InfSet α] {s : Set α} (hs : s.Nonempty)
 
 end Preorder
 
-/-- A lower bound in `WithTop α` of a nonempty set also bounds its coerced infimum. -/
-@[to_dual WithBot.coe_csSup_le
-/-- An upper bound in `WithBot α` of a nonempty set also bounds its coerced supremum. -/]
+@[to_dual WithBot.coe_csSup_le]
 lemma WithTop.le_coe_csInf [ConditionallyCompleteLattice α] {s : Set α}
     {a : WithTop α} (hs : s.Nonempty) (h : ∀ b ∈ s, a ≤ (b : WithTop α)) :
     a ≤ (sInf s : α) := by
