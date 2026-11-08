@@ -191,6 +191,18 @@ theorem exists_preimage_eq_of_preimage_ae {f : α → α} (hfm : Measurable f)
   · simp only [Set.preimage_iterate_eq]
     exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
 
+/-- For a quasi-measure-preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
+then it is a.e. equal to a null measurable invariant set. -/
+theorem exists_preimage_eq_of_preimage_ae₀ {f : α → α} (h : QuasiMeasurePreserving f μ μ)
+    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
+    ∃ t : Set α, NullMeasurableSet t μ ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
+  refine ⟨limsup (f^[·] ⁻¹' s) atTop, ?_, ?_, ?_⟩
+  · simp only [limsup_eq_iInf_iSup_of_nat']
+    exact .iInter fun _ ↦ .iUnion fun _ ↦ hs.preimage (h.iterate _)
+  · exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ h.preimage_iterate_ae_eq n hs'
+  · simp only [Set.preimage_iterate_eq]
+    exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) s
+
 /-- If a quasi-measure-preserving map `f` maps a set `s` to a set `t`,
 then it is quasi-measure-preserving with respect to the restrictions of the measures. -/
 protected theorem restrict {ν : Measure β} {f : α → β}

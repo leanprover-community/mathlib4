@@ -27,7 +27,9 @@ preserving condition is relaxed to quasi-measure-preserving.
 * `QuasiErgodic`: the definition of quasi-ergodic maps / measures.
 * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi-ergodic.
 * `PreErgodic.of_preimage_eq`: to prove pre-ergodicity of a quasi-measure-preserving map, it
-  suffices to check the ergodicity condition on strictly invariant measurable sets.
+  suffices to check the ergodicity condition on strictly invariant null-measurable sets.
+* `PreErgodic.of_preimage_eq_of_measurable`: if the map is moreover measurable, it suffices to
+  check the ergodicity condition on strictly invariant measurable sets.
 
 -/
 
@@ -56,9 +58,19 @@ structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop
 
 variable {f : α → α} {μ : Measure α}
 
+/-- To prove that a quasi-measure-preserving `f` is pre-ergodic, it suffices to check the
+ergodicity condition on strictly invariant null-measurable sets. -/
+theorem PreErgodic.of_preimage_eq (hf : QuasiMeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, NullMeasurableSet s μ → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    PreErgodic f μ where
+  aeconst_set _s hsm hs :=
+    let ⟨_t, htm, hts, htf⟩ := hf.exists_preimage_eq_of_preimage_ae₀ hsm hs
+    (h htm htf).congr hts
+
 /-- To prove that a measurable quasi-measure-preserving `f` is pre-ergodic, it suffices to check the
 ergodicity condition on strictly invariant measurable sets. -/
-theorem PreErgodic.of_preimage_eq (hfm : Measurable f) (hf : QuasiMeasurePreserving f μ μ)
+theorem PreErgodic.of_preimage_eq_of_measurable (hfm : Measurable f)
+    (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     PreErgodic f μ where
   aeconst_set _s hsm hs :=
@@ -68,21 +80,29 @@ theorem PreErgodic.of_preimage_eq (hfm : Measurable f) (hf : QuasiMeasurePreserv
 theorem PreErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     PreErgodic f μ :=
-  .of_preimage_eq (aemeasurable_iff_measurable.1 hf.aemeasurable) hf h
+  .of_preimage_eq hf fun _s hs ↦ h hs.measurable_of_complete
 
 /-- To prove that a quasi-measure-preserving `f` is ergodic, it suffices to check the ergodicity
 condition on strictly invariant measurable sets. -/
 theorem Ergodic.of_preimage_eq (hf : MeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     Ergodic f μ :=
-  ⟨hf, .of_preimage_eq hf.measurable hf.quasiMeasurePreserving h⟩
+  ⟨hf, .of_preimage_eq_of_measurable hf.measurable hf.quasiMeasurePreserving h⟩
+
+/-- To prove that a quasi-measure-preserving `f` is quasi-ergodic, it suffices to check the
+ergodicity condition on strictly invariant null-measurable sets. -/
+theorem QuasiErgodic.of_preimage_eq (hf : QuasiMeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, NullMeasurableSet s μ → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    QuasiErgodic f μ :=
+  ⟨hf, .of_preimage_eq hf h⟩
 
 /-- To prove that a measurable quasi-measure-preserving `f` is quasi-ergodic, it suffices to check
 the ergodicity condition on strictly invariant measurable sets. -/
-theorem QuasiErgodic.of_preimage_eq (hfm : Measurable f) (hf : QuasiMeasurePreserving f μ μ)
+theorem QuasiErgodic.of_preimage_eq_of_measurable (hfm : Measurable f)
+    (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     QuasiErgodic f μ :=
-  ⟨hf, .of_preimage_eq hfm hf h⟩
+  ⟨hf, .of_preimage_eq_of_measurable hfm hf h⟩
 
 theorem QuasiErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
