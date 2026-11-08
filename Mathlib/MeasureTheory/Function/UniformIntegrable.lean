@@ -501,9 +501,7 @@ theorem MemLp.eLpNorm_indicator_norm_ge_pos_le (hf : MemLp f p μ) {ε : ℝ≥0
   · simp only [norm_indicator_eq_indicator_norm]
     grw [← le_max_left]
 
-end
-
-theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : 0 < ε) {M : ℝ}
+theorem eLpNorm_indicator_le_of_bound (hp_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : 0 < ε) {M : ℝ}
     (hmeas : AEStronglyMeasurable f μ) (hf : ∀ x, ‖f x‖ < M) :
     ∃ δ > 0, ∀ s, NullMeasurableSet s μ → μ s ≤ δ → eLpNorm (s.indicator f) p μ ≤ ε := by
   by_cases! hM : M ≤ 0
@@ -527,10 +525,6 @@ theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε :
     ← ENNReal.le_div_iff_mul_le (.inl _) (.inl ofReal_ne_top)]
   · rwa [rpow_inv_le_iff (toReal_pos hp hp_top)]
   · simpa only [ofReal_eq_zero, not_le, Ne]
-
-section
-
-variable {f : α → β}
 
 /-- Auxiliary lemma for `MeasureTheory.MemLp.eLpNorm_indicator_le`. -/
 private theorem MemLp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : MemLp f p μ)
@@ -617,10 +611,11 @@ theorem unifIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞
 
 end
 
+variable {f : ℕ → α → β} {g : α → β}
+
 /-- A sequence of uniformly integrable functions which converges μ-a.e. converges in Lp. -/
 theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
-    {f : ℕ → α → β} {g : α → β} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
-    (hg : MemLp g p μ) (hui : UnifIntegrable f p μ)
+    (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : MemLp g p μ) (hui : UnifIntegrable f p μ)
     (hfg : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (g x))) :
     Tendsto (fun n ↦ eLpNorm (f n - g) p μ) atTop (𝓝 0) := by
   rw [ENNReal.tendsto_atTop_zero]
@@ -679,8 +674,6 @@ theorem tendsto_Lp_finite_of_tendsto_ae [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp'
 @[deprecated "This lemma is superseded by `tendsto_Lp_finite_of_tendsto_ae`."
   (since := "2026-10-12")] alias tendsto_Lp_finite_of_tendsto_ae_of_meas :=
     tendsto_Lp_finite_of_tendsto_ae
-
-variable {f : ℕ → α → β} {g : α → β}
 
 theorem unifIntegrable_of_tendsto_Lp_zero (hp : 1 ≤ p) (hp' : p ≠ ∞) (hf : ∀ n, MemLp (f n) p μ)
     (hf_tendsto : Tendsto (fun n ↦ eLpNorm (f n) p μ) atTop (𝓝 0)) : UnifIntegrable f p μ := by
@@ -842,8 +835,6 @@ section UniformIntegrable
 In probability theory, uniform integrability normally refers to the condition that a sequence
 of function `(fₙ)` satisfies for all `ε > 0`, there exists some `C ≥ 0` such that
 `∫ x in {|fₙ| ≥ C}, fₙ x ∂μ ≤ ε` for all `n`. -/
-
-variable {p : ℝ≥0∞} {f g : ι → α → β}
 
 /-- A finite sequence of Lp functions is uniformly integrable in the probability sense. -/
 theorem uniformIntegrable_finite [Finite ι] (hp_one : 1 ≤ p) (hp_top : p ≠ ∞)
