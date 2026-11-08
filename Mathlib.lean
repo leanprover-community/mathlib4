@@ -5335,6 +5335,7 @@ public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.Cartan
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Admissible
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
+public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.Leaf
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Realisation
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
