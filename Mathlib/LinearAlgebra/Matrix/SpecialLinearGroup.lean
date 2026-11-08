@@ -145,7 +145,6 @@ variable (A B : SpecialLinearGroup n R)
 
 def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
 
-@[simp]
 theorem coe_mk (A : Matrix n n R) (h : det A = 1) : mk A h = A :=
     rfl
 
@@ -233,9 +232,8 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
   map_one' := Subtype.ext f.mapMatrix.map_one
   map_mul' x y := Subtype.ext <| f.mapMatrix.map_mul ↑ₘx ↑ₘy
 
-@[simp]
 theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
-    ↑(SpecialLinearGroup.map f (⟨A, h⟩ : SpecialLinearGroup n R)) = A.map f := rfl
+    SpecialLinearGroup.map f (mk A h) = A.map f := rfl
 
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
