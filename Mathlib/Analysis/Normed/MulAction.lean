@@ -35,12 +35,16 @@ theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := 
   simpa [smul_zero] using dist_smul_pair r 0 x
 
 @[bound]
-theorem nnnorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊ :=
+theorem nnNorm_smul_le (r : α) (x : β) : ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊ :=
   norm_smul_le _ _
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul_le := nnNorm_smul_le
+
 @[bound]
-lemma enorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_mul] using nnnorm_smul_le ..
+lemma eNorm_smul_le : ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ := by
+  simpa [eNorm, ← ENNReal.coe_mul] using nnNorm_smul_le ..
+
+@[deprecated (since := "2026-11-06")] alias enorm_smul_le := eNorm_smul_le
 
 theorem dist_smul_le (s : α) (x y : β) : dist (s • x) (s • y) ≤ ‖s‖ * dist x y := by
   simpa only [dist_eq_norm_neg_add, add_zero, norm_neg] using dist_smul_pair s x y
@@ -79,12 +83,18 @@ theorem IsBoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ 
   { dist_smul_pair' := fun a b₁ b₂ => by simpa [smul_sub, dist_eq_norm] using h a (b₁ - b₂)
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 
-theorem IsBoundedSMul.of_enorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
+theorem IsBoundedSMul.of_eNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ₑ ≤ ‖r‖ₑ * ‖x‖ₑ) :
     IsBoundedSMul α β :=
-  .of_norm_smul_le (by simpa [enorm_eq_nnnorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
+  .of_norm_smul_le (by simpa [eNorm_eq_nnNorm, ← ENNReal.coe_mul, ENNReal.coe_le_coe] using! h)
 
-theorem IsBoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
+@[deprecated (since := "2026-11-06")]
+alias IsBoundedSMul.of_enorm_smul_le := IsBoundedSMul.of_eNorm_smul_le
+
+theorem IsBoundedSMul.of_nnNorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
     IsBoundedSMul α β := .of_norm_smul_le h
+
+@[deprecated (since := "2026-10-31")]
+alias IsBoundedSMul.of_nnnorm_smul_le := IsBoundedSMul.of_nnNorm_smul_le
 
 end SeminormedRing
 
@@ -110,36 +120,46 @@ instance (priority := 100) NormMulClass.toNormSMulClass_op [SeminormedRing α] [
 /-- Mixin class for scalar-multiplication actions with a strictly multiplicative norm, i.e.
 `‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ`. -/
 class ENormSMulClass (α β : Type*) [ENorm α] [ENorm β] [SMul α β] : Prop where
-  protected enorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
+  protected eNorm_smul (r : α) (x : β) : ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ
 
-lemma enorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
+@[deprecated (since := "2026-11-06")]
+protected alias ENormSMulClass.enorm_smul := ENormSMulClass.eNorm_smul
+
+lemma eNorm_smul [ENorm α] [ENorm β] [SMul α β] [ENormSMulClass α β] (r : α) (x : β) :
     ‖r • x‖ₑ = ‖r‖ₑ * ‖x‖ₑ :=
-  ENormSMulClass.enorm_smul r x
+  ENormSMulClass.eNorm_smul r x
+
+@[deprecated (since := "2026-11-06")] alias enorm_smul := eNorm_smul
 
 variable [SeminormedRing α] [SeminormedAddGroup β] [SMul α β]
 
-theorem NormSMulClass.of_nnnorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
+theorem NormSMulClass.of_nnNorm_smul (h : ∀ (r : α) (x : β), ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊) :
     NormSMulClass α β where
   norm_smul r b := congr($(h r b).toReal)
 
+@[deprecated (since := "2026-10-31")]
+alias NormSMulClass.of_nnnorm_smul := NormSMulClass.of_nnNorm_smul
+
 variable [NormSMulClass α β]
 
-theorem nnnorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
+theorem nnNorm_smul (r : α) (x : β) : ‖r • x‖₊ = ‖r‖₊ * ‖x‖₊ :=
   NNReal.eq <| norm_smul r x
 
+@[deprecated (since := "2026-10-31")] alias nnnorm_smul := nnNorm_smul
+
 instance (priority := 100) : ENormSMulClass α β where
-  enorm_smul r x := by simp [enorm, nnnorm_smul]
+  eNorm_smul r x := by simp [eNorm, nnNorm_smul]
 
 instance Pi.instNormSMulClass {ι : Type*} {β : ι → Type*} [Fintype ι]
     [∀ i, SeminormedAddGroup (β i)] [∀ i, SMul α (β i)] [∀ i, NormSMulClass α (β i)] :
     NormSMulClass α (Π i, β i) where
   norm_smul r x := by
-    simp [nnnorm_def, ← coe_nnnorm, nnnorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
+    simp [nnNorm_def, ← coe_nnNorm, nnNorm_smul, ← NNReal.coe_mul, NNReal.mul_finset_sup]
 
 instance Prod.instNormSMulClass {γ : Type*} [SeminormedAddGroup γ] [SMul α γ] [NormSMulClass α γ] :
     NormSMulClass α (β × γ) where
-  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnnorm, nnnorm_def,
-    nnnorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
+  norm_smul := fun r ⟨v₁, v₂⟩ ↦ by simp only [smul_def, ← coe_nnNorm, nnNorm_def,
+    nnNorm_smul r, ← NNReal.coe_mul, NNReal.mul_sup]
 
 instance ULift.instNormSMulClass : NormSMulClass α (ULift β) where
   norm_smul r v := norm_smul r v.down
@@ -219,7 +239,7 @@ theorem Metric.smul_image_sphere {s : α} (hs : s ≠ 0) (x : β) (ε : ℝ) :
 end NormedDivisionRingModule
 
 instance : ENormSMulClass ℝ≥0∞ ℝ≥0∞ where
-  enorm_smul _ _ := rfl
+  eNorm_smul _ _ := rfl
 
 instance : ENormSMulClass ℝ≥0 ℝ≥0∞ where
-  enorm_smul _ _ := rfl
+  eNorm_smul _ _ := rfl

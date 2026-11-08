@@ -9,6 +9,9 @@ public import Mathlib.Dynamics.Ergodic.Action.Basic
 
 import Mathlib.MeasureTheory.Group.Prod
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Regular action of a group on itself is ergodic
 

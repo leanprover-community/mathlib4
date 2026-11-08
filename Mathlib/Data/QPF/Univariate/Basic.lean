@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.PFunctor.Univariate.M
 
 /-!
-
 # Quotients of Polynomial Functors
 
 We assume the following:

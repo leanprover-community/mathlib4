@@ -140,7 +140,7 @@ theorem isBigO_cocompact_zpow_neg_nat (k : ℕ) :
     f =O[cocompact E] (‖·‖ ^ (-k : ℤ)) := by
   obtain ⟨d, _, hd'⟩ := f.decay k 0
   simp only [norm_iteratedFDeriv_zero] at hd'
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [isBigO_iff]
   refine ⟨d, Filter.Eventually.filter_mono Filter.cocompact_le_cofinite ?_⟩
   refine (Filter.eventually_cofinite_ne 0).mono fun x hx ↦ ?_
   rw [Real.norm_of_nonneg (by positivity), zpow_neg, ← div_eq_mul_inv, le_div_iff₀' (by positivity)]
@@ -153,7 +153,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   refine (isBigO_cocompact_zpow_neg_nat f k).trans ?_
   suffices (fun x : ℝ ↦ x ^ (-k : ℤ)) =O[atTop] fun x : ℝ ↦ x ^ s
     from this.comp_tendsto tendsto_norm_cocompact_atTop
-  simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
+  simp_rw [Asymptotics.isBigO_iff]
   refine ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx ↦ ?_⟩
   rw [one_mul, Real.norm_of_nonneg (by positivity), Real.norm_of_nonneg (by positivity),
     ← Real.rpow_intCast, Int.cast_neg, Int.cast_natCast]
@@ -1231,7 +1231,7 @@ def toZeroAtInfty (f : 𝓢(E, F)) : C₀(E, F) where
   rw [← ZeroAtInftyContinuousMap.norm_toBCF_eq_norm, toZeroAtInfty_toBCF]
 
 variable (𝕜 E F)
-variable [RCLike 𝕜] [NormedSpace 𝕜 F] [SMulCommClass ℝ 𝕜 F]
+variable [RCLike 𝕜] [NormedSpace 𝕜 F]
 
 /-- The inclusion map from Schwartz functions to continuous functions vanishing at infinity as a
 continuous linear map. -/
@@ -1280,7 +1280,7 @@ theorem eLpNorm_le_seminorm (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
       (2 ^ k * ENNReal.ofReal (((Finset.Iic (k, 0)).sup (schwartzSeminormFamily 𝕜 E F)) f)) := by
     gcongr
     rw [eLpNorm_exponent_top hf']
-    refine eLpNormEssSup_le_of_ae_nnnorm_bound (ae_of_all μ fun x ↦ ?_)
+    refine eLpNormEssSup_le_of_ae_nnNorm_bound (ae_of_all μ fun x ↦ ?_)
     rw [← norm_toNNReal, Real.toNNReal_le_iff_le_coe]
     simpa [norm_smul, abs_of_nonneg (h_one_add x).le] using!
       one_add_le_sup_seminorm_apply (m := (k, 0)) (le_refl k) (le_refl 0) f x

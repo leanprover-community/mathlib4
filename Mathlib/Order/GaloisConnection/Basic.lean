@@ -8,6 +8,9 @@ module
 public import Mathlib.Order.CompleteLattice.Basic
 public import Mathlib.Order.WithBot
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Galois connections, insertions and coinsertions
 
@@ -399,10 +402,6 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
 end lift
 
 end GaloisInsertion
-
-namespace GaloisCoinsertion
-
-end GaloisCoinsertion
 
 /-- `sSup` and `Iic` form a Galois connection. -/
 theorem gc_sSup_Iic [CompleteSemilatticeSup α] :

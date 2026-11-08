@@ -14,7 +14,6 @@ import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.CategoryTheory.Limits.Types.ColimitTypeFiltered
 
 /-!
-
 # Inverse limits of schemes with affine transition maps
 
 In this file, we develop API for inverse limits of schemes with affine transition maps,
@@ -102,6 +101,7 @@ open Scheme.IdealSheafData in
 Suppose we have a cofiltered diagram of schemes whose transition maps are affine. The limit of
 a family of compatible nonempty quasicompact closed sets in the diagram is also nonempty.
 -/
+@[stacks 01Z3]
 lemma exists_mem_of_isClosed_of_nonempty
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -150,7 +150,7 @@ include hc in
 A variant of `exists_mem_of_isClosed_of_nonempty` where the closed sets are only defined
 for the objects over a given `j : I`.
 -/
-@[stacks 01Z3]
+@[stacks 01Z3 "Variant where the closed sets are indexed by the objects over a fixed index."]
 lemma exists_mem_of_isClosed_of_nonempty'
     [IsCofilteredOrEmpty I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
@@ -365,7 +365,6 @@ lemma Scheme.compactSpace_of_isLimit [IsCofiltered I]
   exact QuasiCompact.compactSpace_of_compactSpace (c.π.app i)
 
 /-!
-
 ## Cofiltered Limits and Schemes of Finite Type
 
 Given a cofiltered diagram `D` of quasi-compact `S`-schemes with affine transition maps,
@@ -672,7 +671,7 @@ In other words, for each pair of `a : Homₛ(Dᵢ, X)` and `b : Homₛ(Dⱼ, X)`
 same map `Homₛ(lim Dᵢ, X)`, there exists a `k` with `fᵢ : k ⟶ i` and `fⱼ : k ⟶ j` such that
 `D(fᵢ) ≫ a = D(fⱼ) ≫ b`.
 -/
-@[stacks 01ZC "Injective part of (1) => (3)"]
+@[stacks 01ZC "Injective part of (1) => (3), only assuming the morphism is locally of finite type."]
 lemma Scheme.exists_hom_hom_comp_eq_comp_of_locallyOfFiniteType
     {i : I} (a : D.obj i ⟶ X) (ha : t.app i = a ≫ f)
     {j : I} (b : D.obj j ⟶ X) (hb : t.app j = b ≫ f)
@@ -962,7 +961,7 @@ section IsAffine
 include hc in
 /-- Suppose `{ Xᵢ }` is an inverse system of qcqs schemes with affine transition maps.
 If `lim Xᵢ` is quasi-affine, then some `Xᵢ` is quasi-affine. -/
-@[stacks 01Z5]
+@[stacks 01Z5 "Use IsQuasiAffine.of_isAffineHom to get `D.obj j` quasi-affine for `j ≥ i` "]
 lemma Scheme.exists_isQuasiAffine_of_isLimit [IsCofiltered I]
     [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ (i : I), CompactSpace (D.obj i)]
@@ -1036,7 +1035,7 @@ lemma Scheme.exists_isAffine_of_isLimit [IsCofiltered I]
     ((preimage_opensRange_toSpecΓ (D.map fij)).symm.trans hj)⟩⟩
 
 include hc in
-@[stacks 01Z4 "(1)"]
+@[stacks 01Z4 "Affine open version of (1)."]
 lemma exists_isAffineOpen_preimage_eq
     [IsCofiltered I] [∀ {i j} (f : i ⟶ j), IsAffineHom (D.map f)]
     [∀ i, QuasiSeparatedSpace (D.obj i)]
@@ -1312,8 +1311,6 @@ lemma Scheme.exists_π_app_comp_eq_of_locallyOfFinitePresentation
   · refine 𝒲.hom_ext _ _ fun j ↦ ?_
     simp [F, Cover.ι_glueMorphisms_assoc, hak]; rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- `Hom_S(-, X)` sends a cofiltered limit of qcqs `S`-schemes with affine transition maps
 to a filtered colimit if `X` is locally of finite presentation over `X`. -/
 instance Scheme.preservesColimit_yoneda (D : I ⥤ Over S) [IsCofiltered I]

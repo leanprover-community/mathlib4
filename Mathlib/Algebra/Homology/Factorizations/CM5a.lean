@@ -111,7 +111,7 @@ variable (K L) in
 noncomputable abbrev mid := S K n₁ ⊞ L
 
 variable (K) in
-/-- The morphim `K ⟶ S K n₁` which in degree `n₁` corresponds to
+/-- The morphism `K ⟶ S K n₁` which in degree `n₁` corresponds to
 the composition `K.X n₁ ⟶ K.opcycles n₁ ⟶ Injective.under (K.opcycles n₁)`. -/
 noncomputable def i : K ⟶ S K n₁ := mkHomToSingle (K.pOpcycles n₁ ≫ Injective.ι _) (by simp)
 
