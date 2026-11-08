@@ -201,7 +201,7 @@ noncomputable def tprodL : ContinuousMultilinearMap 𝕜 E (⨂[𝕜] i, E i) :=
   (liftIsometry 𝕜 E _).symm (ContinuousLinearMap.id 𝕜 _)
 
 @[simp]
-theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (s := E) := by
+theorem tprodL_coe : (tprodL 𝕜).toMultilinearMap = tprod 𝕜 (M := E) := by
   ext; simp
 
 @[simp]
