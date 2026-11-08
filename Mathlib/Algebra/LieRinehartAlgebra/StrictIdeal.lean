@@ -121,7 +121,6 @@ instance : Zero (StrictLieRinehartIdeal A L) where
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
-
 /-- A Lie-Rinehart ideal forms a Lie ring. -/
 instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
   bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_left x.property _⟩

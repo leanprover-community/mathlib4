@@ -50,13 +50,14 @@ instance : Inhabited (LieRinehartSubalgebra A L) :=
 
 namespace LieRinehartSubalgebra
 
+variable {A L} in
 theorem toSubmodule_injective :
     (toSubmodule : LieRinehartSubalgebra A L → Submodule A L).Injective :=
   fun ⟨s, _⟩ t ↦ by congr!
 
 instance : SetLike (LieRinehartSubalgebra A L) L where
   coe L' := L'.carrier
-  coe_injective := SetLike.coe_injective.comp (toSubmodule_injective (A := A) (L := L))
+  coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
@@ -133,10 +134,10 @@ theorem ext_iff' (L₁' L₂' : LieRinehartSubalgebra A L) : L₁' = L₂' ↔ �
 /-- A Lie-Rinehart subalgebra forms a Lie ring. -/
 instance lieRing (L' : LieRinehartSubalgebra A L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
-  lie_add _ _ _ := by simp [ext_iff];
-  add_lie _ _ _ := by simp [ext_iff];
-  lie_self _ := by simp [ext_iff];
-  leibniz_lie _ _ _ := by simp;
+  lie_add _ _ _ := by simp [ext_iff]
+  add_lie _ _ _ := by simp [ext_iff]
+  lie_self _ := by simp [ext_iff]
+  leibniz_lie _ _ _ := by simp
 
 @[simp, norm_cast]
 theorem coe_bracket (x y : L') : (↑⁅x, y⁆ : L) = ⁅(↑x : L), ↑y⁆ :=
