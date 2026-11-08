@@ -140,8 +140,7 @@ theorem reindexGroupEquiv_apply_simple (i : B') :
 theorem reindexGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
 
-theorem subgroupClosure_range_simple (M : CoxeterMatrix B) :
-    Subgroup.closure (range M.simple) = ⊤ :=
+theorem subgroupClosure_range_simple : Subgroup.closure (range M.simple) = ⊤ :=
   PresentedGroup.closure_range_of _
 
 end CoxeterMatrix
@@ -315,11 +314,6 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   inv := f i
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
-
-private theorem toMonoidHom_apply_symm_apply (a : M.Group) :
-    (MulEquiv.toMonoidHom cs.mulEquiv : W →* M.Group)
-    ((MulEquiv.symm cs.mulEquiv) a) = a := by
-  simp
 
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
