@@ -337,6 +337,23 @@ def musicalIso (s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
 --     (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap ∘L (s x) := by
 --   rfl
 
+-- TODO: this lemma uses a WithinAt lemma for bundle metrics, which is not yet proven
+omit [IsContMDiffRiemannianBundle IB k F E] in
+/-- Suppose `s` is a `C^k` section at `x`, then its musical isomorphism is also `C^k` at `x`. -/
+lemma contMDiffWithinAt_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
+    {s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ} {u : Set B} {x : B}
+    (hs : CMDiffAt[u] k (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] (EB →L[ℝ] ℝ))
+      (E := fun (x : B) ↦ E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) x (s x)) x) :
+    ContMDiffWithinAt IB (IB.prod 𝓘(ℝ, F →L[ℝ] EB)) k
+      (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] EB) (E := fun x ↦ E x →L[ℝ] TangentSpace IB x) x
+        (musicalIso s x)) u x := by
+  have : IsManifold IB k B := IsManifold.of_le (by simp : k ≤ k + 1)
+  apply ContMDiffWithinAt.clm_bundle_of_apply
+  intro σ hσ
+  apply fooWithinAt_simple
+  simp only [ContinuousLinearMap.coe_coe]
+  exact hs.clm_bundle_apply hσ.self_of_nhds
+
 omit [IsContMDiffRiemannianBundle IB k F E] in
 /-- Suppose `s` is a `C^k` section at `x`, then its musical isomorphism is also `C^k` at `x`. -/
 lemma contMDiffAt_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
