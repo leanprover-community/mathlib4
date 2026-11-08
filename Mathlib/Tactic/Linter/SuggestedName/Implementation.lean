@@ -5,9 +5,12 @@ Authors: Jon Eugster, Snir Broshi, Jovan Gerbscheid
 -/
 module
 
+public meta import Batteries.Tactic.Lint.Basic
+public meta import Lean.Linter.Deprecated
 public meta import Lean.Linter.EnvLinter.Basic
+public meta import Lean.Meta.Instances
+public meta import Lean.OriginalConstKind
 public meta import Lean.Parser.Term.Doc
-public meta import Mathlib.Lean.Name
 public meta import Std.Data.HashMap.AdditionalOperations
 public import Lean.Environment
 public import Mathlib.Tactic.Linter.SuggestedName.Options
@@ -25,11 +28,17 @@ open Lean Linter EnvLinter
 
 public meta section
 
-/-- Decapitalize the given string according to the naming conventions. -/
+-- copied from `Mathlib.Lean.Name` because a linter prevents us from importing it here
+private def Lean.Name.lastComponentAsString : Name → String
+  | .str _ s => s
+  | .num _ n => toString n
+  | .anonymous => ""
+
+/-- Decapitalise the given string according to the naming conventions. -/
 def _root_.String.lowerStart (s : String) : String :=
   (manualException s).getD <|
-    let positions := s.positions.take (largestNonLowerIndex s)
-    positions.fold (init := s) fun s ⟨⟨pos, _⟩, _⟩ ↦ (pos.set s (pos.get s).toLower)
+    let n := largestNonLowerIndex s
+    (s.positions.take n).fold (init := s) fun s ⟨⟨pos, _⟩, _⟩ ↦ (pos.set s (pos.get s).toLower)
 where
   /-- If `s` is an exception to the rule, return its decapitalization instead. -/
   manualException (s : String) : Option String :=
@@ -100,6 +109,6 @@ public def suggestedNameLinter : EnvLinter where
     if (← Batteries.Tactic.Lint.isAutoDecl name) then return none
     if Linter.isDeprecated env name then return none
     let some suggestion ← name.suggestTheoremName env | return none
-    return s!"rename: {name} → {suggestion}"
+    return s!"→ {suggestion}"
   noErrorsFound := "All statement names are conform with the naming convention"
   errorsFound := "THE FOLLOWING STATEMENT NAMES ARE NOT FOLLOWING THE CONVENTION:"
