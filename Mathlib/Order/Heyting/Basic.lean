@@ -5,8 +5,8 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Order.PropInstances
 public import Mathlib.Order.GaloisConnection.Defs
+public import Mathlib.Order.PropInstances
 
 /-!
 # Heyting algebras
@@ -113,7 +113,6 @@ class HeytingAlgebra (α : Type*) extends GeneralizedHeytingAlgebra α, OrderBot
   /-- `aᶜ` is defined as `a ⇨ ⊥` -/
   himp_bot (a : α) : a ⇨ ⊥ = aᶜ
 
-set_option linter.translate.warnInvalid false in
 /-- A co-Heyting algebra is a bounded lattice with an additional binary difference operation `\`
 such that `(· \ a)` is left adjoint to `(· ⊔ a)`. -/
 @[to_dual]

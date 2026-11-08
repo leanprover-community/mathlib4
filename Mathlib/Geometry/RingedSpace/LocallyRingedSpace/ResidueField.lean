@@ -9,7 +9,6 @@ public import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Residue fields of points
 
 Any point `x` of a locally ringed space `X` comes with a natural residue field, namely the residue
@@ -43,7 +42,7 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| IsLocalRing.ResidueField (X.presheaf.stalk x)
+  ↧(IsLocalRing.ResidueField (X.presheaf.stalk x))
 
 instance (x : X) : Field (X.residueField x) :=
   inferInstanceAs <| Field (IsLocalRing.ResidueField (X.presheaf.stalk x))
@@ -142,8 +141,7 @@ lemma evaluation_naturality_apply {V : Opens Y} (x : (Opens.map f.base).obj V)
     (a : Y.presheaf.obj (op V)) :
     residueFieldMap f x.val (Y.evaluation ⟨f.base x, x.property⟩ a) =
       X.evaluation x (f.c.app (op V) a) := by
-  simpa using! congrFun (congrArg (DFunLike.coe ∘ CommRingCat.Hom.hom) <|
-    evaluation_naturality f x) a
+  simpa using! congr((DFunLike.coe ∘ CommRingCat.Hom.hom) $(evaluation_naturality f x) a)
 
 @[reassoc]
 lemma Γevaluation_naturality (x : X) :

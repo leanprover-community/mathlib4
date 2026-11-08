@@ -5,8 +5,9 @@ Authors: Etienne Marion
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Probability.Independence.Basic
+
+import Mathlib.MeasureTheory.Constructions.Cylinders
 
 /-!
 # Independence of stochastic processes
@@ -166,8 +167,8 @@ lemma IndepFun.process_indepFun_process {T : Type*} {𝓧 : S → Type*} {𝓨 :
     (h : ∀ (I : Finset S) (J : Finset T),
       IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ Y j ω) κ P) [IsZeroOrMarkovKernel κ] :
     IndepFun (fun ω i ↦ X i ω) (fun ω j ↦ Y j ω) κ P := by
-  refine IndepFun.process_indepFun hX (measurable_pi_lambda _ hY) fun I ↦ ?_
-  exact IndepFun.indepFun_process (measurable_pi_lambda _ fun _ ↦ hX _) hY fun J ↦ h I J
+  refine IndepFun.process_indepFun hX (.of_eval hY) fun I ↦ ?_
+  exact IndepFun.indepFun_process (.of_eval fun _ ↦ hX _) hY fun J ↦ h I J
 
 /-- Two stochastic processes $(X_s)_{s \in S}$ and $(Y_t)_{t \in T}$ are independent if
 for all $s_1, ..., s_p \in S$ and $t_1, ..., t_q \in T$ the two families
@@ -288,6 +289,18 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
   refine process_congr ?_ (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk.symm)
   refine iIndepFun_process (fun i j ↦ (hX i j).measurable_mk) fun I J ↦ ?_
   exact (h I J).process_congr (fun i j ↦ Measure.ae_ae_of_ae_comp (hX i j).ae_eq_mk)
+
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X κ P)
+    (mX : ∀ s, AEMeasurable (X s) (κ ∘ₘ P)) :
+    IndepFun (fun ω (i : I) ↦ X i ω) (fun ω (j : J) ↦ X j ω) κ P := by
+  have h : IndepFun (fun ω (i : I) ↦ (mX i).mk (X i) ω)
+      (fun ω (j : J) ↦ (mX j).mk (X j) ω) κ P := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr' fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ Measure.ae_ae_of_ae_comp (mX i).ae_eq_mk.symm
+  · exact fun j ↦ Measure.ae_ae_of_ae_comp (mX j).ae_eq_mk.symm
 
 end Kernel
 
@@ -425,5 +438,16 @@ lemma iIndepFun.iIndepFun_process₀ {T : S → Type*} {𝓧 : (i : S) → (j : 
     (h : ∀ (I : Finset S) (J : (i : I) → Finset (T i)), iIndepFun (fun i ω (j : J i) ↦ X i j ω) P) :
     iIndepFun (fun i ω j ↦ X i j ω) P :=
   Kernel.iIndepFun.iIndepFun_process₀ (by simpa) h
+
+theorem iIndepFun.indepFun_set₀ {𝓧 : S → Type*} [∀ s, MeasurableSpace (𝓧 s)]
+    {X : (s : S) → Ω → 𝓧 s} {I J : Set S} (hIJ : Disjoint I J) (hX : iIndepFun X P)
+    (mX : ∀ s, AEMeasurable (X s) P) :
+    (fun ω (i : I) ↦ X i ω) ⟂ᵢ[P] (fun ω (j : J) ↦ X j ω) := by
+  have h : (fun ω (i : I) ↦ (mX i).mk (X i) ω) ⟂ᵢ[P] (fun ω (j : J) ↦ (mX j).mk (X j) ω) := by
+    refine iIndepFun.indepFun_set I J hIJ ?_ fun i ↦ (mX i).measurable_mk
+    exact hX.congr fun i ↦ (mX i).ae_eq_mk
+  refine IndepFun.process_congr h ?_ ?_
+  · exact fun i ↦ (mX i).ae_eq_mk.symm
+  · exact fun j ↦ (mX j).ae_eq_mk.symm
 
 end ProbabilityTheory

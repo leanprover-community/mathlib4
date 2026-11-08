@@ -5,9 +5,7 @@ Authors: Markus Himmel
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Kernels
-public import Mathlib.CategoryTheory.Subobject.WellPowered
 public import Mathlib.CategoryTheory.Subobject.Limits
 
 /-!
@@ -38,16 +36,15 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         fapply eq_mk_of_comm
         · apply LinearEquiv.toModuleIso
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
-            (LinearMap.range S.arrow.hom) S.arrow.hom _)
+            (LinearMap.range S.arrow.hom) S.arrow.hom (LinearMap.mem_range_self _))
           constructor
           · simp [← LinearMap.ker_eq_bot, ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
-            exact LinearMap.mem_range_self _
         · ext x
           rfl)
       left_inv := fun N => by
-        convert!
+        convert
           congr_arg LinearMap.range
             (ModuleCat.hom_ext_iff.mp (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
@@ -59,7 +56,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
-        convert! LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
+        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
         · rw [← hom_comp, ofMkLEMk_comp]
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }

@@ -6,12 +6,10 @@ Authors: Christian Merten, Joël Riou, Adam Topaz
 module
 
 public import Mathlib.AlgebraicGeometry.OpenImmersion
-public import Mathlib.CategoryTheory.MorphismProperty.Limits
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
 
 /-!
-
 # Site defined by a morphism property
 
 Given a multiplicative morphism property `P` that is stable under base change, we define the

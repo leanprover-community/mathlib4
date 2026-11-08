@@ -5,12 +5,9 @@ Authors: Jeremy Avigad, Mario Carneiro, Simon Hudon
 -/
 module
 
-public import Mathlib.Data.Fin.Fin2
 public import Mathlib.Data.TypeVec
-public import Mathlib.Logic.Equiv.Defs
 
 /-!
-
 # Functors between the category of tuples of types, and the category Type
 
 Features:

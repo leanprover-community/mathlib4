@@ -6,11 +6,9 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
 public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
-
 # Some results on the ranks of subalgebras
 
 This file contains some results on the ranks of subalgebras,

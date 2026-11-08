@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Order
 public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Data.Complex.BigOperators
+public import Mathlib.Basic.Complex.BigOperators
 public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.Topology.Algebra.Algebra.Equiv
 public import Mathlib.Topology.Algebra.InfiniteSum.Module
@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
-
 # Normed space structure on `ℂ`.
 
 This file gathers basic facts of analytic nature on the complex numbers.
@@ -90,18 +89,23 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
 
 -- This result cannot be moved to `Data/Complex/Norm` since `ℤ` gets its norm from its
 -- normed ring structure and that file does not know about rings
-@[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
+@[simp 1100, norm_cast] lemma nnNorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
   ext; exact norm_intCast n
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_intCast := nnNorm_intCast
 
 @[continuity, fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← Complex.normSq_eq_norm_sq] using continuous_norm (E := ℂ).fun_pow 2
 
-theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
-  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
+theorem nnNorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
+  (pow_left_inj₀ zero_le zero_le hn).1 <| by rw [← nnNorm_pow, h, nnNorm_one, one_pow]
+
+@[deprecated (since := "2026-10-31")]
+alias nnnorm_eq_one_of_pow_eq_one := nnNorm_eq_one_of_pow_eq_one
 
 theorem norm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖ = 1 :=
-  congr_arg Subtype.val (nnnorm_eq_one_of_pow_eq_one h hn)
+  congr($(nnNorm_eq_one_of_pow_eq_one h hn).val)
 
 lemma le_of_eq_sum_of_eq_sum_norm {ι : Type*} {a b : ℝ} (f : ι → ℂ) (s : Finset ι) (ha₀ : 0 ≤ a)
     (ha : a = ∑ i ∈ s, f i) (hb : b = ∑ i ∈ s, (‖f i‖ : ℂ)) : a ≤ b := by
@@ -160,9 +164,6 @@ theorem continuous_re : Continuous re :=
 lemma uniformContinuous_re : UniformContinuous re :=
   reCLM.uniformContinuous
 
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_re :=
-  uniformContinuous_re
-
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
@@ -182,9 +183,6 @@ theorem continuous_im : Continuous im :=
 @[fun_prop]
 lemma uniformContinuous_im : UniformContinuous im :=
   imCLM.uniformContinuous
-
-@[deprecated (since := "2026-02-03")] alias uniformlyContinuous_im :=
-  uniformContinuous_im
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=
@@ -265,9 +263,6 @@ theorem conjCAE_toAlgEquiv : conjCAE.toAlgEquiv = conjAe :=
 
 @[simp] theorem conjCLE_toLinearEquiv : conjCLE.toLinearEquiv = conjAe.toLinearEquiv :=
   rfl
-
-@[deprecated "Now provable by simp" (since := "2026-04-13")]
-lemma conjCLE_coe_toLinearMap : (conjCLE : ℂ →ₗ[ℝ] ℂ) = conjAe.toLinearMap := by simp
 
 @[simp]
 theorem conjCAE_apply (z : ℂ) : conjCAE z = conj z :=
@@ -440,8 +435,6 @@ theorem isometry_intCast : Isometry ((↑) : ℤ → ℂ) :=
 
 theorem isClosedEmbedding_intCast : IsClosedEmbedding ((↑) : ℤ → ℂ) :=
   isometry_intCast.isClosedEmbedding
-
-@[deprecated (since := "2026-04-15")] alias closedEmbedding_intCast := isClosedEmbedding_intCast
 
 lemma isClosed_range_intCast : IsClosed (Set.range ((↑) : ℤ → ℂ)) :=
   Complex.isClosedEmbedding_intCast.isClosed_range

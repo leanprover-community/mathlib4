@@ -5,11 +5,10 @@ Authors: Iván Renison
 -/
 module
 
-public import Mathlib.Combinatorics.SimpleGraph.Coloring.Vertex
+public import Mathlib.Combinatorics.SimpleGraph.Bipartite
 public import Mathlib.Combinatorics.SimpleGraph.CompleteMultipartite
-public import Mathlib.Combinatorics.SimpleGraph.Hasse
-public import Mathlib.Data.Fin.Parity
 public import Mathlib.Combinatorics.SimpleGraph.CycleGraph
+public import Mathlib.Data.Fin.Parity
 
 /-!
 # Concrete colorings of common graphs
@@ -36,6 +35,9 @@ def pathGraph.bicoloring (n : ℕ) :
     rw [pathGraph_adj]
     rintro (h | h) <;> simp [← h, not_iff, Nat.succ_mod_two_eq_zero_iff]
 
+theorem IsBipartite.pathGraph (n : ℕ) : (pathGraph n).IsBipartite := by
+  simpa using pathGraph.bicoloring n |>.colorable
+
 /-- Embedding of `pathGraph 2` into the first two elements of `pathGraph n` for `2 ≤ n` -/
 def pathGraph_two_embedding (n : ℕ) (h : 2 ≤ n) : pathGraph 2 ↪g pathGraph n where
   toFun v := ⟨v, trans v.2 h⟩
@@ -56,29 +58,20 @@ theorem chromaticNumber_pathGraph (n : ℕ) (h : 2 ≤ n) :
 theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Even p.length ↔ (c u ↔ c v) := by
-  induction p with
-  | nil => simp
-  | @cons u v w h p ih =>
-    simp only [Walk.length_cons, Nat.even_add_one]
-    have : ¬ c u = true ↔ c v = true := by
-      rw [← not_iff, ← Bool.eq_iff_iff]
-      exact c.valid h
-    tauto
+  induction p <;> grind [c.valid, Walk.length_cons]
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
-  rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
-  tauto
+  rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p, not_iff]
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
-    (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by
-  intro h
-  have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one <| not_le.mp h
+    (h : Odd p.length) : 3 ≤ G.chromaticNumber := by
+  contrapose! h
+  have h' : G.chromaticNumber ≤ 2 := Order.le_of_lt_add_one h
   let c : G.Coloring (Fin 2) := (chromaticNumber_le_iff_colorable.mp h').some
   let c' : G.Coloring Bool := recolorOfEquiv G finTwoEquiv c
-  have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
-  simp_all
+  simp [c'.odd_length_iff_not_congr]
 
 /-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
@@ -97,6 +90,9 @@ def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph 
         apply Classical.not_iff.mpr
         simp [Fin.not_odd_iff_even_of_even h, Fin.not_even_iff_odd_of_even h]
 
+theorem IsBipartite.cycleGraph_of_even {n : ℕ} (h : Even n) : (cycleGraph n).IsBipartite := by
+  simpa using cycleGraph.bicoloring_of_even n h |>.colorable
+
 theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
     (cycleGraph n).chromaticNumber = 2 := by
   have hc := (cycleGraph.bicoloring_of_even n hEven).colorable
@@ -107,48 +103,30 @@ theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even
     exact two_le_chromaticNumber_of_adj hadj
 
 /-- Tricoloring of a cycle graph -/
-def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
-    (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by lia⟩) <| by
-    intro u v hadj
+def cycleGraph.tricoloring (n : ℕ) : Coloring (cycleGraph n) (Fin 3) :=
+  .mk (fun u ↦ if u = n - 1 then 2 else ⟨u % 2, by lia⟩) fun {u v} hadj ↦ by
     match n with
     | 0 => exact u.elim0
-    | 1 => simp at h
+    | 1 => exact absurd hadj cycleGraph_one_adj
     | n + 2 =>
-      simp only [cycleGraph_adj] at hadj
       split_ifs with hu hv
       · simp [Fin.eq_mk_iff_val_eq.mpr hu, Fin.eq_mk_iff_val_eq.mpr hv] at hadj
-      · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val (?_))).symm
-        exact v.val.mod_lt Nat.zero_lt_two
-      · refine (Fin.ne_of_lt (Fin.mk_lt_of_lt_val ?_))
-        exact u.val.mod_lt Nat.zero_lt_two
-      · simp only [ne_eq, Fin.ext_iff]
+      · exact Fin.ne_of_gt <| Fin.mk_lt_of_lt_val (v.val.mod_lt Nat.zero_lt_two :)
+      · exact Fin.ne_of_lt <| Fin.mk_lt_of_lt_val (u.val.mod_lt Nat.zero_lt_two :)
+      · have h2 (x y : ℕ) : x % 2 = y % 2 ↔ (x % 2 = 0 ↔ y % 2 = 0) := by lia
         have hu' : u.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
         have hv' : v.val + (1 : Fin (n + 2)) < n + 2 := by fin_omega
-        cases hadj with
-        | inl huv | inr huv =>
-          rw [← add_eq_of_eq_sub' huv.symm]
-          simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [show ∀ x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; lia,
-            Nat.even_add]
-          simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
-          exact id
+        rcases hadj with huv | huv
+        all_goals simp [← add_eq_of_eq_sub' huv.symm, h2, ← Nat.even_iff, Nat.even_add,
+          Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', -Nat.not_even_iff_odd]
 
 theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
-  have hc := (cycleGraph.tricoloring n h).colorable
-  apply le_antisymm
-  · apply hc.chromaticNumber_le
-  · have hn3 : n - 3 + 3 = n := by
-      refine Nat.sub_add_cancel (Nat.succ_le_of_lt (Nat.lt_of_le_of_ne h ?_))
-      intro h2
-      rw [← h2] at hOdd
-      exact (Nat.not_odd_iff.mpr rfl) hOdd
-    let w : (cycleGraph (n - 3 + 3)).Walk 0 0 := cycleGraph.cycle (n - 3)
-    have hOdd' : Odd w.length := by
-      rw [cycleGraph.length_cycle, hn3]
-      exact hOdd
-    rw [← hn3]
-    exact Walk.three_le_chromaticNumber_of_odd_loop w hOdd'
+  apply cycleGraph.tricoloring n |>.colorable.chromaticNumber_le.antisymm
+  have hn3 : n - 3 + 3 = n := by lia
+  rw [Fintype.card_fin, Nat.cast_ofNat, ← hn3]
+  apply cycleGraph.cycle (n - 3) |>.three_le_chromaticNumber_of_odd_loop
+  rwa [cycleGraph.length_cycle, hn3]
 
 section CompleteEquipartiteGraph
 
@@ -164,25 +142,31 @@ theorem completeEquipartiteGraph_colorable :
 
 end CompleteEquipartiteGraph
 
-open Walk
-lemma two_colorable_iff_forall_loop_even {α : Type*} {G : SimpleGraph α} :
-    G.Colorable 2 ↔ ∀ u, ∀ (w : G.Walk u u), Even w.length := by
+/-- Taking the remainder upon dividing by `r` produces an `r`-coloring of `turanGraph n r` for
+nonzero `r`. -/
+@[simps]
+protected def Coloring.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Coloring (Fin r) :=
+  ⟨(.ofNat r ·), (Fin.ne_of_val_ne ·)⟩
+
+protected theorem Colorable.turanGraph (n r : ℕ) [NeZero r] : (turanGraph n r).Colorable r :=
+  ⟨.turanGraph n r⟩
+
+open Walk in
+lemma isBipartite_iff_forall_walk_even_length {V : Type*} {G : SimpleGraph V} :
+    G.IsBipartite ↔ ∀ (v : V) (p : G.Walk v v), Even p.length := by
   simp_rw [← Nat.not_odd_iff_even]
-  constructor <;> intro h
-  · intro _ w ho
-    have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
+  refine ⟨fun h _ w ho ↦ ?_, fun h ↦ colorable_iff_forall_connectedComponent.mpr fun c ↦ ?_⟩
+  · have := (w.three_le_chromaticNumber_of_odd_loop ho).trans h.chromaticNumber_le
     norm_cast
-  · apply colorable_iff_forall_connectedComponent.2
-    intro c
-    obtain ⟨_, hv⟩ := c.nonempty_supp
-    use fun a ↦ Fin.ofNat 2 (c.connected_toSimpleGraph ⟨_, hv⟩ a).some.length
-    intro a b hab he
-    apply h _ <| (((c.connected_toSimpleGraph ⟨_, hv⟩ a).some.concat hab).append
-                 (c.connected_toSimpleGraph ⟨_, hv⟩ b).some.reverse).map c.toSimpleGraph_hom
-    rw [length_map, length_append, length_concat, length_reverse, add_right_comm]
-    have : ((Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ a)).length) % 2 =
-        (Nonempty.some (c.connected_toSimpleGraph ⟨_, hv⟩ b)).length % 2 := by
-      simp_rw [← Fin.val_natCast, ← Fin.ofNat_eq_cast, he]
-    exact (Nat.even_iff.mpr (by lia)).add_one
+  · have ⟨v, hv⟩ := c.nonempty_supp
+    let f (u : c) := (c.connected_toSimpleGraph ⟨v, hv⟩ u).some
+    refine ⟨fun u ↦ .ofNat 2 (f u).length, fun {a b} hab he ↦ ?_⟩
+    apply h _ <| (((f a).concat hab).append (f b).reverse).map c.toSimpleGraph_hom
+    rw [length_map, length_append, length_concat, length_reverse, Nat.odd_iff]
+    have : (f a).length % 2 = (f b).length % 2 := by simpa using congr(($he : ℕ))
+    lia
+
+@[deprecated (since := "2026-08-12")]
+alias two_colorable_iff_forall_loop_even := isBipartite_iff_forall_walk_even_length
 
 end SimpleGraph

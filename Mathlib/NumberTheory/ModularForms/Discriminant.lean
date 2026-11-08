@@ -6,12 +6,10 @@ Authors: Chris Birkbeck
 module
 
 public import Mathlib.Analysis.Complex.SqrtDeriv
-public import Mathlib.Analysis.Normed.Ring.InfiniteProd
 public import Mathlib.NumberTheory.ModularForms.DedekindEta
-public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.EisensteinSeries.E2.Transform
-public import Mathlib.NumberTheory.ModularForms.LevelOne.Basic
-public import Mathlib.NumberTheory.ModularForms.QExpansion
+
+import Mathlib.Analysis.Normed.Ring.InfiniteProd
 
 /-!
 # The modular discriminant Δ
@@ -80,7 +78,7 @@ lemma logDeriv_eta_comp_eq_logDeriv_csqrt_eta (z : ℍ) :
       logDeriv_mul _ (by simp [sqrt, ne_zero z]) (eta_ne_zero z.2)
       (differentiableAt_sqrt (mem_slitPlane z))
       (differentiableAt_eta_of_mem_upperHalfPlaneSet z.2), logDeriv_apply sqrt]
-  have hE2 := congrFun (E2_slash_action ModularGroup.S) z
+  have hE2 := congr($(E2_slash_action ModularGroup.S) z)
   simp only [one_div, SL_slash_def, modular_S_smul, ModularGroup.denom_S,
     Int.reduceNeg, zpow_neg, riemannZeta_two, mul_inv_rev, inv_div, Pi.sub_apply, Pi.smul_apply,
     D2, ModularGroup.denom_S, smul_eq_mul] at hE2
@@ -125,11 +123,10 @@ lemma discriminant_eq_q_prod (z : ℍ) : Δ z = 𝕢 1 z * ∏' n, (1 - eta_q n 
 lemma discriminant_ne_zero (z : ℍ) : Δ z ≠ 0 := by
   simpa [discriminant] using eta_ne_zero z.2
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant is invariant under `T : z ↦ z + 1`, i.e., `Δ(z + 1) = Δ(z)`. -/
 lemma discriminant_T_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.T) = Δ := by
   ext z
-  rw [SL_slash_apply, denom, modular_T_smul, ModularGroup.T]
+  rw [SL_slash_apply, denom, modular_T_smul]
   simp [discriminant_eq_q_prod, eta_q, Periodic.qParam, ← exp_periodic (2 * π * I * z)]
   ring_nf
 
@@ -141,14 +138,13 @@ lemma eta_comp_eq_csqrt_I_inv : upperHalfPlaneSet.EqOn
   have h3 : η I = z * sqrt I * η I := by simpa [← mul_assoc] using h (show I ∈ _ by simp)
   grind [sqrt, eta_ne_zero (show 0 < I.im by simp)]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The discriminant satisfies the modular transformation for `S : z ↦ -1 / z`:
 we have `Δ(-1 / z) = z ^ 12 · Δ(z)`. -/
 lemma discriminant_S_invariant : (Δ ∣[(12 : ℤ)] ModularGroup.S) = Δ := by
   ext z
   suffices η (-(↑z)⁻¹) ^ 24 * ((z : ℂ) ^ 12)⁻¹ = η z ^ 24 by
     rw [SL_slash_apply, UpperHalfPlane.modular_S_smul]
-    simpa [denom, ModularGroup.S]
+    simpa [denom]
   have he : η (-(↑z)⁻¹) = (sqrt I)⁻¹ * (sqrt z * η z) := by
     simpa [neg_div] using eta_comp_eq_csqrt_I_inv z.2
   simp only [he, mul_pow, mul_pow, inv_pow, csqrt_I_pow_24, csqrt_pow_24_eq (ne_zero z)]
@@ -164,7 +160,7 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
     refine this
       (by simpa only [pow_succ'] using (summable_geometric_of_abs_lt_one (by norm_num)).mul_left _)
       (fun k ↦ by simpa using ((continuous_pow (M := ℂ) (k + 1)).tendsto 0).neg) ?_
-    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by norm_num : (0 : ℝ) < 1 / 2)] with q hq k
+    filter_upwards [Metric.ball_mem_nhds (0 : ℂ) (by simp : (0 : ℝ) < 1 / 2)] with q hq k
     exact pow_le_pow_left₀ (norm_nonneg _) (mem_ball_zero_iff.mp hq).le _
   have := (htprod.comp (UpperHalfPlane.qParam_tendsto_atImInfty zero_lt_one)).pow 24
   simp only [Periodic.qParam, ofReal_one, div_one, comp_apply, one_pow, eta_q] at *
@@ -172,9 +168,6 @@ lemma tendsto_atImInfty_tprod_one_sub_eta_q_pow :
   rw [Multipliable.tprod_pow]
   apply (multipliableLocallyUniformlyOn_eta.multipliable τ.2).congr
   simp [eta_q, Periodic.qParam, ← exp_nat_mul]
-
-@[deprecated (since := "2026-04-30")]
-alias discriminant_bounded_factor := tendsto_atImInfty_tprod_one_sub_eta_q_pow
 
 lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
   apply Tendsto.congr (fun z ↦ (discriminant_eq_q_prod z).symm)
@@ -185,7 +178,7 @@ lemma discriminant_isZeroAtImInfty : IsZeroAtImInfty Δ := by
 lemma exp_isBigO_discriminant : (fun τ ↦ Real.exp (-2 * π * τ.im)) =O[atImInfty] Δ := by
   refine .of_bound 2 ?_
   have hprod := tendsto_atImInfty_tprod_one_sub_eta_q_pow.eventually
-    (Metric.ball_mem_nhds 1 (by norm_num : (0 : ℝ) < 1/2))
+    (Metric.ball_mem_nhds 1 (by simp : (0 : ℝ) < 1/2))
   filter_upwards [hprod] with τ hτ
   rw [discriminant_eq_q_prod, norm_mul, Real.norm_of_nonneg (Real.exp_pos _).le]
   have hq_norm : ‖𝕢 1 τ‖ = Real.exp (-2 * π * τ.im) := by simp [Periodic.qParam, Complex.norm_exp]
@@ -206,7 +199,7 @@ lemma discriminant_cuspFunction_eqOn : Set.EqOn (cuspFunction 1 Δ)
       discriminant_isZeroAtImInfty.zero_at_infty_comp_ofComplex
   · have him := Periodic.im_invQParam_pos_of_norm_lt_one one_pos
       (by simpa [dist_zero_right] using hq) hq0
-    simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero 1 _ hq0,
+    simp [cuspFunction, Periodic.cuspFunction_eq_of_ne_zero 1 _ hq0,
       ofComplex_apply_of_im_pos him, discriminant_eq_q_prod ⟨_, him⟩,
       Periodic.qParam_right_inv one_ne_zero hq0, eta_q]
 
@@ -265,8 +258,5 @@ lemma exp_decay_isBigO_discriminant (f : CuspForm 𝒮ℒ k) :
     (by simpa using exp_isBigO_discriminant)
 
 end CuspForm
-
-@[deprecated CuspForm.discriminant (since := "2026-04-30")]
-alias ModularForm.discriminantCuspForm := CuspForm.discriminant
 
 end

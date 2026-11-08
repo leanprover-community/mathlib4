@@ -6,7 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.GuitartExact.Basic
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
+
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 
 /-!
 # Guitart exact squares involving `Over` categories
@@ -52,8 +53,6 @@ abbrev TwoSquare.overPost :
     TwoSquare (Over.post F) (Over.forget X) (Over.forget (F.obj X)) F :=
   TwoSquare.mk _ _ _ _ (𝟙 _)
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance [∀ (Y : C), HasBinaryProduct X Y] [∀ (Y : C), PreservesLimit (pair X Y) F] :
     (TwoSquare.overPost F X).GuitartExact where
   isConnected_rightwards {W Z} g := by

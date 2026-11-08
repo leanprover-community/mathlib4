@@ -6,11 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Projections
-public import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
 
 /-!
-
 # Construction of the projection `PInfty` for the Dold-Kan correspondence
 
 In this file, we construct the projection `PInfty : K[X] ⟶ K[X]` by passing
@@ -136,7 +134,7 @@ theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   simp only [add_sub_cancel]
 
 theorem PInfty_f_add_QInfty_f (n : ℕ) : (PInfty.f n : X _⦋n⦌ ⟶ _) + QInfty.f n = 𝟙 _ :=
-  HomologicalComplex.congr_hom PInfty_add_QInfty n
+  congr($(PInfty_add_QInfty).f n)
 
 variable (C)
 

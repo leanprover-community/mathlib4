@@ -42,7 +42,7 @@ assert_not_exists Field
 
 namespace SimpleGraph
 
-variable {V : Type*} (G : SimpleGraph V)
+variable {V W : Type*} (G : SimpleGraph V)
 
 /-! ## Metric -/
 
@@ -55,7 +55,7 @@ It is `⊤` if no such walk exists.
 noncomputable def edist (u v : V) : ℕ∞ :=
   ⨅ w : G.Walk u v, w.length
 
-variable {G} {u v w : V}
+variable {G} {H : SimpleGraph W} {u v w : V}
 
 theorem edist_eq_sInf : G.edist u v = sInf (Set.range fun w : G.Walk u v ↦ (w.length : ℕ∞)) := rfl
 
@@ -185,15 +185,20 @@ lemma edist_top_of_ne (h : u ≠ v) : (⊤ : SimpleGraph V).edist u v = 1 := by
 lemma edist_top [DecidableEq V] : (⊤ : SimpleGraph V).edist u v = (if u = v then 0 else 1) := by
   by_cases h : u = v <;> simp [h]
 
+theorem Hom.edist_le (f : G →g H) (u v : V) : H.edist (f u) (f v) ≤ G.edist u v := by
+  refine le_iInf fun p ↦ ?_
+  simpa using (p.map f).edist_le
+
+@[simp]
+theorem Iso.edist_eq (f : G ≃g H) (u v : V) : H.edist (f u) (f v) = G.edist u v := by
+  apply le_antisymm (f.toHom.edist_le u v)
+  simpa using f.symm.toHom.edist_le (f u) (f v)
+
 /-- Supergraphs have smaller or equal extended distances to their subgraphs. -/
 @[gcongr]
 theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
-    G'.edist u v ≤ G.edist u v := by
-  by_cases hr : G.Reachable u v
-  · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
-    rw [← hw, ← Walk.length_map (.ofLE h)]
-    apply edist_le
-  · exact edist_eq_top_of_not_reachable hr ▸ le_top
+    G'.edist u v ≤ G.edist u v :=
+  (Hom.ofLE h).edist_le u v
 
 end edist
 
@@ -206,7 +211,7 @@ If no such walk exists, this uses the junk value of `0`.
 noncomputable def dist (u v : V) : ℕ :=
   (G.edist u v).toNat
 
-variable {G} {u v w : V}
+variable {G} {H : SimpleGraph W} {u v w : V}
 
 theorem dist_eq_sInf : G.dist u v = sInf (Set.range (Walk.length : G.Walk u v → ℕ)) :=
   ENat.iInf_toNat
@@ -225,6 +230,9 @@ protected theorem Connected.exists_walk_length_eq_dist (hconn : G.Connected) (u 
 
 theorem dist_le (p : G.Walk u v) : G.dist u v ≤ p.length :=
   dist_eq_sInf ▸ Nat.sInf_le ⟨p, rfl⟩
+
+theorem natCast_dist_le_edist : G.dist u v ≤ G.edist u v :=
+  ENat.natCast_toNat_le_self _
 
 @[simp]
 theorem dist_eq_zero_iff_eq_or_not_reachable :
@@ -361,13 +369,18 @@ lemma length_eq_dist_of_subwalk {u' v' : V} {p₁ : G.Walk u v} {p₂ : G.Walk u
   have := dist_le r
   lia
 
+theorem Hom.dist_le (f : G →g H) (hr : G.Reachable u v) : H.dist (f u) (f v) ≤ G.dist u v :=
+  ENat.toNat_le_toNat (f.edist_le u v) (edist_ne_top_iff_reachable.mpr hr)
+
+@[simp]
+theorem Iso.dist_eq (f : G ≃g H) (u v : V) : H.dist (f u) (f v) = G.dist u v :=
+  congr($(f.edist_eq u v).toNat)
+
 /-- Supergraphs have smaller or equal distances to their subgraphs. -/
 @[gcongr]
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
-    G'.dist u v ≤ G.dist u v := by
-  obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
-  rw [← hw, ← Walk.length_map (.ofLE h)]
-  apply dist_le
+    G'.dist u v ≤ G.dist u v :=
+  (Hom.ofLE h).dist_le hr
 
 /-- This bundles and abstracts some facts about the first three vertices of a shortest walk
 of length at least two: the first and third nodes are different and not connected. -/

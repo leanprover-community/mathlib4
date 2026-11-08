@@ -5,7 +5,6 @@ Authors: Yaël Dillies
 -/
 module
 
-public import Mathlib.Data.Finset.Card
 public import Mathlib.Data.Finset.Lattice.Fold
 
 /-!

@@ -5,11 +5,9 @@ Authors: Antoine Labelle, Rémi Bottinelli
 -/
 module
 
-public import Mathlib.Combinatorics.Quiver.Basic
 public import Mathlib.Combinatorics.Quiver.Path
 
 /-!
-
 # Rewriting arrows and paths along vertex equalities
 
 This file defines `Hom.cast` and `Path.cast` (and associated lemmas) in order to allow

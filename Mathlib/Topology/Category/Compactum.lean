@@ -6,14 +6,9 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Monad.Types
-public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.CategoryTheory.Equivalence
-public import Mathlib.Topology.Category.CompHaus.Basic
 public import Mathlib.Topology.Category.Profinite.Basic
-public import Mathlib.Data.Set.Constructions
 
 /-!
-
 # Compacta and Compact Hausdorff Spaces
 
 Recall that, given a monad `M` on `Type*`, an *algebra* for `M` consists of the following data:
@@ -110,6 +105,7 @@ instance : CoeSort Compactum Type* :=
   ⟨fun X => X.A⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
+@[macro_inline]
 instance {X Y : Compactum} : FunLike (X ⟶ Y) X Y where
   coe f := f.f
   coe_injective _ _ h := (Monad.forget_faithful β).map_injective (by aesop)
@@ -320,14 +316,9 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
         exact claim4 Q hQ
     intro S hS
     apply finiteInterClosure_insert
-    · constructor
-      · use Set.univ
-        refine ⟨Filter.univ_sets _, ?_⟩
-        ext
-        refine ⟨?_, by tauto⟩
-        · intro
-          apply Filter.univ_sets
-      · exact claim3
+    · refine ⟨⟨Set.univ, Filter.univ_sets _, ?_⟩, claim3⟩
+      ext
+      exact ⟨fun _ ↦ Filter.univ_sets _, by tauto⟩
     · exact hS
   -- It suffices to show that the intersection of any finite subset of T1 is nonempty.
   suffices ∀ F : fsu, ↑F ⊆ T1 → (⋂₀ ι F).Nonempty by
@@ -425,7 +416,7 @@ end Compactum
 
 /-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
-  obj X := { toTop := TopCat.of X, prop := trivial }
+  obj X := { toTop := ↧X, prop := trivial }
   map := fun f => CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
@@ -434,7 +425,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.hom.hom.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 (map_continuous f.hom.hom), rfl⟩
 
 /-- The functor `compactumToCompHaus` is faithful. -/
 instance faithful : compactumToCompHaus.Faithful where
@@ -444,7 +435,7 @@ instance faithful : compactumToCompHaus.Faithful where
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` gets confused by coercion using forget.
     apply Monad.Algebra.Hom.ext
     ext
-    simpa using! ConcreteCategory.congr_hom h _
+    simpa using! congr($h _)
 
 /-- This definition is used to prove essential surjectivity of `compactumToCompHaus`. -/
 noncomputable def isoOfTopologicalSpace {D : CompHaus} :

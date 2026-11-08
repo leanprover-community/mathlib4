@@ -8,7 +8,11 @@ module
 public import Mathlib.Data.Int.Notation
 public import Mathlib.Data.Nat.Notation
 public import Mathlib.Order.Defs.LinearOrder
-public import Mathlib.Logic.Basic
+
+import Mathlib.Basic.Logic.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The order relation on the integers

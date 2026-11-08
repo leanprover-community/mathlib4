@@ -6,9 +6,10 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Module.Presentation.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Logic.UnivLE
+
+import Mathlib.Basic.UnivLE
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 /-!
 # Presentation of free modules

@@ -102,11 +102,11 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     case h =>
       rw [mul_comm]
       exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
-    · refine ⟨?_, ?_⟩
-      · rw [mul_comm]
-        apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
-      · simp only [map_mul, mul_comm (algebraMap R S p) (l a)]
-        rfl
+    refine ⟨?_, ?_⟩
+    · rw [mul_comm]
+      apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
+    · simp only [map_mul, mul_comm (algebraMap R S p) (l a)]
+      rfl
   refine Finset.sum_induction _ (fun u => u ∈ algebraMap R<x> S '' I.map (algebraMap R R<x>))
       (fun a b => ?_) ?_ ?_
   · rintro ⟨z, hz, rfl⟩ ⟨y, hy, rfl⟩
@@ -199,7 +199,7 @@ lemma Localization.localRingHom_bijective_of_not_conductor_le
     {P : Ideal S} [P.IsPrime] (hx : ¬ conductor R x ≤ P) {s : Subalgebra R S}
     (hs : s = R<x>) (p : Ideal s) [p.IsPrime] [P.LiesOver p] :
     Function.Bijective (Localization.localRingHom _ _ _ (P.over_def p)) := by
-  obtain ⟨a, ha, haP⟩ := SetLike.not_le_iff_exists.mp hx
+  obtain ⟨a, ha, haP⟩ := IsConcreteLE.not_le_iff_exists.mp hx
   replace ha (b : _) : a * b ∈ s := by simpa [hs] using ha b
   exact Localization.localRingHom_bijective_of_saturated_inf_eq_top _
     (top_le_iff.mp fun y _ ↦ ⟨a, ⟨haP, by simpa using ha 1⟩, ha _⟩) _

@@ -138,10 +138,18 @@ lemma logDeriv_pow (x : 𝕜) (n : ℕ) : logDeriv (· ^ n) x = n / x :=
 @[simp] lemma logDeriv_inv (x : 𝕜) : logDeriv (·⁻¹) x = -1 / x := by
   simpa using logDeriv_zpow x (-1)
 
+@[to_fun logDeriv_fun_comp]
 theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf : DifferentiableAt 𝕜' f (g x))
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv_comp _ hf hg, comp_apply]
   ring
+
+@[simp] theorem logDeriv_neg (f : 𝕜 → 𝕜') : logDeriv (fun x ↦ -f x) = logDeriv f := by
+  funext; simp [logDeriv_apply, neg_div_neg_eq]
+
+@[simp] theorem logDeriv_comp_neg (f : 𝕜 → 𝕜') (x : 𝕜) :
+  logDeriv (fun x ↦ f (-x)) x = -logDeriv f (-x) := by
+  simp [logDeriv_apply, deriv_comp_neg, field]
 
 lemma logDeriv_eqOn_iff [IsRCLikeNormedField 𝕜] {f g : 𝕜 → 𝕜'} {s : Set 𝕜}
     (hf : DifferentiableOn 𝕜 f s) (hg : DifferentiableOn 𝕜 g s)
