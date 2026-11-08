@@ -46,7 +46,7 @@ which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. 
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
   lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier := by membership
-  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0 := by grind
+  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0 := by simp
 
 namespace StrictLieRinehartIdeal
 
@@ -56,8 +56,8 @@ add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
-lemma toSubmodule_injective : (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective
-    := fun ⟨s, _, _⟩ t ↦ by congr!
+lemma toSubmodule_injective : (toSubmodule :
+    StrictLieRinehartIdeal A L → Submodule A L).Injective := fun ⟨s, _, _⟩ t ↦ by congr!
 
 instance : SetLike (StrictLieRinehartIdeal A L) L where
   coe s := s.carrier
@@ -86,15 +86,14 @@ instance : Zero (StrictLieRinehartIdeal A L) :=
   ⟨⟨0, @fun x y hx ↦ by
     rw [(Submodule.mem_bot A).1 hx, zero_lie]
     exact Submodule.zero_mem 0, by
-      intro l a h; aesop⟩⟩
+ aesop⟩⟩
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
 @[membership .]
-lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' ∈ s) : ⁅l, l'⁆ ∈ s :=
-    by
+lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' ∈ s) :
+    ⁅l, l'⁆ ∈ s := by
   rw [← lie_skew]
-  apply neg_mem
   membership
 
 /-- A Lie-Rinehart ideal forms a Lie ring. -/

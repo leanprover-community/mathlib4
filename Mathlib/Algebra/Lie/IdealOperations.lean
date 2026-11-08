@@ -122,9 +122,7 @@ variable {N I} in
 theorem lie_coe_mem_lie (x : I) (m : N) : ⁅(x : L), (m : M)⁆ ∈ ⁅I, N⁆ := by
   rw [lieIdeal_oper_eq_span]; apply subset_lieSpan; use x, m
 
-
 variable {N I} in
-@[membership .]
 theorem lie_mem_lie {x : L} {m : M} (hx : x ∈ I) (hm : m ∈ N) : ⁅x, m⁆ ∈ ⁅I, N⁆ :=
   lie_coe_mem_lie ⟨x, hx⟩ ⟨m, hm⟩
 

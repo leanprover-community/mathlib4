@@ -56,7 +56,7 @@ theorem toSubmodule_injective :
 
 instance : SetLike (LieRinehartSubalgebra A L) L where
   coe L' := L'.carrier
-  coe_injective := SetLike.coe_injective.comp (toSubmodule_injective (A := A) (L:= L))
+  coe_injective := SetLike.coe_injective.comp (toSubmodule_injective (A := A) (L := L))
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
