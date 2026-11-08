@@ -46,9 +46,11 @@ variable [LieAlgebra R L] [LieModule R L M]
 abbrev LieIdeal :=
   LieSubmodule R L L
 
+@[membership .]
 theorem lie_mem_right (I : LieIdeal R L) (x y : L) (h : y ∈ I) : ⁅x, y⁆ ∈ I :=
   I.lie_mem h
 
+@[membership .]
 theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈ I := by
   rw [← lie_skew, ← neg_lie]; apply lie_mem_right; assumption
 

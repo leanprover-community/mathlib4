@@ -133,18 +133,23 @@ instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
 variable {R L}
 variable (L' : LieSubalgebra R L)
 
+@[membership .]
 protected theorem zero_mem : (0 : L) ∈ L' :=
   zero_mem L'
 
+@[membership .]
 protected theorem add_mem {x y : L} : x ∈ L' → y ∈ L' → (x + y : L) ∈ L' :=
   add_mem
 
+@[membership .]
 protected theorem sub_mem {x y : L} : x ∈ L' → y ∈ L' → (x - y : L) ∈ L' :=
   sub_mem
 
+@[membership .]
 protected theorem smul_mem (t : R) {x : L} (h : x ∈ L') : t • x ∈ L' :=
   SMulMemClass.smul_mem _ h
 
+@[membership .]
 theorem lie_mem {x y : L} (hx : x ∈ L') (hy : y ∈ L') : (⁅x, y⁆ : L) ∈ L' :=
   L'.lie_mem' hx hy
 

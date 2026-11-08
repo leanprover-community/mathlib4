@@ -85,8 +85,7 @@ instance : SMulMemClass (StrictLieRinehartIdeal A L) A L where
 instance : Zero (StrictLieRinehartIdeal A L) :=
   ⟨⟨0, @fun x y hx ↦ by
     rw [(Submodule.mem_bot A).1 hx, zero_lie]
-    exact Submodule.zero_mem 0, by
- aesop⟩⟩
+    exact Submodule.zero_mem 0, by aesop⟩⟩
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
