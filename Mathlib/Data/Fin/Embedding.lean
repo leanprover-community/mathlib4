@@ -157,6 +157,8 @@ lemma range_natAddCastLEEmb {n m : ℕ} (hmn : n ≤ m) :
     fun xin ↦ ⟨subNat (m - n) (y.cast (Nat.add_sub_of_le hmn).symm)
     (Nat.sub_le_of_le_add xin), by simp⟩⟩
 
+@[deprecated (since := "2026-11-08")] alias range_natAdd_castLEEmb := range_natAddCastLEEmb
+
 end SuccAbove
 
 end Fin
