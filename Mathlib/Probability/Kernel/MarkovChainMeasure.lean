@@ -10,15 +10,22 @@ public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 /-!
 # Path measures of Markov chains
 
-For a Markov kernel `P : Kernel E E` and an initial measure `μ`, `P.markovChainMeasure μ`
-is the measure on paths `ℕ → E` obtained by specializing `Kernel.trajMeasure` to the
-transition family `P.markovTransitionFamily`. Each transition depends only on the last state
-of the finite history.
+This file defines the distribution of a Markov chain with a given transition kernel `P` and
+starting distribution `μ`. In other words, if `X ∼ P.markovChainMeasure μ`, then
+```
+X 0 ∼ μ
+X (n + 1) | X 0, …, X n ∼ P (X n)
+```
 
-The initial coordinate has law `μ`. The path measure is s-finite when `μ` is s-finite,
-and is a probability measure when `μ` is a probability measure. For s-finite `μ`, the
-coordinate at time `n` has law `(P ^ n) ∘ₘ μ`, and the joint law of a finite history and
-the next state is given by `markovChainMeasure_map_frestrictLe_compProd`.
+## Main definitions
+
+* `ProbabilityTheory.Kernel.markovChainMeasure`: the distribution on paths `ℕ → E` with
+  starting distribution `μ` and transition kernel `P`.
+
+## Main results
+
+* `ProbabilityTheory.Kernel.markovChainMeasure_map_eval`: for s-finite `μ`, the coordinate
+  at time `n` has law `(P ^ n) ∘ₘ μ`.
 -/
 
 @[expose] public section
