@@ -932,7 +932,7 @@ instance circularPreorder : CircularPreorder (α ⧸ AddSubgroup.zmultiples p) w
 
 instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
   { QuotientAddGroup.circularPreorder with
-    btw_antisymm := fun {x₁ x₂ x₃} h₁₂₃ h₃₂₁ => by
+    btw_antisymm {x₁ x₂ x₃} h₁₂₃ h₃₂₁ := by
       induction x₁ using QuotientAddGroup.induction_on
       induction x₂ using QuotientAddGroup.induction_on
       induction x₃ using QuotientAddGroup.induction_on
@@ -940,7 +940,7 @@ instance circularOrder : CircularOrder (α ⧸ AddSubgroup.zmultiples p) :=
       simp_rw [btw_coe_iff] at h₁₂₃ h₃₂₁
       simp_rw [← modEq_iff_eq_mod_zmultiples]
       simpa only [modEq_comm] using toIxxMod_antisymm _ h₁₂₃ h₃₂₁
-    btw_total := fun x₁ x₂ x₃ => by
+    btw_total x₁ x₂ x₃ := by
       induction x₁ using QuotientAddGroup.induction_on
       induction x₂ using QuotientAddGroup.induction_on
       induction x₃ using QuotientAddGroup.induction_on

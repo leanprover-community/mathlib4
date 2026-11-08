@@ -236,7 +236,7 @@ as the naturality squares are trivial.
 def natTrans {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discrete I, F.obj i ⟶ G.obj i) :
     F ⟶ G where
   app := f
-  naturality := fun {X Y} ⟨g⟩ => by
+  naturality {X Y} := fun ⟨g⟩  => by
     discrete_cases
     rcases g
     change F.map (𝟙 _) ≫ _ = _ ≫ G.map (𝟙 _)
@@ -342,11 +342,11 @@ lemma Discrete.exists {α : Type*} {p : Discrete α → Prop} :
 def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁} C] :
     (J → C) ≌ (Discrete J ⥤ C) where
   functor :=
-    { obj := fun F => Discrete.functor F
-      map := fun f => Discrete.natTrans (fun j => f j.as) }
+    { obj F := Discrete.functor F
+      map f := Discrete.natTrans (fun j => f j.as) }
   inverse :=
-    { obj := fun F j => F.obj ⟨j⟩
-      map := fun f j => f.app ⟨j⟩ }
+    { obj F := fun j  => F.obj ⟨j⟩
+      map f j := f.app ⟨j⟩ }
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
     (by

@@ -349,7 +349,7 @@ variable {ι α : Type*} {s : ι → Set α}
 
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
-  ⟨{  eq_of_mem := fun {_x _i _j} _hi _hj => Subsingleton.elim _ _
+  ⟨{  eq_of_mem {_x _i _j} _hi _hj := Subsingleton.elim _ _
       some := default
       some_mem := Set.mem_univ
       index := default

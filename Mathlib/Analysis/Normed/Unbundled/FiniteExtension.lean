@@ -219,7 +219,7 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
   have hF'_0 : F' ≠ 0 := DFunLike.ne_iff.mpr ⟨(1 : L), by rw [hF'_1]; exact one_ne_zero⟩
   set F : AlgebraNorm K L :=
     { RingSeminorm.toRingNorm F' hF'_0 with
-      smul' := fun k y ↦ by
+      smul' k y := by
         have hk : ∀ y : L, f (algebraMap K L k * y) = f (algebraMap K L k) * f y :=
           seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k)
         have hfk : ‖k‖ = (smoothingSeminorm f hf_1 hf_na) ((algebraMap K L) k) := by

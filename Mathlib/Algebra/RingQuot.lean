@@ -290,9 +290,9 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
     rintro n ⟨⟨⟩⟩
     simp [smul_quot, neg_quot, add_mul]
   intCast := intCast r
-  intCast_ofNat := fun n => congrArg RingQuot.mk <| by
+  intCast_ofNat n := congrArg RingQuot.mk <| by
     exact congrArg (Quot.mk _) (Int.cast_natCast _)
-  intCast_negSucc := fun n => congrArg RingQuot.mk <| by
+  intCast_negSucc n := congrArg RingQuot.mk <| by
     exact congrArg (Quot.mk _) (Int.cast_negSucc n)
 
 instance instCommSemiring {R : Type uR} [CommSemiring R] (r : R → R → Prop) :
@@ -324,7 +324,7 @@ instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot 
 /-- The quotient map from a ring to its quotient, as a homomorphism of rings.
 -/
 @[no_expose] def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
-  { toFun := fun x ↦ ⟨Quot.mk _ x⟩
+  { toFun x := ⟨Quot.mk _ x⟩
     map_one' := by simp [← one_quot]
     map_mul' := by simp [mul_quot]
     map_zero' := by simp [← zero_quot]
@@ -349,7 +349,7 @@ variable [Semiring T]
 
 @[no_expose] def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
-  { toFun := fun x ↦ Quot.lift f
+  { toFun x := Quot.lift f
         (by
           rintro _ _ r
           induction r with
@@ -372,8 +372,8 @@ factors uniquely through a morphism `RingQuot r →+* T`.
 -/
 @[no_expose] def lift {r : R → R → Prop} :
   { f : R →+* T // ∀ ⦃x y⦄, r x y → f x = f y } ≃ (RingQuot r →+* T) :=
-  { toFun := fun f ↦ preLift f.prop
-    invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr(F $(mkRingHom_rel h))⟩
+  { toFun f := preLift f.prop
+    invFun F := ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr(F $(mkRingHom_rel h))⟩
     left_inv := fun f ↦ by rfl
     right_inv := fun F ↦ by ext; rfl }
 
@@ -478,7 +478,7 @@ theorem ringQuot_ext' {s : A → A → Prop} (f g : RingQuot s →ₐ[S] B)
 
 @[no_expose] def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
   (h : ∀ ⦃x y⦄, s x y → f x = f y) : RingQuot s →ₐ[S] B :=
-{ toFun := fun x ↦ Quot.lift f
+{ toFun x := Quot.lift f
             (by
               rintro _ _ r
               induction r with
@@ -504,8 +504,8 @@ factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
 -/
 @[no_expose] def liftAlgHom {s : A → A → Prop} :
   { f : A →ₐ[S] B // ∀ ⦃x y⦄, s x y → f x = f y } ≃ (RingQuot s →ₐ[S] B) :=
-  { toFun := fun f' ↦ preLiftAlgHom _ f'.prop
-    invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr(F $(mkAlgHom_rel S h))⟩
+  { toFun f' := preLiftAlgHom _ f'.prop
+    invFun F := ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr(F $(mkAlgHom_rel S h))⟩
     left_inv := fun f ↦ by rfl
     right_inv := fun F ↦ by ext; rfl }
 

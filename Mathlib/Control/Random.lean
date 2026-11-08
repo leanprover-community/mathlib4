@@ -47,7 +47,7 @@ abbrev RandT := RandGT StdGen
 abbrev Rand := RandG StdGen
 
 instance [MonadLift m n] : MonadLiftT (RandGT g m) (RandGT g n) where
-  monadLift x := fun s => x s
+  monadLift x s := x s
 
 /-- `Random m α` gives us machinery to generate values of type `α` in the monad `m`.
 

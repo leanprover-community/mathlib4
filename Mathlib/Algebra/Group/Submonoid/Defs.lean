@@ -224,14 +224,14 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 instance : Top (Submonoid M) :=
   ⟨{  carrier := Set.univ
       one_mem' := Set.mem_univ 1
-      mul_mem' := fun _ _ => Set.mem_univ _ }⟩
+      mul_mem' _ _ := Set.mem_univ _ }⟩
 
 /-- The trivial submonoid `{1}` of a monoid `M`. -/
 @[to_additive /-- The trivial `AddSubmonoid` `{0}` of an `AddMonoid` `M`. -/]
 instance : Bot (Submonoid M) :=
   ⟨{  carrier := {1}
       one_mem' := Set.mem_singleton 1
-      mul_mem' := fun ha hb => by
+      mul_mem' ha hb := by
         push _ ∈ _ at *
         rw [ha, hb, mul_one] }⟩
 

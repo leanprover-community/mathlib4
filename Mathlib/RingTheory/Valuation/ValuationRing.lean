@@ -237,10 +237,10 @@ theorem mem_integer_iff (x : K) : x ∈ (valuation A K).integer ↔ ∃ a : A, a
 noncomputable def equivInteger : A ≃+* (valuation A K).integer :=
   RingEquiv.ofBijective
     (show A →ₙ+* (valuation A K).integer from
-      { toFun := fun a => ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
-        map_mul' := fun _ _ => by ext1; exact (algebraMap A K).map_mul _ _
+      { toFun a := ⟨algebraMap A K a, (mem_integer_iff _ _ _).mpr ⟨a, rfl⟩⟩
+        map_mul' _ _ := by ext1; exact (algebraMap A K).map_mul _ _
         map_zero' := by ext1; exact (algebraMap A K).map_zero
-        map_add' := fun _ _ => by ext1; exact (algebraMap A K).map_add _ _ })
+        map_add' _ _ := by ext1; exact (algebraMap A K).map_add _ _ })
     (by
       constructor
       · intro x y h

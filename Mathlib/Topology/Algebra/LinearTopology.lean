@@ -181,7 +181,7 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
       (fun I : AddSubgroup M ↦ (I : Set M)) := by
   -- Start from a neighborhood `V`. It contains some open sub-`R`-module `I`.
   refine IsLinearTopology.hasBasis_submodule R |>.to_hasBasis (fun I hI ↦ ?_)
-    (fun I hI ↦ ⟨{I with smul_mem' := fun r x hx ↦ hI.2.1 r x hx}, hI.1, subset_rfl⟩)
+    (fun I hI ↦ ⟨{I with smul_mem' r x hx := hI.2.1 r x hx}, hI.1, subset_rfl⟩)
   -- `I` itself is a neighborhood of zero, so it contains some open sub-`R'`-module `J`.
   rcases (hasBasis_submodule R').mem_iff.mp hI with ⟨J, hJ, J_sub_I⟩
   set uR : Set R := univ -- Convenient to avoid type ascriptions

@@ -61,9 +61,9 @@ instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module' with
     algebraMap :=
     { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-      toFun := fun r => ULift.up (algebraMap R A r) }
-    commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
-    smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
+      toFun r := ULift.up (algebraMap R A r) }
+    commutes' r x := ULift.down_injective <| Algebra.commutes r x.down
+    smul_def' r x := ULift.down_injective <| Algebra.smul_def' r x.down }
 
 theorem _root_.ULift.algebraMap_eq (r : R) :
     algebraMap R (ULift A) r = ULift.up (algebraMap R A r) :=
@@ -168,9 +168,9 @@ See note [reducible non-instances]. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
-    intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
-    intCast_negSucc := fun z => by simp }
+    intCast z := algebraMap R A z
+    intCast_ofNat z := by simp only [Int.cast_natCast, map_natCast]
+    intCast_negSucc z := by simp }
 
 /-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
 abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]
@@ -566,7 +566,7 @@ variable [Module R N] [Module S N] [IsScalarTower R S N]
 /-- If `R →+* S` is surjective, then `S`-linear maps between modules are exactly `R`-linear maps. -/
 def LinearMap.extendScalarsOfSurjectiveEquiv (h : Surjective (algebraMap R S)) :
     (M →ₗ[R] N) ≃ₗ[R] (M →ₗ[S] N) where
-  toFun f := { __ := f, map_smul' := fun r x ↦ by obtain ⟨r, rfl⟩ := h r; simp }
+  toFun f := { __ := f, map_smul' r x := by obtain ⟨r, rfl⟩ := h r; simp }
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   invFun f := f.restrictScalars S

@@ -33,12 +33,12 @@ variable [NonUnitalNonAssocSemiring α] [StarRing α]
 
 instance : Star (CentroidHom α) where
   star f :=
-  { toFun := fun a => star (f (star a))
+  { toFun a := star (f (star a))
     map_zero' := by
       simp only [star_zero, map_zero]
-    map_add' := fun a b => by simp only [star_add, map_add]
-    map_mul_left' := fun a b => by simp only [star_mul, map_mul_right, star_star]
-    map_mul_right' := fun a b => by simp only [star_mul, map_mul_left, star_star] }
+    map_add' a b := by simp only [star_add, map_add]
+    map_mul_left' a b := by simp only [star_mul, map_mul_right, star_star]
+    map_mul_right' a b := by simp only [star_mul, map_mul_left, star_star] }
 
 @[simp] lemma star_apply (f : CentroidHom α) (a : α) : (star f) a = star (f (star a)) := rfl
 

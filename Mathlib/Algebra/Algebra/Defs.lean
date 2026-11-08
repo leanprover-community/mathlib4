@@ -368,7 +368,7 @@ variable (R A)
 packaged as an `R`-linear map.
 -/
 protected def linearMap : R →ₗ[R] A :=
-  { algebraMap R A with map_smul' := fun x y => by simp [Algebra.smul_def] }
+  { algebraMap R A with map_smul' x y := by simp [Algebra.smul_def] }
 
 @[inherit_doc] scoped[RingTheory.LinearMap] notation "η" => Algebra.linearMap _ _
 @[inherit_doc] scoped[RingTheory.LinearMap] notation "η[" R "]" => Algebra.linearMap R _

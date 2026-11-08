@@ -40,15 +40,15 @@ attribute [local instance] subtype_val_mono
 @[simps]
 noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ Set α where
   functor :=
-    { obj := fun f => Set.range f.1.hom
-      map := fun {f g} t =>
+    { obj f := Set.range f.1.hom
+      map {f g} t :=
         homOfLE
           (by
             rintro a ⟨x, rfl⟩
             exact ⟨t.hom.1 x, congr_hom t.hom.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk <| ↾(Subtype.val : s → α)
-      map := fun {s t} b => MonoOver.homMk (↾
+    { obj s := MonoOver.mk <| ↾(Subtype.val : s → α)
+      map {s t} b := MonoOver.homMk (↾
         fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>

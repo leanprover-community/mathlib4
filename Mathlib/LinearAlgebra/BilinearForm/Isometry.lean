@@ -122,13 +122,13 @@ theorem comp_assoc (h : B₃ →bᵢ B₄) (g : B₂ →bᵢ B₃) (f : B₁ →
 
 /-- There is a zero map from any module with the zero form. -/
 instance : Zero ((0 : LinearMap.BilinForm R M₁) →bᵢ B₂) where
-  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' := fun _ _ => map_zero _ }
+  zero := { (0 : M₁ →ₗ[R] M₂) with map_app' _ _ := map_zero _ }
 
 /-- There is a zero map from the trivial module. -/
 instance hasZeroOfSubsingleton [Subsingleton M₁] : Zero (B₁ →bᵢ B₂) where
   zero :=
   { (0 : M₁ →ₗ[R] M₂) with
-    map_app' := fun x y => by
+    map_app' x y := by
       rw [Subsingleton.elim x 0, Subsingleton.elim y 0]
       simp }
 

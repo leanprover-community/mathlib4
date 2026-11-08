@@ -45,17 +45,17 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.natCast_pos.mpr card_pos) n
   letI := Classical.decEq Fq
-  { toFun := fun p => if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
-    nonneg' := fun p => by
+  { toFun p := if p = 0 then 0 else (Fintype.card Fq : ℤ) ^ p.natDegree
+    nonneg' p := by
       split_ifs
       · rfl
       exact pow_nonneg (Int.natCast_nonneg _) _
-    eq_zero' := fun p =>
+    eq_zero' p :=
       ite_eq_left_iff.trans
         ⟨fun h => by
           contrapose! h
           exact ⟨h, (pow_pos _).ne'⟩, absurd⟩
-    add_le' := fun p q => by
+    add_le' p q := by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
       by_cases hpq : p + q = 0
@@ -63,7 +63,7 @@ noncomputable def cardPowDegree : AbsoluteValue Fq[X] ℤ :=
         exact add_nonneg (pow_pos _).le (pow_pos _).le
       simp only [hpq, hp, hq, ite_false]
       exact le_trans (pow_right_mono₀ (by lia) (Polynomial.natDegree_add_le _ _)) (by grind)
-    map_mul' := fun p q => by
+    map_mul' p q := by
       by_cases hp : p = 0; · simp [hp]
       by_cases hq : q = 0; · simp [hq]
       have hpq : p * q ≠ 0 := mul_ne_zero hp hq
@@ -87,7 +87,7 @@ theorem cardPowDegree_isEuclidean : IsEuclidean (cardPowDegree : AbsoluteValue F
   have card_pos : 0 < Fintype.card Fq := Fintype.card_pos_iff.mpr inferInstance
   have pow_pos : ∀ n, 0 < (Fintype.card Fq : ℤ) ^ n := fun n =>
     pow_pos (Int.natCast_pos.mpr card_pos) n
-  { map_lt_map_iff' := fun {p q} => by
+  { map_lt_map_iff' {p q} := by
       classical
       change cardPowDegree p < cardPowDegree q ↔ degree p < degree q
       simp only [cardPowDegree_apply]

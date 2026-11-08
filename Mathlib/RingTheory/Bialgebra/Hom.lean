@@ -70,7 +70,7 @@ instance (priority := 100) toAlgHomClass : AlgHomClass F R A B where
   map_one := map_one
   map_add := map_add
   map_zero := map_zero
-  commutes := fun c r => by
+  commutes c r := by
     simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one]
 
 /-- Turn an element of a type `F` satisfying `BialgHomClass F R A B` into an actual
@@ -121,12 +121,12 @@ instance funLike : FunLike (A →ₐc[R] B) A B where
     simp_all
 
 instance bialgHomClass : BialgHomClass (A →ₐc[R] B) R A B where
-  map_add := fun f => f.map_add'
-  map_smulₛₗ := fun f => f.map_smul'
-  counit_comp := fun f => f.counit_comp
-  map_comp_comul := fun f => f.map_comp_comul
-  map_mul := fun f => f.map_mul'
-  map_one := fun f => f.map_one'
+  map_add f := f.map_add'
+  map_smulₛₗ f := f.map_smul'
+  counit_comp f := f.counit_comp
+  map_comp_comul f := f.map_comp_comul
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R α β : Type*} [CommSemiring R]

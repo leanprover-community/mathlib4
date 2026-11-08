@@ -55,7 +55,7 @@ abbrev diagram : DiscreteQuotient X ⥤ Profinite :=
 /-- A cone over `X.diagram` whose cone point is `X`. -/
 def asLimitCone : CategoryTheory.Limits.Cone X.diagram :=
   { pt := X
-    π := { app := fun S => CompHausLike.ofHom (Y := X.diagram.obj S) _
+    π := { app S := CompHausLike.ofHom (Y := X.diagram.obj S) _
             ⟨S.proj, IsLocallyConstant.continuous (S.proj_isLocallyConstant)⟩ } }
 
 set_option backward.isDefEq.respectTransparency.types false in

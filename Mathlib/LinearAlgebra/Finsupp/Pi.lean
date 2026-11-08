@@ -52,8 +52,8 @@ noncomputable def uniqueLinearEquiv [Subsingleton α] (a : α) : (α →₀ M) �
 @[deprecated uniqueLinearEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def LinearEquiv.finsuppUnique (α : Type*) [Unique α] : (α →₀ M) ≃ₗ[R] M :=
   { Finsupp.equivFunOnFinite.trans (Equiv.funUnique α M) with
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 variable {R M}
 

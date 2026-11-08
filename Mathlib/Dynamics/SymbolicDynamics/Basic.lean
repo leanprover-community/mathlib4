@@ -272,7 +272,7 @@ It is the subshift whose underlying set is the set of all configurations
 def mulFullShift (A G) [TopologicalSpace A] [Monoid G] : MulSubshift A G where
   carrier := Set.univ
   isClosed := isClosed_univ
-  mapsTo := fun _ _ _ => trivial
+  mapsTo _ := fun _ _  => trivial
 
 /-- A *pattern* is a finite configuration in the full shift `A^G`.
 
@@ -392,9 +392,9 @@ with support `U`. In other words, `Pattern.fromConfig x U` is the partial config
 `x` visible on the coordinates in `U`, padded with `default` elsewhere. -/
 noncomputable def fromConfig (x : G → A) (U : Finset G) : Pattern A G := by
   classical
-  exact { config := fun g => if g ∈ U then x g else default,
+  exact { config g := if g ∈ U then x g else default,
           support := U,
-          condition := fun g hg => ite_eq_right hg }
+          condition g hg := ite_eq_right hg }
 
 /-- On the translated support, `p.mulShift v` agrees with `p.config` at the preimage.
 
@@ -594,10 +594,10 @@ lemma finite_setOfPred_pattern_support_eq
   classical
   -- Patterns with support U biject with (U → A) via restriction/extension
   let e : { p : Pattern A G // p.support = U } ≃ (U → A) :=
-  { toFun := fun p i => p.1.config i.1
-    invFun := fun f => ⟨{ config := fun g => if h : g ∈ U then f ⟨g, h⟩ else default,
+  { toFun p := fun i  => p.1.config i.1
+    invFun f := ⟨{ config g := if h : g ∈ U then f ⟨g, h⟩ else default,
                            support := U,
-                           condition := fun g hg => by simp [hg] }, rfl⟩
+                           condition g hg := by simp [hg] }, rfl⟩
     left_inv := by
       rintro ⟨⟨cfg, dom, cond⟩, hU⟩
       simp only at hU; subst hU

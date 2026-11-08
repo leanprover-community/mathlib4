@@ -85,7 +85,7 @@ instance : CoeOut (RingInvo R) (R ≃+* Rᵐᵒᵖ) where coe := toRingEquiv
 /-- Construct a ring involution from a ring homomorphism. -/
 def mk' (f : R →+* Rᵐᵒᵖ) (involution : ∀ r, (f (f r).unop).unop = r) : RingInvo R :=
   { f with
-    invFun := fun r => (f r.unop).unop
+    invFun r := (f r.unop).unop
     left_inv := fun r => involution r
     right_inv := fun _ => MulOpposite.unop_injective <| involution _
     involution' := involution }
@@ -112,7 +112,7 @@ variable [CommRing R]
 
 /-- The identity function of a `CommRing` is a ring involution. -/
 protected def RingInvo.id : RingInvo R :=
-  { RingEquiv.toOpposite R with involution' := fun _ => rfl }
+  { RingEquiv.toOpposite R with involution' _ := rfl }
 
 instance : Inhabited (RingInvo R) :=
   ⟨RingInvo.id _⟩

@@ -241,17 +241,17 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   let he := e.mem_source.2 h
   refine
     ⟨e.toOpenPartialHomeomorph.trans
-        { toFun := fun p => p.1
-          invFun := fun p => ⟨p, x, rfl⟩
+        { toFun p := p.1
+          invFun p := ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
           open_source :=
             e.open_baseSet.prod (discreteTopology_iff_isOpen_singleton.1 (hf (f x) hx).1 ⟨x, rfl⟩)
           open_target := e.open_baseSet
-          map_source' := fun p => And.left
-          map_target' := fun p hp => ⟨hp, rfl⟩
-          left_inv' := fun p hp => Prod.ext rfl hp.2.symm
-          right_inv' := fun p _ => rfl
+          map_source' p := And.left
+          map_target' p hp := ⟨hp, rfl⟩
+          left_inv' p hp := Prod.ext rfl hp.2.symm
+          right_inv' p _ := rfl
           continuousOn_toFun := continuousOn_fst
           continuousOn_invFun := by fun_prop },
       ⟨he, by rwa [e.toOpenPartialHomeomorph.symm_symm, e.proj_toFun x he],

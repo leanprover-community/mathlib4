@@ -234,7 +234,7 @@ def autAdjoinRootXPowSubCHom :
     rw [map_sub, map_pow, aeval_C, aeval_X, Algebra.smul_def, mul_pow, root_X_pow_sub_C_pow,
       AdjoinRoot.algebraMap_eq, ← map_pow, this, map_one, one_mul, sub_self]
   map_one' := algHom_ext <| by simp
-  map_mul' := fun ε η ↦ algHom_ext <| by simp [mul_smul, smul_comm ((ε : Kˣ) : K)]
+  map_mul' ε η := algHom_ext <| by simp [mul_smul, smul_comm ((ε : Kˣ) : K)]
 
 /-- The natural embedding of the roots of unity of `K` into `Gal(K[ⁿ√a]/K)`, by sending
 `η ↦ (ⁿ√a ↦ η • ⁿ√a)`. This is an isomorphism when `K` contains a primitive root of unity.

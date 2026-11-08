@@ -75,7 +75,7 @@ theorem pow_down [Pow α β] (a : ULift.{w} α) (b : β) : (a ^ b).down = a.down
 -/
 @[to_additive /-- The additive equivalence between `ULift α` and `α`. -/]
 def _root_.MulEquiv.ulift [Mul α] : ULift α ≃* α :=
-  { Equiv.ulift with map_mul' := fun _ _ => rfl }
+  { Equiv.ulift with map_mul' _ _ := rfl }
 
 @[to_additive]
 instance semigroup [Semigroup α] : Semigroup (ULift α) :=

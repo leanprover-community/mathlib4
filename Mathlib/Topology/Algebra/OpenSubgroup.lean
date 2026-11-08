@@ -606,7 +606,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
   rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
   let S : Subgroup G := {
     carrier := ⋃ n, V ^ (n + 1)
-    mul_mem' := fun ha hb ↦ by
+    mul_mem' ha hb := by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       rcases mem_iUnion.mp hb with ⟨l, hl⟩
       apply mem_iUnion.mpr
@@ -617,7 +617,7 @@ theorem exist_openSubgroup_sub_clopen_nhds_of_one {G : Type*} [Group G] [Topolog
       apply mem_iUnion.mpr
       use 0
       simp [mem_of_mem_nhds hV.nhds]
-    inv_mem' := fun ha ↦ by
+    inv_mem' ha := by
       rcases mem_iUnion.mp ha with ⟨k, hk⟩
       apply mem_iUnion.mpr
       use k

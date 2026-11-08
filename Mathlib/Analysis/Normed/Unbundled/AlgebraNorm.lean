@@ -40,7 +40,7 @@ instance (K : Type*) [NormedField K] : Inhabited (AlgebraNorm K K) :=
       neg'      := norm_neg
       smul'     := norm_mul
       mul_le'   := norm_mul_le
-      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero.mp }⟩
+      eq_zero_of_map_eq_zero' _ := norm_eq_zero.mp }⟩
 
 /-- `AlgebraNormClass F R S` states that `F` is a type of `R`-algebra norms on the ring `S`.
 You should extend this class when you extend `AlgebraNorm`. -/
@@ -140,7 +140,7 @@ instance (K : Type*) [NormedField K] : Inhabited (MulAlgebraNorm K K) :=
       smul'     := norm_mul
       map_one'  := norm_one
       map_mul'  := norm_mul
-      eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero.mp }⟩
+      eq_zero_of_map_eq_zero' _ := norm_eq_zero.mp }⟩
 
 /-- `MulAlgebraNormClass F R S` states that `F` is a type of multiplicative `R`-algebra norms on
 the ring `S`. You should extend this class when you extend `MulAlgebraNorm`. -/

@@ -229,7 +229,7 @@ def KaehlerDifferential.D : Derivation R S Ω[S⁄R] :=
       dsimp [KaehlerDifferential.DLinearMap_apply, Ideal.toCotangent_apply]
       congr
       rw [sub_self]
-    leibniz' := fun a b => by
+    leibniz' a b := by
       have : LinearMap.CompatibleSMul { x // x ∈ ideal R S } Ω[S⁄R] S (S ⊗[R] S) := inferInstance
       dsimp [KaehlerDifferential.DLinearMap_apply]
       rw [← LinearMap.map_smul_of_tower (ideal R S).toCotangent,

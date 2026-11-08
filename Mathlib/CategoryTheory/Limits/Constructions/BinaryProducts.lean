@@ -91,7 +91,7 @@ variable (C) in
 /-- Any category with pullbacks and terminal object has binary products. -/
 theorem hasBinaryProducts_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullbacks C] :
     HasBinaryProducts C :=
-  { has_limit := fun F => HasLimit.mk (limitConeOfTerminalAndPullbacks F) }
+  { has_limit F := HasLimit.mk (limitConeOfTerminalAndPullbacks F) }
 
 /-- A functor that preserves terminal objects and pullbacks preserves binary products. -/
 lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
@@ -194,7 +194,7 @@ variable (C) in
 /-- Any category with pushouts and initial object has binary coproducts. -/
 theorem hasBinaryCoproducts_of_hasInitial_and_pushouts [HasInitial C] [HasPushouts C] :
     HasBinaryCoproducts C :=
-  { has_colimit := fun F => HasColimit.mk (colimitCoconeOfInitialAndPushouts F) }
+  { has_colimit F := HasColimit.mk (colimitCoconeOfInitialAndPushouts F) }
 
 /-- A functor that preserves initial objects and pushouts preserves binary coproducts. -/
 lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]

@@ -165,7 +165,7 @@ theorem sum_le_one (x : M) : ∑ᶠ i, f i x ≤ 1 :=
 /-- Reinterpret a smooth partition of unity as a continuous partition of unity. -/
 @[simps]
 def toPartitionOfUnity : PartitionOfUnity ι M s :=
-  { f with toFun := fun i => f i }
+  { f with toFun i := f i }
 
 theorem contMDiff_sum : CMDiff ∞ fun x => ∑ᶠ i, f i x :=
   contMDiff_finsum (fun i => (f i).contMDiff) f.locallyFinite
@@ -317,7 +317,7 @@ in `SmoothBumpCovering.toSmoothPartitionOfUnity`. -/
 def toSmoothPartitionOfUnity (f : BumpCovering ι M s) (hf : ∀ i, CMDiff ∞ (f i)) :
     SmoothPartitionOfUnity ι I M s :=
   { f.toPartitionOfUnity with
-    toFun := fun i => ⟨f.toPartitionOfUnity i, f.contMDiff_toPartitionOfUnity hf i⟩ }
+    toFun i := ⟨f.toPartitionOfUnity i, f.contMDiff_toPartitionOfUnity hf i⟩ }
 
 @[simp]
 theorem toSmoothPartitionOfUnity_toPartitionOfUnity (f : BumpCovering ι M s)

@@ -36,7 +36,7 @@ def radical : Submodule R M where
   carrier := {x : M | Q x = 0 ∧ QuadraticMap.polarBilin Q x = 0}
   zero_mem' := by simp
   smul_mem' a x hx := by simp [QuadraticMap.map_smul, hx.1, hx.2]
-  add_mem' := fun {x y} hx hy ↦ by
+  add_mem' {x y} hx hy := by
     refine ⟨?_, by simp [hx.2, hy.2]⟩
     have := congr($(hx.2) y)
     simp only [QuadraticMap.polarBilin_apply_apply, QuadraticMap.polar,

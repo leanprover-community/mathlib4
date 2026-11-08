@@ -174,7 +174,7 @@ variable [PartialOrder Γ'] [VAdd Γ Γ'] [IsOrderedCancelVAdd Γ Γ'] [Zero R] 
 
 instance instSMul : SMul R⟦Γ⟧ (HahnModule Γ' R V) where
   smul x y := (of R) {
-    coeff := fun a =>
+    coeff a :=
       ∑ ij ∈ VAddAntidiagonal a
         (Set.VAddAntidiagonal.finite_of_isPWO x.isPWO_support ((of R).symm y).isPWO_support a),
         x.coeff ij.fst • ((of R).symm y).coeff ij.snd
@@ -714,9 +714,9 @@ instance instModule [Semiring R] [Module R V] : Module R⟦Γ⟧
     (HahnModule Γ' R V) := {
   (inferInstance : DistribSMul R⟦Γ⟧ (HahnModule Γ' R V)) with
   mul_smul := private mul_smul'
-  one_smul := fun _ => one_smul'
-  add_smul := fun _ _ _ => add_smul Module.add_smul
-  zero_smul := fun _ => zero_smul' }
+  one_smul _ := one_smul'
+  add_smul _ _ _ := add_smul Module.add_smul
+  zero_smul _ := zero_smul' }
 
 instance [Zero R] {S : Type*} [Zero S] [SMul R S] [SMulWithZero R V] [SMulWithZero S V]
     [IsScalarTower R S V] : IsScalarTower R S V⟦Γ⟧ where
@@ -933,7 +933,7 @@ variable {Γ' : Type*} [AddCommMonoid Γ'] [PartialOrder Γ'] [IsOrderedCancelAd
 @[simps!]
 def embDomainAlgHom (f : Γ →+ Γ') (hfi : Function.Injective f)
     (hf : ∀ g g' : Γ, f g ≤ f g' ↔ g ≤ g') : A⟦Γ⟧ →ₐ[R] A⟦Γ'⟧ :=
-  { embDomainRingHom f hfi hf with commutes' := fun _ => embDomainRingHom_C (hf := hf) }
+  { embDomainRingHom f hfi hf with commutes' _ := embDomainRingHom_C (hf := hf) }
 
 end Domain
 

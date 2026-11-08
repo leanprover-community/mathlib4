@@ -76,7 +76,7 @@ lemma restrict_mono_left (h : H ≤ G) (F : Set β) : H.restrict F ≤ G.restric
 @[gcongr]
 lemma restrict_mono_right (G : Graph α β) (hss : F₀ ⊆ F) : G.restrict F₀ ≤ G.restrict F where
   vertexSet_mono := subset_rfl
-  isLink_mono _ _ _ := fun h ↦ ⟨hss h.1, h.2⟩
+  isLink_mono _ _ _ h := ⟨hss h.1, h.2⟩
 
 @[simp, grind =]
 lemma restrict_inc : (G.restrict F).Inc e x ↔ G.Inc e x ∧ e ∈ F := by

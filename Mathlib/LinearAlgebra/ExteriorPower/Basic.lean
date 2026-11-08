@@ -154,25 +154,25 @@ noncomputable def relationsSolutionEquiv {ι : Type*} [DecidableEq ι] {M : Type
     [AddCommGroup M] [Module R M] :
     (relations R ι M).Solution N ≃ AlternatingMap R M N ι where
   toFun s :=
-    { toFun := fun m ↦ s.var m
-      map_update_add' := fun m i x y ↦ by
+    { toFun m := s.var m
+      map_update_add' m i x y := by
         have := s.linearCombination_var_relation (.add m i x y)
         dsimp at this ⊢
         rw [map_sub, map_add, Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, one_smul, sub_eq_zero] at this
         convert this.symm -- `convert` is necessary due to the implementation of `MultilinearMap`
-      map_update_smul' := fun m i r x ↦ by
+      map_update_smul' m i r x := by
         have := s.linearCombination_var_relation (.smul m i r x)
         dsimp at this ⊢
         rw [Finsupp.smul_single, smul_eq_mul, mul_one, map_sub,
           Finsupp.linearCombination_single, one_smul,
           Finsupp.linearCombination_single, sub_eq_zero] at this
         convert this
-      map_eq_zero_of_eq' := fun v i j hm hij ↦
+      map_eq_zero_of_eq' v i j hm hij :=
         by simpa using s.linearCombination_var_relation (.alt v i j hm hij) }
   invFun f :=
-    { var := fun m ↦ f m
+    { var m := f m
       linearCombination_var_relation := by
         rintro (⟨m, i, x, y⟩ | ⟨m, i, r, x⟩ | ⟨v, i, j, hm, hij⟩)
         · simp
@@ -213,8 +213,8 @@ noncomputable def alternatingMapLinearEquiv : (M [⋀^Fin n]→ₗ[R] N) ≃ₗ[
   LinearEquiv.symm
     (Equiv.toLinearEquiv
       ((presentation R n M).linearMapEquiv.trans presentation.relationsSolutionEquiv)
-      { map_add := fun _ _ => rfl
-        map_smul := fun _ _ => rfl })
+      { map_add _ _ := rfl
+        map_smul _ _ := rfl })
 
 @[simp]
 lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :
@@ -433,7 +433,7 @@ variable (R M) in
 @[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
   .ofLinearMap (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
-    { toFun := fun r ↦ r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
+    { toFun r := r • (ιMulti _ _ (by rintro ⟨i, hi⟩; simp at hi))
       map_add' := by intros; simp only [add_smul]
       map_smul' := by intros; simp only [smul_eq_mul, mul_smul, RingHom.id_apply] }
     (by aesop) (by aesop)
@@ -456,11 +456,11 @@ noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
       fin_cases i
       rfl
     exact
-      { toFun := fun m ↦ ιMulti _ _ (fun _ ↦ m)
-        map_add' := fun m₁ m₂ ↦ by
+      { toFun m := ιMulti _ _ (fun _ ↦ m)
+        map_add' m₁ m₂ := by
           rw [h]; nth_rw 2 [h]; nth_rw 3 [h]
           simp only [Fin.isValue, AlternatingMap.map_update_add]
-        map_smul' := fun r m ↦ by
+        map_smul' r m := by
           dsimp
           rw [h]; nth_rw 2 [h]
           simp only [Fin.isValue, AlternatingMap.map_update_smul] })

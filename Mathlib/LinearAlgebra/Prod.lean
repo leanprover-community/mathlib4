@@ -395,7 +395,7 @@ variable [Module R M] [Module R M₂]
 /-- `LinearMap.prodMap` as an `AlgHom` -/
 @[simps!]
 def prodMapAlgHom : Module.End R M × Module.End R M₂ →ₐ[R] Module.End R (M × M₂) :=
-  { prodMapRingHom R M M₂ with commutes' := fun _ => rfl }
+  { prodMapRingHom R M M₂ with commutes' _ := rfl }
 
 end LinearMap
 
@@ -657,7 +657,7 @@ def prodComm (R M N : Type*) [Semiring R] [AddCommMonoid M] [AddCommMonoid N] [M
     [Module R N] : (M × N) ≃ₗ[R] N × M :=
   { AddEquiv.prodComm with
     toFun := Prod.swap
-    map_smul' := fun _r ⟨_m, _n⟩ => rfl }
+    map_smul' _r := fun ⟨_m, _n⟩  => rfl }
 
 section prodComm
 
@@ -685,7 +685,7 @@ def prodAssoc (R M₁ M₂ M₃ : Type*) [Semiring R]
     [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
     [Module R M₁] [Module R M₂] [Module R M₃] : ((M₁ × M₂) × M₃) ≃ₗ[R] (M₁ × (M₂ × M₃)) :=
   { AddEquiv.prodAssoc with
-    map_smul' := fun _r ⟨_m, _n⟩ => rfl }
+    map_smul' _r := fun ⟨_m, _n⟩  => rfl }
 
 section prodAssoc
 
@@ -746,9 +746,9 @@ variable [Module R M] [Module R M₂] [Module R M₃] [Module R M₄]
 @[simps apply]
 def prodProdProdComm : ((M × M₂) × M₃ × M₄) ≃ₗ[R] (M × M₃) × M₂ × M₄ :=
   { AddEquiv.prodProdProdComm M M₂ M₃ M₄ with
-    toFun := fun mnmn => ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
-    invFun := fun mmnn => ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
-    map_smul' := fun _c _mnmn => rfl }
+    toFun mnmn := ((mnmn.1.1, mnmn.2.1), (mnmn.1.2, mnmn.2.2))
+    invFun mmnn := ((mmnn.1.1, mmnn.2.1), (mmnn.1.2, mmnn.2.2))
+    map_smul' _c _mnmn := rfl }
 
 @[simp]
 theorem prodProdProdComm_symm :
@@ -773,7 +773,7 @@ variable (e₁ : M ≃ₗ[R] M₂) (e₂ : M₃ ≃ₗ[R] M₄)
 /-- Product of linear equivalences; the maps come from `Equiv.prodCongr`. -/
 protected def prodCongr : (M × M₃) ≃ₗ[R] M₂ × M₄ :=
   { e₁.toAddEquiv.prodCongr e₂.toAddEquiv with
-    map_smul' := fun c _x => Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
+    map_smul' c _x := Prod.ext (e₁.map_smulₛₗ c _) (e₂.map_smulₛₗ c _) }
 
 @[simp]
 theorem prodCongr_symm : (e₁.prodCongr e₂).symm = e₁.symm.prodCongr e₂.symm :=
@@ -804,7 +804,7 @@ protected def skewProd (f : M →ₗ[R] M₄) : (M × M₃) ≃ₗ[R] M₂ × M�
   { ((e₁ : M →ₗ[R] M₂).comp (LinearMap.fst R M M₃)).prod
       ((e₂ : M₃ →ₗ[R] M₄).comp (LinearMap.snd R M M₃) +
         f.comp (LinearMap.fst R M M₃)) with
-    invFun := fun p : M₂ × M₄ => (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
+    invFun (p : M₂ × M₄) := (e₁.symm p.1, e₂.symm (p.2 - f (e₁.symm p.1)))
     left_inv := fun p => by simp
     right_inv := fun p => by simp }
 

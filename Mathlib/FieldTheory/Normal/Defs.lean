@@ -45,8 +45,8 @@ theorem Normal.splits (_ : Normal F K) (x : K) : Splits ((minpoly F x).map (alge
 theorem normal_iff :
     Normal F K ↔ ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
   ⟨fun h x => ⟨h.isIntegral x, h.splits x⟩, fun h =>
-    { isAlgebraic := fun x => (h x).1.isAlgebraic
-      splits' := fun x => (h x).2 }⟩
+    { isAlgebraic x := (h x).1.isAlgebraic
+      splits' x := (h x).2 }⟩
 
 theorem Normal.out :
     Normal F K → ∀ x : K, IsIntegral F x ∧ Splits ((minpoly F x).map (algebraMap F K)) :=
@@ -55,8 +55,8 @@ theorem Normal.out :
 variable (F K)
 
 instance normal_self : Normal F F where
-  isAlgebraic := fun _ => isIntegral_algebraMap.isAlgebraic
-  splits' := fun x => (minpoly.eq_X_sub_C' x).symm ▸ by simp
+  isAlgebraic _ := isIntegral_algebraMap.isAlgebraic
+  splits' x := (minpoly.eq_X_sub_C' x).symm ▸ by simp
 
 section NormalTower
 

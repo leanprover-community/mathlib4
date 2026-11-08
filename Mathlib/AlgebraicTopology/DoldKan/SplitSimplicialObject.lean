@@ -189,8 +189,8 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
     (toKaroubi _).obj s.nondegComplex ≅ N₁.obj X where
   hom :=
     { f :=
-        { f := fun n => (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n
-          comm' := fun i j _ => by
+        { f n := (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n
+          comm' i j _ := by
             dsimp
             rw [assoc, assoc, assoc, πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty,
               HomologicalComplex.Hom.comm] }
@@ -200,8 +200,8 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
         rw [id_comp, assoc, PInfty_f_idem] }
   inv :=
     { f :=
-        { f := fun n => s.πSummand (IndexSet.id (op ⦋n⦌))
-          comm' := fun i j _ => by
+        { f n := s.πSummand (IndexSet.id (op ⦋n⦌))
+          comm' i j _ := by
             dsimp
             slice_rhs 1 1 => rw [← id_comp (K[X].d i j)]
             dsimp only [AlternatingFaceMapComplex.obj_X]
@@ -312,7 +312,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
   obj S := S.s.nondegComplex
   map {S₁ S₂} Φ :=
     { f := Φ.f
-      comm' := fun i j _ => by
+      comm' i j _ := by
         dsimp
         erw [← cofan_inj_naturality_symm_assoc Φ (Splitting.IndexSet.id (op ⦋i⦌)),
           ((alternatingFaceMapComplex C).map Φ.F).comm_assoc i j]

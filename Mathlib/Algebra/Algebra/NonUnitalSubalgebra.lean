@@ -237,7 +237,7 @@ end
 def toSubmodule' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
     NonUnitalSubalgebra R A ↪o Submodule R A where
   toEmbedding :=
-    { toFun := fun S => S.toSubmodule
+    { toFun S := S.toSubmodule
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
@@ -246,7 +246,7 @@ def toSubmodule' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
 def toNonUnitalSubsemiring' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
     NonUnitalSubalgebra R A ↪o NonUnitalSubsemiring A where
   toEmbedding :=
-    { toFun := fun S => S.toNonUnitalSubsemiring
+    { toFun S := S.toNonUnitalSubsemiring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
@@ -255,7 +255,7 @@ def toNonUnitalSubsemiring' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Modu
 def toNonUnitalSubring' [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
     NonUnitalSubalgebra R A ↪o NonUnitalSubring A where
   toEmbedding :=
-    { toFun := fun S => S.toNonUnitalSubring
+    { toFun S := S.toNonUnitalSubring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
   map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
 
@@ -337,7 +337,7 @@ def toSubmoduleEquiv (S : NonUnitalSubalgebra R A) : S.toSubmodule ≃ₗ[R] S :
 /-- Transport a non-unital subalgebra via an algebra homomorphism. -/
 def map (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R A) : NonUnitalSubalgebra R B :=
   { S.toNonUnitalSubsemiring.map (f : A →ₙ+* B) with
-    smul_mem' := fun r b hb => by
+    smul_mem' r b hb := by
       rcases hb with ⟨a, ha, rfl⟩
       exact map_smulₛₗ f r a ▸ Set.mem_image_of_mem f (S.smul_mem' r ha) }
 
@@ -380,7 +380,7 @@ theorem coe_map (S : NonUnitalSubalgebra R A) (f : A →ₙₐ[R] B) : (map f S 
 /-- Preimage of a non-unital subalgebra under an algebra homomorphism. -/
 def comap (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) : NonUnitalSubalgebra R A :=
   { S.toNonUnitalSubsemiring.comap (f : A →ₙ+* B) with
-    smul_mem' := fun r a (ha : f a ∈ S) =>
+    smul_mem' r a (ha : f a ∈ S) :=
       show f (r • a) ∈ S from (map_smulₛₗ f r a).symm ▸ SMulMemClass.smul_mem r ha }
 
 theorem map_le {S : NonUnitalSubalgebra R A} {f : A →ₙₐ[R] B} {U : NonUnitalSubalgebra R B} :
@@ -453,7 +453,7 @@ variable {R : Type u} {A : Type v} {B : Type w} {C : Type w'} [CommSemiring R]
 /-- Range of an `NonUnitalAlgHom` as a non-unital subalgebra. -/
 protected def range (φ : A →ₙₐ[R] B) : NonUnitalSubalgebra R B where
   toNonUnitalSubsemiring := NonUnitalRingHom.srange (φ : A →ₙ+* B)
-  smul_mem' := fun r a => by rintro ⟨a, rfl⟩; exact ⟨r • a, map_smul φ r a⟩
+  smul_mem' r a := by rintro ⟨a, rfl⟩; exact ⟨r • a, map_smul φ r a⟩
 
 @[simp]
 theorem mem_range (φ : A →ₙₐ[R] B) {y : B} : y ∈ φ.range ↔ ∃ x : A, φ x = y :=
@@ -479,7 +479,7 @@ theorem range_comp_le_range (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
 /-- Restrict the codomain of a non-unital algebra homomorphism. -/
 def codRestrict (f : A →ₙₐ[R] B) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₙₐ[R] S :=
   { NonUnitalRingHom.codRestrict (f : A →ₙ+* B) S.toNonUnitalSubsemiring hf with
-    map_smul' := fun r a => Subtype.ext <| map_smul f r a }
+    map_smul' r a := Subtype.ext <| map_smul f r a }
 
 @[simp]
 theorem subtype_comp_codRestrict
@@ -547,9 +547,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 /-- The minimal non-unital subalgebra that includes `s`. -/
 def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
   { Submodule.span R (NonUnitalSubsemiring.closure s : Set A) with
-    mul_mem' :=
-      fun {a b} (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
-        (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
+    mul_mem' {a b} (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
+        (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) :=
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
         refine Submodule.span_induction ?_ ?_ ?_ ?_ ha
         · refine Submodule.span_induction ?_ ?_ ?_ ?_ hb
@@ -628,7 +627,7 @@ theorem adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       mul_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, mul _ _ _ _ ha hb⟩))
       add_mem' := (Exists.elim · fun _ ha ↦ (Exists.elim · fun _ hb ↦ ⟨_, add _ _ _ _ ha hb⟩))
-      smul_mem' := fun r ↦ (Exists.elim · fun _ hb ↦ ⟨_, smul r _ _ hb⟩)
+      smul_mem' r := (Exists.elim · fun _ hb ↦ ⟨_, smul r _ _ hb⟩)
       zero_mem' := ⟨_, zero⟩ }
   adjoin_le (S := S) (fun y hy ↦ ⟨subset_adjoin R hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
@@ -889,7 +888,7 @@ variable (S₁ : NonUnitalSubalgebra R B)
 def prod : NonUnitalSubalgebra R (A × B) :=
   { S.toNonUnitalSubsemiring.prod S₁.toNonUnitalSubsemiring with
     carrier := S ×ˢ S₁
-    smul_mem' := fun r _x hx => ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
+    smul_mem' r _x hx := ⟨SMulMemClass.smul_mem r hx.1, SMulMemClass.smul_mem r hx.2⟩ }
 
 @[simp, norm_cast]
 theorem coe_prod : (prod S S₁ : Set (A × B)) = (S : Set A) ×ˢ S₁ :=
@@ -975,7 +974,7 @@ theorem coe_iSup_of_directed [Nonempty ι] {S : ι → NonUnitalSubalgebra R A}
     (dir : Directed (· ≤ ·) S) : ↑(iSup S) = ⋃ i, (S i : Set A) :=
   let K : NonUnitalSubalgebra R A :=
     { __ := NonUnitalSubsemiring.copy _ _ (NonUnitalSubsemiring.coe_iSup_of_directed dir).symm
-      smul_mem' := fun r _x hx ↦
+      smul_mem' r _x hx :=
         let ⟨i, hi⟩ := Set.mem_iUnion.1 hx
         Set.mem_iUnion.2 ⟨i, (S i).smul_mem' r hi⟩ }
   have : iSup S = K := le_antisymm
@@ -1025,7 +1024,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
           dsimp
           apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
           all_goals simp
-        map_smul' := fun r => by
+        map_smul' r := by
           dsimp
           apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
             (fun _ _ => rfl)

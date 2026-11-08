@@ -154,9 +154,9 @@ equivalences between `α` and `{y : β // y ≠ x}`. -/
 def optionSubtype [DecidableEq β] (x : β) :
     { e : Option α ≃ β // e none = x } ≃ (α ≃ { y : β // y ≠ x }) where
   toFun e :=
-    { toFun := fun a =>
+    { toFun a :=
         ⟨(e : Option α ≃ β) a, ((EquivLike.injective _).ne_iff' e.property).2 (some_ne_none _)⟩,
-      invFun := fun b =>
+      invFun b :=
         get _
           (ne_none_iff_isSome.1
             (((EquivLike.injective _).ne_iff'
@@ -168,8 +168,8 @@ def optionSubtype [DecidableEq β] (x : β) :
         ext
         simp }
   invFun e :=
-    ⟨{  toFun := fun a => casesOn' a x (Subtype.val ∘ e),
-        invFun := fun b => if h : b = x then none else e.symm ⟨b, h⟩,
+    ⟨{  toFun a := casesOn' a x (Subtype.val ∘ e),
+        invFun b := if h : b = x then none else e.symm ⟨b, h⟩,
         left_inv := fun a => by
           cases a with
           | none => simp

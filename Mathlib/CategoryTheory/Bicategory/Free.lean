@@ -57,11 +57,11 @@ instance (a b : B) [Inhabited (a ⟶ b)] : Inhabited (Hom a b) :=
   ⟨Hom.of default⟩
 
 instance quiver : Quiver.{max u v} (FreeBicategory B) where
-  Hom := fun a b : B => Hom a b
+  Hom (a b : B) := Hom a b
 
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
-  id   := fun a : B => Hom.id a
+  id   (a : B) := Hom.id a
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/

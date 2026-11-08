@@ -408,9 +408,9 @@ instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
       invFun := isEmptyElim
       left_inv := isEmptyElim
       right_inv := isEmptyElim
-      map_fun' := fun {n} f x => by
+      map_fun' {n} f x := by
         subsingleton
-      map_rel' := fun {n} r x => by
+      map_rel' {n} r x := by
         cases n
         · exact isEmptyElim r
         · exact isEmptyElim (x 0)

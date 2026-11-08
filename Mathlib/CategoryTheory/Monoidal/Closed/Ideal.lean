@@ -193,7 +193,7 @@ to the respective exponential objects in `C`. -/
 @[instance_reducible]
 def cartesianClosedOfReflective' (l : i.EssImageSubcategory ⥤ D) (φ : l ⋙ i ≅ i.essImage.ι) :
     MonoidalClosed D where
-  closed := fun B =>
+  closed B :=
     { rightAdj := i.essImage.lift (i ⋙ ihom (i.obj B))
         (fun X ↦ ExponentialIdeal.exp_closed (i.obj_mem_essImage X) _) ⋙ l
       adj := by

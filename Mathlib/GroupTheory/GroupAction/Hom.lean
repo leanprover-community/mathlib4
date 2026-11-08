@@ -783,7 +783,7 @@ variable {M C ψ χ}
 
 instance _root_.DistriMulActionHom.instZero {A : Type*} [AddMonoid A] [DistribMulAction M A]
     {B : Type*} [AddMonoid B] [DistribMulAction N B] : Zero (A →ₑ+[φ] B) :=
-  ⟨{ (0 : A →+ B) with map_smul' := fun m _ => by simp }⟩
+  ⟨{ (0 : A →+ B) with map_smul' m _ := by simp }⟩
 
 @[to_additive (dont_translate := M)]
 instance : One (A →*[M] A) :=

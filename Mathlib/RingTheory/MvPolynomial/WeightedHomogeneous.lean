@@ -345,7 +345,7 @@ lemma induction_on {w : σ → M} {m : M}
       add_mem' := fun ⟨_, hx⟩ ⟨_, hy⟩ ↦
         ⟨.add ‹_› ‹_›, fun a ↦ by simp [mul_add, add _ _ _ _ (hx a) (hy a)]⟩
       zero_mem' := ⟨isWeightedHomogeneous_zero R w m, by simp [zero]⟩
-      smul_mem' := fun a x ⟨_, hx⟩ ↦ ⟨by simp [Algebra.smul_def, C_mul ‹_› a], fun a ↦ by
+      smul_mem' a x := fun ⟨_, hx⟩  ↦ ⟨by simp [Algebra.smul_def, C_mul ‹_› a], fun a ↦ by
         simp_rw [Algebra.smul_def, algebraMap_eq, ← mul_assoc, ← map_mul]
         apply hx⟩ }
   rw [← mem_weightedHomogeneousSubmodule, weightedHomogeneousSubmodule_eq_finsupp_supported,

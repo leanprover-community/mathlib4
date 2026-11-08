@@ -167,8 +167,8 @@ pulling back along two propositionally equal functions.
 -/
 @[simps]
 def comapEq {β γ : Type w} {f g : β → γ} (h : f = g) : comap C f ≅ comap C g where
-  hom := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
-  inv := { app := fun X b => eqToHom (by dsimp; simp only [h]) }
+  hom := { app X := fun b  => eqToHom (by dsimp; simp only [h]) }
+  inv := { app X := fun b  => eqToHom (by dsimp; simp only [h]) }
 
 theorem comapEq_symm {β γ : Type w} {f g : β → γ} (h : f = g) :
     comapEq C h.symm = (comapEq C h).symm := by cat_disch
@@ -197,9 +197,9 @@ end
 
 instance hasShift {β : Type*} [AddCommGroup β] (s : β) : HasShift (GradedObjectWithShift s C) ℤ :=
   hasShiftMk _ _
-    { F := fun n => comap C fun b : β => b + n • s
+    { F n := comap C fun b : β => b + n • s
       zero := comapEq C (by cat_disch) ≪≫ Pi.comapId β fun _ => C
-      add := fun m n => comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
+      add m n := comapEq C (by ext; dsimp; rw [add_comm m n, add_zsmul, add_assoc]) ≪≫
           (Pi.comapComp _ _ _).symm }
 
 @[simp]

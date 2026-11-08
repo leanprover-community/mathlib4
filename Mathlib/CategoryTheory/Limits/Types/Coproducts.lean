@@ -196,9 +196,9 @@ def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
     { pt := PEmpty
       ι := (Functor.uniqueFromEmpty _).inv }
   isColimit :=
-    { desc := fun _ => ↾fun x => x.elim
-      fac := fun _ => by rintro ⟨⟨⟩⟩
-      uniq := fun _ _ _ => by ext x; cases x }
+    { desc _ := ↾fun x => x.elim
+      fac _ := by rintro ⟨⟨⟩⟩
+      uniq _ _ _ := by ext x; cases x }
 
 /-- The initial object in `Type u` is `PEmpty`. -/
 noncomputable def initialIso : ⊥_ Type u ≅ PEmpty :=
@@ -227,7 +227,7 @@ open CategoryTheory.Limits.WalkingPair
 /-- The sum type `X ⊕ Y` is a binary coproduct for `X` and `Y`. -/
 @[simps]
 def binaryCoproductColimit (X Y : Type u) : IsColimit (binaryCoproductCocone X Y) where
-  desc := fun s : BinaryCofan X Y => ↾(Sum.elim s.inl s.inr)
+  desc (s : BinaryCofan X Y) := ↾(Sum.elim s.inl s.inr)
   fac _ j := Discrete.recOn j fun j => WalkingPair.casesOn j rfl rfl
   uniq _ _ w := by
     ext ⟨⟩
@@ -336,8 +336,8 @@ def coproductColimitCocone {J : Type v} (F : J → Type (max v u)) :
     { pt := Σ j, F j
       ι := Discrete.natTrans (fun ⟨j⟩ => ↾fun x => ⟨j, x⟩) }
   isColimit :=
-    { desc := fun s => ↾fun x => s.ι.app ⟨x.1⟩ x.2
-      uniq := fun s m w => by
+    { desc s := ↾fun x => s.ι.app ⟨x.1⟩ x.2
+      uniq s m w := by
         ext ⟨j, x⟩
         congrm $(w ⟨j⟩) x }
 

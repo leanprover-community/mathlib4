@@ -219,7 +219,7 @@ private noncomputable def algebraRat (h : ∀ I : Ideal R, I ≠ ⊤ → CharZer
     Algebra ℚ R :=
   haveI : Fact (∀ I : Ideal R, I ≠ ⊤ → CharZero (R ⧸ I)) := ⟨h⟩
   RingHom.toAlgebra
-  { toFun := fun x => x.num /ₚ ↑x.pnatDen
+  { toFun x := x.num /ₚ ↑x.pnatDen
     map_zero' := by simp [divp]
     map_one' := by simp
     map_mul' := by

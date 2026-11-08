@@ -34,7 +34,7 @@ variable [Monoid R] [MulAction R M] [One M]
 instance : One (SubMulAction R M) where
   one :=
     { carrier := Set.range fun r : R => r • (1 : M)
-      smul_mem' := fun r _ ⟨r', hr'⟩ => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
+      smul_mem' r _ := fun ⟨r', hr'⟩  => hr' ▸ ⟨r * r', mul_smul _ _ _⟩ }
 
 theorem coe_one : ↑(1 : SubMulAction R M) = Set.range fun r : R => r • (1 : M) :=
   rfl
@@ -55,7 +55,7 @@ variable [Monoid R] [MulAction R M] [Mul M] [IsScalarTower R M M]
 instance : Mul (SubMulAction R M) where
   mul p q :=
     { carrier := Set.image2 (· * ·) p q
-      smul_mem' := fun r _ ⟨m₁, hm₁, m₂, hm₂, h⟩ =>
+      smul_mem' r _ := fun ⟨m₁, hm₁, m₂, hm₂, h⟩  =>
         h ▸ smul_mul_assoc r m₁ m₂ ▸ Set.mul_mem_mul (p.smul_mem _ hm₁) hm₂ }
 
 @[norm_cast]

@@ -50,7 +50,7 @@ theorem CommRingCat.isLocalHom_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S �
   RingHom.isLocalHom_comp _ _
 
 theorem isLocalHom_of_iso {R S : CommRingCat} (f : R ≅ S) : IsLocalHom f.hom.hom :=
-  { map_nonunit := fun a ha => by
+  { map_nonunit a ha := by
       convert f.inv.hom.isUnit_map ha
       simp }
 

@@ -47,7 +47,7 @@ def adjoinOne : Semigrp.{u} ⥤ MonCat.{u} where
 @[to_additive]
 instance hasForgetToSemigroup : HasForget₂ MonCat Semigrp where
   forget₂ :=
-    { obj := fun M => ↧M
+    { obj M := ↧M
       map f := Semigrp.ofHom f.hom.toMulHom }
 
 /-- The `adjoinOne`-forgetful adjunction from `Semigrp` to `MonCat`. -/

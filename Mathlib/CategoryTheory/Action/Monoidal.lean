@@ -65,7 +65,7 @@ variable (V G)
 instance : (Action.forget V G).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 

@@ -269,9 +269,9 @@ theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : 
 @[stacks 00Z6]
 instance : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
-    le_refl := fun _ => le_def.mpr le_rfl
-    le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
-    le_antisymm := fun _ _ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
+    le_refl _ := le_def.mpr le_rfl
+    le_trans _ _ _ h₁₂ h₂₃ := le_def.mpr (le_trans h₁₂ h₂₃)
+    le_antisymm _ _ h₁₂ h₂₁ := GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 @[stacks 00Z7]
 instance : InfSet (GrothendieckTopology C) where
@@ -439,15 +439,15 @@ theorem ext (S T : J.Cover X) (h : ∀ ⦃Y⦄ (f : Y ⟶ X), S f ↔ T f) : S =
 instance : OrderTop (J.Cover X) :=
   { (inferInstance : Preorder (J.Cover X)) with
     top := ⟨⊤, J.top_mem _⟩
-    le_top := fun _ _ _ _ => by tauto }
+    le_top _ := fun _ _ _  => by tauto }
 
 instance : SemilatticeInf (J.Cover X) :=
   { (inferInstance : Preorder _) with
-    inf := fun S T => ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
-    le_antisymm := fun _ _ h1 h2 => ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
-    inf_le_left := fun _ _ _ _ hf => hf.1
-    inf_le_right := fun _ _ _ _ hf => hf.2
-    le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 _ h, h2 _ h⟩ }
+    inf S T := ⟨S ⊓ T, J.intersection_covering S.condition T.condition⟩
+    le_antisymm _ _ h1 h2 := ext _ _ fun {Y} f => ⟨by apply h1, by apply h2⟩
+    inf_le_left _ _ := fun _ _ hf  => hf.1
+    inf_le_right _ _ := fun _ _ hf  => hf.2
+    le_inf _ _ _ h1 h2 := fun _ _ h  => ⟨h1 _ h, h2 _ h⟩ }
 
 instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩

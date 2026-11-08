@@ -40,16 +40,16 @@ def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
   cone :=
     { pt := ↧(M × N)
       π :=
-        { app := fun j =>
+        { app j :=
             Discrete.casesOn j fun j =>
               WalkingPair.casesOn j (ofHom <| LinearMap.fst R M N) (ofHom <| LinearMap.snd R M N)
           naturality := by rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩ ⟨⟨⟨⟩⟩⟩ <;> rfl } }
   isLimit :=
-    { lift := fun s => ofHom <| LinearMap.prod
+    { lift s := ofHom <| LinearMap.prod
         (s.π.app ⟨WalkingPair.left⟩).hom
         (s.π.app ⟨WalkingPair.right⟩).hom
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
-      uniq := fun s m w => by
+      uniq s m w := by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
         rfl }
 
@@ -90,11 +90,11 @@ to the Cartesian product of those groups.
 @[simps!]
 def lift (s : Fan f) : s.pt ⟶ ↧(∀ j, f j) :=
   ofHom
-  { toFun := fun x j => s.π.app ⟨j⟩ x
-    map_add' := fun x y => by
+  { toFun x := fun j  => s.π.app ⟨j⟩ x
+    map_add' x y := by
       simp only [Functor.const_obj_obj, map_add]
       rfl
-    map_smul' := fun r x => by
+    map_smul' r x := by
       simp only [Functor.const_obj_obj, map_smul]
       rfl }
 
@@ -107,7 +107,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => ofHom (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
-      fac := fun _ _ => rfl
+      fac _ _ := rfl
       uniq s m w := by ext x j; congrm $(w ⟨j⟩) x }
 
 end HasLimit

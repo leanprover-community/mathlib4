@@ -437,7 +437,7 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
 instance : Min (LieSubalgebra R L) :=
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
-      lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
+      lie_mem' hx hy := mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
 
 instance : InfSet (LieSubalgebra R L) :=
   ⟨fun S ↦
@@ -478,16 +478,16 @@ than we would otherwise obtain from `completeLatticeOfInf`. -/
 instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
-    bot_le := fun N _ h ↦ by
+    bot_le N := fun _ h  ↦ by
       rw [mem_bot] at h
       rw [h]
       exact N.zero_mem'
     top := ⊤
-    le_top := fun _ _ _ ↦ trivial
+    le_top _ := fun _ _  ↦ trivial
     inf := (· ⊓ ·)
-    le_inf := fun _ _ _ h₁₂ h₁₃ _ hm ↦ ⟨h₁₂ hm, h₁₃ hm⟩
-    inf_le_left := fun _ _ _ ↦ And.left
-    inf_le_right := fun _ _ _ ↦ And.right }
+    le_inf _ _ _ h₁₂ h₁₃ := fun _ hm  ↦ ⟨h₁₂ hm, h₁₃ hm⟩
+    inf_le_left _ _ := fun _  ↦ And.left
+    inf_le_right _ _ := fun _  ↦ And.right }
 
 instance : Add (LieSubalgebra R L) where add := max
 
@@ -722,7 +722,7 @@ theorem lieSpan_induction {p : (x : L) → x ∈ lieSpan R L s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       zero_mem' := ⟨_, zero⟩
-      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
+      smul_mem' r := fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
       lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
   exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 

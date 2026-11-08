@@ -66,13 +66,13 @@ instance : Min (Finset α) :=
 
 instance : Lattice (Finset α) where
   sup := (· ∪ ·)
-  sup_le := fun _ _ _ hs ht _ ha => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
-  le_sup_left := fun _ _ _ h => mem_ndunion.2 <| Or.inl h
-  le_sup_right := fun _ _ _ h => mem_ndunion.2 <| Or.inr h
+  sup_le _ _ _ hs ht := fun _ ha  => (mem_ndunion.1 ha).elim (fun h => hs h) fun h => ht h
+  le_sup_left _ _ := fun _ h  => mem_ndunion.2 <| Or.inl h
+  le_sup_right _ _ := fun _ h  => mem_ndunion.2 <| Or.inr h
   inf := (· ∩ ·)
-  le_inf := fun _ _ _ ht hu _ h => mem_ndinter.2 ⟨ht h, hu h⟩
-  inf_le_left := fun _ _ _ h => (mem_ndinter.1 h).1
-  inf_le_right := fun _ _ _ h => (mem_ndinter.1 h).2
+  le_inf _ _ _ ht hu := fun _ h  => mem_ndinter.2 ⟨ht h, hu h⟩
+  inf_le_left _ _ := fun _ h  => (mem_ndinter.1 h).1
+  inf_le_right _ _ := fun _ h  => (mem_ndinter.1 h).2
 
 @[deprecated "This is now a syntactic equality" (since := "2026-10-23")]
 theorem sup_eq_union' : (Max.max : Finset α → Finset α → Finset α) = Max.max :=
@@ -225,7 +225,7 @@ theorem inter_subset_union : s ∩ t ⊆ s ∪ t :=
   inf_le_sup
 
 instance : DistribLattice (Finset α) :=
-  { le_sup_inf := fun a b c => by
+  { le_sup_inf a b c := by
       simp +contextual only [subset_iff, mem_inter, mem_union, and_imp,
         or_imp, true_or, imp_true_iff, true_and, or_true] }
 

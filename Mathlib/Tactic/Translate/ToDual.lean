@@ -331,7 +331,7 @@ elab "to_dual_insert_cast_fun" declName:ident " := " valStx₁:term ", " valStx�
 initialize registerBuiltinAttribute {
     name := `to_dual
     descr := "Transport to dual"
-    add := fun src stx kind ↦ discard do
+    add src stx kind := discard do
       profileitM Exception "to_dual" (← getOptions) do
         addTranslationAttr data src (← elabTranslationAttr src stx) kind
     applicationTime := .afterCompilation

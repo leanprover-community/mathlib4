@@ -60,11 +60,11 @@ noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Con
       right := c₂.pt
       hom := (isLimitOfPreserves R t₂).lift (limitAuxiliaryCone _ c₁) }
   π :=
-    { app := fun j =>
+    { app j :=
         { left := c₁.π.app j
           right := c₂.π.app j
           w := ((isLimitOfPreserves R t₂).fac (limitAuxiliaryCone F c₁) j).symm }
-      naturality := fun j₁ j₂ t => by
+      naturality j₁ j₂ t := by
         ext
         · simp [← c₁.w t]
         · simp [← c₂.w t] }
@@ -121,11 +121,11 @@ noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ :
       right := c₂.pt
       hom := (isColimitOfPreserves L t₁).desc (colimitAuxiliaryCocone _ c₂) }
   ι :=
-    { app := fun j =>
+    { app j :=
         { left := c₁.ι.app j
           right := c₂.ι.app j
           w := (isColimitOfPreserves L t₁).fac (colimitAuxiliaryCocone _ c₂) j }
-      naturality := fun j₁ j₂ t => by
+      naturality j₁ j₂ t := by
         ext
         · simp [← c₁.w t]
         · simp [← c₂.w t] }

@@ -123,11 +123,11 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def tensorObj (X Y : Center C) : Center C :=
   ⟨X.1 ⊗ Y.1,
-    { β := fun U =>
+    { β U :=
         α_ _ _ _ ≪≫
           (whiskerLeftIso X.1 (Y.2.β U)) ≪≫ (α_ _ _ _).symm ≪≫
             (whiskerRightIso (X.2.β U) Y.1) ≪≫ α_ _ _ _
-      monoidal := fun U U' => by
+      monoidal U U' := by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         simp only [HalfBraiding.monoidal]
         -- We'd like to commute `X.1 ◁ U ◁ (HalfBraiding.β Y.2 U').hom`
@@ -140,7 +140,7 @@ def tensorObj (X Y : Center C) : Center C :=
                 (HalfBraiding.β X.2 U).hom ▷ _) ⊗≫
                   U ◁ (HalfBraiding.β X.2 U').hom ▷ Y.1 ⊗≫ 𝟙 _ := by monoidal
           _ = _ := by rw [whisker_exchange]; monoidal
-      naturality := fun {U U'} f => by
+      naturality {U U'} f := by
         dsimp only [Iso.trans_hom, whiskerLeftIso_hom, Iso.symm_hom, whiskerRightIso_hom]
         calc
           _ = 𝟙 _ ⊗≫
@@ -217,7 +217,7 @@ section
 /-- Auxiliary definition for the `MonoidalCategory` instance on `Center C`. -/
 @[simps]
 def tensorUnit : Center C :=
-  ⟨𝟙_ C, { β := fun U => λ_ U ≪≫ (ρ_ U).symm }⟩
+  ⟨𝟙_ C, { β U := λ_ U ≪≫ (ρ_ U).symm }⟩
 
 set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
@@ -330,7 +330,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : (forget C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 @[simp] lemma forget_ε : ε (forget C) = 𝟙 _ := rfl
 @[simp] lemma forget_η : η (forget C) = 𝟙 _ := rfl
@@ -372,7 +372,7 @@ open BraidedCategory
 /-- Auxiliary construction for `ofBraided`. -/
 @[simps]
 def ofBraidedObj (X : C) : Center C :=
-  ⟨X, { β := fun Y => β_ X Y}⟩
+  ⟨X, { β Y := β_ X Y}⟩
 
 variable (C)
 
@@ -383,7 +383,7 @@ def ofBraided : C ⥤ Center C where
   obj := ofBraidedObj
   map f :=
     { f
-      comm := fun U => braiding_naturality_left f U }
+      comm U := braiding_naturality_left f U }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -392,7 +392,7 @@ instance : (ofBraided C).Monoidal :=
     { εIso :=
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } }
-      μIso := fun _ _ ↦
+      μIso _ _ :=
         { hom := { f := 𝟙 _ }
           inv := { f := 𝟙 _ } } }
 

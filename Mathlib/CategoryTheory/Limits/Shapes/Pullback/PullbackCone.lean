@@ -115,7 +115,7 @@ such that `fst ≫ f = snd ≫ g`. -/
 def mk {W : C} (fst : W ⟶ X) (snd : W ⟶ Y) (eq : fst ≫ f = snd ≫ g := by cat_disch) :
     PullbackCone f g where
   pt := W
-  π := { app := fun j => Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
+  π := { app j := Option.casesOn j (fst ≫ f) fun j' => WalkingPair.casesOn j' fst snd
          naturality := by rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) j <;> cases j <;> simp [eq] }
 
 @[simp]
@@ -170,7 +170,7 @@ def isLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt ⟶
     (uniq : ∀ (s : PullbackCone f g) (m : s.pt ⟶ t.pt)
       (_ : ∀ j : WalkingCospan, m ≫ t.π.app j = s.π.app j), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j => Option.casesOn j (by
+    fac s j := Option.casesOn j (by
         rw [← s.w inl, ← t.w inl, ← Category.assoc]
         congr
         exact fac_left s)
@@ -330,7 +330,7 @@ that `f ≫ inl = g ↠ inr`. -/
 @[implicit_reducible, simps]
 def mk {W : C} (inl : Y ⟶ W) (inr : Z ⟶ W) (eq : f ≫ inl = g ≫ inr) : PushoutCocone f g where
   pt := W
-  ι := { app := fun j => Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
+  ι := { app j := Option.casesOn j (f ≫ inl) fun j' => WalkingPair.casesOn j' inl inr
          naturality := by
           rintro (⟨⟩ | ⟨⟨⟩⟩) (⟨⟩ | ⟨⟨⟩⟩) <;> intro f <;> cases f <;> dsimp <;> aesop }
 
@@ -387,7 +387,7 @@ def isColimitAux (t : PushoutCocone f g) (desc : ∀ s : PushoutCocone f g, t.pt
     (uniq : ∀ (s : PushoutCocone f g) (m : t.pt ⟶ s.pt)
     (_ : ∀ j : WalkingSpan, t.ι.app j ≫ m = s.ι.app j), m = desc s) : IsColimit t :=
   { desc
-    fac := fun s j =>
+    fac s j :=
       Option.casesOn j (by simp [← s.w fst, ← t.w fst, fac_left s]) fun j' =>
         WalkingPair.casesOn j' (fac_left s) (fac_right s)
     uniq := uniq }

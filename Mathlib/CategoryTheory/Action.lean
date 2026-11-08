@@ -179,7 +179,7 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
   have F_map_eq : ∀ {a b} {f : a ⟶ b}, F.map f = (F.map (homOfPair b.back f.hom) : H) := by
     apply ActionCategory.cases
     simp
-  { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
+  { toFun g := ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
       ext1
       · ext b

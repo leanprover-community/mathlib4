@@ -229,11 +229,11 @@ variable [CommSemiring S] [Algebra S A]
 
 set_option backward.defeqAttrib.useBackward true in
 instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
-  { commutes' := fun r x => by
+  { commutes' r x := by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
       rw [algebraMap_eq_smul_one, ← smul_tmul', ← one_def, mul_smul_comm, smul_mul_assoc, mul_one,
         one_mul]
-    smul_def' := fun r x => by
+    smul_def' r x := by
       dsimp only [RingHom.toFun_eq_coe, RingHom.comp_apply, includeLeftRingHom_apply]
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
@@ -534,11 +534,11 @@ variable [IsScalarTower R A M] [IsScalarTower R B M]
 `TensorProduct.Algebra.module` below. -/
 def moduleAux : A ⊗[R] B →ₗ[R] M →ₗ[R] M :=
   TensorProduct.lift
-    { toFun := fun a => a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
-      map_add' := fun r t => by
+    { toFun a := a • (Algebra.lsmul R R M : B →ₐ[R] Module.End R M).toLinearMap
+      map_add' r t := by
         ext
         simp only [add_smul, LinearMap.add_apply]
-      map_smul' := fun n r => by
+      map_smul' n r := by
         ext
         simp only [RingHom.id_apply, LinearMap.smul_apply, smul_assoc] }
 

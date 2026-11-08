@@ -254,7 +254,7 @@ def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
 @[simps]
 def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddCommMonoid B]
     [Module R A] [Module S B] (f : A →ₛₗ[σ] B) : CStarMatrix m n A →ₛₗ[σ] CStarMatrix m n B where
-  toFun := fun M => M.map f
+  toFun M := M.map f
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
@@ -370,8 +370,8 @@ instance instRing [Fintype n] [DecidableEq n] [Ring A] : Ring (CStarMatrix n n A
 def ofMatrixRingEquiv [Fintype n] [Semiring A] :
     Matrix n n A ≃+* CStarMatrix n n A :=
   { ofMatrix with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 instance instStarRing [Fintype n] [NonUnitalSemiring A] [StarRing A] :
     StarRing (CStarMatrix n n A) := inferInstanceAs <| StarRing (Matrix n n A)
@@ -383,8 +383,8 @@ instance instAlgebra [Fintype n] [DecidableEq n] [CommSemiring R] [Semiring A] [
 def ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
     Matrix n n A ≃⋆ₐ[ℂ] CStarMatrix n n A :=
   { ofMatrixRingEquiv with
-    map_star' := fun _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_star' _ := rfl
+    map_smul' _ _ := rfl }
 
 lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [StarRing A] :
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
@@ -447,7 +447,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
     CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
-  toFun := fun M => M.mapₗ (f : A →ₗ[R] B)
+  toFun M := M.mapₗ (f : A →ₗ[R] B)
   map_smul' := by simp
   map_zero' := by simp [map_zero]
   map_add' := by simp [map_add]

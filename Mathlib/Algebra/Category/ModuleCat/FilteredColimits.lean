@@ -115,16 +115,16 @@ instance colimitMulAction : MulAction R (M F) where
 
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
-  smul_zero := fun r => by
+  smul_zero r := by
     rw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
-  zero_smul := fun x => by
+  zero_smul x := by
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
     simp [← colimit_zero_eq] }
 
 instance colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
-  smul_add := fun r x y => by
+  smul_add r x y := by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x
     obtain ⟨j, y, rfl⟩ := M.mk_surjective F y
     rw [colimit_smul_mk_eq, colimit_smul_mk_eq,
@@ -169,7 +169,7 @@ def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
     congr_hom ((forget AddCommGrpCat).congr_map (h.fac ((forget₂ _ _).mapCocone t) j)) x
   ofHom
     { f with
-      map_smul' := fun r x => by
+      map_smul' r x := by
         obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
         simp [hf] }
 
@@ -191,7 +191,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u}) where
   preserves_filtered_colimits _ _ _ :=
-  { preservesColimit := fun {F} =>
+  { preservesColimit {F} :=
       preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
         (AddCommGrpCat.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrpCat.{u})) }

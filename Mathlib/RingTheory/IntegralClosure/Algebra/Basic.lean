@@ -101,14 +101,14 @@ theorem isIntegral_of_smul_mem_submodule [IsDomain A] {M : Type*} [AddCommGroup 
     (hN' : N.FG) (x : A) (hx : ∀ n ∈ N, x • n ∈ N) : IsIntegral R x := by
   let A' : Subalgebra R A :=
     { carrier := { x | ∀ n ∈ N, x • n ∈ N }
-      mul_mem' := fun {a b} ha hb n hn => smul_smul a b n ▸ ha _ (hb _ hn)
+      mul_mem' {a b} ha hb n := fun hn  => smul_smul a b n ▸ ha _ (hb _ hn)
       one_mem' := fun n hn => (one_smul A n).symm ▸ hn
-      add_mem' := fun {a b} ha hb n hn => (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
+      add_mem' {a b} ha hb n := fun hn  => (add_smul a b n).symm ▸ N.add_mem (ha _ hn) (hb _ hn)
       zero_mem' := fun n _hn => (zero_smul A n).symm ▸ N.zero_mem
-      algebraMap_mem' := fun r n hn => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
+      algebraMap_mem' r := fun n hn  => (algebraMap_smul A r n).symm ▸ N.smul_mem r hn }
   let f : A' →ₐ[R] Module.End R N :=
     AlgHom.ofLinearMap
-      { toFun := fun x => (DistribSMul.toLinearMap R M x).restrict x.prop
+      { toFun x := (DistribSMul.toLinearMap R M x).restrict x.prop
         map_add' := by intro x y; ext; exact add_smul _ _ _
         map_smul' := by intro r s; ext; apply smul_assoc }
       (by ext; apply one_smul)
@@ -269,7 +269,7 @@ variable {G R K : Type*} [CommRing R] [CommRing K] [Algebra R K]
   [Group G] [MulSemiringAction G K] [SMulCommClass G R K]
 
 instance : MulSemiringAction G (integralClosure R K) where
-  smul := fun g x ↦ ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
+  smul g x := ⟨g • (x : K), x.2.map (MulSemiringAction.toAlgHom R K g)⟩
   one_smul x := by ext; exact one_smul G (x : K)
   mul_smul g h x := by ext; exact mul_smul g h (x : K)
   smul_zero g := by ext; exact smul_zero g

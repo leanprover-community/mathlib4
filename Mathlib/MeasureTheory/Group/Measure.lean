@@ -797,7 +797,7 @@ theorem haar_singleton [ContinuousMul G] [BorelSpace G] (g : G) : μ {g} = μ {(
 @[to_additive IsAddHaarMeasure.smul]
 theorem IsHaarMeasure.smul [MeasurableConstSMul G G] {c : ℝ≥0∞} (cpos : c ≠ 0) (ctop : c ≠ ∞) :
     IsHaarMeasure (c • μ) :=
-  { lt_top_of_isCompact := fun _K hK => ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
+  { lt_top_of_isCompact _K hK := ENNReal.mul_lt_top ctop.lt_top hK.measure_lt_top
     toIsOpenPosMeasure := isOpenPosMeasure_smul μ cpos }
 
 @[to_additive IsAddHaarMeasure.nnreal_smul]
@@ -813,7 +813,7 @@ it is an additive Haar measure. -/]
 theorem isHaarMeasure_of_isCompact_nonempty_interior [IsTopologicalGroup G] [BorelSpace G]
     (μ : Measure G) [IsMulLeftInvariant μ] (K : Set G) (hK : IsCompact K)
     (h'K : (interior K).Nonempty) (h : μ K ≠ 0) (h' : μ K ≠ ∞) : IsHaarMeasure μ :=
-  { lt_top_of_isCompact := fun _L hL =>
+  { lt_top_of_isCompact _L hL :=
       measure_lt_top_of_isCompact_of_isMulLeftInvariant' h'K h' hL
     toIsOpenPosMeasure := isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h }
 
@@ -920,8 +920,8 @@ See Note [lower instance priority] -/
 See Note [lower instance priority] -/]
 instance (priority := 100) IsHaarMeasure.sigmaFinite [SigmaCompactSpace G] : SigmaFinite μ :=
   ⟨⟨{   set := compactCovering G
-        set_mem := fun _ => mem_univ _
-        finite := fun n => IsCompact.measure_lt_top <| isCompact_compactCovering G n
+        set_mem _ := mem_univ _
+        finite n := IsCompact.measure_lt_top <| isCompact_compactCovering G n
         spanning := iUnion_compactCovering G }⟩⟩
 
 @[to_additive]

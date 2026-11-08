@@ -1403,7 +1403,7 @@ This is the `AddEquiv` version of `Finsupp.sigmaFinsuppEquivPiFinsupp`.
 noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*} [AddMonoid α] :
     ((Σ j, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
   { sigmaFinsuppEquivPiFinsupp with
-    map_add' := fun f g => by
+    map_add' f g := by
       ext
       simp }
 

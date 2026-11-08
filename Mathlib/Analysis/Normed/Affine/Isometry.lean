@@ -677,7 +677,7 @@ variable (s₁ s₂ : AffineSubspace 𝕜 P) [Nonempty s₁] [Nonempty s₂]
 
 /-- The identity equivalence of an affine subspace equal to `⊤` to the whole space. -/
 def ofTop (h : s₁ = ⊤) : s₁ ≃ᵃⁱ[𝕜] P :=
-  { (AffineEquiv.ofEq s₁ ⊤ h).trans (AffineSubspace.topEquiv 𝕜 V P) with norm_map := fun _ ↦ rfl }
+  { (AffineEquiv.ofEq s₁ ⊤ h).trans (AffineSubspace.topEquiv 𝕜 V P) with norm_map _ := rfl }
 
 variable {s₁}
 
@@ -693,7 +693,7 @@ variable (s₁)
 
 /-- `AffineEquiv.ofEq` as an `AffineIsometryEquiv`. -/
 def ofEq (h : s₁ = s₂) : s₁ ≃ᵃⁱ[𝕜] s₂ :=
-  { AffineEquiv.ofEq s₁ s₂ h with norm_map := fun _ ↦ rfl }
+  { AffineEquiv.ofEq s₁ s₂ h with norm_map _ := rfl }
 
 variable {s₁ s₂}
 
@@ -712,7 +712,7 @@ lemma ofEq_rfl : ofEq s₁ s₁ rfl = refl 𝕜 s₁ :=
 variable (𝕜) in
 /-- The map `v ↦ v +ᵥ p` as an affine isometric equivalence between `V` and `P`. -/
 def vaddConst (p : P) : V ≃ᵃⁱ[𝕜] P :=
-  { AffineEquiv.vaddConst 𝕜 p with norm_map := fun _ => rfl }
+  { AffineEquiv.vaddConst 𝕜 p with norm_map _ := rfl }
 
 @[simp]
 theorem coe_vaddConst (p : P) : ⇑(vaddConst 𝕜 p) = fun v => v +ᵥ p :=
@@ -751,7 +751,7 @@ variable (𝕜 P) in
 /-- Translation by `v` (that is, the map `p ↦ v +ᵥ p`) as an affine isometric automorphism of `P`.
 -/
 def constVAdd (v : V) : P ≃ᵃⁱ[𝕜] P :=
-  { AffineEquiv.constVAdd 𝕜 P v with norm_map := fun _ => rfl }
+  { AffineEquiv.constVAdd 𝕜 P v with norm_map _ := rfl }
 
 @[simp]
 theorem coe_constVAdd (v : V) : ⇑(constVAdd 𝕜 P v : P ≃ᵃⁱ[𝕜] P) = (v +ᵥ ·) :=
@@ -839,7 +839,7 @@ noncomputable def equivMapOfInjective (E : AffineSubspace 𝕜 P₁) [Nonempty E
     linear :=
       (E.direction.equivMapOfInjective φ.linear (φ.linear_injective_iff.mpr hφ)).trans
         (LinearEquiv.ofEq _ _ (AffineSubspace.map_direction _ _).symm)
-    map_vadd' := fun p v => Subtype.ext <| φ.map_vadd p v }
+    map_vadd' p v := Subtype.ext <| φ.map_vadd p v }
 
 section isometryEquivMap
 

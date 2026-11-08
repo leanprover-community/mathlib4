@@ -94,8 +94,8 @@ variable (M)
 def restrictDom (s : Set α) [DecidablePred (· ∈ s)] : (α →₀ M) →ₗ[R] supported M R s :=
   LinearMap.codRestrict _
     { toFun := filter (· ∈ s)
-      map_add' := fun _ _ => filter_add
-      map_smul' := fun _ _ => filter_smul } fun l =>
+      map_add' _ _ := filter_add
+      map_smul' _ _ := filter_smul } fun l =>
     (mem_supported' _ _).2 fun _ => filter_apply_neg (· ∈ s) l
 
 variable {M R}

@@ -179,10 +179,10 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
     (naturality : ∀ {X Y : C} (f : X ⟶ Y),
       F.map f ≫ (app Y).hom = (app X).hom ≫ G.map f := by cat_disch) :
     F ≅ G where
-  hom := { app := fun X => (app X).hom }
+  hom := { app X := (app X).hom }
   inv :=
-    { app := fun X => (app X).inv,
-      naturality := fun X Y f => by
+    { app X := (app X).inv,
+      naturality X Y f := by
         have h := congr((app X).inv ≫ $((naturality f).symm) ≫ (app Y).inv)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }

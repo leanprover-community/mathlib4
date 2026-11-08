@@ -312,7 +312,7 @@ theorem isMultiplyPretransitive_of_nontrivial {K : Type*} [Group K] [MulAction K
   let φ := MulAction.toPermHom K α
   let f : α →ₑ[φ] α :=
     { toFun := id
-      map_smul' := fun _ _ ↦ rfl }
+      map_smul' _ _ := rfl }
   have hf : Function.Bijective f := Function.bijective_id
   suffices Function.Surjective φ by
     unfold IsMultiplyPretransitive

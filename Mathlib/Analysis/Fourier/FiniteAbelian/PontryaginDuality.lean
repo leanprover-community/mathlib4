@@ -95,9 +95,9 @@ characters. -/
 def circleEquivComplex [Finite α] : AddChar α Circle ≃+ AddChar α ℂ where
   toFun ψ := toMonoidHomEquiv.symm <| coeHom.comp ψ.toMonoidHom
   invFun ψ :=
-    { toFun := fun a ↦ (⟨ψ a, mem_sphere_zero_iff_norm.2 <| ψ.norm_apply _⟩ : Circle)
+    { toFun a := (⟨ψ a, mem_sphere_zero_iff_norm.2 <| ψ.norm_apply _⟩ : Circle)
       map_zero_eq_one' := by simp [Circle]
-      map_add_eq_mul' := fun a b ↦ by ext : 1; simp [map_add_eq_mul] }
+      map_add_eq_mul' a b := by ext : 1; simp [map_add_eq_mul] }
   left_inv ψ := by ext : 1; simp
   right_inv ψ := by ext : 1; simp
   map_add' ψ χ := rfl

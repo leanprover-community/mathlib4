@@ -117,11 +117,11 @@ def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful
   exact
     { εIso := fData.εIso
       μIso := fData.μIso
-      μIso_hom_natural_left := fun _ ↦ by simp [fData.whiskerRight_eq]
-      μIso_hom_natural_right := fun _ ↦ by simp [fData.whiskerLeft_eq]
-      associativity := fun _ _ _ ↦ by simp [fData.associator_eq]
-      left_unitality := fun _ ↦ by simp [fData.leftUnitor_eq]
-      right_unitality := fun _ ↦ by simp [fData.rightUnitor_eq] }
+      μIso_hom_natural_left _ := by simp [fData.whiskerRight_eq]
+      μIso_hom_natural_right _ := by simp [fData.whiskerLeft_eq]
+      associativity _ _ _ := by simp [fData.associator_eq]
+      left_unitality _ := by simp [fData.leftUnitor_eq]
+      right_unitality _ := by simp [fData.rightUnitor_eq] }
 
 instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
@@ -160,7 +160,7 @@ attribute [local simp] transportStruct in
 def transport (e : C ≌ D) : MonoidalCategory.{v₂} D :=
   letI : MonoidalCategoryStruct.{v₂} D := transportStruct e
   induced e.inverse
-    { μIso := fun _ _ => e.unitIso.app _
+    { μIso _ _ := e.unitIso.app _
       εIso := e.unitIso.app _
       whiskerLeft_eq := by simp +zetaDelta +instances
       whiskerRight_eq := by simp +zetaDelta +instances

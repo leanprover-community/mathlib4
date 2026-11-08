@@ -50,7 +50,7 @@ variable [DecidableEq α] {s t : Multiset α}
 /-- A DFinsupp version of `Multiset.toFinsupp`. -/
 def toDFinsupp : Multiset α →+ Π₀ _ : α, ℕ where
   toFun s :=
-    { toFun := fun n ↦ s.count n
+    { toFun n := s.count n
       support' := Trunc.mk ⟨s, fun i ↦ (em (i ∈ s)).imp_right Multiset.count_eq_zero_of_notMem⟩ }
   map_zero' := rfl
   map_add' _ _ := DFinsupp.ext fun _ ↦ Multiset.count_add _ _ _

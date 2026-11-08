@@ -106,11 +106,11 @@ which is close to the deterministic timeout limit.
 def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + χ₂ = χ₃) :
     rootSpace H χ₁ →ₗ[R] genWeightSpace M χ₂ →ₗ[R] genWeightSpace M χ₃ where
   toFun x :=
-    { toFun := fun m =>
+    { toFun m :=
         ⟨⁅(x : L), (m : M)⁆,
           hχ ▸ lie_mem_genWeightSpace_of_mem_genWeightSpace x.property m.property⟩
-      map_add' := fun m n => by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
-      map_smul' := fun t m => by simp }
+      map_add' m n := by simp only [LieSubmodule.coe_add, lie_add, AddMemClass.mk_add_mk]
+      map_smul' t m := by simp }
   map_add' x y := by
     ext m
     simp only [LieSubmodule.coe_add, add_lie, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply,
@@ -127,7 +127,7 @@ def rootSpaceWeightSpaceProduct (χ₁ χ₂ χ₃ : H → R) (hχ : χ₁ + χ�
     rootSpace H χ₁ ⊗[R] genWeightSpace M χ₂ →ₗ⁅R,H⁆ genWeightSpace M χ₃ :=
   liftLie R H (rootSpace H χ₁) (genWeightSpace M χ₂) (genWeightSpace M χ₃)
     { toLinearMap := rootSpaceWeightSpaceProductAux R L H M hχ
-      map_lie' := fun {x y} => by
+      map_lie' {x y} := by
         ext m
         simp only [rootSpaceWeightSpaceProductAux]
         dsimp
@@ -166,7 +166,7 @@ theorem rootSpaceProduct_tmul
 subalgebra of `L`. -/
 def zeroRootSubalgebra : LieSubalgebra R L :=
   { toSubmodule := (rootSpace H 0 : Submodule R L)
-    lie_mem' := fun {x y hx hy} => by
+    lie_mem' {x y hx hy} := by
       let xy : rootSpace H 0 ⊗[R] rootSpace H 0 := ⟨x, hx⟩ ⊗ₜ ⟨y, hy⟩
       suffices (rootSpaceProduct R L H 0 0 0 (add_zero 0) xy : L) ∈ rootSpace H 0 by
         rwa [rootSpaceProduct_tmul, Subtype.coe_mk, Subtype.coe_mk] at this

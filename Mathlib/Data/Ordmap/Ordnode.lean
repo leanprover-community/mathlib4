@@ -666,7 +666,7 @@ instance [ToString α] : ToString (Ordnode α) :=
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
 instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
-  format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
+  format t := Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
 /-- O(n). True if the trees have the same elements, ignoring structural differences.
 

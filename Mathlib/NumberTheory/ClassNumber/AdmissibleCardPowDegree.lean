@@ -251,7 +251,7 @@ noncomputable def cardPowDegreeIsAdmissible :
     IsAdmissible (cardPowDegree : AbsoluteValue Fq[X] ℤ) :=
   { @cardPowDegree_isEuclidean Fq _
       _ with
-    card := fun ε => Fintype.card Fq ^ ⌈-log ε / log (Fintype.card Fq)⌉₊
-    exists_partition' := fun n _ hε _ hb => exists_partition_polynomial n hε hb }
+    card ε := Fintype.card Fq ^ ⌈-log ε / log (Fintype.card Fq)⌉₊
+    exists_partition' n _ hε _ hb := exists_partition_polynomial n hε hb }
 
 end Polynomial

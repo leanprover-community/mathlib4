@@ -35,9 +35,9 @@ variable {C : Type u₂} [Category.{v₂} C]
 @[simps, implicit_reducible]
 def const : C ⥤ J ⥤ C where
   obj X :=
-    { obj := fun _ => X
-      map := fun _ => 𝟙 X }
-  map {X Y} f := { app := fun _ => f }
+    { obj _ := X
+      map _ := 𝟙 X }
+  map {X Y} f := { app _ := f }
 
 attribute [to_dual self] const_obj_map
 attribute [to_dual self (reorder := X Y)] const_map_app
@@ -53,16 +53,16 @@ is (naturally isomorphic to) the opposite of the constant functor `J ⥤ C` send
 -/
 @[simps]
 def opObjOp (X : C) : (const Jᵒᵖ).obj (op X) ≅ ((const J).obj X).op where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 /-- The constant functor `Jᵒᵖ ⥤ C` sending everything to `unop X`
 is (naturally isomorphic to) the opposite of
 the constant functor `J ⥤ Cᵒᵖ` sending everything to `X`.
 -/
 def opObjUnop (X : Cᵒᵖ) : (const Jᵒᵖ).obj (unop X) ≅ ((const J).obj X).leftOp where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 -- Lean needs some help with universes here.
 @[simp]
@@ -89,8 +89,8 @@ variable {D : Type u₃} [Category.{v₃} D]
   more convenient than an equality between functors (compare id_to_iso). -/
 @[simps]
 def constComp (X : C) (F : C ⥤ D) : (const J).obj X ⋙ F ≅ (const J).obj (F.obj X) where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 /-- If `J` is nonempty, then the constant functor over `J` is faithful. -/
 instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where

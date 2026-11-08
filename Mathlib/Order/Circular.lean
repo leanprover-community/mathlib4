@@ -388,7 +388,7 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
 See note [reducible non-instances]. -/
 abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : CircularPartialOrder α :=
   { Preorder.toCircularPreorder α with
-    btw_antisymm := fun {a b c} => by
+    btw_antisymm {a b c} := by
       rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hcb, hba⟩ | ⟨hba, hac⟩ | ⟨hac, hcb⟩)
       · exact Or.inl (hab.antisymm hba)
       · exact Or.inl (hab.antisymm hba)
@@ -404,7 +404,7 @@ abbrev PartialOrder.toCircularPartialOrder (α : Type*) [PartialOrder α] : Circ
 See note [reducible non-instances]. -/
 abbrev LinearOrder.toCircularOrder (α : Type*) [LinearOrder α] : CircularOrder α :=
   { PartialOrder.toCircularPartialOrder α with
-    btw_total := fun a b c => by
+    btw_total a b c := by
       rcases le_total a b with hab | hba <;> rcases le_total b c with hbc | hcb <;>
         rcases le_total c a with hca | hac
       · exact Or.inl (Or.inl ⟨hab, hbc⟩)
@@ -434,9 +434,9 @@ instance circularPreorder (α : Type*) [CircularPreorder α] : CircularPreorder 
   sbtw_iff_btw_not_btw {a b c} := @sbtw_iff_btw_not_btw α _ c b a
 
 instance circularPartialOrder (α : Type*) [CircularPartialOrder α] : CircularPartialOrder αᵒᵈ where
-  btw_antisymm := fun {_ _ _} habc hcba => @btw_antisymm α _ _ _ _ hcba habc
+  btw_antisymm {_ _ _} habc hcba := @btw_antisymm α _ _ _ _ hcba habc
 
 instance (α : Type*) [CircularOrder α] : CircularOrder αᵒᵈ where
-  btw_total := fun {a b c} => @btw_total α _ c b a
+  btw_total {a b c} := @btw_total α _ c b a
 
 end OrderDual

@@ -86,7 +86,7 @@ theorem comp (hg : MeasurableEmbedding g) (hf : MeasurableEmbedding f) :
 theorem subtype_coe (hs : MeasurableSet s) : MeasurableEmbedding ((↑) : s → α) where
   injective := Subtype.coe_injective
   measurable := measurable_subtype_coe
-  measurableSet_image' := fun _ => MeasurableSet.subtype_image hs
+  measurableSet_image' _ := MeasurableSet.subtype_image hs
 
 theorem measurableSet_range (hf : MeasurableEmbedding f) : MeasurableSet (range f) := by
   rw [← image_univ]
@@ -127,7 +127,7 @@ lemma natCast {α : Type*} [MeasurableSpace α]
     MeasurableEmbedding (Nat.cast : ℕ → α) where
   injective := Nat.cast_injective
   measurable := measurable_from_nat
-  measurableSet_image' := fun _ _ =>
+  measurableSet_image' _ _ :=
     ((Set.countable_range (Nat.cast : ℕ → α)).mono
       (Set.image_subset_range _ _)).measurableSet
 
@@ -349,7 +349,7 @@ theorem measurableSet_image (e : α ≃ᵐ β) : MeasurableSet (e '' s) ↔ Meas
 protected theorem measurableEmbedding (e : α ≃ᵐ β) : MeasurableEmbedding e where
   injective := e.injective
   measurable := e.measurable
-  measurableSet_image' := fun _ => e.measurableSet_image.2
+  measurableSet_image' _ := e.measurableSet_image.2
 
 /-- Equal measurable spaces are equivalent. -/
 protected def cast {α β} [i₁ : MeasurableSpace α] [i₂ : MeasurableSpace β] (h : α = β)

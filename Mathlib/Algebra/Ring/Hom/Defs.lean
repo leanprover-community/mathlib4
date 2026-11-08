@@ -185,8 +185,8 @@ protected def id (α : Type*) [NonUnitalNonAssocSemiring α] : α →ₙ+* α wh
   map_add' _ _ := rfl
 
 instance : Zero (α →ₙ+* β) :=
-  ⟨{ toFun := 0, map_mul' := fun _ _ => (mul_zero (0 : β)).symm, map_zero' := rfl,
-      map_add' := fun _ _ => (add_zero (0 : β)).symm }⟩
+  ⟨{ toFun := 0, map_mul' _ _ := (mul_zero (0 : β)).symm, map_zero' := rfl,
+      map_add' _ _ := (add_zero (0 : β)).symm }⟩
 
 instance : Inhabited (α →ₙ+* β) :=
   ⟨0⟩
@@ -654,7 +654,7 @@ def mkRingHomOfMulSelfOfTwoNeZero (h : ∀ x, f (x * x) = f x * f x) (h_two : (2
     (h_one : f 1 = 1) : β →+* α :=
   { f with
     map_one' := h_one,
-    map_mul' := fun x y => by
+    map_mul' x y := by
       have hxy := h (x + y)
       rw [mul_add, add_mul, add_mul, f.map_add, f.map_add, f.map_add, f.map_add, h x, h y, add_mul,
         mul_add, mul_add, ← sub_eq_zero, add_comm (f x * f x + f (y * x)), ← sub_sub, ← sub_sub,

@@ -89,8 +89,8 @@ any bicone `b` for `f` satisfying `total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b
 def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt) :
     b.IsBilimit where
   isLimit :=
-    { lift := fun s => ∑ j : J, s.π.app ⟨j⟩ ≫ b.ι j
-      uniq := fun s m h => by
+    { lift s := ∑ j : J, s.π.app ⟨j⟩ ≫ b.ι j
+      uniq s m h := by
         rw [← Category.comp_id m]
         dsimp
         rw [← total, comp_sum]
@@ -99,21 +99,21 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         have reassoced : m ≫ Bicone.π b j ≫ Bicone.ι b j = s.π.app ⟨j⟩ ≫ Bicone.ι b j := by
           simpa using eq_whisker (h ⟨j⟩) _
         rw [reassoced]
-      fac := fun s j => by
+      fac s j := by
         classical
         cases j
         simp only [sum_comp, Category.assoc, Bicone.toCone_π_app, b.ι_π, comp_dite]
         simp }
   isColimit :=
-    { desc := fun s => ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
-      uniq := fun s m h => by
+    { desc s := ∑ j : J, b.π j ≫ s.ι.app ⟨j⟩
+      uniq s m h := by
         rw [← Category.id_comp m]
         dsimp
         rw [← total, sum_comp]
         apply Finset.sum_congr rfl
         intro j _
         simpa using b.π j ≫= h ⟨j⟩
-      fac := fun s j => by
+      fac s j := by
         classical
         cases j
         simp only [comp_sum, ← Category.assoc, Bicone.toCocone_ι_app, b.ι_π, dite_comp]
@@ -187,12 +187,12 @@ end Finite
 
 /-- A preadditive category with finite products has finite biproducts. -/
 theorem HasFiniteBiproducts.of_hasFiniteProducts [HasFiniteProducts C] : HasFiniteBiproducts C :=
-  ⟨fun _ => { has_biproduct := fun _ => HasBiproduct.of_hasProduct _ }⟩
+  ⟨fun _ => { has_biproduct _ := HasBiproduct.of_hasProduct _ }⟩
 
 /-- A preadditive category with finite coproducts has finite biproducts. -/
 theorem HasFiniteBiproducts.of_hasFiniteCoproducts [HasFiniteCoproducts C] :
     HasFiniteBiproducts C :=
-  ⟨fun _ => { has_biproduct := fun _ => HasBiproduct.of_hasCoproduct _ }⟩
+  ⟨fun _ => { has_biproduct _ := HasBiproduct.of_hasCoproduct _ }⟩
 
 section HasBiproduct
 
@@ -298,23 +298,23 @@ any binary bicone `b` satisfying `total : b.fst ≫ b.inl + b.snd ≫ b.inr = �
 def isBinaryBilimitOfTotal {X Y : C} (b : BinaryBicone X Y)
     (total : b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt) : b.IsBilimit where
   isLimit :=
-    { lift := fun s =>
+    { lift s :=
       (BinaryFan.fst s ≫ b.inl : s.pt ⟶ b.pt) + (BinaryFan.snd s ≫ b.inr : s.pt ⟶ b.pt)
-      uniq := fun s m h => by
+      uniq s m h := by
         have hₗ := h ⟨.left⟩
         have hᵣ := h ⟨.right⟩
         dsimp at hₗ hᵣ
         simpa [← hₗ, ← hᵣ] using m ≫= total.symm
-      fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
+      fac s j := by rcases j with ⟨⟨⟩⟩ <;> simp }
   isColimit :=
-    { desc := fun s =>
+    { desc s :=
         (b.fst ≫ BinaryCofan.inl s : b.pt ⟶ s.pt) + (b.snd ≫ BinaryCofan.inr s : b.pt ⟶ s.pt)
-      uniq := fun s m h => by
+      uniq s m h := by
         have hₗ := h ⟨.left⟩
         have hᵣ := h ⟨.right⟩
         dsimp at hₗ hᵣ
         simpa [← hₗ, ← hᵣ] using total.symm =≫ m
-      fac := fun s j => by rcases j with ⟨⟨⟩⟩ <;> simp }
+      fac s j := by rcases j with ⟨⟨⟩⟩ <;> simp }
 
 theorem IsBilimit.binary_total {X Y : C} {b : BinaryBicone X Y} (i : b.IsBilimit) :
     b.fst ≫ b.inl + b.snd ≫ b.inr = 𝟙 b.pt :=
@@ -371,7 +371,7 @@ theorem HasBinaryBiproduct.of_hasBinaryProduct (X Y : C) [HasBinaryProduct X Y] 
 
 /-- In a preadditive category, if all binary products exist, then all binary biproducts exist. -/
 theorem HasBinaryBiproducts.of_hasBinaryProducts [HasBinaryProducts C] : HasBinaryBiproducts C :=
-  { has_binary_biproduct := fun X Y => HasBinaryBiproduct.of_hasBinaryProduct X Y }
+  { has_binary_biproduct X Y := HasBinaryBiproduct.of_hasBinaryProduct X Y }
 
 /-- We can turn any colimit cocone over a pair into a bicone. -/
 @[simps]
@@ -420,7 +420,7 @@ theorem HasBinaryBiproduct.of_hasBinaryCoproduct (X Y : C) [HasBinaryCoproduct X
 /-- In a preadditive category, if all binary coproducts exist, then all binary biproducts exist. -/
 theorem HasBinaryBiproducts.of_hasBinaryCoproducts [HasBinaryCoproducts C] :
     HasBinaryBiproducts C :=
-  { has_binary_biproduct := fun X Y => HasBinaryBiproduct.of_hasBinaryCoproduct X Y }
+  { has_binary_biproduct X Y := HasBinaryBiproduct.of_hasBinaryCoproduct X Y }
 
 section
 
@@ -647,7 +647,7 @@ attribute [local ext] Preadditive
 /-- The existence of binary biproducts implies that there is at most one preadditive structure. -/
 instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.{v} C]
     [HasZeroMorphisms C] [HasBinaryBiproducts C] : Subsingleton (Preadditive C) where
-  allEq := fun a b => by
+  allEq a b := by
     apply Preadditive.ext; funext X Y; apply AddCommGroup.ext; funext f g
     have h₁ := @biprod.add_eq_lift_id_desc _ _ a _ _ f g
       (by convert (inferInstance : HasBinaryBiproduct X X); subsingleton)

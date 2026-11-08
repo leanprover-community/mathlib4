@@ -37,11 +37,11 @@ def homotopic : HomRel (HomologicalComplex V c) := fun _ _ f g => Nonempty (Homo
 
 instance homotopy_congruence : Congruence (homotopic V c) where
   equivalence :=
-    { refl := fun C => ⟨Homotopy.refl C⟩
+    { refl C := ⟨Homotopy.refl C⟩
       symm := fun ⟨w⟩ => ⟨w.symm⟩
       trans := fun ⟨w₁⟩ ⟨w₂⟩ => ⟨w₁.trans w₂⟩ }
-  comp_left := fun _ _ _ ⟨i⟩ => ⟨i.compLeft _⟩
-  comp_right := fun _ ⟨i⟩ => ⟨i.compRight _⟩
+  comp_left _ _ _ := fun ⟨i⟩  => ⟨i.compLeft _⟩
+  comp_right _ := fun ⟨i⟩  => ⟨i.compRight _⟩
 
 /-- `HomotopyCategory V c` is the category of chain complexes of shape `c` in `V`,
 with chain maps identified when they are homotopic. -/

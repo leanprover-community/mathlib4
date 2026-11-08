@@ -76,7 +76,7 @@ an algebra homomorphism from `Aᵐᵒᵖ`. -/
 def fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : Aᵐᵒᵖ →ₐ[R] B :=
   { f.toRingHom.fromOpposite hf with
     toFun := f ∘ unop
-    commutes' := fun r => f.commutes r }
+    commutes' r := f.commutes r }
 
 @[simp]
 theorem toLinearMap_fromOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -95,7 +95,7 @@ an algebra homomorphism to `Bᵐᵒᵖ`. -/
 def toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) : A →ₐ[R] Bᵐᵒᵖ :=
   { f.toRingHom.toOpposite hf with
     toFun := op ∘ f
-    commutes' := fun r => unop_injective <| f.commutes r }
+    commutes' r := unop_injective <| f.commutes r }
 
 @[simp]
 theorem toLinearMap_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f y)) :
@@ -111,8 +111,8 @@ theorem toRingHom_toOpposite (f : A →ₐ[R] B) (hf : ∀ x y, Commute (f x) (f
 This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps!]
 protected def op : (A →ₐ[R] B) ≃ (Aᵐᵒᵖ →ₐ[R] Bᵐᵒᵖ) where
-  toFun f := { RingHom.op f.toRingHom with commutes' := fun r => unop_injective <| f.commutes r }
-  invFun f := { RingHom.unop f.toRingHom with commutes' := fun r => op_injective <| f.commutes r }
+  toFun f := { RingHom.op f.toRingHom with commutes' r := unop_injective <| f.commutes r }
+  invFun f := { RingHom.unop f.toRingHom with commutes' r := op_injective <| f.commutes r }
 
 theorem toRingHom_op (f : A →ₐ[R] B) : f.op.toRingHom = RingHom.op f.toRingHom :=
   rfl
@@ -141,10 +141,10 @@ This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 def op : (A ≃ₐ[R] B) ≃ Aᵐᵒᵖ ≃ₐ[R] Bᵐᵒᵖ where
   toFun f :=
     { RingEquiv.op f.toRingEquiv with
-      commutes' := fun r => MulOpposite.unop_injective <| f.commutes r }
+      commutes' r := MulOpposite.unop_injective <| f.commutes r }
   invFun f :=
     { RingEquiv.unop f.toRingEquiv with
-      commutes' := fun r => MulOpposite.op_injective <| f.commutes r }
+      commutes' r := MulOpposite.op_injective <| f.commutes r }
 
 theorem toAlgHom_op (f : A ≃ₐ[R] B) :
     (AlgEquiv.op f).toAlgHom = AlgHom.op f.toAlgHom :=

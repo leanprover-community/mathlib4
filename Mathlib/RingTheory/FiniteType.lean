@@ -238,7 +238,7 @@ theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg 
   exact ‹Algebra.FiniteType _ _›.of_surjective
     { g with
       toFun := g
-      commutes' := fun a => rfl }
+      commutes' a := rfl }
     hg
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.FiniteType := by

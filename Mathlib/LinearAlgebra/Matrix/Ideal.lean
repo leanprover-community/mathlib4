@@ -128,8 +128,8 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.refl _ := fun _ _ ↦ c.refl _
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
-  add' h₁ h₂ := fun _ _ ↦ c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ ↦ c.finsetSum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  add' h₁ h₂ _ _ := c.add (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ _ _ := c.finsetSum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp low]
 theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
@@ -176,8 +176,8 @@ def ofMatrix [DecidableEq n] (c : RingCon (Matrix n n R)) : RingCon R where
   iseqv.refl _ := fun _ _ ↦ c.refl _
   iseqv.symm h := fun _ _ ↦ c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ ↦ c.trans (h₁ _ _) (h₂ _ _)
-  add' h₁ h₂ := fun _ _ ↦ by simpa [single_add] using c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun i j ↦ by simpa using c.mul (h₁ i i) (h₂ i j)
+  add' h₁ h₂ _ _ := by simpa [single_add] using c.add (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ i j := by simpa using c.mul (h₁ i i) (h₂ i j)
 
 @[simp]
 theorem ofMatrix_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :

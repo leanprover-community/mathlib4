@@ -285,9 +285,9 @@ end SMul
 section Zero
 
 instance instZero : Zero 𝓢(E, F) :=
-  ⟨{  toFun := fun _ => 0
+  ⟨{  toFun _ := 0
       smooth' := by exact contDiff_const
-      decay' := fun _ _ => ⟨1, fun _ => by simp⟩ }⟩
+      decay' _ _ := ⟨1, fun _ => by simp⟩ }⟩
 
 instance instInhabited : Inhabited 𝓢(E, F) :=
   ⟨0⟩
@@ -1157,7 +1157,7 @@ open scoped BoundedContinuousFunction
 
 instance instBoundedContinuousMapClass : BoundedContinuousMapClass 𝓢(E, F) E F where
   __ := instContinuousMapClass
-  map_bounded := fun f ↦ ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
+  map_bounded f := ⟨2 * (SchwartzMap.seminorm ℝ 0 0) f,
     (BoundedContinuousFunction.dist_le_two_norm' (norm_le_seminorm ℝ f))⟩
 
 /-- Schwartz functions as bounded continuous functions -/

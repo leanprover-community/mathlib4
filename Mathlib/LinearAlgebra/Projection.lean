@@ -463,7 +463,7 @@ theorem ofIsComplProd_apply {p q : Submodule R₁ E} (h : IsCompl p q)
 def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
     ((p →ₗ[R₁] F) × (q →ₗ[R₁] F)) ≃ₗ[R₁] E →ₗ[R₁] F :=
   { ofIsComplProd h with
-    invFun := fun φ => ⟨φ.domRestrict p, φ.domRestrict q⟩
+    invFun φ := ⟨φ.domRestrict p, φ.domRestrict q⟩
     left_inv := fun φ ↦ by
       ext x
       · exact ofIsCompl_apply_left h x

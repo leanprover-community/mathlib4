@@ -153,7 +153,7 @@ submonoid of `M`, whose quotient is the localization of `M` at `S`. -/]
 def r' : Con (M × S) := by
   -- note we multiply by `c` on the left so that we can later generalize to `•`
   refine
-    { r := fun a b : M × S ↦ ∃ c : S, ↑c * (↑b.2 * a.1) = c * (a.2 * b.1)
+    { r (a b : M × S) := ∃ c : S, ↑c * (↑b.2 * a.1) = c * (a.2 * b.1)
       iseqv := ⟨fun a ↦ ⟨1, rfl⟩, fun ⟨c, hc⟩ ↦ ⟨c, hc.symm⟩, ?_⟩
       mul' := ?_ }
   · rintro a b c ⟨t₁, ht₁⟩ ⟨t₂, ht₂⟩
@@ -740,8 +740,8 @@ variable (S) in
 `(x, 0)` in the Localization of `M` at a Submonoid. -/]
 def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
   { (r S).mk'.comp <| MonoidHom.inl M S with
-    toFun := fun x ↦ mk x 1
-    map_mul' := fun x y ↦ by rw [mk_mul, mul_one]
+    toFun x := mk x 1
+    map_mul' x y := by rw [mk_mul, mul_one]
     isLocalizationMap :=
     { map_units y :=
         isUnit_iff_exists_inv.2 ⟨mk 1 y, by rw [mk_mul, mul_one, one_mul, mk_self]⟩

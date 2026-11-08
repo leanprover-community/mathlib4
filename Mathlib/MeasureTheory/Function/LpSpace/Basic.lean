@@ -430,7 +430,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
       { toFun := (norm : Lp E p μ → ℝ)
         map_zero' := norm_zero
         neg' := by simp only [norm_neg, implies_true] -- squeezed for performance reasons
-        add_le' := fun f g => by
+        add_le' f g := by
           suffices ‖f + g‖ₑ ≤ ‖f‖ₑ + ‖g‖ₑ by
             -- Squeezed for performance reasons
             simpa only [ge_iff_le, enorm, ← ENNReal.coe_add, ENNReal.coe_le_coe] using! this
@@ -461,7 +461,7 @@ variable (𝕜 E p μ)
 /-- The `𝕜`-submodule of elements of `α →ₘ[μ] E` whose `Lp` norm is finite.  This is `Lp E p μ`,
 with extra structure. -/
 def LpSubmodule : Submodule 𝕜 (α →ₘ[μ] E) :=
-  { Lp E p μ with smul_mem' := fun c f hf => by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
+  { Lp E p μ with smul_mem' c f hf := by simpa using const_smul_mem_Lp c ⟨f, hf⟩ }
 
 variable {𝕜 E p μ}
 

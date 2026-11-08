@@ -297,7 +297,7 @@ instance [PreservesLimitsOfShape WalkingCospan F] {X : C} (R : Presieve X) :
 lemma Presieve.HasPairwisePullbacks.map_of_preservesPairwisePullbacks {X : C} (R : Presieve X)
     [F.PreservesPairwisePullbacks R] [R.HasPairwisePullbacks] :
     (R.map F).HasPairwisePullbacks where
-  has_pullbacks {Y Z} := fun {f} ⟨hf⟩ g ⟨hg⟩ ↦ by
+  has_pullbacks {Y Z} {f} := fun ⟨hf⟩ g ⟨hg⟩  ↦ by
     have := Presieve.HasPairwisePullbacks.has_pullbacks hf hg
     have := F.preservesLimit_cospan_of_mem_presieve _ hf hg
     exact hasPullback_of_preservesPullback F _ _

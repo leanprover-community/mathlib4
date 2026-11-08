@@ -488,14 +488,14 @@ instance : Module R V⟦Γ⟧ where
 @[simps]
 def single.linearMap (a : Γ) : V →ₗ[R] V⟦Γ⟧ :=
   { single.addMonoidHom a with
-    map_smul' := fun r s => by
+    map_smul' r s := by
       ext b
       by_cases h : b = a <;> simp [h] }
 
 /-- `coeff g` as a linear map -/
 @[simps]
 def coeff.linearMap (g : Γ) : V⟦Γ⟧ →ₗ[R] V :=
-  { coeff.addMonoidHom g with map_smul' := fun _ _ => rfl }
+  { coeff.addMonoidHom g with map_smul' _ _ := rfl }
 
 @[simp]
 protected lemma map_smul [AddCommMonoid U] [Module R U] (f : U →ₗ[R] V) {r : R} {x : U⟦Γ⟧} :

@@ -144,7 +144,7 @@ lift it to the quotient by this ideal. -/
 def lift (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) : R ⧸ I →+* S :=
   { QuotientAddGroup.lift I.toAddSubgroup f.toAddMonoidHom H with
     map_one' := f.map_one
-    map_mul' := fun a₁ a₂ => Quotient.inductionOn₂' a₁ a₂ f.map_mul }
+    map_mul' a₁ a₂ := Quotient.inductionOn₂' a₁ a₂ f.map_mul }
 
 @[simp]
 theorem lift_mk (f : R →+* S) (H : ∀ a : R, a ∈ I → f a = 0) :

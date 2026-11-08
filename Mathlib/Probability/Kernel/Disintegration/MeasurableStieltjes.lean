@@ -297,8 +297,8 @@ lemma IsMeasurableRatCDF.stieltjesFunctionAux_eq (a : α) (r : ℚ) :
   rw [← hf.iInf_rat_gt_eq a r, IsMeasurableRatCDF.stieltjesFunctionAux]
   refine Equiv.iInf_congr ?_ ?_
   · exact
-      { toFun := fun t ↦ ⟨t.1, mod_cast t.2⟩
-        invFun := fun t ↦ ⟨t.1, mod_cast t.2⟩ }
+      { toFun t := ⟨t.1, mod_cast t.2⟩
+        invFun t := ⟨t.1, mod_cast t.2⟩ }
   · intro t
     rfl
 

@@ -324,7 +324,7 @@ instance : AddCommGroup (AdicCompletion I M) :=
 instance [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S (AdicCompletion I M) :=
   let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
-    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+    { toFun := Subtype.val, map_zero' := rfl, map_add' _ _ := rfl }
   Subtype.val_injective.module S f val_smul
 
 instance instIsScalarTower [SMul S T] [SMul S R] [SMul T R] [SMul S M] [SMul T M]
@@ -473,7 +473,7 @@ instance : SMul R (AdicCauchySequence I M) where
 
 instance : Module R (AdicCauchySequence I M) :=
   let f : AdicCauchySequence I M →+ (ℕ → M) :=
-    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+    { toFun := Subtype.val, map_zero' := rfl, map_add' _ _ := rfl }
   Subtype.val_injective.module R f (fun _ _ ↦ rfl)
 
 instance : CoeFun (AdicCauchySequence I M) (fun _ ↦ ℕ → M) where
@@ -578,7 +578,7 @@ the `I`-adic completion of `M`. -/
 def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
     M →ₗ[R] AdicCompletion I N where
-  toFun := fun x ↦ ⟨fun n ↦ f n x, fun hkl ↦ congr($(h hkl) x)⟩
+  toFun x := ⟨fun n ↦ f n x, fun hkl ↦ congr($(h hkl) x)⟩
   map_add' x y := by
     simp only [map_add]
     rfl

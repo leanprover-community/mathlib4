@@ -60,7 +60,7 @@ bundled in the first coordinate.  An alternative viewpoint is that this upgrades
 linear maps. -/
 def _root_.NonUnitalAlgHom.Lmul : R →ₙₐ[𝕜] R →L[𝕜] R :=
   { mul 𝕜 R with
-    map_mul' := fun _ _ ↦ ext fun _ ↦ mul_assoc _ _ _
+    map_mul' _ _ := ext fun _ ↦ mul_assoc _ _ _
     map_zero' := ext fun _ ↦ zero_mul _ }
 
 variable {𝕜 R} in

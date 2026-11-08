@@ -44,7 +44,7 @@ The unit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
 @[simps]
 def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F where
   app G :=
-  { app := fun X => (ihom.coev (F.obj X)).app (G.obj X)
+  { app X := (ihom.coev (F.obj X)).app (G.obj X)
     naturality := by
       intro X Y f
       dsimp
@@ -59,7 +59,7 @@ The counit for the adjunction `(tensorLeft F) ⊣ (ihom F)`. -/
 @[simps]
 def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C) where
   app G :=
-  { app := fun X => (ihom.ev (F.obj X)).app (G.obj X)
+  { app X := (ihom.ev (F.obj X)).app (G.obj X)
     naturality := by
       intro X Y f
       dsimp

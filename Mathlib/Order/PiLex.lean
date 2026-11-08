@@ -113,7 +113,7 @@ theorem Colex.lt_iff_of_unique [Unique ι] [∀ i, LT (β i)] [Preorder ι] {x y
 
 instance Lex.isStrictOrder [LinearOrder ι] [∀ a, PartialOrder (β a)] :
     IsStrictOrder (Lex (∀ i, β i)) (· < ·) where
-  irrefl := fun a ⟨k, _, hk₂⟩ => lt_irrefl (a k) hk₂
+  irrefl a := fun ⟨k, _, hk₂⟩  => lt_irrefl (a k) hk₂
   trans := by
     rintro a b c ⟨N₁, lt_N₁, a_lt_b⟩ ⟨N₂, lt_N₂, b_lt_c⟩
     rcases lt_trichotomy N₁ N₂ with (H | rfl | H)

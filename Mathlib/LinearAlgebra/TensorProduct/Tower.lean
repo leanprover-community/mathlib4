@@ -83,7 +83,7 @@ bilinear map `M →[A] N →[R] M ⊗[R] N` to form a bilinear map `M →[A] N �
 nonrec def curry (f : M ⊗[R] N →ₗ[A] P) : M →ₗ[A] N →ₗ[R] P :=
   { curry (f.restrictScalars R) with
     toFun := curry (f.restrictScalars R)
-    map_smul' := fun c x => LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
+    map_smul' c x := LinearMap.ext fun y => f.map_smul c (x ⊗ₜ y) }
 
 theorem restrictScalars_curry (f : M ⊗[R] N →ₗ[A] P) :
     restrictScalars R (curry f) = TensorProduct.curry (f.restrictScalars R) :=
@@ -108,7 +108,7 @@ property that its composition with the canonical bilinear map `M →[A] N →[R]
 the given bilinear map `M →[A] N →[R] P`. -/
 nonrec def lift (f : M →ₗ[A] N →ₗ[R] P) : M ⊗[R] N →ₗ[A] P :=
   { lift (f.restrictScalars R) with
-    map_smul' := fun c =>
+    map_smul' c :=
       show
         ∀ x : M ⊗[R] N,
           (lift (f.restrictScalars R)).comp (lsmul R R _ c) x =
@@ -169,7 +169,7 @@ The canonical bilinear map `M →[A] N →[R] M ⊗[R] N`. -/
 nonrec def mk (A M N : Type*) [Semiring A]
     [AddCommMonoid M] [Module R M] [Module A M] [SMulCommClass R A M]
     [AddCommMonoid N] [Module R N] : M →ₗ[A] N →ₗ[R] M ⊗[R] N :=
-  { mk R M N with map_smul' := fun _ _ => rfl }
+  { mk R M N with map_smul' _ _ := rfl }
 
 variable {R A B M N P Q}
 
@@ -179,9 +179,9 @@ lemma mk_eq : mk R R M N = TensorProduct.mk R M N := rfl
 /-- Heterobasic version of `TensorProduct.map` -/
 def map (f : M →ₗ[A] P) (g : N →ₗ[R] Q) : M ⊗[R] N →ₗ[A] P ⊗[R] Q :=
   lift <|
-    { toFun := fun h => h ∘ₗ g,
-      map_add' := fun h₁ h₂ => LinearMap.add_comp g h₂ h₁,
-      map_smul' := fun c h => LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
+    { toFun h := h ∘ₗ g,
+      map_add' h₁ h₂ := LinearMap.add_comp g h₂ h₁,
+      map_smul' c h := LinearMap.smul_comp c h g } ∘ₗ mk R A P Q ∘ₗ f
 
 @[simp] theorem map_tmul (f : M →ₗ[A] P) (g : N →ₗ[R] Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=

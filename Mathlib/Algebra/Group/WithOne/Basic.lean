@@ -57,7 +57,7 @@ Lift an additive semigroup homomorphism `f` to a bundled additive monoid homomor
 def lift : (α →ₙ* β) ≃ (WithOne α →* β) where
   toFun f :=
     { toFun := WithOne.recOneCoe 1 f, map_one' := rfl,
-      map_mul' := fun x y => x.cases_on (by simp) (fun x => y.cases_on (by simp) (f.map_mul x)) }
+      map_mul' x y := x.cases_on (by simp) (fun x => y.cases_on (by simp) (f.map_mul x)) }
   invFun F := F.toMulHom.comp coeMulHom
   right_inv F := MonoidHom.ext fun x => WithOne.cases_on x F.map_one.symm (fun _ => rfl)
 

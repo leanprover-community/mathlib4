@@ -38,7 +38,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The constructed fan is indeed a limit -/
 def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan α) where
   lift S := ofHom
-    { toFun := fun s i => S.π.app ⟨i⟩ s
+    { toFun s := fun i  => S.π.app ⟨i⟩ s
       continuous_toFun := by fun_prop }
   uniq := by
     intro S m h
@@ -79,7 +79,7 @@ def sigmaCofan {ι : Type v} (α : ι → TopCat.{max v u}) : Cofan α :=
 /-- The constructed cofan is indeed a colimit -/
 def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit (sigmaCofan β) where
   desc S := ofHom
-    { toFun := fun (s : of (Σ i, β i)) => S.ι.app ⟨s.1⟩ s.2
+    { toFun (s : of (Σ i, β i)) := S.ι.app ⟨s.1⟩ s.2
       continuous_toFun := by continuity }
   uniq := by
     intro S m h
@@ -125,7 +125,7 @@ def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
 
 /-- The constructed binary fan is indeed a limit -/
 def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
-  lift := fun S : BinaryFan X Y => ofHom { toFun s := (S.fst s, S.snd s) }
+  lift (S : BinaryFan X Y) := ofHom { toFun s := (S.fst s, S.snd s) }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by

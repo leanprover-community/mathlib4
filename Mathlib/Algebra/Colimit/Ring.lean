@@ -66,9 +66,9 @@ namespace DirectLimit
 /-- The canonical map from a component to the direct limit. -/
 nonrec def of (i) : G i →+* DirectLimit G f :=
   RingHom.mk'
-    { toFun := fun x ↦ Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σ i, G i))
+    { toFun x := Ideal.Quotient.mk _ (of (⟨i, x⟩ : Σ i, G i))
       map_one' := Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inl ⟨i, rfl⟩
-      map_mul' := fun x y ↦
+      map_mul' x y :=
         Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inr <| Or.inr ⟨i, x, y, rfl⟩ }
     fun x y ↦ Ideal.Quotient.eq.2 <| subset_span <| Or.inr <| Or.inr <| Or.inl ⟨i, x, y, rfl⟩
 
@@ -340,7 +340,7 @@ protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G (f' · · ·)
-  mul_inv_cancel := fun _ ↦ DirectLimit.mul_inv_cancel G (f' · · ·)
+  mul_inv_cancel _ := DirectLimit.mul_inv_cancel G (f' · · ·)
   inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def _ _ := rfl

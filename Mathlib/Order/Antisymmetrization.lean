@@ -306,7 +306,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance [DecidableLE α] [DecidableLT α] [@Std.Total α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
-    le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
+    le_total a b := Quotient.inductionOn₂' a b <| total_of (· ≤ ·),
     toDecidableLE := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance,
     toDecidableLT := fun _ _ => show Decidable (Quotient.liftOn₂' _ _ _ _) from inferInstance }
 

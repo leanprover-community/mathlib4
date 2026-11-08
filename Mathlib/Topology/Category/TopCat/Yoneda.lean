@@ -64,7 +64,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The universe polymorphic Yoneda presheaf on `TopCat` preserves finite products. -/
 noncomputable instance : PreservesFiniteProducts (yonedaPresheaf'.{w, w'} Y) where
   preserves _ :=
-    { preservesLimit := fun {K} =>
+    { preservesLimit {K} :=
       have : ∀ {α : Type} (X : α → TopCat), PreservesLimit (Discrete.functor (fun x ↦ op (X x)))
           (yonedaPresheaf'.{w, w'} Y) := fun X => @PreservesProduct.of_iso_comparison _ _ _ _
           (yonedaPresheaf' Y) _ (fun x ↦ op (X x)) _ _ (by rw [piComparison_fac]; infer_instance)

@@ -37,8 +37,8 @@ variable {F : J ⥤ ∀ i, C i}
 def coneCompEval (c : Cone F) (i : I) : Cone (F ⋙ Pi.eval C i) where
   pt := c.pt i
   π :=
-    { app := fun j => c.π.app j i
-      naturality := fun _ _ f => congr($(c.π.naturality f) i) }
+    { app j := c.π.app j i
+      naturality _ _ f := congr($(c.π.naturality f) i) }
 
 /--
 A cocone over `F : J ⥤ Π i, C i` has as its components cocones over each of the `F ⋙ Pi.eval C i`.
@@ -46,8 +46,8 @@ A cocone over `F : J ⥤ Π i, C i` has as its components cocones over each of t
 def coconeCompEval (c : Cocone F) (i : I) : Cocone (F ⋙ Pi.eval C i) where
   pt := c.pt i
   ι :=
-    { app := fun j => c.ι.app j i
-      naturality := fun _ _ f => congr($(c.ι.naturality f) i) }
+    { app j := c.ι.app j i
+      naturality _ _ f := congr($(c.ι.naturality f) i) }
 
 /--
 Given a family of cones over the `F ⋙ Pi.eval C i`, we can assemble these together as a `Cone F`.
@@ -55,8 +55,8 @@ Given a family of cones over the `F ⋙ Pi.eval C i`, we can assemble these toge
 def coneOfConeCompEval (c : ∀ i, Cone (F ⋙ Pi.eval C i)) : Cone F where
   pt i := (c i).pt
   π :=
-    { app := fun j i => (c i).π.app j
-      naturality := fun j j' f => by
+    { app j := fun i  => (c i).π.app j
+      naturality j j' f := by
         funext i
         exact (c i).π.naturality f }
 
@@ -66,8 +66,8 @@ we can assemble these together as a `Cocone F`.
 def coconeOfCoconeCompEval (c : ∀ i, Cocone (F ⋙ Pi.eval C i)) : Cocone F where
   pt i := (c i).pt
   ι :=
-    { app := fun j i => (c i).ι.app j
-      naturality := fun j j' f => by
+    { app j := fun i  => (c i).ι.app j
+      naturality j j' f := by
         funext i
         exact (c i).ι.naturality f }
 

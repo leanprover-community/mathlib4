@@ -49,14 +49,14 @@ instance partialOrder (x : X) : PartialOrder (OpenNhds x) :=
 theorem le_def (U V : OpenNhds x) : U ≤ V ↔ U.1 ≤ V.1 := Iff.rfl
 
 instance (x : X) : Lattice (OpenNhds x) :=
-  { inf := fun U V => ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
-    le_inf := fun U V W => @le_inf _ _ U.1.1 V.1.1 W.1.1
-    inf_le_left := fun U V => @inf_le_left _ _ U.1.1 V.1.1
-    inf_le_right := fun U V => @inf_le_right _ _ U.1.1 V.1.1
-    sup := fun U V => ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
-    sup_le := fun U V W => @sup_le _ _ U.1.1 V.1.1 W.1.1
-    le_sup_left := fun U V => @le_sup_left _ _ U.1.1 V.1.1
-    le_sup_right := fun U V => @le_sup_right _ _ U.1.1 V.1.1 }
+  { inf U V := ⟨U.1 ⊓ V.1, ⟨U.2, V.2⟩⟩
+    le_inf U V W := @le_inf _ _ U.1.1 V.1.1 W.1.1
+    inf_le_left U V := @inf_le_left _ _ U.1.1 V.1.1
+    inf_le_right U V := @inf_le_right _ _ U.1.1 V.1.1
+    sup U V := ⟨U.1 ⊔ V.1, Set.mem_union_left V.1.1 U.2⟩
+    sup_le U V W := @sup_le _ _ U.1.1 V.1.1 W.1.1
+    le_sup_left U V := @le_sup_left _ _ U.1.1 V.1.1
+    le_sup_right U V := @le_sup_right _ _ U.1.1 V.1.1 }
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance (x : X) : OrderTop (OpenNhds x) where
@@ -158,8 +158,8 @@ def functorNhds (h : IsOpenMap f) (x : X) : OpenNhds x ⥤ OpenNhds (f x) where
 
 /-- An open map `f : X ⟶ Y` induces an adjunction between `OpenNhds x` and `OpenNhds (f x)`. -/
 def adjunctionNhds (h : IsOpenMap f) (x : X) : IsOpenMap.functorNhds h x ⊣ OpenNhds.map f x where
-  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app _ := homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app _ := homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 end IsOpenMap
 
@@ -203,7 +203,7 @@ An inducing map `f : X ⟶ Y` induces an adjunction between `OpenNhds (f x)` and
 -/
 def adjunctionNhds (h : IsInducing f) (x : X) :
     OpenNhds.map f x ⊣ h.functorNhds x where
-  unit := { app := fun U => homOfLE (h.adjunction.unit.app U.1).le }
-  counit := { app := fun U => homOfLE (h.adjunction.counit.app U.1).le }
+  unit := { app U := homOfLE (h.adjunction.unit.app U.1).le }
+  counit := { app U := homOfLE (h.adjunction.counit.app U.1).le }
 
 end Topology.IsInducing

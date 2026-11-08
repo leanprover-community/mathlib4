@@ -197,9 +197,9 @@ variable [Module R M] [Module R N] [Module R O]
 /-- The image of a convex cone under an `R`-linear map is a convex cone. -/
 def map (f : M →ₗ[R] N) (C : ConvexCone R M) : ConvexCone R N where
   carrier := f '' C
-  smul_mem' := fun c hc _ ⟨x, hx, hy⟩ =>
+  smul_mem' c hc _ := fun ⟨x, hx, hy⟩  =>
     hy ▸ f.map_smul c x ▸ mem_image_of_mem f (C.smul_mem hc hx)
-  add_mem' := fun _ ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩ =>
+  add_mem' _ := fun ⟨x₁, hx₁, hy₁⟩ _ ⟨x₂, hx₂, hy₂⟩  =>
     hy₁ ▸ hy₂ ▸ f.map_add x₁ x₂ ▸ mem_image_of_mem f (add_mem hx₁ hx₂)
 
 @[simp, norm_cast]

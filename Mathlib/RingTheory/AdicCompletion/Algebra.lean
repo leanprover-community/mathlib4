@@ -358,7 +358,7 @@ ring maps `R →+* S ⧸ I ^ n`.
 def liftRingHom (f : (n : ℕ) → R →+* S ⧸ I ^ n)
     (hf : ∀ {m n : ℕ} (hle : m ≤ n), (Ideal.Quotient.factorPow I hle).comp (f n) = f m) :
     R →+* AdicCompletion I S where
-  toFun := fun x ↦ ⟨fun n ↦ (factor (le_of_eq (Ideal.mul_top _).symm)) (f n x),
+  toFun x := ⟨fun n ↦ (factor (le_of_eq (Ideal.mul_top _).symm)) (f n x),
     fun hkl ↦ by simp [transitionMap, Submodule.factorPow, ← hf hkl]⟩
   map_add' x y := by
     simp only [map_add]

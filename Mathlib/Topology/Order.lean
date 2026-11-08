@@ -101,8 +101,8 @@ lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α}
 protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
   IsOpen s := ∀ a ∈ s, s ∈ n a
   isOpen_univ _ _ := univ_mem
-  isOpen_inter := fun _s _t hs ht x ⟨hxs, hxt⟩ => inter_mem (hs x hxs) (ht x hxt)
-  isOpen_sUnion := fun _s hs _a ⟨x, hx, hxa⟩ =>
+  isOpen_inter _s _t hs ht := fun x ⟨hxs, hxt⟩  => inter_mem (hs x hxs) (ht x hxt)
+  isOpen_sUnion _s hs := fun _a ⟨x, hx, hxa⟩  =>
     mem_of_superset (hs x hx _ hxa) (subset_sUnion_of_mem hx)
 
 theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p : ∀ a, ι a → Prop}
@@ -147,7 +147,7 @@ variable {α : Type u}
 (`t` is finer than `s`). -/
 instance : PartialOrder (TopologicalSpace α) :=
   { PartialOrder.lift (fun t => OrderDual.toDual IsOpen[t]) (fun _ _ => TopologicalSpace.ext) with
-    le := fun s t => ∀ U, IsOpen[t] U → IsOpen[s] U }
+    le s t := ∀ U, IsOpen[t] U → IsOpen[s] U }
 
 protected theorem le_def {α} {t s : TopologicalSpace α} : t ≤ s ↔ IsOpen[s] ≤ IsOpen[t] :=
   Iff.rfl
@@ -658,8 +658,8 @@ lemma generateFrom_insert_empty {α : Type*} {s : Set (Set α)} :
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   IsOpen s := a ∈ s → s ∈ f
   isOpen_univ _ := univ_mem
-  isOpen_inter := fun _s _t hs ht ⟨has, hat⟩ => inter_mem (hs has) (ht hat)
-  isOpen_sUnion := fun _k hk ⟨u, hu, hau⟩ =>
+  isOpen_inter _s _t hs ht := fun ⟨has, hat⟩  => inter_mem (hs has) (ht hat)
+  isOpen_sUnion _k hk := fun ⟨u, hu, hau⟩  =>
     mem_of_superset (hk u hu hau) (subset_sUnion_of_mem hu)
 
 theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a) fun t => @nhds α t a := fun f t => by

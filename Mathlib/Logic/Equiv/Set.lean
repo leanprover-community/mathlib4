@@ -467,8 +467,8 @@ protected def sep {α : Type u} (s : Set α) (t : α → Prop) :
 /-- The set `𝒫 S := {x | x ⊆ S}` is equivalent to the type `Set S`. -/
 protected def powerset {α} (S : Set α) :
     𝒫 S ≃ Set S where
-  toFun := fun x : 𝒫 S => Subtype.val ⁻¹' (x : Set α)
-  invFun := fun x : Set S => ⟨Subtype.val '' x, by rintro _ ⟨a : S, _, rfl⟩; exact a.2⟩
+  toFun (x : 𝒫 S) := Subtype.val ⁻¹' (x : Set α)
+  invFun (x : Set S) := ⟨Subtype.val '' x, by rintro _ ⟨a : S, _, rfl⟩; exact a.2⟩
   left_inv x := by ext y; exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨_, x.2 h⟩, h, rfl⟩⟩
   right_inv x := by ext; simp
 

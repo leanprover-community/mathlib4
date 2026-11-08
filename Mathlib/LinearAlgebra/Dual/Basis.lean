@@ -281,10 +281,10 @@ def basis : Basis ι R M :=
       invFun := lc e
       left_inv := lc_coeffs h
       right_inv := coeffs_lc h
-      map_add' := fun v w => by
+      map_add' v w := by
         ext i
         exact (ε i).map_add v w
-      map_smul' := fun c v => by
+      map_smul' c v := by
         ext i
         exact (ε i).map_smul c v }
 

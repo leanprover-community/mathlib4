@@ -117,7 +117,7 @@ theorem eval₂_sum (p : T[X]) (g : ℕ → T → R[X]) (x : S) :
   let T : R[X] →+ S :=
     { toFun := eval₂ f x
       map_zero' := eval₂_zero _ _
-      map_add' := fun p q => eval₂_add _ _ }
+      map_add' p q := eval₂_add _ _ }
   have A : ∀ y, eval₂ f x y = T y := fun y => rfl
   simp only [A]
   rw [sum, map_sum, sum]
@@ -213,7 +213,7 @@ theorem eval₂_mul_eq_zero_of_right (p : R[X]) (hq : q.eval₂ f x = 0) : (p * 
 def eval₂RingHom (f : R →+* S) (x : S) : R[X] →+* S :=
   { eval₂AddMonoidHom f x with
     map_one' := eval₂_one _ _
-    map_mul' := fun _ _ => eval₂_mul _ _ }
+    map_mul' _ _ := eval₂_mul _ _ }
 
 @[simp]
 theorem coe_eval₂RingHom (f : R →+* S) (x) : ⇑(eval₂RingHom f x) = eval₂ f x :=

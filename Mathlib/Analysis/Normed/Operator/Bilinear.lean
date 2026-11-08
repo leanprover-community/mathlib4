@@ -110,11 +110,11 @@ follow automatically in `LinearMap.mkContinuous₂_norm_le`. -/
 def mkContinuousOfExistsBound₂ (f : E →ₛₗ[σ₁₃] F →ₛₗ[σ₂₃] G)
     (h : ∃ C, ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : E →SL[σ₁₃] F →SL[σ₂₃] G :=
   LinearMap.mkContinuousOfExistsBound
-    { toFun := fun x => (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
-      map_add' := fun x y => by
+    { toFun x := (f x).mkContinuousOfExistsBound <| let ⟨C, hC⟩ := h; ⟨C * ‖x‖, hC x⟩
+      map_add' x y := by
         ext z
         simp
-      map_smul' := fun c x => by
+      map_smul' c x := by
         ext z
         simp } <|
     let ⟨C, hC⟩ := h; ⟨max C 0, norm_mkContinuous₂_aux f C hC⟩
@@ -490,10 +490,10 @@ Do not use: use instead `smulRightL` which outputs a continuous trilinear map. -
 @[simps! apply_apply]
 def smulRightLₗ : StrongDual 𝕜 E' →ₗ[𝕜] Fₗ' →ₗ[𝕜] E' →L[𝕜] Fₗ' where
   toFun := smulRightₗ
-  map_add' := fun c₁ c₂ => by
+  map_add' c₁ c₂ := by
     ext x
     simp only [add_smul, coe_smulRightₗ, add_apply, smulRight_apply, LinearMap.add_apply]
-  map_smul' := fun m c => by
+  map_smul' m c := by
     ext x
     simp [smul_smul]
 

@@ -155,8 +155,8 @@ def lift (f : A →ₐ[S] C) (g : B →ₐ[R] C) (hfg : ∀ x y, Commute (f x) (
     (AlgebraTensorModule.lift <|
       letI restr : (C →ₗ[S] C) →ₗ[S] _ :=
         { toFun := (·.restrictScalars R)
-          map_add' := fun _ _ => LinearMap.ext fun _ => rfl
-          map_smul' := fun _ _ => LinearMap.ext fun _ => rfl }
+          map_add' _ _ := LinearMap.ext fun _ => rfl
+          map_smul' _ _ := LinearMap.ext fun _ => rfl }
       LinearMap.flip <| (restr ∘ₗ LinearMap.mul S C ∘ₗ f.toLinearMap).flip ∘ₗ g)
     (fun a₁ a₂ b₁ b₂ => show f (a₁ * a₂) * g (b₁ * b₂) = f a₁ * g b₁ * (f a₂ * g b₂) by
       rw [map_mul, map_mul, (hfg a₂ b₁).mul_mul_mul_comm])
@@ -750,7 +750,7 @@ variable (R)
 def lmul'' : S ⊗[R] S →ₐ[S] S :=
   algHomOfLinearMapTensorProduct
     { __ := LinearMap.mul' R S
-      map_smul' := fun s x ↦ x.inductionOn
+      map_smul' s x := x.inductionOn
         (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
         fun x y hx hy ↦ by simp_all [mul_add] }
     (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
@@ -855,7 +855,7 @@ and bundled as `A`-algebra homomorphism. -/
 @[simps!]
 def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
   TensorProduct.AlgebraTensorModule.lift
-  { toFun := fun a ↦ a • baseChangeHom R A M N
+  { toFun a := a • baseChangeHom R A M N
     map_add' := by simp only [add_smul, forall_true_iff]
     map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
 

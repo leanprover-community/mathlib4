@@ -56,8 +56,8 @@ noncomputable def directSumEquiv :
     (Relations.directSum relations).Solution N ≃
       ∀ i, (relations i).Solution N where
   toFun s i :=
-    { var := fun g ↦ s.var ⟨i, g⟩
-      linearCombination_var_relation := fun r ↦ by
+    { var g := s.var ⟨i, g⟩
+      linearCombination_var_relation r := by
         rw [← s.linearCombination_var_relation ⟨i, r⟩]
         symm
         apply Finsupp.linearCombination_embDomain }

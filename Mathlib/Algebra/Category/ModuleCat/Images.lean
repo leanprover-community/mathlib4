@@ -59,14 +59,14 @@ set_option backward.isDefEq.respectTransparency.types false in
 noncomputable def image.lift (F' : MonoFactorisation f) : image f ⟶ F'.I :=
   ofHom
   { toFun := (fun x => F'.e (Classical.indefiniteDescription _ x.2).1 : image f → F'.I)
-    map_add' := fun x y => by
+    map_add' x y := by
       apply (mono_iff_injective F'.m).1
       · infer_instance
       rw [map_add]
       change (F'.e ≫ F'.m) _ = (F'.e ≫ F'.m) _ + (F'.e ≫ F'.m) _
       simp_rw [F'.fac, (Classical.indefiniteDescription (fun z => f z = _) _).2]
       rfl
-    map_smul' := fun c x => by
+    map_smul' c x := by
       apply (mono_iff_injective F'.m).1
       · infer_instance
       rw [map_smul]

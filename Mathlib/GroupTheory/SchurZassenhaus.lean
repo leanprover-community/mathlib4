@@ -53,11 +53,11 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
         hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩ := by
   let := H.fintypeQuotientOfFiniteIndex
   let ϕ : H →* H :=
-    { toFun := fun h =>
+    { toFun h :=
         ⟨g.unop⁻¹ * h * g.unop,
           hH.mem_comm (congr($(mul_inv_cancel_left ..) ∈ H).mpr (SetLike.coe_mem _))⟩
       map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
-      map_mul' := fun h₁ h₂ => by
+      map_mul' h₁ h₂ := by
         simp only [Subtype.ext_iff, coe_mul, mul_assoc, mul_inv_cancel_left] }
   refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
   simp only [ϕ, smul_apply_eq_smul_apply_inv_smul, smul_eq_mul_unop, mul_inv_rev, mul_assoc,

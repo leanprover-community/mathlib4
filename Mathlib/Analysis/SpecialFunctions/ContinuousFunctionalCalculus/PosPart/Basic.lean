@@ -257,10 +257,10 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
         with
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
-      map_mul' := fun f g ↦ by
+      map_mul' f g := by
         simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
           zero_add]
-      map_star' := fun f ↦ by simp [← map_star] }
+      map_star' f := by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
     have : ContinuousMapZero.UniqueHom ℝ A := inferInstance
     ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id s

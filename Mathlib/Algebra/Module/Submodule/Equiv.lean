@@ -36,8 +36,8 @@ variable (p q : Submodule R M)
 /-- Linear equivalence between two equal submodules. -/
 def ofEq (h : p = q) : p ≃ₗ[R] q :=
   { Set.equivOfEq (congr_arg _ h) with
-    map_smul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_smul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 variable {p q}
 
@@ -99,7 +99,7 @@ variable (p)
 /-- The top submodule of `M` is linearly equivalent to `M`. -/
 def ofTop (h : p = ⊤) : p ≃ₗ[R] M :=
   { p.subtype with
-    invFun := fun x => ⟨x, h.symm ▸ trivial⟩ }
+    invFun x := ⟨x, h.symm ▸ trivial⟩ }
 
 @[simp]
 theorem ofTop_apply {h} (x : p) : ofTop p h x = x :=
@@ -279,7 +279,7 @@ variable (f : M₁ →ₗ[R] M₂ →ₗ[R] M) (i : M₃ →ₗ[R] M) (hi : Inje
 noncomputable def codRestrict₂ :
     M₁ →ₗ[R] M₂ →ₗ[R] M₃ :=
   let e : LinearMap.range i ≃ₗ[R] M₃ := (LinearEquiv.ofInjective i hi).symm
-  { toFun := fun x ↦ e.comp <| (f x).codRestrict (p := LinearMap.range i) (hf x)
+  { toFun x := e.comp <| (f x).codRestrict (p := LinearMap.range i) (hf x)
     map_add' := by intro x₁ x₂; ext y; simp [f.map_add, ← e.map_add, codRestrict]
     map_smul' := by intro t x; ext y; simp [f.map_smul, ← e.map_smul, codRestrict] }
 

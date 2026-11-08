@@ -42,7 +42,7 @@ namespace Submodule
 This is the localization of an `R`-submodule of `M` viewed as an `R`-submodule of `N`. -/
 def localized₀ : Submodule R N where
   carrier := { x | ∃ m ∈ M', ∃ s : p, IsLocalizedModule.mk' f m s = x }
-  add_mem' := fun {x y} ⟨m, hm, s, hx⟩ ⟨n, hn, t, hy⟩ ↦ ⟨t • m + s • n, add_mem (M'.smul_mem t hm)
+  add_mem' {x y} := fun ⟨m, hm, s, hx⟩ ⟨n, hn, t, hy⟩  ↦ ⟨t • m + s • n, add_mem (M'.smul_mem t hm)
     (M'.smul_mem s hn), s * t, by rw [← hx, ← hy, IsLocalizedModule.mk'_add_mk']⟩
   zero_mem' := ⟨0, zero_mem _, 1, by simp⟩
   smul_mem' r x := by
@@ -53,7 +53,7 @@ def localized₀ : Submodule R N where
 This is the localization of an `R`-submodule of `M` viewed as an `S`-submodule of `N`. -/
 def localized' : Submodule S N where
   __ := localized₀ p f M'
-  smul_mem' := fun r x ⟨m, hm, s, hx⟩ ↦ by
+  smul_mem' r x := fun ⟨m, hm, s, hx⟩  ↦ by
     have ⟨y, t, hyt⟩ := IsLocalization.exists_mk'_eq p r
     exact ⟨y • m, M'.smul_mem y hm, t * s, by simp [← hyt, ← hx, IsLocalizedModule.mk'_smul_mk']⟩
 

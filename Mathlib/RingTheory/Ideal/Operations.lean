@@ -794,7 +794,7 @@ theorem prod_eq_iInf_of_pairwise_isCoprime {s : Finset ι} {J : ι → Ideal R}
 def radical (I : Ideal R) : Ideal R where
   carrier := { r | ∃ n : ℕ, r ^ n ∈ I }
   zero_mem' := ⟨1, (pow_one (0 : R)).symm ▸ I.zero_mem⟩
-  add_mem' := fun {_ _} ⟨m, hxmi⟩ ⟨n, hyni⟩ =>
+  add_mem' {_ _} := fun ⟨m, hxmi⟩ ⟨n, hyni⟩  =>
     ⟨m + n - 1, add_pow_add_pred_mem_of_pow_mem I hxmi hyni⟩
   smul_mem' {r s} := fun ⟨n, h⟩ ↦ ⟨n, (mul_pow r s n).symm ▸ I.mul_mem_left (r ^ n) h⟩
 

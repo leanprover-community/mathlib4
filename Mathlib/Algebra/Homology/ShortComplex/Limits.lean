@@ -72,9 +72,9 @@ of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
   Cone.mk (ShortComplex.mk (limMap (whiskerLeft F π₁Toπ₂)) (limMap (whiskerLeft F π₂Toπ₃))
       (by cat_disch))
-    { app := fun j => Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
+    { app j := Hom.mk (limit.π _ _) (limit.π _ _) (limit.π _ _)
         (by simp) (by simp)
-      naturality := fun _ _ f => by
+      naturality _ _ f := by
         ext <;> simp [← limit.w _ f] }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -208,9 +208,9 @@ of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
   Cocone.mk (ShortComplex.mk (colimMap (whiskerLeft F π₁Toπ₂)) (colimMap (whiskerLeft F π₂Toπ₃))
       (by cat_disch))
-    { app := fun j => Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
+    { app j := Hom.mk (colimit.ι (F ⋙ π₁) _) (colimit.ι (F ⋙ π₂) _)
         (colimit.ι (F ⋙ π₃) _) (by simp) (by simp)
-      naturality := fun _ _ f => by
+      naturality _ _ f := by
         ext
         · simp [← colimit.w (F ⋙ π₁) f]
         · simp [← colimit.w (F ⋙ π₂) f]

@@ -569,7 +569,7 @@ scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
 @[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddSemigroup` under pointwise operations if `α` is. -/]
 protected def semigroup [Semigroup α] : Semigroup (Set α) :=
-  { Set.mul with mul_assoc := fun _ _ _ => image2_assoc mul_assoc }
+  { Set.mul with mul_assoc _ _ _ := image2_assoc mul_assoc }
 
 section CommSemigroup
 
@@ -579,7 +579,7 @@ variable [CommSemigroup α] {s t : Set α}
 @[to_additive (attr := instance_reducible)
   /-- `Set α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup : CommSemigroup (Set α) :=
-  { Set.semigroup with mul_comm := fun _ _ => image2_comm mul_comm }
+  { Set.semigroup with mul_comm _ _ := image2_comm mul_comm }
 
 @[to_additive]
 theorem inter_mul_union_subset : s ∩ t * (s ∪ t) ⊆ s * t :=
@@ -803,13 +803,13 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     /-- `Set α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with
-    mul_inv_rev := fun s t => by
+    mul_inv_rev s t := by
       simp_rw [← image_inv_eq_inv]
       exact image_image2_antidistrib mul_inv_rev
-    inv_eq_of_mul := fun s t h => by
+    inv_eq_of_mul s t h := by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Set.mul_eq_one_iff.1 h
       rw [inv_singleton, inv_eq_of_mul_eq_one_right hab]
-    div_eq_mul_inv := fun s t => by
+    div_eq_mul_inv s t := by
       rw [← image_id (s / t), ← image_inv_eq_inv]
       exact image_image2_distrib_right div_eq_mul_inv }
 

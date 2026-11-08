@@ -172,7 +172,7 @@ theorem id_leftLim (x : ℝ) : leftLim StieltjesFunction.id x = x :=
 variable (R) in
 /-- A constant function is a Stieltjes function. -/
 protected def const (c : ℝ) : StieltjesFunction R where
-  toFun := fun _ ↦ c
+  toFun _ := c
   mono' _ _ := by simp
   right_continuous' _ := continuousWithinAt_const
 
@@ -183,9 +183,9 @@ instance instInhabited : Inhabited (StieltjesFunction R) :=
 
 /-- The sum of two Stieltjes functions is a Stieltjes function. -/
 protected def add (f g : StieltjesFunction R) : StieltjesFunction R where
-  toFun := fun x => f x + g x
+  toFun x := f x + g x
   mono' := f.mono.add g.mono
-  right_continuous' := fun x => (f.right_continuous x).add (g.right_continuous x)
+  right_continuous' x := (f.right_continuous x).add (g.right_continuous x)
 
 instance : AddZeroClass (StieltjesFunction R) where
   add := StieltjesFunction.add
@@ -201,9 +201,9 @@ instance : AddCommMonoid (StieltjesFunction R) where
 
 instance : Module ℝ≥0 (StieltjesFunction R) where
   smul c f := {
-    toFun := fun x ↦ c * f x
+    toFun x := c * f x
     mono' := f.mono.const_mul c.2
-    right_continuous' := fun x ↦ (f.right_continuous x).const_smul c.1 }
+    right_continuous' x := (f.right_continuous x).const_smul c.1 }
   one_smul _ := ext fun _ ↦ one_mul _
   mul_smul _ _ _ := ext fun _ ↦ mul_assoc _ _ _
   smul_zero _ := ext fun _ ↦ mul_zero _

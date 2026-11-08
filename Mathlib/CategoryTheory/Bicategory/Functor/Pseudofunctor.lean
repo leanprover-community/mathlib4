@@ -117,8 +117,8 @@ variable (F : B ⥤ᵖ C)
 @[implicit_reducible, simps]
 def toOplax : B ⥤ᵒᵖᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).hom
-  mapComp := fun f g => (F.mapComp f g).hom
+  mapId a := (F.mapId a).hom
+  mapComp f g := (F.mapComp f g).hom
 
 instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
   ⟨toOplax⟩
@@ -127,8 +127,8 @@ instance hasCoeToOplax : Coe (B ⥤ᵖ C) (B ⥤ᵒᵖᴸ C) :=
 @[implicit_reducible, simps]
 def toLax : B ⥤ᴸ C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => (F.mapId a).inv
-  mapComp := fun f g => (F.mapComp f g).inv
+  mapId a := (F.mapId a).inv
+  mapComp f g := (F.mapComp f g).inv
   map₂_leftUnitor f := by
     rw [← F.map₂Iso_inv, eq_inv_comp, comp_inv_eq]
     simp
@@ -145,8 +145,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : B ⥤ᵖ B where
   toPrelaxFunctor := PrelaxFunctor.id B
-  mapId := fun a => Iso.refl (𝟙 a)
-  mapComp := fun f g => Iso.refl (f ≫ g)
+  mapId a := Iso.refl (𝟙 a)
+  mapComp f g := Iso.refl (f ≫ g)
 
 instance : Inhabited (B ⥤ᵖ B) :=
   ⟨id B⟩
@@ -157,8 +157,8 @@ set_option backward.isDefEq.respectTransparency false in
 @[simps]
 def comp (F : B ⥤ᵖ C) (G : C ⥤ᵖ D) : B ⥤ᵖ D where
   toPrelaxFunctor := F.toPrelaxFunctor.comp G.toPrelaxFunctor
-  mapId := fun a => G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
-  mapComp := fun f g => (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
+  mapId a := G.map₂Iso (F.mapId a) ≪≫ G.mapId (F.obj a)
+  mapComp f g := (G.map₂Iso (F.mapComp f g)) ≪≫ G.mapComp (F.map f) (F.map g)
 
 section
 
@@ -325,13 +325,13 @@ def mkOfOplax (F : B ⥤ᵒᵖᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
   mapId := F'.mapIdIso
   mapComp := F'.mapCompIso
-  map₂_whisker_left := fun f g h η => by
+  map₂_whisker_left f g h η := by
     rw [F'.mapCompIso_hom f g, ← F.mapComp_naturality_right_assoc, ← F'.mapCompIso_hom f h,
       hom_inv_id, comp_id]
-  map₂_whisker_right := fun η h => by
+  map₂_whisker_right η h := by
     rw [F'.mapCompIso_hom _ h, ← F.mapComp_naturality_left_assoc, ← F'.mapCompIso_hom _ h,
       hom_inv_id, comp_id]
-  map₂_associator := fun f g h => by
+  map₂_associator f g h := by
     rw [F'.mapCompIso_hom (f ≫ g) h, F'.mapCompIso_hom f g, ← F.map₂_associator_assoc, ←
       F'.mapCompIso_hom f (g ≫ h), ← F'.mapCompIso_hom g h, whiskerLeft_hom_inv_assoc,
       hom_inv_id, comp_id]
@@ -341,15 +341,15 @@ def mkOfOplax (F : B ⥤ᵒᵖᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 noncomputable def mkOfOplax' (F : B ⥤ᵒᵖᴸ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C where
   toPrelaxFunctor := F.toPrelaxFunctor
-  mapId := fun a => asIso (F.mapId a)
-  mapComp := fun f g => asIso (F.mapComp f g)
-  map₂_whisker_left := fun f g h η => by
+  mapId a := asIso (F.mapId a)
+  mapComp f g := asIso (F.mapComp f g)
+  map₂_whisker_left f g h η := by
     dsimp
     rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_right]
-  map₂_whisker_right := fun η h => by
+  map₂_whisker_right η h := by
     dsimp
     rw [← assoc, IsIso.eq_comp_inv, F.mapComp_naturality_left]
-  map₂_associator := fun f g h => by
+  map₂_associator f g h := by
     dsimp
     simp only [← assoc]
     rw [IsIso.eq_comp_inv, ← Bicategory.inv_whiskerLeft, IsIso.eq_comp_inv]
@@ -378,8 +378,8 @@ def mkOfLax (F : B ⥤ᴸ C) (F' : F.PseudoCore) : B ⥤ᵖ C where
 noncomputable def mkOfLax' (F : B ⥤ᴸ C) [∀ a, IsIso (F.mapId a)]
     [∀ {a b c} (f : a ⟶ b) (g : b ⟶ c), IsIso (F.mapComp f g)] : B ⥤ᵖ C :=
   mkOfLax F
-  { mapIdIso := fun a => (asIso (F.mapId a)).symm
-    mapCompIso := fun f g => (asIso (F.mapComp f g)).symm }
+  { mapIdIso a := (asIso (F.mapId a)).symm
+    mapCompIso f g := (asIso (F.mapComp f g)).symm }
 
 end
 

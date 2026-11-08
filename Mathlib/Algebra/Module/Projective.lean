@@ -177,9 +177,9 @@ theorem Projective.of_equiv {R S} [Semiring R] [Semiring S] {M N}
   let e₁ : R ≃+* S := RingHomInvPair.toRingEquiv σ σ'
   obtain ⟨f, hf⟩ := ‹Projective R M›
   let g : N →ₗ[S] N →₀ S :=
-  { toFun := fun x ↦ (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
-    map_add' := fun x y ↦ by ext; simp
-    map_smul' := fun r v ↦ by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
+  { toFun x := (equivCongrLeft e₂ (f (e₂.symm x))).mapRange e₁ e₁.map_zero
+    map_add' x y := by ext; simp
+    map_smul' r v := by ext i; simp [e₁, e₂.symm.map_smulₛₗ] }
   refine ⟨⟨g, fun x ↦ ?_⟩⟩
   replace hf := congr(e₂ $(hf (e₂.symm x)))
   simpa [linearCombination_apply, sum_mapRange_index, g, map_finsuppSum, e₂.map_smulₛₗ] using! hf

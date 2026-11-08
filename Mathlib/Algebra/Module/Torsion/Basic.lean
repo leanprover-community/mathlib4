@@ -193,7 +193,7 @@ def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S 
     use b * a
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
-  smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩
+  smul_mem' a x := fun ⟨b, h⟩  => ⟨b, by rw [smul_comm, h, smul_zero]⟩
 
 /-- The torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
   non-zero-divisor `a` in `R`. -/
@@ -588,8 +588,8 @@ def IsTorsionBySet.semilinearMap [I.IsTwoSided] (hM : IsTorsionBySet R M I) :
     let _ := hM.module; M →ₛₗ[Ideal.Quotient.mk I] M :=
   let _ := hM.module
   { toFun := id
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 theorem IsTorsionBySet.isSemisimpleModule_iff [I.IsTwoSided]
     (hM : Module.IsTorsionBySet R M I) : letI := hM.module
@@ -716,7 +716,7 @@ instance (a : R) {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScal
 def submodule_torsionBy_orderIso (a : R) :
     Submodule (R ⧸ R ∙ a) (torsionBy R M a) ≃o Submodule R (torsionBy R M a) :=
   { restrictScalarsEmbedding R (R ⧸ R ∙ a) (torsionBy R M a) with
-    invFun := fun p ↦
+    invFun p :=
       { carrier := p
         add_mem' := add_mem
         zero_mem' := p.zero_mem

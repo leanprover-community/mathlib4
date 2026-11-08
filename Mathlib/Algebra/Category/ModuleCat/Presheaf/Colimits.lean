@@ -38,8 +38,8 @@ of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsColimits (c : Cocone F)
     (hc : ∀ (X : Cᵒᵖ), IsColimit ((evaluation R X).mapCocone c)) : IsColimit c where
   desc s :=
-    { app := fun X => (hc X).desc ((evaluation R X).mapCocone s)
-      naturality := fun {X Y} f ↦ (hc X).hom_ext (fun j ↦ by
+    { app X := (hc X).desc ((evaluation R X).mapCocone s)
+      naturality {X Y} f := (hc X).hom_ext (fun j ↦ by
         rw [(hc X).fac_assoc ((evaluation R X).mapCocone s) j]
         have h₁ := (c.ι.app j).naturality f
         have h₂ := (hc Y).fac ((evaluation R Y).mapCocone s)
@@ -99,13 +99,13 @@ the colimit of `F ⋙ evaluation R X` for all `X`. -/
 noncomputable def colimitCocone : Cocone F where
   pt := colimitPresheafOfModules F
   ι :=
-    { app := fun j ↦
-        { app := fun X ↦ colimit.ι (F ⋙ evaluation R X) j
-          naturality := fun {X Y} f ↦ by
+    { app j :=
+        { app X := colimit.ι (F ⋙ evaluation R X) j
+          naturality {X Y} f := by
             dsimp
             erw [colimit.ι_desc_assoc, assoc, ← ι_preservesColimitIso_inv]
             rfl }
-      naturality := fun {X Y} f ↦ by
+      naturality {X Y} f := by
         ext1 X
         simpa using colimit.w (F ⋙ evaluation R X) f }
 

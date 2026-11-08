@@ -250,7 +250,7 @@ instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   sup_le _ _ _ h₁ h₂ _ h := ⟨h₁ h, h₂ h⟩
   inf_le_left _ _ _ := mem_inf_of_left
   inf_le_right _ _ _ := mem_inf_of_right
-  le_inf := fun _ _ _ h₁ h₂ _s ⟨_a, ha, _b, hb, hs⟩ => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
+  le_inf _ _ _ h₁ h₂ := fun _s ⟨_a, ha, _b, hb, hs⟩  => hs.symm ▸ inter_mem (h₁ ha) (h₂ hb)
   isLUB_sSup := Filter.isLUB_sSup
   isGLB_sInf := Filter.isGLB_sInf
   le_top _ _ := univ_mem'

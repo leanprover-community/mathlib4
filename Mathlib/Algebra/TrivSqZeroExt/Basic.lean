@@ -479,17 +479,17 @@ theorem mul_inl_eq_op_smul [Monoid R] [AddMonoid M] [DistribMulAction R M] [Dist
 
 instance mulOneClass [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M] :
     MulOneClass (tsze R M) where
-  one_mul := fun x =>
+  one_mul x :=
     ext (one_mul x.1) <|
       show (1 : R) •> x.2 + (0 : M) <• x.1 = x.2 by rw [one_smul, smul_zero, add_zero]
-  mul_one := fun x =>
+  mul_one x :=
     ext (mul_one x.1) <|
       show x.1 • (0 : M) + x.2 <• (1 : R) = x.2 by rw [smul_zero, zero_add, op_one, one_smul]
 
 instance addMonoidWithOne [AddMonoidWithOne R] [AddMonoid M] : AddMonoidWithOne (tsze R M) where
-  natCast := fun n => inl n
+  natCast n := inl n
   natCast_zero := by simp [Nat.cast]
-  natCast_succ := fun _ => by ext <;> simp [Nat.cast]
+  natCast_succ _ := by ext <;> simp [Nat.cast]
 
 @[simp]
 theorem fst_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (n : tsze R M).fst = n :=
@@ -504,9 +504,9 @@ theorem inl_natCast [AddMonoidWithOne R] [AddMonoid M] (n : ℕ) : (inl n : tsze
   rfl
 
 instance addGroupWithOne [AddGroupWithOne R] [AddGroup M] : AddGroupWithOne (tsze R M) where
-  intCast := fun z => inl z
-  intCast_ofNat := fun _n => ext (Int.cast_natCast _) rfl
-  intCast_negSucc := fun _n => ext (Int.cast_negSucc _) neg_zero.symm
+  intCast z := inl z
+  intCast_ofNat _n := ext (Int.cast_natCast _) rfl
+  intCast_negSucc _n := ext (Int.cast_negSucc _) neg_zero.symm
 
 @[simp]
 theorem fst_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (z : tsze R M).fst = z :=
@@ -522,19 +522,19 @@ theorem inl_intCast [AddGroupWithOne R] [AddGroup M] (z : ℤ) : (inl z : tsze R
 
 instance nonAssocSemiring [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] :
     NonAssocSemiring (tsze R M) where
-  zero_mul := fun x =>
+  zero_mul x :=
     ext (zero_mul x.1) <|
       show (0 : R) •> x.2 + (0 : M) <• x.1 = 0 by rw [zero_smul, zero_add, smul_zero]
-  mul_zero := fun x =>
+  mul_zero x :=
     ext (mul_zero x.1) <|
       show x.1 • (0 : M) + (0 : Rᵐᵒᵖ) • x.2 = 0 by rw [smul_zero, zero_add, zero_smul]
-  left_distrib := fun x₁ x₂ x₃ =>
+  left_distrib x₁ x₂ x₃ :=
     ext (mul_add x₁.1 x₂.1 x₃.1) <|
       show
         x₁.1 •> (x₂.2 + x₃.2) + x₁.2 <• (x₂.1 + x₃.1) =
           x₁.1 •> x₂.2 + x₁.2 <• x₂.1 + (x₁.1 •> x₃.2 + x₁.2 <• x₃.1)
         by simp_rw [smul_add, MulOpposite.op_add, add_smul, add_add_add_comm]
-  right_distrib := fun x₁ x₂ x₃ =>
+  right_distrib x₁ x₂ x₃ :=
     ext (add_mul x₁.1 x₂.1 x₃.1) <|
       show
         (x₁.1 + x₂.1) •> x₃.2 + (x₁.2 + x₂.2) <• x₃.1 =
@@ -603,15 +603,15 @@ theorem inl_pow [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
 
 instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] : Monoid (tsze R M) where
-  mul_assoc := fun x y z =>
+  mul_assoc x y z :=
     ext (mul_assoc x.1 y.1 z.1) <|
       show
         (x.1 * y.1) •> z.2 + (x.1 •> y.2 + x.2 <• y.1) <• z.1 =
           x.1 •> (y.1 •> z.2 + y.2 <• z.1) + x.2 <• (y.1 * z.1)
         by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
-  npow := fun n x => x ^ n
-  npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
-  npow_succ := fun n x =>
+  npow n x := x ^ n
+  npow_zero x := ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
+  npow_succ n x :=
     ext (pow_succ _ _)
       (by
         simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
@@ -653,7 +653,7 @@ instance ring [Ring R] [AddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M] [SMul
 instance commMonoid [CommMonoid R] [AddCommMonoid M] [DistribMulAction R M]
     [DistribMulAction Rᵐᵒᵖ M] [IsCentralScalar R M] : CommMonoid (tsze R M) :=
   { TrivSqZeroExt.monoid with
-    mul_comm := fun x₁ x₂ =>
+    mul_comm x₁ x₂ :=
       ext (mul_comm x₁.1 x₂.1) <|
         show x₁.1 •> x₂.2 + x₁.2 <• x₂.1 = x₂.1 •> x₁.2 + x₂.2 <• x₁.1 by
           rw [op_smul_eq_smul, op_smul_eq_smul, add_comm] }
@@ -852,14 +852,14 @@ variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
 instance algebra' : Algebra S (tsze R M) where
   algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
-  commutes' := fun s x =>
+  commutes' s x :=
     ext (Algebra.commutes _ _) <|
       show algebraMap S R s •> x.snd + (0 : M) <• x.fst
           = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
         rw [smul_zero, smul_zero, add_zero, zero_add]
         rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
           one_smul, smul_assoc, one_smul]
-  smul_def' := fun s x =>
+  smul_def' s x :=
     ext (Algebra.smul_def _ _) <|
       show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
         rw [smul_zero, add_zero, algebraMap_smul]
@@ -1052,10 +1052,10 @@ def liftEquivOfComm :
     { f : M →ₗ[R'] A // ∀ x y, f x * f y = 0 } ≃ (tsze R' M →ₐ[R'] A) := by
   refine Equiv.trans ?_ liftEquiv
   exact {
-    toFun := fun f => ⟨(Algebra.ofId _ _, f.val), f.prop,
+    toFun f := ⟨(Algebra.ofId _ _, f.val), f.prop,
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply],
       fun r x => by simp [Algebra.smul_def, Algebra.ofId_apply, Algebra.commutes]⟩
-    invFun := fun fg => ⟨fg.val.2, fg.prop.1⟩ }
+    invFun fg := ⟨fg.val.2, fg.prop.1⟩ }
 
 section map
 

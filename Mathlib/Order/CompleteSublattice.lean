@@ -132,11 +132,11 @@ sublattice. -/
   carrier := f '' L
   supClosed' := L.supClosed.image f
   infClosed' := L.infClosed.image f
-  sSupClosed' := fun s hs ↦ by
+  sSupClosed' s hs := by
     obtain ⟨t, ht, rfl⟩ := subset_image_iff.mp hs
     rw [← map_sSup]
     exact mem_image_of_mem f (sSupClosed ht)
-  sInfClosed' := fun s hs ↦ by
+  sInfClosed' s hs := by
     obtain ⟨t, ht, rfl⟩ := subset_image_iff.mp hs
     rw [← map_sInf]
     exact mem_image_of_mem f (sInfClosed ht)

@@ -243,7 +243,7 @@ protected theorem HasBasis.inv {ι : Sort*} {p : ι → Prop} {s : ι → Set α
   /-- Negation is involutive on `Filter α` if it is on `α`. -/]
 protected def instInvolutiveInv : InvolutiveInv (Filter α) :=
   { Filter.instInv with
-    inv_inv := fun f => map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
+    inv_inv f := map_map.trans <| by rw [inv_involutive.comp_self, map_id] }
 
 scoped[Pointwise] attribute [instance] Filter.instInvolutiveInv Filter.instInvolutiveNeg
 
@@ -520,7 +520,7 @@ protected def semigroup [Semigroup α] : Semigroup (Filter α) where
 @[to_additive (attr := instance_reducible)
   /-- `Filter α` is an `AddCommSemigroup` under pointwise operations if `α` is. -/]
 protected def commSemigroup [CommSemigroup α] : CommSemigroup (Filter α) :=
-  { Filter.semigroup with mul_comm := fun _ _ => map₂_comm mul_comm }
+  { Filter.semigroup with mul_comm _ _ := map₂_comm mul_comm }
 
 section MulOneClass
 
@@ -657,11 +657,11 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
   /-- `Filter α` is a subtraction monoid under pointwise operations if `α` is. -/]
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
-    mul_inv_rev := fun _ _ => map_map₂_antidistrib mul_inv_rev
-    inv_eq_of_mul := fun s t h => by
+    mul_inv_rev _ _ := map_map₂_antidistrib mul_inv_rev
+    inv_eq_of_mul s t h := by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Filter.mul_eq_one_iff.1 h
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab]
-    div_eq_mul_inv := fun _ _ => map_map₂_distrib_right div_eq_mul_inv }
+    div_eq_mul_inv _ _ := map_map₂_distrib_right div_eq_mul_inv }
 
 @[to_additive]
 theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
@@ -686,8 +686,8 @@ protected def divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (F
 @[instance_reducible]
 protected def instDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Filter α) :=
   { Filter.instInvolutiveNeg with
-    neg_mul := fun _ _ => map₂_map_left_comm neg_mul
-    mul_neg := fun _ _ => map_map₂_right_comm mul_neg }
+    neg_mul _ _ := map₂_map_left_comm neg_mul
+    mul_neg _ _ := map_map₂_right_comm mul_neg }
 
 scoped[Pointwise] attribute [instance] Filter.commMonoid Filter.addCommMonoid Filter.divisionMonoid
   Filter.subtractionMonoid Filter.divisionCommMonoid Filter.subtractionCommMonoid

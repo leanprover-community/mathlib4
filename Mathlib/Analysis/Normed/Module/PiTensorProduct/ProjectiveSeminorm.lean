@@ -316,8 +316,8 @@ noncomputable def mapLMultilinear : ContinuousMultilinearMap 𝕜 (fun (i : ι) 
     ((⨂[𝕜] i, E i) →L[𝕜] ⨂[𝕜] i, E' i) :=
   MultilinearMap.mkContinuous
   { toFun := mapL
-    map_update_smul' := fun _ _ _ _ ↦ PiTensorProduct.mapL_smul _ _ _ _
-    map_update_add' := fun _ _ _ _ ↦ PiTensorProduct.mapL_add _ _ _ _ }
+    map_update_smul' _ _ _ _ := PiTensorProduct.mapL_smul _ _ _ _
+    map_update_add' _ _ _ _ := PiTensorProduct.mapL_add _ _ _ _ }
   1 (fun f ↦ by rw [one_mul]; exact opNorm_mapL f)
 
 variable {𝕜 E E'}

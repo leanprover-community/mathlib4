@@ -294,8 +294,8 @@ protected theorem lt_neg_of_lt_neg {a b : EReal} (h : a < -b) : b < -a := lt_neg
 /-- Negation as an order reversing isomorphism on `EReal`. -/
 def negOrderIso : EReal ≃o ERealᵒᵈ :=
   { Equiv.neg EReal with
-    toFun := fun x => OrderDual.toDual (-x)
-    invFun := fun x => -OrderDual.ofDual x
+    toFun x := OrderDual.toDual (-x)
+    invFun x := -OrderDual.ofDual x
     map_rel_iff' := neg_le_neg_iff }
 
 lemma neg_add {x y : EReal} (h1 : x ≠ ⊥ ∨ y ≠ ⊤) (h2 : x ≠ ⊤ ∨ y ≠ ⊥) :
@@ -740,7 +740,7 @@ protected lemma neg_mul (x y : EReal) : -x * y = -(x * y) := by
 
 instance : HasDistribNeg EReal where
   neg_mul := EReal.neg_mul
-  mul_neg := fun x y => by
+  mul_neg x y := by
     rw [x.mul_comm, x.mul_comm]
     exact y.neg_mul x
 

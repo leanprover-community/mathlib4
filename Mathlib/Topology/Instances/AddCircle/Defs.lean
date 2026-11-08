@@ -433,7 +433,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
 @[simps] def openPartialHomeomorphCoe [DiscreteTopology (zmultiples p)] :
     OpenPartialHomeomorph 𝕜 (AddCircle p) where
   toFun := (↑)
-  invFun := fun x ↦ equivIco p a x
+  invFun x := equivIco p a x
   source := Ioo a (a + p)
   target := {↑a}ᶜ
   map_source' := by
@@ -444,9 +444,8 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     intro x hx
     exact (eq_left_or_mem_Ioo_of_mem_Ico (equivIco p a x).2).resolve_left
       (hx ∘ ((equivIco p a).symm_apply_apply x).symm.trans ∘ congrArg _)
-  left_inv' :=
-    fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
-  right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
+  left_inv' x hx := congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
+  right_inv' x _ := (equivIco p a).symm_apply_apply x
   open_source := isOpen_Ioo
   open_target := isOpen_compl_singleton
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn

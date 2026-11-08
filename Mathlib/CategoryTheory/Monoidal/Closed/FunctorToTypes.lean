@@ -54,15 +54,15 @@ attribute [local simp] types_tensorObj_def in
 /-- The adjunction `tensorLeft F ⊣ rightAdj F`. -/
 def adj : tensorLeft F ⊣ rightAdj F where
   unit := {
-    app := fun G ↦ (functorHomEquiv F G _).2 (𝟙 _)
-    naturality := fun G H f ↦ by
+    app G := (functorHomEquiv F G _).2 (𝟙 _)
+    naturality G H f := by
       ext
       dsimp
       ext
       apply Prod.ext
       · rfl
       · simp }
-  counit := { app := fun G ↦ functorHomEquiv F _ G (𝟙 _) }
+  counit := { app G := functorHomEquiv F _ G (𝟙 _) }
 
 instance closed : Closed F where
   rightAdj := rightAdj F

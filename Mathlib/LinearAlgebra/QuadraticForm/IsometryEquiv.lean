@@ -76,7 +76,7 @@ theorem map_app (f : Q₁.IsometryEquiv Q₂) (m : M₁) : Q₂ (f m) = Q₁ m :
 /-- The identity isometric equivalence between a quadratic form and itself. -/
 @[refl]
 def refl (Q : QuadraticMap R M N) : Q.IsometryEquiv Q :=
-  { LinearEquiv.refl R M with map_app' := fun _ => rfl }
+  { LinearEquiv.refl R M with map_app' _ := rfl }
 
 /-- The inverse isometric equivalence of an isometric equivalence between two quadratic forms. -/
 @[symm]

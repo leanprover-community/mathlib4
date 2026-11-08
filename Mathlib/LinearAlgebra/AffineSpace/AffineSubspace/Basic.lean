@@ -66,7 +66,7 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
 
 instance toAddTorsor (s : AffineSubspace k P) [Nonempty s] : AddTorsor s.direction s where
   vadd a b := ⟨(a : V) +ᵥ (b : P), vadd_mem_of_mem_direction a.2 b.2⟩
-  zero_vadd := fun a => by
+  zero_vadd a := by
     ext
     exact zero_vadd _ _
   add_vadd a b c := by
@@ -161,7 +161,7 @@ theorem singleton_ne_top [Nontrivial P] (x : P) : ({x} : AffineSubspace k P) ≠
 
 instance unique_affineSpan_singleton (p : P) : Unique (affineSpan k {p}) where
   default := ⟨p, mem_affineSpan _ (Set.mem_singleton _)⟩
-  uniq := fun x ↦ Subtype.ext ((mem_affineSpan_singleton _ _).1 x.property)
+  uniq x := Subtype.ext ((mem_affineSpan_singleton _ _).1 x.property)
 
 @[simp]
 theorem preimage_coe_affineSpan_singleton (x : P) :

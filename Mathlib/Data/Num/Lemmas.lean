@@ -355,7 +355,7 @@ instance addMonoidWithOne : AddMonoidWithOne Num :=
   { Num.addMonoid with
     natCast := Num.ofNat'
     natCast_zero := ofNat'_zero
-    natCast_succ := fun _ => ofNat'_succ }
+    natCast_succ _ := ofNat'_succ }
 
 instance commSemiring : CommSemiring Num where
   __ := Num.addMonoid

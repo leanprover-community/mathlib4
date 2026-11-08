@@ -460,9 +460,9 @@ instance [W₁.HasTwoOutOfThreeProperty] : W₁.unop.HasTwoOutOfThreeProperty wh
 end
 
 instance : (isomorphisms C).HasTwoOutOfThreeProperty where
-  of_postcomp f g := fun (hg : IsIso g) (hfg : IsIso (f ≫ g)) =>
+  of_postcomp f g (hg : IsIso g) (hfg : IsIso (f ≫ g)) :=
     by simpa using (inferInstance : IsIso ((f ≫ g) ≫ inv g))
-  of_precomp f g := fun (hf : IsIso f) (hfg : IsIso (f ≫ g)) =>
+  of_precomp f g (hf : IsIso f) (hfg : IsIso (f ≫ g)) :=
     by simpa using (inferInstance : IsIso (inv f ≫ (f ≫ g)))
 
 instance (F : C ⥤ D) (W : MorphismProperty D) [W.HasTwoOutOfThreeProperty] :

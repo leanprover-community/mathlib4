@@ -218,8 +218,8 @@ theorem gc_map_comap (f : R →+* S) : GaloisConnection (map f) (comap f) := fun
 /-- A subring is isomorphic to its image under an injective function -/
 noncomputable def equivMapOfInjective (f : R →+* S) (hf : Function.Injective f) : s ≃+* s.map f :=
   { Equiv.Set.image f s hf with
-    map_mul' := fun _ _ => Subtype.ext (f.map_mul _ _)
-    map_add' := fun _ _ => Subtype.ext (f.map_add _ _) }
+    map_mul' _ _ := Subtype.ext (f.map_mul _ _)
+    map_add' _ _ := Subtype.ext (f.map_add _ _) }
 
 @[simp]
 theorem coe_equivMapOfInjective_apply (f : R →+* S) (hf : Function.Injective f) (x : s) :
@@ -335,15 +335,15 @@ instance : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _x hx =>
+    bot_le s := fun _x hx  =>
       let ⟨n, hn⟩ := mem_bot.1 hx
       hn ▸ intCast_mem s n
     top := ⊤
-    le_top := fun _s _x _hx => trivial
+    le_top _s := fun _x _hx  => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _s _t _x => And.left
-    inf_le_right := fun _s _t _x => And.right
-    le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _s _t := fun _x  => And.left
+    inf_le_right _s _t := fun _x  => And.right
+    le_inf _s _t₁ _t₂ h₁ h₂ := fun _x hx  => ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : Subring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -421,9 +421,9 @@ instance instField : Field (center K) where
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -756,8 +756,8 @@ protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
 /-- Product of subrings is isomorphic to their product as rings. -/
 def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
-    map_mul' := fun _x _y => rfl
-    map_add' := fun _x _y => rfl }
+    map_mul' _x _y := rfl
+    map_add' _x _y := rfl }
 
 /-- The underlying set of a non-empty directed sSup of subrings is just a union of the subrings.
   Note that this fails without the directedness assumption (the union of two subrings is
@@ -940,8 +940,8 @@ variable {s t : Subring R}
 monoid are equal. -/
 def subringCongr (h : s = t) : s ≃+* t :=
   { Set.equivOfEq <| congr_arg _ h with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 @[simp]
 theorem subringCongr_symm (h : s = t) :
@@ -955,8 +955,8 @@ theorem coe_subringCongr_apply (h : s = t) (x : s) :
 `RingHom.range`. -/
 def ofLeftInverse {g : S → R} {f : R →+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ f.range.subtype) x
+    toFun x := f.rangeRestrict x
+    invFun x := (g ∘ f.range.subtype) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

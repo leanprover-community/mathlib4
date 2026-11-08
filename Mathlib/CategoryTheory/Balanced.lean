@@ -48,7 +48,7 @@ section
 attribute [local instance] isIso_of_mono_of_epi
 
 instance balanced_opposite [Balanced C] : Balanced Cᵒᵖ :=
-  { isIso_of_mono_of_epi := fun f fmono fepi => by
+  { isIso_of_mono_of_epi f fmono fepi := by
       rw [← Quiver.Hom.op_unop f]
       exact isIso_of_op _ }
 

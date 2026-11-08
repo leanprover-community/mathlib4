@@ -116,7 +116,7 @@ instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.toMulHomClass with
-    map_one := fun e =>
+    map_one e :=
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
         _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=
@@ -250,7 +250,7 @@ section refl
 /-- The identity map is a multiplicative isomorphism. -/
 @[to_additive (attr := refl) /-- The identity map is an additive isomorphism. -/]
 def refl (M : Type*) [Mul M] : M ≃* M :=
-  { Equiv.refl _ with map_mul' := fun _ _ => rfl }
+  { Equiv.refl _ with map_mul' _ _ := rfl }
 
 @[to_additive]
 instance : Inhabited (M ≃* M) := ⟨refl M⟩
@@ -397,7 +397,7 @@ section trans
 @[to_additive (attr := trans) /-- Transitivity of addition-preserving isomorphisms -/]
 def trans (h1 : M ≃* N) (h2 : N ≃* P) : M ≃* P :=
   { h1.toEquiv.trans h2.toEquiv with
-    map_mul' := fun x y => show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
+    map_mul' x y := show h2 (h1 (x * y)) = h2 (h1 x) * h2 (h1 y) by
       rw [map_mul, map_mul] }
 
 @[to_additive (attr := simp)]

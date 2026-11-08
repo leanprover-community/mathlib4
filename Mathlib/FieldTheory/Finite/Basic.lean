@@ -291,7 +291,7 @@ is equal to `0` unless `(q - 1) ∣ i`, in which case the sum is `q - 1`. -/
 theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     (∑ x : Kˣ, (x ^ i : K)) = if q - 1 ∣ i then -1 else 0 := by
   let φ : Kˣ →* K :=
-    { toFun := fun x => x ^ i
+    { toFun x := x ^ i
       map_one' := by simp
       map_mul' := by simp [mul_pow] }
   have : Decidable (φ = 1) := by classical infer_instance

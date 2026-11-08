@@ -209,9 +209,9 @@ theorem exists_continuousLinearEquiv_apply_eq
   obtain ⟨G, Gx, Gy⟩ : ∃ G : StrongDual R V, G x = 1 ∧ G y ≠ 0 :=
     exists_eq_one_ne_zero_of_ne_zero_pair hx hy
   let A : V ≃L[R] V :=
-  { toFun := fun z ↦ z + G z • (y - x)
-    invFun := fun z ↦ z + ((G y)⁻¹ * G z) • (x - y)
-    map_add' := fun a b ↦ by simp [add_smul]; abel
+  { toFun z := z + G z • (y - x)
+    invFun z := z + ((G y)⁻¹ * G z) • (x - y)
+    map_add' a b := by simp [add_smul]; abel
     map_smul' := by simp [smul_smul]
     left_inv := fun z ↦ by
       simp only [RingHom.id_apply, smul_eq_mul,

@@ -326,7 +326,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
   { carrier := I
     add_mem' := I.add_mem
     zero_mem' := I.zero_mem
-    smul_mem' := fun r x hx => I.mul_mem_left r x hx }
+    smul_mem' r x hx := I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
 set_option backward.isDefEq.respectTransparency false in

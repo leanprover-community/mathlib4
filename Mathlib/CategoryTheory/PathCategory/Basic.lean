@@ -41,7 +41,7 @@ namespace Paths
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance categoryPaths : Category.{max u₁ v₁} (Paths V) where
-  Hom := fun X Y : V => Quiver.Path X Y
+  Hom (X Y : V) := Quiver.Path X Y
   id _ := Quiver.Path.nil
   comp f g := Quiver.Path.comp f g
 

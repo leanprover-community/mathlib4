@@ -221,7 +221,7 @@ set_option backward.isDefEq.respectTransparency false in
 algebras over `R` is adjoint to the forgetful functor in the other direction. -/
 def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
   toFun f :=
-    { toFun := fun c => Quot.liftOn c (liftAux R f) (liftAux_spec R f)
+    { toFun c := Quot.liftOn c (liftAux R f) (liftAux_spec R f)
       map_add' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_add]; rfl
       map_smul' := by rintro t ⟨a⟩; rw [← liftAux_map_smul]; rfl
       map_lie' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_mul]; rfl }

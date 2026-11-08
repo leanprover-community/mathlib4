@@ -138,7 +138,7 @@ theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w �
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
 instance : Compl (Digraph V) where
-  compl G := { Adj := fun v w ↦ ¬G.Adj v w }
+  compl G := { Adj v w := ¬G.Adj v w }
 
 @[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
 
@@ -150,10 +150,10 @@ instance sdiff : SDiff (Digraph V) where
 theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
 
 instance supSet : SupSet (Digraph V) where
-  sSup s := { Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
+  sSup s := { Adj a b := ∃ G ∈ s, Adj G a b }
 
 instance infSet : InfSet (Digraph V) where
-  sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
+  sInf s := { Adj a b := (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl

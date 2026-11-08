@@ -105,7 +105,7 @@ variable {R : Type w} [Semiring R] [Linear R C]
 section oppositeCategory
 
 instance oppositeCategory : Linear R Cᵒᵖ where
-  homModule _ _ := AddEquiv.module R ({opEquiv _ _ with map_add' := fun _ _ ↦ rfl})
+  homModule _ _ := AddEquiv.module R ({opEquiv _ _ with map_add' _ _ := rfl})
   smul_comp _ _ _ _ f g := Quiver.Hom.unop_inj (comp_smul _ _ _ g.unop _ f.unop)
   comp_smul _ _ _ f _ g := Quiver.Hom.unop_inj (smul_comp _ _ _ _ g.unop f.unop)
 

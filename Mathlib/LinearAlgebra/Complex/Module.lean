@@ -100,8 +100,8 @@ instance (priority := 100) instModule [Semiring R] [Module R ℝ] : Module R ℂ
 -- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980
 instance (priority := 95) instAlgebraOfReal [CommSemiring R] [Algebra R ℝ] : Algebra R ℂ where
   algebraMap := Complex.ofRealHom.comp (algebraMap R ℝ)
-  smul_def' := fun r x => by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
-  commutes' := fun r ⟨xr, xi⟩ => by ext <;> simp [Algebra.commutes]
+  smul_def' r x := by ext <;> simp [smul_re, smul_im, Algebra.smul_def]
+  commutes' r := fun ⟨xr, xi⟩  => by ext <;> simp [Algebra.commutes]
 
 instance : StarModule ℝ ℂ :=
   ⟨fun r x => by simp only [star_def, star_trivial, real_smul, map_mul, conj_ofReal]⟩
@@ -142,14 +142,14 @@ open Module
 /-- `ℂ` has a basis over `ℝ` given by `1` and `I`. -/
 noncomputable def basisOneI : Basis (Fin 2) ℝ ℂ :=
   .ofEquivFun
-    { toFun := fun z => ![z.re, z.im]
-      invFun := fun c => c 0 + c 1 • I
+    { toFun z := ![z.re, z.im]
+      invFun c := c 0 + c 1 • I
       left_inv := fun z => by simp
       right_inv := fun c => by
         ext i
         fin_cases i <;> simp
-      map_add' := fun z z' => by simp
-      map_smul' := fun c z => by simp }
+      map_add' z z' := by simp
+      map_smul' c z := by simp }
 
 @[simp]
 theorem coe_basisOneI_repr (z : ℂ) : ⇑(basisOneI.repr z) = ![z.re, z.im] :=
@@ -276,7 +276,7 @@ theorem real_algHom_eq_id_or_conj (f : ℂ →ₐ[ℝ] ℂ) : f = AlgHom.id ℝ 
 @[simps! +simpRhs apply symm_apply_re symm_apply_im]
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
-    map_smul' := fun r c => by simp }
+    map_smul' r c := by simp }
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :
     Complex.equivRealProdLm.symm p = p.1 + p.2 * Complex.I := Complex.equivRealProd_symm_apply p
@@ -530,8 +530,8 @@ open scoped ComplexStarModule
 /-- The natural `ℝ`-linear equivalence between `selfAdjoint ℂ` and `ℝ`. -/
 @[simps apply symm_apply]
 def Complex.selfAdjointEquiv : selfAdjoint ℂ ≃ₗ[ℝ] ℝ where
-  toFun := fun z ↦ (z : ℂ).re
-  invFun := fun x ↦ ⟨x, conj_ofReal x⟩
+  toFun z := (z : ℂ).re
+  invFun x := ⟨x, conj_ofReal x⟩
   left_inv := fun z ↦ Subtype.ext <| conj_eq_iff_re.mp z.property.star_eq
   map_add' := by simp
   map_smul' := by simp

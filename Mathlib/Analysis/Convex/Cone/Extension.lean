@@ -165,7 +165,7 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
     { carrier := { p : E × ℝ | N p.1 ≤ p.2 }
       zero_mem' := by simp [N_0]
       smul_mem' := fun ⟨_, hc⟩ _ _ => by rcases eq_or_lt_of_le' hc <;> simp_all
-      add_mem' := fun hx hy => (N_add _ _).trans (add_le_add hx hy) }
+      add_mem' hx hy := (N_add _ _).trans (add_le_add hx hy) }
   set f' := (-f).coprod (LinearMap.id.toPMap ⊤)
   have hf'_nonneg : ∀ x : f'.domain, x.1 ∈ s → 0 ≤ f' x := fun x (hx : N x.1.1 ≤ x.1.2) ↦ by
     simpa [f'] using le_trans (hf ⟨x.1.1, x.2.1⟩) hx

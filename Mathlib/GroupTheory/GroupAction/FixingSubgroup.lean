@@ -110,7 +110,7 @@ variable (M : Type*) {α : Type*} [Group M] [MulAction M α]
 /-- The subgroup fixing a set under a `MulAction`. -/
 @[to_additive /-- The additive subgroup fixing a set under an `AddAction`. -/]
 def fixingSubgroup (s : Set α) : Subgroup M :=
-  { fixingSubmonoid M s with inv_mem' := fun hx z => by rw [inv_smul_eq_iff, hx z] }
+  { fixingSubmonoid M s with inv_mem' hx z := by rw [inv_smul_eq_iff, hx z] }
 
 @[to_additive]
 theorem mem_fixingSubgroup_iff {s : Set α} {m : M} : m ∈ fixingSubgroup M s ↔ ∀ y ∈ s, m • y = y :=

@@ -158,7 +158,7 @@ def abelianize : GrpCat.{u} ⥤ CommGrpCat.{u} where
 /-- The abelianization-forgetful adjunction from `Group` to `CommGroup`. -/
 def abelianizeAdj : abelianize ⊣ forget₂ CommGrpCat.{u} GrpCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ => ((ConcreteCategory.homEquiv (C := CommGrpCat)).trans
+    { homEquiv _ _ := ((ConcreteCategory.homEquiv (C := CommGrpCat)).trans
         Group.Abelianization.lift.symm).trans
         (ConcreteCategory.homEquiv (C := GrpCat)).symm
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be just `by intros; ext1; rfl`.
@@ -209,7 +209,7 @@ def CommMonCat.units : CommMonCat.{u} ⥤ CommGrpCat.{u} where
 /-- The forgetful-units adjunction between `CommGrpCat` and `CommMonCat`. -/
 def CommGrpCat.forget₂CommMonAdj : forget₂ CommGrpCat CommMonCat ⊣ CommMonCat.units.{u} :=
   Adjunction.mk' {
-    homEquiv := fun _ Y ↦
+    homEquiv _ Y :=
       { toFun f := ofHom (MonoidHom.toHomUnits f.hom)
         invFun f := CommMonCat.ofHom ((Units.coeHom Y).comp f.hom) }
     unit.app X := ofHom toUnits.toMonoidHom

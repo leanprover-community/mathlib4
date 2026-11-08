@@ -302,14 +302,14 @@ orbit, and a corresponding quotient expressed in terms of `Setoid.comap Subtype.
 noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup G) (ω : Ω) :
     orbitRel.Quotient H (orbitRel.Quotient.orbit ω) ≃
       Quotient ((orbitRel H X).comap (Subtype.val : Quotient.mk (orbitRel G X) ⁻¹' {ω} → X)) where
-  toFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
+  toFun q := q.liftOn' (fun x ↦ ⟦⟨↑x, by
     simp only [Set.mem_preimage, Set.mem_singleton_iff]
     have hx := x.property
     rwa [orbitRel.Quotient.mem_orbit] at hx⟩⟧) fun a b h ↦ by
       simp only [← Quotient.eq, orbitRel.Quotient.subgroup_quotient_eq_iff] at h
       simp only [Quotient.eq] at h ⊢
       exact h
-  invFun := fun q ↦ q.liftOn' (fun x ↦ ⟦⟨↑x, by
+  invFun q := q.liftOn' (fun x ↦ ⟦⟨↑x, by
     have hx := x.property
     simp only [Set.mem_preimage, Set.mem_singleton_iff] at hx
     rwa [orbitRel.Quotient.mem_orbit, @Quotient.mk''_eq_mk]⟩⟧) fun a b h ↦ by
@@ -352,7 +352,7 @@ orbits under the action of an additive subgroup and the quotient of the group by
 noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     [IsCancelSMul G X] (H : Subgroup G) :
     orbitRel.Quotient H X ≃ G ⧸ H where
-  toFun := fun q ↦ q.liftOn' (fun y ↦ (exists_smul_eq G y x).choose) (by
+  toFun q := q.liftOn' (fun y ↦ (exists_smul_eq G y x).choose) (by
     intro y₁ y₂ h
     rw [orbitRel_apply] at h
     rw [Quotient.eq'', leftRel_eq]
@@ -364,7 +364,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive G X]
     refine IsCancelSMul.right_cancel _ _ (g • y₂) ?_
     rw [(exists_smul_eq G (g • y₂) x).choose_spec, Subgroup.smul_def, Subgroup.coe_inv,
         smul_smul, inv_mul_cancel_right, (exists_smul_eq G y₂ x).choose_spec])
-  invFun := fun q ↦ q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
+  invFun q := q.liftOn' (fun g ↦ ⟦g⁻¹ • x⟧) (by
     intro g₁ g₂ h
     rw [leftRel_eq] at h
     rw [← @Quotient.mk''_eq_mk, Quotient.eq'', orbitRel_apply]

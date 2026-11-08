@@ -430,7 +430,7 @@ is a linear equivalence. -/
     rfl
   continuous_toFun := (mfderiv% f x).cont
   continuous_invFun := (mfderiv% hf.localInverse (f x)).cont
-  map_add' := fun x_1 y ↦ map_add _ x_1 y
+  map_add' x_1 y := map_add _ x_1 y
   map_smul' := by intros; simp
 
 @[simp, mfld_simps]

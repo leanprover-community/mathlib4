@@ -60,10 +60,10 @@ theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, 
   simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 
 instance : SemilatticeSup {P : Submodule R M // P.FG} where
-  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
-  le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
-  le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
-  sup_le := fun P Q R hPR hQR ↦ by
+  sup P Q := ⟨P.val ⊔ Q.val, Submodule.FG.sup P.property Q.property⟩
+  le_sup_left P Q := by rw [← Subtype.coe_le_coe]; exact le_sup_left
+  le_sup_right P Q := by rw [← Subtype.coe_le_coe]; exact le_sup_right
+  sup_le P Q R hPR hQR := by
     rw [← Subtype.coe_le_coe] at hPR hQR ⊢
     exact sup_le hPR hQR
 
@@ -386,7 +386,7 @@ lemma of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommSemiring A₁] [CommSemi
     (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := fun r ↦ by
+      commutes' r := by
         simpa [RingHom.algebraMap_toAlgebra] using congr($he.symm (e₁.symm r)) }
   have := of_restrictScalars_finite A₁ A₂ B₁
   exact equiv e.toLinearEquiv

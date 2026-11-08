@@ -271,7 +271,7 @@ This is a special case of `MultilinearMap.mkPiAlgebraFin`, and the exterior alge
 def ιMulti (n : ℕ) : M [⋀^Fin n]→ₗ[R] ExteriorAlgebra R M :=
   let F := (MultilinearMap.mkPiAlgebraFin R n (ExteriorAlgebra R M)).compLinearMap fun _ => ι R
   { F with
-    map_eq_zero_of_eq' := fun f x y hfxy hxy => by
+    map_eq_zero_of_eq' f x y hfxy hxy := by
       dsimp [F]
       clear F
       wlog h : x < y
@@ -427,7 +427,7 @@ variable {N : Type u4} {N' : Type u5} [AddCommGroup N] [Module R N] [AddCommGrou
 
 /-- The morphism of exterior algebras induced by a linear map. -/
 def map (f : M →ₗ[R] N) : ExteriorAlgebra R M →ₐ[R] ExteriorAlgebra R N :=
-  CliffordAlgebra.map { f with map_app' := fun _ => rfl }
+  CliffordAlgebra.map { f with map_app' _ := rfl }
 
 @[simp]
 theorem map_comp_ι (f : M →ₗ[R] N) : (map f).toLinearMap ∘ₗ ι R = ι R ∘ₗ f :=

@@ -226,7 +226,7 @@ theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
 
 @[to_additive]
 instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
-  { prf := fun _ ↦ id }
+  { prf _ := id }
 
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive /-- A subsingleton `AddMonoid` has a unique additive unit. -/]

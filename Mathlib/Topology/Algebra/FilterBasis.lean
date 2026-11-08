@@ -81,7 +81,7 @@ def groupFilterBasisOfComm {G : Type*} [CommGroup G] (sets : Set (Set G))
     one' := one _
     mul' := mul _
     inv' := inv _
-    conj' := fun x U U_in ↦ ⟨U, U_in, by simp only [mul_inv_cancel_comm, preimage_id']; rfl⟩ }
+    conj' x U U_in := ⟨U, U_in, by simp only [mul_inv_cancel_comm, preimage_id']; rfl⟩ }
 
 namespace GroupFilterBasis
 

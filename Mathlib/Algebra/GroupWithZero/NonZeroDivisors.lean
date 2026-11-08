@@ -51,7 +51,7 @@ variable (M₀ : Type*) [MonoidWithZero M₀] {x : M₀}
 def nonZeroDivisorsLeft : Submonoid M₀ where
   carrier := {x | ∀ y, x * y = 0 → y = 0}
   one_mem' := by simp
-  mul_mem' {x y} hx hy := fun z hz ↦ hy _ <| hx _ (mul_assoc x y z ▸ hz)
+  mul_mem' {x y} hx hy z := fun hz  ↦ hy _ <| hx _ (mul_assoc x y z ▸ hz)
 
 @[simp]
 lemma mem_nonZeroDivisorsLeft_iff : x ∈ nonZeroDivisorsLeft M₀ ↔ ∀ y, x * y = 0 → y = 0 := .rfl
@@ -65,7 +65,7 @@ lemma notMem_nonZeroDivisorsLeft_iff :
 def nonZeroDivisorsRight : Submonoid M₀ where
   carrier := {x | ∀ y, y * x = 0 → y = 0}
   one_mem' := by simp
-  mul_mem' := fun {x y} hx hy z hz ↦ hx _ (hy _ ((mul_assoc z x y).symm ▸ hz))
+  mul_mem' {x y} hx hy z := fun hz  ↦ hx _ (hy _ ((mul_assoc z x y).symm ▸ hz))
 
 @[simp]
 lemma mem_nonZeroDivisorsRight_iff : x ∈ nonZeroDivisorsRight M₀ ↔ ∀ y, y * x = 0 → y = 0 := .rfl
@@ -327,7 +327,7 @@ lemma mul_mem_nonZeroDivisors : a * b ∈ M₀⁰ ↔ a ∈ M₀⁰ ∧ b ∈ M�
     constructor <;> intro x h' <;> apply h.2
     · rw [← mul_assoc, h', zero_mul]
     · rw [mul_comm a b, ← mul_assoc, h', zero_mul]
-  mpr := fun h ↦ mul_mem h.1 h.2
+  mpr h := mul_mem h.1 h.2
 
 theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
     a ∣ b ↔ (a : M₀) ∣ (b : M₀) :=

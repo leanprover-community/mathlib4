@@ -354,7 +354,7 @@ variable [Preadditive V] {R : Type*} [Semiring R] [Linear R V]
 
 instance : Linear R (Action V G) where
   homModule X Y :=
-    { smul := fun r f => ⟨r • f.hom, by simp [f.comm]⟩
+    { smul r f := ⟨r • f.hom, by simp [f.comm]⟩
       one_smul := by intros; ext; exact one_smul _ _
       smul_zero := by intros; ext; exact smul_zero _
       zero_smul := by intros; ext; exact zero_smul _ _

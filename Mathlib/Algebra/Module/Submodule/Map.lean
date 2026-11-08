@@ -172,7 +172,7 @@ def comap (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : Submodule
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 added `map_smulₛₗ _`
-    smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
+    smul_mem' a x h := by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 
 @[simp]
 theorem comap_coe (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
@@ -753,7 +753,7 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
       ⟨x, by
         simp only [LinearMap.domRestrict_apply, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
-    invFun := fun y =>
+    invFun y :=
       ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
         rcases y with ⟨y', hy⟩
         rw [Submodule.mem_map] at hy

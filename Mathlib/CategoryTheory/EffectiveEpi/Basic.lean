@@ -189,7 +189,7 @@ noncomputable
 def effectiveEpiFamilyStructSingletonOfEffectiveEpi {B X : C} (f : X ⟶ B) [EffectiveEpi f] :
     EffectiveEpiFamilyStruct (fun () ↦ X) (fun () ↦ f) where
   desc e h := EffectiveEpi.desc f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
-  fac e h := fun _ ↦ EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
+  fac e h _ := EffectiveEpi.fac f (e ()) (fun g₁ g₂ hg ↦ h () () g₁ g₂ hg)
   uniq e h m hm := by apply EffectiveEpi.uniq f (e ()) (h () ()); exact hm ()
 
 instance {B X : C} (f : X ⟶ B) [EffectiveEpi f] : EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
@@ -265,7 +265,7 @@ def EffectiveEpiFamilyStruct.reindex
     (e : α' ≃ α)
     (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
     EffectiveEpiFamilyStruct X π where
-  desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
+  desc f h := P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
     obtain ⟨a, rfl⟩ := e.surjective a
     apply P.fac

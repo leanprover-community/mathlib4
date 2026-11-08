@@ -45,7 +45,7 @@ open scoped Classical in
 noncomputable
 def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
   if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
-  { toFun := fun x ↦ (κ x.1).prod (η x.2)
+  { toFun x := (κ x.1).prod (η x.2)
     measurable' := by
       have hκ := h.1
       have hη := h.2

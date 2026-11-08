@@ -53,7 +53,7 @@ variable (U : Subring R') [IsInvariantSubring M U]
 
 /-- The canonical inclusion from an invariant subring. -/
 def IsInvariantSubring.subtypeHom : U →+*[M] R' :=
-  { U.subtype with map_smul' := fun _ _ ↦ rfl }
+  { U.subtype with map_smul' _ _ := rfl }
 
 @[simp]
 theorem IsInvariantSubring.coe_subtypeHom :

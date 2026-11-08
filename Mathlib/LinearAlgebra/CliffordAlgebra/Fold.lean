@@ -163,8 +163,8 @@ def foldr'Aux (f : M →ₗ[R] CliffordAlgebra Q × N →ₗ[R] N) :
   have v_mul := (Algebra.lmul R (CliffordAlgebra Q)).toLinearMap ∘ₗ ι Q
   have l := v_mul.compl₂ (LinearMap.fst _ _ N)
   exact
-    { toFun := fun m => (l m).prod (f m)
-      map_add' := fun v₂ v₂ =>
+    { toFun m := (l m).prod (f m)
+      map_add' v₂ v₂ :=
         LinearMap.ext fun x =>
           Prod.ext congr($(l.map_add _ _) x) congr($(f.map_add _ _) x)
       map_smul' c v := LinearMap.ext fun x =>

@@ -247,8 +247,8 @@ is naturally isomorphic to the identity functor.
 -/
 @[simps]
 def mapId : map (𝟙 X) ≅ 𝟭 (Opens X) where
-  hom := { app := fun U => eqToHom (map_id_obj U) }
-  inv := { app := fun U => eqToHom (map_id_obj U).symm }
+  hom := { app U := eqToHom (map_id_obj U) }
+  inv := { app U := eqToHom (map_id_obj U).symm }
 
 theorem map_id_eq : map (𝟙 X) = 𝟭 (Opens X) := by
   rfl
@@ -260,8 +260,8 @@ of taking preimages under `g`, then preimages under `f`.
 -/
 @[simps]
 def mapComp (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) ≅ map g ⋙ map f where
-  hom := { app := fun U => eqToHom (map_comp_obj f g U) }
-  inv := { app := fun U => eqToHom (map_comp_obj f g U).symm }
+  hom := { app U := eqToHom (map_comp_obj f g U) }
+  inv := { app U := eqToHom (map_comp_obj f g U).symm }
 
 theorem map_comp_eq (f : X ⟶ Y) (g : Y ⟶ Z) : map (f ≫ g) = map g ⋙ map f :=
   rfl
@@ -356,8 +356,8 @@ def IsOpenMap.functor {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) : Open
 -/
 def IsOpenMap.adjunction {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f) :
     hf.functor ⊣ Opens.map f where
-  unit := { app := fun _ => homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
-  counit := { app := fun _ => homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
+  unit := { app _ := homOfLE fun x hxU => ⟨x, hxU, rfl⟩ }
+  counit := { app _ := homOfLE fun _ ⟨_, hfxV, hxy⟩ => hxy ▸ hfxV }
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat.{u}} {f : X ⟶ Y} (hf : IsOpenMap f)
     [H : Mono f] : hf.functor.Full where

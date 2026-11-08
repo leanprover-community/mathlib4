@@ -154,8 +154,8 @@ instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
 
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
-    { obj := fun A => ↧A
-      map := fun f => RingCat.ofHom f.hom.toRingHom }
+    { obj A := ↧A
+      map f := RingCat.ofHom f.hom.toRingHom }
 
 @[simp]
 lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
@@ -172,8 +172,8 @@ instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj 
 
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
-    { obj := fun M => ↧M
-      map := fun f => ModuleCat.ofHom f.hom.toLinearMap }
+    { obj M := ↧M
+      map f := ModuleCat.ofHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgCat.{v} R) :
@@ -196,9 +196,9 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ =>
-        { toFun := fun f ↦ ↾((FreeAlgebra.lift _).symm f.hom)
-          invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
+    { homEquiv _ _ :=
+        { toFun f := ↾((FreeAlgebra.lift _).symm f.hom)
+          invFun f := ofHom <| (FreeAlgebra.lift _) f
           left_inv := fun f ↦ by aesop
           right_inv := fun f ↦ by aesop } }
 

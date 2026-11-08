@@ -134,11 +134,11 @@ def isLimitAux (t : KernelFork f) (lift : ∀ s : KernelFork f, s.pt ⟶ t.pt)
     (fac : ∀ s : KernelFork f, lift s ≫ t.ι = s.ι)
     (uniq : ∀ (s : KernelFork f) (m : s.pt ⟶ t.pt) (_ : m ≫ t.ι = s.ι), m = lift s) : IsLimit t :=
   { lift
-    fac := fun s j => by
+    fac s j := by
       cases j
       · exact fac s
       · simp
-    uniq := fun s m w => uniq s m (w Limits.WalkingParallelPair.zero) }
+    uniq s m w := uniq s m (w Limits.WalkingParallelPair.zero) }
 
 /-- This is a more convenient formulation to show that a `KernelFork` constructed using
 `KernelFork.ofι` is a limit cone.
@@ -617,11 +617,11 @@ def isColimitAux (t : CokernelCofork f) (desc : ∀ s : CokernelCofork f, t.pt �
     (uniq : ∀ (s : CokernelCofork f) (m : t.pt ⟶ s.pt) (_ : t.π ≫ m = s.π), m = desc s) :
     IsColimit t :=
   { desc
-    fac := fun s j => by
+    fac s j := by
       cases j
       · simp
       · exact fac s
-    uniq := fun s m w => uniq s m (w Limits.WalkingParallelPair.one) }
+    uniq s m w := uniq s m (w Limits.WalkingParallelPair.one) }
 
 /-- This is a more convenient formulation to show that a `CokernelCofork` constructed using
 `CokernelCofork.ofπ` is a limit cone.

@@ -504,9 +504,9 @@ lemma le_isoClosure (P : MorphismProperty C) : P ≤ P.isoClosure :=
 
 instance isoClosure_respectsIso (P : MorphismProperty C) :
     RespectsIso P.isoClosure where
-  precomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+  precomp e (he : IsIso e) f := fun ⟨_, _, f', hf', ⟨iso⟩⟩  => ⟨_, _, f', hf',
       ⟨Arrow.isoMk (asIso iso.hom.left ≪≫ asIso (inv e)) (asIso iso.hom.right) (by simp)⟩⟩
-  postcomp := fun e (he : IsIso e) f ⟨_, _, f', hf', ⟨iso⟩⟩ => ⟨_, _, f', hf',
+  postcomp e (he : IsIso e) f := fun ⟨_, _, f', hf', ⟨iso⟩⟩  => ⟨_, _, f', hf',
       ⟨Arrow.isoMk (asIso iso.hom.left) (asIso iso.hom.right ≪≫ asIso e) (by simp)⟩⟩
 
 lemma monotone_isoClosure : Monotone (isoClosure (C := C)) := by

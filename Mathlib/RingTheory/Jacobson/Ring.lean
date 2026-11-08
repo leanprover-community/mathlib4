@@ -602,7 +602,7 @@ universe v w
 /-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)
     [CommRing R] [CommRing S] [Algebra R S] : S →ₐ[R] S[X] :=
-  { Polynomial.C with commutes' := fun r => by rfl }
+  { Polynomial.C with commutes' r := by rfl }
 
 private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
     [CommRing R] [CommRing S] [CommRing T] [IsJacobsonRing S] [Algebra R S] [Algebra R T]

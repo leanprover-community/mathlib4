@@ -139,7 +139,7 @@ variable {σ : R →+* S}
 instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     AddMonoidHomClass F M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    map_zero := fun f ↦
+    map_zero f :=
       show f 0 = 0 by
         rw [← zero_smul R (0 : M), map_smulₛₗ]
         simp }
@@ -148,7 +148,7 @@ instance (priority := 100) distribMulActionSemiHomClass
     [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
   { SemilinearMapClass.toAddHomClass with
-    map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
+    map_smulₛₗ f c x := by rw [map_smulₛₗ] }
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
 
@@ -556,8 +556,8 @@ def inverse (f : M →ₛₗ[σ] M₂) (g : M₂ → M) (h₁ : LeftInverse g f)
   dsimp [LeftInverse, Function.RightInverse] at h₁ h₂
   exact
     { toFun := g
-      map_add' := fun x y ↦ by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
-      map_smul' := fun a b ↦ by
+      map_add' x y := by rw [← h₁ (g (x + y)), ← h₁ (g x + g y)]; simp [h₂]
+      map_smul' a b := by
         rw [← h₁ (g (a • b)), ← h₁ (σ' a • g b)]
         simp [h₂] }
 
@@ -736,8 +736,8 @@ variable [DistribSMul T M₂] [SMulCommClass R₂ T M₂]
 instance : SMul S (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun a f ↦
     { toFun := a • (f : M → M₂)
-      map_add' := fun x y ↦ by simp only [Pi.smul_apply, f.map_add, smul_add]
-      map_smul' := fun c x ↦ by simp [Pi.smul_apply, smul_comm] }⟩
+      map_add' x y := by simp only [Pi.smul_apply, f.map_add, smul_add]
+      map_smul' c x := by simp [Pi.smul_apply, smul_comm] }⟩
 
 @[simp]
 protected theorem smul_apply (a : S) (f : M →ₛₗ[σ₁₂] M₂) (x : M) : (a • f) x = a • f x :=
@@ -802,7 +802,7 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
 
 instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   { (inferInstance : Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
+    uniq f := ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
 
 instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
   coe_injective.unique
@@ -870,8 +870,8 @@ theorem comp_neg (f : M →ₛₗ[σ₁₂] N₂) (g : N₂ →ₛₗ[σ₂₃] 
 instance : Sub (M →ₛₗ[σ₁₂] N₂) :=
   ⟨fun f g ↦
     { toFun := f - g
-      map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
-      map_smul' := fun r x ↦ by simp [Pi.sub_apply, smul_sub] }⟩
+      map_add' x y := by simp only [Pi.sub_apply, map_add, add_sub_add_comm]
+      map_smul' r x := by simp [Pi.sub_apply, smul_sub] }⟩
 
 @[simp]
 protected theorem sub_apply (f g : M →ₛₗ[σ₁₂] N₂) (x : M) : (f - g) x = f x - g x :=

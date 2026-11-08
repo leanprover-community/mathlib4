@@ -103,7 +103,7 @@ def mulEquiv (e : α ≃ β) [Mul β] :
   intros
   exact
     { e with
-      map_mul' := fun x y => by
+      map_mul' x y := by
         simp [mul_def] }
 
 @[to_additive (attr := simp)]

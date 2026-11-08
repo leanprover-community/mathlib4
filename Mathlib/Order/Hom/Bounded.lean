@@ -121,7 +121,7 @@ variable [EquivLike F α β]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
     [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β where
-  map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top
+  map_top f := top_le_iff.1 <| (map_inv_le_iff f).1 le_top
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
@@ -288,7 +288,7 @@ variable [LE β] [OrderTop β]
 @[to_dual]
 instance : OrderTop (TopHom α β) where
   top := ⟨⊤, rfl⟩
-  le_top := fun _ => @le_top (α → β) _ _ _
+  le_top _ := @le_top (α → β) _ _ _
 
 @[to_dual (attr := simp)]
 theorem coe_top : ⇑(⊤ : TopHom α β) = ⊤ :=

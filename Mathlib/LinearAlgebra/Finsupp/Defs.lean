@@ -60,8 +60,8 @@ variable [Finite α] [AddCommMonoid M] [Semiring R] [Module R M]
 noncomputable def linearEquivFunOnFinite : (α →₀ M) ≃ₗ[R] α → M :=
   { equivFunOnFinite with
     toFun := (⇑)
-    map_add' := fun _ _ => rfl
-    map_smul' := fun _ _ => rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 @[simp]
 theorem linearEquivFunOnFinite_single [DecidableEq α] (x : α) (m : M) :
@@ -85,7 +85,7 @@ end LinearEquivFunOnFinite
 
 /-- Interpret `Finsupp.single a` as a linear map. -/
 def lsingle (a : α) : M →ₗ[R] α →₀ M :=
-  { Finsupp.singleAddHom a with map_smul' := fun _ _ => (smul_single _ _ _).symm }
+  { Finsupp.singleAddHom a with map_smul' _ _ := (smul_single _ _ _).symm }
 
 /-- Two `R`-linear maps from `Finsupp X M` which agree on each `single x y` agree everywhere. -/
 theorem lhom_ext ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a b, φ (single a b) = ψ (single a b)) : φ = ψ :=
@@ -104,7 +104,7 @@ theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₛₗ[σ₁₂] N⦄ (h : ∀ a, 
 
 /-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
 def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
-  { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
+  { Finsupp.applyAddHom a with map_smul' _ _ := rfl }
 
 instance [Nonempty α] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M) :=
   .of_injective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)
@@ -212,7 +212,7 @@ end LComapDomain
 def mapRange.linearMap (f : M →ₛₗ[σ₁₂] N) : (α →₀ M) →ₛₗ[σ₁₂] α →₀ N :=
   { mapRange.addMonoidHom f.toAddMonoidHom with
     toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
-    map_smul' := fun c v => mapRange_smul' c (σ₁₂ c) v (f.map_smulₛₗ c) }
+    map_smul' c v := mapRange_smul' c (σ₁₂ c) v (f.map_smulₛₗ c) }
 
 @[simp]
 theorem mapRange.linearMap_id :

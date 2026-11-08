@@ -95,7 +95,7 @@ is a natural Lie algebra morphism from `L` to the linear endomorphism of the quo
 def actionAsEndoMap : L →ₗ⁅R⁆ Module.End R (M ⧸ N) :=
   { LinearMap.comp (Submodule.mapQLinear (N : Submodule R M) (N : Submodule R M))
       lieSubmoduleInvariant with
-    map_lie' := fun {_ _} =>
+    map_lie' {_ _} :=
       Submodule.linearMap_qext _ <| LinearMap.ext fun _ => congr(mk $(lie_lie ..)) }
 
 /-- Given a Lie module `M` over a Lie algebra `L`, together with a Lie submodule `N ⊆ M`, there is
@@ -173,7 +173,7 @@ instance lieQuotientLieAlgebra : LieAlgebra R (L ⧸ I) where
 def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
   { N.toSubmodule.mkQ with
     toFun := mk
-    map_lie' := fun {_ _} => rfl }
+    map_lie' {_ _} := rfl }
 
 @[simp]
 theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective

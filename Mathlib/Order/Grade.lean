@@ -211,7 +211,7 @@ instance OrderDual.gradeOrder [GradeOrder 𝕆 α] : GradeOrder 𝕆ᵒᵈ αᵒ
 
 @[to_dual]
 instance OrderDual.gradeMinOrder [GradeMaxOrder 𝕆 α] : GradeMinOrder 𝕆ᵒᵈ αᵒᵈ :=
-  { OrderDual.gradeOrder with isMin_grade := fun _ => IsMax.grade (α := α) 𝕆 }
+  { OrderDual.gradeOrder with isMin_grade _ := IsMax.grade (α := α) 𝕆 }
 
 instance [GradeBoundedOrder 𝕆 α] : GradeBoundedOrder 𝕆ᵒᵈ αᵒᵈ :=
   { OrderDual.gradeMinOrder, OrderDual.gradeMaxOrder with }
@@ -238,14 +238,14 @@ abbrev GradeOrder.liftLeft [GradeOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictM
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMinOrder.liftLeft [GradeMinOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder ℙ α :=
-  { GradeOrder.liftLeft f hf hcovBy with isMin_grade := fun _ ha => hmin _ <| ha.grade _ }
+  { GradeOrder.liftLeft f hf hcovBy with isMin_grade _ ha := hmin _ <| ha.grade _ }
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 @[to_dual existing]
 abbrev GradeMaxOrder.liftLeft [GradeMaxOrder 𝕆 α] (f : 𝕆 → ℙ) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder ℙ α :=
-  { GradeOrder.liftLeft f hf hcovBy with isMax_grade := fun _ ha => hmax _ <| ha.grade _ }
+  { GradeOrder.liftLeft f hf hcovBy with isMax_grade _ ha := hmax _ <| ha.grade _ }
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
@@ -266,14 +266,14 @@ abbrev GradeOrder.liftRight [GradeOrder 𝕆 β] (f : α → β) (hf : StrictMon
 /-- Lifts a graded order along a strictly monotone function. -/
 abbrev GradeMinOrder.liftRight [GradeMinOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmin : ∀ a, IsMin a → IsMin (f a)) : GradeMinOrder 𝕆 α :=
-  { GradeOrder.liftRight f hf hcovBy with isMin_grade := fun _ ha => (hmin _ ha).grade _ }
+  { GradeOrder.liftRight f hf hcovBy with isMin_grade _ ha := (hmin _ ha).grade _ }
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/
 @[to_dual existing]
 abbrev GradeMaxOrder.liftRight [GradeMaxOrder 𝕆 β] (f : α → β) (hf : StrictMono f)
     (hcovBy : ∀ a b, a ⋖ b → f a ⋖ f b) (hmax : ∀ a, IsMax a → IsMax (f a)) : GradeMaxOrder 𝕆 α :=
-  { GradeOrder.liftRight f hf hcovBy with isMax_grade := fun _ ha => (hmax _ ha).grade _ }
+  { GradeOrder.liftRight f hf hcovBy with isMax_grade _ ha := (hmax _ ha).grade _ }
 
 -- See note [reducible non-instances]
 /-- Lifts a graded order along a strictly monotone function. -/

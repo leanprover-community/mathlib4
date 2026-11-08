@@ -43,8 +43,8 @@ variable (I f)
 instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i, Module α <| f i] :
     @Module α (∀ i : I, f i) r (@Pi.addCommMonoid I f m) :=
   { Pi.distribMulAction _ with
-    add_smul := fun _ _ _ => funext fun _ => add_smul _ _ _
-    zero_smul := fun _ => funext fun _ => zero_smul α _ }
+    add_smul _ _ _ := funext fun _ => add_smul _ _ _
+    zero_smul _ := funext fun _ => zero_smul α _ }
 
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:
@@ -86,8 +86,8 @@ variable [Semiring R] [AddCommMonoid M₂] [Module R M₂] [AddCommMonoid M₃] 
 function into a family of modules. -/
 def pi (f : (i : ι) → M₂ →ₗ[R] φ i) : M₂ →ₗ[R] (i : ι) → φ i :=
   { AddHom.pi fun i => (f i).toAddHom with
-    toFun := fun c i => f i c
-    map_smul' := fun _ _ => funext fun i => (f i).map_smul _ _ }
+    toFun c := fun i  => f i c
+    map_smul' _ _ := funext fun i => (f i).map_smul _ _ }
 
 @[simp]
 theorem pi_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i : ι) : pi f c i = f i c :=

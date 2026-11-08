@@ -58,8 +58,8 @@ set_option linter.style.whitespace false in -- manual alignment is not recognise
 instance Submodule.FG.directedSystem :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)
     (f := fun ⦃P Q⦄ (h : P ≤ Q) ↦ Submodule.inclusion h) where
-  map_self := fun _ _ ↦ rfl
-  map_map  := fun _ _ _ _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map  _ _ _ _ _ _ := rfl
 
 set_option backward.isDefEq.respectTransparency.types false in
 variable (R M) in

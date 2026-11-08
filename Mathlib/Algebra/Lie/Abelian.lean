@@ -63,7 +63,7 @@ instance LieIdeal.isLieAbelian_of_trivial (R : Type u) (L : Type v) [CommRing R]
 theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Injective f) (_ : IsLieAbelian L₂) : IsLieAbelian L₁ :=
-  { trivial := fun x y => h₁ <|
+  { trivial x y := h₁ <|
       calc
         f ⁅x, y⁆ = ⁅f x, f y⁆ := LieHom.map_lie f x y
         _ = 0 := trivial_lie_zero _ _ _ _
@@ -72,7 +72,7 @@ theorem Function.Injective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Typ
 theorem Function.Surjective.isLieAbelian {R : Type u} {L₁ : Type v} {L₂ : Type w} [CommRing R]
     [LieRing L₁] [LieRing L₂] [LieAlgebra R L₁] [LieAlgebra R L₂] {f : L₁ →ₗ⁅R⁆ L₂}
     (h₁ : Function.Surjective f) (h₂ : IsLieAbelian L₁) : IsLieAbelian L₂ :=
-  { trivial := fun x y => by
+  { trivial x y := by
       obtain ⟨u, rfl⟩ := h₁ x
       obtain ⟨v, rfl⟩ := h₁ y
       rw [← LieHom.map_lie, trivial_lie_zero, map_zero] }
@@ -192,7 +192,7 @@ theorem le_max_triv_iff_bracket_eq_bot {N : LieSubmodule R L M} :
 theorem trivial_iff_le_maximal_trivial (N : LieSubmodule R L M) :
     IsTrivial L N ↔ N ≤ maxTrivSubmodule R L M :=
   ⟨fun h m hm x => IsTrivial.casesOn h fun h => Subtype.ext_iff.mp (h x ⟨m, hm⟩), fun h =>
-    { trivial := fun x m => Subtype.ext (h m.2 x) }⟩
+    { trivial x m := Subtype.ext (h m.2 x) }⟩
 
 theorem isTrivial_iff_max_triv_eq_top : IsTrivial L M ↔ maxTrivSubmodule R L M = ⊤ := by
   constructor
@@ -244,7 +244,7 @@ on it is trivial. -/
 def maxTrivLinearMapEquivLieModuleHom : maxTrivSubmodule R L (M →ₗ[R] N) ≃ₗ[R] M →ₗ⁅R,L⁆ N where
   toFun f :=
     { toLinearMap := f.val
-      map_lie' := fun {x m} => by
+      map_lie' {x m} := by
         have hf : ⁅x, f.val⁆ m = 0 := by rw [f.property x, LinearMap.zero_apply]
         rw [LieHom.lie_apply, sub_eq_zero, ← LinearMap.toFun_eq_coe] at hf; exact hf.symm }
   map_add' f g := by ext; simp

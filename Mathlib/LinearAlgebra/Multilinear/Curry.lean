@@ -141,9 +141,9 @@ a multilinear map in `n` variables taking values in linear maps from `M (last n)
 def MultilinearMap.curryRight (f : (Π i, M i) →ₘₗ[R] M₂) :
     (Π i : Fin n, M (Fin.castSucc i)) →ₘₗ[R] M (last n) →ₗ[R] M₂ :=
   MultilinearMap.mk' fun m ↦
-    { toFun := fun x => f (snoc m x)
-      map_add' := fun x y => by simp_rw [f.snoc_add]
-      map_smul' := fun c x => by simp only [f.snoc_smul, RingHom.id_apply] }
+    { toFun x := f (snoc m x)
+      map_add' x y := by simp_rw [f.snoc_add]
+      map_smul' c x := by simp only [f.snoc_smul, RingHom.id_apply] }
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : (Π i, M i) →ₘₗ[R] M₂)

@@ -261,7 +261,7 @@ section commMap
 /-- The linear map that makes `canonicalEmbedding` and `mixedEmbedding` commute, see
 `commMap_canonical_eq_mixed`. -/
 noncomputable def commMap : ((K →+* ℂ) → ℂ) →ₗ[ℝ] (mixedSpace K) where
-  toFun := fun x => ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
+  toFun x := ⟨fun w => (x w.val.embedding).re, fun w => x w.val.embedding⟩
   map_add' := by
     simp only [Pi.add_apply, Complex.add_re, Prod.mk_add_mk, Prod.mk.injEq]
     exact fun _ _ => ⟨rfl, rfl⟩

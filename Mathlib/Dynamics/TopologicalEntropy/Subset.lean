@@ -199,7 +199,7 @@ lemma coverEntropy_biUnion_le (s : Set ι) (T : X → X) (F : ι → Set X) :
 noncomputable def coverEntropySupBotHom (T : X → X) :
     SupBotHom (Set X) EReal where
   toFun := coverEntropy T
-  map_sup' := fun _ _ ↦ coverEntropy_union
+  map_sup' _ _ := coverEntropy_union
   map_bot' := coverEntropy_empty
 
 @[deprecated (since := "2026-07-25")]

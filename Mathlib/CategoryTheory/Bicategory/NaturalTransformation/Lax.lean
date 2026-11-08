@@ -381,7 +381,7 @@ variable (F : B ⥤ᴸ C)
 /-- The identity strong natural transformation. -/
 @[simps!]
 def id : StrongTrans F F :=
-  mkOfLax (LaxTrans.id F) { naturality := fun f ↦ (λ_ (F.map f)) ≪≫ (ρ_ (F.map f)).symm }
+  mkOfLax (LaxTrans.id F) { naturality f := (λ_ (F.map f)) ≪≫ (ρ_ (F.map f)).symm }
 
 @[simp]
 lemma id.toLax : (id F).toLax = LaxTrans.id F :=
@@ -399,7 +399,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps!]
 def vComp : StrongTrans F H :=
   mkOfLax (LaxTrans.vComp η.toLax θ.toLax)
-    { naturality := fun {a b} f ↦
+    { naturality {a b} f :=
         (α_ _ _ _) ≪≫ whiskerLeftIso (η.app a) (θ.naturality f) ≪≫ (α_ _ _ _).symm ≪≫
         whiskerRightIso (η.naturality f) (θ.app b) ≪≫ (α_ _ _ _) }
 

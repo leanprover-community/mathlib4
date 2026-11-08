@@ -72,13 +72,13 @@ namespace Ring.DimensionLEOne
 
 instance principal_ideal_ring [IsDomain A] [IsPrincipalIdealRing A] :
     DimensionLEOne A where
-  maximalOfPrime := fun nonzero _ =>
+  maximalOfPrime nonzero _ :=
     IsPrime.to_maximal_ideal nonzero
 
 theorem of_isIntegral (B : Type*) [CommRing B] [IsDomain B] [Nontrivial R]
     [Algebra R B] [Algebra.IsIntegral R B] [DimensionLEOne R] :
     DimensionLEOne B where
-  maximalOfPrime := fun {p} ne_bot _ =>
+  maximalOfPrime {p} ne_bot _ :=
     IsIntegral.isMaximal_of_isMaximal_under p
       (Ideal.IsPrime.isMaximal inferInstance (IsIntegral.under_ne_bot R ne_bot))
 

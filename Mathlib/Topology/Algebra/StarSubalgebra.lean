@@ -65,7 +65,7 @@ def topologicalClosure (s : StarSubalgebra R A) : StarSubalgebra R A :=
   {
     s.toSubalgebra.topologicalClosure with
     carrier := closure (s : Set A)
-    star_mem' := fun ha =>
+    star_mem' ha :=
       map_mem_closure continuous_star ha fun x => (star_mem : x ∈ s → star x ∈ s) }
 
 theorem topologicalClosure_toSubalgebra_comm (s : StarSubalgebra R A) :

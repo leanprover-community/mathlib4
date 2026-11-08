@@ -241,10 +241,10 @@ def GaloisInsertion.monotoneIntro {α β : Type*} [Preorder α] [Preorder β] {l
 `α` and `β`. -/]
 def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder β] {l : α → β}
     {u : β → α} (gc : GaloisConnection l u) (h : ∀ b, b ≤ l (u b)) : GaloisInsertion l u :=
-  { choice := fun x _ => l x
+  { choice x _ := l x
     gc
     le_l_u := h
-    choice_eq := fun _ _ => rfl }
+    choice_eq _ _ := rfl }
 
 /-- Lift the bottom along a Galois connection -/
 @[to_dual (attr := instance_reducible) /-- Lift the top along a Galois connection -/]

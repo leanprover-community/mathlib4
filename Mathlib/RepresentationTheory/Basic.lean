@@ -423,7 +423,7 @@ variable (k G A : Type*) [Semiring k] [Monoid G] [AddCommMonoid A] [Module k A]
 /-- Turns a `k`-module `A` with a compatible `DistribMulAction` of a monoid `G` into a
 `k`-linear `G`-representation on `A`. -/
 def ofDistribMulAction : Representation k G A where
-  toFun := fun m =>
+  toFun m :=
     { DistribMulAction.toAddMonoidEnd G A m with
       map_smul' := smul_comm _ }
   map_one' := by ext; exact one_smul _ _
@@ -654,9 +654,9 @@ module `V →ₗ[k] W`, where `G` acts by conjugation.
 -/
 def linHom : Representation k G (V →ₗ[k] W) where
   toFun g :=
-    { toFun := fun f => ρW g ∘ₗ f ∘ₗ ρV g⁻¹
-      map_add' := fun f₁ f₂ => by simp_rw [add_comp, comp_add]
-      map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
+    { toFun f := ρW g ∘ₗ f ∘ₗ ρV g⁻¹
+      map_add' f₁ f₂ := by simp_rw [add_comp, comp_add]
+      map_smul' r f := by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' := ext fun x => by simp [Module.End.one_eq_id]
   map_mul' g h := ext fun x => by simp [Module.End.mul_eq_comp, comp_assoc]
 
@@ -669,8 +669,8 @@ where `f : Module.Dual k V`.
 -/
 def dual : Representation k G (Module.Dual k V) where
   toFun g :=
-    { toFun := fun f => f ∘ₗ ρV g⁻¹
-      map_add' := fun f₁ f₂ => by simp only [add_comp]
+    { toFun f := f ∘ₗ ρV g⁻¹
+      map_add' f₁ f₂ := by simp only [add_comp]
       map_smul' r f := by ext; simp }
   map_one' := by ext; simp
   map_mul' g h := by ext; simp

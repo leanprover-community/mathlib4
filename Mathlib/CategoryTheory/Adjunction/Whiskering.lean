@@ -31,11 +31,11 @@ variable (C : Type*) {D E : Type*} [Category* C] [Category* D] [Category* E] {F 
 protected def whiskerRight (adj : F ⊣ G) :
     (whiskeringRight C D E).obj F ⊣ (whiskeringRight C E D).obj G where
   unit :=
-    { app := fun X =>
+    { app X :=
         (rightUnitor _).inv ≫ whiskerLeft X adj.unit ≫ (associator _ _ _).inv
       naturality := by intros; ext; simp }
   counit :=
-    { app := fun X =>
+    { app X :=
         (associator _ _ _).hom ≫ whiskerLeft X adj.counit ≫ (rightUnitor _).hom
       naturality := by intros; ext; simp }
 
@@ -45,10 +45,10 @@ protected def whiskerRight (adj : F ⊣ G) :
 protected def whiskerLeft (adj : F ⊣ G) :
     (whiskeringLeft E D C).obj G ⊣ (whiskeringLeft D E C).obj F where
   unit :=
-    { app := fun X =>
+    { app X :=
         (leftUnitor _).inv ≫ whiskerRight adj.unit X ≫ (associator _ _ _).hom }
   counit :=
-    { app := fun X =>
+    { app X :=
         (associator _ _ _).inv ≫ whiskerRight adj.counit X ≫ (leftUnitor _).hom }
   left_triangle_components X := by ext; simp [← X.map_comp]
   right_triangle_components X := by ext; simp [← X.map_comp]

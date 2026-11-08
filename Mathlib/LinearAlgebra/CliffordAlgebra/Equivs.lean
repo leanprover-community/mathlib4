@@ -78,7 +78,7 @@ theorem ι_eq_zero : ι (0 : QuadraticForm R Unit) = 0 :=
 
 /-- Since the vector space is empty the ring is commutative. -/
 instance : CommRing (CliffordAlgebra (0 : QuadraticForm R Unit)) where
-  mul_comm := fun x y => by
+  mul_comm x y := by
     induction x using CliffordAlgebra.induction with
     | algebraMap r => apply Algebra.commutes
     | ι x => simp
@@ -192,7 +192,7 @@ protected def equiv : CliffordAlgebra Q ≃ₐ[ℝ] ℂ :=
 
 TODO: prove this is true for all `CliffordAlgebra`s over a 1-dimensional vector space. -/
 instance : CommRing (CliffordAlgebra Q) where
-  mul_comm := fun x y =>
+  mul_comm x y :=
     CliffordAlgebraComplex.equiv.injective <| by
       rw [map_mul, mul_comm, map_mul]
 
@@ -259,9 +259,9 @@ variable {c₁ c₂}
 `CliffordAlgebraQuaternion.Q` can be converted to `ℍ[R,c₁,c₂]`. -/
 def toQuaternion : CliffordAlgebra (Q c₁ c₂) →ₐ[R] ℍ[R,c₁,0,c₂] :=
   CliffordAlgebra.lift (Q c₁ c₂)
-    ⟨{  toFun := fun v => (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,0,c₂])
-        map_add' := fun v₁ v₂ => by simp
-        map_smul' := fun r v => by dsimp; rw [mul_zero] }, fun v => by
+    ⟨{  toFun v := (⟨0, v.1, v.2, 0⟩ : ℍ[R,c₁,0,c₂])
+        map_add' v₁ v₂ := by simp
+        map_smul' r v := by dsimp; rw [mul_zero] }, fun v => by
       dsimp
       ext
       all_goals dsimp; ring⟩

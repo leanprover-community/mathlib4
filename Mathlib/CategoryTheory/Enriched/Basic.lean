@@ -122,9 +122,9 @@ open Functor.LaxMonoidal
 
 set_option backward.isDefEq.respectTransparency.types false in
 instance : EnrichedCategory W (TransportEnrichment F C) where
-  Hom := fun X Y : C => F.obj (X ⟶[V] Y)
-  id := fun X : C => ε F ≫ F.map (eId V X)
-  comp := fun X Y Z : C => μ F _ _ ≫ F.map (eComp V X Y Z)
+  Hom (X Y : C) := F.obj (X ⟶[V] Y)
+  id (X : C) := ε F ≫ F.map (eId V X)
+  comp (X Y Z : C) := μ F _ _ ≫ F.map (eComp V X Y Z)
   id_comp X Y := by
     simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
       Functor.LaxMonoidal.left_unitality_inv_assoc]
@@ -513,15 +513,15 @@ def enrichedFunctorTypeEquivFunctor {C : Type u₁} [𝒞 : EnrichedCategory (Ty
     {D : Type u₂} [𝒟 : EnrichedCategory (Type v) D] :
     EnrichedFunctor (Type v) C D ≃ C ⥤ D where
   toFun F :=
-    { obj := fun X => F.obj X
-      map := fun f => F.map _ _ f
-      map_id := fun X => congr($(F.map_id X) PUnit.unit)
-      map_comp := fun f g => congr($(F.map_comp _ _ _) ⟨f, g⟩) }
+    { obj X := F.obj X
+      map f := F.map _ _ f
+      map_id X := congr($(F.map_id X) PUnit.unit)
+      map_comp f g := congr($(F.map_comp _ _ _) ⟨f, g⟩) }
   invFun F :=
-    { obj := fun X => F.obj X
-      map := fun _ _ => ↾fun f => F.map f
-      map_id := fun X => by ext ⟨⟩; exact F.map_id X
-      map_comp := fun X Y Z => by ext ⟨f, g⟩; exact F.map_comp f g }
+    { obj X := F.obj X
+      map _ _ := ↾fun f => F.map f
+      map_id X := by ext ⟨⟩; exact F.map_id X
+      map_comp X Y Z := by ext ⟨f, g⟩; exact F.map_comp f g }
 
 /-- We verify that the presheaf representing natural transformations
 between `Type v`-enriched functors is actually represented by

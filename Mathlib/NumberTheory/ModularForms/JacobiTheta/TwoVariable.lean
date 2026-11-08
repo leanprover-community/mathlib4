@@ -339,7 +339,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   -- This proof is annoyingly fiddly, because of the need to commute "evaluation at a point"
   -- through infinite sums of continuous linear maps.
   let eval_fst_CLM : (ℂ × ℂ →L[ℂ] ℂ) →L[ℂ] ℂ :=
-  { toFun := fun f ↦ f (1, 0)
+  { toFun f := f (1, 0)
     map_add' := by simp only [add_apply, forall_const]
     map_smul' := by simp }
   have step1 : HasSum (fun n ↦ (jacobiTheta₂_term_fderiv n z τ) (1, 0))

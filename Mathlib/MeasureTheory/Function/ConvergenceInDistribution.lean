@@ -87,7 +87,7 @@ theorem tendstoInDistribution_iff_forall_integral_rclike_tendsto
 
 lemma tendstoInDistribution_const [OpensMeasurableSpace E] (hZ : AEMeasurable Z μ') :
     TendstoInDistribution (fun _ ↦ Z) l Z (fun _ ↦ μ') μ' where
-  forall_aemeasurable := fun _ ↦ by fun_prop
+  forall_aemeasurable _ := by fun_prop
   tendsto := tendsto_const_nhds
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -115,7 +115,7 @@ protected lemma TendstoInDistribution.congr [OpensMeasurableSpace E] {T : Ω' �
 @[simp]
 lemma tendstoInDistribution_of_isEmpty [IsEmpty E] :
     TendstoInDistribution X l Z μ μ' where
-  forall_aemeasurable := fun _ ↦ (measurable_of_subsingleton_codomain _).aemeasurable
+  forall_aemeasurable _ := (measurable_of_subsingleton_codomain _).aemeasurable
   aemeasurable_limit := (measurable_of_subsingleton_codomain _).aemeasurable
   tendsto := by
     simp only [Subsingleton.elim _ (0 : Measure E)]
@@ -137,7 +137,7 @@ theorem TendstoInDistribution.continuous_comp {F : Type*} [OpensMeasurableSpace 
     [TopologicalSpace F] [MeasurableSpace F] [BorelSpace F] {g : E → F} (hg : Continuous g)
     (h : TendstoInDistribution X l Z μ μ') :
     TendstoInDistribution (fun n ↦ g ∘ X n) l (g ∘ Z) μ μ' where
-  forall_aemeasurable := fun n ↦ hg.measurable.comp_aemeasurable (h.forall_aemeasurable n)
+  forall_aemeasurable n := hg.measurable.comp_aemeasurable (h.forall_aemeasurable n)
   aemeasurable_limit := hg.measurable.comp_aemeasurable h.aemeasurable_limit
   tendsto := by
     convert! ProbabilityMeasure.tendsto_map_of_tendsto_of_continuous _ _ h.tendsto hg

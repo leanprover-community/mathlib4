@@ -73,9 +73,9 @@ theorem inner_coe (a b : E) : ⟪(a : Completion E), (b : Completion E)⟫ = ⟪
 protected theorem continuous_inner :
     Continuous (uncurry (inner 𝕜 (E := Completion E))) := by
   let inner' : E →+ E →+ 𝕜 :=
-    { toFun := fun x => (innerₛₗ 𝕜 x).toAddMonoidHom
+    { toFun x := (innerₛₗ 𝕜 x).toAddMonoidHom
       map_zero' := by ext x; exact inner_zero_left _
-      map_add' := fun x y => by ext z; exact inner_add_left _ _ _ }
+      map_add' x y := by ext z; exact inner_add_left _ _ _ }
   have : Continuous fun p : E × E => inner' p.1 p.2 := continuous_inner
   rw [Completion.toInner, inner, uncurry_curry _]
   change

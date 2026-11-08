@@ -37,7 +37,7 @@ variable (D : Type*) [Category* D]
 where `forget C` reflects isomorphisms, itself reflects isomorphisms. -/
 instance reflectsIsomorphisms_forget₂ [HasForget₂ C D] [(forget C).ReflectsIsomorphisms] :
     (forget₂ C D).ReflectsIsomorphisms :=
-  { reflects := fun X Y f {i} => by
+  { reflects X Y f {i} := by
       have i' : IsIso ((forget D).map ((forget₂ C D).map f)) := Functor.map_isIso (forget D) _
       have : IsIso ((forget C).map f) := by
         rwa [← @HasForget₂.forget_comp (C := C) (D := D)]

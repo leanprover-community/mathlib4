@@ -309,9 +309,9 @@ variable (σ E F) in
 an `A` and maps it to `fun ⟨x, y⟩ => y (A x)` in `E × F⋆ → 𝕜`, bundled as a linear map to make
 it easier to prove that it is a TVS. -/
 def inducingFn : (E →SWOT[σ] F) →ₗ[𝕜₂] (E × F⋆ → 𝕜₂) where
-  toFun := fun A ⟨x, y⟩ => y (A x)
-  map_add' := fun x y => by ext; simp
-  map_smul' := fun x y => by ext; simp
+  toFun A := fun ⟨x, y⟩  => y (A x)
+  map_add' x y := by ext; simp
+  map_smul' x y := by ext; simp
 
 @[simp]
 lemma inducingFn_apply {f : E →SWOT[σ] F} {x : E} {y : F⋆} :

@@ -186,7 +186,7 @@ instance instLinearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : Lin
   toDecidableLE := Prod.Lex.decidable _ _
   toDecidableLT := Prod.Lex.decidable _ _
   toDecidableEq := instDecidableEqLex _
-  compare_eq_compareOfLessAndEq := fun a b => by
+  compare_eq_compareOfLessAndEq a b := by
     have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
     have : Std.LawfulBEqOrd (α ×ₗ β) := ⟨by
       simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq]⟩

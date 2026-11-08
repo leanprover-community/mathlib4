@@ -46,7 +46,7 @@ def coneCompEvaluationOfConeCompDiagramFunctorCompEvaluation {X : C} {K : Type s
     Cone (F ⋙ (evaluation _ _).obj (op i.Y)) where
   pt := E.pt
   π :=
-    { app := fun k => E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
+    { app k := E.π.app k ≫ Multiequalizer.ι (W.index (F.obj k)) i
       naturality := by
         intro a b f
         dsimp
@@ -96,7 +96,7 @@ instance preservesLimit_diagramFunctor
     PreservesLimit F (J.diagramFunctor D X) :=
   preservesLimit_of_evaluation _ _ fun W =>
     preservesLimit_of_preserves_limit_cone (limit.isLimit _)
-      { lift := fun E => liftToDiagramLimitObj.{_, t, w, v, u} F E
+      { lift E := liftToDiagramLimitObj.{_, t, w, v, u} F E
         fac := by
           intro E k
           dsimp [diagramNatTrans]

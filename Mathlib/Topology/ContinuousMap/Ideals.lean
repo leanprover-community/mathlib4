@@ -387,9 +387,9 @@ variable [Nontrivial 𝕜] [NoZeroDivisors 𝕜]
 `WeakDual.characterSpace 𝕜 C(X, 𝕜)` which sends `x : X` to point evaluation at `x`. -/
 def continuousMapEval : C(X, characterSpace 𝕜 C(X, 𝕜)) where
   toFun x :=
-    ⟨{  toFun := fun f => f x
-        map_add' := fun _ _ => rfl
-        map_smul' := fun _ _ => rfl }, by
+    ⟨{  toFun f := f x
+        map_add' _ _ := rfl
+        map_smul' _ _ := rfl }, by
         rw [CharacterSpace.eq_set_map_one_map_mul]; exact ⟨rfl, fun f g => rfl⟩⟩
   continuous_toFun := by
     exact Continuous.subtype_mk (continuous_of_continuous_eval map_continuous) _

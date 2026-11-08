@@ -101,7 +101,7 @@ theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π 
 
 instance instIsUniformAddGroup : IsUniformAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   let φ : ContinuousMultilinearMap 𝕜 E F →+ (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F :=
-    { toFun := toUniformOnFun, map_add' := fun _ _ ↦ rfl, map_zero' := rfl }
+    { toFun := toUniformOnFun, map_add' _ _ := rfl, map_zero' := rfl }
   isUniformEmbedding_toUniformOnFun.isUniformAddGroup φ
 
 instance instUniformContinuousConstSMul {M : Type*}
@@ -198,7 +198,7 @@ instance instContinuousSMul [ContinuousSMul 𝕜 F] :
   letI := IsTopologicalAddGroup.rightUniformSpace F
   haveI := isUniformAddGroup_of_addCommGroup (G := F)
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
-    { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
+    { toFun := (↑), map_add' _ _ := rfl, map_smul' _ _ := rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
     isEmbedding_toUniformOnFun.isInducing fun _ _ hu ↦ hu.image_multilinear _
 

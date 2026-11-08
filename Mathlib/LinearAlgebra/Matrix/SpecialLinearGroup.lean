@@ -184,7 +184,7 @@ instance monoid : Monoid (SpecialLinearGroup n R) :=
 
 instance : Group (SpecialLinearGroup n R) :=
   { SpecialLinearGroup.monoid, SpecialLinearGroup.hasInv with
-    inv_mul_cancel := fun A => by
+    inv_mul_cancel A := by
       ext1
       simp [adjugate_mul] }
 

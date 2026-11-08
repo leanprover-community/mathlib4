@@ -342,11 +342,11 @@ lemma limitUnopIsoUnopColimit_hom_comp_ι (F : Jᵒᵖ ⥤ Cᵒᵖ) [HasColimit 
 -/
 theorem hasLimitsOfShape_op_of_hasColimitsOfShape [HasColimitsOfShape Jᵒᵖ C] :
     HasLimitsOfShape J Cᵒᵖ :=
-  { has_limit := fun F => hasLimit_of_hasColimit_leftOp F }
+  { has_limit F := hasLimit_of_hasColimit_leftOp F }
 
 theorem hasLimitsOfShape_of_hasColimitsOfShape_op [HasColimitsOfShape Jᵒᵖ Cᵒᵖ] :
     HasLimitsOfShape J C :=
-  { has_limit := fun F => hasLimit_of_hasColimit_op F }
+  { has_limit F := hasLimit_of_hasColimit_op F }
 
 attribute [local instance] hasLimitsOfShape_op_of_hasColimitsOfShape
 
@@ -358,7 +358,7 @@ instance hasLimits_op_of_hasColimits [HasColimitsOfSize.{v₂, u₂} C] :
 
 theorem hasLimits_of_hasColimits_op [HasColimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasLimitsOfSize.{v₂, u₂} C :=
-  { has_limits_of_shape := fun _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
+  { has_limits_of_shape _ _ := hasLimitsOfShape_of_hasColimitsOfShape_op }
 
 /-- If `F.leftOp : Jᵒᵖ ⥤ C` has a limit, we can construct a colimit for `F : J ⥤ Cᵒᵖ`. -/
 theorem hasColimit_of_hasLimit_leftOp (F : J ⥤ Cᵒᵖ) [HasLimit F.leftOp] : HasColimit F :=
@@ -468,7 +468,7 @@ instance hasColimitsOfShape_op_of_hasLimitsOfShape [HasLimitsOfShape Jᵒᵖ C] 
 
 theorem hasColimitsOfShape_of_hasLimitsOfShape_op [HasLimitsOfShape Jᵒᵖ Cᵒᵖ] :
     HasColimitsOfShape J C :=
-  { has_colimit := fun F => hasColimit_of_hasLimit_op F }
+  { has_colimit F := hasColimit_of_hasLimit_op F }
 
 /-- If `C` has limits, we can construct colimits for `Cᵒᵖ`.
 -/
@@ -478,7 +478,7 @@ instance hasColimits_op_of_hasLimits [HasLimitsOfSize.{v₂, u₂} C] :
 
 theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
     HasColimitsOfSize.{v₂, u₂} C :=
-  { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
+  { has_colimits_of_shape _ _ := hasColimitsOfShape_of_hasLimitsOfShape_op }
 
 lemma hasColimitsOfSize_opposite_iff :
     HasColimitsOfSize.{v₂, u₂} Cᵒᵖ ↔ HasLimitsOfSize.{v₂, u₂} C :=

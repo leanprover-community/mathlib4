@@ -313,8 +313,8 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
       obtain ⟨q, hq⟩ := key' ⟨l₁, hl₁⟩
       exact ⟨q, congr(_ ∈ $(Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
   { ‹HasLines P L› with
-    mkPoint := fun {l₁ l₂} hl => Classical.choose (this l₁ l₂ hl)
-    mkPoint_ax := fun {l₁ l₂} hl => Classical.choose_spec (this l₁ l₂ hl) }
+    mkPoint {l₁ l₂} hl := Classical.choose (this l₁ l₂ hl)
+    mkPoint_ax {l₁ l₂} hl := Classical.choose_spec (this l₁ l₂ hl) }
 
 /-- If a nondegenerate configuration has a unique point on any two lines, and if `|P| = |L|`,
   then there is a unique line through any two points. -/
@@ -439,8 +439,8 @@ theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + or
   cases nonempty_fintype L
   obtain ⟨p, -⟩ := @exists_config P L _ _
   let ϕ : { q // q ≠ p } ≃ Σ l : { l : L // p ∈ l }, { q // q ∈ l.1 ∧ q ≠ p } :=
-    { toFun := fun q => ⟨⟨mkLine q.2, (mkLine_ax q.2).2⟩, q, (mkLine_ax q.2).1, q.2⟩
-      invFun := fun lq => ⟨lq.2, lq.2.2.2⟩
+    { toFun q := ⟨⟨mkLine q.2, (mkLine_ax q.2).2⟩, q, (mkLine_ax q.2).1, q.2⟩
+      invFun lq := ⟨lq.2, lq.2.2.2⟩
       right_inv := fun lq =>
         Sigma.subtype_ext
           (Subtype.ext
@@ -516,11 +516,11 @@ noncomputable instance [DecidableEq K] : ProjectivePlane (ℙ K (Fin 3 → K)) (
   { mkPoint := by
       intro v w _
       exact cross v w
-    mkPoint_ax := fun h ↦ ⟨cross_orthogonal_left h, cross_orthogonal_right h⟩
+    mkPoint_ax h := ⟨cross_orthogonal_left h, cross_orthogonal_right h⟩
     mkLine := by
       intro v w _
       exact cross v w
-    mkLine_ax := fun h ↦ ⟨orthogonal_cross_left h, orthogonal_cross_right h⟩
+    mkLine_ax h := ⟨orthogonal_cross_left h, orthogonal_cross_right h⟩
     exists_config := by
       refine ⟨mk K ![0, 1, 1] ?_, mk K ![1, 0, 0] ?_, mk K ![1, 0, 1] ?_, mk K ![1, 0, 0] ?_,
         mk K ![0, 1, 0] ?_, mk K ![0, 0, 1] ?_, ?_⟩ <;> simp [mem_iff, orthogonal_mk] }

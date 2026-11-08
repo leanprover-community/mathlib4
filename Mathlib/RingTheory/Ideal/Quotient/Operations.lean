@@ -364,7 +364,7 @@ variable [Algebra R₁ A] [Algebra R₂ A]
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
 instance Quotient.algebra {I : Ideal A} [I.IsTwoSided] : Algebra R₁ (A ⧸ I) where
   algebraMap := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
-  smul_def' := fun _ x =>
+  smul_def' _ x :=
     Quotient.inductionOn' x fun _ =>
       ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (map_mul _ _ _)
   commutes' := by rintro r ⟨x⟩; congrm ⟦$(Algebra.commutes r x)⟧
@@ -485,7 +485,7 @@ def Quotient.liftₐ (I : Ideal A) [I.IsTwoSided] (f : A →ₐ[R₁] B) (hI : �
     -- imports this file.
       Ideal.Quotient.lift
       I (f : A →+* B) hI with
-    commutes' := fun r => by
+    commutes' r := by
       have : algebraMap R₁ (A ⧸ I) r = Ideal.Quotient.mk I (algebraMap R₁ A r) := rfl
       rw [this, RingHom.toFun_eq_coe, Ideal.Quotient.lift_mk,
         AlgHom.coe_toRingHom, Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one,
@@ -709,7 +709,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The algebra hom `A/I →+* B/J` induced by an algebra hom `f : A →ₐ[R₁] B` with `I ≤ f⁻¹(J)`. -/
 def quotientMapₐ (f : A →ₐ[R₁] B) (hIJ : I ≤ J.comap f) :
     A ⧸ I →ₐ[R₁] B ⧸ J :=
-  { quotientMap J (f : A →+* B) hIJ with commutes' := fun r => by simp only [RingHom.toFun_eq_coe,
+  { quotientMap J (f : A →+* B) hIJ with commutes' r := by simp only [RingHom.toFun_eq_coe,
     quotientMap_algebraMap, AlgHom.coe_toRingHom, AlgHom.commutes, Quotient.mk_algebraMap] }
 
 @[simp]

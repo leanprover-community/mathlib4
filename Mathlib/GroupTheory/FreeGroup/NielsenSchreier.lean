@@ -107,7 +107,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  of := fun (e : Subtype _) => ⟨IsFreeGroup.of e, e.property⟩
+  of (e : Subtype _) := ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>

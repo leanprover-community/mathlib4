@@ -254,7 +254,7 @@ def ofGroup (g : G) : NormalWord d :=
 instance : Inhabited (NormalWord d) := ⟨empty⟩
 
 instance : MulAction G (NormalWord d) :=
-  { smul := fun g w => { w with head := g * w.head }
+  { smul g w := { w with head := g * w.head }
     one_smul := by simp +instances [instHSMul]
     mul_smul := by simp +instances [instHSMul, mul_assoc] }
 
@@ -304,7 +304,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
     exact cons g a.1
       { head := a.2
         toList := l
-        mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
+        mem_set _ _ h := mem_set _ _ (List.mem_cons_of_mem _ h),
         chain := (List.isChain_cons.1 chain).2 }
       (mem_set a.1 a.2 List.mem_cons_self)
       (by simpa using (List.isChain_cons.1 chain).1)
@@ -581,8 +581,8 @@ theorem prod_smul_empty (w : NormalWord d) :
 variable (d)
 /-- The equivalence between elements of the HNN extension and words in normal form. -/
 noncomputable def equiv : HNNExtension G A B φ ≃ NormalWord d :=
-  { toFun := fun g => g • empty,
-    invFun := fun w => w.prod φ,
+  { toFun g := g • empty,
+    invFun w := w.prod φ,
     left_inv := fun g => by simp [prod_smul]
     right_inv := fun w => by simp }
 

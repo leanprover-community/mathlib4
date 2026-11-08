@@ -134,8 +134,8 @@ The specialized version can be obtained by combining this definition with `finSu
 def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂) :
     Mᵢ [⋀^ιa ⊕ ιb]→ₗ[R'] (N₁ ⊗[R'] N₂) :=
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
-    toFun := fun v => (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
-    map_eq_zero_of_eq' := fun v i j hv hij => by
+    toFun v := (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
+    map_eq_zero_of_eq' v i j hv hij := by
       rw [_root_.sum_apply]
       exact
         Finset.sum_involution (fun σ _ => Equiv.swap i j • σ)

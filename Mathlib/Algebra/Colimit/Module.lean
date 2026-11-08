@@ -82,7 +82,7 @@ variable (R ι)
 
 /-- The canonical map from a component to the direct limit. -/
 def of (i) : G i →ₗ[R] DirectLimit G f :=
-  .comp { __ := AddCon.mk' _, map_smul' := fun _ _ ↦ rfl } <| DirectSum.lof R ι G i
+  .comp { __ := AddCon.mk' _, map_smul' _ _ := rfl } <| DirectSum.lof R ι G i
 
 variable {R ι G f}
 

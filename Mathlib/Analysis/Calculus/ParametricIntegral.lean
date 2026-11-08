@@ -420,7 +420,7 @@ theorem hasFTaylorSeriesUpToOn_setIntegral_of_le_const
     exact integrableOn_const hmut
   · apply ae_restrict_of_forall_mem tmeas (fun w hw ↦ ?_)
     let g : H →ᴬ[𝕜] H × H' :=
-    { toFun := fun x ↦ (x, w)
+    { toFun x := (x, w)
       linear := LinearMap.inl 𝕜 H H'
       map_vadd' p v := by simp
       cont := by fun_prop }

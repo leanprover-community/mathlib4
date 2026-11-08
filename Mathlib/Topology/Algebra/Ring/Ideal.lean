@@ -32,7 +32,7 @@ protected def Ideal.closure (I : Ideal R) : Ideal R :=
     AddSubmonoid.topologicalClosure
       I.toAddSubmonoid with
     carrier := closure I
-    smul_mem' := fun c _ hx => map_mem_closure (mulLeft_continuous _) hx fun _ => I.mul_mem_left c }
+    smul_mem' c _ hx := map_mem_closure (mulLeft_continuous _) hx fun _ => I.mul_mem_left c }
 
 @[simp]
 theorem Ideal.coe_closure (I : Ideal R) : (I.closure : Set R) = closure I :=

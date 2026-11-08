@@ -247,12 +247,12 @@ section Singleton
 /-- `Basis.singleton ι R` is the basis sending the unique element of `ι` to `1 : R`. -/
 protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
-    { toFun := fun x => Finsupp.single default x
-      invFun := fun f => f default
+    { toFun x := Finsupp.single default x
+      invFun f := f default
       left_inv := fun x => by simp
       right_inv := fun f => Finsupp.unique_ext (by simp)
-      map_add' := fun x y => by simp
-      map_smul' := fun c x => by simp }
+      map_add' x y := by simp
+      map_smul' c x := by simp }
 
 @[simp]
 theorem singleton_apply (ι R : Type*) [Unique ι] [Semiring R] (i) : Basis.singleton ι R i = 1 :=
@@ -279,7 +279,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr(ofRepr $(Subsingleton.elim ..))
+  uniq _ := congr(ofRepr $(Subsingleton.elim ..))
 
 end Empty
 
@@ -305,12 +305,12 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
     simpa [span_singleton_eq_top_iff, Set.range_unique] using b.span_eq
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
-      { toFun := fun f => f default • x
-        invFun := fun y => Finsupp.single default (w y).choose
+      { toFun f := f default • x
+        invFun y := Finsupp.single default (w y).choose
         left_inv := fun f => Finsupp.unique_ext ?_
         right_inv := fun y => ?_
-        map_add' := fun y z => ?_
-        map_smul' := fun c y => ?_ }⟩
+        map_add' y z := ?_
+        map_smul' c y := ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]
     · simp only [Finsupp.coe_smul, Pi.smul_apply, RingHom.id_apply]
       rw [← smul_assoc]

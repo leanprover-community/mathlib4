@@ -96,9 +96,9 @@ def Spec.sheafedSpaceMap {R S : CommRingCat.{u}} (f : R ⟶ S) :
     Spec.sheafedSpaceObj S ⟶ Spec.sheafedSpaceObj R where
   hom.base := Spec.topMap f
   hom.c :=
-    { app := fun U => CommRingCat.ofHom <|
+    { app U := CommRingCat.ofHom <|
         comap f.hom (unop U) ((TopologicalSpace.Opens.map (Spec.topMap f)).obj (unop U)) fun _ => id
-      naturality := fun {_ _} _ => by ext; rfl }
+      naturality {_ _} _ := by ext; rfl }
 
 set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
@@ -361,7 +361,7 @@ algebra `R ⟶ S` and some `p : Spec R`.
 def toPushforwardStalkAlgHom :
     S →ₐ[R] (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).stalk p :=
   { (StructureSheaf.toPushforwardStalk (CommRingCat.ofHom (algebraMap R S)) p).hom with
-    commutes' := fun _ => rfl }
+    commutes' _ := rfl }
 
 set_option backward.isDefEq.respectTransparency.types false in
 theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :

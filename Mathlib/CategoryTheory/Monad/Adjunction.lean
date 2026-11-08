@@ -173,8 +173,8 @@ set_option backward.defeqAttrib.useBackward true in
 -/
 @[simps]
 def Monad.comparisonForget (h : L ⊣ R) : Monad.comparison h ⋙ h.toMonad.forget ≅ R where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 theorem Monad.left_comparison (h : L ⊣ R) : L ⋙ Monad.comparison h = h.toMonad.free :=
   rfl
@@ -222,8 +222,8 @@ set_option backward.defeqAttrib.useBackward true in
 @[simps]
 def Comonad.comparisonForget {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) :
     Comonad.comparison h ⋙ h.toComonad.forget ≅ L where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 theorem Comonad.left_comparison (h : L ⊣ R) : R ⋙ Comonad.comparison h = h.toComonad.cofree :=
   rfl

@@ -35,7 +35,7 @@ The kernel of a ring homomorphism, as a two-sided ideal.
 def ker : TwoSidedIdeal R :=
   .ofRingCon
   -- TODO: use `RingCon.ker`
-  { r := fun x y ↦ f x = f y
+  { r x y := f x = f y
     iseqv := by constructor <;> aesop
     mul' := by intro; simp_all
     add' := by intro; simp_all }

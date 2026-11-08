@@ -80,7 +80,7 @@ set_option backward.defeqAttrib.useBackward true in
 instance : (endMonoidalStarFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
-      μIso := fun _ _ ↦ Iso.refl _ }
+      μIso _ _ := Iso.refl _ }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence between the endomorphisms of the single object
@@ -92,8 +92,8 @@ noncomputable def endMonoidalStarFunctorEquivalence :
     EndMonoidal (MonoidalSingleObj.star C) ≌ C where
   functor := endMonoidalStarFunctor C
   inverse :=
-    { obj := fun X => X
-      map := fun f => f }
+    { obj X := X
+      map f := f }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

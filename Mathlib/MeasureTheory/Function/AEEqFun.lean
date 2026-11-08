@@ -1031,6 +1031,6 @@ variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Mod
 classes of `μ`-almost-everywhere measurable functions. -/
 def toAEEqFunLinearMap : C(α, γ) →ₗ[𝕜] α →ₘ[μ] γ :=
   { toAEEqFunAddHom μ with
-    map_smul' := fun c f => AEEqFun.smul_mk c f f.continuous.aestronglyMeasurable }
+    map_smul' c f := AEEqFun.smul_mk c f f.continuous.aestronglyMeasurable }
 
 end ContinuousMap

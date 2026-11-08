@@ -77,7 +77,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     letI := RingHom.toAlgebra (s.inl.hom.comp (algebraMap R A))
     let f' : A →ₐ[R] s.pt :=
       { s.inl.hom with
-        commutes' := fun r => rfl }
+        commutes' r := rfl }
     let g' : B →ₐ[R] s.pt :=
       { s.inr.hom with
         commutes' := DFunLike.congr_fun <| congrArg Hom.hom
@@ -96,7 +96,7 @@ def pushoutCoconeIsColimit : Limits.IsColimit (pushoutCocone R A B) :=
     intro h eq1 eq2
     let h' : A ⊗[R] B →ₐ[R] s.pt :=
       { h.hom with
-        commutes' := fun r => by
+        commutes' r := by
           change h (algebraMap R A r ⊗ₜ[R] 1) = s.inl (algebraMap R A r)
           rw [← eq1]
           simp only [pushoutCocone_pt, coe_of]

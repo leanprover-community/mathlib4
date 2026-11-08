@@ -37,8 +37,8 @@ of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
     (hc : ∀ (X : Cᵒᵖ), IsLimit ((evaluation R X).mapCone c)) : IsLimit c where
   lift s :=
-    { app := fun X => (hc X).lift ((evaluation R X).mapCone s)
-      naturality := fun {X Y} f ↦ by
+    { app X := (hc X).lift ((evaluation R X).mapCone s)
+      naturality {X Y} f := by
         apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom) (hc Y)).hom_ext
         intro j
         have h₁ := (c.π.app j).naturality f
@@ -95,13 +95,13 @@ of `F ⋙ evaluation R X` for all `X`. -/
 noncomputable def limitCone : Cone F where
   pt := limitPresheafOfModules F
   π :=
-    { app := fun j ↦
-        { app := fun X ↦ limit.π (F ⋙ evaluation R X) j
-          naturality := fun {X Y} f ↦ by
+    { app j :=
+        { app X := limit.π (F ⋙ evaluation R X) j
+          naturality {X Y} f := by
             dsimp
             simp only [assoc, preservesLimitIso_inv_π]
             apply limMap_π }
-      naturality := fun {j j'} f ↦ by
+      naturality {j j'} f := by
         ext1 X
         simpa using (limit.w (F ⋙ evaluation R X) f).symm }
 

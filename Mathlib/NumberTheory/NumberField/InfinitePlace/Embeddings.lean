@@ -246,7 +246,7 @@ lemma exists_comp_symm_eq_of_comp_eq [Algebra k K] [IsGalois k K] (φ ψ : K →
   let := (φ.comp (algebraMap k K)).toAlgebra
   let := φ.toAlgebra
   have : IsScalarTower k K ℂ := IsScalarTower.of_algebraMap_eq' rfl
-  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' := fun r ↦ congr($h r).symm }
+  let ψ' : K →ₐ[k] ℂ := { ψ with commutes' r := congr($h r).symm }
   use (AlgHom.restrictNormal' ψ' K).symm
   ext1 x
   exact AlgHom.restrictNormal_commutes ψ' K x

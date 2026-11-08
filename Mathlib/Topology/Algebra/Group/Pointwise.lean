@@ -65,8 +65,8 @@ reversed, assuming that the action is *proper*. -/]
 theorem IsClosed.smul_left_of_isCompact (ht : IsClosed t) (hs : IsCompact s) :
     IsClosed (s • t) := by
   let Φ : s × β ≃ₜ s × β :=
-  { toFun := fun gx ↦ (gx.1, (gx.1 : α) • gx.2)
-    invFun := fun gx ↦ (gx.1, (gx.1 : α)⁻¹ • gx.2)
+  { toFun gx := (gx.1, (gx.1 : α) • gx.2)
+    invFun gx := (gx.1, (gx.1 : α)⁻¹ • gx.2)
     left_inv := fun _ ↦ by simp
     right_inv := fun _ ↦ by simp }
   have : s • t = (snd ∘ Φ) '' snd ⁻¹' t :=

@@ -161,7 +161,7 @@ of functors `WithTerminal C ⥤ WithTerminal D`. -/
 /-- From a natural transformation of functors `C ⥤ D`, the induced natural transformation
 of functors `WithInitial C ⥤ WithInitial D`. -/]
 def map₂ {D : Type*} [Category* D] {F G : C ⥤ D} (η : F ⟶ G) : map F ⟶ map G where
-  app := fun X => match X with
+  app X := match X with
     | of x => η.app x
     | star => 𝟙 star
   naturality := by
@@ -270,8 +270,8 @@ def lift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x
 @[to_dual (attr := simps!) /-- The isomorphism between `incl ⋙ lift F _ _` with `F`. -/]
 def inclLift {D : Type*} [Category* D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, F.obj x ⟶ Z)
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) : incl ⋙ lift F M hM ≅ F where
-  hom := { app := fun _ => 𝟙 _ }
-  inv := { app := fun _ => 𝟙 _ }
+  hom := { app _ := 𝟙 _ }
+  inv := { app _ := 𝟙 _ }
 
 /-- The isomorphism between `(lift F _ _).obj WithTerminal.star` with `Z`. -/
 @[to_dual (attr := simps!)
@@ -507,30 +507,30 @@ def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
     { obj := fun ⟨x⟩ ↦ match x with
       | of x => ↧(op x)
       | star => .star
-      map := fun {x y} ⟨f⟩ ↦
+      map {x y} := fun ⟨f⟩  ↦
         match x, y, f with
         | op (of x), op (of y), f => (WithTerminal.down f).op
         | op star, op (of _), _ => WithInitial.starInitial.to _
         | op star, op star, _ => 𝟙 _
       map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
-      map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
+      map_comp {x y z} := fun ⟨f⟩ ⟨g⟩  ↦
         match x, y, z, f, g with
         | op (of x), op (of y), op (of z), f, g => rfl
         | _, op (of y), op star, f, g => (g : PEmpty).elim
         | op (of x), op star, _, f, _ => (f : PEmpty).elim
         | op star, _, _, f, g => by subsingleton }
   inverse :=
-    { obj := fun x ↦
+    { obj x :=
       match x with
         | .of x => op <| .of x.unop
         | .star => op .star
-      map := fun {x y} f ↦
+      map {x y} f :=
         match x, y, f with
         | .of (op x), .of (op y), f => WithInitial.down f
         | .star, .of (op _), _ => op <| WithTerminal.starTerminal.from _
         | .star, .star, _ => 𝟙 _
-      map_id := fun x ↦ by cases x <;> rfl
-      map_comp := fun {x y z} f g ↦
+      map_id x := by cases x <;> rfl
+      map_comp {x y z} f g :=
         match x, y, z, f, g with
         | .of (op x), .of (op y), .of (op z), f, g => rfl
         | _, .of (op y), .star, f, g => (g : PEmpty).elim

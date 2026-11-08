@@ -159,7 +159,7 @@ instance {X : Compactum} : TopologicalSpace X where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
   isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)
-  isOpen_sUnion := fun _ h1 _ ⟨T, hT, h2⟩ =>
+  isOpen_sUnion _ h1 := fun _ ⟨T, hT, h2⟩  =>
     mem_of_superset (h1 T hT _ h2) (Set.subset_sUnion_of_mem hT)
 
 theorem isClosed_iff {X : Compactum} (S : Set X) :
@@ -417,7 +417,7 @@ end Compactum
 /-- The functor from Compactum to CompHaus. -/
 def compactumToCompHaus : Compactum ⥤ CompHaus where
   obj X := { toTop := ↧X, prop := trivial }
-  map := fun f => CompHausLike.ofHom _
+  map f := CompHausLike.ofHom _
     { toFun := f
       continuous_toFun := Compactum.continuous_of_hom _ }
 
@@ -456,7 +456,7 @@ noncomputable def isoOfTopologicalSpace {D : CompHaus} :
 
 /-- The functor `compactumToCompHaus` is essentially surjective. -/
 instance essSurj : compactumToCompHaus.EssSurj :=
-  { mem_essImage := fun X => ⟨Compactum.ofTopologicalSpace X,
+  { mem_essImage X := ⟨Compactum.ofTopologicalSpace X,
       ⟨isoOfTopologicalSpace⟩⟩ }
 
 /-- The functor `compactumToCompHaus` is an equivalence of categories. -/

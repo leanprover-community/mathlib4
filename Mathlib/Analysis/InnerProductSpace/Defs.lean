@@ -188,10 +188,10 @@ norm. -/
 def InnerProductSpace.toCore [NormedAddCommGroup E] [c : InnerProductSpace 𝕜 E] :
     InnerProductSpace.Core 𝕜 E :=
   { c with
-    re_inner_nonneg := fun x => by
+    re_inner_nonneg x := by
       rw [← InnerProductSpace.norm_sq_eq_re_inner]
       apply sq_nonneg
-    definite := fun x hx =>
+    definite x hx :=
       norm_eq_zero.1 <| eq_zero_of_pow_eq_zero (n := 2) <| by
         rw [InnerProductSpace.norm_sq_eq_re_inner (𝕜 := 𝕜) x, hx, map_zero] }
 
@@ -399,10 +399,10 @@ theorem norm_inner_le_norm (x y : F) : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ :=
 @[instance_reducible]
 def toSeminormedAddCommGroup : SeminormedAddCommGroup F :=
   AddGroupSeminorm.toSeminormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun x := √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
-      add_le' := fun x y => by
+      neg' x := by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      add_le' x y := by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
         have h₃ : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ := h₂.trans h₁
@@ -472,10 +472,10 @@ attribute [local instance] toNorm
 @[instance_reducible]
 def toNormedAddCommGroup : NormedAddCommGroup F :=
   AddGroupNorm.toNormedAddCommGroup
-    { toFun := fun x => √(re ⟪x, x⟫)
+    { toFun x := √(re ⟪x, x⟫)
       map_zero' := by simp only [sqrt_zero, inner_zero_right, map_zero]
-      neg' := fun x => by simp only [inner_neg_left, neg_neg, inner_neg_right]
-      add_le' := fun x y => by
+      neg' x := by simp only [inner_neg_left, neg_neg, inner_neg_right]
+      add_le' x y := by
         have h₁ : ‖⟪x, y⟫‖ ≤ ‖x‖ * ‖y‖ := norm_inner_le_norm _ _
         have h₂ : re ⟪x, y⟫ ≤ ‖⟪x, y⟫‖ := re_le_norm _
         have h₃ : re ⟪x, y⟫ ≤ ‖x‖ * ‖y‖ := h₂.trans h₁
@@ -484,7 +484,7 @@ def toNormedAddCommGroup : NormedAddCommGroup F :=
           simp only [← inner_self_eq_norm_mul_norm, inner_add_add_self, mul_add, mul_comm, map_add]
           linarith
         exact nonneg_le_nonneg_of_sq_le_sq (add_nonneg (sqrt_nonneg _) (sqrt_nonneg _)) this
-      eq_zero_of_map_eq_zero' := fun _ hx =>
+      eq_zero_of_map_eq_zero' _ hx :=
         normSq_eq_zero.1 <| (sqrt_eq_zero inner_self_nonneg).1 hx }
 
 section
@@ -573,7 +573,7 @@ def InnerProductSpace.ofCore [AddCommGroup F] [Module 𝕜 F] (cd : PreInnerProd
     InnerProductSpace 𝕜 F :=
   letI : NormedSpace 𝕜 F := InnerProductSpace.Core.toNormedSpace
   { cd with
-    norm_sq_eq_re_inner := fun x => by
+    norm_sq_eq_re_inner x := by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
       have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }
@@ -594,7 +594,7 @@ def InnerProductSpace.ofCoreOfTopology [AddCommGroup F] [hF : Module 𝕜 F] [To
   letI : NormedAddCommGroup F := cd.toNormedAddCommGroupOfTopology h h'
   letI : NormedSpace 𝕜 F := cd.toNormedSpaceOfTopology h h'
   { cd with
-    norm_sq_eq_re_inner := fun x => by
+    norm_sq_eq_re_inner x := by
       have h₁ : ‖x‖ ^ 2 = √(re (cd.inner x x)) ^ 2 := rfl
       have h₂ : 0 ≤ re (cd.inner x x) := InnerProductSpace.Core.inner_self_nonneg
       simp [h₁, sq_sqrt, h₂] }

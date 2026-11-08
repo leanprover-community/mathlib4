@@ -141,7 +141,7 @@ variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 @[simps!]
 def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
   Quiv.lift
-    { obj := fun X => G.obj X.obj
+    { obj X := G.obj X.obj
       map := by
         intro X Y
         rintro (f | ⟨g, hg⟩)

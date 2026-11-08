@@ -152,8 +152,8 @@ def linearOrderOfCompares [Preorder α] (cmp : α → α → Ordering)
     (h : ∀ a b, (cmp a b).Compares a b) : LinearOrder α :=
   let H : DecidableLE α := fun a b => decidable_of_iff _ (h a b).ne_gt
   { (inferInstance : Preorder α) with
-    le_antisymm := fun a b => (h a b).le_antisymm,
-    le_total := fun a b => (h a b).le_total,
+    le_antisymm a b := (h a b).le_antisymm,
+    le_total a b := (h a b).le_total,
     toMin := minOfLe,
     toMax := maxOfLe,
     toDecidableLE := H,

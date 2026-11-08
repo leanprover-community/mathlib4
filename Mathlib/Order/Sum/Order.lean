@@ -163,9 +163,9 @@ variable [Preorder α] [Preorder β]
 
 instance instPreorderSum : Preorder (α ⊕ β) :=
   { instLESum, instLTSum with
-    le_refl := fun _ => LiftRel.refl _ _ _,
-    le_trans := fun _ _ _ => LiftRel.trans _ _,
-    lt_iff_le_not_ge := fun a b => by
+    le_refl _ := LiftRel.refl _ _ _,
+    le_trans _ _ _ := LiftRel.trans _ _,
+    lt_iff_le_not_ge a b := by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩)
         · exact hba.not_gt (inl_lt_inl_iff.1 hab)
@@ -186,7 +186,7 @@ end Preorder
 
 instance [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ β) :=
   { instPreorderSum with
-    le_antisymm := fun _ _ => show LiftRel _ _ _ _ → _ from antisymm }
+    le_antisymm _ _ := show LiftRel _ _ _ _ → _ from antisymm }
 
 instance noMinOrder [LT α] [LT β] [NoMinOrder α] [NoMinOrder β] : NoMinOrder (α ⊕ β) :=
   ⟨fun a =>
@@ -380,8 +380,8 @@ variable [Preorder α] [Preorder β]
 instance preorder : Preorder (α ⊕ₗ β) :=
   { Lex.LE, Lex.LT with
     le_refl := refl_of (Lex (· ≤ ·) (· ≤ ·)),
-    le_trans := fun _ _ _ => trans_of (Lex (· ≤ ·) (· ≤ ·)),
-    lt_iff_le_not_ge := fun a b => by
+    le_trans _ _ _ := trans_of (Lex (· ≤ ·) (· ≤ ·)),
+    lt_iff_le_not_ge a b := by
       refine ⟨fun hab => ⟨hab.mono (fun _ _ => le_of_lt) fun _ _ => le_of_lt, ?_⟩, ?_⟩
       · rintro (⟨hba⟩ | ⟨hba⟩ | ⟨b, a⟩)
         · exact hba.not_gt (inl_lt_inl_iff.1 hab)
@@ -411,7 +411,7 @@ theorem inr_strictMono : StrictMono (toLex ∘ inr : β → α ⊕ₗ β) :=
 end Preorder
 
 instance partialOrder [PartialOrder α] [PartialOrder β] : PartialOrder (α ⊕ₗ β) :=
-  { Lex.preorder with le_antisymm := fun _ _ => antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
+  { Lex.preorder with le_antisymm _ _ := antisymm_of (Lex (· ≤ ·) (· ≤ ·)) }
 
 instance linearOrder [LinearOrder α] [LinearOrder β] : LinearOrder (α ⊕ₗ β) :=
   { Lex.partialOrder with
@@ -573,7 +573,7 @@ theorem sumComm_symm (α β : Type*) [LE α] [LE β] :
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ β) ⊕ γ ≃o α ⊕ (β ⊕ γ) :=
   { Equiv.sumAssoc α β γ with
-    map_rel_iff' := fun {a b} => by
+    map_rel_iff' {a b} := by
       rcases a with ((_ | _) | _) <;> rcases b with ((_ | _) | _) <;>
       simp [Equiv.sumAssoc] }
 
@@ -652,7 +652,7 @@ theorem sumLexCongr_refl : sumLexCongr (.refl α) (.refl β) = .refl _ := by
 /-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
-    map_rel_iff' := fun {a b} =>
+    map_rel_iff' {a b} :=
       ⟨fun h =>
         match a, b, h with
         | inlₗ (inlₗ _), inlₗ (inlₗ _), Lex.inl h => Lex.inl <| Lex.inl h
@@ -700,7 +700,7 @@ theorem sumLexAssoc_symm_apply_inr_inr : (sumLexAssoc α β γ).symm (inr (inr c
 /-- `OrderDual` is antidistributive over `⊕ₗ` up to an order isomorphism. -/
 def sumLexDualAntidistrib (α β : Type*) [LE α] [LE β] : (α ⊕ₗ β)ᵒᵈ ≃o βᵒᵈ ⊕ₗ αᵒᵈ :=
   { Equiv.sumComm α β with
-    map_rel_iff' := fun {a b} => by
+    map_rel_iff' {a b} := by
       rcases a with (a | a) <;> rcases b with (b | b)
       · change
           toLex (inr <| toDual a) ≤ toLex (inr <| toDual b) ↔

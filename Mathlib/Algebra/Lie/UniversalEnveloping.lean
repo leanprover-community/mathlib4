@@ -79,7 +79,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 @[simps!]
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
-    map_lie' := fun {x y} => by
+    map_lie' {x y} := by
       suffices mkAlgHom R L (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) = mkAlgHom R L (ιₜ x * ιₜ y) by
         rw [map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
       exact Quotient.sound <| RingCon.le_ringConGen _ _ (Rel.lie_compat x y) }

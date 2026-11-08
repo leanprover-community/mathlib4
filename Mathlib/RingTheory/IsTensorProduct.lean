@@ -337,7 +337,7 @@ variable [Module R Q] [IsScalarTower R S Q]
 noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :=
   { h.lift
       (((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R) with
-    map_smul' := fun r x => by
+    map_smul' r x := by
       let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
@@ -397,7 +397,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The base change of `M` along `R → S` is linearly equivalent to `S ⊗[R] M`. -/
 noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
   { h.equiv with
-    map_smul' := fun r x => by
+    map_smul' r x := by
       change h.equiv (r • x) = r • h.equiv x
       refine TensorProduct.inductionOn x ?_ ?_
       · intro x y
@@ -481,7 +481,7 @@ theorem IsBaseChange.of_lift_unique
   let f'' : S ⊗[R] M →ₗ[S] N := by
     refine
       { f' with
-        map_smul' := fun s x =>
+        map_smul' s x :=
           TensorProduct.inductionOn x (fun s' y => smul_assoc s s' _) fun x y hx hy => ?_ }
     dsimp at *; rw [smul_add, map_add, map_add, smul_add, hx, hy]
   simp_rw [DFunLike.ext_iff, LinearMap.comp_apply, LinearMap.restrictScalars_apply] at hg

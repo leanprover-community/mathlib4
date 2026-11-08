@@ -295,14 +295,14 @@ variable (R M₂ M₃)
 @[simps]
 def ofSubsingleton [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ ((ι → M₂) →ₘₗ[R] M₃) where
   toFun f :=
-    { toFun := fun x ↦ f (x i)
+    { toFun x := f (x i)
       map_update_add' := by intros; simp [update_eq_const_of_subsingleton]
       map_update_smul' := by intros; simp [update_eq_const_of_subsingleton] }
   invFun f :=
-    { toFun := fun x ↦ f fun _ ↦ x
-      map_add' := fun x y ↦ by
+    { toFun x := f fun _ ↦ x
+      map_add' x y := by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_add 0 i x y
-      map_smul' := fun c x ↦ by
+      map_smul' c x := by
         simpa [update_eq_const_of_subsingleton] using! f.map_update_smul 0 i c x }
   right_inv f := by ext x; congrm f ?_; exact (eq_const_of_subsingleton _ _).symm
 
@@ -954,8 +954,8 @@ and one-multilinear maps `(ι → M₂) →ₘₗ[R] M₃`. -/
 @[simps +simpRhs]
 def ofSubsingletonₗ [Subsingleton ι] (i : ι) : (M₂ →ₗ[R] M₃) ≃ₗ[S] (ι → M₂) →ₘₗ[R] M₃ :=
   { ofSubsingleton R M₂ M₃ i with
-    map_add' := fun _ _ ↦ rfl
-    map_smul' := fun _ _ ↦ rfl }
+    map_add' _ _ := rfl
+    map_smul' _ _ := rfl }
 
 end OfSubsingleton
 
@@ -965,24 +965,24 @@ def domDomCongrLinearEquiv' {ι' : Type*} (σ : ι ≃ ι') :
     ((Π i, M₁ i) →ₘₗ[R] M₂) ≃ₗ[S] (Π i, M₁ (σ.symm i)) →ₘₗ[R] M₂ where
   toFun f :=
     { toFun := f ∘ (σ.piCongrLeft' M₁).symm
-      map_update_add' := fun m i => by
+      map_update_add' m i := by
         let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_symm_update, f.map_update_add]
-      map_update_smul' := fun m i c => by
+      map_update_smul' m i c := by
         let := σ.decidableEq
         rw [← σ.apply_symm_apply i]
         intro x
         simp only [Function.comp, piCongrLeft'_symm_update, f.map_update_smul] }
   invFun f :=
     { toFun := f ∘ σ.piCongrLeft' M₁
-      map_update_add' := fun m i => by
+      map_update_add' m i := by
         let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x y
         simp only [comp_apply, piCongrLeft'_update, f.map_update_add]
-      map_update_smul' := fun m i c => by
+      map_update_smul' m i c := by
         let := σ.symm.decidableEq
         rw [← σ.symm_apply_apply i]
         intro x
@@ -1015,7 +1015,7 @@ def constLinearEquivOfIsEmpty [IsEmpty ι] : M₂ ≃ₗ[S] (Π i, M₁ i) →�
 def domDomCongrLinearEquiv {ι₁ ι₂} (σ : ι₁ ≃ ι₂) :
     ((ι₁ → M₂) →ₘₗ[R] M₃) ≃ₗ[S] (ι₂ → M₂) →ₘₗ[R] M₃ :=
   { (domDomCongrEquiv σ : ((ι₁ → M₂) →ₘₗ[R] M₃) ≃+ ((ι₂ → M₂) →ₘₗ[R] M₃)) with
-    map_smul' := fun c f => by
+    map_smul' c f := by
       ext
       simp [MultilinearMap.domDomCongr] }
 
@@ -1038,7 +1038,7 @@ multilinear maps.
 This is a linear map version of the function `MultilinearMap.domDomRestrict`. -/
 def domDomRestrictₗ (f : (Π i, M₁ i) →ₘₗ[R] M₂) (P : ι → Prop) [DecidablePred P] :
     (Π i : {a : ι // ¬ P a}, M₁ i) →ₘₗ[R] (Π i : {a : ι // P a}, M₁ i) →ₘₗ[R] M₂ where
-  toFun := fun z ↦ domDomRestrict f P z
+  toFun z := domDomRestrict f P z
   map_update_add' := by
     intro h m i x y
     classical
@@ -1069,8 +1069,8 @@ This is multilinear in the components of `x` outside of `s`, and in the `v_j`. -
 noncomputable def iteratedFDerivComponent {α : Type*}
     (f : (Π i, M₁ i) →ₘₗ[R] M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     (Π i : {a : ι // a ∉ s}, M₁ i) →ₘₗ[R] (α → (Π i, M₁ i)) →ₘₗ[R] M₂ where
-  toFun := fun z ↦
-    { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
+  toFun z :=
+    { toFun v := domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
       map_update_add' := by classical simp [iteratedFDeriv_aux]
       map_update_smul' := by classical simp [iteratedFDeriv_aux] }
   map_update_add' := by intros; ext; simp
@@ -1093,9 +1093,9 @@ protected noncomputable def iteratedFDeriv [Fintype ι]
 sending a multilinear map `g` to `g (f₁ ⬝ , ..., fₙ ⬝ )` is linear in `g`. -/
 @[simps] def compLinearMapₗ (f : Π (i : ι), M₁ i →ₗ[R] M₁' i) :
     ((Π i, M₁' i) →ₘₗ[R] M₂) →ₗ[R] (Π i, M₁ i) →ₘₗ[R] M₂ where
-  toFun := fun g ↦ g.compLinearMap f
-  map_add' := fun _ _ ↦ rfl
-  map_smul' := fun _ _ ↦ rfl
+  toFun g := g.compLinearMap f
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- An isomorphism of multilinear maps given an isomorphism between their domains.
 
@@ -1432,7 +1432,7 @@ Note that this is not a submodule - it is not closed under addition. -/
 def map [Nonempty ι] (f : (Π i, M₁ i) →ₘₗ[R] M₂) (p : ∀ i, Submodule R (M₁ i)) :
     SubMulAction R M₂ where
   carrier := f '' { v | ∀ i, v i ∈ p i }
-  smul_mem' := fun c _ ⟨x, hx, hf⟩ => by
+  smul_mem' c _ := fun ⟨x, hx, hf⟩  => by
     let ⟨i⟩ := ‹Nonempty ι›
     let := Classical.decEq ι
     refine ⟨update x i (c • x i), fun j => if hij : j = i then ?_ else ?_, hf ▸ ?_⟩

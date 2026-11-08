@@ -39,10 +39,10 @@ functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C
 def mapBifunctor (I J : Type*) :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject (I × J) C₃ where
   obj X :=
-    { obj := fun Y ij => (F.obj (X ij.1)).obj (Y ij.2)
-      map := fun φ ij => (F.obj (X ij.1)).map (φ ij.2) }
+    { obj Y := fun ij  => (F.obj (X ij.1)).obj (Y ij.2)
+      map φ ij := (F.obj (X ij.1)).map (φ ij.2) }
   map φ :=
-    { app := fun Y ij => (F.map (φ ij.1)).app (Y ij.2) }
+    { app Y := fun ij  => (F.map (φ ij.1)).app (Y ij.2) }
 
 section
 
@@ -147,11 +147,11 @@ functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` se
 noncomputable def mapBifunctorMap [∀ X Y, HasMap (((mapBifunctor F I J).obj X).obj Y) p] :
     GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃ where
   obj X :=
-    { obj := fun Y => mapBifunctorMapObj F p X Y
-      map := fun ψ => mapBifunctorMapMap F p (𝟙 X) ψ }
+    { obj Y := mapBifunctorMapObj F p X Y
+      map ψ := mapBifunctorMapMap F p (𝟙 X) ψ }
   map {X₁ X₂} φ :=
-    { app := fun Y => mapBifunctorMapMap F p φ (𝟙 Y)
-      naturality := fun {Y₁ Y₂} ψ => by
+    { app Y := mapBifunctorMapMap F p φ (𝟙 Y)
+      naturality {Y₁ Y₂} ψ := by
         dsimp
         simp only [Functor.map_id, NatTrans.id_app, id_comp, comp_id,
           ← mapMap_comp, NatTrans.naturality] }

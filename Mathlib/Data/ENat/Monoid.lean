@@ -224,7 +224,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
     (hf : Function.Injective f) : ℕ∞ →*₀ WithTop S :=
   { f.toZeroHom.ENatMap, f.toMonoidHom.toOneHom.ENatMap with
     toFun := ENat.map f
-    map_mul' := fun x y => by
+    map_mul' x y := by
       have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
         (WithTop.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
       rcases Decidable.eq_or_ne x 0 with (rfl | hx)

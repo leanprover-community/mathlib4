@@ -223,7 +223,7 @@ variable (K) in
 /-- A bijection between (left) ideals of a division ring and `{0, 1}`, sending `⊥` to `0`
 and `⊤` to `1`. -/
 noncomputable def equivFinTwo : Ideal K ≃ Fin 2 where
-  toFun := fun I ↦ if I = ⊥ then 0 else 1
+  toFun I := if I = ⊥ then 0 else 1
   invFun := ![⊥, ⊤]
   left_inv := fun I ↦ by rcases eq_bot_or_top I with rfl | rfl <;> simp
   right_inv := fun i ↦ by fin_cases i <;> simp

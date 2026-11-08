@@ -78,7 +78,7 @@ theorem map_app (f : B₁.IsometryEquiv B₂) (m n : M₁) : B₂ (f n) (f m) = 
 /-- The identity isometric equivalence between a bilinear form and itself. -/
 @[refl]
 def refl (B : LinearMap.BilinForm R M) : B.IsometryEquiv B :=
-  { LinearEquiv.refl R M with map_app' := fun _ _ => rfl }
+  { LinearEquiv.refl R M with map_app' _ _ := rfl }
 
 /-- The inverse isometric equivalence of an isometric equivalence between two bilinear forms. -/
 @[symm]

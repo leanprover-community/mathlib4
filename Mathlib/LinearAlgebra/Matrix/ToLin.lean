@@ -1141,11 +1141,11 @@ See also `LinearMap.toMatrix'`
 def endVecRingEquivMatrixEnd :
     Module.End A (ι → M) ≃+* Matrix ι ι (Module.End A M) where
   toFun f i j :=
-  { toFun := fun x ↦ f (Pi.single j x) i
-    map_add' := fun x y ↦ by simp [Pi.single_add]
-    map_smul' := fun x y ↦ by simp [Pi.single_smul] }
+  { toFun x := f (Pi.single j x) i
+    map_add' x y := by simp [Pi.single_add]
+    map_smul' x y := by simp [Pi.single_smul] }
   invFun m :=
-  { toFun := fun x i ↦ ∑ j, m i j (x j)
+  { toFun x := fun i  ↦ ∑ j, m i j (x j)
     map_add' := by intros; ext; simp [Finset.sum_add_distrib]
     map_smul' := by intros; ext; simp [Finset.smul_sum] }
   left_inv f := by

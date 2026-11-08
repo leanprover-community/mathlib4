@@ -131,7 +131,7 @@ theorem ext {p q : Seminorm 𝕜 E} (h : ∀ x, (p : E → ℝ) x = q x) : p = q
 
 instance instZero : Zero (Seminorm 𝕜 E) :=
   ⟨{ AddGroupSeminorm.instZeroAddGroupSeminorm.zero with
-    smul' := fun _ _ => (mul_zero _).symm }⟩
+    smul' _ _ := (mul_zero _).symm }⟩
 
 instance : IsZeroApply (Seminorm 𝕜 E) where
 
@@ -148,8 +148,8 @@ variable (p : Seminorm 𝕜 E) (x : E) (r : ℝ)
 instance instSMul [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] : SMul R (Seminorm 𝕜 E) where
   smul r p :=
     { r • p.toAddGroupSeminorm with
-      toFun := fun x => r • p x
-      smul' := fun _ _ => by
+      toFun x := r • p x
+      smul' _ _ := by
         simp only [← smul_one_smul ℝ≥0 r (_ : ℝ), NNReal.smul_def, smul_eq_mul]
         rw [map_smul_eq_mul, mul_left_comm] }
 
@@ -166,8 +166,8 @@ instance [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] [SMul R' �
 instance instAdd : Add (Seminorm 𝕜 E) where
   add p q :=
     { p.toAddGroupSeminorm + q.toAddGroupSeminorm with
-      toFun := fun x => p x + q x
-      smul' := fun a x => by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
+      toFun x := p x + q x
+      smul' a x := by simp only [map_smul_eq_mul, map_smul_eq_mul, mul_add] }
 
 instance : IsAddApply (Seminorm 𝕜 E) where
 
@@ -210,7 +210,7 @@ instance instSup : Max (Seminorm 𝕜 E) where
   max p q :=
     { p.toAddGroupSeminorm ⊔ q.toAddGroupSeminorm with
       toFun := p ⊔ q
-      smul' := fun x v =>
+      smul' x v :=
         congr(max $(map_smul_eq_mul p x v) $(map_smul_eq_mul q x v)).trans
           (mul_max_of_nonneg _ _ <| norm_nonneg x).symm }
 
@@ -270,7 +270,7 @@ variable [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ]
 /-- Composition of a seminorm with a linear map is a seminorm. -/
 def comp (p : Seminorm 𝕜₂ E₂) (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜 E :=
   { p.toAddGroupSeminorm.comp f.toAddMonoidHom with
-    toFun := fun x => p (f x)
+    toFun x := p (f x)
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` to `map_smulₛₗ _`
     smul' _ _ := by simp only [map_smulₛₗ _, map_smul_eq_mul, RingHomIsometric.norm_map] }
 
@@ -314,9 +314,9 @@ theorem comp_mono {p q : Seminorm 𝕜₂ E₂} (f : E →ₛₗ[σ₁₂] E₂)
 /-- The composition as an `AddMonoidHom`. -/
 @[simps]
 def pullback (f : E →ₛₗ[σ₁₂] E₂) : Seminorm 𝕜₂ E₂ →+ Seminorm 𝕜 E where
-  toFun := fun p => p.comp f
+  toFun p := p.comp f
   map_zero' := zero_comp f
-  map_add' := fun p q => add_comp p q f
+  map_add' p q := add_comp p q f
 
 instance instOrderBot : OrderBot (Seminorm 𝕜 E) where
   bot := 0
@@ -424,7 +424,7 @@ theorem bddBelow_range_add : BddBelow (range fun u => p u + q (x - u)) :=
 noncomputable instance instInf : Min (Seminorm 𝕜 E) where
   min p q :=
     { p.toAddGroupSeminorm ⊓ q.toAddGroupSeminorm with
-      toFun := fun x => ⨅ u : E, p u + q (x - u)
+      toFun x := ⨅ u : E, p u + q (x - u)
       smul' := by
         intro a x
         obtain rfl | ha := eq_or_ne a 0
@@ -447,13 +447,13 @@ theorem inf_apply (p q : Seminorm 𝕜 E) (x : E) : (p ⊓ q) x = ⨅ u : E, p u
 noncomputable instance instLattice : Lattice (Seminorm 𝕜 E) :=
   { Seminorm.instSemilatticeSup with
     inf := (· ⊓ ·)
-    inf_le_left := fun p q x =>
+    inf_le_left p q := fun x  =>
       ciInf_le_of_le bddBelow_range_add x <| by
         simp only [sub_self, map_zero, add_zero]; rfl
-    inf_le_right := fun p q x =>
+    inf_le_right p q := fun x  =>
       ciInf_le_of_le bddBelow_range_add 0 <| by
         simp only [map_zero, zero_add, sub_zero]; rfl
-    le_inf := fun a _ _ hab hac _ =>
+    le_inf a _ _ hab hac := fun _  =>
       le_ciInf fun _ => (le_map_add_map_sub a _ _).trans <| add_le_add (hab _) (hac _) }
 
 theorem smul_inf [SMul R ℝ] [SMul R ℝ≥0] [IsScalarTower R ℝ≥0 ℝ] (r : R) (p q : Seminorm 𝕜 E) :
@@ -490,7 +490,7 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
           congr!
           rename_i _ _ _ i
           exact map_zero i.1
-        add_le' := fun x y => by
+        add_le' x y := by
           rcases h with ⟨q, hq⟩
           obtain rfl | h := s.eq_empty_or_nonempty
           · simp
@@ -504,12 +504,12 @@ noncomputable instance instSupSet : SupSet (Seminorm 𝕜 E) where
               (le_ciSup (f := fun i => (Subtype.val i : Seminorm 𝕜 E).toFun y) ⟨q y, ?_⟩ i)
           <;> rw [mem_upperBounds, forall_mem_range]
           <;> exact fun j => hq (mem_image_of_mem _ j.2) _
-        neg' := fun x => by
+        neg' x := by
           simp only [iSup_apply]
           congr! 2
           rename_i _ _ _ i
           exact i.1.neg' _
-        smul' := fun a x => by
+        smul' a x := by
           simp only [iSup_apply]
           rw [← smul_eq_mul,
             Real.smul_iSup_of_nonneg (norm_nonneg a) fun i : s => (i : Seminorm 𝕜 E) x]
@@ -1034,7 +1034,7 @@ variable (𝕜) {𝕜' : Type*} [NormedField 𝕜] [SeminormedRing 𝕜'] [SMul 
 typically be used with `RCLike 𝕜'` and `𝕜 = ℝ`. -/
 protected def restrictScalars (p : Seminorm 𝕜' E) : Seminorm 𝕜 E :=
   { p with
-    smul' := fun a x => by rw [← smul_one_smul 𝕜' a x, p.smul', norm_smul, norm_one, mul_one] }
+    smul' a x := by rw [← smul_one_smul 𝕜' a x, p.smul', norm_smul, norm_one, mul_one] }
 
 @[simp]
 theorem coe_restrictScalars (p : Seminorm 𝕜' E) : (p.restrictScalars 𝕜 : E → ℝ) = p :=

@@ -110,7 +110,7 @@ homomorphism `NonUnitalRingHom.pi f : γ →+* Π a, β a` given by
 def NonUnitalRingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonUnitalNonAssocSemiring (f i)]
     [NonUnitalNonAssocSemiring γ] (g : ∀ i, γ →ₙ+* f i) : γ →ₙ+* ∀ i, f i :=
   { MulHom.pi fun i => (g i).toMulHom, AddMonoidHom.pi fun i => (g i).toAddMonoidHom with
-    toFun := fun x b => g b x }
+    toFun x := fun b  => g b x }
 
 @[deprecated (since := "2026-05-30")] protected alias Pi.nonUnitalRingHom := NonUnitalRingHom.pi
 @[deprecated (since := "2026-05-30")] protected alias Pi.nonUnitalRingHom_apply :=
@@ -141,7 +141,7 @@ non-unital ring homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def NonUnitalRingHom.compLeft {α β : Type*} [NonUnitalNonAssocSemiring α]
     [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type*) : (I → α) →ₙ+* I → β :=
-  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun h := f ∘ h }
 
 end NonUnitalRingHom
 
@@ -157,7 +157,7 @@ variable {I : Type u}
 protected def RingHom.pi {f : I → Type*} {γ : Type*} [∀ i, NonAssocSemiring (f i)]
     [NonAssocSemiring γ] (g : ∀ i, γ →+* f i) : γ →+* ∀ i, f i :=
   { MonoidHom.pi fun i => (g i).toMonoidHom, AddMonoidHom.pi fun i => (g i).toAddMonoidHom with
-    toFun := fun x b => g b x }
+    toFun x := fun b  => g b x }
 
 @[deprecated (since := "2026-05-30")] protected alias Pi.ringHom := RingHom.pi
 @[deprecated (since := "2026-05-30")] protected alias Pi.ringHom_apply := RingHom.pi_apply
@@ -189,6 +189,6 @@ homomorphism `f` between `α` and `β`. -/
 @[simps]
 protected def RingHom.compLeft {α β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
     (f : α →+* β) (I : Type*) : (I → α) →+* I → β :=
-  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
+  { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun h := f ∘ h }
 
 end RingHom

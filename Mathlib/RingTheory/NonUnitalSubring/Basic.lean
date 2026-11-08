@@ -320,13 +320,13 @@ instance : CompleteLattice (NonUnitalSubring R) :=
       IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
-    bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s
+    bot_le s := fun _x hx  => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤
-    le_top := fun _ _ _ => trivial
+    le_top _ := fun _ _  => trivial
     inf := (· ⊓ ·)
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right
-    le_inf := fun _s _t₁ _t₂ h₁ h₂ _x hx => ⟨h₁ hx, h₂ hx⟩ }
+    inf_le_left _ _ := fun _  => And.left
+    inf_le_right _ _ := fun _  => And.right
+    le_inf _s _t₁ _t₂ h₁ h₂ := fun _x hx  => ⟨h₁ hx, h₂ hx⟩ }
 
 theorem eq_top_iff' (A : NonUnitalSubring R) : A = ⊤ ↔ ∀ x : R, x ∈ A :=
   eq_top_iff.trans ⟨fun h m => h <| mem_top m, fun h m _ => h m⟩
@@ -676,8 +676,8 @@ protected theorem center_prod : center (R × S) = prod (center R) (center S) :=
 /-- Product of `NonUnitalSubring`s is isomorphic to their product as rings. -/
 def prodEquiv (s : NonUnitalSubring R) (t : NonUnitalSubring S) : s.prod t ≃+* s × t :=
   { Equiv.Set.prod (s : Set R) (t : Set S) with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 /-- The underlying set of a non-empty directed Sup of `NonUnitalSubring`s is just a union of the
 `NonUnitalSubring`s. Note that this fails without the directedness assumption (the union of two
@@ -829,15 +829,15 @@ monoid are equal. -/
 def nonUnitalSubringCongr (h : s = t) : s ≃+* t :=
   {
     Set.equivOfEq <| congr_arg _ h with
-    map_mul' := fun _ _ => rfl
-    map_add' := fun _ _ => rfl }
+    map_mul' _ _ := rfl
+    map_add' _ _ := rfl }
 
 /-- Restrict a ring homomorphism with a left inverse to a ring isomorphism to its
 `RingHom.range`. -/
 def ofLeftInverse' {g : S → R} {f : R →ₙ+* S} (h : Function.LeftInverse g f) : R ≃+* f.range :=
   { f.rangeRestrict with
-    toFun := fun x => f.rangeRestrict x
-    invFun := fun x => (g ∘ NonUnitalSubringClass.subtype f.range) x
+    toFun x := f.rangeRestrict x
+    invFun x := (g ∘ NonUnitalSubringClass.subtype f.range) x
     left_inv := h
     right_inv := fun x =>
       Subtype.ext <|

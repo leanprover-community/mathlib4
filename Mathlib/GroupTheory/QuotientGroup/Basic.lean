@@ -165,7 +165,7 @@ isomorphic. -/
 isomorphic. -/]
 def quotientMulEquivOfEq {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) : G ⧸ M ≃* G ⧸ N :=
   { Subgroup.quotientEquivOfEq h with
-    map_mul' := fun q r => Quotient.inductionOn₂' q r fun _g _h => rfl }
+    map_mul' q r := Quotient.inductionOn₂' q r fun _g _h => rfl }
 
 @[to_additive (attr := simp)]
 theorem quotientMulEquivOfEq_mk {M N : Subgroup G} [M.Normal] [N.Normal] (h : M = N) (x : G) :

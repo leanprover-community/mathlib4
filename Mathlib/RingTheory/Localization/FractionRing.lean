@@ -238,9 +238,9 @@ noncomputable abbrev toField : Field K where
     rw [IsFractionRing.inv]
     exact dite_eq_left rfl
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)

@@ -67,7 +67,7 @@ instance (P : MorphismProperty Cᵒᵖ) [P.IsStableUnderRetracts] :
 instance (P₁ P₂ : MorphismProperty C)
     [P₁.IsStableUnderRetracts] [P₂.IsStableUnderRetracts] :
     (P₁ ⊓ P₂).IsStableUnderRetracts where
-  of_retract := fun h ⟨h₁, h₂⟩ ↦ ⟨of_retract h h₁, of_retract h h₂⟩
+  of_retract h := fun ⟨h₁, h₂⟩  ↦ ⟨of_retract h h₁, of_retract h h₂⟩
 
 /-- The class of morphisms that are retracts of morphisms
 belonging to `P : MorphismProperty C`. -/

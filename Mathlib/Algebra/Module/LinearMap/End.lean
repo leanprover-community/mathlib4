@@ -84,11 +84,11 @@ instance instSemiring : Semiring (Module.End R M) where
   __ := addCommMonoid
   mul_zero := comp_zero
   zero_mul := zero_comp
-  left_distrib := fun _ _ _ ↦ comp_add _ _ _
-  right_distrib := fun _ _ _ ↦ add_comp _ _ _
-  natCast := fun n ↦ n • (1 : M →ₗ[R] M)
+  left_distrib _ _ _ := comp_add _ _ _
+  right_distrib _ _ _ := add_comp _ _ _
+  natCast n := n • (1 : M →ₗ[R] M)
   natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
-  natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
+  natCast_succ n := AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)
 
 instance : IsNatCastApplyEqSMul (End R M) where
 
@@ -281,7 +281,7 @@ def Module.toModuleEnd : S →+* Module.End R M :=
   { DistribMulAction.toModuleEnd R M with
     toFun := DistribSMul.toLinearMap R M
     map_zero' := LinearMap.ext <| zero_smul S
-    map_add' := fun _ _ ↦ LinearMap.ext <| add_smul _ _ }
+    map_add' _ _ := LinearMap.ext <| add_smul _ _ }
 
 /-- The canonical (semi)ring isomorphism from `Rᵐᵒᵖ` to `Module.End R R` induced by the right
 multiplication. -/
@@ -289,7 +289,7 @@ multiplication. -/
 def RingEquiv.moduleEndSelf : Rᵐᵒᵖ ≃+* Module.End R R :=
   { Module.toModuleEnd R R with
     toFun := DistribSMul.toLinearMap R R
-    invFun := fun f ↦ MulOpposite.op (f 1)
+    invFun f := MulOpposite.op (f 1)
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring <| one_mul _ }
 
@@ -299,7 +299,7 @@ multiplication. -/
 def RingEquiv.moduleEndSelfOp : R ≃+* Module.End Rᵐᵒᵖ R :=
   { Module.toModuleEnd _ _ with
     toFun := DistribSMul.toLinearMap _ _
-    invFun := fun f ↦ f 1
+    invFun f := f 1
     left_inv := mul_one
     right_inv := fun _ ↦ LinearMap.ext_ring_op <| mul_one _ }
 
@@ -363,9 +363,9 @@ See `LinearMap.applyₗ` for a version where `S = R`. -/
 @[simps]
 def applyₗ' : M →+ (M →ₗ[R] M₂) →ₗ[S] M₂ where
   toFun v :=
-    { toFun := fun f => f v
-      map_add' := fun f g => f.add_apply g v
-      map_smul' := fun x f => f.smul_apply x v }
+    { toFun f := f v
+      map_add' f g := f.add_apply g v
+      map_smul' x f := f.smul_apply x v }
   map_zero' := LinearMap.ext fun f => f.map_zero
   map_add' _ _ := LinearMap.ext fun f => f.map_add _ _
 
@@ -397,8 +397,8 @@ This is the `LinearMap` version of `toAddMonoidHom.eval`. -/
 @[simps]
 def applyₗ : M →ₗ[R] (M →ₗ[R] M₂) →ₗ[R] M₂ :=
   { applyₗ' R with
-    toFun := fun v => { applyₗ' R v with toFun := fun f => f v }
-    map_smul' := fun _ _ => LinearMap.ext fun f => map_smul f _ _ }
+    toFun v := { applyₗ' R v with toFun f := f v }
+    map_smul' _ _ := LinearMap.ext fun f => map_smul f _ _ }
 
 /--
 The family of linear maps `M₂ → M` parameterised by `f ∈ M₂ → R`, `x ∈ M`, is linear in `f`, `x`.
@@ -409,10 +409,10 @@ See `ContinuousLinearMap.smulRightL` for the continuous version of this, and see
 def smulRightₗ : (M₂ →ₗ[R] R) →ₗ[R] M →ₗ[R] M₂ →ₗ[R] M where
   toFun f :=
     { toFun := LinearMap.smulRight f
-      map_add' := fun m m' => by
+      map_add' m m' := by
         ext
         apply smul_add
-      map_smul' := fun c m => by
+      map_smul' c m := by
         ext
         apply smul_comm }
   map_add' f f' := by

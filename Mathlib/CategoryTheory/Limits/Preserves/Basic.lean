@@ -139,7 +139,7 @@ instance preservesLimitsOfSize_subsingleton (F : C ⥤ D) :
 instance id_preservesLimitsOfSize : PreservesLimitsOfSize.{w', w} (𝟭 C) where
   preservesLimitsOfShape {J} 𝒥 :=
     {
-      preservesLimit := fun {K} =>
+      preservesLimit {K} :=
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
@@ -245,7 +245,7 @@ lemma preservesLimitsOfSize_iff_of_natIso {F G : C ⥤ D} (h : F ≅ G) :
 lemma preservesLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [PreservesLimitsOfShape J F] : PreservesLimitsOfShape J' F where
   preservesLimit {K} :=
-    { preserves := fun {c} t => ⟨by
+    { preserves {c} t := ⟨by
         let equ := e.invFunIdAssoc (K ⋙ F)
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
@@ -385,7 +385,7 @@ instance (priority := 100) reflectsLimitsOfShape_of_reflectsLimits (J : Type w) 
 @[to_dual]
 instance id_reflectsLimits : ReflectsLimitsOfSize.{w, w'} (𝟭 C) where
   reflectsLimitsOfShape {J} 𝒥 :=
-    { reflectsLimit := fun {K} =>
+    { reflectsLimit {K} :=
         ⟨fun {c} h =>
           ⟨fun s => h.lift ⟨s.pt, fun j => s.π.app j, fun _ _ f => s.π.naturality f⟩, by
             cases K; rcases c with ⟨_, _, _⟩; intro s j; cases s; exact h.fac _ j, by
@@ -474,7 +474,7 @@ lemma reflectsLimits_of_natIso {F G : C ⥤ D} (h : F ≅ G) [ReflectsLimitsOfSi
 lemma reflectsLimitsOfShape_of_equiv {J' : Type w₂} [Category.{w₂'} J'] (e : J ≌ J') (F : C ⥤ D)
     [ReflectsLimitsOfShape J F] : ReflectsLimitsOfShape J' F where
   reflectsLimit {K} :=
-    { reflects := fun {c} t => ⟨by
+    { reflects {c} t := ⟨by
         apply IsLimit.ofWhiskerEquivalence e
         apply isLimitOfReflects F
         apply IsLimit.ofIsoLimit _ (Functor.mapConeWhisker _).symm
@@ -581,8 +581,8 @@ variable (F : C ⥤ D)
 @[to_dual /-- A fully faithful functor reflects colimits. -/]
 instance fullyFaithful_reflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSize.{w, w'} F where
   reflectsLimitsOfShape {J} 𝒥₁ :=
-    { reflectsLimit := fun {K} =>
-        { reflects := fun {c} t =>
+    { reflectsLimit {K} :=
+        { reflects {c} t :=
             ⟨(IsLimit.mkConeMorphism fun _ =>
                 (Cone.functoriality K F).preimage (t.liftConeMorphism _)) <| by
               apply fun s m => (Cone.functoriality K F).map_injective _

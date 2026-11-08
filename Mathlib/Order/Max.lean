@@ -112,7 +112,7 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
 
 @[to_dual]
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
-  { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
+  { exists_lt a := by simpa [not_le] using exists_not_ge a }
 
 @[to_dual]
 theorem noBotOrder_iff_noMinOrder (α : Type*) [LinearOrder α] : NoBotOrder α ↔ NoMinOrder α :=

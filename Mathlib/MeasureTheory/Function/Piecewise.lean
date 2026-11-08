@@ -42,7 +42,7 @@ theorem aemeasurable_piecewise {μ : Measure α} [MeasurableSpace β] [Countable
 def simpleFunc_piecewise [Finite ι] (hs : IndexedPartition s)
     (hm : ∀ i, MeasurableSet (s i)) (f : ι → SimpleFunc α β) : SimpleFunc α β where
   toFun := hs.piecewise (fun i => f i)
-  measurableSet_fiber' := fun _ =>
+  measurableSet_fiber' _ :=
     letI : MeasurableSpace β := ⊤
     hs.measurable_piecewise hm (fun i => (f i).measurable) trivial
   finite_range' := (finite_iUnion (fun i => (f i).finite_range)).subset

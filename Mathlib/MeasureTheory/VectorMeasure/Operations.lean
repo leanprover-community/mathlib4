@@ -186,9 +186,9 @@ open scoped Classical in
 /-- The pushforward of a vector measure along a function. -/
 def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
   if hf : Measurable f then
-    { measureOf' := fun s => if MeasurableSet s then v (f ⁻¹' s) else 0
+    { measureOf' s := if MeasurableSet s then v (f ⁻¹' s) else 0
       empty' := by simp
-      not_measurable' := fun _ hi => ite_eq_right hi
+      not_measurable' _ hi := ite_eq_right hi
       m_iUnion' := by
         intro g hg₁ hg₂
         convert! v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
@@ -294,9 +294,9 @@ open scoped Classical in
 /-- The restriction of a vector measure on some set. -/
 @[no_expose] def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
   if hi : MeasurableSet i then
-    { measureOf' := fun s => if MeasurableSet s then v (s ∩ i) else 0
+    { measureOf' s := if MeasurableSet s then v (s ∩ i) else 0
       empty' := by simp
-      not_measurable' := fun _ hi => ite_eq_right hi
+      not_measurable' _ hi := ite_eq_right hi
       m_iUnion' := by
         intro f hf₁ hf₂
         convert!

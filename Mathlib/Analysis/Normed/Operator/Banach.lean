@@ -286,8 +286,8 @@ theorem exists_nonlinearRightInverse_of_surjective (f : E →SL[σ] F) (hsurj : 
   use {
       toFun := fsymm
       nnNorm := ⟨C, hC.lt.le⟩
-      bound' := fun y => (h y).2
-      right_inv' := fun y => (h y).1 }
+      bound' y := (h y).2
+      right_inv' y := (h y).1 }
   exact hC
 
 end

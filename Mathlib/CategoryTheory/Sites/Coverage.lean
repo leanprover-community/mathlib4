@@ -275,7 +275,7 @@ a Galois insertion.
 -/
 def gi : GaloisInsertion (toGrothendieck (C := C)) (GrothendieckTopology.toCoverage (C := C)) where
   choice K _ := toGrothendieck K
-  choice_eq := fun _ _ => rfl
+  choice_eq _ _ := rfl
   le_l_u J X S hS := by
     rw [← Sieve.generate_sieve S]
     apply Saturate.of
@@ -310,7 +310,7 @@ theorem toGrothendieck_eq_sInf (K : Coverage C) : toGrothendieck K =
 
 instance : SemilatticeSup (Coverage C) where
   sup x y :=
-  { coverings := fun B ↦ x B ∪ y B
+  { coverings B := x B ∪ y B
     pullback := by
       rintro X Y f S (hx | hy)
       · obtain ⟨T, hT⟩ := x.pullback f S hx

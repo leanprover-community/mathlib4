@@ -165,7 +165,7 @@ end
 @[simps]
 def id (F : 𝒳 ⥤ᵇ 𝒴) : BasedNatTrans F F where
   toNatTrans := CategoryTheory.NatTrans.id F.toFunctor
-  isHomLift' := fun a ↦ of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
+  isHomLift' a := of_fac 𝒴.p _ _ (w_obj F a) (w_obj F a) (by simp)
 
 /-- Composition of `BasedNatTrans`, given by composition of the underlying natural
 transformations. -/
@@ -193,8 +193,8 @@ functors of underlying categories, `𝒳.obj ⥤ 𝒴.obj`. -/
 @[simps]
 def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
     (𝒳 ⥤ᵇ 𝒴) ⥤ (𝒳.obj ⥤ 𝒴.obj) where
-  obj := fun F ↦ F.toFunctor
-  map := fun α ↦ α.toNatTrans
+  obj F := F.toFunctor
+  map α := α.toNatTrans
 
 set_option backward.defeqAttrib.useBackward true in
 instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
@@ -202,7 +202,7 @@ instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where
     constructor
     use {
       toNatTrans := inv ((forgetful 𝒳 𝒴).map α)
-      isHomLift' := fun a ↦ by simp [lift_id_inv_isIso] }
+      isHomLift' a := by simp [lift_id_inv_isIso] }
     aesop
 
 set_option backward.isDefEq.respectTransparency false in
@@ -232,7 +232,7 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
   hom := { toNatTrans := α.hom }
   inv := {
     toNatTrans := α.inv
-    isHomLift' := fun a ↦ by
+    isHomLift' a := by
       have : 𝒴.p.IsHomLift (𝟙 (𝒳.p.obj a)) (α.app a).hom := (Iso.app_hom α a) ▸ isHomLift' a
       rw [← Iso.app_inv]
       apply IsHomLift.lift_id_inv }
@@ -258,7 +258,7 @@ and natural transformations. -/
 def whiskerLeft {𝒵 : BasedCategory.{v₄, u₄} 𝒮} (F : 𝒳 ⥤ᵇ 𝒴) {G H : 𝒴 ⥤ᵇ 𝒵} (α : G ⟶ H) :
     F ⋙ G ⟶ F ⋙ H where
   toNatTrans := Functor.whiskerLeft F.toFunctor α.toNatTrans
-  isHomLift' := fun a ↦ α.isHomLift (F.w_obj a)
+  isHomLift' a := α.isHomLift (F.w_obj a)
 
 /-- Right-whiskering in the bicategory `BasedCategory` is given by whiskering the underlying
 functors and natural transformations. -/
@@ -266,7 +266,7 @@ functors and natural transformations. -/
 def whiskerRight {𝒵 : BasedCategory.{v₄, u₄} 𝒮} {F G : 𝒳 ⥤ᵇ 𝒴} (α : F ⟶ G) (H : 𝒴 ⥤ᵇ 𝒵) :
     F ⋙ H ⟶ G ⋙ H where
   toNatTrans := Functor.whiskerRight α.toNatTrans H.toFunctor
-  isHomLift' := fun _ ↦ BasedFunctor.preserves_isHomLift _ _ _
+  isHomLift' _ := BasedFunctor.preserves_isHomLift _ _ _
 
 end
 

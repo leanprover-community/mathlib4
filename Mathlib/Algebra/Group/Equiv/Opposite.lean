@@ -143,8 +143,7 @@ def AddHom.mulOp {M N} [Add M] [Add N] : AddHom M N ≃ AddHom Mᵐᵒᵖ Nᵐ�
       map_add' x y := unop_injective (f.map_add x.unop y.unop) }
   invFun f :=
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op,
-      map_add' :=
-        fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
+      map_add' x y := congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
 
 /-- The 'unopposite' of an additive semigroup hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddHom.mul_op`. -/
@@ -189,8 +188,7 @@ def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ 
   invFun f :=
     { toFun := MulOpposite.unop ∘ f ∘ MulOpposite.op,
       map_zero' := congrArg MulOpposite.unop f.map_zero,
-      map_add' :=
-        fun x y => congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
+      map_add' x y := congrArg MulOpposite.unop (f.map_add (MulOpposite.op x) (MulOpposite.op y)) }
 
 /-- The 'unopposite' of an additive monoid hom `αᵐᵒᵖ →+ βᵐᵒᵖ`. Inverse to
 `AddMonoidHom.mul_op`. -/

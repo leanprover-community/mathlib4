@@ -87,7 +87,7 @@ def scottHausdorff (α : Type*) (D : Set (Set α)) [Preorder α] : TopologicalSp
     obtain ⟨b₂, hb₂d, hb₂dt⟩ := ht hd₀ hd₁ hd₂ hd₃ ha.2
     obtain ⟨c, hcd, hc⟩ := hd₂ b₁ hb₁d b₂ hb₂d
     exact ⟨c, hcd, fun e ⟨hce, hed⟩ ↦ ⟨hb₁ds ⟨hc.1.trans hce, hed⟩, hb₂dt ⟨hc.2.trans hce, hed⟩⟩⟩
-  isOpen_sUnion := fun s h d hd₀ hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩ ↦ by
+  isOpen_sUnion s h := fun d hd₀ hd₁ hd₂ a hd₃ ⟨s₀, hs₀s, has₀⟩  ↦ by
     obtain ⟨b, hbd, hbds₀⟩ := h s₀ hs₀s hd₀ hd₁ hd₂ hd₃ has₀
     exact ⟨b, hbd, Set.subset_sUnion_of_subset s s₀ hbds₀ hs₀s⟩
 

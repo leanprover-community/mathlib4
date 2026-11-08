@@ -55,26 +55,26 @@ def module' (hr : ∀ (a : R) ⦃X Y : C⦄ (f₁ f₂ : X ⟶ Y) (_ : r f₁ f�
     [Preadditive (Quotient r)] [(functor r).Additive] (X Y : C) :
     Module R ((functor r).obj X ⟶ (functor r).obj Y) :=
   letI smul := smul r hr ((functor r).obj X) ((functor r).obj Y)
-  { smul_zero := fun a => by
+  { smul_zero a := by
       rw [← (functor r).map_zero X Y, smul_eq, smul_zero]
-    zero_smul := fun f => by
+    zero_smul f := by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [zero_smul, Functor.map_zero]
-    one_smul := fun f => by
+    one_smul f := by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [one_smul]
-    mul_smul := fun a b f => by
+    mul_smul a b f := by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [mul_smul]
-    smul_add := fun a f g => by
+    smul_add a f g := by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       obtain ⟨g, rfl⟩ := (functor r).map_surjective g
       dsimp [smul]
       rw [← (functor r).map_add, smul_eq, ← (functor r).map_add, smul_add]
-    add_smul := fun a b f => by
+    add_smul a b f := by
       obtain ⟨f, rfl⟩ := (functor r).map_surjective f
       dsimp [smul]
       rw [add_smul, Functor.map_add] }

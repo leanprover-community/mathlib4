@@ -59,7 +59,7 @@ instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   exact add_le_add le_rfl h3
 
 instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Lp E p μ) :=
-  { add_le_add_left := fun _ _ => add_le_add_left }
+  { add_le_add_left _ _ := add_le_add_left }
 
 instance [Fact (1 ≤ p)] [ClosedIciTopology E] : OrderClosedTopology (Lp E p μ) where
   isClosed_le' := isClosed_le_of_isClosed_nonneg <| IsSeqClosed.isClosed <|
@@ -108,7 +108,7 @@ theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
 
 instance instHasSolidNorm [Fact (1 ≤ p)] :
     HasSolidNorm (Lp E p μ) :=
-  { solid := fun f g hfg => by
+  { solid f g hfg := by
       rw [← coeFn_le] at hfg
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
       refine eLpNorm_mono_ae (Lp.aestronglyMeasurable f) ?_

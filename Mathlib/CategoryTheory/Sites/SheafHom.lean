@@ -81,7 +81,7 @@ set_option backward.defeqAttrib.useBackward true in
 /-- The sections of the presheaf `presheafHom F G` identify to morphisms `F ⟶ G`. -/
 def presheafHomSectionsEquiv : (presheafHom F G).sections ≃ (F ⟶ G) where
   toFun s :=
-    { app := fun X => (s.1 X).app ⟨Over.mk (𝟙 _)⟩
+    { app X := (s.1 X).app ⟨Over.mk (𝟙 _)⟩
       naturality := by
         rintro ⟨X₁⟩ ⟨X₂⟩ ⟨f : X₂ ⟶ X₁⟩
         dsimp
@@ -176,7 +176,7 @@ lemma presheafHom_isSheafFor :
   intro x hx
   apply existsUnique_of_exists_of_unique
   · refine ⟨
-      { app := fun Y => app hG x hx Y.unop.hom
+      { app Y := app hG x hx Y.unop.hom
         naturality := by
           rintro ⟨Y₁ : Over X⟩ ⟨Y₂ : Over X⟩ ⟨φ : Y₂ ⟶ Y₁⟩
           apply (hG Y₂.hom).hom_ext

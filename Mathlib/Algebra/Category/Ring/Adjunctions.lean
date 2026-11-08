@@ -51,12 +51,12 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The free-forgetful adjunction for commutative rings. -/
 def adj : free ⊣ forget CommRingCat.{u} :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ ↦
-        { toFun := fun f ↦ ↾(homEquiv f.hom)
-          invFun := fun f ↦ ofHom <| homEquiv.symm f
+    { homEquiv _ _ :=
+        { toFun f := ↾(homEquiv f.hom)
+          invFun f := ofHom <| homEquiv.symm f
           left_inv := fun f ↦ congrArg ofHom (homEquiv.left_inv f.hom)
           right_inv := by cat_disch }
-      homEquiv_naturality_left_symm := fun {_ _ Y} f g =>
+      homEquiv_naturality_left_symm {_ _ Y} f g :=
         hom_ext <| RingHom.ext fun x ↦ eval₂_cast_comp f (Int.castRingHom Y) g x }
 
 instance : (forget CommRingCat.{u}).IsRightAdjoint :=

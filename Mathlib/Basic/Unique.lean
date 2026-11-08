@@ -136,7 +136,7 @@ instance subsingleton_unique : Subsingleton (Unique α) :=
 /-- Construct `Unique` from `Inhabited` and `Subsingleton`. Making this an instance would create
 a loop in the class inheritance graph. -/
 abbrev mk' (α : Sort u) [h₁ : Inhabited α] [Subsingleton α] : Unique α :=
-  { h₁ with uniq := fun _ ↦ Subsingleton.elim _ _ }
+  { h₁ with uniq _ := Subsingleton.elim _ _ }
 
 end Unique
 
@@ -166,7 +166,7 @@ theorem Pi.default_apply {β : α → Sort v} [∀ a, Inhabited (β a)] (a : α)
   rfl
 
 instance Pi.unique {β : α → Sort v} [∀ a, Unique (β a)] : Unique (∀ a, β a) where
-  uniq := fun _ ↦ funext fun _ ↦ Unique.eq_default _
+  uniq _ := funext fun _ ↦ Unique.eq_default _
 
 /-- There is a unique function on an empty domain. -/
 instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, β a) where

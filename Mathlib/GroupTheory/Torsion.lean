@@ -268,7 +268,7 @@ for some `k`. For prime `p`, these are exactly the elements of `p`-power order. 
 def primaryComponent : Submonoid G where
   carrier := { g | ∃ k : ℕ, g ^ p ^ k = 1 }
   one_mem' := ⟨0, by simp⟩
-  mul_mem' := fun {a b} ⟨m, hm⟩ ⟨n, hn⟩ ↦ ⟨m + n, by
+  mul_mem' {a b} := fun ⟨m, hm⟩ ⟨n, hn⟩  ↦ ⟨m + n, by
     rw [mul_pow, pow_add, pow_mul, hm, one_pow, one_mul, mul_comm, pow_mul, hn, one_pow]⟩
 
 variable {G} {p}
@@ -369,7 +369,7 @@ namespace CommGroup
 /-- The torsion subgroup of an abelian group. -/
 @[to_additive /-- The torsion additive subgroup of an additive abelian group. -/]
 def torsion : Subgroup G :=
-  { CommMonoid.torsion G with inv_mem' := fun hx ↦ IsOfFinOrder.inv hx }
+  { CommMonoid.torsion G with inv_mem' hx := IsOfFinOrder.inv hx }
 
 /-- The torsion submonoid of an abelian group equals the torsion subgroup as a submonoid. -/
 @[to_additive
@@ -449,7 +449,7 @@ for some `k`. For prime `p`, these are exactly the elements of `p`-power order. 
 `p`-power order. -/]
 def primaryComponent : Subgroup G :=
   { CommMonoid.primaryComponent G p with
-    inv_mem' := fun {g} ⟨k, hk⟩ ↦ ⟨k, by rw [inv_pow, hk, inv_one]⟩ }
+    inv_mem' {g} := fun ⟨k, hk⟩  ↦ ⟨k, by rw [inv_pow, hk, inv_one]⟩ }
 
 variable {G} {p}
 
@@ -532,7 +532,7 @@ section AddCommGroup
 instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
     Module R (M ⧸ AddCommGroup.torsion M) :=
   -- Upgrade the torsion subgroup to a submodule.
-  letI S : Submodule R M := { AddCommGroup.torsion M with smul_mem' := fun r m ⟨n, hn, hn'⟩ ↦
+  letI S : Submodule R M := { AddCommGroup.torsion M with smul_mem' r m := fun ⟨n, hn, hn'⟩  ↦
     ⟨n, hn, by { simp only [Function.IsPeriodicPt, Function.IsFixedPt, add_left_iterate, add_zero,
       smul_comm n] at hn' ⊢; simp only [hn', smul_zero] }⟩ }
   -- The quotients are the same.

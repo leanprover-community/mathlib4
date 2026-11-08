@@ -68,7 +68,7 @@ def mk₂'ₛₗ (f : M → N → P) (H1 : ∀ m₁ m₂ n, f (m₁ + m₂) n = 
   toFun m :=
     { toFun := f m
       map_add' := H3 m
-      map_smul' := fun c => H4 c m }
+      map_smul' c := H4 c m }
   map_add' m₁ m₂ := LinearMap.ext <| H1 m₁ m₂
   map_smul' c m := LinearMap.ext <| H2 c m
 
@@ -441,8 +441,8 @@ to `M →ₛₗ[σ₁₃] P`. -/
 def llcomp : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
     { toFun := lcompₛₗ _ P σ₂₃
-      map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
-      map_smul' := fun (_c : R₂) _f => ext₂ fun g _x => g.map_smulₛₗ _ _ }
+      map_add' _f _f' := ext₂ fun g _x => g.map_add _ _
+      map_smul' (_c : R₂) _f := ext₂ fun g _x => g.map_smulₛₗ _ _ }
 
 variable {M N P}
 

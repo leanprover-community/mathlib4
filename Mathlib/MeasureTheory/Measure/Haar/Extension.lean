@@ -80,7 +80,7 @@ continuous compactly supported function on `C` by integrating over `A`. -/]
 noncomputable def pushforward :
     CompactlySupportedContinuousMap B E →ₗ[ℝ] CompactlySupportedContinuousMap C E where
   toFun f :=
-  { toFun := fun c ↦ ∫ a, pullback H f (Function.invFun ψ c) a ∂μA
+  { toFun c := ∫ a, pullback H f (Function.invFun ψ c) a ∂μA
     hasCompactSupport' := by
       obtain ⟨K, hK, hf⟩ := exists_compact_iff_hasCompactSupport.mpr f.hasCompactSupport
       refine exists_compact_iff_hasCompactSupport.mp

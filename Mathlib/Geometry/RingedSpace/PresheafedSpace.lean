@@ -275,8 +275,8 @@ def ofRestrict {U : TopCat} (X : PresheafedSpace C) {f : U ⟶ (X : TopCat)}
     (h : IsOpenEmbedding f) : X.restrict h ⟶ X where
   base := f
   c :=
-    { app := fun V => X.presheaf.map (h.isOpenMap.adjunction.counit.app V.unop).op
-      naturality := fun U V f =>
+    { app V := X.presheaf.map (h.isOpenMap.adjunction.counit.app V.unop).op
+      naturality U V f :=
         show _ = _ ≫ X.presheaf.map _ by
           rw [← map_comp, ← map_comp]
           rfl }

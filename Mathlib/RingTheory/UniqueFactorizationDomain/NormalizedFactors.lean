@@ -378,13 +378,13 @@ open scoped Classical in
 @[instance_reducible]
 protected noncomputable def strongNormalizationMonoid : StrongNormalizationMonoid α :=
   strongNormalizationMonoidOfMonoidHomRightInverse
-    { toFun := fun a : Associates α =>
+    { toFun (a : Associates α) :=
         if a = 0 then 0
         else
           ((normalizedFactors a).map
               (Classical.choose mk_surjective.hasRightInverse : Associates α → α)).prod
       map_one' := by nontriviality α; simp
-      map_mul' := fun x y => by
+      map_mul' x y := by
         by_cases hx : x = 0
         · simp [hx]
         by_cases hy : y = 0

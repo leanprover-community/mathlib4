@@ -60,7 +60,7 @@ instance Discrete.monoidalFunctorMonoidal (F : M →* N) :
     (Discrete.monoidalFunctor F).Monoidal :=
     Functor.CoreMonoidal.toMonoidal
       { εIso := Discrete.eqToIso F.map_one.symm
-        μIso := fun m₁ m₂ ↦ Discrete.eqToIso (F.map_mul _ _).symm }
+        μIso m₁ m₂ := Discrete.eqToIso (F.map_mul _ _).symm }
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal
 

@@ -570,7 +570,7 @@ variable (f : σ → S₁)
 /-- A map `σ → S₁` where `S₁` is an algebra over `R` generates an `R`-algebra homomorphism
 from multivariate polynomials over `σ` to `S₁`. -/
 def aeval : MvPolynomial σ R →ₐ[R] S₁ :=
-  { eval₂Hom (algebraMap R S₁) f with commutes' := fun _r => eval₂_C _ _ _ }
+  { eval₂Hom (algebraMap R S₁) f with commutes' _r := eval₂_C _ _ _ }
 
 theorem aeval_def (p : MvPolynomial σ R) : aeval f p = eval₂ (algebraMap R S₁) f p :=
   rfl
@@ -752,7 +752,7 @@ variable [Algebra S R] [Algebra S A]
   than `R`. -/
 def aevalTower (f : R →ₐ[S] A) (X : σ → A) : MvPolynomial σ R →ₐ[S] A :=
   { eval₂Hom (↑f) X with
-    commutes' := fun r => by
+    commutes' r := by
       simp [IsScalarTower.algebraMap_eq S R (MvPolynomial σ R), algebraMap_eq] }
 
 variable (g : R →ₐ[S] A) (y : σ → A)

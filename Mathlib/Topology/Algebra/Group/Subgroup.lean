@@ -40,7 +40,7 @@ itself a subgroup. -/
 def Subgroup.topologicalClosure (s : Subgroup G) : Subgroup G :=
   { s.toSubmonoid.topologicalClosure with
     carrier := _root_.closure (s : Set G)
-    inv_mem' := fun {g} hg => by simpa only [← Set.mem_inv, inv_closure, inv_coe_set] using hg }
+    inv_mem' {g} hg := by simpa only [← Set.mem_inv, inv_closure, inv_coe_set] using hg }
 
 @[to_additive (attr := simp)]
 theorem Subgroup.topologicalClosure_coe {s : Subgroup G} :

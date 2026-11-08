@@ -74,13 +74,13 @@ instance hasFiniteCoproducts_opposite [HasFiniteProducts C] : HasFiniteCoproduct
   out _ := Limits.hasCoproductsOfShape_opposite _
 
 theorem hasFiniteCoproducts_of_opposite [HasFiniteProducts Cᵒᵖ] : HasFiniteCoproducts C :=
-  { out := fun _ => hasCoproductsOfShape_of_opposite _ }
+  { out _ := hasCoproductsOfShape_of_opposite _ }
 
 instance hasFiniteProducts_opposite [HasFiniteCoproducts C] : HasFiniteProducts Cᵒᵖ where
   out _ := inferInstance
 
 theorem hasFiniteProducts_of_opposite [HasFiniteCoproducts Cᵒᵖ] : HasFiniteProducts C :=
-  { out := fun _ => hasProductsOfShape_of_opposite _ }
+  { out _ := hasProductsOfShape_of_opposite _ }
 
 section OppositeCoproducts
 

@@ -51,10 +51,10 @@ instance may be not definitionally equal to some other “natural” instance. S
 theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
     IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
   { add_left := inner_add_left
-    smul_left := fun r x y => by
+    smul_left r x y := by
       simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
     add_right := inner_add_right
-    smul_right := fun r x y => by
+    smul_right r x y := by
       simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
     bound :=
       ⟨1, zero_lt_one, fun x y => by

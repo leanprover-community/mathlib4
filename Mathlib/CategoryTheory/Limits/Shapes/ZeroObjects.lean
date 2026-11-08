@@ -139,7 +139,7 @@ theorem Iso.isZero_iff {X Y : C} (e : X ≅ Y) : IsZero X ↔ IsZero Y :=
 theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F := by
   constructor <;> intro G <;> refine ⟨⟨⟨?_⟩, ?_⟩⟩
   · refine
-      { app := fun X => (hF _).to_ _
+      { app X := (hF _).to_ _
         naturality := ?_ }
     intros
     exact (hF _).eq_of_src _ _
@@ -147,7 +147,7 @@ theorem Functor.isZero (F : C ⥤ D) (hF : ∀ X, IsZero (F.obj X)) : IsZero F :
     ext
     apply (hF _).eq_of_src _ _
   · refine
-      { app := fun X => (hF _).from_ _
+      { app X := (hF _).from_ _
         naturality := ?_ }
     intros
     exact (hF _).eq_of_tgt _ _

@@ -42,7 +42,7 @@ instance [MulZeroOneClass G] [CommMonoidWithZero H] (f : G →*₀ H) :
 
 instance [GroupWithZero G] [GroupWithZero H] (f : G →*₀ H) :
     GroupWithZero (MonoidHom.mrange f) where
-  inv := fun x ↦ ⟨x⁻¹, by
+  inv x := ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop
     use y⁻¹
     simp [← hy]⟩

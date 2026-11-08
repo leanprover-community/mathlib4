@@ -1261,13 +1261,13 @@ noncomputable def ofHasDayConvolutions
     InducedLawfulDayConvolutionMonoidalCategoryStructCore C V D where
   ι := ι
   fullyFaithfulι := ffι
-  tensorObj := fun d d' ↦ essImageDayConvolution d d' |>.witness
-  convolutions' := fun d d' ↦
+  tensorObj d d' := essImageDayConvolution d d' |>.witness
+  convolutions' d d' :=
     { convolution := (tensor C).pointwiseLeftKanExtension (ι.obj d ⊠ ι.obj d')
       unit := (tensor C).pointwiseLeftKanExtensionUnit (ι.obj d ⊠ ι.obj d')
       isPointwiseLeftKanExtensionUnit :=
         (tensor C).pointwiseLeftKanExtensionIsPointwiseLeftKanExtension (ι.obj d ⊠ ι.obj d') }
-  tensorObjIsoConvolution := fun d d' => Functor.essImage.getIso _
+  tensorObjIsoConvolution d d' := Functor.essImage.getIso _
   tensorUnit := essImageDayConvolutionUnit.witness
   tensorUnitConvolutionUnit :=
     { can :=

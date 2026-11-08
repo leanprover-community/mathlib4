@@ -64,7 +64,7 @@ variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 @[to_additive /-- If a topological additive group embeds into a nonarchimedean additive group, then
 it is nonarchimedean. -/]
 theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : NonarchimedeanGroup H :=
-  { is_nonarchimedean := fun U hU =>
+  { is_nonarchimedean U hU :=
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by
         apply emb.continuous.tendsto
         rwa [f.map_one]

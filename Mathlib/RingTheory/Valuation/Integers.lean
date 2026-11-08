@@ -60,8 +60,8 @@ instance : Algebra v.integer R :=
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
-    map_le_one := fun r => r.2
-    exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
+    map_le_one r := r.2
+    exists_of_le_one r hr := ⟨⟨r, hr⟩, rfl⟩ }
 
 namespace Integers
 
@@ -260,7 +260,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   -- nonunits as an ideal isn't defined here, nor shown to be equivalent to `v x < 1`
   set I : Ideal O := {
     carrier := v ∘ algebraMap O F ⁻¹' Iio (1 : Γ₀)
-    add_mem' := fun {a b} ha hb ↦ by simpa using map_add_lt v ha hb
+    add_mem' {a b} ha hb := by simpa using map_add_lt v ha hb
     zero_mem' := by simp
     smul_mem' := by
       intro c x

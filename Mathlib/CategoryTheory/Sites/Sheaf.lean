@@ -102,8 +102,8 @@ def conesEquivSieveCompatibleFamily :
         S.arrows.categoryMk f hf := ObjectProperty.homMk (Over.homMk _ rfl)
       simpa using! π.naturality φ.op⟩
   invFun x :=
-    { app := fun f => x.1 f.unop.1.hom f.unop.2
-      naturality := fun f f' g => by
+    { app f := x.1 f.unop.1.hom f.unop.2
+      naturality f f' g := by
         have := x.2 f.unop.1.hom g.unop.hom.left f.unop.2
         dsimp at this ⊢
         rw [id_comp, ← this]
@@ -438,8 +438,8 @@ equivalent to the category of presheaves.
 def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤ A where
   functor := sheafToPresheaf _ _
   inverse :=
-    { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
-      map := fun f => ⟨f⟩ }
+    { obj P := ⟨P, Presheaf.isSheaf_bot P⟩
+      map f := ⟨f⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 
@@ -516,7 +516,7 @@ section MultiequalizerConditions
 set_option backward.isDefEq.respectTransparency.types false in
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
-  lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
+  lift (E : Multifork _) := hP.amalgamate S (fun _ => E.ι _)
     (fun _ _ r => E.condition ⟨r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)

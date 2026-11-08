@@ -102,7 +102,7 @@ def toEuclideanCLM :
     Matrix n n 𝕜 ≃⋆ₐ[𝕜] (EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :=
   toMatrixOrthonormal (EuclideanSpace.basisFun n 𝕜) |>.symm.trans <|
     { toContinuousLinearMap with
-      map_mul' := fun _ _ ↦ rfl
+      map_mul' _ _ := rfl
       map_star' := adjoint_toContinuousLinearMap }
 
 @[fun_prop]

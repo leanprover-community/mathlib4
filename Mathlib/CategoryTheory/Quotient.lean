@@ -113,7 +113,7 @@ class Congruence : Prop
 instance Functor.congruence_homRel {C D : Type*} [Category* C] [Category* D] (F : C ⥤ D) :
     Congruence F.homRel where
   equivalence :=
-    { refl := fun _ ↦ rfl
+    { refl _ := rfl
       symm := by aesop
       trans := by aesop }
   comp_left := by aesop

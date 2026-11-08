@@ -858,7 +858,7 @@ theorem Continuous.measurableEmbedding [BorelSpace β]
     MeasurableEmbedding f :=
   { injective := f_inj
     measurable := f_cont.measurable
-    measurableSet_image' := fun _u hu =>
+    measurableSet_image' _u hu :=
       hu.image_of_continuousOn_injOn f_cont.continuousOn f_inj.injOn }
 
 /-- If `s` is Borel-measurable in a Polish space and `f` is continuous injective on `s`, then
@@ -886,7 +886,7 @@ theorem Measurable.measurableEmbedding {f : γ → α}
     (f_meas : Measurable f) (f_inj : Injective f) : MeasurableEmbedding f :=
   { injective := f_inj
     measurable := f_meas
-    measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas f_inj.injOn }
+    measurableSet_image' _u hu := hu.image_of_measurable_injOn f_meas f_inj.injOn }
 
 /-- If one Polish topology on a type refines another, they have the same Borel sets. -/
 theorem MeasureTheory.borel_eq_borel_of_le {t t' : TopologicalSpace γ}

@@ -632,12 +632,12 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
 
 instance instAlgebra : Algebra S (Unitization R A) where
   algebraMap := (Unitization.inlRingHom R A).comp (algebraMap S R)
-  commutes' := fun s x => by
+  commutes' s x := by
     induction x with
     | inl_add_inr =>
       change inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
       rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
-  smul_def' := fun s x => by
+  smul_def' s x := by
     induction x with
     | inl_add_inr =>
       change _ = inl (algebraMap S R s) * _
@@ -736,9 +736,9 @@ algebra homomorphism from the unitization into `C`. This is extended to an `Equi
 reasons. -/
 @[simps]
 def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A →ₐ[R] C where
-  toFun := fun x => algebraMap R C x.fst + φ x.snd
+  toFun x := algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
-  map_mul' := fun x y => by
+  map_mul' x y := by
     induction x with
     | inl_add_inr x_r x_a =>
       induction y with
@@ -749,7 +749,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         rw [← Algebra.commutes _ (φ x_a)]
         simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
   map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
-  map_add' := fun x y => by
+  map_add' x y := by
     induction x with
     | inl_add_inr =>
       induction y with
@@ -757,7 +757,7 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
         simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
           zero_add, φ.map_add]
         rw [add_add_add_comm]
-  commutes' := fun r => by
+  commutes' r := by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
 
@@ -803,9 +803,9 @@ variable [StarModule R C]
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
 @[simps! apply symm_apply]
 def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
-{ toFun := fun φ ↦
+{ toFun φ :=
   { toAlgHom := Unitization.lift φ.toNonUnitalAlgHom
-    map_star' := fun x => by
+    map_star' x := by
       simp [map_star] }
   invFun φ := φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv _ := by ext; simp,

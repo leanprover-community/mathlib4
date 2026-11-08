@@ -120,7 +120,7 @@ local notation "π₂⁻¹ " i ", " j ", " k =>
 
 /-- The glue data of topological spaces associated to a family of glue data of PresheafedSpaces. -/
 abbrev toTopGlueData : TopCat.GlueData :=
-  { f_open := fun i j => (D.f_open i j).base_open
+  { f_open i j := (D.f_open i j).base_open
     toGlueData := 𝖣.mapGlueData (forget C) }
 
 set_option backward.isDefEq.respectTransparency false in
@@ -340,8 +340,8 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
   limit.lift (D.diagramOverOpen U)
     { pt := (D.U i).presheaf.obj (op U)
       π :=
-        { app := fun j => D.ιInvAppπApp U (unop j)
-          naturality := fun {X Y} f' => by
+        { app j := D.ιInvAppπApp U (unop j)
+          naturality {X Y} f' := by
             induction X with | op X => ?_
             induction Y with | op Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this

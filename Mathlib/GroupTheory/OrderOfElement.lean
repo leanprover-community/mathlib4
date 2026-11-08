@@ -1312,7 +1312,7 @@ def submonoidOfIdempotent {M : Type*} [LeftCancelMonoid M] [Finite M] (S : Set M
       obtain ⟨a, ha⟩ := hS1
       rw [← pow_orderOf_eq_one a, ← tsub_add_cancel_of_le (succ_le_of_lt (orderOf_pos a))]
       exact pow_mem a ha (orderOf a - 1)
-    mul_mem' := fun ha hb => (congr_arg₂ (· ∈ ·) rfl hS2).mp (Set.mul_mem_mul ha hb) }
+    mul_mem' ha hb := (congr_arg₂ (· ∈ ·) rfl hS2).mp (Set.mul_mem_mul ha hb) }
 
 /-- A nonempty idempotent subset of a finite group is a subgroup -/
 @[to_additive /-- A nonempty idempotent subset of a finite additive group is a subgroup -/]
@@ -1320,7 +1320,7 @@ def subgroupOfIdempotent {G : Type*} [Group G] [Finite G] (S : Set G) (hS1 : S.N
     (hS2 : S * S = S) : Subgroup G :=
   { submonoidOfIdempotent S hS1 hS2 with
     carrier := S
-    inv_mem' := fun {a} ha => show a⁻¹ ∈ submonoidOfIdempotent S hS1 hS2 by
+    inv_mem' {a} ha := show a⁻¹ ∈ submonoidOfIdempotent S hS1 hS2 by
       rw [← one_mul a⁻¹, ← pow_one a, ← pow_orderOf_eq_one a, ← pow_sub a (orderOf_pos a)]
       exact pow_mem ha (orderOf a - 1) }
 

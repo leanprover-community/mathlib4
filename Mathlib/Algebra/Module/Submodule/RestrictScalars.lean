@@ -111,7 +111,7 @@ as turning it into a type and adding a module structure. -/
 @[simps +simpRhs]
 def restrictScalarsEquiv (p : Submodule R M) : p.restrictScalars S ≃ₗ[R] p :=
   { AddEquiv.refl p with
-    map_smul' := fun _ _ => rfl }
+    map_smul' _ _ := rfl }
 
 @[simp]
 theorem restrictScalars_bot : restrictScalars S (⊥ : Submodule R M) = ⊥ :=

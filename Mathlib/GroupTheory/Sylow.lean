@@ -203,8 +203,8 @@ theorem IsPGroup.exists_le_sylow {P : Subgroup G} (hP : IsPGroup p P) : ∃ Q : 
       (fun c hc1 hc2 Q hQ =>
         ⟨{  carrier := ⋃ R : c, R
             one_mem' := ⟨Q, ⟨⟨Q, hQ⟩, rfl⟩, Q.one_mem⟩
-            inv_mem' := fun {_} ⟨_, ⟨R, rfl⟩, hg⟩ => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
-            mul_mem' := fun {_} _ ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩ =>
+            inv_mem' {_} := fun ⟨_, ⟨R, rfl⟩, hg⟩  => ⟨R, ⟨R, rfl⟩, R.1.inv_mem hg⟩
+            mul_mem' {_} _ := fun ⟨_, ⟨R, rfl⟩, hg⟩ ⟨_, ⟨S, rfl⟩, hh⟩  =>
               (hc2.total R.2 S.2).elim (fun T => ⟨S, ⟨S, rfl⟩, S.1.mul_mem (T hg) hh⟩) fun T =>
                 ⟨R, ⟨R, rfl⟩, R.1.mul_mem hg (T hh)⟩ },
           fun ⟨g, _, ⟨S, rfl⟩, hg⟩ => by
@@ -863,7 +863,7 @@ theorem _root_.Group.card_dvd_prod_orderOf [Fintype G] : Nat.card G ∣ ∏ g : 
 @[instance_reducible]
 noncomputable def unique_of_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (h : P.Normal) : Unique (Sylow p G) := by
-  refine { uniq := fun Q ↦ ?_ }
+  refine { uniq Q := ?_ }
   obtain ⟨x, h1⟩ := exists_smul_eq G P Q
   obtain ⟨x, h2⟩ := exists_smul_eq G P default
   rw [smul_eq_of_normal] at h1 h2

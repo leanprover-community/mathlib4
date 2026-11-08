@@ -174,9 +174,9 @@ class DiffeologicalSpace (X : Type*) where
   dTopology : TopologicalSpace X := {
     IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p ∈ plots n, IsOpen (p ⁻¹' u)
     isOpen_univ := fun _ _ _ ↦ isOpen_univ
-    isOpen_inter := fun _ _ hs ht _ p hp ↦
+    isOpen_inter _ _ hs ht := fun _ p hp  ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
-    isOpen_sUnion := fun _ hs _ p hp ↦
+    isOpen_sUnion _ hs := fun _ p hp  ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   /-- The D-topology consists of exactly those sets whose preimages under plots are all open. -/
   isOpen_iff_preimages_plots {u : Set X} :
@@ -306,9 +306,9 @@ structure CorePlotsOn (X : Type*) where
   dTopology : TopologicalSpace X := {
     IsOpen u := ∀ ⦃n : ℕ⦄, ∀ p : 𝔼ⁿ → X, isPlot p → IsOpen (p ⁻¹' u)
     isOpen_univ := fun _ _ _ ↦ isOpen_univ
-    isOpen_inter := fun _ _ hs ht _ p hp ↦
+    isOpen_inter _ _ hs ht := fun _ p hp  ↦
       Set.preimage_inter.symm ▸ (IsOpen.inter (hs p hp) (ht p hp))
-    isOpen_sUnion := fun _ hs _ p hp ↦
+    isOpen_sUnion _ hs := fun _ p hp  ↦
       Set.preimage_sUnion ▸ isOpen_biUnion fun u hu ↦ hs u hu p hp }
   isOpen_iff_preimages_plots {u : Set X} : dTopology.IsOpen u ↔
     ∀ {n : ℕ}, ∀ p : 𝔼ⁿ → X, isPlot p → IsOpen (p ⁻¹' u) := by rfl
@@ -381,17 +381,17 @@ def _root_.NormedSpace.toDiffeology (X : Type*)
     [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X] :
     DiffeologicalSpace X :=
   .ofCorePlotsOn {
-    isPlotOn := fun {_ u} _ p ↦ ContDiffOn ℝ ∞ p u
-    isPlotOn_congr := fun _ _ _ h ↦ contDiffOn_congr h
-    isPlot := fun p ↦ ContDiff ℝ ∞ p
+    isPlotOn {_ u} _ p := ContDiffOn ℝ ∞ p u
+    isPlotOn_congr _ _ _ h := contDiffOn_congr h
+    isPlot p := ContDiff ℝ ∞ p
     isPlotOn_univ := contDiffOn_univ
-    isPlot_const := fun _ ↦ contDiff_const
-    isPlotOn_reparam := fun _ _ _ h hp hf ↦ hp.comp hf h.subset_preimage
-    locality := fun _ _ h ↦ fun x hxu ↦ by
+    isPlot_const _ := contDiff_const
+    isPlotOn_reparam _ _ _ h hp hf := hp.comp hf h.subset_preimage
+    locality _ _ h := fun x hxu ↦ by
       let ⟨v, hv, hxv, hv'⟩ := h x hxu
       exact ((hv' x hxv).contDiffAt (hv.mem_nhds hxv)).contDiffWithinAt
     dTopology := inferInstance
-    isOpen_iff_preimages_plots := fun {u} ↦ by
+    isOpen_iff_preimages_plots {u} := by
       refine ⟨fun hu _ _ hp ↦ IsOpen.preimage (hp.continuous) hu, fun h ↦ ?_⟩
       rw [← toEuclidean.preimage_symm_preimage u]
       exact toEuclidean.continuous.isOpen_preimage _ (h _ toEuclidean.symm.contDiff) }
@@ -486,8 +486,8 @@ lemma injective_toPlots : Function.Injective (@toPlots X) := fun d d' h ↦ by
 def generateFrom (g : Set ((n : ℕ) × (𝔼ⁿ → X))) : DiffeologicalSpace X where
   plots n := {p | ∀ (d : DiffeologicalSpace X), g ⊆ d.toPlots → ⟨n, p⟩ ∈ d.toPlots}
   constant_plots {n} x := fun _ _ ↦ constant_plots x
-  plot_reparam {n m p f} := fun hp hf d hd ↦ @d.plot_reparam n m p f (hp _ hd) hf
-  locality {n p} := fun hp d hd ↦ @locality X d n p fun x ↦ by
+  plot_reparam {n m p f} hp hf d hd := @d.plot_reparam n m p f (hp _ hd) hf
+  locality {n p} hp d := fun hd  ↦ @locality X d n p fun x ↦ by
     let ⟨u, hxu, hu, hu'⟩ := hp x
     exact ⟨u, hxu, hu, fun {m f} hfu hf ↦ (hu' hfu hf) _ hd⟩
 
@@ -543,7 +543,7 @@ to the diffeology they generate, and whose upper part sends a diffeology to its 
 -/
 def giGenerateFrom (X : Type*) : GaloisInsertion generateFrom (@toPlots X) where
   gc := gc_generateFrom X
-  le_l_u := fun _ ↦ le_def.2 (self_subset_toPlots_generateFrom _)
+  le_l_u _ := le_def.2 (self_subset_toPlots_generateFrom _)
   choice g hg := DiffeologicalSpace.mkOfClosure g (hg.antisymm (self_subset_toPlots_generateFrom g))
   choice_eq _ _ := mkOfClosure_eq_generateFrom
 

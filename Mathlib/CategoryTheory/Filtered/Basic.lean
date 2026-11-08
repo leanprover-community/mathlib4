@@ -191,10 +191,10 @@ variable {D : Type u₁} [Category.{v₁} D]
 filtered or empty.
 -/
 theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredOrEmpty D :=
-  { cocone_objs := fun X Y =>
+  { cocone_objs X Y :=
       ⟨R.obj (max (L.obj X) (L.obj Y)),
         h.homEquiv _ _ (leftToMax _ _), h.homEquiv _ _ (rightToMax _ _), ⟨⟩⟩
-    cocone_maps := fun X Y f g =>
+    cocone_maps X Y f g :=
       ⟨R.obj (coeq (L.map f) (L.map g)), h.homEquiv _ _ (coeqHom _ _), by
         rw [← h.homEquiv_naturality_left, ← h.homEquiv_naturality_left, coeq_condition]⟩ }
 
@@ -720,10 +720,10 @@ variable {D : Type u₁} [Category.{v₁} D]
 then `D` is cofiltered or empty.
 -/
 theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofilteredOrEmpty D :=
-  { cone_objs := fun X Y =>
+  { cone_objs X Y :=
       ⟨L.obj (min (R.obj X) (R.obj Y)), (h.homEquiv _ X).symm (minToLeft _ _),
         (h.homEquiv _ Y).symm (minToRight _ _), ⟨⟩⟩
-    cone_maps := fun X Y f g =>
+    cone_maps X Y f g :=
       ⟨L.obj (eq (R.map f) (R.map g)), (h.homEquiv _ _).symm (eqHom _ _), by
         rw [← h.homEquiv_naturality_right_symm, ← h.homEquiv_naturality_right_symm, eq_condition]⟩ }
 

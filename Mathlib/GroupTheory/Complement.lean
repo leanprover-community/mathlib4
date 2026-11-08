@@ -674,7 +674,7 @@ noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement'
     G ⧸ K ≃* H :=
   MulEquiv.symm
   { h.leftQuotientEquiv.symm with
-    map_mul' := fun _ _ ↦ rfl }
+    map_mul' _ _ := rfl }
 
 theorem IsComplement'.card_mul_card (h : IsComplement' H K) :
     Nat.card H * Nat.card K = Nat.card G :=

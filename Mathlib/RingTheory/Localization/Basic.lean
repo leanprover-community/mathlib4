@@ -349,7 +349,7 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
     IsLocalization M S ↔
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
-  isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+  isLocalization_iff_of_algEquiv M { h with commutes' _ := rfl }
 
 variable (S) in
 /-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra

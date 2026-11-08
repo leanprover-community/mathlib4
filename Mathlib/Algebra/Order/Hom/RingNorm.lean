@@ -88,7 +88,7 @@ instance (priority := 100) RingSeminormClass.toNonnegHomClass [NonUnitalNonAssoc
 -- See note [lower instance priority]
 instance (priority := 100) MulRingSeminormClass.toRingSeminormClass [NonAssocRing α]
     [Semiring β] [PartialOrder β] [MulRingSeminormClass F α β] : RingSeminormClass F α β :=
-  { ‹MulRingSeminormClass F α β› with map_mul_le_mul := fun _ _ _ => (map_mul _ _ _).le }
+  { ‹MulRingSeminormClass F α β› with map_mul_le_mul _ _ _ := (map_mul _ _ _).le }
 
 -- See note [lower instance priority]
 instance (priority := 100) MulRingNormClass.toRingNormClass [NonAssocRing α]

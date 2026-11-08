@@ -167,7 +167,7 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
     hf.divInvMonoid f one mul inv div npow zpow,
     domain_nontrivial f zero one with
     inv_zero := hf <| by rw [inv, zero, inv_zero],
-    mul_inv_cancel := fun x hx => hf <| by
+    mul_inv_cancel x hx := hf <| by
       rw [one, mul, inv, mul_inv_cancel₀ ((hf.ne_iff' zero).2 hx)] }
 
 /-- Push forward a `GroupWithZero` along a surjective function.

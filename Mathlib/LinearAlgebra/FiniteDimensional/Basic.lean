@@ -130,8 +130,8 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
   let b := Module.basisUnique ι h
   have h : b.repr v default ≠ 0 := mt Module.basisUnique_repr_eq_zero_iff.mp hv
   Basis.ofRepr
-    { toFun := fun w => Finsupp.single default (b.repr w default / b.repr v default)
-      invFun := fun f => f default • v
+    { toFun w := Finsupp.single default (b.repr w default / b.repr v default)
+      invFun f := f default • v
       map_add' := by simp [add_div]
       map_smul' := by simp [mul_div]
       left_inv := fun w => by
@@ -509,9 +509,9 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
   inv_zero := dite_eq_left rfl
   nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
+  nnqsmul_def _ _ := rfl
   qsmul := _
-  qsmul_def := fun _ _ => rfl
+  qsmul_def _ _ := rfl
 
 lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : IsUnit x :=

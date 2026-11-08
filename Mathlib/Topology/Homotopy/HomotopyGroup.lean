@@ -479,13 +479,13 @@ def homotopyGroupEquivZerothHomotopyOfIsEmpty (N x) [IsEmpty N] :
       intro a₁ a₂
       constructor <;> rintro ⟨H⟩
       exacts
-        [⟨{ toFun := fun t ↦ H ⟨t, isEmptyElim⟩
+        [⟨{ toFun t := H ⟨t, isEmptyElim⟩
             source' := (H.apply_zero _).trans congr(a₁ $(Subsingleton.elim ..))
             target' := (H.apply_one _).trans congr(a₂ $(Subsingleton.elim ..)) }⟩,
-        ⟨{  toFun := fun t0 ↦ H t0.fst
-            map_zero_left := fun _ ↦ H.source.trans congr(a₁ $(Subsingleton.elim ..))
-            map_one_left := fun _ ↦ H.target.trans congr(a₂ $(Subsingleton.elim ..))
-            prop' := fun _ _ ⟨i, _⟩ ↦ isEmptyElim i }⟩])
+        ⟨{  toFun t0 := H t0.fst
+            map_zero_left _ := H.source.trans congr(a₁ $(Subsingleton.elim ..))
+            map_one_left _ := H.target.trans congr(a₂ $(Subsingleton.elim ..))
+            prop' _ := fun _ ⟨i, _⟩  ↦ isEmptyElim i }⟩])
 
 /-- The 0th homotopy "group" is in bijection with `ZerothHomotopy`. -/
 def HomotopyGroup.pi0EquivZerothHomotopy : π_ 0 X x ≃ ZerothHomotopy X :=
@@ -516,10 +516,10 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
   exact Quotient.congr (genLoopEquivOfUnique N) fun a₁ a₂ ↦ by
     constructor <;> rintro ⟨H⟩
     · exact
-        ⟨{  toFun := fun tx ↦ H (tx.fst, fun _ ↦ tx.snd)
-            map_zero_left := fun _ ↦ H.apply_zero _
-            map_one_left := fun _ ↦ H.apply_one _
-            prop' := fun t y iH ↦ H.prop' _ _ ⟨default, iH⟩ }⟩
+        ⟨{  toFun tx := H (tx.fst, fun _ ↦ tx.snd)
+            map_zero_left _ := H.apply_zero _
+            map_one_left _ := H.apply_one _
+            prop' t := fun y iH  ↦ H.prop' _ _ ⟨default, iH⟩ }⟩
     refine
       ⟨⟨⟨⟨fun tx ↦ H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y ↦ ?_, fun y ↦ ?_⟩, ?_⟩⟩
     · fun_prop

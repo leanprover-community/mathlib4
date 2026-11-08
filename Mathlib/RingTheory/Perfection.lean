@@ -319,14 +319,14 @@ any homomorphism `R →+* S` can be lifted to a homomorphism `R →+* Perfection
 noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing R p]
     (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Perfection S p) where
   toFun f :=
-    { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
+    { toFun r := ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
         fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
           frobeniusEquiv_symm_pow_p]⟩
       map_one' := ext fun _ => congr(f $(iterate_map_one ..)).trans f.map_one
-      map_mul' := fun _ _ =>
+      map_mul' _ _ :=
         ext fun _ => congr(f $(iterate_map_mul ..)).trans <| f.map_mul _ _
       map_zero' := ext fun _ => congr(f $(iterate_map_zero ..)).trans f.map_zero
-      map_add' := fun _ _ =>
+      map_add' _ _ :=
         ext fun _ => congr(f $(iterate_map_add ..)).trans <| f.map_add _ _ }
   invFun := RingHom.comp <| coeff S p 0
   right_inv f := RingHom.ext fun r => ext fun n =>
@@ -398,11 +398,11 @@ variable {P : Type u₃} [CommSemiring P] [CharP P p] [PerfectRing P p]
 /-- Create a `PerfectionMap` from an isomorphism to the perfection. -/
 theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift p P R f = g) :
     PerfectionMap p f :=
-  { injective := fun x y hxy =>
+  { injective x y hxy :=
       g.injective <|
         (RingHom.ext_iff.1 hfg x).symm.trans <|
           Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n => (hxy n).symm
-    surjective := fun y hy =>
+    surjective y hy :=
       let ⟨x, hx⟩ := g.surjective ⟨y, hy⟩
       ⟨x, fun n =>
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
@@ -416,8 +416,8 @@ theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
 
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
-  { injective := fun _ _ hxy => hxy 0
-    surjective := fun f hf =>
+  { injective _ _ hxy := hxy 0
+    surjective f hf :=
       ⟨f 0, fun n =>
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
           Nat.recOn n rfl fun n ih => injective_pow_p R p <| by

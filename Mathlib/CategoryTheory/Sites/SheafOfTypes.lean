@@ -181,7 +181,7 @@ def compatibleYonedaFamily_toCocone (R : Presieve X) (W : C) (x : FamilyOfElemen
     Cocone (R.diagram) where
   pt := W
   ι :=
-    { app := fun f => x f.obj.hom f.property
+    { app f := x f.obj.hom f.property
       naturality := by
         intro g₁ g₂ F
         dsimp
@@ -228,7 +228,7 @@ theorem forallYonedaIsSheaf_iff_colimit (S : Sieve X) :
   · intro H
     refine Nonempty.intro ?_
     exact
-    { desc := fun s => H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
+    { desc s := H s.pt (yonedaFamilyOfElements_fromCocone S.arrows s)
         (yonedaFamily_fromCocone_compatible S s) |>.choose
       fac := by
         intro s f

@@ -144,7 +144,7 @@ theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
     { carrier := { x | ∃ hx, p x hx }
       add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
       zero_mem' := ⟨_, zero⟩
-      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
+      smul_mem' r := fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
   exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
@@ -348,7 +348,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] (S : ι → Submodule R M)
     (H : Directed (· ≤ ·) S) : ((iSup S : Submodule R M) : Set M) = ⋃ i, S i :=
   let s : Submodule R M :=
     { __ := AddSubmonoid.copy _ _ (AddSubmonoid.coe_iSup_of_directed H).symm
-      smul_mem' := fun r _ hx ↦ have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
+      smul_mem' r _ hx := have ⟨i, hi⟩ := Set.mem_iUnion.mp hx
         Set.mem_iUnion.mpr ⟨i, (S i).smul_mem' r hi⟩ }
   have : iSup S = s := le_antisymm
     (iSup_le fun i ↦ le_iSup (fun i ↦ (S i : Set M)) i) (Set.iUnion_subset fun _ ↦ le_iSup S _)

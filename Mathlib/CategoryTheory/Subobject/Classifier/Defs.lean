@@ -225,8 +225,7 @@ Hence, `C` is a regular mono category.
 It also follows that `C` is a balanced category.
 -/
 instance isRegularMonoCategory : IsRegularMonoCategory C where
-  regularMonoOfMono :=
-    fun m => ⟨⟨regularOfIsPullbackFstOfRegular truthIsRegularMono
+  regularMonoOfMono m := ⟨⟨regularOfIsPullbackFstOfRegular truthIsRegularMono
       (isPullback_χ m).w (isPullback_χ m).isLimit⟩⟩
 
 /-- If the source of a faithful functor has a subobject classifier, the functor reflects

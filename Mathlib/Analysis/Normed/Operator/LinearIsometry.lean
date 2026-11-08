@@ -642,7 +642,7 @@ def refl : E ≃ₗᵢ[R] E :=
 
 /-- Linear isometry equiv between a space and its lift to another universe. -/
 def ulift : ULift E ≃ₗᵢ[R] E :=
-  { ContinuousLinearEquiv.ulift with norm_map' := fun _ => rfl }
+  { ContinuousLinearEquiv.ulift with norm_map' _ := rfl }
 
 variable {R E}
 
@@ -1004,7 +1004,7 @@ def ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ�
     (h₁ : f.toLinearMap.comp g = LinearMap.id) (h₂ : g.comp f.toLinearMap = LinearMap.id) :
     E ≃ₛₗᵢ[σ₁₂] E₂ :=
   { toLinearEquiv := LinearEquiv.ofLinearMap f.toLinearMap g h₁ h₂
-    norm_map' := fun x => f.norm_map x }
+    norm_map' x := f.norm_map x }
 
 @[simp]
 theorem coe_ofLinearIsometry (f : E →ₛₗᵢ[σ₁₂] E₂) (g : E₂ →ₛₗ[σ₂₁] E)
@@ -1078,7 +1078,7 @@ variable [Module R' E] (p q : Submodule R' E)
 
 /-- `LinearEquiv.ofEq` as a `LinearIsometryEquiv`. -/
 def ofEq (hpq : p = q) : p ≃ₗᵢ[R'] q :=
-  { LinearEquiv.ofEq p q hpq with norm_map' := fun _ => rfl }
+  { LinearEquiv.ofEq p q hpq with norm_map' _ := rfl }
 
 variable {p q}
 

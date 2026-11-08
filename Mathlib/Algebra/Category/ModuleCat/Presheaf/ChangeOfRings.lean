@@ -30,16 +30,16 @@ variable {C : Type u'} [Category.{v'} C] {R R' : Cᵒᵖ ⥤ RingCat.{u}}
 @[simps]
 noncomputable def restrictScalarsObj (M' : PresheafOfModules.{v} R') (α : R ⟶ R') :
     PresheafOfModules R where
-  obj := fun X ↦ (ModuleCat.restrictScalars (α.app X).hom).obj (M'.obj X)
+  obj X := (ModuleCat.restrictScalars (α.app X).hom).obj (M'.obj X)
   -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(X := ...)` and `(Y := ...)`.
   -- This suggests `restrictScalars` needs to be redesigned.
-  map := fun {X Y} f ↦ ModuleCat.ofHom
+  map {X Y} f := ModuleCat.ofHom
       (X := (ModuleCat.restrictScalars (α.app X).hom).obj (M'.obj X))
       (Y := (ModuleCat.restrictScalars (R.map f).hom).obj
         ((ModuleCat.restrictScalars (α.app Y).hom).obj (M'.obj Y)))
     { toFun := M'.map f
       map_add' := map_add _
-      map_smul' := fun r x ↦ (M'.map_smul f (α.app _ r) x).trans (by
+      map_smul' r x := (M'.map_smul f (α.app _ r) x).trans (by
         have eq := congr($(α.naturality f).hom r)
         dsimp at eq
         rw [← eq]
@@ -52,8 +52,8 @@ noncomputable def restrictScalars (α : R ⟶ R') :
     PresheafOfModules.{v} R' ⥤ PresheafOfModules.{v} R where
   obj M' := M'.restrictScalarsObj α
   map φ' :=
-    { app := fun X ↦ (ModuleCat.restrictScalars (α.app X).hom).map (Hom.app φ' X)
-      naturality := fun {X Y} f ↦ by
+    { app X := (ModuleCat.restrictScalars (α.app X).hom).map (Hom.app φ' X)
+      naturality {X Y} f := by
         ext x
         exact naturality_apply φ' f x }
 

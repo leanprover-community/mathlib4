@@ -30,13 +30,13 @@ abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n
   have := NeZero.ne n
   match n with
   | n + 1 => exact {
-    smul := fun (c : Fin _) x ↦ c.val • x
-    smul_zero := fun _ ↦ nsmul_zero _
-    zero_smul := fun _ ↦ zero_nsmul _
-    smul_add := fun _ _ _ ↦ nsmul_add _ _ _
-    one_smul := fun _ ↦ (h_mod _ _).trans <| one_nsmul _
-    add_smul := fun _ _ _ ↦ (h_mod _ _).trans <| add_nsmul _ _ _
-    mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
+    smul (c : Fin _) x := c.val • x
+    smul_zero _ := nsmul_zero _
+    zero_smul _ := zero_nsmul _
+    smul_add _ _ _ := nsmul_add _ _ _
+    one_smul _ := (h_mod _ _).trans <| one_nsmul _
+    add_smul _ _ _ := (h_mod _ _).trans <| add_nsmul _ _ _
+    mul_smul _ _ _ := (h_mod _ _).trans <| mul_nsmul' _ _ _
   }
 
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
@@ -100,7 +100,7 @@ namespace AddSubgroup
 
 See also: `AddSubgroup.toIntSubmodule`, `AddSubmonoid.toNatSubmodule`. -/
 def toZModSubmodule : AddSubgroup M ≃o Submodule (ZMod n) M where
-  toFun S := { S with smul_mem' := fun c _ h ↦ ZMod.smul_mem (K := S) h c }
+  toFun S := { S with smul_mem' c _ h := ZMod.smul_mem (K := S) h c }
   invFun := Submodule.toAddSubgroup
   map_rel_iff' := Iff.rfl
 

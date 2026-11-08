@@ -115,7 +115,7 @@ instance (priority := 100) : CanLift (Set M) (Subsemigroup M) (↑)
   prf s h := ⟨{ carrier := s, mul_mem' := h }, rfl⟩
 
 @[to_additive]
-instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
+instance : MulMemClass (Subsemigroup M) M where mul_mem {_ _ _} := Subsemigroup.mul_mem' _
 
 @[to_additive (attr := simp)]
 theorem mem_carrier {s : Subsemigroup M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -167,7 +167,7 @@ protected theorem mul_mem {x y : M} : x ∈ S → y ∈ S → x * y ∈ S :=
 @[to_additive /-- The additive subsemigroup `M` of the magma `M`. -/]
 instance : Top (Subsemigroup M) :=
   ⟨{  carrier := Set.univ
-      mul_mem' := fun _ _ => Set.mem_univ _ }⟩
+      mul_mem' _ _ := Set.mem_univ _ }⟩
 
 /-- The trivial subsemigroup `∅` of a magma `M`. -/
 @[to_additive /-- The trivial `AddSubsemigroup` `∅` of an additive magma `M`. -/]
@@ -314,7 +314,7 @@ instance isCancelMul [IsCancelMul M] (S : A) : IsCancelMul S where
 @[to_additive /-- The natural semigroup hom from an `AddSubsemigroup` of
 `AddSubsemigroup` `M` to `M`. -/]
 def subtype : S' →ₙ* M where
-  toFun := Subtype.val; map_mul' := fun _ _ => rfl
+  toFun := Subtype.val; map_mul' _ _ := rfl
 
 variable {S'} in
 @[to_additive (attr := simp)]

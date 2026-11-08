@@ -398,12 +398,12 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
         (show algebraMap C L y ≠ 0 from fun h =>
           mem_nonZeroDivisors_iff_ne_zero.mp hy
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
-    surj := fun z =>
+    surj z :=
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩
-    exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
+    exists_of_eq {x y} h := ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 
 variable (K L)
 

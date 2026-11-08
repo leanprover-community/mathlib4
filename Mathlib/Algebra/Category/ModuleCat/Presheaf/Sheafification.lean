@@ -122,15 +122,15 @@ and `R` a sheaf of rings, this is the adjunction
 noncomputable def sheafificationAdjunction :
     sheafification.{v} α ⊣ SheafOfModules.forget R ⋙ restrictScalars α :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := fun _ _ ↦ sheafificationHomEquiv α
-      homEquiv_naturality_left_symm := fun {P₀ Q₀ N} f g ↦ by
+    { homEquiv _ _ := sheafificationHomEquiv α
+      homEquiv_naturality_left_symm {P₀ Q₀ N} f g := by
         apply (SheafOfModules.toSheaf _).map_injective
         simp only [Functor.comp_obj, Functor.map_comp]
         rw [toSheaf_map_sheafificationHomEquiv_symm α (f ≫ g),
           toSheaf_map_sheafificationHomEquiv_symm α g, Functor.map_comp]
         apply (CategoryTheory.sheafificationAdjunction J
           AddCommGrpCat.{v}).homEquiv_naturality_left_symm
-      homEquiv_naturality_right := fun {P₀ M N} f g ↦ by
+      homEquiv_naturality_right {P₀ M N} f g := by
         apply (toPresheaf _).map_injective
         erw [toPresheaf_map_sheafificationHomEquiv] }
 

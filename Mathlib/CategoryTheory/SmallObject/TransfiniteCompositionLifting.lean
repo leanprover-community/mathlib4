@@ -154,7 +154,7 @@ set_option backward.isDefEq.respectTransparency false in
 noncomputable def liftHom : F.obj j ⟶ X :=
   (F.isColimitOfIsWellOrderContinuous j hj).desc
     (Cocone.mk _
-      { app := fun i ↦ (s.1 ⟨i⟩).f'
+      { app i := (s.1 ⟨i⟩).f'
         naturality i i' g := by
           have := congr(SqStruct.f' $(s.2 g.op))
           dsimp at this ⊢

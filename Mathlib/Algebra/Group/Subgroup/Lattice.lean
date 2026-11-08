@@ -114,7 +114,7 @@ variable (H K : Subgroup G)
 /-- The subgroup `G` of the group `G`. -/
 @[to_additive /-- The `AddSubgroup G` of the `AddGroup G`. -/]
 instance : Top (Subgroup G) :=
-  ⟨{ (⊤ : Submonoid G) with inv_mem' := fun _ => Set.mem_univ _ }⟩
+  ⟨{ (⊤ : Submonoid G) with inv_mem' _ := Set.mem_univ _ }⟩
 
 /-- The top subgroup is isomorphic to the group.
 
@@ -237,7 +237,7 @@ theorem mem_inf {p p' : Subgroup G} {x : G} : x ∈ p ⊓ p' ↔ x ∈ p ∧ x �
 instance : InfSet (Subgroup G) :=
   ⟨fun s =>
     { (⨅ S ∈ s, Subgroup.toSubmonoid S).copy (⋂ S ∈ s, ↑S) (by simp) with
-      inv_mem' := fun {x} hx =>
+      inv_mem' {x} hx :=
         Set.mem_biInter fun i h => i.inv_mem (by apply Set.mem_iInter₂.1 hx i h) }⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -262,13 +262,13 @@ instance : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
       IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
-    bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
+    bot_le S := fun _x hx  => (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
-    le_top := fun _S x _hx => mem_top x
+    le_top _S := fun x _hx  => mem_top x
     inf := (· ⊓ ·)
-    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _a _b _x => And.left
-    inf_le_right := fun _a _b _x => And.right }
+    le_inf _a _b _c ha hb := fun _x hx  => ⟨ha hx, hb hx⟩
+    inf_le_left _a _b := fun _x  => And.left
+    inf_le_right _a _b := fun _x  => And.right }
 
 @[to_additive]
 theorem mem_sup_left {S T : Subgroup G} : ∀ {x : G}, x ∈ S → x ∈ S ⊔ T :=

@@ -54,13 +54,13 @@ by `c` and `x₂` is related to `y₂` by `d`. -/
 is related to `y₁` by `c` and `x₂` is related to `y₂` by `d`. -/]
 protected def prod (c : Con M) (d : Con N) : Con (M × N) :=
   { c.toSetoid.prod d.toSetoid with
-    mul' := fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩ }
+    mul' h1 h2 := ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩ }
 
 /-- The product of an indexed collection of congruence relations. -/
 @[to_additive /-- The product of an indexed collection of additive congruence relations. -/]
 def pi {ι : Type*} {f : ι → Type*} [∀ i, Mul (f i)] (C : ∀ i, Con (f i)) : Con (∀ i, f i) :=
   { @piSetoid _ _ fun i => (C i).toSetoid with
-    mul' := fun h1 h2 i => (C i).mul (h1 i) (h2 i) }
+    mul' h1 h2 i := (C i).mul (h1 i) (h2 i) }
 
 /-- A multiplicative equivalence `e : α ≃* β` generates an equivalence between quotient spaces,
 if it is compatible with the relations. -/
@@ -258,7 +258,7 @@ noncomputable def comapQuotientEquiv (f : N →* M) :
 def quotientQuotientEquivQuotient (c d : Con M) (h : c ≤ d) :
     (ker (c.map d h)).Quotient ≃* d.Quotient :=
   { Setoid.quotientQuotientEquivQuotient c.toSetoid d.toSetoid h with
-    map_mul' := fun x y =>
+    map_mul' x y :=
       Con.induction_on₂ x y fun w z =>
         Con.induction_on₂ w z fun a b =>
           show _ = d.mk' a * d.mk' b by rw [← d.mk'.map_mul]; rfl }
@@ -309,8 +309,8 @@ instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
-  { smul_one := fun _ => congr(Quotient.mk'' $(smul_one _))
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul' ..)) }
+  { smul_one _ := congr(Quotient.mk'' $(smul_one _))
+    smul_mul _ := Quotient.ind₂' fun _ _ => congr(Quotient.mk'' $(smul_mul' ..)) }
 
 end Actions
 

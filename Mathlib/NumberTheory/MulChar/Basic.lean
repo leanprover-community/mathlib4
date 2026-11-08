@@ -268,7 +268,7 @@ lemma one_apply {x : R} (hx : IsUnit x) : (1 : MulChar R R') x = 1 := one_apply_
 def mul (χ χ' : MulChar R R') : MulChar R R' :=
   { χ.toMonoidHom * χ'.toMonoidHom with
     toFun := χ * χ'
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
+    map_nonunit' a ha := by simp only [map_nonunit χ ha, zero_mul, Pi.mul_apply] }
 
 instance hasMul : Mul (MulChar R R') :=
   ⟨mul⟩
@@ -291,8 +291,8 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
   { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => MonoidWithZero.inverse (χ a)
-    map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
+    toFun a := MonoidWithZero.inverse (χ a)
+    map_nonunit' a ha := by simp [map_nonunit _ ha] }
 
 noncomputable instance hasInv : Inv (MulChar R R') :=
   ⟨inv⟩
@@ -457,8 +457,8 @@ theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ
 @[simps]
 def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
   { f.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => f (χ a)
-    map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
+    toFun a := f (χ a)
+    map_nonunit' a ha := by simp only [map_nonunit χ ha, map_zero] }
 
 @[simp]
 lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 := by

@@ -305,7 +305,7 @@ abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 
     NormedGroup E where
   dist_eq := ‹SeminormedGroup E›.dist_eq
   toMetricSpace :=
-    { eq_of_dist_eq_zero := fun hxy =>
+    { eq_of_dist_eq_zero hxy :=
         inv_mul_eq_one.1 <| h _ <| (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
 
 -- See note [reducible non-instances]
@@ -448,7 +448,7 @@ definitional equalities (e.g., it does not take into account a possibly existing
 instance on `E`). -/]
 abbrev GroupNorm.toNormedGroup [Group E] (f : GroupNorm E) : NormedGroup E :=
   { f.toGroupSeminorm.toSeminormedGroup with
-    eq_of_dist_eq_zero := fun h => inv_mul_eq_one.1 <| eq_one_of_map_eq_zero f h }
+    eq_of_dist_eq_zero h := inv_mul_eq_one.1 <| eq_one_of_map_eq_zero f h }
 
 -- See note [reducible non-instances]
 /-- Construct a normed group from a norm, i.e., registering the distance and the metric space

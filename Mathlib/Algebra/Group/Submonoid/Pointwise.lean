@@ -137,7 +137,7 @@ variable [Group G]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
-      mul_mem' := fun ha hb => by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
+      mul_mem' ha hb := by rw [mem_inv, mul_inv_rev]; exact mul_mem hb ha
       one_mem' := mem_inv.2 <| by rw [inv_one]; exact S.one_mem' }
 
 scoped[Pointwise] attribute [instance] Submonoid.inv AddSubmonoid.neg

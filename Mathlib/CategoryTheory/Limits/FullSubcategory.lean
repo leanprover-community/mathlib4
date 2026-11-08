@@ -86,7 +86,7 @@ theorem hasLimit_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
 
 instance hasLimitsOfShape_of_closedUnderLimits [P.IsClosedUnderLimitsOfShape J]
     [HasLimitsOfShape J C] : HasLimitsOfShape J P.FullSubcategory :=
-  { has_limit := fun F => hasLimit_of_closedUnderLimits J P F }
+  { has_limit F := hasLimit_of_closedUnderLimits J P F }
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
 @[instance_reducible]
@@ -108,7 +108,7 @@ theorem hasColimit_of_closedUnderColimits [P.IsClosedUnderColimitsOfShape J]
 
 instance hasColimitsOfShape_of_closedUnderColimits [P.IsClosedUnderColimitsOfShape J]
     [HasColimitsOfShape J C] : HasColimitsOfShape J P.FullSubcategory :=
-  { has_colimit := fun F => hasColimit_of_closedUnderColimits J P F }
+  { has_colimit F := hasColimit_of_closedUnderColimits J P F }
 
 end Limits
 

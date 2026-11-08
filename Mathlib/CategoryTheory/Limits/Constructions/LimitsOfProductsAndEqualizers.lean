@@ -60,8 +60,8 @@ def buildLimit
     (i : Fork s t) : Cone F where
   pt := i.pt
   π :=
-    { app := fun _ => i.ι ≫ c₁.π.app ⟨_⟩
-      naturality := fun j₁ j₂ f => by
+    { app _ := i.ι ≫ c₁.π.app ⟨_⟩
+      naturality j₁ j₂ f := by
         dsimp
         rw [Category.id_comp, Category.assoc, ← hs ⟨⟨_, _⟩, f⟩, i.condition_assoc, ht] }
 
@@ -129,14 +129,13 @@ instance limitSubobjectProduct_mono [HasLimitsOfSize.{w, w} C] (F : J ⥤ C) :
 @[stacks 002N]
 theorem has_limits_of_hasEqualizers_and_products [HasProducts.{w} C] [HasEqualizers C] :
     HasLimitsOfSize.{w, w} C :=
-  { has_limits_of_shape :=
-    fun _ _ => { has_limit := fun F => hasLimit_of_equalizer_and_product F } }
+  { has_limits_of_shape _ _ := { has_limit F := hasLimit_of_equalizer_and_product F } }
 
 /-- Any category with finite products and equalizers has all finite limits. -/
 @[stacks 002O]
 theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts C]
     [HasEqualizers C] : HasFiniteLimits C where
-  out _ := { has_limit := fun F => hasLimit_of_equalizer_and_product F }
+  out _ := { has_limit F := hasLimit_of_equalizer_and_product F }
 
 variable {D : Type u₂} [Category.{v₂} D]
 
@@ -322,8 +321,8 @@ def buildColimit
     (i : Cofork s t) : Cocone F where
   pt := i.pt
   ι :=
-    { app := fun _ => c₂.ι.app ⟨_⟩ ≫ i.π
-      naturality := fun j₁ j₂ f => by
+    { app _ := c₂.ι.app ⟨_⟩ ≫ i.π
+      naturality j₁ j₂ f := by
         dsimp
         have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :
           c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
@@ -401,14 +400,14 @@ instance colimitQuotientCoproduct_epi [HasColimitsOfSize.{w, w} C] (F : J ⥤ C)
 @[stacks 002P]
 theorem has_colimits_of_hasCoequalizers_and_coproducts [HasCoproducts.{w} C] [HasCoequalizers C] :
     HasColimitsOfSize.{w, w} C where
-  has_colimits_of_shape := fun _ _ =>
-      { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
+  has_colimits_of_shape _ _ :=
+      { has_colimit F := hasColimit_of_coequalizer_and_coproduct F }
 
 /-- Any category with finite coproducts and coequalizers has all finite colimits. -/
 @[stacks 002Q]
 theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCoproducts C]
     [HasCoequalizers C] : HasFiniteColimits C where
-  out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
+  out _ := { has_colimit F := hasColimit_of_coequalizer_and_coproduct F }
 
 section
 

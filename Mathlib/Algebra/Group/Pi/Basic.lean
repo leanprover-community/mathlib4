@@ -77,7 +77,7 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
-  npow := fun n x i => x i ^ n
+  npow n x := fun i  => x i ^ n
   npow_zero := by intros; ext; exact Monoid.npow_zero _
   npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 
@@ -86,7 +86,7 @@ instance commMonoid [∀ i, CommMonoid (f i)] : CommMonoid (∀ i, f i) where
 
 @[to_additive Pi.subNegMonoid]
 instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) where
-  zpow := fun z x i => x i ^ z
+  zpow z x := fun i  => x i ^ z
   div_eq_mul_inv := by intros; ext; exact div_eq_mul_inv _ _
   zpow_zero' := by intros; ext; exact DivInvMonoid.zpow_zero' _
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
@@ -131,11 +131,11 @@ instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group,
 
 @[to_additive]
 instance leftCancelSemigroup [∀ i, LeftCancelSemigroup (f i)] : LeftCancelSemigroup (∀ i, f i) :=
-  { semigroup with mul_left_cancel := fun _ _ _ => mul_left_cancel }
+  { semigroup with mul_left_cancel _ := fun _ _  => mul_left_cancel }
 
 @[to_additive]
 instance rightCancelSemigroup [∀ i, RightCancelSemigroup (f i)] : RightCancelSemigroup (∀ i, f i) :=
-  { semigroup with mul_right_cancel := fun _ _ _ => mul_right_cancel }
+  { semigroup with mul_right_cancel _ := fun _ _  => mul_right_cancel }
 
 @[to_additive]
 instance leftCancelMonoid [∀ i, LeftCancelMonoid (f i)] : LeftCancelMonoid (∀ i, f i) :=

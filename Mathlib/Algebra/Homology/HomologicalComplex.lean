@@ -226,7 +226,7 @@ theorem Hom.comm {A B : HomologicalComplex V c} (f : A.Hom B) (i j : ι) :
   · rw [A.shape i j hij, B.shape i j hij, comp_zero, zero_comp]
 
 instance (A B : HomologicalComplex V c) : Inhabited (Hom A B) :=
-  ⟨{ f := fun _ => 0 }⟩
+  ⟨{ f _ := 0 }⟩
 
 /-- Identity chain map. -/
 def id (A : HomologicalComplex V c) : Hom A A where f _ := 𝟙 _
@@ -282,7 +282,7 @@ theorem hom_f_injective {C₁ C₂ : HomologicalComplex V c} :
     Function.Injective fun f : Hom C₁ C₂ => f.f := by cat_disch
 
 instance (X Y : HomologicalComplex V c) : Zero (X ⟶ Y) :=
-  ⟨{ f := fun _ => 0}⟩
+  ⟨{ f _ := 0}⟩
 
 @[simp]
 theorem zero_f (C D : HomologicalComplex V c) (i : ι) : (0 : C ⟶ D).f i = 0 :=
@@ -499,11 +499,11 @@ def isoOfComponents (f : ∀ i, C₁.X i ≅ C₂.X i)
     (hf : ∀ i j, c.Rel i j → (f i).hom ≫ C₂.d i j = C₁.d i j ≫ (f j).hom := by cat_disch) :
     C₁ ≅ C₂ where
   hom :=
-    { f := fun i => (f i).hom
+    { f i := (f i).hom
       comm' := hf }
   inv :=
-    { f := fun i => (f i).inv
-      comm' := fun i j hij =>
+    { f i := (f i).inv
+      comm' i j hij :=
         calc
           (f i).inv ≫ C₁.d i j = (f i).inv ≫ (C₁.d i j ≫ (f j).hom) ≫ (f j).inv := by simp
           _ = (f i).inv ≫ ((f i).hom ≫ C₂.d i j) ≫ (f j).inv := by rw [hf i j hij]
@@ -631,8 +631,8 @@ abbrev of (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n) (sq : ∀ n, d (n + 1) �
     ChainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => by simp [of.d, (Ne.symm w)]
-    d_comp_d' := fun i j k hij hjk => by
+    shape i j w := by simp [of.d, (Ne.symm w)]
+    d_comp_d' i j k hij hjk := by
       dsimp [of.d] at hij hjk ⊢
       subst hij hjk
       simp only [eqToHom_refl, id_comp, dite_eq_ite, ite_true, sq] }
@@ -891,8 +891,8 @@ abbrev of (X : α → V) (d : ∀ n, X n ⟶ X (n + 1)) (sq : ∀ n, d n ≫ d (
     CochainComplex V α :=
   { X := X
     d := of.d X d
-    shape := fun i j w => dite_eq_right (c := i + 1 = j) w
-    d_comp_d' := fun i j k => by
+    shape i j w := dite_eq_right (c := i + 1 = j) w
+    d_comp_d' i j k := by
       dsimp [of.d]
       split_ifs with h h' h'
       · subst h h'

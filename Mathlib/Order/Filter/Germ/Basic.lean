@@ -345,7 +345,7 @@ theorem coe_one [One M] : ↑(1 : α → M) = (1 : Germ l M) :=
 
 @[to_additive]
 instance instSemigroup [Semigroup M] : Semigroup (Germ l M) :=
-  { mul_assoc := fun a b c => Quotient.inductionOn₃' a b c
+  { mul_assoc a b c := Quotient.inductionOn₃' a b c
       fun _ _ _ => congrArg ofFun <| mul_assoc .. }
 
 @[to_additive]
@@ -406,7 +406,7 @@ instance instMonoid [Monoid M] : Monoid (Germ l M) :=
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
-    npow := fun n a => a ^ n }
+    npow n a := a ^ n }
 
 /-- Coercion from functions to germs as a monoid homomorphism. -/
 @[to_additive /-- Coercion from functions to germs as an additive monoid homomorphism. -/]

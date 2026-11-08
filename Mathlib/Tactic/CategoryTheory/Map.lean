@@ -139,7 +139,7 @@ initialize registerBuiltinAttribute {
   name := `mapStx
   descr := ""
   applicationTime := .afterCompilation
-  add := fun src ref kind => match ref with
+  add src ref kind := match ref with
   | `(attr| map $optAttr) => MetaM.run' do
     if (kind != AttributeKind.global) then
       throwError "`map` can only be used as a global attribute"

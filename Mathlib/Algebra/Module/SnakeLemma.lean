@@ -110,12 +110,12 @@ that does not require an explicit section and retraction.
 def SnakeLemma.δ : K₃ →ₗ[R] C₁ :=
   haveI H₁ : ∀ x, f₂ (σ x) = x := congr_fun hσ
   haveI H₂ := δ_aux i₂ i₃ f₂ g₁ g₂ hg h₂ σ hσ ρ hρ ι₃ hι₃
-  { toFun := fun x ↦ π₁ (ρ (i₂ (σ (ι₃ x))))
-    map_add' := fun x y ↦ by
+  { toFun x := π₁ (ρ (i₂ (σ (ι₃ x))))
+    map_add' x y := by
       rw [← map_add]
       exact eq_of_eq i₁ i₂ f₁ f₂ hf g₁ h₁ ρ hρ ι₃ π₁ hπ₁ (x + y) _ (H₁ _) _ (H₂ _)
         (σ (ι₃ x) + σ (ι₃ y)) (by simp only [map_add, H₁]) _ (by simp only [map_add, H₂])
-    map_smul' := fun r x ↦ by
+    map_smul' r x := by
       simp only [← map_smul, RingHom.id_apply]
       apply eq_of_eq i₁ i₂ f₁ f₂ hf g₁ h₁ ρ hρ ι₃ π₁ hπ₁ (r • x) _ (H₁ _) _ (H₂ _)
         (r • σ (ι₃ x)) (by simp only [map_smul, H₁]) _ (by simp only [map_smul, H₂]) }

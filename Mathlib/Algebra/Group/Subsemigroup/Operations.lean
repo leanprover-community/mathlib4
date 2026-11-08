@@ -436,7 +436,7 @@ theorem topEquiv_toMulHom :
 @[to_additive
 /-- An additive subsemigroup is isomorphic to its image under an injective function -/]
 noncomputable def equivMapOfInjective (f : M →ₙ* N) (hf : Function.Injective f) : S ≃* S.map f :=
-  { Equiv.Set.image f S hf with map_mul' := fun _ _ => Subtype.ext (map_mul f _ _) }
+  { Equiv.Set.image f S hf with map_mul' _ _ := Subtype.ext (map_mul f _ _) }
 
 @[to_additive (attr := simp)]
 theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective f) (x : S) :
@@ -494,7 +494,7 @@ theorem bot_prod_bot : (⊥ : Subsemigroup M).prod (⊥ : Subsemigroup N) = ⊥ 
 /-- The product of additive subsemigroups is isomorphic to their product as additive semigroups -/]
 def prodEquiv (s : Subsemigroup M) (t : Subsemigroup N) : s.prod t ≃* s × t :=
   { (Equiv.Set.prod (s : Set M) (t : Set N)) with
-    map_mul' := fun _ _ => rfl }
+    map_mul' _ _ := rfl }
 
 open MulHom
 
@@ -708,7 +708,7 @@ semigroup are equal. -/
       /-- Makes the identity additive isomorphism from a proof two
       subsemigroups of an additive semigroup are equal. -/]
 def subsemigroupCongr (h : S = T) : S ≃* T :=
-  { Set.equivOfEq <| congr_arg _ h with map_mul' := fun _ _ => rfl }
+  { Set.equivOfEq <| congr_arg _ h with map_mul' _ _ := rfl }
 
 -- this name is primed so that the version to `f.range` instead of `f.srange` can be unprimed.
 /-- A semigroup homomorphism `f : M →ₙ* N` with a left-inverse `g : N → M` defines a multiplicative
@@ -740,8 +740,8 @@ def subsemigroupMap (e : M ≃* N) (S : Subsemigroup M) : S ≃* S.map (e : M �
   { -- we restate this for `simps` to avoid `⇑e.symm.toEquiv x`
     (e : M →ₙ* N).subsemigroupMap S,
     (e : M ≃ N).image S with
-    toFun := fun x => ⟨e x, _⟩
-    invFun := fun x => ⟨e.symm x, _⟩ }
+    toFun x := ⟨e x, _⟩
+    invFun x := ⟨e.symm x, _⟩ }
 
 end MulEquiv
 

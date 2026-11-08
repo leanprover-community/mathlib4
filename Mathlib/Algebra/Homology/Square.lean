@@ -37,8 +37,8 @@ the corresponding diagram `X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X₄` a
 noncomputable def isPushoutEquivIsColimitCokernelCofork :
     sq.IsPushout ≃ IsColimit sq.cokernelCofork :=
   Equiv.trans
-    { toFun := fun h ↦ h.isColimit
-      invFun := fun h ↦ IsPushout.mk _ h
+    { toFun h := h.isColimit
+      invFun h := IsPushout.mk _ h
       right_inv := fun _ ↦ Subsingleton.elim _ _ }
     sq.commSq.isColimitEquivIsColimitCokernelCofork
 
@@ -58,8 +58,8 @@ the corresponding diagram `0 ⟶ X₁ ⟶ X₂ ⊞ X₃ ⟶ X₄ ⟶ 0` makes `X
 noncomputable def isPullbackEquivIsLimitKernelFork :
     sq.IsPullback ≃ IsLimit sq.kernelFork :=
   Equiv.trans
-    { toFun := fun h ↦ h.isLimit
-      invFun := fun h ↦ IsPullback.mk _ h
+    { toFun h := h.isLimit
+      invFun h := IsPullback.mk _ h
       right_inv := fun _ ↦ Subsingleton.elim _ _ }
     sq.commSq.isLimitEquivIsLimitKernelFork
 

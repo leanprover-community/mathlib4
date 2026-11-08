@@ -49,8 +49,8 @@ variable (A) [Monoid A] [Monoid M] [MulDistribMulAction M A]
 See note [reducible non-instances]. -/
 abbrev MulDistribMulAction.compHom [Monoid N] (f : N →* M) : MulDistribMulAction N A :=
   { MulAction.compHom A f with
-    smul_one := fun x => smul_one (f x),
-    smul_mul := fun x => smul_mul' (f x) }
+    smul_one x := smul_one (f x),
+    smul_mul x := smul_mul' (f x) }
 
 end Monoid
 
@@ -80,6 +80,6 @@ This is a stronger version of `DistribSMul.toAddMonoidHom`. -/
 def DistribMulAction.toAddEquiv₀ {α : Type*} (β : Type*) [GroupWithZero α] [AddMonoid β]
     [DistribMulAction α β] (x : α) (hx : x ≠ 0) : β ≃+ β :=
   { DistribSMul.toAddMonoidHom β x with
-    invFun := fun b ↦ x⁻¹ • b
+    invFun b := x⁻¹ • b
     left_inv := fun b ↦ inv_smul_smul₀ hx b
     right_inv := fun b ↦ smul_inv_smul₀ hx b }

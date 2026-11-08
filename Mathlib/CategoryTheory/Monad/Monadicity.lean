@@ -106,10 +106,10 @@ def comparisonLeftAdjointHomEquiv (A : adj.toMonad.Algebra) (B : D)
         adj.counit_naturality, adj.left_triangle_components_assoc]
       apply eq_comm
     _ ≃ (A ⟶ (comparison adj).obj B) :=
-      { toFun := fun g =>
+      { toFun g :=
           { f := _
             h := g.prop }
-        invFun := fun f => ⟨f.f, f.h⟩ }
+        invFun f := ⟨f.f, f.h⟩ }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Construct the adjunction to the comparison functor.

@@ -489,7 +489,7 @@ theorem has_smallest_products_of_hasProducts [HasProducts.{w} C] : HasProducts.{
 theorem hasProducts_of_limit_fans (lf : ∀ {J : Type w} (f : J → C), Fan f)
     (lf_isLimit : ∀ {J : Type w} (f : J → C), IsLimit (lf f)) : HasProducts.{w} C :=
   fun _ : Type w =>
-  { has_limit := fun F =>
+  { has_limit F :=
       HasLimit.mk
         ⟨(Cone.postcompose Discrete.natIsoFunctor.inv).obj (lf fun j => F.obj ⟨j⟩),
           (IsLimit.postcomposeInvEquiv _ _).symm (lf_isLimit _)⟩ }
@@ -546,11 +546,11 @@ def limitConeOfUnique [Unique β] (f : β → C) : LimitCone (Discrete.functor f
         congr
         subsingleton)) }
   isLimit :=
-    { lift := fun s => s.π.app default
-      fac := fun s j => by
+    { lift s := s.π.app default
+      fac s j := by
         obtain rfl := Subsingleton.elim j default
         simp
-      uniq := fun s m w => by
+      uniq s m w := by
         specialize w default
         simpa using w }
 

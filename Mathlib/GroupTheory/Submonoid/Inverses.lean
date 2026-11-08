@@ -39,14 +39,14 @@ namespace Submonoid
 @[to_additive]
 noncomputable instance [Monoid M] : Group (IsUnit.submonoid M) :=
   { (inferInstance : Monoid (IsUnit.submonoid M)) with
-    inv := fun x ↦ ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
-    inv_mul_cancel := fun x ↦
+    inv x := ⟨x.prop.unit⁻¹.val, x.prop.unit⁻¹.isUnit⟩
+    inv_mul_cancel x :=
       Subtype.ext ((Units.val_mul x.prop.unit⁻¹ _).trans x.prop.unit.inv_val) }
 
 @[to_additive]
 noncomputable instance [CommMonoid M] : CommGroup (IsUnit.submonoid M) :=
   { (inferInstance : Group (IsUnit.submonoid M)) with
-    mul_comm := fun a b ↦ by convert mul_comm a b }
+    mul_comm a b := by convert mul_comm a b }
 
 @[to_additive]
 theorem _root_.IsUnit.submonoid.coe_inv [Monoid M] (x : IsUnit.submonoid M) :
@@ -69,7 +69,7 @@ variable [Monoid M] (S : Submonoid M)
 def leftInv : Submonoid M where
   carrier := { x : M | ∃ y : S, x * y = 1 }
   one_mem' := ⟨1, mul_one 1⟩
-  mul_mem' := fun {a} _b ⟨a', ha⟩ ⟨b', hb⟩ ↦
+  mul_mem' {a} _b := fun ⟨a', ha⟩ ⟨b', hb⟩  ↦
     ⟨b' * a', by simp only [coe_mul, ← mul_assoc, mul_assoc a, hb, mul_one, ha]⟩
 
 @[to_additive]
@@ -145,7 +145,7 @@ set_option backward.isDefEq.respectTransparency false in
 is `AddEquiv` to `S`. -/]
 noncomputable def leftInvEquiv : S.leftInv ≃* S :=
   { S.fromCommLeftInv with
-    invFun := fun x ↦ ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
+    invFun x := ⟨↑(hS x.2).unit⁻¹, x, by simp⟩
     left_inv := by
       intro x
       ext

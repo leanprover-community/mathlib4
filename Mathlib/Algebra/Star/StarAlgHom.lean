@@ -162,7 +162,7 @@ variable (R A)
 
 /-- The identity as a non-unital ⋆-algebra homomorphism. -/
 protected def id : A →⋆ₙₐ[R] A :=
-  { (1 : A →ₙₐ[R] A) with map_star' := fun _ => rfl }
+  { (1 : A →ₙₐ[R] A) with map_star' _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
@@ -231,8 +231,8 @@ instance : Inhabited (A →⋆ₙₐ[R] B) :=
 instance : MonoidWithZero (A →⋆ₙₐ[R] A) :=
   { (inferInstance : Monoid (A →⋆ₙₐ[R] A)),
     (inferInstance : Zero (A →⋆ₙₐ[R] A)) with
-    zero_mul := fun _ => ext fun _ => rfl
-    mul_zero := fun f => ext fun _ => map_zero f }
+    zero_mul _ := ext fun _ => rfl
+    mul_zero f := ext fun _ => map_zero f }
 
 @[simp]
 theorem coe_zero : ((0 : A →⋆ₙₐ[R] B) : A → B) = 0 :=
@@ -392,7 +392,7 @@ variable (R A)
 
 /-- The identity as a `StarAlgHom`. -/
 protected def id : A →⋆ₐ[R] A :=
-  { AlgHom.id _ _ with map_star' := fun _ => rfl }
+  { AlgHom.id _ _ with map_star' _ := rfl }
 
 @[simp, norm_cast]
 theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
@@ -474,12 +474,12 @@ variable (R A B C : Type*) [Monoid R] [NonUnitalNonAssocSemiring A] [DistribMulA
 /-- The first projection of a product is a non-unital ⋆-algebra homomorphism. -/
 @[simps!]
 def fst : A × B →⋆ₙₐ[R] A :=
-  { NonUnitalAlgHom.fst R A B with map_star' := fun _ => rfl }
+  { NonUnitalAlgHom.fst R A B with map_star' _ := rfl }
 
 /-- The second projection of a product is a non-unital ⋆-algebra homomorphism. -/
 @[simps!]
 def snd : A × B →⋆ₙₐ[R] B :=
-  { NonUnitalAlgHom.snd R A B with map_star' := fun _ => rfl }
+  { NonUnitalAlgHom.snd R A B with map_star' _ := rfl }
 
 variable {R A B C}
 
@@ -487,7 +487,7 @@ variable {R A B C}
 @[simps!]
 def prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : A →⋆ₙₐ[R] B × C :=
   { f.toNonUnitalAlgHom.prod g.toNonUnitalAlgHom with
-    map_star' := fun x => by simp [map_star, Prod.ext_iff] }
+    map_star' x := by simp [map_star, Prod.ext_iff] }
 
 theorem coe_prod (f : A →⋆ₙₐ[R] B) (g : A →⋆ₙₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
@@ -578,19 +578,19 @@ variable (R A B C : Type*) [CommSemiring R] [Semiring A] [Algebra R A] [Star A] 
 /-- The first projection of a product is a ⋆-algebra homomorphism. -/
 @[simps!]
 def fst : A × B →⋆ₐ[R] A :=
-  { AlgHom.fst R A B with map_star' := fun _ => rfl }
+  { AlgHom.fst R A B with map_star' _ := rfl }
 
 /-- The second projection of a product is a ⋆-algebra homomorphism. -/
 @[simps!]
 def snd : A × B →⋆ₐ[R] B :=
-  { AlgHom.snd R A B with map_star' := fun _ => rfl }
+  { AlgHom.snd R A B with map_star' _ := rfl }
 
 variable {R A B C}
 
 /-- The `Function.prod` of two morphisms is a morphism. -/
 @[simps!]
 def prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : A →⋆ₐ[R] B × C :=
-  { f.toAlgHom.prod g.toAlgHom with map_star' := fun x => by simp [Prod.star_def, map_star] }
+  { f.toAlgHom.prod g.toAlgHom with map_star' x := by simp [Prod.star_def, map_star] }
 
 theorem coe_prod (f : A →⋆ₐ[R] B) (g : A →⋆ₐ[R] C) : ⇑(f.prod g) = Function.prod f g :=
   rfl
@@ -654,7 +654,7 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
 instance (priority := 100) (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
-  { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
+  { commutes f r := by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
 an actual `StarAlgEquiv`. -/
@@ -718,7 +718,7 @@ variable (R A) in
 @[refl]
 protected def refl : A ≃⋆ₐ[R] A :=
   { StarRingEquiv.refl (A := A) with
-    map_smul' := fun _ _ => rfl }
+    map_smul' _ _ := rfl }
 
 instance : Inhabited (A ≃⋆ₐ[R] A) :=
   ⟨.refl R A⟩
@@ -731,7 +731,7 @@ theorem coe_refl : ⇑(StarAlgEquiv.refl R A) = id :=
 @[symm]
 nonrec def symm (e : A ≃⋆ₐ[R] B) : B ≃⋆ₐ[R] A :=
   { e.symm with
-    map_smul' := fun r b => by
+    map_smul' r b := by
       simpa only [apply_inv_apply, inv_apply_apply] using!
         congr(inv e $((map_smul e r (inv e b)).symm)) }
 
@@ -789,7 +789,7 @@ theorem toRingEquiv_symm (e : A ≃⋆ₐ[R] B) : e.toStarRingEquiv.symm = e.toR
 @[trans]
 def trans (e₁ : A ≃⋆ₐ[R] B) (e₂ : B ≃⋆ₐ[R] C) : A ≃⋆ₐ[R] C :=
   { e₁.toStarRingEquiv.trans e₂.toStarRingEquiv with
-    map_smul' := fun r a =>
+    map_smul' r a :=
       show e₂.toFun (e₁.toFun (r • a)) = r • e₂.toFun (e₁.toFun a) by
         rw [e₁.map_smul', e₂.map_smul'] }
 
