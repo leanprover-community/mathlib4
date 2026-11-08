@@ -104,10 +104,9 @@ def zmodEquiv : Multiplicative (ZMod n) ≃ₜ* PontryaginDual (Multiplicative (
 theorem zmodEquiv_apply (x y : Multiplicative (ZMod n)) :
     zmodEquiv n x y = AddChar.zmod n x.toAdd y.toAdd := rfl
 
-@[simp]
 theorem zmodEquiv_apply_intCast (x y : ℤ) :
     zmodEquiv n (.ofAdd (x : ZMod n)) (.ofAdd (y : ZMod n)) =
-      Circle.exp (2 * π * (x * y / n)) := AddChar.zmod_intCast n x y
+      Circle.exp (2 * π * (x * y / n)) := by simp
 
 end ZMod
 
