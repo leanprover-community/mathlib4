@@ -104,6 +104,26 @@ def prod (M : CoxeterMatrix B) (N : CoxeterMatrix B') : CoxeterMatrix (B ⊕ B')
     diagonal i := by cases i <;> simp
     off_diagonal i i' h := by aesop (add simp [CoxeterMatrix.off_diagonal]) }
 
+@[simp]
+theorem prod_inl_inl (M : CoxeterMatrix B) (N : CoxeterMatrix B') (i j : B) :
+    (prod M N) (.inl i) (.inl j) = M i j :=
+  rfl
+
+@[simp]
+theorem prod_inr_inr (M : CoxeterMatrix B) (N : CoxeterMatrix B') (i j : B') :
+    (prod M N) (.inr i) (.inr j) = N i j :=
+  rfl
+
+@[simp]
+theorem prod_inl_inr (M : CoxeterMatrix B) (N : CoxeterMatrix B') (i : B) (j : B') :
+    (prod M N) (.inl i) (.inr j) = 2 :=
+  rfl
+
+@[simp]
+theorem prod_inr_inl (M : CoxeterMatrix B) (N : CoxeterMatrix B') (i : B') (j : B) :
+    (prod M N) (.inr i) (.inl j) = 2 :=
+  rfl
+
 variable (n : ℕ)
 
 /-- The Coxeter matrix of type Aₙ.

@@ -208,8 +208,18 @@ theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   exact map_mul_eq_one cs.mulEquiv.symm this
 
 @[simp]
+theorem _root_.CoxeterMatric.simple_mul_simple_self (M : CoxeterMatrix B) (i : B) :
+    M.simple i * M.simple i = 1 :=
+  M.toCoxeterSystem.simple_mul_simple_self i
+
+@[simp]
 theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
   simp [mul_assoc]
+
+@[simp]
+theorem _root_.CoxeterMatric.simple_mul_simple_cancel_right (M : CoxeterMatrix B) (i : B) :
+    M.simple i * M.simple i = 1 :=
+  M.toCoxeterSystem.simple_mul_simple_self i
 
 @[simp]
 theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
@@ -368,10 +378,11 @@ def groupProdEquiv (N : CoxeterMatrix B') : (prod M N).Group ≃* M.Group × N.G
   invFun := sorry
   left_inv := sorry
   right_inv := sorry
-  __ := CoxeterSystem.lift
-where finally
-  intro x hx
-  simp
+  __ := CoxeterSystem.lift (prod M N).toCoxeterSystem
+    ⟨Sum.rec (fun x ↦ ⟨M.simple x, 1⟩) (fun x ↦ ⟨1, N.simple x⟩), by
+      rintro (i | i) (j | j)
+      · simpa [Prod.mul_def] using simple_mul_simple_pow M.toCoxeterSystem i j
+    ⟩
 
 #exit
 
