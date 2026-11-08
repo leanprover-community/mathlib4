@@ -608,6 +608,10 @@ instance : ObjectProperty.EssentiallySmall.{w} hC.generator := by
 lemma generator_le_isCardinalPresentable :
     hC.generator ≤ isCardinalPresentable _ κ' := sorry
 
+instance (X : hC.generator.FullSubcategory) :
+    IsCardinalPresentable X.obj κ' :=
+  hC.generator_le_isCardinalPresentable _ X.property
+
 open IsCardinalAccessibleCategory in
 lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ' :=
   .mk' hC.generator_le_isCardinalPresentable (fun X ↦ by
