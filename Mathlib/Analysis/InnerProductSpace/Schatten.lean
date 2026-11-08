@@ -80,6 +80,16 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι ι' : Type*}
           ← inner_conj_symm, RCLike.enorm_conj]
     _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by simp [b.tsum_enorm_inner_sq]
 
+omit [CompleteSpace E] in
+theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : 0 ≤ A) {ι : Type*}
+    (b : HilbertBasis ι ℂ E) :
+    traceOfBasis A b = (∑' i, ENNReal.ofReal (RCLike.re ⟪b i, A (b i)⟫_ℂ)).toReal := by
+  rw [traceOfBasis_def, ENNReal.tsum_toReal_eq fun _ ↦ ENNReal.ofReal_ne_top, Complex.ofReal_tsum]
+  refine tsum_congr fun i ↦ ?_
+  obtain ⟨hre, him⟩ := RCLike.nonneg_iff.1 (by simpa using hA.inner_nonneg_right (b i))
+  rw [ENNReal.toReal_ofReal hre]
+  exact (RCLike.conj_eq_iff_re.1 (RCLike.conj_eq_iff_im.2 him)).symm
+
 /-- The trace of an operator on `E`. -/
 def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (exists_hilbertBasis ℂ E).choose_spec.choose
 
@@ -118,34 +128,12 @@ theorem toLinearMap_trace [FiniteDimensional ℂ E] :
   let : Fintype ι := Fintype.ofFinite ι
   simp [traceOfBasis_def, LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
 
-theorem _root_.Summable.of_add_nonneg {ι : Type*} {f g : ι → ℂ} (hf : ∀ i, 0 ≤ f i)
-    (hg : ∀ i, 0 ≤ g i) (h : Summable fun i => f i + g i) : Summable f := by
-  have h' : Summable fun i => (f i).re := Summable.of_nonneg_of_le
-    (fun i => (Complex.nonneg_iff.1 (hf i)).1)
-    (fun i => le_add_of_nonneg_right (Complex.nonneg_iff.1 (hg i)).1)
-    (by simpa using Complex.reCLM.summable h)
-  refine (Complex.summable_ofReal.2 h').congr fun i => ?_
-  exact Complex.ext
-    (by rw [Complex.ofReal_re])
-    (by rw [Complex.ofReal_im]; exact (Complex.nonneg_iff.1 (hf i)).2)
-
 theorem trace_add_le (hA : 0 ≤ A) (hB : 0 ≤ B) : trace (A + B) ≤ trace A + trace B := by
-  unfold trace
-  simp_rw [traceOfBasis_def]
-  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
-  have hA' : ∀ i, 0 ≤ ⟪b i, A (b i)⟫_ℂ := fun i => by
-    simpa only [sub_zero] using hA.inner_nonneg_right (b i)
-  have hB' : ∀ i, 0 ≤ ⟪b i, B (b i)⟫_ℂ := fun i => by
-    simpa only [sub_zero] using hB.inner_nonneg_right (b i)
-  by_cases h : Summable fun i => ⟪b i, (A + B) (b i)⟫_ℂ
-  · have hAs : Summable fun i => ⟪b i, A (b i)⟫_ℂ :=
-      Summable.of_add_nonneg hA' hB' (h.congr fun i => by rw [add_apply, inner_add_right])
-    have hBs : Summable fun i => ⟪b i, B (b i)⟫_ℂ :=
-      Summable.of_add_nonneg hB' hA' (h.congr fun i => by rw [add_comm, add_apply, inner_add_right])
-    simp_rw [add_apply, inner_add_right]
-    rw [hAs.tsum_add hBs]
-  · rw [tsum_eq_zero_of_not_summable h]
-    exact add_nonneg (tsum_nonneg hA') (tsum_nonneg hB')
+  simp_rw [trace, traceOfBasis_eq_toReal_tsum (add_nonneg hA hB), traceOfBasis_eq_toReal_tsum hA,
+    traceOfBasis_eq_toReal_tsum hB, add_apply, inner_add_right, map_add,
+    ENNReal.ofReal_add (hA.of_nonneg.re_inner_nonneg_right _)
+      (hB.of_nonneg.re_inner_nonneg_right _), ENNReal.tsum_add]
+  exact_mod_cast ENNReal.toReal_add_le
 
 end Trace
 

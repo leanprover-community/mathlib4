@@ -482,6 +482,8 @@ lemma coe_le_coe_iff {f g : E →L[𝕜] E} :
 lemma nonneg_iff_isPositive {f : E →L[𝕜] E} : 0 ≤ f ↔ f.IsPositive := by
   simpa using le_def (f:=0) (g:=f)
 
+alias ⟨IsPositive.of_nonneg, _⟩ := nonneg_iff_isPositive
+
 instance : IsOrderedAddMonoid (E →L[𝕜] E) where add_le_add_left a b hab c := by simpa [le_def]
 
 instance instIsOrderedModule : IsOrderedModule 𝕜 (E →L[𝕜] E) where
