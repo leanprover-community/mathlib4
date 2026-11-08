@@ -30,8 +30,6 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
 public section
 
 
-open Function
-
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
 
 namespace MeasureTheory
@@ -118,9 +116,10 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     (n : ℕ) : ε • μ {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω} ≤
     ENNReal.ofReal
       (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω},
-      stoppedValue f (fun ω ↦ (hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
+      stoppedValue f (fun ω ↦ (Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
   have : ∀ ω, ((ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω) →
-      (ε : ℝ) ≤ stoppedValue f (fun ω ↦ (hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω := by
+      (ε : ℝ) ≤
+        stoppedValue f (fun ω ↦ (Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
     refine stoppedValue_hittingBtwn_mem (s := {y : ℝ | ε ≤ y}) ?_
@@ -132,7 +131,7 @@ theorem smul_le_stoppedValue_hittingBtwn [IsFiniteMeasure μ] (hsub : Submarting
     (measurable_range_sup'' fun n _ => (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)))
       (measure_ne_top _ _) this (Integrable.integrableOn (hsub.integrable_stoppedValue
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-        (fun ω ↦ mod_cast hittingBtwn_le (f · ω) _ _ _)))
+        (fun ω ↦ mod_cast Function.hittingBtwn_le (f · ω) _ _ _)))
   rw [ENNReal.le_ofReal_iff_toReal_le, ENNReal.toReal_smul]
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
@@ -174,22 +173,24 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
   calc
     _ ≤ ENNReal.ofReal
           (∫ ω in {ω | (ε : ℝ) ≤ (range (n + 1)).sup' nonempty_range_add_one fun k => f k ω},
-            stoppedValue f (fun ω ↦ (hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) +
+            stoppedValue f (fun ω ↦ (Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) +
         ENNReal.ofReal
           (∫ ω in {ω | ((range (n + 1)).sup' nonempty_range_add_one fun k => f k ω) < ε},
-            stoppedValue f (fun ω ↦ (hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
+            stoppedValue f
+              (fun ω ↦ (Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
       gcongr with ω hω
       · exact smul_le_stoppedValue_hittingBtwn hsub n
       · exact (hsub.integrable n).integrableOn
       · refine Integrable.integrableOn ?_
-        refine hsub.integrable_stoppedValue ?_ (fun ω ↦ mod_cast hittingBtwn_le (f · ω) _ _ _)
+        refine hsub.integrable_stoppedValue ?_
+          (fun ω ↦ mod_cast Function.hittingBtwn_le (f · ω) _ _ _)
         exact hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici
       · exact nullMeasurableSet_lt (measurable_range_sup'' fun n _ ↦
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)).aemeasurable aemeasurable_const
       rw [Set.mem_ofPred_eq] at hω
-      have : hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n = n := by
-        simp only [hittingBtwn_def, Set.mem_ofPred_eq, ite_eq_right_iff, forall_exists_index,
-          and_imp]
+      have : Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n = n := by
+        simp only [Function.hittingBtwn_def, Set.mem_ofPred_eq, ite_eq_right_iff,
+          forall_exists_index, and_imp]
         intro m hm hεm
         exact False.elim
           ((not_le.2 hω) ((le_sup'_iff _).2 ⟨m, mem_range.2 (Nat.lt_succ_of_le hm.2), hεm⟩))
@@ -197,7 +198,8 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine le_of_eq ?_
       congr
     _ = ENNReal.ofReal
-        (∫ ω, stoppedValue f (fun ω ↦ (hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
+        (∫ ω, stoppedValue f
+          (fun ω ↦ (Function.hittingBtwn (f · ω) {y : ℝ | ε ≤ y} 0 n : ℕ)) ω ∂μ) := by
       rw [← ENNReal.ofReal_add, ← setIntegral_union]
       · rw [← setIntegral_univ (μ := μ)]
         convert rfl
@@ -209,10 +211,10 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
           (hsub.stronglyMeasurable n).measurable.le (𝒢.le n)) measurable_const
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le (f · ω) _ _ _))
+          (fun ω ↦ mod_cast Function.hittingBtwn_le (f · ω) _ _ _))
       · exact Integrable.integrableOn (hsub.integrable_stoppedValue
           (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
-          (fun ω ↦ mod_cast hittingBtwn_le (f · ω) _ _ _))
+          (fun ω ↦ mod_cast Function.hittingBtwn_le (f · ω) _ _ _))
       exacts [integral_nonneg fun x => hnonneg _ _, integral_nonneg fun x => hnonneg _ _]
     _ ≤ ENNReal.ofReal (μ[f n]) := by
       refine ENNReal.ofReal_le_ofReal ?_
@@ -220,7 +222,7 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       refine hsub.expected_stoppedValue_mono
         (hsub.stronglyAdapted.adapted.isStoppingTime_hittingBtwn measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω ↦ ?_) (fun _ ↦ le_rfl)
-      simp [hittingBtwn_le]
+      simp [Function.hittingBtwn_le]
 
 end Maximal
 
