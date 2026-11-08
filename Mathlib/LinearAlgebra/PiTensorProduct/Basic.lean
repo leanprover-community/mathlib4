@@ -26,8 +26,8 @@ binary tensor product in `Mathlib/LinearAlgebra/TensorProduct/Basic.lean`.
   This is bundled as a multilinear map from `Π i, M i` to `⨂[R] i, M i`.
 * `liftAddHom` constructs an `AddMonoidHom` from `(⨂[R] i, M i)` to some space `N` from a
   function `φ : (R × Π i, M i) → N` with the appropriate properties.
-* `lift φ` with `φ : (Π i, M i) →ₘₗ[R] N` is the corresponding linear map
-  `(⨂[R] i, M i) →ₗ[R] N`. This is bundled as a linear equivalence.
+* `lift φ` with `φ : (Π i, M i) →ₘₛₗ[σ] N` is the corresponding linear map
+  `(⨂[R] i, M i) →ₛₗ[σ] N`. This is bundled as a linear equivalence.
 * `PiTensorProduct.reindex e` re-indexes the components of `⨂[R] i : ι, M` along `e : ι ≃ ι₂`.
 * `PiTensorProduct.tmulEquiv` equivalence between a `TensorProduct` of `PiTensorProduct`s and
   a single `PiTensorProduct`.
@@ -472,8 +472,8 @@ section map
 variable (g : Π i, M₂ i →ₛₗ[σ₂₃] M₃ i) (f : Π i, M₁ i →ₛₗ[σ₁₂] M₂ i)
 
 /--
-Let `M₁ᵢ` and `M₂ᵢ` be two families of `R`-modules.
-Let `f` be a family of `R`-linear maps between `M₁ᵢ` and `M₂ᵢ`, i.e. `f : Πᵢ M₁ᵢ → M₂ᵢ`,
+Let `M₁ᵢ` and `M₂ᵢ` be families of `R₁`- and `R₂`-modules, respectively.
+Let `f` be a family of `σ₁₂`-semilinear maps between `M₁ᵢ` and `M₂ᵢ`, i.e. `f : Πᵢ M₁ᵢ → M₂ᵢ`,
 then there is an induced map `⨂ᵢ M₁ᵢ → ⨂ᵢ M₂ᵢ` by `⨂ aᵢ ↦ ⨂ fᵢ aᵢ`.
 
 This is `TensorProduct.map` for an arbitrary family of modules.
@@ -526,7 +526,7 @@ protected theorem map_mul (f₁ f₂ : Π i, M i →ₗ[R] M i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
-/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `s = t`. -/
+/-- Upgrading `PiTensorProduct.map` to a `MonoidHom` when `M₁ = M₂`. -/
 @[simps]
 def mapMonoidHom : (Π i, M i →ₗ[R] M i) →* ((⨂[R] i, M i) →ₗ[R] ⨂[R] i, M i) where
   toFun := map
@@ -569,13 +569,13 @@ noncomputable def mapMultilinear :
   map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
 
 /--
-Let `M₁ᵢ` and `M₂ᵢ` be families of `R`-modules.
-Then there is an `R`-linear map between `⨂ᵢ Hom(M₁ᵢ, M₂ᵢ)` and `Hom(⨂ᵢ M₁ᵢ, ⨂ M₂ᵢ)` defined by
+Let `M₁ᵢ` and `M₂ᵢ` be families of `R₁`- and `R₂`-modules, respectively.
+Then there is an `R₂`-linear map between `⨂ᵢ Hom(M₁ᵢ, M₂ᵢ)` and `Hom(⨂ᵢ M₁ᵢ, ⨂ M₂ᵢ)` defined by
 `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ fᵢ aᵢ`.
 
 This is `TensorProduct.homTensorHomMap` for an arbitrary family of modules.
 
-Note that `PiTensorProduct.piTensorHomMap (tprod R f)` is equal to `PiTensorProduct.map f`.
+Note that `PiTensorProduct.piTensorHomMap (tprod R₂ f)` is equal to `PiTensorProduct.map f`.
 -/
 def piTensorHomMap : (⨂[R₂] i, M₁ i →ₛₗ[σ₁₂] M₂ i) →ₗ[R₂] (⨂[R₁] i, M₁ i) →ₛₗ[σ₁₂] ⨂[R₂] i, M₂ i :=
   lift.toLinearMap ∘ₗ lift (MultilinearMap.piLinearMap <| tprod R₂)
@@ -613,8 +613,9 @@ theorem congr_symm_tprod (f : Π i, M₁ i ≃ₛₗ[σ₁₂] M₂ i) (p : Π i
     LinearEquiv.coe_coe]
 
 /--
-Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R`-modules, then `f : Πᵢ M₁ᵢ → M₂ᵢ → M₃ᵢ` induces an
-element of `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))` defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules, respectively.
+Then `f : Πᵢ M₁ᵢ → M₂ᵢ → M₃ᵢ` induces an element of `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
+defined by `⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
 This is `PiTensorProduct.map` for two arbitrary families of modules.
 This is `TensorProduct.map₂` for families of modules.
@@ -628,7 +629,7 @@ lemma map₂_tprod_tprod (f : Π i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[
   simp [map₂]
 
 /--
-Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R`-modules.
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules, respectively.
 Then there is a function from `⨂ᵢ Hom(M₁ᵢ, Hom(M₂ᵢ, M₃ᵢ))` to `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`. -/
 def piTensorHomMapFun₂ : (⨂[R₃] i, M₁ i →ₛₗ[σ₁₃] M₂ i →ₛₗ[σ₂₃] M₃ i) →
@@ -647,7 +648,7 @@ theorem piTensorHomMapFun₂_smul (r : R₃) (φ : ⨂[R₃] i, M₁ i →ₛₗ
     lift.tprod, smul_apply, LinearMap.smul_apply]
 
 /--
-Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R`-modules.
+Let `M₁ᵢ`, `M₂ᵢ` and `M₃ᵢ` be families of `R₁`-, `R₂`- and `R₃`-modules, respectively.
 Then there is a linear map from `⨂ᵢ Hom(M₁ᵢ, Hom(M₂ᵢ, M₃ᵢ))` to `Hom(⨂ᵢ M₁ᵢ, Hom(⨂ M₂ᵢ, ⨂ᵢ M₃ᵢ))`
 defined by `⨂ᵢ fᵢ ↦ ⨂ᵢ aᵢ ↦ ⨂ᵢ bᵢ ↦ ⨂ᵢ fᵢ aᵢ bᵢ`.
 
