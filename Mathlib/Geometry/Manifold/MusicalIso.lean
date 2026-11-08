@@ -6,13 +6,13 @@ Authors: Michael Rothgang
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.VectorBundle.CovariantDerivative.Basic
-public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 
+import Aesop.BuiltinRules
+import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 import Mathlib.Geometry.Manifold.VectorBundle.OrthonormalFrame
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.TypeStar
 
 /-!
 # The musical isomorphism preserves smoothness
@@ -44,12 +44,13 @@ variable [RiemannianBundle (fun (x : B) ↦ TangentSpace IB x)]
 
 noncomputable section
 
-local instance : ContMDiffVectorBundle k EB (TangentSpace (M := B) IB) IB :=
-  TangentBundle.contMDiffVectorBundle (M := B) (I := IB) (n := k)
+attribute [local instance] TangentBundle.contMDiffVectorBundle
 
 variable [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace IB x)]
 
 section prereqs
+
+variable [FiniteDimensional ℝ EB]
 
 -- TODO: this needs analogous lemmas about orthonormal frames first
 -- currently, it's unused (but would generalise the next lemma)
@@ -57,9 +58,8 @@ open Module in
 /-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if if its pairing
 with any `C^n` vector field at `x` is `C^n` at `x`.
 This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
-lemma contMDiffWithinAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → TangentSpace% x}
-    [IsManifold IB k B] [IsManifold IB (k + 1) B] [FiniteDimensional ℝ EB]
-    [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace% x)] {s : Set B} {x : B}
+lemma contMDiffWithinAt_of_inner_bundle_apply
+    {W : (x : B) → TangentSpace% x} {s : Set B} {x : B}
     (hW : ∀ {Z : (x : B) → TangentSpace% x},
       CMDiffAt[s] k (T% Z) x → CMDiffAt[s] k (fun x ↦ inner ℝ (W x) (Z x)) x) :
     CMDiffAt[s] k (T% W) x := by
@@ -78,8 +78,6 @@ lemma contMDiffWithinAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → Tang
   have : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := Fintype.toLocallyFiniteOrder
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let frame := b.orthonormalFrame t
-  have : ContMDiffVectorBundle k EB (fun (x : B) ↦ TangentSpace% x) IB :=
-    TangentBundle.contMDiffVectorBundle
   have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k) b (IB := IB)
   sorry /- rw [hs.contMDiffWithinAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
@@ -90,9 +88,8 @@ open Module in
 /-- A vector field on a Riemannian manifold `(M, g)` is `C^n` at `x` if if its pairing
 with any `C^n` vector field at `x` is `C^n` at `x`.
 This version assumes `M` is a `C^{n+1}`-manifold with a `C^n` metric. -/
-lemma contMDiffAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → TangentSpace% x}
-    [IsManifold IB k B] [IsManifold IB (k + 1) B] [FiniteDimensional ℝ EB]
-    [IsContMDiffRiemannianBundle IB k EB (fun (x : B) ↦ TangentSpace% x)] {x : B}
+lemma ContMDiffAt.of_inner_bundle_apply
+    {W : (x : B) → TangentSpace% x} {x : B}
     (hW : ∀ {Z : (x : B) → TangentSpace% x},
       CMDiffAt k (T% Z) x → CMDiffAt k (fun x ↦ inner ℝ (W x) (Z x)) x) :
     CMDiffAt k (T% W) x := by
@@ -111,28 +108,38 @@ lemma contMDiffAt_of_inner_bundle_apply (k : ℕ∞) {W : (x : B) → TangentSpa
   have : LocallyFiniteOrder ↑(Basis.ofVectorSpaceIndex ℝ EB) := Fintype.toLocallyFiniteOrder
   -- Choose an orthonormal frame (s i) near x w.r.t. to this trivialisation, and the metric g
   let frame := b.orthonormalFrame t
-  have : ContMDiffVectorBundle k EB (fun (x : B) ↦ TangentSpace% x) IB :=
-    TangentBundle.contMDiffVectorBundle
   have hs := t.isOrthonormalFrameOn_orthonormalFrame_baseSet (n := k) b (IB := IB)
   rw [hs.contMDiffAt_iff_inner (t.open_baseSet.mem_nhds (mem_baseSet_trivializationAt' x))]
   intro i
   simp_rw [real_inner_comm]
   exact hW (contMDiffAt_orthonormalFrame_of_mem b t i hx)
 
+-- Same workaround as for the Levi-Civita file.
+variable {I} in
+omit [FiniteDimensional ℝ EB] [IsManifold IB (k + 1) B] in
+lemma _root_.ContMDiffAt.inner_bundle' {X Y : Π x : B, TangentSpace IB x} {x : B}
+    (hX : CMDiffAt k (T% X) x) (hY : CMDiffAt k (T% Y) x) :
+    CMDiffAt k (fun x ↦ inner ℝ (X x) (Y x)) x :=
+  ContMDiffAt.inner_bundle hX hY
+
+-- TODO: generalise to any Riemannian bundle
+/-- If `B` has a `C^k` Riemannian metric, then a vector field `s` of `B` is `C^k` at `x`
+if and only if its pairing with any `C^k` vector field is `C^k` at `x`. -/
+lemma ContMDiffAt.inner_bundle_iff_apply
+    {s : (x : B) → TangentSpace IB x} {x : B} :
+    CMDiffAt k (T% s) x ↔ (∀ {t : (x : B) → TangentSpace IB x},
+      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) :=
+  ⟨fun hs _t ht ↦ hs.inner_bundle' ht, fun h ↦ .of_inner_bundle_apply h⟩
+
+-- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
+
 end prereqs
 
-variable [CompleteSpace EB]
-  [∀ (x : B), CompleteSpace (TangentSpace IB x)]
+-- tinkering with the tangent and cotangent bundle: can we exhibit the musical isomorphism
+-- as a diffeomorphism between them? (unconclusive; many typeclass inference failures)
+section tangentcotangent
 
-section simpler
-
-/-
-given a section s : (x : M) → TangentSpace I x →L[ℝ] ℝ,
-we get an induced section (x : M) → TangentSpace I x via the musical isomorphism
--/
-def musicalIsoSimple (s : (x : B) → TangentSpace IB x →L[ℝ] ℝ) :
-    (x : B) → TangentSpace IB x :=
-  fun x ↦ (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap (s x)
+variable [∀ (x : B), CompleteSpace (TangentSpace IB x)]
 
 #check TangentBundle IB B
 
@@ -192,41 +199,43 @@ def fooeq : TangentBundle IB B ≃ CotangentBundle IB B where
 
 -- final step: upgrade that to a diffeomorphism...
 
--- Same workaround as for the Levi-Civita file.
-variable {I} in
-omit [IsManifold IB (k + 1) B] [CompleteSpace EB] [∀ (x : B), CompleteSpace (TangentSpace IB x)] in
-lemma _root_.ContMDiffAt.inner_bundle' {X Y : Π x : B, TangentSpace IB x} {x : B}
-    (hX : CMDiffAt k (T% X) x) (hY : CMDiffAt k (T% Y) x) :
-    CMDiffAt k (fun x ↦ inner ℝ (X x) (Y x)) x :=
-  ContMDiffAt.inner_bundle hX hY
+end tangentcotangent
 
--- Local notation for pointwise inner products of vector fields.
--- Note this does not cause ambiguity with the notation obtained
--- with `open scoped RealInnerProductSpace`.
-local notation "⟪" X ", " Y "⟫" => fun x ↦ inner ℝ (X x) (Y x)
+variable [∀ (x : B), CompleteSpace (TangentSpace IB x)]
 
--- TODO: review if the shape of h is right, and generalise this a lot
-lemma ContMDiffAt.of_inner_bundle_apply
-    {s : (x : B) → TangentSpace IB x} {x : B}
-    (h : ∀ {t : (x : B) → TangentSpace IB x},
-      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) :
-    CMDiffAt k (T% s) x := by
-  let ψ : (x : B) → TangentSpace IB x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ :=
-    fun x ↦ innerSL ℝ --sorry
-  let φ : (x : B) → TangentSpace IB x → ℝ :=
-    fun x X ↦ ψ x (s x) X
-  let φ : (x : B) → TangentSpace IB x →L[ℝ] ℝ := sorry -- φ modulo stuff
-  sorry
+/-
+given a section s : (x : M) → TangentSpace I x →L[ℝ] ℝ,
+we get an induced section (x : M) → TangentSpace I x via the musical isomorphism
+-/
+def musicalIsoSimple (s : (x : B) → TangentSpace IB x →L[ℝ] ℝ) :
+    (x : B) → TangentSpace IB x :=
+  fun x ↦ (InnerProductSpace.toDual ℝ _).symm.toContinuousLinearEquiv.toContinuousLinearMap (s x)
 
--- TODO: generalise to any Riemannian bundle
-/-- If `B` has a `C^k` Riemannian metric, then a vector field `s` of `B` is `C^k` at `x`
-if and only if its pairing with any `C^k` vector field is `C^k` at `x`. -/
-lemma ContMDiffAt.inner_bundle_iff_apply {s : (x : B) → TangentSpace IB x} {x : B} :
-    CMDiffAt k (T% s) x ↔ (∀ {t : (x : B) → TangentSpace IB x},
-      CMDiffAt k (T% t) x → CMDiffAt k (fun x ↦ inner ℝ (s x) (t x)) x) :=
-  ⟨fun hs _t ht ↦ hs.inner_bundle' ht, fun h ↦ ContMDiffAt.of_inner_bundle_apply h⟩
+-- First proof of the desired statements, using `ContMDiffAt.inner_bundle_iff_apply`
+-- (proven via orthonormal frames).
+section useFrames
 
--- TODO: add also the corresponding WithinAt, On and unrestricted versions of these lemmas
+variable [FiniteDimensional ℝ EB]
+
+lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
+    (hs : CMDiffAt k (fun (x : B) ↦
+      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
+    CMDiffAt k (T% (musicalIsoSimple s)) x := by
+  simp only [musicalIsoSimple, LinearIsometryEquiv.toContinuousLinearEquiv_symm,
+    ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_symm_toContinuousLinearEquiv]
+  apply ContMDiffAt.of_inner_bundle_apply
+  intro t ht
+  simp [hs.clm_bundle_apply_trivial_target ht]
+
+lemma foo_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ}
+    (hs : CMDiff k (fun (x : B) ↦
+      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x))) :
+    CMDiff k (T% (musicalIsoSimple s)) :=
+  fun x ↦ fooAt_simple (hs x)
+
+end useFrames
+
+section tryOtherThings
 
 -- wait, is this actually circular now?
 lemma aux {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
@@ -241,6 +250,10 @@ lemma aux {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
   simp
   sorry
 
+omit [IsManifold IB (k + 1) B]
+  [IsContMDiffRiemannianBundle IB k EB fun (x : B) ↦ TangentSpace IB x]
+  [RiemannianBundle fun (x : B) ↦ TangentSpace IB x]
+  [∀ (x : B), CompleteSpace (TangentSpace IB x)] in
 lemma goal {p : (x' : B) → TangentSpace IB x'} (hp : CMDiff k (T% p)) {x : B}
     (hx : x ∈ (chartAt HB x).source) :
     ContMDiffWithinAt IB 𝓘(ℝ, EB) k
@@ -250,7 +263,8 @@ lemma goal {p : (x' : B) → TangentSpace IB x'} (hp : CMDiff k (T% p)) {x : B}
     (hp.contMDiffOn x hx) (by simp : k + 1 ≤ k + 1)
     (chartAt HB x).open_source.uniqueMDiffOn (mem_chart_source _ _)
 
-lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
+-- playground: can we find a proof reducing to a local statement?
+lemma fooAt_simple_try2 {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
     (hs : CMDiffAt k (fun (x : B) ↦
       TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x)) x) :
     CMDiffAt k (T% (musicalIsoSimple s)) x := by
@@ -296,18 +310,8 @@ lemma fooAt_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ} {x : B}
       inf_of_le_left, Set.mem_inter_iff, Set.mem_range, Set.mem_preimage, and_imp,
       forall_exists_index, forall_apply_eq_imp_iff, ModelWithCorners.left_inv] at aux
     exact aux ((chartAt HB y) y) (by simp)
-  -- alternative proof, using orthonormal frames
-  -- rw [ContMDiffAt.inner_bundle_iff_apply (IB := IB)]
-  -- intro t ht
-  -- simp [hs.clm_bundle_apply_trivial_target ht]
 
-lemma foo_simple {s : (x : B) → TangentSpace IB x →L[ℝ] ℝ}
-    (hs : CMDiff k (fun (x : B) ↦
-      TotalSpace.mk' (E := fun (x : B) ↦ TangentSpace IB x →L[ℝ] ℝ) (EB →L[ℝ] ℝ) x (s x))) :
-    CMDiff k (T% (musicalIsoSimple s)) :=
-  fun x ↦ fooAt_simple (hs x)
-
-end simpler
+end tryOtherThings
 
 /-
 given a section s : (x : M) → E x →L[ℝ] TangentSpace I x →L[ℝ] ℝ,
@@ -325,7 +329,7 @@ def musicalIso (s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ) :
 
 -- Suppose s is a C^k section, then its musical isomorphism is also C^k.
 -- TODO: prove point-wise within at version of all these
-omit [IsContMDiffRiemannianBundle IB k F E] in -- temporarily omitted to silence a warning
+omit [IsContMDiffRiemannianBundle IB k F E] in
 lemma contMDiff_musicalIso_apply [FiniteDimensional ℝ EB] [FiniteDimensional ℝ F]
     {s : (x : B) → E x →L[ℝ] TangentSpace IB x →L[ℝ] ℝ}
     (hs : CMDiff k (fun (x : B) ↦ TotalSpace.mk' (F →L[ℝ] (EB →L[ℝ] ℝ))
