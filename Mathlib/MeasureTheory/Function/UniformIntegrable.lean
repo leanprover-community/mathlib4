@@ -251,7 +251,7 @@ protected theorem add (hf : UnifTail f μ) (hg : UnifTail g μ) : UnifTail (f + 
     contrapose
     simp only [mem_union, mem_ofPred_eq, not_or, not_le, and_imp]
     intro hfx hgx
-    grw [enorm_add_le, ENNReal.add_lt_add hfx hgx, c.add_halves]
+    grw [eNorm_add_le, ENNReal.add_lt_add hfx hgx, c.add_halves]
   · rw [mul_comm 2 _, ← ENNReal.lt_div_iff_mul_lt (.inl two_ne_zero) (.inl ofNat_ne_top),
       mul_comm 2 _, ← ENNReal.lt_div_iff_mul_lt (.inl two_ne_zero) (.inl ofNat_ne_top)] at hc
     grw [measure_union_le _ _, add_le_add (haμ hc.1 i) (hbμ hc.2 i), ε.add_halves]
@@ -267,7 +267,7 @@ protected theorem ae_mono (hf : ∀ i, AEStronglyMeasurable (f i) μ) (hg : Unif
     (hfg : ∀ i, (‖f i ·‖ₑ) ≤ᵐ[μ] (‖g i ·‖ₑ)) :
     UnifLpTail f p μ := by
   refine tendsto_nhds_bot_mono hg (Eventually.of_forall fun M ↦ iSup_mono fun i ↦ ?_)
-  apply (eLpNorm_mono_enorm_ae (hf i).restrict (ae_restrict_of_ae (hfg i))).trans
+  apply (eLpNorm_mono_eNorm_ae (hf i).restrict (ae_restrict_of_ae (hfg i))).trans
   apply eLpNorm_mono_measure
   apply μ.restrict_mono_ae
   filter_upwards [hfg i] with x hfg hMf
@@ -316,13 +316,13 @@ theorem unifLpTail_top_exponent_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) 
     obtain ⟨M, hM, hMf⟩ :
       ∃ M < ∞, ∀ c ∈ Ici M, ⨆ i, eLpNorm (f i) ∞ (μ.restrict { x | c ≤ ‖f i x‖ₑ }) ∈ Iic 1 :=
         (nhds_top_basis_Ici.tendsto_iff nhds_zero_basis_Iic).1 h 1 zero_lt_one
-    apply iSup_lt_iff.2 ⟨max M 1, by finiteness, fun i ↦ eLpNormEssSup_le_of_ae_enorm_bound ?_⟩
+    apply iSup_lt_iff.2 ⟨max M 1, by finiteness, fun i ↦ eLpNormEssSup_le_of_ae_eNorm_bound ?_⟩
     simp only [mem_Ici, mem_Iic, iSup_le_iff] at hMf
     specialize hMf M le_rfl i
     rw [eLpNorm_exponent_top (hf i).restrict] at hMf
     have key := ae_le_eLpNormEssSup (f := f i) (μ := μ.restrict { x | M ≤ ‖f i x‖ₑ })
     rw [ae_restrict_iff₀] at key; swap
-    · exact (nullMeasurableSet_le (hf i).enorm aemeasurable_const).mono μ.restrict_le_self
+    · exact (nullMeasurableSet_le (hf i).eNorm aemeasurable_const).mono μ.restrict_le_self
     simp only [le_max_iff, or_iff_not_imp_left]
     filter_upwards [key] with x hx hxM
     exact (hx (not_le.1 hxM).le).trans hMf
@@ -342,7 +342,7 @@ theorem unifLpTail_top_exponent_iff (hf : ∀ i, AEStronglyMeasurable (f i) μ) 
 namespace UniformIntegrable
 
 protected theorem memLp (hf : UniformIntegrable f p μ) (i : ι) : MemLp (f i) p μ :=
-  (le_iSup _ i).trans_lt hf.bdd
+  (le_iSup _ i).trans_lt hf.iSup_eLpNorm_lt
 
 protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) :
     AEStronglyMeasurable (f i) μ :=
@@ -351,7 +351,7 @@ protected theorem aestronglyMeasurable (hf : UniformIntegrable f p μ) (i : ι) 
 protected theorem ae_eq (hf : UniformIntegrable f p μ) (hfg : ∀ i, f i =ᵐ[μ] g i) :
     UniformIntegrable g p μ :=
   ⟨(unifIntegrable_congr_ae hfg).1 hf.unifIntegrable,
-    hf.bdd.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
+    hf.iSup_eLpNorm_lt.trans_eq' (iSup_congr fun i ↦ eLpNorm_congr_ae (hfg i))⟩
 
 end UniformIntegrable
 
