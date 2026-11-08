@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.CategoryTheory.Limits.WideSubcategory
 public import Mathlib.CategoryTheory.Presentable.CardinalPure
 public import Mathlib.CategoryTheory.Presentable.Presheaf
 public import Mathlib.CategoryTheory.Presentable.Representation
@@ -12,7 +13,6 @@ public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Presentable.Uniformization
 public import Mathlib.CategoryTheory.Subfunctor.Colimits
 public import Mathlib.CategoryTheory.Subfunctor.Image
-public import Mathlib.CategoryTheory.Widesubcategory
 
 /-!
 # ...
@@ -511,6 +511,8 @@ lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory
       ObjectProperty.homMk f', ObjectProperty.homMk i,
       IsCardinalPure.of_full_of_faithful P.ι (by assumption), by cat_disch⟩
 
+namespace IsCardinalAccessibleCategory
+
 -- Proposition 2.33
 lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
@@ -525,10 +527,37 @@ lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
   exact ⟨κ₂, inferInstance, h₁.trans h₂,
     ((H.fullSubcategory P).trans h₁).of_equivalence e.symm⟩
 
+open MorphismProperty in
+attribute [local instance] IsFiltered.nonempty in
+lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
+    (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+    (isCardinalPure C κ).RespectsColimitsOfShapeWideSubcategory J := by
+  have := isFiltered_of_isCardinalFiltered J κ
+  have := IsFiltered.isConnected J
+  have (j : J) := IsFiltered.isConnected (Under j)
+  refine fun F ↦ ⟨fun {c} hc j ↦ ?_, fun {c} hc t ↦ ?_⟩
+  · refine colimitsOfShape_le (J := Under j) _ ?_
+    refine colimitsOfShape.mk' (W := isCardinalPure C κ) _ _ _ _
+      (isColimitConstCocone _ (F.obj j).obj)
+      ((Functor.Final.isColimitWhiskerEquiv (Under.forget j) _).symm hc)
+      { app i := (F.map i.hom).hom
+        naturality _ _ f := ?_ }
+      (fun i ↦ (F.map i.hom).property) _ (fun i ↦ by simp [← c.w i.hom])
+    dsimp
+    rw [Category.id_comp, ← Under.Hom.w f, Functor.map_comp,
+    WideSubcategory.comp_def]
+  · exact colimitsOfShape_le _ (colimitsOfShape.mk' _ _ _ _ hc
+      (isColimitConstCocone J t.pt.obj) (Functor.whiskerRight t.ι _)
+      (fun j ↦ (t.ι.app j).property) _
+      (by simpa using hc.fac ((wideSubcategoryInclusion (isCardinalPure C κ)).mapCocone t)))
+
 -- Proposition 2.34
-lemma IsCardinalAccessibleCategory.isAccessibleCategory_isCardinalPure
+lemma isAccessibleCategory_isCardinalPure
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
-    IsAccessibleCategory.{w} (WideSubcategory (isCardinalPure C κ)) := by
-  sorry
+    IsAccessibleCategory.{w} (WideSubcategory (isCardinalPure C κ)) where
+  exists_cardinal := sorry
+
+end IsCardinalAccessibleCategory
 
 end CategoryTheory
