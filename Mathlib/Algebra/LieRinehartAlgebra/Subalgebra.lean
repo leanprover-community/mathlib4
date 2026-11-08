@@ -50,13 +50,13 @@ instance : Inhabited (LieRinehartSubalgebra A L) :=
 
 namespace LieRinehartSubalgebra
 
+theorem toSubmodule_injective :
+    (toSubmodule : (LieRinehartSubalgebra A L) → Submodule A L).Injective :=
+  fun ⟨s, _⟩ t ↦ by congr!
+
 instance : SetLike (LieRinehartSubalgebra A L) L where
   coe L' := L'.carrier
-  coe_injective L' L'' h := by
-    rcases L'
-    rcases L''
-    congr
-    exact SetLike.coe_injective h
+  coe_injective := SetLike.coe_injective.comp (toSubmodule_injective (A := A) (L:= L))
 
 instance : PartialOrder (LieRinehartSubalgebra A L) := .ofSetLike (LieRinehartSubalgebra A L)
 
@@ -155,12 +155,6 @@ theorem coe_injective : Function.Injective ((↑) : LieRinehartSubalgebra A L �
 @[norm_cast]
 theorem coe_set_eq (L₁' L₂' : LieRinehartSubalgebra A L) : (L₁' : Set L) = L₂' ↔ L₁' = L₂' :=
   SetLike.coe_set_eq
-
-theorem toSubmodule_injective : Function.Injective (toSubmodule (A := A) (L := L)) := by
-  intro L₁' L₂' h
-  rw [SetLike.ext'_iff] at h
-  rw [← coe_set_eq]
-  exact h
 
 theorem coe_toSubmodule : (L'.toSubmodule : Set L) = L' :=
   rfl

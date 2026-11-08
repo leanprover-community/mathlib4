@@ -56,13 +56,12 @@ add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
+lemma toSubmodule_injective : (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective
+    := fun ⟨s, _, _⟩ t ↦ by congr!
+
 instance : SetLike (StrictLieRinehartIdeal A L) L where
   coe s := s.carrier
-  coe_injective s s' h := by
-    rcases s
-    rcases s'
-    congr
-    exact SetLike.coe_injective h
+  coe_injective := SetLike.coe_injective.comp toSubmodule_injective
 
 initialize_simps_projections StrictLieRinehartIdeal (carrier → coe, as_prefix coe)
 
@@ -125,10 +124,6 @@ theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodu
 
 @[simp]
 theorem coe_toSubmodule (s : StrictLieRinehartIdeal A L) : (s.toSubmodule : Set L) = s := rfl
-
-theorem toSubmodule_injective :
-    Function.Injective (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L) := fun S T h =>
-  ext fun x => by rw [← mem_toSubmodule, ← mem_toSubmodule, h]
 
 theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule = t.toSubmodule ↔ s = t :=
