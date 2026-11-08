@@ -74,6 +74,12 @@ theorem Monotone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → 
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact ⟨_, Set.mem_image_of_mem _ (max_rec' _ hx hy), hf (le_max_left x y), hf (le_max_right x y)⟩
 
+@[to_dual directedOn_ge_image]
+theorem Antitone.directedOn_le_image [LinearOrder α] [Preorder β] {f : α → β} (hf : Antitone f)
+    (s : Set α) : DirectedOn (· ≤ ·) (f '' s) := by
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
+  exact ⟨_, Set.mem_image_of_mem _ (min_rec' _ hx hy), hf (min_le_left x y), hf (min_le_right x y)⟩
+
 theorem DirectedOn.mono' {s : Set α} (hs : DirectedOn r s)
     (h : ∀ ⦃a⦄, a ∈ s → ∀ ⦃b⦄, b ∈ s → r a b → r' a b) : DirectedOn r' s := fun _ hx _ hy =>
   let ⟨z, hz, hxz, hyz⟩ := hs _ hx _ hy
