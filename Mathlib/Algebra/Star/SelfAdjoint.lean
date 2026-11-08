@@ -377,12 +377,21 @@ end IsSelfAdjoint
 
 variable (R)
 
-/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
-def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+/-- The self-adjoint elements of a star additive monoid, as an additive submonoid.
+
+When coercing to a type, prefer `selfAdjoint` over this definition, as it has more API. -/
+def selfAdjoint.addSubmonoid [AddMonoid R] [StarAddMonoid R] : AddSubmonoid R where
   carrier := { x | IsSelfAdjoint x }
   zero_mem' := star_zero R
   add_mem' hx := hx.add
+
+/-- The self-adjoint elements of a star additive group, as an additive subgroup. -/
+def selfAdjoint [AddGroup R] [StarAddMonoid R] : AddSubgroup R where
+  __ := selfAdjoint.addSubmonoid R
   neg_mem' hx := hx.neg
+
+@[simp] theorem toAddSubmonoid_selfAdjoint [AddGroup R] [StarAddMonoid R] :
+  (selfAdjoint R).toAddSubmonoid = selfAdjoint.addSubmonoid R := rfl
 
 /-- The skew-adjoint elements of a star additive group, as an additive subgroup. -/
 def skewAdjoint [AddCommGroup R] [StarAddMonoid R] : AddSubgroup R where
@@ -598,7 +607,7 @@ section SMul
 
 variable [Star R] [TrivialStar R] [AddCommGroup A] [StarAddMonoid A]
 
-@[aesop 90% (rule_sets := [SetLike])]
+@[aesop 90% (rule_sets := [SetLike]), membership .]
 theorem smul_mem [Monoid R] [DistribMulAction R A] [StarModule R A] (r : R) {x : A}
     (h : x ∈ skewAdjoint A) : r • x ∈ skewAdjoint A := by
   rw [mem_iff, star_smul, star_trivial, mem_iff.mp h, smul_neg r]

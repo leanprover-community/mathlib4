@@ -675,12 +675,14 @@ they are beside each other.
 -/
 lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
-    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
+    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C)
     {x y : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + 1, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + 1, n))
     (h₁h : h(x + 1, y, n) ≤ h(xh, yh, n)) (h₂h : h(x, y + 1, n) ≤ h(xh, yh, n)) :
     f h(x + 1, y, n) = f h(x, y + 1, n) := by
   classical
+  obtain ⟨hx, hy⟩ : xl ≤ xh ∧ yl ≤ yh := by
+    simpa [toHollom_le_toHollom_iff_fixed_right] using h₁l.trans h₁h
   -- Write `int` for the interval `[(xl, yl, n), (xh, yh, n)]`, as a finite set, and `I` for the
   -- intersection of `C` with this interval.
   set int : Finset Hollom := (Icc (xl, yl) (xh, yh)).image (embed n)
@@ -764,7 +766,7 @@ induction on `k` with `apply_eq_of_line_eq_step`.
 -/
 lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
-    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
+    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C)
     {x y k : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + k, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + k, n))
     (h₁h : h(x + k, y, n) ≤ h(xh, yh, n)) (h₂h : h(x, y + k, n) ≤ h(xh, yh, n)) :
@@ -774,7 +776,7 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
   | succ k ih =>
       have : f h(x + (k + 1), y, n) = f h(x + k, y + 1, n) := by
         simp only [← add_assoc] at h₁l h₁h ⊢
-        refine apply_eq_of_line_eq_step f hC hlo hhi hx hy h₁l ?_ h₁h ?_
+        refine apply_eq_of_line_eq_step f hC hlo hhi h₁l ?_ h₁h ?_
         all_goals
           simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
           lia
@@ -788,7 +790,7 @@ For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, 
 if `a + b = c + d` then `f (a, b, n) = f (c, d, n)`.
 -/
 theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·) C)
-    {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n) (hlohi : lo ≤ hi)
+    {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n)
     {x y : Hollom} (h : line x = line y)
     (h₁l : lo ≤ x) (h₂l : lo ≤ y) (h₁h : x ≤ hi) (h₂h : y ≤ hi) :
     f x = f y := by
@@ -804,7 +806,7 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
   obtain rfl : y₂ = y₁ + k := by lia
   induction hlo.2 using induction_on_level with | h xlo ylo =>
   induction hhi.2 using induction_on_level with | h xhi yhi =>
-  exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 (by simp_all) (by simp_all) h₁l h₂l h₁h h₂h
+  exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 h₁l h₂l h₁h h₂h
 
 /--
 Construction of the set `R`, which has the following key properties:
@@ -1072,7 +1074,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
       have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; lia
       -- Then we have `f(a, b, n + 1) = f(x0, a + b - x0, n + 1)` since they are at the same line
       have : f h(a, b, n + 1) = f h(x0 n C, a + b - x0 n C, n + 1) := apply_eq_of_line_eq f hC
-        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
+        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       -- so `f(x, y, n) = (a, b, n + 1) = f(a, b, n + 1) = f(x0, a + b - x0, n + 1)`
       have : f h(x, y, n) = f h(x0 n C, a + b - x0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
@@ -1090,7 +1092,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         lia
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
       have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; lia
-      have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this
+      have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn this
         (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       have : f h(x, y, n) = f h(a + b - y0 n C, y0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
