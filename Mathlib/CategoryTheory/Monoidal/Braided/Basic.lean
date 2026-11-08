@@ -715,7 +715,7 @@ instance tensorMonoidal : (tensor C).Monoidal :=
             inv := tensorδ X.1 X.2 Y.1 Y.2 }
         μIso_hom_natural_left := fun f Z ↦ tensorμ_natural_left f.1 f.2 Z.1 Z.2
         μIso_hom_natural_right := fun Z f ↦ tensorμ_natural_right Z.1 Z.2 f.1 f.2
-        associativity := fun X Y Z ↦ tensor_associativity X.1 X.2 Y.1 Y.2 Z.1 Z.2
+        associativity X Y Z := tensor_associativity X.1 X.2 Y.1 Y.2 Z.1 Z.2
         left_unitality := fun ⟨X₁, X₂⟩ ↦ tensor_left_unitality X₁ X₂
         right_unitality := fun ⟨X₁, X₂⟩ ↦ tensor_right_unitality X₁ X₂ }
 
@@ -845,7 +845,7 @@ instance : (mopFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun X Y ↦ β_ (mop X) (mop Y)
-      associativity := fun X Y Z ↦ by simp [← yang_baxter_assoc] }
+      associativity X Y Z := by simp [← yang_baxter_assoc] }
 
 @[simp] lemma mopFunctor_ε : ε (mopFunctor C) = 𝟙 _ := rfl
 @[simp] lemma mopFunctor_η : η (mopFunctor C) = 𝟙 _ := rfl
@@ -857,7 +857,7 @@ instance : (unmopFunctor C).Monoidal :=
   Functor.CoreMonoidal.toMonoidal
     { εIso := Iso.refl _
       μIso := fun X Y ↦ β_ (unmop X) (unmop Y)
-      associativity := fun X Y Z ↦ by simp [← yang_baxter_assoc] }
+      associativity X Y Z := by simp [← yang_baxter_assoc] }
 
 @[simp] lemma unmopFunctor_ε : ε (unmopFunctor C) = 𝟙 _ := rfl
 @[simp] lemma unmopFunctor_η : η (unmopFunctor C) = 𝟙 _ := rfl

@@ -125,7 +125,7 @@ def ofMeasurable (m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞) (m0 : m �
         Pairwise (Disjoint on f) → m (⋃ i, f i) (MeasurableSet.iUnion h) = ∑' i, m (f i) (h i)) :
     Measure α :=
   { toOuterMeasure := inducedOuterMeasure m _ m0
-    m_iUnion := fun f hf hd =>
+    m_iUnion f hf hd :=
       show inducedOuterMeasure m _ m0 (iUnion f) = ∑' i, inducedOuterMeasure m _ m0 (f i) by
         rw [inducedOuterMeasure_eq m0 mU (MeasurableSet.iUnion hf), mU hf hd]
         congr; funext n; rw [inducedOuterMeasure_eq m0 mU]

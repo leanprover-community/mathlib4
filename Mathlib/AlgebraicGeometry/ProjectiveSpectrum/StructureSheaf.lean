@@ -371,7 +371,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /-- `Proj` of a graded ring as a `LocallyRingedSpace` -/
 def Proj.toLocallyRingedSpace : LocallyRingedSpace :=
   { Proj.toSheafedSpace 𝒜 with
-    isLocalRing := fun x =>
+    isLocalRing x :=
       @RingEquiv.isLocalRing _ _ _ (show IsLocalRing (at x) from inferInstance) _
         (Proj.stalkIso' 𝒜 x).symm }
 

@@ -258,8 +258,8 @@ def inclusion (B : Type u) [Quiver.{v} B] :
     LocallyDiscrete (Paths B) ⥤ᵖ (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
-    mapId := fun _ => Iso.refl _
-    mapComp := fun f g => inclusionMapCompAux f.as g.as }
+    mapId _ := Iso.refl _
+    mapComp f g := inclusionMapCompAux f.as g.as }
 
 end FreeBicategory
 

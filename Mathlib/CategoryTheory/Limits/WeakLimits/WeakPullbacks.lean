@@ -143,7 +143,7 @@ def isWeakLimitAux (t : PullbackCone f g) (lift : ∀ s : PullbackCone f g, s.pt
     (fac_left : ∀ s : PullbackCone f g, lift s ≫ t.fst = s.fst)
     (fac_right : ∀ s : PullbackCone f g, lift s ≫ t.snd = s.snd) : IsWeakLimit t :=
   { lift
-    fac := fun s j => Option.casesOn j (by
+    fac s j := Option.casesOn j (by
         rw [← s.w WalkingCospan.Hom.inl, ← t.w WalkingCospan.Hom.inl, ← Category.assoc]
         congr
         exact fac_left s)

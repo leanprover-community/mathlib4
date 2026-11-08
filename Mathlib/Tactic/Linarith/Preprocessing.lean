@@ -233,7 +233,7 @@ it tries to scale `t` to cancel out division by numerals.
 -/
 def cancelDenoms : Preprocessor where
   description := "cancel denominators"
-  transform := fun pf => (do
+  transform pf := (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
       guard <| lhs.containsConst <| fun n =>
         n = ``HDiv.hDiv || n = ``Div.div || n = ``Inv.inv || n == ``OfScientific.ofScientific

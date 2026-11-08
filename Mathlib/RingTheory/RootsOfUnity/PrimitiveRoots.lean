@@ -148,7 +148,7 @@ theorem pow_inj (h : IsPrimitiveRoot ζ k) ⦃i j : ℕ⦄ (hi : i < k) (hj : j 
 
 theorem one : IsPrimitiveRoot (1 : M) 1 :=
   { pow_eq_one := pow_one _
-    dvd_of_pow_eq_one := fun _ _ ↦ one_dvd _ }
+    dvd_of_pow_eq_one _ _ := one_dvd _ }
 
 @[simp]
 theorem one_right_iff : IsPrimitiveRoot ζ 1 ↔ ζ = 1 := by

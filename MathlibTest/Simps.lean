@@ -261,7 +261,7 @@ def test {α} : ComplicatedEquivPlusData α :=
   { foo.rfl with
     P := fun f ↦ f = id
     data := rfl
-    extra := fun _ ↦ ⟨(⟨3, 5⟩ : MyProd _ _).1, (⟨3, 5⟩ : MyProd _ _).2⟩ }
+    extra _ := ⟨(⟨3, 5⟩ : MyProd _ _).1, (⟨3, 5⟩ : MyProd _ _).2⟩ }
 
 /- test whether this is indeed rejected as a valid eta expansion -/
 @[simps!]
@@ -269,7 +269,7 @@ def test_sneaky {α} : ComplicatedEquivPlusData α :=
   { foo.rfl with
     P := fun f ↦ f = id
     data := rfl
-    extra := fun _ ↦ ⟨(3,5).1,(3,5).2⟩ }
+    extra _ := ⟨(3,5).1,(3,5).2⟩ }
 
 run_cmd liftTermElabM do
   let env ← getEnv
@@ -431,7 +431,7 @@ example (n : ℕ) : myNatEquiv.toFun (myNatEquiv.toFun <| myNatEquiv.invFun n) =
 /- test that we don't recursively take projections of `prod` and `PProd` -/
 @[simps] def pprodEquivProd2 : PProd ℕ ℕ ≃ ℕ × ℕ :=
   { toFun := fun x ↦ ⟨x.1, x.2⟩
-    invFun := fun x ↦ ⟨x.1, x.2⟩
+    invFun x := ⟨x.1, x.2⟩
     left_inv := fun ⟨_, _⟩ ↦ rfl
     right_inv := fun ⟨_, _⟩ ↦ rfl }
 
@@ -475,8 +475,8 @@ namespace types
 
 @[simps] instance : CategoryStruct (Type u) :=
   { hom  := fun a b ↦ (a → b)
-    id   := fun _ ↦ id
-    comp := fun f g ↦ g ∘ f }
+    id _ := id
+    comp f g := g ∘ f }
 
 end types
 
@@ -583,7 +583,7 @@ class Semigroup (G : Type u) extends Mul G where
 
 @[simps] instance {α β} [Semigroup α] [Semigroup β] : Semigroup (α × β) :=
   { mul := fun x y ↦ (x.1 * y.1, x.2 * y.2)
-    mul_assoc := fun _ _ _ ↦ Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
+    mul_assoc _ _ _ := Prod.ext (Semigroup.mul_assoc ..) (Semigroup.mul_assoc ..) }
 
 example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : x * y = (x.1 * y.1, x.2 * y.2) := by simp
 example {α β} [Semigroup α] [Semigroup β] (x y : α × β) : (x * y).1 = x.1 * y.1 := by simp
@@ -603,8 +603,8 @@ instance (G : BSemigroup) : Mul G := ⟨G.op⟩
 
 protected def prod (G H : BSemigroup) : BSemigroup :=
   { G := G × H
-    op := fun x y ↦ (x.1 * y.1, x.2 * y.2)
-    op_assoc := fun _ _ _ ↦ Prod.ext (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
+    op x y := (x.1 * y.1, x.2 * y.2)
+    op_assoc _ _ _ := Prod.ext (BSemigroup.op_assoc ..) (BSemigroup.op_assoc ..) }
 
 end BSemigroup
 
@@ -614,7 +614,7 @@ class ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G wher
 @[simps!, instance_reducible] def bar : ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
-    new_axiom := fun _ ↦ trivial }
+    new_axiom _ := trivial }
 
 section
 attribute [local instance] bar
@@ -627,7 +627,7 @@ class new_ExtendingStuff (G : Type u) extends Mul G, Zero G, Neg G, HasSubset G 
 @[simps!, instance_reducible] def new_bar : new_ExtendingStuff ℕ :=
   { neg := Nat.succ
     Subset := fun _ _ ↦ True
-    new_axiom := fun _ ↦ trivial }
+    new_axiom _ := trivial }
 
 section
 attribute [local instance] new_bar
@@ -1131,9 +1131,9 @@ initialize_simps_projections DecoratedEquiv (toFun → apply, invFun → symm_ap
 
 @[simps] def foo (α : Type) : DecoratedEquiv α α :=
   { toFun     := fun x ↦ x
-    invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
+    invFun x := x
+    left_inv _ := rfl
+    right_inv _ := rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h }
 
@@ -1185,9 +1185,9 @@ initialize_simps_projections FurtherDecoratedEquiv
 
 @[simps] def ffoo (α : Type) : FurtherDecoratedEquiv α α :=
   { toFun     := fun x ↦ x
-    invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
+    invFun x := x
+    left_inv _ := rfl
+    right_inv _ := rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h
     Q_toFun   := fun y ↦ ⟨y, rfl⟩
@@ -1222,9 +1222,9 @@ initialize_simps_projections OneMore (toFun → apply, invFun → symm_apply,
 
 @[simps] def fffoo (α : Type) : OneMore α α :=
   { toFun     := fun x ↦ x
-    invFun    := fun x ↦ x
-    left_inv  := fun _ ↦ rfl
-    right_inv := fun _ ↦ rfl
+    invFun x := x
+    left_inv _ := rfl
+    right_inv _ := rfl
     P_toFun   := fun _ _ h ↦ h
     P_invFun  := fun _ _ h ↦ h
     Q_toFun   := fun y ↦ ⟨y, rfl⟩

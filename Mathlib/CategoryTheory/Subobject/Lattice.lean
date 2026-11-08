@@ -358,7 +358,7 @@ theorem le_inf {A : C} (h f g : Subobject A) : h ≤ f → h ≤ g → h ≤ (in
       exact ⟨MonoOver.leInf _ _ _ k l⟩)
 
 instance semilatticeInf {B : C} : SemilatticeInf (Subobject B) where
-  inf := fun m n => (inf.obj m).obj n
+  inf m n := (inf.obj m).obj n
   inf_le_left := inf_le_left
   inf_le_right := inf_le_right
   le_inf := le_inf
@@ -495,10 +495,10 @@ def sup {A : C} : Subobject A ⥤ Subobject A ⥤ Subobject A :=
   ThinSkeleton.map₂ MonoOver.sup
 
 instance semilatticeSup {B : C} : SemilatticeSup (Subobject B) where
-  sup := fun m n => (sup.obj m).obj n
-  le_sup_left := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
-  le_sup_right := fun m n => Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
-  sup_le := fun m n k =>
+  sup m n := (sup.obj m).obj n
+  le_sup_left m n := Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupLeft _ _⟩
+  le_sup_right m n := Quotient.inductionOn₂' m n fun _ _ => ⟨MonoOver.leSupRight _ _⟩
+  sup_le m n k :=
     Quotient.inductionOn₃' m n k fun _ _ _ ⟨i⟩ ⟨j⟩ => ⟨MonoOver.supLe _ _ _ i j⟩
 
 theorem sup_factors_of_factors_left {A B : C} {X Y : Subobject B} {f : A ⟶ B} (P : X.Factors f) :

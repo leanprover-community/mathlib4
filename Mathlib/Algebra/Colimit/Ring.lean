@@ -340,7 +340,7 @@ protected noncomputable abbrev field [DirectedSystem G (f' · · ·)] :
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
   inv := inv G (f' · · ·)
-  mul_inv_cancel := fun _ ↦ DirectLimit.mul_inv_cancel G (f' · · ·)
+  mul_inv_cancel _ := DirectLimit.mul_inv_cancel G (f' · · ·)
   inv_zero := dite_eq_left rfl
   nnqsmul := _
   nnqsmul_def _ _ := rfl

@@ -83,9 +83,9 @@ This is used to derive instances for both `[EmptyCollection ω] [Append ω]` and
 -/
 @[reducible, inline]
 def monad (empty : ω) (append : ω → ω → ω) : Monad (WriterT ω M) where
-  map := fun f cmd ↦ WriterT.mk <| (fun (a, w) ↦ (f a, w)) <$> cmd.run
-  pure := fun a ↦ pure (f := M) (a, empty)
-  bind := fun cmd f ↦
+  map f cmd := WriterT.mk <| (fun (a, w) ↦ (f a, w)) <$> cmd.run
+  pure a := pure (f := M) (a, empty)
+  bind cmd f :=
     WriterT.mk <| cmd.run >>= fun (a, w₁) ↦
       (fun (b, w₂) ↦ (b, append w₁ w₂)) <$> (f a).run
 
@@ -112,7 +112,7 @@ theorem run_bind (empty : ω) (append : ω → ω → ω)
 /-- Lift an `M` to a `WriterT ω M`, using the given `empty` as the monoid unit. -/
 @[inline, instance_reducible]
 protected def liftTell (empty : ω) : MonadLift M (WriterT ω M) where
-  monadLift := fun cmd ↦ WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
+  monadLift cmd := WriterT.mk <| (fun a ↦ (a, empty)) <$> cmd
 
 @[simp]
 theorem run_liftM (empty : ω) (cmd : M α) :
@@ -132,9 +132,9 @@ instance [Monoid ω] [LawfulMonad M] : LawfulMonad (WriterT ω M) := LawfulMonad
   (bind_assoc := fun _ _ _ => by ext; simp [mul_assoc])
 
 instance : MonadWriter ω (WriterT ω M) where
-  tell := fun w ↦ WriterT.mk <| pure (⟨⟩, w)
-  listen := fun cmd ↦ WriterT.mk <| (fun (a, w) ↦ ((a, w), w)) <$> cmd.run
-  pass := fun cmd ↦ WriterT.mk <| (fun ((a, f), w) ↦ (a, f w)) <$> cmd.run
+  tell w := WriterT.mk <| pure (⟨⟩, w)
+  listen cmd := WriterT.mk <| (fun (a, w) ↦ ((a, w), w)) <$> cmd.run
+  pass cmd := WriterT.mk <| (fun ((a, f), w) ↦ (a, f w)) <$> cmd.run
 
 @[simp]
 theorem run_tell (w : ω) :
@@ -151,8 +151,8 @@ theorem run_pass (cmd : WriterT ω M (α × (ω → ω))) :
   rfl
 
 instance {ε : Type*} [MonadExceptOf ε M] : MonadExceptOf ε (WriterT ω M) where
-  throw := fun e ↦ WriterT.mk <| throw e
-  tryCatch := fun cmd c ↦ WriterT.mk <| tryCatch cmd.run fun e ↦ (c e).run
+  throw e := WriterT.mk <| throw e
+  tryCatch cmd c := WriterT.mk <| tryCatch cmd.run fun e ↦ (c e).run
 
 @[simp]
 theorem run_throw {M} {ε : Type*} [MonadExceptOf ε M] (e : ε) :
@@ -166,7 +166,7 @@ theorem run_tryCatch {M} {ε : Type*} [MonadExceptOf ε M]
   rfl
 
 instance [MonadLiftT M (WriterT ω M)] : MonadControl M (WriterT ω M) where
-  stM := fun α ↦ α × ω
+  stM α := α × ω
   liftWith f := liftM <| f fun x ↦ x.run
   restoreM := WriterT.mk
 

@@ -431,8 +431,8 @@ theorem ofRingEquiv_dpow_apply (hI : DividedPowers I) {n : ℕ} {a : A} :
 def equiv : DividedPowers I ≃ DividedPowers J where
   toFun := ofRingEquiv h
   invFun := ofRingEquiv (show map e.symm J = I by rw [← h]; exact I.map_of_equiv e)
-  left_inv := fun hI ↦ by ext n a; simp [ofRingEquiv]
-  right_inv := fun hJ ↦ by ext n b; simp [ofRingEquiv]
+  left_inv hI := by ext n a; simp [ofRingEquiv]
+  right_inv hJ := by ext n b; simp [ofRingEquiv]
 
 theorem equiv_apply (hI : DividedPowers I) (n : ℕ) (b : B) :
     (equiv h hI).dpow n b = e (hI.dpow n (e.symm b)) := rfl

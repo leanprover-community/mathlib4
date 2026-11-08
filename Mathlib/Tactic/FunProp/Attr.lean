@@ -28,7 +28,7 @@ initialize
     name  := `fun_prop
     descr := funPropHelpString
     applicationTime := AttributeApplicationTime.afterCompilation
-    add   := fun declName _stx attrKind =>
+    add declName _stx attrKind :=
        discard <| MetaM.run do
        let info ← getConstInfo declName
        forallTelescope info.type fun _ b => do
@@ -36,7 +36,7 @@ initialize
            addFunPropDecl declName
          else
            addTheorem declName attrKind
-    erase := fun _declName =>
+    erase _declName :=
       throwError "can't remove `funProp` attribute (not implemented yet)"
   }
 

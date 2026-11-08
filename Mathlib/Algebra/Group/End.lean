@@ -364,8 +364,8 @@ variable {p : α → Prop} {f : Perm α}
 /-- If the permutation `f` fixes the subtype `{x // p x}`, then this returns the permutation
   on `{x // p x}` induced by `f`. -/
 def subtypePerm (f : Perm α) (h : ∀ x, p (f x) ↔ p x) : Perm { x // p x } where
-  toFun := fun x => ⟨f x, (h _).2 x.2⟩
-  invFun := fun x => ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
+  toFun x := ⟨f x, (h _).2 x.2⟩
+  invFun x := ⟨f⁻¹ x, (h (f⁻¹ x)).1 <| by simpa using x.2⟩
   left_inv _ := by simp
   right_inv _ := by simp
 

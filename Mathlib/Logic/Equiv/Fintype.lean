@@ -40,10 +40,10 @@ constructed inverse. When a better inverse is known, use `Equiv.ofLeftInverse'` 
 `Equiv.ofLeftInverse` instead. This is the computable version of `Equiv.ofInjective`.
 -/
 def Function.Embedding.toEquivRange : α ≃ Set.range f where
-  toFun := fun a => ⟨f a, Set.mem_range_self a⟩
+  toFun a := ⟨f a, Set.mem_range_self a⟩
   invFun := f.invOfMemRange
-  left_inv := fun _ => by simp
-  right_inv := fun _ => by simp
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 @[simp]
 theorem Function.Embedding.toEquivRange_apply (a : α) :

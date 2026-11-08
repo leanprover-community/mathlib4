@@ -215,7 +215,7 @@ lemma toNonUnitalSubalgebra_inj {S U : Subalgebra R A} :
 
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.instSubsemiringClass with
-    neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
+    neg_mem {S x} hx := neg_one_smul R x ▸ S.smul_mem hx _ }
 
 protected theorem neg_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) {x : A} (hx : x ∈ S) : -x ∈ S :=
@@ -611,7 +611,7 @@ def ofLeftInverse {g : B → A} {f : A →ₐ[R] B} (h : Function.LeftInverse g 
     toFun := f.rangeRestrict
     invFun := g ∘ f.range.val
     left_inv := h
-    right_inv := fun x =>
+    right_inv x :=
       Subtype.ext <|
         let ⟨x', hx'⟩ := f.mem_range.mp x.prop
         show f (g x) = x by rw [← hx', h x'] }

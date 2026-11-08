@@ -53,9 +53,9 @@ theorem totient_eq_card_coprime (n : ℕ) : φ n = #{a ∈ range n | n.Coprime a
 theorem totient_eq_card_lt_and_coprime (n : ℕ) : φ n = Nat.card { m | m < n ∧ n.Coprime m } := by
   let e : { m | m < n ∧ n.Coprime m } ≃ {x ∈ range n | n.Coprime x} :=
     { toFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
-      invFun := fun m => ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
-      left_inv := fun m => by simp only [Subtype.coe_eta]
-      right_inv := fun m => by simp only }
+      invFun m := ⟨m, by simpa only [Finset.mem_filter, Finset.mem_range] using! m.property⟩
+      left_inv m := by simp only [Subtype.coe_eta]
+      right_inv m := by simp only }
   rw [totient_eq_card_coprime, card_congr e, card_eq_fintype_card, Fintype.card_coe]
 
 theorem totient_le (n : ℕ) : φ n ≤ n :=

@@ -49,7 +49,7 @@ def binaryProductLimitCone (M N : ModuleCat.{v} R) : Limits.LimitCone (pair M N)
         (s.π.app ⟨WalkingPair.left⟩).hom
         (s.π.app ⟨WalkingPair.right⟩).hom
       fac := by rintro s (⟨⟩ | ⟨⟩) <;> rfl
-      uniq := fun s m w => by
+      uniq s m w := by
         simp_rw [← w ⟨WalkingPair.left⟩, ← w ⟨WalkingPair.right⟩]
         rfl }
 
@@ -107,7 +107,7 @@ def productLimitCone : Limits.LimitCone (Discrete.functor f) where
       π := Discrete.natTrans fun j => ofHom (LinearMap.proj j.as : (∀ j, f j) →ₗ[R] f j.as) }
   isLimit :=
     { lift := lift.{_, v} f
-      fac := fun _ _ => rfl
+      fac _ _ := rfl
       uniq s m w := by ext x j; congrm $(w ⟨j⟩) x }
 
 end HasLimit

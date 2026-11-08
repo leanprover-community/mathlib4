@@ -45,8 +45,8 @@ instance : ConditionallyCompleteLinearOrder ℤ where
   isGLB_csInf _ hn hb := by
     rw [dite_eq_left ⟨hn, hb⟩]
     exact (isLeast_coe_leastOfBdd ..).isGLB
-  csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
-  csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
+  csSup_of_not_bddAbove s hs := by simp [hs]
+  csInf_of_not_bddBelow s hs := by simp [hs]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem csSup_eq_greatestOfBdd {s : Set ℤ} [DecidablePred (· ∈ s)] (b : ℤ) (Hb : ∀ z ∈ s, z ≤ b)

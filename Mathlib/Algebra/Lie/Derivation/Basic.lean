@@ -318,7 +318,7 @@ instance : LieRing (LieDerivation R L L) where
 
 /-- The set of Lie derivations from a Lie algebra `L` to itself is a Lie algebra. -/
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
-  lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
+  lie_smul r d e := by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
 
 @[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
     ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=

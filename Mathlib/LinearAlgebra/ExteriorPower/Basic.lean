@@ -214,7 +214,7 @@ noncomputable def alternatingMapLinearEquiv : (M [⋀^Fin n]→ₗ[R] N) ≃ₗ[
     (Equiv.toLinearEquiv
       ((presentation R n M).linearMapEquiv.trans presentation.relationsSolutionEquiv)
       { map_add := fun _ _ => rfl
-        map_smul := fun _ _ => rfl })
+        map_smul _ _ := rfl })
 
 @[simp]
 lemma alternatingMapLinearEquiv_comp_ιMulti (f : M [⋀^Fin n]→ₗ[R] N) :

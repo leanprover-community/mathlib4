@@ -612,7 +612,7 @@ instance hasImage_iso_comp [IsIso f] [HasImage g] : HasImage (f ≫ g) :=
   HasImage.mk
     { F := (Image.monoFactorisation g).isoComp f
       isImage := { lift := fun F' => image.lift (F'.ofIsoComp f)
-                   lift_fac := fun F' => by
+                   lift_fac F' := by
                     dsimp
                     have : (MonoFactorisation.ofIsoComp f F').m = F'.m := rfl
                     rw [← this, image.lift_fac (MonoFactorisation.ofIsoComp f F')] } }
@@ -639,7 +639,7 @@ instance hasImage_comp_iso [HasImage f] [IsIso g] : HasImage (f ≫ g) :=
     { F := (Image.monoFactorisation f).compMono g
       isImage :=
       { lift := fun F' => image.lift F'.ofCompIso
-        lift_fac := fun F' => by
+        lift_fac F' := by
           rw [← Category.comp_id (image.lift (MonoFactorisation.ofCompIso F') ≫ F'.m),
             ← IsIso.inv_hom_id g, ← Category.assoc]
           refine congrArg (· ≫ g) ?_

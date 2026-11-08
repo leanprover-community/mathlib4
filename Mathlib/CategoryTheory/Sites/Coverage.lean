@@ -275,7 +275,7 @@ a Galois insertion.
 -/
 def gi : GaloisInsertion (toGrothendieck (C := C)) (GrothendieckTopology.toCoverage (C := C)) where
   choice K _ := toGrothendieck K
-  choice_eq := fun _ _ => rfl
+  choice_eq _ _ := rfl
   le_l_u J X S hS := by
     rw [← Sieve.generate_sieve S]
     apply Saturate.of

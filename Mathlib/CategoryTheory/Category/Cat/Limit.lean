@@ -93,8 +93,8 @@ def limitCone (F : J ⥤ Cat.{v, v}) : Cone F where
   π :=
     { app := fun j => Functor.toCatHom
         { obj := limit.π (F ⋙ Cat.objects) j
-          map := fun f => limit.π (homDiagram _ _) j f }
-      naturality := fun _ _ f => Cat.Hom.ext <|
+          map f := limit.π (homDiagram _ _) j f }
+      naturality _ _ f := Cat.Hom.ext <|
         CategoryTheory.Functor.ext (fun X => (congr_hom (limit.w (F ⋙ Cat.objects) f) X).symm)
           fun X Y h => (congr_hom (limit.w (homDiagram X Y) f) h).symm }
 
@@ -110,7 +110,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F :=
         { pt := s.pt
           π :=
             { app := fun j => ↾(s.π.app j).toFunctor.obj
-              naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
+              naturality _ _ f := objects.congr_map (s.π.naturality f) } }
     map f := by
       fapply Types.Limit.mk.{v, v}
       · intro j

@@ -48,9 +48,9 @@ instance : Inhabited (Ctop α (Set α)) :=
   ⟨{  f := id
       top := singleton
       top_mem := mem_singleton
-      inter := fun s t _ _ ↦ s ∩ t
-      inter_mem := fun _s _t _a ↦ id
-      inter_sub := fun _s _t _a _ha ↦ Subset.rfl }⟩
+      inter s t _ _ := s ∩ t
+      inter_mem _s _t _a := id
+      inter_sub _s _t _a _ha := Subset.rfl }⟩
 
 namespace Ctop
 
@@ -67,11 +67,11 @@ theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) 
 def ofEquiv (E : σ ≃ τ) : Ctop α σ → Ctop α τ
   | ⟨f, T, h₁, I, h₂, h₃⟩ =>
     { f := fun a ↦ f (E.symm a)
-      top := fun x ↦ E (T x)
-      top_mem := fun x ↦ by simpa using h₁ x
-      inter := fun a b x h ↦ E (I (E.symm a) (E.symm b) x h)
-      inter_mem := fun a b x h ↦ by simpa using h₂ (E.symm a) (E.symm b) x h
-      inter_sub := fun a b x h ↦ by simpa using h₃ (E.symm a) (E.symm b) x h }
+      top x := E (T x)
+      top_mem x := by simpa using h₁ x
+      inter a b x h := E (I (E.symm a) (E.symm b) x h)
+      inter_mem a b x h := by simpa using h₂ (E.symm a) (E.symm b) x h
+      inter_sub a b x h := by simpa using h₃ (E.symm a) (E.symm b) x h }
 
 @[simp]
 theorem ofEquiv_val (E : σ ≃ τ) (F : Ctop α σ) (a : τ) : F.ofEquiv E a = F (E.symm a) := by
@@ -161,7 +161,7 @@ variable [TopologicalSpace α]
 protected def id : Realizer α :=
   ⟨{ x : Set α // IsOpen x },
     { f := Subtype.val
-      top := fun _ ↦ ⟨univ, isOpen_univ⟩
+      top _ := ⟨univ, isOpen_univ⟩
       top_mem := mem_univ
       inter := fun ⟨_x, h₁⟩ ⟨_y, h₂⟩ _a _h₃ ↦ ⟨_, h₁.inter h₂⟩
       inter_mem := fun ⟨_x, _h₁⟩ ⟨_y, _h₂⟩ _a ↦ id

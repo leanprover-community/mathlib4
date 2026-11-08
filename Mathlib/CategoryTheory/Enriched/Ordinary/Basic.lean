@@ -164,7 +164,7 @@ variable (C) in
 def eHomFunctor : Cᵒᵖ ⥤ C ⥤ V where
   obj X :=
     { obj := fun Y => X.unop ⟶[V] Y
-      map := fun φ => eHomWhiskerLeft V X.unop φ }
+      map φ := eHomWhiskerLeft V X.unop φ }
   map φ :=
     { app := fun Y => eHomWhiskerRight V φ.unop Y }
 

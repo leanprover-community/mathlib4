@@ -240,8 +240,8 @@ def createsColimitOfIsSheaf (F : K ⥤ Sheaf J D)
       validLift := Cocone.ext (eqToIso rfl) fun j => by simp
       makesColimit :=
         { desc := fun S => ⟨hE.desc ((sheafToPresheaf J D).mapCocone S)⟩
-          fac := fun S j => by ext1; dsimp; rw [hE.fac]; rfl
-          uniq := fun S m hm => by
+          fac S j := by ext1; dsimp; rw [hE.fac]; rfl
+          uniq S m hm := by
             ext1
             exact hE.uniq ((sheafToPresheaf J D).mapCocone S) m.hom fun j =>
               (ObjectProperty.ι _).congr_map (hm j) } }

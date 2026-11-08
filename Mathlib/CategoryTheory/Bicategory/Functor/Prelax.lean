@@ -88,7 +88,7 @@ instance : Inhabited (PrelaxFunctorStruct B B) :=
 @[simps]
 def comp (F : PrelaxFunctorStruct B C) (G : PrelaxFunctorStruct C D) : PrelaxFunctorStruct B D where
   toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
-  map₂ := fun η => G.map₂ (F.map₂ η)
+  map₂ η := G.map₂ (F.map₂ η)
 
 end PrelaxFunctorStruct
 

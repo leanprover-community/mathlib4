@@ -46,7 +46,7 @@ def limitCone (F : J ⥤ TopCat.{max v u}) : Cone F where
         { toFun := fun u => u.val j
           -- Porting note: `continuity` from the original mathlib3 proof failed here.
           continuous_toFun := Continuous.comp (continuous_apply _) (continuous_subtype_val) }
-      naturality := fun X Y f => by
+      naturality X Y f := by
         ext a
         exact (a.2 f).symm }
 
@@ -167,7 +167,7 @@ lemma hasLimit_iff_small_sections :
 
 instance topCat_hasLimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasLimitsOfShape J TopCat.{u} where
-  has_limit := fun F => by
+  has_limit F := by
     rw [hasLimit_iff_small_sections]
     infer_instance
 
@@ -305,7 +305,7 @@ lemma hasColimit_iff_small_colimitType :
 
 instance topCat_hasColimitsOfShape (J : Type v) [Category* J] [Small.{u} J] :
     HasColimitsOfShape J TopCat.{u} where
-  has_colimit := fun F => by
+  has_colimit F := by
     rw [hasColimit_iff_small_colimitType]
     infer_instance
 

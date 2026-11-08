@@ -505,7 +505,7 @@ def homIso' (h : IsLimit t) (W : C) :
         ⟨fun j => π.app j, fun f => by convert! ← (π.naturality f).symm; apply id_comp⟩
       inv := ↾fun p =>
         { app := fun j => p.1 j
-          naturality := fun j j' f => by dsimp; rw [id_comp]; exact (p.2 f).symm } }
+          naturality j j' f := by dsimp; rw [id_comp]; exact (p.2 f).symm } }
 
 /-- If `G : C → D` is a faithful functor which sends t to a limit cone,
 then it suffices to check that the induced maps for the image of t
@@ -517,8 +517,8 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
     (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
   { lift
-    fac := fun s j => by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
-    uniq := fun s m w => by
+    fac s j := by apply G.map_injective; rw [G.map_comp, h]; apply ht.fac
+    uniq s m w := by
       apply G.map_injective; rw [h]
       refine ht.uniq (mapCone G s) _ fun j => ?_
       convert! ← congrArg (fun f => G.map f) (w j)
@@ -547,10 +547,10 @@ def isoUniqueConeMorphism {t : Cone F} :
     IsLimit t ≅ ∀ s, Unique (s ⟶ t) where
   hom := ↾fun h s ↦
     { default := h.liftConeMorphism s
-      uniq := fun _ => h.uniq_cone_morphism }
+      uniq _ := h.uniq_cone_morphism }
   inv := ↾fun h =>
     { lift := fun s => (h s).default.hom
-      uniq := fun s f w => congrArg ConeMorphism.hom ((h s).uniq ⟨f, w⟩) }
+      uniq s f w := congrArg ConeMorphism.hom ((h s).uniq ⟨f, w⟩) }
 
 namespace OfNatIso
 

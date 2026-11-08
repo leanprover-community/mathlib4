@@ -155,7 +155,7 @@ instance {S : AlgCat.{v} R} : Algebra R ((forget (AlgCat R)).obj S) :=
 instance hasForgetToRing : HasForget₂ (AlgCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => ↧A
-      map := fun f => RingCat.ofHom f.hom.toRingHom }
+      map f := RingCat.ofHom f.hom.toRingHom }
 
 @[simp]
 lemma forget₂_ringCat_obj (X : AlgCat.{v} R) :
@@ -173,7 +173,7 @@ instance (A : AlgCat.{v} R) : Algebra R ((forget₂ (AlgCat.{v} R) RingCat).obj 
 instance hasForgetToModule : HasForget₂ (AlgCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ↧M
-      map := fun f => ModuleCat.ofHom f.hom.toLinearMap }
+      map f := ModuleCat.ofHom f.hom.toLinearMap }
 
 @[simp]
 lemma forget₂_module_obj (X : AlgCat.{v} R) :
@@ -198,9 +198,9 @@ def adj : free.{u} R ⊣ forget (AlgCat.{u} R) :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun _ _ =>
         { toFun := fun f ↦ ↾((FreeAlgebra.lift _).symm f.hom)
-          invFun := fun f ↦ ofHom <| (FreeAlgebra.lift _) f
-          left_inv := fun f ↦ by aesop
-          right_inv := fun f ↦ by aesop } }
+          invFun f := ofHom <| (FreeAlgebra.lift _) f
+          left_inv f := by aesop
+          right_inv f := by aesop } }
 
 instance : (forget (AlgCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -224,8 +224,8 @@ def toAlgEquiv {X Y : AlgCat.{v} R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
   { i.hom.hom with
     toFun := i.hom
     invFun := i.inv
-    left_inv := fun x ↦ by simp
-    right_inv := fun x ↦ by simp }
+    left_inv x := by simp
+    right_inv x := by simp }
 
 end CategoryTheory.Iso
 

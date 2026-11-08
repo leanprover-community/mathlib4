@@ -116,7 +116,7 @@ instance (priority := 100) instMonoidHomClass
     [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.toMulHomClass with
-    map_one := fun e =>
+    map_one e :=
       calc
         e 1 = e 1 * 1 := (mul_one _).symm
         _ = e 1 * e (EquivLike.inv e (1 : N) : M) :=

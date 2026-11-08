@@ -405,8 +405,8 @@ def sigmaOptionEquivOfSome {α} (p : Option α → Type v) (h : p none → False
 `Sigma` type such that for all `i` we have `(f i).fst = i`. -/
 def piEquivSubtypeSigma (ι) (π : ι → Type*) :
     (∀ i, π i) ≃ { f : ι → Σ i, π i // ∀ i, (f i).1 = i } where
-  toFun := fun f => ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
-  invFun := fun f i => by rw [← f.2 i]; exact (f.1 i).2
+  toFun f := ⟨fun i => ⟨i, f i⟩, fun _ => rfl⟩
+  invFun f i := by rw [← f.2 i]; exact (f.1 i).2
   right_inv := fun ⟨f, hf⟩ =>
     Subtype.ext <| funext fun i =>
       Sigma.eq (hf i).symm <| eq_of_heq <| rec_heq_of_heq _ <| by simp
@@ -415,8 +415,8 @@ def piEquivSubtypeSigma (ι) (π : ι → Type*) :
 to the type of functions `∀ a, {b : β a // p a b}`. -/
 def subtypePiEquivPi {β : α → Sort v} {p : ∀ a, β a → Prop} :
     { f : ∀ a, β a // ∀ a, p a (f a) } ≃ ∀ a, { b : β a // p a b } where
-  toFun := fun f a => ⟨f.1 a, f.2 a⟩
-  invFun := fun f => ⟨fun a => (f a).1, fun a => (f a).2⟩
+  toFun f a := ⟨f.1 a, f.2 a⟩
+  invFun f := ⟨fun a => (f a).1, fun a => (f a).2⟩
   left_inv := by
     rintro ⟨f, h⟩
     rfl

@@ -60,8 +60,8 @@ instance : Algebra v.integer R :=
 
 theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
-    map_le_one := fun r => r.2
-    exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
+    map_le_one r := r.2
+    exists_of_le_one r hr := ⟨⟨r, hr⟩, rfl⟩ }
 
 namespace Integers
 

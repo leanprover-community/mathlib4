@@ -150,8 +150,8 @@ def pullbackHomeoPreimage
     {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
     (f : X → Z) (hf : Continuous f) (g : Y → Z) (hg : IsEmbedding g) :
     { p : X × Y // f p.1 = g p.2 } ≃ₜ f ⁻¹' Set.range g where
-  toFun := fun x ↦ ⟨x.1.1, _, x.2.symm⟩
-  invFun := fun x ↦ ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
+  toFun x := ⟨x.1.1, _, x.2.symm⟩
+  invFun x := ⟨⟨x.1, Exists.choose x.2⟩, (Exists.choose_spec x.2).symm⟩
   left_inv := by
     intro x
     ext <;> dsimp
@@ -326,7 +326,7 @@ theorem fst_iso_of_right_embedding_range_subset {X Y S : TopCat.{u}} (f : X ⟶ 
   let esto : (pullback f g : TopCat) ≃ₜ X :=
     (fst_isEmbedding_of_right f hg).toHomeomorph.trans
       { toFun := Subtype.val
-        invFun := fun x =>
+        invFun x :=
           ⟨x, by
             rw [pullback_fst_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec.symm⟩⟩ }
@@ -337,7 +337,7 @@ theorem snd_iso_of_left_embedding_range_subset {X Y S : TopCat.{u}} {f : X ⟶ S
   let esto : (pullback f g : TopCat) ≃ₜ Y :=
     (snd_isEmbedding_of_left hf g).toHomeomorph.trans
       { toFun := Subtype.val
-        invFun := fun x =>
+        invFun x :=
           ⟨x, by
             rw [pullback_snd_range]
             exact ⟨_, (H (Set.mem_range_self x)).choose_spec⟩⟩ }

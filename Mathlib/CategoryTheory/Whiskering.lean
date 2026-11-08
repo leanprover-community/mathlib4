@@ -79,12 +79,12 @@ variable (C D E)
 def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
   obj F :=
     { obj := fun G => F ⋙ G
-      map := fun α => whiskerLeft F α }
+      map α := whiskerLeft F α }
   map τ :=
     { app := fun H =>
         { app := fun c => H.map (τ.app c)
-          naturality := fun X Y f => by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [f.naturality] }
+          naturality X Y f := by dsimp; rw [← H.map_comp, ← H.map_comp, ← τ.naturality] }
+      naturality X Y f := by ext; dsimp; rw [f.naturality] }
 
 /-- Right-composition gives a functor `(D ⥤ E) ⥤ ((C ⥤ D) ⥤ (C ⥤ E))`.
 
@@ -95,12 +95,12 @@ def whiskeringLeft : (C ⥤ D) ⥤ (D ⥤ E) ⥤ C ⥤ E where
 def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
   obj H :=
     { obj := fun F => F ⋙ H
-      map := fun α => whiskerRight α H }
+      map α := whiskerRight α H }
   map τ :=
     { app := fun F =>
         { app := fun c => τ.app (F.obj c)
-          naturality := fun X Y f => by dsimp; rw [τ.naturality] }
-      naturality := fun X Y f => by ext; dsimp; rw [← NatTrans.naturality] }
+          naturality X Y f := by dsimp; rw [τ.naturality] }
+      naturality X Y f := by ext; dsimp; rw [← NatTrans.naturality] }
 
 variable {C} {D} {E}
 
@@ -118,7 +118,7 @@ def FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
     ((whiskeringRight C D E).obj F).FullyFaithful where
   preimage f :=
     { app := fun X => hF.preimage (f.app X)
-      naturality := fun _ _ g => by
+      naturality _ _ g := by
         apply hF.map_injective
         simp only [map_comp, map_preimage]
         apply f.naturality }
@@ -390,7 +390,7 @@ def whiskeringLeft₂ :
     { obj := fun F₂ ↦
         (whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).obj ((whiskeringLeft C₂ D₂ E).obj F₂) ⋙
           (whiskeringLeft C₁ D₁ (C₂ ⥤ E)).obj F₁
-      map := fun φ ↦ whiskerRight
+      map φ := whiskerRight
         ((whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).map ((whiskeringLeft C₂ D₂ E).map φ)) _ }
   map ψ :=
     { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }

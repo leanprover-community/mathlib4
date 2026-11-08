@@ -142,7 +142,7 @@ variable (H) in
 noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G => homEquivOfIsLeftKanExtension _ (L.lanUnit.app F) G
-      homEquiv_naturality_left_symm := fun {F₁ F₂ G} f α =>
+      homEquiv_naturality_left_symm {F₁ F₂ G} f α :=
         hom_ext_of_isLeftKanExtension _ (L.lanUnit.app F₁) _ _ (by
           ext X
           dsimp [homEquivOfIsLeftKanExtension]
@@ -150,7 +150,7 @@ noncomputable def lanAdjunction : L.lan ⊣ (whiskeringLeft C D H).obj L :=
           have h := congr_app (L.lanUnit.naturality f) X
           dsimp at h ⊢
           rw [← h, assoc, descOfIsLeftKanExtension_fac_app])
-      homEquiv_naturality_right := fun {F G₁ G₂} β f => by
+      homEquiv_naturality_right {F G₁ G₂} β f := by
         dsimp [homEquivOfIsLeftKanExtension]
         rw [assoc] }
 
@@ -337,7 +337,7 @@ noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun F G =>
         (homEquivOfIsRightKanExtension (α := L.ranCounit.app G) _ F).symm
-      homEquiv_naturality_right := fun {F G₁ G₂} β f ↦
+      homEquiv_naturality_right {F G₁ G₂} β f :=
         hom_ext_of_isRightKanExtension _ (L.ranCounit.app G₂) _ _ (by
         ext X
         dsimp [homEquivOfIsRightKanExtension]
@@ -345,7 +345,7 @@ noncomputable def ranAdjunction : (whiskeringLeft C D H).obj L ⊣ L.ran :=
         have h := congr_app (L.ranCounit.naturality f) X
         dsimp at h ⊢
         rw [h, liftOfIsRightKanExtension_fac_app_assoc])
-      homEquiv_naturality_left_symm := fun {F₁ F₂ G} β f ↦ by
+      homEquiv_naturality_left_symm {F₁ F₂ G} β f := by
         dsimp [homEquivOfIsRightKanExtension]
         rw [assoc] }
 

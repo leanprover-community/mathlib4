@@ -122,7 +122,7 @@ def functorialSurjectiveInjectiveFactorizationData :
   Z.map φ := ↾fun y ↦ ⟨φ.right y.1, by obtain ⟨_, x, rfl⟩ := y; exact ⟨φ.left x, congr_hom φ.w x⟩⟩
   i :=
     { app := fun f => ↾fun x => ⟨f.hom x, ⟨x, rfl⟩⟩
-      naturality := fun f g φ => by
+      naturality f g φ := by
         ext x
         exact congr_hom φ.w x }
   p :=

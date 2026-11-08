@@ -154,11 +154,11 @@ noncomputable def conjAct : G →* MulAut N := S.conjAct.comp s
 noncomputable def semidirectProductToGroupExtensionEquiv :
     (SemidirectProduct.toGroupExtension s.conjAct).Equiv S where
   toFun := fun ⟨n, g⟩ ↦ S.inl n * s g
-  invFun := fun e ↦ ⟨Function.invFun S.inl (e * (s (S.rightHom e))⁻¹), S.rightHom e⟩
+  invFun e := ⟨Function.invFun S.inl (e * (s (S.rightHom e))⁻¹), S.rightHom e⟩
   left_inv := fun ⟨n, g⟩ ↦ by
     simp only [map_mul, rightHom_inl, rightHom_splitting, one_mul, mul_inv_cancel_right,
       Function.leftInverse_invFun S.inl_injective n]
-  right_inv := fun e ↦ by
+  right_inv e := by
     simp only [← eq_mul_inv_iff_mul_eq]
     apply Function.invFun_eq
     rw [← MonoidHom.mem_range, S.range_inl_eq_ker_rightHom, MonoidHom.mem_ker, map_mul, map_inv,

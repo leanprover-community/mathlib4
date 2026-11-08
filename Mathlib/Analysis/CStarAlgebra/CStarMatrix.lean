@@ -254,7 +254,7 @@ def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
 @[simps]
 def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddCommMonoid B]
     [Module R A] [Module S B] (f : A →ₛₗ[σ] B) : CStarMatrix m n A →ₛₗ[σ] CStarMatrix m n B where
-  toFun := fun M => M.map f
+  toFun M := M.map f
   map_add' M N := by ext; simp
   map_smul' r M := by ext; simp
 
@@ -447,7 +447,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 def mapₙₐ [Fintype n] [Semiring R] [NonUnitalNonAssocSemiring A] [Module R A]
     [Star A] [NonUnitalNonAssocSemiring B] [Module R B] [Star B] (f : A →⋆ₙₐ[R] B) :
     CStarMatrix n n A →⋆ₙₐ[R] CStarMatrix n n B where
-  toFun := fun M => M.mapₗ (f : A →ₗ[R] B)
+  toFun M := M.mapₗ (f : A →ₗ[R] B)
   map_smul' := by simp
   map_zero' := by simp [map_zero]
   map_add' := by simp [map_add]
@@ -833,7 +833,7 @@ variable {m n A : Type*} [NonUnitalCStarAlgebra A]
 lemma uniformEmbedding_ofMatrix :
     IsUniformEmbedding (ofMatrix : Matrix m n A → CStarMatrix m n A) where
   comap_uniformity := Filter.comap_id'
-  injective := fun ⦃_ _⦄ a ↦ a
+  injective ⦃_ _⦄ a := a
 
 /-- `ofMatrix` bundled as a continuous linear equivalence. -/
 def ofMatrixL : Matrix m n A ≃L[ℂ] CStarMatrix m n A :=

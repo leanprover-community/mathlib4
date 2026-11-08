@@ -22,8 +22,8 @@ variable {α : Type*}
 namespace Multiset
 
 instance : IsOrderedCancelAddMonoid (Multiset α) where
-  add_le_add_left := fun _ _ => add_le_add_left
-  le_of_add_le_add_left := fun _ _ _ => le_of_add_le_add_left
+  add_le_add_left _ _ := add_le_add_left
+  le_of_add_le_add_left _ _ _ := le_of_add_le_add_left
 
 instance : CanonicallyOrderedAdd (Multiset α) where
   le_add_self := le_add_left

@@ -753,17 +753,17 @@ def submoduleMap (p : Submodule R M) : p ≃ₛₗ[σ₁₂] ↥(p.map (e : M �
       ⟨x, by
         simp only [LinearMap.domRestrict_apply, and_true, SetLike.coe_mem,
           SetLike.mem_coe]⟩ with
-    invFun := fun y =>
+    invFun y :=
       ⟨(e.symm : M₂ →ₛₗ[σ₂₁] M) y, by
         rcases y with ⟨y', hy⟩
         rw [Submodule.mem_map] at hy
         rcases hy with ⟨x, hx, hxy⟩
         subst hxy
         simp only [symm_apply_apply, coe_coe, hx]⟩
-    left_inv := fun x => by
+    left_inv x := by
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, SetLike.eta]
-    right_inv := fun y => by
+    right_inv y := by
       apply SetCoe.ext
       simp only [LinearMap.domRestrict_apply, LinearMap.codRestrict_apply, LinearMap.toFun_eq_coe,
         LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply] }

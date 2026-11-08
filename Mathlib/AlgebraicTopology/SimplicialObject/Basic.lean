@@ -468,7 +468,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.comp_id, Category.comp_id, η.naturality] } }
-  map_comp := fun _ _ => by ext <;> rfl
+  map_comp _ _ := by ext <;> rfl
 
 variable {C}
 
@@ -832,7 +832,7 @@ def whiskering (D : Type u') [Category.{v'} D] : (C ⥤ D) ⥤ Augmented C ⥤ A
             ext n
             dsimp
             rw [Category.id_comp, Category.id_comp, η.naturality] }
-      naturality := fun _ _ f => by ext <;> simp }
+      naturality _ _ f := by ext <;> simp }
 
 variable {C}
 

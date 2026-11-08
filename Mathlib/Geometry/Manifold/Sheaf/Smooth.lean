@@ -184,10 +184,10 @@ noncomputable instance (U : (Opens (TopCat.of M))ᵒᵖ) :
 as a presheaf of additive groups. -/]
 noncomputable def smoothPresheafGroup : TopCat.Presheaf GrpCat.{u} ↧M :=
   { obj := fun U ↦ ↧((smoothSheaf IM I M G).presheaf.obj U)
-    map := fun h ↦ GrpCat.ofHom <|
+    map h := GrpCat.ofHom <|
       ContMDiffMap.restrictMonoidHom IM I G <| CategoryTheory.leOfHom h.unop
-    map_id := fun _ ↦ rfl
-    map_comp := fun _ _ ↦ rfl }
+    map_id _ := rfl
+    map_comp _ _ := rfl }
 
 /-- The sheaf of smooth functions from `M` to `G`, for `G` a Lie group, as a sheaf of
 groups. -/
@@ -215,10 +215,10 @@ presheaf of abelian groups. -/
 group, as a presheaf of additive abelian groups. -/]
 noncomputable def smoothPresheafCommGroup : TopCat.Presheaf CommGrpCat.{u} ↧M :=
   { obj := fun U ↦ ↧((smoothSheaf IM I M A).presheaf.obj U)
-    map := fun h ↦ CommGrpCat.ofHom <|
+    map h := CommGrpCat.ofHom <|
       ContMDiffMap.restrictMonoidHom IM I A <| CategoryTheory.leOfHom h.unop
-    map_id := fun _ ↦ rfl
-    map_comp := fun _ _ ↦ rfl }
+    map_id _ := rfl
+    map_comp _ _ := rfl }
 
 /-- The sheaf of smooth functions from `M` to `A`, for `A` an abelian Lie group, as a
 sheaf of abelian groups. -/
@@ -242,7 +242,7 @@ noncomputable def smoothSheafCommGroup.compLeft (φ : A →* A') (hφ : CMDiff �
     smoothSheafCommGroup IM I M A ⟶ smoothSheafCommGroup IM I' M A' :=
   CategoryTheory.ObjectProperty.homMk
   { app := fun _ ↦ CommGrpCat.ofHom <| ContMDiffMap.compLeftMonoidHom _ _ φ hφ
-    naturality := fun _ _ _ ↦ rfl }
+    naturality _ _ _ := rfl }
 
 end CommLieGroup
 
@@ -257,10 +257,10 @@ instance (U : (Opens (TopCat.of M))ᵒᵖ) : Ring ((smoothSheaf IM I M R).preshe
 of rings. -/
 def smoothPresheafRing : TopCat.Presheaf RingCat.{u} ↧M :=
   { obj := fun U ↦ ↧((smoothSheaf IM I M R).presheaf.obj U)
-    map := fun h ↦ RingCat.ofHom <|
+    map h := RingCat.ofHom <|
       ContMDiffMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
-    map_id := fun _ ↦ rfl
-    map_comp := fun _ _ ↦ rfl }
+    map_id _ := rfl
+    map_comp _ _ := rfl }
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth ring, as a sheaf of
 rings. -/
@@ -283,10 +283,10 @@ instance (U : (Opens (TopCat.of M))ᵒᵖ) : CommRing ((smoothSheaf IM I M R).pr
 presheaf of commutative rings. -/
 def smoothPresheafCommRing : TopCat.Presheaf CommRingCat.{u} ↧M :=
   { obj := fun U ↦ ↧((smoothSheaf IM I M R).presheaf.obj U)
-    map := fun h ↦ CommRingCat.ofHom <|
+    map h := CommRingCat.ofHom <|
       ContMDiffMap.restrictRingHom IM I R <| CategoryTheory.leOfHom h.unop
-    map_id := fun _ ↦ rfl
-    map_comp := fun _ _ ↦ rfl }
+    map_id _ := rfl
+    map_comp _ _ := rfl }
 
 /-- The sheaf of smooth functions from `M` to `R`, for `R` a smooth commutative ring, as a sheaf of
 commutative rings. -/

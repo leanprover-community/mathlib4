@@ -87,7 +87,7 @@ etc. -/
 @[simps]
 def evalAlgHom (i : ι) : (Π i, A i) →ₐ[R] A i :=
   { Pi.evalRingHom A i with
-    toFun := fun f ↦ f i
+    toFun f := f i
     commutes' := fun _ ↦ rfl }
 
 lemma coe_evalAlgHom (i : ι) : evalAlgHom R A i = evalRingHom A i := rfl
@@ -147,7 +147,7 @@ variable [Algebra R A] [Algebra R B]
 @[simps]
 protected def compLeft (f : A →ₐ[R] B) (ι : Type*) : (ι → A) →ₐ[R] ι → B :=
   { f.toRingHom.compLeft ι with
-    toFun := fun h ↦ f ∘ h
+    toFun h := f ∘ h
     commutes' := fun c ↦ by
       ext
       exact f.commutes' c }
@@ -169,8 +169,8 @@ This is the `AlgEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 @[simps apply]
 def piCongrRight (e : ∀ i, A₁ i ≃ₐ[R] A₂ i) : (Π i, A₁ i) ≃ₐ[R] Π i, A₂ i :=
   { @RingEquiv.piCongrRight ι A₁ A₂ _ _ fun i ↦ (e i).toRingEquiv with
-    toFun := fun x j ↦ e j (x j)
-    invFun := fun x j ↦ (e j).symm (x j)
+    toFun x j := e j (x j)
+    invFun x j := (e j).symm (x j)
     commutes' := fun r ↦ by
       ext i
       simp }

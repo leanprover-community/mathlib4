@@ -93,7 +93,7 @@ noncomputable def endMonoidalStarFunctorEquivalence :
   functor := endMonoidalStarFunctor C
   inverse :=
     { obj := fun X => X
-      map := fun f => f }
+      map f := f }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

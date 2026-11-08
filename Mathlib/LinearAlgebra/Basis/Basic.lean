@@ -112,8 +112,8 @@ protected noncomputable def mk : Basis ι R M :=
   .ofRepr
     { hli.repr.comp (LinearMap.id.codRestrict _ fun _ => hsp Submodule.mem_top) with
       invFun := Finsupp.linearCombination _ v
-      left_inv := fun x => hli.linearCombination_repr ⟨x, _⟩
-      right_inv := fun _ => hli.repr_eq rfl }
+      left_inv x := hli.linearCombination_repr ⟨x, _⟩
+      right_inv _ := hli.repr_eq rfl }
 
 @[simp]
 theorem mk_repr : (Basis.mk hli hsp).repr x = hli.repr ⟨x, hsp Submodule.mem_top⟩ :=
@@ -248,9 +248,9 @@ section Singleton
 protected def singleton (ι R : Type*) [Unique ι] [Semiring R] : Basis ι R R :=
   ofRepr
     { toFun := fun x => Finsupp.single default x
-      invFun := fun f => f default
-      left_inv := fun x => by simp
-      right_inv := fun f => Finsupp.unique_ext (by simp)
+      invFun f := f default
+      left_inv x := by simp
+      right_inv f := Finsupp.unique_ext (by simp)
       map_add' := fun x y => by simp
       map_smul' := fun c x => by simp }
 
@@ -279,7 +279,7 @@ protected def empty [Subsingleton M] [IsEmpty ι] : Basis ι R M :=
 
 instance emptyUnique [Subsingleton M] [IsEmpty ι] : Unique (Basis ι R M) where
   default := Basis.empty M
-  uniq := fun _ => congr(ofRepr $(Subsingleton.elim ..))
+  uniq _ := congr(ofRepr $(Subsingleton.elim ..))
 
 end Empty
 
@@ -306,9 +306,9 @@ theorem basis_singleton_iff {R M : Type*} [Ring R] [IsDomain R] [AddCommGroup M]
   · rintro ⟨x, nz, w⟩
     refine ⟨ofRepr <| LinearEquiv.symm
       { toFun := fun f => f default • x
-        invFun := fun y => Finsupp.single default (w y).choose
-        left_inv := fun f => Finsupp.unique_ext ?_
-        right_inv := fun y => ?_
+        invFun y := Finsupp.single default (w y).choose
+        left_inv f := Finsupp.unique_ext ?_
+        right_inv y := ?_
         map_add' := fun y z => ?_
         map_smul' := fun c y => ?_ }⟩
     · simp [Finsupp.add_apply, add_smul]

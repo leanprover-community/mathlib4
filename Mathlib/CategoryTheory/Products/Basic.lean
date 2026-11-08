@@ -233,7 +233,7 @@ which is functorial in both `X` and `F`.
 def evaluation : C ⥤ (C ⥤ D) ⥤ D where
   obj X :=
     { obj := fun F => F.obj X
-      map := fun α => α.app X }
+      map α := α.app X }
   map {_} {_} f :=
     { app := fun F => F.map f }
 
@@ -243,7 +243,7 @@ as a functor `C × (C ⥤ D) ⥤ D`.
 @[implicit_reducible, simps]
 def evaluationUncurried : C × (C ⥤ D) ⥤ D where
   obj p := p.2.obj p.1
-  map := fun {x} {y} f => x.2.map f.1 ≫ f.2.app y.1
+  map {x} {y} f := x.2.map f.1 ≫ f.2.app y.1
 
 variable {C}
 
@@ -431,7 +431,7 @@ variable (D) in
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
     { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
-      map := fun f ↦ f.unop.1.op ×ₘ f.unop.2.op }
+      map f := f.unop.1.op ×ₘ f.unop.2.op }
   inverse :=
     { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
       map := fun ⟨f,g⟩ ↦ op (f.unop ×ₘ g.unop) }

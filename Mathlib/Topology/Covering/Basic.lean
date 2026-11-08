@@ -242,7 +242,7 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
   refine
     ⟨e.toOpenPartialHomeomorph.trans
         { toFun := fun p => p.1
-          invFun := fun p => ⟨p, x, rfl⟩
+          invFun p := ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
           open_source :=

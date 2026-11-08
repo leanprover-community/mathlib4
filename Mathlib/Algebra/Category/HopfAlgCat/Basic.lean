@@ -111,7 +111,7 @@ lemma hom_ext {X Y : HopfAlgCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toB
 instance hasForgetToBialgebra : HasForget₂ (HopfAlgCat R) (BialgCat R) where
   forget₂ :=
     { obj := fun X => ↧X
-      map := fun {_ _} f => BialgCat.ofHom f.toBialgHom }
+      map {_ _} f := BialgCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_bialgebra_obj (X : HopfAlgCat R) :
@@ -167,8 +167,8 @@ variable {X Y Z : HopfAlgCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => congr($(i.3).toBialgHom x)
-    right_inv := fun x => congr($(i.4).toBialgHom x) }
+    left_inv x := congr($(i.3).toBialgHom x)
+    right_inv x := congr($(i.4).toBialgHom x) }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
     (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl

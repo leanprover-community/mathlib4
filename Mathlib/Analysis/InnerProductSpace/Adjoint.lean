@@ -972,8 +972,8 @@ noncomputable def linearIsometryEquiv : unitary (H →L[𝕜] H) ≃* (H ≃ₗ�
     { (u : H →L[𝕜] H) with
       norm_map' := norm_map u
       invFun := ↑(star u)
-      left_inv := fun x ↦ congr($(star_mul_self u).val x)
-      right_inv := fun x ↦ congr($(mul_star_self u).val x) }
+      left_inv x := congr($(star_mul_self u).val x)
+      right_inv x := congr($(mul_star_self u).val x) }
   invFun e :=
     { val := e
       property := by

@@ -143,10 +143,10 @@ def BinaryFan.isLimitMk {W : C} {fst : W ⟶ X} {snd : W ⟶ Y} (lift : ∀ s : 
         m = lift s) :
     IsLimit (BinaryFan.mk fst snd) :=
   { lift := lift
-    fac := fun s j => by
+    fac s j := by
       rcases j with ⟨⟨⟩⟩
       exacts [fac_left s, fac_right s]
-    uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
+    uniq s m w := uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
 `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.

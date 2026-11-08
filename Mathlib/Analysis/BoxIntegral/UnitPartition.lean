@@ -98,9 +98,9 @@ variable (n : ℕ)
 /-- A `BoxIntegral`, indexed by a positive integer `n` and `ν : ι → ℤ`, with corners `ν i / n`
 and of side length `1 / n`. -/
 def box [NeZero n] (ν : ι → ℤ) : Box ι where
-  lower := fun i ↦ ν i / n
-  upper := fun i ↦ (ν i + 1) / n
-  lower_lt_upper := fun _ ↦ by simp [add_div, n.pos_of_neZero]
+  lower i := ν i / n
+  upper i := (ν i + 1) / n
+  lower_lt_upper _ := by simp [add_div, n.pos_of_neZero]
 
 @[simp]
 theorem box_lower [NeZero n] (ν : ι → ℤ) :

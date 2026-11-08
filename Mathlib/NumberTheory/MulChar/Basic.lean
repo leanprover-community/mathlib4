@@ -291,7 +291,7 @@ protected theorem mul_one (χ : MulChar R R') : χ * 1 = χ := by
 /-- The inverse of a multiplicative character. We define it as `inverse ∘ χ`. -/
 noncomputable def inv (χ : MulChar R R') : MulChar R R' :=
   { MonoidWithZero.inverse.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => MonoidWithZero.inverse (χ a)
+    toFun a := MonoidWithZero.inverse (χ a)
     map_nonunit' := fun a ha => by simp [map_nonunit _ ha] }
 
 noncomputable instance hasInv : Inv (MulChar R R') :=
@@ -457,7 +457,7 @@ theorem IsQuadratic.eq_of_eq_coe {χ : MulChar R ℤ} (hχ : IsQuadratic χ) {χ
 @[simps]
 def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
   { f.toMonoidHom.comp χ.toMonoidHom with
-    toFun := fun a => f (χ a)
+    toFun a := f (χ a)
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
 
 @[simp]

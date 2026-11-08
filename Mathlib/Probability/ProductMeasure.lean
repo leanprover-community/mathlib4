@@ -281,9 +281,9 @@ theorem piContent_tendsto_zero {A : ℕ → Set (Π i, X i)} (A_mem : ∀ n, A n
   -- `aux` is the obvious equivalence between `sₙ` and `tₙ`
   let aux n : t n ≃ s n :=
     { toFun := fun i ↦ ⟨i.1.1, mem_preimage.1 i.2⟩
-      invFun := fun i ↦ ⟨⟨i.1, Set.mem_iUnion.2 ⟨n, i.2⟩⟩, mem_preimage.2 i.2⟩
-      left_inv := fun i ↦ by simp
-      right_inv := fun i ↦ by simp }
+      invFun i := ⟨⟨i.1, Set.mem_iUnion.2 ⟨n, i.2⟩⟩, mem_preimage.2 i.2⟩
+      left_inv i := by simp
+      right_inv i := by simp }
   -- Finally `gₙ` is the equivalence between the product indexed by `tₙ` and the one indexed by `sₙ`
   let g n := (aux n).piCongrLeft (fun i : s n ↦ X i)
   -- Mapping from the product indexed by `u` by `f` and then restricting to `sₙ` is the same as

@@ -159,12 +159,12 @@ class HasBesicovitchCovering (α : Type*) [MetricSpace α] : Prop where
 instance Besicovitch.SatelliteConfig.instInhabited {α : Type*} {τ : ℝ}
     [Inhabited α] [MetricSpace α] : Inhabited (Besicovitch.SatelliteConfig α 0 τ) :=
   ⟨{  c := default
-      r := fun _ => 1
-      rpos := fun _ => zero_lt_one
-      h := fun i j hij => (hij (Subsingleton.elim (α := Fin 1) i j)).elim
-      hlast := fun i hi => by
+      r _ := 1
+      rpos _ := zero_lt_one
+      h i j hij := (hij (Subsingleton.elim (α := Fin 1) i j)).elim
+      hlast i hi := by
         rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim
-      inter := fun i hi => by
+      inter i hi := by
         rw [Subsingleton.elim (α := Fin 1) i (last 0)] at hi; exact (lt_irrefl _ hi).elim }⟩
 
 namespace Besicovitch
@@ -419,8 +419,8 @@ theorem color_lt {i : Ordinal.{u}} (hi : i < p.lastStep) {N : ℕ}
   -- therefore, one may use them to construct a satellite configuration with `N+1` points
   let sc : SatelliteConfig α N p.τ :=
     { c := fun k => p.c (p.index (G k))
-      r := fun k => p.r (p.index (G k))
-      rpos := fun k => p.rpos (p.index (G k))
+      r k := p.r (p.index (G k))
+      rpos k := p.rpos (p.index (G k))
       h := by
         intro a b a_ne_b
         wlog G_le : G a ≤ G b generalizing a b
@@ -554,10 +554,10 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     enough finite subfamily will then cover a proportion at least `1/(N+1)`. -/
   let a : BallPackage s α :=
     { c := fun x => x
-      r := fun x => r x
-      rpos := fun x => rpos x x.2
+      r x := r x
+      rpos x := rpos x x.2
       r_bound := 1
-      r_le := fun x => rle x x.2 }
+      r_le x := rle x x.2 }
   rcases exist_disjoint_covering_families hτ hN a with ⟨u, hu, hu'⟩
   have u_count : ∀ i, (u i).Countable := by
     intro i
@@ -898,10 +898,10 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
   choose! r1 hr1 using this
   let q : BallPackage s' α :=
     { c := fun x => x
-      r := fun x => r1 x
-      rpos := fun x => (hr1 x.1 x.2).1.2.1
+      r x := r1 x
+      rpos x := (hr1 x.1 x.2).1.2.1
       r_bound := 1
-      r_le := fun x => (hr1 x.1 x.2).1.2.2.le }
+      r_le x := (hr1 x.1 x.2).1.2.2.le }
   -- by Besicovitch, we cover `s'` with at most `N` families of disjoint balls, all included in
   -- a suitable neighborhood `v` of `s'`.
   obtain ⟨S, S_disj, hS⟩ :

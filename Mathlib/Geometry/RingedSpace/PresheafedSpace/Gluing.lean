@@ -341,7 +341,7 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
     { pt := (D.U i).presheaf.obj (op U)
       π :=
         { app := fun j => D.ιInvAppπApp U (unop j)
-          naturality := fun {X Y} f' => by
+          naturality {X Y} f' := by
             induction X with | op X => ?_
             induction Y with | op Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this

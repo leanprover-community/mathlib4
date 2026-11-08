@@ -131,8 +131,8 @@ canonical projections from `Gal(K/k)` to `Gal(L/k)`.
 -/
 noncomputable def algEquivToLimit : Gal(K/k) →* limit (asProfiniteGaloisGroupFunctor k K) where
   toFun σ := {
-    val := fun L ↦ σ.restrictNormalHom L.unop
-    property := fun {L₁ L₂} π ↦ by
+    val L := σ.restrictNormalHom L.unop
+    property {L₁ L₂} π := by
       algebraize [Subsemiring.inclusion π.1.le]
       have : IsScalarTower k L₂.unop L₁.unop := IsScalarTower.of_algebraMap_eq (congrFun rfl)
       have : IsScalarTower L₂.unop L₁.unop K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
@@ -275,9 +275,9 @@ noncomputable def mulEquivToLimit [IsGalois k K] :
   toFun := algEquivToLimit k K
   map_mul' := map_mul _
   invFun := limitToAlgEquiv
-  left_inv := fun f ↦ AlgEquiv.ext fun x ↦
+  left_inv f := AlgEquiv.ext fun x ↦
     AlgEquiv.restrictNormal_commutes f (adjoin k {x}).1 ⟨x, _⟩
-  right_inv := fun g ↦ by
+  right_inv g := by
     apply Subtype.val_injective
     ext L
     change (limitToAlgEquiv g).restrictNormal _ = _

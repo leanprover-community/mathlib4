@@ -136,13 +136,13 @@ def lift {A : Type*} [Semiring A] [Algebra R A] : (M →ₗ[R] A) ≃ (TensorAlg
         induction h <;>
           simp [Algebra.smul_def, FreeAlgebra.lift_ι_apply,
             map_mul, AlgHom.commutes, map_add, RingCon.ker]
-    invFun := fun F => F.toLinearMap.comp (ι R)
-    left_inv := fun f => by
+    invFun F := F.toLinearMap.comp (ι R)
+    left_inv f := by
       rw [ι]
       ext1 x
       dsimp
       exact (RingCon.liftₐ_mk _ _ _ _).trans (FreeAlgebra.lift_ι_apply f x)
-    right_inv := fun F =>
+    right_inv F :=
       RingCon.Quotient.hom_extₐ <|
         FreeAlgebra.hom_ext <|
           funext fun x => by

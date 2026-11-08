@@ -214,7 +214,7 @@ variable {S : Type*} [NormedCommRing S] [IsUltrametricDist S] (c : σ → ℝ)
 /-- Commutative ring structure on `Restricted S c` when `S` is commutative. -/
 noncomputable
 instance : CommRing (Restricted S c) where
-  mul_comm := fun f g ↦ Subtype.ext (mul_comm f.1 g.1)
+  mul_comm f g := Subtype.ext (mul_comm f.1 g.1)
 
 /-- Algebra structure on `Restricted S c` when `S` is commutative. -/
 noncomputable

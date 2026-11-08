@@ -101,9 +101,9 @@ noncomputable instance : CompleteLattice M.Submodule where
         rintro _ ⟨N', hN', rfl⟩
         exact le_iff.mp (hb hN')⟩
   inf := (· ⊓ ·)
-  inf_le_left := fun _ _ ↦ le_iff.mpr inf_le_left
-  inf_le_right := fun _ _ ↦ le_iff.mpr inf_le_right
-  le_inf := fun _ _ _ h₁ h₂ ↦ le_iff.mpr (le_inf (le_iff.mp h₁) (le_iff.mp h₂))
+  inf_le_left _ _ := le_iff.mpr inf_le_left
+  inf_le_right _ _ := le_iff.mpr inf_le_right
+  le_inf _ _ _ h₁ h₂ := le_iff.mpr (le_inf (le_iff.mp h₁) (le_iff.mp h₂))
 
 @[simp]
 lemma toSubmodule_sInf (s : Set M.Submodule) :

@@ -182,7 +182,7 @@ def ofComponents (app : ∀ X : C, F.obj X ≅ G.obj X)
   hom := { app := fun X => (app X).hom }
   inv :=
     { app := fun X => (app X).inv,
-      naturality := fun X Y f => by
+      naturality X Y f := by
         have h := congr((app X).inv ≫ $((naturality f).symm) ≫ (app Y).inv)
         simp only [Iso.inv_hom_id_assoc, Iso.hom_inv_id, assoc, comp_id] at h
         exact h }

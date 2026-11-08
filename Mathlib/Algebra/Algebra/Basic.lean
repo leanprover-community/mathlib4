@@ -61,7 +61,7 @@ instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module' with
     algebraMap :=
     { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-      toFun := fun r => ULift.up (algebraMap R A r) }
+      toFun r := ULift.up (algebraMap R A r) }
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
 
@@ -168,9 +168,9 @@ See note [reducible non-instances]. -/
 abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
-    intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
-    intCast_negSucc := fun z => by simp }
+    intCast z := algebraMap R A z
+    intCast_ofNat z := by simp only [Int.cast_natCast, map_natCast]
+    intCast_negSucc z := by simp }
 
 /-- The `CommRing` structure on a `CommSemiring` induced by a ring morphism from a `CommRing`. -/
 abbrev _root_.RingHom.commSemiringToCommRing {R A : Type*} [CommRing R] [CommSemiring A]

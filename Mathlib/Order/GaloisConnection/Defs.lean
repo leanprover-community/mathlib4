@@ -244,7 +244,7 @@ def GaloisConnection.toGaloisInsertion {α β : Type*} [Preorder α] [Preorder �
   { choice := fun x _ => l x
     gc
     le_l_u := h
-    choice_eq := fun _ _ => rfl }
+    choice_eq _ _ := rfl }
 
 /-- Lift the bottom along a Galois connection -/
 @[to_dual (attr := instance_reducible) /-- Lift the top along a Galois connection -/]

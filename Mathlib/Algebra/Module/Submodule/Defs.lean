@@ -295,10 +295,10 @@ instance addCommMonoid : AddCommMonoid p := AddSubmonoidClass.toAddCommMonoid p
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
     Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
-    smul_zero := fun a => by ext; simp
-    zero_smul := fun a => by ext; simp
-    add_smul := fun a b x => by ext; simp [add_smul]
-    smul_add := fun a x y => by ext; simp [smul_add] }
+    smul_zero a := by ext; simp
+    zero_smul a := by ext; simp
+    add_smul a b x := by ext; simp [add_smul]
+    smul_add a x y := by ext; simp [smul_add] }
 
 instance module : Module R p :=
   p.module'

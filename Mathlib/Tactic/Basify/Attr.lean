@@ -142,7 +142,7 @@ initialize registerBuiltinAttribute {
   name := `basifyElim
   descr := "an eliminator that `basify` uses to case split a value of a registered type"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => do
+  add declName stx kind := do
     unless stx.isOfKind ``basifyElim do throwUnsupportedSyntax
     elimExt.add (← MetaM.run' <| analyzeElim declName) kind
 }
@@ -162,7 +162,7 @@ initialize registerBuiltinAttribute {
   name := `basifyOp
   descr := "an operation of a registered type that `basify` looks inside of"
   applicationTime := .afterCompilation
-  add := fun declName stx kind => do
+  add declName stx kind := do
     unless stx.isOfKind ``basifyOp do throwUnsupportedSyntax
     let some ext ← getSimpExtension? `basify_simp |
       throwError "the `basify_simp` simp set is not registered"

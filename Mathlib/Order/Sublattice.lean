@@ -190,13 +190,13 @@ def topEquiv : (⊤ : Sublattice α) ≃o α where
 /-- Sublattices of a lattice form a complete lattice. -/
 instance instCompleteLattice : CompleteLattice (Sublattice α) where
   bot := ⊥
-  bot_le := fun _S _a ↦ False.elim
+  bot_le _S _a := False.elim
   top := ⊤
-  le_top := fun _S a _ha ↦ mem_top a
+  le_top _S a _ha := mem_top a
   inf := (· ⊓ ·)
-  le_inf := fun _L _M _N hM hN _a ha ↦ ⟨hM ha, hN ha⟩
-  inf_le_left := fun _L _M _a ↦ And.left
-  inf_le_right := fun _L _M _a ↦ And.right
+  le_inf _L _M _N hM hN _a ha := ⟨hM ha, hN ha⟩
+  inf_le_left _L _M _a := And.left
+  inf_le_right _L _M _a := And.right
   __ := completeLatticeOfInf (Sublattice α)
       fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
 

@@ -402,7 +402,7 @@ theorem mk' {f : P →+* R} (g : P ≃+* Perfection R p) (hfg : Perfection.lift 
       g.injective <|
         (RingHom.ext_iff.1 hfg x).symm.trans <|
           Eq.symm <| (RingHom.ext_iff.1 hfg y).symm.trans <| Perfection.ext fun n => (hxy n).symm
-    surjective := fun y hy =>
+    surjective y hy :=
       let ⟨x, hx⟩ := g.surjective ⟨y, hy⟩
       ⟨x, fun n =>
         show Perfection.coeff R p n (Perfection.lift p P R f x) = Perfection.coeff R p n ⟨y, hy⟩ by
@@ -417,7 +417,7 @@ theorem of : PerfectionMap p (Perfection.coeff R p 0) :=
 /-- For a perfect ring, it itself is the perfection. -/
 theorem id [PerfectRing R p] : PerfectionMap p (RingHom.id R) :=
   { injective := fun _ _ hxy => hxy 0
-    surjective := fun f hf =>
+    surjective f hf :=
       ⟨f 0, fun n =>
         show ((frobeniusEquiv R p).symm)^[n] (f 0) = f n from
           Nat.recOn n rfl fun n ih => injective_pow_p R p <| by

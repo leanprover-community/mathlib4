@@ -185,13 +185,13 @@ instance completeLattice : CompleteLattice (Setoid α) :=
   { (completeLatticeOfInf (Setoid α)) fun _ =>
       ⟨fun _ hr _ _ h => h _ hr, fun _ hr _ _ h _ hr' => hr hr' h⟩ with
     inf := Min.min
-    inf_le_left := fun _ _ _ _ h => h.1
-    inf_le_right := fun _ _ _ _ h => h.2
-    le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 h, h2 h⟩
+    inf_le_left _ _ _ _ h := h.1
+    inf_le_right _ _ _ _ h := h.2
+    le_inf _ _ _ h1 h2 _ _ h := ⟨h1 h, h2 h⟩
     top := ⟨fun _ _ => True, ⟨fun _ => trivial, fun h => h, fun h1 _ => h1⟩⟩
-    le_top := fun _ _ _ _ => trivial
+    le_top _ _ _ _ := trivial
     bot := ⟨(· = ·), ⟨fun _ => rfl, fun h => h.symm, fun h1 h2 => h1.trans h2⟩⟩
-    bot_le := fun r x _ h => h ▸ r.2.1 x }
+    bot_le r x _ h := h ▸ r.2.1 x }
 
 @[simp, grind =]
 theorem top_def : ⇑(⊤ : Setoid α) = ⊤ :=
@@ -241,7 +241,7 @@ def quotientBotEquiv :
   toFun := Quotient.lift id (fun _ _ ↦ id)
   invFun := Quotient.mk''
   left_inv := Quotient.ind fun _ ↦ rfl
-  right_inv := fun _ ↦ rfl
+  right_inv _ := rfl
 
 section EqvGen
 

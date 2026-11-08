@@ -329,10 +329,10 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
   { changeForm h with
     toFun := changeForm h
     invFun := changeForm (changeForm.neg_proof h)
-    left_inv := fun x => by
+    left_inv x := by
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(add_neg_cancel B), changeForm_self_apply]
-    right_inv := fun x => by
+    right_inv x := by
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(neg_add_cancel B), changeForm_self_apply] }
 

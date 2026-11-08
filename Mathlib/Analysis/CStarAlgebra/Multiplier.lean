@@ -111,26 +111,26 @@ theorem range_toProd :
 instance instAdd : Add 𝓜(𝕜, A) where
   add a b :=
     { toProd := a.toProd + b.toProd
-      central := fun x y =>
+      central x y :=
         show (a.snd + b.snd) x * y = x * (a.fst + b.fst) y by
           simp only [add_apply, mul_add, add_mul, central] }
 
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
     { toProd := 0
-      central := fun x y => (zero_mul y).trans (mul_zero x).symm }
+      central x y := (zero_mul y).trans (mul_zero x).symm }
 
 instance instNeg : Neg 𝓜(𝕜, A) where
   neg a :=
     { toProd := -a.toProd
-      central := fun x y =>
+      central x y :=
         show -a.snd x * y = x * -a.fst y by
           simp only [neg_mul, mul_neg, central] }
 
 instance instSub : Sub 𝓜(𝕜, A) where
   sub a b :=
     { toProd := a.toProd - b.toProd
-      central := fun x y =>
+      central x y :=
         show (a.snd - b.snd) x * y = x * (a.fst - b.fst) y by
           simp only [sub_apply, _root_.sub_mul, _root_.mul_sub, central] }
 
@@ -142,7 +142,7 @@ variable {S : Type*} [Monoid S] [DistribMulAction S A] [SMulCommClass 𝕜 S A]
 instance instSMul : SMul S 𝓜(𝕜, A) where
   smul s a :=
     { toProd := s • a.toProd
-      central := fun x y =>
+      central x y :=
         show (s • a.snd) x * y = x * (s • a.fst) y by
           simp only [smul_apply, mul_smul_comm, smul_mul_assoc, central] }
 
@@ -178,7 +178,7 @@ instance instOne : One 𝓜(𝕜, A) :=
 instance instMul : Mul 𝓜(𝕜, A) where
   mul a b :=
     { toProd := (a.fst.comp b.fst, b.snd.comp a.snd)
-      central := fun x y => show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp only [central] }
+      central x y := show b.snd (a.snd x) * y = x * a.fst (b.fst y) by simp only [central] }
 
 instance instNatCast : NatCast 𝓜(𝕜, A) where
   natCast n :=
@@ -348,7 +348,7 @@ instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
   algebraMap :=
   { toFun k :=
       { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
-        central := fun x y => by
+        central x y := by
           simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply,
             one_apply_eq_self, mul_smul_comm, smul_mul_assoc] }
     map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
@@ -393,7 +393,7 @@ instance instStar : Star 𝓜(𝕜, A) where
       snd :=
         (((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A).comp a.fst).comp
           ((starₗᵢ 𝕜 : A ≃ₗᵢ⋆[𝕜] A) : A →L⋆[𝕜] A)
-      central := fun x y => by
+      central x y := by
         simpa only [star_mul, star_star]
           using! congr(star $(a.central (star y) (star x))).symm }
 
@@ -435,7 +435,7 @@ Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equa
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
     snd := (ContinuousLinearMap.mul 𝕜 A).flip a
-    central := fun _x _y => mul_assoc _ _ _ }
+    central _x _y := mul_assoc _ _ _ }
 
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
@@ -514,7 +514,7 @@ theorem nnNorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a
 
 noncomputable instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
-    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite :) }
+    norm_smul_le k a := (norm_smul_le k a.toProdMulOpposite :) }
 
 noncomputable instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }

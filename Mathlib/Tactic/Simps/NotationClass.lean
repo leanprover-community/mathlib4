@@ -107,7 +107,7 @@ initialize notationClassAttr : NameMapExtension AutomaticProjectionData ← do
   registerBuiltinAttribute {
     name := `notation_class
     descr := "An attribute specifying that this is a notation class. Used by @[simps]."
-    add := fun src stx _kind => do
+    add src stx _kind := do
       unless isStructure (← getEnv) src do
         throwError "@[notation_class] attribute can only be added to classes."
       match stx with

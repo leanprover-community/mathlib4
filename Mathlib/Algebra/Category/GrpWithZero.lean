@@ -76,12 +76,12 @@ lemma coe_comp {X Y Z : GrpWithZero} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X 
 instance hasForgetToBipointed : HasForget₂ GrpWithZero Bipointed where
   forget₂ :=
       { obj := fun X => ⟨X, 0, 1⟩
-        map := fun f => ⟨f, f.map_zero', f.map_one'⟩ }
+        map f := ⟨f, f.map_zero', f.map_one'⟩ }
 
 instance hasForgetToMon : HasForget₂ GrpWithZero MonCat where
   forget₂ :=
       { obj := fun X => ↧X
-        map := fun f => MonCat.ofHom f.toMonoidHom }
+        map f := MonCat.ofHom f.toMonoidHom }
 
 /-- Constructs an isomorphism of groups with zero from a group isomorphism between them. -/
 @[simps]

@@ -202,8 +202,8 @@ This is the `MulEquiv` version of `Equiv.piCongrRight`, and the dependent versio
 def piCongrRight {η : Type*} {Ms Ns : η → Type*} [∀ j, Mul (Ms j)] [∀ j, Mul (Ns j)]
     (es : ∀ j, Ms j ≃* Ns j) : (∀ j, Ms j) ≃* ∀ j, Ns j :=
   { Equiv.piCongrRight fun j => (es j).toEquiv with
-    toFun := fun x j => es j (x j),
-    invFun := fun x j => (es j).symm (x j),
+    toFun x j := es j (x j),
+    invFun x j := (es j).symm (x j),
     map_mul' := fun x y => funext fun j => map_mul (es j) (x j) (y j) }
 
 @[to_additive (attr := simp)]

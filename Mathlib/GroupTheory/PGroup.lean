@@ -239,12 +239,12 @@ noncomputable def powEquiv {n : ℕ} (hn : p.Coprime n) : G ≃ G :=
   let h : ∀ g : G, (Nat.card (Subgroup.zpowers g)).Coprime n := fun g =>
     (Nat.card_zpowers g).symm ▸ hG.orderOf_coprime hn g
   { toFun := (· ^ n)
-    invFun := fun g => (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
-    left_inv := fun g =>
+    invFun g := (powCoprime (h g)).symm ⟨g, Subgroup.mem_zpowers g⟩
+    left_inv g :=
       Subtype.ext_iff.1 <|
         (powCoprime (h (g ^ n))).left_inv
           ⟨g, _, Subtype.ext_iff.1 <| (powCoprime (h g)).left_inv ⟨g, Subgroup.mem_zpowers g⟩⟩
-    right_inv := fun g =>
+    right_inv g :=
       Subtype.ext_iff.1 <| (powCoprime (h g)).right_inv ⟨g, Subgroup.mem_zpowers g⟩ }
 
 @[to_additive (attr := simp)]

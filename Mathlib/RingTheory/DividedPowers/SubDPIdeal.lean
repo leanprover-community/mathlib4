@@ -293,7 +293,7 @@ theorem lt_iff {J J' : SubDPIdeal hI} : J < J' ↔ J.carrier < J'.carrier := Iff
 instance : Top (SubDPIdeal hI) :=
   ⟨{carrier    := I
     isSubideal := le_refl _
-    dpow_mem   := fun _ hn _ hx ↦ hI.dpow_mem hn hx }⟩
+    dpow_mem _ hn _ hx := hI.dpow_mem hn hx }⟩
 
 instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 
@@ -301,24 +301,24 @@ instance inhabited : Inhabited hI.SubDPIdeal := ⟨⊤⟩
 instance : Bot (SubDPIdeal hI) :=
   ⟨{carrier    := ⊥
     isSubideal := bot_le
-    dpow_mem   := fun _ hn x hx ↦ by rw [mem_bot.mp hx, hI.dpow_eval_zero hn, mem_bot]}⟩
+    dpow_mem _ hn x hx := by rw [mem_bot.mp hx, hI.dpow_eval_zero hn, mem_bot]}⟩
 
 /-- The intersection of two sub-dp-ideals is a sub-dp-ideal. -/
 instance : Min (SubDPIdeal hI) :=
   ⟨fun J J' ↦
     { carrier    := J.carrier ⊓ J'.carrier
-      isSubideal := fun _ hx ↦ J.isSubideal hx.1
-      dpow_mem   := fun _ hn x hx ↦ ⟨J.dpow_mem _ hn x hx.1, J'.dpow_mem _ hn x hx.2⟩ }⟩
+      isSubideal _ hx := J.isSubideal hx.1
+      dpow_mem _ hn x hx := ⟨J.dpow_mem _ hn x hx.1, J'.dpow_mem _ hn x hx.2⟩ }⟩
 
 theorem inf_carrier_def (J J' : SubDPIdeal hI) : (J ⊓ J').carrier = J.carrier ⊓ J'.carrier := rfl
 
 instance : InfSet (SubDPIdeal hI) :=
   ⟨fun S ↦
     { carrier    := ⨅ s ∈ Insert.insert ⊤ S, (s : hI.SubDPIdeal).carrier
-      isSubideal := fun x hx ↦ by
+      isSubideal x hx := by
         simp only [mem_iInf] at hx
         exact hx ⊤ (Set.mem_insert ⊤ S)
-      dpow_mem   := fun _ hn x hx ↦ by
+      dpow_mem _ hn x hx := by
         simp only [mem_iInf] at hx ⊢
         exact fun s hs ↦ s.dpow_mem _ hn x (hx s hs) }⟩
 

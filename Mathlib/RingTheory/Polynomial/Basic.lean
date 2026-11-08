@@ -145,7 +145,7 @@ def monicEquivDegreeLT [Nontrivial R] (n : ℕ) :
     simp only [mem_degreeLT]
     refine lt_of_lt_of_le ?_ degree_le_natDegree
     exact degree_eraseLead_lt (Polynomial.Monic.ne_zero_of_polynomial_ne hp one_ne_zero)⟩
-  invFun := fun p =>
+  invFun p :=
     ⟨X^n + p.1, monic_X_pow_add (mem_degreeLT.1 p.2), by
         rw [natDegree_add_eq_left_of_degree_lt]
         · simp

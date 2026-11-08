@@ -115,7 +115,7 @@ def ofSubset {a b : α} (P : Finpartition a) {parts : Finset α} (subset : parts
   { parts := parts
     supIndep := P.supIndep.subset subset
     sup_parts := sup_parts
-    bot_notMem := fun h ↦ P.bot_notMem (subset h) }
+    bot_notMem h := P.bot_notMem (subset h) }
 
 lemma sum_ofSubset_eq_sum {a b : α} (P : Finpartition a) {parts : Finset α}
     (subset : parts ⊆ P.parts) (sup_parts : parts.sup id = b)
@@ -232,7 +232,7 @@ theorem parts_nonempty (P : Finpartition a) (ha : a ≠ ⊥) : P.parts.Nonempty 
 
 instance : Unique (Finpartition (⊥ : α)) :=
   { (inferInstance : Inhabited (Finpartition (⊥ : α))) with
-    uniq := fun P ↦ by
+    uniq P := by
       ext a
       exact iff_of_false (fun h ↦ P.ne_bot h <| le_bot_iff.1 <| P.le h) (notMem_empty a) }
 
@@ -271,12 +271,12 @@ instance : LE (Finpartition a) :=
 
 instance : PartialOrder (Finpartition a) :=
   { (inferInstance : LE (Finpartition a)) with
-    le_refl := fun _ b hb ↦ ⟨b, hb, le_rfl⟩
-    le_trans := fun _ Q R hPQ hQR b hb ↦ by
+    le_refl _ b hb := ⟨b, hb, le_rfl⟩
+    le_trans _ Q R hPQ hQR b hb := by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hcd⟩ := hQR hc
       exact ⟨d, hd, hbc.trans hcd⟩
-    le_antisymm := fun P Q hPQ hQP ↦ by
+    le_antisymm P Q hPQ hQP := by
       ext b
       refine ⟨fun hb ↦ ?_, fun hb ↦ ?_⟩
       · obtain ⟨c, hc, hbc⟩ := hPQ hb
@@ -414,15 +414,15 @@ theorem parts_inf (P Q : Finpartition a) :
 
 instance : SemilatticeInf (Finpartition a) :=
   { inf := Min.min
-    inf_le_left := fun P Q b hb ↦ by
+    inf_le_left P Q b hb := by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
       rw [mem_product] at hc
       exact ⟨c.1, hc.1, inf_le_left⟩
-    inf_le_right := fun P Q b hb ↦ by
+    inf_le_right P Q b hb := by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
       rw [mem_product] at hc
       exact ⟨c.2, hc.2, inf_le_right⟩
-    le_inf := fun P Q R hPQ hPR b hb ↦ by
+    le_inf P Q R hPQ hPR b hb := by
       obtain ⟨c, hc, hbc⟩ := hPQ hb
       obtain ⟨d, hd, hbd⟩ := hPR hb
       have h := _root_.le_inf hbc hbd
@@ -807,7 +807,7 @@ theorem mem_bot_iff : t ∈ (⊥ : Finpartition s).parts ↔ ∃ a ∈ s, {a} = 
 
 instance (s : Finset α) : OrderBot (Finpartition s) :=
   { (inferInstance : Bot (Finpartition s)) with
-    bot_le := fun P t ht ↦ by
+    bot_le P t ht := by
       rw [mem_bot_iff] at ht
       obtain ⟨a, ha, rfl⟩ := ht
       obtain ⟨t, ht, hat⟩ := P.exists_mem ha

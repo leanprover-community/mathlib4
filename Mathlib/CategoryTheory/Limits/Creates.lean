@@ -330,7 +330,7 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
     { pt := X
       π :=
         { app := fun j => F.preimage (i.hom ≫ l.π.app j)
-          naturality := fun Y Z f =>
+          naturality Y Z f :=
             F.map_injective <| by
               simpa using (l.w f).symm } }
     (Cone.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
@@ -453,7 +453,7 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.
     { pt := X
       ι :=
         { app := fun j => F.preimage (l.ι.app j ≫ i.inv)
-          naturality := fun Y Z f =>
+          naturality Y Z f :=
             F.map_injective <| by
               simpa [← cancel_mono i.hom] using l.w f } }
     (Cocone.ext i fun j => by simp)
@@ -497,7 +497,7 @@ instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits 
 def createsLimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesLimit K₁ F] :
     CreatesLimit K₂ F :=
   { reflectsLimit_of_iso_diagram F h with
-    lifts := fun c t =>
+    lifts c t :=
       let t' := (IsLimit.postcomposeInvEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCone := (Cone.postcompose h.hom).obj (liftLimit t')
         validLift :=
@@ -550,7 +550,7 @@ def createsLimitsOfShapeOfEquiv {J' : Type w₁} [Category.{w'₁} J'] (e : J �
 def createsColimitOfIsoDiagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂) [CreatesColimit K₁ F] :
     CreatesColimit K₂ F :=
   { reflectsColimit_of_iso_diagram F h with
-    lifts := fun c t =>
+    lifts c t :=
       let t' := (IsColimit.precomposeHomEquiv (isoWhiskerRight h F :) c).symm t
       { liftedCocone := (Cocone.precompose h.inv).obj (liftColimit t')
         validLift :=

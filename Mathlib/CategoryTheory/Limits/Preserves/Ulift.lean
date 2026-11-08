@@ -42,8 +42,8 @@ The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbit
 -/
 noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
-    preservesLimit := fun {K} => {
-      preserves := fun {c} hc => by
+    preservesLimit {K} := {
+      preserves {c} hc := by
         rw [Types.isLimit_iff ((uliftFunctor.{v, u}).mapCone c)]
         intro s hs
         obtain ⟨x, hx₁, hx₂⟩ := (Types.isLimit_iff c).mp ⟨hc⟩ _ ((sectionsEquiv K).symm ⟨s, hs⟩).2

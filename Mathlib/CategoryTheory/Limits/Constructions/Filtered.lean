@@ -65,7 +65,7 @@ def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
         colimit.desc (liftToFinsetObj F)
           { pt := s.pt
             ι := { app := fun _ => Sigma.desc fun x => s.ι.app x } }
-      uniq := fun s m h => by
+      uniq s m h := by
         apply colimit.hom_ext
         rintro t
         dsimp [liftToFinsetObj]
@@ -83,7 +83,7 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ (Finset (Discrete α) ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Sigma.map (fun x => β.app x.val) }
+  map β := { app := fun _ => Sigma.map (fun x => β.app x.val) }
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The converse of the construction in `liftToFinsetColimitCocone`: we can form a cocone on the
@@ -208,7 +208,7 @@ def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
         limit.lift (liftToFinsetObj F)
           { pt := s.pt
             π := { app := fun _ => Pi.lift fun x => s.π.app x } }
-      uniq := fun s m h => by
+      uniq s m h := by
         apply limit.hom_ext
         rintro t
         dsimp [liftToFinsetObj]
@@ -254,7 +254,7 @@ coproducts. -/
 @[simps!]
 def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
   obj := liftToFinsetObj
-  map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
+  map β := { app := fun _ => Pi.map (fun x => β.app x.val) }
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original

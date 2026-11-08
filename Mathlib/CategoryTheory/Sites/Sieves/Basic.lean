@@ -108,7 +108,7 @@ instance : CompleteLattice (Sieve X) where
   le_antisymm _ _ p q := Sieve.ext fun _ _ => ⟨p _, q _⟩
   top :=
     { arrows := ⊤
-      downward_closed := fun _ _ => ⟨⟩ }
+      downward_closed _ _ := ⟨⟩ }
   bot :=
     { arrows := ⊥
       downward_closed := False.elim }

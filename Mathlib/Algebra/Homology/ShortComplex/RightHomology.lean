@@ -922,7 +922,7 @@ noncomputable def opcyclesFunctor :
 noncomputable def rightHomologyιNatTrans :
     rightHomologyFunctor C ⟶ opcyclesFunctor C where
   app S := rightHomologyι S
-  naturality := fun _ _ φ => rightHomologyι_naturality φ
+  naturality _ _ φ := rightHomologyι_naturality φ
 
 set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
@@ -936,7 +936,7 @@ noncomputable def pOpcyclesNatTrans :
 noncomputable def fromOpcyclesNatTrans :
     opcyclesFunctor C ⟶ π₃ where
   app S := S.fromOpcycles
-  naturality := fun _ _ φ => fromOpcycles_naturality φ
+  naturality _ _ φ := fromOpcycles_naturality φ
 
 end
 

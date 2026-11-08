@@ -49,9 +49,9 @@ and the set of elements of `G` divisible by `g`.
 -/
 protected noncomputable def Equiv.dvd {G : Type*} [LeftCancelSemigroup G] (g : G) :
     G ≃ {a : G // g ∣ a} where
-  toFun := fun a ↦ ⟨g * a, ⟨a, rfl⟩⟩
+  toFun a := ⟨g * a, ⟨a, rfl⟩⟩
   invFun := fun ⟨_, h⟩ ↦ h.choose
-  left_inv := fun _ ↦ by simp
+  left_inv _ := by simp
   right_inv := by
     rintro ⟨_, ⟨_, rfl⟩⟩
     simp

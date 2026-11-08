@@ -63,8 +63,8 @@ instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
 
 @[to_additive]
 instance mulAction' [Monoid R] [MulAction R M] : MulAction R (ULift M) where
-  mul_smul := fun _ _ _ => congr(.up $(mul_smul ..))
-  one_smul := fun _ => congr(up $(one_smul ..))
+  mul_smul _ _ _ := congr(.up $(mul_smul ..))
+  one_smul _ := congr(up $(one_smul ..))
 
 instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M :=
   { ULift.smulLeft with smul_zero := fun _ => smul_zero _ }
@@ -96,16 +96,16 @@ instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
 instance mulDistribMulAction' [Monoid R] [Monoid M] [MulDistribMulAction R M] :
     MulDistribMulAction R (ULift M) :=
   { ULift.mulAction' with
-    smul_one := fun _ => by
+    smul_one _ := by
       ext
       simp [smul_one]
-    smul_mul := fun _ _ _ => by
+    smul_mul _ _ _ := by
       ext
       simp [smul_mul'] }
 
 instance smulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero (ULift R) M :=
   { ULift.smulLeft with
-    smul_zero := fun _ => smul_zero _
+    smul_zero _ := smul_zero _
     zero_smul := zero_smul _ }
 
 instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (ULift M) where
@@ -126,14 +126,14 @@ instance mulActionWithZero' [MonoidWithZero R] [Zero M] [MulActionWithZero R M] 
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module (ULift R) M :=
   { ULift.smulWithZero with
-    add_smul := fun _ _ => add_smul _ _
+    add_smul _ _ := add_smul _ _
     smul_add := smul_add
     one_smul := one_smul _
     mul_smul := mul_smul }
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M) :=
   { ULift.smulWithZero' with
-    add_smul := fun _ _ _ => ULift.ext <| add_smul _ _ _
+    add_smul _ _ _ := ULift.ext <| add_smul _ _ _
     one_smul := one_smul _
     mul_smul := mul_smul
     smul_add := smul_add }

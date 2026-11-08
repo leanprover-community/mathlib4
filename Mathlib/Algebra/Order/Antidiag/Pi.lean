@@ -77,7 +77,7 @@ def finAntidiagonal.aux (d : ℕ) (n : μ) : {s : Finset (Fin d → μ) // ∀ f
         intro i _ j _ hij
         simp only [Finset.disjoint_left, Finset.mem_map, Embedding.coeFn_mk]
         grind [Fin.cons_inj]
-      property := fun f => by
+      property f := by
         simp_rw [mem_disjiUnion, mem_antidiagonal, mem_map, Embedding.coeFn_mk, Prod.exists,
           (aux d _).prop, Fin.sum_univ_succ]
         constructor

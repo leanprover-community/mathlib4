@@ -158,7 +158,7 @@ instance [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β] : CoeTC F (
 instance (priority := 100) OrderIsoClass.toOrderHomClass [LE α] [LE β]
     [EquivLike F α β] [OrderIsoClass F α β] : OrderHomClass F α β :=
   { EquivLike.toEmbeddingLike (E := F) with
-    map_rel := fun f _ _ => (map_le_map_iff f).2 }
+    map_rel f _ _ := (map_le_map_iff f).2 }
 
 namespace OrderHomClass
 
@@ -1322,7 +1322,7 @@ def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α
   { OrderEmbedding.ofStrictMono f h_mono with
     toFun := f,
     invFun := g,
-    left_inv := fun _ => h_mono.injective <| hg _,
+    left_inv _ := h_mono.injective <| hg _,
     right_inv := hg }
 
 end StrictMono

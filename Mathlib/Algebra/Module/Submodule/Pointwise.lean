@@ -173,7 +173,7 @@ instance : IsOrderedAddMonoid (Submodule R M) where
 instance : CanonicallyOrderedAdd (Submodule R M) where
   exists_add_of_le {_a b} h := ⟨b, (sup_eq_right.2 h).symm⟩
   le_add_self _ _ := le_sup_right
-  le_self_add := fun _a _b => le_sup_left
+  le_self_add _a _b := le_sup_left
 
 section
 
@@ -271,7 +271,7 @@ not hold so this cannot be stated as a `Module`. -/
 @[instance_reducible]
 protected def pointwiseMulActionWithZero : MulActionWithZero α (Submodule R M) :=
   { Submodule.pointwiseDistribMulAction with
-    zero_smul := fun S =>
+    zero_smul S :=
       congr(S.map $(LinearMap.ext <| zero_smul α)).trans S.map_zero }
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseMulActionWithZero

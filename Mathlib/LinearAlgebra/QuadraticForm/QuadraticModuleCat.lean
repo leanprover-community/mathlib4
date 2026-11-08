@@ -91,7 +91,7 @@ lemma hom_ext {M N : QuadraticModuleCat.{v} R} (f g : M ⟶ N) (h : f.toIsometry
 instance hasForgetToModule : HasForget₂ (QuadraticModuleCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ↧M
-      map := fun f => ModuleCat.ofHom f.toIsometry.toLinearMap }
+      map f := ModuleCat.ofHom f.toIsometry.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : QuadraticModuleCat R) :

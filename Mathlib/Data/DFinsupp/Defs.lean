@@ -1132,7 +1132,7 @@ variable {α : Option ι → Type v}
 
 This is the dfinsupp version of `Option.rec`. -/
 def extendWith [∀ i, Zero (α i)] (a : α none) (f : Π₀ i, α (some i)) : Π₀ i, α i where
-  toFun := fun i ↦ match i with | none => a | some _ => f _
+  toFun i := match i with | none => a | some _ => f _
   support' :=
     f.support'.map fun s =>
       ⟨none ::ₘ Multiset.map some s.1, fun i =>
@@ -1233,11 +1233,11 @@ def mapRange.addEquiv (e : ∀ i, β₁ i ≃+ β₂ i) : (Π₀ i, β₁ i) ≃
       (e i).toAddMonoidHom with
     toFun := mapRange (fun i x => e i x) fun i => (e i).map_zero
     invFun := mapRange (fun i x => (e i).symm x) fun i => (e i).symm.map_zero
-    left_inv := fun x => by
+    left_inv x := by
       rw [← mapRange_comp] <;>
         · simp_rw [AddEquiv.symm_comp_self]
           simp
-    right_inv := fun x => by
+    right_inv x := by
       rw [← mapRange_comp] <;>
         · simp_rw [AddEquiv.self_comp_symm]
           simp }

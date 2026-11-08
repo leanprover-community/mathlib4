@@ -343,10 +343,10 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
     (J → C) ≌ (Discrete J ⥤ C) where
   functor :=
     { obj := fun F => Discrete.functor F
-      map := fun f => Discrete.natTrans (fun j => f j.as) }
+      map f := Discrete.natTrans (fun j => f j.as) }
   inverse :=
     { obj := fun F j => F.obj ⟨j⟩
-      map := fun f j => f.app ⟨j⟩ }
+      map f j := f.app ⟨j⟩ }
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents (fun F => (NatIso.ofComponents (fun _ => Iso.refl _)
     (by

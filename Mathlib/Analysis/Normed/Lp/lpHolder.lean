@@ -194,7 +194,7 @@ uniformly bounded family of continuous bilinear maps on the underlying spaces. -
 def holder (B : (i : ι) → E i →L[𝕜] F i →L[𝕜] G i) {K : ℝ} (hBK : ∀ i, ‖B i‖ ≤ K)
     (e : lp E p) (f : lp F q) :
     lp G r where
-  val := fun i ↦ B i (e i) (f i)
+  val i := B i (e i) (f i)
   property := (lp.memℓp e).holder _ (lp.memℓp f) B hBK
 
 /-- `lp.holder` as a bilinear map. -/

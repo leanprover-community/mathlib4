@@ -196,9 +196,9 @@ instance [LT R] [DecidableLT R] : DecidableLT (MinTropical R) :=
 
 @[to_dual]
 instance [Preorder R] : Preorder (MinTropical R) where
-  le_refl := fun x => le_refl (untrop x)
-  le_trans := fun _ _ _ h h' => le_trans (α := R) h h'
-  lt_iff_le_not_ge := fun _ _ => lt_iff_le_not_ge (α := R)
+  le_refl x := le_refl (untrop x)
+  le_trans _ _ _ h h' := le_trans (α := R) h h'
+  lt_iff_le_not_ge _ _ := lt_iff_le_not_ge (α := R)
 
 /-- Reinterpret `x : R` as an element of `MinTropical R`, preserving the order. -/
 @[to_dual
@@ -222,7 +222,7 @@ theorem untrop_monotone [Preorder R] : Monotone (untrop : MinTropical R → R) :
 
 @[to_dual]
 instance [PartialOrder R] : PartialOrder (MinTropical R) where
-  le_antisymm := fun _ _ h h' => untrop_injective (le_antisymm h h')
+  le_antisymm _ _ h h' := untrop_injective (le_antisymm h h')
 
 @[to_dual]
 instance [Top R] : Zero (MinTropical R) :=
@@ -285,28 +285,28 @@ theorem trop_add_def (x y : MinTropical R) : x + y = trop (min (untrop x) (untro
   rfl
 
 instance : LinearOrder (MinTropical R) where
-  le_total := fun a b => le_total (untrop a) (untrop b)
+  le_total a b := le_total (untrop a) (untrop b)
   toDecidableLE := MinTropical.instDecidableLE
   toDecidableEq := MinTropical.instDecidableEq
   toDecidableLT := MinTropical.instDecidableLT
-  max := fun a b => trop (max (untrop a) (untrop b))
-  max_def := fun a b => untrop_injective (by
+  max a b := trop (max (untrop a) (untrop b))
+  max_def a b := untrop_injective (by
     simp only [max_def, untrop_le_iff, untrop_trop]; split_ifs <;> simp)
   min := (· + ·)
-  min_def := fun a b => untrop_injective (by
+  min_def a b := untrop_injective (by
     simp only [untrop_add, min_def, untrop_le_iff]; split_ifs <;> simp)
 
 @[to_dual existing]
 instance _root_.MaxTropical.instLinearOrder : LinearOrder (MaxTropical R) where
-  le_total := fun a b => le_total (MaxTropical.untrop a) (MaxTropical.untrop b)
+  le_total a b := le_total (MaxTropical.untrop a) (MaxTropical.untrop b)
   toDecidableLE := MaxTropical.instDecidableLE
   toDecidableEq := MaxTropical.instDecidableEq
   toDecidableLT := MaxTropical.instDecidableLT
-  min := fun a b => MaxTropical.trop (min (MaxTropical.untrop a) (MaxTropical.untrop b))
-  min_def := fun a b => MaxTropical.untrop_injective (by
+  min a b := MaxTropical.trop (min (MaxTropical.untrop a) (MaxTropical.untrop b))
+  min_def a b := MaxTropical.untrop_injective (by
     simp only [min_def, MaxTropical.untrop_le_iff, MaxTropical.untrop_trop]; split_ifs <;> simp)
   max := (· + ·)
-  max_def := fun a b => MaxTropical.untrop_injective (by
+  max_def a b := MaxTropical.untrop_injective (by
     simp only [MaxTropical.untrop_add, max_def, MaxTropical.untrop_le_iff]; split_ifs <;> simp)
 
 @[to_dual (attr := simp)]
@@ -417,9 +417,9 @@ theorem untrop_one [Zero R] : untrop (1 : MinTropical R) = 0 :=
 
 @[to_dual]
 instance [LinearOrder R] [OrderTop R] [Zero R] : AddMonoidWithOne (MinTropical R) where
-  natCast := fun n => if n = 0 then 0 else 1
+  natCast n := if n = 0 then 0 else 1
   natCast_zero := rfl
-  natCast_succ := fun n => (untrop_inj_iff _ _).1 (by cases n <;> simp)
+  natCast_succ n := (untrop_inj_iff _ _).1 (by cases n <;> simp)
 
 @[to_dual]
 instance [Zero R] : Nontrivial (MinTropical (WithTop R)) :=
@@ -447,7 +447,7 @@ instance [AddSemigroup R] : Semigroup (MinTropical R) where
 
 @[to_dual]
 instance [AddCommSemigroup R] : CommSemigroup (MinTropical R) where
-  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
+  mul_comm _ _ := untrop_injective (add_comm _ _)
 
 @[to_dual]
 instance {α : Type*} [SMul α R] : Pow (MinTropical R) α where pow x n := trop <| n • untrop x
@@ -468,9 +468,9 @@ instance [AddZeroClass R] : MulOneClass (MinTropical R) where
 
 @[to_dual]
 instance [AddMonoid R] : Monoid (MinTropical R) where
-  npow := fun n x => x ^ n
-  npow_zero := fun _ => untrop_injective <| by simp
-  npow_succ := fun _ _ => untrop_injective <| succ_nsmul _ _
+  npow n x := x ^ n
+  npow_zero _ := untrop_injective <| by simp
+  npow_succ _ _ := untrop_injective <| succ_nsmul _ _
 
 @[to_dual (attr := simp)]
 theorem trop_nsmul [AddMonoid R] (x : R) (n : ℕ) : trop (n • x) = trop x ^ n :=
@@ -481,16 +481,16 @@ instance [AddCommMonoid R] : CommMonoid (MinTropical R) where
 
 @[to_dual]
 instance [AddGroup R] : Group (MinTropical R) where
-  div_eq_mul_inv := fun _ _ => untrop_injective <| by simp [sub_eq_add_neg]
-  inv_mul_cancel := fun _ => untrop_injective <| neg_add_cancel _
-  zpow := fun n x => trop <| n • untrop x
+  div_eq_mul_inv _ _ := untrop_injective <| by simp [sub_eq_add_neg]
+  inv_mul_cancel _ := untrop_injective <| neg_add_cancel _
+  zpow n x := trop <| n • untrop x
   zpow_zero' := fun _ => untrop_injective <| zero_zsmul _
   zpow_succ' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_succ' _ _
   zpow_neg' := fun _ _ => untrop_injective <| SubNegMonoid.zsmul_neg' _ _
 
 @[to_dual]
 instance [AddCommGroup R] : CommGroup (MinTropical R) where
-  mul_comm := fun _ _ => untrop_injective (add_comm _ _)
+  mul_comm _ _ := untrop_injective (add_comm _ _)
 
 @[to_dual (attr := simp)]
 theorem untrop_zpow [AddGroup R] (x : MinTropical R) (n : ℤ) : untrop (x ^ n) = n • untrop x :=
@@ -580,8 +580,8 @@ section Semiring
 variable [LinearOrderedAddCommMonoidWithTop R]
 
 instance : CommSemiring (MinTropical R) where
-  zero_mul := fun _ => untrop_injective (by simp [top_add])
-  mul_zero := fun _ => untrop_injective (by simp [add_top])
+  zero_mul _ := untrop_injective (by simp [top_add])
+  mul_zero _ := untrop_injective (by simp [add_top])
 
 @[simp]
 theorem succ_nsmul {R} [LinearOrder R] [OrderTop R] (x : MinTropical R) (n : ℕ) :

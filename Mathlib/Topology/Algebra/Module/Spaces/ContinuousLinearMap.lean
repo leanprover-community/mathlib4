@@ -510,9 +510,9 @@ def arrowCongrSL (e₁₂ : E ≃SL[σ₁₂] F) (e₄₃ : H ≃SL[σ₄₃] G)
     (E →SL[σ₁₄] H) ≃SL[σ₄₃] F →SL[σ₂₃] G :=
 { e₁₂.arrowCongrEquivₛₗ e₄₃ with
     -- given explicitly to help `simps`
-    toFun := fun L => (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
+    toFun L := (e₄₃ : H →SL[σ₄₃] G).comp (L.comp (e₁₂.symm : F →SL[σ₂₁] E))
     -- given explicitly to help `simps`
-    invFun := fun L => (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
+    invFun L := (e₄₃.symm : G →SL[σ₃₄] H).comp (L.comp (e₁₂ : E →SL[σ₁₂] F))
     continuous_toFun := ((postcomp F e₄₃.toContinuousLinearMap).comp
       (precomp H e₁₂.symm.toContinuousLinearMap)).continuous
     continuous_invFun := ((precomp H e₁₂.toContinuousLinearMap).comp

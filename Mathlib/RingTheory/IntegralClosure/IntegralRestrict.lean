@@ -350,7 +350,7 @@ See `Algebra.intNorm` instead. -/
 noncomputable
 def Algebra.intNormAux :
     B →* A where
-  toFun := fun s ↦ IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
+  toFun s := IsIntegralClosure.mk' (R := A) A (Algebra.norm K (algebraMap B L s))
     (isIntegral_norm K <| IsIntegral.map (IsScalarTower.toAlgHom A B L)
       (IsIntegralClosure.isIntegral A L s))
   map_one' := by simp

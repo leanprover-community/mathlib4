@@ -135,18 +135,18 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : Ring (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
-    mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    one_mul x := Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one x := Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm x y := Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
+    mul_assoc x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
-    left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    mul_zero x := Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul x := Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
+    left_distrib x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
-    right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    right_distrib x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
@@ -428,19 +428,19 @@ instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
     mul := Quot.map₂ Prequotient.mul Relation.mul_2 Relation.mul_1
-    one_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
-    mul_one := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
-    add_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
-    mul_comm := fun x y => Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.mul_comm _ _
-    mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    one_mul x := Quot.inductionOn x fun _ => Quot.sound <| Relation.one_mul _
+    mul_one x := Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_one _
+    add_comm x y := Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.add_comm _ _
+    mul_comm x y := Quot.induction_on₂ x y fun _ _ => Quot.sound <| Relation.mul_comm _ _
+    mul_assoc x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
-    mul_zero := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
-    zero_mul := fun x => Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
-    left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    mul_zero x := Quot.inductionOn x fun _ => Quot.sound <| Relation.mul_zero _
+    zero_mul x := Quot.inductionOn x fun _ => Quot.sound <| Relation.zero_mul _
+    left_distrib x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
-    right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
+    right_distrib x y z := Quot.induction_on₃ x y z fun x y z => by
       simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
@@ -568,8 +568,8 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt := ofHom
 set_option backward.isDefEq.respectTransparency false in
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
-  desc := fun s ↦ descMorphism F s
-  uniq := fun s m w ↦ hom_ext <| RingHom.ext fun x => by
+  desc s := descMorphism F s
+  uniq s m w := hom_ext <| RingHom.ext fun x => by
     refine Quot.inductionOn x ?_
     intro x
     induction x with

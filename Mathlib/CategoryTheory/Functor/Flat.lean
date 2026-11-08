@@ -95,7 +95,7 @@ instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
   obtain ⟨c₁⟩ := IsCofiltered.cone_nonempty (H ⋙ StructuredArrow.pre X F G)
   let H₂ : J ⥤ StructuredArrow c₁.pt.right F :=
     { obj := fun j => StructuredArrow.mk (c₁.π.app j).right
-      map := fun {j j'} f =>
+      map {j j'} f :=
         StructuredArrow.homMk (H.map f).right (congrArg CommaMorphism.right (c₁.w f)) }
   obtain ⟨c₂⟩ := IsCofiltered.cone_nonempty H₂
   simp only [H₂] at c₂
@@ -256,7 +256,7 @@ lemma preservesFiniteLimits_of_flat (F : C ⥤ D) [RepresentablyFlat F] :
   exact
     { lift := PreservesFiniteLimitsOfFlat.lift F hc
       fac := PreservesFiniteLimitsOfFlat.fac F hc
-      uniq := fun s m h => by
+      uniq s m h := by
         apply PreservesFiniteLimitsOfFlat.uniq F hc
         · exact h
         · exact PreservesFiniteLimitsOfFlat.fac F hc s }

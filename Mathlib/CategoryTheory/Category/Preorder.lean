@@ -127,7 +127,7 @@ theorem le_of_op_hom {x y : Xᵒᵖ} (h : x ⟶ y) : unop y ≤ unop x :=
 @[to_dual uniqueFromBot]
 instance uniqueToTop [OrderTop X] {x : X} : Unique (x ⟶ ⊤) where
   default := homOfLE le_top
-  uniq := fun a => by rfl
+  uniq a := by rfl
 
 variable (X) in
 /-- The equivalence of categories from the order dual of a preordered type `X`
@@ -136,10 +136,10 @@ to the opposite category of the preorder `X`. -/
 def orderDualEquivalence : Xᵒᵈ ≌ Xᵒᵖ where
   functor :=
     { obj := fun x => op (OrderDual.ofDual x)
-      map := fun f => (homOfLE (leOfHom f)).op }
+      map f := (homOfLE (leOfHom f)).op }
   inverse :=
     { obj := fun x => OrderDual.toDual x.unop
-      map := fun f => (homOfLE (leOfHom f.unop)) }
+      map f := (homOfLE (leOfHom f.unop)) }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
 

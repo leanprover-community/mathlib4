@@ -46,7 +46,7 @@ abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoi
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
-    zero_smul := fun x => by rw [← f.map_zero, hsmul, zero_smul]
+    zero_smul x := by rw [← f.map_zero, hsmul, zero_smul]
     add_smul := hf.forall₂.mpr fun a b x => by simp only [← f.map_add, hsmul, add_smul] }
 
 variable {R} (M)
@@ -61,7 +61,7 @@ abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
     -- TODO(jmc): there should be a rw-lemma `smul_comp` close to `SMulZeroClass.compFun`
-    add_smul := fun r s x => show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
+    add_smul r s x := show f (r + s) • x = f r • x + f s • x by simp [add_smul] }
 
 end AddCommMonoid
 

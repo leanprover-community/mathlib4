@@ -156,7 +156,7 @@ variable [(i : I) → MulOneClass (f i)]
 def MonoidHom.pi {γ : Type w} [MulOneClass γ] (g : ∀ i, γ →* f i) :
     γ →* ∀ i, f i :=
   { MulHom.pi fun i => (g i).toMulHom with
-    toFun := fun x i => g i x
+    toFun x i := g i x
     map_one' := funext fun i => (g i).map_one }
 
 @[to_additive (attr := deprecated (since := "2026-05-29"))] alias Pi.monoidHom := MonoidHom.pi

@@ -67,7 +67,7 @@ instance instSMulMemClass : SMulMemClass (LieSubmodule R L M) R M where
 /-- The zero module is a Lie submodule of any Lie module. -/
 instance : Zero (LieSubmodule R L M) :=
   ⟨{ (0 : Submodule R M) with
-      lie_mem := fun {x m} h ↦ by rw [(Submodule.mem_bot R).1 h]; apply lie_zero }⟩
+      lie_mem {x m} h := by rw [(Submodule.mem_bot R).1 h]; apply lie_zero }⟩
 
 instance : Inhabited (LieSubmodule R L M) :=
   ⟨0⟩
@@ -316,12 +316,12 @@ theorem mem_top (x : M) : x ∈ (⊤ : LieSubmodule R L M) :=
 instance : Min (LieSubmodule R L M) :=
   ⟨fun N N' ↦
     { (N ⊓ N' : Submodule R M) with
-      lie_mem := fun h ↦ mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
+      lie_mem h := mem_inter (N.lie_mem h.1) (N'.lie_mem h.2) }⟩
 
 instance : InfSet (LieSubmodule R L M) :=
   ⟨fun S ↦
     { toSubmodule := sInf {(s : Submodule R M) | s ∈ S}
-      lie_mem := fun {x m} h ↦ by
+      lie_mem {x m} h := by
         simp only [Submodule.mem_carrier, mem_iInter, Submodule.coe_sInf, mem_ofPred_eq,
           forall_apply_eq_imp_iff₂, forall_exists_index, and_imp] at h ⊢
         intro N hN; apply N.lie_mem (h N hN) }⟩
@@ -726,7 +726,7 @@ variable (f : M →ₗ⁅R,L⁆ M') (N N₂ : LieSubmodule R L M) (N' : LieSubmo
 of `M'`. -/
 def map : LieSubmodule R L M' :=
   { (N : Submodule R M).map (f : M →ₗ[R] M') with
-    lie_mem := fun {x m'} h ↦ by
+    lie_mem {x m'} h := by
       rcases h with ⟨m, hm, hfm⟩; use ⁅x, m⁆; constructor
       · apply N.lie_mem hm
       · norm_cast at hfm; simp [hfm] }
@@ -741,7 +741,7 @@ theorem toSubmodule_map : (N.map f : Submodule R M') = (N : Submodule R M).map (
 `M`. -/
 def comap : LieSubmodule R L M :=
   { (N' : Submodule R M').comap (f : M →ₗ[R] M') with
-    lie_mem := fun {x m} h ↦ by
+    lie_mem {x m} h := by
       suffices ⁅x, f m⁆ ∈ N' by simp [this]
       apply N'.lie_mem h }
 
@@ -847,8 +847,8 @@ Submodules. -/
     LieSubmodule R L M ≃o LieSubmodule R L M' where
   toFun := map e
   invFun := comap e
-  left_inv := fun N ↦ by ext; simp
-  right_inv := fun N ↦ by ext; simp [← e.eq_symm_apply]
+  left_inv N := by ext; simp
+  right_inv N := by ext; simp [← e.eq_symm_apply]
   map_rel_iff' := fun {_ _} ↦ Set.image_subset_image_iff e.injective
 
 end LieSubmodule
@@ -1013,7 +1013,7 @@ variable [LieAlgebra R L] [LieModule R L M]
 This is the Lie subalgebra version of `Submodule.topEquiv`. -/
 def LieSubalgebra.topEquiv : (⊤ : LieSubalgebra R L) ≃ₗ⁅R⁆ L :=
   { (⊤ : LieSubalgebra R L).incl with
-    invFun := fun x ↦ ⟨x, Set.mem_univ x⟩ }
+    invFun x := ⟨x, Set.mem_univ x⟩ }
 
 @[simp]
 theorem LieSubalgebra.topEquiv_apply (x : (⊤ : LieSubalgebra R L)) : LieSubalgebra.topEquiv x = x :=

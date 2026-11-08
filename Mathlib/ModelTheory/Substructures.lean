@@ -155,7 +155,7 @@ theorem constants_mem (c : L.Constants) : (c : M) ∈ S :=
 /-- The substructure `M` of the structure `M`. -/
 instance instTop : Top (L.Substructure M) :=
   ⟨{  carrier := Set.univ
-      fun_mem := fun {_} _ _ _ => Set.mem_univ _ }⟩
+      fun_mem {_} _ _ _ := Set.mem_univ _ }⟩
 
 instance instInhabited : Inhabited (L.Substructure M) :=
   ⟨⊤⟩
@@ -172,7 +172,7 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
 instance instInf : Min (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
-      fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
+      fun_mem {_} f := (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
 
 @[simp]
 theorem coe_inf (p p' : L.Substructure M) :
@@ -186,7 +186,7 @@ theorem mem_inf {p p' : L.Substructure M} {x : M} : x ∈ p ⊓ p' ↔ x ∈ p �
 instance instInfSet : InfSet (L.Substructure M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, (t : Set M)
-      fun_mem := fun {n} f =>
+      fun_mem {n} f :=
         ClosedUnder.sInf
           (by
             rintro _ ⟨t, rfl⟩
@@ -219,12 +219,12 @@ instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
     le := (· ≤ ·)
     lt := (· < ·)
     top := ⊤
-    le_top := fun _ x _ => mem_top x
+    le_top _ x _ := mem_top x
     inf := (· ⊓ ·)
     sInf := InfSet.sInf
-    le_inf := fun _a _b _c ha hb _x hx => ⟨ha hx, hb hx⟩
-    inf_le_left := fun _ _ _ => And.left
-    inf_le_right := fun _ _ _ => And.right }
+    le_inf _a _b _c ha hb _x hx := ⟨ha hx, hb hx⟩
+    inf_le_left _ _ _ := And.left
+    inf_le_right _ _ _ := And.right }
 
 variable (L)
 
@@ -694,7 +694,7 @@ def substructureReduct (φ : L →ᴸ L') [φ.IsExpansionOn M] :
     L'.Substructure M ↪o L.Substructure M where
   toFun S :=
     { carrier := S
-      fun_mem := fun {n} f x hx => by
+      fun_mem {n} f x hx := by
         have h := S.fun_mem (φ.onFunction f) x hx
         simp only [LHom.map_onFunction, Substructure.mem_carrier] at h
         exact h }

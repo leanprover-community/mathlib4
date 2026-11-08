@@ -158,13 +158,13 @@ attribute [reassoc (attr := simp)] left_triangle_components right_triangle_compo
 /-- The hom set equivalence associated to an adjunction. -/
 def homEquiv {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (X : C) (Y : D) :
     (F.obj X ⟶ Y) ≃ (X ⟶ G.obj Y) where
-  toFun := fun f => adj.unit.app X ≫ G.map f
-  invFun := fun g => F.map g ≫ adj.counit.app Y
-  left_inv := fun f => by
+  toFun f := adj.unit.app X ≫ G.map f
+  invFun g := F.map g ≫ adj.counit.app Y
+  left_inv f := by
     dsimp
     rw [F.map_comp, assoc, ← Functor.comp_map, adj.counit.naturality, ← assoc]
     simp
-  right_inv := fun g => by
+  right_inv g := by
     simp only [Functor.comp_obj, Functor.map_comp]
     rw [← assoc, ← Functor.comp_map, ← adj.unit.naturality]
     simp
@@ -443,8 +443,8 @@ def mkOfHomEquiv (adj : CoreHomEquiv F G) : F ⊣ G :=
           intros
           simp [← adj.homEquiv_naturality_left_symm, ← adj.homEquiv_naturality_right_symm] }
     homEquiv := adj.homEquiv
-    homEquiv_unit := fun {X Y f} => by simp [← adj.homEquiv_naturality_right]
-    homEquiv_counit := fun {X Y f} => by simp [← adj.homEquiv_naturality_left_symm] }
+    homEquiv_unit {X Y f} := by simp [← adj.homEquiv_naturality_right]
+    homEquiv_counit {X Y f} := by simp [← adj.homEquiv_naturality_left_symm] }
 
 @[simp]
 lemma mkOfHomEquiv_homEquiv (adj : CoreHomEquiv F G) :
@@ -559,7 +559,7 @@ variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ C} {H : D 
 @[to_dual self (reorder := C E, 2 6, F I, G H, adj₁ adj₂), simps! -isSimp unit counit, stacks 0DV0]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
-    homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
+    homEquiv _ _ := Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
     unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
       (associator _ _ _).inv) G ≫ (associator _ _ _).hom
     counit := (associator _ _ _).inv ≫ whiskerRight ((associator _ _ _).hom ≫
@@ -598,7 +598,7 @@ Dual to `rightAdjointOfEquiv`. -/
 def leftAdjointOfEquiv (he : ∀ X Y Y' g h, e X Y' (h ≫ g) = e X Y h ≫ G.map g) : C ⥤ D where
   obj := F_obj
   map {X} {X'} f := (e X (F_obj X')).symm (f ≫ e X' (F_obj X') (𝟙 _))
-  map_comp := fun f f' => by
+  map_comp f f' := by
     rw [Equiv.symm_apply_eq, he, Equiv.apply_symm_apply]
     conv =>
       rhs
@@ -613,7 +613,7 @@ to `adjunctionOfEquivRight`. -/
 def adjunctionOfEquivLeft : leftAdjointOfEquiv e he ⊣ G :=
   mkOfHomEquiv
     { homEquiv := e
-      homEquiv_naturality_left_symm := fun {X'} {X} {Y} f g => by
+      homEquiv_naturality_left_symm {X'} {X} {Y} f g := by
         have {X : C} {Y Y' : D} (f : X ⟶ G.obj Y) (g : Y ⟶ Y') :
             (e X Y').symm (f ≫ G.map g) = (e X Y).symm f ≫ g := by
           rw [Equiv.symm_apply_eq, he]; simp
@@ -639,7 +639,7 @@ Dual to `leftAdjointOfEquiv`. -/
 def rightAdjointOfEquiv (he : ∀ X' X Y f g, e X' Y (F.map f ≫ g) = f ≫ e X Y g) : D ⥤ C where
   obj := G_obj
   map {Y} {Y'} g := (e (G_obj Y) Y') ((e (G_obj Y) Y).symm (𝟙 _) ≫ g)
-  map_comp := fun {Y} {Y'} {Y''} g g' => by
+  map_comp {Y} {Y'} {Y''} g g' := by
     rw [← Equiv.eq_symm_apply, ← he'' e he, Equiv.symm_apply_apply]
     conv =>
       rhs

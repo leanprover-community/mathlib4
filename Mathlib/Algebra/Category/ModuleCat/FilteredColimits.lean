@@ -115,16 +115,16 @@ instance colimitMulAction : MulAction R (M F) where
 
 instance colimitSMulWithZero : SMulWithZero R (M F) :=
 { colimitMulAction F with
-  smul_zero := fun r => by
+  smul_zero r := by
     rw [colimit_zero_eq _ (IsFiltered.nonempty.some : J), colimit_smul_mk_eq, smul_zero]
-  zero_smul := fun x => by
+  zero_smul x := by
     obtain ⟨j, x, rfl⟩ := M.mk_surjective F x
     simp [← colimit_zero_eq] }
 
 instance colimitModule : Module R (M F) :=
 { colimitMulAction F,
   colimitSMulWithZero F with
-  smul_add := fun r x y => by
+  smul_add r x y := by
     obtain ⟨i, x, rfl⟩ := M.mk_surjective F x
     obtain ⟨j, y, rfl⟩ := M.mk_surjective F y
     rw [colimit_smul_mk_eq, colimit_smul_mk_eq,

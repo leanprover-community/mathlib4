@@ -31,7 +31,7 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 See note [reducible non-instances]. -/
 abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R where
   algebraMap := ZMod.castHom h R
-  smul := fun a r => cast a * r
+  smul a r := cast a * r
   commutes' := fun a r =>
     show (cast a * r : R) = r * cast a by
       rcases ZMod.intCast_surjective a with ⟨k, rfl⟩

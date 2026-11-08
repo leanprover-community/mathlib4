@@ -193,8 +193,8 @@ functors of underlying categories, `𝒳.obj ⥤ 𝒴.obj`. -/
 @[simps]
 def forgetful (𝒳 : BasedCategory.{v₂, u₂} 𝒮) (𝒴 : BasedCategory.{v₃, u₃} 𝒮) :
     (𝒳 ⥤ᵇ 𝒴) ⥤ (𝒳.obj ⥤ 𝒴.obj) where
-  obj := fun F ↦ F.toFunctor
-  map := fun α ↦ α.toNatTrans
+  obj F := F.toFunctor
+  map α := α.toNatTrans
 
 set_option backward.defeqAttrib.useBackward true in
 instance : (forgetful 𝒳 𝒴).ReflectsIsomorphisms where

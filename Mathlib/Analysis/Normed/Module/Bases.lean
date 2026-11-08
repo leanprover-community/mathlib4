@@ -513,7 +513,7 @@ def basis : SchauderBasis 𝕜 X :=
   have hcoeff : ∀ n x, (succSub D.P n) x = coeff n x • D.e n := fun n x ↦
     (basisCoeff_spec D n x).symm
   { basis := D.e
-    coord := fun n ↦ LinearMap.mkContinuous
+    coord n := LinearMap.mkContinuous
       { toFun := coeff n
         map_add' := fun x y ↦ smul_left_injective 𝕜 (D.e_ne_zero n) <| by
           simp only [add_smul, ← hcoeff, map_add]
@@ -526,13 +526,13 @@ def basis : SchauderBasis 𝕜 X :=
         calc ‖coeff n x‖ * ‖D.e n‖ = ‖coeff n x • D.e n‖ := (norm_smul _ _).symm
           _ = ‖(succSub D.P n) x‖ := by rw [hcoeff]
           _ ≤ ‖succSub D.P n‖ * ‖x‖ := ContinuousLinearMap.le_opNorm _ _)
-    ortho := fun i j ↦ smul_left_injective 𝕜 (D.e_ne_zero i) <| by
+    ortho i j := smul_left_injective 𝕜 (D.e_ne_zero i) <| by
       obtain ⟨x, hx⟩ : ∃ x, (succSub D.P j) x = D.e j := D.e_mem_range j
       simp only [mkContinuous_apply, LinearMap.coe_mk, AddHom.coe_mk]
       rw [← hcoeff, ← hx, succSub_ortho D.proj_comp, hx]
       simp only [Pi.single_apply]
       split_ifs with h <;> simp [h]
-    expansion := fun x ↦ by
+    expansion x := by
       rw [HasSum, SummationFilter.conditional_filter_eq_map_range, tendsto_map'_iff]
       exact (D.proj_tendsto x).congr fun n ↦ by
         simp only [Function.comp, LinearMap.coe_mk, AddHom.coe_mk,

@@ -201,7 +201,7 @@ lemma forget_obj {M : SemimoduleCat.{v} R} : ((forget (SemimoduleCat.{v} R)).obj
 instance hasForgetToAddCommMonoid : HasForget₂ (SemimoduleCat R) AddCommMonCat where
   forget₂ :=
     { obj := fun M => ↧M
-      map := fun f => AddCommMonCat.ofHom f.hom.toAddMonoidHom }
+      map f := AddCommMonCat.ofHom f.hom.toAddMonoidHom }
 
 @[simp]
 theorem forget₂_obj (X : SemimoduleCat R) :

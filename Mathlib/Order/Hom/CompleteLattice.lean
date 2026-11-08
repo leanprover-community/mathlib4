@@ -134,10 +134,10 @@ theorem map_iSup₂ [SupSet α] [SupSet β] [sSupHomClass F α β] (f : F) (g : 
 instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
     [CompleteLattice β] [sSupHomClass F α β] : SupBotHomClass F α β :=
   { ‹sSupHomClass F α β› with
-    map_sup := fun f a b => by
+    map_sup f a b := by
       rw [← sSup_pair, map_sSup]
       simp
-    map_bot := fun f => by
+    map_bot f := by
       rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 
 -- See note [lower instance priority]
@@ -170,7 +170,7 @@ variable [EquivLike F α β]
 @[to_dual]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]
     [CompleteLattice β] [OrderIsoClass F α β] : sSupHomClass F α β where
-  map_sSup := fun f s =>
+  map_sSup f s :=
     eq_of_forall_ge_iff fun c => by
       simp only [← le_map_inv_iff, sSup_le_iff, Set.forall_mem_image]
 
@@ -316,7 +316,7 @@ instance : Bot (sSupHom α β) :=
 
 @[to_dual]
 instance : OrderBot (sSupHom α β) where
-  bot_le := fun _ _ ↦ OrderBot.bot_le _
+  bot_le _ _ := OrderBot.bot_le _
 
 @[to_dual (attr := simp)]
 theorem coe_bot : ⇑(⊥ : sSupHom α β) = ⊥ :=

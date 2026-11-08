@@ -360,7 +360,7 @@ theorem isSeparable_of_sigmaFinite [CountablyGenerated X] [SigmaFinite μ] :
     refine ⟨generateSetAlgebra 𝒜, countable_generateSetAlgebra count_𝒜,
       Measure.MeasureDense.of_generateFrom_isSetAlgebra_sigmaFinite isSetAlgebra_generateSetAlgebra
       { set := μ.toFiniteSpanningSetsIn.set
-        set_mem := fun n ↦ self_subset_generateSetAlgebra (𝒜 := 𝒜) <| Or.inr ⟨n, rfl⟩
+        set_mem n := self_subset_generateSetAlgebra (𝒜 := 𝒜) <| Or.inr ⟨n, rfl⟩
         finite := μ.toFiniteSpanningSetsIn.finite
         spanning := μ.toFiniteSpanningSetsIn.spanning }
       (le_antisymm ?_ (generateFrom_le (fun s hs ↦ ?_)))⟩

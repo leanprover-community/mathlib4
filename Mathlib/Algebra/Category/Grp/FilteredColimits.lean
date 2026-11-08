@@ -111,7 +111,7 @@ theorem colimit_inv_mk_eq (x : Σ j, F.obj j) : (G.mk.{v, u} F x)⁻¹ = G.mk F 
 @[to_additive]
 noncomputable instance colimitGroup : Group (G.{v, u} F) :=
   { colimitInv.{v, u} F, (G.{v, u} F).str with
-    inv_mul_cancel := fun x => by
+    inv_mul_cancel x := by
       refine Quot.inductionOn x ?_; clear x; intro x
       change (G.mk _ _)⁻¹ * G.mk _ _ = _
       obtain ⟨j, x⟩ := x

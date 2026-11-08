@@ -460,13 +460,13 @@ protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  isCofinal := fun f => h f m
+  isCofinal f := h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  isCofinal := fun f => h.cod f n
+  isCofinal f := h.cod f n
 
 end IsExtensionPair
 

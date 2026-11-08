@@ -57,22 +57,22 @@ noncomputable def UniqueFactorizationMonoid.toNormalizedGCDMonoid (α : Type*)
     [CommMonoidWithZero α] [UniqueFactorizationMonoid α] [NormalizationMonoid α] :
     NormalizedGCDMonoid α :=
   { ‹NormalizationMonoid α› with
-    gcd := fun a b => (Associates.mk a ⊓ Associates.mk b).out
-    lcm := fun a b => (Associates.mk a ⊔ Associates.mk b).out
-    gcd_dvd_left := fun a b => (out_dvd_iff a (Associates.mk a ⊓ Associates.mk b)).2 inf_le_left
-    gcd_dvd_right := fun a b =>
+    gcd a b := (Associates.mk a ⊓ Associates.mk b).out
+    lcm a b := (Associates.mk a ⊔ Associates.mk b).out
+    gcd_dvd_left a b := (out_dvd_iff a (Associates.mk a ⊓ Associates.mk b)).2 inf_le_left
+    gcd_dvd_right a b :=
       (out_dvd_iff b (Associates.mk a ⊓ Associates.mk b)).2 inf_le_right
-    dvd_gcd := fun {a} {b} {c} hac hab =>
+    dvd_gcd {a} {b} {c} hac hab :=
       show a ∣ (Associates.mk c ⊓ Associates.mk b).out by
         rw [dvd_out_iff, le_inf_iff, mk_le_mk_iff_dvd, mk_le_mk_iff_dvd]
         exact ⟨hac, hab⟩
-    lcm_zero_left := fun a => show (⊤ ⊔ Associates.mk a).out = 0 by simp
-    lcm_zero_right := fun a => show (Associates.mk a ⊔ ⊤).out = 0 by simp
-    gcd_mul_lcm := fun a b => (out_mul' ..).symm.trans <| by
+    lcm_zero_left a := show (⊤ ⊔ Associates.mk a).out = 0 by simp
+    lcm_zero_right a := show (Associates.mk a ⊔ ⊤).out = 0 by simp
+    gcd_mul_lcm a b := (out_mul' ..).symm.trans <| by
       rw [mul_comm, sup_mul_inf, mk_mul_mk, out_mk]
       exact normalize_associated (a * b)
-    normalize_gcd := fun a b => by apply normalize_out _
-    normalize_lcm := fun a b => by apply normalize_out _ }
+    normalize_gcd a b := by apply normalize_out _
+    normalize_lcm a b := by apply normalize_out _ }
 
 /-- `toStrongNormalizedGCDMonoid` constructs a GCD monoid out of a strong normalization on a
   unique factorization domain. -/

@@ -139,9 +139,9 @@ abbrev HeytingAlgebra.ofHImp [DistribLattice α] [BoundedOrder α] (himp : α �
     (le_himp_iff : ∀ a b c, a ≤ himp b c ↔ a ⊓ b ≤ c) : HeytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
     himp,
-    compl := fun a => himp a ⊥,
+    compl a := himp a ⊥,
     le_himp_iff,
-    himp_bot := fun _ => rfl }
+    himp_bot _ := rfl }
 
 -- See note [reducible non-instances]
 /-- Construct a Heyting algebra from the lattice structure and complement operator alone. -/
@@ -158,9 +158,9 @@ abbrev CoheytingAlgebra.ofSDiff [DistribLattice α] [BoundedOrder α] (sdiff : �
     (sdiff_le_iff : ∀ a b c, sdiff a b ≤ c ↔ a ≤ b ⊔ c) : CoheytingAlgebra α :=
   { ‹DistribLattice α›, ‹BoundedOrder α› with
     sdiff,
-    hnot := fun a => sdiff ⊤ a,
+    hnot a := sdiff ⊤ a,
     sdiff_le_iff,
-    top_sdiff := fun _ => rfl }
+    top_sdiff _ := rfl }
 
 -- See note [reducible non-instances]
 /-- Construct a co-Heyting algebra from the difference and Heyting negation alone. -/
@@ -512,8 +512,8 @@ instance (priority := 100) GeneralizedCoheytingAlgebra.toDistribLattice : Distri
 
 @[to_dual existing]
 instance OrderDual.instGeneralizedHeytingAlgebra : GeneralizedHeytingAlgebra αᵒᵈ where
-  himp := fun a b => toDual (ofDual b \ ofDual a)
-  le_himp_iff := fun a b c => by rw [inf_comm]; exact sdiff_le_iff
+  himp a b := toDual (ofDual b \ ofDual a)
+  le_himp_iff a b c := by rw [inf_comm]; exact sdiff_le_iff
 
 @[to_dual existing]
 instance Prod.instGeneralizedCoheytingAlgebra [GeneralizedCoheytingAlgebra β] :
@@ -772,7 +772,7 @@ complement. -/
 instance Prop.instHeytingAlgebra : HeytingAlgebra Prop :=
   { Prop.instDistribLattice, Prop.instBoundedOrder with
     himp := (· → ·),
-    le_himp_iff := fun _ _ _ => and_imp.symm, himp_bot := fun _ => rfl }
+    le_himp_iff _ _ _ := and_imp.symm, himp_bot := fun _ => rfl }
 
 @[simp]
 theorem himp_iff_imp (p q : Prop) : p ⇨ q ↔ p → q :=
@@ -789,19 +789,19 @@ variable (α) in
 * `a \ b = ⊥` if `a ≤ b` and `a \ b = a` otherwise. -/
 abbrev LinearOrder.toBiheytingAlgebra [LinearOrder α] [BoundedOrder α] : BiheytingAlgebra α :=
   { LinearOrder.toLattice, ‹BoundedOrder α› with
-    himp := fun a b => if a ≤ b then ⊤ else b,
-    compl := fun a => if a = ⊥ then ⊤ else ⊥,
-    le_himp_iff := fun a b c => by
+    himp a b := if a ≤ b then ⊤ else b,
+    compl a := if a = ⊥ then ⊤ else ⊥,
+    le_himp_iff a b c := by
       split_ifs with h
       · exact iff_of_true le_top (inf_le_of_right_le h)
       · rw [inf_le_iff, or_iff_left h],
-    himp_bot := fun _ => if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
-    hnot := fun a => if a = ⊤ then ⊥ else ⊤,
-    sdiff_le_iff := fun a b c => by
+    himp_bot _ := if_congr le_bot_iff rfl rfl, sdiff := fun a b => if a ≤ b then ⊥ else a,
+    hnot a := if a = ⊤ then ⊥ else ⊤,
+    sdiff_le_iff a b c := by
       split_ifs with h
       · exact iff_of_true bot_le (le_sup_of_le_left h)
       · rw [le_sup_iff, or_iff_right h],
-    top_sdiff := fun _ => if_congr top_le_iff rfl rfl }
+    top_sdiff _ := if_congr top_le_iff rfl rfl }
 
 instance OrderDual.instBiheytingAlgebra [BiheytingAlgebra α] : BiheytingAlgebra αᵒᵈ where
   __ := instHeytingAlgebra
@@ -935,24 +935,24 @@ instance instBiheytingAlgebra : BiheytingAlgebra PUnit.{u + 1} :=
   { PUnit.instLinearOrder.{u} with
     top := unit,
     bot := unit,
-    sup := fun _ _ => unit,
-    inf := fun _ _ => unit,
-    compl := fun _ => unit,
-    sdiff := fun _ _ => unit,
-    hnot := fun _ => unit,
-    himp := fun _ _ => unit,
-    le_top := fun _ => trivial,
-    le_sup_left := fun _ _ => trivial,
-    le_sup_right := fun _ _ => trivial,
-    sup_le := fun _ _ _ _ _ => trivial,
-    inf_le_left := fun _ _ => trivial,
-    inf_le_right := fun _ _ => trivial,
-    le_inf := fun _ _ _ _ _ => trivial,
-    bot_le := fun _ => trivial,
-    le_himp_iff := fun _ _ _ => Iff.rfl,
-    himp_bot := fun _ => rfl,
-    top_sdiff := fun _ => rfl,
-    sdiff_le_iff := fun _ _ _ => Iff.rfl }
+    sup _ _ := unit,
+    inf _ _ := unit,
+    compl _ := unit,
+    sdiff _ _ := unit,
+    hnot _ := unit,
+    himp _ _ := unit,
+    le_top _ := trivial,
+    le_sup_left _ _ := trivial,
+    le_sup_right _ _ := trivial,
+    sup_le _ _ _ _ _ := trivial,
+    inf_le_left _ _ := trivial,
+    inf_le_right _ _ := trivial,
+    le_inf _ _ _ _ _ := trivial,
+    bot_le _ := trivial,
+    le_himp_iff _ _ _ := Iff.rfl,
+    himp_bot _ := rfl,
+    top_sdiff _ := rfl,
+    sdiff_le_iff _ _ _ := Iff.rfl }
 
 @[to_dual (attr := simp)]
 theorem top_eq : (⊤ : PUnit) = unit :=

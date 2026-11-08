@@ -92,7 +92,7 @@ instance : Inhabited (IntermediateField F E) :=
 
 instance : Unique (IntermediateField F F) :=
   { (inferInstance : Inhabited (IntermediateField F F)) with
-    uniq := fun _ ↦ toSubalgebra_injective <| Subsingleton.elim _ _ }
+    uniq _ := toSubalgebra_injective <| Subsingleton.elim _ _ }
 
 theorem coe_bot : ↑(⊥ : IntermediateField F E) = Set.range (algebraMap F E) := rfl
 

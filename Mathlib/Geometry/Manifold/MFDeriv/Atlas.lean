@@ -165,11 +165,11 @@ protected def mfderiv (he : e.MDifferentiable I I') {x : M} (hx : x ∈ e.source
     invFun := mfderiv% e.symm (e x)
     continuous_toFun := (mfderiv% e x).cont
     continuous_invFun := (mfderiv% e.symm (e x)).cont
-    left_inv := fun y => by
+    left_inv y := by
       have : (ContinuousLinearMap.id _ _ : TangentSpace I x →L[𝕜] TangentSpace I x) y = y := rfl
       conv_rhs => rw [← this, ← he.symm_comp_deriv hx]
       rfl
-    right_inv := fun y => by
+    right_inv y := by
       have :
         (ContinuousLinearMap.id 𝕜 _ : TangentSpace I' (e x) →L[𝕜] TangentSpace I' (e x)) y = y :=
         rfl

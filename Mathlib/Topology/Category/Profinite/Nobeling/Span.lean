@@ -69,7 +69,7 @@ open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
 noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
-  toFun := fun y ↦ if y = x then 1 else 0
+  toFun y := if y = x then 1 else 0
   isLocallyConstant :=
     haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
     IsLocallyConstant.of_discrete _

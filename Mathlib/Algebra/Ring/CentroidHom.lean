@@ -528,11 +528,11 @@ set_option backward.isDefEq.respectTransparency false in
 /-- The canonical isomorphism from the center of a (non-associative) semiring onto its centroid. -/
 def centerIsoCentroid : Subsemiring.center α ≃+* CentroidHom α :=
   { centerToCentroid with
-    invFun := fun T ↦
+    invFun T :=
       ⟨T 1, by constructor <;> simp [commute_iff_eq, ← map_mul_left, ← map_mul_right]⟩
-    left_inv := fun z ↦ Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
+    left_inv z := Subtype.ext <| by simp only [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, mul_one]
-    right_inv := fun T ↦ CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
+    right_inv T := CentroidHom.ext <| fun _ => by rw [MulHom.toFun_eq_coe,
       NonUnitalRingHom.coe_toMulHom, centerToCentroid_apply, ← map_mul_right, one_mul] }
 
 end NonAssocSemiring
@@ -614,7 +614,7 @@ variable [NonUnitalRing α]
 abbrev commRing
     (h : ∀ a b : α, (∀ r : α, a * r * b = 0) → a = 0 ∨ b = 0) : CommRing (CentroidHom α) :=
   { CentroidHom.instRing with
-    mul_comm := fun f g ↦ by
+    mul_comm f g := by
       ext
       refine sub_eq_zero.1 (or_self_iff.1 <| (h _ _) fun r ↦ ?_)
       rw [mul_assoc, sub_mul, sub_eq_zero, ← map_mul_right, ← map_mul_right, coe_mul, coe_mul,

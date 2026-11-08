@@ -479,7 +479,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 @[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
     (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
-  toFun := fun i ↦ ⟨i, f i⟩
+  toFun i := ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 

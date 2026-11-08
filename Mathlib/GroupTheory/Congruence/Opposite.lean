@@ -34,7 +34,7 @@ def op (c : Con M) : Con Mᵐᵒᵖ where
   iseqv :=
   { refl := fun a ↦ c.refl a.unop
     symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
+    trans h1 h2 := c.trans h2 h1 }
   mul' h1 h2 := c.mul h2 h1
 
 /-- If `c` is a multiplicative congruence on `Mᵐᵒᵖ`, then `(a, b) ↦ c bᵒᵖ aᵒᵖ` is a multiplicative
@@ -46,7 +46,7 @@ def unop (c : Con Mᵐᵒᵖ) : Con M where
   iseqv :=
   { refl := fun a ↦ c.refl (.op a)
     symm := c.symm
-    trans := fun h1 h2 ↦ c.trans h2 h1 }
+    trans h1 h2 := c.trans h2 h1 }
   mul' h1 h2 := c.mul h2 h1
 
 /--

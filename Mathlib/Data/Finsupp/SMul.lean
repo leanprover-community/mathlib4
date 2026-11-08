@@ -120,13 +120,13 @@ variable (α M)
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
   { Finsupp.distribSMul _ _ with
-    one_smul := fun x => ext fun y => one_smul R (x y)
-    mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
+    one_smul x := ext fun y => one_smul R (x y)
+    mul_smul r s x := ext fun y => mul_smul r s (x y) }
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
-    zero_smul := fun _ => ext fun _ => zero_smul _ _
-    add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
+    zero_smul _ := ext fun _ => zero_smul _ _
+    add_smul _ _ _ := ext fun _ => add_smul _ _ _ }
 
 variable {α M}
 

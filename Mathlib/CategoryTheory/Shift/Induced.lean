@@ -99,7 +99,7 @@ noncomputable def induced : HasShift D A :=
     { F := s
       zero := Induced.zero F s i
       add := Induced.add F s i
-      zero_add_hom_app := fun n => by
+      zero_add_hom_app n := by
         suffices (Induced.add F s i 0 n).hom =
           eqToHom (by rw [zero_add]; rfl) ≫ whiskerRight (Induced.zero F s i).inv (s n) by
           intro X
@@ -113,7 +113,7 @@ noncomputable def induced : HasShift D A :=
           eqToHom_refl, Category.id_comp, eqToHom_app, Induced.zero_inv_app_obj]
         erw [← NatTrans.naturality_assoc, Iso.hom_inv_id_app_assoc]
         rfl
-      add_zero_hom_app := fun n => by
+      add_zero_hom_app n := by
         suffices (Induced.add F s i n 0).hom =
             eqToHom (by rw [add_zero]; rfl) ≫ whiskerLeft (s n) (Induced.zero F s i).inv by
           intro X
@@ -128,7 +128,7 @@ noncomputable def induced : HasShift D A :=
           ← NatTrans.naturality, Induced.zero_inv_app_obj,
           shiftFunctorAdd_add_zero_hom_app]
         simp [eqToHom_map, eqToHom_app]
-      assoc_hom_app := fun m₁ m₂ m₃ => by
+      assoc_hom_app m₁ m₂ m₃ := by
         suffices (Induced.add F s i (m₁ + m₂) m₃).hom ≫
             whiskerRight (Induced.add F s i m₁ m₂).hom (s m₃) =
             eqToHom (by rw [add_assoc]) ≫ (Induced.add F s i m₁ (m₂ + m₃)).hom ≫
@@ -221,7 +221,7 @@ noncomputable def Functor.CommShift.ofInduced :
         dsimp
         simp only [isoZero_hom_app, shiftFunctorZero_inv_app_obj_of_induced,
           ← F.map_comp_assoc, Iso.hom_inv_id_app, F.map_id, Category.id_comp]
-      commShiftIso_add := fun a b => by
+      commShiftIso_add a b := by
         ext X
         dsimp
         simp only [isoAdd_hom_app, Iso.symm_hom, shiftFunctorAdd_inv_app_obj_of_induced,

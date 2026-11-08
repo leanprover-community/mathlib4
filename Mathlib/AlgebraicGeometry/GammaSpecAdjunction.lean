@@ -395,7 +395,7 @@ lemma toOpen_comp_locallyRingedSpaceAdjunction_homEquiv_app
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec.{u} where
   unit :=
   { app := fun X ↦ ⟨locallyRingedSpaceAdjunction.{u}.unit.app X.toLocallyRingedSpace⟩
-    naturality := fun _ _ f ↦
+    naturality _ _ f :=
       Scheme.Hom.ext' (locallyRingedSpaceAdjunction.{u}.unit.naturality f.toLRSHom) }
   counit := (NatIso.op Scheme.SpecΓIdentity.{u}).inv
   left_triangle_components Y :=

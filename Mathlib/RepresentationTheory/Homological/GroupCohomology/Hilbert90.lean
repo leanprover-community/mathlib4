@@ -106,7 +106,7 @@ variable (K L : Type) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
 first group cohomology `H¹(Aut_K(L), Lˣ)` is trivial. -/
 noncomputable instance H1ofAutOnUnitsUnique : Unique (H1 (Rep.ofAlgebraAutOnUnits K L)) where
   default := 0
-  uniq := fun a => H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
+  uniq a := H1_induction_on a fun x => (H1π_eq_zero_iff _).2 <| by
     refine (coboundariesOfIsMulCoboundary₁ ?_).2
     rcases isMulCoboundary₁_of_isMulCocycle₁_of_aut_to_units x.1
       (isMulCocycle₁_of_mem_cocycles₁ _ x.2) with ⟨β, hβ⟩
