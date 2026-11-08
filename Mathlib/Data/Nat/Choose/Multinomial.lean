@@ -515,12 +515,11 @@ open Mathlib.Meta.Positivity Qq in
 Positivity extension for `Multiset.multinomial`.
 -/
 @[positivity multinomial (_ : Multiset ℕ)]
-meta def evalMultinomial : PositivityExt where eval {u α} _zα pα? e :=
-  match pα? with | none => throwError "not PartialOrder ℕ" | some _ => do
+meta def evalMultinomial : PositivityExt where eval {u α} _zα _ e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(multinomial $a) =>
     assertInstancesCommute
-    return .positive q(multinomial_pos $a)
+    return .nonzero q((multinomial_pos $a).ne')
   | _, _, _ => throwError "not multinomial"
 
 end PositivityExtension

@@ -143,7 +143,18 @@ alias ⟨_, ofReal_ne_zero_of_ne_zero⟩ := ofReal_ne_zero
 input is. -/
 @[positivity Complex.ofReal _, Complex.ofReal _]
 meta def evalComplexOfReal : PositivityExt where eval {u α} _ pα? e :=
-  match pα? with | none => pure .none | some _ => do
+  match pα? with
+  | none => do
+    -- `ℂ` is not ordered unless `ComplexOrder` is open, but we can still prove nonzeroness.
+    match u, α, e with
+    | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
+      assumeInstancesCommute
+      match ← core q(inferInstance) (some q(inferInstance)) a with
+      | .positive pa => return .nonzero q(ofReal_ne_zero_of_ne_zero (ne_of_gt $pa))
+      | .nonzero pa => return .nonzero q(ofReal_ne_zero_of_ne_zero $pa)
+      | _ => return .none
+    | _, _ => throwError "not Complex.ofReal"
+  | some _ => do
   match u, α, e with
   | 0, ~q(ℂ), ~q(Complex.ofReal $a) =>
     assumeInstancesCommute
