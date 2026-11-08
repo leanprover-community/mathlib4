@@ -696,4 +696,14 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
   rwa [Subtype.ext_iff, coe_one, coe_mul, ← right_eq_mul, mul_assoc (↑h) (↑h') g] at h1
 
+/-- If `S` is a complement of a subgroup `H` of a commutative group `G`, then for every `x : G`
+there is a unique `g : H` with `g • x ∈ S`. -/
+@[to_additive /-- If `S` is a complement of a subgroup `H` of a commutative additive group `G`, then
+for every `x : G` there is a unique `g : H` with `g +ᵥ x ∈ S`. -/]
+lemma IsComplement.existsUnique_smul_mem {G : Type*} [CommGroup G] {S : Set G} {H : Subgroup G}
+    (h : IsComplement S H) (x : G) : ∃! g : H, g • x ∈ S := by
+  obtain ⟨t, ht, ht'⟩ := isComplement_iff_existsUnique_mul_inv_mem.1 h x
+  refine ⟨t⁻¹, by simpa [Subgroup.smul_def, mul_comm] using ht, fun g hg ↦ ?_⟩
+  rw [← inv_inv g, ht' g⁻¹ (by simpa [Subgroup.smul_def, mul_comm] using hg)]
+
 end Subgroup

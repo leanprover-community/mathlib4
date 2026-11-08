@@ -762,11 +762,17 @@ noncomputable def OrderSupSet.choose (d : α) :
 
 /-- Noncomputably constructs a "supremum" for an arbitrary set using the axiom of choice
 such that it is the actual supremum of the set if one exists, the bottom element if the supremum
-doesn't exist but a bottom element does, and the default value `d` if neither exists. -/
+doesn't exist but a bottom element does, and the default value `d` if neither exists.
+
+The junk value satisfies `sSup s = sSup ∅` for any set `s` without a supremum, which is the same
+as the convention of `ConditionallyCompleteLinearOrder`. -/
 @[to_dual (attr := instance_reducible)
 /-- Noncomputably constructs an "infimum" for an arbitrary set using the axiom of choice
 such that it is the actual infimum of the set if one exists, the top element if the infimum
-doesn't exist but a top element does, and the default value `d` if neither exists. -/]
+doesn't exist but a top element does, and the default value `d` if neither exists.
+
+The junk value satisfies `sInf s = sInf ∅` for any set `s` without an infimum, which is the same
+as the convention of `ConditionallyCompleteLinearOrder`. -/]
 noncomputable def OrderSupSet.chooseBot (d : α) : OrderSupSet α :=
   .choose ((OrderSupSet.choose d).sSup ∅)
 
