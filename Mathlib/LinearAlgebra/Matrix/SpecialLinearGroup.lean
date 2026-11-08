@@ -143,16 +143,11 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
-theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
-  rfl
+def mk (A : Matrix n n R) (h : det A = 1) : SpecialLinearGroup n R := ⟨A, h⟩
 
-theorem coe_mk_mul_mk (A B : Matrix n n R) (hA : det A = 1) (hB : det B = 1) :
-    ↑(⟨A, hA⟩ * ⟨B, hB⟩ : SpecialLinearGroup n R) = A * B :=
-  rfl
-
-theorem coe_mk_inv (A : Matrix n n R) (h : det A = 1) :
-    ↑(⟨A, h⟩⁻¹ : SpecialLinearGroup n R) = adjugate A :=
-  rfl
+@[simp]
+theorem coe_mk (A : Matrix n n R) (h : det A = 1) : mk A h = A :=
+    rfl
 
 @[simp]
 theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
@@ -241,6 +236,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 @[simp]
 theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
     ↑(SpecialLinearGroup.map f (⟨A, h⟩ : SpecialLinearGroup n R)) = A.map f := rfl
+
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
 
