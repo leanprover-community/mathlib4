@@ -31,7 +31,7 @@ open Topology.IsScott in
     [OmegaCompletePartialOrder α] [TopologicalSpace α]
     [Topology.IsScott α (Set.range fun c : Chain α => Set.range c)] {f : α → Prop} :
     ωScottContinuous f ↔ Continuous f := by
-  rw [ωScottContinuous, scottContinuousOn_iff_continuous (fun a b hab => by
+  rw [ωScottContinuous, supScottContinuousOn_iff_continuous (fun a b hab => by
     use Chain.pair a b hab; exact OmegaCompletePartialOrder.Chain.range_pair a b hab)]
 
 namespace Scott

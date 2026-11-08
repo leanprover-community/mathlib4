@@ -239,8 +239,8 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
   simpa only [mem_compl_iff, mem_preimage, mem_Iic, le_refl, not_true]
     using isUpperSet_of_isOpen (D := D) ((isOpen_compl_iff.2 isClosed_Iic).preimage hf) hab h
 
-@[simp] lemma scottContinuousOn_iff_continuous {D : Set (Set α)} [Topology.IsScott α D]
-    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D) : ScottContinuousOn D f ↔ Continuous f := by
+@[simp] lemma supScottContinuousOn_iff_continuous {D : Set (Set α)} [Topology.IsScott α D]
+    (hD : ∀ a b : α, a ≤ b → {a, b} ∈ D) : SupScottContinuousOn D f ↔ Continuous f := by
   refine ⟨fun h ↦ continuous_def.2 fun u hu ↦ ?_, ?_⟩
   · rw [isOpen_iff_isUpperSet_and_dirSupInaccOn (D := D)]
     exact ⟨(isUpperSet_of_isOpen (D := univ) hu).preimage (h.monotone D hD),
@@ -258,6 +258,9 @@ lemma monotone_of_continuous [IsScott α D] (hf : Continuous f) : Monotone f := 
     simp only [upperBounds, mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
       mem_ofPred] at hb
     exact hfcb <| hb _ hcd
+
+@[deprecated (since := "2026-11-08")]
+alias scottContinuousOn_iff_continuous := supScottContinuousOn_iff_continuous
 
 end Preorder
 
@@ -316,10 +319,13 @@ instance : IsScott Prop univ :=
 
 end CompleteLinearOrder
 
-lemma isOpen_iff_scottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]
-    [IsScott α univ] : IsOpen s ↔ ScottContinuous fun x ↦ x ∈ s := by
-  rw [← scottContinuousOn_univ, scottContinuousOn_iff_continuous (fun _ _ _ ↦ by trivial)]
+lemma isOpen_iff_supScottContinuous_mem [Preorder α] {s : Set α} [TopologicalSpace α]
+    [IsScott α univ] : IsOpen s ↔ SupScottContinuous fun x ↦ x ∈ s := by
+  rw [← supScottContinuousOn_univ, supScottContinuousOn_iff_continuous (fun _ _ _ ↦ by trivial)]
   exact isOpen_iff_continuous_mem
+
+@[deprecated (since := "2026-11-08")]
+alias isOpen_iff_scottContinuous_mem := isOpen_iff_supScottContinuous_mem
 
 end IsScott
 
