@@ -443,58 +443,38 @@ macro_rules
 
 omit [IsContMDiffRiemannianBundle I 1 E fun (x : M) ↦ TangentSpace I x] in
 theorem contMDiffAt_leviCivitaAuxInner
-    {σ : (x : M) → TangentSpace I x} (hσ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% σ) x)
+    {σ : (x : M) → TangentSpace I x} (hσ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1) (T% σ) x)
     {τ : (x : M) → TangentSpace I x}
-    (hτ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ) x)
+    (hτ : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (k + 1) (T% τ) x)
     {τ' : (x : M) → TangentSpace I x}
-    (hτ' : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (↑k + 1 + 1) (T% τ') x) :
-    CMDiffAt (k + 1) (leviCivitaAuxInner I τ σ τ') x := by
+    (hτ' : ContMDiffAt I (I.prod 𝓘(ℝ, E)) (k + 1) (T% τ') x) :
+    CMDiffAt k (leviCivitaAuxInner I τ σ τ') x := by
     unfold leviCivitaAuxInner
     apply ContMDiffAt.div_const
-    have : IsContMDiffRiemannianBundle I (k + 2) E fun (x : M) ↦ TangentSpace I x :=
-      IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
     have : IsContMDiffRiemannianBundle I (k + 1) E fun (x : M) ↦ TangentSpace I x :=
-      IsContMDiffRiemannianBundle.of_le (n := k + 3) (by count_derivatives)
-    have : IsManifold I (↑(k + 2) + 1) M := IsManifold.of_le (n := k + 3) (by count_derivatives)
-    have : IsManifold I (minSmoothness ℝ 2) M := IsManifold.of_le (n := k + 3)
+      IsContMDiffRiemannianBundle.of_le (n := k + 2) (by count_derivatives)
+    have : IsContMDiffRiemannianBundle I k E fun (x : M) ↦ TangentSpace I x :=
+      IsContMDiffRiemannianBundle.of_le (n := k + 2) (by count_derivatives)
+    have : IsManifold I (↑(k + 1) + 1) M := IsManifold.of_le (n := k + 2) (by count_derivatives)
+    have : IsManifold I (minSmoothness ℝ 2) M := IsManifold.of_le (n := k + 2)
       (by simp only [minSmoothness_of_isRCLikeNormedField]; count_derivatives)
     repeat apply ContMDiffAt.add
     all_goals try apply ContMDiffAt.neg
     -- TODO: all of these should be proven by fun_prop, eventually!
-    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
-        (hτ.of_le (by count_derivatives)) (by count_derivatives)
-      apply ContMDiffAt.inner_bundle'
-      · apply hσ.of_le (by count_derivatives)
-      · -- Papercut: have hypotheses (k + 1 + 1)-differentiability; want k + 2-differentiability
-        -- convert won't do it, but creates k = k + 1 and 2 = 1 goals
-        apply hτ'.of_le (by count_derivatives)
-    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
-        (hσ.of_le (by count_derivatives)) (by count_derivatives)
-      exact (hτ'.of_le (by count_derivatives)).inner_bundle' (hτ.of_le (by count_derivatives))
-    · apply ContMDiffAt.mvfderiv ?_ (n := k + 2)
+    · exact (hσ.inner_bundle' hτ').mvfderiv (hτ.of_le (by count_derivatives)) le_rfl
+    · exact (hτ'.inner_bundle' hτ).mvfderiv (hσ.of_le (by count_derivatives)) le_rfl
+    · apply ContMDiffAt.mvfderiv ?_ (n := k + 1)
         (hτ'.of_le (by count_derivatives)) (by count_derivatives)
       exact (hτ.of_le (by count_derivatives)).inner_bundle' (hσ.of_le (by count_derivatives))
-    · apply ContMDiffAt.inner_bundle'
-      · apply hσ.of_le (by simp)
-      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
-        · apply hτ.of_le (by count_derivatives)
-        · apply hτ'.of_le (by count_derivatives)
-        simp only [minSmoothness_of_isRCLikeNormedField]
-        count_derivatives
-    · apply ContMDiffAt.inner_bundle'
-      · apply hτ'.of_le (by simp)
-      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
-        · apply hσ.of_le (by count_derivatives)
-        · apply hτ.of_le (by count_derivatives)
-        simp only [minSmoothness_of_isRCLikeNormedField]
-        count_derivatives
-    · apply ContMDiffAt.inner_bundle'
-      · apply hτ.of_le (by simp)
-      · apply ContMDiffAt.mlieBracket_vectorField (n := k + 2)
-        · apply hτ'.of_le (by count_derivatives)
-        · apply hσ.of_le (by count_derivatives)
-        simp only [minSmoothness_of_isRCLikeNormedField]
-        count_derivatives
+    · apply (hσ.of_le (by simp)).inner_bundle'
+      apply hτ.mlieBracket_vectorField hτ'
+      simp [minSmoothness_of_isRCLikeNormedField]
+    · apply (hτ'.of_le (by simp)).inner_bundle'
+      apply hσ.mlieBracket_vectorField hτ
+      simp [minSmoothness_of_isRCLikeNormedField]
+    · apply (hτ.of_le (by simp)).inner_bundle'
+      apply ContMDiffAt.mlieBracket_vectorField hτ' hσ
+      simp [minSmoothness_of_isRCLikeNormedField]
 
 attribute [local instance] TangentBundle.contMDiffVectorBundle
 
