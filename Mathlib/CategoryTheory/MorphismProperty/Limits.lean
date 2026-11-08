@@ -609,6 +609,13 @@ instance IsStableUnderColimitsOfShape.isomorphisms :
       h₁.hom_ext (fun j ↦ by simp [reassoc_of% (hφ j)]),
       h₂.hom_ext (by simp [hφ])⟩
 
+variable (W) in
+lemma IsStableUnderColimitsOfShape.iff_of_equivalence
+    {J' : Type*} [Category* J'] (e : J ≌ J') :
+    W.IsStableUnderColimitsOfShape J ↔ W.IsStableUnderColimitsOfShape J' := by
+  simp only [isStableUnderColimitsOfShape_iff_colimitsOfShape_le,
+    W.colimitsOfShape_eq_of_equivalence e]
+
 end ColimitsOfShape
 
 /-- The condition that a property of morphisms is stable by filtered colimits. -/

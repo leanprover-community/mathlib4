@@ -12,6 +12,7 @@ public import Mathlib.CategoryTheory.Presentable.Type
 public import Mathlib.CategoryTheory.Presentable.Uniformization
 public import Mathlib.CategoryTheory.Subfunctor.Colimits
 public import Mathlib.CategoryTheory.Subfunctor.Image
+public import Mathlib.CategoryTheory.Widesubcategory
 
 /-!
 # ...
@@ -510,9 +511,9 @@ lemma _root_.Cardinal.SharplyLT.HasEnoughPureSubobjects.fullSubcategory
       ObjectProperty.homMk f', ObjectProperty.homMk i,
       IsCardinalPure.of_full_of_faithful P.ι (by assumption), by cat_disch⟩
 
+-- Proposition 2.33
 lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
-    [IsCardinalAccessibleCategory C κ] :
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
       h.HasEnoughPureSubobjects C := by
   obtain ⟨A, _, P, _, _, ⟨e⟩⟩ :=
@@ -523,5 +524,11 @@ lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
   have : P.IsClosedUnderCardinalFilteredColimits κ₁ := .of_le h₁.le
   exact ⟨κ₂, inferInstance, h₁.trans h₂,
     ((H.fullSubcategory P).trans h₁).of_equivalence e.symm⟩
+
+-- Proposition 2.34
+lemma IsCardinalAccessibleCategory.isAccessibleCategory_isCardinalPure
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
+    IsAccessibleCategory.{w} (WideSubcategory (isCardinalPure C κ)) := by
+  sorry
 
 end CategoryTheory
