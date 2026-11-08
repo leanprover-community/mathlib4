@@ -161,9 +161,6 @@ attribute [coe] ContinuousAlgHom.toAlgHom
 
 instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
 
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
-
 @[simp, norm_cast]
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
   cases f; cases g; simp only [mk.injEq]

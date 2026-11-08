@@ -12,7 +12,6 @@ public import Mathlib.Tactic.Push
 import all Lean.MetavarContext -- for `mkAuxMVarType`
 
 /-!
-
 # Without loss of generality tactic
 
 The tactic `wlog h : P` will add an assumption `h : P` to the main goal,
