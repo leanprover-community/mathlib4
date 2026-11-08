@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.RingTheory.Ideal.Quotient.HasFiniteQuotients.Basic
 
 /-!
-
 # Unramified and ramification index
 
 We connect `Ideal.ramificationIdx` to the commutative algebra notion predicate of `IsUnramifiedAt`.

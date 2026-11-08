@@ -12,7 +12,6 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.Notation
 
 /-!
-
 # Freek № 99: Buffon's Needle
 
 This file proves Theorem 99 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/), also
@@ -67,7 +66,6 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://en.wikipedia.org/wiki/Buffon%27s_needle_problem
 * https://www.math.leidenuniv.nl/~hfinkeln/seminarium/stelling_van_Buffon.pdf
 * https://www.isa-afp.org/entries/Buffons_Needle.html
-
 -/
 
 @[expose] public section

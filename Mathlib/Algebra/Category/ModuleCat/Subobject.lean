@@ -36,12 +36,11 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         fapply eq_mk_of_comm
         · apply LinearEquiv.toModuleIso
           apply LinearEquiv.ofBijective (LinearMap.codRestrict
-            (LinearMap.range S.arrow.hom) S.arrow.hom _)
+            (LinearMap.range S.arrow.hom) S.arrow.hom (LinearMap.mem_range_self _))
           constructor
           · simp [← LinearMap.ker_eq_bot, ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
-            exact LinearMap.mem_range_self _
         · ext x
           rfl)
       left_inv := fun N => by

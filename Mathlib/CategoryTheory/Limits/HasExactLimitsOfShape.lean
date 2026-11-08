@@ -12,7 +12,6 @@ import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
-
 # Exact (co)limits
 
 We introduce a typeclass `HasExactColimitsOfShape J C` in order to express

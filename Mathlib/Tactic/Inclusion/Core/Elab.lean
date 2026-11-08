@@ -178,7 +178,8 @@ One can directly write inclusion and hypothesis extensions like:
 @[inclusion_ext (_ : ℝ)]
 meta def mkRealIVar : InclusionExt :=
   mkNDIVarExt `interval_dyadic_real
-    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩ mkBinarySplitCover
+    ⟨q(ℝ), q(Interval Dyadic), q(instToSetIntervalDyadicReal)⟩
+    (Interval.mkBinarySplitCover q(binarySplit))
 ```
 
 ```lean

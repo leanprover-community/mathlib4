@@ -11,7 +11,6 @@ import Mathlib.RingTheory.Ideal.MonicSpan
 import Mathlib.RingTheory.KrullDimension.Polynomial
 
 /-!
-
 # Polynomial over Regular Ring
 
 In this file we prove that the polynomial ring over a regular ring is regular.

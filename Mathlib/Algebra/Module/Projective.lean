@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Basic.UnivLE
 
 /-!
-
 # Projective modules
 
 This file contains a definition of a projective module, the proof that
