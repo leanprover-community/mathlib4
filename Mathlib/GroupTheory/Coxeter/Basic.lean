@@ -140,8 +140,45 @@ theorem reindexGroupEquiv_apply_simple (i : B') :
 theorem reindexGroupEquiv_symm_apply_simple (i : B) :
     (M.reindexGroupEquiv e).symm (M.simple i) = (M.reindex e).simple (e i) := rfl
 
+@[simp]
+theorem simple_mul_simple_self (i : B) : M.simple i * M.simple i = 1 := by
+  apply (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure _)
+  exact ⟨(i, i), by simp [relation]⟩
+
+@[simp]
+theorem simple_mul_simple_cancel_right {w} (i : B) : w * M.simple i * M.simple i = w := by
+  simp [mul_assoc]
+
+@[simp]
+theorem simple_mul_simple_cancel_left {w} (i : B) : M.simple i * (M.simple i * w) = w := by
+  simp [← mul_assoc]
+
+@[simp]
+theorem simple_sq (i : B) : M.simple i ^ 2 = 1 :=
+  pow_two (M.simple i) ▸ M.simple_mul_simple_self i
+
+@[simp]
+theorem inv_simple (i : B) : (M.simple i)⁻¹ = M.simple i :=
+  (eq_inv_of_mul_eq_one_right (M.simple_mul_simple_self i)).symm
+
+@[simp]
+theorem simple_mul_simple_pow (i i' : B) : (M.simple i * M.simple i') ^ M i i' = 1 := by
+  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
+  have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
+    (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
+  exact this
+
+@[simp]
+theorem simple_mul_simple_pow' (i i' : B) : (M.simple i' * M.simple i) ^ M i i' = 1 :=
+  M.symmetric i' i ▸ M.simple_mul_simple_pow i' i
+
 theorem subgroupClosure_range_simple : Subgroup.closure (range M.simple) = ⊤ :=
   PresentedGroup.closure_range_of _
+
+theorem submonoidClosure_range_simple : Submonoid.closure (range M.simple) = ⊤ := by
+  have : range M.simple = range M.simple ∪ (range M.simple)⁻¹ := by
+    simp_rw [inv_range, inv_simple, union_self]
+  rw [this, ← Subgroup.closure_toSubmonoid, subgroupClosure_range_simple, Subgroup.top_toSubmonoid]
 
 end CoxeterMatrix
 
@@ -184,8 +221,6 @@ protected def reindex (e : B ≃ B') : CoxeterSystem (M.reindex e) W :=
 @[simps]
 protected def map (e : W ≃* H) : CoxeterSystem M H := ⟨e.symm.trans cs.mulEquiv⟩
 
-/-! ### Simple reflections -/
-
 /-- The simple reflection of `W` at the index `i`. -/
 def simple (i : B) : W := cs.mulEquiv.symm (M.simple i)
 
@@ -200,11 +235,8 @@ theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
 local prefix:100 "s" => cs.simple
 
 @[simp]
-theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
-  have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
-    (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
-  exact map_mul_eq_one cs.mulEquiv.symm this
+theorem simple_mul_simple_self (i : B) : s i * s i = 1 :=
+  map_mul_eq_one cs.mulEquiv.symm (M.simple_mul_simple_self _)
 
 @[simp]
 theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
@@ -214,7 +246,9 @@ theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
 theorem simple_mul_simple_cancel_left {w : W} (i : B) : s i * (s i * w) = w := by
   simp [← mul_assoc]
 
-@[simp] theorem simple_sq (i : B) : s i ^ 2 = 1 := pow_two (s i) ▸ cs.simple_mul_simple_self i
+@[simp]
+theorem simple_sq (i : B) : s i ^ 2 = 1 :=
+  pow_two (s i) ▸ cs.simple_mul_simple_self i
 
 @[simp]
 theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
@@ -222,14 +256,12 @@ theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
 
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
-  have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
-  have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
-    (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
   rw [← map_mul, ← map_pow]
-  exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
+  exact cs.mulEquiv.symm.map_eq_one_iff.mpr (M.simple_mul_simple_pow i i')
 
-@[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
+@[simp]
+theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
 
 /-- The simple reflections of `W` generate `W` as a group. -/
