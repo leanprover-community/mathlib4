@@ -765,20 +765,37 @@ def trajMeasure (μ₀ : Measure (X 0)) (κ : (n : ℕ) → Kernel (Π i : Iic n
     Measure (Π n, X n) :=
   (traj κ 0) ∘ₘ (μ₀.map (MeasurableEquiv.piUnique _).symm)
 
-variable {μ₀ : Measure (X 0)} [IsProbabilityMeasure μ₀]
+variable {μ₀ : Measure (X 0)}
 
-instance : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
+instance [SFinite μ₀] : SFinite (trajMeasure μ₀ κ) := by
   rw [trajMeasure]
   infer_instance
 
-lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure {a : ℕ} :
+instance [IsProbabilityMeasure μ₀] : IsProbabilityMeasure (trajMeasure μ₀ κ) := by
+  rw [trajMeasure]
+  infer_instance
+
+variable (μ₀ κ) in
+lemma map_frestrictLe_trajMeasure (n : ℕ) :
+    (trajMeasure μ₀ κ).map (frestrictLe n) =
+      partialTraj κ 0 n ∘ₘ μ₀.map (MeasurableEquiv.piUnique _).symm := by
+  rw [trajMeasure, Measure.map_comp _ _ (by fun_prop), traj_map_frestrictLe]
+
+variable (μ₀ κ) in
+lemma map_eval_zero_trajMeasure : (trajMeasure μ₀ κ).map (fun ω ↦ ω 0) = μ₀ := by
+  change (trajMeasure μ₀ κ).map (MeasurableEquiv.piUnique _ ∘ frestrictLe 0) = μ₀
+  rw [← Measure.map_map (by fun_prop) (by fun_prop), map_frestrictLe_trajMeasure,
+    partialTraj_self, Measure.id_comp, MeasurableEquiv.map_map_symm]
+
+lemma map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure [SFinite μ₀] {a : ℕ} :
     (trajMeasure μ₀ κ).map (frestrictLe a) ⊗ₘ κ a =
       (trajMeasure μ₀ κ).map (fun x ↦ (frestrictLe a x, x (a + 1))) := by
-  rw [Measure.compProd_eq_comp_prod, trajMeasure, Measure.map_comp _ _ (by fun_prop),
-    traj_map_frestrictLe, Measure.comp_assoc, Measure.map_comp _ _ (by fun_prop)]
-  congr with x₀ : 1
-  rw [comp_apply, ← Measure.compProd_eq_comp_prod, map_apply _ (by fun_prop),
-    partialTraj_compProd_eq_map_traj zero_le]
+  rw [map_frestrictLe_trajMeasure, Measure.compProd_eq_comp_prod,
+    Measure.bind_bind (by fun_prop) (by fun_prop), trajMeasure,
+    Measure.map_bind (by fun_prop) (by fun_prop)]
+  simp [← Measure.compProd_eq_comp_prod, partialTraj_compProd_eq_map_traj zero_le]
+
+variable [IsProbabilityMeasure μ₀]
 
 /-- A regular conditional probability distribution of the point at time `a + 1` given the
 trajectory up to time `a` corresponds to the kernel `κ a`. -/
