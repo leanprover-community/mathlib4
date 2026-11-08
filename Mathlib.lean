@@ -5338,6 +5338,8 @@ public import Mathlib.LinearAlgebra.Matrix.Cartan.Basic
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.Exceptional
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.Leaf
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.TypeA
+public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.TypeB
+public import Mathlib.LinearAlgebra.Matrix.Cartan.Classification.TypeD
 public import Mathlib.LinearAlgebra.Matrix.Cartan.Realisation
 public import Mathlib.LinearAlgebra.Matrix.CharP
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
