@@ -5,12 +5,12 @@ Authors: Tjeerd Jan Heeringa
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
-public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.InnerProductSpace.Trace
+public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 # Schatten operators
@@ -74,10 +74,10 @@ theorem traceOfBasis_eq {A : E →L[ℂ] E} (hA : A.IsPositive) {ι ι' : Type*}
   calc ∑' i, ‖S (b i)‖ₑ ^ 2 = ∑' i, ∑' j, ‖⟪b' j, S (b i)⟫_ℂ‖ₑ ^ 2 := by
         simp [b'.tsum_enorm_inner_sq]
     _ = ∑' j, ∑' i, ‖⟪b i, S (b' j)⟫_ℂ‖ₑ ^ 2 := by
-        rw [ENNReal.tsum_comm]
+        rw [tsum_comm]
         refine tsum_congr fun j ↦ tsum_congr fun i ↦ ?_
         rw [← (CFC.sqrt_nonneg A).isSelfAdjoint.isSymmetric.apply_clm,
-          ← inner_conj_symm, RCLike.enorm_conj]
+          ← inner_conj_symm, RCLike.eNorm_conj]
     _ = ∑' j, ‖S (b' j)‖ₑ ^ 2 := by simp [b.tsum_enorm_inner_sq]
 
 omit [CompleteSpace E] in
@@ -152,8 +152,7 @@ theorem trace_add_le (hA : A.IsPositive) (hB : B.IsPositive) :
     trace (A + B) ≤ trace A + trace B := by
   simp_rw [trace_def, traceOfBasis_eq_toReal_tsum (hA.add hB), traceOfBasis_eq_toReal_tsum hA,
     traceOfBasis_eq_toReal_tsum hB, add_apply, inner_add_right, map_add,
-    ENNReal.ofReal_add (hA.re_inner_nonneg_right _) (hB.re_inner_nonneg_right _),
-    ENNReal.tsum_add]
+    ENNReal.ofReal_add (hA.re_inner_nonneg_right _) (hB.re_inner_nonneg_right _), tsum_add]
   exact_mod_cast ENNReal.toReal_add_le
 
 end IsPositive
