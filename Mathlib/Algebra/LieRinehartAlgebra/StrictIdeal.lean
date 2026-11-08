@@ -45,7 +45,7 @@ public section
 which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. -/
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
-  ideal' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
+  lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
   isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
 
 namespace StrictLieRinehartIdeal
@@ -66,6 +66,13 @@ instance : SetLike (StrictLieRinehartIdeal A L) L where
 
 initialize_simps_projections StrictLieRinehartIdeal (carrier → coe, as_prefix coe)
 
+lemma isotropic {s : StrictLieRinehartIdeal A L} {l : L} (h : l ∈ s) (a : A) : ⁅l, a⁆ = 0 :=
+  s.isotropic' l a h
+
+@[membership .]
+lemma lie_mem_left {s : StrictLieRinehartIdeal A L} {l : L} (h : l ∈ s) (l' : L) : ⁅l, l'⁆ ∈ s :=
+  s.lie_mem_left' h
+
 instance : PartialOrder (StrictLieRinehartIdeal A L) := .ofSetLike (StrictLieRinehartIdeal A L)
 
 instance : AddSubgroupClass (StrictLieRinehartIdeal A L) L where
@@ -84,16 +91,20 @@ instance : Zero (StrictLieRinehartIdeal A L) :=
 
 instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
 
+@[membership .]
+lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' ∈ s) : ⁅l, l'⁆ ∈ s :=
+    by
+  rw [← lie_skew]
+  apply neg_mem
+  membership
+
 /-- A Lie-Rinehart ideal forms a Lie ring. -/
 instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
-  bracket x y := ⟨⁅x.val, y.val⁆, s.ideal' x.property⟩
+  bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_left x.property _⟩
   lie_add x y z := by aesop
   add_lie x y z := by aesop
   lie_self x := by aesop
   leibniz_lie x y z := by aesop
-
-lemma isotropic {s : StrictLieRinehartIdeal A L} {l : L} (h : l ∈ s) (a : A) : ⁅l, a⁆ = 0 :=
-  s.isotropic' l a h
 
 @[simp]
 lemma coe_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ := rfl
@@ -168,10 +179,7 @@ variable (R) in
 /-- Converts a Lie-Rinehart ideal to the corresponding Lie ideal. -/
 @[expose] def toLieIdeal {s : StrictLieRinehartIdeal A L} : LieIdeal R L where
   toSubmodule := s.toSubmodule.restrictScalars R
-  lie_mem {x y} hy := by
-    rw [← lie_skew]
-    refine neg_mem ?_
-    exact s.ideal' hy
+  lie_mem {_ _} hy := lie_mem_right _ hy
 
 theorem toLieIdeal_injective : Function.Injective (fun s =>
     s.toLieIdeal R : StrictLieRinehartIdeal A L → LieIdeal R L) := fun s₁ s₂ h ↦ by
@@ -221,12 +229,12 @@ identity of `A`) is a strict Lie-Rinehart ideal. -/
 @[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ := {
   s₂.toSubmodule.comap (f.toLinearMap') with
-  ideal' {x y} h := by
+  lie_mem_left' {x y} h := by
     change f.toLinearMap' ⁅x, y⁆ ∈ s₂
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply, LieHom.map_lie]
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
-    exact s₂.ideal' h
+    exact lie_mem_left h _
   isotropic' x a h := by
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h

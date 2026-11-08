@@ -68,9 +68,7 @@ instance : LieRing (L ⧸ s) where
       rw [mem_toSubmodule]
       have h : ⁅a₁, a₂⁆ - ⁅b₁, b₂⁆ = ⁅a₁ - b₁, a₂⁆ + ⁅b₁, a₂ - b₂⁆ := by simp
       rw [h]
-      refine add_mem ?_ ?_
-      · exact s.ideal' ha
-      · rw [← neg_mem_iff, lie_skew]; exact s.ideal' hb)
+      exact add_mem (lie_mem_left ha _) (lie_mem_right _ hb))
   add_lie := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (add_lie x y z)
   lie_add := by rintro ⟨x⟩ ⟨y⟩ ⟨z⟩; exact congrArg mk (lie_add x y z)
   lie_self := by rintro ⟨x⟩; exact congrArg mk (lie_self x)
@@ -120,12 +118,11 @@ instance : LieAlgebra R (L ⧸ s) where
 variable (s R) in
 open LieRinehartAlgebra in
 /-- `StrictLieRinehartIdeal.Quotient.mk` as a Lie-Rinehart homomorphism. -/
-@[expose] def mk' : L →ₗ⁅.id R A⁆ L ⧸ s :=
-  { (s.toSubmodule.restrictScalars R).mkQ with
-    toFun := mk
-    map_lie' {_ _} := rfl
-    map_smul_apply' _ _ := rfl
-    apply_lie' _ _ := rfl }
+@[expose] def mk' : L →ₗ⁅.id R A⁆ L ⧸ s where
+  __ := (s.toSubmodule.restrictScalars R).mkQ
+  map_lie' {_ _} := rfl
+  map_smul_apply' _ _ := rfl
+  apply_lie' _ _ := rfl
 
 @[simp]
 lemma mk'_apply {l : L} : mk' s R l = mk l := rfl
