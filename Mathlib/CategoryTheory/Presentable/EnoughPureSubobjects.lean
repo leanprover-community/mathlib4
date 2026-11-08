@@ -612,7 +612,7 @@ lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ'
     have hc : IsColimit c := (isCardinalPresentable C κ').ι.denseAt X.obj
     have := isFiltered_of_isCardinalFiltered J κ'
     let P : ObjectProperty J := fun j ↦ IsCardinalPure κ j.hom
-    have (j : P.FullSubcategory) : IsCardinalPure κ j.obj.hom := sorry
+    have (j : P.FullSubcategory) : IsCardinalPure κ j.obj.hom := j.property
     have hP {j k : P.FullSubcategory} (g : j ⟶ k) : IsCardinalPure κ g.hom.left.hom :=
       IsCardinalPure.of_fac κ _ _ _ g.hom.w
     have : P.ι.Final := by
