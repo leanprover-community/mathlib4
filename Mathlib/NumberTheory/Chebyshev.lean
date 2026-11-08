@@ -652,6 +652,27 @@ theorem isBigO_psi_sub_theta_sqrt : IsBigO atTop (ψ - θ) sqrt := by
   rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
   exact hC x
 
+open Asymptotics Filter in
+/-- Prime powers contribute a sublinear error to the Chebyshev functions. -/
+theorem isLittleO_psi_sub_theta_id : (ψ - θ) =o[atTop] id := by
+  refine isBigO_psi_sub_theta_sqrt.trans_isLittleO ?_
+  apply (isLittleO_iff_tendsto' (by filter_upwards [eventually_gt_atTop 0]; grind)).mpr
+  apply ((tendsto_const_nhds (x := (1 : ℝ))).div_atTop tendsto_sqrt_atTop).congr
+  grind
+
+open Asymptotics Filter in
+/-- Restricting to any predicate preserves the sublinear error from prime powers. -/
+theorem sum_vonMangoldt_sub_sum_prime_log_isLittleO (P : ℕ → Prop) [DecidablePred P] :
+    (fun x : ℝ ↦ (∑ n ∈ Ioc 0 ⌊x⌋₊ with P n, Λ n) -
+      ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime ∧ P p, log p) =o[atTop] id := by
+  refine (IsBigO.of_bound' (.of_forall fun x ↦ ?_)).trans_isLittleO isLittleO_psi_sub_theta_id
+  rw [Pi.sub_apply, norm_of_nonneg (sub_nonneg.mpr (theta_le_psi x)),
+    psi_sub_theta_eq_sum_not_prime]
+  simp_rw [sum_filter, ← sum_sub_distrib]
+  refine (norm_sum_le _ _).trans (sum_le_sum fun n _ ↦ ?_)
+  by_cases n.Prime <;> by_cases P n <;>
+    simp [*, vonMangoldt_apply_prime, abs_of_nonneg, vonMangoldt_nonneg]
+
 end CostaPereira
 
 section PrimeCounting
@@ -900,6 +921,34 @@ theorem pi_le_log4_mul_div {x : ℝ} (hx : 1 < x) : π ⌊x⌋₊ ≤ log 4 * x 
   have : 0 < log √x := log_pos (lt_sqrt_of_sq_lt (by simp [hx]))
   field_simp
   grind [pi_mul_log_sqrt_le hx.le]
+
+/-- Replacing the logarithm of each prime by `log x` gives a sublinear error. -/
+theorem primeCounting_mul_log_sub_theta_isLittleO :
+    (fun x ↦ π ⌊x⌋₊ * log x - θ x) =o[atTop] id := by
+  refine (integral_theta_div_log_sq_isLittleO.mul_isBigO (isBigO_refl log atTop)).congr' ?_ ?_
+  · filter_upwards [eventually_ge_atTop 2] with x hx
+    grind [primeCounting_eq_theta_div_log_add_integral, Real.log_pos]
+  · filter_upwards [eventually_gt_atTop 1] with x hx
+    exact div_mul_cancel₀ _ (log_pos hx).ne'
+
+/-- Restricting to any predicate preserves the sublinear error from replacing `log p`
+by `log x`. -/
+theorem card_prime_mul_log_sub_sum_prime_log_isLittleO (P : ℕ → Prop) [DecidablePred P] :
+    (fun x : ℝ ↦ (#{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ P p} : ℝ) * log x -
+      ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime ∧ P p, log p) =o[atTop] id := by
+  refine (IsBigO.of_bound' ?_).trans_isLittleO primeCounting_mul_log_sub_theta_isLittleO
+  filter_upwards [eventually_gt_atTop 0] with x hx
+  have hnonneg (n : ℕ) (hn : n ∈ Ioc 0 ⌊x⌋₊) : 0 ≤ log x - log n :=
+    sub_nonneg.mpr (log_le_log (mod_cast (mem_Ioc.mp hn).1)
+      ((Nat.le_floor_iff hx.le).mp (mem_Ioc.mp hn).2))
+  rw [← nsmul_eq_mul, ← sum_const, ← sum_sub_distrib, Real.norm_of_nonneg <| sum_nonneg <| by grind]
+  calc
+    _ ≤ ∑ p ∈ Ioc 0 ⌊x⌋₊ with p.Prime, _ :=
+      sum_le_sum_of_subset_of_nonneg (by grind) (by grind)
+    _ = π ⌊x⌋₊ * log x - θ x := by
+      rw [sum_sub_distrib, sum_const, nsmul_eq_mul, ← primesLE_eq_filter_Ioc_zero,
+        primesLE_card_eq_primeCounting, theta_eq_sum_primesLE]
+    _ ≤ _ := le_norm_self _
 
 end PrimeCounting
 end Chebyshev
