@@ -5,15 +5,17 @@ Authors: Matthew W. Horn
 -/
 module
 
-public import Mathlib.Data.Nat.Factorial.Basic
-public import Mathlib.Basic.Real.Basic
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
-public import Mathlib.Tactic.FieldSimp
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Tactic.Ring
+public import Mathlib.Basic.Real.Basic
+public import Mathlib.Data.Nat.Factorial.Basic
 
-/-! # Erlang's loss formula
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Ring
+
+/-!
+# Erlang's loss formula
 
 `Real.erlangB a c` is Erlang's loss formula `B(c, a)`: the blocking probability of a loss system
 with `c` servers at offered load `a`. It is defined by the recursion
@@ -47,9 +49,9 @@ The recursion and its equality with the closed form are classical; see for examp
 Erlang, loss formula, blocking probability
 -/
 
-open Finset
-
 public section
+
+open Finset
 
 namespace Real
 
@@ -67,6 +69,7 @@ which makes the denominator positive (`erlangB_denom_pos`). -/
 theorem erlangB_succ (a : ℝ) (c : ℕ) :
     erlangB a (c + 1) = a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c) := rfl
 
+/-- `erlangB a c` is nonnegative for `0 ≤ a`. -/
 theorem erlangB_nonneg {a : ℝ} (ha : 0 ≤ a) : ∀ c : ℕ, 0 ≤ erlangB a c
   | 0 => zero_le_one
   | c + 1 => by
@@ -82,6 +85,7 @@ theorem erlangB_denom_pos {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
   have hc : (0 : ℝ) ≤ c := Nat.cast_nonneg c
   linarith
 
+/-- `erlangB a c` is at most `1` for `0 ≤ a`. -/
 theorem erlangB_le_one {a : ℝ} (ha : 0 ≤ a) (c : ℕ) : erlangB a c ≤ 1 := by
   cases c with
   | zero => exact le_rfl
@@ -102,8 +106,8 @@ theorem erlangB_carried_le {a : ℝ} (ha : 0 ≤ a) : ∀ c : ℕ, a * (1 - erla
     have ih := erlangB_carried_le ha c
     have hD := erlangB_denom_pos ha c
     have hDne : ((c : ℝ) + 1 + a * erlangB a c) ≠ 0 := hD.ne'
-    have key : a * (1 - a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c))
-        = a * ((c : ℝ) + 1) / ((c : ℝ) + 1 + a * erlangB a c) := by
+    have key : a * (1 - a * erlangB a c / ((c : ℝ) + 1 + a * erlangB a c)) =
+        a * ((c : ℝ) + 1) / ((c : ℝ) + 1 + a * erlangB a c) := by
       field_simp
       ring
     rw [erlangB_succ, key, div_le_iff₀ hD]
@@ -154,8 +158,8 @@ theorem erlangB_mul_sum {a : ℝ} (ha : 0 ≤ a) (c : ℕ) :
     have hfact : ((c + 1).factorial : ℝ) = ((c : ℝ) + 1) * (c.factorial : ℝ) := by
       push_cast [Nat.factorial_succ]
       ring
-    have hT : a ^ (c + 1) / ((c + 1).factorial : ℝ) * ((c : ℝ) + 1)
-        = a * (a ^ c / (c.factorial : ℝ)) := by
+    have hT : a ^ (c + 1) / ((c + 1).factorial : ℝ) * ((c : ℝ) + 1) =
+        a * (a ^ c / (c.factorial : ℝ)) := by
       rw [hfact, pow_succ]
       field_simp
     rw [sum_range_succ, erlangB_succ, div_mul_eq_mul_div, div_eq_iff hD.ne']
