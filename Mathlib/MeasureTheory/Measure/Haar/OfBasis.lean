@@ -83,7 +83,7 @@ theorem parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
 theorem prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped ×ˢ w.parallelepiped :=
   PositiveCompacts.ext <|
-    congr(_root_.parallelepiped ℝ $(funext (v.prod_apply w))).trans (parallelepiped_prod _ _)
+    congr(_root_.parallelepiped ℝ $(funext (v.prod_apply w))).trans (parallelepiped_sumElim _ _)
 
 variable [MeasurableSpace E] [BorelSpace E]
 

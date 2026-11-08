@@ -65,7 +65,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   refine (e.arrowCongr (.refl K)).exists_congr fun t ↦ ?_
   simp [Pi.le_def, ← e.sum_comp, e.forall_congr_left]
 
-theorem parallelepiped_prod (v : ι → E) (w : ι' → F) :
+theorem parallelepiped_sumElim (v : ι → E) (w : ι' → F) :
     parallelepiped K (Sum.elim (LinearMap.inl K E F ∘ v) (LinearMap.inr K E F ∘ w)) =
       parallelepiped K v ×ˢ parallelepiped K w := by
   ext ⟨x, y⟩
