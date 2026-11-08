@@ -141,25 +141,6 @@ theorem smallArtanh.spec (num den n : ℕ) :
     simp [div_pow, field]
     ring
 
-private theorem sum_le_of_nonneg {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ico 0 1) :
-    ∑ k ∈ Finset.range n, x ^ (2 * k + 1) / (2 * k + 1) ≤ artanh x := by
-  have h (k : ℕ) : 0 ≤ x ^ (2 * k + 1) / (2 * k + 1) :=
-    div_nonneg (pow_nonneg hx.left (2 * k + 1)) (mod_cast by lia)
-  suffices HasSum (fun k : ℕ => x ^ (2 * k + 1) / (2 * k + 1)) (artanh x) by
-    rw [← this.tsum_eq, ← this.summable.sum_add_tsum_nat_add n, le_add_iff_nonneg_right]
-    exact tsum_nonneg fun k => h (k + n)
-  apply hasSum_iff_tendsto_nat_of_nonneg (fun k => h k) (artanh x) |>.mpr
-  rw [tendsto_iff_norm_sub_tendsto_zero]
-  simp only [norm_eq_abs, abs_sub_comm]
-  have := sum_range_sub_log_div_le (by grind : |x| < 1)
-  rw [← artanh_eq_half_log (by grind)] at this
-  refine squeeze_zero (fun k => abs_nonneg _) this ?_
-  simp only [pow_succ |x|]
-  simp only [mul_div_assoc, pow_mul]
-  rw [← zero_mul (|x| / (1 - x ^ 2))]
-  refine tendsto_pow_atTop_nhds_zero_of_abs_lt_one ?_ |>.mul_const _
-  grind [sq_lt_one_iff_abs_lt_one]
-
 private theorem abs_artanh_sub_le {n : ℕ} {x : ℝ} (hx : x ∈ Set.Ioo (-1) 1) :
     |artanh x - ∑ k ∈ Finset.range n, x ^ (2 * k + 1) / (2 * k + 1)| ≤
       |x| ^ (2 * n + 1) / (1 - x ^ 2) := by
@@ -243,7 +224,8 @@ theorem logTwo_le (prec : ℕ) :
   simp only [add_div]
   conv in _ + _ => congr; congr; all_goals field_simp; rw [mul_div_assoc]
   rw [hartanh17, hartanh19, hartanh31]
-  iterate 3 grw [sum_le_of_nonneg (by norm_num)]
+  iterate 3 grw [Real.sum_range_le_log_div (by norm_num) (by norm_num),
+    ← artanh_eq_half_log (by grind)]
   simp only [Nat.cast_one, Nat.cast_ofNat, logTwo_aux, le_rfl]
 
 theorem le_logTwo (prec : ℕ) :
@@ -267,7 +249,7 @@ def logSum (x : Dyadic) (prec : ℕ) : Dyadic :=
     let m : ℕ := n.natAbs
     -- Dyadic.smallArtanh → δ₁ < (1 / 2) ^ (prec + 2), although we only need `≤`
     let (P, Q) : ℕ × ℕ := smallArtanh (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
-    -- ofIntFdivWithPrec → δ₂ ≤ (1 / 2) ^ (prec + 2)
+    -- (P / Q : ℚ).toDyadic → δ₂ ≤ (1 / 2) ^ (prec + 2)
     -- δ ≤ 2 * (δ₁ + δ₂) < (1 / 2) ^ prec
     2 * (P / Q : ℚ).toDyadic (prec + 2)
 
@@ -345,7 +327,7 @@ theorem logSum_le {x : Dyadic} (hx : 1 ≤ |x| ∧ |x| < 2) (prec : ℕ) :
     simp only [Rat.cast_div, Rat.cast_natCast]
     have hartanh := smallArtanh.spec (m - 2 ^ e) (m + 2 ^ e) (prec / 3 + 1)
     simp only [hPQ] at hartanh
-    grw [hartanh, sum_le_of_nonneg hem', artanh_eq_half_log (by grind),
+    grw [hartanh, Real.sum_range_le_log_div hem'.left hem'.right,
       one_div, mul_inv_cancel_left₀ (by simp)]
     apply le_of_eq
     nth_rw 2 [← log_abs]
