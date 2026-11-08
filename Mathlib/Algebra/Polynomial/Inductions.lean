@@ -136,7 +136,7 @@ See `recOnHorner_const` for a variant with a constant base case.
 -/
 @[elab_as_elim]
 noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
-    (MC : ∀ p a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
+    (MC : ∀ (p : R[X]) a, coeff p 0 = 0 → a ≠ 0 → M p → M (p + C a))
     (MX : ∀ p, p ≠ 0 → M p → M (p * X)) : M p :=
   letI := Classical.decEq R
   if hp : p = 0 then hp ▸ M0
