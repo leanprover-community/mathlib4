@@ -51,7 +51,7 @@ instance : Inhabited (LieRinehartSubalgebra A L) :=
 namespace LieRinehartSubalgebra
 
 theorem toSubmodule_injective :
-    (toSubmodule : (LieRinehartSubalgebra A L) → Submodule A L).Injective :=
+    (toSubmodule : LieRinehartSubalgebra A L → Submodule A L).Injective :=
   fun ⟨s, _⟩ t ↦ by congr!
 
 instance : SetLike (LieRinehartSubalgebra A L) L where
@@ -65,7 +65,7 @@ initialize_simps_projections LieRinehartSubalgebra (carrier → coe, as_prefix c
 @[simps! top_toSubmodule top_coe]
 instance : Top (LieRinehartSubalgebra A L) where
   top.toSubmodule := ⊤
-  top.lie_mem' := by aesop
+  top.lie_mem' _ _ := trivial
 
 @[simp]
 theorem coe_eq_univ (L' : LieRinehartSubalgebra A L) : (L' : Set L) = Set.univ ↔ L' = ⊤ := by
@@ -80,14 +80,6 @@ instance : AddSubgroupClass (LieRinehartSubalgebra A L) L where
 
 instance : SMulMemClass (LieRinehartSubalgebra A L) A L where
   smul_mem {s} := SMulMemClass.smul_mem (s := s.toSubmodule)
-
-/-- A Lie-Rinehart subalgebra forms a Lie ring. -/
-instance lieRing (L' : LieRinehartSubalgebra A L) : LieRing L' where
-  bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
-  lie_add x y z := by aesop
-  add_lie x y z := by aesop
-  lie_self x := by aesop
-  leibniz_lie x y z := by aesop
 
 variable {A L}
 variable (L' : LieRinehartSubalgebra A L)
@@ -127,10 +119,6 @@ theorem mem_mk_iff' (p : Submodule A L) (h) {x : L} :
 theorem mem_coe {x : L} : x ∈ (L' : Set L) ↔ x ∈ L' :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_bracket (x y : L') : (↑⁅x, y⁆ : L) = ⁅(↑x : L), ↑y⁆ :=
-  rfl
-
 theorem ext_iff (x y : L') : x = y ↔ (x : L) = y := Subtype.ext_iff
 
 theorem coe_zero_iff_zero (x : L') : (x : L) = 0 ↔ x = 0 := (ext_iff L' x 0).symm
@@ -141,6 +129,18 @@ theorem ext (L₁' L₂' : LieRinehartSubalgebra A L) (h : ∀ x, x ∈ L₁' �
 
 theorem ext_iff' (L₁' L₂' : LieRinehartSubalgebra A L) : L₁' = L₂' ↔ ∀ x, x ∈ L₁' ↔ x ∈ L₂' :=
   SetLike.ext_iff
+
+/-- A Lie-Rinehart subalgebra forms a Lie ring. -/
+instance lieRing (L' : LieRinehartSubalgebra A L) : LieRing L' where
+  bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
+  lie_add _ _ _ := by simp [ext_iff];
+  add_lie _ _ _ := by simp [ext_iff];
+  lie_self _ := by simp [ext_iff];
+  leibniz_lie _ _ _ := by simp;
+
+@[simp, norm_cast]
+theorem coe_bracket (x y : L') : (↑⁅x, y⁆ : L) = ⁅(↑x : L), ↑y⁆ :=
+  rfl
 
 @[simp]
 theorem mk_coe (S : Set L) (h₁ h₂ h₃ h₄) :
@@ -215,7 +215,7 @@ variable (R) [LieRinehartAlgebra R A L]
 
 /-- A Lie-Rinehart subalgebra of a Lie-Rinehart algebra forms a Lie algebra. -/
 instance lieAlgebra : LieAlgebra R L' where
-  lie_smul := by aesop
+  lie_smul _ _ _ := by simp [ext_iff]
 
 /-- Converts a Lie-Rinehart subalgebra to the corresponding Lie subalgebra. -/
 @[expose] def toLieSubalgebra : LieSubalgebra R L where

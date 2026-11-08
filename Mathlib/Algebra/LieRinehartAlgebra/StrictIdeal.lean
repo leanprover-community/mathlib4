@@ -45,8 +45,8 @@ public section
 which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. -/
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
-  lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier := by membership
-  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0 := by simp
+  lie_mem_left' {l l'} : l ∈ carrier → ⁅l, l'⁆ ∈ carrier
+  isotropic' (l : L) (a : A) : l ∈ carrier → ⁅l, a⁆ = 0
 
 namespace StrictLieRinehartIdeal
 
@@ -56,8 +56,9 @@ add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
-lemma toSubmodule_injective : (toSubmodule :
-    StrictLieRinehartIdeal A L → Submodule A L).Injective := fun ⟨s, _, _⟩ t ↦ by congr!
+lemma toSubmodule_injective :
+    (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective :=
+  fun ⟨s, _, _⟩ t ↦ by congr!
 
 instance : SetLike (StrictLieRinehartIdeal A L) L where
   coe s := s.carrier
@@ -82,29 +83,11 @@ instance : AddSubgroupClass (StrictLieRinehartIdeal A L) L where
 instance : SMulMemClass (StrictLieRinehartIdeal A L) A L where
   smul_mem {s} := s.smul_mem'
 
-instance : Zero (StrictLieRinehartIdeal A L) :=
-  ⟨⟨0, @fun x y hx ↦ by
-    rw [(Submodule.mem_bot A).1 hx, zero_lie]
-    exact Submodule.zero_mem 0, by aesop⟩⟩
-
-instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
-
 @[membership .]
 lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' ∈ s) :
     ⁅l, l'⁆ ∈ s := by
   rw [← lie_skew]
   membership
-
-/-- A Lie-Rinehart ideal forms a Lie ring. -/
-instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
-  bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_left x.property _⟩
-  lie_add x y z := by aesop
-  add_lie x y z := by aesop
-  lie_self x := by aesop
-  leibniz_lie x y z := by aesop
-
-@[simp]
-lemma coe_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ := rfl
 
 theorem mem_carrier {s : StrictLieRinehartIdeal A L} {x : L} : x ∈ s.carrier ↔ x ∈ (s : Set L) :=
   Iff.rfl
@@ -130,6 +113,25 @@ theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} :
 theorem toSubmodule_le_iff {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t :=
   Iff.rfl
+
+instance : Zero (StrictLieRinehartIdeal A L) where
+  zero := ⟨0,
+    @fun x y hx ↦ by rw [(Submodule.mem_bot A).1 hx, zero_lie]; exact Submodule.zero_mem 0,
+    by simp_all⟩
+
+instance : Inhabited (StrictLieRinehartIdeal A L) := ⟨0⟩
+
+
+/-- A Lie-Rinehart ideal forms a Lie ring. -/
+instance lieRing {s : StrictLieRinehartIdeal A L} : LieRing s where
+  bracket x y := ⟨⁅x.val, y.val⁆, lie_mem_left x.property _⟩
+  lie_add _ _ _ := by simp
+  add_lie _ _ _ := by simp
+  lie_self _ := by ext; simp
+  leibniz_lie _ _ _ := by simp
+
+@[simp]
+lemma coe_bracket {s : StrictLieRinehartIdeal A L} (x y : s) : ⁅x, y⁆ = ⁅(x : L), (y : L)⁆ := rfl
 
 section LieModule
 
