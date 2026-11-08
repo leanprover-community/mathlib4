@@ -41,6 +41,8 @@ set_option linter.checkUnivs false in
 def Cat :=
   Bundled Category.{v, u}
 
+attribute [to_dual_dont_translate] Bundled.α
+
 namespace Cat
 
 instance : Inhabited Cat :=

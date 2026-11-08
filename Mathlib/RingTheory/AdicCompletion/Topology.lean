@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
-
 # Connection between adic properties and topological properties
 
 ## Main results
