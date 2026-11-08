@@ -23,6 +23,11 @@ open Limits
 variable {C : Type*} [Category* C] (W : MorphismProperty C)
   [W.IsMultiplicative] {J : Type*} [Category* J]
 
+instance [W.RespectsIso] : (wideSubcategoryInclusion W).ReflectsIsomorphisms where
+  reflects f hf := by
+    dsimp at hf
+    exact ⟨.mk (inv f.hom) (W.of_isIso (inv f.hom)), by cat_disch⟩
+
 structure RespectsColimitWideSubcategory (F : J ⥤ WideSubcategory W) : Prop where
   prop_ι_app {c : Cocone (F ⋙ wideSubcategoryInclusion W)} (hc : IsColimit c) (j : J) :
     W (c.ι.app j)
@@ -60,6 +65,11 @@ lemma preservesColimit : PreservesColimit F (wideSubcategoryInclusion W) :=
   preservesColimit_of_preserves_colimit_cocone (hF.isColimitCocone (colimit.isColimit _))
     (colimit.isColimit _)
 
+lemma reflectsColimit [W.RespectsIso] : ReflectsColimit F (wideSubcategoryInclusion W) := by
+  have := hF.hasColimit
+  have := hF.preservesColimit
+  apply reflectsColimit_of_reflectsIsomorphisms
+
 end RespectsColimitWideSubcategory
 
 variable (J) in
@@ -69,7 +79,34 @@ abbrev RespectsColimitsOfShapeWideSubcategory :=
 namespace RespectsColimitsOfShapeWideSubcategory
 
 variable {W} (hW : W.RespectsColimitsOfShapeWideSubcategory J)
-  [HasColimitsOfShape J C]
+
+include hW in
+lemma of_equivalence [W.RespectsIso] {J' : Type*} [Category* J'] (e : J ≌ J') :
+    W.RespectsColimitsOfShapeWideSubcategory J' := by
+  intro F
+  replace hW := hW (e.functor ⋙ F)
+  let c' (c : Cocone (F ⋙ wideSubcategoryInclusion W)) :
+      Cocone ((e.functor ⋙ F) ⋙ wideSubcategoryInclusion W) :=
+    (Cocone.precompose (Functor.associator _ _ _).hom).obj (c.whisker e.functor)
+  have hc' {c : Cocone (F ⋙ wideSubcategoryInclusion W)} (hc : IsColimit c) :
+      IsColimit (c' c) :=
+    (IsColimit.precomposeHomEquiv _ _).symm
+      ((Functor.Final.isColimitWhiskerEquiv e.functor _).symm hc)
+  exact
+  { prop_ι_app {c} hc j' := by
+      refine (W.arrow_mk_iso_iff ?_).mp (hW.prop_ι_app (hc' hc) (e.inverse.obj j'))
+      exact Arrow.isoMk ((F ⋙ wideSubcategoryInclusion W).mapIso (e.counitIso.app j'))
+        (Iso.refl _) (by simpa [c'] using c.w (e.counitIso.hom.app j'))
+    prop_desc {c} hc t := by
+      have : hc.desc ((wideSubcategoryInclusion W).mapCocone t) =
+          (hc' hc).desc ((wideSubcategoryInclusion W).mapCocone (t.whisker _)) :=
+        (hc' hc).hom_ext (fun j ↦ by
+          rw [(hc' hc).fac]
+          simp [c'] )
+      rw [this]
+      exact hW.prop_desc (hc' hc) (t.whisker _) }
+
+variable [HasColimitsOfShape J C]
 
 include hW
 
@@ -80,6 +117,10 @@ lemma hasColimitsOfShape :
 lemma preservesColimitsOfShape :
     PreservesColimitsOfShape J (wideSubcategoryInclusion W) where
   preservesColimit {F} := (hW F).preservesColimit
+
+lemma reflectsColimitsOfShape [W.RespectsIso] :
+    ReflectsColimitsOfShape J (wideSubcategoryInclusion W) where
+  reflectsColimit {F} := (hW F).reflectsColimit
 
 end RespectsColimitsOfShapeWideSubcategory
 

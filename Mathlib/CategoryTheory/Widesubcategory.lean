@@ -74,7 +74,7 @@ instance InducedWideCategory.category :
   comp {_ _ _} f g := ⟨f.1 ≫ g.1, P.comp_mem _ _ f.2 g.2⟩
 
 /-- The forgetful functor from an induced wide category to the original category. -/
-@[simps]
+@[simps, implicit_reducible]
 def wideInducedFunctor : InducedWideCategory D F P ⥤ D where
   obj := F
   map {_ _} f := f.1
@@ -120,6 +120,7 @@ lemma WideSubcategory.comp_def {X Y Z : WideSubcategory P} (f : X ⟶ Y) (g : Y 
 /-- The forgetful functor from a wide subcategory into the original category
 ("forgetting" the condition).
 -/
+@[implicit_reducible]
 def wideSubcategoryInclusion : WideSubcategory P ⥤ C :=
   wideInducedFunctor WideSubcategory.obj P
 

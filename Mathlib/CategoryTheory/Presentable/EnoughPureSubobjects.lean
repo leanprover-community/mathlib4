@@ -536,7 +536,7 @@ lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
 open MorphismProperty in
 attribute [local instance] IsFiltered.nonempty in
 variable (C) in
-lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
+lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure'
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
     (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
     (isCardinalPure C κ).RespectsColimitsOfShapeWideSubcategory J := by
@@ -556,14 +556,22 @@ lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
     WideSubcategory.comp_def]
   · exact colimitsOfShape_le _ (colimitsOfShape.mk' _ _ _ _ hc
       (isColimitConstCocone J t.pt.obj) (Functor.whiskerRight t.ι _)
-      (fun j ↦ (t.ι.app j).property) _
-      (by simpa using hc.fac ((wideSubcategoryInclusion (isCardinalPure C κ)).mapCocone t)))
+      (fun j ↦ (t.ι.app j).property) _ (by simp))
+
+variable (C) in
+lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
+    (J : Type*) [Category* J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    (isCardinalPure C κ).RespectsColimitsOfShapeWideSubcategory J :=
+  have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
+  (respectsColimitsOfShapeWideSubcategory_isCardinalPure' C κ
+    (SmallModel.{w} J)).of_equivalence (equivSmallModel.{w} J).symm
 
 variable (C) in
 lemma hasCardinalFilteredColimits_wideSubcategory_isCardinalPure
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     HasCardinalFilteredColimits (WideSubcategory (isCardinalPure C κ)) κ where
-  hasColimitsOfShape J _ _ :=
+  hasColimitsOfShape' J _ _ :=
     have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     (respectsColimitsOfShapeWideSubcategory_isCardinalPure C κ J).hasColimitsOfShape
 
@@ -617,12 +625,23 @@ lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ'
       IsCardinalPure.of_fac κ _ _ _ g.hom.w
     have : P.ι.Final := by
       rw [P.final_ι_iff_of_isFiltered]
-      sorry
+      intro j
+      obtain ⟨j', _, f', i, hi, fac⟩ := hC.exists_isCardinalPure j.hom
+      exact ⟨CostructuredArrow.mk (Y := ⟨j', inferInstance⟩) (by exact i), by exact hi,
+        ⟨CostructuredArrow.homMk (by exact ObjectProperty.homMk f')⟩⟩
+    have := P.isCardinalFiltered κ'
+    have : IsCardinalFiltered P.FullSubcategory κ := .of_le _ h.le
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ P.FullSubcategory
+    have := (respectsColimitsOfShapeWideSubcategory_isCardinalPure C κ
+      P.FullSubcategory).reflectsColimitsOfShape
     exact ⟨P.FullSubcategory, inferInstance, inferInstance, P.isCardinalFiltered κ',
       ⟨{diag := WideSubcategory.lift (P.ι ⋙ F) (fun _ _ f ↦ hP _)
         ι.app j := .mk j.obj.hom j.property
         ι.naturality j k g := by ext; simpa [c] using c.w g.hom
-        isColimit := sorry
+        isColimit :=
+          isColimitOfReflects (wideSubcategoryInclusion _)
+            (IsColimit.ofIsoColimit ((Functor.Final.isColimitWhiskerEquiv P.ι _).symm hc)
+              (Cocone.ext (Iso.refl _)))
         prop_diag_obj j := j.obj.left.property }⟩⟩)
 
 open IsCardinalAccessibleCategory in

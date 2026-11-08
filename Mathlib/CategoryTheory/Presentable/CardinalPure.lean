@@ -89,10 +89,8 @@ instance : (isCardinalPure C κ).RespectsIso where
   postcomp _ _ _ _ := inferInstance
 
 instance {X Y : C} (f : X ⟶ Y) [IsIso f] :
-    IsCardinalPure κ f := by
-  let e : Arrow.mk f ≅ Arrow.mk (𝟙 Y) := Arrow.isoMk (asIso f) (Iso.refl _)
-  simp only [(isCardinalPure C κ).arrow_mk_iso_iff e]
-  infer_instance
+    IsCardinalPure κ f :=
+  (isCardinalPure C κ).of_isIso f
 
 lemma IsCardinalPure.of_postcomp
     {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsCardinalPure κ (f ≫ g)] :
