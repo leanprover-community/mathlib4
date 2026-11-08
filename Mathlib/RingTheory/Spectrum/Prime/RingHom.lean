@@ -5,8 +5,8 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Spectrum.Prime.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Ideal
+public import Mathlib.RingTheory.Spectrum.Prime.Basic
 
 /-!
 # Functoriality of the prime spectrum
@@ -114,9 +114,6 @@ def sigmaToPi : (Σ i, PrimeSpectrum (R i)) → PrimeSpectrum (Π i, R i)
 lemma sigmaToPi_apply (i : ι) (p : PrimeSpectrum (R i)) :
     sigmaToPi R ⟨i, p⟩ = comap (Pi.evalRingHom R i) p :=
   rfl
-
-@[deprecated (since := "2026-04-17")]
-alias coe_sigmaToPi_asIdeal := sigmaToPi_apply
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   classical

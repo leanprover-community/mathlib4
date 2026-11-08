@@ -5,8 +5,8 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
+public import Mathlib.LinearAlgebra.Dimension.Free
 
 /-!
 # Exact sequences with free modules

@@ -5,14 +5,13 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Extension.Generators
+public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.MvPolynomial.Localization
 
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-
 # Presentations of algebras
 
 A presentation of an `R`-algebra `S` is a distinguished family of generators and relations.

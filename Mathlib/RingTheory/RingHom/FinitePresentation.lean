@@ -8,12 +8,11 @@ module
 public import Mathlib.RingTheory.FiniteStability
 public import Mathlib.RingTheory.LocalProperties.Basic
 
-import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 import Mathlib.RingTheory.Finiteness.FinitePresentationLocal
+import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.Localization.Finiteness
 
 /-!
-
 # The meta properties of finitely-presented ring homomorphisms.
 
 The main result is `RingHom.finitePresentation_isLocal`.

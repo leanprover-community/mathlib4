@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
-
 # Naive cotangent complex associated to a presentation.
 
 Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`

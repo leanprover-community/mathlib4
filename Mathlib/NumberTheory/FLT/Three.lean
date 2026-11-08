@@ -9,8 +9,8 @@ module
 public import Mathlib.NumberTheory.FLT.Basic
 public import Mathlib.NumberTheory.NumberField.Cyclotomic.Three
 
-import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 import Mathlib.Algebra.Ring.Divisibility.Lemmas
+import Mathlib.NumberTheory.NumberField.Cyclotomic.PID
 
 /-!
 # Fermat Last Theorem in the case `n = 3`

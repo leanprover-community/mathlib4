@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 public import Mathlib.Algebra.Algebra.Tower
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Algebra.Order.Interval.Set.Instances
+public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 
 /-!
 # Topological (sub)algebras
@@ -160,9 +160,6 @@ instance : AlgHomClass (A →A[R] B) R A B where
 attribute [coe] ContinuousAlgHom.toAlgHom
 
 instance : Coe (A →A[R] B) (A →ₐ[R] B) where coe := toAlgHom
-
-@[deprecated "Now a syntactic equality" (since := "2026-04-29"), nolint synTaut]
-theorem toAlgHom_eq_coe (f : A →A[R] B) : f.toAlgHom = f := rfl
 
 @[simp, norm_cast]
 theorem coe_inj {f g : A →A[R] B} : (f : A →ₐ[R] B) = g ↔ f = g := by
@@ -660,7 +657,7 @@ def Algebra.elemental (x : A) : Subalgebra R A :=
 
 namespace Algebra.elemental
 
-@[simp, aesop safe (rule_sets := [SetLike])]
+@[simp, aesop safe (rule_sets := [SetLike]), membership .]
 theorem self_mem (x : A) : x ∈ elemental R x :=
   le_topologicalClosure _ <| self_mem_adjoin_singleton R x
 

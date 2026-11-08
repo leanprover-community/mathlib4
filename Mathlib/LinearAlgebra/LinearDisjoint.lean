@@ -5,12 +5,11 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.LinearAlgebra.Dimension.Finite
+public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.Flat.Basic
 
 /-!
-
 # Linearly disjoint submodules
 
 This file contains basics about linearly disjoint submodules.

@@ -7,13 +7,13 @@ module
 
 public import Mathlib.Algebra.Algebra.Rat
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Algebra.Module.Pi
 public import Mathlib.Data.Finset.Density
 public import Mathlib.Data.Fintype.BigOperators
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
-import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Group.Finset.Indicator
+import Mathlib.Algebra.BigOperators.Ring.Finset
 
 /-!
 # Average over a finset
@@ -339,7 +339,7 @@ lemma expect_mul_expect [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M] 
 end Semiring
 
 section CommSemiring
-variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M] [SMulCommClass ℚ≥0 M M]
+variable [CommSemiring M] [Module ℚ≥0 M] [IsScalarTower ℚ≥0 M M]
 
 lemma expect_pow (s : Finset ι) (f : ι → M) (n : ℕ) :
     (𝔼 i ∈ s, f i) ^ n = 𝔼 p ∈ Fintype.piFinset fun _ : Fin n ↦ s, ∏ i, f (p i) := by

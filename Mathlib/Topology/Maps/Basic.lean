@@ -345,9 +345,6 @@ theorem of_comp_of_isCoinducing (hgf : IsQuotientMap (g ∘ f)) (hf : IsCoinduci
     IsQuotientMap g :=
   ⟨hf.of_comp_iff.mp hgf.1, hgf.2.of_comp⟩
 
-@[deprecated (since := "2026-03-21")]
-alias of_comp_of_eq_coinduced := of_comp_of_isCoinducing
-
 protected theorem of_comp_iff (hf : IsQuotientMap f) :
     IsQuotientMap (g ∘ f) ↔ IsQuotientMap g := by
   rw [isQuotientMap_iff, isQuotientMap_iff, hf.isCoinducing.of_comp_iff, hf.surjective.of_comp_iff]

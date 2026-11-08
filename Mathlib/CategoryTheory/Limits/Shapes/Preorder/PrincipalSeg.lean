@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Order.InitialSeg
 public import Mathlib.CategoryTheory.Category.Preorder
 public import Mathlib.CategoryTheory.Limits.Cones
+public import Mathlib.Order.InitialSeg
 
 /-!
 # Cocones associated to principal segments

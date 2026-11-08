@@ -5,10 +5,10 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.Topology.Separation.Profinite
+public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Sets.Closeds
 
-import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Compactness.Bases
 
 /-!
 # Clopen subsets in Cartesian products
@@ -49,7 +49,8 @@ theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
   have hUV : U ×ˢ V ⊆ W := fun ⟨_, _⟩ hw ↦ hw.1 hw.2
   exact ⟨⟨U, (ContinuousMap.isClopen_setOfPred_mapsTo hV W.2).preimage
-    (ContinuousMap.id (X × Y)).curry.2⟩, by simp [U, V, MapsTo], ⟨V, W.2.preimage hp⟩, h, hUV⟩
+    (map_continuous (ContinuousMap.id (X × Y)).curry)⟩, by simp [U, V, MapsTo],
+    ⟨V, W.2.preimage hp⟩, h, hUV⟩
 
 variable [CompactSpace X]
 
@@ -82,13 +83,11 @@ instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-lemma countable_iff_secondCountable [T2Space X]
-    [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
-  refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
+lemma countable_iff_secondCountable [T2Space X] [TotallyDisconnectedSpace X] :
+    Countable (Clopens X) ↔ SecondCountableTopology X := by
+  refine ⟨fun h ↦ ⟨_, ?_, isTopologicalBasis_isClopen.eq_generateFrom⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
     exact Injective.of_eq_imp_le (f := f) (·.le) |>.countable
-  · apply IsTopologicalBasis.eq_generateFrom
-    exact loc_compact_Haus_tot_disc_of_zero_dim
   · have : ∀ (s : Clopens X), ∃ (t : Finset (countableBasis X)), s.1 = (SetLike.coe t).sUnion :=
       fun s ↦ eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _
         (isBasis_countableBasis X) s.1 s.2.1.isCompact s.2.2

@@ -5,13 +5,12 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 public import Mathlib.AlgebraicGeometry.Morphisms.IsIso
+public import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 
 import Mathlib.AlgebraicGeometry.PullbackCarrier
 
 /-!
-
 # Affine morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is affine if the preimage

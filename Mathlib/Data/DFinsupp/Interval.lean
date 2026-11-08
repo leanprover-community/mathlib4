@@ -5,12 +5,15 @@ Authors: Yaël Dillies
 -/
 module
 
+public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
 public import Mathlib.Order.Interval.Finset.Basic
-public import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 import Mathlib.Data.Fintype.BigOperators
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Finite intervals of finitely supported functions

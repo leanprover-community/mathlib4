@@ -5,13 +5,12 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 public import Mathlib.Algebra.Ring.Hom.InjSurj
+public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
-
 # Nontriviality of tensor product of algebras
 
 This file contains some more results on nontriviality of tensor product of algebras.

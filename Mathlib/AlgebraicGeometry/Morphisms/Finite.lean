@@ -5,14 +5,13 @@ Authors: Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.Algebra.Category.Ring.Epi
+public import Mathlib.AlgebraicGeometry.Morphisms.Integral
 public import Mathlib.RingTheory.RingHom.Finite
 
 import Mathlib.RingTheory.Finiteness.Prod
 
 /-!
-
 # Finite morphisms of schemes
 
 A morphism of schemes `f : X ⟶ Y` is finite if the preimage

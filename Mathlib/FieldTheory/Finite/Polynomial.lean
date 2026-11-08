@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.MvPolynomial.Expand
 public import Mathlib.FieldTheory.Finite.Basic
 
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Polynomials over finite fields

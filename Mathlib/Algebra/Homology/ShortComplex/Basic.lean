@@ -123,19 +123,19 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
 
 /-- The second projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
 /-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
@@ -176,7 +176,7 @@ def map (F : C ⥤ D) [F.PreservesZeroMorphisms] : ShortComplex D :=
 
 /-- The morphism of short complexes `S.map F ⟶ S.map G` induced by
 a natural transformation `F ⟶ G`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ⟶ G) :
     S.map F ⟶ S.map G where
   τ₁ := τ.app _
@@ -185,7 +185,7 @@ def mapNatTrans {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorph
 
 /-- The isomorphism of short complexes `S.map F ≅ S.map G` induced by
 a natural isomorphism `F ≅ G`. -/
-@[simps]
+@[simps, implicit_reducible]
 def mapNatIso {F G : C ⥤ D} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (τ : F ≅ G) :
     S.map F ≅ S.map G where
   hom := S.mapNatTrans τ.hom
