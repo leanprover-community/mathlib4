@@ -19,12 +19,12 @@ X (n + 1) | X 0, …, X n ∼ P (X n)
 
 ## Main definitions
 
-* `ProbabilityTheory.Kernel.markovChainMeasure`: the distribution on paths `ℕ → E` with
-  starting distribution `μ` and transition kernel `P`.
+* `ProbabilityTheory.Kernel.markovChainMeasure`: the distribution of the trajectories `ℕ → E` of a
+Markov chain with state space `E`, transition kernel `P` and starting distribution `μ`.
 
 ## Main results
 
-* `ProbabilityTheory.Kernel.markovChainMeasure_map_eval`: for s-finite `μ`, the coordinate
+* `ProbabilityTheory.Kernel.markovChainMeasure_map_eval`: the coordinate of a Markov chain
   at time `n` has law `(P ^ n) ∘ₘ μ`.
 -/
 
