@@ -6,6 +6,7 @@ Authors: Xavier Généreux, María Inés de Frutos Fernández, Miriam Philipp, J
 module
 
 public import Mathlib.RingTheory.Algebraic.Basic
+public import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
 /-!
 # Polynomials and adjoining transcendental elements

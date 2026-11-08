@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.RingTheory.RootsOfUnity.Basic
+public import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # The Special Linear group $SL(n, R)$

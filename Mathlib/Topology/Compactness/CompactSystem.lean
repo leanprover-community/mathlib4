@@ -5,9 +5,9 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Cylinders
 public import Mathlib.Order.CountableSupClosed
 public import Mathlib.Topology.Separation.Hausdorff
+public import Mathlib.MeasureTheory.PiSystem
 
 /-!
 # Compact systems

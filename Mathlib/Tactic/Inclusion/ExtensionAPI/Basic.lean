@@ -6,7 +6,7 @@ Authors: David Ledvinka
 module
 
 public meta import Mathlib.Lean.Meta.Basic
-public meta import Mathlib.Tactic.Inclusion.Core.Inclusion
+public import Mathlib.Tactic.Inclusion.Core.Inclusion
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

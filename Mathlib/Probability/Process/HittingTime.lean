@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Probability.Process.Stopping
 
-import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Hitting times

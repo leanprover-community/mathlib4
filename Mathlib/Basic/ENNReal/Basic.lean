@@ -11,7 +11,6 @@ public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Order.ConditionallyCompleteLattice.WithTop
 public import Mathlib.Order.Interval.Set.WithBotTop
 
-import Mathlib.Tactic.Basify.Attr
 
 /-!
 # Extended non-negative reals

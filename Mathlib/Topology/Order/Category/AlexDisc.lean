@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Topology.Specialization
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # Category of Alexandrov-discrete topological spaces

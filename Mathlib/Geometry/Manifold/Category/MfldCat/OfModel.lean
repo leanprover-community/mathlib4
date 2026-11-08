@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Geometry.Manifold.Diffeomorph
 public import Mathlib.Topology.Category.TopCat.Basic
+public import Mathlib.CategoryTheory.ConcreteCategory.Forget
 
 /-!
 # The category of `C^n` manifolds modeled on `I`

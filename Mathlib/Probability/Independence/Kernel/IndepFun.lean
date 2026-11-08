@@ -10,7 +10,6 @@ public import Mathlib.Probability.Independence.Kernel.Indep
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
 import Mathlib.MeasureTheory.Constructions.Cylinders
-import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

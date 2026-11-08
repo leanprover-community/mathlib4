@@ -13,6 +13,7 @@ public import Mathlib.RingTheory.HahnSeries.Summable
 public import Mathlib.RingTheory.PowerSeries.Inverse
 
 import Mathlib.RingTheory.PowerSeries.Trunc
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 
 
 /-!

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Defs
 public import Mathlib.Analysis.Calculus.FDeriv.Affine
+public import Mathlib.Analysis.Analytic.Constructions
 
 /-!
 # Basic properties of continuously-differentiable functions

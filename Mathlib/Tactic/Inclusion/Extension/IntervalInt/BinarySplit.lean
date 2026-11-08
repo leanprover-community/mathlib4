@@ -5,8 +5,8 @@ Authors: David Ledvinka
 -/
 module
 
-public meta import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
-public import Mathlib.Tactic.Inclusion.Extension.IntervalInt.Init
+public import Mathlib.Tactic.Inclusion.Extension.Interval.Basic
+public import Mathlib.Tactic.Inclusion.Extension.Interval.BinarySplit
 
 /-!
 # Binary splitting of integer intervals

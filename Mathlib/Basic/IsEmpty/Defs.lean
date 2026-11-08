@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.Init
+public import Mathlib.Tactic.Lemma
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

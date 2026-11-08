@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Sites.Over
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
 import Mathlib.CategoryTheory.Comma.LocallySmall
-import Mathlib.CategoryTheory.Comma.StructuredArrow.Small
 
 /-!
 # Points of `Over` sites

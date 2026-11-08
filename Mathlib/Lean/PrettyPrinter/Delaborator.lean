@@ -8,6 +8,7 @@ module
 public import Mathlib.Init
 
 import Lean.PrettyPrinter.Delaborator.Basic
+public import Lean.PrettyPrinter
 
 set_option doc.verso true
 set_option doc.verso.suggestions false

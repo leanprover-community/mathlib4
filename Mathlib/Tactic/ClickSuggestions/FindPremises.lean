@@ -11,6 +11,8 @@ public import Mathlib.Tactic.ClickSuggestions.Apply
 public import Mathlib.Tactic.ClickSuggestions.ApplyAt
 public import Mathlib.Tactic.ClickSuggestions.GRewrite
 public import Mathlib.Tactic.ClickSuggestions.Rewrite
+public import Mathlib.Lean.FoldEnvironment
+public import Mathlib.Lean.Meta.RefinedDiscrTree
 
 /-!
 # Generating a shortlist of candidate lemmas for suggestions

@@ -6,9 +6,10 @@ Authors: Albert Smith
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Finrank
-public import Mathlib.RingTheory.Algebraic.Basic
 
 import Mathlib.RingTheory.Algebraic.Integral
+public import Mathlib.RingTheory.Algebraic.Defs
+public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Rank theorems over domains

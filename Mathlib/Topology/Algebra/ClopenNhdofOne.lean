@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
-import Mathlib.Topology.Separation.Connected
 
 /-!
 # Existence of an open normal subgroup in any clopen neighborhood of the neutral element

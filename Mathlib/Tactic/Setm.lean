@@ -5,8 +5,8 @@ Authors: Lua Viana Reis
 -/
 module
 
-public meta import Mathlib.Lean.Elab.Tactic.Basic
 public import Mathlib.Init
+public import Mathlib.Lean.Elab.Tactic.Basic
 
 /-!
 # The `setm` tactic
