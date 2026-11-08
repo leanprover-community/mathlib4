@@ -10,7 +10,6 @@ public import Mathlib.Tactic.ClickSuggestions.Util
 import ProofWidgets.Component.Basic
 
 /-!
-
 # Interactive unfolding
 
 This file defines the interactive tactic `unfold?`.

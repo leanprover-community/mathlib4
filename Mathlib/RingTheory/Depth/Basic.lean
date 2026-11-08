@@ -11,7 +11,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.MapBijective
 public import Mathlib.RingTheory.Depth.Rees
 
 /-!
-
 # The Definition of Depth
 
 In this file, we give the definition of depth of a module over a local ring. We also establish

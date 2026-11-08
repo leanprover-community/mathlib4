@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Spectrum.Prime.Topology
 public import Mathlib.RingTheory.Valuation.ValuationRing
 
 /-!
-
 # Valuation subrings of a field
 
 ## Projects

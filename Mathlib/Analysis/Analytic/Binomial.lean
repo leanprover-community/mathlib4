@@ -177,7 +177,7 @@ theorem one_div_sub_pow_hasFPowerSeriesOnBall_zero (a : ℕ) {z : ℂ} (hz : z �
   have := one_div_one_sub_pow_hasFPowerSeriesOnBall_zero a
   rw [← map_zero (z⁻¹ • 1 : ℂ →L[ℂ] ℂ)] at this
   have := this.compContinuousLinearMap
-  have H : 1 / ‖(z⁻¹ • 1 : ℂ →L[ℂ] ℂ)‖ₑ = ‖z‖ₑ := by simp [enorm_smul, enorm_inv, hz]
+  have H : 1 / ‖(z⁻¹ • 1 : ℂ →L[ℂ] ℂ)‖ₑ = ‖z‖ₑ := by simp [eNorm_smul, eNorm_inv, hz]
   simp only [one_div, FunLike.coe_smul, H, Function.comp_def] at this
   convert (this.const_smul (c := (z ^ (a + 1))⁻¹)).congr ?_
   · ext n

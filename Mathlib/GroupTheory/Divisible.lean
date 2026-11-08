@@ -116,12 +116,6 @@ theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective fun a : A => a ^ n := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 
-@[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
-  RootableBy.surjective_pow
-
-@[deprecated (since := "2026-04-19")] alias smul_right_surj_of_divisibleBy :=
-  DivisibleBy.surjective_smul
-
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.

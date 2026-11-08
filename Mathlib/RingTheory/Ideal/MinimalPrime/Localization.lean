@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Localization.AtPrime.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Regular
 
 /-!
-
 # Minimal primes and localization
 
 We provide various results concerning the minimal primes above an ideal that require the theory

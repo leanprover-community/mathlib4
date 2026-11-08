@@ -56,6 +56,12 @@ theorem continuousWithinAt_iff_continuousAt_domRestrict (f : α → β) {x : α}
 @[deprecated (since := "2026-07-19")] alias continuousWithinAt_iff_continuousAt_restrict :=
   continuousWithinAt_iff_continuousAt_domRestrict
 
+theorem continuousWithinAt_inter_iff_continuousWithinAt_domRestrict (f : α → β) {x : α}
+    {s t : Set α} (h : x ∈ s) :
+    ContinuousWithinAt f (s ∩ t) x ↔
+      ContinuousWithinAt (s.domRestrict f) ((↑) ⁻¹' t) ⟨x, h⟩ :=
+  tendsto_nhdsWithin_inter_iff_subtype h f _
+
 theorem ContinuousWithinAt.tendsto_nhdsWithin {t : Set β}
     (h : ContinuousWithinAt f s x) (ht : MapsTo f s t) :
     Tendsto f (𝓝[s] x) (𝓝[t] f x) :=

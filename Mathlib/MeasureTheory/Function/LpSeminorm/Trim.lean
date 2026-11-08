@@ -51,7 +51,7 @@ theorem essSup_trim (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] 
 
 theorem eLpNormEssSup_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNormEssSup f (μ.trim hm) = eLpNormEssSup f μ :=
-  essSup_trim _ (@StronglyMeasurable.enorm _ m _ _ _ _ hf)
+  essSup_trim _ (@StronglyMeasurable.eNorm _ m _ _ _ _ hf)
 
 theorem eLpNorm_trim (hm : m ≤ m0) {f : α → ε} (hf : StronglyMeasurable[m] f) :
     eLpNorm f p (μ.trim hm) = eLpNorm f p μ := by

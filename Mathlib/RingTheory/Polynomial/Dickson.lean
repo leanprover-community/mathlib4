@@ -110,7 +110,6 @@ theorem dickson_two_zero : ∀ n : ℕ, dickson 2 (0 : R) n = X ^ n
 section Dickson
 
 /-!
-
 ### A Lambda structure on `ℤ[X]`
 
 Mathlib doesn't currently know what a Lambda ring is.

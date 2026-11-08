@@ -15,7 +15,6 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.RestrictScalar
 public import Mathlib.Topology.Instances.RealVectorSpace
 
 /-!
-
 # Normed space structure on `ℂ`.
 
 This file gathers basic facts of analytic nature on the complex numbers.

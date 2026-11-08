@@ -14,7 +14,6 @@ import Mathlib.RingTheory.Regular.Category
 import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 /-!
-
 # The Rees theorem
 
 In this file we prove the Rees theorem for depth, which relates the vanishing of

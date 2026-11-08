@@ -12,7 +12,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Simple
 public import Mathlib.GroupTheory.Sylow
 
 /-!
-
 # Nilpotent groups
 
 An API for nilpotent groups, that is, groups for which the upper central series

@@ -12,7 +12,6 @@ public import Mathlib.Topology.LocallyConstant.Basic
 import Mathlib.Topology.Separation.Regular
 
 /-!
-
 # Discrete quotients of a topological space.
 
 This file defines the type of discrete quotients of a topological space,
