@@ -97,8 +97,7 @@ theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
     exact congr($h (Multiplicative.ofAdd z))
   · let ψ := AddChar.toMonoidHomEquiv.symm χ.toMonoidHom
     obtain ⟨x, hx⟩ := (AddChar.zmodAddEquiv (n := n)).surjective (AddChar.circleEquivComplex ψ)
-    have hx' := AddChar.circleEquivComplex.injective hx
-    exact ⟨.ofAdd x, ext fun y ↦ congr($hx' y.toAdd)⟩
+    exact ⟨.ofAdd x, ext fun y ↦ congr($(AddChar.circleEquivComplex.injective hx) y.toAdd)⟩
 
 /-- A finite cyclic group is isomorphic to its Pontryagin dual. -/
 def zmodEquiv : Multiplicative (ZMod n) ≃ₜ* PontryaginDual (Multiplicative (ZMod n)) :=
@@ -112,8 +111,7 @@ theorem zmodEquiv_apply (x y : Multiplicative (ZMod n)) :
 @[simp]
 theorem zmodEquiv_apply_intCast (x y : ℤ) :
     zmodEquiv n (.ofAdd (x : ZMod n)) (.ofAdd (y : ZMod n)) =
-      Circle.exp (2 * π * (x * y / n)) :=
-  AddChar.zmod_intCast n x y
+      Circle.exp (2 * π * (x * y / n)) := AddChar.zmod_intCast n x y
 
 end ZMod
 
@@ -128,9 +126,7 @@ def intEquiv : Circle ≃ₜ* PontryaginDual (Multiplicative ℤ) where
   map_mul' z w := by ext1 n; exact mul_zpow z w n.toAdd
   continuous_toFun := continuous_of_continuous_uncurry _ <|
     continuous_prod_of_discrete_right.mpr fun n ↦ continuous_zpow n.toAdd
-  continuous_invFun := by
-    change Continuous (fun χ : Multiplicative ℤ →ₜ* Circle ↦ χ (.ofAdd 1))
-    exact continuous_eval_const _
+  continuous_invFun := continuous_eval_const _
 
 @[simp]
 theorem intEquiv_apply (z : Circle) (n : Multiplicative ℤ) : intEquiv z n = z ^ n.toAdd := rfl
@@ -145,10 +141,8 @@ section Real
 
 /-- The real character with frequency `a`, given by `t ↦ exp (a * t * I)`. -/
 def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
-  toFun a :=
-    ⟨(Real.probChar.mulShift a.toAdd).toMonoidHom, by
-      change Continuous (fun t : Multiplicative ℝ ↦ Circle.exp (a.toAdd * t.toAdd))
-      fun_prop⟩
+  toFun a := ⟨(Real.probChar.mulShift a.toAdd).toMonoidHom,
+    Circle.exp.continuous.comp (continuous_const.mul continuous_toAdd)⟩
   map_one' := by ext1 t; exact congr($(Real.probChar.mulShift_zero) t.toAdd)
   map_mul' a b := by
     ext1 t
@@ -158,36 +152,30 @@ def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
 theorem realChar_apply (a t : Multiplicative ℝ) :
     realChar a t = Circle.exp (a.toAdd * t.toAdd) := rfl
 
-/-- Every continuous character of `ℝ` has the form `t ↦ exp (a * t * I)`. -/
-theorem real_exists_eq_exp (χ : PontryaginDual (Multiplicative ℝ)) :
-    ∃ a : ℝ, ∀ t : ℝ, χ (.ofAdd t) = Circle.exp (a * t) := by
-  obtain ⟨a, ha⟩ :=
-    AddChar.exists_eq_probChar_mulShift (AddChar.toMonoidHomEquiv.symm χ.toMonoidHom)
-      ((map_continuous χ).comp continuous_ofAdd)
-  exact ⟨a, fun t ↦ congr($ha t)⟩
-
 theorem realChar_bijective : Function.Bijective realChar := by
   refine ⟨(injective_iff_map_eq_one _).mpr fun a ha ↦ ?_, fun χ ↦ ?_⟩
   · by_contra h
     apply Real.probChar_ne_one
-    rw [← Real.probChar.mulShift_unit_eq_one_iff
-      (isUnit_iff_ne_zero.mpr (show a.toAdd ≠ 0 from h))]
+    rw [← Real.probChar.mulShift_unit_eq_one_iff (isUnit_iff_ne_zero.mpr h)]
     exact AddChar.ext _ _ fun t ↦ congr($ha (Multiplicative.ofAdd t))
-  · obtain ⟨a, ha⟩ := real_exists_eq_exp χ
-    exact ⟨.ofAdd a, ext fun t ↦ (ha t.toAdd).symm⟩
+  · obtain ⟨a, ha⟩ :=
+      AddChar.exists_eq_probChar_mulShift (AddChar.toMonoidHomEquiv.symm χ.toMonoidHom)
+        ((map_continuous χ).comp continuous_ofAdd)
+    exact ⟨.ofAdd a, ext fun t ↦ congr($ha t.toAdd).symm⟩
 
 @[fun_prop]
 theorem continuous_realChar : Continuous realChar :=
-  continuous_of_continuous_uncurry _ <| by
-    change Continuous (fun p : Multiplicative ℝ × Multiplicative ℝ ↦
-      Circle.exp (p.1.toAdd * p.2.toAdd))
-    fun_prop
+  continuous_of_continuous_uncurry _ <| Circle.exp.continuous.comp <|
+    continuous_toAdd.fst'.mul continuous_toAdd.snd'
+
+theorem isOpenMap_realChar : IsOpenMap realChar :=
+  realChar.isOpenMap_of_sigmaCompact realChar_bijective.surjective continuous_realChar
 
 /-- The Pontryagin dual of `ℝ` is isomorphic to `ℝ`, via `a ↦ (t ↦ exp (a * t * I))`. -/
 def realEquiv : Multiplicative ℝ ≃ₜ* PontryaginDual (Multiplicative ℝ) :=
-  (MulEquiv.ofBijective realChar realChar_bijective).toContinuousMulEquiv fun _ ↦ by
-    have ho := realChar.isOpenMap_of_sigmaCompact realChar_bijective.surjective continuous_realChar
-    exact (ho.isQuotientMap continuous_realChar realChar_bijective.surjective).isOpen_preimage
+  (MulEquiv.ofBijective realChar realChar_bijective).toContinuousMulEquiv fun _ ↦
+    ((isOpenMap_realChar).isQuotientMap continuous_realChar
+      realChar_bijective.surjective).isOpen_preimage
 
 @[simp]
 theorem realEquiv_apply (a t : Multiplicative ℝ) :

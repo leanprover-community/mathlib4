@@ -70,7 +70,7 @@ instance : CommGroup (PontryaginDual A) := inferInstanceAs (CommGroup (A →ₜ*
 
 deriving instance
   T2Space, IsTopologicalGroup,
-  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass,
+  Inhabited, FunLike, ContinuousMapClass, MonoidHomClass, ContinuousEvalConst,
   [DiscreteTopology A] → CompactSpace _
 for PontryaginDual A
 
