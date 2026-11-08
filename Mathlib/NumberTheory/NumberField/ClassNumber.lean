@@ -131,7 +131,7 @@ To show that `𝓞 K` is a PID it is enough to show that, for all (natural) prim
 `p ^ (span ({p}).inertiaDeg P) ≤ ⌊(M K)⌋₊` are principal. This is the standard technique to prove
 that `𝓞 K` is principal, see [marcus1977number], discussion after Theorem 37.
 If `K/ℚ` is Galois, one can use the more convenient
-`NumberField.RingOfIntegers.isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`.
+`isPrincipalIdealRing_of_isPrincipal_of_lt_or_isPrincipal_of_mem_primesOver_of_mem_Icc`.
 
 The way this theorem should be used is to first compute `⌊(M K)⌋₊` and then to use `fin_cases`
 to deal with the finite number of primes `p` in the interval. -/
