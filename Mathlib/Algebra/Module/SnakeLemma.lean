@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Exact.Basic
 
 /-!
-
 # The snake lemma in terms of modules
 
 The snake lemma is proven in `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian

@@ -12,7 +12,6 @@ import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Independence
 
 /-!
-
 # A stochastic process with independent increments and Gaussian marginals is Gaussian
 
 We prove that a stochastic process with independent increments and Gaussian marginals is Gaussian.

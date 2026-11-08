@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Trace.Basic
 
 /-!
-
 # Normalized trace
 
 This file defines the *normalized trace* map; that is, an `F`-linear map from the algebraic closure

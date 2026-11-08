@@ -37,20 +37,24 @@ variable {f' : α → E'} {g' : α → F'} {f'' : α → E''} {l l' : Filter α}
 /-! ### NNNorm -/
 
 /-- `IsBigO` in terms of the non-negative norm. -/
-theorem isBigO_iff_nnnorm :
+theorem isBigO_iff_nnNorm :
     f' =O[l] g' ↔ ∃ c : ℝ≥0, ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
-  simp only [isBigO_iff, ← NNReal.coe_le_coe, coe_nnnorm, NNReal.coe_mul]
+  simp only [isBigO_iff, ← NNReal.coe_le_coe, coe_nnNorm, NNReal.coe_mul]
   constructor <;> intro ⟨c, H⟩
   · use c.toNNReal
     filter_upwards [H] with x h
     grw [h, Real.le_coe_toNNReal c]
   · use c
 
+@[deprecated (since := "2026-10-31")] alias isBigO_iff_nnnorm := isBigO_iff_nnNorm
+
 /-- `IsLittleO` in terms of the non-negative norm. -/
-theorem isLittleO_iff_nnnorm :
+theorem isLittleO_iff_nnNorm :
     f' =o[l] g' ↔ ∀ ⦃c : ℝ≥0⦄, c ≠ 0 → ∀ᶠ x in l, ‖f' x‖₊ ≤ c * ‖g' x‖₊ := by
   simpa [-NNReal.image_coe_Ioi, isLittleO_iff_forall_isBigOWith, zero_lt_iff, ← NNReal.coe_le_coe,
     isBigOWith_iff] using congr(∀ c ∈ $(NNReal.image_coe_Ioi 0), ∀ᶠ x in l, _).symm
+
+@[deprecated (since := "2026-10-31")] alias isLittleO_iff_nnnorm := isLittleO_iff_nnNorm
 
 /-! ### Conversions -/
 
