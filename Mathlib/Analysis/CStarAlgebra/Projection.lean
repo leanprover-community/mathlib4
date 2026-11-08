@@ -124,3 +124,73 @@ lemma commute_of_le (hp : IsStarProjection p) (hq : IsStarProjection q) (h : p �
   rw [commute_iff_eq, hp.le_iff_mul_eq_right hq |>.mp h, hp.le_iff_mul_eq_left hq |>.mp h]
 
 end IsStarProjection
+
+section ProjectionNorm
+
+variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A]
+
+/-- A nonzero star projection in a C⋆-algebra has norm one. -/
+theorem IsStarProjection.norm_eq_one {p : A} (hp : IsStarProjection p) (h0 : p ≠ 0) :
+    ‖p‖ = 1 := by
+  have h1 : ‖p‖ = ‖p‖ * ‖p‖ := by
+    have h := CStarRing.norm_star_mul_self (x := p)
+    rw [hp.isSelfAdjoint, hp.isIdempotentElem] at h
+    exact h
+  have hzero : ‖p‖ * (‖p‖ - 1) = 0 := by nlinarith [h1]
+  rcases mul_eq_zero.mp hzero with h | h
+  · exact absurd (norm_eq_zero.mp h) h0
+  · linarith
+
+end ProjectionNorm
+
+section IsometryProjection
+
+variable {A : Type*} [Semiring A] [StarRing A]
+
+/-- If `v` is an isometry then `v * v⋆` is a star projection. -/
+theorem isStarProjection_mul_star {v : A} (hv : star v * v = 1) :
+    IsStarProjection (v * star v) where
+  isIdempotentElem := by
+    show (v * star v) * (v * star v) = v * star v
+    calc (v * star v) * (v * star v) = v * (star v * v) * star v := by
+          simp only [mul_assoc]
+      _ = v * 1 * star v := by rw [hv]
+      _ = v * star v := by simp
+  isSelfAdjoint := by
+    show star (v * star v) = v * star v
+    simp only [star_mul, star_star]
+
+end IsometryProjection
+
+section TwoValued
+
+variable {A : Type*} [NormedRing A] [StarRing A] [CStarRing A]
+
+/-- For an isometry `v`, either `v` is unitary or the corner `v * v⋆` is at distance exactly one
+from the identity: there is no intermediate value. -/
+theorem two_valued {v : A} (hv : star v * v = 1) :
+    v * star v = 1 ∨ ‖v * star v - 1‖ = 1 := by
+  by_cases hunit : v * star v = 1
+  · exact Or.inl hunit
+  · right
+    have hproj : IsStarProjection (1 - v * star v) := by
+      refine ⟨?_, ?_⟩
+      · show (1 - v * star v) * (1 - v * star v) = 1 - v * star v
+        have hmul : (v * star v) * (v * star v) = v * star v :=
+          (isStarProjection_mul_star hv).isIdempotentElem
+        rw [mul_sub, mul_one, sub_mul, one_mul, hmul, sub_self, sub_zero]
+      · show star (1 - v * star v) = 1 - v * star v
+        rw [star_sub, star_one, (isStarProjection_mul_star hv).isSelfAdjoint]
+    have h0 : (1 - v * star v) ≠ 0 := by
+      intro h
+      exact hunit (Eq.symm (sub_eq_zero.mp h))
+    have hnorm : ‖1 - v * star v‖ = 1 := hproj.norm_eq_one h0
+    rwa [norm_sub_rev] at hnorm
+
+/-- The corner form: a proper corner of an isometry is at distance exactly one from the
+identity. -/
+theorem norm_sub_one_eq_one {v : A} (hv : star v * v = 1) (hne : v * star v ≠ 1) :
+    ‖v * star v - 1‖ = 1 :=
+  (two_valued hv).resolve_left hne
+
+end TwoValued
