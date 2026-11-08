@@ -172,7 +172,7 @@ theorem exists_pi_nat_abs_mul_sub_lt {d n : ℕ} (ξ : Fin d → ℝ) (n_pos : 0
   let D := range (n ^ d + 1)
   have hwd (m) (_ : m ∈ D) : f m ∈ Fintype.piFinset fun _ ↦ Ico (0 : ℤ) n := by
     simp_rw [Fintype.mem_piFinset, mem_Ico]
-   exact fun i ↦ ⟨by positivity, by exact_mod_cast (floor_le _).trans_lt (hfu ..)⟩
+    exact fun i ↦ ⟨by positivity, by exact_mod_cast (floor_le _).trans_lt (hfu ..)⟩
   have hD : #(Fintype.piFinset fun _ : Fin d ↦ Ico (0 : ℤ) n) < #D := by simp [D]
   obtain ⟨x, hx, y, hy, x_lt_y, hxy⟩ : ∃ x ∈ D, ∃ y ∈ D, x < y ∧ f x = f y := by
     obtain ⟨x, hx, y, hy, x_ne_y, hxy⟩ := exists_ne_map_eq_of_card_lt_of_maps_to hD hwd
