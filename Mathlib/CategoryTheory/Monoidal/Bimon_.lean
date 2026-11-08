@@ -83,7 +83,7 @@ namespace Bimon
 
 variable (C) in
 /-- The trivial bimonoid object. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def trivial : Bimon C := mk (𝟙_ C)
 
 instance : Inhabited (Bimon C) :=
@@ -134,8 +134,8 @@ instance : Category (Bimon C) where
 /-- Construct a morphism `Bimon.mk G ⟶ Bimon.mk H` from a  map `f : G ⟶ H` and a `IsBimonHom f`
 instance. -/
 @[simps!]
-def ofHom {A B : C} [BimonObj A] [BimonObj B] (f : A ⟶ B) [IsBimonHom f] :
-    Bimon.mk A ⟶ Bimon.mk B := .mk f
+def ofHom {A B : C} [BimonObj A] [BimonObj B] (f : A ⟶ B) [IsMonHom f] [IsComonHom f] :
+    Bimon.mk A ⟶ Bimon.mk B := .mk' f
 
 @[ext] lemma ext {A B : Bimon C} {f g : A ⟶ B} (w : f.hom = g.hom) : f = g := Hom.ext w
 
@@ -179,6 +179,22 @@ theorem mul_counit (M : C) [BimonObj M] :
       (μ[M] ⊗ₘ μ[M]) =
     μ[M] ≫ Δ[M] := by
   simp only [BimonObj.mul_comul, tensorμ, Category.assoc]
+
+/-! ### The trivial bimonoid -/
+
+attribute [local simp] unitors_equal Mon.one_def in
+/-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
+@[simps]
+def trivialTo (A : Bimon C) : trivial C ⟶ A :=
+  .mk' η[A.X]
+
+attribute [local simp] unitors_inv_equal in
+/-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
+@[simps]
+def toTrivial (A : Bimon C) : A ⟶ trivial C :=
+  .mk' ε[A.X]
+
+-- TODO: `trivial C` is a zero object
 
 end Bimon
 
@@ -267,33 +283,42 @@ variable (C)
 abbrev toMon : Comon (Mon C) ⥤ Mon C := Comon.forget (Mon C)
 
 /-- The forgetful functor from bimonoid objects to the underlying category. -/
+@[implicit_reducible]
 def forget : Comon (Mon C) ⥤ C := toMon C ⋙ Mon.forget C
 
 @[simp]
 theorem toMon_forget : toMon C ⋙ Mon.forget C = forget C := rfl
 
 /-- The forgetful functor from bimonoid objects to comonoid objects. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def toComon : Comon (Mon C) ⥤ Comon C := (Mon.forget C).mapComon
 
 @[simp]
 theorem toComon_forget : toComon C ⋙ Comon.forget C = forget C := rfl
 
+section ComonMonEquivMonComon
+
+-- @[simp]
+-- lemma _root_.Comon.tensorUnit_X : (𝟙_ (Comon C)).X = 𝟙_ C := rfl
+
+-- @[simp]
+-- lemma _root_.Comon.tensorUnit_counit : ε[(𝟙_ (Comon C)).X] = 𝟙 (𝟙_ C) := rfl
+
+-- @[simp]
+-- lemma _root_.Comon.tensorUnit_comul : Δ[(𝟙_ (Comon C)).X] = (λ_ (𝟙_ C)).inv := rfl
+
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 variable {C} in
 /-- The object level part of the forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
-@[simps]
+@[simps, implicit_reducible]
 def toMonComonObj (M : Comon (Mon C)) : Mon (Comon C) where
   X := (toComon C).obj M
   mon.one := .mk' η[M.X.X]
-  mon.mul.hom := μ[M.X.X]
-  mon.mul.isComonHom_hom.hom_comul := by simp
+  mon.mul := .mk' μ[M.X.X]
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
-@[simps]
+@[simps, implicit_reducible]
 def toMonComon : Comon (Mon C) ⥤ Mon (Comon C) where
   obj := toMonComonObj
   map f := .mk' ((toComon C).map f)
@@ -301,7 +326,7 @@ def toMonComon : Comon (Mon C) ⥤ Mon (Comon C) where
 variable {C}
 
 /-- Auxiliary definition for `ofMonComonObj`. -/
-@[simps! X]
+@[simps! X, implicit_reducible]
 def ofMonComonObjX (M : Mon (Comon C)) : Mon C := (Comon.forget C).mapMon.obj M
 
 @[simp]
@@ -314,22 +339,19 @@ theorem ofMonComonObjX_mul (M : Mon (Comon C)) :
     μ[(ofMonComonObjX M).X] = 𝟙 (M.X.X ⊗ M.X.X) ≫ μ[M.X].hom :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [local instance] ComonObj.instTensorUnit in
 attribute [local simp] MonObj.tensorObj.one_def MonObj.tensorObj.mul_def tensorμ in
 /-- The object level part of the backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
-@[simps]
+@[simps, implicit_reducible]
 def ofMonComonObj (M : Mon (Comon C)) : Comon (Mon C) where
   X := ofMonComonObjX M
-  comon.counit := .mk' ε[M.X.X]
+  comon.counit := .mk' ε[M.X.X] (by simp)
   comon.comul := .mk' Δ[M.X.X]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 /-- The backward direction of `Comon (Mon C) ≌ Mon (Comon C)` -/
-@[simps]
+@[simps, implicit_reducible]
 def ofMonComon : Mon (Comon C) ⥤ Comon (Mon C) where
   obj := ofMonComonObj
   map f := .mk' ((Comon.forget C).mapMon.map f)
@@ -350,10 +372,8 @@ def equivMonComonUnitIsoAppXAux (M : Comon (Mon C)) :
     M.X.X ≅ ((toMonComon C ⋙ ofMonComon C).obj M).X.X :=
   Iso.refl _
 
-set_option backward.isDefEq.respectTransparency false in
 instance (M : Comon (Mon C)) : IsMonHom (equivMonComonUnitIsoAppXAux M).hom where
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Auxiliary definition for `equivMonComonUnitIsoApp`. -/
 @[simps!]
 def equivMonComonUnitIsoAppX (M : Comon (Mon C)) :
@@ -379,9 +399,6 @@ theorem ofMonComon_toMonComon_obj_comul (M : Mon (Comon C)) :
     Δ[((ofMonComon C ⋙ toMonComon C).obj M).X.X] = Δ[M.X.X] ≫ 𝟙 _ :=
   rfl
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
 @[simps!]
 def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
@@ -389,12 +406,8 @@ def equivMonComonCounitIsoAppXAux (M : Mon (Comon C)) :
   Iso.refl _
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (M : Mon (Comon C)) : IsComonHom (equivMonComonCounitIsoAppXAux M).hom where
 
-#adaptation_note
-/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
-set_option backward.isDefEq.respectTransparency.types false in
 /-- Auxiliary definition for `equivMonComonCounitIsoApp`. -/
 @[simps!]
 def equivMonComonCounitIsoAppX (M : Mon (Comon C)) :
@@ -402,7 +415,6 @@ def equivMonComonCounitIsoAppX (M : Mon (Comon C)) :
   Comon.mkIso' (equivMonComonCounitIsoAppXAux M)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 instance (M : Mon (Comon C)) : IsMonHom (equivMonComonCounitIsoAppX M).hom where
 
 set_option backward.isDefEq.respectTransparency false in
@@ -413,48 +425,30 @@ def equivMonComonCounitIsoApp (M : Mon (Comon C)) :
   Mon.mkIso (equivMonComonCounitIsoAppX M)
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The equivalence `Comon (Mon C) ≌ Mon (Comon C)` -/
+@[implicit_reducible]
 def equivMonComon : Comon (Mon C) ≌ Mon (Comon C) where
   functor := toMonComon C
   inverse := ofMonComon C
   unitIso := NatIso.ofComponents equivMonComonUnitIsoApp
   counitIso := NatIso.ofComponents equivMonComonCounitIsoApp
 
-/-! ### The trivial bimonoid -/
+end ComonMonEquivMonComon
 
-variable (C) in
-/-- The trivial bimonoid object. -/
-@[simps!]
-def trivial : Comon (Mon C) := Comon.trivial (Mon C)
-
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency.types false in
-/-- The bimonoid morphism from the trivial bimonoid to any bimonoid. -/
-@[simps]
-def trivialTo (A : Comon (Mon C)) : trivial C ⟶ A :=
-  .mk' (default : Mon.trivial C ⟶ A.X)
-
-set_option backward.isDefEq.respectTransparency.types false in
-/-- The bimonoid morphism from any bimonoid to the trivial bimonoid. -/
-@[simps!]
-def toTrivial (A : Comon (Mon C)) : A ⟶ trivial C :=
-  (default : @Quiver.Hom (Comon (Mon C)) _ A (Comon.trivial (Mon C)))
+variable {C}
 
 /-! ### Additional lemmas -/
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem BimonObjAux_counit (M : Comon (Mon C)) :
     ε[((toComon C).obj M).X] = ε[M.X].hom :=
   Category.comp_id _
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem BimonObjAux_comul (M : Comon (Mon C)) :
     Δ[((toComon C).obj M).X] = Δ[M.X].hom :=
   Category.comp_id _
 
-set_option backward.isDefEq.respectTransparency false in
-instance (M : Comon (Mon C)) : BimonObj M.X.X where
+@[simps]
+instance (M : Comon (Mon C)) : ComonObj M.X.X where
   counit := ε[M.X].hom
   comul := Δ[M.X].hom
   counit_comul := by
@@ -464,9 +458,10 @@ instance (M : Comon (Mon C)) : BimonObj M.X.X where
   comul_assoc := by
     simp_rw [← BimonObjAux_comul, ComonObj.comul_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
+instance (M : Comon (Mon C)) : BimonObj M.X.X where
+
 /-- Construct an object of `Comon (Mon C)` from an object `X : C` and `BimonObj X` instance. -/
-@[simps X]
+@[simps, instance_reducible]
 def mk' (X : C) [BimonObj X] : Comon (Mon C) where
   X := .mk X
   comon :=
@@ -484,38 +479,29 @@ end ComonMon
 /-! ### Equivalence between `Bimon C` and `Comon (Mon C)` -/
 
 /-- The functor from `Comon (Mon C)` to `Bimon C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def ComonMon.toBimon : Comon (Mon C) ⥤ Bimon C where
-  obj M := ⟨M.X.X⟩
-  map f := .mk' f.hom.hom
-  map_id M := rfl
-  map_comp f g := rfl
+  obj M := .mk M.X.X
+  map f := .mk f.hom.hom
 
 /-- The functor from `Bimon C` to `Comon (Mon C)`. -/
-@[simps]
+@[simps, implicit_reducible]
 def Bimon.toComonMon : Bimon C ⥤ Comon (Mon C) where
   obj M := ComonMon.mk' M.X
   map f := {
-    hom := {
-      hom := f.hom
-      isMonHom_hom := f.isBimonHom_hom.toIsMonHom
-    }
+    hom := .mk f.hom
     isComonHom_hom := {
-      hom_counit := Mon.Hom.ext' (IsComonHom.hom_counit f.hom)
-      hom_comul := Mon.Hom.ext' (IsComonHom.hom_comul f.hom)
+      hom_counit := Mon.Hom.ext (IsComonHom.hom_counit f.hom)
+      hom_comul := Mon.Hom.ext (IsComonHom.hom_comul f.hom)
     }
   }
-  map_id _ := rfl
-  map_comp _ _ := rfl
 
-set_option backward.isDefEq.respectTransparency false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The equivalence of categories between `Bimon C` and `Comon (Mon C)`. -/
+@[simps, implicit_reducible]
 def equiv : Comon (Mon C) ≌ Bimon C where
   functor := ComonMon.toBimon
   inverse := Bimon.toComonMon
-  unitIso := NatIso.ofComponents Iso.refl (by intros; ext; simp)
-  counitIso := NatIso.ofComponents Iso.refl (by intros; ext; simp)
-  functor_unitIso_comp := by intros; ext; simp
+  unitIso := NatIso.ofComponents (fun _ ↦ Comon.mkIso (Iso.refl _))
+  counitIso := NatIso.ofComponents .refl
 
 end CategoryTheory
