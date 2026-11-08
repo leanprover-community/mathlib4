@@ -90,30 +90,48 @@ theorem traceOfBasis_eq_toReal_tsum {A : E →L[ℂ] E} (hA : A.IsPositive) {ι 
   rw [ENNReal.toReal_ofReal hre]
   exact (RCLike.conj_eq_iff_re.mp (RCLike.conj_eq_iff_im.mpr him)).symm
 
+variable (E) in
+/-- The index set of the Hilbert basis `traceBasis E` used to define `ContinuousLinearMap.trace`. -/
+def traceBasisIndex : Set E := (exists_hilbertBasis ℂ E).choose
+
+variable (E) in
+/-- An arbitrary Hilbert basis of `E`, used to define `ContinuousLinearMap.trace`. The trace of a
+positive operator does not depend on this choice, see `traceOfBasis_eq`. -/
+def traceBasis : HilbertBasis (traceBasisIndex E) ℂ E :=
+    (exists_hilbertBasis ℂ E).choose_spec.choose
+
 /-- The trace of an operator on `E`. -/
-def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (exists_hilbertBasis ℂ E).choose_spec.choose
+@[expose]
+def trace (A : E →L[ℂ] E) : ℂ := traceOfBasis A (traceBasis E)
+
+theorem trace_def (A : E →L[ℂ] E) : A.trace = A.traceOfBasis (traceBasis E) := rfl
 
 variable (A : E →L[ℂ] E)
 
 @[simp]
 theorem trace_zero : trace (0 : E →L[ℂ] E) = 0 := by
-  simp [trace, traceOfBasis_def]
+  simp [trace_def, traceOfBasis_def]
 
 @[simp]
 theorem trace_smul (c : ℂ) : (c • A).trace = c * A.trace := by
-  simp [trace, traceOfBasis_def, ← tsum_mul_left]
+  simp [trace_def, traceOfBasis_def, ← tsum_mul_left]
 
 theorem trace_adjoint : A.adjoint.trace = conj A.trace := by
-  simp [trace, traceOfBasis_def, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
+  simp [trace_def, traceOfBasis_def, Complex.conj_tsum, ContinuousLinearMap.adjoint_inner_right]
 
-theorem toLinearMap_trace [FiniteDimensional ℂ E] :
-    A.toLinearMap.trace ℂ E = A.trace := by
-  unfold trace
-  set ι := (exists_hilbertBasis ℂ E).choose
-  set b := (exists_hilbertBasis ℂ E).choose_spec.choose
-  let : Finite ι := b.orthonormal.linearIndependent.finite
-  let : Fintype ι := Fintype.ofFinite ι
-  simp [traceOfBasis_def, LinearMap.trace_eq_sum_inner _ b.toOrthonormalBasis]
+section FiniteDimensional
+
+variable [FiniteDimensional ℂ E]
+
+instance : Finite (traceBasisIndex E) :=
+  (traceBasis E).orthonormal.linearIndependent.finite
+
+theorem toLinearMap_trace : A.toLinearMap.trace ℂ E = A.trace := by
+  have := Fintype.ofFinite (traceBasisIndex E)
+  simp [trace_def, traceOfBasis_def,
+    LinearMap.trace_eq_sum_inner _ (traceBasis E).toOrthonormalBasis]
+
+end FiniteDimensional
 
 section IsPositive
 
@@ -121,7 +139,7 @@ variable {A B : E →L[ℂ] E}
 
 theorem trace_eq_traceOfBasis (hA : A.IsPositive) {ι : Type*}
     (b : HilbertBasis ι ℂ E) : trace A = traceOfBasis A b := by
-  unfold trace
+  rw [trace_def]
   exact traceOfBasis_eq hA _ b
 
 theorem IsPositive.trace_nonneg (hA : A.IsPositive) : 0 ≤ A.trace :=
@@ -132,7 +150,7 @@ theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace :=
 
 theorem trace_add_le (hA : A.IsPositive) (hB : B.IsPositive) :
     trace (A + B) ≤ trace A + trace B := by
-  simp_rw [trace, traceOfBasis_eq_toReal_tsum (hA.add hB), traceOfBasis_eq_toReal_tsum hA,
+  simp_rw [trace_def, traceOfBasis_eq_toReal_tsum (hA.add hB), traceOfBasis_eq_toReal_tsum hA,
     traceOfBasis_eq_toReal_tsum hB, add_apply, inner_add_right, map_add,
     ENNReal.ofReal_add (hA.re_inner_nonneg_right _) (hB.re_inner_nonneg_right _),
     ENNReal.tsum_add]
