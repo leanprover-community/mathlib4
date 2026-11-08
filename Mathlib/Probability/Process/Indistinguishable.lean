@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
 /-!
-
 # Indistinguishability of processes
 
 In Mathlib, `E`-valued stochastic processes over a probability space `Ω` and indexed by a type `ι`

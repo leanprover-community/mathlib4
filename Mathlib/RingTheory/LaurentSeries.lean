@@ -487,7 +487,7 @@ theorem valuation_eq_LaurentSeries_valuation (P : K⟮X⟯) :
     polynomialValuationX K P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
-  rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
+  rw [Polynomial.valuation_of_mk K f g, RatFunc.mk_eq_mk' f h, Eq.comm]
   convert
     @valuation_of_mk' K⟦X⟧ _ _ K⸨X⸩ _ _ _ (PowerSeries.idealX K) f
       ⟨g, mem_nonZeroDivisors_iff_ne_zero.2 (by simp [h])⟩

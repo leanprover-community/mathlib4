@@ -13,7 +13,6 @@ import Mathlib.Basic.Real.Embedding
 import Mathlib.GroupTheory.DivisibleHull
 
 /-!
-
 # Hahn embedding theorem
 
 In this file, we prove the Hahn embedding theorem: every linearly ordered abelian group
