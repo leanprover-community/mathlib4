@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 
 /-!
-
 This file proves $\log(n + 1) \le H_n \le 1 + \log(n)$ for all natural numbers $n$.
 
 -/
@@ -73,5 +72,5 @@ theorem harmonic_floor_le_one_add_log (y : ℝ) (hy : 1 ≤ y) :
     harmonic ⌊y⌋₊ ≤ 1 + Real.log y := by
   refine (harmonic_le_one_add_log _).trans ?_
   gcongr
-  · exact_mod_cast Nat.floor_pos.mpr hy
+  · exact mod_cast Nat.floor_pos.mpr hy
   · exact Nat.floor_le <| zero_le_one.trans hy

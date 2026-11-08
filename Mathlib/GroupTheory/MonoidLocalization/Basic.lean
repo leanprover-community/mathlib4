@@ -391,6 +391,12 @@ namespace IsLocalizationMap
   rw [← (hf.map_units 1).mul_right_inj, mul_one]
   exact (map_mul ..).symm.trans congr(f $(mul_one _))
 
+@[to_additive] protected theorem map_pow {F : Type*} [FunLike F M N] [MulHomClass F M N]
+    {f : F} (hf : IsLocalizationMap S f) (a : M) (n : ℕ) : f (a ^ n) = f a ^ n := by
+  induction n with
+  | zero => simp [hf.map_one]
+  | succ n hn => rw [pow_succ, pow_succ, map_mul, hn]
+
 @[to_additive] theorem mulEquiv_comp {f : M → N} (hf : IsLocalizationMap S f)
     {E} [EquivLike E N P] [MulEquivClass E N P] (e : E) : IsLocalizationMap S (e ∘ f) where
   map_units x := (hf.map_units x).map e
@@ -398,6 +404,25 @@ namespace IsLocalizationMap
     have ⟨x, eq⟩ := hf.surj (e.symm y)
     ⟨x, e.symm.injective (by simpa [e])⟩
   exists_of_eq eq := hf.exists_of_eq (EquivLike.injective e eq)
+
+/-- A monoid with a localization map of a monoid with unique roots has unique roots. -/
+@[to_additive /-- An additive monoid with a localization map of an additive monoid with unique
+divisibility has unique divisibility. -/]
+theorem hasUniqueRoots {F : Type*} [FunLike F M N] [MulHomClass F M N] {f : F}
+    (hf : IsLocalizationMap S f) [HasUniqueRoots M] : HasUniqueRoots N where
+  pow_left_injective {n} hn x y hxy := by
+    obtain ⟨⟨a₁, a₂⟩, ha⟩ := hf.surj x
+    obtain ⟨⟨b₁, b₂⟩, hb⟩ := hf.surj y
+    obtain ⟨c, hc⟩ : ∃ c : S, c * (a₁ ^ n * b₂ ^ n) = c * (b₁ ^ n * a₂ ^ n) :=
+      hf.exists_of_eq <|
+        by simp only [map_mul, hf.map_pow, ← ha, ← hb, mul_pow, hxy, mul_right_comm]
+    suffices c * (a₁ * b₂) = c * (b₁ * a₂) by
+      rw [← (hf.map_units a₂).mul_left_inj, ha, ← (hf.map_units b₂).mul_left_inj, mul_right_comm,
+        hb, ← (hf.map_units c).mul_right_inj, ← map_mul, ← map_mul, ← map_mul, ← map_mul, this]
+    refine pow_left_injective hn ?_
+    obtain _ | n := n
+    · simp
+    · simp [mul_pow, pow_succ (c : M), mul_assoc, hc]
 
 end IsLocalizationMap
 
@@ -753,17 +778,9 @@ theorem liftOn₂_mk' {p : Sort*} (f : M → S → M → S → p) (H) (a c : M) 
 
 /-- The localization of a torsion-free monoid is torsion-free. -/
 @[to_additive /-- The localization of a torsion-free monoid is torsion-free. -/]
-instance [HasUniqueRoots M] : HasUniqueRoots <| Localization S where
-  pow_left_injective n hn := by
-    rintro ⟨a⟩ ⟨b⟩ (hab : mk a.1 a.2 ^ n = mk b.1 b.2 ^ n)
-    change mk a.1 a.2 = mk b.1 b.2
-    simp only [mk_pow, mk_eq_mk_iff, r_iff_exists, SubmonoidClass.coe_pow, Subtype.exists,
-      exists_prop] at hab ⊢
-    obtain ⟨c, hc, hab⟩ := hab
-    refine ⟨c, hc, pow_left_injective hn ?_⟩
-    obtain _ | n := n
-    · simp
-    · simp [mul_pow, pow_succ c, mul_assoc, hab]
+instance [HasUniqueRoots M] : HasUniqueRoots <| Localization S :=
+  Submonoid.IsLocalizationMap.hasUniqueRoots (f := (monoidOf S).toMulHom)
+    (monoidOf S).isLocalizationMap
 
 end Localization
 

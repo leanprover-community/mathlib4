@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Galois.Topology
 public import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-!
-
 # Essential surjectivity of fiber functors
 
 Let `F : C ⥤ FintypeCat` be a fiber functor of a Galois category `C` and denote by
@@ -149,7 +148,6 @@ private def quotientDiag : SingleObj (V.toSubgroup ⧸ Subgroup.subgroupOf U V) 
 
 variable {V} (hUinV : U ≤ V)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simps]
 private def coconeQuotientDiag :

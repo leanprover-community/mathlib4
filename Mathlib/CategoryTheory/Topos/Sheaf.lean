@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.Equivalence
 public import Mathlib.CategoryTheory.Subobject.Classifier.Defs
 
 /-!
-
 # (Elementary) Sheaf Topos
 
 We define a subobject classifier for categories of sheaves of (large enough) types.
