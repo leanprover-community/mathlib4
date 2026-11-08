@@ -23,6 +23,8 @@ isomorphic to its double dual.
 ## Main definitions
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
+
+See `Mathlib.Topology.Algebra.PontryaginDual.Examples` for concrete duality isomorphisms.
 -/
 
 @[expose] public section
