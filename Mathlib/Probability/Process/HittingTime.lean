@@ -96,11 +96,7 @@ theorem Adapted.isStoppingTime_hittingBtwn_isStoppingTime [ConditionallyComplete
     (f.mono hi _ (hτ.measurableSet_eq i)).inter ?_
   simpa using hf.isStoppingTime_hittingBtwn hs n
 
-/-! ### Deprecated process-based hitting times
-
-These declarations preserve the original process API during the transition to `Function.hittingBtwn`
-and `Function.hittingAfter`.
--/
+/-! ### Deprecated process-based hitting times -/
 
 section Deprecated
 
