@@ -344,10 +344,6 @@ theorem ext_simple {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G}
     (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) : φ₁ = φ₂ :=
   MonoidHom.eq_of_eqOn_denseM cs.submonoidClosure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
 
-theorem ext_simple_apply {G : Type*} [MulOneClass G] {φ₁ φ₂ : W →* G}
-    (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) : ∀ i, φ₁ i = φ₂ i := by
-  intro; rw [ext_simple _ h]
-
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
 def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B) (f : B → G) :
