@@ -15,7 +15,6 @@ import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 import Mathlib.CategoryTheory.Abelian.Exact
 
 /-!
-
 # Bijections Between Ext
 
 In this file, we show that the maps between `Ext` induced

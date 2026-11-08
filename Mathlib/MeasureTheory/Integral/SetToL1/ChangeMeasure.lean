@@ -45,7 +45,7 @@ theorem tendsto_setToFun_approxOn_of_measurable (hT : DominatedFinMeasAdditive �
       (𝓝 <| setToFun μ T hT f) :=
   tendsto_setToFun_of_L1 hT _ hfi.aestronglyMeasurable
     (Eventually.of_forall (SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i))
-    (SimpleFunc.tendsto_approxOn_L1_enorm hfm _ hs (hfi.sub h₀i).2)
+    (SimpleFunc.tendsto_approxOn_L1_eNorm hfm _ hs (hfi.sub h₀i).2)
 
 theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
     (hT : DominatedFinMeasAdditive μ T C) [MeasurableSpace E] [BorelSpace E] {f : α → E}

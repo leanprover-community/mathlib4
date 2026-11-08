@@ -19,7 +19,7 @@ This file contains lemmas dealing with different flavours of induction on polyno
 
 noncomputable section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Polynomial
 
@@ -34,28 +34,26 @@ variable [Semiring R] {p q : R[X]}
 /-- `divX p` returns a polynomial `q` such that `q * X + C (p.coeff 0) = p`.
   It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
-  ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
+  AddMonoidAlgebra.divOf p 1
 
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
 
-theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, coeff_mul_X]
+theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p := by
+  ext (_ | _) <;> simp [coeff_C, coeff_mul_X]
 
 @[simp]
-theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
-  ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C]
+theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p := by
+  ext (_ | _) <;> simp [coeff_C]
 
 @[simp]
-theorem divX_C (a : R) : divX (C a) = 0 :=
-  ext fun n => by simp [coeff_divX]
+theorem divX_C (a : R) : divX (C a) = 0 := by ext; simp [coeff_divX]
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
 
-theorem divX_add : divX (p + q) = divX p + divX q :=
-  ext <| by simp
+theorem divX_add : divX (p + q) = divX p + divX q := by ext; simp
 
 @[simp]
 theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl

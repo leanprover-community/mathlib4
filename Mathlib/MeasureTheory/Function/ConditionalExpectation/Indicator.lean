@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
 /-!
-
 # Conditional expectation of indicator functions
 
 This file proves some results about the conditional expectation of an indicator function and
