@@ -6650,6 +6650,7 @@ public import Mathlib.Probability.Kernel.IonescuTulcea.Maps
 public import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 public import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 public import Mathlib.Probability.Kernel.Irreducible
+public import Mathlib.Probability.Kernel.MarkovChainMeasure
 public import Mathlib.Probability.Kernel.MeasurableIntegral
 public import Mathlib.Probability.Kernel.MeasurableLIntegral
 public import Mathlib.Probability.Kernel.Posterior
@@ -6658,7 +6659,6 @@ public import Mathlib.Probability.Kernel.RadonNikodym
 public import Mathlib.Probability.Kernel.Representation
 public import Mathlib.Probability.Kernel.SetIntegral
 public import Mathlib.Probability.Kernel.WithDensity
-public import Mathlib.Probability.MarkovChain.MarkovChainMeasure
 public import Mathlib.Probability.Martingale.Basic
 public import Mathlib.Probability.Martingale.BorelCantelli
 public import Mathlib.Probability.Martingale.Centering
