@@ -165,9 +165,9 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
           simp_rw [sub_eq_add_neg, ← nnNorm_neg a, ← ENNReal.coe_add, ENNReal.coe_le_coe]
           exact nnNorm_add_le _ _
         · simp_rw [lintegral_add_right _ measurable_const, lintegral_const]
-          apply add_le_add_left ((le_iSup _ n).trans_eq' _)
-          have hmeas := aestronglyMeasurable_of_eLpNorm_ne_top ((le_iSup _ n).trans_lt hbdd).ne
-          simp only [eLpNorm_one_eq_lintegral_eNorm hmeas, eNorm_eq_nnNorm]
+          refine add_le_add_left (le_iSup_of_le n ?_) _
+          simp [eLpNorm_one_eq_lintegral_eNorm (hf.integrable n).aestronglyMeasurable,
+            eNorm_eq_nnNorm]
       refine ne_of_lt (iSup_lt_iff.2 ⟨(⨆ n, eLpNorm (f n) 1 μ) + ‖a‖₊ * μ Set.univ, by finiteness,
         fun n ↦ (hR' n).trans' ?_ ⟩)
       refine lintegral_mono fun ω => ?_
