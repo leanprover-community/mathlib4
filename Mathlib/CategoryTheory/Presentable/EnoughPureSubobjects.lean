@@ -68,6 +68,12 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category* C]
 
+-- to be moved
+instance {W : MorphismProperty C} [W.IsMultiplicative] [LocallySmall.{w} C] :
+    LocallySmall.{w} (WideSubcategory W) where
+  hom_small X Y :=
+    small_of_injective (f := fun f ↦ f.hom) (fun _ _ h ↦ by ext; exact h)
+
 instance {P : ObjectProperty C} (X : P.FullSubcategory) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalPresentable X κ] [P.ι.PreservesCardinalPresentable κ] :
     IsCardinalPresentable X.obj κ :=
@@ -529,6 +535,7 @@ lemma hasEnoughPureSubobjects (C : Type*) [Category* C]
 
 open MorphismProperty in
 attribute [local instance] IsFiltered.nonempty in
+variable (C) in
 lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
     (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
@@ -552,11 +559,77 @@ lemma respectsColimitsOfShapeWideSubcategory_isCardinalPure
       (fun j ↦ (t.ι.app j).property) _
       (by simpa using hc.fac ((wideSubcategoryInclusion (isCardinalPure C κ)).mapCocone t)))
 
+variable (C) in
+lemma hasCardinalFilteredColimits_wideSubcategory_isCardinalPure
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
+    HasCardinalFilteredColimits (WideSubcategory (isCardinalPure C κ)) κ where
+  hasColimitsOfShape J _ _ :=
+    have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
+    (respectsColimitsOfShapeWideSubcategory_isCardinalPure C κ J).hasColimitsOfShape
+
+end IsCardinalAccessibleCategory
+
+end CategoryTheory
+
+namespace Cardinal.SharplyLT.HasEnoughPureSubobjects
+
+variable {C : Type*} [Category* C]
+  {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular]
+  {h : κ.SharplyLT κ'}
+
+def generator (_ : h.HasEnoughPureSubobjects C) :
+    ObjectProperty (WideSubcategory (isCardinalPure C κ)) :=
+  (isCardinalPresentable C κ').inverseImage (wideSubcategoryInclusion _)
+
+@[simp]
+lemma generator_iff (H : h.HasEnoughPureSubobjects C) (X : WideSubcategory (isCardinalPure C κ)) :
+    H.generator X ↔ IsCardinalPresentable X.obj κ' := Iff.rfl
+
+variable (hC : h.HasEnoughPureSubobjects C)
+
+instance : ObjectProperty.EssentiallySmall.{w} hC.generator := by
+  have := hC.toIsCardinalAccessibleCategory
+  have := h.isCardinalAccessibleCategory C
+  obtain ⟨ι, X, h⟩ := ObjectProperty.EssentiallySmall.exists_eq_isoClosure_ofObj
+    (isCardinalPresentable C κ')
+  refine ⟨.ofObj (.mk ∘ X), inferInstance, fun Y hY ↦ ?_⟩
+  obtain ⟨_, ⟨i⟩, ⟨e⟩⟩ := h.le _ hY
+  dsimp at e
+  exact ⟨.mk (X i), ⟨i⟩, ⟨WideSubcategory.isoMk e inferInstance inferInstance⟩⟩
+
+lemma generator_le_isCardinalPresentable :
+    hC.generator ≤ isCardinalPresentable _ κ' := sorry
+
+lemma isCardinalFilteredGenerator : hC.generator.IsCardinalFilteredGenerator κ' :=
+  .mk'.{w, w} hC.generator_le_isCardinalPresentable (fun X ↦ by
+    sorry)
+
+open IsCardinalAccessibleCategory in
+lemma isCardinalAccessibleCategory_isCardinalPure
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] (h : κ.SharplyLT κ')
+    (hC : h.HasEnoughPureSubobjects C) :
+    IsCardinalAccessibleCategory.{w} (WideSubcategory (isCardinalPure C κ)) κ' :=
+  have := hC.toIsCardinalAccessibleCategory
+  have := hasCardinalFilteredColimits_wideSubcategory_isCardinalPure C κ
+  have : HasCardinalFilteredColimits (WideSubcategory (isCardinalPure C κ)) κ' := .of_le h.le
+  { exists_generator := ⟨hC.generator, inferInstance, hC.isCardinalFilteredGenerator ⟩ }
+
+end Cardinal.SharplyLT.HasEnoughPureSubobjects
+
+namespace CategoryTheory
+
+namespace IsCardinalAccessibleCategory
+
+variable {C : Type*} [Category* C]
+
+variable (C) in
 -- Proposition 2.34
-lemma isAccessibleCategory_isCardinalPure
+instance isAccessibleCategory_isCardinalPure
     (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ] :
     IsAccessibleCategory.{w} (WideSubcategory (isCardinalPure C κ)) where
-  exists_cardinal := sorry
+  exists_cardinal := by
+    obtain ⟨κ', _, h, hC⟩ := hasEnoughPureSubobjects C κ
+    exact ⟨_, inferInstance, hC.isCardinalAccessibleCategory_isCardinalPure⟩
 
 end IsCardinalAccessibleCategory
 
