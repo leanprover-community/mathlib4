@@ -48,7 +48,8 @@ If `N` is abelian,
   (which will be available in the planned file `Mathlib/GroupTheory/GroupExtension/Abelian.lean` to
   be added in a later PR).
 - there is a bijection between equivalence classes of group extensions and `groupCohomology.H2`
-  (which is also stated as a TODO in `Mathlib/RepresentationTheory/GroupCohomology/LowDegree.lean`).
+  (which is also stated as a TODO in
+  `Mathlib/RepresentationTheory/Homological/GroupCohomology/LowDegree.lean`).
 -/
 
 @[expose] public section

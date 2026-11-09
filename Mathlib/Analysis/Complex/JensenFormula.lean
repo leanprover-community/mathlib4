@@ -270,7 +270,7 @@ set_option backward.isDefEq.respectTransparency.types false in
 /--
 Reformulation of a finsum that appears in Jensen's formula and in the definition of the counting
 function of Value Distribution Theory, as discussed in
-`Mathlib/Analysis/Complex/ValueDistribution/CountingFunction.lean`.
+`Mathlib/Analysis/Complex/ValueDistribution/LogCounting/Basic.lean`.
 -/
 lemma countingFunction_finsum_eq_finsum_add {c : ℂ} {R : ℝ} {D : ℂ → ℤ} (hR : R ≠ 0)
     (hD : D.HasFiniteSupport) :

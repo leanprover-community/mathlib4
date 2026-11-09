@@ -10,7 +10,7 @@ public import Mathlib.Topology.Algebra.Module.Spaces.WeakBilin
 /-!
 # Weak dual topology
 
-We continue in the setting of `Mathlib/Topology/Algebra/Module/WeakBilin.lean`,
+We continue in the setting of `Mathlib/Topology/Algebra/Module/Spaces/WeakBilin.lean`,
 which defines the weak topology given two vector spaces `E` and `F` over a commutative semiring
 `𝕜` and a bilinear form `B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜`. The weak topology on `E` is the coarsest topology
 such that for all `y : F` every map `fun x => B x y` is continuous.

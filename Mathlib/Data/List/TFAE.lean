@@ -11,7 +11,7 @@ import Mathlib.Init
 # The Following Are Equivalent
 
 This file allows to state that all propositions in a list are equivalent. It is used by
-`Mathlib/Tactic/Tfae.lean`.
+`Mathlib/Tactic/TFAE.lean`.
 -/
 
 @[expose] public section

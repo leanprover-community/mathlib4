@@ -105,7 +105,7 @@ Versions of FTC-2 under the simpler assumption that the function is `C^1` are gi
 file `Mathlib/MeasureTheory/Integral/IntervalIntegral/ContDiff.lean`.
 
 Applications to integration by parts are in the file
-`Mathlib.MeasureTheory.Integral.IntegrationByParts`.
+`Mathlib.MeasureTheory.Integral.IntervalIntegral.IntegrationByParts`.
 
 ### `intervalIntegral.FTCFilter` class
 
