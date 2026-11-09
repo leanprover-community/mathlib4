@@ -238,7 +238,7 @@ public register_option linter.style.setOption : Bool := {
 Run the `set_option` linter on the entire command syntax,
 warning against global `maxHeartbeats` or `linter.flexible` options.
 -/
-def globalSetOptionLinter (stx : Syntax) : CommandElabM Unit := do
+def SetOptionCommandLinter (stx : Syntax) : CommandElabM Unit := do
   if stx.isOfKind ``Lean.Parser.Command.set_option then
     let name := stx[1].getId
     if name.components.contains `maxHeartbeats || name == `linter.flexible then
@@ -271,6 +271,11 @@ def setOptionLinter (stx : Syntax) : CommandElabM Unit := do
 
 /-! ### The combined syntax linter -/
 
+/-- Run a selection of linters on `stx`. -/
+def lintCommandSyntax (stx : Syntax) : CommandElabM Unit := do
+  SetOptionCommandLinter stx
+
+/-- Run a selection of linters on all syntax in `stx`. -/
 partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
   match stx with
   | .ident .. => auxLemmaLinter stx
@@ -289,20 +294,21 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
   | _ => pure ()
 
 /--
-Peel off and evaluate `set_option ... in ...` syntax, and run the syntax based linters.
+Peel off and evaluate `set_option ... in` syntax.
+Run `lintSyntax` on each nested command, and `lintCommandSyntax` on the final nested command.
 This is like `Lean.withSetOptionIn`, but it also lints the leading `set_option ... in` syntax.
 -/
 partial def withSetOptionInLintSyntax (stx : Syntax) : CommandElabM Unit := do
-  if stx.getKind == ``Lean.Parser.Command.in
-      && stx[0].getKind == ``Lean.Parser.Command.set_option then
-    setOptionLinter stx[0]
+  if stx.isOfKind ``Lean.Parser.Command.in
+      && stx[0].isOfKind ``Lean.Parser.Command.set_option then
+    lintSyntax stx[0]
     -- Do not modify the infotrees when elaborating, and silently ignore errors.
     let opts ← Elab.withEnableInfoTree false try
         (·.1) <$> Elab.elabSetOption stx[0][1] stx[0][3]
       catch _ => getOptions
     withScope ({ · with opts }) do withSetOptionInLintSyntax stx[2]
   else
-    globalSetOptionLinter stx
+    lintCommandSyntax stx
     lintSyntax stx
 
 def syntaxBasedLinter : Linter where
