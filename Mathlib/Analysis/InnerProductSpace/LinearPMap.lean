@@ -198,6 +198,20 @@ theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
   -- `⟪v, S x⟫ = ⟪v, T.adjoint y⟫` for all `v : T.domain`:
   fun _ _ hxy => (adjoint_apply_eq hT _ fun _ => by rw [h.symm, hxy]).symm⟩
 
+/-- For a densely defined `T`, a vector `y` belongs to the domain of the adjoint if and only if
+the functional `x ↦ ⟪y, T x⟫` on `T.domain` can be represented as an inner product with
+a vector of `E`. -/
+theorem mem_adjoint_domain_iff_exists
+    (T : E →ₗ.[𝕜] F) (hT : Dense (T.domain : Set E)) (y : F) :
+    y ∈ T.adjoint.domain ↔
+      ∃ w : E, ∀ x : T.domain,
+        inner 𝕜 w (x : E) = inner 𝕜 y (T x) := by
+  constructor
+  · intro hy
+    use T.adjoint ⟨y, hy⟩
+    exact LinearPMap.adjoint_isFormalAdjoint hT ⟨y, hy⟩
+  · exact LinearPMap.mem_adjoint_domain_of_exists y
+
 end LinearPMap
 
 namespace ContinuousLinearMap
