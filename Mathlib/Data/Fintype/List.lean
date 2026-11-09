@@ -9,7 +9,6 @@ public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.List.Permutation
 
 /-!
-
 # Fintype instance for nodup lists
 
 The subtype of `{l : List α // l.Nodup}` over a `[Fintype α]`

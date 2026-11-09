@@ -251,11 +251,11 @@ theorem MemSobolev.fourier_memL1 {s : ℝ} (hs : Module.finrank ℝ E < 2 * s) {
   have hmeas : AEStronglyMeasurable (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) :=
     htemp.1.continuous.aestronglyMeasurable
   have : MemLp (fun x : E ↦ (1 + ‖x‖ ^ 2) ^ (-s / 2)) 2 := by
-    rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top (by simp) (by simp) hmeas]
+    rw [memLp_iff, eLpNorm_lt_top_iff_lintegral_rpow_eNorm_lt_top (by simp) (by simp) hmeas]
     suffices h : ∫⁻ a : E, ENNReal.ofReal ‖(1 + ‖a‖ ^ 2) ^ (-s)‖ < ⊤ by
       norm_cast
       simp_rw [ofReal_norm] at h
-      simp_rw [← enorm_pow]
+      simp_rw [← eNorm_pow]
       convert h
       rw [← Real.rpow_mul_natCast (by positivity)]
       simp

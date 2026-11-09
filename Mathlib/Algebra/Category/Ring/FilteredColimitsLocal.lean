@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 public import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
-
 # Filtered colimits of local rings via local homomorphisms are local rings
 
 In this file, we deal with filtered colimits of local rings via local homomorphisms, proving that

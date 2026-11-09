@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Ideal
 public import Mathlib.CategoryTheory.Sites.CartesianMonoidal
 
 /-!
-
 # Sheaf categories are Cartesian closed
 
 ...if the underlying presheaf category is Cartesian closed, the target category has

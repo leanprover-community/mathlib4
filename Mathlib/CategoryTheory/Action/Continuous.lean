@@ -11,7 +11,6 @@ public import Mathlib.Topology.Algebra.MulAction
 public import Mathlib.Topology.Category.TopCat.Basic
 
 /-!
-
 # Topological subcategories of `Action V G`
 
 For a concrete category `V`, where the forgetful functor factors via `TopCat`,

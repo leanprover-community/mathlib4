@@ -334,7 +334,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
   gcongr with x i
   calc ‖u x‖ₑ
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖ₑ := by
-        apply le_trans (by simp) (HasCompactSupport.enorm_le_lintegral_Ici_deriv _ _ _)
+        apply le_trans (by simp) (HasCompactSupport.eNorm_le_lintegral_Ici_deriv _ _ _)
         · exact hu.comp (by convert contDiff_update 1 x i)
         · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, ‖fderiv ℝ u (update x i xᵢ)‖ₑ := ?_
@@ -345,7 +345,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
         rw [fderiv_comp_deriv _ (hu.differentiable one_ne_zero).differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ * ‖deriv (update x i) y‖ₑ := ContinuousLinearMap.le_opENorm _ _
-    _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ := by simp [deriv_update, Pi.enorm_single]
+    _ ≤ ‖fderiv ℝ u (update x i y)‖ₑ := by simp [deriv_update, Pi.eNorm_single]
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [MeasurableSpace E] [BorelSpace E]
   [FiniteDimensional ℝ E] (μ : Measure E) [IsAddHaarMeasure μ]
@@ -441,7 +441,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_one {u : E → F} (hu : ContDiff ℝ 1 u) (h2u
     {p : ℝ≥0} (hp : NNReal.HolderConjugate (finrank ℝ E) p) :
     eLpNorm u p μ ≤ eLpNormLESNormFDerivOneConst μ p * eLpNorm (fderiv ℝ u) 1 μ := by
   have h0p : 0 < (p : ℝ) := hp.coe.symm.pos
-  rw [eLpNorm_one_eq_lintegral_enorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
+  rw [eLpNorm_one_eq_lintegral_eNorm (hu.continuous_fderiv one_ne_zero).aestronglyMeasurable,
     ← ENNReal.rpow_le_rpow_iff h0p, ENNReal.mul_rpow_of_nonneg _ _ h0p.le,
     ← ENNReal.coe_rpow_of_nonneg _ h0p.le, eLpNormLESNormFDerivOneConst, ← NNReal.rpow_mul,
     eLpNorm_nnreal_pow_eq_lintegral hp.symm.pos.ne' hu.continuous.aestronglyMeasurable,
@@ -526,7 +526,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   · rw [eLpNorm_nnreal_eq_lintegral hp'0 hu.continuous.aestronglyMeasurable, h3u,
       ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ ≠ ∞ := by
-    refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
+    refine lintegral_rpow_eNorm_lt_top_of_eLpNorm'_lt_top
       ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hp'0) ?_ |>.ne
     rw [← eLpNorm_nnreal_eq_eLpNorm' hp'0 hu.continuous.aestronglyMeasurable]
     exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
@@ -541,16 +541,16 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner {u : E → F'}
   have :=
   calc (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / (n' : ℝ)) = eLpNorm v n' μ := by
         rw [← h2γ, eLpNorm_nnreal_eq_lintegral hn.symm.pos.ne' hv.continuous.aestronglyMeasurable]
-        simp (discharger := positivity) [v, Real.enorm_rpow_of_nonneg, ENNReal.rpow_mul]
+        simp (discharger := positivity) [v, Real.eNorm_rpow_of_nonneg, ENNReal.rpow_mul]
     _ ≤ C * eLpNorm (fderiv ℝ v) 1 μ := eLpNorm_le_eLpNorm_fderiv_one μ hv h2v hn
     _ = C * ∫⁻ x, ‖fderiv ℝ v x‖ₑ ∂μ := by
-      rw [eLpNorm_one_eq_lintegral_enorm (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable]
+      rw [eLpNorm_one_eq_lintegral_eNorm (hv.continuous_fderiv one_ne_zero).aestronglyMeasurable]
     _ ≤ C * γ * ∫⁻ x, ‖u x‖ₑ ^ ((γ : ℝ) - 1) * ‖fderiv ℝ u x‖ₑ ∂μ := by
       rw [mul_assoc, ← lintegral_const_mul γ]
       · gcongr
         simp_rw [← mul_assoc]
-        exact enorm_fderiv_norm_rpow_le (hu.differentiable one_ne_zero) h1γ
-      dsimp [enorm]
+        exact eNorm_fderiv_norm_rpow_le (hu.differentiable one_ne_zero) h1γ
+      dsimp [eNorm]
       fun_prop
     _ ≤ C * γ * ((∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) *
         (∫⁻ x, ‖fderiv ℝ u x‖ₑ ^ (p : ℝ) ∂μ) ^ (1 / (p : ℝ))) := by

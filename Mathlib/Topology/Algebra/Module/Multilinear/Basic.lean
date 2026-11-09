@@ -259,19 +259,19 @@ and continuous 1-multilinear maps from `M₂` to `M₃`. -/
 @[simps! apply_toMultilinearMap apply_apply symm_apply_apply]
 def ofSubsingleton [Subsingleton ι] (i : ι) :
     (M₂ →L[R] M₃) ≃ ContinuousMultilinearMap R (fun _ : ι => M₂) M₃ where
-  toFun f := ⟨MultilinearMap.ofSubsingleton R M₂ M₃ i f,
+  toFun f := ⟨MultilinearMap.ofSubsingleton _ M₂ M₃ i f,
     (map_continuous f).comp (continuous_apply i)⟩
-  invFun f := ⟨(MultilinearMap.ofSubsingleton R M₂ M₃ i).symm f.toMultilinearMap,
+  invFun f := ⟨(MultilinearMap.ofSubsingleton _ M₂ M₃ i).symm f.toMultilinearMap,
     (map_continuous f).comp <| continuous_pi fun _ ↦ continuous_id⟩
   right_inv f := toMultilinearMap_injective <|
-    (MultilinearMap.ofSubsingleton R M₂ M₃ i).apply_symm_apply f.toMultilinearMap
+    (MultilinearMap.ofSubsingleton _ M₂ M₃ i).apply_symm_apply f.toMultilinearMap
 
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
 @[simps! toMultilinearMap apply]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : ContinuousMultilinearMap R M₁ M₂ where
-  toMultilinearMap := MultilinearMap.constOfIsEmpty R _ m
+  toMultilinearMap := MultilinearMap.constOfIsEmpty _ _ m
   cont := continuous_const
 
 end

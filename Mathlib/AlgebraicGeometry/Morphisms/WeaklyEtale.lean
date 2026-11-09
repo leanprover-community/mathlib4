@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Etale
 import Mathlib.AlgebraicGeometry.Morphisms.Immersion
 
 /-!
-
 # Weakly étale morphisms
 
 A morphism of schemes is weakly étale if it is flat and its diagonal is flat. As

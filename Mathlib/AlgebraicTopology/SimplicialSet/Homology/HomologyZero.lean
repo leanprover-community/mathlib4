@@ -102,7 +102,6 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :

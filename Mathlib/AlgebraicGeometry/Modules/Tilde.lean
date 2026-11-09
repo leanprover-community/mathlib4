@@ -16,7 +16,6 @@ import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Data.Fintype.Order
 
 /-!
-
 # Construction of M^~
 
 Given any commutative ring `R` and `R`-module `M`, we construct the sheaf `M^~` of `𝒪_SpecR`-modules

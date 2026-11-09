@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Localization.Algebra
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
 
 /-!
-
 # Finiteness properties under localization
 
 In this file we establish behaviour of `Module.Finite` under localizations.

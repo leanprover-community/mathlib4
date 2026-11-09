@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.SimpleGraph.Walk.Decomp
 
 /-!
-
 # Trail, Path, and Cycle
 
 In a simple graph,

@@ -9,7 +9,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Basic
 public import Mathlib.RingTheory.RingHomProperties
 
 /-!
-
 # Constructors for properties of morphisms between schemes
 
 This file provides some constructors to obtain morphism properties of schemes from other morphism
