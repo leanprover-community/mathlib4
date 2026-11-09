@@ -247,7 +247,7 @@ theorem iteratedFDerivWithin_add_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E →
   | base =>
     ext
     simp [iteratedFDerivWithin_one_apply (hu.uniqueDiffWithinAt hx)]
-  | succ i hi IH => 
+  | succ i hi IH =>
     ext h
     calc
       iteratedFDerivWithin 𝕜 (i + 1) (fun x ↦ f x + c) s x h =
