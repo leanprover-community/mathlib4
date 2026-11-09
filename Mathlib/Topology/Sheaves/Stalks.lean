@@ -79,6 +79,7 @@ def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
 /-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
 nbhds x ⥤ opens F.X ⥤ C
 -/
+@[implicit_reducible]
 def stalk (ℱ : X.Presheaf C) (x : X) : C :=
   (stalkFunctor C x).obj ℱ
 
@@ -142,18 +143,16 @@ theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ 
   colimit.hom_ext fun U => by
     induction U with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
 
-set_option backward.isDefEq.respectTransparency false in -- This is needed in Geometry/RingedSpace/Stalks.lean
 @[reassoc (attr := simp)]
 theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) :
     F.germ U x hx ≫ (stalkFunctor C x).map f = f.app (op U) ≫ G.germ U x hx :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
-  rw [← ConcreteCategory.comp_apply, ← stalkFunctor_map_germ, ConcreteCategory.comp_apply]
-  rfl
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply,
+    ← stalkFunctor_map_germ U x hx f, ConcreteCategory.comp_apply]
 
 -- a variant of `stalkFunctor_map_germ_apply` that makes simpNF happy.
 @[simp]
