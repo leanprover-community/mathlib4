@@ -288,9 +288,9 @@ def makePositivityLemma (hyps : Array Expr) (target : Expr) (declName : Name) (p
         return some i
     return none
   let some (targetVal, kind) ← getPositivity target
-    | fail "The conclusion {target} is not a positivity proposition"
+    | fail m!"The conclusion {target} is not a positivity proposition"
   let some (head, args) := getAppFnArgs targetVal
-    | fail "The conclusion {target} does not have a constant head"
+    | fail m!"The conclusion {target} does not have a constant head"
   let key := { head, arity := args.size }
   let mut premises := #[]
   for hyp in hyps do
@@ -723,7 +723,7 @@ partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α
   let provePremise (i : Nat) (kind : OrderRel) : PositivityM (Option Expr) := do
     let some arg := args[i]? | return none
     let ⟨_, β, arg⟩ ← inferTypeQ' arg
-    let zβ ← synthInstanceQ q(Zero $β)
+    let some zβ ← synthInstanceQ? q(Zero $β) | return none
     match kind with
     | .lt =>
       let some pβ ← synthInstanceQ? q(PartialOrder $β) | return none
@@ -742,10 +742,13 @@ partial def applyPositivityLemmas {u : Level} {α : Q(Type u)} (zα : Q(Zero $α
       assumeInstancesCommute
       return (← core (zα := zβ) pβ? arg).toNonzero.map fun pf => q(Ne.symm $pf)
   for lem in lems do
-    let some prePfs ←
-      (lem.premises.mapM fun (i, kind) => OptionT.mk <| provePremise i kind).run
-      | continue
-    result ← orElse result <| applyPositivityLemma zα pα? e lem prePfs
+    -- The premises are proved inside `orElse`, so that they are skipped once `result` is
+    -- `.positive`, and so that an error only discards this lemma.
+    result ← orElse result do
+      let some prePfs ←
+        (lem.premises.mapM fun (i, kind) => OptionT.mk <| provePremise i kind).run
+        | return .none
+      applyPositivityLemma zα pα? e lem prePfs
   return result
 
 /-- Run each registered `positivity` extension on an expression, returning a `NormNum.Result`. -/

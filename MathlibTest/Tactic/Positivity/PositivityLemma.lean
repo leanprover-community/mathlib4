@@ -111,6 +111,24 @@ example {x : ℤ} (hx : 0 ≤ x) : 0 ≤ x + x + x + x + x + x + x + x := by pos
 
 end Cache
 
+namespace PremiseWithoutZero
+
+/-! If the argument of a premise has a type without `Zero`, that lemma is skipped,
+but the other lemmas for the same head are still tried. -/
+
+axiom γ : Type
+axiom k {δ : Type} : δ → α
+
+@[positivity_lemma high]
+axiom k_pos {δ : Type} [Zero δ] [PartialOrder δ] {x : δ} : 0 < x → 0 < k x
+
+@[positivity_lemma low]
+axiom k_pos' {δ : Type} {x : δ} : 0 < k x
+
+example (x : γ) : 0 < k x := by positivity
+
+end PremiseWithoutZero
+
 end
 
 namespace FailureCache
@@ -118,7 +136,7 @@ namespace FailureCache
 /--
 error: @[positivity_lemma] attribute only applies to lemmas
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
-The conclusion {target} is not a positivity proposition
+The conclusion a < 0 is not a positivity proposition
 -/
 #guard_msgs in
 @[positivity_lemma]
@@ -136,7 +154,7 @@ theorem neg_pos'' {a : ℤ} : a < 0 → 0 < -a := by exact fun a_1 => Int.neg_po
 /--
 error: @[positivity_lemma] attribute only applies to lemmas
     proving 0 [</≤/≠] f x₁ ... xₙ or f x₁ ... xₙ [>/≥/≠] 0.
-The conclusion {target} is not a positivity proposition
+The conclusion a < 0 ↔ 0 < -a is not a positivity proposition
 -/
 #guard_msgs in
 @[positivity_lemma]
