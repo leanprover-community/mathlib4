@@ -204,25 +204,25 @@ theorem lt_iSup_add_one_iff {ι} {f : ι → Ordinal.{u}} {a} [Small.{u} ι] :
   simp
 
 /-- The lift of a supremum is the supremum of the lifts. -/
-theorem lift_sSup {s : Set Ordinal.{u}} (hs : BddAbove s) :
+theorem lift_sSup {s : Set Ordinal.{u}} [Small.{u} s] :
     lift.{v} (sSup s) = sSup (lift.{v} '' s) :=
-  liftInitialSeg.map_sSup hs
+  liftInitialSeg.map_sSup bddAbove_of_small
 
 /-- The lift of a supremum is the supremum of the lifts. -/
-theorem lift_iSup {ι : Type*} {f : ι → Ordinal.{u}} (hf : BddAbove (range f)) :
+theorem lift_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι] :
     lift.{v} (⨆ i, f i) = ⨆ i, lift.{v} (f i) :=
-  liftInitialSeg.map_iSup hf
+  liftInitialSeg.map_iSup bddAbove_of_small
 
-theorem lift_iSup_le {ι : Type*} {f : ι → Ordinal.{u}} {a : Ordinal.{max u v}}
-    (hf : BddAbove (range f)) (h : ∀ i, lift.{v} (f i) ≤ a) : lift.{v} (⨆ i, f i) ≤ a := by
-  rw [lift_iSup hf]
-  exact ciSup_le' h
+theorem lift_iSup_le {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{max u v}} [Small.{u} ι]
+    (h : ∀ i, lift.{v} (f i) ≤ a) : lift.{v} (⨆ i, f i) ≤ a := by
+  rw [lift_iSup]
+  exact Ordinal.iSup_le h
 
 @[simp]
-theorem lift_iSup_le_iff {ι : Type*} {f : ι → Ordinal.{u}} (hf : BddAbove (range f))
-    {a : Ordinal.{max u v}} : lift.{v} (⨆ i, f i) ≤ a ↔ ∀ i, lift.{v} (f i) ≤ a := by
-  rw [lift_iSup hf]
-  exact ciSup_le_iff' (bddAbove_range_comp.{_, _, v} hf _)
+theorem lift_iSup_le_iff {ι} {f : ι → Ordinal.{u}} {a : Ordinal.{max u v}} [Small.{u} ι] :
+    lift.{v} (⨆ i, f i) ≤ a ↔ ∀ i, lift.{v} (f i) ≤ a := by
+  have : Small.{max u v} ι := small_lift ι
+  rw [lift_iSup, Ordinal.iSup_le_iff]
 
 -- TODO: state in terms of `IsSuccLimit`.
 theorem succ_lt_iSup_of_ne_iSup {ι} {f : ι → Ordinal.{u}} [Small.{u} ι]

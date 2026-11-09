@@ -170,7 +170,7 @@ theorem le_iff_le_sSup' [WellFoundedLT α] {f : α → α} (hf : IsNormal f) {x 
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot
-variable {ι : Type*} [ConditionallyCompleteLinearOrderBot α]
+variable {ι : Sort*} [ConditionallyCompleteLinearOrderBot α]
   [ConditionallyCompleteLinearOrderBot β]
 
 /-- An initial segment embedding preserves suprema of bounded sets. -/
@@ -183,7 +183,7 @@ theorem _root_.InitialSeg.map_sSup (f : α ≤i β) {s : Set α} (hs : BddAbove 
 /-- An initial segment embedding preserves bounded indexed suprema. -/
 theorem _root_.InitialSeg.map_iSup (f : α ≤i β) {g : ι → α} (hg : BddAbove (range g)) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [iSup, iSup, f.map_sSup hg, ← range_comp]
+  rw [← sSup_range, ← sSup_range, f.map_sSup hg, ← range_comp]
   rfl
 
 end ConditionallyCompleteLinearOrderBot
