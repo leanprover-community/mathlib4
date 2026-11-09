@@ -141,7 +141,9 @@ instance [CommSemigroup α] : CommSemigroup (SetSemiring α) := fast_instance%
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) where
+instance [CommMonoid α] : CommMonoid (SetSemiring α) := fast_instance%
+  toSetEquiv.injective.commMonoid toSet rfl (fun _ _ ↦ rfl)
+    fun _ n ↦ by induction n <;> simp [*, pow_succ]
 
 instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
 
