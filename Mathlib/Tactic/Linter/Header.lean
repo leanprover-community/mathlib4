@@ -361,68 +361,13 @@ def formatImports (imports : Array (ImportRef × Import.Whitespace)) : CommandEl
     logWarningAt lastImportRef.stx m!"Imports can be reformatted, but some comments could not be \
       carried over. Please review the comment that will be inserted after the imports.\n{msg}{note}"
 
-section HeaderParser
-
-open Lean.ParseImports
-
-/-! We extend the import parser to also parse Verso `set_option` commands that need to go before
-the module doc-string. We only use the parser for determining whether a given string matches
-and ignore the other bits of the state.
-
-This approach may be unneeded in the future when using stateful linters. -/
-
-/-- Allow zero or more repetitions of the parser before the parser errors.
-
-Backtracks to the start of parse at any failure.
--/
-@[specialize] partial def many (p : Parser) : Parser := fun input s ↦
-  let newS := p input s
-  if newS.error?.isSome then
-    s
-  else
-    many p input newS
-
-/-- Allow any of the given parsers, committing to the first that succeeded. -/
-def anyOf (ps : List Parser) : Parser := fun input s ↦ Id.run do
-  for p in ps do
-    let newS := p input s
-    if newS.error?.isSome then
-      continue
-    else
-      return newS
-  return {s with error? := some "no alternative matches"}
-
-/-- Accepts either the keyword "false" or the keyword "true". -/
-@[inline] def boolLit : Parser := anyOf [keyword "false", keyword "true"]
-
-/-- Parser for all the module header code allowed before the module docs. -/
-partial def allowedHeaderParser : Parser :=
-  ParseImports.main >>
-  many (keyword "set_option" >> anyOf [
-    keyword "doc.verso.suggestions",
-    keyword "doc.verso.module",
-    -- check last, otherwise it prevents hitting the ones it is a prefix of
-    keyword "doc.verso",
-    keyword "linter.style.header.license",
-    keyword "linter.style.header.imports",
-    -- check last, otherwise it prevents hitting the ones it is a prefix of
-    keyword "linter.style.header" -- for testing and downstream
-  ] >> boolLit)
-
-end HeaderParser
-
 @[inherit_doc Mathlib.Linter.linter.style.header]
-def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def headerLinter (stx : Syntax) : CommandElabM Unit := do
   unless getLinterValue linter.style.header (← getLinterOptions) do
     return
   if (← get).messages.hasErrors then
     return
   profileitM Exception "headerLinter" (← getOptions) do
-  let map ← getFileMap
-  -- This is essentially the same as calling `parseImports'`, but we need access to `s.pos`.
-  let s := allowedHeaderParser map.source (ParseImports.whitespace map.source {})
-  unless (← read).cmdPos == s.pos do
-    return
   let mainModule ← getMainModule
   if Parser.isTerminalCommand stx ||
     -- Deprecated module files are exempt from all header style checks (copyright, doc-string,
@@ -453,8 +398,9 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- The linter skips files not imported in their library root (e.g. `Mathlib.lean`), to avoid
   -- linting "scratch files". It is however active in the test files for the linter itself.
   unless inLibraryRoot? || headerTestFiles.contains mainModule do return
-  -- Re-parse the header slowly, to get the leading whitespace and nice source locations for imports
-  let (headerStx, s, log) ← Parser.parseHeader (Parser.mkInputContext map.source (← getFileName))
+  -- Parse the header, to get the leading whitespace and nice source locations for imports
+  let (headerStx, s, log) ←
+    Parser.parseHeader (Parser.mkInputContext (← getFileMap).source (← getFileName))
   if log.hasErrors then return
   let importRefsWithWhitespace := headerToImportRefsWithWhitespace headerStx
   -- TODO: Enable this more broadly (Archive, etc., and downstream)
@@ -478,7 +424,18 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for (stx, m) in copyrightHeaderChecks copyright expectedLicense do
       Linter.logLint linter.style.header stx m!"* `{stx.getAtomVal}`:\n{m}\n"
 
-initialize addLinter headerLinter
+initialize
+  _ ← registerStatefulLinter (τ := Unit) (init := true) (post := fun stx atStart _ _ _ ↦ do
+    if !atStart then
+      return false
+    -- We allow `set_option linter.style.header...` to be used to change this linter.
+    -- We also allow `set_option doc.verso...` before the module doc-string.
+    if stx.isOfKind ``Lean.Parser.Command.set_option then
+      if stx[1].getId matches `doc.verso | `doc.verso.suggestions | `doc.verso.module
+          | `linter.style.header | `linter.style.header.license | `linter.style.header.imports then
+        return true
+    headerLinter stx
+    return false)
 
 end Style.Header
 

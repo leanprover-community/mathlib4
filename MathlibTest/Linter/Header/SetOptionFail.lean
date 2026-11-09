@@ -34,7 +34,4 @@ Hint: Type `m(odule docstring) + [tab]` to insert a template via snippet.
 Note: This linter can be disabled with `set_option linter.style.header false`
 -/
 #guard_msgs in
-set_option linter.style.header true in
-set_option doc.verso true in
-
 def foo := 37
