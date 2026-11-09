@@ -45,6 +45,23 @@ theorem acc_iff_isEmpty_descending_chain {α} {r : α → α → Prop} {x : α} 
   rw [nonempty_subtype]
   exact not_acc_iff_exists_descending_chain
 
+theorem Subtype.acc_iff {α} {p : α → Prop} {r : Subtype p → Subtype p → Prop} {a : Subtype p} :
+    Acc r a ↔ Acc (fun a b ↦ ∃ ha : p a, ∃ hb : p b, r ⟨a, ha⟩ ⟨b, hb⟩) a.val where
+  mp h := by induction h with | intro => exact Acc.intro _ <| by grind
+  mpr h := by
+    obtain ⟨a', ha'⟩ := a
+    simp only at h
+    induction h with | intro => exact Acc.intro _ <| by grind
+
+theorem acc_iff_onFun_subtype {α} {p : α → Prop} {r : α → α → Prop} {a : α} :
+    Acc (fun a b ↦ r a b ∧ p a ∧ p b) a ↔ ∀ h : p a, Acc (Function.onFun r Subtype.val) ⟨a, h⟩ where
+  mp h ha := by induction h with | intro => exact Acc.intro _ <| by grind
+  mpr h := by
+    by_cases! ha : ¬ p a
+    · exact acc_def.mpr <| by grind
+    convert Subtype.acc_iff (p := p) (r := r.onFun Subtype.val) (a := ⟨a, ha⟩) |>.mp (h ha)
+    grind
+
 /-- A relation is well-founded iff it doesn't have any infinite descending chain.
 
 See `RelEmbedding.wellFounded_iff_isEmpty` for a version in terms of relation embeddings. -/
@@ -52,6 +69,9 @@ theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
     WellFounded r ↔ IsEmpty { f : ℕ → α // ∀ n, r (f (n + 1)) (f n) } where
   mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
   mpr h := ⟨fun _ ↦ acc_iff_isEmpty_descending_chain.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
+
+theorem wellFounded_def {α : Sort*} (r : α → α → Prop) : WellFounded r ↔ ∀ a, Acc r a :=
+  ⟨WellFounded.apply, WellFounded.intro⟩
 
 variable {α β γ : Type*}
 
@@ -80,15 +100,11 @@ instance (r : β → β → Prop) (f : α → β) [H : WellFounded r] : WellFoun
 theorem subtype_iff {p : α → Prop} :
     WellFounded (α := Subtype p) (Function.onFun r Subtype.val) ↔
       WellFounded (fun a b ↦ r a b ∧ p a ∧ p b) := by
-  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← not_iff_not (a := IsEmpty _),
-    not_isEmpty_iff, nonempty_subtype]
-  refine ⟨fun ⟨f, ha⟩ ↦ ⟨(f ·), ?_⟩, fun ⟨f, ha⟩ ↦ ⟨(⟨f ·, ?_⟩), ?_⟩⟩ <;> grind
+  simp [wellFounded_def, acc_iff_onFun_subtype]
 
 theorem subtype_iff' {p : α → Prop} {r : Subtype p → Subtype p → Prop} :
     WellFounded r ↔ WellFounded (fun a b ↦ ∃ ha : p a, ∃ hb : p b, r ⟨a, ha⟩ ⟨b, hb⟩) := by
-  simp_rw [wellFounded_iff_isEmpty_descending_chain, ← not_iff_not (a := IsEmpty _),
-    not_isEmpty_iff, nonempty_subtype]
-  refine ⟨fun ⟨f, ha⟩ ↦ ⟨(f ·), ?_⟩, fun ⟨f, ha⟩ ↦ ⟨(⟨f ·, (ha _).snd.fst⟩), ?_⟩⟩ <;> grind
+  convert subtype_iff (p := p) (r := Relation.Map r Subtype.val Subtype.val) <;> grind
 
 theorem _root_.Function.Injective.isWellOrder (r : β → β → Prop) {f : α → β} (hf : f.Injective)
     [IsWellOrder β r] : IsWellOrder α (r.onFun f) where
