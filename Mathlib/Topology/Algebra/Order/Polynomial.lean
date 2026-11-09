@@ -107,13 +107,12 @@ theorem tendsto_atTop_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
 theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
     Tendsto P.eval atTop (𝓝 c) ↔ P.leadingCoeff = c ∧ P.degree ≤ 0 := by
   rw [tendsto_atTop_nhds_iff]
-  grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, leadingCoeff_C,
-    natDegree_eq_zero_iff_degree_le_zero]
+  grind [degree_le_zero_iff, leadingCoeff, leadingCoeff_C]
 
 theorem tendsto_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
     (h : P.degree ≤ 0) : Tendsto P.eval atTop (𝓝 P.leadingCoeff) := by
   apply tendsto_atTop_nhds_iff.mpr
-  grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, natDegree_eq_zero_iff_degree_le_zero]
+  grind [degree_le_zero_iff, leadingCoeff]
 
 end PolynomialAtTop
 
