@@ -655,22 +655,22 @@ lemma coeff_single_one_mul (x : R[M]) (r : R) (m : M) :
 
 @[deprecated (since := "2026-06-18")] alias single_one_mul_apply := coeff_single_one_mul
 
-@[to_additive (dont_translate := R) (attr := simp)]
+@[to_additive (dont_translate := R)]
 lemma coeff_mul_natCast (x : R[M]) (n : ℕ) (m : M) :
     (x * (n : R[M])).coeff m = x.coeff m * (n : R) :=
   coeff_mul_single_one x (n : R) m
 
-@[to_additive (dont_translate := R) (attr := simp)]
+@[to_additive (dont_translate := R)]
 lemma coeff_natCast_mul (x : R[M]) (n : ℕ) (m : M) :
     ((n : R[M]) * x).coeff m = (n : R) * x.coeff m :=
   coeff_single_one_mul x (n : R) m
 
-@[to_additive (dont_translate := R) (attr := simp)]
+@[to_additive (dont_translate := R)]
 lemma coeff_mul_ofNat (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
     (x * (ofNat(n) : R[M])).coeff m = x.coeff m * ofNat(n) :=
   coeff_mul_single_one x ofNat(n) m
 
-@[to_additive (dont_translate := R) (attr := simp)]
+@[to_additive (dont_translate := R)]
 lemma coeff_ofNat_mul (x : R[M]) (n : ℕ) [n.AtLeastTwo] (m : M) :
     ((ofNat(n) : R[M]) * x).coeff m = ofNat(n) * x.coeff m :=
   coeff_single_one_mul x ofNat(n) m
