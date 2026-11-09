@@ -721,25 +721,49 @@ lemma isAccessibleCategory_fullSubcategory_iff
 
 -- Remark 2.50
 lemma isCardinalAccessibleCategory_inverseImage_and
-    (P : ObjectProperty D) (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (P : ObjectProperty D) (F : C ⥤ D) [F.IsAccessible.{w}]
+    (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
     [IsAccessibleCategory.{w} P.FullSubcategory] [P.IsClosedUnderCardinalFilteredColimits κ] :
     IsAccessibleCategory.{w} (P.inverseImage F).FullSubcategory ∧
-    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular),
       (P.inverseImage F).IsClosedUnderCardinalFilteredColimits κ' := by
   obtain ⟨κ', κ'', _, _, h₁, h₂, _, _, _⟩ :
     ∃ (κ' κ'' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : Fact κ''.IsRegular)
       (h₁ : κ.SharplyLT κ') (h₂ : κ'.SharplyLT κ''),
       IsCardinalAccessibleCategory C κ' ∧ F.IsCardinalAccessible κ' ∧
       P.IsClosedUnderCardinalPureSubobjects κ'' := by
-    sorry
+    obtain ⟨κ₁, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} C
+    obtain ⟨κ₂, _, _⟩ := IsAccessibleCategory.exists_cardinal.{w} D
+    obtain ⟨κ₃, _, _⟩ := Functor.IsAccessible.exists_cardinal.{w} F
+    obtain ⟨κ₄, _, h, h₁, h₂, h₃⟩ := Cardinal.SharplyLT.exists_of_quadruple κ κ₁ κ₂ κ₃
+    have := h₂.isCardinalAccessibleCategory D
+    have : P.IsClosedUnderCardinalFilteredColimits κ₄ := .of_le h.le
+    obtain ⟨κ₅, _, h₅, _⟩ := (P.isAccessibleCategory_fullSubcategory_iff κ₄).1 inferInstance
+    exact ⟨κ₄, κ₅, inferInstance, inferInstance, h, h₅,
+      h₁.isCardinalAccessibleCategory C, F.isCardinalAccessible_of_le h₃.le, inferInstance⟩
   have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le h₁.le
   have := F.isCardinalAccessible_of_le h₂.le
   have := h₂.isCardinalAccessibleCategory C
   rw [isAccessibleCategory_fullSubcategory_iff _ κ']
   exact ⟨⟨κ'', inferInstance, h₂,
     ⟨fun {X Y} f _ hY ↦ P.prop_of_isCardinalPure κ'' (F.map f) hY⟩⟩,
-    κ', inferInstance, h₁, inferInstance⟩
+    κ', inferInstance, inferInstance⟩
+
+instance (P : ObjectProperty D) (F : C ⥤ D) [F.IsAccessible.{w}]
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    [IsAccessibleCategory.{w} P.FullSubcategory] [P.IsAccessiblyEmbedded.{w}] :
+    IsAccessibleCategory.{w} (P.inverseImage F).FullSubcategory := by
+  obtain ⟨κ, _, _⟩ := IsAccessiblyEmbedded.exists_cardinal.{w} P
+  exact (P.isCardinalAccessibleCategory_inverseImage_and F κ).1
+
+instance (P : ObjectProperty D) (F : C ⥤ D) [F.IsAccessible.{w}]
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    [IsAccessibleCategory.{w} P.FullSubcategory] [P.IsAccessiblyEmbedded.{w}] :
+    (P.inverseImage F).IsAccessiblyEmbedded.{w} := by
+  obtain ⟨κ, _, _⟩ := IsAccessiblyEmbedded.exists_cardinal.{w} P
+  obtain ⟨κ', _, h⟩ := (P.isCardinalAccessibleCategory_inverseImage_and F κ).2
+  exact ⟨κ', inferInstance, h⟩
 
 end ObjectProperty
 

@@ -206,10 +206,18 @@ lemma exists_of_pair (κ₁ κ₂ : Cardinal.{u})
 lemma exists_of_triple (κ₁ κ₂ κ₃ : Cardinal.{u})
     [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [Fact κ₃.IsRegular] :
     ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
-      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ':= by
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ' := by
   obtain ⟨κ₁₂, _, h₁, h₂⟩ := exists_of_pair κ₁ κ₂
   obtain ⟨κ, _, h₁₂, h₃⟩ := exists_of_pair κ₁₂ κ₃
   exact ⟨κ, inferInstance, h₁.trans h₁₂, h₂.trans h₁₂, h₃⟩
+
+lemma exists_of_quadruple (κ₁ κ₂ κ₃ κ₄ : Cardinal.{u})
+    [Fact κ₁.IsRegular] [Fact κ₂.IsRegular] [Fact κ₃.IsRegular] [Fact κ₄.IsRegular] :
+    ∃ (κ' : Cardinal.{u}) (_ : Fact κ'.IsRegular),
+      SharplyLT κ₁ κ' ∧ SharplyLT κ₂ κ' ∧ SharplyLT κ₃ κ' ∧ SharplyLT κ₄ κ' := by
+  obtain ⟨κ₁₂₃, _, h₁, h₂, h₃⟩ := exists_of_triple κ₁ κ₂ κ₃
+  obtain ⟨κ, _, h₁₂₃, h₄⟩ := exists_of_pair κ₁₂₃ κ₄
+  exact ⟨κ, inferInstance, h₁.trans h₁₂₃, h₂.trans h₁₂₃, h₃.trans h₁₂₃, h₄⟩
 
 lemma _root_.Cardinal.fact_isRegular_succ_sigmaPowLT
     (κ κ' : Cardinal.{u}) [Fact κ.IsRegular] [Fact κ'.IsRegular] :

@@ -112,4 +112,8 @@ lemma isCardinalPresentable_of_fullSubcategory
     NatIso.ofComponents (fun _ ↦ P.fullyFaithfulι.homEquiv.toIso)
   exact Functor.isCardinalAccessible_of_natIso e.symm _
 
+class IsAccessiblyEmbedded (P : ObjectProperty C) where
+  exists_cardinal (P) : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular),
+    P.IsClosedUnderCardinalFilteredColimits κ
+
 end CategoryTheory.ObjectProperty
