@@ -105,11 +105,13 @@ theorem mem_toSubmodule {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toSubmodu
 @[simp]
 theorem coe_toSubmodule (s : StrictLieRinehartIdeal A L) : (s.toSubmodule : Set L) = s := rfl
 
+@[simp]
 theorem toSubmodule_inj {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule = t.toSubmodule ↔ s = t :=
   toSubmodule_injective.eq_iff
 
-theorem toSubmodule_le_iff {s t : StrictLieRinehartIdeal A L} :
+@[simp]
+theorem toSubmodule_le_toSubmodule {s t : StrictLieRinehartIdeal A L} :
     s.toSubmodule ≤ t.toSubmodule ↔ s ≤ t :=
   Iff.rfl
 
@@ -234,7 +236,7 @@ identity of `A`) is a strict Lie-Rinehart ideal. -/
     have h2 := f.apply_lie' a x
     simp only [AlgHom.coe_id, id_eq] at h2
     rw [h2]
-    exact s₂.isotropic' (f x) a h }
+    exact s₂.isotropic' (f x) a h
 
 end StrictLieRinehartIdeal
 
