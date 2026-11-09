@@ -125,6 +125,51 @@ theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ =
   · rwa [le_inv_mul_iff₀ hp, mul_neg, ← mul_div_assoc, mul_one]
   · rwa [inv_mul_lt_iff₀ hp, ← mul_div_assoc, mul_one]
 
+theorem norm_nsmul_eq_mul {x : AddCircle p} {n : ℕ}
+    (hx : n * ‖x‖ ≤ |p| / 2) : ‖n • x‖ = n * ‖x‖ := by
+  obtain ⟨t, rfl⟩ := mk_surjective x
+  rcases eq_or_ne p 0 with rfl | hp
+  · simp only [← coe_nsmul, nsmul_eq_mul, norm_eq_of_zero, abs_mul, Nat.abs_cast]
+  let s := t - round (p⁻¹ * t) * p
+  have hs : (s : AddCircle p) = t := by simp [s, coe_period]
+  have hs' : ‖(s : AddCircle p)‖ = |s| := by rw [hs, norm_eq]
+  rw [← hs, hs'] at hx ⊢
+  rw [← coe_nsmul, nsmul_eq_mul, (norm_coe_eq_abs_iff p hp).mpr
+    (by rwa [abs_mul, Nat.abs_cast]), abs_mul, Nat.abs_cast]
+
+/-- If `x` lies in the ball of radius `|p| / 2 / n` and `n • x` lies in the ball of radius `s`,
+then `x` lies in the ball of radius `s / n`. -/
+theorem mem_ball_div {x : AddCircle p} {s : ℝ} {n : ℕ}
+    (h1 : x ∈ ball 0 (|p| / 2 / n)) (h2 : n • x ∈ ball 0 s) : x ∈ ball 0 (s / n) := by
+  have hn0 : n ≠ 0 := by
+    contrapose h1
+    simp [h1]
+  rw [mem_ball_zero_iff, lt_div_iff₀' (by positivity)] at h1 ⊢
+  rwa [mem_ball_zero_iff, norm_nsmul_eq_mul p h1.le] at h2
+
+/-- The balls of radius `|p| / 2 / 2 ^ (n + 1)` around `0` form a basis of neighbourhoods of `0`. -/
+theorem hasBasis_ball_div_two_pow (hp : p ≠ 0) :
+    (nhds (0 : AddCircle p)).HasBasis (fun _ ↦ True) (fun n ↦ ball 0 (|p| / 2 / 2 ^ (n + 1))) :=
+  nhds_basis_uniformity <| mk_uniformity_basis_of_tendsto (f := fun n ↦ |p| / 2 / 2 ^ (n + 1))
+    (l := Filter.atTop) (fun _ _ ↦ by positivity) (by simp) <| tendsto_const_nhds.div_atTop <|
+    (tendsto_pow_atTop_atTop_of_one_lt one_lt_two).comp (Filter.tendsto_add_atTop_nat 1)
+
+/-- If all positive multiples of `x : AddCircle p` lie in the ball of radius `|p| / 2 / 2` around
+`0`, then `x = 0`. -/
+theorem eq_zero_of_forall_nsmul_mem_ball {x : AddCircle p}
+    (hx : ∀ n > 0, n • x ∈ ball 0 (|p| / 2 / 2)) : x = 0 := by
+  rcases eq_or_ne p 0 with rfl | hp
+  · simpa using hx 1
+  have hx1 : x ∈ ball 0 (|p| / 2 / 2) := by simpa using hx 1
+  have h (n : ℕ) : x ∈ ball 0 (|p| / 2 / 2 ^ (n + 1)) := by
+    induction n with
+    | zero => simpa using hx1
+    | succ n ih =>
+        simpa [div_div, mul_assoc, ← pow_succ'] using
+          mem_ball_div p (by simpa using ih) (hx (2 ^ (n + 1)) (by positivity))
+  rw [← Set.mem_singleton_iff, ← ker_nhds, (hasBasis_ball_div_two_pow p hp).ker]
+  exact Set.mem_iInter₂.mpr fun n _ ↦ h n
+
 open Metric
 
 theorem closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {ε : ℝ}

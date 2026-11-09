@@ -23,6 +23,8 @@ isomorphic to its double dual.
 ## Main definitions
 
 * `PontryaginDual A`: The group of continuous homomorphisms `A →* Circle`.
+* `AddPontryaginDual A`: The additive version for additive groups, the group of continuous
+  additive homomorphisms `A →+ UnitAddCircle`.
 -/
 
 @[expose] public section
@@ -30,11 +32,13 @@ isomorphic to its double dual.
 open scoped Pointwise
 open Real
 
+noncomputable section
+
+section PontryaginDual
+
 variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Group H]
   [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
   [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalGroup G] [IsTopologicalGroup H]
-
-noncomputable section
 
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
@@ -142,3 +146,120 @@ def mapHom [LocallyCompactSpace G] :
   continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
 
 end PontryaginDual
+
+end PontryaginDual
+
+/-! ### The additive Pontryagin dual -/
+
+section AddPontryaginDual
+
+open Metric
+
+variable (A B C G H : Type*) [AddMonoid A] [AddMonoid B] [AddMonoid C] [AddCommGroup G]
+  [AddGroup H] [TopologicalSpace A] [TopologicalSpace B] [TopologicalSpace C]
+  [TopologicalSpace G] [TopologicalSpace H] [IsTopologicalAddGroup G] [IsTopologicalAddGroup H]
+
+/-- The additive Pontryagin dual of `A` is the group of continuous additive homomorphisms
+`A → UnitAddCircle`. -/
+def AddPontryaginDual :=
+  A →ₜ+ UnitAddCircle
+deriving TopologicalSpace
+
+variable {A B C G}
+
+namespace AddPontryaginDual
+
+open ContinuousAddMonoidHom
+
+instance : AddCommGroup (AddPontryaginDual A) :=
+  inferInstanceAs (AddCommGroup (A →ₜ+ UnitAddCircle))
+
+deriving instance
+  T2Space, IsTopologicalAddGroup,
+  Inhabited, FunLike, ContinuousMapClass, AddMonoidHomClass, ContinuousEvalConst,
+  [DiscreteTopology A] → CompactSpace _
+for AddPontryaginDual A
+
+@[ext]
+theorem ext {ψ φ : AddPontryaginDual A} (h : ∀ a, ψ a = φ a) : ψ = φ :=
+  DFunLike.ext _ _ h
+
+@[simp]
+theorem zero_apply (a : A) : (0 : AddPontryaginDual A) a = 0 :=
+  rfl
+
+instance [LocallyCompactSpace H] : LocallyCompactSpace (AddPontryaginDual H) := by
+  let Vn : ℕ → Set UnitAddCircle := fun n ↦ ball 0 (1 / 2 / 2 ^ (n + 1))
+  refine ContinuousAddMonoidHom.locallyCompactSpace_of_hasBasis Vn ?_ ?_
+  · intro n x h1 h2
+    have hx : ‖x‖ + ‖x‖ ≤ 1 / 2 := by
+      rw [← two_mul, ← le_div_iff₀' two_pos]
+      refine (mem_ball_zero_iff.mp h1).le.trans ?_
+      gcongr
+      exact le_self_pow₀ one_le_two n.succ_ne_zero
+    have : ‖x + x‖ = ‖x‖ + ‖x‖ := by
+      rw [← two_nsmul x, AddCircle.norm_nsmul_eq_mul _ ?_, Nat.cast_ofNat, two_mul]
+      rwa [Nat.cast_ofNat, two_mul, abs_one]
+    rw [mem_ball_zero_iff] at h1 h2 ⊢
+    rwa [this, ← two_mul, ← lt_div_iff₀' two_pos, div_div,
+      ← pow_succ] at h2
+  · simpa [Vn] using AddCircle.hasBasis_ball_div_two_pow 1 one_ne_zero
+
+/-- A compact additive monoid has discrete Pontryagin dual. -/
+instance [CompactSpace A] : DiscreteTopology (AddPontryaginDual A) := by
+  let V : Set (AddPontryaginDual A) := {ψ | Set.MapsTo ψ Set.univ (ball 0 (1 / 2 / 2))}
+  have hVopen : IsOpen V :=
+    isOpen_induced (ContinuousMap.isOpen_setOfPred_mapsTo isCompact_univ isOpen_ball)
+  have hVeq : V = ({0} : Set (AddPontryaginDual A)) := by
+    ext ψ
+    rw [Set.mem_singleton_iff]
+    refine ⟨fun hψ ↦ ?_, ?_⟩
+    · ext1 a
+      refine AddCircle.eq_zero_of_forall_nsmul_mem_ball 1 fun n hn ↦ ?_
+      simpa using hψ (Set.mem_univ (n • a))
+    · intro rfl _ _
+      simp
+  exact discreteTopology_of_isOpen_singleton_zero (by simpa [hVeq] using hVopen)
+
+instance [DiscreteTopology A] [CompactSpace A] : Finite (AddPontryaginDual A) :=
+  finite_of_compact_of_discrete
+
+noncomputable instance [DiscreteTopology A] [CompactSpace A] : Fintype (AddPontryaginDual A) :=
+  .ofFinite _
+
+/-- `AddPontryaginDual` is a contravariant functor. -/
+def map (f : A →ₜ+ B) :
+    (AddPontryaginDual B) →ₜ+ (AddPontryaginDual A) :=
+  f.compLeft UnitAddCircle
+
+@[simp]
+theorem map_apply (f : A →ₜ+ B) (x : AddPontryaginDual B) (y : A) :
+    map f x y = x (f y) :=
+  rfl
+
+@[simp]
+theorem map_zero : map (0 : A →ₜ+ B) = 0 :=
+  ContinuousAddMonoidHom.ext fun x => AddPontryaginDual.ext fun _y => ZeroHomClass.map_zero x
+
+@[simp]
+theorem map_comp (g : B →ₜ+ C) (f : A →ₜ+ B) :
+    map (comp g f) = ContinuousAddMonoidHom.comp (map f) (map g) :=
+  ContinuousAddMonoidHom.ext fun _x => AddPontryaginDual.ext fun _y => rfl
+
+@[simp]
+nonrec theorem map_add (f g : A →ₜ+ G) : map (f + g) = map f + map g :=
+  ContinuousAddMonoidHom.ext fun x => AddPontryaginDual.ext fun y => map_add x (f y) (g y)
+
+variable (A B C G)
+
+/-- `AddPontryaginDual.map` as a `ContinuousAddMonoidHom`. -/
+def mapHom [LocallyCompactSpace G] :
+    (A →ₜ+ G) →ₜ+ ((AddPontryaginDual G) →ₜ+ (AddPontryaginDual A)) where
+  toFun := map
+  map_zero' := map_zero
+  map_add' := map_add
+  continuous_toFun := continuous_of_continuous_uncurry _ continuous_comp
+
+end AddPontryaginDual
+
+end AddPontryaginDual
