@@ -32,7 +32,7 @@ variable {ι A σ : Type*} [Preorder ι] [CompleteLattice σ] [SetLike σ A]
 
 lemma IsFiltration.f_lt_eq_sup (i : ι) :
     F_lt i = ⨆ j < i, F j :=
-  le_antisymm_iff.mpr ⟨IsFiltration.is_sup (⨆ j < i, F j) i fun _ h ↦ le_biSup F h,
-    iSup₂_le fun _ h ↦ IsFiltration.is_le h⟩
+  le_antisymm_iff.mpr ⟨IsFiltration.is_sup (F := F) (⨆ j < i, F j) i
+    fun j hj ↦ le_iSup₂_of_le j hj (by simp), iSup₂_le fun _ h ↦ IsFiltration.is_le h⟩
 
 end
