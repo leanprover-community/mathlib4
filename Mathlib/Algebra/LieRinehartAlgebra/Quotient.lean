@@ -33,11 +33,9 @@ these are the short exact sequences `0 → s → L → L ⧸ s → 0`.
 
 public section
 
-universe u v
-
 namespace StrictLieRinehartIdeal
 
-variable {A : Type u} {L : Type v} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
+variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
 instance : HasQuotient L (StrictLieRinehartIdeal A L) := ⟨fun s => L ⧸ s.toSubmodule⟩
 
