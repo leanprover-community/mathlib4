@@ -181,6 +181,6 @@ lemma logDeriv_eta_eq_E2 (z : ℍ) : logDeriv eta z = (π * I / 12) * E2 z := by
 
 open EisensteinSeries in
 lemma deriv_eta_eq_E2_mul_eta (z : ℍ) : deriv eta z = (π * I / 12) * E2 z * eta z := by
-  rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.2)]
+  rw [← logDeriv_eta_eq_E2, logDeriv_apply, div_mul_cancel₀ _ (eta_ne_zero z.coe_im_pos)]
 
 end ModularForm

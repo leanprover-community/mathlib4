@@ -159,9 +159,9 @@ is `2πi E₂`. -/
 theorem normalizedDerivOfComplex_discriminant : D Δ = E2 * Δ := by
   ext z
   have hΔ : Δ ∘ ofComplex =ᶠ[𝓝 (z : ℂ)] (eta · ^ 24) := by
-    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.2] with w hw
+    filter_upwards [isOpen_upperHalfPlaneSet.mem_nhds z.coe_im_pos] with w hw
     simp [discriminant, ofComplex_apply_of_im_pos hw]
-  have hη := differentiableAt_eta_of_mem_upperHalfPlaneSet z.2
+  have hη := differentiableAt_eta_of_mem_upperHalfPlaneSet z.coe_im_pos
   simp only [normalizedDerivOfComplex, Pi.mul_apply, hΔ.deriv_eq, deriv_fun_pow hη,
     deriv_eta_eq_E2_mul_eta z, discriminant]
   field
