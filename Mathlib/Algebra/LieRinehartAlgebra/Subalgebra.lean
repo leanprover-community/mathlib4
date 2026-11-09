@@ -184,10 +184,10 @@ instance lieRingModule : LieRingModule L' M where
 
 end LieModule
 
-variable {R L₂ : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L][LieRingModule L A] [LieRing L₂]
+variable {R L₂ : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRingModule L A] [LieRing L₂]
   [Module A L₂] [LieRingModule L₂ A] [LieAlgebra R L₂] {f : L →ₗ⁅.id R A⁆ L₂} {x : L₂}
 
-/-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂` -/
+/-- The pushforward of a Lie-Rinehart subalgebra `L' ⊆ L` by `f : L → L₂`. -/
 @[expose]
 def map (f : L →ₗ⁅.id R A⁆ L₂) : LieRinehartSubalgebra A L₂ :=
   letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}

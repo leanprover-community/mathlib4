@@ -50,7 +50,7 @@ instance : AddCommGroup (L ⧸ s) := Submodule.Quotient.addCommGroup _
 instance : Module A (L ⧸ s) := Submodule.Quotient.module _
 
 /-- Map associating to an element in a Lie-Rinehart algebra `L`, an element in the quotient
-`L ⧸ s`, where s is a strict Lie-Rinehart ideal. -/
+`L ⧸ s`, where `s` is a strict Lie-Rinehart ideal. -/
 abbrev mk : L → L ⧸ s := Submodule.Quotient.mk
 
 @[simp]
@@ -62,7 +62,7 @@ theorem mk''_eq_mk (l : L) : Quotient.mk'' l = (mk l : L ⧸ s) := rfl
 instance : LieRing (L ⧸ s) where
   bracket x y :=
     Quotient.liftOn₂' x y (fun x' y' => mk ⁅x', y'⁆) (by
-      intros a₁ a₂ b₁ b₂ ha hb
+      intro a₁ a₂ b₁ b₂ ha hb
       rw [Submodule.quotientRel_def, mem_toSubmodule] at ha hb
       apply (Submodule.Quotient.eq s.toSubmodule).2
       rw [mem_toSubmodule]
@@ -78,7 +78,7 @@ theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ s), (mk y : L �
 
 instance : Bracket (L ⧸ s) A where
   bracket x a := Quotient.liftOn' x (fun x' => ⁅x', a⁆) (by
-    intros l l' h
+    intro l l' h
     rw [Submodule.quotientRel_def, mem_toSubmodule] at h
     rw [← sub_eq_zero, ← sub_lie]
     exact isotropic h a)
@@ -100,19 +100,9 @@ instance [LieRinehartRing A L] : LieRinehartRing A (L ⧸ s) where
 variable {R : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRinehartRing A L]
   [LieRinehartAlgebra R A L]
 
+instance : Module R (L ⧸ s) := Submodule.Quotient.module' _
+
 instance : LieAlgebra R (L ⧸ s) where
-  smul r l := Quotient.liftOn' l (fun l' => mk (r • l')) (by
-    intros a b h
-    rw [Submodule.quotientRel_def, mem_toSubmodule] at h
-    apply (Submodule.Quotient.eq s.toSubmodule).2
-    rw [mem_toSubmodule, ← smul_sub]
-    exact (s.restrictScalars R).smul_mem r h)
-  mul_smul := by rintro r₁ r₂ ⟨x⟩; exact congrArg mk (mul_smul r₁ r₂ x)
-  one_smul := by rintro ⟨x⟩; exact congrArg mk (one_smul R x)
-  smul_zero r := congrArg mk (smul_zero r)
-  smul_add := by rintro r ⟨x⟩ ⟨y⟩; exact congrArg mk (smul_add r x y)
-  add_smul := by rintro r₁ r₂ ⟨x⟩; exact congrArg mk (add_smul r₁ r₂ x)
-  zero_smul := by rintro ⟨x⟩; exact congrArg mk (zero_smul R x)
   lie_smul := by rintro r ⟨x⟩ ⟨y⟩; exact congrArg mk (lie_smul r x y)
 
 variable (s R) in

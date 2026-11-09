@@ -10,9 +10,9 @@ public import Mathlib.Algebra.LieRinehartAlgebra.Subalgebra
 /-!
 # Lie-Rinehart ideals
 
-A strict Lie-Rinehart Ideal of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`,
+A strict Lie-Rinehart ideal of a Lie-Rinehart algebra `(R A L)` is an `A`-submodule of `L`,
 which is a Lie ideal with respect to the Lie bracket and whose action on `A` is trivial.
-(This can be defined independently of `R` and most Lie-Rinehart algebra axioms).
+(This can be defined independently of `R` and most Lie-Rinehart algebra axioms.)
 
 ## Main definitions/statements
 
@@ -41,7 +41,7 @@ ideals exist, see [albuquerque_barreiro_calderon_sanchez_2021].
 
 public section
 
-/-- A strict Lie-Rinehart Ideal of a Lie-Rinehart ring `(A L)` is an `A`-submodule of `L`,
+/-- A strict Lie-Rinehart ideal of a Lie-Rinehart ring `(A L)` is an `A`-submodule of `L`,
 which is a Lie ideal with respect to the Lie bracket and acts trivially on `A`. -/
 structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module A L]
     [LieRingModule L A] extends Submodule A L where
@@ -53,7 +53,7 @@ namespace StrictLieRinehartIdeal
 /-- Forgetting that a Lie-Rinehart-ideal is also a Lie ideal. -/
 add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
-variable {A L} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
+variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
 
 lemma toSubmodule_injective :
     (toSubmodule : StrictLieRinehartIdeal A L → Submodule A L).Injective :=
@@ -88,7 +88,6 @@ lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' �
   rw [← lie_skew]
   membership
 
-@[simp]
 theorem mem_carrier {s : StrictLieRinehartIdeal A L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -148,7 +147,7 @@ theorem coe_bracket_of_module (x : s) (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
 instance : IsLieTower s L M where
   leibniz_lie x y m := leibniz_lie x.val y m
 
-/-- Given a Lie-Rinehart algebra `L` containing a LieRinehart ideal `s ⊆ L`, together with a
+/-- Given a Lie-Rinehart algebra `L` containing a Lie-Rinehart ideal `s ⊆ L`, together with a
 Lie ring module `M` of `L`, we may regard `M` as a Lie ring module of `s` by restriction. -/
 instance lieRingModule : LieRingModule s M where
   add_lie x y m := add_lie (x : L) y m
@@ -183,7 +182,7 @@ theorem toLieIdeal_injective : Function.Injective (fun s =>
 
 @[simp]
 theorem toLieIdeal_inj (s t : StrictLieRinehartIdeal A L) :
-    (s.toLieIdeal R) = (t.toLieIdeal R) ↔ s = t := toLieIdeal_injective.eq_iff
+    s.toLieIdeal R = t.toLieIdeal R ↔ s = t := toLieIdeal_injective.eq_iff
 
 theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := rfl
 
@@ -191,8 +190,8 @@ section LieModule
 
 variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModule R L M]
 
-/-- Given a Lie-Rinehart algebra  `L` containing a LieRinehart subalgebra `s ⊆ L`, together with a
- Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
+/-- Given a Lie-Rinehart algebra `L` containing a LieRinehart ideal `s ⊆ L`, together with a
+Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by
     rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
@@ -210,7 +209,7 @@ variable (R) in
 Lie-Rinehart algebras. -/
 @[expose] def incl {s : StrictLieRinehartIdeal A L} : s →ₗ⁅.id R A⁆ L where
   __ := s.toSubmodule.subtype.restrictScalars R
-  map_lie' {x y} := by simp
+  map_lie' {_ _} := by simp
   map_smul_apply' a x := s.toSubmodule.subtype.map_smul a x
   apply_lie' a x := AlgHom.id_apply ⁅x, a⁆
 
@@ -234,10 +233,10 @@ identity of `A`) is a strict Lie-Rinehart ideal. -/
   isotropic' x a h := by
     change f.toLinearMap' x ∈ s₂ at h
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
-    have h2 := f.apply_lie' a x
+    have h2 := f.apply_lie a x
     simp only [AlgHom.coe_id, id_eq] at h2
     rw [h2]
-    exact s₂.isotropic' (f x) a h
+    exact isotropic h a
 
 end StrictLieRinehartIdeal
 
