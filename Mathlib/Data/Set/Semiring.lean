@@ -7,15 +7,15 @@ module
 
 public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.Algebra.Order.Kleene
-public import Mathlib.Algebra.Order.Ring.Canonical
+public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets as a semiring under union
 
-This file defines `SetSemiring α`, an alias of `Set α`, which we endow with `∪` as addition and
-pointwise `*` as multiplication. If `α` is a (commutative) monoid, `SetSemiring α` is an
-idempotent (commutative) semiring.
+This file defines `SetSemiring α`, a one-field structure around `Set α`, which we endow with
+`∪` as addition and pointwise `*` as multiplication. If `α` is a (commutative) monoid,
+`SetSemiring α` is an idempotent (commutative) semiring.
 -/
 
 @[expose] public section
@@ -25,18 +25,25 @@ open scoped Pointwise
 
 variable {α β γ : Type*}
 
-/-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
-multiplication `*` as "multiplication". -/
-def SetSemiring (α : Type*) : Type _ := Set α
-deriving Inhabited, CompleteAtomicBooleanAlgebra
+/-- `SetSemiring α` is a one-field structure around `Set α` with a semiring structure given by
+`∪` as addition and pointwise multiplication `*` as multiplication. -/
+@[ext]
+structure SetSemiring (α : Type*) where
+  /-- Convert a `Set α` to a `SetSemiring α`. -/
+  ofSet ::
+  /-- The underlying set -/
+  toSet : Set α
+deriving Inhabited
 
 namespace SetSemiring
 
-/-- The identity equivalence between `Set α` and `SetSemiring α`. -/
-def ofSet : Set α ≃ SetSemiring α := Equiv.refl _
+/-- The natural equivalence between `SetSemiring α` and `Set α`. -/
+def toSetEquiv : SetSemiring α ≃ Set α where
+  toFun := toSet
+  invFun := ofSet
 
-/-- The identity equivalence between `SetSemiring α` and `Set α`. -/
-def toSet : SetSemiring α ≃ Set α := Equiv.refl _
+instance : CompleteAtomicBooleanAlgebra (SetSemiring α) :=
+  toSetEquiv.completeAtomicBooleanAlgebra
 
 @[simp] lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
 @[simp] lemma ofSet_toSet (s : SetSemiring α) : ofSet s.toSet = s := rfl
@@ -45,8 +52,12 @@ def toSet : SetSemiring α ≃ Set α := Equiv.refl _
 @[simp] lemma toSet_subset_toSet {s t : SetSemiring α} : s.toSet ⊆ t.toSet ↔ s ≤ t := Iff.rfl
 @[simp] lemma toSet_ssubset_toSet {s t : SetSemiring α} : s.toSet ⊂ t.toSet ↔ s < t := Iff.rfl
 
-@[simp] lemma symm_toSet : toSet (α := α).symm = ofSet := rfl
-@[simp] lemma symm_ofSet : ofSet (α := α).symm = toSet := rfl
+instance : Membership α (SetSemiring α) where mem s a := a ∈ s.toSet
+instance : Singleton α (SetSemiring α) where singleton a := ofSet {a}
+instance : Insert α (SetSemiring α) where insert a s := ofSet (insert a s.toSet)
+
+@[simp] lemma mem_toSet {s : SetSemiring α} {a : α} : a ∈ s.toSet ↔ a ∈ s := Iff.rfl
+@[simp] lemma mem_singleton_iff {a b : α} : a ∈ ({b} : SetSemiring α) ↔ a = b := Iff.rfl
 
 instance : Zero (SetSemiring α) where zero := ofSet ∅
 instance : Add (SetSemiring α) where add s t := ofSet (s.toSet ∪ t.toSet)
@@ -59,10 +70,10 @@ lemma add_def (s t : SetSemiring α) : s + t = ofSet (s.toSet ∪ t.toSet) := rf
 @[simp] lemma ofSet_union (s t : Set α) : ofSet (s ∪ t) = ofSet s + ofSet t := rfl
 
 instance : AddCommMonoid (SetSemiring α) where
-  add_assoc := union_assoc
-  zero_add := empty_union
-  add_zero := union_empty
-  add_comm := union_comm
+  add_assoc _ _ _ := SetSemiring.ext (union_assoc ..)
+  zero_add _ := SetSemiring.ext (empty_union _)
+  add_zero _ := SetSemiring.ext (union_empty _)
+  add_comm _ _ := SetSemiring.ext (union_comm ..)
   nsmul := nsmulRec
 
 instance : AddLeftMono (SetSemiring α) where
@@ -74,20 +85,17 @@ variable [Mul α]
 
 instance : NonUnitalNonAssocSemiring (SetSemiring α) where
   mul s t := ofSet (s.toSet * t.toSet)
-  zero_mul _ := empty_mul
-  mul_zero _ := mul_empty
-  left_distrib _ _ _ := mul_union
-  right_distrib _ _ _ := union_mul
+  zero_mul _ := SetSemiring.ext empty_mul
+  mul_zero _ := SetSemiring.ext mul_empty
+  left_distrib _ _ _ := SetSemiring.ext mul_union
+  right_distrib _ _ _ := SetSemiring.ext union_mul
 
 lemma mul_def (s t : SetSemiring α) : s * t = ofSet (s.toSet * t.toSet) := rfl
 @[simp] lemma toSet_mul (s t : SetSemiring α) : (s * t).toSet = s.toSet * t.toSet := rfl
 @[simp] lemma ofSet_mul (s t : Set α) : ofSet (s * t) = ofSet s * ofSet t := rfl
 
 instance : NoZeroDivisors (SetSemiring α) where
-  eq_zero_or_eq_zero_of_mul_eq_zero {a b} ab :=
-    a.eq_empty_or_nonempty.imp_right fun ha ↦
-      b.eq_empty_or_nonempty.resolve_right fun hb ↦
-        Nonempty.ne_empty ⟨_, mul_mem_mul ha.some_mem hb.some_mem⟩ ab
+  eq_zero_or_eq_zero_of_mul_eq_zero := by simp [SetSemiring.ext_iff]
 
 instance : MulLeftMono (SetSemiring α) where
   elim _ _ _ := mul_subset_mul_left
@@ -109,41 +117,40 @@ lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
 
 end One
 
-instance [MulOneClass α] : MulOneClass (SetSemiring α) :=
-  inferInstanceAs <| MulOneClass (Set α)
+instance [MulOneClass α] : MulOneClass (SetSemiring α) where
+  one_mul _ := SetSemiring.ext (one_mul _)
+  mul_one _ := SetSemiring.ext (mul_one _)
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
 
-instance [Semigroup α] : Semigroup (SetSemiring α) :=
-  inferInstanceAs <| Semigroup (Set α)
+instance [Semigroup α] : Semigroup (SetSemiring α) where
+  mul_assoc _ _ _ := SetSemiring.ext (mul_assoc ..)
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
-instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
-  inferInstanceAs <| CommSemigroup (Set α)
+instance [CommSemigroup α] : CommSemigroup (SetSemiring α) where
+  mul_comm _ _ := SetSemiring.ext (mul_comm ..)
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 
-instance [CommMonoid α] : CommMonoid (SetSemiring α) :=
-  inferInstanceAs <| CommMonoid (Set α)
+instance [CommMonoid α] : CommMonoid (SetSemiring α) where
 
 instance [CommMonoid α] : IdemCommSemiring (SetSemiring α) where
 
 instance : CanonicallyOrderedAdd (SetSemiring α) where
-  exists_add_of_le {_ b} ab := ⟨b, (union_eq_right.2 ab).symm⟩
+  exists_add_of_le {_ b} ab := ⟨b, SetSemiring.ext (union_eq_right.2 ab).symm⟩
   le_add_self _ _ := subset_union_right
   le_self_add _ _ := subset_union_left
 
-instance [CommMonoid α] : IsOrderedRing (SetSemiring α) :=
-  CanonicallyOrderedAdd.toIsOrderedRing
+instance [CommMonoid α] : IsOrderedRing (SetSemiring α) where
 
 /-- If `α` is a monoid, the map that sends `a : α` to `{a}` is a monoid homomorphism. -/
 def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
   toFun a := ofSet {a}
   map_one' := rfl
-  map_mul' _ _ := image2_singleton.symm
+  map_mul' _ _ := SetSemiring.ext image2_singleton.symm
 
 section ImageHom
 
@@ -153,10 +160,10 @@ variable [MulOneClass α] [MulOneClass β] [MulOneClass γ] (f : α →* β)
 with respect to the pointwise operations on sets. -/
 def imageHom : SetSemiring α →+* SetSemiring β where
   toFun s := ofSet (f '' s.toSet)
-  map_zero' := image_empty _
+  map_zero' := SetSemiring.ext (image_empty _)
   map_one' := by rw [toSet_one, image_one, map_one, singleton_one, ofSet_one]
-  map_add' := image_union _
-  map_mul' _ _ := image_mul f
+  map_add' _ _ := SetSemiring.ext (image_union ..)
+  map_mul' _ _ := SetSemiring.ext (image_mul f)
 
 @[simp] lemma imageHom_apply (s : SetSemiring α) : imageHom f s = ofSet (f '' s.toSet) := rfl
 
@@ -164,9 +171,7 @@ def imageHom : SetSemiring α →+* SetSemiring β where
   simp [imageHom, RingHom.id]
 
 lemma imageHom_comp (g : β →* γ) : imageHom (g.comp f) = (imageHom g).comp (imageHom f) := by
-  ext s
-  simp_rw [imageHom_apply, MonoidHom.coe_comp]
-  exact image_comp ..
+  ext; simp
 
 end ImageHom
 
@@ -189,5 +194,7 @@ end ImageHom
 @[deprecated (since := "2026-10-13")] alias imageHom_def := imageHom_apply
 @[deprecated (since := "2026-10-13")] alias down_imageHom := imageHom_apply
 @[deprecated (since := "2026-10-13")] alias _root_.Set.up_image := imageHom_apply
+@[deprecated (since := "2026-11-09")] alias symm_toSet := ofSet_toSet
+@[deprecated (since := "2026-11-09")] alias symm_ofSet := toSet_ofSet
 
 end SetSemiring
