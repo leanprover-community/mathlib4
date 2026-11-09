@@ -87,7 +87,8 @@ protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserv
   have hg' : AEMeasurable g (μa.map f) := hg.aemeasurable.mono_ac hf.absolutelyContinuous
   ⟨hg'.comp_aemeasurable hf.aemeasurable, by
     rw [← hg'.map_map_of_aemeasurable hf.aemeasurable]
-    exact (hf.absolutelyContinuous.map_of_aemeasurable hg.aemeasurable).trans hg.absolutelyContinuous⟩
+    exact hf.absolutelyContinuous.map_of_aemeasurable hg.aemeasurable
+      |>.trans hg.absolutelyContinuous⟩
 
 protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa) :
     ∀ n, QuasiMeasurePreserving f^[n] μa μa
