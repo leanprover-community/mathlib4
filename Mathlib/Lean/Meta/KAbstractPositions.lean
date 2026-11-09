@@ -5,13 +5,13 @@ Authors: Jovan Gerbscheid
 -/
 module
 
-public import Mathlib.Init
 public import Lean.HeadIndex
-public import Lean.Meta.ExprLens
 public import Lean.Meta.Check
+public import Lean.Meta.ExprLens
+
+import Mathlib.Init
 
 /-!
-
 # Find the positions of a pattern in an expression
 
 This file defines some tools for dealing with subexpressions and occurrence numbers.
@@ -26,14 +26,13 @@ whether this is the case.
 
 -/
 
-@[expose] public section
+public section
 
 namespace Lean.Meta
 
 /-- Return the positions that `kabstract` would abstract for pattern `p` in expression `e`.
 i.e. the positions that unify with `p`. -/
 def kabstractPositions (p e : Expr) : MetaM (Array SubExpr.Pos) := do
-  let e ← instantiateMVars e
   let mctx ← getMCtx
   let pHeadIdx := p.toHeadIndex
   let pNumArgs := p.headNumArgs

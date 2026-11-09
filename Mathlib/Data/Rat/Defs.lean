@@ -6,10 +6,12 @@ Authors: Johannes Hölzl, Mario Carneiro
 module
 
 public import Mathlib.Algebra.Group.Defs
-public import Mathlib.Data.Nat.Basic
 public import Mathlib.Data.Rat.Init
-public import Mathlib.Order.Basic
 public import Mathlib.Tactic.Common
+
+import Mathlib.Data.Nat.Basic
+import Mathlib.Order.Basic
+import Mathlib.Tactic.Attr.Core
 
 /-!
 # Basics for the Rational Numbers
@@ -140,7 +142,7 @@ protected theorem zero_ne_one : 0 ≠ (1 : ℚ) := by
 attribute [simp] mkRat_eq_zero
 
 -- Extra instances to short-circuit type class resolution
--- TODO(Mario): this instance slows down Mathlib.Data.Real.Basic
+-- TODO(Mario): this instance slows down Mathlib.Basic.Real.Basic
 instance nontrivial : Nontrivial ℚ where exists_pair_ne := ⟨1, 0, by decide⟩
 
 /-! ### The rational numbers are a group -/
@@ -160,8 +162,10 @@ instance addCommGroup : AddCommGroup ℚ where
     rw [Rat.intCast_add, Rat.add_mul, Rat.intCast_one, Rat.one_mul]
     rfl
   zsmul_zero' := Rat.zero_mul
-  zsmul_succ' _ _ := by simp [Rat.add_mul]
-  zsmul_neg' _ _ := by rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
+  zsmul_succ' _ _ := by simp_rw [HSMul.hSMul, SMul.smul]; simp [Rat.add_mul]
+  zsmul_neg' _ _ := by
+    simp_rw [HSMul.hSMul, SMul.smul]
+    rw [Int.negSucc_eq, Rat.intCast_neg, Rat.neg_mul]; rfl
 
 instance addGroup : AddGroup ℚ := by infer_instance
 
@@ -248,25 +252,24 @@ theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x *
     simp
   rw [divInt_mul_divInt, x.mul_comm, divInt_mul_right hx]
 
-theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
+theorem intCast_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]
   rw [intCast_eq_divInt]
   rfl
 
+@[deprecated (since := "2026-10-27")] alias coe_int_num_of_den_eq_one := intCast_num_of_den_eq_one
+
 lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   rw [Rat.isInt, Nat.beq_eq_true_eq] at h
-  exact (Rat.coe_int_num_of_den_eq_one h).symm
+  exact (Rat.intCast_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
-  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
+  ⟨Rat.intCast_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
-  ⟨fun q hq => ⟨q.num, coe_int_num_of_den_eq_one hq⟩⟩
+  ⟨fun q hq => ⟨q.num, intCast_num_of_den_eq_one hq⟩⟩
 
--- Will be subsumed by `Int.coe_inj` after we have defined
--- `LinearOrderedField ℚ` (which implies characteristic zero).
-theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
-  ⟨congr_arg num, congr_arg _⟩
+@[deprecated (since := "2026-06-06")] alias coe_int_inj := intCast_inj
 
 end Casts
 

@@ -38,10 +38,6 @@ Lemmas relating to natural numbers and integers are in `Mathlib.RingTheory.Radic
 - `EuclideanDomain.divRadical_mul`: `divRadical` of a product is the product of `divRadical`s.
 - `IsCoprime.divRadical`: `divRadical` of coprime elements are coprime.
 
-## TODO
-
-- Connect this notion with `Ideal.radical`. Particularly, for a principal ideal,
-  `Ideal.radical (Ideal.span {a}) = Ideal.span {radical a}`.
 -/
 
 @[expose] public noncomputable section
@@ -55,6 +51,12 @@ open scoped Classical in
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
+
+@[simp]
+theorem toFinset_normalizedFactors [DecidableEq M] :
+    (normalizedFactors a).toFinset = primeFactors a := by
+  unfold primeFactors
+  convert rfl
 
 lemma mem_primeFactors : a ∈ primeFactors b ↔ a ∈ normalizedFactors b := by
   simp only [primeFactors, Multiset.mem_toFinset]
@@ -296,6 +298,22 @@ theorem radical_dvd_iff_primeFactors_subset (hb : b ≠ 0) :
   rw [← dvd_radical_iff isRadical_radical hb,
     radical_dvd_radical_iff_primeFactors_subset_primeFactors]
 
+theorem exists_dvd_pow_iff_radical_dvd (ha : a ≠ 0) : (∃ n, a ∣ b ^ n) ↔ radical a ∣ b := by
+  rcases eq_or_ne b 0 with (rfl | hb)
+  · exact ⟨by simp, fun _ ↦ ⟨1, by simp⟩⟩
+  refine ⟨fun ⟨n, hdvd⟩ ↦ ?_, fun h ↦ ⟨normalizedFactors a |>.card, ?_⟩⟩
+  · rcases eq_or_ne n 0 with (rfl | hn)
+    · simp [radical_of_isUnit <| isUnit_of_dvd_one <| pow_zero b ▸ hdvd]
+    grw [radical_dvd_radical hdvd <| pow_ne_zero _ hb, radical_pow b hn, radical_dvd_self]
+  · classical
+    rwa [dvd_iff_normalizedFactors_le_normalizedFactors ha <| pow_ne_zero _ hb,
+      normalizedFactors_pow, Multiset.le_card_smul_iff_subset, ← Multiset.toFinset_subset,
+      toFinset_normalizedFactors, toFinset_normalizedFactors,
+      ← radical_dvd_iff_primeFactors_subset hb]
+
+theorem exists_dvd_radical_self_pow (ha : a ≠ 0) : ∃ n, a ∣ radical a ^ n := by
+  rw [exists_dvd_pow_iff_radical_dvd ha]
+
 /-- Radical is multiplicative for relatively prime elements. -/
 theorem radical_mul (hc : IsRelPrime a b) :
     radical (a * b) = radical a * radical b := by
@@ -309,8 +327,7 @@ theorem radical_prod {ι : Type*} {f : ι → M} (s : Finset ι)
   | empty => simp
   | cons i s his ih =>
     simp only [Finset.prod_cons]
-    rw [Finset.coe_cons,
-      Set.pairwise_insert_of_symmetric_of_notMem (symmetric_isRelPrime.comap _) (by simpa)] at h
+    rw [Finset.coe_cons, Set.pairwise_insert_of_symm_of_notMem <| by simpa] at h
     rw [radical_mul, ih h.1]
     exact IsRelPrime.prod_right h.2
 
@@ -332,6 +349,14 @@ theorem radical_prod_dvd {ι : Type*} {s : Finset ι} {f : ι → M} :
     simp only [Finset.prod_cons]
     exact radical_mul_dvd.trans (mul_dvd_mul_left _ ih)
 
+theorem radical_mul_of_dvd (h : a ∣ b) : radical (a * b) = radical b := by
+  classical
+  by_cases ha : a = 0; · simp_all
+  by_cases hb : b = 0; · simp_all
+  rw [radical_eq_iff_primeFactors_eq, primeFactors_mul_eq_union ha hb, Finset.union_eq_right,
+    ← radical_dvd_iff_primeFactors_subset hb]
+  exact radical_dvd_self.trans h
+
 end UniqueFactorizationMonoid
 
 open UniqueFactorizationMonoid
@@ -340,7 +365,7 @@ open UniqueFactorizationMonoid
 namespace UniqueFactorizationDomain
 
 variable {R : Type*} [CommRing R] [NormalizationMonoid R]
-  [UniqueFactorizationMonoid R] {a b : R}
+  [UniqueFactorizationMonoid R] {a : R}
 
 @[simp]
 theorem radical_neg : radical (-a) = radical a :=
@@ -350,7 +375,6 @@ theorem radical_neg_one : radical (-1 : R) = 1 := by simp
 
 end UniqueFactorizationDomain
 
-open UniqueFactorizationDomain
 namespace EuclideanDomain
 
 variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactorizationMonoid E]

@@ -5,8 +5,8 @@ Authors: Stepan Nesterov
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.FieldTheory.IsAlgClosed.Basic
+public import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Basic facts about algebra representations
@@ -23,8 +23,8 @@ variable {A V : Type*} (k : Type*) [Field k] [Ring A] [Algebra k A] [AddCommGrou
   [Module A V] [IsScalarTower k A V]
   [IsSimpleModule A V] [FiniteDimensional k V] [IsAlgClosed k]
 
-/-- Schur's Lemma: If `V` is a representation of an algebra `A` over an algebraically closed field
-`k`, then any endomorphism of `V` is scalar. -/
+/-- Schur's Lemma: If `V` is a simple module of a `k`-algebra `A` where `k` is an algebraically
+closed field, then any endomorphism of `V` is a scalar. -/
 theorem IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed :
     Function.Bijective (algebraMap k (Module.End A V)) := by
   have : Module.Finite k (Module.End A V) := .of_injective (LinearMap.restrictScalarsₗ k A V V k) <|
@@ -44,8 +44,9 @@ theorem IsSimpleModule.finrank_eq_one_of_isMulCommutative [IsMulCommutative A] :
     smul_mem' a w hw := by
       have ⟨t, ht⟩ := (IsSimpleModule.algebraMap_end_bijective_of_isAlgClosed k).2
         (Module.toModuleEnd A V a)
-      simpa only [← show _ = a • w from congr($ht w)] using (k ∙ v).smul_mem t hw }
+      simpa only [← show _ = a • w from congr($ht w)] using! (k ∙ v).smul_mem t hw }
   obtain hU | hU := eq_bot_or_eq_top U
   · exact (v_nz <| hU.le <| Submodule.mem_span_singleton_self v).elim
-  · rw [finrank_eq_one_iff_of_nonzero v v_nz]
-    rwa [← top_le_iff] at hU ⊢
+  · rw [finrank_eq_one_iff_of_ne_zero v v_nz]
+    rw [← top_le_iff] at hU ⊢
+    assumption

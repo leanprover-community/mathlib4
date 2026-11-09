@@ -66,7 +66,9 @@ variable {I}
 theorem dpow_eq_of_mem {m : ℕ} {x : A} (hx : x ∈ I) : dpow I m x = inverse (m ! : A) * x ^ m := by
   simp [dpow, hx]
 
-theorem dpow_eq_of_not_mem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+theorem dpow_eq_of_notMem {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
+
+@[deprecated (since := "2026-09-28")] alias dpow_eq_of_not_mem := dpow_eq_of_notMem
 
 theorem dpow_null {m : ℕ} {x : A} (hx : x ∉ I) : dpow I m x = 0 := by simp [dpow, hx]
 
@@ -87,7 +89,7 @@ theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) {m : ℕ} (hmn
     Finset.mul_sum, Commute.add_pow' (Commute.all _ _)]
   apply Finset.sum_congr rfl
   intro k hk
-  rw [if_pos hx, if_pos hy]
+  rw [ite_eq_left hx, ite_eq_left hy]
   ring_nf
   simp only [mul_assoc]; congr; rw [← mul_assoc]
   exact castChoose_eq (hn_fac.natCast_factorial_of_lt hmn) hk
@@ -106,7 +108,7 @@ theorem dpow_add {n : ℕ} (hn_fac : IsUnit ((n - 1)! : A)) (hnI : I ^ n = 0) {m
     rw [hxy, mul_zero, eq_comm]
     apply Finset.sum_eq_zero
     intro k hk
-    rw [if_pos hx, if_pos hy, mul_assoc, mul_comm (x ^ k.1), mul_assoc, ← mul_assoc]
+    rw [ite_eq_left hx, ite_eq_left hy, mul_assoc, mul_comm (x ^ k.1), mul_assoc, ← mul_assoc]
     apply mul_eq_zero_of_right
     rw [← Ideal.mem_bot, ← Ideal.zero_eq_bot, ← hnI]
     apply Set.mem_of_subset_of_mem h_sub
@@ -198,7 +200,7 @@ variable {A : Type*} [CommSemiring A] {I : Ideal A} [DecidablePred (fun x ↦ x 
 
 /-- If `I^2 = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
-  OfInvertibleFactorial.dividedPowers (by norm_num) hI2
+  OfInvertibleFactorial.dividedPowers (by simp) hI2
 
 theorem dpow_of_two_le {n : ℕ} (hn : 2 ≤ n) (a : A) :
     (dividedPowers hI2) n a = 0 := by
@@ -304,7 +306,7 @@ variable {I}
 
 /-- There are no other divided power structures on an ideal of a  `ℚ`-algebra. -/
 theorem dividedPowers_unique (hI : DividedPowers I) : hI = dividedPowers I :=
-  hI.ext _ (fun n x hx ↦ by rw [dpow_apply, if_pos hx, eq_comm, inverse_mul_eq_iff_eq_mul _ _ _
+  hI.ext _ (fun n x hx ↦ by rw [dpow_apply, ite_eq_left hx, eq_comm, inverse_mul_eq_iff_eq_mul _ _ _
       (IsUnit.natCast_factorial_of_algebra ℚ n), factorial_mul_dpow_eq_pow _ hx])
 
 end RatAlgebra

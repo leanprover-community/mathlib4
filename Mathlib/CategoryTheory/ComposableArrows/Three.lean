@@ -40,13 +40,11 @@ def threeδ₃Toδ₂ (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₂ f₁ f₂ ⟶ mk₂ f₁ f₂₃ :=
   homMk₂ (𝟙 _) (𝟙 _) f₃
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃` when `f₁ ≫ f₂ = f₁₂` and `f₂ ≫ f₃ = f₂₃`. -/
 def threeδ₂Toδ₁ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) (h₂₃ : f₂ ≫ f₃ = f₂₃ := by cat_disch) :
     mk₂ f₁ f₂₃ ⟶ mk₂ f₁₂ f₃ :=
   homMk₂ (𝟙 _) f₂ (𝟙 _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃` when `f₁ ≫ f₂ = f₁₂`. -/
 def threeδ₁Toδ₀ (h₁₂ : f₁ ≫ f₂ = f₁₂ := by cat_disch) :
     mk₂ f₁₂ f₃ ⟶ mk₂ f₂ f₃ :=

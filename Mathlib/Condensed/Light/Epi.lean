@@ -5,12 +5,13 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
-public import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
 public import Mathlib.Condensed.Light.Functors
 public import Mathlib.Condensed.Light.Limits
-/-!
 
+import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
+import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
+
+/-!
 # Epimorphisms of light condensed objects
 
 This file characterises epimorphisms in light condensed sets and modules as the locally surjective
@@ -128,6 +129,7 @@ attribute [local instance] functorMap_epi Abelian.hasFiniteBiproducts
 
 variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
 
+set_option backward.defeqAttrib.useBackward true in
 instance : Epi (Limits.Pi.map f) :=
   epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by
     simp only [Nat.succ_eq_add_one, Functor.ofOpSequence_obj, homOfLE_leOfHom,

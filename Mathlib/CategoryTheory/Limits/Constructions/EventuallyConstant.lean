@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Filtered.Basic
-public import Mathlib.CategoryTheory.Limits.HasLimits
 
 /-!
 # Limits of eventually constant functors
@@ -115,6 +114,8 @@ noncomputable def cone : Cone F where
         let β : i ⟶ j := IsCofiltered.minToRight _ _
         rw [h.coneπApp_eq j _ α β, assoc, h.coneπApp_eq j' _ α (β ≫ φ), map_comp] }
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 /-- When `h : F.IsEventuallyConstantTo i₀`, the limit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isLimitCone : IsLimit h.cone where
   lift s := s.π.app i₀
@@ -126,6 +127,8 @@ noncomputable def isLimitCone : IsLimit h.cone where
 
 lemma hasLimit : HasLimit F := ⟨_, h.isLimitCone⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 lemma isIso_π_of_isLimit {c : Cone F} (hc : IsLimit c) :
     IsIso (c.π.app i₀) := by
   simp only [← IsLimit.conePointUniqueUpToIso_hom_comp hc h.isLimitCone i₀,
@@ -137,6 +140,7 @@ lemma isIso_π_of_isLimit' {c : Cone F} (hc : IsLimit c) (j : J) (π : j ⟶ i�
     IsIso (c.π.app j) :=
   (h.precomp π).isIso_π_of_isLimit hc
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Given a cone `c` on a cofiltered diagram `F` which `IsEventuallyConstantTo i₀`, such that
 `c.π.app i₀` is an isomorphism, `c` a limit cone. -/
 noncomputable def isLimitOfIsIso (c : Cone F) [IsIso (c.π.app i₀)] : IsLimit c :=
@@ -220,6 +224,7 @@ noncomputable def cocone : Cocone F where
         let β : j' ⟶ i := IsFiltered.rightToMax _ _
         rw [h.coconeιApp_eq j' _ β α, h.coconeιApp_eq j _ (φ ≫ β) α, map_comp, assoc] }
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- When `h : F.IsEventuallyConstantFrom i₀`, the colimit of `F` exists and is `F.obj i₀`. -/
 noncomputable def isColimitCocone : IsColimit h.cocone where
@@ -244,6 +249,7 @@ lemma isIso_ι_of_isColimit' {c : Cocone F} (hc : IsColimit c) (j : J) (ι : i�
     IsIso (c.ι.app j) :=
   (h.postcomp ι).isIso_ι_of_isColimit hc
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- Given a cocone `c` on a filtered diagram `F` which `IsEventuallyConstantFrom i₀`, such that
 `c.π.app i₀` is an isomorphism, `c` a colimit cocone. -/

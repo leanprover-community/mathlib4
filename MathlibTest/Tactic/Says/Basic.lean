@@ -1,5 +1,7 @@
-import Mathlib.Tactic.Says
-import Aesop
+module
+
+public import Aesop
+public import Mathlib.Tactic.Says
 
 -- removing changes to the `simp` set after this test was created
 attribute [-simp] Nat.add_left_cancel_iff Nat.add_right_cancel_iff
@@ -62,7 +64,6 @@ example (x y : List α) : (x ++ y).length = x.length + y.length := by
   simp? says simp only []
 
 set_option linter.unreachableTactic false
-set_option linter.unusedTactic false in
 -- Now we check that `says` does not consume following tactics unless they are indented.
 /-- error: Tactic `simp` did not produce a 'Try this:' suggestion. -/
 #guard_msgs in
@@ -98,9 +99,10 @@ example : True := by
 def P : Prop := True
 def Q : Prop := True
 @[simp]
-def very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+theorem very_long_lemma_name_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa : Q → P := fun _ => trivial
+
 @[simp]
-def very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
+theorem very_long_lemma_name_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb : Q := trivial
 /--
 info: Try this:
   [apply] aesop? says

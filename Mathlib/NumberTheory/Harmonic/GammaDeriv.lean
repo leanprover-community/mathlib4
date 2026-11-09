@@ -5,10 +5,10 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.Analysis.Convex.Deriv
 public import Mathlib.Analysis.SpecialFunctions.Gamma.Deligne
-public import Mathlib.Data.Nat.Factorial.Basic
 public import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+
+import Mathlib.Analysis.Convex.Deriv
 
 /-!
 # Derivative of Γ at positive integers
@@ -92,6 +92,16 @@ lemma hasDerivAt_Gamma_nat (n : ℕ) :
 lemma eulerMascheroniConstant_eq_neg_deriv : γ = -deriv Gamma 1 := by
   rw [show (1 : ℝ) = ↑(0 : ℕ) + 1 by simp, deriv_Gamma_nat 0]
   simp
+
+/-- The Euler–Mascheroni constant as an integral: `γ = -∫₀^∞ log t · e^{-t} dt`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log :
+    γ = -∫ t in Ioi 0, log t * exp (-t) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log]
+
+/-- An integral representation of the Euler–Mascheroni constant, valid for any `s > 1`. -/
+lemma eulerMascheroniConstant_eq_neg_integral_log_log {s : ℝ} (hs : 1 < s) :
+    γ = -log (s - 1) + -((s - 1) * ∫ (t : ℝ) in Ioi 1, log (log t) * t ^ (-s)) := by
+  rw [eulerMascheroniConstant_eq_neg_deriv, deriv_Gamma_one_eq_integral_log_log hs, neg_add_rev]
 
 lemma hasDerivAt_Gamma_one : HasDerivAt Gamma (-γ) 1 := by
   simpa only [factorial_zero, cast_one, harmonic_zero, Rat.cast_zero, add_zero, mul_neg, one_mul,
@@ -194,12 +204,11 @@ lemma hasDerivAt_Gammaℂ_one : HasDerivAt Gammaℂ (-(γ + log (2 * π)) / π) 
   let f (s : ℂ) : ℂ := 2 * (2 * π) ^ (-s)
   have : HasDerivAt (fun s : ℂ ↦ 2 * (2 * π : ℂ) ^ (-s)) (-log (2 * π) / π) 1 := by
     have := (hasDerivAt_neg' (1 : ℂ)).const_cpow (c := 2 * π)
-      (Or.inl (by exact_mod_cast Real.two_pi_pos.ne'))
+      (Or.inl (mod_cast Real.two_pi_pos.ne'))
     refine (this.const_mul 2).congr_deriv ?_
     rw [mul_neg_one, mul_neg, cpow_neg_one, ← div_eq_inv_mul, ← mul_div_assoc,
       mul_div_mul_left _ _ two_ne_zero, neg_div]
   have := this.mul hasDerivAt_Gamma_one
-  simp only at this
   rwa [Gamma_one, mul_one, cpow_neg_one, ← div_eq_mul_inv, ← div_div, div_self two_ne_zero,
     mul_comm (1 / _), mul_one_div, ← _root_.add_div, ← neg_add, add_comm] at this
 

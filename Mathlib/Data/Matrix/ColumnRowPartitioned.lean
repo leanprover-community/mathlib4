@@ -189,6 +189,7 @@ lemma vecMul_fromCols [Fintype m] (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂
     v ᵥ* fromCols B₁ B₂ = Sum.elim (v ᵥ* B₁) (v ᵥ* B₂) := by
   ext (_ | _) <;> rfl
 
+set_option backward.isDefEq.respectTransparency false in
 lemma sumElim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
     (v₁ : m₁ → R) (v₂ : m₂ → R) :
     Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
@@ -216,12 +217,12 @@ lemma fromCols_mulVec [Fintype n₁] [Fintype n₂]
 @[simp]
 lemma fromRows_mul [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :
     fromRows A₁ A₂ * B = fromRows (A₁ * B) (A₂ * B) := by
-  ext (_ | _) _ <;> simp [mul_apply]
+  ext (_ | _) _ <;> simp [Matrix.mul_apply]
 
 @[simp]
 lemma mul_fromCols [Fintype n] (A : Matrix m n R) (B₁ : Matrix n n₁ R) (B₂ : Matrix n n₂ R) :
     A * fromCols B₁ B₂ = fromCols (A * B₁) (A * B₂) := by
-  ext _ (_ | _) <;> simp [mul_apply]
+  ext _ (_ | _) <;> simp [Matrix.mul_apply]
 
 @[simp]
 lemma fromRows_zero : fromRows (0 : Matrix m₁ n R) (0 : Matrix m₂ n R) = 0 := by
@@ -245,7 +246,7 @@ lemma fromCols_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix m n₁ 
     (B₁ : Matrix n₁ n R) (B₂ : Matrix n₂ n R) :
     fromCols A₁ A₂ * fromRows B₁ B₂ = (A₁ * B₁ + A₂ * B₂) := by
   ext
-  simp [mul_apply]
+  simp [Matrix.mul_apply]
 
 /-- A column partitioned matrix multiplied by a block matrix results in a column partitioned
 matrix. -/
@@ -253,14 +254,14 @@ lemma fromCols_mul_fromBlocks [Fintype m₁] [Fintype m₂] (A₁ : Matrix m m�
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     (fromCols A₁ A₂) * fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ =
       fromCols (A₁ * B₁₁ + A₂ * B₂₁) (A₁ * B₁₂ + A₂ * B₂₂) := by
-  ext _ (_ | _) <;> simp [mul_apply]
+  ext _ (_ | _) <;> simp [Matrix.mul_apply]
 
 /-- A block matrix multiplied by a row partitioned matrix gives a row partitioned matrix. -/
 lemma fromBlocks_mul_fromRows [Fintype n₁] [Fintype n₂] (A₁ : Matrix n₁ n R) (A₂ : Matrix n₂ n R)
     (B₁₁ : Matrix m₁ n₁ R) (B₁₂ : Matrix m₁ n₂ R) (B₂₁ : Matrix m₂ n₁ R) (B₂₂ : Matrix m₂ n₂ R) :
     fromBlocks B₁₁ B₁₂ B₂₁ B₂₂ * (fromRows A₁ A₂) =
       fromRows (B₁₁ * A₁ + B₁₂ * A₂) (B₂₁ * A₁ + B₂₂ * A₂) := by
-  ext (_ | _) _ <;> simp [mul_apply]
+  ext (_ | _) _ <;> simp [Matrix.mul_apply]
 
 end Semiring
 

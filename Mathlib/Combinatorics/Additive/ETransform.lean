@@ -6,7 +6,8 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Group.Action.Pointwise.Finset
-public import Mathlib.Algebra.Ring.Nat
+
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # e-transforms
@@ -61,6 +62,7 @@ theorem mulDysonETransform.subset :
   refine union_mul_inter_subset_union.trans (union_subset Subset.rfl ?_)
   rw [mul_smul_comm, smul_mul_assoc, inv_smul_smul, mul_comm]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem mulDysonETransform.card :
     (mulDysonETransform e x).1.card + (mulDysonETransform e x).2.card = x.1.card + x.2.card := by
@@ -68,6 +70,7 @@ theorem mulDysonETransform.card :
   rw [← card_smul_finset e (_ ∩ _), smul_finset_inter, smul_inv_smul, inter_comm,
     card_union_add_card_inter, card_smul_finset]
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive (attr := simp)]
 theorem mulDysonETransform_idem :
     mulDysonETransform e (mulDysonETransform e x) = mulDysonETransform e x := by
@@ -79,6 +82,7 @@ theorem mulDysonETransform_idem :
 
 variable {e x}
 
+set_option backward.defeqAttrib.useBackward true in
 @[to_additive]
 theorem mulDysonETransform.smul_finset_snd_subset_fst :
     e • (mulDysonETransform e x).2 ⊆ (mulDysonETransform e x).1 := by

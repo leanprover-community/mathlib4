@@ -68,10 +68,12 @@ instance (F : C ⥤ₗ Type v) : PreservesFiniteLimits (inverseAux.obj F) where
 
 /-- Implementation, see `leftExactFunctorForgetEquivalence`. -/
 noncomputable def inverse : (C ⥤ₗ Type v) ⥤ (C ⥤ₗ AddCommGrpCat.{v}) :=
-  ObjectProperty.lift _ inverseAux (by simp only [leftExactFunctor_iff]; infer_instance)
+  ObjectProperty.lift _ inverseAux
+    (by simp only [ObjectProperty.preservesFiniteLimits_iff]; infer_instance)
 
 open scoped MonObj
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
 /-- Implementation, see `leftExactFunctorForgetEquivalence`.

@@ -1,4 +1,8 @@
-import Mathlib.CategoryTheory.Category.Basic
+module
+
+public import Mathlib.CategoryTheory.Category.Basic
+
+@[expose] public section
 
 structure Foo where
   x : Nat
@@ -12,7 +16,7 @@ example : Foo where
 /--
 error: could not synthesize default value for field 'w' of 'Foo' using tactics
 ---
-error: tactic 'aesop' failed, failed to prove the goal after exhaustive search.
+error: Tactic `aesop` failed, failed to prove the goal after exhaustive search.
 Initial goal:
   ⊢ 35 = 37
 Remaining goals after safe rules:

@@ -1,4 +1,6 @@
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+module
+
+public import Mathlib.MeasureTheory.Measure.CompleteLattice
 
 /-!
 # Testing for the `gcongr` tactic
@@ -48,7 +50,7 @@ a b c d : ℕ
 h : b~d
 ⊢ a~a
 
-case a.a
+case a
 a b c d : ℕ
 h : b~d
 ⊢ c~c

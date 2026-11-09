@@ -6,15 +6,14 @@ Authors: Anne Baanen, María Inés de Frutos-Fernández, Filippo A. E. Nuccio
 module
 
 public import Mathlib.FieldTheory.RatFunc.Basic
-public import Mathlib.RingTheory.EuclideanDomain
-public import Mathlib.RingTheory.DedekindDomain.AdicValuation
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.Polynomial.Content
-import Mathlib.RingTheory.Valuation.IsTrivialOn
+public import Mathlib.RingTheory.Adjoin.Polynomial.Transcendental
+public import Mathlib.RingTheory.DedekindDomain.AdicValuation.Completion
 
+import Mathlib.RingTheory.Valuation.IsTrivialOn
 
 /-!
 # Generalities on the polynomial structure of rational functions
+
 * Main evaluation properties
 * Study of the X-adic valuation
 
@@ -300,9 +299,11 @@ theorem valuation_X_eq_neg_one :
   rw [← RatFunc.algebraMap_X, valuation_of_algebraMap, intValuation_singleton
       _ (Polynomial.X_ne_zero) (idealX_span K)]
 
-theorem valuation_of_mk (f : Polynomial K) {g : Polynomial K} (hg : g ≠ 0) :
+theorem valuation_of_mk (f g : Polynomial K) :
     (Polynomial.idealX K).valuation _ (RatFunc.mk f g) =
       (Polynomial.idealX K).intValuation f / (Polynomial.idealX K).intValuation g := by
+  rcases eq_or_ne g 0 with rfl | hg
+  · simp
   simp only [RatFunc.mk_eq_mk' _ hg, valuation_of_mk']
 
 end HeightOneSpectrum
@@ -361,7 +362,7 @@ open scoped WithZero
 
 open Polynomial
 
-/- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
+/-- We give this instance a name so that it can be locally disabled when defining `FqtInfty`.
 Something similar might be needed after the refactor from `Valued` to `ValuativeRel`. -/
 instance valuedRatFunc : Valued K⟮X⟯ ℤᵐ⁰ := Valued.mk' ((idealX K).valuation _)
 

@@ -16,23 +16,58 @@ on:
 permissions:
   actions: read
   contents: read
+  issues: read # for `verify` on issue comments
   pull-requests: write
 
 jobs:
   report:
     runs-on: ubuntu-latest
+    # Only for successful producer runs: if a job that ran PR code took the artifact's name,
+    # `emit` failed, and the one artifact left is not ours (see olean_report.yaml).
     if: ${{ github.repository == 'leanprover-community/mathlib4' && github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Consume bridge artifact
         id: bridge
-        uses: leanprover-community/privilege-escalation-bridge/consume@f5dfe313a79647c07315b451b2dc2a81a161a50d # v1.2.0
+        uses: leanprover-community/privilege-escalation-bridge/consume@120e98bbb1e9438be8973be645ef67e9cddc39ba # v2.1.0
         with:
           token: ${{ github.token }}
           artifact: workflow-data
           source_workflow: olean report
+          require_event: issue_comment
+          # The producer emits from a job that runs no PR code. `verify` additionally fetches
+          # the triggering comment and its PR from the API, and the next step checks that the
+          # comment is the olean report request that started the producer run. The comment
+          # body comes from the job that ran PR code, so it is only ever posted to that PR.
+          verify: true
           fail_on_missing: false
           extract: |
-            pr_number=outputs.pr_number
+            pr_number=verified.pr.number
+            comment=verified.trigger.body
+            comment_created_at=verified.trigger.created_at
+            run_created_at=run.created_at
+
+      # `verify` accepts any comment by the user who started the producer run from the 24 hours
+      # before it. Narrow that to an `!olean_report` request made shortly before the run.
+      - name: Check the triggering comment
+        if: steps.bridge.outputs.pr_number != ''
+        env:
+          COMMENT: ${{ steps.bridge.outputs.comment }}
+          COMMENT_CREATED_AT: ${{ steps.bridge.outputs.comment_created_at }}
+          RUN_CREATED_AT: ${{ steps.bridge.outputs.run_created_at }}
+        run: |
+          # same trigger pattern as in olean_report.yaml
+          if ! printf '%s' "${COMMENT}" | grep -qE '^!olean_report'
+          then
+            echo "::error::The triggering comment is not an olean report request."
+            exit 1
+          fi
+          age=$(( $(date -d "${RUN_CREATED_AT}" +%s) - $(date -d "${COMMENT_CREATED_AT}" +%s) ))
+          echo "The comment was posted ${age}s before the producer run was created."
+          if [ "${age}" -gt 3600 ]
+          then
+            echo "::error::The triggering comment is more than an hour older than the producer run. Post \`!olean_report\` again."
+            exit 1
+          fi
 
       - name: Find existing olean-report comment
         if: steps.bridge.outputs.pr_number != ''

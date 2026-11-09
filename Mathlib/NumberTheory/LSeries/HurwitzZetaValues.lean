@@ -5,8 +5,8 @@ Authors: David Loeffler
 -/
 module
 
-public import Mathlib.NumberTheory.ZetaValues
 public import Mathlib.NumberTheory.LSeries.RiemannZeta
+public import Mathlib.NumberTheory.ZetaValues
 
 /-!
 # Special values of Hurwitz and Riemann zeta functions
@@ -54,7 +54,7 @@ theorem cosZeta_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       ((Polynomial.bernoulli (2 * k)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_cosZeta x (?_ : 1 < re (2 * k))).tsum_eq]
   · refine Eq.trans ?_ <|
-      (congr_arg ofReal (hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq).trans ?_
+      congr(ofReal $((hasSum_one_div_nat_pow_mul_cos hk hx).tsum_eq)).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
       norm_cast
@@ -80,7 +80,7 @@ theorem sinZeta_two_mul_nat_add_one (hk : k ≠ 0) (hx : x ∈ Icc 0 1) :
       ((Polynomial.bernoulli (2 * k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rw [← (hasSum_nat_sinZeta x (?_ : 1 < re (2 * k + 1))).tsum_eq]
   · refine Eq.trans ?_ <|
-      (congr_arg ofReal (hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq).trans ?_
+      congr(ofReal $((hasSum_one_div_nat_pow_mul_sin hk hx).tsum_eq)).trans ?_
     · rw [ofReal_tsum]
       refine tsum_congr fun n ↦ ?_
       norm_cast
@@ -136,10 +136,10 @@ theorem hurwitzZetaEven_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : 
   rw [hurwitzZetaEven_one_sub _ h1 (Or.inr h2), ← Gammaℂ, cosZeta_two_mul_nat' hk hx, ← mul_assoc,
     ← mul_div_assoc, mul_assoc, mul_div_cancel_left₀ _ h3, ← mul_div_assoc]
   congr 2
-  rw [mul_div_assoc, mul_div_cancel_left₀ _ two_ne_zero, ← ofReal_natCast, ← ofReal_mul,
-    ← ofReal_cos, mul_comm π, ← sub_zero (k * π), cos_nat_mul_pi_sub, Real.cos_zero, mul_one,
-    ofReal_pow, ofReal_neg, ofReal_one, pow_succ, mul_neg_one, mul_neg, ← mul_pow, neg_one_mul,
-    neg_neg, one_pow]
+  calc
+    _ = Complex.cos (k * π) * (-1) ^ (k + 1) := by congr; ring
+    _ = Real.cos (k * π) * (-1) ^ (k + 1) := by simp
+    _ = -1 := by simp [cos_nat_mul_pi, ← pow_add]
 
 theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZetaOdd x (-(2 * k)) =
@@ -156,12 +156,10 @@ theorem hurwitzZetaOdd_neg_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 
     hurwitzZetaOdd_one_sub _ h1, ← Gammaℂ, sinZeta_two_mul_nat_add_one' hk hx, ← mul_assoc,
     ← mul_div_assoc, mul_assoc, mul_div_cancel_left₀ _ h3, ← mul_div_assoc]
   congr 2
-  rw [mul_div_assoc, add_div, mul_div_cancel_left₀ _ two_ne_zero, ← ofReal_natCast,
-    ← ofReal_one, ← ofReal_ofNat, ← ofReal_div, ← ofReal_add, ← ofReal_mul,
-    ← ofReal_sin, mul_comm π, add_mul, mul_comm (1 / 2), mul_one_div, Real.sin_add_pi_div_two,
-    ← sub_zero (k * π), cos_nat_mul_pi_sub, Real.cos_zero, mul_one,
-    ofReal_pow, ofReal_neg, ofReal_one, pow_succ, mul_neg_one, mul_neg, ← mul_pow, neg_one_mul,
-    neg_neg, one_pow]
+  calc
+    _ = Complex.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by congr; ring
+    _ = Real.sin ((k * π) + π / 2) * (-1) ^ (k + 1) := by simp
+    _ = -1 := by simp [Real.sin_add_pi_div_two, cos_nat_mul_pi, ← pow_add]
 
 -- private because it is superseded by `hurwitzZeta_neg_nat` below
 private lemma hurwitzZeta_one_sub_two_mul_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
@@ -190,8 +188,8 @@ theorem hurwitzZeta_neg_nat (hk : k ≠ 0) (hx : x ∈ Icc (0 : ℝ) 1) :
     hurwitzZeta x (-k) =
     -1 / (k + 1) * ((Polynomial.bernoulli (k + 1)).map (algebraMap ℚ ℂ)).eval (x : ℂ) := by
   rcases Nat.even_or_odd' k with ⟨n, (rfl | rfl)⟩
-  · exact_mod_cast hurwitzZeta_neg_two_mul_nat (by lia : n ≠ 0) hx
-  · exact_mod_cast hurwitzZeta_one_sub_two_mul_nat (by lia : n + 1 ≠ 0) hx
+  · exact mod_cast hurwitzZeta_neg_two_mul_nat (by lia : n ≠ 0) hx
+  · exact mod_cast hurwitzZeta_one_sub_two_mul_nat (by lia : n + 1 ≠ 0) hx
 
 end HurwitzZeta
 
@@ -206,19 +204,31 @@ the functional equation). -/
 theorem riemannZeta_two_mul_nat {k : ℕ} (hk : k ≠ 0) :
     riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1)
       * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
-  convert! congr_arg ((↑) : ℝ → ℂ) (hasSum_zeta_nat hk).tsum_eq
+  convert congr(($((hasSum_zeta_nat hk).tsum_eq) : ℂ))
   · rw [← Nat.cast_two, ← Nat.cast_mul, zeta_nat_eq_tsum_of_gt_one (by lia)]
     simp [push_cast]
   · norm_cast
 
+/-- Explicit formula for `ζ (2 * k)`, for `k ∈ ℕ`, in terms of the Bernoulli number
+`bernoulli (2 * k)`. Compare `riemannZeta_two_mul_nat` which avoids a cast in an exponent
+but requires `k ≠ 0`. -/
+theorem riemannZeta_two_mul_nat' {k : ℕ} :
+    riemannZeta (2 * k) = (-1) ^ (k + 1) * (2 : ℂ) ^ (2 * k - 1 : ℤ)
+      * (π : ℂ) ^ (2 * k) * bernoulli (2 * k) / (2 * k)! := by
+  rcases eq_or_ne k 0 with rfl | hk
+  · simp [riemannZeta_zero]
+    norm_num
+  · convert riemannZeta_two_mul_nat hk
+    grind [zpow_natCast]
+
 theorem riemannZeta_two : riemannZeta 2 = (π : ℂ) ^ 2 / 6 := by
-  convert! congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_two.tsum_eq
+  convert congr(($hasSum_zeta_two.tsum_eq : ℂ))
   · rw [← Nat.cast_two, zeta_nat_eq_tsum_of_gt_one one_lt_two]
     simp [push_cast]
   · norm_cast
 
 theorem riemannZeta_four : riemannZeta 4 = π ^ 4 / 90 := by
-  convert! congr_arg ((↑) : ℝ → ℂ) hasSum_zeta_four.tsum_eq
+  convert congr(($hasSum_zeta_four.tsum_eq : ℂ))
   · rw [← Nat.cast_one, show (4 : ℂ) = (4 : ℕ) by simp,
       zeta_nat_eq_tsum_of_gt_one (by simp : 1 < 4)]
     simp only [push_cast]

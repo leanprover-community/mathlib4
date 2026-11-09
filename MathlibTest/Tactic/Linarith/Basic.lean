@@ -728,7 +728,6 @@ example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
 def tightlyWrapped (z : ℤ) : ℤ := z
 /--
 error: linarith failed to find a contradiction
-case h
 x : ℤ
 a✝ : x * tightlyWrapped x < 0
 ⊢ False
@@ -801,6 +800,46 @@ info: Try this:
 #guard_msgs in
 example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
   linarith? -minimize only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? +minimize only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith only [h₄, h₂, h₁]
+-/
+#guard_msgs in
+example (x y : ℚ) (h₁ : x ≤ 0) (h₂ : y ≤ 0) (h₃ : x + y ≤ 0) (h₄ : x + y > 0) : False := by
+  linarith? (minimize := true) only [h₁, h₂, h₃, h₄]
+
+/--
+info: Try this:
+  [apply] linarith (oracle := .fourierMotzkin) only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith? (oracle := .fourierMotzkin)
+
+/--
+info: Try this:
+  [apply] linarith (oracle := .fourierMotzkin) only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith? -minimize (oracle := .fourierMotzkin) only [h]
+
+/--
+info: Try this:
+  [apply] linarith! only [h]
+-/
+#guard_msgs in
+example (a : ℚ) (h : a < 0) : a ≤ 0 := by
+  linarith?!
 
 /-!
 From https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Adding.20an.20extra.20hypothesis.20breaks.20linarith/near/533973472

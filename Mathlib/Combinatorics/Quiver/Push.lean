@@ -8,7 +8,6 @@ module
 public import Mathlib.Combinatorics.Quiver.Prefunctor
 
 /-!
-
 # Pushing a quiver structure along a map
 
 Given a map `σ : V → W` and a `Quiver` instance on `V`, this file defines a `Quiver` instance
@@ -59,7 +58,6 @@ noncomputable def lift : Push σ ⥤q W' where
   obj := τ
   map :=
     @PushQuiver.rec V _ W σ (fun X Y _ => τ X ⟶ τ Y) @fun X Y f => by
-      dsimp only
       rw [← h X, ← h Y]
       exact φ.map f
 

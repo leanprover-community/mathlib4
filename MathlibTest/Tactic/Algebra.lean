@@ -146,7 +146,7 @@ example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [
   algebra with R
 
 example {A R R' : Type*} [CommRing A] [CommRing R] [CommRing R'] [Algebra R A] [Algebra R' A] (r : R) (r' : R') (x : A) :
-(r : R) • x + (1 : ℕ) • x + (r' : R') • x = (r' : R') • x + (1 : ℕ) • x + (r : R) • x:= by
+(r : R) • x + (1 : ℕ) • x + (r' : R') • x = (r' : R') • x + (1 : ℕ) • x + (r : R) • x := by
   algebra
 
 /- Ensure that terms are eliminated if the coefficient happens to evaluate to zero. -/

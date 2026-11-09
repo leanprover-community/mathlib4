@@ -6,6 +6,7 @@ Authors: Christian Merten, Yi Song, Sihan Su
 module
 
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
+public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Spectrum.Prime.RingHom
 
@@ -56,9 +57,6 @@ lemma Module.FaithfullyFlat.of_comap_surjective [Flat A B]
   exact (Submodule.restrictScalars_eq_top_iff _ _ _).ne.mpr
     fun top ↦ m'.isPrime.ne_top <| top_le_iff.mp <| top ▸ Ideal.map_comap_le
 
-@[deprecated (since := "2025-12-10")]
-alias Module.FaithfullyFlat.of_specComap_surjective := Module.FaithfullyFlat.of_comap_surjective
-
 /-- If `A` is local and `B` is a local and flat `A`-algebra, then `B` is faithfully flat. -/
 lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B] [Flat A B]
     [IsLocalHom (algebraMap A B)] : Module.FaithfullyFlat A B := by
@@ -67,9 +65,15 @@ lemma Module.FaithfullyFlat.of_flat_of_isLocalHom [IsLocalRing A] [IsLocalRing B
   by_contra eqt
   have : Submodule.restrictScalars A (Ideal.map (algebraMap A B) (IsLocalRing.maximalIdeal A)) ≤
       Submodule.restrictScalars A (IsLocalRing.maximalIdeal B) :=
-    ((IsLocalRing.local_hom_TFAE (algebraMap A B)).out 0 2).mp ‹_›
+    ((IsLocalRing.local_hom_tfae (algebraMap A B)).out 1 3).mp ‹_›
   rw [eqt, top_le_iff, Submodule.restrictScalars_eq_top_iff] at this
   exact Ideal.IsPrime.ne_top' this
+
+instance [Module.Flat A B] (p : Ideal A) (q : Ideal B) [p.IsPrime] [q.IsPrime] [q.LiesOver p]
+    [Algebra (Localization.AtPrime p) (Localization.AtPrime q)]
+    [IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime q)] :
+    Module.FaithfullyFlat (Localization.AtPrime p) (Localization.AtPrime q) :=
+  Module.FaithfullyFlat.of_flat_of_isLocalHom
 
 instance Module.FaithfullyFlat.of_isIntegral_of_isDomain [IsDomain B] [Module.Flat A B]
     [Algebra.IsIntegral A B] [FaithfulSMul A B] :
@@ -135,7 +139,7 @@ lemma Ideal.comap_surjective_of_faithfullyFlat :
 lemma Ideal.map_injective_of_faithfullyFlat :
     Function.Injective (map (algebraMap A B)) :=
   fun _ _ h ↦ by simpa [comap_map_eq_self_of_faithfullyFlat]
-    using congr_arg (Ideal.comap (algebraMap A B) ·) h
+    using congr(Ideal.comap (algebraMap A B) $h)
 
 /-- If `B` is faithfully flat over `A`, every prime of `A` comes from a prime of `B`. -/
 lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat (p : Ideal A) [p.IsPrime] :
@@ -151,6 +155,15 @@ lemma PrimeSpectrum.comap_surjective_of_faithfullyFlat :
   (PrimeSpectrum.mem_range_comap_iff (algebraMap A B)).mpr
     I.asIdeal.comap_map_eq_self_of_faithfullyFlat
 
-@[deprecated (since := "2025-12-10")]
-alias PrimeSpectrum.specComap_surjective_of_faithfullyFlat :=
-  PrimeSpectrum.comap_surjective_of_faithfullyFlat
+section IsLocalRing
+
+variable (A B)
+
+instance Module.FaithfullyFlat.isLocalHom : IsLocalHom (algebraMap A B) :=
+  IsLocalHom.of_comap_surjective (algebraMap A B) PrimeSpectrum.comap_surjective_of_faithfullyFlat
+
+/-- Let `B` be a faithfully flat `A`-algebra, then `A` is a local ring if `B` is. -/
+theorem Module.FaithfullyFlat.isLocalRing [IsLocalRing B] : IsLocalRing A :=
+  (algebraMap A B).domain_isLocalRing
+
+end IsLocalRing

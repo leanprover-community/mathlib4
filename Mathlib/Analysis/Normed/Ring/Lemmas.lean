@@ -12,6 +12,9 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.Analysis.Normed.Ring.Basic
 public import Mathlib.Topology.MetricSpace.Dilation
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Normed rings
 
@@ -20,7 +23,7 @@ In this file we continue building the theory of (semi)normed rings.
 
 @[expose] public section
 
-variable {α : Type*} {β : Type*} {ι : Type*}
+variable {α : Type*} {ι : Type*}
 
 open Filter Bornology
 open scoped Topology NNReal Pointwise
@@ -48,7 +51,7 @@ instance Pi.nonUnitalSeminormedRing {R : ι → Type*} [Fintype ι]
   { seminormedAddCommGroup, nonUnitalRing with
     norm_mul_le x y := NNReal.coe_mono <| calc
       (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
-        sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
+        sup_mono_fun fun _ _ ↦ nnNorm_mul_le _ _
       _ ≤ (univ.sup (‖x ·‖₊)) * univ.sup (‖y ·‖₊) :=
         sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le) fun _ _ ↦ zero_le }
 
@@ -78,7 +81,7 @@ lemma RingHomIsometric.inv {𝕜₁ 𝕜₂ : Type*} [SeminormedRing 𝕜₁] [S
 lemma tendsto_pow_cobounded_cobounded
     [NormOneClass α] [NormMulClass α] {m : ℕ} (hm : m ≠ 0) :
     Tendsto (· ^ m) (cobounded α) (cobounded α) := by
-  simpa [← tendsto_norm_atTop_iff_cobounded] using
+  simpa [← tendsto_norm_atTop_iff_cobounded] using!
     (tendsto_pow_atTop hm).comp (tendsto_norm_cobounded_atTop (E := α))
 
 end SeminormedRing
@@ -168,7 +171,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
-        convert!
+        convert
           ((continuous_fst.tendsto x).norm.mul
                 ((continuous_snd.tendsto x).sub tendsto_const_nhds).norm).add
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul tendsto_const_nhds)
@@ -214,8 +217,8 @@ lemma lipschitzWith_sub : LipschitzWith 2 (fun (p : ℝ≥0 × ℝ≥0) ↦ p.1 
   have : Isometry (Prod.map ((↑) : ℝ≥0 → ℝ) ((↑) : ℝ≥0 → ℝ)) :=
     NNReal.isometry_coe.prodMap NNReal.isometry_coe
   convert!
-    (((LipschitzWith.prod_fst.comp this.lipschitz).sub
-          (LipschitzWith.prod_snd.comp this.lipschitz)).max_const
+    (((LipschitzWith.prod_fst.comp this.lipschitzWith).sub
+          (LipschitzWith.prod_snd.comp this.lipschitzWith)).max_const
       0)
   norm_num
 
@@ -246,16 +249,16 @@ multiplicative norm. -/
 @[simps!]
 def Dilation.mulLeft (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := a * b
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
+  edist_eq' := ⟨‖a‖₊, nnNorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nnDist_eq_nnNorm, ← mul_sub]⟩
 
 /-- Multiplication by a nonzero element `a` on the right, as a `Dilation` of a ring with a strictly
 multiplicative norm. -/
 @[simps!]
 def Dilation.mulRight (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := b * a
-  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
-    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
+  edist_eq' := ⟨‖a‖₊, nnNorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nnDist_eq_nnNorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
 
 namespace Filter
 

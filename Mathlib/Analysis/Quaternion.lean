@@ -6,9 +6,7 @@ Authors: Yury Kudryashov, Eric Wieser
 module
 
 public import Mathlib.Algebra.Quaternion
-public import Mathlib.Analysis.InnerProductSpace.Continuous
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Topology.Algebra.Algebra
 
 /-!
 # Quaternions as a normed algebra
@@ -73,16 +71,20 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
   rw [norm_eq_sqrt_real_inner, inner_self, normSq_coe, Real.sqrt_sq_eq_abs, Real.norm_eq_abs]
 
 @[simp, norm_cast]
-theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
+theorem nnNorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_coe := nnNorm_coe
 
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
 -- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
-theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
+theorem nnNorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_star := nnNorm_star
 
 instance : NormedDivisionRing ℍ where
   dist_eq _ _ := rfl
@@ -90,11 +92,9 @@ instance : NormedDivisionRing ℍ where
 
 instance : NormedAlgebra ℝ ℍ where
   norm_smul_le := norm_smul_le
-  toAlgebra := Quaternion.algebra
 
 instance : CStarRing ℍ where
-  norm_mul_self_le x :=
-    le_of_eq <| Eq.symm <| (norm_mul _ _).trans <| congr_arg (· * ‖x‖) (norm_star x)
+  norm_mul_self_le x := ge_of_eq <| (norm_mul _ _).trans congr($(norm_star x) * ‖x‖)
 
 /-- Coercion from `ℂ` to `ℍ`. -/
 @[coe] def coeComplex (z : ℂ) : ℍ := ⟨z.re, z.im, 0, 0⟩
@@ -193,7 +193,7 @@ theorem continuous_imK : Continuous fun q : ℍ => q.imK :=
 
 @[continuity]
 theorem continuous_im : Continuous fun q : ℍ => q.im := by
-  simpa only [← sub_re_self] using continuous_id.sub (continuous_coe.comp continuous_re)
+  simpa only [← sub_re_self] using! continuous_id.sub (continuous_coe.comp continuous_re)
 
 instance : CompleteSpace ℍ :=
   haveI : IsUniformEmbedding linearIsometryEquivTuple.toLinearEquiv.toEquiv.symm :=
@@ -207,13 +207,13 @@ variable {α : Type*} {L : SummationFilter α}
 @[simp, norm_cast]
 theorem hasSum_coe {f : α → ℝ} {r : ℝ} : HasSum (fun a => (f a : ℍ)) (↑r : ℍ) L ↔ HasSum f r L :=
   ⟨fun h => by
-    simpa only using
+    simpa only using!
     h.map (show ℍ →ₗ[ℝ] ℝ from QuaternionAlgebra.reₗ _ _ _) continuous_re,
-    fun h => by simpa only using h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
+    fun h => by simpa only using! h.map (algebraMap ℝ ℍ) (continuous_algebraMap _ _)⟩
 
 @[simp, norm_cast]
 theorem summable_coe {f : α → ℝ} : (Summable (fun a => (f a : ℍ)) L) ↔ Summable f L := by
-  simpa only using
+  simpa only using!
     Summable.map_iff_of_leftInverse (algebraMap ℝ ℍ) (show ℍ →ₗ[ℝ] ℝ from
       QuaternionAlgebra.reₗ _ _ _)
       (continuous_algebraMap _ _) continuous_re re_coe
