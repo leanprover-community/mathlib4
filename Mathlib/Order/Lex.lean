@@ -38,12 +38,12 @@ variable {α : Type*}
 
 /-- A one-field structure equipping a type with its lexicographic order. -/
 @[ext]
-structure Lex (α : Type*) where
-  /-- `toLex` is the identity function to the `Lex` of a type. -/
+structure Lex (α : Sort*) where
+  /-- Equip a type with its lexicographic order. -/
   toLex ::
-  /-- `ofLex` is the identity function from the `Lex` of a type. -/
+  /-- The underlying element -/
   ofLex : α
-deriving Nonempty, Inhabited, DecidableEq
+deriving Inhabited, DecidableEq
 
 /-- The natural equivalence between `Lex α` and `α`. -/
 @[simps]
@@ -83,12 +83,12 @@ instance {α β} [H : CoeFun α fun _ ↦ β] : CoeFun (Lex α) fun _ ↦ β whe
 
 /-- A one-field structure equipping a type with its colexicographic order. -/
 @[ext]
-structure Colex (α : Type*) where
-  /-- `toColex` is the identity function to the `Colex` of a type. -/
+structure Colex (α : Sort*) where
+  /-- Equip a type with its colexicographic order. -/
   toColex ::
-  /-- `ofColex` is the identity function from the `Colex` of a type. -/
+  /-- The underlying element -/
   ofColex : α
-deriving Nonempty, Inhabited, DecidableEq
+deriving Inhabited, DecidableEq
 
 /-- The natural equivalence between `Colex α` and `α`. -/
 @[simps]
