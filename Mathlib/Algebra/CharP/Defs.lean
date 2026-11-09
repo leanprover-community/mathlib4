@@ -33,21 +33,21 @@ namespace CharP
 section AddMonoidWithOne
 variable [AddMonoidWithOne R] (p : ℕ)
 
-/-- The generator of the kernel of the unique homomorphism ℕ → R for a semiring R. -/
+/-- `CharP R p` says that the image of an `n : ℕ` in `R` is uniquely determined modulo `p`. -/
 @[mk_iff]
 class _root_.CharP (R : Type*) [AddMonoidWithOne R] (p : outParam ℕ) : Prop where
-  cast_eq_iff_mod_eq (R p) : ∀ a b : ℕ, (a : R) = (b : R) ↔ a % p = b % p
+  cast_eq_iff_mod_eq' (R p) : ∀ a b : ℕ, (a : R) = (b : R) ↔ a % p = b % p
 
 variable [CharP R p]
 
 variable {R} in
 lemma congr {q : ℕ} (h : p = q) : CharP R q := h ▸ ‹CharP R p›
 
-lemma cast_eq_iff_mod_eq' {a b : ℕ} : (a : R) = (b : R) ↔ a % p = b % p :=
-  cast_eq_iff_mod_eq R p a b
+lemma cast_eq_iff_mod_eq {a b : ℕ} : (a : R) = (b : R) ↔ a % p = b % p :=
+  cast_eq_iff_mod_eq' R p a b
 
 lemma cast_eq_zero_iff (x : ℕ) : (x : R) = 0 ↔ p ∣ x := by
-  simpa [Nat.dvd_iff_mod_eq_zero] using cast_eq_iff_mod_eq R p x 0
+  simpa [Nat.dvd_iff_mod_eq_zero] using cast_eq_iff_mod_eq' R p x 0
 
 lemma ofNat_eq_zero' (a : ℕ) [a.AtLeastTwo] (h : p ∣ a) : (ofNat(a) : R) = 0 := by
   rwa [← CharP.cast_eq_zero_iff R p] at h
@@ -67,7 +67,7 @@ lemma eq {p q : ℕ} (hp : CharP R p) (hq : CharP R q) : p = q :=
     ((cast_eq_zero_iff R q p).mp hp.cast_eq_zero)
 
 instance ofCharZero [CharZero R] : CharP R 0 where
-  cast_eq_iff_mod_eq := by simp
+  cast_eq_iff_mod_eq' := by simp
 
 theorem charP_to_charZero [CharP R 0] : CharZero R where
   cast_injective a b h := by simpa [cast_eq_iff_mod_eq] using h
@@ -76,8 +76,7 @@ theorem charP_zero_iff_charZero : CharP R 0 ↔ CharZero R :=
   ⟨fun _ ↦ charP_to_charZero R, fun _ ↦ ofCharZero R⟩
 
 lemma cast_eq_mod (k : ℕ) : (k : R) = (k % p : ℕ) := by
-  nth_rw 1 [← Nat.div_add_mod k p]
-  rw [Nat.cast_add, (cast_eq_zero_iff R p _).mpr (Nat.dvd_mul_right _ _), zero_add]
+  rw [cast_eq_iff_mod_eq, Nat.mod_mod]
 
 lemma of_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) = 0)
     (hp1 : ∀ n < p, (n : R) = 0 → n = 0) : CharP R p := by
@@ -137,7 +136,6 @@ lemma _root_.charP_iff_cast_eq_zero_iff_dvd {p : ℕ} : CharP R p ↔ ∀ x : �
   ⟨fun _ => cast_eq_zero_iff R p, of_cast_eq_zero_iff_dvd R⟩
 
 lemma «exists» : ∃ p, CharP R p := by
-  let := Classical.decEq R
   by_cases! H : ∀ p : ℕ, (p : R) = 0 → p = 0
   · exact ⟨0, (charP_zero_iff_charZero R).mpr (charZero_of_inj_zero H)⟩
   · obtain ⟨p, -, Hp⟩ := exists_of_exists_ne_zero_cast_eq_zero R H
@@ -173,7 +171,7 @@ variable [NonAssocSemiring R] [IsLeftCancelAdd R]
 
 lemma spec : ∀ a b : ℕ, (a : R) = b ↔ a % ringChar R = b % ringChar R := by
   let : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
-  exact CharP.cast_eq_iff_mod_eq R (ringChar R)
+  exact CharP.cast_eq_iff_mod_eq' R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
   ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm

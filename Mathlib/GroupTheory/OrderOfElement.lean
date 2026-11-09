@@ -1439,7 +1439,7 @@ section NonAssocRing
 variable (R : Type*) [NonAssocRing R] (p : ℕ)
 
 lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
-  cast_eq_iff_mod_eq a b := by simp_rw [← Nat.smul_one_eq_cast, nsmul_eq_nsmul_iff_modEq, ModEq]
+  cast_eq_iff_mod_eq' a b := by simp_rw [← Nat.smul_one_eq_cast, nsmul_eq_nsmul_iff_modEq, ModEq]
 
 variable [Fintype R]
 
