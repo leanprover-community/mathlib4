@@ -1497,3 +1497,5 @@ def range (f : (Π i, M i) →ₘₗ[R] N) : SubMulAction R N :=
 end Submodule
 
 end MultilinearMap
+
+set_option linter.style.longFile 1700
