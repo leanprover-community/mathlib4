@@ -25,7 +25,7 @@ namespace Matrix
 variable {ι R : Type*} {M : Matrix ι ι R}
 
 def IsSymmetrizable [Zero R] [Mul R] (M : Matrix ι ι R) : Prop :=
-  ∃ d : ι → R, (∀ i, d i ≠ 0) ∧ ∀ i j, d i * M i j = d j * M j i
+  ∃ d : ι → R, (∀ i, d i ∈ nonZeroDivisors R) ∧ ∀ i j, d i * M i j = d j * M j i
 
 section IsSymmetrizable
 
