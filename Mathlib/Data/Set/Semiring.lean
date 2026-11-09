@@ -58,6 +58,11 @@ instance : Insert α (SetSemiring α) where insert a s := ofSet (insert a s.toSe
 
 @[simp] lemma mem_toSet {s : SetSemiring α} {a : α} : a ∈ s.toSet ↔ a ∈ s := Iff.rfl
 @[simp] lemma mem_singleton_iff {a b : α} : a ∈ ({b} : SetSemiring α) ↔ a = b := Iff.rfl
+@[simp] lemma toSet_singleton {a : α} : toSet {a} = {a} := rfl
+@[simp] lemma ofSet_singleton {a : α} : ofSet {a} = {a} := rfl
+@[simp] lemma toSet_insert {s : SetSemiring α} {a : α} : (insert a s).toSet = insert a s.toSet :=
+  rfl
+@[simp] lemma ofSet_insert {s : Set α} {a : α} : ofSet (insert a s) = insert a (ofSet s) := rfl
 
 instance : Zero (SetSemiring α) where zero := ofSet ∅
 instance : Add (SetSemiring α) where add s t := ofSet (s.toSet ∪ t.toSet)
@@ -148,7 +153,7 @@ instance [CommMonoid α] : IsOrderedRing (SetSemiring α) where
 
 /-- If `α` is a monoid, the map that sends `a : α` to `{a}` is a monoid homomorphism. -/
 def singletonMonoidHom [Monoid α] : α →* SetSemiring α where
-  toFun a := ofSet {a}
+  toFun a := {a}
   map_one' := rfl
   map_mul' _ _ := SetSemiring.ext image2_singleton.symm
 
@@ -194,7 +199,7 @@ end ImageHom
 @[deprecated (since := "2026-10-13")] alias imageHom_def := imageHom_apply
 @[deprecated (since := "2026-10-13")] alias down_imageHom := imageHom_apply
 @[deprecated (since := "2026-10-13")] alias _root_.Set.up_image := imageHom_apply
-@[deprecated (since := "2026-11-09")] alias symm_toSet := ofSet_toSet
-@[deprecated (since := "2026-11-09")] alias symm_ofSet := toSet_ofSet
+@[deprecated "type changed" (since := "2026-11-09")] alias symm_toSet := ofSet_toSet
+@[deprecated "type changed" (since := "2026-11-09")] alias symm_ofSet := toSet_ofSet
 
 end SetSemiring
