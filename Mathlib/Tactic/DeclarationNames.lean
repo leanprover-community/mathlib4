@@ -26,16 +26,17 @@ namespace Mathlib.Linter
 
 /--
 If `pos` is a `String.Pos`, then `getNamesFrom pos` returns the array of identifiers
-for the names of the declarations whose syntax begins in position at least `pos`.
+for the names of the declarations whose syntax begins on or after the line of `pos`.
 -/
 def getNamesFrom {m} [Monad m] [MonadEnv m] [MonadFileMap m] (pos : String.Pos.Raw) :
     m (Array Syntax) := do
   -- declarations from parallelism branches should not be interesting here, so use `local`
   let drs := declRangeExt.toPersistentEnvExtension.getState (asyncMode := .local) (← getEnv)
   let fm ← getFileMap
+  let line := (fm.toPosition pos).line
   let mut nms := #[]
   for (nm, rgs) in drs do
-    if pos ≤ fm.ofPosition rgs.range.pos then
+    if line ≤ rgs.range.pos.line then
       let ofPos1 := fm.ofPosition rgs.selectionRange.pos
       let ofPos2 := fm.ofPosition rgs.selectionRange.endPos
       nms := nms.push (mkIdentFrom (.ofRange ⟨ofPos1, ofPos2⟩) nm)

@@ -87,11 +87,13 @@ open Lean Parser Elab Command Meta Linter
 
 @[inherit_doc linter.dupNamespace]
 def dupNamespace : Linter where run := withSetOptionIn fun stx ↦ do
-  if getLinterValue linter.dupNamespace (← getLinterOptions) then
+  unless getLinterValue linter.dupNamespace (← getLinterOptions) do
+    return
+  if let some pos := stx.getPos? then
     let mut aliases := #[]
     if let some exp := stx.find? (·.isOfKind `Lean.Parser.Command.export) then
       aliases ← getAliasSyntax exp
-    for id in (← getNamesFrom (stx.getPos?.getD default)) ++ aliases do
+    for id in (← getNamesFrom pos) ++ aliases do
       let declName := id.getId
       -- We intentionally *do* lint deprecated declarations:
       -- this is important since people can forget to add a `_root_` when adding deprecations.
