@@ -22,4 +22,12 @@ lemma eq_natCast_of_ne_bot_of_ne_top {x : WithBot ℕ∞} (ne1 : x ≠ ⊥) (ne2
     ∃ n : ℕ, x = n :=
   WithBotTop.eq_coe_of_ne_top_of_ne_bot ne1 ne2
 
+@[induction_eliminator]
+def recBotTopCoe {C : WithBot ℕ∞ → Sort*} (bot : C ⊥) (top : C ⊤) (coe : ∀ n : ℕ, C n) : ∀ x, C x
+  | ⊥ => bot
+  | (m : ℕ∞) => by
+    induction m with
+    | top => exact top
+    | coe n => exact coe n
+
 end ENat.WithBot
