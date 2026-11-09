@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Polynomial.Basic
 
 /-!
-
 # Basis of a polynomial ring
 
 -/

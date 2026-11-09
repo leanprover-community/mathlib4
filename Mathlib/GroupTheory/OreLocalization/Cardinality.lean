@@ -11,7 +11,6 @@ public import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Data.Fintype.Pigeonhole
 
 /-!
-
 # Cardinality of Ore localizations
 
 This file contains some results on cardinality of Ore localizations.
