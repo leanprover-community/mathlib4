@@ -44,8 +44,11 @@ variable [NontrivialTopology E] [RingHomIsometric σ₁₂]
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
 
-@[simp] lemma enorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
+@[simp] lemma eNorm_toContinuousLinearMap (f : E →ₛₗᵢ[σ₁₂] F) : ‖f.toContinuousLinearMap‖ₑ = 1 :=
   congrArg _ f.nnNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
 
 end
 
@@ -83,9 +86,12 @@ variable [NontrivialTopology E] {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₁ : 𝕜
 @[deprecated (since := "2026-10-31")]
 alias nnnorm_toContinuousLinearMap := nnNorm_toContinuousLinearMap
 
-@[simp] lemma enorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
+@[simp] lemma eNorm_toContinuousLinearMap (e : E ≃ₛₗᵢ[σ₁₂] F) :
     ‖e.toContinuousLinearEquiv.toContinuousLinearMap‖ₑ = 1 :=
-  e.toLinearIsometry.enorm_toContinuousLinearMap
+  e.toLinearIsometry.eNorm_toContinuousLinearMap
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_toContinuousLinearMap := eNorm_toContinuousLinearMap
 
 end LinearIsometryEquiv
 end SeminormedAddCommGroup
