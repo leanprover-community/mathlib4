@@ -266,11 +266,21 @@ lemma IndepFun.hasLaw_union_setBernoulli [Countable ι] (hXY : X ⟂ᵢ[P] Y)
     have :
         (Function.uncurry (· ∪ ·)) ∘
             (Prod.map (fun (p : ι → Prop) ↦ {i | p i}) fun (p : ι → Prop) ↦ {i | p i}) =
-          (fun p ↦ {i | p i}) ∘ (fun p i ↦ p.1 i ∨ p.2 i) := by ext; grind
+          (fun p ↦ {i | p i}) ∘ ((fun p i ↦ (p i).1 ∨ (p i).2) ∘ fun p i ↦ (p.1 i, p.2 i)) := by
+      ext; grind
     rw [show (fun ω ↦ X ω ∪ Y ω) = (· ∪ ·).uncurry ∘ (fun ω ↦ (X ω, Y ω)) from rfl,
       ← AEMeasurable.map_map_of_aemeasurable, (hXY.hasLaw_prod hX hY).map_eq, setBernoulli_eq_map,
-      setBernoulli_eq_map, map_prod_map, map_map, this, ← map_map, setBernoulli_eq_map]
-    · congr
+      setBernoulli_eq_map, map_prod_map, map_map, this, ← map_map, setBernoulli_eq_map,
+      ← map_map, infinitePi_prod_infinitePi,
+      infinitePi_map_pi (f := fun _ p ↦ (p.1 ∨ p.2))
+        (μ := fun i ↦ Ber(i ∈ s, False, p).prod Ber(i ∈ t, False, p))]
+    · congrm map _ (infinitePi fun i ↦ ?_)
+      by_cases hi1 : i ∈ s <;> by_cases hi2 : i ∈ t
+      · grind
+      · simp [hi2, prod_dirac]
+      · simp [hi1, dirac_prod]
+      · simp [hi1, hi2, dirac_prod_dirac]
+    all_goals fun_prop
 
 lemma HasLaw.hasLaw_indicator_infinitePi_ite_of_setBernoulli [DecidablePred (· ∈ u)]
     {M : Type*} [MeasurableSpace M] [MeasurableSingletonClass M] [Zero M] (c : M)
