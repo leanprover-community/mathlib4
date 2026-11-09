@@ -42,7 +42,7 @@ def quotientMulEquiv : Abelianization (G ⧸ N) ≃* Abelianization G ⧸ N.map 
       (QuotientGroup.eq_one_iff _).mpr (Subgroup.mem_map_of_mem of h))
     (QuotientGroup.lift _ (map (QuotientGroup.mk' N)) <| fun y ⟨x, hx, hxy⟩ ↦
       hxy ▸ (congrArg of ((QuotientGroup.eq_one_iff _).mpr hx)).trans (map_one of))
-    (by ext; rfl) 
+    (by ext; rfl)
     (by ext; rfl)
 
 @[to_additive (attr := simp)]
