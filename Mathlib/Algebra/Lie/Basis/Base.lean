@@ -12,7 +12,6 @@ public import Mathlib.LinearAlgebra.RootSystem.BaseExists
 public import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 
 /-!
-
 # The root system base associated to a Lie algebra basis
 
 -/

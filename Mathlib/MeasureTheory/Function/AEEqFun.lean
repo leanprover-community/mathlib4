@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical
@@ -236,8 +235,8 @@ theorem coeFn_compQuasiMeasurePreserving (g : β →ₘ[ν] γ) (hf : QuasiMeasu
   apply coeFn_mk
 
 theorem compQuasiMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν)
-    {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
-    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' (hf.congr hf' h) := by
+    {f' : α → β} (h : f =ᵐ[μ] f') :
+    compQuasiMeasurePreserving g f hf = compQuasiMeasurePreserving g f' (hf.congr h) := by
   ext
   grw [coeFn_compQuasiMeasurePreserving, coeFn_compQuasiMeasurePreserving, h]
 
@@ -298,7 +297,7 @@ theorem coeFn_compMeasurePreserving (g : β →ₘ[ν] γ) (hf : MeasurePreservi
 theorem compMeasurePreserving_congr (g : β →ₘ[ν] γ) (hf : MeasurePreserving f μ ν)
     {f' : α → β} (hf' : Measurable f') (h : f =ᵐ[μ] f') :
     compMeasurePreserving g f hf = compMeasurePreserving g f' (hf.congr hf' h) :=
-  compQuasiMeasurePreserving_congr _ _ hf' h
+  compQuasiMeasurePreserving_congr _ _ h
 
 @[simp]
 theorem compMeasurePreserving_id (g : β →ₘ[ν] γ) :

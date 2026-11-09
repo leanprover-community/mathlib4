@@ -41,7 +41,9 @@ theorem nnNorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
 
 @[deprecated (since := "2026-10-31")] alias nnnorm_natCast := nnNorm_natCast
 
-@[simp] lemma enorm_natCast (n : ℕ) : ‖(n : ℤ)‖ₑ = n := Real.enorm_natCast _
+@[simp] lemma eNorm_natCast (n : ℕ) : ‖(n : ℤ)‖ₑ = n := Real.eNorm_natCast _
+
+@[deprecated (since := "2026-11-06")] alias enorm_natCast := eNorm_natCast
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnNorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by

@@ -63,7 +63,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
     gcongr with i hi
     apply edist_triangle
   _ = ∑ i ∈ range n, ‖B (f (u (i + 1)) - f (u i)) (g (u (i + 1)))‖ₑ +
-      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [edist_eq_enorm_sub]
+      ∑ i ∈ range n, ‖B (f (u i)) (g (u (i + 1)) - g (u i))‖ₑ := by simp [eDist_eq_eNorm_sub]
   _ ≤ ∑ i ∈ range n, ‖B‖ₑ * ‖f (u (i + 1)) - f (u i)‖ₑ * ‖g (u (i + 1))‖ₑ +
       ∑ i ∈ range n, ‖B‖ₑ * ‖f (u i)‖ₑ * ‖g (u (i + 1)) - g (u i)‖ₑ := by
     gcongr with i hi i hi
@@ -79,7 +79,7 @@ lemma eVariationOn_bilinear_comp_le (hf : ∀ x ∈ s, ‖f x‖ₑ ≤ C) (hg :
     simp only [← sum_mul, ← mul_sum]
     ring
   _ ≤ ‖B‖ₑ * D * eVariationOn f s + ‖B‖ₑ * C * eVariationOn g s := by
-    simp only [← edist_eq_enorm_sub]
+    simp only [← eDist_eq_eNorm_sub]
     gcongr
     · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
     · exact eVariationOn.sum_le_of_monotoneOn_Iic (u_mono.monotoneOn _) (fun i hi ↦ u_mem i)
@@ -107,10 +107,10 @@ lemma BoundedVariationOn.bilinear_comp
   · simp
   suffices eVariationOn (fun x ↦ (B (f x)) (g x)) s < ∞ from ne_of_lt this
   have A (y) (hy : y ∈ s) : ‖f y‖ₑ ≤ ‖f x‖ₑ + eVariationOn f s := by
-    grw [show f y = f x + (f y - f x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show f y = f x + (f y - f x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
       eVariationOn.edist_le _ hy hx]
   have A' (y) (hy : y ∈ s) : ‖g y‖ₑ ≤ ‖g x‖ₑ + eVariationOn g s := by
-    grw [show g y = g x + (g y - g x) by abel, enorm_add_le, ← edist_eq_enorm_sub,
+    grw [show g y = g x + (g y - g x) by abel, eNorm_add_le, ← eDist_eq_eNorm_sub,
       eVariationOn.edist_le _ hy hx]
   grw [eVariationOn_bilinear_comp_le A A']
   simp [mul_add, ENNReal.mul_lt_top_iff, hf.lt_top, hg.lt_top]
