@@ -5,11 +5,11 @@ Authors: Yakov Pechersky
 -/
 module
 
-import Mathlib.Data.List.Induction
 public import Mathlib.Data.List.TakeWhile
 
-/-!
+import Mathlib.Data.List.Induction
 
+/-!
 # Dropping or taking from lists on the right
 
 Taking or removing element from the tail end of a list

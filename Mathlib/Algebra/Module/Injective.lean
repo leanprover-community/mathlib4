@@ -6,13 +6,14 @@ Authors: Jujian Zhang
 
 module
 
-import Mathlib.Algebra.Module.Shrink
-public import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.LinearAlgebra.Pi
-public import Mathlib.Logic.Small.Basic
 public import Mathlib.LinearAlgebra.BilinearMap
+public import Mathlib.LinearAlgebra.LinearPMap
+public import Mathlib.Logic.Small.Basic
 public import Mathlib.RingTheory.Ideal.Defs
 public import Mathlib.Tactic.NormNum
+
+import Mathlib.Algebra.Module.Shrink
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Injective modules

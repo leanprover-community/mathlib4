@@ -5,9 +5,10 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 module
 
-import Mathlib.Algebra.Polynomial.Degree.Support
 public import Mathlib.Algebra.Polynomial.Eval.Coeff
 public import Mathlib.Algebra.Ring.Subring.Basic
+
+import Mathlib.Algebra.Polynomial.Degree.Support
 
 /-!
 # Evaluation of polynomials in subrings

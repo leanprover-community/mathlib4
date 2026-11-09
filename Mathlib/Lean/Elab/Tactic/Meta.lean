@@ -6,9 +6,13 @@ Authors: Kim Morrison
 module
 
 public meta import Lean.Elab.SyntheticMVars
+
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import Mathlib.Tactic.Linter.Header  -- shake: keep
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additions to `Lean.Elab.Tactic.Meta`

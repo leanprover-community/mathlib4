@@ -6,6 +6,7 @@ Authors: David Ledvinka
 module
 
 public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Basic
+
 import Mathlib.Data.Rat.Cast.Lemmas
 
 /-!
@@ -56,6 +57,20 @@ theorem ratCast_mem (q : ℚ) (prec : ℕ) : (q : ℝ) ∈ rat q prec := by
     · rw [Dyadic.toReal, h]
     · rw [← Dyadic.ofIntWithPrec_one]
       exact Rat.cast_lt.mpr Rat.lt_toRat_toDyadic_add |>.le
+
+/-- The interval `[(c - r) / d, (c + r) / d]`, rounded outward to precision `prec`. -/
+def ratBall (c r : ℤ) (d prec : ℕ) : Interval Dyadic :=
+  Interval.Icc (rat (mkRat (c - r) d) prec).lb (rat (mkRat (c + r) d) prec).ub
+
+theorem ratBall_mem {x : ℝ} {c r : ℤ} {d : ℕ} (hx : |x - c / d| ≤ r / d) (prec : ℕ) :
+    x ∈ ratBall c r d prec := by
+  obtain ⟨h₁, h₂⟩ := abs_sub_le_iff.mp hx
+  refine mem_iff_mem_map.mpr
+    (Interval.mem_Icc_of_le (ratCast_mem _ prec) ?_ ?_ (ratCast_mem _ prec))
+  · push_cast [Rat.mkRat_eq_div, sub_div]
+    exact sub_le_comm.mp h₂
+  · push_cast [Rat.mkRat_eq_div, add_div]
+    exact sub_le_iff_le_add'.mp h₁
 
 /-- Efficiently enclose `m / d` in a dyadic interval with precision `prec`. -/
 def natDiv (m d prec : ℕ) : Interval Dyadic :=

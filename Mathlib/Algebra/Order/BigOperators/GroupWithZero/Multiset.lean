@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Big operators on a multiset in ordered groups with zeros
 

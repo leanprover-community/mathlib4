@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.Finite
 
 /-!
-
 # Proper morphisms
 
 A morphism of schemes is proper if it is separated, universally closed and (locally) of finite type.

@@ -9,11 +9,11 @@ public import Mathlib.CategoryTheory.Sites.Canonical
 public import Mathlib.CategoryTheory.Sites.Continuous
 public import Mathlib.CategoryTheory.Sites.JointlySurjective
 public import Mathlib.CategoryTheory.Sites.MorphismProperty
-import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 public import Mathlib.Topology.Category.TopCat.ULift
 
-/-!
+import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 
+/-!
 # The Grothendieck topology on `TopCat`
 
 In this file we define the standard Grothendieck topology on `TopCat`. This is the topology
@@ -84,7 +84,6 @@ lemma isOpenEmbedding_f_zeroHypercover {X : TopCat.{u}} (E : precoverage.ZeroHyp
 instance : Precoverage.Small.{u} precoverage.{u} :=
   .inf fun _ _ _ hRS hS _ _ hf ↦ hS (hRS _ _ hf)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The Grothendieck topology on `TopCat` is subcanonical. -/
 instance subcanonical_grothendieckTopology : grothendieckTopology.Subcanonical := by
   refine .of_isSheaf_yoneda_obj _ fun X ↦ ?_

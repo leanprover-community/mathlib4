@@ -5,10 +5,11 @@ Authors: Junyan Xu
 -/
 module
 
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 public import Mathlib.LinearAlgebra.Dimension.Constructions
 public import Mathlib.SetTheory.Cardinal.Subfield
+
+import Mathlib.Algebra.Field.Opposite
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Erdős-Kaplansky theorem
@@ -20,8 +21,6 @@ public import Mathlib.SetTheory.Cardinal.Subfield
 -/
 
 public section
-
-noncomputable section
 
 universe u v
 

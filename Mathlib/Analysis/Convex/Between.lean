@@ -6,10 +6,10 @@ Authors: Joseph Myers
 module
 
 public import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Interval.Set.Group
 public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
+import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Tactic.Bound
 
 /-!

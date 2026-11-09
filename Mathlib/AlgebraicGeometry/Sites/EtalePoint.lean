@@ -7,11 +7,11 @@ module
 
 public import Mathlib.AlgebraicGeometry.Fiber
 public import Mathlib.AlgebraicGeometry.Sites.AffineEtale
-import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 public import Mathlib.CategoryTheory.Sites.Point.Conservative
 
-/-!
+import Mathlib.CategoryTheory.Functor.TypeValuedFlat
 
+/-!
 # Points of the étale site
 
 In this file, we show that a morphism `Spec (.of Ω) ⟶ S` where `Ω` is

@@ -5,17 +5,17 @@ Authors: Jingting Wang, Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.FiveLemma
 public import Mathlib.RingTheory.Flat.Basic
 
-/-!
+import Mathlib.Algebra.FiveLemma
 
+/-!
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that if `S` is a flat `R`-algebra, taking kernels commutes with base change
 of modules from `R` to `S`.
 
-# Main Results
+## Main results
 
 For `S` an `R`-algebra, consider the following commutative diagram with exact rows,
 `M₁` `M₂` `M₃` `R`-modules, `N₁` `N₂` `N₃` `S`-modules,

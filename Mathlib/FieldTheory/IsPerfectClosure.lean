@@ -5,11 +5,10 @@ Authors: Jz Pan
 -/
 module
 
-public import Mathlib.FieldTheory.PurelyInseparable.Basic
 public import Mathlib.FieldTheory.PerfectClosure
+public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
-
 # `IsPerfectClosure` predicate
 
 This file contains `IsPerfectClosure` which asserts that `L` is a perfect closure of `K` under a

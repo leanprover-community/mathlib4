@@ -5,8 +5,9 @@ Authors: John Nicol, Haobo Ma, Wenlin Zhang
 -/
 module
 
-import Mathlib.Data.ZMod.Factorial
 public import Mathlib.FieldTheory.Finite.Basic
+
+import Mathlib.Data.ZMod.Factorial
 
 /-!
 # Wilson's theorem.

@@ -5,10 +5,11 @@ Authors: Yuma Mizuno, Ralf Stephan
 -/
 module
 
-import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Data.Nat.Cast.Field
 public import Mathlib.RingTheory.PowerSeries.Derivative
 public import Mathlib.RingTheory.PowerSeries.Inverse
+
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
 # Exponential Power Series

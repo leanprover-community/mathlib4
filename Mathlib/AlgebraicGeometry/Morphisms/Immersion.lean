@@ -6,10 +6,10 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.AlgebraicGeometry.Morphisms.Separated
+
 import Mathlib.AlgebraicGeometry.IdealSheaf.Functorial
 
 /-!
-
 # Immersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is an immersion if the underlying map of topological spaces

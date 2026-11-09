@@ -25,51 +25,6 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
-section
-
-/-!
-Extension of `iSup` and `iInf` from a preorder `α` to `WithTop α` and `WithBot α`
--/
-
-variable [Preorder α]
-
-@[to_dual]
-theorem WithTop.iInf_empty [IsEmpty ι] [InfSet α] (f : ι → WithTop α) :
-    ⨅ i, f i = ⊤ := by
-  simp
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iInf [Nonempty ι] [InfSet α] {f : ι → α} (hf : BddBelow (range f)) :
-    ↑(⨅ i, f i) = (⨅ i, f i : WithTop α) := by
-  rw [iInf, iInf, WithTop.coe_sInf' (range_nonempty f) hf, ← range_comp, Function.comp_def]
-
-@[to_dual (attr := norm_cast)]
-theorem WithTop.coe_iSup [SupSet α] (f : ι → α) (h : BddAbove (Set.range f)) :
-    ↑(⨆ i, f i) = (⨆ i, f i : WithTop α) := by
-  rw [iSup, iSup, WithTop.coe_sSup' h, ← range_comp, Function.comp_def]
-
-@[deprecated (since := "2026-05-04")] alias WithBot.ciSup_empty := WithBot.iSup_empty
-
-@[to_dual]
-theorem WithBot.coe_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty)
-    {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨆ i ∈ s, f i = ⨆ i ∈ s, (f i : WithBot α) := by
-  rcases hs with ⟨j, hj⟩
-  have : Nonempty ι := Nonempty.intro j
-  refine le_antisymm ((WithBot.coe_iSup (OrderTop.bddAbove _)).trans_le <|
-    iSup_le_iff.mpr fun i ↦ ?_) <| iSup_le_iff.mpr <| fun _ ↦ iSup_le_iff.mpr <|
-      fun hi ↦ WithBot.coe_le_coe.mpr (le_biSup _ hi)
-  by_cases h : i ∈ s
-  · simpa only [iSup_pos h] using by apply le_biSup _ h
-  · simpa only [iSup_neg h] using le_trans (by simp) (le_biSup _ hj)
-
-@[to_dual]
-theorem WithBot.coe_biInf {ι : Type*} {s : Set ι} {α : Type*} [CompleteLattice α] (f : ι → α) :
-    ⨅ i ∈ s, f i = ⨅ i ∈ s, (f i : WithBot α) := by
-  simp [coe_iInf]
-
-end
-
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {a b : α}
@@ -262,19 +217,11 @@ theorem cbiSup_eq_ciSup_subtype {p : ι → Prop} {f : ∀ i, p i → α}
     ⨆ (i) (h), f i h = ⨆ x : Subtype p, f x x.property :=
   (ciSup_subtype (f := fun x => f x.val x.property) hf hf').symm
 
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype' := cbiSup_eq_ciSup_subtype
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype' := cbiInf_eq_ciInf_subtype
-
 @[to_dual]
 theorem ciSup_subtype_fun {ι} {s : Set ι} {f : ι → α}
     (hf : BddAbove (Set.range fun i : s ↦ f i)) (hf' : sSup ∅ ≤ ⨆ i : s, f i) :
     ⨆ i : s, f i = ⨆ (t : ι) (_ : t ∈ s), f t :=
   ciSup_subtype hf hf'
-
-@[deprecated (since := "2026-04-04")] alias ciSup_subtype'' := ciSup_subtype_fun
-
-@[deprecated (since := "2026-04-04")] alias ciInf_subtype'' := ciInf_subtype_fun
 
 @[to_dual]
 theorem csSup_image {s : Set β} {f : β → α}
@@ -285,8 +232,8 @@ theorem csSup_image {s : Set β} {f : β → α}
 @[to_dual]
 theorem cbiSup_id {s : Set α} (hs : BddAbove s) (h : sSup ∅ ≤ sSup s) : ⨆ i ∈ s, i = sSup s := by
   rw [← csSup_image (Subtype.range_coe ▸ hs), Set.image_id']
-  · convert h
-    rw [← sSup_range, Subtype.range_coe]
+  convert h
+  rw [← sSup_range, Subtype.range_coe]
 
 @[to_dual]
 lemma ciSup_image {ι ι' : Type*} {s : Set ι} {f : ι → ι'} {g : ι' → α}
@@ -407,8 +354,6 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
 @[to_dual]
 theorem ciSup_eq_top_of_top_mem [OrderTop α] {f : ι → α} (hs : ⊤ ∈ range f) : iSup f = ⊤ :=
   csSup_eq_top_of_top_mem hs
-
-@[deprecated (since := "2026-04-05")] alias ciInf_eq_top_of_top_mem := ciSup_eq_top_of_top_mem
 
 variable [WellFoundedLT α]
 
@@ -581,28 +526,3 @@ lemma map_ciSup' (e : α ≃o β) (f : ι → α) : e (⨆ i, f i) = ⨆ i, e (f
 
 end ConditionallyCompleteLinearOrderBot
 end OrderIso
-
-section WithTopBot
-
-namespace WithTop
-variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α}
-
-lemma iSup_coe_eq_top : ⨆ x, (f x : WithTop α) = ⊤ ↔ ¬BddAbove (range f) := by
-  rw [iSup_eq_top, not_bddAbove_iff]
-  refine ⟨fun hf r => ?_, fun hf a ha => ?_⟩
-  · rcases hf r (WithTop.coe_lt_top r) with ⟨i, hi⟩
-    exact ⟨f i, ⟨i, rfl⟩, WithTop.coe_lt_coe.mp hi⟩
-  · rcases hf (a.untop ha.ne) with ⟨-, ⟨i, rfl⟩, hi⟩
-    exact ⟨i, by simpa only [WithTop.coe_untop _ ha.ne] using WithTop.coe_lt_coe.mpr hi⟩
-
-lemma iSup_coe_lt_top : ⨆ x, (f x : WithTop α) < ⊤ ↔ BddAbove (range f) :=
-  lt_top_iff_ne_top.trans iSup_coe_eq_top.not_left
-
-lemma iInf_coe_eq_top : ⨅ x, (f x : WithTop α) = ⊤ ↔ IsEmpty ι := by simp [isEmpty_iff]
-
-lemma iInf_coe_lt_top : ⨅ i, (f i : WithTop α) < ⊤ ↔ Nonempty ι := by
-  rw [lt_top_iff_ne_top, Ne, iInf_coe_eq_top, not_isEmpty_iff]
-
-end WithTop
-
-end WithTopBot

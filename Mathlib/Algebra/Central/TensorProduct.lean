@@ -7,10 +7,10 @@ module
 
 public import Mathlib.Algebra.Central.Basic
 public import Mathlib.RingTheory.Flat.Basic
+
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
-
 # Lemmas about tensor products of central algebras
 
 In this file we prove for algebras `B` and `C` over a field `K` that if `B ⊗[K] C` is a central

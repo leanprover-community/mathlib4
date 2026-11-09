@@ -6,13 +6,13 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.RingTheory.Etale.StandardEtale
-import Mathlib.RingTheory.LocalRing.ResidueField.Instances
 public import Mathlib.RingTheory.RingHom.StandardSmooth
-import Mathlib.RingTheory.Unramified.LocalRing
 public import Mathlib.RingTheory.ZariskisMainTheorem
 
-/-!
+import Mathlib.RingTheory.LocalRing.ResidueField.Instances
+import Mathlib.RingTheory.Unramified.LocalRing
 
+/-!
 # Local structure of unramified algebras
 
 In this file, we will prove that if `S` is a finite type `R`-algebra unramified at `Q`, then

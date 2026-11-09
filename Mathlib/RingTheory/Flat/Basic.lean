@@ -7,11 +7,13 @@ module
 
 public import Mathlib.Algebra.Colimit.TensorProduct
 public import Mathlib.Algebra.Module.Projective
+public import Mathlib.LinearAlgebra.DirectSum.Finsupp
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+public import Mathlib.RingTheory.Adjoin.FGBaseChange
 public import Mathlib.RingTheory.Finiteness.Small
 public import Mathlib.RingTheory.IsTensorProduct
 public import Mathlib.RingTheory.TensorProduct.Finite
-public import Mathlib.RingTheory.Adjoin.FGBaseChange
+
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -403,7 +405,7 @@ end Module
 section Injective
 
 variable {R S A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+  [CommSemiring S] [Algebra S A]
 
 namespace Algebra.TensorProduct
 
