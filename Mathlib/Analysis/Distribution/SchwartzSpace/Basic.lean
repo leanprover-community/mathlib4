@@ -13,6 +13,7 @@ public import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Normed.Lp.SmoothApprox
 
 
@@ -448,6 +449,18 @@ theorem norm_pow_mul_le_seminorm (f : 𝓢(E, F)) (k : ℕ) (x₀ : E) :
 theorem norm_le_seminorm (f : 𝓢(E, F)) (x₀ : E) : ‖f x₀‖ ≤ (SchwartzMap.seminorm 𝕜 0 0) f := by
   have := norm_pow_mul_le_seminorm 𝕜 f 0 x₀
   rwa [pow_zero, one_mul] at this
+
+/-- Mean value inequality for Schwartz functions. -/
+theorem norm_sub_le_seminorm_mul_norm (g : 𝓢(E, F)) {x y : E} :
+    ‖g y - g x‖ ≤ (SchwartzMap.seminorm 𝕜 0 1 g) * ‖y - x‖ := by
+  apply Convex.norm_image_sub_le_of_norm_fderiv_le (𝕜 := ℝ) (s := Set.univ)
+  · intros; fun_prop
+  · intro z _hz
+    convert norm_iteratedFDeriv_le_seminorm 𝕜 g 1 z using 1
+    exact (norm_iteratedFDeriv_one g).symm
+  · exact convex_univ
+  · simp
+  · simp
 
 variable (E F)
 

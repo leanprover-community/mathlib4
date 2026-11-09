@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Terence Tao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Terence Tao
+Authors: Terence Tao, Moritz Doll
 -/
 module
 
@@ -19,8 +19,8 @@ multiplying a Schwartz function by a rescaled smooth cutoff.
 
 ## Main statements
 
-* `SchwartzMap.tendsto_smulLeftCLM_comp_smul`: if `φ` is smooth, compactly supported, and equal
-  to `1` near the origin, then `(fun x ↦ φ (ε • x)) • f → f` in the Schwartz topology as `ε → 0`.
+* `SchwartzMap.tendsto_smulLeftCLM_comp_smul`: if `g` is Schwartz function and equal to `1` at `0`,
+  then `(fun x ↦ g (ε • x)) • f → f` in the Schwartz topology as `ε → 0`.
 * `SchwartzMap.dense_hasCompactSupport`: compactly supported Schwartz functions are dense.
 
 -/
@@ -32,86 +32,116 @@ open Filter Metric Real Finset Function
 
 namespace SchwartzMap
 
-variable {E} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {F} [NormedAddCommGroup F] [NormedSpace ℝ F]
+variable {ι 𝕜 E F : Type*}
+  [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+  [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup F] [NormedSpace ℝ F] [NormedSpace 𝕜 F]
 
-variable {φ : E → ℝ} (hφ : ContDiff ℝ ∞ φ) (hφc : HasCompactSupport φ) (hφ1 : φ =ᶠ[𝓝 0] 1)
-  (f : 𝓢(E, F))
+variable (f : 𝓢(E, F)) {g : 𝓢(E, 𝕜)}
 
-include hφ hφc hφ1 in
+/-- The main estimate for the density argument. -/
+private lemma seminorm_smulLeft_sub_le (hg : g 0 = 1) (k n : ℕ) (ε : ℝ) (hr : |ε| ≤ 1) :
+    ((smulLeftCLM F (fun x ↦ g (ε • x))) f - f).seminorm 𝕜 k n ≤
+      |ε| * (g.seminorm 𝕜 0 1 * f.seminorm 𝕜 (k + 1) n +
+        ∑ i ∈ Finset.range n,
+          n.choose (i + 1) * g.seminorm 𝕜 0 (i + 1) * f.seminorm 𝕜 k (n - (i + 1))) := by
+  refine seminorm_le_bound _ _ _ _ (by positivity) ?_
+  intro x
+  calc
+    _ = ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (fun x => (g (ε • x) - 1) • f x) x‖ := by
+      congr
+      ext y
+      rw [sub_apply, smulLeftCLM_apply_apply (by fun_prop)]
+      module
+    _ ≤ ‖x‖ ^ k * ∑ i ∈ Finset.range (n + 1), n.choose i *
+        ‖iteratedFDeriv ℝ i (fun x ↦ g (ε • x) - 1) x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+      gcongr
+      apply norm_iteratedFDeriv_smul_le (f := fun x ↦ g (ε • x) - 1) (g := f) (N := n)
+      · have : ContDiff ℝ n g := g.smooth _
+        fun_prop
+      · apply f.smooth
+      · simp
+    _ = ∑ i ∈ Finset.range (n + 1), ‖x‖ ^ k * n.choose i *
+        ‖iteratedFDeriv ℝ i (fun x ↦ g (ε • x) - 1) x‖ * ‖iteratedFDeriv ℝ (n - i) f x‖ := by
+      grind [Finset.mul_sum]
+    _ = ‖x‖ ^ k * ‖g (ε • x) - 1‖ * ‖iteratedFDeriv ℝ n f x‖ +
+        ∑ i ∈ Finset.range n, ‖x‖ ^ k * (n.choose (i + 1)) *
+        ‖iteratedFDeriv ℝ (i + 1) (fun x ↦ g (ε • x) - 1) x‖ *
+        ‖iteratedFDeriv ℝ (n - (i + 1)) f x‖ := by
+      nth_rw 1 [Finset.sum_range_succ', add_comm]
+      simp
+    _ ≤ |ε| * g.seminorm 𝕜 0 1 * f.seminorm 𝕜 (k + 1) n +
+        ∑ i ∈ Finset.range n, |ε| * n.choose (i + 1) *
+        g.seminorm 𝕜 0 (i + 1) * f.seminorm 𝕜 k (n - (i + 1)) := by
+      gcongr 1
+      · grw [← hg, norm_sub_le_seminorm_mul_norm 𝕜, ← f.le_seminorm 𝕜 _ _ x]
+        simp only [sub_zero, norm_smul, Real.norm_eq_abs]
+        apply le_of_eq; ring
+      · gcongr 1 with i hi
+        grw [iteratedFDeriv_sub_const_apply (by simp)]
+        rw [iteratedFDeriv_comp_const_smul _ (g.smooth _), norm_smul, norm_pow, Real.norm_eq_abs]
+        have : |ε| ^ (i + 1) ≤ |ε| := by
+          grw [pow_succ, pow_le_one₀ (by simp) hr]
+          simp
+        grw [this, ← f.le_seminorm 𝕜 _ _ x, ← g.le_seminorm 𝕜 _ _ (ε • x)]
+        apply le_of_eq; ring
+    _ = _ := by
+      grind [Finset.mul_sum]
+
+theorem tendsto_smulLeftCLM_comp_smul_sub (hg : g 0 = 1) :
+    Tendsto (fun ε : ℝ ↦ smulLeftCLM F (g <| ε • · ) f - f) (𝓝 0) (𝓝 0) := by
+  rw [(schwartz_withSeminorms 𝕜 E F).tendsto_nhds]
+  intro ⟨k, n⟩ ε hε
+  set C := (g.seminorm 𝕜 0 1) * (f.seminorm 𝕜 (k + 1) n) +
+    ∑ i ∈ Finset.range n,
+      (n.choose (i + 1)) * (g.seminorm 𝕜 0 (i + 1)) * (f.seminorm 𝕜 k (n - (i + 1)))
+  rw [Metric.eventually_nhds_iff_ball]
+  use min 1 (ε / (C + 1)), by positivity
+  intro δ hδ
+  obtain ⟨hδ₁, hδ₂⟩ : |δ| < 1 ∧ |δ| < ε / (C + 1) := by simpa using hδ
+  calc
+    _ ≤ |δ| * C := by
+      simp only [schwartzSeminormFamily_apply, sub_zero]
+      exact seminorm_smulLeft_sub_le f hg k n δ hδ₁.le
+    _ < ε := by
+      rw [lt_div_iff₀ (by positivity)] at hδ₂
+      grw [← hδ₂]
+      gcongr
+      simp
+
 /-- Multiplying a Schwartz function `f` by the rescaled cutoff `fun x ↦ φ (ε • x)` converges to
 `f` in each Schwartz seminorm as `ε → 0`, when `φ` is smooth, compactly supported, and equal to
 `1` near the origin. -/
-lemma tendsto_seminorm_smulLeftCLM_comp_smul_sub (k n : ℕ) :
-    Tendsto
-      (fun ε : ℝ ↦ (smulLeftCLM F (fun x ↦ φ (ε • x)) f - f).seminorm ℝ k n) (𝓝 0) (𝓝 0) := by
-  obtain ⟨r, hr, hφr⟩ := eventually_nhds_iff_ball.mp hφ1
-  obtain ⟨A, hA0, hA⟩ := hφc.exists_bound_iteratedFDeriv hφ n
-  have hψ : ∀ i ≤ n, ∀ y, ‖iteratedFDeriv ℝ i (fun z ↦ φ z - 1) y‖ ≤ A + 1 := by
-    rintro (- | i) hi y
-    · grind [norm_iteratedFDeriv_zero, norm_sub_le, norm_one, hA 0 hi y]
-    · rw [fun_iteratedFDeriv_sub_apply (hφ.contDiffAt.of_le (mod_cast le_top)) contDiffAt_const,
-        iteratedFDeriv_succ_const, Pi.zero_apply, sub_zero]
-      linarith [hA _ hi y]
-  refine squeeze_zero' (g := fun ε ↦
-      ‖ε‖ * (∑ i ∈ range (n + 1), n.choose i * (A + 1) * f.seminorm ℝ (k + 1) (n - i)) / r)
-    (.of_forall fun _ ↦ apply_nonneg _ _) ?_
-    (by simpa only [zero_mul, zero_div] using (tendsto_norm_zero.mul_const _).div_const r)
-  filter_upwards [closedBall_mem_nhds (0 : ℝ) one_pos] with ε hε
-  have hg : ∀ i ≤ n, ∀ x, ‖iteratedFDeriv ℝ i (fun y ↦ φ (ε • y) - 1) x‖ ≤ A + 1 := by
-    intro i hi x
-    rw [iteratedFDeriv_comp_const_smul (f := fun z ↦ φ z - 1) _
-      ((hφ.sub contDiff_const).of_le (mod_cast le_top)), norm_smul, norm_pow]
-    exact (mul_le_of_le_one_left (norm_nonneg _)
-      (pow_le_one₀ (norm_nonneg _) (mem_closedBall_zero_iff.mp hε))).trans (hψ i hi _)
-  have hsmul : ⇑(smulLeftCLM F (fun x ↦ φ (ε • x)) f - f) = fun x ↦ (φ (ε • x) - 1) • f x := by
-    ext x
-    simp [show (fun x ↦ φ (ε • x)).HasTemperateGrowth by fun_prop, sub_smul]
-  refine seminorm_le_bound ℝ k n _ (by positivity) fun x ↦ ?_
-  rw [hsmul, le_div_iff₀ hr]
-  rcases lt_or_ge ‖ε • x‖ r with hx | hx
-  · have : (fun y ↦ (φ (ε • y) - 1) • f y) =ᶠ[𝓝 x] 0 := by
-      filter_upwards [(isOpen_ball.preimage (continuous_const_smul ε)).mem_nhds
-        (mem_ball_zero_iff.mpr hx)] with y hy
-      simp [hφr (ε • y) hy]
-    calc
-      _ = (0 : ℝ) := by simp [(this.iteratedFDeriv ℝ n).eq_of_nhds]
-      _ ≤ _ := by positivity
-  · rw [norm_smul] at hx
-    calc
-      _ ≤ ‖x‖ ^ k * ‖iteratedFDeriv ℝ n (fun y ↦ (φ (ε • y) - 1) • f y) x‖ * (‖ε‖ * ‖x‖) := by
-          gcongr
-      _ ≤ ‖ε‖ * ∑ i ∈ range (n + 1), n.choose i *
-            ‖iteratedFDeriv ℝ i (fun y ↦ φ (ε • y) - 1) x‖ *
-            (‖x‖ ^ (k + 1) * ‖iteratedFDeriv ℝ (n - i) f x‖) := by
-          grw [norm_iteratedFDeriv_smul_le (by fun_prop) (f.smooth ⊤) x (mod_cast le_top)]
-          simp only [mul_sum, sum_mul]
-          exact (sum_congr rfl fun _ _ ↦ by ring).le
-      _ ≤ _ := by
-          gcongr with i hi
-          · exact hg i (by grind) x
-          · exact le_seminorm ℝ _ _ f x
+@[deprecated "use tendsto_smulLeftCLM_comp_smul_sub" (since := "2026-11-05")]
+theorem tendsto_seminorm_smulLeftCLM_comp_smul_sub (hg : g 0 = 1) (k n : ℕ) :
+    Tendsto (fun ε : ℝ ↦ (smulLeftCLM F (g <| ε • · ) f - f).seminorm 𝕜 k n) (𝓝 0) (𝓝 0) := by
+  have : Continuous (SchwartzMap.seminorm 𝕜 k n : 𝓢(E, F) → ℝ) :=
+    (schwartz_withSeminorms 𝕜 E F).continuous_seminorm (k, n)
+  convert (this.tendsto _).comp (tendsto_smulLeftCLM_comp_smul_sub f hg)
+  · simp
+  · simp
 
-include hφ hφc hφ1 in
-/-- As `ε → 0`, multiplying `f` by the rescaled cutoff `fun x ↦ φ (ε • x)` converges to `f` in
-the Schwartz topology, for any smooth, compactly supported `φ` equal to `1` near the origin. -/
-theorem tendsto_smulLeftCLM_comp_smul :
-    Tendsto (fun ε : ℝ ↦ smulLeftCLM F (fun x ↦ φ (ε • x)) f) (𝓝 0) (𝓝 f) := by
-  rw [(schwartz_withSeminorms ℝ E F).tendsto_nhds]
-  rintro ⟨k, n⟩ δ hδ
-  simpa using (tendsto_seminorm_smulLeftCLM_comp_smul_sub hφ hφc hφ1 f k n).eventually
-    (isOpen_Iio.mem_nhds hδ)
+/-- As `ε → 0`, multiplying `f` by the rescaled cutoff `fun x ↦ g (ε • x)` converges to `f` in
+the Schwartz topology, for any Schwartz function `g` with `g 0 = 1`. -/
+theorem tendsto_smulLeftCLM_comp_smul (hg : g 0 = 1) :
+    Tendsto (fun ε : ℝ ↦ smulLeftCLM F (g <| ε • · ) f) (𝓝 0) (𝓝 f) := by
+  suffices Tendsto (fun ε : ℝ ↦ (smulLeftCLM F (g <| ε • · ) f - f) + f) (𝓝 0) (𝓝 (0 + f)) by
+    simpa
+  exact (tendsto_smulLeftCLM_comp_smul_sub f hg).add tendsto_const_nhds
 
 /-- Compactly supported Schwartz functions are dense in `𝓢(E, F)`. -/
 theorem dense_hasCompactSupport [FiniteDimensional ℝ E] :
     Dense {f : 𝓢(E, F) | HasCompactSupport (f : E → F)} := by
   intro f
   set b : ContDiffBump (0 : E) := ⟨1, 2, one_pos, one_lt_two⟩ with hb
-  refine mem_closure_of_tendsto ((tendsto_smulLeftCLM_comp_smul b.contDiff b.hasCompactSupport
-    b.eventuallyEq_one f).mono_left (nhdsWithin_le_nhds (s := {0}ᶜ))) ?_
+  set b' := b.hasCompactSupport.toSchwartzMap b.contDiff
+  have hb' : b' 0 = 1 := b.eventuallyEq_one.eq_of_nhds
+  refine mem_closure_of_tendsto ((tendsto_smulLeftCLM_comp_smul f hb').mono_left
+    (nhdsWithin_le_nhds (s := {0}ᶜ))) ?_
   filter_upwards [self_mem_nhdsWithin] with ε hε
   have hcs : HasCompactSupport (fun x ↦ b (ε • x)) := b.hasCompactSupport.comp_smul hε
-  rw [smulLeftCLM_apply <| hcs.hasTemperateGrowth <| b.contDiff.comp <| contDiff_const_smul _]
+  simp only [HasCompactSupport.toSchwartzMap_toFun, b']
+  rw [smulLeftCLM_apply <| hcs.hasTemperateGrowth (by fun_prop)]
   exact hcs.smul_right
 
 end SchwartzMap
