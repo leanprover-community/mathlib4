@@ -143,16 +143,16 @@ end ObjectProperty
 namespace IsCardinalAccessibleCategory
 
 open ObjectProperty.IsClosedUnderCardinalFilteredColimits in
-instance [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
-    (κ : Cardinal.{w}) [Fact κ.IsRegular]
+instance (P : ObjectProperty C)
+    (κ : Cardinal.{w}) [Fact κ.IsRegular] [IsCardinalAccessibleCategory C κ]
     [P.IsClosedUnderCardinalFilteredColimits κ]
     [IsCardinalAccessibleCategory P.FullSubcategory κ]
     [P.ι.PreservesCardinalPresentable κ] :
     P.IsClosedUnderCardinalPureSubobjects κ where
   prop_of_isCardinalPure {F₁ F₂} f _ hF₂ := by
-    let J := CostructuredArrow (isCardinalPresentable (C ⥤ Type w) κ).ι F₁
-    let D : J ⥤ C ⥤ Type w :=
-      CostructuredArrow.proj _ F₁ ⋙ (isCardinalPresentable (C ⥤ Type w) κ).ι
+    let J := CostructuredArrow (isCardinalPresentable C κ).ι F₁
+    let D : J ⥤ C :=
+      CostructuredArrow.proj _ F₁ ⋙ (isCardinalPresentable C κ).ι
     let c : Cocone D := (Functor.LeftExtension.mk _ (Functor.rightUnitor _).inv).coconeAt F₁
     have hc : IsColimit c := (isCardinalPresentable _ κ).ι.denseAt F₁
     let D' : (P.inverseImage D).FullSubcategory ⥤ P.FullSubcategory :=
@@ -165,8 +165,7 @@ instance [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
       have : IsCardinalPresentable (D.obj j) κ := by dsimp [D]; infer_instance
       let J' := CostructuredArrow (isCardinalPresentable P.FullSubcategory κ).ι ⟨F₂, hF₂⟩
       have := isCardinalClosedUnderColimitsOfShape P κ J'
-      have : HasColimitsOfShape J' (Type w) :=
-        hasColimitsOfShape_of_equivalence (equivSmallModel.{w} J').symm
+      have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J'
       obtain ⟨Z, z, hz⟩ :=
         IsCardinalPresentable.exists_hom_of_isColimit κ (isColimitOfPreserves P.ι
           ((isCardinalPresentable P.FullSubcategory κ).ι.denseAt ⟨F₂, hF₂⟩)) (c.ι.app j ≫ f)
@@ -202,8 +201,9 @@ lemma isAccessible_ι (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegu
 
 -- key part of Proposition 2.32
 lemma isClosedUnderCardinalPureSubobjects
-    [EssentiallySmall.{w} C] (P : ObjectProperty (C ⥤ Type w))
+    (P : ObjectProperty C)
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessibleCategory C κ]
     [P.IsClosedUnderCardinalFilteredColimits κ]
     [IsAccessibleCategory.{w} P.FullSubcategory] :
     ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
@@ -211,6 +211,7 @@ lemma isClosedUnderCardinalPureSubobjects
       IsCardinalAccessibleCategory P.FullSubcategory κ' ∧
       P.ι.IsCardinalAccessible κ' ∧
         P.ι.PreservesCardinalPresentable κ' := by
+  have : IsAccessibleCategory.{w} C := ⟨κ, inferInstance, inferInstance⟩
   obtain ⟨κ', _, h, _, _⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
       P.ι.PreservesCardinalPresentable κ' ∧
         IsCardinalAccessibleCategory.{w} P.FullSubcategory κ' := by
@@ -219,6 +220,7 @@ lemma isClosedUnderCardinalPureSubobjects
     obtain ⟨κ₂, _, h, h₁⟩ := Cardinal.SharplyLT.exists_of_pair κ κ₁
     exact ⟨κ₂, inferInstance, h, h₁.preservesCardinalPresentable _,
       h₁.isCardinalAccessibleCategory _⟩
+  have := h.isCardinalAccessibleCategory C
   have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le h.le
   exact ⟨κ', inferInstance, h, inferInstance, inferInstance, inferInstance, inferInstance⟩
 
@@ -605,8 +607,31 @@ instance : ObjectProperty.EssentiallySmall.{w} hC.generator := by
   dsimp at e
   exact ⟨.mk (X i), ⟨i⟩, ⟨WideSubcategory.isoMk e inferInstance inferInstance⟩⟩
 
+open IsCardinalAccessibleCategory in
 lemma generator_le_isCardinalPresentable :
-    hC.generator ≤ isCardinalPresentable _ κ' := sorry
+    hC.generator ≤ isCardinalPresentable _ κ' := by
+  have := hC.toIsCardinalAccessibleCategory
+  intro X hX
+  simp only [generator_iff] at hX
+  refine ⟨fun J _ _ ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨?_⟩⟩⟩⟩
+  have := isFiltered_of_isCardinalFiltered J κ'
+  have : IsCardinalFiltered J κ := .of_le _ h.le
+  have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
+  have := (respectsColimitsOfShapeWideSubcategory_isCardinalPure C κ J).preservesColimitsOfShape
+  have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X.obj κ' J
+  have hc' := isColimitOfPreserves (wideSubcategoryInclusion _ ⋙
+    coyoneda.obj (Opposite.op X.obj)) hc
+  refine Types.FilteredColimit.isColimitOf' _ _ (fun f ↦ ?_) (fun j f₁ f₂ hf ↦ ?_)
+  · obtain ⟨j, g, hg⟩ := Types.jointly_surjective_of_isColimit hc' f.hom
+    refine ⟨j, .mk g ?_, ?_⟩
+    · dsimp at hg
+      have : IsCardinalPure κ f.hom := f.property
+      exact IsCardinalPure.of_fac κ _ _ _ hg
+    · cat_disch
+  · obtain ⟨j, g, hg⟩ :=
+      (Types.FilteredColimit.isColimit_eq_iff' hc' f₁.hom f₂.hom).mp
+      ((wideSubcategoryInclusion _).congr_map hf)
+    exact ⟨j, g, by cat_disch⟩
 
 instance (X : hC.generator.FullSubcategory) :
     IsCardinalPresentable X.obj κ' :=
@@ -676,5 +701,24 @@ instance isAccessibleCategory_isCardinalPure
     exact ⟨_, inferInstance, hC.isCardinalAccessibleCategory_isCardinalPure⟩
 
 end IsCardinalAccessibleCategory
+
+namespace ObjectProperty
+
+variable {C : Type*} [Category* C]
+
+-- Corollary 2.36 (first part)
+lemma isAccessibleCategory_fullSubcategory_iff
+    (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessibleCategory C κ]
+    [P.IsClosedUnderCardinalFilteredColimits κ] :
+    IsAccessibleCategory.{w} P.FullSubcategory ↔
+      ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ.SharplyLT κ'),
+        P.IsClosedUnderCardinalPureSubobjects κ' := by
+  refine ⟨fun _ ↦ ?_, fun ⟨κ', _, h, _⟩ ↦ ?_⟩
+  · obtain ⟨κ', _, h, _, _, _, _⟩ := P.isClosedUnderCardinalPureSubobjects κ
+    exact ⟨κ', inferInstance, h, inferInstance⟩
+  · sorry
+
+end ObjectProperty
 
 end CategoryTheory
