@@ -123,7 +123,7 @@ instance Colex.linearOrder [LinearOrder N] : LinearOrder (Colex (α →₀ N)) w
 section OrderIso
 variable (N) {β : Type*} [LinearOrder β] [PartialOrder N] (eαβ : α ≃o β)
 
-/- Given `f : α ≃o β`, lexographic powers of `M` indexed by `α` and `β` are also isomorphic:
+/-- Given `f : α ≃o β`, lexographic powers of `M` indexed by `α` and `β` are also isomorphic:
 `Lex (α →₀ M) ≃o Lex (β →₀ M)`.
 
 This is the lexographic `OrderIso` version of `Finsupp.equivCongrLeft`. -/
@@ -143,7 +143,7 @@ def _root_.OrderIso.finsuppLexCongrLeft :
     apply eαβ.symm.forall_congr
     simp
 
-/- Given `f : α ≃o β`, colexographic powers of `M` indexed by `α` and `β` are also isomorphic:
+/-- Given `f : α ≃o β`, colexographic powers of `M` indexed by `α` and `β` are also isomorphic:
 `Colex (α →₀ M) ≃o Colex (β →₀ M)`.
 
 This is the colexographic `OrderIso` version of `Finsupp.equivCongrLeft`. -/
