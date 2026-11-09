@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Limits.FullSubcategory
 public import Mathlib.CategoryTheory.Sites.Sheafification
 
 /-!
-
 # Limits and colimits of sheaves
 
 ## Limits

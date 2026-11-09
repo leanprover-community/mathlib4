@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.ExteriorAlgebra.Grading
 public import Mathlib.LinearAlgebra.TensorProduct.Graded.Internal
 
 /-!
-
 # Exterior algebra of product module
 
 In this file, we proved the equivalence between exterior algebra of product module and

@@ -118,8 +118,7 @@ theorem Measure.MeasureDense.completion (h𝒜 : μ.MeasureDense 𝒜) : μ.comp
     refine ⟨t, ht, ?_⟩
     convert hμst using 1
     rw [completion_apply]
-    exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm
-      Filter.EventuallyEq.rfl
+    exact measure_congr <| ae_eq_set_symmDiff (NullMeasurableSet.toMeasurable_ae_eq hs).symm .rfl
 
 /-- If a family of sets `𝒜` is measure-dense in `X`, then any measurable set with finite measure
 can be approximated by sets in `𝒜` with finite measure. -/
