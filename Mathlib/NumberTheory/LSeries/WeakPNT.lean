@@ -28,19 +28,15 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 * `ArithmeticFunction.vonMangoldt.tendsto_sum_modEq_div_atTop`: the von Mangoldt form of the
   prime number theorem in arithmetic progressions: for `a` coprime to `q`,
   `∑ n ≤ x, n ≡ a [MOD q], Λ n = x / q.totient + o(x)`.
-* `Nat.isEquivalent_card_prime_modEq`: **the prime number theorem in arithmetic progressions**:
-  for `a` coprime to `q`, the number of primes `p ≤ x` with `p ≡ a [MOD q]` is asymptotic to
-  `x / (q.totient * log x)`.  It is deduced from the previous result (via the `θ`-form
-  `Chebyshev.tendsto_sum_log_prime_modEq_div_atTop`) using the error bounds
-  `Chebyshev.sum_vonMangoldt_sub_sum_prime_log_isLittleO` and
-  `Chebyshev.card_prime_mul_log_sub_sum_prime_log_isLittleO`, which reduce to the `q = 1` bounds
-  `Chebyshev.isLittleO_psi_sub_theta_id` and `Chebyshev.primeCounting_mul_log_sub_theta_isLittleO`.
 * `Chebyshev.isEquivalent_psi_id`: the `ψ`-form of the prime number theorem, `ψ x ~ x`
   (equivalently `Chebyshev.tendsto_psi_div_atTop`, `ψ x / x → 1`); this is the `q = 1` case of
   the previous result.
 * `Chebyshev.isEquivalent_theta_id`: the `θ`-form, `θ x ~ x`.
 * `Nat.isEquivalent_primeCounting`: **the prime number theorem** `π x ~ x / log x`, deduced
-  from the `θ`-form by Abel summation (`Chebyshev.primeCounting_mul_log_sub_theta_isLittleO`).
+  from the `θ`-form by Abel summation (`Chebyshev.isLittleO_primeCounting_mul_log_sub_theta`).
+* `Nat.isEquivalent_card_prime_modEq`: **the prime number theorem in arithmetic progressions**:
+  for `a` coprime to `q`, the number of primes `p ≤ x` with `p ≡ a [MOD q]` is asymptotic to
+  `x / (q.totient * log x)`.
 * `Nat.eventually_exists_prime_mem_Ioc`: for every `ε > 0` and every sufficiently large `x`, there
   is a prime in `(x, (1 + ε) * x]`; `Nat.eventually_exists_prime_mem_Ioc_sub` gives one in
   `((1 - ε) * x, x]`.
@@ -129,8 +125,8 @@ theorem tendsto_sum_log_prime_modEq_div_atTop {q a : ℕ} [NeZero q] (ha : a.Cop
       (𝓝 q.totient⁻¹) :=
     (tendsto_sum_modEq_div_atTop ha).congr fun x ↦ by
       rw [sum_filter, sum_filter, ← add_sum_Ioc_eq_sum_Icc] <;> simp
-  simpa using (hψ.sub (sum_vonMangoldt_sub_sum_prime_log_isLittleO
-    (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr fun x ↦ by grind [id_eq]
+  simpa using (hψ.sub (isLittleO_sum_vonMangoldt_with_sum_prime_log_with
+    (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr <| by grind
 
 /-- If the Chebyshev function `θ` is strictly larger at `b` than at `a`, then there is a prime in
 the half-open interval `(a, b]`. -/
@@ -159,13 +155,13 @@ namespace Nat
 /-- **The prime number theorem**: the prime counting function satisfies `π x ~ x / Real.log x`. -/
 theorem isEquivalent_primeCounting : (↑⌊·⌋₊.primeCounting) ~[atTop] fun x ↦ x / Real.log x := by
   have h := tendsto_theta_div_atTop.add
-    primeCounting_mul_log_sub_theta_isLittleO.tendsto_div_nhds_zero
+    isLittleO_primeCounting_mul_log_sub_theta.tendsto_div_nhds_zero
   rw [add_zero] at h
   rw [isEquivalent_iff_tendsto_one (by
-    filter_upwards [eventually_gt_atTop 1] with x hx; grind [Real.log_pos hx])]
+    filter_upwards [eventually_gt_atTop 1]; grind [Real.log_pos])]
   refine h.congr' ?_
-  filter_upwards [eventually_gt_atTop 1] with x hx
-  grind [Pi.div_apply, id_eq, (Real.log_pos hx).ne']
+  filter_upwards [eventually_gt_atTop 1]
+  grind [Pi.div_apply, Real.log_pos]
 
 /-- **The prime number theorem in arithmetic progressions**: for `a` coprime to `q`, the number
 `π(x; q, a)` of primes `p ≤ x` with `p ≡ a [MOD q]` satisfies
@@ -174,7 +170,7 @@ theorem tendsto_card_prime_modEq_mul_log_div_atTop {q a : ℕ} [NeZero q] (ha : 
     Tendsto (fun x : ℝ ↦ #{p ∈ Ioc 0 ⌊x⌋₊ | p.Prime ∧ p ≡ a [MOD q]} * Real.log x / x) atTop
       (𝓝 q.totient⁻¹) := by
   simpa using ((tendsto_sum_log_prime_modEq_div_atTop ha).add
-    (card_prime_mul_log_sub_sum_prime_log_isLittleO
+    (isLittleO_card_prime_with_mul_log_sum_prime_log_with
       (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr fun x ↦ by grind [id_eq]
 
 /-- **The prime number theorem in arithmetic progressions**: for `a` coprime to `q`, the number
@@ -188,10 +184,8 @@ theorem isEquivalent_card_prime_modEq {q a : ℕ} [NeZero q] (ha : a.Coprime q) 
     exact div_ne_zero (by linarith) (mul_ne_zero hφ (Real.log_pos hx).ne'))]
   convert ((tendsto_card_prime_modEq_mul_log_div_atTop ha).const_mul (q.totient : ℝ)).congr' ?_
   · field_simp
-  · filter_upwards [eventually_gt_atTop 1] with x hx
-    have := (Real.log_pos hx).ne'
-    simp only [Pi.div_apply]
-    field_simp
+  · filter_upwards [eventually_gt_atTop 1]
+    grind [Pi.div_apply, Real.log_pos]
 
 /-- **Small prime gaps.**  Let `ε > 0`.  Then for every sufficiently large `x`, there exists a
 prime in the interval `(x, (1 + ε) * x]`. -/
@@ -204,10 +198,8 @@ theorem eventually_exists_prime_mem_Ioc {ε : ℝ} (hε : 0 < ε) :
     · simp
     · filter_upwards [eventually_gt_atTop 0] with x hx; field_simp [hx.ne']
   have : Tendsto (fun x ↦ (θ ((1 + ε) * x) - θ x) / x) atTop (𝓝 ε) := by
-    have := this.sub tendsto_theta_div_atTop
-    rw [add_sub_cancel_left] at this
-    exact this.congr' (by filter_upwards; grind)
-  filter_upwards [(tendsto_order.1 this).1 0 hε, eventually_gt_atTop 0] with x _ hx
+    grind [this.sub tendsto_theta_div_atTop]
+  filter_upwards [this.eventually_const_lt hε, eventually_gt_atTop 0] with x _ hx
   exact exists_prime_of_theta_lt (by grind [lt_div_iff₀ hx])
 
 /-- **Small prime gaps**, dual form.  Let `ε > 0`.  Then for every sufficiently large `x`, there
@@ -237,9 +229,10 @@ theorem isEquivalent_nth_prime_succ :
       infinite_setOfPred_prime).tendsto_atTop).eventually (eventually_exists_prime_mem_Ioc hε)]
       with n ⟨q, hq, hq1, hq2⟩
     specialize hpos n
-    simp only [Function.comp_apply] at hq1 hq2
-    grw [Pi.div_apply, (nth_add_one_le_iff infinite_setOfPred_prime hq).mpr (mod_cast hq1),
-      hq2, ← hεc]
+    simp only [Function.comp_apply, Pi.div_apply] at hq1 hq2 ⊢
+    have : nth Prime (n + 1) ≤ q :=
+      (nth_add_one_le_iff infinite_setOfPred_prime hq).mpr (mod_cast hq1)
+    grw [this, hq2, ← hεc]
     simp [field]
 
 /-- **Least common multiple asymptotics**: `Real.log (lcmUpto n) / n → 1`. -/
