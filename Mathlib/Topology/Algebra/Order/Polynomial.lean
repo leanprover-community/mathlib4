@@ -98,7 +98,7 @@ theorem abs_tendsto_atTop_iff : Tendsto (|P.eval ·|) atTop atTop ↔ 0 < P.degr
 theorem tendsto_atTop_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
     Tendsto P.eval atTop (𝓝 c) ↔ P = C c := by
   rcases eq_or_ne P 0 with rfl | hP
-  · simp_rw [eval_zero, tendsto_const_nhds_iff]; grind [C_eq_zero]
+  · simp [Eq.comm, ← C_eq_zero]
   rw [tendsto_nhds_iff_of_tendsto_div_nhds_one (tendsTo_atTop_div_nhds_one hP),
     tendsto_const_mul_pow_nhds_iff (by grind [leadingCoeff_eq_zero])]
   grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, leadingCoeff_C]
