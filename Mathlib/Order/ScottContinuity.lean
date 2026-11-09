@@ -238,11 +238,11 @@ section SemilatticeSup
 
 variable [SemilatticeSup β]
 
-/-- The join operation is Scott continuous. -/
+/-- The join operation is Scott continuous for suprema. -/
 @[to_dual (attr := fun_prop)
-/-- The meet operation is Scott continuous. -/]
-lemma SupScottContinuous.sup :
-    SupScottContinuous fun b : β × β => (b.1 ⊔ b.2 : β) := fun d _ _ ⟨p₁, p₂⟩ hdp => by
+/-- The meet operation is Scott continuous for infima. -/]
+protected lemma SupScottContinuous.sup :
+    SupScottContinuous fun b : β × β => b.1 ⊔ b.2 := fun d _ _ ⟨p₁, p₂⟩ hdp => by
   simp only [IsLUB, IsLeast, upperBounds, Prod.forall, mem_ofPred_eq, Prod.mk_le_mk] at hdp
   simp only [IsLUB, IsLeast, upperBounds, mem_image, Prod.exists, forall_exists_index, and_imp]
   have e1 : (p₁, p₂) ∈ lowerBounds {x | ∀ (b₁ b₂ : β), (b₁, b₂) ∈ d → (b₁, b₂) ≤ x} := hdp.2

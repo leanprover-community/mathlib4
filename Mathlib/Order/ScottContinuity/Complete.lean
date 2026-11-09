@@ -25,20 +25,31 @@ section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β]
 
-/-- `f` is Scott continuous if and only if it commutes with `sSup` on directed sets -/
-lemma scottContinuous_iff_map_sSup {f : α → β} :
-    ScottContinuous f ↔
+/-- A restatement of the definition of `SupScottContinuous` using `sSup`. -/
+@[to_dual
+/-- A restatement of the definition of `InfScottContinuous` using `sInf`. -/]
+lemma supScottContinuous_iff_map_sSup {f : α → β} :
+    SupScottContinuous f ↔
       ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) where
   mp h _ d₁ d₂ := by rw [IsLUB.sSup_eq (h d₁ d₂ (isLUB_iff_sSup_eq.mpr rfl))]
   mpr h _ d₁ d₂ _ hda := by rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), IsLUB.sSup_eq hda]
 
-alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
-  scottContinuous_iff_map_sSup
+@[deprecated (since := "2026-11-08")]
+alias scottContinuous_iff_map_sSup := supScottContinuous_iff_map_sSup
+
+@[to_dual]
+alias ⟨SupScottContinuous.map_sSup, SupScottContinuous.of_map_sSup⟩ :=
+  supScottContinuous_iff_map_sSup
+
+@[deprecated (since := "2026-11-08")]
+alias ScottContinuous.map_sSup := SupScottContinuous.map_sSup
+@[deprecated (since := "2026-11-08")]
+alias ScottContinuous.of_map_sSup := SupScottContinuous.of_map_sSup
 
 end CompleteLattice
 
 /-!
-In a complete linear order, the Scott Topology coincides with the Upper topology, see
+In a complete linear order, the Scott Topology coincides with the upper topology, see
 `Topology.IsScott.scott_eq_upper_of_completeLinearOrder`
 -/
 
@@ -46,14 +57,27 @@ section CompleteLinearOrder
 
 variable [CompleteLinearOrder β]
 
-lemma scottContinuous_inf_right (a : β) : ScottContinuous fun b ↦ a ⊓ b :=
+@[to_dual]
+lemma supScottContinuous_inf_right (a : β) : SupScottContinuous fun b ↦ a ⊓ b :=
   .of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq, sSup_image])
 
-lemma scottContinuous_inf_left (b : β) : ScottContinuous fun a ↦ a ⊓ b :=
+@[deprecated (since := "2026-11-08")]
+alias scottContinuous_inf_right := supScottContinuous_inf_right
+
+@[to_dual]
+lemma supScottContinuous_inf_left (b : β) : SupScottContinuous fun a ↦ a ⊓ b :=
   .of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq, sSup_image])
 
-/- The meet operation is Scott continuous -/
-lemma ScottContinuous.inf₂ : ScottContinuous fun (a, b) => (a ⊓ b : β) :=
-  ScottContinuous.fromProd (fun a => scottContinuous_inf_right a) scottContinuous_inf_left
+@[deprecated (since := "2026-11-08")]
+alias scottContinuous_inf_left := supScottContinuous_inf_left
+
+/- The meet operation is Scott continuous for suprema. -/
+@[to_dual
+/- The join operation is Scott continuous for infima. -/]
+protected lemma SupScottContinuous.inf : SupScottContinuous fun b : β × β => b.1 ⊓ b.2 :=
+  .fromProd supScottContinuous_inf_right supScottContinuous_inf_left
+
+@[deprecated (since := "2026-11-08")]
+alias ScottContinuous.inf₂ := SupScottContinuous.inf
 
 end CompleteLinearOrder
