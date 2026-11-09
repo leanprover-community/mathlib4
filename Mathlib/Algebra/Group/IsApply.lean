@@ -72,6 +72,8 @@ end FunLike
 
 public section
 
+assert_not_exists Monoid
+
 section Def
 
 section Zero

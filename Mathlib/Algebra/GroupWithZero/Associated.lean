@@ -23,7 +23,7 @@ and prove basic properties of this quotient.
 
 assert_not_exists DenselyOrdered IsOrderedMonoid Multiset Ring
 
-variable {M : Type*}
+variable {M N P : Type*}
 
 /-- Two elements of a `Monoid` are `Associated` if one of them is another one
 multiplied by a unit on the right. -/
@@ -479,8 +479,7 @@ theorem mk_injective [Monoid M] [Subsingleton Mˣ] : Function.Injective (@Associ
   fun _ _ h => associated_iff_eq.mp (Associates.mk_eq_mk_iff_associated.mp h)
 
 section CommMonoid
-
-variable [CommMonoid M]
+variable [CommMonoid M] [CommMonoid N] [CommMonoid P]
 
 instance instMul : Mul (Associates M) :=
   ⟨Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ h₁.mul_mul h₂⟩
@@ -506,6 +505,47 @@ protected def mkMonoidHom : M →* Associates M where
 @[simp]
 theorem mkMonoidHom_apply (a : M) : Associates.mkMonoidHom a = Associates.mk a :=
   rfl
+
+/-- The monoid homomorphism on associates induced by a monoid homomorphism. -/
+def map (f : M →* N) : Associates M →* Associates N where
+  toFun := Quotient.map' f fun _ _ ↦ .map f
+  map_one' := show Associates.mk (f 1) = 1 by simp
+  map_mul' := by
+    rintro ⟨a⟩ ⟨b⟩
+    change Associates.mk (f (a * b)) = .mk (f a) * .mk (f b)
+    simp [mk_mul_mk]
+
+@[simp] lemma map_mk (f : M →* N) (a : M) : map f (.mk a) = .mk (f a) := rfl
+
+@[simp] lemma map_id : map (.id M) = .id (Associates M) := by ext ⟨x⟩; simp
+
+@[simp] lemma map_comp_map (g : N →* P) (f : M →* N) : (map g).comp (map f) = map (g.comp f) := by
+  ext ⟨x⟩; simp
+
+@[simp] protected lemma map_one : map (1 : M →* N) = 1 := by ext ⟨x⟩; simp
+
+@[simp]
+protected lemma map_mul (f g : M →* N) : map (f * g) = map f * map g := by ext ⟨x⟩; simp [mk_mul_mk]
+
+/-- A multiplicative equivalence `M ≃* N` induces a multiplicative equivalence of associates. -/
+def congr (e : M ≃* N) : Associates M ≃* Associates N where
+  __ := map e.toMonoidHom
+  invFun := map e.symm.toMonoidHom
+  left_inv := mk_surjective.forall.2 <| by simp
+  right_inv := mk_surjective.forall.2 <| by simp
+
+@[simp] lemma congr_mk (e : M ≃* N) (x : M) : congr e (.mk x) = .mk (e x) := rfl
+
+-- TODO: Make `simp` once `MonoidHomClass.toMonoidHom` isn't simp nf anymore.
+-- See https://github.com/leanprover-community/mathlib4/pull/43765.
+lemma congr_toMonoidHom (e : M ≃* N) : (congr e).toMonoidHom = map e.toMonoidHom := rfl
+
+@[simp] lemma congr_refl : congr (.refl M) = .refl (Associates M) := by ext ⟨x⟩; simp
+
+@[simp, grind =] lemma symm_congr (e : M ≃* N) : (congr e).symm = congr e.symm := rfl
+
+@[simp] lemma congr_trans_congr (e : M ≃* N) (e' : N ≃* P) :
+    (congr e).trans (congr e') = congr (e.trans e') := by ext ⟨x⟩; simp
 
 theorem associated_map_mk {f : Associates M →* M} (hinv : Function.RightInverse f Associates.mk)
     (a : M) : a ~ᵤ f (Associates.mk a) :=

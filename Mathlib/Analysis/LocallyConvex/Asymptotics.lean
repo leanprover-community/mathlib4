@@ -38,11 +38,11 @@ namespace Seminorm
 
 theorem isBigO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
     (p ∘ f) =O[l] (q ∘ g) ↔ ∃ C : ℝ≥0, p ∘ f ≤ᶠ[l] (C • q) ∘ g := by
-  simp [Asymptotics.isBigO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+  simp [Asymptotics.isBigO_iff_nnNorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
 
 theorem isLittleO_comp_iff {p : Seminorm 𝕜 E} {q : Seminorm 𝕜 F} :
     (p ∘ f) =o[l] (q ∘ g) ↔ ∀ ε : ℝ≥0, ε ≠ 0 → p ∘ f ≤ᶠ[l] (ε • q) ∘ g := by
-  simp [Asymptotics.isLittleO_iff_nnnorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
+  simp [Asymptotics.isLittleO_iff_nnNorm, EventuallyLE, NNReal.smul_def, ← NNReal.coe_le_coe]
 
 end Seminorm
 
