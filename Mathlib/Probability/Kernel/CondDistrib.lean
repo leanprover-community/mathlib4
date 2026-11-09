@@ -61,7 +61,7 @@ For almost all `a`, `condDistrib Y X μ` evaluated at `X a` and a measurable set
 the conditional expectation `μ⟦Y ⁻¹' s | mβ.comap X⟧ a`. It also satisfies the equality
 `μ[(fun a => f (X a, Y a)) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`
 for all integrable functions `f`. -/
-noncomputable irreducible_def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
+@[no_expose] noncomputable def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
     (X : α → β) (μ : Measure α) [IsFiniteMeasure μ] : Kernel β Ω :=
   (μ.map fun a => (X a, Y a)).condKernel
 
@@ -407,7 +407,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prodMk
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   have hf := hf_int.1.comp_snd_map_prodMk hX (mΩ := mΩ) (mβ := mβ)
   refine ⟨hf, ?_⟩
-  rw [hasFiniteIntegral_iff_enorm, lintegral_map' hf.enorm (hX.prodMk aemeasurable_id)]
+  rw [hasFiniteIntegral_iff_eNorm, lintegral_map' hf.eNorm (hX.prodMk aemeasurable_id)]
   exact hf_int.2
 
 theorem aestronglyMeasurable_comp_snd_map_prodMk_iff {Ω F} {_ : MeasurableSpace Ω}

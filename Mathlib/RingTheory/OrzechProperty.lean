@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
-
 # Orzech property of rings
 
 In this file we define the following property of rings:

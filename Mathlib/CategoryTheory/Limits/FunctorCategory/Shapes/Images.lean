@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Subfunctor.Image
 
 /-!
-
 # The category of type-valued functors has images
 -/
 

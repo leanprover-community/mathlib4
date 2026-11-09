@@ -11,6 +11,9 @@ public import Mathlib.Algebra.Order.Nonneg.Ring
 public import Mathlib.Algebra.Order.Positive.Ring
 public import Mathlib.Data.Nat.Cast.Order.Ring
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Semifield structure on the type of nonnegative elements
 

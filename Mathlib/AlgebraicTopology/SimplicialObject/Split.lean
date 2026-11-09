@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 public import Mathlib.Data.Fintype.Sigma
 
 /-!
-
 # Split simplicial objects
 
 In this file, we introduce the notion of split simplicial object.

@@ -26,7 +26,7 @@ This file defines the extended floor and ceil functions `ENat.floor, ENat.ceil :
 * `⌊r⌋ₑ` is `ENat.floor r`.
 * `⌈r⌉ₑ` is `ENat.ceil r`.
 
-The index `ₑ` is used in analogy to the notation for `enorm`.
+The index `ₑ` is used in analogy to the notation for `eNorm`.
 
 ## TODO
 
