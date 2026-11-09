@@ -9,7 +9,6 @@ public import Mathlib.Data.ZMod.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Push
 
 /-!
 # Incidence columns over ZMod 2
@@ -112,7 +111,7 @@ theorem columns_linearIndependent_iff_isForest
     exact hnonzero (hcoeff e)
   · intro hForest c hzero
     by_contra hNotAllZero
-    push_neg at hNotAllZero
+    push Not at hNotAllZero
     obtain ⟨e, he⟩ := hNotAllZero
     let F : Finset E := Finset.univ.filter fun e => c e ≠ 0
     have hF : F.Nonempty := by
@@ -175,11 +174,12 @@ private theorem reducedCombination_edgeIndicator
 /-- Removing the exterior-root row preserves column independence over ZMod 2.
 The omitted root coordinate is forced by the handshake-parity identity. -/
 theorem reducedColumns_linearIndependent_iff_isForest
-    {V E : Type*} [Fintype V] [DecidableEq V]
+    {V E : Type*} [Finite V] [DecidableEq V]
     [Fintype E] [DecidableEq E]
     (source target : E → Option V) :
     LinearIndependent (ZMod 2) (reducedColumn source target) ↔ IsForest source target := by
   classical
+  letI := Fintype.ofFinite V
   rw [Fintype.linearIndependent_iff]
   constructor
   · intro h F hF
@@ -200,7 +200,7 @@ theorem reducedColumns_linearIndependent_iff_isForest
     exact hnonzero (hcoeff e)
   · intro hForest c hzero
     by_contra hNotAllZero
-    push_neg at hNotAllZero
+    push Not at hNotAllZero
     obtain ⟨e, he⟩ := hNotAllZero
     let F : Finset E := Finset.univ.filter fun e => c e ≠ 0
     have hF : F.Nonempty := by
@@ -228,7 +228,7 @@ theorem reducedColumns_linearIndependent_iff_isForest
       | none => exact htotal
       | some v => exact hSome v
     obtain ⟨v, hv⟩ := hForest F hF
-    exact hv (hEven (some v))
+    exact hv (hEven v)
 
 /-- An incidence forest cannot contain a loop. -/
 theorem isForest_no_loop (source target : E → V)
@@ -240,7 +240,9 @@ theorem isForest_no_loop (source target : E → V)
   have hF : F.Nonempty := by simp [F]
   obtain ⟨v, hv⟩ := hForest F hF
   have hTwo : (1 : ZMod 2) + 1 = 0 := by
-    norm_num
+    calc
+      (1 : ZMod 2) + 1 = (2 : ZMod 2) := by norm_num
+      _ = 0 := ZMod.natCast_self 2
   have hEven : degreeParity source target F v = 0 := by
     by_cases htv : target e = v
     · simp [F, degreeParity, edgeIndicator, entry, he, htv, hTwo]
@@ -268,7 +270,7 @@ theorem isForest_no_parallel_edges (source target : E → V)
 /-- Coefficients on a reduced incidence forest are uniquely determined by their
 incidence sum. -/
 theorem reducedForest_coefficients_unique
-    {V E : Type*} [Fintype V] [DecidableEq V]
+    {V E : Type*} [Finite V] [DecidableEq V]
     [Fintype E] [DecidableEq E]
     (source target : E → Option V)
     (hForest : IsForest source target)
