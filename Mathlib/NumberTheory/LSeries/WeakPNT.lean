@@ -96,7 +96,7 @@ theorem isEquivalent_psi_id : ψ ~[atTop] id := by
 `θ x = ∑ p ≤ x, log p` (over primes `p`) is the Chebyshev function `Chebyshev.theta`. -/
 theorem tendsto_theta_div_atTop : Tendsto (fun x ↦ θ x / x) atTop (𝓝 1) := by
   simpa using (tendsto_psi_div_atTop.sub isLittleO_psi_sub_theta_id.tendsto_div_nhds_zero).congr
-    fun x ↦ by simp only [Pi.sub_apply, id_eq]; ring
+    fun x ↦ by grind [Pi.sub_apply]
 
 /-- **The prime number theorem, `θ` form**: `θ x ~ x`, where `θ x = ∑ p ≤ x, log p` (over
 primes `p`) is the Chebyshev function `Chebyshev.theta`. -/
@@ -159,7 +159,7 @@ theorem tendsto_card_prime_modEq_mul_log_div_atTop {q a : ℕ} [NeZero q] (ha : 
       (𝓝 q.totient⁻¹) := by
   simpa using ((tendsto_sum_log_prime_modEq_div_atTop ha).add
     (isLittleO_card_prime_with_mul_log_sum_prime_log_with
-      (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr fun x ↦ by grind [id_eq]
+      (· ≡ a [MOD q])).tendsto_div_nhds_zero).congr fun x ↦ by grind
 
 /-- **The prime number theorem in arithmetic progressions**: for `a` coprime to `q`, the number
 `π(x; q, a)` of primes `p ≤ x` with `p ≡ a [MOD q]` satisfies `π(x; q, a) ~ x / (φ(q) log x)`. -/
