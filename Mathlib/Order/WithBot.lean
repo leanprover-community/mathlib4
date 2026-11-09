@@ -401,7 +401,7 @@ variable [LE α] [LE β] {x y : WithBot α}
 lemma le_iff_forall : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a ≤ b := by
   cases x <;> cases y <;> simp [le_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
 @[to_dual not_top_le_coe]
@@ -495,7 +495,7 @@ variable [LT α] {x y : WithBot α}
 lemma lt_iff_exists : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b := by
   cases x <;> cases y <;> simp [lt_def]
 
-@[to_dual (attr := simp, norm_cast)]
+@[to_dual (attr := simp, norm_cast, gcongr)]
 lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[to_dual (attr := simp) coe_lt_top]
 lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]

@@ -11,7 +11,6 @@ public import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 public import Mathlib.Topology.FiberPartition
 
 /-!
-
 # The sheaf of locally constant maps on `CompHausLike P`
 
 This file proves that under suitable conditions, the functor from the category of sets to the
@@ -99,7 +98,7 @@ def locallyConstantIsoContinuousMap (Y X : Type*) [TopologicalSpace Y] :
   letI : TopologicalSpace X := ⊥
   haveI : DiscreteTopology X := ⟨rfl⟩
   { hom := ↾fun f ↦ (f : C(Y, X))
-    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr f.2⟩ }
+    inv := ↾fun f ↦ ⟨f, (IsLocallyConstant.iff_continuous f).mpr (by fun_prop)⟩ }
 
 section Adjunction
 

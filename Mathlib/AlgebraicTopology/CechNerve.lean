@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.Tactic.ApplyFun
 
 /-!
-
 # The Čech Nerve
 
 This file provides a definition of the Čech nerve associated to an arrow, provided

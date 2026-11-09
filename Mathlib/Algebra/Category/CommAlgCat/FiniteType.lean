@@ -10,6 +10,9 @@ public import Mathlib.CategoryTheory.MorphismProperty.Comma
 public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.RingHomProperties
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # The category of finitely generated `R`-algebras
 

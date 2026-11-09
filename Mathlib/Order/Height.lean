@@ -9,7 +9,6 @@ public import Mathlib.Data.ENat.Lattice
 public import Mathlib.Data.Set.Card
 
 /-!
-
 # Maximal length of chains
 
 This file contains lemmas to work with the maximal lengths of chains of arbitrary relations. See
