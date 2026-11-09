@@ -26,6 +26,9 @@ characteristic functions and convergence in distribution in finite dimensional i
   to a function which is continuous at 0, then `{μ n | n}` is tight.
 * `ProbabilityMeasure.tendsto_iff_tendsto_charFun`: the weak convergence of probability measures is
   equivalent to the pointwise convergence of their characteristic functions.
+* `ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_tendsto_charFunDual`: in a separable Banach
+  space, possibly infinite-dimensional, a tight family of probability measures whose characteristic
+  functionals converge pointwise to those of `ν₀` converges to `ν₀`.
 
 -/
 
@@ -254,5 +257,84 @@ lemma tendstoInDistribution_iff_tendsto_charFun
     (∀ t : E, Tendsto (fun n ↦ charFun ((P n).map (X n)) t) atTop (𝓝 (charFun (P'.map X') t))) where
   mp := TendstoInDistribution.tendsto_charFun
   mpr := TendstoInDistribution.of_tendsto_charFun hX hX'
+
+section Tight
+
+/-! ### Tight families in infinite dimension
+
+In an infinite-dimensional space, pointwise convergence of the characteristic functions does not
+imply tightness. Combined with tightness, it does imply convergence. -/
+
+variable {Ω'' : Type*} {Ω₀ : ι → Type*} {m₀ : ∀ i, MeasurableSpace (Ω₀ i)}
+  {P₀ : (i : ι) → Measure (Ω₀ i)} [∀ i, IsProbabilityMeasure (P₀ i)]
+  {m'' : MeasurableSpace Ω''} {P'' : Measure Ω''} [IsProbabilityMeasure P'']
+
+/-- Random variables whose laws form a tight family converge in distribution as soon as every
+cluster point of their laws is the law of the limit. -/
+lemma TendstoInDistribution.of_isTightMeasureSet_of_forall_mapClusterPt {G : Type*}
+    [TopologicalSpace G] [T2Space G] [MeasurableSpace G] [BorelSpace G]
+    {Y : (i : ι) → Ω₀ i → G} {Y' : Ω'' → G}
+    (hY : ∀ i, AEMeasurable (Y i) (P₀ i)) (hY' : AEMeasurable Y' P'')
+    (h_tight : IsTightMeasureSet {(P₀ i).map (Y i) | i})
+    (h : ∀ ν : ProbabilityMeasure G,
+      MapClusterPt ν 𝓕 (fun i ↦ ((P₀ i).map (Y i)).toProbabilityMeasure) →
+        (ν : Measure G) = P''.map Y') :
+    TendstoInDistribution Y 𝓕 Y' P₀ P'' where
+  forall_aemeasurable := hY
+  aemeasurable_limit := hY'
+  tendsto := ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_forall_mapClusterPt h_tight
+    fun ν hν ↦ ProbabilityMeasure.toMeasure_injective (h ν hν)
+
+omit [FiniteDimensional ℝ E] in
+/-- In a complete separable inner product space, a tight family of probability measures whose
+characteristic functions converge pointwise to that of `μ₀` converges to `μ₀`. -/
+lemma ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_tendsto_charFun [CompleteSpace E]
+    [SecondCountableTopology E] {ν : ι → ProbabilityMeasure E}
+    (h_tight : IsTightMeasureSet {(ν i : Measure E) | i})
+    (h : ∀ t : E, Tendsto (fun i ↦ charFun (ν i : Measure E) t) 𝓕 (𝓝 (charFun μ₀ t))) :
+    Tendsto ν 𝓕 (𝓝 μ₀) := by
+  refine tendsto_of_isTightMeasureSet_of_forall_mapClusterPt h_tight fun ν' hν' ↦ ?_
+  refine toMeasure_injective <| Measure.ext_of_charFun <| funext fun t ↦ ?_
+  have h_cont : Continuous fun P : ProbabilityMeasure E ↦ charFun (P : Measure E) t := by
+    simp_rw [charFun_eq_integral_innerProbChar]
+    exact continuous_iff_continuousAt.2 fun P ↦
+      (tendsto_iff_forall_integral_rclike_tendsto ℂ).1 tendsto_id (innerProbChar t)
+  exact eq_of_nhds_neBot ((hν'.tendsto_comp h_cont.continuousAt).neBot.mono
+    (inf_le_inf_left _ (h t)))
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  [SecondCountableTopology F] [MeasurableSpace F] [BorelSpace F]
+
+/-- In a separable Banach space, a tight family of probability measures whose characteristic
+functionals converge pointwise to that of `ν₀` converges to `ν₀`. -/
+lemma ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_tendsto_charFunDual
+    {ν : ι → ProbabilityMeasure F} {ν₀ : ProbabilityMeasure F}
+    (h_tight : IsTightMeasureSet {(ν i : Measure F) | i})
+    (h : ∀ L : StrongDual ℝ F,
+      Tendsto (fun i ↦ charFunDual (ν i : Measure F) L) 𝓕 (𝓝 (charFunDual (ν₀ : Measure F) L))) :
+    Tendsto ν 𝓕 (𝓝 ν₀) := by
+  refine tendsto_of_isTightMeasureSet_of_forall_mapClusterPt h_tight fun ν' hν' ↦ ?_
+  refine toMeasure_injective <| Measure.ext_of_charFunDual <| funext fun L ↦ ?_
+  have h_cont : Continuous fun P : ProbabilityMeasure F ↦ charFunDual (P : Measure F) L :=
+    continuous_iff_continuousAt.2 fun P ↦
+      (tendsto_iff_forall_integral_rclike_tendsto ℂ).1 tendsto_id (probCharDual L)
+  exact eq_of_nhds_neBot ((hν'.tendsto_comp h_cont.continuousAt).neBot.mono
+    (inf_le_inf_left _ (h L)))
+
+/-- Random variables in a separable Banach space whose laws form a tight family converge in
+distribution as soon as the characteristic functionals of their laws converge pointwise to that
+of the law of the limit. -/
+lemma TendstoInDistribution.of_isTightMeasureSet_of_tendsto_charFunDual
+    {Y : (i : ι) → Ω₀ i → F} {Y' : Ω'' → F}
+    (hY : ∀ i, AEMeasurable (Y i) (P₀ i)) (hY' : AEMeasurable Y' P'')
+    (h_tight : IsTightMeasureSet {(P₀ i).map (Y i) | i})
+    (h : ∀ L : StrongDual ℝ F, Tendsto (fun i ↦ charFunDual ((P₀ i).map (Y i)) L) 𝓕
+      (𝓝 (charFunDual (P''.map Y') L))) :
+    TendstoInDistribution Y 𝓕 Y' P₀ P'' where
+  forall_aemeasurable := hY
+  aemeasurable_limit := hY'
+  tendsto := ProbabilityMeasure.tendsto_of_isTightMeasureSet_of_tendsto_charFunDual h_tight h
+
+end Tight
 
 end MeasureTheory
