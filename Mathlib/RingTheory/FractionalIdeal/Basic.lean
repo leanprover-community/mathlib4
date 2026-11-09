@@ -164,7 +164,7 @@ instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective := SetLike.coe_injective.comp Subtype.coe_injective
 
-instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P) P
+instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P)
 
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
@@ -197,7 +197,7 @@ theorem equivNum_apply [IsDomain R] [Module.IsTorsionFree R P] [Nontrivial P]
 Useful to fix definitional equalities. -/
 protected def copy (p : FractionalIdeal S P) (s : Set P) (hs : s = ↑p) : FractionalIdeal S P :=
   ⟨Submodule.copy p s hs, by
-    convert! p.isFractional
+    convert p.isFractional
     ext
     simp only [hs]
     rfl⟩
@@ -421,7 +421,7 @@ theorem coe_le_coe {I J : FractionalIdeal S P} :
 
 theorem zero_le (I : FractionalIdeal S P) : 0 ≤ I := by
   intro x hx
-  convert! zero_mem I
+  convert zero_mem I
   rw [(mem_zero_iff _).mp hx]
 
 instance orderBot : OrderBot (FractionalIdeal S P) where
@@ -508,7 +508,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     ∀ n : ℕ, IsFractional S I → IsFractional S (n • I : Submodule R P)
   | 0, _ => by
     rw [zero_smul]
-    convert! ((0 : Ideal R) : FractionalIdeal S P).isFractional
+    convert ((0 : Ideal R) : FractionalIdeal S P).isFractional
     simp
   | n + 1, h => by
     rw [succ_nsmul]
@@ -548,8 +548,10 @@ This is only an auxiliary definition: the preferred way of writing `I.mul J` is 
 Elaborated terms involving `FractionalIdeal` tend to grow quite large,
 so by making definitions irreducible, we hope to avoid deep unfolds.
 -/
-irreducible_def mul (lemma := mul_def') (I J : FractionalIdeal S P) : FractionalIdeal S P :=
+@[no_expose] def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
   ⟨I * J, I.isFractional.mul J.isFractional⟩
+
+alias mul_def' := mul.eq_def
 
 -- local attribute [semireducible] mul
 instance : Mul (FractionalIdeal S P) :=
@@ -604,9 +606,9 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
-  show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
-  by induction n <;> simp [*, Nat.unaryCast]
+theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n := by
+  change ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
+  induction n <;> simp [*, Nat.unaryCast]
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul

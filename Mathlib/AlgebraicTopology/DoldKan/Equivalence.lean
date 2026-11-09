@@ -6,10 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.EquivalencePseudoabelian
-public import Mathlib.AlgebraicTopology.DoldKan.Normalized
 
 /-!
-
 # The Dold-Kan correspondence
 
 The Dold-Kan correspondence states that for any abelian category `A`, there is

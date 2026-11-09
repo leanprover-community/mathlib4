@@ -6,7 +6,6 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Category.Preorder
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.Types.Basic
 public import Mathlib.Order.SuccPred.Limit
 
@@ -156,7 +155,7 @@ instance [WellFoundedLT J] (j : J) : Subsingleton (d.Extension val₀ j) := by
     congr
     ext ⟨⟨l, hl⟩⟩
     have := hi' l hl
-    exact congr_arg val (Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
+    congrm val $(Subsingleton.elim (e₁.ofLE hl.le) (e₂.ofLE hl.le))
 
 lemma compatibility [WellFoundedLT J]
     {j : J} (e : d.Extension val₀ j) {i : J} (e' : d.Extension val₀ i) (h : i ≤ j) :
@@ -195,7 +194,7 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
   map_limit i hi hij := by
     obtain hij | rfl := hij.lt_or_eq
     · have hij' : i ≤ j := (Order.lt_succ_iff_of_not_isMax hj).mp hij
-      have := congr_arg (F.map (homOfLE hij').op) (d.map_succ j hj e.val)
+      have := congr(F.map (homOfLE hij').op $(d.map_succ j hj e.val))
       rw [e.map_limit i hi, ← comp_apply, ← map_comp, ← op_comp, homOfLE_comp] at this
       rw [this]
       congr
@@ -209,7 +208,6 @@ def succ {j : J} (e : d.Extension val₀ j) (hj : ¬IsMax j) :
 
 variable [WellFoundedLT J]
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- When `j` is a limit element, this is the extension to `d.Extension val₀ j`
 of a family of elements in `d.Extension val₀ i` for all `i < j`. -/
 def limit (j : J) (hj : Order.IsSuccLimit j)
@@ -222,7 +220,7 @@ def limit (j : J) (hj : Order.IsSuccLimit j)
     rw [d.map_lift _ _ _ _ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)]
     simpa using (e ⊥ (by simpa [bot_lt_iff_ne_bot] using hj.not_isMin)).map_zero
   map_succ i hi := by
-    convert!
+    convert
       (e (Order.succ i) ((Order.IsSuccLimit.succ_lt_iff hj).mpr hi)).map_succ i
         (by
           simp only [Order.lt_succ_iff_not_isMax, not_isMax_iff]

@@ -5,9 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.FieldTheory.Minpoly.Finite
 public import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 public import Mathlib.FieldTheory.PrimitiveElement
+
+import Mathlib.FieldTheory.Minpoly.Finite
 
 /-!
 # Results about `minpoly R x / (X - C x)`
@@ -37,15 +38,15 @@ lemma minpolyDiv_spec :
   delta minpolyDiv
   rw [mul_comm, mul_divByMonic_eq_iff_isRoot, IsRoot, eval_map_algebraMap, minpoly.aeval]
 
-lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
-    algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
+lemma coeff_minpolyDiv (i) : (minpolyDiv R x).coeff i =
+    algebraMap R S ((minpoly R x).coeff (i + 1)) + (minpolyDiv R x).coeff (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
 variable {R x}
 
 lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   delta minpolyDiv minpoly
-  rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
+  rw [dite_eq_right hx, Polynomial.map_zero, zero_divByMonic]
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
   rw [← eval_map_algebraMap, ← derivative_map, ← minpolyDiv_spec R x]; simp
@@ -82,9 +83,9 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
 
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
-    coeff (minpolyDiv R x) i ∈ R[x] := by
+    (minpolyDiv R x).coeff i ∈ R[x] := by
   by_contra H
-  have : ∀ j, coeff (minpolyDiv R x) (i + j) ∉ R[x] := by
+  have : ∀ j, (minpolyDiv R x).coeff (i + j) ∉ R[x] := by
     intro j; induction j with
     | zero => exact H
     | succ j IH =>
@@ -109,7 +110,7 @@ lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
 
 lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
   nontriviality S
-  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
+  have := congr(leadingCoeff $(minpolyDiv_spec R x))
   rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
   · simpa using! this
   · simpa using! minpolyDiv_ne_zero hx
@@ -133,7 +134,7 @@ lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [I
     ← minpoly.isIntegrallyClosed_eq_field_fractions' _ hx]
 
 lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R x)) :
-    coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) - x ^ i ∈
+    (minpolyDiv R x).coeff (natDegree (minpolyDiv R x) - i) - x ^ i ∈
       Submodule.span R ((x ^ ·) '' Set.Iio i) := by
   induction i with
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
@@ -144,7 +145,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩
     · rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left (b := 1) hi)]
-      apply SetLike.le_def.mp ?_
+      apply mem_of_le_of_mem ?_
         (Submodule.mul_mem_mul (IH ((Nat.le_succ _).trans hi))
           (Submodule.mem_span_singleton_self x))
       rw [Submodule.span_mul_span, Set.mul_singleton, Set.image_image]
@@ -154,7 +155,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ x j⟩
 
 lemma span_coeff_minpolyDiv :
-    Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
+    Submodule.span R (Set.range (minpolyDiv R x).coeff) =
       Subalgebra.toSubmodule (R[x]) := by
   nontriviality S
   apply le_antisymm
@@ -167,11 +168,11 @@ lemma span_coeff_minpolyDiv :
     intro i
     induction i using Nat.strongRecOn with | ind i hi => ?_
     intro hi'
-    have : coeff (minpolyDiv R x) (natDegree (minpolyDiv R x) - i) ∈
-        Submodule.span R (Set.range (coeff (minpolyDiv R x))) :=
+    have : (minpolyDiv R x).coeff (natDegree (minpolyDiv R x) - i) ∈
+        Submodule.span R (Set.range (minpolyDiv R x).coeff) :=
       Submodule.subset_span (Set.mem_range_self _)
     rw [Set.mem_preimage, SetLike.mem_coe, ← Submodule.sub_mem_iff_right _ this]
-    refine SetLike.le_def.mp ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
+    refine mem_of_le_of_mem ?_ (coeff_minpolyDiv_sub_pow_mem_span hx ?_)
     · rw [Submodule.span_le, Set.image_subset_iff]
       intro j (hj : j < i)
       exact hi j hj (lt_trans hj hi')

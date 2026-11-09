@@ -5,8 +5,9 @@ Authors: Kim Morrison
 -/
 module
 
+public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Algebra.Ring.InjSurj
-public import Mathlib.Algebra.Module.Pi
+public import Mathlib.Algebra.Ring.Pi
 public import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
@@ -18,7 +19,7 @@ see the type synonyms `AddMonoidAlgebra`
 and `MonoidAlgebra`.
 -/
 
-@[expose] public section
+public section
 
 
 noncomputable section
@@ -27,7 +28,7 @@ open Finset
 
 universe u₁ u₂ u₃ u₄ u₅
 
-variable {α : Type u₁} {β : Type u₂} {γ : Type u₃} {δ : Type u₄} {ι : Type u₅}
+variable {α : Type u₁} {β : Type u₂} {γ : Type u₃}
 
 namespace Finsupp
 
@@ -97,7 +98,7 @@ instance [NonUnitalCommRing β] : NonUnitalCommRing (α →₀ β) :=
 
 lemma pointwise_smul_support_finite [Zero γ] [SMulZeroClass β γ] (f : α → β)
     (g : α →₀ γ) : (fun x ↦ f x • g x).support.Finite :=
-  Set.Finite.subset g.hasFiniteSupport (by simp; grind [smul_zero])
+  Set.Finite.subset g.hasFiniteSupport (by grind [smul_zero])
 
 -- TODO(Paul-Lez): add a `DFinsupp` version of this.
 -- Note: this creates an instance diamond with `SMul (α → β) (α →₀ (α → β))`, so this is an

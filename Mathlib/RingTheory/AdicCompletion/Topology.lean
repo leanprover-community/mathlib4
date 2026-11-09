@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 
 /-!
-
 # Connection between adic properties and topological properties
 
 ## Main results
@@ -36,7 +35,7 @@ end TopologicalSpace
 
 section UniformSpace
 
-open Topology Uniformity
+open scoped Uniformity
 
 variable {R : Type*} [CommRing R] [UniformSpace R] [IsUniformAddGroup R]
   {I : Ideal R} (hI : IsAdic I)

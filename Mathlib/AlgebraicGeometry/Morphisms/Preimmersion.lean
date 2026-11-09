@@ -5,11 +5,10 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 public import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
+public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
-
 # Preimmersions of schemes
 
 A morphism of schemes `f : X ⟶ Y` is a preimmersion if the underlying map of topological spaces
@@ -34,8 +33,6 @@ class IsPreimmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnSta
   isEmbedding (f) : IsEmbedding f
 
 alias Scheme.Hom.isEmbedding := IsPreimmersion.isEmbedding
-
-@[deprecated (since := "2026-01-20")] alias IsPreimmersion.base_embedding := Scheme.Hom.isEmbedding
 
 lemma isPreimmersion_eq_inf :
     @IsPreimmersion = (@SurjectiveOnStalks ⊓ topologically IsEmbedding : MorphismProperty _) := by

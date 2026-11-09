@@ -6,11 +6,11 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Abelian
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 public import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 public import Mathlib.Algebra.Homology.ShortComplex.Exact
-public import Mathlib.CategoryTheory.Elements
 public import Mathlib.CategoryTheory.Generator.Basic
+
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.EpiMono
 
 /-!
 # Generators for the category of presheaves of modules
@@ -87,12 +87,16 @@ lemma isSeparating : ObjectProperty.IsSeparating (freeYoneda R) := by
   intro M N f₁ f₂ h
   ext ⟨X⟩ m
   obtain ⟨g, rfl⟩ := freeYonedaEquiv.surjective m
-  exact congr_arg freeYonedaEquiv (h _ ⟨X⟩ g)
+  congrm freeYonedaEquiv $(h _ ⟨X⟩ g)
 
 lemma isDetecting : ObjectProperty.IsDetecting (freeYoneda R) :=
   (isSeparating R).isDetecting
 
 end freeYoneda
+
+instance hasSeparator {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
+    HasSeparator (PresheafOfModules.{u} R₀) :=
+  ⟨_, (freeYoneda.isSeparating R₀).isSeparator_coproduct⟩
 
 instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
     WellPowered.{u} (PresheafOfModules.{u} R₀) :=
@@ -160,13 +164,12 @@ noncomputable def freeYonedaCoproductMk (m : M.Elements) :
 @[reassoc (attr := simp)]
 lemma ι_fromFreeYonedaCoproduct (m : M.Elements) :
     M.ιFreeYonedaCoproduct m ≫ M.fromFreeYonedaCoproduct = m.fromFreeYoneda := by
-  apply Sigma.ι_desc
+  apply Sigma.ι_comp_desc
 
 lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.freeYoneda.obj X) :
     M.fromFreeYonedaCoproduct.app X ((M.ιFreeYonedaCoproduct m).app X x) =
       m.fromFreeYoneda.app X x :=
-  ConcreteCategory.congr_hom
-    ((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x
+  congr($((evaluation R X ⋙ forget _).congr_map (M.ι_fromFreeYonedaCoproduct m)) x)
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]

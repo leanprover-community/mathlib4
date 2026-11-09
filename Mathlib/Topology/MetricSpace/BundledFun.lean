@@ -6,8 +6,8 @@ Authors: Yakov Pechersky
 module
 
 public import Mathlib.Algebra.Order.Monoid.Defs
+public import Mathlib.Basic.Rel
 public import Mathlib.Data.Finset.Lattice.Fold
-public import Mathlib.Data.Rel
 
 /-!
 # Pseudometrics as bundled functions
@@ -50,6 +50,7 @@ section Basic
 
 variable [Zero R] [Add R] [LE R] (d : PseudoMetric X R)
 
+@[macro_inline]
 instance : FunLike (PseudoMetric X R) X (X → R) where
   coe := PseudoMetric.toFun
   coe_injective _ := by aesop

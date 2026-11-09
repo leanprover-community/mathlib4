@@ -93,7 +93,6 @@ theorem mongePoint_eq_smul_vsub_vadd_circumcenter {n : ℕ} (s : Simplex ℝ P n
   congr 3
   convert! Finset.univ.affineCombination_map e.toEmbedding _ _ <;> simp [Function.comp_assoc]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem mongePoint_map {V₂ P₂ : Type*} [NormedAddCommGroup V₂] [InnerProductSpace ℝ V₂]
     [MetricSpace P₂] [NormedAddTorsor V₂ P₂]
@@ -171,7 +170,7 @@ theorem mongePoint_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ}
       simp_rw [centroidWeightsWithCircumcenter, circumcenterWeightsWithCircumcenter,
         mongePointWeightsWithCircumcenter] <;>
     rw [add_tsub_assoc_of_le (by decide : 1 ≤ 2), (by decide : 2 - 1 = 1)]
-  · rw [if_pos (mem_univ _), card_fin]
+  · rw [ite_eq_left (mem_univ _), card_fin]
     field
   · simp [field]
     ring
@@ -281,7 +280,7 @@ lemma mongePlane_reindex {m n : ℕ} (s : Simplex ℝ P (n + 2)) (e : Fin (n + 3
   simp_rw [mongePlane, reindex_points, reindex_range_points, Function.comp_apply, centroid_def,
     reindex]
   congr 2
-  convert! Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3
+  convert Finset.affineCombination_map {e.symm i₁, e.symm i₂}ᶜ e.toEmbedding _ _ using 3
   · ext i
     simp
   · simp [Function.comp_assoc]
@@ -489,6 +488,14 @@ theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 
+/-- The affine span of the orthocenter and a vertex is equal to the
+altitude if the orthocenter is not the vertex. -/
+theorem affineSpan_orthocenter_point_eq_altitude (t : Triangle ℝ P) (i : Fin 3)
+    (h : t.orthocenter ≠ t.points i) : line[ℝ, t.orthocenter, t.points i] = t.altitude i := by
+  rw [← affineSpan_pair_altitudeFoot_eq_altitude, affineSpan_pair_eq_of_left_mem_of_ne _ h]
+  rw [affineSpan_pair_altitudeFoot_eq_altitude]
+  exact orthocenter_mem_altitude t
+
 /-- Suppose we are given a triangle `t₁`, and replace one of its
 vertices by its orthocenter, yielding triangle `t₂` (with vertices not
 necessarily listed in the same order).  Then an altitude of `t₂` from
@@ -615,7 +622,7 @@ theorem exists_dist_eq_circumradius_of_subset_insert_orthocenter {t : Triangle �
     rcases hp₁ with ⟨i, rfl⟩
     have h₁₂₃ := h₁₂₃ i
     repeat' rcases h₁₂₃ with h₁₂₃ | h₁₂₃
-    · convert! Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
+    · convert Triangle.dist_orthocenter_reflection_circumcenter t hj₂₃
     · rw [← h₂, dist_reflection_eq_of_mem _
        (mem_affineSpan ℝ (Set.mem_image_of_mem _ (Set.mem_insert _ _)))]
       exact t.dist_circumcenter_eq_circumradius _
@@ -696,7 +703,7 @@ theorem OrthocentricSystem.eq_insert_orthocenter {s : Set P} (ho : OrthocentricS
       (Triangle.orthocenter_replace_orthocenter_eq_point hj₁₂ hj₁₃ hj₂₃ h₁₂ h₁₃ h₂₃ h₁ h₂.symm
           h₃.symm).symm
   · rw [hs]
-    convert! ht₀s using 2
+    convert ht₀s using 2
     exact Triangle.orthocenter_eq_of_range_eq hs
 
 end EuclideanGeometry

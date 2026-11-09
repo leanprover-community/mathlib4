@@ -5,11 +5,11 @@ Authors: Yongxi Lin
 -/
 module
 
-public import Mathlib.Analysis.Convex.Cone.Extension
-public import Mathlib.Analysis.LocallyConvex.AbsConvexOpen
 public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Module.RCLike.Extend
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
+
+import Mathlib.Analysis.Convex.Cone.Extension
 
 /-!
 # Hahn-Banach theorem for polynormable spaces

@@ -5,15 +5,19 @@ Authors: Paul Cadman
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-meta import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness
-public meta import Mathlib.Tactic.Determinant.Bird.Cert
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic  -- shake: keep (Matrix.det, Qq dependency)
+public import Mathlib.LinearAlgebra.Matrix.Determinant.Bird.Correctness  -- shake: keep (BirdDet.det_eq_birdDet, Qq dependency)
+public import Mathlib.Tactic.Determinant.Bird.Cert
+public import Mathlib.Tactic.Determinant.Echelon.Cert
 
 /-!
 # `norm_det` simproc and `eval_det` tactic
 
 This module defines the `norm_det` simproc and the `eval_det` tactic for
 normalizing determinants of matrix literals over a commutative ring.
+
+The simproc tries an echelon decomposition of the literal before falling back to Bird's
+division-free algorithm.
 -/
 
 public meta section
@@ -31,12 +35,16 @@ private def normalizeBirdDet (e : Expr) : MetaM Simp.Result := do
 private def normalizeDetFromEntries {u : Level} {α : Q(Type u)} {n : Q(ℕ)} (rα : Q(CommRing $α))
   (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
     MetaM Simp.Result := do
-  let arrayExpr : Q(Array $α) ← mkArrayLit α entries.toList
-  let hA ← mkDecideProofQ q(Array.size $arrayExpr = $n * $n)
-  have : $arrayExpr =Q Array.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat := ⟨⟩
-  let ofArrayEqA := q(Matrix.ofArray_ofFn $A)
+  let xs : Q(List $α) ← mkListLit α entries.toList
+  let arrayExpr : Q(Array $α) := q(List.toArray $xs)
+  -- `List.ofFn` is exposed (unlike `Array.ofFn`) and so this reduction can be
+  -- checked by the kernel
+  have : (List.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) =Q $xs := ⟨⟩
+  let hlist : Q(List.ofFn (fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) = $xs) := q(rfl)
+  let hArray := q($hlist ▸ List.toArray_ofFn)
   let birdDet := q(BirdDet.birdDet $n $arrayExpr)
-  let detEqBirdDet := q($ofArrayEqA ▸ BirdDet.det_eq_birdDet $arrayExpr $hA)
+  let detEqBirdDet := q($hArray ▸ Matrix.ofArray_ofFn $A ▸ BirdDet.det_eq_birdDet
+    (Array.ofFn fun k : Fin ($n * $n) ↦ $A k.divNat k.modNat) Array.size_ofFn)
   let birdDetNorm ← normalizeBirdDet birdDet
   let detEqBirdDetRes : Simp.Result := ⟨birdDet, some detEqBirdDet, true⟩
   detEqBirdDetRes.mkEqTrans birdDetNorm
@@ -59,6 +67,20 @@ private def entriesOfMatrixLiteral? {u : Level} {α : Q(Type u)} {n : Q(ℕ)}
     return entry
   return some entries.toArray
 
+/-- A fast path of determinant evaluation when an echelon form is available. -/
+private def normalizeDetByEchelon? {u : Level} {α : Q(Type u)} {n : Q(Nat)} (rα : Q(CommRing $α))
+    (A : Q(Matrix (Fin $n) (Fin $n) $α)) (entries : Array Q($α)) :
+    MetaM (Option Simp.Result) := do
+  if A.hasFVar || A.hasMVar then return none
+  let some m ← getNatValue? n | return none
+  let some iα ← synthInstanceQ? q(IsDomain $α) | return none
+  have A : Q(Matrix (Fin $m) (Fin $m) $α) := A
+  -- The entries come flattened from the parser shared with Bird's path. Regrouping them here
+  -- avoids parsing the literal twice.
+  let rows := Array.ofFn (n := m) fun i ↦ entries.extract ((i : Nat) * m) ((i : Nat) * m + m)
+  let some ⟨v, pf⟩ ← proveEchelonDet rα iα m A rows | return none
+  return some { expr := v, proof? := some pf }
+
 /-- The `norm_det` simproc normalizes determinants of matrices written using `!![...]`
 notation over a commutative ring. -/
 simproc_decl norm_det (Matrix.det _) := fun e => do
@@ -66,6 +88,10 @@ simproc_decl norm_det (Matrix.det _) := fun e => do
   let ⟨_, _, e⟩ ← inferTypeQ' e
   let ~q(@Matrix.det (Fin $n) _ _ _ $rα $matrix) := e | return .continue
   let some entries ← entriesOfMatrixLiteral? matrix | return .continue
+  -- Entry types without a registered model fall back to the rational model, which throws on an
+  -- entry it cannot evaluate to a rational number (such as `Real.pi`). Bird then takes over.
+  if let some r ← try normalizeDetByEchelon? rα matrix entries catch _ => pure none then
+    return .done r
   return .done (← normalizeDetFromEntries rα matrix entries)
 
 /--

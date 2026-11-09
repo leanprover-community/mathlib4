@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
-
 # The meta properties of surjective ring homomorphisms.
 
 ## Main results
@@ -49,7 +48,6 @@ theorem surjective_isStableUnderBaseChange : IsStableUnderBaseChange surjective 
   refine IsStableUnderBaseChange.mk surjective_respectsIso ?_
   introv h x
   induction x with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
     rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]

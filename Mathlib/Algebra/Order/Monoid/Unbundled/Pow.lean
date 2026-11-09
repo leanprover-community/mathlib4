@@ -16,8 +16,6 @@ public import Mathlib.Tactic.Monotonicity.Attr
 
 public section
 
-open Function
-
 variable {β G M : Type*}
 
 section Monoid
@@ -157,7 +155,7 @@ section CovariantLESwap
 
 variable [Preorder β] [MulLeftMono M] [MulRightMono M]
 
-@[to_additive (attr := mono, gcongr) nsmul_le_nsmul_right]
+@[to_additive (attr := mono, gcongr, to_dual self) nsmul_le_nsmul_right]
 theorem pow_le_pow_left' {a b : M} (hab : a ≤ b) : ∀ i : ℕ, a ^ i ≤ b ^ i
   | 0 => by simp
   | k + 1 => by
@@ -248,6 +246,14 @@ variable [MulLeftMono M] [MulRightMono M]
 theorem lt_of_pow_lt_pow_left' {a b : M} (n : ℕ) : a ^ n < b ^ n → a < b :=
   (pow_left_mono _).reflect_lt
 
+@[to_additive nsmul_max]
+theorem max_pow (a b : M) (n : ℕ) : max a b ^ n = max (a ^ n) (b ^ n) :=
+  (pow_left_mono n).map_max
+
+@[to_additive nsmul_min]
+theorem min_pow (a b : M) (n : ℕ) : min a b ^ n = min (a ^ n) (b ^ n) :=
+  (pow_left_mono n).map_min
+
 @[to_additive min_lt_of_add_lt_two_nsmul]
 theorem min_lt_of_mul_lt_sq {a b c : M} (h : a * b < c ^ 2) : min a b < c := by
   simpa using min_lt_max_of_mul_lt_mul (h.trans_eq <| pow_two _)
@@ -295,7 +301,7 @@ theorem Right.pow_lt_one_iff [MulRightStrictMono M] {n : ℕ} {x : M}
   ⟨fun H => not_le.mp fun k => H.not_ge <| Right.one_le_pow_of_le k, Right.pow_lt_one_of_lt hn⟩
 
 @[to_additive]
-instance [MulLeftStrictMono M] [MulRightStrictMono M] : IsMulTorsionFree M where
+instance [MulLeftStrictMono M] [MulRightStrictMono M] : HasUniqueRoots M where
   pow_left_injective _ hn := (pow_left_strictMono hn).injective
 
 end LinearOrder

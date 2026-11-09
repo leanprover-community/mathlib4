@@ -3,13 +3,15 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.List.ChainOfFn
-import Mathlib.Data.List.TakeWhile
-import Mathlib.Data.Nat.Dist
-import Mathlib.Data.Fintype.Fin
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Tactic.FinCases
+module
+
+public import Mathlib.Data.Fin.VecNotation
+public import Mathlib.Data.List.ChainOfFn
+public import Mathlib.Data.List.TakeWhile
+public import Mathlib.Data.Nat.Dist
+public import Mathlib.Data.Fintype.Fin
+public import Mathlib.Tactic.IntervalCases
+public import Mathlib.Tactic.FinCases
 
 /-!
 # IMO 2024 Q5
@@ -41,6 +43,7 @@ column to the last row, while if it is at one side of the board, the second atte
 zigzag path such that if it encounters a monster the third attempt can avoid all monsters.
 -/
 
+@[expose] public section
 
 namespace Imo2024Q5
 
@@ -302,14 +305,14 @@ lemma Path.tail_induction {motive : Path N → Prop} (ind : ∀ p, motive p.tail
   case cons head tail hi =>
     by_cases h : (p'.cells[1]'p'.one_lt_length_cells).1 = 0
     · refine ind p' ?_
-      simp_rw [Path.tail, if_pos h, p', List.tail_cons]
+      simp_rw [Path.tail, ite_eq_left h, p', List.tail_cons]
       exact hi _ _ _ _
     · exact base p' h
 
 lemma Path.tail_findFstEq (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 0) :
     p.tail.findFstEq r = p.findFstEq r := by
   by_cases h : (p.cells[1]'p.one_lt_length_cells).1 = 0
-  · simp_rw [Path.tail, if_pos h]
+  · simp_rw [Path.tail, ite_eq_left h]
     nth_rw 2 [Path.findFstEq]
     rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
     rcases cells with ⟨⟩ | ⟨head, tail⟩
@@ -317,19 +320,19 @@ lemma Path.tail_findFstEq (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 0) :
     · simp only [List.head_cons] at head_first_row
       simp only [List.find?_cons, head_first_row, hr.symm, decide_false]
       rfl
-  · simp_rw [Path.tail, if_neg h]
+  · simp_rw [Path.tail, ite_eq_right h]
 
 lemma Path.tail_firstMonster (p : Path N) (m : MonsterData N) :
     p.tail.firstMonster m = p.firstMonster m := by
   by_cases h : (p.cells[1]'p.one_lt_length_cells).1 = 0
-  · simp_rw [Path.tail, if_pos h]
+  · simp_rw [Path.tail, ite_eq_left h]
     nth_rw 2 [Path.firstMonster]
     rcases p with ⟨cells, nonempty, head_first_row, last_last_row, valid_move_seq⟩
     rcases cells with ⟨⟩ | ⟨head, tail⟩
     · simp at nonempty
     · simp only [List.head_cons] at head_first_row
       simp [m.notMem_monsterCells_of_fst_eq_zero head_first_row, firstMonster]
-  · simp_rw [Path.tail, if_neg h]
+  · simp_rw [Path.tail, ite_eq_right h]
 
 lemma Path.firstMonster_eq_of_findFstEq_mem {p : Path N} {m : MonsterData N}
     (h : p.findFstEq 1 ∈ m.monsterCells) : p.firstMonster m = some (p.findFstEq 1) := by
@@ -534,7 +537,8 @@ def baseMonsterData (N : ℕ) : MonsterData N where
     rw [Fin.le_def] at hrN
     rw [Nat.lt_add_one_iff]
     exact hrN⟩
-  inj' := fun ⟨⟨x, hx⟩, hx1, hxN⟩ ⟨⟨y, hy⟩, hy1, hyN⟩ h ↦ by
+  inj' := by
+    rintro ⟨⟨x, hx⟩, hx1, hxN⟩ ⟨⟨y, hy⟩, hy1, hyN⟩ h
     simp only [Fin.mk.injEq] at h
     simpa using h
 
@@ -890,7 +894,7 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
     split_ifs at hix <;> simp [Prod.ext_iff, Fin.ext_iff] at hix <;> lia
   have hi' : (i : ℕ) ≠ 2 * N := by
     intro h
-    rw [← hix, fn1OfEdge0, dif_pos h] at hx
+    rw [← hix, fn1OfEdge0, dite_eq_left h] at hx
     have h' := MonsterData.le_N_of_mem_monsterCells hx
     simp at h'
   intro j
@@ -900,7 +904,7 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
     refine hnm _ ?_
     simp only
     lia
-  · rw [fn2OfEdge0, dif_neg h]
+  · rw [fn2OfEdge0, dite_eq_right h]
     split_ifs with h'
     · have hx1 : 1 ≤ x.1 := by
         rw [Fin.le_def, Fin.val_one]
@@ -918,7 +922,6 @@ lemma path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some (hN
       simp only
       lia
 
-set_option linter.flexible false in
 lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 ≤ N)
     {m : MonsterData N} (hc₁0 : m (row1 hN) = 0) :
     (winningStrategy hN).play m 3 ⟨1, by simp⟩ = none ∨
@@ -929,7 +932,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
   rcases h with ⟨x, hx⟩
   rw [winningStrategy_play_one] at hx
   rw [winningStrategy_play_two, ← hx, Option.getD_some]
-  rw [path1, dif_pos hc₁0] at hx
+  rw [path1, dite_eq_left hc₁0] at hx
   have h1 := Path.mem_of_firstMonster_eq_some (hx.symm)
   have hx2N : 2 ≤ (x.1 : ℕ) ∧ (x.1 : ℕ) ≤ N := by
     rw [path1OfEdge0, Path.ofFn_cells, List.mem_ofFn] at h1
@@ -941,7 +944,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
       interval_cases i <;> rw [fn1OfEdge0] at hm <;> split_ifs at hm with h
       · simp at h
         lia
-      · simp at hm
+      · simp_rw [zero_add] at hm
         exact m.notMem_monsterCells_of_fst_eq_zero rfl hm
       · simp [eqComm] at h
       · dsimp only [Nat.reduceAdd, Nat.reduceDiv, Fin.mk_one] at hm
@@ -959,7 +962,7 @@ lemma winningStrategy_play_one_eq_none_or_play_two_eq_none_of_edge_zero (hN : 2 
         simp at hc₁0
     rw [fn1OfEdge0]
     split_ifs <;> simp <;> lia
-  rw [path2, if_pos hc₁0, path2OfEdge0Def, dif_pos hx2N]
+  rw [path2, ite_eq_left hc₁0, path2OfEdge0Def, dite_eq_left hx2N]
   exact path2OfEdge0_firstMonster_eq_none_of_path1OfEdge0_firstMonster_eq_some hN hx2N.1
     hx2N.2 hc₁0 hx.symm
 
@@ -975,8 +978,8 @@ lemma winningStrategy_play_one_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
       ← Fin.rev_last, Fin.rev_inj]
     rw [Fin.ext_iff]
     exact hc₁N
-  simp_rw [winningStrategy_play_one hN, path1, path1OfEdgeN, dif_neg hc₁0, if_pos hc₁N,
-    dif_pos hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
+  simp_rw [winningStrategy_play_one hN, path1, path1OfEdgeN, dite_eq_right hc₁0, ite_eq_left hc₁N,
+    dite_eq_left hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
@@ -990,9 +993,9 @@ lemma winningStrategy_play_two_of_edge_N (hN : 2 ≤ N) {m : MonsterData N}
       ← Fin.rev_last, Fin.rev_inj]
     rw [Fin.ext_iff]
     exact hc₁N
-  simp_rw [winningStrategy_play_two hN, path1, path1OfEdgeN, path2, path2OfEdgeNDef, if_neg hc₁0,
-    dif_neg hc₁0, if_pos hc₁N, dif_pos hc₁N, if_pos hc₁r0, dif_pos hc₁r0,
-    ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
+  simp_rw [winningStrategy_play_two hN, path1, path1OfEdgeN, path2, path2OfEdgeNDef,
+    ite_eq_right hc₁0, dite_eq_right hc₁0, ite_eq_left hc₁N, dite_eq_left hc₁N, ite_eq_left hc₁r0,
+    dite_eq_left hc₁r0, ← Path.firstMonster_reflect, MonsterData.reflect_reflect]
   convert! rfl using 4
   nth_rw 2 [← m.reflect_reflect]
   rw [Path.firstMonster_reflect]

@@ -8,7 +8,6 @@ module
 public import Mathlib.Data.Finset.Basic
 public import Mathlib.Data.Finset.Image
 public import Mathlib.Data.Multiset.Fold
-public import Mathlib.Data.Finset.Lattice.Lemmas
 
 /-!
 # The fold operation for a commutative associative operation over a finset.
@@ -82,7 +81,7 @@ theorem fold_const [hd : Decidable (s = ∅)] (c : β) (h : op c (op b c) = op b
     induction s using Finset.induction_on generalizing hd with
     | empty => simp
     | insert x s hx IH =>
-      simp only [Finset.fold_insert hx, IH, if_false, Finset.insert_ne_empty]
+      simp only [Finset.fold_insert hx, IH, ite_false, Finset.insert_ne_empty]
       split_ifs
       · rw [hc.comm]
       · exact h
@@ -108,7 +107,7 @@ theorem fold_insert_idem [DecidableEq α] [hi : Std.IdempotentOp op] :
     (insert a s).fold op b f = f a * s.fold op b f := by
   by_cases h : a ∈ s
   · rw [← insert_erase h]
-    simp [← ha.assoc, hi.idempotent]
+    simp [-insert_erase_eq_insert, ← ha.assoc, hi.idempotent]
   · apply fold_insert h
 
 theorem fold_image_idem [DecidableEq α] {g : γ → α} {s : Finset γ} [hi : Std.IdempotentOp op] :

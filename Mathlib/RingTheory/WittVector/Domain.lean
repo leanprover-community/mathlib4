@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.Identities
 
 /-!
-
 # Witt vectors over a domain
 
 This file builds to the proof `WittVector.instIsDomain`,
@@ -40,8 +39,6 @@ noncomputable section
 
 namespace WittVector
 
-open Function
-
 variable {p : ℕ} {R : Type*}
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
@@ -57,7 +54,7 @@ local notation "𝕎" => WittVector p -- type as `\bbW`
 This is mainly useful as an auxiliary construction for `WittVector.verschiebung_nonzero`.
 -/
 def shift (x : 𝕎 R) (n : ℕ) : 𝕎 R :=
-  @mk' p R fun i => x.coeff (n + i)
+  mk p fun i => x.coeff (n + i)
 
 theorem shift_coeff (x : 𝕎 R) (n k : ℕ) : (x.shift n).coeff k = x.coeff (n + k) :=
   rfl

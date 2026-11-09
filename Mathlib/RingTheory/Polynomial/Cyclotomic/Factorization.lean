@@ -5,10 +5,11 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.Algebra.CharP.CharAndCard
-public import Mathlib.Data.ZMod.Units
-public import Mathlib.FieldTheory.Finite.GaloisField
 public import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
+
+import Mathlib.Algebra.CharP.CharAndCard
+import Mathlib.Data.ZMod.Units
+import Mathlib.FieldTheory.Finite.GaloisField
 
 /-!
 # Factorization of cyclotomic polynomials over finite fields
@@ -159,7 +160,7 @@ theorem normalizedFactors_cyclotomic_card : (normalizedFactors (cyclotomic n K))
       (pos_of_ne_zero <| f_ne_zero hK) _ _).mp (hn.pow_left f))
         ((CharP.cast_eq_zero_iff K p _).mp H)
   have hP : P ∈ normalizedFactors (cyclotomic n K) := count_pos.mp (by lia)
-  refine (prime_of_normalized_factor _ hP).not_unit (squarefree_cyclotomic n K P ?_)
+  refine (prime_of_normalized_factor _ hP).not_isUnit (squarefree_cyclotomic n K P ?_)
   have : {P, P} ≤ normalizedFactors (cyclotomic n K) := by
     refine le_iff_count.mpr (fun Q ↦ ?_)
     by_cases hQ : Q = P

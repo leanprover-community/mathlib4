@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
+public import Mathlib.Algebra.Category.ModuleCat.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 public import Mathlib.Algebra.Homology.DerivedCategory.Linear
-public import Mathlib.Algebra.Module.TransferInstance
 public import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
@@ -38,13 +38,13 @@ variable {X Y : C} {n : ℕ}
 
 noncomputable instance : Module R (Ext X Y n) :=
   letI := HasDerivedCategory.standard C
-  Equiv.module R homEquiv
+  homAddEquiv.module R
 
 lemma smul_eq_comp_mk₀ (x : Ext X Y n) (r : R) :
     r • x = x.comp (mk₀ (r • 𝟙 Y)) (add_zero _) := by
   let := HasDerivedCategory.standard C
   ext
-  apply ((Equiv.linearEquiv R homEquiv).map_smul r x).trans
+  apply ((homAddEquiv.linearEquiv R).map_smul r x).trans
   change r • homEquiv x = (x.comp (mk₀ (r • 𝟙 Y)) (add_zero _)).hom
   rw [comp_hom, mk₀_hom, Functor.map_smul, Functor.map_id, ShiftedHom.mk₀_smul,
     ShiftedHom.comp_smul, ShiftedHom.comp_mk₀_id]
@@ -128,6 +128,28 @@ noncomputable abbrev precompOfLinear {X Y : C} {n : ℕ} (α : Ext X Y n)
 end CommRing
 
 end Ext
+
+section
+
+variable (R : Type t) [CommRing R] {C : Type u} [Category.{v} C] [Abelian C] [Linear R C]
+  [HasExt.{w} C]
+
+/-- Auxiliary definition for `linearExtFunctor`. -/
+@[implicit_reducible, simps]
+noncomputable def linearExtFunctorObj (X : C) (n : ℕ) : C ⥤ ModuleCat.{w} R where
+  obj Y := ModuleCat.of R (Ext X Y n)
+  map f := ModuleCat.ofHom (Ext.postcompOfLinear (Ext.mk₀ f) R X (add_zero n))
+
+variable (C) in
+/-- The functor `Cᵒᵖ ⥤ C ⥤ ModuleCat R` which sends `X : C` and `Y : C`
+to `Ext X Y n`. -/
+@[implicit_reducible, simps]
+noncomputable def linearExtFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ ModuleCat.{w} R where
+  obj X := linearExtFunctorObj R X.unop n
+  map {X₁ X₂} f :=
+    { app Y := ModuleCat.ofHom (Ext.precompOfLinear (Ext.mk₀ f.unop) _ _ (zero_add n)) }
+
+end
 
 end Abelian
 

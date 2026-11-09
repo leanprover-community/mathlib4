@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
 -/
 module
 
-public import Mathlib.Algebra.Group.Subgroup.Map
 public import Mathlib.Algebra.Module.Submodule.Basic
 public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Algebra.Module.Submodule.LinearMap
@@ -28,10 +27,10 @@ submodule, subspace, linear map, pushforward, pullback
 
 @[expose] public section
 
-open Function Pointwise Set
+open Function Set
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {M : Type*} {M₂ : Type*} {M₃ : Type*}
 
 namespace Submodule
 
@@ -589,7 +588,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  simp only [SetLike.le_def, mem_comap, mem_inf, LinearMap.add_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, mem_inf, LinearMap.add_apply]
   exact fun _ h ↦ add_mem h.1 h.2
 
 lemma surjOn_iff_le_map [RingHomSurjective τ₁₂] {f : M →ₛₗ[τ₁₂] M₂} {p : Submodule R M}
@@ -600,24 +599,25 @@ end Submodule
 
 namespace Submodule
 
-variable {S N N₂ : Type*}
+variable {S N N₂ N₃ : Type*}
 variable [CommSemiring S] [Semiring R] [CommSemiring R₂]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module R₂ M₂]
 variable [AddCommMonoid N] [AddCommMonoid N₂] [Module S N] [Module S N₂]
+variable [AddCommMonoid N₃] [Module S N₃]
 variable {τ₁₂ : R →+* R₂}
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule S N) (qₗ : Submodule S N₂)
 
 theorem comap_le_comap_smul (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) : comap f q ≤ comap (c • f) q := by
-  simp only [SetLike.le_def, mem_comap, LinearMap.smul_apply]
+  simp only [IsConcreteLE.le_iff, mem_comap, LinearMap.smul_apply]
   exact fun _ h ↦ smul_mem _ _ h
 
 theorem map_smul_le_map [RingHomSurjective τ₁₂] (f : M →ₛₗ[τ₁₂] M₂) (c : R₂) :
     map (c • f) p ≤ map f p := by
   grw [map_le_iff_le_comap, ← comap_le_comap_smul (map f p) f c, ← map_le_iff_le_comap]
 
-/-- Given modules `M`, `M₂` over a commutative ring, together with submodules `p ⊆ M`, `q ⊆ M₂`,
-the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
+/-- Given modules `N`, `N₂` over a commutative semiring, together with submodules `p ⊆ N`, `q ⊆ N₂`,
+the set of maps $\{f ∈ Hom(N, N₂) | f(p) ⊆ q \}$ is a submodule of `Hom(N, N₂)`. -/
 def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
   zero_mem' := by simp
@@ -628,6 +628,18 @@ def compatibleMaps : Submodule S (N →ₗ[S] N₂) where
   smul_mem' c fₗ h := by
     dsimp at h
     exact le_trans h (comap_le_comap_smul qₗ fₗ c)
+
+@[simp]
+theorem mem_compatibleMaps {f : N →ₗ[S] N₂} : f ∈ pₗ.compatibleMaps qₗ ↔ pₗ ≤ qₗ.comap f :=
+  Iff.rfl
+
+variable {pₗ qₗ} {rₗ : Submodule S N₃} in
+theorem comp_mem_compatibleMaps {f g} (hf : f ∈ pₗ.compatibleMaps qₗ)
+    (hg : g ∈ qₗ.compatibleMaps rₗ) : g ∘ₗ f ∈ pₗ.compatibleMaps rₗ :=
+  fun _ hx ↦ hg (hf hx)
+
+theorem one_mem_compatibleMaps : (1 : Module.End S N) ∈ pₗ.compatibleMaps pₗ :=
+  fun _ ↦ id
 
 end Submodule
 

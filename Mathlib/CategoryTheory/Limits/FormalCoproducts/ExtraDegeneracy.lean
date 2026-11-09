@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.ExtraDegeneracy
-public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 public import Mathlib.CategoryTheory.Limits.Constructions.WidePullbackOfTerminal
+public import Mathlib.CategoryTheory.Limits.FormalCoproducts.Cech
 
 /-!
 # Extradegeneracy for the Cech object
@@ -26,14 +26,11 @@ morphism `T ⟶ U.obj i₀` for some `i₀`.
 
 universe w t v u
 
-open Simplicial
-
 namespace CategoryTheory.Limits.FormalCoproduct
 
 variable {C : Type u} [Category.{v} C] [HasFiniteProducts C]
   (U : FormalCoproduct.{w} C) {T : C} (hT : IsTerminal T)
 
-set_option backward.defeqAttrib.useBackward true in
 instance (n : ℕ) :
     HasWidePullback (Arrow.mk ((isTerminalIncl T hT).from U)).right
       (fun (_ : Fin (n + 1)) ↦ (Arrow.mk ((isTerminalIncl T hT).from U)).left)
@@ -61,15 +58,12 @@ lemma cechIsoCechNerveApp_hom_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop)
       WidePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i = U.powerπ i :=
   IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma cechIsoCechNerveApp_inv_π (n : SimplexCategoryᵒᵖ) (i : ToType n.unop) :
     (U.cechIsoCechNerveApp hT n).inv ≫ U.powerπ i =
       WidePullback.π (fun _ ↦ (isTerminalIncl T hT).from U) i := by
   rw [← U.cechIsoCechNerveApp_hom_π hT, Iso.inv_hom_id_assoc]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- The Cech construction for `FormalCoproduct` is isomorphic
 to the general `Arrow.cechNerve` construction applied to the morphism
 to the terminal object. -/
@@ -90,7 +84,6 @@ noncomputable def cechIsoAugmentedCechNerve :
     ext : 1
     apply (isTerminalIncl _ hT).hom_ext)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The Cech object of `U : FormalCoproduct C` has an extra degeneracy
 when there is a morphism `T ⟶ U.obj i₀` from the terminal object. -/
 noncomputable def extraDegeneracyCech {i₀ : U.I} (d : T ⟶ U.obj i₀) :

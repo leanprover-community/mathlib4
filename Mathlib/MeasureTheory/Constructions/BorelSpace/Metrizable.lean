@@ -7,8 +7,8 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
-public import Mathlib.Topology.Metrizable.Real
 public import Mathlib.Topology.IndicatorConstPointwise
+public import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Measurable functions in (pseudo-)metrizable Borel spaces
@@ -16,7 +16,9 @@ public import Mathlib.Topology.IndicatorConstPointwise
 
 public section
 
-open Filter MeasureTheory TopologicalSpace Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory TopologicalSpace NNReal ENNReal MeasureTheory
+
+open scoped Topology
 
 variable {α β : Type*} [MeasurableSpace α]
 

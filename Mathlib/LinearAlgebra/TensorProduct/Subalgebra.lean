@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Some results on tensor product of subalgebras
 
 ## Linear maps induced by multiplication for subalgebras
@@ -135,7 +134,7 @@ set_option backward.isDefEq.respectTransparency false in
 This is promoted to an `R`-algebra isomorphism `Algebra.TensorProduct.algEquivIncludeRange`. -/
 def linearEquivIncludeRange :
     S ⊗[R] T ≃ₗ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
-      (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinear
+      (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinearMap
   (_root_.TensorProduct.map
     includeLeft.toLinearMap.rangeRestrict includeRight.toLinearMap.rangeRestrict)
   (includeLeft.toLinearMap.range.mulMap includeRight.toLinearMap.range)

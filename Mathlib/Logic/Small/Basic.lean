@@ -5,8 +5,11 @@ Authors: Kim Morrison
 -/
 module
 
-public import Mathlib.Logic.Small.Defs
 public import Mathlib.Logic.Equiv.Set
+public import Mathlib.Logic.Small.Defs
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Instances and theorems for `Small`.
@@ -68,7 +71,7 @@ instance small_sum {α β} [Small.{w} α] [Small.{w} β] : Small.{w} (α ⊕ β)
   ⟨⟨Shrink α ⊕ Shrink β, ⟨Equiv.sumCongr (equivShrink α) (equivShrink β)⟩⟩⟩
 
 instance small_set {α} [Small.{w} α] : Small.{w} (Set α) :=
-  ⟨⟨Set (Shrink α), ⟨Equiv.Set.congr (equivShrink α)⟩⟩⟩
+  ⟨⟨Set (Shrink α), ⟨(equivShrink α).setCongr⟩⟩⟩
 
 instance small_quot {α : Type u} [Small.{v} α] (r : α → α → Prop) : Small.{v} (Quot r) :=
   small_of_surjective Quot.mk_surjective

@@ -6,6 +6,7 @@ Authors: Etienne Marion, Rémy Degenne, Kexing Ying
 module
 
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
+
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
 import Mathlib.MeasureTheory.Function.Holder
 
@@ -37,7 +38,7 @@ conditional expectation, pull-out, bilinear map
 public section
 
 
-open TopologicalSpace MeasureTheory.Lp Filter ContinuousLinearMap
+open MeasureTheory.Lp Filter ContinuousLinearMap
 
 open scoped NNReal ENNReal Topology MeasureTheory
 
@@ -61,14 +62,13 @@ theorem condExp_stronglyMeasurable_simpleFunc_bilin [CompleteSpace E]
   apply @SimpleFunc.induction _ _ m _ (fun f ↦ _)
     (fun c s hs ↦ ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ ↦ ?_) f
   · simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
-      SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
+      FunLike.coe_zero, Set.piecewise_eq_indicator]
     rw [this, this]
     refine (condExp_indicator ((B c).integrable_comp hg) hs).trans ?_
     filter_upwards [(B c).comp_condExp_comm hg (m := m)] with ω hω
     simp only [Function.comp_apply] at hω
     simp only [Set.indicator, hω, Function.comp_def]
-  · have h_add := @SimpleFunc.coe_add _ _ m _ g₁ g₂
-    calc
+  · calc
       μ[fun ω ↦ B (g₁ ω + g₂ ω) (g ω) | m] =ᵐ[μ]
           μ[fun ω ↦ B (g₁ ω) (g ω) | m] + μ[fun ω ↦ B (g₂ ω) (g ω) | m] := by
         simp_rw [B.map_add]
@@ -173,10 +173,9 @@ theorem condExp_bilin_of_stronglyMeasurable_left [CompleteSpace E] {f : Ω → F
     rw [hω1, hω2]
   suffices (μ.restrict (sets n))[fun ω ↦ B ((sets n).indicator f ω) (g ω) | m]
       =ᵐ[μ.restrict (sets n)] fun ω ↦ B ((sets n).indicator f ω) ((μ.restrict (sets n))[g | m] ω) by
-    refine EventuallyEq.trans (condExp_congr_ae ?_) (this.trans ?_)
-    · filter_upwards [indicator_ae_eq_restrict (f := f) <| hm _ <| h_meas n] with ω hω
-      rw [hω]
-    · filter_upwards [indicator_ae_eq_restrict (f := f) <| hm _ <| h_meas n] with ω hω
+    refine EventuallyEq.trans (condExp_congr_ae ?_) (this.trans ?_) <;>
+    · filter_upwards [indicator_ae_eq_restrict (f := f) (hm _ (h_meas n)).nullMeasurableSet]
+        with ω hω
       rw [hω]
   have : IsFiniteMeasure (μ.restrict (sets n)) := by
     constructor

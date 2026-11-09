@@ -10,7 +10,6 @@ public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RingTheory.TensorProduct.MonoidAlgebra
 
 /-!
-
 ## Main Purpose
 This file is the preliminary for the `linearize` functor from `Action (Type w) G` to `Rep k G`,
 constructing the functor from the `Representation` would reduce the amount of DefEq abuses that we

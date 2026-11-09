@@ -77,13 +77,17 @@ theorem IsIsotypicOfType.of_isSimpleModule [IsSimpleModule R M] : IsIsotypicOfTy
 
 variable {R}
 
-theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
-  fun m _ m' _ ↦
-    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
-    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m'
+theorem IsIsotypic.isIsotypicOfType [IsSemisimpleRing R] [IsSimpleModule R S] (h : IsIsotypic R R) :
+    IsIsotypicOfType R M S :=
+  fun m ↦
+    have ⟨_, ⟨e⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R S
+    have ⟨_, ⟨e'⟩⟩ := IsSemisimpleRing.exists_linearEquiv_ideal_of_isSimpleModule R m
     have := IsSimpleModule.congr e.symm
     have := IsSimpleModule.congr e'.symm
     ⟨e'.trans <| (h _ _).some.trans e.symm⟩
+
+theorem IsIsotypic.of_self [IsSemisimpleRing R] (h : IsIsotypic R R) : IsIsotypic R M :=
+  fun m _ ↦ h.isIsotypicOfType M m
 
 variable {M N S}
 
@@ -209,7 +213,9 @@ instance (c : isotypicComponents R M) : IsSemisimpleModule R c := by
 variable {S} in
 theorem LinearEquiv.isotypicComponent_eq (e : N ≃ₗ[R] S) :
     isotypicComponent R M N = isotypicComponent R M S :=
-  congr_arg sSup <| Set.ext fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)
+  congr(sSup $(Set.ext (a := {m : Submodule R M | Nonempty (m ≃ₗ[R] N)})
+    (b := {m : Submodule R M | Nonempty (m ≃ₗ[R] S)})
+    fun _ ↦ Nonempty.congr (·.trans e) (·.trans e.symm)))
 
 section SimpleSubmodule
 
@@ -336,7 +342,7 @@ def Submodule.IsFullyInvariant (N : Submodule R M) : Prop :=
 
 theorem isFullyInvariant_iff_isTwoSided {I : Ideal R} : I.IsFullyInvariant ↔ I.IsTwoSided := by
   simpa only [Submodule.IsFullyInvariant, ← MulOpposite.opEquiv.trans (RingEquiv.moduleEndSelf R
-    |>.toEquiv) |>.forall_congr_right, SetLike.le_def, I.isTwoSided_iff] using! forall_comm
+    |>.toEquiv) |>.forall_congr_right, IsConcreteLE.le_iff, I.isTwoSided_iff] using! forall_comm
 
 variable (R M) in
 /-- The fully invariant submodules of a module form a complete sublattice in the lattice of
@@ -357,7 +363,6 @@ section Equiv
 variable {ι : Type*} [DecidableEq ι] {N : ι → Submodule R M}
   (ind : iSupIndep N) (iSup_top : ⨆ i, N i = ⊤) (invar : ∀ i, (N i).IsFullyInvariant)
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- If an `R`-module `M` is the direct sum of fully invariant submodules `Nᵢ`,
 then `End R M` is isomorphic to `Πᵢ End R Nᵢ` as a ring. -/
 noncomputable def iSupIndep.ringEquiv : Module.End R M ≃+* Π i, Module.End R (N i) where
@@ -466,12 +471,11 @@ form a complete atomic Boolean algebra. -/
     exact le_biSup _ (isFullyInvariant_iff_le_imp_isotypicComponent_le.mp m.2 _ le)
   map_rel_iff' := (GaloisCoinsertion.setIsotypicComponents R M).l_le_l_iff
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem isFullyInvariant_iff_sSup_isotypicComponents {m : Submodule R M} :
     m.IsFullyInvariant ↔ ∃ s ⊆ isotypicComponents R M, m = sSup s := by
   refine ⟨fun h ↦ ⟨OrderIso.setIsotypicComponents.symm ⟨m, h⟩, ⟨?_, ?_⟩⟩, ?_⟩
   · rintro _ ⟨c, _, rfl⟩; exact c.2
-  · convert! Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
+  · convert Subtype.ext_iff.mp (OrderIso.setIsotypicComponents.right_inv ⟨m, h⟩).symm
     simp [sSup_image, OrderIso.setIsotypicComponents, OrderIso.symm]
   · rintro ⟨_, hs, rfl⟩
     exact (fullyInvariantSubmodule R M).sSupClosed fun _ h ↦ .of_mem_isotypicComponents (hs h)

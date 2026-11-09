@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
 
 /-!
-
 # Construction of functors N for the Dold-Kan correspondence
 
 In this file, we construct functors `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)`
@@ -45,7 +44,6 @@ namespace DoldKan
 
 variable {C : Type*} [Category* C] [Preadditive C]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)` which maps
 `X` to the formal direct factor of `K[X]` defined by `PInfty`. -/
 @[simps, implicit_reducible]

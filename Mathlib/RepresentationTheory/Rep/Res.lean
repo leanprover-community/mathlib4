@@ -6,7 +6,8 @@ Authors: Edison Xie
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
-public import Mathlib.RepresentationTheory.Rep.Iso
+public import Mathlib.RepresentationTheory.Rep.Basic
+
 /-!
 # Restriction of representations
 
@@ -31,7 +32,7 @@ namespace Rep
 @[expose, implicit_reducible]
 def resMap {X Y : Rep k G} (f : H →* G) (p : X ⟶ Y) :
     of (X := X.V) (X.ρ.comp f) ⟶ of (X := Y.V) (Y.ρ.comp f) :=
-  ofHom ⟨p.hom, fun h ↦ by simpa using p.hom.2 (f h)⟩
+  ofHom ⟨p.hom, fun h ↦ by simpa using! p.hom.2 (f h)⟩
 
 /-- The restriction functor `Rep R G ⥤ Rep R H` for a subgroup `H` of `G`. -/
 abbrev resFunctor (f : H →* G) : Rep.{t} k G ⥤ Rep k H where
@@ -44,6 +45,8 @@ abbrev res (f : H →* G) (M : Rep k G) := (resFunctor f).obj M
 variable (f : H →* G) (M : Rep k G)
 
 lemma res_id : res (MonoidHom.id G) M = M := rfl
+
+lemma resMap_id {X Y : Rep k G} (p : X ⟶ Y) : resMap (MonoidHom.id G) p = p := rfl
 
 @[simp] lemma res_obj_ρ : (res f M).ρ = (M.ρ.comp f) := rfl
 
@@ -118,7 +121,6 @@ lemma res_map_exact {k : Type u} [CommRing k]
     (S.map (resFunctor f)).Exact ↔ S.Exact := by
   rw [ShortComplex.exact_map_iff_of_faithful]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma shortExact_res {k : Type u} [CommRing k] (φ : H →* G) {S : ShortComplex (Rep.{w} k G)} :
     (S.map (resFunctor φ)).ShortExact ↔ S.ShortExact := by
   constructor

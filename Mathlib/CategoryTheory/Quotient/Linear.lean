@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Quotient
 public import Mathlib.CategoryTheory.Linear.LinearFunctor
+public import Mathlib.CategoryTheory.Quotient
 
 /-!
 # The quotient category is linear
@@ -89,7 +89,6 @@ end Linear
 
 variable (R)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Assuming `Quotient r` has already been endowed with a preadditive category structure
 such that `functor r : C ⥤ Quotient r` is additive, and that `C` has an `R`-linear category
 structure compatible with `r`, this is the induced `R`-linear category structure on
