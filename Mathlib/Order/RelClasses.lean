@@ -74,14 +74,17 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
   the constructive reals, and is also known as negative transitivity,
   since the contrapositive asserts transitivity of the relation `¬ a < b`. -/
+@[deprecated IsStrictTotalOrder +typeChanged (since := "2026-11-08")]
 class IsOrderConnected (α : Type u) (lt : α → α → Prop) : Prop where
   /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`. -/
   conn : ∀ a b c, lt a c → lt a b ∨ lt b c
 
+@[deprecated "`IsStrictTotalOrder` is deprecated" (since := "2026-11-08")]
 theorem IsOrderConnected.neg_trans {r : α → α → Prop} [IsOrderConnected α r] {a b c}
     (h₁ : ¬r a b) (h₂ : ¬r b c) : ¬r a c :=
   mt (IsOrderConnected.conn a b c) <| by simp [h₁, h₂]
 
+@[deprecated "`IsStrictTotalOrder` is deprecated" (since := "2026-11-08")]
 theorem isStrictWeakOrder_of_isOrderConnected [Std.Asymm r] [IsOrderConnected α r] :
     IsStrictWeakOrder α r :=
   { @Std.Asymm.irrefl α r _ with
@@ -89,7 +92,7 @@ theorem isStrictWeakOrder_of_isOrderConnected [Std.Asymm r] [IsOrderConnected α
     incomp_trans := fun _ _ _ ⟨h₁, h₂⟩ ⟨h₃, h₄⟩ =>
       ⟨IsOrderConnected.neg_trans h₁ h₃, IsOrderConnected.neg_trans h₄ h₂⟩ }
 
--- see Note [lower instance priority]
+@[deprecated "`IsStrictTotalOrder` is deprecated" (since := "2026-11-08")]
 instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsOrderConnected α r :=
   ⟨fun _ _ _ h ↦ (trichotomous _ _).imp_right
