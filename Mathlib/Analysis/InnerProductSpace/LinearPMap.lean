@@ -202,7 +202,7 @@ theorem IsFormalAdjoint.le_adjoint (h : T.IsFormalAdjoint S) : S ≤ T† :=
 the functional `x ↦ ⟪y, T x⟫` on `T.domain` can be represented as an inner product with
 a vector of `E`. -/
 theorem mem_adjoint_domain_iff_exists
-    (T : E →ₗ.[𝕜] F) (hT : Dense (T.domain : Set E)) (y : F) :
+    {T : E →ₗ.[𝕜] F} (hT : Dense (T.domain : Set E)) (y : F) :
     y ∈ T.adjoint.domain ↔
       ∃ w : E, ∀ x : T.domain,
         inner 𝕜 w (x : E) = inner 𝕜 y (T x) := by
