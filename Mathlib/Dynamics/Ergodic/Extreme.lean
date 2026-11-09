@@ -36,7 +36,7 @@ theorem of_mem_extremePoints_measure_univ_eq (hfm : Measurable f) {c : ℝ≥0�
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert zero_measure
     rw [← measure_univ_eq_zero, h.1.2]
-  · refine ⟨hf, .of_preimage_eq hfm hf.quasiMeasurePreserving ?_⟩
+  · refine .of_preimage_eq hfm hf ?_
     have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]

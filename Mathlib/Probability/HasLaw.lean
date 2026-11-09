@@ -81,9 +81,8 @@ lemma _root_.MeasureTheory.MeasurePreserving.hasLaw (h : MeasurePreserving X P �
   aemeasurable := h.aemeasurable
   map_eq := h.map_eq
 
-lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) (h₂ : Measurable X) :
-    MeasurePreserving X P μ where
-  aemeasurable := h₂.aemeasurable
+lemma HasLaw.measurePreserving (h₁ : HasLaw X μ P) : MeasurePreserving X P μ where
+  aemeasurable := h₁.aemeasurable
   map_eq := h₁.map_eq
 
 @[to_fun (attr := simp)]

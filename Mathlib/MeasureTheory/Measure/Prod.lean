@@ -902,10 +902,18 @@ Some authors call a map of the form `fun (a, c) ↦ (f a, g a c)` a *skew produc
 thus the choice of a name.
 -/
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
-    (hfm : Measurable f) {g : α → γ → δ} (hgm : Measurable (uncurry g))
-    (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
+    {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  have : Measurable fun p : α × γ => (f p.1, g p.1 p.2) := (hfm.comp measurable_fst).prodMk hgm
+  -- Replace `f` by a measurable function which is a.e. equal to it.
+  set f' := hf.aemeasurable.mk f
+  have hff' : f =ᵐ[μa] f' := hf.aemeasurable.ae_eq_mk
+  have hf' : MeasurePreserving f' μa μb := hf.congr hff'
+  refine (?_ : MeasurePreserving (fun p : α × γ => (f' p.1, g p.1 p.2)) _ _).congr ?_
+  swap
+  · filter_upwards [quasiMeasurePreserving_fst.ae hff'] with p hp
+    simp [hp]
+  have : Measurable fun p : α × γ => (f' p.1, g p.1 p.2) :=
+    (hf.aemeasurable.measurable_mk.comp measurable_fst).prodMk hgm
   use this.aemeasurable
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
@@ -918,7 +926,7 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
   rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
-    ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
+    ← hf'.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
   rw [← ha, map_apply hgm.of_uncurry_left (measurable_prodMk_left hs), preimage_preimage,

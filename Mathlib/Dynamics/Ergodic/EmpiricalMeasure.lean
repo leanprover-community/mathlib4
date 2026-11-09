@@ -35,11 +35,6 @@ spaces.
 - `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` gives an invariant
   probability measure defined over a (not necessarily compact) ambient space, supported on a
   compact, forward invariant subset.
-
-## TODO
-
-- When the `Measurable` requirement of `MeasurePreserving` is relaxed,
-  `exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant` can be generalized.
 -/
 
 public section
@@ -140,8 +135,7 @@ public theorem exists_measurePreserving_probabilityMeasure
 theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
     [TopologicalSpace X] [BorelSpace X] [T2Space X]
     {K : Set X} (hcomp : IsCompact K) (hnonempty : K.Nonempty)
-    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K)
-    (hfmeas : Measurable f) : -- TODO: relax this
+    {f : X → X} (hfcont : ContinuousOn f K) (hfinv : Set.MapsTo f K K) :
     ∃ μ : Measure X, MeasurePreserving f μ μ
       ∧ Measure.Regular μ ∧ IsProbabilityMeasure μ ∧ Measure.support μ ⊆ K := by
   have : CompactSpace K := isCompact_iff_compactSpace.mp hcomp
@@ -160,7 +154,12 @@ theorem exists_measurePreserving_probabilityMeasure_of_compact_forwardInvariant
   have hsemi : Function.Semiconj ι (Set.MapsTo.restrict f K K hfinv) f := by
     intro
     rfl
-  refine ⟨hιmp.of_semiconj hμ hsemi hfmeas.aemeasurable, inferInstance, inferInstance, ?_⟩
+  have hfν : AEMeasurable f ν := by
+    rw [ProbabilityMeasure.toMeasure_map,
+      (MeasurableEmbedding.subtype_coe hcomp.isClosed.measurableSet).aemeasurable_map_iff,
+      ← hsemi.comp_eq]
+    exact (continuous_subtype_val.comp (hfcont.mapsToRestrict hfinv)).measurable.aemeasurable
+  refine ⟨hιmp.of_semiconj hμ hsemi hfν, inferInstance, inferInstance, ?_⟩
   -- Now we prove that the invariant measure is supported on the forward invariant set
   apply Measure.support_subset_of_isClosed hcomp.isClosed
   rw [MeasureTheory.mem_ae_iff]

@@ -157,8 +157,8 @@ theorem preErgodic_of_preErgodic_semiconj (hg : MeasurePreserving g μ μ') (hf 
     exact hg.quasiMeasurePreserving.preimage_ae_eq hs₁
 
 theorem ergodic_of_ergodic_semiconj (hg : MeasurePreserving g μ μ') (hf : Ergodic f μ)
-    {f' : β → β} (hf' : Measurable f') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
-  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf'.aemeasurable,
+    {f' : β → β} (hf' : AEMeasurable f' μ') (h_comm : Semiconj g f f') : Ergodic f' μ' :=
+  ⟨hg.of_semiconj hf.toMeasurePreserving h_comm hf',
    hg.preErgodic_of_preErgodic_semiconj hf.toPreErgodic h_comm⟩
 
 theorem preErgodic_conjugate_iff {e : α ≃ᵐ β} (h : MeasurePreserving e μ μ') :
