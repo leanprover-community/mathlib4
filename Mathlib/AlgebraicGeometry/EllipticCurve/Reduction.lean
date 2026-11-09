@@ -336,14 +336,14 @@ lemma hasGoodReduction_iff_isElliptic_reduction {W : WeierstrassCurve K} [hW : I
   simpa [hW] using (valuation_le_one (R := R) (K := K) _ _).ge_iff_eq.symm
 
 /-- A minimal Weierstrass equation has multiplicative reduction if and only if
-the valuation of its discriminant is less than 1 and the valuation of `a₄` equals 1. -/
+the valuation of its discriminant is less than 1 and the valuation of `c₄` equals 1. -/
 @[mk_iff]
 class HasMultiplicativeReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
   multiplicativeReduction : valuation K (maximalIdeal R) W.c₄ = 1
 
 /-- A minimal Weierstrass equation has additive reduction if and only if
-the valuation of its discriminant is less than 1 and the valuation of `a₄` is less than 1. -/
+the valuation of its discriminant is less than 1 and the valuation of `c₄` is less than 1. -/
 @[mk_iff]
 class HasAdditiveReduction (W : WeierstrassCurve K) : Prop extends IsMinimal R W where
   badReduction : valuation K (maximalIdeal R) W.Δ < 1
