@@ -144,28 +144,29 @@ inductive CachedResult where
   | positive (pf : Expr)
   | nonnegative (pf : Expr)
   | nonzero (pf : Expr)
+  /-- `positivity` failed, so it should not be tried again. -/
+  | none
 
 /-- Gives a generic description of the cached `positivity` result. -/
 def CachedResult.toString : CachedResult → String
   | .positive _ => "positive"
   | .nonnegative _ => "nonnegative"
   | .nonzero _ => "nonzero"
+  | .none => "none"
 
 /-- `positivity` state -/
 structure State where
-  /-- Cache holding successful goals. -/
+  /-- Cache holding the results of goals, including failures. -/
   cache : ExprMap CachedResult := {}
-  /-- Cache storing failed goals such that they are not tried again. -/
-  failureCache : ExprSet := {}
 
 /-- Monad to run `positivity` tactic in. -/
 abbrev PositivityM := StateT Positivity.State MetaM
 
 /-- Cache for failed goals such that `positivity` can fail fast next time. -/
 def cacheFailure (e : Expr) : PositivityM Unit := do
-  modify fun s => { s with failureCache := s.failureCache.insert e }
+  modify fun s => { s with cache := s.cache.insert e .none }
 
-/-- Gives a message describing all successful results in the `positivity` cache. -/
+/-- Gives a message describing all results in the `positivity` cache. -/
 def cacheInfo : PositivityM MessageData := do
   let ms := (← get).cache.toList.map fun r => m!"{r.1} => {r.2.toString}"
   return MessageData.joinSep ms "\n"
@@ -416,15 +417,6 @@ def catchNone {e pα?} (t : MetaM (Strictness zα e pα?)) : MetaM (Strictness z
     pure .none
 
 variable {zα} in
-/-- Converts a `PositivityM Strictness` which can fail
-into one that never fails and returns `.none` instead. -/
-def catchNone' {e pα?} (t : PositivityM (Strictness zα e pα?))
-    : PositivityM (Strictness zα e pα?) :=
-  try t catch e =>
-    trace[Tactic.positivity.failure] "{e.toMessageData}"
-    pure .none
-
-variable {zα} in
 /-- Converts a `MetaM Strictness` which can return `.none`
 into one which never returns `.none` but fails instead. -/
 def throwNone {e pα?} (t : MetaM (Strictness zα e pα?)) : MetaM (Strictness zα e pα?) := do
@@ -623,20 +615,20 @@ It assumes `t₁` has already been run for a result, and runs `t₂` and takes t
 It will skip `t₂` if `t₁` is already a proof of `.positive`, and can also combine
 `.nonnegative` and `.nonzero` to produce a `.positive` result. -/
 def orElse {pα?} {e : Q($α)} (t₁ : Strictness zα e pα?) (t₂ : PositivityM (Strictness zα e pα?)) :
-    PositivityM (Strictness zα e pα?) :=
-  match t₁ with
-  | .none => catchNone' t₂
-  | p@(.positive _) => pure p
-  | .nonnegative p₁ => do
-    match ← catchNone' t₂ with
-    | p@(.positive _) => pure p
-    | .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
-    | _ => pure (.nonnegative p₁)
-  | .nonzero p₁ => do
-    match (dependent := true) ← catchNone' t₂ with
-    | p@(.positive _) => pure p
-    | .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
-    | _ => pure (.nonzero p₁)
+    PositivityM (Strictness zα e pα?) := do
+  if t₁ matches .positive _ then return t₁
+  let r₂ ← try t₂ catch err =>
+    trace[Tactic.positivity.failure] "{err.toMessageData}"
+    pure .none
+  match (dependent := true) t₁, r₂ with
+  | .none, r₂ => pure r₂
+  | p@(.positive _), _ => pure p
+  | .nonnegative _, p@(.positive _) => pure p
+  | .nonnegative p₁, .nonzero p₂ => pure (.positive q(lt_of_le_of_ne' $p₁ $p₂))
+  | .nonnegative p₁, _ => pure (.nonnegative p₁)
+  | .nonzero _, p@(.positive _) => pure p
+  | .nonzero p₁, .nonnegative p₂ => pure (.positive q(lt_of_le_of_ne' $p₂ $p₁))
+  | .nonzero p₁, _ => pure (.nonzero p₁)
 
 /-- Build a proof of `goalType` using `lem`, filling its positivity premises with `prePfs`. -/
 def mkProof (lem : PositivityLemma) (goalType : Q(Prop))
@@ -702,9 +694,11 @@ def findCached? (pα? : Option Q(PartialOrder $α)) (e : Q($α)) :
     | .positive pf => pure <| some <| .positive pf
     | .nonnegative pf => pure <| some <| .nonnegative pf
     | .nonzero pf => pure <| some <| .nonzero pf
+    | .none => pure <| some .none
   | none =>
     match cached with
     | .nonzero pf => pure <| some <| .nonzero pf
+    | .none => pure <| some .none
     | _ => pure none
 
 end Meta.Positivity
@@ -760,7 +754,6 @@ partial def core {u : Level} {α : Q(Type u)} (zα : Q(Zero $α))
     PositivityM (Strictness zα e pα?) := withReducible do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
-  if e ∈ (← get).failureCache then return .none else
   if let some r ← findCached? zα pα? e then
     trace[Tactic.positivity] "cached: {e} => {r.toString}"
     return r

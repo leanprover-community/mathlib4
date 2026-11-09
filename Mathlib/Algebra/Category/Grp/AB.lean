@@ -25,13 +25,11 @@ universe u v w
 
 open CategoryTheory Limits
 
-set_option backward.defeqAttrib.useBackward true in
 instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by

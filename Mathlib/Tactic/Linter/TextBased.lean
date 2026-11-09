@@ -51,8 +51,6 @@ inductive StyleError where
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
-  /-- A line contains trailing whitespace. -/
-  | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
   /-- A unicode character was used that isn't allowed -/
@@ -87,7 +85,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | windowsLineEnding => "This file contains windows line endings (\\r\\n): please use Unix line\
     endings (\\n) instead"
-  | trailingWhitespace => "This line ends with some whitespace: please remove this"
   | semicolon => "This line contains a space before a semicolon"
   | StyleError.unwantedUnicode c => s!"This line contains a unicode character that is not on the \
     allowlist '{c}' ({c.printCodepointHex}). \
@@ -122,7 +119,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
-  | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
   | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.unicodeVariant _ _ => "ERR_UNICODE_VARIANT"
@@ -216,7 +212,6 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)
         | "ERR_SEM" => some (StyleError.semicolon)
-        | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_UNICODE" => do
           -- extract the offending unicode character from `errorMessage`
@@ -290,22 +285,6 @@ def adaptationNoteLinter : TextbasedLinter := fun opts lines ↦ Id.run do
         !line.contains "see adaptation note" then
       errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
-
-/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
-public register_option linter.trailingWhitespace : Bool := { defValue := true }
-
-@[inherit_doc linter.trailingWhitespace]
-def trailingWhitespaceLinter : TextbasedLinter := fun opts lines ↦ Id.run do
-  unless getLinterValue linter.trailingWhitespace opts do return (#[], none)
-
-  let mut errors := Array.mkEmpty 0
-  let mut fixedLines : Vector String lines.size := lines.toVector
-  for h : idx in [:lines.size] do
-    let line := lines[idx]
-    if line.back == ' ' then
-      errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set idx line.trimAsciiEnd.copy
-  return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/
 public register_option linter.whitespaceBeforeSemicolon : Bool := { defValue := true }
@@ -433,7 +412,6 @@ def unicodeLinter : TextbasedLinter := fun opts lines ↦ Id.run do
 def allLinters : Array TextbasedLinter := #[
     adaptationNoteLinter,
     semicolonLinter,
-    trailingWhitespaceLinter,
     unicodeLinter,
   ]
 

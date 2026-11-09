@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
+public import Mathlib.MeasureTheory.Measure.Typeclasses.ZeroOne
 public import Mathlib.Topology.MetricSpace.Perfect
 public import Mathlib.Topology.Separation.CountableSeparatingOn
 
@@ -1111,6 +1112,65 @@ theorem MeasurableSet.standardBorel {s : Set α} (hs : MeasurableSet s) :
   obtain ⟨_, _, _, s_closed, _⟩ := hs.isClopenable'
   have := s_closed.polishSpace
   infer_instance
+
+/-- In a standard Borel space, a zero-one measure that is not the zero measure is a Dirac
+measure. -/
+theorem MeasureTheory.IsZeroOneMeasure.exists_eq_dirac
+    {μ : Measure α} [IsZeroOneMeasure μ] [NeZero μ] : ∃ x₀, μ = Measure.dirac x₀ := by
+  have : IsProbabilityMeasure μ := by
+    rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with (h | h)
+    · simp_all
+    · exact ⟨h⟩
+  obtain ⟨A, hAm, hAsep⟩ := exists_seq_separating (α := α) MeasurableSet.univ univ
+  let B := fun n => if h : μ (A n) = 1 then A n else (A n)ᶜ
+  have mBn : MeasurableSet (⋂ n, B n) := by
+    refine MeasurableSet.iInter fun n ↦ ?_
+    simp only [dite_eq_ite, B]
+    split_ifs
+    · exact hAm n
+    · exact (hAm n).compl
+  have hBn : μ (⋂ n, B n) = 1 := by
+    refine (prob_compl_eq_zero_iff mBn).mp ?_
+    simp only [dite_eq_ite, compl_iInter, measure_iUnion_null_iff, B]
+    intro n
+    split_ifs with h
+    · simp_all
+    · rw [compl_compl]
+      rcases μ.zero_one (A n) with (h₀ | h₁)
+      · exact h₀
+      · simp_all
+  obtain ⟨x₀, hx₀⟩ : ∃ x₀, ⋂ n, B n = {x₀} := by
+    simp_rw [eq_singleton_iff_unique_mem]
+    have neBn : (⋂ n, B n).Nonempty := by
+      by_contra! h
+      rw [h] at hBn
+      simp_all
+    refine ⟨neBn.some, neBn.some_mem, fun y hy ↦ ?_⟩
+    refine hAsep y (by trivial) neBn.some (by trivial) fun n ↦ ?_
+    have hsome := neBn.some_mem
+    simp only [dite_eq_ite, mem_iInter, B] at hsome hy
+    specialize hsome n
+    specialize hy n
+    constructor
+    · intro h
+      split_ifs at hy with hμAn
+      · simpa [hμAn] using! hsome
+      · contradiction
+    · intro h
+      split_ifs at hsome with hμAn
+      · simpa [hμAn] using! hy
+      · contradiction
+  use x₀
+  ext s hs
+  by_cases h : x₀ ∈ s
+  · simp [h]
+    have : μ {x₀} ≤ μ s := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, hBn] at this
+    simp_all
+  · simp [h]
+    have : μ s ≤ μ {x₀}ᶜ := measure_mono (μ := μ) (by grind)
+    rw [← hx₀, measure_compl mBn (by simp), MeasureTheory.measure_univ, hBn] at this
+    simp_all
 
 end StandardBorelSpace
 

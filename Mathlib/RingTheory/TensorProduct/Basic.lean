@@ -186,11 +186,7 @@ variable [NonUnitalSemiring B] [Module R B] [SMulCommClass R B B] [IsScalarTower
 
 unseal mul in
 protected theorem mul_assoc (x y z : A ⊗[R] B) : mul (mul x y) z = mul x (mul y z) := by
-  -- restate as an equality of morphisms so that we can use `ext`
-  suffices LinearMap.llcomp R _ _ _ mul ∘ₗ mul =
-      (LinearMap.llcomp R _ _ _ LinearMap.lflip.toLinearMap <|
-        LinearMap.llcomp R _ _ _ mul.flip ∘ₗ mul).flip by
-    congrm $this x y z
+  apply mul.assoc_iff.mpr
   ext xa xb ya yb za zb
   congrm $(mul_assoc xa ya za) ⊗ₜ $(mul_assoc xb yb zb)
 

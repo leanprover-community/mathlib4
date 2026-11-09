@@ -147,12 +147,10 @@ theorem isSquare [IsSepClosed k] (x : k) [h2 : NeZero (2 : k)] : IsSquare x := b
 
 theorem roots_eq_zero_iff [IsSepClosed k] {p : k[X]} (hsep : p.Separable) :
     p.roots = 0 ↔ p = Polynomial.C (p.coeff 0) := by
-  refine ⟨fun h => ?_, fun hp => by rw [hp, roots_C]⟩
-  rcases le_or_gt (degree p) 0 with hd | hd
-  · exact eq_C_of_degree_le_zero hd
-  · obtain ⟨z, hz⟩ := IsSepClosed.exists_root p hd.ne' hsep
-    rw [← mem_roots (ne_zero_of_degree_gt hd), h] at hz
-    simp at hz
+  refine ⟨fun h => eq_C_of_degree_le_zero ?_, fun hp => by rw [hp, roots_C]⟩
+  contrapose! h
+  rw [roots_ne_zero_iff_exists_isRoot (ne_zero_of_degree_gt h)]
+  exact IsSepClosed.exists_root p h.ne' hsep
 
 theorem exists_eval₂_eq_zero_of_injective {k : Type*} [CommSemiring k] [IsSepClosed K] (f : k →+* K)
     (hf : Function.Injective f) (p : k[X]) (hp : p.degree ≠ 0) (hsep : p.Separable) :

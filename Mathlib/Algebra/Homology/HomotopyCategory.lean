@@ -298,7 +298,6 @@ def Functor.mapHomotopyCategoryCompIso {W' : Type*} [Category W'] [Preadditive W
     (HomotopyCategory.quotient W' c))
 
 variable {c} in
-set_option backward.defeqAttrib.useBackward true in
 /-- The preimage by a fully faithful functor of a homotopy between morphisms
 of homological complexes. -/
 def Functor.preimageHomotopy

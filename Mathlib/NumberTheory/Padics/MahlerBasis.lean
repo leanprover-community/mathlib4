@@ -356,12 +356,10 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℤ_[p]] C₀(ℕ, E) wh
   invFun a := mahlerSeries a
   map_add' f g := by
     ext x
-    simp only [ContinuousMap.coe_add, fwdDiff_iter_add, Pi.add_apply,
-      ZeroAtInftyContinuousMap.coe_mk, ZeroAtInftyContinuousMap.coe_add]
+    simp
   map_smul' r f := by
     ext n
-    simp only [ContinuousMap.coe_smul, RingHom.id_apply, ZeroAtInftyContinuousMap.coe_mk,
-      ZeroAtInftyContinuousMap.coe_smul, Pi.smul_apply, fwdDiff_iter_const_smul]
+    simp
   left_inv f := (hasSum_mahler f).tsum_eq
   right_inv a := ZeroAtInftyContinuousMap.ext <|
     fwdDiff_mahlerSeries (cocompact_eq_atTop (α := ℕ) ▸ zero_at_infty a)

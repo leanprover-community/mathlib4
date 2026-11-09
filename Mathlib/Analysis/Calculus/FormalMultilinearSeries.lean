@@ -284,7 +284,7 @@ theorem order_zero : (0 : FormalMultilinearSeries 𝕜 E F).order = 0 := by simp
 theorem ne_zero_of_order_ne_zero (hp : p.order ≠ 0) : p ≠ 0 := fun h => by simp [h] at hp
 
 theorem order_eq_find [DecidablePred fun n => p n ≠ 0] (hp : ∃ n, p n ≠ 0) :
-    p.order = Nat.find hp := by convert! Nat.sInf_def hp
+    p.order = Nat.find hp := by convert! Nat.sInf_def (s := {n | p n ≠ 0}) hp
 
 theorem order_eq_find' [DecidablePred fun n => p n ≠ 0] (hp : p ≠ 0) :
     p.order = Nat.find (FormalMultilinearSeries.ne_iff.mp hp) :=
@@ -298,7 +298,7 @@ theorem order_eq_zero_iff (hp : p ≠ 0) : p.order = 0 ↔ p 0 ≠ 0 := by
   simp [order_eq_zero_iff', hp]
 
 theorem apply_order_ne_zero (hp : p ≠ 0) : p p.order ≠ 0 :=
-  Nat.sInf_mem (FormalMultilinearSeries.ne_iff.1 hp)
+  Nat.sInf_mem (s := {n | p n ≠ 0}) (FormalMultilinearSeries.ne_iff.1 hp)
 
 theorem apply_order_ne_zero' (hp : p.order ≠ 0) : p p.order ≠ 0 :=
   apply_order_ne_zero (ne_zero_of_order_ne_zero hp)
@@ -387,10 +387,13 @@ theorem constFormalMultilinearSeries_apply_succ [NontriviallyNormedField 𝕜] [
     constFormalMultilinearSeries 𝕜 E c (n + 1) = 0 :=
   rfl
 
-theorem constFormalMultilinearSeries_apply_of_nonzero [NontriviallyNormedField 𝕜]
+theorem constFormalMultilinearSeries_apply_of_ne_zero [NontriviallyNormedField 𝕜]
     [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] {c : F}
     {n : ℕ} (hn : n ≠ 0) : constFormalMultilinearSeries 𝕜 E c n = 0 :=
   Nat.casesOn n (fun hn => (hn rfl).elim) (fun _ _ => rfl) hn
+
+@[deprecated (since := "2026-10-13")]
+alias constFormalMultilinearSeries_apply_of_nonzero := constFormalMultilinearSeries_apply_of_ne_zero
 
 @[simp]
 lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]

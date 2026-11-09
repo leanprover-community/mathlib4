@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.SkewMonoidAlgebra.Single
 
 import Mathlib.Algebra.SkewMonoidAlgebra.Support
+
 /-!
 # Univariate skew polynomials
 
@@ -527,10 +528,12 @@ lemma monomial_left_inj {R : Type*} [Semiring R] {a : R} (ha : a ≠ 0) {i j : �
     (monomial i a) = (monomial j a) ↔ i = j :=
   SkewMonoidAlgebra.single_left_inj ha
 
-lemma nat_cast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
+lemma natCast_mul {R : Type*} [Semiring R] (n : ℕ) (p : SkewPolynomial R)
     [MulSemiringAction (Multiplicative ℕ) R] : (n : SkewPolynomial R) * p = n • p :=
   (nsmul_eq_mul _ _).symm
 section Sum
+
+@[deprecated (since := "2026-10-13")] alias nat_cast_mul := natCast_mul
 
 variable {S : Type*} [AddCommMonoid S]
 

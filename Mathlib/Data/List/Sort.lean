@@ -703,22 +703,22 @@ theorem sortedGE_insertionSort : (l.insertionSort (· ≥ ·)).SortedGE :=
 
 @[grind =]
 theorem sortedLE_append {l₁ l₂ : List α} :
-    SortedLE (l₁ ++ l₂) ↔ SortedLE l₁ ∧ SortedLE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a ≤ b := by
+    SortedLE (l₁ ++ l₂) ↔ SortedLE l₁ ∧ SortedLE l₂ ∧ ∀ a ∈ l₁, ∀ b ∈ l₂, a ≤ b := by
   rw [sortedLE_iff_pairwise, sortedLE_iff_pairwise, sortedLE_iff_pairwise, pairwise_append]
 
 @[grind =]
 theorem sortedGE_append {l₁ l₂ : List α} :
-    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b ≤ a := by
+    SortedGE (l₁ ++ l₂) ↔ SortedGE l₁ ∧ SortedGE l₂ ∧ ∀ a ∈ l₁, ∀ b ∈ l₂, b ≤ a := by
   rw [sortedGE_iff_pairwise, sortedGE_iff_pairwise, sortedGE_iff_pairwise, pairwise_append]
 
 @[grind =]
 theorem sortedLT_append {l₁ l₂ : List α} :
-    SortedLT (l₁ ++ l₂) ↔ SortedLT l₁ ∧ SortedLT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), a < b := by
+    SortedLT (l₁ ++ l₂) ↔ SortedLT l₁ ∧ SortedLT l₂ ∧ ∀ a ∈ l₁, ∀ b ∈ l₂, a < b := by
   rw [sortedLT_iff_pairwise, sortedLT_iff_pairwise, sortedLT_iff_pairwise, pairwise_append]
 
 @[grind =]
 theorem sortedGT_append {l₁ l₂ : List α} :
-    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ᵉ (a ∈ l₁) (b ∈ l₂), b < a := by
+    SortedGT (l₁ ++ l₂) ↔ SortedGT l₁ ∧ SortedGT l₂ ∧ ∀ a ∈ l₁, ∀ b ∈ l₂, b < a := by
   rw [sortedGT_iff_pairwise, sortedGT_iff_pairwise, sortedGT_iff_pairwise, pairwise_append]
 
 section

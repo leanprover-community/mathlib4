@@ -626,39 +626,55 @@ protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, 
   exact ⟨n, coe_lt_natCast.2 hn⟩
 
 @[simp]
-theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
+theorem iUnion_Iio_natCast : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
   ext x
   rw [mem_iUnion]
   exact ⟨fun ⟨n, hn⟩ => ne_top_of_lt hn, ENNReal.exists_nat_gt⟩
 
+@[deprecated (since := "2026-10-13")] alias iUnion_Iio_coe_nat := iUnion_Iio_natCast
+
 @[simp]
-theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
+theorem iUnion_Iic_natCast : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
   Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
-    iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
+    iUnion_Iio_natCast ▸ iUnion_mono fun _ => Iio_subset_Iic_self
+
+@[deprecated (since := "2026-10-13")] alias iUnion_Iic_coe_nat := iUnion_Iic_natCast
 
 @[simp]
-theorem iUnion_Ioc_coe_nat : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
+theorem iUnion_Ioc_natCast : ⋃ n : ℕ, Ioc a n = Ioi a \ {∞} := by
+  simp only [← Ioi_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
+
+@[deprecated (since := "2026-10-13")] alias iUnion_Ioc_coe_nat := iUnion_Ioc_natCast
 
 @[simp]
-theorem iUnion_Ioo_coe_nat : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
-  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
+theorem iUnion_Ioo_natCast : ⋃ n : ℕ, Ioo a n = Ioi a \ {∞} := by
+  simp only [← Ioi_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
+
+@[deprecated (since := "2026-10-13")] alias iUnion_Ioo_coe_nat := iUnion_Ioo_natCast
 
 @[simp]
-theorem iUnion_Icc_coe_nat : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_coe_nat, sdiff_eq]
+theorem iUnion_Icc_natCast : ⋃ n : ℕ, Icc a n = Ici a \ {∞} := by
+  simp only [← Ici_inter_Iic, ← inter_iUnion, iUnion_Iic_natCast, sdiff_eq]
+
+@[deprecated (since := "2026-10-13")] alias iUnion_Icc_coe_nat := iUnion_Icc_natCast
 
 @[simp]
-theorem iUnion_Ico_coe_nat : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
-  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_coe_nat, sdiff_eq]
+theorem iUnion_Ico_natCast : ⋃ n : ℕ, Ico a n = Ici a \ {∞} := by
+  simp only [← Ici_inter_Iio, ← inter_iUnion, iUnion_Iio_natCast, sdiff_eq]
+
+@[deprecated (since := "2026-10-13")] alias iUnion_Ico_coe_nat := iUnion_Ico_natCast
 
 @[simp]
-theorem iInter_Ici_coe_nat : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iio, ← compl_iUnion, iUnion_Iio_coe_nat, compl_compl]
+theorem iInter_Ici_natCast : ⋂ n : ℕ, Ici (n : ℝ≥0∞) = {∞} := by
+  simp only [← compl_Iio, ← compl_iUnion, iUnion_Iio_natCast, compl_compl]
+
+@[deprecated (since := "2026-10-13")] alias iInter_Ici_coe_nat := iInter_Ici_natCast
 
 @[simp]
-theorem iInter_Ioi_coe_nat : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
-  simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_coe_nat, compl_compl]
+theorem iInter_Ioi_natCast : ⋂ n : ℕ, Ioi (n : ℝ≥0∞) = {∞} := by
+  simp only [← compl_Iic, ← compl_iUnion, iUnion_Iic_natCast, compl_compl]
+
+@[deprecated (since := "2026-10-13")] alias iInter_Ioi_coe_nat := iInter_Ioi_natCast
 
 @[simp, norm_cast, basify_op ←]
 theorem coe_min (r p : ℝ≥0) : ((min r p : ℝ≥0) : ℝ≥0∞) = min (r : ℝ≥0∞) p := rfl

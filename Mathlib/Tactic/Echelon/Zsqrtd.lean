@@ -80,6 +80,11 @@ def zsqrtdModel {u : Level} (α : Q(Type u)) (dQ : Q(ℤ)) (d : ℤ) : Model α 
   mkEntry e := do
     let some v := zsqrtdOfRawLit? d e
       | throwError "expected a `ℤ√d` literal with raw integer components{indentExpr e}"
+    -- An integer value is emitted as an integer numeral.
+    if v.im = 0 then
+      let n : Q(Zsqrtd $dQ) ← mkNumeral q(Zsqrtd $dQ) v.re.natAbs
+      let entry : Q(Zsqrtd $dQ) := if v.re < 0 then q(-$n) else n
+      return entry
     let entry : Q(Zsqrtd $dQ) := q(⟨$(mkIntLitQ v.re), $(mkIntLitQ v.im)⟩)
     return entry
 

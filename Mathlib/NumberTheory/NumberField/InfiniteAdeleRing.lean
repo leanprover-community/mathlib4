@@ -50,6 +50,7 @@ infinite places. See `NumberField.InfinitePlace` for the definition of an infini
 -/
 
 /-- The infinite adele ring of a number field. -/
+@[implicit_reducible]
 def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
 deriving CommRing, Inhabited, TopologicalSpace, IsTopologicalRing, Algebra K
 
@@ -117,7 +118,6 @@ variable {K}
 
 theorem norm_def [NumberField K] (x : K∞) : ‖x‖ = ∏ v, ‖x v‖ ^ v.mult := rfl
 
-set_option backward.isDefEq.respectTransparency false in
 theorem norm_eq_zero_of_not_isUnit [NumberField K] {x : K∞} (hx : ¬IsUnit x) :
     ‖x‖ = 0 := by
   rw [Pi.isUnit_iff, not_forall] at hx

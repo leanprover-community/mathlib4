@@ -15,7 +15,7 @@ import Mathlib.Algebra.FiniteSupport.Basic
 # The finite adele ring of a number field
 
 This file concerns the finite adele ring of a Dedekind domain `R` and its field of
-fractions under the assumption that `Ring.HasFiniteQuotients R` and `Infinite R`.
+fractions under the assumption that `Ring.HasFiniteQuotients R`.
 Later, these results are applied to the case where `K` is a number field and `R` is `𝓞 K`.
 
 ## Main definitions
@@ -34,7 +34,7 @@ namespace NumberField
 
 open IsDedekindDomain FiniteAdeleRing
 
-variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R] [Infinite R]
+variable {R K : Type*} [CommRing R] [IsDedekindDomain R] [Ring.HasFiniteQuotients R]
   [Field K] [Algebra R K] [IsFractionRing R K]
 
 namespace AdeleRing
@@ -110,6 +110,9 @@ theorem norm_def (x : 𝔸ᶠ[R, K]) : ‖x‖ = ∏' v, ‖x v‖ := rfl
 
 theorem norm_eq_finprod_of_unit (x : 𝔸ᶠ[R, K]ˣ) : ‖(x : 𝔸ᶠ[R, K])‖ = ∏ᶠ v, ‖(x : 𝔸ᶠ[R, K]) v‖ :=
   tprod_norm_eq_finprod_of_unit x
+
+theorem norm_eq_finprod_of_isUnit {x : 𝔸ᶠ[R, K]} (hx : IsUnit x) :
+    ‖x‖ = ∏ᶠ v, ‖x v‖ := norm_eq_finprod_of_unit hx.unit
 
 theorem norm_eq_zero_of_not_isUnit {x : 𝔸ᶠ[R, K]} (hx : ¬IsUnit x) : ‖x‖ = 0 :=
   tprod_eq_zero_of_not_isUnit hx

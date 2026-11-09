@@ -6,6 +6,7 @@ Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 module
 
 public import Mathlib.Init
+
 /-!
 # Definitions for `String`
 

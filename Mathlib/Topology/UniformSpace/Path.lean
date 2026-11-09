@@ -36,7 +36,7 @@ instance instUniformSpace : UniformSpace (Path x y) :=
 
 theorem isUniformEmbedding_coe : IsUniformEmbedding ((↑) : Path x y → C(I, X)) where
   comap_uniformity := rfl
-  injective := ContinuousMap.coe_injective'
+  injective := ContinuousMap.injective_ofClass
 
 theorem uniformContinuous (γ : Path x y) : UniformContinuous γ :=
   CompactSpace.uniformContinuous_of_continuous <| map_continuous _

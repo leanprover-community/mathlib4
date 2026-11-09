@@ -602,9 +602,6 @@ theorem iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero (p : ι → Submodule R N) :
       simp at hf
       grind [Finsupp.sum, Finset.sum_congr]
 
-@[deprecated (since := "2026-04-08")]
-alias iSupIndep_iff_finset_sum_eq_zero_imp_eq_zero := iSupIndep_iff_finsetSum_eq_zero_imp_eq_zero
-
 omit [DecidableEq ι] in
 theorem iSupIndep_iff_finsetSum_eq_imp_eq (p : ι → Submodule R N) :
     iSupIndep p ↔ ∀ (s : Finset ι) (v w : ι → N),
@@ -616,9 +613,6 @@ theorem iSupIndep_iff_finsetSum_eq_imp_eq (p : ι → Submodule R N) :
   · intro h s v hv hv0
     specialize h s v 0
     simp_all
-
-@[deprecated (since := "2026-04-08")]
-alias iSupIndep_iff_finset_sum_eq_imp_eq := iSupIndep_iff_finsetSum_eq_imp_eq
 
 /-- A family of additive subgroups over an additive group are independent if and only if
 `DFinsupp.sumAddHom` applied with `AddSubgroup.subtype` is injective. -/

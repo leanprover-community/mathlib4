@@ -100,14 +100,14 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     · refine
         ⟨fun _ => c, fun x => ?_, lowerSemicontinuous_const, by
           simp only [f, _root_.top_add, le_top, h]⟩
-      simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
+      simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, FunLike.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise]
       exact Set.indicator_le_self _ _ _
     by_cases hc : c = 0
     · refine ⟨fun _ => 0, ?_, lowerSemicontinuous_const, ?_⟩
       · classical
         simp only [hc, Set.indicator_zero', Pi.zero_apply, SimpleFunc.const_zero, imp_true_iff,
-          SimpleFunc.coe_zero, Set.piecewise_eq_indicator,
+          FunLike.coe_zero, Set.piecewise_eq_indicator,
           SimpleFunc.coe_piecewise, le_zero_iff]
       · simp only [lintegral_const, zero_mul, zero_le, ENNReal.coe_zero]
     have ne_top : μ s ≠ ⊤ := by
@@ -115,7 +115,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
         Function.const_apply, lintegral_const, ENNReal.coe_indicator, Set.univ_inter,
         ENNReal.coe_ne_top, MeasurableSet.univ, ENNReal.mul_eq_top, SimpleFunc.const_zero,
         lintegral_indicator, ENNReal.coe_eq_zero, Ne, not_false_iff,
-        SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
+        FunLike.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
         restrict_apply] using h
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
@@ -124,13 +124,14 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
       s.exists_isOpen_lt_of_lt _ this
     refine ⟨Set.indicator u fun _ => c,
       fun x => ?_, u_open.lowerSemicontinuous_indicator zero_le, ?_⟩
-    · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
+    · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, FunLike.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
       grw [su]
     · suffices (c : ℝ≥0∞) * μ u ≤ c * μ s + ε by
         simpa only [ENNReal.coe_indicator, u_open.measurableSet, lintegral_indicator,
           lintegral_const, MeasurableSet.univ, Measure.restrict_apply, Set.univ_inter, const_zero,
-          coe_piecewise, coe_const, coe_zero, Set.piecewise_eq_indicator, Function.const_apply, hs]
+          coe_piecewise, coe_const, FunLike.coe_zero, Set.piecewise_eq_indicator,
+          Function.const_apply, hs, ge_iff_le]
       calc
         (c : ℝ≥0∞) * μ u ≤ c * (μ s + ε / c) := by grw [μu]
         _ = c * μ s + ε := by
@@ -142,7 +143,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     rcases h₂ (ENNReal.half_pos ε0).ne' with ⟨g₂, f₂_le_g₂, g₂cont, g₂int⟩
     refine
       ⟨fun x => g₁ x + g₂ x, fun x => add_le_add (f₁_le_g₁ x) (f₂_le_g₂ x), g₁cont.add g₂cont, ?_⟩
-    simp only [SimpleFunc.coe_add, ENNReal.coe_add, Pi.add_apply]
+    simp only [FunLike.coe_add, ENNReal.coe_add, Pi.add_apply]
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
     convert add_le_add g₁int g₂int using 1
@@ -319,13 +320,13 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     refine
       ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator zero_le,
         ?_⟩
-    · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, SimpleFunc.coe_zero,
+    · simp only [SimpleFunc.coe_const, SimpleFunc.const_zero, FunLike.coe_zero,
         Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, ← Function.const_def]
       grw [Fs]
     · suffices (c : ℝ≥0∞) * μ s ≤ c * μ F + ε by
         simpa only [hs, F_closed.measurableSet, SimpleFunc.coe_const, Function.const_apply,
           lintegral_const, ENNReal.coe_indicator, Set.univ_inter, MeasurableSet.univ,
-          SimpleFunc.const_zero, lintegral_indicator, SimpleFunc.coe_zero,
+          SimpleFunc.const_zero, lintegral_indicator, FunLike.coe_zero,
           Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise, Measure.restrict_apply]
       calc
         (c : ℝ≥0∞) * μ s ≤ c * (μ F + ε / c) := by grw [μF]
@@ -342,7 +343,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
       ⟨g₂, f₂_le_g₂, g₂cont, g₂int⟩
     refine
       ⟨fun x => g₁ x + g₂ x, fun x => add_le_add (f₁_le_g₁ x) (f₂_le_g₂ x), g₁cont.add g₂cont, ?_⟩
-    simp only [SimpleFunc.coe_add, ENNReal.coe_add, Pi.add_apply]
+    simp only [FunLike.coe_add, ENNReal.coe_add, Pi.add_apply]
     rw [lintegral_add_left f₁.measurable.coe_nnreal_ennreal,
       lintegral_add_left g₁cont.measurable.coe_nnreal_ennreal]
     convert add_le_add g₁int g₂int using 1

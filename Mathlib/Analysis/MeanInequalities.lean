@@ -32,9 +32,10 @@ $$
 $$
 The classical version is a special case of this inequality for $w_i=\frac{1}{n}$.
 
-We prove a few versions of this inequality. Each of the following lemmas comes in two versions:
-a version for real-valued non-negative functions is in the `Real` namespace, and a version for
-`NNReal`-valued functions is in the `NNReal` namespace.
+We prove a few versions of this inequality. Each of the following lemmas comes in three versions:
+a version for real-valued non-negative functions is in the `Real` namespace, a version for
+`NNReal`-valued functions is in the `NNReal` namespace, and a version for `ENNReal`-valued functions
+is in the `ENNReal` namespace.
 
 - `geom_mean_le_arith_mean_weighted` : weighted version for functions on `Finset`s;
 - `geom_mean_le_arith_mean2_weighted` : weighted version for two numbers;
@@ -435,6 +436,47 @@ theorem geom_mean_lt_arith_mean2_weighted_iff_of_nonneg {w₁ w₂ p₁ p₂ : �
   grind
 
 end Real
+
+namespace ENNReal
+
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for `NNReal`-valued weights and `ENNReal`-valued elements. -/
+theorem geom_mean_le_arith_mean_weighted (w : ι → ℝ≥0) (z : ι → ℝ≥0∞) (hw : ∑ i ∈ s, w i = 1) :
+    ∏ i ∈ s, z i ^ (w i : ℝ) ≤ ∑ i ∈ s, w i * z i := by
+  by_cases! h : ∃ i ∈ s, w i ≠ 0 ∧ z i = ∞
+  · obtain ⟨i, his, hwi, hzi⟩ := h
+    rw [sum_eq_top.mpr ⟨i, his, by simp [hwi, hzi]⟩]
+    exact le_top
+  rw [← prod_filter_of_ne (p := (w · ≠ 0)) (by aesop)]
+  rw [← sum_filter_of_ne (p := (w · ≠ 0)) (by aesop)] at ⊢ hw
+  convert coe_le_coe.mpr (NNReal.geom_mean_le_arith_mean_weighted _ w (fun i ↦ (z i).toNNReal) hw)
+  · rw [ofNNReal_finsetProd]
+    congr! with i hi
+    simp [coe_rpow_of_nonneg, h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
+  · rw [ofNNReal_finsetSum]
+    congr! with i hi
+    simp [h i (Finset.mem_filter.mp hi).1 (Finset.mem_filter.mp hi).2]
+
+/-- **AM-GM inequality**: The geometric mean is less than or equal to the arithmetic mean, weighted
+version for two `ENNReal` numbers. -/
+theorem geom_mean_le_arith_mean2_weighted (w₁ w₂ : ℝ≥0) (p₁ p₂ : ℝ≥0∞) :
+    w₁ + w₂ = 1 → p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ := by
+  simpa using geom_mean_le_arith_mean_weighted univ ![w₁, w₂] ![p₁, p₂]
+
+theorem geom_mean_le_arith_mean3_weighted (w₁ w₂ w₃ : ℝ≥0) (p₁ p₂ p₃ : ℝ≥0∞) :
+    w₁ + w₂ + w₃ = 1 →
+      p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) * p₃ ^ (w₃ : ℝ) ≤ w₁ * p₁ + w₂ * p₂ + w₃ * p₃ := by
+  simpa [Fin.prod_univ_succ, Fin.sum_univ_succ, add_assoc, mul_assoc]
+    using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃] ![p₁, p₂, p₃]
+
+theorem geom_mean_le_arith_mean4_weighted (w₁ w₂ w₃ w₄ : ℝ≥0) (p₁ p₂ p₃ p₄ : ℝ≥0∞) :
+    w₁ + w₂ + w₃ + w₄ = 1 →
+      p₁ ^ (w₁ : ℝ) * p₂ ^ (w₂ : ℝ) * p₃ ^ (w₃ : ℝ) * p₄ ^ (w₄ : ℝ) ≤
+        w₁ * p₁ + w₂ * p₂ + w₃ * p₃ + w₄ * p₄ := by
+  simpa [Fin.prod_univ_succ, Fin.sum_univ_succ, add_assoc, mul_assoc]
+    using geom_mean_le_arith_mean_weighted univ ![w₁, w₂, w₃, w₄] ![p₁, p₂, p₃, p₄]
+
+end ENNReal
 
 end GeomMeanLEArithMean
 

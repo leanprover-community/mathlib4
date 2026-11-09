@@ -428,34 +428,9 @@ end frobenius
 
 open Polynomial
 
-section
-
-variable [Fintype K] (K' : Type*) [Field K'] {p n : ℕ}
-
-theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
-  have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
-    rw [degree_X_pow, degree_X]
-    exact mod_cast hp
-  rw [natDegree_eq_of_degree_eq (degree_sub_eq_left_of_degree_lt h1), natDegree_X_pow]
-
-theorem X_pow_card_pow_sub_X_natDegree_eq (hn : n ≠ 0) (hp : 1 < p) :
-    (X ^ p ^ n - X : K'[X]).natDegree = p ^ n :=
-  X_pow_card_sub_X_natDegree_eq K' <| Nat.one_lt_pow hn hp
-
-theorem X_pow_card_sub_X_ne_zero (hp : 1 < p) : (X ^ p - X : K'[X]) ≠ 0 :=
-  ne_zero_of_natDegree_gt <|
-    calc
-      1 < _ := hp
-      _ = _ := (X_pow_card_sub_X_natDegree_eq K' hp).symm
-
-theorem X_pow_card_pow_sub_X_ne_zero (hn : n ≠ 0) (hp : 1 < p) : (X ^ p ^ n - X : K'[X]) ≠ 0 :=
-  X_pow_card_sub_X_ne_zero K' <| Nat.one_lt_pow hn hp
-
-end
-
 theorem roots_X_pow_card_sub_X : roots (X ^ q - X : K[X]) = Finset.univ.val := by
   classical
-    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_card_sub_X_ne_zero K Fintype.one_lt_card
+    have aux : (X ^ q - X : K[X]) ≠ 0 := X_pow_sub_X_ne_zero Fintype.one_lt_card
     have : (roots (X ^ q - X : K[X])).toFinset = Finset.univ := by
       rw [eq_univ_iff_forall]
       intro x
@@ -498,21 +473,14 @@ namespace ZMod
 
 open FiniteField Polynomial
 
-set_option backward.isDefEq.respectTransparency false in
 theorem sq_add_sq (p : ℕ) [hp : Fact p.Prime] (x : ZMod p) : ∃ a b : ZMod p, a ^ 2 + b ^ 2 = x := by
   rcases hp.1.eq_two_or_odd with rfl | hp_odd
-  · change Fin 2 at x
+  · unfold ZMod
     fin_cases x
     · use 0; simp
     · use 0, 1; simp
-  let f : (ZMod p)[X] := X ^ 2
-  let g : (ZMod p)[X] := X ^ 2 - C x
-  obtain ⟨a, b, hab⟩ : ∃ a b, f.eval a + g.eval b = 0 :=
-    @exists_root_sum_quadratic _ _ _ _ f g (degree_X_pow 2) (degree_X_pow_sub_C (by decide) _)
-      (by rw [ZMod.card, hp_odd])
-  refine ⟨a, b, ?_⟩
-  rw [← sub_eq_zero]
-  simpa only [f, g, eval_C, eval_X, eval_pow, eval_sub, ← add_sub_assoc] using hab
+  simpa [hp_odd, sub_eq_zero, ← add_sub_assoc] using
+    exists_root_sum_quadratic (degree_X_pow 2) (degree_X_pow_sub_C two_pos x)
 
 end ZMod
 
@@ -748,13 +716,12 @@ theorem Subfield.splits_bot :
     Splits (X ^ p - X : (⊥ : Subfield F)[X]) := by
   let _ := Subfield.fintypeBot F p
   rw [splits_iff_card_roots, roots_X_pow_char_sub_X_bot, ← Finset.card_def, Finset.card_univ,
-    FiniteField.X_pow_card_sub_X_natDegree_eq _ (Fact.out (p := p.Prime)).one_lt,
-    Fintype.card_eq_nat_card, card_bot F p]
+    natDegree_X_pow_sub_X (Fact.out (p := p.Prime)).one_lt, Fintype.card_eq_nat_card, card_bot F p]
 
 theorem Subfield.mem_bot_iff_pow_eq_self {x : F} : x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
   have := roots_X_pow_char_sub_X_bot F p ▸
       (splits_bot F p).roots_map (Subfield.subtype _) ▸ Multiset.mem_map (b := x)
-  simpa [sub_eq_zero, iff_comm, FiniteField.X_pow_card_sub_X_ne_zero F (Fact.out : p.Prime).one_lt]
+  simpa [sub_eq_zero, iff_comm, X_pow_sub_X_ne_zero (Fact.out : p.Prime).one_lt]
 
 end prime_subfield
 

@@ -340,6 +340,11 @@ theorem compactSpace_iff_isBounded_univ [ProperSpace α] :
     CompactSpace α ↔ IsBounded (univ : Set α) :=
   ⟨@isBounded_of_compactSpace α _ _, fun hb => ⟨isCompact_of_isClosed_isBounded isClosed_univ hb⟩⟩
 
+@[compactness .]
+lemma isCompact_closure_ball [ProperSpace α] {x : α} {ε : ℝ} :
+    IsCompact (closure (Metric.ball x ε)) :=
+  Metric.isBounded_ball.isCompact_closure
+
 section CompactIccSpace
 
 variable [Preorder α] [CompactIccSpace α]
@@ -381,15 +386,13 @@ section CompactIccSpace_abs
 variable {α : Type*} [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] [PseudoMetricSpace α]
   [CompactIccSpace α]
 
-lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} := by
-  convert Metric.isBounded_Icc (-C) C
-  ext1 x
-  simp [abs_le]
+lemma isBounded_of_abs_le (C : α) : Bornology.IsBounded {x : α | |x| ≤ C} :=
+  (show {x : α | |x| ≤ C} = Set.Icc (-C) C by ext x; simp [abs_le]) ▸
+    Metric.isBounded_Icc (-C) C
 
-lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} := by
-  convert Metric.isBounded_Ioo (-C) C
-  ext1 x
-  simp [abs_lt]
+lemma isBounded_of_abs_lt (C : α) : Bornology.IsBounded {x : α | |x| < C} :=
+  (show {x : α | |x| < C} = Set.Ioo (-C) C by ext x; simp [abs_lt]) ▸
+    Metric.isBounded_Ioo (-C) C
 
 end CompactIccSpace_abs
 

@@ -405,43 +405,7 @@ Therefore, the space of continuous multilinear maps on `(Fin 0) → G` with valu
 isomorphic (and even isometric) to `E₂`. As this is the zeroth step in the construction of iterated
 derivatives, we register this isomorphism. -/
 
-
 section
-
-/-- Associating to a continuous multilinear map in `0` variables the unique value it takes. -/
-def ContinuousMultilinearMap.curry0 (f : ContinuousMultilinearMap 𝕜 (fun _ : Fin 0 => G) G') :
-    G' :=
-  f 0
-
-variable (𝕜 G) in
-/-- Associating to an element `x` of a vector space `E₂` the continuous multilinear map in `0`
-variables taking the (unique) value `x` -/
-def ContinuousMultilinearMap.uncurry0 (x : G') : G [×0]→L[𝕜] G' :=
-  ContinuousMultilinearMap.constOfIsEmpty 𝕜 _ x
-
-variable (𝕜) in
-@[simp]
-theorem ContinuousMultilinearMap.uncurry0_apply (x : G') (m : Fin 0 → G) :
-    ContinuousMultilinearMap.uncurry0 𝕜 G x m = x :=
-  rfl
-
-@[simp]
-theorem ContinuousMultilinearMap.curry0_apply (f : G [×0]→L[𝕜] G') : f.curry0 = f 0 :=
-  rfl
-
-@[simp]
-theorem ContinuousMultilinearMap.apply_zero_uncurry0 (f : G [×0]→L[𝕜] G') {x : Fin 0 → G} :
-    ContinuousMultilinearMap.uncurry0 𝕜 G (f x) = f := by
-  ext m
-  simp [Subsingleton.elim x m]
-
-theorem ContinuousMultilinearMap.uncurry0_curry0 (f : G [×0]→L[𝕜] G') :
-    ContinuousMultilinearMap.uncurry0 𝕜 G f.curry0 = f := by simp
-
-variable (𝕜 G) in
-theorem ContinuousMultilinearMap.curry0_uncurry0 (x : G') :
-    (ContinuousMultilinearMap.uncurry0 𝕜 G x).curry0 = x :=
-  rfl
 
 variable (𝕜 G) in
 @[simp]
@@ -501,7 +465,6 @@ theorem continuousMultilinearCurryFin0_symm_apply_apply (x : G') (v : Fin 0 → 
 end
 
 /-! #### With 1 variable -/
-
 
 variable (𝕜 G G')
 

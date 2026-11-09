@@ -512,7 +512,7 @@ theorem univ_pi_Ico_ae_eq_Icc {f g : ∀ i, α i} :
 
 end Intervals
 
-/-- If one of the measures `μ i` has value zero on singeltons, them `Measure.pi µ`
+/-- If one of the measures `μ i` has value zero on singletons, then `Measure.pi µ`
 has value zero on singletons. The instance below assumes that all `μ i` have value zero on
 singletons. -/
 theorem pi_nullSingletonClass (i : ι) [NullSingletonClass (μ i)] :

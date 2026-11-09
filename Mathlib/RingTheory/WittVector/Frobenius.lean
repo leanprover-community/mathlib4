@@ -162,7 +162,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   simp only [mul_assoc]
   apply congr_arg
   apply congr_arg
-  rw [← C_eq_coe_nat]
+  rw [← C_eq_natCast]
   simp only [← map_pow, ← C_mul]
   rw [C_inj]
   simp only [invOf_eq_inv, eq_intCast, inv_pow, Int.cast_natCast, Nat.cast_mul, Int.cast_mul]
@@ -206,8 +206,7 @@ instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
     ghostComponent n (frobeniusFun x) = ghostComponent (n + 1) x := by
-  simp only [ghostComponent_apply, frobeniusFun, coeff_mk, ← bind₁_frobeniusPoly_wittPolynomial,
-    aeval_bind₁]
+  simp only [ghostComponent_apply, frobeniusFun, ← bind₁_frobeniusPoly_wittPolynomial, aeval_bind₁]
 
 /-- If `R` has characteristic `p`, then there is a ring endomorphism
 that raises `r : R` to the power `p`.

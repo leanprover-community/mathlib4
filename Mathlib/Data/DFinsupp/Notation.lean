@@ -77,6 +77,6 @@ unsafe instance {α : Type*} {β : α → Type*} [Repr α] [∀ i, Repr (β i)] 
     else
       let ret : Std.Format := f!"fun₀" ++ .nest 2 (.group (.join <| vals_dedup.map fun a =>
           .line ++ .group (f!"| {a.1} =>" ++ .line ++ a.2)))
-      if p ≥ leadPrec then Format.paren ret else ret
+      if p ≥ eval_prec lead then Format.paren ret else ret
 
 end DFinsupp

@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 module
 
-public import Aesop
+public meta import Aesop
 public import Mathlib.Basic.IsEmpty.Defs
 public import Mathlib.Control.Combinators
 public import Mathlib.Data.Option.Defs

@@ -99,7 +99,7 @@ theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
   rw [Subgroup.finiteIndex_iff, ← Subgroup.relIndex_mul_index (le_sup_left : s ≤ s ⊔ torsion K)]
   refine Nat.mul_ne_zero ?_ (Subgroup.finiteIndex_iff.mp h)
   rw [Subgroup.relIndex_sup_left]
-  exact Subgroup.FiniteIndex.index_ne_zero
+  exact Subgroup.index_ne_zero
 
 set_option backward.isDefEq.respectTransparency false in
 open Subgroup in
