@@ -28,8 +28,6 @@ preserving condition is relaxed to quasi-measure-preserving.
 * `Ergodic.quasiErgodic`: an ergodic map / measure is quasi-ergodic.
 * `PreErgodic.of_preimage_eq`: to prove pre-ergodicity of a quasi-measure-preserving map, it
   suffices to check the ergodicity condition on strictly invariant null-measurable sets.
-* `PreErgodic.of_preimage_eq_of_measurable`: if the map is moreover measurable, it suffices to
-  check the ergodicity condition on strictly invariant measurable sets.
 
 -/
 
