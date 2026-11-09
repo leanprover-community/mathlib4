@@ -17,15 +17,18 @@ public import Mathlib.Topology.Sets.BaseChangeNhds
 We define K-sheaves on `X` a T2 topological space with value in an arbitrary category `A`.
 
 This corespond to the  `F : (Compacts X)ᵒᵖ ⥤ A` such that:
-- `F (∅)`  is terminal.
-- For any two compacts subsets `K₁` and  `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by gluing `F(K₁)` and `F(K₂)` over `F.obj (K₁ ∩ K₂)`.
-- For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts subsets `L` of `X`such that `K` is in the interior of `L`.
+- `F.obj (∅)`  is terminal.
+- For any two compacts subsets `K₁` and  `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by
+  gluing `F.obj K₁` and `F.obj K₂` over `F.obj K₁ ∩ K₂`.
+- For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
+  subsets `L` of `X`such that `K` is in the interior of `L`.
 
 One may expect this notion to come from sheaves on a site of compact subset of a topological space
 but there is no corresponding Grothendieck topology on compact subsets, in particular
 because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a sheaf condition.
 
-However this category turns out to be equivalent to the category of sheaves over `X`, and is thus a topos.
+However this category turns out to be equivalent to the category of sheaves over `X`,
+and is thus a topos.
 
 TODO: provide the equivalence of category (Yannis Monbru Carcelero)
 
@@ -68,8 +71,7 @@ def coconeOfCompacts (P : KPresheaf A X) (K : Compacts X) :
 
 /-- For `P` a K-presheaf, and `K` a compact subset then `P.obj (op K)` is equiped with a
 structure of cocone over the diagram defined by the `P.obj (op (closure (U : Set X))`
-for `U` an open
-neighbourhood of `K` -/
+for `U` an open neighbourhood of `K` -/
 @[simps!, implicit_reducible]
 def coconeOfClosureOfOpens (P : KPresheaf A X) (K : Compacts X) :=
   Cocone.whisker K.openRcNhdsToCompactNhds_mono.functor.op <| P.coconeOfCompacts K
@@ -95,13 +97,9 @@ lemma hom_ext_of_isColimit_coconeOfCompacts (P : KPresheaf A X) {K : Compacts X}
   ((Functor.Final.isColimitWhiskerEquiv K.openRcNhdsToCompactNhds_mono.functor.op
     _).symm h).hom_ext w
 
-/-- The K-sheaf condition. It's a generalisation of the one of J.Pardon that
-correspond to the one of J.Lurie in the case of usual categories.
-
-definition A.1.4
-
-definition 7.3.4.1
- -/
+/-- The K-sheaf condition. It's a generalisation of the one of J.Pardon (definition A.1.4) that
+  correspond to the one of J.Lurie (definition 7.3.4.1) in the case of usual categories.
+-/
 structure IsKSheaf (P : KPresheaf A X) : Prop where
   nonempty_isTerminal : Nonempty (IsTerminal (P.obj (op ⊥)))
   isPullback {K₁ K₂ K₃ K₄ : Compacts X} (h : Lattice.BicartSq K₁ K₂ K₃ K₄) :
