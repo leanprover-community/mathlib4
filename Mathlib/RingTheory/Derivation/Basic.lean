@@ -5,6 +5,8 @@ Authors: Nicolò Cavalleri, Andrew Yang
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.Algebra.Polynomial.Derivative
