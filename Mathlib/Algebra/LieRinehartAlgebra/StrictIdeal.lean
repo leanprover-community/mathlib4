@@ -249,7 +249,7 @@ variable {R A L₁ L₂ : Type*} [CommRing R] [CommRing A] [Algebra R A] [LieRin
 
 /-- The kernel of a Lie-Rinehart homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
-@[expose] def ker : StrictLieRinehartIdeal A L₁ := StrictLieRinehartIdeal.comap f 0
+@[expose] def ker : StrictLieRinehartIdeal A L₁ := .comap f 0
 
 @[simp] theorem mem_ker {l : L₁} : l ∈ f.ker ↔ f l = 0 := Iff.rfl
 
