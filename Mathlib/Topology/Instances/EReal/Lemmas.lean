@@ -442,6 +442,19 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
   · exact continuousAt_add_top_coe _
   · exact continuousAt_add_top_top
 
+/-- Addition of a real number to an extended real number is continuous. -/
+@[fun_prop]
+theorem continuous_add_coe : Continuous fun p : EReal × ℝ ↦ p.1 + p.2 := by
+  refine continuous_iff_continuousAt.2 fun _ ↦ ?_
+  exact (continuousAt_add (.inr (coe_ne_bot _)) (.inr (coe_ne_top _))).comp₂
+    continuous_fst.continuousAt
+    (continuous_coe_real_ereal.comp continuous_snd).continuousAt
+
+@[fun_prop]
+theorem _root_.Continuous.ereal_add_coe [TopologicalSpace α] {f : α → EReal} {g : α → ℝ}
+    (hf : Continuous f) (hg : Continuous g) : Continuous fun x ↦ f x + g x :=
+  continuous_add_coe.comp (hf.prodMk hg)
+
 lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
   intro x y
   by_cases hx₁ : x.1 = ⊥
