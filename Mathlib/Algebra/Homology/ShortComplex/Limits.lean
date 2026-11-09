@@ -6,9 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.Basic
-public import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
-public import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
+
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 # Limits and colimits in the category of short complexes
@@ -22,7 +22,7 @@ of a certain shape `J`, then it is also the case of the category `ShortComplex C
 
 namespace CategoryTheory
 
-open Category Limits Functor
+open Category Limits CategoryTheory.Functor
 
 variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
   {F : J ⥤ ShortComplex C}
@@ -64,7 +64,6 @@ section
 variable (F)
 variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a limit cone for a functor `J ⥤ ShortComplex C` using the limits
 of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
@@ -198,7 +197,6 @@ section
 variable (F)
 variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a colimit cocone for a functor `J ⥤ ShortComplex C` using the colimits
 of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=

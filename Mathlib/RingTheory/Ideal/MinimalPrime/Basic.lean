@@ -7,10 +7,8 @@ module
 
 public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
-public import Mathlib.Order.Minimal
 
 /-!
-
 # Minimal primes
 
 We provide various results concerning the minimal primes above an ideal.
@@ -63,8 +61,8 @@ This is defined as `Ideal.minimalPrimes ⊥`. -/
 abbrev minimalPrimes : Set (Ideal R) :=
   {p | IsMinimalPrime p}
 
-lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} :=
-  congr_arg Minimal (by simp)
+lemma minimalPrimes_eq_minimals : minimalPrimes R = {x | Minimal Ideal.IsPrime x} := by
+  ext; simp [Ideal.IsMinimalPrime]
 
 variable {I J}
 
@@ -129,7 +127,7 @@ end
 
 section
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S] {I J : Ideal R}
+variable {R : Type*} [CommSemiring R] {I J : Ideal R}
 
 theorem Ideal.minimalPrimes_eq_subsingleton (hI : I.IsPrimary) : I.minimalPrimes = {I.radical} := by
   ext J

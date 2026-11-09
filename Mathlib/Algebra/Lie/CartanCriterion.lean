@@ -5,15 +5,14 @@ Authors: Janos Wolosz
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Rat
-public import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
 public import Mathlib.Algebra.Lie.Killing
-public import Mathlib.Algebra.Lie.TraceForm
-public import Mathlib.LinearAlgebra.Eigenspace.Matrix
-public import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-public import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.RingTheory.Flat.Localization
+
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Lie.AdjointAction.JordanChevalley
+import Mathlib.LinearAlgebra.Eigenspace.Matrix
+import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 
 /-!
 # Cartan's criteria
@@ -42,8 +41,8 @@ via its vanishing on `L × ⁅L, L⁆`, semisimplicity via its non-degeneracy.
 
 ## References
 
-* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*](bourbaki1975) Chapter I. §5.4
-* [J. Humphreys, *Introduction to Lie Algebras and ...*](humphreys1972) Chapter II 4.3
+* [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 1--3*][bourbaki1975] Chapter I. §5.4
+* [J. Humphreys, *Introduction to Lie Algebras and ...*][humphreys1972] Chapter II 4.3
 -/
 
 variable {R L M : Type*} [CommRing R] [CharZero R] [IsDomain R] [LieRing L] [LieAlgebra R L]
@@ -68,6 +67,7 @@ lemma exists_polynomial_eval_sub_aux
   rw [← (algebraMap R K).map_sub, ← (algebraMap R K).map_sub, ← map_sub, ← map_sub, heq]
 
 variable [AddCommGroup M] [LieRingModule L M]
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- An auxiliary lemma used to prove `LieModule.isNilpotent_derivedSeries_of_traceForm_eq_zero`
 which proves the same result except without the algebraically closed assumption. -/
@@ -109,7 +109,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
       Submodule.nontrivial_iff_ne_bot.mpr (hasEigenvalue_iff.mp hν)
     replace hν : ν ∈ E := Submodule.subset_span ⟨⟨ν, ⟨0, finrank_pos⟩⟩, rfl⟩
     have : Subsingleton E := (subsingleton_dual_iff ℚ).mp ⟨by aesop⟩
-    simpa using Subsingleton.elim (⟨ν, hν⟩ : E) 0
+    simpa using! Subsingleton.elim (⟨ν, hν⟩ : E) 0
   intro f
   /- It suffices to show that any `f : Dual ℚ E` vanishes on all the eigenvalues of `s`. -/
   suffices ∀ i, f ⟨μ i, hμ i⟩ = 0 by
@@ -121,7 +121,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
     (Finset.sum_eq_zero_iff_of_nonneg (fun _ _ ↦ sq_nonneg _)).mp this i (Finset.mem_univ _)
   /- Which will follow from the fact that the following `f`-linear expression vanishes. -/
   suffices ∑ i, (f ⟨μ i, hμ i⟩) • (⟨μ i, hμ i⟩ : E) = 0 by
-    simpa only [map_sum, map_zero, map_smul, sq] using f.congr_arg this
+    simpa only [map_sum, map_zero, map_smul, sq] using! f.congr_arg this
   let fμ (i : I) : K := f ⟨μ i, hμ i⟩
   /- Defining `fμ i = f ⟨μ i, hμ i⟩`, we can restate our goal as `∑ i, fμ i * μ i = 0`. -/
   suffices ∑ i, fμ i * μ i = 0 by simp [Subtype.ext_iff, fμ, ← this, smul_def]
@@ -146,7 +146,7 @@ theorem isNilpotent_derivedSeries_of_traceForm_eq_zero_aux {K : Type*}
         rfl
       obtain ⟨p, hp⟩ : ∃ p : K[X], p.aeval (ad K _ (φ x)) = ad K _ s :=
         adjoin_mem_exists_aeval K _ <| by
-          simpa only [← hX_ns] using ad_mem_adjoin_of_isSemisimple hns hn_nil hs_ss
+          simpa only [← hX_ns] using! ad_mem_adjoin_of_isSemisimple hns hn_nil hs_ss
       exact ⟨r.comp p, by rw [aeval_comp, hp, hr]⟩
     rw [instLieRingModule_eq, ← ad_apply K, ← hq]
     apply q.aeval_apply_smul_mem_of_le_comap hz _ ?_

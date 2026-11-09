@@ -80,7 +80,7 @@ and returning the `Trie α`.
 
 Performance note: In the `apply` search discrimination tree, after root node `⟨Eq, 3⟩`,
 there are about `150,000` entries in the `pending` array.
-To deal with this smoothly, we parallellize the computation into chunks of `5000` entries.
+To deal with this smoothly, we parallelize the computation into chunks of `5000` entries.
 -/
 private def evalNode (trie : TrieIndex) : TreeM α (Trie α) := do
   let node := (← get)[trie]!

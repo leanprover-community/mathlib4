@@ -8,17 +8,16 @@ module
 public import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
-
 # `compute_degree` and `monicity`: tactics for explicit polynomials
 
 This file defines two related tactics: `compute_degree` and `monicity`.
 
 Using `compute_degree` when the goal is of one of the seven forms
-*  `natDegree f ≤ d` (or `<`),
-*  `degree f ≤ d` (or `<`),
-*  `natDegree f = d`,
-*  `degree f = d`,
-*  `coeff f d = r`, if `d` is the degree of `f`,
+* `natDegree f ≤ d` (or `<`),
+* `degree f ≤ d` (or `<`),
+* `natDegree f = d`,
+* `degree f = d`,
+* `coeff f d = r`, if `d` is the degree of `f`,
 
 tries to solve the goal.
 It may leave side-goals, in case it is not entirely successful.
@@ -83,7 +82,7 @@ The leaves of the process are
 
 public meta section
 
-open Polynomial
+open AddMonoidAlgebra Polynomial
 
 namespace Mathlib.Tactic.ComputeDegree
 
@@ -109,7 +108,7 @@ theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
 
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
-    (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply coeff_add
+    (f + g).coeff n = a + b := by subst ‹_› ‹_›; apply Polynomial.coeff_add
 
 theorem coeff_mul_add_of_le_natDegree_of_eq_ite {d df dg : ℕ} {a b : R} {f g : R[X]}
     (h_mul_left : natDegree f ≤ df) (h_mul_right : natDegree g ≤ dg)
@@ -197,7 +196,10 @@ variable [Ring R]
 theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
 
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
-    (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
+    (f - g).coeff n = a - b := by subst hf hg; apply Polynomial.coeff_sub
+
+theorem coeff_neg_of_eq {n : ℕ} {a : R} {f : R[X]} (hf : f.coeff n = a) :
+    (-f).coeff n = -a := by subst hf; apply Polynomial.coeff_neg
 
 theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
   simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
@@ -241,7 +243,13 @@ def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id
   let (ndeg_or_deg_or_coeff, pol, and?) ← match lhs.getAppFnArgs with
     | (na@``Polynomial.natDegree, #[_, _, pol])     => (na, pol, [rhs.isMVar])
     | (na@``Polynomial.degree,    #[_, _, pol])     => (na, pol, [rhs.isMVar])
-    | (na@``Polynomial.coeff,     #[_, _, pol, c])  => (na, pol, [rhs.isMVar, c.isMVar])
+    -- Since `Polynomial.coeff` returns a `Finsupp`, `coeff p n` is the `DFunLike.coe` of the
+    -- `Finsupp` `coeff p` applied to `n`.
+    | (``DFunLike.coe, #[_, _, _, _, cf, c]) =>
+      match cf.getAppFnArgs with
+        | (``AddMonoidAlgebra.coeff, #[_, _, _, pol]) =>
+          (``AddMonoidAlgebra.coeff, pol, [rhs.isMVar, c.isMVar])
+        | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
     | _ => return (.anonymous, eq_or_le, .inl .anonymous, [])
   let head := match pol.numeral? with
     -- can I avoid the tri-splitting `n = 0`, `n = 1`, and generic `n`?
@@ -334,7 +342,7 @@ def dispatchLemma
           dbg_trace f!"{lem.lastComponentAsString}\n{msg}"
         lem
       match head with
-        | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
+        | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``Polynomial.coeff_zero
         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
         | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inl .anonymous => π ``le_rfl ``le_rfl ``rfl
@@ -347,7 +355,7 @@ def dispatchLemma
         | .inr ``HPow.hPow =>
           π ``natDegree_pow_le_of_le ``degree_pow_le_of_le ``coeff_pow_of_natDegree_le_of_eq_ite'
         | .inr ``Neg.neg =>
-          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg
+          π ``natDegree_neg_le_of_le ``degree_neg_le_of_le ``coeff_neg_of_eq
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>
@@ -359,14 +367,14 @@ def dispatchLemma
         | .inr ``IntCast.intCast =>
           π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``Polynomial.monomial =>
-          π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
+          π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial_apply
         | .inr ``Polynomial.C =>
           π ``natDegree_C_le ``degree_C_le ``coeff_C
         | .inr ``HSMul.hSMul =>
           π ``natDegree_smul_le_of_le ``degree_smul_le_of_le ``coeff_smul
         | _ => π ``le_rfl ``le_rfl ``rfl
 
-/-- `try_rfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
+/-- `tryRfl mvs` takes as input a list of `MVarId`s, scans them partitioning them into two
 lists: the goals containing some metavariables and the goals not containing any metavariable.
 
 If a goal containing a metavariable has the form `?_ = x`, `x = ?_`, where `?_` is a metavariable
@@ -378,12 +386,12 @@ If a goal does not contain metavariables, it tries `rfl` on it.
 It returns the list of `MVarId`s, beginning with the ones that initially involved (`Expr`)
 metavariables followed by the rest.
 -/
-def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
-  let (yesMV, noMV) := ← mvs.partitionM fun mv =>
+def tryRfl (mvs : List MVarId) : MetaM (List MVarId) := do
+  let (yesMV, noMV) ← mvs.partitionM fun mv =>
                           return hasExprMVar (← instantiateMVars (← mv.getDecl).type)
-  let tried_rfl := ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
-  let assignable := ← yesMV.mapM fun g => do
-    let tgt := ← instantiateMVars (← g.getDecl).type
+  let tried_rfl ← noMV.mapM fun g => g.applyConst ``rfl <|> return [g]
+  let assignable ← yesMV.mapM fun g => do
+    let tgt ← instantiateMVars (← g.getDecl).type
     match tgt.eq? with
       | some (_, lhs, rhs) =>
         if (isMVar rhs && (! hasExprMVar lhs)) ||
@@ -393,6 +401,8 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
       | none =>
         return [g]
   return (assignable.flatten ++ tried_rfl.flatten)
+
+@[deprecated (since := "2026-05-27")] alias try_rfl := tryRfl
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -405,27 +415,27 @@ lemma and returns two lists: the left-over goals of all the applications, follow
 concatenation of the previous `static` list, followed by the newly discovered goals outside of the
 scope of `compute_degree`. -/
 def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId)) := do
-  let (can_progress, curr_static) := ← mvs.partitionM fun mv => do
+  let (can_progress, curr_static) ← mvs.partitionM fun mv => do
     return dispatchLemma (twoHeadsArgs (← mv.getType'')) != ``id
-  let progress := ← can_progress.mapM fun mv => do
+  let progress ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
-    mv.applyConst <| lem
+    mv.applyConst lem
   return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
-*  an `Expr`ession `deg`, representing the degree of a polynomial
+* an `Expr`ession `deg`, representing the degree of a polynomial
   (i.e. an `Expr`ession of inferred type either `ℕ` or `WithBot ℕ`);
-*  a list of `MVarId`s `false_goals`.
+* a list of `MVarId`s `false_goals`.
 
 Although inconsequential for this function, the list of goals `false_goals` reduces to `False`
 if `norm_num`med.
 `miscomputedDegree?` extracts error information from goals of the form
-*  `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0`
-  --- reducing to `False` means that the coefficient that was supposed to vanish, does not;
-*  `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial`
-  --- reducing to `False` means that there is a term of degree that is apparently too large;
-*  `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree`
-  --- reducing to `False` means that there is a term of degree that is apparently too large.
+* `a ≠ b`, assuming it comes from `⊢ coeff_of_given_degree ≠ 0` —
+  reducing to `False` means that the coefficient that was supposed to vanish, does not;
+* `a ≤ b`, assuming it comes from `⊢ degree_of_subterm ≤ degree_of_polynomial` —
+  reducing to `False` means that there is a term of degree that is apparently too large;
+* `a = b`, assuming it comes from `⊢ computed_degree ≤ given_degree` —
+  reducing to `False` means that there is a term of degree that is apparently too large.
 
 The cases `a ≠ b` and `a = b` are not a perfect match with the top coefficient:
 reducing to `False` is not exactly correlated with a coefficient being non-zero.
@@ -487,7 +497,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
-      let rfled ← try_rfl static
+      let rfled ← tryRfl static
       setGoals rfled
       --  simplify the left-hand sides, since this is where the degree computations leave
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
@@ -528,7 +538,7 @@ end Tactic
 end Mathlib.Tactic.ComputeDegree
 
 /-!
- We register `compute_degree` with the `hint` tactic.
- -/
+We register `compute_degree` with the `hint` tactic.
+-/
 register_hint 1000 compute_degree
 register_try?_tactic (priority := 1000) compute_degree

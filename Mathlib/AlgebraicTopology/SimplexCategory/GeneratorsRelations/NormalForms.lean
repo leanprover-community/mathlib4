@@ -6,6 +6,7 @@ Authors: Robin Carlier
 module
 
 public import Mathlib.AlgebraicTopology.SimplexCategory.GeneratorsRelations.EpiMono
+
 /-! # Normal forms for morphisms in `SimplexCategoryGenRel`.
 
 In this file, we establish that `P_δ` and `P_σ` morphisms in `SimplexCategoryGenRel`
@@ -116,19 +117,14 @@ lemma cons {m a L} (hL : IsAdmissible (m + 1) L) (ha : a ≤ m)
 theorem sortedLT {m L} (hL : IsAdmissible m L) : L.SortedLT :=
   hL.isChain.sortedLT
 
-@[deprecated (since := "2025-11-27")] alias pairwise := sortedLT
-
-@[deprecated (since := "2025-10-16")]
-alias sorted := pairwise
-
 /-- If `(a :: l)` is `m`-admissible then a is less than all elements of `l` -/
 @[grind →]
 lemma head_lt {m a L} (hL : IsAdmissible m (a :: L)) :
     ∀ a' ∈ L, a < a' := fun _ => L.rel_of_pairwise_cons hL.sortedLT.pairwise
 
 @[grind →] lemma getElem_lt {m L} (hL : IsAdmissible m L)
-    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length :=
-  (hL.le k hk).trans_lt (Nat.add_lt_add_left hk _)
+    {k : ℕ} {hk : k < L.length} : L[k] < m + L.length := by
+  grw [hL.le, hk]
 
 /-- An element of an `m`-admissible list, as an element of the appropriate `Fin` -/
 @[simps]
@@ -229,9 +225,6 @@ def simplicialEvalσ (L : List ℕ) : ℕ → ℕ :=
 lemma simplicialEvalσ_of_le_mem (j : ℕ) (hj : ∀ k ∈ L, j ≤ k) : simplicialEvalσ L j = j := by
   induction L with | nil => grind | cons _ _ _ => simp only [List.forall_mem_cons] at hj; grind
 
-@[deprecated (since := "2025-10-16")]
-alias simplicialEvalσ_of_lt_mem := simplicialEvalσ_of_le_mem
-
 lemma simplicialEvalσ_monotone (L : List ℕ) : Monotone (simplicialEvalσ L) := by
   induction L <;> grind [Monotone]
 
@@ -270,7 +263,7 @@ lemma simplicialEvalσ_of_isAdmissible
 
 /-- Performing a simplicial insertion in a list is the same as composition on the right by the
 corresponding degeneracy operator. -/
-lemma standardσ_simplicialInsert (hL : IsAdmissible (m + 1) L) (j : ℕ) (hj : j < m + 1)
+lemma standardσ_simplicialInsert (j : ℕ) (hj : j < m + 1)
     (m₁ : ℕ) (hm₁ : m + L.length + 1 = m₁) :
     standardσ (m₂ := m) (simplicialInsert j L) (m₁ := m₁)
       (by simpa only [simplicialInsert_length, add_assoc]) =
@@ -311,7 +304,7 @@ theorem exists_normal_form_P_σ {x y : SimplexCategoryGenRel} (f : x ⟶ y) (hf 
     use simplicialInsert k.val L₁, m, b₁ + 1, rfl, by grind, by grind, by grind
     subst_vars
     have := standardσ (m₁ := m + 1 + L₁.length) [] (by grind) ≫=
-      (standardσ_simplicialInsert L₁ hL₁ k k.prop _ rfl).symm
+      (standardσ_simplicialInsert L₁ k k.prop _ rfl).symm
     simp_all [Fin.ofNat_eq_cast, Fin.cast_val_eq_self, standardσ_comp_standardσ_assoc,
       standardσ_comp_standardσ]
 
@@ -324,14 +317,18 @@ lemma IsAdmissible.simplicialEvalσ_succ_getElem (hL : IsAdmissible m L)
 local grind_pattern IsAdmissible.simplicialEvalσ_succ_getElem =>
   IsAdmissible m L, simplicialEvalσ L L[k]
 
-lemma mem_isAdmissible_of_lt_and_eval_eq_eval_add_one (hL : IsAdmissible m L)
-    (j : ℕ) (hj₁ : j < m + L.length) (hj₂ : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
+lemma mem_isAdmissible_of_eval_eq_eval_add_one (hL : IsAdmissible m L)
+    (j : ℕ) (hj : simplicialEvalσ L j = simplicialEvalσ L (j + 1)) :
     j ∈ L := by
   induction L generalizing m with
   | nil => grind
   | cons a L h_rec =>
     have := simplicialEvalσ_monotone L (a := a + 1)
     rcases lt_trichotomy j a with h | h | h <;> grind
+
+@[deprecated (since := "2026-10-31")]
+alias mem_isAdmissible_of_lt_and_eval_eq_eval_add_one :=
+  mem_isAdmissible_of_eval_eq_eval_add_one
 
 lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j : ℕ) (hj : j ∈ L) :
     j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
@@ -340,9 +337,9 @@ lemma lt_and_eval_eq_eval_add_one_of_mem_isAdmissible (hL : IsAdmissible m L) (j
 /-- We can characterize elements in an admissible list as exactly those for which
 `simplicialEvalσ` takes the same value twice in a row. -/
 lemma mem_isAdmissible_iff (hL : IsAdmissible m L) (j : ℕ) :
-    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) := by
-  grind [lt_and_eval_eq_eval_add_one_of_mem_isAdmissible,
-    mem_isAdmissible_of_lt_and_eval_eq_eval_add_one]
+    j ∈ L ↔ j < m + L.length ∧ simplicialEvalσ L j = simplicialEvalσ L (j + 1) :=
+  ⟨lt_and_eval_eq_eval_add_one_of_mem_isAdmissible L hL j,
+    fun h ↦ mem_isAdmissible_of_eval_eq_eval_add_one L hL j h.2⟩
 
 end MemIsAdmissible
 

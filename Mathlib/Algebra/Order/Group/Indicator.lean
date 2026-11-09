@@ -6,10 +6,11 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.Algebra.Group.Indicator
-public import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 public import Mathlib.Algebra.Order.Group.Synonym
 public import Mathlib.Algebra.Order.Group.Unbundled.Abs
 public import Mathlib.Algebra.Order.Monoid.Canonical.Defs
+public import Mathlib.Order.ConditionallyCompleteLattice.Basic
+public import Mathlib.Order.ConditionallyCompletePartialOrder.Indexed
 
 /-!
 # Support of a function in an order
@@ -109,7 +110,7 @@ lemma mulIndicator_le_mulIndicator' (h : a ∈ s → f a ≤ g a) :
     mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl h
 
-@[to_additive (attr := mono, gcongr)]
+@[to_additive (attr := mono, gcongr only)]
 lemma mulIndicator_le_mulIndicator (h : f a ≤ g a) : mulIndicator s f a ≤ mulIndicator s g a :=
   mulIndicator_rel_mulIndicator le_rfl fun _ ↦ h
 

@@ -5,8 +5,8 @@ Authors: Yakov Pechersky
 -/
 module
 
-public import Mathlib.Topology.UniformSpace.Defs
 public import Mathlib.Topology.Bases
+public import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Ultrametric (nonarchimedean) uniform spaces
@@ -26,7 +26,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Basic/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs
@@ -46,88 +46,13 @@ but rather extend the relation properties as needed.
 
 -/
 
-@[expose] public section
+public section
 
-open Set Filter Topology
-open scoped SetRel Uniformity
+open Set Filter
+
+open scoped Topology SetRel Uniformity
 
 variable {X : Type*}
-
-/-- The relation is transitive. -/
-@[deprecated SetRel.IsTrans (since := "2025-10-17")]
-def IsTransitiveRel (V : SetRel X X) : Prop :=
-  ∀ ⦃x y z⦄, (x, y) ∈ V → (y, z) ∈ V → (x, z) ∈ V
-
-set_option linter.deprecated false in
-@[deprecated SetRel.comp_subset_self (since := "2025-10-17")]
-lemma IsTransitiveRel.comp_subset_self {s : SetRel X X}
-    (h : IsTransitiveRel s) :
-    s ○ s ⊆ s :=
-  fun ⟨_, _⟩ ⟨_, hxz, hzy⟩ ↦ h hxz hzy
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_iff_comp_subset_self (since := "2025-10-17")]
-lemma isTransitiveRel_iff_comp_subset_self {s : SetRel X X} :
-    IsTransitiveRel s ↔ s ○ s ⊆ s :=
-  ⟨IsTransitiveRel.comp_subset_self, fun h _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_empty (since := "2025-10-17")]
-lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
-  simp [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_univ (since := "2025-10-17")]
-lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
-  simp [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_singleton (since := "2025-10-17")]
-lemma isTransitiveRel_singleton (x y : X) : IsTransitiveRel {(x, y)} := by
-  simp +contextual [IsTransitiveRel]
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_inter (since := "2025-10-17")]
-lemma IsTransitiveRel.inter {s t : SetRel X X} (hs : IsTransitiveRel s) (ht : IsTransitiveRel t) :
-    IsTransitiveRel (s ∩ t) :=
-  fun _ _ _ h h' ↦ ⟨hs h.left h'.left, ht h.right h'.right⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_iInter (since := "2025-10-17")]
-lemma IsTransitiveRel.iInter {ι : Type*} {U : (i : ι) → SetRel X X}
-    (hU : ∀ i, IsTransitiveRel (U i)) :
-    IsTransitiveRel (⋂ i, U i) := by
-  intro _ _ _ h h'
-  simp only [mem_iInter] at h h' ⊢
-  intro i
-  exact hU i (h i) (h' i)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.IsTrans.sInter (since := "2025-10-17")]
-lemma IsTransitiveRel.sInter {s : Set (SetRel X X)} (h : ∀ i ∈ s, IsTransitiveRel i) :
-    IsTransitiveRel (⋂₀ s) := by
-  rw [sInter_eq_iInter]
-  exact IsTransitiveRel.iInter (by simpa)
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_preimage (since := "2025-10-17")]
-lemma IsTransitiveRel.preimage_prodMap {Y : Type*} {t : Set (Y × Y)}
-    (ht : IsTransitiveRel t) (f : X → Y) :
-    IsTransitiveRel (Prod.map f f ⁻¹' t) :=
-  fun _ _ _ h h' ↦ ht h h'
-
-set_option linter.deprecated false in
-@[deprecated SetRel.isTrans_symmetrize (since := "2025-10-17")]
-lemma IsTransitiveRel.symmetrizeRel {s : SetRel X X} (h : IsTransitiveRel s) :
-    IsTransitiveRel (SetRel.symmetrize s) :=
-  fun _ _ _ hxy hyz ↦ ⟨h hxy.1 hyz.1, h hyz.2 hxy.2⟩
-
-set_option linter.deprecated false in
-@[deprecated SetRel.comp_eq_self (since := "2025-10-17")]
-lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : SetRel X X}
-    (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
-    s ○ s = s :=
-  le_antisymm h.comp_subset_self (subset_comp_self h')
 
 lemma IsTransitiveRel.prod_subset_trans {s : SetRel X X} {t u v : Set X} [s.IsTrans]
     (htu : t ×ˢ u ⊆ s) (huv : u ×ˢ v ⊆ s) (hu : u.Nonempty) :
@@ -145,14 +70,14 @@ lemma IsTransitiveRel.mem_filter_prod_trans {s : SetRel X X} {f g h : Filter X} 
 
 open UniformSpace
 
-lemma ball_subset_of_mem {V : SetRel X X} [V.IsTrans] {x y : X} (hy : y ∈ ball x V) :
-    ball y V ⊆ ball x V :=
-  ball_subset_of_comp_subset hy SetRel.comp_subset_self
+lemma ball_subset_of_mem {V : SetRel X X} [V.IsTrans] {x y : X} (hy : y ∈ V.ball x) :
+    V.ball y ⊆ V.ball x :=
+  SetRel.ball_subset_ball_of_comp_subset hy SetRel.comp_subset_self
 
-lemma ball_eq_of_mem {V : SetRel X X} [V.IsSymm] [V.IsTrans] {x y : X} (hy : y ∈ ball x V) :
-    ball x V = ball y V := by
+lemma ball_eq_of_mem {V : SetRel X X} [V.IsSymm] [V.IsTrans] {x y : X} (hy : y ∈ V.ball x) :
+    V.ball x = V.ball y := by
   refine le_antisymm (ball_subset_of_mem ?_) (ball_subset_of_mem hy)
-  rwa [← mem_ball_symmetry]
+  exact V.comm.mp hy
 
 variable [UniformSpace X]
 
@@ -171,46 +96,44 @@ lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι �
     (fun _ hs ↦ hs.1)
 
 lemma IsUltraUniformity.mem_nhds_iff_symm_trans [IsUltraUniformity X] {x : X} {s : Set X} :
-    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 X, SetRel.IsSymm V ∧ SetRel.IsTrans V ∧ UniformSpace.ball x V ⊆ s := by
+    s ∈ 𝓝 x ↔ ∃ V ∈ 𝓤 X, SetRel.IsSymm V ∧ SetRel.IsTrans V ∧ SetRel.ball V x ⊆ s := by
   rw [UniformSpace.mem_nhds_iff]
   constructor
   · rintro ⟨V, V_in, V_sub⟩
     rw [IsUltraUniformity.hasBasis.mem_iff'] at V_in
     obtain ⟨U, ⟨U_in, U_sym, U_trans⟩, U_sub⟩ := V_in
-    refine ⟨U, U_in, U_sym, U_trans, (UniformSpace.ball_mono U_sub _).trans V_sub⟩
+    refine ⟨U, U_in, U_sym, U_trans, (SetRel.ball_mono U_sub x).trans V_sub⟩
   · rintro ⟨V, V_in, _, _, V_sub⟩
     exact ⟨V, V_in, V_sub⟩
 
 namespace UniformSpace
 
 lemma isOpen_ball_of_mem_uniformity (x : X) {V : SetRel X X} [V.IsTrans] (h' : V ∈ 𝓤 X) :
-    IsOpen (ball x V) := by
-  rw [isOpen_iff_ball_subset]
+    IsOpen (V.ball x) := by
+  rw [isOpen_iff_mem_nhds]
   intro y hy
-  exact ⟨V, h', ball_subset_of_mem hy⟩
+  have hV : V.ball y ∈ 𝓝 y := SetRel.ball_mem_nhds y h'
+  have hsub : V.ball y ⊆ V.ball x := ball_subset_of_mem hy
+  exact mem_of_superset hV hsub
 
 lemma isClosed_ball_of_isSymm_of_isTrans_of_mem_uniformity (x : X) {V : SetRel X X} [V.IsSymm]
     [V.IsTrans] (h' : V ∈ 𝓤 X) :
-    IsClosed (ball x V) := by
+    IsClosed (V.ball x) := by
   rw [← isOpen_compl_iff, isOpen_iff_ball_subset]
-  exact fun y hy ↦ ⟨V, h', fun z hyz hxz ↦ hy <| V.trans hxz <| V.symm hyz⟩
-
-@[deprecated (since := "2025-10-17")]
-alias isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity :=
-  isClosed_ball_of_isSymm_of_isTrans_of_mem_uniformity
+  exact fun y hy ↦ ⟨V, h', fun z hyz hxz ↦ hy <| V.trans (V.symm hyz) hxz⟩
 
 lemma isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity (x : X) {V : SetRel X X} [V.IsSymm]
     [V.IsTrans] (h' : V ∈ 𝓤 X) :
-    IsClopen (ball x V) :=
+    IsClopen (V.ball x) :=
   ⟨isClosed_ball_of_isSymm_of_isTrans_of_mem_uniformity _ ‹_›, isOpen_ball_of_mem_uniformity _ ‹_›⟩
 
 variable [IsUltraUniformity X]
 
 lemma nhds_basis_clopens (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
-  refine (nhds_basis_uniformity' (IsUltraUniformity.hasBasis)).to_hasBasis' ?_ ?_
+  refine (nhds_basis_uniformity (IsUltraUniformity.hasBasis)).to_hasBasis' ?_ ?_
   · intro V ⟨hV, h_symm, h_trans⟩
-    exact ⟨ball x V, ⟨mem_ball_self _ hV,
+    exact ⟨V.ball x, ⟨refl_mem_uniformity hV,
       isClopen_ball_of_isSymm_of_isTrans_of_mem_uniformity _ hV⟩, le_rfl⟩
   · rintro u ⟨hx, hu⟩
     simp [hu.right.mem_nhds_iff, hx]

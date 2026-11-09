@@ -35,6 +35,10 @@ instance (priority := 100) finite [Finite α] : Finite (α ⧸ s) :=
   Quotient.finite _
 
 @[to_additive]
+instance countable [Countable α] : Countable (α ⧸ s) :=
+  Quotient.countable
+
+@[to_additive]
 instance fintypeQuotientRightRel [Fintype (α ⧸ s)] :
     Fintype (Quotient (QuotientGroup.rightRel s)) :=
   .ofEquiv (α ⧸ s) (QuotientGroup.quotientRightRelEquivQuotientLeftRel s).symm
@@ -64,10 +68,10 @@ lemma card_mul_eq_card_subgroup_mul_card_quotient (s : Subgroup α) (t : Set α)
   aesop (add simp [Set.mem_mul])
 
 /-- **Lagrange's Theorem**: The order of a subgroup divides the order of its ambient group. -/
-@[to_additive /-- **Lagrange's Theorem**: The order of an additive subgroup divides the order of its
-ambient additive group. -/]
+@[to_additive (attr := wikidata Q505798) /-- **Lagrange's Theorem**: The order of an additive
+subgroup divides the order of its ambient additive group. -/]
 theorem card_subgroup_dvd_card (s : Subgroup α) : Nat.card s ∣ Nat.card α := by
-  classical simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
+  simp [card_eq_card_quotient_mul_card_subgroup s, @dvd_mul_left ℕ]
 
 @[to_additive]
 theorem card_quotient_dvd_card (s : Subgroup α) : Nat.card (α ⧸ s) ∣ Nat.card α := by
@@ -78,7 +82,7 @@ variable {H : Type*} [Group H]
 @[to_additive]
 theorem card_dvd_of_injective (f : α →* H) (hf : Function.Injective f) :
     Nat.card α ∣ Nat.card H := by
-  classical calc
+  calc
       Nat.card α = Nat.card (f.range : Subgroup H) := Nat.card_congr (Equiv.ofInjective f hf)
       _ ∣ Nat.card H := card_subgroup_dvd_card _
 

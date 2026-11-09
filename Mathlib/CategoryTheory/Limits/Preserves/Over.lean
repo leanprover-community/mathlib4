@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 
 /-!
-
 # Forgetful functor from `Over X` preserves cofiltered limits
 
 Note that `Over.forget X : Over X ⥤ C` already preserves all colimits because it is a left adjoint.
@@ -34,8 +33,8 @@ instance {X : C} : PreservesCofilteredLimitsOfSize (Over.forget X) := by
     simp), fun j k e ↦ by ext; simpa using (s.w e).symm⟩
   refine ⟨(hc.lift s').left, fun j ↦ congr($(hc.fac s' j).left), fun f hf ↦ ?_⟩
   dsimp at hf
-  exact congr($(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
-    fun j ↦ Over.OverMorphism.ext (hf j)).left)
+  congrm $(hc.uniq s' (Over.homMk f (by simp [s', ← hf]))
+   fun j ↦ Over.OverMorphism.ext (hf j)).left
 
 instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
   refine ⟨fun J hJ hJ' ↦ ⟨fun {F} ↦ ⟨fun {c} hc ↦ ⟨.ofExistsUnique fun s ↦ ?_⟩⟩⟩⟩
@@ -47,7 +46,7 @@ instance {X : C} : PreservesFilteredColimitsOfSize (Under.forget X) := by
     simp), fun j k e ↦ by ext; simpa using s.w e⟩
   refine ⟨(hc.desc s').right, fun j ↦ congr($(hc.fac s' j).right), fun f hf ↦ ?_⟩
   dsimp at hf
-  exact congr($(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
-    fun j ↦ Under.UnderMorphism.ext (hf j)).right)
+  congrm $(hc.uniq s' (Under.homMk f (by simp [s', ← hf]))
+   fun j ↦ Under.UnderMorphism.ext (hf j)).right
 
 end CategoryTheory.Limits

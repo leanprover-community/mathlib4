@@ -7,10 +7,8 @@ module
 
 public import Mathlib.CategoryTheory.Adhesive.Basic
 public import Mathlib.CategoryTheory.Subobject.Basic
-public import Mathlib.CategoryTheory.Subobject.Lattice
 
 /-!
-
 # Subobjects in adhesive categories
 
 ## Main Results
@@ -28,7 +26,6 @@ universe v u
 
 variable {C : Type u} [Category.{v} C] [Adhesive C] {X : C}
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Given an object `X` of an adhesive category `C`, the coproduct of two subobjects of `X` is their
   pushout in `C` over their pullback. -/
 noncomputable def isColimitBinaryCofan (a b : Subobject X) :

@@ -7,8 +7,10 @@ module
 
 public import Mathlib.Algebra.Group.Action.Pi
 public import Mathlib.Algebra.Group.End
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.Algebra.Order.Archimedean.Basic
+
 import Mathlib.Algebra.Order.Group.Basic
 
 /-!
@@ -76,11 +78,13 @@ protected theorem semiconj [Add G] [Add H] [AddConstMapClass F G H a b] (f : F) 
     Semiconj f (· + a) (· + b) :=
   map_add_const f
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_add_nsmul [AddMonoid G] [AddMonoid H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℕ) : f (x + n • a) = f x + n • b := by
   simpa using (AddConstMapClass.semiconj f).iterate_right n x
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_add_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) : f (x + n) = f x + n • b := by simp [← map_add_nsmul]
@@ -88,6 +92,7 @@ theorem map_add_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 
 theorem map_add_one [AddMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) : f (x + 1) = f x + b := map_add_const f x
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_add_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
@@ -101,6 +106,7 @@ theorem map_add_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClas
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
     f (x + ofNat(n)) = f x + ofNat(n) := map_add_nat f x n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_const [AddZeroClass G] [Add H] [AddConstMapClass F G H a b] (f : F) :
     f a = f 0 + b := by
@@ -110,11 +116,13 @@ theorem map_one [AddZeroClass G] [One G] [Add H] [AddConstMapClass F G H 1 b] (f
     f 1 = f 0 + b :=
   map_const f
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_nsmul_const [AddMonoid G] [AddMonoid H] [AddConstMapClass F G H a b]
     (f : F) (n : ℕ) : f (n • a) = f 0 + n • b := by
   simpa using map_add_nsmul f 0 n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) : f n = f 0 + n • b := by
@@ -132,6 +140,7 @@ theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F 
     (f : F) (n : ℕ) [n.AtLeastTwo] :
     f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (a + x) = f x + b := by
@@ -140,11 +149,13 @@ theorem map_const_add [AddCommMagma G] [Add H] [AddConstMapClass F G H a b]
 theorem map_one_add [AddCommMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) : f (1 + x) = f x + b := map_const_add f x
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_nsmul_add [AddCommMonoid G] [AddMonoid H] [AddConstMapClass F G H a b]
     (f : F) (n : ℕ) (x : G) : f (n • a + x) = f x + n • b := by
   rw [add_comm, map_add_nsmul]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) (x : G) : f (↑n + x) = f x + n • b := by
@@ -163,11 +174,13 @@ theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMap
     f (ofNat(n) + x) = f x + ofNat(n) :=
   map_nat_add f n x
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_nsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℕ) : f (x - n • a) = f x - n • b := by
   conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel_right]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : f (x - a) = f x - b := by
@@ -177,28 +190,33 @@ theorem map_sub_one [AddGroup G] [One G] [AddGroup H] [AddConstMapClass F G H 1 
     (f : F) (x : G) : f (x - 1) = f x - b :=
   map_sub_const f x
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) : f (x - n) = f x - n • b := by
   simpa using map_sub_nsmul f x n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
     f (x - ofNat(n)) = f x - ofNat(n) • b :=
   map_sub_nat' f x n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_add_zsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) : ∀ n : ℤ, f (x + n • a) = f x + n • b
   | (n : ℕ) => by simp
   | .negSucc n => by simp [← sub_eq_add_neg]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_zsmul_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (n : ℤ) : f (n • a) = f 0 + n • b := by
   simpa using map_add_zsmul f 0 n
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_add_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℤ) : f (x + n) = f x + n • b := by
@@ -207,11 +225,13 @@ theorem map_add_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 theorem map_add_int [AddGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℤ) : f (x + n) = f x + n := by simp
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_zsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℤ) : f (x - n • a) = f x - n • b := by
   simpa [sub_eq_add_neg] using map_add_zsmul f x (-n)
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_sub_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℤ) : f (x - n) = f x - n • b := by
@@ -220,11 +240,13 @@ theorem map_sub_int' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 theorem map_sub_int [AddGroupWithOne G] [AddGroupWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℤ) : f (x - n) = f x - n := by simp
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_zsmul_add [AddCommGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (n : ℤ) (x : G) : f (n • a + x) = f x + n • b := by
   rw [add_comm, map_add_zsmul]
 
+-- For the use of `scoped` rather than `simp`, see library note [Simp lemmas with weak keys]
 @[scoped simp]
 theorem map_int_add' [AddCommGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℤ) (x : G) : f (↑n + x) = f x + n • b := by
@@ -321,9 +343,10 @@ variable {G H : Type*} [Add G] [Add H] {a : G} {b : H}
 ### Coercion to function
 -/
 
+@[macro_inline]
 instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
-  coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
+  coe_injective | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
 @[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
 @[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
@@ -371,37 +394,50 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
-@[simp, norm_cast]
+instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : IsVAddApply K (G →+c[a, b] H) where
+
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-10-27")]
 theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
 
 instance {K : Type*} [AddMonoid K] [AddAction K H] [VAddAssocClass K H H] :
-    AddAction K (G →+c[a, b] H) :=
-  DFunLike.coe_injective.addAction _ coe_vadd
+    AddAction K (G →+c[a, b] H) := fast_instance% FunLike.addAction
 
 /-!
 ### Monoid structure on endomorphisms `G →+c[a, a] G`
 -/
 
 instance : Mul (G →+c[a, a] G) := ⟨comp⟩
+
+instance : IsMulApplyEqComp (G →+c[a, a] G) where
+
 instance : One (G →+c[a, a] G) := ⟨.id⟩
+
+instance : IsOneApplyEqSelf (G →+c[a, a] G) where
 
 instance : Pow (G →+c[a, a] G) ℕ where
   pow f n := ⟨f^[n], Commute.iterate_left (AddConstMapClass.semiconj f) _⟩
 
-instance : Monoid (G →+c[a, a] G) :=
-  DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+instance : IsNPowApplyEqIterate (G →+c[a, a] G) where
+
+instance : Monoid (G →+c[a, a] G) := fast_instance% FunLike.compMonoid
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
-@[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
+
+@[deprecated FunLike.coe_mul_eq_comp +typeChanged (since := "2026-10-27")]
+theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
 
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
-@[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-@[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+@[deprecated FunLike.coe_one_eq_id +typeChanged (since := "2026-10-27")]
+theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
+@[deprecated FunLike.coe_pow_eq_iterate +typeChanged (since := "2026-10-27")]
+theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+
+@[deprecated pow_apply_eq_iterate +typeChanged (since := "2026-10-27")]
+protected theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
 @[simps -fullyApplied]

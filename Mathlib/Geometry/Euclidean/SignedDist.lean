@@ -5,8 +5,9 @@ Authors: Joseph Myers
 -/
 module
 
-public import Mathlib.Geometry.Euclidean.Projection
 public import Mathlib.Analysis.Normed.Module.Normalize
+public import Mathlib.Geometry.Euclidean.Projection
+public import Mathlib.Topology.Algebra.ContinuousAffineMap.Topology
 
 /-!
 # Signed distance to an affine subspace in a Euclidean space.
@@ -43,10 +44,8 @@ section signedDist
 The signed distance between two points `p` and `q`, in the direction of a reference vector `v`.
 It is the size of `q - p` in the direction of `v`.
 In the degenerate case `v = 0`, it returns `0`.
-
-TODO: once we have a topology on `P →ᴬ[ℝ] ℝ`, the type should be `P →ᴬ[ℝ] P →ᴬ[ℝ] ℝ`.
 -/
-noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
+noncomputable def signedDist (v : V) : P →ᴬ[ℝ] P →ᴬ[ℝ] ℝ where
   toFun p := (innerSL ℝ (normalize v)).toContinuousAffineMap.comp
     (ContinuousAffineMap.id ℝ P -ᵥ .const ℝ P p)
   linear := {
@@ -56,6 +55,7 @@ noncomputable def signedDist (v : V) : P →ᵃ[ℝ] P →ᴬ[ℝ] ℝ where
   map_vadd' p v' := by
     ext q
     simp [vsub_vadd_eq_vsub_sub, inner_sub_right, ← sub_eq_neg_add]
+  cont := by fun_prop
 
 variable (v w : V) (p q r : P)
 
@@ -176,7 +176,7 @@ lemma abs_signedDist_eq_dist_iff_vsub_mem_span :
   by_cases h : v = 0
   · simp [h, eq_comm (a := (0 : ℝ)), eq_comm (a := (0 : V))]
   rw [inv_mul_eq_iff_eq_mul₀ (by positivity)]
-  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 0 2 :)]
+  rw [← Real.norm_eq_abs, ((norm_inner_eq_norm_tfae ℝ v (q -ᵥ p)).out 1 3 :)]
   simp [h, eq_comm]
 
 open NNReal in
@@ -280,8 +280,8 @@ lemma abs_signedInfDist_eq_dist_of_mem_affineSpan_insert {x : P}
     orthogonalProjection_vsub_orthogonalProjection, norm_smul, abs_mul]
 
 lemma signedInfDist_singleton :
-    (affineSpan ℝ ({q} : Set P)).signedInfDist p = signedDist (p -ᵥ q) q := by
-  simpa using signedInfDist_eq_signedDist_of_mem (mem_affineSpan ℝ (Set.mem_singleton q))
+    ({q} : AffineSubspace ℝ P).signedInfDist p = signedDist (p -ᵥ q) q := by
+  simpa using signedInfDist_eq_signedDist_of_mem (mem_singleton q)
 
 end AffineSubspace
 

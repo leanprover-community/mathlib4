@@ -77,7 +77,7 @@ set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem oangle_self (x : V) : o.oangle x x = 0 := by
   rw [oangle, kahler_apply_self, ← ofReal_pow]
-  convert QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
+  convert! QuotientAddGroup.mk_zero (AddSubgroup.zmultiples (2 * π))
   apply arg_ofReal_of_nonneg
   positivity
 
@@ -325,6 +325,13 @@ theorem two_zsmul_oangle_smul_right_self (x : V) {r : ℝ} : (2 : ℤ) • o.oan
 theorem two_zsmul_oangle_smul_smul_self (x : V) {r₁ r₂ : ℝ} :
     (2 : ℤ) • o.oangle (r₁ • x) (r₂ • x) = 0 := by by_cases h : r₁ = 0 <;> simp [h]
 
+/-- If the spans of two vectors are equal, twice angles with those vectors is zero -/
+theorem two_zsmul_oangle_of_span_eq {x y : V} (h : ℝ ∙ x = ℝ ∙ y) :
+    (2 : ℤ) • o.oangle x y = 0 := by
+  rw [Submodule.span_singleton_eq_span_singleton] at h
+  rcases h with ⟨r, rfl⟩
+  exact o.two_zsmul_oangle_smul_right_self x
+
 /-- If the spans of two vectors are equal, twice angles with those vectors on the left are
 equal. -/
 theorem two_zsmul_oangle_left_of_span_eq {x y : V} (z : V) (h : ℝ ∙ x = ℝ ∙ y) :
@@ -493,6 +500,58 @@ theorem oangle_add_cyc3_neg_right {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz 
     o.oangle x (-y) + o.oangle y (-z) + o.oangle z (-x) = π := by
   simp_rw [← oangle_neg_left_eq_neg_right, o.oangle_add_cyc3_neg_left hx hy hz]
 
+/-- If twice angles with two vectors are zero, the spans of two vectors are equal. -/
+theorem span_eq_of_two_zsmul_oangle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : (2 : ℤ) • o.oangle x y = 0) :
+    ℝ ∙ x = ℝ ∙ y := by
+  rw [Real.Angle.two_zsmul_eq_zero_iff, o.oangle_eq_zero_or_eq_pi_iff_right_eq_smul,
+    or_iff_right hx] at h
+  rw [Submodule.span_singleton_eq_span_singleton]
+  rcases h with ⟨r, rfl⟩
+  use (Units.mk0 r (by simp_all))
+  rw [Units.smul_mk0]
+
+/-- Twice angles with two vectors are zero if and only if the spans of two vectors are equal. -/
+theorem two_zsmul_oangle_eq_zero_iff_span_eq {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (2 : ℤ) • o.oangle x y = 0 ↔ ℝ ∙ x = ℝ ∙ y := by
+  constructor <;> intro h
+  · exact o.span_eq_of_two_zsmul_oangle_eq_zero hx hy h
+  · exact o.two_zsmul_oangle_of_span_eq h
+
+/-- If twice angles with those non-zero vectors on the right are equal,
+the spans of two vectors are equal. -/
+theorem span_eq_of_two_zsmul_oangle_right {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0)
+    (h : (2 : ℤ) • o.oangle x y = (2 : ℤ) • o.oangle x z) :
+    ℝ ∙ y = ℝ ∙ z := by
+  apply o.span_eq_of_two_zsmul_oangle_eq_zero hy hz
+  rw [eq_comm ,← sub_eq_zero, ← smul_sub, o.oangle_sub_left hx hy hz] at h
+  exact h
+
+/-- Twice angles with those non-zero vectors on the right are equal if and only if
+the spans of two non-zero vectors are equal. -/
+theorem two_zsmul_oangle_right_iff_span_eq {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    (2 : ℤ) • o.oangle x y = (2 : ℤ) • o.oangle x z ↔ ℝ ∙ y = ℝ ∙ z := by
+  constructor <;> intro h
+  · exact o.span_eq_of_two_zsmul_oangle_right hx hy hz h
+  · exact o.two_zsmul_oangle_right_of_span_eq x h
+
+/-- If twice angles with those non-zero vectors on the left are equal,
+the spans of two vectors are equal. -/
+theorem span_eq_of_two_zsmul_oangle_left {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0)
+    (h : (2 : ℤ) • o.oangle x z = (2 : ℤ) • o.oangle y z) :
+    ℝ ∙ x = ℝ ∙ y := by
+  apply o.span_eq_of_two_zsmul_oangle_eq_zero hx hy
+  rw [← sub_eq_zero, ← smul_sub, o.oangle_sub_right hx hy hz] at h
+  exact h
+
+/-- Twice angles with those non-zero vectors on the left are equal if and only if
+the spans of two non-zero vectors are equal. -/
+theorem two_zsmul_oangle_left_iff_span_eq {x y z : V} (hx : x ≠ 0) (hy : y ≠ 0) (hz : z ≠ 0) :
+    (2 : ℤ) • o.oangle x z = (2 : ℤ) • o.oangle y z ↔ ℝ ∙ x = ℝ ∙ y := by
+  constructor <;> intro h
+  · exact o.span_eq_of_two_zsmul_oangle_left hx hy hz h
+  · exact o.two_zsmul_oangle_left_of_span_eq z h
+
 /-- Pons asinorum, oriented vector angle form. -/
 theorem oangle_sub_eq_oangle_sub_rev_of_norm_eq {x y : V} (h : ‖x‖ = ‖y‖) :
     o.oangle x (x - y) = o.oangle (y - x) y := by simp [oangle, h]
@@ -579,6 +638,30 @@ theorem angle_eq_abs_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) :
   · rw [h, eq_comm, Real.Angle.abs_toReal_neg_coe_eq_self_iff]
     exact ⟨h0, hpi⟩
 
+/-- If the unoriented angle between two nonzero vectors is at most `π / 2`, twice that angle is
+the absolute value of twice the oriented angle, converted to a real. -/
+theorem two_mul_angle_eq_abs_two_zsmul_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : InnerProductGeometry.angle x y ≤ π / 2) :
+    2 * InnerProductGeometry.angle x y = |((2 : ℤ) • o.oangle x y).toReal| := by
+  have h_double_angle : 2 * InnerProductGeometry.angle x y =
+      |((2 * InnerProductGeometry.angle x y : ℝ) : Real.Angle).toReal| := by
+    rw [eq_comm, Real.Angle.abs_toReal_coe_eq_self_iff]
+    exact ⟨mul_nonneg zero_le_two (InnerProductGeometry.angle_nonneg x y), by linarith⟩
+  rcases o.oangle_eq_angle_or_eq_neg_angle hx hy with he | he
+  all_goals
+    simpa only [he, smul_neg, two_zsmul, ← Real.Angle.coe_add, ← two_mul, ← neg_add,
+      Real.Angle.abs_toReal_neg] using h_double_angle
+
+/-- If the unoriented angle between two nonzero vectors is at least `π / 2`, twice that angle is
+`2 * π` minus the absolute value of twice the oriented angle, converted to a real. -/
+theorem two_mul_angle_eq_two_pi_sub_abs_two_zsmul_oangle_toReal {x y : V} (hx : x ≠ 0) (hy : y ≠ 0)
+    (h : π / 2 ≤ InnerProductGeometry.angle x y) :
+    2 * InnerProductGeometry.angle x y = 2 * π - |((2 : ℤ) • o.oangle x y).toReal| := by
+  have key := o.two_mul_angle_eq_abs_two_zsmul_oangle_toReal hx (neg_ne_zero.2 hy)
+    (by rw [InnerProductGeometry.angle_neg_right]; linarith)
+  rw [InnerProductGeometry.angle_neg_right, o.two_zsmul_oangle_neg_right] at key
+  linarith
+
 /-- If the sign of the oriented angle between two vectors is zero, either one of the vectors is
 zero or the unoriented angle is 0 or π. -/
 theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
@@ -588,7 +671,7 @@ theorem eq_zero_or_angle_eq_zero_or_pi_of_sign_oangle_eq_zero {x y : V}
   by_cases hy : y = 0; · simp [hy]
   rw [o.angle_eq_abs_oangle_toReal hx hy]
   rw [Real.Angle.sign_eq_zero_iff] at h
-  rcases h with (h | h) <;> simp [h, Real.pi_pos.le]
+  rcases h with (h | h) <;> simp [h]
 
 /-- If two unoriented angles are equal, and the signs of the corresponding oriented angles are
 equal, then the oriented angles are equal (even in degenerate cases). -/
@@ -700,8 +783,7 @@ theorem oangle_eq_pi_iff_angle_eq_pi {x y : V} :
   · simp [hy, Real.Angle.pi_ne_zero.symm, div_eq_mul_inv,
       Real.pi_ne_zero]
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [o.angle_eq_abs_oangle_toReal hx hy, h]
-    simp [Real.pi_pos.le]
+  · simp [o.angle_eq_abs_oangle_toReal hx hy, h]
   · have ha := o.oangle_eq_angle_or_eq_neg_angle hx hy
     rw [h] at ha
     simpa using ha

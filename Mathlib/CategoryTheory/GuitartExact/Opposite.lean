@@ -21,8 +21,6 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
-open Category
-
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃} {C₄ : Type u₄}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃] [Category.{v₄} C₄]
   {T : C₁ ⥤ C₂} {L : C₁ ⥤ C₃} {R : C₂ ⥤ C₄} {B : C₃ ⥤ C₄}
@@ -38,13 +36,13 @@ variable {X₃ : C₃ᵒᵖ} {X₂ : C₂ᵒᵖ} (g : B.op.obj X₃ ⟶ R.op.obj
 namespace structuredArrowRightwardsOpEquivalence
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
-@[simps!]
+@[simps!, implicit_reducible]
 def functor :
     (w.op.StructuredArrowRightwards g)ᵒᵖ ⥤
       w.CostructuredArrowDownwards g.unop where
   obj f := CostructuredArrowDownwards.mk _ _ f.unop.right.left.unop
       f.unop.right.hom.unop f.unop.hom.left.unop
-      (Quiver.Hom.op_inj (by simpa using CostructuredArrow.w f.unop.hom))
+      (Quiver.Hom.op_inj (by simpa using! CostructuredArrow.w f.unop.hom))
   map {f f'} φ :=
     CostructuredArrow.homMk
       (StructuredArrow.homMk (φ.unop.right.left.unop)
@@ -54,6 +52,7 @@ def functor :
             ((CostructuredArrow.proj _ _).congr_map (StructuredArrow.w φ.unop)))
 
 /-- Auxiliary definition for `structuredArrowRightwardsOpEquivalence`. -/
+@[simps!, implicit_reducible]
 def inverse :
     w.CostructuredArrowDownwards g.unop ⥤
       (w.op.StructuredArrowRightwards g)ᵒᵖ where
@@ -66,12 +65,10 @@ def inverse :
         (Quiver.Hom.unop_inj (by exact StructuredArrow.w φ.left)))
           (by
             ext
-            exact Quiver.Hom.unop_inj
-              ((StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ)))).op
+            exact ((StructuredArrow.proj _ _).congr_map (CostructuredArrow.w φ)))).op
 
 end structuredArrowRightwardsOpEquivalence
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If `w : TwoSquare T L R B`, and `g : B.op.obj X₃ ⟶ R.op.obj X₂`, this is
 the obvious equivalence of categories between
 `(w.op.StructuredArrowRightwards g)ᵒᵖ` and `w.CostructuredArrowDownwards g.unop`. -/
@@ -93,7 +90,6 @@ instance [w.GuitartExact] : w.op.GuitartExact := by
     isConnected_iff_of_equivalence (w.structuredArrowRightwardsOpEquivalence g)]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 lemma guitartExact_op_iff : w.op.GuitartExact ↔ w.GuitartExact := by
   constructor
   · intro
@@ -111,7 +107,7 @@ instance guitartExact_id' (F : C₁ ⥤ C₂) :
   apply guitartExact_id
 
 instance guitartExact_of_isEquivalence_of_isIso'
-    [T.IsEquivalence] [B.IsEquivalence] [IsIso w.natTrans] : GuitartExact w := by
+    [T.IsEquivalence] [B.IsEquivalence] [IsIso w] : GuitartExact w := by
   rw [← guitartExact_op_iff]
   infer_instance
 

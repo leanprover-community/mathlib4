@@ -9,11 +9,10 @@ public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Adjunctions
 public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.Square
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Square
 public import Mathlib.CategoryTheory.Sites.Abelian
-public import Mathlib.CategoryTheory.Sites.Adjunction
-public import Mathlib.CategoryTheory.Sites.Sheafification
+
+import Mathlib.CategoryTheory.Sites.Adjunction
 
 /-!
 # Mayer-Vietoris squares
@@ -61,6 +60,7 @@ open Limits Opposite
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 lemma Sheaf.isPullback_square_op_map_yoneda_presheafToSheaf_yoneda_iff
     [HasWeakSheafify J (Type v)]
@@ -244,6 +244,7 @@ noncomputable def shortComplex :
   zero := (S.map (yoneda ⋙ (Functor.whiskeringRight _ _ _).obj AddCommGrpCat.free ⋙
       presheafToSheaf J _)).cokernelCofork.condition
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 instance : Mono S.shortComplex.f := by
   have : Mono (S.shortComplex.f ≫ biprod.snd) := by

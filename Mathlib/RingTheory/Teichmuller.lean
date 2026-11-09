@@ -5,10 +5,10 @@ Authors: Kenny Lau
 -/
 module
 
-public import Mathlib.LinearAlgebra.SModEq.Basic
-public import Mathlib.LinearAlgebra.SModEq.Pow
 public import Mathlib.RingTheory.AdicCompletion.Basic
 public import Mathlib.RingTheory.Perfection
+
+import Mathlib.LinearAlgebra.SModEq.Pow
 
 /-! # Teichmüller map
 
@@ -179,8 +179,7 @@ theorem mk_comp_teichmuller :
 
 variable (p I) in
 theorem mk_comp_teichmuller₀ :
-    (Ideal.Quotient.mk I : _ →*₀ _).comp (teichmuller₀ p I) =
-      (coeff (R ⧸ I) p 0 : Perfection (R ⧸ I) p →*₀ R ⧸ I) :=
+    ((Ideal.Quotient.mk I) : _ →*₀ _).comp (teichmuller₀ p I) = (coeff (R ⧸ I) p 0 : _ →*₀ R ⧸ I) :=
   MonoidWithZeroHom.ext mk_teichmuller
 
 variable (p I) in

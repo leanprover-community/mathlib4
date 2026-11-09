@@ -6,6 +6,10 @@ Authors: Mario Carneiro
 module
 
 public import Mathlib.Data.List.Forall2
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # List sections
 
@@ -16,7 +20,7 @@ list of lists `[l₁, ..., lₙ]` is a list whose `i`-th element comes from the 
 public section
 
 
-open Nat Function
+open Nat
 
 namespace List
 

@@ -6,25 +6,26 @@ Authors: Kexing Ying, Rémy Degenne
 module
 
 public import Mathlib.Probability.Process.Filtration
-public import Mathlib.Topology.Instances.Discrete
 
 /-!
 # Adapted and progressively measurable processes
 
-This file defines the related notions of a process `u` being `Adapted`, `StronglyAdapted`
-or `StronglyProgressive` (progressively measurable) with respect to a filter `f`, and proves
-some basic facts about them.
+This file defines the related notions of a process `u` being (strongly) `Adapted` or
+`Progressive` (progressively measurable) with respect to a filtration `f`, and proves some
+basic facts about them.
 
 ## Main definitions
 
 * `MeasureTheory.Adapted`: a sequence of functions `u` is said to be adapted to a
   filtration `f` if at each point in time `i`, `u i` is `f i`-measurable
-* `MeasureTheory.StronglyAdapted`: a sequence of functions `u` is said to be strongly adapted to a
-  filtration `f` if at each point in time `i`, `u i` is `f i`-strongly measurable
-* `MeasureTheory.IsStronglyProgressive`: a sequence of functions `u` is said to be strongly
-  progressive with respect to a filtration `f` if at each point in time `i`, `u` restricted to
-  `Set.Iic i × Ω` is strongly measurable with respect to the product `MeasurableSpace` structure
-  where the σ-algebra used for `Ω` is `f i`.
+* `MeasureTheory.IsProgressive`: a sequence of functions `u` is said to be progressive with respect
+  to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is strongly
+  measurable with respect to the product `MeasurableSpace` structure where the σ-algebra used for
+  `Ω` is `f i`.
+We also provide the following variants, which use `MeasureTheory.StronglyMeasurable` instead
+of `Measurable`:
+* `MeasureTheory.StronglyAdapted`
+* `MeasureTheory.IsStronglyProgressive`
 
 ## Main results
 
@@ -39,7 +40,7 @@ adapted, progressively measurable
 
 @[expose] public section
 
-open Filter Order TopologicalSpace
+open Filter TopologicalSpace
 
 open scoped MeasureTheory NNReal ENNReal Topology
 
@@ -178,6 +179,77 @@ theorem Filtration.stronglyAdapted_natural [∀ i, MetrizableSpace (β i)]
 
 end StronglyAdapted
 
+section Progressive
+
+variable {β : Type*} {u v : ι → Ω → β}
+
+/-- Progressive process. A sequence of functions `u` is said to be progressive with respect
+to a filtration `f` if at each point in time `i`, `u` restricted to `Set.Iic i × Ω` is measurable
+with respect to the product `MeasurableSpace` structure where the σ-algebra used for `Ω` is `f i`.
+The usual definition uses the interval `[0,i]`, which we replace by `Set.Iic i`. We recover the
+usual definition for index types `ℝ≥0` or `ℕ`. -/
+def IsProgressive [MeasurableSpace ι] [MeasurableSpace β] (f : Filtration ι m)
+    (u : ι → Ω → β) : Prop :=
+  ∀ i, Measurable[Subtype.instMeasurableSpace.prod (f i)] fun p : Set.Iic i × Ω => u p.1 p.2
+
+theorem isProgressive_const {mi : MeasurableSpace ι} {mβ : MeasurableSpace β} (f : Filtration ι m)
+    (b : β) : IsProgressive f (fun _ _ => b : ι → Ω → β) :=
+  fun _ ↦ by exact measurable_const
+
+namespace IsProgressive
+
+variable {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
+
+protected theorem adapted (h : IsProgressive f u) : Adapted f u := by
+  intro i
+  have : u i = (fun p : Set.Iic i × Ω => u p.1 p.2) ∘ fun x => (⟨i, Set.mem_Iic.mpr le_rfl⟩, x) :=
+    rfl
+  rw [this]
+  exact (h i).comp measurable_prodMk_left
+
+protected theorem comp {t : ι → Ω → ι} (h : IsProgressive f u) (ht : IsProgressive f t)
+    (ht_le : ∀ i ω, t i ω ≤ i) :
+    IsProgressive f fun i ω => u (t i ω) ω := by
+  intro i
+  have : (fun p : ↥(Set.Iic i) × Ω => u (t (p.fst : ι) p.snd) p.snd) =
+    (fun p : ↥(Set.Iic i) × Ω => u (p.fst : ι) p.snd) ∘ fun p : ↥(Set.Iic i) × Ω =>
+      (⟨t (p.fst : ι) p.snd, Set.mem_Iic.mpr ((ht_le _ _).trans p.fst.prop)⟩, p.snd) := rfl
+  rw [this]
+  exact (h i).comp ((ht i).subtype_mk.prodMk measurable_snd)
+
+section Arithmetic
+
+@[to_additive]
+protected theorem mul [Mul β] [MeasurableMul₂ β] (hu : IsProgressive f u)
+    (hv : IsProgressive f v) : IsProgressive f fun i ω ↦  (u i ω * v i ω) :=
+  fun i ↦ Measurable.mul (hu i) (hv i)
+
+@[to_additive]
+protected theorem finsetProd {γ} [CommMonoid β] [MeasurableMul₂ β] {U : γ → ι → Ω → β}
+    {s : Finset γ} (h : ∀ c ∈ s, IsProgressive f (U c)) :
+    IsProgressive f fun i ω ↦ ∏ c ∈ s, U c i ω :=
+  fun i ↦ s.measurable_prod fun c hc ↦ h c hc i
+
+@[to_additive]
+protected theorem inv [Group β] [MeasurableInv β] (hu : IsProgressive f u) :
+    IsProgressive f fun i ω => (u i ω)⁻¹ := fun i ↦ (hu i).inv
+
+@[to_additive]
+protected theorem div [Group β] [MeasurableDiv₂ β] (hu : IsProgressive f u)
+    (hv : IsProgressive f v) : IsProgressive f fun i ω ↦ u i ω / v i ω :=
+  fun i ↦ Measurable.div (hu i) (hv i)
+
+/-- The norm of a progressive process is progressive. -/
+protected lemma norm [NormedAddCommGroup β] [OpensMeasurableSpace β] (hu : IsProgressive f u) :
+    IsProgressive f fun t ω ↦ ‖u t ω‖ :=
+  fun i ↦ by apply @(hu i).norm; infer_instance
+
+end Arithmetic
+
+end IsProgressive
+
+end Progressive
+
 variable {β : Type*} [TopologicalSpace β] {u v : ι → Ω → β}
 
 /-- Strongly progressive process. A sequence of functions `u` is said to be strongly
@@ -228,23 +300,11 @@ protected theorem finsetProd' {γ} [CommMonoid β] [ContinuousMul β] {U : γ �
   Finset.prod_induction U (IsStronglyProgressive f) (fun _ _ => .mul)
     (isStronglyProgressive_const _ 1) h
 
-@[deprecated (since := "2026-04-08")]
-protected alias finset_sum' := MeasureTheory.IsStronglyProgressive.finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod' := MeasureTheory.IsStronglyProgressive.finsetProd'
-
 @[to_additive]
 protected theorem finsetProd {γ} [CommMonoid β] [ContinuousMul β] {U : γ → ι → Ω → β}
     {s : Finset γ} (h : ∀ c ∈ s, IsStronglyProgressive f (U c)) :
     IsStronglyProgressive f fun i a => ∏ c ∈ s, U c i a := by
   convert IsStronglyProgressive.finsetProd' h using 1; ext (i a); simp only [Finset.prod_apply]
-
-@[deprecated (since := "2026-04-08")]
-protected alias finset_sum := MeasureTheory.IsStronglyProgressive.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-08")]
-protected alias finset_prod := MeasureTheory.IsStronglyProgressive.finsetProd
 
 @[to_additive]
 protected theorem inv [Group β] [ContinuousInv β] (hu : IsStronglyProgressive f u) :
@@ -263,6 +323,15 @@ protected lemma norm {β : Type*} {u : ι → Ω → β} [SeminormedAddCommGroup
 end Arithmetic
 
 end IsStronglyProgressive
+
+lemma IsProgressive.isStronglyProgressive {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
+    [PseudoMetrizableSpace β] [SecondCountableTopology β] [OpensMeasurableSpace β]
+  (h : IsProgressive f u) : IsStronglyProgressive f u :=
+  fun i ↦ (h i).stronglyMeasurable
+
+lemma IsStronglyProgressive.isProgressive {mi : MeasurableSpace ι} {mβ : MeasurableSpace β}
+    [PseudoMetrizableSpace β] [BorelSpace β] (h : IsStronglyProgressive f u) : IsProgressive f u :=
+  fun i ↦ (h i).measurable
 
 theorem isStronglyProgressive_of_tendsto' {γ} [MeasurableSpace ι] [PseudoMetrizableSpace β]
     (fltr : Filter γ) [fltr.NeBot] [fltr.IsCountablyGenerated] {U : γ → ι → Ω → β}
@@ -295,58 +364,5 @@ theorem StronglyAdapted.isStronglyProgressive_of_discrete [TopologicalSpace ι] 
     [SecondCountableTopology ι] [MeasurableSpace ι] [OpensMeasurableSpace ι]
     [PseudoMetrizableSpace β] (h : StronglyAdapted f u) : IsStronglyProgressive f u :=
   h.isStronglyProgressive_of_continuous fun _ => continuous_of_discreteTopology
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable := IsStronglyProgressive
-
-@[deprecated (since := "2026-04-24")] alias progMeasurable_const := isStronglyProgressive_const
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stronglyAdapted := IsStronglyProgressive.stronglyAdapted
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.comp := IsStronglyProgressive.comp
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.add := IsStronglyProgressive.add
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.mul := IsStronglyProgressive.mul
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum' := IsStronglyProgressive.finsetSum'
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod' := IsStronglyProgressive.finsetProd'
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_sum := IsStronglyProgressive.finsetSum
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.finset_prod := IsStronglyProgressive.finsetProd
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.neg := IsStronglyProgressive.neg
-
-@[to_additive existing, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.inv := IsStronglyProgressive.inv
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.sub := IsStronglyProgressive.sub
-
-@[to_additive existing ProgMeasurable.sub, deprecated (since := "2026-04-24")]
-alias ProgMeasurable.div' := IsStronglyProgressive.div'
-
-@[deprecated (since := "2026-04-24")] alias ProgMeasurable.norm := IsStronglyProgressive.norm
-
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_of_tendsto := isStronglyProgressive_of_tendsto
-
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_of_tendsto' := isStronglyProgressive_of_tendsto'
-
-@[deprecated (since := "2026-04-24")]
-alias StronglyAdapted.progMeasurable_of_continuous :=
-  StronglyAdapted.isStronglyProgressive_of_continuous
-
-@[deprecated (since := "2026-04-24")]
-alias StronglyAdapted.progMeasurable_of_discrete :=
-  StronglyAdapted.isStronglyProgressive_of_discrete
 
 end MeasureTheory

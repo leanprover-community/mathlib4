@@ -23,7 +23,7 @@ We provide basic instances, as well as a custom tactic for discharging
 
 noncomputable section
 
-open Topology Filter Set Int Set.Icc
+open Set Int Set.Icc
 
 /-! ### The unit interval -/
 
@@ -44,7 +44,7 @@ theorem one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, mul_le_one₀ hx.2 hy.1 hy.2⟩
+  ⟨mul_nonneg hx.1 hy.1, (mul_le_of_le_one_left hy.1 hx.2).trans hy.2⟩
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
   ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
@@ -69,7 +69,7 @@ theorem mul_le_right {x y : I} : x * y ≤ y :=
   Subtype.coe_le_coe.mp <| mul_le_of_le_one_left y.2.1 x.2.2
 
 theorem eq_closedBall : I = Metric.closedBall 2⁻¹ 2⁻¹ := by
-  norm_num [unitInterval, Real.Icc_eq_closedBall]
+  simp [unitInterval, Real.Icc_eq_closedBall]
 
 /-- Unit interval central symmetry. -/
 def symm : I → I := fun t => ⟨1 - t, Icc.mem_iff_one_sub_mem.mp t.prop⟩
@@ -170,12 +170,16 @@ example : CompactSpace I := by infer_instance
 theorem nonneg (x : I) : 0 ≤ (x : ℝ) :=
   x.2.1
 
-theorem one_minus_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+theorem one_sub_nonneg (x : I) : 0 ≤ 1 - (x : ℝ) := by simpa using x.2.2
+
+@[deprecated (since := "2026-10-06")] alias one_minus_nonneg := one_sub_nonneg
 
 theorem le_one (x : I) : (x : ℝ) ≤ 1 :=
   x.2.2
 
-theorem one_minus_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+theorem one_sub_le_one (x : I) : 1 - (x : ℝ) ≤ 1 := by simpa using x.2.1
+
+@[deprecated (since := "2026-10-06")] alias one_minus_le_one := one_sub_nonneg
 
 theorem add_pos {t : I} {x : ℝ} (hx : 0 < x) : 0 < (x + t : ℝ) :=
   add_pos_of_pos_of_nonneg hx <| nonneg _
@@ -508,7 +512,7 @@ theorem projIcc_eq_zero {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 0 ↔ x 
 theorem projIcc_eq_one {x : ℝ} : projIcc (0 : ℝ) 1 zero_le_one x = 1 ↔ 1 ≤ x :=
   projIcc_eq_right zero_lt_one
 
-namespace Tactic.Interactive
+namespace Mathlib.Tactic.Interactive
 
 /--
 `unit_interval` solves the goals `0 ≤ ↑x`, `0 ≤ 1 - ↑x`, `↑x ≤ 1`, and `1 - ↑x ≤ 1` for
@@ -517,13 +521,13 @@ any expression `x : I`.
 macro "unit_interval" : tactic =>
   `(tactic| (first
   | apply unitInterval.nonneg
-  | apply unitInterval.one_minus_nonneg
+  | apply unitInterval.one_sub_nonneg
   | apply unitInterval.le_one
-  | apply unitInterval.one_minus_le_one))
+  | apply unitInterval.one_sub_le_one))
 
 example (x : unitInterval) : 0 ≤ (x : ℝ) := by unit_interval
 
-end Tactic.Interactive
+end Mathlib.Tactic.Interactive
 
 section
 

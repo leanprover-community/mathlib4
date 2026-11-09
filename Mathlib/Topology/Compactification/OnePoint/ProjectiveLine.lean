@@ -5,11 +5,11 @@ Authors: Bjørn Kjos-Hanssen, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.QuadraticDiscriminant
-public import Mathlib.Data.Matrix.Action
 public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.FinTwo
 public import Mathlib.LinearAlgebra.Projectivization.Action
 public import Mathlib.Topology.Compactification.OnePoint.Basic
+
+import Mathlib.Algebra.QuadraticDiscriminant
 
 /-!
 # One-point compactification and projectivization
@@ -38,7 +38,7 @@ open Projectivization Matrix Polynomial OnePoint
 
 section MatrixProdAction
 
-variable {R n : Type*} [Semiring R] [Fintype n] [DecidableEq n]
+variable {R : Type*} [Semiring R]
 
 @[simp] lemma Matrix.mulVec_fin_two (m : Matrix (Fin 2) (Fin 2) R) (v : Fin 2 → R) :
     m *ᵥ v = ![m 0 0 * v 0 + m 0 1 * v 1, m 1 0 * v 0 + m 1 1 * v 1] := by
@@ -50,27 +50,6 @@ variable {R n : Type*} [Semiring R] [Fintype n] [DecidableEq n]
     (g : GL (Fin 2) R) (v : Fin 2 → R) :
     g • v = ![g 0 0 * v 0 + g 0 1 * v 1, g 1 0 * v 0 + g 1 1 * v 1] := by
   simp [Units.smul_def]
-
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-instance : Module (Matrix (Fin 2) (Fin 2) R) (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.toAddEquiv.module _
-
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-instance {S} [DistribSMul S R] [SMulCommClass R S R] :
-    SMulCommClass (Matrix (Fin 2) (Fin 2) R) S (R × R) :=
-  (LinearEquiv.finTwoArrow R R).symm.smulCommClass _ _
-
-@[deprecated "use Fin 2 → R instead" (since := "2026-04-19")]
-lemma Matrix.fin_two_smul_prod (g : Matrix (Fin 2) (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Equiv.smul_def, smul_eq_mulVec, Matrix.mulVec_eq_sum]
-
-set_option linter.deprecated false in
-@[deprecated Matrix.GeneralLinearGroup.fin_two_smul (since := "2026-04-19")]
-lemma Matrix.GeneralLinearGroup.fin_two_smul_prod {R : Type*} [CommRing R]
-    (g : GL (Fin 2) R) (v : R × R) :
-    g • v = (g 0 0 * v.1 + g 0 1 * v.2, g 1 0 * v.1 + g 1 1 * v.2) := by
-  simp [Units.smul_def, Matrix.fin_two_smul_prod]
 
 end MatrixProdAction
 
@@ -93,8 +72,8 @@ def equivProjectivization : OnePoint K ≃ ℙ K (Fin 2 → K) where
   left_inv p := by cases p <;> simp
   right_inv p := by
     induction p using ind with | h w hw =>
-    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, if_true,
-        if_false, OnePoint.elim_infty, OnePoint.elim_some]
+    by_cases h₀ : w 1 = 0 <;> simp only [mk_eq_mk_iff', h₀, Projectivization.lift_mk, ite_true,
+        ite_false, OnePoint.elim_infty, OnePoint.elim_some]
     · have : w 0 ≠ 0 := fun h ↦ hw <| funext <| by simp_all
       use (w 0)⁻¹
       ext i
@@ -131,9 +110,10 @@ lemma equivProjectivization_smul {g : GL (Fin 2) K} (x : OnePoint K) :
     equivProjectivization K (g • x) = g • equivProjectivization K x := by
   rw [Equiv.smul_def, Equiv.apply_symm_apply]
 
+set_option backward.isDefEq.respectTransparency.types false in
 lemma smul_infty_def {g : GL (Fin 2) K} :
     g • ∞ = (equivProjectivization K).symm (.mk K ![g 0 0, g 1 0] (fun h ↦ by
-      simpa [det_fin_two, show g 0 0 = 0 from congr_fun h 0, show g 1 0 = 0 from congr_fun h 1]
+      simpa [det_fin_two, show g 0 0 = 0 from congr($h 0), show g 1 0 = 0 from congr($h 1)]
         using g.det_ne_zero)) := by
   simp [Equiv.smul_def, mulVec_eq_sum, Units.smul_def]
 
@@ -150,6 +130,12 @@ lemma smul_some_eq_ite {g : GL (Fin 2) K} {k : K} :
     g • (k : OnePoint K) =
       if g 1 0 * k + g 1 1 = 0 then ∞ else (g 0 0 * k + g 0 1) / (g 1 0 * k + g 1 1) := by
   simp [Equiv.smul_def, mulVec_eq_sum, div_eq_inv_mul, mul_comm, Units.smul_def]
+
+@[simp] lemma neg_smul (g : GL (Fin 2) K) (c : OnePoint K) :
+    -g • c = g • c := by
+  induction c using OnePoint.rec with
+  | infty => simp [OnePoint.smul_infty_eq_ite]
+  | coe x => simp [OnePoint.smul_some_eq_ite]; grind
 
 lemma map_smul {L : Type*} [Field L] [DecidableEq L]
     (f : K →+* L) (g : GL (Fin 2) K) (c : OnePoint K) :
@@ -202,7 +188,7 @@ lemma IsParabolic.smul_eq_self_iff {g : GL (Fin 2) K} (hg : g.IsParabolic) [NeZe
       refine fun hb ↦ fixpointPolynomial_eq_zero_iff.not.mpr hg ?_
       simp [fixpointPolynomial, hb, hc, hd]
     · have : discrim (g 1 0) (g 1 1 - g 0 0) (-g 0 1) = 0 := by rw [discrim]; grind
-      simpa [parabolicFixedPoint, if_neg hc, sq, sub_eq_add_neg]
+      simpa [parabolicFixedPoint, ite_eq_right hc, sq, sub_eq_add_neg]
         using quadratic_eq_zero_iff_of_discrim_eq_zero hc this c
 
 lemma IsParabolic.parabolicFixedPoint_pow {g : GL (Fin 2) K} (hg : IsParabolic g) [CharZero K]

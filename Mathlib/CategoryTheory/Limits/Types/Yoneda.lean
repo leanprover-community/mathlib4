@@ -5,6 +5,7 @@ Authors: Kim Morrison, Reid Barton
 -/
 module
 
+public import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 
 /-!
@@ -22,7 +23,7 @@ universe v u
 
 namespace CategoryTheory.Limits
 
-open Functor Opposite
+open CategoryTheory.Functor Opposite
 
 section
 
@@ -39,9 +40,8 @@ def compCoyonedaSectionsEquiv (F : J ⥤ C) (X : C) :
         dsimp
         rw [Category.id_comp]
         exact (s.property f).symm }
-  invFun τ := ⟨τ.app, fun {j j'} f => by simpa using (τ.naturality f).symm⟩
+  invFun τ := ⟨τ.app, fun {j j'} f => by simpa using! (τ.naturality f).symm⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Sections of `F.op ⋙ yoneda.obj X` identify to natural
 transformations `F ⟶ (const J).obj X`. -/
 @[simps]
@@ -67,7 +67,7 @@ def compYonedaSectionsEquiv (F : J ⥤ Cᵒᵖ) (X : C) :
         rw [Category.id_comp]
         exact Quiver.Hom.unop_inj (s.property f).symm }
   invFun τ := ⟨fun j => (τ.app j).unop,
-    fun {j j'} f => Quiver.Hom.op_inj (by simpa using (τ.naturality f).symm)⟩
+    fun {j j'} f => Quiver.Hom.op_inj (by simpa using! (τ.naturality f).symm)⟩
 
 end
 
@@ -81,12 +81,13 @@ noncomputable def limitCompCoyonedaIsoCone (F : J ⥤ C) (X : C) :
     limit (F ⋙ coyoneda.obj (op X)) ≅ ((const J).obj X ⟶ F) where
   hom := ↾fun a ↦ {
     app j := limit.π (F ⋙ coyoneda.obj (op X)) j a
-    naturality _ _ _ := by simpa using (limit.w_apply _ _ _).symm }
+    naturality _ _ _ := by simpa using! (limit.w_apply _ _ _).symm }
   inv := ↾fun t ↦ limit.lift _ (Types.coneOfSection (s := t.app) <| by
     simp [Functor.sections, ← t.naturality]) ⟨⟩
 
+set_option backward.isDefEq.respectTransparency.types false in
+set_option backward.defeqAttrib.useBackward true in
 attribute [local simp←] comp_apply in
-set_option backward.isDefEq.respectTransparency false in
 variable (J) (C) in
 /-- A cone on `F` with cone point `X` is the same as an element of `lim Hom(X, F·)`,
     naturally in `F` and `X`. -/
@@ -117,13 +118,5 @@ variable (J) (C) in
 noncomputable def opHomCompWhiskeringLimYonedaIsoCocones : opHom _ _ ⋙ whiskeringLeft _ _ _ ⋙
       (whiskeringRight _ _ _).obj lim ⋙ (whiskeringLeft _ _ _).obj yoneda ≅ cocones J C :=
   NatIso.ofComponents fun F => NatIso.ofComponents (limitCompYonedaIsoCocone F.unop)
-
-/-- A cocone on `F` with cocone point `X` is the same as an element of `lim Hom(F·, X)`,
-naturally in `X`. -/
-@[deprecated "Use `(opHomCompWhiskeringLimYonedaIsoCocones _ _).app _` instead"
-  (since := "2026-04-08")]
-noncomputable def yonedaCompLimIsoCocones (F : J ⥤ C) :
-    yoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙ lim ≅ F.cocones :=
-  (opHomCompWhiskeringLimYonedaIsoCocones _ _).app (op F)
 
 end CategoryTheory.Limits

@@ -112,21 +112,21 @@ Lower topology.
 lemma isTopologicalBasis_relativeLower (hT : ∀ p ∈ T, InfPrime p) :
     IsTopologicalBasis { S : Set T | ∃ (a : α), (hull T a)ᶜ = S } := by
   convert isTopologicalBasis_subtype Topology.IsLower.isTopologicalBasis (· ∈ T)
-  ext R
-  simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
-  constructor <;> intro ha
-  · obtain ⟨a, ha'⟩ := ha
+  simp only [preimage_compl, mem_ofPred_eq, mem_eq_mem, IsLower.lowerBasis, mem_image,
+    exists_exists_and_eq_and]
+  constructor
+  · rintro ⟨a, ha'⟩
     use {a}
-    rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
+    rw [← ha', ← Subtype.val_injective.preimage_image (hull T a)ᶜ]
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
-      Subtype.image_preimage_coe, diff_self_inter, preimage_diff, Subtype.coe_preimage_self,
+      Subtype.image_preimage_coe, sdiff_self_inter, preimage_sdiff, Subtype.coe_preimage_self,
       true_and]
-    exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · obtain ⟨F, hF⟩ := ha
-    lift F to Finset α using hF.1
+    exact compl_eq_univ_sdiff (Subtype.val ⁻¹' Ici a)
+  · rintro ⟨F, hFfin, hF⟩
+    lift F to Finset α using hFfin
     use Finset.inf F id
     ext
-    simp [hull_finsetInf hT, ← hF.2]
+    simp [hull_finsetInf hT, ← hF]
 
 end PrimitiveSpectrum
 
@@ -181,6 +181,7 @@ def OrderGenerates := ∀ (a : α), ∃ (S : Set T), a = kernel S
 
 variable {T}
 
+set_option backward.isDefEq.respectTransparency false in
 /--
 When `T` is order generating, the `kernel` and the `hull` form a Galois insertion
 -/
@@ -211,7 +212,7 @@ lemma closedsGC_closureOperator [TopologicalSpace α] [IsLower α]
   constructor
   · exact fun ⦃a⦄ a ↦ a (hull T (kernel S)) ⟨(isClosed_iff hT).mpr ⟨kernel S, rfl⟩,
       image_subset_iff.mp (fun _ hbS => sInf_le hbS)⟩
-  · simp_rw [le_eq_subset, subset_sInter_iff]
+  · simp_rw [subset_sInter_iff]
     intro R hR
     rw [← (hull_kernel_of_isClosed hT hG hR.1), ← gc_closureOperator]
     exact ClosureOperator.monotone _ hR.2

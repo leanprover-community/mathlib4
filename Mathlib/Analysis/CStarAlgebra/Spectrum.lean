@@ -6,10 +6,10 @@ Authors: Jireh Loreaux
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Unitization
-public import Mathlib.Analysis.Complex.Convex
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
 public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Mathlib.Algebra.Star.StarAlgHom
+
+import Mathlib.Analysis.Complex.Convex
 
 /-! # Spectral properties in C⋆-algebras
 
@@ -38,9 +38,9 @@ we can still establish a form of spectral permanence.
 
 + `Unitary.spectrum_subset_circle`: The spectrum of a unitary element is contained in the unit
   sphere in `ℂ`.
-+ `IsSelfAdjoint.spectralRadius_eq_nnnorm`: The spectral radius of a selfadjoint element is equal
++ `IsSelfAdjoint.spectralRadius_eq_nnNorm`: The spectral radius of a selfadjoint element is equal
   to its norm.
-+ `IsStarNormal.spectralRadius_eq_nnnorm`: The spectral radius of a normal element is equal to
++ `IsStarNormal.spectralRadius_eq_nnNorm`: The spectral radius of a normal element is equal to
   its norm.
 + `spectralRadius_toReal_star_self_mul_self_eq_normSq`: The spectral radius of `a⋆ * a` is equal to
   the square of the norm of `a`.
@@ -86,9 +86,6 @@ theorem Unitary.spectrum_subset_circle (u : unitary E) :
       simpa only [norm_inv] using norm_le_norm_of_mem hk
     simpa using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
 
-@[deprecated (since := "2025-10-29")] alias unitary.spectrum_subset_circle :=
-  Unitary.spectrum_subset_circle
-
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   Unitary.spectrum_subset_circle ⟨u, h⟩
@@ -102,10 +99,13 @@ end UnitarySpectrum
 section Quasispectrum
 
 open scoped NNReal in
-lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+lemma CStarAlgebra.le_nnNorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
     {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
   rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
-  simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
+  simpa [Unitization.nnNorm_inr] using spectrum.le_nnNorm_of_mem hx
+
+@[deprecated (since := "2026-10-31")]
+alias CStarAlgebra.le_nnnorm_of_mem_quasispectrum := CStarAlgebra.le_nnNorm_of_mem_quasispectrum
 
 end Quasispectrum
 
@@ -117,25 +117,25 @@ variable {A : Type*} [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
-theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
+theorem IsSelfAdjoint.spectralRadius_eq_nnNorm {a : A} (ha : IsSelfAdjoint a) :
     spectralRadius ℂ a = ‖a‖₊ := by
   have hconst : Tendsto (fun _n : ℕ => (‖a‖₊ : ℝ≥0∞)) atTop _ := tendsto_const_nhds
-  refine tendsto_nhds_unique ?_ hconst
-  convert
-    (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
-      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
-  refine funext fun n => ?_
-  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
+  refine tendsto_nhds_unique_of_forall ((pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius a).comp
+      (tendsto_pow_atTop_atTop_of_one_lt one_lt_two)) hconst fun n ↦ ?_
+  rw [Function.comp_apply, ha.nnNorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
+
+@[deprecated (since := "2026-10-31")]
+alias IsSelfAdjoint.spectralRadius_eq_nnnorm := IsSelfAdjoint.spectralRadius_eq_nnNorm
 
 /-- In a C⋆-algebra, the spectral radius of a self-adjoint element is equal to its norm.
 See `IsSelfAdjoint.toReal_spectralRadius_eq_norm` for a version involving
 `spectralRadius ℝ a`. -/
 lemma IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm {a : A} (ha : IsSelfAdjoint a) :
     (spectralRadius ℂ a).toReal = ‖a‖ := by
-  simp [ha.spectralRadius_eq_nnnorm]
+  simp [ha.spectralRadius_eq_nnNorm]
 
-theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
+theorem IsStarNormal.spectralRadius_eq_nnNorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
   refine (ENNReal.pow_right_strictMono two_ne_zero).injective ?_
   have heq :
@@ -143,13 +143,16 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
     funext n
     rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm, rpow_mul, rpow_natCast, ←
-      coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
+      coe_pow, sq, ← nnNorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
   have h₂ :=
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
-      (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius a)
+      (spectrum.pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius a)
   rw [← heq] at h₂
-  convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
-  rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
+  convert tendsto_nhds_unique h₂ (pow_nnNorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
+  rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnNorm, sq, nnNorm_star_mul_self, coe_mul]
+
+@[deprecated (since := "2026-10-31")]
+alias IsStarNormal.spectralRadius_eq_nnnorm := IsStarNormal.spectralRadius_eq_nnNorm
 
 namespace CStarAlgebra
 
@@ -172,8 +175,6 @@ theorem sqrt_toReal_spectralRadius_self_mul_star_eq_norm (a : A) :
 
 end CStarAlgebra
 
-variable [StarModule ℂ A]
-
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
     (hz : z ∈ spectrum ℂ a) : z = z.re := by
@@ -181,11 +182,11 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
   have hu := exp_mem_unitary_of_mem_skewAdjoint (ha.smul_mem_skewAdjoint conj_I)
   let Iu := Units.mk0 I I_ne_zero
   have : NormedSpace.exp (I • z) ∈ spectrum ℂ (NormedSpace.exp (I • a)) := by
-    simpa only [Units.smul_def, Units.val_mk0] using
+    simpa only [Units.smul_def, Units.val_mk0] using!
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
     simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
-      smul_eq_mul, I_mul, neg_eq_zero] using
+      smul_eq_mul, I_mul, neg_eq_zero] using!
       spectrum.subset_circle_of_unitary hu this
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
@@ -214,20 +215,17 @@ theorem selfAdjoint.val_re_map_spectrum (a : selfAdjoint A) :
 lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
     IsConnected (σ ℂ a)ᶜ := by
   suffices IsConnected (((σ ℂ a)ᶜ ∩ {z | 0 ≤ z.im}) ∪ (σ ℂ a)ᶜ ∩ {z | z.im ≤ 0}) by
-    rw [← Set.inter_union_distrib_left, ← Set.setOf_or] at this
-    rw [← Set.inter_univ (σ ℂ a)ᶜ]
-    convert this using 2
-    exact Eq.symm <| Set.eq_univ_of_forall (fun z ↦ le_total 0 z.im)
+    simpa [← Set.inter_union_distrib_left, ← Set.ofPred_or, le_total] using this
   refine IsConnected.union ?nonempty ?upper ?lower
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
-      Complex.isometry_ofReal.antilipschitz.tendsto_cobounded (spectrum.isBounded a |>.compl)
+      Complex.isometry_ofReal.antilipschitzWith.tendsto_cobounded (spectrum.isBounded a |>.compl)
     exact this.image Complex.ofReal |>.mono <| by simp
-  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
-  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
+  case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ Set.inter_subset_right
+  case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ Set.inter_subset_right
   all_goals
     refine Set.subset_inter (fun z hz hz' ↦ ?_) (fun _ ↦ by simpa using le_of_lt)
-    rw [Set.mem_setOf_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
+    rw [Set.mem_ofPred_eq, ha.im_eq_zero_of_mem_spectrum hz'] at hz
     simp_all
 
 namespace StarSubalgebra
@@ -241,7 +239,7 @@ lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
   have ha₁ := ha.star.mul ha
   have ha₂ := ha.mul ha.star
   have spec_eq {x : S} (hx : IsSelfAdjoint x) : spectrum ℂ x = spectrum ℂ (x : A) :=
-    Subalgebra.spectrum_eq_of_isPreconnected_compl S _ <|
+    Subalgebra.spectrum_eq_of_isPreconnected_compl S _
       (hx.map S.subtype).isConnected_spectrum_compl.isPreconnected
   rw [← StarMemClass.coe_star, ← MulMemClass.coe_mul, ← spectrum.zero_notMem_iff ℂ, ← spec_eq,
     spectrum.zero_notMem_iff] at ha₁ ha₂
@@ -270,31 +268,35 @@ variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
+set_option backward.isDefEq.respectTransparency.types false in
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
-lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
+lemma nnNorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
   have h (ψ : Unitization ℂ A →⋆ₐ[ℂ] Unitization ℂ B) (x : Unitization ℂ A) :
       ‖ψ x‖₊ ≤ ‖x‖₊ := by
     suffices ∀ {s}, IsSelfAdjoint s → ‖ψ s‖₊ ≤ ‖s‖₊ by
-      refine nonneg_le_nonneg_of_sq_le_sq zero_le' ?_
-      simp_rw [← nnnorm_star_mul_self, ← map_star, ← map_mul]
+      refine nonneg_le_nonneg_of_sq_le_sq zero_le ?_
+      simp_rw [← nnNorm_star_mul_self, ← map_star, ← map_mul]
       exact this <| .star_mul_self x
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
+      rwa [(hs.map ψ).spectralRadius_eq_nnNorm, hs.spectralRadius_eq_nnNorm, coe_le_coe]
         at this
-    exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
-  simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
+    exact iSup_le_iSup_of_subset (NonUnitalAlgHom.quasispectrum_apply_subset ψ s)
+  simpa [nnNorm_inr] using
+    h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (ofClass φ : A →⋆ₙₐ[ℂ] B))) a
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_apply_le := nnNorm_apply_le
 
 /-- A non-unital star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 lemma norm_apply_le (φ : F) (a : A) : ‖φ a‖ ≤ ‖a‖ := by
-  exact_mod_cast nnnorm_apply_le φ a
+  exact mod_cast nnNorm_apply_le φ a
 
 /-- Non-unital star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
 lemma instContinuousLinearMapClassComplex : ContinuousLinearMapClass F ℂ A B :=
   { NonUnitalAlgHomClass.instLinearMapClass with
     map_continuous := fun φ =>
-      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using nnnorm_apply_le φ) }
+      AddMonoidHomClass.continuous_of_bound φ 1 (by simpa only [one_mul] using! nnNorm_apply_le φ) }
 
 scoped[CStarAlgebra] attribute [instance] NonUnitalStarAlgHom.instContinuousLinearMapClassComplex
 
@@ -305,12 +307,15 @@ namespace StarAlgEquiv
 variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
-lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
-  le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
-    simpa using NonUnitalStarAlgHom.nnnorm_apply_le (symm (φ : A ≃⋆ₐ[ℂ] B)) ((φ : A ≃⋆ₐ[ℂ] B) a)
+lemma nnNorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
+  le_antisymm (NonUnitalStarAlgHom.nnNorm_apply_le φ a) <| by
+    simpa using! NonUnitalStarAlgHom.nnNorm_apply_le
+      (symm (ofClass φ : A ≃⋆ₐ[ℂ] B)) ((ofClass φ : A ≃⋆ₐ[ℂ] B) a)
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
 
 lemma norm_map (φ : F) (a : A) : ‖φ a‖ = ‖a‖ :=
-  congr_arg NNReal.toReal (nnnorm_map φ a)
+  congr($(nnNorm_map φ a).toReal)
 
 lemma isometry (φ : F) : Isometry φ :=
   AddMonoidHomClass.isometry_of_norm φ (norm_map φ)
@@ -321,7 +326,7 @@ end
 
 namespace WeakDual
 
-open ContinuousMap Complex
+open Complex
 
 open scoped ComplexStarModule
 

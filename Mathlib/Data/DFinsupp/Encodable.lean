@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.DFinsupp.Defs
 public import Mathlib.Logic.Encodable.Pi
+
 /-!
 # `Encodable` and `Countable` instances for `Π₀ i, α i`
 

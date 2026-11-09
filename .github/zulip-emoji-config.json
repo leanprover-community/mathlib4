@@ -1,0 +1,63 @@
+{
+  "_comment": "Config for the zulip-emoji-reconcile action (see .github/workflows/zulip_emoji_reconcile.yml), which keeps Zulip emoji reactions in sync with PR state. Format and semantics: https://github.com/leanprover-community/mathlib-ci/blob/master/docs/zulip-emoji-reconcile.md. Derived from scripts/zulip/examples/mathlib4-config.json in that repo; keep the two in sync when the emoji table changes.",
+
+  "github_repo": "leanprover-community/mathlib4",
+
+  "_merged_comment": "bors merges by rebasing a PR's commits onto master, so GitHub reports the PR as CLOSED (not merged) and renames its title to start with '[Merged by Bors] -'. Treat such closed PRs as merged so they get the 'merge' emoji rather than 'closed-pr'. Drop this key for repos that merge via the GitHub merge button/queue, where the PR state is reported as MERGED directly.",
+  "merged_title_prefix": "[Merged by Bors] -",
+
+  "zulip": {
+    "site": "https://leanprover.zulipchat.com",
+    "email": "github-mathlib4-bot@leanprover.zulipchat.com"
+  },
+
+  "channels": {
+    "pr_reviews": "PR reviews",
+    "reviewers": "mathlib reviewers",
+    "rss_allow": ["mathlib bors notifications"]
+  },
+
+  "ci": {
+    "_comment": "Case-insensitive substring match against check-run name, workflow name, or status context. The first three select the gating jobs of 'continuous integration' / 'continuous integration (mathlib forks)' -- their check runs are named 'ci / Build', 'ci (fork) / Build', etc. -- while leaving auxiliary jobs (Upload to cache, Post-CI job) out of the emoji. 'Check workflows' is the actionlint workflow: it runs only on PRs touching .github/**, so it contributes nothing on ordinary PRs and becomes the CI signal on workflows-only PRs where the main CI never triggers.",
+    "check_names": ["Build", "Lint style", "Post-Build Step", "Check workflows"]
+  },
+
+  "states": [
+    {
+      "name": "merged", "group": "pr", "priority": 30,
+      "source": {"state": "merged"}, "emoji": "merge"
+    },
+    {
+      "name": "closed", "group": "pr", "priority": 20,
+      "source": {"state": "closed"},
+      "emoji": "closed-pr", "emoji_code": "61293", "reaction_type": "realm_emoji"
+    },
+    {
+      "name": "ready-to-merge", "group": "pr", "priority": 12,
+      "source": {"label": "ready-to-merge"},
+      "emoji": "bors", "emoji_code": "22134", "reaction_type": "realm_emoji"
+    },
+    {
+      "name": "delegated", "group": "pr", "priority": 11,
+      "source": {"label": "delegated"}, "emoji": "peace_sign"
+    },
+    {
+      "name": "awaiting-author", "group": "pr", "priority": 10,
+      "source": {"label": "awaiting-author"}, "emoji": "writing"
+    },
+
+    {"name": "ci-running", "group": "ci", "source": {"ci": "running"}, "emoji": "yellow"},
+    {"name": "ci-success", "group": "ci", "source": {"ci": "success"}, "emoji": "check"},
+    {"name": "ci-failure", "group": "ci", "source": {"ci": "failure"}, "emoji": "cross_mark"},
+
+    {
+      "name": "maintainer-merge", "group": null,
+      "source": {"label": "maintainer-merge"}, "emoji": "hammer",
+      "suppress_in": {"channel": "reviewers", "subject_prefix": "maintainer merge"}
+    },
+    {
+      "name": "migrated", "group": null, "sticky": true,
+      "source": {"label": "migrated-from-branch"}, "emoji": "skip_forward"
+    }
+  ]
+}

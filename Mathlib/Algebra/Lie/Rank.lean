@@ -6,7 +6,6 @@ Authors: Johan Commelin
 module
 
 public import Mathlib.Algebra.Lie.EngelSubalgebra
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Module.LinearMap.Polynomial
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
@@ -36,9 +35,8 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 open Module
 
-variable {R A L M ι ιₘ : Type*}
+variable {R L M ι ιₘ : Type*}
 variable [CommRing R]
-variable [CommRing A] [Algebra R A]
 variable [LieRing L] [LieAlgebra R L] [Module.Finite R L] [Module.Free R L]
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 variable [Module.Finite R M] [Module.Free R M]
@@ -49,6 +47,7 @@ variable (b : Basis ι R L) (bₘ : Basis ιₘ R M) (x : L)
 namespace LieModule
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L M)
 
@@ -124,6 +123,7 @@ end LieModule
 namespace LieAlgebra
 
 open LieAlgebra LinearMap Module.Free
+attribute [local instance 100] LieRing.ofAssociativeRing
 
 variable (R L)
 
@@ -165,7 +165,7 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :
-    IsRegular R x ↔ (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := Iff.rfl
+    IsRegular R x ↔ ((ad R L x).charpoly.coeff (rank R L) ≠ 0) := Iff.rfl
 
 lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero [DecidableEq ι] :
     IsRegular R x ↔

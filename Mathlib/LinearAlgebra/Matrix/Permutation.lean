@@ -7,9 +7,6 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Data.Matrix.PEquiv
-public import Mathlib.Data.Set.Card
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Permutation matrices
@@ -34,7 +31,9 @@ open Equiv
 variable {n R : Type*} [DecidableEq n] (σ τ : Perm n)
 
 variable (R) in
-/-- the permutation matrix associated with an `Equiv.Perm` -/
+/-- the permutation matrix associated with an `Equiv.Perm`.
+
+This is available in a bundled form as `Matrix.permMatrixHom`. -/
 abbrev Equiv.Perm.permMatrix [Zero R] [One R] : Matrix n n R :=
   σ.toPEquiv.toMatrix
 

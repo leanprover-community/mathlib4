@@ -6,11 +6,9 @@ Authors: Yunzhou Xie, Jujian Zhang
 module
 
 public import Mathlib.Algebra.Azumaya.Defs
-public import Mathlib.Algebra.Central.End
 public import Mathlib.Algebra.Central.TensorProduct
-public import Mathlib.RingTheory.Finiteness.Basic
-public import Mathlib.GroupTheory.GroupAction.Hom
-public import Mathlib.RingTheory.TensorProduct.Maps
+
+import Mathlib.Algebra.Central.End
 
 /-!
 # Basic properties of Azumaya algebras
@@ -79,7 +77,7 @@ theorem of_AlgEquiv (e : A ≃ₐ[R] B) [IsAzumaya R A] : IsAzumaya R B :=
   let _ : Module.Finite R B := .equiv e.toLinearEquiv
   ⟨Function.Bijective.of_comp_iff (AlgHom.mulLeftRight R B)
     (Algebra.TensorProduct.congr e e.op).bijective |>.1 <| by
-    rw [← AlgEquiv.coe_algHom, ← AlgHom.coe_comp, mulLeftRight_comp_congr]
+    rw [← AlgEquiv.coe_toAlgHom, ← AlgHom.coe_comp, mulLeftRight_comp_congr]
     simp [AlgHom.mulLeftRight_bij]⟩
 
 end IsAzumaya

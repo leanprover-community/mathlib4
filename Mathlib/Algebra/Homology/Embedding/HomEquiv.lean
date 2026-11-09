@@ -5,10 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Homology.Embedding.Restriction
-public import Mathlib.Algebra.Homology.Embedding.Extend
 public import Mathlib.Algebra.Homology.Embedding.Boundary
-public import Mathlib.CategoryTheory.MorphismProperty.Basic
+public import Mathlib.Algebra.Homology.Embedding.Extend
+public import Mathlib.Algebra.Homology.Embedding.Restriction
 
 /-!
 # Relations between `extend` and `restriction`
@@ -54,7 +53,7 @@ variable (φ : K.restriction e ⟶ L)
 
 variable {e}
 
-open Classical in
+open scoped Classical in
 /-- Auxiliary definition for `liftExtend`. -/
 noncomputable def f (i' : ι') : K.X i' ⟶ (L.extend e).X i' :=
   if hi' : ∃ i, e.f i = i' then
@@ -68,7 +67,6 @@ lemma f_eq {i' : ι'} {i : ι} (hi : e.f i = i') :
   have : hi'.choose = i := e.injective_f (by rw [hi'.choose_spec, hi])
   grind [f]
 
-set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma comm (hφ : e.HasLift φ) (i' j' : ι') :
     f φ i' ≫ (L.extend e).d i' j' = K.d i' j' ≫ f φ j' := by
@@ -158,7 +156,6 @@ lemma comm (i j : ι) :
 
 end homRestrict
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The morphism `K.restriction e ⟶ L` induced by a morphism `K ⟶ L.extend e`. -/
 noncomputable def homRestrict (ψ : K ⟶ L.extend e) : K.restriction e ⟶ L where
   f i := homRestrict.f ψ i
@@ -167,7 +164,6 @@ lemma homRestrict_f (ψ : K ⟶ L.extend e) {i : ι} {i' : ι'} (h : e.f i = i')
     (e.homRestrict ψ).f i = (K.restrictionXIso e h).hom ≫ ψ.f i' ≫ (L.extendXIso e h).hom :=
   homRestrict.f_eq ψ h
 
-set_option backward.isDefEq.respectTransparency false in
 lemma homRestrict_hasLift (ψ : K ⟶ L.extend e) :
     e.HasLift (e.homRestrict ψ) := by
   intro j hj i' hij'

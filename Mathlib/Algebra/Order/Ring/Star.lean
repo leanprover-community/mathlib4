@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Algebra.Order.Ring.Defs
 public import Mathlib.Algebra.Order.Star.Basic
 
 /-!
@@ -25,7 +24,7 @@ public section
 
 namespace StarOrderedRing
 
-/- This example shows that nonnegative elements in an ordered semiring which is also star-ordered
+/-! This example shows that nonnegative elements in an ordered semiring which is also star-ordered
 must commute. We provide this only as an example as opposed to a lemma because we never expect the
 type class assumptions to be satisfied without a `CommSemiring` instance already in scope; not that
 it is impossible, only that it shouldn't occur in practice. -/

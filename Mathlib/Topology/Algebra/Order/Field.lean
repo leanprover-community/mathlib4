@@ -5,10 +5,14 @@ Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Pointwise.Interval
 public import Mathlib.Order.Filter.AtTopBot.Field
 public import Mathlib.Topology.Algebra.Field
 public import Mathlib.Topology.Algebra.Order.Group
+
+import Mathlib.Tactic.NormNum.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Topologies on linear ordered fields
@@ -84,7 +88,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 A version for positive real powers exists as `tendsto_rpow_neg_atTop`. -/
 theorem tendsto_pow_neg_atTop {n : ℕ} (hn : n ≠ 0) :
     Tendsto (fun x : 𝕜 => x ^ (-(n : ℤ))) atTop (𝓝 0) := by
-  simpa only [zpow_neg, zpow_natCast] using (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
+  simpa only [zpow_neg, zpow_natCast] using! (tendsto_pow_atTop (α := 𝕜) hn).inv_tendsto_atTop
 
 theorem tendsto_zpow_atTop_zero {n : ℤ} (hn : n < 0) :
     Tendsto (fun x : 𝕜 => x ^ n) atTop (𝓝 0) := by
@@ -182,6 +186,31 @@ theorem Filter.Tendsto.pos_mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (
 theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atTop := by
   simpa only [mul_comm] using hg.atBot_mul_neg hC hf
+
+theorem Filter.tendsto_nhds_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) {c : 𝕜} :
+    Tendsto f l (𝓝 c) ↔ Tendsto g l (𝓝 c) := by
+  refine ⟨fun hlim ↦ ?_, fun hlim ↦ ?_⟩
+  · convert (hlim.mul (h.inv₀ (by simp))).congr' ?_
+    · simp
+    · filter_upwards [h.eventually_ne one_ne_zero]
+      grind
+  · convert (hlim.mul h).congr' ?_
+    · simp
+    · filter_upwards [h.eventually_ne one_ne_zero]
+      grind
+
+theorem Filter.tendsto_atTop_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
+    Tendsto f l atTop ↔ Tendsto g l atTop := by
+  refine ⟨fun hlim ↦ (hlim.atTop_mul_pos (by simp) (h.inv₀ (by simp))).congr' ?_,
+    fun hlim ↦ (hlim.atTop_mul_pos (by simp) h).congr' ?_⟩ <;>
+    (filter_upwards [h.eventually_ne one_ne_zero]; grind)
+
+theorem Filter.tendsto_atBot_iff_of_tendsto_div_nhds_one
+    (h : Tendsto (fun x ↦ f x / g x) l (𝓝 1)) :
+    Tendsto f l atBot ↔ Tendsto g l atBot := by
+  simpa [← tendsto_neg_atTop_iff] using tendsto_atTop_iff_of_tendsto_div_nhds_one (by simpa)
 
 @[simp]
 lemma inv_atBot₀ : (atBot : Filter 𝕜)⁻¹ = 𝓝[<] 0 :=
@@ -300,6 +329,17 @@ theorem tendsto_const_mul_zpow_atTop_nhds_iff {n : ℤ} {c d : 𝕜} (hc : c ≠
     · simp only [h.left, h.right, zpow_zero, mul_one]
       exact tendsto_const_nhds
     · exact h.2.symm ▸ tendsto_const_mul_zpow_atTop_zero h.1
+
+theorem tendsto_const_mul_zpow_atTop_atTop_iff {n : ℤ} {c : 𝕜} :
+    Tendsto (fun x => c * x ^ n) atTop atTop ↔ 0 < n ∧ 0 < c := by
+  refine ⟨fun h => ?_, fun ⟨hn, hc⟩ => ?_⟩
+  · cases n with
+    | ofNat n =>
+      simpa [tendsto_const_mul_pow_atTop_iff, Nat.pos_iff_ne_zero] using h
+    | negSucc n =>
+      cases (tendsto_const_mul_zpow_atTop_zero (Int.negSucc_lt_zero n)).not_tendsto
+        (disjoint_nhds_atTop _) h
+  · exact (tendsto_zpow_atTop_atTop hn).const_mul_atTop hc
 
 instance (priority := 100) IsStrictOrderedRing.toIsTopologicalDivisionRing :
     IsTopologicalDivisionRing 𝕜 := ⟨⟩

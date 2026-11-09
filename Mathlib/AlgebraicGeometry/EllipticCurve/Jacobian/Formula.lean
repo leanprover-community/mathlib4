@@ -261,8 +261,6 @@ lemma dblX_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
   rw [dblX, Y_eq_negY_of_Y_eq hQz hx hy hy']
   ring1
 
--- Non-terminal simp, used to be field_simp
-set_option linter.flexible false in
 private lemma toAffine_addX_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : F} (hd : d ≠ 0) :
     W.toAffine.addX (P x / P z ^ 2) (P x / P z ^ 2) (-n / (P z * d)) =
       (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * d ^ 2) / (P z * d) ^ 2 := by
@@ -400,8 +398,8 @@ More specifically, the unit `u` such that `W.add P Q = u • ![1, 1, 0]` where
 def addU (P Q : Fin 3 → F) : F :=
   -((P y * Q z ^ 3 - Q y * P z ^ 3) / (P z * Q z))
 
-lemma addU_smul {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q z ≠ 0) {u v : F} (hu : u ≠ 0)
-    (hv : v ≠ 0) : addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
+lemma addU_smul {P Q : Fin 3 → F} {u v : F} :
+    addU (u • P) (v • Q) = (u * v) ^ 2 * addU P Q := by
   simp [field, addU, smul_fin3_ext]
 
 lemma addU_of_Z_eq_zero_left {P Q : Fin 3 → F} (hPz : P z = 0) : addU P Q = 0 := by
