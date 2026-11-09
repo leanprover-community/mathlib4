@@ -68,8 +68,6 @@ abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearO
     toMax := maxOfLe,
     toDecidableLE := hD }
 
-/-! ### Order connection -/
-
 /-- A connected order is one satisfying the condition `a < c → a < b ∨ b < c`.
   This is recognizable as an intuitionistic substitute for `a ≤ b ∨ b ≤ a` on
   the constructive reals, and is also known as negative transitivity,
