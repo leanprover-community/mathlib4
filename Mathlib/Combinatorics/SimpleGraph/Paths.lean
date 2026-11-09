@@ -439,7 +439,7 @@ lemma exists_isTrail_forall_isTrail_length_le_length (G : SimpleGraph V) [Nonemp
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsTrail ∧ p.length = n}
   have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
     fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.length_le_ncard_edgeSet
-  obtain x := Classical.arbitrary V
+  obtain ⟨x⟩ := ‹Nonempty V›
   obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
   have := hn ⟨u', v', p', hp', rfl⟩
@@ -453,7 +453,7 @@ lemma exists_isPath_forall_isPath_length_le_length (G : SimpleGraph V) [Nonempty
   let s := {n | ∃ (u v : V) (p : G.Walk u v), p.IsPath ∧ p.length = n}
   have : s.Finite := Set.Finite.subset (Set.finite_le_nat G.edgeSet.ncard)
     fun n ⟨_, _, _, hp, hn⟩ ↦ hn ▸ hp.isTrail.length_le_ncard_edgeSet
-  obtain x := Classical.arbitrary V
+  obtain ⟨x⟩ := ‹Nonempty V›
   obtain ⟨_, ⟨u, v, p, hp, _⟩, hn⟩ := this.exists_maximal ⟨0, ⟨x, x, Walk.nil, by simp⟩⟩
   refine ⟨u, v, p, hp, fun u' v' p' hp' ↦ ?_⟩
   have := hn ⟨u', v', p', hp', rfl⟩
