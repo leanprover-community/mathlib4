@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
-
 # The Lie algebra `sl₂` and its representations
 
 The Lie algebra `sl₂` is the unique simple Lie algebra of minimal rank, 1, and as such occupies a

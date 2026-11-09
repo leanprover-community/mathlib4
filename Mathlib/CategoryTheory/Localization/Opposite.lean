@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Localization.Equivalence
 
 /-!
-
 # Localization of the opposite category
 
 If a functor `L : C ⥤ D` is a localization functor for `W : MorphismProperty C`, it

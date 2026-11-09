@@ -9,7 +9,6 @@ public import Mathlib.Topology.Algebra.ValuativeRel.ValuativeTopology
 public import Mathlib.Topology.Algebra.WithZeroTopology
 
 /-!
-
 # Valuative Relations as Valued
 
 In this temporary file, we provide a helper instance

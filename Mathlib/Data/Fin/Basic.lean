@@ -550,12 +550,4 @@ instance [NeZero n] [NeZero ofNat(m)] : NeZero (ofNat(m) : Fin (n + ofNat(m))) :
   apply Nat.mod_eq_of_lt
   simpa using! zero_lt_of_ne_zero (NeZero.ne n)
 
-section Mul
-
-/-!
-### mul
--/
-
-end Mul
-
 end Fin
