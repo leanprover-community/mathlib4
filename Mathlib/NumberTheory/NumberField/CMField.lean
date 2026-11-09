@@ -217,7 +217,7 @@ protected theorem RingOfIntegers.complexConj_eq_self_iff (x : 𝓞 K) :
 
 protected theorem Units.complexConj_eq_self_iff (u : (𝓞 K)ˣ) :
     complexConj K u = u ↔ ∃ v : (𝓞 K⁺)ˣ, algebraMap (𝓞 K⁺) K v = u := by
-  rw [RingOfIntegers.complexConj_eq_self_iff, Units.coe_coe]
+  rw [← RingOfIntegers.coe_eq_algebraMap, RingOfIntegers.complexConj_eq_self_iff, Units.coe_coe]
   refine ⟨fun ⟨y, hy⟩ ↦ ?_, fun ⟨v, hv⟩ ↦ ⟨v, by rw [hv]⟩⟩
   have : IsUnit y := by
     apply IsUnit.of_map (algebraMap (𝓞 K⁺) (𝓞 K))
@@ -277,7 +277,7 @@ theorem unitsComplexConj_eq_self_iff [Algebra.IsIntegral ℚ K] (u : (𝓞 K)ˣ)
     unitsComplexConj K u = u ↔ u ∈ realUnits K := by
   simp_rw [Units.ext_iff, mem_realUnits_iff, RingOfIntegers.ext_iff, Units.coe_mapEquiv,
     RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply,
-    AlgEquiv.coe_toRingEquiv, Units.complexConj_eq_self_iff,
+    AlgEquiv.coe_toRingEquiv, RingOfIntegers.coe_eq_algebraMap, Units.complexConj_eq_self_iff,
     IsScalarTower.algebraMap_apply (𝓞 K⁺) (𝓞 K) K]
 
 variable [NumberField K]
@@ -298,14 +298,16 @@ theorem complexConj_torsion (ζ : torsion K) :
 
 theorem unitsComplexConj_torsion (ζ : torsion K) :
     unitsComplexConj K ζ = ζ⁻¹ := by
-  apply coe_injective
-  simp
+  ext
+  simp only [Units.coe_mapEquiv, RingEquiv.coe_toMulEquiv, RingOfIntegers.mapRingEquiv_apply]
+  simp [RingOfIntegers.coe_eq_algebraMap]
 
 /--
 The map `(𝓞 K)ˣ →* torsion K` defined by `u ↦ u * (conj u)⁻¹`.
 -/
 noncomputable def unitsMulComplexConjInv : (𝓞 K)ˣ →* torsion K where
-  toFun := fun u ↦ ⟨u * (unitsComplexConj K u)⁻¹, (mem_torsion K).mpr fun _ ↦ by simp⟩
+  toFun := fun u ↦ ⟨u * (unitsComplexConj K u)⁻¹, (mem_torsion K).mpr fun _ ↦ by
+    simp [map_mul, ← RingOfIntegers.coe_eq_algebraMap]⟩
   map_one' := by simp
   map_mul' := by
     intro _ _
@@ -434,7 +436,7 @@ theorem regOfFamily_realFunSystem :
   rw [Matrix.submatrix_apply, Matrix.of_apply, Matrix.of_apply,
     show f.symm w = (equivInfinitePlace K).symm w.1 by rfl,
     show algebraMap (𝓞 K) K _ = algebraMap K⁺ K _ by rfl, equivInfinitePlace_symm_apply]
-  simp [f, g]
+  simp [f, g, RingOfIntegers.coe_eq_algebraMap]
 
 theorem regulator_div_regulator_eq_two_pow_mul_indexRealUnits_inv :
     regulator K / regulator K⁺ = 2 ^ rank K * (indexRealUnits K : ℝ)⁻¹ := by

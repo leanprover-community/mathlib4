@@ -41,11 +41,11 @@ open NumberField Units
 
 section Rat
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
-  simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
-    RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
-    Subtype.coe_injective.eq_iff]; rfl
+  simp_rw [← isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x, Int.isUnit_iff,
+    RingHom.coe_coe, EmbeddingLike.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff,
+    OneMemClass.coe_eq_one, RingOfIntegers.ext_iff, Subtype.ext_iff, Subalgebra.coe_neg _,
+    Subalgebra.coe_one]
 
 end Rat
 
@@ -127,7 +127,7 @@ variable (K)
 @[simp]
 protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
-  rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
+  rw [← RingOfIntegers.coe_eq_algebraMap, ← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
 variable {K} in
 theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
