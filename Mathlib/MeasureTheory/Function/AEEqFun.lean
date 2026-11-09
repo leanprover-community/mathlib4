@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical

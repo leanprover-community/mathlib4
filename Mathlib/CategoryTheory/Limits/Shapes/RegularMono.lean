@@ -129,7 +129,6 @@ def Fork.IsLimit.regularMono {A B : C} {p₁ p₂ : A ⟶ B} {c : Fork p₁ p₂
 section IsRegularMono
 
 /-!
-
 Given a regular monomorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularMono`),
 this section gives an equalizer diagram
 ```
@@ -379,7 +378,6 @@ def Cofork.IsColimit.regularEpi {A B : C} {p₁ p₂ : A ⟶ B} {c : Cofork p₁
 section IsRegularEpi
 
 /-!
-
 Given a regular epimorphism `f : X ⟶ Y` (i.e. a morphism satisfying the predicate `IsRegularEpi`),
 this section gives a coequalizer diagram
 ```

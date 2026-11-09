@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
-
 # Adhesive categories
 
 ## Main definitions

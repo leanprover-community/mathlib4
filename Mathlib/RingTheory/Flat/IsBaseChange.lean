@@ -10,7 +10,6 @@ public import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Algebra.FiveLemma
 
 /-!
-
 # Lemmas about `IsBaseChange` under exact sequences
 
 In this file, we show that if `S` is a flat `R`-algebra, taking kernels commutes with base change

@@ -93,7 +93,6 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hX : f X = g X) : f = g :=
   AlgHom.toRingHom_injective (ringHom_ext' congr($(hC).toRingHom) hX)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (R) in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/

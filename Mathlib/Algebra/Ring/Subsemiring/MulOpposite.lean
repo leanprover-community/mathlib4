@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 /-!
-
 # Subsemiring of opposite semirings
 
 For every semiring `R`, we construct an equivalence between subsemirings of `R` and that of `Rᵐᵒᵖ`.
