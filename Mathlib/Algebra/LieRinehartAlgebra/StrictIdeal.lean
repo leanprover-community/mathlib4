@@ -88,9 +88,6 @@ lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' �
   rw [← lie_skew]
   membership
 
-theorem mem_carrier {s : StrictLieRinehartIdeal A L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
-  Iff.rfl
-
 @[ext]
 theorem ext {s t : StrictLieRinehartIdeal A L} (h : ∀ x : L, x ∈ s ↔ x ∈ t) : s = t :=
   SetLike.ext h
