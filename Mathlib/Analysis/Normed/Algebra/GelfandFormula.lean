@@ -11,6 +11,7 @@ public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Normed.Operator.Mul
 
 import Mathlib.Analysis.Analytic.RadiusLiminf
+import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Complex.Polynomial.Basic
 
 /-!

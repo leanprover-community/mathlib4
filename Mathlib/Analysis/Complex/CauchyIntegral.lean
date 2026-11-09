@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
+import Mathlib.Analysis.Analytic.Uniqueness
+import Mathlib.Analysis.Calculus.DSlope
 import Mathlib.Analysis.Real.Cardinality
 
 /-!
