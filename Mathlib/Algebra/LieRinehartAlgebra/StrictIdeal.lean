@@ -178,10 +178,14 @@ theorem toLieIdeal_injective : Function.Injective
   rw [SetLike.ext_iff] at h; ext x; exact h x
 
 @[simp]
-theorem toLieIdeal_inj (s t : StrictLieRinehartIdeal A L) :
+theorem toLieIdeal_inj {s t : StrictLieRinehartIdeal A L} :
     s.toLieIdeal R = t.toLieIdeal R ↔ s = t := toLieIdeal_injective.eq_iff
 
+@[simp]
 theorem coe_toLieIdeal {s : StrictLieRinehartIdeal A L} : ((s.toLieIdeal R) : Set L) = s := rfl
+
+@[simp]
+theorem mem_toLieIdeal {s : StrictLieRinehartIdeal A L} {x} : x ∈ s.toLieIdeal R ↔ x ∈ s := Iff.rfl
 
 section LieModule
 
@@ -221,19 +225,17 @@ identity of `A`) is a strict Lie-Rinehart ideal. -/
 @[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
     StrictLieRinehartIdeal A L₁ where
   toSubmodule := s₂.toSubmodule.comap f.toLinearMap'
-  lie_mem_left' {x y} h := by
-    change f.toLinearMap' ⁅x, y⁆ ∈ s₂
-    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply, LieHom.map_lie]
-    change f.toLinearMap' x ∈ s₂ at h
-    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
-    exact lie_mem_left h _
-  isotropic' x a h := by
-    change f.toLinearMap' x ∈ s₂ at h
-    rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at h
-    have h2 := f.apply_lie a x
-    simp only [AlgHom.coe_id, id_eq] at h2
-    rw [h2]
+  lie_mem_left' {x y} (h : f x ∈ s₂) := by
+    change f ⁅x, y⁆ ∈ s₂
+    simp [lie_mem_left h (f y)]
+  isotropic' x a (h : f x ∈ s₂) := by
+    have h' : ⁅x, a⁆ = ⁅f x, a⁆ := f.apply_lie a x
+    rw [h']
     exact isotropic h a
+
+@[simp]
+lemma mem_comap {s : StrictLieRinehartIdeal A L₂} {f : L₁ →ₗ⁅.id R A⁆ L₂} {x : L₁} :
+    x ∈ s.comap f ↔ f x ∈ s := Iff.rfl
 
 end StrictLieRinehartIdeal
 
