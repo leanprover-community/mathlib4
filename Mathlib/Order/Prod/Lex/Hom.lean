@@ -21,5 +21,5 @@ set_option doc.verso.suggestions false
 @[simps]
 def Prod.Lex.toLexOrderHom {α β : Type*} [PartialOrder α] [Preorder β] :
     α × β →o α ×ₗ β where
-  toFun := toLex
+  toFun := Lex.toLex
   monotone' := Prod.Lex.toLex_mono

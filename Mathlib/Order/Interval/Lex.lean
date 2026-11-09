@@ -25,6 +25,8 @@ namespace NonemptyInterval
 
 variable {α}
 
+open Lex
+
 section LELT
 variable [LT α] [LE α]
 
@@ -60,14 +62,11 @@ theorem toLex_strictMono [PartialOrder α] : StrictMono (toLex : NonemptyInterva
   Prod.Lex.toLex_strictMono.comp toDualProd_strictMono
 
 instance [PartialOrder α] : PartialOrder (Lex (NonemptyInterval α)) := fast_instance%
-  PartialOrder.lift (fun x => toLex (ofLex x).toDualProd) <|
-    toLex.injective.comp <| toDualProd_injective.comp ofLex.injective
+  PartialOrder.lift (fun x ↦ toLex (ofLex x).toDualProd) <|
+    ofLexEquiv.symm.injective.comp <| toDualProd_injective.comp ofLexEquiv.injective
 
 instance [LinearOrder α] : LinearOrder (Lex (NonemptyInterval α)) := fast_instance%
-  { LinearOrder.lift' (fun x : Lex (NonemptyInterval α) => toLex (ofLex x).toDualProd) <|
-      toLex.injective.comp <| toDualProd_injective.comp ofLex.injective with
-    toDecidableEq := inferInstance
-    toDecidableLT := inferInstance
-    toDecidableLE := inferInstance }
+  LinearOrder.lift' (fun x ↦ toLex (ofLex x).toDualProd) <|
+    ofLexEquiv.symm.injective.comp <| toDualProd_injective.comp ofLexEquiv.injective
 
 end NonemptyInterval

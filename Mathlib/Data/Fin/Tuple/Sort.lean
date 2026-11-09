@@ -39,33 +39,28 @@ namespace Tuple
 variable {n : ℕ}
 variable {α : Type*} [LinearOrder α]
 
-/-- `graph f` produces the finset of pairs `(f i, i)`
-equipped with the lexicographic order.
--/
+/-- `graph f` produces the finset of pairs `(f i, i)` equipped with the lexicographic order. -/
+@[implicit_reducible]
 def graph (f : Fin n → α) : Finset (α ×ₗ Fin n) :=
-  Finset.univ.image fun i => (f i, i)
+  Finset.univ.image fun i ↦ ⟨f i, i⟩
 
 /-- Given `p : α ×ₗ (Fin n) := (f i, i)` with `p ∈ graph f`,
 `graph.proj p` is defined to be `f i`.
 -/
-def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1
+def graph.proj {f : Fin n → α} : graph f → α := fun p => p.1.1.1
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note: proof was `simp`
-    rw [Prod.ext_iff]
     simp
 
-set_option backward.isDefEq.respectTransparency false in
 /-- `graphEquiv₁ f` is the natural equivalence between `Fin n` and `graph f`,
 mapping `i` to `(f i, i)`. -/
 def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
-  toFun i := ⟨(f i, i), by simp [graph]⟩
-  invFun p := p.1.2
+  toFun i := ⟨⟨f i, i⟩, by simp [graph]⟩
+  invFun p := p.1.1.2
   left_inv i := by simp
   right_inv := fun ⟨⟨x, i⟩, h⟩ => by
     simpa [graph, eq_comm, eqComm] using h

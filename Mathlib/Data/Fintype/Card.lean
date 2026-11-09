@@ -196,7 +196,7 @@ theorem Fintype.card_orderDual (α : Type*) [Fintype α] : Fintype.card αᵒᵈ
 
 @[simp]
 theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fintype.card α :=
-  rfl
+  card_congr ofLexEquiv
 
 -- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
 -- no matter what instance of `Fintype (Set.univ : Set α)` is used.

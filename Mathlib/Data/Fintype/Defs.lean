@@ -297,5 +297,6 @@ instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
 instance OrderDual.finite (α : Type*) [Finite α] : Finite αᵒᵈ :=
   ‹Finite α›
 
-instance Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) :=
-  ‹Fintype α›
+instance Lex.fintype (α : Type*) [Fintype α] : Fintype (Lex α) where
+  elems := ⟨univ.val.map toLex, nodup_map_iff_injOn.mpr fun _ _ _ _ ↦ toLex_inj.mp⟩
+  complete := by simp

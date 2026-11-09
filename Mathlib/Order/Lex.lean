@@ -51,6 +51,7 @@ def ofLexEquiv : Lex α ≃ α where
   toFun := Lex.ofLex
   invFun := Lex.toLex
 
+@[simp] lemma ofLexEquiv_symm_apply (a : α) : ofLexEquiv.symm a = .toLex a := rfl
 @[simp] theorem toLex_ofLex (a : Lex α) : .toLex a.ofLex = a := rfl
 @[simp] theorem ofLex_toLex (a : α) : (Lex.toLex a).ofLex = a := rfl
 
@@ -96,6 +97,7 @@ def ofColexEquiv : Colex α ≃ α where
   toFun := Colex.ofColex
   invFun := Colex.toColex
 
+@[simp] lemma ofColexEquiv_symm_apply (a : α) : ofColexEquiv.symm a = .toColex a := rfl
 @[simp] theorem toColex_ofColex (a : Colex α) : .toColex a.ofColex = a := rfl
 @[simp] theorem ofColex_toColex (a : α) : (Colex.toColex a).ofColex = a := rfl
 
