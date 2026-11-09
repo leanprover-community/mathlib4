@@ -459,8 +459,8 @@ theorem dual_eq_dual_mul_dual :
   · intro x hx
     rw [← spanSingleton_le_iff_mem, ← mul_inv_le_iff₀ (bot_lt_iff_ne_bot.mpr
       (by simp [-extendedHom'_apply])), ← map_inv₀, ← coeToSubmodule_le_coeToSubmodule,
-        extendedHom'_apply, coeToSubmodule_mul, coeToSubmodule_spanSingleton, coe_extended_eq_span,
-        coeToSubmodule_dual_one, span_mul_span, span_le]
+        extendedHom'_apply, coeToSubmodule_mul, coeToSubmodule_spanSingleton,
+        coeToSubmodule_extended_eq_span, coeToSubmodule_dual_one, span_mul_span, span_le]
     rintro _ ⟨x, rfl, _, ⟨a, ha, rfl⟩, rfl⟩ _ ⟨m, rfl⟩
     simp only [← h_alg, mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def a, map_smul,
       LinearMap.toSpanSingleton_apply, Algebra.smul_def m, mul_one,
@@ -469,7 +469,7 @@ theorem dual_eq_dual_mul_dual :
     refine (mem_inv_iff (by simp)).mp ha _ (trace_mem_dual_one A K L B C M _ ?_)
     exact Algebra.smul_def m x ▸ smul_mem _ _ hx
   · rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_mul, extendedHom'_apply,
-      coe_extended_eq_span, ← span_eq (coeToSubmodule _), span_mul_span, span_le]
+      coeToSubmodule_extended_eq_span, ← span_eq (coeToSubmodule _), span_mul_span, span_le]
     rintro _ ⟨a, ha, _, ⟨b, hb, rfl⟩, rfl⟩
     simp only [SetLike.mem_coe, mem_coeToSubmodule, ← h_alg, mul_comm a,
       ← Algebra.smul_def] at ha hb ⊢

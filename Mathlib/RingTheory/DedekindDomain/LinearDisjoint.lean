@@ -93,7 +93,7 @@ theorem differentIdeal_dvd_map_differentIdeal [Algebra.IsIntegral R₂ B]
   rw [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal L, coeIdeal_differentIdeal R₁ F₁ L B,
     ← extendedHom_coeIdeal_eq_map L B (K := F₂), le_inv_comm _ (by simp), ← map_inv₀,
     coeIdeal_differentIdeal A K, inv_inv, ← coeToSubmodule_le_coeToSubmodule,
-    coeToSubmodule_dual_one, coe_extendedHom_eq_span, ← coeToSet_coeToSubmodule,
+    coeToSubmodule_dual_one, coeToSubmodule_extendedHom_eq_span, ← coeToSet_coeToSubmodule,
     coeToSubmodule_dual_one]
   · have := Submodule.span_mono (R := B) <| traceDual_le_span_map_traceDual A B R₁ R₂ h₁ h₂
     rwa [← span_coe_eq_restrictScalars, span_span_of_tower, span_span_of_tower, span_eq] at this
@@ -167,8 +167,8 @@ theorem Submodule.traceDual_eq_span_map_traceDual_of_linearDisjoint [Module.Free
     (IsDedekindDomain.differentIdeal_eq_map_differentIdeal A B R₁ R₂ h₁ h₂ h₃).symm
   rwa [Ideal.dvd_iff_le, ← coeIdeal_le_coeIdeal (K := L), coeIdeal_differentIdeal R₁ F₁,
     inv_le_comm, ← extendedHom_coeIdeal_eq_map (K := F₂), coeIdeal_differentIdeal A K, map_inv₀,
-    inv_inv, ← coeToSubmodule_le_coeToSubmodule, coe_extendedHom_eq_span, coeToSubmodule_dual_one,
-    ← coeToSet_coeToSubmodule, coeToSubmodule_dual_one] at this
+    inv_inv, ← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_extendedHom_eq_span,
+    coeToSubmodule_dual_one, ← coeToSet_coeToSubmodule, coeToSubmodule_dual_one] at this
   · simp
   · rw [← extendedHom_coeIdeal_eq_map (K := F₂), ne_eq, extendedHom_eq_zero_iff]
     rw [coeIdeal_eq_zero]
