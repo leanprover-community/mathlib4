@@ -125,7 +125,7 @@ theorem mulHeight_linearMap_apply_le [Nonempty ι] (A : ι' × ι → K) (x : ι
   have H₀ : 1 ≤ Nat.card ι ^ totalWeight K * mulHeight A * mulHeight x := by
     rw [show (1 : ℝ) = 1 * 1 * 1 by ring]
     gcongr
-    · exact mod_cast Nat.one_le_pow _ _ Nat.card_pos
+    · exact_mod_cast Nat.one_le_pow _ _ Nat.card_pos
     · exact one_le_mulHeight _
     · exact one_le_mulHeight _
   rcases isEmpty_or_nonempty ι' with hι' | hι'
@@ -543,7 +543,7 @@ lemma mulHeight_mul_mulHeight {a b c d : K} (hab : ![a, b] ≠ 0) (hcd : ![c, d]
     mulHeight ![a, b] * mulHeight ![c, d] = mulHeight ![a * c, a * d, b * c, b * d] := by
   simp only [← mulHeight_fun_mul_eq hab hcd]
   convert! mulHeight_comp_equiv finProdFinEquiv _ with i
-  fin_cases i <;> simp [finProdFinEquiv, Fin.mkDivMod]
+  fin_cases i <;> rw [Function.comp_apply, finProdFinEquiv_apply] <;> simp [Fin.mkDivMod]
 
 open MvPolynomial
 
