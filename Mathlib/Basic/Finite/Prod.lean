@@ -180,7 +180,7 @@ theorem finite_prod : (s ×ˢ t).Finite ↔ (s.Finite ∨ t = ∅) ∧ (t.Finite
 protected theorem Finite.offDiagonal {s : Set α} (hs : s.Finite) : s.offDiagonal.Finite :=
   (hs.prod hs).subset s.offDiagonal_subset_prod
 
-@[deprecated (since := "2026-09-06")] alias Finite.offDiag := Finite.offDiagonal
+@[deprecated (since := "2026-09-06")] protected alias Finite.offDiag := Finite.offDiagonal
 
 protected theorem Finite.image2 (f : α → β → γ) (hs : s.Finite) (ht : t.Finite) :
     (image2 f s t).Finite := by
