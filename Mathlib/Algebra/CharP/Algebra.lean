@@ -40,8 +40,9 @@ theorem CharP.dvd_of_ringHom [NonAssocSemiring R] [NonAssocSemiring A]
   rw [← map_natCast f p, CharP.cast_eq_zero, map_zero]
 
 /-- Given `R →+* A`, where `R` is a domain with `char R > 0`, then `char A = char R`. -/
-theorem CharP.of_ringHom_of_ne_zero [NonAssocSemiring R] [NoZeroDivisors R] [NonAssocSemiring A]
-    [Nontrivial A] (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
+theorem CharP.of_ringHom_of_ne_zero [NonAssocSemiring R] [NoZeroDivisors R]
+    [NonAssocSemiring A] [Nontrivial A]
+    (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
   have := f.domain_nontrivial
   have hp0 := (CharP.char_is_prime_or_zero R p).resolve_right hp
   exact of_addMonoidHom_of_prime f (map_one f) hp0
