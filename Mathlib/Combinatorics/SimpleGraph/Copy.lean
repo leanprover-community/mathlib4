@@ -521,12 +521,13 @@ noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : �
 end LabelledCopyCount
 
 section CopyCount
-variable [Fintype V]
 
-/-- `UnlabeledCopy A B` is the type of `SimpleGraph.Subgraph`s of `B` isomorphic to `A`.
+/-- `H.UnlabeledCopy G` is the type of `SimpleGraph.Subgraph`s of `G` isomorphic to `H`.
 The corresponding count is `SimpleGraph.copyCount`. -/
-abbrev UnlabeledCopy (A : SimpleGraph α) (B : SimpleGraph β) : Type _ :=
-  {B' : B.Subgraph // Nonempty (A ≃g B'.coe)}
+abbrev UnlabeledCopy (H : SimpleGraph W) (G : SimpleGraph V) : Type _ :=
+  {G' : G.Subgraph // Nonempty (H ≃g G'.coe)}
+
+variable [Fintype V]
 
 /-- `G.copyCount H` is the number of unlabelled copies of `H` in `G`, i.e. the number of subgraphs
 of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
