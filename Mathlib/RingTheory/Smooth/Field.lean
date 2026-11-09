@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.SeparablyGenerated
 public import Mathlib.RingTheory.Etale.Field
 
 /-!
-
 # Smooth algebras over fields
 
 We show that separably generated extensions of fields are smooth.

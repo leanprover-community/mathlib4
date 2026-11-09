@@ -85,7 +85,7 @@ theorem prodPrimeFactors_add_of_squarefree [CommSemiring R] {f g : ArithmeticFun
     ∏ᵖ p ∣ n, (f + g) p = (f * g) n := by
   rw [prodPrimeFactors_apply hn.ne_zero]
   simp_rw [add_apply (f := f) (g := g)]
-  rw [prod_add, mul_apply, sum_divisorsAntidiagonal (f · * g ·),
+  rw [prod_add, ArithmeticFunction.mul_apply, sum_divisorsAntidiagonal (f · * g ·),
     ← divisors_filter_squarefree_of_squarefree hn, sum_divisors_filter_squarefree hn.ne_zero,
     factors_eq]
   apply sum_congr rfl
@@ -402,7 +402,7 @@ variable {R : Type*} [Semiring R]
 
 theorem sum_Ioc_mul_eq_sum_prod_filter (f g : ArithmeticFunction R) (N : ℕ) :
     ∑ n ∈ Ioc 0 N, (f * g) n = ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 ≤ N, f x.1 * g x.2 := by
-  simp only [mul_apply]
+  simp only [ArithmeticFunction.mul_apply]
   trans ∑ n ∈ Ioc 0 N, ∑ x ∈ Ioc 0 N ×ˢ Ioc 0 N with x.1 * x.2 = n, f x.1 * g x.2
   · refine sum_congr rfl fun n hn ↦ ?_
     simp only [mem_Ioc] at hn

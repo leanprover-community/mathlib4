@@ -13,7 +13,6 @@ import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.PowerSeries.CoeffMulMem
 
 /-!
-
 # Weierstrass preparation theorem for power series over a complete local ring
 
 In this file we define Weierstrass division, Weierstrass factorization, and prove
@@ -99,7 +98,6 @@ namespace PowerSeries
 variable {A : Type*} [CommRing A]
 
 /-!
-
 ## Weierstrass division
 
 -/
@@ -640,7 +638,6 @@ alias zero_weierstrassMod := weierstrassMod_zero_left
 end IsLocalRing
 
 /-!
-
 ## Weierstrass preparation theorem
 
 -/
