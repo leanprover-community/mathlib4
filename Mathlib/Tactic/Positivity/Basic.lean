@@ -37,18 +37,22 @@ lemma ite_pos [LT α] (ha : 0 < a) (hb : 0 < b) : 0 < ite p a b := by
 lemma ite_nonneg [LE α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ ite p a b := by
   by_cases p <;> simp [*]
 
+@[deprecated ite_nonneg +typeChanged (since := "2026-10-26")]
 lemma ite_nonneg_of_pos_of_nonneg [Preorder α] (ha : 0 < a) (hb : 0 ≤ b) : 0 ≤ ite p a b :=
   ite_nonneg _ ha.le hb
 
+@[deprecated ite_nonneg +typeChanged (since := "2026-10-26")]
 lemma ite_nonneg_of_nonneg_of_pos [Preorder α] (ha : 0 ≤ a) (hb : 0 < b) : 0 ≤ ite p a b :=
   ite_nonneg _ ha hb.le
 
 lemma ite_ne_zero (ha : a ≠ 0) (hb : b ≠ 0) : ite p a b ≠ 0 := by by_cases p <;> simp [*]
 
+@[deprecated ite_ne_zero +typeChanged (since := "2026-10-26")]
 lemma ite_ne_zero_of_pos_of_ne_zero [Preorder α] (ha : 0 < a) (hb : b ≠ 0) :
     ite p a b ≠ 0 :=
   ite_ne_zero _ ha.ne' hb
 
+@[deprecated ite_ne_zero +typeChanged (since := "2026-10-26")]
 lemma ite_ne_zero_of_ne_zero_of_pos [Preorder α] (ha : a ≠ 0) (hb : 0 < b) :
     ite p a b ≠ 0 :=
   ite_ne_zero _ ha hb.ne'
@@ -375,13 +379,14 @@ meta def evalAbs : PositivityExt where eval {_u} (α zα pα?) (e : Q($α)) :=
     let pa' ← mkAppM ``abs_nonneg #[a]
     pure (.nonnegative (pα := pα') pa')
 
-theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
-  Int.natAbs_pos.mpr hn.ne'
-
 /-- The natural absolute value of a nonzero integer is positive. -/
 @[positivity_lemma]
 theorem int_natAbs_pos_of_ne_zero {n : ℤ} (hn : n ≠ 0) : 0 < n.natAbs :=
   Int.natAbs_pos.mpr hn
+
+@[deprecated int_natAbs_pos_of_ne_zero +typeChanged (since := "2026-10-26")]
+theorem int_natAbs_pos {n : ℤ} (hn : 0 < n) : 0 < n.natAbs :=
+  Int.natAbs_pos.mpr hn.ne'
 
 /-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
 and positive when its input is. -/

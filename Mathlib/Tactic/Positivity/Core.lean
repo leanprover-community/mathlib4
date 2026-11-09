@@ -48,7 +48,7 @@ Example:
   ...
 ```
 -/
-syntax (name := positivity) "positivity" ppSpace term,+ : attr
+syntax (name := positivity) "positivity " term,+ : attr
 
 /-- A theorem tagged with `@[positivity_lemma]` is used by `positivity` to
 prove `f x₁ ... xₙ > 0`, `f x₁ ... xₙ ≥ 0`, or `f x₁ ... xₙ ≠ 0`
