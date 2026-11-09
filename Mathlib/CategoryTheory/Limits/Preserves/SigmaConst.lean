@@ -26,7 +26,6 @@ namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
-set_option backward.defeqAttrib.useBackward true in
 /- If the morphisms in `C` were in `Type w`, the functor
 `sigmaConst.{w}`
 would be a left adjoint (see `sigmaConstAdj`). In general, we cannot
