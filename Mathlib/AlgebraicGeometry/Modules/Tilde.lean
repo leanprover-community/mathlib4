@@ -39,7 +39,6 @@ namespace AlgebraicGeometry
 
 open _root_.PrimeSpectrum
 
-set_option backward.isDefEq.respectTransparency.types false in
 /-- The forgetful functor from `𝒪_{Spec R}` modules to sheaves of `R`-modules. -/
 def modulesSpecToSheaf :
     (Spec R).Modules ⥤ TopCat.Sheaf (ModuleCat R) (Spec R) :=
