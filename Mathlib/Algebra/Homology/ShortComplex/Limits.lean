@@ -29,8 +29,6 @@ variable {J C : Type*} [Category* J] [Category* C] [HasZeroMorphisms C]
 
 namespace ShortComplex
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If a cone with values in `ShortComplex C` is such that it becomes limit
 when we apply the three projections `ShortComplex C ⥤ C`, then it is limit. -/
 def isLimitOfIsLimitπ (c : Cone F)
@@ -66,7 +64,6 @@ section
 variable (F)
 variable [HasLimit (F ⋙ π₁)] [HasLimit (F ⋙ π₂)] [HasLimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a limit cone for a functor `J ⥤ ShortComplex C` using the limits
 of the three components `J ⥤ C`. -/
 noncomputable def limitCone : Cone F :=
@@ -161,8 +158,6 @@ instance preservesMonomorphisms_π₃ :
 
 end
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- If a cocone with values in `ShortComplex C` is such that it becomes colimit
 when we apply the three projections `ShortComplex C ⥤ C`, then it is colimit. -/
 def isColimitOfIsColimitπ (c : Cocone F)
@@ -202,7 +197,6 @@ section
 variable (F)
 variable [HasColimit (F ⋙ π₁)] [HasColimit (F ⋙ π₂)] [HasColimit (F ⋙ π₃)]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Construction of a colimit cocone for a functor `J ⥤ ShortComplex C` using the colimits
 of the three components `J ⥤ C`. -/
 noncomputable def colimitCocone : Cocone F :=
