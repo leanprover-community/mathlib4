@@ -89,10 +89,12 @@ private theorem isLUB_sSup {s : Set (Πₗ i, α i)} : IsLUB s (sSup s) := by
     refine ha.2.not_ge <| sSup_apply_le fun f hf hf' ↦ apply_le_of_toLex (h hf) ?_
     simp_all
 
+@[nolint instanceDiamonds] -- TODO investigate and/or fix!
 noncomputable instance completeLattice : CompleteLattice (Πₗ i, α i) where
   isLUB_sSup _ := by exact isLUB_sSup
   isGLB_sInf _ := by exact isGLB_sInf
 
+@[nolint instanceDiamonds] -- TODO investigate and/or fix!
 noncomputable instance : CompleteLinearOrder (Πₗ i, α i) where
   __ := linearOrder
   __ := completeLattice
@@ -148,10 +150,12 @@ theorem sSup_apply_le {s : Set (Colex ((i : ι) → α i))} {i : ι} {e : Colex 
   Lex.sSup_apply_le (ι := ιᵒᵈ) h
 
 set_option backward.isDefEq.respectTransparency false in
+@[nolint instanceDiamonds]
 noncomputable instance completeLattice : CompleteLattice (Colex ((i : ι) → α i)) where
   isLUB_sSup _ := by exact Lex.isLUB_sSup (ι := ιᵒᵈ)
   isGLB_sInf _ := by exact Lex.isGLB_sInf (ι := ιᵒᵈ)
 
+@[nolint instanceDiamonds]
 noncomputable instance : CompleteLinearOrder (Colex ((i : ι) → α i)) where
   __ := linearOrder
   __ := completeLattice

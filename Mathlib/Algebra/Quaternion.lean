@@ -711,6 +711,7 @@ variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
 
+@[nolint instanceDiamonds] -- TODO: fix instance diamond with the coercion from Quaternion
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
 @[ext]
