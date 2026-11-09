@@ -20,8 +20,6 @@ public section
 
 variable {R F α β : Type*}
 
-namespace FunLike
-
 variable [FunLike F α β] [CommSemiring R] [Semiring F] [Semiring β] [Algebra R F] [Algebra R β]
 
 section IsApply
@@ -33,10 +31,12 @@ theorem algebraMap_apply (r : R) (x : α) : algebraMap R F r x = algebraMap R β
   grind [Algebra.algebraMap_eq_smul_one]
 
 @[simp, norm_cast]
-theorem coe_algebraMap (r : R) : algebraMap R F r = algebraMap R (α → β) r := by
+theorem FunLike.coe_algebraMap (r : R) : algebraMap R F r = algebraMap R (α → β) r := by
   ext; simp [Algebra.algebraMap_eq_smul_one]
 
 end IsApply
+
+namespace FunLike
 
 section AlgHom
 
