@@ -243,23 +243,19 @@ section AddConst
 theorem iteratedFDerivWithin_add_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F}
     (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (c : F) :
     iteratedFDerivWithin 𝕜 i (fun x ↦ f x + c) s x = iteratedFDerivWithin 𝕜 i f s x := by
-  induction i generalizing x with
-  | zero => contradiction
-  | succ i IH =>
-    by_cases hi' : 1 ≤ i
-    · ext h
-      calc
-        iteratedFDerivWithin 𝕜 (i + 1) (fun x ↦ f x + c) s x h =
-            fderivWithin 𝕜 (iteratedFDerivWithin _ i (fun x ↦ f x + c) s) s x (h 0) (Fin.tail h) :=
-          iteratedFDerivWithin_succ_apply_left _
-        _ = fderivWithin _ (iteratedFDerivWithin _ i f s) s x (h 0) (Fin.tail h) := by
-          rw [fderivWithin_congr' _ hx]
-          intro y hy
-          apply IH hi' hy
-    · simp only [not_le, Order.lt_one_iff] at hi'
-      rw [hi']
-      ext m
-      simp [Nat.reduceAdd, iteratedFDerivWithin_one_apply (hu.uniqueDiffWithinAt hx)]
+  induction i, hi using Nat.le_induction generalizing x with
+  | base =>
+    ext
+    simp [iteratedFDerivWithin_one_apply (hu.uniqueDiffWithinAt hx)]
+  | succ i hi IH => 
+    ext h
+    calc
+      iteratedFDerivWithin 𝕜 (i + 1) (fun x ↦ f x + c) s x h =
+          fderivWithin 𝕜 (iteratedFDerivWithin _ i (fun x ↦ f x + c) s) s x (h 0) (Fin.tail h) :=
+        iteratedFDerivWithin_succ_apply_left _
+      _ = fderivWithin _ (iteratedFDerivWithin _ i f s) s x (h 0) (Fin.tail h) := by
+        rw [fderivWithin_congr' _ hx]
+        exact fun y hy ↦ IH hy
 
 theorem iteratedFDeriv_add_const_apply {i : ℕ} (hi : 1 ≤ i) {f : E → F} (c : F) :
     iteratedFDeriv 𝕜 i (fun x ↦ f x + c) x = iteratedFDeriv 𝕜 i f x := by
