@@ -88,7 +88,8 @@ lemma lie_mem_right {s : StrictLieRinehartIdeal A L} (l : L) {l' : L} (h : l' �
   rw [← lie_skew]
   membership
 
-theorem mem_carrier {s : StrictLieRinehartIdeal A L} {x : L} : x ∈ s.carrier ↔ x ∈ (s : Set L) :=
+@[simp]
+theorem mem_carrier {s : StrictLieRinehartIdeal A L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
 @[ext]
