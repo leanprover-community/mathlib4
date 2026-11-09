@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Linear
 public import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
-
 # `Ext`-modules between finitely generated modules over Noetherian rings are finitely generated
 
 -/

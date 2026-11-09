@@ -58,7 +58,7 @@ theorem exists_eLpNorm_indicator_le (hp : p ≠ ∞) (c : E) {ε : ℝ≥0∞} (
     obtain ⟨δ, hδ, hδε'⟩ := NNReal.nhds_zero_basis.eventually_iff.mp (this.eventually_le_const hε')
     obtain ⟨η, hη, hηδ⟩ := exists_between hδ
     refine ⟨η, hη, ?_⟩
-    simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', enorm, ← ENNReal.coe_mul] using hδε' hηδ
+    simpa only [← ENNReal.coe_rpow_of_nonneg _ hp₀', eNorm, ← ENNReal.coe_mul] using hδε' hηδ
   refine ⟨η, hη_pos, fun s hs hsc => ?_⟩
   grw [eLpNorm_indicator_const_le c p, ← hη_le, hs]
   exact hsc
@@ -76,14 +76,17 @@ theorem _root_.HasCompactSupport.memLp_of_bound {f : X → E} (hf : HasCompactSu
 
 /-- A bounded measurable function with compact support is in L^p.
 This is the `ENNReal`-valued version of `HasCompactSupport.memLp_of_bound`. -/
-theorem _root_.HasCompactSupport.memLp_of_enorm_bound {f : X → E} (hf : HasCompactSupport f)
+theorem _root_.HasCompactSupport.memLp_of_eNorm_bound {f : X → E} (hf : HasCompactSupport f)
     (h2f : AEStronglyMeasurable f μ) {C : ℝ≥0∞} (hfC : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ C) (hC : C ≠ ⊤) :
       MemLp f p μ := by
   have : MemLp f ∞ μ := by
     rw [memLp_iff, eLpNorm_exponent_top h2f]
-    exact eLpNormEssSup_le_of_ae_enorm_bound hfC |>.trans_lt hC.lt_top
+    exact eLpNormEssSup_le_of_ae_eNorm_bound hfC |>.trans_lt hC.lt_top
   exact this.mono_exponent_of_measure_support_ne_top
     (fun x ↦ image_eq_zero_of_notMem_tsupport) hf.measure_ne_top le_top
+
+@[deprecated (since := "2026-11-06")]
+alias _root_.HasCompactSupport.memLp_of_enorm_bound := _root_.HasCompactSupport.memLp_of_eNorm_bound
 
 /-- A continuous function with compact support is in L^p. -/
 theorem _root_.Continuous.memLp_of_hasCompactSupport [OpensMeasurableSpace X]
@@ -131,13 +134,13 @@ theorem norm_indicatorConstLp (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
     eLpNorm_indicator_const hs.nullMeasurableSet hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
-      measureReal_def, ENNReal.toReal_rpow, toReal_enorm]
+      measureReal_def, ENNReal.toReal_rpow, toReal_eNorm]
 
 theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     ‖indicatorConstLp ∞ hs hμs c‖ = ‖c‖ := by
   rw [Lp.norm_def, eLpNorm_congr_ae indicatorConstLp_coeFn,
     eLpNorm_indicator_const' hs.nullMeasurableSet hμs_ne_zero ENNReal.top_ne_zero,
-    ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_enorm]
+    ENNReal.toReal_top, div_zero, ENNReal.rpow_zero, mul_one, toReal_eNorm]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * μ.real s ^ (1 / p.toReal) := by
@@ -155,28 +158,35 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   finiteness
 
-theorem nnnorm_indicatorConstLp_le :
+theorem nnNorm_indicatorConstLp_le :
     ‖indicatorConstLp p hs hμs c‖₊ ≤ ‖c‖₊ * (μ s).toNNReal ^ (1 / p.toReal) :=
   norm_indicatorConstLp_le
 
-theorem enorm_indicatorConstLp_le :
-    ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
-  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.enorm_def, ← enorm_eq_nnnorm]
-    using ENNReal.coe_le_coe.2 <| nnnorm_indicatorConstLp_le (c := c) (hμs := hμs)
+@[deprecated (since := "2026-10-31")] alias nnnorm_indicatorConstLp_le := nnNorm_indicatorConstLp_le
 
-theorem edist_indicatorConstLp_eq_enorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
+theorem eNorm_indicatorConstLp_le :
+    ‖indicatorConstLp p hs hμs c‖ₑ ≤ ‖c‖ₑ * μ s ^ (1 / p.toReal) := by
+  simpa [ENNReal.coe_rpow_of_nonneg, ENNReal.coe_toNNReal hμs, Lp.eNorm_def, ← eNorm_eq_nnNorm]
+    using ENNReal.coe_le_coe.2 <| nnNorm_indicatorConstLp_le (c := c) (hμs := hμs)
+
+@[deprecated (since := "2026-11-06")] alias enorm_indicatorConstLp_le := eNorm_indicatorConstLp_le
+
+theorem edist_indicatorConstLp_eq_eNorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ₑ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, eLpNorm_indicator_sub_indicator _ hs.nullMeasurableSet
-    ht.nullMeasurableSet, Lp.enorm_toLp]
+    ht.nullMeasurableSet, Lp.eNorm_toLp]
+
+@[deprecated (since := "2026-11-06")]
+alias edist_indicatorConstLp_eq_enorm := edist_indicatorConstLp_eq_eNorm
 
 theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp (μ := μ) p (hs.symmDiff ht) (by finiteness) c‖ := by
   -- Squeezed for performance reasons
-  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_enorm, enorm, ENNReal.coe_toReal,
-    Lp.coe_nnnorm]
+  simp only [Lp.dist_edist, edist_indicatorConstLp_eq_eNorm, eNorm, ENNReal.coe_toReal,
+    Lp.coe_nnNorm]
 
 /-- A family of `indicatorConstLp` functions tends to an `indicatorConstLp`,
 if the underlying sets tend to the set in the sense of the measure of the symmetric difference. -/
@@ -262,13 +272,13 @@ theorem Lp.norm_const [NeZero μ] (hp_zero : p ≠ 0) :
   have := NeZero.ne μ
   rw [← MemLp.toLp_const, Lp.norm_toLp,
     eLpNorm_const _ hp_zero this]
-  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_eNorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const' (hp_zero : p ≠ 0) (hp_top : p ≠ ∞) :
     ‖Lp.const p μ c‖ = ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← MemLp.toLp_const, Lp.norm_toLp,
     eLpNorm_const' _ hp_zero hp_top]
-  rw [measureReal_def, ENNReal.toReal_mul, toReal_enorm, ← ENNReal.toReal_rpow]
+  rw [measureReal_def, ENNReal.toReal_mul, toReal_eNorm, ← ENNReal.toReal_rpow]
 
 theorem Lp.norm_const_le : ‖Lp.const p μ c‖ ≤ ‖c‖ * μ.real Set.univ ^ (1 / p.toReal) := by
   rw [← indicatorConstLp_univ]
