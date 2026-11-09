@@ -28,7 +28,6 @@ throughout the count. The probability of this is `(p - q) / (p + q)`.
 ## Main result
 
 * `ballot_problem`: the ballot problem.
-
 -/
 
 @[expose] public section

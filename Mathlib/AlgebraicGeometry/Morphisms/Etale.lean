@@ -10,7 +10,6 @@ public import Mathlib.AlgebraicGeometry.Morphisms.Smooth
 public import Mathlib.CategoryTheory.Limits.MorphismProperty
 
 /-!
-
 # Étale morphisms
 
 A morphism of schemes `f : X ⟶ Y` is étale if for each affine `U ⊆ Y`

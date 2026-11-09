@@ -14,7 +14,6 @@ public import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.Matrix.Dual
 
 /-!
-
 # Realisations of Cartan Matrices
 
 Let `R` be an integral domain of characteristic zero, and let `M` and `N` be `R`-modules in perfect

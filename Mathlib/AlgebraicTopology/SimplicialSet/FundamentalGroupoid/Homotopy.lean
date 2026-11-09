@@ -40,7 +40,6 @@ namespace Edge
 open ConcreteCategory
 
 /-!
-
 Given ``h : SimplicialObject.Homotopy f g` where `f` and `g` are morphisms
 of simplicial sets `X ⟶ Y`, we define an edge `ofSimplicialObjectHomotopy h x`
 connecting `f.app _ x` and `g.app _ x` for any `x : X _⦋0⦌`.

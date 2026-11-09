@@ -444,7 +444,7 @@ theorem condExp_tsum [CompleteSpace E]
   have B : ∑' (n : ι), ‖condExpL1 hm μ (f n)‖ₑ ≠ ∞ := by
     apply (lt_of_le_of_lt ?_ hf'.lt_top).ne
     gcongr with i
-    exact (enorm_setToFun_le _ (by simp)).trans_eq (by simp)
+    exact (eNorm_setToFun_le _ (by simp)).trans_eq (by simp)
   have C := coeFn_tsum (f := fun i ↦ condExpL1 hm μ (f i)) B
   filter_upwards [A, C] with a ha h'a
   simp_all [condExpL1, setToFun_tsum]
