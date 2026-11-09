@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Data.ZMod.Basic
 public import Mathlib.LinearAlgebra.LinearIndependent.Defs
+
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.NormNum
 
@@ -137,6 +138,7 @@ theorem isForest_comm (source target : E → V) :
     simpa [degreeParity, entry, add_comm] using hv
 
 /-- The sum of the incidence entries of one edge is zero in ZMod 2. -/
+omit [Fintype E] [DecidableEq E] in
 private theorem entry_sum_vertices_eq_zero
     {V : Type*} [Fintype V] [DecidableEq V]
     (source target : E → V) (e : E) :
@@ -179,7 +181,7 @@ theorem reducedColumns_linearIndependent_iff_isForest
     (source target : E → Option V) :
     LinearIndependent (ZMod 2) (reducedColumn source target) ↔ IsForest source target := by
   classical
-  letI := Fintype.ofFinite V
+  let _ : Fintype V := Fintype.ofFinite V
   rw [Fintype.linearIndependent_iff]
   constructor
   · intro h F hF
