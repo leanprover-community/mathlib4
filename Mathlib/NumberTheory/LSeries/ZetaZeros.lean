@@ -101,7 +101,7 @@ lemma one_notMem_riemannZetaZeros : (1 : ℂ) ∉ riemannZetaZeros :=
 
 No `s ≠ 1` clause is needed here: `riemannZeta 1` is a junk value standing in for the pole, and
 `riemannZeta_one_ne_zero` shows it is nonzero, so `1 ∉ riemannZetaZeros` already. -/
-def riemannZetaNontrivialZeros : Set ℂ :=
+noncomputable def riemannZetaNontrivialZeros : Set ℂ :=
   riemannZetaZeros \ riemannZetaTrivialZeros
 
 lemma mem_riemannZetaNontrivialZeros {s : ℂ} :
