@@ -8,6 +8,9 @@ module
 public import Mathlib.Data.DFinsupp.BigOperators
 public import Mathlib.Data.DFinsupp.Order
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
 
