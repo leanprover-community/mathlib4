@@ -167,8 +167,10 @@ instance : SetLike (FractionalIdeal S P) P where
 instance : PartialOrder (FractionalIdeal S P) := .ofSetLike (FractionalIdeal S P)
 
 @[simp]
-theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
+theorem mem_coeToSubmodule {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
+@[deprecated (since := "2026-11-09")] alias mem_coe := mem_coeToSubmodule
+
 
 /-- Partially-applied version of `FractionalIdeal.ext`. -/
 theorem coeToSubmodule_ext {I J : FractionalIdeal S P} :
@@ -511,7 +513,7 @@ theorem coeToSubmodule_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule
 
 theorem mem_add (I J : FractionalIdeal S P) (x : P) :
     x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
-  rw [← mem_coe, coeToSubmodule_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
+  rw [← mem_coeToSubmodule, coeToSubmodule_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
 
 @[simp, norm_cast]
 lemma coeIdeal_inf [FaithfulSMul R P] (I J : Ideal R) :
@@ -694,7 +696,7 @@ theorem le_one_iff_exists_coeIdeal {J : FractionalIdeal S P} :
 
 @[simp]
 theorem one_le {I : FractionalIdeal S P} : 1 ≤ I ↔ (1 : P) ∈ I := by
-  rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_one, Submodule.one_le, mem_coe]
+  rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_one, Submodule.one_le, mem_coeToSubmodule]
 
 variable (S P)
 

@@ -77,7 +77,7 @@ lemma mem_extended_iff (x : L) : x ∈ I.extended L hf ↔ x ∈ span B (map_f '
 
 @[simp]
 lemma coe_extended_eq_span : I.extended L hf = span B (map_f '' I) := by
-  ext; simp [mem_coe, mem_extended_iff]
+  ext; simp [mem_coeToSubmodule, mem_extended_iff]
 
 @[simp]
 theorem extended_zero : extended L hf (0 : FractionalIdeal M K) = 0 :=
@@ -88,9 +88,9 @@ variable {I}
 
 theorem extended_ne_zero [IsDomain B] (hf' : Function.Injective f) (hI : I ≠ 0) (hN : 0 ∉ N) :
     extended L hf I ≠ 0 := by
-  simp only [ne_eq, ← coeToSubmodule_inj, coe_extended_eq_span, coe_zero, Submodule.span_eq_bot,
-    Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
-    not_forall]
+  simp only [ne_eq, ← coeToSubmodule_inj, coe_extended_eq_span, coeToSubmodule_zero,
+    Submodule.span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂, not_forall]
   obtain ⟨x, hx₁, hx₂⟩ : ∃ x ∈ I, x ≠ 0 := by simpa [ne_eq, eq_zero_iff] using hI
   refine ⟨x, hx₁, ?_⟩
   exact (map_ne_zero_iff _ (IsLocalization.map_injective_of_injective' _ _ _ _ hN hf')).mpr hx₂
@@ -129,7 +129,8 @@ theorem one_le_extended_of_one_le (hI : 1 ≤ I) : 1 ≤ extended L hf I := by
 
 theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L hf) := by
   apply coeToSubmodule_injective
-  simp only [coe_extended_eq_span, coe_add, Submodule.add_eq_sup, ← span_union, ← Set.image_union]
+  simp only [coe_extended_eq_span, coeToSubmodule_add, Submodule.add_eq_sup, ← span_union,
+    ← Set.image_union]
   apply Submodule.span_eq_span
   · rintro _ ⟨y, hy, rfl⟩
     obtain ⟨i, hi, j, hj, rfl⟩ := (mem_add I J y).mp <| SetLike.mem_coe.mp hy
@@ -143,10 +144,10 @@ theorem extended_add : (I + J).extended L hf = (I.extended L hf) + (J.extended L
 
 theorem extended_mul : (I * J).extended L hf = (I.extended L hf) * (J.extended L hf) := by
   apply coeToSubmodule_injective
-  simp only [coe_extended_eq_span, coe_mul, span_mul_span]
+  simp only [coe_extended_eq_span, coeToSubmodule_mul, span_mul_span]
   refine Submodule.span_eq_span (fun _ h ↦ ?_) (fun _ h ↦ ?_)
   · rcases h with ⟨x, hx, rfl⟩
-    replace hx : x ∈ (I : Submodule A K) * (J : Submodule A K) := coe_mul I J ▸ hx
+    replace hx : x ∈ (I : Submodule A K) * (J : Submodule A K) := coeToSubmodule_mul I J ▸ hx
     rw [Submodule.mul_eq_span_mul_set] at hx
     refine span_induction (fun y hy ↦ ?_) (by simp) (fun y z _ _ hy hz ↦ ?_)
       (fun a y _ hy ↦ ?_) hx
@@ -186,7 +187,7 @@ theorem extended_extended {C W : Type*} [CommRing C] [CommRing W] [Algebra C W]
 @[simp]
 theorem extended_coeIdeal_eq_map (I₀ : Ideal A) :
     (I₀ : FractionalIdeal M K).extended L hf = (I₀.map f : FractionalIdeal N L) := by
-  rw [Ideal.map, Ideal.span, ← coeToSubmodule_inj, Ideal.submodule_span_eq, coe_coeIdeal,
+  rw [Ideal.map, Ideal.span, ← coeToSubmodule_inj, Ideal.submodule_span_eq, coeToSubmodule_coeIdeal,
     IsLocalization.coeSubmodule_span, coe_extended_eq_span]
   refine Submodule.span_eq_span ?_ ?_
   · rintro _ ⟨_, ⟨a, ha, rfl⟩, rfl⟩
@@ -278,7 +279,7 @@ theorem le_one_of_extendedHom_le_one [IsIntegrallyClosed A] [IsIntegrallyClosed 
   rw [IsConcreteLE.not_le_iff_exists] at hI ⊢
   obtain ⟨x, hx₁, hx₂⟩ := hI
   refine ⟨algebraMap K L x, ?_, ?_⟩
-  · simpa [← FractionalIdeal.mem_coe, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
+  · simpa [← mem_coeToSubmodule, IsLocalization.algebraMap_eq_map_map_submonoid A⁰ B K L]
       using! subset_span <| Set.mem_image_of_mem _ hx₁
   · contrapose hx₂
     rw [mem_one_iff, ← IsIntegrallyClosed.isIntegral_iff] at hx₂ ⊢

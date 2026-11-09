@@ -263,16 +263,20 @@ local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L}
 
 set_option backward.isDefEq.respectTransparency.types false in
-lemma coe_dual (hI : I ≠ 0) :
-    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dite_eq_right hI, coe_mk]
+lemma coeToSubmodule_dual (hI : I ≠ 0) :
+    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dite_eq_right hI, coeToSubmodule_mk]
+
+@[deprecated (since := "2026-11-09")] alias coe_dual := coeToSubmodule_dual
 
 variable (B L)
 
 @[simp]
-lemma coe_dual_one :
+lemma coeToSubmodule_dual_one :
     (dual A K (1 : FractionalIdeal B⁰ L) : Submodule B L) = 1ᵛ := by
-  rw [← coe_one, coe_dual]
+  rw [← coeToSubmodule_one, coeToSubmodule_dual]
   exact one_ne_zero
+
+@[deprecated (since := "2026-11-09")] alias coe_dual_one := coeToSubmodule_dual_one
 
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
@@ -339,7 +343,8 @@ lemma le_dual_iff (hJ : J ≠ 0) :
     I ≤ dual A K J ↔ I * J ≤ dual A K 1 := by
   by_cases hI : I = 0
   · simp [hI]
-  rw [← coe_le_coe, ← coe_le_coe, coe_mul, coe_dual A K hJ, coe_dual_one, le_traceDual]
+  rw [← coeToSubmodule_le_coeToSubmodule, ← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_mul,
+    coeToSubmodule_dual A K hJ, coeToSubmodule_dual_one, le_traceDual]
 
 variable (I)
 
@@ -453,17 +458,17 @@ theorem dual_eq_dual_mul_dual :
   refine le_antisymm ?_ ?_
   · intro x hx
     rw [← spanSingleton_le_iff_mem, ← mul_inv_le_iff₀ (bot_lt_iff_ne_bot.mpr
-      (by simp [-extendedHom'_apply])), ← map_inv₀, ← FractionalIdeal.coe_le_coe,
-        extendedHom'_apply, coe_mul, coe_spanSingleton, coe_extended_eq_span, coe_dual_one,
-        span_mul_span, span_le]
+      (by simp [-extendedHom'_apply])), ← map_inv₀, ← coeToSubmodule_le_coeToSubmodule,
+        extendedHom'_apply, coeToSubmodule_mul, coe_spanSingleton, coe_extended_eq_span,
+        coeToSubmodule_dual_one, span_mul_span, span_le]
     rintro _ ⟨x, rfl, _, ⟨a, ha, rfl⟩, rfl⟩ _ ⟨m, rfl⟩
     simp only [← h_alg, mul_comm _ (algebraMap _ _ _), ← Algebra.smul_def a, map_smul,
       LinearMap.toSpanSingleton_apply, Algebra.smul_def m, mul_one,
       LinearMap.smul_apply, traceForm_apply, smul_eq_mul]
-    rw [← FractionalIdeal.coe_one (S := B⁰)]
+    rw [← coeToSubmodule_one (S := B⁰)]
     refine (mem_inv_iff (by simp)).mp ha _ (trace_mem_dual_one A K L B C M _ ?_)
     exact Algebra.smul_def m x ▸ smul_mem _ _ hx
-  · rw [← FractionalIdeal.coe_le_coe, coe_mul, extendedHom'_apply,
+  · rw [← coeToSubmodule_le_coeToSubmodule, coeToSubmodule_mul, extendedHom'_apply,
       coe_extended_eq_span, ← span_eq (coeToSubmodule _), span_mul_span, span_le]
     rintro _ ⟨a, ha, _, ⟨b, hb, rfl⟩, rfl⟩
     simp only [SetLike.mem_coe, mem_coe, ← h_alg, mul_comm a, ← Algebra.smul_def] at ha hb ⊢
@@ -492,8 +497,8 @@ lemma coeSubmodule_differentIdeal_fractionRing [Algebra.IsIntegral A B]
     (1 : FractionalIdeal B⁰ (FractionRing B))
   have : _ ≤ ((1 : FractionalIdeal B⁰ (FractionRing B)) : Submodule B (FractionRing B)) := this
   rw [← one_div, FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
-    FractionalIdeal.coe_dual] at this
-  · simpa only [FractionalIdeal.coe_one, Submodule.one_eq_range] using this
+    FractionalIdeal.coeToSubmodule_dual] at this
+  · simpa only [FractionalIdeal.coeToSubmodule_one, Submodule.one_eq_range] using this
   · exact one_ne_zero
   · exact one_ne_zero
 
@@ -535,8 +540,8 @@ lemma coeIdeal_differentIdeal :
   apply FractionalIdeal.coeToSubmodule_injective
   simp only [FractionalIdeal.coe_div
     (FractionalIdeal.dual_ne_zero _ _ (@one_ne_zero (FractionalIdeal B⁰ L) _ _ _)),
-    FractionalIdeal.coe_coeIdeal, coeSubmodule_differentIdeal A K, inv_eq_one_div,
-    FractionalIdeal.coe_dual_one, FractionalIdeal.coe_one]
+    FractionalIdeal.coeToSubmodule_coeIdeal, coeSubmodule_differentIdeal A K, inv_eq_one_div,
+    FractionalIdeal.coeToSubmodule_dual_one, FractionalIdeal.coeToSubmodule_one]
 
 variable {A K B L}
 
@@ -553,7 +558,7 @@ lemma differentialIdeal_le_fractionalIdeal_iff
     differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
   rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
-    ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
+    ← FractionalIdeal.coeToSubmodule_le_coeToSubmodule, FractionalIdeal.coeToSubmodule_dual_one]
   refine le_traceDual_iff_map_le_one.trans ?_
   simp
 
@@ -646,7 +651,7 @@ lemma conductor_mul_differentIdeal
   swap
   · exact FractionalIdeal.dual_ne_zero A K one_ne_zero
   apply FractionalIdeal.coeToSubmodule_injective
-  simp only [FractionalIdeal.coe_coeIdeal, FractionalIdeal.coe_mul,
+  simp only [FractionalIdeal.coeToSubmodule_coeIdeal, FractionalIdeal.coeToSubmodule_mul,
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
   ext y
   have hne₁ : aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))) ≠ 0 :=
@@ -720,7 +725,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
       FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
-    rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
+    rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coeToSubmodule_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
       FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
@@ -880,7 +885,7 @@ lemma dvd_differentIdeal_of_not_isSeparable
     intro x hx
     rw [Submodule.restrictScalars_mem, FractionalIdeal.mem_coe,
       FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp')] at hx
-    rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coe_one,
+    rw [Submodule.mem_comap, LinearMap.coe_restrictScalars, ← FractionalIdeal.coeToSubmodule_one,
       ← div_self (G₀ := FractionalIdeal A⁰ K) (a := p) (by simpa using hp),
       FractionalIdeal.mem_coe, FractionalIdeal.mem_div_iff_of_ne_zero (by simpa using hp)]
     simp only [FractionalIdeal.mem_coeIdeal, forall_exists_index, and_imp,
