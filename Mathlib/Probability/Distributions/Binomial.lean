@@ -217,13 +217,27 @@ lemma IndepFun.hasLaw_add_map_cast_binomial [MeasurableAdd₂ R] {n1 n2 : ℕ}
     · convert (hS.setBernoulli_inter (Iio n1)).cast_ncard_setBernoulli R (by simp)
       simp
     · have : Iio (n1 + n2) ∩ Ico n1 (n1 + n2) = Ico n1 (n1 + n2) := by grind
-      convert (hS.setBernoulli_inter (Ico n1 (n1 + n2))).cast_ncard_setBernoulli R (by simp [this])
+      convert (hS.setBernoulli_inter (Ico n1 (n1 + n2))).cast_ncard_setBernoulli R (by toFinite_tac)
       simp [this]
     · exact (hS.indepFun_setBernoulli_inter (by grind)).comp
-        (φ := (Nat.cast (R := R)) ∘ ncard) (ψ := (Nat.cast (R := R)) ∘ ncard) (by fun)
-      all_goals fun_prop
+        (φ := (Nat.cast (R := R)) ∘ ncard) (ψ := (Nat.cast (R := R)) ∘ ncard)
+        (by fun_prop) (by fun_prop)
+  -- convert IndepFun.hasLaw_union_setBernoulli ?_
+  --   (hS.setBernoulli_inter (Iio n1))
+  --   (hS.setBernoulli_inter (Ico n1 (n1 + n2)))
+  --   (by grind) |>.cast_ncard_setBernoulli R (by toFinite_tac)
+
   convert this.comp_of_hasLaw_comp (f := fun x ↦ x.1 + x.2)
     (by fun_prop) (hXY.hasLaw_prod hX hY) ?_
+  convert IndepFun.hasLaw_union_setBernoulli ?_
+    (hS.setBernoulli_inter (Iio n1))
+    (hS.setBernoulli_inter (Ico n1 (n1 + n2)))
+    (by grind) |>.cast_ncard_setBernoulli R (by toFinite_tac) with ω'
+  · rw [ncard_union_eq (by grind)]
+    simp
+  · rw [ncard_union_eq (by grind)]
+    simp
+    grind
   simp only
   convert (hS.cast_ncard_setBernoulli R (finite_Iio (n1 + n2))).congr ?_
   · simp
