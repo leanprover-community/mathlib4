@@ -125,7 +125,7 @@ theorem gc_ideal :
       (fun I => zeroLocus 𝒜 I) fun t => (vanishingIdeal t).toIdeal :=
   fun I t => subset_zeroLocus_iff_le_vanishingIdeal t I
 
-set_option backward.isDefEq.respectTransparency.types false in
+attribute [local implicit_reducible] OrderDual in
 /-- `zeroLocus` and `vanishingIdeal` form a Galois connection. -/
 theorem gc_set :
     @GaloisConnection (Set A) (Set (ProjectiveSpectrum 𝒜))ᵒᵈ _ _
@@ -295,8 +295,8 @@ instance zariskiTopology : TopologicalSpace (ProjectiveSpectrum 𝒜) :=
       exact ⟨_, (union_zeroLocus 𝒜 s t).symm⟩)
 
 /-- The underlying topology of `Proj` is the projective spectrum of graded ring `A`. -/
-def top : TopCat :=
-  ↧(ProjectiveSpectrum 𝒜)
+@[implicit_reducible]
+def top : TopCat := ↧(ProjectiveSpectrum 𝒜)
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
   simp only [@eq_comm _ Uᶜ]; rfl
