@@ -73,6 +73,7 @@ All linters imported here have no bulk imports;
 - the `minImports` linter, as that linter is disabled by default (and has an informational function;
   it is useful for debugging, but not as a permanently enabled lint)
 - the `upstreamableDecls` linter, as it is also mostly informational
+- the `longUncommentedProof` linter, as it is an opt-in style aid (it is disabled by default)
 
 -/
 
