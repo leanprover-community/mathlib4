@@ -513,7 +513,7 @@ variable {M : CoxeterMatrix B} {N : CoxeterMatrix B'}
   (cs : CoxeterSystem M W) (cs' : CoxeterSystem N H)
 
 /-- The product of two Coxeter systems, formed as a block matrix. -/
-def prod : CoxeterSystem (M.prod N) (W × H) where
+protected def prod : CoxeterSystem (M.prod N) (W × H) where
   mulEquiv := (MulEquiv.prodCongr cs.mulEquiv cs'.mulEquiv).trans
     (CoxeterMatrix.groupProdEquiv M N).symm
 
