@@ -19,7 +19,7 @@ Using the `to_dual` machinery we also define *càglàd functions* (left-continuo
 
 @[expose] public section
 
-open Filter TopologicalSpace Bornology
+open Filter TopologicalSpace Bornology Set
 open scoped Topology ENNReal
 
 variable {X Y : Type*} [TopologicalSpace X] {f g : X → Y}
@@ -94,6 +94,130 @@ lemma IsRightContinuous.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R
     IsRightContinuous (c • f) :=
   hf.continuous_comp (continuous_const_smul c)
 
+section IsRightContinuousOn
+
+variable {s t : Set X}
+
+/-- A function `f` is *right-continuous on* a set `s` if for any `a ∈ s`, `f x → f a` when
+`x → a` with `x ∈ s` and `x > a`. -/
+@[to_dual /-- A function `f` is *left-continuous on* a set `s` if for any `a ∈ s`, `f x → f a`
+when `x → a` with `x ∈ s` and `x < a`. -/]
+def IsRightContinuousOn (f : X → Y) (s : Set X) : Prop :=
+  ∀ a ∈ s, ContinuousWithinAt f (s ∩ Ioi a) a
+
+@[to_dual]
+lemma IsRightContinuousOn.continuousWithinAt {a : X} (hf : IsRightContinuousOn f s) (ha : a ∈ s) :
+    ContinuousWithinAt f (s ∩ Ioi a) a :=
+  hf a ha
+
+@[to_dual (attr := simp)]
+lemma isRightContinuousOn_univ : IsRightContinuousOn f univ ↔ IsRightContinuous f := by
+  simp [IsRightContinuousOn, IsRightContinuous]
+
+@[to_dual]
+lemma IsRightContinuousOn.mono (hf : IsRightContinuousOn f s) (h : t ⊆ s) :
+    IsRightContinuousOn f t :=
+  fun a ha ↦ (hf a (h ha)).mono (inter_subset_inter_left _ h)
+
+@[to_dual]
+lemma IsRightContinuous.isRightContinuousOn (hf : IsRightContinuous f) :
+    IsRightContinuousOn f s :=
+  fun a _ ↦ (hf a).mono inter_subset_right
+
+@[to_dual]
+lemma ContinuousOn.isRightContinuousOn (hf : ContinuousOn f s) : IsRightContinuousOn f s :=
+  fun a ha ↦ (hf a ha).mono inter_subset_left
+
+@[to_dual (attr := simp)]
+lemma isRightContinuousOn_empty (f : X → Y) : IsRightContinuousOn f ∅ :=
+  fun _ ↦ False.elim
+
+@[to_dual (attr := simp)]
+lemma isRightContinuousOn_singleton (f : X → Y) (a : X) : IsRightContinuousOn f {a} :=
+  (continuousOn_singleton f a).isRightContinuousOn
+
+@[to_dual]
+lemma IsOpen.isRightContinuousOn_iff (hs : IsOpen s) :
+    IsRightContinuousOn f s ↔ ∀ a ∈ s, ContinuousWithinAt f (Ioi a) a :=
+  forall₂_congr fun _ ha ↦ by rw [inter_comm, continuousWithinAt_inter (hs.mem_nhds ha)]
+
+@[to_dual]
+lemma isRightContinuousOn_iff_isRightContinuous_domRestrict :
+    IsRightContinuousOn f s ↔ IsRightContinuous (s.domRestrict f) := by
+  rw [IsRightContinuousOn, IsRightContinuous, Subtype.forall]
+  exact forall₂_congr fun _ ha ↦ continuousWithinAt_inter_iff_continuousWithinAt_domRestrict f ha
+
+@[to_dual]
+alias ⟨IsRightContinuousOn.domRestrict, _⟩ := isRightContinuousOn_iff_isRightContinuous_domRestrict
+
+@[to_dual]
+lemma IsRightContinuousOn.congr (hf : IsRightContinuousOn f s) (h : EqOn g f s) :
+    IsRightContinuousOn g s :=
+  fun a ha ↦ (hf a ha).congr (fun _ hy ↦ h hy.1) (h ha)
+
+@[to_dual]
+lemma isRightContinuousOn_congr (h : EqOn g f s) :
+    IsRightContinuousOn g s ↔ IsRightContinuousOn f s :=
+  ⟨fun hg ↦ hg.congr h.symm, fun hf ↦ hf.congr h⟩
+
+@[to_dual (attr := to_fun continuous_fun_comp)]
+lemma IsRightContinuousOn.continuous_comp {Z : Type*} [TopologicalSpace Z] {g : Y → Z}
+    (hf : IsRightContinuousOn f s) (hg : Continuous g) :
+    IsRightContinuousOn (g ∘ f) s :=
+  fun a ha ↦ hg.continuousAt.comp_continuousWithinAt (hf a ha)
+
+@[to_dual]
+lemma IsRightContinuousOn.continuous_comp₂ {Z T : Type*} [TopologicalSpace Z] [TopologicalSpace T]
+    {g : X → Z} {φ : Y → Z → T} (hf : IsRightContinuousOn f s) (hg : IsRightContinuousOn g s)
+    (hφ : Continuous φ.uncurry) :
+    IsRightContinuousOn (fun x ↦ φ (f x) (g x)) s :=
+  fun a ha ↦ (hφ.tendsto (f a, g a)).comp ((hf a ha).prodMk_nhds (hg a ha))
+
+@[to_dual (attr := simp)]
+lemma IsRightContinuousOn.const {c : Y} : IsRightContinuousOn (fun _ ↦ c : X → Y) s :=
+  continuous_const.continuousOn.isRightContinuousOn
+
+@[to_dual]
+lemma IsRightContinuousOn.id : IsRightContinuousOn (id : X → X) s :=
+  continuous_id.continuousOn.isRightContinuousOn
+
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsRightContinuousOn.mul [Mul Y] [ContinuousMul Y]
+    (hf : IsRightContinuousOn f s) (hg : IsRightContinuousOn g s) :
+    IsRightContinuousOn (f * g) s :=
+  hf.continuous_comp₂ hg continuous_mul
+
+@[to_additive (attr := to_fun (attr := to_dual)) sub]
+lemma IsRightContinuousOn.div' [Div Y] [ContinuousDiv Y]
+    (hf : IsRightContinuousOn f s) (hg : IsRightContinuousOn g s) :
+    IsRightContinuousOn (f / g) s :=
+  hf.continuous_comp₂ hg continuous_div'
+
+@[to_fun (attr := to_dual)]
+lemma IsRightContinuousOn.div [GroupWithZero Y] [ContinuousInv₀ Y] [ContinuousMul Y]
+    (hf : IsRightContinuousOn f s) (hg : IsRightContinuousOn g s) (h : ∀ x ∈ s, g x ≠ 0) :
+    IsRightContinuousOn (f / g) s :=
+  fun x hx ↦ (hf x hx).div (hg x hx) (h x hx)
+
+@[to_additive (attr := to_fun (attr := to_dual))]
+lemma IsRightContinuousOn.inv [Inv Y] [ContinuousInv Y] (hf : IsRightContinuousOn f s) :
+    IsRightContinuousOn (f⁻¹) s :=
+  hf.continuous_comp continuous_inv
+
+@[to_fun (attr := to_dual)]
+lemma IsRightContinuousOn.inv₀ [Zero Y] [Inv Y] [ContinuousInv₀ Y]
+    (hf : IsRightContinuousOn f s) (h : ∀ x ∈ s, f x ≠ 0) :
+    IsRightContinuousOn (f⁻¹) s :=
+  fun x hx ↦ (hf x hx).inv₀ (h x hx)
+
+@[to_fun (attr := to_dual (attr := to_additive))]
+lemma IsRightContinuousOn.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : R)
+    (hf : IsRightContinuousOn f s) :
+    IsRightContinuousOn (c • f) s :=
+  hf.continuous_comp (continuous_const_smul c)
+
+end IsRightContinuousOn
+
 /-- A function is *càglàd* if it is left-continuous and has right limits. -/
 structure IsCaglad (f : X → Y) : Prop where
   isLeftContinuous : IsLeftContinuous f
@@ -153,15 +277,27 @@ lemma IsCadlag.const_smul {R : Type*} [SMul R Y] [ContinuousConstSMul R Y] (c : 
 
 end Basic
 
+section PartialOrder
+
+variable [PartialOrder X] [TopologicalSpace Y] {s : Set X}
+
+@[to_dual]
+lemma isRightContinuous_iff_continuousWithinAt_Ici :
+    IsRightContinuous f ↔ ∀ a, ContinuousWithinAt f (Ici a) a :=
+  forall_congr' fun _ ↦ continuousWithinAt_Ioi_iff_Ici
+
+@[to_dual]
+lemma isRightContinuousOn_iff_continuousWithinAt_inter_Ici :
+    IsRightContinuousOn f s ↔ ∀ a ∈ s, ContinuousWithinAt f (s ∩ Set.Ici a) a :=
+  forall₂_congr fun _ _ ↦ continuousWithinAt_inter_Ioi_iff_Ici
+
+end PartialOrder
+
 section LinearOrder
 
 variable [LinearOrder X] [TopologicalSpace Y]
 
-lemma IsCaglad.tendsto_nhdsGT_rightLim [OrderTopology X] (hf : IsCaglad f) (x : X) :
-    Tendsto f (𝓝[>] x) (𝓝 (f.rightLim x)) :=
-  tendsto_rightLim_of_tendsto (hf.tendsto_nhdsGT x)
-
--- TODO: tag `leftLim` with `to_dual` to use `to_dual` here.
+@[to_dual]
 lemma IsCadlag.tendsto_nhdsLT_leftLim [OrderTopology X] (hf : IsCadlag f) (x : X) :
     Tendsto f (𝓝[<] x) (𝓝 (f.leftLim x)) :=
   tendsto_leftLim_of_tendsto (hf.tendsto_nhdsLT x)

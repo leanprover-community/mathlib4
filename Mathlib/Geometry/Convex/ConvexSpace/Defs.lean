@@ -354,16 +354,15 @@ lemma weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· 
       ((w.weights.filter (· ∈ s)).sum fun _x k ↦ k)⁻¹ • w.weights.filter (· ∈ s) := by
   simp [restrict]; congr
 
-variable [IsDomain K]
-
 @[simp]
 lemma support_weights_restrict (w : StdSimplex K X) (s : Set X) (hs) [DecidablePred (· ∈ s)] :
     (w.restrict s hs).weights.support = w.weights.support.filter (· ∈ s) := by
   have : (w.weights.filter (· ∈ s)).sum (fun x k ↦ k) ≠ 0 :=
     (sum_pos (by simp +contextual [lt_iff_le_and_ne, eq_comm]) <| by
       simpa [ne_iff, filter_apply]).ne'
-  rw [weights_restrict, support_smul_eq (by convert inv_ne_zero this)]
-  simp
+  rw [weights_restrict]
+  ext a
+  simp [filter_apply, inv_ne_zero this, and_comm]
 
 @[simp] lemma restrict_singleton (w : StdSimplex K X) (x : X) (hx) :
     w.restrict {x} hx = single x := by

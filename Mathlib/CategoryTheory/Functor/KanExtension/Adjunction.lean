@@ -78,7 +78,7 @@ noncomputable def leftKanExtensionObjIsoColimit [HasLeftKanExtension L F] (X : D
     (isPointwiseLeftKanExtensionLeftKanExtensionUnit L F X)
 
 @[reassoc (attr := simp)]
-lemma ι_leftKanExtensionObjIsoColimit_inv [HasLeftKanExtension L F] (X : D)
+lemma ι_leftKanExtensionObjIsoColimit_inv (X : D)
     (f : CostructuredArrow L X) :
     colimit.ι _ f ≫ (L.leftKanExtensionObjIsoColimit F X).inv =
     (L.leftKanExtensionUnit F).app f.left ≫ (L.leftKanExtension F).map f.hom := by
@@ -107,7 +107,6 @@ lemma leftKanExtensionUnit_leftKanExtensionObjIsoColimit_hom (X : C) :
   simpa using leftKanExtensionUnit_leftKanExtension_map_leftKanExtensionObjIsoColimit_hom L F
     (L.obj X) (CostructuredArrow.mk (𝟙 _))
 
-set_option backward.isDefEq.respectTransparency false in
 @[instance]
 theorem hasColimit_map_comp_ι_comp_grothendieckProj {X Y : D} (f : X ⟶ Y) :
     HasColimit (((functor L).map f).toFunctor ⋙ Grothendieck.ι (functor L) Y ⋙
@@ -236,7 +235,6 @@ lemma ι_colimitIsoColimitGrothendieck_inv (X : Grothendieck (CostructuredArrow.
     colimit.ι G ((CostructuredArrow.proj L X.base).obj X.fiber) := by
   simp [colimitIsoColimitGrothendieck]
 
-set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ι_colimitIsoColimitGrothendieck_hom (X : C) :
     colimit.ι G X ≫ (colimitIsoColimitGrothendieck L G).hom =

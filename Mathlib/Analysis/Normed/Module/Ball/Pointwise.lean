@@ -45,7 +45,7 @@ theorem ediam_smul₀ (c : 𝕜) (s : Set E) : ediam (c • s) = ‖c‖₊ • 
   simp_rw [ediam, ← image_smul, iSup_image, edist_smul₀, ENNReal.smul_iSup]
 
 theorem diam_smul₀ (c : 𝕜) (x : Set E) : diam (c • x) = ‖c‖ * diam x := by
-  simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnnorm, smul_eq_mul]
+  simp_rw [diam, ediam_smul₀, ENNReal.toReal_smul, NNReal.smul_def, coe_nnNorm, smul_eq_mul]
 
 theorem infEDist_smul_of_nonempty₀ (c : 𝕜) {s : Set E} (hs : s.Nonempty) (x : E) :
     infEDist (c • x) (c • s) = ‖c‖₊ • infEDist x s := by
