@@ -924,7 +924,6 @@ noncomputable def rightHomologyιNatTrans :
   app S := rightHomologyι S
   naturality := fun _ _ φ => rightHomologyι_naturality φ
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.X₂ ⟶ S.opcycles` for all short complexes `S`. -/
 @[simps]
 noncomputable def pOpcyclesNatTrans :
