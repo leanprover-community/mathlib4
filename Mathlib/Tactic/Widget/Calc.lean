@@ -5,17 +5,15 @@ Authors: Patrick Massot
 -/
 module
 
+public meta import Batteries.CodeAction.Attr
 public meta import Lean.Elab.Tactic.Calc
 public meta import Lean.Meta.Tactic.TryThis
-
 public meta import Mathlib.Data.String.Defs
 public meta import Mathlib.Tactic.Widget.SelectPanelUtils
-public meta import Batteries.CodeAction.Attr
-public import Batteries.CodeAction.Attr
-public import Lean.Server.Rpc.RequestHandling
+public meta import ProofWidgets.Component.OfRpcMethod
 public import Mathlib.Tactic.Widget.SelectPanelUtils
-public import ProofWidgets.Component.Basic
-public import ProofWidgets.Component.OfRpcMethod
+
+meta import ProofWidgets.Component.Basic
 
 /-! # Calc widget
 

@@ -12,7 +12,6 @@ public import Mathlib.Order.Filter.Germ.Basic
 public import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
-
 # Almost everywhere equal functions
 
 We build a space of equivalence classes of functions, where two functions are treated as identical
@@ -77,7 +76,9 @@ assert_not_exists InnerProductSpace
 
 noncomputable section
 
-open Topology Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
+open Set Filter TopologicalSpace ENNReal MeasureTheory Function
+
+open scoped Topology
 
 variable {α β γ δ : Type*} [MeasurableSpace α] {μ ν : Measure α}
 
@@ -208,8 +209,6 @@ end
 section compQuasiMeasurePreserving
 
 variable [TopologicalSpace γ] [MeasurableSpace β] {ν : MeasureTheory.Measure β} {f : α → β}
-
-open MeasureTheory.Measure (QuasiMeasurePreserving)
 
 /-- Composition of an almost everywhere equal function and a quasi-measure-preserving function.
 
@@ -352,7 +351,7 @@ theorem coeFn_comp (g : β → γ) (hg : Continuous g) (f : α →ₘ[μ] β) : 
 
 theorem comp_compQuasiMeasurePreserving
     {β : Type*} [MeasurableSpace β] {ν} (g : γ → δ) (hg : Continuous g)
-    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : Measure.QuasiMeasurePreserving φ μ ν) :
+    (f : β →ₘ[ν] γ) {φ : α → β} (hφ : QuasiMeasurePreserving φ μ ν) :
     (comp g hg f).compQuasiMeasurePreserving φ hφ =
       comp g hg (f.compQuasiMeasurePreserving φ hφ) := by
   rcases f; rfl
@@ -494,7 +493,7 @@ theorem toGerm_injective : Injective (toGerm : (α →ₘ[μ] β) → Germ (ae �
 
 @[simp]
 theorem compQuasiMeasurePreserving_toGerm {β : Type*} [MeasurableSpace β] {f : α → β} {ν}
-    (g : β →ₘ[ν] γ) (hf : Measure.QuasiMeasurePreserving f μ ν) :
+    (g : β →ₘ[ν] γ) (hf : QuasiMeasurePreserving f μ ν) :
     (g.compQuasiMeasurePreserving f hf).toGerm = g.toGerm.compTendsto f hf.tendsto_ae := by
   rcases g; rfl
 

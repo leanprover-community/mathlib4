@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.LinearAlgebra.AffineSpace.Pointwise
@@ -45,10 +46,13 @@ barycentric coordinate of `q : P` is `1 - fᵢ (q -ᵥ p i)`.
 
 -/
 
+open scoped Finset
+
 @[expose] public section
 
-open Affine Module Set
-open scoped Pointwise
+open Module Set
+
+open scoped Affine Pointwise
 
 section Coordinates
 
@@ -104,6 +108,7 @@ variable [Ring k] [Module k V] (b : AffineBasis ι k P) {s : Finset ι} {i j : �
 instance : Inhabited (AffineBasis PUnit k PUnit) :=
   ⟨⟨id, affineIndependent_of_subsingleton k id, by simp⟩⟩
 
+@[macro_inline]
 instance instFunLike : FunLike (AffineBasis ι k P) ι P where
   coe := AffineBasis.toFun
   coe_injective f g h := by cases f; cases g; congr
@@ -202,14 +207,14 @@ theorem coord_apply [DecidableEq ι] (i j : ι) : b.coord i (b j) = if i = j the
 @[simp]
 theorem coord_apply_combination_of_mem (hi : i ∈ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = w i := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_true,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_true,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
 @[simp]
 theorem coord_apply_combination_of_notMem (hi : i ∉ s) {w : ι → k} (hw : s.sum w = 1) :
     b.coord i (s.affineCombination k b w) = 0 := by
-  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, if_false,
+  classical simp only [coord_apply, hi, Finset.affineCombination_eq_linear_combination, ite_false,
       mul_boole, hw, Function.comp_apply, smul_eq_mul, s.sum_ite_eq,
       s.map_affineCombination b w hw]
 
@@ -293,20 +298,22 @@ instance instVAdd : VAdd V (AffineBasis ι k P) where
       tot' := by rw [Pi.vadd_def, ← vadd_set_range, ← AffineSubspace.pointwise_vadd_span, b.tot,
         AffineSubspace.pointwise_vadd_top] }
 
-@[simp, norm_cast] lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
+instance : IsVAddApply V (AffineBasis ι k P) where
+
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-10-26")]
+lemma coe_vadd (v : V) (b : AffineBasis ι k P) : ⇑(v +ᵥ b) = v +ᵥ ⇑b := rfl
 
 @[simp] lemma basisOf_vadd (v : V) (b : AffineBasis ι k P) : (v +ᵥ b).basisOf = b.basisOf := by
   ext
   simp
 
-instance instAddAction : AddAction V (AffineBasis ι k P) :=
-  DFunLike.coe_injective.addAction _ coe_vadd
+instance instAddAction : AddAction V (AffineBasis ι k P) := fast_instance% FunLike.addAction
 
 @[simp] lemma coord_vadd (v : V) (b : AffineBasis ι k P) :
     (v +ᵥ b).coord i = (b.coord i).comp (AffineEquiv.constVAdd k P v).symm := by
   ext p
-  simp only [coord, ne_eq, basisOf_vadd, coe_vadd, Pi.vadd_apply, Basis.coe_sumCoords,
-    AffineMap.coe_mk, AffineEquiv.constVAdd_symm, AffineMap.coe_comp, AffineEquiv.coe_toAffineMap,
+  simp only [coord, ne_eq, basisOf_vadd, vadd_apply, Basis.coe_sumCoords, AffineMap.coe_mk,
+    AffineEquiv.constVAdd_symm, AffineMap.coe_comp, AffineEquiv.coe_toAffineMap,
     Function.comp_apply, AffineEquiv.constVAdd_apply, sub_right_inj]
   congr! 1
   rw [vadd_vsub_assoc, neg_add_eq_sub, vsub_vadd_eq_vsub_sub]
@@ -328,17 +335,20 @@ instance instSMul : SMul G (AffineBasis ι k V) where
         rw [Pi.smul_def, ← smul_set_range, ← AffineSubspace.smul_span, b.tot,
           AffineSubspace.smul_top (Group.isUnit a)] }
 
-@[simp, norm_cast] lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
+instance : IsSMulApply G (AffineBasis ι k V) where
+
+@[deprecated FunLike.coe_smul +typeChanged (since := "2026-10-26")]
+lemma coe_smul (a : G) (b : AffineBasis ι k V) : ⇑(a • b) = a • ⇑b := rfl
 
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-instance [SMulCommClass G G' V] : SMulCommClass G G' (AffineBasis ι k V) where
-  smul_comm _g _g' _b := DFunLike.ext _ _ fun _ => smul_comm _ _ _
+instance [SMulCommClass G G' V] : SMulCommClass G G' (AffineBasis ι k V) :=
+  FunLike.smulCommClass
 
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι k V) where
-  smul_assoc _g _g' _b := DFunLike.ext _ _ fun _ => smul_assoc _ _ _
+instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι k V) :=
+  FunLike.isScalarTower
 
 @[simp] lemma basisOf_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
     (a • b).basisOf i = a • b.basisOf i := by ext j; simp [smul_sub]
@@ -353,8 +363,7 @@ instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι
 
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/
-instance instMulAction : MulAction G (AffineBasis ι k V) :=
-  DFunLike.coe_injective.mulAction _ coe_smul
+instance instMulAction : MulAction G (AffineBasis ι k V) := fast_instance% FunLike.mulAction
 
 end SMul
 end Ring
@@ -365,7 +374,7 @@ variable [DivisionRing k] [Module k V]
 
 @[simp]
 theorem coord_apply_centroid [CharZero k] (b : AffineBasis ι k P) {s : Finset ι} {i : ι}
-    (hi : i ∈ s) : b.coord i (s.centroid k b) = (s.card : k)⁻¹ := by
+    (hi : i ∈ s) : b.coord i (s.centroid k b) = (#s : k)⁻¹ := by
   rw [Finset.centroid,
     b.coord_apply_combination_of_mem hi (s.sum_centroidWeights_eq_one_of_nonempty _ ⟨i, hi⟩),
     Finset.centroidWeights, Function.const_apply]

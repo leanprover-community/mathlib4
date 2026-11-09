@@ -22,8 +22,6 @@ elements.
 
 assert_not_exists HeytingAlgebra RelIso
 
-open Function
-
 universe u v
 
 namespace Set
@@ -210,16 +208,16 @@ theorem nontrivial_of_lt [Preorder α] {x y} (hx : x ∈ s) (hy : y ∈ s) (hxy 
   ⟨x, hx, y, hy, ne_of_lt hxy⟩
 
 theorem nontrivial_of_exists_lt [Preorder α]
-    (H : ∃ᵉ (x ∈ s) (y ∈ s), x < y) : s.Nontrivial :=
+    (H : ∃ x ∈ s, ∃ y ∈ s, x < y) : s.Nontrivial :=
   let ⟨_, hx, _, hy, hxy⟩ := H
   nontrivial_of_lt hx hy hxy
 
-theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+theorem Nontrivial.exists_lt [LinearOrder α] (hs : s.Nontrivial) : ∃ x ∈ s, ∃ y ∈ s, x < y :=
   let ⟨x, hx, y, hy, hxy⟩ := hs
   Or.elim (lt_or_gt_of_ne hxy) (fun H => ⟨x, hx, y, hy, H⟩) fun H => ⟨y, hy, x, hx, H⟩
 
 theorem nontrivial_iff_exists_lt [LinearOrder α] :
-    s.Nontrivial ↔ ∃ᵉ (x ∈ s) (y ∈ s), x < y :=
+    s.Nontrivial ↔ ∃ x ∈ s, ∃ y ∈ s, x < y :=
   ⟨Nontrivial.exists_lt, nontrivial_of_exists_lt⟩
 
 protected theorem Nontrivial.nonempty (hs : s.Nontrivial) : s.Nonempty :=
@@ -324,7 +322,7 @@ theorem univ_set_of_isEmpty [IsEmpty α] : @univ (Set α) = {∅} :=
 @[simp]
 theorem univ_set_eq_singleton_empty_iff : @Set.univ (Set α) = {∅} ↔ IsEmpty α := by
   refine ⟨fun h ↦ ?_, fun _ ↦ by simp⟩
-  suffices @univ α ∈ univ by aesop
+  suffices @univ α ∈ univ by simpa [h]
   simp
 
 end Nontrivial

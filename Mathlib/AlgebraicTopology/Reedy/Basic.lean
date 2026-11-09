@@ -30,8 +30,6 @@ https://github.com/leanprover-community/project-intentions/issues/5
 
 @[expose] public section
 
-universe u
-
 open CategoryTheory
 
 namespace HomotopicalAlgebra
@@ -123,7 +121,7 @@ lemma unique {X Y : C} {f : X ⟶ Y} (fac fac' : W₁.MapFactorizationData W₂ 
   obtain rfl : fac = fac' := Subsingleton.elim _ _
   simp
 
-/-- The degree of a morphisms for a Reedy structure. It is defined as the degree of
+/-- The degree of a morphism for a Reedy structure. It is defined as the degree of
 the intermediate object in the Reedy factorization, but it is also the smallest
 degree of an intermediate object in a factorization, see the lemma `degHom_le`. -/
 @[no_expose]
@@ -168,7 +166,7 @@ lemma degHom_comp_le_left {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
 lemma degHom_comp_le_right {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     r.degHom (f ≫ g) ≤ r.degHom g := by
   have ⟨_, g₁, g₂, _, _, h_fac, h_deg⟩ := r.exists_fac g
-  rw [h_deg, ← h_fac, <- Category.assoc]
+  rw [h_deg, ← h_fac, ← Category.assoc]
   exact r.degHom_le (f ≫ g₁) g₂
 
 lemma prop₂_of_degHom_eq_deg_left {X Y : C} {f : X ⟶ Y} (hf : r.degHom f = r.deg X) :

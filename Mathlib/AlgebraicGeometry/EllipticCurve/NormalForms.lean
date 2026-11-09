@@ -6,10 +6,8 @@ Authors: Jz Pan
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.Algebra.CharP.Defs
 
 /-!
-
 # Some normal forms of elliptic curves
 
 This file defines some normal forms of Weierstrass equations of elliptic curves.
@@ -685,10 +683,10 @@ def toCharTwoNF [DecidableEq F] : VariableChange F :=
 
 instance toCharTwoNF_spec [DecidableEq F] : (W.toCharTwoNF • W).IsCharTwoNF := by
   by_cases ha₁ : W.a₁ = 0
-  · rw [toCharTwoNF, dif_pos ha₁]
+  · rw [toCharTwoNF, dite_eq_left ha₁]
     have := W.toCharTwoJEqZeroNF_spec ha₁
     infer_instance
-  · rw [toCharTwoNF, dif_neg ha₁]
+  · rw [toCharTwoNF, dite_eq_right ha₁]
     have := W.toCharTwoJNeZeroNF_spec ha₁
     infer_instance
 

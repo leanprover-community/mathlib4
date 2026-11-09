@@ -43,6 +43,10 @@
   authors: Chris Hughes (first) and Michael Stoll (second)
 8:
   title  : The Impossibility of Trisecting the Angle and Doubling the Cube
+  authors: Weiyi Wang
+  links  :
+    angle trisection: https://github.com/wwylele/Compass/blob/738da583822a43ffa8e6356b9f5629678cf700d7/Compass/Wiedijk8.lean#L91-L97
+    doubling the cube: https://github.com/wwylele/Compass/blob/738da583822a43ffa8e6356b9f5629678cf700d7/Compass/Wiedijk8.lean#L289-L291
 9:
   title  : The Area of a Circle
   decl   : Theorems100.area_disc
@@ -57,8 +61,15 @@
   authors: Jeremy Avigad
 12:
   title  : The Independence of the Parallel Postulate
+  authors: Richard Sutton
+  links  :
+    result: https://github.com/Richiesutie/ParallelPostulate/blob/8ee502804263194ae40babeca9773127f1e0a085/ParallelPostulate/Hilbert/Independence.lean#L80-L85
 13:
   title  : Polyhedron Formula
+  authors: Michal Wallace
+  links  :
+    result: https://github.com/tangentproofs/eulers-gem/blob/a8155ae8a2e58e4dee838ae5841580a7c1488ff3/lean/Results.lean#L65-L73
+    website: https://github.com/tangentproofs/eulers-gem
 14:
   title  : Euler’s Summation of 1 + (1/2)^2 + (1/3)^2 + ….
   decl   : hasSum_zeta_two
@@ -91,6 +102,9 @@
   authors: Chris Hughes
 21:
   title  : Green’s Theorem
+  authors: The Tau Ceti contributors
+  links  :
+    result: https://taucetiproject.org/docs/TauCeti/Analysis/Green/IndexOne.html#TauCeti.Green.green_ac_index_one
 22:
   title  : The Non-Denumerability of the Continuum
   decl   : Cardinal.not_countable_real
@@ -120,8 +134,19 @@
   authors: Joseph Myers
 28:
   title  : Pascal’s Hexagon Theorem
+  authors: Boris Alexeev
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/8822f7ddef30fadbd92e1c6ab4ed897af356af5e/src/latest/HundredTheorems/Theorem28.lean#L729-L746
+  note   : >-
+    Circle version. Formalized using Aristotle (Harmonic),
+    with an informal proof by ChatGPT-5.2 Pro.
 29:
   title  : Feuerbach’s Theorem
+  authors: "Weiyi Wang and Daniele Cappello (UNICO/NOUS)"
+  links  :
+    Weiyi Wang's proof: https://github.com/wwylele/Feuerbach/blob/bdd66fa4be2db41e1ac5f1e2dd8c99ffb1b23a1b/Feuerbach/Basic.lean#L714-L728
+    Daniele Cappello's proof (incircle): https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Feuerbach/Main.lean#L133-L136
+    Daniele Cappello's proof (excircles): https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Feuerbach/Main.lean#L181-L185
 30:
   title  : The Ballot Problem
   authors: Bhavik Mehta and Kexing Ying
@@ -133,10 +158,24 @@
     result: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 32:
   title  : The Four Color Problem
+  authors: "Chris Emery and Robert D. Barish (Lean ports); Georges Gonthier and contributors (original Rocq proof)"
+  links  :
+    Chris Emery's proof: https://github.com/corun1024/4ct/blob/3db71e0a786a1f19be04c5266fe3d06fed216885/FourColor/Complete.lean#L43-L45
+    Robert D. Barish's proof: https://github.com/RBarish-UTokyo/FourColorTheorem-Lean4/blob/20fa34599f5189dd569d96dd22f306c94ab1c446/Solution.lean#L27-L30
+  note   : >-
+    Chris Emery’s port was produced using Claude. Robert D. Barish’s port was produced
+    using Claude Opus 5.5 (Anthropic), under his direction.
 33:
   title  : Fermat’s Last Theorem
   statement: FermatLastTheorem
-  note: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
+  authors: "Anthropic"
+  links  :
+    result: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/FinalCheck.lean#L7
+    attribution: https://github.com/anthropics/fermats-last-theorem/blob/6e837e75355538c7f80bab5b956861e86c4eacc2/NOTICE
+  note   : >-
+    External Lean proof of FermatLastTheorem, building on the Imperial College FLT project,
+    flt-regular, and mathlib. The Imperial College FLT project is at
+    https://imperialcollegelondon.github.io/FLT/.
 34:
   title  : Divergence of the Harmonic Series
   decl   : Real.tendsto_sum_range_one_div_nat_succ_atTop
@@ -174,12 +213,25 @@
   authors: Alex J. Best and Yaël Dillies
 41:
   title  : Puiseux’s Theorem
+  authors: "Dean Cureton"
+  links  :
+    result: https://github.com/deancureton/Puiseux/blob/73e78681d7bb78ddb202e29cb92ab3c16b723126/Puiseux/AlgClosed.lean#L389-L395
 42:
   title  : Sum of the Reciprocals of the Triangular Numbers
   authors: Jalex Stark and Yury Kudryashov
   decl   : Theorems100.inverse_triangle_sum
 43:
   title  : The Isoperimetric Theorem
+  authors: Kim Morrison
+  links  :
+    result: https://github.com/kim-em/isoperimetric/blob/919aa52aca02625e4525d67d688940261ab5d459/Isoperimetric/Main.lean#L46-L52
+    website: https://github.com/kim-em/isoperimetric
+    Humanfia's inequality: https://huggingface.co/datasets/humanfia-lab/lean-eval-source/tree/6a6d9f67a91d546677321aeea559c2857b697635/problems/isoperimetric_inequality
+    MovingSofa: https://github.com/deancureton/MovingSofa
+    Jordan curve theorem: https://github.com/rkirov/jordan_pick
+  note   : >-
+    Produced with Codex assistance, based on Humanfia’s inequality and work by Dean Cureton,
+    Rado Kirov, and the Tau Ceti contributors. Includes equality exactly for circle images.
 44:
   title  : The Binomial Theorem
   decl   : add_pow
@@ -206,6 +258,10 @@
   authors: Kim Morrison
 50:
   title  : The Number of Platonic Solids
+  authors: "Daniele Cappello (UNICO/NOUS)"
+  links  :
+    result: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Platonici/TeoremaPlatonici.lean#L48-L56
+  note   : Produced using Claude.
 51:
   title  : Wilson’s Lemma
   decl   : ZMod.wilsons_lemma
@@ -216,6 +272,10 @@
   authors: mathlib
 53:
   title  : Pi is Transcendental
+  authors: "Trevor Morris and Yuyang Zhao (independent formalizations)"
+  links  :
+    Trevor Morris's proof: https://github.com/gotrevor/lean-formalizations/blob/bad0e21a37874f09f45072dad6225de55742e6c5/src/LeanFormalizations/NumberTheory/Transcendence/PiTranscendental.lean#L26-L32
+    Yuyang Zhao's proof: https://github.com/astrainfinita/mathlib4/blob/2ec8b0e44647603dc096134c99901892b8105825/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L243-L244
 54:
   title  : Königsberg Bridges Problem
   decl   : Konigsberg.not_isEulerian
@@ -226,6 +286,10 @@
   authors: Manuel Candales
 56:
   title  : The Hermite-Lindemann Transcendence Theorem
+  authors: "Yuyang Zhao"
+  links  :
+    result: https://github.com/astrainfinita/mathlib4/blob/2ec8b0e44647603dc096134c99901892b8105825/Mathlib/NumberTheory/Transcendental/Lindemann/Basic.lean#L225-L226
+    pull request: https://github.com/leanprover-community/mathlib4/pull/28013
 57:
   title  : Heron’s Formula
   decl   : Theorems100.heron
@@ -343,7 +407,7 @@
   decls  :
     - Nat.primeFactorsList_unique
     - Int.euclideanDomain
-    - EuclideanDomain.to_principal_ideal_domain
+    - EuclideanDomain.instIsPrincipalIdealRing
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   authors: Chris Hughes
@@ -364,6 +428,10 @@
   authors: Aaron Anderson and Jalex Stark and Kyle Miller
 84:
   title  : Morley’s Theorem
+  authors: "UNICO / NOUS project (Solarys431)"
+  links  :
+    result: https://github.com/Solarys431/unico-lean-proofs/blob/794568d279e377c34e3ab93a5e0626467f7d9e0d/UnicoProofs/Morley.lean#L1034-L1044
+  note   : Produced using Claude.
 85:
   title  : Divisibility by 3 Rule
   authors: Kim Morrison
@@ -375,6 +443,11 @@
   authors: Johannes Hölzl
 87:
   title  : Desargues’s Theorem
+  authors: Boris Alexeev
+  links  :
+    result: https://github.com/plby/lean-proofs/blob/8822f7ddef30fadbd92e1c6ab4ed897af356af5e/src/latest/HundredTheorems/Theorem87.lean#L510-L522
+  note   : >-
+    Formalized using Aristotle (Harmonic), with an informal proof by ChatGPT-5.2 Pro.
 88:
   title  : Derangements Formula
   decls  :
@@ -398,6 +471,10 @@
   authors: Zhouhang Zhou
 92:
   title  : Pick’s Theorem
+  authors: "Rado Kirov"
+  links  :
+    result: https://github.com/rkirov/jordan_pick/blob/b3c9b7cf7358bf81a077d78ad67e6e8247869ddd/JordanPick/PicksTheorem/EvalBridgeMain.lean#L102-L107
+  note   : Produced using Claude.
 93:
   title  : The Birthday Problem
   decls  :

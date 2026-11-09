@@ -4,8 +4,6 @@ import Mathlib.CategoryTheory.Functor.Category
 
 open CategoryTheory
 
-set_option pp.mvars.anonymous false
-
 section
 
 variable (C : Type*) [Category* C]

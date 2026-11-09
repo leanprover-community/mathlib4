@@ -6,10 +6,6 @@ Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 module
 
 public import Mathlib.LinearAlgebra.Dimension.Constructions
-public import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-public import Mathlib.LinearAlgebra.Dimension.Subsingleton
-public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-public import Mathlib.SetTheory.Cardinal.Cofinality.Ordinal
 
 /-!
 # Conditions for rank to be finite
@@ -28,9 +24,7 @@ variable {R : Type u} {M : Type v} {ι : Type w}
 variable [Semiring R] [AddCommMonoid M]
 variable [Module R M]
 
-attribute [local instance] nontrivial_of_invariantBasisNumber
-
-open Basis Cardinal Function Module Set Submodule
+open Cardinal Function Module Set Submodule
 
 /-- If every finite set of linearly independent vectors has cardinality at most `n`,
 then the same is true for arbitrary sets of linearly independent vectors.
@@ -75,7 +69,7 @@ lemma rank_eq_zero_iff {R M} [Ring R] [AddCommGroup M] [Module R M] :
     rintro ⟨i : s⟩
     obtain ⟨a, ha, ha'⟩ := h i
     apply ha
-    simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
+    simpa using congr($(linearIndependent_iff.mp hs (.single i a) (by simpa)) i)
 
 variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
 
@@ -132,21 +126,29 @@ section
 variable [StrongRankCondition R]
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
+    (h : Module.rank R M < ℵ₀) : Finite ι := by
+  rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
+    Cardinal.lt_aleph0_iff_finite] at h
+
+/-- If a module has a finite dimension, all bases are indexed by a finite type. -/
+@[deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 theorem Module.Basis.nonempty_fintype_index_of_rank_lt_aleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Nonempty (Fintype ι) := by
   rwa [← Cardinal.lift_lt, ← b.mk_eq_rank, Cardinal.lift_aleph0, Cardinal.lift_lt_aleph0,
     Cardinal.lt_aleph0_iff_fintype] at h
 
 /-- If a module has a finite dimension, all bases are indexed by a finite type. -/
-@[instance_reducible]
+@[instance_reducible,
+deprecated Module.Basis.finite_index_of_rank_lt_aleph0 +typeChanged (since := "2026-10-11")]
 noncomputable def Module.Basis.fintypeIndexOfRankLtAleph0 {ι : Type*} (b : Basis ι R M)
     (h : Module.rank R M < ℵ₀) : Fintype ι :=
   Classical.choice (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
 
 /-- If a module has a finite dimension, all bases are indexed by a finite set. -/
-theorem Module.Basis.finite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
+theorem Module.Basis.setFinite_index_of_rank_lt_aleph0 {ι : Type*} {s : Set ι} (b : Basis s R M)
     (h : Module.rank R M < ℵ₀) : s.Finite :=
-  Set.finite_def.2 (b.nonempty_fintype_index_of_rank_lt_aleph0 h)
+  Set.finite_coe_iff.1 (b.finite_index_of_rank_lt_aleph0 h)
 
 end
 
@@ -179,7 +181,7 @@ theorem lt_aleph0_of_finite {ι : Type w}
 
 theorem finite [Module.Finite R M] {ι : Type*} {f : ι → M}
     (h : LinearIndependent R f) : Finite ι :=
-  Cardinal.lt_aleph0_iff_finite.1 <| h.lt_aleph0_of_finite
+  Cardinal.lt_aleph0_iff_finite.1 h.lt_aleph0_of_finite
 
 theorem setFinite [Module.Finite R M] {b : Set M}
     (h : LinearIndependent R fun x : b => (x : M)) : b.Finite :=
@@ -200,9 +202,6 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
-
-@[deprecated (since := "2026-04-13")]
-alias exists_set_linearIndependent_of_lt_rank := Module.exists_set_linearIndependent_of_lt_rank
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
@@ -327,16 +326,16 @@ theorem Module.exists_nontrivial_relation_sum_zero_of_finrank_succ_lt_card
   -- After this, it's a matter of verifying the properties,
   -- based on the corresponding properties for `g`.
   · rw [sum_map, Embedding.coeFn_mk] at gsum
-    simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, neg_smul, sum_smul,
+    simp_rw [f, ← t.sum_erase_add _ x₀_mem, ite_eq_left, neg_smul, sum_smul,
              ← sub_eq_add_neg, ← sum_sub_distrib, ← gsum, smul_sub]
     refine sum_congr rfl fun x x_mem ↦ ?_
-    rw [if_neg (mem_erase.mp x_mem).1]
-  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, if_pos, add_neg_eq_zero]
-    exact sum_congr rfl fun x x_mem ↦ if_neg (mem_erase.mp x_mem).1
+    rw [ite_eq_right (mem_erase.mp x_mem).1]
+  · simp_rw [f, ← t.sum_erase_add _ x₀_mem, ite_eq_left, add_neg_eq_zero]
+    exact sum_congr rfl fun x x_mem ↦ ite_eq_right (mem_erase.mp x_mem).1
   · obtain ⟨x₁, x₁_mem', rfl⟩ := Finset.mem_map.mp x₁_mem
     have := mem_erase.mp x₁_mem'
     exact ⟨x₁, by
-      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, if_neg this.1]⟩
+      simpa only [f, Embedding.coeFn_mk, sub_add_cancel, this.2, true_and, ite_eq_right this.1]⟩
 
 end
 
@@ -412,7 +411,6 @@ theorem Module.finrank_zero_iff [IsDomain R] [IsTorsionFree R M] :
 /-- Similar to `rank_quotient_add_rank_le` but for `finrank` and a finite `M`. -/
 lemma Module.finrank_quotient_add_finrank_le (N : Submodule R M) :
     finrank R (M ⧸ N) + finrank R N ≤ finrank R M := by
-  have := nontrivial_of_invariantBasisNumber R
   have := rank_quotient_add_rank_le N
   rw [← finrank_eq_rank R M, ← finrank_eq_rank R, ← N.finrank_eq_rank] at this
   exact mod_cast this
@@ -479,7 +477,7 @@ theorem finrank_eq_zero_of_basis_imp_false (h : ∀ s : Finset M, Basis.{v} (s :
   finrank_eq_zero_of_basis_imp_not_finite fun s b hs =>
     h hs.toFinset
       (by
-        convert! b
+        convert b
         simp)
 
 theorem finrank_eq_zero_of_not_exists_basis
@@ -505,7 +503,6 @@ variable [IsDomain R] [IsTorsionFree R M] [StrongRankCondition R]
 then the module has dimension one. -/
 theorem rank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) :
     Module.rank R M = 1 := by
-  have := nontrivial_of_invariantBasisNumber R
   obtain ⟨b⟩ := (Basis.basis_singleton_iff.{_, _, u} PUnit).mpr ⟨v, n, h⟩
   rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
 

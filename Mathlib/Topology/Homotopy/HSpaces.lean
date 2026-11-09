@@ -5,7 +5,6 @@ Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 module
 
-public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Homotopy.Basic
 public import Mathlib.Topology.Path
 
@@ -34,7 +33,8 @@ Some notable properties of `H-spaces` are
   definitionally equal to the product of `H-space` structures on `G` and `G'`.
 * The loop space based at every `x : X` carries a structure of an `H-space`.
 
-## To Do
+## TODO
+
 * Prove that for every `NormedAddTorsor Z` and every `z : Z`, the operation
   `fun x y ↦ midpoint x y` defines an `H-space` structure with `z` as a "neutral element".
 * Prove that `S^0`, `S^1`, `S^3` and `S^7` are the unique spheres that are `H-spaces`, where the
@@ -74,7 +74,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
-open HSpaces
+open scoped HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
@@ -211,11 +211,11 @@ theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Pa
   split_ifs with h; swap
   on_goal 1 => conv_rhs => rw [← γ.target]
   all_goals apply congr_arg γ; ext1; rw [qRight_zero_right]
-  exacts [if_neg h, if_pos h]
+  exacts [ite_eq_right h, ite_eq_left h]
 
 theorem delayReflRight_one (γ : Path x y) : delayReflRight 1 γ = γ := by
   ext t
-  exact congr_arg γ (qRight_one_right t)
+  congrm γ $(qRight_one_right t)
 
 /-- This is the function on p. 475 of [serre1951], defining a homotopy from a path `γ` to the
 product path `e ∧ γ`. -/

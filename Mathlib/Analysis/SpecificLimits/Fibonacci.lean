@@ -5,8 +5,12 @@ Authors: Snir Broshi
 -/
 module
 
-public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.NumberTheory.Real.GoldenRatio
+
+import Mathlib.Analysis.SpecificLimits.Normed
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The ratio of consecutive Fibonacci numbers

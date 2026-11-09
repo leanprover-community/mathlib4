@@ -5,10 +5,10 @@ Authors: Christian Merten, Yi Song, Sihan Su
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.GoingUp
 public import Mathlib.RingTheory.Flat.FaithfullyFlat.Algebra
-public import Mathlib.RingTheory.Flat.Localization
 public import Mathlib.RingTheory.Spectrum.Prime.Topology
+
+import Mathlib.RingTheory.Flat.Localization
 
 /-!
 # Going down
@@ -30,7 +30,7 @@ of `S` lying above `q`, there exists a prime `P ≤ Q` of `S` lying above `p`.
 
 -/
 
-@[expose] public section
+public section
 
 /--
 An `R`-algebra `S` satisfies `Algebra.HasGoingDown R S` if for every pair of
@@ -48,7 +48,7 @@ class Algebra.HasGoingDown (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 lemma Ideal.exists_ideal_le_liesOver_of_le [Algebra.HasGoingDown R S]
-    {p q : Ideal R} [p.IsPrime] [q.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
+    {p q : Ideal R} [p.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
     (hle : p ≤ q) :
     ∃ P ≤ Q, P.IsPrime ∧ P.LiesOver p := by
   by_cases h : p = q
@@ -59,7 +59,7 @@ lemma Ideal.exists_ideal_le_liesOver_of_le [Algebra.HasGoingDown R S]
     exact Algebra.HasGoingDown.exists_ideal_le_liesOver_of_lt Q (lt_of_le_of_ne hle h)
 
 lemma Ideal.exists_ideal_lt_liesOver_of_lt [Algebra.HasGoingDown R S]
-    {p q : Ideal R} [p.IsPrime] [q.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
+    {p q : Ideal R} [p.IsPrime] (Q : Ideal S) [Q.IsPrime] [Q.LiesOver q]
     (hpq : p < q) : ∃ P < Q, P.IsPrime ∧ P.LiesOver p := by
   obtain ⟨P, hPQ, _, _⟩ := Q.exists_ideal_le_liesOver_of_le (p := p) (q := q) hpq.le
   refine ⟨P, ?_, inferInstance, inferInstance⟩
@@ -68,7 +68,6 @@ lemma Ideal.exists_ideal_lt_liesOver_of_lt [Algebra.HasGoingDown R S]
   subst this
   simp [P.over_def p, P.over_def q] at hpq
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma Ideal.exists_ltSeries_of_hasGoingDown [Algebra.HasGoingDown R S]
     (l : LTSeries (PrimeSpectrum R)) (P : Ideal S) [P.IsPrime] [lo : P.LiesOver l.last.asIdeal] :
     ∃ (L : LTSeries (PrimeSpectrum S)),
@@ -159,8 +158,6 @@ instance of_flat [Module.Flat R S] : Algebra.HasGoingDown R S := by
   have : IsLocalHom (algebraMap (Localization.AtPrime <| P.under R) (Localization.AtPrime P)) := by
     rw [RingHom.algebraMap_toAlgebra]
     exact Localization.isLocalHom_localRingHom (P.under R) P (algebraMap R S) Ideal.LiesOver.over
-  have : Module.FaithfullyFlat (Localization.AtPrime (P.under R)) (Localization.AtPrime P) :=
-    Module.FaithfullyFlat.of_flat_of_isLocalHom
   apply PrimeSpectrum.comap_surjective_of_faithfullyFlat
 
 end Algebra.HasGoingDown

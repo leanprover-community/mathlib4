@@ -167,7 +167,6 @@ lemma η_comp_tensorDesc_app {F G H : C ⊛⥤ V}
     (η F G).app (x, y) ≫ (tensorDesc α).natTrans.app (x ⊗ y) = α.app (x, y) :=
   Functor.descOfIsLeftKanExtension_fac_app _ _ _ _ _
 
-open LawfulDayConvolutionMonoidalCategoryStruct
 /-- An abstract isomorphism between `(F ⊗ G).functor` and the generic pointwise
 left Kan extension of `F.functor ⊠ G.functor` along the -/
 def isoPointwiseLeftKanExtension (F G : C ⊛⥤ V) :
@@ -189,7 +188,6 @@ lemma η_comp_isoPointwiseLeftKanExtension_hom (F G : C ⊛⥤ V) (x y : C) :
       (F ⊗ G).functor (η F G) _
       ((tensor C).pointwiseLeftKanExtensionUnit (F.functor ⊠ G.functor)) (x, y)
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma ι_comp_isoPointwiseLeftKanExtension_inv (F G : C ⊛⥤ V) (x y : C) :
@@ -206,7 +204,6 @@ that exhibits `(𝟙_ (C ⊛⥤ V)).functor` as a Day convolution unit. -/
 def ν : 𝟙_ V ⟶ (𝟙_ (C ⊛⥤ V)).functor.obj (𝟙_ C) :=
   LawfulDayConvolutionMonoidalCategoryStruct.unitUnit C V (C ⊛⥤ V)
 
-set_option backward.defeqAttrib.useBackward true in
 variable (C V) in
 /-- The reinterpretation of `ν` as a natural transformation. -/
 @[simps]
@@ -228,7 +225,6 @@ lemma unit_hom_ext {F : C ⊛⥤ V} {α β : 𝟙_ (C ⊛⥤ V) ⟶ F}
   ext
   exact h
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given `F : C ⊛⥤ V`, a morphism `𝟙_ V ⟶ F.functor.obj (𝟙_ C)` induces a
 (unique) morphism `𝟙_ (C ⊛⥤ V) ⟶ F`. -/
 def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
@@ -236,7 +232,6 @@ def unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
   .mk <| Functor.descOfIsLeftKanExtension (𝟙_ (C ⊛⥤ V)).functor (νNatTrans C V)
     F.functor { app _ := φ }
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma ν_comp_unitDesc {F : C ⊛⥤ V} (φ : 𝟙_ V ⟶ F.functor.obj (𝟙_ C)) :
     ν C V ≫ (unitDesc φ).natTrans.app (𝟙_ C) = φ :=

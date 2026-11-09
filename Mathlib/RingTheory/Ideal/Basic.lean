@@ -10,10 +10,8 @@ public import Mathlib.Data.Fin.VecNotation
 public import Mathlib.Data.Nat.Choose.Sum
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 public import Mathlib.RingTheory.Ideal.Maximal
-public import Mathlib.Tactic.FinCases
 
 /-!
-
 # Ideals over a ring
 
 This file contains an assortment of definitions and results for `Ideal R`,
@@ -32,7 +30,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 @[expose] public section
 
 
-variable {ι α β F : Type*}
+variable {ι α β : Type*}
 
 open Set Function
 

@@ -12,13 +12,13 @@ public import Mathlib.Topology.Sets.Closeds
 # Noetherian space
 
 A Noetherian space is a topological space that satisfies any of the following equivalent conditions:
-- `WellFounded ((· > ·) : TopologicalSpace.Opens α → TopologicalSpace.Opens α → Prop)`
-- `WellFounded ((· < ·) : TopologicalSpace.Closeds α → TopologicalSpace.Closeds α → Prop)`
+- `WellFoundedGT (TopologicalSpace.Opens α)`
+- `WellFoundedLT (TopologicalSpace.Closeds α)`
 - `∀ s : Set α, IsCompact s`
 - `∀ s : TopologicalSpace.Opens α, IsCompact s`
 
 The first is chosen as the definition, and the equivalence is shown in
-`TopologicalSpace.noetherianSpace_TFAE`.
+`TopologicalSpace.noetherianSpace_tfae`.
 
 Many examples of Noetherian spaces come from algebraic topology. For example, the underlying space
 of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
@@ -27,7 +27,7 @@ of a Noetherian scheme (e.g., the spectrum of a Noetherian ring) is Noetherian.
 
 - `TopologicalSpace.NoetherianSpace.set`: Every subspace of a Noetherian space is Noetherian.
 - `TopologicalSpace.NoetherianSpace.isCompact`: Every set in a Noetherian space is a compact set.
-- `TopologicalSpace.noetherianSpace_TFAE`: Describes the equivalent definitions of Noetherian
+- `TopologicalSpace.noetherianSpace_tfae`: Describes the equivalent definitions of Noetherian
   spaces.
 - `TopologicalSpace.NoetherianSpace.range`: The image of a Noetherian space under a continuous map
   is Noetherian.
@@ -52,8 +52,8 @@ namespace TopologicalSpace
 abbrev NoetherianSpace : Prop := WellFoundedGT (Opens α)
 
 theorem noetherianSpace_iff_opens : NoetherianSpace α ↔ ∀ s : Opens α, IsCompact (s : Set α) := by
-  rw [NoetherianSpace, CompleteLattice.wellFoundedGT_iff_isSupFiniteCompact,
-    CompleteLattice.isSupFiniteCompact_iff_all_elements_compact]
+  rw [NoetherianSpace, wellFoundedGT_iff_isSupFiniteCompact,
+    isSupFiniteCompact_iff_all_elements_compact]
   exact forall_congr' Opens.isCompactElement_iff
 
 instance (priority := 100) NoetherianSpace.compactSpace [h : NoetherianSpace α] : CompactSpace α :=
@@ -78,24 +78,25 @@ instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace
 
 variable (α) in
 open List in
-theorem noetherianSpace_TFAE :
+theorem noetherianSpace_tfae :
     TFAE [NoetherianSpace α,
       WellFoundedLT (Closeds α),
       ∀ s : Set α, IsCompact s,
       ∀ s : Opens α, IsCompact (s : Set α)] := by
   tfae_have 1 ↔ 2 := by
-    simp_rw [isWellFounded_iff]
     exact Opens.compl_bijective.2.wellFounded_iff (@OrderIso.compl (Set α)).lt_iff_lt.symm
   tfae_have 1 ↔ 4 := noetherianSpace_iff_opens α
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
 
+@[deprecated (since := "2026-10-27")] alias noetherianSpace_TFAE := noetherianSpace_tfae
+
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
-  (noetherianSpace_TFAE α).out 0 2
+  (noetherianSpace_tfae α).out 1 3
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
-  Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
+  Iff.mp ((noetherianSpace_tfae α).out 1 2) ‹_›
 
 instance {α} : NoetherianSpace (CofiniteTopology α) := by
   simp only [noetherianSpace_iff_isCompact, isCompact_iff_ultrafilter_le_nhds,
@@ -147,7 +148,7 @@ theorem NoetherianSpace.finite [NoetherianSpace α] [T2Space α] : Finite α :=
   Finite.of_finite_univ (NoetherianSpace.isCompact Set.univ).finite_of_discrete
 
 instance (priority := 100) Finite.to_noetherianSpace [Finite α] : NoetherianSpace α :=
-  ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
+  Finite.wellFounded_of_trans_of_irrefl _
 
 instance (priority := 100) [IndiscreteTopology α] : NoetherianSpace α :=
   noetherianSpace_of_surjective CofiniteTopology.of.symm continuous_of_indiscreteTopology
@@ -169,7 +170,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
       lift z₂ to Closeds α using hz₂
       rcases H (s ⊓ z₁) (inf_lt_left.2 hz₁') with ⟨S₁, hSf₁, hS₁, h₁⟩
       rcases H (s ⊓ z₂) (inf_lt_left.2 hz₂') with ⟨S₂, hSf₂, hS₂, h₂⟩
-      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, Set.union_subset_iff.2 ⟨hS₁, hS₂⟩, ?_⟩
+      refine ⟨S₁ ∪ S₂, hSf₁.union hSf₂, by grind, ?_⟩
       rwa [sSup_union, ← h₁, ← h₂, ← inf_sup_left, left_eq_inf]
 
 /-- In a Noetherian space, every closed set is a finite union of irreducible closed sets. -/

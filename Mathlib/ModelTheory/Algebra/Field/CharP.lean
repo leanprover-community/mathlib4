@@ -5,9 +5,10 @@ Authors: Chris Hughes
 -/
 module
 
-public import Mathlib.Algebra.CharP.Basic
-public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Algebra.Field.Basic
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
+
+import Mathlib.Algebra.CharP.Basic
 
 /-!
 # First-order theory of fields
@@ -41,7 +42,9 @@ noncomputable def eqZero (n : ℕ) : Language.ring.Sentence :=
   simp [eqZero]
 
 /-- The first-order theory of fields of characteristic `p` as a theory over the language of rings -/
-def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def _root_.FirstOrder.Language.Theory.fieldOfChar (p : ℕ) : Language.ring.Theory :=
   Theory.field ∪
   if p = 0
   then (fun q => ∼(eqZero q)) '' {q : ℕ | q.Prime}

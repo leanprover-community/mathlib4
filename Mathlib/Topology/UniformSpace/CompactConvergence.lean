@@ -118,19 +118,20 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
     -- Then choose a closed entourage `W ⊆ V`
     rcases mem_uniformity_isClosed hV with ⟨W, hW, hWc, hWU⟩
     -- Consider `s = {y ∈ K | (f x, f y) ∈ W}`
-    set s := K ∩ f ⁻¹' ball (f x) W
+    set s := K ∩ f ⁻¹' SetRel.ball W (f x)
     -- This is a neighbourhood of `x` within `K`, because `W` is an entourage.
-    have hnhds : s ∈ 𝓝[K] x := inter_mem_nhdsWithin _ <| f.continuousAt _ (ball_mem_nhds _ hW)
+    have hnhds : s ∈ 𝓝[K] x :=
+      inter_mem_nhdsWithin _ <| f.continuousAt _ (SetRel.ball_mem_nhds _ hW)
     -- This set is compact because it is an intersection of `K`
-    -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' UniformSpace.ball (f x) W`
+    -- with a closed set `{y | (f x, f y) ∈ W} = f ⁻¹' W.ball (f x)`
     have hcomp : IsCompact s := hK.inter_right <| (isClosed_ball _ hWc).preimage f.continuous
-    -- `f` maps `s` to the open set `ball (f x) V = {z | (f x, z) ∈ V}`
-    have hmaps : MapsTo f s (ball (f x) V) := fun x hx ↦ hWU hx.2
+    -- `f` maps `s` to the open set `V.ball (f x) = {z | (f x, z) ∈ V}`
+    have hmaps : MapsTo f s (SetRel.ball V (f x)) := fun x hx ↦ hWU hx.2
     use s, hnhds
-    -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `ball (f x) V` as well.
+    -- Continuous maps `F i` in a neighbourhood of `f` map `s` to `V.ball (f x)`.
     refine (h s hcomp _ (isOpen_ball _ hVo) hmaps).mono fun g hg y hy ↦ ?_
     -- Then for `y ∈ s` we have `(f y, f x) ∈ V` and `(f x, F i y) ∈ V`, thus `(f y, F i y) ∈ U`
-    exact hVU ⟨f x, SetRel.symm V <| hmaps hy, hg hy⟩
+    exact hVU ⟨f x, hmaps hy, SetRel.symm V (hg hy)⟩
   · -- Now we prove that uniform convergence on compacts
     -- implies convergence in the compact-open topology
     -- Consider a compact set `K`, an open set `U`, and a continuous map `f` that maps `K` to `U`
@@ -141,7 +142,8 @@ theorem tendsto_iff_forall_isCompact_tendstoUniformlyOn
         with ⟨V, hV, -, hVf⟩
     -- Then any continuous map that is uniformly `V`-close to `f` on `K`
     -- maps `K` to `U` as well
-    filter_upwards [h K hK V hV] with g hg x hx using hVf _ (mem_image_of_mem f hx) (hg x hx)
+    filter_upwards [h K hK (SetRel.inv V) (symm_le_uniformity hV)] with g hg x hx using
+      hVf _ (mem_image_of_mem f hx) (hg x hx)
 
 /-- Interpret a bundled continuous map as an element of `α →ᵤ[{K | IsCompact K}] β`.
 
@@ -155,7 +157,7 @@ theorem toUniformOnFun_toFun (f : C(α, β)) :
 
 theorem range_toUniformOnFunIsCompact :
     range (toUniformOnFunIsCompact) = {f : UniformOnFun α β {K | IsCompact K} | Continuous f} :=
-  Set.ext fun f ↦ ⟨fun g ↦ g.choose_spec ▸ g.choose.2, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
+  Set.ext fun f ↦ ⟨fun g ↦ g.choose_spec ▸ map_continuous g.choose, fun hf ↦ ⟨⟨f, hf⟩, rfl⟩⟩
 
 open UniformSpace in
 /-- Uniform space structure on `C(α, β)`.
@@ -283,7 +285,8 @@ theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
 theorem uniformContinuous_comp_left (g : C(α, γ)) :
     UniformContinuous (fun f ↦ f.comp g : C(γ, β) → C(α, β)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous_iff.mpr <|
-    UniformOnFun.precomp_uniformContinuous (fun _ hK ↦ hK.image g.continuous) |>.comp
+    UniformOnFun.precomp_uniformContinuous (𝔗 := {K : Set α | IsCompact K})
+      (fun _ hK ↦ hK.image g.continuous) |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.uniformContinuous
 
 /-- Any pair of a homeomorphism `X ≃ₜ Z` and an isomorphism `Y ≃ᵤ T` of uniform spaces gives rise
@@ -347,25 +350,33 @@ section ContinuousOnRestrict
 
 /-- Given functions `F i, f` which are continuous on a compact set `s`, `F` tends to `f`
 uniformly on `s` if and only if the restrictions (as elements of `C(s, β)`) converge. -/
-theorem _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
+theorem _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn {s : Set α} [CompactSpace s]
     {f : α → β} (hf : ContinuousOn f s) {ι : Type*} {p : Filter ι}
     {F : ι → α → β} (hF : ∀ i, ContinuousOn (F i) s) :
-    Tendsto (fun i ↦ ⟨_, (hF i).restrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.restrict⟩) ↔
+    Tendsto (fun i ↦ ⟨_, (hF i).domRestrict⟩ : ι → C(s, β)) p (𝓝 ⟨_, hf.domRestrict⟩) ↔
       TendstoUniformlyOn F f p s := by
   rw [ContinuousMap.tendsto_iff_tendstoUniformly, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe]
   congr!
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.ContinuousOn.tendsto_restrict_iff_tendstoUniformlyOn :=
+  _root_.ContinuousOn.tendsto_domRestrict_iff_tendstoUniformlyOn
 
 open UniformOnFun in
 /-- A family `f : X → α → β`, each of which is continuous on a compact set `s : Set α` is
 continuous in the topology `X → α →ᵤ[{s}] β` if and only if the family of continuous restrictions
 `X → C(s, β)` is continuous. -/
-theorem _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun
+theorem _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
     {X : Type*} [TopologicalSpace X] {f : X → α → β} {s : Set α}
     (hf : ∀ x, ContinuousOn (f x) s) [CompactSpace s] :
-    Continuous (fun x ↦ ⟨_, (hf x).restrict⟩ : X → C(s, β)) ↔
+    Continuous (fun x ↦ ⟨_, (hf x).domRestrict⟩ : X → C(s, β)) ↔
       Continuous (fun x ↦ ofFun {s} (f x)) := by
   rw [ContinuousMap.continuous_iff_continuous_uniformFun, UniformOnFun.continuous_rng_iff]
   simp [Function.comp_def]
+
+@[deprecated (since := "2026-07-19")]
+alias _root_.ContinuousOn.continuous_restrict_iff_continuous_uniformOnFun :=
+  _root_.ContinuousOn.continuous_domRestrict_iff_continuous_uniformOnFun
 
 end ContinuousOnRestrict
 

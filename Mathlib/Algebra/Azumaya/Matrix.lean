@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Azumaya.Defs
 public import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Matrix algebra is an Azumaya algebra over R
@@ -57,7 +58,7 @@ lemma AlgHom.mulLeftRightMatrix.comp_inv :
     map_smul, stdBasis_eq_single, LinearMap.coe_sum, Finset.sum_apply,
     LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   ext k l
-  simp [sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
+  simp [Matrix.sum_apply, Matrix.mul_apply, single, Fintype.sum_prod_type, ite_and]
 
 namespace IsAzumaya
 

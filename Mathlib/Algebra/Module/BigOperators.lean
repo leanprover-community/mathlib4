@@ -6,7 +6,6 @@ Authors: Chris Hughes, Yury Kudryashov, Yaël Dillies
 module
 
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Data.Fintype.BigOperators
 
 import Mathlib.Algebra.Module.End

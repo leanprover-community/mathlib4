@@ -47,6 +47,7 @@ namespace Nat
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
 coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element
 set, see `Finset.card_powersetCard`. -/
+@[oeis A007318]
 def choose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
@@ -104,7 +105,8 @@ lemma choose_one_right (n : ℕ) : choose n 1 = n := by induction n <;> simp [*,
 -- The `n + 1`-st triangle number is `n` more than the `n`-th triangle number
 theorem triangle_succ (n : ℕ) : (n + 1) * (n + 1 - 1) / 2 = n * (n - 1) / 2 + n := by
   rw [← add_mul_div_left, Nat.mul_comm 2 n, ← Nat.mul_add, Nat.add_sub_cancel, Nat.mul_comm]
-  cases n <;> rfl; apply zero_lt_succ
+  · cases n <;> rfl
+  · apply zero_lt_succ
 
 /-- `choose n 2` is the `n`-th triangle number. -/
 theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
@@ -376,6 +378,7 @@ in terms of multinomial coefficients. For details see https://mathworld.wolfram.
 
 /--
 `multichoose n k` is the number of multisets of cardinality `k` from a type of cardinality `n`. -/
+@[oeis A059481]
 def multichoose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0

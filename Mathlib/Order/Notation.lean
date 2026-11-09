@@ -5,11 +5,11 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 module
 
-public import Qq
+public meta import Lean.PrettyPrinter.Delaborator.Builtins
 public meta import Mathlib.Lean.PrettyPrinter.Delaborator
-public import Mathlib.Tactic.Simps.NotationClass
+public meta import Qq
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToDual
-public import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-!
 # Notation classes for lattice operations
@@ -37,7 +37,7 @@ Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` 
 
 -/
 
-@[expose] public section
+public section
 
 /-- Set / lattice complement -/
 @[notation_class]
@@ -47,16 +47,10 @@ class Compl (α : Type*) where
 
 export Compl (compl)
 
-/-- Set / lattice complement -/
-@[deprecated Compl (since := "2026-01-04")]
-class HasCompl (α : Type*) where
-  /-- Set / lattice complement -/
-  compl : α → α
-
-attribute [deprecated Compl.compl (since := "2026-01-04")] HasCompl.compl
-
 @[inherit_doc]
 postfix:1024 "ᶜ" => compl
+
+initialize_simps_projections Compl
 
 /-! ### `Sup` and `Inf` -/
 
@@ -90,32 +84,25 @@ private meta def linearOrderToMax (u : Level) : Q((a : Type u) → $(linearOrder
 private meta def linearOrderToMin (u : Level) : Q((a : Type u) → $(linearOrderExpr u) a → Min a) :=
   .const `LinearOrder.toMin [u]
 
-/--
-Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder e` instance.
-
-We use a `try catch` block to make sure there are no surprising errors during delaboration.
--/
+/-- Return `true` if `inst` comes from a `LinearOrder e` instance. -/
 private meta def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type u))
     (toCls : Q((α : Type u) → $(linearOrderExpr u) α → $cls α)) (inst : Q($cls $α)) :
     MetaM Bool := do
-  try
-    withNewMCtxDepth do
-    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
-    -- In Lean 4.19 the pretty printer clears local instances, so we re-add them here.
-    -- TODO(Jovan): remove
-    withLocalInstances (← getLCtx).decls.toList.reduceOption do
-      let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
-      let inst' : Q($cls $α) := q($toCls $α $mvar)
-      isDefEq inst inst'
-  catch _ =>
-    -- For instance, if `LinearOrder` is not yet imported.
-    return false
+  withNewMCtxDepth do
+  -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances.
+  -- Unfortunately, the local instances are not present in delaboration.
+  -- See https://leanprover.zulipchat.com/#narrow/channel/270676-lean4/topic/Bug.3F.20Local.20instances.20not.20populated.20during.20delaboration/with/545766705
+  withLocalInstances (← getLCtx).decls.toList.reduceOption do
+    let mvar ← mkFreshExprMVarQ q($(linearOrderExpr u) $α) (kind := .synthetic)
+    let inst' : Q($cls $α) := q($toCls $α $mvar)
+    withImplicit <| isDefEq inst inst'
 
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 meta def delabSup : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Max.max α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!
@@ -130,7 +117,8 @@ meta def delabSup : Delab :=
 @[delab app.Min.min]
 meta def delabInf : Delab :=
   whenNotPPOption getPPExplicit <|
-  whenPPOption getPPNotation <|
+  whenPPOption getPPNotation do
+  unless (← getEnv).contains `LinearOrder do failure
   withOverApp 4 do
     let_expr f@Min.min α inst _ _ := ← getExpr | failure
     have u := f.constLevels![0]!
@@ -149,9 +137,9 @@ class HImp (α : Type*) where
   /-- Heyting implication `⇨` -/
   himp : α → α → α
 
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := 3 4) sdiff] HImp.himp
-set_option linter.translateOverwrite false in
+set_option linter.translate.overwrite false in
 attribute [to_dual existing (reorder := himp (1 2))] HImp.mk
 
 /-- Syntax typeclass for Heyting negation `￢`.
@@ -176,6 +164,8 @@ infixr:60 " ⇨ " => himp
 /-- Heyting negation -/
 prefix:72 "￢" => hnot
 
+initialize_simps_projections HImp
+initialize_simps_projections HNot
 
 /-- Typeclass for the `⊤` (`\top`) notation -/
 @[notation_class, ext]

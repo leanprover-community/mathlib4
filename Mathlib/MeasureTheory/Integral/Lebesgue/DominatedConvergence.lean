@@ -5,8 +5,9 @@ Authors: Mario Carneiro, Johannes Hölzl
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Sub
+
+import Mathlib.MeasureTheory.Integral.Lebesgue.Markov
 
 /-!
 # Dominated convergence theorem
@@ -18,7 +19,9 @@ pointwise dominated by a fixed function. This file provides a few variants of th
 
 public section
 
-open Filter ENNReal Topology
+open Filter ENNReal
+
+open scoped Topology
 
 namespace MeasureTheory
 
@@ -34,9 +37,10 @@ theorem limsup_lintegral_le {f : ℕ → α → ℝ≥0∞} (g : α → ℝ≥0�
     _ = ∫⁻ a, ⨅ n : ℕ, ⨆ i ≥ n, f i a ∂μ := by
       refine (lintegral_iInf ?_ ?_ ?_).symm
       · intro n
-        exact .biSup _ (Set.to_countable _) (fun i _ ↦ hf_meas i)
+        exact .biSup {i | i ≥ n} (Set.to_countable _) (fun i _ ↦ hf_meas i)
       · intro n m hnm a
-        exact iSup_le_iSup_of_subset fun i hi => le_trans hnm hi
+        exact iSup_le_iSup_of_subset (s := {i | i ≥ m}) (t := {i | i ≥ n})
+          fun i hi => le_trans hnm hi
       · refine ne_top_of_le_ne_top h_fin (lintegral_mono_ae ?_)
         refine (ae_all_iff.2 h_bound).mono fun n hn => ?_
         exact iSup_le fun i => iSup_le fun _ => hn i
@@ -104,8 +108,7 @@ theorem tendsto_lintegral_filter_of_dominated_convergence' {ι} {l : Filter ι}
   · refine h_lim.mono fun a h_lim => ?_
     apply @Tendsto.comp _ _ _ (fun n => x (n + k)) fun n => F n a
     · assumption
-    rw [tendsto_add_atTop_iff_nat]
-    assumption
+    rwa [tendsto_add_atTop_iff_nat]
 
 /-- **Dominated convergence theorem** for filters with a countable basis. -/
 theorem tendsto_lintegral_filter_of_dominated_convergence {ι} {l : Filter ι}
@@ -144,7 +147,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto
@@ -223,7 +226,7 @@ lemma tendsto_of_lintegral_tendsto_of_antitone {α : Type*} {mα : MeasurableSpa
     then h.choose else ∞
   have hF'_tendsto : ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F' a)) := by
     filter_upwards [h_exists] with a ha
-    simp_rw [F', dif_pos ha]
+    simp_rw [F', dite_eq_left ha]
     exact ha.choose_spec
   suffices F' =ᵐ[μ] F by
     filter_upwards [this, hF'_tendsto] with a h_eq h_tendsto using h_eq ▸ h_tendsto

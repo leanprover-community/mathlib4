@@ -121,27 +121,9 @@ def pdf {_ : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω) (μ : Measure
 theorem pdf_def {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E} :
     pdf X ℙ μ = (map X ℙ).rnDeriv μ := rfl
 
-theorem pdf_of_not_aemeasurable {_ : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
-    {X : Ω → E} (hX : ¬AEMeasurable X ℙ) : pdf X ℙ μ =ᵐ[μ] 0 := by
-  rw [pdf_def, map_of_not_aemeasurable hX]
-  exact rnDeriv_zero μ
-
 theorem pdf_of_not_haveLebesgueDecomposition {_ : MeasurableSpace Ω} {ℙ : Measure Ω}
     {μ : Measure E} {X : Ω → E} (h : ¬(map X ℙ).HaveLebesgueDecomposition μ) : pdf X ℙ μ = 0 :=
   rnDeriv_of_not_haveLebesgueDecomposition h
-
-theorem aemeasurable_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E}
-    (X : Ω → E) (h : ¬pdf X ℙ μ =ᵐ[μ] 0) : AEMeasurable X ℙ := by
-  contrapose h
-  exact pdf_of_not_aemeasurable h
-
-theorem hasPDF_of_pdf_ne_zero {m : MeasurableSpace Ω} {ℙ : Measure Ω} {μ : Measure E} {X : Ω → E}
-    (hac : map X ℙ ≪ μ) (hpdf : ¬pdf X ℙ μ =ᵐ[μ] 0) : HasPDF X ℙ μ := by
-  refine ⟨?_, ?_, hac⟩
-  · exact aemeasurable_of_pdf_ne_zero X hpdf
-  · contrapose hpdf
-    have := pdf_of_not_haveLebesgueDecomposition hpdf
-    filter_upwards using congrFun this
 
 @[fun_prop]
 theorem measurable_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
@@ -278,12 +260,12 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
     (hgi : ∫⁻ x, ‖f x‖ₑ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [hasFiniteIntegral_iff_enorm]
+  rw [hasFiniteIntegral_iff_eNorm]
   have : (fun x => ‖f x‖ₑ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖ₑ := by
     refine ae_eq_trans ((ae_eq_refl _).fun_mul (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_
-    simp_rw [← smul_eq_mul, enorm_smul, smul_eq_mul]
+    simp_rw [← smul_eq_mul, eNorm_smul, smul_eq_mul]
     refine .fun_mul (ae_eq_refl _) ?_
-    simp only [Real.enorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
+    simp only [Real.eNorm_eq_ofReal ENNReal.toReal_nonneg, ae_eq_refl]
   rwa [lt_top_iff_ne_top, ← lintegral_congr_ae this]
 
 end Real
