@@ -76,16 +76,16 @@ section ZMod
 variable (n : ℕ) [NeZero n]
 
 /-- The character of `ZMod n` indexed by `x`, using the standard finite cyclic pairing. -/
-def zmodChar : Multiplicative (ZMod n) →* PontryaginDual (Multiplicative (ZMod n)) where
+private def zmodChar : Multiplicative (ZMod n) →* PontryaginDual (Multiplicative (ZMod n)) where
   toFun x := ⟨(AddChar.zmod n x.toAdd).toMonoidHom, continuous_of_discreteTopology⟩
   map_one' := by ext1 x; exact congr($(AddChar.zmod_zero n) x.toAdd)
   map_mul' x y := by ext1 z; exact congr($(AddChar.zmod_add x.toAdd y.toAdd) z.toAdd)
 
 @[simp]
-theorem zmodChar_apply (x y : Multiplicative (ZMod n)) :
+private theorem zmodChar_apply (x y : Multiplicative (ZMod n)) :
     zmodChar n x y = AddChar.zmod n x.toAdd y.toAdd := rfl
 
-theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
+private theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
   refine ⟨fun x y h ↦ ?_, fun χ ↦ ?_⟩
   · apply Multiplicative.toAdd.injective
     apply AddChar.zmod_injective
@@ -96,13 +96,14 @@ theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
     exact ⟨.ofAdd x, ext fun y ↦ congr($(AddChar.circleEquivComplex.injective hx) y.toAdd)⟩
 
 /-- A finite cyclic group is isomorphic to its Pontryagin dual. -/
+@[no_expose]
 def zmodEquiv : Multiplicative (ZMod n) ≃ₜ* PontryaginDual (Multiplicative (ZMod n)) :=
   (MulEquiv.ofBijective (zmodChar n) (zmodChar_bijective n)).toContinuousMulEquiv
     fun _ ↦ by simp [isOpen_discrete]
 
 @[simp]
 theorem zmodEquiv_apply (x y : Multiplicative (ZMod n)) :
-    zmodEquiv n x y = AddChar.zmod n x.toAdd y.toAdd := rfl
+    zmodEquiv n x y = AddChar.zmod n x.toAdd y.toAdd := by rfl
 
 theorem zmodEquiv_apply_intCast (x y : ℤ) :
     zmodEquiv n (.ofAdd (x : ZMod n)) (.ofAdd (y : ZMod n)) =
@@ -135,7 +136,7 @@ end Int
 section Real
 
 /-- The real character with frequency `a`, given by `t ↦ exp (a * t * I)`. -/
-def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
+private def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
   toFun a := ⟨(Real.probChar.mulShift a.toAdd).toMonoidHom,
     Circle.exp.continuous.comp (continuous_const.mul continuous_toAdd)⟩
   map_one' := by ext1 t; exact congr($(Real.probChar.mulShift_zero) t.toAdd)
@@ -144,10 +145,10 @@ def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
     exact congr($(Real.probChar.mulShift_mul a.toAdd b.toAdd) t.toAdd).symm
 
 @[simp]
-theorem realChar_apply (a t : Multiplicative ℝ) :
+private theorem realChar_apply (a t : Multiplicative ℝ) :
     realChar a t = Circle.exp (a.toAdd * t.toAdd) := rfl
 
-theorem realChar_bijective : Function.Bijective realChar := by
+private theorem realChar_bijective : Function.Bijective realChar := by
   refine ⟨(injective_iff_map_eq_one _).mpr fun a ha ↦ ?_, fun χ ↦ ?_⟩
   · by_contra h
     apply Real.probChar_ne_one
@@ -158,15 +159,15 @@ theorem realChar_bijective : Function.Bijective realChar := by
         ((map_continuous χ).comp continuous_ofAdd)
     exact ⟨.ofAdd a, ext fun t ↦ congr($ha t.toAdd).symm⟩
 
-@[fun_prop]
-theorem continuous_realChar : Continuous realChar :=
+private theorem continuous_realChar : Continuous realChar :=
   continuous_of_continuous_uncurry _ <| Circle.exp.continuous.comp <|
     continuous_toAdd.fst'.mul continuous_toAdd.snd'
 
-theorem isOpenMap_realChar : IsOpenMap realChar :=
+private theorem isOpenMap_realChar : IsOpenMap realChar :=
   realChar.isOpenMap_of_sigmaCompact realChar_bijective.surjective continuous_realChar
 
 /-- The Pontryagin dual of `ℝ` is isomorphic to `ℝ`, via `a ↦ (t ↦ exp (a * t * I))`. -/
+@[no_expose]
 def realEquiv : Multiplicative ℝ ≃ₜ* PontryaginDual (Multiplicative ℝ) :=
   (MulEquiv.ofBijective realChar realChar_bijective).toContinuousMulEquiv fun _ ↦
     ((isOpenMap_realChar).isQuotientMap continuous_realChar
@@ -174,23 +175,23 @@ def realEquiv : Multiplicative ℝ ≃ₜ* PontryaginDual (Multiplicative ℝ) :
 
 @[simp]
 theorem realEquiv_apply (a t : Multiplicative ℝ) :
-    realEquiv a t = Circle.exp (a.toAdd * t.toAdd) := rfl
+    realEquiv a t = Circle.exp (a.toAdd * t.toAdd) := by rfl
 
 end Real
 
 section Circle
 
 /-- The homomorphism `ℤ → PontryaginDual Circle` sending `n` to the character `z ↦ z ^ n`. -/
-def zpowCircle : Multiplicative ℤ →* PontryaginDual Circle where
+private def zpowCircle : Multiplicative ℤ →* PontryaginDual Circle where
   toFun n := (⟨zpowGroupHom n.toAdd, continuous_zpow _⟩ : Circle →ₜ* Circle)
   map_one' := by ext1 z; exact zpow_zero z
   map_mul' m n := by ext1 z; exact zpow_add z _ _
 
 @[simp]
-theorem zpowCircle_apply (n : Multiplicative ℤ) (z : Circle) : zpowCircle n z = z ^ n.toAdd :=
-  rfl
+private theorem zpowCircle_apply (n : Multiplicative ℤ) (z : Circle) :
+    zpowCircle n z = z ^ n.toAdd := rfl
 
-theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
+private theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
   refine ⟨(injective_iff_map_eq_one _).mpr fun n hn ↦ ?_, fun χ ↦ ?_⟩
   · by_contra h
     have hn' : (n.toAdd : ℝ) ≠ 0 := by simpa using h
@@ -201,13 +202,14 @@ theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
     exact ⟨.ofAdd n, ext fun z ↦ congr($hn z).symm⟩
 
 /-- The Pontryagin dual of the circle is isomorphic to `ℤ`. -/
+@[no_expose]
 def circleEquiv : Multiplicative ℤ ≃ₜ* PontryaginDual Circle :=
   (MulEquiv.ofBijective zpowCircle zpowCircle_bijective).toContinuousMulEquiv
     fun _ ↦ by simp [isOpen_discrete]
 
 @[simp]
-theorem circleEquiv_apply (n : Multiplicative ℤ) (z : Circle) : circleEquiv n z = z ^ n.toAdd :=
-  rfl
+theorem circleEquiv_apply (n : Multiplicative ℤ) (z : Circle) :
+    circleEquiv n z = z ^ n.toAdd := by rfl
 
 end Circle
 
