@@ -5,7 +5,7 @@ open Lake DSL
 /-!
 ## Mathlib dependencies on upstream projects
 -/
-require "verso-migrate" from git "git@github.com:david-christiansen/verso-migrate.git" @ "main"
+require "verso-migrate" from git "git@github.com:Vierkantor/verso-migrate.git" @ "main"
 
 require "leanprover-community" / "batteries" @ git "main"
 require "leanprover-community" / "Qq" @ git "master"
