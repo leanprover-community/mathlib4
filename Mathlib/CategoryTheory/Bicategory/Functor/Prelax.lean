@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!
-
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
@@ -42,8 +41,6 @@ corresponding hom types.
 @[expose] public section
 
 namespace CategoryTheory
-
-open Category Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 
@@ -174,6 +171,10 @@ instance map₂_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : IsIso (F.map�
 lemma map₂_inv {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] : F.map₂ (inv η) = inv (F.map₂ η) := by
   apply IsIso.eq_inv_of_hom_inv_id
   simp [← F.map₂_comp η (inv η)]
+
+lemma map₂_iso_inv {f g : a ⟶ b} (η : f ≅ g) :
+    F.map₂ η.inv = inv (F.map₂ η.hom) := by
+  rw [← F.map₂_inv, IsIso.Iso.inv_hom]
 
 @[reassoc, simp]
 lemma map₂_hom_inv {f g : a ⟶ b} (η : f ≅ g) :

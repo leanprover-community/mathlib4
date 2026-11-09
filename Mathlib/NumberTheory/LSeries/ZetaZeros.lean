@@ -7,6 +7,8 @@ module
 
 public import Mathlib.NumberTheory.LSeries.Nonvanishing
 
+import Mathlib.Analysis.Analytic.Order
+
 /-!
 # Discreteness of the zeros of the Riemann zeta function
 
@@ -37,7 +39,9 @@ so that in particular any compact subset of `ℂ` contains only finitely many ze
 @[expose] public section
 
 /-- The zeros of Riemann's ζ-function. -/
-def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
+-- Note: `Set` has no computational content, but Lean still attempts to compile it.
+-- See https://github.com/leanprover/lean4/issues/14084.
+noncomputable def riemannZetaZeros : Set ℂ := riemannZeta ⁻¹' {0}
 
 lemma mem_riemannZetaZeros {z : ℂ} :
     z ∈ riemannZetaZeros ↔ riemannZeta z = 0 := .rfl
@@ -54,18 +58,18 @@ private lemma compl_riemannZetaZeros_mem_codiscrete :
     riemannZetaZerosᶜ ∈ Filter.codiscrete ℂ := by
   have := riemannZetaZeros_codiscreteWithin_compl_one
   simp only [mem_codiscreteWithin, Set.mem_compl_iff, Set.mem_singleton_iff, sdiff_compl,
-    Set.inf_eq_inter, Filter.disjoint_principal_right, mem_codiscrete, compl_compl] at this ⊢
+    Filter.disjoint_principal_right, mem_codiscrete, compl_compl] at this ⊢
   intro x
   rcases eq_or_ne x 1 with rfl | hx
   · exact riemannZeta_eventually_ne_zero_nhds_one.filter_mono nhdsWithin_le_nhds
   · exact Filter.mem_of_superset (this x hx)
       (by grind [riemannZeta_one_ne_zero, mem_riemannZetaZeros])
 
-lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
+lemma isClosed_riemannZetaZeros : IsClosed riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).1
 
-lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros :=
-  by simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
+lemma isDiscrete_riemannZetaZeros : IsDiscrete riemannZetaZeros := by
+  simpa using (mem_codiscrete'.mp compl_riemannZetaZeros_mem_codiscrete).2
 
 /-- Any compact subset of `ℂ` contains only finitely many zeros of the Riemann zeta function. -/
 lemma IsCompact.inter_riemannZetaZeros_finite {S : Set ℂ} (hS : IsCompact S) :

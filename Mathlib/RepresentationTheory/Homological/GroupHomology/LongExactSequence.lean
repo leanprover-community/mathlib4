@@ -5,9 +5,9 @@ Authors: Amelia Livingston
 -/
 module
 
-public import Mathlib.Algebra.Homology.ConcreteCategory
-public import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 public import Mathlib.RepresentationTheory.Homological.GroupHomology.Functoriality
+
+import Mathlib.Algebra.Homology.HomologicalComplexAbelian
 
 /-!
 # Long exact sequence in group homology
@@ -148,7 +148,6 @@ theorem δ₀_apply
       conv_rhs => rw [← LinearMap.comp_apply, ← ModuleCat.hom_comp, eq_d₁₀_comp_inv]
       simp [chainsIso₀, ← hx])
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Stated for readability of `δ₁_apply`. -/
 theorem mem_cycles₁_of_comp_eq_d₂₁
     {y : G × G →₀ X.X₂} {x : G →₀ X.X₁} (hx : mapRange.linearMap X.f.hom.toLinearMap x =

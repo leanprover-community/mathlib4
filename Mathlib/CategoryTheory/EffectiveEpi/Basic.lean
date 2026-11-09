@@ -6,8 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-/-!
 
+/-!
 # Effective epimorphisms
 
 We define the notion of effective epimorphism and effective epimorphic family of morphisms.
@@ -101,8 +101,6 @@ instance epi_of_effectiveEpi {X Y : C} (f : Y ⟶ X) [EffectiveEpi f] : Epi f wh
   left_cancellation m₁ m₂ h := by
     rw [show m₂ = desc f (f ≫ m₂) (fun _ _ h => by simp [← assoc, h]) from uniq _ _ _ _ rfl]
     exact uniq _ _ _ _ h
-
-@[deprecated (since := "2025-11-20")] alias epiOfEffectiveEpi := epi_of_effectiveEpi
 
 instance (priority := 100) strongEpi_of_effectiveEpi {X Y : C} (f : X ⟶ Y) [EffectiveEpi f] :
     StrongEpi f :=
@@ -219,7 +217,6 @@ theorem effectiveEpi_iff_effectiveEpiFamily {B X : C} (f : X ⟶ B) :
     EffectiveEpi f ↔ EffectiveEpiFamily (fun () ↦ X) (fun () ↦ f) :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /--
 A family of morphisms with the same target inducing an isomorphism from the coproduct to the target
 is an `EffectiveEpiFamily`.

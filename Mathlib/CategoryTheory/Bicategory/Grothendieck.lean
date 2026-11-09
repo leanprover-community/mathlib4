@@ -59,15 +59,13 @@ Angelo Vistoli
 
 -/
 
-set_option backward.defeqAttrib.useBackward true
-
 @[expose] public section
 
 namespace CategoryTheory.Pseudofunctor
 
 universe w v₁ v₂ v₃ u₁ u₂ u₃
 
-open Functor Category Opposite Discrete Bicategory StrongTrans
+open CategoryTheory.Functor Category Opposite Discrete Bicategory StrongTrans
 
 variable {𝒮 : Type u₁} [Category.{v₁} 𝒮]
 
@@ -168,7 +166,6 @@ attribute [local simp]
 variable {F} {G : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
   {H : Pseudofunctor (LocallyDiscrete 𝒮) Cat.{v₂, u₂}}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The Grothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `Grothendieck.map : ∫ F ⥤ ∫ G`. -/
@@ -293,7 +290,6 @@ lemma Hom.congr {a b : ∫ᶜ F} {f g : a ⟶ b} (h : f = g) :
 
 end
 
-set_option backward.isDefEq.respectTransparency false in
 attribute [local simp] PrelaxFunctor.map₂_eqToHom in
 /-- The category structure on `∫ᶜ F`. -/
 instance category : Category (∫ᶜ F) where
@@ -329,7 +325,6 @@ attribute [local simp]
 variable {F} {G : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
   {H : LocallyDiscrete 𝒮ᵒᵖ ⥤ᵖ Cat.{v₂, u₂}}
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The CoGrothendieck construction is functorial: a strong natural transformation `α : F ⟶ G`
 induces a functor `CoGrothendieck.map : ∫ᶜ F ⥤ ∫ᶜ G`. -/
@@ -352,12 +347,13 @@ def map (α : F ⟶ G) : ∫ᶜ F ⥤ ∫ᶜ G where
     · dsimp
     · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc,
         categoryStruct_comp_fiber, Cat.Hom.comp_toFunctor, map_comp, naturality_comp_hom_app, assoc,
-        eqToHom_refl, comp_id, id_comp]
+        eqToHom_refl, comp_id]
       slice_lhs 2 4 => simp [← Cat.Hom.toNatIso_inv, Cat.Hom.comp_toFunctor,
         ← Cat.Hom.toNatIso_hom, ← map_comp, Iso.inv_hom_id_app, comp_obj, map_id, comp_id]
       simp only [assoc, ← reassoc_of% Cat.Hom.comp_map,
-        (α.naturality f.base.op.toLoc).hom.toNatTrans.naturality_assoc]
+        Cat.Hom.comp_toFunctor, Functor.comp_obj, NatTrans.naturality_assoc]
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma map_id_map {x y : ∫ᶜ F} (f : x ⟶ y) : (map (𝟙 F)).map f = f := by
@@ -380,6 +376,7 @@ lemma map_id_eq : map (𝟙 F) = 𝟭 (∫ᶜ F) :=
 
 end
 
+set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 /-- The natural isomorphism witnessing the pseudo-functoriality of `CoGrothendieck.map`. -/
 def mapCompIso (α : F ⟶ G) (β : G ⟶ H) : map (α ≫ β) ≅ map α ⋙ map β :=

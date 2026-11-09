@@ -50,7 +50,7 @@ scoped[CompactlySupported] notation (priority := 2000)
 @[inherit_doc]
 scoped[CompactlySupported] notation α " →C_c " β => CompactlySupportedContinuousMap α β
 
-open CompactlySupported
+open scoped CompactlySupported
 
 section
 
@@ -58,7 +58,7 @@ section
 compact support.
 
 You should also extend this typeclass when you extend `CompactlySupportedContinuousMap`. -/
-class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type*)
+class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam Type*)
     [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop
     extends ContinuousMapClass F α β where
   /-- Each member of the class has compact support. -/
@@ -72,6 +72,7 @@ section Basics
 
 variable [TopologicalSpace β] [Zero β]
 
+@[macro_inline]
 instance : FunLike C_c(α, β) α β where
   coe f := f.toFun
   coe_injective f g h := by
@@ -141,10 +142,10 @@ noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
     · exact .zero
 
 lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
-    (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
+    (f.compLeft g).toContinuousMap = g.comp f := ite_eq_left hg
 
 lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
-  simp [compLeft, if_pos hg]
+  simp [compLeft, ite_eq_left hg]
 
 lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
     f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
@@ -173,7 +174,7 @@ variable [TopologicalSpace β] (x : α)
 
 instance [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
-            continuous_toFun := (0 : C(α, β)).2
+            continuous_toFun := by fun_prop
             hasCompactSupport' := by simp [HasCompactSupport, tsupport] }
 
 instance [Zero β] : Inhabited C_c(α, β) :=
@@ -563,7 +564,7 @@ def comp (f : C_c(γ, δ)) (g : β →co γ) : C_c(β, δ) where
     rw [tsupport, Set.mem_preimage, _root_.mem_closure_iff]
     intro o ho hgxo
     rw [tsupport, _root_.mem_closure_iff] at hx
-    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage g.1.2 ho) hgxo
+    obtain ⟨y, hy⟩ := hx (g ⁻¹' o) (IsOpen.preimage (by fun_prop) ho) hgxo
     exact ⟨g y, hy⟩
 
 @[simp]
@@ -667,6 +668,7 @@ open NNReal
 
 namespace CompactlySupportedContinuousMap
 
+set_option backward.isDefEq.respectTransparency.types false in
 protected lemma exists_add_of_le {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁ ≤ f₂) : ∃ (g : C_c(α, ℝ≥0)),
     f₁ + g = f₂ := by
   refine ⟨⟨f₂.1 - f₁.1, ?_⟩, ?_⟩

@@ -112,7 +112,6 @@ set_option backward.privateInPublic true in
 set_option backward.privateInPublic.warn false in
 lemma lieCharpoly_coeff_natDegree [Nontrivial R] (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
-  classical
   rw [← mul_one j, lieCharpoly, coeff_map]
   apply MvPolynomial.aeval_natDegree_le
   · apply (polyCharpoly_coeff_isHomogeneous φ (chooseBasis R L) _ _ hij).totalDegree_le
@@ -129,7 +128,6 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open Module LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -301,7 +299,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   intro α hα
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
   rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
+    (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, ite_eq_right hi.ne]
   -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
   let v := α • u + x'
   suffices engel K (v : L) ≤ engel K x by
@@ -329,15 +327,15 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
     rw [← hn]
     clear hn
     induction n with
-    | zero => simp only [z', pow_zero, Module.End.one_apply]
-    | succ n ih => rw [pow_succ', pow_succ', Module.End.mul_apply, ih]; rfl
+    | zero => simp [z']
+    | succ n ih => rw [pow_succ', pow_succ', mul_apply_eq_comp, ih]; rfl
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
   have hn : (toEnd K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀ | ⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
-  · simpa only [hn₀, pow_zero, Module.End.one_apply] using hn
+  · simpa [hn₀] using hn
   -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
   -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
@@ -351,7 +349,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   refine ⟨?_, ?_⟩
   · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; lia
-  · rw [← hn, hk, pow_succ', Module.End.mul_apply]
+  · rw [← hn, hk, pow_succ', mul_apply_eq_comp]
 
 variable (K L)
 

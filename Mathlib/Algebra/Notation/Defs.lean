@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 module
 
-public import Mathlib.Tactic.Simps.NotationClass
+public import Mathlib.Tactic.Simps
 public import Mathlib.Tactic.ToAdditive
 
 /-!
@@ -20,7 +20,7 @@ We introduce the notation typeclass `Star` for algebraic structures with a star 
 accommodate diverse notational preferences, no default notation is provided for `Star.star`.
 
 `SMul` is typically, but not exclusively, used for scalar multiplication-like operators.
-See the module `Algebra.AddTorsor` for a motivating example for the name `VAdd` (vector addition).
+See the module `Algebra.Torsor.Defs` for a motivating example for the name `VAdd` (vector addition).
 
 Note `Zero` has already been defined in core Lean.
 
@@ -47,9 +47,7 @@ class HVAdd (α : Type u) (β : Type v) (γ : outParam (Type w)) where
   The meaning of this notation is type-dependent. -/
   hVAdd : α → β → γ
 
-attribute [notation_class smul Simps.copySecond] HSMul
-attribute [notation_class nsmul Simps.nsmulArgs] HSMul
-attribute [notation_class zsmul Simps.zsmulArgs] HSMul
+attribute [notation_class vadd Simps.copySecond] HVAdd
 
 /-- Type class for the `+ᵥ` notation. -/
 class VAdd (G : Type u) (P : Type v) where
@@ -73,6 +71,8 @@ class SDiv (G : outParam Type*) (P : Type*) where
 attribute [to_additive existing] SMul HSMul
 attribute [to_additive (attr := default_instance)] instHSMul
 
+initialize_simps_projections VAdd
+
 attribute [ext] SMul VAdd
 
 @[inherit_doc] infixr:65 " +ᵥ " => HVAdd.hVAdd
@@ -82,8 +82,6 @@ attribute [ext] SMul VAdd
 recommended_spelling "vadd" for "+ᵥ" in [HVAdd.hVAdd, «term_+ᵥ_»]
 recommended_spelling "vsub" for "-ᵥ" in [VSub.vsub, «term_-ᵥ_»]
 recommended_spelling "sdiv" for "/ₛ" in [SDiv.sdiv, «term_/ₛ_»]
-
-variable {G : Type*}
 
 section Star
 
@@ -137,6 +135,9 @@ lemma ite_mul_ite (a b c d : α) :
     ((if P then a else b) * if P then c else d) = if P then a * c else b * d := by split <;> rfl
 
 end Mul
+
+lemma neg_ite {α : Type*} (P : Prop) [Decidable P] [Neg α] (b : α) (c : α) :
+    -(if P then b else c) = if P then -b else -c := by split <;> rfl
 
 section Div
 variable [Div α]

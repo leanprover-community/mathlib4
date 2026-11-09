@@ -6,7 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Def
-public import Mathlib.Probability.HasLaw
+
 import Mathlib.Probability.Distributions.Gaussian.CharFun
 import Mathlib.Probability.Distributions.Gaussian.Fernique
 import Mathlib.Probability.Distributions.Gaussian.HasGaussianLaw.Basic
@@ -284,7 +284,6 @@ lemma IndepFun.hasGaussianLaw [NormedSpace ℝ E] [NormedSpace ℝ F] {X : Ω �
   isGaussian_map := by
     have := hX.isProbabilityMeasure
     rw [isGaussian_iff_gaussian_charFunDual]
-    classical
     refine ⟨(∫ x, x ∂P.map X, ∫ y, y ∂P.map Y),
       .diagonalStrongDualProd (covarianceBilinDual (P.map X)) (covarianceBilinDual (P.map Y)),
       isPosSemidef_diagonalStrongDualProd isPosSemidef_covarianceBilinDual

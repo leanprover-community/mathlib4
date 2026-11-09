@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Trace.Basic
 
 /-!
-
 # Normalized trace
 
 This file defines the *normalized trace* map; that is, an `F`-linear map from the algebraic closure
@@ -246,6 +245,6 @@ theorem normalizedTrace_surjective : Function.Surjective (normalizedTrace F K) :
 /-- The normalized trace map is non-trivial. -/
 theorem normalizedTrace_ne_zero : normalizedTrace F K ≠ 0 :=
   let ⟨a, ha⟩ := normalizedTrace_surjective F K 1
-  DFunLike.ne_iff.mpr <| ⟨a, ha ▸ one_ne_zero⟩
+  DFunLike.ne_iff.mpr ⟨a, ha ▸ one_ne_zero⟩
 
 end Algebra

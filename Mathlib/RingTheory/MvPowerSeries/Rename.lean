@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Order.Filter.TendstoCofinite
 public import Mathlib.RingTheory.MvPowerSeries.Substitution
-public import Mathlib.Algebra.MvPolynomial.Rename
 
 /-!
 # Renaming variables of power series
@@ -278,7 +277,7 @@ theorem killCompl_comp_rename : (killCompl e).comp (rename e) = AlgHom.id R _ :=
 
 @[simp]
 theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl e (rename e p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename) p
+  congr($killCompl_comp_rename p)
 
 theorem killCompl_map (φ : R →+* S) (p : MvPowerSeries τ R) :
     killCompl e (map φ p) = map φ (killCompl e p) := by
@@ -288,13 +287,24 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R)
+variable {R : Type*} [CommRing R] (p : MvPowerSeries σ R) {a : τ → MvPowerSeries γ R}
 
-lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) where
-  const_coeff := by simp
-  coeff_zero d := Set.Finite.subset (d.support.finite_toSet.biUnion'
-    (fun i _ ↦ TendstoCofinite.finite_preimage_singleton f i)) (fun x => by
-      contrapose; intro _ _; classical simp_all [coeff_X])
+theorem HasSubst.comp_tendstoCofinite (ha : HasSubst a) : HasSubst (a ∘ f) where
+  const_coeff i := ha.const_coeff (f i)
+  coeff_zero d := Filter.TendstoCofinite.finite_preimage f (ha.coeff_zero d)
+
+lemma HasSubst.X_comp : HasSubst (X ∘ f : σ → MvPowerSeries τ R) :=
+  HasSubst.X.comp_tendstoCofinite f
+
+variable {f} in
+omit [TendstoCofinite f] in
+theorem HasSubst.comp_injective (ha : HasSubst a) (hf : f.Injective) : HasSubst (a ∘ f) :=
+  have := tendstoCofinite_of_injective hf
+  ha.comp_tendstoCofinite f
+
+theorem HasSubst.curry {a : γ × σ → MvPowerSeries τ R} (ha : HasSubst a) (k : γ) :
+    HasSubst (Function.curry a k) :=
+  ha.comp_injective (Prod.mk_right_injective k)
 
 theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   classical
@@ -308,7 +318,8 @@ theorem rename_eq_subst : rename f p = p.subst (X ∘ f) := by
   refine (Finset.sum_subset_zero_on_sdiff ?_ ?_ (fun x hx => ?_)).symm
   · exact Set.Finite.toFinset_mono this
   · simp +contextual [← monomial_mapDomain_apply_one]
-  · simp only [Set.Finite.mem_toFinset] at hx
+  · simp only [Function.comp_apply, smul_eq_mul, Set.Finite.mem_toFinset, Function.mem_support,
+      ne_eq] at hx
     simp [← this _ hx, ← monomial_mapDomain_apply_one, coeff_monomial_same]
 
 end CommRing

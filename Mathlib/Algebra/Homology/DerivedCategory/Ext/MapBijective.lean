@@ -5,16 +5,16 @@ Authors: Nailin Guan
 -/
 module
 
-public import Mathlib.Algebra.Category.Grp.Zero
-public import Mathlib.Algebra.FiveLemma
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
-public import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
 public import Mathlib.Algebra.Homology.DerivedCategory.Ext.Map
 public import Mathlib.CategoryTheory.Preadditive.Injective.Preserves
 public import Mathlib.CategoryTheory.Preadditive.Projective.Preserves
 
-/-!
+import Mathlib.Algebra.FiveLemma
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughInjectives
+import Mathlib.Algebra.Homology.DerivedCategory.Ext.EnoughProjectives
+import Mathlib.CategoryTheory.Abelian.Exact
 
+/-!
 # Bijections Between Ext
 
 In this file, we show that the maps between `Ext` induced

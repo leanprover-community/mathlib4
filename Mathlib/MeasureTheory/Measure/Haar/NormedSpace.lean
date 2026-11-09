@@ -5,9 +5,8 @@ Authors: Floris van Doorn, Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 public import Mathlib.MeasureTheory.Integral.Bochner.Set
+public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
 # Basic properties of Haar measures on real vector spaces
@@ -25,10 +24,12 @@ namespace MeasureTheory
 
 namespace Measure
 
-/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.noAtoms` applies in particular to show that
-an additive Haar measure on a nontrivial finite-dimensional real vector space has no atom. -/
+/-- The instance `MeasureTheory.Measure.IsAddHaarMeasure.nullSingletonClass` applies in particular
+to show that an additive Haar measure on a nontrivial finite-dimensional real vector space has no
+atom. -/
 example {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Nontrivial E] [FiniteDimensional ℝ E]
-    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] : NoAtoms μ := by
+    [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ] :
+    NullSingletonClass μ := by
   infer_instance
 
 section LinearEquiv
@@ -91,7 +92,7 @@ thanks to the convention that a non-integrable function has integral zero. -/
 theorem integral_comp_smul (f : E → F) (R : ℝ) :
     ∫ x, f (R • x) ∂μ = |(R ^ finrank ℝ E)⁻¹| • ∫ x, f x ∂μ := by
   by_cases hF : CompleteSpace F; swap
-  · simp [integral, hF]
+  · simp [integral_of_not_completeSpace, hF]
   rcases eq_or_ne R 0 with (rfl | hR)
   · simp only [zero_smul, integral_const]
     rcases Nat.eq_zero_or_pos (finrank ℝ E) with (hE | hE)

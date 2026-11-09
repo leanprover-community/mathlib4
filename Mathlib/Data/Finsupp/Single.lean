@@ -33,7 +33,7 @@ noncomputable section
 
 open Finset Function
 
-variable {α β γ ι M M' N P G H R S : Type*}
+variable {α β ι M N P H : Type*}
 
 namespace Finsupp
 
@@ -68,10 +68,6 @@ theorem set_indicator_singleton (a : α) (f : α → M) :
     Set.indicator {a} f = ⇑(single a (f a)) := by
   classical rw [Set.indicator_singleton, single_eq_pi_single]
 
-@[deprecated set_indicator_singleton (since := "2026-04-27")]
-theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b :=
-  (set_indicator_singleton a (fun _ => b)).symm
-
 @[simp]
 theorem single_eq_same : (single a b : α →₀ M) a = b := by
   classical exact Pi.single_eq_same (M := fun _ ↦ M) a b
@@ -99,7 +95,7 @@ theorem single_of_single_apply (a a' : α) (b : M) :
   grind
 
 @[simp] lemma support_single (a : α) (hb : b ≠ 0) : (single a b).support = {a} :=
-  if_neg hb
+  ite_eq_right hb
 
 @[deprecated (since := "2026-05-05")] alias support_single_ne_zero := support_single
 
@@ -256,7 +252,7 @@ noncomputable def uniqueEquiv (a : α) [Subsingleton α] : (α →₀ M) ≃ M w
 /--
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
-@[simps!, deprecated uniqueEquiv (since := "2026-05-06")]
+@[simps!, deprecated uniqueEquiv +typeChanged (since := "2026-05-06")]
 noncomputable def _root_.Equiv.finsuppUnique {ι : Type*} [Unique ι] : (ι →₀ M) ≃ M :=
   Finsupp.equivFunOnFinite.trans (Equiv.funUnique ι M)
 
@@ -361,7 +357,6 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     haveI := Classical.decEq α
     if a' = a then 0 else f a'
   mem_support_toFun a' := by
-    classical
     grind
 
 @[grind =]
@@ -373,7 +368,6 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem support_erase [DecidableEq α] {a : α} {f : α →₀ M} :
     (f.erase a).support = f.support.erase a := by
-  classical
   grind
 
 @[simp]

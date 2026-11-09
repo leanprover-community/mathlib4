@@ -30,7 +30,9 @@ For the existence of orthonormal bases, Hilbert bases, etc., see the file
 
 noncomputable section
 
-open RCLike Real Filter Module Topology ComplexConjugate Finsupp
+open RCLike Real Module Finsupp
+
+open scoped ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -64,13 +66,17 @@ lemma orthonormal_vecCons_iff {n : ℕ} {v : E} {vs : Fin n → E} :
 lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
 
-lemma Orthonormal.nnnorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+lemma Orthonormal.nnNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖₊ = 1 := by
   suffices (‖v i‖₊ : ℝ) = 1 by norm_cast at this
   simp [h.norm_eq_one]
 
-lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+@[deprecated (since := "2026-10-31")] alias Orthonormal.nnnorm_eq_one := Orthonormal.nnNorm_eq_one
+
+lemma Orthonormal.eNorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
+
+@[deprecated (since := "2026-11-06")] alias Orthonormal.enorm_eq_one := Orthonormal.eNorm_eq_one
 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
     ⟪v i, v j⟫ = 0 := h.2 hij
@@ -139,7 +145,7 @@ theorem Orthonormal.inner_left_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l :
     {i : ι} (hi : i ∈ s) : ⟪∑ i ∈ s, l i • v i, v i⟫ = conj (l i) := by
   classical
   simp only [sum_inner, inner_smul_left, orthonormal_iff_ite.mp hv, hi, mul_boole,
-    Finset.sum_ite_eq', if_true]
+    Finset.sum_ite_eq', ite_true]
 
 /-- The inner product of a linear combination of a set of orthonormal vectors with one of those
 vectors picks out the coefficient of that vector. -/
@@ -237,7 +243,6 @@ adapted from the corresponding development of the theory of linearly independent
 variable (𝕜 E)
 
 theorem orthonormal_empty : Orthonormal 𝕜 (fun x => x : (∅ : Set E) → E) := by
-  classical
   simp
 
 variable {𝕜 E}
@@ -329,7 +334,7 @@ theorem Orthonormal.mapLinearIsometryEquiv {v : Basis ι 𝕜 E} (hv : Orthonorm
 def LinearMap.isometryOfOrthonormal (f : E →ₗ[𝕜] E') {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
     (hf : Orthonormal 𝕜 (f ∘ v)) : E →ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
-    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       Finsupp.apply_linearCombination, Finsupp.apply_linearCombination,
       hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
@@ -350,7 +355,7 @@ def LinearEquiv.isometryOfOrthonormal (f : E ≃ₗ[𝕜] E') {v : Basis ι 𝕜
     (hf : Orthonormal 𝕜 (f ∘ v)) : E ≃ₗᵢ[𝕜] E' :=
   f.isometryOfInner fun x y => by
     rw [← LinearEquiv.coe_coe] at hf
-    classical rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
+    rw [← v.linearCombination_repr x, ← v.linearCombination_repr y,
       ← LinearEquiv.coe_coe f, Finsupp.apply_linearCombination,
       Finsupp.apply_linearCombination, hv.inner_finsupp_eq_sum_left, hf.inner_finsupp_eq_sum_left]
 
@@ -374,7 +379,7 @@ def Orthonormal.equiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v) {v' : Basi
         ext i
         simp
       rw [h]
-      classical exact hv'.comp _ e.injective)
+      exact hv'.comp _ e.injective)
 
 @[simp]
 theorem Orthonormal.equiv_toLinearEquiv {v : Basis ι 𝕜 E} (hv : Orthonormal 𝕜 v)
@@ -437,7 +442,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
     ∑ i ∈ s, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
   have h₂ :
     (∑ i ∈ s, ∑ j ∈ s, ⟪v i, x⟫ * ⟪x, v j⟫ * ⟪v j, v i⟫) = (∑ k ∈ s, ⟪v k, x⟫ * ⟪x, v k⟫ : 𝕜) := by
-    classical exact hv.inner_left_right_finset
+    exact hv.inner_left_right_finset
   have h₃ : ∀ z : 𝕜, re (z * conj z) = ‖z‖ ^ 2 := by
     intro z
     simp only [mul_conj]

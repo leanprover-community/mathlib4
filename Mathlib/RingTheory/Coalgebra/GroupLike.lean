@@ -57,7 +57,7 @@ lemma IsGroupLikeElem.map [FunLike F A B] [CoalgHomClass F R A B] (f : F)
 /-- A coalgebra isomorphism preserves group-like elements. -/
 @[simp] lemma isGroupLikeElem_map_equiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) :
     IsGroupLikeElem R (f a) ↔ IsGroupLikeElem R a where
-  mp ha := (CoalgEquivClass.toCoalgEquiv f).symm_apply_apply a ▸ ha.map _
+  mp ha := (CoalgEquiv.ofClass f).symm_apply_apply a ▸ ha.map _
   mpr := .map f
 
 variable (R A) in
@@ -112,7 +112,7 @@ lemma linearIndepOn_isGroupLikeElem : LinearIndepOn R id {a : A | IsGroupLikeEle
   -- Let's deal with the `s ∪ {a}` case.
   | cons a s has ih =>
   simp only [Finset.cons_eq_insert, Finset.coe_insert, Set.subset_def, Set.mem_insert_iff,
-    Finset.mem_coe, Set.mem_setOf_eq, forall_eq_or_imp] at hs
+    Finset.mem_coe, Set.mem_ofPred_eq, forall_eq_or_imp] at hs
   obtain ⟨ha, hs⟩ := hs
   specialize ih hs
   -- Assume that there is some `c : A → R` and `d : R` such that `∑ x ∈ s, c x • x = d • a`.

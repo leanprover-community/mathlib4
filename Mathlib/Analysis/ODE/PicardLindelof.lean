@@ -6,8 +6,9 @@ Authors: Yury Kudryashov, Winston Yin
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.MetricSpace.Contracting
+
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
@@ -98,7 +99,7 @@ equivalent to the initial value problem defined by `f`.
 section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ : ℝ}
 
 /-- The Picard iteration. It will be shown that if `α : ℝ → E` and `picard f t₀ x₀ α` agree on an
 interval containing `t₀`, then `α` is a solution to `f` with `α t₀ = x₀` on this interval. -/
@@ -123,7 +124,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
+  contDiffOn_zero.mp (contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem)
 
 end
 
@@ -202,8 +203,8 @@ lemma range_toContinuousMap :
 instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [completeSpace_iff_isComplete_range isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
-  rw [range_toContinuousMap, setOf_and]
-  apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
+  rw [range_toContinuousMap, ofPred_and]
+  apply isClosed_setOfPred_lipschitzWith L |>.preimage continuous_coeFun |>.inter
   simp_rw [mem_closedBall_iff_norm]
   exact isClosed_le (by fun_prop) (by fun_prop)
 
@@ -688,8 +689,8 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
       _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
         gcongr
         apply hl.norm_sub_le _ (mem_of_mem_nhds hs)
-        apply subset_trans _ has hx
-        exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
+        grw [half_lt_self ha, has] at hx -- this is where we need `a / 2`
+        exact hx
       _ ≤ K * a + ‖f x₀‖ := by
         gcongr
         rw [← mem_closedBall_iff_norm]
@@ -700,10 +701,12 @@ lemma of_contDiffAt_one [NormedSpace ℝ E]
   refine ⟨ε, hε0,
     .mk (a / 2) (half_pos ha).le, (.mk (a / 2) (half_pos ha).le) / 2,
     .mk L hL0.le, K, half_pos <| half_pos ha, fun t₀ ↦ ?_⟩
-  apply of_time_independent hb <|
-    hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) has
-  simp [ε, field]
-  norm_num
+  apply of_time_independent hb
+  · dsimp only [NNReal.coe_mk]
+    grw [half_lt_self ha, has]
+    exact hl
+  · simp [ε, field]
+    norm_num
 
 end
 

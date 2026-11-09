@@ -6,7 +6,6 @@ Authors: Stuart Presnell
 module
 
 public import Mathlib.Algebra.Ring.Parity
-public import Mathlib.Data.Nat.BinaryRec
 
 /-! # A recursion principle based on even and odd numbers. -/
 

@@ -7,12 +7,10 @@ module
 
 public import Mathlib.Algebra.FiveLemma
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.RingTheory.AdicCompletion.Exactness
 public import Mathlib.RingTheory.Flat.Tensor
 
 /-!
-
 # Adic completion as tensor product
 
 In this file we examine properties of the natural map
@@ -179,7 +177,7 @@ lemma ofTensorProduct_comp_ofTensorProductInvOfPiFintype :
 /-- `ofTensorProduct` as an equiv in the case of `M = R^ι` where `ι` is finite. -/
 def ofTensorProductEquivOfPiFintype :
     AdicCompletion I R ⊗[R] (ι → R) ≃ₗ[AdicCompletion I R] AdicCompletion I (ι → R) :=
-  LinearEquiv.ofLinear
+  LinearEquiv.ofLinearMap
     (ofTensorProduct I (ι → R))
     (ofTensorProductInvOfPiFintype I ι)
     (ofTensorProduct_comp_ofTensorProductInvOfPiFintype I ι)
@@ -219,7 +217,6 @@ variable {R : Type u} [CommRing R] (I : Ideal R)
 variable (M : Type u) [AddCommGroup M] [Module R M]
 
 /-!
-
 ### Noetherian case
 
 Suppose `R` is Noetherian. Then we show that the canonical map
@@ -287,7 +284,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (lTensorf I M f)
     (0 : AdicCompletion I R ⊗[R] M →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
-    (map I <| (LinearMap.ker f).subtype)
+    (map I (LinearMap.ker f).subtype)
     (map I f)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
     (0 : _ →ₗ[AdicCompletion I R] Unit)
@@ -296,7 +293,7 @@ lemma ofTensorProduct_bijective_of_map_from_fin [Finite ι] [IsNoetherianRing R]
     (ofTensorProduct I M)
     0
     0
-    (ofTensorProduct_naturality I <| (LinearMap.ker f).subtype)
+    (ofTensorProduct_naturality I (LinearMap.ker f).subtype)
     (ofTensorProduct_naturality I f)
     rfl
     rfl

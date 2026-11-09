@@ -123,15 +123,7 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
   /-- `x ∈ finsetIoo a b ↔ a < x ∧ x < b` -/
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 
-/-- `LocallyFiniteOrder.mk'` is the dual of `LocallyFiniteOrder.mk`, which we need for `to_dual`.
-Please avoid using this directly. -/
-@[to_dual existing mk]
-abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
-    (finsetIcc finsetIco finsetIoc finsetIoo : α → α → Finset α)
-    (finset_mem_Icc : ∀ (a b x : α), x ∈ finsetIcc a b ↔ x ≤ a ∧ b ≤ x)
-    (finset_mem_Ico : ∀ (a b x : α), x ∈ finsetIco a b ↔ x ≤ a ∧ b < x)
-    (finset_mem_Ioc : ∀ (a b x : α), x ∈ finsetIoc a b ↔ x < a ∧ b ≤ x)
-    (finset_mem_Ioo : ∀ (a b x : α), x ∈ finsetIoo a b ↔ x < a ∧ b < x) : LocallyFiniteOrder α where
+to_dual_for LocallyFiniteOrder.mk := {
   finsetIcc := swap finsetIcc
   finsetIco := swap finsetIoc
   finsetIoc := swap finsetIco
@@ -140,6 +132,7 @@ abbrev LocallyFiniteOrder.mk' {α : Type*} [Preorder α]
   finset_mem_Ico := by grind
   finset_mem_Ioc := by grind
   finset_mem_Ioo := by grind
+}
 
 /-- This mixin class describes an order where all intervals bounded below are finite. This is
 slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
@@ -169,7 +162,7 @@ class LocallyFiniteOrderBot (α : Type*) [Preorder α] where
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc`, this one requires `DecidableLE` but
 only `Preorder`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableLE α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
     LocallyFiniteOrder α where
@@ -186,7 +179,7 @@ def LocallyFiniteOrder.ofIcc' (α : Type*) [Preorder α] [DecidableLE α]
 /-- A constructor from a definition of `Finset.Icc` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrder.ofIcc'`, this one requires `PartialOrder` but only
 `DecidableEq`. -/
-@[implicit_reducible]
+@[instance_reducible]
 def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
     (finsetIcc : α → α → Finset α) (mem_Icc : ∀ a b x, x ∈ finsetIcc a b ↔ a ≤ x ∧ x ≤ b) :
     LocallyFiniteOrder α where
@@ -203,7 +196,7 @@ def LocallyFiniteOrder.ofIcc (α : Type*) [PartialOrder α] [DecidableEq α]
 /-- A constructor from a definition of `Finset.Ici` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderTop.ofIci`, this one requires `DecidableLE` but
 only `Preorder`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A constructor from a definition of `Finset.Iic` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderBot.ofIic`, this one requires `DecidableLE` but
 only `Preorder`. -/]
@@ -218,7 +211,7 @@ def LocallyFiniteOrderTop.ofIci' (α : Type*) [Preorder α] [DecidableLE α]
 /-- A constructor from a definition of `Finset.Ici` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderTop.ofIci'`, this one requires `PartialOrder` but
 only `DecidableEq`. -/
-@[to_dual (attr := implicit_reducible)
+@[to_dual (attr := instance_reducible)
 /-- A constructor from a definition of `Finset.Iic` alone, the other ones being derived by removing
 the ends. As opposed to `LocallyFiniteOrderBot.ofIic'`, this one requires `PartialOrder` but
 only `DecidableEq`. -/]
@@ -313,10 +306,10 @@ theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
 theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
   LocallyFiniteOrder.finset_mem_Ioo a b x
 
-@[to_dual existing mem_Icc] theorem mem_Icc' : x ∈ Icc a b ↔ x ≤ b ∧ a ≤ x := by grind
-@[to_dual existing mem_Ioc] theorem mem_Ico' : x ∈ Ico a b ↔ x < b ∧ a ≤ x := by grind
-@[to_dual existing mem_Ico] theorem mem_Ioc' : x ∈ Ioc a b ↔ x ≤ b ∧ a < x := by grind
-@[to_dual existing mem_Ioo] theorem mem_Ioo' : x ∈ Ioo a b ↔ x < b ∧ a < x := by grind
+to_dual_for mem_Icc := by grind
+to_dual_for mem_Ico := by grind
+to_dual_for mem_Ioc := by grind
+to_dual_for mem_Ioo := by grind
 
 @[simp, norm_cast, to_dual self]
 theorem coe_Icc (a b : α) : (Icc a b : Set α) = Set.Icc a b :=
@@ -388,6 +381,9 @@ theorem _root_.Fintype.card_Ici (a : α) [Fintype (Set.Ici a)] :
 theorem _root_.Fintype.card_Ioi (a : α) [Fintype (Set.Ioi a)] :
     Fintype.card (Set.Ioi a) = #(Ioi a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
+
+@[to_additive (attr := simp)]
+lemma Ici_one_eq_univ [One α] [IsBotOneClass α] [Fintype α] : Ici (1 : α) = univ := by ext; simp
 
 end LocallyFiniteOrderTop
 
@@ -542,8 +538,6 @@ instance fintypeUIcc : Fintype (uIcc a b) :=
 
 @[simp] lemma finite_uIcc : (uIcc a b).Finite := (uIcc _ _).toFinite
 
-@[deprecated (since := "2026-02-03")] alias finite_interval := finite_uIcc
-
 end Lattice
 
 end Set
@@ -555,7 +549,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 /-- A noncomputable constructor from the finiteness of all closed intervals. -/
-@[implicit_reducible]
+@[instance_reducible]
 noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b).Finite) :
     LocallyFiniteOrder α :=
   @LocallyFiniteOrder.ofIcc' α _ (Classical.decRel _) (fun a b => (h a b).toFinset) fun a b x => by
@@ -612,7 +606,7 @@ instance : Subsingleton (LocallyFiniteOrderTop α) :=
 
 -- Should this be called `LocallyFiniteOrder.lift`?
 /-- Given an order embedding `α ↪o β`, pulls back the `LocallyFiniteOrder` on `β` to `α`. -/
-@[implicit_reducible]
+@[instance_reducible]
 protected noncomputable def OrderEmbedding.locallyFiniteOrder [LocallyFiniteOrder β] (f : α ↪o β) :
     LocallyFiniteOrder α where
   finsetIcc a b := (Icc (f a) (f b)).preimage f f.toEmbedding.injective.injOn
@@ -807,7 +801,7 @@ using `WithBot.some` and then insert `⊥`. -/]
 def insertTop : Finset α ↪o Finset (WithTop α) :=
   OrderEmbedding.ofMapLEIff
     (fun s => cons ⊤ (s.map Embedding.coeWithTop) <| by simp)
-    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+    (fun s t => by rw [cons_subset_cons, map_subset_map])
 
 @[to_dual (attr := simp)]
 theorem some_mem_insertTop {s : Finset α} {a : α} : ↑a ∈ insertTop s ↔ a ∈ s := by

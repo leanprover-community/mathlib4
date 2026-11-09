@@ -7,6 +7,9 @@ module
 
 public import Mathlib.CategoryTheory.Monoidal.Mon
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Monoid objects internal to monoidal opposites
 
@@ -89,6 +92,7 @@ instance unmop_isMonHom {N : Cᴹᵒᵖ} [MonObj N]
 
 end unmop
 
+set_option backward.isDefEq.respectTransparency.types false in
 variable (C) in
 /-- The equivalence of categories between monoids internal to `C`
 and monoids internal to the monoidal opposite of `C`. -/

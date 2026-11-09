@@ -6,7 +6,7 @@ Authors: Floris van Doorn
 module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Group.Measure
+public import Mathlib.MeasureTheory.Integral.IntegrableOn
 
 /-!
 # Bochner Integration on Groups
@@ -23,7 +23,7 @@ open Measure TopologicalSpace
 
 open scoped ENNReal
 
-variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
+variable {α G E F : Type*} [MeasurableSpace G]
 variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 variable {μ : Measure G} {f : G → E} {g : G}
 
@@ -116,7 +116,7 @@ to a left-invariant measure is 0. -/
       respect to a left-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_left_eq_neg [IsMulLeftInvariant μ] (hf' : ∀ x, f (g * x) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
+  have : HasUniqueDiv E := .of_isTorsionFree ℝ E
   simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_left_eq_self]
 
 /-- If some right-translate of a function negates it, then the integral of the function with respect
@@ -126,7 +126,7 @@ to a right-invariant measure is 0. -/
       respect to a right-invariant measure is 0. -/]
 theorem integral_eq_zero_of_mul_right_eq_neg [IsMulRightInvariant μ] (hf' : ∀ x, f (x * g) = -f x) :
     ∫ x, f x ∂μ = 0 := by
-  have : IsAddTorsionFree E := .of_isTorsionFree ℝ E
+  have : HasUniqueDiv E := .of_isTorsionFree ℝ E
   simp_rw [← self_eq_neg, ← integral_neg, ← hf', integral_mul_right_eq_self]
 
 @[to_additive]

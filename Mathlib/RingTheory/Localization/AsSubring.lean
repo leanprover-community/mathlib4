@@ -6,11 +6,8 @@ Authors: Adam Topaz, Junyan Xu
 module
 
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
-public import Mathlib.LinearAlgebra.FreeModule.Basic
-public import Mathlib.Algebra.Algebra.Subalgebra.Tower
 
 /-!
-
 # Localizations of domains as subalgebras of the fraction field.
 
 Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which

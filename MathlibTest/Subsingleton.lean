@@ -76,7 +76,7 @@ example : 1 + 1 = 2 := by
 `subsingleton` does not itself try `rfl` if it's not in error recovery mode
 -/
 example : 1 + 1 = 2 := by
-  try subsingleton
+  fail_if_success subsingleton
   guard_target =ₛ 1 + 1 = 2
   rfl
 
@@ -141,6 +141,7 @@ example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x 
 The same, but now there's a universe level metavariable.
 -/
 set_option warn.classDefReducibility false in
+set_option linter.defProp false in
 def fdef : ∀ {β : Type _} [BEq β], Subsingleton β := test_sorry
 
 example {α : Type} [BEq α] (x y : α) : x = y := by

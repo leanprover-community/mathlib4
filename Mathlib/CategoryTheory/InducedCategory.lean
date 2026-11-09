@@ -42,7 +42,7 @@ variable (F : C → D)
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
-@[nolint unusedArguments]
+@[nolint unusedArguments, implicit_reducible]
 def InducedCategory (_F : C → D) : Type u₁ :=
   C
 
@@ -97,7 +97,7 @@ end InducedCategory
 /-- The forgetful functor from an induced category to the original category,
 forgetting the extra data.
 -/
-@[simps]
+@[simps, implicit_reducible]
 def inducedFunctor : InducedCategory D F ⥤ D where
   obj := F
   map f := f.hom

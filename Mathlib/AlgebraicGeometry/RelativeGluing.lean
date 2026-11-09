@@ -24,8 +24,6 @@ open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 lemma Scheme.isLocallyDirected_of_equifibered_of_injective {J : Type*} [Category J]
     {F G : J ⥤ Scheme.{u}} (s : F ⟶ G) [Quiver.IsThin J] (hs : s.Equifibered)
     (H : ∀ {i j} (hij : i ⟶ j), Function.Injective (F.map hij))
@@ -117,7 +115,9 @@ noncomputable def toBase : d.glued ⟶ S :=
     { pt := S
       ι := d.natTrans ≫ 𝒰.functorOfLocallyDirectedHomBase }
 
-set_option backward.defeqAttrib.useBackward true in
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 @[reassoc (attr := simp)]
 lemma ι_toBase (i : 𝒰.I₀) :
     colimit.ι d.functor i ≫ d.toBase = d.natTrans.app i ≫ 𝒰.f i := by

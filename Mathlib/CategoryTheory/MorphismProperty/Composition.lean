@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Andrew Yang, Joël Riou
+Authors: Andrew Yang, Joël Riou, Aras Ergus
 -/
 module
 
@@ -26,6 +26,18 @@ namespace CategoryTheory
 namespace MorphismProperty
 
 variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+
+variable (C) in
+/-- The property of morphisms that is satisfied by `𝟙 X` for any `X`. -/
+abbrev identities : MorphismProperty C :=
+  .ofHoms fun X ↦ 𝟙 X
+
+lemma identities_op_iff {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    identities Cᵒᵖ f ↔ identities C f.unop := by
+  obtain ⟨X⟩ := X
+  obtain ⟨f⟩ := f
+  dsimp
+  exact ⟨fun ⟨_⟩ ↦ ⟨_⟩, fun ⟨_⟩ ↦ ⟨_⟩⟩
 
 /-- Typeclass expressing that a morphism property contains identities. -/
 class ContainsIdentities (W : MorphismProperty C) : Prop where
@@ -71,6 +83,13 @@ instance iInf {ι : Type*} {W : ι → MorphismProperty C}
     [∀ i, (W i).ContainsIdentities] : (⨅ i, W i).ContainsIdentities := by
   rw [← sInf_range]
   exact sInf (by simpa)
+
+lemma iff_identities_le {W : MorphismProperty C} :
+    W.ContainsIdentities ↔ identities C ≤ W :=
+  ⟨fun _ ↦ by intro _ _ _ ⟨_⟩; exact id_mem _, fun h ↦ ⟨fun _ ↦ h _ ⟨_⟩⟩⟩
+
+instance : (identities C).ContainsIdentities :=
+  iff_identities_le.2 (by rfl)
 
 end ContainsIdentities
 
@@ -219,6 +238,12 @@ instance : (epimorphisms C).IsMultiplicative where
   comp_mem f g hf hg := by
     rw [epimorphisms.iff] at hf hg ⊢
     apply epi_comp
+
+instance : (identities C).IsMultiplicative where
+  comp_mem := by
+    rintro _ _ _ _ _ ⟨_⟩ ⟨_⟩
+    simp only [Category.comp_id]
+    constructor
 
 instance {P : MorphismProperty D} [P.IsMultiplicative] (F : C ⥤ D) :
     (P.inverseImage F).IsMultiplicative where

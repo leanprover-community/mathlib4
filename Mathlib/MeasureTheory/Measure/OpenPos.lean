@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 module
 
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
-public import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+public import Mathlib.MeasureTheory.Measure.Typeclasses.NullSingletonClass
 public import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 
 /-!
@@ -217,7 +217,7 @@ theorem measure_closedBall_pos (x : X) {r : ℝ} (hr : 0 < r) : 0 < μ (closedBa
   (measure_ball_pos μ x hr).trans_le (measure_mono ball_subset_closedBall)
 
 @[simp] lemma measure_closedBall_pos_iff {X : Type*} [MetricSpace X] {m : MeasurableSpace X}
-    (μ : Measure X) [IsOpenPosMeasure μ] [NoAtoms μ] {x : X} {r : ℝ} :
+    (μ : Measure X) [IsOpenPosMeasure μ] [NullSingletonClass μ] {x : X} {r : ℝ} :
     0 < μ (closedBall x r) ↔ 0 < r := by
   refine ⟨fun h ↦ ?_, measure_closedBall_pos μ x⟩
   contrapose! h
@@ -237,12 +237,6 @@ theorem measure_closedEBall_pos (x : X) {r : ℝ≥0∞} (hr : r ≠ 0) : 0 < μ
   (measure_eball_pos μ x hr).trans_le (measure_mono eball_subset_closedEBall)
 
 end Metric
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_ball_pos := Metric.measure_eball_pos
-
-@[deprecated (since := "2026-01-24")]
-alias EMetric.measure_closedBall_pos := Metric.measure_closedEBall_pos
 
 section MeasureZero
 /-! ## Meagre sets and measure zero

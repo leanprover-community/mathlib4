@@ -5,12 +5,12 @@ Authors: Dagur Asgeirsson
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 public import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 
-/-!
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Pullbacks
 
+/-!
 # The category of type-valued sheaves is a regular epi category
 
 This file proves that when the target category `D` is a regular epi category (i.e. every epimorphism
@@ -27,6 +27,7 @@ open Limits
 
 variable {C D : Type*} [Category C] [Category D]
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 instance [∀ {F G : D} (f : F ⟶ G) [Epi f], HasPullback f f] [HasPushouts D]
     [IsRegularEpiCategory D] :

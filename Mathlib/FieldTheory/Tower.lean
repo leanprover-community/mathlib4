@@ -29,7 +29,7 @@ public section
 
 universe u v w u₁ v₁ w₁
 
-open Cardinal Submodule
+open Submodule
 
 variable (F : Type u) (K : Type v) (A : Type w)
 

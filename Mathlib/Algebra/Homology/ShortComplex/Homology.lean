@@ -41,7 +41,7 @@ namespace CategoryTheory
 open Category Limits
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] (S : ShortComplex C)
-  {S₁ S₂ S₃ S₄ : ShortComplex C}
+  {S₁ S₂ S₃ : ShortComplex C}
 
 namespace ShortComplex
 
@@ -178,6 +178,9 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : HomologyData S�
   right := RightHomologyData.ofEpiOfIsIsoOfMono' φ h.right
   iso := h.iso
 
+#adaptation_note
+/-- `respectTransparency.types true` changes the auto-generated lemmas' signature -/
+set_option backward.isDefEq.respectTransparency.types false in
 /-- If `e : S₁ ≅ S₂` is an isomorphism of short complexes and `h₁ : HomologyData S₁`,
 this is the homology data for `S₂` deduced from the isomorphism. -/
 @[simps!]
@@ -413,6 +416,7 @@ lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
   dsimp [homologyIso, leftHomologyIso, ShortComplex.leftHomologyIso]
   rw [← leftHomologyMap'_comp, comp_id]
 
+set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma RightHomologyData.homologyIso_rightHomologyData [S.HasHomology] :
     S.rightHomologyData.homologyIso = S.rightHomologyIso.symm := by
@@ -671,19 +675,23 @@ noncomputable def ofIsIsoLeftRightHomologyComparison'
 
 end HomologyData
 
-lemma leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap'
+lemma leftRightHomologyComparison'_eq_leftHomologyMap'_comp_iso_hom_comp_rightHomologyMap'
     (h : S.HomologyData) (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData) :
     leftRightHomologyComparison' h₁ h₂ =
       leftHomologyMap' (𝟙 S) h₁ h.left ≫ h.iso.hom ≫ rightHomologyMap' (𝟙 S) h.right h₂ := by
   simpa only [h.leftRightHomologyComparison'_eq] using
     leftRightHomologyComparison'_compatibility h₁ h.left h₂ h.right
 
+@[deprecated (since := "2026-09-17")]
+alias leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap' :=
+  leftRightHomologyComparison'_eq_leftHomologyMap'_comp_iso_hom_comp_rightHomologyMap'
+
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc]
 lemma leftRightHomologyComparison'_fac (h₁ : S.LeftHomologyData) (h₂ : S.RightHomologyData)
     [S.HasHomology] :
     leftRightHomologyComparison' h₁ h₂ = h₁.homologyIso.inv ≫ h₂.homologyIso.hom := by
-  rw [leftRightHomologyComparison'_eq_leftHomologpMap'_comp_iso_hom_comp_rightHomologyMap'
+  rw [leftRightHomologyComparison'_eq_leftHomologyMap'_comp_iso_hom_comp_rightHomologyMap'
     S.homologyData h₁ h₂]
   dsimp only [LeftHomologyData.homologyIso, LeftHomologyData.leftHomologyIso,
     Iso.symm, Iso.trans, Iso.refl, leftHomologyMapIso', leftHomologyIso,
@@ -702,7 +710,6 @@ lemma leftRightHomologyComparison_fac [S.HasHomology] :
 
 variable {S}
 
-set_option backward.defeqAttrib.useBackward true in
 lemma HomologyData.right_homologyIso_eq_left_homologyIso_trans_iso
     (h : S.HomologyData) [S.HasHomology] :
     h.right.homologyIso = h.left.homologyIso ≪≫ h.iso := by
@@ -727,7 +734,7 @@ lemma hasHomology_of_isIso_leftRightHomologyComparison'
 lemma hasHomology_of_isIsoLeftRightHomologyComparison [S.HasLeftHomology]
     [S.HasRightHomology] [h : IsIso S.leftRightHomologyComparison] :
     S.HasHomology := by
-  haveI : IsIso (leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData) := h
+  have : IsIso (leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData) := h
   exact hasHomology_of_isIso_leftRightHomologyComparison' S.leftHomologyData S.rightHomologyData
 
 section
@@ -817,8 +824,14 @@ attribute [instance] CategoryWithHomology.hasHomology
 instance [CategoryWithHomology C] : CategoryWithHomology Cᵒᵖ :=
   ⟨fun S => HasHomology.mk' S.unop.homologyData.op⟩
 
+instance (priority := low) [CategoryWithHomology C] : HasKernels C where
+  has_limit {X Y} f := ⟨_, (ShortComplex.mk (0 : X ⟶ X) f).cyclesIsKernel⟩
+
+instance (priority := low) [CategoryWithHomology C] : HasCokernels C where
+  has_colimit {X Y} f := ⟨_, (ShortComplex.mk f (0 : Y ⟶ Y)).opcyclesIsCokernel⟩
+
 /-- The homology functor `ShortComplex C ⥤ C` for a category `C` with homology. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def homologyFunctor [CategoryWithHomology C] :
     ShortComplex C ⥤ C where
   obj S := S.homology
@@ -899,7 +912,6 @@ noncomputable def homologyIsCokernel :
   IsColimit.ofIsoColimit S.leftHomologyIsCokernel
     (Cofork.ext S.leftHomologyIso rfl)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The homology `S.homology` of a short complex is
 the kernel of the morphism `S.fromOpcycles : S.opcycles ⟶ S.X₃`. -/
 noncomputable def homologyIsKernel :
@@ -948,6 +960,22 @@ lemma homologyι_naturality (φ : S₁ ⟶ S₂) [S₁.HasHomology] [S₂.HasHom
   simp only [← cancel_epi S₁.rightHomologyIso.hom, rightHomologyIso_hom_naturality_assoc φ,
     rightHomologyIso_hom_comp_homologyι, rightHomologyι_naturality]
   simp only [homologyι, assoc, Iso.hom_inv_id_assoc]
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyπNatTrans [CategoryWithHomology C] :
+    cyclesFunctor C ⟶ homologyFunctor C where
+  app S := S.homologyπ
+
+variable (C) in
+/-- The morphism `S.homologyπ : S.cycles ⟶ S.homology` for any `S : Shortcomplex C`,
+as a natural transformation`. -/
+@[simps]
+noncomputable def homologyιNatTrans [CategoryWithHomology C] :
+    homologyFunctor C ⟶ opcyclesFunctor C where
+  app S := S.homologyι
 
 @[reassoc (attr := simp)]
 lemma homology_π_ι :
@@ -1050,6 +1078,7 @@ noncomputable def homologyOpIso [S.HasHomology] :
     S.op.homology ≅ Opposite.op S.homology :=
   S.op.leftHomologyIso.symm ≪≫ S.leftHomologyOpIso ≪≫ S.rightHomologyIso.symm.op
 
+set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
     h₂.iso.inv.op ≫ homologyMap' (opMap φ) h₂.op h₁.op ≫ h₁.iso.hom.op :=
@@ -1109,7 +1138,6 @@ lemma homologyι_descOpcycles_eq_zero_of_boundary [S.HasHomology]
   dsimp only [homologyι]
   rw [assoc, S.rightHomologyι_descOpcycles_π_eq_zero_of_boundary k x hx, comp_zero]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (cyclesMap φ)) (h₂ : Epi φ.τ₁) :
     IsIso (homologyMap φ) := by
@@ -1124,7 +1152,6 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
   · rw [← cancel_epi S₂.homologyπ, reassoc_of% hz, homologyπ_naturality,
       IsIso.inv_hom_id_assoc, comp_id]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
     [S₁.HasHomology] [S₂.HasHomology] (h₁ : IsIso (opcyclesMap φ)) (h₂ : Mono φ.τ₃) :
     IsIso (homologyMap φ) := by

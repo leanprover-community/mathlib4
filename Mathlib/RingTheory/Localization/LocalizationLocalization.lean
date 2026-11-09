@@ -6,7 +6,6 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 module
 
 public import Mathlib.RingTheory.Localization.AtPrime.Basic
-public import Mathlib.RingTheory.Localization.Basic
 public import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
@@ -120,7 +119,7 @@ localization is a localization.
 -/
 theorem localization_localization_isLocalization_of_has_all_units [IsLocalization N T]
     (H : ∀ x : S, IsUnit x → x ∈ N) : IsLocalization (N.comap (algebraMap R S)) T := by
-  convert! localization_localization_isLocalization M N T using 1
+  convert localization_localization_isLocalization M N T using 1
   dsimp [localizationLocalizationSubmodule]
   congr
   symm
@@ -196,7 +195,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
     IsLocalization (N.map (algebraMap R S)) T where
   map_units := by
     rintro ⟨_, ⟨y, hy, rfl⟩⟩
-    convert! IsLocalization.map_units T ⟨y, hy⟩
+    convert IsLocalization.map_units T ⟨y, hy⟩
     exact (IsScalarTower.algebraMap_apply _ _ _ _).symm
   surj y := by
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj N y
@@ -223,7 +222,7 @@ theorem isLocalization_of_submonoid_le (M N : Submonoid R) (h : M ≤ N) [IsLoca
       simpa only [mul_comm] using! this
     simp_rw [IsLocalization.eq_iff_exists N T, IsLocalization.eq_iff_exists M S]
     intro ⟨a, e⟩
-    exact ⟨a, 1, by convert! e using 1 <;> simp⟩
+    exact ⟨a, 1, by convert e using 1 <;> simp⟩
 
 /-- If `M ≤ N` are submonoids of `R` such that `∀ x : N, ∃ m : R, m * x ∈ M`, then the
 localization at `N` is equal to the localization of `M`. -/
@@ -256,6 +255,7 @@ variable {R : Type*} [CommRing R] (M : Submonoid R)
 
 open IsLocalization
 
+set_option backward.isDefEq.respectTransparency false in
 theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T] [Algebra R S]
     [Algebra R T] [Algebra S T] [IsScalarTower R S T] [IsLocalization M S] [IsFractionRing R T]
     (hM : M ≤ nonZeroDivisors R) : IsFractionRing S T := by
@@ -277,8 +277,8 @@ theorem isFractionRing_of_isLocalization (S T : Type*) [CommRing S] [CommRing T]
 theorem isFractionRing_of_isDomain_of_isLocalization [IsDomain R] (S T : Type*) [CommRing S]
     [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
     [IsLocalization M S] [IsFractionRing R T] : IsFractionRing S T := by
-  haveI := IsFractionRing.nontrivial R T
-  haveI := (algebraMap S T).domain_nontrivial
+  have := IsFractionRing.nontrivial R T
+  have := (algebraMap S T).domain_nontrivial
   apply isFractionRing_of_isLocalization M S T
   intro x hx
   rw [mem_nonZeroDivisors_iff_ne_zero]

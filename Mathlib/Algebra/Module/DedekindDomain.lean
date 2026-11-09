@@ -8,6 +8,9 @@ module
 public import Mathlib.Algebra.Module.Torsion.Basic
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Modules over a Dedekind domain
 
@@ -40,7 +43,7 @@ theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal
   have prime_of_mem := fun p (hp : p ∈ P.toFinset) =>
     prime_of_factor p (Multiset.mem_toFinset.mp hp)
   apply torsionBySet_isInternal (p := fun p => p ^ P.count p) _
-  · convert! hM
+  · convert hM
     rw [← Finset.inf_eq_iInf, IsDedekindDomain.inf_pow_eq_prod_of_prime,
       ← Finset.prod_multiset_count, ← associated_iff_eq]
     · exact factors_prod hI
@@ -74,7 +77,6 @@ theorem isInternal_prime_power_torsion [Module.Finite R M]
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
       DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) := by
-  classical
   exact ⟨_, _, fun p hp => prime_of_factor p (Multiset.mem_toFinset.mp hp), _,
     isInternal_prime_power_torsion hM⟩
 

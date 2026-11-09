@@ -5,14 +5,13 @@ Authors: Frédéric Dupuis
 -/
 module
 
+public import Mathlib.Algebra.Star.Pi
+public import Mathlib.Algebra.Star.Subalgebra
+public import Mathlib.Algebra.Star.Unitary
 public import Mathlib.Analysis.Normed.Group.Hom
 public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
-public import Mathlib.Algebra.Star.Pi
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Algebra.Star.Subalgebra
-public import Mathlib.Algebra.Star.Unitary
-public import Mathlib.Data.Real.Star
+public import Mathlib.Basic.Real.Star
 public import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -38,15 +37,13 @@ Note that the type classes corresponding to C⋆-algebras are defined in
 
 assert_not_exists ContinuousLinearMap.hasOpNorm
 
-open Topology
-
 local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
   norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
-variable {𝕜 E α : Type*}
+variable {𝕜 E : Type*}
 
 section NormedStarGroup
 
@@ -57,8 +54,10 @@ lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
   le_antisymm (NormedStarGroup.norm_star_le x) (by simpa using NormedStarGroup.norm_star_le x⋆)
 
 @[simp]
-theorem nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
+theorem nnNorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_star _
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_star := nnNorm_star
 
 /-- The `star` map in a normed star group is a normed group homomorphism. -/
 def starNormedAddGroupHom : NormedAddGroupHom E E :=
@@ -77,6 +76,26 @@ instance [NormedField 𝕜] [NormedSpace 𝕜 E] [Star 𝕜] [TrivialStar 𝕜] 
     NormedSpace 𝕜 (selfAdjoint E) where
   norm_smul_le _ _ := norm_smul_le _ (_ : E)
 
+variable (x : E) (r : ℝ)
+
+@[simp] lemma Metric.star_ball : star (ball x r) = ball (star x) r := by
+  simpa using star_isometry.preimage_ball (star x) r
+
+@[simp] lemma Metric.star_closedBall : star (closedBall x r) = closedBall (star x) r := by
+  simpa using star_isometry.preimage_closedBall (star x) r
+
+@[simp] lemma Metric.star_sphere : star (sphere x r) = sphere (star x) r := by
+  simpa using star_isometry.preimage_sphere (star x) r
+
+@[simp] lemma dist_star_star (x y : E) : dist (star x) (star y) = dist x y :=
+  star_isometry.dist_eq x y
+
+@[simp] lemma edist_star_star (x y : E) : edist (star x) (star y) = edist x y :=
+  star_isometry.edist_eq x y
+
+@[simp] lemma nndist_star_star (x y : E) : nndist (star x) (star y) = nndist x y :=
+  star_isometry.nndist_eq x y
+
 end NormedStarGroup
 
 instance RingHomIsometric.starRingEnd [NormedCommRing E] [StarRing E] [NormedStarGroup E] :
@@ -90,8 +109,7 @@ class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
 
 instance : CStarRing ℝ where
-  norm_mul_self_le x := by
-    simp only [Real.norm_eq_abs, abs_mul_abs_self, star, id, norm_mul, le_refl]
+  norm_mul_self_le x := by simp
 
 namespace CStarRing
 
@@ -128,34 +146,41 @@ theorem norm_self_mul_star {x : E} : ‖x * x⋆‖ = ‖x‖ * ‖x‖ := by
 
 theorem norm_star_mul_self' {x : E} : ‖x⋆ * x‖ = ‖x⋆‖ * ‖x‖ := by rw [norm_star_mul_self, norm_star]
 
-theorem nnnorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
+theorem nnNorm_self_mul_star {x : E} : ‖x * x⋆‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_self_mul_star
 
-theorem nnnorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
+@[deprecated (since := "2026-10-31")] alias nnnorm_self_mul_star := nnNorm_self_mul_star
+
+theorem nnNorm_star_mul_self {x : E} : ‖x⋆ * x‖₊ = ‖x‖₊ * ‖x‖₊ :=
   Subtype.ext norm_star_mul_self
+
+@[deprecated (since := "2026-10-31")] alias nnnorm_star_mul_self := nnNorm_star_mul_self
 
 lemma _root_.IsSelfAdjoint.norm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖ = ‖x‖ ^ 2 := by
   simpa [sq, hx.star_eq] using CStarRing.norm_star_mul_self (x := x)
 
-lemma _root_.IsSelfAdjoint.nnnorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
+lemma _root_.IsSelfAdjoint.nnNorm_mul_self {x : E} (hx : IsSelfAdjoint x) :
     ‖x * x‖₊ = ‖x‖₊ ^ 2 :=
   Subtype.ext hx.norm_mul_self
 
-@[simp]
-theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
-  rw [← norm_eq_zero, norm_star_mul_self]
-  exact mul_self_eq_zero.trans norm_eq_zero
+@[deprecated (since := "2026-10-31")]
+alias _root_.IsSelfAdjoint.nnnorm_mul_self := _root_.IsSelfAdjoint.nnNorm_mul_self
 
-theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne, star_mul_self_eq_zero_iff]
+instance : IsProperStar E where
+  eq_zero_of_star_mul_self_eq_zero {x} := by rw [← norm_eq_zero, norm_star_mul_self]; simp
 
-@[simp]
-theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
-  simpa only [star_eq_zero, star_star] using @star_mul_self_eq_zero_iff _ _ _ _ (star x)
+@[deprecated (since := "2026-09-22")] alias star_mul_self_eq_zero_iff :=
+  star_mul_self_eq_zero
 
-theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne, mul_star_self_eq_zero_iff]
+@[deprecated (since := "2026-09-22")] alias star_mul_self_ne_zero_iff :=
+  star_mul_self_ne_zero
+
+@[deprecated (since := "2026-09-22")] alias mul_star_self_eq_zero_iff :=
+  mul_star_self_eq_zero
+
+@[deprecated (since := "2026-09-22")] alias mul_star_self_ne_zero_iff :=
+  mul_star_self_ne_zero
 
 end NonUnital
 
@@ -183,7 +208,7 @@ instance _root_.Prod.cstarRing : CStarRing (R₁ × R₂) where
 instance _root_.Pi.cstarRing : CStarRing (∀ i, R i) where
   norm_mul_self_le x := by
     refine le_of_eq (Eq.symm ?_)
-    simp only [norm, Pi.mul_apply, Pi.star_apply, nnnorm_star_mul_self, ← sq]
+    simp only [norm, Pi.mul_apply, Pi.star_apply, nnNorm_star_mul_self, ← sq]
     norm_cast
     exact
       (Finset.apply_sup_eq_sup_comp_of_linearOrder (fun x : NNReal => x ^ 2)
@@ -249,16 +274,19 @@ section SelfAdjoint
 
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
-theorem IsSelfAdjoint.nnnorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
+theorem IsSelfAdjoint.nnNorm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction n with
   | zero => simp only [pow_zero, pow_one]
   | succ k hk =>
-    rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnnorm_mul_self, hk, pow_mul']
+    rw [pow_succ', pow_mul', sq, (hx.pow (2 ^ k)).nnNorm_mul_self, hk, pow_mul']
+
+@[deprecated (since := "2026-10-31")]
+alias IsSelfAdjoint.nnnorm_pow_two_pow := IsSelfAdjoint.nnNorm_pow_two_pow
 
 theorem IsSelfAdjoint.norm_pow_two_pow {x : E} (hx : IsSelfAdjoint x) (n : ℕ) :
     ‖x ^ 2 ^ n‖ = ‖x‖ ^ 2 ^ n :=
-  congr($(hx.nnnorm_pow_two_pow n))
+  congr($(hx.nnNorm_pow_two_pow n))
 
 end SelfAdjoint
 

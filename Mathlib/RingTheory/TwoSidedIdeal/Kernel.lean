@@ -5,8 +5,10 @@ Authors: Johan Commelin, Jujian Zhang
 -/
 module
 
-public import Mathlib.RingTheory.TwoSidedIdeal.Basic
 public import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Kernel of a ring homomorphism as a two-sided ideal
@@ -31,7 +33,8 @@ variable (f : F)
 The kernel of a ring homomorphism, as a two-sided ideal.
 -/
 def ker : TwoSidedIdeal R :=
-  .mk
+  .ofRingCon
+  -- TODO: use `RingCon.ker`
   { r := fun x y ↦ f x = f y
     iseqv := by constructor <;> aesop
     mul' := by intro; simp_all

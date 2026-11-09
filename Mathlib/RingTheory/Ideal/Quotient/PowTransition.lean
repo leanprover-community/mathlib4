@@ -6,10 +6,8 @@ Authors: Nailin Guan, Jiedong Jiang
 module
 
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.RingTheory.Ideal.Quotient.Defs
-public import Mathlib.Algebra.Algebra.Operations
-public import Mathlib.RingTheory.Ideal.Operations
 public import Mathlib.RingTheory.Ideal.Maps
+public import Mathlib.RingTheory.Ideal.Quotient.Defs
 
 /-!
 # The quotient map from `R ⧸ I ^ m` to `R ⧸ I ^ n` where `m ≥ n`
@@ -178,7 +176,7 @@ lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I
     _ = 1 := by
       rw [← eq, mul_sub, mul_one, sub_add_sub_cancel', sub_eq_self, ← map_mul,
         Ideal.Quotient.eq_zero_iff_mem, pow_add]
-      apply Ideal.mul_mem_mul hc (Ideal.mul_le_left (I := I ^ (n - 1)) _)
+      apply Ideal.mul_mem_mul hc (Ideal.mul_le_right (I := I ^ (n - 1)) _)
       simpa only [← pow_add, Nat.sub_add_cancel npos] using! hc
 
 section powSMulQuotInclusion

@@ -88,7 +88,7 @@ theorem some_eball (a : α) (r : ENNReal) :
 
 lemma edist_self' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
     ∀ x : Option α, edist x x = 0
-  | (_ : α) => by simp [m.edist_self]
+  | (_ : α) => by simp
   | none => rfl
 
 lemma edist_comm' {α : Type u} [TopologicalSpace α] (m : WeakPseudoEMetricSpace α) :
@@ -128,7 +128,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
   edist_comm := h_edist ▸ edist_comm' m
   edist_triangle := h_edist ▸ edist_triangle' m
   topology_le s so := by
-    apply (@EMetric.isOpen_iff (Option α) (PseudoEMetricSpace.ofEDist edist
+    apply (@EMetric.isOpen_iff (Option α) _ (PseudoEMetricSpace.ofEDist edist
       (h_edist ▸ edist_self' m) (h_edist ▸ edist_comm' m) (h_edist ▸ edist_triangle' m))).mpr
     intro x xs
     suffices ∃ ε > 0, @Metric.eball (Option α) Option.toEDist x ε ⊆ s by rwa [← h_edist] at this
@@ -136,7 +136,7 @@ abbrev WeakPseudoEMetricSpace.OfIsOpenEmbedding {α : Type u} [t : TopologicalSp
     | none =>
       exact ⟨1, by norm_num, by simpa [ball_infty_of_pos]⟩
     | (x : α) =>
-      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α (PseudoEMetricSpace.ofEDist edist
+      obtain ⟨ε, εp, εt⟩ := (@EMetric.isOpen_iff α _ (PseudoEMetricSpace.ofEDist edist
         m.edist_self m.edist_comm m.edist_triangle)).mp
           (m.topology_le _ <| h.continuous.isOpen_preimage s so) x (mem_preimage.mpr xs)
       exact ⟨ε, εp, some_eball x ε ▸ image_subset_iff.mpr εt⟩
@@ -197,22 +197,25 @@ instance [EDist α] : EDist (WithTop α) where
   | (x : α), ⊤ => ∞
   | (x : α), (y : α) => edist x y
 
-/-- If `α` has a topology induced by a linear order in is a weak pseudo extended metric space,
-so if `WithTop α` -/
+/-- If `α` has a topology induced by a linear order and is a weak pseudo extended metric space,
+so is `WithTop α` -/
 @[to_dual]
 instance instWeakPseudoEMetricSpaceWithTop [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (WithTop α) :=
-  let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
+  letI : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
+  letI : WeakPseudoEMetricSpace (Option α) :=
+    Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
     WithTop.isOpenEmbedding_some
+  inferInstanceAs <| WeakPseudoEMetricSpace (Option α)
 
-/-- If `α` has a topology induced by a linear order in is a weak extended metric space,
-so if `WithTop α` -/
+/-- If `α` has a topology induced by a linear order and is a weak extended metric space,
+so is `WithTop α` -/
 @[to_dual]
 instance instWeakEMetricSpaceWithTop [m : WeakEMetricSpace α] : WeakEMetricSpace (WithTop α) :=
   let : TopologicalSpace (Option α) := TopologicalSpace.instWithTopOfOrderTopology
-  Option.WeakEMetricSpace.OfIsOpenEmbedding (inst := instEDistWithTop) rfl
-    WithTop.isOpenEmbedding_some
+  let : WeakEMetricSpace (Option α) := Option.WeakEMetricSpace.OfIsOpenEmbedding
+    (inst := instEDistWithTop) rfl WithTop.isOpenEmbedding_some
+  inferInstanceAs <| WeakEMetricSpace (Option α)
 
 open scoped OnePoint in
 instance [EDist α] : EDist (OnePoint α) where
@@ -227,36 +230,94 @@ extended metric space. -/
 instance instWeakPseudoEMetricSpaceOnePoint [m : WeakPseudoEMetricSpace α] :
     WeakPseudoEMetricSpace (OnePoint α) :=
   let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
-  Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding (inst := instEDistOnePoint) rfl
-    OnePoint.isOpenEmbedding_coe
+  let : WeakPseudoEMetricSpace (Option α) := Option.WeakPseudoEMetricSpace.OfIsOpenEmbedding
+    (inst := instEDistOnePoint) rfl OnePoint.isOpenEmbedding_coe
+  inferInstanceAs <| WeakPseudoEMetricSpace (Option α)
 
 /-- The one point compactification of a weak extended metric space is again a weak extended metric
 space. -/
 instance instWeakEMetricSpaceOnePoint [m : WeakEMetricSpace α] :
     WeakEMetricSpace (OnePoint α) :=
   let : TopologicalSpace (Option α) := OnePoint.instTopologicalSpace
-  Option.WeakEMetricSpace.OfIsOpenEmbedding (inst := instEDistOnePoint) rfl
-    OnePoint.isOpenEmbedding_coe
+  let : WeakEMetricSpace (Option α) := Option.WeakEMetricSpace.OfIsOpenEmbedding
+    (inst := instEDistOnePoint) rfl OnePoint.isOpenEmbedding_coe
+  inferInstanceAs <| WeakEMetricSpace (Option α)
 
 /-- `ℝ≥0∞` is a weak extended metric space with its usual distance function. -/
 noncomputable instance instWeakEMetricSpaceENNReal : WeakEMetricSpace ℝ≥0∞ :=
-  instWeakEMetricSpaceWithTop
+  inferInstanceAs <| WeakEMetricSpace (WithTop ℝ≥0)
 
 /-- `EReal` is a weak extended metric space with its usual distance function. -/
 noncomputable instance instWeakEMetricSpaceEReal : WeakEMetricSpace EReal :=
-  instWeakEMetricSpaceWithBot
+  inferInstanceAs <| WeakEMetricSpace (WithBot (WithTop ℝ))
 
 /-- `ℕ∞` is a weak extended metric space with its usual distance function. -/
 noncomputable instance instWeakEMetricSpaceENat : WeakEMetricSpace ℕ∞ :=
-  instWeakEMetricSpaceWithTop
+  inferInstanceAs <| WeakEMetricSpace (WithTop ℕ)
 
-theorem ENNReal.edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ⊤ ↔ a ≠ b ∧ (a = ⊤ ∨ b = ⊤) := by
-  cases a <;> cases b <;> simp only [ne_eq, not_true_eq_false, or_self, and_true, iff_false,
-    top_ne_coe, not_false_eq_true, coe_ne_top, or_false, and_self, or_true, and_self, iff_true,
-    coe_inj, and_false, iff_false]
-  · exact zero_ne_top
-  · rfl
-  · rfl
-  · exact edist_ne_top _ _
+namespace ENNReal
 
---TODO: Many more lemmas around `edist` on `ℝ≥0∞` etc. to add
+@[simp]
+theorem edist_top_coe (a : ℝ≥0) : edist ∞ ↑a = ∞ :=
+  rfl
+
+@[simp]
+theorem edist_coe_top (a : ℝ≥0) : edist ↑a ∞ = ∞ :=
+  rfl
+
+@[simp, norm_cast]
+theorem edist_coe (a b : ℝ≥0) : edist (a : ℝ≥0∞) b = edist a b :=
+  rfl
+
+@[simp]
+theorem edist_eq_top_iff (a b : ℝ≥0∞) : edist a b = ∞ ↔ a ≠ b ∧ (a = ∞ ∨ b = ∞) := by
+  cases a <;> cases b <;> simp
+
+theorem edist_eq_max (a b : ℝ≥0∞) : edist a b = max (a - b) (b - a) := by
+  cases a <;> cases b
+  case coe.coe =>
+    rw [edist_coe, ← coe_nnreal_ennreal_nndist, NNReal.nndist_eq]
+    norm_cast
+  all_goals simp
+
+theorem edist_le_iff_le_add_left (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ c + b ∧ b ≤ c + a := by
+  simp [edist_eq_max]
+
+theorem edist_le_iff_le_add_right (a b c : ℝ≥0∞) : edist a b ≤ c ↔ a ≤ b + c ∧ b ≤ a + c := by
+  simp only [edist_le_iff_le_add_left, add_comm]
+
+theorem sub_le_dist (a b : ℝ≥0∞) : a - b ≤ edist a b := by
+  grw [edist_eq_max, ← le_max_left]
+
+theorem le_add_edist (a b : ℝ≥0∞) : a ≤ b + edist a b := by
+  grw [← sub_le_dist, ← le_add_tsub]
+
+@[simp]
+theorem edist_zero_left (a : ℝ≥0∞) : edist 0 a = a := by
+  simp [edist_eq_max]
+
+@[simp]
+theorem edist_zero_right (a : ℝ≥0∞) : edist a 0 = a := by
+  simp [edist_eq_max]
+
+@[simp]
+theorem edist_add_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    edist (c + a) (c + b) = edist a b := by
+  simp only [edist_eq_max, add_sub_add_eq_sub_left hc]
+
+@[simp]
+theorem edist_add_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    edist (a + c) (b + c) = edist a b := by
+  simp only [edist_eq_max, add_sub_add_eq_sub_right hc]
+
+theorem edist_mul_left (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    edist (c * a) (c * b) = c * edist a b := by
+  simp_rw [edist_eq_max, mul_max, ENNReal.mul_sub fun _ _ => hc]
+
+theorem edist_mul_right (a b : ℝ≥0∞) {c : ℝ≥0∞} (hc : c ≠ ∞) :
+    edist (a * c) (b * c) = edist a b * c := by
+  simp_rw [edist_eq_max, max_mul, ENNReal.sub_mul fun _ _ => hc]
+
+end ENNReal
+
+--TODO: Add lemmas about `edist` on `ℕ∞` etc.

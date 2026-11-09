@@ -5,8 +5,10 @@ Authors: Sina Hazratpour
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.MorphismProperty.Composition
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Wide subcategories
@@ -137,10 +139,12 @@ instance wideSubcategory.faithful : (wideSubcategoryInclusion P).Faithful :=
 variable {P} in
 /-- Build an isomorphism in `WideSubcategory P` from an isomorphism in `C`. -/
 @[simps!]
-def isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
+def WideSubcategory.isoMk {X Y : WideSubcategory P} (e : X.obj ≅ Y.obj)
     (h₁ : P e.hom) (h₂ : P e.inv) : X ≅ Y where
   hom := ⟨e.hom, h₁⟩
   inv := ⟨e.inv, h₂⟩
+
+@[deprecated (since := "2026-08-07")] alias isoMk := WideSubcategory.isoMk
 
 end WideSubcategory
 
