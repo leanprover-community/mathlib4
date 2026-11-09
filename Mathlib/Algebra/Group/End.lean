@@ -740,6 +740,18 @@ theorem conj_symm_apply [Group G] (g h : G) : (conj g).symm h = g⁻¹ * h * g :
 theorem conj_inv_apply [Group G] (g h : G) : (conj g)⁻¹ h = g⁻¹ * h * g :=
   rfl
 
+@[to_additive]
+theorem conj_conj [Group G] (f : MulAut G) (g : G) : conj f (conj g) = conj (f g) := by ext; simp
+
+@[to_additive]
+theorem conj_eq_one_iff [Group G] : conj (G := G) = 1 ↔ IsMulCommutative G := by
+  simp only [DFunLike.ext_iff, MonoidHom.one_apply, conj_apply, one_apply, mul_inv_eq_iff_eq_mul,
+    isMulCommutative_iff]
+
+@[to_additive (attr := simp)]
+theorem conj_eq_one [Group G] [IsMulCommutative G] : conj (G := G) = 1 := by
+  simpa only [conj_eq_one_iff]
+
 /-- Isomorphic groups have isomorphic automorphism groups. -/
 @[to_additive (attr := simps) /-- Isomorphic groups have isomorphic automorphism groups. -/]
 def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
@@ -749,6 +761,10 @@ def congr [Group G] {H : Type*} [Group H] (ϕ : G ≃* H) :
   left_inv _ := by simp [DFunLike.ext_iff]
   right_inv _ := by simp [DFunLike.ext_iff]
   map_mul' := by simp [DFunLike.ext_iff]
+
+@[to_additive]
+theorem congr_conj [Group G] {H} [Group H] (e : G ≃* H) (g : G) :
+    MulAut.congr e (conj g) = conj (e g) := by ext; simp
 
 end MulAut
 

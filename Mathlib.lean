@@ -5028,6 +5028,7 @@ public import Mathlib.GroupTheory.HNNExtension
 public import Mathlib.GroupTheory.Index
 public import Mathlib.GroupTheory.IndexNSmul
 public import Mathlib.GroupTheory.IndexNormal
+public import Mathlib.GroupTheory.InnerAutomorphism
 public import Mathlib.GroupTheory.IsPerfect
 public import Mathlib.GroupTheory.IsSubnormal
 public import Mathlib.GroupTheory.MonoidLocalization.Away
@@ -5051,6 +5052,7 @@ public import Mathlib.GroupTheory.OrderOfElement
 public import Mathlib.GroupTheory.OreLocalization.Basic
 public import Mathlib.GroupTheory.OreLocalization.Cardinality
 public import Mathlib.GroupTheory.OreLocalization.OreSet
+public import Mathlib.GroupTheory.OuterAutomorphism
 public import Mathlib.GroupTheory.PGroup
 public import Mathlib.GroupTheory.Perm.Basic
 public import Mathlib.GroupTheory.Perm.Centralizer
