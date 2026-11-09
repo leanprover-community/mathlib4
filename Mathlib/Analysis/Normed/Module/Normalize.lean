@@ -6,8 +6,8 @@ Authors: Ilmārs Cīrulis, Alex Meiburg
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Basic.Sign.Defs
 public import Mathlib.Analysis.Normed.Module.Ray
+public import Mathlib.Basic.Sign.Defs
 
 set_option doc.verso true
 set_option doc.verso.suggestions false
