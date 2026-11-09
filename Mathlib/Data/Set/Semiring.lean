@@ -43,7 +43,7 @@ def toSetEquiv : SetSemiring α ≃ Set α where
   toFun := toSet
   invFun := ofSet
 
-instance : CompleteAtomicBooleanAlgebra (SetSemiring α) :=
+instance : CompleteAtomicBooleanAlgebra (SetSemiring α) := fast_instance%
   toSetEquiv.completeAtomicBooleanAlgebra
 
 @[simp] lemma toSet_ofSet (s : Set α) : (ofSet s).toSet = s := rfl
@@ -124,19 +124,19 @@ lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
 
 end One
 
-instance [MulOneClass α] : MulOneClass (SetSemiring α) :=
+instance [MulOneClass α] : MulOneClass (SetSemiring α) := fast_instance%
   toSetEquiv.injective.mulOneClass toSet rfl fun _ _ ↦ rfl
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
 
-instance [Semigroup α] : Semigroup (SetSemiring α) :=
+instance [Semigroup α] : Semigroup (SetSemiring α) := fast_instance%
   toSetEquiv.injective.semigroup toSet fun _ _ ↦ rfl
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
-instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
+instance [CommSemigroup α] : CommSemigroup (SetSemiring α) := fast_instance%
   toSetEquiv.injective.commSemigroup toSet fun _ _ ↦ rfl
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
