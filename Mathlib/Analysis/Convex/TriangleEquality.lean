@@ -26,8 +26,6 @@ multiple of a single vector.
   be nonzero.
 * `normalize_eq_of_pairwise_sameRay`: if the summands pairwise lie on a common closed ray, then
   every nonzero summand has the same normalization as the sum.
-* `norm_sum_eq_iff_pairwise_normalize_eq`: for nonzero summands, triangle equality holds iff all
-  the summands have the same normalization.
 * `norm_sum_eq_iff_exists_smul`: triangle equality holds iff every summand is a nonnegative real
   multiple of a single vector.
 
