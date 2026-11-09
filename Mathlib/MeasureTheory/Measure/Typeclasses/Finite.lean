@@ -650,15 +650,19 @@ section MeasureIxx
 variable [Preorder α] [TopologicalSpace α] [CompactIccSpace α] {m : MeasurableSpace α}
   {μ : Measure α} [IsLocallyFiniteMeasure μ] {a b : α}
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_Icc_lt_top : μ (Icc a b) < ∞ :=
   isCompact_Icc.measure_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_Ico_lt_top : μ (Ico a b) < ∞ :=
   (measure_mono Ico_subset_Icc_self).trans_lt measure_Icc_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_Ioc_lt_top : μ (Ioc a b) < ∞ :=
   (measure_mono Ioc_subset_Icc_self).trans_lt measure_Icc_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_Ioo_lt_top : μ (Ioo a b) < ∞ :=
   (measure_mono Ioo_subset_Icc_self).trans_lt measure_Icc_lt_top
 
@@ -671,8 +675,10 @@ open scoped Interval
 variable [LinearOrder α] [TopologicalSpace α] [CompactIccSpace α] {m : MeasurableSpace α}
   {μ : Measure α} [IsLocallyFiniteMeasure μ] {a b : α}
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_uIcc_lt_top : μ [[a, b]] < ∞ := measure_Icc_lt_top
 
+@[aesop (rule_sets := [finiteness]) safe apply]
 theorem measure_uIoc_lt_top : μ (Ι a b) < ∞ := measure_Ioc_lt_top
 
 end MeasureUIxx
