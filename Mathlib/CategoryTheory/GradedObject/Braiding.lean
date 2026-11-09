@@ -7,6 +7,7 @@ module
 
 public import Mathlib.CategoryTheory.GradedObject.Monoidal
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+
 /-!
 # The braided and symmetric category structures on graded objects
 

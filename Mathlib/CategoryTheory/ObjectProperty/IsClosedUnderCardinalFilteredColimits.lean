@@ -60,7 +60,7 @@ lemma isCardinalClosedUnderColimitsOfShape
 
 instance [HasCardinalFilteredColimits C κ] :
     HasCardinalFilteredColimits P.FullSubcategory κ where
-  hasColimitsOfShape J _ _ := by
+  hasColimitsOfShape' J _ _ := by
     have := HasCardinalFilteredColimits.hasColimitsOfShape C κ J
     have := isCardinalClosedUnderColimitsOfShape P κ J
     infer_instance
@@ -83,6 +83,13 @@ lemma isClosedUnderIsomorphisms : P.IsClosedUnderIsomorphisms where
         isColimit.uniq s m hm := by simp [← hm .unit]
         prop_diag_obj _ := hX }
     p.prop
+
+instance {D : Type*} [Category* D] (F : D ⥤ C) [F.IsCardinalAccessible κ] :
+    (P.inverseImage F).IsClosedUnderCardinalFilteredColimits κ where
+  isCardinalClosedUnderColimitsOfShape' J _ _ := by
+    have := isCardinalClosedUnderColimitsOfShape P κ J
+    have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
+    infer_instance
 
 end IsClosedUnderCardinalFilteredColimits
 

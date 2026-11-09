@@ -10,7 +10,6 @@ public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
-
 # Linear independence
 
 This file defines linear independence in a module or vector space.

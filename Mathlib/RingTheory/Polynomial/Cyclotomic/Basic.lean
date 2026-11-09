@@ -124,7 +124,7 @@ theorem X_pow_sub_one_eq_prod {ζ : R} {n : ℕ} (hpos : 0 < n) (h : IsPrimitive
   have hmonic : (X ^ n - C (1 : R)).Monic := monic_X_pow_sub_C (1 : R) (ne_of_lt hpos).symm
   symm
   apply prod_multiset_X_sub_C_of_monic_of_roots_card_eq hmonic
-  rw [@natDegree_X_pow_sub_C R _ _ n 1, ← nthRoots]
+  rw [natDegree_X_pow_sub_C, ← nthRoots]
   exact IsPrimitiveRoot.card_nthRoots_one h
 
 end IsDomain
@@ -214,10 +214,8 @@ then `cyclotomic n K` comes from a unique polynomial with integer coefficients. 
 theorem unique_int_coeff_of_cycl {K : Type*} [CommRing K] [IsDomain K] [CharZero K] {ζ : K}
     {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
     ∃! P : ℤ[X], map (Int.castRingHom K) P = cyclotomic' n K := by
-  obtain ⟨P, hP⟩ := int_coeff_of_cyclotomic' h
-  refine ⟨P, hP.1, fun Q hQ => ?_⟩
-  apply map_injective (Int.castRingHom K) Int.cast_injective
-  rw [hP.1, hQ]
+  rw [(map_injective (Int.castRingHom K) Int.cast_injective).existsUnique_iff_exists]
+  exact (int_coeff_of_cyclotomic' h).imp fun _ hP ↦ hP.1
 
 end Field
 
@@ -429,7 +427,7 @@ theorem cyclotomic_eq_prod_X_pow_sub_one_pow_moebius {n : ℕ} (R : Type*) [Comm
       algebraMap _ _ (X ^ n - 1 : R[X]) := by
     intro n hn
     rw [← prod_cyclotomic_eq_X_pow_sub_one hn R, map_prod]
-  rw [(prod_eq_iff_prod_pow_moebius_eq_of_nonzero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
+  rw [(prod_eq_iff_prod_pow_moebius_eq_of_ne_zero (fun n hn => _) fun n hn => _).1 h n hpos] <;>
     simp_rw [Ne, IsFractionRing.to_map_eq_zero_iff]
   · simp [cyclotomic_ne_zero]
   · intro n hn
@@ -548,7 +546,7 @@ theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
     have hrw : (∏ x ∈ n.properDivisors.erase 1, (cyclotomic x R).coeff 0) = 1 := by
       rw [Finset.prod_congr (refl (n.properDivisors.erase 1)) hcongr]
       simp only [Finset.prod_const_one]
-    simp only [hrw, mul_one, zero_sub, coeff_one_zero, coeff_X_zero, coeff_sub]
+    simp only [hrw, mul_one, zero_sub, AddMonoidAlgebra.coeff_one_zero, coeff_X_zero, coeff_sub]
   have heq : (X ^ n - 1 : R[X]).coeff 0 = -(cyclotomic n R).coeff 0 := by
     rw [← prod_cyclotomic_eq_X_pow_sub_one (zero_le_one.trans_lt hn), ←
       Nat.cons_self_properDivisors hn.ne_bot, Finset.prod_cons, mul_coeff_zero, coeff_zero_prod,
@@ -569,8 +567,8 @@ theorem coprime_of_root_cyclotomic {n : ℕ} (hpos : 0 < n) {p : ℕ} [hprime : 
   replace h := (ZMod.natCast_eq_zero_iff a p).2 h
   rw [IsRoot.def, eq_natCast, h, ← coeff_zero_eq_eval_zero] at hroot
   by_cases hone : n = 1
-  · simp only [hone, cyclotomic_one, zero_sub, coeff_one_zero, coeff_X_zero, neg_eq_zero,
-      one_ne_zero, coeff_sub] at hroot
+  · simp only [hone, cyclotomic_one, zero_sub, AddMonoidAlgebra.coeff_one_zero, coeff_X_zero,
+      neg_eq_zero, one_ne_zero, coeff_sub] at hroot
   rw [cyclotomic_coeff_zero (ZMod p) (Nat.succ_le_of_lt
     (lt_of_le_of_ne (Nat.succ_le_of_lt hpos) (Ne.symm hone)))] at hroot
   exact one_ne_zero hroot

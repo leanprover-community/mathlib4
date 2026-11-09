@@ -130,7 +130,7 @@ instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := in
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
 def copy (f : Ω^ N X x) (g : (I^N) → X) (h : g = f) : Ω^ N X x :=
-  ⟨⟨g, h.symm ▸ f.1.2⟩, by convert f.2⟩
+  ⟨⟨g, by rw [h]; fun_prop⟩, by convert f.2⟩
 
 theorem coe_copy (f : Ω^ N X x) {g : (I^N) → X} (h : g = f) : ⇑(copy f g h) = g :=
   rfl
@@ -330,7 +330,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f ↦ f.comp (Cube.insertAt i),
-    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
+    (ContinuousMap.ofClass <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
@@ -407,7 +407,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_ofClass, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · change f _ = _; congr 1
@@ -467,7 +467,7 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   toFun f := f 0
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ ↦ isEmptyElim i⟩
   left_inv f := by ext; congrm f $(Subsingleton.elim ..)
-  continuous_invFun := ContinuousMap.const'.2.subtype_mk _
+  continuous_invFun := by fun_prop
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
   the path components of `X`, aka the `ZerothHomotopy`. -/

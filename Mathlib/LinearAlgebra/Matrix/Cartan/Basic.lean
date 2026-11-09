@@ -6,10 +6,12 @@ Authors: Oliver Nash, Jonathan Reich
 module
 
 public import Mathlib.GroupTheory.Perm.Cycle.Concrete
+public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.NormDet
+import Mathlib.Tactic.Simproc.IsIndecomposable
 
 /-!
 # Cartan matrices
@@ -36,7 +38,8 @@ It also defines the predicate that a matrix is a finite-type Cartan matrix `Matr
 ## References
 
 * [N. Bourbaki, *Lie Groups and Lie Algebras, Chapters 4--6*][bourbaki1968] plates I -- IX
-* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*] Chapter 11
+* [J. Humphreys, *Introduction to Lie Algebras and Representation Theory*][humphreys1972]
+  Chapter 11
 
 ## Tags
 
@@ -451,6 +454,21 @@ off-diagonal entries that are neither 0 nor -1. -/
 theorem not_isSimplyLaced_F₄ : ¬ IsSimplyLaced F₄ := by decide
 
 theorem not_isSimplyLaced_G₂ : ¬ IsSimplyLaced G₂ := by decide
+
+theorem isIndecomposable_E_six : (E 6).IsIndecomposable := by
+  simp only [E_six_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_E_seven : (E 7).IsIndecomposable := by
+  simp only [E_seven_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_E_eight : (E 8).IsIndecomposable := by
+  simp only [E_eight_eq, reduceIsIndecomposable]
+
+theorem isIndecomposable_F₄ : F₄.IsIndecomposable := by
+  simp only [F₄, reduceIsIndecomposable]
+
+theorem isIndecomposable_G₂ : G₂.IsIndecomposable := by
+  simp only [G₂, reduceIsIndecomposable]
 
 end Properties
 
