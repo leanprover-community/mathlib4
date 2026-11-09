@@ -180,7 +180,7 @@ public register_option linter.oldObtain : Bool := {
 /-- Run the `oldObtain` linter, given that `stx` has kind `Lean.Parser.Tactic.obtain`. -/
 def obtainLinter (stx : Syntax) : CommandElabM Unit := do
   if stx[3].isNone then
-    Linter.logLint linter.oldObtain stx m!"Please remove stream-of-consciousness `obtain` syntax"
+    Linter.logLintIf linter.oldObtain stx m!"Please remove stream-of-consciousness `obtain` syntax"
 
 /-!
 ### The extended binder linter
@@ -219,6 +219,56 @@ partial def extendedBinderLinter (stx : Syntax) (symbol : String) : CommandElabM
       logWarningAt ref m!"Try this:{sugg}\n\n\
         The basic `{symbol}` syntax is preferred over `{symbol}ᵉ`."
 
+/-! ### The `set_option` linter -/
+
+/--
+The `setOption` linter flags a `set_option` command, term or tactic if the used option
+is only meant for use during development (such as `debug`, `pp`, `profiler` or `trace`).
+
+It also flags options that introduce technical debt.
+These may be flagged when set globally (such as `maxHeartbeats`) or
+when set at all (such as `backward.inferInstanceAs.wrap.reuseSubInstances`).
+-/
+public register_option linter.style.setOption : Bool := {
+  defValue := false
+  descr := "enable the `setOption` linter"
+}
+
+/--
+Run the `set_option` linter on the entire command syntax,
+warning against global `maxHeartbeats` or `linter.flexible` options.
+-/
+def globalSetOptionLinter (stx : Syntax) : CommandElabM Unit := do
+  if stx.isOfKind ``Lean.Parser.Command.set_option then
+    let name := stx[1].getId
+    if name.components.contains `maxHeartbeats || name == `linter.flexible then
+      Linter.logLintIf linter.style.setOption stx
+        m!"Unscoped option {name} is not allowed:\n\
+          Please scope this to individual declarations, as in\n```\nset_option {name} in\n\
+          -- comment explaining why this is necessary\n\
+          example : ... := ...\n```"
+
+/--
+Run the `set_option` linter, given that `stx` has kind `Lean.Parser.Term.set_option`,
+`Lean.Parser.Tactic.set_option`, or `Lean.Parser.Command.set_option`.
+
+For a command level `set_option ... in`, this function will run on the `set_option ...` part.
+-/
+def setOptionLinter (stx : Syntax) : CommandElabM Unit := do
+  -- In all 3 cases, `stx[1]` is the identifier of the option.
+  let opt := stx[1]
+  let name := opt.getId
+  let forbidden := [`debug, `pp, `profiler, `trace]
+  if forbidden.contains name.getRoot then
+    Linter.logLintIf linter.style.setOption opt
+      m!"Setting options starting with `{"`, `".intercalate (forbidden.map (·.toString))}` \
+        is only intended for development and not for final code. \
+        If you intend to submit this contribution to the Mathlib project, \
+        please remove `set_option {name}`."
+  else if name == `backward.inferInstanceAs.wrap.reuseSubInstances then
+    Linter.logLintIf linter.style.setOption opt
+      m!"The `{name}` option marks the introduction of technical debt, so please don't use it."
+
 /-! ### The combined syntax linter -/
 
 partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
@@ -233,14 +283,33 @@ partial def lintSyntax (stx : Syntax) : CommandElabM Unit := do
     | ``Lean.Parser.Tactic.obtain => obtainLinter stx
     | ``Batteries.ExtendedBinder.«term∃ᵉ_,_» => extendedBinderLinter stx "∃"
     | ``Batteries.ExtendedBinder.«term∀ᵉ_,_» => extendedBinderLinter stx "∀"
+    | ``Lean.Parser.Term.set_option | ``Lean.Parser.Tactic.set_option
+    | ``Lean.Parser.Command.set_option => setOptionLinter stx
     | _ => pure ()
   | _ => pure ()
 
+/--
+Peel off and evaluate `set_option ... in ...` syntax, and run the syntax based linters.
+This is like `Lean.withSetOptionIn`, but it also lints the leading `set_option ... in` syntax.
+-/
+partial def withSetOptionInLintSyntax (stx : Syntax) : CommandElabM Unit := do
+  if stx.getKind == ``Lean.Parser.Command.in
+      && stx[0].getKind == ``Lean.Parser.Command.set_option then
+    setOptionLinter stx[0]
+    -- Do not modify the infotrees when elaborating, and silently ignore errors.
+    let opts ← Elab.withEnableInfoTree false try
+        (·.1) <$> Elab.elabSetOption stx[0][1] stx[0][3]
+      catch _ => getOptions
+    withScope ({ · with opts }) do withSetOptionInLintSyntax stx[2]
+  else
+    globalSetOptionLinter stx
+    lintSyntax stx
+
 def syntaxBasedLinter : Linter where
-  run := withSetOptionIn fun stx ↦ do
+  run stx := do
     if ← MonadLog.hasErrors then
       return
-    lintSyntax stx
+    withSetOptionInLintSyntax stx
 
 initialize addLinter syntaxBasedLinter
 

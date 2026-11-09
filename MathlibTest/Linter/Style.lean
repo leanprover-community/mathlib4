@@ -17,12 +17,12 @@ section setOption
 set_option linter.style.setOption true
 
 -- All types of options are supported: Boolean, numeric and string-valued.
--- On the top level, i.e. as commands.
+-- As a command or localized to a command, tactic or term
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option pp.all'.
+Mathlib project, please remove `set_option pp.all`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -30,9 +30,9 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 set_option pp.all true
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option profiler'.
+Mathlib project, please remove `set_option profiler`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -40,19 +40,9 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 set_option profiler false
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
--/
-#guard_msgs in
-set_option pp.all false
-
-/--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
-for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option profiler.threshold'.
+Mathlib project, please remove `set_option profiler.threshold`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -60,9 +50,9 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 set_option profiler.threshold 50
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option trace.profiler.output'.
+Mathlib project, please remove `set_option trace.profiler.output`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -70,9 +60,9 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 set_option trace.profiler.output "foo"
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option debug.moduleNameAtTimeout'.
+Mathlib project, please remove `set_option debug.moduleNameAtTimeout`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -82,12 +72,21 @@ set_option debug.moduleNameAtTimeout false
 -- The lint does not fire on arbitrary options.
 set_option autoImplicit false
 
--- We also cover set_option tactics.
+/--
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
+for development and not for final code. If you intend to submit this contribution to the
+Mathlib project, please remove `set_option pp.all`.
+
+Note: This linter can be disabled with `set_option linter.style.setOption false`
+-/
+#guard_msgs in
+set_option pp.all true in
+lemma command : True := trivial
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option pp.all'.
+Mathlib project, please remove `set_option pp.all`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
@@ -97,46 +96,14 @@ lemma tactic : True := by
   trivial
 
 /--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
+warning: Setting options starting with `debug`, `pp`, `profiler`, `trace` is only intended
 for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option pp.raw.maxDepth'.
+Mathlib project, please remove `set_option pp.all`.
 
 Note: This linter can be disabled with `set_option linter.style.setOption false`
 -/
 #guard_msgs in
-lemma tactic2 : True := by
-  set_option pp.raw.maxDepth 32 in
-  trivial
-
-/--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
-for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option pp.all'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
--/
-#guard_msgs in
-lemma tactic3 : True := by
-  set_option pp.all false in
-  trivial
-
-/--
-warning: Setting options starting with 'debug', 'pp', 'profiler', 'trace' is only intended
-for development and not for final code. If you intend to submit this contribution to the
-Mathlib project, please remove 'set_option trace.profiler.output'.
-
-Note: This linter can be disabled with `set_option linter.style.setOption false`
--/
-#guard_msgs in
-lemma tactic4 : True := by
-  set_option trace.profiler.output "foo" in
-  trivial
-
--- This option is not affected, hence does not throw an error.
-set_option autoImplicit true in
-lemma foo' : True := trivial
-
--- TODO: add terms for the term form
+lemma term : True := set_option pp.all true in trivial
 
 /--
 warning: Unscoped option maxHeartbeats is not allowed:
@@ -152,7 +119,6 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 #guard_msgs in
 set_option maxHeartbeats 20
 
-#guard_msgs in
 set_option maxHeartbeats 20 in
 section
 end
@@ -171,7 +137,6 @@ Note: This linter can be disabled with `set_option linter.style.setOption false`
 #guard_msgs in
 set_option synthInstance.maxHeartbeats 20
 
-#guard_msgs in
 set_option synthInstance.maxHeartbeats 20 in
 section
 end
