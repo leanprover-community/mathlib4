@@ -50,7 +50,7 @@ structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module 
 
 namespace StrictLieRinehartIdeal
 
-/-- Forgetting that a Lie-Rinehart-ideal is also a Lie ideal. -/
+/-- Forgetting that a Lie-Rinehart ideal is also a Lie ideal. -/
 add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L : Type*} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
@@ -187,7 +187,7 @@ section LieModule
 
 variable {M : Type*} [AddCommGroup M] [LieRingModule L M] [Module R M] [LieModule R L M]
 
-/-- Given a Lie-Rinehart algebra `L` containing a LieRinehart ideal `s ⊆ L`, together with a
+/-- Given a Lie-Rinehart algebra `L` containing a Lie-Rinehart ideal `s ⊆ L`, together with a
 Lie module `M` of `L`, we may regard `M` as a Lie module of `s` by restriction. -/
 instance lieModule {s : StrictLieRinehartIdeal A L} : LieModule R s M where
   smul_lie t x m := by

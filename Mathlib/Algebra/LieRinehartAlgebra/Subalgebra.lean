@@ -192,14 +192,13 @@ variable {R L₂ : Type*} [CommRing R] [Algebra R A] [LieAlgebra R L] [LieRingMo
 def map (f : L →ₗ⁅.id R A⁆ L₂) : LieRinehartSubalgebra A L₂ :=
   letI : RingHomSurjective (AlgHom.id R A).toRingHom := {is_surjective := Function.surjective_id}
   { L'.toSubmodule.map f.toLinearMap' with
-    lie_mem' {x y} := by
+    lie_mem' {_ _} := by
       rintro ⟨x', hx1, hx2⟩ ⟨y', hy1, hy2⟩
       use ⁅x', y'⁆
       constructor
       · exact L'.lie_mem' hx1 hy1
       · rw [LieRinehartAlgebra.Hom.toLinearMap'_apply] at *
-        rw [LieHom.map_lie, hx2, hy2]
-    }
+        rw [LieHom.map_lie, hx2, hy2] }
 
 @[simp] lemma mem_map : x ∈ map L' f ↔ ∃ y ∈ L', f y = x := .rfl
 @[simp] lemma coe_map : (map L' f : Set L₂) = f '' L' := rfl
