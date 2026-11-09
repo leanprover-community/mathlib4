@@ -125,6 +125,6 @@ instance {α β} [H : CoeFun α fun _ ↦ β] : CoeFun (Colex α) fun _ ↦ β w
   ofColexEquiv.symm.surjective.exists
 
 @[deprecated "type changed" (since := "2026-11-08")] alias toLex_symm_eq := ofLex_toLex
-@[deprecated (since := "2026-11-08")] alias ofLex_symm_eq := toLex_ofLex
-@[deprecated (since := "2026-11-08")] alias toColex_symm_eq := ofColex_toColex
-@[deprecated (since := "2026-11-08")] alias ofColex_symm_eq := toColex_ofColex
+@[deprecated "type changed" (since := "2026-11-08")] alias ofLex_symm_eq := toLex_ofLex
+@[deprecated "type changed" (since := "2026-11-08")] alias toColex_symm_eq := ofColex_toColex
+@[deprecated "type changed" (since := "2026-11-08")] alias ofColex_symm_eq := toColex_ofColex
