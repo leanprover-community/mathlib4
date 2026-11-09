@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.EffectiveEpi.Basic
 public import Mathlib.CategoryTheory.Sites.SheafOfTypes
 
 /-!
-
 # Effective epimorphic sieves
 
 We define the notion of effective epimorphic (pre)sieves and provide some API for relating the

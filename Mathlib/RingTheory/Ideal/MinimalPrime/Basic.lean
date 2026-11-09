@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Ideal.IsPrimary
 public import Mathlib.RingTheory.Ideal.Over
 
 /-!
-
 # Minimal primes
 
 We provide various results concerning the minimal primes above an ideal.
