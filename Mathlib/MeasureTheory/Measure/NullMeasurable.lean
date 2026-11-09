@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 module
 
+public import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 public import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 public import Mathlib.MeasureTheory.Measure.AEDisjoint
 
@@ -307,6 +308,14 @@ theorem measure_add_measure_compl₀ {s : Set α} (hs : NullMeasurableSet s μ) 
 
 lemma measure_of_measure_compl_eq_zero (hs : μ sᶜ = 0) : μ s = μ Set.univ := by
   simpa [hs] using measure_add_measure_compl₀ <| .of_compl <| .of_null hs
+
+theorem nullMeasurableSet_image_of_measure_eq {f : α → α}
+    (hf : MeasurableEmbedding f) (H : ∀ s, μ s = 0 → μ (f '' s) = 0) (hs : NullMeasurableSet s μ) :
+    NullMeasurableSet (f '' s) μ := by
+  obtain ⟨t, hts, ht, hts'⟩ := exists_measurable_subset_ae_eq hs
+  rw [← union_sdiff_cancel hts, image_union]
+  apply (hf.measurableSet_image' ht).nullMeasurableSet.union
+  exact .of_null <| H _ (ae_eq_set.mp hts').right
 
 section MeasurableSingletonClass
 
