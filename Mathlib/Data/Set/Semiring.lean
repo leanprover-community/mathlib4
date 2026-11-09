@@ -38,6 +38,7 @@ deriving Inhabited
 namespace SetSemiring
 
 /-- The natural equivalence between `SetSemiring α` and `Set α`. -/
+@[simps]
 def toSetEquiv : SetSemiring α ≃ Set α where
   toFun := toSet
   invFun := ofSet
@@ -57,6 +58,7 @@ instance : Singleton α (SetSemiring α) where singleton a := ofSet {a}
 instance : Insert α (SetSemiring α) where insert a s := ofSet (insert a s.toSet)
 
 @[simp] lemma mem_toSet {s : SetSemiring α} {a : α} : a ∈ s.toSet ↔ a ∈ s := Iff.rfl
+@[simp] lemma mem_ofSet {s : Set α} {a : α} : a ∈ ofSet s ↔ a ∈ s := Iff.rfl
 @[simp] lemma mem_singleton_iff {a b : α} : a ∈ ({b} : SetSemiring α) ↔ a = b := Iff.rfl
 @[simp] lemma toSet_singleton {a : α} : toSet {a} = {a} := rfl
 @[simp] lemma ofSet_singleton {a : α} : ofSet {a} = {a} := rfl
@@ -122,21 +124,20 @@ lemma one_def : (1 : SetSemiring α) = ofSet 1 := rfl
 
 end One
 
-instance [MulOneClass α] : MulOneClass (SetSemiring α) where
-  one_mul _ := SetSemiring.ext (one_mul _)
-  mul_one _ := SetSemiring.ext (mul_one _)
+instance [MulOneClass α] : MulOneClass (SetSemiring α) :=
+  toSetEquiv.injective.mulOneClass toSet rfl fun _ _ ↦ rfl
 
 instance [MulOneClass α] : NonAssocSemiring (SetSemiring α) where
 
-instance [Semigroup α] : Semigroup (SetSemiring α) where
-  mul_assoc _ _ _ := SetSemiring.ext (mul_assoc ..)
+instance [Semigroup α] : Semigroup (SetSemiring α) :=
+  toSetEquiv.injective.semigroup toSet fun _ _ ↦ rfl
 
 instance [Semigroup α] : NonUnitalSemiring (SetSemiring α) where
 
 instance [Monoid α] : IdemSemiring (SetSemiring α) where
 
-instance [CommSemigroup α] : CommSemigroup (SetSemiring α) where
-  mul_comm _ _ := SetSemiring.ext (mul_comm ..)
+instance [CommSemigroup α] : CommSemigroup (SetSemiring α) :=
+  toSetEquiv.injective.commSemigroup toSet fun _ _ ↦ rfl
 
 instance [CommSemigroup α] : NonUnitalCommSemiring (SetSemiring α) where
 
