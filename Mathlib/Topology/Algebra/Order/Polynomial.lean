@@ -111,7 +111,7 @@ theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
 
 theorem tendsto_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
     (h : P.degree ≤ 0) : Tendsto P.eval atTop (𝓝 P.leadingCoeff) := by
-  apply tendsto_atTop_nhds_iff.mpr
+  rw [tendsto_atTop_nhds_iff]
   grind [degree_le_zero_iff, leadingCoeff]
 
 end PolynomialAtTop
