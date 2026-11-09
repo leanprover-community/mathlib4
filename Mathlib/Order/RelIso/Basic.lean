@@ -637,7 +637,7 @@ def Simps.apply (h : r ≃r s) : α → β :=
 def Simps.symm_apply (h : r ≃r s) : β → α :=
   h.symm
 
-initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply, as_prefix toEquiv)
+initialize_simps_projections RelIso (toFun → apply, invFun → symm_apply)
 
 /-- Identity map is a relation isomorphism. -/
 @[refl, simps! toEquiv apply]
