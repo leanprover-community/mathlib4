@@ -5,11 +5,10 @@ Authors: Christian Merten
 -/
 module
 
-public import Mathlib.CategoryTheory.Sites.Hypercover.One
 public import Mathlib.CategoryTheory.Limits.Types.Multiequalizer
+public import Mathlib.CategoryTheory.Sites.Hypercover.One
 
 /-!
-
 # `1`-hypercovers and (pre)sheaves of types
 
 In this file we provide some API for working with `1`-hypercovers for sheaves of types.
@@ -65,7 +64,7 @@ def sectionsEquivOfHasPullbacks (E : PreZeroHypercover S)
 lemma isLimit_toPreOneHypercover_type_iff (E : PreZeroHypercover.{w} S) [E.HasPullbacks]
     (F : Cᵒᵖ ⥤ Type*) :
     Nonempty (IsLimit <| E.toPreOneHypercover.multifork F) ↔ E.presieve₀.IsSheafFor F := by
-  rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompabible,
+  rw [Multifork.isLimit_types_iff, Presieve.isSheafFor_ofArrows_iff_bijective_toCompatible,
     ← Function.Bijective.of_comp_iff' (E.sectionsEquivOfHasPullbacks F).symm.bijective]
   rfl
 

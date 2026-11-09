@@ -5,10 +5,8 @@ Authors: Anne Baanen
 -/
 module
 
-public import Mathlib.RingTheory.Norm.Defs
 public import Mathlib.FieldTheory.PrimitiveElement
 public import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
-public import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 
 /-!
 # Norm for (finite) ring extensions
@@ -63,7 +61,7 @@ section EqProdRoots
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
 `(-1) ^ pb.dim * coeff (minpoly K pb.gen) 0`. -/
 theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
-    norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
+    norm R pb.gen = (-1) ^ pb.dim * (minpoly R pb.gen).coeff 0 := by
   rw [norm_eq_matrix_det pb.basis, det_eq_sign_charpoly_coeff, charpoly_leftMulMatrix,
     Fintype.card_fin]
 
@@ -104,7 +102,7 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
       leftMulMatrix_mulVec_repr] at hv
     refine (mul_eq_zero.mp (b.ext_elem fun i => ?_)).resolve_right (show ∑ i, v i • b i ≠ 0 from ?_)
-    · simpa only [map_zero, Pi.zero_apply] using! congr_fun hv i
+    · simpa only [map_zero, Pi.zero_apply] using! congr($hv i)
     · contrapose v_ne with sum_eq
       apply b.equivFun.symm.injective
       rw [b.equivFun_symm_apply, sum_eq, map_zero]
@@ -171,7 +169,7 @@ end IntermediateField
 
 section EqProdEmbeddings
 
-open IntermediateField IntermediateField.AdjoinSimple Polynomial
+open IntermediateField.AdjoinSimple Polynomial
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 

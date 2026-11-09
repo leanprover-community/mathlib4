@@ -5,12 +5,13 @@ Authors: Jujian Zhang
 -/
 module
 
+public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Group.ULift
 public import Mathlib.Algebra.GroupWithZero.Subgroup
 public import Mathlib.Algebra.Module.NatInt
 public import Mathlib.GroupTheory.QuotientGroup.Defs
-public import Mathlib.Tactic.NormNum.Eq
-public import Mathlib.Algebra.Field.Defs
+
+import Mathlib.Tactic.NormNum.Eq
 
 /-!
 # Divisible Group and rootable group
@@ -115,12 +116,6 @@ theorem RootableBy.surjective_pow [RootableBy A α] {n : α} (hn : n ≠ 0) :
     Function.Surjective fun a : A => a ^ n := fun x =>
   ⟨RootableBy.root x n, RootableBy.root_cancel _ hn⟩
 
-@[deprecated (since := "2026-04-19")] alias pow_left_surj_of_rootableBy :=
-  RootableBy.surjective_pow
-
-@[deprecated (since := "2026-04-19")] alias smul_right_surj_of_divisibleBy :=
-  DivisibleBy.surjective_smul
-
 /--
 A `Monoid A` is `α`-rootable iff the `pow _ n` function is surjective, i.e. the constructive version
 implies the textbook approach.
@@ -131,10 +126,10 @@ implies the textbook approach.
 noncomputable def rootableByOfPowLeftSurj
     (H : ∀ {n : α}, n ≠ 0 → Function.Surjective (fun a => a ^ n : A → A)) : RootableBy A α where
   root a n := @dite _ (n = 0) (Classical.dec _) (fun _ => (1 : A)) fun hn => (H hn a).choose
-  root_zero _ := by exact dif_pos rfl
+  root_zero _ := by exact dite_eq_left rfl
   root_cancel a hn := by
     dsimp only
-    rw [dif_neg hn]
+    rw [dite_eq_right hn]
     exact (H hn a).choose_spec
 
 section Pi
@@ -168,8 +163,8 @@ section ULift
 @[to_additive]
 instance ULift.instRootableBy [RootableBy A α] : RootableBy (ULift A) α where
   root x a := ULift.up <| RootableBy.root x.down a
-  root_zero x := ULift.ext _ _ <| RootableBy.root_zero x.down
-  root_cancel _ h := ULift.ext _ _ <| RootableBy.root_cancel _ h
+  root_zero x := ULift.ext <| RootableBy.root_zero x.down
+  root_cancel _ h := ULift.ext <| RootableBy.root_cancel _ h
 
 end ULift
 
@@ -190,9 +185,9 @@ noncomputable def divisibleByIntOfSMulTopEqTop
     (H : ∀ {n : ℤ} (_hn : n ≠ 0), n • (⊤ : AddSubgroup A) = ⊤) : DivisibleBy A ℤ where
   div a n :=
     if hn : n = 0 then 0 else (show a ∈ n • (⊤ : AddSubgroup A) by rw [H hn]; trivial).choose
-  div_zero _ := dif_pos rfl
+  div_zero _ := dite_eq_left rfl
   div_cancel a hn := by
-    simp_rw [dif_neg hn]
+    simp_rw [dite_eq_right hn]
     generalize_proofs h1
     exact h1.choose_spec.2
 
@@ -262,7 +257,7 @@ end Hom
 
 section Quotient
 
-variable (α : Type*) {A : Type*} [CommGroup A] (B : Subgroup A)
+variable {A : Type*} [CommGroup A] (B : Subgroup A)
 
 /-- Any quotient group of a rootable group is rootable. -/
 @[to_additive /-- Any quotient group of a divisible group is divisible -/]

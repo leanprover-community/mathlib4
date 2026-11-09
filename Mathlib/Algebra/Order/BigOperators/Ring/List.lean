@@ -6,7 +6,9 @@ Authors: Stuart Presnell
 module
 
 public import Mathlib.Algebra.Order.Ring.Canonical
-public import Batteries.Data.List.Lemmas
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Big operators on a list in ordered rings

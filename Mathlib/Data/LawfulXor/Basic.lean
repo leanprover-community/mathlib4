@@ -5,8 +5,12 @@ Authors: Eric Wieser
 -/
 
 module
-public import Mathlib.Logic.Function.Basic
+
 public import Mathlib.Data.Fin.Init
+public import Mathlib.Logic.Function.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # The `LawfulXor` typeclass
@@ -14,7 +18,7 @@ public import Mathlib.Data.Fin.Init
 This file generalizes basic lemmas about the `^^^` operator across numeric types.
 -/
 
-@[expose] public section
+public section
 
 /-- A typeclass indicating that the xor operation, `^^^`, is lawful. -/
 class LawfulXor (α : Type*) [XorOp α] [Zero α] where

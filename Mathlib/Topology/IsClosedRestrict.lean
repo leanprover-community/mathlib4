@@ -95,7 +95,6 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
     exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
   continuous_invFun := continuous_reorderRestrictProd.subtype_mk _
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
 `Sᶜ.domRestrict ⁻¹' Sᶜ.domRestrict '' s` is a set of
 `Sᶜ.domRestrict '' s × (Π i : S, α i)`, and the image of that set by `Prod.snd` is

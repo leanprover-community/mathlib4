@@ -3,12 +3,14 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Data.Setoid.Partition
-import Mathlib.Order.Filter.AtTopBot.Basic
-import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Order.WellFoundedSet
+module
+
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.Order.Field.Rat
+public import Mathlib.Order.Filter.AtTopBot.Basic
+public import Mathlib.Order.Interval.Set.Infinite
+public import Mathlib.Order.Setoid.Partition
+public import Mathlib.Order.WellFoundedSet
 
 /-!
 # Disproof of the Aharoni–Korman conjecture
@@ -66,6 +68,8 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
 * But as `f` maps each element of `S \ (C ∩ level n)` to `level (n - 1) ∪ level n ∪ level (n + 1)`,
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
+
+@[expose] public section
 
 attribute [aesop 2 simp] Set.subset_def Finset.subset_iff
 
@@ -585,7 +589,7 @@ lemma image_chainBetween_isChain {a b c d n : ℕ} :
 open Finset in
 lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
     #(chainBetween a b c d) = c + d + 1 - (a + b) := by
-  rw [chainBetween, if_pos ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
+  rw [chainBetween, ite_eq_left ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
   · simp only [Icc_self, card_singleton, Nat.card_Icc]
     rw [← Finset.Ico_map_sectR, card_map, Nat.card_Ico]
     lia
@@ -671,12 +675,14 @@ they are beside each other.
 -/
 lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
-    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
+    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C)
     {x y : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + 1, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + 1, n))
     (h₁h : h(x + 1, y, n) ≤ h(xh, yh, n)) (h₂h : h(x, y + 1, n) ≤ h(xh, yh, n)) :
     f h(x + 1, y, n) = f h(x, y + 1, n) := by
   classical
+  obtain ⟨hx, hy⟩ : xl ≤ xh ∧ yl ≤ yh := by
+    simpa [toHollom_le_toHollom_iff_fixed_right] using h₁l.trans h₁h
   -- Write `int` for the interval `[(xl, yl, n), (xh, yh, n)]`, as a finite set, and `I` for the
   -- intersection of `C` with this interval.
   set int : Finset Hollom := (Icc (xl, yl) (xh, yh)).image (embed n)
@@ -746,7 +752,7 @@ lemma apply_eq_of_line_eq_step (f : SpinalMap C) {n xl yl xh yh : ℕ}
       · rintro _ _ c a b hab rfl rfl rfl h
         have : (x + 1, y + 1) ≤ (a, b) := (Finset.mem_Icc.1 (chainBetween_subset hab)).1
         rw [← embed_apply, ← embed_apply] at h
-        exact f.not_lt_of_eq congr(toHollom $(h.symm)) (embed_strictMono (this.trans_lt' (by simp)))
+        exact f.not_lt_of_eq congr(toHollom $h.symm) (embed_strictMono (this.trans_lt' (by simp)))
   -- Therefore the image of both points is in `I \ B.image f`,
   replace hleft : f h(x + 1, y, n) ∈ I \ B.image f := by simpa [mem_sdiff, hleft, I] using this.1
   replace hright : f h(x, y + 1, n) ∈ I \ B.image f := by simpa [mem_sdiff, hright, I] using this.2
@@ -760,7 +766,7 @@ induction on `k` with `apply_eq_of_line_eq_step`.
 -/
 lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
-    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C) (hx : xl ≤ xh) (hy : yl ≤ yh)
+    (hlo : h(xl, yl, n) ∈ C) (hhi : h(xh, yh, n) ∈ C)
     {x y k : ℕ}
     (h₁l : h(xl, yl, n) ≤ h(x + k, y, n)) (h₂l : h(xl, yl, n) ≤ h(x, y + k, n))
     (h₁h : h(x + k, y, n) ≤ h(xh, yh, n)) (h₂h : h(x, y + k, n) ≤ h(xh, yh, n)) :
@@ -770,7 +776,7 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
   | succ k ih =>
       have : f h(x + (k + 1), y, n) = f h(x + k, y + 1, n) := by
         simp only [← add_assoc] at h₁l h₁h ⊢
-        refine apply_eq_of_line_eq_step f hC hlo hhi hx hy h₁l ?_ h₁h ?_
+        refine apply_eq_of_line_eq_step f hC hlo hhi h₁l ?_ h₁h ?_
         all_goals
           simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
           lia
@@ -784,7 +790,7 @@ For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, 
 if `a + b = c + d` then `f (a, b, n) = f (c, d, n)`.
 -/
 theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·) C)
-    {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n) (hlohi : lo ≤ hi)
+    {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n)
     {x y : Hollom} (h : line x = line y)
     (h₁l : lo ≤ x) (h₂l : lo ≤ y) (h₁h : x ≤ hi) (h₂h : y ≤ hi) :
     f x = f y := by
@@ -794,13 +800,13 @@ theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·
   have hy : y ∈ level n := ordConnected_level.out hlo.2 hhi.2 ⟨h₂l, h₂h⟩
   induction hx using induction_on_level with | h x₁ y₁ =>
   induction hy using induction_on_level with | h x₂ y₂ =>
-  simp only [] at hxy
+  simp only at hxy
   simp only [line_toHollom] at h
   obtain ⟨k, rfl⟩ := exists_add_of_le hxy
   obtain rfl : y₂ = y₁ + k := by lia
   induction hlo.2 using induction_on_level with | h xlo ylo =>
   induction hhi.2 using induction_on_level with | h xhi yhi =>
-  exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 (by simp_all) (by simp_all) h₁l h₂l h₁h h₂h
+  exact apply_eq_of_line_eq_aux f hC hlo.1 hhi.1 h₁l h₂l h₁h h₂h
 
 /--
 Construction of the set `R`, which has the following key properties:
@@ -890,14 +896,14 @@ noncomputable def x0y0 (n : ℕ) (C : Set Hollom) : ℕ × ℕ :=
 
 lemma x0y0_mem (h : (C ∩ level (n + 1)).Nonempty) :
     embed (n + 1) (x0y0 n C) ∈ C := by
-  rw [x0y0, dif_pos h]
+  rw [x0y0, dite_eq_left h]
   exact WellFounded.min_mem _ {x | embed (n + 1) x ∈ C} _
 
 lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) z ∈ C) :
     embed (n + 1) (x0y0 n C) ≤ embed (n + 1) z := by
   have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
   refine hC.le_of_not_gt h (x0y0_mem this) ?_
-  rw [x0y0, dif_pos this, OrderEmbedding.lt_iff_lt]
+  rw [x0y0, dite_eq_left this, OrderEmbedding.lt_iff_lt]
   exact wellFounded_lt.not_lt_min {x | embed (n + 1) x ∈ C} h
 
 /--
@@ -947,7 +953,7 @@ We will later show the same assuming `C ∩ level (n + 1)` is infinite.
 -/
 lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Finite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
-  rw [S, if_pos h']
+  rw [S, ite_eq_left h']
   -- Take a maximal pair `(b, c)` so that any `(d, e, n)` in `C` satisfies
   -- `(d, e, n) ≤ (b, c, n)`.
   obtain ⟨b, c, hab⟩ : ∃ b c, ∀ d e, h(d, e, n + 1) ∈ C → (d, e) ≤ (b, c) := by
@@ -982,7 +988,7 @@ We earlier showed the same assuming `C ∩ level (n + 1)` is finite.
 -/
 lemma square_subset_S_case_2 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Infinite) :
     ∀ᶠ a in atTop, embed n '' Set.Ici (a, a) ⊆ S n C \ (C ∩ level n) := by
-  rw [S, if_neg h']
+  rw [S, ite_eq_right h']
   filter_upwards [eventually_ge_atTop (x0 n C + 1), eventually_ge_atTop (y0 n C + 1),
     square_subset_R h] with a hax hay haR
   simp [Set.subset_def, embed_apply] at *
@@ -1032,7 +1038,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   cases (C ∩ level (n + 1)).finite_or_infinite
   -- In the case that `C ∩ level (n + 1)` is finite, this is immediate from the definition of `S`.
   case inl h =>
-    rw [S, if_pos h, Set.mem_ofPred_eq] at hx
+    rw [S, ite_eq_left h, Set.mem_ofPred_eq] at hx
     intro hy
     refine f.incomp_apply ?_ (hx.2 _ hy).symm
     have := R_subset_level hx.1
@@ -1043,7 +1049,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
   case inr h =>
     -- Write `(x, y, n)` for our given point, and set `(a, b, n + 1) := f(x, y, n)`
     induction S_subset_level hx using induction_on_level with | h x y =>
-    simp only [S, if_neg h, Set.mem_ofPred_eq] at hx
+    simp only [S, ite_eq_right h, Set.mem_ofPred_eq] at hx
     intro hp
     set fp := f h(x, y, n) with hfp
     clear_value fp
@@ -1068,7 +1074,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
       have : line h(a, b, n + 1) = line h(x0 n C, a + b - x0 n C, n + 1) := by simp; lia
       -- Then we have `f(a, b, n + 1) = f(x0, a + b - x0, n + 1)` since they are at the same line
       have : f h(a, b, n + 1) = f h(x0 n C, a + b - x0 n C, n + 1) := apply_eq_of_line_eq f hC
-        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
+        ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn this (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       -- so `f(x, y, n) = (a, b, n + 1) = f(a, b, n + 1) = f(x0, a + b - x0, n + 1)`
       have : f h(x, y, n) = f h(x0 n C, a + b - x0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
@@ -1086,7 +1092,7 @@ theorem not_S_hits_next (f : SpinalMap C) (hC : IsChain (· ≤ ·) C)
         lia
       have h0j : h(x0 n C, y0 n C, n + 1) ≤ j := hj'.trans' (by simp [ha, hb])
       have : line h(a, b, n + 1) = line h(a + b - y0 n C, y0 n C, n + 1) := by simp; lia
-      have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn ‹_› this
+      have := apply_eq_of_line_eq f hC ⟨x0_y0_mem h.nonempty, by simp⟩ hjCn this
         (x0_y0_min hC hp.1) (by simp; lia) hj' hj
       have : f h(x, y, n) = f h(a + b - y0 n C, y0 n C, n + 1) := by
         rw [← this, ← hfp, f.eq_self_of_mem hp.1]
@@ -1168,7 +1174,7 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     set c := f x with hc
     have hc' : c ∈ C ∩ level (n - 1) := h _ (F_subs hx)
     clear_value c
-    rw [coe_image, chainBetween, Ico_self, if_pos (by lia), empty_union, ← Icc_map_sectL] at hx
+    rw [coe_image, chainBetween, Ico_self, ite_eq_left (by lia), empty_union, ← Icc_map_sectL] at hx
     simp only [embed_apply, coe_map, Function.Embedding.sectL_apply, coe_Icc,
       Set.mem_image, Set.mem_Icc, exists_exists_and_eq_and] at hx
     obtain ⟨b, ⟨hab, hba⟩, rfl⟩ := hx

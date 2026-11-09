@@ -20,13 +20,14 @@ neighborhood
 
 public section
 
-open Set Filter Topology
+open Set Filter
+
+open scoped Topology
 
 universe u v
 
 variable {X : Type u} [TopologicalSpace X] {ι : Sort v} {α : Type*} {x : X} {s t : Set X}
 
-set_option backward.isDefEq.respectTransparency false in
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_ofPred_eq, @and_comm (x ∈ _), iInf_and]
 
@@ -333,12 +334,13 @@ theorem Dense.inter_of_isOpen_right (hs : Dense s) (ht : Dense t) (hto : IsOpen 
 theorem Dense.inter_nhds_nonempty (hs : Dense s) (ht : t ∈ 𝓝 x) :
     (s ∩ t).Nonempty :=
   let ⟨U, hsub, ho, hx⟩ := mem_nhds_iff.1 ht
-  (hs.inter_open_nonempty U ho ⟨x, hx⟩).mono fun _y hy => ⟨hy.2, hsub hy.1⟩
+  let ⟨y, hyU, hys⟩ := hs.inter_open_nonempty U ho ⟨x, hx⟩
+  ⟨y, hys, hsub hyU⟩
 
 theorem closure_sdiff : closure s \ closure t ⊆ closure (s \ t) :=
   calc
     closure s \ closure t = (closure t)ᶜ ∩ closure s := by simp only [sdiff_eq, inter_comm]
-    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr <| isClosed_closure).inter_closure
+    _ ⊆ closure ((closure t)ᶜ ∩ s) := (isOpen_compl_iff.mpr isClosed_closure).inter_closure
     _ = closure (s \ closure t) := by simp only [sdiff_eq, inter_comm]
     _ ⊆ closure (s \ t) := closure_mono <| sdiff_subset_sdiff (Subset.refl s) subset_closure
 

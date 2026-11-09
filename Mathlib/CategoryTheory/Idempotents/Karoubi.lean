@@ -7,7 +7,6 @@ module
 
 public import Mathlib.CategoryTheory.Idempotents.Basic
 public import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-public import Mathlib.CategoryTheory.Equivalence
 
 /-!
 # The Karoubi envelope of a category
@@ -127,7 +126,7 @@ theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 
 @[simp]
 theorem eqToHom_f {P Q : Karoubi C} (h : P = Q) :
-    Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom (congr_arg Karoubi.X h) := by
+    Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom congr(Karoubi.X $h) := by
   subst h
   simp only [eqToHom_refl, Karoubi.id_f, comp_id]
 
@@ -219,7 +218,6 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-set_option backward.defeqAttrib.useBackward true in
 instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
@@ -261,7 +259,6 @@ theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
   simp only [comp_f, id_f, P.idem, decompId_i, decompId_p]
 
-set_option backward.isDefEq.respectTransparency.types false in
 theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by
   ext
   simp only [comp_f, decompId_p_f, decompId_i_f, P.idem, toKaroubi_map_f]
@@ -284,7 +281,6 @@ theorem decompId_p_naturality {P Q : Karoubi C} (f : P ⟶ Q) :
 theorem zsmul_hom [Preadditive C] {P Q : Karoubi C} (n : ℤ) (f : P ⟶ Q) : (n • f).f = n • f.f :=
   map_zsmul (inclusionHom P Q) n f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `X : Karoubi C`, then `X` is a retract of `((toKaroubi C).obj X.X)`. -/
 @[simps]
 def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
@@ -293,14 +289,12 @@ def retract (X : Karoubi C) : Retract X ((toKaroubi C).obj X.X) where
 
 end Karoubi
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesEpimorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext
     rw [← cancel_epi f]
     simpa using eq⟩
 
-set_option backward.isDefEq.respectTransparency false in
 instance : (toKaroubi C).PreservesMonomorphisms where
   preserves f _ := ⟨fun g h eq ↦ by
     ext

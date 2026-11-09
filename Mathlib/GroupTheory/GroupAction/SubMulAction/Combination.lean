@@ -46,7 +46,7 @@ open scoped Pointwise
 open MulAction Finset Set Equiv Equiv.Perm
 
 variable (G : Type*) [Group G] {α : Type*} [MulAction G α]
-  {n : ℕ} {s t : powersetCard α n}
+  {n : ℕ} {s : powersetCard α n}
 
 section
 
@@ -76,35 +76,7 @@ theorem stabilizer_coe {n : ℕ} (s : powersetCard α n) :
   ext g
   simp [mem_stabilizer_iff, ← Subtype.coe_inj, ← coe_inj]
 
-theorem addAction_faithful {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
-    (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
-    AddAction.toPerm g = (1 : Perm (powersetCard α n)) ↔ AddAction.toPerm g = (1 : Perm α) := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · contrapose h with h
-    have : ∃ a, (g +ᵥ a : α) ≠ a := by simpa [Equiv.ext_iff] using h
-    obtain ⟨a, ha⟩ := this
-    obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
-    rw [Equiv.ext_iff, not_forall]
-    use s
-    contrapose has'
-    simp only [AddAction.toPerm_apply, coe_one, id_eq] at has'
-    rw [← has']
-    simpa [← mem_coe_iff]
-  · simp only [Equiv.ext_iff, AddAction.toPerm_apply] at h ⊢
-    simp [Subtype.ext_iff, Finset.ext_iff, mem_vadd_finset, h]
-
-/-- If an additive group `G` acts faithfully on `α`,
-then it acts faithfully on `powersetCard α n`,
-provided `1 ≤ n < ENat.card α`. -/
-theorem faithfulVAdd {G : Type*} [AddGroup G] [AddAction G α] {n : ℕ}
-    (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulVAdd G α] :
-    FaithfulVAdd G (powersetCard α n) := by
-  rw [faithfulVAdd_iff]
-  intro g hg
-  apply AddAction.toPerm_injective (α := G) (β := α)
-  rw [AddAction.toPerm_zero, ← addAction_faithful hn hα]
-  exact Perm.ext_iff.mpr hg
-
+@[to_additive]
 theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     toPerm g = (1 : Perm (powersetCard α n)) ↔ toPerm g = (1 : Perm α) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -114,7 +86,7 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     obtain ⟨s, has, has'⟩ := exists_mem_notMem hn hα (Ne.symm ha)
     rw [Equiv.ext_iff, not_forall]
     use s
-    contrapose! has'
+    contrapose has'
     simp only [toPerm_apply, coe_one, id_eq] at has'
     rw [← has']
     simpa only [coe_smul, smul_mem_smul_finset_iff, ← mem_coe_iff]
@@ -122,7 +94,10 @@ theorem mulAction_faithful (hn : 1 ≤ n) (hα : n < ENat.card α) {g : G} :
     simp [Subtype.ext_iff, Finset.ext_iff, mem_smul_finset, h]
 
 /-- If a group `G` acts faithfully on `α`, then
-it acts faithfully on `powersetCard α n` provided `1 ≤ n < ENat.card α`. -/
+it acts faithfully on `powersetCard α n`, provided `1 ≤ n < ENat.card α`. -/
+@[to_additive
+/-- If an additive group `G` acts faithfully on `α`, then
+it acts faithfully on `powersetCard α n`, provided `1 ≤ n < ENat.card α`. -/]
 theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α] :
     FaithfulSMul G (powersetCard α n) := by
   rw [faithfulSMul_iff]
@@ -131,11 +106,8 @@ theorem faithfulSMul (hn : 1 ≤ n) (hα : n < ENat.card α) [FaithfulSMul G α]
   rw [toPerm_one, ← mulAction_faithful hn hα]
   exact Perm.ext_iff.mpr hg
 
-attribute [to_additive existing] faithfulSMul
-
 variable (α G)
 
-set_option backward.isDefEq.respectTransparency false in
 variable (n) in
 /-- The equivariant map from embeddings of `Fin n` (aka arrangement) to combinations. -/
 @[to_additive /-- The equivariant map from embeddings of `Fin n`
@@ -215,7 +187,7 @@ theorem fixedPoints_ne_univ_of_faithfulSMul
     {n : ℕ} (hn : 0 < n) (hn' : n < Nat.card α) :
     fixedPoints G (powersetCard α n) ≠ univ := by
   obtain ⟨g, h⟩ := exists_ne (1 : G)
-  contrapose! h
+  contrapose h
   replace h : (toPerm g : Perm (powersetCard α n)) = 1 := by
     ext1 s
     exact eq_univ_iff_forall.mp h s g
@@ -242,11 +214,11 @@ theorem mulActionHom_singleton_bijective :
 variable {α}
 
 /-- The action of `Equiv.Perm α` on `Set.powersetCard α n` is preprimitive
-provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`.
+provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`.
 
 This is a consequence that the stabilizer of such a combination
 is a maximal subgroup. -/
-theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α)
+theorem isPreprimitive_perm {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
     (hα : Nat.card α ≠ 2 * n) :
     IsPreprimitive (Perm α) (powersetCard α n) := by
   -- The finiteness of `α` follows from the assumptions of the theorem.
@@ -255,7 +227,7 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
   -- The action is pretransitive.
   have : IsPretransitive (Perm α) (powersetCard α n) := powersetCard.isPretransitive
   -- The type on which the group acts is nontrivial.
-  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' h_one_le hn
+  have : Nontrivial (powersetCard α n) := powersetCard.nontrivial' hn₀.pos hn
   obtain ⟨s⟩ := this.to_nonempty
   -- It remains to prove that stabilizer of some point is maximal.
   rw [← isCoatom_stabilizer_iff_preprimitive _ s]
@@ -264,7 +236,7 @@ theorem isPreprimitive_perm {n : ℕ} (h_one_le : 1 ≤ n) (hn : n < Nat.card α
   -- We conclude by `Equiv.Perm.isCoatom_stabilizer`
   apply isCoatom_stabilizer
   -- `s` is nonempty because `n ≠ 0`.
-  · rwa [powersetCard.coe_nonempty_iff]
+  · exact powersetCard.coe_nonempty_iff.mpr hn₀.pos
   -- `sᶜ` is nonempty because `n < Nat.card α`.
   · rw [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq]
     exact hn.ne
@@ -301,21 +273,20 @@ theorem isPretransitive_alternatingGroup [Fintype α] (hα : 3 ≤ Nat.card α) 
   have := alternatingGroup.isMultiplyPretransitive α
   apply isMultiplyPretransitive_of_le (n := Nat.card α - 2) <;> grind
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The action of `alternatingGroup α` on `Set.powersetCard α n` is preprimitive
-provided `1 ≤ n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
-theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ}
-    (h_three_le : 3 ≤ n) (hn : n < Nat.card α) (hα : Nat.card α ≠ 2 * n) :
-    IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
+provided `0 < n < Nat.card α` and `Nat.card α ≠ 2 * n`. -/
+theorem isPreprimitive_alternatingGroup [Fintype α] {n : ℕ} (hn₀ : n ≠ 0) (hn : n < Nat.card α)
+    (hα : Nat.card α ≠ 2 * n) : IsPreprimitive (alternatingGroup α) (powersetCard α n) := by
   have : IsPretransitive (alternatingGroup α) (powersetCard α n) :=
-    isPretransitive_alternatingGroup (le_trans h_three_le hn.le)
-  have : Nontrivial (powersetCard α n) := nontrivial (by positivity) (by simpa using hn)
+    isPretransitive_alternatingGroup (by lia)
+  have : Nontrivial (powersetCard α n) := nontrivial' hn₀.pos hn
   obtain ⟨s⟩ := this.to_nonempty
-  rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]
-  apply alternatingGroup.isCoatom_stabilizer
-  · rw [powersetCard.coe_nonempty_iff]
-    exact le_trans (by norm_num) h_three_le
-  · simpa [nonempty_compl, ne_eq, eq_univ_iff_ncard, ncard_eq] using ne_of_lt hn
-  · simpa only [ncard_eq]
+  -- TODO: this should just be `rw [← isCoatom_stabilizer_iff_preprimitive _ s, stabilizer_coe]`,
+  -- but the two actions of `alternatingGroup α` on `powersetCard α n` (as a subgroup of
+  -- `Perm α`, and as a group acting on `α`) only agree at default transparency.
+  rw [← isCoatom_stabilizer_iff_preprimitive _ s, ← stabilizer_subgroupOf, stabilizer_coe,
+    stabilizer_subgroupOf]
+  exact alternatingGroup.isCoatom_stabilizer (coe_nonempty_iff.mpr hn₀.pos)
+    (by simpa [nonempty_compl, eq_univ_iff_ncard] using hn.ne) (by rwa [ncard_eq])
 
 end Set.powersetCard

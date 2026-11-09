@@ -5,8 +5,6 @@ Authors: Ben Eltschig, Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Monad.Limits
-public import Mathlib.Topology.Category.TopCat.Limits.Basic
 public import Mathlib.Topology.Compactness.DeltaGeneratedSpace
 public import Mathlib.Topology.Convenient.Category
 
@@ -45,7 +43,12 @@ namespace DeltaGenerated
 
 /-- Constructor for objects of the category `DeltaGenerated` -/
 abbrev of (X : Type u) [TopologicalSpace X] [DeltaGeneratedSpace X] : DeltaGenerated.{u} :=
-  GeneratedByTopCat.of X
+  ↧X
+
+open Lean.PrettyPrinter.Delaborator in
+/-- This prints `DeltaGenerated.of X` as `↧X`. -/
+@[app_delab DeltaGenerated.of]
+meta def delabOf : Delab := CategoryTheory.delabOf
 
 /-- The forgetful functor `DeltaGenerated ⥤ TopCat` -/
 abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
@@ -54,8 +57,6 @@ abbrev deltaGeneratedToTop : DeltaGenerated.{u} ⥤ TopCat.{u} :=
 /-- `deltaGeneratedToTop` is fully faithful. -/
 abbrev fullyFaithfulDeltaGeneratedToTop : deltaGeneratedToTop.{u}.FullyFaithful :=
   GeneratedByTopCat.fullyFaithfulToTopCat _
-
-@[deprecated (since := "2026-04-23")] alias topToDeltaGenerated := TopCat.toDeltaGenerated
 
 /-- The adjunction between the forgetful functor `DeltaGenerated ⥤ TopCat` and its coreflector. -/
 abbrev coreflectorAdjunction : deltaGeneratedToTop ⊣ TopCat.toDeltaGenerated :=

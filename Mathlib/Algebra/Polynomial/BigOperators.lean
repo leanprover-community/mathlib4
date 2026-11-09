@@ -30,7 +30,7 @@ Recall that `∑` and `∏` are notation for `Finset.sum` and `Finset.prod` resp
 public section
 
 
-open Finset
+open AddMonoidAlgebra Finset
 
 open Multiset
 
@@ -121,7 +121,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
     have h : natDegree tl.prod ≤ n * tl.length := by
       refine (natDegree_list_prod_le _).trans ?_
       rw [← tl.length_map natDegree, mul_comm]
-      refine List.sum_le_card_nsmul _ _ ?_
+      refine List.sum_le_length_nsmul _ _ ?_
       simpa using hl'
     exact coeff_mul_add_eq_of_natDegree_le (hl _ List.mem_cons_self) h
 
@@ -267,8 +267,8 @@ theorem prod_X_sub_C_nextCoeff {s : Finset ι} (f : ι → R) :
 theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multiset.card t) :
     (t.map fun x => X - C x).prod.coeff ((Multiset.card t) - 1) = -t.sum := by
   nontriviality R
-  convert! multiset_prod_X_sub_C_nextCoeff (by assumption)
-  rw [nextCoeff, if_neg]
+  convert multiset_prod_X_sub_C_nextCoeff (by assumption)
+  rw [nextCoeff, ite_eq_right]
   swap
   · rw [natDegree_multiset_prod_of_monic]
     swap
@@ -299,7 +299,7 @@ lemma degree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {f :
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
@@ -319,7 +319,7 @@ lemma natDegree_sum_eq_of_linearIndepOn {A : Type*} [CommRing A] [Algebra R A] {
     rw [finsetSum_coeff]
     conv in (fun _ ↦ _) =>
       ext
-      rw [coeff_smul, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
+      rw [coeff_smul_apply, smul_eq_mul, coeff_map, mul_comm, ← Algebra.smul_def]
     intro H
     exact hf (leadingCoeff_eq_zero.mp (linearIndepOn_finset_iff.mp h _ H i hi))
 
@@ -336,9 +336,6 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
     (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
   rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
     natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
-
-@[deprecated (since := "2026-04-08")]
-alias natDegree_finset_prod_X_sub_C_eq_card := natDegree_finsetProd_X_sub_C_eq_card
 
 end CommRing
 

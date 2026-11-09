@@ -6,8 +6,8 @@ Authors: Justus Springer
 module
 
 public import Mathlib.AlgebraicGeometry.Birational.RationalMap
-/-!
 
+/-!
 # Dominant rational maps
 
 This file defines `RationalMap.IsDominant` and establishes its connection to
@@ -20,7 +20,7 @@ This file defines `RationalMap.IsDominant` and establishes its connection to
 
 -/
 
-@[expose] public section
+public section
 
 universe u
 

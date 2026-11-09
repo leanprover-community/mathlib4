@@ -5,11 +5,11 @@ Authors: Kexing Ying, Bhavik Mehta
 -/
 module
 
-public import Mathlib.Probability.ConditionalProbability
-public import Mathlib.MeasureTheory.Measure.Count
 public import Mathlib.MeasureTheory.Constructions.Pi
+public import Mathlib.Probability.ConditionalProbability
 
-import Mathlib.Data.Fintype.Pi
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Classical probability
@@ -116,9 +116,6 @@ theorem isProbabilityMeasure_uniformOn {s : Set Ω} (hs : s.Finite) (hs' : s.Non
   · rwa [Measure.count_ne_zero_iff]
   · exact (Measure.count_apply_lt_top.2 hs).ne
 
-@[deprecated (since := "2026-01-26")]
-alias uniformOn_isProbabilityMeasure := isProbabilityMeasure_uniformOn
-
 theorem uniformOn_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     uniformOn {ω} t = if ω ∈ t then 1 else 0 := by
   rw [uniformOn, cond_apply (measurableSet_singleton ω), Measure.count_singleton, inv_one,
@@ -164,8 +161,8 @@ theorem uniformOn_of_univ (hs : s.Finite) (hs' : s.Nonempty) : uniformOn s Set.u
 theorem uniformOn_inter (hs : s.Finite) :
     uniformOn s (t ∩ u) = uniformOn (s ∩ t) u * uniformOn s t := by
   by_cases hst : s ∩ t = ∅
-  · rw [hst, uniformOn_empty_meas, Measure.coe_zero, Pi.zero_apply, zero_mul,
-      uniformOn_eq_zero_iff hs, ← Set.inter_assoc, hst, Set.empty_inter]
+  · rw [hst, uniformOn_empty_meas, zero_apply, zero_mul, uniformOn_eq_zero_iff hs,
+      ← Set.inter_assoc, hst, Set.empty_inter]
   rw [uniformOn, uniformOn, cond_apply hs.measurableSet, cond_apply hs.measurableSet,
     cond_apply (hs.inter_of_left _).measurableSet, mul_comm _ (Measure.count (s ∩ t)),
     ← mul_assoc, mul_comm _ (Measure.count (s ∩ t)), ← mul_assoc, ENNReal.mul_inv_cancel, one_mul,

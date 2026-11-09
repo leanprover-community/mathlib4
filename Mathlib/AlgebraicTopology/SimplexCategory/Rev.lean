@@ -30,7 +30,7 @@ category of nonempty finite linearly ordered types, corresponds to
 the *covariant* functor which sends a type `α` to `αᵒᵈ`.
 This functor sends the object `⦋n⦌` to `⦋n⦌` and a map `f : ⦋n⦌ ⟶ ⦋m⦌`
 is sent to the monotone map `(i : Fin (n + 1)) ↦ (f i.rev).rev`. -/
-@[simps obj]
+@[simps obj, simps -isSimp map, implicit_reducible]
 def rev : SimplexCategory ⥤ SimplexCategory where
   obj n := n
   map {n m} f := Hom.mk ⟨fun i ↦ (f i.rev).rev, fun i j hij ↦ by
@@ -39,44 +39,32 @@ def rev : SimplexCategory ⥤ SimplexCategory where
 
 @[simp]
 lemma rev_map_apply {n m : SimplexCategory} (f : n ⟶ m) (i : Fin (n.len + 1)) :
-    (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev := by
+    (rev.map f).toOrderHom (a := n) (b := m) i = (f.toOrderHom i.rev).rev :=
   rfl
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_δ {n : ℕ} (i : Fin (n + 2)) :
     rev.map (δ i) = δ i.rev := by
   ext j : 3
-  rw [rev_map_apply]
-  dsimp [δ]
-  rw [Fin.succAbove_rev_right, Fin.rev_rev]
+  simp [δ, Fin.succAbove_rev_right, Fin.rev_rev, rev_map_apply]
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_σ {n : ℕ} (i : Fin (n + 1)) :
     rev.map (σ i) = σ i.rev := by
   ext j : 3
-  rw [rev_map_apply]
-  dsimp [σ]
-  rw [Fin.predAbove_rev_right, Fin.rev_rev]
+  simp [σ, Fin.predAbove_rev_right, Fin.rev_rev, rev_map_apply]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 is a covariant involution. -/
 @[simps! hom_app inv_app]
 def revCompRevIso : rev ⋙ rev ≅ 𝟭 _ :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma rev_map_rev_map {n m : SimplexCategory} (f : n ⟶ m) :
     rev.map (rev.map f) = f := by
   aesop
 
-set_option backward.isDefEq.respectTransparency.types false in
-set_option backward.defeqAttrib.useBackward true in
 /-- The functor `SimplexCategory.rev : SimplexCategory ⥤ SimplexCategory`
 as an equivalence of category. -/
 @[simps]

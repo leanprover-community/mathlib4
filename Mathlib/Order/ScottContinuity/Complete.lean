@@ -8,7 +8,6 @@ module
 public import Mathlib.Order.ScottContinuity.Prod
 
 /-!
-
 # Scott continuity on complete lattices
 
 ## Main results
@@ -26,7 +25,7 @@ section CompleteLattice
 
 variable [CompleteLattice α] [CompleteLattice β]
 
-/- `f` is Scott continuous if and only if it commutes with `sSup` on directed sets -/
+/-- `f` is Scott continuous if and only if it commutes with `sSup` on directed sets -/
 lemma scottContinuous_iff_map_sSup {f : α → β} :
     ScottContinuous f ↔
       ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) where

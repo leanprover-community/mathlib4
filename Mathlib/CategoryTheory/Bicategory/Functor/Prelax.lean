@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Bicategory.Basic
 public import Mathlib.CategoryTheory.EqToHom
 
 /-!
-
 # Prelax functors
 
 This file defines lax prefunctors and prelax functors between bicategories. The point of these
@@ -42,8 +41,6 @@ corresponding hom types.
 @[expose] public section
 
 namespace CategoryTheory
-
-open Category Bicategory
 
 universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 

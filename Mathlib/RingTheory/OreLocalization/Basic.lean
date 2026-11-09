@@ -7,10 +7,8 @@ module
 
 public import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 public import Mathlib.GroupTheory.OreLocalization.Basic
-public import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
-
 # Localization over left Ore sets.
 
 This file proves results on the localization of rings (monoids with zeros) over a left Ore set.

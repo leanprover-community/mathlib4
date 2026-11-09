@@ -5,9 +5,8 @@ Authors: Vasilii Nesterov
 -/
 module
 
-import all Lean.Elab.Tactic.Induction
-public import Mathlib.Data.PNat.Basic
 public meta import Mathlib.Tactic.ToAdditive
+public import Mathlib.Data.PNat.Basic
 
 
 /-!

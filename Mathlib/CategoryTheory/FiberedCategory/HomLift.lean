@@ -5,11 +5,9 @@ Authors: Paul Lezeau, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.Category
 public import Mathlib.CategoryTheory.CommSq
 
 /-!
-
 # HomLift
 
 Given a functor `p : 𝒳 ⥤ 𝒮`, this file provides API for expressing the fact that `p(φ) = f`

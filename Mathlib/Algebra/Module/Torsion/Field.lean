@@ -6,8 +6,12 @@ Authors: Yaël Dillies
 module
 
 public import Mathlib.Algebra.Field.Defs
-public import Mathlib.Algebra.GroupWithZero.Action.Units
 public import Mathlib.Algebra.Module.Torsion.Free
+
+import Mathlib.Algebra.GroupWithZero.Action.Units
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Vector spaces are torsion-free

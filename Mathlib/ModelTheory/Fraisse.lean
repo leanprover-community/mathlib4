@@ -5,10 +5,9 @@ Authors: Aaron Anderson, Gabin Kolly
 -/
 module
 
-public import Mathlib.ModelTheory.FinitelyGenerated
-public import Mathlib.ModelTheory.PartialEquiv
-public import Mathlib.ModelTheory.Bundled
 public import Mathlib.Algebra.Order.Archimedean.Basic
+public import Mathlib.ModelTheory.Bundled
+public import Mathlib.ModelTheory.PartialEquiv
 
 /-!
 # Fraïssé Classes and Fraïssé Limits
@@ -295,7 +294,7 @@ theorem IsUltrahomogeneous.extend_embedding (M_homog : L.IsUltrahomogeneous M) {
   use t.toEmbedding.comp r
   change _ = t.toEmbedding.comp s
   ext x
-  have eq' := congr_fun (congr_arg DFunLike.coe eq) ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩
+  have eq' := congr($eq ⟨s x, Hom.mem_range.2 ⟨x, rfl⟩⟩)
   simp only [Embedding.comp_apply,
     coe_subtype] at eq'
   simp only [Embedding.comp_apply, ← eq', Equiv.coe_toEmbedding, EmbeddingLike.apply_eq_iff_eq]
