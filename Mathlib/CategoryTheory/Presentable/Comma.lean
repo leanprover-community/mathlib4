@@ -440,8 +440,7 @@ instance isCardinalAccessibleCategory :
 protected lemma isCardinalPresentable_eq :
     Comma.isCardinalPresentable F₁ F₂ κ = isCardinalPresentable (Comma F₁ F₂) κ := by
   rw [(Comma.isCardinalFilteredGenerator_isCardinalPresentable
-      F₁ F₂ κ).isPresentable_eq_retractClosure,
-    ObjectProperty.retractClosure_eq_self]
+      F₁ F₂ κ).isCardinalPresentable_eq]
 
 variable {F₁ F₂} in
 protected lemma isCardinalPresentable_iff (f : Comma F₁ F₂) :

@@ -590,6 +590,7 @@ variable {C : Type*} [Category* C]
 def generator (_ : h.HasEnoughPureSubobjects C) :
     ObjectProperty (WideSubcategory (isCardinalPure C κ)) :=
   (isCardinalPresentable C κ').inverseImage (wideSubcategoryInclusion _)
+deriving ObjectProperty.IsStableUnderRetracts
 
 @[simp]
 lemma generator_iff (H : h.HasEnoughPureSubobjects C) (X : WideSubcategory (isCardinalPure C κ)) :
@@ -683,6 +684,12 @@ lemma isCardinalAccessibleCategory_isCardinalPure
   have : HasCardinalFilteredColimits (WideSubcategory (isCardinalPure C κ)) κ' := .of_le h.le
   { exists_generator := ⟨hC.generator, inferInstance, hC.isCardinalFilteredGenerator ⟩ }
 
+lemma isCardinalPresentable_wideSubcategory_isCardinalPure
+    {κ κ' : Cardinal.{w}} [Fact κ.IsRegular] [Fact κ'.IsRegular] (h : κ.SharplyLT κ')
+    (hC : h.HasEnoughPureSubobjects C) :
+    isCardinalPresentable (WideSubcategory (isCardinalPure C κ)) κ' = hC.generator :=
+  hC.isCardinalFilteredGenerator.isCardinalPresentable_eq
+
 end Cardinal.SharplyLT.HasEnoughPureSubobjects
 
 namespace CategoryTheory
@@ -706,7 +713,21 @@ namespace ObjectProperty
 
 variable {C D : Type*} [Category* C] [Category* D]
 
+-- to be moved
+instance (P : ObjectProperty D) [P.EssentiallySmall.{w}] (F : C ⥤ D) [F.Full] [F.Faithful] :
+    (P.inverseImage F).EssentiallySmall.{w} where
+  exists_small_le' := by
+    obtain ⟨Q, _, _, hQ⟩ := ObjectProperty.EssentiallySmall.exists_small_le.{w} P
+    obtain ⟨ι, X, rfl⟩ := ObjectProperty.Small.exists_eq_ofObj.{w} Q
+    let R (i : ι) : Prop := ∃ (Y : C), Nonempty (F.obj Y ≅ X i)
+    let Y (i : Subtype R) : C := i.property.choose
+    have hY (i : Subtype R) : F.obj (Y i) ≅ X i := i.property.choose_spec.some
+    refine ⟨.ofObj Y, inferInstance, fun Z hZ ↦ ?_⟩
+    obtain ⟨T, ⟨i⟩, ⟨e⟩⟩ := hQ _ hZ
+    exact ⟨_, ⟨i, _, ⟨e⟩⟩, ⟨F.preimageIso (e ≪≫ (hY ⟨i, _, ⟨e⟩⟩).symm)⟩⟩
+
 -- Corollary 2.36 (first part)
+open IsCardinalAccessibleCategory in
 lemma isAccessibleCategory_fullSubcategory_iff
     (P : ObjectProperty C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalAccessibleCategory C κ]
@@ -717,7 +738,43 @@ lemma isAccessibleCategory_fullSubcategory_iff
   refine ⟨fun _ ↦ ?_, fun ⟨κ', _, h, _⟩ ↦ ?_⟩
   · obtain ⟨κ', _, h, _, _, _, _⟩ := P.isClosedUnderCardinalPureSubobjects κ
     exact ⟨κ', inferInstance, h, inferInstance⟩
-  · sorry
+  · have := h.isCardinalAccessibleCategory C
+    obtain ⟨κ₁, _, h₁, hC⟩ := IsCardinalAccessibleCategory.hasEnoughPureSubobjects C κ'
+    have := h₁.isCardinalAccessibleCategory C
+    have : P.IsClosedUnderCardinalFilteredColimits κ₁ := .of_le (h.trans h₁).le
+    have : IsCardinalAccessibleCategory P.FullSubcategory κ₁ :=
+      { exists_generator :=
+          ⟨(isCardinalPresentable _ κ₁).inverseImage P.ι, inferInstance, by
+            refine .mk' (fun X hX ↦ ?_) (fun X ↦ ?_)
+            · simp only [prop_inverseImage_iff, ι_obj] at hX
+              exact IsCardinalPresentable.of_full_of_faithful P.ι (by assumption)
+            · have := hC.isCardinalAccessibleCategory_isCardinalPure
+              let J := CostructuredArrow (isCardinalPresentable
+                (WideSubcategory (isCardinalPure C κ')) κ₁).ι (.mk X.obj)
+              have : IsCardinalFiltered J κ' := .of_le _ h₁.le
+              have := HasCardinalFilteredColimits.hasColimitsOfShape C κ₁ J
+              let F : J ⥤ WideSubcategory (isCardinalPure C κ') :=
+                CostructuredArrow.proj _ _ ⋙ (isCardinalPresentable _ κ₁).ι
+              have (j : J) := j.hom.property
+              have hF (j : J) : P (F.obj j).obj :=
+                P.prop_of_isCardinalPure κ' j.hom.hom X.property
+              exact ⟨J, inferInstance, inferInstance, inferInstance,
+                ⟨{diag := P.lift (F ⋙ wideSubcategoryInclusion _) hF
+                  ι.app j := ObjectProperty.homMk j.hom.hom
+                  ι.naturality j₁ j₂ f := by ext; simpa [F] using congr($(f.w).hom)
+                  isColimit :=
+                    isColimitOfReflects P.ι (by
+                      have := (respectsColimitsOfShapeWideSubcategory_isCardinalPure
+                        C κ' J).preservesColimitsOfShape
+                      exact IsColimit.ofIsoColimit
+                        (isColimitOfPreserves (wideSubcategoryInclusion _)
+                          ((isCardinalPresentable (WideSubcategory
+                            (isCardinalPure C κ')) κ₁).ι.denseAt (.mk X.obj)))
+                              (Cocone.ext (Iso.refl _)))
+                  prop_diag_obj j := by
+                    simpa using! hC.isCardinalPresentable_wideSubcategory_isCardinalPure.le _
+                      j.left.property }⟩⟩⟩}
+    exact ⟨κ₁, inferInstance, inferInstance⟩
 
 -- Remark 2.50
 lemma isCardinalAccessibleCategory_inverseImage_and

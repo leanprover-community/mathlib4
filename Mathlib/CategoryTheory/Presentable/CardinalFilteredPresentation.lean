@@ -143,7 +143,7 @@ lemma isStrongGenerator : P.IsStrongGenerator :=
     exact ⟨_, _, hX⟩)
 
 include h in
-lemma isPresentable_eq_retractClosure :
+lemma isCardinalPresentable_eq_retractClosure :
     isCardinalPresentable C κ = P.retractClosure := by
   refine le_antisymm (fun X hX ↦ ?_) ?_
   · rw [isCardinalPresentable_iff] at hX
@@ -153,11 +153,19 @@ lemma isPresentable_eq_retractClosure :
     exact ⟨_, p.prop_diag_obj j, ⟨{ i := _, r := _, retract := hf}⟩⟩
   · simpa only [ObjectProperty.retractClosure_le_iff] using h.le_isCardinalPresentable
 
+@[deprecated (since := "2026-11-09")] alias isPresentable_eq_retractClosure :=
+  isCardinalPresentable_eq_retractClosure
+
+include h in
+lemma isCardinalPresentable_eq [P.IsStableUnderRetracts] :
+    isCardinalPresentable C κ = P := by
+  rw [h.isCardinalPresentable_eq_retractClosure, P.retractClosure_eq_self]
+
 include h in
 lemma essentiallySmall_isPresentable
     [ObjectProperty.EssentiallySmall.{w} P] [LocallySmall.{w} C] :
     ObjectProperty.EssentiallySmall.{w} (isCardinalPresentable C κ) := by
-  rw [h.isPresentable_eq_retractClosure]
+  rw [h.isCardinalPresentable_eq_retractClosure]
   infer_instance
 
 end IsCardinalFilteredGenerator
