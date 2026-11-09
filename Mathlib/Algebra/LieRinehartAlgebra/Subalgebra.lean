@@ -17,7 +17,7 @@ definitions and results.
 ## Main definitions/ statements:
 
 * `LieRinehartSubalgebra` as an `A`-submodule of `L` stable under the Lie bracket. (This is also
-applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ring structure).
+  applicable to Lie-Rinehart rings and more generally any `A`-module with a Lie ring structure).
 
 * A Lie-Rinehart subalgebra of a Lie-Rinehart ring is a Lie-Rinehart ring
 
