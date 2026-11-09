@@ -150,6 +150,9 @@ def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
 instance empty : Primcodable Empty :=
   ⟨zero⟩
 
+instance (priority := 100) {α : Type*} [IsEmpty α] : Primcodable α where
+  ⟨zero⟩
+
 instance unit : Primcodable PUnit :=
   ⟨(casesOn1 1 zero).of_eq fun n => by cases n <;> simp⟩
 
