@@ -10,7 +10,6 @@ public import Mathlib.CategoryTheory.Monad.Kleisli
 public import Mathlib.Control.Basic
 
 /-!
-
 # Convert from `Monad` (i.e. Lean's `Type`-based monads) to `CategoryTheory.Monad`
 
 This allows us to use these monads in category theory.
@@ -69,8 +68,6 @@ def kleisliCatEquivKleisli : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
     change f >=> pure = pure >=> f
     simp [functor_norm]
   counitIso := NatIso.ofComponents fun X => Iso.refl X
-
-@[deprecated (since := "2026-04-16")] alias eq := kleisliCatEquivKleisli
 
 end
 

@@ -201,7 +201,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
   rcases h with ⟨t, htm, hst⟩
   refine ⟨t ∪ toMeasurable μ (s \ t), ?_, htm.union (measurableSet_toMeasurable _ _), ?_⟩
   · exact sdiff_subset_iff.1 (subset_toMeasurable _ _)
-  · have : toMeasurable μ (s \ t) =ᵐ[μ] ∅ := by simp [ae_le_set.1 hst.le]
+  · have : toMeasurable μ (s \ t) =ᵐ[μ] ∅ := by simp [ae_subset.1 hst.subset]
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
@@ -460,8 +460,7 @@ theorem NullMeasurableSet.measurable_of_complete (hs : NullMeasurableSet s μ) [
     MeasurableSet s :=
   sdiff_sdiff_cancel_left (subset_toMeasurable μ s) ▸
     (measurableSet_toMeasurable _ _).diff
-      (measurableSet_of_null (ae_le_set.1 <|
-        EventuallyEq.le (NullMeasurableSet.toMeasurable_ae_eq hs)))
+      (measurableSet_of_null (ae_subset.1 (NullMeasurableSet.toMeasurable_ae_eq hs).subset))
 
 theorem NullMeasurable.measurable_of_complete [μ.IsComplete] {_m1 : MeasurableSpace β} {f : α → β}
     (hf : NullMeasurable f μ) : Measurable f := fun _s hs => (hf hs).measurable_of_complete

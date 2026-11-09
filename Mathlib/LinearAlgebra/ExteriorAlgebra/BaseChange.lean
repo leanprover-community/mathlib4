@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.ExteriorPower.Basic
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Base change of exterior algebra
 
 In this file, we proved that Exterior algebra behaves well with respect to base change.

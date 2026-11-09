@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.WittVector.InitTail
 
 /-!
-
 # Truncated Witt vectors
 
 The ring of truncated Witt vectors (of length `n`) is a quotient of the ring of Witt vectors.
