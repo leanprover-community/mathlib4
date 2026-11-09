@@ -7,12 +7,8 @@ Authors: Jose Francisco Antonio Balderas, Vincent Beffara, Alex Kontorovich, Ter
 module
 
 public import Mathlib.NumberTheory.Chebyshev
-public import Mathlib.NumberTheory.Harmonic.ZetaAsymp
-public import Mathlib.NumberTheory.LSeries.Dirichlet
 public import Mathlib.NumberTheory.LSeries.PrimesInAP
 public import Mathlib.NumberTheory.LSeries.WienerIkehara
-
-import Mathlib.NumberTheory.LSeries.Linearity
 
 /-!
 # The weak prime number theorem
@@ -43,19 +39,12 @@ Chebyshev functions `Chebyshev.psi` and `Chebyshev.theta`.
 * `Nat.isEquivalent_nth_prime_succ`: consecutive primes are asymptotically equal, `pₙ₊₁ ~ pₙ`.
 * `isEquivalent_log_primorial_id`: `log (primorial n) ~ n`.
 * `Nat.isEquivalent_log_lcmUpto_id`: `log (Nat.lcmUpto n) ~ n`.
-* `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id`: the **Möbius form of the prime number
-  theorem** `∑ n ≤ x, μ n = o(x)`, obtained by applying Wiener–Ikehara to the nonnegative function
-  `n ↦ 1 + μ n` (with `L`-series `ζ s + 1/ζ s`).
 
 ## Future directions
 
 * Versions of `Nat.eventually_exists_prime_mem_Ioc` and `Nat.eventually_exists_prime_mem_Ioc_sub`
 for arithmetic progressions
-* Versions of `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id` in arithmetic progressions
-* Versions of `Mertens.tendsto_M_div_atTop` / `Mertens.isLittleO_M_id` for the Liouville function
 * Showing that the nth prime is asymptotic to `n * log n`
-* Showing that `μ n / n` sums conditionally to zero (this might not be easy to establish just from
-the Wiener-Ikehara theorem)
 
 Note though that all the results here could eventually be superseded by other approaches to the
 prime number theorem with stronger error terms.
@@ -65,7 +54,6 @@ prime number theorem with stronger error terms.
 public section
 
 open Nat hiding log
-open Complex hiding log
 open ArithmeticFunction.vonMangoldt Filter LSeries Chebyshev Real Finset ZMod Asymptotics
 open scoped Topology
 
@@ -257,51 +245,3 @@ theorem isEquivalent_log_primorial_id : (fun n ↦ log (primorial n)) ~[atTop] (
   rw [isEquivalent_iff_tendsto_one
     (by filter_upwards [eventually_gt_atTop 0] with _ _ using by positivity)]
   exact tendsto_log_primorial_div_atTop.congr (by simp)
-
-namespace Mertens
-
-open scoped ArithmeticFunction.Moebius
-
-/-- The **Möbius form of the prime number theorem**: `M x / x → 0`. -/
-theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ (M x : ℝ) / x) atTop (𝓝 0) := by
-  have (s : ℂ) (hs : 1 ≤ s.re) : riemannZeta₁ s ≠ 0 := by
-    rcases eq_or_ne s 1 with rfl | hs1
-    · simp
-    · grind [riemannZeta_eq_inv_sub_mul hs1, riemannZeta_ne_zero_of_one_le_re]
-  have e : (fun n ↦ ofReal (1 + μ n)) = 1 + fun n ↦ (μ n : ℂ) := by push_cast; funext; simp
-  have hWI : Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, ((1 : ℝ) + μ n)) / x) atTop (𝓝 1) :=
-    WienerIkehara.tendsto_sum_div (f := fun n ↦ 1 + μ n) (C := 2)
-      (G := fun s ↦ riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹)
-      (fun n ↦ by
-        calc ∑ i ∈ range n, ((1 : ℝ) + μ i)
-            ≤ ∑ _i ∈ range n, (2 : ℝ) := Finset.sum_le_sum fun i _ ↦ by
-              grw [(abs_le.mp ArithmeticFunction.abs_moebius_le_one).2]; norm_num
-          _ = 2 * n := by simp [mul_comm])
-      (.add differentiable_riemannZeta₀.continuous.continuousOn <|
-        .mul (by fun_prop) (differentiable_riemannZeta₁.continuous.continuousOn.inv₀ this))
-      (fun s hs ↦ by
-          have : s ≠ 1 := by rintro rfl; simp at hs
-          have : LSeries (fun n ↦ (μ n : ℂ)) s = (riemannZeta s)⁻¹ := by
-            grind [LSeries_one_eq_riemannZeta hs, LSeries_one_mul_Lseries_moebius]
-          have : LSeries (fun n ↦ ofReal (1 + μ n)) s = riemannZeta s + (riemannZeta s)⁻¹ := by
-            rw [e, LSeries_add, LSeries_one_eq_riemannZeta hs, this]
-            exacts [LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (by simp) hs,
-              ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs]
-          change riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹
-            = LSeries (fun n ↦ ofReal (1 + μ n)) s - 1 / (s - 1)
-          grind [inv_riemannZeta_eq_sub_mul_of_ne_one, riemannZeta_eq_inv_sub_add])
-      (fun n ↦ by dsimp; grw [← (abs_le.mp ArithmeticFunction.abs_moebius_le_one).1]; simp)
-  have : Tendsto (fun x : ℝ ↦ (⌊x⌋₊ + 1) / x) atTop (𝓝 1) := by
-    convert ((tendsto_nat_floor_div_atTop (R := ℝ)).add tendsto_inv_atTop_zero).congr' ?_
-    · simp
-    · filter_upwards [eventually_gt_atTop 0]; grind
-  convert (hWI.sub this).congr' ?_
-  · simp
-  · filter_upwards [eventually_gt_atTop 0]; simp [← sub_div, sum_add_distrib, M_eq_sum_Icc]
-
-/-- The **Möbius form of the prime number theorem**, asymptotic form: `M x = o(x)`. -/
-theorem isLittleO_M_id : (fun x : ℝ ↦ (M x : ℝ)) =o[atTop] id :=
-  (isLittleO_iff_tendsto' (by filter_upwards [eventually_gt_atTop 0]; grind)).mpr
-  (tendsto_M_div_atTop.congr (by simp))
-
-end Mertens

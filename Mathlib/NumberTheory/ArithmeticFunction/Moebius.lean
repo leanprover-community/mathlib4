@@ -5,7 +5,6 @@ Authors: Aaron Anderson
 -/
 module
 
-public import Mathlib.Algebra.Order.Floor.Semiring
 public import Mathlib.NumberTheory.ArithmeticFunction.Misc
 
 import Mathlib.Algebra.Order.Ring.Abs
@@ -17,7 +16,6 @@ import Mathlib.Algebra.Order.Ring.Abs
 
 * `μ` is the Möbius function (spelled `moebius` in code; the notation `μ` is available by opening
   the namespace `ArithmeticFunction.Moebius`).
-* `Mertens.M` is the Mertens function `M x = ∑ n ≤ x, μ n`.
 
 ## Main Results
 
@@ -384,28 +382,3 @@ theorem prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero [CommGroupWithZero R]
 alias prod_eq_iff_prod_pow_moebius_eq_on_of_nonzero := prod_eq_iff_prod_pow_moebius_eq_on_of_ne_zero
 
 end ArithmeticFunction
-
-namespace Mertens
-
-open ArithmeticFunction
-open scoped ArithmeticFunction.Moebius
-
-/-- The **Mertens function** `M x = ∑ n ≤ x, μ n`, the partial sums of the Möbius function.
-Following `Chebyshev.psi`/`Chebyshev.theta`, the sum is taken over `Ioc 0 ⌊x⌋₊`; see `M_eq_sum_Icc`
-for the equal sum over `Icc 0 ⌊x⌋₊`. -/
-noncomputable def M [Semiring R] [PartialOrder R] [FloorSemiring R] (x : R) : ℤ :=
-  ∑ n ∈ Ioc 0 ⌊x⌋₊, μ n
-
-theorem M_eq_sum_Icc [Semiring R] [PartialOrder R] [FloorSemiring R] (x : R) :
-    M x = ∑ n ∈ Icc 0 ⌊x⌋₊, μ n := by
-  rw [M, ← add_sum_Ioc_eq_sum_Icc] <;> simp
-
-/-- The trivial bound `|M x| ≤ x`. -/
-theorem abs_M_le [Ring R] [LinearOrder R] [IsStrictOrderedRing R] [FloorSemiring R] {x : R}
-    (hx : 0 ≤ x) : |(M x : R)| ≤ x := by
-  rw [← Int.cast_abs]
-  unfold M
-  grw [abs_sum_le_sum_abs, abs_moebius_le_one]
-  simp [floor_le hx]
-
-end Mertens
