@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 public import Mathlib.RingTheory.PowerSeries.Order
 
 /-!
-
 # Distinguished polynomial
 
 In this file we define the predicate `Polynomial.IsDistinguishedAt`

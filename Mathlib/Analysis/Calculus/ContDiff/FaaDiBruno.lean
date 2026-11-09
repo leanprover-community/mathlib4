@@ -787,7 +787,7 @@ def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E 
           ContinuousMultilinearMap.map_update_add])
       (fun v i c x ↦ by
         simp only [applyOrderedFinpartition_update_right,
-          ContinuousMultilinearMap.map_update_smul])
+          ContinuousMultilinearMap.map_update_smul, RingHom.id_apply])
   cont := by
     apply f.cont.comp
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))

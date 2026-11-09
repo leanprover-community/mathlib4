@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Algebra.CharP.IntermediateField
 
 /-!
-
 # Separably generated extensions
 
 We aim to formalize the following result:

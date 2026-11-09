@@ -15,7 +15,6 @@ public import Mathlib.Topology.Category.TopCat.Limits.Pullbacks
 import Mathlib.CategoryTheory.Limits.Types.Pullbacks
 
 /-!
-
 # Extensive categories
 
 ## Main definitions

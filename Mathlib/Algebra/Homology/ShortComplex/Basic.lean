@@ -123,19 +123,19 @@ variable {S₁ S₂}
 instance : HasZeroMorphisms (ShortComplex C) where
 
 /-- The first projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₁ : ShortComplex C ⥤ C where
   obj S := S.X₁
   map f := f.τ₁
 
 /-- The second projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₂ : ShortComplex C ⥤ C where
   obj S := S.X₂
   map f := f.τ₂
 
 /-- The third projection functor `ShortComplex C ⥤ C`. -/
-@[simps]
+@[simps, implicit_reducible]
 def π₃ : ShortComplex C ⥤ C where
   obj S := S.X₃
   map f := f.τ₃
@@ -148,17 +148,14 @@ instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₁ := (inferInstance : IsIso
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₂ := (inferInstance : IsIso (π₂.mapIso (asIso f)).hom)
 instance (f : S₁ ⟶ S₂) [IsIso f] : IsIso f.τ₃ := (inferInstance : IsIso (π₃.mapIso (asIso f)).hom)
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `π₁ ⟶ π₂` induced by `S.f` for all `S : ShortComplex C`. -/
 @[simps] def π₁Toπ₂ : (π₁ : _ ⥤ C) ⟶ π₂ where
   app S := S.f
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `π₂ ⟶ π₃` induced by `S.g` for all `S : ShortComplex C`. -/
 @[simps] def π₂Toπ₃ : (π₂ : _ ⥤ C) ⟶ π₃ where
   app S := S.g
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc (attr := simp)]
 lemma π₁Toπ₂_comp_π₂Toπ₃ : (π₁Toπ₂ : (_ : _ ⥤ C) ⟶ _) ≫ π₂Toπ₃ = 0 := by cat_disch
 
