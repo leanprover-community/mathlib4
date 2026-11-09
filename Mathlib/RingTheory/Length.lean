@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.FiniteLength
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
-
 # Length of modules
 
 ## Main results

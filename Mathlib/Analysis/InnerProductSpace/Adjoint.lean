@@ -222,7 +222,7 @@ theorem ker_le_ker_iff_range_le_range [FiniteDimensional 𝕜 E] {T U : E →L[�
     (hT : T.IsSymmetric) (hU : U.IsSymmetric) :
     U.ker ≤ T.ker ↔ T.range ≤ U.range := by
   refine ⟨fun h ↦ ?_, LinearMap.ker_le_ker_of_range hT hU⟩
-  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 E
   simpa [orthogonal_ker, hT, hU] using Submodule.orthogonal_le h
 
 /-- Infinite-dimensional version of 7.64(b) in [axler2024]. -/
@@ -548,12 +548,12 @@ variable [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] [FiniteDimensiona
 /-- The adjoint of an operator from the finite-dimensional inner product space `E` to the
 finite-dimensional inner product space `F`. -/
 def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
-  haveI := FiniteDimensional.complete 𝕜 E
-  haveI := FiniteDimensional.complete 𝕜 F
+  haveI := FiniteDimensional.completeSpace 𝕜 E
+  haveI := FiniteDimensional.completeSpace 𝕜 F
   /- Note: Instead of the two instances above, the following works:
     ```
-      haveI := FiniteDimensional.complete 𝕜
-      haveI := FiniteDimensional.complete 𝕜
+      haveI := FiniteDimensional.completeSpace 𝕜
+      haveI := FiniteDimensional.completeSpace 𝕜
     ```
     But removing one of the `have`s makes it fail. The reason is that `E` and `F` don't live
     in the same universe, so the first `have` can no longer be used for `F` after its universe
@@ -564,34 +564,34 @@ def adjoint : (E →ₗ[𝕜] F) ≃ₗ⋆[𝕜] F →ₗ[𝕜] E :=
     LinearMap.toContinuousLinearMap.symm
 
 theorem adjoint_toContinuousLinearMap (A : E →ₗ[𝕜] F) :
-    haveI := FiniteDimensional.complete 𝕜 E
-    haveI := FiniteDimensional.complete 𝕜 F
+    haveI := FiniteDimensional.completeSpace 𝕜 E
+    haveI := FiniteDimensional.completeSpace 𝕜 F
     A.adjoint.toContinuousLinearMap = A.toContinuousLinearMap.adjoint :=
   rfl
 
 theorem adjoint_eq_toCLM_adjoint (A : E →ₗ[𝕜] F) :
-    haveI := FiniteDimensional.complete 𝕜 E
-    haveI := FiniteDimensional.complete 𝕜 F
+    haveI := FiniteDimensional.completeSpace 𝕜 E
+    haveI := FiniteDimensional.completeSpace 𝕜 F
     A.adjoint = A.toContinuousLinearMap.adjoint :=
   rfl
 
 theorem _root_.ContinuousLinearMap.adjoint_toLinearMap (A : E →L[𝕜] F) :
-    haveI := FiniteDimensional.complete 𝕜 E
-    haveI := FiniteDimensional.complete 𝕜 F
+    haveI := FiniteDimensional.completeSpace 𝕜 E
+    haveI := FiniteDimensional.completeSpace 𝕜 F
     A.toLinearMap.adjoint = A.adjoint.toLinearMap :=
   rfl
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_left (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪adjoint A y, x⟫ = ⟪y, A x⟫ := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_left _ x y
 
 /-- The fundamental property of the adjoint. -/
 theorem adjoint_inner_right (A : E →ₗ[𝕜] F) (x : E) (y : F) : ⟪x, adjoint A y⟫ = ⟪A x, y⟫ := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   rw [← coe_toContinuousLinearMap A, adjoint_eq_toCLM_adjoint]
   exact ContinuousLinearMap.adjoint_inner_right _ x y
 
@@ -630,21 +630,21 @@ lemma adjoint_one : (1 : E →ₗ[𝕜] E).adjoint = 1 := by simp
 /-- 7.6(b) from [axler2024].
 See `ContinuousLinearMap.orthogonal_ker` for the infinite-dimensional version. -/
 lemma orthogonal_ker (A : E →ₗ[𝕜] F) : A.kerᗮ = A.adjoint.range := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_ker
 
 /-- 7.6(a) from [axler2024].
 See `ContinuousLinearMap.orthogonal_range` for the infinite-dimensional version. -/
 lemma orthogonal_range (A : E →ₗ[𝕜] F) : A.rangeᗮ = A.adjoint.ker := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa using! A.toContinuousLinearMap.orthogonal_range
 
 /-- 7.64(b) in [axler2024] -/
 lemma ker_adjoint_comp_self (A : E →ₗ[𝕜] F) : (A.adjoint ∘ₗ A).ker = A.ker := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 F
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 F
   simpa using! A.toContinuousLinearMap.ker_adjoint_comp_self
 
 lemma ker_self_comp_adjoint (A : E →ₗ[𝕜] F) : (A ∘ₗ A.adjoint).ker = A.adjoint.ker := by
@@ -780,13 +780,13 @@ theorem im_inner_adjoint_mul_self_eq_zero (T : E →ₗ[𝕜] E) (x : E) :
   norm_cast
 
 theorem isSelfAdjoint_toContinuousLinearMap_iff (T : E →ₗ[𝕜] E) :
-    have := FiniteDimensional.complete 𝕜 E
+    have := FiniteDimensional.completeSpace 𝕜 E
     IsSelfAdjoint T.toContinuousLinearMap ↔ IsSelfAdjoint T := by
   simp [IsSelfAdjoint, star, adjoint,
     ContinuousLinearMap.toLinearMap_eq_iff_eq_toContinuousLinearMap]
 
 theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[𝕜] E) :
-    have := FiniteDimensional.complete 𝕜 E
+    have := FiniteDimensional.completeSpace 𝕜 E
     IsSelfAdjoint T.toLinearMap ↔ IsSelfAdjoint T := by
   simp only [IsSelfAdjoint, star, adjoint, LinearEquiv.trans_apply,
     coe_toContinuousLinearMap_symm,
@@ -794,7 +794,7 @@ theorem _root_.ContinuousLinearMap.isSelfAdjoint_toLinearMap_iff (T : E →L[�
   rfl
 
 theorem isStarProjection_toContinuousLinearMap_iff {T : E →ₗ[𝕜] E} :
-    have := FiniteDimensional.complete 𝕜 E
+    have := FiniteDimensional.completeSpace 𝕜 E
     IsStarProjection (toContinuousLinearMap T) ↔ IsStarProjection T := by
   simp [isStarProjection_iff, isSelfAdjoint_toContinuousLinearMap_iff,
     ← ContinuousLinearMap.isIdempotentElem_toLinearMap_iff]
@@ -809,7 +809,7 @@ open LinearMap in
 theorem IsStarProjection.ext_iff {S T : E →ₗ[𝕜] E}
     (hS : IsStarProjection S) (hT : IsStarProjection T) :
     S = T ↔ LinearMap.range S = LinearMap.range T := by
-  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 E
   simpa using ContinuousLinearMap.IsStarProjection.ext_iff
     (S.isStarProjection_toContinuousLinearMap_iff.mpr hS)
     (T.isStarProjection_toContinuousLinearMap_iff.mpr hT)
@@ -818,7 +818,7 @@ alias ⟨_, IsStarProjection.ext⟩ := IsStarProjection.ext_iff
 
 theorem adjoint_innerₛₗ_apply (x : E) :
     adjoint (innerₛₗ 𝕜 x) = toSpanSingleton 𝕜 E x :=
-  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 E
   ext fun _ ↦ congr($(ContinuousLinearMap.adjoint_innerSL_apply x) _)
 
 theorem adjoint_toSpanSingleton (x : E) :
@@ -830,7 +830,7 @@ open Module End in
 in a finite-dimensional space. -/
 theorem _root_.Module.End.mem_invtSubmodule_adjoint_iff {T : E →ₗ[𝕜] E} {U : Submodule 𝕜 E} :
     U ∈ invtSubmodule T.adjoint ↔ Uᗮ ∈ invtSubmodule T :=
-  have := FiniteDimensional.complete 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 E
   ContinuousLinearMap.mem_invtSubmodule_adjoint_iff
 
 end LinearMap
@@ -871,8 +871,8 @@ omit [CompleteSpace H] [CompleteSpace K] in
 theorem _root_.LinearIsometryEquiv.adjoint_toLinearMap_eq_symm
     [FiniteDimensional 𝕜 H] [FiniteDimensional 𝕜 K] (e : H ≃ₗᵢ[𝕜] K) :
     LinearMap.adjoint e.toLinearMap = e.symm.toLinearMap :=
-  have := FiniteDimensional.complete 𝕜 H
-  have := FiniteDimensional.complete 𝕜 K
+  have := FiniteDimensional.completeSpace 𝕜 H
+  have := FiniteDimensional.completeSpace 𝕜 K
   congr($e.adjoint_eq_symm)
 
 @[simp]
@@ -1075,7 +1075,7 @@ theorem LinearIsometry.adjoint_comp_self' {E E' : Type*}
     [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E]
     [NormedAddCommGroup E'] [InnerProductSpace 𝕜 E'] [FiniteDimensional 𝕜 E'] (f : E →ₗᵢ[𝕜] E') :
     f.adjoint ∘ₗ f.toLinearMap = LinearMap.id := by
-  have := FiniteDimensional.complete 𝕜 E
-  have := FiniteDimensional.complete 𝕜 E'
+  have := FiniteDimensional.completeSpace 𝕜 E
+  have := FiniteDimensional.completeSpace 𝕜 E'
   ext x
   congrm $f.adjoint_comp_self x

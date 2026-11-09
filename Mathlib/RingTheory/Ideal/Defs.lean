@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Tactic.Abel
 
 /-!
-
 # Ideals over a ring
 
 This file defines `Ideal R`, the type of (left) ideals over a ring `R`.
