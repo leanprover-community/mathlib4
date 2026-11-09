@@ -123,6 +123,8 @@ set_option maxHeartbeats 20 in
 section
 end
 
+example : True := set_option maxHeartbeats 20 in trivial
+
 /--
 warning: Unscoped option synthInstance.maxHeartbeats is not allowed:
 Please scope this to individual declarations, as in
