@@ -70,11 +70,11 @@ protected theorem _root_.Measurable.quasiMeasurePreserving
 
 theorem mono_left (h : QuasiMeasurePreserving f μa μb) (ha : μa' ≪ μa) :
     QuasiMeasurePreserving f μa' μb :=
-  ⟨h.measurable.mono_ac ha, (ha.map_of_aemeasurable h.measurable).trans h.absolutelyContinuous⟩
+  ⟨h.aemeasurable.mono_ac ha, (ha.map_of_aemeasurable h.aemeasurable).trans h.absolutelyContinuous⟩
 
 theorem mono_right (h : QuasiMeasurePreserving f μa μb) (ha : μb ≪ μb') :
     QuasiMeasurePreserving f μa μb' :=
-  ⟨h.measurable, h.absolutelyContinuous.trans ha⟩
+  ⟨h.aemeasurable, h.absolutelyContinuous.trans ha⟩
 
 @[gcongr, mono]
 theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving f μa μb) :
@@ -102,7 +102,7 @@ protected theorem congr (hf : QuasiMeasurePreserving f μa μb) {f' : α → β}
 
 theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.measurable.smul_measure c, by
+  ⟨hf.aemeasurable.smul_measure c, by
     rw [Measure.map_smul _ hf.aemeasurable]
     exact hf.absolutelyContinuous.smul c⟩
 
