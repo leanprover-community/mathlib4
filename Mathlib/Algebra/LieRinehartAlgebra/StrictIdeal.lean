@@ -221,8 +221,8 @@ variable {L₁ L₂ : Type*} [LieRing L₁] [Module A L₁] [LieRingModule L₁ 
 /-- The preimage of a strict Lie-Rinehart ideal under a homomorphism `f` (which lies over the
 identity of `A`) is a strict Lie-Rinehart ideal. -/
 @[expose] def comap (f : L₁ →ₗ⁅.id R A⁆ L₂) (s₂ : StrictLieRinehartIdeal A L₂) :
-    StrictLieRinehartIdeal A L₁ := {
-  s₂.toSubmodule.comap (f.toLinearMap') with
+    StrictLieRinehartIdeal A L₁ where
+  toSubmodule := s₂.toSubmodule.comap f.toLinearMap'
   lie_mem_left' {x y} h := by
     change f.toLinearMap' ⁅x, y⁆ ∈ s₂
     rw [LieRinehartAlgebra.Hom.toLinearMap'_apply, LieHom.map_lie]
