@@ -286,6 +286,14 @@ protected theorem IsSuccPrelimit.isMax (h : IsSuccPrelimit (succ a)) : IsMax a :
 protected theorem IsSuccLimit.isMax (h : IsSuccLimit (succ a)) : IsMax a :=
   h.isSuccPrelimit.isMax
 
+@[to_dual]
+theorem _root_.SuccOrder.not_isPredLimit (a : α) : ¬IsPredLimit a :=
+  fun h ↦ h.isPredPrelimit _ <| covBy_succ_of_not_isMax h.not_isMax
+
+@[to_dual]
+theorem _root_.SuccOrder.not_isPredPrelimit [NoMaxOrder α] (a : α) : ¬IsPredPrelimit a :=
+  (· _ <| covBy_succ a)
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]
