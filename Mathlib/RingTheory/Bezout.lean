@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
-
 # Bézout rings
 
 A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are principal.
@@ -52,7 +51,7 @@ theorem _root_.Function.Surjective.isBezout {S : Type v} [CommRing S] (f : R →
   · simp [Ideal.map_span]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem TFAE [IsBezout R] [IsDomain R] :
+theorem tfae [IsBezout R] [IsDomain R] :
     List.TFAE
     [IsNoetherianRing R, IsPrincipalIdealRing R, UniqueFactorizationMonoid R, WfDvdMonoid R] := by
   classical
@@ -78,5 +77,7 @@ theorem TFAE [IsBezout R] [IsDomain R] :
             rw [← Ideal.span_singleton_lt_span_singleton, ← hf, ← hf]
             rfl }
     tfae_finish
+
+@[deprecated (since := "2026-10-27")] alias TFAE := tfae
 
 end IsBezout

@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
-
 # Localizations of domains as subalgebras of the fraction field.
 
 Given a domain `A` with fraction field `K`, and a submonoid `S` of `A` which

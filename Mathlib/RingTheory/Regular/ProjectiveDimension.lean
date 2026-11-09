@@ -5,15 +5,15 @@ Authors: Nailin Guan
 -/
 module
 
-import Mathlib.Algebra.Category.Grp.Zero
 public import Mathlib.Algebra.Category.ModuleCat.Ext.Finite
 public import Mathlib.Algebra.Category.ModuleCat.ProjectiveDimension
-import Mathlib.RingTheory.LocalRing.Module
-import Mathlib.RingTheory.Regular.Category
 public import Mathlib.RingTheory.Regular.RegularSequence
 
-/-!
+import Mathlib.Algebra.Category.Grp.Zero
+import Mathlib.RingTheory.LocalRing.Module
+import Mathlib.RingTheory.Regular.Category
 
+/-!
 # ProjectiveDimension of quotient by regular element
 
 For `M` a finitely generated module over Noetherian local ring `R` and an `M`-regular element `x`
@@ -82,7 +82,6 @@ end
 
 variable [IsLocalRing R] [IsNoetherianRing R]
 
-set_option backward.isDefEq.respectTransparency false in
 lemma projectiveDimension_quotSMulTop_eq_succ_of_isSMulRegular (M : ModuleCat.{v} R)
     [Module.Finite R M] (x : R) (reg : IsSMulRegular M x) (mem : x ∈ maximalIdeal R) :
     projectiveDimension (ModuleCat.of R (QuotSMulTop x M)) = projectiveDimension M + 1 := by

@@ -5,11 +5,10 @@ Authors: Riccardo Brasca
 -/
 module
 
-public import Mathlib.RingTheory.FiniteType
 public import Mathlib.LinearAlgebra.InvariantBasisNumber
+public import Mathlib.RingTheory.FiniteType
 
 /-!
-
 # Strong rank condition for commutative rings
 
 We provide a shortcut instance for the fact that any nontrivial commutative ring satisfies

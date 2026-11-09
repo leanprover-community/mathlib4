@@ -5,8 +5,9 @@ Authors: Michael Stoll
 -/
 module
 
-import Mathlib.Basic.Finite.Prod
 public import Mathlib.Data.Fin.Tuple.Sort
+
+import Mathlib.Basic.Finite.Prod
 import Mathlib.Order.PiLex
 
 /-!

@@ -6,9 +6,10 @@ Authors: Aaron Anderson
 module
 
 public import Mathlib.Computability.Encoding
-import Mathlib.Logic.Small.List
 public import Mathlib.ModelTheory.Syntax
 public import Mathlib.SetTheory.Cardinal.Arithmetic
+
+import Mathlib.Logic.Small.List
 
 /-!
 # Encodings and Cardinality of First-Order Syntax

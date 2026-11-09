@@ -74,9 +74,6 @@ theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I
   rw [one_mul]
   exact coeIdeal_le_one hy
 
-@[deprecated (since := "2026-04-16")]
-alias one_mem_inv_coe_ideal := FractionalIdeal.one_mem_inv_coe_ideal
-
 /-- Specialization of `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
 Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
 Then `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` states we can find a product of prime
@@ -107,14 +104,10 @@ theorem PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDo
     subst hPM'
     -- By minimality of `Z`, erasing `P` from `Z` is exactly what we need.
     refine ⟨Z.erase P, ?_, ?_⟩
-    · convert! hZI
+    · convert hZI
       rw [this, Multiset.cons_erase hPZ']
     · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
-
-@[deprecated (since := "2026-04-16")]
-alias exists_multiset_prod_cons_le_and_prod_not_le :=
-  PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le
 
 namespace FractionalIdeal
 variable [IsDedekindDomain A] {I : Ideal A}
@@ -271,7 +264,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
-    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), spanSingleton_one, ←
+    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (Ne.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)
@@ -325,7 +318,7 @@ theorem isDedekindDomain_iff_isDedekindDomainInv [IsDomain A] :
     exact ⟨spanSingleton A⁰ (algebraMap _ _ a) * (J : FractionalIdeal A⁰ _)⁻¹, h₂⟩
   subst hJ
   rw [mul_assoc, mul_left_comm (J : FractionalIdeal A⁰ _), coe_ideal_mul_inv, mul_one,
-    spanSingleton_mul_spanSingleton, inv_mul_cancel₀, spanSingleton_one]
+    ← map_mul, inv_mul_cancel₀, map_one]
   · exact mt ((injective_iff_map_eq_zero (algebraMap A _)).mp (IsFractionRing.injective A _) _) ha
   · exact coeIdeal_ne_zero.mp (right_ne_zero_of_mul hI)
 

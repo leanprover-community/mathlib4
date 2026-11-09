@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-
 public import Mathlib.GroupTheory.GroupAction.Iwasawa
 public import Mathlib.GroupTheory.GroupAction.SubMulAction.Combination
 public import Mathlib.GroupTheory.Solvable
@@ -151,10 +150,9 @@ theorem map_kleinFour_conj (s : Finset α) (hs : s.card = 4) (g : alternatingGro
   rcases g with ⟨g, hg⟩
   ext ⟨k, hk⟩
   simp_rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_map_kleinFour_ofSubtype hs,
-    Subgroup.mk_smul, MulAut.smul_def, MulAut.inv_apply, MulAut.conj_symm_apply, Subgroup.coe_mul,
-    Subgroup.coe_inv, ← ConjAct.toConjAct_inv_smul, Equiv.Perm.support_toConjAct_eq_smul_support,
+    mk_smul, MulAut.smul_def, ← map_inv, MulAut.coe_conj_apply, support_conj_eq_smul_support,
     mem_map_kleinFour_ofSubtype (s := g • s) (by simpa), Finset.subset_smul_finset_iff,
-    ConjAct.toConjAct_smul, cycleType_conj, mul_inv_eq_one, mul_eq_left]
+    MulEquiv.map_eq_one_iff, Subgroup.coe_inv, MulAut.conj_apply, cycleType_conj]
 
 /-- The Iwasawa structure of `alternatingGroup α` acting on `Set.powersetCard α 4`,
 provided `α` has at least 5 elements. -/
@@ -215,32 +213,6 @@ theorem isSolvable (hα : Nat.card α ≤ 4) : Group.IsSolvable (alternatingGrou
   · rw [← Group.isSolvable_commutator_iff, ← kleinFour_eq_commutator hα]
     have := (kleinFour_isKleinFour hα).isMulCommutative
     infer_instance
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem _root_.Equiv.Perm.IsThreeCycle.alternating_normalClosure
-    (h5 : 5 ≤ Nat.card α) {f : Perm α} (hf : IsThreeCycle f) :
-    normalClosure ({⟨f, hf.mem_alternatingGroup⟩} : Set (alternatingGroup α)) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup α) := isSimpleGroup h5
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp [hf.ne_one]
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
-    finRotate_bit1_mem_alternatingGroup (n := 2)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp +decide
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-theorem normalClosure_swap_mul_swap_five : normalClosure ({⟨swap 0 4 * swap 1 3,
-    mem_alternatingGroup.2 (by decide)⟩} : Set (alternatingGroup (Fin 5))) = ⊤ := by
-  have : IsSimpleGroup (alternatingGroup (Fin 5)) := isSimpleGroup (by simp)
-  apply normalClosure_normal.eq_bot_or_eq_top.resolve_left
-  simp +decide
-
-@[deprecated "Use `alternatingGroup.isSimpleGroup` instead." (since := "2026-04-28")]
-instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
-  isSimpleGroup (by simp)
 
 end alternatingGroup
 

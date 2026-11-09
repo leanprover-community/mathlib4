@@ -5,13 +5,12 @@ Authors: Chris Hughes
 -/
 module
 
+public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 public import Mathlib.ModelTheory.Definability
 public import Mathlib.RingTheory.MvPolynomial.FreeCommRing
 public import Mathlib.RingTheory.Nullstellensatz
-public import Mathlib.ModelTheory.Algebra.Ring.FreeCommRing
 
 /-!
-
 # Definable Subsets in the language of rings
 
 This file proves that the set of zeros of a multivariable polynomial is a definable subset.

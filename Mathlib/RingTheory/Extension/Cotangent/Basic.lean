@@ -5,12 +5,11 @@ Authors: Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.Kaehler.Polynomial
 public import Mathlib.Algebra.Module.FinitePresentation
 public import Mathlib.RingTheory.Extension.Presentation.Basic
+public import Mathlib.RingTheory.Kaehler.Polynomial
 
 /-!
-
 # Naive cotangent complex associated to a presentation.
 
 Given a presentation `0 → I → R[x₁,...,xₙ] → S → 0` (or equivalently a closed embedding `S ↪ Aⁿ`
@@ -223,7 +222,7 @@ lemma Hom.sub_aux (f g : Hom P P') (x y) :
         Function.comp_apply,
         ker, RingHom.mem_ker, map_sub, algebraMap_toRingHom,
         algebraMap_σ, sub_self, toAlgHom_apply]
-  convert! this using 1
+  convert this using 1
   simp only [map_mul]
   ring
 

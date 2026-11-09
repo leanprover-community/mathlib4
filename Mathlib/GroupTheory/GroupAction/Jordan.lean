@@ -5,8 +5,9 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-import Mathlib.Algebra.Group.Pointwise.Set.Card
 public import Mathlib.GroupTheory.GroupAction.MultiplePrimitivity
+
+import Mathlib.Algebra.Group.Pointwise.Set.Card
 
 /-! # Theorems of Jordan
 
@@ -103,8 +104,7 @@ theorem MulAction.IsPreprimitive.is_two_motive_of_is_motive
       → IsMultiplyPretransitive G α 2)
     ∧ (IsPreprimitive (fixingSubgroup G s) (ofFixingSubgroup G s)
       → IsMultiplyPreprimitive G α 2) := by
-  induction n using Nat.strong_induction_on generalizing α G with
-  | h n hrec =>
+  induction n using Nat.strong_induction_on generalizing α G with | ind n hrec
   have : Finite α := Nat.finite_of_card_ne_zero <| ne_zero_of_lt hsn'
   have hs_ne_univ : s ≠ Set.univ := by
     intro hs
@@ -399,7 +399,7 @@ theorem subgroup_eq_top_of_isPreprimitive_of_isSwap_mem
   · rw [hn]; apply Nat.lt_add_one
   have := isPretransitive_of_isCycle_mem h2g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert! Nat.prime_two
+  convert Nat.prime_two
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← card_support_eq_two.mpr h2g]
   simp [SubMulAction.mem_ofFixingSubgroup_iff, support]
 
@@ -436,7 +436,7 @@ theorem alternatingGroup_le_of_isPreprimitive_of_isThreeCycle_mem
   · grind
   have := isPretransitive_of_isCycle_mem h3g.isCycle hg
   apply IsPreprimitive.of_prime_card
-  convert! Nat.prime_three
+  convert Nat.prime_three
   rw [Nat.card_eq_fintype_card, Fintype.card_subtype, ← h3g.card_support]
   apply congr_arg
   ext x

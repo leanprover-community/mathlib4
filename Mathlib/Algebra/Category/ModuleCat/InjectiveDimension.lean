@@ -5,13 +5,13 @@ Authors: Nailin Guan
 -/
 module
 
+public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
+
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-public import Mathlib.CategoryTheory.Abelian.Injective.Dimension
 
 /-!
-
 # Injective Dimension in ModuleCat
 
 This file deals with preservation of `injectiveDimension` in (semi) linear equivalences.

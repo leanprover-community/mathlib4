@@ -9,7 +9,6 @@ public import Mathlib.FieldTheory.IntermediateField.Basic
 public import Mathlib.RingTheory.PowerBasis
 
 /-!
-
 # Separable polynomials
 
 We define a polynomial to be separable if it is coprime with its derivative. We prove basic
@@ -155,7 +154,7 @@ theorem isUnit_of_self_mul_dvd_separable {p q : R[X]} (hp : p.Separable) (hq : q
       (q * (derivative q * p + derivative q * p + q * derivative p)) := by
     simp only [← mul_assoc, mul_add]
     dsimp only [Separable] at hp
-    convert! hp using 1
+    convert hp using 1
     rw [derivative_mul, derivative_mul]
     ring
   exact IsCoprime.of_mul_right_left (IsCoprime.of_mul_left_left this)

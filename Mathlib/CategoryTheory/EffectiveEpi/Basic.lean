@@ -6,8 +6,8 @@ Authors: Adam Topaz
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.Products
-/-!
 
+/-!
 # Effective epimorphisms
 
 We define the notion of effective epimorphism and effective epimorphic family of morphisms.

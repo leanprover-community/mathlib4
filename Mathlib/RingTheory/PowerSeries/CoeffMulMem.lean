@@ -5,12 +5,12 @@ Authors: Jz Pan
 -/
 module
 
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.BigOperators
 public import Mathlib.RingTheory.PowerSeries.Basic
 
-/-!
+import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Operations
 
+/-!
 # Some results on the coefficients of multiplication of two power series
 
 ## Main results

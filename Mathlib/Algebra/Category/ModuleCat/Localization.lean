@@ -6,11 +6,11 @@ Authors: Nailin Guan
 module
 
 public import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
-import Mathlib.Algebra.Module.LocalizedModule.Exact
 public import Mathlib.RingTheory.Localization.Module
 
-/-!
+import Mathlib.Algebra.Module.LocalizedModule.Exact
 
+/-!
 # Localized Module in ModuleCat
 
 For a ring `R` satisfying `[Small.{v} R]` and a submonoid `S` of `R`,

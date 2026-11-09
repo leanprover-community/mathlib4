@@ -5,13 +5,13 @@ Authors: Jung Tao Cheng, Christian Merten, Andrew Yang
 -/
 module
 
-public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.Extension.Generators
+public import Mathlib.RingTheory.FinitePresentation
 public import Mathlib.RingTheory.MvPolynomial.Localization
+
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
-
 # Presentations of algebras
 
 A presentation of an `R`-algebra `S` is a distinguished family of generators and relations.
@@ -133,7 +133,7 @@ lemma exists_presentation_fin [FinitePresentation R S] :
   let v : Fin m → MvPolynomial (Fin n) R := H'.choose_spec.choose
   have hv : Ideal.span (Set.range v) = RingHom.ker f := H'.choose_spec.choose_spec
   ⟨n, m,
-    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert! hf; ext; simp)
+    ⟨{__ := Generators.ofSurjective (fun x ↦ f (.X x)) (by convert hf; ext; simp)
       relation := v
       span_range_relation_eq_ker := hv.trans (by congr; ext; simp) }⟩⟩
 

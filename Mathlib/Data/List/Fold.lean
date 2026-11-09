@@ -5,7 +5,6 @@ Authors: Jeremy Tan
 -/
 module
 
-import Batteries.Tactic.Alias
 public import Mathlib.Logic.OpClass
 
 /-!
@@ -76,12 +75,5 @@ theorem foldl_flip_eq_foldr [LeftCommutative f] : l.foldl (flip f) b = l.foldr f
 /-- **Second Bird–Wadler duality theorem**. -/
 theorem foldr_flip_eq_foldl [RightCommutative v] : l.foldr (flip v) b = l.foldl v b := by
   induction l generalizing b <;> simp [*, flip, foldl_cons_eq_apply_foldl, -foldl_cons]
-
-@[deprecated (since := "2026-04-02")] alias foldl_eq_of_comm' := foldl_cons_eq_apply_foldl
-@[deprecated (since := "2026-04-02")] alias foldr_eq_of_comm' := foldr_cons_eq_foldr_apply
-@[deprecated (since := "2026-04-02")] alias foldl_eq_foldr' := foldr_flip_eq_foldl
-@[deprecated (since := "2026-04-02")] alias foldl_eq_of_comm_of_assoc := foldl_cons_eq_apply_foldl
-@[deprecated (since := "2026-04-02")] alias foldl_op_eq_op_foldr_assoc := foldl1_eq_foldr1
-@[deprecated (since := "2026-04-02")] alias foldl_assoc_comm_cons := foldl_cons_eq_apply_foldl
 
 end List

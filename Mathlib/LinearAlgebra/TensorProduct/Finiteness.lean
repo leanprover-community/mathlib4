@@ -6,11 +6,10 @@ Authors: Jz Pan
 module
 
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.RingTheory.Finiteness.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Map
+public import Mathlib.RingTheory.Finiteness.Basic
 
 /-!
-
 # Some finiteness results of tensor product
 
 This file contains some finiteness results of tensor product.

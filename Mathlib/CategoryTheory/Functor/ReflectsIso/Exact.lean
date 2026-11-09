@@ -5,9 +5,9 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
-public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 public import Mathlib.Algebra.Homology.QuasiIso
+public import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+public import Mathlib.CategoryTheory.Functor.ReflectsIso.Jointly
 
 /-!
 # Exactness properties of functors which jointly reflect isomorphisms
@@ -73,7 +73,7 @@ end
 
 section
 
-variable [Abelian C] [∀ i, Abelian (D i)] [CategoryWithHomology C]
+variable [Abelian C] [∀ i, Abelian (D i)]
   [∀ i, PreservesFiniteLimits (F i)] [∀ i, PreservesFiniteColimits (F i)]
 
 lemma shortExact_iff (S : ShortComplex C) :

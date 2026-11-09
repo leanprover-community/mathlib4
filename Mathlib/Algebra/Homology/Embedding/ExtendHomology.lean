@@ -130,7 +130,6 @@ noncomputable def isColimitCokernelCofork :
 
 end leftHomologyData
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 open leftHomologyData in
 /-- The left homology data of `(K.extend e).sc' i' j' k'` that is deduced
@@ -198,7 +197,6 @@ lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
       exact hjk
     simp [h₁, h₂]
 
-set_option backward.defeqAttrib.useBackward true in
 include hk hk' in
 lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
     φ ≫ hcocone.desc (CokernelCofork.ofπ (K.d j k) (K.d_comp_d i j k)) = 0 ↔
@@ -225,8 +223,6 @@ noncomputable def isLimitKernelFork :
 
 end rightHomologyData
 
-set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 open rightHomologyData in
 /-- The right homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a right homology data of `K.sc' i j k`. -/
@@ -259,7 +255,6 @@ lemma rightHomologyData_g' (h : (K.sc' i j k).RightHomologyData) (hk'' : e.f k =
   rw [assoc] at this
   rw [this, K.extend_d_eq e hj' hk'', h.p_g'_assoc, shortComplexFunctor'_obj_g]
 
-set_option backward.isDefEq.respectTransparency.types false in
 set_option backward.defeqAttrib.useBackward true in
 /-- The homology data of `(K.extend e).sc' i' j' k'` that is deduced
 from a homology data of `K.sc' i j k`. -/
@@ -420,7 +415,6 @@ lemma extendHomologyIso_hom_naturality :
       (K.extendHomologyIso e hj').hom ≫ homologyMap φ j := by
   simp [← cancel_epi ((K.extend e).homologyπ _)]
 
-set_option backward.defeqAttrib.useBackward true in
 include hj' in
 lemma quasiIsoAt_extendMap_iff :
     QuasiIsoAt (extendMap φ e) j' ↔ QuasiIsoAt φ j := by

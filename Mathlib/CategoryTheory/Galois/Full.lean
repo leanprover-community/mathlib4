@@ -8,7 +8,6 @@ module
 public import Mathlib.CategoryTheory.Galois.Action
 
 /-!
-
 # Fiber functors are (faithfully) full
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
@@ -86,7 +85,7 @@ lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
       simpa [is2, u']
     simp only [h, Iso.inv_hom_id_assoc]
   refine ⟨∐ gZ, Sigma.desc gf, t.symm ≪≫ u' ≪≫ is2.symm, ?_, by simp [heq]⟩
-  · exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
+  exact mono_of_mono_map (functorToAction F) (heq ▸ mono_comp _ _)
 
 /-- The by a fiber functor `F : C ⥤ FintypeCat` induced functor `functorToAction F` to
 finite `Aut F`-sets is full. -/
