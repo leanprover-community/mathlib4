@@ -84,10 +84,10 @@ theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving
 @[fun_prop]
 protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
     (hf : QuasiMeasurePreserving f μa μb) : QuasiMeasurePreserving (g ∘ f) μa μc :=
-  have hg' : AEMeasurable g (μa.map f) := hg.1.mono_ac hf.2
-  ⟨hg'.comp_aemeasurable hf.1, by
-    rw [← hg'.map_map_of_aemeasurable hf.1]
-    exact (hf.2.map_of_aemeasurable hg.1).trans hg.2⟩
+  have hg' : AEMeasurable g (μa.map f) := hg.aemeasurable.mono_ac hf.absolutelyContinuous
+  ⟨hg'.comp_aemeasurable hf.aemeasurable, by
+    rw [← hg'.map_map_of_aemeasurable hf.aemeasurable]
+    exact (hf.absolutelyContinuous.map_of_aemeasurable hg.aemeasurable).trans hg.absolutelyContinuous⟩
 
 protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa) :
     ∀ n, QuasiMeasurePreserving f^[n] μa μa
