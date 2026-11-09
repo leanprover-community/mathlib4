@@ -50,8 +50,7 @@ structure StrictLieRinehartIdeal (A L : Type*) [CommRing A] [LieRing L] [Module 
 
 namespace StrictLieRinehartIdeal
 
-/-- Forgetting that a Lie-Rinehart-ideal is also a Lie ideal.
--/
+/-- Forgetting that a Lie-Rinehart-ideal is also a Lie ideal. -/
 add_decl_doc StrictLieRinehartIdeal.toSubmodule
 
 variable {A L} [CommRing A] [LieRing L] [Module A L] [LieRingModule L A]
