@@ -34,15 +34,13 @@ Additive groups are written using `Multiplicative`, as `PontryaginDual` takes a 
 group.
 -/
 
-@[expose] public section
-
 noncomputable section
 
 open Real ContinuousMonoidHom
 
 /-- Every continuous circle-valued character of `ℝ` is a multiplicative shift of
 `Real.probChar`. -/
-theorem AddChar.exists_eq_probChar_mulShift (χ : AddChar ℝ Circle) (hχ : Continuous χ) :
+public theorem AddChar.exists_eq_probChar_mulShift (χ : AddChar ℝ Circle) (hχ : Continuous χ) :
     ∃ a : ℝ, χ = Real.probChar.mulShift a := by
   obtain ⟨F, ⟨hF0, hF⟩, _⟩ :=
     Circle.isCoveringMap_exp.existsUnique_continuousMap_lifts ⟨χ, hχ⟩ 0 0 (by simp)
@@ -58,7 +56,7 @@ theorem AddChar.exists_eq_probChar_mulShift (χ : AddChar ℝ Circle) (hχ : Con
   exact ⟨F 1, AddChar.ext _ _ fun t ↦ by simp [← hF', eq_aux t, mul_comm, probChar_apply']⟩
 
 /-- Every continuous endomorphism of the circle is of the form `z ↦ z ^ n` for some `n : ℤ`. -/
-theorem Circle.exists_eq_zpowGroupHom (χ : Circle →* Circle) (hχ : Continuous χ) :
+public theorem Circle.exists_eq_zpowGroupHom (χ : Circle →* Circle) (hχ : Continuous χ) :
     ∃ n : ℤ, χ = zpowGroupHom n := by
   obtain ⟨a, ha⟩ := AddChar.exists_eq_probChar_mulShift (χ.compAddChar Real.probChar)
     (hχ.comp Circle.exp.continuous)
@@ -76,16 +74,16 @@ section ZMod
 variable (n : ℕ) [NeZero n]
 
 /-- The character of `ZMod n` indexed by `x`, using the standard finite cyclic pairing. -/
-private def zmodChar : Multiplicative (ZMod n) →* PontryaginDual (Multiplicative (ZMod n)) where
+def zmodChar : Multiplicative (ZMod n) →* PontryaginDual (Multiplicative (ZMod n)) where
   toFun x := ⟨(AddChar.zmod n x.toAdd).toMonoidHom, continuous_of_discreteTopology⟩
   map_one' := by ext1 x; exact congr($(AddChar.zmod_zero n) x.toAdd)
   map_mul' x y := by ext1 z; exact congr($(AddChar.zmod_add x.toAdd y.toAdd) z.toAdd)
 
 @[simp]
-private theorem zmodChar_apply (x y : Multiplicative (ZMod n)) :
+theorem zmodChar_apply (x y : Multiplicative (ZMod n)) :
     zmodChar n x y = AddChar.zmod n x.toAdd y.toAdd := rfl
 
-private theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
+theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
   refine ⟨fun x y h ↦ ?_, fun χ ↦ ?_⟩
   · apply Multiplicative.toAdd.injective
     apply AddChar.zmod_injective
@@ -96,16 +94,15 @@ private theorem zmodChar_bijective : Function.Bijective (zmodChar n) := by
     exact ⟨.ofAdd x, ext fun y ↦ congr($(AddChar.circleEquivComplex.injective hx) y.toAdd)⟩
 
 /-- A finite cyclic group is isomorphic to its Pontryagin dual. -/
-@[no_expose]
-def zmodEquiv : Multiplicative (ZMod n) ≃ₜ* PontryaginDual (Multiplicative (ZMod n)) :=
+public def zmodEquiv : Multiplicative (ZMod n) ≃ₜ* PontryaginDual (Multiplicative (ZMod n)) :=
   (MulEquiv.ofBijective (zmodChar n) (zmodChar_bijective n)).toContinuousMulEquiv
     fun _ ↦ by simp [isOpen_discrete]
 
 @[simp]
-theorem zmodEquiv_apply (x y : Multiplicative (ZMod n)) :
+public theorem zmodEquiv_apply (x y : Multiplicative (ZMod n)) :
     zmodEquiv n x y = AddChar.zmod n x.toAdd y.toAdd := by rfl
 
-theorem zmodEquiv_apply_intCast (x y : ℤ) :
+public theorem zmodEquiv_apply_intCast (x y : ℤ) :
     zmodEquiv n (.ofAdd (x : ZMod n)) (.ofAdd (y : ZMod n)) =
       Circle.exp (2 * π * (x * y / n)) := by simp
 
@@ -114,7 +111,7 @@ end ZMod
 section Int
 
 /-- The Pontryagin dual of `ℤ` is isomorphic to the circle, via `z ↦ (n ↦ z ^ n)`. -/
-def intEquiv : Circle ≃ₜ* PontryaginDual (Multiplicative ℤ) where
+public def intEquiv : Circle ≃ₜ* PontryaginDual (Multiplicative ℤ) where
   toFun z := ⟨zpowersHom Circle z, continuous_of_discreteTopology⟩
   invFun χ := χ (.ofAdd 1)
   left_inv z := zpow_one z
@@ -125,18 +122,19 @@ def intEquiv : Circle ≃ₜ* PontryaginDual (Multiplicative ℤ) where
   continuous_invFun := continuous_eval_const _
 
 @[simp]
-theorem intEquiv_apply (z : Circle) (n : Multiplicative ℤ) : intEquiv z n = z ^ n.toAdd := rfl
+public theorem intEquiv_apply (z : Circle) (n : Multiplicative ℤ) :
+    intEquiv z n = z ^ n.toAdd := by rfl
 
 @[simp]
-theorem intEquiv_symm_apply (χ : PontryaginDual (Multiplicative ℤ)) :
-    intEquiv.symm χ = χ (.ofAdd 1) := rfl
+public theorem intEquiv_symm_apply (χ : PontryaginDual (Multiplicative ℤ)) :
+    intEquiv.symm χ = χ (.ofAdd 1) := by rfl
 
 end Int
 
 section Real
 
 /-- The real character with frequency `a`, given by `t ↦ exp (a * t * I)`. -/
-private def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
+def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative ℝ) where
   toFun a := ⟨(Real.probChar.mulShift a.toAdd).toMonoidHom,
     Circle.exp.continuous.comp (continuous_const.mul continuous_toAdd)⟩
   map_one' := by ext1 t; exact congr($(Real.probChar.mulShift_zero) t.toAdd)
@@ -145,10 +143,10 @@ private def realChar : Multiplicative ℝ →* PontryaginDual (Multiplicative �
     exact congr($(Real.probChar.mulShift_mul a.toAdd b.toAdd) t.toAdd).symm
 
 @[simp]
-private theorem realChar_apply (a t : Multiplicative ℝ) :
+theorem realChar_apply (a t : Multiplicative ℝ) :
     realChar a t = Circle.exp (a.toAdd * t.toAdd) := rfl
 
-private theorem realChar_bijective : Function.Bijective realChar := by
+theorem realChar_bijective : Function.Bijective realChar := by
   refine ⟨(injective_iff_map_eq_one _).mpr fun a ha ↦ ?_, fun χ ↦ ?_⟩
   · by_contra h
     apply Real.probChar_ne_one
@@ -159,22 +157,21 @@ private theorem realChar_bijective : Function.Bijective realChar := by
         ((map_continuous χ).comp continuous_ofAdd)
     exact ⟨.ofAdd a, ext fun t ↦ congr($ha t.toAdd).symm⟩
 
-private theorem continuous_realChar : Continuous realChar :=
+theorem continuous_realChar : Continuous realChar :=
   continuous_of_continuous_uncurry _ <| Circle.exp.continuous.comp <|
     continuous_toAdd.fst'.mul continuous_toAdd.snd'
 
-private theorem isOpenMap_realChar : IsOpenMap realChar :=
+theorem isOpenMap_realChar : IsOpenMap realChar :=
   realChar.isOpenMap_of_sigmaCompact realChar_bijective.surjective continuous_realChar
 
 /-- The Pontryagin dual of `ℝ` is isomorphic to `ℝ`, via `a ↦ (t ↦ exp (a * t * I))`. -/
-@[no_expose]
-def realEquiv : Multiplicative ℝ ≃ₜ* PontryaginDual (Multiplicative ℝ) :=
+public def realEquiv : Multiplicative ℝ ≃ₜ* PontryaginDual (Multiplicative ℝ) :=
   (MulEquiv.ofBijective realChar realChar_bijective).toContinuousMulEquiv fun _ ↦
     ((isOpenMap_realChar).isQuotientMap continuous_realChar
       realChar_bijective.surjective).isOpen_preimage
 
 @[simp]
-theorem realEquiv_apply (a t : Multiplicative ℝ) :
+public theorem realEquiv_apply (a t : Multiplicative ℝ) :
     realEquiv a t = Circle.exp (a.toAdd * t.toAdd) := by rfl
 
 end Real
@@ -182,16 +179,16 @@ end Real
 section Circle
 
 /-- The homomorphism `ℤ → PontryaginDual Circle` sending `n` to the character `z ↦ z ^ n`. -/
-private def zpowCircle : Multiplicative ℤ →* PontryaginDual Circle where
+def zpowCircle : Multiplicative ℤ →* PontryaginDual Circle where
   toFun n := (⟨zpowGroupHom n.toAdd, continuous_zpow _⟩ : Circle →ₜ* Circle)
   map_one' := by ext1 z; exact zpow_zero z
   map_mul' m n := by ext1 z; exact zpow_add z _ _
 
 @[simp]
-private theorem zpowCircle_apply (n : Multiplicative ℤ) (z : Circle) :
+theorem zpowCircle_apply (n : Multiplicative ℤ) (z : Circle) :
     zpowCircle n z = z ^ n.toAdd := rfl
 
-private theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
+theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
   refine ⟨(injective_iff_map_eq_one _).mpr fun n hn ↦ ?_, fun χ ↦ ?_⟩
   · by_contra h
     have hn' : (n.toAdd : ℝ) ≠ 0 := by simpa using h
@@ -202,13 +199,12 @@ private theorem zpowCircle_bijective : Function.Bijective zpowCircle := by
     exact ⟨.ofAdd n, ext fun z ↦ congr($hn z).symm⟩
 
 /-- The Pontryagin dual of the circle is isomorphic to `ℤ`. -/
-@[no_expose]
-def circleEquiv : Multiplicative ℤ ≃ₜ* PontryaginDual Circle :=
+public def circleEquiv : Multiplicative ℤ ≃ₜ* PontryaginDual Circle :=
   (MulEquiv.ofBijective zpowCircle zpowCircle_bijective).toContinuousMulEquiv
     fun _ ↦ by simp [isOpen_discrete]
 
 @[simp]
-theorem circleEquiv_apply (n : Multiplicative ℤ) (z : Circle) :
+public theorem circleEquiv_apply (n : Multiplicative ℤ) (z : Circle) :
     circleEquiv n z = z ^ n.toAdd := by rfl
 
 end Circle
