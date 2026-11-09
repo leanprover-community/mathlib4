@@ -429,7 +429,6 @@ public import Mathlib.Algebra.Group.Irreducible.Indecomposable
 public import Mathlib.Algebra.Group.Irreducible.Lemmas
 public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Group.IsCommutative
-public import Mathlib.Algebra.Group.IsNPowApplyEqIterate
 public import Mathlib.Algebra.Group.MinimalAxioms
 public import Mathlib.Algebra.Group.ModEq
 public import Mathlib.Algebra.Group.Monoid
