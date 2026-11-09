@@ -48,19 +48,6 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
   natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
 
-lemma of_prime_eq_zero {R} [AddMonoidWithOne R] [NeZero (1 : R)] {p : ℕ} (hp : Nat.Prime p)
-    (hp0 : (p : R) = 0) : CharP R p := by
-  obtain ⟨q, hqp, hq⟩ := exists_charP_dvd_of_cast_eq_zero R hp.ne_zero hp0
-  obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp).mp hqp
-  · exact absurd (by rw [← Nat.cast_one, cast_eq_zero]) (one_ne_zero (α := R))
-  · exact hq
-
-theorem of_addMonoidHom_of_prime {R A} [AddMonoidWithOne R] [AddMonoidWithOne A] [NeZero (1 : A)]
-    {F : Type*} [FunLike F R A] [AddMonoidHomClass F R A] (f : F) (hf : f 1 = 1) {p : ℕ}
-    (hp : p.Prime) [CharP R p] : CharP A p := by
-  apply CharP.of_prime_eq_zero hp
-  rw [← map_natCast' f hf, cast_eq_zero, map_zero]
-
 variable [IsRightCancelAdd R]
 
 lemma natCast_eq_natCast : (a : R) = b ↔ a ≡ b [MOD p] := by
@@ -117,13 +104,6 @@ lemma ringChar_of_prime_eq_zero [Nontrivial R] [IsLeftCancelAdd R] {p : ℕ} (hp
 lemma charP_iff_prime_eq_zero [Nontrivial R] {p : ℕ} (hp : p.Prime) :
     CharP R p ↔ (p : R) = 0 :=
   ⟨fun _ => cast_eq_zero R p, of_prime_eq_zero hp⟩
-
-/-- Given `R →+* A`, where `R` is a domain with `char R > 0`, then `char A = char R`. -/
-theorem of_ringHom_of_ne_zero [NoZeroDivisors R] {A} [NonAssocSemiring A] [Nontrivial A]
-    (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
-  have := f.domain_nontrivial
-  have hp0 := (CharP.char_is_prime_or_zero R p).resolve_right hp
-  exact of_addMonoidHom_of_prime f (map_one f) hp0
 
 end NonAssocSemiring
 end CharP

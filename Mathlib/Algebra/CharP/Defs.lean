@@ -8,6 +8,7 @@ module
 public import Mathlib.Data.Nat.Cast.Basic
 public import Mathlib.Data.Nat.Prime.Defs
 
+import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Int.Cast.Basic
 import Mathlib.Data.Int.Order.Basic
 import Mathlib.Data.Nat.Find
@@ -83,16 +84,14 @@ lemma of_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) = 0)
   have hp2 (k : ℕ) : (k : R) = k % p := by
     nth_rw 1 [← Nat.div_add_mod k p]
     rw [Nat.cast_add, ← nsmul_one, mul_nsmul, nsmul_one, hp0, nsmul_zero, zero_add]
-  refine ⟨fun a b => Iff.symm ⟨fun h => ?_, fun h => ?_⟩⟩
-  · rw [hp2 a, hp2 b, h]
+  refine ⟨fun a b ↦ ⟨fun h ↦ ?_, by grind⟩⟩
   wlog h0 : a ≤ b generalizing a b
-  · exact (this b a h.symm (Nat.le_of_not_le h0)).symm
+  · grind
+  have ha : IsAddUnit (a : R) := by
+    rw [← nsmul_one] at hp0 ⊢
+    exact (IsAddUnit.of_nsmul_eq_zero hp0 hp).nsmul a
   obtain ⟨k, rfl⟩ : ∃ k, b = a + k := Nat.exists_eq_add_of_le h0
-  replace h0 : ((p - 1) * a : ℕ) + (a : R) = 0 := by
-    rw [← Nat.cast_add, ← Nat.add_one_mul, Nat.sub_one_add_one hp,
-      hp2, Nat.mul_mod_right, Nat.cast_zero]
-  replace h : (k % p : R) = 0 := by
-    rw [← h0, h, Nat.cast_add, ← add_assoc, h0, zero_add, ← hp2]
+  rw [Nat.cast_add, eq_comm, ha.add_eq_left, hp2 k] at h
   rw [← Nat.add_mod_mod, hp1 _ (Nat.mod_lt _ (Nat.pos_of_ne_zero hp)) h, Nat.add_zero]
 
 lemma _root_.charP_iff_minimal_cast_eq_zero {p : ℕ} (hp : p ≠ 0) :
@@ -124,6 +123,19 @@ lemma exists_charP_dvd_of_cast_eq_zero {p : ℕ} (hp : p ≠ 0) (hp0 : (p : R) =
     ∃ q, q ∣ p ∧ CharP R q := by
   obtain ⟨q, -, Hq⟩ := exists_of_exists_ne_zero_cast_eq_zero R ⟨p, hp0, hp⟩
   exact ⟨q, (cast_eq_zero_iff R q p).mp hp0, Hq⟩
+
+lemma of_prime_eq_zero {R} [AddMonoidWithOne R] [NeZero (1 : R)] {p : ℕ} (hp : Nat.Prime p)
+    (hp0 : (p : R) = 0) : CharP R p := by
+  obtain ⟨q, hqp, hq⟩ := exists_charP_dvd_of_cast_eq_zero R hp.ne_zero hp0
+  obtain rfl | rfl : q = 1 ∨ q = p := (Nat.dvd_prime hp).mp hqp
+  · exact absurd (by rw [← Nat.cast_one, cast_eq_zero]) (one_ne_zero (α := R))
+  · exact hq
+
+theorem of_addMonoidHom_of_prime {R A} [AddMonoidWithOne R] [AddMonoidWithOne A] [NeZero (1 : A)]
+    {F : Type*} [FunLike F R A] [AddMonoidHomClass F R A] (f : F) (hf : f 1 = 1) {p : ℕ}
+    (hp : Nat.Prime p) [CharP R p] : CharP A p := by
+  apply CharP.of_prime_eq_zero hp
+  rw [← map_natCast' f hf, cast_eq_zero, map_zero]
 
 variable [IsLeftCancelAdd R]
 
