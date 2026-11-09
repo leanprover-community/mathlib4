@@ -110,7 +110,7 @@ theorem tendsto_nhds_iff [TopologicalSpace F] [OrderTopology F] {c : F} :
   grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, leadingCoeff_C,
     natDegree_eq_zero_iff_degree_le_zero]
 
-theorem tendsto_nhds_of_natDegree_le_zero [TopologicalSpace F] [OrderTopology F]
+theorem tendsto_nhds_of_degree_le_zero [TopologicalSpace F] [OrderTopology F]
     (h : P.degree ≤ 0) : Tendsto P.eval atTop (𝓝 P.leadingCoeff) := by
   apply tendsto_atTop_nhds_iff.mpr
   grind [eq_C_coeff_zero_iff_natDegree_eq_zero, leadingCoeff, natDegree_eq_zero_iff_degree_le_zero]
