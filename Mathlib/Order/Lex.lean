@@ -57,13 +57,6 @@ def ofLexEquiv : Lex α ≃ α where
 theorem toLex_inj {a b : α} : Lex.toLex a = Lex.toLex b ↔ a = b := by simp
 theorem ofLex_inj {a b : Lex α} : a.ofLex = b.ofLex ↔ a = b := Lex.ext_iff.symm
 
-lemma toLex_bijective : Lex.toLex (α := α).Bijective := ofLexEquiv.symm.bijective
-lemma ofLex_bijective : Lex.ofLex (α := α).Bijective := ofLexEquiv.bijective
-lemma toLex_injective : Lex.toLex (α := α).Injective := ofLexEquiv.symm.injective
-lemma ofLex_injective : Lex.ofLex (α := α).Injective := ofLexEquiv.injective
-lemma toLex_surjective : Lex.toLex (α := α).Surjective := ofLexEquiv.symm.surjective
-lemma ofLex_surjective : Lex.ofLex (α := α).Surjective := ofLexEquiv.surjective
-
 instance (α : Type*) [BEq α] : BEq (Lex α) where
   beq a b := a.ofLex == b.ofLex
 
@@ -75,16 +68,16 @@ instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Lex α) where
     change (a.ofLex == b.ofLex) at e
     simpa [ofLex_inj] using e
 
-instance (α : Type*) [Nontrivial α] : Nontrivial (Lex α) := ofLex_surjective.nontrivial
-instance (α : Type*) [Unique α] : Unique (Lex α) := ofLex_injective.unique
+instance (α : Type*) [Nontrivial α] : Nontrivial (Lex α) := ofLexEquiv.surjective.nontrivial
+instance (α : Type*) [Unique α] : Unique (Lex α) := ofLexEquiv.injective.unique
 
 instance {α β} [H : CoeFun α fun _ ↦ β] : CoeFun (Lex α) fun _ ↦ β where
   coe f := H.coe (Lex.ofLex f)
 
 @[simp] lemma Lex.forall {p : Lex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toLex a) :=
-  toLex_surjective.forall
+  ofLexEquiv.symm.surjective.forall
 @[simp] lemma Lex.exists {p : Lex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toLex a) :=
-  toLex_surjective.exists
+  ofLexEquiv.symm.surjective.exists
 
 /-! ### Colexicographic order -/
 
@@ -109,13 +102,6 @@ def ofColexEquiv : Colex α ≃ α where
 theorem toColex_inj {a b : α} : Colex.toColex a = Colex.toColex b ↔ a = b := by simp
 theorem ofColex_inj {a b : Colex α} : a.ofColex = b.ofColex ↔ a = b := Colex.ext_iff.symm
 
-lemma toColex_bijective : Colex.toColex (α := α).Bijective := ofColexEquiv.symm.bijective
-lemma ofColex_bijective : Colex.ofColex (α := α).Bijective := ofColexEquiv.bijective
-lemma toColex_injective : Colex.toColex (α := α).Injective := ofColexEquiv.symm.injective
-lemma ofColex_injective : Colex.ofColex (α := α).Injective := ofColexEquiv.injective
-lemma toColex_surjective : Colex.toColex (α := α).Surjective := ofColexEquiv.symm.surjective
-lemma ofColex_surjective : Colex.ofColex (α := α).Surjective := ofColexEquiv.surjective
-
 instance (α : Type*) [BEq α] : BEq (Colex α) where
   beq a b := a.ofColex == b.ofColex
 
@@ -127,16 +113,16 @@ instance (α : Type*) [BEq α] [LawfulBEq α] : LawfulBEq (Colex α) where
     change (a.ofColex == b.ofColex) at e
     simpa [ofColex_inj] using e
 
-instance (α : Type*) [Nontrivial α] : Nontrivial (Colex α) := ofColex_surjective.nontrivial
-instance (α : Type*) [Unique α] : Unique (Colex α) := ofColex_injective.unique
+instance (α : Type*) [Nontrivial α] : Nontrivial (Colex α) := ofColexEquiv.surjective.nontrivial
+instance (α : Type*) [Unique α] : Unique (Colex α) := ofColexEquiv.injective.unique
 
 instance {α β} [H : CoeFun α fun _ ↦ β] : CoeFun (Colex α) fun _ ↦ β where
   coe f := H.coe (Colex.ofColex f)
 
 @[simp] lemma Colex.forall {p : Colex α → Prop} : (∀ a, p a) ↔ ∀ a, p (toColex a) :=
-  toColex_surjective.forall
+  ofColexEquiv.symm.surjective.forall
 @[simp] lemma Colex.exists {p : Colex α → Prop} : (∃ a, p a) ↔ ∃ a, p (toColex a) :=
-  toColex_surjective.exists
+  ofColexEquiv.symm.surjective.exists
 
 @[deprecated "type changed" (since := "2026-11-08")] alias toLex_symm_eq := ofLex_toLex
 @[deprecated (since := "2026-11-08")] alias ofLex_symm_eq := toLex_ofLex
