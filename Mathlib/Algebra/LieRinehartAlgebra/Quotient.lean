@@ -133,7 +133,7 @@ theorem surjective_mk' : Function.Surjective (mk' s R) := Quot.mk_surjective
 theorem mk'_eq_zero {l : L} : mk' s R l = 0 ↔ l ∈ s := Submodule.Quotient.mk_eq_zero s.toSubmodule
 
 @[simp]
-theorem mk'_ker : (mk' s R).ker = s := by ext l; simp
+theorem ker_mk' : (mk' s R).ker = s := by ext l; simp
 
 end Quotient
 end StrictLieRinehartIdeal
