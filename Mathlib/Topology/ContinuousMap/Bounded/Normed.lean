@@ -507,8 +507,8 @@ instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
   commutes' _ _ := ext fun _ ↦ Algebra.commutes' _ _
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def' _ _
 
-@[deprecated FunLike.algebraMap_apply +typeChanged (since := "2026-10-27")]
-theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
+@[deprecated algebraMap_apply +typeChanged (since := "2026-10-27")]
+protected theorem algebraMap_apply (k : 𝕜) (a : α) : algebraMap 𝕜 (α →ᵇ γ) k a = k • (1 : γ) := by
   simp [Algebra.algebraMap_eq_smul_one]
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where

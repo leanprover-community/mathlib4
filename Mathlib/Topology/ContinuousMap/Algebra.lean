@@ -734,7 +734,8 @@ theorem Subalgebra.separatesPoints_monotone :
   exact ⟨_, ⟨f, ⟨r m, rfl⟩⟩, w⟩
 
 @[simp]
-theorem algebraMap_apply (k : R) (a : α) : algebraMap R C(α, A) k a = k • (1 : A) := by
+theorem ContinuousMap.algebraMap_apply (k : R) (a : α) :
+    algebraMap R C(α, A) k a = k • (1 : A) := by
   rw [Algebra.algebraMap_eq_smul_one]
   rfl
 
