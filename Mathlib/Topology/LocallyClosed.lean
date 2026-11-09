@@ -5,9 +5,9 @@ Authors: Andrew Yang, Anatole Dedecker
 -/
 module
 
-public import Mathlib.Topology.Constructions
 public import Mathlib.Topology.NhdsWithin
-public import Mathlib.Tactic.TFAE
+
+import Mathlib.Tactic.TFAE
 
 /-!
 # Locally closed sets
@@ -190,8 +190,8 @@ lemma isLocallyClosedAt_tfae (s : Set X) (x : X) :
       eventuallyEqSet_iff, eventually_iff_exists_mem]
     grind
   tfae_have 4 ↔ 6 := by simp [eventuallyEqSet_iff, eventually_iff_exists_mem, Set.ext_iff]
-  tfae_have 6 → 7 := fun H ↦ H.symm.le
-  tfae_have 7 → 6 := fun H ↦ EventuallyLE.antisymm (.of_forall subset_closure) H
+  tfae_have 6 → 7 := fun H ↦ H.symm.subset
+  tfae_have 7 → 6 := fun H ↦ EventuallySubset.antisymm (.of_forall subset_closure) H
   tfae_have 7 ↔ 8 := by
     simp_rw [← eventually_mem_set, eventually_nhdsWithin_iff]
     rfl
@@ -266,6 +266,15 @@ alias isLocallyClosedAt_iff_closure_eventuallyLE :=
 
 lemma isLocallyClosedAt_iff_coborder_mem_nhds {x : X} : IsLocallyClosedAt s x ↔ coborder s ∈ 𝓝 x :=
   (isLocallyClosedAt_tfae s x).out 1 9
+
+lemma IsLocallyClosedAt.congr {x : X} (hs : IsLocallyClosedAt s x) (h : s =ᶠ[𝓝 x] t) :
+    IsLocallyClosedAt t x := by
+  rw [isLocallyClosedAt_iff_exists_isClosed_eventuallyEqSet] at *
+  exact hs.imp fun _ ↦ And.imp_right h.symm.trans
+
+lemma isLocallyClosedAt_congr {x : X} (h : s =ᶠ[𝓝 x] t) :
+    IsLocallyClosedAt s x ↔ IsLocallyClosedAt t x :=
+  ⟨fun hs ↦ hs.congr h, fun ht ↦ ht.congr h.symm⟩
 
 lemma interior_coborder : interior (coborder s) = {x | IsLocallyClosedAt s x} := by
   ext

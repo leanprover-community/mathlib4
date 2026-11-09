@@ -226,7 +226,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
   -- Choose `N` such that the integral of `‖f N x - g x‖` is less than or equal to `ε`.
   obtain ⟨N₀, hN₀⟩ : ∃ N : ℕ, ∫ x in I, ‖f N x - g x‖ ∂μ ≤ ε := by
     have : Tendsto (fun n => ∫⁻ x in I, ‖f n x - g x‖₊ ∂μ) atTop (𝓝 0) :=
-      SimpleFunc.tendsto_approxOn_range_L1_enorm hg.measurable hgi
+      SimpleFunc.tendsto_approxOn_range_L1_eNorm hg.measurable hgi
     refine (this.eventually (ge_mem_nhds ε0')).exists.imp fun N hN => ?_
     exact integral_coe_le_of_lintegral_coe_le hN
   -- For each `x`, we choose `Nx x ≥ N₀` such that `dist (f Nx x) (g x) ≤ ε`.
@@ -276,7 +276,7 @@ theorem IntegrableOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} {
     have :
         l.MemBaseSet I c ((hfi' n).convergenceR (δ n) c) (π.filter fun J => Nx (π.tag J) = n) :=
       (hπ.filter _).mono' _ le_rfl le_rfl fun J hJ => (hrn J hJ).le
-    convert! (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
+    convert (hfi' n).dist_integralSum_sum_integral_le_of_memBaseSet (δ0 _) this using 2
     · refine sum_congr rfl fun J hJ => ?_
       simp [hNxn J hJ]
     · refine sum_congr rfl fun J hJ => ?_
@@ -307,7 +307,7 @@ theorem ContinuousOn.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := BoxIntegral.integrable_of_continuousOn l hc μ
-  convert! hy
+  convert hy
   have : IntegrableOn f I μ :=
     IntegrableOn.mono_set (hc.integrableOn_compact I.isCompact_Icc) Box.coe_subset_Icc
   exact HasIntegral.unique (IntegrableOn.hasBoxIntegral this ⊥ rfl) (HasIntegral.mono hy bot_le)
@@ -319,7 +319,7 @@ theorem AEContinuous.hasBoxIntegral [CompleteSpace E] {f : (ι → ℝ) → E} (
     (hc : ∀ᵐ x ∂μ, ContinuousAt f x) (l : IntegrationParams) :
     HasIntegral.{u, v, v} I l f μ.toBoxAdditive.toSMul (∫ x in I, f x ∂μ) := by
   obtain ⟨y, hy⟩ := integrable_of_bounded_and_ae_continuous l hb μ hc
-  convert! hy
+  convert hy
   refine HasIntegral.unique (IntegrableOn.hasBoxIntegral ?_ ⊥ rfl) (HasIntegral.mono hy bot_le)
   constructor
   · let v := {x : (ι → ℝ) | ContinuousAt f x}

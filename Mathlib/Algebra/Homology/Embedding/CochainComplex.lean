@@ -6,8 +6,8 @@ Authors: Joël Riou
 module
 
 public import Mathlib.Algebra.Homology.Embedding.AreComplementary
-public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 public import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
+public import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 
 /-!
 # Truncations on cochain complexes indexed by the integers.

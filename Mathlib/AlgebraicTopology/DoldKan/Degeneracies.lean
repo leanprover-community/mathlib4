@@ -6,11 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.AlgebraicTopology.DoldKan.Decomposition
-public import Mathlib.Tactic.FinCases
 public import Mathlib.Tactic.Linarith
 
 /-!
-
 # Behaviour of `P_infty` with respect to degeneracies
 
 For any `X : SimplicialObject C` where `C` is an abelian category,

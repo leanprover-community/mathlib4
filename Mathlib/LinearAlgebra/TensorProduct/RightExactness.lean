@@ -118,7 +118,6 @@ theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul q p =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨q ⊗ₜ[R] n, rfl⟩
@@ -141,7 +140,7 @@ theorem LinearMap.lTensor_range :
 /-- If `g` is surjective, then `g.baseChange A` is surjective. -/
 theorem LinearMap.baseChange_surjective (A : Type*) [Semiring A] [Algebra R A]
     (hg : Function.Surjective g) : Function.Surjective (g.baseChange A) := by
-  rw [LinearMap.baseChange_eq_ltensor]
+  rw [LinearMap.baseChange_eq_lTensor]
   exact lTensor_surjective _ hg
 
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
@@ -149,7 +148,6 @@ theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
   induction z with
-  | zero => exact ⟨0, map_zero _⟩
   | tmul p q =>
     obtain ⟨n, rfl⟩ := hg p
     exact ⟨n ⊗ₜ[R] q, rfl⟩
@@ -204,11 +202,11 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
+/-- The inverse map in `lTensor.linearEquiv_of_rightInverse` (computably, given a right inverse). -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
-  TensorProduct.lift <| LinearMap.flip <| {
+  TensorProduct.lift <| LinearMap.flip {
     toFun := fun p ↦ Submodule.mkQ _ ∘ₗ ((TensorProduct.mk R _ _).flip (h p))
     map_add' := fun p p' => LinearMap.ext fun q => (Submodule.Quotient.eq _).mpr <| by
       change q ⊗ₜ[R] (h (p + p')) - (q ⊗ₜ[R] (h p) + q ⊗ₜ[R] (h p')) ∈ range (lTensor Q f)
@@ -263,10 +261,9 @@ lemma lTensor.inverse_comp_lTensor :
       Submodule.mkQ (p := LinearMap.range (lTensor Q f)) := by
   rw [lTensor.inverse, lTensor.inverse_of_rightInverse_comp_lTensor]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P`
-  (computably, given a right inverse) -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`
+  (computably, given a right inverse). -/
 noncomputable
 def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) := {
@@ -282,8 +279,8 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     rw [lTensor.inverse_of_rightInverse_apply]
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `Q ⊗ N ⧸ (image of ker f)` to `Q ⊗ P` -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `Q ⊗ N ⧸ (image of (id Q) ⊗ f)` to `Q ⊗ P`. -/
 noncomputable def lTensor.equiv :
     ((Q ⊗[R] N) ⧸ (LinearMap.range (lTensor Q f))) ≃ₗ[R] (Q ⊗[R] P) :=
   lTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
@@ -311,7 +308,7 @@ noncomputable def rTensor.toFun (hfg : Exact f g) :
     rw [range_le_iff_comap, ← ker_comp, ← rTensor_comp,
       hfg.linearMap_comp_eq_zero, rTensor_zero, ker_zero]
 
-/-- The inverse map in `rTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
+/-- The inverse map in `rTensor.linearEquiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def rTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     P ⊗[R] Q →ₗ[R] N ⊗[R] Q ⧸ LinearMap.range (rTensor Q f) :=
@@ -369,10 +366,9 @@ lemma rTensor.inverse_comp_rTensor :
       Submodule.mkQ (p := LinearMap.range (rTensor Q f)) := by
   rw [rTensor.inverse, rTensor.inverse_of_rightInverse_comp_rTensor]
 
-set_option linter.style.whitespace false in -- manual alignment is not recognised
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q`
-  (computably, given a right inverse) -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`
+  (computably, given a right inverse). -/
 noncomputable
 def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInverse h g) :
     ((N ⊗[R] Q) ⧸ (range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) := {
@@ -388,8 +384,8 @@ def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     rw [rTensor.inverse_of_rightInverse_apply]
     simp only [rTensor.toFun, Submodule.liftQ_apply] }
 
-/-- For a surjective `f : N →ₗ[R] P`,
-  the natural equivalence between `N ⊗[R] Q ⧸ (range (rTensor Q f))` and `P ⊗[R] Q` -/
+/-- For a surjective `g : N → P`,
+  the natural equivalence between `N ⊗ Q ⧸ (image of f ⊗ (id Q))` and `P ⊗ Q`. -/
 noncomputable def rTensor.equiv :
     ((N ⊗[R] Q) ⧸ (LinearMap.range (rTensor Q f))) ≃ₗ[R] (P ⊗[R] Q) :=
   rTensor.linearEquiv_of_rightInverse Q hfg (Function.rightInverse_surjInv hg)
@@ -411,7 +407,7 @@ lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
     ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
   apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
   rw [← ker_comp]
-  convert! rTensor_mkQ Q I
+  convert rTensor_mkQ Q I
   · ext; simp
   rw [comap_equiv_eq_map_symm, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
@@ -471,14 +467,8 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a • x) ⊗ₜ[R] (b * y)
           simp only [smul_eq_mul]
@@ -495,9 +485,6 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.rTensor_tmul, Submodule.coe_subtype]
         suffices (a : A) ⊗ₜ[R] b = ((1 : A) ⊗ₜ[R] b) * ((a : A) ⊗ₜ[R] (1 : B)) by
@@ -535,14 +522,8 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
       simp only [map_add]
     · rintro a x - ⟨x, hx, rfl⟩
       induction a with
-      | zero =>
-        use 0
-        simp only [map_zero, smul_eq_mul, zero_mul]
       | tmul a b =>
         induction x with
-        | zero =>
-          use 0
-          simp only [map_zero, smul_eq_mul, mul_zero]
         | tmul x y =>
           use (a * x) ⊗ₜ[R] (b • y)
           simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype, smul_eq_mul, tmul_mul_tmul]
@@ -559,9 +540,6 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
         simp only [map_add, ha', add_smul, hb']
   · rintro x ⟨y, rfl⟩
     induction y with
-    | zero =>
-        rw [map_zero]
-        apply zero_mem
     | tmul a b =>
         simp only [LinearMap.lTensor_tmul, Submodule.coe_subtype]
         suffices a ⊗ₜ[R] (b : B) = (a ⊗ₜ[R] (1 : B)) * ((1 : A) ⊗ₜ[R] (b : B)) by

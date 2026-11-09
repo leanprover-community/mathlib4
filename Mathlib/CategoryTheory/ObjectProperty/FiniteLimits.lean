@@ -6,7 +6,9 @@ Authors: Joël Riou
 module
 
 public import Mathlib.CategoryTheory.Limits.Preserves.Finite
-public import Mathlib.CategoryTheory.Limits.FullSubcategory
+public import Mathlib.CategoryTheory.ObjectProperty.FiniteProducts
+
+import Mathlib.CategoryTheory.Limits.FullSubcategory
 
 /-!
 # Properties of objects that are closed under finite limits
@@ -35,7 +37,14 @@ namespace IsClosedUnderFiniteLimits
 
 attribute [instance] isClosedUnderLimitsOfShape
 
-variable [HasFiniteLimits C] [P.IsClosedUnderFiniteLimits]
+variable [P.IsClosedUnderFiniteLimits]
+
+instance : P.IsClosedUnderFiniteProducts where
+  isClosedUnderLimitsOfShape X _ := by
+    have := Fintype.ofFinite X
+    infer_instance
+
+variable [HasFiniteLimits C]
 
 instance : HasFiniteLimits P.FullSubcategory where
   out _ _ _ := inferInstance
@@ -54,7 +63,14 @@ namespace IsClosedUnderFiniteColimits
 
 attribute [instance] isClosedUnderColimitsOfShape
 
-variable [HasFiniteColimits C] [P.IsClosedUnderFiniteColimits]
+variable [P.IsClosedUnderFiniteColimits]
+
+instance : P.IsClosedUnderFiniteCoproducts where
+  isClosedUnderColimitsOfShape X _ := by
+    have := Fintype.ofFinite X
+    infer_instance
+
+variable [HasFiniteColimits C]
 
 instance : HasFiniteColimits P.FullSubcategory where
   out _ _ _ := inferInstance

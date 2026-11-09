@@ -12,7 +12,6 @@ public import Mathlib.Probability.Distributions.Uniform
 public import Mathlib.Probability.Notation
 
 /-!
-
 # Freek № 99: Buffon's Needle
 
 This file proves Theorem 99 from the [100 Theorems List](https://www.cs.ru.nl/~freek/100/), also
@@ -67,7 +66,6 @@ We then show the two integrals equal their respective values `l - √(l^2 - d^2)
 * https://en.wikipedia.org/wiki/Buffon%27s_needle_problem
 * https://www.math.leidenuniv.nl/~hfinkeln/seminarium/stelling_van_Buffon.pdf
 * https://www.isa-afp.org/entries/Buffons_Needle.html
-
 -/
 
 @[expose] public section
@@ -198,13 +196,11 @@ lemma buffon_integral :
       ∫ (θ : ℝ) in Set.Icc 0 π,
       ∫ (_ : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1 := by
   simp_rw [N, Function.comp_apply]
-  rw [
-    ← MeasureTheory.integral_map hBₘ.aemeasurable
+  rw [← MeasureTheory.integral_map hBₘ.aemeasurable
       (stronglyMeasurable_needleCrossesIndicator l).aestronglyMeasurable,
     hB.map_eq, ProbabilityTheory.cond, MeasureTheory.integral_smul_measure, volume_needleSpace d hd,
     ← ENNReal.ofReal_inv_of_pos (mul_pos hd Real.pi_pos),
-    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul,
-  ]
+    ENNReal.toReal_ofReal (inv_nonneg.mpr (mul_nonneg hd.le Real.pi_pos.le)), smul_eq_mul]
   refine mul_eq_mul_left_iff.mpr (Or.inl ?_)
   have : MeasureTheory.IntegrableOn (needleCrossesIndicator l)
       (Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π) := by

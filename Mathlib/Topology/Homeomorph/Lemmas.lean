@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 module
 
 public import Mathlib.Logic.Equiv.Fin.Basic
-public import Mathlib.Topology.Connected.LocallyConnected
-public import Mathlib.Topology.DenseEmbedding
-public import Mathlib.Topology.Connected.TotallyDisconnected
 public import Mathlib.Topology.Baire.Lemmas
+public import Mathlib.Topology.Connected.LocallyConnected
+public import Mathlib.Topology.Connected.TotallyDisconnected
+public import Mathlib.Topology.DenseEmbedding
 
 /-!
 # Further properties of homeomorphisms
@@ -114,7 +114,7 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
 
 @[simp]
 theorem map_punctured_nhds_eq (h : X ≃ₜ Y) (x : X) : map h (𝓝[≠] x) = 𝓝[≠] (h x) := by
-  convert! h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
+  convert h.isEmbedding.map_nhdsWithin_eq ({ x }ᶜ) x
   rw [h.image_compl, Set.image_singleton]
 
 @[simp]
@@ -172,7 +172,6 @@ abbrev sets {s : Set X} {t : Set Y} (h : X ≃ₜ Y) (h_eq : s = h ⁻¹' t) : s
   h.subtype <| Set.ext_iff.mp h_eq
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- If two sets are equal, then they are homeomorphic. -/
 def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   toEquiv := Set.equivOfEq h
@@ -269,6 +268,7 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   toEquiv := Equiv.ulift
@@ -298,6 +298,7 @@ theorem _root_.Fin.continuous_append (m n : ℕ) :
   rw [Fin.appendEquiv_eq_homeomorph]
   exact Homeomorph.continuous_toFun _
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
 `Fin.appendEquiv` as a homeomorphism -/
 @[simps!]
@@ -329,6 +330,7 @@ set_option backward.defeqAttrib.useBackward true in
 def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃ₜ X where
   toEquiv := Equiv.funUnique ι X
 
+set_option backward.defeqAttrib.useBackward true in
 /-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
@@ -348,6 +350,7 @@ def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
 
+set_option backward.defeqAttrib.useBackward true in
 /-- `Set.univ X` is homeomorphic to `X`. -/
 @[simps! -fullyApplied]
 def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
@@ -366,6 +369,7 @@ section
 
 variable {ι : Type*}
 
+set_option backward.defeqAttrib.useBackward true in
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
   depending on whether they satisfy a predicate p or not. -/
 @[simps!]
@@ -379,6 +383,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
 
 variable [DecidableEq ι] (i : ι)
 
+set_option backward.defeqAttrib.useBackward true in
 /-- A product of topological spaces can be split as the binary product of one of the spaces and
   the product of all the remaining spaces. -/
 @[simps!]
@@ -443,15 +448,15 @@ end Topology.IsEmbedding
 
 lemma Topology.IsEmbedding.uliftMap {f : X → Y} (hf : IsEmbedding f) :
     IsEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf <| Homeomorph.ulift.isEmbedding)
+  .comp Homeomorph.ulift.symm.isEmbedding (.comp hf Homeomorph.ulift.isEmbedding)
 
 lemma Topology.IsOpenEmbedding.uliftMap {f : X → Y} (hf : IsOpenEmbedding f) :
     IsOpenEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf <| Homeomorph.ulift.isOpenEmbedding)
+  .comp Homeomorph.ulift.symm.isOpenEmbedding (.comp hf Homeomorph.ulift.isOpenEmbedding)
 
 lemma Topology.IsClosedEmbedding.uliftMap {f : X → Y} (hf : IsClosedEmbedding f) :
     IsClosedEmbedding (ULift.map f) :=
-  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf <| Homeomorph.ulift.isClosedEmbedding)
+  .comp Homeomorph.ulift.symm.isClosedEmbedding (.comp hf Homeomorph.ulift.isClosedEmbedding)
 
 end
 

@@ -6,7 +6,9 @@ Authors: Antoine Chambert-Loir
 module
 
 public import Mathlib.Data.Fin.Tuple.Basic
-public import Mathlib.Order.Fin.Basic
+public import Mathlib.Data.Set.Basic
+
+import Mathlib.Data.Set.Disjoint
 
 /-! # Constructions of embeddings of `Fin n` into a type
 
@@ -81,7 +83,7 @@ theorem snoc_last {n : ℕ} {x : Fin n ↪ α} {a : α} {ha : a ∉ range x} :
 def append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α} (h : Disjoint (range x) (range y)) :
     Fin (m + n) ↪ α :=
   ⟨Fin.append x y,
-    Fin.append_injective_iff.mpr ⟨x.inj', y.inj', disjoint_range_iff.mp h⟩⟩
+    Fin.append_injective_iff.mpr ⟨x.inj', y.inj', by exact disjoint_range_iff.mp h⟩⟩
 
 @[simp, norm_cast]
 theorem coe_append {m n : ℕ} {x : Fin m ↪ α} {y : Fin n ↪ α} (h : Disjoint (range x) (range y)) :

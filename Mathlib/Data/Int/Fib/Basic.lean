@@ -5,11 +5,9 @@ Authors: Monica Omar
 -/
 module
 
-public import Mathlib.Algebra.Group.Int.Even
 public import Mathlib.Data.Nat.Fib.Basic
 
 /-!
-
 # Fibonacci numbers extended onto the integers
 
 This file defines the Fibonacci sequence on the integers.
@@ -27,7 +25,7 @@ namespace Int
 `fib (n + 2) = fib n + fib (n + 1)`.
 
 This is an extension of `Nat.fib`. -/
-@[pp_nodot]
+@[pp_nodot, oeis A000045]
 def fib (n : ℤ) : ℤ :=
   if 0 ≤ n then n.toNat.fib else
   if Even n then -(-n).toNat.fib else (-n).toNat.fib

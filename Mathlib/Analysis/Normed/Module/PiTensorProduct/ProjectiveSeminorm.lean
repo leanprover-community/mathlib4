@@ -41,7 +41,7 @@ for every `m` in `Π i, Eᵢ` is bounded above by the projective seminorm.
   `E = Π i, Eᵢ` and `x` is in `⨂[𝕜] i, Eᵢ`, then `‖f.lift x‖ ≤ projectiveSeminorm x * ‖f‖`.
 * `PiTensorProduct.mapL_opNorm`: If `f` is a family of continuous linear maps
   `fᵢ : Eᵢ →L[𝕜] Fᵢ`, then `‖PiTensorProduct.mapL f‖ ≤ ∏ i, ‖fᵢ‖`.
-* `PiTensorProduct.opNorm_mapLMultilinear_le` : If `F` is a normed vecteor space, then
+* `PiTensorProduct.opNorm_mapLMultilinear_le` : If `F` is a normed vector space, then
   `‖mapLMultilinear 𝕜 E F‖ ≤ 1`.
 
 ## TODO
@@ -127,7 +127,7 @@ noncomputable instance : SeminormedAddCommGroup (⨂[𝕜] i, E i) :=
 
 noncomputable instance : NormedSpace 𝕜 (⨂[𝕜] i, E i) := ⟨projectiveSeminorm_smul_le⟩
 
-@[deprecated norm_def (since := "2026-06-10")]
+@[deprecated norm_def +typeChanged (since := "2026-06-10")]
 theorem projectiveSeminorm_apply (x : ⨂[𝕜] i, E i) :
     projectiveSeminorm x = iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1) := rfl
 

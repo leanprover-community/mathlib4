@@ -50,9 +50,9 @@ lemma self_mem_principalOpen (x : X) : x ∈ principalOpen x := le_refl _
 lemma principalOpen_le_iff {x : X} (U : Opens X) :
     principalOpen x ≤ U ↔ x ∈ U := by
   refine ⟨fun h => h <| self_mem_principalOpen _, fun hx y hy => ?_⟩
-  · have := U.isOpen
-    rw [IsUpperSet.isOpen_iff_isUpperSet] at this
-    exact this hy hx
+  have := U.isOpen
+  rw [IsUpperSet.isOpen_iff_isUpperSet] at this
+  exact this hy hx
 
 lemma principalOpen_le {x y : X} (h : x ≤ y) :
     principalOpen y ≤ principalOpen x :=
@@ -90,7 +90,7 @@ This definition is primarily meant to be used in `lowerCone`, and `isLimit` belo
 @[simps]
 def projSup {ι : Type v} (Us : ι → Opens X) :
     StructuredArrow (.op <| iSup Us) (principals X) ⥤
-      (OpensLeCover (X := .of X) Us)ᵒᵖ where
+      (OpensLeCover (X := ↧X) Us)ᵒᵖ where
   obj f := .op <| .mk (principalOpen f.right) <| exists_le_of_le_sup Us f.hom.unop.le
   map e := (ObjectProperty.homMk (homOfLE (principalOpen_le e.right.le))).op
 
@@ -101,7 +101,7 @@ variable {F} in
 @[simps]
 def lowerCone
     {α : Type v} (Us : α → Opens X)
-    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := .of X) Us ⥤ _).op ⋙
+    (S : Cone ((ObjectProperty.ι _ : OpensLeCover (X := ↧X) Us ⥤ _).op ⋙
       principalsKanExtension F)) :
     Cone (generator (iSup Us) ⋙ F) where
   pt := S.pt
@@ -197,6 +197,6 @@ theorem Topology.IsUpperSet.isSheaf_of_isRightKanExtension
   let _ : (principalsKanExtension F).IsRightKanExtension γ := inferInstance
   have : P ≅ principalsKanExtension F :=
     @rightKanExtensionUnique _ _ _ _ _ _ _ _ _ _ (by assumption) _ _ (by assumption)
-  change TopCat.Presheaf.IsSheaf (X := TopCat.of X) P
+  change TopCat.Presheaf.IsSheaf (X := ↧X) P
   rw [isSheaf_iso_iff this]
-  exact isSheaf_principalsKanExtension (X := TopCat.of X) F
+  exact isSheaf_principalsKanExtension (X := ↧X) F

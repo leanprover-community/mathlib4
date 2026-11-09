@@ -5,18 +5,15 @@ Authors: Jiedong Jiang, Christian Merten
 -/
 module
 
-public import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 public import Mathlib.AlgebraicGeometry.Morphisms.WeaklyEtale
 public import Mathlib.AlgebraicGeometry.Sites.Etale
-public import Mathlib.AlgebraicGeometry.Sites.QuasiCompact
 public import Mathlib.AlgebraicGeometry.Sites.Fpqc
 public import Mathlib.CategoryTheory.Comma.Over.StrictInitial
-public import Mathlib.CategoryTheory.MorphismProperty.CommaSites
-public import Mathlib.CategoryTheory.Sites.Subcanonical
-public import Mathlib.CategoryTheory.Sites.SubcanonicalOver
+
+import Mathlib.CategoryTheory.Sites.Subcanonical
+import Mathlib.CategoryTheory.Sites.SubcanonicalOver
 
 /-!
-
 # The pro-étale site
 
 In this file we define the big and small pro-étale site. The big pro-étale site is
