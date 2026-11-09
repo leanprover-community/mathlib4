@@ -14,7 +14,6 @@ import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 
 /-!
-
 # Relation of Injective Dimension with Localizations
 
 -/

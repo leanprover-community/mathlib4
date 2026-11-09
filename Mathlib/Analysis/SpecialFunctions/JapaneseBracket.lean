@@ -138,8 +138,8 @@ theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
   · apply Measurable.aestronglyMeasurable (by fun_prop)
   -- Lower Lebesgue integral
   have : (∫⁻ a : E, ‖(1 + ‖a‖) ^ (-r)‖ₑ ∂μ) = ∫⁻ a : E, ENNReal.ofReal ((1 + ‖a‖) ^ (-r)) ∂μ :=
-    lintegral_enorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
-  rw [hasFiniteIntegral_iff_enorm, this]
+    lintegral_eNorm_of_nonneg fun _ => rpow_nonneg (by positivity) _
+  rw [hasFiniteIntegral_iff_eNorm, this]
   exact finite_integral_one_add_norm hnr
 
 theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :

@@ -8,7 +8,6 @@ module
 public import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
-
 # Integer elements of a localized module
 
 This is a mirror of the corresponding notion for localizations of rings.
