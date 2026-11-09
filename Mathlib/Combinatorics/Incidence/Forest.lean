@@ -138,9 +138,8 @@ theorem isForest_comm (source target : E → V) :
     simpa [degreeParity, entry, add_comm] using hv
 
 /-- The sum of the incidence entries of one edge is zero in ZMod 2. -/
-omit [Fintype E] [DecidableEq E] in
 private theorem entry_sum_vertices_eq_zero
-    {V : Type*} [Fintype V] [DecidableEq V]
+    {V E : Type*} [Fintype V] [DecidableEq V]
     (source target : E → V) (e : E) :
     (∑ v : V, entry source target e v) = 0 := by
   classical
