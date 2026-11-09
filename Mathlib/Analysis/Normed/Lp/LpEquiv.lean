@@ -105,6 +105,11 @@ theorem coe_lpPiLpₗᵢ_symm [Fact (1 ≤ p)] (f : PiLp p E) :
     ((lpPiLpₗᵢ E 𝕜).symm f : ∀ i, E i) = f :=
   rfl
 
+@[simp]
+theorem lpPiLpₗᵢ_symm_single [Fact (1 ≤ p)] [DecidableEq α] (i : α) (a : E i) :
+    (lpPiLpₗᵢ E 𝕜).symm (PiLp.single p i a) = lp.single p i a :=
+  rfl
+
 end Equivₗᵢ
 
 end LpPiLp
