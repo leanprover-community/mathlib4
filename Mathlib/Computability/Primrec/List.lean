@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Cameron Freer
+Authors: Mario Carneiro
 -/
 module
 
@@ -283,7 +283,6 @@ theorem list_any {f : α → List β} {p : α → β → Bool}
         to₂ <| Primrec.or.comp (hp.comp fst <| fst.comp snd) (snd.comp snd)).of_eq
     fun a => by dsimp; induction f a <;> simp [*]
 
-/-- Summing a list of natural numbers is primitive recursive. -/
 theorem list_sum {f : α → List ℕ} (hf : Primrec f) : Primrec fun a => (f a).sum :=
   (list_foldr hf (const 0) <|
         to₂ <| Primrec.nat_add.comp (fst.comp snd) (snd.comp snd)).of_eq
