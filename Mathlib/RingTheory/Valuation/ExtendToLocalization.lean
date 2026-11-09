@@ -9,7 +9,6 @@ public import Mathlib.RingTheory.Localization.Defs
 public import Mathlib.RingTheory.Valuation.Basic
 
 /-!
-
 # Extending valuations to a localization
 
 We show that, given a valuation `v` taking values in a linearly ordered commutative *group*

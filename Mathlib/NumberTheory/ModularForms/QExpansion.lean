@@ -145,11 +145,6 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-@[deprecated ModularFormClass.bdd_at_infty +typeChanged (since := "2026-04-19")]
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
-    BoundedAtFilter I∞ (f ∘ ofComplex) :=
-  (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
-
 protected theorem differentiableAt_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction h f) q :=

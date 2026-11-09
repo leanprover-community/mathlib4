@@ -28,12 +28,12 @@ theorem eLpNorm'_lim_eq_lintegral_liminf {ι} [Nonempty ι] [LinearOrder ι] {f 
     {f_lim : α → E} (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm' f_lim p μ = (∫⁻ a, atTop.liminf (‖f · a‖ₑ ^ p) ∂μ) ^ (1 / p) := by
   suffices h_no_pow : (∫⁻ a, ‖f_lim a‖ₑ ^ p ∂μ) = ∫⁻ a, atTop.liminf fun m => ‖f m a‖ₑ ^ p ∂μ by
-    rw [eLpNorm'_eq_lintegral_enorm, h_no_pow]
+    rw [eLpNorm'_eq_lintegral_eNorm, h_no_pow]
   refine lintegral_congr_ae (h_lim.mono fun a ha => ?_)
   dsimp only
   rw [Tendsto.liminf_eq]
   refine (ENNReal.continuous_rpow_const.tendsto ‖f_lim a‖₊).comp ?_
-  exact (continuous_enorm.tendsto (f_lim a)).comp ha
+  exact (continuous_eNorm.tendsto (f_lim a)).comp ha
 
 theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     (hp_pos : 0 < p) (hf : ∀ n, AEStronglyMeasurable (f n) μ) {f_lim : α → E}
@@ -41,7 +41,7 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     eLpNorm' f_lim p μ ≤ atTop.liminf fun n => eLpNorm' (f n) p μ := by
   rw [eLpNorm'_lim_eq_lintegral_liminf h_lim]
   rw [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv]
-  refine (lintegral_liminf_le' fun m => (hf m).enorm.pow_const _).trans_eq ?_
+  refine (lintegral_liminf_le' fun m => (hf m).eNorm.pow_const _).trans_eq ?_
   have h_pow_liminf :
     atTop.liminf (fun n ↦ eLpNorm' (f n) p μ) ^ p
       = atTop.liminf fun n ↦ eLpNorm' (f n) p μ ^ p := by
@@ -50,18 +50,18 @@ theorem eLpNorm'_lim_le_liminf_eLpNorm' {f : ℕ → α → E} {p : ℝ}
     refine (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply ?_ ?_ ?_ ?_
     all_goals isBoundedDefault
   rw [h_pow_liminf]
-  simp_rw [eLpNorm'_eq_lintegral_enorm, ← ENNReal.rpow_mul, one_div,
+  simp_rw [eLpNorm'_eq_lintegral_eNorm, ← ENNReal.rpow_mul, one_div,
     inv_mul_cancel₀ hp_pos.ne.symm, ENNReal.rpow_one]
 
 theorem eLpNorm_exponent_top_lim_eq_essSup_liminf {ι} [Nonempty ι] [LinearOrder ι] {f : ι → α → E}
     {f_lim : α → E} (hf_lim : AEStronglyMeasurable f_lim μ)
     (h_lim : ∀ᵐ x : α ∂μ, Tendsto (fun n => f n x) atTop (𝓝 (f_lim x))) :
     eLpNorm f_lim ∞ μ = essSup (fun x => atTop.liminf fun m => ‖f m x‖ₑ) μ := by
-  rw [eLpNorm_exponent_top hf_lim, eLpNormEssSup_eq_essSup_enorm]
+  rw [eLpNorm_exponent_top hf_lim, eLpNormEssSup_eq_essSup_eNorm]
   refine essSup_congr_ae (h_lim.mono fun x hx => ?_)
   dsimp only
   apply (Tendsto.liminf_eq ..).symm
-  exact (continuous_enorm.tendsto (f_lim x)).comp hx
+  exact (continuous_eNorm.tendsto (f_lim x)).comp hx
 
 theorem eLpNorm_exponent_top_lim_le_liminf_eLpNorm_exponent_top {ι} [Nonempty ι] [Countable ι]
     [LinearOrder ι] {f : ι → α → E} {f_lim : α → E}
@@ -209,13 +209,13 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
   refine (Finset.sum_le_sum ?_).trans <| sum_le_tsum _
   exact fun m _ => (h_cau m (m + 1) m (Nat.le_succ m) (le_refl m)).le
 
-private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
+private theorem lintegral_rpow_sum_eNorm_sub_le_rpow_tsum
     {f : ℕ → α → E} {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (n : ℕ)
     (hn : eLpNorm' (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) p μ ≤ ∑' i, B i) :
     (∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ) ≤ (∑' i, B i) ^ p := by
   have hp_pos : 0 < p := zero_lt_one.trans_le hp1
   rw [← inv_inv p, @ENNReal.le_rpow_inv_iff _ _ p⁻¹ (by simp [hp_pos]), inv_inv p]
-  simp_rw [eLpNorm'_eq_lintegral_enorm, one_div] at hn
+  simp_rw [eLpNorm'_eq_lintegral_eNorm, one_div] at hn
   have h_nnNorm_nonneg :
     (fun a => ‖∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖‖ₑ ^ p) = fun a =>
       (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p := by
@@ -228,7 +228,7 @@ private theorem lintegral_rpow_sum_enorm_sub_le_rpow_tsum
     · exact fun x _ => norm_nonneg _
   rwa [h_nnNorm_nonneg] at hn
 
-private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
+private theorem lintegral_rpow_tsum_coe_eNorm_sub_le_tsum {f : ℕ → α → E}
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞}
     (h : ∀ n, ∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ ≤ (∑' i, B i) ^ p) :
     (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i := by
@@ -251,9 +251,9 @@ private theorem lintegral_rpow_tsum_coe_enorm_sub_le_tsum {f : ℕ → α → E}
     all_goals isBoundedDefault
   rw [h_liminf_pow]
   refine (lintegral_liminf_le' fun n ↦ ?_).trans <| liminf_le_of_frequently_le' <| .of_forall h
-  exact ((Finset.range _).aemeasurable_fun_sum fun i _ ↦ ((hf _).sub (hf i)).enorm).pow_const _
+  exact ((Finset.range _).aemeasurable_fun_sum fun i _ ↦ ((hf _).sub (hf i)).eNorm).pow_const _
 
-private theorem tsum_enorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
+private theorem tsum_eNorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AEStronglyMeasurable (f n) μ)
     {p : ℝ} (hp1 : 1 ≤ p) {B : ℕ → ℝ≥0∞} (hB : ∑' i, B i ≠ ∞)
     (h : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i) :
     ∀ᵐ x ∂μ, ∑' i, ‖f (i + 1) x - f i x‖ₑ < ∞ := by
@@ -264,7 +264,7 @@ private theorem tsum_enorm_sub_ae_lt_top {f : ℕ → α → E} (hf : ∀ n, AES
     rwa [one_div, ← ENNReal.le_rpow_inv_iff (by simp [hp_pos] : 0 < p⁻¹), inv_inv] at h
   have rpow_ae_lt_top : ∀ᵐ x ∂μ, (∑' i, ‖f (i + 1) x - f i x‖ₑ) ^ p < ∞ := by
     refine ae_lt_top' (AEMeasurable.pow_const ?_ _) h_integral.ne
-    exact AEMeasurable.tsum fun n => ((hf (n + 1)).sub (hf n)).enorm
+    exact AEMeasurable.tsum fun n => ((hf (n + 1)).sub (hf n)).eNorm
   refine rpow_ae_lt_top.mono fun x hx => ?_
   rwa [← ENNReal.lt_rpow_inv_iff hp_pos,
     ENNReal.top_rpow_of_pos (by simp [hp_pos] : 0 < p⁻¹)] at hx
@@ -279,11 +279,11 @@ theorem ae_tendsto_of_cauchy_eLpNorm' [CompleteSpace E] {f : ℕ → α → E} {
       eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' hf hp1 h_cau
     have h2 n :
         ∫⁻ a, (∑ i ∈ Finset.range (n + 1), ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ ≤ (∑' i, B i) ^ p :=
-      lintegral_rpow_sum_enorm_sub_le_rpow_tsum hp1 n (h1 n)
+      lintegral_rpow_sum_eNorm_sub_le_rpow_tsum hp1 n (h1 n)
     have h3 : (∫⁻ a, (∑' i, ‖f (i + 1) a - f i a‖ₑ) ^ p ∂μ) ^ (1 / p) ≤ ∑' i, B i :=
-      lintegral_rpow_tsum_coe_enorm_sub_le_tsum hf hp1 h2
+      lintegral_rpow_tsum_coe_eNorm_sub_le_tsum hf hp1 h2
     have h4 : ∀ᵐ x ∂μ, ∑' i, ‖f (i + 1) x - f i x‖ₑ < ∞ :=
-      tsum_enorm_sub_ae_lt_top hf hp1 hB h3
+      tsum_eNorm_sub_ae_lt_top hf hp1 hB h3
     exact h4.mono fun x hx => .of_nnNorm <| ENNReal.tsum_coe_ne_top_iff_summable.mp hx.ne
   refine h_summable.mono fun x hx ↦ ?_
   have hx_sum := hx.hasSum.tendsto_sum_nat

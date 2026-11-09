@@ -8,7 +8,6 @@ module
 public import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
-
 # Bézout rings
 
 A Bézout ring (Bezout ring) is a ring whose finitely generated ideals are principal.

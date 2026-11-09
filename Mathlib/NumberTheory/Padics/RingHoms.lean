@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.ZMod
 
 /-!
-
 # Relating `ℤ_[p]` to `ZMod (p ^ n)`, aka `ℤ/p^nℤ`.
 
 In this file we establish connections between the `p`-adic integers `ℤ_[p]`

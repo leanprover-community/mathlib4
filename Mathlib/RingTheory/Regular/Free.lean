@@ -14,7 +14,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Regular
 import Mathlib.RingTheory.Ideal.Finsupp
 
 /-!
-
 # Freeness of `QuotSMulTop` by a regular element
 
 Let `M` be a finitely presented module over a commutative ring `R`. If `x` is in the

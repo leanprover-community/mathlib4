@@ -12,7 +12,6 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
 import Mathlib.Topology.Algebra.Group.Units
 
 /-!
-
 # Topological monoids with open units
 
 We say that a topological monoid `M` has open units (`IsOpenUnits`) if `Mˣ` is open in `M` and

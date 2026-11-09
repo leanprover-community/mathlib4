@@ -8,7 +8,6 @@ module
 public import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
-
 # Open immersions
 
 A morphism is an open immersion if the underlying map of spaces is an open embedding

@@ -9,7 +9,6 @@ module
 public import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
-
 # The extension adjoining all `p`-th roots to a field of characteristic `p`
 
 In this file, we introduce the field extension adjoining all `p`-th roots to a

@@ -11,7 +11,6 @@ public import Mathlib.NumberTheory.Padics.PadicNumbers
 import Mathlib.Tactic.Positivity
 
 /-!
-
 The nth Harmonic number is not an integer. We formalize the proof using
 2-adic valuations. This proof is due to Kürschák.
 

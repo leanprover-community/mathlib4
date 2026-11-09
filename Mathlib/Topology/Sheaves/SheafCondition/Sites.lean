@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Sites.DenseSubsite.Basic
 public import Mathlib.Topology.Sheaves.Sheaf
 
 /-!
-
 # Coverings and sieves; from sheaves on sites and sheaves on spaces
 
 In this file, we connect coverings in a topological space to sieves in the associated Grothendieck

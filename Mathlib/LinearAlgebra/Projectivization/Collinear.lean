@@ -10,7 +10,6 @@ public import Mathlib.LinearAlgebra.Projectivization.Subspace
 import Mathlib.LinearAlgebra.Projectivization.Independence
 
 /-!
-
 # Collinearity in Projective Space
 
 This file defines collinearity of points in projective space and proves
