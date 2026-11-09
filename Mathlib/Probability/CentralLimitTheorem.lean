@@ -178,9 +178,8 @@ theorem tendstoInDistribution_inv_sqrt_smul_sum
     TendstoInDistribution (fun (n : ℕ) ω ↦ (√n)⁻¹ • ∑ k ∈ Finset.range n, X k ω) atTop Y
       (fun _ ↦ P) P' := by
   have hL2 : MemLp (X 0) 2 P := .of_eval_piLp fun i ↦
-    (memLp_two_iff_integrable_sq ((by fun_prop : Continuous
-      (fun x : EuclideanSpace ℝ ι ↦ x i)).comp_aestronglyMeasurable
-        (hident 0).aemeasurable_fst.aestronglyMeasurable)).2 <| .of_integral_ne_zero <| by
+    (memLp_two_iff_integrable_sq ((PiLp.continuous_ofLp 2 _).comp_aestronglyMeasurable
+      (hident 0).aemeasurable_fst.aestronglyMeasurable).eval).2 <| .of_integral_ne_zero <| by
       simp [h1 i i, pow_two]
   have mX n : AEMeasurable (X n) P := (hident n).aemeasurable_fst
   refine .of_inner hY.aemeasurable (by fun_prop) fun t ↦ ?_
