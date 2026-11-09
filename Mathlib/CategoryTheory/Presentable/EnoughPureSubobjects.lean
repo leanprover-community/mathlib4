@@ -704,7 +704,7 @@ end IsCardinalAccessibleCategory
 
 namespace ObjectProperty
 
-variable {C : Type*} [Category* C]
+variable {C D : Type*} [Category* C] [Category* D]
 
 -- Corollary 2.36 (first part)
 lemma isAccessibleCategory_fullSubcategory_iff
@@ -718,6 +718,28 @@ lemma isAccessibleCategory_fullSubcategory_iff
   · obtain ⟨κ', _, h, _, _, _, _⟩ := P.isClosedUnderCardinalPureSubobjects κ
     exact ⟨κ', inferInstance, h, inferInstance⟩
   · sorry
+
+-- Remark 2.50
+lemma isCardinalAccessibleCategory_inverseImage_and
+    (P : ObjectProperty D) (F : C ⥤ D) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsAccessibleCategory.{w} C] [IsAccessibleCategory.{w} D]
+    [IsAccessibleCategory.{w} P.FullSubcategory] [P.IsClosedUnderCardinalFilteredColimits κ] :
+    IsAccessibleCategory.{w} (P.inverseImage F).FullSubcategory ∧
+    ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (h : κ.SharplyLT κ'),
+      (P.inverseImage F).IsClosedUnderCardinalFilteredColimits κ' := by
+  obtain ⟨κ', κ'', _, _, h₁, h₂, _, _, _⟩ :
+    ∃ (κ' κ'' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : Fact κ''.IsRegular)
+      (h₁ : κ.SharplyLT κ') (h₂ : κ'.SharplyLT κ''),
+      IsCardinalAccessibleCategory C κ' ∧ F.IsCardinalAccessible κ' ∧
+      P.IsClosedUnderCardinalPureSubobjects κ'' := by
+    sorry
+  have : P.IsClosedUnderCardinalFilteredColimits κ' := .of_le h₁.le
+  have := F.isCardinalAccessible_of_le h₂.le
+  have := h₂.isCardinalAccessibleCategory C
+  rw [isAccessibleCategory_fullSubcategory_iff _ κ']
+  exact ⟨⟨κ'', inferInstance, h₂,
+    ⟨fun {X Y} f _ hY ↦ P.prop_of_isCardinalPure κ'' (F.map f) hY⟩⟩,
+    κ', inferInstance, h₁, inferInstance⟩
 
 end ObjectProperty
 
