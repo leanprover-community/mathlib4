@@ -74,7 +74,7 @@ lemma toEnd_pow_apply_mem {χ₁ χ₂ : H → R} {x : L} {m : M}
   induction n with
   | zero => simpa using hm
   | succ n IH =>
-    simp only [pow_succ', Module.End.mul_apply, toEnd_apply_apply]
+    simp only [pow_succ', mul_apply_eq_comp, toEnd_apply_apply]
     convert lie_mem_genWeightSpace_of_mem_genWeightSpace hx IH using 2
     rw [succ_nsmul, ← add_assoc, add_comm (n • _)]
 
@@ -194,7 +194,7 @@ theorem toLieSubmodule_le_rootSpace_zero : H.toLieSubmodule ≤ rootSpace H 0 :=
   rw [Module.End.commute_pow_left_of_commute hfg k]
   have h := iterate_toEnd_mem_lowerCentralSeries R H H y ⟨x, hx⟩ k
   rw [hk, LieSubmodule.mem_bot] at h
-  simp only [Submodule.subtype_apply, Function.comp_apply, Module.End.pow_apply, LinearMap.coe_comp,
+  simp only [Submodule.subtype_apply, Function.comp_apply, pow_apply_eq_iterate, LinearMap.coe_comp,
     Submodule.coe_eq_zero]
   exact h
 

@@ -155,7 +155,7 @@ def drop (i : ℕ) (hi : (p.toList.take i).count U = (p.toList.take i).count D) 
     rw [← take_append_drop i p.toList, count_append, count_append] at this
     lia
   count_D_le_count_U k := by
-    rw [show i = min i (i + k) by omega, ← take_take] at hi
+    rw [show i = min i (i + k) by lia, ← take_take] at hi
     rw [take_drop, ← add_le_add_iff_left (((p.toList.take (i + k)).take i).count U),
       ← count_append, hi, ← count_append, take_append_drop]
     exact p.count_D_le_count_U _
@@ -211,7 +211,7 @@ def denest (hn : p.IsNested) : DyckWord where
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
       (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by lia
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
@@ -277,13 +277,13 @@ lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   exact ⟨by lia, by rw [Nat.sub_add_cancel lp, take_of_length_le (le_refl _),
     p.count_U_eq_count_D]⟩
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
-  have := findIdx_getElem
-    (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
-  simpa using! this
+  have := firstReturn_lt_length h
+  rw [firstReturn] at this
+  conv_rhs at this => rw [← length_range (n := p.toList.length)]
+  simpa [firstReturn] using findIdx_getElem (w := this)
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
     (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
@@ -330,8 +330,9 @@ variable (p) in
 inside the `U, D` pair that `firstReturn` refers to. `insidePart 0 = 0`. -/
 def insidePart : DyckWord :=
   if h : p = 0 then 0 else
-  (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest
-    ⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h, fun i lb ub ↦ by
+  (p.take (p.firstReturn + 1) (count_take_firstReturn_add_one h)).denest <|
+  show IsNested _ from ⟨by rw [← toList_ne_nil, take]; simpa using toList_ne_nil.mpr h,
+    fun i lb ub ↦ by
       simp only [take, length_take, lt_min_iff] at ub ⊢
       replace ub := ub.1
       rw [take_take, min_eq_left ub.le]
@@ -375,11 +376,10 @@ lemma outsidePart_nest : p.nest.outsidePart = 0 := by
   rw [DyckWord.ext_iff]; apply drop_of_length_le
   simp_rw [nest, length_append, length_singleton]; lia
 
-set_option backward.isDefEq.respectTransparency false in
 include h in
 @[simp]
 theorem nest_insidePart_add_outsidePart : p.insidePart.nest + p.outsidePart = p := by
-  simp_rw [insidePart, outsidePart, h, dite_false, nest_denest, DyckWord.ext_iff]
+  simp_rw [insidePart, outsidePart, dite_eq_right h, nest_denest, DyckWord.ext_iff]
   apply take_append_drop
 
 include h in

@@ -143,8 +143,6 @@ theorem vars_X [Nontrivial R] : (X n : MvPolynomial σ R).vars = {n} := by
 theorem mem_vars_iff_mem_support (i : σ) : i ∈ p.vars ↔ ∃ d ∈ p.support, i ∈ d.support := by
   classical simp only [vars_def, Multiset.mem_toFinset, mem_degrees, mem_support_iff]
 
-@[deprecated (since := "2026-04-24")] alias mem_vars := mem_vars_iff_mem_support
-
 theorem mem_vars_iff_degreeOf_ne_zero {i : σ} : i ∈ p.vars ↔ p.degreeOf i ≠ 0 := by
   classical simp [degreeOf, vars_def]
 
@@ -247,9 +245,7 @@ theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise (Disjoint on fun i =
   | empty => simp
   | insert _ _ has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]
-    unfold Pairwise onFun at h
-    simp only [Finset.disjoint_iff_ne] at h ⊢
-    grind
+    grind [Pairwise]
 
 end Sum
 

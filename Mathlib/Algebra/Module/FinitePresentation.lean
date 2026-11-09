@@ -6,6 +6,7 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.LinearAlgebra.LeftExact
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.Flat.IsBaseChange
 public import Mathlib.RingTheory.Localization.BaseChange
@@ -13,7 +14,6 @@ public import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 
 /-!
-
 # Finitely Presented Modules
 
 ## Main definition
@@ -563,8 +563,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
     LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]
-  simp only [LocalizedModule.lift_mk, OneMemClass.coe_one, map_one, IsUnit.unit_one,
-    inv_one, Units.val_one, Module.End.one_apply, this]
+  simp [this]
 
 instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentation R M] :
     IsLocalizedModule S (IsLocalizedModule.map S f g) := by

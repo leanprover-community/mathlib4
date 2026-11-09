@@ -70,7 +70,6 @@ lemma δ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : i
   rw [Fin.castPred_castSucc]
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   change toMk₁ i.castSucc (j.succAbove k) = _
-  dsimp
   grind [Fin.succAbove]
 
 lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j.castSucc < i) :
@@ -79,7 +78,6 @@ lemma δ_comp_toMk₁_of_lt {n : ℕ} (i : Fin (n + 3)) (j : Fin (n + 2)) (h : j
   rw [Fin.pred_succ]
   refine ConcreteCategory.hom_ext _ _ (fun k ↦ ?_)
   change toMk₁ i.succ (j.succAbove k) = _
-  dsimp
   grind [Fin.succAbove]
 
 lemma σ_comp_toMk₁_of_le {n : ℕ} (i : Fin (n + 2)) (j : Fin (n + 1)) (h : i ≤ j.castSucc) :

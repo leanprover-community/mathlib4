@@ -50,7 +50,6 @@ local notation "𝕎" => WittVector p
 namespace RecursionMain
 
 /-!
-
 ## The recursive case of the vector coefficients
 
 The first coefficient of our solution vector is easy to define below.

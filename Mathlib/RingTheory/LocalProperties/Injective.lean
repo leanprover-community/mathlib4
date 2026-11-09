@@ -12,7 +12,6 @@ import Mathlib.Algebra.Module.FinitePresentation
 import Mathlib.RingTheory.LocalProperties.Exactness
 
 /-!
-
 # Being injective is a local property
 
 ## Main Results
