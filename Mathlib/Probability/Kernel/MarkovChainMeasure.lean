@@ -81,14 +81,14 @@ lemma markovChainMeasure_map_frestrictLe_compProd (n : ℕ) :
   simp [markovChainMeasure_def, map_frestrictLe_trajMeasure_compProd_eq_map_trajMeasure]
 
 lemma markovChainMeasure_map_eval_succ (n : ℕ) :
-    (markovChainMeasure μ P).map (fun ω ↦ ω (n + 1)) =
-      P ∘ₘ (markovChainMeasure μ P).map (fun ω ↦ ω n) := by
+    (markovChainMeasure μ P).map (fun x ↦ x (n + 1)) =
+      P ∘ₘ (markovChainMeasure μ P).map (fun x ↦ x n) := by
   rw [Measure.bind_map (measurable_pi_apply n).aemeasurable P.aemeasurable]
   simpa (disch := fun_prop) [Measure.snd_map_prodMk, Measure.bind_map] using
     congrArg Measure.snd (markovChainMeasure_map_frestrictLe_compProd μ P n).symm
 
 lemma markovChainMeasure_map_eval (n : ℕ) :
-    (markovChainMeasure μ P).map (fun ω ↦ ω n) = (P ^ n) ∘ₘ μ := by
+    (markovChainMeasure μ P).map (fun x ↦ x n) = (P ^ n) ∘ₘ μ := by
   induction n with
   | zero => exact (markovChainMeasure_map_eval_zero μ P).trans Measure.id_comp.symm
   | succ n ih =>
