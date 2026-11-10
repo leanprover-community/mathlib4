@@ -167,11 +167,11 @@ variable {X Y Z : HopfAlgCat.{v} R}
 def toHopfAlgEquiv (i : X ≅ Y) : X ≃ₐc[R] Y :=
   { i.hom.toBialgHom with
     invFun := i.inv.toBialgHom
-    left_inv := fun x => congr($(i.3).toBialgHom x)
-    right_inv := fun x => congr($(i.4).toBialgHom x) }
+    left_inv := fun x => congr($(i.hom_inv_id).toBialgHom x)
+    right_inv := fun x => congr($(i.inv_hom_id).toBialgHom x) }
 
 @[simp] theorem toHopfAlgEquiv_toBialgHom (i : X ≅ Y) :
-    (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.1 := rfl
+    (i.toHopfAlgEquiv : X →ₐc[R] Y) = i.hom.toBialgHom' := rfl
 
 @[simp] theorem toHopfAlgEquiv_refl : toHopfAlgEquiv (.refl X) = .refl _ _ :=
   rfl
@@ -191,4 +191,4 @@ instance HopfAlgCat.forget_reflects_isos :
   reflects {X Y} f _ := by
     let i := asIso ((forget (HopfAlgCat.{v} R)).map f)
     let e : X ≃ₐc[R] Y := { f.toBialgHom, i.toEquiv with }
-    exact ⟨e.toHopfAlgIso.isIso_hom.1⟩
+    exact ⟨e.toHopfAlgIso.isIso_hom.out⟩

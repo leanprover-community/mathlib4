@@ -102,8 +102,8 @@ instance [HasPullbacks C] (P Q : MorphismProperty C) [P.DescendsAlong Q] [P.Resp
       pullback.diagonal (pullback.fst f g) ≫
       (diagonalObjPullbackFstIso f g).hom := by
     apply pullback.hom_ext
-    apply pullback.hom_ext <;> simp [pullback.condition]
-    simp [pullback.condition]
+    · apply pullback.hom_ext <;> simp [pullback.condition]
+    · simp [pullback.condition]
   rw [diagonal_iff]
   apply MorphismProperty.of_pullback_fst_of_descendsAlong (P := P) (Q := Q)
       (f := pullback.fst (pullback.snd g g ≫ g) f)

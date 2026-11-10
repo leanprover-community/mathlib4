@@ -9,7 +9,6 @@ public import Mathlib.LinearAlgebra.TensorProduct.Submodule
 public import Mathlib.RingTheory.TensorProduct.Maps
 
 /-!
-
 # Some results on tensor product of subalgebras
 
 ## Linear maps induced by multiplication for subalgebras

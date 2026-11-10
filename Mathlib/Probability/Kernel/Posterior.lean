@@ -11,7 +11,6 @@ public import Mathlib.Probability.Kernel.Deterministic
 public import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
-
 # Posterior kernel
 
 For `μ : Measure Ω` (called prior measure), seen as a measure on a parameter, and a kernel

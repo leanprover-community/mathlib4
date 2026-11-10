@@ -69,7 +69,7 @@ theorem norm_setToFun_le' (hT : DominatedFinMeasAdditive μ T C) (hf : Integrabl
   rw [setToFun_eq hT hf]
   exact L1.norm_setToL1_le_mul_norm' hT _
 
-theorem enorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
+theorem eNorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ₑ ≤ NNReal.mk C hC * ∫⁻ x, ‖f x‖ₑ ∂μ := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
@@ -77,11 +77,13 @@ theorem enorm_setToFun_le (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) 
   · simp [setToFun_undef _ hf]
   apply (ENNReal.toReal_le_toReal (by simp)
     (ENNReal.mul_ne_top (by simp) hf.hasFiniteIntegral.ne)).1
-  simp only [toReal_enorm, toReal_mul, coe_toReal, NNReal.coe_mk]
+  simp only [toReal_eNorm, toReal_mul, coe_toReal, NNReal.coe_mk]
   apply (norm_setToFun_le hT hf hC).trans
   gcongr
   apply le_of_eq
-  rw [Integrable.norm_toL1_eq_lintegral_enorm]
+  rw [Integrable.norm_toL1_eq_lintegral_eNorm]
+
+@[deprecated (since := "2026-11-06")] alias enorm_setToFun_le := eNorm_setToFun_le
 
 theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     ‖setToFun μ T hT f‖ ≤ NNReal.mk C hC * ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
@@ -94,7 +96,7 @@ theorem norm_setToFun_le_toReal (hT : DominatedFinMeasAdditive μ T C) (hC : 0 �
   apply (norm_setToFun_le hT hf hC).trans
   gcongr
   · simp
-  rw [Integrable.norm_toL1_eq_lintegral_enorm]
+  rw [Integrable.norm_toL1_eq_lintegral_eNorm]
   simp
 
 /-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
@@ -204,7 +206,7 @@ theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
     setToFun μ T hT (fun a ↦ ∑' i, f i a) = ∑' i, setToFun μ T hT (f i) := by
   by_cases hF : CompleteSpace F; swap
   · simp [setToFun, hF]
-  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).enorm
+  have hf'' i : AEMeasurable (‖f i ·‖ₑ) μ := (hf i).eNorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
     refine (ae_lt_top' (AEMeasurable.tsum hf'') hf').mono ?_
@@ -222,7 +224,7 @@ theorem setToFun_tsum [CompleteSpace E] (hT : DominatedFinMeasAdditive μ T C)
     have : ∫⁻ a, ∑' n, ‖f n a‖ₑ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
     apply lintegral_congr_ae
-    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
+    simp_rw [← coe_nnNorm, ← NNReal.coe_tsum, eNorm_eq_nnNorm, NNReal.nnNorm_eq]
     filter_upwards [hhh] with a ha
     exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
   · filter_upwards [hhh] with x hx
@@ -249,7 +251,7 @@ theorem _root_.measurableSet_integrable {β : Type*} {mβ : MeasurableSpace β} 
     ⦃f : β → α → E⦄ (hf : StronglyMeasurable (Function.uncurry f)) :
     MeasurableSet {x | Integrable (f x) μ} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_prod_right hf.enorm) measurable_const
+  exact measurableSet_lt (Measurable.lintegral_prod_right hf.eNorm) measurable_const
 
 /-- The `setToFun` operation is measurable. This shows that the integrand of (the right-hand-side
 of) Fubini's theorem is measurable. This version has `f` in curried form. -/
