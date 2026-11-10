@@ -287,7 +287,7 @@ private theorem tendsto_one_add_mobius_div :
 This is not a direct corollary of the other forms of the prime number theorem in this file;
 instead, it is a fresh application of the Wiener–Ikehara theorem, to the nonnegative function
 `n ↦ 1 + μ n` (whose `L`-series is `ζ s + 1 / ζ s`). -/
-theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ (M x : ℝ) / x) atTop (𝓝 0) := by
+theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ M x / x) atTop (𝓝 0) := by
   have : Tendsto (fun x : ℝ ↦ (⌊x⌋₊ + 1) / x) atTop (𝓝 1) := by
     convert ((tendsto_nat_floor_div_atTop (R := ℝ)).add tendsto_inv_atTop_zero).congr' ?_
     · simp
