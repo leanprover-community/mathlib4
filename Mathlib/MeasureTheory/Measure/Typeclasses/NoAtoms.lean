@@ -63,16 +63,17 @@ theorem measure_eq_zero_or_eq (h : μ.IsAtom s) {t : Set α} (hts : t ⊆ s) :
   obtain ⟨u, -, hus, hu, hut⟩ := exists_measurable_superset_of_subset μ hts h.measurableSet
   exact hut ▸ h.measure_eq_zero_or_eq' u hus hu
 
-theorem exists_of_not_isAtom (hs : MeasurableSet s) (hμs : 0 < μ s) (h : ¬ IsAtom μ s) :
-    ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
-  simp only [isAtom_iff, not_and, not_forall, not_or] at h
-  obtain ⟨t, hts, ht, ht₀, hts'⟩ := h hs hμs
-  exact ⟨t, hts, ht, pos_iff_ne_zero.2 ht₀, (measure_mono hts).lt_of_ne hts'⟩
-
 theorem not_isAtom_of_exists (h : ∃ t ⊆ s, 0 < μ t ∧ μ t < μ s) : ¬ IsAtom μ s := by
   intro ha
   obtain ⟨t, hts, ht₀, hts'⟩ := h
   exact (ha.measure_eq_zero_or_eq hts).elim ht₀.ne' hts'.ne
+
+theorem not_isAtom_iff_exists (hs : MeasurableSet s) (hμs : 0 < μ s) :
+    ¬ IsAtom μ s ↔ ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
+  refine ⟨fun h ↦ ?_, fun ⟨t, hts, _, ht⟩ ↦ not_isAtom_of_exists ⟨t, hts, ht⟩⟩
+  simp only [isAtom_iff, hs, hμs, true_and, not_forall, not_or] at h
+  obtain ⟨t, hts, ht, ht₀, hts'⟩ := h
+  exact ⟨t, hts, ht, pos_iff_ne_zero.2 ht₀, (measure_mono hts).lt_of_ne hts'⟩
 
 theorem measure_ne_zero (h : μ.IsAtom s) : μ s ≠ 0 :=
   h.pos.ne'
@@ -94,11 +95,10 @@ class NoAtoms (μ : Measure α) : Prop where
 
 theorem noAtoms_iff_forall_exists :
     NoAtoms μ ↔
-      ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s := by
-  refine ⟨fun h s hs hμs ↦ IsAtom.exists_of_not_isAtom hs hμs (h.not_isAtom s),
-    fun h ↦ ⟨fun s ha ↦ ?_⟩⟩
-  obtain ⟨t, hts, -, ht⟩ := h s ha.measurableSet ha.pos
-  exact IsAtom.not_isAtom_of_exists ⟨t, hts, ht⟩ ha
+      ∀ s, MeasurableSet s → 0 < μ s → ∃ t ⊆ s, MeasurableSet t ∧ 0 < μ t ∧ μ t < μ s :=
+  ⟨fun h s hs hμs ↦ (IsAtom.not_isAtom_iff_exists hs hμs).1 (h.not_isAtom s),
+    fun h ↦ ⟨fun s ha ↦ (IsAtom.not_isAtom_iff_exists ha.measurableSet ha.pos).2
+      (h s ha.measurableSet ha.pos) ha⟩⟩
 
 namespace NoAtoms
 
