@@ -13,7 +13,6 @@ public import Mathlib.Order.Max
 
 Let `S : Set J` and `m : S`. If `m` is not a maximal element of `S`,
 then `↑m : J` is not maximal in `J`.
-
 -/
 
 public section

@@ -14,7 +14,6 @@ public import Mathlib.Data.Finset.NatAntidiagonal
 
 This file contains lemmas providing sufficient conditions for the cast of `n!` to a (semi)ring `A`
 to be a unit.
-
 -/
 
 public section

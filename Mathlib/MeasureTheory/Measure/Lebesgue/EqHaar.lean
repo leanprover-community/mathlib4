@@ -90,7 +90,7 @@ open MeasureTheory MeasureTheory.Measure
 
 theorem map_addHaar {ι E F : Type*} [Fintype ι] [NormedAddCommGroup E] [NormedAddCommGroup F]
     [NormedSpace ℝ E] [NormedSpace ℝ F] [MeasurableSpace E] [MeasurableSpace F] [BorelSpace E]
-    [BorelSpace F] [SecondCountableTopology F] [SigmaCompactSpace F]
+    [BorelSpace F] [SigmaCompactSpace F]
     (b : Basis ι ℝ E) (f : E ≃L[ℝ] F) :
     map f b.addHaar = (b.map f.toLinearEquiv).addHaar := by
   rw [eq_comm, Basis.addHaar_eq_iff, Measure.map_apply f.continuous.measurable
@@ -180,7 +180,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
       (tendsto_pow_atTop_nhds_zero_of_lt_one cpos.le cone).smul_const x
     isBounded_range_of_tendsto _ this
   apply addHaar_eq_zero_of_disjoint_translates μ _ A _
-    (Submodule.closed_of_finiteDimensional s).measurableSet
+    (Submodule.isClosed_of_finiteDimensional s).measurableSet
   intro m n hmn
   simp only [Function.onFun, image_add_left, singleton_add, disjoint_left, mem_preimage,
     SetLike.mem_coe]
@@ -320,7 +320,7 @@ theorem addHaar_image_continuousLinearEquiv (f : E ≃L[ℝ] E) (s : Set E) :
 
 theorem LinearMap.quasiMeasurePreserving (f : E →ₗ[ℝ] E) (hf : LinearMap.det f ≠ 0) :
     QuasiMeasurePreserving f μ μ := by
-  refine ⟨f.continuous_of_finiteDimensional.measurable, ?_⟩
+  refine ⟨f.continuous_of_finiteDimensional.aemeasurable, ?_⟩
   rw [map_linearMap_addHaar_eq_smul_addHaar μ hf]
   exact smul_absolutelyContinuous
 
@@ -344,7 +344,7 @@ theorem map_addHaar_smul {r : ℝ} (hr : r ≠ 0) :
 
 theorem quasiMeasurePreserving_smul {r : ℝ} (hr : r ≠ 0) :
     QuasiMeasurePreserving (r • ·) μ μ := by
-  refine ⟨measurable_const_smul r, ?_⟩
+  refine ⟨(measurable_const_smul r).aemeasurable, ?_⟩
   rw [map_addHaar_smul μ hr]
   exact smul_absolutelyContinuous
 
@@ -355,7 +355,7 @@ theorem addHaar_preimage_smul {r : ℝ} (hr : r ≠ 0) (s : Set E) :
     μ ((r • ·) ⁻¹' s) = Measure.map (r • ·) μ s :=
       ((Homeomorph.smul (isUnit_iff_ne_zero.2 hr).unit).toMeasurableEquiv.map_apply s).symm
     _ = ENNReal.ofReal (abs (r ^ finrank ℝ E)⁻¹) * μ s := by
-      rw [map_addHaar_smul μ hr, coe_smul, Pi.smul_apply, smul_eq_mul]
+      rw [map_addHaar_smul μ hr, smul_apply, smul_eq_mul]
 
 /-- Rescaling a set by a factor `r` multiplies its measure by `abs (r ^ dim)`. -/
 @[simp]
@@ -495,7 +495,7 @@ theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
   refine le_of_tendsto A ?_
   filter_upwards [Ioo_mem_nhdsLT zero_lt_one] with r hr
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
-  exact measure_mono (closedBall_subset_ball hr.2)
+  grw [hr.2]
 
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
@@ -578,16 +578,16 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
+@[no_expose] noncomputable def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 
 theorem _root_.AlternatingMap.measure_parallelepiped (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ)
     (v : Fin n → G) : ω.measure (parallelepiped v) = ENNReal.ofReal |ω v| := by
   conv_rhs => rw [ω.eq_smul_basis_det (finBasisOfFinrankEq ℝ G _i.out)]
-  simp only [addHaar_parallelepiped, AlternatingMap.measure, coe_nnreal_smul_apply,
-    _root_.smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
-    ← Real.enorm_eq_ofReal_abs, enorm]
+  simp only [addHaar_parallelepiped, AlternatingMap.measure, ENNReal.smul_def,
+    smul_apply, smul_eq_mul, abs_mul, ENNReal.ofReal_mul (abs_nonneg _),
+    ← Real.eNorm_eq_ofReal_abs, eNorm]
 
 instance (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) : IsAddLeftInvariant ω.measure := by
   rw [AlternatingMap.measure]; infer_instance

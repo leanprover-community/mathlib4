@@ -51,7 +51,6 @@ an arbitrary `FintypeCat.{w}`.
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 @[expose] public section
@@ -143,7 +142,6 @@ section Specialized
 
 variable (F : C ⥤ FintypeCat.{u₂})
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `F ⋙ FintypeCat.incl` as a cocone over `(can F).op ⋙ coyoneda`.
 This is a colimit cocone (see `PreGaloisCategory.isColimit`) -/
 def cocone : Cocone ((incl F).op ⋙ coyoneda) where
@@ -262,7 +260,6 @@ theorem AutGalois.π_surjective (A : PointedGaloisObject F) :
 section EndAutGaloisIsomorphism
 
 /-!
-
 ### Isomorphism between `Aut F` and `AutGalois F`
 
 In this section we establish the isomorphism between the automorphism group of `F` and
@@ -286,7 +283,6 @@ We first establish the isomorphism between `End F` and `AutGalois F`, from which
   `(incl F ⋙ F).sections ≅ (autGaloisSystem F ⋙ forget GrpCat).sections`
 
   which is induced from the level-wise equivalence `Aut A ≃ F.obj A` for a Galois object `A`.
-
 -/
 
 -- Local notation for `F` considered as a functor to types instead of finite types.

@@ -23,7 +23,6 @@ algebras, as `CliffordAlgebra.equivProd`.
 
 Introduce morphisms and equivalences of graded algebras, and upgrade `CliffordAlgebra.equivProd`
 to a graded algebra equivalence.
-
 -/
 
 @[expose] public section

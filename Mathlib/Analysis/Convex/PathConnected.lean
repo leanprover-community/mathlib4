@@ -10,6 +10,9 @@ public import Mathlib.Topology.Connected.PathConnected
 
 import Mathlib.LinearAlgebra.Projection
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Segment between 2 points as a bundled path
 
@@ -35,7 +38,7 @@ namespace Path
 @[simps]
 protected def segment (a b : E) : Path a b where
   toFun t := lineMap a b (t : ℝ)
-  continuous_toFun := by dsimp [lineMap]; fun_prop
+  continuous_toFun := by simp only [lineMap_apply_module']; fun_prop
   source' := by simp
   target' := by simp
 

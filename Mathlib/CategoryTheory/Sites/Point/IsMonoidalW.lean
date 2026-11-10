@@ -19,7 +19,6 @@ check the assumptions of `Sheaf.monoidalCategory` in the
 file `Mathlib/CategoryTheory/Sites/Monoidal.lean`,
 i.e. this can be used in order to construct the monoidal
 category structure on `Sheaf J A`.
-
 -/
 
 public section
