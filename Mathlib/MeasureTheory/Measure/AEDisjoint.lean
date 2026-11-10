@@ -7,6 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Almost everywhere disjoint sets
 
@@ -84,7 +87,7 @@ protected theorem mono (h : AEDisjoint μ s t) (hu : u ⊆ s) (hv : v ⊆ t) : A
 
 protected theorem congr (h : AEDisjoint μ s t) (hu : u =ᵐ[μ] s) (hv : v =ᵐ[μ] t) :
     AEDisjoint μ u v :=
-  mono_ae h (Filter.EventuallyEq.le hu) (Filter.EventuallyEq.le hv)
+  mono_ae h hu.subset hv.subset
 
 @[simp]
 theorem iUnion_left_iff {ι : Sort*} [Countable ι] {s : ι → Set α} :

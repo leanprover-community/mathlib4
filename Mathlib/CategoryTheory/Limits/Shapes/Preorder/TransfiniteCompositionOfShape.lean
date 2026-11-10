@@ -23,7 +23,6 @@ more properties or data for the morphisms `F.obj j ⟶ F.obj (Order.succ j)`
 which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
-
 -/
 
 @[expose] public section
@@ -86,7 +85,6 @@ def ofComposableArrows {n : ℕ} (G : ComposableArrows C n) :
   isColimit := colimitOfDiagramTerminal (Fin.isTerminalLast n) G
   fac := Category.id_comp _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- If `f` is a transfinite composition of shape `J`, then it is
 also a transfinite composition of shape `J'` if `J' ≃o J`. -/
 @[simps]
@@ -112,7 +110,6 @@ noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
       (Cocone.ext (Iso.refl _))
   fac := by simp [← Functor.map_comp]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Iic j` for any `j : J`. -/
 @[simps]
@@ -128,7 +125,6 @@ noncomputable def iic (j : J) :
         rfl }
   isColimit := colimitOfDiagramTerminal isTerminalTop _
 
-set_option backward.defeqAttrib.useBackward true in
 /-- A transfinite composition of shape `J` induces a transfinite composition
 of shape `Set.Ici j` for any `j : J`. -/
 @[simps]

@@ -13,7 +13,6 @@ public import Mathlib.Probability.Kernel.Composition.CompNotation
 
 In countable spaces, we can write integrals as sums, hence we can write the average or Bayes risk
 with sums instead of integrals.
-
 -/
 
 public section

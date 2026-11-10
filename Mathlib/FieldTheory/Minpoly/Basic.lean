@@ -13,7 +13,6 @@ public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 This file defines the minimal polynomial of an element `x` of an `A`-algebra `B`,
 under the assumption that x is integral over `A`, and derives some basic properties
 such as irreducibility under the assumption `B` is a domain.
-
 -/
 
 @[expose] public section
@@ -171,7 +170,8 @@ of `x` over `A`. -/
 theorem eq_of_linearIndependent {p : A[X]} (monic : p.Monic) (hp0 : p.aeval x = 0)
     (n : ℕ) (hpn : p.degree = n) (ind : LinearIndependent A fun i : Fin n ↦ x ^ i.val) :
     minpoly A x = p :=
-  .symm <| unique' _ _ monic hp0 fun q lt ↦ or_iff_not_imp_left.mpr fun ne hq ↦ ne <| ext fun i ↦ by
+  .symm <| unique' _ _ monic hp0 fun q lt ↦ or_iff_not_imp_left.mpr fun ne hq ↦ ne <| by
+    ext i
     rw [q.as_sum_range' _ ((natDegree_lt_iff_degree_lt ne).mpr (hpn ▸ lt))] at hq
     obtain lt | le := lt_or_ge i n
     · simpa using Fintype.linearIndependent_iff.mp ind (q.coeff ·)

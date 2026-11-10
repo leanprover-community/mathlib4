@@ -14,7 +14,6 @@ public import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
 In this file, given a short exact short complex `S : ShortComplex C`
 in an abelian category, we construct the associated class in
 `Ext S.X₃ S.X₁ 1`.
-
 -/
 
 @[expose] public section
@@ -50,12 +49,10 @@ local notation "qis" => CochainComplex.mappingCone.descShortComplex S'
 local notation "hqis" => CochainComplex.mappingCone.quasiIso_descShortComplex hS'
 local notation "δ" => Triangle.mor₃ (CochainComplex.mappingCone.triangle (ShortComplex.f S'))
 
-set_option backward.defeqAttrib.useBackward true in
 instance : HasSmallLocalizedShiftedHom.{w} W ℤ (S').X₃ (S').X₁ := by
   dsimp
   infer_instance
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.privateInPublic true in
 include hS in
 private lemma hasSmallLocalizedHom_S'_X₃_K :

@@ -48,7 +48,6 @@ which are lattices with only two elements, and related ideas.
 * `IsCompl.isAtom_iff_isCoatom` and `IsCompl.isCoatom_if_isAtom`: In a modular
   bounded lattice, a complement of an atom is a coatom and vice versa.
 * `isAtomic_iff_isCoatomic`: A modular complemented lattice is atomic iff it is coatomic.
-
 -/
 
 @[expose] public section

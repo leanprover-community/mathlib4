@@ -51,7 +51,6 @@ have the finite intersection property, so their intersection is nonempty.
 * [N. G. de Bruijn, P. Erdős, *A colour problem for infinite graphs and a problem in the theory
   of relations*][debruijnerdos1951]
 * [R. Rado, *Axiomatic treatment of rank in infinite sets*][rado1949]
-
 -/
 
 public section

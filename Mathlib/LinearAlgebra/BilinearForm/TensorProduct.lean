@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Hom
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
@@ -18,7 +19,6 @@ public import Mathlib.RingTheory.TensorProduct.Finite
   applying `B₁` on `M₁` and `B₂` on `M₂`.
 * `LinearMap.BilinMap.tensorDistribEquiv`: `BilinForm.tensorDistrib` as an equivalence on finite
   free modules.
-
 -/
 
 @[expose] public section
@@ -38,8 +38,8 @@ section CommSemiring
 variable [CommSemiring R] [CommSemiring A]
 variable [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable [Algebra R A] [Module R M₁] [Module A M₁] [Module R N₁] [Module A N₁]
-variable [SMulCommClass R A M₁] [IsScalarTower R A M₁]
-variable [SMulCommClass R A N₁] [IsScalarTower R A N₁]
+variable [IsScalarTower R A M₁]
+variable [IsScalarTower R A N₁]
 variable [Module R M₂] [Module R N₂]
 
 namespace BilinMap

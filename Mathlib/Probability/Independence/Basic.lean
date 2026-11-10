@@ -633,7 +633,6 @@ end IndepSet
 section IndepFun
 
 /-! ### Independence of random variables
-
 -/
 
 

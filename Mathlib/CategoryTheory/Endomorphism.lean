@@ -18,7 +18,6 @@ Definition and basic properties of endomorphisms and automorphisms of an object 
 For each `X : C`, we define a monoid `CategoryTheory.End X` which is a `1`-field structure
 that is equipped with a bijection with `X ⟶ X`. Similarly, we define the
 group `CategoryTheory.Aut X`, which is equipped with a bijection with `X ≅ X`.
-
 -/
 
 @[expose] public section

@@ -24,7 +24,6 @@ to an `m'` by `n'` matrix, as long as `m ≃ m'` and `n ≃ n'`.
 ## Tags
 
 matrix, reindex
-
 -/
 
 @[expose] public section

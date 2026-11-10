@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 public import Mathlib.NumberTheory.ModularForms.Basic
 public import Mathlib.NumberTheory.ModularForms.Identities
-public import Mathlib.RingTheory.PowerSeries.Basic
+public import Mathlib.RingTheory.PowerSeries.Order
 
 import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
@@ -47,10 +47,9 @@ and bounded at infinity.
 
 ## See also
 
-* Lemmas relating q-expansion coefficents to Fourier series, such as
+* Lemmas relating q-expansion coefficients to Fourier series, such as
   `UpperHalfPlane.qExpansion_coeff_eq_exp_mul_fourierCoeffOn`, are placed in `Bounds.lean`, since
   the present file does not import Fourier theory.
-
 -/
 
 assert_not_exists fourierCoeffOn -- guard against import creep
@@ -145,11 +144,6 @@ open SlashInvariantFormClass
 
 namespace ModularFormClass
 
-@[deprecated ModularFormClass.bdd_at_infty +typeChanged (since := "2026-04-19")]
-theorem bounded_at_infty_comp_ofComplex [ModularFormClass F Γ k] (hi : IsCusp OnePoint.infty Γ) :
-    BoundedAtFilter I∞ (f ∘ ofComplex) :=
-  (OnePoint.isBoundedAt_infty_iff.mp (bdd_at_cusps f hi)).comp_tendsto tendsto_comap_im_ofComplex
-
 protected theorem differentiableAt_cuspFunction [ModularFormClass F Γ k]
     (hh : 0 < h) (hΓ : h ∈ Γ.strictPeriods) {q : ℂ} (hq : ‖q‖ < 1) :
     DifferentiableAt ℂ (cuspFunction h f) q :=
@@ -237,7 +231,7 @@ private lemma hasSum_cuspFunction_of_hasSum_punctured {f : ℍ → ℂ} (hh : 0 
     (hq1 : q ≠ 0) : HasSum (fun m ↦ c m • q ^ m) (cuspFunction h f q) := by
   have h1 := Periodic.im_invQParam_pos_of_norm_lt_one hh hq hq1
   let τ : ℍ := ⟨Periodic.invQParam h q, h1⟩
-  have h2 := (Periodic.cuspFunction_eq_of_nonzero h (f ∘ ofComplex) hq1)
+  have h2 := (Periodic.cuspFunction_eq_of_ne_zero h (f ∘ ofComplex) hq1)
   have : cuspFunction h f q = f τ := by simpa [UpperHalfPlane.ofComplex_apply_of_im_pos h1]
     using! h2
   grind [hf τ, Periodic.qParam_right_inv]
@@ -556,10 +550,19 @@ lemma qExpansion_one (h) : qExpansion h (1 : ℍ → ℂ) = 1 := by
     ext q
     rcases eq_or_ne q 0 with rfl | hq
     · simpa [cuspFunction, Periodic.cuspFunction] using! tendsto_const_nhds.limUnder_eq
-    · simp [cuspFunction, Periodic.cuspFunction_eq_of_nonzero h _ hq]
+    · simp [cuspFunction, Periodic.cuspFunction_eq_of_ne_zero h _ hq]
   have h2 : iteratedDeriv m (1 : ℂ → ℂ) 0 = if m = 0 then 1 else 0 := by
     simpa [ite_apply] using! iteratedDeriv_const
   simp +contextual [qExpansion_coeff, h1, h2]
+
+theorem analyticOrderAt_eq_qExpansion_order {f : ℍ → ℂ} (hh : 0 < h)
+    (hfper : Periodic (f ∘ ofComplex) h) (hfhol : MDiff f) (hfbdd : IsBoundedAtImInfty f) :
+    analyticOrderAt (cuspFunction h f) 0 = (qExpansion h f).order := by
+  -- Both orders are characterized by the vanishing of all coefficients below `n`.
+  refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+  rw [natCast_le_analyticOrderAt_iff_iteratedDeriv_eq_zero
+    (analyticAt_cuspFunction_zero hh hfper hfhol hfbdd), PowerSeries.nat_le_order_iff]
+  simp [qExpansion_coeff, Nat.factorial_ne_zero]
 
 end UpperHalfPlane
 
