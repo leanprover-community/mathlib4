@@ -92,6 +92,9 @@ theorem exists_accPt_of_nullSingletonClass {X : Type*} [TopologicalSpace X] [Mea
   have : DiscreteTopology E := discreteTopology_of_noAccPts fun x _ => h x
   exact hE.ne' <| (Set.countable_coe_iff.mp <| separableSpace_iff_countable.mp ‹_›).measure_zero μ
 
+@[deprecated (since := "2026-06-09")]
+alias exists_accPt_of_noAtoms := exists_accPt_of_nullSingletonClass
+
 section
 
 variable [PartialOrder α] {a b : α}
