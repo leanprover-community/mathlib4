@@ -150,7 +150,7 @@ def ofEquiv (α) {β} [Primcodable α] (e : β ≃ α) : Primcodable β :=
 instance empty : Primcodable Empty :=
   ⟨zero⟩
 
-instance (priority := 100) {α : Type*} [IsEmpty α] : Primcodable α where
+instance (priority := 100) {α : Type*} [IsEmpty α] : Primcodable α :=
   ⟨zero⟩
 
 instance unit : Primcodable PUnit :=
