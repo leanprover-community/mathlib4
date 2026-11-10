@@ -5,15 +5,12 @@ Authors: Johan Commelin, Kenny Lau
 -/
 module
 
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.Data.Finsupp.Interval
-public import Mathlib.Algebra.MvPolynomial.Eval
-public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.Algebra.MvPolynomial.Degrees
+public import Mathlib.Data.Finsupp.Interval
+public import Mathlib.Order.Filter.AtTopBot.Basic
 public import Mathlib.RingTheory.MvPowerSeries.Order
 
 /-!
-
 # Formal (multivariate) power series - Truncation
 
 * `MvPowerSeries.truncFinset s p` restricts the support of a multivariate power series `p`
@@ -52,7 +49,6 @@ public import Mathlib.RingTheory.MvPowerSeries.Order
 
 * `MvPowerSeries.truncTotal` : the truncation of a multivariate formal power series at
   a total degree `n` when the index `σ` is finite
-
 -/
 
 @[expose] public section
@@ -364,7 +360,7 @@ lemma truncTotal_pow_eq_truncTotal_truncTotal_pow :
   ext d
   by_cases hd : d.degree < n
   · simp_rw [coeff_truncTotal _ hd]
-    exact_mod_cast (coeff_truncTotal_pow _ hd).symm
+    exact mod_cast (coeff_truncTotal_pow _ hd).symm
   simp_rw [coeff_truncTotal_eq_zero _ (not_lt.mp hd)]
 
 theorem totalDegree_truncTotal_lt (h : n ≠ 0) :

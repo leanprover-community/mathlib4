@@ -8,8 +8,8 @@ module
 public import Mathlib.CategoryTheory.Limits.Types.Colimits
 public import Mathlib.CategoryTheory.Limits.Types.Limits
 public import Mathlib.CategoryTheory.SingleObj
-public import Mathlib.Data.Setoid.Basic
 public import Mathlib.GroupTheory.GroupAction.Defs
+public import Mathlib.Order.Setoid.Basic
 
 /-!
 # (Co)limits of functors out of `SingleObj M`
@@ -23,7 +23,6 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
 
 * `SingleObj.Types.colimitEquivQuotient`: The colimit of `J : SingleObj G ⥤ Type u` is the
   quotient of `J.obj (SingleObj.star G)` by the induced action.
-
 -/
 
 @[expose] public section

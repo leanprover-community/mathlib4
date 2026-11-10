@@ -6,9 +6,9 @@ Authors: Weiyi Wang
 module
 
 public import Mathlib.Topology.Algebra.InfiniteSum.Basic
-public import Mathlib.Topology.Hom.ContinuousEval
+public import Mathlib.Topology.Hom.ContinuousEvalConst
 
-import Mathlib.Data.FunLike.Group
+import Mathlib.Algebra.Group.FunLike
 
 /-! # Applying an infinite sum of functions
 
@@ -21,7 +21,7 @@ public section
 
 variable {α β γ F : Type*} [TopologicalSpace β] [CommMonoid β]
   [FunLike F α β] [TopologicalSpace F] [CommMonoid F] [ContinuousEvalConst F α β]
-  [IsMulApply F α β] [IsOneApply F α β] {f : γ → F} {g : F} {L : SummationFilter γ}
+  [IsMulApply F] [IsOneApply F] {f : γ → F} {g : F} {L : SummationFilter γ}
 
 /-- See also `Pi.hasProd` for bare pi type. -/
 @[to_additive /-- See also `Pi.hasSum` for bare pi type. -/]

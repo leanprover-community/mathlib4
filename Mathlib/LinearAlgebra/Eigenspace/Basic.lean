@@ -6,13 +6,12 @@ Authors: Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Spectrum.Basic
-public import Mathlib.Algebra.Module.LinearMap.Basic
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-public import Mathlib.LinearAlgebra.GeneralLinearGroup.Basic
-public import Mathlib.RingTheory.Nilpotent.Basic
-public import Mathlib.RingTheory.Nilpotent.Defs
-public import Mathlib.RingTheory.Nilpotent.Lemmas
-public import Mathlib.Tactic.Peel
+
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.Tactic.Peel
 
 /-!
 # Eigenvectors and eigenvalues
@@ -106,7 +105,7 @@ lemma map_genEigenspace_le {N : Type*} [AddCommGroup N] [Module R N]
   rintro y ⟨x, hx, rfl⟩
   obtain ⟨l, hl, hx⟩ := mem_genEigenspace.mp hx
   refine mem_genEigenspace.mpr ⟨l, hl, ?_⟩
-  simp only [LinearMap.mem_ker, Module.End.pow_apply] at hx ⊢
+  simp only [LinearMap.mem_ker, pow_apply_eq_iterate] at hx ⊢
   suffices (⇑φ).Semiconj ⇑(f - μ • 1) ⇑(g - μ • 1) by rw [← this.iterate_right, hx, map_zero]
   intro; simpa using congr($hφ _).symm
 
@@ -143,12 +142,12 @@ lemma genEigenspace_one {f : End R M} {μ : R} :
 lemma mem_genEigenspace_one {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ 1 ↔ f x = μ • x := by
   rw [genEigenspace_one, LinearMap.mem_ker, LinearMap.sub_apply,
-    sub_eq_zero, LinearMap.smul_apply, Module.End.one_apply]
+    sub_eq_zero, LinearMap.smul_apply, one_apply_eq_self]
 
 -- `simp` can prove this using `genEigenspace_zero`
 lemma mem_genEigenspace_zero {f : End R M} {μ : R} {x : M} :
     x ∈ f.genEigenspace μ 0 ↔ x = 0 := by
-  rw [← Nat.cast_zero, mem_genEigenspace_nat, pow_zero, LinearMap.mem_ker, Module.End.one_apply]
+  rw [← Nat.cast_zero, mem_genEigenspace_nat, pow_zero, LinearMap.mem_ker, one_apply_eq_self]
 
 @[simp]
 lemma genEigenspace_zero {f : End R M} {μ : R} :
@@ -293,7 +292,7 @@ lemma HasUnifEigenvalue.exp_ne_zero {f : End R M} {μ : R} {k : ℕ}
 maximal generalized eigenspace, then this value is the least such `k`. If not, this value is not
 meaningful. -/
 noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
-  monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
+  monotonicSequenceLimitIndex <| (f.genEigenspace μ).comp WithTop.coeOrderHom.toOrderHom
 
 set_option backward.isDefEq.respectTransparency false in
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
@@ -301,7 +300,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
-    (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
+    (f.genEigenspace μ).comp WithTop.coeOrderHom.toOrderHom
   convert! this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
     Function.comp_def]
@@ -346,7 +345,7 @@ lemma HasUnifEigenvalue.lt {f : End R M} {μ : R} {k m : ℕ∞}
   rw [mem_genEigenspace] at hx
   rcases hx with ⟨l, -, hx⟩
   rwa [LinearMap.ker_eq_bot.mpr] at hx
-  rw [Module.End.coe_pow (f - μ • 1) l]
+  rw [FunLike.coe_pow_eq_iterate]
   exact Function.Injective.iterate contra l
 
 /-- Generalized eigenvalues are actually just eigenvalues. -/
@@ -496,7 +495,7 @@ theorem genEigenspace_mem_invtSubmodule (f : End R M) (μ : R) (n : ℕ∞) :
   induction k generalizing x
   case zero => simp_all
   case succ k ih =>
-    rw [pow_succ, mul_apply] at hx ⊢
+    rw [pow_succ, mul_apply_eq_comp] at hx ⊢
     simpa using ih (le_trans (by simp) hk) hx
 
 theorem eigenspace_mem_invtSubmodule (f : End R M) (μ : R) :
@@ -714,7 +713,7 @@ theorem independent_genEigenspace [IsDomain R] [IsTorsionFree R M] (f : End R M)
   obtain ⟨y, hy, z, hz, rfl⟩ := Submodule.mem_sup.mp hx'; clear hx'
   let g := f - μ₂ • 1
   simp_rw [mem_genEigenspace, ← exists_prop] at hy ⊢
-  peel hy with l hlk hl
+  gconvert hy with l hlk hl
   simp only [LinearMap.mem_ker] at hl
   have hyz : (g ^ l) (y + z) ∈
       (f.genEigenspace μ₁ k) ⊓ s.sup fun μ ↦ f.genEigenspace μ k := by
@@ -802,7 +801,7 @@ theorem eigenspace_restrict_le_eigenspace (f : End R M) {p : Submodule R M} (hfp
     (μ : R) : (eigenspace (f.restrict hfp) μ).map p.subtype ≤ f.eigenspace μ := by
   rintro a ⟨x, hx, rfl⟩
   simp only [SetLike.mem_coe, mem_eigenspace_iff, LinearMap.restrict_apply] at hx ⊢
-  exact congr_arg Subtype.val hx
+  congrm $(hx).val
 
 /-- Generalized eigenrange and generalized eigenspace for exponent `finrank K V` are disjoint. -/
 theorem generalized_eigenvec_disjoint_range_ker [FiniteDimensional K V] (f : End K V) (μ : K) :
@@ -857,7 +856,7 @@ lemma genEigenspace_le_smul (f : Module.End R M) (μ t : R) (k : ℕ∞) :
     (f.genEigenspace μ k) ≤ (t • f).genEigenspace (t * μ) k := by
   intro m hm
   simp_rw [mem_genEigenspace, ← exists_prop, LinearMap.mem_ker] at hm ⊢
-  peel hm with l hlk hl
+  gconvert hm using 2 with l hlk hl
   rw [mul_smul, ← smul_sub, smul_pow, LinearMap.smul_apply, hl, smul_zero]
 
 lemma genEigenspace_inf_le_add
@@ -881,8 +880,8 @@ lemma genEigenspace_inf_le_add
     rw [LinearMap.smul_apply, this, smul_zero]
   rw [Finset.mem_antidiagonal] at hij
   obtain hi | hj : l₁ ≤ i ∨ l₂ ≤ j := by lia
-  · rw [(h.pow_pow i j).eq, Module.End.mul_apply, Module.End.pow_map_zero_of_le hi hl₁, map_zero]
-  · rw [Module.End.mul_apply, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
+  · rw [(h.pow_pow i j).eq, mul_apply_eq_comp, Module.End.pow_map_zero_of_le hi hl₁, map_zero]
+  · rw [mul_apply_eq_comp, Module.End.pow_map_zero_of_le hj hl₂, map_zero]
 
 lemma map_smul_of_iInf_genEigenspace_ne_bot [IsDomain R] [IsTorsionFree R M]
     {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)

@@ -20,7 +20,6 @@ and obtain `Presheaf.FamilyOfElementsOnObjects.IsCompatible.existsUnique_section
 which asserts that if a presheaf of types is a sheaf, then any compatible
 family of elements on objects `Y` which cover the final object extends to
 a section of this presheaf.
-
 -/
 
 @[expose] public section
@@ -75,7 +74,7 @@ lemma sections_ext (F : Sheaf J Type*) {x y : F.1.sections}
   ext W
   apply (((isSheaf_iff_isSheaf_of_type _ _).1 F.2).isSeparated _ (hY W.unop)).ext
   rintro T a ⟨i, ⟨b⟩⟩
-  simpa using congr_arg (F.1.map b.op) (h i)
+  simpa using congr(F.1.map b.op $(h i))
 
 end CoversTop
 

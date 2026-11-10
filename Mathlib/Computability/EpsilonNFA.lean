@@ -6,7 +6,8 @@ Authors: Fox Thomson, Yaël Dillies, Anthony DeRossi
 module
 
 public import Mathlib.Computability.NFA
-public import Mathlib.Data.List.ReduceOption
+
+import Mathlib.Data.List.ReduceOption
 
 /-!
 # Epsilon Nondeterministic Finite Automata
@@ -63,7 +64,7 @@ def εClosure (S : Set σ) : Set σ := {s | MemεClosure M S s}
 
 @[simp] lemma subset_εClosure (S : Set σ) : S ⊆ M.εClosure S := MemεClosure.base
 
-@[deprecated subset_εClosure (since := "2026-07-07")]
+@[deprecated subset_εClosure +typeChanged (since := "2026-07-07")]
 lemma εClosure.base (s : σ) (hs : s ∈ S) : s ∈ M.εClosure S := M.subset_εClosure S hs
 
 lemma mem_εClosure_of_mem_step (hts : t ∈ M.step s none) (hs : s ∈ M.εClosure S) :

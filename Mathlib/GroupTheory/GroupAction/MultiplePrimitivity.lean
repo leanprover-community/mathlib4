@@ -5,9 +5,8 @@ Authors: Antoine Chambert-Loir
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
-public import Mathlib.GroupTheory.GroupAction.SubMulAction.OfFixingSubgroup
 public import Mathlib.Data.ENat.Lattice
+public import Mathlib.GroupTheory.GroupAction.MultipleTransitivity
 
 /-! # Multiply preprimitive actions
 
@@ -34,7 +33,6 @@ Let `G` be a group acting on a type `α`.
   If an action is `s.ncard + m`-primitive, then
   the action of `FixingSubgroup G s` on the complement of `s`
   is `m`-primitive.
-
 -/
 
 public section
@@ -261,7 +259,7 @@ theorem isMultiplyPreprimitive_of_le
     · apply hrec
         (isMultiplyPreprimitive_of_isMultiplyPretransitive_succ M α hα)
         (Nat.lt_succ_iff.mp hmn')
-      · refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
+      refine le_trans ?_ hα; rw [ENat.natCast_le_natCast]; exact Nat.le_succ n
 
 variable {M α}
 

@@ -5,13 +5,11 @@ Authors: Robert Y. Lewis, Heather Macbeth, Johan Commelin
 -/
 module
 
+public import Mathlib.RingTheory.DiscreteValuationRing.Basic
 public import Mathlib.RingTheory.WittVector.Domain
 public import Mathlib.RingTheory.WittVector.MulCoeff
-public import Mathlib.RingTheory.DiscreteValuationRing.Basic
-public import Mathlib.Tactic.LinearCombination
 
 /-!
-
 # Witt vectors over a perfect ring
 
 This file establishes that Witt vectors over a perfect field are a discrete valuation ring.
@@ -24,7 +22,6 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 * `WittVector.exists_eq_pow_p_mul`: the existence of this element `b` over a perfect ring
 * `WittVector.exists_eq_pow_p_mul'`: the existence of this unit `b` over a perfect field
 * `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
-
 -/
 
 @[expose] public section
@@ -59,7 +56,7 @@ noncomputable def inverseCoeff (a : Units k) (A : 𝕎 k) : ℕ → k
 Upgrade a Witt vector `A` whose first entry `A.coeff 0` is a unit to be, itself, a unit in `𝕎 k`.
 -/
 def mkUnit {a : Units k} {A : 𝕎 k} (hA : A.coeff 0 = a) : Units (𝕎 k) :=
-  Units.mkOfMulEqOne A (@WittVector.mk' p _ (inverseCoeff a A)) (by
+  Units.mkOfMulEqOne A (WittVector.mk p (inverseCoeff a A)) (by
     ext n
     induction n with
     | zero => simp [WittVector.mul_coeff_zero, inverseCoeff, hA]
@@ -98,7 +95,7 @@ theorem irreducible : Irreducible (p : 𝕎 k) := by
       (constantCoeff : WittVector p k →+* _).isUnit_map hp
   refine ⟨hp, fun a b hab => ?_⟩
   obtain ⟨ha0, hb0⟩ : a ≠ 0 ∧ b ≠ 0 := by
-    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_nonzero p k hab
+    rw [← mul_ne_zero_iff]; intro h; rw [h] at hab; exact p_ne_zero p k hab
   obtain ⟨m, a, ha, rfl⟩ := verschiebung_nonzero ha0
   obtain ⟨n, b, hb, rfl⟩ := verschiebung_nonzero hb0
   cases m; · exact Or.inl (isUnit_of_coeff_zero_ne_zero a ha)
@@ -120,14 +117,14 @@ theorem exists_eq_pow_p_mul (a : 𝕎 k) (ha : a ≠ 0) :
   obtain ⟨m, c, hc, hcm⟩ := WittVector.verschiebung_nonzero ha
   obtain ⟨b, rfl⟩ := (frobenius_bijective p k).surjective.iterate m c
   rw [WittVector.iterate_frobenius_coeff] at hc
-  have := congr_fun (WittVector.verschiebung_frobenius_comm.comp_iterate m) b
+  have := congr($(WittVector.verschiebung_frobenius_comm.comp_iterate m) b)
   simp only [Function.comp_apply] at this
   rw [← this] at hcm
   refine ⟨m, b, ?_, ?_⟩
   · contrapose hc
     simp [hc, zero_pow <| pow_ne_zero _ hp.out.ne_zero]
   · simp_rw [← mul_left_iterate (p : 𝕎 k) m]
-    convert! hcm using 2
+    convert hcm using 2
     ext1 x
     rw [mul_comm, ← WittVector.verschiebung_frobenius x]; rfl
 

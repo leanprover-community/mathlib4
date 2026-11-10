@@ -6,10 +6,8 @@ Authors: Jz Pan
 module
 
 public import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
-public import Mathlib.Algebra.CharP.Defs
 
 /-!
-
 # Some normal forms of elliptic curves
 
 This file defines some normal forms of Weierstrass equations of elliptic curves.
@@ -91,7 +89,6 @@ The following normal forms are in [silverman2009], Appendix A, Proposition 1.1.
 ## Tags
 
 elliptic curve, weierstrass equation, normal form
-
 -/
 
 @[expose] public section

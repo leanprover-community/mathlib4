@@ -5,8 +5,12 @@ Authors: Michael Stoll
 -/
 module
 
-public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
+
+import Mathlib.Analysis.Complex.Polynomial.Basic
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Additive characters on finite fields

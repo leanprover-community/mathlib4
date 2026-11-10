@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.AlgebraicTopology.ModelCategory.Bifibrant
+public import Mathlib.AlgebraicTopology.ModelCategory.Homotopy
 public import Mathlib.CategoryTheory.MorphismProperty.Quotient
 
 /-!
@@ -19,7 +19,6 @@ in `C`, and we define a cofibrant resolution functor
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
-
 -/
 
 @[expose] public section

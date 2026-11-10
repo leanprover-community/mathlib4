@@ -6,13 +6,12 @@ Authors: Andrew Yang
 module
 
 public import Mathlib.Algebra.Polynomial.Bivariate
-public import Mathlib.Algebra.Polynomial.Taylor
 public import Mathlib.RingTheory.Etale.Basic
 public import Mathlib.RingTheory.Extension.Presentation.Submersive
-public import Mathlib.RingTheory.Ideal.IdempotentFG
+
+import Mathlib.RingTheory.Ideal.IdempotentFG
 
 /-!
-
 # Standard etale maps
 
 ## Main definitions
@@ -28,7 +27,6 @@ public import Mathlib.RingTheory.Ideal.IdempotentFG
 - We also provide the instance that `P.Ring` is etale over `R`.
 
 - `Algebra.IsStandardEtale`: The class of standard etale algebras.
-
 -/
 
 @[expose] public section
@@ -347,7 +345,7 @@ lemma StandardEtalePresentation.hom_ext {f₁ f₂ : S →ₐ[R] T} (h : f₁ P.
     P.P.hom_ext (by simpa)
   ext x
   obtain ⟨x, rfl⟩ := P.equivRing.symm.surjective x
-  exact congr($this x)
+  congrm $this x
 
 open scoped TensorProduct
 
@@ -417,7 +415,7 @@ lemma IsStandardEtale.of_isLocalizationAway [IsStandardEtale R S]
     have : ((e.symm.toAlgHom.comp (IsScalarTower.toAlgHom R _ S')).comp (AdjoinRoot.mkₐ P.f)) =
       aeval P.x := by ext; simp [e, StandardEtalePair.equivAwayAdjoinRoot]
     rw [Submonoid.map_powers]
-    exact congr(Submonoid.powers ($this p))
+    congrm Submonoid.powers ($this p)
   have : IsLocalization.Away (aeval P.x p) Sₛ :=
     IsLocalization.Away.of_associated (r := s) ⟨(P.hasMap.2.pow n).unit, hp⟩
   let e₁ : P'.Ring ≃ₐ[R]

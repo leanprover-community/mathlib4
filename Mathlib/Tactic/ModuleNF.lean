@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Tactic.Algebra.Basic
 public import Mathlib.Tactic.Module
-public meta import Mathlib.Tactic.Ring.RingNF
 
 /-! # `module_nf` - a normalization tactic for module expressions.
 
