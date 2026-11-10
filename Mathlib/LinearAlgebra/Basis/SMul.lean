@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 module
 
 public import Mathlib.Algebra.Algebra.Defs
-public import Mathlib.Algebra.Module.FunLike
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!

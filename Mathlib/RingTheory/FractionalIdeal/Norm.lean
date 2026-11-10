@@ -11,7 +11,6 @@ import Mathlib.RingTheory.Localization.NormTrace
 import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
-
 # Fractional ideal norms
 
 This file defines the absolute ideal norm of a fractional ideal `I : FractionalIdeal R⁰ K` where

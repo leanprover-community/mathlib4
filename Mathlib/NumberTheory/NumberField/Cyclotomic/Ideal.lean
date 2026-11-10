@@ -45,7 +45,7 @@ public section
 
 namespace IsCyclotomicExtension.Rat
 
-open Ideal NumberField RingOfIntegers
+open Ideal NumberField NumberField.RingOfIntegers
 
 variable (n m p k : ℕ) [hp : Fact (Nat.Prime p)] (K : Type*) [Field K] [NumberField K]
   (P : Ideal (𝓞 K)) [hP₁ : P.IsPrime] [hP₂ : P.LiesOver (span {(p : ℤ)})]

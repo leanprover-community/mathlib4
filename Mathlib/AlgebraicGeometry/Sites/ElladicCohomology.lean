@@ -16,7 +16,6 @@ import Mathlib.Algebra.Category.Grp.AB
 import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 
 /-!
-
 # `ℓ`-adic cohomology of a scheme
 
 Let `X` be a scheme and `ℓ` be a prime number. In this file we define the sheaf

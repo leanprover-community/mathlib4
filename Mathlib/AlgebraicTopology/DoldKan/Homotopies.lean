@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Homology.Homotopy
 public import Mathlib.AlgebraicTopology.DoldKan.Notations
 
 /-!
-
 # Construction of homotopies for the Dold-Kan correspondence
 
 (The general strategy of proof of the Dold-Kan correspondence is explained
