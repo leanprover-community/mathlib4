@@ -43,8 +43,9 @@ def catToPreordAdjunction : catToPreord.{u} ⊣ preordToCat :=
   .mkOfHomEquiv
     { homEquiv C P :=
         { toFun f :=
-            { obj := f.hom
-              map g := homOfLE (f.hom.monotone ⟨g⟩) : C ⥤ P }.toCatHom
+            Functor.toCatHom
+              { obj := f.hom
+                map g := homOfLE (f.hom.monotone ⟨g⟩) }
           invFun F := Preord.ofHom (X := catToPreord.obj C) (Y := P)
             ⟨F.toFunctor.obj, fun _ _ h ↦ h.elim fun f ↦ leOfHom (F.toFunctor.map f)⟩ } }
 
@@ -55,11 +56,6 @@ instance : Reflective preordToCat.{u} where
 /-- A thin category is isomorphic to the category associated to its preorder of objects. -/
 noncomputable def Preord.ofCatIso (C : Type u) [SmallCategory C] [Quiver.IsThin C] :
     preordToCat.obj (ofCat C) ≅ .of C where
-  hom :=
-    { obj := id
-      map f := (leOfHom f).some : ofCat C ⥤ C }.toCatHom
-  inv :=
-    { obj := id
-      map f := homOfLE ⟨f⟩ : C ⥤ ofCat C }.toCatHom
-  hom_inv_id := rfl
+  hom := Functor.toCatHom { obj := id, map f := (leOfHom f).some }
+  inv := Functor.toCatHom { obj := id, map f := homOfLE ⟨f⟩ }
   inv_hom_id := Cat.ext <| Functor.ext (fun _ ↦ rfl) fun _ _ _ ↦ Subsingleton.elim _ _

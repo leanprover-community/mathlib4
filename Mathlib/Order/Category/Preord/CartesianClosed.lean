@@ -23,12 +23,8 @@ universe u
 open CategoryTheory Limits
 open scoped MonoidalCategory
 
-noncomputable section
-
-instance : ExponentialIdeal preordToCat.{u} := by
-  apply ExponentialIdeal.mk'
-  intro P C
-  exact ⟨.ofCat (C ⥤ P), ⟨Preord.ofCatIso (C ⥤ P)⟩⟩
+instance : ExponentialIdeal preordToCat.{u} :=
+  ExponentialIdeal.mk' _ fun P C ↦ ⟨.ofCat (C ⥤ P), ⟨Preord.ofCatIso (C ⥤ P)⟩⟩
 
 namespace Preord
 
@@ -38,10 +34,12 @@ def isTerminalPUnit : IsTerminal (of PUnit.{u + 1}) :=
     (fun _ _ ↦ by ext)
 
 /-- The category of preorders has `PUnit` as a terminal object. -/
+@[implicit_reducible]
 def terminalLimitCone : LimitCone (Functor.empty.{0} Preord.{u}) :=
   ⟨_, isTerminalPUnit⟩
 
 /-- The product cone of preorders, with the usual product preorder. -/
+@[implicit_reducible]
 def prodCone (X Y : Preord.{u}) : BinaryFan X Y :=
   .mk (P := of (X × Y)) (ofHom .fst) (ofHom .snd)
 
@@ -54,6 +52,7 @@ def isLimitProdCone (X Y : Preord.{u}) : IsLimit (prodCone X Y) := by
 
 /-- The category of preorders has `X × Y`, the usual Cartesian product,
 as the binary product of `X` and `Y`. -/
+@[implicit_reducible]
 def binaryProductLimitCone (X Y : Preord.{u}) : LimitCone (pair X Y) :=
   ⟨prodCone X Y, isLimitProdCone X Y⟩
 
@@ -66,7 +65,7 @@ lemma tensorUnit : 𝟙_ Preord.{u} = of PUnit.{u + 1} := rfl
 
 instance : BraidedCategory Preord.{u} := .ofCartesianMonoidalCategory
 
-instance : MonoidalClosed Preord.{u} :=
+noncomputable instance : MonoidalClosed Preord.{u} :=
   cartesianClosedOfReflective preordToCat
 
 end Preord
