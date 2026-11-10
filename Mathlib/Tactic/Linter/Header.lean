@@ -38,9 +38,6 @@ The linter allows `import`-only files and does not require a copyright statement
 
 ## Implementation
 
-The linter checks if it is linting the first command or not by (quickly) parsing the imports, and
-checking whether the end position of the header is the same as the start position of the current
-command. If so, it re-parses the header more slowly and checks that the current (first) command is
 The linter is a stateful linter whose state is `atStart : Bool`. It starts out `true`, and is set 
 to `false` as soon as a command which is not a header-related `set_option` is encountered. The 
 header linter ensures that that first command is a module doc-string (unless the linter has been 
