@@ -211,7 +211,7 @@ lemma finallySmall_iff_of_isFiltered [IsFilteredOrEmpty J] [LocallySmall.{w} J] 
   have := IsFilteredOrEmpty.of_equivalence e
   have := finallySmall_of_final_of_finallySmall.{w} e.functor
   obtain ⟨S, _, hS⟩ :=
-    (finallySmall_iff_exists_small_weakly_terminal_set.{w} (ShrinkHoms J)).1 inferInstance
+    (finallySmall_iff_exists_small_weakly_terminal_set.{w} (ShrinkHoms J)).mp inferInstance
   refine ⟨ObjectProperty.strictMap (fun X ↦ X ∈ S) e.inverse, inferInstance, ?_⟩
   rw [ObjectProperty.final_ι_iff_of_isFiltered]
   intro X
