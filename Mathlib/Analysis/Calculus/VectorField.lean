@@ -239,8 +239,7 @@ lemma fderiv_apply_lieBracket_of_isSymmSndFDerivAt {f : E → F}
         fderiv 𝕜 (fun x ↦ fderiv 𝕜 f x (V x)) x (W x) := by
   simp only [← fderivWithin_univ, ← lieBracketWithin_univ, ← contDiffWithinAt_univ,
     ← isSymmSndFDerivWithinAt_univ, ← differentiableWithinAt_univ] at *
-  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp)
-    hV hW
+  exact fderivWithin_apply_lieBracket_of_isSymmSndFDerivWithinAt hf hsymm (by simp) (by simp) hV hW
 
 /-- The differentiation operator along `[V, W]`
 is the commutator of the differentiation operators along `V` and `W`. -/
