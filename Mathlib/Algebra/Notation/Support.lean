@@ -109,7 +109,7 @@ lemma mulSupport_eq_empty_iff : mulSupport f = ∅ ↔ f = 1 := by
 
 @[to_additive (attr := simp)]
 lemma mulSupport_nonempty_iff : (mulSupport f).Nonempty ↔ f ≠ 1 := by
-  rw [← ne_empty_iff_nonempty, Ne, mulSupport_eq_empty_iff]
+  simp [← ne_empty_iff_nonempty]
 
 @[to_additive]
 theorem _root_.Subsingleton.mulSupport_eq [Subsingleton M] (f : ι → M) : mulSupport f = ∅ :=

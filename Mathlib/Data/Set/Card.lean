@@ -213,7 +213,7 @@ theorem encard_sdiff (h : s ⊆ t) (hs : s.Finite) :
 @[deprecated (since := "2026-06-03")] alias encard_diff := encard_sdiff
 
 @[simp] theorem one_le_encard_iff_nonempty : 1 ≤ s.encard ↔ s.Nonempty := by
-  rw [← ne_empty_iff_nonempty, Ne, ← encard_eq_zero, Order.one_le_iff_ne_zero]
+  simp [← ne_empty_iff_nonempty, Order.one_le_iff_ne_zero]
 
 lemma encard_lt_one : s.encard < 1 ↔ s = ∅ := by simp
 

@@ -109,7 +109,7 @@ theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → ↑a ≤ degree p 
   le_degree_of_ne_zero ∘ mem_support_iff.mp
 
 theorem nonempty_support_iff : p.support.Nonempty ↔ p ≠ 0 := by
-  rw [Ne, ← ne_empty_iff_nonempty, Ne, ← support_eq_empty]
+  simp [← ne_empty_iff_nonempty]
 
 end Semiring
 
