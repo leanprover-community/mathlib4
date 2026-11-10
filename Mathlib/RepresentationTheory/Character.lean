@@ -51,12 +51,11 @@ variable {G k V W : Type*} [Monoid G] [Field k] [AddCommGroup V] [Module k V]
   [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
-/-- The character of a representation `ρ : Representation k G V` is the function associating to
-`g : G` the trace of the linear map `ρ g`. -/
+/-- The character of a finite-dimensional representation `ρ : Representation k G V` is the
+function associating to `g : G` the trace of the linear map `ρ g`. -/
 def character (g : G) :=
   LinearMap.trace k V (ρ g)
 
-omit [FiniteDimensional k V] in
 theorem char_mul_comm (g : G) (h : G) :
     ρ.character (h * g) = ρ.character (g * h) := by simp only [trace_mul_comm, character, map_mul]
 
@@ -69,7 +68,6 @@ theorem char_one (ρ : Representation k G V) : ρ.character 1 = Module.finrank k
 theorem char_tensor : (tprod ρ σ).character = ρ.character * σ.character := by
   ext g; convert! trace_tensorProduct' (ρ g) (σ g)
 
-omit [FiniteDimensional k V] [FiniteDimensional k W] in
 variable {ρ σ} in
 /-- The character of isomorphic representations is the same. -/
 theorem char_iso (φ : Equiv ρ σ) : ρ.character = σ.character := by
@@ -84,7 +82,6 @@ variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
   [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
-omit [FiniteDimensional k V] in
 /-- The character of a representation is constant on conjugacy classes. -/
 @[simp]
 theorem char_conj (g : G) (h : G) : ρ.character (h * g * h⁻¹) = ρ.character g := by
@@ -133,7 +130,7 @@ end Group
 section Orthogonality
 
 variable {G k V W : Type*} [Group G] [Field k] [AddCommGroup V] [Module k V]
-  [AddCommGroup W] [Module k W]
+  [FiniteDimensional k V] [AddCommGroup W] [Module k W] [FiniteDimensional k W]
   (ρ : Representation k G V) (σ : Representation k G W)
 
 variable [Fintype G] [Invertible (Nat.card G : k)] [IsAlgClosed k]
@@ -144,8 +141,6 @@ algebraically closed field whose characteristic doesn't divide the order of the 
 theorem char_orthonormal [IsIrreducible ρ] [IsIrreducible σ] :
     (Nat.card G : k)⁻¹ * ∑ g : G, ρ.character g * σ.character g⁻¹ =
       if Nonempty (Equiv σ ρ) then ↑1 else ↑0 := by
-  have := ρ.asModuleEquiv.finiteDimensional
-  have := σ.asModuleEquiv.finiteDimensional
   cases isEmpty_or_nonempty (Equiv σ ρ)
   · rw [card_inv_mul_sum_char_mul_char_eq_finrank]
     simpa [finrank_eq_zero_of_subsingleton]

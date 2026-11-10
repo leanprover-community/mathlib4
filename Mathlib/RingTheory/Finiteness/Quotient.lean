@@ -14,12 +14,14 @@ public import Mathlib.RingTheory.Ideal.Over
 
 public section
 
+/-- A finite `R`-module with a compatible `R ⧸ I`-module structure is finite over `R ⧸ I`. -/
+instance Module.Finite.quotientScalars {R M : Type*} [CommRing R] (I : Ideal R)
+    [AddCommMonoid M] [Module R M] [Module (R ⧸ I) M]
+    [IsScalarTower R (R ⧸ I) M] [Module.Finite R M] : Module.Finite (R ⧸ I) M :=
+  Module.Finite.of_restrictScalars_finite R _ _
+
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable (P : Ideal B) (p : Ideal A) [P.LiesOver p]
-
-/-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
-instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
-  Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
 
 example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
 
