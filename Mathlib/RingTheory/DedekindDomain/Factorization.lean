@@ -528,7 +528,7 @@ theorem count_finprod (exps : HeightOneSpectrum R → ℤ)
     rw [mem_mulSupport, h, zpow_zero] at hv
     exact hv (Eq.refl 1)
 
-theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
+theorem count_coeIdeal {J : Ideal R} (hJ : J ≠ 0) :
     count K v J = (Associates.mk v.asIdeal).count (Associates.mk J).factors := by
   rw [count_well_defined K (J := J) (a := 1), Ideal.span_singleton_one, sub_eq_self,
     Nat.cast_eq_zero, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
@@ -536,10 +536,14 @@ theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
   · simpa only [ne_eq, coeIdeal_eq_zero]
   · simp only [map_one, inv_one, one_mul]
 
-theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
+@[deprecated (since := "2026-11-10")] alias count_coe := count_coeIdeal
+
+theorem count_coeIdeal_nonneg (J : Ideal R) : 0 ≤ count K v J := by
   by_cases hJ : J = 0
   · simp only [hJ, Submodule.zero_eq_bot, coeIdeal_bot, count_zero, le_refl]
-  · classical simp only [count_coe K v hJ, Nat.cast_nonneg]
+  · classical simp only [count_coeIdeal K v hJ, Nat.cast_nonneg]
+
+@[deprecated (since := "2026-11-10")] alias count_coe_nonneg := count_coeIdeal_nonneg
 
 theorem count_mono {I J} (hI : I ≠ 0) (h : I ≤ J) : count K v J ≤ count K v I := by
   by_cases hJ : J = 0
@@ -548,7 +552,7 @@ theorem count_mono {I J} (hI : I ≠ 0) (h : I ≤ J) : count K v J ≤ count K 
   rw [inv_mul_cancel₀ hJ, FractionalIdeal.le_one_iff_exists_coeIdeal] at this
   obtain ⟨J', hJ'⟩ := this
   rw [← mul_inv_cancel_left₀ hJ I, ← hJ', count_mul K v hJ, le_add_iff_nonneg_right]
-  · exact count_coe_nonneg K v J'
+  · exact count_coeIdeal_nonneg K v J'
   · exact hJ' ▸ mul_ne_zero (inv_ne_zero hJ) hI
 
 /-- If `I` is a nonzero fractional ideal, then `I` is equal to the product `∏_v v^(count K v I)`. -/
