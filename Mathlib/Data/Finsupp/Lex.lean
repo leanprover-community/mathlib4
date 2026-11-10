@@ -154,33 +154,30 @@ theorem _root_.OrderIso.ofLex_finsuppLexCongrLeft_apply (x : Lex (α →₀ N)) 
 theorem _root_.OrderIso.ofColex_finsuppColexCongrLeft_apply (x : Colex (α →₀ N)) :
     ofColex (eαβ.finsuppColexCongrLeft N x) = Finsupp.equivCongrLeft eαβ.toEquiv (ofColex x) := rfl
 
+theorem _root_.OrderIso.finsuppLexCongrLeft_apply (x : Lex (α →₀ N)) :
+    eαβ.finsuppLexCongrLeft N x = toLex (Finsupp.equivCongrLeft eαβ.toEquiv (ofLex x)) := rfl
+
+theorem _root_.OrderIso.finsuppColexCongrLeft_apply (x : Colex (α →₀ N)) :
+    eαβ.finsuppColexCongrLeft N x = toColex (Finsupp.equivCongrLeft eαβ.toEquiv (ofColex x)) := rfl
+
 @[simp]
 theorem _root_.OrderIso.finsuppLexCongrLeft_refl :
     (OrderIso.refl α).finsuppLexCongrLeft N = OrderIso.refl _ := by
-  apply DFunLike.ext
-  intro x
-  apply ofLex.injective
-  apply DFunLike.ext
-  simp
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply]
 
 @[simp]
 theorem _root_.OrderIso.finsuppColexCongrLeft_refl :
     (OrderIso.refl α).finsuppColexCongrLeft N = OrderIso.refl _ := by
-  apply DFunLike.ext
-  intro x
-  apply ofColex.injective
-  apply DFunLike.ext
-  simp
+  ext
+  simp [OrderIso.finsuppColexCongrLeft_apply]
 
 @[simp]
 theorem _root_.OrderIso.trans_finsuppLexCongrLeft {γ : Type*} [LinearOrder γ] (eβγ : β ≃o γ) :
     (eαβ.finsuppLexCongrLeft N).trans (eβγ.finsuppLexCongrLeft N) =
       (eαβ.trans eβγ).finsuppLexCongrLeft N := by
-  apply DFunLike.ext
-  intro x
-  apply ofLex.injective
-  apply DFunLike.ext
-  simp
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply, equivMapDomain_trans]
 
 @[simp]
 theorem _root_.OrderIso.trans_finsuppColexCongrLeft {γ : Type*} [LinearOrder γ] (eβγ : β ≃o γ) :
@@ -191,12 +188,8 @@ theorem _root_.OrderIso.trans_finsuppColexCongrLeft {γ : Type*} [LinearOrder γ
 @[simp]
 theorem _root_.OrderIso.symm_finsuppLexCongrLeft :
     (eαβ.finsuppLexCongrLeft N).symm = eαβ.symm.finsuppLexCongrLeft N := by
-  apply DFunLike.coe_injective
-  apply (eαβ.finsuppLexCongrLeft N).injective.comp_left
-  funext x
-  simp only [Function.comp_apply, OrderIso.apply_symm_apply]
-  rw [← OrderIso.trans_apply, OrderIso.trans_finsuppLexCongrLeft]
-  simp
+  ext
+  simp [OrderIso.finsuppLexCongrLeft_apply, OrderIso.symm_apply_eq, ← equivMapDomain_trans]
 
 @[simp]
 theorem _root_.OrderIso.symm_finsuppColexCongrLeft :
