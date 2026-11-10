@@ -262,41 +262,37 @@ namespace Mertens
 
 open scoped ArithmeticFunction.Moebius
 
+private theorem tendsto_one_add_mobius_div :
+    Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, ((1 : ℝ) + μ n)) / x) atTop (𝓝 1) := by
+  refine WienerIkehara.tendsto_sum_div (G := fun s ↦ riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹)
+      (C := 2) (fun n ↦ ?_) ?_ (fun s hs ↦ (?_ : _ = _ - 1 / (s - 1))) (fun n ↦ ?_)
+  · calc
+      _ ≤ ∑ _ ∈ _, (2 : ℝ) := Finset.sum_le_sum fun i _ ↦ (by
+        grw [(abs_le.mp ArithmeticFunction.abs_moebius_le_one).2]; norm_num)
+      _ = _ := by simp [mul_comm]
+  · exact .add differentiable_riemannZeta₀.continuous.continuousOn <|
+      .mul (by fun_prop) (differentiable_riemannZeta₁.continuous.continuousOn.inv₀
+      fun _ hs ↦ riemannZeta₁_ne_zero_of_one_le_re hs)
+  · have : (fun n ↦ ofReal (1 + μ n)) = 1 + fun n ↦ (μ n : ℂ) := by push_cast; funext; simp
+    rw [this, LSeries_add, LSeries_one_eq_riemannZeta hs, LSeries_moebius_eq_inv_riemannZeta hs]
+    · have : s ≠ 1 := by rintro rfl; simp at hs
+      grind [inv_riemannZeta_eq_sub_mul_of_ne_one, riemannZeta_eq_inv_sub_add]
+    · exact LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (by simp) hs
+    · exact ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs
+  · grw [← (abs_le.mp ArithmeticFunction.abs_moebius_le_one).1]
+    simp
+
 /-- The **Möbius form of the prime number theorem**: `M x / x → 0`.
 
 This is not a direct corollary of the other forms of the prime number theorem in this file;
 instead, it is a fresh application of the Wiener–Ikehara theorem, to the nonnegative function
 `n ↦ 1 + μ n` (whose `L`-series is `ζ s + 1 / ζ s`). -/
 theorem tendsto_M_div_atTop : Tendsto (fun x : ℝ ↦ (M x : ℝ) / x) atTop (𝓝 0) := by
-  have e : (fun n ↦ ofReal (1 + μ n)) = 1 + fun n ↦ (μ n : ℂ) := by push_cast; funext; simp
-  have hWI : Tendsto (fun x : ℝ ↦ (∑ n ∈ Icc 0 ⌊x⌋₊, ((1 : ℝ) + μ n)) / x) atTop (𝓝 1) :=
-    WienerIkehara.tendsto_sum_div (f := fun n ↦ 1 + μ n) (C := 2)
-      (G := fun s ↦ riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹)
-      (fun n ↦ by
-        calc ∑ i ∈ range n, ((1 : ℝ) + μ i)
-            ≤ ∑ _i ∈ range n, (2 : ℝ) := Finset.sum_le_sum fun i _ ↦ by
-              grw [(abs_le.mp ArithmeticFunction.abs_moebius_le_one).2]; norm_num
-          _ = 2 * n := by simp [mul_comm])
-      (.add differentiable_riemannZeta₀.continuous.continuousOn <|
-        .mul (by fun_prop) (differentiable_riemannZeta₁.continuous.continuousOn.inv₀
-          fun _ hs ↦ riemannZeta₁_ne_zero_of_one_le_re hs))
-      (fun s hs ↦ by
-          have : s ≠ 1 := by rintro rfl; simp at hs
-          have : LSeries (fun n ↦ (μ n : ℂ)) s = (riemannZeta s)⁻¹ := by
-            grind [LSeries_one_eq_riemannZeta hs, LSeries_one_mul_Lseries_moebius]
-          have : LSeries (fun n ↦ ofReal (1 + μ n)) s = riemannZeta s + (riemannZeta s)⁻¹ := by
-            rw [e, LSeries_add, LSeries_one_eq_riemannZeta hs, this]
-            exacts [LSeriesSummable_of_bounded_of_one_lt_re (m := 1) (by simp) hs,
-              ArithmeticFunction.LSeriesSummable_moebius_iff.mpr hs]
-          change riemannZeta₀ s + (s - 1) * (riemannZeta₁ s)⁻¹
-            = LSeries (fun n ↦ ofReal (1 + μ n)) s - 1 / (s - 1)
-          grind [inv_riemannZeta_eq_sub_mul_of_ne_one, riemannZeta_eq_inv_sub_add])
-      (fun n ↦ by dsimp; grw [← (abs_le.mp ArithmeticFunction.abs_moebius_le_one).1]; simp)
   have : Tendsto (fun x : ℝ ↦ (⌊x⌋₊ + 1) / x) atTop (𝓝 1) := by
     convert ((tendsto_nat_floor_div_atTop (R := ℝ)).add tendsto_inv_atTop_zero).congr' ?_
     · simp
     · filter_upwards [eventually_gt_atTop 0]; grind
-  convert (hWI.sub this).congr' ?_
+  convert (tendsto_one_add_mobius_div.sub this).congr' ?_
   · simp
   · filter_upwards [eventually_gt_atTop 0]; simp [← sub_div, sum_add_distrib, M_eq_sum_Icc]
 
