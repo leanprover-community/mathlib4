@@ -563,7 +563,7 @@ theorem WellFoundedOn.finite_of_wellFoundedOn_swap {α : Type*} {r : α → α �
     [IsStrictTotalOrder s (Function.onFun r Subtype.val)]
     (h : WellFoundedOn s r) (h' : WellFoundedOn s (Function.swap r)) :
     s.Finite := by
-  rw [Set.wellFoundedOn_iff, ← WellFounded.subtype_iff, ← isWellFounded_iff] at h h'
+  rw [Set.wellFoundedOn_iff, ← WellFounded.subtype_iff] at h h'
   exact Set.finite_coe_iff.mp <| @IsWellOrder.finite_of_isWellOrder_of_isWellOrder_swap _ _ ⟨⟩ h'
 
 @[to_dual]
