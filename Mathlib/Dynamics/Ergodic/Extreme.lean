@@ -40,7 +40,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     obtain ⟨g, hgm, hfg⟩ := hf.aemeasurable
     have hg : MeasurePreserving g μ μ := hf.congr hfg
     grw [hfg]
-    refine .of_preimage_eq hgm hg ?_
+    refine .of_preimage_eq_of_measurable hgm hg ?_
     have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]

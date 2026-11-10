@@ -79,12 +79,24 @@ theorem PreErgodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : QuasiMeasu
     PreErgodic f μ :=
   .of_preimage_eq hf fun _s hs ↦ h hs.measurable_of_complete
 
-/-- To prove that a measurable quasi-measure-preserving `f` is ergodic, it suffices to check the
+/-- To prove that a measure-preserving `f` is ergodic, it suffices to check the ergodicity
+condition on strictly invariant null-measurable sets. -/
+theorem Ergodic.of_preimage_eq (hf : MeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, NullMeasurableSet s μ → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    Ergodic f μ :=
+  ⟨hf, .of_preimage_eq hf.quasiMeasurePreserving h⟩
+
+/-- To prove that a measurable measure-preserving `f` is ergodic, it suffices to check the
 ergodicity condition on strictly invariant measurable sets. -/
-theorem Ergodic.of_preimage_eq (hfm : Measurable f) (hf : MeasurePreserving f μ μ)
+theorem Ergodic.of_preimage_eq_of_measurable (hfm : Measurable f) (hf : MeasurePreserving f μ μ)
     (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
     Ergodic f μ :=
   ⟨hf, .of_preimage_eq_of_measurable hfm hf.quasiMeasurePreserving h⟩
+
+theorem Ergodic.of_preimage_eq_of_isComplete [μ.IsComplete] (hf : MeasurePreserving f μ μ)
+    (h : ∀ ⦃s : Set α⦄, MeasurableSet s → f ⁻¹' s = s → EventuallyEmptyOrUniv s (ae μ)) :
+    Ergodic f μ :=
+  ⟨hf, .of_preimage_eq_of_isComplete hf.quasiMeasurePreserving h⟩
 
 /-- To prove that a quasi-measure-preserving `f` is quasi-ergodic, it suffices to check the
 ergodicity condition on strictly invariant null-measurable sets. -/
@@ -252,8 +264,8 @@ theorem ae_empty_or_univ_of_image_ae_le' (hf : Ergodic f μ) (hs : NullMeasurabl
 
 /-- If a measurable equivalence is ergodic, then so is the inverse map. -/
 theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ :=
-  .of_preimage_eq e.symm.measurable he.toMeasurePreserving.symm fun s hsm hs ↦
-    he.aeconst_set hsm.nullMeasurableSet <| by
+  .of_preimage_eq he.toMeasurePreserving.symm fun s hsm hs ↦
+    he.aeconst_set hsm <| by
       conv_lhs => rw [← hs, ← e.image_eq_preimage_symm, e.preimage_image]
 
 @[simp] theorem symm_iff {e : α ≃ᵐ α} : Ergodic e.symm μ ↔ Ergodic e μ := ⟨.symm, .symm⟩
