@@ -32,7 +32,6 @@ L-series.
   `(∑ k ∈ Icc 1 n, f k) / n` tends to some complex number `l` when `n → ∞` and that the L-series
   `LSeries f` converges for all `s : ℝ` such that `1 < s`. Then `(s - 1) * LSeries f s` tends
   to `l` when `s → 1` with `1 < s`.
-
 -/
 
 public section

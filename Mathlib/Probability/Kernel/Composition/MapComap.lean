@@ -25,7 +25,6 @@ Kernels built from other kernels:
 
 * `lintegral_map`, `lintegral_comap`: Lebesgue integral of a function against the map or comap of
   a kernel.
-
 -/
 
 @[expose] public section

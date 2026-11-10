@@ -62,7 +62,6 @@ In texts, this is what the Frobenius equations are usually referred to as.
 
 * show `IsFrobenius R (A ⊗ B)`
 * show `IsFrobenius R (A × B)`
-
 -/
 
 public section

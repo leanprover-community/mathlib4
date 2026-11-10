@@ -35,7 +35,6 @@ This file defines filtrations of a measurable space and σ-finite filtrations.
 ## Tags
 
 filtration, stochastic process
-
 -/
 
 @[expose] public section
@@ -170,7 +169,6 @@ noncomputable instance instPartialOrder : PartialOrder (Filtration ι m) where
   le_trans _ _ _ h_fg h_gh i := (h_fg i).trans (h_gh i)
   le_antisymm _ _ h_fg h_gf := Filtration.ext <| funext fun i => (h_fg i).antisymm (h_gf i)
 
-set_option linter.style.longLine false in
 noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) where
   sup := (· ⊔ ·)
   le_sup_left _ _ _ := le_sup_left
@@ -181,7 +179,8 @@ noncomputable instance instCompleteLattice : CompleteLattice (Filtration ι m) w
   inf_le_right _ _ _ := inf_le_right
   le_inf _ _ _ h_fg h_fh i := le_inf (h_fg i) (h_fh i)
   isLUB_sSup _ :=
-    .of_image (f := seq) .rfl (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
+    .of_image (f := seq) .rfl
+      (by simpa only [isLUB_pi, Set.image_image] using! fun _ ↦ isLUB_sSup _)
   isGLB_sInf _ := by
     dsimp +instances [instInfSet]
     split_ifs with hn
