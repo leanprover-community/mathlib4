@@ -18,19 +18,16 @@ We define K-sheaves on `X` a T2 topological space with value in an arbitrary cat
 
 This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
 - `F.obj (∅)` is terminal.
-- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is obtained by
-  gluing `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
+- For any two compacts subsets `K₁` and `K₂` of `X`, `F.obj (K₁ ∪ K₂)` is  the pullback
+  of `F.obj K₁` and `F.obj K₂` over `F.obj (K₁ ∩ K₂)`.
 - For any compact subset `K` of `X`, `F.obj K` is the colimit of the `F.obj L` for all the compacts
   subsets `L` of `X` such that `K` is in the interior of `L`.
 
-One may expect this notion to come from sheaves on a site of compact subset of a topological space
-but there is no corresponding Grothendieck topology on compact subsets, in particular
-because the `nonempty_isColimit_coconeOfCompacts` condition can't be expressed as a sheaf condition.
-
-However this category turns out to be equivalent to the category of sheaves over `X`,
-and is thus a topos.
-
-TODO: provide the equivalence of category (Yannis Monbru Carcelero)
+The category of K-sheaves is a topos, because it is equivalent to the category of sheaves over `X`
+(TODO Yannis Monbru Carcelero), but the condition that `K`-presheaves need to verify to
+be `K`-sheaves is *not* expressed as the sheaf condition for a Grothendieck topology of
+compact sets. Indeed, two of three conditions do involve limits, but the third
+`nonempty_isColimit_coconeOfCompact` involves colimits.
 
 ## References
 
