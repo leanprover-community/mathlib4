@@ -92,8 +92,8 @@ theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : �
         (UniformSpace.Completion.norm_coe _).trans_le (hC z hz)
 
 /-- An auxiliary lemma for Liouville's theorem `Differentiable.isConst_of_bounded`. -/
-theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f) (hb : IsBounded (range f)) :
-    IsConst f := by
+private theorem liouville_theorem_aux {f : ℂ → F} (hf : Differentiable ℂ f)
+    (hb : IsBounded (range f)) : IsConst f := by
   suffices ∀ c, deriv f c = 0 from is_const_of_deriv_eq_zero hf this
   intro c
   obtain ⟨C, C₀, hC⟩ : ∃ C > (0 : ℝ), ∀ z, ‖f z‖ ≤ C := by
