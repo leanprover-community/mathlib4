@@ -489,9 +489,7 @@ meta def isMisnamedCoercionAux (name : Name) : MetaM (Bool × String) := do
 
 -- This lemma is misnamed: the name contains "coe".
 public lemma foo_coe : 2 = 2 := rfl
-/--
-info: (true, "This declaration statement references the constant(s) [Eq, Nat, OfNat.ofNat, instOfNatNat]")
--/
+/-- info: (true, "This declaration statement references the coercions(s) []") -/
 #guard_msgs in
 #eval isMisnamedCoercionAux `foo_coe
 
@@ -506,18 +504,15 @@ public lemma coeFoo_bar_eq_baz : 2 = 2 := rfl
 #guard_msgs in
 #eval isMisnamedCoercionAux `coeFoo_bar_eq_baz
 
--- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`.
+-- This lemma involves the name `coe`, but also the coercion `DFunLike.coe`. TODO fix!
 public lemma coe_f {M N : Type*} (f : M → N) : (f : M → N) = f := rfl
-/-- info: (true, "This declaration statement references the constant(s) [Eq]") -/
+/-- info: (true, "This declaration statement references the coercions(s) []") -/
 #guard_msgs in
 #eval isMisnamedCoercionAux `coe_f
 
--- This lemma involves the name `coe` and a coercion, but the coercion in question is `Int.ofNat`.
+-- This lemma involves the name `coe` and a coercion, but the coercion in question is `Nat.cast`.
 public lemma coe_n (a : ℕ) (b : ℤ) (ha : a = 0) (hb : b = 0) : a = b := by simp [*]
-/--
-info: (true,
-  "This declaration statement references the constant(s) [Nat,\n Int,\n Eq,\n OfNat.ofNat,\n instOfNatNat,\n instOfNat,\n Nat.cast,\n instNatCastInt]")
--/
+/-- info: (true, "This declaration statement references the coercions(s) [Nat.cast]") -/
 #guard_msgs in
 #eval isMisnamedCoercionAux `coe_n
 

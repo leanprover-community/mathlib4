@@ -7,6 +7,7 @@ module
 
 public meta import Batteries.Tactic.Lint.Basic
 public meta import Lean.Elab.Command
+public meta import Lean.Meta.CoeAttr
 public meta import Lean.Parser.Module
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
@@ -419,10 +420,11 @@ public def isMisnamedCoercion (name : Name) : MetaM (Bool × MessageData) := do
   unless parts.contains "coe" || parts.contains "coe'" do return (false, "")
   -- Does the declaration reference a constant called `coe`? If so, we are fine.
   let usedConstants := ((← getEnv).find? name).get!.type.getUsedConstants
+  let usedCoercions ← usedConstants.filterM (fun c ↦ return (← getCoeFnInfo? c).isSome)
   let coercionConstants := usedConstants.filter
     fun c ↦ c.components.getLast? == some `coe || c == `UniformSpace.Completion.coe'
   if coercionConstants.isEmpty then return (true,
-    m!"This declaration statement references the constant(s) {usedConstants}")
+    m!"This declaration statement references the coercions(s) {usedCoercions}")
   return (false, "")
 
 /-- Linter that checks for lemmas whose name contains the string "coe",
