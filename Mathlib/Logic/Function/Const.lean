@@ -168,7 +168,7 @@ variable {α : Type*}
 
 Note that every function is constant on the empty set, and more generally on any subsingleton.
 A function is constant on `Set.univ` if and only if it is `Function.IsConst`,
-see `isConstOn_univ_iff`.
+see `isConstOn_univ`.
 
 The intended use is for expressing that a function is constant on `s` when the exact constant
 value is not known, not unique or not easy to express. To state the constant value explicitly,
@@ -186,12 +186,12 @@ protected theorem IsConstOn.eq
     f x = f y :=
   hf hx hy
 
-theorem isConstOn_iff_subtype_isConst (f : α → β) (s : Set α) :
+theorem isConstOn_iff_isConst_comp_val (f : α → β) (s : Set α) :
     IsConstOn f s ↔ IsConst (f ∘ Subtype.val : s → β) :=
   ⟨fun h ⟨_, hx⟩ ⟨_, hy⟩ ↦ h hx hy, fun h x hx y hy ↦ h ⟨x, hx⟩ ⟨y, hy⟩⟩
 
 @[simp]
-theorem isConstOn_univ_iff (f : α → β) :
+theorem isConstOn_univ (f : α → β) :
     IsConstOn f Set.univ ↔ IsConst f := by
   simp [isConstOn_iff, IsConst]
 
@@ -235,7 +235,7 @@ theorem IsConstOn.of_forall_eq {f : α → β} {s : Set α} (b : β) (h : ∀ x 
 `b : β` so that `f a = b` for all `a ∈ s`. -/
 theorem isConstOn_iff_exists_forall_eq [Nonempty β] {f : α → β} {s : Set α} :
     IsConstOn f s ↔ ∃ b, ∀ x ∈ s, f x = b := by
-  simp [isConstOn_iff_subtype_isConst, isConst_iff_exists_forall_eq]
+  simp [isConstOn_iff_isConst_comp_val, isConst_iff_exists_forall_eq]
 
 /-- A function `f : α → β` is constant on a non-empty set `s` if and only if there is `b : β` so
 that `f a = b` for all `a ∈ s`. -/
@@ -318,7 +318,7 @@ theorem IsConstOn.subsingleton_of_surjOn {β : Type*} {f : α → β} {s : Set �
   (Set.subsingleton_image_iff.mpr hf).anti h
 
 /-- Every function mapping `s` into a subsingleton is constant on `s`. -/
-theorem IsConstOn.of_mapsTo {β : Type*} {f : α → β} {s : Set α} {t : Set β}
+theorem IsConstOn.of_mapsTo_of_subsingleton {β : Type*} {f : α → β} {s : Set α} {t : Set β}
     (hf : Set.MapsTo f s t) (ht : t.Subsingleton) : IsConstOn f s :=
   fun _ hx _ hy ↦ ht (hf hx) (hf hy)
 
