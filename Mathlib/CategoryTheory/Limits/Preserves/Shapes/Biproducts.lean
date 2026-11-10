@@ -6,7 +6,6 @@ Authors: Markus Himmel
 module
 
 public import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
-public import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Zero
 
 /-!
 # Preservation of biproducts
@@ -19,7 +18,6 @@ classes `PreservesBiproduct` and `PreservesBinaryBiproduct`. We then
   images and show that the biproduct is preserved if one of them is an isomorphism,
 * give the canonical isomorphism between the image of a biproduct and the biproduct of the images
   in case that the biproduct is preserved.
-
 -/
 
 @[expose] public section
@@ -85,7 +83,7 @@ namespace Limits
 
 section Bicone
 
-variable {J : Type w₁} {K : Type w₂}
+variable {J : Type w₁}
 
 /-- A functor `F` preserves biproducts of `f` if `F` maps every bilimit bicone over `f` to a
 bilimit bicone over `F.obj ∘ f`. -/

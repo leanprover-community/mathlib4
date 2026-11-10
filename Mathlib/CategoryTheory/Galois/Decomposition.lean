@@ -6,8 +6,9 @@ Authors: Christian Merten
 module
 
 public import Mathlib.CategoryTheory.Galois.GaloisObjects
-public import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
-public import Mathlib.Data.Finite.Sum
+
+import Mathlib.Basic.Finite.Sum
+import Mathlib.CategoryTheory.Limits.Shapes.CombinedProducts
 
 /-!
 # Decomposition of objects into connected components and applications
@@ -30,7 +31,6 @@ is represented by a Galois object.
 ## References
 
 * [lenstraGSchemes]: H. W. Lenstra. Galois theory for schemes.
-
 -/
 
 public section
@@ -54,10 +54,8 @@ we proceed by induction on the cardinality of the fiber under an arbitrary fiber
 
 If `X` is connected, there is nothing to show. If not, we can write `X` as the sum of two
 non-trivial subobjects which have strictly smaller fiber and conclude by the induction hypothesis.
-
 -/
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The trivial case if `X` is connected. -/
 private lemma has_decomp_connected_components_aux_conn (X : C) [IsConnected X] :
     ∃ (ι : Type) (f : ι → C) (g : (i : ι) → (f i) ⟶ X) (_ : IsColimit (Cofan.mk X g)),
@@ -180,7 +178,6 @@ that has at each index `x : F.obj X` the element `x`.
 This `A` is Galois and evaluation at `a` is bijective.
 
 Reference: [lenstraGSchemes, 3.14]
-
 -/
 
 variable [GaloisCategory C] (F : C ⥤ FintypeCat.{w}) [FiberFunctor F]
@@ -284,11 +281,11 @@ lemma exists_galois_representative (X : C) : ∃ (A : C) (a : F.obj A),
   · refine (isGalois_iff_pretransitive F A).mpr ⟨fun x y ↦ ?_⟩
     obtain ⟨fi1, hfi1⟩ := subobj_selfProd_trans h1 x
     obtain ⟨fi2, hfi2⟩ := subobj_selfProd_trans h1 y
-    use fi1 ≪≫ fi2.symm
+    use .of (fi1 ≪≫ fi2.symm)
     change F.map (fi1.hom ≫ fi2.inv) x = y
     simp only [map_comp, FintypeCat.comp_apply]
     rw [hfi1, ← hfi2]
-    exact ConcreteCategory.congr_hom (F.mapIso fi2).hom_inv_id y
+    congrm $((F.mapIso fi2).hom_inv_id) y
   · refine ⟨evaluation_injective_of_isConnected F A X a, ?_⟩
     intro x
     use u ≫ Pi.π _ x

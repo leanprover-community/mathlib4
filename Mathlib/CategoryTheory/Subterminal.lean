@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 module
 
-public import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-public import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 public import Mathlib.CategoryTheory.Subobject.MonoOver
 
 /-!
@@ -25,7 +23,6 @@ We also construct the subcategory of subterminal objects.
 * Define exponential ideals, and show this subcategory is an exponential ideal.
 * Use the above to show that in a locally Cartesian closed category, every subobject lattice
   is Cartesian closed (equivalently, a Heyting algebra).
-
 -/
 
 @[expose] public section

@@ -8,6 +8,9 @@ module
 public import Mathlib.Topology.CompactOpen
 public import Mathlib.Topology.Order.ProjIcc
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Continuous bundled maps on intervals
 
@@ -16,7 +19,9 @@ In this file we prove a few results about `ContinuousMap` when the domain is an 
 
 @[expose] public section
 
-open Set ContinuousMap Filter Topology
+open Set ContinuousMap Filter
+
+open scoped Topology
 
 namespace ContinuousMap
 

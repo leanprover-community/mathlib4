@@ -5,11 +5,10 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 public import Mathlib.AlgebraicTopology.DoldKan.PInfty
+public import Mathlib.AlgebraicTopology.SimplicialObject.Split
 
 /-!
-
 # Construction of the inverse functor of the Dold-Kan equivalence
 
 
@@ -27,7 +26,6 @@ We also construct `Γ₂ : Karoubi (ChainComplex C ℕ) ⥤ Karoubi (SimplicialO
 which shall be an equivalence for any additive category `C`.
 
 (See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
-
 -/
 
 @[expose] public section
@@ -36,7 +34,9 @@ which shall be an equivalence for any additive category `C`.
 noncomputable section
 
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits SimplexCategory
-  SimplicialObject Opposite CategoryTheory.Idempotents Simplicial DoldKan
+  SimplicialObject Opposite CategoryTheory.Idempotents
+
+open scoped Simplicial DoldKan
 
 namespace AlgebraicTopology
 
@@ -334,7 +334,7 @@ theorem HigherFacesVanish.on_Γ₀_summand_id (K : ChainComplex C ℕ) (n : ℕ)
   have eq := Γ₀.Obj.mapMono_on_summand_id K (SimplexCategory.δ j.succ)
   rw [Γ₀.Obj.Termwise.mapMono_eq_zero K, zero_comp] at eq; rotate_left
   · intro h
-    exact (Nat.succ_ne_self n) (congr_arg SimplexCategory.len h)
+    exact (Nat.succ_ne_self n) congr($(h).len)
   · exact fun h => Fin.succ_ne_zero j (by simpa only [Isδ₀.iff] using h)
   exact eq
 

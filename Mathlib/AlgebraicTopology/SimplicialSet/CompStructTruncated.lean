@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 public import Mathlib.AlgebraicTopology.SimplexCategory.Truncated
+public import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 
 /-!
 # Edges and "triangles" in truncated simplicial sets
@@ -18,7 +18,6 @@ Given a `2`-truncated simplicial set `X`, we introduce two types:
   `e₀₂ : Edge x₀ x₂`, a structure `CompStruct e₀₁ e₁₂ e₀₂` which records the
   data of a `2`-simplex with faces `e₁₂`, `e₀₂` and `e₀₁` respectively. This data
   will allow to obtain relations in the homotopy category of `X`.
-
 -/
 
 @[expose] public section
@@ -146,7 +145,7 @@ def idCompId (x : X _⦋0⦌₂) :
     CompStruct (.id x) (.id x) (.id x) :=
   idComp _
 
-attribute [local simp ←] FunctorToTypes.naturality in
+attribute [local simp ←] NatTrans.naturality_apply in
 /-- The image of a `Edge.CompStruct` by a morphism of `2`-truncated
 simplicial sets. -/
 @[simps]

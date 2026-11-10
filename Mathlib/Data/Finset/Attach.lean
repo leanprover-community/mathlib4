@@ -19,7 +19,6 @@ public import Mathlib.Data.Multiset.MapFold
 ## Tags
 
 finite sets, finset
-
 -/
 
 @[expose] public section
@@ -32,7 +31,7 @@ open Multiset Subtype
 
 universe u
 
-variable {α : Type*} {β : Type*} {γ : Type*}
+variable {α : Type*}
 
 namespace Finset
 

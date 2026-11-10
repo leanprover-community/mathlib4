@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.AlgebraicTopology.SimplicialSet.Homology.Basic
+public import Mathlib.AlgebraicTopology.SimplicialSet.PiZero
 public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 
 /-!
@@ -15,14 +15,15 @@ public import Mathlib.CategoryTheory.Limits.Preserves.SigmaConst
 The main definition in this file is `SSet.homology₀Iso` which is
 an isomorphism `X.homology R 0 ≅ ∐ (fun (_ : π₀ X) ↦ R)` for any simplicial
 set `X`.
-
 -/
 
 @[expose] public section
 
 universe w v v' u u'
 
-open CategoryTheory Limits AlgebraicTopology Simplicial TypeCat
+open CategoryTheory Limits AlgebraicTopology TypeCat
+
+open scoped Simplicial
 
 variable {C : Type u} [Category.{v} C] [HasCoproducts.{w} C] [Preadditive C]
 
@@ -52,7 +53,6 @@ lemma π₀.d_fromChainComplexXZero (n : ℕ) :
     ext x
     simp [π₀.sound (Edge.mk' x)]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- Given a simplicial set `X`, the cokernel of the differential `d 1 0`
 of the chain complex of `X` with coefficients in `R` identifies
 to the coproduct of copies of `R` indexed by `π₀ X`. -/
@@ -82,7 +82,6 @@ set_option backward.defeqAttrib.useBackward true in
 lemma homologyData₀_left_π :
     dsimp% (X.homologyData₀ R).left.π = π₀.fromChainComplexXZero X R := rfl
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma homologyData₀_left_i :
     dsimp% (X.homologyData₀ R).left.i = 𝟙 _ := rfl
@@ -102,7 +101,6 @@ noncomputable def homology₀Iso :
   ShortComplex.homologyMapIso (HomologicalComplex.isoSc' _ 1 0 0 (by simp) (by simp)) ≪≫
     (X.homologyData₀ R).left.homologyIso
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 @[reassoc (attr := simp)]
 lemma liftCycles_ιChainComplex_homologyπ_homology₀Iso_hom (x : X _⦋0⦌) :

@@ -5,11 +5,9 @@ Authors: Jakob Scholbach
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Defs
 public import Mathlib.FieldTheory.Separable
 
 /-!
-
 # Separable degree
 
 This file contains basics about the separable degree of a polynomial.

@@ -5,9 +5,13 @@ Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle S
 -/
 module
 
-public import Mathlib.Algebra.BigOperators.Field
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.Data.Int.Log
+
+import Mathlib.Algebra.BigOperators.Field
+
+set_option doc.verso true
+set_option doc.verso.suggestions false
 
 /-!
 # Real logarithm base `b`
@@ -29,7 +33,7 @@ logarithm, continuity
 
 open Set Filter Function
 
-open Topology
+open scoped Topology
 
 noncomputable section
 
@@ -116,7 +120,7 @@ theorem mul_logb {a b c : ℝ} (h₁ : b ≠ 0) (h₂ : b ≠ 1) (h₃ : b ≠ -
 
 theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -1) :
     logb a c / logb b c = logb a b :=
-  div_div_div_cancel_left' _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
+  div_div_div_cancel_left₀ _ _ <| log_ne_zero.mpr ⟨h₁, h₂, h₃⟩
 
 theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b x := by
   rw [logb, log_rpow hx, logb, mul_div_assoc]

@@ -5,11 +5,12 @@ Authors: Yury Kudryashov
 -/
 module
 
-public import Mathlib.Algebra.Order.Field.Pointwise
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.AffineMap
-public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+
+import Mathlib.Algebra.Order.Field.Pointwise
+import Mathlib.Analysis.Calculus.Deriv.AffineMap
+import Mathlib.Analysis.Calculus.Deriv.Shift
 
 /-!
 # Integral of a 1-form along a path
@@ -87,8 +88,9 @@ and a future formalization of Poincaré lemma.
 
 @[expose] public section
 
-open Metric MeasureTheory Topology Set Interval AffineMap Convex Filter
-open scoped Pointwise unitInterval
+open Metric MeasureTheory Set AffineMap Convex Filter
+
+open scoped Topology Interval Pointwise unitInterval
 
 section Defs
 
@@ -99,10 +101,11 @@ variable {𝕜 E F : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace �
 
 This definition is used to factor out common parts of lemmas
 about `CurveIntegrable` and `curveIntegral`. -/
-noncomputable irreducible_def curveIntegralFun (lemma := curveIntegralFun_def')
-    (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
+@[no_expose] noncomputable def curveIntegralFun (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) : F :=
   letI : NormedSpace ℝ E := .restrictScalars ℝ 𝕜 E
   ω (γ.extend t) (derivWithin γ.extend I t)
+
+alias curveIntegralFun_def' := curveIntegralFun.eq_def
 
 /-- A 1-form `ω` is *curve integrable* along a path `γ`,
 if the function `curveIntegralFun ω γ t = ω (γ t) (γ' t)` is integrable on `[0, 1]`.
@@ -119,10 +122,11 @@ defined as $\int_0^1 \omega(\gamma(t))(\gamma'(t))$.
 The actual definition uses `curveIntegralFun` which uses `Path.extend γ`
 and `derivWithin (Path.extend γ) (Set.Icc 0 1) t`,
 because calculus-related definitions in Mathlib expect globally defined functions as arguments. -/
-noncomputable irreducible_def curveIntegral (lemma := curveIntegral_def')
-    (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
+@[no_expose] noncomputable def curveIntegral (ω : E → E →L[𝕜] F) (γ : Path a b) : F :=
   letI : NormedSpace ℝ F := .restrictScalars ℝ 𝕜 F
   ∫ t in 0..1, curveIntegralFun ω γ t
+
+alias curveIntegral_def' := curveIntegral.eq_def
 
 @[inherit_doc curveIntegral]
 notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) => r
@@ -131,7 +135,7 @@ notation3 "∫ᶜ "(...)" in " γ ", "r:67:(scoped ω => curveIntegral ω γ) =>
 thus it is defined as zero whenever the codomain is not a complete space. -/
 theorem curveIntegral_of_not_completeSpace (h : ¬CompleteSpace F) (ω : E → E →L[𝕜] F)
     (γ : Path a b) : ∫ᶜ x in γ, ω x = 0 := by
-  simp [curveIntegral, intervalIntegral, integral, h]
+  simp [curveIntegral, intervalIntegral, integral_of_not_completeSpace, h]
 
 theorem curveIntegralFun_def [NormedSpace ℝ E] (ω : E → E →L[𝕜] F) (γ : Path a b) (t : ℝ) :
     curveIntegralFun ω γ t = ω (γ.extend t) (derivWithin γ.extend I t) := by
@@ -221,7 +225,7 @@ theorem curveIntegralFun_trans_of_lt_half (ω : E → E →L[𝕜] F) (γab : Pa
   have H₁ : (γab.trans γbc).extend =ᶠ[𝓝 t] (fun s ↦ γab.extend (2 * s)) :=
     (eventually_le_nhds ht).mono fun _ ↦ Path.extend_trans_of_le_half _ _
   have H₂ : (2 : ℝ) • I =ᶠ[𝓝 (2 * t)] I := by
-    rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEq]
+    rw [LinearOrderedField.smul_Icc two_pos, mul_zero, mul_one, ← nhdsWithin_eq_iff_eventuallyEqSet]
     rcases lt_trichotomy t 0 with ht₀ | rfl | ht₀
     · rw [notMem_closure_iff_nhdsWithin_eq_bot.mp, notMem_closure_iff_nhdsWithin_eq_bot.mp] <;>
         simp_intro h <;> linarith

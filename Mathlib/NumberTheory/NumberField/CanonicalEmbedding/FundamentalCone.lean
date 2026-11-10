@@ -5,9 +5,9 @@ Authors: Xavier Roblot
 -/
 module
 
-public import Mathlib.RingTheory.Ideal.IsPrincipal
 public import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 public import Mathlib.RingTheory.ClassGroup.Basic
+public import Mathlib.RingTheory.Ideal.IsPrincipal
 
 /-!
 # Fundamental Cone
@@ -136,7 +136,7 @@ theorem logMap_eq_logEmbedding (u : (𝓞 K)ˣ) :
 
 theorem logMap_unit_smul (u : (𝓞 K)ˣ) (hx : mixedEmbedding.norm x ≠ 0) :
     logMap (u • x) = logEmbedding K (Additive.ofMul u) + logMap x := by
-  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; norm_num) hx, logMap_eq_logEmbedding]
+  rw [unitSMul_smul, logMap_mul (by rw [norm_unit]; simp) hx, logMap_eq_logEmbedding]
 
 variable (x) in
 theorem logMap_torsion_smul {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K) :
@@ -222,7 +222,7 @@ theorem smul_mem_of_mem (hx : x ∈ fundamentalCone K) (hc : c ≠ 0) :
 theorem smul_mem_iff_mem (hc : c ≠ 0) :
     c • x ∈ fundamentalCone K ↔ x ∈ fundamentalCone K := by
   refine ⟨fun h ↦ ?_, fun h ↦ smul_mem_of_mem h hc⟩
-  convert! smul_mem_of_mem h (inv_ne_zero hc)
+  convert smul_mem_of_mem h (inv_ne_zero hc)
   rw [eq_inv_smul_iff₀ hc]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -277,7 +277,7 @@ theorem existsUnique_preimage_of_mem_integerSet {a : mixedSpace K} (ha : a ∈ i
   exact (mixedEmbedding_injective K).comp RingOfIntegers.coe_injective
 
 theorem ne_zero_of_mem_integerSet (a : integerSet K) : (a : mixedSpace K) ≠ 0 := by
-  by_contra!
+  by_contra
   exact a.prop.1.2 (this.symm ▸ mixedEmbedding.norm.map_zero')
 
 open scoped nonZeroDivisors
@@ -488,7 +488,7 @@ theorem mem_idealSet :
   simp_rw [idealSet, Set.mem_inter_iff, idealLattice, SetLike.mem_coe, FractionalIdeal.coe_mk0,
     LinearMap.mem_range, LinearMap.coe_comp, LinearMap.coe_restrictScalars, coe_subtype,
     Function.comp_apply, AlgHom.toLinearMap_apply, RingHom.toIntAlgHom_coe, Subtype.exists,
-    FractionalIdeal.mem_coe, FractionalIdeal.mem_coeIdeal, exists_prop', nonempty_prop,
+    FractionalIdeal.mem_coeToSubmodule, FractionalIdeal.mem_coeIdeal, exists_prop', nonempty_prop,
     exists_exists_and_eq_and]
 
 /-- The map that sends `a : idealSet` to an element of `integerSet`. This map exists because

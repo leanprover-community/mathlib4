@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Module.Submodule.Defs
 public import Mathlib.Tactic.Abel
 
 /-!
-
 # Ideals over a ring
 
 This file defines `Ideal R`, the type of (left) ideals over a ring `R`.
@@ -29,7 +28,7 @@ Support right ideals, and two-sided ideals over non-commutative rings.
 
 universe u v w
 
-variable {α : Type u} {β : Type v} {F : Type w}
+variable {α : Type u}
 
 open Set
 
