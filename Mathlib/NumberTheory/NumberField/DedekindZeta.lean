@@ -17,7 +17,8 @@ In this file, we define and prove results about the Dedekind zeta function of a 
 
 ## Main definitions and results
 
-* `NumberField.dedekindZeta`: the Dedekind zeta function.
+* `NumberField.dedekindZeta`: the Dedekind zeta function on the half-plane `1 < re s`, as an
+  `L`-series.
 * `NumberField.dedekindZeta_residue`: the value of the residue at `s = 1` of the Dedekind
   zeta function.
 * `NumberField.tendsto_sub_one_mul_dedekindZeta_nhdsGT`: **Dirichlet class number formula**
@@ -44,8 +45,12 @@ namespace NumberField
 open scoped Real
 
 /--
-The Dedekind zeta function of a number field. It is defined as the `L`-series with coefficients
-the number of integral ideals of norm `n`.
+The Dedekind zeta function of a number field, on the half-plane `1 < re s`. It is defined as the
+`L`-series whose `n`-th coefficient is the number of integral ideals of norm `n`.
+
+This is not the meromorphic continuation of the Dedekind zeta function: the series converges only
+for `1 < re s`, and `dedekindZeta K s` is `0`, the junk value of `LSeries`, for `re s ≤ 1`. For
+example, `dedekindZeta ℚ 0 = 0`, whereas `riemannZeta 0 = -1 / 2`.
 -/
 def dedekindZeta (s : ℂ) :=
   LSeries (fun n ↦ Nat.card {I : Ideal (𝓞 K) // absNorm I = n}) s
