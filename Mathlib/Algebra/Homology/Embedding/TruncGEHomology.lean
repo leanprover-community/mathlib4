@@ -54,7 +54,6 @@ lemma hasHomology_of_not_mem_boundary (hj : ¬ e.BoundaryGE j) :
     (K.truncGE' e).HasHomology j :=
   hasHomology_sc'_of_not_mem_boundary K e _ j _ rfl rfl hj
 
-set_option backward.defeqAttrib.useBackward true in
 /-- `K.restrictionToTruncGE' e` is a quasi-isomorphism in degrees that are not at the boundary. -/
 lemma quasiIsoAt_restrictionToTruncGE' (hj : ¬ e.BoundaryGE j)
     [(K.restriction e).HasHomology j] [(K.truncGE' e).HasHomology j] :
@@ -87,7 +86,7 @@ noncomputable def isLimitKernelFork :
       parallelPair.ext (K.truncGE'XIsoOpcycles e hj' hj)
         (K.truncGE'XIso e rfl (e.not_boundaryGE_next hjk))
         (by simp [K.truncGE'_d_eq_fromOpcycles e hjk hj' rfl hj]) (by simp)
-    exact (IsLimit.postcomposeHomEquiv e _).1
+    exact (IsLimit.postcomposeHomEquiv e _).toFun
       (IsLimit.ofIsoLimit (K.homologyIsKernel _ _ hk')
       (Fork.ext (Iso.refl _) (by simp [e, Fork.ι])))
   · have := K.isIso_homologyι _ _ hk'

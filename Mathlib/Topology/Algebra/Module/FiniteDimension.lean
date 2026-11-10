@@ -12,6 +12,7 @@ public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 public import Mathlib.RingTheory.Finiteness.Cofinite
+public import Mathlib.RingTheory.Finiteness.Projective
 public import Mathlib.RingTheory.LocalRing.Basic
 public import Mathlib.Topology.Algebra.Module.Complement
 public import Mathlib.Topology.Algebra.Module.Determinant
@@ -502,6 +503,35 @@ end ContinuousLinearMap
 
 end NormedField
 
+section IsModuleTopology
+
+variable {R E : Type*} [Ring R] [AddCommGroup E] [Module R E] [UniformSpace R] [CompleteSpace R]
+  [IsUniformAddGroup R] [IsTopologicalRing R]
+
+variable (R E) in
+theorem Module.Finite.completeSpace_of_isModuleTopology [UniformSpace E] [IsUniformAddGroup E]
+    [Module.Finite R E] [Projective R E] [IsModuleTopology R E] : CompleteSpace E := by
+  obtain ⟨_, f, g, -, -, hfg⟩ := Finite.exists_comp_eq_id_of_projective R E
+  exact CompleteSpace.of_comp_eq_id f g congr(↑$hfg) (IsModuleTopology.continuous_of_linearMap f)
+    (uniformContinuous_addMonoidHom_of_continuous (IsModuleTopology.continuous_of_linearMap g))
+
+theorem Submodule.isComplete_of_finite_of_isModuleTopology
+    [UniformSpace E] [IsUniformAddGroup E]
+    (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
+    IsComplete (s : Set E) :=
+  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
+  completeSpace_coe_iff_isComplete.1 (Finite.completeSpace_of_isModuleTopology R s)
+
+theorem Submodule.isClosed_of_finite_of_isModuleTopology
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [T0Space E]
+    (s : Submodule R E) [Module.Finite R s] [Module.Projective R s] [IsModuleTopology R s] :
+    IsClosed (s : Set E) :=
+  letI := IsTopologicalAddGroup.rightUniformSpace E
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
+  s.isComplete_of_finite_of_isModuleTopology.isClosed
+
+end IsModuleTopology
+
 section IsUniformAddGroup
 
 variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
@@ -509,18 +539,23 @@ variable (𝕜 E : Type*) [NontriviallyNormedField 𝕜]
   [Module 𝕜 E] [ContinuousSMul 𝕜 E]
 
 include 𝕜 in
-theorem FiniteDimensional.complete [FiniteDimensional 𝕜 E] : CompleteSpace E := by
-  set e := ContinuousLinearEquiv.ofFinrankEq (@finrank_fin_fun 𝕜 _ _ (finrank 𝕜 E)).symm
-  have : IsUniformEmbedding e.toEquiv.symm := e.symm.isUniformEmbedding
-  exact (completeSpace_congr this).1 inferInstance
+theorem FiniteDimensional.completeSpace [FiniteDimensional 𝕜 E] : CompleteSpace E :=
+  have : IsModuleTopology 𝕜 E := isModuleTopologyOfFiniteDimensional
+  Finite.completeSpace_of_isModuleTopology 𝕜 E
+
+@[deprecated (since := "2026-10-29")]
+alias FiniteDimensional.complete := FiniteDimensional.completeSpace
 
 variable {𝕜 E}
 
 /-- A finite-dimensional subspace is complete. -/
-theorem Submodule.complete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
+theorem Submodule.isComplete_of_finiteDimensional (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsComplete (s : Set E) :=
-  haveI : IsUniformAddGroup s := s.toAddSubgroup.isUniformAddGroup
-  completeSpace_coe_iff_isComplete.1 (FiniteDimensional.complete 𝕜 s)
+  have : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
+  s.isComplete_of_finite_of_isModuleTopology
+
+@[deprecated (since := "2026-10-29")]
+alias Submodule.complete_of_finiteDimensional := Submodule.isComplete_of_finiteDimensional
 
 end IsUniformAddGroup
 
@@ -531,12 +566,14 @@ variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
   [ContinuousSMul 𝕜 F]
 
 /-- A finite-dimensional subspace is closed. -/
-theorem Submodule.closed_of_finiteDimensional
+theorem Submodule.isClosed_of_finiteDimensional
     [T2Space E] (s : Submodule 𝕜 E) [FiniteDimensional 𝕜 s] :
     IsClosed (s : Set E) :=
-  letI := IsTopologicalAddGroup.rightUniformSpace E
-  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
-  s.complete_of_finiteDimensional.isClosed
+  have : IsModuleTopology 𝕜 s := isModuleTopologyOfFiniteDimensional
+  s.isClosed_of_finite_of_isModuleTopology
+
+@[deprecated (since := "2026-10-29")]
+alias Submodule.closed_of_finiteDimensional := Submodule.isClosed_of_finiteDimensional
 
 /-- If `s` is a closed subspace with finite codimension, any subspace containing `s` is closed. -/
 theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
@@ -544,14 +581,14 @@ theorem Submodule.isClosed_mono_of_finiteDimensional_quotient
     (s_le_t : s ≤ t) :
     IsClosed (t : Set E) := by
   rw [show t = comap s.mkQ (map s.mkQ t) by simpa]
-  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+  exact (map s.mkQ t).isClosed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- The supremum of a closed subspace and a finite dimensional subspace is closed. -/
 theorem Submodule.isClosed_sup_finiteDimensional
     (s t : Submodule 𝕜 E) (hs : IsClosed (s : Set E)) [ht : FiniteDimensional 𝕜 t] :
     IsClosed ((s ⊔ t : Submodule 𝕜 E) : Set E) := by
   rw [← comap_map_mkQ]
-  exact (map s.mkQ t).closed_of_finiteDimensional.preimage continuous_quot_mk
+  exact (map s.mkQ t).isClosed_of_finiteDimensional.preimage continuous_quot_mk
 
 /-- A sufficient condition for a linear map taking values in a TVS to have closed range is that
 there exists a finite-codimension subspace of the domain whose image is closed. -/
@@ -570,7 +607,7 @@ theorem LinearMap.isClosedEmbedding_of_injective [T2Space E] [FiniteDimensional 
   let g := LinearEquiv.ofInjective f (LinearMap.ker_eq_bot.mp hf)
   { IsEmbedding.subtypeVal.comp g.toContinuousLinearEquiv.toHomeomorph.isEmbedding with
     isClosed_range := by
-      simpa [LinearMap.coe_range f] using (LinearMap.range f).closed_of_finiteDimensional }
+      simpa [LinearMap.coe_range f] using (LinearMap.range f).isClosed_of_finiteDimensional }
 
 theorem isClosedEmbedding_smul_left [T2Space E] {c : E} (hc : c ≠ 0) :
     IsClosedEmbedding fun x : 𝕜 => x • c :=
@@ -587,10 +624,6 @@ theorem ContinuousLinearMap.exists_rightInverse_of_surjective [T2Space F] [Finit
     (f : E →L[𝕜] F) (hf : f.range = ⊤) : ∃ g : F →L[𝕜] E, f.comp g = ContinuousLinearMap.id 𝕜 F :=
   let ⟨g, hg⟩ := (f : E →ₗ[𝕜] F).exists_rightInverse_of_surjective hf
   ⟨LinearMap.toContinuousLinearMap g, ContinuousLinearMap.coe_inj.1 hg⟩
-
-@[deprecated (since := "2026-04-24")]
-alias ContinuousLinearMap.exists_right_inverse_of_surjective :=
-  ContinuousLinearMap.exists_rightInverse_of_surjective
 
 theorem ContinuousLinearMap.isQuotientMap_of_finiteDimensional [T2Space F] [FiniteDimensional 𝕜 F]
     (f : E →L[𝕜] F) (hf : f.range = ⊤) :
@@ -684,7 +717,7 @@ theorem FiniteDimensional.of_totallyBounded_nhds_zero {U : Set Eᵤ} (hU_nhds : 
       exact (tendsto_smallSets_iff.mp h_small W hW).mono fun n hn ↦ hn (hu n)
     have hm_tendsto : Tendsto m atTop (𝓝 x) := by
       simpa [show m = fun n ↦ x - u n by grind] using! tendsto_const_nhds.sub hu_tendsto
-    exact M.closed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
+    exact M.isClosed_of_finiteDimensional.mem_of_tendsto hm_tendsto (Eventually.of_forall hm)
   have hM_top : M = ⊤ := absorbent_nhds_zero (𝕜 := 𝕜) hU_nhds |>.mono hU_sub_M |>.submodule_eq_top
   exact FiniteDimensional.of_surjective M.subtype fun x ↦ ⟨⟨x, by simp [hM_top]⟩, rfl⟩
 

@@ -37,16 +37,16 @@ private theorem free_and_finite_fin (n : ℕ) (N : Fin n → Type*) [∀ i, AddC
   | zero =>
     have : IsEmpty (Fin Nat.zero) := inferInstanceAs (IsEmpty (Fin 0))
     exact
-      ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R R N M₂),
-        Module.Finite.equiv (constLinearEquivOfIsEmpty R R N M₂)⟩
+      ⟨Module.Free.of_equiv (constLinearEquivOfIsEmpty R _ N M₂),
+        Module.Finite.equiv (constLinearEquivOfIsEmpty R _ N M₂)⟩
   | succ n ih =>
     suffices
       Module.Free R (N 0 →ₗ[R] (Π i : Fin n, N i.succ) →ₘₗ[R] M₂) ∧
         Module.Finite R (N 0 →ₗ[R] (Π i : Fin n, N i.succ) →ₘₗ[R] M₂) by
       cases this
       exact
-        ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv R N M₂).symm,
-          Module.Finite.equiv (multilinearCurryLeftEquiv R N M₂).symm⟩
+        ⟨Module.Free.of_equiv (multilinearCurryLeftEquiv _ N M₂).symm,
+          Module.Finite.equiv (multilinearCurryLeftEquiv _ N M₂).symm⟩
     cases ih fun i => N i.succ
     exact ⟨Module.Free.linearMap _ _ _ _, Module.Finite.linearMap _ _ _ _⟩
 
@@ -60,7 +60,7 @@ private theorem free_and_finite :
   have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)
     (fun x => M₁ ((Fintype.equivFin ι).symm x))
   obtain ⟨l, r⟩ := this
-  have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
+  have e := domDomCongrLinearEquiv' R (.id R) M₁ M₂ (Fintype.equivFin ι)
   exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
 
 instance _root_.Module.Finite.multilinearMap : Module.Finite R ((Π i, M₁ i) →ₘₗ[R] M₂) :=
