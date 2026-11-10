@@ -311,7 +311,7 @@ theorem X_eq_normalizeX : (X : k⟦X⟧) = normalize X := by
 open UniqueFactorizationMonoid
 
 open scoped Classical in
-theorem normalized_count_X_eq_of_coe {P : k[X]} :
+theorem normalized_count_X_eq_of_coe (P : k[X]) :
     Multiset.count PowerSeries.X (normalizedFactors (P : k⟦X⟧)) =
       Multiset.count Polynomial.X (normalizedFactors P) := by
   rcases eq_or_ne P 0 with rfl | hP
