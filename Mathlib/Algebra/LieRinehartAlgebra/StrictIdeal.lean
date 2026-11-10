@@ -212,7 +212,7 @@ Lie-Rinehart algebras. -/
   __ := s.toSubmodule.subtype.restrictScalars R
   map_lie' {_ _} := by simp
   map_smul_apply' a x := s.toSubmodule.subtype.map_smul a x
-  apply_lie' a x := AlgHom.id_apply ⁅x, a⁆
+  apply_lie' a x := rfl
 
 @[simp]
 theorem coe_incl {s : StrictLieRinehartIdeal A L} : ⇑(s.incl R) = ((↑) : s → L) := rfl
