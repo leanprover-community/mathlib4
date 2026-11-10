@@ -39,7 +39,6 @@ a product set.
   σ-algebra
 * `generateFrom_measurableCylinders`: cylinders formed from measurable sets generate the
   product σ-algebra
-
 -/
 
 @[expose] public section

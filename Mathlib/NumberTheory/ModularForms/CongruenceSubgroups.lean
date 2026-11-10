@@ -16,7 +16,6 @@ This defines congruence subgroups of `SL(2, ℤ)` such as `Γ(N)`, `Γ₀(N)` an
 natural number.
 
 It also contains basic results about congruence subgroups.
-
 -/
 
 @[expose] public section

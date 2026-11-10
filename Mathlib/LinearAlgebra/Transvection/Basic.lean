@@ -38,7 +38,6 @@ called “dilations” (especially if `f v ≠ -1`).
 
 The definition is almost the same as that of `Module.preReflection f v`,
 up to a sign change, which are interesting when `f v = 2`, because they give “reflections”.
-
 -/
 
 @[expose] public section

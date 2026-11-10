@@ -20,7 +20,6 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 ## References
 
 - [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
-
 -/
 
 @[expose] public section

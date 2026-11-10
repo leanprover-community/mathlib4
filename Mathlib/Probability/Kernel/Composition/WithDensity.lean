@@ -14,7 +14,6 @@ public import Mathlib.Probability.Kernel.WithDensity
 
 We prove lemmas about `Kernel.withDensity` and `Measure.withDensity` in relation with the
 composition of kernels and measures.
-
 -/
 
 public section

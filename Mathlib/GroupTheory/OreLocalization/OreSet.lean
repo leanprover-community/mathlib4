@@ -15,7 +15,6 @@ This defines left Ore sets on arbitrary monoids.
 ## References
 
 * https://ncatlab.org/nlab/show/Ore+set
-
 -/
 
 @[expose] public section

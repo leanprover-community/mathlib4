@@ -39,7 +39,6 @@ This file contains results related to `Field.sepDegree`, `Field.insepDegree` and
 ## Tags
 
 separable degree, degree, separable closure, purely inseparable
-
 -/
 
 public section

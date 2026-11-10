@@ -35,7 +35,6 @@ public import Mathlib.Topology.Order.Lattice
 * `Measurable.liminf`, `Measurable.limsup`:
   Countable liminfs and limsups of measurable functions to conditionally complete linear orders
   are measurable.
-
 -/
 
 public section

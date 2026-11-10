@@ -44,7 +44,6 @@ Related definitions of reflection exist elsewhere in the library. These more spe
 definitions, which require an ambient `InnerProductSpace` structure, are `reflection` (of type
 `LinearIsometryEquiv`) and `EuclideanGeometry.reflection` (of type `AffineIsometryEquiv`). We
 should connect (or unify) these definitions with `Module.reflection` defined here.
-
 -/
 
 @[expose] public section

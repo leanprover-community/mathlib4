@@ -19,7 +19,6 @@ This file defines `Disjoint`, `Codisjoint`, and the `IsCompl` predicate.
 * `IsCompl x y`: In a bounded lattice, predicate for "`x` is a complement of `y`". Note that in a
   non-distributive lattice, an element can have several complements.
 * `ComplementedLattice α`: Typeclass stating that any element of a lattice has a complement.
-
 -/
 
 @[expose] public section

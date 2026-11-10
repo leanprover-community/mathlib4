@@ -83,7 +83,6 @@ type with a zero. They are denoted `R⸨X⸩`.
   `K⟮X⟯` we consider its alias `LaurentSeries.powerSeries_as_subring` as a subring of `K⸨X⸩`,
   that is itself clearly isomorphic (via the inverse of `LaurentSeries.powerSeriesEquivSubring`)
   to `K⟦X⟧`.
-
 -/
 
 @[expose] public section
@@ -459,7 +458,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
   rw [Ideal.count_associates_factors_eq span_ne_zero.1
     (Ideal.span_singleton_prime Polynomial.X_ne_zero |>.mpr Polynomial.prime_X) span_ne_zero.2,
     Ideal.count_associates_factors_eq]
-  on_goal 1 => convert (normalized_count_X_eq_of_coe hP).symm
+  on_goal 1 => convert (normalized_count_X_eq_of_coe _).symm
   exacts [
     Ideal.count_span_normalizedFactors_eq_of_normUnit hP Polynomial.normUnit_X Polynomial.prime_X,
     Ideal.count_span_normalizedFactors_eq_of_normUnit (by simp [hP]) normUnit_X prime_X,

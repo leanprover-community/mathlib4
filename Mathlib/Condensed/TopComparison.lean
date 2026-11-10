@@ -18,7 +18,6 @@ satisfies the sheaf condition for the regular and extensive topologies respectiv
 
 We apply this API to `CompHaus` and define the functor
 `topCatToCondensedSet : TopCat.{u + 1} ⥤ CondensedSet.{u}`.
-
 -/
 
 @[expose] public section

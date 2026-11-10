@@ -15,7 +15,6 @@ This file provides an alternative constructor for braided categories, given a br
 `β : -₁ ⊗ -₂ ≅ -₂ ⊗ -₁` as a natural isomorphism between bifunctors. The hexagon identities are
 phrased as equalities of natural transformations between trifunctors
 `(-₁ ⊗ -₂) ⊗ -₃ ⟶ -₂ ⊗ (-₃ ⊗ -₁)` and `-₁ ⊗ (-₂ ⊗ -₃) ⟶ (-₃ ⊗ -₁) ⊗ -₂`.
-
 -/
 
 @[expose] public section

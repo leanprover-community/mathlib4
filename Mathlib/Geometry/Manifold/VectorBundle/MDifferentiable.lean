@@ -9,7 +9,6 @@ public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 
 /-!
 # Differentiability of functions in vector bundles
-
 -/
 
 public section

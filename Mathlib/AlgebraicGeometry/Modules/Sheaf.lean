@@ -18,7 +18,6 @@ public import Mathlib.Topology.Sheaves.Module
 
 In this file, we define the abelian category of sheaves of modules
 `X.Modules` over a scheme `X`, and study its basic functoriality.
-
 -/
 
 @[expose] public section

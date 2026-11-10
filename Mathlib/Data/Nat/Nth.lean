@@ -42,7 +42,6 @@ There has been some discussion on the subject of whether both of `nth` and
 `Nat.Subtype.orderIsoOfNat` should exist. See discussion
 [here](https://github.com/leanprover-community/mathlib/pull/9457#pullrequestreview-767221180).
 Future work should address how lemmas that use these should be written.
-
 -/
 
 @[expose] public section

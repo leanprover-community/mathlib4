@@ -65,7 +65,6 @@ for commutative rings.
 ## TODO
 
 * Upgrading `groupHomologyIsoTor` to an isomorphism of derived functors.
-
 -/
 
 @[expose] public section
@@ -233,7 +232,6 @@ abbrev groupHomology.π (n : ℕ) :
     cycles A n ⟶ groupHomology A n :=
   (inhomogeneousChains A).homologyπ n
 
-set_option backward.isDefEq.respectTransparency false in
 variable {A} in
 @[elab_as_elim]
 theorem groupHomology_induction_on {n : ℕ}

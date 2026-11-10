@@ -43,7 +43,6 @@ inversions of $w$ in some order, but we do not prove that in this file.
 ## References
 
 * [A. Björner and F. Brenti, *Combinatorics of Coxeter Groups*][bjorner2005]
-
 -/
 
 @[expose] public section
