@@ -65,7 +65,9 @@ theorem ofOdd_nonneg {n k : ℤ} {hn : n % 2 = 1} : 0 ≤ ofOdd n k hn ↔ 0 ≤
 theorem toRat_one : toRat 1 = 1 := rfl
 
 @[simp]
-theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := toRat_natCast n
+theorem toRat_ofNat {n : ℕ} [n.AtLeastTwo] : toRat ofNat(n) = ofNat(n) := by
+  rw [← Nat.cast_ofNat (R := Dyadic), ← Nat.cast_ofNat (R := ℚ)]
+  exact toRat_natCast n
 
 @[simp]
 theorem toRat_pos (x : Dyadic) : 0 < x.toRat ↔ 0 < x := by
