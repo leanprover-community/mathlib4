@@ -165,7 +165,7 @@ def othersInMathlib : Array Char := #[
 
   'ꟴ', 'ᵟ', 'ᴀ', 'ʙ', 'ᴄ', 'ᴅ', 'ᴇ', 'ꜰ', 'ɢ', 'ʜ', 'ɪ', 'ᴊ', 'ᴋ', 'ʟ', 'ᴍ', 'ɴ',
 
-  'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ', 'Ś', 'ę'
+  'ᴏ', 'ᴘ', 'ꞯ', 'ʀ', 'ꜱ', 'ᴛ', 'ᴜ', 'ᴠ', 'ᴡ', 'ʏ', 'ᴢ', 'ᵦ', 'ᵨ', 'ᵩ', 'ᵪ', 'Ś', 'ę', 'ğ'
 ]
 
 /-- Unicode symbols in mathlib that should always be followed by the emoji variant selector. -/
