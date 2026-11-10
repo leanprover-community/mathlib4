@@ -188,13 +188,13 @@ def witnessFor (witnesses : List Witness) (p : ℕ) : CoreM (ℕ × List (ℕ ×
 
 /-- Constructs the certificate of a prime, given the primes already proved, which need no
 certificate of their own. -/
-abbrev CertBuilder := Std.HashSet ℕ → ℕ → CoreM Cert
+abbrev CertBuilder := Array ℕ → ℕ → CoreM Cert
 
 /-- Builds the certificate of `p` from the root and the factorization of `p - 1` that `witness`
 gives for each prime, with `norm_num` below `normNumBound` and the available proofs for the primes
 in `known`. Each prime's certificate is built once. -/
 partial def Cert.build (witness : ℕ → CoreM (ℕ × List (ℕ × ℕ))) : CertBuilder := fun known p ↦
-  StateT.run' (go p) (known.fold (·.insert · .known) {})
+  StateT.run' (go p) (known.foldl (·.insert · .known) {})
 where
   /-- Builds the certificate of `p`. The state caches the certificates constructed for each
   nontrivial intermediate result. -/
@@ -208,13 +208,15 @@ where
     modify (·.insert p cert)
     return cert
 
-/-- Builds each prime's certificate from the first entry of `witnesses` that fits it. -/
+/-- Builds each prime's certificate from the first entry of `witnesses` that fits it. Repeated
+prime factors in an entry count once. -/
 def Cert.ofWitnesses (witnesses : List Witness) : CertBuilder :=
-  Cert.build (witnessFor witnesses)
+  Cert.build <| witnessFor <| witnesses.map fun (.lucas w) ↦
+    Witness.lucas { w with primeFactors := w.primeFactors.eraseDups }
 
 /-- Builds the certificate of `p` from witnesses searched for with the factorizer options `cfg`,
 trying the primes in `known` as factors first. -/
 def Cert.search (cfg : FactorizerConfig) : CertBuilder := fun known p ↦
-  Cert.build (findLucasWitness ((Factorizer.ofArray known.toArray).then cfg.toFactorizer)) known p
+  Cert.build (findLucasWitness ((Factorizer.ofArray known).then cfg.toFactorizer)) known p
 
 end Mathlib.Tactic.Primality

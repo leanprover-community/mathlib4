@@ -29,7 +29,7 @@ prime factors passes `Cert.search { factors := … }`. A caller with a complete 
 on the way are added to the state, so calls that thread it share them. -/
 def provePrime (p : ℕ) (mkCert : CertBuilder := Cert.search {}) :
     StateT (Std.HashMap ℕ Expr) MetaM Q(Nat.Prime $p) := do
-  certifyPrime p (← mkCert (.ofArray (← get).keysArray) p)
+  certifyPrime p (← mkCert (← get).keysArray p)
 
 /-- Configuration for `primality`. -/
 structure Config where
@@ -91,8 +91,7 @@ elab_rules : tactic
       | .search searchCfg => fun known p ↦ do
         try Cert.search searchCfg known p
         catch e => throwError "{e.toMessageData}; provide the certificate at `.witnesses […]`"
-      | .witnesses witnesses => Cert.ofWitnesses <| witnesses.map fun (.lucas w) ↦
-        Witness.lucas { w with primeFactors := w.primeFactors.eraseDups }
+      | .witnesses witnesses => Cert.ofWitnesses witnesses
     let known ← elabKnownPrimes <| hs.map (·.getElems) |>.getD #[]
     liftMetaFinishingTactic fun g ↦ do
       let_expr Nat.Prime e := ← instantiateMVars (← g.getType) |
