@@ -157,8 +157,12 @@ theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : I
   · exact ⟨Classical.arbitrary Y, funext h.elim⟩
   · exact ⟨f (Classical.arbitrary X), hf.eq_const _⟩
 
-theorem iff_is_const [PreconnectedSpace X] {f : X → Y} : IsLocallyConstant f ↔ ∀ x y, f x = f y :=
+theorem iff_isConst [PreconnectedSpace X] {f : X → Y} : IsLocallyConstant f ↔ Function.IsConst f :=
   ⟨fun h _ _ => h.apply_eq_of_isPreconnected isPreconnected_univ trivial trivial, of_constant _⟩
+
+@[deprecated iff_isConst +typeChanged (since := "2026-11-10")]
+theorem iff_is_const [PreconnectedSpace X] {f : X → Y} : IsLocallyConstant f ↔ ∀ x y, f x = f y :=
+  iff_isConst
 
 theorem range_finite [CompactSpace X] {f : X → Y} (hf : IsLocallyConstant f) :
     (Set.range f).Finite := by

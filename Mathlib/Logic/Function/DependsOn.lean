@@ -6,6 +6,7 @@ Authors: Etienne Marion
 module
 
 public import Mathlib.Data.Set.Restrict
+public import Mathlib.Logic.Function.Const
 public import Mathlib.Util.Delaborators
 
 set_option doc.verso true
@@ -88,7 +89,7 @@ lemma DependsOn.mono {s t : Set ι} (hst : s ⊆ t) (hf : DependsOn f s) : Depen
   fun _ _ h ↦ hf fun i hi ↦ h i (hst hi)
 
 /-- A function which depends on the empty set is constant. -/
-lemma DependsOn.empty (hf : DependsOn f ∅) (x y : Π i, α i) : f x = f y := hf (by simp)
+lemma DependsOn.empty (hf : DependsOn f ∅) : IsConst f := fun _ _ ↦ hf (by simp)
 
 lemma Set.dependsOn_domRestrict (s : Set ι) : DependsOn (s.domRestrict (π := α)) s :=
   fun _ _ h ↦ funext fun i ↦ h i.1 i.2

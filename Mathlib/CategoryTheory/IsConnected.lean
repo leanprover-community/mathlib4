@@ -8,6 +8,7 @@ module
 public import Mathlib.CategoryTheory.Category.ULift
 public import Mathlib.CategoryTheory.Groupoid
 public import Mathlib.CategoryTheory.PUnit
+public import Mathlib.Logic.Function.Const
 
 import Mathlib.Data.List.Chain
 
@@ -113,8 +114,8 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
 -/
-theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j j' : J) :
-    F.obj j = F.obj j' := by
+theorem any_functor_const_on_obj [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) :
+    Function.IsConst F.obj := fun j j' ↦ by
   ext; exact ((isoConstant F j').hom.app j).1
 
 /-- If any functor to a discrete category is constant on objects, J is connected.
@@ -146,7 +147,7 @@ This can be thought of as a local-to-global property.
 The converse is shown in `IsConnected.of_constant_of_preserves_morphisms`
 -/
 theorem constant_of_preserves_morphisms [IsPreconnected J] {α : Type u₂} (F : J → α)
-    (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) (j j' : J) : F j = F j' := by
+    (h : ∀ (j₁ j₂ : J) (_ : j₁ ⟶ j₂), F j₁ = F j₂) : Function.IsConst F := fun j j' ↦ by
   simpa using
     any_functor_const_on_obj
       { obj := Discrete.mk ∘ F

@@ -392,7 +392,7 @@ section Metric
 variable [PseudoMetricSpace X] [MetricSpace Y] {r : ℝ≥0} {f : X → Y}
 
 @[simp]
-lemma holderWith_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by
+lemma holderWith_zero_iff : HolderWith 0 r f ↔ Function.IsConst f := by
   refine ⟨fun h x₁ x₂ => ?_, fun h x₁ x₂ => h x₁ x₂ ▸ ?_⟩
   · specialize h x₁ x₂
     simp [ENNReal.coe_zero, zero_mul, nonpos_iff_eq_zero, edist_eq_zero] at h

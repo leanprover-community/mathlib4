@@ -128,10 +128,16 @@ theorem isTotallyDisconnected_of_totallyDisconnectedSpace [TotallyDisconnectedSp
     IsTotallyDisconnected s := fun t _ ht =>
   TotallyDisconnectedSpace.isTotallyDisconnected_univ _ t.subset_univ ht
 
+lemma TotallyDisconnectedSpace.isConst_of_continuous [TopologicalSpace β]
+    [PreconnectedSpace α] [TotallyDisconnectedSpace β] (f : α → β) (hf : Continuous f) :
+    IsConst f := fun i j ↦
+  (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
+
+@[deprecated TotallyDisconnectedSpace.isConst_of_continuous +typeChanged (since := "2026-11-10")]
 lemma TotallyDisconnectedSpace.eq_of_continuous [TopologicalSpace β]
     [PreconnectedSpace α] [TotallyDisconnectedSpace β] (f : α → β) (hf : Continuous f)
     (i j : α) : f i = f j :=
-  (isPreconnected_univ.image f hf.continuousOn).subsingleton ⟨i, trivial, rfl⟩ ⟨j, trivial, rfl⟩
+  TotallyDisconnectedSpace.isConst_of_continuous f hf i j
 
 /-- The bijection `C(X, Y) ≃ Y` when `Y` is totally disconnected and `X` is connected. -/
 @[simps! symm_apply_apply]
@@ -141,7 +147,8 @@ noncomputable def TotallyDisconnectedSpace.continuousMapEquivOfConnectedSpace
     C(X, Y) ≃ Y where
   toFun f := f (Classical.arbitrary _)
   invFun y := ⟨fun _ ↦ y, by fun_prop⟩
-  left_inv f := ContinuousMap.ext (TotallyDisconnectedSpace.eq_of_continuous _ (map_continuous f) _)
+  left_inv f :=
+    ContinuousMap.ext (TotallyDisconnectedSpace.isConst_of_continuous _ (map_continuous f) _)
   right_inv _ := rfl
 
 theorem isTotallyDisconnected_of_image [TopologicalSpace β] {f : α → β} (hf : ContinuousOn f s)

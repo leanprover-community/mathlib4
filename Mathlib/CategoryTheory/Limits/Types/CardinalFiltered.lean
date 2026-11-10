@@ -43,8 +43,8 @@ stage of the colimit. -/
 theorem isColimit_eq_iff'_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {i : J} (x : ι → F.obj i) :
-    (∀ (k k' : ι), t.ι.app i (x k) = t.ι.app i (x k')) ↔
-      ∃ (j : _) (f : i ⟶ j), ∀ (k k' : ι), F.map f (x k) = F.map f (x k') := by
+    Function.IsConst (fun k ↦ t.ι.app i (x k)) ↔
+      ∃ (j : _) (f : i ⟶ j), Function.IsConst (fun k ↦ F.map f (x k)) := by
   have := isFiltered_of_isCardinalFiltered J κ
   refine ⟨fun h ↦ ?_, fun ⟨j, f, h⟩ k k' ↦ ?_⟩
   · -- every individual equality is explained at some stage in the diagram by ℵ₀-filteredness
@@ -72,9 +72,8 @@ to the same element in the colimit if and only if it already does at some stage 
 theorem isColimit_eq_iff''_of_hasCardinalLT
     {t : Cocone F} (ht : IsColimit t) {ι : Type*} (hι : HasCardinalLT ι κ)
     {φ : ι → J} (x : (i : ι) → F.obj (φ i)) :
-    (∀ (k k' : ι), t.ι.app _ (x k) = t.ι.app _ (x k')) ↔
-      ∃ (j : _) (f : (i : ι) → (φ i) ⟶ j), ∀ (k k' : ι),
-        F.map (f k) (x k) = F.map (f k') (x k') := by
+    Function.IsConst (fun k ↦ t.ι.app (φ k) (x k)) ↔
+      ∃ (j : _) (f : (i : ι) → (φ i) ⟶ j), Function.IsConst (fun k ↦ F.map (f k) (x k)) := by
   refine ⟨fun h ↦ ?_, fun ⟨j, f, h⟩ k k' ↦ ?_⟩
   · -- We reduce to the case of isColimit_eq_iff'_of_hasCardinalLT
     let i₀ := IsCardinalFiltered.max φ hι
