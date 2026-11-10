@@ -864,7 +864,7 @@ variable (R)
 
 @[simp] theorem toAddEquiv_prodLinearEquiv [Semiring R] [AddCommMonoid α] [AddCommMonoid β]
     [Module R α] [Module R β] :
-    prodLinearEquiv m n R α β  = prodAddEquiv m n α β := rfl
+    prodLinearEquiv m n R α β = prodAddEquiv m n α β := rfl
 
 variable [Fintype n]
 
