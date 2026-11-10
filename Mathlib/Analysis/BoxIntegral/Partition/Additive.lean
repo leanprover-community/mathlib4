@@ -235,7 +235,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
       intro J hJ j x
       rw [WithTop.coe_le_coe] at hJ
       refine i.succAboveCases (fun hx => ?_) (fun j hx => ?_) j
-      · simp only [Box.splitLower_def hx, Box.splitUpper_def hx, update_self, ← WithBot.some_eq_coe,
+      · simp only [Box.splitLower_def hx, Box.splitUpper_def hx, update_self, ← WithBot.optionSome_eq_some,
           Option.elim', Box.face, Function.comp_def, update_of_ne (Fin.succAbove_ne _ _)]
         abel
       · have : (J.face i : WithTop (Box (Fin n))) ≤ I₀.face i :=
@@ -245,7 +245,7 @@ def upperSubLower.{u} {G : Type u} [AddCommGroup G] (I₀ : Box (Fin (n + 1))) (
           ← (fb _).map_split_add this j x, ← (fb _).map_split_add this j x]
         have hx' : x ∈ Ioo ((J.face i).lower j) ((J.face i).upper j) := hx
         simp only [Box.splitLower_def hx, Box.splitUpper_def hx, Box.splitLower_def hx',
-          Box.splitUpper_def hx', ← WithBot.some_eq_coe, Option.elim', Box.face_mk,
+          Box.splitUpper_def hx', ← WithBot.optionSome_eq_some, Option.elim', Box.face_mk,
           update_of_ne (Fin.succAbove_ne _ _).symm, sub_add_sub_comm,
           update_comp_eq_of_injective _ (Fin.strictMono_succAbove i).injective j x, ← hf]
         simp only [Box.face])

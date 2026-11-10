@@ -123,11 +123,11 @@ lemma coe_add_eq_top_iff : a + y = ⊤ ↔ y = ⊤ := by simp
 
 lemma _root_.IsAddLeftRegular.withTop (ha : IsAddLeftRegular a) :
     IsAddLeftRegular (a : WithTop α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, optionSome_eq_some, ← coe_add, ha.eq_iff]
 
 lemma _root_.IsAddRightRegular.withTop (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithTop α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_top, some_eq_coe, ← coe_add, ha.eq_iff]
+  rintro (_ | b) (_ | c) <;> simp [none_eq_top, optionSome_eq_some, ← coe_add, ha.eq_iff]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
@@ -135,8 +135,8 @@ lemma _root_.AddLECancellable.withTop [LE α] (ha : AddLECancellable a) :
   rintro (_ | b) (_ | c)
   · simp [none_eq_top]
   · simp [none_eq_top]
-  · simp [some_eq_coe, ← coe_add, none_eq_top]
-  · simpa [none_eq_top, some_eq_coe, ← coe_add] using fun a ↦ ha a
+  · simp [optionSome_eq_some, ← coe_add, none_eq_top]
+  · simpa [none_eq_top, optionSome_eq_some, ← coe_add] using fun a ↦ ha a
 
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊤) : x + z = y + z ↔ x = y := by
   lift z to α using hz; exact (IsAddRightRegular.all _).withTop.eq_iff
@@ -484,11 +484,11 @@ lemma coe_add_eq_bot_iff : a + y = ⊥ ↔ y = ⊥ := by simp
 
 lemma _root_.IsAddLeftRegular.withBot (ha : IsAddLeftRegular a) :
     IsAddLeftRegular (a : WithBot α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, optionSome_eq_some, ← coe_add]; simpa using @ha _ _
 
 lemma _root_.IsAddRightRegular.withBot (ha : IsAddRightRegular a) :
     IsAddRightRegular (a : WithBot α) := by
-  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, some_eq_coe, ← coe_add]; simpa using @ha _ _
+  rintro (_ | b) (_ | c) <;> simp [none_eq_bot, optionSome_eq_some, ← coe_add]; simpa using @ha _ _
 
 set_option backward.isDefEq.respectTransparency false in
 lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
@@ -496,8 +496,8 @@ lemma _root_.AddLECancellable.withBot [LE α] (ha : AddLECancellable a) :
   rintro (_ | b) (_ | c)
   · simp [none_eq_bot]
   · simp [none_eq_bot]
-  · simp [some_eq_coe, ← coe_add, none_eq_bot]
-  · simpa [none_eq_bot, some_eq_coe, ← coe_add] using fun a ↦ ha a
+  · simp [optionSome_eq_some, ← coe_add, none_eq_bot]
+  · simpa [none_eq_bot, optionSome_eq_some, ← coe_add] using fun a ↦ ha a
 
 lemma add_right_inj [IsRightCancelAdd α] (hz : z ≠ ⊥) : x + z = y + z ↔ x = y := by
   lift z to α using hz; cases x <;> cases y <;> simp [← coe_add]
