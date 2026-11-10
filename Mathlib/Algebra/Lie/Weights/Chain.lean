@@ -377,7 +377,7 @@ end
 
 lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
     (chainTop α β).IsNonZero :=
-  chainTop_isNonZero' α β hα α.2
+  chainTop_isNonZero' α β hα α.genWeightSpace_ne_bot'
 
 end
 
