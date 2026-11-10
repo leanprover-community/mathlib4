@@ -481,9 +481,13 @@ theorem nonempty_iff_ne_empty : s.Nonempty ↔ s ≠ ∅ :=
   ne_empty_iff_nonempty.symm
 
 /-- Variant of `ne_empty_iff_nonempty` used by `push Not`. -/
-@[push ←]
+@[simp, push]
+lemma empty_ne_iff_nonempty : ∅ ≠ s ↔ s.Nonempty :=
+  ne_comm.trans ne_empty_iff_nonempty
+
+@[deprecated empty_ne_iff_nonempty +typeChanged (since := "2026-11-10")]
 theorem nonempty_iff_empty_ne : s.Nonempty ↔ ∅ ≠ s :=
-  ne_empty_iff_nonempty.symm.trans ne_comm
+  empty_ne_iff_nonempty.symm
 
 /-- See also `nonempty_iff_ne_empty'`. -/
 theorem not_nonempty_iff_eq_empty' : ¬Nonempty s ↔ s = ∅ := by

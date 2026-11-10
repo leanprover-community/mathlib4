@@ -210,7 +210,7 @@ theorem NoetherianSpace.exists_isOpen_nonempty_subset_irreducibleComponent [Noet
   · rw [Set.sUnion_eq_biUnion, isOpen_compl_iff]
     exact hα.sdiff.isClosed_biUnion fun W hW ↦ isClosed_of_mem_irreducibleComponents W hW.1
   · contrapose! hZ
-    rw [hZ, closure_empty, ← Set.nonempty_iff_empty_ne]
+    rw [hZ, closure_empty, Set.empty_ne_iff_nonempty]
     exact H.1.nonempty
 
 lemma NoetherianSpace.of_subset {W V : Set α} [NoetherianSpace W]
