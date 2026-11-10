@@ -105,9 +105,6 @@ lemma isSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] (d : ι →
 
 end IsSymmetrizable
 
-def IsPosSymmetrizer [Semiring R] [LT R] (M : Matrix ι ι R) {κ : Type*} (f : κ → ι) (d : κ → R) :=
-  (∀ i, 0 < d i) ∧ ∀ i j, d i * M (f i) (f j) = d j * M (f j) (f i)
-
 /-- A matrix is positively symmetrizable if it is symmetric when multiplied by a diagonal matrix of
 positive diagonal entries. -/
 def IsPosSymmetrizable [Semiring R] [IsDomain R] [LT R]
