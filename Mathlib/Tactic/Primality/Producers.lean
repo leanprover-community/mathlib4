@@ -135,6 +135,19 @@ def FactorizerConfig.toFactorizer (cfg : FactorizerConfig) : Factorizer :=
 
 end Factorizer
 
+/-- The Jacobi symbol `J(a | n)` for an odd `n`. `jacobiSym` computes the same
+value, but importing it would double the import closure of the tactic. -/
+def jacobi (a n : ℕ) : ℤ := Id.run do
+  let mut a := a % n
+  let mut n := n
+  let mut s : ℤ := 1
+  while a != 0 do
+    let (k, b) := Nat.maxPowDvdDiv 2 a
+    if k % 2 == 1 && (n % 8 == 3 || n % 8 == 5) then s := -s
+    if b % 4 == 3 && n % 4 == 3 then s := -s
+    (a, n) := (n % b, b)
+  return if n == 1 then s else 0
+
 /-- Searches for the root and the factorization of `p - 1` of a Lucas witness for `p`, trying
 `2, …, 1023` as primitive roots. The part of `p - 1` that the factorizer leaves is taken to be
 prime. -/
@@ -142,6 +155,8 @@ def findLucasWitness (factorizer : Factorizer) (p : ℕ) : CoreM (ℕ × List (�
   let (factors, rest) ← factorizer.decompose (p - 1)
   let primeFactors := (if rest == 1 then factors else factors.push rest).toList
   for root in 2...1024 do
+    -- A primitive root is not a square modulo `p`, and `jacobi` decides that without a `powMod`.
+    if jacobi root p != -1 then continue
     if let some factorization := LucasWitness.factorization? { root, primeFactors } p then
       return (root, factorization)
   throwError "primality failed to find a witness for {p}"
