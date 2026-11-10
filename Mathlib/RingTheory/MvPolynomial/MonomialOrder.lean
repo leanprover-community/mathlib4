@@ -90,7 +90,6 @@ and a monomial order `m : MonomialOrder σ`.
 ## References
 
 [Becker-Weispfenning1993]
-
 -/
 
 @[expose] public section

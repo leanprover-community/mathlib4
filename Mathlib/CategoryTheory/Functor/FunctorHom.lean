@@ -17,7 +17,6 @@ that the functor category `C ⥤ D` is enriched over `C ⥤ Type max v' v u`. Th
 for showing that `C ⥤ Type max w v u` is monoidal closed.
 
 See `Mathlib/CategoryTheory/Closed/FunctorToTypes.lean`.
-
 -/
 
 @[expose] public section

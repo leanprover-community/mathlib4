@@ -16,7 +16,6 @@ public import Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology
   `IsPrecomplete I R` is equivalent to `CompleteSpace R` in the adic topology.
 - `IsAdic.isAdicComplete_iff`:
   `IsAdicComplete I R` is equivalent to `CompleteSpace R` and `T2Space R` in the adic topology.
-
 -/
 
 public section

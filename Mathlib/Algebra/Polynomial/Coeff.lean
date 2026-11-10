@@ -17,7 +17,6 @@ import Mathlib.Algebra.MonoidAlgebra.Support
 
 The theorems include formulas for computing coefficients, such as
 `coeff_add`, `coeff_sum`, `coeff_mul`
-
 -/
 
 @[expose] public section

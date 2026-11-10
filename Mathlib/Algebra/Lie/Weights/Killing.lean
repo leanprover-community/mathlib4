@@ -36,7 +36,6 @@ forms.
 * `LieAlgebra.IsKilling.finrank_rootSpace_eq_one`: root spaces are one-dimensional.
 * `LieAlgebra.IsKilling.lieIdeal_eq_inf_cartan_sup_biSup_rootSpace`: a Lie ideal decomposes as its
   intersection with the Cartan subalgebra plus a sum of root spaces.
-
 -/
 
 @[expose] public section

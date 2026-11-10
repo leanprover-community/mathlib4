@@ -59,7 +59,6 @@ and `Asymptotics.IsBigOTVS` was defined in a similar manner.
 
 - Add `Asymptotics.IsEquivalentTVS`.
 - Prove a version of `Asymptotics.isBigO_one` for `IsBigOTVS`.
-
 -/
 
 @[expose] public section

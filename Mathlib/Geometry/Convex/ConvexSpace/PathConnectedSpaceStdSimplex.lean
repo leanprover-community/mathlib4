@@ -10,7 +10,6 @@ public import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # The standard simplex is path-connected
-
 -/
 
 public section

@@ -300,7 +300,7 @@ protected theorem FiniteAtFilter.prod {X Y : Type*} {m : MeasurableSpace X} {μ 
   rcases hν with ⟨t, ht, hνt⟩
   use s ×ˢ t, Filter.prod_mem_prod hs ht
   grw [prod_prod_le]
-  exact ENNReal.mul_lt_top hμs hνt
+  finiteness
 
 instance prod.instIsLocallyFiniteMeasure {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
     {m : MeasurableSpace X} {μ : Measure X} [IsLocallyFiniteMeasure μ] {m' : MeasurableSpace Y}

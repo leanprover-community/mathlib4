@@ -21,7 +21,6 @@ public import Mathlib.RingTheory.Ideal.Norm.RelNorm
   Assume that `K₁` and `K₂` are two linear disjoint number fields with coprime different ideals.
   Then, the absolute value of the discriminant of their compositum is equal to
   `|discr K₁| ^ [K₂ : ℚ] * |discr K₂| ^ [K₁ : ℚ]`.
-
 -/
 
 public section

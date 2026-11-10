@@ -19,7 +19,6 @@ The purpose of this file is to record basic analytic properties of
 ## Main definitions
 
 * `negMulLog`: the function `x ↦ - x * log x` from `ℝ` to `ℝ`.
-
 -/
 
 @[expose] public section

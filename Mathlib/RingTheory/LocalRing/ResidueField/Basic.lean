@@ -14,7 +14,6 @@ public import Mathlib.RingTheory.LocalRing.RingHom.Basic
 # Residue Field of local rings
 
 We prove basic properties of the residue field of a local ring.
-
 -/
 
 @[expose] public section

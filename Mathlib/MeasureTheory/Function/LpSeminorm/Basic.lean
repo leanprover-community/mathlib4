@@ -263,7 +263,8 @@ theorem eLpNorm_const_lt_top_iff_eNorm {c : ε} (hc' : ‖c‖ₑ ≠ ∞)
   obtain hμ_top | hμ_ne_top := eq_or_ne (μ .univ) ∞
   · simp [hc, hμ_top, hp]
   rw [ENNReal.mul_lt_top_iff]
-  simpa [hμ, hc, hμ_ne_top, hμ_ne_top.lt_top, hc'.lt_top] using by finiteness
+  simp [hμ, hc, hμ_ne_top, hμ_ne_top.lt_top, hc'.lt_top]
+  finiteness
 
 @[deprecated (since := "2026-11-06")]
 alias eLpNorm_const_lt_top_iff_enorm := eLpNorm_const_lt_top_iff_eNorm

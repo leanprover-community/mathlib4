@@ -71,7 +71,6 @@ Unfortunately there is not yet enough API to show that they are the completion
 of the ring of multivariate polynomials. However, we provide most of the infrastructure
 that is needed to do this. Once I-adic completion (topological or algebraic) is available
 it should not be hard to fill in the details.
-
 -/
 
 @[expose] public section

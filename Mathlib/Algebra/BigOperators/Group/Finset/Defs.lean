@@ -39,7 +39,6 @@ Let `s` be a `Finset ι`, and `f : ι → β` a function.
 The first arguments in all definitions and lemmas is the codomain of the function of the big
 operator. This is necessary for the heuristic in `@[to_additive]`.
 See the documentation of `to_additive.attr` for more information.
-
 -/
 
 @[expose] public section

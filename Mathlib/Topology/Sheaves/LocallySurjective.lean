@@ -22,7 +22,6 @@ In this file we formulate two notions for what it means for
   2. For each `x : X`, the map of *stalks* `Tₓ : ℱₓ ⟶ 𝒢ₓ` is surjective.
 
 We prove that these are equivalent.
-
 -/
 
 @[expose] public section

@@ -27,7 +27,6 @@ contains a unique prime field: it is the smallest field contained in `K`.
   image of) `ℚ`.
 * `Subfield.bot_eq_of_zMod_algebra`: the smallest subfield of a field of characteristic `p` is (the
   image of) `ZMod p`.
-
 -/
 
 public section

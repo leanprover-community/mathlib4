@@ -29,7 +29,6 @@ In this file we provide basic properties of the scheme.
 - `AlgebraicGeometry.Proj.fromOfGlobalSections`:
   Given a map `f : A →+* Γ(X, ⊤)` such that the image of the irrelevant ideal under `f`
   generates the whole ring, we can construct a map `X ⟶ Proj 𝒜`.
-
 -/
 
 @[expose] public section

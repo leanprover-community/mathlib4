@@ -24,7 +24,6 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 - `Nat.prime_iff`: `Nat.Prime` coincides with the general definition of `Prime`
 - `Nat.irreducible_iff_nat_prime`: a non-unit natural number is
                                   only divisible by `1` iff it is prime
-
 -/
 
 @[expose] public section
@@ -354,7 +353,7 @@ theorem minFac_le_div {n : ℕ} (pos : 0 < n) (np : ¬Prime n) : minFac n ≤ n 
     rw [le_antisymm (le_of_lt_succ np) (succ_le_of_lt pos), minFac_one, Nat.div_one]
   | ⟨x + 2, hx⟩ => by
     conv_rhs =>
-      congr
+      enter [1]
       rw [hx]
     rw [Nat.mul_div_cancel_left _ (minFac_pos _)]
     exact minFac_le_of_dvd (le_add_left 2 x) ⟨minFac n, by rwa [mul_comm]⟩

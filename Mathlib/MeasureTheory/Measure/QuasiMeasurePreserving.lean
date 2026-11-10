@@ -20,7 +20,6 @@ absolutely continuous with respect to `μb`).
 
 * `MeasureTheory.QuasiMeasurePreserving f μa μb`: `f` is quasi-measure-preserving with
   respect to `μa` and `μb`.
-
 -/
 
 public section

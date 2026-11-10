@@ -70,7 +70,6 @@ Rework proofs to hold in semirings, by avoiding the path through
 ## Tags
 
 linearly dependent, linear dependence, linearly independent, linear independence
-
 -/
 
 @[expose] public section
