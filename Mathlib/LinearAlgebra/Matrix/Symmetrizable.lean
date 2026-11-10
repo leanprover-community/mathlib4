@@ -202,7 +202,7 @@ lemma isPosSymmetrizable_iff_add_diagonal [DecidableEq ι] [Semiring R] [IsDomai
   simp [h]
 
 /-- Extends positive symmetry from the complement of an index `v` to the full matrix,
-given scaling factors `a` and `b` and a symmetry condition on the cross-entries with `v`. -/
+given a positive symmetry condition on the entries with `v`. -/
 lemma IsPosSymmetrizable.extend_index [Semiring R] [IsDomain R] [PartialOrder R] [ZeroLEOneClass R]
     [PosMulStrictMono R] {v : ι} (e : {i : ι // i ≠ v} → R) (he : ∀ i, 0 < e i) (a b : R)
     (ha : 0 < a) (hb : 0 < b) (hE : ∀ i j, e i * M i.1 j.1 = e j * M j.1 i.1)
