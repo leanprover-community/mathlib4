@@ -103,8 +103,7 @@ theorem ext {e e' : P₁ ≃ᴬ[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
   DFunLike.ext _ _ h
 
 @[continuity]
-protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e :=
-  e.2
+protected theorem continuous (e : P₁ ≃ᴬ[k] P₂) : Continuous e := by fun_prop
 
 /-- A continuous affine equivalence is a continuous affine map. -/
 def toContinuousAffineMap (e : P₁ ≃ᴬ[k] P₂) : P₁ →ᴬ[k] P₂ where
@@ -137,6 +136,7 @@ end Basic
 
 section ReflSymmTrans
 
+set_option fun_prop.projDefaultTransparency true in
 variable (k P₁) in
 /-- Identity map as a `ContinuousAffineEquiv`. -/
 def refl : P₁ ≃ᴬ[k] P₁ where

@@ -12,7 +12,6 @@ public import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
 /-!
-
 # Smooth morphisms
 
 An `R`-algebra `A` is formally smooth if `Ω[A⁄R]` is `A`-projective and `H¹(L_{A/R}) = 0`.
@@ -108,7 +107,6 @@ lemma FormallySmooth.comp_surjective [FormallySmooth R A] (I : Ideal B) (hI : I 
     simpa using! (Function.surjInv_eq _ _).symm
   exact ⟨l.comp g, by rw [← AlgHom.comp_assoc, ← this, AlgHom.comp_assoc, hg, AlgHom.comp_id]⟩
 
-set_option backward.defeqAttrib.useBackward true in
 instance instFormallySmoothMvPolynomial (σ : Type*) : FormallySmooth R (MvPolynomial σ R) := by
   let P := Generators.mvPolynomial R σ
   have : Subsingleton ↥P.toExtension.ker :=

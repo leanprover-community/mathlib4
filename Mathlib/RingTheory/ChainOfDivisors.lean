@@ -8,8 +8,8 @@ module
 public import Mathlib.Algebra.IsPrimePow
 public import Mathlib.Order.Atoms
 public import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-/-!
 
+/-!
 # Chains of divisors
 
 The results in this file show that in the monoid `Associates M` of a `UniqueFactorizationMonoid`

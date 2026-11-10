@@ -8,7 +8,6 @@ module
 public import Mathlib.GroupTheory.Perm.Cycle.Type
 
 /-!
-
 # Properties of cyclic permutations constructed from lists/cycles
 
 In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.

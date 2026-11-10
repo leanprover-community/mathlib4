@@ -319,7 +319,7 @@ def piFan : Fan R :=
 The categorical product of rings is the Cartesian product of rings.
 -/
 def piFanIsLimit : IsLimit (piFan R) where
-  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.1 ⟨i⟩).hom
+  lift s := ofHom <| RingHom.pi fun i ↦ (s.π.app ⟨i⟩).hom
   fac s i := by rfl
   uniq _ _ h := hom_ext <| DFunLike.ext _ _ fun x ↦ funext fun i ↦
     congr($(h ⟨i⟩).hom x)

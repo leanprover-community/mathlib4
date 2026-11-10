@@ -76,7 +76,7 @@ theorem AnalyticOnNhd.eval_continuousLinearMap' (f : σ → E →L[𝕜] B) (p :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f · x) p) Set.univ :=
   fun x _ ↦ .aeval_mvPolynomial (fun i ↦ (f i).analyticAt x) p
 
-variable [CompleteSpace 𝕜] [T2Space E] [FiniteDimensional 𝕜 E]
+variable [CompleteSpace 𝕜] [FiniteDimensional 𝕜 E]
 
 theorem AnalyticOnNhd.eval_linearMap (f : E →ₗ[𝕜] σ → B) (p : MvPolynomial σ B) :
     AnalyticOnNhd 𝕜 (fun x ↦ eval (f x) p) Set.univ :=

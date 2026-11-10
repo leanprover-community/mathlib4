@@ -725,7 +725,6 @@ def toCochainLinearMap : Cocycle K L n →ₗ[R] Cochain K L n where
   map_add' := by simp
   map_smul' := by simp
 
-set_option backward.defeqAttrib.useBackward true in
 set_option backward.isDefEq.respectTransparency false in
 variable (L n) in
 /-- `Cocycle K L n` is the kernel of the differential on `HomComplex K L`. -/
@@ -992,7 +991,7 @@ noncomputable def HomComplex.Cocycle.isKernel' (hm : n + 1 = m) :
     IsLimit (KernelFork.ofι (f := (linearHomComplex R K L).d n m)
       (ModuleCat.ofHom (Cocycle.toCochainLinearMap R K L _)) (by cat_disch)) :=
   isLimitOfReflects (forget₂ _ (AddCommGrpCat.{v}))
-    ((KernelFork.isLimitMapConeEquiv ..).2 (Cocycle.isKernel K L n m hm))
+    ((KernelFork.isLimitMapConeEquiv ..).invFun (Cocycle.isKernel K L n m hm))
 
 variable (R K L) in
 lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
@@ -1000,6 +999,6 @@ lemma HomComplex.Cocycle.isKernel'_lift_apply_coe_eq_δ
     dsimp% (((Cocycle.isKernel' R K L m p hp).lift
       (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp))) x).1 = δ n m x :=
   congr($((Cocycle.isKernel' R K L m p hp).fac
-      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).1 x)
+      (KernelFork.ofι ((linearHomComplex R K L).d n m) (by simp)) .zero).hom' x)
 
 end CochainComplex

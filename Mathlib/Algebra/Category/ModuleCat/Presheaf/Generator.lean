@@ -120,16 +120,16 @@ variable {C : Type u} [Category.{v} C] {R : Cᵒᵖ ⥤ RingCat.{v}} {M : Preshe
 free presheaf of modules on the Yoneda presheaf of types corresponding to the
 underlying object of `m`. -/
 noncomputable abbrev freeYoneda (m : M.Elements) :
-    PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.1.unop)
+    PresheafOfModules.{v} R := (free R).obj (yoneda.obj m.obj.unop)
 
 /-- Given an element `m : M.Elements` of a presheaf of modules `M`, this is
 the canonical morphism `m.freeYoneda ⟶ M`. -/
 noncomputable abbrev fromFreeYoneda (m : M.Elements) :
     m.freeYoneda ⟶ M :=
-  freeYonedaEquiv.symm m.2
+  freeYonedaEquiv.symm m.val
 
 lemma fromFreeYoneda_app_apply (m : M.Elements) :
-    m.fromFreeYoneda.app m.1 (ModuleCat.freeMk (𝟙 _)) = m.2 := by
+    m.fromFreeYoneda.app m.obj (ModuleCat.freeMk (𝟙 _)) = m.val := by
   apply freeYonedaEquiv_symm_app
 
 end Elements
@@ -158,7 +158,7 @@ noncomputable def fromFreeYonedaCoproduct :
 /-- Given an element `m` of a presheaf of modules `M`, this is the associated
 canonical section of the presheaf `M.freeYonedaCoproduct` over the object `m.1`. -/
 noncomputable def freeYonedaCoproductMk (m : M.Elements) :
-    M.freeYonedaCoproduct.obj m.1 :=
+    M.freeYonedaCoproduct.obj m.obj :=
   (M.ιFreeYonedaCoproduct m).app _ (ModuleCat.freeMk (𝟙 _))
 
 @[reassoc (attr := simp)]
@@ -174,7 +174,7 @@ lemma ι_fromFreeYonedaCoproduct_apply (m : M.Elements) (X : Cᵒᵖ) (x : m.fre
 set_option backward.isDefEq.respectTransparency.types false in
 @[simp]
 lemma fromFreeYonedaCoproduct_app_mk (m : M.Elements) :
-    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.2 := by
+    M.fromFreeYonedaCoproduct.app _ (M.freeYonedaCoproductMk m) = m.val := by
   rw [freeYonedaCoproductMk, M.ι_fromFreeYonedaCoproduct_apply m, m.fromFreeYoneda_app_apply]
 
 instance : Epi M.fromFreeYonedaCoproduct :=

@@ -70,6 +70,24 @@ example (hAB : A ⊆ B) (hBC : B ⊆ C) (hCD : C ⊆ D) (hDE : D = E) (hEA : E �
     (Aᶜ ∩ B ∪ (C ∩ Bᶜ)ᶜ ∩ (Eᶜ ∪ A))ᶜ ∩ (B ∪ Eᶜᶜ)ᶜ =
     (Dᶜ ∩ C ∪ (B ∩ Aᶜ)ᶜ ∩ (Eᶜ ∪ E))ᶜ ∩ (D ∪ Cᶜᶜ)ᶜ := by tauto_set
 
+/-!
+`tauto_set` must not specialize the auxiliary local
+declaration for the theorem currently being elaborated.
+-/
+example : ∀ x : ℕ, {x} ⊆ Set.univ := by
+  intro x
+  tauto_set
+
+example : ∀ x : ℕ, x ≠ 0 → {x} ⊆ Set.univ := by
+  intro x hx
+  tauto_set
+
+example : ∀ x : ℕ, x ≠ 0 → x = x := by
+  intro x hx
+  have : ({x} : Set Nat) ⊆ Set.univ := by
+    tauto_set
+  rfl
+
 
 
 /-
