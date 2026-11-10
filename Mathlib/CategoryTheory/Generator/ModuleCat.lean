@@ -30,7 +30,7 @@ namespace ModuleCat
 variable (R : Type w) [Ring R]
 
 /-- The forget functor `ModuleCat R ⥤ Type _` is corepresentable by `R` as a module over itself. -/
-@[expose, simps!]
+@[expose, simps! +dsimpLhs]
 def corepresentableByForget : (forget (ModuleCat.{w} R)).CorepresentableBy (.of R R) where
   homEquiv :=
     { toFun f := f.hom 1
@@ -39,16 +39,15 @@ def corepresentableByForget : (forget (ModuleCat.{w} R)).CorepresentableBy (.of 
       right_inv _ := by simp }
 
 /-- The forget functor `ModuleCat R ⥤ Type _` is corepresentable by `R` as a module over itself. -/
-@[expose, simps!]
+@[expose, simps! +dsimpLhs]
 def coyonedaObjIsoForget : coyoneda.obj (op (ModuleCat.of R R)) ≅ forget _ :=
   NatIso.ofComponents (fun M ↦ (corepresentableByForget R).homEquiv.toIso)
 
 lemma isSeparating_singleton :
     (ObjectProperty.singleton (ModuleCat.of R R)).IsSeparating := by
-  intro M N f g h
+  intro _ _ _ _ h
   ext m
-  simpa [corepresentableByForget_homEquiv_symm_apply_hom_apply R] using
-    congr($(h _ ⟨⟨⟩⟩ ((corepresentableByForget R).homEquiv.symm m)) 1)
+  simpa using congr($(h _ ⟨⟨⟩⟩ ((corepresentableByForget R).homEquiv.symm m)) 1)
 
 lemma isStrongGenerator_singleton :
     (ObjectProperty.singleton (ModuleCat.of R R)).IsStrongGenerator := by
@@ -60,8 +59,7 @@ lemma isStrongGenerator_singleton :
     intro n
     obtain ⟨f, hf⟩ := hi _ ⟨⟨⟩⟩ ((corepresentableByForget R).homEquiv.symm n)
     obtain ⟨m, rfl⟩ := (corepresentableByForget R).homEquiv.symm.surjective f
-    refine ⟨m, ?_⟩
-    simpa [corepresentableByForget_homEquiv_symm_apply_hom_apply R] using congr($(hf) 1)
+    exact ⟨m, by simpa using congr($(hf) 1)⟩
   exact Balanced.isIso_of_mono_of_epi i
 
 end ModuleCat
