@@ -44,21 +44,21 @@ theorem smul_def [Group G] [MulAction G β] (g : G) (f : α ↪ β) :
     g • f = f.trans (MulAction.toPerm g).toEmbedding :=
   rfl
 
-@[deprecated vadd_apply +typeChanged (since := "2026-10-29")]
+@[deprecated vadd_apply +typeChanged (since := "2026-11-10")]
 protected theorem vadd_apply [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) (a : α) :
     (g +ᵥ f) a = g +ᵥ f a :=
   rfl
 
-@[to_additive existing, deprecated smul_apply +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated smul_apply +typeChanged (since := "2026-11-10")]
 protected theorem smul_apply [Group G] [MulAction G β] (g : G) (f : α ↪ β) (a : α) :
     (g • f) a = g • f a :=
   rfl
 
-@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-10-29")]
+@[deprecated FunLike.coe_vadd +typeChanged (since := "2026-11-10")]
 theorem coe_vadd [AddGroup G] [AddAction G β] (g : G) (f : α ↪ β) : ⇑(g +ᵥ f) = g +ᵥ ⇑f :=
   rfl
 
-@[to_additive existing, deprecated FunLike.coe_smul +typeChanged (since := "2026-10-29")]
+@[to_additive existing, deprecated FunLike.coe_smul +typeChanged (since := "2026-11-10")]
 theorem coe_smul [Group G] [MulAction G β] (g : G) (f : α ↪ β) : ⇑(g • f) = g • ⇑f :=
   rfl
 
