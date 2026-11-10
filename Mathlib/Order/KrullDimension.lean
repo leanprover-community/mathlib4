@@ -949,7 +949,7 @@ lemma krullDimLE_iff_coheight_le_isMin {X : Type*} [Preorder X] {n : ℕ} :
         (coheight_add_one_le (lt_of_le_not_ge hy hxy))
     have h3 : ((n + 1 : ℕ) : WithBot ℕ∞) ≤ (n : WithBot ℕ∞) :=
       le_trans (le_trans (by exact_mod_cast h2) (coheight_le_krullDim y)) h
-    exact absurd (by exact_mod_cast h3 : n + 1 ≤ n) (by omega)
+    exact absurd (mod_cast h3 : n + 1 ≤ n) (by lia)
   · by_contra hcon
     rw [not_le] at hcon
     obtain ⟨l, hl⟩ := le_krullDim_iff.mp (show ((n + 1 : ℕ) : WithBot ℕ∞) ≤ krullDim X by
