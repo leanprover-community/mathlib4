@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.CategoryTheory.Comma.IsoCat
 public import Mathlib.CategoryTheory.Functor.KanExtension.DenseAtCoyoneda
 public import Mathlib.CategoryTheory.Generator.Presheaf
 public import Mathlib.CategoryTheory.Limits.Preorder
