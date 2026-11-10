@@ -110,6 +110,7 @@ positive diagonal entries. -/
 def IsPosSymmetrizable [Semiring R] [IsDomain R] [LT R]
     (M : Matrix ι ι R) : Prop :=
   ∃ d : ι → R, (∀ i, 0 < d i) ∧ ∀ i j, d i * M i j = d j * M j i
+
 section IsPosSymmetrizable
 
 lemma IsPosSymmetrizable.isSymmetrizable [Semiring R] [IsDomain R] [Preorder R]
