@@ -20,7 +20,6 @@ function takes the same value at every pair of points of a given set.
 Note that a function with empty domain is considered constant.
 If a constant function has non-empty codomain, then it can be represented by `Function.const`,
 see `isConst_iff_exists_eq_const`.
-
 -/
 
 public section
