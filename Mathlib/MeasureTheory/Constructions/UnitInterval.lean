@@ -35,7 +35,7 @@ instance : IsProbabilityMeasure (volume : Measure I) where
     rw [Measure.Subtype.volume_univ nullMeasurableSet_Icc, Real.volume_Icc, sub_zero,
       ENNReal.ofReal_one]
 
-lemma measurableEmbedding_coe : MeasurableEmbedding ((↑) : I → ℝ) where
+lemma measurableEmbedding_subtypeVal : MeasurableEmbedding ((↑) : I → ℝ) where
   injective := Subtype.val_injective
   measurable := measurable_subtype_coe
   measurableSet_image' _ := measurableSet_Icc.subtype_image
@@ -43,7 +43,7 @@ lemma measurableEmbedding_coe : MeasurableEmbedding ((↑) : I → ℝ) where
 lemma volume_apply {s : Set I} : volume s = volume (Subtype.val '' s) :=
   measurableEmbedding_coe.comap_apply ..
 
-lemma measurePreserving_coe : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
+lemma measurePreserving_subtypeVal : MeasurePreserving ((↑) : I → ℝ) volume (volume.restrict I) :=
   measurePreserving_subtype_coe measurableSet_Icc
 
 instance : NullSingletonClass (volume : Measure I) where

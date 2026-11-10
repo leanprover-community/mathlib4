@@ -383,12 +383,12 @@ theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
   ⟨.subtypeVal, by rwa [Subtype.range_coe_subtype]⟩
 
 @[continuity, fun_prop]
-theorem continuous_subtype_val : Continuous (@Subtype.val X p) :=
+theorem continuous_subtypeVal : Continuous (@Subtype.val X p) :=
   continuous_induced_dom
 
-theorem Continuous.subtype_val {f : Y → Subtype p} (hf : Continuous f) :
+theorem Continuous.subtypeVal {f : Y → Subtype p} (hf : Continuous f) :
     Continuous fun x => (f x : X) :=
-  continuous_subtype_val.comp hf
+  continuous_subtypeVal.comp hf
 
 @[fun_prop]
 theorem IsOpen.isOpenEmbedding_subtypeVal {s : Set X} (hs : IsOpen s) :
@@ -504,10 +504,10 @@ theorem denseRange_inclusion_iff {s t : Set X} (hst : s ⊆ t) :
     DenseRange (inclusion hst) ↔ t ⊆ closure s := by
   rw [DenseRange, Subtype.dense_iff, ← range_comp, val_comp_inclusion, Subtype.range_coe]
 
-theorem map_nhds_subtype_val {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
+theorem map_nhds_subtypeVal {s : Set X} (x : s) : map ((↑) : s → X) (𝓝 x) = 𝓝[s] ↑x := by
   rw [IsInducing.subtypeVal.map_nhds_eq, Subtype.range_val]
 
-theorem map_nhds_subtype_coe_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
+theorem map_nhds_subtypeVal_eq_nhds {x : X} (hx : p x) (h : ∀ᶠ x in 𝓝 x, p x) :
     map ((↑) : Subtype p → X) (𝓝 ⟨x, hx⟩) = 𝓝 x :=
   map_nhds_induced_of_mem <| by rw [Subtype.range_val]; exact h
 

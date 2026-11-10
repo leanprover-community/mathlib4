@@ -494,7 +494,7 @@ theorem comap_injective {f : α → β} (hf : Surjective f) : Injective (comap f
 theorem _root_.Function.Surjective.filter_map_top {f : α → β} (hf : Surjective f) : map f ⊤ = ⊤ :=
   (congr_arg _ comap_top).symm.trans <| map_comap_of_surjective hf ⊤
 
-theorem subtype_coe_map_comap (s : Set α) (f : Filter α) :
+theorem subtypeVal_map_comap (s : Set α) (f : Filter α) :
     map ((↑) : s → α) (comap ((↑) : s → α) f) = f ⊓ 𝓟 s := by rw [map_comap, Subtype.range_coe]
 
 theorem image_mem_of_mem_comap {f : Filter α} {c : β → α} (h : range c ∈ f) {W : Set β}

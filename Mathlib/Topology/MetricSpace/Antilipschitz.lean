@@ -182,7 +182,7 @@ theorem isClosedEmbedding {α : Type*} {β : Type*} [EMetricSpace α] [EMetricSp
     IsClosedEmbedding f :=
   { (hf.isUniformEmbedding hfc).isEmbedding with isClosed_range := hf.isClosed_range hfc }
 
-theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
+theorem subtypeVal (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.domRestrict s
 
 @[nontriviality]

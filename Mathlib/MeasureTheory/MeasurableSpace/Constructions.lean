@@ -189,7 +189,7 @@ section
 
 variable [MeasurableSpace α]
 
-theorem measurable_subtype_coe {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
+theorem measurable_subtypeVal {p : α → Prop} : Measurable ((↑) : Subtype p → α) :=
   MeasurableSpace.le_map_comap
 
 instance Subtype.instMeasurableSingletonClass {p : α → Prop} [MeasurableSingletonClass α] :
@@ -213,11 +213,11 @@ theorem MeasurableSet.subtype_image {s : Set α} {t : Set s} (hs : MeasurableSet
   exact hs.inter hu
 
 @[fun_prop]
-theorem Measurable.subtype_coe {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
+theorem Measurable.subtypeVal {p : β → Prop} {f : α → Subtype p} (hf : Measurable f) :
     Measurable fun a : α => (f a : β) :=
   measurable_subtype_coe.comp hf
 
-alias Measurable.subtype_val := Measurable.subtype_coe
+alias Measurable.subtype_val := Measurable.subtypeVal
 
 @[fun_prop]
 theorem Measurable.subtype_mk {p : β → Prop} {f : α → β} (hf : Measurable f) {h : ∀ x, p (f x)} :

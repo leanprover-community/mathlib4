@@ -509,7 +509,7 @@ theorem nhdsWithin_subtype (s : Set α) (a : { x // x ∈ s }) (t : Set { x // x
     𝓝[t] a = comap ((↑) : s → α) (𝓝[(↑) '' t] a) :=
   Filter.ext fun _ => mem_nhdsWithin_subtype
 
-theorem nhdsWithin_eq_map_subtype_coe {s : Set α} {a : α} (h : a ∈ s) :
+theorem nhdsWithin_eq_map_subtypeVal {s : Set α} {a : α} (h : a ∈ s) :
     𝓝[s] a = map ((↑) : s → α) (𝓝 ⟨a, h⟩) :=
   (map_nhds_subtype_val ⟨a, h⟩).symm
 

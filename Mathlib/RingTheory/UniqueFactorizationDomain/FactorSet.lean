@@ -190,7 +190,7 @@ noncomputable def factors' (a : α) : Multiset { a : Associates α // Irreducibl
   (factors a).pmap (fun a ha => ⟨Associates.mk a, irreducible_mk.2 ha⟩) irreducible_of_factor
 
 @[simp]
-theorem map_subtype_coe_factors' {a : α} :
+theorem map_subtypeVal_factors' {a : α} :
     (factors' a).map (↑) = (factors a).map Associates.mk := by
   simp [factors', Multiset.map_pmap, Multiset.pmap_eq_map]
 

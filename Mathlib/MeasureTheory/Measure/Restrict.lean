@@ -787,7 +787,7 @@ section Subtype
 
 section ComapAnyMeasure
 
-theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
+theorem MeasurableSet.nullMeasurableSet_subtypeVal {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : MeasurableSet t) : NullMeasurableSet ((↑) '' t) μ := by
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
   induction t, ht using generateFrom_induction with
@@ -803,17 +803,17 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
     rw [image_iUnion]
     exact .iUnion hf
 
-theorem NullMeasurableSet.subtype_coe {t : Set s} (hs : NullMeasurableSet s μ)
+theorem NullMeasurableSet.subtypeVal {t : Set s} (hs : NullMeasurableSet s μ)
     (ht : NullMeasurableSet t (μ.comap Subtype.val)) : NullMeasurableSet (((↑) : s → α) '' t) μ :=
   NullMeasurableSet.image _ μ Subtype.coe_injective
     (fun _ => MeasurableSet.nullMeasurableSet_subtype_coe hs) ht
 
-theorem measure_subtype_coe_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
+theorem measure_subtypeVal_le_comap (hs : NullMeasurableSet s μ) (t : Set s) :
     μ (((↑) : s → α) '' t) ≤ μ.comap Subtype.val t :=
   le_comap_apply _ _ Subtype.coe_injective (fun _ =>
     MeasurableSet.nullMeasurableSet_subtype_coe hs) _
 
-theorem measure_subtype_coe_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
+theorem measure_subtypeVal_eq_zero_of_comap_eq_zero (hs : NullMeasurableSet s μ) {t : Set s}
     (ht : μ.comap Subtype.val t = 0) : μ (((↑) : s → α) '' t) = 0 :=
   eq_bot_iff.mpr <| (measure_subtype_coe_le_comap hs t).trans ht.le
 
@@ -842,11 +842,11 @@ theorem Subtype.volume_univ (hu : NullMeasurableSet u) : volume (univ : Set u) =
   · exact Subtype.coe_injective
   · exact fun t => MeasurableSet.nullMeasurableSet_subtype_coe hu
 
-theorem volume_subtype_coe_le_volume (hu : NullMeasurableSet u) (t : Set u) :
+theorem volume_subtypeVal_le_volume (hu : NullMeasurableSet u) (t : Set u) :
     volume (((↑) : u → δ) '' t) ≤ volume t :=
   measure_subtype_coe_le_comap hu t
 
-theorem volume_subtype_coe_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
+theorem volume_subtypeVal_eq_zero_of_volume_eq_zero (hu : NullMeasurableSet u) {t : Set u}
     (ht : volume t = 0) : volume (((↑) : u → δ) '' t) = 0 :=
   measure_subtype_coe_eq_zero_of_comap_eq_zero hu ht
 
@@ -928,14 +928,15 @@ lemma MeasureTheory.Measure.map_eq_comap {_ : MeasurableSpace α} {_ : Measurabl
 
 section Subtype
 
-theorem comap_subtype_coe_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
+theorem comap_subtypeVal_apply {_m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) (t : Set s) : comap (↑) μ t = μ ((↑) '' t) :=
   (MeasurableEmbedding.subtype_coe hs).comap_apply _ _
 
-theorem map_comap_subtype_coe {m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
+theorem map_comap_subtypeVal {m0 : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s)
     (μ : Measure α) : (comap (↑) μ).map ((↑) : s → α) = μ.restrict s := by
   rw [(MeasurableEmbedding.subtype_coe hs).map_comap, Subtype.range_coe]
 
+-- XXX: should this be named subtypeVal instead?
 theorem ae_restrict_iff_subtype {m0 : MeasurableSpace α} {μ : Measure α} {s : Set α}
     (hs : MeasurableSet s) {p : α → Prop} :
     (∀ᵐ x ∂μ.restrict s, p x) ↔ ∀ᵐ (x : s) ∂comap ((↑) : s → α) μ, p x := by
@@ -957,7 +958,7 @@ theorem MeasurableSet.map_coe_volume {s : Set α} (hs : MeasurableSet s) :
     volume.map ((↑) : s → α) = restrict volume s := by
   rw [volume_set_coe_def, (MeasurableEmbedding.subtype_coe hs).map_comap volume, Subtype.range_coe]
 
-theorem volume_image_subtype_coe {s : Set α} (hs : MeasurableSet s) (t : Set s) :
+theorem volume_image_subtypeVal {s : Set α} (hs : MeasurableSet s) (t : Set s) :
     volume ((↑) '' t : Set α) = volume t :=
   (comap_subtype_coe_apply hs volume t).symm
 
