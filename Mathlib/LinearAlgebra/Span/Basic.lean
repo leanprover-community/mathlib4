@@ -712,7 +712,7 @@ lemma isCompl_span_singleton_of_isCoatom_of_notMem (hs : IsCoatom s) (hx : x ∉
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
-theorem isCompl_span_singleton_iff : IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
+theorem isCoatom_iff_exists_isCompl_span_singleton : IsCoatom s ↔ ∃ x ∉ s, IsCompl s (K ∙ x) := by
   constructor
   · intro hs
     have ⟨b, hb⟩ := SetLike.exists_notMem_of_ne_top s hs.1 rfl
@@ -944,7 +944,7 @@ theorem coord_apply_smul (y : Submodule.span R ({x} : Set M)) : coord R M x h y 
   Subtype.ext_iff.1 <| (toSpanNonzeroSingleton R M x h).apply_symm_apply _
 
 @[simp]
-theorem coord_smul {x : M} (h : x ≠ 0) (a : R) :
+theorem coord_mk_smul {x : M} (h : x ≠ 0) (a : R) :
     (coord R M x h) ⟨a • x, Submodule.mem_span_singleton.mpr ⟨a, rfl⟩⟩ = a :=
   (symm_apply_eq (toSpanNonzeroSingleton R M x h)).mpr rfl
 
