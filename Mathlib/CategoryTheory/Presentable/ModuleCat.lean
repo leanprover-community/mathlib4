@@ -16,7 +16,7 @@ import Mathlib.CategoryTheory.Presentable.StrongGenerator
 # The category of modules over a ring is locally presentable
 
 If `R : Type w` is a ring, we show that the category `ModuleCat.{w} R`
-is `κ`-locally presentable category for any regular cardinal `κ`.
+is `κ`-locally presentable for any regular cardinal `κ`.
 
 -/
 
