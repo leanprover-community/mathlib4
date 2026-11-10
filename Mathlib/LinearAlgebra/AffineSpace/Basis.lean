@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Module.FunLike
 public import Mathlib.LinearAlgebra.AffineSpace.Centroid
 public import Mathlib.LinearAlgebra.AffineSpace.Independent

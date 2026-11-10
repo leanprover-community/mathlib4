@@ -36,7 +36,7 @@ variable (C) (D)
   ObjectProperty.preservesFiniteLimits
 
 variable {C D} in
-@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28"), simp]
+@[deprecated ObjectProperty.preservesFiniteLimits_iff +typeChanged (since := "2026-10-28")]
 lemma leftExactFunctor_iff (F : C ⥤ D) :
     leftExactFunctor F ↔ PreservesFiniteLimits F := Iff.rfl
 
@@ -60,7 +60,7 @@ abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaith
   ObjectProperty.preservesFiniteColimits
 
 variable {C D} in
-@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28"), simp]
+@[deprecated ObjectProperty.preservesFiniteColimits_iff +typeChanged (since := "2026-10-28")]
 lemma rightExactFunctor_iff (F : C ⥤ D) :
     rightExactFunctor F ↔ PreservesFiniteColimits F := Iff.rfl
 

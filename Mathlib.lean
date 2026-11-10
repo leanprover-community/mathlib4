@@ -366,6 +366,7 @@ public import Mathlib.Algebra.Group.Action.Defs
 public import Mathlib.Algebra.Group.Action.End
 public import Mathlib.Algebra.Group.Action.Equidecomp
 public import Mathlib.Algebra.Group.Action.Faithful
+public import Mathlib.Algebra.Group.Action.FunLike
 public import Mathlib.Algebra.Group.Action.Hom
 public import Mathlib.Algebra.Group.Action.Opposite
 public import Mathlib.Algebra.Group.Action.Option
@@ -460,6 +461,7 @@ public import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 public import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 public import Mathlib.Algebra.Group.Pointwise.Set.SelfInv
 public import Mathlib.Algebra.Group.Pointwise.Set.Small
+public import Mathlib.Algebra.Group.PowIterate
 public import Mathlib.Algebra.Group.Prod
 public import Mathlib.Algebra.Group.SelfInv
 public import Mathlib.Algebra.Group.Semiconj.Basic
@@ -526,6 +528,7 @@ public import Mathlib.Algebra.GroupWithZero.Action.Center
 public import Mathlib.Algebra.GroupWithZero.Action.ConjAct
 public import Mathlib.Algebra.GroupWithZero.Action.Defs
 public import Mathlib.Algebra.GroupWithZero.Action.End
+public import Mathlib.Algebra.GroupWithZero.Action.FunLike
 public import Mathlib.Algebra.GroupWithZero.Action.Hom
 public import Mathlib.Algebra.GroupWithZero.Action.Opposite
 public import Mathlib.Algebra.GroupWithZero.Action.Pi
@@ -2064,6 +2067,7 @@ public import Mathlib.Analysis.Convex.StrictConvexSpace
 public import Mathlib.Analysis.Convex.Strong
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Convex.TotallyBounded
+public import Mathlib.Analysis.Convex.TriangleEquality
 public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.Convex.Visible
 public import Mathlib.Analysis.Convolution
@@ -5531,6 +5535,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.TensorProduct.Opposite
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
+public import Mathlib.LinearAlgebra.TensorProduct.Projective
 public import Mathlib.LinearAlgebra.TensorProduct.Quotient
 public import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 public import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
@@ -7777,6 +7782,7 @@ public import Mathlib.Tactic.Linter.OverlappingInstances
 public import Mathlib.Tactic.Linter.PPRoundtrip
 public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
+public import Mathlib.Tactic.Linter.SyntaxBased
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
 public import Mathlib.Tactic.Linter.TextBased.UnicodeLinter
@@ -8099,6 +8105,7 @@ public import Mathlib.Topology.Algebra.Order.Floor
 public import Mathlib.Topology.Algebra.Order.Group
 public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 public import Mathlib.Topology.Algebra.Order.Module
+public import Mathlib.Topology.Algebra.Order.Polynomial
 public import Mathlib.Topology.Algebra.Order.Support
 public import Mathlib.Topology.Algebra.Order.UpperLower
 public import Mathlib.Topology.Algebra.Polynomial
