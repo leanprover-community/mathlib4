@@ -645,21 +645,31 @@ theorem adicAbv'_of_mk' {s : nonZeroDivisors R} :
     v.adicAbv' hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
   simp [adicAbv', adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
+@[deprecated (since := "2026-11-10")] alias adicAbv_of_mk' := adicAbv'_of_mk'
+
 /-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
 theorem adicAbv'_of_algebraMap (r : R) : v.adicAbv' hb (algebraMap R K r) = v.intAdicAbv hb r := by
   simp [adicAbv', adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+
+@[deprecated (since := "2026-11-10")] alias adicAbv_of_algebraMap := adicAbv'_of_algebraMap
 
 theorem adicAbv'_coe_le_one : v.adicAbv' hb (algebraMap R K r) ≤ 1 := by
   rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_le_one v hb r
 
+@[deprecated (since := "2026-11-10")] alias adicAbv_coe_le_one := adicAbv'_coe_le_one
+
 theorem adicAbv'_coe_lt_one_iff : v.adicAbv' hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
   rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_lt_one_iff v hb r
 
+@[deprecated (since := "2026-11-10")] alias adicAbv_coe_lt_one_iff := adicAbv'_coe_lt_one_iff
+
 theorem adicAbv'_coe_eq_one_iff : v.adicAbv' hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
   rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_eq_one_iff v hb r
+
+@[deprecated (since := "2026-11-10")] alias adicAbv_coe_eq_one_iff := adicAbv'_coe_eq_one_iff
 
 variable (K)
 
