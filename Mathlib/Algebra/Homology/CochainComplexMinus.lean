@@ -17,7 +17,6 @@ of `CochainComplex C ℤ` consisting of bounded above cochain complexes
 in a category `C`.
 
 This file should be kept in sync with `Mathlib/Algebra/Homology/CochainComplexPlus.lean`.
-
 -/
 
 @[expose] public section

@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 In this file, it is shown if a category `C` with zero morphisms has limits
 of a certain shape `J`, then it is also the case of the category `ShortComplex C`.
-
 -/
 
 @[expose] public section

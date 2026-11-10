@@ -31,7 +31,6 @@ See `Pseudofunctor.StrongTrans.categoryStruct`.
 
 ## References
 * [Niles Johnson, Donald Yau, *2-Dimensional Categories*](https://arxiv.org/abs/2002.06055)
-
 -/
 
 @[expose] public section

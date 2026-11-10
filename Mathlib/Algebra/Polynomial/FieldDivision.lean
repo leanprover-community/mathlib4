@@ -18,7 +18,6 @@ import Mathlib.Algebra.Order.Group.Finset
 # Theory of univariate polynomials
 
 This file starts looking like the ring theory of $R[X]$
-
 -/
 
 @[expose] public section

@@ -14,7 +14,6 @@ This file defines *càdlàg functions*, i.e. right-continuous functions with lef
 are for instance a common hypothesis made on stochastic processes.
 
 Using the `to_dual` machinery we also define *càglàd functions* (left-continuous with right limits).
-
 -/
 
 @[expose] public section

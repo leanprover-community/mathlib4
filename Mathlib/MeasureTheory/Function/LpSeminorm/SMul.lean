@@ -52,7 +52,7 @@ theorem eLpNorm_const_smul_le :
     exact le_top
 
 theorem MemLp.const_smul (hf : MemLp f p μ) (c : 𝕜) : MemLp (c • f) p μ :=
-  (eLpNorm_const_smul_le).trans_lt (ENNReal.mul_lt_top ENNReal.coe_lt_top hf)
+  (eLpNorm_const_smul_le).trans_lt (by finiteness)
 
 theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp (fun x => c * f x) p μ :=
   hf.const_smul c

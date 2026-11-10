@@ -40,7 +40,6 @@ We also give constructors for localization, base change and composition.
 
 This contribution was created as part of the AIM workshop "Formalizing algebraic geometry"
 in June 2024.
-
 -/
 
 @[expose] public section
@@ -350,7 +349,6 @@ under the canonical map `MvPolynomial ι R →ₐ[R] MvPolynomial (ι' ⊕ ι) R
 assumption this span is the kernel of the evaluation map of `P`. For this, we use the isomorphism
 `MvPolynomial (ι' ⊕ ι) R ≃ₐ[R] MvPolynomial ι' (MvPolynomial ι R)` and
 `MvPolynomial.ker_map`.
-
 -/
 
 variable {ι' σ' T : Type*} [CommRing T] [Algebra S T]

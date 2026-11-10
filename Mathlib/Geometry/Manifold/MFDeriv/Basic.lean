@@ -22,7 +22,6 @@ mimicking the API for Fréchet derivatives.
 - deriving continuity from differentiability on manifolds,
 - congruence lemmas for derivatives on manifolds
 - composition lemmas and the chain rule
-
 -/
 
 public section

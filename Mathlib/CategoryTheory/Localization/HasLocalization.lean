@@ -35,7 +35,6 @@ involve the localized category, but the proof does,
 it is no longer necessary to use a `HasLocalization`
 assumption, but one may use
 `HasLocalization.standard` in the proof instead.
-
 -/
 
 @[expose] public noncomputable section

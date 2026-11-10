@@ -14,7 +14,6 @@ public import Mathlib.GroupTheory.QuotientGroup.Defs
 
 Given a `MulAction`/`MulDistribMulAction` of a group `G` on `A` and a normal subgroup `H` of `G`,
 there is a `MulAction`/`MulDistribMulAction` of the quotient group `G ⧸ H` on `fixedPoints H A`.
-
 -/
 
 public section

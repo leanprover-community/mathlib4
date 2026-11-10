@@ -81,7 +81,6 @@ Skew Polynomials, Twisted Polynomials.
 Note that [ore33] proposes a more general definition of skew polynomial ring, where the
 multiplication is determined by  $Xa = \varphi (a)X + δ (a)$, where `φ` is as above and
 `δ` is a derivation.
-
 -/
 
 @[expose] public section

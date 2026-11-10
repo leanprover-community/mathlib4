@@ -17,7 +17,6 @@ This file defines `RationalMap.IsDominant` and establishes its connection to
 
 - `Scheme.RationalMap.IsDominant`: a rational map is dominant if some (equivalently, any)
   representative partial map has dominant underlying morphism.
-
 -/
 
 public section

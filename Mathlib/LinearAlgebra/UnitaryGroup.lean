@@ -35,7 +35,6 @@ We also define the orthogonal group `Matrix.orthogonalGroup n R`, where `R` is a
 ## Tags
 
 matrix group, group, unitary group, orthogonal group
-
 -/
 
 @[expose] public section
