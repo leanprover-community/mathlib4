@@ -745,7 +745,6 @@ end eisenstein
 
 end case2
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Fermat's Last Theorem for `n = 3`: if `a b c : ℕ` are all non-zero then
 `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 public theorem fermatLastTheoremThree : FermatLastTheoremFor 3 := by
