@@ -745,14 +745,14 @@ def isoShortComplexH1 : (inhomogeneousChains A).sc 1 ≅ shortComplexH1 A :=
 /-- The 1-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₁ A`, which is a simpler type. -/
 def isoCycles₁ : cycles A 1 ≅ ↧(cycles₁ A) :=
-    cyclesMapIso' (isoShortComplexH1 A) ((inhomogeneousChains A).sc 1).leftHomologyData
-      (shortComplexH1 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.cyclesIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_hom_comp_i :
     (isoCycles₁ A).hom ≫ (shortComplexH1 A).moduleCatLeftHomologyData.i =
       iCycles A 1 ≫ (chainsIso₁ A).hom := by
-  simp [isoCycles₁, iCycles, HomologicalComplex.iCycles, ShortComplex.iCycles]
+  simp [isoCycles₁, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₁_inv_comp_iCycles :
@@ -789,14 +789,14 @@ def isoShortComplexH2 : (inhomogeneousChains A).sc 2 ≅ shortComplexH2 A :=
 /-- The 2-cycles of the complex of inhomogeneous chains of `A` are isomorphic to
 `cycles₂ A`, which is a simpler type. -/
 def isoCycles₂ : cycles A 2 ≅ ↧(cycles₂ A) :=
-    cyclesMapIso' (isoShortComplexH2 A) ((inhomogeneousChains A).sc 2).leftHomologyData
-      (shortComplexH2 A).moduleCatLeftHomologyData
+  ShortComplex.cyclesMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.cyclesIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_hom_comp_i :
     (isoCycles₂ A).hom ≫ (shortComplexH2 A).moduleCatLeftHomologyData.i =
       iCycles A 2 ≫ (chainsIso₂ A).hom := by
-  simp [isoCycles₂, iCycles, HomologicalComplex.iCycles, ShortComplex.iCycles]
+  simp [isoCycles₂, HomologicalComplex.iCycles]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoCycles₂_inv_comp_iCycles :
@@ -905,13 +905,14 @@ instance : Epi (H1π A) :=
 /-- The 1st group homology of `A`, defined as the 1st homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₁ A ⧸ boundaries₁ A`, which is a simpler type. -/
 def H1Iso : H1 A ≅ (shortComplexH1 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH1 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH1 A) ≪≫
+    (shortComplexH1 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_hom :
     π A 1 ≫ (H1Iso A).hom = (isoCycles₁ A).hom ≫
-      (shortComplexH1 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH1 A).moduleCatLeftHomologyData.π := by
+  simp [H1Iso, isoCycles₁, HomologicalComplex.homologyπ]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H1Iso_inv :
@@ -1040,13 +1041,14 @@ instance : Epi (H2π A) :=
 /-- The 2nd group homology of `A`, defined as the 2nd homology of the complex of inhomogeneous
 chains, is isomorphic to `cycles₂ A ⧸ boundaries₂ A`, which is a simpler type. -/
 def H2Iso : H2 A ≅ (shortComplexH2 A).moduleCatLeftHomologyData.H :=
-  (leftHomologyIso _).symm ≪≫ (leftHomologyMapIso' (isoShortComplexH2 A) _ _)
+  ShortComplex.homologyMapIso (isoShortComplexH2 A) ≪≫
+    (shortComplexH2 A).moduleCatLeftHomologyData.homologyIso
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_hom :
     π A 2 ≫ (H2Iso A).hom = (isoCycles₂ A).hom ≫
-      (shortComplexH2 A).moduleCatLeftHomologyData.π :=
-  (homologyπ_comp_leftHomologyIso_inv_assoc _ _).trans (leftHomologyπ_naturality' _ _ _)
+      (shortComplexH2 A).moduleCatLeftHomologyData.π := by
+  simp [H2Iso, isoCycles₂, HomologicalComplex.homologyπ]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma π_comp_H2Iso_inv :

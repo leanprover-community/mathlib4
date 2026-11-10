@@ -350,12 +350,15 @@ lemma norm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G) (u 
   apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
   simp
 
-lemma enorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
+lemma eNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖ₑ ≤ ‖p n‖ₑ * ‖u‖ₑ ^ n := by
   rw [← ofReal_norm, ← ofReal_norm, ← ofReal_norm,
     ← ENNReal.ofReal_pow (by simp), ← ENNReal.ofReal_mul (by simp)]
   gcongr
   apply norm_compContinuousLinearMap_le
+
+@[deprecated (since := "2026-11-06")]
+alias enorm_compContinuousLinearMap_le := eNorm_compContinuousLinearMap_le
 
 lemma nnNorm_compContinuousLinearMap_le (p : FormalMultilinearSeries 𝕜 F G)
     (u : E →L[𝕜] F) (n : ℕ) : ‖p.compContinuousLinearMap u n‖₊ ≤ ‖p n‖₊ * ‖u‖₊ ^ n :=

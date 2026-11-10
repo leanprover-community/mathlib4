@@ -788,7 +788,7 @@ def quotientEquiv (I J I' J' : FractionalIdeal R⁰ K)
       exact inf_le_left
     rw [← inv_mul_eq_iff_eq_mul₀ (by simpa [spanSingleton_eq_zero_iff] using H'), mul_inf₀
       (zero_le _), inv_mul_cancel_left₀ (by simpa [spanSingleton_eq_zero_iff] using H')] at this
-    rw [← this, inf_comm, coe_inf]
+    rw [← this, inf_comm, coeToSubmodule_inf]
     refine inf_le_inf ?_ le_rfl
     intro x hx
     rw [spanSingleton_inv]

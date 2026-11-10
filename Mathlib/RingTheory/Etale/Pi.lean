@@ -11,7 +11,6 @@ public import Mathlib.RingTheory.Smooth.Pi
 public import Mathlib.RingTheory.Unramified.Pi
 
 /-!
-
 # Formal-étaleness of finite products of rings
 
 ## Main result
