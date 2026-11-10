@@ -31,8 +31,6 @@ We allow both infinite values because operations such as infimal convolution may
 
 @[expose] public section
 
-assert_not_exists TopologicalSpace Real
-
 open Set
 
 namespace Convexity
