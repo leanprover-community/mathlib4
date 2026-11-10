@@ -76,7 +76,7 @@ theorem updateSubmatrix_apply_congr {X Y : Matrix o p α} {i : o} {j : p} (h : X
     simp
   · rcases not_and_or.mp hij with h' | h' <;> simp [h', h]
 
-theorem ext_updateSubmatrix_iff {C : Matrix o p α} :
+theorem eq_updateSubmatrix_iff {C : Matrix o p α} :
     C = updateSubmatrix eₙ eₘ A B ↔ C.submatrix eₙ eₘ = A ∧
       ∀ i j, (i ∉ Set.range eₙ ∨ j ∉ Set.range eₘ) → C i j = B i j := by
   refine ⟨?_, fun ⟨h1, h2⟩ ↦ ?_⟩
@@ -91,18 +91,18 @@ theorem ext_updateSubmatrix_iff {C : Matrix o p α} :
 
 @[simp]
 theorem updateSubmatrix_submatrix_self : updateSubmatrix eₙ eₘ (B.submatrix eₙ eₘ) B = B :=
-  ((ext_updateSubmatrix_iff eₙ eₘ _ B).mpr ⟨rfl, fun _ _ _ ↦ rfl⟩).symm
+  ((eq_updateSubmatrix_iff eₙ eₘ _ B).mpr ⟨rfl, fun _ _ _ ↦ rfl⟩).symm
 
 @[simp]
-theorem updateSubmatrix_idem (C : Matrix n m α) :
+theorem updateSubmatrix_updateSubmatrix (C : Matrix n m α) :
     updateSubmatrix eₙ eₘ C (updateSubmatrix eₙ eₘ A B) = updateSubmatrix eₙ eₘ C B :=
-  (ext_updateSubmatrix_iff eₙ eₘ C B).mpr ⟨by simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
+  (eq_updateSubmatrix_iff eₙ eₘ C B).mpr ⟨by simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 theorem updateSubmatrix_comm_of_disjoint_left (eₖ : k ↪ o) (eₗ : l ↪ p) (C : Matrix k l α)
     (h : Disjoint (Set.range eₙ) (Set.range eₖ)) :
     updateSubmatrix eₙ eₘ A (updateSubmatrix eₖ eₗ C B) =
       updateSubmatrix eₖ eₗ C (updateSubmatrix eₙ eₘ A B) := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   refine ⟨?_, fun _ _ hij ↦ updateSubmatrix_apply_congr _ _ _ ?_⟩
   · ext
     simp [Set.disjoint_right.mp h]
@@ -114,7 +114,7 @@ theorem updateSubmatrix_comm_of_disjoint_right (eₖ : k ↪ o) (eₗ : l ↪ p)
     (h : Disjoint (Set.range eₘ) (Set.range eₗ)) :
     updateSubmatrix eₙ eₘ A (updateSubmatrix eₖ eₗ C B) =
       updateSubmatrix eₖ eₗ C (updateSubmatrix eₙ eₘ A B) := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   refine ⟨?_, fun _ _ hij ↦ updateSubmatrix_apply_congr _ _ _ ?_⟩
   · ext
     simp [Set.disjoint_right.mp h]
@@ -128,7 +128,7 @@ theorem updateSubmatrix_eq_self_iff : updateSubmatrix eₙ eₘ A B = B ↔ A = 
 
 theorem updateSubmatrix_equiv_equiv (e : n ≃ o) (f : m ≃ p) :
     updateSubmatrix e.toEmbedding f.toEmbedding A B = reindex e f A := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   refine ⟨by simp, fun i j h ↦ ?_⟩
   rcases h with h | h
   · exact absurd (e.surjective i) h
@@ -148,9 +148,9 @@ theorem updateSubmatrix_left_injective : Function.Injective (updateSubmatrix e�
 theorem updateSubmatrix_trans (eₒ : o ↪ q) (eₚ : p ↪ r) (B : Matrix q r α) :
     updateSubmatrix (eₙ.trans eₒ) (eₘ.trans eₚ) A B =
       updateSubmatrix eₒ eₚ (updateSubmatrix eₙ eₘ A (B.submatrix eₒ eₚ)) B := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   refine ⟨?_, fun _ _ h ↦ ?_⟩
-  · rw [ext_updateSubmatrix_iff]
+  · rw [eq_updateSubmatrix_iff]
     refine ⟨?_, fun x y h ↦ ?_⟩
     · ext
       simpa using updateSubmatrix_apply_embedding (eₙ.trans eₒ) (eₘ.trans eₚ) A B (i := _) (j := _)
@@ -168,20 +168,20 @@ theorem updateSubmatrix_trans (eₒ : o ↪ q) (eₚ : p ↪ r) (B : Matrix q r 
         (Set.notMem_subset (Set.range_comp_subset_range eₘ eₚ) h)
 
 theorem transpose_updateSubmatrix : (updateSubmatrix eₙ eₘ A B)ᵀ = updateSubmatrix eₘ eₙ Aᵀ Bᵀ := by
-  refine (ext_updateSubmatrix_iff eₘ eₙ Aᵀ Bᵀ).mpr ⟨by ext; simp, fun _ _ h ↦ ?_⟩
+  refine (eq_updateSubmatrix_iff eₘ eₙ Aᵀ Bᵀ).mpr ⟨by ext; simp, fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · exact updateSubmatrix_apply_of_notMem_right _ _ _ _ h
   · exact updateSubmatrix_apply_of_notMem_left _ _ _ _ h
 
 theorem conjTranspose_updateSubmatrix [Star α] :
     (updateSubmatrix eₙ eₘ A B)ᴴ = updateSubmatrix eₘ eₙ Aᴴ Bᴴ := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 theorem updateSubmatrix_diagonal [Zero α] [DecidableEq n] [DecidableEq o] (d : n → α)
     (d' : o → α) :
     updateSubmatrix eₙ eₙ (diagonal d) (diagonal d') = diagonal (extend eₙ d d') := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   refine ⟨by ext; simp [diagonal_apply, eₙ.injective.eq_iff, eₙ.injective.extend_apply],
     fun i j h ↦ ?_⟩
   obtain rfl | hij := eq_or_ne i j
@@ -190,13 +190,13 @@ theorem updateSubmatrix_diagonal [Zero α] [DecidableEq n] [DecidableEq o] (d : 
 
 theorem updateSubmatrix_map {β : Type*} (f : α → β) :
     (updateSubmatrix eₙ eₘ A B).map f = updateSubmatrix eₙ eₘ (A.map f) (B.map f) :=
-  (ext_updateSubmatrix_iff eₙ eₘ (A.map f) (B.map f)).mpr
+  (eq_updateSubmatrix_iff eₙ eₘ (A.map f) (B.map f)).mpr
     ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 theorem updateSubmatrix_reindex_reindex (σ : n ≃ k) (τ : m ≃ l) (eₖ : k ↪ o) (eₗ : l ↪ p) :
     updateSubmatrix eₖ eₗ (reindex σ τ A) B =
       updateSubmatrix (σ.toEmbedding.trans eₖ) (τ.toEmbedding.trans eₗ) A B := by
-  refine (ext_updateSubmatrix_iff (σ.toEmbedding.trans eₖ)
+  refine (eq_updateSubmatrix_iff (σ.toEmbedding.trans eₖ)
       (τ.toEmbedding.trans eₗ) A B).mpr ⟨by ext; simp, fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · exact updateSubmatrix_apply_of_notMem_left _ _ _ _ (by simpa using h)
@@ -205,7 +205,7 @@ theorem updateSubmatrix_reindex_reindex (σ : n ≃ k) (τ : m ≃ l) (eₖ : k 
 theorem reindex_reindex_updateSubmatrix (ρ : o ≃ q) (π : p ≃ r) :
     reindex ρ π (updateSubmatrix eₙ eₘ A B) =
       updateSubmatrix (eₙ.trans ρ.toEmbedding) (eₘ.trans π.toEmbedding) A (reindex ρ π B) := by
-  refine (ext_updateSubmatrix_iff (eₙ.trans ρ.toEmbedding) (eₘ.trans π.toEmbedding) A
+  refine (eq_updateSubmatrix_iff (eₙ.trans ρ.toEmbedding) (eₘ.trans π.toEmbedding) A
     ((reindex ρ π) B)).mpr ⟨by ext; simp, fun _ _ h ↦ ?_⟩
   simp only [reindex_apply, submatrix_apply]
   rcases h with h | h
@@ -242,7 +242,7 @@ theorem toSquareBlockProp_updateSubmatrix_compl (M : Matrix n n α) (N : Matrix 
 
 theorem updateRow_eq_updateSubmatrix [DecidableEq o] (i : o) (b : p → α) :
     B.updateRow i b = updateSubmatrix (Embedding.punit i) (Embedding.refl p) (of fun _ ↦ b) B := by
-  refine (ext_updateSubmatrix_iff (Embedding.punit i) (Embedding.refl p)
+  refine (eq_updateSubmatrix_iff (Embedding.punit i) (Embedding.refl p)
     (of fun _ ↦ b) B).mpr ⟨by ext; simp [Embedding.punit], fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · simp_all [updateRow_apply, Embedding.punit]
@@ -251,7 +251,7 @@ theorem updateRow_eq_updateSubmatrix [DecidableEq o] (i : o) (b : p → α) :
 theorem updateCol_eq_updateSubmatrix [DecidableEq p] (j : p) (b : o → α) :
     B.updateCol j b =
       updateSubmatrix (Embedding.refl o) (Embedding.punit j) (of fun i _ ↦ b i) B := by
-  refine (ext_updateSubmatrix_iff (Embedding.refl o) (Embedding.punit j)
+  refine (eq_updateSubmatrix_iff (Embedding.refl o) (Embedding.punit j)
     (of fun i _ ↦ b i) B).mpr ⟨by ext; simp [Embedding.punit], fun _ _ h ↦ ?_⟩
   rcases h with h | h
   · exact (h ⟨_, rfl⟩).elim
@@ -260,57 +260,57 @@ theorem updateCol_eq_updateSubmatrix [DecidableEq p] (j : p) (b : o → α) :
 theorem updateSubmatrix_updateRow_of_notMem [DecidableEq o] {i : o} (hi : i ∉ Set.range eₙ)
     (b : p → α) :
     updateSubmatrix eₙ eₘ A (B.updateRow i b) = (updateSubmatrix eₙ eₘ A B).updateRow i b := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp [updateRow_apply, ne_of_mem_of_not_mem _ hi],
     fun _ _ h ↦ by rcases h with h | h <;> simp [updateRow_apply, h]⟩
 
 theorem updateSubmatrix_updateCol_of_notMem [DecidableEq p] {j : p} (hj : j ∉ Set.range eₘ)
     (b : o → α) :
     updateSubmatrix eₙ eₘ A (B.updateCol j b) = (updateSubmatrix eₙ eₘ A B).updateCol j b := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp [ne_of_mem_of_not_mem _ hj],
     fun _ _ h ↦ by rcases h with h | h <;> simp [updateCol_apply, h]⟩
 
 theorem updateRow_updateSubmatrix [DecidableEq n] [DecidableEq o] (a : n) (b : p → α) :
     (updateSubmatrix eₙ eₘ A B).updateRow (eₙ a) b =
       updateSubmatrix eₙ eₘ (A.updateRow a (b ∘ eₘ)) (B.updateRow (eₙ a) b) := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   exact ⟨by ext; simp [updateRow_apply, eₙ.injective.eq_iff],
     fun _ _ h ↦ by rcases h with h | h <;> simp [updateRow_apply, h]⟩
 
 theorem updateCol_updateSubmatrix [DecidableEq m] [DecidableEq p] (a : m) (b : o → α) :
     (updateSubmatrix eₙ eₘ A B).updateCol (eₘ a) b =
       updateSubmatrix eₙ eₘ (A.updateCol a (b ∘ eₙ)) (B.updateCol (eₘ a) b) := by
-  rw [ext_updateSubmatrix_iff]
+  rw [eq_updateSubmatrix_iff]
   exact ⟨by ext; simp [updateCol_apply, eₘ.injective.eq_iff],
     fun _ _ h ↦ by rcases h with h | h <;> simp [updateCol_apply, h]⟩
 
 theorem updateSubmatrix_add [Add α] (C : Matrix n m α) (D : Matrix o p α) :
     updateSubmatrix eₙ eₘ (A + C) (B + D) =
       updateSubmatrix eₙ eₘ A B + updateSubmatrix eₙ eₘ C D := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 @[simp]
 theorem updateSubmatrix_zero [Zero α] :
     updateSubmatrix eₙ eₘ (0 : Matrix n m α) (0 : Matrix o p α) = 0 := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ _ ↦ rfl⟩
 
 theorem updateSubmatrix_neg [Neg α] :
     updateSubmatrix eₙ eₘ (-A) (-B) = -updateSubmatrix eₙ eₘ A B := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 theorem updateSubmatrix_sub [Sub α] (C : Matrix n m α) (D : Matrix o p α) :
     updateSubmatrix eₙ eₘ (A - C) (B - D) =
       updateSubmatrix eₙ eₘ A B - updateSubmatrix eₙ eₘ C D := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 theorem updateSubmatrix_smul [SMul R α] (r : R) :
     updateSubmatrix eₙ eₘ (r • A) (r • B) = r • updateSubmatrix eₙ eₘ A B := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   exact ⟨by ext; simp, fun _ _ h ↦ by rcases h with h | h <;> simp [h]⟩
 
 /-- `updateSubmatrix eₙ eₘ` as an additive monoid homomorphism in the pair `(A, B)`. -/
@@ -346,10 +346,10 @@ is `A i j`, and every other entry is that of the identity matrix. -/
 noncomputable abbrev extendedByOne (A : Matrix n n R) : Matrix m m R :=
   updateSubmatrix e e A (1 : Matrix m m R)
 
-theorem ext_extendedByOne_iff {B : Matrix m m R} {A : Matrix n n R} :
+theorem eq_extendedByOne_iff {B : Matrix m m R} {A : Matrix n n R} :
     B = A.extendedByOne e ↔ B.submatrix e e = A ∧
       ∀ i j, (i ∉ Set.range e ∨ j ∉ Set.range e) → B i j = (1 : Matrix m m R) i j :=
-  ext_updateSubmatrix_iff ..
+  eq_updateSubmatrix_iff ..
 
 theorem extendedByOne_trans (f : m ↪ l) (A : Matrix n n R) :
     A.extendedByOne (e.trans f) = (A.extendedByOne e).extendedByOne f := by
@@ -398,7 +398,7 @@ theorem extendedByOne_eq_one_iff [DecidableEq n] {A : Matrix n n R} :
 
 theorem extendedByOne_mul [Fintype n] [Fintype m] (A B : Matrix n n R) :
     (A * B).extendedByOne e = A.extendedByOne e * B.extendedByOne e := by
-  rw [eq_comm, ext_updateSubmatrix_iff]
+  rw [eq_comm, eq_updateSubmatrix_iff]
   refine ⟨?_, fun i j h ↦ ?_⟩
   · ext
     rw [submatrix_apply, Matrix.mul_apply]
