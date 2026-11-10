@@ -25,7 +25,7 @@ This coresponds to the presheaves `F : (Compacts X)ᵒᵖ ⥤ A` such that:
 
 The category of K-sheaves is a topos, because it is equivalent to the category of sheaves over `X`
 (TODO Yannis Monbru Carcelero), but the condition that `K`-presheaves need to verify to
-be `K`-sheaves is *not* expressed as the sheaf condition for a Grothendieck topology of
+be `K`-sheaves is *not* expressed as the sheaf condition for a Grothendieck topology on
 compact sets. Indeed, two of three conditions do involve limits, but the third
 `nonempty_isColimit_coconeOfCompact` involves colimits.
 
