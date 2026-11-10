@@ -322,7 +322,7 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
 theorem natAddLEFunctor_obj_exact {n k l : ℕ} (h : k + l ≤ n) {R : ComposableArrows C n}
     (hR : R.Exact) :
     ((natAddLEFunctor h).obj R).Exact :=
-  ⟨⟨fun i _ => hR.1.1 (k + i)⟩, fun i _ => hR.exact (k + i)⟩
+  ⟨⟨fun i _ => hR.toIsComplex.zero (k + i)⟩, fun i _ => hR.exact (k + i)⟩
 
 lemma Exact.isIso_map' {C : Type*} [Category* C] [Preadditive C]
     [Balanced C] {n : ℕ} {S : ComposableArrows C n} (hS : S.Exact) (k : ℕ) (hk : k + 3 ≤ n)

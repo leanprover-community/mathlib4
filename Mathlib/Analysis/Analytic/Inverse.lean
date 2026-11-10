@@ -414,7 +414,7 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
           (fun k : ℕ => (Fintype.piFinset fun _ : Fin k => Ico 1 n : Finset (Fin k → ℕ)))
           (fun n e => ∏ j : Fin n, r * (a ^ e j * p (e j)))]
       congr! with j
-      simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) _ ℝ]
+      simp only [← @MultilinearMap.mkPiAlgebra_apply ℝ (Fin j) ℝ]
       simp only [←
         MultilinearMap.map_sum_finset (MultilinearMap.mkPiAlgebra ℝ (Fin j) ℝ) fun _ (m : ℕ) =>
           r * (a ^ m * p m)]
@@ -595,7 +595,7 @@ lemma HasFPowerSeriesAt.tendsto_partialSum_prod_of_comp
           gcongr
           rw [Metric.mem_eball, edist_zero_right] at hy
           have := le_trans (le_of_lt hy) (min_le_right _ _)
-          rwa [enorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
+          rwa [eNorm_le_coe, ← NNReal.coe_le_coe, coe_nnNorm] at this
     apply HasSum.of_sigma (fun b ↦ hasSum_fintype _) ?_ cau
     simpa [FormalMultilinearSeries.comp] using h0.hasSum hy0
   have B : Tendsto (fun (n : ℕ × ℕ) => ∑ i ∈ compPartialSumTarget 0 n.1 n.2,
@@ -687,7 +687,7 @@ theorem OpenPartialHomeomorph.hasFPowerSeriesAt_symm (f : OpenPartialHomeomorph 
   refine ⟨min r (p.leftInv i a).radius, min_le_right _ _,
     lt_min r_pos (radius_leftInv_pos_of_radius_pos h.radius_pos hp), fun {y} hy ↦ ?_⟩
   have : y + f a ∈ Metric.eball (f a) r := by
-    simp only [Metric.mem_eball, edist_eq_enorm_sub, sub_zero, lt_min_iff,
+    simp only [Metric.mem_eball, eDist_eq_eNorm_sub, sub_zero, lt_min_iff,
       add_sub_cancel_right] at hy ⊢
     exact hy.1
   simpa [add_comm] using! hr this

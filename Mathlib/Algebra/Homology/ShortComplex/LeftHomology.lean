@@ -803,14 +803,14 @@ variable [HasKernels C] [HasCokernels C]
 /-- The left homology functor `ShortComplex C ⥤ C`, where the left homology of a
 short complex `S` is understood as a cokernel of the obvious map `S.toCycles : S.X₁ ⟶ S.cycles`
 where `S.cycles` is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def leftHomologyFunctor : ShortComplex C ⥤ C where
   obj S := S.leftHomology
   map := leftHomologyMap
 
 /-- The cycles functor `ShortComplex C ⥤ C` which sends a short complex `S` to `S.cycles`
 which is a kernel of `S.g : S.X₂ ⟶ S.X₃`. -/
-@[simps]
+@[simps, implicit_reducible]
 noncomputable def cyclesFunctor : ShortComplex C ⥤ C where
   obj S := S.cycles
   map := cyclesMap
@@ -821,7 +821,6 @@ noncomputable def leftHomologyπNatTrans : cyclesFunctor C ⟶ leftHomologyFunct
   app S := leftHomologyπ S
   naturality := fun _ _ φ => (leftHomologyπ_naturality φ).symm
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The natural transformation `S.cycles ⟶ S.X₂` for all short complexes `S`. -/
 @[simps]
 noncomputable def iCyclesNatTrans : cyclesFunctor C ⟶ ShortComplex.π₂ where
@@ -964,7 +963,6 @@ instance (φ : S₁ ⟶ S₂) (h₁ : S₁.LeftHomologyData) (h₂ : S₂.LeftHo
   rw [eq]
   infer_instance
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If a morphism of short complexes `φ : S₁ ⟶ S₂` is such that `φ.τ₁` is epi, `φ.τ₂` is an iso,
 and `φ.τ₃` is mono, then the induced morphism on left homology is an isomorphism. -/
 instance (φ : S₁ ⟶ S₂) [S₁.HasLeftHomology] [S₂.HasLeftHomology]
