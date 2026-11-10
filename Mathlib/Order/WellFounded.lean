@@ -70,7 +70,7 @@ theorem wellFounded_iff_isEmpty_descending_chain {α} {r : α → α → Prop} :
   mp := fun ⟨h⟩ ↦ ⟨fun ⟨f, hf⟩ ↦ (acc_iff_isEmpty_descending_chain.mp (h (f 0))).false ⟨f, rfl, hf⟩⟩
   mpr h := ⟨fun _ ↦ acc_iff_isEmpty_descending_chain.mpr ⟨fun ⟨f, hf⟩ ↦ h.false ⟨f, hf.2⟩⟩⟩
 
-theorem wellFounded_def {α : Sort*} (r : α → α → Prop) : WellFounded r ↔ ∀ a, Acc r a :=
+theorem wellFounded_def {α : Sort*} {r : α → α → Prop} : WellFounded r ↔ ∀ a, Acc r a :=
   ⟨WellFounded.apply, WellFounded.intro⟩
 
 variable {α β γ : Type*}
