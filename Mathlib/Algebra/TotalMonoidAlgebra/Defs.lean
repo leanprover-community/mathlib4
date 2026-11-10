@@ -502,23 +502,19 @@ lemma coeff_single_one_mul [DecidableEq M] (x : R⟦M⟧) (r : R) (m : M) :
 
 @[to_additive (dont_translate := R)]
 lemma coeff_mul_natCast [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
-    (x * (n : R⟦M⟧)).coeff m = x.coeff m * (n : R) :=
-  coeff_mul_single_one x (n : R) m
+    (x * n).coeff m = x.coeff m * n := coeff_mul_single_one ..
 
 @[to_additive (dont_translate := R)]
 lemma coeff_natCast_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) (m : M) :
-    ((n : R⟦M⟧) * x).coeff m = (n : R) * x.coeff m :=
-  coeff_single_one_mul x (n : R) m
+    (n * x).coeff m = n * x.coeff m := coeff_single_one_mul ..
 
 @[to_additive (dont_translate := R)]
 lemma coeff_mul_ofNat [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (x * (ofNat(n) : R⟦M⟧)).coeff m = x.coeff m * ofNat(n) :=
-  coeff_mul_single_one x ofNat(n) m
+    (x * ofNat(n)).coeff m = x.coeff m * ofNat(n) := coeff_mul_single_one ..
 
 @[to_additive (dont_translate := R)]
 lemma coeff_ofNat_mul [DecidableEq M] (x : R⟦M⟧) (n : ℕ) [n.AtLeastTwo] (m : M) :
-    ((ofNat(n) : R⟦M⟧) * x).coeff m = ofNat(n) * x.coeff m :=
-  coeff_single_one_mul x ofNat(n) m
+    (ofNat(n) * x).coeff m = ofNat(n) * x.coeff m := coeff_single_one_mul ..
 
 /-- The embedding of a unital magma into its magma algebra. -/
 @[simps! apply]
