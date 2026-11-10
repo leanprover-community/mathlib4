@@ -236,7 +236,7 @@ def map (f : R →+* S) : SpecialLinearGroup n R →* SpecialLinearGroup n S whe
 
 @[simp]
 theorem coe_map_mk (f : R →+* S) (A : Matrix n n R) (h : det A = 1) :
-    SpecialLinearGroup.map f ( SpecialLinearGroup.mk A h) = A.map f := rfl
+    SpecialLinearGroup.map f (SpecialLinearGroup.mk A h) = A.map f := rfl
 
 @[simp] lemma map_comp_map (f : R →+* S) (g : S →+* T) :
     (map (n := n) g).comp (map f) = map (g.comp f) := rfl
@@ -472,12 +472,12 @@ theorem SL2_inv_expl_det (A : SL(2, R)) :
   (det_fin_two _).trans (by simpa [-det_coe, det_fin_two, mul_comm] using A.2)
 
 theorem SL2_inv_expl (A : SL(2, R)) :
-    A⁻¹ =  SpecialLinearGroup.mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
+    A⁻¹ = SpecialLinearGroup.mk !![A.1 1 1, -A.1 0 1; -A.1 1 0, A.1 0 0] (SL2_inv_expl_det A) := by
   ext
   simp [adjugate_fin_two]
 
 theorem eta_fin_two (g : SL(2, R)) :
-    g =  SpecialLinearGroup.mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
+    g = SpecialLinearGroup.mk !![g 0 0, g 0 1; g 1 0, g 1 1] (by simp [← eta_fin_two]) :=
   Subtype.ext (Matrix.eta_fin_two g.1)
 
 theorem fin_two_induction (P : SL(2, R) → Prop)
@@ -687,12 +687,12 @@ namespace SpecialLinearGroup
   positions `i` and `j` respectively where `i ≠ j`. -/
 noncomputable def diag2n {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
     (ha : a ≠ 0) : SpecialLinearGroup ι F :=
-  ⟨diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1), by
+  SpecialLinearGroup.mk (diagonal (fun k ↦ if k = i then a else if k = j then a⁻¹ else 1)) (by
     simp [Finset.prod_ite, hij.symm, Finset.card_eq_one (s := {x : ι | x = i}).2 ⟨i, by grind⟩,
-      mul_inv_cancel₀ ha]⟩
+      mul_inv_cancel₀ ha])
 
 lemma diag2n_coe {ι : Type*} [Fintype ι] [DecidableEq ι] {i j : ι} (hij : i ≠ j) (a : F)
-    (ha : a ≠ 0) : (diag2n hij a ha).1 = diagonal (fun k ↦
+    (ha : a ≠ 0) : ↑(diag2n hij a ha) = diagonal (fun k ↦
       if k = i then a else if k = j then a⁻¹ else 1) := rfl
 
 /-- An element in SL₂(F) induced by a diagonal matrix with `a`, `a⁻¹` on
@@ -769,22 +769,20 @@ lemma diag_commute (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
   simp only [dite_eq_left hi1, dite_eq_left hi2, coe_mul, diag2n_coe, diagonal_mul_diagonal,
     mul_comm]
 
-set_option backward.isDefEq.respectTransparency.types false in
 lemma diag_eq_diag2n_prod (i₀ : ι) (D : ι → F) (hD : det (diagonal D) = 1) :
-    (⟨diagonal D, hD⟩ : SpecialLinearGroup ι F) =
+    SpecialLinearGroup.mk (diagonal D) hD =
       Finset.noncommProd {i : ι | i ≠ i₀} (fun i ↦ if hi : i ≠ i₀ then
       diag2n hi (D i) (diagonal_neZero D hD i) else 1) (diag_commute i₀ D hD) := by
   set g : ι → ι → F := fun i k ↦ if k = i then D i else if k = i₀ then (D i)⁻¹ else 1 with hg_def
   apply coeMonoidHom_injective
   rw [Finset.map_noncommProd]
-  simp_rw [coeMonoidHom_apply, apply_dite, coe_one]
+  simp only [coeMonoidHom_apply, coe_mk, ne_eq, apply_dite]
   rw [Finset.noncommProd_congr (s₂ := {i | i ≠ i₀}) rfl (fun i hi ↦
       (dite_eq_left (Finset.mem_filter.1 hi).2 : _ = (diag2n (Finset.mem_filter.1 hi).2 _ _).1))]
   convert_to! _ = Finset.noncommProd {i | i ≠ i₀} (fun x ↦ diagonal (g x)) _
   simp_rw [← diagonalRingHom_apply]
   rw [← Finset.map_noncommProd _ _ (fun _ _ _ _ _ ↦ Commute.all _ _), Finset.noncommProd_eq_prod,
     diag_decompose i₀ D hD]
-
 
 set_option backward.isDefEq.respectTransparency.types false in
 /-- The `SpecialLinearGroup` analogue of
@@ -807,7 +805,8 @@ theorem diagonal_transvection_induction' [Nontrivial ι] (P : SpecialLinearGroup
     (hmul : ∀ A B, P A → P B → P (A * B)) : P M := by
   obtain ⟨i₀, j₀, hij₀⟩ := exists_pair_ne ι
   have hP1 : P 1 := transvection_coeff_zero (F := F) hij₀ ▸ htransvec i₀ j₀ hij₀ 0
-  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) : P ⟨diagonal D, hD⟩ := by
+  have hdiagonal (D : ι → F) (hD : det (diagonal D) = 1) :
+    P (SpecialLinearGroup.mk (diagonal D) hD ):= by
     rw [diag_eq_diag2n_prod i₀ D hD]
     refine Finset.noncommProd_induction _ _ _ P hmul hP1 fun i hi => ?_
     simp [(Finset.mem_filter.1 hi).2, hdiag]
@@ -953,7 +952,7 @@ theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := 
 
 @[simp]
 theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 :=
-  T_pow_mul_apply_one 1 g
+  T_pow_mul_apply_one 1 _
 
 @[simp]
 theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
