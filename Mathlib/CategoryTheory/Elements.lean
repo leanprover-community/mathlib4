@@ -94,6 +94,10 @@ def π : F.Elements ⥤ C where
   obj X := X.1
   map f := f.hom
 
+@[simp]
+lemma eqToHom_hom {x y : F.Elements} (h : x = y) :
+    (eqToHom h).hom = eqToHom (by rw [h]) := by subst h; rfl
+
 end Functor.Elements
 
 /-- Natural transformations are mapped to functors between categories of elements. -/
@@ -103,6 +107,12 @@ def NatTrans.mapElements {G : C ⥤ Type w} (φ : F ⟶ G) : F.Elements ⥤ G.El
   map {e₁ e₂} f :=
     { hom := f.hom
       map_val := by simpa using (φ.naturality_apply f.hom e₁.val).symm }
+
+lemma NatTrans.injective_mapElements_obj {G : C ⥤ Type w} :
+    Function.Injective (fun (φ : F ⟶ G) ↦ φ.mapElements.obj) := by
+  intro a b h
+  ext X e
+  exact congr(($(h) (Functor.elementsMk _ _ e)).val)
 
 /-- If `φ : F ⟶ G` is a natural transformation between functors to types, this is the
 canonical isomorphism `φ.mapElements ⋙ Functor.Elements.π G ≅ Functor.Elements.π F`. -/
@@ -114,6 +124,10 @@ def NatTrans.mapElementsCompπIso {G : C ⥤ Type w} (φ : F ⟶ G) :
 lemma NatTrans.mapElements_comp_π {G : C ⥤ Type w} (φ : F ⟶ G) :
     φ.mapElements ⋙ Functor.Elements.π G = Functor.Elements.π F :=
   rfl
+
+lemma NatTrans.mapElements_comp_obj {G H : C ⥤ Type w} (φ : F ⟶ G) (ψ : G ⟶ H)
+    (e : F.Elements) :
+    (φ ≫ ψ).mapElements.obj e = ψ.mapElements.obj (φ.mapElements.obj e) := rfl
 
 /-- The functor mapping functors `C ⥤ Type w` to their category of elements -/
 @[simps]
@@ -482,5 +496,26 @@ def Equivalence.congrElements {D : Type*} [Category* D] (e : C ≌ D) (P : D ⥤
     NatIso.ofComponents
       (fun x ↦ Functor.Elements.isoMk (e.unitIso.symm.app x.obj) (by
         simp [← ConcreteCategory.comp_apply, ← Functor.map_comp]))
+
+/-- Two equal natural transformations induce isomorphic functors on
+categories of elements. -/
+@[simps!]
+def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ') :
+    φ.mapElements ≅ φ'.mapElements :=
+  NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
+
+@[simps!, implicit_reducible]
+def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    F.Elements ≌ G.Elements where
+  functor := e.hom.mapElements
+  inverse := e.inv.mapElements
+  unitIso := NatTrans.congrMapElements e.hom_inv_id.symm
+  counitIso := NatTrans.congrMapElements e.inv_hom_id
+
+@[simps!, implicit_reducible]
+def Functor.Elements.isoCatOfIso {G : C ⥤ Type w} (e : F ≅ G) :
+    IsoCat F.Elements G.Elements :=
+  (equivalenceOfIso e).toIsoCat
+    (fun x ↦ ext _ _ rfl (by simp)) (fun y ↦ ext _ _ rfl (by simp))
 
 end CategoryTheory

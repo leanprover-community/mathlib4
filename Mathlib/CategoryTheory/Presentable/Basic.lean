@@ -190,6 +190,12 @@ lemma isCardinalPresentable_monotone {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (
   rw [isCardinalPresentable_iff] at hX ⊢
   exact isCardinalPresentable_of_le _ h
 
+variable {κ} in
+lemma IsCardinalPresentable.of_le
+    {κ' : Cardinal.{w}} [Fact κ'.IsRegular] (h : κ ≤ κ') {X : C} [IsCardinalPresentable X κ] :
+    IsCardinalPresentable X κ' :=
+  isCardinalPresentable_monotone C h X inferInstance
+
 include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
@@ -234,6 +240,34 @@ lemma isCardinalPresentable_iff_of_isEquivalence
       (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X :) κ
   · intro
     infer_instance
+
+instance (X : C) [LocallySmall.{w} C] [IsCardinalPresentable X κ] :
+    (shrinkCoyoneda.{w}.obj (op X)).IsCardinalAccessible κ where
+  preservesColimitOfShape J _ _ := by
+    have := preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall X κ J
+    have := preservesColimitsOfShape_of_natIso (J := J)
+      (shrinkCoyonedaObjCompUliftFunctorIso (op X)).symm
+    exact preservesColimitsOfShape_of_reflects_of_preserves _ uliftFunctor
+
+instance (X : C) [LocallySmall.{w} C] :
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkYoneda.{w}.obj X))) := by
+  have e : coyoneda.obj (op (shrinkYoneda.{w}.obj X)) ≅
+      (evaluation ..).obj (op X) ⋙ uliftFunctor.{u₁} :=
+    NatIso.ofComponents (fun P ↦ (shrinkYonedaEquiv.trans Equiv.ulift.symm).toIso)
+  exact preservesColimits_of_natIso e.symm
+
+instance (X : Cᵒᵖ) [LocallySmall.{w} C] :
+    PreservesColimitsOfSize.{w, w} (coyoneda.obj (op (shrinkCoyoneda.{w}.obj X))) := by
+  have e : coyoneda.obj (op (shrinkCoyoneda.{w}.obj X)) ≅
+      (evaluation ..).obj X.unop ⋙ uliftFunctor.{u₁} :=
+    NatIso.ofComponents (fun _ ↦ (shrinkCoyonedaEquiv.trans Equiv.ulift.symm).toIso)
+  exact preservesColimits_of_natIso e.symm
+
+example (X : C) [LocallySmall.{w} C] :
+    IsCardinalPresentable (shrinkYoneda.{w}.obj X) κ := inferInstance
+
+example (X : Cᵒᵖ) [LocallySmall.{w} C] :
+    IsCardinalPresentable (shrinkCoyoneda.{w}.obj X) κ := inferInstance
 
 variable {X κ} in
 open IsFiltered in
