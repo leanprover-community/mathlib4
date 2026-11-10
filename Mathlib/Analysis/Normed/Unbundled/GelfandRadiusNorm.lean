@@ -41,6 +41,7 @@ noncomputable def gelfandRadiusNorm : AlgebraNorm K L where
   neg' x := by rw [map_neg, gelfandRadius_neg]
   mul_le' x y := by grw [map_mul, ((Commute.all x y).map _).gelfandRadius_mul_le]
   eq_zero_of_map_eq_zero' x h := by
+    have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
     have hx := ((Commute.inv_right_self₀ x).map
       (Algebra.leftMulMatrix (Module.finBasis K L))).gelfandRadius_mul_le
     contrapose! hx
@@ -54,6 +55,7 @@ theorem gelfandRadiusNorm_def (x : L) :
 
 @[simp]
 theorem gelfandRadiusNorm_one : gelfandRadiusNorm K L 1 = 1 := by
+  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   rw [gelfandRadiusNorm_def, map_one, gelfandRadius_one]
 
 variable {K} in
@@ -63,6 +65,7 @@ theorem gelfandRadiusNorm_eq_norm (x : K) : gelfandRadiusNorm K K x = ‖x‖ :=
 
 /-- The Gelfand radius norm is power-multiplicative. -/
 theorem isPowMul_gelfandRadiusNorm : IsPowMul (gelfandRadiusNorm K L) := by
+  have : NeZero (Module.finrank K L) := ⟨Module.finrank_pos.ne'⟩
   intro x k hk
   simp_rw [gelfandRadiusNorm_def, map_pow, gelfandRadius_pow]
 
@@ -78,6 +81,7 @@ variable {L} in
 theorem gelfandRadiusNorm_algebraMap (x : L) :
     gelfandRadiusNorm K M (algebraMap L M x) = gelfandRadiusNorm K L x := by
   have : FiniteDimensional L M := .of_restrictScalars_finite K L M
+  have : NeZero (Module.finrank L M) := ⟨Module.finrank_pos.ne'⟩
   let bKL := Module.finBasis K L
   let bLM := Module.finBasis L M
   rw [(bKL.smulTower bLM).gelfandRadiusNorm_apply, Algebra.smulTower_leftMulMatrix_algebraMap,
