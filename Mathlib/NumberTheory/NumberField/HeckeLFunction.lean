@@ -106,11 +106,11 @@ open Classical Polynomial in
 noncomputable def localPolynomial (v : HeightOneSpectrum R) : ℂ[X] :=
   if χ.IsUnramifiedAt v then 1 - C (χ.localValue v) * X else 1
 
-/-- The local power series associated to a Weierstrass curve over a nonarchimedean local field. -/
+/-- The local power series associated to a Hecke character. -/
 noncomputable def localPowerSeries (v : HeightOneSpectrum R) : PowerSeries ℂ :=
   .invOfUnit (χ.localPolynomial v) 1
 
-/-- The local Euler factor associated to a Weierstrass curve over a nonarchimedean local field. -/
+/-- The local Euler factor associated to a Hecke character. -/
 noncomputable def localEulerFactor (v : HeightOneSpectrum R) : ArithmeticFunction ℂ :=
   .ofPowerSeries (.card (IsLocalRing.ResidueField (v.adicCompletionIntegers K)))
     (χ.localPowerSeries v)
