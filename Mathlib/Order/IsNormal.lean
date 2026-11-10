@@ -198,7 +198,7 @@ theorem _root_.InitialSeg.map_sSup (f : α ≤i β) {s : Set α} (hs : BddAbove 
     f (sSup s) = sSup (f '' s) := by
   obtain rfl | hs' := s.eq_empty_or_nonempty
   · simp
-  · exact f.isNormal.map_sSup hs' hs
+  · exact f.isNormal.leftOrdContinuous.map_csSup hs' hs
 
 /-- An initial segment embedding preserves bounded indexed suprema. -/
 theorem _root_.InitialSeg.map_iSup (f : α ≤i β) {g : ι → α} (hg : BddAbove (range g)) :
