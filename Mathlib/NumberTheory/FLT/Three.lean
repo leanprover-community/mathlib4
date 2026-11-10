@@ -49,7 +49,6 @@ The strategy is the following:
   elementary on paper, would be quite annoying to formalize: indeed it involves a lot of explicit
   computations in `ℤ[ζ₃] / (λ)`: this ring is isomorphic to `ℤ / 9ℤ`, but of course, even if we
   construct such an isomorphism, tactics like `decide` would not work.
-
 -/
 
 section case1

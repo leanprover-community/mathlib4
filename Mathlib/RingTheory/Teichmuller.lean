@@ -17,7 +17,6 @@ Let `R` be an `I`-adically complete ring, and `p` be a prime number with `p ∈ 
 Then there is a canonical map `Perfection (R ⧸ I) p →*₀ R` that we shall call
 `Perfection.teichmuller`, such that it composed with the quotient map `R →+* R ⧸ I` is the
 "0-th coefficient" map `Perfection (R ⧸ I) p →+* R ⧸ I`.
-
 -/
 
 @[expose] public section

@@ -33,7 +33,6 @@ see `cylinder.desc`. There is also a homotopy equivalence
 the cylinder, we deduce the lemma `Homotopy.map_eq_of_inverts_homotopyEquivalences`
 which asserts that if a functor inverts homotopy equivalences, then the images of
 two homotopic maps are equal.
-
 -/
 
 @[expose] public section

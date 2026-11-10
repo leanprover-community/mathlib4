@@ -33,7 +33,6 @@ In this file we define the various notions of derivatives of Schwartz functions.
 * `SchwartzMap.integral_bilinear_lineDerivOp_right_eq_neg_left`: Integration by parts using the
   directional derivative `∂_{m}`
 * `SchwartzMap.integral_bilinear_laplacian_right_eq_left`: Integration by parts for the Laplacian
-
 -/
 
 @[expose] public noncomputable section

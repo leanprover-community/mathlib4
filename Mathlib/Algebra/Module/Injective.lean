@@ -36,7 +36,6 @@ import Mathlib.LinearAlgebra.Pi
 ## Main statements
 
 * `Module.Baer.injective`: an `R`-module is injective if it is Baer.
-
 -/
 
 @[expose] public section

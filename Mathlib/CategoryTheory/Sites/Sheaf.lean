@@ -49,7 +49,6 @@ in a sufficiently large universe. Rather than use `UnivLE` we prove some results
 a category `A'` instead, whose morphism universe of `A'` is defined to be `max u₁ v₁`, where
 `u₁, v₁` are the universes for `C`. Perhaps after we get better at handling universe
 inequalities this can be changed.
-
 -/
 
 @[expose] public section

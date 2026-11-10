@@ -19,7 +19,6 @@ A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
 asking that all stalk maps are flat (see `AlgebraicGeometry.Flat.iff_flat_stalkMap`).
 
 We show that this property is local, and are stable under compositions and base change.
-
 -/
 
 public section
@@ -214,7 +213,6 @@ We show that this map is
 5. `isIso_pushoutSection_of_isCompact_of_flat_right_of_ringHomFlat`:
   bijective when `Uₛ` is affine, `Uₜ` and `Uₓ` are qcqs, `f` is flat,
   and `Γ(T, Uₜ)` is flat over `Γ(S, Uₛ)` (typically true when `S = Spec k`.)
-
 -/
 
 variable {X Y S T : Scheme.{u}} {f : T ⟶ S} {g : Y ⟶ X} {iX : X ⟶ S} {iY : Y ⟶ T}
