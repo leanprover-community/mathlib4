@@ -235,19 +235,19 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_lt_coe, coe_mul]; gcongr
 
 lemma subtype_Iic_eq_Icc (x : I) : Subtype.val ⁻¹' (Iic ↑x) = Icc 0 x := by
-  rw [preimage_subtype_val_Iic]
+  rw [preimage_subtypeVal_Iic]
   exact Icc_bot.symm
 
 lemma subtype_Iio_eq_Ico (x : I) : Subtype.val ⁻¹' (Iio ↑x) = Ico 0 x := by
-  rw [preimage_subtype_val_Iio]
+  rw [preimage_subtypeVal_Iio]
   exact Ico_bot.symm
 
 lemma subtype_Ici_eq_Icc (x : I) : Subtype.val ⁻¹' (Ici ↑x) = Icc x 1 := by
-  rw [preimage_subtype_val_Ici]
+  rw [preimage_subtypeVal_Ici]
   exact Icc_top.symm
 
 lemma subtype_Ioi_eq_Ioc (x : I) : Subtype.val ⁻¹' (Ioi ↑x) = Ioc x 1 := by
-  rw [preimage_subtype_val_Ioi]
+  rw [preimage_subtypeVal_Ioi]
   exact Ioc_top.symm
 
 end unitInterval

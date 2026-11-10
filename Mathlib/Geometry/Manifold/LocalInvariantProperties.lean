@@ -544,7 +544,7 @@ theorem liftPropAt_iff_comp_subtypeVal (hG : LocalInvariantProp G G' P) {U : Ope
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ, U.isOpenEmbedding'.continuousAt_iff]
   · apply hG.congr_iff
-    exact (U.chartAt_subtype_val_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
+    exact (U.chartAt_subtypeVal_symm_eventuallyEq).fun_comp (chartAt H' (f x) ∘ f)
 
 @[deprecated (since := "2026-11-10")]
 alias liftPropAt_iff_comp_subtype_val := liftPropAt_iff_comp_subtypeVal
@@ -565,7 +565,7 @@ theorem liftProp_subtypeVal {Q : (H → H) → Set H → H → Prop} (hG : Local
     LiftProp Q (Subtype.val : U → M) := by
   intro x
   change LiftPropAt Q (id ∘ Subtype.val) x
-  rw [← hG.liftPropAt_iff_comp_subtype_val]
+  rw [← hG.liftPropAt_iff_comp_subtypeVal]
   apply hG.liftProp_id hQ
 
 @[deprecated (since := "2026-11-10")] alias liftProp_subtype_val := liftProp_subtypeVal

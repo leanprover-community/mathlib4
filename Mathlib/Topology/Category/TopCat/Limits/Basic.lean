@@ -34,7 +34,7 @@ section Limits
 
 variable {J : Type v} [Category.{w} J]
 
-attribute [local fun_prop] continuous_subtype_val
+attribute [local fun_prop] continuous_subtypeVal
 /-- A choice of limit cone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `limit.cone F`, unless you need the actual definition
 (which is in terms of `Types.limitCone`).

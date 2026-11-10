@@ -419,7 +419,7 @@ def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ᵐ s × t where
 /-- `univ α ≃ α` as measurable spaces. -/
 def Set.univ (α : Type*) [MeasurableSpace α] : (univ : Set α) ≃ᵐ α where
   toEquiv := Equiv.Set.univ α
-  measurable_toFun := measurable_id.subtype_val
+  measurable_toFun := measurable_id.subtypeVal
   measurable_invFun := measurable_id.subtype_mk
 
 /-- `{a} ≃ Unit` as measurable spaces. -/
@@ -690,7 +690,7 @@ theorem iff_comap_eq :
   if `f` is a measurable embedding -/
 noncomputable def equivImage (s : Set α) (hf : MeasurableEmbedding f) : s ≃ᵐ f '' s where
   toEquiv := Equiv.Set.image f s hf.injective
-  measurable_toFun := (hf.measurable.comp measurable_id.subtype_val).subtype_mk
+  measurable_toFun := (hf.measurable.comp measurable_id.subtypeVal).subtype_mk
   measurable_invFun := by
     rintro t ⟨u, hu, rfl⟩
     simpa [preimage_preimage, Set.image_symm_preimage hf.injective]

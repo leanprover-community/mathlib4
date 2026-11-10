@@ -506,7 +506,7 @@ lemma IsLocallyConstructible.of_isOpenCover
   have ⟨i, hi⟩ := hU.exists_mem x
   have ⟨V, hVx, hV, hV'⟩ := H i ⟨x, hi⟩
   refine ⟨_, (U i).2.isOpenEmbedding_subtypeVal.image_mem_nhds.mpr hVx,
-      (U i).2.isOpenMap_subtype_val _ hV, ?_⟩
+      (U i).2.isOpenMap_subtypeVal _ hV, ?_⟩
   let e : V ≃ₜ Subtype.val '' V :=
     (Equiv.Set.image _ V Subtype.val_injective).toHomeomorphOfIsInducing
       ((U i).2.isOpenEmbedding_subtypeVal.restrict (by simp [MapsTo]) hV).isInducing

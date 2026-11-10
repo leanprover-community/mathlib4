@@ -350,9 +350,9 @@ noncomputable def codExtend' {s : Set B} (hs : IsOpen s) {proj : Z → s}
   map_target' _ := by rintro ⟨x, hx, rfl⟩; simpa using e.map_target hx
   left_inv' z hz := by simpa using e.left_inv hz
   right_inv' _ := by rintro ⟨x, hx, rfl⟩; ext <;> simp [e.apply_symm_apply hx]
-  open_target := hs.isOpenMap_subtype_val.prodMap .id _ e.open_target
+  open_target := hs.isOpenMap_subtypeVal.prodMap .id _ e.open_target
   baseSet := Subtype.val '' e.baseSet
-  open_baseSet := hs.isOpenMap_subtype_val _ e.open_baseSet
+  open_baseSet := hs.isOpenMap_subtypeVal _ e.open_baseSet
   source_eq := by ext; simp [e.source_eq]
   target_eq := by rw [e.target_eq, prodMap_image_prod, image_id]
   proj_toFun _ h := by simp [e.coe_fst h]
@@ -846,7 +846,7 @@ noncomputable def domExtend {s : Set B} (hps : IsOpen (proj ⁻¹' s))
     (e : Trivialization F fun z : proj ⁻¹' s ↦ proj z) [Nonempty (Z → F)] :
     Trivialization F proj where
   __ := e.toPretrivialization.domExtend
-  open_source := hps.isOpenMap_subtype_val _ e.open_source
+  open_source := hps.isOpenMap_subtypeVal _ e.open_source
   continuousOn_toFun := Topology.IsInducing.subtypeVal.continuousOn_image_iff.mpr <| by
     convert! e.continuousOn_toFun
     ext1 ⟨x, (hx : proj x ∈ s)⟩

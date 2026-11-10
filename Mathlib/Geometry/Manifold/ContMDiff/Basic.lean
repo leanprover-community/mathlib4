@@ -362,7 +362,7 @@ open TopologicalSpace
 
 theorem contMDiffAt_subtype_iff {n : ℕ∞ω} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
-  ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
+  ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtypeVal _ _).symm
 
 theorem contMDiff_subtypeVal {n : ℕ∞ω} {U : Opens M} :
     ContMDiff I I n (Subtype.val : U → M) :=

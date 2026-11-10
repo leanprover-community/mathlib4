@@ -155,7 +155,7 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
     f ⁻¹' g ⁻¹' s = (fun x => g (f x)) ⁻¹' s :=
   preimage_comp.symm
 
-theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
+theorem eq_preimage_subtypeVal_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
     s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t := by grind
 
 theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻¹' s).Nonempty) :

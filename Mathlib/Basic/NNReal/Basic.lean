@@ -238,16 +238,16 @@ end rify
 theorem range_coe : range toReal = Ici 0 := Subtype.range_coe_subtype
 
 @[simp]
-theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtype_val_Ici_Ici ..
+theorem image_coe_Ici (x : ℝ≥0) : toReal '' Ici x = Ici ↑x := image_subtypeVal_Ici_Ici ..
 
 @[simp]
-theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtype_val_Ici_Iic ..
+theorem image_coe_Iic (x : ℝ≥0) : toReal '' Iic x = Icc 0 ↑x := image_subtypeVal_Ici_Iic ..
 
 @[simp]
-theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtype_val_Ici_Ioi ..
+theorem image_coe_Ioi (x : ℝ≥0) : toReal '' Ioi x = Ioi ↑x := image_subtypeVal_Ici_Ioi ..
 
 @[simp]
-theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtype_val_Ici_Iio ..
+theorem image_coe_Iio (x : ℝ≥0) : toReal '' Iio x = Ico 0 ↑x := image_subtypeVal_Ici_Iio ..
 
 @[simp]
 theorem image_coe_Icc (x y : ℝ≥0) : toReal '' Icc x y = Icc ↑x ↑y :=

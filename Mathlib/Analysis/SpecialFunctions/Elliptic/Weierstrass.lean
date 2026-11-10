@@ -126,7 +126,7 @@ lemma isClosed_lattice : IsClosed (X := ℂ) L.lattice :=
 
 lemma isClosed_of_subset_lattice {s : Set ℂ} (hs : s ⊆ L.lattice) : IsClosed s := by
   convert
-    L.isClosed_lattice.isClosedMap_subtype_val _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
+    L.isClosed_lattice.isClosedMap_subtypeVal _ (isClosed_discrete (α := L.lattice) ((↑) ⁻¹' s))
   convert Set.image_preimage_eq_inter_range.symm using 1
   simpa
 

@@ -34,7 +34,7 @@ theorem two_pow_mk_le_two_pow_mk_dense [NormalSpace X] {s d : Set X} (hs : IsClo
     [DiscreteTopology s] (hd : Dense d) : (2 : Cardinal) ^ #s ≤ 2 ^ #d := by
   have h_closed (t) (ht : t ∈ 𝒫 s) : IsClosed t := by
     rw [← inter_eq_self_of_subset_right ht, ← Subtype.image_preimage_val]
-    exact hs.isClosedMap_subtype_val _ (isClosed_discrete _)
+    exact hs.isClosedMap_subtypeVal _ (isClosed_discrete _)
   choose U V hU hV hUs hVs hUV using fun t : 𝒫 s ↦
     normal_separation (h_closed t t.2) (h_closed _ sdiff_subset) disjoint_sdiff_right
   have hUd {t₁ t₂} (h : U t₁ ∩ d = U t₂ ∩ d) : t₁.1 ⊆ t₂.1 := by

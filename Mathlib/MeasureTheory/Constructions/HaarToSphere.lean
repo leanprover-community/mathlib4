@@ -58,7 +58,7 @@ variable (μ : Measure E)
 theorem toSphere_apply_aux (s : Set (sphere (0 : E) 1)) (r : Ioi (0 : ℝ)) :
     μ ((↑) '' (homeomorphUnitSphereProd E ⁻¹' s ×ˢ Iio r)) = μ (Ioo (0 : ℝ) r • ((↑) '' s)) := by
   rw [← image2_smul, image2_image_right, ← Homeomorph.image_symm, image_image,
-    ← image_subtype_val_Ioi_Iio, image2_image_left, image2_swap, ← image_prod]
+    ← image_subtypeVal_Ioi_Iio, image2_image_left, image2_swap, ← image_prod]
   rfl
 
 variable [BorelSpace E]
@@ -119,7 +119,7 @@ lemma volumeIoiPow_apply_Iio (n : ℕ) (x : Ioi (0 : ℝ)) :
   have hr₀ : 0 ≤ x.1 := le_of_lt x.2
   rw [volumeIoiPow, withDensity_apply _ measurableSet_Iio,
     setLIntegral_subtype measurableSet_Ioi _ fun a : ℝ ↦ .ofReal (a ^ n),
-    image_subtype_val_Ioi_Iio, restrict_congr_set Ioo_ae_eq_Ioc,
+    image_subtypeVal_Ioi_Iio, restrict_congr_set Ioo_ae_eq_Ioc,
     ← ofReal_integral_eq_lintegral_ofReal (intervalIntegrable_pow _).1, ← integral_of_le hr₀]
   · simp
   · filter_upwards [ae_restrict_mem measurableSet_Ioc] with y hy

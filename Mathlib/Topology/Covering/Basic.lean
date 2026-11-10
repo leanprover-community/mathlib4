@@ -151,7 +151,7 @@ theorem subtypeVal_comp (hs : IsOpen s) {x : s} {f : E → s} (h : IsEvenlyCover
     IsEvenlyCovered (Subtype.val ∘ f) x I :=
   have ⟨inst, U, hxU, hU, hfU, H, hH⟩ := h
   have : Subtype.val ∘ f ⁻¹' Subtype.val '' U = f ⁻¹' U := by ext; simp
-  ⟨inst, Subtype.val '' U, ⟨x, hxU, rfl⟩, hs.isOpenMap_subtype_val _ hU, by rwa [this], .trans
+  ⟨inst, Subtype.val '' U, ⟨x, hxU, rfl⟩, hs.isOpenMap_subtypeVal _ hU, by rwa [this], .trans
     (.setCongr this) (H.trans <| .prodCongr (IsEmbedding.subtypeVal.homeomorphImage U) (.refl I)),
     fun _ ↦ congr_arg Subtype.val (hH _)⟩
 
@@ -163,7 +163,7 @@ theorem comp_subtypeVal (hs : IsOpen s) (hfs : IsOpen (f ⁻¹' s)) {x : X} (hx 
   have hUs : U ⊆ s := fun y hy ↦ by
     convert Set.mem_preimage.mp (H.symm (⟨y, hy⟩, Classical.arbitrary I)).1.2; simp [← hH]
   have : Subtype.val '' (fun e : f ⁻¹' s ↦ f e) ⁻¹' U = f ⁻¹' U := by ext; simpa using @hUs _
-  ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtype_val _ hfU, .trans (.symm <| .trans
+  ⟨inst, U, hxU, hU, this ▸ hfs.isOpenMap_subtypeVal _ hfU, .trans (.symm <| .trans
     (IsEmbedding.subtypeVal.homeomorphImage _) <| .setCongr this) H, fun x ↦ by
     dsimp; convert hH ⟨⟨x, hUs x.2⟩, x.2⟩ using 4; rw [Homeomorph.symm_apply_eq]; rfl⟩
 

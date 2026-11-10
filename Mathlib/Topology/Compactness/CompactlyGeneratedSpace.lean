@@ -336,7 +336,7 @@ theorem compactlyGeneratedSpace_of_isClosed_of_t2
     CompactlyGeneratedSpace X := by
   refine compactlyGeneratedSpace_of_isClosed fun s hs ↦ h s fun K hK ↦ ?_
   rw [Set.inter_comm, ← Subtype.image_preimage_coe]
-  apply hK.isClosed.isClosedMap_subtype_val
+  apply hK.isClosed.isClosedMap_subtypeVal
   have : CompactSpace ↑K := isCompact_iff_compactSpace.1 hK
   exact hs _ Subtype.val continuous_subtypeVal
 

@@ -263,11 +263,11 @@ is homeomorphic to the unit interval. -/
 @[simps! -fullyApplied, deprecated StdSimplex.homeomorphI +typeChanged (since := "2026-08-29")]
 def stdSimplexHomeomorphUnitInterval : stdSimplex ℝ (Fin 2) ≃ₜ unitInterval where
   toEquiv := stdSimplexEquivIcc ℝ
-  continuous_toFun := .subtype_mk ((continuous_apply 1).comp continuous_subtype_val) _
+  continuous_toFun := .subtype_mk ((continuous_apply 1).comp continuous_subtypeVal) _
   continuous_invFun := by
     apply Continuous.subtype_mk
     exact (continuous_pi <| Fin.forall_fin_two.2
-      ⟨continuous_const.sub continuous_subtype_val, continuous_subtype_val⟩)
+      ⟨continuous_const.sub continuous_subtypeVal, continuous_subtypeVal⟩)
 
 @[simp, deprecated StdSimplex.homeomorphI_single_zero +typeChanged (since := "2026-08-29")]
 lemma stdSimplexHomeomorphUnitInterval_zero :

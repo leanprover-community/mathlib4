@@ -85,7 +85,7 @@ theorem discreteTopology_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s)
   rintro hX ⟨_, x, hx, rfl⟩
   obtain ⟨e, hxe, rfl⟩ := h x hx
   refine ⟨e '' {x}, e.isOpen_image_of_subset_source ?_ (Set.singleton_subset_iff.mpr hxe), ?_⟩
-  · simpa using hs.isOpenMap_subtype_val _ (hX ⟨x, hx⟩)
+  · simpa using hs.isOpenMap_subtypeVal _ (hX ⟨x, hx⟩)
   · ext; simp [Subtype.ext_iff]
 
 lemma isDiscrete_image_iff (h : IsLocalHomeomorphOn f s) (hs : IsOpen s) :

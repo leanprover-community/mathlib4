@@ -68,7 +68,7 @@ private lemma exists_measurable_map_eq_unitInterval_aux (κ : Kernel X I) [IsMar
     rw [sSup_eq_iUnion_rat]
     refine MeasurableSet.iUnion (fun b ↦ MeasurableSet.iUnion
       (fun bI ↦ MeasurableSet.iUnion (fun _ ↦ ?_)))
-    refine measurableSet_lt ?_ measurable_snd.subtype_val
+    refine measurableSet_lt ?_ measurable_snd.subtypeVal
     simp_rw [measureReal_def]
     have hκ := κ.measurable_coe (s := Icc 0 ⟨b, bI⟩) measurableSet_Icc
     fun_prop

@@ -204,9 +204,9 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
       simp only [dist_eq, one_div] at hε
       have : Tendsto (fun y : s ↦ dist x.1 y.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist y.1 sᶜ)⁻¹|)
           (𝓝 x) (𝓝 (dist x.1 x.1 + |(infDist x.1 sᶜ)⁻¹ - (infDist x.1 sᶜ)⁻¹|)) := by
-        refine (tendsto_const_nhds.dist continuous_subtype_val.continuousAt).add
+        refine (tendsto_const_nhds.dist continuous_subtypeVal.continuousAt).add
           (tendsto_const_nhds.sub <| ?_).abs
-        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtype_val.continuousAt
+        refine (continuousAt_inv_infDist_pt ?_).comp continuous_subtypeVal.continuousAt
         rw [s.isOpen.isClosed_compl.closure_eq, mem_compl_iff, not_not]
         exact x.2
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
