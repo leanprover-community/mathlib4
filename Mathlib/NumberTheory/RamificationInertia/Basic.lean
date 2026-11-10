@@ -144,9 +144,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [← Submodule.Quotient.mk_eq_zero, Submodule.Quotient.mk_smul]
     obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.Quotient.mk x')
     rw [← quot_x_eq, Finset.smul_sum]
-    conv =>
-      lhs; congr; next => skip
-      intro x; rw [smul_comm A.det, d_smul, smul_zero]
+    conv_lhs =>
+      enter [2, x]; rw [smul_comm A.det, d_smul, smul_zero]
     exact Finset.sum_const_zero
   refine top_le_iff.mp
       (calc

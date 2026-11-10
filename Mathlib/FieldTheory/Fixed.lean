@@ -157,16 +157,12 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
   ext g'
   conv_lhs =>
     rw [Finset.sum_apply]
-    congr
-    · skip
-    · ext
-      rw [Pi.smul_apply, sub_smul, smul_eq_mul]
+    enter [2, _]
+    rw [Pi.smul_apply, sub_smul, smul_eq_mul]
   rw [sum_sub_distrib, Pi.zero_apply, sub_eq_zero]
   conv_lhs =>
-    congr
-    · skip
-    · ext x
-      rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
+    enter [2, x]
+    rw [toFun_apply, ← mul_inv_cancel_left g g', mul_smul, ← smul_mul', ← toFun_apply _ x]
   change
     (∑ x ∈ s, g • (fun y => l y • MulAction.toFun G F y) x (g⁻¹ * g')) =
       ∑ x ∈ s, (fun y => l y • MulAction.toFun G F y) x g'
