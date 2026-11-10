@@ -10,6 +10,7 @@ public import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 public import Mathlib.Data.Int.WithZero
 public import Mathlib.RingTheory.DedekindDomain.Dvr
 public import Mathlib.RingTheory.DedekindDomain.Ideal.Lemmas
+public import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 public import Mathlib.RingTheory.Valuation.Discrete.Basic
 public import Mathlib.RingTheory.Valuation.ExtendToLocalization
 
@@ -627,7 +628,7 @@ lemma isNonarchimedean_adicAbvDef : IsNonarchimedean (α := K) (v.adicAbvDef hb)
 
 /-- The `v`-adic absolute value on `K` defined as `b` raised to negative `v`-adic
 valuation, for some `b` in `ℝ≥0` -/
-def adicAbv : AbsoluteValue K ℝ where
+def adicAbv' : AbsoluteValue K ℝ where
   toFun x := v.adicAbvDef hb x
   map_mul' _ _ := by simp [adicAbvDef]
   nonneg' _ := zero_le_coe
@@ -635,30 +636,68 @@ def adicAbv : AbsoluteValue K ℝ where
   add_le' _ _ := (isNonarchimedean_adicAbvDef v hb).add_le fun _ ↦ bot_le
 
 /-- The `v`-adic absolute value is nonarchimedean -/
-theorem isNonarchimedean_adicAbv : IsNonarchimedean (α := K) (v.adicAbv hb) :=
+theorem isNonarchimedean_adicAbv' : IsNonarchimedean (α := K) (v.adicAbv' hb) :=
   isNonarchimedean_adicAbvDef v hb
 
 /-- The `v`-adic absolute value of `r / s : K` is the absolute value of `r` divided by the absolute
 value of `s`. -/
-theorem adicAbv_of_mk' {s : nonZeroDivisors R} :
-    v.adicAbv hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
-  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+theorem adicAbv'_of_mk' {s : nonZeroDivisors R} :
+    v.adicAbv' hb (IsLocalization.mk' K r s) = v.intAdicAbv hb r / v.intAdicAbv hb s := by
+  simp [adicAbv', adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
 /-- The `v`-adic absolute value on `K` extends the `v`-adic absolute value on `R`. -/
-theorem adicAbv_of_algebraMap (r : R) : v.adicAbv hb (algebraMap R K r) = v.intAdicAbv hb r := by
-  simp [adicAbv, adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
+theorem adicAbv'_of_algebraMap (r : R) : v.adicAbv' hb (algebraMap R K r) = v.intAdicAbv hb r := by
+  simp [adicAbv', adicAbvDef, intAdicAbv, intAdicAbvDef, valuation_of_algebraMap]
 
-theorem adicAbv_coe_le_one : v.adicAbv hb (algebraMap R K r) ≤ 1 := by
-  rw [adicAbv_of_algebraMap]
+theorem adicAbv'_coe_le_one : v.adicAbv' hb (algebraMap R K r) ≤ 1 := by
+  rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_le_one v hb r
 
-theorem adicAbv_coe_lt_one_iff : v.adicAbv hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
-  rw [adicAbv_of_algebraMap]
+theorem adicAbv'_coe_lt_one_iff : v.adicAbv' hb (algebraMap R K r) < 1 ↔ r ∈ v.asIdeal := by
+  rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_lt_one_iff v hb r
 
-theorem adicAbv_coe_eq_one_iff : v.adicAbv hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
-  rw [adicAbv_of_algebraMap]
+theorem adicAbv'_coe_eq_one_iff : v.adicAbv' hb (algebraMap R K r) = 1 ↔ r ∉ v.asIdeal := by
+  rw [adicAbv'_of_algebraMap]
   exact intAdicAbv_eq_one_iff v hb r
+
+variable (K)
+
+/-- The base of the `v`-adic absolute value on `K` is the index of `v`. If `v` has infinite index,
+then `37` is arbitrarily picked as the base instead. -/
+def adicAbvBase : ℝ≥0 :=
+  if 1 < v.asIdeal.absNorm then v.asIdeal.absNorm else 37
+
+theorem adicAbvBase_spec : 1 < v.adicAbvBase := by
+  rw [adicAbvBase]
+  split_ifs with h <;> simp [h]
+
+/-- The `v`-adic absolute value on `K` defined as the index of `v` raised to negative `v`-adic
+valuation. If `v` has infinite index, then `37` is arbitrarily picked as the base instead. -/
+def adicAbv : AbsoluteValue K ℝ :=
+  v.adicAbv' v.adicAbvBase_spec
+
+theorem adicAbv_def (hv : 1 < v.asIdeal.absNorm) {x : K} :
+    adicAbv K v x = v.adicAbv' (mod_cast hv : (1 : ℝ≥0) < v.asIdeal.absNorm) x := by
+  simp [adicAbv, adicAbvBase, hv]
+
+/-- The `v`-adic absolute value is nonarchimedean -/
+theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv K v) :=
+  v.isNonarchimedean_adicAbv' v.adicAbvBase_spec
+
+/-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
+theorem adicAbv_add_le_max (x y : K) :
+    adicAbv K v (x + y) ≤ (adicAbv K v x) ⊔ (adicAbv K v y) := isNonarchimedean_adicAbv K v x y
+
+/-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
+theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
+  (isNonarchimedean_adicAbv K v).apply_natCast_le_one (map_zero_le (adicAbv K v) 1)
+  (map_one (adicAbv K v))
+
+/-- The `v`-adic absolute value of an integer is `≤ 1`. -/
+theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
+  (isNonarchimedean_adicAbv K v).apply_intCast_le_one (map_zero_le (adicAbv K v) 1)
+  (map_one (adicAbv K v)) (map_neg_eq_map (adicAbv K v))
 
 end AbsoluteValue
 

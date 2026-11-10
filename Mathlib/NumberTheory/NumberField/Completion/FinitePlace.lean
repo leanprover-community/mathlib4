@@ -26,7 +26,6 @@ with field of fractions `K` such that `Ring.HasFiniteQuotients R`, as holds for 
 a number field. This is so that `ℤ` and `𝓞 ℚ` can be used interchangeably.
 
 ## Main Definitions and Results
-* `NumberField.adicAbv`: a `v`-adic absolute value on `K`.
 * `NumberField.FinitePlace`: the type of finite places of a number field `K`.
 * `NumberField.FinitePlace.embedding`: the canonical embedding of a number field `K` to the
   `v`-adic completion `v.adicCompletion K` of `K`, where `v` is a non-zero prime ideal of `𝓞 K`
@@ -129,15 +128,8 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : ℝ≥0) ≠ 0 :=
 
 variable (K)
 
-/-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
-valuation -/
-noncomputable def adicAbv : AbsoluteValue K ℝ := v.adicAbv <| one_lt_absNorm_nnreal v
-
-theorem adicAbv_def {x : K} : adicAbv K v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) := rfl
-
-/-- The `v`-adic absolute value is nonarchimedean -/
-theorem isNonarchimedean_adicAbv : IsNonarchimedean (adicAbv K v) :=
-  v.isNonarchimedean_adicAbv <| one_lt_absNorm_nnreal v
+theorem adicAbv_def {x : K} : adicAbv K v x = toNNReal (absNorm_ne_zero v) (v.valuation K x) :=
+  v.adicAbv_def K (one_lt_absNorm v)
 
 open Valuation.IsRankOneDiscrete
 
@@ -157,21 +149,8 @@ noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCo
   Valued.toNormedField (adicCompletion K v) ℤᵐ⁰
 
 lemma toNNReal_valued_eq_adicAbv (x : WithVal (v.valuation K)) :
-    toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) := rfl
-
-/-- The `v`-adic absolute value satisfies the ultrametric inequality. -/
-theorem adicAbv_add_le_max (x y : K) :
-    adicAbv K v (x + y) ≤ (adicAbv K v x) ⊔ (adicAbv K v y) := isNonarchimedean_adicAbv K v x y
-
-/-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
-theorem adicAbv_natCast_le_one (n : ℕ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_natCast_le_one (map_zero_le (adicAbv K v) 1)
-  (map_one (adicAbv K v))
-
-/-- The `v`-adic absolute value of an integer is `≤ 1`. -/
-theorem adicAbv_intCast_le_one (n : ℤ) : adicAbv K v n ≤ 1 :=
-  (isNonarchimedean_adicAbv K v).apply_intCast_le_one (map_zero_le (adicAbv K v) 1)
-  (map_one (adicAbv K v)) (map_neg_eq_map (adicAbv K v))
+    toNNReal (absNorm_ne_zero v) (Valued.v x) = adicAbv K v (WithVal.equiv _ x) :=
+  (adicAbv_def K v).symm
 
 end HeightOneSpectrum
 
@@ -209,19 +188,19 @@ open FinitePlace
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem FinitePlace.norm_le_one (x : R) : ‖embedding v (algebraMap _ K x)‖ ≤ 1 := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_le_one (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv'_coe_le_one _ x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem FinitePlace.norm_eq_one_iff_notMem (x : R) :
     ‖embedding v (algebraMap _ K x)‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_eq_one_iff (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv'_coe_eq_one_iff _ x
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : R) :
     ‖embedding v (algebraMap _ K x)‖ < 1 ↔ x ∈ v.asIdeal := by
   rw [norm_embedding]
-  exact v.adicAbv_coe_lt_one_iff (one_lt_absNorm_nnreal v) x
+  exact v.adicAbv'_coe_lt_one_iff _ x
 
 variable {v} in
 lemma FinitePlace.two_le_norm_of_one_lt_norm (x : v.adicCompletion K) (h : 1 < ‖x‖) : 2 ≤ ‖x‖ := by
@@ -377,7 +356,7 @@ protected
 lemma add_le (v : FinitePlace K) (x y : K) :
     v (x + y) ≤ max (v x) (v y) := by
   obtain ⟨w, hw⟩ := v.prop
-  have H x : v x = NumberField.HeightOneSpectrum.adicAbv K w x := by
+  have H x : v x = w.adicAbv K x := by
     rw [show v x = v.val x from rfl]
     grind only [place_apply, norm_embedding]
   simpa only [H] using adicAbv_add_le_max K w x y
@@ -450,3 +429,20 @@ end HeightOneSpectrum
 end LiesOver
 
 end NumberField
+
+/-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
+valuation -/
+@[deprecated (since := "2026-11-10")]
+alias NumberField.HeightOneSpectrum.adicAbv := adicAbv
+
+@[deprecated (since := "2026-11-10")]
+alias NumberField.HeightOneSpectrum.isNonarchimedean_adicAbv := isNonarchimedean_adicAbv
+
+@[deprecated (since := "2026-11-10")]
+alias NumberField.HeightOneSpectrum.adicAbv_add_le_max := adicAbv_add_le_max
+
+@[deprecated (since := "2026-11-10")]
+alias NumberField.HeightOneSpectrum.adicAbv_natCast_le_one := adicAbv_natCast_le_one
+
+@[deprecated (since := "2026-11-10")]
+alias NumberField.HeightOneSpectrum.adicAbv_intCast_le_one := adicAbv_intCast_le_one
