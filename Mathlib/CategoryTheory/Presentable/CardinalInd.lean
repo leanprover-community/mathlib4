@@ -27,7 +27,7 @@ category.
 ## Implementation notes
 
 If `P : Cᵒᵖ ⥤ Type w` is a presheaf, we do not define `P.IsCardinalIndObject κ`
-by saying that the exists a presentation of `P` as a small `κ`-filtered colimit
+by saying that there exists a presentation of `P` as a small `κ`-filtered colimit
 of representable presheaves. Instead, we define this property by requiring
 that the opposite category `P.Elementsᵒᵖ` of the category of elements of `P`
 is both `κ`-filtered and finally `w`-small (i.e. `P.Elements` is initially `w`-small).
@@ -369,8 +369,7 @@ instance : IsCardinalAccessibleCategory (CardinalInd C κ) κ where
   exists_generator :=
     ⟨_, inferInstance, isCardinalFilteredGenerator_essImage_ι C κ⟩
 
-instance :
-    IsAccessibleCategory.{w} (CardinalInd C κ) where
+instance : IsAccessibleCategory.{w} (CardinalInd C κ) where
   exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
 example : (CardinalInd.inclusion : CardinalInd C κ ⥤ Cᵒᵖ ⥤ Type w).IsCardinalAccessible κ :=
@@ -380,7 +379,7 @@ end EssentiallySmall
 
 end CardinalInd
 
-/-- If two `w`-small categories `C₁` and `C₂` are equivalent,
+/-- If two locally `w`-small categories `C₁` and `C₂` are equivalent,
 and `κ` is a regular cardinal, then the categories of `κ`-ind
 objects of `C₁` and `C₂` are also equivalent. -/
 @[expose, implicit_reducible, simps! +dsimpLhs]
