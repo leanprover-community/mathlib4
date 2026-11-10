@@ -23,7 +23,7 @@ In this file we show how to find a limit of `Monomial` and how to asymptotically
 
 * `Monomial`: type to represent monomials.
 * `UnitMonomial.toFun`/`Monomial.toFun`: converts structures to real functions.
-* `UnitMonomial.toLogFun_isEquivalent_of_nonzero_head`: `log m.toFun` is asymptotically equivalent
+* `UnitMonomial.toLogFun_isEquivalent_of_head_ne_zero`: `log m.toFun` is asymptotically equivalent
   to its first summand - `m[0] • log basis[0]` if `m[0] ≠ 0`. Using this theorem we can prove that
   the asymptotic behaviour of the monomials is determined by its first non-zero exponent.
 * `toFun_tendsto_top_of_FirstNonzeroIsPos` and its variants are used to infer the limit of
@@ -212,7 +212,7 @@ theorem log_toFun_eq_toLogFun {m : UnitMonomial} {basis : Basis} (h_basis : Well
             Real.log_rpow (hx b (by simp)), ← heq]
       rfl
 
-theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMonomial}
+theorem toLogFun_isEquivalent_of_head_ne_zero {exps_hd : ℝ} {exps_tl : UnitMonomial}
     {basis_hd : ℝ → ℝ} {basis_tl : Basis} (h_basis : WellFormedBasis (basis_hd :: basis_tl))
     (h_nonzero : exps_hd ≠ 0) :
     UnitMonomial.toLogFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
@@ -235,6 +235,9 @@ theorem toLogFun_isEquivalent_of_nonzero_head {exps_hd : ℝ} {exps_tl : UnitMon
     | cons b bs =>
       exact (IsLittleO.const_mul_left (hlo b (by simp)) e).add (ih (by grind))
 
+@[deprecated (since := "2026-10-13")]
+alias toLogFun_isEquivalent_of_nonzero_head := toLogFun_isEquivalent_of_head_ne_zero
+
 theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : UnitMonomial} {basis_hd : ℝ → ℝ}
     {basis_tl : Basis}
     (h_basis : WellFormedBasis (basis_hd :: basis_tl))
@@ -242,7 +245,7 @@ theorem toFun_tendsto_top_of_head_pos {exps_hd : ℝ} {exps_tl : UnitMonomial} {
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop atTop := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne').congr_left
+    (toLogFun_isEquivalent_of_head_ne_zero h_basis h_nonzero.ne').congr_left
       (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atTop by
@@ -263,7 +266,7 @@ theorem toFun_tendsto_zero_of_head_neg {exps_hd : ℝ} {exps_tl : UnitMonomial} 
     Tendsto (UnitMonomial.toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl)) atTop (𝓝 0) := by
   have h_equiv : Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl) ~[atTop]
       exps_hd • Real.log ∘ basis_hd :=
-    (toLogFun_isEquivalent_of_nonzero_head h_basis h_nonzero.ne).congr_left
+    (toLogFun_isEquivalent_of_head_ne_zero h_basis h_nonzero.ne).congr_left
       (log_toFun_eq_toLogFun h_basis).symm
   suffices h_log : Tendsto (Real.log ∘ toFun (exps_hd :: exps_tl) (basis_hd :: basis_tl))
       atTop atBot by

@@ -5,11 +5,16 @@ Authors: David Kurniadi Angdinata, Moritz Firsching, Nikolas Kuhn, Amelia Living
 -/
 module
 
+public import Mathlib.Algebra.Category.Grp.Abelian
 public import Mathlib.Algebra.Category.Grp.Biproducts
-public import Mathlib.Algebra.Category.Grp.FilteredColimits
-public import Mathlib.Algebra.Homology.ShortComplex.Ab
+public import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 public import Mathlib.CategoryTheory.Abelian.GrothendieckCategory.Basic
-public import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
+
+import Mathlib.Algebra.Category.Grp.FilteredColimits
+import Mathlib.Algebra.Homology.ShortComplex.Ab
+import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
+import Mathlib.CategoryTheory.Abelian.FunctorCategory
+import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 
 /-!
 # AB axioms for the category of abelian groups
@@ -20,17 +25,15 @@ AB4\*.
 
 public section
 
-universe u
+universe u v w
 
 open CategoryTheory Limits
 
-set_option backward.defeqAttrib.useBackward true in
 instance {J C : Type*} [Category* J] [Category* C] [HasColimitsOfShape J C] [Preadditive C] :
     (colim (J := J) (C := C)).Additive where
 
 variable {J : Type u} [SmallCategory J] [IsFiltered J]
 
-set_option backward.defeqAttrib.useBackward true in
 noncomputable instance :
     (colim (J := J) (C := AddCommGrpCat.{u})).PreservesHomology :=
   Functor.preservesHomology_of_map_exact _ (fun S hS ↦ by
@@ -58,6 +61,18 @@ instance : HasFilteredColimits (AddCommGrpCat.{u}) where
 
 noncomputable instance : AB5 (AddCommGrpCat.{u}) where
   ofShape _ := { preservesFiniteLimits := inferInstance }
+
+section UnivLE
+
+variable [UnivLE.{u, v}] [UnivLE.{u, w}] [UnivLE.{v, w}]
+
+instance Ab.hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{u, v} Ab.{w} :=
+  hasFilteredColimitsOfSize_of_univLE.{u, v, w}
+
+instance Ab.ab5OfSize : AB5OfSize.{u, v} Ab.{w} :=
+  AB5OfSize_of_univLE.{u, v, w, w} Ab.{w}
+
+end UnivLE
 
 attribute [local instance] Abelian.hasFiniteBiproducts
 

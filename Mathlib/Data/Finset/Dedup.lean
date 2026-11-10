@@ -6,8 +6,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 module
 
 public import Mathlib.Data.Finset.Defs
-public import Mathlib.Data.Multiset.Dedup
 public import Mathlib.Data.Multiset.Basic
+public import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Deduplicating Multisets to make Finsets
@@ -82,7 +82,7 @@ theorem toFinset_ssubset : s.toFinset ⊂ t.toFinset ↔ s ⊂ t := by
 theorem toFinset_dedup (m : Multiset α) : m.dedup.toFinset = m.toFinset := by
   simp_rw [toFinset, dedup_idem]
 
-instance isWellFounded_ssubset : IsWellFounded (Multiset β) (· ⊂ ·) := by
+instance isWellFounded_ssubset : @WellFounded (Multiset β) (· ⊂ ·) := by
   classical
   exact Subrelation.isWellFounded (InvImage _ toFinset) toFinset_ssubset.2
 

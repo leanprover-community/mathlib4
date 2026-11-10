@@ -6,7 +6,6 @@ Authors: Jacob Reinhold
 module
 
 public import Mathlib.CategoryTheory.CopyDiscardCategory.Basic
-public import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 # Markov Categories

@@ -25,11 +25,13 @@ return propositions of expected types, not just `Is*Filter`.
 
 Here is the list of statements specific to these two types of filters:
 
-* `IsLocal*.on`, `IsLocal*On.on_subset`: restrict to a subset;
-* `IsLocal*On.inter` : intersect the set with another one;
-* `Is*On.localize` : a global extremum is a local extremum too.
-* `Is[Local]*On.isLocal*` : if we have `IsLocal*On f s a` and `s ∈ 𝓝 a`, then we have
-  `IsLocal* f a`.
+* `IsLocalExtr.isLocalExtrOn`, `IsLocalExtrOn.mono`: restrict to a subset.
+* `IsLocalExtrOn.inter`: intersect the set with another one.
+* `IsExtrOn.isLocalExtrOn`: a global extremum is a local extremum too.
+* `IsLocalExtrOn.isLocalExtr`, `IsExtrOn.isLocalExtr`: an extremum restricted to some neighborhood
+  of itself is an unrestricted extremum.
+
+and analogous statements for the min and max predicates.
 -/
 
 @[expose] public section
@@ -63,11 +65,11 @@ def IsLocalExtrOn :=
 def IsLocalMin :=
   IsMinFilter f (𝓝 a) a
 
-/-- `IsLocalMax f a` means that `f x ≤ f a` for all `x ∈ s` in some neighborhood of `a`. -/
+/-- `IsLocalMax f a` means that `f x ≤ f a` for all `x` in some neighborhood of `a`. -/
 def IsLocalMax :=
   IsMaxFilter f (𝓝 a) a
 
-/-- `IsLocalExtr f s a` means `IsLocalMin f s a ∨ IsLocalMax f s a`. -/
+/-- `IsLocalExtr f a` means `IsLocalMin f a ∨ IsLocalMax f a`. -/
 def IsLocalExtr :=
   IsExtrFilter f (𝓝 a) a
 
@@ -126,17 +128,17 @@ theorem IsLocalExtrOn.inter (hf : IsLocalExtrOn f s a) (t) : IsLocalExtrOn f (s 
   hf.mono inter_subset_left
 
 theorem IsMinOn.isLocalMinOn (hf : IsMinOn f s a) : IsLocalMinOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsMinOn.localize := IsMinOn.isLocalMinOn
 
 theorem IsMaxOn.isLocalMaxOn (hf : IsMaxOn f s a) : IsLocalMaxOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsMaxOn.localize := IsMaxOn.isLocalMaxOn
 
 theorem IsExtrOn.isLocalExtrOn (hf : IsExtrOn f s a) : IsLocalExtrOn f s a :=
-  hf.filter_mono <| inf_le_right
+  hf.filter_mono inf_le_right
 
 @[deprecated (since := "2026-07-17")] alias IsExtrOn.localize := IsExtrOn.isLocalExtrOn
 
@@ -149,7 +151,7 @@ theorem IsLocalMaxOn.isLocalMax (hf : IsLocalMaxOn f s a) (hs : s ∈ 𝓝 a) : 
   hf.filter_mono <| le_inf le_rfl this
 
 theorem IsLocalExtrOn.isLocalExtr (hf : IsLocalExtrOn f s a) (hs : s ∈ 𝓝 a) : IsLocalExtr f a :=
-  hf.elim (fun hf => (hf.isLocalMin hs).isExtr) fun hf => (hf.isLocalMax hs).isExtr
+  hf.elim (fun hf => (hf.isLocalMin hs).isExtrFilter) fun hf => (hf.isLocalMax hs).isExtrFilter
 
 lemma isLocalMinOn_univ_iff : IsLocalMinOn f univ a ↔ IsLocalMin f a := by
   simp only [IsLocalMinOn, IsLocalMin, nhdsWithin_univ]
@@ -290,40 +292,40 @@ theorem IsLocalMax.comp_continuous [TopologicalSpace δ] {g : δ → α} {b : δ
 
 theorem IsLocalExtr.comp_continuous [TopologicalSpace δ] {g : δ → α} {b : δ}
     (hf : IsLocalExtr f (g b)) (hg : ContinuousAt g b) : IsLocalExtr (f ∘ g) b :=
-  hf.comp_tendsto hg
+  hf.comp_of_tendsto hg
 
 theorem IsLocalMin.comp_continuousOn [TopologicalSpace δ] {s : Set δ} {g : δ → α} {b : δ}
     (hf : IsLocalMin f (g b)) (hg : ContinuousOn g s) (hb : b ∈ s) : IsLocalMinOn (f ∘ g) s b :=
-  hf.comp_tendsto (hg b hb)
+  hf.comp_of_tendsto (hg b hb)
 
 theorem IsLocalMax.comp_continuousOn [TopologicalSpace δ] {s : Set δ} {g : δ → α} {b : δ}
     (hf : IsLocalMax f (g b)) (hg : ContinuousOn g s) (hb : b ∈ s) : IsLocalMaxOn (f ∘ g) s b :=
-  hf.comp_tendsto (hg b hb)
+  hf.comp_of_tendsto (hg b hb)
 
 theorem IsLocalExtr.comp_continuousOn [TopologicalSpace δ] {s : Set δ} (g : δ → α) {b : δ}
     (hf : IsLocalExtr f (g b)) (hg : ContinuousOn g s) (hb : b ∈ s) : IsLocalExtrOn (f ∘ g) s b :=
-  hf.elim (fun hf => (hf.comp_continuousOn hg hb).isExtr) fun hf =>
-    (IsLocalMax.comp_continuousOn hf hg hb).isExtr
+  hf.elim (fun hf => (hf.comp_continuousOn hg hb).isExtrFilter) fun hf =>
+    (IsLocalMax.comp_continuousOn hf hg hb).isExtrFilter
 
 theorem IsLocalMinOn.comp_continuousOn [TopologicalSpace δ] {t : Set α} {s : Set δ} {g : δ → α}
     {b : δ} (hf : IsLocalMinOn f t (g b)) (hst : s ⊆ g ⁻¹' t) (hg : ContinuousOn g s) (hb : b ∈ s) :
     IsLocalMinOn (f ∘ g) s b :=
-  hf.comp_tendsto
+  hf.comp_of_tendsto
     (tendsto_nhdsWithin_mono_right (image_subset_iff.mpr hst)
       (ContinuousWithinAt.tendsto_nhdsWithin_image (hg b hb)))
 
 theorem IsLocalMaxOn.comp_continuousOn [TopologicalSpace δ] {t : Set α} {s : Set δ} {g : δ → α}
     {b : δ} (hf : IsLocalMaxOn f t (g b)) (hst : s ⊆ g ⁻¹' t) (hg : ContinuousOn g s) (hb : b ∈ s) :
     IsLocalMaxOn (f ∘ g) s b :=
-  hf.comp_tendsto
+  hf.comp_of_tendsto
     (tendsto_nhdsWithin_mono_right (image_subset_iff.mpr hst)
       (ContinuousWithinAt.tendsto_nhdsWithin_image (hg b hb)))
 
 theorem IsLocalExtrOn.comp_continuousOn [TopologicalSpace δ] {t : Set α} {s : Set δ} (g : δ → α)
     {b : δ} (hf : IsLocalExtrOn f t (g b)) (hst : s ⊆ g ⁻¹' t) (hg : ContinuousOn g s)
     (hb : b ∈ s) : IsLocalExtrOn (f ∘ g) s b :=
-  hf.elim (fun hf => (hf.comp_continuousOn hst hg hb).isExtr) fun hf =>
-    (IsLocalMaxOn.comp_continuousOn hf hst hg hb).isExtr
+  hf.elim (fun hf => (hf.comp_continuousOn hst hg hb).isExtrFilter) fun hf =>
+    (IsLocalMaxOn.comp_continuousOn hf hst hg hb).isExtrFilter
 
 end Preorder
 

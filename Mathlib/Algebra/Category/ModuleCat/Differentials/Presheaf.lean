@@ -5,8 +5,8 @@ Authors: Joël Riou
 -/
 module
 
-public import Mathlib.Algebra.Category.ModuleCat.Presheaf.OfCommRing
 public import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
+public import Mathlib.Algebra.Category.ModuleCat.Presheaf.OfCommRing
 
 /-!
 # The presheaf of differentials of a presheaf of modules
@@ -85,7 +85,7 @@ def postcomp (f : M ⟶ N) : N.Derivation φ where
   d_map {X Y} g x := by simpa using PresheafOfModules.naturality_apply f g (d.d x)
   d_app {X} a := by
     dsimp
-    erw [d_app]
+    rw [d_app]
     rw [map_zero]
 
 /-- The universal property that a derivation `d : M.Derivation φ` must

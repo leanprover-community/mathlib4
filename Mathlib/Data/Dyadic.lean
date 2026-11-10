@@ -5,6 +5,9 @@ Authors: David Ledvinka
 -/
 module
 
-public import Mathlib.Data.Dyadic.ToReal
+public import Mathlib.Tactic.Inclusion.Extension.IntervalDyadicReal.Init
 
-deprecated_module (since := "2026-09-07")
+deprecated_module
+  "The material in this module is internal to the `Inclusion` tactic, \
+  it has been moved to namespace `Inclusion.IntervalDyadicReal.Dyadic`."
+  (since := "2026-10-22")

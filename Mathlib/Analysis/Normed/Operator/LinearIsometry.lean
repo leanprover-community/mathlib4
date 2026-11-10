@@ -11,7 +11,7 @@ public import Mathlib.Analysis.Normed.Group.Submodule
 public import Mathlib.Analysis.Normed.Group.Uniform
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.LinearAlgebra.DFinsupp
-public import Mathlib.Topology.Algebra.Module.Equiv
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 
 /-!
 # (Semi-)linear isometries
@@ -92,15 +92,23 @@ protected theorem continuous [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f :
   (SemilinearIsometryClass.isometry f).continuous
 
 -- Should be `@[simp]` but it doesn't fire due to https://github.com/leanprover/lean4/issues/3107.
-theorem nnnorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
+theorem nnNorm_map [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (x : E) : ‖f x‖₊ = ‖x‖₊ :=
   NNReal.eq <| norm_map f x
 
-protected theorem lipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
+@[deprecated (since := "2026-10-31")] alias nnnorm_map := nnNorm_map
+
+protected theorem lipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) : LipschitzWith 1 f :=
   (SemilinearIsometryClass.isometry f).lipschitzWith
 
-protected theorem antilipschitz [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := SemilinearIsometryClass.lipschitzWith
+
+protected theorem antilipschitzWith [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) :
     AntilipschitzWith 1 f :=
   (SemilinearIsometryClass.isometry f).antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := SemilinearIsometryClass.antilipschitzWith
 
 theorem ediam_image [SemilinearIsometryClass 𝓕 σ₁₂ E E₂] (f : 𝓕) (s : Set E) :
     Metric.ediam (f '' s) = Metric.ediam s :=
@@ -139,6 +147,7 @@ theorem toLinearMap_injective : Injective (toLinearMap : (E →ₛₗᵢ[σ₁�
 theorem toLinearMap_inj {f g : E →ₛₗᵢ[σ₁₂] E₂} : f.toLinearMap = g.toLinearMap ↔ f = g :=
   toLinearMap_injective.eq_iff
 
+@[macro_inline]
 instance instFunLike : FunLike (E →ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe f := f.toFun
   coe_injective _ _ h := toLinearMap_injective (DFunLike.coe_injective h)
@@ -193,8 +202,10 @@ protected theorem map_smul [Module R E₂] (f : E →ₗᵢ[R] E₂) (c : R) (x 
   f.toLinearMap.map_smul c x
 
 protected lemma norm_map (x : E) : ‖f x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
+protected lemma nnNorm_map (x : E) : ‖f x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖f x‖ₑ = ‖x‖ₑ := by simp
+
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometry.nnNorm_map
 
 protected theorem isometry : Isometry f :=
   AddMonoidHomClass.isometry_of_norm f.toLinearMap f.norm_map
@@ -232,11 +243,17 @@ theorem map_eq_iff {x y : F} : f₁ x = f₁ y ↔ x = y :=
 theorem map_ne {x y : F} (h : x ≠ y) : f₁ x ≠ f₁ y :=
   f₁.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 f :=
+protected theorem lipschitzWith : LipschitzWith 1 f :=
   f.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 f :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometry.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 f :=
   f.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometry.antilipschitzWith
 
 @[continuity]
 protected theorem continuous : Continuous f :=
@@ -477,6 +494,7 @@ theorem toLinearEquiv_injective : Injective (toLinearEquiv : (E ≃ₛₗᵢ[σ�
 theorem toLinearEquiv_inj {f g : E ≃ₛₗᵢ[σ₁₂] E₂} : f.toLinearEquiv = g.toLinearEquiv ↔ f = g :=
   toLinearEquiv_injective.eq_iff
 
+@[macro_inline]
 instance instEquivLike : EquivLike (E ≃ₛₗᵢ[σ₁₂] E₂) E E₂ where
   coe e := e.toFun
   inv e := e.invFun
@@ -526,8 +544,10 @@ def ofBounds (e : E ≃ₛₗ[σ₁₂] E₂) (h₁ : ∀ x, ‖e x‖ ≤ ‖x�
   ⟨e, fun x => le_antisymm (h₁ x) <| by simpa only [e.symm_apply_apply] using h₂ (e x)⟩
 
 protected lemma norm_map (x : E) : ‖e x‖ = ‖x‖ := by simp
-protected lemma nnnorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
+protected lemma nnNorm_map (x : E) : ‖e x‖₊ = ‖x‖₊ := by simp
 protected lemma enorm_map (x : E) : ‖e x‖ₑ = ‖x‖ₑ := by simp
+
+@[deprecated (since := "2026-10-31")] protected alias nnnorm_map := LinearIsometryEquiv.nnNorm_map
 
 /-- Reinterpret a `LinearIsometryEquiv` as a `LinearIsometry`. -/
 def toLinearIsometry : E →ₛₗᵢ[σ₁₂] E₂ :=
@@ -906,11 +926,17 @@ theorem map_eq_iff {x y : E} : e x = e y ↔ x = y :=
 theorem map_ne {x y : E} (h : x ≠ y) : e x ≠ e y :=
   e.injective.ne h
 
-protected theorem lipschitz : LipschitzWith 1 e :=
+protected theorem lipschitzWith : LipschitzWith 1 e :=
   e.isometry.lipschitzWith
 
-protected theorem antilipschitz : AntilipschitzWith 1 e :=
+@[deprecated (since := "2026-09-11")]
+protected alias lipschitz := LinearIsometryEquiv.lipschitzWith
+
+protected theorem antilipschitzWith : AntilipschitzWith 1 e :=
   e.isometry.antilipschitzWith
+
+@[deprecated (since := "2026-09-11")]
+protected alias antilipschitz := LinearIsometryEquiv.antilipschitzWith
 
 theorem image_eq_preimage_symm (s : Set E) : e '' s = e.symm ⁻¹' s :=
   e.toLinearEquiv.image_eq_preimage_symm s
@@ -1015,6 +1041,10 @@ def prodComm [Module R E₂] : E × E₂ ≃ₗᵢ[R] E₂ × E :=
 @[simp]
 theorem symm_prodComm [Module R E₂] : (prodComm R E E₂).symm = prodComm R E₂ E :=
   rfl
+
+@[simp]
+theorem prodComm_trans_prodComm [Module R E₂] :
+    (prodComm R E E₂).trans (prodComm R E₂ E) = .refl _ _ := rfl
 
 variable (E₃)
 

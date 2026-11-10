@@ -6,7 +6,8 @@ Authors: Moritz Doll
 module
 
 public import Mathlib.Analysis.LocallyConvex.Bounded
-public import Mathlib.Analysis.SpecificLimits.Normed
+
+import Mathlib.Analysis.SpecificLimits.Normed
 
 /-!
 # Continuity and Von Neumann boundedness

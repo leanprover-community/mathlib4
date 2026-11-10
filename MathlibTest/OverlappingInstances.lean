@@ -5,6 +5,8 @@ import Mathlib.Init
 
 public section
 
+set_option linter.concreteInstances false
+
 class SubBar (α : Type) where
   a' : α
 
