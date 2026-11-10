@@ -36,37 +36,28 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert zero_measure
     rw [← measure_univ_eq_zero, h.1.2]
-  · -- Replace `f` by an a.e. equal measurable map `g`.
-    obtain ⟨g, hgm, hfg⟩ := hf.aemeasurable
-    have hg : MeasurePreserving g μ μ := hf.congr hfg
-    grw [hfg]
-    refine .of_preimage_eq_of_measurable hgm hg ?_
-    have : IsFiniteMeasure μ := by
+  · have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]
     set S := {ν | MeasurePreserving f ν ν ∧ ν univ = c}
-    have {s : Set X} (hsm : MeasurableSet s) (hgs : g ⁻¹' s = s) (hμs : μ s ≠ 0) :
+    have {s : Set X} (hsm : NullMeasurableSet s μ) (hfs : f ⁻¹' s = s) (hμs : μ s ≠ 0) :
         c • μ[|s] ∈ S := by
-      -- The measures we feed to extremality are `≪ μ`, hence preserved by `f` iff by `g`.
-      have hac : c • μ[|s] ≪ μ := smul_absolutelyContinuous.trans cond_absolutelyContinuous
-      refine ⟨?_, ?_⟩
-      · grw [hac.ae_eq hfg]
-        refine .smul_measure (.smul_measure ?_ _) c
-        convert hg.restrict_preimage hsm
-        exact hgs.symm
+      refine ⟨.smul_measure (.smul_measure ?_ _) c, ?_⟩
+      · convert hf.restrict_preimage₀ hsm
+        exact hfs.symm
       · rw [smul_apply, (cond_isProbabilityMeasure hμs).1, smul_eq_mul, mul_one]
-    intro s hsm hgs
+    refine .of_preimage_eq hf fun s hsm hfs ↦ ?_
     by_contra H
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by
       simpa [eventuallyEmptyOrUniv_iff, ae_iff, and_comm] using! H
     have hcond : c • μ[|s] = μ := by
-      apply h.2 (this hsm hgs hs) (this hsm.compl (by rw [preimage_compl, hgs]) hs')
+      apply h.2 (this hsm hfs hs) (this hsm.compl (by rw [preimage_compl, hfs]) hs')
       refine ⟨μ s / c, μ sᶜ / c, ENNReal.div_pos hs hc, ENNReal.div_pos hs' hc, ?_, ?_⟩
-      · rw [← ENNReal.add_div, measure_add_measure_compl hsm, h.1.2, ENNReal.div_self hc₀ hc]
+      · rw [← ENNReal.add_div, measure_add_measure_compl₀ hsm, h.1.2, ENNReal.div_self hc₀ hc]
       · simp [ProbabilityTheory.cond, smul_smul, ← mul_assoc, ENNReal.div_mul_cancel,
-          ENNReal.mul_inv_cancel, *]
+          ENNReal.mul_inv_cancel, restrict_add_restrict_compl₀ hsm, *]
     rw [← hcond] at hs'
-    simp [ProbabilityTheory.cond_apply, hsm] at hs'
+    simp [ProbabilityTheory.cond_apply₀ hsm] at hs'
 
 /-- An extreme point of the set of invariant probability measures is an ergodic measure. -/
 theorem of_mem_extremePoints

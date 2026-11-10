@@ -77,9 +77,20 @@ theorem symm (e : α ≃ᵐ β) {μa : Measure α} {μb : Measure β} (h : Measu
   ⟨e.symm.measurable.aemeasurable, by
     rw [← h.map_eq, map_map e.symm.measurable e.measurable, e.symm_comp_self, map_id]⟩
 
+protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
+    QuasiMeasurePreserving f μa μb :=
+  ⟨hf.1, hf.2.absolutelyContinuous⟩
+
 theorem restrict_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : MeasurableSet s) : MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) :=
   ⟨hf.aemeasurable.restrict, by rw [← hf.map_eq, restrict_map_of_aemeasurable hf.aemeasurable hs]⟩
+
+theorem restrict_preimage₀ {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) :
+    MeasurePreserving f (μa.restrict (f ⁻¹' s)) (μb.restrict s) := by
+  rw [restrict_congr_set (hf.quasiMeasurePreserving.preimage_ae_eq hs.toMeasurable_ae_eq.symm),
+    restrict_congr_set hs.toMeasurable_ae_eq.symm]
+  exact hf.restrict_preimage (measurableSet_toMeasurable _ _)
 
 theorem restrict_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (h₂ : MeasurableEmbedding f) (s : Set β) :
@@ -93,10 +104,6 @@ theorem restrict_image_emb {f : α → β} (hf : MeasurePreserving f μa μb) (h
 theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
     (h₂ : MeasurableEmbedding f) {g : β → γ} : AEMeasurable (g ∘ f) μa ↔ AEMeasurable g μb := by
   rw [← hf.map_eq, h₂.aemeasurable_map_iff]
-
-protected theorem quasiMeasurePreserving {f : α → β} (hf : MeasurePreserving f μa μb) :
-    QuasiMeasurePreserving f μa μb :=
-  ⟨hf.1, hf.2.absolutelyContinuous⟩
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=

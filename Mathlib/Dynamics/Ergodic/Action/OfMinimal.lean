@@ -94,7 +94,6 @@ theorem ergodic_smul_of_denseRange_pow {M : Type*} [Monoid M] [TopologicalSpace 
     [MulAction M X] [ContinuousSMul M X] {g : M} (hg : DenseRange (g ^ · : ℕ → M))
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul M X μ] :
     Ergodic (g • ·) μ := by
-  borelize M
   refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
   refine aeconst_of_dense_setOfPred_preimage_smul_eq hsm (hg.mono ?_)
   refine range_subset_iff.2 fun n ↦ ?_
@@ -152,7 +151,6 @@ then the vector addition of `g` is an ergodic map. -/]
 theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ → G))
     (μ : Measure X) [IsFiniteMeasure μ] [μ.InnerRegular] [ErgodicSMul G X μ] :
     Ergodic (g • ·) μ := by
-  borelize G
   refine .of_preimage_eq (measurePreserving_smul _ _) fun s hsm hs ↦ ?_
   refine aeconst_of_dense_aestabilizer_smul hsm (hg.mono ?_)
   rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
