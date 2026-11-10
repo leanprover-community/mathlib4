@@ -38,6 +38,10 @@ and convergence in distribution.
 * `TendstoInDistribution.prodMk_of_tendstoInMeasure_const`: **Slutsky's theorem**.
   If `X n` converges in distribution to `Z`, and `Y n` converges in probability to a constant `c`,
   then the pair `(X n, Y n)` converges in distribution to `(Z, c)`.
+* `tendstoInDistribution_of_approx`: **Billingsley's approximation theorem**.
+  If `X k n` converges in distribution to `Y k` as `n → ∞` for each `k`, `Y k` converges in
+  distribution to `Z` as `k → ∞`, and `X k n` approximates `U n` in probability, uniformly in
+  `n` as `k → ∞`, then `U n` converges in distribution to `Z`.
 
 -/
 
@@ -183,6 +187,150 @@ theorem TendstoInMeasure.tendstoInDistribution [PseudoEMetricSpace E] [BorelSpac
   refine ⟨ms, TendstoInDistribution.tendsto ?_⟩
   exact tendstoInDistribution_of_ae_tendsto (by fun_prop) hZ hms2
 
+/-- Convergence in distribution can be tested on bounded Lipschitz functions. -/
+theorem tendstoInDistribution_iff_forall_lipschitz_integral_tendsto [PseudoEMetricSpace E]
+    [OpensMeasurableSpace E] [l.IsCountablyGenerated]
+    (hX : ∀ i, AEMeasurable (X i) (μ i)) (hZ : AEMeasurable Z μ') :
+    TendstoInDistribution X l Z μ μ' ↔
+      ∀ F : E → ℝ, (∃ C, ∀ x y, dist (F x) (F y) ≤ C) → (∃ L, LipschitzWith L F) →
+        Tendsto (fun i ↦ ∫ ω, F (X i ω) ∂(μ i)) l (𝓝 (∫ ω, F (Z ω) ∂μ')) := by
+  have h_map (i) {F : E → ℝ} (hF : Continuous F) :
+      ∫ x, F x ∂(μ i).map (X i) = ∫ ω, F (X i ω) ∂(μ i) :=
+    integral_map (hX i) hF.aestronglyMeasurable
+  have h_map' {F : E → ℝ} (hF : Continuous F) : ∫ x, F x ∂μ'.map Z = ∫ ω, F (Z ω) ∂μ' :=
+    integral_map hZ hF.aestronglyMeasurable
+  refine ⟨fun h F hF_bounded hF_lip ↦ ?_, fun h ↦ ⟨hX, hZ, ?_⟩⟩
+  · have hF := (tendsto_iff_forall_lipschitz_integral_tendsto.mp h.tendsto) F hF_bounded hF_lip
+    have hF_cont : Continuous F := hF_lip.choose_spec.continuous
+    simpa [h_map _ hF_cont, h_map' hF_cont] using hF
+  · refine tendsto_iff_forall_lipschitz_integral_tendsto.mpr fun F hF_bounded hF_lip ↦ ?_
+    have hF_cont : Continuous F := hF_lip.choose_spec.continuous
+    simpa [h_map _ hF_cont, h_map' hF_cont] using h F hF_bounded hF_lip
+
+section Approximation
+
+variable [PseudoMetricSpace E] [SecondCountableTopology E] [BorelSpace E]
+
+/-- Let `F` be an `L`-Lipschitz real function whose oscillation is bounded by `M`, and let `A, B`
+be two random variables on the same probability space. Then for `δ ≥ 0`,
+`|𝔼[F ∘ A] - 𝔼[F ∘ B]| ≤ L * δ + M * ℙ(δ ≤ dist A B)`. -/
+lemma abs_integral_sub_integral_le_of_lipschitzWith {A B : Ω'' → E}
+    (hA : AEMeasurable A μ'') (hB : AEMeasurable B μ'') {F : E → ℝ} {M : ℝ}
+    (hF_bounded : ∀ x y, dist (F x) (F y) ≤ M) {L : NNReal} (hF_lip : LipschitzWith L F) {δ : ℝ}
+    (hδ : 0 ≤ δ) :
+    |∫ ω, F (A ω) ∂μ'' - ∫ ω, F (B ω) ∂μ''|
+      ≤ L * δ + M * μ''.real {ω | δ ≤ dist (A ω) (B ω)} := by
+  let f : E →ᵇ ℝ := .mkOfBound ⟨F, hF_lip.continuous⟩ M hF_bounded
+  have h_int_A : Integrable (fun ω ↦ F (A ω)) μ'' :=
+    (f.integrable (μ''.map A)).comp_aemeasurable hA
+  have h_int_B : Integrable (fun ω ↦ F (B ω)) μ'' :=
+    (f.integrable (μ''.map B)).comp_aemeasurable hB
+  have h_int_sub : Integrable (fun ω ↦ ‖F (A ω) - F (B ω)‖) μ'' := (h_int_A.sub h_int_B).norm
+  have h_meas : NullMeasurableSet {ω | dist (A ω) (B ω) < δ} μ'' :=
+    nullMeasurableSet_lt (by fun_prop) (by fun_prop)
+  rw [← integral_sub h_int_A h_int_B, ← Real.norm_eq_abs]
+  calc ‖∫ ω, F (A ω) - F (B ω) ∂μ''‖
+  _ ≤ ∫ ω, ‖F (A ω) - F (B ω)‖ ∂μ'' := norm_integral_le_integral_norm _
+  -- Either `dist (A ω) (B ω)` is smaller than `δ`, or it is not
+  _ = ∫ ω in {ω | dist (A ω) (B ω) < δ}, ‖F (A ω) - F (B ω)‖ ∂μ''
+      + ∫ ω in {ω | δ ≤ dist (A ω) (B ω)}, ‖F (A ω) - F (B ω)‖ ∂μ'' := by
+    simp_rw [← not_lt]
+    exact (integral_add_compl₀ h_meas h_int_sub).symm
+  -- If it is smaller, we use the Lipschitz property of `F`; if not, the boundedness of `F`
+  _ ≤ ∫ ω in {ω | dist (A ω) (B ω) < δ}, L * δ ∂μ''
+      + ∫ ω in {ω | δ ≤ dist (A ω) (B ω)}, M ∂μ'' := by
+    gcongr ?_ + ?_
+    · refine setIntegral_mono_on₀ h_int_sub.integrableOn integrableOn_const h_meas ?_
+      intro ω (hω : dist (A ω) (B ω) < δ)
+      rw [← dist_eq_norm]
+      exact (hF_lip.dist_le_mul _ _).trans (by gcongr)
+    · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun ω ↦ ?_
+      rw [← dist_eq_norm]
+      exact hF_bounded _ _
+  _ = L * δ * μ''.real {ω | dist (A ω) (B ω) < δ}
+      + M * μ''.real {ω | δ ≤ dist (A ω) (B ω)} := by
+    simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
+      smul_eq_mul]
+    ring
+  _ ≤ L * δ + M * μ''.real {ω | δ ≤ dist (A ω) (B ω)} := by
+    rw [mul_assoc]
+    gcongr
+    grw [measureReal_le_one, mul_one]
+
+/-- **Approximation theorem for convergence in distribution** (Billingsley, *Convergence of
+Probability Measures*, 2nd ed., Theorem 3.2).
+
+Let `U i` be random variables, and for each `k` let `X k i` be random variables defined on the
+same probability spaces as `U i`. Suppose that
+* for each `k`, `X k i` converges in distribution to `Y k` along `l`;
+* `Y k` converges in distribution to `Z` along `l'`;
+* the `X k` approximate `U` uniformly in probability: for every `δ > 0`,
+  `limsup_{i → l} ℙ(δ ≤ dist (U i) (X k i))` tends to `0` along `l'`.
+
+Then `U i` converges in distribution to `Z` along `l`.
+
+Taking `X k = X`, `Y k = Z` for all `k` recovers `tendstoInDistribution_of_tendstoInMeasure_sub`
+(for random variables defined on a common probability space). -/
+theorem tendstoInDistribution_of_approx {κ : Type*} {Ωκ : κ → Type*}
+    {mκ : ∀ k, MeasurableSpace (Ωκ k)} {ν : (k : κ) → Measure (Ωκ k)}
+    [∀ k, IsProbabilityMeasure (ν k)] {l' : Filter κ} [l'.NeBot] [l.IsCountablyGenerated]
+    {X : κ → (i : ι) → Ω i → E} {Y : (k : κ) → Ωκ k → E} {U : (i : ι) → Ω i → E}
+    (hX : ∀ k, TendstoInDistribution (X k) l (Y k) μ (ν k))
+    (hY : TendstoInDistribution Y l' Z ν μ') (hU : ∀ i, AEMeasurable (U i) (μ i))
+    (h_approx : ∀ δ > 0, Tendsto
+      (fun k ↦ limsup (fun i ↦ μ i {ω | δ ≤ dist (U i ω) (X k i ω)}) l) l' (𝓝 0)) :
+    TendstoInDistribution U l Z μ μ' := by
+  rw [tendstoInDistribution_iff_forall_lipschitz_integral_tendsto hU hY.aemeasurable_limit]
+  rintro F ⟨M, hF_bounded⟩ ⟨L, hF_lip⟩
+  have hM : 0 ≤ M := by
+    obtain ⟨ω⟩ := nonempty_of_isProbabilityMeasure μ'
+    exact dist_nonneg.trans (hF_bounded (Z ω) (Z ω))
+  -- Convergence in distribution, tested against the bounded continuous function `F`
+  let f : E →ᵇ ℝ := .mkOfBound ⟨F, hF_lip.continuous⟩ M hF_bounded
+  have h_Y : Tendsto (fun k ↦ ∫ ω, F (Y k ω) ∂(ν k)) l' (𝓝 (∫ ω, F (Z ω) ∂μ')) :=
+    (tendstoInDistribution_iff_forall_integral_rclike_tendsto ℝ hY.forall_aemeasurable
+      hY.aemeasurable_limit).mp hY f
+  rw [Metric.tendsto_nhds]
+  intro η hη
+  -- We split `η` into four pieces: `L * δ < η / 4`, `M * ε ≤ η / 4`, and two more for the
+  -- convergence in distribution of `X k` and of `Y`.
+  set δ : ℝ := η / (4 * ((L : ℝ) + 1)) with hδ_def
+  set ε : ℝ := η / (4 * (M + 1)) with hε_def
+  have hδ : 0 < δ := by positivity
+  have hε : 0 < ε := by positivity
+  have hLδ : L * δ < η / 4 := by
+    rw [hδ_def, mul_div_assoc', div_lt_div_iff₀ (by positivity) (by norm_num)]
+    nlinarith
+  have hMε : M * ε ≤ η / 4 := by
+    rw [hε_def, mul_div_assoc', div_le_div_iff₀ (by positivity) (by norm_num)]
+    nlinarith
+  -- Choose `k` such that `Y k` is close to `Z` and `X k` approximates `U` well
+  obtain ⟨k, hk_approx, hk_Y⟩ := ((h_approx δ hδ).eventually_lt_const
+    (ENNReal.ofReal_pos.mpr hε)).and
+    (Metric.tendsto_nhds.mp h_Y (η / 4) (by positivity)) |>.exists
+  -- Bound the integrals for that `k`
+  have h_Yk : Tendsto (fun i ↦ ∫ ω, F (X k i ω) ∂(μ i)) l (𝓝 (∫ ω, F (Y k ω) ∂(ν k))) :=
+    (tendstoInDistribution_iff_forall_integral_rclike_tendsto ℝ (hX k).forall_aemeasurable
+      (hX k).aemeasurable_limit).mp (hX k) f
+  filter_upwards [eventually_lt_of_limsup_lt hk_approx,
+    Metric.tendsto_nhds.mp h_Yk (η / 4) (by positivity)] with i hi_approx hi_X
+  have h_UX := abs_integral_sub_integral_le_of_lipschitzWith (hU i)
+    ((hX k).forall_aemeasurable i) hF_bounded hF_lip hδ.le
+  have h_meas : (μ i).real {ω | δ ≤ dist (U i ω) (X k i ω)} < ε :=
+    ENNReal.toReal_lt_of_lt_ofReal hi_approx
+  rw [Real.dist_eq] at hi_X hk_Y ⊢
+  calc |∫ ω, F (U i ω) ∂(μ i) - ∫ ω, F (Z ω) ∂μ'|
+  _ ≤ |∫ ω, F (U i ω) ∂(μ i) - ∫ ω, F (X k i ω) ∂(μ i)|
+      + |∫ ω, F (X k i ω) ∂(μ i) - ∫ ω, F (Y k ω) ∂(ν k)|
+      + |∫ ω, F (Y k ω) ∂(ν k) - ∫ ω, F (Z ω) ∂μ'| := by
+    grw [abs_sub_le _ (∫ ω, F (X k i ω) ∂(μ i)) _, add_assoc,
+      abs_sub_le (∫ ω, F (X k i ω) ∂(μ i)) (∫ ω, F (Y k ω) ∂(ν k)) _]
+  _ < η := by
+    have := mul_le_mul_of_nonneg_left h_meas.le hM
+    linarith
+
+end Approximation
+
 variable [SeminormedAddCommGroup E] [SecondCountableTopology E] [BorelSpace E]
 
 set_option backward.isDefEq.respectTransparency.types false in
@@ -228,55 +376,10 @@ lemma tendstoInDistribution_of_tendstoInMeasure_sub {X : ι → Ω'' → E}
     refine (abs_sub_le (∫ ω, F ω ∂(μ''.map (Y n))) (∫ ω, F ω ∂(μ''.map (X n)))
       (∫ ω, F ω ∂(μ'.map Z))).trans ?_
     gcongr
-    -- `⊢ |∫ ω, F ω ∂(μ.map (Y n)) - ∫ ω, F ω ∂(μ.map (X n))|`
-    -- `    ≤ L * (ε / 2) + M * μ.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖}`
-    -- We prove integrability of the functions involved to be able to manipulate the integrals.
-    have h_int_Y : Integrable (fun x ↦ F (Y n x)) μ'' := by
-      refine Integrable.of_bound (by fun_prop) (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
-      specialize hF_bounded (Y n a) x₀
-      rw [← sub_le_iff_le_add']
-      exact (abs_sub_abs_le_abs_sub (F (Y n a)) (F x₀)).trans hF_bounded
-    have h_int_X : Integrable (fun x ↦ F (X n x)) μ'' := by
-      refine Integrable.of_bound (by fun_prop) (‖F x₀‖ + M) (ae_of_all _ fun a ↦ ?_)
-      specialize hF_bounded (X n a) x₀
-      rw [← sub_le_iff_le_add']
-      exact (abs_sub_abs_le_abs_sub (F (X n a)) (F x₀)).trans hF_bounded
-    have h_int_sub : Integrable (fun a ↦ ‖F (Y n a) - F (X n a)‖) μ'' := by
-      rw [integrable_norm_iff (by fun_prop)]
-      exact h_int_Y.sub h_int_X
-    -- Now we prove the inequality
-    rw [integral_map (by fun_prop) (by fun_prop), integral_map (by fun_prop) (by fun_prop),
-      ← integral_sub h_int_Y h_int_X, ← Real.norm_eq_abs]
-    calc ‖∫ a, F (Y n a) - F (X n a) ∂μ''‖
-    _ ≤ ∫ a, ‖F (Y n a) - F (X n a)‖ ∂μ'' := norm_integral_le_integral_norm _
-    -- Either `‖Y n x - X n x‖` is smaller than `ε / 2`, or it is not
-    _ = ∫ a in {x | ‖Y n x - X n x‖ < ε / 2}, ‖F (Y n a) - F (X n a)‖ ∂μ''
-        + ∫ a in {x | ε / 2 ≤ ‖Y n x - X n x‖}, ‖F (Y n a) - F (X n a)‖ ∂μ'' := by
-      symm
-      simp_rw [← not_lt]
-      refine integral_add_compl₀ ?_ h_int_sub
-      exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
-    -- If it is smaller, we use the Lipschitz property of `F`
-    -- If not, we use the boundedness of `F`.
-    _ ≤ ∫ a in {x | ‖Y n x - X n x‖ < ε / 2}, L * (ε / 2) ∂μ''
-        + ∫ a in {x | ε / 2 ≤ ‖Y n x - X n x‖}, M ∂μ'' := by
-      gcongr ?_ + ?_
-      · refine setIntegral_mono_on₀ h_int_sub.integrableOn integrableOn_const ?_ ?_
-        · exact nullMeasurableSet_lt (by fun_prop) (by fun_prop)
-        · exact fun x hx ↦ hF_lip.norm_sub_le_of_le hx.le
-      · refine setIntegral_mono h_int_sub.integrableOn integrableOn_const fun a ↦ ?_
-        rw [← dist_eq_norm]
-        convert hF_bounded _ _
-    -- The goal is now a simple computation
-    _ = L * (ε / 2) * μ''.real {x | ‖Y n x - X n x‖ < ε / 2}
-        + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
-      simp only [integral_const, MeasurableSet.univ, measureReal_restrict_apply, Set.univ_inter,
-        smul_eq_mul]
-      ring
-    _ ≤ L * (ε / 2) + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖} := by
-      rw [mul_assoc]
-      gcongr
-      grw [measureReal_le_one, mul_one]
+    rw [integral_map (hY n) hF_cont.aestronglyMeasurable,
+      integral_map (hX n) hF_cont.aestronglyMeasurable]
+    simpa only [dist_eq_norm] using abs_integral_sub_integral_le_of_lipschitzWith (hY n) (hX n)
+      hF_bounded hF_lip (δ := ε / 2) (by positivity)
   -- We finally show that the right-hand side tends to `L * ε / 2`, which is smaller than `L * ε`
   have h_tendsto :
       Tendsto (fun n ↦ L * (ε / 2) + M * μ''.real {ω | ε / 2 ≤ ‖Y n ω - X n ω‖}
