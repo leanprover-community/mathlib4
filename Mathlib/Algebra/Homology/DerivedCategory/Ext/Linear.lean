@@ -46,9 +46,7 @@ noncomputable instance moduleEndRight : Module (End G) (Ext A G n) where
   smul_zero r := by simp [smul_end_def]
   zero_smul x := (congrArg (x.comp · _) (mk₀_zero G G)).trans (comp_zero ..)
   smul_add r x y := by simp [smul_end_def]
-  add_smul r s x := by
-    simp only [smul_end_def]
-    rw [show mk₀ (r + s) = mk₀ r + mk₀ s from mk₀_add r s, comp_add]
+  add_smul r s x := (congrArg (x.comp · _) (mk₀_add r s)).trans (comp_add ..)
 
 end End
 
