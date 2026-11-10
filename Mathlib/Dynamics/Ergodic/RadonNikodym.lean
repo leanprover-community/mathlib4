@@ -41,12 +41,9 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
   rcases (μ.mutuallySingular_singularPart ν).symm with ⟨s, hsm, hνs, hμs⟩
   convert hfμ.restrict_preimage hsm using 1
   · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
-    have hac : μ.singularPart ν ≪ μ :=
-      (rnDeriv_add_singularPart (μ := μ) (ν := ν) ▸
-        Measure.le_add_left le_rfl).absolutelyContinuous
     rw [← mem_ae_iff, ← Filter.eventuallyEqSet_univ,
-      ae_eq_univ_iff_measure_eq
-        ((hfμ.aemeasurable.mono_ac hac).nullMeasurableSet_preimage hsm)]
+      ae_eq_univ_iff_measure_eq ((hfμ.aemeasurable.nullMeasurableSet_preimage hsm).mono
+        (singularPart_le μ ν))]
     calc
       μ.singularPart ν (f ⁻¹' s) = (ν.withDensity (μ.rnDeriv ν) + μ.singularPart ν) (f ⁻¹' s) := by
         rw [← hfν.measure_preimage hsm.nullMeasurableSet] at hνs
@@ -64,14 +61,11 @@ with respect to a σ-finite invariant measure is an invariant measure. -/
 protected theorem withDensity_rnDeriv [SigmaFinite ν] {f : X → X}
     (hfμ : MeasurePreserving f μ μ) (hfν : MeasurePreserving f ν ν) :
     MeasurePreserving f (ν.withDensity (μ.rnDeriv ν)) (ν.withDensity (μ.rnDeriv ν)) := by
-  have hac : ν.withDensity (μ.rnDeriv ν) ≪ μ :=
-    (rnDeriv_add_singularPart (μ := μ) (ν := ν) ▸
-      Measure.le_add_right le_rfl).absolutelyContinuous
-  use hfμ.aemeasurable.mono_ac hac
+  have hfm := hfμ.aemeasurable.mono_measure (withDensity_rnDeriv_le μ ν)
+  use hfm
   ext s hs
   rw [← ENNReal.add_left_inj (measure_ne_top (μ.singularPart ν) s),
-    map_apply₀ (hfμ.aemeasurable.mono_ac hac) hs.nullMeasurableSet,
-    ← add_apply, rnDeriv_add_singularPart,
+    map_apply₀ hfm hs.nullMeasurableSet, ← add_apply, rnDeriv_add_singularPart,
     ← (hfμ.singularPart hfν).measure_preimage hs.nullMeasurableSet, ← add_apply,
     rnDeriv_add_singularPart, hfμ.measure_preimage hs.nullMeasurableSet]
 
@@ -98,16 +92,15 @@ theorem rnDeriv_comp_aeEq [IsFiniteMeasure ν] {f : X → X}
   suffices ν (f ⁻¹' s \ s) = 0 from (ae_subset.mpr this).antisymm (ae_subset.mpr <| hν_sdiff ▸ this)
   contrapose! hμ_sdiff with h₀
   apply ne_of_gt
-  have hsdiff_nm : NullMeasurableSet (s \ f ⁻¹' s) ν :=
-    hsm.nullMeasurableSet.diff (hfν.aemeasurable.nullMeasurableSet_preimage hsm)
   calc
     μ (s \ f ⁻¹' s) = ∫⁻ a in s \ f ⁻¹' s, μ.rnDeriv ν a ∂ν := (setLIntegral_rnDeriv hμν _).symm
     _ < ∫⁻ _ in s \ f ⁻¹' s, c ∂ν := by
-      apply lintegral_strict_mono (μ := ν.restrict (s \ f ⁻¹' s))
-        (Measure.restrict_eq_zero.not.mpr (hν_sdiff ▸ h₀)) measurable_const.aemeasurable
+      apply setLIntegral_strict_mono₀
+        (hsm.nullMeasurableSet.diff (hfν.aemeasurable.nullMeasurableSet_preimage hsm))
+        (hν_sdiff ▸ h₀) aemeasurable_const
       · rw [setLIntegral_rnDeriv hμν]
         finiteness
-      · exact (ae_restrict_iff'₀ hsdiff_nm).mpr (.of_forall fun x hx ↦ hx.1)
+      · exact .of_forall fun x hx ↦ hx.1
     _ = ∫⁻ _ in f ⁻¹' s \ s, c ∂ν := by simp [hν_sdiff]
     _ ≤ ∫⁻ a in f ⁻¹' s \ s, μ.rnDeriv ν a ∂ν :=
       setLIntegral_mono (by fun_prop) (fun x hx ↦ not_lt.mp hx.2)

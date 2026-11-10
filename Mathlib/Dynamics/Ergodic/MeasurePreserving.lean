@@ -12,8 +12,8 @@ public import Mathlib.Order.Filter.EventuallyConst
 # Measure-preserving maps
 
 We say that `f : α → β` is a measure-preserving map w.r.t. measures `μ : Measure α` and
-`ν : Measure β` if `f` is measurable and `map f μ = ν`. In this file we define the predicate
-`MeasureTheory.MeasurePreserving` and prove its basic properties.
+`ν : Measure β` if `f` is almost everywhere measurable w.r.t. `μ` and `map f μ = ν`. In this
+file we define the predicate `MeasureTheory.MeasurePreserving` and prove its basic properties.
 
 We use the term "measure preserving" because in many applications `α = β` and `μ = ν`.
 
@@ -39,12 +39,18 @@ namespace MeasureTheory
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ}
 
-/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is measurable
-and `map f μa = μb`. -/
+/-- `f` is a measure-preserving map w.r.t. measures `μa` and `μb` if `f` is almost everywhere
+measurable w.r.t. `μa` and `map f μa = μb`. -/
 structure MeasurePreserving (f : α → β)
   (μa : Measure α := by volume_tac) (μb : Measure β := by volume_tac) : Prop where
   protected aemeasurable : AEMeasurable f μa
   protected map_eq : map f μa = μb
+
+attribute [fun_prop] MeasurePreserving.aemeasurable
+
+@[deprecated "After a change of definition, measure-preserving maps are no longer necessarily
+measurable." (since := "2026-11-10")]
+protected alias MeasurePreserving.measurable := MeasurePreserving.aemeasurable
 
 protected theorem _root_.AEMeasurable.measurePreserving
     {f : α → β} {μa : Measure α} (h : AEMeasurable f μa) : MeasurePreserving f μa (map f μa) :=
@@ -60,7 +66,6 @@ protected theorem id (μ : Measure α) : MeasurePreserving id μ μ :=
   ⟨aemeasurable_id, map_id⟩
 
 /-- Being measure preserving only depends on the a.e. equivalence class of the map. -/
-@[gcongr]
 protected theorem congr {f f' : α → β} (hf : MeasurePreserving f μa μb) (h : f =ᵐ[μa] f') :
     MeasurePreserving f' μa μb := by
   refine ⟨hf.aemeasurable.congr h, ?_⟩
@@ -107,19 +112,27 @@ theorem aemeasurable_comp_iff {f : α → β} (hf : MeasurePreserving f μa μb)
 
 protected theorem comp {g : β → γ} {f : α → β} (hg : MeasurePreserving g μb μc)
     (hf : MeasurePreserving f μa μb) : MeasurePreserving (g ∘ f) μa μc :=
-  have hg' : AEMeasurable g (μa.map f) := hf.map_eq ▸ hg.aemeasurable
-  ⟨hg'.comp_aemeasurable hf.aemeasurable, by
-    rw [← hg'.map_map_of_aemeasurable hf.aemeasurable, hf.map_eq, hg.map_eq]⟩
+  ⟨hg.aemeasurable.comp_quasiMeasurePreserving hf.quasiMeasurePreserving, by
+    rw [← hg.aemeasurable.map_map_of_quasiMeasurePreserving hf.quasiMeasurePreserving, hf.map_eq,
+      hg.map_eq]⟩
 
 protected theorem map_of_comp {f : α → β} {g : β → γ} (hgf : MeasurePreserving (g ∘ f) μa μc)
     (hg : AEMeasurable g (μa.map f)) (hf : AEMeasurable f μa) :
     MeasurePreserving g (μa.map f) μc :=
   ⟨hg, (hg.map_map_of_aemeasurable hf).trans hgf.map_eq⟩
 
+/-- A version of `MeasurePreserving.map_of_comp` where `g` is a.e.-measurable w.r.t. a measure
+`μb` instead of `μa.map f`. -/
+protected theorem map_of_comp_quasiMeasurePreserving {f : α → β} {g : β → γ}
+    (hgf : MeasurePreserving (g ∘ f) μa μc) (hg : AEMeasurable g μb)
+    (hf : QuasiMeasurePreserving f μa μb) : MeasurePreserving g (μa.map f) μc :=
+  hgf.map_of_comp (hg.mono_ac hf.absolutelyContinuous) hf.aemeasurable
+
 protected theorem of_semiconj {f : α → β} {ga : α → α} {gb : β → β}
     (hfm : MeasurePreserving f μa μb) (hga : MeasurePreserving ga μa μa) (hf : Semiconj f ga gb)
     (hgb : AEMeasurable gb μb) : MeasurePreserving gb μb μb := by
-  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp (hfm.map_eq ▸ hgb) hfm.aemeasurable
+  have := hf.comp_eq ▸ hfm.comp hga |>.map_of_comp_quasiMeasurePreserving hgb
+    hfm.quasiMeasurePreserving
   rwa [hfm.map_eq] at this
 
 /-- An alias of `MeasureTheory.MeasurePreserving.comp` with a convenient defeq and argument order

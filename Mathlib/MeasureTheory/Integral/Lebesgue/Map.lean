@@ -70,6 +70,12 @@ theorem setLIntegral_map {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
     ∫⁻ y in s, f y ∂map g μ = ∫⁻ x in g ⁻¹' s, f (g x) ∂μ := by
   rw [restrict_map hg hs, lintegral_map hf hg]
 
+theorem setLIntegral_map₀ {f : β → ℝ≥0∞} {g : α → β} {s : Set β}
+    (hs : MeasurableSet s) (hf : AEMeasurable f (map g μ)) (hg : AEMeasurable g μ) :
+    ∫⁻ y in s, f y ∂map g μ = ∫⁻ x in g ⁻¹' s, f (g x) ∂μ := by
+  rw [restrict_map_of_aemeasurable hg hs, lintegral_map' _ hg.restrict]
+  exact hf.mono_measure <| map_mono_of_aemeasurable restrict_le_self hg
+
 theorem lintegral_indicator_const_comp {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
@@ -133,8 +139,7 @@ theorem lintegral_comp_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞)
 theorem setLIntegral_comp_preimage
     {s : Set β} (hs : MeasurableSet s) {f : β → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by
-  rw [← hg.map_eq, Measure.restrict_map_of_aemeasurable hg.aemeasurable hs,
-    lintegral_map' hf.aemeasurable hg.aemeasurable.restrict]
+  rw [← hg.map_eq, setLIntegral_map₀ hs hf.aemeasurable hg.aemeasurable]
 
 theorem setLIntegral_comp_preimage_emb (hge : MeasurableEmbedding g) (f : β → ℝ≥0∞) (s : Set β) :
     ∫⁻ a in g ⁻¹' s, f (g a) ∂μ = ∫⁻ b in s, f b ∂ν := by

@@ -105,10 +105,10 @@ theorem mem_extremePoints [IsProbabilityMeasure μ] (hμ : Ergodic f μ) :
 
 theorem iff_mem_extremePoints_measure_univ_eq [IsFiniteMeasure μ] :
     Ergodic f μ ↔ μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = μ univ} :=
-  ⟨(mem_extremePoints_measure_univ_eq ·), of_mem_extremePoints_measure_univ_eq (measure_ne_top _ _)⟩
+  ⟨mem_extremePoints_measure_univ_eq, of_mem_extremePoints_measure_univ_eq (measure_ne_top _ _)⟩
 
 theorem iff_mem_extremePoints [IsProbabilityMeasure μ] :
     Ergodic f μ ↔ μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ IsProbabilityMeasure ν} :=
-  ⟨(mem_extremePoints ·), of_mem_extremePoints⟩
+  ⟨mem_extremePoints, of_mem_extremePoints⟩
 
 end Ergodic

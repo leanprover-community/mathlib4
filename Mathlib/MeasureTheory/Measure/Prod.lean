@@ -904,17 +904,8 @@ thus the choice of a name.
 theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : α → γ → δ} (hgm : Measurable (uncurry g)) (hg : ∀ᵐ a ∂μa, map (g a) μc = μd) :
     MeasurePreserving (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) (μb.prod μd) := by
-  -- Replace `f` by a measurable function which is a.e. equal to it.
-  set f' := hf.aemeasurable.mk f
-  have hff' : f =ᵐ[μa] f' := hf.aemeasurable.ae_eq_mk
-  have hf' : MeasurePreserving f' μa μb := hf.congr hff'
-  refine (?_ : MeasurePreserving (fun p : α × γ => (f' p.1, g p.1 p.2)) _ _).congr ?_
-  swap
-  · filter_upwards [quasiMeasurePreserving_fst.ae hff'] with p hp
-    simp [hp]
-  have : Measurable fun p : α × γ => (f' p.1, g p.1 p.2) :=
-    (hf.aemeasurable.measurable_mk.comp measurable_fst).prodMk hgm
-  use this.aemeasurable
+  have : AEMeasurable (fun p : α × γ => (f p.1, g p.1 p.2)) (μa.prod μc) := by fun_prop
+  use this
   /- if `μa = 0`, then the lemma is trivial, otherwise we can use `hg`
     to deduce `SFinite μd`. -/
   rcases eq_zero_or_neZero μa with rfl | _
@@ -925,8 +916,8 @@ theorem skew_product [SFinite μa] [SFinite μc] {f : α → β} (hf : MeasurePr
     infer_instance
   -- Thus we can use the integral formula for the product measure, and compute things explicitly
   ext s hs
-  rw [map_apply this hs, Measure.prod_apply (this hs), Measure.prod_apply hs,
-    ← hf'.lintegral_comp (measurable_measure_prodMk_left hs)]
+  rw [map_apply_of_aemeasurable this hs, Measure.prod_apply₀ (this.nullMeasurable hs),
+    Measure.prod_apply hs, ← hf.lintegral_comp (measurable_measure_prodMk_left hs)]
   apply lintegral_congr_ae
   filter_upwards [hg] with a ha
   rw [← ha, map_apply hgm.of_uncurry_left (measurable_prodMk_left hs), preimage_preimage,
@@ -937,7 +928,7 @@ then `Prod.map f g` sends `μa.prod μc` to `μb.prod μd`. -/
 protected theorem prod [SFinite μc] {f : α → β} {g : γ → δ}
     (hf : MeasurePreserving f μa μb) (hg : MeasurePreserving g μc μd) :
     MeasurePreserving (Prod.map f g) (μa.prod μc) (μb.prod μd) :=
-  ⟨hf.aemeasurable.prodMap hg.aemeasurable, by
+  ⟨by fun_prop, by
     rw [← map_prod_map_of_aemeasurable _ _ hf.aemeasurable hg.aemeasurable, hf.map_eq, hg.map_eq]⟩
 
 end MeasurePreserving
