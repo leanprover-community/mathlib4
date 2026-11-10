@@ -504,6 +504,7 @@ def NatTrans.congrMapElements {G : C ⥤ Type w} {φ φ' : F ⟶ G} (h : φ = φ
     φ.mapElements ≅ φ'.mapElements :=
   NatIso.ofComponents (fun _ ↦ Functor.Elements.isoMk (Iso.refl _))
 
+/-- Isomorphic functors have equivalent categories of elements. -/
 @[simps!, implicit_reducible]
 def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
     F.Elements ≌ G.Elements where
@@ -512,6 +513,7 @@ def Functor.Elements.equivalenceOfIso {G : C ⥤ Type w} (e : F ≅ G) :
   unitIso := NatTrans.congrMapElements e.hom_inv_id.symm
   counitIso := NatTrans.congrMapElements e.inv_hom_id
 
+/-- Isomorphic functors have isomorphic categories of elements. -/
 @[simps!, implicit_reducible]
 def Functor.Elements.isoCatOfIso {G : C ⥤ Type w} (e : F ≅ G) :
     IsoCat F.Elements G.Elements :=
