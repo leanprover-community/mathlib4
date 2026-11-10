@@ -86,20 +86,20 @@ variable (x : I)
 
 @[simp]
 lemma volume_Iic : volume (Iic x) = .ofReal x := by
-  simp only [volume_apply, image_subtypeVal_Icc_Iic, Real.volume_Icc, sub_zero]
+  simp only [volume_apply, image_subtype_val_Icc_Iic, Real.volume_Icc, sub_zero]
 
 @[simp]
 lemma volume_Iio : volume (Iio x) = .ofReal x := by
-  simp only [← volume_image_subtypeVal measurableSet_Icc, image_subtypeVal_Icc_Iio,
+  simp only [← volume_image_subtypeVal measurableSet_Icc, image_subtype_val_Icc_Iio,
     Real.volume_Ico, sub_zero]
 
 @[simp]
 lemma volume_Ici : volume (Ici x) = .ofReal (1 - x) := by
-  simp only [volume_apply, image_subtypeVal_Icc_Ici, Real.volume_Icc]
+  simp only [volume_apply, image_subtype_val_Icc_Ici, Real.volume_Icc]
 
 @[simp]
 lemma volume_Ioi : volume (Ioi x) = .ofReal (1 - x) := by
-  simp only [volume_apply, image_subtypeVal_Icc_Ioi, Real.volume_Ioc]
+  simp only [volume_apply, image_subtype_val_Icc_Ioi, Real.volume_Ioc]
 
 variable (y : I)
 
