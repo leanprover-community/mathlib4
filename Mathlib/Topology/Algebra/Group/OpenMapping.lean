@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Topology.Baire.Lemmas
 public import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
@@ -109,7 +108,9 @@ theorem isOpenMap_smul_of_sigmaCompact (x : X) : IsOpenMap (fun (g : G) ↦ g �
 
 /-- A surjective morphism of topological groups is open when the source group is sigma-compact and
 the target group is a Baire space (for instance a locally compact group). -/
-@[to_additive]
+@[to_additive /-- A surjective morphism of additive topological groups is open when the source group
+is sigma-compact and the target group is a Baire space (for instance a locally compact additive
+group). -/]
 theorem MonoidHom.isOpenMap_of_sigmaCompact
     {H : Type*} [Group H] [TopologicalSpace H] [BaireSpace H] [T2Space H] [ContinuousMul H]
     (f : G →* H) (hf : Function.Surjective f) (h'f : Continuous f) :

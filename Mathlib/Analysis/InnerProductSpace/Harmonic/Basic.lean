@@ -22,7 +22,9 @@ variable
   {f f₁ f₂ : E → F}
   {x : E} {s t : Set E} {c : ℝ}
 
-open Topology Laplacian
+open Laplacian
+
+open scoped Topology
 
 namespace InnerProductSpace
 
@@ -96,6 +98,7 @@ theorem isOpen_setOfPred_harmonicAt : IsOpen { x : E | HarmonicAt f x } :=
 /--
 If `f` is harmonic in a neighborhood of `s`, it is harmonic in a neighborhood of every subset.
 -/
+@[gcongr]
 lemma HarmonicOnNhd.mono (h : HarmonicOnNhd f s) (hst : t ⊆ s) :
     HarmonicOnNhd f t := fun x hx ↦ h x (hst hx)
 

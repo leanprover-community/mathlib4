@@ -16,7 +16,6 @@ to parallel the API for conditionally complete lattices where possible. For the 
 theorems here are mostly protected within the `DirectedOn` namespace, unless such an assumption is
 unnecessary. Otherwise the names here share the same names as their counterparts in
 `Mathlib/Order/ConditionallyCompleteLattice/Basic.lean`.
-
 -/
 public section
 
@@ -25,7 +24,7 @@ assert_not_exists Multiset
 
 open OrderDual Set
 
-variable {α β γ : Type*} {ι : Sort*}
+variable {α : Type*}
 
 namespace OrderDual
 
@@ -154,7 +153,7 @@ end ConditionallyCompletePartialOrderSup
 
 section ConditionallyCompletePartialOrder
 
-variable [ConditionallyCompletePartialOrder α] {s t : Set α} {a b : α}
+variable [ConditionallyCompletePartialOrder α] {s : Set α} {a : α}
 
 protected theorem DirectedOn.subset_Icc_csInf_csSup (hdb : DirectedOn (· ≥ ·) s)
     (hda : DirectedOn (· ≤ ·) s) (hb : BddBelow s) (ha : BddAbove s) :

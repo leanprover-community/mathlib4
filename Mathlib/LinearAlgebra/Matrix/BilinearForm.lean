@@ -29,7 +29,6 @@ In this file we use the following type variables:
 ## Tags
 
 bilinear form, bilin form, BilinearForm, matrix, basis
-
 -/
 
 @[expose] public section
@@ -314,7 +313,6 @@ section MatrixAdjoints
 open Matrix
 
 variable {n : Type*} [Fintype n]
-variable (b : Basis n R₂ M₂)
 variable (J J₃ A A' : Matrix n n R₂)
 
 theorem Matrix.isAdjointPair_equiv' [DecidableEq n] (P : Matrix n n R₂) (h : IsUnit P) :

@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 
 The purpose of this file is to show that a category with a single
 object and a single morphism is locally presentable.
-
 -/
 
 @[expose] public section
@@ -50,6 +49,12 @@ protected instance (priority := low) isCardinalAccessible
     exact Functor.IsEventuallyConstantFrom.isColimitOfIsIso (i₀ := j)
       (fun _ _ ↦ by dsimp; infer_instance) _⟩⟩⟩
 
+protected instance (priority := low) isAccessible
+    {D : Type*} [Category* D] (F : C ⥤ D) :
+    Functor.IsAccessible.{w} F where
+  exists_cardinal :=
+    ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
+
 instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [Subsingleton C] [Nonempty C] :
     IsCardinalLocallyPresentable C κ where
@@ -67,6 +72,10 @@ instance (priority := low) (κ : Cardinal.{w}) [Fact κ.IsRegular]
       { diag := (Functor.const _).obj X
         ι := 𝟙 _
         isColimit.desc _ := eqToHom (by subsingleton) }, fun _ ↦ ⟨⟨⟩⟩⟩
+
+instance (priority := low) [Subsingleton C] [Nonempty C] :
+    IsLocallyPresentable.{w} C :=
+  ⟨.aleph0, Cardinal.fact_isRegular_aleph0, inferInstance⟩
 
 end IsDiscrete
 

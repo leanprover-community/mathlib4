@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 module
 
 public import Batteries.Tactic.Congr
-public import Mathlib.Data.Option.Basic
 public import Mathlib.Data.Prod.Basic
+public import Mathlib.Data.Set.Inclusion
 public import Mathlib.Data.Set.Subsingleton
 public import Mathlib.Data.Set.SymmDiff
-public import Mathlib.Data.Set.Inclusion
 
 /-!
 # Images and preimages of sets
@@ -31,7 +30,6 @@ public import Mathlib.Data.Set.Inclusion
 ## Tags
 
 set, sets, image, preimage, pre-image, range
-
 -/
 
 public section
@@ -104,6 +102,9 @@ theorem preimage_ofPred_eq {p : α → Prop} {f : β → α} : f ⁻¹' { a | p 
   rfl
 
 @[deprecated (since := "2026-07-09")] alias preimage_setOf_eq := preimage_ofPred_eq
+
+theorem preimage_singleton (f : α → β) (y : β) : f ⁻¹' {y} = {x | f x = y} :=
+  rfl
 
 @[simp]
 theorem preimage_id_eq : preimage (id : α → α) = id :=
@@ -319,6 +320,7 @@ theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
     Compl.compl '' Compl.compl '' s = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
+@[simp]
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
     f '' insert a s = insert (f a) (f '' s) := by grind
 
@@ -372,6 +374,10 @@ theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' s�
 theorem subset_image_sdiff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [sdiff_subset_iff, ← image_union, union_sdiff_self]
   exact image_mono subset_union_right
+
+open scoped symmDiff in
+lemma subset_image_symmDiff : (f '' s) ∆ (f '' t) ⊆ f '' s ∆ t := by
+  grw [Set.symmDiff_def, Set.symmDiff_def, subset_image_sdiff, subset_image_sdiff, image_union]
 
 theorem image_sdiff {f : α → β} (hf : Injective f) (s t : Set α) : f '' (s \ t) = f '' s \ f '' t :=
   Subset.antisymm
@@ -1129,7 +1135,7 @@ theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f)
 
 theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
     b ∈ range f ↔ ∃! a, f a = b :=
-  ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
+  hf.existsUnique_iff_exists.symm
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 
@@ -1341,7 +1347,7 @@ theorem Disjoint.preimage (f : α → β) {s t : Set β} (h : Disjoint s t) :
 
 lemma Codisjoint.preimage (f : α → β) {s t : Set β} (h : Codisjoint s t) :
     Codisjoint (f ⁻¹' s) (f ⁻¹' t) := by
-  simp only [codisjoint_iff_le_sup, Set.sup_eq_union, top_le_iff, ← Set.preimage_union] at h ⊢
+  simp only [codisjoint_iff_le_sup, top_le_iff, ← Set.preimage_union] at h ⊢
   rw [h]; rfl
 
 lemma IsCompl.preimage (f : α → β) {s t : Set β} (h : IsCompl s t) :

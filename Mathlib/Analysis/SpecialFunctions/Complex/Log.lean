@@ -105,6 +105,26 @@ theorem log_zero : log 0 = 0 := by simp [log]
 @[simp]
 theorem log_one : log 1 = 0 := by simp [log]
 
+lemma log_mul_eq_add_log_sub_two_pi_mul_I_iff {x y : ℂ} :
+    log (x * y) = log x + log y - 2 * π * I ↔ π < arg x + arg y := by
+  rw [← arg_mul_eq_add_arg_sub_two_pi_iff]
+  refine ⟨fun h ↦ by simpa [log_im] using congr(im $h), fun h ↦ ?_⟩
+  have hx : x ≠ 0 := by grind [arg_le_pi, Real.pi_pos]
+  have hy : y ≠ 0 := by grind [arg_le_pi, Real.pi_pos]
+  simp [Complex.ext_iff, log_re, Real.log_mul, hx, hy, log_im, h]
+
+alias ⟨_, log_mul_of_pi_lt⟩ := log_mul_eq_add_log_sub_two_pi_mul_I_iff
+
+lemma log_mul_eq_add_log_add_two_pi_mul_I_iff {x y : ℂ} :
+    log (x * y) = log x + log y + 2 * π * I ↔ arg x + arg y ≤ -π := by
+  rw [← arg_mul_eq_add_arg_add_two_pi_iff]
+  refine ⟨fun h ↦ by simpa [log_im] using congr(im $h), fun h ↦ ?_⟩
+  have hx : x ≠ 0 := by grind [neg_pi_lt_arg, Real.pi_pos]
+  have hy : y ≠ 0 := by grind [neg_pi_lt_arg, Real.pi_pos]
+  simp [Complex.ext_iff, log_re, Real.log_mul, hx, hy, log_im, h]
+
+alias ⟨_, log_mul_of_le_neg_pi⟩ := log_mul_eq_add_log_add_two_pi_mul_I_iff
+
 /-- This holds true for all `x : ℂ` because of the junk values `0 / 0 = 0` and `log 0 = 0`. -/
 @[simp] lemma log_div_self (x : ℂ) : log (x / x) = 0 := by simp [log]
 
@@ -129,7 +149,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
   · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_norm_sq, Real.log_pow,
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
-    norm_num
+    simp
     grind
   · rwa [inv_pos, Complex.normSq_pos]
   · rwa [map_ne_zero]
@@ -242,7 +262,7 @@ section LogDeriv
 
 open Complex Filter
 
-open Topology
+open scoped Topology
 
 variable {α : Type*}
 

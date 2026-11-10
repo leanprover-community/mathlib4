@@ -5,9 +5,9 @@ Authors: Michael Stoll, Ralf Stephan
 -/
 module
 
-public import Mathlib.NumberTheory.Height.Basic
 public import Mathlib.NumberTheory.Height.Northcott
 public import Mathlib.NumberTheory.NumberField.ProductFormula
+public import Mathlib.RingTheory.Algebraic.Denominator
 
 import Mathlib.Algebra.FiniteSupport.Basic
 import Mathlib.Algebra.Order.Hom.Lattice
@@ -245,7 +245,7 @@ private lemma relIndex_span_span_nat_mul (m : ℕ) {n : ℕ} (hn : n ≠ 0) (a :
   have H₁ : span {(n * m : 𝓞 K)} = Submodule.map f (span {↑m}) := by
     simp [LinearMap.map_span, f]
   have H₂ : span {↑(n * m), n * a} = Submodule.map f (span {↑m, a}) := by
-    simp [LinearMap.map_span, f, Set.image_pair]
+    simp [LinearMap.map_span, f]
   rw [H₁, H₂]
   exact AddSubgroup.relIndex_map_map_of_injective _ _ hf |>.symm
 
@@ -273,7 +273,7 @@ lemma exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow (x : K) :
   have ha : n * x = a := by
     refine mul_left_cancel₀ (mod_cast hm : (m : K) ≠ 0) ?_
     rw [mul_left_comm, ← nsmul_eq_mul m, hmr]
-    exact_mod_cast ha'.symm
+    exact mod_cast ha'.symm
   refine ⟨n, hn, a, ha, mul_left_cancel₀ hn ?_⟩
   nth_rewrite 1 [hndef]
   rw [absNorm_eq_index, mul_pow_sub_one finrank_pos.ne', ← RingOfIntegers.rank,
@@ -301,8 +301,7 @@ open Finset
 
 /-- If `x : K` (for a number field `K`), then we can find a nonzero `n : ℕ` such that
 `n ≤ mulHeight₁ x` and `n * x` is integral. I.e., the denominator of `x` can be bounded by
-its multplicative height. -/
--- TODO: Use this to show `natDenominator x ≤ mulHeight₁ x` once #39872 is merged.
+its multiplicative height. -/
 lemma exists_nat_le_mulHeight₁ (x : K) :
     ∃ n : ℕ, n ≠ 0 ∧ n ≤ mulHeight₁ x ∧ IsIntegral ℤ (n * x) := by
   obtain ⟨n, hn, a, ha₁, ha₂⟩ := exists_nat_ne_zero_exists_integer_mul_eq_and_absNorm_span_eq_pow x
@@ -318,6 +317,13 @@ lemma exists_nat_le_mulHeight₁ (x : K) :
     totalWeight_eq_sum_mult, ← prod_pow_eq_pow_sum univ]
   gcongr
   exact Finite.le_ciSup_of_le 1 <| by simp
+
+/-- The natural-number denominator of an element of a number field is bounded by its
+multiplicative height. -/
+lemma natDenominator_le_mulHeight₁ (x : K) : Algebra.natDenominator x ≤ mulHeight₁ x := by
+  obtain ⟨n, hn, hn_le, hn_int⟩ := exists_nat_le_mulHeight₁ x
+  rw [← nsmul_eq_mul, ← Algebra.natDenominator_dvd_iff] at hn_int
+  grw [Nat.le_of_dvd hn.pos hn_int, hn_le]
 
 private lemma pow_totalWeight_sub_one_eq [DecidableEq (InfinitePlace K)] {n : ℕ} (hn : n ≠ 0)
     (v : InfinitePlace K) :
@@ -392,7 +398,7 @@ private lemma finite_setOfPred_isIntegral_nat_mul_and_mulHeight₁_le {n : ℕ} 
   · simp only [Set.mem_ofPred_eq] at ha ⊢
     rw [mul_div_cancel₀ (a : K) hn', mulHeight₁_div_eq_mulHeight]
     exact ⟨a.isIntegral_coe, ha⟩
-  · rwa [div_left_inj' hn', RingOfIntegers.eq_iff] at h
+  · rwa [div_left_inj₀ hn', RingOfIntegers.eq_iff] at h
   · simp only [Set.mem_ofPred_eq, Set.mem_image]
     obtain ⟨a, ha⟩ : ∃ a : 𝓞 K, n * x = a := ⟨⟨_, hx₁⟩, rfl⟩
     refine ⟨a, ?_, (EuclideanDomain.eq_div_of_mul_eq_right hn' ha).symm⟩
@@ -526,9 +532,9 @@ its numerator and its denominator. -/
 lemma mulHeight₁_eq_max (q : ℚ) : mulHeight₁ q = max q.num.natAbs q.den := by
   rw [mulHeight₁_eq_mulHeight, mulHeight_self_one_eq_mulHeight_num_den, ← intCast_natCast q.den]
   have : (.univ : Finset (Fin 2)).gcd ![q.num, q.den] = 1 := by
-    simpa [Finset.univ_fin2, Int.normalize_coe_nat, ← Int.coe_gcd q.num q.den] using
+    simpa [Finset.univ_fin2, Int.normalize_natCast, ← Int.coe_gcd q.num q.den] using
       Int.isCoprime_iff_gcd_eq_one.mp <| isCoprime_num_den q
-  convert! mulHeight_eq_max_abs_of_gcd_eq_one this
+  convert mulHeight_eq_max_abs_of_gcd_eq_one this
   · ext i; fin_cases i <;> simp
   · rw [← Int.cast_natCast, Int.cast_inj]
     push_cast

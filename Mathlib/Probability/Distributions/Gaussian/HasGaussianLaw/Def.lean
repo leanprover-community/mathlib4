@@ -7,6 +7,9 @@ module
 
 public import Mathlib.Probability.Distributions.Gaussian.Basic
 
+set_option doc.verso true
+set_option doc.verso.suggestions false
+
 /-!
 # Gaussian random variables
 
@@ -30,4 +33,7 @@ open MeasureTheory
 public structure ProbabilityTheory.HasGaussianLaw {Ω E : Type*} {mΩ : MeasurableSpace Ω}
     [TopologicalSpace E] [AddCommMonoid E] [Module ℝ E] [mE : MeasurableSpace E]
     (X : Ω → E) (P : Measure Ω) : Prop where
+  protected aemeasurable : AEMeasurable X P := by fun_prop
   protected isGaussian_map : IsGaussian (P.map X)
+
+attribute [fun_prop] ProbabilityTheory.HasGaussianLaw.aemeasurable

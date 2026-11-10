@@ -5,10 +5,9 @@ Authors: Kexing Ying, Rémy Degenne
 -/
 module
 
-public import Mathlib.Probability.Process.Adapted
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
-public import Mathlib.Data.ENat.Lattice
 public import Mathlib.MeasureTheory.Function.ConditionalExpectation.Indicator
+public import Mathlib.Probability.Process.Adapted
 
 /-!
 # Stopping times, stopped processes and stopped values
@@ -51,7 +50,6 @@ property.
 ## Tags
 
 stopping time, stochastic process
-
 -/
 
 @[expose] public section
@@ -78,6 +76,14 @@ def IsStoppingTime [Preorder ι] (f : Filtration ι m) (τ : Ω → WithTop ι) 
 
 theorem isStoppingTime_const [Preorder ι] (f : Filtration ι m) (i : ι) :
     IsStoppingTime f fun _ => i := fun j => by simp only [MeasurableSet.const]
+
+/-- If a filtration `f` is complete with respect to `μ`, then a random time that is `μ`-almost
+everywhere equal to a stopping time is a stopping time. -/
+theorem IsStoppingTime.congr_ae [Preorder ι] {f : Filtration ι m} {μ : Measure Ω} [f.IsComplete μ]
+    {τ σ : Ω → WithTop ι} (hσ : IsStoppingTime f σ) (h : τ =ᵐ[μ] σ) :
+    IsStoppingTime f τ :=
+  fun i ↦ Filtration.IsComplete.measurableSet_of_ae_eq (hσ i)
+    (eventuallyEqSet_iff'.2 <| h.fun_comp (· ≤ i))
 
 section MeasurableSet
 
@@ -977,12 +983,9 @@ theorem isStronglyProgressive_min_stopping_time [PseudoMetrizableSpace ι]
     · lift τ (ω : Set.Iic i × Ω).2 to ι using h with t ht
       norm_cast
       refine hx_fst_le.trans (le_of_lt ?_)
-      convert! ω.prop
+      convert ω.prop
       simp only [sc, s, not_le, Set.mem_compl_iff, Set.mem_ofPred_eq, ← ht]
       norm_cast
-
-@[deprecated (since := "2026-04-24")]
-alias progMeasurable_min_stopping_time := isStronglyProgressive_min_stopping_time
 
 theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
@@ -996,17 +999,10 @@ theorem IsStronglyProgressive.stoppedProcess [PseudoMetrizableSpace ι]
     · simp [(mod_cast h_it : (i : WithTop ι) ≤ t)]
     · simpa [(mod_cast h_ti : t ≤ (i : WithTop ι))]
 
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stoppedProcess := IsStronglyProgressive.stoppedProcess
-
 theorem IsStronglyProgressive.stronglyAdapted_stoppedProcess [PseudoMetrizableSpace ι]
     (h : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) :
     StronglyAdapted f (MeasureTheory.stoppedProcess u τ) :=
   (h.stoppedProcess hτ).stronglyAdapted
-
-@[deprecated (since := "2026-04-24")]
-alias ProgMeasurable.stronglyAdapted_stoppedProcess :=
-  IsStronglyProgressive.stronglyAdapted_stoppedProcess
 
 theorem IsStronglyProgressive.stronglyMeasurable_stoppedProcess [PseudoMetrizableSpace ι]
     (hu : IsStronglyProgressive f u) (hτ : IsStoppingTime f τ) (i : ι) :
@@ -1169,8 +1165,8 @@ theorem memLp_stoppedValue_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : ∀
     {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ WithTop.some '' s) :
     MemLp (stoppedValue u τ) p μ := by
   rw [stoppedValue_eq_of_mem_finset hbdd]
-  refine memLp_finsetSum' _ fun i _ => MemLp.indicator ?_ (hu i)
-  refine ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)
+  refine memLp_finsetSum' _ fun i _ ↦ (hu i).indicator ?_
+  refine (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq_of_countable_range ?_ i)).nullMeasurableSet
   have : Set.range τ ⊆ WithTop.some '' s := by
     rintro x ⟨y, rfl⟩
     exact hbdd y
@@ -1216,11 +1212,11 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
     MemLp (stoppedProcess u τ n) p μ := by
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine MemLp.add ?_ ?_
-  · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
+  · exact (hu n).indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)).nullMeasurableSet
   · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
-      convert! this using 1; ext1 ω; simp only [Finset.sum_apply]
-    refine memLp_finsetSum _ fun i _ => MemLp.indicator ?_ (hu i)
-    exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)
+      convert this using 1; ext1 ω; simp only [Finset.sum_apply]
+    refine memLp_finsetSum _ fun i _ ↦ (hu i).indicator ?_
+    exact (ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)).nullMeasurableSet
 
 theorem memLp_stoppedProcess [LocallyFiniteOrderBot ι] (hτ : IsStoppingTime ℱ τ)
     (hu : ∀ n, MemLp (u n) p μ) (n : ι) :
@@ -1285,9 +1281,9 @@ section Nat
 
 /-! ### Filtrations indexed by `ℕ` -/
 
-variable {u : ℕ → Ω → β} {τ π : Ω → ℕ∞}
+variable {u : ℕ → Ω → β} {τ π : Ω → WithTop ℕ}
 
-theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ∞) :
+theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) (hπ : ∀ ω, π ω ≠ ⊤) :
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.Ico (τ ω).untopA (π ω).untopA, (u (i + 1) - u i)) ω := by
   ext ω
@@ -1299,9 +1295,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
     stoppedValue u π - stoppedValue u τ = fun ω =>
       (∑ i ∈ Finset.range (N + 1), Set.indicator {ω | τ ω ≤ i ∧ i < π ω} (u (i + 1) - u i)) ω := by
   have hπ_top ω : π ω ≠ ⊤ := fun h ↦ by specialize hbdd ω; simp [h] at hbdd
-  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (mod_cast hle ω)
-  rw [stoppedValue_sub_eq_sum hle]
-  swap; · intro ω; exact mod_cast hπ_top ω
+  have hτ_top ω : τ ω ≠ ⊤ := ne_top_of_le_ne_top (hπ_top ω) (hle ω)
+  rw [stoppedValue_sub_eq_sum hle hπ_top]
   ext ω
   simp only [Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
   refine Finset.sum_congr ?_ fun _ _ => rfl
@@ -1310,8 +1305,8 @@ theorem stoppedValue_sub_eq_sum' [AddCommGroup β] (hle : τ ≤ π) {N : ℕ} (
   specialize hbdd ω
   lift τ ω to ℕ using hτ_top ω with t ht
   lift π ω to ℕ using hπ_top ω with b hb
-  simp only [Nat.cast_le] at hbdd
-  simp
+  simp at hbdd
+  simp [← ENat.some_eq_natCast]
   grind
 
 section AddCommMonoid
@@ -1324,9 +1319,8 @@ theorem stoppedValue_eq {N : ℕ} (hbdd : ∀ ω, τ ω ≤ N) : stoppedValue u 
   specialize hbdd ω
   have h_top : τ ω ≠ ⊤ := fun h_contra ↦ by simp [h_contra] at hbdd
   lift τ ω to ℕ using h_top with t ht
-  simp only [Nat.cast_le] at hbdd
-  simp only [ENat.some_eq_natCast, Finset.coe_range]
-  exact ⟨t, by simpa, Nat.cast_inj.mpr rfl⟩
+  simp only [Nat.cast_withTop, WithTop.coe_le_coe] at hbdd
+  exact ⟨t, by simpa [Nat.lt_succ_iff], rfl⟩
 
 theorem stoppedProcess_eq (n : ℕ) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
     ∑ i ∈ Finset.range n, Set.indicator {ω | τ ω = i} (u i) := by
@@ -1340,14 +1334,14 @@ theorem stoppedProcess_eq' (n : ℕ) : stoppedProcess u τ n = Set.indicator {a 
       {a | n + 1 ≤ τ a}.indicator (u n) + {a | τ a = n}.indicator (u n) := by
     ext x
     rw [add_comm, Pi.add_apply, ← Set.indicator_union_of_notMem_inter]
-    · simp_rw [@eq_comm _ _ (n : ℕ∞), @le_iff_eq_or_lt _ _ (n : ℕ∞)]
+    · simp_rw [@eq_comm _ _ (n : WithTop ℕ), @le_iff_eq_or_lt _ _ (n : WithTop ℕ)]
       have : {a | ↑n + 1 ≤ τ a} = {a | ↑n < τ a} := by
         ext ω
         simp only [Set.mem_ofPred_eq]
         cases τ ω with
         | top => simp
         | coe t =>
-          simp only [Nat.cast_lt]
+          simp
           norm_cast
       rw [this, Set.ofPred_or]
     · rintro ⟨h₁, h₂⟩

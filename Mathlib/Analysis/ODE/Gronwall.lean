@@ -123,7 +123,7 @@ theorem le_gronwallBound_of_liminf_deriv_right_le {f f' : ℝ → ℝ} {δ K ε 
     · exact hx
   intro x hx
   change f x ≤ (fun ε' => gronwallBound δ K ε' (x - a)) ε
-  convert! continuousWithinAt_const.closure_le _ _ (H x hx)
+  convert continuousWithinAt_const.closure_le _ _ (H x hx)
   · simp only [closure_Ioi, self_mem_Ici]
   exact (gronwallBound_continuous_ε δ K (x - a)).continuousWithinAt
 
@@ -151,7 +151,7 @@ theorem eq_zero_of_abs_deriv_le_mul_abs_self_of_eq_zero_right {f f' : ℝ → E}
       norm_le_gronwallBound_of_norm_deriv_right_le hf hf' (by simp [ha]) (by simpa using bound) _ hx
     _ = 0 := by rw [gronwallBound_ε0_δ0]
 
-variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b t₀ : ℝ} {εf εg δ : ℝ}
+variable {v : ℝ → E → E} {s : ℝ → Set E} {K : ℝ≥0} {f g f' g' : ℝ → E} {a b : ℝ} {εf εg δ : ℝ}
 
 /-- If `f` and `g` are two approximate solutions of the same ODE, then the distance between them
 can't grow faster than exponentially. This is a simple corollary of Grönwall's inequality, and some

@@ -5,9 +5,8 @@ Authors: Yuma Mizuno, Calle Sönne
 -/
 module
 
-public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 public import Mathlib.CategoryTheory.Bicategory.Functor.Lax
-public import Mathlib.Tactic.CategoryTheory.ToApp
+public import Mathlib.CategoryTheory.Bicategory.Functor.Oplax
 
 /-!
 # Pseudofunctors
@@ -30,7 +29,6 @@ We provide several constructors for pseudofunctors:
 * `CategoryTheory.Pseudofunctor B C` : a pseudofunctor between bicategories `B` and `C`, which we
   denote by `B ⥤ᵖ C`.
 * `CategoryTheory.Pseudofunctor.comp F G` : the composition of pseudofunctors
-
 -/
 
 @[expose] public section

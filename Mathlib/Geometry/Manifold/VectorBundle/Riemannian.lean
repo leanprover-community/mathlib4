@@ -5,9 +5,10 @@ Authors: Sébastien Gouëzel
 -/
 module
 
-public import Mathlib.Geometry.Manifold.VectorBundle.Hom
 public import Mathlib.Geometry.Manifold.VectorBundle.MDifferentiable
 public import Mathlib.Topology.VectorBundle.Riemannian
+
+import Mathlib.Geometry.Manifold.VectorBundle.Hom
 
 /-! # Riemannian vector bundles
 
@@ -42,8 +43,9 @@ variable
 
 @[expose] public section
 
-open Manifold Bundle ContinuousLinearMap ENat Bornology
-open scoped ContDiff Topology
+open Bundle ContinuousLinearMap ENat Bornology
+
+open scoped Manifold ContDiff Topology
 
 section
 
@@ -99,7 +101,7 @@ variable {F₁ : Type*} [NormedAddCommGroup F₁] [InnerProductSpace ℝ F₁]
 is a Riemannian bundle. -/
 instance : IsContMDiffRiemannianBundle IB n F₁ (Bundle.Trivial B F₁) := by
   refine ⟨fun x ↦ innerSL ℝ, fun x ↦ ?_, fun x v w ↦ rfl⟩
-  simp only [contMDiffAt_section]
+  simp only [contMDiffAt_section_iff]
   convert! contMDiffAt_const (c := innerSL ℝ)
   ext v w
   simp [hom_trivializationAt_apply, inCoordinates]
@@ -123,7 +125,7 @@ lemma ContMDiffWithinAt.inner_bundle
     CMDiffAt[s] n (fun m ↦ ⟪v m, w m⟫) x := by
   rcases h.exists_contMDiff with ⟨g, g_smooth, hg⟩
   have hb : CMDiffAt[s] n b x := by
-    simp only [contMDiffWithinAt_totalSpace] at hv
+    simp only [contMDiffWithinAt_totalSpace_iff] at hv
     exact hv.1
   simp only [hg]
   have : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ)) n
@@ -132,7 +134,7 @@ lemma ContMDiffWithinAt.inner_bundle
     · exact ContMDiffAt.comp_contMDiffWithinAt x g_smooth.contMDiffAt hb
     · exact hv
     · exact hw
-  simp only [contMDiffWithinAt_totalSpace] at this
+  simp only [contMDiffWithinAt_totalSpace_iff] at this
   exact this.2
 
 /-- Given two smooth maps into the same fibers of a Riemannian bundle,
@@ -268,3 +270,14 @@ instance (g : ContMDiffRiemannianMetric IB n F E) :
 end Construction
 
 end Bundle
+
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  [IsManifold I 1 M] [RiemannianBundle (fun (x : M) ↦ TangentSpace I x)]
+
+instance [CompleteSpace E] {x : M} : CompleteSpace (TangentSpace I x) :=
+  VectorBundle.completeSpace ℝ E ..
+
+end

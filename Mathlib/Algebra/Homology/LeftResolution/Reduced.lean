@@ -7,7 +7,8 @@ module
 
 public import Mathlib.Algebra.Homology.LeftResolution.Transport
 public import Mathlib.CategoryTheory.Idempotents.FunctorExtension
-public import Mathlib.CategoryTheory.MorphismProperty.Retract
+
+import Mathlib.CategoryTheory.MorphismProperty.Retract
 
 /-!
 # Left resolutions which preserve the zero object
@@ -31,7 +32,6 @@ on the elements of `M`. Then, `Λ.reduced.F.obj M` will be obtained
 from the free `R`-module on `M` by factoring out the direct factor
 corresponding to the submodule spanned by the generator corresponding
 to `0 : M` (TODO).
-
 -/
 
 @[expose] public section

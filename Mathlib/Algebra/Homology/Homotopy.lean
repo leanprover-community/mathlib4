@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Homology.Linear
 public import Mathlib.Algebra.Homology.ShortComplex.HomologicalComplex
-public import Mathlib.Tactic.Abel
 
 /-!
 # Chain homotopies
@@ -294,6 +293,27 @@ theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X 
   · rfl
   · rw [comp_zero]
 
+@[simp]
+lemma nullHomotopicMap_add (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ + h₂) = nullHomotopicMap h₁ + nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_neg (h₁ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (-h₁) = -nullHomotopicMap h₁ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
+@[simp]
+lemma nullHomotopicMap_sub (h₁ h₂ : ∀ i j, C.X i ⟶ D.X j) :
+    nullHomotopicMap (h₁ - h₂) = nullHomotopicMap h₁ - nullHomotopicMap h₂ := by
+  ext
+  simp [nullHomotopicMap]
+  abel
+
 set_option backward.defeqAttrib.useBackward true in
 /-- Compatibility of `nullHomotopicMap` with the application of additive functors -/
 theorem map_nullHomotopicMap {W : Type*} [Category* W] [Preadditive W] (G : V ⥤ W) [G.Additive]
@@ -404,6 +424,19 @@ theorem nullHomotopicMap'_f_eq_zero {k₀ : ι} (hk₀ : ∀ l : ι, ¬c.Rel k�
     (nullHomotopicMap' h).f k₀ = 0 := by
   simp only [nullHomotopicMap']
   apply nullHomotopicMap_f_eq_zero hk₀ hk₀'
+
+lemma sub_eq_nullHomotopicMap (h : Homotopy f g) :
+    f - g = nullHomotopicMap h.hom := by
+  ext
+  simp [nullHomotopicMap, HomologicalComplex.sub_f_apply, h.comm]
+
+lemma eq_add_nullHomotopicMap (h : Homotopy f g) :
+    f = g + nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
+
+lemma eq_sub_nullHomotopicMap (h : Homotopy f g) :
+    g = f - nullHomotopicMap h.hom := by
+  simp [← h.sub_eq_nullHomotopicMap]
 
 /-!
 `Homotopy.mkInductive` allows us to build a homotopy of chain complexes inductively,
@@ -682,6 +715,22 @@ end MkCoinductive
 
 end Homotopy
 
+namespace ChainComplex
+
+variable {K L : ChainComplex V ℕ} (h : ∀ i j, K.X i ⟶ L.X j)
+
+@[reassoc]
+lemma nullHomotopicMap_f_zero :
+    (Homotopy.nullHomotopicMap h).f 0 = h 0 1 ≫ L.d 1 0 :=
+  Homotopy.nullHomotopicMap_f_of_not_rel_left (by simp) (by simp) _
+
+lemma nullHomotopicMap_f_succ (n : ℕ) :
+    (Homotopy.nullHomotopicMap h).f (n + 1) =
+        K.d (n + 1) n ≫ h n (n + 1) + h (n + 1) (n + 2) ≫ L.d (n + 2) (n + 1) :=
+  Homotopy.nullHomotopicMap_f (by simp) (by simp) _
+
+end ChainComplex
+
 /-- A homotopy equivalence between two chain complexes consists of a chain map each way,
 and homotopies from the compositions to the identity chain maps.
 
@@ -744,7 +793,7 @@ def trans (f : HomotopyEquiv C D) (g : HomotopyEquiv D E) :
 /-- An isomorphism of complexes induces a homotopy equivalence. -/
 def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : ComplexShape ι}
     {C D : HomologicalComplex V c} (f : C ≅ D) : HomotopyEquiv C D :=
-  ⟨f.hom, f.inv, Homotopy.ofEq f.3, Homotopy.ofEq f.4⟩
+  ⟨f.hom, f.inv, Homotopy.ofEq f.hom_inv_id, Homotopy.ofEq f.inv_hom_id⟩
 
 lemma homotopyEquivalences_hom (f : HomotopyEquiv C D) :
     homotopyEquivalences _ _ f.hom := ⟨f, rfl⟩
@@ -805,7 +854,6 @@ namespace CategoryTheory
 
 variable {W : Type*} [Category* W] [Preadditive W]
 
-set_option backward.defeqAttrib.useBackward true in
 /-- An additive functor takes homotopies to homotopies. -/
 @[simps]
 def Functor.mapHomotopy (F : V ⥤ W) [F.Additive] {f g : C ⟶ D} (h : Homotopy f g) :
@@ -830,6 +878,12 @@ def Functor.mapHomotopyEquiv (F : V ⥤ W) [F.Additive] (h : HomotopyEquiv C D) 
     rw [← (F.mapHomologicalComplex c).map_comp, ← (F.mapHomologicalComplex c).map_id]
     exact F.mapHomotopy h.homotopyInvHomId
 
+lemma Functor.homotopyEquivalences_mapHomologicalComplex_map
+    (F : V ⥤ W) [F.Additive] (f : C ⟶ D) (hf : homotopyEquivalences _ _ f) :
+    homotopyEquivalences _ _ ((F.mapHomologicalComplex _).map f) := by
+  obtain ⟨e, rfl⟩ := hf
+  exact ⟨F.mapHomotopyEquiv e, rfl⟩
+
 end CategoryTheory
 
 section
@@ -840,7 +894,6 @@ variable {C : Type*} [Category* C] [Preadditive C] {ι : Type _} {c : ComplexSha
   [DecidableRel c.Rel] {K L : HomologicalComplex C c} {f g : K ⟶ L}
 
 set_option backward.defeqAttrib.useBackward true in
-set_option backward.isDefEq.respectTransparency false in
 /-- A homotopy between morphisms of homological complexes `K ⟶ L` induces a homotopy
 between morphisms of short complexes `K.sc i ⟶ L.sc i`. -/
 noncomputable def Homotopy.toShortComplex (ho : Homotopy f g) (i : ι) :

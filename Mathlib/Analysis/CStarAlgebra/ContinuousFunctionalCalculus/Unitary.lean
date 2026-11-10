@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 module
 
-public import Mathlib.Tactic.Peel
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 public import Mathlib.Analysis.Complex.Basic
 
@@ -15,7 +14,6 @@ public import Mathlib.Analysis.Complex.Basic
 
 * `unitary_iff_isStarNormal_and_spectrum_subset_unitary`: An element is unitary if and only if it is
   star-normal and its spectrum lies on the unit circle.
-
 -/
 
 public section

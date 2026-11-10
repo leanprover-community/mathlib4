@@ -27,7 +27,6 @@ l|      |r
 
 (Similar results for the (co)kernels of the vertical maps can be obtained
 by applying these results to the flipped square.)
-
 -/
 
 public section

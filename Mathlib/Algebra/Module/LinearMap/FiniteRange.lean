@@ -5,8 +5,8 @@ Authors: Patrick Massot, Anatole Dedecker, Yongxi Lin
 -/
 module
 
-public import Mathlib.RingTheory.Finiteness.Cofinite
 public import Mathlib.Algebra.Module.Submodule.EqLocus
+public import Mathlib.RingTheory.Finiteness.Cofinite
 
 /-!
 # `HasFiniteRange` predicate on linear maps, and the associated equivalence relation
@@ -34,7 +34,6 @@ In this file, we define:
   so opening this scope allows this relation to be denoted by `≈`.
 * `LinearMap.IsQuasiInverse`: two linear maps `u` and `v` are **quasi-inverses** if we have
   `u ∘ₗ v ≈ id` and `v ∘ₗ u ≈ id` modulo linear maps with noetherian ranges.
-
 -/
 
 @[expose] public section
@@ -43,7 +42,7 @@ open LinearMap Submodule Module
 
 namespace LinearMap
 
-variable {K V V' V₂ V₂' V₃ : Type*}
+variable {K V V₂ V₃ : Type*}
 
 section Semiring
 

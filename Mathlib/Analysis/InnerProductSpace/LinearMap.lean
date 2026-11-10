@@ -23,14 +23,15 @@ This file studies linear maps on inner product spaces.
 ## Tags
 
 inner product space, Hilbert space, norm
-
 -/
 
 @[expose] public section
 
 noncomputable section
 
-open RCLike Real ComplexConjugate
+open RCLike Real
+
+open scoped ComplexConjugate
 
 open LinearMap (BilinForm)
 
@@ -103,9 +104,7 @@ end Complex
 
 section
 
-variable {ι : Type*} {ι' : Type*} {ι'' : Type*}
 variable {E' : Type*} [SeminormedAddCommGroup E'] [InnerProductSpace 𝕜 E']
-variable {E'' : Type*} [SeminormedAddCommGroup E''] [InnerProductSpace 𝕜 E'']
 
 /-- A linear isometry preserves the inner product. -/
 @[simp]
@@ -151,8 +150,8 @@ theorem LinearEquiv.isometryOfInner_toLinearEquiv (f : E ≃ₗ[𝕜] E') (h) :
 /-- A linear map is an isometry if and it preserves the inner product. -/
 theorem LinearMap.norm_map_iff_inner_map_map {F : Type*} [FunLike F E E'] [LinearMapClass F 𝕜 E E']
     (f : F) : (∀ x, ‖f x‖ = ‖x‖) ↔ (∀ x y, ⟪f x, f y⟫_𝕜 = ⟪x, y⟫_𝕜) :=
-  ⟨({ toLinearMap := LinearMapClass.linearMap f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
-    (LinearMapClass.linearMap f |>.isometryOfInner · |>.norm_map)⟩
+  ⟨({ toLinearMap := ofClass f, norm_map' := · : E →ₗᵢ[𝕜] E' }.inner_map_map),
+    (ofClass f |>.isometryOfInner · |>.norm_map)⟩
 
 end
 
@@ -313,11 +312,15 @@ lemma toLinearMap_rankOne (x : E) (y : F) :
 @[simp] theorem norm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ = ‖x‖ * ‖y‖ := by
   rw [rankOne_def, norm_smulRight_apply, innerSL_apply_norm, mul_comm]
 
-@[simp] theorem nnnorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
+@[simp] theorem nnNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖₊ = ‖x‖₊ * ‖y‖₊ :=
   NNReal.eq <| norm_rankOne _ _
 
-@[simp] theorem enorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
-  ENNReal.coe_inj.mpr <| nnnorm_rankOne _ _
+@[deprecated (since := "2026-10-31")] alias nnnorm_rankOne := nnNorm_rankOne
+
+@[simp] theorem eNorm_rankOne (x : E) (y : F) : ‖rankOne 𝕜 x y‖ₑ = ‖x‖ₑ * ‖y‖ₑ :=
+  ENNReal.coe_inj.mpr <| nnNorm_rankOne _ _
+
+@[deprecated (since := "2026-11-06")] alias enorm_rankOne := eNorm_rankOne
 
 @[simp] lemma rankOne_apply (x : E) (y z : F) : rankOne 𝕜 x y z = inner 𝕜 y z • x := rfl
 
