@@ -7,6 +7,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 module
 
 public import Mathlib.Algebra.Group.Defs
+public import Mathlib.Algebra.Group.IsApply
 public import Mathlib.Algebra.Notation.Pi.Defs
 public import Mathlib.Basic.FunLike.Basic
 public import Mathlib.Logic.Function.Iterate
@@ -57,7 +58,6 @@ deprecated and moved to `Deprecated/Group`.
 ## Tags
 
 MonoidHom, AddMonoidHom
-
 -/
 
 @[expose] public section
@@ -201,7 +201,7 @@ library_note «hom simp lemma priority»
 /--
 The hom class hierarchy allows for a single lemma, such as `map_one`, to apply to a large variety
 of morphism types, so long as they have an instance of `OneHomClass`. For example, this applies to
-to `MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
+`MonoidHom`, `RingHom`, `AlgHom`, `StarAlgHom`, as well as their `Equiv` variants, etc. However,
 precisely because these lemmas are so widely applicable, they keys in the `simp` discrimination tree
 are necessarily highly non-specific. For example, the key for `map_one` is
 `@DFunLike.coe _ _ _ _ _ 1`.
@@ -907,7 +907,7 @@ theorem MulHom.id_comp [Mul M] [Mul N] (f : M →ₙ* N) : (MulHom.id N).comp f 
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.id_comp [MulOne M] [MulOne N] (f : M →* N) :
-    (MonoidHom.id N).comp f = f := MonoidHom.ext fun _ => rfl
+    (MonoidHom.id N).comp f = f := rfl
 
 @[to_additive (reorder := a n)]
 protected theorem MonoidHom.map_pow [Monoid M] [Monoid N] (f : M →* N) (a : M) (n : ℕ) :
@@ -1024,6 +1024,9 @@ end End
 @[to_additive /-- `0` is the homomorphism sending all elements to `0`. -/]
 instance [One M] [One N] : One (OneHom M N) := ⟨⟨fun _ => 1, rfl⟩⟩
 
+@[to_additive]
+instance [One M] [One N] : IsOneApply (OneHom M N) where
+
 /-- `1` is the multiplicative homomorphism sending all elements to `1`. -/
 @[to_additive /-- `0` is the additive homomorphism sending all elements to `0` -/]
 instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
@@ -1034,8 +1037,11 @@ instance [Mul M] [MulOneClass N] : One (M →ₙ* N) :=
 instance [MulOne M] [MulOneClass N] : One (M →* N) :=
   ⟨⟨⟨fun _ => 1, rfl⟩, fun _ _ => (one_mul 1).symm⟩⟩
 
-@[to_additive (attr := simp)]
-theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
+@[deprecated zero_apply +typeChanged (since := "2026-11-10")]
+protected theorem ZeroHom.zero_apply [Zero M] [Zero N] (x : M) : (0 : ZeroHom M N) x = 0 := rfl
+
+@[to_additive existing, deprecated one_apply +typeChanged (since := "2026-11-10")]
+protected theorem OneHom.one_apply [One M] [One N] (x : M) : (1 : OneHom M N) x = 1 := rfl
 
 @[to_additive (attr := simp)]
 theorem MonoidHom.one_apply [MulOne M] [MulOneClass N] (x : M) : (1 : M →* N) x = 1 := rfl
@@ -1047,7 +1053,7 @@ theorem OneHom.one_comp [One M] [One N] [One P] (f : OneHom M N) :
 @[to_additive (attr := simp)]
 theorem OneHom.comp_one [One M] [One N] [One P] (f : OneHom N P) : f.comp (1 : OneHom M N) = 1 := by
   ext
-  simp only [map_one, OneHom.coe_comp, Function.comp_apply, OneHom.one_apply]
+  simp
 
 @[to_additive]
 instance [One M] [One N] : Inhabited (OneHom M N) := ⟨1⟩

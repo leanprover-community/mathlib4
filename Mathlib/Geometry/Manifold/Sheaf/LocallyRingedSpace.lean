@@ -28,7 +28,6 @@ This file equips a smooth manifold with the structure of a locally ringed space.
 
 - Show that every morphism of locally ringed spaces between two smooth manifolds is induced
   by a smooth map via `ChartedSpace.locallyRingedSpaceMap`.
-
 -/
 
 @[expose] public section
@@ -135,9 +134,6 @@ def ChartedSpace.locallyRingedSpace : LocallyRingedSpace where
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).property
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
-
-@[deprecated (since := "2026-04-01")]
-alias IsManifold.locallyRingedSpace := ChartedSpace.locallyRingedSpace
 
 open CategoryTheory
 

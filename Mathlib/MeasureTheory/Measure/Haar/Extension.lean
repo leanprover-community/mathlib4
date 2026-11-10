@@ -26,7 +26,6 @@ we construct a Haar measure on `B` from Haar measures on `A` and `C`.
 * `TopologicalGroup.IsSES.isHaarMeasure_inducedMeasure`: `inducedMeasure` is a Haar measure.
 * `TopologicalGroup.IsSES.inducedMeasure_lt_of_injOn`: If `ψ` is injective on an open set `U`,
   then the induced measure on `U` is bounded by `μC Set.univ * μA {1}` (possibly infinite).
-
 -/
 
 @[expose] public section
@@ -222,13 +221,13 @@ instance isHaarMeasure_inducedMeasure : IsHaarMeasure (inducedMeasure H μA μC)
     grw [← pos_iff_ne_zero, inducedMeasure,
       ← RealRMK.le_rieszMeasure_tsupport_subset (f := ⟨f, hf2⟩) _ hf4 hf3, ENNReal.ofReal_pos]
     suffices (0 : ℝ) < pushforward H μA ⟨f, hf2⟩ (ψ b) from
-      (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+      (pushforward H μA ⟨f, hf2⟩).continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
         (pushforward H μA ⟨f, hf2⟩).hasCompactSupport hf0 this.ne'
     have : (Function.invFun ψ (ψ b))⁻¹ * b ∈ φ.range := by
       simp [← H.mulExact.monoidHom_ker_eq, Function.apply_invFun_apply]
     obtain ⟨a, ha⟩ := this
     replace ha : f (Function.invFun ψ (ψ b) * φ a) ≠ 0 := by simp [ha, hf1 (interior_subset hb)]
-    exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero
+    exact (pullback H ⟨f, hf2⟩ _).continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero
       (pullback H ⟨f, hf2⟩ _).hasCompactSupport (fun x ↦ (hf4 _).1) ha
 
 set_option backward.isDefEq.respectTransparency.types false in

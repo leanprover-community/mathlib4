@@ -22,7 +22,6 @@ mimicking the API for Fréchet derivatives.
 - deriving continuity from differentiability on manifolds,
 - congruence lemmas for derivatives on manifolds
 - composition lemmas and the chain rule
-
 -/
 
 public section
@@ -680,10 +679,10 @@ theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f 
     mfderiv[s] f x = 0 := by
   simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
   simp only [HasMFDerivWithinAt, mfld_simps] at h
-  rw [fderivWithin, ite_eq_left (by exact h.2)]
+  rw [fderivWithin_def, ite_eq_left (by exact h.2)]
   simp
 
-theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
+protected theorem MDifferentiable.mfderivWithin (h : MDiffAt f x) (hxs : UniqueMDiffAt[s] x) :
     mfderiv[s] f x = mfderiv% f x := by
   apply HasMFDerivWithinAt.mfderivWithin _ hxs
   exact h.hasMFDerivAt.hasMFDerivWithinAt
@@ -858,7 +857,7 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
     (extChartAt I x).symm ⁻¹' s ∩ range I =ᶠ[𝓝[{extChartAt I x x}ᶜ] (extChartAt I x x)]
     ((extChartAt I x).symm ⁻¹' t ∩ range I : Set E) := by
   have : T1Space M := I.t1Space M
-  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | (y ∈ s) = (y ∈ t)} :=
+  obtain ⟨u, u_mem, hu⟩ : ∃ u ∈ 𝓝 x, u ∩ {x}ᶜ ⊆ {y | y ∈ s ↔ y ∈ t} :=
     mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (nhdsWithin_compl_singleton_le x y h)
   rw [← extChartAt_to_inv (I := I) x] at u_mem
   have B : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 (extChartAt I x x) := by
@@ -867,11 +866,10 @@ theorem preimage_extChartAt_eventuallyEqSet_compl_singleton (y : M) (h : s =ᶠ[
   apply mem_nhdsWithin_iff_exists_mem_nhds_inter.2
     ⟨_, Filter.inter_mem ((continuousAt_extChartAt_symm x).preimage_mem_nhds u_mem) B, ?_⟩
   rintro z ⟨hz, h'z⟩
-  simp only [eq_iff_iff, mem_ofPred_eq]
+  simp only [mem_ofPred_eq]
   by_cases hIz : z ∈ range I
   · simp only [mem_inter_iff, mem_preimage, mem_union, mem_compl_iff, hIz, not_true_eq_false,
       or_false, and_true] at hz ⊢
-    rw [← eq_iff_iff]
     apply hu ⟨hz.1, ?_⟩
     push _ ∈ _ at h'z ⊢
     rw [eq_comm, (extChartAt I x).eq_symm_apply (by simp) hz.2]

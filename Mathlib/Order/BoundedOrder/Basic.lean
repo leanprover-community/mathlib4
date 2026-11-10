@@ -24,7 +24,6 @@ instances for `Prop` and `fun`.
 * `<Top/Bot> α`: Typeclasses to declare the `⊤`/`⊥` notation.
 * `Order<Top/Bot> α`: Order with a top/bottom element.
 * `BoundedOrder α`: Order with a top and bottom element.
-
 -/
 
 @[expose] public section

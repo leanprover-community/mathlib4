@@ -24,7 +24,6 @@ For example, if `C` is the derived category (TODO) of an abelian
 category `A` and `F` is the homology functor in degree `0`, then
 for any `n : ℤ`, we may choose `F.shift n` to be the homology functor
 in degree `n`.
-
 -/
 
 @[expose] public section
@@ -57,7 +56,6 @@ class ShiftSequence where
       isoWhiskerRight (shiftFunctorAdd C m n) _ ≪≫ Functor.associator _ _ _ ≪≫
         isoWhiskerLeft _ (shiftIso n a a' ha') ≪≫ shiftIso m a' a'' ha''
 
-set_option backward.defeqAttrib.useBackward true in
 /-- The tautological shift sequence on a functor. -/
 @[instance_reducible]
 noncomputable def ShiftSequence.tautological : ShiftSequence F M where
@@ -130,14 +128,12 @@ lemma shiftIso_zero (a : M) :
       isoWhiskerRight (shiftFunctorZero C M) _ ≪≫ leftUnitor _ :=
   ShiftSequence.shiftIso_zero a
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shiftIso_zero_hom_app (a : M) (X : C) :
     (F.shiftIso 0 a a (zero_add a)).hom.app X =
       (shift F a).map ((shiftFunctorZero C M).hom.app X) := by
   simp [F.shiftIso_zero a]
 
-set_option backward.defeqAttrib.useBackward true in
 @[simp]
 lemma shiftIso_zero_inv_app (a : M) (X : C) :
     (F.shiftIso 0 a a (zero_add a)).inv.app X =
@@ -150,7 +146,6 @@ lemma shiftIso_add (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') :
         isoWhiskerLeft _ (F.shiftIso n a a' ha') ≪≫ F.shiftIso m a' a'' ha'' :=
   ShiftSequence.shiftIso_add _ _ _ _ _ _ _
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_hom_app (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).hom.app X =
       (shift F a).map ((shiftFunctorAdd C m n).hom.app X) ≫
@@ -158,7 +153,6 @@ lemma shiftIso_add_hom_app (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' 
           (shiftIso F m a' a'' ha'').hom.app X := by
   simp [F.shiftIso_add n m a a' a'' ha' ha'']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add_inv_app (n m a a' a'' : M) (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso (m + n) a a'' (by rw [add_assoc, ha', ha''])).inv.app X =
       (shiftIso F m a' a'' ha'').inv.app X ≫
@@ -174,7 +168,6 @@ lemma shiftIso_add' (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
   subst hnm
   rw [shiftFunctorAdd'_eq_shiftFunctorAdd, shiftIso_add]
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_hom_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).hom.app X =
@@ -183,7 +176,6 @@ lemma shiftIso_add'_hom_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
           (shiftIso F m a' a'' ha'').hom.app X := by
   simp [F.shiftIso_add' n m mn hnm a a' a'' ha' ha'']
 
-set_option backward.defeqAttrib.useBackward true in
 lemma shiftIso_add'_inv_app (n m mn : M) (hnm : m + n = mn) (a a' a'' : M)
     (ha' : n + a = a') (ha'' : m + a' = a'') (X : C) :
     (F.shiftIso mn a a'' (by rw [← hnm, ← ha'', ← ha', add_assoc])).inv.app X =
@@ -208,7 +200,6 @@ def shiftMap {X Y : C} {n : M} (f : X ⟶ Y⟦n⟧) (a a' : M) (ha' : n + a = a'
     (F.shift a).obj X ⟶ (F.shift a').obj Y :=
   (F.shift a).map f ≫ (F.shiftIso _ _ _ ha').hom.app Y
 
-set_option backward.defeqAttrib.useBackward true in
 @[reassoc]
 lemma shiftMap_comp {X Y Z : C} {n : M} (f : X ⟶ Y⟦n⟧) (g : Y ⟶ Z) (a a' : M) (ha' : n + a = a') :
     F.shiftMap (f ≫ g⟦n⟧') a a' ha' = F.shiftMap f a a' ha' ≫ (F.shift a').map g := by

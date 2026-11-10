@@ -14,7 +14,6 @@ public import Mathlib.CategoryTheory.Monoidal.Closed.Enrichment
 Let `C` be a monoidal closed category. Let `J` be a category. In this file,
 we obtain that the category `J ⥤ C` is monoidal closed if `C` has suitable
 limits.
-
 -/
 
 @[expose] public section

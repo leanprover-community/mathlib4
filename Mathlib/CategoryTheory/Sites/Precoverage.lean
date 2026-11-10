@@ -11,7 +11,6 @@ public import Mathlib.CategoryTheory.Sites.Sieves.Functoriality
 public import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
-
 # Precoverages
 
 A precoverage `K` on a category `C` is a set of presieves associated to every object `X : C`,
@@ -31,7 +30,6 @@ These two are defined in later files. For precoverages, we define stability cond
   covering.
 - `CategoryTheory.Precoverage.IsStableUnderComposition`: Refining a covering presieve by covering
   presieves yields a covering presieve.
-
 -/
 
 @[expose] public section
@@ -240,7 +238,6 @@ lemma comap_id (K : Precoverage C) : K.comap (𝟭 C) = K := by
   ext
   simp
 
-set_option backward.defeqAttrib.useBackward true in
 lemma comap_comp {E : Type*} [Category* E] (F : C ⥤ D) (G : D ⥤ E) (J : Precoverage E) :
     J.comap (F ⋙ G) = (J.comap G).comap F := by
   ext X R

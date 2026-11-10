@@ -32,7 +32,6 @@ The proof idea is as follows.
   `b ^ (2 * n + 1) * sinPoly n (a / b)` is a positive integer by the degree bound. But it is equal
   to `a ^ (2 * n + 1) / n ! * I n (π / 2) ≤ 2 * a * (2 * n + 1) / n !`, which converges to 0 as
   `n → ∞`.
-
 -/
 
 public section
@@ -277,7 +276,7 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     ¬Irrational x → ∃ (a : ℤ) (b : ℕ), 0 < b ∧ x = a / b := by
   rw [Irrational, not_not, mem_range]
   rintro ⟨q, rfl⟩
-  exact ⟨q.num, q.den, q.pos, by exact_mod_cast (Rat.num_div_den _).symm⟩
+  exact ⟨q.num, q.den, q.pos, mod_cast (Rat.num_div_den _).symm⟩
 
 @[simp] theorem irrational_pi : Irrational π := by
   apply Irrational.of_div_natCast 2

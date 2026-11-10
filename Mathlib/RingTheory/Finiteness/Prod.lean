@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Finitely generated product (sub)modules
-
 -/
 
 public section

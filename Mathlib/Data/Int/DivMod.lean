@@ -9,7 +9,6 @@ import Mathlib.Init
 
 /-!
 # Basic lemmas about division and modulo for integers
-
 -/
 
 public section

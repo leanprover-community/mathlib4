@@ -23,7 +23,6 @@ See also `IsSelfAdjoint`, which generalizes this definition to other star rings.
 ## Tags
 
 self-adjoint matrix, hermitian matrix
-
 -/
 
 @[expose] public section

@@ -6,6 +6,7 @@ Authors: Brian Nugent
 module
 
 public import Mathlib.Algebra.Category.Grp.AB
+public import Mathlib.Algebra.Homology.ShortComplex.ExactFunctor
 public import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Sheaf
 public import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 public import Mathlib.Topology.Sheaves.Limits
@@ -20,7 +21,6 @@ We provide instances for categories of sheaves over Abelian categories.
 
 * `TopCat.Sheaf.exact_iff_stalkFunctor_map_exact`: A complex of sheaves over a concrete abelian
   category is exact if and only if it is exact on stalks.
-
 -/
 
 public section

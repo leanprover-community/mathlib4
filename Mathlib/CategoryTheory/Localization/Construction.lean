@@ -9,7 +9,6 @@ public import Mathlib.CategoryTheory.Category.Quiv
 public import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 
 /-!
-
 # Construction of the localized category
 
 This file constructs the localized category, obtained by formally inverting
@@ -33,7 +32,6 @@ uniqueness is expressed by `uniq`.
 ## References
 
 * [P. Gabriel, M. Zisman, *Calculus of fractions and homotopy theory*][gabriel-zisman-1967]
-
 -/
 
 set_option backward.defeqAttrib.useBackward true
@@ -157,7 +155,7 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      rcases r with ⟨⟩ <;> all_goals aesop)
+      rcases r with ⟨⟩ <;> aesop)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]

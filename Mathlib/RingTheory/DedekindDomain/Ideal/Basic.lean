@@ -62,7 +62,7 @@ theorem FractionalIdeal.adjoinIntegral_eq_one_of_isUnit (x : K)
   set I := adjoinIntegral A⁰ x hx
   have mul_self : IsIdempotentElem I := by
     apply coeToSubmodule_injective
-    simp only [coe_mul, adjoinIntegral_coe, I]
+    simp only [coeToSubmodule_mul, coeToSubmodule_adjoinIntegral, I]
     rw [(Algebra.adjoin A {x}).isIdempotentElem_toSubmodule]
   convert! congr($mul_self * I⁻¹) <;>
     simp only [(mul_inv_cancel_iff_isUnit K).mpr hI, mul_assoc, mul_one]
@@ -73,9 +73,6 @@ theorem FractionalIdeal.one_mem_inv_coe_ideal [IsDomain A] {I : Ideal A} (hI : I
   intro y hy
   rw [one_mul]
   exact coeIdeal_le_one hy
-
-@[deprecated (since := "2026-04-16")]
-alias one_mem_inv_coe_ideal := FractionalIdeal.one_mem_inv_coe_ideal
 
 /-- Specialization of `exists_primeSpectrum_prod_le_and_ne_bot_of_domain` to Dedekind domains:
 Let `I : Ideal A` be a nonzero ideal, where `A` is a Dedekind domain that is not a field.
@@ -111,10 +108,6 @@ theorem PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le [IsDedekindDo
       rw [this, Multiset.cons_erase hPZ']
     · refine fun h => h_eraseZ (Z.erase P) ⟨h, ?_⟩ (Multiset.erase_lt.mpr hPZ)
       exact hZP0
-
-@[deprecated (since := "2026-04-16")]
-alias exists_multiset_prod_cons_le_and_prod_not_le :=
-  PrimeSpectrum.exists_multiset_prod_cons_le_and_prod_not_le
 
 namespace FractionalIdeal
 variable [IsDedekindDomain A] {I : Ideal A}
@@ -271,7 +264,7 @@ theorem integrallyClosed : IsIntegrallyClosed A := by
   -- `A[x]` (which is a fractional ideal) is in fact equal to `A`.
   refine (isIntegrallyClosed_iff (FractionRing A)).mpr (fun {x hx} => ?_)
   rw [← Set.mem_range, ← Algebra.mem_bot, ← Subalgebra.mem_toSubmodule, Algebra.toSubmodule_bot,
-    Submodule.one_eq_span, ← coe_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
+    Submodule.one_eq_span, ← coeToSubmodule_spanSingleton A⁰ (1 : FractionRing A), map_one, ←
     FractionalIdeal.adjoinIntegral_eq_one_of_isUnit x hx (Ne.isUnit _)]
   · exact mem_adjoinIntegral_self A⁰ x hx
   · exact fun h => one_ne_zero (eq_zero_iff.mp h 1 (Algebra.adjoin A {x}).one_mem)

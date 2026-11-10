@@ -11,7 +11,6 @@ public import Mathlib.LinearAlgebra.Dimension.Constructions
 # Conditions for rank to be finite
 
 Also contains characterization for when rank equals zero or rank equals one.
-
 -/
 
 @[expose] public section
@@ -202,9 +201,6 @@ lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.ra
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ natCast_lt_aleph0)
     cases nonempty_fintype s
     exact ⟨s.toFinset, by simpa using hs, by simpa⟩
-
-@[deprecated (since := "2026-04-13")]
-alias exists_set_linearIndependent_of_lt_rank := Module.exists_set_linearIndependent_of_lt_rank
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=

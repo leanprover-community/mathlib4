@@ -34,7 +34,6 @@ In this definition and the results below, `μ` is an s-finite measure (`SFinite 
 * `absolutelyContinuous_toFinite`: `μ ≪ μ.toFinite`.
 * `toFinite_absolutelyContinuous`: `μ.toFinite ≪ μ`.
 * `ae_toFinite`: `ae μ.toFinite = ae μ`.
-
 -/
 
 @[expose] public section
@@ -116,7 +115,7 @@ lemma restrict_compl_sigmaFiniteSet [SFinite μ] :
   rw [Measure.sigmaFiniteSet,
     restrict_compl_sigmaFiniteSetWRT (Measure.AbsolutelyContinuous.refl μ)]
   ext t ht
-  simp only [Measure.smul_apply, smul_eq_mul]
+  simp only [smul_apply, smul_eq_mul]
   rw [Measure.restrict_apply ht, Measure.restrict_apply ht]
   by_cases hμt : μ (t ∩ (μ.sigmaFiniteSetWRT μ)ᶜ) = 0
   · rw [hμt, toFinite_absolutelyContinuous μ hμt]
